@@ -25,7 +25,7 @@ const KIND_WORDS={
   service:{cat_line:'Mrrr… hôm nay có ai ghé làm đẹp không?',store:'VẬT TƯ',ledger:'SỔ THU CHI',open_sign:'ĐANG NHẬN KHÁCH',warehouse:'Kho vật tư',shelf:'Tủ dụng cụ',evidence:'Sổ hẹn & phiếu',counter:'Quầy thanh toán'},
   classroom:{cat_line:'Mrrr… hôm nay lớp mình học gì thế?',rating:'phụ huynh',till:'Quỹ lớp',door_open:'Tan lớp',door_closed:'Vào lớp',open_sign:'ĐANG HỌC',closed_sign:'ĐÃ TAN LỚP',
     shelf:'Góc học liệu',evidence:'Sổ liên lạc',counter:'Bàn giáo viên',warehouse:'Tủ đồ dùng',finance:'Sổ quỹ lớp',property:'Phòng học',ledger:'SỔ LỚP',store:'TỦ ĐỒ'},
-  office:{cat_line:'Mrrr… bàn phím ấm quá, cho mèo nằm nhờ nhé.',rating:'phản hồi',till:'Quỹ bộ phận',door_open:'Tan làm',door_closed:'Vào ca',open_sign:'ĐANG LÀM VIỆC',closed_sign:'ĐÃ TAN LÀM',
+  office:{cat_line:'Mrrr… bàn phím ấm quá, cho mèo nằm nhờ nhé.',security:'An ninh tòa nhà',rating:'phản hồi',till:'Quỹ bộ phận',door_open:'Tan làm',door_closed:'Vào ca',open_sign:'ĐANG LÀM VIỆC',closed_sign:'ĐÃ TAN LÀM',
     shelf:'Kệ hồ sơ',evidence:'Bản gốc & chứng cứ',counter:'Phòng trưởng phòng',warehouse:'Tủ hồ sơ',finance:'Sổ chi phí',property:'Văn phòng',ledger:'SỔ CÔNG VIỆC',store:'HỒ SƠ'},
   farm:{cat_line:'Mrrr… nắng đẹp thế này, rau lớn nhanh lắm.',till:'Quỹ nông trại',door_open:'Nghỉ tay',door_closed:'Ra vườn',open_sign:'ĐANG LÀM VƯỜN',closed_sign:'NGHỈ TAY',
     shelf:'Kệ hạt giống',evidence:'Nhật ký canh tác',board:'Chuyện xóm',security:'Canh vườn',counter:'Bàn đóng hàng',warehouse:'Nhà kho',property:'Đất trại',ledger:'SỔ TRẠI',store:'NHÀ KHO'},
@@ -42,13 +42,21 @@ const CAREER_WORDS={
 };
 export const wordsFor=career=>({...BASE,...KIND_WORDS[kindOf(career)],...CAREER_WORDS[career]});
 
-const loaded={shop},waiting={};
+const loaded={shop},waiting={},listener={};
+function load(kind){
+  return waiting[kind]??=import(`./${kind}.js`).then(m=>{loaded[kind]=m.default;return m.default;})
+    .catch(error=>{console.warn('Chưa có cảnh',kind,error);loaded[kind]=shop;return shop;})
+    .then(scene=>{listener[kind]?.();delete listener[kind];return scene;});
+}
 /** The scene module for a career, or `shop` while its kind is still loading.
- * `onReady` runs once the real one arrives (to redraw). */
+ * `onReady` runs once when the real one arrives (the latest caller wins; the
+ * draw loop asks every frame, so nothing piles up). */
 export function sceneFor(career,onReady){
   const kind=kindOf(career);
   if(loaded[kind])return loaded[kind];
-  if(!waiting[kind])waiting[kind]=import(`./${kind}.js`).then(m=>{loaded[kind]=m.default;return m.default;}).catch(error=>{console.warn('Chưa có cảnh',kind,error);loaded[kind]=shop;return shop;});
-  waiting[kind].then(()=>onReady?.());
+  if(onReady)listener[kind]=onReady;
+  load(kind);
   return shop;
 }
+/** Load every scene kind now (startup, tools) so no career flashes the shop. */
+export const loadAllScenes=()=>Promise.all([...new Set(Object.values(KIND_OF))].filter(k=>!loaded[k]).map(load));

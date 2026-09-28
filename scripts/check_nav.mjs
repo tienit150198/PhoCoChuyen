@@ -18,6 +18,8 @@ globalThis.requestAnimationFrame=()=>0;globalThis.cancelAnimationFrame=noop;
 globalThis.devicePixelRatio=1;globalThis.location={search:''};
 globalThis.document={hidden:false,createElement:()=>({getContext:ctx2d,toDataURL:()=>'data:,'})};
 const {BobaWorld}=await import('../public/js/boba-world.js');
+// Scene kinds load lazily in the browser; load them all so each career is checked in its own place.
+await (await import('../public/js/scenes/index.js')).loadAllScenes();
 
 const args=process.argv.slice(2),verbose=args.includes('--verbose');
 let seed=Number(args[args.indexOf('--seed')+1])||20260928;
