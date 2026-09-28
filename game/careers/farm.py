@@ -35,6 +35,17 @@ v0.5:
   wave, beekeeper (no chemical spray while bees are near), trader buy-out.
 * `fa_hen` restocks a lost hen. Order generator 2 adds new orders and larger
   quantities with the day; old saves keep their tasks (kit legacy band).
+
+Care loop (docs/superpowers/specs/2026-09-29-farm-care-design.md):
+* Daily growth budget (`cap` per crop, `plot.grown`): crops take 2–3 nights from
+  seed to harvest; ripe produce ages at half budget, so the harvest window is a day.
+* Soil fertility per bed (`soil`): crops feed on it overnight, empty beds rest,
+  compost/NPK add to it (compost also on an empty bed: bón lót); depleted soil
+  slows growth. Rotation (`prev`): other family +soil, same crop brings pests back.
+* Pests at level 2+ spread to neighbouring beds overnight unless sprayed today (`guard`).
+* Night drying follows tomorrow's sky; a 3-day outlook and a planning tip are shown.
+* Hen mood (`coop.mood`, `fa_clean`): food, a clean coop and heat move it; eggs follow it.
+All deterministic, no new randomness; older saves are migrated in validate_data.
 """
 from __future__ import annotations
 import copy
@@ -50,13 +61,22 @@ NIGHT_GROWTH = 20
 PHI = dict(npk=15, chem=20, bio=2)
 COLD_CAP, MAX_LOTS = 160, 30
 NEST_MAX = 40
+# Care loop (sub-project 3): growth budget per day, soil fertility, rotation, hen mood.
+SOIL_START, SOIL_LOW, SOIL_REST, SOIL_ROTATE, SOIL_LEACH = 60, 25, 8, 8, 4
+SOIL_ADD = dict(compost=20, npk=30)
+CAP_BONUS = dict(compost=4, npk=8)
+LOW_CAP = 60              # % of the day's budget on depleted soil
+NIGHT_DRY = dict(sun=12, hot=18, wind=15, cloud=8, rain=-13)   # overnight moisture loss by tomorrow's sky
+MOOD_START, MOOD_MIN = 80, 20
+MOOD = dict(fed=8, hungry=-15, clean=6, dirty=-8, heat=-5, fox=-15)
+OUTLOOK_DAYS = 3
 
 CROPS = [
-    dict(id='muong', name='Rau muống', emoji='🥬', seed='seed_muong', unit='bó', rate=4, thirst=0, yield_=8, life=2, unlock=1, start=0, value=1),
-    dict(id='lettuce', name='Xà lách', emoji='🥗', seed='seed_lettuce', unit='cây', rate=3, thirst=0, yield_=8, life=2, unlock=1, start=0, value=1),
-    dict(id='tomato', name='Cà chua', emoji='🍅', seed='seed_tomato', unit='kg', rate=2, thirst=1, yield_=6, life=4, unlock=1, start=15, value=2),
-    dict(id='cucumber', name='Dưa leo', emoji='🥒', seed='seed_cucumber', unit='kg', rate=3, thirst=1, yield_=6, life=3, unlock=2, start=0, value=2),
-    dict(id='herbs', name='Rau thơm', emoji='🌿', seed='seed_herbs', unit='bó', rate=3, thirst=0, yield_=10, life=2, unlock=3, start=0, value=1),
+    dict(id='muong', name='Rau muống', emoji='🥬', seed='seed_muong', unit='bó', rate=4, thirst=0, yield_=8, life=2, unlock=1, start=0, value=1, cap=34, feed=8, family='leafy'),
+    dict(id='lettuce', name='Xà lách', emoji='🥗', seed='seed_lettuce', unit='cây', rate=3, thirst=0, yield_=8, life=2, unlock=1, start=0, value=1, cap=32, feed=8, family='leafy'),
+    dict(id='tomato', name='Cà chua', emoji='🍅', seed='seed_tomato', unit='kg', rate=2, thirst=1, yield_=6, life=4, unlock=1, start=15, value=2, cap=18, feed=12, family='fruit'),
+    dict(id='cucumber', name='Dưa leo', emoji='🥒', seed='seed_cucumber', unit='kg', rate=3, thirst=1, yield_=6, life=3, unlock=2, start=0, value=2, cap=26, feed=10, family='fruit'),
+    dict(id='herbs', name='Rau thơm', emoji='🌿', seed='seed_herbs', unit='bó', rate=3, thirst=0, yield_=10, life=2, unlock=3, start=0, value=1, cap=30, feed=6, family='leafy'),
 ]
 CROP_INDEX = {x['id']: x for x in CROPS}
 EGG = dict(id='egg', name='Trứng gà', emoji='🥚', unit='quả', life=10, value=1)
@@ -201,19 +221,46 @@ def _make_v1(day: int, slot: int, serial: int) -> dict:
 FIXED = ('needs',)
 
 
-def _plot(pid: str, crop=None, growth=0, moisture=55, weeds=0, compost=False) -> dict:
+def _plot(pid: str, crop=None, growth=0, moisture=55, weeds=0, compost=False, soil=SOIL_START) -> dict:
     return dict(id=pid, crop=crop, growth=growth, moisture=moisture, weeds=weeds, pests=0, seen=0, scouted=0,
-                compost=compost, npk=False, organic=True, phi=0, stress=0, planted=1 if crop else 0)
+                compost=compost, npk=False, organic=True, phi=0, stress=0, planted=1 if crop else 0,
+                soil=soil, grown=0, prev=None, guard=0)
+
+
+def _care_fields() -> dict:
+    """Plot keys added by the care loop (older saves gain them in validate_data)."""
+    return dict(soil=SOIL_START, grown=0, prev=None, guard=0)
+
+
+def _empty(plot: dict) -> None:
+    """Clear a bed after harvest or clearing: the soil, its history and the moisture stay."""
+    prev = plot['crop']
+    plot.update(_plot(plot['id'], None, 0, plot['moisture'], plot['weeds'], soil=plot['soil']))
+    plot['prev'] = prev
+
+
+def _rotate(plot: dict, crop: dict, prev) -> str:
+    """Rotation rule at sowing: the other family feeds the soil, the same crop brings its pests back."""
+    if not prev or prev not in CROP_INDEX:
+        return ''
+    if prev == crop['id']:
+        plot['pests'] = max(plot['pests'], 1)
+        return f'Vụ trước cũng là {crop["name"].lower()}: sâu bệnh cũ còn trong đất, nhớ thăm sâu sớm.'
+    if CROP_INDEX[prev]['family'] != crop['family']:
+        plot['soil'] = _clamp(plot['soil'] + SOIL_ROTATE)
+        return f'Luân canh sau {CROP_INDEX[prev]["name"].lower()}: đất được bồi thêm màu (+{SOIL_ROTATE}).'
+    return ''
 
 
 def initial() -> dict:
-    plots = [_plot('P1', 'muong', 100, 62, 1), _plot('P2', 'tomato', 88, 55, 0, True), _plot('P3', 'lettuce', 64, 58, 2),
-             _plot('P4', 'muong', 36, 50, 0), _plot('P5', 'tomato', 18, 60, 1), _plot('P6', None, 0, 45, 1)]
+    plots = [_plot('P1', 'muong', 100, 62, 1, soil=58), _plot('P2', 'tomato', 88, 55, 0, True, soil=72), _plot('P3', 'lettuce', 64, 58, 2, soil=55),
+             _plot('P4', 'muong', 36, 50, 0, soil=62), _plot('P5', 'tomato', 18, 60, 1, soil=66), _plot('P6', None, 0, 45, 1, soil=40)]
+    plots[5]['prev'] = 'muong'
     cold = [dict(id='L1', crop='muong', grade='A', qty=6, day=1, expires=2, organic=True, unsafe=False, plot='P1'),
             dict(id='L2', crop='tomato', grade='A', qty=4, day=1, expires=4, organic=True, unsafe=False, plot='P2'),
             dict(id='L3', crop='egg', grade='A', qty=20, day=1, expires=10, organic=False, unsafe=False, plot='coop')]
     return dict(turn=0, seq=3, plots=plots, cold=cold,
-                coop=dict(hens=HENS, fed=0, nest=10, stale=0),
+                coop=dict(hens=HENS, fed=0, nest=10, stale=0, mood=MOOD_START, cleaned=0),
                 diary=[dict(day=1, plot='P2', text='Nhận lại vườn từ chú Tám: luống 2 đã bón phân compost, chưa dùng hóa chất.')],
                 stats=dict(harvested=0, unsafe=0, wasted_spray=0, delivered=0, eggs=0, sold=0, pledged=0),
                 **_v2_fields())
@@ -301,6 +348,20 @@ def _clamp(x: int, low: int = 0, high: int = 100) -> int:
     return max(low, min(high, x))
 
 
+def _cap(p: dict) -> int:
+    """How much the crop on this bed can still grow in one day's work (its daily budget)."""
+    crop = CROP_INDEX[p['crop']]
+    cap = crop['cap'] + CAP_BONUS['compost'] * int(p['compost']) + CAP_BONUS['npk'] * int(p['npk'])
+    if p['soil'] < SOIL_LOW:
+        cap = cap * LOW_CAP // 100
+    return cap if p['growth'] < RIPE else cap // 2    # ripe produce ages slower than it grows
+
+
+def _night_growth(p: dict, day: int) -> int:
+    g = NIGHT_GROWTH * season(day)['night'] // 100
+    return g // 2 if p['soil'] < SOIL_LOW else g
+
+
 def _step(d: dict, turn: int, weather: dict, day: int) -> None:
     onset = 97 - 12 * kit.tier(day)      # pests find the farm more often as days go by
     for i, p in enumerate(d['plots']):
@@ -319,12 +380,49 @@ def _step(d: dict, turn: int, weather: dict, day: int) -> None:
         if p['moisture'] < MOIST_DRY:
             p['stress'] = min(50, p['stress'] + 1)
             continue
+        room = _cap(p) - p['grown']
+        if room <= 0:                     # today's budget is used: the rest happens overnight
+            continue
         # The season speeds up (or slows) growing; once ripe, crops age at their own pace.
         g = crop['rate'] + (_fit(day, crop['id']) if p['growth'] < RIPE else 0) + int(p['compost']) + int(p['npk']) - int(p['weeds'] >= 2) - int(p['pests'] >= 2)
         g = max(1, g)
         if p['moisture'] > MOIST_WET:
             g = max(1, g // 2)
-        p['growth'] = min(GROWTH_MAX, p['growth'] + g)
+        g = min(g, room)
+        before = p['growth']
+        p['growth'] = min(GROWTH_MAX, before + g)
+        p['grown'] = min(GROWTH_MAX, p['grown'] + p['growth'] - before)
+
+
+def _day_gain(growth: int, grown: int, cap: int) -> int:
+    """Growth reached by the end of a day with full care (mirrors _step's budget)."""
+    g = growth
+    if g < RIPE:
+        if g + max(0, cap - grown) < RIPE:
+            return g + max(0, cap - grown)
+        grown += RIPE - g
+        g = RIPE
+    return min(GROWTH_MAX, g + max(0, cap // 2 - grown))
+
+
+def _eta(p: dict, day: int) -> tuple:
+    """Days until ripe and until over-ripe with full care (0 = today). None beyond a week."""
+    if not p['crop']:
+        return None, None
+    base = dict(p, growth=0)
+    full = _cap(base)                                   # the budget below ripeness
+    g, grown = p['growth'], p['grown']
+    ripe = over = None
+    for k in range(8):
+        g = _day_gain(g, grown, full)
+        if ripe is None and g >= RIPE:
+            ripe = k
+        if over is None and g >= OVER:
+            over = k
+            break
+        g = min(GROWTH_MAX, g + _night_growth(p, day + k))
+        grown = 0
+    return ripe, over
 
 
 def _advance(d: dict, turn: int, day: int, is_open: bool) -> None:
@@ -559,12 +657,17 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         kit.need(crop['unlock'] <= level, f'{crop["name"]} mở ở cấp {crop["unlock"]}.')
         kit.need(plot['crop'] is None, 'Luống đang có cây. Thu hoạch hoặc dọn luống trước.')
         kit.take(c, crop['seed'], 1)
-        moisture, weeds = plot['moisture'], 0
-        plot.update(_plot(plot['id'], crop['id'], crop['start'], moisture, weeds))
+        prev, soil, lined = plot['prev'], plot['soil'], plot['compost']
+        plot.update(_plot(plot['id'], crop['id'], crop['start'], plot['moisture'], 0, lined, soil))
+        plot['prev'] = prev
         plot['planted'] = c['day']
-        _diary(d, c, plot['id'], f'Làm đất, nhổ sạch cỏ, gieo {crop["name"].lower()}.')
+        rotation = _rotate(plot, crop, prev)
+        _diary(d, c, plot['id'], f'Làm đất, nhổ sạch cỏ, gieo {crop["name"].lower()}.' + (f' {rotation}' if rotation else ''))
         kit.metric(c, 'fa_planted')
-        return dict(message=f'Đã làm đất và gieo {crop["name"].lower()} ở luống {plot["id"]}. Giữ ẩm {MOIST_LOW}–{MOIST_HIGH}% để cây lên đều.')
+        ripe, _ = _eta(plot, c['day'])
+        when = '' if ripe is None else f' Chăm đủ thì khoảng {ripe} ngày nữa tới lứa.'
+        return dict(message=f'Đã làm đất và gieo {crop["name"].lower()} ở luống {plot["id"]}. Giữ ẩm {MOIST_LOW}–{MOIST_HIGH}% để cây lên đều.'
+                    + when + (f' {rotation}' if rotation else ''))
     if name == 'fa_water':
         w = _weather(c['day'])
         if p.get('plot') == 'all':
@@ -603,20 +706,31 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
     if name == 'fa_fertilize':
         plot = _plot_of(d, p.get('plot'))
         kind = kit.one_of(p.get('kind'), ('compost', 'npk'), 'Chọn phân compost hoặc NPK.')
-        kit.need(plot['crop'], 'Luống trống, gieo cây trước rồi hẵng bón.')
+        if kind == 'compost' and not plot['crop']:      # bón lót: feed an empty bed before sowing
+            kit.need(not plot['compost'], 'Luống này đã bón lót compost, gieo cây thôi.')
+            kit.take(c, 'compost', 1)
+            plot['compost'] = True
+            before = plot['soil']
+            plot['soil'] = _clamp(before + SOIL_ADD['compost'])
+            _diary(d, c, plot['id'], 'Bón lót phân compost ủ hoai trước khi gieo (hữu cơ).')
+            return dict(message=f'Bón lót compost luống {plot["id"]}: đất màu {before} → {plot["soil"]}. Vụ tới cây lớn khỏe hơn.')
+        kit.need(plot['crop'], 'Luống trống, gieo cây trước rồi hẵng bón NPK.')
         kit.need(plot['growth'] < OVER, 'Cây đã tới lứa thu, bón thêm vô ích.')
         if kind == 'compost':
             kit.need(not plot['compost'], 'Luống này đã bón compost trong vụ.')
             kit.take(c, 'compost', 1)
             plot['compost'] = True
             plot['growth'] = min(GROWTH_MAX, plot['growth'] + 5)
+            before = plot['soil']
+            plot['soil'] = _clamp(before + SOIL_ADD['compost'])
             _diary(d, c, plot['id'], 'Bón phân compost ủ hoai (hữu cơ).')
-            return dict(message=f'Bón compost luống {plot["id"]}: đất tơi, cây lớn đều hơn. Vẫn giữ được chuẩn hữu cơ.')
+            return dict(message=f'Bón compost luống {plot["id"]}: đất màu {before} → {plot["soil"]}, cây lớn đều hơn. Vẫn giữ được chuẩn hữu cơ.')
         kit.need(not plot['npk'], 'Luống này đã bón NPK trong vụ.')
         kit.take(c, 'npk', 1)
         plot['npk'] = True
         plot['organic'] = False
         plot['growth'] = min(GROWTH_MAX, plot['growth'] + 15)
+        plot['soil'] = _clamp(plot['soil'] + SOIL_ADD['npk'])
         plot['phi'] = max(plot['phi'], c['turn'] + PHI['npk'])
         _diary(d, c, plot['id'], f'Bón phân NPK hóa học. Cách ly {PHI["npk"]} nhịp trước thu hoạch.')
         return dict(message=f'Bón NPK luống {plot["id"]}: cây lên nhanh. Từ giờ lô này KHÔNG còn là hữu cơ và phải cách ly {PHI["npk"]} nhịp trước khi thu.')
@@ -642,6 +756,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
                 bee_note = _kill_bees(s, c, d, plot['id'])
         plot['seen'] = plot['pests']
         plot['scouted'] = c['turn']
+        plot['guard'] = c['day']          # a bed sprayed today does not catch its neighbours' pests tonight
         if before == 0:
             d['stats']['wasted_spray'] += 1
             return dict(message=f'Phun luống {plot["id"]} khi không có sâu: tốn thuốc, hại cả ong và thiên địch. Thăm đồng trước khi phun nhé.' + bee_note)
@@ -672,7 +787,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
             d['stats']['unsafe'] += 1
             kit.log(s, c, 'safety', f'Thu hoạch luống {plot["id"]} khi chưa hết thời gian cách ly — lô không được bán.')
             msg += f' ⛔ Chưa hết thời gian cách ly (còn {plot["phi"] - c["turn"]} nhịp): lô này KHÔNG được bán, phải hủy.'
-        plot.update(_plot(plot['id'], None, 0, plot['moisture'], plot['weeds']))
+        _empty(plot)
         return dict(message=msg, celebrate=bool(a) and not unsafe)
     if name == 'fa_clear':
         kit.confirm(p, 'Xác nhận nhổ bỏ cây trên luống này.')
@@ -680,7 +795,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         kit.need(plot['crop'], 'Luống đã trống.')
         crop = CROP_INDEX[plot['crop']]
         _diary(d, c, plot['id'], f'Nhổ bỏ {crop["name"].lower()} ({_stage(plot)}), ủ làm phân.')
-        plot.update(_plot(plot['id'], None, 0, plot['moisture'], plot['weeds']))
+        _empty(plot)
         return dict(message=f'Đã dọn luống {plot["id"]}, thân lá đem ủ phân. Luống sẵn sàng gieo vụ mới.')
     if name == 'fa_discard':
         kit.confirm(p, 'Xác nhận bỏ lô này; ghi vào hao hụt.')
@@ -696,6 +811,12 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         coop['fed'] = c['day']
         kit.metric(c, 'fa_fed')
         return dict(message=f'Rải cám, thay nước sạch cho {coop["hens"]} con gà. Gà no thì mai đẻ đủ.')
+    if name == 'fa_clean':
+        coop = d['coop']
+        kit.need(coop['cleaned'] != c['day'], 'Hôm nay chuồng đã dọn sạch rồi.')
+        coop['cleaned'] = c['day']
+        kit.metric(c, 'fa_cleaned')
+        return dict(message='Cào phân, thay rơm ổ đẻ, rửa máng và thay nước mát. Gà vui thì đẻ đều.')
     if name == 'fa_collect':
         coop = d['coop']
         kit.need(coop['nest'] > 0, 'Ổ đang trống, gà chưa đẻ thêm.')
@@ -910,16 +1031,28 @@ def public_task(t: dict) -> dict:
 def public_data(c: dict) -> dict:
     d = copy.deepcopy(kit.data(c))
     _advance(d, c['turn'], c['day'], c['open'])
+    start = d['market']['start'] if d['market']['day'] == c['day'] else c['turn']
+    care = _care(c, d, start)
     for p in d['plots']:
         p['stage'] = _stage(p)
         p['safe_in'] = max(0, p['phi'] - c['turn'])
         p['scouted_ago'] = (c['turn'] - p['scouted']) if p['scouted'] else None
+        p['scouted_today'] = bool(p['scouted']) and p['scouted'] >= start
+        p['eta'], p['over_in'] = _eta(p, c['day'])
+        p['cap'] = _cap(p) if p['crop'] else 0
+        p['day_no'] = c['day'] - p['planted'] + 1 if p['crop'] else 0
+        p['rotation'] = {k['id']: _rotation_hint(p, k) for k in CROPS} if not p['crop'] else {}
         p.pop('pests', None)   # pests are only known by walking the plot
     for lot in d['cold']:
         lot['left'] = lot['expires'] - c['day']
     w, tomorrow = _weather(c['day']), _weather(c['day'] + 1)
     d['weather'] = w
     d['forecast'] = tomorrow
+    d['outlook'] = _outlook(c['day'])
+    d['plan'] = _plan(c, d, tomorrow)
+    d['care'] = care
+    coop = d['coop']
+    d['coop'] = dict(coop, lay_pct=_lay_pct(coop['mood']), cleaned_today=coop['cleaned'] == c['day'], mood_ok=MOOD_OK)
     d['cold_units'] = _cold_units(d)
     d['fed_today'] = d['coop']['fed'] == c['day']
     d['prices'] = {k: _price(c, k) for k in PRICES}
@@ -942,6 +1075,75 @@ def public_data(c: dict) -> dict:
     d['bees'] = _bees(c, d)
     d['desk'] = _desk_view(c)
     return d
+
+
+def _rotation_hint(p: dict, crop: dict) -> str | None:
+    prev = p['prev']
+    if not prev or prev not in CROP_INDEX:
+        return None
+    if prev == crop['id']:
+        return 'same'
+    return 'rotate' if CROP_INDEX[prev]['family'] != crop['family'] else None
+
+
+def _outlook(day: int) -> list:
+    """The next days' sky from the commune radio (the weather is fixed per day, so it is exact)."""
+    rows = []
+    for k in range(1, OUTLOOK_DAYS + 1):
+        w, x = _weather(day + k), season(day + k)
+        rows.append(dict(day=day + k, id=w['id'], emoji=w['emoji'], name=w['name'], night=-NIGHT_DRY[w['id']],
+                         season=x['name'] if x['id'] != season(day + k - 1)['id'] else None, season_emoji=x['emoji']))
+    return rows
+
+
+def _plan(c: dict, d: dict, tomorrow: dict) -> str:
+    """One planning tip for tonight, from tomorrow's sky and the beds."""
+    planted = [p for p in d['plots'] if p['crop']]
+    wet = [p['id'] for p in planted if p['moisture'] > MOIST_HIGH - 10]
+    if tomorrow['id'] == 'rain':
+        return ('Mai mưa: đêm nay đất tự ẩm thêm, đừng tưới đẫm.' + (f' Luống {", ".join(wet)} đã ẩm, khơi rãnh sẵn kẻo úng và trôi phân.' if wet else ''))
+    need = -NIGHT_DRY[tomorrow['id']]
+    dry = [p['id'] for p in planted if p['moisture'] + need < MOIST_LOW]
+    sky = {'hot': 'Mai nắng gắt', 'wind': 'Mai gió lộng', 'sun': 'Mai nắng nhẹ', 'cloud': 'Mai trời râm'}[tomorrow['id']]
+    if dry:
+        return f'{sky}: đêm nay đất khô thêm {abs(need)}%. Tưới luống {", ".join(dry)} trước khi khép ca.'
+    return f'{sky}: đêm nay đất khô thêm {abs(need)}%. Các luống đủ ẩm qua đêm.'
+
+
+def _care(c: dict, d: dict, start: int) -> list:
+    """Today's care checklist (computed on the server, shown with ui-kit reqList)."""
+    day = c['day']
+    planted = [p for p in d['plots'] if p['crop']]
+    ids = lambda rows: ', '.join(p['id'] for p in rows)
+    rows = []
+    dry = [p for p in planted if p['moisture'] < MOIST_LOW]
+    wet = [p for p in planted if p['moisture'] > MOIST_HIGH]
+    if dry or wet:
+        rows.append(dict(ok=False, icon='💧', label='Giữ ẩm ' + ' · '.join(x for x in (f'tưới {ids(dry)}' if dry else '', f'khơi rãnh {ids(wet)}' if wet else '') if x),
+                         tone='danger' if any(p['moisture'] < MOIST_DRY for p in dry) else None))
+    else:
+        rows.append(dict(ok=True, icon='💧', label='Độ ẩm các luống vừa đủ'))
+    pests = [p for p in planted if p['seen'] >= 1 and p['scouted'] >= start]
+    walk = [p for p in planted if not (p['scouted'] and p['scouted'] >= start)]
+    if pests:
+        rows.append(dict(ok=False, icon='🐛', label=f'Xử lý sâu {ids(pests)}', note='Sâu mức 2 trở lên sẽ lan sang luống bên cạnh qua đêm.',
+                         tone='danger' if any(p['seen'] >= 2 for p in pests) else 'warn'))
+    rows.append(dict(ok=True if not walk else None, icon='🔍', label='Thăm sâu mọi luống' if not walk else f'Thăm sâu {ids(walk)}', note=None if walk else 'đã đi hết một vòng'))
+    weedy = [p for p in d['plots'] if p['weeds'] >= 2]
+    if weedy:
+        rows.append(dict(ok=False, icon='🌾', label=f'Nhổ cỏ {ids(weedy)}'))
+    poor = [p for p in d['plots'] if p['soil'] < SOIL_LOW]
+    if poor:
+        rows.append(dict(ok=False, icon='🟫', label=f'Đất bạc màu {ids(poor)}', note='bón compost, hoặc để luống trống nghỉ qua đêm', tone='warn'))
+    ripe = [p for p in planted if RIPE <= p['growth'] < ROTTEN]
+    if ripe:
+        rows.append(dict(ok=False, icon='🧺', label=f'Thu hoạch {ids(ripe)}', note='quá lứa thì chỉ còn loại B' if any(p['growth'] >= OVER for p in ripe) else None))
+    coop = d['coop']
+    rows.append(dict(ok=coop['fed'] == day, icon='🌾', label='Cho gà ăn & thay nước'))
+    rows.append(dict(ok=coop['cleaned'] == day, icon='🧹', label='Dọn chuồng gà'))
+    if coop['nest']:
+        rows.append(dict(ok=None, icon='🥚', label=f'Nhặt {coop["nest"]} trứng trong ổ', note='để qua đêm thì chỉ còn loại B'))
+    return rows
 
 
 # ---------------------------------------------------------------- validation
@@ -978,6 +1180,14 @@ def validate_data(c: dict) -> None:
         d.setdefault(k, v)
     for k in ('sold', 'pledged'):
         d['stats'].setdefault(k, 0)
+    # Care loop migration: soil, the day's growth budget, rotation memory and hen mood.
+    for p in d['plots'] if isinstance(d.get('plots'), list) else []:
+        if isinstance(p, dict):
+            for k, v in _care_fields().items():
+                p.setdefault(k, v)
+    if isinstance(d.get('coop'), dict):
+        d['coop'].setdefault('mood', MOOD_START)
+        d['coop'].setdefault('cleaned', max(0, c['day'] - 1))
     if isinstance(d['market'], dict):
         d['market'].setdefault('start', 0)
     kit.need(set(d) == {'turn', 'seq', 'plots', 'cold', 'coop', 'diary', 'stats', 'desk', 'market', 'pledge'}, 'Dữ liệu nông trại sai.')
@@ -996,6 +1206,10 @@ def validate_data(c: dict) -> None:
         kit.integer(p['stress'], 0, 50)
         for k in ('scouted', 'phi', 'planted'):
             kit.integer(p[k], 0, 10**9)
+        kit.integer(p['soil'], 0, 100)
+        kit.integer(p['grown'], 0, GROWTH_MAX)
+        kit.integer(p['guard'], 0, 10**7)
+        kit.need(p['prev'] is None or p['prev'] in CROP_INDEX, 'Luống sai.')
         for k in ('compost', 'npk', 'organic'):
             kit.need(type(p[k]) is bool, 'Luống sai.')
         kit.need(p['organic'] or p['crop'], 'Luống trống không thể mất chuẩn hữu cơ.')
@@ -1011,7 +1225,9 @@ def validate_data(c: dict) -> None:
         kit.integer(lot['day'], 1, 10**7)
         kit.integer(lot['expires'], 0, 10**7)
     coop = d['coop']
-    kit.need(isinstance(coop, dict) and set(coop) == {'hens', 'fed', 'nest', 'stale'}, 'Chuồng gà sai.')
+    kit.need(isinstance(coop, dict) and set(coop) == {'hens', 'fed', 'nest', 'stale', 'mood', 'cleaned'}, 'Chuồng gà sai.')
+    kit.integer(coop['mood'], MOOD_MIN, 100)
+    kit.integer(coop['cleaned'], 0, max(0, c['day']))
     kit.integer(coop['hens'], 0, HENS)
     kit.integer(coop['fed'], 0, 10**7)
     kit.integer(coop['nest'], 0, NEST_MAX)
@@ -1076,23 +1292,10 @@ def on_close(s: dict, c: dict) -> dict:
             keep.append(lot)
     d['cold'] = keep
     tomorrow = _weather(c['day'] + 1)
-    for i, p in enumerate(d['plots']):
-        p['moisture'] = _clamp(p['moisture'] - 12 + (25 if tomorrow['id'] == 'rain' else 0))
-        if (c['day'] + i) % 2 == 0:
-            p['weeds'] = min(3, p['weeds'] + 1)
-        if not p['crop']:
-            continue
-        if p['pests']:
-            p['pests'] = min(3, p['pests'] + 1)
-        if p['moisture'] >= MOIST_DRY:
-            p['growth'] = min(GROWTH_MAX, p['growth'] + NIGHT_GROWTH * season(c['day'])['night'] // 100)
-        else:
-            p['stress'] = min(50, p['stress'] + 3)
+    night = _night(c, d, tomorrow)
     coop = d['coop']
-    laid = coop['hens'] if coop['fed'] == c['day'] else coop['hens'] // 2
-    coop['stale'] = coop['nest']
-    coop['nest'] = min(NEST_MAX, coop['nest'] + laid)
-    coop['stale'] = min(coop['stale'], coop['nest'])
+    mood0 = coop['mood']
+    laid = _hens_night(c, coop)
     ripe = [p['id'] for p in d['plots'] if p['crop'] and RIPE <= p['growth'] < OVER]
     m = d['market']
     income = m['income'] if m['day'] == c['day'] else 0
@@ -1106,10 +1309,76 @@ def on_close(s: dict, c: dict) -> dict:
         lines.append(f'{nxt["emoji"]} Mai sang {nxt["name"].lower()}: {nxt["text"]}')
     if surprise:
         lines.append(f'⚡ {surprise}')
+    if night['spread']:
+        lines.append(f'🐛 Đêm qua sâu bò sang {night["spread"]} luống bên cạnh luống đang có sâu nặng. Sáng mai thăm đồng (🔍) từng luống.')
+    if night['low']:
+        lines.append(f'🟫 Đất bạc màu ở luống {", ".join(night["low"])}: cây lớn chậm. Bón compost, hoặc thu xong để luống nghỉ, luân canh.')
+    if coop['mood'] < MOOD_OK <= mood0 or coop['mood'] < 35:
+        lines.append(f'🐔 Đàn gà kém vui ({coop["mood"]}/100): mai chỉ đẻ {laid} quả. Cho ăn đủ, dọn chuồng mỗi ngày là gà vui lại.')
     return dict(expired_units=expired, eggs_tomorrow=coop['nest'], hungry_hens=coop['fed'] != c['day'], ripe_tomorrow=ripe,
-                market_income=income, lines=lines,
+                market_income=income, lines=lines, hen_mood=coop['mood'], pest_spread=night['spread'], low_soil=night['low'],
                 note=f'Mai trời {tomorrow["name"].lower()}. ' + (f'Luống chín: {", ".join(ripe)}. ' if ripe else '') +
                 ('Gà chưa được cho ăn nên mai đẻ ít. ' if coop['fed'] != c['day'] else '') + (f'{expired} đơn vị hàng hết hạn trong kho mát.' if expired else ''))
+
+
+NEIGHBOURS = {pid: [PLOT_IDS[j] for j in range(len(PLOT_IDS))
+                   if (abs(i - j) == 1 and i // 3 == j // 3) or abs(i - j) == 3] for i, pid in enumerate(PLOT_IDS)}
+MOOD_OK = 60
+
+
+def _night(c: dict, d: dict, tomorrow: dict) -> dict:
+    """Overnight on the beds: drying by tomorrow's sky, pests spread, crops grow and feed on the soil,
+    empty beds rest. Deterministic; the day's growth budget starts again."""
+    day = c['day']
+    plots = {p['id']: p for p in d['plots']}
+    caught = sorted({n for p in d['plots'] if p['crop'] and p['pests'] >= 2 for n in NEIGHBOURS[p['id']]
+                     if plots[n]['crop'] and plots[n]['pests'] == 0 and plots[n]['guard'] != day})
+    low = []
+    for i, p in enumerate(d['plots']):
+        p['moisture'] = _clamp(p['moisture'] - NIGHT_DRY[tomorrow['id']])
+        if (day + i) % 2 == 0:
+            p['weeds'] = min(3, p['weeds'] + 1)
+        p['grown'] = 0
+        if not p['crop']:
+            p['soil'] = _clamp(p['soil'] + SOIL_REST)        # a resting bed recovers
+            continue
+        if p['pests']:
+            p['pests'] = min(3, p['pests'] + 1)
+        if p['moisture'] >= MOIST_DRY:
+            p['growth'] = min(GROWTH_MAX, p['growth'] + _night_growth(p, day))
+        else:
+            p['stress'] = min(50, p['stress'] + 3)
+        leach = SOIL_LEACH if tomorrow['id'] == 'rain' and p['moisture'] > MOIST_HIGH else 0
+        p['soil'] = _clamp(p['soil'] - CROP_INDEX[p['crop']]['feed'] - leach)
+        if p['soil'] < SOIL_LOW:
+            low.append(p['id'])
+    for pid in caught:
+        plots[pid]['pests'] = 1
+    return dict(spread=len(caught), low=low)
+
+
+def _lay_pct(mood: int) -> int:
+    return 100 if mood >= MOOD_OK else 80 if mood >= 35 else 60
+
+
+def _hens_night(c: dict, coop: dict) -> int:
+    """The flock's mood follows the day's care; tomorrow's eggs follow food and mood."""
+    day = c['day']
+    fed = coop['fed'] == day
+    mood = coop['mood'] + (MOOD['fed'] if fed else MOOD['hungry'])
+    if coop['cleaned'] == day:
+        mood += MOOD['clean']
+    else:
+        if day - coop['cleaned'] >= 2:
+            mood += MOOD['dirty']
+        if _weather(day)['id'] == 'hot':
+            mood += MOOD['heat']
+    coop['mood'] = max(MOOD_MIN, min(100, mood))
+    laid = (coop['hens'] if fed else coop['hens'] // 2) * _lay_pct(coop['mood']) // 100
+    coop['stale'] = coop['nest']
+    coop['nest'] = min(NEST_MAX, coop['nest'] + laid)
+    coop['stale'] = min(coop['stale'], coop['nest'])
+    return laid
 
 
 # ---------------------------------------------------------------- staff & hints
@@ -1132,7 +1401,10 @@ def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
             kit.take(c, 'feed', 1)
             coop['fed'] = c['day']
             return 'Đã cho gà ăn, thay nước máng.'
-        return 'Đã dọn chuồng, thay rơm ổ đẻ.'
+        if coop['cleaned'] != c['day']:
+            coop['cleaned'] = c['day']
+            return 'Đã dọn chuồng, thay rơm ổ đẻ, rửa máng.'
+        return 'Đã đi một vòng chuồng, gà khỏe cả.'
     if e['role'] == 'fa_pack':
         return 'Đã rửa khay, lót giấy thùng carton, viết sẵn tem ngày thu hoạch.'
     return None
@@ -1140,7 +1412,8 @@ def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
 
 def hint(c: dict, t: dict) -> str:
     return ('Thu hoạch luống chín (vùng xanh) → hàng vào kho mát → xếp đúng loại, đủ số vào thùng → nhãn trung thực '
-            '(chỉ dán hữu cơ khi lô không dùng hóa chất) → giao. Giữa các đơn: tưới theo thời tiết, nhổ cỏ, thăm sâu, cho gà ăn, nhặt trứng. '
+            '(chỉ dán hữu cơ khi lô không dùng hóa chất) → giao. Giữa các đơn: tưới theo dự báo, nhổ cỏ, thăm sâu (sâu nặng lan sang luống bên qua đêm), '
+            'bón compost khi đất bạc màu, đổi nhóm cây khi gieo lại, cho gà ăn, dọn chuồng, nhặt trứng. '
             'Hàng dư sắp hết hạn: bán sỉ ở tab 📈 Chợ, chọn lúc được giá.')
 
 
@@ -1151,7 +1424,8 @@ def content() -> dict:
                 water=dict(one=WATER_ONE, all=WATER_ALL, drain=DRAIN), phi=PHI, cold_cap=COLD_CAP,
                 b_percent=B_PERCENT, organic_percent=ORGANIC_PERCENT, hens=HENS, hen_cost=HEN_COST,
                 seasons=[dict(id=x['id'], name=x['name'], emoji=x['emoji'], text=x['text'], good=list(x['good']), bad=list(x['bad'])) for x in SEASONS],
-                season_days=SEASON_DAYS, wholesale=WHOLESALE, depth=DEPTH, slip=SLIP, pledge_fine=PLEDGE_FINE, bee_fine=BEE_FINE)
+                season_days=SEASON_DAYS, wholesale=WHOLESALE, depth=DEPTH, slip=SLIP, pledge_fine=PLEDGE_FINE, bee_fine=BEE_FINE,
+                soil=dict(low=SOIL_LOW, add=SOIL_ADD, rest=SOIL_REST, rotate=SOIL_ROTATE), mood=dict(ok=MOOD_OK, low=35), families={'leafy': 'Rau lá', 'fruit': 'Cây trái'})
 
 
 SITUATIONS = [
@@ -1572,6 +1846,7 @@ def _hook(s: dict, c: dict, key: str, v) -> str | None:
         coop = d['coop']
         lost = int(coop['hens'] > 1)
         coop['hens'] -= lost
+        coop['mood'] = max(MOOD_MIN, coop['mood'] + MOOD['fox'])
         coop['nest'] //= 2
         coop['stale'] = min(coop['stale'], coop['nest'])
         return (f'Mất {lost} gà mái và nửa ổ trứng. ' if lost else 'Mất nửa ổ trứng. ') + f'Có thể mua gà mái mới ({HEN_COST} xu) ở chuồng.'

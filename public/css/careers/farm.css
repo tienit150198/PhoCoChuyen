@@ -156,6 +156,47 @@
 .career-job.fa .fa-crate-line .icon-btn{min-width:44px;min-height:44px;border:0;background:none;font-size:18px;cursor:pointer;color:var(--fa-ink)}
 .career-job.fa .fa-labels{grid-template-columns:1fr 1fr}
 
+/* Care loop: outlook strip, planning tip, care list, soil + mood meters */
+.career-job.fa .fa-outlook{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.career-job.fa .fa-outlook li{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;padding:6px 4px;border-radius:var(--fa-rs);background:var(--fa-surface);border:1px solid var(--fa-line);text-align:center;line-height:1.2}
+.career-job.fa .fa-outlook li>span{font-size:22px;line-height:1.1}
+.career-job.fa .fa-outlook b{font-size:13px;overflow-wrap:anywhere}
+.career-job.fa .fa-outlook small{font-size:11px}
+.career-job.fa .fa-outlook .fa-night{color:var(--fa-muted)}
+.career-job.fa .fa-outlook li.rain .fa-night{color:var(--fa-info);font-weight:700}
+.career-job.fa .fa-outlook li.hot .fa-night{color:var(--fa-bad);font-weight:700}
+.career-job.fa .fa-outlook em{font-style:normal;font-size:11px;padding:0 6px;border-radius:99px;background:var(--fa-surface-2);border:1px solid var(--fa-line)}
+.career-job.fa .fa-plan{margin:0;padding:6px 10px;border-radius:var(--fa-rs);background:var(--fa-surface);border-left:4px solid var(--fa-info);font-size:14px;line-height:1.4}
+.career-job.fa .fa-care{margin:0 0 8px}
+.career-job.fa .fa-care-head{display:flex;flex-direction:column;align-items:flex-start;gap:0;width:100%;height:auto;min-height:52px;padding:8px 12px;text-align:left;white-space:normal;line-height:1.3}
+.career-job.fa .fa-care-head::after{content:"▾";position:absolute;right:12px;top:12px;color:var(--fa-muted)}
+.career-job.fa .fa-care-head{position:relative;padding-right:32px}
+.career-job.fa .fa-care.open .fa-care-head::after{content:"▴"}
+.career-job.fa .fa-care-head small{color:var(--fa-muted);font-weight:400;font-size:13px}
+.career-job.fa .fa-care .req-list{margin-top:6px}
+.career-job.fa .fa-meter.soil{background:var(--fa-surface)}
+.career-job.fa .fa-meter.soil::before{content:"";position:absolute;top:0;bottom:0;left:var(--lo);border-left:2px solid var(--fa-warn);z-index:2;pointer-events:none}
+.career-job.fa .fa-meter.soil i{background:#8a6a3f;opacity:.8}
+.career-job.fa .fa-meter.soil.low i{background:var(--fa-warn)}
+.career-job.fa .lg.soil{background:#8a6a3f}
+.career-job.fa .fa-icons em.day{background:var(--fa-surface);color:var(--fa-muted);border:1px solid var(--fa-line)}
+.career-job.fa .fa-icons em.poor{background:#8a6a3f}
+.career-job.fa .fa-rot{display:block;margin-top:2px;font-style:normal;font-size:11px;padding:0 6px;border-radius:99px;border:1px solid var(--fa-line)}
+.career-job.fa .fa-rot.good{border-color:var(--fa-good);color:var(--fa-good)}
+.career-job.fa .fa-rot.bad{border-color:var(--fa-bad);color:var(--fa-bad)}
+.career-job.fa .fa-budget{display:flex;align-items:center;gap:8px}
+.career-job.fa .fa-budget .fa-meter{flex:1;min-width:60px}
+.career-job.fa .fa-meter.budget{background:var(--fa-surface-2)}
+.career-job.fa .fa-meter.budget i{background:var(--fa-good)}
+.career-job.fa .fa-budget small{color:var(--fa-muted)}
+.career-job.fa .fa-mood{display:grid;gap:4px;margin:6px 0 4px}
+.career-job.fa .fa-mood small{font-size:12px}
+.career-job.fa .fa-meter.mood{height:10px}
+.career-job.fa .fa-meter.mood::before{content:"";position:absolute;top:0;bottom:0;left:var(--lo);border-left:2px solid var(--fa-good);z-index:2;pointer-events:none}
+.career-job.fa .fa-meter.mood i{background:var(--fa-good)}
+.career-job.fa .fa-meter.mood.low i{background:var(--fa-warn)}
+.career-job.fa .fa-hens.sad span{animation:none;filter:grayscale(.5)}
+
 @media (max-width:720px){
   :where(.career-job.fa) :where(.workbench){grid-template-columns:1fr}
   :where(.career-job.fa) :where(.wb-side){position:static}

@@ -1027,6 +1027,277 @@ class FarmConsequenceTests(unittest.TestCase):
             validate_state(json.loads(json.dumps(j.state)))
 
 
+class FarmCareLoopTests(unittest.TestCase):
+    """Sub-project 3: multi-day growth, soil, rotation, pest spread, outlook, hen mood."""
+
+    def setUp(self):
+        self.j = Journey('farm')
+        quiet(self.j)
+
+    def night(self, sky='sun'):
+        return F._night(self.j.c, data(self.j), F.WEATHER_INDEX[sky])
+
+    def test_crops_take_several_days_with_a_daily_budget(self):
+        j = self.j
+        j.act('fa_clear', plot='P6', confirm=True) if plot(j, 'P6')['crop'] else None
+        plot(j, 'P6')['prev'] = None
+        j.act('fa_plant', plot='P6', crop='muong')
+        cap = F.CROP_INDEX['muong']['cap']
+        for _ in range(30):
+            plot(j, 'P6').update(moisture=60, weeds=0)
+            j.act('fa_scout', plot='P6')              # a farm action: the stored state catches up each beat
+        p6 = plot(j, 'P6')
+        self.assertEqual((p6['growth'], p6['grown']), (cap, cap))   # no more growth today
+        v = next(p for p in view(j)['data']['plots'] if p['id'] == 'P6')
+        self.assertEqual((v['stage'], v['eta'], v['cap']), ('young', 2, cap))
+        self.assertLess(p6['growth'], F.YOUNG)                       # cannot be harvested on the day it was sown
+        j.act('end_day', carry_event=True)
+        self.assertEqual(plot(j, 'P6')['grown'], 0)                  # the budget starts again
+        self.assertEqual(plot(j, 'P6')['growth'], cap + F.NIGHT_GROWTH)
+        j.act('start_day')
+
+    def test_ripe_produce_ages_at_half_budget(self):
+        p = F._plot('P1', 'muong', F.RIPE, 60, soil=60)
+        self.assertEqual(F._cap(p), F.CROP_INDEX['muong']['cap'] // 2)
+        ripe, over = F._eta(p, 1)
+        self.assertEqual(ripe, 0)
+        self.assertGreaterEqual(over, 1)                             # a missed day is grade B, not rotten
+        self.assertEqual(F._eta(F._plot('P1', 'tomato', 15, 60), 1)[0], 2)
+
+    def test_soil_is_used_rested_and_fed(self):
+        j = self.j
+        s1, s6 = plot(j, 'P1')['soil'], plot(j, 'P6')['soil']
+        self.night()
+        self.assertEqual(plot(j, 'P1')['soil'], s1 - F.CROP_INDEX['muong']['feed'])
+        self.assertEqual(plot(j, 'P6')['soil'], s6 + F.SOIL_REST)
+        compost = kit.stock(j.c, 'compost')
+        j.act('fa_fertilize', plot='P6', kind='compost')              # bón lót on an empty bed
+        self.assertEqual(plot(j, 'P6')['soil'], s6 + F.SOIL_REST + F.SOIL_ADD['compost'])
+        self.assertEqual(kit.stock(j.c, 'compost'), compost - 1)
+        with self.assertRaises(GameError):
+            j.act('fa_fertilize', plot='P6', kind='compost')
+        with self.assertRaises(GameError):
+            j.act('fa_fertilize', plot='P6', kind='npk')              # NPK still needs a crop
+        j.act('fa_plant', plot='P6', crop='tomato')
+        self.assertTrue(plot(j, 'P6')['compost'])                     # the base dressing counts for this crop
+        self.assertTrue(plot(j, 'P6')['organic'])
+        with self.assertRaises(GameError):
+            j.act('fa_fertilize', plot='P6', kind='compost')
+
+    def test_depleted_soil_slows_but_never_stops(self):
+        rich, poor = F._plot('P1', 'lettuce', 40, 60, soil=60), F._plot('P1', 'lettuce', 40, 60, soil=F.SOIL_LOW - 1)
+        self.assertLess(F._cap(poor), F._cap(rich))
+        self.assertGreater(F._cap(poor), 0)
+        self.assertEqual(F._night_growth(poor, 1), F._night_growth(rich, 1) // 2)
+        self.assertGreater(F._night_growth(F._plot('P1', 'lettuce', 40, 60, soil=0), 13), 0)
+
+    def test_rotation_and_replanting_the_same_crop(self):
+        j = self.j
+        self.assertEqual(plot(j, 'P6')['prev'], 'muong')
+        v = next(p for p in view(j)['data']['plots'] if p['id'] == 'P6')
+        self.assertEqual((v['rotation']['muong'], v['rotation']['tomato'], v['rotation']['lettuce']), ('same', 'rotate', None))
+        s6 = plot(j, 'P6')['soil']
+        r = j.act('fa_plant', plot='P6', crop='tomato')
+        self.assertIn('Luân canh', r['message'])
+        self.assertEqual(plot(j, 'P6')['soil'], s6 + F.SOIL_ROTATE)
+        self.assertEqual(plot(j, 'P6')['pests'], 0)
+        j.act('fa_harvest', plot='P1', confirm=True)
+        self.assertEqual(plot(j, 'P1')['prev'], 'muong')
+        r = j.act('fa_plant', plot='P1', crop='muong')
+        self.assertIn('sâu bệnh cũ', r['message'])
+        self.assertEqual(plot(j, 'P1')['pests'], 1)
+        self.assertNotIn('pests', next(p for p in view(j)['data']['plots'] if p['id'] == 'P1'))   # still hidden
+        roundtrip(j)
+
+    def test_heavy_pests_spread_overnight_unless_sprayed(self):
+        j = self.j
+        self.assertEqual(F.NEIGHBOURS['P2'], ['P1', 'P3', 'P5'])
+        self.assertEqual(F.NEIGHBOURS['P4'], ['P1', 'P5'])
+        for p in data(j)['plots']:
+            p['pests'] = 0
+        plot(j, 'P2')['pests'] = 2
+        plot(j, 'P1')['guard'] = j.c['day']                            # sprayed today
+        out = self.night()
+        self.assertEqual(out['spread'], 2)
+        self.assertEqual([plot(j, x)['pests'] for x in ('P1', 'P2', 'P3', 'P4', 'P5')], [0, 3, 1, 0, 1])
+        # One pest level does not spread.
+        j2 = Journey('farm')
+        for p in data(j2)['plots']:
+            p['pests'] = 0
+        plot(j2, 'P2')['pests'] = 1
+        self.assertEqual(F._night(j2.c, data(j2), F.WEATHER_INDEX['sun'])['spread'], 0)
+
+    def test_spray_guards_and_summary_names_no_hidden_bed(self):
+        j = self.j
+        for p in data(j)['plots']:
+            p['pests'] = 0
+        plot(j, 'P2')['pests'] = 3
+        j.act('fa_spray', plot='P3', kind='bio')
+        self.assertEqual(plot(j, 'P3')['guard'], j.c['day'])
+        summary = j.act('end_day', carry_event=True)['summary']['career']
+        line = next(x for x in summary['lines'] if '🐛' in x)
+        self.assertNotIn('P1', line)
+        self.assertEqual(summary['pest_spread'], 2)                  # P1 and P5; P3 was guarded
+        self.assertEqual(plot(j, 'P3')['pests'], 0)
+
+    def test_nights_follow_tomorrows_sky(self):
+        for sky, loss in F.NIGHT_DRY.items():
+            j = Journey('farm')
+            before = [p['moisture'] for p in data(j)['plots']]
+            F._night(j.c, data(j), F.WEATHER_INDEX[sky])
+            self.assertEqual([p['moisture'] for p in data(j)['plots']], [max(0, min(100, m - loss)) for m in before], sky)
+        self.assertGreater(F.NIGHT_DRY['hot'], F.NIGHT_DRY['cloud'])
+
+    def test_outlook_plan_and_care_list(self):
+        j = self.j
+        v = view(j)['data']
+        self.assertEqual([r['day'] for r in v['outlook']], [j.c['day'] + k for k in (1, 2, 3)])
+        self.assertEqual(v['outlook'][0]['id'], v['forecast']['id'])
+        self.assertTrue(v['plan'].startswith('Mai'))
+        labels = [r['label'] for r in v['care']]
+        self.assertIn('Cho gà ăn & thay nước', labels)
+        self.assertTrue(any(r['label'].startswith('Thu hoạch') and 'P1' in r['label'] for r in v['care']))
+        self.assertTrue(all(set(r) <= {'ok', 'icon', 'label', 'note', 'tone'} for r in v['care']))
+        self.assertTrue(all(p['eta'] is not None for p in v['plots'] if p['crop']))
+        j.act('fa_feed')
+        j.act('fa_clean')
+        care = {r['label']: r['ok'] for r in view(j)['data']['care']}
+        self.assertTrue(care['Cho gà ăn & thay nước'] and care['Dọn chuồng gà'])
+        for pid in ('P1', 'P2', 'P3', 'P4', 'P5'):
+            j.act('fa_scout', plot=pid)
+        self.assertTrue(next(r for r in view(j)['data']['care'] if r['icon'] == '🔍')['ok'])
+        # A tip for a rainy tomorrow warns against watering.
+        rainy = next(d for d in range(2, 60) if F._weather(d + 1)['id'] == 'rain')
+        self.assertIn('đừng tưới', F._plan(dict(j.c, day=rainy), data(j), F._weather(rainy + 1)))
+
+    def test_hen_mood_follows_care_and_recovers(self):
+        j = self.j
+        self.assertEqual(data(j)['coop']['mood'], F.MOOD_START)
+        j.act('fa_clean')
+        with self.assertRaises(GameError):
+            j.act('fa_clean')
+        coop = data(j)['coop']
+        self.assertEqual(coop['cleaned'], j.c['day'])
+        c = j.c
+        # Three neglected days: the flock sulks but never dies and still lays.
+        coop.update(fed=0, cleaned=0, nest=0, stale=0)
+        eggs = []
+        for day in range(2, 5):
+            c['day'] = day
+            coop['nest'] = 0
+            eggs.append(F._hens_night(c, coop))
+        self.assertEqual(coop['hens'], F.HENS)
+        self.assertGreaterEqual(coop['mood'], F.MOOD_MIN)
+        self.assertLess(F._lay_pct(coop['mood']), 100)
+        self.assertEqual(eggs[-1], F.HENS // 2 * F._lay_pct(coop['mood']) // 100)
+        self.assertGreater(eggs[-1], 0)
+        # Three good days bring the worst flock back to full laying.
+        for day in range(5, 8):
+            c['day'] = day
+            coop.update(fed=day, cleaned=day, nest=0)
+            laid = F._hens_night(c, coop)
+        self.assertEqual((F._lay_pct(coop['mood']), laid), (100, F.HENS))
+        # A normal flock that misses one feeding lays half (hunger) but its mood still allows full laying.
+        c['day'] = 8
+        coop.update(fed=7, cleaned=8, nest=0, mood=F.MOOD_START)
+        self.assertEqual(F._hens_night(c, coop), F.HENS // 2)
+        self.assertGreaterEqual(coop['mood'], F.MOOD_OK)
+
+    def test_coop_helper_cleans_and_fox_scares(self):
+        j = self.j
+        at_day(j, 4)
+        force(j, 'FE-FOX')
+        m = data(j)['coop']['mood']
+        j.act('fa_decide', option='later')
+        self.assertEqual(data(j)['coop']['mood'], m + F.MOOD['fox'])
+        data(j)['coop']['fed'] = j.c['day']
+        self.assertIn('dọn chuồng', F.assist(j.state, j.c, dict(role='fa_coop'), None))
+        self.assertEqual(data(j)['coop']['cleaned'], j.c['day'])
+
+    def test_old_save_gains_care_fields(self):
+        j = self.j
+        s = copy.deepcopy(j.state)
+        d = s['careers']['farm']['ext']['data']
+        for p in d['plots']:
+            for k in ('soil', 'grown', 'prev', 'guard'):
+                p.pop(k)
+        for k in ('mood', 'cleaned'):
+            d['coop'].pop(k)
+        validate_state(s)
+        d = s['careers']['farm']['ext']['data']
+        self.assertTrue(all(p['soil'] == F.SOIL_START and p['grown'] == 0 and p['prev'] is None for p in d['plots']))
+        self.assertEqual(d['coop']['mood'], F.MOOD_START)
+        public_state(s)
+        validate_state(json.loads(json.dumps(s)))
+
+    def test_care_tampering_rejected(self):
+        j = self.j
+        cases = [
+            lambda d: d['plots'][0].update(soil=101),
+            lambda d: d['plots'][0].update(grown=-1),
+            lambda d: d['plots'][0].update(prev='durian'),
+            lambda d: d['plots'][0].update(guard='x'),
+            lambda d: d['coop'].update(mood=5),
+            lambda d: d['coop'].update(cleaned=10 ** 6),
+            lambda d: d['coop'].update(happy=True),
+        ]
+        for i, mutate in enumerate(cases):
+            s = copy.deepcopy(j.state)
+            mutate(s['careers']['farm']['ext']['data'])
+            with self.assertRaises(GameError, msg=str(i)):
+                validate_state(s)
+
+    def test_a_week_of_care_with_one_lazy_day(self):
+        """Play seven days through commands: a caring routine, one day skipped, then back to work."""
+        j = self.j
+        harvested = []
+        for n in range(7):
+            quiet(j)
+            data(j)['desk']['ev'] = None
+            lazy = n == 3
+            for _ in range(3 if lazy else 18):
+                v = view(j)['data']
+                if data(j)['desk']['ev']:
+                    j.act('fa_decide', option=kit.desk_script(F.EVENTS, data(j)['desk']['ev']['script'])['default'])
+                    continue
+                if lazy:
+                    j.act('advance')
+                    continue
+                p = next((p for p in v['plots'] if p['crop'] and p['stage'] in ('ripe', 'over') and not p['safe_in']), None)
+                if p:
+                    lots = len(data(j)['cold'])
+                    try:
+                        j.act('fa_harvest', plot=p['id'], confirm=True)
+                    except GameError:
+                        pass
+                    harvested.append(len(data(j)['cold']) - lots)
+                    continue
+                e = next((p for p in v['plots'] if not p['crop']), None)
+                if e and kit.stock(j.c, 'seed_lettuce'):
+                    j.act('fa_plant', plot=e['id'], crop='lettuce' if e['rotation'].get('lettuce') != 'same' else 'muong')
+                    continue
+                dry = next((p for p in v['plots'] if p['crop'] and p['moisture'] < F.MOIST_LOW), None)
+                if dry:
+                    j.act('fa_water', plot=dry['id'])
+                    continue
+                if not v['fed_today'] and kit.stock(j.c, 'feed'):
+                    j.act('fa_feed')
+                    continue
+                if not v['coop']['cleaned_today']:
+                    j.act('fa_clean')
+                    continue
+                if v['coop']['nest']:
+                    j.act('fa_collect')
+                    continue
+                j.act('advance')
+            j.act('end_day', carry_event=True)
+            j.act('start_day')
+            roundtrip(j)
+        self.assertTrue(harvested)
+        self.assertGreaterEqual(data(j)['coop']['mood'], F.MOOD_OK)   # the flock forgave the lazy day
+        self.assertFalse(any(p['crop'] and p['growth'] >= F.ROTTEN for p in data(j)['plots']))
+
+
 def cq_points(t):
     from game import consequences as cq
     return cq.points(t)

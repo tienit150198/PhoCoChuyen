@@ -1,9 +1,19 @@
 /** Nông Trại Đồi Gió — six plots, a hen house, the cold room and the packing
  *  table. Field state is persistent and turn-based; everything is recomputed
  *  on the server, the client only shows it. */
+import {reqList} from '../ui-kit.js';
 const ID='farm';
 const STAGE={empty:'Luống trống',sprout:'Mới nhú',young:'Đang lớn',almost:'Sắp tới lứa',ripe:'Đúng lứa · thu được',over:'Quá lứa · xơ',rotten:'Hỏng · dọn luống'};
 const ART={sprout:'🌱',young:'🌿'};
+const DAYS=n=>n===0?'hôm nay':n===1?'mai':n===2?'ngày kia':`${n} ngày nữa`;
+/* When will this bed be ready (server estimate with full care: eta/over_in in days, 0 = today). */
+function when(p){
+  if(!p.crop)return '';
+  if(p.stage==='rotten')return 'Hỏng · dọn luống';
+  if(p.stage==='over')return 'Quá lứa · chỉ loại B';
+  if(p.stage==='ripe')return p.over_in==null?'Đúng lứa · thu được':p.over_in===0?'Đúng lứa · thu ngay hôm nay':`Đúng lứa · giữ được tới ${DAYS(p.over_in)}`;
+  return p.eta==null?STAGE[p.stage]:`${STAGE[p.stage]} · chín ${DAYS(p.eta)}`;
+}
 const catalogue=x=>x.content.inventory?.items?.[ID]||[];
 const supply=(x,id)=>catalogue(x).find(i=>i.id===id)||{id,name:id,emoji:'•',unit:''};
 const produce=(x,id)=>id==='egg'?x.cc.egg:(x.cc.crops||[]).find(c=>c.id===id)||{id,name:id,emoji:'•',unit:''};
@@ -20,11 +30,13 @@ const estimate=(row,grade,qty,slip)=>{let t=0;const base=grade==='A'?row.a:row.b
 
 /* ------------------------------------------------------------ weather + order */
 function weatherBar(x){
-  const d=data(x),w=d.weather||{},f=d.forecast||{},se=d.season;
+  const d=data(x),w=d.weather||{},f=d.forecast||{},se=d.season,out=d.outlook||[];
   const flags=[d.nopump?'<span class="fa-flag bad">🚱 Trạm bơm cúp nước: chỉ tưới từng luống</span>':'',d.bees?'<span class="fa-flag">🐝 Ong đang ở cạnh vườn: đừng phun thuốc hóa học</span>':''].join('');
   const season=se?`<div class="fa-season"><span class="fa-sky" aria-hidden="true">${x.esc(se.emoji)}</span><div class="grow"><b>${x.esc(se.name)} · ngày ${se.day}/${se.days}</b><small>${x.esc(se.text)}</small></div>${se.day===se.days?`<span class="fa-flag">Mai: ${x.esc(se.next.emoji)} ${x.esc(se.next.name)}</span>`:''}</div>`:'';
-  return `<div class="fa-weather card"><div class="fa-wrow"><span class="fa-sky" aria-hidden="true">${x.esc(w.emoji||'🌤️')}</span><div class="grow"><b>Hôm nay: ${x.esc(w.name||'')}</b><small>${x.esc(w.tip||'')}</small></div>
-    <div class="fa-forecast"><small>Mai</small><span aria-hidden="true">${x.esc(f.emoji||'')}</span><small>${x.esc(f.name||'')}</small></div></div>${season}${flags?`<div class="fa-flags">${flags}</div>`:''}</div>`;
+  const strip=out.length?`<ol class="fa-outlook" aria-label="Dự báo ba ngày tới">${out.map((o,i)=>`<li class="${o.id}"><small>${i===0?'Mai':i===1?'Ngày kia':'Ngày '+o.day}</small><span aria-hidden="true">${x.esc(o.emoji)}</span><b>${x.esc(o.name)}</b><small class="fa-night">${o.night>0?'đêm ẩm +'+o.night:'đêm khô '+o.night}%</small>${o.season?`<em>${x.esc(o.season_emoji)} ${x.esc(o.season)}</em>`:''}</li>`).join('')}</ol>`
+    :`<div class="fa-forecast"><small>Mai</small><span aria-hidden="true">${x.esc(f.emoji||'')}</span><small>${x.esc(f.name||'')}</small></div>`;
+  return `<div class="fa-weather card"><div class="fa-wrow"><span class="fa-sky" aria-hidden="true">${x.esc(w.emoji||'🌤️')}</span><div class="grow"><b>Hôm nay: ${x.esc(w.name||'')}</b><small>${x.esc(w.tip||'')}</small></div></div>
+    ${strip}${d.plan?`<p class="fa-plan">🗓️ ${x.esc(d.plan)}</p>`:''}${season}${flags?`<div class="fa-flags">${flags}</div>`:''}</div>`;
 }
 function deskCard(x){
   const desk=data(x).desk;if(!desk)return '';
@@ -64,38 +76,48 @@ function tabs(x){
 }
 
 /* ------------------------------------------------------------ field */
+const soilLow=x=>x.cc.soil?.low??25;
 function meters(p,x){
   const th=x.cc.thresholds,m=x.cc.moisture;
   const zones=`--y:${pct(th.young,th.max)};--r:${pct(th.ripe,th.max)};--o:${pct(th.over,th.max)};--x:${pct(th.rotten,th.max)}`;
   return `<span class="fa-meter growth" style="${zones}" title="Độ lớn ${p.growth}"><i style="width:${pct(p.growth,th.max)}"></i></span>
-    <span class="fa-meter water ${p.moisture<m.dry?'dry':p.moisture>m.wet?'wet':''}" style="--lo:${m.low}%;--hi:${m.high}%" title="Độ ẩm ${p.moisture}%"><i style="width:${p.moisture}%"></i></span>`;
+    <span class="fa-meter water ${p.moisture<m.dry?'dry':p.moisture>m.wet?'wet':''}" style="--lo:${m.low}%;--hi:${m.high}%" title="Độ ẩm ${p.moisture}%"><i style="width:${p.moisture}%"></i></span>
+    <span class="fa-meter soil ${p.soil<soilLow(x)?'low':''}" style="--lo:${soilLow(x)}%" title="Đất màu ${p.soil}"><i style="width:${Math.max(0,Math.min(100,p.soil||0))}%"></i></span>`;
 }
 function plotCard(p,x){
   const c=p.crop?produce(x,p.crop):null,sel=x.ui.plot===p.id;
   const art=!c?'🟫':p.stage==='rotten'?'🥀':ART[p.stage]||c.emoji;
   return `<button type="button" class="fa-plot ${p.stage} ${sel?'selected':''}" data-action="car:plot" data-plot="${x.esc(p.id)}" aria-pressed="${sel}">
     <span class="fa-plot-id">${x.esc(p.id)}</span><span class="fa-plot-art">${art}</span>
-    <b>${c?x.esc(c.name):'Luống trống'}</b><small>${STAGE[p.stage]||''}${p.stage==='ripe'?` · còn ~${Math.ceil((x.cc.thresholds.over-p.growth)/Math.max(1,c.rate||3))} nhịp`:''}</small>${meters(p,x)}
-    <span class="fa-icons">${'🌾'.repeat(p.weeds)}${'🐛'.repeat(p.seen||0)}${c&&!p.organic?'<em class="chem">hóa chất</em>':''}${p.safe_in?`<em class="phi">⏳ ${p.safe_in}</em>`:''}</span></button>`;
+    <b>${c?x.esc(c.name):'Luống trống'}</b><small>${c?x.esc(when(p)):`Nghỉ đất · màu ${p.soil}`}</small>${meters(p,x)}
+    <span class="fa-icons">${c?`<em class="day">ngày ${p.day_no}</em>`:''}${'🌾'.repeat(p.weeds)}${'🐛'.repeat(p.seen||0)}${p.soil<soilLow(x)?'<em class="poor">bạc màu</em>':''}${c&&!p.organic?'<em class="chem">hóa chất</em>':''}${p.safe_in?`<em class="phi">⏳ ${p.safe_in}</em>`:''}</span></button>`;
 }
 function plotPanel(p,x){
   if(!p)return `<p class="muted small">Chạm vào một luống để xem chi tiết và làm việc.</p>`;
   const th=x.cc.thresholds,m=x.cc.moisture,inv=x.room.inventory||{stock:{}},st=inv.stock||{},level=x.room.level||1;
   if(!p.crop){
-    return `<div class="card fa-panel"><h4>${x.esc(p.id)} · Luống trống</h4><p class="small">Độ ẩm ${p.moisture}% · cỏ ${p.weeds}/3. Chọn giống để gieo (làm đất sẽ nhổ sạch cỏ).</p>
-      <div class="tile-grid fa-seeds">${x.cc.crops.map(c=>{const locked=c.unlock>level,q=st[c.seed]||0;
-        return tile(x,'fa_plant',{plot:p.id,crop:c.id},`<span class="tile-emoji">${c.emoji}</span><b>${x.esc(c.name)}</b><small>${locked?'🔒 cấp '+c.unlock:q+' '+x.esc(supply(x,c.seed).unit)}</small>`,`${locked?'locked':''} ${!q?'empty':''}`,locked||!q);}).join('')}</div></div>`;
+    const prev=p.prev?produce(x,p.prev):null,rot=p.rotation||{};
+    return `<div class="card fa-panel"><h4>${x.esc(p.id)} · Luống trống</h4>
+      <dl class="kv"><dt>Đất màu</dt><dd>${p.soil}/100 ${p.soil<soilLow(x)?'<b class="fa-bad">bạc màu</b>':''}<small class="muted"> · để trống qua đêm +${x.cc.soil?.rest??8}</small></dd><dt>Độ ẩm · cỏ</dt><dd>${p.moisture}% · ${p.weeds}/3</dd><dt>Vụ trước</dt><dd>${prev?`${prev.emoji} ${x.esc(prev.name)}`:'chưa rõ'}</dd></dl>
+      <p class="small">Chọn giống để gieo (làm đất sẽ nhổ sạch cỏ). <b>Luân canh</b>: đổi nhóm rau lá ↔ cây trái thì đất thêm màu; trồng lại đúng cây cũ thì sâu bệnh còn trong đất.</p>
+      <div class="tile-grid fa-seeds">${x.cc.crops.map(c=>{const locked=c.unlock>level,q=st[c.seed]||0,r=rot[c.id];
+        const tag=r==='rotate'?'<em class="fa-rot good">luân canh +màu</em>':r==='same'?'<em class="fa-rot bad">trùng vụ trước</em>':'';
+        return tile(x,'fa_plant',{plot:p.id,crop:c.id},`<span class="tile-emoji">${c.emoji}</span><b>${x.esc(c.name)}</b><small>${locked?'🔒 cấp '+c.unlock:q+' '+x.esc(supply(x,c.seed).unit)}</small>${tag}`,`${locked?'locked':''} ${!q?'empty':''}`,locked||!q);}).join('')}</div>
+      <div class="fa-actions space-top">${x.cmd(p.compost?'🟫 Đã bón lót compost':`🟫 Bón lót compost (${st.compost||0}) · +${x.cc.soil?.add?.compost??20} màu`,'fa_fertilize',{plot:p.id,kind:'compost'},'small ghost',p.compost||!st.compost)}</div></div>`;
   }
   const c=produce(x,p.crop);
-  const beats=Math.ceil((th.over-p.growth)/Math.max(1,c.rate||3));
-  const left=p.growth<th.ripe?`còn ~${th.ripe-p.growth} tới lứa`:p.growth<th.over?`đang đúng lứa · ~${beats} nhịp nữa là quá lứa`:p.growth<th.rotten?'đã quá lứa':'hỏng';
+  const left=when(p);
+  const budget=p.cap?Math.min(100,Math.round((p.grown||0)/p.cap*100)):0;
   const scouted=p.scouted_ago==null?'chưa thăm':p.scouted_ago===0?'vừa thăm':`thăm ${p.scouted_ago} nhịp trước`;
   const canHarvest=p.growth>=th.young&&p.growth<th.rotten;
   const harvestQ=p.safe_in?`⛔ Luống này còn ${p.safe_in} nhịp cách ly sau khi dùng hóa chất. Thu bây giờ thì cả lô phải hủy, không được bán. Vẫn thu?`
     :p.growth<th.ripe?'Cây còn non: thu bây giờ được ít và chỉ đạt loại B. Vẫn thu?':p.growth>=th.over?'Cây đã quá lứa: chỉ đạt loại B. Thu hoạch?':'Thu hoạch luống này vào kho mát?';
   return `<div class="card fa-panel"><div class="row spread"><h4>${x.esc(p.id)} · ${c.emoji} ${x.esc(c.name)}</h4><span class="tag ${p.organic?'green':'amber'}">${p.organic?'🌿 Hữu cơ':'🧪 Đã dùng hóa chất'}</span></div>
-    <dl class="kv"><dt>Độ lớn</dt><dd>${p.growth} · ${x.esc(left)}</dd><dt>Độ ẩm</dt><dd>${p.moisture}% <small class="muted">(lý tưởng ${m.low}–${m.high}%)</small></dd>
-      <dt>Cỏ dại</dt><dd>${p.weeds}/3</dd><dt>Sâu</dt><dd>${p.scouted_ago==null?'?':p.seen+'/3'} · ${x.esc(scouted)}</dd>
+    <dl class="kv"><dt>Độ lớn</dt><dd>${p.growth} · ${x.esc(left)}</dd><dt>Ngày của vụ</dt><dd>ngày ${p.day_no}</dd>
+      <dt>Sức lớn hôm nay</dt><dd><span class="fa-budget"><span class="fa-meter budget"><i style="width:${budget}%"></i></span><small>${p.grown||0}/${p.cap}${(p.grown||0)>=p.cap?' · đủ, chờ qua đêm':''}</small></span></dd>
+      <dt>Đất màu</dt><dd>${p.soil}/100 ${p.soil<soilLow(x)?'<b class="fa-bad">bạc màu: cây lớn chậm</b>':''}<small class="muted"> · mỗi đêm cây ăn ${c.feed||0}</small></dd>
+      <dt>Độ ẩm</dt><dd>${p.moisture}% <small class="muted">(lý tưởng ${m.low}–${m.high}%)</small></dd>
+      <dt>Cỏ dại</dt><dd>${p.weeds}/3</dd><dt>Sâu</dt><dd>${p.scouted_ago==null?'?':p.seen+'/3'} · ${x.esc(scouted)}${p.seen>=2?' · <b class="fa-bad">đêm nay lan sang luống bên</b>':''}</dd>
       <dt>Phân đã bón</dt><dd>${[p.compost?'compost':'',p.npk?'NPK':''].filter(Boolean).join(' + ')||'chưa'}</dd><dt>Cách ly</dt><dd>${p.safe_in?`<b class="fa-bad">còn ${p.safe_in} nhịp</b>`:'an toàn'}</dd></dl>
     <div class="fa-actions">
       ${x.cmd('💧 Tưới','fa_water',{plot:p.id},'small')}
@@ -113,24 +135,34 @@ function plotPanel(p,x){
     <div class="row wrap space-top">${x.confirmCmd('🧺 THU HOẠCH','fa_harvest',{plot:p.id},harvestQ,`primary ${p.safe_in?'danger':''}`,!canHarvest)}
       ${x.confirmCmd('🧹 Nhổ bỏ, ủ phân','fa_clear',{plot:p.id},'Nhổ bỏ toàn bộ cây trên luống này?','ghost small')}</div></div>`;
 }
+function careFold(x){
+  const rows=data(x).care||[];if(!rows.length)return '';
+  const done=rows.filter(r=>r.ok===true).length,next=rows.find(r=>r.ok!==true),open=!!x.ui.careOpen;
+  const head=`<span class="fa-care-title">📋 Việc chăm hôm nay <b>${done}/${rows.length}</b></span><small>${next?`Tiếp: ${x.esc(next.label)}`:'Xong hết, giỏi quá!'}</small>`;
+  return `<section class="fa-care ${open?'open':''}">${carBtn(x,head,'care',{},'fa-care-head ghost',` aria-expanded="${open}"`)}
+    ${open?reqList(rows.map(r=>({ok:r.ok,icon:r.icon,label:r.label,note:r.note||'',tone:r.tone||''})),x.esc,'Việc chăm hôm nay'):''}</section>`;
+}
 function fieldTab(x){
   const d=data(x),sel=d.plots.find(p=>p.id===x.ui.plot);
   const diary=(d.diary||[]).slice(-6).reverse();
-  return `<div class="row spread"><h4 class="section-title">Sáu luống rau</h4>${x.cmd(d.nopump?'🚱 Van tưới mất nước':'🚿 Mở van tưới cả vườn','fa_water',{plot:'all'},'small ghost',d.nopump||!d.plots.some(p=>p.crop))}</div>
+  return `${careFold(x)}<div class="row spread"><h4 class="section-title">Sáu luống rau</h4>${x.cmd(d.nopump?'🚱 Van tưới mất nước':'🚿 Mở van tưới cả vườn','fa_water',{plot:'all'},'small ghost',d.nopump||!d.plots.some(p=>p.crop))}</div>
     <div class="fa-plots">${d.plots.map(p=>plotCard(p,x)).join('')}</div>
-    <div class="fa-legend small muted"><span><i class="lg young"></i>non</span><span><i class="lg ripe"></i>đúng lứa</span><span><i class="lg over"></i>quá lứa</span><span><i class="lg water"></i>độ ẩm (vạch = lý tưởng)</span></div>
+    <div class="fa-legend small muted"><span><i class="lg young"></i>non</span><span><i class="lg ripe"></i>đúng lứa</span><span><i class="lg over"></i>quá lứa</span><span><i class="lg water"></i>độ ẩm (vạch = lý tưởng)</span><span><i class="lg soil"></i>đất màu</span></div>
     ${plotPanel(sel,x)}
     <details class="fa-diary space-top"><summary>📓 Nhật ký canh tác (QR truy xuất)</summary><ul>${diary.map(r=>`<li><b>Ngày ${r.day} · ${x.esc(r.plot)}</b> ${x.esc(r.text)}</li>`).join('')||'<li class="muted">Chưa có ghi chép.</li>'}</ul></details>`;
 }
 
 /* ------------------------------------------------------------ coop */
 function coopTab(x){
-  const d=data(x),coop=d.coop||{},st=(x.room.inventory||{}).stock||{};
-  return `<div class="card fa-coop"><div class="fa-hens">${Array.from({length:coop.hens||0},(_,i)=>`<span style="--i:${i}">🐔</span>`).join('')}</div>
+  const d=data(x),coop=d.coop||{},st=(x.room.inventory||{}).stock||{},mood=coop.mood??80,ok=coop.mood_ok??60;
+  const face=mood>=ok?'😊 vui, đẻ đều':mood>=35?'😐 hơi mệt':'😟 ủ rũ';
+  return `<div class="card fa-coop"><div class="fa-hens ${mood<35?'sad':''}">${Array.from({length:coop.hens||0},(_,i)=>`<span style="--i:${i}">🐔</span>`).join('')}</div>
     <div class="fa-nest">${Array.from({length:Math.min(24,coop.nest||0)},(_,i)=>`<span class="${i<(coop.stale||0)?'stale':''}">🥚</span>`).join('')||'<small class="muted">Ổ trống</small>'}</div>
-    <dl class="kv"><dt>Đàn gà</dt><dd>${coop.hens||0} mái</dd><dt>Trứng trong ổ</dt><dd>${coop.nest||0}${coop.stale?` · ${coop.stale} quả từ hôm qua`:''}</dd><dt>Hôm nay</dt><dd>${d.fed_today?'✓ đã cho ăn':'<b class="fa-bad">chưa cho ăn</b>'}</dd><dt>Cám trong kho</dt><dd>${st.feed||0} bao</dd></dl>
-    <p class="muted small">Gà no thì mai đẻ đủ đàn; đói thì chỉ đẻ một nửa. Trứng để qua đêm trong ổ chỉ còn loại B. Trứng lau khô, không rửa nước.</p>
-    <div class="row wrap">${x.cmd('🌾 Cho gà ăn & thay nước','fa_feed',{},'primary',d.fed_today||!st.feed)}${x.cmd('🧺 Nhặt trứng','fa_collect',{},'',!coop.nest)}
+    <div class="fa-mood"><div class="row spread"><b>Tinh thần đàn · ${x.esc(face)}</b><small>${mood}/100</small></div><span class="fa-meter mood ${mood<ok?'low':''}" style="--lo:${ok}%"><i style="width:${mood}%"></i></span>
+      <small class="muted">Mai đẻ khoảng ${coop.lay_pct??100}% đàn${d.fed_today?'':' (chưa ăn: chỉ nửa đàn)'}. Ăn no +, chuồng sạch +, đói hoặc chuồng bẩn hai ngày −, nắng gắt mà không dọn chuồng −.</small></div>
+    <dl class="kv"><dt>Đàn gà</dt><dd>${coop.hens||0} mái</dd><dt>Trứng trong ổ</dt><dd>${coop.nest||0}${coop.stale?` · ${coop.stale} quả từ hôm qua`:''}</dd><dt>Hôm nay</dt><dd>${d.fed_today?'✓ đã cho ăn':'<b class="fa-bad">chưa cho ăn</b>'} · ${coop.cleaned_today?'✓ chuồng sạch':'<b class="fa-bad">chưa dọn chuồng</b>'}</dd><dt>Cám trong kho</dt><dd>${st.feed||0} bao</dd></dl>
+    <p class="muted small">Trứng để qua đêm trong ổ chỉ còn loại B. Trứng lau khô, không rửa nước.</p>
+    <div class="row wrap">${x.cmd('🌾 Cho gà ăn & thay nước','fa_feed',{},'primary',d.fed_today||!st.feed)}${x.cmd('🧹 Dọn chuồng','fa_clean',{},'',!!coop.cleaned_today)}${x.cmd('🧺 Nhặt trứng','fa_collect',{},'',!coop.nest)}
       ${(coop.hens||0)<(x.cc.hens||10)?x.confirmCmd(`🐔 Mua gà mái đẻ · ${x.cc.hen_cost} xu`,'fa_hen',{},`Mua một gà mái đẻ giá ${x.cc.hen_cost} xu?`,'ghost small',(Number(x.room.money)||0)<x.cc.hen_cost):''}</div></div>`;
 }
 
@@ -233,6 +265,7 @@ export default {
     async tab(data,el,x){x.ui.tab=['field','coop','cold','market'].includes(data.tab)?data.tab:'field';x.render();},
     async plot(data,el,x){x.ui.plot=x.ui.plot===data.plot?null:data.plot;x.render();},
     async seen(data,el,x){x.ui.seen=data.key;x.render();},
+    async care(data,el,x){x.ui.careOpen=!x.ui.careOpen;x.render();},
   },
   dock:[['inventory','box','Kho vật tư','Hạt giống, phân, bao bì']],
 };
