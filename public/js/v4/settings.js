@@ -78,7 +78,7 @@ export async function settingsAction(action,data,el,env){
   const {api,ui,cmd,renderSheet,toast,confirmAction}=env;
   if(await accountAction(action,data,el,env))return true;
   switch(action){
-    case'v4SetTab':ui.setTab=data.tab;renderSheet();return true;
+    case'v4SetTab':ui.setTab=data.tab;renderSheet(false);return true;
     case'v4PushOn':try{const r=await enablePush(api);toast(r.message);ui.pushState=null;}catch(e){toast(e.message,true);}renderSheet();return true;
     case'v4PushOff':try{const r=await disablePush(api);toast(r.message);ui.pushState=null;}catch(e){toast(e.message,true);}renderSheet();return true;
     case'v4PushDaily':try{await enablePush(api,{daily:true,hour:19});toast('Sẽ nhắc bạn mở quán lúc 19:00 mỗi ngày.');}catch(e){toast(e.message,true);}return true;

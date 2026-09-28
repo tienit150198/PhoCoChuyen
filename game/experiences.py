@@ -76,7 +76,7 @@ def after_task(s:dict,c:dict,t:dict):
  # Reward on the third accurate service only once per game day; no menu farming.
  if x['streak']==3 and not x['day_metrics'].get('combo_reward'):
   core().money(s,c,8,'Ba việc liền mạch',f"combo-{c['day']}",category='skill_reward');x['day_metrics']['combo_reward']=1
- tip=(mod.SPEC.get('tip',0) if mod else 2 if t['career'] in ('mother_baby','milk_tea','tour_guide') else 0) if t['mistakes']==0 and not t.get('combo') else 0
+ tip=(mod.SPEC.get('tip',0) if mod else 2 if t['career'] in ('mother_baby','milk_tea','tour_guide') else 0) if t['mistakes']==0 and not t.get('combo') and (t.get('reaction') or {}).get('kind') not in ('refuse','walkout') else 0
  if tip:
   active=[e for e in c['ops']['staff'] if e['status']=='hired' and e['on_shift'] and e['jobs']>0]
   if active:
