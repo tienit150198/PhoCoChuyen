@@ -45,6 +45,7 @@
 .career-job.rs .rs-say b.hot{color:var(--bad,#c0533f)}
 .career-job.rs .rs-say b.no{text-decoration:underline wavy var(--bad)}
 .career-job.rs .rs-say small{color:var(--muted)}
+.career-job.rs .rs-note{margin:0;padding:0 2px;font-size:.9rem;color:var(--ink-2)}
 .career-job.rs .rs-story{margin:0;padding:8px 10px;border-radius:12px 12px 12px 2px;background:var(--surface-2);font-size:.867rem;line-height:1.45}
 .career-job.rs .rs-picture{margin:0;font-size:1.7rem;line-height:1.45;letter-spacing:.04em;overflow-wrap:anywhere}
 .career-job.rs .rs-recall{gap:8px}
@@ -102,9 +103,6 @@
 .career-job.rs .rs-cta>.fk-wide-only{flex:1 1 220px}
 .career-job.rs .rs-cta>.fk-wide-only .btn{width:100%}
 .career-job.rs .rs-cta>.btn{min-height:44px}
-.career-job.rs .rs-check{padding:8px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
-.career-job.rs .rs-check>summary{display:flex;align-items:center;min-height:40px;font-weight:800;cursor:pointer}
-.career-job.rs .rs-check .checklist{margin-top:6px}
 .career-job.rs .rs-tools{gap:8px;margin:0}
 @container sheet (min-width:640px){
   .career-job.rs .rs-cookline{grid-template-columns:minmax(0,1fr) minmax(0,1.4fr) 96px}
@@ -119,3 +117,9 @@
 .career-job.rs .rs-batch-bar>i{display:block;height:100%;background:var(--accent)}
 .career-job.rs .rs-dishes{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0;padding:8px 12px;border-radius:var(--radius);background:var(--surface-2)}
 .career-job.rs .rs-dishes.full{background:var(--bad-soft);border:1px solid var(--bad)}
+.career-job.rs .fold .rs-story{padding:0;background:none;font-size:.9rem}
+
+/* ---------- Order beside the kitchen on wide screens ---------- */
+.career-job.rs .rs-work,.career-job.rs .rs-side{display:grid;gap:10px;min-width:0}
+html[data-layout="desktop"] .career-job.rs .rs-work{grid-template-columns:minmax(300px,380px) minmax(0,1fr);align-items:start;gap:12px}
+html[data-layout="desktop"] .career-job.rs .rs-side{position:sticky;top:0;z-index:1}

@@ -9,7 +9,7 @@ export const openTasks=x=>(x.room.tasks||[]).filter(t=>!DONE.includes(t.status))
 /** Luck of the day + served count + streak. */
 export function dayStrip(x,day,compact=false){
   if(!day?.mod)return '';
-  const m=day.mod,streak=x.room.life?.streak||0,short=compact&&(Number(day.served)||0)>0;
+  const m=day.mod,streak=x.room.life?.streak||0,short=compact;
   return `<div class="fk-day${short?' short':''}" role="group" aria-label="Hôm nay">
     <p class="fk-mod"><span aria-hidden="true">${x.esc(m.emoji)}</span><span><b>Hôm nay: ${x.esc(m.label)}</b>${short?'':`<small>${x.esc(m.hint)}</small>`}</span></p>
     <p class="fk-stats"><span title="Đã phục vụ">✅ ${Number(day.served)||0}</span>${streak?`<span class="fk-streak" title="Làm đúng liên tiếp">🔥 ${streak}</span>`:''}${day.walkins?`<span title="Khách vãng lai">🚶 ${day.walkins}</span>`:''}</p>

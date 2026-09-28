@@ -3,6 +3,7 @@
  * bar, the bowl with a live status line, chili, one big "Giao món" and the
  * toppings grid. Only renders server state and sends commands; the server
  * checks every rule (and keeps order details hidden until they are known). */
+import {reqList,fold,refTable} from '../ui-kit.js';
 import {dayStrip,flash,eventCard,actionBar,keepBarAboveFooter,idlePanel,gradeCard,patience,openTasks} from './food_kit.js';
 
 const BASE_SCALE=25; // seconds shown on the boiling bar
@@ -63,34 +64,30 @@ function floor(x,active){
 }
 
 /* ---------------------------------------------------------------- the order */
-function topsText(x,tops,subs){
-  return Object.entries(tops).map(([k,q])=>{const s=subs?.[k];return `${q} ${x.esc(lower(item(x,s||k).name))}${s?' (đổi món)':''}`;}).join(', ');
-}
 function picture(sp,x){
   const b=brothOf(x,sp.broth);
   const tops=Object.entries(sp.toppings).map(([k,q])=>item(x,k).emoji.repeat(q)).join(' ');
   return `<p class="rs-picture" aria-label="Phiếu bằng hình">${x.esc(b?.emoji||'')} ${sp.spice?'🌶️'.repeat(sp.spice):'🚫🌶️'} ${x.esc(tops)} ${sp.extra_noodle?'🍜🍜':''} ${sp.takeaway?'🥡':'🥣'} ${sp.allergy?'🚫🦐':''}</p><p class="muted small">Khách chỉ vào hình trên thực đơn. Đọc từng hình nhé.</p>`;
 }
-/** What the guest says, with the important bits highlighted. */
-function say(t,x){
+/** Only the two orders that hide their spec on purpose get a lead line:
+ * a regular's "như mọi khi" (look it up or ask) and a picture order. */
+function lead(t,x){
   const n=t.needs,d=data(x);
   if(n.masked){
     const known=(d.notebook||[]).includes(t.npc);
-    return `<p class="rs-say">🏠 “Như mọi khi nhé!” <small>${n.takeaway?'🥡 mang về':'🥣 ăn tại quán'}</small></p>
+    return `<p class="rs-say">🏠 “Như mọi khi nhé!”</p>
       <div class="row wrap rs-recall">${x.cmd('📒 Tra sổ khách quen','rs_recall',{task:t.id},'primary',!known)}${x.cmd('🙋 Hỏi lại món','rs_reask',{task:t.id},'ghost')}</div>
       <p class="muted small">${known?'Sổ đã ghi món quen của khách này.':'Sổ chưa ghi món của khách này. Hỏi lại thì khách chờ lâu hơn một chút.'}</p>`;
   }
   if(n.style==='picture')return picture(n,x);
-  if(n.style==='open'){
-    const o=n.open,sp=o.spice[0]===o.spice[1]?o.spice[0]:o.spice[0]+'–'+o.spice[1];
-    return `<p class="rs-say">✨ Tô tùy quán, tối đa <b>${o.budget} xu</b>, <b class="hot">cay cấp ${sp}</b>${o.broths?`, nước dùng <b>${o.broths.map(id=>x.esc(lower(brothOf(x,id)?.name||id))).join(' hoặc ')}</b>`:''}${o.must.length?`, phải có <b>${o.must.map(k=>x.esc(lower(item(x,k).name))).join(', ')}</b>`:''}${o.avoid.length?`, không <b class="no">${o.avoid.map(k=>x.esc(lower(item(x,k).name))).join(', ')}</b>`:''}${o.veg?', <b>ăn chay</b>':''}, ít nhất ${o.min_tops} phần topping${o.takeaway?', mang về':''}.</p>
-      ${n.allergy?'<p class="tag danger">⚠️ Dị ứng hải sản</p>':''}<p class="muted small">“${x.esc(n.note)}”</p>`;
-  }
-  const sp=specOf(t),g=isGroup(t);
-  const head=g?`Tô ${t.cur+1} là`:n.takeaway?'1 hộp mang về,':'1 tô,';
-  const tops=topsText(x,sp.toppings,t.subs);
-  return `<p class="rs-say">${head} mì <b>${x.esc(lower(brothOf(x,sp.broth)?.name||''))}</b>${tops?` thêm <b>${tops}</b>`:''}, <b class="hot">cấp ${sp.spice}</b>${sp.extra_noodle?', <b>thêm 1 vắt</b>':''} nha!</p>
-    ${n.allergy?'<p class="tag danger">⚠️ Dị ứng hải sản</p>':''}<p class="muted small">“${x.esc(n.note)}”</p>`;
+  return '';
+}
+/** Story and the guest's own words, folded to one line. */
+function voice(t,x){
+  const note=t.needs?.masked?'':t.needs?.note,story=t.story;
+  if(!note&&!story)return '';
+  if(!story)return `<p class="rs-note">💬 “${x.esc(note)}”</p>`;
+  return fold(`💬 ${note?`“${x.esc(note)}”`:'Chuyện của khách'}`,`<p class="rs-story">${x.esc(story)}</p>`);
 }
 /** Tô 1 · Tô 2 · Tô 3 for a table's order (done ones are struck through). */
 function tabs(t,x){
@@ -108,51 +105,50 @@ function ticket(t,x){
   return `<article class="card rs-order${t.vip==='critic'?' critic':''}"><div class="rs-order-head">${x.portrait(who,44)}<div class="grow">
     <div class="row spread"><h3>${x.esc(who.display_name)}</h3><b class="price">${x.esc(price)}</b></div>
     <p class="rs-guest"><span class="tag">${x.esc(g.emoji||'')} ${x.esc(g.label||'')}</span>${t.app?` <span class="tag">🛵 Đơn app ${x.esc(t.app)}</span>`:''}${isGroup(t)?` <span class="tag">🍜 ${t.needs.party.length} tô</span>`:''}${t.vip==='critic'?' <span class="tag amber">📝 Người viết review</span>':''}</p></div></div>
-    ${t.story?`<p class="rs-story">💬 ${x.esc(t.story)}</p>`:''}
-    ${say(t,x)}${tabs(t,x)}${patience(t.patience)}</article>`;
+    ${patience(t.patience)}${lead(t,x)}${tabs(t,x)}${reqList(checklistRows(t,x),x.esc,'Phiếu order')}${voice(t,x)}</article>`;
 }
 
 /* ---------------------------------------------------------------- checklist */
-const row=(ok,label,note='')=>[ok,label,note];
+/** The order as a requirement list, each row checked live against the bowl. */
+const row=(ok,icon,label,value='',tone='')=>({ok,icon,label,value,tone});
 function checklistRows(t,x){
   const n=t.needs,b=t.bowl,rows=[],tops=b.toppings||{},count=Object.values(tops).reduce((a,v)=>a+v,0);
-  if(plated(t))return [row(true,`Đủ ${t.plates.length} tô trên khay, giao một lượt`)];
-  const pic=n.style==='picture',name=(k)=>pic?item(x,k).emoji:lower(item(x,k).name);
+  if(plated(t))return [row(true,'🍜',`Đủ ${t.plates.length} tô trên khay, giao một lượt`)];
+  const pic=n.style==='picture',name=(k)=>pic?item(x,k).emoji:item(x,k).name;
   const paper=data(x).rules?.paper&&!n.takeaway;
-  rows.push(row(b.container?((b.container==='box')===n.takeaway||(paper&&b.container==='box')):null,n.takeaway?'Hộp mang về + nắp':'Tô ăn tại quán',n.takeaway&&b.container==='box'&&!b.lid?'chưa đậy nắp':''));
+  rows.push(row(b.container?((b.container==='box')===n.takeaway||(paper&&b.container==='box')):null,n.takeaway?'🥡':'🥣',n.takeaway?'Hộp mang về + nắp':'Tô ăn tại quán',n.takeaway&&b.container==='box'&&!b.lid?'chưa đậy nắp':''));
   if(n.masked){
-    rows.push(row(b.noodles.length?b.noodles.every(v=>v==='perfect'):null,'Mì chín tới'));
-    rows.push(row(null,'Món quen: tra sổ hoặc hỏi lại để chắc chắn'));
+    rows.push(row(b.noodles.length?b.noodles.every(v=>v==='perfect'):null,'🍜','Mì chín tới'));
+    rows.push(row(null,'📒','Món quen: tra sổ hoặc hỏi lại'));
     return rows;
   }
   const sp=specOf(t),nb=n.style==='open'?Math.max(1,b.noodles.length):(sp.extra_noodle?2:1);
-  rows.push(row(b.noodles.length?b.noodles.length===nb&&b.noodles.every(v=>v==='perfect'):null,`${nb} vắt mì chín tới`,b.noodles.map(v=>NOODLE[v]).join(', ')));
+  rows.push(row(b.noodles.length?b.noodles.length===nb&&b.noodles.every(v=>v==='perfect'):null,'🍜',`${nb} vắt mì chín tới`,b.noodles.length?b.noodles.map(v=>NOODLE[v]).join(', '):''));
   const meat=x.cc.meat||[];
   if(n.style==='open'){
-    const o=n.open,names=(o.broths||[]).map(id=>lower(brothOf(x,id)?.name)).join(' hoặc ');
-    rows.push(row(b.broth?(!o.broths||o.broths.includes(b.broth))&&!(o.veg&&brothOf(x,b.broth)?.allergen):null,o.broths?`Nước dùng ${names}`:'Nước dùng tùy bạn chọn'));
-    for(const k of o.must)rows.push(row(tops[k]?true:null,`Có ${lower(item(x,k).name)}`));
-    for(const k of o.avoid)rows.push(row(tops[k]?false:(b.broth?true:null),`Không ${lower(item(x,k).name)}`));
-    if(o.veg)rows.push(row(Object.keys(tops).some(k=>meat.includes(k))?false:(b.broth?true:null),'Món chay: không thịt, cá, đồ biển'));
-    rows.push(row(count>=o.min_tops?true:null,`Ít nhất ${o.min_tops} phần topping`,`${count}/${o.min_tops}`));
+    const o=n.open,names=(o.broths||[]).map(id=>brothOf(x,id)?.name).join(' hoặc ');
+    rows.push(row(b.broth?(!o.broths||o.broths.includes(b.broth))&&!(o.veg&&brothOf(x,b.broth)?.allergen):null,'🍲',o.broths?`Nước dùng ${names}`:'Nước dùng tùy bạn chọn',b.broth?brothOf(x,b.broth)?.name||'':''));
+    for(const k of o.must)rows.push(row(tops[k]?true:null,item(x,k).emoji,`Phải có ${lower(item(x,k).name)}`));
+    for(const k of o.avoid)rows.push(row(tops[k]?false:(b.broth?true:null),'🚫',`Không ${lower(item(x,k).name)}`,'','warn'));
+    if(o.veg)rows.push(row(Object.keys(tops).some(k=>meat.includes(k))?false:(b.broth?true:null),'🌱','Ăn chay: không thịt, cá, đồ biển','','warn'));
+    rows.push(row(count>=o.min_tops?true:null,'➕',`Ít nhất ${o.min_tops} phần topping`,`${count}/${o.min_tops}`));
     const [lo,hi]=o.spice;
-    rows.push(row(b.chili>hi?false:b.chili>=lo&&(b.chili||b.broth)?true:null,lo===hi?`Cay cấp ${lo}`:`Cay cấp ${lo}–${hi}`,`${b.chili} lượt`));
+    rows.push(row(b.chili>hi?false:b.chili>=lo&&(b.chili||b.broth)?true:null,'🌶️',lo===hi?`Cay cấp ${lo}`:`Cay cấp ${lo}–${hi}`,`${b.chili} lượt`));
     const price=bowlPrice(b,x);
-    rows.push(row(price>o.budget?false:b.broth?true:null,`Trong ngân sách ${o.budget} xu`,b.broth?`${price} xu`:''));
+    rows.push(row(price>o.budget?false:b.broth?true:null,'💰',`Trong ngân sách ${o.budget} xu`,b.broth?`${price} xu`:''));
   }else{
     const br=brothOf(x,sp.broth);
-    rows.push(row(b.broth?b.broth===sp.broth:null,`Nước dùng ${pic?br?.emoji||'':lower(br?.name)}`));
+    rows.push(row(b.broth?b.broth===sp.broth:null,pic?br?.emoji||'🍲':'🍲',pic?'Nước dùng theo hình':`Nước dùng ${br?.name||''}`));
     const want={...sp.toppings};
     for(const [k,v] of Object.entries(t.subs||{})){if(want[k]){want[v]=(want[v]||0)+want[k];delete want[k];}}
-    for(const [k,q] of Object.entries(want)){const have=tops[k]||0;rows.push(row(have?have===q:null,`${q} × ${name(k)}`,have?`${have}/${q}`:''));}
+    for(const [k,q] of Object.entries(want)){const have=tops[k]||0,sub=Object.values(t.subs||{}).includes(k);rows.push(row(have>q?false:have===q?true:null,item(x,k).emoji,pic?`${q} ×`:`${name(k)}${sub?' (đổi món)':''}`,`${have}/${q}`));}
     const pampered=data(x).rules?.pamper===t.id;
-    for(const [k,q] of Object.entries(tops)){if(!want[k])rows.push(row(pampered?true:false,`${item(x,k).name} (${pampered?'tặng thêm':'khách không gọi'})`,`${q}`));}
-    rows.push(row(b.chili||sp.spice===0?b.chili===sp.spice:null,`Cay cấp ${sp.spice}`,`${b.chili}/${sp.spice} lượt`));
+    for(const [k,q] of Object.entries(tops)){if(!want[k])rows.push(row(pampered?true:false,item(x,k).emoji,`${item(x,k).name} (${pampered?'tặng thêm':'khách không gọi'})`,`${q}`));}
+    rows.push(row(b.chili>sp.spice?false:b.chili===sp.spice&&(b.chili||b.broth)?true:null,'🌶️',sp.spice?`Cay cấp ${sp.spice}`:'Không cay',`${b.chili}/${sp.spice} lượt`));
   }
-  if(n.allergy)rows.push(row(!Object.keys(tops).some(k=>item(x,k).allergen===n.allergy)&&(!b.broth||!brothOf(x,b.broth)?.allergen),'⚠️ Không hải sản (dị ứng)'));
+  if(n.allergy)rows.push(row(!Object.keys(tops).some(k=>item(x,k).allergen===n.allergy)&&(!b.broth||!brothOf(x,b.broth)?.allergen),'⚠️','Dị ứng hải sản: không tomyum, cá viên, hải sản','','danger'));
   return rows;
 }
-const checklist=(rows,x)=>`<ul class="checklist">${rows.map(([ok,label,note])=>`<li class="${ok===true?'ok':ok===false?'bad':''}"><span aria-hidden="true">${ok===true?'✓':ok===false?'✗':'○'}</span>${x.esc(label)}${note?`<small>${x.esc(note)}</small>`:''}</li>`).join('')}</ul>`;
 
 /* ---------------------------------------------------------------- next step */
 function nextStep(t,x){
@@ -308,9 +304,28 @@ function primary(t,x,rows,big){
     return x.cmd(`✅ Xong tô ${t.cur+1}`,'rs_plate',{task:t.id},'primary'+(big?' big':''),!ready);
   }
   const label=big?'🛎️ Giao món':'🛎️ Giao';
-  const allOk=rows.every(r=>r[0]===true);
+  const allOk=rows.every(r=>r.ok===true);
   return allOk&&!blocked?x.cmd(label,'rs_serve',{task:t.id,confirm:true},'primary'+(big?' big':''),!ready)
     :x.confirmCmd(label,'rs_serve',{task:t.id,confirm:true},blocked?'Có chuyện bất ngờ đang chờ bạn quyết. Xử lý xong rồi hãy giao nhé.':'Tô chưa khớp hết phiếu. Vẫn giao? Khách sẽ đánh giá đúng những gì có trong tô.','primary'+(big?' big':''),!ready);
+}
+
+/** "📖 Thực đơn": what each broth and topping costs, how much is left, which
+ * ones carry seafood or meat, and the few kitchen rules worth remembering. */
+function menuPage(x){
+  const d=data(x),level=x.room.level,mult=d.price_mult||1,prices=x.room.life?.prices||{},meat=x.cc.meat||[],w=x.cc.boil||{raw:7,perfect:13};
+  const xu=v=>`${Math.max(1,Math.round(v*mult))} xu`,lock=u=>u>level?`🔒 cấp ${u}`:null;
+  const seafood={label:'🦐 Hải sản',tone:'bad'},veg={label:'🌱 Chay được',tone:'good'},savory={label:'🥩 Mặn'};
+  const broths=x.cc.broths.map(p=>({icon:p.emoji,name:p.name,price:xu(prices[p.id]??x.cc.prices?.[p.id]??0),locked:p.unlock>level,
+    stock:lock(p.unlock)||`nồi còn ${d.pots?.[p.id]??0}`,tags:[p.allergen?seafood:veg]}));
+  const tops=x.cc.toppings.map(k=>{const i=item(x,k),u=i.unlock||1;
+    return {icon:i.emoji,name:i.name,price:`+${xu(i.price||0)}`,locked:u>level,stock:lock(u)||`còn ${stockOf(x,k)}`,
+      tags:[i.allergen?seafood:meat.includes(k)?savory:veg]};});
+  const extra=[{icon:'🍜',name:'Thêm 1 vắt mì',price:`+${xu(10)}`},{icon:'🥡',name:'Hộp mang về',price:`+${xu(3)}`,stock:`còn ${stockOf(x,'box')}`}];
+  const rules=[`🍜 Vớt mì khi thanh vào vùng xanh: ${w.raw}–${w.perfect} giây.`,'🌶️ Mỗi lượt bơm ớt là 1 cấp cay. Cấp 0 là không bơm.',
+    '🔄 Hết topping khách gọi: hỏi khách đổi món ở ô vàng trên kệ.','🥡 Mang về: lấy hộp, làm xong nhớ đậy nắp.','⚠️ Khách dị ứng hải sản: không tomyum, cá viên, hải sản.'];
+  return `<header class="sheet-head"><div class="grow"><span class="eyebrow">QUÁN MÌ CAY · SỔ TRA CỨU</span><h2>📖 Thực đơn</h2><p>Giá bán, còn bao nhiêu, món nào có hải sản hay thịt.</p></div><button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${x.icon('x',21)}</button></header>
+  <div class="sheet-body ref-sheet">${refTable([{title:'Nước dùng (giá một tô)',rows:broths},{title:'Topping',rows:tops},{title:'Thêm',rows:extra}],x.esc)}
+    <section class="ref-group"><h3>Nhớ nhanh</h3><ul class="ref-rules">${rules.map(r=>`<li>${x.esc(r)}</li>`).join('')}</ul></section></div>`;
 }
 
 export default {
@@ -331,7 +346,7 @@ export default {
         ${t.story?`<p class="rs-story">💬 ${x.esc(t.story)}</p>`:''}<p class="rs-say">“${x.esc(t.opening)}”</p>${patience(t.patience)}
         ${x.cmd(t.app?'🧾 Đọc đơn app':'📝 Nhận order','ask',{task:t.id},'primary full')}</article>${extras(x)}</div>`;
     }
-    const b=t.bowl,rows=checklistRows(t,x),ok=rows.filter(r=>r[0]===true).length;
+    const b=t.bowl,rows=checklistRows(t,x);
     const dump=x.confirmCmd('🗑️ Đổ tô','rs_dump',{task:t.id,confirm:true},'Đổ tô này và làm lại? Nguyên liệu đã dùng được ghi hao hụt.','danger small',!started(b)||plated(t));
     const lid=b.container==='box'&&!b.lid&&!plated(t)?x.cmd('📦 Đậy nắp','rs_lid',{task:t.id},'small'):'';
     const clean=d.clean_checked_day===x.room.day;
@@ -340,14 +355,10 @@ export default {
       <div class="rs-cookline">${stove(t,x)}<div class="rs-bowlbox">${bowlArt(b,x)}<p class="rs-status" aria-live="polite">${x.esc(bowlStatus(t,x))}</p>${tray(t,x)}</div>${chili(t,x)}</div>
       <div class="rs-cta"><div class="fk-wide-only">${primary(t,x,rows,true)}</div>${lid}${dump}</div>
       ${toppings(t,x)}
-      <details class="rs-check"${x.ui.rsCheck?' open':''}><summary data-action="car:check">📋 Kiểm tô · ${ok}/${rows.length} đúng</summary>${checklist(rows,x)}</details>
-      <p class="row wrap rs-tools">${clean?'<span class="tag green">🧽 Đã kiểm vệ sinh hôm nay</span>':x.cmd('🧽 Kiểm vệ sinh bếp','rs_clean',{},'ghost small')} ${x.button('📦 Kho & nhập hàng','inventory',{},'ghost small')}</p>
+      <p class="row wrap rs-tools">${clean?'<span class="tag green">🧽 Đã kiểm vệ sinh hôm nay</span>':x.cmd('🧽 Kiểm vệ sinh bếp','rs_clean',{},'ghost small')} ${x.button('📖 Thực đơn','prices',{},'ghost small')} ${x.button('📦 Kho & nhập hàng','inventory',{},'ghost small')}</p>
     </section>`;
     const bar=actionBar(x.esc(nextStep(t,x)),(lid?lid:'')+primary(t,x,rows,false));
-    return `<div class="career-job rs food">${head}${ticket(t,x)}${extras(x)}${desk}${bar}</div>`;
-  },
-  actions:{
-    async check(data,el,x){x.ui.rsCheck=!x.ui.rsCheck;},
+    return `<div class="career-job rs food">${head}<div class="rs-work"><div class="rs-side">${ticket(t,x)}${extras(x)}</div>${desk}</div>${bar}</div>`;
   },
   tick(root,x){
     keepBarAboveFooter(root);
@@ -360,6 +371,7 @@ export default {
       el.classList.toggle('ready',s>=w.raw+shift&&s<=w.perfect+shift);el.classList.toggle('over',s>w.soft+shift);
     });
   },
+  page(view,x){return view==='prices'?menuPage(x):'';},
   summary(data,x){return gradeCard(data,x);},
-  dock:[['inventory','box','Kho','Nhập & đếm hàng']],
+  dock:[['prices','book','Thực đơn','Giá & món'],['inventory','box','Kho','Nhập & đếm hàng']],
 };

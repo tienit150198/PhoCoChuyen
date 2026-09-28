@@ -1844,6 +1844,51 @@ html[data-layout="phone"] .ops-foot>.row .btn{flex:1}
 .is-locked::after{content:"🔒";position:absolute;top:50%;left:50%;display:grid;place-items:center;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:var(--surface);box-shadow:var(--shadow-sm);font-size:.933rem;line-height:1}
 @media (forced-colors:active){.is-selected{outline:3px solid Highlight}.count-badge{border:1px solid CanvasText}}
 
+/* ---------- 27d. UI kit: requirement list, fold, look-up table (ui-kit.js) */
+.req-list{list-style:none;margin:0;padding:0;display:grid;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--line);overflow:hidden}
+.req-row{display:grid;grid-template-columns:26px 28px minmax(0,1fr) auto;align-items:center;column-gap:8px;min-height:44px;padding:6px 12px;border-top:1px solid var(--line);font-size:.967rem;line-height:1.35}
+.req-row:first-child{border-top:0}
+.req-mark{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--surface-3);color:var(--muted);font-size:.8rem;font-weight:800}
+.req-row.ok .req-mark{background:var(--good);color:var(--surface)}
+.req-row.bad .req-mark{background:var(--bad);color:var(--on-bad)}
+.req-row.ok .req-label{color:var(--muted)}
+.req-row.bad .req-label{color:var(--bad);font-weight:700}
+.req-icon{font-size:1.2rem;line-height:1;text-align:center}
+.req-label{min-width:0;overflow-wrap:anywhere;font-weight:600}
+.req-label small{display:block;font-size:.8rem;font-weight:400;color:var(--muted)}
+.req-value{font-size:.867rem;font-variant-numeric:tabular-nums;color:var(--ink-2);white-space:nowrap}
+.req-row.tone-warn{background:var(--warn-soft)}
+.req-row.tone-warn .req-label{color:var(--warn)}
+.req-row.tone-danger{background:var(--bad-soft)}
+.req-row.tone-danger .req-label{color:var(--bad);font-weight:700}
+.fold{border-radius:var(--radius-sm);background:var(--surface-2)}
+.fold>summary{display:block;min-height:40px;padding:9px 12px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-weight:600;font-size:.9rem;color:var(--ink-2);list-style:none}
+.fold>summary::-webkit-details-marker{display:none}
+.fold>summary::after{content:" ▾";color:var(--muted)}
+.fold[open]>summary{white-space:normal;margin-bottom:0}
+.fold[open]>summary::after{content:" ▴"}
+.fold-body{padding:0 12px 10px}
+.fold-body>:last-child{margin-bottom:0}
+.ref-sheet{display:grid;gap:18px}
+.ref-group>h3{margin:0 0 8px;font-size:.867rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.ref-list{list-style:none;margin:0;padding:0;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--line);overflow:hidden}
+.ref-row{display:grid;grid-template-columns:32px minmax(0,1fr) auto;align-items:center;gap:4px 10px;min-height:52px;padding:8px 12px;border-top:1px solid var(--line)}
+.ref-row:first-child{border-top:0}
+.ref-row.locked{background:var(--surface-2)}
+.ref-row.locked .ref-name b,.ref-row.locked .ref-price{color:var(--muted)}
+.ref-icon{font-size:1.4rem;line-height:1;text-align:center}
+.ref-name{display:grid;gap:3px;min-width:0}
+.ref-name b{overflow-wrap:anywhere}
+.ref-tags{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.ref-tag{padding:1px 8px;border-radius:var(--radius-pill);background:var(--surface-2);color:var(--ink-2);font-size:.767rem;font-weight:700;line-height:1.6}
+.ref-tag.good{background:var(--good-soft);color:var(--good)}
+.ref-tag.bad{background:var(--bad-soft);color:var(--bad)}
+.ref-stock{color:var(--muted);font-size:.8rem;white-space:nowrap}
+.ref-price{font-variant-numeric:tabular-nums;white-space:nowrap;min-width:52px;text-align:right}
+.ref-rules{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.ref-rules li{padding:10px 12px;border-radius:var(--radius-sm);background:var(--surface-2);line-height:1.45}
+html.large-text .req-row{font-size:1rem}
+
 /* ---------- 28. Motion ---------------------------------------------------- */
 html.reduce-motion *,html.reduce-motion *::before,html.reduce-motion *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
