@@ -1069,5 +1069,328 @@ class DeliveryConsequenceTests(unittest.TestCase):
         validate_state(json.loads(json.dumps(j.state)))
 
 
+# ======================================================================== care (sub-project 3)
+UT = kit.npc_id('delivery', 3)          # Bà Út: F4, P3, P9 in Hẻm Ốc Bươu
+HOA = kit.npc_id('delivery', 4)         # Chú Hòa: Nhà vườn Sứ Trắng
+
+
+def calm(order, sun=True):
+    """A v0.5 order with no dog, bomb or new address, on a sunny (or rainy) day."""
+    return v2_journey(lambda t, d: t['needs']['order'] == order and not (t['_dog'] or t['_bomb'] or t['_moved'])
+                      and (D.weather(d) == 'sun') == sun)
+
+
+def hand_over(j, tid, **extra):
+    n = j.get(tid)['needs']
+    if n['cod']:
+        extra.setdefault('change', n['cash'] - n['cod'])
+    return j.act('dl_deliver', task=tid, **extra)
+
+
+class DeliveryCareTests(unittest.TestCase):
+    def test_parts_wear_with_the_odometer_and_the_rain(self):
+        j, tid = calm('P3')
+        d = data(j)
+        d['km'] = 0
+        j.act('dl_plan', route=['villa'])                   # 6 blocks on a sunny day
+        j.act('dl_ride')
+        p = data(j)['parts']
+        self.assertEqual((p['brake'], p['oil'], p['chain'], p['coat']), (100 - 1, 100 - 2, 100 - 3, 100))
+        j, tid = calm('P3', sun=False)
+        data(j)['km'] = 0
+        j.act('dl_plan', route=['villa'])
+        j.act('dl_ride')
+        p = data(j)['parts']
+        self.assertEqual((p['brake'], p['oil'], p['chain'], p['coat']), (100 - 2, 100 - 2, 100 - 4, 100 - 3))
+        # The wear carries over to the next shift: nothing resets overnight.
+        j.act('end_day')
+        j.act('start_day')
+        self.assertEqual(data(j)['parts']['coat'], 97)
+
+    def test_each_worn_part_has_one_clear_consequence(self):
+        j, tid = calm('P3')
+        base = D._leg(j.c, 'hub', 'villa', 0)
+        parts = data(j)['parts']
+        parts.update(oil=20, chain=20)
+        worn = D._leg(j.c, 'hub', 'villa', 0)
+        self.assertEqual((worn['fuel'], worn['minutes']), (base['fuel'] + 1, base['minutes'] + 1))
+        self.assertTrue(any('nhớt' in x for x in worn['notes']) and any('sên' in x for x in worn['notes']))
+        parts['coat'] = 10
+        self.assertEqual(D._leg(j.c, 'hub', 'villa', 0)['minutes'], worn['minutes'])   # a torn coat only matters in rain
+        j, tid = calm('P3', sun=False)
+        dry = D._leg(j.c, 'hub', 'villa', 0)['minutes']
+        data(j)['parts']['coat'] = 10
+        self.assertEqual(D._leg(j.c, 'hub', 'villa', 0)['minutes'], dry + 1)
+        # Worn brakes: the steep alley shortcut is refused, the main road still works.
+        data(j)['parts']['brake'] = 20
+        j.act('dl_plan', route=['villa'])
+        with self.assertRaises(GameError) as ctx:
+            j.act('dl_ride', way='short')
+        self.assertEqual(ctx.exception.code, 'brake')
+        eta = public_state(j.state)['careers']['delivery']['data']['eta'][0]
+        self.assertTrue(eta['short']['brake'])
+        j.act('dl_ride')
+
+    def test_garage_fixes_chosen_parts_for_a_fair_price(self):
+        j, tid = calm('P3')
+        with self.assertRaises(GameError):
+            j.act('dl_fix', parts=['brake'], confirm=True)     # not at the garage yet
+        ride(j, 'garage')
+        d = data(j)
+        d['parts'].update(brake=25, oil=40, chain=100)
+        d['tyre'] = 70
+        for bad in (['chain'], ['wheel'], [], 'brake', ['brake', 'brake']):
+            with self.assertRaises(GameError):
+                j.act('dl_fix', parts=bad, confirm=True)
+        with self.assertRaises(GameError):
+            j.act('dl_fix', parts=['brake', 'oil'])            # confirm first
+        money, clock = j.c['money'], data(j)['clock']
+        r = j.act('dl_fix', parts=['brake', 'oil', 'tyre'], confirm=True)
+        self.assertIn('Chú Bảy', r['message'])
+        d = data(j)
+        cost = D.PART_INFO['brake']['price'] + D.PART_INFO['oil']['price'] + D.PART_INFO['tyre']['price']
+        self.assertEqual(j.c['money'], money - cost)
+        self.assertEqual(d['clock'], clock + 3 * D.FIX_MIN)
+        self.assertEqual((d['parts']['brake'], d['parts']['oil'], d['tyre']), (100, 100, 100))
+        self.assertEqual(d['stats']['repairs'], 1)
+        validate_state(json.loads(json.dumps(j.state)))
+        # Not enough money: a clear refusal, nothing taken.
+        d['parts']['coat'] = 5
+        j.c['money'] = 3
+        with self.assertRaises(GameError) as ctx:
+            j.act('dl_fix', parts=['coat'], confirm=True)
+        self.assertEqual(ctx.exception.code, 'money')
+
+    def test_bent_rim_is_fixed_at_the_garage_too(self):
+        j, tid = calm('P3')
+        data(j)['desk']['marks']['rim'] = j.c['day']
+        data(j)['tyre'] = 100
+        ride(j, 'garage')
+        bike = public_state(j.state)['careers']['delivery']['data']['bike']
+        tyre = next(x for x in bike['parts'] if x['id'] == 'tyre')
+        self.assertTrue(tyre['need'] and bike['alert'])
+        self.assertEqual(tyre['price'], D.SERVICE_COST + D.RIM_COST)
+        money = j.c['money']
+        j.act('dl_fix', parts=['tyre'], confirm=True)
+        self.assertEqual(j.c['money'], money - D.SERVICE_COST - D.RIM_COST)
+        self.assertNotIn('rim', data(j)['desk']['marks'])
+
+    def test_worn_out_chain_slips_off_and_is_recoverable(self):
+        j, tid = calm('P3')
+        data(j)['parts']['chain'] = 1
+        j.act('dl_plan', route=['villa', 'hub'])
+        r = j.act('dl_ride')
+        self.assertIn('Sên', r['message'])
+        d = data(j)
+        self.assertEqual((d['parts']['chain'], d['desk']['ev']['script'], d['at']), (0, 'DE-CHAIN', 'villa'))
+        with self.assertRaises(GameError):
+            j.act('dl_ride')                                  # decide first
+        j.act('dl_decide', option='refit')
+        self.assertEqual(data(j)['parts']['chain'], 25)
+        j.act('dl_ride')
+        self.assertEqual(data(j)['at'], 'hub')
+        # A chain left at 0 % (e.g. a flat happened on the same leg) opens the event instead of riding.
+        data(j)['parts']['chain'] = 0
+        j.act('dl_plan', route=['gas'])
+        j.act('dl_ride')
+        self.assertEqual((data(j)['at'], data(j)['desk']['ev']['script']), ('hub', 'DE-CHAIN'))
+        money = j.c['money']
+        j.act('dl_decide', option='mobile')
+        self.assertEqual((data(j)['parts']['chain'], j.c['money']), (100, money - 14))
+        self.assertEqual(data(j)['stats']['chains'], 2)
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_regular_tells_a_note_after_the_first_delivery(self):
+        j, tid = calm('F4')
+        load(j, tid)
+        ride(j, 'alley')
+        with self.assertRaises(GameError):
+            j.act('dl_care', task=tid, kind='carry')          # nobody asked for this yet
+        r = hand_over(j, tid)
+        self.assertIn('xách hàng vào tận trong tiệm', r['message'])
+        reg = data(j)['regulars'][UT]
+        self.assertEqual((reg['visits'], reg['bond'], reg['notes']), (1, 1, ['ut-carry']))
+        self.assertNotIn('wishes', crit(review(j, tid)))       # nothing was known before this visit
+        book = next(x for x in public_state(j.state)['careers']['delivery']['data']['book'] if x['npc'] == UT)
+        self.assertEqual(([n['id'] for n in book['notes']], book['locked'], book['next_in']), (['ut-carry'], 1, 2))
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_keeping_a_note_builds_the_bond_and_forgetting_it_does_not(self):
+        def visit(carry):
+            j, tid = calm('F4')
+            data(j)['regulars'][UT] = dict(visits=2, bond=2, notes=['ut-carry'])
+            load(j, tid)
+            ride(j, 'alley')
+            with self.assertRaises(GameError):
+                j.act('dl_care', task=tid, kind='photo')      # not what Bà Út asked for
+            if carry:
+                clock = data(j)['clock']
+                j.act('dl_care', task=tid, kind='carry')
+                self.assertEqual(data(j)['clock'], clock + D.CARE_KINDS['carry']['minutes'])
+                with self.assertRaises(GameError):
+                    j.act('dl_care', task=tid, kind='carry')  # once is enough
+            money = j.c['money']
+            r = hand_over(j, tid)
+            return j, tid, r, j.c['money'] - money
+        j, tid, r, got = visit(True)
+        reg = data(j)['regulars'][UT]
+        self.assertEqual(reg['bond'], 3)
+        self.assertEqual(j.get(tid)['run']['kept'], ['ut-carry'])
+        self.assertEqual(crit(review(j, tid))['wishes'], 5)
+        self.assertIn('tiền cà phê', r['message'])
+        self.assertEqual(data(j)['stats']['regular_tips'], 2)
+        self.assertEqual(reg['notes'], ['ut-carry', 'ut-call'])  # the third visit tells the second note
+        j2, tid2, r2, got2 = visit(False)
+        self.assertEqual(data(j2)['regulars'][UT]['bond'], 2)
+        self.assertEqual(j2.get(tid2)['run']['missed'], ['ut-carry'])
+        self.assertEqual(crit(review(j2, tid2))['wishes'], 3)
+        self.assertIn('quên lời dặn', r2['message'])
+        self.assertEqual(got - got2, 2)                           # only the thank-you differs
+        validate_state(json.loads(json.dumps(j2.state)))
+
+    def test_a_call_note_is_kept_by_calling(self):
+        j, tid = calm('F4')
+        data(j)['regulars'][UT] = dict(visits=3, bond=0, notes=['ut-carry', 'ut-call'])
+        j.act('dl_call', task=tid)
+        load(j, tid)
+        ride(j, 'alley')
+        j.act('dl_care', task=tid, kind='carry')
+        hand_over(j, tid)
+        self.assertEqual(sorted(j.get(tid)['run']['kept']), ['ut-call', 'ut-carry'])
+
+    def test_gate_code_gets_past_the_dog(self):
+        j, tid = v2_journey(lambda t, d: t['npc'] == HOA and t['_dog'] and t['needs']['kind'] == 'parcel' and not t['needs']['cod']
+                            and not t['_moved'] and t['needs']['size'] == 'S' and D.weather(d) == 'sun')
+        data(j)['regulars'][HOA] = dict(visits=3, bond=2, notes=['hoa-call', 'hoa-gate'])
+        j.act('dl_call', task=tid)
+        load(j, tid)
+        ride(j, 'villa')
+        r = hand_over(j, tid)
+        self.assertIn('mã cổng', r['message'])
+        t = j.get(tid)
+        self.assertEqual((t['status'], t['run']['dog']), ('completed', 'ok'))
+        self.assertIsNone(data(j)['desk']['ev'])
+        self.assertEqual((data(j)['stats']['gates'], data(j)['stats']['dogs']), (1, 0))
+
+    def test_failing_a_regular_by_your_own_fault_costs_bond(self):
+        j, tid = calm('P1')
+        data(j)['regulars'][kit.npc_id('delivery', 0)] = dict(visits=2, bond=2, notes=['man-photo'])
+        j.act('dl_check', task=tid)
+        j.act('dl_load', task=tid)                            # no bubble wrap
+        ride(j, 'villa')
+        hand_over(j, tid)
+        r = j.act('dl_fail', task=tid, confirm=True)
+        self.assertIn('bớt tin', r['message'])
+        self.assertEqual(data(j)['regulars'][kit.npc_id('delivery', 0)]['bond'], 1)
+
+    def test_known_streets_make_the_shortcut_smooth_then_shorter(self):
+        j, tid = calm('F4')                                    # broth: spills on a bumpy alley
+        load(j, tid)
+        self.assertEqual(data(j)['areas']['com'], 1)
+        data(j)['areas']['alley'] = D.AREA_SMOOTH
+        leg = D._leg(j.c, 'com', 'alley', 0, 'short')
+        self.assertTrue(leg['smooth'] and not leg['local'])
+        self.assertEqual((leg['blocks'], leg['wear']), (D.dist('com', 'alley') - 1, D.dist('com', 'alley') - 1))
+        j.act('dl_plan', route=['alley'])
+        j.act('dl_ride', way='short')
+        self.assertFalse(j.get(tid)['run']['spilled'])
+        r = hand_over(j, tid)
+        self.assertEqual(data(j)['areas']['alley'], D.AREA_SMOOTH + 1)
+        data(j)['areas']['alley'] = D.AREA_LOCAL
+        leg = D._leg(j.c, 'com', 'alley', 0, 'short')
+        self.assertTrue(leg['local'])
+        self.assertEqual(leg['blocks'], D.dist('com', 'alley') - 2)
+        self.assertTrue(D._leg(j.c, 'com', 'alley', 0, 'main')['blocks'] == D.dist('com', 'alley'))
+        self.assertEqual(D._leg(j.c, 'hub', 'alley', 0, 'short')['blocks'], 1)   # a 2-block leg keeps its single cut
+
+    def test_forecast_is_the_next_shift_with_advice(self):
+        day = next(d for d in range(2, 40) if D.weather(d + 1) == 'rain')
+        j = Journey('delivery', slot=0, day=day)
+        fc = public_state(j.state)['careers']['delivery']['data']['forecast']
+        self.assertEqual((fc['day'], fc['weather'], fc['label']), (day + 1, 'rain', 'Ngày mai'))
+        self.assertTrue(any('Túi chống nước' in a for a in fc['advice']))
+        data(j)['parts']['coat'] = 20
+        fc = public_state(j.state)['careers']['delivery']['data']['forecast']
+        self.assertTrue(any('Áo mưa' in a for a in fc['advice']))
+        out = j.act('end_day')['summary']['career']
+        self.assertTrue(any(x.startswith('📡 Dự báo ngày mai') for x in out['lines']))
+        self.assertTrue(any(x.startswith('🔧 Xe:') for x in out['lines']))
+        self.assertEqual(out['forecast']['day'], day + 1)
+        fc = public_state(j.state)['careers']['delivery']['data']['forecast']
+        self.assertEqual((fc['day'], fc['label']), (day + 1, 'Ca tới'))   # closed: the coming shift
+
+    def test_unlearned_notes_never_reach_the_client(self):
+        j, tid = calm('F4')
+        pub = public_state(j.state)
+        blob = json.dumps(pub['careers']['delivery']['data'], ensure_ascii=False)
+        blob += json.dumps(pub['content'].get('careers', {}).get('delivery', {}), ensure_ascii=False) if 'content' in pub else ''
+        blob += json.dumps(D.content(), ensure_ascii=False)
+        for note in D.NOTE_INDEX.values():
+            self.assertNotIn(note['text'], blob)
+        self.assertNotIn('regulars', pub['careers']['delivery']['data'])
+
+    def test_old_save_without_care_data_loads(self):
+        j, tid = calm('P3')
+        state = json.loads(json.dumps(j.state))
+        c = state['careers']['delivery']
+        for k in ('parts', 'regulars', 'areas'):
+            c['ext']['data'].pop(k)
+        for k in ('repairs', 'chains', 'cares', 'gates', 'regular_tips'):
+            c['ext']['data']['stats'].pop(k)
+        for k in D.RUN_V3:
+            c['tasks'][0]['run'].pop(k)
+        validate_state(state)
+        d = state['careers']['delivery']['ext']['data']
+        self.assertEqual((d['parts'], d['regulars'], d['areas']), (dict(brake=100, oil=100, chain=100, coat=100), {}, {}))
+        self.assertEqual(state['careers']['delivery']['tasks'][0]['run']['care'], [])
+        self.assertIn('book', public_state(state)['careers']['delivery']['data'])
+
+    def test_tampered_care_data_is_rejected(self):
+        j, tid = calm('F4')
+        load(j, tid)
+        mutations = (
+            lambda d, r: d['parts'].__setitem__('oil', 140),
+            lambda d, r: d['parts'].__setitem__('turbo', 50),
+            lambda d, r: d['regulars'].__setitem__('delivery_npc_07', dict(visits=1, bond=0, notes=[])),
+            lambda d, r: d['regulars'].__setitem__(UT, dict(visits=1, bond=0, notes=['hoa-gate'])),
+            lambda d, r: d['regulars'].__setitem__(UT, dict(visits=1, bond=0, notes=['ut-carry', 'ut-call'])),
+            lambda d, r: d['regulars'].__setitem__(UT, dict(visits=1, bond=5, notes=[])),
+            lambda d, r: d['areas'].__setitem__('moon', 3),
+            lambda d, r: r.__setitem__('care', ['dance']),
+            lambda d, r: r.__setitem__('kept', ['ut-carry']),                   # not handed over yet
+        )
+        for mutate in mutations:
+            state = json.loads(json.dumps(j.state))
+            c = state['careers']['delivery']
+            mutate(c['ext']['data'], next(t for t in c['tasks'] if t['id'] == tid)['run'])
+            with self.assertRaises(GameError):
+                validate_state(state)
+
+    def test_three_days_of_care_loop(self):
+        """Ride, wear, fix and come back over several shifts: everything carries over and stays valid."""
+        j = Journey('delivery')
+        for _ in range(3):
+            data(j)['desk'].update(plan=[], fired=0)
+            for t in list(j.c['tasks']):
+                if t['status'] not in ('completed', 'referred', 'cancelled') and not t['known']:
+                    j.act('ask', task=t['id'])
+            j.act('dl_plan', route=['villa', 'gas', 'garage'])
+            for stop in ('villa', 'gas', 'garage'):
+                if data(j)['desk']['ev']:
+                    j.act('dl_decide', option=D.kit.desk_script(D.EVENTS, data(j)['desk']['ev']['script'])['default'])
+                j.act('dl_ride')
+                if stop == 'gas' and data(j)['fuel'] <= 95:
+                    j.act('dl_refuel', amount=(100 - data(j)['fuel']) // 5 * 5, confirm=True)
+            if data(j)['desk']['ev']:
+                j.act('dl_decide', option=D.kit.desk_script(D.EVENTS, data(j)['desk']['ev']['script'])['default'])
+            need = [x['id'] for x in public_state(j.state)['careers']['delivery']['data']['bike']['parts'] if x['need']]
+            j.act('dl_fix', parts=need, confirm=True)
+            self.assertTrue(all(D.part(data(j), k) == 100 for k in need))
+            j.act('end_day', carry_event=True)
+            validate_state(json.loads(json.dumps(j.state)))
+            j.act('start_day')
+        self.assertEqual(data(j)['stats']['repairs'], 3)
+
+
 if __name__ == '__main__':
     unittest.main()

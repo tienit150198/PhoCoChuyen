@@ -34,6 +34,17 @@ v0.5 — the road answers back:
   ("bom hàng"), a customer who moved to another address.
 Old saves: tasks made before v0.5 keep their generator (legacy serial band) and
 all new data is added with setdefault.
+
+Care (sub-project 3, docs/superpowers/specs/2026-09-29-delivery-care-design.md):
+* Five scooter parts wear day after day (tyre, brakes, oil, chain, raincoat); each
+  one has a single clear consequence below its line and is fixed at Chú Bảy's
+  garage (`dl_fix`). A chain worn to 0 % slips off (DE-CHAIN).
+* Regular customers keep a notes card (call first, gate code, carry it in for an
+  elderly lady…) learned by delivering to them; honouring a note at the door
+  (`dl_call` / `dl_care`) builds the bond, which pays a small thank-you.
+* Neighbourhood knowledge: after working at a stop a few times its alley shortcut
+  is smooth, later a local cut saves another block.
+* The next shift's weather and road board are forecast with concrete advice.
 """
 from __future__ import annotations
 import copy
@@ -68,6 +79,7 @@ NODES = {
     'office': dict(name='Tòa văn phòng Cỏ May', emoji='🏬', x=6, y=0, note='Lễ tân nhận hàng ở sảnh.'),
     'villa': dict(name='Nhà vườn Sứ Trắng', emoji='🏡', x=5, y=4, note='Cổng xa, có chòi bảo vệ.'),
     'vet': dict(name='Phòng khám thú y Mèo Mướp', emoji='🐾', x=4, y=4, note='Mèo nhiều hơn khách.'),
+    'garage': dict(name='Tiệm sửa xe Chú Bảy', emoji='🔧', x=5, y=2, note='Thay nhớt, sên, má phanh, lốp, áo mưa.'),
 }
 
 ITEMS = [
@@ -209,6 +221,43 @@ STORM = dict(id='storm', emoji='⛈️', name='Mưa to, ngập hẻm',
 MOD_INDEX = {m['id']: m for m in MODS + [RAINY, STORM]}
 WAYS = ('main', 'short')
 
+# --- care (sub-project 3) -------------------------------------------------------
+PARTS = ('tyre', 'brake', 'oil', 'chain', 'coat')
+PART_INFO = {
+    'tyre': dict(name='Lốp & ruột', emoji='🛞', price=SERVICE_COST, low=TYRE_FLAT_AT,
+                 effect=f'Dưới {TYRE_FLAT_AT}% dễ xẹp bánh giữa đường.'),
+    'brake': dict(name='Má phanh', emoji='🛑', price=8, low=30, effect='Dưới 30%: không được chạy hẻm tắt (dốc, cua gắt).'),
+    'oil': dict(name='Nhớt máy', emoji='🛢️', price=6, low=30, effect='Dưới 30%: máy nóng, mỗi chặng hao thêm 1% xăng.'),
+    'chain': dict(name='Sên xe', emoji='⛓️', price=6, low=30, effect='Dưới 30%: xe ì, mỗi chặng chậm 1 phút. Về 0% là tuột sên.'),
+    'coat': dict(name='Áo mưa', emoji='🧥', price=8, low=30, effect='Dưới 30%: ngày mưa mỗi chặng chậm 1 phút vì ướt lạnh.'),
+}
+FIX_MIN = 3               # minutes per part at the garage
+CARE_KINDS = {'carry': dict(minutes=3, label='Xách vào tận nơi', emoji='🤲'),
+              'photo': dict(minutes=1, label='Chụp ảnh gửi khách', emoji='📸'),
+              'check': dict(minutes=2, label='Đồng kiểm trước mặt khách', emoji='🔍')}
+NOTE_KINDS = ('call', 'gate') + tuple(CARE_KINDS)
+NOTE_AT = (1, 3)          # a customer tells you note 1 after the 1st delivery, note 2 after the 3rd
+BOND_MAX = 10
+BOND_TIP = ((6, 4, 'khách ruột'), (3, 2, 'khách quen'))
+AREA_SMOOTH = 2           # jobs at a stop before its alley shortcut is smooth
+AREA_LOCAL = 5            # … before the locals' cut saves one more block
+REGULARS = {
+    0: [dict(id='man-photo', kind='photo', text='Chụp ảnh kiện hàng lúc giao gửi chị — chị báo khách yên tâm.'),
+        dict(id='man-call', kind='call', text='Gọi trước khi tới để người nhận ra lấy, khách của chị hay đi vắng.')],
+    1: [dict(id='tung-call', kind='call', text='Gọi trước 5 phút để anh xuống sảnh — anh ghét phải chờ.'),
+        dict(id='tung-photo', kind='photo', text='Chụp ảnh lúc gửi lễ tân, anh cần làm bằng chứng với sếp.')],
+    2: [dict(id='vy-call', kind='call', text='Gọi trước khi tới — Vy hay chạy ra tiệm làm tóc.'),
+        dict(id='vy-carry', kind='carry', text='Mang lên tận cửa phòng giúp — cả nhóm đang chạy deadline.')],
+    3: [dict(id='ut-carry', kind='carry', text='Bà lớn tuổi, lưng yếu: xách hàng vào tận trong tiệm giúp bà.'),
+        dict(id='ut-call', kind='call', text='Gọi bà ra mở cửa, bà nghe chuông không rõ.')],
+    4: [dict(id='hoa-call', kind='call', text='Chú nghe máy chậm — gọi trước để chú ra cổng.'),
+        dict(id='hoa-gate', kind='gate', text='Mã cổng phụ 1975: đi cổng phụ là tránh được con chó vện ở cổng trước.')],
+    5: [dict(id='le-check', kind='check', text='Mở hộp đồng kiểm ngay trước mặt cô, cô mới yên tâm ký nhận.'),
+        dict(id='le-call', kind='call', text='Gọi trước khi tới, cô đang khám thì cần vài phút mới ra được.')],
+}
+NOTE_INDEX = {x['id']: dict(x, who=i) for i, rows in REGULARS.items() for x in rows}
+REGULAR_IDS = tuple(kit.npc_id(ID, i) for i in REGULARS)
+
 
 # --- small helpers --------------------------------------------------------------
 def weather(day: int) -> str:
@@ -236,13 +285,14 @@ def _window(o: dict, day: int) -> int:
 
 
 RUN_V2 = dict(dog=None, dest=None, spilled=False, discount=0, bomb=None, moved=None)
+RUN_V3 = dict(care=[], kept=[], missed=[])      # care at the door; regulars' notes kept / forgotten
 
 
 def _empty_run() -> dict:
     return dict(day=0, t0=0, checked=False, w=None, seam=None, missing=None, packed=[], loaded=False, reported=False,
                 called=False, unit=None, back=None, knocks=0, wet=False, burst=False, melted=False, _broken=False,
                 broken_seen=False, change=None, short=0, over=0, outcome=None, fee=None, late=0, expired=False, comp=0,
-                **copy.deepcopy(RUN_V2))
+                **copy.deepcopy(RUN_V2), **copy.deepcopy(RUN_V3))
 
 
 def mod_of(day: int) -> dict:
@@ -293,8 +343,16 @@ def _leg(c: dict, a: str, b: str, clock: int, way: str = 'main') -> dict:
     base = dist(a, b)
     touch = (a, b)
     notes = []
+    raw = kit.data(c)
+    know = (raw.get('areas') or {}).get(b, 0)
+    smooth = way == 'short' and know >= AREA_SMOOTH
+    local = way == 'short' and know >= AREA_LOCAL and base >= 3
     if way == 'short':
-        blocks = max(1, base - 1)
+        blocks = max(1, base - (2 if local else 1))
+        if local:
+            notes.append('🗺️ lối tắt dân địa phương')
+        elif smooth:
+            notes.append('🗺️ thuộc hẻm, chạy êm')
     else:
         blocks = base
         if h['works'] in touch:
@@ -317,8 +375,20 @@ def _leg(c: dict, a: str, b: str, clock: int, way: str = 'main') -> dict:
             minutes += 3
             notes.append('🌊 lội nước chậm')
     fuel = blocks * FUEL_RATE[wx] + (8 if stall else 0)
-    wear = blocks * (2 if way == 'short' else 1) + (1 if wx == 'rain' else 0)
-    return dict(node=b, way=way, blocks=blocks, minutes=minutes, fuel=fuel, wear=wear, stall=stall, notes=notes)
+    wear = blocks * (2 if way == 'short' and not smooth else 1) + (1 if wx == 'rain' else 0)
+    # A neglected scooter: each worn part costs a little on every leg until it is fixed.
+    parts = raw.get('parts') or {}
+    if parts.get('oil', 100) < PART_INFO['oil']['low']:
+        fuel += 1
+        notes.append('🛢️ nhớt cạn +1% xăng')
+    if parts.get('chain', 100) < PART_INFO['chain']['low']:
+        minutes += 1
+        notes.append('⛓️ sên chùng +1 phút')
+    if wx == 'rain' and parts.get('coat', 100) < PART_INFO['coat']['low']:
+        minutes += 1
+        notes.append('🧥 áo mưa rách +1 phút')
+    return dict(node=b, way=way, blocks=blocks, minutes=minutes, fuel=fuel, wear=wear, stall=stall, notes=notes,
+                smooth=smooth, local=local)
 
 
 def _dest(t: dict) -> str:
@@ -376,7 +446,8 @@ def _make_v2(day: int, slot: int, serial: int) -> dict:
 FIXED = ('needs', '_w', '_seam', '_unit', '_away', '_missing', '_dog', '_bomb', '_moved')
 
 
-STAT_KEYS = ('flats', 'services', 'shortcuts', 'stalls', 'bombs', 'dogs', 'moved', 'streak_bonus', 'quest_bonus', 'top_bonus')
+STAT_KEYS = ('flats', 'services', 'shortcuts', 'stalls', 'bombs', 'dogs', 'moved', 'streak_bonus', 'quest_bonus', 'top_bonus',
+             'repairs', 'chains', 'cares', 'gates', 'regular_tips')
 
 
 def initial() -> dict:
@@ -397,11 +468,179 @@ def _extend(d: dict) -> dict:
     stats = d.setdefault('stats', {})
     for k in STAT_KEYS:
         stats.setdefault(k, 0)
+    # care (sub-project 3): parts other than the tyre, regulars' notes cards, known stops
+    parts = d.setdefault('parts', {})
+    for k in PARTS[1:]:
+        parts.setdefault(k, 100)
+    d.setdefault('regulars', {})
+    d.setdefault('areas', {})
     return d
 
 
 def _data(c: dict) -> dict:
     return _extend(kit.data(c))
+
+
+# --- care helpers -------------------------------------------------------------------
+def part(d: dict, k: str) -> int:
+    return d['tyre'] if k == 'tyre' else d['parts'][k]
+
+
+def _set_part(d: dict, k: str, v: int) -> None:
+    v = max(0, min(100, int(v)))
+    if k == 'tyre':
+        d['tyre'] = v
+    else:
+        d['parts'][k] = v
+
+
+def _wear(c: dict, d: dict, leg: dict, km_before: int) -> list[str]:
+    """Parts other than the tyre wear with the odometer and the rain (exact, no dice).
+    Returns warnings for parts that just dropped below their line."""
+    rain = weather(c['day']) == 'rain'
+    km = km_before + leg['blocks']
+    before = {k: part(d, k) for k in PARTS[1:]}
+    p = d['parts']
+    p['brake'] = max(0, p['brake'] - (km // 4 - km_before // 4) - (1 if rain else 0))
+    p['oil'] = max(0, p['oil'] - (km // 3 - km_before // 3))
+    p['chain'] = max(0, p['chain'] - (km // 2 - km_before // 2) - (1 if rain else 0))
+    if rain:
+        p['coat'] = max(0, p['coat'] - 3)
+    out = []
+    for k in PARTS[1:]:
+        low = PART_INFO[k]['low']
+        if before[k] >= low > p[k]:
+            out.append(f'{PART_INFO[k]["emoji"]} {PART_INFO[k]["name"]} còn {p[k]}% — {PART_INFO[k]["effect"].split(": ", 1)[-1]}')
+    return out
+
+
+def _npc_index(t: dict) -> int:
+    return int(t['npc'].rsplit('_', 1)[1]) - 1
+
+
+def _regular(d: dict, t: dict) -> dict | None:
+    if _npc_index(t) not in REGULARS:
+        return None
+    return d['regulars'].setdefault(t['npc'], dict(visits=0, bond=0, notes=[]))
+
+
+def _known_notes(d: dict, t: dict) -> list[dict]:
+    reg = d['regulars'].get(t['npc'])
+    return [NOTE_INDEX[x] for x in reg['notes']] if reg else []
+
+
+def _note_kept(t: dict, note: dict) -> bool:
+    r = t['run']
+    if note['kind'] == 'call':
+        return r['called']
+    if note['kind'] == 'gate':
+        return True
+    return note['kind'] in r['care']
+
+
+def _care_record(c: dict, t: dict) -> None:
+    """At the hand-over: which of the customer's known wishes were kept (before the review is written)."""
+    d = _data(c)
+    notes = [x for x in _known_notes(d, t) if x['kind'] != 'gate']
+    t['run']['kept'] = [x['id'] for x in notes if _note_kept(t, x)]
+    t['run']['missed'] = [x['id'] for x in notes if not _note_kept(t, x)]
+
+
+def _care_after(s: dict, c: dict, t: dict, clean: bool) -> str:
+    """After a successful hand-over: the regular remembers you (bond, thank-you, a new note)."""
+    d = _data(c)
+    reg = _regular(d, t)
+    if reg is None:
+        return ''
+    who, r = _who(t), t['run']
+    reg['visits'] += 1
+    out = ''
+    good = clean and not r['missed']
+    if r['missed']:
+        out += f' 📒 {who} hơi buồn: bạn quên lời dặn “{NOTE_INDEX[r["missed"][0]]["text"]}”'
+    elif good and reg['bond'] < BOND_MAX:
+        reg['bond'] += 1
+        out += f' 💛 {who} quý bạn hơn (thân thiết {reg["bond"]}/{BOND_MAX}).'
+    if good:
+        for at, amount, label in BOND_TIP:
+            if reg['bond'] >= at:
+                kit.money(s, c, amount, f'{who} ({label}) gửi tiền cà phê', t['id'], 'revenue')
+                d['stats']['regular_tips'] += amount
+                out += f' ☕ {who} ({label}) gửi {amount} xu tiền cà phê.'
+                break
+    rows = REGULARS[_npc_index(t)]
+    for k, at in enumerate(NOTE_AT):
+        if k < len(rows) and reg['visits'] >= at and rows[k]['id'] not in reg['notes']:
+            reg['notes'].append(rows[k]['id'])
+            out += f' 📒 {who} dặn: “{rows[k]["text"]}” — đã ghi vào sổ tay khách quen.'
+    return out
+
+
+def _bond_hurt(c: dict, t: dict) -> str:
+    reg = _regular(_data(c), t)
+    if not reg or not reg['bond']:
+        return ''
+    reg['bond'] -= 1
+    return f' 💔 {_who(t)} bớt tin bạn (thân thiết {reg["bond"]}/{BOND_MAX}).'
+
+
+def _area(d: dict, node: str) -> str:
+    n = d['areas'][node] = min(10**6, d['areas'].get(node, 0) + 1)
+    name = NODES[node]['name']
+    if n == AREA_SMOOTH:
+        return f' 🗺️ Đã thuộc hẻm quanh {name}: hẻm tắt vào đây chạy êm, không xóc đổ, không mòn lốp thêm.'
+    if n == AREA_LOCAL:
+        return f' 🗺️ Biết lối tắt của dân quanh {name}: hẻm tắt vào đây bớt thêm 1 ô (quãng từ 3 ô).'
+    return ''
+
+
+def _gate(c: dict, d: dict, t: dict) -> str:
+    """Chú Hòa's side-gate code: the dog at the main gate no longer blocks you."""
+    r = t['run']
+    if not (t.get('_dog') and r['dog'] is None and r['loaded'] and d['at'] == _dest(t) == 'villa'
+            and not r['expired'] and not r['broken_seen']):
+        return ''
+    due = _due(t)
+    if t['needs']['kind'] == 'food' and d['clock'] > due + GRACE:
+        return ''
+    if not any(x['kind'] == 'gate' for x in _known_notes(d, t)):
+        return ''
+    r['dog'] = 'ok'
+    d['stats']['gates'] += 1
+    return '🔢 Bấm mã cổng phụ theo sổ tay — con chó vện ở cổng trước chỉ sủa vọng theo. '
+
+
+def _forecast(raw: dict, d: dict) -> dict:
+    """The next shift's weather and road board (both fixed per day) with advice from the courier's own state."""
+    day = raw['day'] + (1 if raw.get('open') else 0)
+    wx, m, h = weather(day), mod_of(day), hazards(day)
+    advice = []
+    if wx == 'rain':
+        want = _goal(day)[0] + 1
+        have = kit.stock(raw, 'rainbag')
+        advice.append(f'🛍️ Túi chống nước: kho còn {have}, ca mưa nên có ít nhất {want}' +
+                      (' — đặt thêm ngay hôm nay cho kịp hàng về.' if have < want else ' — đủ dùng.'))
+        if d['parts']['coat'] < 50:
+            advice.append(f'🧥 Áo mưa còn {d["parts"]["coat"]}% — thay ở tiệm Chú Bảy trước khi mưa.')
+        if d['parts']['brake'] < 50:
+            advice.append(f'🛑 Đường trơn mà má phanh còn {d["parts"]["brake"]}% — nên thay sớm.')
+    if h['flood']:
+        advice.append('🌊 Hẻm ngập ở ' + ' và '.join(NODES[x]['name'] for x in h['flood']) + ': đừng chạy hẻm tắt vào đó.')
+    if h['works']:
+        advice.append(f'🚧 Đào đường trước {NODES[h["works"]]["name"]}: đường chính vòng thêm 2 ô, hẻm tắt thì không vướng.')
+    for j in h['jams']:
+        advice.append(f'🚦 {NODES[j["node"]]["name"]} kẹt {hm(j["start"])}–{hm(j["end"])}: tránh giờ đó hoặc đi hẻm.')
+    if m['id'] == 'sale':
+        advice.append(f'💵 Ngày săn sale: nhiều đơn thu hộ — nộp COD sớm, đừng để túi chạm {COD_CAP} xu.')
+    if d['tyre'] < 50:
+        advice.append(f'🛞 Lốp còn {d["tyre"]}% — thay ruột ở cây xăng hoặc tiệm Chú Bảy.')
+    for k in ('oil', 'chain'):
+        if d['parts'][k] < 40:
+            advice.append(f'{PART_INFO[k]["emoji"]} {PART_INFO[k]["name"]} còn {d["parts"][k]}% — ghé tiệm Chú Bảy.')
+    if not advice:
+        advice.append('✅ Xe ổn, đường êm — cứ thế mà chạy.')
+    return dict(day=day, label='Ngày mai' if raw.get('open') else 'Ca tới', weather=wx, id=m['id'], emoji=m['emoji'],
+                name=m['name'], text=_mod_text(day), advice=advice)
 
 
 def _goal(day: int) -> tuple[int, int]:
@@ -562,6 +801,7 @@ def _finish(s: dict, c: dict, t: dict, how: str) -> dict:
     late, r['late'] = r['late'], 0
     base = _fee(c, t)            # the fee before the app's flat late deduction
     r['late'] = late
+    _care_record(c, t)
     _slips(t)
     react = cq.react(s, c, t, base, who=_who(t))
     # A customer who complains takes their cut instead of the flat late deduction, never both.
@@ -583,7 +823,10 @@ def _finish(s: dict, c: dict, t: dict, how: str) -> dict:
         msg += ' Khách phàn nàn: ' + '; '.join(notes) + '.'
     if react['message']:
         msg += ' ' + react['message']
-    msg += _score(s, c, t, clean=not notes and not r['late'] and not cq.slips(t))
+    clean = not notes and not r['late'] and not cq.slips(t)
+    msg += _score(s, c, t, clean=clean)
+    msg += _care_after(s, c, t, clean)
+    msg += _area(_data(c), _dest(t))
     if d['owed'] and d['at'] != 'hub':
         msg += f' Túi COD đang giữ {d["owed"]} xu của bưu cục.'
     return dict(message=msg, celebrate=not notes and not r['late'])
@@ -635,7 +878,8 @@ def _ride_effects(c: dict, blocks: int, leg: dict | None = None) -> list[str]:
     out = []
     for t in _open(c):
         r, n = t['run'], t['needs']
-        if leg and leg['way'] == 'short' and r['loaded'] and n['kind'] == 'food' and n.get('soup') and not r['spilled']:
+        if (leg and leg['way'] == 'short' and not leg.get('smooth') and r['loaded'] and n['kind'] == 'food'
+                and n.get('soup') and not r['spilled']):
             r['spilled'] = True
             out.append(f'hẻm xóc làm đổ nước lèo của {n["item"].lower()}')
         if leg and leg['stall'] and r['loaded'] and n['kind'] == 'parcel' and 'rainbag' not in r['packed'] and not r['wet']:
@@ -704,12 +948,21 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         kit.need(way in WAYS, 'Chọn đường chính hoặc hẻm tắt.')
         nxt = d['route'][0]
         kit.need(way == 'main' or dist(d['at'], nxt) >= 2, 'Quãng này ngắn quá, không có hẻm tắt nào.')
+        brake = d['parts']['brake']
+        kit.need(way == 'main' or brake >= PART_INFO['brake']['low'],
+                 f'Má phanh mòn còn {brake}% — hẻm tắt dốc, cua gắt, chạy vậy không an toàn. '
+                 'Đi đường chính, hoặc thay má phanh ở tiệm Chú Bảy.', 'brake')
+        if d['parts']['chain'] <= 0:
+            d['stats']['chains'] += 1
+            _fire(s, c, 'DE-CHAIN')
+            return dict(message='⛓️ Sên tuột khỏi nhông, xe không chạy được — xử lý sên trước đã!')
         leg = _leg(c, d['at'], nxt, d['clock'], way)
         blocks, use = leg['blocks'], leg['fuel']
         kit.need(d['fuel'] >= use, f'Không đủ xăng tới {NODES[nxt]["name"]} (cần {use}%, còn {d["fuel"]}%). '
                  f'Ghé cây xăng hoặc mua xăng chai ven đường.', 'fuel')
         d['route'].pop(0)
         d['fuel'] -= use
+        worn = _wear(c, d, leg, d['km'])
         d['km'] += blocks
         d['day_km'] += blocks
         _clock(d, leg['minutes'])
@@ -733,24 +986,51 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
             msg += ' Giao: ' + ', '.join(drops) + '.'
         if hurt:
             msg += ' ⚠️ Trên đường: ' + '; '.join(hurt) + '.'
+        if worn:
+            msg += ' 🔧 ' + '; '.join(worn) + '. Ghé tiệm Chú Bảy.'
         if _flat(c, d):
             d['stats']['flats'] += 1
             _fire(s, c, 'DE-FLAT')
             msg += f' 💥 Bánh sau xẹp lép (lốp còn {d["tyre"]}%)!'
+        elif d['parts']['chain'] <= 0:
+            d['stats']['chains'] += 1
+            _fire(s, c, 'DE-CHAIN')
+            msg += ' ⛓️ Sên mòn chùng quá, tuột khỏi nhông!'
         elif d['tyre'] < TYRE_FLAT_AT:
-            msg += f' Lốp mòn còn {d["tyre"]}% — ghé cây xăng bảo dưỡng kẻo xẹp bánh.'
+            msg += f' Lốp mòn còn {d["tyre"]}% — thay ruột ở cây xăng hoặc tiệm Chú Bảy kẻo xẹp bánh.'
         return dict(message=msg)
     if name == 'dl_service':
-        _at(d, 'gas', 'Bảo dưỡng xe')
-        kit.need(d['tyre'] < 100 or 'rim' in d['desk']['marks'], 'Xe đang ngon lành, chưa cần bảo dưỡng.')
+        _at(d, 'gas', 'Thay ruột xe')
+        kit.need(d['tyre'] < 100 or 'rim' in d['desk']['marks'], 'Lốp đang ngon lành, chưa cần thay ruột.')
         cost = SERVICE_COST + (RIM_COST if 'rim' in d['desk']['marks'] else 0)
-        kit.confirm(p, f'Thay ruột, chỉnh sên, thay nhớt hết {cost} xu?')
-        kit.money(s, c, -cost, 'Bảo dưỡng xe: thay ruột, chỉnh sên, thay nhớt', None, 'repair')
+        kit.confirm(p, f'Thay ruột mới, bơm lốp{", nắn vành" if "rim" in d["desk"]["marks"] else ""} hết {cost} xu?')
+        kit.money(s, c, -cost, 'Thay ruột xe ở cây xăng', None, 'repair')
         d['tyre'] = 100
         d['desk']['marks'].pop('rim', None)
         d['stats']['services'] += 1
         _clock(d, 6)
-        return dict(message=f'🔧 Thợ thay ruột mới, chỉnh sên, thay nhớt ({cost} xu, 6 phút). Lốp 100%, chạy êm ru.')
+        return dict(message=f'🔧 Thợ cây xăng thay ruột mới, bơm lốp ({cost} xu, 6 phút). Lốp 100%. '
+                            'Nhớt, sên, má phanh thì phải ghé tiệm Chú Bảy.')
+    if name == 'dl_fix':
+        _at(d, 'garage', 'Sửa xe')
+        parts = kit.id_list(p.get('parts'), PARTS, len(PARTS), 'Chọn bộ phận cần sửa trong danh sách.')
+        kit.need(parts, 'Chọn ít nhất một bộ phận cần sửa.')
+        rim = 'rim' in d['desk']['marks']
+        for k in parts:
+            kit.need(part(d, k) < 100 or (k == 'tyre' and rim), f'{PART_INFO[k]["name"]} còn tốt, chưa cần thay.')
+        cost = sum(PART_INFO[k]['price'] for k in parts) + (RIM_COST if 'tyre' in parts and rim else 0)
+        names = ', '.join(PART_INFO[k]['name'].lower() for k in parts)
+        kit.confirm(p, f'Sửa {names} hết {cost} xu?')
+        kit.need(c['money'] >= cost, f'Chưa đủ {cost} xu. Bỏ bớt, sửa bộ phận gấp nhất trước.', 'money')
+        kit.money(s, c, -cost, f'Sửa xe ở tiệm Chú Bảy: {names}', None, 'repair')
+        for k in parts:
+            _set_part(d, k, 100)
+        if 'tyre' in parts:
+            d['desk']['marks'].pop('rim', None)
+        d['stats']['repairs'] += 1
+        _clock(d, FIX_MIN * len(parts))
+        return dict(message=f'🔧 Chú Bảy làm xong {names} ({cost} xu, {FIX_MIN * len(parts)} phút): “Chạy êm rồi đó con, '
+                            'nhớ ghé thường xuyên nha.”')
     if name == 'dl_wait':
         _clock(d, 5)
         return dict(message=f'⏳ Đứng chờ 5 phút… bây giờ là {hm(d["clock"])}.')
@@ -810,6 +1090,21 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         else:
             msg += f'{_who(t)}: “Có nhà, cứ tới nha.”'
         return dict(message=msg.strip())
+    if name == 'dl_care':
+        kind = kit.one_of(p.get('kind'), CARE_KINDS, 'Việc chăm khách không hợp lệ.')
+        _at(d, _dest(t), 'Chăm khách tận cửa')
+        kit.need(r['loaded'], 'Hàng chưa lên xe.')
+        kit.need(not r['expired'] and not r['broken_seen'], 'Đơn này không giao được nữa — báo giao thất bại.')
+        note = next((x for x in _known_notes(d, t) if x['kind'] == kind), None)
+        kit.need(note, f'{_who(t)} chưa dặn việc này. Xem sổ tay khách quen để biết khách cần gì.')
+        kit.need(kind not in r['care'], 'Việc này làm rồi.')
+        r['care'].append(kind)
+        d['stats']['cares'] += 1
+        _clock(d, CARE_KINDS[kind]['minutes'])
+        lines = {'carry': f'🤲 Bạn xách {n["item"].lower()} vào tận nơi cho {_who(t)}.',
+                 'photo': f'📸 Chụp ảnh kiện hàng ở cửa, gửi {_who(t)} qua app.',
+                 'check': f'🔍 Mở hộp đồng kiểm {n["item"].lower()} ngay trước mặt {_who(t)}.'}
+        return dict(message=lines[kind] + f' (+{CARE_KINDS[kind]["minutes"]} phút) Nhớ đúng lời dặn trong sổ tay.')
     if name == 'dl_check':
         _at(d, n['pickup'], 'Kiểm hàng')
         kit.need(not r['loaded'], 'Hàng đã lên xe.')
@@ -880,6 +1175,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
             msg += ' ⚠️ Chưa có: ' + ', '.join(ITEM_INDEX[x]['name'].lower() for x in missing) + '.'
         if n['kind'] == 'food' and not r['checked']:
             msg += ' (Chưa so túi với bill.)'
+        msg += _area(d, n['pickup'])
         return dict(message=msg)
     if name == 'dl_refuse':
         _at(d, n['pickup'], 'Từ chối nhận')
@@ -897,81 +1193,11 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         kit.complete(s, c, t, 0, f'Từ chối nhận {n["item"].lower()} vì {reason}; bưu cục chuyển xe tải.', status='referred')
         return dict(message=f'🚫 Đã từ chối: {reason}. Chị Hạnh chuyển đơn cho xe tải, cảm ơn bạn đã cân kỹ.')
     if name in ('dl_deliver', 'dl_safedrop'):
-        _at(d, _dest(t), 'Giao hàng')
-        kit.need(r['loaded'], 'Hàng chưa lên xe.')
-        kit.need(not r['expired'], 'Đơn đã bị hủy — báo giao thất bại.')
-        kit.need(not r['broken_seen'], 'Khách đã từ chối vì hàng hỏng — báo giao thất bại.')
-        due = _due(t)
-        if n['kind'] == 'food' and d['clock'] > due + GRACE:
-            r['expired'] = True
-            return dict(message=f'⌛ Khách đã hủy đơn trên app vì chờ quá lâu (hẹn {hm(due)}). Báo giao thất bại.')
-        if t.get('_dog') and r['dog'] is None:
-            _clock(d, 1)
-            d['stats']['dogs'] += 1
-            _fire(s, c, 'DE-DOG', t)
-            return dict(message='🐕 Một con chó vện to đùng lao ra sủa ầm ở cổng, không cho ai bước vào!')
-        if t.get('_moved') and r['moved'] is None:
-            _clock(d, 2)
-            _fire(s, c, 'DE-MOVED', t)
-            return dict(message=f'🚪 Bấm chuông không ai mở. Hàng xóm nói: “Người đó mới chuyển qua {NODES[t["_moved"]]["name"]} rồi.” '
-                                'Gọi trước thì đỡ một chuyến!')
-        if t.get('_bomb') and n['cod'] and r['bomb'] is None:
-            _clock(d, 3)
-            d['stats']['bombs'] += 1
-            _fire(s, c, 'DE-BOMB', t)
-            return dict(message=f'📵 Gọi {_who(t)} ba cuộc không bắt máy. Người nhà ra cửa: “Không đặt gì hết, không nhận!”')
-        if name == 'dl_safedrop':
-            kit.need(n['safe_drop'] or not n['paper'], 'Thư bảo đảm phải đúng người nhận ký, không gửi hộ được.')
-            kit.need(not n['cod'], 'Đơn thu tiền hộ không được gửi bảo vệ.')
-            kit.confirm(p, 'Gửi hàng ở chòi bảo vệ và chụp ảnh làm bằng chứng?')
-            if _ruined(t):
-                r['broken_seen'] = True
-                t['mistakes'] += 1
-                return dict(message='📸 Chú bảo vệ mở ra kiểm: hàng đã vỡ/hỏng trên đường. Không gửi được — báo giao thất bại.')
-            if not n['safe_drop']:
-                t['mistakes'] += 1
-                cq.slip(t, 'handed_over', 2, 'Tôi dặn giao tận tay mà shipper gửi người khác nhận hộ, suýt thất lạc.', 'gửi người khác nhận hộ khi khách chưa cho phép')
-            return _finish(s, c, t, 'safedrop')
-        if n['cod']:
-            kit.need(d['owed'] + n['cod'] <= COD_CAP, f'Túi COD sẽ vượt hạn mức {COD_CAP} xu — app khóa thu tiền. Về bưu cục nộp tiền trước.')
-        astray = bool(t['_unit']) and not r['unit']   # no room number: knock along the corridors and ask the neighbours
-        _clock(d, STAIRS.get(n['dest'], 0) + (8 if astray else 0))
-        back = r['t0'] + t['_away']
-        if t['_away'] and d['clock'] < back:
-            r['knocks'] += 1
-            _clock(d, 2)
-            return dict(message='🚪 Bấm chuông mãi không ai mở. ' + ('Khách hẹn ' + hm(back) + ' mới về — chờ hoặc đi giao đơn khác.' if r['called'] else 'Gọi hỏi khách xem sao.'))
-        if _ruined(t):
-            r['broken_seen'] = True
-            t['mistakes'] += 1
-            what = 'giấy tờ ướt nhòe mực' if n['paper'] else 'hàng bên trong đã vỡ'
-            return dict(message=f'💔 Đồng kiểm với khách: {what}. Khách từ chối nhận. Báo giao thất bại và làm biên bản.')
-        if astray:
-            t['mistakes'] += 1
-            cq.slip(t, 'no_room', 2, 'Không gọi hỏi số phòng, shipper gõ cửa lung tung cả dãy, hỏi hàng xóm mới tìm ra tôi.', 'không hỏi số phòng, gõ nhầm cửa')
-        if n['cod']:
-            change = kit.integer(p.get('change'), 0, 1000)
-            right = n['cash'] - n['cod']
-            extra = ''
-            if change < right:
-                r['short'] = right - change
-                t['mistakes'] += 1
-                extra = f' Khách đếm lại: “Thối thiếu {right - change} xu nè!” — bạn đưa thêm cho đủ.'
-                change = right
-            elif change > right:
-                r['over'] = change - right
-                t['mistakes'] += 1
-                extra = f' Bạn thối dư {change - right} xu — cuối ca túi COD sẽ thiếu đúng chừng đó.'
-            r['change'] = change
-            d['bag'] += max(0, n['cash'] - change - r['discount'])
-            d['owed'] += n['cod']
-            d['cod'].append(dict(task=t['id'], item=n['item'], cod=n['cod'], day=c['day']))
-            out = _finish(s, c, t, 'delivered')
-            cut = f' Bớt cho khách {r["discount"]} xu từ túi mình.' if r['discount'] else ''
-            out['message'] = f'💵 Thu {n["cash"]} xu, thối {change} xu.{extra}{cut} ' + out['message']
-            return out
-        kit.need(p.get('change') in (None, 0), 'Đơn đã thanh toán online, không thu tiền.')
-        return _finish(s, c, t, 'delivered')
+        gate = _gate(c, d, t)
+        out = _deliver(s, c, d, t, name, p)
+        if gate:
+            out['message'] = gate + out['message']
+        return out
     if name == 'dl_fail':
         kit.confirm(p, 'Báo giao thất bại cho đơn này?')
         due = _due(t)
@@ -1015,8 +1241,89 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
             msg += ' ' + react['message']
         kit.complete(s, c, t, fee, story, status='cancelled')
         msg += _score(s, c, t, clean=None)
+        if r['expired'] or r['broken_seen']:
+            msg += _bond_hurt(c, t)
         return dict(message=msg + (f' Phí giao lần đầu +{fee} xu.' if fee else ''))
     raise kit.eng().GameError('Thao tác giao hàng không hợp lệ.')
+
+
+def _deliver(s: dict, c: dict, d: dict, t: dict, name: str, p: dict) -> dict:
+    n, r = t['needs'], t['run']
+    _at(d, _dest(t), 'Giao hàng')
+    kit.need(r['loaded'], 'Hàng chưa lên xe.')
+    kit.need(not r['expired'], 'Đơn đã bị hủy — báo giao thất bại.')
+    kit.need(not r['broken_seen'], 'Khách đã từ chối vì hàng hỏng — báo giao thất bại.')
+    due = _due(t)
+    if n['kind'] == 'food' and d['clock'] > due + GRACE:
+        r['expired'] = True
+        return dict(message=f'⌛ Khách đã hủy đơn trên app vì chờ quá lâu (hẹn {hm(due)}). Báo giao thất bại.')
+    if t.get('_dog') and r['dog'] is None:
+        _clock(d, 1)
+        d['stats']['dogs'] += 1
+        _fire(s, c, 'DE-DOG', t)
+        return dict(message='🐕 Một con chó vện to đùng lao ra sủa ầm ở cổng, không cho ai bước vào!')
+    if t.get('_moved') and r['moved'] is None:
+        _clock(d, 2)
+        _fire(s, c, 'DE-MOVED', t)
+        return dict(message=f'🚪 Bấm chuông không ai mở. Hàng xóm nói: “Người đó mới chuyển qua {NODES[t["_moved"]]["name"]} rồi.” '
+                            'Gọi trước thì đỡ một chuyến!')
+    if t.get('_bomb') and n['cod'] and r['bomb'] is None:
+        _clock(d, 3)
+        d['stats']['bombs'] += 1
+        _fire(s, c, 'DE-BOMB', t)
+        return dict(message=f'📵 Gọi {_who(t)} ba cuộc không bắt máy. Người nhà ra cửa: “Không đặt gì hết, không nhận!”')
+    if name == 'dl_safedrop':
+        kit.need(n['safe_drop'] or not n['paper'], 'Thư bảo đảm phải đúng người nhận ký, không gửi hộ được.')
+        kit.need(not n['cod'], 'Đơn thu tiền hộ không được gửi bảo vệ.')
+        kit.confirm(p, 'Gửi hàng ở chòi bảo vệ và chụp ảnh làm bằng chứng?')
+        if _ruined(t):
+            r['broken_seen'] = True
+            t['mistakes'] += 1
+            return dict(message='📸 Chú bảo vệ mở ra kiểm: hàng đã vỡ/hỏng trên đường. Không gửi được — báo giao thất bại.')
+        if not n['safe_drop']:
+            t['mistakes'] += 1
+            cq.slip(t, 'handed_over', 2, 'Tôi dặn giao tận tay mà shipper gửi người khác nhận hộ, suýt thất lạc.', 'gửi người khác nhận hộ khi khách chưa cho phép')
+        return _finish(s, c, t, 'safedrop')
+    if n['cod']:
+        kit.need(d['owed'] + n['cod'] <= COD_CAP, f'Túi COD sẽ vượt hạn mức {COD_CAP} xu — app khóa thu tiền. Về bưu cục nộp tiền trước.')
+    astray = bool(t['_unit']) and not r['unit']   # no room number: knock along the corridors and ask the neighbours
+    _clock(d, STAIRS.get(n['dest'], 0) + (8 if astray else 0))
+    back = r['t0'] + t['_away']
+    if t['_away'] and d['clock'] < back:
+        r['knocks'] += 1
+        _clock(d, 2)
+        return dict(message='🚪 Bấm chuông mãi không ai mở. ' + ('Khách hẹn ' + hm(back) + ' mới về — chờ hoặc đi giao đơn khác.' if r['called'] else 'Gọi hỏi khách xem sao.'))
+    if _ruined(t):
+        r['broken_seen'] = True
+        t['mistakes'] += 1
+        what = 'giấy tờ ướt nhòe mực' if n['paper'] else 'hàng bên trong đã vỡ'
+        return dict(message=f'💔 Đồng kiểm với khách: {what}. Khách từ chối nhận. Báo giao thất bại và làm biên bản.')
+    if astray:
+        t['mistakes'] += 1
+        cq.slip(t, 'no_room', 2, 'Không gọi hỏi số phòng, shipper gõ cửa lung tung cả dãy, hỏi hàng xóm mới tìm ra tôi.', 'không hỏi số phòng, gõ nhầm cửa')
+    if n['cod']:
+        change = kit.integer(p.get('change'), 0, 1000)
+        right = n['cash'] - n['cod']
+        extra = ''
+        if change < right:
+            r['short'] = right - change
+            t['mistakes'] += 1
+            extra = f' Khách đếm lại: “Thối thiếu {right - change} xu nè!” — bạn đưa thêm cho đủ.'
+            change = right
+        elif change > right:
+            r['over'] = change - right
+            t['mistakes'] += 1
+            extra = f' Bạn thối dư {change - right} xu — cuối ca túi COD sẽ thiếu đúng chừng đó.'
+        r['change'] = change
+        d['bag'] += max(0, n['cash'] - change - r['discount'])
+        d['owed'] += n['cod']
+        d['cod'].append(dict(task=t['id'], item=n['item'], cod=n['cod'], day=c['day']))
+        out = _finish(s, c, t, 'delivered')
+        cut = f' Bớt cho khách {r["discount"]} xu từ túi mình.' if r['discount'] else ''
+        out['message'] = f'💵 Thu {n["cash"]} xu, thối {change} xu.{extra}{cut} ' + out['message']
+        return out
+    kit.need(p.get('change') in (None, 0), 'Đơn đã thanh toán online, không thu tiền.')
+    return _finish(s, c, t, 'delivered')
 
 
 def _eta(c: dict, d: dict) -> list[dict]:
@@ -1029,7 +1336,8 @@ def _eta(c: dict, d: dict) -> list[dict]:
         fuel -= leg['fuel']
         rows.append(dict(node=node, blocks=leg['blocks'], at=clock, fuel=fuel, minutes=leg['minutes'], notes=leg['notes'],
                          short=dict(blocks=alt['blocks'], minutes=alt['minutes'], fuel=alt['fuel'], notes=alt['notes'],
-                                    stall=alt['stall']) if alt else None))
+                                    stall=alt['stall'], smooth=alt['smooth'], local=alt['local'],
+                                    brake=(d.get('parts') or {}).get('brake', 100) < PART_INFO['brake']['low']) if alt else None))
         at = node
     return rows
 
@@ -1089,6 +1397,10 @@ def feedback(c: dict, t: dict) -> dict:
                          note='nhận đổi địa chỉ, giao tới nơi mới' if r['moved'] != 'meet' else 'hẹn khách ra nhận ở chỗ cũ'))
     if r.get('dog') == 'bite':
         rows.append(dict(key='care', label='Cẩn thận', score=2, note='liều vào cổng có chó dữ, té xe'))
+    if r.get('kept') or r.get('missed'):
+        rows.append(dict(key='wishes', label='Nhớ lời dặn', score=3 if r['missed'] else 5,
+                         note='quên lời dặn: ' + NOTE_INDEX[r['missed'][0]]['text'].split(' — ')[0].split(':')[0].lower()
+                         if r['missed'] else 'nhớ đúng thói quen của khách quen'))
     return dict(criteria=rows)
 
 
@@ -1133,11 +1445,36 @@ def public_data(raw: dict) -> dict:
                       streak=d['streak'], best=d['best'], every=STREAK_EVERY, streak_bonus=STREAK_BONUS, rated=len(d['stars']),
                       quest=dict(goal=q['goal'], done=q['done'], paid=q['paid'], bonus=q['bonus']) if q['day'] == raw['day'] else None)
     marks = d['desk'].get('marks', {})
-    d['bike'] = dict(tyre=d['tyre'], flat_at=TYRE_FLAT_AT, service=SERVICE_COST + (RIM_COST if 'rim' in marks else 0),
-                     rim='rim' in marks, nogas=marks.get('nogas') == raw['day'] and d['clock'] < 60)
+    rim = 'rim' in marks
+    parts = [dict(id=k, name=PART_INFO[k]['name'], emoji=PART_INFO[k]['emoji'], value=part(d, k), low=PART_INFO[k]['low'],
+                  effect=PART_INFO[k]['effect'], price=PART_INFO[k]['price'] + (RIM_COST if k == 'tyre' and rim else 0),
+                  need=part(d, k) < 100 or (k == 'tyre' and rim)) for k in PARTS]
+    worst = min(parts, key=lambda x: (x['value'] - x['low'], PARTS.index(x['id'])))
+    d['bike'] = dict(tyre=d['tyre'], flat_at=TYRE_FLAT_AT, service=SERVICE_COST + (RIM_COST if rim else 0),
+                     rim=rim, nogas=marks.get('nogas') == raw['day'] and d['clock'] < 60, parts=parts, worst=worst['id'],
+                     alert=any(x['value'] < x['low'] for x in parts) or rim)
+    d['book'] = _book(d)
+    d.pop('regulars', None)
+    d['forecast'] = _forecast(raw, d)
     d['desk'] = _desk_view(raw)
     d.pop('stars', None)
     return d
+
+
+def _book(d: dict) -> list[dict]:
+    """The regulars' notes card: only notes the courier has been told."""
+    out = []
+    for i, rows in REGULARS.items():
+        npc = kit.npc_id(ID, i)
+        reg = d['regulars'].get(npc) or dict(visits=0, bond=0, notes=[])
+        level = next((label for at, _, label in BOND_TIP if reg['bond'] >= at), 'khách mới')
+        tip = next((amount for at, amount, _ in BOND_TIP if reg['bond'] >= at), 0)
+        nxt = next((at for k, at in enumerate(NOTE_AT) if k < len(rows) and rows[k]['id'] not in reg['notes']), None)
+        out.append(dict(npc=npc, name=PEOPLE[i][0], role=PEOPLE[i][1], visits=reg['visits'], bond=reg['bond'], max=BOND_MAX,
+                        level=level, tip=tip,
+                        notes=[dict(id=x, kind=NOTE_INDEX[x]['kind'], text=NOTE_INDEX[x]['text']) for x in reg['notes']],
+                        locked=len(rows) - len(reg['notes']), next_in=max(1, nxt - reg['visits']) if nxt else None))
+    return out
 
 
 def validate_task(t: dict, original: dict) -> None:
@@ -1171,6 +1508,15 @@ def validate_task(t: dict, original: dict) -> None:
     kit.need(r['dest'] is None or (r['dest'] == t.get('_moved') and r['moved'] in ('accept', 'nofee')), 'Địa chỉ giao sai.')
     kit.need(type(r['spilled']) is bool and (not r['spilled'] or n['kind'] == 'food'), 'Tình trạng món sai.')
     kit.need(kit.integer(r['discount'], 0, DISCOUNT) in (0, DISCOUNT) and (not r['discount'] or r['bomb'] == 'discount'), 'Tiền bớt cho khách sai.')
+    care = r['care']
+    kit.need(isinstance(care, list) and len(set(care)) == len(care) and all(x in CARE_KINDS for x in care)
+             and (not care or r['loaded']), 'Việc chăm khách sai.')
+    who = _npc_index(t)
+    for k in ('kept', 'missed'):
+        v = r[k]
+        kit.need(isinstance(v, list) and len(set(v)) == len(v) and all(isinstance(x, str) and x in NOTE_INDEX and NOTE_INDEX[x]['who'] == who for x in v)
+                 and (not v or r['outcome'] in ('delivered', 'safedrop')), 'Lời dặn khách quen sai.')
+    kit.need(not set(r['kept']) & set(r['missed']), 'Lời dặn khách quen sai.')
 
 
 def validate_data(c: dict) -> None:
@@ -1178,9 +1524,27 @@ def validate_data(c: dict) -> None:
     kit.mark_legacy(c, ID, 'gen')
     for t in c.get('tasks', []):
         if isinstance(t, dict) and t.get('career') == ID and isinstance(t.get('run'), dict):
-            for k, v in RUN_V2.items():
+            for k, v in {**RUN_V2, **RUN_V3}.items():
                 t['run'].setdefault(k, copy.deepcopy(v))
     kit.desk_validate(d['desk'], EVENTS)
+    parts = d['parts']
+    kit.need(isinstance(parts, dict) and set(parts) == set(PARTS[1:]), 'Tình trạng xe sai.')
+    for k in PARTS[1:]:
+        kit.integer(parts[k], 0, 100)
+    regs = d['regulars']
+    kit.need(isinstance(regs, dict) and set(regs) <= set(REGULAR_IDS), 'Sổ tay khách quen sai.')
+    for npc, reg in regs.items():
+        kit.need(isinstance(reg, dict) and set(reg) == {'visits', 'bond', 'notes'}, 'Sổ tay khách quen sai.')
+        visits = kit.integer(reg['visits'], 0, 10**6)
+        kit.need(kit.integer(reg['bond'], 0, BOND_MAX) <= visits, 'Độ thân thiết sai.')
+        ids = [x['id'] for x in REGULARS[REGULAR_IDS.index(npc)]]
+        notes = reg['notes']
+        kit.need(isinstance(notes, list) and len(set(notes)) == len(notes) and all(isinstance(x, str) and x in ids for x in notes)
+                 and len(notes) <= sum(visits >= at for at in NOTE_AT), 'Lời dặn trong sổ tay sai.')
+    areas = d['areas']
+    kit.need(isinstance(areas, dict) and set(areas) <= set(NODES), 'Khu phố quen sai.')
+    for v in areas.values():
+        kit.integer(v, 0, 10**6)
     ev = d['desk']['ev']
     if ev is not None and 'task' in ev:
         kit.need(any(t.get('id') == ev['task'] for t in c.get('tasks', [])), 'Chuyện dọc đường gắn với đơn không có.')
@@ -1230,7 +1594,7 @@ def on_start(s: dict, c: dict) -> None:
     for t in _open(c):
         r = t['run']
         if not r['expired']:
-            r.update(t0=0, day=c['day'], called=False, unit=None, back=None, knocks=0)
+            r.update(t0=0, day=c['day'], called=False, unit=None, back=None, knocks=0, care=[])
     m = mod_of(c['day'])
     d['today'] = dict(day=c['day'], mod=m['id'])
     goal, bonus = _goal(c['day'])
@@ -1273,10 +1637,19 @@ def on_close(s: dict, c: dict) -> dict:
     lines.append(f'⭐ Điểm tài xế: {score / 10:.1f}'.replace('.', ',') + (' — được ưu tiên đơn (+2 xu/đơn).' if score >= TOP_RATING else '.')
                  if score is not None else '⭐ Điểm tài xế: cần thêm vài đơn để có điểm.')
     lines.append(f'🔥 Chuỗi đơn sạch hiện tại: {d["streak"]} (kỷ lục {d["best"]}).')
-    lines.append(f'🛞 Lốp còn {d["tyre"]}%' + (' — nên bảo dưỡng ở cây xăng.' if d['tyre'] < TYRE_FLAT_AT + 10 else '.'))
+    worn = [k for k in PARTS if part(d, k) < PART_INFO[k]['low'] + 10]
+    lines.append('🔧 Xe: ' + ', '.join(f'{PART_INFO[k]["name"].lower()} {part(d, k)}%' for k in PARTS) +
+                 (' — nên ghé tiệm Chú Bảy: ' + ', '.join(PART_INFO[k]['name'].lower() for k in worn) + '.' if worn else '.'))
+    friends = [(PEOPLE[REGULAR_IDS.index(npc)][0], reg['bond']) for npc, reg in d['regulars'].items() if reg['bond']]
+    if friends:
+        lines.append('💛 Khách quen: ' + ', '.join(f'{name} {bond}/{BOND_MAX}' for name, bond in sorted(friends, key=lambda x: -x[1])) + '.')
+    fc = _forecast(c, d)
+    lines.append(f'📡 Dự báo ngày mai: {fc["emoji"]} {fc["name"]}. ' + ' '.join(fc['advice'][:3]))
     if surprise:
         lines.append(surprise)
     out['lines'] = lines
+    out['parts'] = {k: part(d, k) for k in PARTS}
+    out['forecast'] = dict(day=fc['day'], id=fc['id'], weather=fc['weather'])
     d['day_delivered'] = d['day_failed'] = d['day_refused'] = d['day_km'] = d['day_fees'] = 0
     return out
 
@@ -1332,7 +1705,8 @@ def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
 
 def hint(c: dict, t: dict) -> str:
     return ('Nhận đơn → chọn điểm dừng, chốt lộ trình, chạy xe → ở điểm lấy: cân/kiểm hàng, đóng gói đúng loại, nhận lên xe '
-            '(báo nếu lệch cân) → ở điểm giao: gọi khách nếu thiếu số phòng, thối tiền COD cho đúng → cuối cùng về bưu cục nộp COD.')
+            '(báo nếu lệch cân) → ở điểm giao: gọi khách nếu thiếu số phòng, làm theo lời dặn trong sổ tay khách quen, thối tiền COD '
+            'cho đúng → cuối cùng về bưu cục nộp COD. Xem dự báo ngày mai và ghé tiệm Chú Bảy khi xe báo đỏ.')
 
 
 def content() -> dict:
@@ -1343,7 +1717,13 @@ def content() -> dict:
                 top_rating=TOP_RATING, top_bonus=TOP_BONUS, redirect_fee=REDIRECT_FEE, discount=DISCOUNT,
                 road_rules=['Đường chính: đúng số ô phố; kẹt xe giờ cao điểm thì chậm gấp đôi, công trình thì đi vòng.',
                             'Hẻm tắt: bớt 1 ô, né kẹt xe và công trình, nhưng xóc (đổ nước lèo), mòn lốp gấp đôi, hẻm ngập thì chết máy.',
-                            f'Lốp dưới {TYRE_FLAT_AT}% dễ xẹp bánh — bảo dưỡng ở cây xăng.'])
+                            f'Lốp dưới {TYRE_FLAT_AT}% dễ xẹp bánh — thay ruột ở cây xăng hoặc tiệm Chú Bảy.',
+                            f'Thuộc hẻm: làm việc ở một điểm {AREA_SMOOTH} lần thì hẻm tắt vào đó chạy êm; {AREA_LOCAL} lần thì biết lối tắt bớt thêm 1 ô.'],
+                parts=[dict(id=k, name=PART_INFO[k]['name'], emoji=PART_INFO[k]['emoji'], low=PART_INFO[k]['low'],
+                            price=PART_INFO[k]['price'], effect=PART_INFO[k]['effect']) for k in PARTS],
+                fix_minutes=FIX_MIN, rim_cost=RIM_COST, care_kinds=CARE_KINDS, note_at=list(NOTE_AT), bond_max=BOND_MAX,
+                bond_tip=[dict(at=at, tip=tip, label=label) for at, tip, label in BOND_TIP],
+                area_smooth=AREA_SMOOTH, area_local=AREA_LOCAL)
 
 
 # --- situations --------------------------------------------------------------------
@@ -1679,6 +2059,17 @@ EVENTS = [
                        effects=dict(tyre=0, mark='rim', rimhit=1), good=False,
                        outcome='Xe cà giật suốt đoạn đường, vành móp — lần bảo dưỡng tới tốn thêm tiền.')],
          default='patch'),
+    dict(id='DE-CHAIN', title='Tuột sên giữa đường', emoji='⛓️', npc=6, need_mark='ctx', tone='tense',
+         text='Sên mòn chùng quá, tuột khỏi nhông. Xe đứng im, hàng vẫn còn trên xe.',
+         options=[dict(id='refit', label='Tự lắp sên lại bên lề', hint='+8 phút, sên tạm 25%', effects=dict(clock=8, chain=25),
+                       outcome='Tay lem nhớt nhưng sên vào lại được. Nhớ ghé tiệm Chú Bảy thay sên mới.'),
+                  dict(id='push', label='Dắt xe vào tiệm sửa gần nhất thay sên mới', hint='8 xu, +15 phút, sên 100%',
+                       effects=dict(money=-8, clock=15, chain=100), good=True,
+                       outcome='Thợ thay sên mới, căng vừa tay. Xe chạy êm hẳn.'),
+                  dict(id='mobile', label='Gọi thợ lưu động tới thay sên tại chỗ', hint='14 xu, +5 phút, sên 100%',
+                       effects=dict(money=-14, clock=5, chain=100),
+                       outcome='Thợ tới nhanh, thay sên tại chỗ. Tốn tiền nhưng giữ được giờ giao.')],
+         default='refit'),
 ]
 
 
@@ -1721,8 +2112,8 @@ def _hook(s: dict, c: dict, key: str, v) -> str | None:
         add = min(int(v), 100 - d['fuel'])
         d['fuel'] += add
         return f'Bình xăng lên {d["fuel"]}%.' if add else None
-    if key == 'tyre':
-        d['tyre'] = int(v)
+    if key in PARTS:
+        _set_part(d, key, int(v))
         return None
     if key in ('wrap', 'soak'):
         wrapped, soaked = [], []

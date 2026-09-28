@@ -2,6 +2,7 @@
  * The server owns the clock, fuel, fees and COD; this view only builds a draft
  * route, a change-count and a settlement count before sending them. */
 import {t,language} from '../v4/i18n.js';
+import {reqList} from '../ui-kit.js';
 
 const CELL=60,PAD=30;
 /** "Cỏ May Office Tower" → "Office Tower"; "Bồ Câu School" → "School". */
@@ -46,6 +47,8 @@ function tags(t,x){
   if(n.kind==='parcel'&&d.weather==='rain')out.push(['🌧️','Trời mưa','info']);
   if(n.soup)out.push(['🍲','Có nước lèo · tránh hẻm xóc','warn']);
   if(t.run?.dest)out.push(['📍',`Địa chỉ mới: ${nodeOf(x,t.run.dest).name}`,'info']);
+  const reg=(d.book||[]).find(b=>b.npc===t.npc);
+  if(reg?.bond)out.push(['💛',`${reg.level} ${reg.bond}/${x.cc.bond_max||10}`,'good']);
   return out.map(([e,l,k])=>`<span class="dl-tag ${k}">${e} ${x.esc(l)}</span>`).join('');
 }
 function stopsAt(x,node){
@@ -63,15 +66,91 @@ function status(x){
     ${meter('⛽ Xăng',`${fuel}%`,fuel,fuel<20?'bad':fuel<35?'warn':'')}
     ${meter('📦 Tải',`${kg(load)} / ${kg(limit)}`,load/limit*100,load>limit*.8?'warn':'')}
     ${meter('💵 Túi COD',`${d.owed||0} / ${cap} xu`,(d.owed||0)/cap*100,(d.owed||0)>cap*.7?'warn':'')}
-    ${d.bike?meter('🛞 Lốp',`${d.bike.tyre}%`,d.bike.tyre,d.bike.tyre<d.bike.flat_at?'bad':d.bike.tyre<d.bike.flat_at+15?'warn':''):''}
+    ${bikeMeter(x,meter)}
   </div>`;
+}
+
+function bikeMeter(x,meter){
+  const b=x.room.data?.bike;if(!b)return '';
+  const w=(b.parts||[]).find(p=>p.id===b.worst)||{emoji:'🛞',name:'Lốp',value:b.tyre,low:b.flat_at};
+  const cls=w.value<w.low||b.rim?'bad':w.value<w.low+15?'warn':'';
+  return meter('🔧 Xe',`${w.emoji} ${w.value}%`,w.value,cls);
+}
+
+/* ---------- care: folds that remember whether the player opened them ---------- */
+function foldBox(x,key,summary,body,auto=false,cls=''){
+  const u=ui(x),open=u.open?.[key]??auto;
+  return `<details class="fold dl-fold ${cls}"${open?' open':''}><summary ${carAttr(x,'fold',{key})}>${summary}</summary><div class="fold-body">${body}</div></details>`;
+}
+const partState=p=>p.value<p.low?'bad':p.value<p.low+15?'warn':'';
+function partList(x,b){
+  return `<ul class="dl-parts" aria-label="Tình trạng xe">${b.parts.map(p=>{const st=partState(p)||(p.id==='tyre'&&b.rim?'bad':'');
+    return `<li class="${st}"><span class="dl-part-emoji" aria-hidden="true">${x.esc(p.emoji)}</span><span class="dl-part-name"><b>${x.esc(p.name)}</b>${st||p.id==='tyre'&&b.rim?`<small>${x.esc(p.id==='tyre'&&b.rim?'Vành móp vì chạy bánh xẹp. ':'')}${x.esc(p.effect)}</small>`:''}</span><span class="dl-part-val"><b>${p.value}%</b><span class="bar" aria-hidden="true"><i style="width:${p.value}%"></i></span></span></li>`;}).join('')}</ul>`;
+}
+function bikeFold(x){
+  const d=x.room.data||{},b=d.bike;if(!b?.parts)return '';
+  const w=b.parts.find(p=>p.id===b.worst)||b.parts[0],st=partState(w);
+  const summary=`🔧 Chăm xe · <span class="${st==='bad'?'bad-text':st==='warn'?'warn-text':''}">${x.esc(w.name)} ${w.value}%</span>${b.alert?' · cần sửa':''}`;
+  const where=d.at==='garage'?'':`<p class="small muted">Sửa ở ${x.esc(nodeOf(x,'garage').emoji)} ${x.esc(nodeOf(x,'garage').name)} — thêm vào lộ trình. Cây xăng chỉ thay ruột lốp.</p>`;
+  return foldBox(x,'bike',summary,partList(x,b)+where,b.alert&&d.at!=='garage');
+}
+function garagePanel(x){
+  const d=x.room.data||{},b=d.bike;if(!b?.parts||d.at!=='garage')return '';
+  const u=ui(x),need=b.parts.filter(p=>p.need);
+  if(!u.fix||u.fixDay!==x.room.day){u.fix=need.filter(p=>partState(p)||p.id==='tyre'&&b.rim).map(p=>p.id);u.fixDay=x.room.day;}
+  u.fix=u.fix.filter(id=>need.some(p=>p.id===id));
+  const sel=u.fix,cost=sum(need.filter(p=>sel.includes(p.id)).map(p=>p.price)),mins=(x.cc.fix_minutes||3)*sel.length;
+  const tiles=b.parts.map(p=>{const on=sel.includes(p.id),st=partState(p);
+    return `<button type="button" class="tile dl-fix ${on?'selected':''} ${st}" ${carAttr(x,'fix',{part:p.id})} aria-pressed="${on}" ${p.need?'':'disabled'}><span class="tile-emoji" aria-hidden="true">${x.esc(p.emoji)}</span><b>${x.esc(p.name)}</b><small>${p.value}% · ${p.need?`${p.price} xu`:'còn mới'}</small></button>`;}).join('');
+  const names=b.parts.filter(p=>sel.includes(p.id)).map(p=>p.name.toLowerCase()).join(', ');
+  return `<section class="dl-sec dl-garage"><h4 class="section-title">🔧 Tiệm sửa xe Chú Bảy <small class="muted">Chọn bộ phận cần làm, mỗi món ${x.cc.fix_minutes||3} phút.</small></h4>
+    ${need.length?`<div class="dl-grid pack">${tiles}</div>
+    <div class="row wrap space-top">${x.confirmCmd(sel.length?`🔧 Sửa ${sel.length} món · ${cost} xu`:'Chọn bộ phận để sửa','dl_fix',{parts:sel},`Sửa ${names} hết ${cost} xu (mất ${mins} phút)?`,'primary',!sel.length||cost>(Number(x.room.money)||0))}</div>
+    ${cost>(Number(x.room.money)||0)?'<p class="small bad-text">Ví chưa đủ — bỏ bớt, sửa món gấp nhất trước.</p>':''}`:'<p class="muted">Chú Bảy xem qua: “Xe ngon lành, chưa cần làm gì hết con.”</p>'}</section>`;
+}
+function forecastFold(x){
+  const f=x.room.data?.forecast;if(!f)return '';
+  const summary=`📡 ${x.esc(f.label)}: ${x.esc(f.emoji)} ${x.esc(f.name)} · ${f.advice.length} lời khuyên`;
+  return foldBox(x,'fc',summary,`<p class="small muted">${x.esc(f.text)}</p><ul class="dl-advice">${f.advice.map(a=>`<li>${x.esc(a)}</li>`).join('')}</ul>`,false,'dl-fc');
+}
+const hearts=(n,max)=>'💛'.repeat(Math.min(n,5))+(n>5?`+${n-5}`:'');
+function bookFold(x){
+  const book=x.room.data?.book;if(!book)return '';
+  const known=book.filter(b=>b.visits>0).length,max=x.cc.bond_max||10;
+  const rows=book.map(b=>`<li class="dl-reg ${b.visits?'':'new'}"><div class="dl-reg-head"><b>${x.esc(b.name)}</b><small>${x.esc(b.role)}</small><span class="dl-bond" aria-label="Thân thiết ${b.bond} trên ${max}">${b.bond?hearts(b.bond,max):'🤍'} ${b.bond}/${max}</span></div>
+    <small class="dl-reg-level">${x.esc(b.level)}${b.tip?` · +${b.tip} xu tiền cà phê mỗi đơn sạch`:''} · đã giao ${b.visits} đơn${nextLevel(x,b)}</small>
+    ${b.notes.length?`<ul class="dl-notes">${b.notes.map(n=>`<li><span aria-hidden="true">${x.esc(KIND_EMOJI[n.kind]||'📝')}</span> ${x.esc(n.text)}</li>`).join('')}</ul>`:''}
+    ${b.locked?`<small class="muted">🔒 ${b.next_in?`Giao thêm ${b.next_in} đơn`:'Giao thêm'} để biết thêm một lời dặn.</small>`:''}</li>`).join('');
+  return foldBox(x,'book',`📒 Sổ tay khách quen · ${known}/${book.length} người đã quen`,`<ul class="dl-book">${rows}</ul>`);
+}
+const KIND_EMOJI={call:'📞',gate:'🔢',carry:'🤲',photo:'📸',check:'🔍'};
+/** " · 3💛 → khách quen (+2 xu)": the next reward on the bond ladder. */
+function nextLevel(x,b){
+  const up=[...(x.cc.bond_tip||[])].sort((p,q)=>p.at-q.at).find(l=>l.at>b.bond);
+  return up?` · ${up.at}💛 → ${x.esc(up.label)} (+${up.tip} xu/đơn)`:'';
+}
+function areaLine(x){
+  const a=x.room.data?.areas||{},sm=x.cc.area_smooth||2,lo=x.cc.area_local||5;
+  const rows=Object.entries(a).filter(([,n])=>n>=sm).sort((p,q)=>q[1]-p[1]).map(([id,n])=>`${nodeOf(x,id).emoji} ${nodeOf(x,id).name}${n>=lo?' (lối tắt riêng)':''}`);
+  return `<p class="small dl-areas">🗺️ ${rows.length?`Thuộc hẻm: ${x.esc(rows.join(', '))}.`:`Chưa thuộc hẻm nào — làm việc ${sm} lần ở một điểm thì hẻm tắt vào đó chạy êm.`}</p>`;
+}
+function careSection(x){
+  return `<section class="dl-care" aria-label="Chăm xe và khách quen">${bikeFold(x)}${bookFold(x)}</section>`;
+}
+function wishes(t,x){
+  const b=(x.room.data?.book||[]).find(e=>e.npc===t.npc);if(!b||!b.notes.length)return '';
+  const r=t.run,care=r.care||[],kinds=x.cc.care_kinds||{};
+  const rows=b.notes.map(n=>{const done=n.kind==='call'?r.called:n.kind==='gate'?true:care.includes(n.kind);
+    return {ok:done?true:null,icon:KIND_EMOJI[n.kind]||'📝',label:n.text,note:n.kind==='gate'?'tự áp dụng khi tới cổng':done?'đã làm':n.kind==='call'?'bấm “Gọi khách”':''};});
+  const btns=b.notes.filter(n=>kinds[n.kind]&&!care.includes(n.kind)).map(n=>x.cmd(`${KIND_EMOJI[n.kind]} ${kinds[n.kind].label} · +${kinds[n.kind].minutes} phút`,'dl_care',{task:t.id,kind:n.kind},'ghost')).join('');
+  return `<div class="dl-wish"><p class="dl-sub">📒 ${x.esc(b.name)} từng dặn</p>${reqList(rows,x.esc,'Lời dặn của khách quen')}${btns?`<div class="row wrap space-top">${btns}</div>`:''}</div>`;
 }
 
 /* ---------- road board, courier score, surprises ---------- */
 function roadBoard(x){
   const r=x.room.data?.road;if(!r)return '';
   const signs=(r.signs||[]).map(g=>`<span class="dl-sign ${g.kind} ${g.now?'now':''}">${x.esc(g.text)}</span>`).join('');
-  return `<section class="dl-road" aria-label="Đường hôm nay"><div class="dl-road-head"><span class="dl-road-emoji" aria-hidden="true">${x.esc(r.mod.emoji)}</span><div><b>Đường hôm nay: ${x.esc(r.mod.name)}</b><small>${x.esc(r.mod.text)}</small></div></div>${signs?`<div class="dl-signs">${signs}</div>`:''}</section>`;
+  return `<section class="dl-road" aria-label="Đường hôm nay"><div class="dl-road-head"><span class="dl-road-emoji" aria-hidden="true">${x.esc(r.mod.emoji)}</span><div><b>Đường hôm nay: ${x.esc(r.mod.name)}</b><small>${x.esc(r.mod.text)}</small></div></div>${signs?`<div class="dl-signs">${signs}</div>`:''}${forecastFold(x)}</section>`;
 }
 function scoreStrip(x){
   const sc=x.room.data?.score;if(!sc)return '';
@@ -145,7 +224,8 @@ function planner(x){
     if(s.drop.length)bits.push(`giao ${s.drop.length}`);
     if(id==='hub'&&(d.owed||0)>0)bits.push('nộp COD');
     if(id==='gas')bits.push('đổ xăng');
-    const hot=s.pick.length||s.drop.length||(id==='hub'&&(d.owed||0)>0);
+    if(id==='garage'&&d.bike?.alert)bits.push('sửa xe');
+    const hot=s.pick.length||s.drop.length||(id==='hub'&&(d.owed||0)>0)||(id==='garage'&&d.bike?.alert);
     return tile(x,{emoji:n.emoji,label:n.name,sub:`${b} ô · ${b*mpu} phút${bits.length?' · '+bits.join(', '):''}`,cls:`${hot?'hot':''} ${id===from?'here':''}`,attr:carAttr(x,'stop',{node:id}),off:id===from});
   }).join('');
   const sameAsPlan=!u.draft.length;
@@ -164,8 +244,9 @@ function rideChoice(x,next){
   const name=x.esc(nodeOf(x,next.node).name),alt=next.short,soup=live(x).some(t=>t.known&&t.run.loaded&&t.needs.soup&&!t.run.spilled);
   const main=`<button type="button" class="btn primary big dl-way" ${cmdAttr(x,'dl_ride',{way:'main'})}><span>🛣️ Đường chính tới ${name}</span><small>${next.minutes??next.blocks*(x.room.data?.mpu||3)} phút · ${next.blocks} ô${(next.notes||[]).length?' · '+x.esc(next.notes.join(', ')):''}</small></button>`;
   if(!alt)return `<div class="dl-ways">${main}</div>`;
-  const warn=[...(alt.notes||[]),...(soup?['đổ nước lèo trên xe']:[]),'lốp mòn gấp đôi'];
-  return `<div class="dl-ways">${main}<button type="button" class="btn ghost dl-way ${alt.stall||soup?'risky':''}" ${cmdAttr(x,'dl_ride',{way:'short'})}><span>🏍️ Hẻm tắt</span><small>${alt.minutes} phút · ${alt.blocks} ô · ${x.esc(warn.join(', '))}</small></button></div>`;
+  if(alt.brake)return `<div class="dl-ways">${main}<button type="button" class="btn ghost dl-way" disabled><span>🏍️ Hẻm tắt</span><small>🛑 Má phanh mòn — hẻm dốc không an toàn. Thay ở tiệm Chú Bảy.</small></button></div>`;
+  const bumpy=!alt.smooth,warn=[...(alt.notes||[]),...(soup&&bumpy?['đổ nước lèo trên xe']:[]),...(bumpy?['lốp mòn gấp đôi']:[])];
+  return `<div class="dl-ways">${main}<button type="button" class="btn ghost dl-way ${alt.stall||soup&&bumpy?'risky':''} ${alt.smooth?'known':''}" ${cmdAttr(x,'dl_ride',{way:'short'})}><span>🏍️ Hẻm tắt</span><small>${alt.minutes} phút · ${alt.blocks} ô · ${x.esc(warn.join(', '))}</small></button></div>`;
 }
 
 /* ---------- orders at the current stop ---------- */
@@ -223,6 +304,7 @@ function dropCard(t,x){
   if(r.expired)body+=`<p class="notice red">Khách đã hủy đơn vì chờ quá lâu.</p>`;
   const blocked=r.broken_seen||r.expired;
   body+=`<div class="row wrap">${x.cmd(r.called?'✓ Đã gọi khách':'📞 Gọi khách','dl_call',{task:t.id},r.called?'ghost':'',r.called||blocked)}</div>`;
+  if(!blocked)body+=wishes(t,x);
   if(n.cod&&!blocked){
     const coins=u.change[t.id]||[],given=sum(coins);
     body+=`<div class="dl-cash"><p>Khách đưa <b>${n.cash} xu</b> · tiền hàng <b>${n.cod} xu</b></p>
@@ -250,8 +332,8 @@ function hubPanel(x){
 function servicePanel(x){
   const d=x.room.data||{},b=d.bike;if(!b||d.at!=='gas')return '';
   const need=b.tyre<100||b.rim;
-  return `<section class="dl-sec"><h4 class="section-title">🔧 Bảo dưỡng xe</h4><p class="small">Lốp còn <b>${b.tyre}%</b>${b.rim?' · vành móp vì chạy bánh xẹp':''}. Dưới ${b.flat_at}% là dễ xẹp bánh giữa đường.</p>
-    <div class="row wrap">${x.confirmCmd(`🔧 Thay ruột, chỉnh sên · ${b.service} xu`,'dl_service',{},`Bảo dưỡng xe hết ${b.service} xu (mất 6 phút)?`,b.tyre<b.flat_at?'primary':'ghost',!need)}</div></section>`;
+  return `<section class="dl-sec"><h4 class="section-title">🛞 Thay ruột ở cây xăng</h4><p class="small">Lốp còn <b>${b.tyre}%</b>${b.rim?' · vành móp vì chạy bánh xẹp':''}. Dưới ${b.flat_at}% là dễ xẹp bánh giữa đường. Nhớt, sên, má phanh thì ghé tiệm Chú Bảy.</p>
+    <div class="row wrap">${x.confirmCmd(`🛞 Thay ruột, bơm lốp · ${b.service} xu`,'dl_service',{},`Thay ruột lốp hết ${b.service} xu (mất 6 phút)?`,b.tyre<b.flat_at?'primary':'ghost',!need)}</div></section>`;
 }
 function fuelPanel(x){
   const d=x.room.data||{},fuel=Number(d.fuel)||0,gas=d.at==='gas'&&!d.bike?.nogas,step=x.cc.fuel_step||5,price=x.cc.fuel_price||{gas:1,bottle:2};
@@ -273,7 +355,7 @@ function stopPanel(x){
     ${cards||'<p class="muted">Không có đơn cần lấy hay giao ở đây. Lên lộ trình để chạy tiếp.</p>'}
     ${expired.map(t=>`<p class="notice red">${x.esc(t.needs.item)}: khách đã hủy đơn. ${x.confirmCmd('Báo thất bại','dl_fail',{task:t.id},'Báo giao thất bại cho đơn đã bị hủy?','danger small')}</p>`).join('')}
     <div class="row wrap">${x.cmd('⏳ Chờ 5 phút','dl_wait',{},'ghost small')} ${x.button('📦 Kho vật tư','inventory',{},'ghost small')}</div></section>
-    ${d.at==='hub'?hubPanel(x):''}${fuelPanel(x)}${servicePanel(x)}`;
+    ${d.at==='hub'?hubPanel(x):''}${fuelPanel(x)}${servicePanel(x)}${garagePanel(x)}`;
 }
 
 /* ---------- order board & checklist ---------- */
@@ -324,7 +406,8 @@ export default {
     if(x.room.data?.desk?.ev)return `<div class="career-job dl">${status(x)}${deskCard(x)}<p class="dl-hold small muted" role="note">Các việc khác tạm dừng: quyết xong chuyện này rồi chạy tiếp nhé.</p></div>`;
     return `<div class="career-job dl">${status(x)}${roadBoard(x)}${scoreStrip(x)}${deskCard(x)}<div class="workbench"><section class="wb-main">
       ${stopPanel(x)}
-      <section class="dl-sec"><h4 class="section-title">🗺️ Lộ trình</h4>${map(x)}${planner(x)}</section>
+      <section class="dl-sec"><h4 class="section-title">🗺️ Lộ trình</h4>${map(x)}${areaLine(x)}${planner(x)}</section>
+      ${careSection(x)}
     </section><aside class="wb-side">${board(x,t.id)}${checklist(t,x)}</aside></div></div>`;
   },
   // Between orders: still ride to the hub to hand in COD cash or to refuel.
@@ -332,7 +415,8 @@ export default {
     if(x.room.data?.desk?.ev)return `<div class="career-job dl">${status(x)}${deskCard(x)}<p class="dl-hold small muted" role="note">Các việc khác tạm dừng: quyết xong chuyện này rồi chạy tiếp nhé.</p></div>`;
     return `<div class="career-job dl">${status(x)}${roadBoard(x)}${scoreStrip(x)}${deskCard(x)}<div class="workbench"><section class="wb-main">
       ${stopPanel(x)}
-      <section class="dl-sec"><h4 class="section-title">🗺️ Lộ trình</h4>${map(x)}${planner(x)}</section>
+      <section class="dl-sec"><h4 class="section-title">🗺️ Lộ trình</h4>${map(x)}${areaLine(x)}${planner(x)}</section>
+      ${careSection(x)}
     </section><aside class="wb-side">${board(x,null)}</aside></div></div>`;
   },
   actions:{
@@ -351,6 +435,9 @@ export default {
     async snote(data,el,x){ui(x).settle.push(Number(data.v));x.render();},
     async snoteClear(data,el,x){ui(x).settle=[];x.render();},
     async seen(data,el,x){ui(x).seen=data.key;x.render();},
+    // <details> toggles natively before this runs; just remember the state for the next render.
+    async fold(data,el,x){const u=ui(x);(u.open??={})[data.key]=!!el.closest('details')?.open;},
+    async fix(data,el,x){const u=ui(x),f=u.fix||[];u.fix=f.includes(data.part)?f.filter(p=>p!==data.part):[...f,data.part];x.render();},
   },
   dock:[['inventory','box','Vật tư','Xốp, keo, túi mưa']],
 };
