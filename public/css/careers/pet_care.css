@@ -192,6 +192,37 @@
 .career-job.pc :is(button,summary,.btn):focus-visible{outline:3px solid var(--pc-accent);outline-offset:2px}
 @keyframes pc-pop{from{transform:scale(.97);opacity:.4}to{transform:none;opacity:1}}
 
+/* ---------- care loop: boarders' day cards, regulars, reminders, follow-up calls */
+.career-job.pc .pc-stays{display:grid;gap:10px;margin-bottom:10px}
+.career-job.pc .pc-stays>p{margin:0}
+.career-job.pc .pc-stay{display:grid;gap:8px;padding:10px 12px;border-radius:var(--pc-rs);background:var(--pc-s1);border:1px solid var(--pc-line);border-left:4px solid var(--pc-warn)}
+.career-job.pc .pc-stay.done{border-left-color:var(--pc-good)}
+.career-job.pc .pc-stay-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px}
+.career-job.pc .pc-stay-head small{display:inline;color:var(--pc-muted);font-size:.85em}
+.career-job.pc .pc-vitals{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px 12px}
+.career-job.pc .pc-vital{display:grid;gap:3px;font-size:.9em}
+.career-job.pc .pc-vbar{height:8px;border-radius:99px;background:var(--pc-s2);border:1px solid var(--pc-line);overflow:hidden}
+.career-job.pc .pc-vbar i{display:block;height:100%;background:var(--pc-info);transition:width .3s}
+.career-job.pc .pc-vital.good .pc-vbar i{background:var(--pc-good)}
+.career-job.pc .pc-vital.warn .pc-vbar i{background:var(--pc-warn)}
+.career-job.pc .pc-vital.warn b{color:var(--pc-warn)}
+.career-job.pc .pc-stay .req-row{min-height:40px}
+.career-job.pc .pc-stay-btns,.career-job.pc .pc-doses{gap:6px}
+.career-job.pc .pc-doses>small{flex:1 1 100%;color:var(--pc-muted)}
+.career-job.pc .pc-log{margin:0;padding-left:18px;display:grid;gap:2px;font-size:.88em;line-height:1.4}
+.career-job.pc .pc-regular{border-color:var(--pc-good);padding:6px}
+.career-job.pc .pc-regular .fold-body .row{margin-top:8px}
+.career-job.pc .pc-hearts{color:var(--pc-accent);letter-spacing:1px;white-space:nowrap}
+.career-job.pc .pc-dues,.career-job.pc .pc-book{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.pc .pc-dues li,.career-job.pc .pc-book li{display:flex;align-items:center;gap:8px;min-height:44px;padding:6px 10px;border-radius:var(--pc-rs);background:var(--pc-s2);border:1px solid var(--pc-line)}
+.career-job.pc .pc-dues li>.grow,.career-job.pc .pc-book li>.grow{min-width:0}
+.career-job.pc .pc-dues small,.career-job.pc .pc-book small{display:block;color:var(--pc-muted);font-size:.85em}
+.career-job.pc .pc-dues li>.btn{flex:0 0 auto;white-space:nowrap}
+.career-job.pc .pc-due.warn{border-color:var(--pc-warn)}
+.career-job.pc .pc-due.late{border-color:var(--pc-bad);box-shadow:inset 4px 0 0 var(--pc-bad)}
+.career-job.pc .pc-follow{display:grid;gap:6px}
+.career-job.pc .pc-follow p{margin:0}
+
 /* ---------- phones */
 @media (max-width:720px){
   :where(.career-job.pc) :where(.workbench){grid-template-columns:1fr}

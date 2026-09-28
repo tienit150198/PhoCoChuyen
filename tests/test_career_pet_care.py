@@ -1432,3 +1432,464 @@ class PetCareConsequenceTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class PetCareLoopTests(unittest.TestCase):
+    """Care loop: the regulars' book and trust, boarding days, vaccine/deworming reminders, adoption follow-up."""
+
+    setUp = PetCareConsequenceTests.setUp
+    tearDown = PetCareConsequenceTests.tearDown
+    journey = PetCareConsequenceTests.journey
+    review = PetCareConsequenceTests.review
+    calm = PetCareConsequenceTests.calm
+    groom = PetCareConsequenceTests.groom
+    board = PetCareConsequenceTests.board
+
+    def data(self, j):
+        return j.c['ext']['data']
+
+    def ok(self, j):
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def add(self, j, day, slot, ask=True):
+        """Another visit in the same save (so the book carries over)."""
+        from game.content import make_task
+        t = make_task('pet_care', day, slot, j.c['turn'])
+        j.c['tasks'].append(t)
+        j.c['active_task'] = t['id']
+        P.on_task(j.state, j.c, t)
+        if ask:
+            j.act('ask', task=t['id'])
+        return j.get(t['id'])
+
+    def stay(self, j, pid):
+        return self.data(j)['stay'][pid]
+
+    def close(self, j):
+        j.act('end_day')
+        j.act('start_day')
+
+    def admit_lu(self):
+        j = self.journey('board', 'Lu')
+        t, _, _ = self.board(j)
+        self.assertEqual(t['status'], 'completed')
+        return j, t
+
+    # ------------------------------------------------------------ the book
+    def test_a_good_visit_writes_the_card_and_grows_trust(self):
+        j = self.journey('groom', 'Bơ')
+        t, _, r = self.groom(j)
+        self.assertEqual(t.get('slips') or [], [])
+        key = P._task_key(t)
+        rec = self.data(j)['book'][key]
+        self.assertEqual((rec['name'], rec['visits'], rec['trust'], rec['mood'], rec['nails']), ('Bơ', 1, 1, 'nervous', 'dark'))
+        self.assertTrue(rec['fav'])
+        self.assertIn(P.FAV['Bơ'][1], r['message'])                      # the owner tells what the pet loves
+        self.assertIsNotNone(rec['worm_due'])
+        self.ok(j)
+        # Bơ comes back to board: the card is there and the ticket knows it is a regular.
+        nxt = self.add(j, *find('board', 'Bơ'))
+        self.assertEqual(nxt['regular'], 1)
+        pub = public_state(j.state)['careers']['pet_care']['data']['book'][key]
+        self.assertEqual((pub['trust_name'], pub['fav_text']), (P.TRUST_NAMES[1], P.FAV['Bơ'][1]))
+
+    def test_a_regular_starts_calmer_on_the_table(self):
+        j = self.journey('groom', 'Bơ')
+        key = P._task_key(j.task)
+        self.groom(j)
+        self.data(j)['book'][key]['trust'] = 3
+        day, slot = next((d, s) for d in range(2, 40) for s in range(12)
+                         if (lambda x: x['job'] == 'groom' and x['needs']['name'] == 'Bơ' and x['_x']['case'] is None)(P.make_task(d, s, 1)))
+        fresh = P.make_task(day, slot, 1)['g']['stress']
+        t = self.add(j, day, slot)
+        self.assertEqual(t['regular'], 3)
+        self.assertEqual(t['g']['stress'], max(0, fresh - 3 * P.TRUST_CALM))
+        self.assertIn('Khách quen', P.hint(j.c, t))
+
+    def lu_again(self):
+        """Lu boards, then comes back for a bath: a regular with trust 1."""
+        j, t = self.admit_lu()
+        with self.assertRaises(GameError):
+            j.act('pc_greet', task=t['id'])                             # nothing to greet on a finished first visit
+        t = self.add(j, *find('groom', 'Lu', days=range(t['day'] + 1, 60)))
+        self.assertEqual(t['regular'], 1)
+        return j, t
+
+    def test_greeting_a_regular_by_name(self):
+        j = self.journey('groom', 'Bơ')
+        with self.assertRaises(GameError):
+            j.act('pc_greet')                                           # first visit: nothing to remember yet
+        j, t = self.lu_again()
+        j.get(t['id'])['patience'] = 80
+        turn = j.c['turn']
+        r = j.act('pc_greet')
+        self.assertIn('Lu ơi', r['message'])
+        t = j.get(t['id'])
+        self.assertTrue(t['greeted'])
+        self.assertEqual(t['patience'], 80 + P.GREET_PATIENCE)
+        self.assertEqual(j.c['turn'], turn)                             # a greeting takes no time
+        with self.assertRaises(GameError):
+            j.act('pc_greet')
+        tg, _, _ = self.groom(j)
+        crit = next(x for x in self.review(j, tg['id'])['feedback']['criteria'] if x['key'] == 'regular')
+        self.assertEqual(crit['score'], 5)
+        self.assertEqual(self.data(j)['book'][P._task_key(tg)]['visits'], 2)
+        self.ok(j)
+
+    def test_a_regular_not_greeted_is_only_a_small_miss(self):
+        j, t = self.lu_again()
+        tg, _, _ = self.groom(j)
+        crit = next(x for x in self.review(j, tg['id'])['feedback']['criteria'] if x['key'] == 'regular')
+        self.assertEqual(crit['score'], 4)
+
+    def test_favourite_comfort_unlocks_with_trust(self):
+        j = self.journey('groom', 'Bơ')
+        key = P._task_key(j.task)
+        self.groom(j)
+        day, slot = find('groom', 'Bơ', days=range(2, 40))
+        self.data(j)['book'][key]['trust'] = 1
+        t = self.add(j, day, slot)
+        with self.assertRaises(GameError):
+            j.act('pc_calm', how='fav')                                 # “quen mặt” is not enough yet
+        j.c['tasks'] = [x for x in j.c['tasks'] if x['id'] != t['id']]
+        self.data(j)['book'][key]['trust'] = 2
+        t = self.add(j, day, slot)
+        before = t['g']['stress']
+        treats = kit.stock(j.c, 'treat')
+        r = j.act('pc_calm', how='fav')
+        self.assertIn(P.FAV['Bơ'][1], r['message'])
+        self.assertEqual(j.task['g']['stress'], max(0, before - P.FAV_DROP))
+        self.assertEqual(kit.stock(j.c, 'treat'), treats)             # a toy costs no treat
+        self.ok(j)
+
+    def test_a_treat_favourite_uses_a_treat(self):
+        j = self.journey('groom', 'Bông')
+        key = P._task_key(j.task)
+        self.groom(j)
+        self.data(j)['book'][key]['trust'] = 2
+        self.add(j, *find('groom', 'Bông', days=range(2, 40)))
+        treats = kit.stock(j.c, 'treat')
+        j.act('pc_calm', how='fav')
+        self.assertEqual(kit.stock(j.c, 'treat'), treats - 1)
+        self.assertEqual(j.task['g']['treats'], 1)
+
+    def test_a_safety_slip_costs_trust(self):
+        j = self.journey('groom', 'Bơ')
+        key = P._task_key(j.task)
+        self.groom(j)
+        self.data(j)['book'][key]['trust'] = 2
+        self.add(j, *find('groom', 'Bơ', days=range(2, 40)))
+        t, _, _ = self.groom(j, scald=True)
+        self.assertTrue(any(s['safety'] for s in t['slips']))
+        self.assertEqual(self.data(j)['book'][key]['trust'], 1)
+
+    # ------------------------------------------------------------ boarding days
+    def test_admission_opens_a_stay_card_with_chores(self):
+        j, t = self.admit_lu()
+        st = self.stay(j, 'd3')
+        self.assertTrue(st['own'])
+        self.assertEqual(st['warn'], P._roll(st['key'], j.c['day'], True, 0))
+        pub = public_state(j.state)['careers']['pet_care']['data']['stay']['d3']
+        self.assertEqual(pub['rx']['name'], P.STAY_MEDS['Lu']['name'])
+        self.assertNotIn('dose', json.dumps(pub))                       # the right dose stays on the server
+        self.assertEqual((pub['need'], pub['meals']), (2, 1))           # breakfast was eaten at home
+        self.assertGreaterEqual(pub['todo'], 3)                         # the evening meal, a walk, the pill
+        self.ok(j)
+
+    def full_day(self, j, pid, dose=None):
+        st = self.stay(j, pid)
+        v = self.data(j)['pens'][pid]
+        j.act('pc_stay', pen=pid, do='play')
+        for _ in range(v['meals'] - st['meals']):
+            j.act('pc_stay', pen=pid, do='feed')
+        if not st['chore']:
+            j.act('pc_stay', pen=pid, do='walk' if v['species'] == 'dog' else 'litter')
+        if P.STAY_MEDS.get(v['pet']):
+            j.act('pc_stay', pen=pid, do='med', dose=dose or P.STAY_MEDS[v['pet']]['dose'])
+        if st['warn'] == 'upset':
+            j.act('pc_stay', pen=pid, do='call')
+        return self.stay(j, pid)
+
+    def test_a_full_day_of_care_lifts_mood_and_health(self):
+        j, t = self.admit_lu()
+        st = self.stay(j, 'd3')
+        mood, health = st['mood'], st['health']
+        bags = kit.stock(j.c, 'poop_bag')
+        self.full_day(j, 'd3')
+        self.assertEqual(kit.stock(j.c, 'poop_bag'), bags - 1)
+        self.assertEqual(P._stay_todo(self.data(j)['pens']['d3'], self.stay(j, 'd3')), 0)
+        with self.assertRaises(GameError):
+            j.act('pc_stay', pen='d3', do='feed')                      # the card's meals are done
+        j.act('end_day')
+        st = self.stay(j, 'd3')
+        self.assertEqual((st['mood'], st['health']), (min(100, mood + 25), min(100, health + 10)))
+        self.assertEqual((st['nights'], st['good'], st['meals'], st['chore']), (1, 1, 0, False))
+        self.assertTrue(st['log'][-1].startswith(f'Ngày {j.c["day"] - 1}: chăm đủ'))
+        self.assertTrue(any(line.startswith('Khu lưu trú:') for line in j.c['shift_summary']['career']['lines']))
+        self.ok(j)
+
+    def test_a_missed_day_is_recoverable(self):
+        j, t = self.admit_lu()
+        st = self.stay(j, 'd3')
+        st.update(warn=None, meals=0)
+        j.act('end_day')                                                # nothing done: every chore missed
+        st = self.stay(j, 'd3')
+        self.assertGreaterEqual(st['mood'], P.MOOD_FLOOR)
+        self.assertGreaterEqual(st['health'], P.HEALTH_FLOOR)
+        low = (st['mood'], st['health'])
+        self.assertLess(low[0], 60)
+        self.assertIn('thiếu 2 bữa', st['log'][-1])
+        j.act('start_day')
+        st['warn'] = None
+        self.full_day(j, 'd3')
+        j.act('end_day')
+        st = self.stay(j, 'd3')
+        self.assertGreaterEqual(st['mood'], low[0] + 25)
+        self.assertGreaterEqual(st['health'], low[1] + 10)
+
+    def test_issues_of_the_day_need_the_right_care(self):
+        j, t = self.admit_lu()
+        st = self.stay(j, 'd3')
+        st['warn'] = 'upset'
+        base = st['health']
+        self.assertTrue(self.full_day(j, 'd3')['told'])                 # calls the owner
+        j.act('end_day')
+        self.assertEqual(self.stay(j, 'd3')['health'], min(100, base + 10))
+        j.act('start_day')
+        st = self.stay(j, 'd3')
+        st.update(warn='upset', health=80)
+        for _ in range(2 - st['meals']):
+            j.act('pc_stay', pen='d3', do='feed')
+        j.act('pc_stay', pen='d3', do='walk')
+        j.act('pc_stay', pen='d3', do='med', dose='half')
+        j.act('end_day')                                                # no call: loose stool untold
+        self.assertEqual(self.stay(j, 'd3')['health'], 70)
+        # Homesick: food alone does not help, a cuddle does.
+        st = self.stay(j, 'd3')
+        st['warn'] = 'appetite'
+        self.assertFalse(P._warn_ok(st))
+        st['played'] = True
+        self.assertTrue(P._warn_ok(st))
+
+    def test_medicine_on_a_stay_follows_the_label(self):
+        j, t = self.admit_lu()
+        self.stay(j, 'd3')['meals'] = 0
+        with self.assertRaises(GameError):
+            j.act('pc_stay', pen='d3', do='med', dose='half')           # with a meal
+        j.act('pc_stay', pen='d3', do='feed')
+        with self.assertRaises(GameError):
+            j.act('pc_stay', pen='d3', do='med', dose='lots')
+        r = j.act('pc_stay', pen='d3', do='med', dose='two')
+        self.assertIn('vượt liều', r['message'])
+        self.stay(j, 'd3')['warn'] = None
+        j.act('pc_stay', pen='d3', do='feed')
+        j.act('pc_stay', pen='d3', do='walk')
+        health = self.stay(j, 'd3')['health']
+        j.act('end_day')
+        self.assertEqual(self.stay(j, 'd3')['health'], health - 15)
+        self.assertEqual(self.stay(j, 'd3')['good'], 0)
+
+    def test_stay_actions_are_checked(self):
+        j, t = self.admit_lu()
+        for payload in (dict(pen='zz', do='feed'), dict(pen='d1', do='feed'), dict(pen='d3', do='dance'),
+                        dict(pen='d3', do='litter'), dict(pen='c1', do='walk'), dict(pen='c1', do='med', dose='one')):
+            with self.assertRaises(GameError, msg=payload):
+                j.act('pc_stay', **payload)
+        j.act('pc_stay', pen='d3', do='play')
+        with self.assertRaises(GameError):
+            j.act('pc_stay', pen='d3', do='play')
+        j.act('pc_stay', pen='d3', do='call')
+        with self.assertRaises(GameError):
+            j.act('pc_stay', pen='d3', do='call')
+
+    def test_house_food_comes_from_stock(self):
+        j = Journey('pet_care')
+        food = kit.stock(j.c, 'cat_food')
+        j.act('pc_stay', pen='c1', do='feed')                           # Mun eats the shop's cat food
+        self.assertEqual(kit.stock(j.c, 'cat_food'), food - 1)
+        self.assertEqual(self.stay(j, 'c1')['meals'], 1)
+
+    def test_pickup_brings_a_review_for_pets_you_admitted(self):
+        j, t = self.admit_lu()
+        st = self.stay(j, 'd3')
+        st.update(mood=90, health=95)
+        key = st['key']
+        trust = self.data(j)['book'][key]['trust']
+        self.data(j)['pens']['d3']['until'] = j.c['day'] + 1
+        self.data(j)['stay']['d3']['warn'] = None
+        self.full_day(j, 'd3')
+        feed = len(j.c['feed'])
+        self.close(j)
+        self.assertIsNone(self.data(j)['pens']['d3'])
+        self.assertNotIn('d3', self.data(j)['stay'])
+        post = next(p for p in j.c['feed'] if p['source'].startswith('stay-'))
+        self.assertEqual((post['stars'], post['npc']), (5, t['npc']))
+        self.assertGreater(len(j.c['feed']), feed)
+        self.assertEqual(self.data(j)['book'][key]['trust'], min(P.TRUST_MAX, trust + 1))
+        self.ok(j)
+
+    def test_preloaded_boarders_leave_without_a_review(self):
+        j = Journey('pet_care')
+        self.assertEqual(set(self.data(j)['stay']), {'d3', 'c1'})
+        self.assertFalse(self.stay(j, 'd3')['own'])
+        j.act('end_day')
+        j.act('start_day')                                              # Ki goes home on day 2
+        self.assertNotIn('d3', self.data(j)['stay'])
+        self.assertFalse(any(p['source'].startswith('stay-') for p in j.c['feed']))
+        self.assertTrue(any('Sáng nay chủ đã đón: Ki' in r['text'] for r in j.c['journal']))
+
+    def test_feeding_round_ticks_the_same_stay_card(self):
+        j = PetCareTests.journey(self, 'feed', 'Ki')
+        j.act('pc_inspect', part='bowl')
+        j.act('pc_feed', food='own', grams=240)
+        j.act('pc_walk')
+        st = self.stay(j, 'd3')
+        self.assertEqual((st['meals'], st['chore']), (1, True))
+        with self.assertRaises(GameError):
+            j.act('pc_stay', pen='d3', do='walk')                      # already walked on the round
+
+    def test_kennel_staff_take_a_pending_chore(self):
+        j = Journey('pet_care')
+        msg = P.assist(j.state, j.c, dict(role='kennel'), None)
+        self.assertIn('Ki', msg)
+        self.assertTrue(self.stay(j, 'd3')['chore'])
+        msg = P.assist(j.state, j.c, dict(role='kennel'), None)
+        self.assertIn('Mun', msg)
+        self.assertTrue(self.stay(j, 'c1')['chore'])
+
+    # ------------------------------------------------------------ reminders
+    def test_vaccine_and_deworming_reminders(self):
+        j, t = self.admit_lu()
+        key = P._task_key(t)
+        rec = self.data(j)['book'][key]
+        self.assertIsNotNone(rec['vax_due'])
+        self.assertGreater(rec['vax_due'], j.c['day'] + P.REMIND_EARLY)
+        with self.assertRaises(GameError):
+            j.act('pc_remind', pet=key, kind='vax')                    # too early
+        with self.assertRaises(GameError):
+            j.act('pc_remind', pet='9:Nobody', kind='vax')
+        with self.assertRaises(GameError):
+            j.act('pc_remind', pet=key, kind='flu')
+        rec['vax_due'] = j.c['day'] + 1
+        due = public_state(j.state)['careers']['pet_care']['data']['due']
+        self.assertTrue(any(x['pet'] == key and x['kind'] == 'vax' for x in due))
+        trust, xp = rec['trust'], j.c['xp']
+        j.act('pc_remind', pet=key, kind='vax')
+        rec = self.data(j)['book'][key]
+        self.assertEqual(rec['trust'], min(P.REMIND_TRUST, trust + 1))
+        self.assertEqual(j.c['xp'], xp + 3)
+        self.assertEqual(rec['vax_due'], j.c['day'] + P.VAX_CYCLE)
+        self.assertTrue(P.WORM_FIRST[0] <= rec['worm_due'] - rec['first'] <= P.WORM_FIRST[1])
+        rec.update(worm_due=j.c['day'], trust=P.REMIND_TRUST)          # reminders alone never push past “thân thiết”
+        j.act('pc_remind', pet=key, kind='worm')
+        rec = self.data(j)['book'][key]
+        self.assertEqual(rec['trust'], P.REMIND_TRUST)
+        rec.update(worm_due=j.c['day'] - 5, trust=1)                    # very late: still sent, no trust
+        trust = rec['trust']
+        r = j.act('pc_remind', pet=key, kind='worm')
+        rec = self.data(j)['book'][key]
+        self.assertIn('trễ 5 ngày', r['message'])
+        self.assertEqual(rec['trust'], trust)
+        self.assertEqual(rec['worm_due'], j.c['day'] + P.WORM_CYCLE)
+        self.ok(j)
+
+    def test_expired_book_is_due_now(self):
+        j = self.journey('board', 'Bơ')                                  # book expired: refused
+        j.act('pc_inspect', part='vaccine')
+        j.act('pc_refuse', reason='vaccine', confirm=True)
+        rec = self.data(j)['book'][P._task_key(j.get(j.c['tasks'][-1]['id']))]
+        self.assertEqual(rec['vax_due'], j.c['day'])
+        self.assertEqual(rec['trust'], 0)
+
+    # ------------------------------------------------------------ adoption follow-up
+    def test_adoption_follow_up_call(self):
+        j = PetCareV2Tests.at(self, *find('adopt', 'Gia đình anh Tín', case='adopt'))
+        for part in P.JOB_PARTS['adopt']:
+            j.act('pc_inspect', part=part)
+        j.act('pc_match', pet='may', confirm=True)
+        f = self.data(j)['follow'][0]
+        self.assertEqual((f['pet'], f['state'], f['due']), ('may', 'open', j.c['day'] + P.FOLLOW_AFTER))
+        pub = public_state(j.state)['careers']['pet_care']['data']['follow'][0]
+        self.assertFalse(pub['ready'])
+        self.assertNotIn('good', json.dumps(pub))                       # which answer is right stays on the server
+        good = next(o['id'] for o in P.FOLLOW['may']['options'] if o['good'])
+        with self.assertRaises(GameError):
+            j.act('pc_follow', id=f['id'], option=good)                # too soon
+        j.c['day'] = f['due']
+        with self.assertRaises(GameError):
+            j.act('pc_follow', id=f['id'], option='maybe')
+        xp = j.c['xp']
+        r = j.act('pc_follow', id=f['id'], option=good)
+        f = self.data(j)['follow'][0]
+        self.assertTrue(r['celebrate'])
+        self.assertEqual((f['state'], f['pick']), ('done', good))
+        self.assertEqual(j.c['xp'], xp + 8)
+        self.assertEqual(next(p for p in j.c['feed'] if p['source'] == 'follow-' + f['id'])['stars'], 5)
+        with self.assertRaises(GameError):
+            j.act('pc_follow', id=f['id'], option=good)
+        self.ok(j)
+
+    def test_a_missed_follow_up_lapses_quietly(self):
+        j = PetCareV2Tests.at(self, *find('adopt', 'Gia đình anh Tín', case='adopt'))
+        for part in P.JOB_PARTS['adopt']:
+            j.act('pc_inspect', part=part)
+        j.act('pc_match', pet='may', confirm=True)
+        f = self.data(j)['follow'][0]
+        j.c['day'] = f['due'] + P.FOLLOW_KEEP + 1
+        money, feed = j.c['money'], len(j.c['feed'])
+        P.on_start(j.state, j.c)
+        self.assertEqual(self.data(j)['follow'][0]['state'], 'lapsed')
+        self.assertEqual((j.c['money'], len(j.c['feed'])), (money, feed))
+        self.ok(j)
+
+    def test_a_mismatch_brings_no_follow_up(self):
+        j = PetCareV2Tests.at(self, *find('adopt', 'Gia đình anh Tín', case='adopt'))
+        j.act('pc_inspect', part='home')
+        j.act('pc_match', pet='dom', confirm=True)
+        self.assertEqual(self.data(j)['follow'], [])
+
+    # ------------------------------------------------------------ saves
+    def test_old_save_gains_the_care_loop(self):
+        j = self.journey('groom', 'Bơ')
+        s = copy.deepcopy(j.state)
+        d = s['careers']['pet_care']['ext']['data']
+        for k in ('book', 'stay', 'follow', *P.DATA_V3):
+            d.pop(k)
+        t = next(x for x in s['careers']['pet_care']['tasks'] if x['id'] == j.task['id'])
+        t.pop('regular')
+        validate_state(s)
+        self.assertEqual(set(d['stay']), {pid for pid, v in d['pens'].items() if v})
+        self.assertEqual((d['book'], d['follow'], d['reminders']), ({}, [], 0))
+        j.state = s
+        self.groom(j)                                                   # old ticket still finishes
+        self.ok(j)
+
+    def test_tampered_care_data_is_rejected(self):
+        j, t = self.admit_lu()
+        key = P._task_key(t)
+        bad = [lambda d: d['book'][key].update(trust=9), lambda d: d['book'][key].update(fav='yes'),
+               lambda d: d['book'].update({'1:Ghost': dict(d['book'][key])}), lambda d: d['book'][key].update(told=['zombie']),
+               lambda d: d['stay']['d3'].update(mood=500), lambda d: d['stay']['d3'].update(med='ten'),
+               lambda d: d['stay']['d3'].update(extra=1), lambda d: d['stay']['d3'].update(good=99),
+               lambda d: d['follow'].append(dict(id='fu-1', pet='rex', family='x', npc=1, day=1, due=3, state='open', pick=None)),
+               lambda d: d.update(reminders=-1)]
+        for fn in bad:
+            s = copy.deepcopy(j.state)
+            fn(s['careers']['pet_care']['ext']['data'])
+            with self.assertRaises(GameError):
+                validate_state(json.loads(json.dumps(s)))
+        s = copy.deepcopy(j.state)
+        next(x for x in s['careers']['pet_care']['tasks'] if x['id'] == t['id'])['regular'] = 7
+        with self.assertRaises(GameError):
+            validate_state(s)
+
+    def test_stay_rolls_are_deterministic(self):
+        self.assertEqual([P._roll('3:Lu', d, False, 0) for d in range(1, 30)], [P._roll('3:Lu', d, False, 0) for d in range(1, 30)])
+        self.assertIsNone(P._roll('3:Lu', 1, True, P.FAV_AT))          # a pet that knows the shop is not homesick
+        self.assertTrue(any(P._roll(f'3:x{i}', 1, True, 0) == 'appetite' for i in range(10)))
+
+    def test_new_text_never_assumes_the_groomers_gender(self):
+        texts = json.dumps([P.FAV, P.STAY_MEDS, P.WARNS, P.FOLLOW, P.TRUST_NAMES, P.RULES], ensure_ascii=False)
+        for bad in ('Chị chủ', 'chị chủ', 'anh chủ', 'cô chủ', 'rồi anh', 'nha anh', 'anh tin em'):
+            self.assertNotIn(bad, texts)
+        self.assertFalse(re.search(r'trong game|của game|người chơi|NPC|mô phỏng|giả lập', texts))

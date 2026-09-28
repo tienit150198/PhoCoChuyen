@@ -1,5 +1,7 @@
 /** Pet Care Mèo Mập — intake form, grooming table (body language, escapes, live rinse/dry bars), kennel, feeding
- *  station with medicine by the label, adoption interviews, and the surprises that walk in at the counter. */
+ *  station with medicine by the label, adoption interviews, and the surprises that walk in at the counter.
+ *  Care loop: regulars' cards and trust, a daily care card per boarder, vaccine/deworming reminders, adoption follow-ups. */
+import {reqList,fold} from '../ui-kit.js';
 const JOB_ICON={groom:'🛁',board:'🏠',feed:'🥣',adopt:'🏡'};
 const SPECIES_EMOJI={dog:'🐶',cat:'🐱'};
 const MOOD={calm:'hiền',nervous:'nhát, dễ run',bitey:'hay cắn/cào',dog_aggressive:'ghét chó khác'};
@@ -89,10 +91,86 @@ function foot(x){
   return `<p class="row wrap pc-foot">${x.cmd(d.sanitized_today?'✅ Đã khử khuẩn chuồng hôm nay':'🧽 Khử khuẩn chuồng & bàn tắm','pc_sanitize',{},'ghost small',!!d.sanitized_today||busy)}${x.button('📦 Kho & nhập hàng','inventory',{},'ghost small')}</p>`;
 }
 function rules(x){return `<details class="pc-rules"><summary>📋 Nội quy tiệm</summary><ul>${(x.cc.rules||[]).map(r=>`<li>${x.esc(r)}</li>`).join('')}</ul></details>`;}
-function kennelBox(x){
-  const pens=x.room.data?.pens||{},busy=Object.values(pens).filter(Boolean).length,open=x.cc.pens.filter(p=>p.unlock<=(x.room.data?.level||1)).length;
-  return `<details class="pc-card pc-kennel-box"><summary><b>🏠 Khu lưu trú</b> <small>${busy}/${open} chuồng có bé</small></summary>${kennel(x)}</details>`;
+function kennelBox(x,open=false){
+  const d=x.room.data||{},pens=d.pens||{},busy=Object.values(pens).filter(Boolean).length,free=x.cc.pens.filter(p=>p.unlock<=(d.level||1)).length;
+  const todo=Object.values(d.stay||{}).reduce((a,s)=>a+(s.todo||0),0);
+  const left=todo?`<span class="tag amber">${todo} việc chăm còn lại</span>`:busy?'<span class="tag green">đã chăm đủ hôm nay</span>':'';
+  return `<details class="pc-card pc-kennel-box"${open&&todo?' open':''}><summary><b>🏠 Khu lưu trú</b> <small>${busy}/${free} chuồng có bé</small> ${left}</summary>${stayCards(x)}${kennel(x)}</details>`;
 }
+
+/* ---------------------------------------------------------------- care loop: one card per boarder, today's chores */
+const petKey=t=>`${parseInt(String(t.npc).split('_').pop(),10)-1}:${t.needs?.name}`;
+const bookOf=(t,x)=>x.room.data?.book?.[petKey(t)]||null;
+const hearts=n=>'★'.repeat(n)+'☆'.repeat(Math.max(0,5-n));
+function vital(label,word,v){
+  const tone=v>=75?'good':v>=55?'':'warn';
+  return `<div class="pc-vital ${tone}"><span>${label} <b>${word}</b></span><div class="pc-vbar" aria-hidden="true"><i style="width:${Math.max(0,Math.min(100,v))}%"></i></div></div>`;
+}
+function stayCard(x,pid,st){
+  const v=x.room.data.pens[pid],p=pen(x,pid),dog=v.species==='dog',busy=deskOpen(x);
+  const rows=[{ok:st.meals>=st.need?true:null,icon:'🥣',label:'Bữa ăn theo thẻ',value:`${st.meals}/${st.need}`,note:`${v.grams} g/bữa · ${v.food==='own'?'đồ chủ gửi':'hạt của tiệm'}`},
+    {ok:st.chore?true:null,icon:dog?'🦮':'🧹',label:dog?'Dắt đi dạo':'Dọn khay cát'}];
+  if(st.rx)rows.push({ok:st.med?true:null,icon:'💊',label:st.rx.name,note:'Nhãn: '+st.rx.label});
+  if(st.warn_info)rows.push({ok:st.warn_ok?true:null,icon:st.warn_info.emoji,label:st.warn_info.label,note:st.warn_info.fix,tone:st.warn_ok?'':'warn'});
+  rows.push({ok:st.played?true:null,icon:'🧸',label:'Chơi, vỗ về',note:st.fav_text?`bé mê ${st.fav_text}`:'không bắt buộc, bé vui hơn'});
+  const food=v.food==='house'?x.stock(x.cc.house_food[v.species]):null;
+  const btns=[x.cmd(`🥣 Cho ăn${food!==null?` <small>(kho ${food})</small>`:''}`,'pc_stay',{pen:pid,do:'feed'},st.meals<st.need&&!(st.warn==='appetite'&&!st.played)?'primary small':'ghost small',busy||st.meals>=st.need||food===0),
+    dog?x.cmd(`🦮 Dắt đi dạo <small>(túi ${x.stock('poop_bag')})</small>`,'pc_stay',{pen:pid,do:'walk'},'ghost small',busy||st.chore||!x.stock('poop_bag'))
+      :x.cmd('🧹 Dọn khay cát','pc_stay',{pen:pid,do:'litter'},'ghost small',busy||st.chore),
+    x.cmd('🧸 Chơi, vỗ về','pc_stay',{pen:pid,do:'play'},st.warn&&!st.warn_ok&&st.warn!=='upset'?'primary small':'ghost small',busy||st.played),
+    x.cmd('📞 Gọi báo chủ','pc_stay',{pen:pid,do:'call'},st.warn==='upset'&&!st.called?'primary small':'ghost small',busy||st.called)].join('');
+  const med=st.rx&&!st.med?`<div class="row wrap pc-doses"><small>💊 Liều theo nhãn:</small>${(x.cc.doses||[]).map(d=>x.confirmCmd(x.esc(d.name),'pc_stay',{pen:pid,do:'med',dose:d.id},`Cho bé ${v.pet} uống ${d.name.toLowerCase()}? Nhãn: “${st.rx.label}”`,'ghost small',busy||!st.meals)).join('')}</div>${st.meals?'':'<p class="small muted">Cho ăn trước — thuốc uống cùng bữa.</p>'}`:'';
+  const log=(st.log||[]).length?fold('📓 Nhật ký chăm sóc',`<ul class="pc-log">${st.log.map(l=>`<li>${x.esc(l)}</li>`).join('')}</ul>`):'';
+  return `<article class="pc-stay ${st.todo?'':'done'}"><div class="pc-stay-head"><b>${SPECIES_EMOJI[v.species]} ${x.esc(v.pet)}</b><small>${x.esc(p.name)} · ${x.esc(v.owner)} đón ngày ${v.until}</small></div>
+    <div class="pc-vitals">${vital('😊 Tinh thần',x.esc(st.mood_word),st.mood)}${vital('💚 Sức khỏe',x.esc(st.health_word),st.health)}</div>
+    ${reqList(rows,x.esc,'Việc chăm bé '+v.pet+' hôm nay')}<div class="row wrap pc-stay-btns">${btns}</div>${med}${log}</article>`;
+}
+function stayCards(x){
+  const st=x.room.data?.stay||{},ids=x.cc.pens.map(p=>p.id).filter(id=>st[id]&&x.room.data.pens?.[id]);
+  if(!ids.length)return '';
+  return `<div class="pc-stays"><p class="small muted">Mỗi ngày: đủ bữa theo thẻ chuồng, đi dạo hoặc dọn khay cát, thuốc đúng nhãn. Tối khép ca, tinh thần và sức khỏe của bé đổi theo.</p>${ids.map(id=>stayCard(x,id,st[id])).join('')}</div>`;
+}
+
+/* ---------------------------------------------------------------- care loop: regulars, reminders, follow-up calls */
+function regularCard(t,x){
+  const r=bookOf(t,x);if(!r||t.regular==null)return '';
+  const rows=[['Tin tiệm',`<span class="pc-hearts" aria-label="${r.trust}/5">${hearts(r.trust)}</span> ${x.esc(r.trust_name)}`],['Đã ghé',`${r.visits} lần · lần trước ngày ${r.last}`]];
+  rows.push(['Tính khí',r.mood?`<b>${x.esc(MOOD[r.mood]||r.mood)}</b>`:'<span class="muted">chưa ghi</span>']);
+  if(r.allergy)rows.push(['Dị ứng',`<span class="tag danger">${x.esc(x.cc.allergy_names[r.allergy]||r.allergy)}</span>`]);
+  if(r.nails)rows.push(['Móng',r.nails==='dark'?'<span class="tag amber">Móng đen — chỉ tỉa đầu móng</span>':'Móng trắng, thấy tủy']);
+  if(r.kg)rows.push(['Cân lần trước',`${r.kg} kg`]);
+  if((r.told||[]).length)rows.push(['Lần trước đã báo',x.esc(r.told.map(s=>x.cc.signs[s]?.label||s).join(', '))]);
+  const favOn=r.fav_text&&t.regular>=(x.cc.fav_at||2);
+  rows.push(['Món bé mê',r.fav_text?`${x.esc(r.fav_text)} ${favOn?'<span class="tag green">dùng khi dỗ bé</span>':`<span class="tag">mở khi bé “${x.esc((x.cc.trust_names||[])[x.cc.fav_at||2]||'')}”</span>`}`:'<span class="muted">chủ chưa kể</span>']);
+  const due=[r.vax_due!=null?`💉 tiêm nhắc ngày ${r.vax_due}`:'',r.worm_due!=null?`🪱 tẩy giun ngày ${r.worm_due}`:''].filter(Boolean).join(' · ');
+  if(due)rows.push(['Lịch hẹn',due]);
+  const open=!['completed','referred','cancelled'].includes(t.status);
+  const greet=open&&!t.greeted?`<div class="row wrap">${x.cmd('👋 Gọi tên bé, hỏi thăm lần trước','pc_greet',{task:t.id},'ghost small',deskOpen(x))}</div>`:t.greeted?'<p class="small muted">✓ Đã chào bé và hỏi thăm chủ.</p>':'';
+  const body=`<div class="pc-form">${rows.map(([k,v])=>`<div class="pc-row"><span>${k}</span><b>${v}</b></div>`).join('')}</div>${greet}`;
+  return `<section class="pc-card pc-regular">${fold(`⭐ Khách quen · ${x.esc(r.trust_name)} · ${r.visits} lần ghé`,body,!t.greeted&&open)}</section>`;
+}
+function dueList(x){
+  const due=x.room.data?.due||[],busy=deskOpen(x),late=x.cc.remind_late||2;
+  if(!due.length)return '';
+  const row=r=>`<li class="pc-due ${r.late>late?'late':r.late?'warn':''}"><span aria-hidden="true">${r.kind==='vax'?'💉':'🪱'}</span><div class="grow"><b>${x.esc(r.name)}</b> <small>${x.esc(r.owner)} · ${r.kind==='vax'?'tiêm nhắc':'tẩy giun'} ${r.late?`trễ ${r.late} ngày`:`ngày ${r.due}`}</small></div>${x.cmd('📱 Nhắn chủ','pc_remind',{pet:r.pet,kind:r.kind},'ghost small',busy)}</li>`;
+  const more=due.length>4?fold(`Xem thêm ${due.length-4} lịch nhắc`,`<ul class="pc-dues">${due.slice(4).map(row).join('')}</ul>`):'';
+  return section('📅 Nhắc lịch tiêm & tẩy giun',`<ul class="pc-dues">${due.slice(0,4).map(row).join('')}</ul>${more}<p class="small muted">Nhắc đúng hạn (trễ tối đa ${late} ngày) chủ thêm tin tiệm. Khi bé ghé vẫn phải xem sổ tiêm thật.</p>`);
+}
+function followCards(x){
+  const calls=x.room.data?.follow||[],busy=deskOpen(x);
+  if(!calls.length)return '';
+  return section('📞 Hỏi thăm bé đã nhận nuôi',calls.map(f=>f.ready?`<div class="pc-follow"><p><b>${x.esc(f.emoji)} ${x.esc(f.name)} · ${x.esc(f.family)}</b></p><p class="bubble npc small">“${x.esc(f.q)}”</p>
+    <div class="pc-opts">${f.options.map(o=>`<button type="button" class="btn ghost pc-opt" ${cmdAttr(x,'pc_follow',{id:f.id,option:o.id})} ${busy?'disabled':''}><b>${x.esc(o.label)}</b></button>`).join('')}</div></div>`
+    :`<p class="small">${x.esc(f.emoji)} Ngày ${f.due}: gọi hỏi thăm bé <b>${x.esc(f.name)}</b> ở nhà ${x.esc(f.family)}.</p>`).join(''));
+}
+function bookFold(x){
+  const book=Object.values(x.room.data?.book||{}).sort((a,b)=>b.last-a.last||b.trust-a.trust);
+  if(!book.length)return '';
+  const rows=book.slice(0,24).map(r=>`<li><span aria-hidden="true">${SPECIES_EMOJI[r.species]}</span><div class="grow"><b>${x.esc(r.name)}</b> <small>${x.esc(r.breed)} · ${x.esc(r.owner)} · ngày ${r.last}</small></div><span class="pc-hearts" title="${x.esc(r.trust_name)}" aria-label="${x.esc(r.trust_name)}">${hearts(r.trust)}</span></li>`).join('');
+  return `<section class="pc-card">${fold(`📒 Sổ khách quen · ${book.length} bé`,`<ul class="pc-book">${rows}</ul>`)}</section>`;
+}
+function careBoard(x){return followCards(x)+dueList(x);}
+function careCount(x){const d=x.room.data||{};return (d.due||[]).length+(d.follow||[]).filter(f=>f.ready).length;}
 
 /* ---------------------------------------------------------------- intake form + inspection */
 function partTiles(t,x,warnOf){
@@ -155,7 +233,8 @@ function calmTools(t,x){
   if(!cat&&knownBitey)muzzle=g.muzzle?'<span class="tag blue">🧢 Đang đeo rọ mõm mềm</span>':g.consent?x.cmd('🧢 Đeo rọ mõm mềm','pc_muzzle',{task:t.id},'ghost small',off):x.cmd('🙋 Hỏi chủ đồng ý rọ mõm','pc_consent',{task:t.id},'ghost small',off);
   if(cat)muzzle=`${x.cmd('🧢 Rọ mõm','pc_muzzle',{task:t.id},'ghost small pc-no',off)}${g.wrap?'<span class="tag blue">🌯 Đã quấn khăn</span>':''}`;
   const loop=!gen?'':g.loop?'<span class="tag blue">🔗 Đang đeo vòng giữ trên bàn</span>':x.cmd('🔗 Đeo vòng giữ cổ trên bàn','pc_loop',{task:t.id},'ghost small',off);
-  return `${gen?cueBox(t,x):stressBar(x,g)}<div class="row wrap pc-tools">${tools}${muzzle}${loop}</div>
+  const r=bookOf(t,x),fav=gen&&r?.fav_text&&t.regular>=(x.cc.fav_at||2)?x.cmd(`💛 ${x.esc(r.fav_text)}${r.fav_kind==='treat'?` <small>(${x.stock('treat')})</small>`:''}`,'pc_calm',{task:t.id,how:'fav'},'ghost small',off||(r.fav_kind==='treat'&&!x.stock('treat'))):'';
+  return `${gen?cueBox(t,x):stressBar(x,g)}<div class="row wrap pc-tools">${fav}${tools}${muzzle}${loop}</div>
     <div class="row wrap">${x.confirmCmd('⏹️ Dừng dịch vụ','pc_stop',{task:t.id},'Dừng giữa chừng? Bé được lau khô, trả chủ và chỉ tính phần đã làm.','danger small',off||!!(g.rinse||g.dry))}</div>${g.rinse||g.dry?'<p class="small muted">Muốn dừng: khóa vòi / tắt máy sấy trước.</p>':''}`;
 }
 function boltAlert(t,x){
@@ -388,7 +467,8 @@ function ticket(t,x){
   const pill=`<span class="tag blue">${JOB_ICON[t.job]||''} ${x.esc(x.cc.jobs?.[t.job]||t.job)}</span>`;
   const line=t.job==='adopt'?`<p class="small"><span class="pc-pet">🏡 ${x.esc(n.family)}</span> · ${n.candidates.length} bé đang chờ nhà</p>`
     :`<p class="small"><span class="pc-pet">${SPECIES_EMOJI[n.species]} ${x.esc(n.name)}</span> ${x.esc(n.breed)} · ${age(n.months)}</p>`;
-  const tags=[ci?`<span class="tag amber pc-case">${x.esc(ci.emoji)} ${x.esc(ci.label)}</span>`:'',n.humid?'<span class="tag blue">🌧️ Trời ẩm</span>':''].join('');
+  const reg=t.regular!=null?bookOf(t,x):null;
+  const tags=[reg?`<span class="tag green">⭐ Khách quen · ${x.esc(reg.trust_name)}</span>`:'',ci?`<span class="tag amber pc-case">${x.esc(ci.emoji)} ${x.esc(ci.label)}</span>`:'',n.humid?'<span class="tag blue">🌧️ Trời ẩm</span>':''].join('');
   return `<article class="card ticket"><div class="row">${x.portrait(who,48)}<div class="grow"><div class="row spread"><h3>${x.esc(who.display_name)}</h3>${pill}</div>
     ${line}${tags?`<div class="row wrap pc-tags">${tags}</div>`:''}
     <div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></div><small>${t.patience}%</small></div></div></div></article>`;
@@ -439,8 +519,8 @@ export default {
   },
   idle(x){
     const d=x.room.data||{};
-    const stats=`<div class="row wrap pc-stats">${x.pill(`🐾 ${d.day_done||0} việc hôm nay`)}${d.admitted?x.pill(`🏠 ${d.admitted} bé đã lưu trú`):''}${d.adopted?x.pill(`🏡 ${d.adopted} bé có nhà mới`,'green'):''}${d.meds?x.pill(`💊 ${d.meds} liều thuốc đúng nhãn`,'green'):''}${d.fevers?x.pill(`🌡️ ${d.fevers} bé sốt được phát hiện`,'amber'):''}${d.bolts?x.pill(`🏃 ${d.bolts} lần bé nhảy khỏi bàn`,'amber'):''}</div>`;
-    return `<div class="career-job pc pc-idle">${deskCard(x)}${lastDesk(x)}${todayChip(x)}${stats}${foot(x)}${rules(x)}${kennelBox(x)}</div>`;
+    const stats=`<div class="row wrap pc-stats">${x.pill(`🐾 ${d.day_done||0} việc hôm nay`)}${d.admitted?x.pill(`🏠 ${d.admitted} bé đã lưu trú`):''}${d.stays_good?x.pill(`💚 ${d.stays_good} ngày lưu trú chăm đủ`,'green'):''}${d.reminders?x.pill(`📅 ${d.reminders} lần nhắc lịch`):''}${d.adopted?x.pill(`🏡 ${d.adopted} bé có nhà mới`,'green'):''}${d.meds?x.pill(`💊 ${d.meds} liều thuốc đúng nhãn`,'green'):''}${d.fevers?x.pill(`🌡️ ${d.fevers} bé sốt được phát hiện`,'amber'):''}${d.bolts?x.pill(`🏃 ${d.bolts} lần bé nhảy khỏi bàn`,'amber'):''}</div>`;
+    return `<div class="career-job pc pc-idle">${deskCard(x)}${lastDesk(x)}${todayChip(x)}${stats}${kennelBox(x,true)}${careBoard(x)}${bookFold(x)}${foot(x)}${rules(x)}</div>`;
   },
   job(t,x){
     const desk=deskCard(x),who=x.npc(t.npc);
@@ -452,8 +532,9 @@ export default {
     if(t.job==='groom'&&t.g.bolt)return `<div class="career-job pc">${runningTimers(t,x)}${boltAlert(t,x)}${ticket(t,x)}</div>`;
     const [main,side]=JOBS[t.job]||JOBS.groom;
     const extra=t.job==='board'||t.job==='adopt'?'':kennelBox(x);
-    return `<div class="career-job pc">${lastDesk(x)}${todayChip(x)}${ticket(t,x)}<div class="workbench"><section class="wb-main">${main(t,x)}${extra}
-      ${foot(x)}${rules(x)}</section><aside class="wb-side">${side(t,x)}</aside></div></div>`;
+    const n=careCount(x),care=n?`<section class="pc-card">${fold(`📋 Việc chăm sóc khác · ${n} việc`,careBoard(x))}</section>`:'';
+    return `<div class="career-job pc">${lastDesk(x)}${todayChip(x)}${ticket(t,x)}${regularCard(t,x)}<div class="workbench"><section class="wb-main">${main(t,x)}${extra}
+      ${care}${foot(x)}${rules(x)}</section><aside class="wb-side">${side(t,x)}</aside></div></div>`;
   },
   tick(root,x){
     root.querySelectorAll('[data-pc-timer]').forEach(el=>{

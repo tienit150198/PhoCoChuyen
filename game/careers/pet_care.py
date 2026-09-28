@@ -280,6 +280,8 @@ RULES = [
     'Sổ tiêm phải còn hạn tới ngày chủ đón bé, không chỉ còn hạn hôm nay.',
     'Thuốc cho bé lưu trú: đúng liều trên nhãn bác sĩ thú y, cho cùng bữa ăn; không tăng liều theo lời dặn miệng.',
     'Nhận nuôi: hỏi chỗ ở, giờ vắng nhà, trẻ nhỏ, thú đang nuôi, dị ứng lông rồi mới giao bé hợp nếp nhà. Nhà có người dị ứng lông thì chưa giao.',
+    'Bé lưu trú: mỗi ngày đủ bữa theo thẻ chuồng, dắt đi dạo hoặc dọn khay cát, thuốc đúng nhãn; bé lạ thì vỗ về, gọi báo chủ khi bé mệt.',
+    'Khách quen: đọc thẻ của bé trước khi làm; nhắc chủ lịch tiêm, tẩy giun đúng hạn — nhưng vẫn xem sổ tiêm thật khi bé ghé.',
 ]
 ADOPTEES = [
     dict(id='dom', name='Đốm', species='dog', emoji='🐕', age='1 tuổi', note='Chó ta năng động, cần sân chạy nhảy mỗi ngày.',
@@ -292,6 +294,74 @@ ADOPTEES = [
          yard=False, alone=6, kids=True, cats=True, dogs=True),
 ]
 ADOPTEE_INDEX = {x['id']: x for x in ADOPTEES}
+
+# ================================================================ care loop — regulars, boarding days, reminders, follow-up
+# (docs/superpowers/specs/2026-09-29-pet-care-design.md)
+TRUST_NAMES = ['Khách mới', 'Quen mặt', 'Quen tay', 'Thân thiết', 'Khách ruột', 'Như người nhà']
+TRUST_MAX = len(TRUST_NAMES) - 1
+TRUST_CALM = 3              # a pet that knows the shop starts this much calmer per trust level
+FAV_AT = 2                  # trust from which the pet's favourite comfort works on the table
+FAV_DROP = 30
+GREET_PATIENCE = 8
+VAX_CYCLE = 12              # game rule: game days between combined-booster reminders
+WORM_CYCLE = 8              # game rule: game days between deworming reminders
+REMIND_EARLY = 2            # a reminder may go out this many days before the due day …
+REMIND_LATE = 2             # … and still counts as on time this many days after it
+REMIND_TRUST = 3            # reminders build trust up to “thân thiết”; beyond that only good visits do
+WORM_FIRST = (4, 9)         # the first deworming reminder, days after the first visit (seeded)
+BOOK_MAX = 80
+FOLLOW_AFTER = 2            # days after an adoption before the follow-up call
+FOLLOW_KEEP = 3             # days the call waits before the rescue group calls instead
+FOLLOW_MAX = 12
+STAY_LOG = 3
+MOOD_FLOOR, HEALTH_FLOOR = 25, 45     # a missed day never sinks a boarder below these
+MOOD_WORDS = [(75, 'Vui vẻ'), (55, 'Ổn'), (40, 'Hơi buồn'), (0, 'Buồn bã')]
+HEALTH_WORDS = [(80, 'Khỏe'), (60, 'Hơi mệt'), (0, 'Mệt')]
+# What each pet loves most: kind (treat | toy | touch), text. Owners tell it after a good first visit.
+FAV = {
+    'Bông': ('treat', 'bánh quy phô mai'), 'Bơ': ('toy', 'quả bóng cao su kêu chít chít'), 'Lu': ('touch', 'được gãi sau tai'),
+    'Mochi': ('toy', 'cần câu lông vũ'), 'Vện': ('touch', 'giọng nói trầm, thật chậm'), 'Mướp': ('touch', 'được vuốt dọc sống lưng'),
+    'Xám': ('toy', 'chiếc khăn có mùi của chủ'), 'Mít': ('toy', 'con thú bông hình cà rốt'), 'Tia': ('toy', 'trò ném bóng'),
+    'Mập': ('touch', 'được xoa bụng'), 'Bánh Mì': ('toy', 'cọng lông vũ'), 'Vàng': ('treat', 'bánh quy vị cá'),
+    'Bắp': ('touch', 'được bế như em bé'), 'Sushi': ('toy', 'cái hộp giấy cũ'), 'Ổi': ('treat', 'bánh quy bí đỏ'),
+    'Ki': ('touch', 'được chải lông bằng bàn chải mềm'), 'Mun': ('touch', 'nằm phơi nắng cạnh cửa sổ'), 'Mực': ('toy', 'khúc gỗ gặm'),
+    'Khói': ('toy', 'quả bóng lục lạc'), 'Kem': ('touch', 'được nói chuyện nhỏ nhẹ'), 'Bánh Bao': ('toy', 'que cù lông'),
+    'Sữa': ('touch', 'được gãi cằm'),
+}
+FAV_DEFAULT = ('touch', 'được gãi cằm')
+# Standing prescriptions a boarder keeps taking while it stays (label = the vet's label; dose stays on the server).
+STAY_MEDS = {'Mướp': dict(name='Thuốc hỗ trợ thận (đơn bác sĩ thú y)', label='Một viên mỗi sáng, trộn vào bữa ăn.', dose='one'),
+             'Lu': dict(name='Viên bổ khớp (đơn bác sĩ thú y)', label='Nửa viên mỗi sáng, cho cùng bữa ăn.', dose='half')}
+WARNS = dict(appetite=dict(emoji='🥺', label='Nhớ nhà, ăn ít', fix='Vỗ về, chơi với bé rồi mới cho ăn'),
+             upset=dict(emoji='💩', label='Đi ngoài hơi lỏng', fix='Gọi báo chủ, theo dõi, cho uống đủ nước'),
+             bored=dict(emoji='🌀', label='Bồn chồn, cào cửa chuồng', fix='Chơi với bé hoặc dắt đi dạo'))
+STAY_DO = ('feed', 'walk', 'litter', 'play', 'med', 'call')
+FOLLOW = {
+    'dom': dict(q='Đốm gặm nát chân ghế lúc cả nhà đi vắng. Nhà mình phải làm sao?', options=[
+        dict(id='run', label='Cho Đốm chạy nhảy nhiều hơn mỗi sáng, mua đồ gặm riêng, khen khi bé gặm đúng đồ', good=True,
+             outcome='Một tuần sau, chân ghế còn nguyên. Đốm ngủ say sau mỗi buổi chạy.'),
+        dict(id='balcony', label='Nhốt Đốm ngoài ban công khi đi vắng', good=None, outcome='Đỡ hỏng đồ, nhưng Đốm sủa suốt buổi, hàng xóm phàn nàn.'),
+        dict(id='scold', label='Mắng thật to, xịt nước mỗi lần bắt gặp', good=False, outcome='Đốm sợ cả nhà, lén gặm nhiều hơn khi không ai thấy.')]),
+    'may': dict(q='Mây trốn dưới gầm giường hai ngày rồi, ăn rất ít. Có sao không?', options=[
+        dict(id='room', label='Để Mây một phòng yên tĩnh, đặt bát ăn, nước, khay cát gần chỗ trốn; đừng lôi bé ra', good=True,
+             outcome='Ngày thứ tư, Mây tự ra nằm cửa sổ, dụi đầu vào tay chủ.'),
+        dict(id='pate', label='Mua pate thơm dụ bé ra', good=None, outcome='Mây ăn pate nhưng vẫn giật mình mỗi khi có tiếng động.'),
+        dict(id='hug', label='Kéo Mây ra ôm cho quen hơi người', good=False, outcome='Mây cào người rồi trốn kỹ hơn, bỏ ăn thêm một ngày.')]),
+    'tom': dict(q='Tôm chạy loạn, cào rèm lúc nửa đêm. Cả nhà mất ngủ.', options=[
+        dict(id='play', label='Chơi cần câu lông vũ mười lăm phút trước giờ ngủ, thêm trụ cào móng', good=True,
+             outcome='Tôm chơi mệt rồi ngủ tới sáng. Rèm cửa được tha.'),
+        dict(id='door', label='Đóng cửa phòng của Tôm ban đêm', good=None, outcome='Nhà yên hơn, nhưng Tôm kêu cửa gần sáng.'),
+        dict(id='clip', label='Cắt móng thật sát cho hết cào', good=False, outcome='Móng chảy máu, Tôm sợ ai chạm vào chân.')]),
+    'bi': dict(q='Bi hay đi vệ sinh trong nhà mấy hôm nay.', options=[
+        dict(id='routine', label='Dắt Bi ra ngoài đúng giờ sau khi ăn, khen khi đi đúng chỗ, lau sạch mùi cũ', good=True,
+             outcome='Sau năm ngày, Bi tự ra cửa đứng chờ tới giờ đi dạo.'),
+        dict(id='pads', label='Lót tã khắp nhà cho dễ dọn', good=None, outcome='Dễ dọn hơn, nhưng Bi vẫn chưa biết đi đâu mới đúng.'),
+        dict(id='nose', label='Dí mũi Bi vào chỗ bẩn cho nhớ', good=False, outcome='Bi sợ, lén đi vệ sinh sau ghế.')]),
+}
+BOOK_KEYS = ('name', 'species', 'breed', 'npc', 'visits', 'first', 'last', 'trust', 'mood', 'allergy', 'nails', 'kg', 'fav', 'told',
+             'job', 'stars', 'vax_due', 'worm_due')
+STAY_KEYS = ('pet', 'key', 'npc', 'own', 'mood', 'health', 'meals', 'chore', 'played', 'med', 'called', 'told', 'warn', 'nights', 'good', 'log')
+FOLLOW_KEYS = ('id', 'pet', 'family', 'npc', 'day', 'due', 'state', 'pick')
 
 
 def _v2rows(rows: list, notes: dict | None = None) -> list:
@@ -591,22 +661,40 @@ def make_task(day: int, slot: int, serial: int) -> dict:
 
 
 DATA_V2 = dict(sanitize_day=0, adopted=0, returned=0, bolts=0, fevers=0, meds=0, day_done=0, day_bolts=0, day_adopted=0)
+DATA_V3 = dict(reminders=0, follows=0, stays_good=0)       # care-loop counters
 
 
 def initial() -> dict:
     pens = {p['id']: None for p in PENS}
     pens['d3'] = _pet('Ki', 'dog', 32, 84, 2, 'Chú Sơn', 'own', 2, 240)
     pens['c1'] = _pet('Mun', 'cat', 4, 132, 3, 'Cô Hạnh', 'house', 2, 27)
-    return dict(pens=pens, admitted=0, refused=0, walks=0, nicks=0, referrals=0, departed=0, desk=kit.desk_initial(), **DATA_V2)
+    return _migrate(dict(pens=pens, admitted=0, refused=0, walks=0, nicks=0, referrals=0, departed=0, desk=kit.desk_initial(), **DATA_V2))
+
+
+def _migrate(d: dict) -> dict:
+    """Old saves gain the v0.5 counters, the desk book and the care loop (book, stays, follow-ups) — idempotent.
+    Stays follow the pens: an occupied pen without a stay gets a neutral one, an empty pen loses its stay."""
+    for k, v in {**DATA_V2, **DATA_V3}.items():
+        d.setdefault(k, v)
+    d.setdefault('desk', kit.desk_initial())
+    d.setdefault('book', {})
+    d.setdefault('stay', {})
+    d.setdefault('follow', [])
+    pens, stay = d.get('pens'), d['stay']
+    if isinstance(pens, dict) and isinstance(stay, dict):
+        for pid in list(stay):
+            v = pens.get(pid)
+            if not isinstance(v, dict) or not isinstance(stay[pid], dict) or stay[pid].get('pet') != v.get('pet'):
+                del stay[pid]
+        for pid, v in pens.items():
+            if pid in PEN_INDEX and isinstance(v, dict) and pid not in stay:
+                stay[pid] = _stay_new(v)
+    return d
 
 
 def _data(c: dict) -> dict:
-    """Career data with the v0.5 counters and the desk book (old saves get them on first touch)."""
-    d = kit.data(c)
-    for k, v in DATA_V2.items():
-        d.setdefault(k, v)
-    d.setdefault('desk', kit.desk_initial())
-    return d
+    """Career data with the v0.5 counters, the desk book and the care loop (old saves get them on first touch)."""
+    return _migrate(kit.data(c))
 
 
 def _case(t: dict) -> str | None:
@@ -659,6 +747,58 @@ def _npc_index(t: dict) -> int:
     return int(t['npc'].rsplit('_', 1)[1]) - 1
 
 
+# ---------------------------------------------------------------- care loop helpers
+def _key(npc: int, name: str) -> str:
+    """One pet of one owner: the same Bông of Chị Ngân comes back for a bath, a stay or a feeding round."""
+    return f'{npc}:{name}'
+
+
+def _task_key(t: dict) -> str:
+    return _key(_npc_index(t), t['needs']['name'])
+
+
+def _owner_npc(owner) -> int:
+    return next((i for i, p in enumerate(PEOPLE) if p[0] == owner), -1)
+
+
+def _owner_name(npc: int) -> str:
+    return PEOPLE[npc][0] if 0 <= npc < len(PEOPLE) else 'Chủ bé'
+
+
+def _word(words: list, v: int) -> str:
+    return next(w for top, w in words if v >= top)
+
+
+def _fav(name: str) -> tuple:
+    return FAV.get(name, FAV_DEFAULT)
+
+
+def _stay_new(v: dict, own: bool = False, mood: int = 70, warn=None) -> dict:
+    npc = _owner_npc(v.get('owner'))
+    return dict(pet=v.get('pet'), key=_key(npc, v.get('pet')), npc=npc, own=own, mood=mood, health=90, meals=0, chore=False, played=False,
+                med=None, called=False, told=False, warn=warn, nights=0, good=0, log=[])
+
+
+def _roll(key: str, day: int, first: bool, trust: int):
+    """Today's issue for a boarder, from the seed: homesick on the first night unless the pet knows the shop."""
+    r = kit.rng(ID, 'stay', key, day)
+    if first and trust < FAV_AT:
+        return 'appetite' if r.random() < 0.6 else None
+    return r.choice(('upset', 'bored', 'appetite')) if r.random() < 0.25 else None
+
+
+def _warn_ok(st: dict) -> bool:
+    w = st['warn']
+    return (w is None or (w == 'appetite' and st['played']) or (w == 'upset' and st['called'])
+            or (w == 'bored' and (st['played'] or st['chore'])))
+
+
+def _stay_todo(v: dict, st: dict) -> int:
+    rx = STAY_MEDS.get(v['pet'])
+    return (max(0, v['meals'] - st['meals']) + (not st['chore']) + bool(rx and st['med'] is None)
+            + (0 if _warn_ok(st) else 1))
+
+
 def _owner(t: dict) -> str:
     return PEOPLE[_npc_index(t)][0]
 
@@ -687,21 +827,36 @@ def _bind_feed(c: dict, t: dict) -> None:
 def on_task(s: dict, c: dict, t: dict) -> None:
     if t['job'] == 'feed' and not t['bound']:
         _bind_feed(c, t)
+        _data(c)                                   # a pen filled for this round gets its stay card
     if t.get('gen') and t['status'] == 'new' and t.get('patience') == 100:
         # Later days and the holiday rush make owners a little less patient.
         t['patience'] = max(60, 100 - 4 * kit.tier(t['day']) - (8 if t['needs'].get('today') == 'holiday' else 0))
+    if t.get('gen') and t['job'] != 'adopt' and 'regular' not in t:
+        # A pet the shop has met before: the card remembers it, and it starts calmer on the table.
+        rec = _data(c)['book'].get(_task_key(t)) if t['status'] == 'new' else None
+        t['regular'] = rec['trust'] if rec else None
+        if rec and t['job'] == 'groom' and rec['trust']:
+            g = t['g']
+            g['stress'] = g['peak'] = max(0, g['stress'] - TRUST_CALM * rec['trust'])
 
 
 def on_start(s: dict, c: dict) -> None:
-    d = kit.data(c)
+    d = _data(c)
     left = []
     for pid, v in d['pens'].items():
         if v and not v['task'] and v['until'] <= c['day']:
-            left.append(f'{v["pet"]} ({v["owner"]})')
+            st = d['stay'].pop(pid, None)
+            left.append(f'{v["pet"]} ({v["owner"]}' + (f', {_word(MOOD_WORDS, st["mood"]).lower()})' if st else ')'))
+            if st:
+                _pickup(s, c, v, st)
             d['pens'][pid] = None
             d['departed'] += 1
     if left:
         kit.log(s, c, 'pet_care', 'Sáng nay chủ đã đón: ' + ', '.join(left) + '. Chuồng đã trống, nhớ khử khuẩn.')
+    for f in d['follow']:
+        if f['state'] == 'open' and c['day'] > f['due'] + FOLLOW_KEEP:
+            f['state'] = 'lapsed'
+            kit.log(s, c, 'pet_care', f'Chị Mây đã gọi hỏi thăm bé {ADOPTEE_INDEX[f["pet"]]["name"]} ở nhà {f["family"]} thay tiệm.')
     for t in c['tasks']:
         if t['career'] == ID and t['status'] not in ('completed', 'cancelled', 'referred'):
             on_task(s, c, t)
@@ -718,6 +873,9 @@ def on_close(s: dict, c: dict) -> dict:
     if staying:
         kit.log(s, c, 'pet_care', 'Tối nay ở lại tiệm: ' + ', '.join(staying) + '. Camera chuồng đã bật cho chủ xem.')
     lines = [f'Hôm nay xong {d["day_done"]} việc.']
+    nights = [_night(c, pid, st) for pid, st in d['stay'].items() if d['pens'].get(pid)]
+    if nights:
+        lines.append('Khu lưu trú: ' + ' · '.join(nights) + '.')
     if d['day_bolts']:
         lines.append(f'Bé nhảy khỏi bàn: {d["day_bolts"]} lần — nhớ đeo vòng giữ cho bé hay trốn.')
     if d['day_adopted']:
@@ -774,7 +932,9 @@ ACTION_JOBS = {
     'pc_rinse': ('groom',), 'pc_dry': ('groom',), 'pc_nails': ('groom',), 'pc_styptic': ('groom',), 'pc_ears': ('groom',), 'pc_stop': ('groom',),
     'pc_pen': ('board',), 'pc_plan': ('board',), 'pc_admit': ('board',), 'pc_refuse': ('board',),
     'pc_feed': ('feed',), 'pc_walk': ('feed',), 'pc_litter': ('feed',), 'pc_treat': ('feed',),
+    'pc_greet': ('groom', 'board', 'feed'),
 }
+CARE_ACTIONS = ('pc_stay', 'pc_remind', 'pc_follow')     # the kennel, the phone: no ticket needed
 
 
 DESK_FREE = ('pc_rinse', 'pc_dry')     # a running tap or dryer can always be turned off
@@ -822,6 +982,12 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         d['sanitize_day'] = c['day']
         kit.metric(c, 'pc_sanitized')
         return dict(message=f'Đã rửa chuồng, ngâm lược kéo, phun khử khuẩn bàn tắm; ký sổ vệ sinh ngày {c["day"]}.')
+    if name == 'pc_stay':
+        return _stay_act(s, c, p)
+    if name == 'pc_remind':
+        return _remind(c, p)
+    if name == 'pc_follow':
+        return _follow(s, c, p)
     jobs = ACTION_JOBS.get(name)
     if jobs is None:
         raise kit.eng().GameError('Thao tác tiệm thú cưng không hợp lệ.')
@@ -831,6 +997,8 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         return _inspect(s, c, t, p)
     if name == 'pc_report':
         return _report(t, p)
+    if name == 'pc_greet':
+        return _greet(c, t)
     if name == 'pc_handover':
         return _groom_handover(s, c, t, p) if t['job'] == 'groom' else _feed_handover(s, c, t, p)
     out = dict(groom=_groom, board=_board, feed=_feed, adopt=_adopt)[t['job']](s, c, t, name, p)
@@ -1035,6 +1203,8 @@ def _groom(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         g['muzzle'] = True
         _add_stress(t, 5)
         return dict(message='Đeo rọ mõm mềm vừa khít, vẫn đủ chỗ thở hổn hển. Chỉ đeo trong lúc làm, tháo ngay khi xong.')
+    if name == 'pc_calm' and p.get('how') == 'fav':
+        return _calm_fav(c, t)
     if name == 'pc_calm':
         how = kit.one_of(p.get('how'), CALM_INDEX, 'Cách dỗ bé không hợp lệ.')
         kit.start_work(t)
@@ -1515,9 +1685,10 @@ def _groom_handover(s: dict, c: dict, t: dict, p: dict) -> dict:
     _data(c)['day_done'] += 1
     kit.complete(s, c, t, pay, f'Bạn đã tắm tỉa cho bé {t["needs"]["name"]} của {_owner(t)}.')
     note = ' Chủ về nhà mới thấy móng bé có vết máu khô…' if ev['nick_hidden'] else ''
+    card = _visit(c, t)
     if not cq.slips(t):
-        return dict(message=f'Trả bé {t["needs"]["name"]} thơm tho · thu {pay} xu.{note}', celebrate=t['mistakes'] == 0)
-    return dict(message=_with(f'Trả bé {t["needs"]["name"]} · thu {pay} xu.{note}', r), celebrate=False, reaction=r['kind'])
+        return dict(message=f'Trả bé {t["needs"]["name"]} thơm tho · thu {pay} xu.{note}{card}', celebrate=t['mistakes'] == 0)
+    return dict(message=_with(f'Trả bé {t["needs"]["name"]} · thu {pay} xu.{note}', r) + card, celebrate=False, reaction=r['kind'])
 
 
 # ---------------------------------------------------------------- boarding
@@ -1593,6 +1764,11 @@ def _board(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
             t['mistakes'] += 1
         t['flags'] = flags
         d['pens'][t['pen']] = _pet(n['name'], n['species'], x['kg'], n['months'], c['day'] + n['nights'], _owner(t), plan['food'], plan['meals'], plan['grams'])
+        rec = _data(c)['book'].get(_task_key(t))
+        trust = rec['trust'] if rec else 0
+        d['stay'][t['pen']] = _stay_new(d['pens'][t['pen']], own=True, mood=75 if trust >= FAV_AT else 60,
+                                        warn=_roll(_task_key(t), c['day'], True, trust))
+        d['stay'][t['pen']]['meals'] = min(1, plan['meals'] - 1)     # the owner fed breakfast at home
         d['admitted'] += 1
         key = 'board_dog' if n['species'] == 'dog' else 'board_cat'
         total = kit.price(c, key, SPEC['prices'][key]) * n['nights']
@@ -1605,7 +1781,8 @@ def _board(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
             extra += ' Nửa đêm bé sốt cao, li bì — phải gọi chủ đưa đi cấp cứu.'
         d['day_done'] += 1
         msg = f'Bé {n["name"]} vào {PEN_INDEX[t["pen"]]["name"]}, dán thẻ ăn {plan["meals"]} × {plan["grams"]} g. Thu {r["pay"]} xu.{extra}'
-        return dict(message=_with(msg, r), celebrate=not flags, **({'reaction': r['kind']} if cq.slips(t) else {}))
+        msg = _with(msg, r) + _visit(c, t) + ' Thẻ chăm bé đã có ở khu lưu trú.'
+        return dict(message=msg, celebrate=not flags, **({'reaction': r['kind']} if cq.slips(t) else {}))
     # pc_refuse
     kit.confirm(p, 'Xác nhận từ chối nhận lưu trú.')
     reason = kit.one_of(p.get('reason'), ('vaccine', 'sick', 'full'), 'Chọn lý do từ chối.')
@@ -1629,6 +1806,7 @@ def _board(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
                 sick=f'Bé có dấu hiệu bệnh. Mời chủ đưa bé đến {VET}; khỏi bệnh tiệm nhận ngay.',
                 full='Chuồng phù hợp đã kín. Tiệm giới thiệu chỗ gửi quen và hẹn lần sau.')[reason]
     kit.complete(s, c, t, 0, f'Bạn đã từ chối nhận lưu trú bé {n["name"]} ({text})', status='referred')
+    _visit(c, t)
     return dict(message=_unpaid(text + ('' if right else ' (Lý do này chưa đúng với tình trạng của bé…)'), t))
 
 
@@ -1655,6 +1833,9 @@ def _feed(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         t['bowl'] = dict(food=food, grams=grams, cost=cost)
         t['fed'] = True
         kit.start_work(t)
+        st = _stay_of(c, t)
+        if st:
+            st['meals'] = min(kit.data(c)['pens'][t['pen']]['meals'], st['meals'] + 1)
         eat = 'Bé ngửi rồi quay đi, không ăn.' if 'appetite' in x['signs'] else 'Bé ăn ngon lành, liếm sạch bát.'
         return dict(message=f'Cân {grams} g cho vào bát. {eat} ' + ' '.join(msgs))
     if name == 'pc_walk':
@@ -1665,6 +1846,7 @@ def _feed(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         t['walked'] = True
         kit.data(c)['walks'] += 1
         kit.start_work(t)
+        _stay_chore(c, t)
         if 'limp' in x['signs']:
             if 'gait' not in t['inspected']:
                 t['inspected'].append('gait')
@@ -1675,6 +1857,7 @@ def _feed(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         kit.need(not t['litter'], 'Đã dọn khay cát.')
         t['litter'] = True
         kit.start_work(t)
+        _stay_chore(c, t)
         return dict(message='Xúc khay cát, thêm cát mới, rửa bát nước. Mèo thích khay sạch.')
     if name == 'pc_med':
         kit.need(n.get('med') and t.get('gen'), 'Bé này không có thuốc theo đơn.')
@@ -1683,6 +1866,9 @@ def _feed(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         dose = kit.one_of(p.get('dose'), DOSE_IDS, 'Chọn liều thuốc.')
         t['med'] = dose
         kit.start_work(t)
+        st = _stay_of(c, t)
+        if st and STAY_MEDS.get(n['name']) and st['med'] is None:
+            st['med'] = dose
         right = x['dose']
         if dose == right:
             _data(c)['meds'] += 1
@@ -1723,9 +1909,10 @@ def _feed_handover(s: dict, c: dict, t: dict, p: dict) -> dict:
     _feed_slips(t, ev)
     r = _settle(s, c, t, reward)
     kit.complete(s, c, t, r['pay'], f'Bạn đã chăm bé {n["name"]} và nhắn cập nhật cho {_owner(t)}.')
+    card = _visit(c, t)
     if not cq.slips(t):
-        return dict(message=f'Đã gửi ảnh và lời nhắn cho {_owner(t)} · phí chăm sóc {reward} xu.', celebrate=t['mistakes'] == 0)
-    return dict(message=_with(f'Đã gửi ảnh và lời nhắn cho {_owner(t)} · phí chăm sóc {r["pay"]} xu.', r), celebrate=False, reaction=r['kind'])
+        return dict(message=f'Đã gửi ảnh và lời nhắn cho {_owner(t)} · phí chăm sóc {reward} xu.{card}', celebrate=t['mistakes'] == 0)
+    return dict(message=_with(f'Đã gửi ảnh và lời nhắn cho {_owner(t)} · phí chăm sóc {r["pay"]} xu.', r) + card, celebrate=False, reaction=r['kind'])
 
 
 # ---------------------------------------------------------------- adoption day
@@ -1767,8 +1954,326 @@ def _adopt(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
     kit.metric(c, 'pc_adopted')
     kit.complete(s, c, t, r['pay'], f'Bạn đã giao bé {a["name"]} cho {n["family"]}.')
     tail = ' Cả nhà ôm bé không rời, hẹn gửi ảnh mỗi tuần.' if ok else ' Có điều… nếp nhà này hình như không hợp với bé lắm.'
+    if ok:
+        # The first weeks in a new home bring questions: the shop calls back.
+        opened = [f for f in d['follow'] if f['state'] == 'open'][-(FOLLOW_MAX - 1):]
+        closed = [f for f in d['follow'] if f['state'] != 'open']
+        room = FOLLOW_MAX - 1 - len(opened)
+        d['follow'] = (closed[-room:] if room > 0 else []) + opened
+        d['follow'].append(dict(id=kit.next_id(c, 'fu'), pet=pick, family=n['family'], npc=_npc_index(t), day=c['day'],
+                                due=c['day'] + FOLLOW_AFTER, state='open', pick=None))
+        tail += f' Hẹn ngày {c["day"] + FOLLOW_AFTER} tiệm gọi hỏi thăm bé.'
     return dict(message=_with(f'{a["emoji"]} {a["name"]} về nhà mới với {n["family"]} · phí nhận nuôi {r["pay"]} xu (tiêm phòng, triệt sản).' + tail, r),
                 celebrate=ok)
+
+
+# ---------------------------------------------------------------- care loop: regulars' book
+def _stars(c: dict, t: dict) -> int:
+    """The fair stars of this visit's review (a reviewer who misremembers does not move trust)."""
+    post = next((p for p in c['feed'] if p.get('source') == t['id'] and p.get('kind') == 'review'), None)
+    if not post:
+        return 0
+    fb = post.get('feedback') or {}
+    return int(fb.get('fair') or post.get('stars') or 0)
+
+
+def _visit(c: dict, t: dict) -> str:
+    """After a finished visit: write what the shop learned about this pet into the book, and move trust."""
+    if t['job'] not in ('groom', 'board', 'feed'):
+        return ''
+    d = _data(c)
+    n, x = t['needs'], t['_x']
+    npc, key = _npc_index(t), _task_key(t)
+    book = d['book']
+    rec = book.get(key)
+    if rec is None:
+        while len(book) >= BOOK_MAX:
+            del book[min(book, key=lambda k: (book[k]['last'], book[k]['visits']))]
+        rec = book[key] = dict(name=n['name'], species=n['species'], breed=n['breed'], npc=npc, visits=0, first=c['day'], last=c['day'],
+                               trust=0, mood=None, allergy=None, nails=None, kg=None, fav=False, told=[], job=t['job'], stars=0,
+                               vax_due=None, worm_due=c['day'] + kit.rng(ID, 'worm', key).randint(*WORM_FIRST))
+    stars = _stars(c, t)
+    rec.update(visits=min(10 ** 6, rec['visits'] + 1), last=c['day'], job=t['job'], stars=stars)
+    insp = t['inspected']
+    if 'mood' in insp and x.get('mood') in BASE_STRESS:
+        rec['mood'] = x['mood']
+    if t['job'] == 'feed':
+        rec['kg'] = n['kg']
+    elif 'scale' in insp:
+        rec['kg'] = x['kg']
+    if 'nails' in insp and x.get('nails') in ('dark', 'clear'):
+        rec['nails'] = x['nails']
+    if n.get('allergy'):
+        rec['allergy'] = n['allergy']
+    signs = x.get('signs', [])
+    told = [r[4:] for r in t.get('report') or [] if r.startswith('vet_') and r[4:] in signs]
+    if t['job'] == 'board' and t.get('reason') == 'sick':
+        told += [sg for sg in ('fever', 'cough') if sg in signs and SIGNS[sg]['part'] in insp]
+    rec['told'] = list(dict.fromkeys(told))[:4]
+    if t['job'] == 'board' and 'vaccine' in insp:
+        if x['vax'] != 'valid':
+            rec['vax_due'] = c['day']
+        elif x.get('vax_left') is not None:
+            rec['vax_due'] = t['day'] + x['vax_left']
+        else:
+            rec['vax_due'] = c['day'] + VAX_CYCLE - kit.rng(ID, 'vax', key).randrange(6)
+    good = t['status'] == 'completed' and stars >= 4 and not cq.slips(t)
+    msg = ''
+    if cq.safety(t):
+        if rec['trust']:
+            rec['trust'] -= 1
+            msg = f' Thẻ khách quen: {_owner(t)} bớt tin tiệm một chút.'
+    elif good:
+        if rec['trust'] < TRUST_MAX:
+            rec['trust'] += 1
+            msg = f' Thẻ khách quen: bé {n["name"]} thêm quen tiệm — {TRUST_NAMES[rec["trust"]].lower()}.'
+        if not rec['fav']:
+            rec['fav'] = True
+            msg += f' {_owner(t)} kể: bé mê {_fav(n["name"])[1]} nhất.'
+    return msg
+
+
+def _greet(c: dict, t: dict) -> dict:
+    kit.need(t.get('regular') is not None, 'Bé đến lần đầu — chưa có thẻ khách quen.')
+    kit.need(not t.get('greeted'), 'Đã chào bé rồi.')
+    t['greeted'] = True
+    if 'patience' in t:
+        t['patience'] = min(100, t['patience'] + GREET_PATIENCE)
+    n = t['needs']
+    rec = _data(c)['book'].get(_task_key(t)) or {}
+    trust = rec.get('trust', t['regular'])
+    react = ('vẫy đuôi rối rít' if n['species'] == 'dog' else 'chớp mắt chậm') if trust >= FAV_AT else 'ngửi tay bạn, nhận ra mùi quen'
+    msg = f'“{n["name"]} ơi, lại gặp nhau rồi!” — bé {react}. {_owner(t)} cười: “Tiệm nhớ cả tên bé luôn!”'
+    if rec.get('told'):
+        what = ', '.join(SIGNS[sg]['label'].lower() for sg in rec['told'] if sg in SIGNS)
+        msg += f' Bạn hỏi thăm chuyện lần trước ({what}): chủ kể đã cho bé đi bác sĩ thú y, giờ đỡ nhiều rồi.'
+    return dict(message=msg)
+
+
+def _calm_fav(c: dict, t: dict) -> dict:
+    """From trust 2 the groomer knows what this pet loves most — the gentlest way to calm it."""
+    n, g = t['needs'], t['g']
+    rec = _data(c)['book'].get(_task_key(t)) or {}
+    kit.need(t.get('gen') and (t.get('regular') or 0) >= FAV_AT and rec.get('fav'),
+             f'Chưa đủ quen để biết bé mê gì — cần bé “{TRUST_NAMES[FAV_AT].lower()}” trở lên.')
+    kind, text = _fav(n['name'])
+    extra = ''
+    if kind == 'treat':
+        kit.need(kit.stock(c, 'treat') >= 1, 'Hết bánh thưởng trong túi.')
+        g['cost'] += kit.take(c, 'treat', 1)
+        g['treats'] += 1
+        if n['no_treat']:
+            t['mistakes'] += 1
+            extra = ' Nhưng chủ đã dặn không cho bánh thưởng!'
+    kit.start_work(t)
+    g['stress'] = max(0, g['stress'] - FAV_DROP)
+    return dict(message=f'Món bé mê — {text}: bé dịu hẳn, {_mood_line(t)}.' + extra)
+
+
+# ---------------------------------------------------------------- care loop: boarding days
+def _stay_of(c: dict, t: dict):
+    d = _data(c)
+    v = d['pens'].get(t.get('pen')) if t.get('pen') else None
+    st = d['stay'].get(t['pen']) if v else None
+    return st if st and v['pet'] == t['needs']['name'] else None
+
+
+def _stay_chore(c: dict, t: dict) -> None:
+    st = _stay_of(c, t)
+    if st:
+        st['chore'] = True
+
+
+def _assist_kennel(c: dict) -> str | None:
+    """Kennel staff take one pending walk or litter tray off the stay cards."""
+    d = _data(c)
+    for pid, st in d['stay'].items():
+        v = d['pens'].get(pid)
+        if not v or st['chore']:
+            continue
+        if v['species'] == 'dog':
+            if not kit.stock(c, 'poop_bag'):
+                continue
+            kit.take(c, 'poop_bag', 1)
+            d['walks'] += 1
+            st['chore'] = True
+            return f'Đã dắt bé {v["pet"]} ({PEN_INDEX[pid]["name"]}) đi dạo, nhặt phân sạch sẽ.'
+        st['chore'] = True
+        return f'Đã dọn khay cát cho bé {v["pet"]} ({PEN_INDEX[pid]["name"]}).'
+    return None
+
+
+def _stay_act(s: dict, c: dict, p: dict) -> dict:
+    d = _data(c)
+    pid = kit.one_of(p.get('pen'), PEN_INDEX, 'Chuồng không tồn tại.')
+    v = d['pens'][pid]
+    kit.need(v is not None, 'Chuồng này đang trống.')
+    st = d['stay'][pid]
+    do = kit.one_of(p.get('do'), STAY_DO, 'Chọn việc chăm bé.')
+    name, cat = v['pet'], v['species'] == 'cat'
+    kit.metric(c, 'pc_stay_care')
+    if do == 'feed':
+        kit.need(st['meals'] < v['meals'], f'Bé {name} đã ăn đủ {v["meals"]} bữa hôm nay theo thẻ chuồng.')
+        if v['food'] == 'house':
+            item = HOUSE_FOOD[v['species']]
+            kit.need(kit.stock(c, item) >= 1, f'Hết {ITEM_INDEX[item]["name"]}. Mở Kho để nhập thêm.')
+            kit.take(c, item, 1)
+        st['meals'] += 1
+        food = 'đồ chủ gửi' if v['food'] == 'own' else 'hạt của tiệm'
+        if st['warn'] == 'appetite' and not st['played']:
+            return dict(message=f'Cân {v["grams"]} g {food} cho vào bát. Bé {name} chỉ ngửi rồi nằm quay mặt vào tường — bé nhớ nhà. '
+                                'Ngồi vỗ về, chơi với bé một lúc nhé.')
+        return dict(message=f'Cân {v["grams"]} g {food} cho vào bát (bữa {st["meals"]}/{v["meals"]}). Bé {name} ăn sạch bát.')
+    if do == 'walk':
+        kit.need(not cat, 'Mèo không dắt đi dạo — hãy dọn khay cát.')
+        kit.need(not st['chore'], f'Đã dắt bé {name} đi dạo hôm nay.')
+        kit.need(kit.stock(c, 'poop_bag') >= 1, 'Hết túi nhặt phân — không dắt bé ra đường khi không dọn được. Nhập thêm túi.')
+        kit.take(c, 'poop_bag', 1)
+        d['walks'] += 1
+        st['chore'] = True
+        calm = ' Bé hết bồn chồn, về chuồng nằm ngủ ngon.' if st['warn'] == 'bored' else ''
+        return dict(message=f'Dắt bé {name} đi một vòng quanh công viên, nhặt phân bằng túi, bỏ đúng thùng rác.{calm}')
+    if do == 'litter':
+        kit.need(cat, 'Chó không dùng khay cát — hãy dắt đi dạo.')
+        kit.need(not st['chore'], f'Đã dọn khay cát của bé {name} hôm nay.')
+        st['chore'] = True
+        return dict(message=f'Xúc khay cát, thêm cát mới, rửa bát nước cho bé {name}.')
+    if do == 'play':
+        kit.need(not st['played'], f'Hôm nay đã chơi với bé {name} rồi — để bé nghỉ.')
+        st['played'] = True
+        rec = d['book'].get(st['key']) or {}
+        how = _fav(name)[1] if rec.get('fav') else ('trò ném bóng' if not cat else 'cần câu lông vũ')
+        tail = {'appetite': ' Bé dụi vào tay bạn, chịu ăn lại rồi.', 'bored': ' Bé chạy mệt, nằm ngủ ngon lành.'}.get(st['warn'] or '', '')
+        return dict(message=f'Ngồi với bé {name} mười phút: {how}.{tail}')
+    if do == 'med':
+        rx = STAY_MEDS.get(name)
+        kit.need(rx, f'Bé {name} không có thuốc theo đơn.')
+        kit.need(st['med'] is None, 'Hôm nay đã cho thuốc rồi.')
+        kit.need(st['meals'] >= 1, 'Nhãn ghi cho cùng bữa ăn — cho bé ăn trước đã.')
+        dose = kit.one_of(p.get('dose'), DOSE_IDS, 'Chọn liều thuốc.')
+        st['med'] = dose
+        if dose == rx['dose']:
+            d['meds'] += 1
+            kit.metric(c, 'pc_meds')
+            return dict(message=f'{DOSE_NAME[dose]} trộn vào bữa ăn của bé {name}, đúng nhãn bác sĩ thú y. Ghi giờ vào thẻ chuồng.')
+        more = DOSE_IDS.index(dose) > DOSE_IDS.index(rx['dose'])
+        return dict(message=f'Cho {DOSE_NAME[dose].lower()} — ' + ('vượt liều trên nhãn! Gọi bác sĩ thú y hỏi cách theo dõi.' if more
+                                                                 else 'thiếu liều so với nhãn, thuốc không đủ tác dụng.'))
+    # call
+    kit.need(not st['called'], 'Hôm nay đã gọi cho chủ rồi.')
+    st['called'] = True
+    owner = v['owner']
+    if st['warn'] == 'upset':
+        st['told'] = True
+        return dict(message=f'Bạn gọi báo {owner}: bé {name} đi ngoài hơi lỏng, tiệm đang theo dõi và cho uống đủ nước. '
+                            'Chủ cảm ơn, dặn nếu kéo dài thì đưa bé đi bác sĩ thú y.')
+    if st['health'] < 60:
+        st['told'] = True
+        return dict(message=f'Bạn báo thật với {owner}: bé {name} hơi mệt, tiệm đề nghị cho bé đi {VET} kiểm tra. Chủ cảm ơn vì được biết sớm.')
+    return dict(message=f'Bạn gửi {owner} ảnh bé {name} đang {"nằm phơi nắng" if cat else "gặm đồ chơi"}. Chủ thả tim.')
+
+
+def _night(c: dict, pid: str, st: dict) -> str:
+    """Day close: today's chores move mood and health; floors keep one missed day recoverable."""
+    v = _data(c)['pens'][pid]
+    rx = STAY_MEDS.get(v['pet'])
+    need = v['meals']
+    missed = max(0, need - st['meals'])
+    warn_ok = _warn_ok(st)
+    med_ok = not rx or st['med'] == rx['dose']
+    good = missed == 0 and st['chore'] and med_ok and warn_ok
+    portion_ok = _within(v['grams'] * v['meals'], _daily(v['species'], v['kg'], v['months']))
+    mood = (st['mood'] + (15 if good else 0) + (10 if st['played'] else 0) - 12 * missed - (0 if st['chore'] else 10)
+            - (10 if not warn_ok and st['warn'] != 'upset' else 0))
+    health = (st['health'] + (10 if good else 0) - (15 if missed >= need else 0) - (0 if med_ok else 15 if st['med'] else 12)
+              - (10 if st['warn'] == 'upset' and not st['called'] else 0) - (0 if portion_ok else 4))
+    miss = ([f'thiếu {missed} bữa'] if missed else []) + ([] if st['chore'] else ['chưa dắt đi dạo' if v['species'] == 'dog' else 'khay cát bẩn'])
+    miss += ([] if med_ok else ['sai/thiếu thuốc']) + ([] if warn_ok else [WARNS[st['warn']]['label'].lower()])
+    st.update(mood=max(MOOD_FLOOR, min(100, mood)), health=max(HEALTH_FLOOR, min(100, health)), nights=st['nights'] + 1,
+              good=st['good'] + good, meals=0, chore=False, played=False, med=None, called=False)
+    if good:
+        _data(c)['stays_good'] += 1
+    word = f'{_word(MOOD_WORDS, st["mood"]).lower()}, {_word(HEALTH_WORDS, st["health"]).lower()}'
+    st['log'] = (st['log'] + [f'Ngày {c["day"]}: ' + ('chăm đủ' if good else ', '.join(miss) or 'ổn') + f' — {word}.'])[-STAY_LOG:]
+    rec = _data(c)['book'].get(st['key']) or {}
+    st['warn'] = _roll(st['key'], c['day'] + 1, False, rec.get('trust', 0))
+    return f'{v["pet"]} {word}' + (f' ({", ".join(miss)})' if miss else '')
+
+
+def _pickup(s: dict, c: dict, v: dict, st: dict) -> None:
+    """The owner takes the pet home and sees how it is; pets the player admitted bring a review."""
+    m, h = st['mood'], st['health']
+    stars = 5 if m >= 75 and h >= 80 else 4 if m >= 55 and h >= 60 else 3 if h >= 60 or st['told'] else 2
+    name = v['pet']
+    rec = _data(c)['book'].get(st['key'])
+    if rec:
+        rec['trust'] = min(TRUST_MAX, rec['trust'] + 1) if stars >= 4 else max(0, rec['trust'] - 1) if stars <= 2 else rec['trust']
+    if not st['own'] or st['npc'] < 0:
+        return
+    text = {5: f'Đón bé {name} về, bé vui như vừa đi nghỉ mát. Nhật ký chăm sóc ghi kỹ từng bữa, từng lần đi dạo!',
+            4: f'Bé {name} về khỏe, chỉ hơi nhớ nhà. Tiệm chăm chu đáo.',
+            3: (f'Bé {name} có hôm hơi mệt, may tiệm gọi báo sớm.' if st['told'] else f'Bé {name} ở tiệm có bữa bị trễ, về nhà ăn ngấu nghiến.'),
+            2: f'Đón bé {name} về thấy bé lờ đờ, buồn thiu; tiệm không báo gì.'}[stars]
+    kit.review(s, c, kit.npc_id(ID, st['npc']), stars, text, f'stay-{st["key"]}-{c["day"]}')
+    kit.metric(c, 'pc_stay_reviews')
+
+
+# ---------------------------------------------------------------- care loop: reminders and adoption follow-up
+def _due_list(d: dict, day: int) -> list:
+    out = []
+    for key, r in d['book'].items():
+        for kind in ('vax', 'worm'):
+            due = r[kind + '_due']
+            if due is not None and due <= day + REMIND_EARLY:
+                out.append(dict(pet=key, name=r['name'], species=r['species'], owner=_owner_name(r['npc']), kind=kind, due=due,
+                                late=max(0, day - due)))
+    return sorted(out, key=lambda x: (x['due'], x['name']))
+
+
+def _remind(c: dict, p: dict) -> dict:
+    d = _data(c)
+    key = kit.one_of(p.get('pet'), d['book'], 'Không có bé này trong sổ khách quen.')
+    kind = kit.one_of(p.get('kind'), ('vax', 'worm'), 'Chọn nhắc tiêm hay tẩy giun.')
+    rec = d['book'][key]
+    due = rec[kind + '_due']
+    what = 'tiêm nhắc mũi phối hợp' if kind == 'vax' else 'tẩy giun'
+    kit.need(due is not None, 'Chưa biết lịch tiêm của bé — xem sổ tiêm khi bé ghé.')
+    kit.need(due <= c['day'] + REMIND_EARLY, f'Chưa tới hạn {what} (ngày {due}) — nhắc sớm quá chủ dễ quên.')
+    late = c['day'] - due
+    rec[kind + '_due'] = c['day'] + (VAX_CYCLE if kind == 'vax' else WORM_CYCLE)
+    d['reminders'] += 1
+    kit.metric(c, 'pc_reminders')
+    owner = _owner_name(rec['npc'])
+    msg = f'Đã nhắn {owner}: bé {rec["name"]} tới lịch {what} (hạn ngày {due}). Chủ hẹn đưa bé tới {VET}.'
+    if late > REMIND_LATE:
+        return dict(message=msg + f' Nhắc trễ {late} ngày — chủ hơi tiếc, nhưng vẫn cảm ơn.')
+    c['xp'] += 3
+    if rec['trust'] < REMIND_TRUST:
+        rec['trust'] += 1
+    return dict(message=msg + ' Chủ cảm ơn vì tiệm nhớ giùm.')
+
+
+def _follow(s: dict, c: dict, p: dict) -> dict:
+    d = _data(c)
+    f = next((x for x in d['follow'] if x['id'] == p.get('id')), None)
+    kit.need(f is not None and f['state'] == 'open', 'Cuộc gọi hỏi thăm này không còn.')
+    kit.need(f['due'] <= c['day'], f'Hẹn ngày {f["due"]} mới gọi — để gia đình quen bé vài hôm đã.')
+    script = FOLLOW[f['pet']]
+    opt = kit.one_of(p.get('option'), [o['id'] for o in script['options']], 'Chọn lời khuyên.')
+    o = next(x for x in script['options'] if x['id'] == opt)
+    f.update(state='done', pick=opt)
+    d['follows'] += 1
+    kit.metric(c, 'pc_follows')
+    name = ADOPTEE_INDEX[f['pet']]['name']
+    npc = kit.npc_id(ID, f['npc'])
+    if o['good']:
+        c['xp'] += 8
+        kit.review(s, c, npc, 5, f'Tiệm gọi hỏi thăm bé {name}, chỉ cách rất dễ làm. Cả nhà cảm ơn!', f'follow-{f["id"]}')
+    elif o['good'] is None:
+        c['xp'] += 3
+    else:
+        kit.review(s, c, npc, 2, f'Tiệm khuyên cách làm bé {name} càng sợ hơn.', f'follow-{f["id"]}')
+    return dict(message=f'📞 {f["family"]}: {o["outcome"]}', celebrate=bool(o['good']))
 
 
 # ---------------------------------------------------------------- feedback
@@ -1903,6 +2408,9 @@ def feedback(c: dict, t: dict) -> dict:
                              note='đúng liều trên nhãn, cùng bữa ăn' if given == right else 'vượt liều bác sĩ kê' if over else 'thiếu liều'))
             if given != right:
                 cap = min(cap, 3)
+    if t.get('regular') is not None:
+        rows.append(dict(key='regular', label='Nhớ bé', score=5 if t.get('greeted') else 4,
+                         note='gọi tên bé, hỏi thăm lần trước' if t.get('greeted') else 'không nhận ra khách quen'))
     rows.append(_speed(t))
     return dict(criteria=rows, cap=cap)
 
@@ -1942,11 +2450,42 @@ def public_task(t: dict) -> dict:
     return v
 
 
+def _public_care(d: dict, day: int) -> None:
+    """Book, stay cards, reminders and follow-up calls as the client shows them (doses stay on the server)."""
+    book = {}
+    for key, r in d['book'].items():
+        kind, fav = _fav(r['name'])
+        book[key] = dict(r, key=key, owner=_owner_name(r['npc']), trust_name=TRUST_NAMES[r['trust']],
+                         fav_text=fav if r['fav'] else None, fav_kind=kind if r['fav'] else None)
+    stays = {}
+    for pid, st in d['stay'].items():
+        v = d['pens'].get(pid)
+        if not v:
+            continue
+        rx = STAY_MEDS.get(v['pet'])
+        rec = d['book'].get(st['key']) or {}
+        stays[pid] = dict(st, need=v['meals'], mood_word=_word(MOOD_WORDS, st['mood']), health_word=_word(HEALTH_WORDS, st['health']),
+                          rx=dict(name=rx['name'], label=rx['label']) if rx else None, todo=_stay_todo(v, st),
+                          warn_info=WARNS[st['warn']] if st['warn'] else None, warn_ok=_warn_ok(st),
+                          fav_text=_fav(v['pet'])[1] if rec.get('fav') else None, trust=rec.get('trust', 0))
+    d['book'] = book
+    d['stay'] = stays
+    d['due'] = _due_list(dict(book=book), day)
+    calls = []
+    for f in d['follow']:
+        if f['state'] != 'open':
+            continue
+        opts = [dict(id=o['id'], label=o['label']) for o in FOLLOW[f['pet']]['options']]
+        kit.rng(ID, 'follow-order', f['id']).shuffle(opts)       # the careful answer is not always the first button
+        calls.append(dict(f, name=ADOPTEE_INDEX[f['pet']]['name'], emoji=ADOPTEE_INDEX[f['pet']]['emoji'], ready=f['due'] <= day,
+                          q=FOLLOW[f['pet']]['q'], options=opts))
+    d['follow'] = calls
+
+
 def public_data(c: dict) -> dict:
-    d = copy.deepcopy(kit.data(c))
+    d = _migrate(copy.deepcopy(kit.data(c)))
     desk = d.pop('desk', None) or kit.desk_initial()
-    for k, v in DATA_V2.items():
-        d.setdefault(k, v)
+    _public_care(d, c['day'])
     d['today'] = c['day']
     d['level'] = kit.level(c)
     mod = today(c['day'])
@@ -1981,6 +2520,8 @@ def validate_task(t: dict, original: dict) -> None:
                  'Ghi chú nhận nuôi sai.')
         return
     kit.integer(t.get('mistakes', 0), 0, 100000)
+    kit.need(t.get('regular') is None or (type(t['regular']) is int and 0 <= t['regular'] <= TRUST_MAX), 'Thẻ khách quen sai.')
+    kit.need(type(t.get('greeted', False)) is bool and (not t.get('greeted') or t.get('regular') is not None), 'Lời chào sai.')
     kit.need(type(t.get('scald', False)) is bool and (not t.get('scald') or job == 'groom'), 'Ghi chú nước tắm sai.')
     kit.need(isinstance(t['inspected'], list) and len(set(t['inspected'])) == len(t['inspected'])
              and all(x in JOB_PARTS[job] for x in t['inspected']), 'Danh sách kiểm tra sai.')
@@ -2064,6 +2605,70 @@ def validate_data(c: dict) -> None:
         kit.need(v['task'] is None or (isinstance(v['task'], str) and len(v['task']) <= 80), 'Liên kết chuồng sai.')
     for k in ('admitted', 'refused', 'walks', 'nicks', 'referrals', 'departed'):
         kit.integer(d.get(k), 0, 10**9)
+    _validate_care(d)
+
+
+def _day_or_none(v) -> None:
+    kit.need(v is None or (type(v) is int and 0 <= v <= 10 ** 7), 'Ngày hẹn sai.')
+
+
+def _validate_care(d: dict) -> None:
+    for k in DATA_V3:
+        kit.integer(d[k], 0, 10 ** 9)
+    book = d['book']
+    kit.need(isinstance(book, dict) and len(book) <= BOOK_MAX, 'Sổ khách quen sai.')
+    for key, r in book.items():
+        kit.text(key, 60)
+        kit.need(isinstance(r, dict) and set(r) == set(BOOK_KEYS), 'Thẻ khách quen thiếu dữ liệu.')
+        kit.text(r['name'], 40)
+        kit.need(key == _key(r['npc'], r['name']) and r['species'] in SPECIES_NAMES, 'Thẻ khách quen sai.')
+        kit.text(r['breed'], 60)
+        kit.integer(r['npc'], 0, len(PEOPLE) - 1)
+        kit.integer(r['visits'], 0, 10 ** 6)
+        kit.integer(r['first'], 1, 10 ** 7)
+        kit.integer(r['last'], r['first'], 10 ** 7)
+        kit.integer(r['trust'], 0, TRUST_MAX)
+        kit.integer(r['stars'], 0, 5)
+        kit.need(r['mood'] is None or r['mood'] in BASE_STRESS, 'Tính khí sai.')
+        kit.need(r['allergy'] is None or r['allergy'] in ALLERGY_NAMES, 'Dị ứng sai.')
+        kit.need(r['nails'] in (None, 'dark', 'clear') and r['job'] in ('groom', 'board', 'feed'), 'Thẻ khách quen sai.')
+        kit.need(r['kg'] is None or (type(r['kg']) is int and 1 <= r['kg'] <= 99), 'Cân nặng sai.')
+        _bool(r['fav'])
+        kit.need(isinstance(r['told'], list) and len(r['told']) <= 4 and len(set(r['told'])) == len(r['told'])
+                 and all(x in SIGNS for x in r['told']), 'Ghi chú sức khỏe sai.')
+        _day_or_none(r['vax_due'])
+        _day_or_none(r['worm_due'])
+    stay, pens = d['stay'], d['pens']
+    kit.need(isinstance(stay, dict), 'Thẻ lưu trú sai.')
+    for pid, st in stay.items():
+        v = pens.get(pid) if pid in PEN_INDEX else None
+        kit.need(v is not None and isinstance(st, dict) and set(st) == set(STAY_KEYS) and st['pet'] == v['pet'], 'Thẻ lưu trú không khớp chuồng.')
+        kit.text(st['key'], 60)
+        kit.integer(st['npc'], -1, len(PEOPLE) - 1)
+        for k in ('own', 'chore', 'played', 'called', 'told'):
+            _bool(st[k])
+        kit.integer(st['mood'], 0, 100)
+        kit.integer(st['health'], 0, 100)
+        kit.integer(st['meals'], 0, 4)
+        kit.integer(st['nights'], 0, 10 ** 6)
+        kit.integer(st['good'], 0, st['nights'])
+        kit.need(st['med'] is None or st['med'] in DOSE_IDS, 'Liều thuốc sai.')
+        kit.need(st['warn'] is None or st['warn'] in WARNS, 'Ghi chú lưu trú sai.')
+        kit.need(isinstance(st['log'], list) and len(st['log']) <= STAY_LOG, 'Nhật ký lưu trú sai.')
+        for row in st['log']:
+            kit.text(row, 200)
+    follow = d['follow']
+    kit.need(isinstance(follow, list) and len(follow) <= FOLLOW_MAX, 'Lịch hỏi thăm sai.')
+    for f in follow:
+        kit.need(isinstance(f, dict) and set(f) == set(FOLLOW_KEYS) and f['pet'] in FOLLOW, 'Lịch hỏi thăm thiếu dữ liệu.')
+        kit.text(f['id'], 20)
+        kit.text(f['family'], 80)
+        kit.integer(f['npc'], 0, len(PEOPLE) - 1)
+        kit.integer(f['day'], 1, 10 ** 7)
+        kit.integer(f['due'], f['day'], 10 ** 7)
+        kit.need(f['state'] in ('open', 'done', 'lapsed'), 'Trạng thái hỏi thăm sai.')
+        kit.need((f['pick'] is None) == (f['state'] != 'done')
+                 and (f['pick'] is None or f['pick'] in [o['id'] for o in FOLLOW[f['pet']]['options']]), 'Lời khuyên sai.')
 
 
 # ---------------------------------------------------------------- staff, hints, content
@@ -2075,11 +2680,12 @@ def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
             t['cost'] += kit.take(c, 'poop_bag', 1)
             t['walked'] = True
             kit.data(c)['walks'] += 1
+            _stay_chore(c, t)
             if 'limp' in t['_x']['signs'] and 'gait' not in t['inspected']:
                 t['inspected'].append('gait')
                 return f'Đã dắt bé {t["needs"]["name"]} đi dạo. Bé đi khập khiễng chân sau, em báo để mình nhắn chủ.'
             return f'Đã dắt bé {t["needs"]["name"]} đi dạo và nhặt phân sạch sẽ.'
-        return 'Đã lau chuồng, thay nước uống, phơi khăn.'
+        return _assist_kennel(c) or 'Đã lau chuồng, thay nước uống, phơi khăn.'
     if not ok:
         return None
     if role == 'bather' and t['job'] == 'groom':
@@ -2103,6 +2709,8 @@ def hint(c: dict, t: dict) -> str:
     tip = {'escape': ' Bé hay trốn: đeo vòng giữ trên bàn trước khi làm.', 'flat': ' Giống mặt ngắn: chỉ sấy nấc mát.',
            'hidden': ' Chủ nói “không sao đâu” thì càng nên đo nhiệt độ.', 'vax_short': ' So hạn sổ tiêm với ngày chủ đón bé.',
            'med': ' Thuốc theo đơn: đúng liều trên nhãn, cho cùng bữa ăn.'}.get(_case(t) or '', '')
+    if t.get('regular') is not None:
+        tip += ' Khách quen: xem thẻ của bé, gọi tên bé và hỏi thăm lần trước.'
     calm = ('Đọc tín hiệu cơ thể của bé: tai cụp, đuôi kẹp, run là phải dỗ hoặc cho nghỉ; hoảng hẳn thì dừng.' if t.get('gen')
             else 'Stress ≥80 thì dỗ hoặc dừng.')
     return {'groom': 'Kiểm bé trước (cân, lông, da, tai, móng, tính khí) → chải → tắm 36–39°C đúng sữa tắm → xả ≥8 giây → sấy ấm/mát đến khô → '
@@ -2119,7 +2727,9 @@ def content() -> dict:
                 species_names=SPECIES_NAMES, parts=PARTS, job_parts=JOB_PARTS, signs=SIGNS, reports=REPORTS, calm=CALM,
                 services=SERVICE_NAMES, jobs=JOB_NAMES, allergy_names=ALLERGY_NAMES, house_food=HOUSE_FOOD, vet=VET,
                 today=[dict(id=x['id'], title=x['title'], emoji=x['emoji'], text=x['text']) for x in TODAY],
-                cases=CASES, bands=MOOD_BANDS, cues=CUES, catch=CATCH, doses=DOSES, adoptees=ADOPTEES, rules=RULES)
+                cases=CASES, bands=MOOD_BANDS, cues=CUES, catch=CATCH, doses=DOSES, adoptees=ADOPTEES, rules=RULES,
+                trust_names=TRUST_NAMES, fav_at=FAV_AT, warns=WARNS, remind_early=REMIND_EARLY, remind_late=REMIND_LATE,
+                vax_cycle=VAX_CYCLE, worm_cycle=WORM_CYCLE)
 
 
 def _p(who, emoji, text):
@@ -2433,7 +3043,7 @@ SPEC = dict(
     tip=2,
     physical=('pc_bath', 'pc_nails', 'pc_ears', 'pc_walk', 'pc_admit', 'pc_handover'),
     free_actions=(),
-    no_tick=('pc_report', 'pc_plan', 'pc_pen', 'pc_desk'),
+    no_tick=('pc_report', 'pc_plan', 'pc_pen', 'pc_desk', 'pc_greet', 'pc_remind', 'pc_follow'),
     waste_items=(),
     activity=('🐾', 'Tiệm thú cưng ngăn nắp', [('Sữa tắm cún con', 'Kệ sữa tắm'), ('Bột cầm máu', 'Hộp sơ cứu'), ('Hạt cho mèo', 'Tủ thức ăn'), ('Túi nhặt phân', 'Móc dây dắt')],
               ['Chải gỡ rối', 'Tắm nước ấm, xả sạch', 'Sấy ấm tới chân lông', 'Tỉa móng, lau tai']),
