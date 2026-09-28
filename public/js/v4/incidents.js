@@ -7,7 +7,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const signed=n=>`${n<0?'−':'+'}${fmt(Math.abs(n))}`;
-const CAT_NAMES={fine:'Tiền phạt',tax:'Thuế',theft_loss:'Mất trộm',scam_loss:'Bị lừa',under_table:'Chi không chứng từ',legal:'Luật sư',
+const CAT_NAMES={fine:'Tiền phạt',tax:'Thuế',theft_loss:'Mất trộm',scam_loss:'Bị lừa',bad_debt:'Bị quỵt',under_table:'Chi không chứng từ',legal:'Luật sư',
   compensation:'Bồi thường',recovery:'Thu hồi',damage:'Đồ bị phá hỏng',insurance_recovery:'Bảo hiểm chi trả',repair:'Sửa chữa',security:'An ninh',rent:'Tiền thuê',gift:'Quà',incident:'Chuyện đời',
   service:'Tiền dịch vụ',commission:'Hoa hồng',security_reward:'Thưởng khu phố',stock:'Nhập hàng',upgrade:'Nâng cấp',office:'Giấy tờ',
   refund:'Hoàn tiền',marketing:'Quảng bá',promotion:'Khuyến mãi'};
