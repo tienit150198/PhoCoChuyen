@@ -1,8 +1,13 @@
-/** Kế toán doanh nghiệp · Công ty Mây Tre Xanh — bàn kế toán (plugin client module).
- *  Document tray (hóa đơn soi được lỗi, sao kê, sổ quỹ…), procedure steps with hands-on widgets
- *  (phiếu kế toán Nợ/Có tự cân, bảng khớp, sắp xếp), and the running trial balance on the side.
+/** Kế toán doanh nghiệp · Công ty CP Mây Tre Xanh — bàn kế toán (plugin client module).
+ *  An office desktop (office_kit.js): 📥 Hộp thư (việc chị Hạnh và đồng nghiệp giao, tin trong ngày),
+ *  📂 Hồ sơ (một chứng từ một lúc: khay đóng dấu DUYỆT/TRẢ LẠI/TRÌNH SẾP, hoặc hồ sơ nhiều bước với
+ *  phiếu kế toán Nợ/Có tự cân), 📋 Quy định (quy định tháng + sổ tra cứu), 📒 Sổ sách (cân đối thử)
+ *  and a sticky bar with the next step and the main action.
  *  No inline handlers: every button goes through data-command / data-action="car:*". */
+import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,dueOf,dueText,openTasks} from './office_kit.js';
+
 const P='ca_';
+const BOSS='Chị Hạnh';
 const num=v=>Number(v||0).toLocaleString('vi-VN');
 const dkey=(t,st)=>`${t.id}:${st.id}`;
 const drafts=x=>(x.ui.drafts??={});
@@ -45,23 +50,24 @@ function docBody(d,x,flags){
   if(d.type==='email')return `<div class="ca-mail"><p><b>Từ:</b> ${x.esc(d.sender||'')}</p><p><b>Chủ đề:</b> ${x.esc(d.subject||'')}</p><p>${x.esc(d.text||'')}</p></div>`;
   return `<p class="ca-paper">${x.esc(d.text||'')}</p>`;
 }
+/** The dossier's papers: a strip of folder tabs, one paper open at a time. */
 function docsPanel(t,x){
   const st=currentStep(t),need=new Set(st?.docs||[]);
   const opened=t.docs.filter(d=>!d.closed);
   let sel=views(x)[t.id];
   if(!opened.some(d=>d.id===sel))sel=opened[0]?.id;
   const tabs=t.docs.map(d=>{
-    const label=`<span class="ca-doc-ico">${d.closed?'📁':'📄'}</span><span class="grow">${x.esc(d.title)}<small>${x.esc(d.source)}</small></span>${d.closed&&need.has(d.id)?'<em class="ca-need">cần mở</em>':''}`;
-    return d.closed?btn(x,label,'car:open',{task:t.id,doc:d.id},'ca-tab closed'):btn(x,label,'car:view',{task:t.id,doc:d.id},`ca-tab ${d.id===sel?'active':''}`);
+    const label=`<span class="ca-doc-ico" aria-hidden="true">${d.closed?'📁':'📄'}</span><span class="grow">${x.esc(d.title)}<small>${d.closed?(need.has(d.id)?'Cần mở cho bước này':'Chạm để mở'):x.esc(d.source)}</small></span>`;
+    return d.closed?btn(x,label,'car:open',{task:t.id,doc:d.id},`ca-tab closed ${need.has(d.id)?'need':''}`):btn(x,label,'car:view',{task:t.id,doc:d.id},`ca-tab ${d.id===sel?'active':''}`);
   }).join('');
   const doc=opened.find(d=>d.id===sel);
   let flags=null;
   if(doc?.type==='invoice'&&st?.kind==='multi'&&(st.options||[]).some(o=>INVOICE_FLAGS.includes(o.id))){
     const k=dkey(t,st);flags={key:k,sel:drafts(x)[k]||[]};
   }
-  return `<section class="ca-docs"><h4 class="ca-sec">📂 Chứng từ trong hồ sơ <small>${opened.length}/${t.docs.length} đã mở</small></h4>
-    <div class="ca-tabs">${tabs}</div>
-    ${doc?`<article class="ca-viewer" aria-live="polite"><header><b>${x.esc(doc.title)}</b><small>Nguồn: ${x.esc(doc.source)}</small></header>${docBody(doc,x,flags)}</article>`:'<p class="ca-empty">Mở một chứng từ để xem. Chứng từ gốc là căn cứ duy nhất để ghi sổ.</p>'}
+  return `<section class="ca-docs"><h3 class="ok-h">📄 Chứng từ <small>${opened.length}/${t.docs.length} đã mở</small></h3>
+    <div class="ca-tabs" role="toolbar" aria-label="Chứng từ trong hồ sơ">${tabs}</div>
+    ${doc?`<article class="ca-viewer" aria-live="polite"><header><b>${x.esc(doc.title)}</b><small>Nguồn: ${x.esc(doc.source)}</small></header>${docBody(doc,x,flags)}</article>`:'<p class="ok-empty"><span aria-hidden="true">📁</span><span>Mở một chứng từ để xem. Chứng từ gốc là căn cứ duy nhất để ghi sổ.</span></p>'}
   </section>`;
 }
 
@@ -85,12 +91,11 @@ function acctOptions(x,st,selected){
 function voucher(t,st,x){
   const k=dkey(t,st),d=drafts(x)[k]??={debit:[{account:'',amount:''}],credit:[{account:'',amount:''}]};
   const row=(side,r,i)=>`<div class="ca-vrow" data-side="${side}"><select class="ca-acct" aria-label="Tài khoản ${side==='debit'?'Nợ':'Có'}">${acctOptions(x,st,r.account)}</select><input class="ca-amt" type="number" inputmode="numeric" min="1" step="1" placeholder="số tiền" value="${x.esc(r.amount)}" aria-label="Số tiền">${btn(x,'✕','car:delrow',{key:k,side,i},'ca-del ghost',d[side].length<=1)}</div>`;
-  const side=(id,label)=>`<div class="ca-vside ${id}"><h5>${label}</h5>${d[id].map((r,i)=>row(id,r,i)).join('')}${btn(x,`＋ Dòng ${label}`,'car:addrow',{key:k,side:id},'ghost small ca-add',d[id].length>=6)}</div>`;
+  const side=(id,label)=>`<div class="ca-vside ${id}"><h4>${label}</h4>${d[id].map((r,i)=>row(id,r,i)).join('')}${btn(x,`＋ Dòng ${label}`,'car:addrow',{key:k,side:id},'ghost small ca-add',d[id].length>=6)}</div>`;
   return `<div class="ca-voucher" data-entry="${x.esc(k)}">
     <div class="ca-vhead"><b>PHIẾU KẾ TOÁN</b><small>${x.esc(t.title)}</small></div>
     <div class="ca-vcols">${side('debit','Nợ')}${side('credit','Có')}</div>
     <div class="ca-vfoot"><span>Tổng Nợ <b data-sum="debit">0</b></span><span>Tổng Có <b data-sum="credit">0</b></span><span class="ca-bal" data-bal>—</span></div>
-    ${btn(x,'✍️ Ghi bút toán','car:entry',{task:t.id,step:st.id},'primary full')}
   </div>`;
 }
 function widget(t,st,x){
@@ -98,99 +103,74 @@ function widget(t,st,x){
   if(st.kind==='choice')return `<div class="ca-options">${(st.options||[]).map(o=>x.cmd(x.esc(o.label),P+'step',{task:t.id,step:st.id,answer:o.id},'ca-opt')).join('')}</div>`;
   if(st.kind==='multi'){
     const sel=dr[k]||[];
-    return `<div class="ca-checks" data-multi="${x.esc(k)}">${(st.options||[]).map(o=>`<label class="ca-check"><input type="checkbox" value="${x.esc(o.id)}" ${sel.includes(o.id)?'checked':''}><span>${x.esc(o.label)}</span></label>`).join('')}</div>${btn(x,'✔ Xác nhận lựa chọn','car:multi',{task:t.id,step:st.id},'primary full')}`;
+    return `<div class="ca-checks" data-multi="${x.esc(k)}">${(st.options||[]).map(o=>`<label class="ca-check"><input type="checkbox" value="${x.esc(o.id)}" ${sel.includes(o.id)?'checked':''}><span>${x.esc(o.label)}</span></label>`).join('')}</div>`;
   }
-  if(st.kind==='number')return `<div class="ca-numrow"><input class="ca-input" type="number" inputmode="numeric" step="1" data-num="${x.esc(k)}" value="${x.esc(dr[k]??'')}" aria-label="${x.esc(st.title)}"><span class="ca-unit">${x.esc(st.unit||'')}</span>${btn(x,'Xác nhận','car:num',{task:t.id,step:st.id},'primary')}</div>`;
+  if(st.kind==='number')return `<div class="ca-numrow"><input class="ca-input" type="number" inputmode="numeric" step="1" data-num="${x.esc(k)}" value="${x.esc(dr[k]??'')}" aria-label="${x.esc(st.title)}"><span class="ca-unit">${x.esc(st.unit||'')}</span></div>`;
   if(st.kind==='order'){
     const ids=dr[k]??=(st.items||[]).map(i=>i.id);
     const item=id=>(st.items||[]).find(i=>i.id===id)?.label||id;
-    return `<ol class="ca-order">${ids.map((id,i)=>`<li><span class="ca-ord-n">${i+1}</span><span class="grow">${x.esc(item(id))}</span>${btn(x,'↑','car:move',{key:k,i,dir:-1},'ghost ca-mv',i===0)}${btn(x,'↓','car:move',{key:k,i,dir:1},'ghost ca-mv',i===ids.length-1)}</li>`).join('')}</ol>${btn(x,'✔ Chốt thứ tự','car:order',{task:t.id,step:st.id},'primary full')}`;
+    return `<ol class="ca-order">${ids.map((id,i)=>`<li><span class="ca-ord-n">${i+1}</span><span class="grow">${x.esc(item(id))}</span>${btn(x,'↑','car:move',{key:k,i,dir:-1},'ghost ca-mv',i===0)}${btn(x,'↓','car:move',{key:k,i,dir:1},'ghost ca-mv',i===ids.length-1)}</li>`).join('')}</ol>`;
   }
   if(st.kind==='match'){
     const cur=dr[k]||{};
-    return `<div class="ca-match" data-match="${x.esc(k)}">${(st.left||[]).map(l=>`<label class="ca-mrow"><span>${x.esc(l.label)}</span><select data-left="${x.esc(l.id)}"><option value="">— chọn —</option>${(st.right||[]).map(r=>`<option value="${x.esc(r.id)}" ${cur[l.id]===r.id?'selected':''}>${x.esc(r.label)}</option>`).join('')}</select></label>`).join('')}</div>${btn(x,'✔ Xác nhận ghép','car:match',{task:t.id,step:st.id},'primary full')}`;
+    return `<div class="ca-match" data-match="${x.esc(k)}">${(st.left||[]).map(l=>`<label class="ca-mrow"><span>${x.esc(l.label)}</span><select data-left="${x.esc(l.id)}"><option value="">— chọn —</option>${(st.right||[]).map(r=>`<option value="${x.esc(r.id)}" ${cur[l.id]===r.id?'selected':''}>${x.esc(r.label)}</option>`).join('')}</select></label>`).join('')}</div>`;
   }
   if(st.kind==='fields'){
     const cur=dr[k]||{};
-    return `<div class="ca-fields" data-fields="${x.esc(k)}">${(st.fields||[]).map(f=>`<label class="ca-mrow"><span>${x.esc(f.label)}</span>${f.options?`<select data-field="${x.esc(f.id)}"><option value="">— chọn —</option>${f.options.map(o=>`<option value="${x.esc(o.id)}" ${cur[f.id]===o.id?'selected':''}>${x.esc(o.label)}</option>`).join('')}</select>`:`<span class="ca-numrow"><input class="ca-input" type="number" inputmode="numeric" step="1" data-field="${x.esc(f.id)}" value="${x.esc(cur[f.id]??'')}"><span class="ca-unit">${x.esc(f.unit||'')}</span></span>`}</label>`).join('')}</div>${btn(x,'✔ Xác nhận số liệu','car:fields',{task:t.id,step:st.id},'primary full')}`;
+    return `<div class="ca-fields" data-fields="${x.esc(k)}">${(st.fields||[]).map(f=>`<label class="ca-mrow"><span>${x.esc(f.label)}</span>${f.options?`<select data-field="${x.esc(f.id)}"><option value="">— chọn —</option>${f.options.map(o=>`<option value="${x.esc(o.id)}" ${cur[f.id]===o.id?'selected':''}>${x.esc(o.label)}</option>`).join('')}</select>`:`<span class="ca-numrow"><input class="ca-input" type="number" inputmode="numeric" step="1" data-field="${x.esc(f.id)}" value="${x.esc(cur[f.id]??'')}"><span class="ca-unit">${x.esc(f.unit||'')}</span></span>`}</label>`).join('')}</div>`;
   }
   if(st.kind==='entry')return voucher(t,st,x);
   return '';
 }
-function stepsPanel(t,x){
-  const ps=t.proc_state||{},rows=(t.proc||[]).map((st,i)=>{
-    if(st.state==='locked')return `<li class="ca-step locked"><span class="ca-dot">🔒</span><b>${i+1}. ${x.esc(st.title)}</b></li>`;
-    if(st.state==='solved')return `<li class="ca-step solved"><span class="ca-dot">✓</span><div class="grow"><b>${i+1}. ${x.esc(st.title)}</b><p class="ca-ans">${summary(st,x)}</p>${st.explain?`<p class="ca-explain">${x.esc(st.explain)}</p>`:''}</div></li>`;
-    const tries=(ps.attempts||{})[st.id]||0;
-    const missing=(st.docs||[]).filter(id=>t.docs.find(d=>d.id===id)?.closed);
-    return `<li class="ca-step current"><span class="ca-dot">${i+1}</span><div class="grow"><b>${x.esc(st.title)}</b><p class="ca-prompt">${x.esc(st.prompt||'')}</p>
+/** The confirm button of a step (it lives in the sticky bar; choices answer on tap). */
+const CONFIRM={multi:['✔ Xác nhận lựa chọn','car:multi'],number:['✔ Xác nhận','car:num'],order:['✔ Chốt thứ tự','car:order'],
+  match:['✔ Xác nhận ghép','car:match'],fields:['✔ Xác nhận số liệu','car:fields'],entry:['✍️ Ghi bút toán','car:entry']};
+function confirmBtn(t,st,x){const c=CONFIRM[st.kind];return c?btn(x,c[0],c[1],{task:t.id,step:st.id},'primary'):'';}
+/** The work sheet: the current step big, done steps folded away. */
+function stepCard(t,x){
+  const ps=t.proc_state||{},steps=t.proc||[],cur=steps.find(s=>s.state==='current');
+  const solved=steps.filter(s=>s.state==='solved'),locked=steps.filter(s=>s.state==='locked').length,total=ps.total||steps.length;
+  const last=solved[solved.length-1];
+  const done=solved.length?fold(`✓ ${solved.length} bước đã xong <small>xem lại</small>`,`<ol class="ca-steps">${solved.map(st=>`<li class="ca-step solved"><span class="ca-dot" aria-hidden="true">✓</span><div class="grow"><b>${steps.indexOf(st)+1}. ${x.esc(st.title)}</b><p class="ca-ans">${summary(st,x)}</p>${st.explain?`<p class="ca-explain">${x.esc(st.explain)}</p>`:''}</div></li>`).join('')}</ol>`):'';
+  let body;
+  if(cur){
+    const i=steps.indexOf(cur),tries=(ps.attempts||{})[cur.id]||0;
+    const missing=(cur.docs||[]).filter(id=>t.docs.find(d=>d.id===id)?.closed);
+    body=`<article class="ca-work"><header class="ca-work-head"><span class="ca-dot" aria-hidden="true">${i+1}</span><div class="grow"><small>Bước ${i+1}/${total}${locked?` · còn ${locked} bước sau`:''}</small><h3>${x.esc(cur.title)}</h3></div></header>
+      <p class="ca-prompt">${x.esc(cur.prompt||'')}</p>
       ${missing.length?`<p class="ca-warn">📁 Mở trước: ${missing.map(id=>x.esc(t.docs.find(d=>d.id===id).title)).join(', ')}</p>`:''}
-      ${st.tip?`<p class="ca-tip">💡 ${x.esc(st.tip)}</p>`:''}
-      ${widget(t,st,x)}
-      <div class="ca-stepfoot">${tries?`<small class="ca-small">Đã thử ${tries} lần</small>`:'<span></span>'}${st.tip?'':x.cmd('💡 Xin gợi ý',P+'hint',{task:t.id},'ghost small')}</div></div></li>`;
-  }).join('');
-  return `<section class="ca-proc"><h4 class="ca-sec">🧾 Quy trình <small>${(ps.solved||[]).length}/${ps.total||0} bước</small></h4><ol class="ca-steps">${rows}</ol>${handover(t,x)}</section>`;
+      ${cur.tip?`<p class="ca-tip">💡 ${x.esc(cur.tip)}</p>`:''}
+      ${widget(t,cur,x)}
+      <div class="ca-stepfoot">${tries?`<small>Đã thử ${tries} lần</small>`:'<span></span>'}${cur.tip?'':x.cmd('💡 Xin gợi ý',P+'hint',{task:t.id},'ghost small')}</div></article>`;
+  }else body=handover(t,x);
+  const pct=total?Math.round(solved.length/total*100):0;
+  return `<section class="ca-proc"><h3 class="ok-h">🧾 Quy trình <small>${solved.length}/${total} bước</small></h3>
+    <div class="ca-prog" role="progressbar" aria-label="Tiến độ hồ sơ" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${solved.length}"><i style="width:${pct}%"></i></div>
+    ${last&&cur&&last.explain?`<p class="ca-lastok">✓ <b>${x.esc(last.title)}</b> — ${x.esc(last.explain)}</p>`:''}${body}${done}</section>`;
 }
 function handover(t,x){
   if(!t.handover_options)return '';
   const sel=x.ui.note?.[t.id]||'specific';
-  return `<div class="ca-handover"><h5>📝 Ghi chú bàn giao</h5>${t.handover_options.map(o=>`<label class="ca-check"><input type="radio" name="ca-note-${x.esc(t.id)}" value="${x.esc(o.id)}" ${o.id===sel?'checked':''}><span>${x.esc(o.label)}</span></label>`).join('')}
-    ${btn(x,'📤 Nộp hồ sơ','car:submit',{task:t.id},'primary full big')}</div>`;
+  return `<article class="ca-work ca-handover"><header class="ca-work-head"><span class="ca-dot" aria-hidden="true">📝</span><div class="grow"><small>Bước cuối</small><h3>Ghi chú bàn giao</h3></div></header>
+    <p class="ca-prompt">Chọn lời nhắn gửi kèm hồ sơ, rồi bấm “Nộp hồ sơ” ở thanh dưới.</p>
+    ${t.handover_options.map(o=>`<label class="ca-check"><input type="radio" name="ca-note-${x.esc(t.id)}" value="${x.esc(o.id)}" ${o.id===sel?'checked':''}><span>${x.esc(o.label)}</span></label>`).join('')}</article>`;
 }
 
-/* ---------------------------------------------------------------- side: ledger & trial balance */
-function ledgerPanel(x){
+/* ---------------------------------------------------------------- 📒 books: period, trial balance, journal */
+function booksPane(x){
   const d=x.room.data||{},led=d.ledger||{},ids=Object.keys(led).sort();
   const dr=ids.reduce((s,k)=>s+Math.max(0,led[k]),0),cr=ids.reduce((s,k)=>s+Math.max(0,-led[k]),0);
   const rows=ids.map(k=>`<tr><td><b>${x.esc(k)}</b> <small>${x.esc(acct(x,k).replace(/^\d+ · /,''))}</small></td><td class="num">${led[k]>0?num(led[k]):''}</td><td class="num">${led[k]<0?num(-led[k]):''}</td></tr>`).join('');
   const last=(d.entries||[]).slice(-3).reverse().map(e=>`<li><b>${x.esc(e.title)}</b><small>${e.lines.map(([a,b,m])=>`Nợ ${x.esc(a)}/Có ${x.esc(b)} ${num(m)}`).join(' · ')}</small></li>`).join('');
   const ms=(x.cc.milestones||[]).map(m=>`<li class="${(d.milestones||[]).includes(m.id)?'done':''}">${(d.milestones||[]).includes(m.id)?'✓':'○'} ${x.esc(m.name)}</li>`).join('');
-  return `<aside class="ca-side">
-    <section class="ca-card"><h4 class="ca-sec">📅 ${x.esc(d.period?.label||'Kỳ kế toán')} <small>${x.esc(d.period?.date||'')}</small></h4><ul class="ca-ms">${ms}</ul></section>
-    <section class="ca-card"><h4 class="ca-sec">⚖️ Cân đối thử <span class="ca-badge ${dr===cr?'ok':'bad'}">${dr===cr?'Cân':'Lệch'}</span></h4>
-      ${ids.length?`<div class="ca-scroll"><table class="ca-table tb"><thead><tr><th>TK</th><th>Dư Nợ</th><th>Dư Có</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td>Tổng</td><td class="num">${num(dr)}</td><td class="num">${num(cr)}</td></tr></tfoot></table></div>`:'<p class="ca-empty">Chưa có bút toán nào trong kỳ. Mỗi bút toán đúng sẽ được ghi vào sổ cái của bạn.</p>'}
+  return `<section class="ca-book"><h3 class="ok-h">📅 ${x.esc(d.period?.label||'Kỳ kế toán')} <small>${x.esc(d.period?.date||'')}</small></h3><ul class="ca-ms">${ms}</ul></section>
+    <section class="ca-book"><h3 class="ok-h">⚖️ Cân đối thử <span class="ok-tag ${dr===cr?'good':'bad'}">${dr===cr?'Cân':'Lệch'}</span></h3>
+      ${ids.length?`<div class="ca-scroll"><table class="ca-table tb"><thead><tr><th>TK</th><th>Dư Nợ</th><th>Dư Có</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td>Tổng</td><td class="num">${num(dr)}</td><td class="num">${num(cr)}</td></tr></tfoot></table></div>`:'<p class="ok-note">Chưa có bút toán nào trong kỳ. Mỗi bút toán đúng sẽ được ghi vào sổ cái của bạn.</p>'}
     </section>
-    ${last?`<section class="ca-card"><h4 class="ca-sec">📒 Nhật ký chung gần đây</h4><ul class="ca-journal">${last}</ul></section>`:''}
-  </aside>`;
+    ${last?`<section class="ca-book"><h3 class="ok-h">📒 Nhật ký chung gần đây</h3><ul class="ca-journal">${last}</ul></section>`:''}`;
 }
 
-/* ---------------------------------------------------------------- office: clock, deadline, trust, luck of the day */
-const hhmm=m=>`${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
-const span=m=>m>=60?`${Math.floor(m/60)} giờ${m%60?` ${m%60} phút`:''}`:`${m} phút`;
-function dueOf(t,x){
-  if(typeof t?.due!=='number')return null;
-  const o=x.room.data?.office||{},clock=Number(o.clock)||480,day=x.room.day;
-  const overdue=day>(t.due_day??day)||clock>t.due,left=t.due-clock;
-  return {time:hhmm(t.due),overdue,soon:!overdue&&left<=45,left:Math.max(0,left)};
-}
-function officeBar(t,x){
-  const d=x.room.data||{},o=d.office;if(!o)return '';
-  const mod=d.today?.mod,due=t&&t.status!=='completed'?dueOf(t,x):null,trust=Math.max(0,Math.min(100,Number(o.trust)||0));
-  const crunch=mod?.id==='crunch';
-  const dueChip=due?`<span class="ca-chip ${due.overdue?'bad':due.soon?'warn':''}">⏰ Hạn ${x.esc(due.time)} · ${due.overdue?'đã trễ':'còn '+span(due.left)}</span>`:'';
-  let alert='';
-  if(o.locked)alert=`<p class="ca-alert bad">🔒 20:00 — văn phòng khóa cửa. Khép ngày, mai làm tiếp; việc dở được giữ nguyên.</p>`;
-  else if(o.closed)alert=`<div class="ca-alert warn"><span>🌇 17:30 — hết giờ hành chính.</span>${x.confirmCmd(`🌙 Ở lại tăng ca (+${crunch?18:12} xu)`,'ca_overtime',{},`Ở lại tới 20:00? Được trả ${crunch?18:12} xu, mai vào muộn 30 phút vì mệt.`,'small')}</div>`;
-  else if(o.can_overtime)alert=`<div class="ca-alert"><span>Sắp hết giờ. Còn việc dở?</span>${x.confirmCmd(`🌙 Đăng ký tăng ca (+${crunch?18:12} xu)`,'ca_overtime',{},`Ở lại tới 20:00? Được trả ${crunch?18:12} xu, mai vào muộn 30 phút vì mệt.`,'ghost small')}</div>`;
-  return `<section class="ca-office" aria-label="Giờ làm việc hôm nay">
-    <div class="ca-obar">
-      <span class="ca-clock"><b>🕗 ${x.esc(o.time)}</b><small>${o.overtime?'tăng ca tới 20:00':o.lunch?'nghỉ trưa 12:00':'tan sở 17:30'}</small></span>
-      ${dueChip}
-      <span class="ca-trust" title="Chị Hạnh tin bạn ${trust}/100"><small>Chị Hạnh: ${x.esc(o.trust_label||'')}</small><span class="bar ${trust<35?'low':trust>=75?'high':''}"><i style="width:${trust}%"></i></span></span>
-    </div>
-    ${mod&&mod.id!=='normal'?`<p class="ca-mod"><b>${x.esc(mod.emoji)} ${x.esc(mod.name)}</b> ${x.esc(mod.text)}</p>`:''}
-    ${o.tired?'<p class="ca-small">😮‍💨 Hôm qua tăng ca nên sáng nay vào muộn 30 phút.</p>':''}
-    ${alert}
-  </section>`;
-}
-function rulesBox(x){
-  const rs=x.room.data?.today?.rules||[];if(!rs.length)return '';
-  const fresh=rs.filter(r=>r.new).length;
-  return `<section class="ca-rulebox" aria-label="Quy định đang áp dụng"><h4 class="ca-sec">📋 Quy định đang áp dụng ${fresh?`<span class="ca-new">${fresh} mới</span>`:''}</h4>
-    <div class="ca-rules-row">${rs.map(r=>`<article class="ca-rule ${r.new?'new':''}"><b>${x.esc(r.emoji)} ${x.esc(r.title)}${r.new?' <em>MỚI</em>':''}</b><p>${x.esc(r.text)}</p></article>`).join('')}</div></section>`;
-}
-
-/* ---------------------------------------------------------------- the document desk */
+/* ---------------------------------------------------------------- the document desk (khay chứng từ) */
 const VLAB={approve:'DUYỆT',escalate:'TRÌNH SẾP',reject:'TRẢ LẠI'};
 const RES={ok:['✓','Chuẩn'],reason:['⚠️','Đúng dấu, sai căn cứ'],wrong:['✗','Sai dấu']};
 const DOC_ICON={invoice:'🧾',payreq:'📝',voucher:'💵',email:'📧'};
@@ -218,19 +198,36 @@ function paperView(t,c,x){
 }
 function caseCard(t,c,x){
   const cs=t.cases||[],i=cs.indexOf(c),n=(c.circles||[]).length,max=x.cc.max_circles||3;
-  const from=`<div class="ca-from"><span class="ca-doc-ico">${DOC_ICON[c.doc]||'📄'}</span><div class="grow"><small>Bộ ${i+1}/${cs.length} · ${x.esc(c.who||'')}</small><p>“${x.esc(c.quote||'')}”</p></div></div>`;
+  const memo=`<div class="ca-from"><span class="ca-doc-ico" aria-hidden="true">${DOC_ICON[c.doc]||'📄'}</span><div class="grow"><small>Bộ ${i+1}/${cs.length} · ${x.esc(c.who||'')}</small><p>“${x.esc(c.quote||'')}”</p></div></div>`;
   if(c.stamp){
-    const [ic,label]=RES[c.result]||['•',''],next=cs.find(v=>!v.stamp);
-    return `<section class="ca-case done">${from}${paperView(t,c,x)}
-      <div class="ca-verdict ${x.esc(c.result||'')}" role="status"><b>${ic} ${label}</b><span>Dấu của bạn: ${VLAB[c.stamp]}${c.result!=='ok'?` · Cần: ${VLAB[c.truth?.v]||''}`:''}</span><p>${x.esc(c.truth?.why||'')}</p></div>
-      ${next?btn(x,`Bộ tiếp theo ›`,'car:pick',{task:t.id,case:next.id},'primary full big'):''}</section>`;
+    const [ic,label]=RES[c.result]||['•',''];
+    return `<section class="ca-case done">${memo}${paperView(t,c,x)}
+      <div class="ca-verdict ${x.esc(c.result||'')}" role="status"><b>${ic} ${label}</b><span>Dấu của bạn: ${VLAB[c.stamp]}${c.result!=='ok'?` · Cần: ${VLAB[c.truth?.v]||''}`:''}</span><p>${x.esc(c.truth?.why||'')}</p></div></section>`;
   }
-  const hint=c.tip?`<p class="ca-tip">💡 ${x.esc(c.tip)}</p>`:'';
-  return `<section class="ca-case">${from}${paperView(t,c,x)}${hint}
-    <div class="ca-tools"><small>${n?`⭕ Đã khoanh ${n}/${max} chỗ`:'Chạm vào ô trên giấy để khoanh chỗ nghi sai'}</small>${c.hinted?'':x.cmd('💡 Gợi ý','ca_hint',{task:t.id,case:c.id},'ghost small')}</div>
-    <div class="ca-stampbar" role="group" aria-label="Đóng dấu">
-      ${['approve','escalate','reject'].map(v=>btn(x,`<span>${VLAB[v]}</span>`,'car:stamp',{task:t.id,case:c.id,verdict:v},`ca-sbtn ${v}`)).join('')}
-    </div></section>`;
+  return `<section class="ca-case">${memo}${paperView(t,c,x)}${c.tip?`<p class="ca-tip">💡 ${x.esc(c.tip)}</p>`:''}
+    <div class="ca-tools"><small>${n?`⭕ Đã khoanh ${n}/${max} chỗ`:'Chạm vào ô trên giấy để khoanh chỗ nghi sai'}</small>${c.hinted?'':x.cmd('💡 Gợi ý','ca_hint',{task:t.id,case:c.id},'ghost small')}</div></section>`;
+}
+function deskDoc(t,x){
+  const cs=t.cases||[],c=caseOf(t,x),tray=t.tray||{};
+  const chips=cs.map((v,i)=>{
+    const st=v.stamp?(RES[v.result]||['•'])[0]:'';
+    return btn(x,`<b>${i+1}</b><span aria-hidden="true">${DOC_ICON[v.doc]||'📄'}</span>${st?`<i>${st}</i>`:''}`,'car:pick',{task:t.id,case:v.id},`ca-qchip ${v.id===c?.id?'active':''} ${v.stamp?'stamped '+(v.result||''):''}`)
+      .replace('<button ',`<button aria-label="Bộ ${i+1}${v.stamp?' · đã đóng dấu':''}" `);
+  }).join('');
+  return `<nav class="ca-queue" aria-label="Khay chứng từ"><span class="ca-qlabel">🗂️ Khay</span>${chips}<small>${tray.stamped||0}/${tray.total||cs.length} đã đóng dấu</small></nav>
+    ${c?caseCard(t,c,x):''}`;
+}
+function deskBar(t,x){
+  const cs=t.cases||[],c=caseOf(t,x),tray=t.tray||{},i=cs.indexOf(c);
+  if(tray.ready&&t.status!=='completed')return bar(x,t,`Đã đóng dấu đủ ${tray.total} bộ. Chốt khay để báo ${BOSS}.`,x.confirmCmd(`📤 Chốt khay · ${tray.ok}/${tray.total} chuẩn`,'ca_submit',{task:t.id},'Chốt khay và báo kết quả cho chị Hạnh?','primary'));
+  if(!c)return bar(x,t,'Khay đang trống.');
+  if(c.stamp){
+    const next=cs.find(v=>!v.stamp),[ic,label]=RES[c.result]||['•',''];
+    return bar(x,t,`Bộ ${i+1}: ${ic} ${label}`,next?btn(x,'Bộ tiếp theo ›','car:pick',{task:t.id,case:next.id},'primary'):'');
+  }
+  const n=(c.circles||[]).length;
+  const stamps=['approve','escalate','reject'].map(v=>btn(x,`<span>${VLAB[v]}</span>`,'car:stamp',{task:t.id,case:c.id,verdict:v},`ca-sbtn ${v}`)).join('');
+  return bar(x,t,`Bộ ${i+1}/${cs.length} · ${n?`đã khoanh ${n} chỗ — chọn dấu`:'soi giấy rồi đóng dấu'}`,`<div class="ca-stampbar" role="group" aria-label="Đóng dấu">${stamps}</div>`);
 }
 /** Reference tables as scannable cards: first column is the name, the rest are labelled facts. */
 function refList(d,x){
@@ -243,8 +240,8 @@ function binder(t,x){
   let sel=views(x)[t.id];if(!opened.some(d=>d.id===sel))sel=null;
   const doc=opened.find(d=>d.id===sel);
   const lag=x.room.data?.today?.mod?.id==='lag';
-  const tabs=docs.map(d=>d.closed?btn(x,`<span class="ca-doc-ico">📁</span><span class="grow">${x.esc(d.title)}<small>Mở · ${lag?12:6} phút</small></span>`,'car:open',{task:t.id,doc:d.id},'ca-tab closed'):btn(x,`<span class="ca-doc-ico">📖</span><span class="grow">${x.esc(d.title)}<small>${d.id===sel?'Đang xem · chạm để gấp':'Chạm để xem'}</small></span>`,'car:view',{task:t.id,doc:d.id===sel?'':d.id},`ca-tab ${d.id===sel?'active':''}`)).join('');
-  return `<section class="ca-binder"><h4 class="ca-sec">📚 Sổ tra cứu <small>${opened.length}/${docs.length} đã mở</small></h4><div class="ca-tabs">${tabs}</div>
+  const tabs=docs.map(d=>d.closed?btn(x,`<span class="ca-doc-ico" aria-hidden="true">📁</span><span class="grow">${x.esc(d.title)}<small>Mở · ${lag?12:6} phút</small></span>`,'car:open',{task:t.id,doc:d.id},'ca-tab closed'):btn(x,`<span class="ca-doc-ico" aria-hidden="true">📖</span><span class="grow">${x.esc(d.title)}<small>${d.id===sel?'Đang xem · chạm để gấp':'Chạm để xem'}</small></span>`,'car:view',{task:t.id,doc:d.id===sel?'':d.id},`ca-tab ${d.id===sel?'active':''}`)).join('');
+  return `<section class="ca-binder"><h3 class="ok-h">📚 Sổ tra cứu <small>${opened.length}/${docs.length} đã mở</small></h3><div class="ca-tabs">${tabs}</div>
     ${doc?`<article class="ca-viewer"><header><b>${x.esc(doc.title)}</b><small>Nguồn: ${x.esc(doc.source)}</small></header>${refList(doc,x)}</article>`:''}</section>`;
 }
 function trayRecap(x){
@@ -255,79 +252,71 @@ function trayRecap(x){
     const [ic,label]=RES[c.result]||['•',''];
     return `<li class="${x.esc(c.result||'')}"><b>${ic} Bộ ${i+1} · ${x.esc(label)}</b><span>Dấu của bạn: ${VLAB[c.stamp]||'—'}${c.result!=='ok'?` · Cần: ${VLAB[c.truth?.v]||''}`:''}</span>${c.result!=='ok'&&c.truth?.why?`<small>${x.esc(c.truth.why)}</small>`:''}</li>`;
   }).join('');
-  return `<section class="ca-recap" role="status"><h4>🗂️ Khay vừa chốt · ${ok}/${cs.length} bộ chuẩn</h4><ul>${li}</ul></section>`;
-}
-function deskView(t,x){
-  const cs=t.cases||[],c=caseOf(t,x),desk=t.tray||{};
-  const chips=cs.map((v,i)=>{
-    const st=v.stamp?(RES[v.result]||['•'])[0]:'';
-    return btn(x,`<b>${i+1}</b><span>${DOC_ICON[v.doc]||'📄'}</span>${st?`<i>${st}</i>`:''}`,'car:pick',{task:t.id,case:v.id},`ca-qchip ${v.id===c?.id?'active':''} ${v.stamp?'stamped '+(v.result||''):''}`);
-  }).join('');
-  const ready=desk.ready&&t.status!=='completed';
-  const foot=ready?`<div class="ca-ready">${x.confirmCmd(`📤 Chốt khay · ${desk.ok}/${desk.total} chuẩn`,'ca_submit',{task:t.id},'Chốt khay và báo kết quả cho chị Hạnh?','primary full big')}</div>`:'';
-  return `<div class="ca-desk">
-    <div class="ca-desk-main"><nav class="ca-queue" aria-label="Khay chứng từ">${chips}<small>${desk.stamped||0}/${desk.total||cs.length} đã đóng dấu</small></nav>
-      ${foot}${c?caseCard(t,c,x):''}</div>
-    <div class="ca-desk-side">${rulesBox(x)}${binder(t,x)}</div>
-  </div>`;
+  return `<section class="ca-recap" role="status"><h3 class="ok-h">🗂️ Khay vừa chốt · ${ok}/${cs.length} bộ chuẩn</h3><ul>${li}</ul></section>`;
 }
 
-/* ---------------------------------------------------------------- DOM → draft sync (no input hook: tick + actions) */
-function readEntry(box){
-  const out={debit:[],credit:[]};
-  box.querySelectorAll('.ca-vrow').forEach(r=>out[r.dataset.side].push({account:r.querySelector('select').value,amount:r.querySelector('input').value}));
-  return out;
+/* ---------------------------------------------------------------- the office desktop */
+const strip=(x,t)=>statusStrip(x,t,{boss:BOSS,op:'ca_overtime'});
+const todayRules=x=>rulesList(x,x.room.data?.today?.rules||[],'Quy định đang áp dụng');
+function currentMail(t,x){
+  const timed=typeof t.due==='number',due=dueOf(t,x),k=t.kind_info||{};
+  const chips=[
+    `<span class="ok-tag">${x.esc(k.emoji||'🧾')} ${x.esc(k.name||'Hồ sơ kế toán')}</span>`,
+    due?`<span class="ok-tag ${due.overdue?'bad':due.soon?'warn':'info'}">⏰ ${x.esc(dueText(due))}</span>`:'',
+    !timed?`<span class="ok-tag ${t.patience<50?'warn':''}">Kiên nhẫn ${Number(t.patience)||0}%</span>`:'',
+  ].join('');
+  const help=t.known?'':`<p class="ok-note">${t.variant==='desk'?'Soi từng bộ theo quy định hôm nay rồi đóng dấu. Duyệt nhầm là bị trừ tiền.':'Nhận hồ sơ để xem đề bài, chứng từ và các bước cần làm.'}</p>`;
+  return `<p class="ok-quote">“${x.esc(t.opening)}”</p>${t.brief?`<p class="ok-brief">🎯 ${x.esc(t.brief)}</p>`:''}<div class="ok-chips">${chips}</div>${help}`;
 }
-function sync(root,x){
-  const dr=drafts(x);
-  root.querySelectorAll('[data-multi]').forEach(b=>{dr[b.dataset.multi]=[...b.querySelectorAll('input:checked')].map(i=>i.value);});
-  root.querySelectorAll('[data-num]').forEach(i=>{dr[i.dataset.num]=i.value;});
-  root.querySelectorAll('[data-match]').forEach(b=>{const o={};b.querySelectorAll('select').forEach(s=>{if(s.value)o[s.dataset.left]=s.value;});dr[b.dataset.match]=o;});
-  root.querySelectorAll('[data-fields]').forEach(b=>{const o={};b.querySelectorAll('[data-field]').forEach(s=>{o[s.dataset.field]=s.value;});dr[b.dataset.fields]=o;});
-  root.querySelectorAll('[data-entry]').forEach(b=>{dr[b.dataset.entry]=readEntry(b);});
-  root.querySelectorAll('input[type=radio][name^="ca-note-"]:checked').forEach(r=>{(x.ui.note??={})[r.name.slice(8)]=r.value;});
+function nextText(t){
+  if(t.variant==='desk'){
+    if(!t.known)return 'Nhận khay chứng từ';
+    const left=(t.cases||[]).filter(c=>!c.stamp).length;
+    return left?`Soi và đóng dấu: còn ${left}/${(t.cases||[]).length} bộ`:'Chốt khay, báo kết quả';
+  }
+  if(!t.known)return 'Nhận hồ sơ từ người giao việc';
+  const st=(t.proc||[]).find(s=>s.state==='current');
+  if(st){
+    const miss=(st.docs||[]).filter(id=>(t.docs||[]).find(d=>d.id===id)?.closed);
+    return miss.length?'Mở chứng từ gốc trước khi làm bước này':`Bước ${(t.proc_state?.at||0)+1}/${t.proc_state?.total||0}: ${st.title}`;
+  }
+  return t.handover?'Đã nộp hồ sơ':'Chọn ghi chú bàn giao và nộp hồ sơ';
 }
-const rootOf=el=>el.closest('.career-job')||document;
-const intOf=v=>{const s=String(v??'').trim();return /^-?\d+$/.test(s)?Number(s):null;};
-function stepOf(x,data){
-  const t=(x.room.tasks||[]).find(v=>v.id===data.task);
-  return [t,t&&(t.proc||[]).find(s=>s.id===data.step)];
+function dossierBar(t,x){
+  const st=currentStep(t);
+  if(st){
+    const miss=(st.docs||[]).filter(id=>(t.docs||[]).find(d=>d.id===id)?.closed);
+    const text=miss.length?`Mở “${(t.docs||[]).find(d=>d.id===miss[0])?.title||'chứng từ'}” trước`:st.kind==='choice'?`${st.title}: chạm một đáp án`:nextText(t);
+    return bar(x,t,x.esc(text),confirmBtn(t,st,x));
+  }
+  if(t.handover_options)return bar(x,t,'Chọn ghi chú bàn giao rồi nộp.',btn(x,'📤 Nộp hồ sơ','car:submit',{task:t.id},'primary'));
+  return bar(x,t,x.esc(nextText(t)));
 }
-const send=(x,t,st,answer)=>x.send(P+'step',{task:t.id,step:st.id,answer});
 
 export default {
   id:'corp_accounting',
   css:true,
-  next(t){
-    if(t.variant==='desk'){
-      if(!t.known)return 'Nhận khay chứng từ';
-      const left=(t.cases||[]).filter(c=>!c.stamp).length;
-      return left?`Soi và đóng dấu: còn ${left}/${(t.cases||[]).length} bộ`:'Chốt khay, báo kết quả';
-    }
-    if(!t.known)return 'Nhận hồ sơ từ người giao việc';
-    const st=(t.proc||[]).find(s=>s.state==='current');
-    if(st){
-      const miss=(st.docs||[]).filter(id=>(t.docs||[]).find(d=>d.id===id)?.closed);
-      return miss.length?'Mở chứng từ gốc trước khi làm bước này':`Bước ${(t.proc_state?.at||0)+1}/${t.proc_state?.total||0}: ${st.title}`;
-    }
-    return t.handover?'Đã nộp hồ sơ':'Chọn ghi chú bàn giao và nộp hồ sơ';
-  },
+  next:nextText,
   job(t,x){
-    const who=x.npc(t.npc),k=t.kind_info||{};
-    const timed=typeof t.due==='number';
-    const head=t.known&&timed?`<article class="ca-head compact"><div class="ca-who">${x.portrait(who,40)}<div class="grow"><small class="ca-small">${x.esc(k.emoji||'🧾')} ${x.esc(who.display_name)}${who.role?' · '+x.esc(who.role):''}</small><p class="ca-quote">“${x.esc(t.opening)}”</p></div></div></article>`
-      :`<article class="ca-head"><div class="ca-who">${x.portrait(who,52)}<div class="grow"><span class="ca-kind">${x.esc(k.emoji||'🧾')} ${x.esc(k.name||'Hồ sơ kế toán')}</span><h3>${x.esc(t.title)}</h3><p class="ca-quote">“${x.esc(t.opening)}”</p><small class="ca-small">${x.esc(who.display_name)}${who.role?' · '+x.esc(who.role):''}</small></div></div>
-      ${timed?'':`<div class="patience" title="Kiên nhẫn của người giao việc"><div class="bar ${t.patience<50?'low':''}"><i style="width:${Number(t.patience)||0}%"></i></div><small>${Number(t.patience)||0}%</small></div>`}</article>`;
-    const desk=t.variant==='desk',bar=officeBar(t,x);
-    x.ui.lastTray=desk?t.id:null;
-    if(!t.known)return `<div class="career-job ca">${bar}${head}<div class="ca-card">${x.cmd(desk?'📥 Nhận khay chứng từ':'📥 Nhận hồ sơ','ask',{task:t.id},'primary full big')}<p class="ca-small">${desk?'Soi từng bộ theo quy định hôm nay rồi đóng dấu. Duyệt nhầm là bị trừ tiền.':'Nhận hồ sơ để xem đề bài, chứng từ và các bước cần làm.'}</p></div>${desk?rulesBox(x):ledgerPanel(x)}</div>`;
-    if(desk)return `<div class="career-job ca">${bar}${head}${deskView(t,x)}</div>`;
-    return `<div class="career-job ca">${bar}${head}<p class="ca-brief">🎯 ${x.esc(t.brief||'')}</p>
-      <div class="ca-bench"><div class="ca-main">${docsPanel(t,x)}${stepsPanel(t,x)}</div>${ledgerPanel(x)}</div></div>`;
+    const isDesk=t.variant==='desk',rules=x.room.data?.today?.rules||[],fresh=rules.filter(r=>r.new).length;
+    x.ui.lastTray=isDesk?t.id:null;
+    const tabs=[{id:'inbox',icon:'📥',label:'Hộp thư',badge:openTasks(x).filter(v=>!v.known).length||''},
+      {id:'doc',icon:'📂',label:'Hồ sơ'},{id:'rules',icon:'📋',label:'Quy định',badge:fresh||'',tone:'warn'},
+      ...(isDesk?[]:[{id:'books',icon:'📒',label:'Sổ sách'}])];
+    const inbox=inboxPane(x,{tasks:taskMails(x,t,currentMail(t,x)),other:dayMails(x,{boss:BOSS,key:`${t.id}:${t.known?1:0}`})});
+    if(!t.known){
+      const label=isDesk?'📥 Nhận khay chứng từ':'📥 Nhận hồ sơ';
+      return desk(x,t,{cls:'ca',tabs,strip:strip(x,t),panes:{inbox,
+        doc:`<p class="ok-empty"><span aria-hidden="true">✉️</span><b>${x.esc(t.title)}</b><span>${isDesk?'Khay chứng từ còn nằm trên bàn chị Hạnh.':'Hồ sơ còn trong phong bì.'} Bấm “${isDesk?'Nhận khay':'Nhận hồ sơ'}” để mở.</span></p>`,
+        rules:todayRules(x),books:booksPane(x)},
+        bar:bar(x,t,x.esc(nextText(t)),x.cmd(label,'ask',{task:t.id},'primary'),true)});
+    }
+    if(isDesk)return desk(x,t,{cls:'ca',tabs,strip:strip(x,t),panes:{inbox,doc:deskDoc(t,x),rules:todayRules(x)+binder(t,x)},bar:deskBar(t,x)});
+    return desk(x,t,{cls:'ca',tabs,strip:strip(x,t),panes:{inbox,doc:stepCard(t,x)+docsPanel(t,x),rules:todayRules(x)||'<p class="ok-note">Hôm nay chưa có quy định mới.</p>',books:booksPane(x)},bar:dossierBar(t,x)});
   },
   idle(x){
     const d=x.room.data||{};if(!d.office)return '';
-    return `<div class="career-job ca">${trayRecap(x)}${officeBar(null,x)}${rulesBox(x)}</div>`;
+    return idleDesk(x,{cls:'ca',strip:strip(x,null),recap:trayRecap(x),tasks:taskMails(x,null),other:dayMails(x,{boss:BOSS}),rules:todayRules(x)});
   },
   summary(data,x){
     if(!data||typeof data!=='object')return '';
@@ -349,6 +338,7 @@ export default {
     return `<article class="card space-top ca-sum"><h4 class="section-title">🗂️ Bàn kế toán hôm nay</h4>${audit}${trust}${rows.length?`<div class="kv">${rows.join('')}</div>`:''}</article>`;
   },
   tick(root,x){
+    keepBarAboveFooter(root);
     sync(root,x);
     root.querySelectorAll('[data-entry]').forEach(b=>{
       const e=readEntry(b),sum=side=>e[side].reduce((s,r)=>s+(intOf(r.amount)>0?intOf(r.amount):0),0);
@@ -361,6 +351,7 @@ export default {
     });
   },
   actions:{
+    tab:switchTab,
     async open(data,el,x){views(x)[data.task]=data.doc;await x.send(P+'open',{task:data.task,doc:data.doc});},
     view(data,el,x){sync(rootOf(el),x);views(x)[data.task]=data.doc;x.render();},
     pick(data,el,x){sels(x)[data.task]=data.case;x.ui.fresh=null;x.render();document.querySelector('.career-job.ca .ca-queue')?.scrollIntoView({block:'nearest'});},
@@ -444,3 +435,26 @@ export default {
     },
   },
 };
+
+/* ---------------------------------------------------------------- DOM → draft sync (no input hook: tick + actions) */
+function readEntry(box){
+  const out={debit:[],credit:[]};
+  box.querySelectorAll('.ca-vrow').forEach(r=>out[r.dataset.side].push({account:r.querySelector('select').value,amount:r.querySelector('input').value}));
+  return out;
+}
+function sync(root,x){
+  const dr=drafts(x);
+  root.querySelectorAll('[data-multi]').forEach(b=>{dr[b.dataset.multi]=[...b.querySelectorAll('input:checked')].map(i=>i.value);});
+  root.querySelectorAll('[data-num]').forEach(i=>{dr[i.dataset.num]=i.value;});
+  root.querySelectorAll('[data-match]').forEach(b=>{const o={};b.querySelectorAll('select').forEach(s=>{if(s.value)o[s.dataset.left]=s.value;});dr[b.dataset.match]=o;});
+  root.querySelectorAll('[data-fields]').forEach(b=>{const o={};b.querySelectorAll('[data-field]').forEach(s=>{o[s.dataset.field]=s.value;});dr[b.dataset.fields]=o;});
+  root.querySelectorAll('[data-entry]').forEach(b=>{dr[b.dataset.entry]=readEntry(b);});
+  root.querySelectorAll('input[type=radio][name^="ca-note-"]:checked').forEach(r=>{(x.ui.note??={})[r.name.slice(8)]=r.value;});
+}
+function rootOf(el){return el.closest('.career-job')||document;}
+function intOf(v){const s=String(v??'').trim();return /^-?\d+$/.test(s)?Number(s):null;}
+function stepOf(x,data){
+  const t=(x.room.tasks||[]).find(v=>v.id===data.task);
+  return [t,t&&(t.proc||[]).find(s=>s.id===data.step)];
+}
+function send(x,t,st,answer){return x.send(P+'step',{task:t.id,step:st.id,answer});}

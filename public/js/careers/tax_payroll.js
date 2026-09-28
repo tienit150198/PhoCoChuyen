@@ -1,4 +1,10 @@
-/** Dịch vụ Thuế & Tiền lương Minh Bạch — paper tray, step-by-step worksheet and a desk calculator. */
+/** Dịch vụ Thuế & Tiền lương Minh Bạch — the payroll desk inside the shared office desktop (office_kit.js):
+ *  📥 Hộp thư (việc chị Hồng giao, khiếu nại lương), 📂 Hồ sơ (bảng lương nháp soát từng người, hoặc
+ *  tờ khai làm từng bước với giấy tờ gốc và máy tính bàn), 📋 Quy định (quy định kỳ lương + sổ tay luật),
+ *  and a sticky bar with the next step and the main action. */
+import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,dueOf,dueText,openTasks} from './office_kit.js';
+
+const BOSS='Chị Hồng';
 const fmtN=n=>Number(n).toLocaleString('vi-VN');
 const lab=(list,id)=>list?.find(o=>o.id===id)?.label??id;
 const state=(x,t)=>x.ui[t.id]??={paper:0,sel:{},multi:{},order:{}};
@@ -39,6 +45,11 @@ function paperView(p,x){
     :`<dl class="tp-kv">${p.rows.map(([k,v])=>`<dt>${x.esc(k)}</dt><dd class="${NUMERIC.test(String(v))?'num':''}">${x.esc(v)}</dd>`).join('')}</dl>`;
   return `<article class="tp-paper"><h4>${x.esc(p.title)}</h4>${body}${p.note?`<p class="tp-paper-note">✎ ${x.esc(p.note)}</p>`:''}</article>`;
 }
+/** Paper tabs (one paper at a time). */
+function paperTabs(t,x,label){
+  const u=state(x,t),idx=Math.min(u.paper,t.papers.length-1);
+  return {idx,html:`<div class="tp-tabs" role="toolbar" aria-label="${x.esc(label)}">${t.papers.map((q,i)=>`<button type="button" class="tp-tab ${i===idx?'on':''}" data-action="car:paper" data-task="${x.esc(t.id)}" data-i="${i}" aria-pressed="${i===idx}"><span aria-hidden="true">📄</span> ${x.esc(q.title)}</button>`).join('')}</div>`};
+}
 
 function solvedText(st,x){
   const a=st.answer;
@@ -56,84 +67,58 @@ function solvedText(st,x){
 function inputView(st,t,x){
   const u=state(x,t),sid=x.esc(st.id),tid=x.esc(t.id);
   switch(st.kind){
-    case'choice':return `<div class="tp-choices">${st.options.map(o=>`<button type="button" class="tp-choice ${u.sel[st.id]===o.id?'on':''}" data-action="car:pick" data-task="${tid}" data-step="${sid}" data-v="${x.esc(o.id)}" aria-pressed="${u.sel[st.id]===o.id}">${x.esc(o.label)}</button>`).join('')}</div>`;
+    case'choice':return `<div class="tp-choices">${st.options.map(o=>`<button type="button" class="tp-choice ${u.sel[st.id]===o.id?'on':''}" data-action="car:pick" data-task="${tid}" data-step="${sid}" data-v="${x.esc(o.id)}" aria-pressed="${u.sel[st.id]===o.id}"><span class="tp-box radio" aria-hidden="true">${u.sel[st.id]===o.id?'●':''}</span>${x.esc(o.label)}</button>`).join('')}</div>`;
     case'multi':{const on=u.multi[st.id]||[];return `<div class="tp-choices">${st.options.map(o=>`<button type="button" class="tp-choice check ${on.includes(o.id)?'on':''}" data-action="car:toggle" data-task="${tid}" data-step="${sid}" data-v="${x.esc(o.id)}" aria-pressed="${on.includes(o.id)}"><span class="tp-box" aria-hidden="true">${on.includes(o.id)?'✓':''}</span>${x.esc(o.label)}</button>`).join('')}</div>`;}
     case'number':return `<label class="tp-cell-row"><span>Đáp số (xu)</span><input class="input tp-num" id="${fid(t,st.id)}" data-preserve type="text" inputmode="numeric" autocomplete="off" placeholder="0"></label>`;
     case'fields':return `<table class="tp-cells edit"><tbody>${st.fields.map(f=>`<tr><th scope="row"><label for="${fid(t,st.id,f.id)}">${x.esc(f.label)}</label></th><td>${f.options?`<select id="${fid(t,st.id,f.id)}" data-preserve><option value="">Chọn…</option>${f.options.map(o=>`<option value="${x.esc(o.id)}">${x.esc(o.label)}</option>`).join('')}</select>`:`<input class="input tp-num" id="${fid(t,st.id,f.id)}" data-preserve type="text" inputmode="numeric" autocomplete="off" placeholder="0">`}</td></tr>`).join('')}</tbody></table>`;
     case'match':return `<div class="tp-match">${st.left.map(l=>`<label class="tp-cell-row"><span>${x.esc(l.label)}</span><select id="${fid(t,st.id,l.id)}" data-preserve><option value="">Chọn…</option>${st.right.map(r=>`<option value="${x.esc(r.id)}">${x.esc(r.label)}</option>`).join('')}</select></label>`).join('')}</div>`;
     case'order':{
       const picked=u.order[st.id]||[],rest=st.items.filter(o=>!picked.includes(o.id));
-      return `<ol class="tp-order">${picked.map((id,i)=>`<li><span class="tp-no">${i+1}</span><span class="grow">${x.esc(lab(st.items,id))}</span><button type="button" class="btn small ghost" data-action="car:unpick" data-task="${tid}" data-step="${sid}" data-i="${i}" aria-label="Bỏ bước ${i+1}">✕</button></li>`).join('')||'<li class="muted small">Chạm các việc bên dưới theo đúng thứ tự.</li>'}</ol>
+      return `<ol class="tp-order">${picked.map((id,i)=>`<li><span class="tp-no">${i+1}</span><span class="grow">${x.esc(lab(st.items,id))}</span><button type="button" class="btn small ghost" data-action="car:unpick" data-task="${tid}" data-step="${sid}" data-i="${i}" aria-label="Bỏ bước ${i+1}">✕</button></li>`).join('')||'<li class="tp-order-empty">Chạm các việc bên dưới theo đúng thứ tự.</li>'}</ol>
         <div class="tp-choices">${rest.map(o=>`<button type="button" class="tp-choice" data-action="car:opick" data-task="${tid}" data-step="${sid}" data-v="${x.esc(o.id)}">＋ ${x.esc(o.label)}</button>`).join('')}</div>`;
     }
   }
-  return '<p class="muted">Bước này chưa có giao diện.</p>';
+  return '<p class="ok-note">Bước này chưa có giao diện.</p>';
 }
 
-function sheet(t,x){
-  return `<ol class="tp-steps">${t.steps.map((st,i)=>{
-    const head=`<div class="tp-step-head"><span class="tp-no">${st.state==='solved'?'✓':i+1}</span><b>${x.esc(st.title)}</b>${st.tag==='ethic'?x.pill('🔒 bảo mật & quy trình'):''}${t.progress.attempts[st.id]>1&&st.state!=='locked'?`<small class="muted">${t.progress.attempts[st.id]} lần kiểm</small>`:''}</div>`;
-    if(st.state==='solved')return `<li class="tp-step solved">${head}<div class="tp-answer">${solvedText(st,x)}</div>${st.explain?`<p class="tp-explain">${x.esc(st.explain)}</p>`:''}</li>`;
-    if(st.state==='locked')return `<li class="tp-step locked">${head}</li>`;
-    const hint=(t.progress.attempts[st.id]||0)>0?`<p class="tp-hint">💡 ${x.esc(st.hints[Math.min(st.hints.length,t.progress.attempts[st.id])-1])}</p>`:'';
-    return `<li class="tp-step current">${head}<p>${x.esc(st.prompt)}</p>${inputView(st,t,x)}${hint}
-      <div class="row wrap space-top">${x.button('✔ Kiểm tra','car:check',{task:t.id,step:st.id,kind:st.kind},'primary')}</div></li>`;
-  }).join('')}</ol>`;
+/** The worksheet: the current step big, done steps folded away. */
+function worksheet(t,x){
+  const p=t.progress||{at:0,total:0,attempts:{}},steps=t.steps||[],cur=steps[p.at];
+  const solved=steps.filter(s=>s.state==='solved'),last=solved[solved.length-1];
+  const done=solved.length?fold(`✓ ${solved.length} bước đã xong <small>xem lại</small>`,`<ol class="tp-steps">${solved.map(st=>`<li class="tp-step solved"><div class="tp-step-head"><span class="tp-no" aria-hidden="true">✓</span><b>${x.esc(st.title)}</b></div><div class="tp-answer">${solvedText(st,x)}</div>${st.explain?`<p class="tp-explain">${x.esc(st.explain)}</p>`:''}</li>`).join('')}</ol>`):'';
+  let body='';
+  if(cur&&cur.state==='current'){
+    const tries=p.attempts[cur.id]||0;
+    const hint=tries>0?`<p class="tp-hint">💡 ${x.esc(cur.hints[Math.min(cur.hints.length,tries)-1])}</p>`:'';
+    body=`<article class="tp-work"><header class="tp-work-head"><span class="tp-no" aria-hidden="true">${p.at+1}</span><div class="grow"><small>Bước ${p.at+1}/${p.total}${p.total-p.at-1?` · còn ${p.total-p.at-1} bước sau`:''}${tries>1?` · ${tries} lần kiểm`:''}</small><h3>${x.esc(cur.title)}</h3></div>${cur.tag==='ethic'?'<span class="ok-tag warn">🔒 bảo mật & quy trình</span>':''}</header>
+      <p class="tp-prompt">${x.esc(cur.prompt)}</p>${inputView(cur,t,x)}${hint}</article>`;
+  }else if(!t.filed)body=`<article class="tp-work done"><header class="tp-work-head"><span class="tp-no" aria-hidden="true">📤</span><div class="grow"><small>Bước cuối</small><h3>Nộp / bàn giao hồ sơ</h3></div></header><p class="tp-prompt">Mọi ô đã khớp. Bấm “Nộp” ở thanh dưới — sau khi nộp không sửa được nữa.</p></article>`;
+  const pct=p.total?Math.round(p.at/p.total*100):0;
+  return `<section class="tp-sheet"><h3 class="ok-h">🧮 Bảng tính hồ sơ <small>${p.at}/${p.total} bước</small></h3>
+    <div class="tp-progress" role="progressbar" aria-label="Tiến độ hồ sơ" aria-valuemin="0" aria-valuemax="${p.total}" aria-valuenow="${p.at}"><i style="width:${pct}%"></i></div>
+    ${last&&cur&&last.explain?`<p class="tp-lastok">✓ <b>${x.esc(last.title)}</b> — ${x.esc(last.explain)}</p>`:''}${body}${done}</section>`;
 }
 
 function calculator(x){
   const hist=x.ui.calc||[];
-  return `<section class="tp-calc" aria-label="Máy tính bàn"><h4>🧮 Máy tính bàn</h4>
+  return `<section class="tp-calc" aria-label="Máy tính bàn"><h3 class="ok-h">🧮 Máy tính bàn</h3>
     <div class="tp-calc-row"><input class="input" id="tp-calc" data-preserve type="text" inputmode="decimal" autocomplete="off" placeholder="vd: 12.400 × 8%" aria-label="Phép tính">${x.button('=','car:calc',{},'primary')}</div>
-    <ul class="tp-tape">${hist.map(h=>`<li><span>${x.esc(h.expr)}</span><b>${x.esc(h.out)}</b></li>`).join('')||'<li class="muted small">Dấu chấm là phân cách hàng nghìn; % hiểu là chia 100. Kết quả làm tròn xuống ghi kèm.</li>'}</ul></section>`;
+    <ul class="tp-tape">${hist.map(h=>`<li><span>${x.esc(h.expr)}</span><b>${x.esc(h.out)}</b></li>`).join('')||'<li class="tp-tape-help">Dấu chấm là phân cách hàng nghìn; % hiểu là chia 100. Kết quả làm tròn xuống ghi kèm.</li>'}</ul></section>`;
 }
 
-function rules(x){
-  return `<details class="tp-rules"><summary>📘 Quy định: lương, bảo hiểm, thuế, hạn nộp</summary>${(x.cc.rules||[]).map(g=>`<h5>${x.esc(g.emoji+' '+g.group)}</h5><ul>${g.lines.map(l=>`<li>${x.esc(l)}</li>`).join('')}</ul>`).join('')}</details>`;
+/** Law notes (lương, bảo hiểm, thuế, hạn nộp) as one fold per group. */
+function lawBook(x){
+  const gs=x.cc.rules||[];if(!gs.length)return '';
+  return `<section class="tp-law"><h3 class="ok-h">📘 Sổ tay quy định</h3>${gs.map(g=>fold(`${x.esc(g.emoji)} ${x.esc(g.group)}`,`<ul class="tp-law-list">${g.lines.map(l=>`<li>${x.esc(l)}</li>`).join('')}</ul>`)).join('')}</section>`;
 }
+const todayRules=x=>rulesList(x,x.room.data?.today?.rules||[],`Quy định kỳ lương tháng ${x.room.data?.today?.month??''}`);
 
-/* ---------------------------------------------------------------- office: clock, deadline, trust, luck of the day */
-const hhmm=m=>`${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
-const span=m=>m>=60?`${Math.floor(m/60)} giờ${m%60?` ${m%60} phút`:''}`:`${m} phút`;
-function dueOf(t,x){
-  if(typeof t?.due!=='number')return null;
-  const o=x.room.data?.office||{},clock=Number(o.clock)||480,day=x.room.day;
-  const overdue=day>(t.due_day??day)||clock>t.due,left=t.due-clock;
-  return {time:hhmm(t.due),overdue,soon:!overdue&&left<=45,left:Math.max(0,left)};
-}
-function dueChip(t,x){
-  const due=t&&t.status!=='completed'?dueOf(t,x):null;
-  return due?`<span class="tp-chip ${due.overdue?'bad':due.soon?'warn':''}">⏰ Hạn ${x.esc(due.time)} · ${due.overdue?'đã trễ':'còn '+span(due.left)}</span>`:'';
-}
-function officeBar(t,x){
-  const d=x.room.data||{},o=d.office;if(!o)return '';
-  const mod=d.today?.mod,trust=Math.max(0,Math.min(100,Number(o.trust)||0)),pay=mod?.id==='crunch'?18:12;
-  const ask=`Ở lại tới 20:00? Được trả ${pay} xu, mai vào muộn 30 phút vì mệt.`;
-  let alert='';
-  if(o.locked)alert=`<p class="tp-alert bad">🔒 20:00 — văn phòng khóa cửa. Khép ngày, mai làm tiếp; việc dở được giữ nguyên.</p>`;
-  else if(o.closed)alert=`<div class="tp-alert warn"><span>🌇 17:30 — hết giờ hành chính.</span>${x.confirmCmd(`🌙 Ở lại tăng ca (+${pay} xu)`,'tp_overtime',{},ask,'small')}</div>`;
-  else if(o.can_overtime)alert=`<div class="tp-alert"><span>Sắp hết giờ. Còn việc dở?</span>${x.confirmCmd(`🌙 Đăng ký tăng ca (+${pay} xu)`,'tp_overtime',{},ask,'ghost small')}</div>`;
-  return `<section class="tp-office" aria-label="Giờ làm việc hôm nay">
-    <div class="tp-obar"><span class="tp-clock"><b>🕗 ${x.esc(o.time)}</b><small>${o.overtime?'tăng ca tới 20:00':o.lunch?'nghỉ trưa 12:00':'tan sở 17:30'}</small></span>
-      ${dueChip(t,x)}
-      <span class="tp-trust" title="Chị Hồng tin bạn ${trust}/100"><small>Chị Hồng: ${x.esc(o.trust_label||'')}</small><span class="bar ${trust<35?'low':trust>=75?'high':''}"><i style="width:${trust}%"></i></span></span></div>
-    ${mod&&mod.id!=='normal'?`<p class="tp-mod"><b>${x.esc(mod.emoji)} ${x.esc(mod.name)}</b> ${x.esc(mod.text)}</p>`:''}
-    ${o.tired?'<p class="small muted">😮‍💨 Hôm qua tăng ca nên sáng nay vào muộn 30 phút.</p>':''}
-    ${alert}</section>`;
-}
-function rulesBox(x){
-  const rs=x.room.data?.today?.rules||[];if(!rs.length)return '';
-  const fresh=rs.filter(r=>r.new).length;
-  return `<section class="tp-rulebox" aria-label="Quy định kỳ lương này"><h4>📋 Quy định kỳ lương tháng ${x.esc(x.room.data?.today?.month??'')} ${fresh?`<span class="tp-new">${fresh} mới</span>`:''}</h4>
-    <div class="tp-rules-row">${rs.map(r=>`<article class="tp-rule ${r.new?'new':''}"><b>${x.esc(r.emoji)} ${x.esc(r.title)}${r.new?' <em>MỚI</em>':''}</b><p>${x.esc(r.text)}</p></article>`).join('')}</div></section>`;
-}
-function claimsBox(x){
-  const cl=x.room.data?.claims||[];if(!cl.length)return '';
-  const ch=x.cc.claim_choices||[];
-  return `<section class="tp-claims" aria-label="Khiếu nại lương"><h4>📨 Khiếu nại sau ngày trả lương <span class="tp-new">${cl.length}</span></h4>
-    ${cl.map(c=>`<article class="tp-claim"><div><b>${x.esc(c.name)}</b> · thiếu <b class="num">${fmtN(c.amount)} xu</b><p>${x.esc(c.why)}</p></div>
-      <div class="tp-claim-acts">${ch.map((o,i)=>x.cmd(x.esc(o.label),'tp_claim',{claim:c.id,choice:o.id},i===0?'primary small':'ghost small')).join('')}</div></article>`).join('')}
-    <p class="small muted">Khiếu nại chưa xử lý tới cuối ngày làm chị Hồng mất tin tưởng.</p></section>`;
+/** Claims after payday: messages from staff, answered right in the inbox. */
+function claimMails(x){
+  const cl=x.room.data?.claims||[],ch=x.cc.claim_choices||[];
+  return cl.map(c=>({avatar:'<span class="ok-emoji">📨</span>',from:x.esc(c.name),role:'Khiếu nại lương',tone:'bad',
+    subject:`Thiếu ${fmtN(c.amount)} xu`,
+    body:`<p>${x.esc(c.why)}</p><div class="tp-claim-acts">${ch.map((o,i)=>x.cmd(x.esc(o.label),'tp_claim',{claim:c.id,choice:o.id},i===0?'primary small':'ghost small')).join('')}</div><p class="ok-note">Chưa xử lý tới cuối ngày là ${BOSS} mất tin tưởng.</p>`}));
 }
 
 /* ---------------------------------------------------------------- the payroll grid */
@@ -156,13 +141,11 @@ function rowCard(t,r,x){
   let foot='';
   if(r.result){
     const ok=r.result.ok,[ic,label]=RES[ok?'ok':'bad'];
-    foot=`<div class="tp-verdict ${ok?'ok':'bad'}" role="status"><b>${ic} ${label}</b>${(r.truth?.why||[]).map(w=>`<p>${x.esc(w)}</p>`).join('')}${r.result.missed.length?`<p class="small">Sót: ${r.result.missed.length} ô</p>`:''}${r.result.extra.length?`<p class="small">Đánh dấu nhầm: ${r.result.extra.length} ô</p>`:''}${ok&&!(r.truth?.why||[]).length?'<p>Dòng này đúng từ đầu.</p>':''}</div>`;
+    foot=`<div class="tp-verdict ${ok?'ok':'bad'}" role="status"><b>${ic} ${label}</b>${(r.truth?.why||[]).map(w=>`<p>${x.esc(w)}</p>`).join('')}${r.result.missed.length?`<p>Sót: ${r.result.missed.length} ô</p>`:''}${r.result.extra.length?`<p>Đánh dấu nhầm: ${r.result.extra.length} ô</p>`:''}${ok&&!(r.truth?.why||[]).length?'<p>Dòng này đúng từ đầu.</p>':''}</div>`;
   }else if(r.reviewed){
-    const next=(t.rows||[]).find(v=>!v.reviewed);
-    foot=`<p class="tp-done">✓ Đã soát${flags.size?` · ${flags.size} ô cần sửa`:' · không thấy sai'}</p>${next?x.button('Người tiếp theo ›','car:gpick',{task:t.id,row:next.id},'primary full'):''}`;
+    foot=`<p class="tp-done">✓ Đã soát${flags.size?` · ${flags.size} ô cần sửa`:' · không thấy sai'}</p>`;
   }else{
-    foot=`${r.tip?`<p class="tp-hint">💡 ${x.esc(r.tip)}</p>`:''}<div class="tp-row-tools"><small>${flags.size?`🚩 ${flags.size}/${max} ô nghi sai`:'Chạm vào ô sai để đánh dấu'}</small>${r.hinted?'':x.cmd('💡 Gợi ý','tp_hint',{task:t.id,row:r.id},'ghost small')}</div>
-      ${x.cmd(flags.size?`✓ Xong dòng · ${flags.size} ô cần sửa`:'✓ Xong dòng · không thấy sai','tp_row',{task:t.id,row:r.id},'primary full')}`;
+    foot=`${r.tip?`<p class="tp-hint">💡 ${x.esc(r.tip)}</p>`:''}<div class="tp-row-tools"><small>${flags.size?`🚩 ${flags.size}/${max} ô nghi sai`:'Chạm vào ô sai để đánh dấu'}</small>${r.hinted?'':x.cmd('💡 Gợi ý','tp_hint',{task:t.id,row:r.id},'ghost small')}</div>`;
   }
   return `<section class="tp-person"><header><span class="tp-avatar" aria-hidden="true">${x.esc(nameOf(r).split(' ').pop().slice(0,1))}</span><b>${x.esc(nameOf(r))}</b><small>Dòng ${x.esc(r.id.slice(1))}</small></header>
     <div class="tp-cells-grid">${(r.cells||[]).map(cell).join('')}</div>${foot}</section>`;
@@ -177,70 +160,88 @@ function gridRecap(x){
     if(res.extra?.length)notes.push(`đánh dấu nhầm ${res.extra.length} ô`);
     return `<li class="${res.ok?'ok':'bad'}"><b>${res.ok?'✓':'✗'} ${x.esc(nameOf(r))}</b>${why.length?`<span>${why.map(w=>x.esc(w)).join(' · ')}</span>`:'<span>Dòng này đúng từ đầu.</span>'}${notes.length?`<small>${notes.join(' · ')}</small>`:''}</li>`;
   }).join('');
-  return `<section class="tp-recap" role="status"><h4>💸 Bảng lương vừa chuyển · ${Number(g.ok)||0}/${Number(g.total)||t.rows.length} dòng chuẩn</h4><ul>${li}</ul></section>`;
+  return `<section class="tp-recap" role="status"><h3 class="ok-h">💸 Bảng lương vừa chuyển · ${Number(g.ok)||0}/${Number(g.total)||t.rows.length} dòng chuẩn</h3><ul>${li}</ul></section>`;
 }
-function gridView(t,x){
+function gridDoc(t,x){
   const rows=t.rows||[],r=rowOf(t,x),g=t.grid||{};
   const chips=rows.map(v=>{
     const st=v.result?(v.result.ok?'✓':'✗'):v.reviewed?'•':'';
     return x.button(`<span>${x.esc(nameOf(v).split(' ').pop())}</span>${st?`<i>${st}</i>`:''}${(v.flags||[]).length&&!v.result?'<i>🚩</i>':''}`,'car:gpick',{task:t.id,row:v.id},`tp-qchip ${v.id===r?.id?'active':''} ${v.result?(v.result.ok?'ok':'bad'):v.reviewed?'done':''}`);
   }).join('');
-  const u=state(x,t),idx=Math.min(u.paper,t.papers.length-1);
-  const tabs=t.papers.map((q,i)=>`<button type="button" class="tp-tab ${i===idx?'on':''}" data-action="car:paper" data-task="${x.esc(t.id)}" data-i="${i}" aria-pressed="${i===idx}">📄 ${x.esc(q.title)}</button>`).join('');
-  const ready=!t.filed&&g.reviewed===g.total;
-  const pay=ready?`<div class="tp-pay">${x.confirmCmd(`💸 Chuyển lương ${g.total} người`,'tp_pay',{task:t.id},'Chuyển lương theo bảng đã soát? Ô đánh dấu sẽ được sửa trước khi chuyển; ô sót thì chuyển nguyên như bảng nháp.','primary full big')}</div>`:'';
-  const summary=t.filed?`<p class="tp-grid-sum">💸 Đã chuyển lương · ${g.ok}/${g.total} dòng chuẩn</p>`:`<small class="muted">${g.reviewed||0}/${g.total||rows.length} đã soát</small>`;
-  return `<div class="tp-grid-desk">
-    <div class="tp-grid-main"><nav class="tp-queue" aria-label="Bảng lương nháp">${chips}${summary}</nav>${pay}${r?rowCard(t,r,x):''}</div>
-    <div class="tp-grid-side">${rulesBox(x)}<section class="tp-tray"><div class="tp-tabs" role="toolbar" aria-label="Hồ sơ gốc">${tabs}</div>
-      <article class="tp-paper"><h4>${x.esc(t.papers[idx].title)}</h4>${refList(t.papers[idx],x)}</article></section></div>
-  </div>`;
+  const {idx,html}=paperTabs(t,x,'Hồ sơ gốc');
+  const count=t.filed?`<small class="tp-grid-sum">💸 Đã chuyển · ${g.ok}/${g.total} dòng chuẩn</small>`:`<small>${g.reviewed||0}/${g.total||rows.length} đã soát</small>`;
+  return `<nav class="tp-queue" aria-label="Bảng lương nháp"><span class="tp-qlabel">👥 Bảng lương</span>${chips}${count}</nav>
+    ${r?rowCard(t,r,x):''}
+    <section class="tp-tray"><h3 class="ok-h">🗃️ Hồ sơ gốc để đối chiếu</h3>${html}<article class="tp-paper"><h4>${x.esc(t.papers[idx].title)}</h4>${refList(t.papers[idx],x)}</article></section>`;
+}
+function gridBar(t,x){
+  const rows=t.rows||[],r=rowOf(t,x),g=t.grid||{};
+  if(!t.filed&&g.reviewed===g.total)return bar(x,t,`Đã soát đủ ${g.total} người. Chuyển lương trước giờ hạn.`,x.confirmCmd(`💸 Chuyển lương ${g.total} người`,'tp_pay',{task:t.id},'Chuyển lương theo bảng đã soát? Ô đánh dấu sẽ được sửa trước khi chuyển; ô sót thì chuyển nguyên như bảng nháp.','primary'));
+  if(!r||t.filed)return bar(x,t,'Bảng lương đã chuyển.');
+  if(r.reviewed){
+    const next=rows.find(v=>!v.reviewed);
+    return bar(x,t,`${x.esc(nameOf(r))}: đã soát`,next?x.button('Người tiếp theo ›','car:gpick',{task:t.id,row:next.id},'primary'):'');
+  }
+  const n=(r.flags||[]).length;
+  return bar(x,t,`${x.esc(nameOf(r))} · ${n?`${n} ô nghi sai`:'so từng ô với hồ sơ gốc'}`,x.cmd(n?`✓ Xong dòng · ${n} ô cần sửa`:'✓ Xong dòng · không thấy sai','tp_row',{task:t.id,row:r.id},'primary'));
+}
+
+/* ---------------------------------------------------------------- a form (tờ khai) done step by step */
+function formDoc(t,x){
+  const {idx,html}=paperTabs(t,x,'Giấy tờ');
+  return `${worksheet(t,x)}<section class="tp-tray"><h3 class="ok-h">🗃️ Giấy tờ khách gửi <small>${t.papers.length} tờ</small></h3>${html}${paperView(t.papers[idx],x)}</section>${calculator(x)}`;
+}
+function formBar(t,x){
+  const p=t.progress||{},cur=(t.steps||[])[p.at];
+  if(cur&&cur.state==='current')return bar(x,t,`Bước ${p.at+1}/${p.total}: ${x.esc(cur.title)}`,x.button('✔ Kiểm tra','car:check',{task:t.id,step:cur.id,kind:cur.kind},'primary'));
+  if(!t.filed)return bar(x,t,'Hồ sơ đã khớp hết — nộp cho khách.',x.confirmCmd('📤 Nộp / bàn giao hồ sơ','tp_file',{task:t.id,confirm:true},'Nộp hồ sơ này? Sau khi nộp không sửa được nữa; thưởng hồ sơ phụ thuộc số lần chưa khớp và hạn nộp.','primary'));
+  return bar(x,t,'Đã nộp hồ sơ.');
+}
+
+/* ---------------------------------------------------------------- the office desktop */
+const strip=(x,t)=>statusStrip(x,t,{boss:BOSS,op:'tp_overtime'});
+function currentMail(t,x){
+  const label=x.cc.labels?.[t.form]||'Hồ sơ',due=dueOf(t,x),left=typeof t.due_turn==='number'?t.due_turn-(x.room.turn||0):null;
+  const chips=[`<span class="ok-tag">${x.esc(label)}</span>`,
+    due?`<span class="ok-tag ${due.overdue?'bad':due.soon?'warn':'info'}">⏰ ${x.esc(dueText(due))}</span>`:'',
+    !due&&left!==null&&t.known?`<span class="ok-tag ${left<0?'bad':left<8?'warn':''}">${left>=0?`⏳ Hạn nội bộ: còn ${left} lượt`:'⌛ Quá hạn nội bộ'}</span>`:'',
+    t.bonus&&t.form!=='grid'?`<span class="ok-tag good">🎁 Thưởng ${x.money(t.bonus)}</span>`:'',
+    t.mistakes?`<span class="ok-tag bad">✗ ${t.mistakes} lần chưa khớp</span>`:''].join('');
+  const help=t.known?'':`<p class="ok-note">${t.form==='grid'?'Soát từng ô với hồ sơ gốc. Sót lỗi thì người lao động nhận sai lương — hôm sau sẽ có khiếu nại.':'Nhận hồ sơ để đọc yêu cầu, giấy tờ và các bước cần làm.'}</p>`;
+  return `<p class="ok-quote">“${x.esc(t.opening)}”</p>${t.brief?`<p class="ok-brief">🎯 ${x.esc(t.brief)}</p>`:''}<div class="ok-chips">${chips}</div>${help}`;
+}
+function nextText(t){
+  if(t.form==='grid'){
+    if(!t.known)return 'Nhận bảng lương nháp';
+    const left=(t.rows||[]).filter(r=>!r.reviewed).length;
+    return left?`Soát bảng lương: còn ${left}/${(t.rows||[]).length} người`:'Chuyển lương trước giờ hạn';
+  }
+  if(!t.known)return 'Nhận hồ sơ, đọc yêu cầu';
+  const p=t.progress;
+  if(p&&p.at<p.total)return `Bước ${p.at+1}/${p.total}: ${t.steps[p.at].title}`;
+  return 'Nộp / bàn giao hồ sơ';
 }
 
 export default {
   id:'tax_payroll',
   css:true,
-  next(t){
-    if(t.form==='grid'){
-      if(!t.known)return 'Nhận bảng lương nháp';
-      const left=(t.rows||[]).filter(r=>!r.reviewed).length;
-      return left?`Soát bảng lương: còn ${left}/${(t.rows||[]).length} người`:'Chuyển lương trước giờ hạn';
-    }
-    if(!t.known)return 'Nhận hồ sơ, đọc yêu cầu';
-    const p=t.progress;
-    if(p&&p.at<p.total)return `Bước ${p.at+1}/${p.total}: ${t.steps[p.at].title}`;
-    return 'Nộp / bàn giao hồ sơ';
-  },
+  next:nextText,
   job(t,x){
-    const who=x.npc(t.npc),label=x.cc.labels?.[t.form]||'Hồ sơ',bar=officeBar(t,x),grid=t.form==='grid';
+    const grid=t.form==='grid',claims=(x.room.data?.claims||[]).length,fresh=(x.room.data?.today?.rules||[]).filter(r=>r.new).length;
     x.ui.lastGrid=grid?t.id:null;
-    if(!t.known){
-      return `<div class="career-job tp">${bar}${claimsBox(x)}<article class="tp-ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><span class="tp-form">${x.esc(label)}</span><h3>${x.esc(who.display_name)}</h3><p>“${x.esc(t.opening)}”</p></div></div>${x.cmd(grid?'📥 Nhận bảng lương nháp':'📥 Nhận hồ sơ & đọc yêu cầu','ask',{task:t.id},'primary full')}${grid?'<p class="small muted">Soát từng ô với hồ sơ gốc. Sót lỗi thì người lao động nhận sai lương — hôm sau sẽ có khiếu nại.</p>':''}</article>${grid?rulesBox(x):''}</div>`;
-    }
-    if(grid)return `<div class="career-job tp">${bar}${claimsBox(x)}<article class="tp-ticket compact"><div class="row">${x.portrait(who,40)}<div class="grow"><small class="muted">${x.esc(label)} · ${x.esc(who.display_name)}</small><p>“${x.esc(t.opening)}”</p></div></div></article>${gridView(t,x)}</div>`;
-    const u=state(x,t),p=t.progress,left=t.due_turn-(x.room.turn||0);
-    const idx=Math.min(u.paper,t.papers.length-1);
-    const tabs=t.papers.map((q,i)=>`<button type="button" class="tp-tab ${i===idx?'on':''}" data-action="car:paper" data-task="${x.esc(t.id)}" data-i="${i}" aria-pressed="${i===idx}">📄 ${x.esc(q.title)}</button>`).join('');
-    const done=p.at>=p.total;
-    const timed=typeof t.due==='number';
-    const due=left>=0?`⏳ Hạn nội bộ: còn ${left} lượt thao tác`:'⌛ Đã quá hạn nội bộ — nộp vẫn được nhưng không có thưởng';
-    return `<div class="career-job tp">${bar}${claimsBox(x)}
-      <article class="tp-ticket"><div class="row">${x.portrait(who,48)}<div class="grow">
-        <div class="row spread wrap"><span class="tp-form">${x.esc(label)}</span>${x.pill(`🎁 thưởng ${x.money(t.bonus)}`)}</div>
-        <h3>${x.esc(t.title)}</h3><p class="small">${x.esc(t.brief)}</p>
-        <div class="row wrap">${timed?dueChip(t,x):`<span class="tp-due ${left<8?'warn':''} ${left<0?'bad':''}">${due}</span>`}${t.mistakes?x.pill(`✗ ${t.mistakes} lần chưa khớp`,'bad'):''}</div>
-        <div class="tp-progress" role="progressbar" aria-valuemin="0" aria-valuemax="${p.total}" aria-valuenow="${p.at}"><i style="width:${p.at/p.total*100}%"></i></div>
-      </div></div></article>
-      <div class="tp-desk">
-        <section class="tp-tray"><div class="tp-tabs" role="toolbar" aria-label="Giấy tờ">${tabs}</div>${paperView(t.papers[idx],x)}${calculator(x)}</section>
-        <section class="tp-work"><h4 class="section-title">Bảng tính hồ sơ</h4>${sheet(t,x)}
-          ${done&&!t.filed?`<div class="tp-file">${x.confirmCmd('📤 Nộp / bàn giao hồ sơ','tp_file',{task:t.id,confirm:true},'Nộp hồ sơ này? Sau khi nộp không sửa được nữa; thưởng hồ sơ phụ thuộc số lần chưa khớp và hạn nộp.','primary full')}</div>`:''}</section>
-        <aside class="tp-tools">${rules(x)}</aside>
-      </div></div>`;
+    const unread=openTasks(x).filter(v=>!v.known).length+claims;
+    const tabs=[{id:'inbox',icon:'📥',label:'Hộp thư',badge:unread||'',tone:claims?'bad':''},{id:'doc',icon:'📂',label:'Hồ sơ'},{id:'rules',icon:'📋',label:'Quy định',badge:fresh||'',tone:'warn'}];
+    const inbox=inboxPane(x,{tasks:taskMails(x,t,currentMail(t,x)),other:[...claimMails(x),...dayMails(x,{boss:BOSS,key:`${t.id}:${t.known?1:0}`})]});
+    const rules=todayRules(x)+lawBook(x);
+    if(!t.known)return desk(x,t,{cls:'tp',tabs,strip:strip(x,t),panes:{inbox,rules,
+      doc:`<p class="ok-empty"><span aria-hidden="true">✉️</span><b>${x.esc(t.title)}</b><span>${grid?'Bảng lương nháp còn nằm trên bàn chị Hồng.':'Hồ sơ còn trong phong bì.'} Bấm “${grid?'Nhận bảng lương':'Nhận hồ sơ'}” để mở.</span></p>`},
+      bar:bar(x,t,x.esc(nextText(t)),x.cmd(grid?'📥 Nhận bảng lương nháp':'📥 Nhận hồ sơ & đọc yêu cầu','ask',{task:t.id},'primary'),true)});
+    if(grid)return desk(x,t,{cls:'tp',tabs,strip:strip(x,t),panes:{inbox,rules,doc:gridDoc(t,x)},bar:gridBar(t,x)});
+    return desk(x,t,{cls:'tp',tabs,strip:strip(x,t),panes:{inbox,rules,doc:formDoc(t,x)},bar:formBar(t,x)});
   },
   idle(x){
     const d=x.room.data||{};if(!d.office)return '';
-    return `<div class="career-job tp">${gridRecap(x)}${officeBar(null,x)}${claimsBox(x)}${rulesBox(x)}</div>`;
+    return idleDesk(x,{cls:'tp',strip:strip(x,null),recap:gridRecap(x),tasks:taskMails(x,null),other:[...claimMails(x),...dayMails(x,{boss:BOSS})],rules:todayRules(x)});
   },
   summary(data,x){
     if(!data||typeof data!=='object')return '';
@@ -260,7 +261,9 @@ export default {
     if(!rows.length&&!trust&&!insp)return '';
     return `<article class="card space-top tp-sum"><h4 class="section-title">🧮 Bàn lương hôm nay</h4>${insp}${trust}${rows.length?`<div class="kv">${rows.join('')}</div>`:''}</article>`;
   },
+  tick(root){keepBarAboveFooter(root);},
   actions:{
+    tab:switchTab,
     gpick(d,el,x){gsel(x)[d.task]=d.row;x.render();document.querySelector('.career-job.tp .tp-queue')?.scrollIntoView({block:'nearest'});},
     async flag(d,el,x){
       const on=el.getAttribute('aria-pressed')==='true';
