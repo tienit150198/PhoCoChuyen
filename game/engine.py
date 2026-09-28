@@ -23,6 +23,8 @@ from . import inventory as inv
 from . import employment as emp
 from .careers import PLUGINS
 from . import journey as jr
+from . import invest as iv
+from . import career_stories as cst
 from . import desk as dk
 from . import giftshop as gifts
 from . import incidents as incs
@@ -58,7 +60,7 @@ def normalize(s: str) -> str:
 def new_state() -> dict:
     return dict(schema=4,name="Mây",current=None,seq=0,
         settings=default_settings(),
-        careers={cid:initial_career(cid) for cid in CAREERS},journey=jr.initial())
+        careers={cid:initial_career(cid) for cid in CAREERS},journey=jr.initial(),stories=cst.initial())
 
 def default_settings() -> dict:
     return dict(mode="everyday",sound=True,music=False,reduceMotion=False,largeText=False,aiConsent=False,securityEvents=True,
@@ -107,15 +109,17 @@ def migrate_state(state:dict) -> dict:
         # One character's journey: older saves join the story where their progress already is.
         if 'journey' not in s:jr.migrate(s)
         elif isinstance(s['journey'],dict):jr.upgrade(s['journey'])
+        iv.migrate(s)  # đầu tư: savings, Mây Coin, scam offers under journey.invest
         life.upgrade_save(s)
         dk.migrate(s)  # paperwork desks: desk memory + refreshed wording of older tasks
         incs.migrate(s)  # chuyện đời: an empty incident book per workplace
         haps.migrate(s)  # chuyện bất ngờ trong ca: live happenings in the scene
+        cst.migrate(s)  # truyện nghề: an empty story book for older saves
     return s
 
 
 def needs_migration(state:dict) -> bool:
-    return state.get('schema')!=4 or not isinstance(state.get('careers'),dict) or set(state['careers'])!=set(CAREERS) or 'journey' not in state
+    return state.get('schema')!=4 or not isinstance(state.get('careers'),dict) or set(state['careers'])!=set(CAREERS) or 'journey' not in state or 'stories' not in state
 
 
 def metric(c: dict,key: str,value: int=1) -> None:
@@ -355,6 +359,8 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
         if s["journey"]["story"]:jr.enable_story(fresh,s["journey"]["seed"]+1)
         return fresh,dict(message="Đã tạo hành trình mới.")
     if action.startswith("jr_"):return jr.action(s,career,action,p)
+    if action.startswith("iv_"):return iv.action(s,action,p)
+    if action.startswith("st_"):return cst.action(s,career,action,p)
     need(career in CAREERS,"Chọn một nghề trước nhé.")
     jr.gate(s,career,action,internal)
     c=s["careers"][career]
@@ -824,6 +830,8 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
     incs.after(s,c,career,action,result)
     haps.after(s,c,career,action,result)
     jr.after(s,career,action,p,result)
+    iv.on_life_day(s,result)  # prices, interest and offers move once per life day
+    cst.after(s,career,action,result)
     validate_state(s)
     return s,result
 
@@ -864,6 +872,8 @@ def public_state(s:dict,full:str|None=None) -> dict:
     v={k:copy.deepcopy(x) for k,x in s.items() if k!="careers"}
     v["careers"]={cid:(copy.deepcopy(c) if cid==focus else career_summary(c,cid)) for cid,c in s["careers"].items()}
     v["journey"]=jr.public(s)
+    v["invest"]=iv.public(s)
+    v["stories"]=cst.public(s)
     for cid,c in v["careers"].items():
         if c.get("summary"):continue
         raw=s["careers"][cid];mod=PLUGINS.get(cid)
@@ -910,6 +920,8 @@ workflow references, quantities and maximum sizes are validated before commit.
     need(s.get("current") in CAREERS or s.get("current") is None,"Nghề trong bản lưu không hợp lệ.")
     clean_text(s.get("name"),24);integer(s.get("seq"),0,10**9)
     jr.validate(s)
+    iv.validate(s)
+    cst.validate(s)
     settings=s.get("settings",{});need(settings.get("mode") in ("relaxed","everyday","challenge"),"Chế độ bản lưu không hợp lệ.")
     for k in ("sound","music","reduceMotion","largeText","aiConsent","securityEvents","notify","publicProfile"):need(type(settings.get(k)) is bool,"Thiếu thiết lập bản lưu.")
     for k,choices in SETTING_CHOICES.items():need(settings.get(k) in choices,"Thiết lập bản lưu không hợp lệ.")

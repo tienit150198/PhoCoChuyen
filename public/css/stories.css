@@ -1,0 +1,95 @@
+/* ==========================================================================
+   Truyện nghề (stories.js): a workplace's story beat as a scene, and the
+   "Truyện nghề" card on the journey home. The dialog frame, speech bubbles and
+   award row come from journey.css (.jr-scene, .jr-line, .jr-award); this file
+   only adds the workplace-coloured header, line reveal, choices and the card.
+   Colours come from theme tokens plus --career (the workplace colour).
+   ========================================================================== */
+
+/* ---------- Scene --------------------------------------------------------- */
+.st-scene{width:min(540px,calc(100vw - 24px))}
+.st-card{position:relative;text-align:left}
+.st-head{position:relative;display:flex;align-items:flex-start;gap:14px;padding:22px 52px 16px 20px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--career) 24%,var(--surface)),color-mix(in srgb,var(--career) 6%,var(--surface)));
+  border-bottom:1px solid color-mix(in srgb,var(--career) 22%,var(--line))}
+.st-art{flex:none;display:grid;place-items:center;width:64px;height:64px;border-radius:20px;background:var(--surface);
+  box-shadow:var(--shadow-sm),0 0 0 3px color-mix(in srgb,var(--career) 30%,transparent);font-size:2.2rem;line-height:1}
+.st-head-text{flex:1 1 auto;min-width:0}
+.st-head .eyebrow{display:block;margin:0 0 2px;color:var(--ink-2);overflow-wrap:anywhere}
+.st-head h2{font-size:1.35rem;line-height:1.25;margin:0;overflow-wrap:anywhere}
+.st-sub{margin:3px 0 0;font-size:.833rem;font-weight:600;color:var(--ink-2)}
+.st-x{position:absolute;top:10px;right:10px;width:40px;min-height:40px;padding:0;border-color:transparent}
+.st-pips{display:flex;gap:5px;list-style:none;margin:8px 0 0;padding:0}
+.st-pips li{width:18px;height:6px;border-radius:3px;background:color-mix(in srgb,var(--career) 18%,var(--surface-3))}
+.st-pips li.past{background:color-mix(in srgb,var(--career) 60%,var(--surface))}
+.st-pips li.now{width:28px;background:var(--career)}
+
+.st-body{padding:14px 18px 18px}
+.st-lines{margin:4px 0 14px}
+.st-line .jr-face{background:color-mix(in srgb,var(--career) 12%,var(--surface))}
+.st-line.me{flex-direction:row-reverse}
+.st-line.me .jr-bubble{border-radius:16px 16px 6px 16px;background:color-mix(in srgb,var(--career) 12%,var(--surface));
+  border-color:color-mix(in srgb,var(--career) 30%,var(--line))}
+.st-line.me .jr-bubble b{color:var(--ink-2)}
+.st-me-face{overflow:hidden;padding:0}
+.st-me-face .jr-av{width:100%;height:100%;border-radius:50%}
+.st-line.fresh{animation:st-in .35s var(--ease) both}
+.st-line.reply .jr-bubble{box-shadow:0 0 0 2px color-mix(in srgb,var(--career) 26%,transparent)}
+@keyframes st-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.st-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}
+.st-actions .btn.primary:not(.full){min-width:120px}
+.st-choice{display:grid;gap:8px}
+.st-prompt{margin:0 0 2px;font-weight:800;font-size:.95rem;color:var(--ink)}
+.st-option{display:flex;align-items:center;gap:10px;width:100%;min-height:54px;padding:10px 12px;border-radius:14px;
+  background:var(--surface);border:1.5px solid color-mix(in srgb,var(--career) 34%,var(--line));box-shadow:var(--shadow-sm);
+  text-align:left;font-weight:700;font-size:.933rem;line-height:1.35;color:var(--ink);transition:border-color var(--dur),transform .15s}
+.st-option:hover{border-color:var(--career);transform:translateY(-1px)}
+.st-option:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.st-option:disabled{opacity:.6;transform:none}
+.st-option .grow{min-width:0}
+.st-option>.icon{flex:none;color:var(--ink-2)}
+.st-opt-key{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;
+  background:color-mix(in srgb,var(--career) 20%,var(--surface));font-size:.8rem;font-weight:800;color:var(--ink)}
+.st-note{display:flex;align-items:center;gap:8px;margin:0 0 12px;padding:8px 12px;border-radius:12px;background:var(--good-soft);
+  color:var(--good);font-weight:700;font-size:.867rem}
+.st-note .icon{flex:none}
+.st-keep{margin:0 0 14px;background:linear-gradient(90deg,color-mix(in srgb,var(--career) 14%,var(--surface)),var(--surface))}
+.st-keep small+b{margin:1px 0}
+
+/* ---------- Journey home card -------------------------------------------- */
+.st-home .jr-sec-head{margin-bottom:4px}
+.st-home h2{display:flex;align-items:center;gap:8px;font-size:1.1rem}
+.st-home h2 .icon{color:var(--accent-text)}
+.st-lead{margin:0 0 10px}
+.st-rows{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.st-row{display:flex;align-items:flex-start;gap:10px;padding:10px;border-radius:var(--radius);background:var(--surface-2);border:1px solid var(--line)}
+.st-row.due{background:color-mix(in srgb,var(--career) 10%,var(--surface));border-color:color-mix(in srgb,var(--career) 40%,var(--line))}
+.st-row .jr-place-emoji{width:42px;height:42px;font-size:1.35rem;border-radius:13px}
+.st-row-text{flex:1 1 auto;min-width:0}
+.st-row-text .eyebrow{display:block;font-size:.8rem;margin:0;overflow-wrap:anywhere}
+.st-row-text h3{font-size:.95rem;margin:0;line-height:1.3;overflow-wrap:anywhere}
+.st-dots{display:flex;gap:4px;margin:5px 0 3px}
+.st-dots i{width:14px;height:5px;border-radius:3px;background:color-mix(in srgb,var(--career) 22%,var(--surface-3))}
+.st-dots i.on{background:var(--career)}
+.st-row-note{margin:0;font-size:.8rem;line-height:1.4;color:var(--muted)}
+.st-row-note.due{color:var(--accent-text);font-weight:700}
+.st-row-note.done{color:var(--good);font-weight:700}
+.st-row>.btn{flex:none;align-self:center}
+.st-past{margin-top:4px}
+.st-past summary{display:inline-flex;align-items:center;min-height:32px;font-size:.8rem;font-weight:700;color:var(--ink-2);cursor:pointer}
+.st-past ol{list-style:none;margin:2px 0 0;padding:0;display:grid;gap:4px}
+.st-past li{display:flex;gap:8px;font-size:.8rem;line-height:1.35}
+.st-past li small{display:block;color:var(--muted)}
+.st-empty{margin:0}
+
+/* ---------- Layouts & motion --------------------------------------------- */
+html[data-layout="phone"] .st-scene{width:100%;max-width:100%}
+html[data-layout="phone"] .st-head{padding:20px 50px 14px 16px;gap:12px}
+html[data-layout="phone"] .st-art{width:54px;height:54px;font-size:1.9rem;border-radius:17px}
+html[data-layout="phone"] .st-head h2{font-size:1.2rem}
+html[data-layout="phone"] .st-body{padding:12px 14px calc(18px + var(--safe-b))}
+html[data-layout="phone"] .st-actions .btn:not(.full){flex:1 1 0}
+html.reduce-motion .st-line.fresh{animation:none}
+html.reduce-motion .st-option:hover{transform:none}
+@media (prefers-reduced-motion:reduce){.st-line.fresh{animation:none}.st-option:hover{transform:none}}

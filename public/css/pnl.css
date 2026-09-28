@@ -1,0 +1,108 @@
+/* Kết quả kinh doanh (public/js/v4/pnl.js). Theme tokens only (docs/DESIGN.md).
+   Phone first: one column, no fixed text widths, tabular numbers. */
+.pnl{display:grid;gap:14px;margin-top:14px;padding:16px 14px}
+.pnl .good{color:var(--good)}
+.pnl .bad{color:var(--bad)}
+.pnl .flat{color:var(--muted)}
+
+/* Headline */
+.pnl-head .eyebrow{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.pnl-hero{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;padding:12px 14px;border-radius:var(--radius-sm);background:var(--surface-2)}
+.pnl-hero.good{background:var(--good-soft)}
+.pnl-hero.bad{background:var(--bad-soft)}
+.pnl-hero strong{font-size:2rem;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pnl-hero strong span{font-size:1rem;font-weight:700}
+.pnl-hero>span{font-size:.933rem;font-weight:700;color:var(--ink-2)}
+.pnl-hero.good strong{color:var(--good)}
+.pnl-hero.bad strong{color:var(--bad)}
+.pnl-lead{margin:8px 0 0;font-size:.933rem;line-height:1.45;color:var(--ink-2)}
+
+/* Statement */
+.pnl-table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.pnl-table th,.pnl-table td{padding:8px 0;border-bottom:1px solid var(--line);vertical-align:top;text-align:left;font-weight:400}
+.pnl-table td{padding-left:10px;text-align:right;white-space:nowrap;font-size:1rem;font-weight:700;color:var(--ink)}
+.pnl-rowhead{display:flex;gap:8px;min-width:0}
+.pnl-sign{flex:0 0 1ch;font-weight:800;color:var(--muted);text-align:center}
+.pnl-lbl{min-width:0;font-size:.933rem;font-weight:600;color:var(--ink)}
+.pnl-lbl small{display:block;margin-top:1px;font-size:.8rem;font-weight:400;line-height:1.35;color:var(--muted)}
+.pnl-table tr.zero td,.pnl-table tr.zero .pnl-lbl{color:var(--muted);font-weight:400}
+.pnl-table tr.sub th,.pnl-table tr.sub td{background:var(--surface-2)}
+.pnl-table tr.sub th{padding-left:6px}
+.pnl-table tr.sub td{padding-right:6px}
+.pnl-table tr.total th,.pnl-table tr.total td{border-bottom:0;border-top:2px solid var(--line-strong);padding-top:10px}
+.pnl-table tr.total td{font-size:1.2rem}
+.pnl-table tr.good td b{color:var(--good)}
+.pnl-table tr.bad td b{color:var(--bad)}
+
+/* Notes */
+.pnl-note{display:flex;gap:8px;align-items:flex-start;margin:0;font-size:.867rem;line-height:1.45;color:var(--ink-2)}
+.pnl-note .icon{flex:none;margin-top:2px;color:var(--muted)}
+.pnl-bills{margin:0;padding:10px 12px 10px 28px;border-radius:var(--radius-sm);background:var(--surface-2);font-size:.867rem;line-height:1.45;color:var(--ink-2)}
+.pnl-bills li+li{margin-top:4px}
+
+/* Section heads */
+.pnl-sub{display:grid;gap:2px;margin-bottom:8px}
+.pnl-sub h5{display:flex;align-items:center;gap:6px;margin:0;font-size:1rem;font-weight:800;color:var(--ink)}
+.pnl-sub small{font-size:.8rem;line-height:1.4;color:var(--muted)}
+
+/* Biggest costs */
+.pnl-top ol{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.pnl-top li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:baseline}
+.pnl-top-text{min-width:0}
+.pnl-top-text b{display:block;font-size:.933rem;font-weight:600;overflow-wrap:anywhere}
+.pnl-top-text small{font-size:.8rem;color:var(--muted)}
+.pnl-amt{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--ink)}
+.pnl-meter{grid-column:1/-1;display:block;height:6px;border-radius:var(--radius-pill);background:var(--surface-3);overflow:hidden;position:relative}
+.pnl-meter::after{content:"";position:absolute;inset:0 auto 0 0;width:var(--w);border-radius:inherit;background:var(--second)}
+.pnl-meter.losses::after{background:var(--bad)}
+.pnl-meter.cogs::after{background:var(--warn)}
+
+/* 7-day bars */
+.pnl-chart{display:block;width:100%;height:auto;max-height:150px;overflow:visible}
+.pnl-zero{stroke:var(--line-strong);stroke-width:1}
+.pnl-hit{fill:transparent}
+.pnl-bar.good{fill:var(--good)}
+.pnl-bar.bad{fill:var(--bad)}
+.pnl-bar.flat{fill:var(--line-strong)}
+.pnl-bar:not(.today){opacity:.55}
+g:hover>.pnl-bar{opacity:1}
+.pnl-day{font-size:10px;fill:var(--muted);font-family:var(--font)}
+.pnl-day.today{font-weight:800;fill:var(--ink)}
+.pnl-val{font-size:11px;font-weight:800;fill:var(--ink);font-family:var(--font);font-variant-numeric:tabular-nums}
+
+/* Your money */
+.pnl-mine{display:grid;gap:8px;padding:12px;border-radius:var(--radius-sm);background:var(--second-soft);border:1px solid var(--line)}
+.pnl-mine .pnl-sub{margin-bottom:0}
+.pnl-mine .pnl-sub small{color:var(--ink-2)}
+.pnl-mine-list{display:grid;gap:4px;margin:0;padding:0;list-style:none}
+.pnl-mine-list li,.pnl-mine-total{display:flex;justify-content:space-between;gap:10px;font-size:.933rem;color:var(--ink)}
+.pnl-mine-list b,.pnl-mine-total b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.pnl-mine .good{color:var(--ink)}
+.pnl-mine-total{padding-top:6px;border-top:1px solid var(--line-strong);font-weight:800}
+.pnl-mine-total b{font-size:1.067rem}
+.pnl-mine .pnl-mine-total b.bad{color:var(--bad)}
+.pnl-mine .pnl-note{color:var(--ink-2)}
+.pnl-mine .btn{justify-self:start;min-height:44px}
+
+/* Detail */
+.pnl-detail summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-size:.933rem;font-weight:700;color:var(--accent-text)}
+.pnl-detail h6{margin:10px 0 4px;font-size:.8rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.pnl-detail ul{display:grid;gap:4px;margin:0;padding:0;list-style:none}
+.pnl-detail li{display:flex;justify-content:space-between;gap:10px;font-size:.867rem;color:var(--ink-2)}
+.pnl-detail li span{min-width:0;overflow-wrap:anywhere}
+.pnl-detail li b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.pnl-detail li small{color:var(--muted)}
+
+/* Per-order line (orderReceipt) */
+.pnl-receipt{display:flex;gap:6px;align-items:flex-start;margin:6px 0 0;padding:6px 10px;border-radius:var(--radius-sm);background:var(--surface-2);font-size:.867rem;line-height:1.4;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.pnl-receipt .icon{flex:none;margin-top:1px}
+.pnl-receipt.good b{color:var(--good)}
+.pnl-receipt.bad b{color:var(--bad)}
+
+@container sheet (min-width:560px){
+  .pnl{padding:18px 20px}
+  .pnl-hero strong{font-size:2.2rem}
+}
+@media (prefers-reduced-motion:no-preference){
+  html:not(.reduce-motion) .pnl-bar{transition:opacity .15s}
+}

@@ -1,0 +1,105 @@
+/* ==========================================================================
+   Đầu tư (invest.js): savings card, Mây Coin card with sparkline, scam offer
+   card, the wallet entry and the locked teaser. Theme tokens only (docs/DESIGN.md);
+   phone first, columns via container queries on the journey sheet body.
+   Reuses .jr-card / .jr-sub / .jr-history / .jr-bar from journey.css.
+   ========================================================================== */
+
+.iv{display:grid;gap:14px}
+.iv>*{min-width:0;margin:0}
+.iv .jr-sub{margin:6px 0 0}
+.iv-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+@container sheet (min-width:680px){.iv-grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}}
+
+/* Wallet strip + risk note */
+.iv-strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.iv-strip>div{display:grid;gap:1px;padding:10px 12px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line)}
+.iv-strip small{font-size:.8rem;font-weight:600;color:var(--muted)}
+.iv-strip b{font-size:1.15rem;white-space:nowrap}
+.iv-risk{margin:0}
+.iv-risk p{color:var(--ink-2);font-size:.867rem}
+
+/* Cards */
+.iv-card{display:grid;gap:10px}
+.iv-card h3{font-size:1.1rem;margin:0}
+.iv-card .eyebrow{color:var(--accent-text)}
+.iv-card p{margin:0}
+.iv-card-top{display:flex;align-items:flex-start;gap:12px}
+.iv-card-top .grow{min-width:0}
+.iv-earned{margin-top:6px}
+.iv-emoji{flex:none;display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:var(--surface-2);font-size:1.6rem;line-height:1}
+.iv-big{display:grid;gap:0;padding:10px 12px;border-radius:12px;background:var(--good-soft)}
+.iv-big small{font-size:.8rem;font-weight:700;color:var(--muted)}
+.iv-big strong{font-size:1.7rem;line-height:1.25;color:var(--good)}
+.iv-kv{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:.9rem;padding:2px 0}
+.iv-kv span{color:var(--ink-2);min-width:0}
+.iv-kv b{flex:none;white-space:nowrap;text-align:right}
+.iv-kv.small{font-size:.833rem}
+.iv-hold{display:grid;gap:2px;padding:8px 12px;border-radius:12px;background:var(--surface-2)}
+.iv .gain,.iv-pnl.gain b{color:var(--good)}
+.iv .loss,.iv-pnl.loss b{color:var(--bad)}
+.iv-chips{margin:2px 0 0}
+.iv-chips .chip{min-height:44px;padding:6px 14px;font-size:.867rem}
+.iv-chips .chip[data-over]{opacity:.7}
+.iv-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.iv-actions .btn{min-height:44px}
+.iv-actions.wrap{display:flex;flex-wrap:wrap}
+.iv-actions.wrap .btn{flex:1 1 auto}
+.iv-hint{display:flex;align-items:flex-start;gap:6px;font-size:.8rem;line-height:1.45;color:var(--muted)}
+.iv-hint svg{flex:none;margin-top:2px}
+
+/* Mây Coin */
+.iv-price{flex:none;display:grid;justify-items:end;text-align:right}
+.iv-price strong{font-size:1.25rem;white-space:nowrap}
+.iv-change{font-size:.833rem;font-weight:800;white-space:nowrap}
+.iv-change small{font-weight:600;color:var(--muted)}
+.iv-change.up{color:var(--good)}
+.iv-change.down{color:var(--bad)}
+.iv-change.flat{color:var(--muted)}
+.iv-chart{margin:0;padding:8px 8px 6px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}
+.iv-chart figcaption{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:.767rem;color:var(--muted);padding:2px 4px 0}
+.iv-spark{display:block;width:100%;height:auto;overflow:visible}
+.iv-spark .iv-line{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.iv-spark .iv-area{stroke:none;opacity:.14}
+.iv-spark .iv-dot{stroke:var(--surface-2);stroke-width:2}
+.iv-spark.up .iv-line{stroke:var(--good)}
+.iv-spark.up .iv-area,.iv-spark.up .iv-dot{fill:var(--good)}
+.iv-spark.down .iv-line{stroke:var(--bad)}
+.iv-spark.down .iv-area,.iv-spark.down .iv-dot{fill:var(--bad)}
+.iv-spark .iv-cost{stroke:var(--muted);stroke-width:1.5;stroke-dasharray:4 4}
+.iv-spark rect:hover{fill:var(--line)}
+.iv-cost-key{display:inline-block;width:16px;border-top:2px dashed var(--muted);vertical-align:middle}
+.iv-chart.preview{opacity:.8}
+
+/* Scam offer */
+.iv-scam{border:2px dashed var(--line-strong);background:var(--surface)}
+.iv-scam.quiet{border-style:solid;border-width:1px;background:var(--surface-2)}
+.iv-pitch{margin:0;padding:10px 12px;border-radius:12px;background:var(--warn-soft);color:var(--ink);font-weight:700;font-size:.95rem;line-height:1.45}
+.iv-flags{border-top:1px solid var(--line);padding-top:6px}
+.iv-flags summary{display:flex;align-items:center;gap:6px;min-height:40px;font-weight:700;font-size:.867rem;color:var(--ink-2);cursor:pointer}
+.iv-flags ul{margin:4px 0 0;padding-left:20px;display:grid;gap:3px;font-size:.867rem;color:var(--ink-2)}
+
+/* Badges + log */
+.iv-badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.iv-badge{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line-strong)}
+.iv-badge>span{font-size:1.4rem;line-height:1.2}
+.iv-badge b{display:block;font-size:.9rem}
+.iv-badge small{font-size:.8rem;color:var(--muted);line-height:1.35}
+.iv-log li{align-items:flex-start}
+
+/* Teaser + wallet entry */
+.iv-bar{display:block;margin-top:6px}
+.iv-progress{color:var(--ink-2)}
+.iv-entry{display:flex;align-items:center;gap:12px;width:100%;min-height:64px;margin:12px 0 0;text-align:left;color:var(--ink);cursor:pointer}
+.iv-entry:hover{border-color:var(--accent)}
+.iv-entry .grow{display:grid;gap:2px;min-width:0}
+.iv-entry b{font-size:.95rem}
+.iv-entry small{font-size:.8rem;color:var(--muted)}
+.iv-entry>svg{flex:none;color:var(--muted)}
+.iv-entry.locked{background:var(--surface-2);border-style:dashed}
+.iv-entry.locked .iv-emoji{background:var(--surface)}
+
+@media (prefers-reduced-motion:no-preference){
+  html:not(.reduce-motion) .iv-spark .iv-dot{animation:iv-pulse 2.4s ease-in-out infinite}
+}
+@keyframes iv-pulse{50%{opacity:.55}}

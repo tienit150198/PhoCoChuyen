@@ -5,6 +5,8 @@
  * `choose`/`close`; forms use data-jr-form (journeySubmit). */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {accountChip} from './account.js';
+import {storiesBoot,storiesCard,storiesAction,maybeStory} from './stories.js';
+import {investView,investEntry,investAction} from './invest.js';
 
 export const EMOJI={restaurant:'🍜',cafe_bakery:'🥐',grocery:'🛒',repair:'🔧',homestay:'🏡',corp_accounting:'🧮',tax_payroll:'🧾',group_accounting:'🏢',
   mother_baby:'🎁',pharmacy:'💊',accounting:'📒',customer_care:'🎧',teacher:'🍎',tour_guide:'🧭',milk_tea:'🧋',florist:'💐',salon:'💇',
@@ -55,6 +57,7 @@ export function journeyHome(env){
   if(J.story&&!J.intro)return introView(env);
   if(ui.jrView==='titles')return titlesView(env);
   if(ui.jrView==='wallet')return walletView(env);
+  if(ui.jrView==='invest')return investView(env);
   if(ui.jrView==='profile')return profileView(env);
   return homeMain(env);
 }
@@ -148,7 +151,7 @@ function placesSection(env){
 function homeMain(env){
   const {api}=env,J=api.state.journey;
   const top=`<header class="jr-top"><div class="grow"><span class="eyebrow">${J.story?`Khu phố nhỏ · Ngày sống ${fmt(J.life_day)}`:'Khu phố nhỏ · mọi nơi đều mở'}</span><h1>Hành trình của bạn</h1></div>${accountChip(env)}${api.state.current?btn(icon('x',20),'close',{},'ghost small jr-close','aria-label="Đóng"'):''}</header>`;
-  return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col">${meCard(env)}${J.story?chapterCard(env):''}</div><div class="jr-col wide">${placesSection(env)}</div></div></div>`;
+  return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col">${meCard(env)}${J.story?chapterCard(env):''}${storiesCard(env)}</div><div class="jr-col wide">${placesSection(env)}</div></div></div>`;
 }
 
 /* ------------------------------------------------------------------ intro */
@@ -225,6 +228,7 @@ function walletView(env){
     <section class="jr-card jr-purse ${J.debt?'bad':''}" aria-live="polite"><small>${J.debt?'Đang nợ tiền phòng':'Số dư'}</small><strong>${J.debt?`${fmt(J.debt)} xu`:`${fmt(J.wallet)} xu`}</strong>
       <p>Mỗi ngày sống: tiền phòng ${fmt(L.rent)} xu và cơm nước ${fmt(L.meals)} xu.</p><p class="muted small">Nơi đã làm mà hôm đó bạn vắng mặt vẫn tốn phí duy trì từ quỹ của nơi đó. Tạm đóng để ngưng.</p>
       ${J.debt?`<p class="jr-debt-note">Khi ví còn nợ, câu chuyện tạm dừng. Rút tiền lời về ví để trả nhé.</p>`:''}</section>
+    ${investEntry(env)}
     <h3 class="jr-sub">Quỹ các nơi làm việc</h3><div class="jr-funds">${places}</div>
     <h3 class="jr-sub">Sổ ví gần đây</h3><ul class="jr-history">${hist}</ul></div>`;
 }
@@ -300,14 +304,16 @@ let asked=false;
 function maybeScene(){
   if(!E?.api.state?.journey||!E.api.content?.journey)return;
   const J=E.api.state.journey,d=document.getElementById('jrScene');
-  if(d?.open||!J.story||!J.intro)return;
+  if(d?.open||document.getElementById('stScene')?.open||J.story&&!J.intro)return;
+  if(!J.story){maybeStory();return;}
   if(document.getElementById('confirmDialog')?.open){setTimeout(maybeScene,400);return;}
   const ch=J.news.find(n=>n.kind==='chapter');
   if(ch){openScene(chapterScene(Number(ch.ref)),[ch.id]);return;}
   const ts=J.news.filter(n=>n.kind==='titles');
   if(ts.length){const ids=[...new Set(ts.flatMap(n=>n.items))];const html=titleScene(ids);if(html){openScene(html,ts.map(n=>n.id));return;}
     E.cmd('jr_seen',{ids:ts.map(n=>n.id)},{quiet:true});return;}
-  if(!J.gender&&!asked){asked=true;openScene(whoScene());}
+  if(!J.gender&&!asked){asked=true;openScene(whoScene());return;}
+  maybeStory();   // truyện nghề: a workplace beat, after the journey's own scenes
 }
 
 /* ------------------------------------------------------------------ HUD */
@@ -327,7 +333,7 @@ function hud(){
 
 /* ------------------------------------------------------------------ wiring */
 export function journeyBoot(env){
-  E=env;sceneDialog();
+  E=env;sceneDialog();storiesBoot(env);
   const sheet=document.getElementById('sheet');
   // The first-run intro cannot be dismissed into an empty scene.
   sheet?.addEventListener('cancel',e=>{const J=E.api.state?.journey;if(E.ui.view==='home'&&J?.story&&!J.intro)e.preventDefault();});
@@ -336,8 +342,10 @@ export function journeyBoot(env){
 }
 
 export async function journeyAction(action,data,el,env){
+  if(action?.startsWith('iv'))return investAction(action,data,el,env);
   if(!action?.startsWith('jr'))return false;
   E=E||env;
+  if(action.startsWith('jrArc'))return storiesAction(action,data,el,env);
   const {ui,cmd,renderSheet,confirmAction,api}=env;
   switch(action){
     case'jrView':ui.jrView=data.view||'home';renderSheet(false);document.getElementById('sheet')?.scrollTo?.(0,0);return true;

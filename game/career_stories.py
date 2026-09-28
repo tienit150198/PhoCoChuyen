@@ -1,0 +1,1100 @@
+"""Truyện nghề: every workplace has its own little story arc.
+
+Next to the neighbourhood journey (game/journey.py), each of the 20 careers
+has one arc of five beats with a small recurring cast: a shy pupil who sings
+at the year-end show, a stormy rainy season on the farm, an old woman waiting
+for letters from abroad, a fake invoice in the office…
+
+* Beats are strictly ordered. A beat becomes due when the real save of that
+  workplace reaches its `when` (tasks served, days closed, level, an optional
+  metric, and a minimum gap in workplace days since the previous beat).
+* `after()` runs after every career action and queues the acting workplace's
+  next beat into a small queue; the client shows it as a scene and answers with
+  `st_seen` (plain beat) or `st_choose` (beat with a two-option choice).
+* Choices are flavour only: reply lines, a small relationship bump with a
+  linked NPC and at most a few coins. Arcs never gate the journey or the work.
+
+State lives in the root `s['stories']` (setdefault in `migrate`, checked by
+`validate`), like `s['journey']`. See docs/superpowers/specs/2026-09-29-career-stories-design.md.
+"""
+from __future__ import annotations
+
+import copy
+
+from .content import CAREERS, CAREER_META, NPC_INDEX
+
+VERSION = 1
+QUEUE_MAX = 40
+MAX_COINS = 10
+REL_BUMP = 6
+TOKENS = {
+    'anh': dict(male='anh', female='chị', none='bạn'),
+    'Anh': dict(male='Anh', female='Chị', none='Bạn'),
+    'thay': dict(male='thầy', female='cô', none='cô'),
+    'Thay': dict(male='Thầy', female='Cô', none='Cô'),
+}
+# Default rhythm of the five beats: first finished task, then ~days 2, 4, 6, 9.
+WHEN = (dict(served=1), dict(days=2, gap=1), dict(days=4, served=8, gap=1),
+        dict(days=6, served=14, gap=1), dict(days=9, served=22, gap=2))
+
+
+def _p(name, emoji, role, npc=None):
+    return dict(name=name, emoji=emoji, role=role, npc=npc)
+
+
+def _o(oid, label, reply, rel=None, coins=0):
+    return dict(id=oid, label=label, reply=list(reply), rel=rel, coins=coins)
+
+
+def _b(title, emoji, hint, lines, choice=None, **when):
+    return dict(title=title, emoji=emoji, hint=hint, lines=list(lines), choice=choice, when=when)
+
+
+def _c(prompt, a, b):
+    return dict(prompt=prompt, options=[a, b])
+
+
+ARCS = {
+    # ------------------------------------------------------------ chương 1
+    'milk_tea': dict(
+        title='Ly trà mùa thi', emoji='📚',
+        keepsake=dict(emoji='🧋', name='Công thức “Trà Mùa Thi”', desc='Món mới trên bảng menu, đặt theo tên mùa thi của Linh.'),
+        cast={'linh': _p('Linh', '🎒', 'Khách quen, ôn thi đại học', 'milk_tea_npc_01'),
+              'nhi': _p('Nhi', '🧑‍🍳', 'Bạn phụ quầy', 'milk_tea_npc_06'),
+              'bac_tu': _p('Bác Tư', '👴', 'Hàng xóm', 'milk_tea_npc_02'),
+              'miu': _p('Miu', '📸', 'Bạn thân của Linh', 'milk_tea_npc_03')},
+        beats=[
+            _b('Vị khách giờ tan học', '🎒', 'Có một bạn học sinh hay ngồi bàn cạnh cửa sổ tới tận giờ đóng cửa.', [
+                ('linh', '{Anh} ơi, cho em một ly trà sữa ít đá, ba phần đường nha.'),
+                ('nhi', 'Bạn đó ngày nào cũng ngồi bàn cửa sổ, ôm cuốn sách dày cộm tới lúc tiệm đóng cửa.'),
+                ('linh', 'Em ôn thi đại học. Còn bốn mươi ngày nữa thôi…'),
+                ('me', 'Vậy ly này tiệm pha thật êm cho em nhé. Cần gì cứ gọi.')]),
+            _b('Bốn mươi ngày', '⏳', 'Linh trông mệt hơn mọi hôm.', [
+                ('bac_tu', 'Con bé học khuya quá. Sáng nào bác đi tập thể dục cũng thấy đèn phòng nó còn sáng.'),
+                ('linh', 'Em uống trà sữa cho tỉnh, mà uống nhiều đường xong lại buồn ngủ hơn.'),
+                ('nhi', 'Hay mình làm cho bạn ấy món gì nhẹ bụng hơn ha?')],
+                _c('Tối nay làm gì cho Linh?',
+                   _o('a', 'Pha tặng một ly trà gừng ấm', [('linh', 'Ấm bụng ghê. Cảm ơn {anh}, em học thêm được một chương nữa rồi.')], rel='linh'),
+                   _o('b', 'Viết một câu cổ vũ lên nắp ly', [('linh', '“Từng trang một thôi.” Em chụp lại làm hình nền điện thoại luôn nè.')], rel='linh'))),
+            _b('Công thức mới', '🍵', 'Nhi đang nghĩ một món mới cho người thức khuya.', [
+                ('nhi', 'Ô long, sữa tươi, ít ngọt, thêm thạch nha đam. Món cho người thức khuya mà không muốn say đường!'),
+                ('me', 'Để mình canh lại lượng trà cho khỏi đắng.'),
+                ('linh', 'Uống xong thấy đầu nhẹ hẳn. {Anh} đặt tên món này đi!'),
+                ('nhi', 'Chưa được. Đợi bạn thi xong rồi mới đặt tên.')]),
+            _b('Ngày thi', '✏️', 'Mấy hôm nay bàn cửa sổ bỏ trống.', [
+                ('miu', 'Linh đi thi rồi {anh} ơi. Bạn ấy nhờ em mua mang vào ly quen, ít đá, ba phần đường.'),
+                ('bac_tu', 'Hèn chi mấy bữa nay bàn cửa sổ trống trơn.'),
+                ('me', 'Để mình pha thật cẩn thận. Nhắn Linh: làm từng câu một thôi.'),
+                ('miu', 'Em chụp ly này gửi Linh liền. Chắc bạn ấy vui lắm.')]),
+            _b('Trà Mùa Thi', '🎓', 'Sắp có tin vui từ bàn cửa sổ.', [
+                ('linh', '{Anh} ơi! Em đậu rồi! Đậu nguyện vọng một luôn!'),
+                ('bac_tu', 'Bác biết mà. Con bé học chăm vậy thì phải đậu chứ.'),
+                ('linh', 'Em muốn món trà ô long đó có tên. Để mấy bạn khóa sau cũng được uống.'),
+                ('nhi', 'Vậy thì ghi lên bảng menu nha: “Trà Mùa Thi”.'),
+                ('me', 'Mùa thi năm sau, bàn cửa sổ vẫn để dành cho người cần.')]),
+        ]),
+    'grocery': dict(
+        title='Cuốn sổ ghi nợ', emoji='📗',
+        keepsake=dict(emoji='🔑', name='Chìa khóa tiệm Cô Ba', desc='Cô Ba giao chìa khóa tiệm cho bạn trông mấy hôm cô về quê.'),
+        cast={'co_ba': _p('Cô Ba', '👩‍🦳', 'Chủ tiệm', 'grocery_npc_01'),
+              'chi_lan': _p('Chị Lan', '🧵', 'Công nhân may', 'grocery_npc_03'),
+              'be_ti': _p('Bé Tí', '👦', 'Học sinh lớp 9', 'grocery_npc_04'),
+              'chu_bay': _p('Chú Bảy', '🛵', 'Xe ôm đầu hẻm', 'grocery_npc_02')},
+        beats=[
+            _b('Cuốn sổ bìa xanh', '📗', 'Dưới quầy có một cuốn sổ cũ mà Cô Ba giữ rất kỹ.', [
+                ('co_ba', 'Con thấy cuốn sổ bìa xanh này không? Sổ ghi nợ của cả hẻm, hai chục năm rồi đó.'),
+                ('co_ba', 'Ai khó thì cô cho ghi, tới kỳ lương thì trả. Hàng xóm với nhau mà con.'),
+                ('chu_bay', 'Hồi xe chú hư máy, chú cũng ghi sổ Cô Ba cả tháng trời.'),
+                ('me', 'Dạ, vậy con giữ sổ này cẩn thận giùm cô.')]),
+            _b('Chị Lan mua chịu', '🧺', 'Hình như ở xưởng may có chuyện chậm lương.', [
+                ('chi_lan', 'Tháng này xưởng chậm lương. Em cho chị ghi sổ gói mì với hộp sữa cho con nha.'),
+                ('chi_lan', 'Chị ngại lắm, mà thằng nhỏ đang sốt, phải có sữa.'),
+                ('co_ba', 'Con lo giùm cô nha, cô đang cân gạo.')],
+                _c('Ghi sổ cho Chị Lan thế nào?',
+                   _o('a', 'Ghi rõ ràng, hẹn ngày trả nhẹ nhàng', [('chi_lan', 'Có ngày hẹn rõ vậy chị yên tâm hơn. Lãnh lương là chị ghé liền.')], rel='chi_lan'),
+                   _o('b', 'Ghi sổ và gửi thêm gói cháo cho bé', [('co_ba', 'Gói cháo đó cô tặng. Con bệnh thì ăn cháo cho mau khỏe.')], rel='co_ba'))),
+            _b('Sổ mới cho tiệm', '✍️', 'Cuốn sổ bìa xanh sắp hết trang.', [
+                ('me', 'Cô ơi, con chép lại sổ thành từng cột nha: tên, ngày, món, số tiền, đã trả chưa.'),
+                ('be_ti', 'Để em kẻ thước cho! Thước của em thẳng nhất lớp đó.'),
+                ('co_ba', 'Nhìn vô là biết ai còn bao nhiêu, khỏi phải lật tới lật lui.'),
+                ('co_ba', 'Sổ cũ cô vẫn giữ nha. Trong đó có chữ của bao nhiêu người.')]),
+            _b('Tiền trả đủ', '💵', 'Xưởng may sắp phát lương.', [
+                ('chi_lan', 'Lương về rồi em! Tiền mì, tiền sữa, chị trả đủ nè.'),
+                ('chi_lan', 'Còn mấy cái tạp dề này xưởng may dư, chị xin về tặng tiệm.'),
+                ('me', 'Để con gạch dòng này trong sổ. Chữ “đã trả” đẹp nhất sổ luôn.'),
+                ('co_ba', 'Mặc tạp dề mới vô, nhìn tiệm sáng hẳn.')]),
+            _b('Chùm chìa khóa', '🔑', 'Cô Ba nói cuối tuần này muốn về quê thăm con gái.', [
+                ('co_ba', 'Cuối tuần cô về quê thăm con gái hai bữa. Tiệm này cô giao con trông.'),
+                ('co_ba', 'Chìa khóa đây. Cô tin con, vì con giữ sổ còn kỹ hơn cô.'),
+                ('chu_bay', 'Có gì cứ kêu chú, chú đứng đầu hẻm cả ngày mà.'),
+                ('be_ti', dict(male='Anh trông tiệm thì em ghé mua kẹo mỗi ngày luôn!',
+                               female='Chị trông tiệm thì em ghé mua kẹo mỗi ngày luôn!',
+                               none='Vậy em ghé mua kẹo mỗi ngày luôn!'))]),
+        ]),
+    'delivery': dict(
+        title='Lá thư từ phương xa', emoji='✉️',
+        keepsake=dict(emoji='🗼', name='Tấm bưu thiếp Osaka', desc='Tín gửi tặng “người đưa thư tốt bụng của bà”.'),
+        cast={'ba_nguyet': _p('Bà Nguyệt', '👵', 'Bà cụ ở cuối hẻm'),
+              'chi_hanh': _p('Chị Hạnh', '📋', 'Điều phối viên bưu cục', 'delivery_npc_07'),
+              'ba_ut': _p('Bà Út', '🧓', 'Chủ tạp hóa trong hẻm', 'delivery_npc_04'),
+              'tin': _p('Tín', '🎓', 'Cháu bà Nguyệt, du học ở Nhật')},
+        beats=[
+            _b('Bà hỏi thư', '👵', 'Có một bà cụ hay đứng chờ ở cổng cuối hẻm.', [
+                ('ba_nguyet', 'Con ơi, hôm nay có thư của thằng Tín không con? Nó đi du học bên Nhật.'),
+                ('me', 'Dạ hôm nay chưa có bà ơi. Có là con mang tới liền.'),
+                ('chi_hanh', 'Bà Nguyệt đó, tuần nào cũng hỏi. Tuần nào có thư là bà vui cả tuần.')]),
+            _b('Chưa có thư', '📭', 'Mấy tuần rồi chưa có thư từ Nhật.', [
+                ('ba_nguyet', 'Hôm nay cũng chưa có hả con… Chắc nó bận học.'),
+                ('ba_ut', 'Bà ngồi đây từ sáng. Ai chạy xe ngang cũng hỏi.'),
+                ('ba_nguyet', 'Nó hiền lắm, hồi nhỏ ngày nào cũng xin bà kể chuyện mới chịu ngủ.')],
+                _c('Bạn làm gì?',
+                   _o('a', 'Dừng xe, ngồi nghe bà kể về Tín một lúc', [('ba_nguyet', 'Lâu lắm mới có người nghe bà kể trọn một câu chuyện. Con đi đường cẩn thận nghe.')]),
+                   _o('b', 'Hứa hễ có thư là mang tới bà đầu tiên', [('ba_nguyet', 'Ừ, bà tin con. Bà để dành cho con trái ổi ngọt nhất trên cây.')]))),
+            _b('Bưu kiện nhỏ từ Osaka', '📦', 'Bưu cục vừa nhận một kiện hàng quốc tế.', [
+                ('chi_hanh', 'Có kiện từ Osaka gửi bà Nguyệt nè! Em giao đi, chị biết em mong kiện này lắm.'),
+                ('ba_nguyet', 'Của thằng Tín! Mà mắt bà kém rồi, con đọc thư giùm bà nghe.'),
+                ('tin', '“Bà ơi, con học tốt. Con làm thêm ở tiệm bánh, tối nào cũng nhớ canh chua của bà.”'),
+                ('ba_nguyet', 'Cái thằng… Còn gửi cái khăn len nữa. Trời ở đây nóng muốn chết mà.')]),
+            _b('Thư hồi âm', '✍️', 'Bà Nguyệt muốn gửi thư trả lời.', [
+                ('ba_nguyet', 'Con viết giùm bà lá thư trả lời nha. Bà đọc, con viết.'),
+                ('ba_nguyet', '“Tín ơi, bà khỏe. Cây ổi năm nay sai trái. Con nhớ ăn cơm cho đủ.”'),
+                ('me', 'Dạ, con viết chữ to, thẳng hàng cho Tín dễ đọc.')],
+                _c('Cuối thư, bạn…',
+                   _o('a', 'Ghi đúng từng lời bà đọc, không thêm gì', [('ba_nguyet', 'Đúng giọng bà rồi. Nó đọc là biết bà nói liền.')]),
+                   _o('b', 'Xin bà cho ghi thêm một dòng: “Bà vẫn khỏe, người đưa thư làm chứng”', [('ba_nguyet', 'Ghi đi con. Cho nó yên tâm mà học.')]))),
+            _b('Tết này con về', '🎍', 'Hình như sắp có thư mới từ Nhật.', [
+                ('chi_hanh', 'Thêm một thư từ Osaka! Lần này dày lắm nha.'),
+                ('tin', '“Bà ơi, Tết này con về. Con đã mua vé rồi. Con cảm ơn người đưa thư đã đọc thư cho bà.”'),
+                ('ba_nguyet', 'Nó về! Nó về ăn Tết với bà!'),
+                ('ba_nguyet', 'Trong thư có tấm bưu thiếp, nó dặn gửi cho người đưa thư tốt bụng. Của con đó.'),
+                ('ba_ut', 'Từ nay bà khỏi ngồi cổng chờ nữa rồi ha.')]),
+        ]),
+    # ------------------------------------------------------------ chương 2
+    'cafe_bakery': dict(
+        title='Hũ men của Chú Lâm', emoji='🫙',
+        keepsake=dict(emoji='🫙', name='Hũ men cái “Bé Men”', desc='Chú Lâm nuôi hai mươi năm, nay giao lại cho bạn.'),
+        cast={'chu_lam': _p('Chú Lâm', '👴', 'Khách quen 6 giờ sáng', 'cafe_bakery_npc_01'),
+              'mo': _p('Mơ', '🧑‍🎓', 'Sinh viên tình nguyện', 'cafe_bakery_npc_03'),
+              'ba_sau': _p('Bà Sáu', '👵', 'Khách lớn tuổi', 'cafe_bakery_npc_06')},
+        beats=[
+            _b('Người khách 6 giờ', '☕', 'Sáng nào cũng có một ông khách tới đúng 6 giờ.', [
+                ('chu_lam', 'Cà phê đen, không đường. Bánh sừng bò nướng thêm nửa phút nữa.'),
+                ('chu_lam', 'Vỏ phải kêu “rộp” khi cắn. Không kêu là chưa tới.'),
+                ('mo', 'Chú Lâm đó. Sáng nào cũng đúng 6 giờ, trễ một phút là tiệm chưa mở, chú đứng chờ luôn.')]),
+            _b('Vỏ bánh kêu rộp', '🥐', 'Chú Lâm hình như rất rành chuyện làm bánh.', [
+                ('chu_lam', 'Hồi trẻ chú làm thợ bánh ba chục năm ở một lò bánh mì cũ ngoài phố.'),
+                ('chu_lam', 'Bột mà vội là bánh biết liền. Nó xẹp cho mình coi.'),
+                ('mo', 'Chú chỉ tụi con vài chiêu đi chú!')],
+                _c('Bạn muốn…',
+                   _o('a', 'Xin chú chỉ cách gấp bơ cho bánh nhiều lớp', [('chu_lam', 'Gấp ba, nghỉ lạnh, rồi gấp nữa. Nhớ tay lạnh, lòng không vội.')], rel='chu_lam'),
+                   _o('b', 'Mời chú thêm ly cà phê, ngồi nghe chú kể chuyện lò bánh', [('chu_lam', 'Lâu rồi mới có người chịu nghe ông già này kể. Mai chú mang cái này cho coi.')], rel='chu_lam'))),
+            _b('Hũ men cái', '🫙', 'Chú Lâm hứa mang một thứ đặc biệt tới tiệm.', [
+                ('chu_lam', 'Hũ men cái chú nuôi hai chục năm. Làm bánh mì chua là phải có nó.'),
+                ('chu_lam', 'Nuôi nó như nuôi mèo. Mỗi sáng cho ăn một muỗng bột, một muỗng nước.'),
+                ('mo', 'Vậy mình đặt tên nó là “Bé Men” đi!'),
+                ('me', 'Con hứa ngày nào cũng cho Bé Men ăn đúng giờ.')]),
+            _b('Chú Lâm vắng mặt', '🏥', 'Sáng nay đã 6 giờ 15 mà chưa thấy Chú Lâm.', [
+                ('mo', 'Ba bữa rồi không thấy Chú Lâm. Em lo quá.'),
+                ('ba_sau', 'Ông Lâm đi mổ đầu gối, nằm viện rồi con. Ổng dặn đừng ai lo.'),
+                ('me', 'Bé Men lên men đều lắm. Phải cho chú biết mới được.')],
+                _c('Gửi gì vào viện cho Chú Lâm?',
+                   _o('a', 'Ổ bánh mì chua đầu tiên từ Bé Men', [('ba_sau', 'Bà mang vô cho. Ổng cầm ổ bánh lên ngửi mà cười hoài.')], rel='chu_lam'),
+                   _o('b', 'Một tấm ảnh Bé Men sủi bọt, kèm lời hỏi thăm', [('mo', 'Chú nhắn lại: “Bọt vậy là khỏe. Nhớ đừng để nó đói.”')], rel='chu_lam'))),
+            _b('Ổ bánh đầu tiên', '🍞', 'Nghe nói Chú Lâm sắp xuất viện.', [
+                ('chu_lam', 'Chú về rồi đây. Chống gậy thôi, chứ mũi thì vẫn thính.'),
+                ('chu_lam', 'Vỏ giòn, ruột dai, chua vừa. Được rồi.'),
+                ('chu_lam', 'Hũ men này giờ là của con. Chú già rồi, sáng chỉ muốn ngồi uống cà phê thôi.'),
+                ('mo', 'Vậy mỗi sáng 6 giờ mình để dành cho chú một lát bánh nha!')]),
+        ]),
+    'florist': dict(
+        title='Cành hướng dương thứ Sáu', emoji='🌻',
+        keepsake=dict(emoji='🌻', name='Gói hạt giống hướng dương', desc='Hạt từ khu vườn nhỏ của Chú Phúc và Cô Hiền.'),
+        cast={'chu_phuc': _p('Chú Phúc', '👴', 'Tài xế về hưu', 'florist_npc_06'),
+              'co_hien': _p('Cô Hiền', '👵', 'Vợ Chú Phúc'),
+              'ba_tam': _p('Bà Tám', '🧓', 'Hàng xóm lâu năm', 'florist_npc_07')},
+        beats=[
+            _b('Một cành hướng dương', '🌻', 'Có một ông khách chỉ mua đúng một cành hoa.', [
+                ('chu_phuc', 'Cho chú một cành hướng dương. Một cành thôi con.'),
+                ('chu_phuc', 'Gói giấy báo cũng được, miễn cành tươi.'),
+                ('me', 'Dạ, con chọn cành bông to nhất cho chú.')]),
+            _b('Vì sao là hướng dương', '💛', 'Thứ Sáu nào Chú Phúc cũng ghé.', [
+                ('chu_phuc', 'Vợ chú, Cô Hiền, giờ hay quên lắm. Có bữa quên cả tên chú.'),
+                ('chu_phuc', 'Mà hễ thấy hướng dương là bả cười. Hồi đám cưới bả cầm hướng dương.'),
+                ('ba_tam', 'Hiền đó hả? Hồi xưa bán rau cạnh sạp tôi ngoài chợ. Cười đẹp nhất chợ.')],
+                _c('Tuần này gói hoa thế nào?',
+                   _o('a', 'Chọn cành tươi nhất, cắt chéo gốc cho lâu tàn', [('chu_phuc', 'Cành này để được cả tuần. Bả ngó nó hoài.')], rel='chu_phuc'),
+                   _o('b', 'Kẹp thêm tấm thiệp nhỏ vẽ ông mặt trời', [('chu_phuc', 'Bả cầm tấm thiệp ngó hoài, rồi nói “ông mặt trời của tui”.')], rel='chu_phuc'))),
+            _b('Cô Hiền ghé tiệm', '👵', 'Chú Phúc nói sẽ dẫn Cô Hiền đi dạo ngang tiệm.', [
+                ('co_hien', 'Tiệm hoa đẹp quá. Mình vô đây lần nào chưa ông?'),
+                ('chu_phuc', 'Tuần nào tui cũng vô mua hoa cho bà đó.'),
+                ('ba_tam', 'Hiền! Nhớ tui không? Sạp rau ngoài chợ nè.'),
+                ('co_hien', 'Chị Tám… Tay chị vẫn đeo cái vòng bạc đó hả?'),
+                ('ba_tam', 'Còn nhớ! Còn nhớ cái vòng!')]),
+            _b('Bốn mươi năm', '💐', 'Sắp tới một ngày kỷ niệm quan trọng.', [
+                ('chu_phuc', 'Tuần sau là bốn chục năm ngày cưới. Chú muốn một bó giống hồi đó.'),
+                ('chu_phuc', 'Hướng dương với cúc trắng. Hồi đó nghèo, bó có năm cành à.'),
+                ('me', 'Để con làm bó thật giống ngày xưa.')],
+                _c('Bó hoa kỷ niệm',
+                   _o('a', 'Gói giấy kiếng, buộc nơ đỏ như ảnh cưới xưa', [('chu_phuc', 'Y chang! Y chang cái bó trong hình cưới.')], rel='chu_phuc'),
+                   _o('b', 'Năm cành hướng dương, bốn mươi bông cúc trắng nhỏ', [('chu_phuc', 'Bốn mươi bông cúc, bốn mươi năm. Con khéo quá.')], rel='chu_phuc'))),
+            _b('Tấm ảnh cưới', '📷', 'Chú Phúc hẹn ghé kể chuyện ngày kỷ niệm.', [
+                ('chu_phuc', 'Hôm đó bả ôm bó hoa, rồi gọi tên chú. Gọi đúng tên luôn con.'),
+                ('chu_phuc', 'Chú chụp lại rồi nè. Coi nè, bả cười y hồi bốn chục năm trước.'),
+                ('co_hien', 'Ông Phúc nói tiệm này gói hoa đẹp nhất phố. Cô cảm ơn con.'),
+                ('chu_phuc', 'Hạt hướng dương trong vườn nhà chú. Con trồng một chậu trước tiệm nghe.')]),
+        ]),
+    'mother_baby': dict(
+        title='Chờ bé Bơ chào đời', emoji='🍼',
+        keepsake=dict(emoji='🧸', name='Tấm ảnh bé Bơ đầy tháng', desc='Mai dán ảnh bé Bơ lên tường tiệm, cạnh kệ gấu bông.'),
+        cast={'mai': _p('Mai', '🤰', 'Khách thường ghé', 'mother_baby_npc_03'),
+              'an': _p('An', '🧑', 'Phụ việc', 'mother_baby_npc_04'),
+              'linh': _p('Linh', '🎀', 'Bạn thân của Mai', 'mother_baby_npc_01'),
+              'bac_tu': _p('Bác Tư', '👴', 'Hàng xóm', 'mother_baby_npc_02')},
+        beats=[
+            _b('Danh sách dài ngoằng', '📝', 'Có một chị khách đang cầm danh sách dài cả mét.', [
+                ('mai', 'Mình mới có bầu tháng thứ năm. Đọc trên mạng thấy cái gì cũng cần hết trơn.'),
+                ('mai', 'Máy hâm sữa, máy tiệt trùng, máy ru ngủ… Có cần hết không {anh}?'),
+                ('an', 'Danh sách này dài hơn cả kệ hàng tiệm mình luôn.')]),
+            _b('Món nào thật cần', '🍼', 'Mai quay lại, vẫn còn bối rối với danh sách.', [
+                ('mai', 'Tối qua mình trằn trọc hoài. Sợ thiếu món gì cho con.'),
+                ('me', 'Mình ngồi đọc lại danh sách từ từ nha. Món nào cần trước, món nào đợi được.'),
+                ('an', 'Em pha trà cho chị Mai nha. Đọc danh sách dài vậy phải có trà.')],
+                _c('Bạn giúp Mai thế nào?',
+                   _o('a', 'Cùng Mai gạch bớt những món chưa cần', [('mai', 'Gạch xong nhẹ cả người. Tiền đó mình để dành mua sữa.')], rel='mai'),
+                   _o('b', 'Chia danh sách mua dần theo từng tháng', [('mai', 'Chia tháng vậy dễ thở ghê. Mình dán lên tủ lạnh luôn.')], rel='mai'))),
+            _b('Tiệc chờ bé', '🎈', 'Bạn bè của Mai muốn làm một bữa tiệc chờ bé.', [
+                ('linh', 'Tụi mình làm tiệc chờ bé cho Mai. Tiệm gói giùm một giỏ quà thật xinh nha.'),
+                ('an', 'Khăn sữa, bình nước, gấu bông, thêm tấm thiệp viết tay!'),
+                ('linh', 'Mai nói bé tên ở nhà là Bơ. Vì Mai thèm bơ suốt mấy tháng nay.'),
+                ('me', 'Vậy thiệp vẽ trái bơ luôn cho hợp.')]),
+            _b('Tin nhắn lúc nửa đêm', '🌙', 'Ngày dự sinh của Mai đã tới gần.', [
+                ('an', 'Có tin nhắn! Chồng chị Mai nhắn: bé Bơ chào đời rồi, ba ký hai, mẹ tròn con vuông!'),
+                ('bac_tu', 'Mừng quá! Hẻm mình có thêm một đứa nhỏ.'),
+                ('me', 'Mình gửi gì vào viện mừng Mai đây ta?')],
+                _c('Món quà mừng',
+                   _o('a', 'Một bộ quà nhỏ: khăn sữa và mũ len', [('an', 'Chị Mai gửi hình bé đội mũ len rồi nè. Dễ thương xỉu.')], rel='mai'),
+                   _o('b', 'Một tấm thiệp cả tiệm cùng ký tên', [('an', 'Chị Mai nói sẽ dán tấm thiệp vào album đầu đời của bé.')], rel='mai'))),
+            _b('Bé Bơ đầy tháng', '👶', 'Có người sắp bế bé tới thăm tiệm.', [
+                ('mai', 'Bé Bơ đầy tháng rồi! Mình bế bé ghé chào tiệm nè.'),
+                ('mai', 'Hồi đó không có {anh} chắc mình mua cả đống đồ không xài tới.'),
+                ('linh', 'Chụp chung một tấm đi! Cả tiệm luôn!'),
+                ('mai', 'Tấm này tặng tiệm. Để bé Bơ lúc nào cũng ở đây.')]),
+        ]),
+    'restaurant': dict(
+        title='Tô mì cấp 0', emoji='🌶️',
+        keepsake=dict(emoji='🍜', name='Món “Mì cấp 0 Cần Thơ”', desc='Món mới trên menu, nấu theo vị canh quê của mẹ Minh Béo.'),
+        cast={'minh_beo': _p('Minh Béo', '🧑‍🎓', 'Sinh viên', 'restaurant_npc_05'),
+              'anh_son': _p('Anh Sơn', '🧔', 'Khách quen', 'restaurant_npc_01'),
+              'ba_hoa': _p('Bà Hoa', '👵', 'Khách lớn tuổi', 'restaurant_npc_06'),
+              'me_minh': _p('Cô Út', '👩', 'Mẹ Minh Béo, ở Cần Thơ')},
+        beats=[
+            _b('Thử thách cấp 7', '🔥', 'Một cậu sinh viên đang dựng điện thoại lên quay video.', [
+                ('minh_beo', 'Cho em một tô cấp 7! Em quay video “thử thách mì cay” đăng mạng.'),
+                ('anh_son', 'Cấp 7 hả? Tui ăn cấp 3 thôi mà còn chảy nước mắt đó nhóc.'),
+                ('minh_beo', 'Không sao! Em ăn cay giỏi lắm!')]),
+            _b('Nước mắt và ly trà đá', '😭', 'Minh Béo quay lại, lần này đi một mình.', [
+                ('minh_beo', 'Hôm bữa em bỏ dở tô cấp 7… Video bị chọc quá trời.'),
+                ('anh_son', 'Ăn cay đâu phải để chứng minh gì đâu nhóc.'),
+                ('minh_beo', 'Mà em lỡ hứa với cả lớp là ăn hết rồi…')],
+                _c('Bạn nói gì với Minh?',
+                   _o('a', 'Rót ly sữa lạnh, cười: “Cay là để ngon, không phải để thắng”', [('minh_beo', 'Nghe {anh} nói vậy em thấy nhẹ nhõm. Hôm nay em ăn cấp 2 thôi.')], rel='minh_beo'),
+                   _o('b', 'Gợi ý bắt đầu lại từ cấp 3, tăng dần mỗi tuần', [('minh_beo', 'Tập từ từ ha. Vậy tuần sau em lên cấp 4!')], rel='minh_beo'))),
+            _b('Nhớ nhà', '🏠', 'Tối muộn, Minh Béo ngồi lại lâu hơn mọi khi.', [
+                ('minh_beo', 'Thiệt ra em không mê cay lắm. Em ở Cần Thơ lên, nhớ nhà quá nên kiếm cái gì mạnh mạnh ăn cho quên.'),
+                ('minh_beo', 'Em nhớ canh chua bông điên điển của má.'),
+                ('ba_hoa', 'Nhớ nhà thì ăn món nhà, con à. Cay quá lại càng nhớ.'),
+                ('me', 'Để mình thử nấu một tô cho em. Không cay, mà có vị quê.')]),
+            _b('Tô mì cấp 0', '🍜', 'Bếp đang thử một nồi nước dùng mới.', [
+                ('me', 'Nước dùng xương hầm ngọt, chút me chua, rau ăn kèm kiểu miền Tây.'),
+                ('minh_beo', 'Trời… giống canh của má em quá.'),
+                ('anh_son', 'Cho tui một tô cấp 0 luôn. Nhìn ngon quá trời.')],
+                _c('Rau ăn kèm cho tô cấp 0',
+                   _o('a', 'Bông điên điển và rau đắng như ở quê Minh', [('minh_beo', 'Có bông điên điển luôn! Em chụp gửi má liền.')], rel='minh_beo'),
+                   _o('b', 'Rau muống bào và giá, ai ăn cũng quen', [('ba_hoa', 'Món này bà ăn được nè. Không cay mà đậm đà.')], rel='ba_hoa'))),
+            _b('Má lên thăm', '👩', 'Nghe nói mẹ của Minh Béo sắp lên thành phố.', [
+                ('minh_beo', 'Má em lên thăm nè! Em dẫn má tới ăn thử tô cấp 0.'),
+                ('me_minh', 'Nước dùng này có hồn đó con. Nấu kiểu người thương người ăn.'),
+                ('me_minh', 'Cảm ơn con đã cho thằng Minh chỗ để nhớ nhà mà không buồn.'),
+                ('minh_beo', 'Bảng menu ghi tên món đi {anh}: “Mì cấp 0 Cần Thơ”!')]),
+        ]),
+    # ------------------------------------------------------------ chương 3
+    'pet_care': dict(
+        title='Chú chó tên Mực', emoji='🐕',
+        keepsake=dict(emoji='🦴', name='Vòng cổ nhỏ của Mực', desc='Bé Na tặng lại chiếc vòng cổ đầu tiên của Mực.'),
+        cast={'chi_may': _p('Chị Mây', '🧡', 'Nhóm cứu hộ thú lạc', 'pet_care_npc_16'),
+              'bs_hoa': _p('Bác sĩ Hòa', '🩺', 'Thú y phường', 'pet_care_npc_14'),
+              'be_na': _p('Bé Na', '👧', 'Cô bé 9 tuổi', 'pet_care_npc_05'),
+              'muc': _p('Mực', '🐕', 'Chó lạc được cứu')},
+        beats=[
+            _b('Bé chó run rẩy', '🐕', 'Nhóm cứu hộ vừa tìm thấy một chú chó dưới gầm cầu.', [
+                ('chi_may', 'Tụi chị mới tìm được bé này dưới gầm cầu. Đen thui nên đặt tên là Mực.'),
+                ('chi_may', 'Nó sợ nước lắm. Tắm giúp chị mà nhẹ tay nha.'),
+                ('muc', 'Ư… ư…'),
+                ('me', 'Không sao đâu Mực. Ở đây không ai làm em đau đâu.')]),
+            _b('Không ép', '🫧', 'Mực vẫn trốn vào góc mỗi khi thấy vòi nước.', [
+                ('chi_may', 'Mực cứ thấy vòi nước là chui vào góc run lẩy bẩy.'),
+                ('me', 'Mình không ép. Để từ từ Mực tự quen.'),
+                ('muc', 'Ư…')],
+                _c('Làm quen với Mực',
+                   _o('a', 'Ngồi xuống sàn, để Mực tự lại gần', [('chi_may', 'Mười phút sau nó dụi đầu vào tay em luôn. Chị suýt khóc.')], rel='chi_may'),
+                   _o('b', 'Lau người bằng khăn ấm thay vì tắm vòi', [('chi_may', 'Khăn ấm thì nó chịu nằm yên. Còn ngủ gục luôn nữa.')], rel='chi_may'))),
+            _b('Bác sĩ Hòa khám', '🩺', 'Đến ngày đưa Mực đi khám tổng quát.', [
+                ('bs_hoa', 'Mực khỏe. Hơi gầy, cần tiêm ngừa đủ mũi, ăn đều là lên cân.'),
+                ('muc', 'Gâu!'),
+                ('bs_hoa', 'Lần đầu thấy nó vẫy đuôi đó. Nó chọn người rồi.'),
+                ('chi_may', 'Giờ chỉ còn tìm cho Mực một mái nhà.')]),
+            _b('Bé Na và Mực', '👧', 'Có một cô bé cứ đứng ngoài cửa kính nhìn vào.', [
+                ('be_na', 'Mẹ ơi, con muốn nuôi Mực! Con hứa cho Mực ăn mỗi ngày!'),
+                ('be_na', dict(male='Anh ơi, Mực có thích con không?', female='Chị ơi, Mực có thích con không?', none='Mực có thích con không?')),
+                ('me', 'Mẹ Na còn lo, nuôi chó là chuyện cả nhà mà.')],
+                _c('Giúp mẹ Na yên tâm',
+                   _o('a', 'Kể cho mẹ Na nghe cách chăm Mực mỗi ngày', [('be_na', 'Mẹ nói nghe rõ vậy thì mẹ yên tâm rồi!')], rel='be_na'),
+                   _o('b', 'Mời hai mẹ con ghé chơi với Mực thêm vài lần', [('be_na', 'Tuần này con ghé ba lần luôn! Mực nhớ tên con rồi.')], rel='be_na'))),
+            _b('Về nhà mới', '🏡', 'Chị Mây nói giấy nhận nuôi đã sẵn sàng.', [
+                ('chi_may', 'Giấy nhận nuôi ký rồi. Mực có nhà rồi em ơi!'),
+                ('be_na', 'Đây là vòng cổ đầu tiên của Mực. Con tặng lại tiệm để nhớ Mực nha.'),
+                ('muc', 'Gâu! Gâu!'),
+                ('me', 'Nhớ đưa Mực ghé tắm nha. Lần này có vòi nước cũng không sợ nữa.')]),
+        ]),
+    'salon': dict(
+        title='Mái tóc bạc ngày cưới', emoji='💇',
+        keepsake=dict(emoji='📸', name='Ảnh cưới ba thế hệ', desc='Cô Ngọc, con gái và cô dâu Trâm, ai cũng làm tóc ở Salon Tóc Gió.'),
+        cast={'co_ngoc': _p('Cô Ngọc', '👩‍🦳', 'Giáo viên về hưu', 'salon_npc_03'),
+              'ba_luu': _p('Bà Lựu', '🧓', 'Khách quen lắm chuyện', 'salon_npc_05'),
+              'tram': _p('Cô dâu Trâm', '👰', 'Cháu gái Cô Ngọc', 'salon_npc_10')},
+        beats=[
+            _b('Chiếc mũ len', '🧶', 'Một cô khách lớn tuổi đội mũ len giữa trời nắng.', [
+                ('co_ngoc', 'Tóc cô mới mọc lại sau đợt điều trị. Lởm chởm lắm con.'),
+                ('co_ngoc', 'Cô đội mũ hoài, mà trời nắng quá.'),
+                ('me', 'Tóc mới mọc mềm lắm cô. Để con xem thử, không làm gì cô chưa muốn đâu.')]),
+            _b('Cắt cho gọn', '✂️', 'Cô Ngọc quay lại, lần này bỏ mũ ra.', [
+                ('co_ngoc', 'Hôm nay cô dám bỏ mũ ra rồi. Con làm sao cho gọn giùm cô.'),
+                ('ba_luu', 'Ngọc đó hả? Cô giáo dạy văn của nửa cái phố này đó!'),
+                ('me', 'Dạ, cô cứ ngồi thoải mái. Mình từ từ thôi cô.')],
+                _c('Kiểu tóc cho Cô Ngọc',
+                   _o('a', 'Tỉa nhẹ cho đều, giữ nguyên độ dài', [('co_ngoc', 'Đều rồi, nhìn hiền hẳn. Mai cô đi chợ không đội mũ nữa.')], rel='co_ngoc'),
+                   _o('b', 'Gợi ý kiểu tém ngắn khỏe khoắn', [('co_ngoc', 'Trời, cô trẻ ra chục tuổi! Hồi con gái cô cũng để tóc tém.')], rel='co_ngoc'))),
+            _b('Chuyện trong ghế gội', '💬', 'Bà Lựu đang kể chuyện rôm rả ở ghế gội.', [
+                ('ba_luu', 'Hồi đó Ngọc dạy thằng con tui đọc thơ. Giờ nó làm nhà báo đó.'),
+                ('co_ngoc', 'Thằng Tuấn hả? Viết văn hay mà hay đi học trễ.'),
+                ('ba_luu', 'Còn nhớ luôn! Bà này nhớ dai hơn tui nữa.'),
+                ('co_ngoc', 'Làm tóc ở đây vui, cô ghé thường hơn.')]),
+            _b('Đám cưới cháu gái', '💍', 'Salon nhận lịch hẹn làm tóc cho một đám cưới.', [
+                ('tram', 'Em là Trâm, cháu ngoại của bà Ngọc. Bà giới thiệu em tới làm tóc cưới.'),
+                ('co_ngoc', 'Ngày cưới con Trâm, cô cũng muốn làm tóc đàng hoàng.'),
+                ('tram', 'Bà có mái tóc bạc đẹp lắm. Em muốn bà nổi bật hơn cả em luôn!')],
+                _c('Tóc cưới cho Cô Ngọc',
+                   _o('a', 'Giữ màu bạc tự nhiên, cài một nhành hoa nhỏ', [('tram', 'Bà giống bà tiên trong truyện cổ tích luôn!')], rel='co_ngoc'),
+                   _o('b', 'Uốn phồng nhẹ cho đồng bộ với tóc cô dâu', [('co_ngoc', 'Hai bà cháu tóc giống nhau, chụp hình đẹp nghe con.')], rel='tram'))),
+            _b('Ảnh cưới ba thế hệ', '📸', 'Có người mang ảnh cưới tới khoe.', [
+                ('tram', 'Ảnh cưới nè! Tấm đẹp nhất là tấm có bà.'),
+                ('co_ngoc', 'Cả nhà khen tóc cô. Có đứa còn hỏi cô đi làm ở đâu.'),
+                ('co_ngoc', 'Cô nói: ở tiệm có đứa nhỏ hỏi kỹ lắm rồi mới dám cắt.'),
+                ('ba_luu', 'Treo tấm này lên tường đi, cho khách coi.')]),
+        ]),
+    'repair': dict(
+        title='Chiếc radio của Ông Bảy', emoji='📻',
+        keepsake=dict(emoji='💡', name='Bóng đèn radio cũ', desc='Chiếc đèn điện tử cháy, Ông Bảy tặng lại làm kỷ niệm.'),
+        cast={'ong_bay': _p('Ông Bảy', '👴', 'Hưu trí, hàng xóm', 'repair_npc_02'),
+              'chu_tu': _p('Chú Tư', '👨‍🔧', 'Chủ tiệm'),
+              'be_ngan': _p('Bé Ngân', '👩‍🎓', 'Sinh viên năm hai', 'repair_npc_03'),
+              'lam': _p('Lâm Linh Kiện', '📦', 'Mối buôn linh kiện', 'repair_npc_07')},
+        beats=[
+            _b('Cái radio gỗ', '📻', 'Có một ông cụ ôm một chiếc hộp gỗ vào tiệm.', [
+                ('ong_bay', 'Cái radio này của bà nhà tôi. Bà mất rồi.'),
+                ('ong_bay', 'Chiều nào tôi cũng muốn nghe cải lương, như hồi bà còn ngồi đây.'),
+                ('chu_tu', 'Đồ xưa quá. Để lại đây, tụi này coi thử.')]),
+            _b('Chú Tư lắc đầu', '🔧', 'Chú Tư đã mở nắp chiếc radio ra xem.', [
+                ('chu_tu', 'Đèn điện tử cháy rồi. Loại này giờ hiếm lắm.'),
+                ('ong_bay', 'Vậy là… không nghe được nữa hả con?'),
+                ('chu_tu', 'Chú không hứa bừa đâu. Con nói với ông đi, con là người nhận đồ mà.')],
+                _c('Bạn nói với Ông Bảy…',
+                   _o('a', '“Con hứa sẽ đi tìm linh kiện cho ông.”', [('ong_bay', 'Ừ. Ông chờ được. Bà nhà ông cũng hay chờ ông vậy đó.')], rel='ong_bay'),
+                   _o('b', '“Nói thật là khó ông ạ, nhưng tiệm sẽ thử hết cách.”', [('ong_bay', 'Nói thật vậy ông thích. Thợ nói thật là thợ tốt.')], rel='ong_bay'))),
+            _b('Chợ linh kiện', '🔎', 'Tiệm đang đi tìm một bóng đèn điện tử đời cũ.', [
+                ('lam', 'Kiếm được rồi! Đèn cũ tháo máy, còn tốt. Mười năm mới gặp một cái.'),
+                ('be_ngan', 'Em tìm được sơ đồ mạch trên diễn đàn nước ngoài. In ra rồi nè.'),
+                ('chu_tu', 'Có sơ đồ, có đèn. Giờ tới tay nghề.')]),
+            _b('Tiếng rè đầu tiên', '⚡', 'Chiếc radio sắp được hàn lại.', [
+                ('me', 'Hàn xong mối cuối rồi. Chú Tư, con bật thử nha.'),
+                ('chu_tu', 'Bật đi. Tay run là tại hồi hộp thôi.'),
+                ('be_ngan', 'Nó rè rè kìa! Có tiếng rồi!'),
+                ('chu_tu', 'Được đó. Giờ thì chú tin con làm được nghề này rồi.')]),
+            _b('Vọng cổ buổi chiều', '🎶', 'Đến lúc trả radio cho Ông Bảy.', [
+                ('ong_bay', 'Đúng đài này. Chiều nào bà cũng mở đài này.'),
+                ('ong_bay', 'Nghe như bà còn ngồi đây.'),
+                ('ong_bay', 'Bóng đèn cũ cháy đó, con giữ đi. Nó chở bài hát của bà nhà ông mấy chục năm.'),
+                ('chu_tu', 'Món này sửa không lấy tiền công. Tiệm mình nhận vậy đủ rồi.')]),
+        ]),
+    'farm': dict(
+        title='Mùa mưa trên Đồi Gió', emoji='⛈️',
+        keepsake=dict(emoji='📜', name='Giấy chứng nhận hữu cơ đầu tiên', desc='Lồng khung treo trong kho, cạnh áo mưa của Chú Tám.'),
+        cast={'chu_tam': _p('Chú Tám', '👨‍🌾', 'Tổ trưởng HTX rau', 'farm_npc_01'),
+              'chi_hanh': _p('Chị Hạnh', '👩‍🍳', 'Bếp trưởng Bếp Mây', 'farm_npc_02'),
+              'be_mit': _p('Bé Mít', '👧', 'Học sinh lớp 5', 'farm_npc_05'),
+              'anh_tuan': _p('Anh Tuấn', '🚚', 'Thương lái', 'farm_npc_04')},
+        beats=[
+            _b('Đất đồi', '🌱', 'Chú Tám có chuyện muốn nói về luống đất.', [
+                ('chu_tam', 'Đất đồi này bạc màu lâu rồi. Làm hữu cơ thì chậm, nhưng đất nó nhớ ơn.'),
+                ('chu_tam', 'Phủ rơm, ủ phân, trồng xen. Ba mùa mới thấy khác.'),
+                ('be_mit', 'Con thấy giun đất nè! Chú Tám nói có giun là đất khỏe.'),
+                ('me', 'Vậy mình làm từng luống một, chú chỉ con nha.')]),
+            _b('Tin bão', '🌧️', 'Đài báo sắp có mưa lớn kéo dài.', [
+                ('chu_tam', 'Đài báo tuần này mưa to, gió giật. Rau non chịu không nổi đâu.'),
+                ('chu_tam', 'Còn hai ngày. Con tính làm gì trước?'),
+                ('be_mit', 'Con phụ được! Con khiêng cọc tre được đó!')],
+                _c('Chuẩn bị cho cơn bão',
+                   _o('a', 'Dựng mái che lưới cho luống rau non', [('chu_tam', 'Mái che vững đó. Gió lớn cỡ nào rau cũng còn chỗ núp.')], rel='chu_tam'),
+                   _o('b', 'Đào rãnh thoát nước quanh các luống', [('chu_tam', 'Đất đồi mà ngập là thối rễ. Đào rãnh là khôn đó con.')], rel='chu_tam'))),
+            _b('Đêm mưa gió', '⛈️', 'Mây đen đã kéo tới Đồi Gió.', [
+                ('be_mit', 'Gà sổ chuồng hết rồi! Con phụ lùa gà vô nha!'),
+                ('chu_tam', 'Mái che còn đứng, rau non vẫn sống. May quá.', ('farm_2', 'a')),
+                ('chu_tam', 'Nước thoát hết theo rãnh, không luống nào ngập. May quá.', ('farm_2', 'b')),
+                ('chu_tam', 'Mất mấy luống cải ngoài bìa. Không sao, gieo lại được.'),
+                ('me', 'Sáng mai con gieo lại liền. Đất còn là còn rau.')]),
+            _b('Thương lái ép giá', '⚖️', 'Có xe tải của thương lái đậu dưới chân đồi.', [
+                ('anh_tuan', 'Sau bão rau khan. Anh mua hết, giá rẻ thôi, dán nhãn “rau hữu cơ” bán cho lẹ.'),
+                ('me', 'Rau của con chưa có chứng nhận, anh ạ. Dán nhãn vậy là nói sai.'),
+                ('chi_hanh', 'Bếp Mây cũng đang cần rau đó em. Chị lấy đúng giá, ghi đúng là rau nhà trồng.')],
+                _c('Bán rau sau bão',
+                   _o('a', 'Giữ rau cho bếp của Chị Hạnh, ghi đúng nhãn', [('chi_hanh', 'Rau này chị ghi hẳn lên menu: “Rau Đồi Gió, nhà trồng”.')], rel='chi_hanh'),
+                   _o('b', 'Bán bớt cho Anh Tuấn, nhưng ghi rõ “chưa chứng nhận”', [('anh_tuan', 'Ờ… ghi vậy cũng được. Nói thật thì mối lâu. Anh gửi tiền cọc đây.')], rel='chu_tam', coins=8)),
+                days=6, served=14, gap=1),
+            _b('Giấy chứng nhận đầu tiên', '📜', 'Đoàn kiểm tra hữu cơ sắp lên đồi.', [
+                ('chu_tam', 'Đoàn kiểm tra xem đất, xem sổ ghi chép, xem cả chuồng gà. Đạt hết!'),
+                ('chu_tam', 'Giấy chứng nhận đầu tiên của Đồi Gió. Ba mùa, một cơn bão, đất nhớ ơn thật.'),
+                ('chi_hanh', 'Tuần sau Bếp Mây in chữ “Rau hữu cơ Đồi Gió” lên menu.'),
+                ('be_mit', 'Con viết bài văn “Nông trại của em” được mười điểm đó!')],
+                days=10, served=24, gap=2),
+        ]),
+    'homestay': dict(
+        title='Căn phòng số 3', emoji='🗝️',
+        keepsake=dict(emoji='📖', name='Trang sổ khách phòng số 3', desc='Mười hai năm, mười hai dòng chữ của Cô Diệp và Chú Khang.'),
+        cast={'co_diep': _p('Cô Diệp', '👵', 'Khách lớn tuổi', 'homestay_npc_03'),
+              'chu_khang': _p('Chú Khang', '👴', 'Chồng Cô Diệp'),
+              'ong_lam': _p('Ông Lâm', '🧓', 'Hàng xóm kiêm khách quen', 'homestay_npc_06')},
+        beats=[
+            _b('Khách cũ của phòng 3', '🗝️', 'Ông Lâm nói tuần này có hai vị khách rất đặc biệt.', [
+                ('ong_lam', 'Tuần này đôi vợ chồng già lại lên đó. Năm nào cũng xin phòng số 3, cửa sổ nhìn đồi thông.'),
+                ('co_diep', 'Năm thứ mười hai rồi đó con. Phòng số 3 còn trống không?'),
+                ('chu_khang', 'Bà nhà tôi nói ngủ phòng khác là không ngủ được.'),
+                ('me', 'Dạ còn. Phòng số 3 để dành cho cô chú mà.')]),
+            _b('Tấm ảnh trên bậu cửa', '🖼️', 'Cô Diệp đặt một tấm ảnh cũ lên bậu cửa sổ.', [
+                ('co_diep', 'Ảnh này chụp ở đúng cửa sổ này, mười hai năm trước. Hồi đó tụi cô mới cưới.'),
+                ('chu_khang', 'Cưới muộn lắm con. Sáu chục tuổi mới cưới. Nên năm nào cũng phải đi trăng mật bù.'),
+                ('ong_lam', 'Năm nào tôi cũng qua uống trà với hai ông bà. Thành lệ rồi.')],
+                _c('Chuẩn bị gì cho phòng số 3?',
+                   _o('a', 'Cắm bình hoa dã quỳ trên bậu cửa', [('co_diep', 'Dã quỳ! Năm đầu tiên ngoài đồi cũng vàng rực vậy đó.')], rel='co_diep'),
+                   _o('b', 'Pha sẵn ấm trà atiso nóng lúc tối', [('chu_khang', 'Trà nóng mà ngồi ngó đồi thông. Còn gì bằng.')], rel='co_diep'))),
+            _b('Chú Khang ốm', '🤒', 'Đêm qua trời trở lạnh bất ngờ.', [
+                ('co_diep', 'Ông nhà cô cảm lạnh rồi. Ho cả đêm.'),
+                ('ong_lam', 'Để tôi đem qua chai dầu gừng. Người Đà Lạt ai cũng có.'),
+                ('me', 'Con nấu nồi cháo gừng, lát bưng lên phòng cho chú.'),
+                ('chu_khang', 'Chén cháo này ngon hơn khách sạn năm sao đó.')]),
+            _b('Bốn mươi năm quen nhau', '🎂', 'Cô Diệp thì thầm nhờ một việc bí mật.', [
+                ('co_diep', 'Mai là bốn chục năm ngày cô với ông quen nhau. Ông quên rồi, cô muốn làm ông bất ngờ.'),
+                ('ong_lam', 'Bất ngờ thì phải có tôi. Tôi đàn được bài “Còn chút gì để nhớ”.'),
+                ('me', 'Dạ, con lo phần còn lại. Chú Khang sẽ không đoán ra đâu.')],
+                _c('Bất ngờ cho Chú Khang',
+                   _o('a', 'Bày bàn trà nhỏ dưới gốc thông, có bánh kem', [('chu_khang', 'Bà còn nhớ hả? Tôi tưởng mình tôi nhớ…')], rel='co_diep'),
+                   _o('b', 'Treo dây đèn vàng quanh cửa sổ phòng 3', [('chu_khang', 'Cửa sổ này sáng y như đêm đầu tiên.')], rel='co_diep'))),
+            _b('Hẹn năm sau', '📅', 'Cô chú sắp trả phòng.', [
+                ('co_diep', 'Tụi cô đặt luôn phòng số 3 cho năm sau nha con.'),
+                ('chu_khang', 'Năm nào còn đi được là còn lên.'),
+                ('co_diep', 'Cô viết vô sổ khách rồi. Trang này mười hai năm, chữ cô chữ ông xen nhau.'),
+                ('ong_lam', 'Homestay có khách quen vậy là có nhà rồi đó.')]),
+        ]),
+    # ------------------------------------------------------------ chương 4
+    'customer_care': dict(
+        title='Người khách hay gọi', emoji='☎️',
+        keepsake=dict(emoji='💌', name='Lá thư cảm ơn của anh Phúc', desc='Chị Mai dán lá thư ở bảng tin của trạm.'),
+        cast={'phuc': _p('Anh Phúc', '😠', 'Khách đang bức xúc', 'customer_care_npc_02'),
+              'chi_mai': _p('Chị Mai', '🎧', 'Trưởng ca', 'customer_care_npc_06'),
+              'duy': _p('Duy', '📦', 'Đầu mối kho', 'customer_care_npc_04')},
+        beats=[
+            _b('Cuộc gọi thứ năm', '☎️', 'Có một số điện thoại gọi tới trạm rất thường xuyên.', [
+                ('phuc', 'Lại là tôi đây! Lần thứ năm rồi! Đơn của tôi đâu?'),
+                ('chi_mai', 'Anh Phúc đó. Tuần nào cũng gọi, ai nghe cũng ngại.'),
+                ('me', 'Dạ em nghe đây anh. Anh cứ nói, em ghi lại hết.')]),
+            _b('Nghe cho hết câu', '👂', 'Anh Phúc lại gọi, giọng còn gắt hơn.', [
+                ('phuc', 'Đó là máy đo đường huyết cho má tôi! Không phải món đồ chơi!'),
+                ('phuc', 'Má tôi phải đo mỗi sáng mà mượn máy hàng xóm cả tuần nay.'),
+                ('chi_mai', 'Em cứ bình tĩnh. Người nóng là vì đang lo.')],
+                _c('Bạn trả lời thế nào?',
+                   _o('a', 'Để anh nói hết, rồi tóm tắt lại từng ý', [('phuc', '…Ừ, đúng vậy. Lần đầu có người nhắc lại đúng chuyện của tôi.')], rel='phuc'),
+                   _o('b', 'Xin lỗi trước, hứa gọi lại trong một giờ', [('phuc', 'Một giờ. Tôi chờ. Mà nhớ gọi đó nha.')], rel='phuc'))),
+            _b('Kiện hàng thất lạc', '📦', 'Bạn đã nhờ kho tìm lại đơn của anh Phúc.', [
+                ('duy', 'Tìm ra rồi! Kiện bị dán nhầm mã, nằm ở kho quận bên kia hai tuần.'),
+                ('chi_mai', 'Lỗi của mình thì mình nhận. Em gọi báo anh Phúc đi.'),
+                ('me', 'Em báo rõ: hàng ở đâu, bao giờ tới, và vì sao trễ.')]),
+            _b('Giao tận tay', '🤝', 'Chiếc máy đo đã sẵn sàng để giao lại.', [
+                ('duy', 'Mai kiện tới. Em muốn giao kiểu nào?'),
+                ('chi_mai', 'Khách chờ lâu rồi. Làm sao cho anh ấy thấy mình để tâm thật.'),
+                ('me', 'Dạ, em nghĩ tới má của anh Phúc trước.')],
+                _c('Giao máy cho anh Phúc',
+                   _o('a', 'Gọi báo trước giờ giao chính xác, xin lỗi thêm một lần', [('phuc', 'Giao đúng giờ luôn. Má tôi đo sáng nay rồi, chỉ số ổn.')], rel='phuc'),
+                   _o('b', 'Nhờ Duy giao kèm tờ hướng dẫn chữ to cho mẹ anh', [('phuc', 'Tờ hướng dẫn chữ to đó… má tôi tự đo được luôn. Cảm ơn.')], rel='duy'))),
+            _b('Lá thư cảm ơn', '💌', 'Trạm vừa nhận được một phong bì viết tay.', [
+                ('chi_mai', 'Thư tay gửi trạm nè. Của anh Phúc.'),
+                ('phuc', '“Cảm ơn người đã nghe tôi nói hết câu. Tôi đã nóng, mà mọi người vẫn tử tế.”'),
+                ('chi_mai', 'Từ tuần sau, em kèm hai bạn mới vào ca nha. Dạy tụi nó cách nghe như vậy.'),
+                ('me', 'Dạ. Em sẽ dạy điều đầu tiên: nghe cho hết câu đã.')]),
+        ]),
+    'pharmacy': dict(
+        title='Hộp thuốc của Bác Năm', emoji='💊',
+        keepsake=dict(emoji='🍋', name='Túi chanh vườn Bác Năm', desc='Chanh không phun thuốc, Bác Năm hái tặng quầy.'),
+        cast={'bac_nam': _p('Bác Năm', '👴', 'Khách quen', 'pharmacy_npc_02'),
+              'co_thu': _p('Cô Thu', '👩‍⚕️', 'Người phụ trách', 'pharmacy_npc_01'),
+              'lan': _p('Lan', '👩', 'Cháu gái Bác Năm', 'pharmacy_npc_03'),
+              'khoa': _p('Khoa', '🧑‍⚕️', 'Nhân viên mới', 'pharmacy_npc_04')},
+        beats=[
+            _b('Túi thuốc lộn xộn', '💊', 'Bác Năm đổ cả túi thuốc ra quầy.', [
+                ('bac_nam', 'Thuốc đường, thuốc huyết áp, bác uống lộn hoài. Có bữa uống hai lần, có bữa quên.'),
+                ('co_thu', 'Người lớn tuổi hay vậy lắm. Mình phải giúp bác cho gọn.'),
+                ('me', 'Bác để con xem từng vỉ, ghi lại cho bác nha.')]),
+            _b('Hộp chia thuốc', '🗓️', 'Quầy có sẵn loại hộp chia thuốc theo ngày.', [
+                ('co_thu', 'Lấy hộp chia thuốc bảy ngày, sáng tối riêng. Mình soạn mẫu cho bác một tuần.'),
+                ('bac_nam', 'Mắt bác kém, chữ nhỏ là chịu.'),
+                ('me', 'Vậy mình làm sao cho bác nhìn là biết, khỏi cần đọc.')],
+                _c('Làm sao cho Bác Năm dễ nhìn?',
+                   _o('a', 'Vẽ mặt trời, mặt trăng lên từng ngăn', [('bac_nam', 'Mặt trời là sáng, mặt trăng là tối. Vậy bác nhớ liền!')], rel='bac_nam'),
+                   _o('b', 'Ghi chữ thật to, dán hai màu sáng và tối', [('bac_nam', 'Màu vàng buổi sáng, màu xanh buổi tối. Dễ ợt!')], rel='bac_nam'))),
+            _b('Lan mua hộ', '👩', 'Hôm nay người tới quầy không phải Bác Năm.', [
+                ('lan', 'Em là cháu Bác Năm. Ông bận đi tập dưỡng sinh, nhờ em mua thuốc giùm.'),
+                ('me', 'Để mình chỉ em cách soạn hộp thuốc cho ông mỗi tuần.'),
+                ('lan', 'Vậy em soạn chủ nhật. Ông khỏi lo quên nữa.'),
+                ('co_thu', 'Có người nhà cùng lo là yên tâm nhất.')]),
+            _b('Câu hỏi khó', '🤔', 'Bác Năm muốn mua thêm một loại thuốc giảm đau.', [
+                ('bac_nam', 'Bác đau lưng, bán cho bác vỉ thuốc giảm đau loại mạnh nha.'),
+                ('khoa', 'Dạ để em lấy liền…'),
+                ('me', 'Khoan đã Khoa. Thuốc này dùng chung với thuốc huyết áp của bác phải hỏi kỹ.')],
+                _c('Bạn xử lý thế nào?',
+                   _o('a', 'Giải thích cho Bác Năm vì sao cần hỏi bác sĩ trước', [('bac_nam', 'Vậy mai bác đi khám luôn. May mà con nói.')], rel='bac_nam'),
+                   _o('b', 'Mời Cô Thu cùng xem, để Khoa học luôn', [('co_thu', 'Khoa nhớ nha: hỏi thuốc đang dùng trước khi bán thêm thuốc nào.')], rel='khoa'))),
+            _b('Chỉ số đẹp', '📈', 'Bác Năm vừa đi tái khám.', [
+                ('bac_nam', 'Tái khám rồi! Đường huyết đẹp, huyết áp đều. Bác sĩ khen quá trời.'),
+                ('lan', 'Tuần nào em cũng soạn hộp thuốc. Ông còn đi bộ mỗi sáng nữa.'),
+                ('bac_nam', 'Chanh vườn nhà bác, không phun thuốc. Cả quầy lấy pha nước uống.'),
+                ('co_thu', 'Quầy mình nhận chanh, còn Bác Năm nhận lời khen của bác sĩ. Hòa cả làng.')]),
+        ]),
+    'tour_guide': dict(
+        title='Chuyến đi của Bác Bình', emoji='🗺️',
+        keepsake=dict(emoji='🏺', name='Cái chén gốm méo', desc='Bác Bình nặn ở làng gốm, tặng người dẫn đoàn.'),
+        cast={'bac_binh': _p('Bác Bình', '👴', 'Du khách', 'tour_guide_npc_02'),
+              'truc': _p('Trúc', '📷', 'Người mê ảnh', 'tour_guide_npc_03'),
+              'co_gom': _p('Cô Gốm', '🏺', 'Chủ xưởng gốm', 'tour_guide_npc_05'),
+              'hai': _p('Hải', '📋', 'Điều phối', 'tour_guide_npc_06')},
+        beats=[
+            _b('Tấm bản đồ cũ', '🗺️', 'Có một bác lớn tuổi mang theo tấm bản đồ đã ố vàng.', [
+                ('bac_binh', 'Tấm bản đồ này bác vẽ tay năm mười tám tuổi, hồi đi thanh niên xung phong.'),
+                ('bac_binh', 'Giờ bác muốn đi lại mấy chỗ đó một lần.'),
+                ('hai', 'Đoàn tuần sau có Bác Bình. Em lo lộ trình kỹ giùm anh nha.')]),
+            _b('Lộ trình riêng', '🧭', 'Bạn đang soạn lịch trình cho đoàn có Bác Bình.', [
+                ('hai', 'Lịch trình chung thì kín rồi. Em muốn thêm gì cho Bác Bình?'),
+                ('bac_binh', 'Bác đi chậm. Đầu gối không còn như hồi mười tám.'),
+                ('truc', 'Đi chậm thì con chụp được nhiều hơn. Con thích vậy!')],
+                _c('Thêm gì vào lịch trình?',
+                   _o('a', 'Một điểm dừng ở bến đò cũ trên bản đồ', [('bac_binh', 'Bến đò đó… bác chờ năm chục năm rồi.')], rel='bac_binh'),
+                   _o('b', 'Đi chậm lại, thêm giờ nghỉ ở mỗi điểm', [('bac_binh', 'Đi chậm mới thấy hết. Cảm ơn con đã nghĩ cho người già.')], rel='bac_binh'))),
+            _b('Làng gốm', '🏺', 'Đoàn dừng chân ở xưởng gốm của Cô Gốm.', [
+                ('co_gom', 'Bác thử nặn một cái chén đi. Méo cũng là của mình.'),
+                ('bac_binh', 'Méo xẹo rồi. Mà nhìn cũng thương.'),
+                ('truc', 'Để con chụp bàn tay bác dính đất. Tấm này đẹp lắm.'),
+                ('co_gom', 'Nung xong tôi gửi theo đoàn về.')]),
+            _b('Bến đò năm xưa', '⛴️', 'Theo bản đồ, sắp tới chỗ bến đò cũ.', [
+                ('bac_binh', 'Bến đò đây mà. Giờ thành cây cầu rồi.'),
+                ('bac_binh', 'Năm đó bác chèo đò chở bạn qua sông, bạn bác giờ không còn nữa.'),
+                ('truc', 'Con chụp bác đứng trên cầu, phía sau là chỗ bến cũ nha.'),
+                ('me', 'Mình đứng đây thêm một lát. Đoàn không vội đâu bác.')]),
+            _b('Cuốn album', '📷', 'Trúc hẹn gửi ảnh chuyến đi.', [
+                ('truc', 'Album in xong rồi! Tấm đầu tiên là bàn tay bác dính đất.'),
+                ('bac_binh', 'Bác đưa cho mấy đứa cháu coi. Tụi nó hỏi ông đi với ai mà vui vậy.'),
+                ('bac_binh', 'Cái chén méo này bác tặng con. Người dẫn đường giỏi phải có cái chén uống trà.'),
+                ('hai', 'Khách viết đánh giá dài ba trang luôn. Em đọc chưa?')]),
+        ]),
+    'teacher': dict(
+        title='Tiếng hát của Minh', emoji='🎤',
+        keepsake=dict(emoji='🎨', name='Bức vẽ của Minh', desc='Minh vẽ cả lớp đứng hát, người đứng giữa là bạn.'),
+        cast={'minh': _p('Minh', '🙈', 'Học sinh bàn cuối', 'teacher_npc_02'),
+              'co_ha': _p('Cô Hạ', '👩‍🏫', 'Đồng nghiệp', 'teacher_npc_01'),
+              'co_lan': _p('Cô Lan', '👩', 'Mẹ của Minh', 'teacher_npc_06'),
+              'vy': _p('Vy', '👧', 'Bạn cùng bàn của Minh', 'teacher_npc_04')},
+        beats=[
+            _b('Cậu bé bàn cuối', '🙈', 'Có một cậu bé bàn cuối biết bài mà không giơ tay.', [
+                ('co_ha', 'Em để ý bé Minh bàn cuối chưa? Biết bài mà không bao giờ giơ tay.'),
+                ('minh', '…'),
+                ('me', 'Minh viết đáp án vào góc vở rồi lấy tay che lại. Mà đáp án đúng hết.'),
+                ('co_ha', 'Nó nhút nhát từ hồi lớp một. Chắc cần một người kiên nhẫn.')]),
+            _b('Tờ giấy nhỏ', '✉️', 'Trên bàn giáo viên có một mẩu giấy gấp tư.', [
+                ('minh', '“{Thay} ơi, con biết câu hai. Mà con sợ nói sai các bạn cười.”'),
+                ('vy', 'Minh viết đó. Minh không dám nói.'),
+                ('co_ha', 'Mẩu giấy này là cả một bước dài của Minh đó em.')],
+                _c('Bạn giúp Minh thế nào?',
+                   _o('a', 'Cho Minh trả lời bằng cách viết lên bảng', [('minh', 'Con viết đúng rồi hả {thay}? Cả lớp vỗ tay cho con…')], rel='minh'),
+                   _o('b', 'Khen riêng Minh sau giờ học', [('minh', 'Mai con thử giơ tay một lần. Chỉ một lần thôi nha {thay}.')], rel='minh'))),
+            _b('Giọng hát giờ ra chơi', '🎵', 'Giờ ra chơi, sau dãy lớp có tiếng ai đó hát.', [
+                ('co_ha', 'Em nghe không? Minh ngồi hát một mình sau gốc phượng đó.'),
+                ('me', 'Giọng trong quá. Không giống cậu bé chẳng dám giơ tay chút nào.'),
+                ('co_lan', 'Ở nhà Minh hát suốt. Mà ra ngoài là im thin thít.'),
+                ('co_ha', 'Cuối năm trường có đêm văn nghệ. Hay mình thử?')]),
+            _b('Buổi tập văn nghệ', '🎤', 'Lớp bắt đầu tập tiết mục cho đêm văn nghệ.', [
+                ('minh', 'Con đứng hàng cuối được không {thay}? Hàng cuối không ai nhìn.'),
+                ('vy', 'Minh hát hay nhất lớp đó! Tụi con nghe lén rồi.'),
+                ('co_ha', 'Không ép nha. Cho Minh một chỗ đứng mà Minh thấy an toàn.')],
+                _c('Cho Minh tập thế nào?',
+                   _o('a', 'Để Minh đứng cạnh Vy, hát cùng bạn thân', [('minh', 'Có Vy bên cạnh con đỡ run hơn. Con hát to thêm được một chút.')], rel='vy'),
+                   _o('b', 'Cho Minh cầm trống lắc trước, hát sau', [('minh', 'Cầm trống lắc thì tay con hết run. Con hát được đoạn điệp khúc rồi!')], rel='minh'))),
+            _b('Đêm văn nghệ cuối năm', '🌟', 'Sân trường đã treo đèn cho đêm văn nghệ.', [
+                ('co_ha', 'Tới lớp mình rồi! Minh đâu?'),
+                ('minh', '{Thay} ơi… con hát đoạn đơn ca được không? Một đoạn thôi.'),
+                ('co_lan', 'Trời ơi, thằng Minh nhà tôi hát trên sân khấu… Tôi khóc mất.'),
+                ('minh', 'Con tặng {thay} bức vẽ nè. Cả lớp đứng hát, người đứng giữa là {thay}.')]),
+        ]),
+    'accounting': dict(
+        title='Sổ của Cô Hoa', emoji='📒',
+        keepsake=dict(emoji='🗝️', name='Chìa khóa tủ hồ sơ', desc='Chị Vân giao bạn tủ hồ sơ của ba khách quen.'),
+        cast={'chi_van': _p('Chị Vân', '👩‍💼', 'Người quản lý', 'accounting_npc_02'),
+              'co_hoa': _p('Cô Hoa', '🍜', 'Chủ tiệm bánh cuốn, khách thuê làm sổ', 'accounting_npc_03'),
+              'tram': _p('Trâm', '🔍', 'Người kiểm tra nội bộ', 'accounting_npc_06'),
+              'nam': _p('Nam', '🛒', 'Bộ phận mua hàng', 'accounting_npc_04'),
+              'huy': _p('Huy', '🧑‍💻', 'Đồng nghiệp mới', 'accounting_npc_01')},
+        beats=[
+            _b('Hộp giày đầy hóa đơn', '👟', 'Có một vị khách ôm hộp giày vào văn phòng.', [
+                ('co_hoa', 'Hóa đơn cả năm của tiệm bánh cuốn cô nằm hết trong hộp giày này.'),
+                ('co_hoa', 'Cô bán bánh thì giỏi, chứ sổ sách thì thua.'),
+                ('chi_van', 'Em nhận sổ của Cô Hoa nha. Làm từ đầu, làm cho gọn.')]),
+            _b('Nhặt từng tờ', '🧾', 'Hộp giày đã được đổ ra bàn.', [
+                ('huy', 'Hóa đơn gạo, hóa đơn điện, có tờ viết trên giấy lịch luôn…'),
+                ('me', 'Tờ nào cũng là tiền thật của Cô Hoa. Mình xếp cho đàng hoàng.'),
+                ('co_hoa', 'Tờ giấy lịch đó là tiền mua than hồi Tết. Cô nhớ mà.')],
+                _c('Xếp hóa đơn của Cô Hoa',
+                   _o('a', 'Xếp theo ngày, dán số thứ tự từng tờ', [('co_hoa', 'Có số thứ tự rồi, cô tìm tờ nào cũng ra.')], rel='co_hoa'),
+                   _o('b', 'Chia theo loại: nguyên liệu, điện nước, tiền công', [('co_hoa', 'Giờ cô mới biết tiền gạo chiếm nửa chi phí!')], rel='co_hoa'))),
+            _b('Lần kiểm tra đầu tiên', '🔍', 'Bộ phận kiểm tra nội bộ muốn xem sổ của Cô Hoa.', [
+                ('tram', 'Chị kiểm ngẫu nhiên mười chứng từ trong sổ Cô Hoa nha.'),
+                ('tram', 'Chín tờ khớp. Còn một tờ tiền ga thiếu hóa đơn gốc.'),
+                ('me', 'Em gọi Cô Hoa xin lại bản gốc liền. Em ghi chú ngay dòng đó.'),
+                ('tram', 'Lần đầu mà vậy là tốt. Chỗ thiếu thì ghi chú rõ, đừng giấu.')]),
+            _b('Tờ hóa đơn lạ', '⚠️', 'Nam bên mua hàng đang đứng chờ ở bàn bạn.', [
+                ('nam', 'Em ghi giùm anh tờ hóa đơn này nha. Số tiền cao hơn thực tế chút xíu, cho sổ đẹp.'),
+                ('nam', 'Ai mà để ý. Có mấy trăm nghìn thôi.'),
+                ('me', 'Sổ đẹp mà sai thì không phải sổ đẹp đâu anh.')],
+                _c('Bạn làm gì?',
+                   _o('a', 'Từ chối, xin anh Nam hóa đơn đúng số tiền', [('nam', '…Ừ, anh lấy lại hóa đơn đúng. Thôi, làm cho đàng hoàng.')]),
+                   _o('b', 'Báo Chị Vân để cùng xử lý cho rõ', [('chi_van', 'Em làm đúng. Chị nói chuyện với Nam. Sổ này có tên em, phải sạch.')], rel='chi_van'))),
+            _b('Chìa khóa tủ hồ sơ', '🗝️', 'Chị Vân hẹn gặp riêng cuối ngày.', [
+                ('chi_van', 'Sổ Cô Hoa gọn nhất văn phòng. Kiểm tra không sót, hóa đơn lạ cũng không lọt.'),
+                ('chi_van', 'Từ tháng sau em phụ trách sổ của Cô Hoa và hai tiệm nữa. Chìa khóa tủ hồ sơ đây.'),
+                ('co_hoa', 'Cô giới thiệu thêm tiệm chè của em gái cô nữa đó!'),
+                ('huy', 'Chỉ em cách xếp hộp giày với nha.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
+    # ------------------------------------------------------------ văn phòng
+    'corp_accounting': dict(
+        title='Năm đầu ở Mây Tre Xanh', emoji='🧮',
+        keepsake=dict(emoji='📄', name='Quyết định bổ nhiệm', desc='Kế toán tổng hợp, ký tên Anh Tùng và Chị Hạnh.'),
+        cast={'chi_hanh': _p('Chị Hạnh', '👩‍💼', 'Kế toán trưởng', 'corp_accounting_npc_01'),
+              'anh_tung': _p('Anh Tùng', '👔', 'Giám đốc', 'corp_accounting_npc_02'),
+              'anh_khai': _p('Anh Khải', '🔍', 'Kiểm toán viên', 'corp_accounting_npc_05'),
+              'ba_sau': _p('Bà Sáu', '🧺', 'Chủ HTX Mây Tre', 'corp_accounting_npc_06'),
+              'na': _p('Na', '🧑‍🎓', 'Thực tập sinh kế toán', 'corp_accounting_npc_08')},
+        beats=[
+            _b('Chiếc bàn gần cửa sổ', '🪪', 'Ngày đầu có thẻ nhân viên ở Mây Tre Xanh.', [
+                ('chi_hanh', 'Bàn của em đây. Mật khẩu phần mềm, tủ chứng từ, lịch khóa sổ, chị dán hết lên bảng rồi.'),
+                ('chi_hanh', 'Ở đây chị chỉ cần một điều: số nào cũng có chứng từ.'),
+                ('na', 'Em là Na, thực tập. Có gì em hỏi {anh} nha!')]),
+            _b('Hóa đơn viết tay của HTX', '🧺', 'Bà Sáu bên HTX Mây Tre ghé công ty.', [
+                ('ba_sau', 'Bà giao hàng mây tre ba chục năm, toàn viết hóa đơn tay. Giờ người ta bắt hóa đơn điện tử.'),
+                ('ba_sau', 'Bà mù chữ máy tính con ơi.'),
+                ('chi_hanh', 'HTX là nhà cung cấp lâu năm. Em giúp bà một tay nha.')],
+                _c('Giúp Bà Sáu',
+                   _o('a', 'Ngồi hướng dẫn Bà Sáu lập hóa đơn điện tử từng bước', [('ba_sau', 'Bà bấm được rồi! Để bà về chỉ lại cho mấy đứa trong HTX.')], rel='ba_sau'),
+                   _o('b', 'Viết cho bà một tờ hướng dẫn chữ to, có hình', [('ba_sau', 'Tờ này bà dán lên tường xưởng luôn. Cảm ơn con.')], rel='ba_sau'))),
+            _b('Đợt kiểm toán đầu tiên', '🔍', 'Công ty kiểm toán sắp tới làm việc.', [
+                ('anh_khai', 'Tôi chọn mẫu ba mươi chứng từ quý ba. Chị Hạnh nói em giữ tủ chứng từ?'),
+                ('me', 'Dạ, em đánh số theo bút toán. Anh chọn tờ nào em lấy tờ đó.'),
+                ('anh_khai', 'Hai mươi chín tờ khớp, một tờ lệch ngày ghi sổ. Ghi chú rõ rồi, được.'),
+                ('chi_hanh', 'Lần đầu gặp kiểm toán mà không run. Được đó em.')]),
+            _b('Lời nhờ của Giám đốc', '⚠️', 'Anh Tùng gọi bạn vào phòng, đóng cửa lại.', [
+                ('anh_tung', 'Em đưa vào chi phí giùm anh hóa đơn tiếp khách này. Bữa đó không có thật, nhưng giảm được thuế.'),
+                ('anh_tung', 'Công ty nhỏ, cuối năm kẹt lắm. Em hiểu mà.'),
+                ('me', 'Em hiểu công ty đang kẹt. Nhưng hóa đơn không có thật thì em không ghi được.')],
+                _c('Bạn nói tiếp…',
+                   _o('a', 'Nói thẳng và đề xuất cách giảm thuế hợp lệ', [('anh_tung', '…Khấu hao đúng hạn, ưu đãi cho HTX. Ừ, vậy mà giảm được thật. Thôi, bỏ tờ kia.')], rel='anh_tung'),
+                   _o('b', 'Xin gặp Chị Hạnh để ba người cùng bàn', [('chi_hanh', 'Anh Tùng, em nó đúng. Công ty mình làm ăn thật thì sổ phải thật.')], rel='chi_hanh')),
+                days=6, served=14, gap=1),
+            _b('Tờ quyết định', '📄', 'Cuối năm, phòng kế toán có một cuộc họp nhỏ.', [
+                ('anh_tung', 'Năm nay sổ sạch, kiểm toán không ý kiến. Anh cảm ơn em chuyện hôm đó.'),
+                ('chi_hanh', 'Từ tháng sau em làm kế toán tổng hợp. Na sẽ theo em học việc.'),
+                ('na', 'Em sẽ học cách “số nào cũng có chứng từ”!'),
+                ('ba_sau', 'Bà gửi cái giỏ mây này mừng con lên chức. HTX tự đan đó.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
+    'tax_payroll': dict(
+        title='Phiếu lương của Diệu', emoji='🧾',
+        keepsake=dict(emoji='🧵', name='Chiếc khăn tay thêu', desc='Diệu thêu tặng, góc khăn có hình cây bút và cuốn sổ.'),
+        cast={'chi_hong': _p('Chị Hồng', '👩‍💼', 'Kế toán trưởng', 'tax_payroll_npc_01'),
+              'dieu': _p('Em Diệu', '🧵', 'Công nhân may', 'tax_payroll_npc_03'),
+              'anh_phat': _p('Anh Phát', '👔', 'Giám đốc Xưởng may Chỉ Vàng', 'tax_payroll_npc_02'),
+              'chi_hoa': _p('Chị Hoa', '📋', 'Tổ trưởng chuyền may', 'tax_payroll_npc_07'),
+              'co_lua': _p('Cô Lụa', '🏛️', 'Cán bộ thuế phường', 'tax_payroll_npc_06')},
+        beats=[
+            _b('Tờ phiếu lương nhàu', '🧾', 'Một cô công nhân cầm tờ phiếu lương đứng ngoài cửa.', [
+                ('dieu', 'Em không hiểu phiếu lương. Tháng này sao ít hơn tháng trước?'),
+                ('dieu', 'Em hỏi tổ trưởng, tổ trưởng nói hỏi kế toán.'),
+                ('chi_hong', 'Em ngồi giải thích từng dòng cho Diệu nha. Người lao động có quyền hiểu lương mình.')]),
+            _b('Giờ tăng ca bị sót', '⏱️', 'Bạn đang đối chiếu bảng chấm công của Diệu.', [
+                ('me', 'Bảng chấm công ghi Diệu tăng ca sáu buổi, mà bảng lương chỉ tính bốn.'),
+                ('chi_hoa', 'Hai buổi đó chị ghi tay vô sổ tổ, chắc chưa nhập máy.'),
+                ('chi_hong', 'Sai của mình thì sửa ngay. Lương là công sức người ta.')],
+                _c('Sửa sai sót',
+                   _o('a', 'Làm phiếu điều chỉnh, trả bù ngay kỳ lương này', [('dieu', 'Em nhận đủ rồi! Hai buổi đó em thức khuya lắm đó.')], rel='dieu'),
+                   _o('b', 'Rà lại cả chuyền may xem còn ai bị sót không', [('chi_hoa', 'Còn ba bạn nữa bị sót. Cả tổ cảm ơn em.')], rel='chi_hoa'))),
+            _b('Mùa quyết toán', '📅', 'Hạn quyết toán thuế thu nhập cá nhân đã tới gần.', [
+                ('co_lua', 'Năm nay phường nhắc sớm: quyết toán đúng hạn, hồ sơ đủ người phụ thuộc.'),
+                ('dieu', 'Em có nuôi mẹ già. Vậy có được giảm trừ không {anh}?'),
+                ('me', 'Được, nếu mẹ em không có thu nhập. Mình làm hồ sơ đăng ký nha.'),
+                ('chi_hong', 'Hồ sơ đủ, nộp sớm hai tuần. Năm nay đỡ chạy.')]),
+            _b('Lương hai sổ', '⚠️', 'Anh Phát bên xưởng may muốn gặp riêng.', [
+                ('anh_phat', 'Em chia lương công nhân ra: một phần lương, một phần “phụ cấp tiền mặt” ngoài sổ.'),
+                ('anh_phat', 'Đóng bảo hiểm ít đi, công nhân cũng được cầm tiền nhiều hơn. Ai cũng lợi.'),
+                ('me', 'Vậy là công nhân mất bảo hiểm khi ốm đau, về già. Diệu và cả chuyền may đó anh.')],
+                _c('Bạn trả lời Anh Phát',
+                   _o('a', 'Từ chối và tính cho anh xem chi phí thật nếu bị phát hiện', [('anh_phat', 'Tính ra còn lỗ hơn… Thôi, giữ như cũ. Em nói có lý.')], rel='anh_phat'),
+                   _o('b', 'Mời Chị Hồng cùng giải thích quyền lợi của người lao động', [('chi_hong', 'Minh Bạch làm dịch vụ cho người đàng hoàng. Anh Phát hiểu mà.')], rel='chi_hong')),
+                days=6, served=14, gap=1),
+            _b('Chiếc khăn tay thêu', '🧵', 'Cuối năm, có người gửi quà tới văn phòng.', [
+                ('dieu', 'Em thêu tặng {anh} cái khăn. Góc khăn là cây bút với cuốn sổ.'),
+                ('dieu', 'Nhờ {anh} mà em hiểu từng dòng lương. Giờ em chỉ lại cho mấy bạn mới vô.'),
+                ('chi_hong', 'Năm sau em phụ trách luôn hồ sơ của Xưởng Chỉ Vàng. Chị tin em.'),
+                ('anh_phat', 'Công nhân ít nghỉ việc hẳn. Tôi cũng không ngờ.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
+    'group_accounting': dict(
+        title='Mùa hợp nhất đầu tiên', emoji='🏢',
+        keepsake=dict(emoji='🪪', name='Thẻ trưởng nhóm hợp nhất', desc='Tầng 12, Sông Hồng Group. Thẻ có tên bạn.'),
+        cast={'mai_anh': _p('Chị Mai Anh', '👩‍💼', 'Giám đốc tài chính tập đoàn', 'group_accounting_npc_01'),
+              'ong_dai': _p('Ông Đại', '👨‍⚖️', 'Chủ tịch HĐQT', 'group_accounting_npc_02'),
+              'anh_kien': _p('Anh Kiên', '📈', 'Giám đốc tài chính SH Nami', 'group_accounting_npc_05'),
+              'chi_thao': _p('Chị Thảo', '🔍', 'Trưởng nhóm kiểm toán', 'group_accounting_npc_06'),
+              'linh': _p('Linh', '🧑‍💻', 'Kế toán mới ở SH Pack', 'group_accounting_npc_07')},
+        beats=[
+            _b('Bốn công ty, một bộ sổ', '🏢', 'Ngày đầu ở tầng 12 của Sông Hồng Group.', [
+                ('mai_anh', 'Bốn công ty con, bán cho nhau đủ thứ. Việc của em là để bộ báo cáo chung không đếm trùng đồng nào.'),
+                ('mai_anh', 'Loại trừ đúng, hợp nhất khớp. Lệch một đồng chị cũng hỏi.'),
+                ('me', 'Dạ. Em vẽ sơ đồ giao dịch nội bộ trước rồi mới vào số.')]),
+            _b('Linh lạc giữa các con số', '🤝', 'Có một kế toán mới ngồi thở dài ở bàn bên.', [
+                ('linh', 'Em mới vào SH Pack. Công nợ nội bộ lệch với SH Logistics mà em không biết tìm ở đâu.'),
+                ('linh', 'Em sợ hỏi nhiều người ta chê.'),
+                ('me', 'Hồi mới vào mình cũng vậy. Hỏi là cách học nhanh nhất đó.')],
+                _c('Bạn giúp Linh',
+                   _o('a', 'Ngồi cùng Linh đối chiếu từng hóa đơn nội bộ', [('linh', 'Lệch do một hóa đơn ghi hai lần! Cảm ơn {anh}, em hiểu cách dò rồi.')], rel='linh'),
+                   _o('b', 'Chỉ Linh cách lập bảng đối chiếu, để Linh tự dò', [('linh', 'Em tự tìm ra rồi! Lần sau em tự làm được.')], rel='linh'))),
+            _b('Kiểm toán năm', '🔍', 'Nhóm kiểm toán đã dọn vào phòng họp nhỏ.', [
+                ('chi_thao', 'Chị cần bảng loại trừ doanh thu nội bộ và lãi chưa thực hiện trong hàng tồn kho.'),
+                ('me', 'Dạ, em có bảng đối chiếu cho từng cặp công ty, kèm chứng từ gốc.'),
+                ('chi_thao', 'Đầy đủ vậy là nhóm chị về sớm hai ngày đó.'),
+                ('mai_anh', 'Lần đầu làm kiểm toán năm mà vậy là tốt lắm.')]),
+            _b('Doanh thu nội bộ', '⚠️', 'Trước buổi họp HĐQT, Anh Kiên ghé bàn bạn.', [
+                ('anh_kien', 'Lô hàng SH Nami bán cho SH Food cuối quý, em đừng loại trừ nha. Doanh thu đẹp trước buổi họp.'),
+                ('anh_kien', 'Quý sau mình điều chỉnh lại. Không ai thiệt đâu.'),
+                ('me', 'Bán cho nhau trong tập đoàn thì không phải doanh thu thật, anh ạ. Báo cáo sẽ sai.')],
+                _c('Bạn làm gì?',
+                   _o('a', 'Giữ bút toán loại trừ, giải thích bằng số liệu cho Anh Kiên', [('anh_kien', 'Ừ… nhìn bảng thì rõ thật. Để anh tự trình bày doanh thu thật với HĐQT.')], rel='anh_kien'),
+                   _o('b', 'Báo Chị Mai Anh trước buổi họp', [('mai_anh', 'Cảm ơn em đã nói sớm. Báo cáo của tập đoàn phải nói thật, kể cả khi số không đẹp.')], rel='mai_anh')),
+                days=6, served=14, gap=1),
+            _b('Phòng họp tầng 12', '🏙️', 'Bạn được mời vào buổi họp HĐQT.', [
+                ('ong_dai', 'Năm nay báo cáo hợp nhất ra sớm, kiểm toán không ngoại trừ. Người lập là ai?'),
+                ('mai_anh', 'Dạ, là bạn này. Và bạn đã giữ cho báo cáo nói thật.'),
+                ('ong_dai', 'Tập đoàn cần người như vậy. Từ quý sau, cháu làm trưởng nhóm hợp nhất.'),
+                ('linh', 'Em xin vào nhóm của {anh} đầu tiên!')],
+                days=9, served=22, gap=2, level=4),
+        ]),
+}
+
+
+# ------------------------------------------------------------------ build
+def _build() -> dict:
+    """Give every beat its id, default trigger and normalised lines."""
+    for cid, arc in ARCS.items():
+        for i, beat in enumerate(arc['beats']):
+            beat['id'] = f'{cid}_{i + 1}'
+            when = dict(served=0, days=0, level=1, gap=0, metric=None)
+            when.update(WHEN[min(i, len(WHEN) - 1)])
+            when.update(beat['when'])
+            beat['when'] = when
+            beat['lines'] = [_norm(x) for x in beat['lines']]
+            if beat['choice']:
+                for opt in beat['choice']['options']:
+                    opt['reply'] = [_norm(x) for x in opt['reply']]
+    return {cid: {b['id']: i for i, b in enumerate(arc['beats'])} for cid, arc in ARCS.items()}
+
+
+def _norm(line) -> dict:
+    who, text = line[0], line[1]
+    need = tuple(line[2]) if len(line) > 2 else None
+    return dict(who=who, text=text, need=need)
+
+
+BEAT_INDEX = _build()
+
+
+# ------------------------------------------------------------------ helpers
+def _core():
+    from . import engine
+    return engine
+
+
+def _gender(s: dict) -> str:
+    j = s.get('journey') if isinstance(s.get('journey'), dict) else {}
+    g = j.get('gender')
+    return g if g in ('male', 'female') else 'none'
+
+
+def resolve(text, gender: str, name: str = '') -> str:
+    """Pick the gender variant, then fill {anh} {Anh} {thay} {Thay} {name}."""
+    if isinstance(text, dict):
+        text = text.get(gender) or text['none']
+    for key, forms in TOKENS.items():
+        text = text.replace('{' + key + '}', forms[gender])
+    return text.replace('{name}', name or 'bạn')
+
+
+def _speaker(arc: dict, who: str, s: dict) -> tuple[str, str]:
+    if who == 'me':
+        return (s.get('name') or 'Bạn'), '🙂'
+    p = arc['cast'][who]
+    return p['name'], p['emoji']
+
+
+def _lines(s: dict, cid: str, rows: list, picks: dict) -> list[dict]:
+    arc, g, name = ARCS[cid], _gender(s), s.get('name') or ''
+    out = []
+    for row in rows:
+        if row['need'] and picks.get(row['need'][0]) != row['need'][1]:
+            continue
+        nm, emoji = _speaker(arc, row['who'], s)
+        out.append(dict(who=row['who'], name=nm, emoji=emoji, text=resolve(row['text'], g, name)))
+    return out
+
+
+def _place(cid: str) -> str:
+    return CAREER_META.get(cid, {}).get('place', cid)
+
+
+def _level(c: dict) -> int:
+    return 1 + int(c.get('xp', 0)) // 90
+
+
+def initial() -> dict:
+    return dict(version=VERSION, seq=0, queue=[], arcs={})
+
+
+def _arc_state(st: dict, cid: str) -> dict:
+    return st['arcs'].setdefault(cid, dict(seen=[], picks={}, last=0))
+
+
+def migrate(s: dict) -> dict:
+    """Saves from before career stories get an empty book (setdefault only)."""
+    st = s.get('stories')
+    if not isinstance(st, dict):
+        s['stories'] = st = initial()
+    for k, v in initial().items():
+        st.setdefault(k, copy.deepcopy(v))
+    return st
+
+
+# ------------------------------------------------------------------ triggers
+def next_beat(s: dict, cid: str) -> dict | None:
+    arc = ARCS.get(cid)
+    if not arc:
+        return None
+    a = s['stories']['arcs'].get(cid) or dict(seen=[])
+    n = len(a['seen'])
+    return arc['beats'][n] if n < len(arc['beats']) else None
+
+
+def due(s: dict, cid: str) -> bool:
+    """Is the next beat of this workplace due now (and not already queued)?"""
+    st = s['stories']
+    beat = next_beat(s, cid)
+    c = s['careers'].get(cid)
+    if not beat or not c or any(q['career'] == cid for q in st['queue']):
+        return False
+    w = beat['when']
+    a = st['arcs'].get(cid) or dict(seen=[], last=0)
+    day = int(c.get('day', 1))
+    metrics = c.get('metrics', {})
+    if int(metrics.get('served', 0)) < w['served'] or day - 1 < w['days'] or _level(c) < w['level']:
+        return False
+    if w['metric'] and int(metrics.get(w['metric'][0], 0)) < w['metric'][1]:
+        return False
+    if a['seen'] and w['gap']:
+        since = day - a['last'] if day >= a['last'] else 10**6   # reset_career: time has passed
+        if since < w['gap']:
+            return False
+    return True
+
+
+def check(s: dict, cid: str) -> dict | None:
+    """Queue the next beat of `cid` when it is due. Returns the queued item."""
+    if cid not in ARCS or not due(s, cid):
+        return None
+    st = s['stories']
+    beat = next_beat(s, cid)
+    st['seq'] += 1
+    day = int(s['careers'][cid].get('day', 1))
+    item = dict(id=f's{st["seq"]}', career=cid, beat=beat['id'], day=day)
+    st['queue'].append(item)
+    _arc_state(st, cid)['last'] = day
+    return item
+
+
+def after(s: dict, career: str | None, action: str, result: dict) -> None:
+    """Runs after every successful career action, next to journey.after()."""
+    migrate(s)
+    if career not in ARCS:
+        return
+    item = check(s, career)
+    if item:
+        beat = ARCS[career]['beats'][BEAT_INDEX[career][item['beat']]]
+        result['story'] = dict(id=item['id'], career=career, title=beat['title'], emoji=beat['emoji'])
+
+
+# ------------------------------------------------------------------ commands
+def _take(s: dict, qid) -> tuple[dict, dict, dict]:
+    e = _core()
+    st = s['stories']
+    e.need(isinstance(qid, str), 'Câu chuyện không hợp lệ.')
+    item = next((q for q in st['queue'] if q['id'] == qid), None)
+    e.need(item is not None, 'Câu chuyện này đã khép lại rồi.', 'story_missing')
+    beat = ARCS[item['career']]['beats'][BEAT_INDEX[item['career']][item['beat']]]
+    return item, beat, _arc_state(st, item['career'])
+
+
+def _close(s: dict, item: dict, beat: dict, a: dict) -> None:
+    st = s['stories']
+    st['queue'] = [q for q in st['queue'] if q['id'] != item['id']]
+    a['seen'].append(beat['id'])
+    c = s['careers'][item['career']]
+    _core().log(s, c, 'story', f'Truyện nghề · {beat["title"]}')
+
+
+def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]:
+    """`st_*` commands. `career` is ignored, like `jr_*`."""
+    e = _core()
+    need = e.need
+    migrate(s)
+    result = dict(message='', effects=[])
+    if name == 'st_seen':
+        need(set(p) <= {'id'}, 'Dữ liệu câu chuyện không hợp lệ.')
+        item, beat, a = _take(s, p.get('id'))
+        need(not beat['choice'], 'Câu chuyện này đang chờ bạn chọn một cách.', 'story_choice')
+        _close(s, item, beat, a)
+        result['story'] = dict(id=item['id'], career=item['career'], reply=[], note=None)
+    elif name == 'st_choose':
+        need(set(p) <= {'id', 'option'}, 'Dữ liệu câu chuyện không hợp lệ.')
+        item, beat, a = _take(s, p.get('id'))
+        need(bool(beat['choice']), 'Câu chuyện này không có lựa chọn.', 'story_no_choice')
+        opt = next((o for o in beat['choice']['options'] if o['id'] == p.get('option')), None)
+        need(opt is not None, 'Lựa chọn không hợp lệ.')
+        cid = item['career']
+        c = s['careers'][cid]
+        notes = []
+        rel = ARCS[cid]['cast'].get(opt['rel']) if opt['rel'] else None
+        if rel and rel.get('npc'):
+            c['relationships'][rel['npc']] = min(100, c['relationships'].get(rel['npc'], 0) + REL_BUMP)
+            notes.append(f'{rel["name"]} quý bạn thêm một chút.')
+        if opt['coins']:
+            e.money(s, c, opt['coins'], f'Khép chuyện: {beat["title"]}', category='story_reward')
+            notes.append(f'+{opt["coins"]} xu vào quỹ {_place(cid)}.')
+        a['picks'][beat['id']] = opt['id']
+        _close(s, item, beat, a)
+        result['story'] = dict(id=item['id'], career=cid, pick=opt['id'], label=opt['label'],
+                               reply=_lines(s, cid, opt['reply'], a['picks']), note=' '.join(notes) or None)
+    else:
+        raise e.GameError('Thao tác truyện nghề không hợp lệ.', 'unknown_action')
+    cid = result['story']['career']
+    arc = ARCS[cid]
+    if len(s['stories']['arcs'][cid]['seen']) == len(arc['beats']):
+        result['story']['keepsake'] = copy.deepcopy(arc['keepsake'])
+        result['message'] = f'Trọn truyện “{arc["title"]}”. Kỷ vật: {arc["keepsake"]["name"]}.'
+    e.validate_state(s)
+    return s, result
+
+
+# ------------------------------------------------------------------ views
+def _due_view(s: dict, item: dict) -> dict:
+    cid = item['career']
+    arc = ARCS[cid]
+    i = BEAT_INDEX[cid][item['beat']]
+    beat = arc['beats'][i]
+    picks = s['stories']['arcs'].get(cid, {}).get('picks', {})
+    g = _gender(s)
+    choice = None
+    if beat['choice']:
+        choice = dict(prompt=resolve(beat['choice']['prompt'], g, s.get('name')),
+                      options=[dict(id=o['id'], label=resolve(o['label'], g, s.get('name'))) for o in beat['choice']['options']])
+    last = i == len(arc['beats']) - 1
+    return dict(id=item['id'], career=cid, beat=beat['id'], step=i + 1, total=len(arc['beats']), title=beat['title'],
+                emoji=beat['emoji'], arc=arc['title'], arc_emoji=arc['emoji'], place=_place(cid),
+                lines=_lines(s, cid, beat['lines'], picks), choice=choice, last=last,
+                keepsake=copy.deepcopy(arc['keepsake']) if last else None)
+
+
+def public(s: dict) -> dict:
+    st = s.get('stories') if isinstance(s.get('stories'), dict) else initial()
+    queued = {q['career']: q['id'] for q in st.get('queue', [])}
+    arcs = []
+    for cid in CAREERS:
+        arc = ARCS.get(cid)
+        if not arc:
+            continue
+        a = st.get('arcs', {}).get(cid) or dict(seen=[], picks={})
+        n = len(a['seen'])
+        done = n >= len(arc['beats'])
+        beats = []
+        for bid in a['seen']:
+            b = arc['beats'][BEAT_INDEX[cid][bid]]
+            pick = a['picks'].get(bid)
+            label = next((o['label'] for o in (b['choice'] or {}).get('options', []) if o['id'] == pick), None)
+            beats.append(dict(title=b['title'], emoji=b['emoji'], pick=label))
+        nxt = None if done else arc['beats'][n]
+        arcs.append(dict(career=cid, title=arc['title'], emoji=arc['emoji'], seen=n, total=len(arc['beats']), done=done,
+                         hint=nxt['hint'] if nxt else None, pending=queued.get(cid),
+                         keepsake=copy.deepcopy(arc['keepsake']) if done else None, beats=beats))
+    return dict(due=[_due_view(s, q) for q in st.get('queue', [])], arcs=arcs)
+
+
+# ------------------------------------------------------------------ validation
+def validate(s: dict) -> None:
+    e = _core()
+    need, integer = e.need, e.integer
+    st = s.get('stories')
+    need(isinstance(st, dict) and set(initial()) <= set(st), 'Bản lưu thiếu dữ liệu truyện nghề.', 'invalid_save')
+    need(st['version'] == VERSION, 'Phiên bản truyện nghề không hợp lệ.', 'invalid_save')
+    integer(st['seq'], 0, 10**9)
+    need(isinstance(st['arcs'], dict) and set(st['arcs']) <= set(ARCS), 'Truyện nghề không hợp lệ.', 'invalid_save')
+    for cid, a in st['arcs'].items():
+        need(isinstance(a, dict) and set(a) == {'seen', 'picks', 'last'}, 'Truyện nghề không hợp lệ.', 'invalid_save')
+        ids = [b['id'] for b in ARCS[cid]['beats']]
+        need(isinstance(a['seen'], list) and a['seen'] == ids[:len(a['seen'])], 'Tiến trình truyện nghề không hợp lệ.', 'invalid_save')
+        integer(a['last'], 0, 10**9)
+        need(isinstance(a['picks'], dict), 'Lựa chọn truyện nghề không hợp lệ.', 'invalid_save')
+        for bid, oid in a['picks'].items():
+            need(bid in a['seen'], 'Lựa chọn truyện nghề không hợp lệ.', 'invalid_save')
+            beat = ARCS[cid]['beats'][BEAT_INDEX[cid][bid]]
+            need(bool(beat['choice']) and oid in [o['id'] for o in beat['choice']['options']],
+                 'Lựa chọn truyện nghề không hợp lệ.', 'invalid_save')
+    need(isinstance(st['queue'], list) and len(st['queue']) <= QUEUE_MAX, 'Hàng chờ truyện nghề không hợp lệ.', 'invalid_save')
+    seen_ids, seen_careers = set(), set()
+    for q in st['queue']:
+        need(isinstance(q, dict) and set(q) == {'id', 'career', 'beat', 'day'}, 'Hàng chờ truyện nghề không hợp lệ.', 'invalid_save')
+        need(isinstance(q['id'], str) and 1 <= len(q['id']) <= 20 and q['id'] not in seen_ids, 'Mã truyện nghề không hợp lệ.', 'invalid_save')
+        need(q['career'] in ARCS and q['career'] not in seen_careers, 'Hàng chờ truyện nghề không hợp lệ.', 'invalid_save')
+        seen_ids.add(q['id'])
+        seen_careers.add(q['career'])
+        nxt = len((st['arcs'].get(q['career']) or dict(seen=[]))['seen'])
+        beats = ARCS[q['career']]['beats']
+        need(nxt < len(beats) and q['beat'] == beats[nxt]['id'], 'Hàng chờ truyện nghề sai thứ tự.', 'invalid_save')
+        integer(q['day'], 1, 10**9)
