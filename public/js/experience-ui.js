@@ -26,7 +26,7 @@ function goalList(c){return c.life.goals.length?`<ul class="prep-goals">${c.life
 function goalBoard(c){return `<section class="prep-block"><h3 class="prep-h">🌞 Nhiệm vụ hôm nay</h3>${goalList(c)}</section>`;}
 /** One short craft line instead of a whole chalkboard of filler. Menus live in "Bảng giá". */
 function craftLine(cid){
- const [title,steps]=cid==='teacher'?['🌱 Lớp học Mầm Nắng',['🖼️ Ví dụ','🧩 Luyện tập','💡 Cùng hiểu']]:cid==='pharmacy'?['🧰 Cẩn thận từng chút',['📋 Nhận phiếu','🔎 Đọc mã lô','🧰 Kiểm khay','🤝 Bàn giao']]:cid==='accounting'?['📒 Mỗi số có một nguồn',['📂 Mở nguồn','🧩 Ghép phiếu','🔎 Tìm sai lệch','📒 Giải thích']]:['milk_tea','tour_guide','mother_baby'].includes(cid)?['',[]]:['🎧 Nghe thật, làm tới nơi',['💬 Lắng nghe','🔎 Kiểm chứng','🤝 Phối hợp','✅ Theo dõi']];
+ const [title,steps]=cid==='teacher'?['🌱 Lớp học Mầm Nắng',['🖼️ Ví dụ','🧩 Luyện tập','💡 Cùng hiểu']]:cid==='pharmacy'?['🧰 Cẩn thận từng chút',['📋 Nhận phiếu','🔎 Đọc mã lô','🧰 Kiểm khay','🤝 Bàn giao']]:cid==='accounting'?['📒 Mỗi số có một nguồn',['📂 Mở nguồn','🧩 Ghép phiếu','🔎 Tìm sai lệch','📒 Giải thích']]:cid!=='customer_care'?['',[]]:['🎧 Nghe thật, làm tới nơi',['💬 Lắng nghe','🔎 Kiểm chứng','🤝 Phối hợp','✅ Theo dõi']];
  return title?`<p class="prep-craft"><b>${title}</b>${steps.map(v=>`<span>${v}</span>`).join('')}</p>`:'';
 }
 function boardContent(cid,c,content){

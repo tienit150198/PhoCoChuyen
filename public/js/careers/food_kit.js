@@ -37,9 +37,9 @@ export function queue(x,active){
     const badge=t.vip==='critic'?'📝':(g.emoji||'🙂');
     const label=`${who.display_name} · ${t.vip==='critic'?'Người viết review':g.label||'Khách'} · kiên nhẫn ${p}%`;
     return `<button type="button" class="fk-guest${on?' on':''}${p<50?' low':''}" data-command="task_select" data-payload="${x.esc(JSON.stringify({task:t.id}))}" aria-label="${x.esc(label)}"${on?' aria-current="true"':''}>
-      ${x.portrait(who,34)}<em aria-hidden="true">${badge}</em><i class="fk-pat" aria-hidden="true"><b style="width:${Math.max(0,Math.min(100,p))}%"></b></i></button>`;
+      ${x.portrait(who,34)}<em aria-hidden="true">${badge}</em><i class="fk-pat" aria-hidden="true"><b style="width:${Math.max(0,Math.min(100,p))}%"></b></i><small class="fk-name" aria-hidden="true">${x.esc(who.display_name)}</small></button>`;
   }).join('');
-  const more=x.room.open&&tasks.length<4?`<button type="button" class="fk-guest fk-more" data-command="more_work" data-payload="{}" aria-label="Đón thêm một khách"><span aria-hidden="true">＋</span><small>Đón khách</small></button>`:'';
+  const more=x.room.open&&tasks.length>0&&tasks.length<4?`<button type="button" class="fk-guest fk-more" data-command="more_work" data-payload="{}" aria-label="Đón thêm một khách"><span aria-hidden="true">＋</span><small>Đón khách</small></button>`:'';
   if(!chips&&!more)return '';
   return `<nav class="fk-queue" aria-label="Hàng chờ">${chips}${more}</nav>`;
 }
@@ -63,7 +63,8 @@ export function eventLog(x,day){
 
 /** Sticky bottom bar on phones: what's next + the one primary action. */
 export function actionBar(next,buttons){
-  return `<div class="fk-bar"><p class="fk-next" aria-live="polite">${next}</p><div class="fk-bar-btns">${buttons}</div></div>`;
+  const cap=String(next).replace(/^\s*(\S)/,(m,c)=>m.replace(c,c.toUpperCase()));
+  return `<div class="fk-bar"><p class="fk-next" aria-live="polite">${cap}</p><div class="fk-bar-btns">${buttons}</div></div>`;
 }
 
 /** Keeps the sticky bar above the sheet's own footer (called from tick). */

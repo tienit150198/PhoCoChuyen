@@ -32,6 +32,7 @@ function pluginTheme(m){
 const R=(c,x,y,w,h,fill,r=12,stroke=null,lw=2)=>{c.beginPath();c.roundRect(x,y,w,h,r);c.fillStyle=fill;c.fill();if(stroke){c.strokeStyle=stroke;c.lineWidth=lw;c.stroke();}};
 const E=(c,x,y,rx,ry,fill)=>{c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);c.fillStyle=fill;c.fill();};
 const L=(c,x,y,x2,y2,color,width=2)=>{c.strokeStyle=color;c.lineWidth=width;c.lineCap='round';c.beginPath();c.moveTo(x,y);c.lineTo(x2,y2);c.stroke();};
+const fit=(c,s,max,size,weight=700)=>{c.font=`${weight} ${size}px "Trebuchet MS", "Segoe UI", sans-serif`;const w=c.measureText(tr(String(s))).width;return w>max?Math.max(10,Math.floor(size*max/w)):size;};
 const T=(c,s,x,y,size=16,color='#765952',weight=700,align='center')=>{c.font=`${weight} ${size}px "Trebuchet MS", "Segoe UI", sans-serif`;c.fillStyle=color;c.textAlign=align;c.textBaseline='middle';c.fillText(tr(String(s)),x,y);};
 const P=(c,points,fill)=>{c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.fillStyle=fill;c.fill();};
 function heart(c,x,y,scale=1,col='#cf839c'){c.save();c.translate(x,y);c.scale(scale,scale);c.beginPath();c.moveTo(0,6);c.bezierCurveTo(-25,-9,-15,-27,0,-13);c.bezierCurveTo(15,-27,25,-9,0,6);c.fillStyle=col;c.fill();c.restore();}
@@ -87,7 +88,7 @@ export class BobaWorld extends World {
    const c=this.ctx,npc=this.speech.npc,portrait=this.isPortrait();
    const target=this.hotspots.find(h=>h.id===`npc:${npc}`)||(npc==='event'?this.hotspots.find(h=>h.id==='event'):null);
    const point=target?this.project(target.x,target.y,155):this.project(this.player.x,this.player.y,155);
-   const width=portrait?310:270,size=portrait?16:13,lineHeight=portrait?23:21;
+   const width=portrait?360:270,size=portrait?21:13,lineHeight=portrait?28:21;
    c.font=`500 ${size}px "Trebuchet MS", "Segoe UI", sans-serif`;
    const lines=[];let current='';
    for(const word of tr(this.speech.text).split(/\s+/)){const next=current?current+' '+word:word;if(current&&c.measureText(next).width>width-28){lines.push(current);current=word;}else current=next;}
@@ -210,8 +211,8 @@ export class BobaWorld extends World {
  /** Things standing on the floor, as [depth, draw] pairs sorted with people. */
  floorProps(){const c=this.ctx,p=this.palette(),tier=this.c?.ops?.property?.tier||'cozy',open=this.c?.open,items=this.c?.ops?.security?.items||[],out=[];
    if(this.isPortrait()){
-     out.push([626,()=>this.portraitCounter()],[612,()=>{R(c,57,524,56,92,'#c6a27f',6);R(c,63,530,44,78,'#ecd1af',4);T(c,'KHO',85,570,12,p.dark);if(items.includes('lock')){R(c,89,553,17,20,'#d8c596',5);L(c,93,553,93,546,'#a09675',3);L(c,102,553,102,546,'#a09675',3);}}]);
-     out.push([752,()=>{R(c,560,701,90,50,'#d6b492',10);R(c,553,693,104,13,'#eed3b0',5);R(c,576,668,57,28,'#fff8e9',5,'#d5b395',1);L(c,577,671,604,685,p.primary,1.5);L(c,632,671,604,685,p.primary,1.5);T(c,'SỔ TIỆM',605,730,12,p.dark);}]);
+     out.push([626,()=>this.portraitCounter()],[612,()=>{R(c,24,524,62,92,'#c6a27f',6);R(c,30,530,50,78,'#ecd1af',4);T(c,'KHO',55,570,17,p.dark,800);if(items.includes('lock')){R(c,62,553,17,20,'#d8c596',5);L(c,66,553,66,546,'#a09675',3);L(c,75,553,75,546,'#a09675',3);}}]);
+     out.push([752,()=>{R(c,560,701,90,50,'#d6b492',10);R(c,553,693,104,13,'#eed3b0',5);R(c,576,668,57,28,'#fff8e9',5,'#d5b395',1);L(c,577,671,604,685,p.primary,1.5);L(c,632,671,604,685,p.primary,1.5);T(c,'SỔ TIỆM',605,730,16,p.dark,800);}]);
      out.push([795,()=>this.plantAt(62,791,1.03)],[824,()=>this.plantAt(642,822,.75)]);
      out.push([820,()=>{R(c,470,786,114,32,'#fff8e8',13,'#c6a182',2);T(c,open?'ĐANG MỞ':'HẸN GẶP LẠI',527,803,12,p.dark);}]);
      if(tier!=='cozy')out.push([826,()=>{R(c,80,793,121,16,p.mint,7);R(c,80,765,121,30,p.mint,9);L(c,90,810,90,825,'#af8b6c',6);L(c,193,810,193,825,'#af8b6c',6);T(c,'ngồi nghỉ nhé',140,780,12,p.dark);if(tier==='garden')bloom(c,190,758,12,p.primary);}]);
@@ -346,10 +347,10 @@ export class BobaWorld extends World {
        // Staff tags show just the name plus a dot (green: on shift); the full
        // status is in the hover label, so neighbouring tags don't collide.
        const staff=isStaff?this.c?.ops?.staff?.find(e=>'staff:'+e.id===h.id):null;
-       const pt=this.project(h.x,h.y,141),name=isNPC?this.npcName(h.id.slice(4)):staff?staff.name:h.label,selected=isNPC&&h.id.slice(4)===activeNPC;const w=Math.min(210,Math.max(60,name.length*(this.isPortrait()?8:7)+22+(staff?12:0)));R(c,pt.x-w/2,pt.y-13,w,26,selected?p.primary:'#fff9ef',13,selected?p.dark:'#d9bca6',1.5);T(c,name,pt.x+(staff?6:0),pt.y,this.isPortrait()?14:11,selected?'#fffaf2':p.dark);
+       const pt=this.project(h.x,h.y,141),name=isNPC?this.npcName(h.id.slice(4)):staff?staff.name:h.label,selected=isNPC&&h.id.slice(4)===activeNPC;const w=Math.min(250,Math.max(60,name.length*(this.isPortrait()?10:7)+22+(staff?12:0)));R(c,pt.x-w/2,pt.y-(this.isPortrait()?16:13),w,this.isPortrait()?32:26,selected?p.primary:'#fff9ef',13,selected?p.dark:'#d9bca6',1.5);T(c,name,pt.x+(staff?6:0),pt.y,this.isPortrait()?18:11,selected?'#fffaf2':p.dark);
        if(staff)E(c,pt.x-w/2+13,pt.y,4.5,4.5,this.staffWorking(staff)?'#6fae7c':'#c9b8a6');
      }else if(['workbench','counter','shelf','board','ops:finance'].includes(h.id)){
-       const pt=this.project(h.x,h.y,h.z+15);E(c,pt.x,pt.y,13,13,'#fff9ee');E(c,pt.x,pt.y,9,9,p.light);T(c,'+',pt.x,pt.y,16,p.dark,700);
+       const pt=this.project(h.x,h.y,h.z+15);if(h.id==='board'&&this.isPortrait()){pt.x+=36;pt.y-=44;}E(c,pt.x,pt.y,13,13,'#fff9ee');E(c,pt.x,pt.y,9,9,p.light);T(c,'+',pt.x,pt.y,16,p.dark,700);
      }
      if(hover){const pt=this.project(h.x,h.y,h.z+52),w=Math.min(290,h.label.length*7+25);R(c,pt.x-w/2,pt.y-17,w,32,p.dark,12);T(c,h.label,pt.x,pt.y,12,'#fff8ed');}
    }
@@ -365,7 +366,7 @@ export class BobaWorld extends World {
    this.cabinet(62,269,165,166,0);this.cabinet(454,269,181,166,1);
    c.save();c.beginPath();c.roundRect(35,117,630,90,19);c.clip();for(let i=0;i<10;i++){R(c,35+i*63,117,63,66,i%2?'#fff6e8':p.awning,0);E(c,66.5+i*63,184,31.5,15,i%2?'#fff6e8':p.awning);}c.restore();
    if(['teacher','tour_guide','milk_tea'].includes(this.career))this.professionBoard(260,196,190,118);
-   R(c,130,41,440,103,'#c79879',31);R(c,135,34,430,103,'#fff9ed',30,'#e7c9ad',3);R(c,145,44,410,82,'#fffaf2',25,'#efdcc0',2);this.mascot(180,83,.56);T(c,p.title,364,76,p.title.length>21?23:30,p.dark,800);T(c,p.sub,352,112,9,p.dark);heart(c,532,85,.36,p.primary);
+   R(c,130,41,440,103,'#c79879',31);R(c,135,34,430,103,'#fff9ed',30,'#e7c9ad',3);R(c,145,44,410,82,'#fffaf2',25,'#efdcc0',2);this.mascot(180,83,.56);T(c,p.title,364,76,fit(c,p.title,320,p.title.length>21?23:30,800),p.dark,800);T(c,p.sub,360,110,fit(c,p.sub,330,13),p.dark);heart(c,532,85,.36,p.primary);
    c.strokeStyle='#cfb693';c.lineWidth=2;c.beginPath();c.moveTo(53,195);c.quadraticCurveTo(345,252,643,195);c.stroke();for(let i=0;i<9;i++){const x=60+i*72,y=197+Math.sin(i/8*Math.PI)*27;L(c,x,y,x,y+7,'#c8ad89',1);E(c,x,y+11,4,6,'#ffe5a1');}
    for(let i=0;i<10;i++){E(c,34+Math.sin(i)*9,170+i*24,13,7,i%2?'#a2c596':'#81b095');E(c,665+Math.cos(i)*9,169+i*24,13,7,i%2?'#a2c596':'#81b095');}
    R(c,571,425,65,77,'#c89f7f',9);R(c,577,431,53,65,'#fff7e7',6);T(c,'CHUYỆN',603,449,10,p.dark);T(c,'PHỐ',603,465,14,p.dark);heart(c,603,484,.35,p.primary);
@@ -376,7 +377,7 @@ export class BobaWorld extends World {
    if(items.includes('bell')){L(c,638,220,638,232,'#ad9073',2);P(c,[[628,249],[648,249],[645,235],[631,235]],'#f1d189');E(c,638,251,4,3,'#d3ad67');}
    if(items.includes('light')){const g=c.createRadialGradient(629,548,0,629,548,55);g.addColorStop(0,'#ffe2a56a');g.addColorStop(1,'#ffe2a500');c.fillStyle=g;c.fillRect(574,493,110,110);R(c,618,528,23,31,'#fff0bc',6,'#b89b7e',2);}
  }
- portraitCounter(){const c=this.ctx,p=this.palette();E(c,325,642,235,13,'#b795761e');R(c,105,566,440,74,p.mint,16,'#96b8a6',2);R(c,95,553,460,24,'#eac39d',9,'#c2a180',2);R(c,103,557,444,5,'#f7dfc0',2);R(c,250,592,181,29,'#fff8e8',14,'#cfb699',1.5);T(c,'chăm chút từng ngày',340,607,13,p.dark);
+ portraitCounter(){const c=this.ctx,p=this.palette();E(c,325,642,235,13,'#b795761e');R(c,105,566,440,74,p.mint,16,'#96b8a6',2);R(c,95,553,460,24,'#eac39d',9,'#c2a180',2);R(c,103,557,444,5,'#f7dfc0',2);
    if(this.career==='mother_baby'){R(c,207,531,128,16,'#f1d3dc',6);R(c,228,489,56,45,'#fae7bd',8,'#c8a88a',2);L(c,256,490,256,534,p.primary,6);L(c,230,512,283,512,p.primary,5);E(c,248,486,11,5,p.primary);E(c,266,486,11,5,p.primary);}
    else if(this.career==='pharmacy'){R(c,198,526,137,24,'#f4fbf5',8,'#9db9a9',2);this.tinyItem(234,527,1);this.tinyItem(284,527,2);T(c,'MÃ · LÔ · LƯỢNG',266,540,10,p.dark);}
    else{R(c,201,507,60,42,'#fff9ee',5,'#d3b7a1',1);R(c,210,502,60,42,'#fff9ee',5,'#d3b7a1',1);for(let i=0;i<3;i++)L(c,220,513+i*9,257,513+i*9,i===0?p.primary:'#c0b4a8',2);R(c,285,519,45,31,p.light,6);T(c,this.career==='accounting'?'550':'♡',307,534,14,p.dark);}

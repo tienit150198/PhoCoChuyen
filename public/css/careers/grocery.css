@@ -18,18 +18,18 @@
 :where(.career-job.gr) :where(.tile .tile-emoji){font-size:24px;line-height:1}
 :where(.career-job.gr) :where(.tile small){color:var(--gr-muted);font-size:12px}
 :where(.career-job.gr) :where(.tile-count){position:absolute;top:4px;right:6px;font-style:normal;font-weight:700;color:var(--gr-accent)}
-:where(.career-job.gr) :where(.checklist){list-style:none;margin:0;padding:10px;border:1px dashed var(--gr-line);border-radius:var(--gr-rs);background:var(--gr-surface)}
-:where(.career-job.gr) :where(.checklist li){display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;padding:4px 0;font-size:14px}
-:where(.career-job.gr) :where(.checklist li>span){width:18px;font-weight:700;color:var(--gr-muted)}
-:where(.career-job.gr) :where(.checklist li.ok>span){color:var(--gr-good)}
-:where(.career-job.gr) :where(.checklist li.bad>span){color:var(--gr-bad)}
-:where(.career-job.gr) :where(.checklist small){margin-left:auto;color:var(--gr-muted)}
+.career-job.gr .checklist{list-style:none;margin:0;padding:10px;border:1px dashed var(--gr-line);border-radius:var(--gr-rs);background:var(--gr-surface)}
+.career-job.gr .checklist li{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;padding:4px 0;font-size:14px}
+.career-job.gr .checklist li>span{width:18px;font-weight:700;color:var(--gr-muted)}
+.career-job.gr .checklist li.ok>span{color:var(--gr-good)}
+.career-job.gr .checklist li.bad>span{color:var(--gr-bad)}
+.career-job.gr .checklist small{margin-left:auto;color:var(--gr-muted)}
 :where(.career-job.gr) :where(.bar){height:8px;border-radius:99px;background:var(--gr-surface-2);overflow:hidden}
 :where(.career-job.gr) :where(.bar i){display:block;height:100%;background:var(--gr-good);border-radius:inherit}
 :where(.career-job.gr) :where(.bar.low i){background:var(--gr-bad)}
-:where(.career-job.gr) :where(.kv){display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:8px 0}
-:where(.career-job.gr) :where(.kv dt){color:var(--gr-muted)}
-:where(.career-job.gr) :where(.kv dd){margin:0}
+.career-job.gr .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:8px 0}
+.career-job.gr .kv dt{color:var(--gr-muted)}
+.career-job.gr .kv dd{margin:0}
 :where(.career-job.gr) :where(.section-title){margin:16px 0 8px}
 :where(.career-job.gr) :where(.patience){display:flex;align-items:center;gap:8px}
 :where(.career-job.gr) :where(.patience .bar){flex:1}
@@ -153,7 +153,7 @@
 .career-job.gr .gr-haggle-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 
 /* Sticky bill bar: the one primary action */
-.career-job.gr .gr-billbar{position:sticky;bottom:0;z-index:2;display:flex;align-items:center;gap:10px;margin-top:12px;padding:10px 12px;border-radius:var(--gr-r);background:var(--gr-surface);border:1px solid var(--gr-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
+.career-job.gr .gr-billbar{position:sticky;bottom:var(--fk-foot,0px);z-index:2;display:flex;align-items:center;gap:10px;margin-top:12px;padding:10px 12px;border-radius:var(--gr-r);background:var(--gr-surface);border:1px solid var(--gr-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
 .career-job.gr .gr-billsum{display:flex;flex-direction:column;min-width:78px}
 .career-job.gr .gr-billsum small{color:var(--gr-muted);font-size:12px}
 .career-job.gr .gr-billsum b{font-size:18px}

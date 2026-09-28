@@ -98,3 +98,5 @@ html[data-layout="phone"] .career-job.food{--fk-foot:68px}
 .fk-grade .fk-tomorrow{display:grid;grid-template-columns:auto 1fr;gap:0 8px;margin:10px 0 0;padding:10px 12px;border-radius:var(--radius-sm,10px);background:var(--accent-soft)}
 .fk-grade .fk-tomorrow>span{grid-row:1/span 2;font-size:1.5rem}
 .fk-grade .fk-tomorrow small{color:var(--ink-2,var(--muted))}
+
+.career-job.food .fk-name{max-width:58px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:.75rem;font-weight:700;line-height:1.2}

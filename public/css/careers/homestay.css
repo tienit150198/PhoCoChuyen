@@ -15,7 +15,8 @@
 .career-job.hs small{display:block}
 .career-job.hs .row small,.career-job.hs .kv small{display:inline}
 
-/* ---------- shared-class fallbacks (zero specificity: a theme rule wins) */
+/* ---------- shared-class fallbacks (zero specificity: a theme rule wins).
+   .kv and .checklist are real selectors: app.css lays those out differently. */
 :where(.career-job.hs) :where(.card){background:var(--hs-s1);border:1px solid var(--hs-line);border-radius:var(--hs-r);padding:14px;box-shadow:var(--hs-shadow)}
 :where(.career-job.hs) :where(.ticket) h3{margin:0}
 :where(.career-job.hs) :where(.ticket) p{margin:6px 0;line-height:1.5}
@@ -35,14 +36,14 @@
 :where(.career-job.hs) :where(.tile.empty){opacity:.62}
 :where(.career-job.hs) :where(.tile.locked,.tile:disabled){opacity:.45;cursor:not-allowed}
 :where(.career-job.hs) :where(.tile .tile-count){position:absolute;top:4px;right:6px;font-style:normal;font-weight:800;color:var(--hs-accent)}
-:where(.career-job.hs) :where(.checklist){list-style:none;margin:0;padding:0;display:grid;gap:4px}
-:where(.career-job.hs) :where(.checklist li){display:grid;grid-template-columns:22px 1fr;align-items:start;gap:4px;font-size:.92em;color:var(--hs-muted)}
-:where(.career-job.hs) :where(.checklist li>span){font-weight:800}
-:where(.career-job.hs) :where(.checklist li small){grid-column:2;font-size:.85em}
-:where(.career-job.hs) :where(.checklist li.ok){color:var(--hs-good)}
-:where(.career-job.hs) :where(.checklist li.bad){color:var(--hs-bad)}
-:where(.career-job.hs) :where(.kv){display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:.95em}
-:where(.career-job.hs) :where(.kv.total){border-top:1px dashed var(--hs-line);margin-top:4px;padding-top:6px;font-size:1.05em}
+.career-job.hs .checklist{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.career-job.hs .checklist li{display:grid;grid-template-columns:22px 1fr;align-items:start;gap:4px;font-size:.92em;color:var(--hs-muted)}
+.career-job.hs .checklist li>span{font-weight:800}
+.career-job.hs .checklist li small{grid-column:2;font-size:.85em}
+.career-job.hs .checklist li.ok{color:var(--hs-good)}
+.career-job.hs .checklist li.bad{color:var(--hs-bad)}
+.career-job.hs .kv{display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:.95em}
+.career-job.hs .kv.total{border-top:1px dashed var(--hs-line);margin-top:4px;padding-top:6px;font-size:1.05em}
 :where(.career-job.hs) :where(.btn.big){min-height:52px;font-size:1.05em}
 :where(.career-job.hs) :where(.btn.full){width:100%}
 :where(.career-job.hs) :where(.stack){display:grid;gap:8px}
@@ -233,7 +234,7 @@
 @media (max-width:400px){
   .career-job.hs .hs-rooms{grid-template-columns:1fr}
   .career-job.hs .hs-cal{min-width:0}
-  .career-job.hs .hs-row{grid-template-columns:76px repeat(7,minmax(0,1fr))}
+  .career-job.hs .hs-row{grid-template-columns:100px repeat(7,minmax(0,1fr))}
   .career-job.hs .hs-rname{padding:4px 6px;font-size:.8em}
 }
 @media (prefers-reduced-motion:reduce){.career-job.hs *{transition:none!important;animation:none!important}}

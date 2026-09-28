@@ -154,7 +154,7 @@
 .career-job.sl .sl-nav button.done span{background:var(--sl-good);color:var(--sl-accent-ink);border-color:var(--sl-good)}
 .career-job.sl .sl-nav button.now{color:var(--sl-ink);font-weight:800}
 .career-job.sl .sl-nav button.open{border-color:var(--sl-accent);background:var(--sl-s1);box-shadow:0 0 0 1px var(--sl-accent) inset}
-.career-job.sl .sl-nav button:disabled{cursor:default;opacity:.55}
+.career-job.sl .sl-nav button:disabled{cursor:default;opacity:.72}
 .career-job.sl .sl-panel .section-title{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
 .career-job.sl .sl-ticket .patience{min-width:110px;flex:0 1 150px}
 .career-job.sl .sl-more summary{min-height:40px;display:flex;align-items:center;cursor:pointer;font-size:.88em;color:var(--sl-muted)}
@@ -201,7 +201,8 @@
 }
 @media (max-width:400px){
   .career-job.sl .sl-zones{grid-template-columns:minmax(0,1fr)}
-  .career-job.sl .sl-nav button{font-size:.62em;padding:5px 1px}
+  .career-job.sl .sl-nav{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:76px;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:4px}
+  .career-job.sl .sl-nav button{font-size:.75rem;padding:5px 2px;scroll-snap-align:start}
   .career-job.sl .sl-nav button span{width:22px;height:22px}
   .career-job.sl .sl-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .career-job.sl .sl-tubes{grid-template-columns:repeat(3,minmax(0,1fr))}

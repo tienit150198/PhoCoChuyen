@@ -16,7 +16,8 @@
 .career-job.pc .row small,.career-job.pc .kv small,.career-job.pc .btn small{display:inline}
 .career-job.pc h5{margin:12px 0 4px;font-size:.95em}
 
-/* ---------- shared-class fallbacks (zero specificity: a theme rule wins) */
+/* ---------- shared-class fallbacks (zero specificity: a theme rule wins).
+   .kv and .checklist are real selectors: app.css lays those out differently. */
 :where(.career-job.pc) :where(.card){background:var(--pc-s1);border:1px solid var(--pc-line);border-radius:var(--pc-r);padding:14px;box-shadow:var(--pc-shadow)}
 :where(.career-job.pc) :where(.ticket) h3{margin:0}
 :where(.career-job.pc) :where(.ticket) p{margin:6px 0;line-height:1.5}
@@ -35,15 +36,15 @@
 :where(.career-job.pc) :where(.tile.selected){border-color:var(--pc-accent);background:var(--pc-s2);box-shadow:inset 0 0 0 2px var(--pc-accent)}
 :where(.career-job.pc) :where(.tile.empty){opacity:.6}
 :where(.career-job.pc) :where(.tile.locked,.tile:disabled){opacity:.45;cursor:not-allowed}
-:where(.career-job.pc) :where(.checklist){list-style:none;margin:0;padding:0;display:grid;gap:4px}
-:where(.career-job.pc) :where(.checklist li){display:grid;grid-template-columns:22px 1fr;align-items:start;gap:4px;font-size:.92em;color:var(--pc-muted)}
-:where(.career-job.pc) :where(.checklist li>span){font-weight:800}
-:where(.career-job.pc) :where(.checklist li small){grid-column:2;font-size:.85em}
-:where(.career-job.pc) :where(.checklist li.ok){color:var(--pc-good)}
-:where(.career-job.pc) :where(.checklist li.bad){color:var(--pc-bad)}
-:where(.career-job.pc) :where(.kv){display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:.95em}
-:where(.career-job.pc) :where(.kv.total){border-top:1px dashed var(--pc-line);margin-top:4px;padding-top:6px;font-size:1.05em}
-:where(.career-job.pc) :where(.kv.muted){color:var(--pc-muted)}
+.career-job.pc .checklist{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.career-job.pc .checklist li{display:grid;grid-template-columns:22px 1fr;align-items:start;gap:4px;font-size:.92em;color:var(--pc-muted)}
+.career-job.pc .checklist li>span{font-weight:800}
+.career-job.pc .checklist li small{grid-column:2;font-size:.85em}
+.career-job.pc .checklist li.ok{color:var(--pc-good)}
+.career-job.pc .checklist li.bad{color:var(--pc-bad)}
+.career-job.pc .kv{display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:.95em}
+.career-job.pc .kv.total{border-top:1px dashed var(--pc-line);margin-top:4px;padding-top:6px;font-size:1.05em}
+.career-job.pc .kv.muted{color:var(--pc-muted)}
 :where(.career-job.pc) :where(.btn.big){min-height:52px;font-size:1.05em}
 :where(.career-job.pc) :where(.btn.full){width:100%}
 :where(.career-job.pc) :where(.stack){display:grid;gap:6px}
@@ -170,7 +171,7 @@
 .career-job.pc .pc-kennel-box[open]>summary{margin-bottom:8px}
 .career-job.pc .pc-tags{gap:4px;margin:4px 0}
 .career-job.pc .pc-cues{display:grid;gap:4px;margin:8px 0;padding:10px 12px;border-radius:var(--pc-rs);background:var(--pc-s2);border:1px solid var(--pc-line)}
-.career-job.pc .pc-cues>ul{margin:0;padding-left:18px;display:grid;gap:2px;font-weight:600}
+.career-job.pc .pc-cues>ul{margin:0;padding-left:18px;display:grid;gap:2px;font-weight:500;font-size:.9em}
 .career-job.pc .pc-guide{margin:6px 0;padding-left:18px;display:grid;gap:4px;font-size:.85em;line-height:1.4}
 .career-job.pc .pc-bolt{display:grid;gap:8px;padding:14px;border-radius:var(--pc-r);background:var(--pc-s1);border:2px solid var(--pc-bad);box-shadow:var(--pc-shadow);animation:pc-pop .25s ease-out}
 .career-job.pc .pc-bolt h4{margin:0;color:var(--pc-bad)}

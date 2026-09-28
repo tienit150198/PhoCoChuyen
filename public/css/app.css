@@ -70,6 +70,7 @@ hr{border:0;border-top:1px solid var(--line);margin:20px 0}
 :focus{outline:none}
 :focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:8px}
 canvas:focus-visible{outline-offset:-3px;border-radius:0}
+#sheet:focus,#sheet:focus-visible{outline:none}
 summary{cursor:pointer;font-weight:700;color:var(--ink-2);line-height:1.5;padding:4px 0;border-radius:8px}
 summary::marker{color:var(--muted)}
 details[open]>summary{margin-bottom:8px}
@@ -485,7 +486,8 @@ html[data-layout="tablet"] .sheet.drawer{width:min(620px,92vw);max-height:100dvh
 .toast.leaving{opacity:0;transform:translateY(6px);transition:opacity .3s,transform .3s}
 @keyframes mnl-toast-in{from{opacity:0;transform:translateY(8px)}}
 dialog .toasts{top:calc(max(10px,var(--safe-t)) + 10px);bottom:auto}
-html[data-layout="phone"] .toasts{top:calc(var(--topbar-h) + var(--safe-t) + 8px);bottom:auto}
+/* Below the scene's title card (.scene-heading), so hints never cover the shop name. */
+html[data-layout="phone"] .toasts{top:calc(var(--topbar-h) + var(--safe-t) + 76px);bottom:auto}
 html[data-layout="phone"] dialog .toasts{top:calc(max(10px,var(--safe-t)) + 8px)}
 
 /* ---------- 13. Home: career picker -------------------------------------- */
@@ -565,6 +567,8 @@ html[data-layout="phone"] .home-empty{margin:8px 14px 16px}
 .work-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;align-items:start}
 .work-main{min-width:0}
 .work-aside{min-width:0;padding:16px;border-radius:var(--radius);background:var(--surface-2);border:1px solid var(--line)}
+/* Phone: what the guest asked for comes before the shelf. */
+@container sheet (max-width:759px){.work-aside{order:-1}}
 @container sheet (min-width:760px){.work-layout{grid-template-columns:minmax(0,1fr) minmax(260px,300px);gap:24px}.work-aside{position:sticky;top:96px}}
 .customer-intro{display:flex;align-items:center;gap:14px;margin-bottom:14px}
 .customer-intro>svg{flex:none}
@@ -612,7 +616,7 @@ html[data-layout="phone"] .home-empty{margin:8px 14px 16px}
 .swatch:hover{background:var(--surface-2)}
 .swatch i{width:30px;height:30px;border-radius:50%;border:3px solid var(--surface);box-shadow:0 0 0 1px var(--line-strong)}
 .swatch.selected{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-text);font-weight:700}
-.lot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.lot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .lot-card{position:relative;min-width:0;padding:14px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line)}
 .lot-card.held{background:var(--warn-soft)}
 .lot-card.expired{background:var(--bad-soft)}
@@ -654,7 +658,7 @@ html[data-layout="phone"] .home-empty{margin:8px 14px 16px}
 .evidence-card p{font-size:.9rem;margin:8px 0 0}
 .evidence-card .btn{margin-top:10px}
 .choice-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
-.choice{display:block;width:100%;min-height:44px;padding:14px 16px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--line-strong);color:var(--ink);text-align:left;transition:background var(--dur),border-color var(--dur),box-shadow var(--dur)}
+.choice{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:14px 16px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--line-strong);color:var(--ink);text-align:left;transition:background var(--dur),border-color var(--dur),box-shadow var(--dur)}
 .choice:hover:not(:disabled){background:var(--surface-2);border-color:var(--field-line)}
 .choice.selected,label.choice:has(input:checked){background:var(--accent-soft);border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 .choice:disabled{opacity:.6}
@@ -866,7 +870,7 @@ label.choice:has(input:focus-visible){outline:3px solid var(--focus);outline-off
 .activity-card h4{font-size:1rem;margin:6px 0 0}
 .activity-card p{font-size:.9rem;line-height:1.6;color:var(--ink-2)}
 .activity-card>small{display:block;margin:12px 0;font-size:.8rem;color:var(--muted)}
-.activity-emoji{display:grid;place-items:center;flex:none;width:48px;height:48px;border-radius:14px;background:var(--surface);font-size:1.6rem}
+.activity-emoji{display:grid;place-items:center;flex:none;width:48px;height:48px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line);font-size:1.6rem}
 .activity-board{padding:22px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-sm)}
 .activity-board>div>h2{font-size:1.4rem}
 .memory-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:18px}
@@ -1888,6 +1892,14 @@ html[data-layout="phone"] .ops-foot>.row .btn{flex:1}
 .ref-rules{margin:0;padding:0;list-style:none;display:grid;gap:8px}
 .ref-rules li{padding:10px 12px;border-radius:var(--radius-sm);background:var(--surface-2);line-height:1.45}
 html.large-text .req-row{font-size:1rem}
+
+/* Career panels often style <summary> as a flex row, which drops the native
+   disclosure marker and makes a folded section look like an empty card.
+   One marker for every career summary; .fold draws its own. */
+.career-job details>summary:not(.fold>summary){list-style:none}
+.career-job details>summary:not(.fold>summary)::-webkit-details-marker{display:none}
+.career-job details>summary:not(.fold>summary)::after{content:"▾";margin-left:auto;padding-left:8px;color:var(--muted)}
+.career-job details[open]>summary:not(.fold>summary)::after{content:"▴"}
 
 /* ---------- 28. Motion ---------------------------------------------------- */
 html.reduce-motion *,html.reduce-motion *::before,html.reduce-motion *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}

@@ -158,7 +158,7 @@ function housekeeping(x){
     let body='';
     if(room.status==='occupied')body=`<small>${x.esc(room.guest||'Khách')} · trả phòng ngày ${room.until}</small>`;
     else if(room.status==='clean')body=`<small class="hs-stars" aria-label="Điểm buồng phòng ${room.q}/5">${'★'.repeat(room.q)}${'☆'.repeat(Math.max(0,5-room.q))}</small>`;
-    else if(room.status==='maintenance')body=`<small>${x.esc(room.note||'Đang sửa')}</small>${locked?`<small>🔒 mở ở cấp ${r.unlock}</small>`:x.confirmCmd('🔧 Gọi thợ','hs_repair',{room:r.id},'Gọi thợ sửa phòng này? Tiền công trả ngay, sau đó phòng cần dọn lại.','ghost small',deskOpen(x))}`;
+    else if(room.status==='maintenance')body=`<small>${x.esc(room.note||'Đang sửa')}</small>${locked?(/cấp \d/.test(room.note||'')?'':`<small>🔒 mở ở cấp ${r.unlock}</small>`):x.confirmCmd('🔧 Gọi thợ','hs_repair',{room:r.id},'Gọi thợ sửa phòng này? Tiền công trả ngay, sau đó phòng cần dọn lại.','ghost small',deskOpen(x))}`;
     else body=x.button(room.hk?'🧹 Dọn tiếp':'🧹 Dọn phòng','car:hk',{room:r.id},'small ghost');
     return `<article class="hs-roomcard ${x.esc(room.status)} ${x.ui.hk===r.id?'active':''}"><div class="row spread"><b>${r.emoji} ${x.esc(r.name)}</b><span class="tag ${kind}">${label}</span></div><small class="muted">${r.cap} người · ${x.esc(r.beds)}</small>${body}</article>`;
   }).join('');

@@ -1,6 +1,7 @@
 /** Tạp Hoá Cô Ba — checkout counter (scanner, scale, promo board, change tray,
  *  bank app, ghi-sổ ledger), shelf rotation, rush-hour queue, bulk orders,
  *  the stock & price-tag board (Mây Mart flyer) and surprises at the shop. */
+import {keepBarAboveFooter} from './food_kit.js';
 const ID='grocery';
 const catalogue=x=>x.content.inventory?.items?.[ID]||[];
 const item=(x,id)=>catalogue(x).find(i=>i.id===id)||{id,name:id,emoji:'•',unit:''};
@@ -430,5 +431,7 @@ export default {
       x.ui.order.sort((a,b)=>exp[a]-exp[b]);x.render();
     },
   },
+  // The sticky bill bar rides above the sheet's own sticky footer.
+  tick(root){keepBarAboveFooter(root);},
   dock:[['inventory','box','Kho','Nhập & đếm hàng']],
 };

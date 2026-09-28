@@ -25,7 +25,7 @@ export function inventoryView(env){
   const cap=inv.capacity,arriving=inv.arriving||{},unit=i=>i?.unit||'phần',stock=id=>inv.stock[id]||0;
   const room=id=>inv.room?.[id]??Math.max(0,cap-stock(id)-(arriving[id]||0));
   const orders=inv.orders||[],ready=orders.filter(o=>o.status==='in_transit'&&o.ready_now),transit=orders.filter(o=>o.status==='in_transit'&&!o.ready_now);
-  const open=items.filter(i=>!inv.locked.includes(i.id)),lowLine=Math.max(2,Math.floor(cap*.15));
+  const open=items.filter(i=>!inv.locked.includes(i.id)),lowLine=Math.max(2,Math.floor(cap*.08));
   const low=open.filter(i=>stock(i.id)+(arriving[i.id]||0)<=lowLine).sort((a,b)=>stock(a.id)-stock(b.id));
   const tonight=open.reduce((n,i)=>n+(inv.expiring[i.id]||0),0);
   const tab=['stock','orders','lots'].includes(ui.invTab)?ui.invTab:'stock';
@@ -49,7 +49,7 @@ export function inventoryView(env){
       return `<button type="button" class="inv-bin ${state}" data-action="v4Order" data-item="${esc(i.id)}"${locked?' disabled':''} aria-label="${esc(i.name)}: ${q} trên kệ${on?`, ${on} đang giao`:''}${locked?`, mở ở cấp ${i.unlock}`:', chạm để nhập thêm'}">`+
         `<span class="inv-bin-top"><span class="inv-bin-emoji" aria-hidden="true">${esc(i.emoji||'📦')}</span><span class="inv-bin-count"><b>${locked?'—':q}</b><small>/${cap}</small></span></span>`+
         `<span class="inv-bin-name">${esc(i.name)}</span><small class="inv-bin-unit">${esc(unit(i))}${life}</small>`+
-        `<span class="inv-bar" aria-hidden="true"><i style="width:${pct(q)}%"></i><i class="on" style="width:${pct(on)}%"></i></span>`+
+        `<span class="inv-bar" aria-hidden="true"><i style="width:${locked?0:pct(q)}%"></i><i class="on" style="width:${pct(on)}%"></i></span>`+
         `${flags?`<span class="inv-flags">${flags}</span>`:''}</button>`;};
     // Sections by group; runs of one-item groups share a section so the grid stays full.
     const sections=[];
@@ -142,7 +142,7 @@ export function feedbackView(env){
     return `<button type="button" class="rv-card ${p.id===shown?.id?'active':''}${f?.removed?' removed':''}" data-action="v4FbOpen" data-post="${esc(p.id)}"><span class="persona">${esc(f?.persona_emoji||'🙂')}</span><span class="grow"><span class="rv-top"><b>${esc(p.author)}</b>${p.stars?`<span class="stars" aria-label="${p.stars} sao">${stars(p.stars)}</span>`:''}</span><span class="rv-text">${esc(p.text)}</span>${flags}<small class="muted">Ngày ${p.day}${f?.title?` · ${esc(f.title)}`:''}</small></span><span class="rv-side">${tag}</span></button>`;};
   const list=all.length?rows.map(card).join('')||`<p class="muted small rv-none">Không có đánh giá nào ở mục này.</p>`:`<div class="empty">${icon('star',30)}<h3>Chưa có đánh giá nào</h3><p class="muted small">Làm xong việc cho khách, họ sẽ để lại lời nhắn ở đây.</p></div>`;
   const body=all.length?`<div class="fb-layout ${selected?'has-detail':''}"><section class="fb-list">${summary}${chips}<div class="stack rv-list">${list}</div>${crit}</section><section class="fb-detail ${selected?'':'auto'}">${shown?threadView(shown,env):''}</section></div>`:list;
-  return head('Đánh giá',esc(place),'KHÁCH NÓI GÌ')+`<div class="sheet-body">${body}</div>`;
+  return head('Đánh giá',esc(place),'PHẢN HỒI')+`<div class="sheet-body">${body}</div>`;
 }
 function threadView(p,env){
   const f=p.feedback,api=env.api,aiOn=api.state.settings.aiConsent&&api.ai?.configured;

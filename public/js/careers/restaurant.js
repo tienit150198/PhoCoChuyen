@@ -194,7 +194,7 @@ function pots(t,x){
     tileBtn(x,{cmd:'rs_container',payload:{task:t.id,kind:'box'},emoji:'🥡',name:'Hộp',count:stockOf(x,'box'),zero:!stockOf(x,'box'),selected:b.container==='box',
       disabled:!!b.container||locked||!stockOf(x,'box'),wanted:!hide&&!b.container&&n.takeaway,label:`Hộp mang về, còn ${stockOf(x,'box')}`}),
     ...x.cc.broths.map(p=>{const q=d.pots?.[p.id]??0,lock=p.unlock>level;
-      return tileBtn(x,{cmd:'rs_broth',payload:{task:t.id,broth:p.id},emoji:p.emoji,name:p.name,count:lock?null:q,zero:q<portions,locked:lock,selected:b.broth===p.id,
+      return tileBtn(x,{cmd:'rs_broth',payload:{task:t.id,broth:p.id},emoji:p.emoji,name:p.name,sub:'nước dùng',count:lock?null:q,zero:q<portions,locked:lock,selected:b.broth===p.id,
         wanted:!b.broth&&wantBroth.includes(p.id),disabled:q<portions||!!b.broth||!b.container||locked,cls:'pot',
         label:lock?`Nước dùng ${p.name}, mở ở cấp ${p.unlock}`:`Chan nước dùng ${p.name}, nồi còn ${q} phần`});})];
   // Cooking a pot is offered when it runs low (a pot holds 12 portions, one batch adds 6).

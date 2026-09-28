@@ -246,3 +246,5 @@
 .ga-sum .ga-sum-trust{margin:0 0 6px}
 .ga-sum .ga-sum-note{margin:0 0 8px;padding:8px 10px;border-radius:10px;background:var(--good-soft,var(--surface-2))}
 .ga-sum .ga-sum-note.bad{background:var(--bad-soft,var(--surface-2))}
+
+@media (max-width:600px){.career-job.ga .ga-rules-row{flex-direction:column;overflow:visible}.career-job.ga .ga-rule{flex:none}}

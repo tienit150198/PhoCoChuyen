@@ -46,7 +46,7 @@ function deskCard(x){
 }
 function orderTicket(t,x){
   const who=x.npc(t.npc);
-  if(!t.known)return `<article class="card ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3><p>“${x.esc(t.opening)}”</p></div></div>${x.cmd('📞 Nhận đơn hàng','ask',{task:t.id},'primary full')}</article>`;
+  if(!t.known)return `<article class="card ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3><p>${x.esc(t.opening)}</p></div></div>${x.cmd('📞 Nhận đơn hàng','ask',{task:t.id},'primary full')}</article>`;
   const n=t.needs;
   return `<article class="card ticket"><div class="row">${x.portrait(who,48)}<div class="grow">
     <div class="row spread"><h3>${x.esc(who.display_name)}</h3><b class="price">${x.money(t.quoted_price||0)}</b></div>

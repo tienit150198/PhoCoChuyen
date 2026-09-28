@@ -109,7 +109,7 @@ function lPath(x,from,route){
   return pts.map(([a,b])=>`${PAD+a*CELL},${PAD+b*CELL}`).join(' ');
 }
 function map(x){
-  const d=x.room.data||{},u=ui(x),all=nodes(x),W=PAD*2+6*CELL,H=PAD*2+4*CELL;
+  const d=x.room.data||{},u=ui(x),all=nodes(x),W=PAD*2+6*CELL,H=PAD*2+4*CELL+16;
   const streets=[...Array(7).keys()].map(i=>`<line x1="${PAD+i*CELL}" y1="${PAD}" x2="${PAD+i*CELL}" y2="${H-PAD}"/>`).join('')+[...Array(5).keys()].map(i=>`<line x1="${PAD}" y1="${PAD+i*CELL}" x2="${W-PAD}" y2="${PAD+i*CELL}"/>`).join('');
   const marks=Object.entries(all).map(([id,n])=>{
     const s=stopsAt(x,id),cls=[s.pick.length?'pick':'',s.drop.length?'drop':'',id===d.at?'here':''].join(' ');

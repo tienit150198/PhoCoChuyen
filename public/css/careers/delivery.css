@@ -131,7 +131,7 @@
 
 @media (max-width:760px){
   .career-job.dl .workbench{grid-template-columns:minmax(0,1fr)}
-  .career-job.dl .wb-side{position:static}
+  .career-job.dl .wb-side{position:static;order:-1}
   .career-job.dl .dl-status{grid-template-columns:repeat(2,minmax(0,1fr))}
   .career-job.dl .dl-clock{grid-column:1/-1}
 }
@@ -179,3 +179,5 @@
 .career-job.dl .dl-way.risky{border-color:var(--dl-warn)}
 @media (max-width:420px){.career-job.dl .dl-ways{grid-template-columns:minmax(0,1fr)}}
 @media (prefers-reduced-motion:reduce){.career-job.dl .bar i{transition:none}}
+
+.career-job.dl .dl-sec h4 small{display:block;font-weight:400}

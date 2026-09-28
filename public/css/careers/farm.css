@@ -17,18 +17,18 @@
 :where(.career-job.fa) :where(.tile.selected){border-color:var(--fa-accent);box-shadow:inset 0 0 0 2px var(--fa-accent)}
 :where(.career-job.fa) :where(.tile .tile-emoji){font-size:24px;line-height:1}
 :where(.career-job.fa) :where(.tile small){color:var(--fa-muted);font-size:12px}
-:where(.career-job.fa) :where(.checklist){list-style:none;margin:10px 0;padding:10px;border:1px dashed var(--fa-line);border-radius:var(--fa-rs)}
-:where(.career-job.fa) :where(.checklist li){display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;padding:4px 0;font-size:14px}
-:where(.career-job.fa) :where(.checklist li>span){width:18px;font-weight:700;color:var(--fa-muted)}
-:where(.career-job.fa) :where(.checklist li.ok>span){color:var(--fa-good)}
-:where(.career-job.fa) :where(.checklist li.bad>span){color:var(--fa-bad)}
-:where(.career-job.fa) :where(.checklist small){margin-left:auto;color:var(--fa-muted)}
+.career-job.fa .checklist{list-style:none;margin:10px 0;padding:10px;border:1px dashed var(--fa-line);border-radius:var(--fa-rs)}
+.career-job.fa .checklist li{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;padding:4px 0;font-size:14px}
+.career-job.fa .checklist li>span{width:18px;font-weight:700;color:var(--fa-muted)}
+.career-job.fa .checklist li.ok>span{color:var(--fa-good)}
+.career-job.fa .checklist li.bad>span{color:var(--fa-bad)}
+.career-job.fa .checklist small{margin-left:auto;color:var(--fa-muted)}
 :where(.career-job.fa) :where(.bar){height:8px;border-radius:99px;background:var(--fa-surface-2);overflow:hidden}
 :where(.career-job.fa) :where(.bar i){display:block;height:100%;background:var(--fa-good);border-radius:inherit}
 :where(.career-job.fa) :where(.bar.low i){background:var(--fa-bad)}
-:where(.career-job.fa) :where(.kv){display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:8px 0}
-:where(.career-job.fa) :where(.kv dt){color:var(--fa-muted)}
-:where(.career-job.fa) :where(.kv dd){margin:0}
+.career-job.fa .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:8px 0}
+.career-job.fa .kv dt{color:var(--fa-muted)}
+.career-job.fa .kv dd{margin:0}
 :where(.career-job.fa) :where(.section-title){margin:14px 0 8px}
 :where(.career-job.fa) :where(.patience){display:flex;align-items:center;gap:8px}
 :where(.career-job.fa) :where(.patience .bar){flex:1}

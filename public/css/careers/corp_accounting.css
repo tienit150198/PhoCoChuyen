@@ -290,3 +290,5 @@
   .career-job.ca .ca-sbtn{letter-spacing:0;font-size:.85em;padding:6px 2px}
   .career-job.ca .ca-sbtn span{white-space:nowrap;padding:2px 4px}
 }
+
+@media (max-width:600px){.career-job.ca .ca-rules-row{flex-direction:column;overflow:visible}.career-job.ca .ca-rule{flex:none}}

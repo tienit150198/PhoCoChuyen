@@ -181,3 +181,5 @@ html.reduce-motion .tt-event,html.reduce-motion .tt-meter b{animation:none;trans
 .tt-legend{margin:0;font-size:.75rem;color:var(--muted,#8a7a6a)}
 .tt-roster li{padding:4px 8px}
 .tt-roster .tt-face{width:28px;height:28px;font-size:1rem}
+
+.tt-sum{position:sticky;bottom:0;z-index:2;box-shadow:0 -4px 14px rgb(0 0 0 / 8%);background:var(--surface-2,#f4ecdf)}
