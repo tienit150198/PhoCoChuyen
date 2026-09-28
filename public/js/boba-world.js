@@ -224,9 +224,9 @@ export class BobaWorld extends World {
        if(id==='plant')this.plantAt(x,y,.5);
        if(id==='lamp'){L(c,x,y,x,y-30,'#c6a47f',3);P(c,[[x-8,y-40],[x+8,y-40],[x+14,y-26],[x-14,y-26]],'#f5ddb1');E(c,x,y,9,3,'#cead8e');}
        if(id==='seat'){R(c,x-22,y-11,44,12,p.mint,6,'#c9a88a',1);E(c,x,y-9,12,3,'#ffffff55');}}
-     if(id==='poster'){const [x,y]=portrait?[170,472]:[1054,285];R(c,x-25,y-24,50,48,'#fff6e9',9,'#d1ad8e',2);heart(c,x,y+4,.58,p.primary);}
+     if(id==='poster'){const [x,y]=pl.wall?.poster||(this.scene().id==='shop'?(portrait?[170,472]:[1054,285]):[pl.spots.board[0][0]-(portrait?70:90),pl.spots.board[0][1]-40]);R(c,x-25,y-24,50,48,'#fff6e9',9,'#d1ad8e',2);heart(c,x,y+4,.58,p.primary);}
    }
-   if(this.c?.upgrades?.includes('shelf')&&!portrait){R(c,1009,440,65,21,'#e3b99c',6);for(let i=0;i<2;i++)this.tinyItem(1023+i*30,442,i+2);}
+   if(this.c?.upgrades?.includes('shelf')&&!portrait&&this.scene().id==='shop'){R(c,1009,440,65,21,'#e3b99c',6);for(let i=0;i<2;i++)this.tinyItem(1023+i*30,442,i+2);}
  }
  cabinet(x,y,w,h,index){const c=this.ctx,p=this.palette();R(c,x-4,y-21,w+8,h+29,'#dcb396',10,'#b78b6c',2);R(c,x+5,y+6,w-10,h-9,'#fff3e0',7);
    R(c,x+17,y-34,w-34,32,p.light,12,'#d9b7a1',1.5);T(c,p.shelves[index],x+w/2,y-17,13,p.dark);
@@ -365,7 +365,7 @@ export class BobaWorld extends World {
    if(this.career==='teacher'){R(c,401,473,132,69,'#fff8dd',5,'#ba9b76',2);T(c,'3 + 4 = 7',468,505,20,p.dark);}else if(this.career==='tour_guide'){R(c,393,476,146,65,'#f6edc8',6,'#b79c73',2);L(c,412,524,522,492,'#8eb68c',8);T(c,'⚑',432,503,22,p.dark);T(c,'⚑',514,490,20,p.dark);}else this.monitor(458,530);this.bobaCup(353,550,.7);
    if((this.c?.ops?.equipment?.condition||100)<100){R(c,113,548,80,14,'#f4d591',4);T(c,'CẦN KIỂM',153,555,10,'#90633e');}
  }
- pet(){this.say('Mrrr… hôm nay tiệm có thêm bạn mới không?');const [x,y]=this.plan().cat;this.ping(x,y-30,'#d790a9');this.petUntil=this.time+4;}
+ pet(){this.say(this.words().cat_line);const [x,y]=this.plan().cat;this.ping(x,y-30,'#d790a9');this.petUntil=this.time+4;}
  /** ?navdebug=1 only: walkable cells, footprints, people, approach spots, path. */
  drawNavDebug(){const c=this.ctx,g=this.nav;if(!g)return;c.save();
    const me=this.navCell(this.player.x,this.player.y),main=me>=0&&g.walk[me]?g.comp[me]:g.comp[this.navNearest(this.player.x,this.player.y)];

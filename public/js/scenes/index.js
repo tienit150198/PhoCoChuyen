@@ -18,27 +18,27 @@ export const kindOf=career=>KIND_OF[career]||'shop';
 const BASE={
   rating:'đánh giá',till:'Ví của tiệm',door_open:'Khép một ngày',door_closed:'Mở cửa tiệm',open_sign:'ĐANG MỞ',closed_sign:'HẸN GẶP LẠI',
   shelf:'Kệ hàng xinh',evidence:'Đối chiếu yêu cầu',counter:'Kiểm & bàn giao',warehouse:'Kho sau tiệm',
-  board:'Chuyện phố',finance:'Sổ thu chi',property:'Mặt bằng của tiệm',security:'An ninh khu phố',pet:'Chơi với Mướp',ledger:'SỔ TIỆM',store:'KHO',
+  board:'Chuyện phố',cat_line:'Mrrr… hôm nay tiệm có thêm bạn mới không?',finance:'Sổ thu chi',property:'Mặt bằng của tiệm',security:'An ninh khu phố',pet:'Chơi với Mướp',ledger:'SỔ TIỆM',store:'KHO',
 };
 const KIND_WORDS={
   shop:{},
-  service:{warehouse:'Kho vật tư',shelf:'Tủ dụng cụ',evidence:'Sổ hẹn & phiếu',counter:'Quầy thanh toán'},
-  classroom:{rating:'phụ huynh',till:'Quỹ lớp',door_open:'Tan lớp',door_closed:'Vào lớp',open_sign:'ĐANG HỌC',closed_sign:'ĐÃ TAN LỚP',
+  service:{cat_line:'Mrrr… hôm nay có ai ghé làm đẹp không?',store:'VẬT TƯ',ledger:'SỔ THU CHI',open_sign:'ĐANG NHẬN KHÁCH',warehouse:'Kho vật tư',shelf:'Tủ dụng cụ',evidence:'Sổ hẹn & phiếu',counter:'Quầy thanh toán'},
+  classroom:{cat_line:'Mrrr… hôm nay lớp mình học gì thế?',rating:'phụ huynh',till:'Quỹ lớp',door_open:'Tan lớp',door_closed:'Vào lớp',open_sign:'ĐANG HỌC',closed_sign:'ĐÃ TAN LỚP',
     shelf:'Góc học liệu',evidence:'Sổ liên lạc',counter:'Bàn giáo viên',warehouse:'Tủ đồ dùng',finance:'Sổ quỹ lớp',property:'Phòng học',ledger:'SỔ LỚP',store:'TỦ ĐỒ'},
-  office:{rating:'phản hồi',till:'Quỹ bộ phận',door_open:'Tan làm',door_closed:'Vào ca',open_sign:'ĐANG LÀM VIỆC',closed_sign:'ĐÃ TAN LÀM',
+  office:{cat_line:'Mrrr… bàn phím ấm quá, cho mèo nằm nhờ nhé.',rating:'phản hồi',till:'Quỹ bộ phận',door_open:'Tan làm',door_closed:'Vào ca',open_sign:'ĐANG LÀM VIỆC',closed_sign:'ĐÃ TAN LÀM',
     shelf:'Kệ hồ sơ',evidence:'Bản gốc & chứng cứ',counter:'Phòng trưởng phòng',warehouse:'Tủ hồ sơ',finance:'Sổ chi phí',property:'Văn phòng',ledger:'SỔ CÔNG VIỆC',store:'HỒ SƠ'},
-  farm:{till:'Quỹ nông trại',door_open:'Nghỉ tay',door_closed:'Ra vườn',open_sign:'ĐANG LÀM VƯỜN',closed_sign:'NGHỈ TAY',
-    shelf:'Giàn hạt giống',evidence:'Nhật ký canh tác',counter:'Bàn đóng hàng',warehouse:'Nhà kho',property:'Đất trại',ledger:'SỔ TRẠI',store:'NHÀ KHO'},
-  street:{till:'Quỹ',door_open:'Nghỉ',door_closed:'Bắt đầu chạy',open_sign:'ĐANG CHẠY',closed_sign:'ĐÃ NGHỈ',
+  farm:{cat_line:'Mrrr… nắng đẹp thế này, rau lớn nhanh lắm.',till:'Quỹ nông trại',door_open:'Nghỉ tay',door_closed:'Ra vườn',open_sign:'ĐANG LÀM VƯỜN',closed_sign:'NGHỈ TAY',
+    shelf:'Kệ hạt giống',evidence:'Nhật ký canh tác',board:'Chuyện xóm',security:'Canh vườn',counter:'Bàn đóng hàng',warehouse:'Nhà kho',property:'Đất trại',ledger:'SỔ TRẠI',store:'NHÀ KHO'},
+  street:{cat_line:'Mrrr… đi đường cẩn thận nhé.',till:'Quỹ',door_open:'Nghỉ',door_closed:'Bắt đầu chạy',open_sign:'ĐANG CHẠY',closed_sign:'ĐÃ NGHỈ',
     shelf:'Kệ hàng',evidence:'Bảng lộ trình',counter:'Quầy nhận',warehouse:'Kho hàng',property:'Điểm tập kết',ledger:'SỔ CHUYẾN',store:'KHO'},
-  lodging:{till:'Ví của homestay',door_closed:'Mở quầy',shelf:'Bảng chìa khóa',evidence:'Lịch phòng',counter:'Quầy lễ tân',warehouse:'Kho buồng phòng',property:'Nhà & vườn',ledger:'SỔ KHÁCH',store:'KHO'},
+  lodging:{cat_line:'Mrrr… lò sưởi ấm quá, khách có lạnh không?',till:'Ví của homestay',door_closed:'Mở quầy',shelf:'Bảng chìa khóa',evidence:'Lịch phòng',counter:'Quầy trả phòng',warehouse:'Kho buồng phòng',pet:'Chơi với Mướp bên lò sưởi',door_open:'Khép quầy',open_sign:'ĐANG ĐÓN KHÁCH',closed_sign:'HẸN BẠN LẦN SAU',security:'An ninh nhà nghỉ',property:'Nhà & vườn',ledger:'SỔ KHÁCH',store:'KHO'},
 };
 const CAREER_WORDS={
   milk_tea:{warehouse:'Kho nguyên liệu'},
-  delivery:{shelf:'Kệ bưu kiện',counter:'Quầy bưu cục'},
-  tour_guide:{shelf:'Bưu thiếp & bản đồ',counter:'Điểm hẹn đoàn',evidence:'Bảng lộ trình',warehouse:'Hành trang',door_open:'Kết thúc chuyến',door_closed:'Xuất phát'},
+  delivery:{shelf:'Kệ bưu kiện',counter:'Quầy bưu cục',evidence:'Bản đồ tuyến giao',warehouse:'Lồng hàng chờ giao',finance:'Sổ tiền thu hộ',property:'Bưu cục Mây Chiều',open_sign:'ĐANG NHẬN ĐƠN',closed_sign:'TẠM NGHỈ GIAO'},
+  tour_guide:{shelf:'Bưu thiếp & bản đồ',counter:'Điểm hẹn đoàn',evidence:'Bảng lộ trình',warehouse:'Hành trang',door_open:'Kết thúc chuyến',door_closed:'Xuất phát',finance:'Sổ quỹ đoàn',property:'Điểm hẹn Mây Lang Thang',open_sign:'ĐANG ĐÓN ĐOÀN',closed_sign:'HẸN CHUYẾN SAU',ledger:'SỔ ĐOÀN'},
   customer_care:{counter:'Trưởng ca',evidence:'Chứng cứ · phối hợp'},
-  pet_care:{shelf:'Kệ đồ thú cưng'},repair:{shelf:'Tường dụng cụ',counter:'Quầy nhận máy'},salon:{shelf:'Kệ thuốc nhuộm'},
+  pet_care:{shelf:'Kệ đồ thú cưng',evidence:'Phiếu nhận thú cưng',counter:'Quầy nhận bé',cat_line:'Mrrr… hôm nay có bạn bốn chân nào ghé không?'},repair:{shelf:'Tường dụng cụ',counter:'Quầy nhận máy',evidence:'Phiếu nhận máy',cat_line:'Mrrr… cái quạt kia kêu to quá.'},salon:{shelf:'Kệ thuốc nhuộm'},
 };
 export const wordsFor=career=>({...BASE,...KIND_WORDS[kindOf(career)],...CAREER_WORDS[career]});
 

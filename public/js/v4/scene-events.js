@@ -22,8 +22,12 @@ export const ACTOR_TAG={thief:'Kẻ gian',pickpocket:'Kẻ móc túi',biker:'K�
 
 function anchors(w){
   const pl=w.plan(),port=w.isPortrait(),door=pl.spots.door[0],cus=pl.customers;
-  return port?{door:[door[0]-10,door[1]-10],out:[720,850],shelf:[160,694],till:[455,694],table:cus[1],window:[338,470],glass:[338,340],car:[610,742],street:[-40,760]}
+  const shop=port?{door:[door[0]-10,door[1]-10],out:[720,850],shelf:[160,694],till:[455,694],table:cus[1],window:[338,470],glass:[338,340],car:[610,742],street:[-40,760]}
              :{door:[door[0]-20,door[1]-6],out:[1190,690],shelf:[300,616],till:[760,616],table:cus[1],window:[573,452],glass:[573,330],car:[1085,606],street:[1190,560]};
+  if(w.scene?.().id==='shop')return shop;
+  // Other workplaces: stand where the player would (approach spots), unless the scene names its own anchors.
+  const at=k=>pl.spots[k]?.[2]?.[0],hit=k=>pl.spots[k]?.[0];
+  return {...shop,shelf:at('shelf')||shop.shelf,till:at('counter')||shop.till,window:at('workbench')||shop.window,glass:hit('workbench')||shop.glass,...(pl.anchors||{})};
 }
 
 export class SceneFx{
