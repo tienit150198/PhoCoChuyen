@@ -1,0 +1,33 @@
+MỘT NGÀY LÀM NGHỀ — v0.3 / NHỮNG NGÀY NHIỀU CHUYỆN
+
+CHẠY NGAY
+1. Giải nén TOÀN BỘ ZIP. Cần Python 3.11 trở lên.
+2. Windows: mở start.bat.
+   macOS/Linux: python3 server.py --open
+3. Mở http://127.0.0.1:8765 — giữ Terminal đang mở.
+4. Chọn 1 trong 7 nghề → Chuẩn bị → Mở ca → Tiếp tục công việc.
+   Các nghề cũ vẫn giữ; có thêm Giáo viên, Hướng dẫn viên, Tiệm trà sữa.
+
+THỬ CÁC TRẢI NGHIỆM MỚI
+• Trà sữa: hỏi món → bấm nguyên liệu → chọn cỡ/đường/đá, Lưu →
+  Kiểm ly → Đóng nắp → Trao khách. Nhập mẻ +5 ở Chuẩn bị khi hết.
+• Giáo viên: soạn 3 bước → điểm danh đúng ghế → giúp theo nhu cầu →
+  đọc và phản hồi phiếu → khép tiết.
+• Hướng dẫn viên: chọn tuyến đủ yêu cầu + nơi nghỉ → kiểm đoàn →
+  khởi hành → kể chuyện/tìm ảnh/kiểm người ở mỗi điểm → khép chuyến.
+• Trò nhỏ: 4 kiểu/ nghề, có thử lại và điểm cá nhân.
+• Hộ chiếu: 3 chuyện/nghề, mục tiêu, huy hiệu, sticker.
+• Khu phố: chạm điểm để mở hoạt động đang chạy; Ngày hội tự chọn.
+• Nhân viên, Thu chi, An ninh, Mặt bằng, Review và Album vẫn có đủ.
+• Trên điện thoại: vuốt thanh chức năng dưới. “Thêm” có Đổi nghề.
+
+NÂNG TỪ BẢN CŨ
+Xuất JSON bản cũ → giữ bản sao → dừng server cũ → chạy bản mới → nhập JSON.
+Migration schema 1/2 → 3, không truy thu chi phí ngày cũ. Không nhập v3 ngược v2.
+Không cần API key / npm install / pip install. Không mở index.html bằng file://.
+Cổng bận: python server.py --port 8766 --open
+
+Đây là playable prototype local, chưa phải bản thương mại/online multiplayer.
+7 nghề mở, 12 nghề tương lai khóa. Chat mặc định theo kịch bản.
+Thuế, bảo hiểm, công an/thưởng, tiền vé, nghiệp vụ chuyên môn đều giả lập.
+Chi tiết: README.md, docs/V03_GUIDE.md, docs/IMPLEMENTED_VS_DESIGN.md.

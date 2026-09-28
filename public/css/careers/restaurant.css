@@ -1,0 +1,121 @@
+@import url('food_kit.css');
+/* Quán Mì Cay Mây — kitchen desk: tables + app orders, the guest's words, pots,
+   two boiling baskets, the bowl with a live status line, chili, toppings.
+   Theme tokens only; nothing truncates (names wrap) at 390 px. */
+
+/* ---------- Tables and app orders ---------- */
+.career-job.rs .rs-floor{display:grid;gap:8px;padding:10px;border-radius:var(--radius-lg,20px);background:var(--surface-2);border:1px solid var(--line)}
+.career-job.rs .rs-tables{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.career-job.rs .rs-seat{position:relative;display:grid;justify-items:center;align-content:start;gap:3px;min-width:0;min-height:92px;padding:8px 4px 6px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--ink);text-align:center;cursor:pointer}
+.career-job.rs .rs-seat:hover:not(.empty){border-color:var(--accent)}
+.career-job.rs .rs-seat.on{background:var(--accent-soft)}
+.career-job.rs .rs-seat>b{font-size:.75rem;line-height:1.2;font-weight:800;overflow-wrap:anywhere}
+.career-job.rs .rs-seat.empty{align-content:center;border-style:dashed;background:transparent;cursor:default}
+.career-job.rs .rs-seat.empty>b{color:var(--muted);font-weight:700}
+.career-job.rs .rs-seat.add{cursor:pointer;color:var(--accent-text)}
+.career-job.rs .rs-seat.add>b{color:var(--accent-text)}
+.career-job.rs .rs-plus{font-size:1.4rem;line-height:1;font-weight:800}
+.career-job.rs .rs-ring{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:conic-gradient(var(--good) calc(var(--p,100)*1%),var(--surface-3,#e8e2d6) 0)}
+.career-job.rs .rs-seat.low .rs-ring{background:conic-gradient(var(--bad) calc(var(--p,100)*1%),var(--surface-3,#e8e2d6) 0)}
+.career-job.rs .rs-ring>svg{width:40px;height:40px;border-radius:50%;background:var(--surface)}
+.career-job.rs .rs-mood{position:absolute;left:4px;top:4px;font-style:normal;font-size:.867rem;line-height:1}
+.career-job.rs .rs-n{margin-top:-10px;padding:0 6px;border-radius:var(--radius-pill,99px);background:var(--accent);color:var(--accent-ink,#fff);font-size:.75rem;font-weight:800;line-height:1.5}
+.career-job.rs .rs-apps{display:flex;align-items:flex-start;gap:8px}
+.career-job.rs .rs-apps-tag{display:grid;justify-items:center;flex:none;width:44px;padding-top:6px;font-size:1.3rem;line-height:1}
+.career-job.rs .rs-apps-tag small{font-size:.75rem;font-weight:800;color:var(--muted);margin-top:2px;text-align:center}
+.career-job.rs .rs-app-list{flex:1;min-width:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.career-job.rs .rs-app{display:flex;align-items:center;gap:8px;min-width:0;min-height:52px;padding:6px 8px;border-radius:12px;background:var(--surface);border:2px dashed var(--line-strong);color:var(--ink);text-align:left;cursor:pointer}
+.career-job.rs .rs-app.on{border-style:solid;background:var(--accent-soft)}
+.career-job.rs .rs-app>svg{flex:none;width:30px;height:30px}
+.career-job.rs .rs-app-txt{display:grid;gap:2px;min-width:0;flex:1}
+.career-job.rs .rs-app-txt b{font-size:.767rem;line-height:1.25;overflow-wrap:anywhere}
+.career-job.rs .rs-app-txt small{font-size:.75rem;color:var(--ink-2,var(--muted));line-height:1.25}
+.career-job.rs .rs-app-bar{display:block;height:5px;border-radius:3px;background:var(--surface-3,#eee);overflow:hidden}
+.career-job.rs .rs-app-bar>i{display:block;height:100%;background:var(--good)}
+.career-job.rs .rs-app.low .rs-app-bar>i{background:var(--bad)}
+
+/* ---------- The order ---------- */
+.career-job.rs .rs-order{display:grid;gap:8px;padding:14px;border-left:5px solid var(--accent)}
+.career-job.rs .rs-order.critic{border-left-color:var(--warn,#c98a2b)}
+.career-job.rs .rs-order-head{display:flex;gap:10px;align-items:flex-start}
+.career-job.rs .rs-order-head h3{margin:0;font-size:1rem}
+.career-job.rs .rs-guest{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 0}
+.career-job.rs .rs-say{position:relative;margin:0;padding:10px 12px;border-radius:4px 16px 16px 16px;background:var(--surface-2);font-size:.967rem;line-height:1.5}
+.career-job.rs .rs-say b{color:var(--accent-text,#9a3f1f)}
+.career-job.rs .rs-say b.hot{color:var(--bad,#c0533f)}
+.career-job.rs .rs-say b.no{text-decoration:underline wavy var(--bad)}
+.career-job.rs .rs-say small{color:var(--muted)}
+.career-job.rs .rs-story{margin:0;padding:8px 10px;border-radius:12px 12px 12px 2px;background:var(--surface-2);font-size:.867rem;line-height:1.45}
+.career-job.rs .rs-picture{margin:0;font-size:1.7rem;line-height:1.45;letter-spacing:.04em;overflow-wrap:anywhere}
+.career-job.rs .rs-recall{gap:8px}
+.career-job.rs .rs-tabs{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.rs .rs-tab{min-height:40px;min-width:64px;padding:6px 14px;border-radius:var(--radius-pill,99px);background:var(--surface);border:2px solid var(--line-strong);color:var(--ink);font-weight:800;cursor:pointer}
+.career-job.rs .rs-tab.on{background:var(--bad,#c0533f);border-color:var(--bad,#c0533f);color:var(--on-bad,#fff);opacity:1}
+.career-job.rs .rs-tab.done{text-decoration:line-through;color:var(--good);border-color:var(--good)}
+.career-job.rs .rs-tab:disabled:not(.on){opacity:.5;cursor:not-allowed}
+
+/* ---------- Kitchen desk ---------- */
+.career-job.rs .rs-desk{display:grid;gap:10px;padding:10px;border-radius:var(--radius-lg,20px);background:var(--surface-2);border:1px solid var(--line)}
+.career-job.rs .rs-grid{display:grid;gap:6px}
+.career-job.rs .rs-pots{grid-template-columns:repeat(auto-fill,minmax(76px,1fr))}
+.career-job.rs .rs-tops{grid-template-columns:repeat(auto-fill,minmax(66px,1fr))}
+.career-job.rs .rs-tile{position:relative;display:grid;justify-items:center;align-content:center;gap:1px;min-width:0;min-height:74px;padding:14px 4px 6px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--ink);text-align:center;cursor:pointer;transition:border-color var(--dur,.2s),box-shadow var(--dur,.2s),transform .12s}
+.career-job.rs .rs-tile:hover:not(:disabled){border-color:var(--accent)}
+.career-job.rs .rs-tile:active:not(:disabled){transform:scale(.97)}
+.career-job.rs .rs-tile:disabled{cursor:not-allowed;background:var(--surface)}
+.career-job.rs .rs-tile:disabled:not(.is-selected):not(.is-locked)>:not(.count-badge){opacity:.5}
+.career-job.rs .rs-tile.is-selected{border-color:var(--good);box-shadow:0 0 0 2px var(--good)}
+.career-job.rs .rs-tile.wanted::before{content:"★";position:absolute;left:5px;top:3px;color:var(--warn,#c98a2b);font-size:.9rem;line-height:1}
+.career-job.rs .rs-tile.avoid{border-color:var(--bad)}
+.career-job.rs .rs-tile.avoid::before{content:"🚫";position:absolute;left:4px;top:3px;font-size:.8rem;line-height:1}
+.career-job.rs .rs-emoji{font-size:1.55rem;line-height:1.1}
+.career-job.rs .rs-tile>b{font-size:.75rem;line-height:1.2;overflow-wrap:anywhere}
+.career-job.rs .rs-tile>small{font-size:.75rem;color:var(--muted);line-height:1.2}
+.career-job.rs .rs-have{position:absolute;left:4px;bottom:4px;padding:0 5px;border-radius:var(--radius-pill,99px);background:var(--good);color:var(--surface);font-size:.75rem;font-style:normal;font-weight:800}
+.career-job.rs .rs-cook{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.career-job.rs .rs-cook>small{font-weight:800;color:var(--muted)}
+.career-job.rs .rs-cook .btn{min-height:40px}
+
+/* Cook line: baskets · bowl · chili */
+.career-job.rs .rs-cookline{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr) 76px;gap:8px;align-items:stretch}
+.career-job.rs .rs-stove{display:grid;gap:6px;align-content:start}
+.career-job.rs .rs-basket{display:grid;gap:4px;padding:6px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.career-job.rs .rs-basket .btn{min-height:40px;width:100%;padding-inline:6px}
+.career-job.rs .rs-basket>small{display:grid;place-items:center;min-height:40px}
+.career-job.rs .rs-basket .boil-track{height:18px;border-radius:9px}
+.career-job.rs .rs-basket .boil-label{font-size:.75rem}
+.career-job.rs .rs-bowlbox{display:grid;align-content:start;gap:4px;min-width:0}
+.career-job.rs .rs-bowlbox .bowl-art{min-height:0;padding:8px 0 6px;overflow:hidden}
+.career-job.rs .rs-bowlbox .bowl-shell{max-width:none;transform:scale(.68);margin:-24px -33px}
+.career-job.rs .rs-status{margin:0;padding:4px 8px;border-radius:var(--radius-pill,99px);background:var(--surface);border:1px solid var(--line);font-size:.75rem;font-weight:800;line-height:1.35;text-align:center}
+.career-job.rs .rs-tray{display:flex;justify-content:center;gap:6px;margin:0}
+.career-job.rs .rs-tray>span{display:grid;justify-items:center;width:34px;padding:2px 0;border-radius:10px;border:1px dashed var(--line-strong);font-size:1rem;line-height:1.2}
+.career-job.rs .rs-tray>span.on{border-style:solid;border-color:var(--good);background:var(--good-soft,#e7f3e4)}
+.career-job.rs .rs-tray>span.cur{border-style:solid;border-color:var(--accent)}
+.career-job.rs .rs-tray small{font-size:.75rem;font-weight:800}
+.career-job.rs .rs-chili{display:grid;gap:6px;align-content:start;justify-items:center}
+.career-job.rs .rs-bottle{width:100%;min-height:96px}
+.career-job.rs .rs-chili .pumps{justify-content:center;gap:3px}
+.career-job.rs .rs-chili .pumps i{width:10px;height:16px}
+.career-job.rs .pumps i.need{outline:2px dashed var(--warn);outline-offset:1px}
+.career-job.rs .rs-cta{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.career-job.rs .rs-cta>.fk-wide-only{flex:1 1 220px}
+.career-job.rs .rs-cta>.fk-wide-only .btn{width:100%}
+.career-job.rs .rs-cta>.btn{min-height:44px}
+.career-job.rs .rs-check{padding:8px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.career-job.rs .rs-check>summary{display:flex;align-items:center;min-height:40px;font-weight:800;cursor:pointer}
+.career-job.rs .rs-check .checklist{margin-top:6px}
+.career-job.rs .rs-tools{gap:8px;margin:0}
+@container sheet (min-width:640px){
+  .career-job.rs .rs-cookline{grid-template-columns:minmax(0,1fr) minmax(0,1.4fr) 96px}
+  .career-job.rs .rs-bowlbox .bowl-shell{transform:none;margin:0}
+  .career-job.rs .rs-bowlbox .bowl-art{padding:14px 6px 8px}
+}
+@media (max-width:360px){.career-job.rs .rs-cookline{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.career-job.rs .rs-chili{grid-column:1/-1;grid-template-columns:auto 1fr;justify-items:start}.career-job.rs .rs-bottle{min-height:74px}}
+
+/* ---------- Side jobs ---------- */
+.career-job.rs .rs-batch h4{margin:0}
+.career-job.rs .rs-batch-bar{height:10px;margin:10px 0 6px;border-radius:6px;background:var(--surface-3);overflow:hidden}
+.career-job.rs .rs-batch-bar>i{display:block;height:100%;background:var(--accent)}
+.career-job.rs .rs-dishes{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0;padding:8px 12px;border-radius:var(--radius);background:var(--surface-2)}
+.career-job.rs .rs-dishes.full{background:var(--bad-soft);border:1px solid var(--bad)}

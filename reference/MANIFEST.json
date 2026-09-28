@@ -1,0 +1,100 @@
+{
+  "title": "Một ngày làm nghề — Bộ thiết kế V1",
+  "version": "1.0",
+  "date": "2026-09-27",
+  "document_pages_in_review": 48,
+  "counts": {
+    "career_catalog": 16,
+    "launch_careers": 4,
+    "future_proposals": 12,
+    "npcs": 24,
+    "event_seeds": 96,
+    "story_outlines": 12,
+    "onboarding_game_days": 40,
+    "backlog_items": 44,
+    "acceptance_tests_specified": 54
+  },
+  "status": "design_and_seed_data_only",
+  "files": [
+    {
+      "path": "Mot_ngay_lam_nghe_Thiet_ke_day_du_v1.docx",
+      "bytes": 89384,
+      "sha256": "1b7f78005ec7d2ddb82694fe6482bdb2bd0b7041747865ce572fd30e7ed989ad"
+    },
+    {
+      "path": "Mot_ngay_lam_nghe_Thiet_ke_day_du_v1.md",
+      "bytes": 119078,
+      "sha256": "f49175489c154568c21bfc22190b78d5b860fb2753a5e8a23478aa08863a3594"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3095,
+      "sha256": "be9dba74eed38b7e4ffa3aa776ed5858a17edb42d9067e3e4bd2483650670aa4"
+    },
+    {
+      "path": "data/acceptance_tests.json",
+      "bytes": 17823,
+      "sha256": "1be80b9351a1548f9f8d5c8bdb60f7b99f5ae75904bc020eff3c1e0db693e19c"
+    },
+    {
+      "path": "data/backlog.json",
+      "bytes": 11310,
+      "sha256": "445700eb3ac7c88ee4200a424a5adeed836ea8ae9f8ffef7fe523d4c9ebe6634"
+    },
+    {
+      "path": "data/catalog_16_careers.json",
+      "bytes": 4376,
+      "sha256": "aeeb0c584f6563d695010729da5c15cc2b9b57fbf7f1fe978210c989adf264d9"
+    },
+    {
+      "path": "data/command.schema.json",
+      "bytes": 2285,
+      "sha256": "6f756b03eebd218a01687a39caa09ecd6f058d217b9e5bb762d71d3134bb3ddd"
+    },
+    {
+      "path": "data/command_examples.json",
+      "bytes": 1611,
+      "sha256": "3544798f417d6965217aaa0c8356b62869176569078165224565f1aeebfb17fc"
+    },
+    {
+      "path": "data/core_game_designs.json",
+      "bytes": 30024,
+      "sha256": "4fd6e823de39ec33a4e744115565d849d79fd910482d6021ef34e178ca10ff85"
+    },
+    {
+      "path": "data/events_96.json",
+      "bytes": 122320,
+      "sha256": "7a5357ccc2b39177cb90ef9d50cc52bc98d6572d59f6b8352452f7919ab85d56"
+    },
+    {
+      "path": "data/future_game_designs.json",
+      "bytes": 29924,
+      "sha256": "418b71772b759c3df84399692b64bb5cbb89a13418751d3baeb44aa231a16137"
+    },
+    {
+      "path": "data/npcs_24.json",
+      "bytes": 11718,
+      "sha256": "fa002198ce0802f987ca7c655622b265af5a25f8a733f4ba81cca4adeb01b0a1"
+    },
+    {
+      "path": "data/progression_40_days.json",
+      "bytes": 7213,
+      "sha256": "baa3735559419f56f790e748175aec71563f1fa995e61251a7314d261579f646"
+    },
+    {
+      "path": "data/quests_12.json",
+      "bytes": 6941,
+      "sha256": "7a2e347f1fe52c2341f7a0c0f63323a7fef26257c2f6a7cd543e0db13da910fa"
+    },
+    {
+      "path": "data_validation_report.json",
+      "bytes": 511,
+      "sha256": "19b5126b924b4b3456a442eaccca46bfecf8b9ab9da75bd01147b3485c360e85"
+    },
+    {
+      "path": "docs/Hop_dong_thuc_thi.md",
+      "bytes": 2622,
+      "sha256": "e99f033f30d8e6195f1b167d6306d3a15595f59128a5bcd1c58b8032e3410af9"
+    }
+  ]
+}

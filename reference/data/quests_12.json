@@ -1,0 +1,134 @@
+[
+  {
+    "id": "MB-Q01",
+    "career_id": "mother_baby",
+    "title": "Món quà của bác Tư",
+    "story_outline": "Gặp lần đầu và hỏi người nhận → cùng chọn quà → nhận phản hồi lần sau → chuẩn bị một món quà đặc biệt → nhận ảnh kỷ niệm.",
+    "npc_only": true,
+    "time_basis": "game_time",
+    "can_defer": true,
+    "requires_typing": false,
+    "reward_policy": "cosmetic_memory_or_mechanic_not_real_money"
+  },
+  {
+    "id": "MB-Q02",
+    "career_id": "mother_baby",
+    "title": "Một clip, nhiều góc nhìn",
+    "story_outline": "Bảo đề nghị quay và xin tài trợ → bạn đặt ranh giới/thỏa thuận → bài đăng và khách tới hỏi → trao đổi lại khi có đủ dữ kiện.",
+    "npc_only": true,
+    "time_basis": "game_time",
+    "can_defer": true,
+    "requires_typing": false,
+    "reward_policy": "cosmetic_memory_or_mechanic_not_real_money"
+  },
+  {
+    "id": "MB-Q03",
+    "career_id": "mother_baby",
+    "title": "Buổi gói quà khu phố",
+    "story_outline": "Khách bình luận gợi ý hoạt động → bạn nhận hoặc để sau → đặt dụng cụ, bố trí bàn, mời khách → tổ chức → ảnh nhóm xuất hiện trên bảng tin.",
+    "npc_only": true,
+    "time_basis": "game_time",
+    "can_defer": true,
+    "requires_typing": false,
+    "reward_policy": "cosmetic_memory_or_mechanic_not_real_money"
+  },
+  {
+    "id": "PH-Q01",
+    "career_id": "pharmacy",
+    "title": "Người mua hộ cẩn thận hơn",
+    "story_outline": "Lan tới với mô tả thiếu → được hướng dẫn lấy đúng thông tin → lần sau mang phiếu đủ → giúp chuẩn bị một danh mục vật dụng cho gia đình.",
+    "npc_only": true,
+    "time_basis": "game_time",
+    "can_defer": true,
+    "requires_typing": false,
+    "reward_policy": "cosmetic_memory_or_mechanic_not_real_money"
+  },
+  {
+    "id": "PH-Q02",
+    "career_id": "pharmacy",
+    "title": "Khoa học cách kiểm hai bước",
+    "story_outline": "Bạn phát hiện Khoa chọn nhầm bao bì → cùng kiểm mã → thiết lập vị trí và nhãn → trong ca đông Khoa chủ động phát hiện sai khác.",
+    "npc_only": true,
+    "time_basis": "game_time",
+    "can_defer": true,
+    "requires_typing": false,
+    "reward_policy": "cosmetic_memory_or_mechanic_not_real_money"
+  },
+  {
+    "id": "PH-Q03",
+    "career_id": "pharmacy",
+    "title": "Góc chia sẻ của khu phố",
+    "story_outline": "Vy muốn làm bài giới thiệu → bạn thống nhất vùng quay và dữ liệu được chia sẻ → thực hiện hoạt động danh mục vật dụng đã duyệt → nhận phản hồi về sự cẩn thận.",
+    "npc_only": true,
+    "time_basis": "game_time",
+    "can_defer": true,
+    "requires_typing": false,
+    "reward_policy": "cosmetic_memory_or_mechanic_not_real_money"
+  },
+  {
+    "id": "AC-Q01",
+    "career_id": "accounting",
+    "title": "Huy hết sợ đối chiếu",
+    "story_outline": "Giúp Huy xử lý một lỗi nhập → cùng tạo thói quen kiểm nguồn → Huy nhận phần phân loại sơ bộ → hai người hoàn thành một kỳ đối chiếu.",
+    "npc_only": true,
+    "time_basis": "game_time",
+    "can_defer": true,
+    "requires_typing": false,
+    "reward_policy": "cosmetic_memory_or_mechanic_not_real_money"
+  },
+  {
+    "id": "AC-Q02",
+    "career_id": "accounting",
+    "title": "Sổ của cô Hoa",
+    "story_outline": "Cô Hoa gửi giấy tờ lộn xộn → bạn hỏi đúng phần thiếu → dựng bản tổng hợp dễ hiểu → cô chủ động chuẩn bị dữ liệu tốt hơn lần sau.",
+    "npc_only": true,
+    "time_basis": "game_time",
+    "can_defer": true,
+    "requires_typing": false,
+    "reward_policy": "cosmetic_memory_or_mechanic_not_real_money"
+  },
+  {
+    "id": "AC-Q03",
+    "career_id": "accounting",
+    "title": "Áp lực trước giờ chốt",
+    "story_outline": "Một vụ lệch số và lời đề nghị “sửa cho khớp” → bạn kiểm nguồn/chuyển quyền → tìm được bản thay thế hoặc giữ kết luận chưa đủ → trình bày minh bạch.",
+    "npc_only": true,
+    "time_basis": "game_time",
+    "can_defer": true,
+    "requires_typing": false,
+    "reward_policy": "cosmetic_memory_or_mechanic_not_real_money"
+  },
+  {
+    "id": "CS-Q01",
+    "career_id": "customer_care",
+    "title": "Khách phải kể lại quá nhiều lần",
+    "story_outline": "Phúc đã liên hệ nhiều lần → bạn đọc hồ sơ và xác định điểm thiếu → phối hợp một đầu mối → cập nhật đúng hẹn → nhận phản hồi.",
+    "npc_only": true,
+    "time_basis": "game_time",
+    "can_defer": true,
+    "requires_typing": false,
+    "reward_policy": "cosmetic_memory_or_mechanic_not_real_money"
+  },
+  {
+    "id": "CS-Q02",
+    "career_id": "customer_care",
+    "title": "Bàn giao không đánh rơi lời hứa",
+    "story_outline": "Một ca phải chuyển → bạn tóm tắt và giao người nhận → người đó cần thông tin bổ sung hoặc xử lý tiếp → khách thấy không phải kể lại.",
+    "npc_only": true,
+    "time_basis": "game_time",
+    "can_defer": true,
+    "requires_typing": false,
+    "reward_policy": "cosmetic_memory_or_mechanic_not_real_money"
+  },
+  {
+    "id": "CS-Q03",
+    "career_id": "customer_care",
+    "title": "Từ một review tới thay đổi quy trình",
+    "story_outline": "Hà phản hồi giao thiếu → bạn xử lý đúng vụ → phát hiện nhiều vụ cùng nguyên nhân → đề xuất kiểm đóng gói → ngày sau thấy loại lỗi giảm.",
+    "npc_only": true,
+    "time_basis": "game_time",
+    "can_defer": true,
+    "requires_typing": false,
+    "reward_policy": "cosmetic_memory_or_mechanic_not_real_money"
+  }
+]

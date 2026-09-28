@@ -1,0 +1,88 @@
+/* Chuyện bất ngờ trong ca: reaction card over the scene, loss / result banner,
+   police news and the day-summary block. Theme tokens only (every theme,
+   including "dem", follows). Motion is off with .reduce-motion / prefers-reduced-motion. */
+.hap-top{position:fixed;z-index:80;top:calc(var(--safe-t) + var(--topbar-h,60px) + 8px);left:50%;transform:translateX(-50%);width:min(540px,calc(100vw - 24px));display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.hap-top>*{pointer-events:auto}
+.hap-top [hidden],.hap-panel[hidden]{display:none!important}
+
+.hap-pill{align-self:center;display:inline-flex;align-items:center;gap:8px;min-height:44px;max-width:100%;padding:8px 18px;border:2px solid #fff4ec;border-radius:var(--radius-pill);background:var(--bad);color:var(--on-bad);font:inherit;font-weight:800;font-size:.95rem;box-shadow:var(--shadow);cursor:pointer;animation:hap-pulse 1.1s var(--ease) infinite;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hap-pill b{text-decoration:underline;text-underline-offset:3px}
+.hap-pill:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+@keyframes hap-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+
+.hap-panel{position:fixed;z-index:81;top:calc(var(--safe-t) + var(--topbar-h,64px) + 12px);right:calc(var(--safe-r) + 14px);width:min(430px,calc(100vw - 28px));max-height:calc(100vh - var(--topbar-h,64px) - var(--foot-h,28px) - 40px);overflow:auto;overscroll-behavior:contain;padding:14px 16px 12px;border-radius:var(--radius-lg);background:var(--surface);color:var(--ink);border:2px solid var(--bad);box-shadow:var(--shadow-lg);animation:hap-in .28s var(--ease)}
+@keyframes hap-in{from{transform:translateX(24px);opacity:0}to{transform:none;opacity:1}}
+@keyframes hap-down{from{transform:translateY(-18px);opacity:0}to{transform:none;opacity:1}}
+.hap-head{display:flex;gap:12px;align-items:center}
+.hap-head .grow{min-width:0;flex:1}
+.hap-head h2{margin:2px 0 0;font-size:1.15rem;line-height:1.3;color:var(--ink)}
+.hap-head .eyebrow{color:var(--bad);font-weight:800;letter-spacing:.06em;font-size:.75rem}
+.hap-emoji{flex:none;display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:var(--bad-soft);font-size:1.6rem;line-height:1}
+.hap-min{flex:none;min-width:44px;min-height:44px}
+.hap-text{margin:10px 0 0;font-size:.95rem;line-height:1.55;color:var(--ink-2)}
+.hap-ask{margin:12px 0 8px;font-size:.9rem;color:var(--ink)}
+.hap-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
+.hap-choice{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-height:52px;padding:10px 12px;border-radius:var(--radius);border:1.5px solid var(--line-strong);background:var(--surface-2);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.hap-choice strong{font-size:.93rem;line-height:1.35}
+.hap-choice small{font-size:.8rem;color:var(--muted);line-height:1.4}
+.hap-choice:hover:not(:disabled){border-color:var(--bad);background:var(--bad-soft)}
+.hap-choice:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.hap-choice:disabled{opacity:.6;cursor:not-allowed}
+.hap-foot{margin:10px 0 0;font-size:.78rem;color:var(--muted);display:flex;gap:6px;align-items:center}
+
+.hap-ba{margin-top:10px;border:1px solid var(--line);border-radius:var(--radius-sm);overflow:hidden;font-size:.86rem}
+.hap-ba-head,.hap-ba-row{display:grid;grid-template-columns:1fr 56px 56px;gap:6px;padding:6px 10px}
+.hap-ba-head{background:var(--surface-2);color:var(--muted);font-weight:700;font-size:.78rem}
+.hap-ba-row+.hap-ba-row{border-top:1px solid var(--line)}
+.hap-ba-row span:first-child{min-width:0;overflow-wrap:anywhere}
+.hap-ba-row b{color:var(--bad)}
+
+.hap-lines{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px}
+.hap-lines li{display:flex;justify-content:space-between;gap:10px;padding:5px 10px;border-radius:8px;background:var(--surface-2);font-size:.84rem}
+.hap-lines li.out b{color:var(--bad)}
+.hap-lines li.in b{color:var(--good)}
+
+.hap-banner-card,.hap-news-card{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:var(--radius);background:var(--surface);color:var(--ink);box-shadow:var(--shadow-lg);border:2px solid var(--line-strong);animation:hap-drop .3s var(--ease)}
+@keyframes hap-drop{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
+.hap-banner-card .grow,.hap-news-card .grow{min-width:0;flex:1}
+.hap-banner-card.bad{border-color:var(--bad);background:linear-gradient(0deg,var(--surface),var(--surface)) padding-box}
+.hap-banner-card.bad .hap-banner-top{background:var(--bad);color:var(--on-bad)}
+.hap-banner-card.good{border-color:var(--good)}
+.hap-banner-card.good .hap-banner-top{background:var(--good);color:#fff}
+.hap-banner-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:-2px 0 6px;padding:6px 10px;border-radius:10px}
+.hap-big{font-size:1.35rem;font-weight:900;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.hap-what{font-weight:700;font-size:.92rem;min-width:0;overflow-wrap:anywhere}
+.hap-banner-emoji{flex:none;font-size:1.7rem;line-height:1;margin-top:4px}
+.hap-outcome,.hap-news-card p{margin:0;font-size:.88rem;line-height:1.5;color:var(--ink-2)}
+.hap-items{margin:6px 0 0!important;font-size:.84rem!important;color:var(--ink)!important}
+.hap-items span{color:var(--bad);font-weight:700;margin-left:2px}
+.hap-hurt,.hap-case,.hap-ins,.hap-auto,.hap-back{margin:6px 0 0!important;font-size:.84rem!important;display:flex;gap:6px;align-items:center}
+.hap-hurt{color:var(--bad)!important}
+.hap-back,.hap-ins{color:var(--good)!important;font-weight:700}
+.hap-banner-foot{display:flex;justify-content:flex-end;margin-top:8px}
+.hap-banner-foot .btn{min-height:44px}
+.hap-news-card.solved{border-color:var(--info)}
+.hap-news-card.cold{border-color:var(--line-strong)}
+.hap-news-title{display:block;font-size:1.05rem;margin:2px 0 4px;color:var(--ink)}
+.hap-news-card .eyebrow{color:var(--muted);font-size:.75rem;font-weight:700}
+
+.hap-sum ul{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}
+.hap-sum li{display:flex;gap:8px;align-items:center}
+.hap-sum li small{display:block;color:var(--muted);font-size:.8rem}
+.hap-sum li .grow{min-width:0}
+.hap-sum b.out{color:var(--bad);white-space:nowrap}
+.hap-sum b.in{color:var(--good);white-space:nowrap}
+
+html[data-layout="phone"] .hap-top{top:auto;bottom:calc(var(--dock-h,62px) + var(--safe-b) + 10px);max-height:62vh;overflow:auto}
+html[data-layout="phone"] .hap-panel{top:calc(var(--safe-t) + var(--topbar-h,58px) + 4px);left:8px;right:8px;width:auto;max-height:54vh;padding:12px 12px 10px;animation-name:hap-down}
+html[data-layout="phone"] .hap-text{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:.9rem;margin-top:8px}
+html[data-layout="phone"] .hap-choices{grid-template-columns:1fr 1fr}
+html[data-layout="phone"] .hap-choice{min-height:48px;padding:8px 10px}
+html[data-layout="phone"] .hap-emoji{width:40px;height:40px;font-size:1.35rem}
+html[data-layout="phone"] .hap-head h2{font-size:1.02rem}
+@media (max-width:360px){.hap-choices,html[data-layout="phone"] .hap-choices{grid-template-columns:1fr}}
+
+.reduce-motion .hap-pill,.reduce-motion .hap-panel,.reduce-motion .hap-banner-card,.reduce-motion .hap-news-card{animation:none}
+@media (prefers-reduced-motion:reduce){.hap-pill,.hap-panel,.hap-banner-card,.hap-news-card{animation:none}}
+html.hap-open .toast.hint{display:none}
+html[data-layout="phone"] .hap-foot{display:none}

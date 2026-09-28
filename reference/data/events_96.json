@@ -1,0 +1,3842 @@
+[
+  {
+    "id": "MB-E01",
+    "career_id": "mother_baby",
+    "title": "Quà đúng ngân sách",
+    "category": "positive",
+    "truth": "Ngân sách và màu ưa thích chỉ biết được khi hỏi khách.",
+    "player_task": "Hỏi người nhận, chọn bộ phù hợp và gói theo màu khách thích.",
+    "follow_up": "Khách gửi ảnh cảm ơn; lưu sở thích đã hỏi được.",
+    "min_game_day": 1,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E02",
+    "career_id": "mother_baby",
+    "title": "Đơn thiếu một món",
+    "category": "moderate",
+    "truth": "Nhật ký đóng gói cho thấy người chơi bỏ sót một món.",
+    "player_task": "Đối chiếu đơn và khay đóng gói; gửi bù hoặc hoàn phần thiếu.",
+    "follow_up": "Chỉ cập nhật vụ việc khi hàng bù được giao hoặc tiền được hoàn.",
+    "min_game_day": 3,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E03",
+    "career_id": "mother_baby",
+    "title": "Đổi cỡ đồ",
+    "category": "neutral",
+    "truth": "Món khác cỡ còn ở kho sau, không nằm trên kệ.",
+    "player_task": "Xem món còn nguyên, kiểm kho rồi đổi hoặc nhận hẹn.",
+    "follow_up": "Khách phản hồi về phương án tiệm đã thực hiện.",
+    "min_game_day": 3,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E04",
+    "career_id": "mother_baby",
+    "title": "Khách nói tiệm tính sai",
+    "category": "moderate",
+    "truth": "Hóa đơn đã bỏ sót một ưu đãi đang có hiệu lực.",
+    "player_task": "Mở chi tiết hóa đơn và ưu đãi trước khi giải thích.",
+    "follow_up": "Tính sai thì sửa; tính đúng thì giải thích, không ép khách sửa review.",
+    "min_game_day": 3,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E05",
+    "career_id": "mother_baby",
+    "title": "Hàng để nhầm kệ",
+    "category": "neutral",
+    "truth": "Phụ việc đã chuyển món sang bàn quà tặng.",
+    "player_task": "Tìm trên các kệ, hỏi phụ việc, chưa vội kết luận trộm.",
+    "follow_up": "Tìm lại hàng và nhắc quy trình sắp xếp.",
+    "min_game_day": 4,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E06",
+    "career_id": "mother_baby",
+    "title": "Lấy hàng chưa thanh toán",
+    "category": "tense",
+    "truth": "Nhân vật đã đi qua quầy ra cửa mà chưa có giao dịch tương ứng.",
+    "player_task": "Kiểm bằng chứng trong cảnh; nhắc thanh toán hoặc gọi hỗ trợ.",
+    "follow_up": "Đồ được trả hoặc đơn được thanh toán; không xảy ra xô xát.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 3,
+    "availability": {
+      "relaxed": false,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E07",
+    "career_id": "mother_baby",
+    "title": "Quay clip xin quà",
+    "category": "moderate",
+    "truth": "Người quay clip xin tài trợ, chưa có thỏa thuận nào được chấp nhận.",
+    "player_task": "Trao đổi đề nghị hợp tác, tặng có xác nhận hoặc từ chối.",
+    "follow_up": "Bài đăng sau đó phản ánh trao đổi; không bảo đảm quảng bá tích cực.",
+    "min_game_day": 4,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E08",
+    "career_id": "mother_baby",
+    "title": "Quay sát khách khác",
+    "category": "moderate",
+    "truth": "Một khách đã bày tỏ không muốn xuất hiện trong clip.",
+    "player_task": "Nhắc quy định trong tiệm, chỉ khu quay hoặc yêu cầu dừng.",
+    "follow_up": "Khách được bảo vệ không gian; phản ứng của người quay tùy cách xử lý.",
+    "min_game_day": 4,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E09",
+    "career_id": "mother_baby",
+    "title": "Review hiểu nhầm",
+    "category": "neutral",
+    "truth": "Khách đến sớm hơn giờ đã hẹn.",
+    "player_task": "Đọc đơn, xem thời điểm hẹn và giải thích công khai ở mức cần thiết.",
+    "follow_up": "Chuyển phần thông tin riêng sang tin nhắn; có thể hẹn lại.",
+    "min_game_day": 4,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E10",
+    "career_id": "mother_baby",
+    "title": "Bom đơn quà",
+    "category": "moderate",
+    "truth": "Khách hủy trước khi nhận, hộp cá nhân hóa chưa thể bán nguyên bộ.",
+    "player_task": "Liên hệ xác nhận, giữ đơn có hạn hoặc chuyển hàng về bán lẻ.",
+    "follow_up": "Không tự có doanh thu; giảm lãng phí bằng phương án bán lại.",
+    "min_game_day": 5,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E11",
+    "career_id": "mother_baby",
+    "title": "Dùng thử nhiều lần",
+    "category": "neutral",
+    "truth": "Khách đã nhận phần dùng thử của hôm nay hai lần.",
+    "player_task": "Hỏi nhu cầu, áp dụng giới hạn phần thử hoặc chủ động mời thêm.",
+    "follow_up": "Khách có thể mua, rời đi hoặc quay lại; không bảo đảm được đền đáp.",
+    "min_game_day": 5,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E12",
+    "career_id": "mother_baby",
+    "title": "Khách thật sự cần giúp",
+    "category": "positive",
+    "truth": "NPC cần một món thiết yếu giả lập nhưng thiếu xu trong ví.",
+    "player_task": "Hỏi vừa đủ; tặng từ quỹ tiệm, giảm giá hoặc từ chối lịch sự.",
+    "follow_up": "Lựa chọn của bạn đã được ghi nhận.",
+    "min_game_day": 5,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E13",
+    "career_id": "mother_baby",
+    "title": "Khách quên ví",
+    "category": "neutral",
+    "truth": "Khách chưa thanh toán; lời hứa trả sau chưa phải doanh thu.",
+    "player_task": "Giữ hàng, hẹn thanh toán hoặc chủ động tặng món đã chọn.",
+    "follow_up": "Nếu cho hẹn, tạo khoản hẹn riêng và lần quay lại.",
+    "min_game_day": 5,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E14",
+    "career_id": "mother_baby",
+    "title": "Đơn hàng xóm lớn",
+    "category": "positive",
+    "truth": "Hàng xóm cần nhiều phần quà; tiệm hiện chưa đủ hộp.",
+    "player_task": "Chốt số lượng, khả năng đáp ứng và giờ nhận trước khi nhận đơn.",
+    "follow_up": "Mở chuỗi chuẩn bị cộng đồng, không tăng tải vượt mức đã chấp nhận.",
+    "min_game_day": 5,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E15",
+    "career_id": "mother_baby",
+    "title": "Giao hàng nhập bị thiếu",
+    "category": "moderate",
+    "truth": "Kiện giao có ít hơn hai món so với phiếu.",
+    "player_task": "Kiểm kiện, đối chiếu phiếu và báo nhà cung cấp.",
+    "follow_up": "Nhận bù hoặc giảm đơn; kho không cộng số lượng chưa nhận.",
+    "min_game_day": 6,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E16",
+    "career_id": "mother_baby",
+    "title": "Nhân viên lấy nhầm",
+    "category": "neutral",
+    "truth": "Hai mẫu có màu gần giống nhưng mã sản phẩm khác nhau.",
+    "player_task": "Kiểm trước khi giao, sửa món rồi hướng dẫn phụ việc.",
+    "follow_up": "Mở quy tắc gắn nhãn hoặc kiểm hai bước.",
+    "min_game_day": 6,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E17",
+    "career_id": "mother_baby",
+    "title": "Khách làm vỡ món",
+    "category": "moderate",
+    "truth": "Khách vô ý va vào món trưng bày, không có chủ ý lấy trộm.",
+    "player_task": "Dọn khu vực, hỏi thăm và xử lý theo quy định tiệm đã công bố.",
+    "follow_up": "Không tự kết luận phá hoại; ghi nhận thiệt hại có giới hạn.",
+    "min_game_day": 6,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E18",
+    "career_id": "mother_baby",
+    "title": "Tranh lượt thanh toán",
+    "category": "moderate",
+    "truth": "Khách tới sau có việc gấp nhưng chưa được người trước đồng ý nhường.",
+    "player_task": "Xem thứ tự, giải thích, xin ý kiến nếu nhường lượt.",
+    "follow_up": "Hai khách phản ứng theo việc được xử lý công bằng và rõ ràng.",
+    "min_game_day": 6,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E19",
+    "career_id": "mother_baby",
+    "title": "Mưa tạt vào hàng",
+    "category": "neutral",
+    "truth": "Góc gần cửa bị mưa tạt, hàng trên kệ trong nhà vẫn an toàn.",
+    "player_task": "Che kệ, chuyển hàng và tạm đóng khu vực bị ảnh hưởng.",
+    "follow_up": "Một số dịch vụ tạm dừng, mở lựa chọn nâng cấp mái che.",
+    "min_game_day": 6,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E20",
+    "career_id": "mother_baby",
+    "title": "Khách để quên túi",
+    "category": "positive",
+    "truth": "Túi thuộc khách đã ghé, cần đối chiếu vật nhận diện giả lập.",
+    "player_task": "Cất vào đồ thất lạc, xác minh bằng chi tiết trong game rồi trả.",
+    "follow_up": "Khách cảm ơn; không đăng vật riêng tư lên bảng tin.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E21",
+    "career_id": "mother_baby",
+    "title": "Giật túi trước cửa",
+    "category": "tense",
+    "truth": "Sự việc được xác lập bởi cảnh cắt ngắn, không yêu cầu suy đoán ngoại hình.",
+    "player_task": "Trấn an khách, báo bảo vệ và cung cấp dữ kiện được nhìn thấy.",
+    "follow_up": "Mở vụ theo dõi; không cần truy đuổi và bạn không mất đồ quý.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 3,
+    "availability": {
+      "relaxed": false,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E22",
+    "career_id": "mother_baby",
+    "title": "Clip tích cực bất ngờ",
+    "category": "positive",
+    "truth": "Bài đăng tích cực làm tăng khách trong vài ngày tới.",
+    "player_task": "Bật nhận hẹn, giới hạn lượt hoặc nhờ người hỗ trợ.",
+    "follow_up": "Lượng khách tăng có kiểm soát, không ép phục vụ tất cả.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E23",
+    "career_id": "mother_baby",
+    "title": "Khách nhờ tư vấn chuyên môn",
+    "category": "neutral",
+    "truth": "Câu hỏi vượt ngoài việc chọn quà, cỡ hoặc mã hàng.",
+    "player_task": "Giải thích phạm vi tiệm, chỉ hỗ trợ thông tin hàng giả lập và chuyển người phù hợp.",
+    "follow_up": "Tiệm không đoán cách dùng sản phẩm chăm sóc sức khỏe; khách được chuyển tới người phù hợp.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "MB-E24",
+    "career_id": "mother_baby",
+    "title": "Buổi gói quà khu phố",
+    "category": "positive",
+    "truth": "Buổi gặp chỉ diễn ra sau khi người chơi nhận tổ chức và chuẩn bị đủ.",
+    "player_task": "Chọn chủ đề, chuẩn bị dụng cụ, mời khách rồi hỗ trợ từng bàn.",
+    "follow_up": "Nhận ảnh nhóm và đồ trang trí kỷ niệm, không phụ thuộc doanh số.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E01",
+    "career_id": "pharmacy",
+    "title": "Phiếu đầu tiên",
+    "category": "positive",
+    "truth": "Phiếu yêu cầu hai hộp P-03 từ lô còn hợp lệ.",
+    "player_task": "Đối chiếu mã, số lượng, thông tin lô rồi đóng gói.",
+    "follow_up": "Nhận phản hồi vì làm đúng, không cần tư vấn bệnh.",
+    "min_game_day": 1,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E02",
+    "career_id": "pharmacy",
+    "title": "Phiếu thiếu trường",
+    "category": "neutral",
+    "truth": "Phiếu chưa đủ trường bắt buộc, không được tự điền.",
+    "player_task": "Chỉ ra thông tin còn thiếu, hỏi bổ sung hoặc chuyển người phụ trách.",
+    "follow_up": "Đơn được giữ chờ, không bị chấm sai vì chưa bán.",
+    "min_game_day": 3,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E03",
+    "career_id": "pharmacy",
+    "title": "Khách mua hộ",
+    "category": "neutral",
+    "truth": "Người mua chỉ nhớ màu hộp, thông tin đó chưa đủ xác định mã.",
+    "player_task": "Hỏi lại mã trong phiếu hoặc giữ yêu cầu để người mua xác nhận.",
+    "follow_up": "Không đoán theo lời mô tả mơ hồ.",
+    "min_game_day": 3,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E04",
+    "career_id": "pharmacy",
+    "title": "Bao bì gần giống",
+    "category": "neutral",
+    "truth": "Hai hộp có màu giống nhau nhưng mã khác.",
+    "player_task": "Xoay hộp, đọc mã và đối chiếu trước khi đưa vào khay.",
+    "follow_up": "Lấy đúng mở điểm chính xác; sửa nhầm trước chốt không mất tiền.",
+    "min_game_day": 3,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E05",
+    "career_id": "pharmacy",
+    "title": "Số lượng không khớp",
+    "category": "neutral",
+    "truth": "Phiếu cần hai hộp nhưng khay đang có ba hộp.",
+    "player_task": "So lại phiếu và khay; thêm hoặc bỏ đúng số hộp.",
+    "follow_up": "Chỉ hoàn thành khi số lượng đúng.",
+    "min_game_day": 4,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E06",
+    "career_id": "pharmacy",
+    "title": "Lô không còn hợp lệ",
+    "category": "moderate",
+    "truth": "Một lô đã hết hiệu lực.",
+    "player_task": "Xem nhãn lô, tách khỏi kệ bán và chọn lô khác.",
+    "follow_up": "Kho bán được cập nhật, mở việc xử lý lô riêng.",
+    "min_game_day": 4,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E07",
+    "career_id": "pharmacy",
+    "title": "Hộp bị móp",
+    "category": "neutral",
+    "truth": "Một hộp hỏng bao bì nên không đạt điều kiện giao.",
+    "player_task": "Kiểm tình trạng, giữ riêng và hỏi người phụ trách.",
+    "follow_up": "Khách nhận món đủ điều kiện; không cố bán để đạt chỉ tiêu.",
+    "min_game_day": 4,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E08",
+    "career_id": "pharmacy",
+    "title": "Khách muốn lấy gấp",
+    "category": "moderate",
+    "truth": "Khách vội nhưng phiếu vẫn có đầy đủ điều kiện kiểm tra.",
+    "player_task": "Giải thích bước kiểm tra, xin hỗ trợ hoặc nhận hẹn.",
+    "follow_up": "Nhanh không được lấn điều kiện xác minh.",
+    "min_game_day": 4,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E09",
+    "career_id": "pharmacy",
+    "title": "Yêu cầu ngoài phạm vi",
+    "category": "neutral",
+    "truth": "NPC hỏi cách dùng hoặc chẩn đoán ngoài dữ liệu nhiệm vụ.",
+    "player_task": "Từ chối đoán, chuyển người phụ trách chuyên môn của cảnh.",
+    "follow_up": "Cách xử lý đúng là chuyển người phụ trách, không phải bán bằng mọi giá.",
+    "min_game_day": 4,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E10",
+    "career_id": "pharmacy",
+    "title": "Hết đúng mã hàng",
+    "category": "neutral",
+    "truth": "Kho không có mã yêu cầu; mã gần giống không tương đương mặc định.",
+    "player_task": "Thông báo tồn thực, nhận hẹn hoặc kết thúc yêu cầu.",
+    "follow_up": "Không tự thay mã khác như một chỉ dẫn chuyên môn.",
+    "min_game_day": 5,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E11",
+    "career_id": "pharmacy",
+    "title": "Giá bị hiểu nhầm",
+    "category": "neutral",
+    "truth": "Khách đọc giá một hộp nhưng yêu cầu hai hộp.",
+    "player_task": "So giá nhãn, hóa đơn và số lượng rồi giải thích hoặc sửa.",
+    "follow_up": "Review có thể cập nhật sau khi vấn đề được giải quyết.",
+    "min_game_day": 5,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E12",
+    "career_id": "pharmacy",
+    "title": "Khách quên thanh toán",
+    "category": "neutral",
+    "truth": "Đơn đã đóng gói nhưng chưa có giao dịch hoàn tất.",
+    "player_task": "Kiểm giao dịch, giữ gói hoặc hẹn theo quy định tiệm.",
+    "follow_up": "Không ghi doanh thu khi chưa nhận tiền.",
+    "min_game_day": 5,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E13",
+    "career_id": "pharmacy",
+    "title": "Giao nhập sai lô",
+    "category": "moderate",
+    "truth": "Nhà cung cấp giao mã đúng nhưng thông tin lô không khớp.",
+    "player_task": "Đối chiếu phiếu, cách ly kiện và yêu cầu điều chỉnh.",
+    "follow_up": "Không nhập lô sai vào tồn có thể bán.",
+    "min_game_day": 5,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E14",
+    "career_id": "pharmacy",
+    "title": "Thông báo giữ lô",
+    "category": "moderate",
+    "truth": "Một lô vừa bị đánh dấu tạm giữ.",
+    "player_task": "Tìm các hộp thuộc lô, chặn xuất và tạo việc liên hệ giả lập.",
+    "follow_up": "Chuỗi kiểm tra lô đã hoàn tất.",
+    "min_game_day": 5,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E15",
+    "career_id": "pharmacy",
+    "title": "Khách đổi trả",
+    "category": "neutral",
+    "truth": "Món nhận lại chưa được phép cộng thẳng vào kho bán.",
+    "player_task": "Xem trạng thái hộp và quy định giả lập, đề nghị phương án phù hợp.",
+    "follow_up": "Tách hàng nhận lại khỏi tồn bán cho đến khi kiểm tra.",
+    "min_game_day": 6,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E16",
+    "career_id": "pharmacy",
+    "title": "Review đòi bỏ kiểm tra",
+    "category": "moderate",
+    "truth": "Khách chấm thấp vì không được bỏ qua trường bắt buộc trên phiếu.",
+    "player_task": "Đọc vụ việc, giải thích lý do chưa thể xử lý và đề nghị bước tiếp.",
+    "follow_up": "Không mất tiến trình vì từ chối thao tác thiếu điều kiện.",
+    "min_game_day": 6,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E17",
+    "career_id": "pharmacy",
+    "title": "Người quay clip",
+    "category": "moderate",
+    "truth": "Ống kính đang hướng vào phiếu của khách khác.",
+    "player_task": "Nhắc không quay dữ liệu khách; chỉ khu được quay hoặc dừng.",
+    "follow_up": "Không đưa phiếu và thông tin riêng lên bài phản hồi công khai.",
+    "min_game_day": 6,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E18",
+    "career_id": "pharmacy",
+    "title": "Đòi tặng sản phẩm",
+    "category": "moderate",
+    "truth": "Chưa có thỏa thuận tài trợ nào.",
+    "player_task": "Thảo luận hợp tác hoặc tặng vật lưu niệm phù hợp; có thể từ chối.",
+    "follow_up": "Không dùng quà chuyên môn để đổi lấy review tích cực.",
+    "min_game_day": 6,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E19",
+    "career_id": "pharmacy",
+    "title": "Nghi mất hàng",
+    "category": "neutral",
+    "truth": "Hộp đã được nhân viên đặt vào khu tạm giữ.",
+    "player_task": "So kho, vị trí và giao dịch trước khi hỏi khách.",
+    "follow_up": "Có thể tìm hàng chuyển nhầm; không kết tội từ diện mạo.",
+    "min_game_day": 6,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E20",
+    "career_id": "pharmacy",
+    "title": "Lấy hàng không trả",
+    "category": "tense",
+    "truth": "Có sự kiện lấy hộp qua cửa mà không có hóa đơn tương ứng.",
+    "player_task": "Kiểm bằng chứng, nhắc thanh toán hoặc nhờ bảo vệ.",
+    "follow_up": "Thiệt hại được giới hạn, không xảy ra xô xát.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 3,
+    "availability": {
+      "relaxed": false,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E21",
+    "career_id": "pharmacy",
+    "title": "Mất điện quầy",
+    "category": "moderate",
+    "truth": "Quầy tạm ngừng; không đưa lời khuyên bảo quản thuốc.",
+    "player_task": "Lưu việc đang làm, tạm ngừng bước cần thiết và hướng dẫn khách chờ.",
+    "follow_up": "Khôi phục tiếp tục đúng phiếu, không xuất lặp.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E22",
+    "career_id": "pharmacy",
+    "title": "Đơn bị giao nhầm",
+    "category": "moderate",
+    "truth": "Hai túi được gán sai mã đơn, có log đủ để đối chiếu.",
+    "player_task": "Đối chiếu hai đơn, liên hệ đúng khách riêng tư và sửa giao nhận.",
+    "follow_up": "Chỉ đóng vụ khi hàng đã được xử lý xong.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E23",
+    "career_id": "pharmacy",
+    "title": "Tủ vật dụng khu phố",
+    "category": "positive",
+    "truth": "Danh mục cố định đã duyệt; không kê đơn hay hướng dẫn liều.",
+    "player_task": "Chuẩn bị bộ vật dụng giả lập theo danh mục được duyệt.",
+    "follow_up": "Mở hoạt động cộng đồng và ảnh kỷ niệm.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "PH-E24",
+    "career_id": "pharmacy",
+    "title": "Khách quay lại cảm ơn",
+    "category": "positive",
+    "truth": "Khách nhớ một lần được hỗ trợ đúng phiếu, không suy diễn kết quả sức khỏe.",
+    "player_task": "Trò chuyện về sự cẩn thận, nhận ảnh hoặc cây nhỏ trang trí.",
+    "follow_up": "Tăng mức quen biết từ việc bạn đã làm.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E01",
+    "career_id": "accounting",
+    "title": "Chứng từ đầu tiên",
+    "category": "positive",
+    "truth": "Phiếu có đầy đủ mã và số tiền.",
+    "player_task": "Kéo phiếu vào đúng nhóm, kiểm số và gắn nguồn giao dịch.",
+    "follow_up": "Hoàn thành một vụ nhỏ, kèm lời giải thích rõ ràng.",
+    "min_game_day": 1,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E02",
+    "career_id": "accounting",
+    "title": "Chứng từ trùng",
+    "category": "neutral",
+    "truth": "Hai bản thuộc cùng một giao dịch, không phải hai khoản thu.",
+    "player_task": "So mã, thời điểm, nguồn và đánh dấu bản trùng.",
+    "follow_up": "Tổng được tính lại một lần, lưu lý do loại trùng.",
+    "min_game_day": 3,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E03",
+    "career_id": "accounting",
+    "title": "Thiếu giấy tờ",
+    "category": "neutral",
+    "truth": "Giao dịch có nhưng nguồn chứng từ còn thiếu.",
+    "player_task": "Hỏi người gửi, tạo yêu cầu bổ sung và đặt việc ở trạng thái chờ.",
+    "follow_up": "Không đoán hay bịa chứng từ cho đủ.",
+    "min_game_day": 3,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E04",
+    "career_id": "accounting",
+    "title": "Một chuyển khoản nhiều phiếu",
+    "category": "neutral",
+    "truth": "Hai phiếu 120 và 180 xu khớp giao dịch 300 xu.",
+    "player_task": "Nhóm các phiếu hợp lệ rồi so tổng với giao dịch.",
+    "follow_up": "Mở cách ghép nhiều-một, không ép một-một.",
+    "min_game_day": 3,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E05",
+    "career_id": "accounting",
+    "title": "Một phiếu nhiều lần trả",
+    "category": "neutral",
+    "truth": "Phiếu 400 xu có hai lần trả 150 và 250 xu.",
+    "player_task": "Ghép từng lần thanh toán, tính phần còn lại.",
+    "follow_up": "Trạng thái phản ánh đã trả một phần, không tự coi thiếu tiền là gian.",
+    "min_game_day": 4,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E06",
+    "career_id": "accounting",
+    "title": "Sai một chữ số",
+    "category": "neutral",
+    "truth": "Bản gốc ghi 250, dữ liệu nhập ghi 520.",
+    "player_task": "Đối chiếu bản gốc với dòng nhập, sửa có nhật ký.",
+    "follow_up": "Tổng khớp lại; người nhập được hướng dẫn, không bị bêu tên.",
+    "min_game_day": 4,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E07",
+    "career_id": "accounting",
+    "title": "Khác mốc ngày",
+    "category": "neutral",
+    "truth": "Một khoản được xếp vào ngày khác với phạm vi báo cáo.",
+    "player_task": "Kiểm ngày ghi nhận theo quy ước nhiệm vụ trước khi đối chiếu.",
+    "follow_up": "Đưa khoản về đúng kỳ, có dấu vết thay đổi.",
+    "min_game_day": 4,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E08",
+    "career_id": "accounting",
+    "title": "Khoản hoàn lại",
+    "category": "neutral",
+    "truth": "Dữ liệu có một giao dịch hoàn liên kết với giao dịch gốc.",
+    "player_task": "Ghép chứng từ hoàn với giao dịch gốc, tránh đếm thành thu mới.",
+    "follow_up": "Bảng tổng hợp giải thích khoản điều chỉnh.",
+    "min_game_day": 4,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E09",
+    "career_id": "accounting",
+    "title": "Quỹ không khớp",
+    "category": "moderate",
+    "truth": "Một khoản chi có ghi chú nhưng chưa có xác nhận bàn giao.",
+    "player_task": "Kiểm các khoản đã xác nhận và khoản đang chờ, hỏi người giữ quỹ.",
+    "follow_up": "Chỉ kết luận từ chứng cứ, có thể giữ vụ chưa đủ dữ liệu.",
+    "min_game_day": 4,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E10",
+    "career_id": "accounting",
+    "title": "Khách giục báo cáo",
+    "category": "moderate",
+    "truth": "Một phiếu bắt buộc chưa được bổ sung.",
+    "player_task": "Nêu dữ liệu thiếu, đề nghị bản tạm gắn nhãn hoặc hẹn đủ dữ liệu.",
+    "follow_up": "Không xuất bản báo cáo hoàn chỉnh từ số liệu chưa kiểm tra.",
+    "min_game_day": 5,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E11",
+    "career_id": "accounting",
+    "title": "Đồng nghiệp nhập sai",
+    "category": "neutral",
+    "truth": "Đồng nghiệp nhập sai do hiểu nhầm nhãn, không có ý gian.",
+    "player_task": "Cùng xem nguồn và sửa dòng, đề nghị bước kiểm tra mới.",
+    "follow_up": "Mức hợp tác tăng khi hỗ trợ rõ ràng, không phải chỉ khen.",
+    "min_game_day": 5,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E12",
+    "career_id": "accounting",
+    "title": "Xin dùng lại chữ ký",
+    "category": "moderate",
+    "truth": "Tài liệu cần xác nhận mới, chưa có phê duyệt cho lần này.",
+    "player_task": "Giữ quy trình xác nhận của game, yêu cầu người có quyền duyệt.",
+    "follow_up": "Không làm vượt quyền chỉ để xong nhanh.",
+    "min_game_day": 5,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E13",
+    "career_id": "accounting",
+    "title": "Nghi chứng từ giả",
+    "category": "tense",
+    "truth": "Một chứng từ có nguồn không xác minh được và số tham chiếu mâu thuẫn.",
+    "player_task": "So dữ kiện nguồn, ghi vấn đề và chuyển người phụ trách.",
+    "follow_up": "Không hướng dẫn làm giả; giữ kết luận nghi vấn nếu chưa đủ bằng chứng.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 3,
+    "availability": {
+      "relaxed": false,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E14",
+    "career_id": "accounting",
+    "title": "Đề nghị giấu sai lệch",
+    "category": "tense",
+    "truth": "NPC đề nghị đổi số mà không có nguồn hợp lệ.",
+    "player_task": "Từ chối sửa số cho khớp giả, ghi điều chỉnh hoặc chuyển xác minh.",
+    "follow_up": "Giữ số liệu trung thực không làm chậm tiến độ của bạn.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 3,
+    "availability": {
+      "relaxed": false,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E15",
+    "career_id": "accounting",
+    "title": "Hai nguồn mâu thuẫn",
+    "category": "moderate",
+    "truth": "Hai bản dữ liệu có phiên bản khác nhau, một bản đã bị thay thế.",
+    "player_task": "Mở cả hai nguồn, hỏi bên sở hữu và ghi nguồn được xác nhận.",
+    "follow_up": "Báo cáo chỉ cập nhật sau khi có xác nhận.",
+    "min_game_day": 6,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E16",
+    "career_id": "accounting",
+    "title": "Người lạ xin báo cáo",
+    "category": "moderate",
+    "truth": "Người yêu cầu không có quyền xem báo cáo đó.",
+    "player_task": "Kiểm quyền trong game, từ chối hoặc chuyển người phê duyệt.",
+    "follow_up": "Không lộ dữ liệu vì lời hứa hoặc tên hiển thị giống người quen.",
+    "min_game_day": 6,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E17",
+    "career_id": "accounting",
+    "title": "Quay clip bàn làm việc",
+    "category": "moderate",
+    "truth": "Người quay đang thu hình tài liệu riêng của một khách.",
+    "player_task": "Che/tạm đóng tài liệu và đề nghị khu quay không có dữ liệu riêng.",
+    "follow_up": "Ảnh chia sẻ chỉ dùng dữ liệu mẫu đã làm sạch.",
+    "min_game_day": 6,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E18",
+    "career_id": "accounting",
+    "title": "Yêu cầu chỉnh sau chốt",
+    "category": "moderate",
+    "truth": "Báo cáo đã chốt, người gửi vừa bổ sung thông tin đúng.",
+    "player_task": "Mở quy trình điều chỉnh, giữ phiên bản cũ và giải thích thay đổi.",
+    "follow_up": "Không sửa âm thầm kết quả đã được xác nhận.",
+    "min_game_day": 6,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E19",
+    "career_id": "accounting",
+    "title": "Nhầm tên tệp",
+    "category": "neutral",
+    "truth": "Tên tệp ghi khác với mã khách bên trong tệp.",
+    "player_task": "So nội dung, mã khách và phạm vi trước khi gắn hồ sơ.",
+    "follow_up": "Trả tệp về đúng vụ; không coi tên file là sự thật.",
+    "min_game_day": 6,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E20",
+    "career_id": "accounting",
+    "title": "Công việc đến dồn",
+    "category": "moderate",
+    "truth": "Ba việc có hạn khác nhau; một việc đang chờ nguồn khác.",
+    "player_task": "Ưu tiên theo hạn và mức thiếu dữ liệu, thương lượng hoặc bàn giao.",
+    "follow_up": "Không buộc xử lý tất cả, lý do ưu tiên được lưu.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E21",
+    "career_id": "accounting",
+    "title": "Mất kết nối lúc lưu",
+    "category": "neutral",
+    "truth": "Kết nối bị gián đoạn sau khi có thể đã ghi dữ liệu.",
+    "player_task": "Giữ bản nháp, thử lại với cùng mã thao tác và kiểm kết quả.",
+    "follow_up": "Không ghi trùng; các thao tác đã xác nhận vẫn được giữ.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E22",
+    "career_id": "accounting",
+    "title": "Khách hiểu sai biểu đồ",
+    "category": "neutral",
+    "truth": "Khách đang so hai khoảng thời gian khác nhau.",
+    "player_task": "Mở số nguồn, chọn cách trình bày và giải thích đơn vị/phạm vi.",
+    "follow_up": "Phản hồi tốt dựa trên hiểu đúng, không làm đẹp để che dữ kiện.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E23",
+    "career_id": "accounting",
+    "title": "Hướng dẫn người mới",
+    "category": "positive",
+    "truth": "Đồng nghiệp mới chưa quen quy tắc dữ liệu của văn phòng.",
+    "player_task": "Cho đồng nghiệp thử một vụ nhỏ và giải thích chỗ sai.",
+    "follow_up": "Mở phụ tá có thể phân loại sơ bộ, vẫn cần duyệt bước quan trọng.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "AC-E24",
+    "career_id": "accounting",
+    "title": "Khép kỳ khu phố",
+    "category": "positive",
+    "truth": "Mọi nguồn của kỳ đã đủ để khép sổ.",
+    "player_task": "Hoàn thành chuỗi đối chiếu, trình bày kết quả và nhận phản hồi.",
+    "follow_up": "Nhận album thành quả và nâng cấp góc làm việc.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E01",
+    "career_id": "customer_care",
+    "title": "Đơn đầu tiên",
+    "category": "positive",
+    "truth": "Đơn có thời điểm giao dự kiến rõ ràng.",
+    "player_task": "Hỏi mã giả lập, xem trạng thái và trả lời đúng câu khách cần.",
+    "follow_up": "Khách xác nhận đã hiểu; chỉ đóng khi điều kiện vụ được đáp ứng.",
+    "min_game_day": 1,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E02",
+    "career_id": "customer_care",
+    "title": "Giao hàng chậm",
+    "category": "neutral",
+    "truth": "Đơn vẫn ở chặng vận chuyển, chưa có chứng cứ đã nhận.",
+    "player_task": "Kiểm chặng hiện tại, liên hệ bên giao và hẹn mốc cập nhật.",
+    "follow_up": "Lời hứa tạo việc theo dõi, không tự đổi hàng thành đã giao.",
+    "min_game_day": 3,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E03",
+    "career_id": "customer_care",
+    "title": "Giao thiếu món",
+    "category": "moderate",
+    "truth": "Kho đóng gói thiếu một món, dữ liệu có thể kiểm tra.",
+    "player_task": "Đối chiếu đơn, ảnh/biên bản game và lựa chọn gửi bù hoặc hoàn phần thiếu.",
+    "follow_up": "Theo dõi thực hiện, không đóng ngay sau câu xin lỗi.",
+    "min_game_day": 3,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E04",
+    "career_id": "customer_care",
+    "title": "Giao sai món",
+    "category": "moderate",
+    "truth": "Món nhận được khác với dòng đơn đã mua.",
+    "player_task": "Xác minh hai mã, đề nghị đổi hoặc phương án trong chính sách game.",
+    "follow_up": "Trạng thái đi qua xác nhận, thực hiện và kiểm tra kết quả.",
+    "min_game_day": 3,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E05",
+    "career_id": "customer_care",
+    "title": "Đã giao nhưng chưa nhận",
+    "category": "moderate",
+    "truth": "Ảnh giao hàng cho thấy địa điểm không khớp đơn.",
+    "player_task": "Xem chứng cứ giao, hỏi thông tin cần thiết và chuyển đối soát.",
+    "follow_up": "Không cáo buộc khách nói dối hoặc người giao gian lận.",
+    "min_game_day": 4,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E06",
+    "career_id": "customer_care",
+    "title": "Khách đổi ý",
+    "category": "neutral",
+    "truth": "Đơn đang chuẩn bị, có thể dừng nếu kho xác nhận kịp.",
+    "player_task": "Xem giai đoạn đơn và chính sách giả lập, đưa phương án còn khả dụng.",
+    "follow_up": "Không hứa hủy tức thì khi việc đã sang bước cần phối hợp.",
+    "min_game_day": 4,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E07",
+    "career_id": "customer_care",
+    "title": "Sản phẩm có vấn đề",
+    "category": "moderate",
+    "truth": "Vụ cần nhóm xử lý kiểm tra trước khi quyết định.",
+    "player_task": "Hỏi biểu hiện trong phạm vi game, lấy chứng cứ phù hợp và chuyển xử lý.",
+    "follow_up": "Không tự hứa kết quả chuyên môn hoặc phê duyệt vượt quyền.",
+    "min_game_day": 4,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E08",
+    "career_id": "customer_care",
+    "title": "Chưa thấy tiền hoàn",
+    "category": "moderate",
+    "truth": "Lệnh mới được đề nghị, chưa thực thi.",
+    "player_task": "Kiểm trạng thái lệnh hoàn và xác nhận thực thi trong game.",
+    "follow_up": "Chỉ báo đã hoàn khi có kết quả, không chỉ vì tạo yêu cầu.",
+    "min_game_day": 4,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E09",
+    "career_id": "customer_care",
+    "title": "Khách nóng giận",
+    "category": "moderate",
+    "truth": "Khách khó chịu vì hẹn trước đó bị bỏ lỡ.",
+    "player_task": "Xác nhận vấn đề, hỏi ngắn gọn, đặt ranh giới khi bị xúc phạm.",
+    "follow_up": "Có thể chuyển hỗ trợ; bạn không phải chịu đựng mãi.",
+    "min_game_day": 4,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E10",
+    "career_id": "customer_care",
+    "title": "Hai người hỏi cùng đơn",
+    "category": "moderate",
+    "truth": "Người thứ hai chưa được xác minh quyền xem đơn.",
+    "player_task": "Kiểm quyền và quan hệ với đơn trước khi cung cấp thông tin.",
+    "follow_up": "Chỉ chia sẻ phần được phép, tránh trả nhầm cuộc hội thoại.",
+    "min_game_day": 5,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E11",
+    "career_id": "customer_care",
+    "title": "Tin nhắn lặp",
+    "category": "neutral",
+    "truth": "Cùng một người gửi lại cùng vấn đề trên hai kênh.",
+    "player_task": "Gộp yêu cầu liên quan sau khi kiểm tra, giữ lịch sử và chủ vụ.",
+    "follow_up": "Khách không bị trả lời mâu thuẫn bởi nhiều luồng.",
+    "min_game_day": 5,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E12",
+    "career_id": "customer_care",
+    "title": "Bàn giao giữa ca",
+    "category": "neutral",
+    "truth": "Vụ chưa hoàn thành nhưng người phụ trách sắp hết ca.",
+    "player_task": "Tóm tắt dữ kiện, việc đã làm, lời hẹn và bước tiếp theo.",
+    "follow_up": "Người nhận ca có đủ thông tin, khách không phải kể lại hết.",
+    "min_game_day": 5,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E13",
+    "career_id": "customer_care",
+    "title": "Đòi ưu đãi đổi review",
+    "category": "moderate",
+    "truth": "Khách yêu cầu quà để xóa chê dù chưa chỉ ra lỗi mới.",
+    "player_task": "Giải thích hỗ trợ theo vấn đề thật, không mua đánh giá tích cực.",
+    "follow_up": "Review và bồi hoàn là hai việc độc lập.",
+    "min_game_day": 5,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E14",
+    "career_id": "customer_care",
+    "title": "Clip phàn nàn",
+    "category": "moderate",
+    "truth": "Clip chỉ nêu một phần câu chuyện; log đầy đủ còn trong hồ sơ riêng.",
+    "player_task": "Đọc vụ gốc, trả lời công khai ngắn rồi chuyển phần riêng vào tin nhắn.",
+    "follow_up": "Không công khai dữ liệu khách để chứng minh mình đúng.",
+    "min_game_day": 5,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E15",
+    "career_id": "customer_care",
+    "title": "Mạo danh người quen",
+    "category": "tense",
+    "truth": "Tài khoản không có quyền với đơn dù dùng tên giống khách.",
+    "player_task": "Kiểm quyền và chứng cứ game, không tin tên hiển thị một mình.",
+    "follow_up": "Từ chối/chuyển xác minh mà không lộ dữ liệu nhạy cảm.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 3,
+    "availability": {
+      "relaxed": false,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E16",
+    "career_id": "customer_care",
+    "title": "Yêu cầu ngoài chính sách",
+    "category": "moderate",
+    "truth": "Phương án khách muốn cần phê duyệt từ vai trò khác.",
+    "player_task": "Giải thích giới hạn, đề xuất phương án hợp lệ hoặc xin duyệt ngoại lệ.",
+    "follow_up": "Không tự tạo quyền hay hứa chắc trước khi được duyệt.",
+    "min_game_day": 6,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E17",
+    "career_id": "customer_care",
+    "title": "Kho nói khác khách",
+    "category": "moderate",
+    "truth": "Dữ liệu kho và phản ánh khách đang mâu thuẫn, chưa đủ kết luận.",
+    "player_task": "Giữ hai nguồn, hỏi chứng cứ bổ sung và cập nhật trạng thái chưa xác định.",
+    "follow_up": "Không tự chọn bên có vẻ đáng tin chỉ vì vai trò.",
+    "min_game_day": 6,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E18",
+    "career_id": "customer_care",
+    "title": "Hẹn nhưng quên theo dõi",
+    "category": "moderate",
+    "truth": "Người chơi đã nhận hẹn nhưng chưa tạo việc kiểm tra tiếp.",
+    "player_task": "Xem hẹn quá mốc game, xin lỗi và thực hiện bước khắc phục.",
+    "follow_up": "Không tự xóa hạn cũ; ghi rõ lần hẹn mới và kết quả.",
+    "min_game_day": 6,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E19",
+    "career_id": "customer_care",
+    "title": "Gửi nhầm phản hồi",
+    "category": "moderate",
+    "truth": "Nội dung đang thuộc vụ khác, phát hiện được từ mã vụ.",
+    "player_task": "Dừng gửi nếu còn nháp, hoặc nhận lỗi và sửa theo quy trình game.",
+    "follow_up": "Không lặp gửi; kiểm lại ngữ cảnh trước lần tiếp theo.",
+    "min_game_day": 6,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E20",
+    "career_id": "customer_care",
+    "title": "Hệ thống tra cứu lỗi",
+    "category": "neutral",
+    "truth": "Công cụ tra cứu đang không trả dữ liệu, không phải đơn không tồn tại.",
+    "player_task": "Thông báo chưa kiểm tra được, giữ nháp và hẹn cập nhật.",
+    "follow_up": "Không bịa trạng thái đơn để trả lời cho nhanh.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E21",
+    "career_id": "customer_care",
+    "title": "Khách chỉ cần hướng dẫn",
+    "category": "neutral",
+    "truth": "Khách không cần hoàn tiền, chỉ chưa tìm thấy một chức năng.",
+    "player_task": "Hỏi mục tiêu, đưa bước trong game và kiểm tra khách đã làm được.",
+    "follow_up": "Khách đã hiểu và tự làm được; không cần kéo dài cuộc trò chuyện.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E22",
+    "career_id": "customer_care",
+    "title": "Khách quay lại cảm ơn",
+    "category": "positive",
+    "truth": "Vụ trước đã hoàn thành có chứng cứ.",
+    "player_task": "Nhắc đúng vụ đã xử lý và nhận phản hồi tự nguyện.",
+    "follow_up": "Mở ký ức tích cực, không nhắc khách phải chấm 5 sao.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E23",
+    "career_id": "customer_care",
+    "title": "Cao điểm sau quảng bá",
+    "category": "moderate",
+    "truth": "Lượng yêu cầu tăng trong một sự kiện đã báo trước.",
+    "player_task": "Phân loại, nhận hẹn, chia việc và tạm giới hạn yêu cầu mới.",
+    "follow_up": "Không cần mở tất cả chat một lúc; xử lý đúng và rõ ràng được ghi nhận.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "capped_common_items_only",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  },
+  {
+    "id": "CS-E24",
+    "career_id": "customer_care",
+    "title": "Tổng kết cải tiến",
+    "category": "positive",
+    "truth": "Nhiều vụ có cùng lỗi đóng gói đã được xác minh.",
+    "player_task": "Nhóm nguyên nhân lặp, đề xuất sửa quy trình và xem tác dụng.",
+    "follow_up": "Mở nâng cấp giảm loại vấn đề cụ thể trong ngày sau.",
+    "min_game_day": 7,
+    "required_state": [
+      "career_is_active",
+      "no_conflicting_major_event",
+      "required_interactions_available"
+    ],
+    "selection_weight": 1,
+    "cooldown_game_days": 2,
+    "availability": {
+      "relaxed": true,
+      "everyday": true,
+      "challenge": true
+    },
+    "resolution_contract": {
+      "stages": [
+        "noticed",
+        "investigating",
+        "proposed",
+        "confirmed",
+        "executing",
+        "resolved",
+        "follow_up"
+      ],
+      "truth_must_not_change_after_choice": true,
+      "completion_requires_evidence": true,
+      "public_reply_must_not_expose_private_records": true,
+      "loss_profile": "none_or_declared_cost",
+      "must_offer_quick_replies": true,
+      "allow_pause_or_handover": true
+    },
+    "authoring_status": "design_seed_not_executable_script"
+  }
+]

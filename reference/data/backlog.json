@@ -1,0 +1,398 @@
+[
+  {
+    "id": "BK-001",
+    "milestone": "M0",
+    "group": "Nền tảng",
+    "title": "Client cảnh",
+    "deliverable": "Đi lại, chọn vật, cầm/đặt, camera và phản hồi",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-002",
+    "milestone": "M0",
+    "group": "Nền tảng",
+    "title": "Điều khiển thay thế",
+    "deliverable": "Bấm thay kéo; bàn phím; phóng chữ",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-003",
+    "milestone": "M0",
+    "group": "Nền tảng",
+    "title": "Bản lưu",
+    "deliverable": "Lưu giữa ca, phiên bản, khôi phục và chống gửi lặp",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-004",
+    "milestone": "M0",
+    "group": "Nền tảng",
+    "title": "Luật trạng thái",
+    "deliverable": "Tiền, kho, việc, quyền và chuyển trạng thái hợp lệ",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-005",
+    "milestone": "M0",
+    "group": "Nền tảng",
+    "title": "Nội dung",
+    "deliverable": "Loader nghề/NPC/sự kiện và kiểm tra tham chiếu",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-006",
+    "milestone": "M0",
+    "group": "Nền tảng",
+    "title": "Hội thoại dự phòng",
+    "deliverable": "Câu nhanh, tự gõ, mất AI vẫn tiếp tục",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-007",
+    "milestone": "M0",
+    "group": "Nền tảng",
+    "title": "Thiết lập",
+    "deliverable": "Cường độ, âm, chuyển động, ngôn ngữ và riêng tư",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-008",
+    "milestone": "M1",
+    "group": "Tiệm mẹ & bé",
+    "title": "Ca đầu",
+    "deliverable": "Mở cửa, nhận nhu cầu, lấy hàng, tính tiền, giao",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-009",
+    "milestone": "M1",
+    "group": "Tiệm mẹ & bé",
+    "title": "Gói quà",
+    "deliverable": "Mẫu nhanh, tự phối, thiệp và duyệt",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-010",
+    "milestone": "M1",
+    "group": "Tiệm mẹ & bé",
+    "title": "Kho/nhập",
+    "deliverable": "Đặt, kiểm nhận, giữ hàng và lô đơn giản",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-011",
+    "milestone": "M1",
+    "group": "Tiệm mẹ & bé",
+    "title": "Hẹn/đổi trả",
+    "deliverable": "Thực thi hẹn, trả hàng, gửi bù/hoàn",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-012",
+    "milestone": "M1",
+    "group": "Tiệm mẹ & bé",
+    "title": "Trang trí",
+    "deliverable": "Đồ hiện trong cảnh và có tác dụng",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-013",
+    "milestone": "M1",
+    "group": "Tiệm mẹ & bé",
+    "title": "NPC/review",
+    "deliverable": "Ký ức từ sự kiện, bình luận và vụ theo dõi",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-014",
+    "milestone": "M2",
+    "group": "Nhà thuốc",
+    "title": "Phiếu mô phỏng",
+    "deliverable": "Trường bắt buộc, hỏi lại và chuyển phụ trách",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-015",
+    "milestone": "M2",
+    "group": "Nhà thuốc",
+    "title": "Mã/lô",
+    "deliverable": "Đối chiếu hộp, số lượng, lô và tạm giữ",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-016",
+    "milestone": "M2",
+    "group": "Nhà thuốc",
+    "title": "Kiểm hai bước",
+    "deliverable": "Khay đối chiếu, sửa trước giao",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-017",
+    "milestone": "M2",
+    "group": "Nhà thuốc",
+    "title": "Vòng phản hồi",
+    "deliverable": "Giao nhận, giữ lô, riêng tư và review",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-018",
+    "milestone": "M2",
+    "group": "Kế toán",
+    "title": "Thẻ chứng từ",
+    "deliverable": "Nguồn, phân loại, lật và nhóm",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-019",
+    "milestone": "M2",
+    "group": "Kế toán",
+    "title": "Câu đố đối chiếu",
+    "deliverable": "Một-một, nhiều-một, một-nhiều và loại trùng",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-020",
+    "milestone": "M2",
+    "group": "Kế toán",
+    "title": "Nguồn/phiên bản",
+    "deliverable": "Bổ sung, mâu thuẫn, điều chỉnh có lý do",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-021",
+    "milestone": "M2",
+    "group": "Kế toán",
+    "title": "Kết quả/bàn giao",
+    "deliverable": "Báo cáo mẫu, giải thích, bàn giao và lưu",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-022",
+    "milestone": "M2",
+    "group": "CSKH",
+    "title": "Vụ việc",
+    "deliverable": "Hiểu nhu cầu, xác minh quyền, dữ kiện",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-023",
+    "milestone": "M2",
+    "group": "CSKH",
+    "title": "Phương án",
+    "deliverable": "Điều kiện, xin duyệt, đổi/gửi bù/hoàn",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-024",
+    "milestone": "M2",
+    "group": "CSKH",
+    "title": "Phối hợp",
+    "deliverable": "Kho/giao nhận nhận việc và trả kết quả",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-025",
+    "milestone": "M2",
+    "group": "CSKH",
+    "title": "Hẹn/đóng",
+    "deliverable": "Theo dõi, bàn giao, mở lại và đóng có chứng cứ",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-026",
+    "milestone": "M3",
+    "group": "Nội dung sâu",
+    "title": "24 NPC",
+    "deliverable": "Tính cách, lịch, ký ức, hoạt ảnh",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-027",
+    "milestone": "M3",
+    "group": "Nội dung sâu",
+    "title": "12 tuyến chuyện",
+    "deliverable": "Các bước có hành động và kết quả",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-028",
+    "milestone": "M3",
+    "group": "Nội dung sâu",
+    "title": "96 sự kiện",
+    "deliverable": "Fixture, điều kiện, bằng chứng, nhánh và follow-up",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-029",
+    "milestone": "M3",
+    "group": "Nội dung sâu",
+    "title": "40 ngày đầu",
+    "deliverable": "Bốn đường giới thiệu nghề, không ngày đăng nhập thật",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-030",
+    "milestone": "M3",
+    "group": "Nội dung sâu",
+    "title": "Bộ điều phối",
+    "deliverable": "Nhịp nghỉ, điều kiện, không lặp và độ căng",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-031",
+    "milestone": "M3",
+    "group": "Nội dung sâu",
+    "title": "Kinh tế",
+    "deliverable": "Tiền mềm, thưởng một lần, giới hạn mất ngẫu nhiên",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-032",
+    "milestone": "M3",
+    "group": "Nội dung sâu",
+    "title": "Cảnh/âm",
+    "deliverable": "Nhân vật dùng đồ, sound và phản ứng trạng thái",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-033",
+    "milestone": "M4",
+    "group": "Cộng đồng",
+    "title": "Bản ghé",
+    "deliverable": "Xuất bản snapshot không chứa dữ liệu riêng",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-034",
+    "milestone": "M4",
+    "group": "Cộng đồng",
+    "title": "Review người thật",
+    "deliverable": "Xác minh lượt ghé, một review hiệu lực, sửa và trả lời",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-035",
+    "milestone": "M4",
+    "group": "Cộng đồng",
+    "title": "Nhãn/tách điểm",
+    "deliverable": "NPC và người thật tách nguồn và tổng hợp",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-036",
+    "milestone": "M4",
+    "group": "Cộng đồng",
+    "title": "Chặn/báo cáo",
+    "deliverable": "Spam, hàng đợi kiểm duyệt, xem lại quyết định",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-037",
+    "milestone": "M4",
+    "group": "Cộng đồng",
+    "title": "Quyền/chia sẻ",
+    "deliverable": "Chỉ công khai dữ liệu đã chọn, không phá tiến trình",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-038",
+    "milestone": "M5",
+    "group": "Chất lượng",
+    "title": "Thử người mới",
+    "deliverable": "Quan sát hoàn thành việc đầu và điểm khó",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-039",
+    "milestone": "M5",
+    "group": "Chất lượng",
+    "title": "Thử AI",
+    "deliverable": "Nói sai, chèn lệnh, thiếu nguồn, timeout",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-040",
+    "milestone": "M5",
+    "group": "Chất lượng",
+    "title": "Thử giao dịch",
+    "deliverable": "Tồn/tiền, đồng thời, mất kết nối và replay",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-041",
+    "milestone": "M5",
+    "group": "Chất lượng",
+    "title": "Thử quyền",
+    "deliverable": "Nghề khác, tài khoản khác, nguồn riêng tư",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-042",
+    "milestone": "M5",
+    "group": "Chất lượng",
+    "title": "Thử tiếp cận",
+    "deliverable": "Bàn phím, chữ lớn, giảm chuyển động, ít hội thoại",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-043",
+    "milestone": "M5",
+    "group": "Chất lượng",
+    "title": "Thử hiệu năng",
+    "deliverable": "Thiết bị được chọn, thời gian tải và độ trễ",
+    "status": "specified_not_implemented",
+    "estimate": null
+  },
+  {
+    "id": "BK-044",
+    "milestone": "M5",
+    "group": "Chất lượng",
+    "title": "Thử nội dung",
+    "deliverable": "Không y tế/thuế thật, không định kiến, không giả cộng đồng",
+    "status": "specified_not_implemented",
+    "estimate": null
+  }
+]

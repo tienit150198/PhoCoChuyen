@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GameCommandDesignEnvelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "command_id",
+    "career_id",
+    "actor_id",
+    "expected_state_version",
+    "action",
+    "payload"
+  ],
+  "properties": {
+    "command_id": {
+      "type": "string",
+      "minLength": 8
+    },
+    "career_id": {
+      "enum": [
+        "mother_baby",
+        "pharmacy",
+        "accounting",
+        "customer_care"
+      ]
+    },
+    "actor_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expected_state_version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "action": {
+      "enum": [
+        "inspect_evidence",
+        "propose_order",
+        "reserve_items",
+        "pick_item",
+        "pack_order",
+        "confirm_payment",
+        "deliver_order",
+        "create_followup",
+        "reply_to_review",
+        "publish_post",
+        "submit_document_correction",
+        "request_approval",
+        "dispatch_remedy",
+        "close_case",
+        "set_event_intensity"
+      ]
+    },
+    "confirmation_token": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "target_id": {
+          "type": "string"
+        },
+        "item_id": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "choice_id": {
+          "type": "string"
+        },
+        "proposal_id": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "scheduled_game_day": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "scheduled_game_slot": {
+          "type": "string"
+        },
+        "intensity": {
+          "enum": [
+            "relaxed",
+            "everyday",
+            "challenge"
+          ]
+        }
+      }
+    }
+  }
+}

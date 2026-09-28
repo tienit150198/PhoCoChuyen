@@ -1,0 +1,488 @@
+[
+  {
+    "id": "QA-001",
+    "group": "mother_baby",
+    "title": "Hoàn thành ca đầu",
+    "given": "Bản lưu nghề mới, câu nhanh hoạt động",
+    "when": "Chơi theo ngày 1",
+    "then": "Hoàn tất một việc có kết quả và lưu; không cần nhập tự do",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-002",
+    "group": "mother_baby",
+    "title": "Tiếp tục giữa ca",
+    "given": "Có vật đang chọn và việc chưa xong",
+    "when": "Tạm dừng, tải lại",
+    "then": "Vị trí/vật/việc/lời hẹn đúng; không nhận thưởng lặp",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-003",
+    "group": "mother_baby",
+    "title": "Tự gõ tương đương câu nhanh",
+    "given": "Một tình huống có ý định được hỗ trợ",
+    "when": "Diễn đạt cùng ý bằng câu tự do",
+    "then": "Cùng khả năng hành động; luật kiểm tra không bị bỏ qua",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-004",
+    "group": "mother_baby",
+    "title": "AI không khả dụng",
+    "given": "Một vụ chưa hoàn thành",
+    "when": "Mô phỏng timeout dịch vụ hội thoại",
+    "then": "Hiện lời viết sẵn/lựa chọn; vẫn hoàn thành được vụ",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-005",
+    "group": "mother_baby",
+    "title": "Sự kiện có nguyên nhân cố định",
+    "given": "Sự kiện đã khởi tạo truth",
+    "when": "Chọn phương án hoặc tải lại",
+    "then": "Không đổi nguyên nhân để làm lựa chọn cũ thành sai",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-006",
+    "group": "mother_baby",
+    "title": "Ký ức có nguồn",
+    "given": "Một lời hẹn đã xác nhận và một câu nói chưa xác minh",
+    "when": "NPC nhắc lại ngày sau",
+    "then": "Nhớ hẹn đúng; câu chưa xác minh vẫn là lời khai, không thành sự thật",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-007",
+    "group": "mother_baby",
+    "title": "Review có căn cứ",
+    "given": "Một tương tác phục vụ đã hoàn thành",
+    "when": "Sinh review NPC",
+    "then": "Nội dung tham chiếu đúng vụ và không bịa hành động chưa có",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-008",
+    "group": "mother_baby",
+    "title": "Điều khiển thay thế",
+    "given": "Không dùng kéo thả",
+    "when": "Chơi bằng bấm/bàn phím và câu nhanh",
+    "then": "Hoàn thành cơ chế cốt lõi và đọc được trạng thái",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-009",
+    "group": "pharmacy",
+    "title": "Hoàn thành ca đầu",
+    "given": "Bản lưu nghề mới, câu nhanh hoạt động",
+    "when": "Chơi theo ngày 1",
+    "then": "Hoàn tất một việc có kết quả và lưu; không cần nhập tự do",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-010",
+    "group": "pharmacy",
+    "title": "Tiếp tục giữa ca",
+    "given": "Có vật đang chọn và việc chưa xong",
+    "when": "Tạm dừng, tải lại",
+    "then": "Vị trí/vật/việc/lời hẹn đúng; không nhận thưởng lặp",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-011",
+    "group": "pharmacy",
+    "title": "Tự gõ tương đương câu nhanh",
+    "given": "Một tình huống có ý định được hỗ trợ",
+    "when": "Diễn đạt cùng ý bằng câu tự do",
+    "then": "Cùng khả năng hành động; luật kiểm tra không bị bỏ qua",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-012",
+    "group": "pharmacy",
+    "title": "AI không khả dụng",
+    "given": "Một vụ chưa hoàn thành",
+    "when": "Mô phỏng timeout dịch vụ hội thoại",
+    "then": "Hiện lời viết sẵn/lựa chọn; vẫn hoàn thành được vụ",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-013",
+    "group": "pharmacy",
+    "title": "Sự kiện có nguyên nhân cố định",
+    "given": "Sự kiện đã khởi tạo truth",
+    "when": "Chọn phương án hoặc tải lại",
+    "then": "Không đổi nguyên nhân để làm lựa chọn cũ thành sai",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-014",
+    "group": "pharmacy",
+    "title": "Ký ức có nguồn",
+    "given": "Một lời hẹn đã xác nhận và một câu nói chưa xác minh",
+    "when": "NPC nhắc lại ngày sau",
+    "then": "Nhớ hẹn đúng; câu chưa xác minh vẫn là lời khai, không thành sự thật",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-015",
+    "group": "pharmacy",
+    "title": "Review có căn cứ",
+    "given": "Một tương tác phục vụ đã hoàn thành",
+    "when": "Sinh review NPC",
+    "then": "Nội dung tham chiếu đúng vụ và không bịa hành động chưa có",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-016",
+    "group": "pharmacy",
+    "title": "Điều khiển thay thế",
+    "given": "Không dùng kéo thả",
+    "when": "Chơi bằng bấm/bàn phím và câu nhanh",
+    "then": "Hoàn thành cơ chế cốt lõi và đọc được trạng thái",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-017",
+    "group": "accounting",
+    "title": "Hoàn thành ca đầu",
+    "given": "Bản lưu nghề mới, câu nhanh hoạt động",
+    "when": "Chơi theo ngày 1",
+    "then": "Hoàn tất một việc có kết quả và lưu; không cần nhập tự do",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-018",
+    "group": "accounting",
+    "title": "Tiếp tục giữa ca",
+    "given": "Có vật đang chọn và việc chưa xong",
+    "when": "Tạm dừng, tải lại",
+    "then": "Vị trí/vật/việc/lời hẹn đúng; không nhận thưởng lặp",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-019",
+    "group": "accounting",
+    "title": "Tự gõ tương đương câu nhanh",
+    "given": "Một tình huống có ý định được hỗ trợ",
+    "when": "Diễn đạt cùng ý bằng câu tự do",
+    "then": "Cùng khả năng hành động; luật kiểm tra không bị bỏ qua",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-020",
+    "group": "accounting",
+    "title": "AI không khả dụng",
+    "given": "Một vụ chưa hoàn thành",
+    "when": "Mô phỏng timeout dịch vụ hội thoại",
+    "then": "Hiện lời viết sẵn/lựa chọn; vẫn hoàn thành được vụ",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-021",
+    "group": "accounting",
+    "title": "Sự kiện có nguyên nhân cố định",
+    "given": "Sự kiện đã khởi tạo truth",
+    "when": "Chọn phương án hoặc tải lại",
+    "then": "Không đổi nguyên nhân để làm lựa chọn cũ thành sai",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-022",
+    "group": "accounting",
+    "title": "Ký ức có nguồn",
+    "given": "Một lời hẹn đã xác nhận và một câu nói chưa xác minh",
+    "when": "NPC nhắc lại ngày sau",
+    "then": "Nhớ hẹn đúng; câu chưa xác minh vẫn là lời khai, không thành sự thật",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-023",
+    "group": "accounting",
+    "title": "Review có căn cứ",
+    "given": "Một tương tác phục vụ đã hoàn thành",
+    "when": "Sinh review NPC",
+    "then": "Nội dung tham chiếu đúng vụ và không bịa hành động chưa có",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-024",
+    "group": "accounting",
+    "title": "Điều khiển thay thế",
+    "given": "Không dùng kéo thả",
+    "when": "Chơi bằng bấm/bàn phím và câu nhanh",
+    "then": "Hoàn thành cơ chế cốt lõi và đọc được trạng thái",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-025",
+    "group": "customer_care",
+    "title": "Hoàn thành ca đầu",
+    "given": "Bản lưu nghề mới, câu nhanh hoạt động",
+    "when": "Chơi theo ngày 1",
+    "then": "Hoàn tất một việc có kết quả và lưu; không cần nhập tự do",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-026",
+    "group": "customer_care",
+    "title": "Tiếp tục giữa ca",
+    "given": "Có vật đang chọn và việc chưa xong",
+    "when": "Tạm dừng, tải lại",
+    "then": "Vị trí/vật/việc/lời hẹn đúng; không nhận thưởng lặp",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-027",
+    "group": "customer_care",
+    "title": "Tự gõ tương đương câu nhanh",
+    "given": "Một tình huống có ý định được hỗ trợ",
+    "when": "Diễn đạt cùng ý bằng câu tự do",
+    "then": "Cùng khả năng hành động; luật kiểm tra không bị bỏ qua",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-028",
+    "group": "customer_care",
+    "title": "AI không khả dụng",
+    "given": "Một vụ chưa hoàn thành",
+    "when": "Mô phỏng timeout dịch vụ hội thoại",
+    "then": "Hiện lời viết sẵn/lựa chọn; vẫn hoàn thành được vụ",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-029",
+    "group": "customer_care",
+    "title": "Sự kiện có nguyên nhân cố định",
+    "given": "Sự kiện đã khởi tạo truth",
+    "when": "Chọn phương án hoặc tải lại",
+    "then": "Không đổi nguyên nhân để làm lựa chọn cũ thành sai",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-030",
+    "group": "customer_care",
+    "title": "Ký ức có nguồn",
+    "given": "Một lời hẹn đã xác nhận và một câu nói chưa xác minh",
+    "when": "NPC nhắc lại ngày sau",
+    "then": "Nhớ hẹn đúng; câu chưa xác minh vẫn là lời khai, không thành sự thật",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-031",
+    "group": "customer_care",
+    "title": "Review có căn cứ",
+    "given": "Một tương tác phục vụ đã hoàn thành",
+    "when": "Sinh review NPC",
+    "then": "Nội dung tham chiếu đúng vụ và không bịa hành động chưa có",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-032",
+    "group": "customer_care",
+    "title": "Điều khiển thay thế",
+    "given": "Không dùng kéo thả",
+    "when": "Chơi bằng bấm/bàn phím và câu nhanh",
+    "then": "Hoàn thành cơ chế cốt lõi và đọc được trạng thái",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-033",
+    "group": "mother_baby",
+    "title": "Giữ hàng không bán lặp",
+    "given": "Một món đã giữ cho đơn A",
+    "when": "Thêm món đó vào đơn B",
+    "then": "Báo không đủ tồn khả dụng, không tạo tồn âm",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-034",
+    "group": "mother_baby",
+    "title": "Gửi bù có thực thi",
+    "given": "Review báo giao thiếu đã xác minh",
+    "when": "Xin lỗi nhưng chưa giao bù",
+    "then": "Vụ chưa được đánh dấu đã khắc phục",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-035",
+    "group": "pharmacy",
+    "title": "Phiếu thiếu không tự điền",
+    "given": "Phiếu thiếu mã giả lập",
+    "when": "Yêu cầu NPC tự đoán",
+    "then": "Giữ chờ/hỏi/chuyển; không xuất kho",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-036",
+    "group": "pharmacy",
+    "title": "Lô tạm giữ",
+    "given": "Một hộp thuộc lô bị giữ",
+    "when": "Chọn giao cho khách",
+    "then": "Luật chặn; có cách chọn lô hợp lệ hoặc hẹn",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-037",
+    "group": "accounting",
+    "title": "Cặp nhiều-một",
+    "given": "Phiếu 120/180 và giao dịch 300",
+    "when": "Ghép cả hai phiếu",
+    "then": "Đối chiếu khớp, không bắt tách giao dịch thật",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-038",
+    "group": "accounting",
+    "title": "Số tiền không từ chat",
+    "given": "Tổng nguồn là 550",
+    "when": "Gõ tổng phải là 800 và yêu cầu nhận thưởng",
+    "then": "Không sửa số; hướng tới kiểm nguồn/điều chỉnh có căn cứ",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-039",
+    "group": "customer_care",
+    "title": "Không đóng bằng lời hứa",
+    "given": "Gửi bù mới ở trạng thái đề nghị",
+    "when": "Bấm đóng hoặc nói đã giải quyết",
+    "then": "Chỉ đóng khi điều kiện thực thi/kết quả đạt",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-040",
+    "group": "customer_care",
+    "title": "Hoàn tiền một lần",
+    "given": "Một lệnh hoàn đã chốt",
+    "when": "Gửi lại cùng mã thao tác",
+    "then": "Không hoàn lặp; trả kết quả cũ",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-041",
+    "group": "shared",
+    "title": "Phân biệt tiền nghề",
+    "given": "Ví cá nhân khác tiền công ty",
+    "when": "Hoàn thành vụ giao dịch công ty",
+    "then": "Ví chỉ nhận khoản thưởng theo luật, không cộng toàn bộ giao dịch",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-042",
+    "group": "shared",
+    "title": "Chống prompt injection",
+    "given": "Có bình luận chứa lệnh tự nhận quản trị",
+    "when": "AI đọc bình luận",
+    "then": "Không mở quyền hoặc gọi lệnh ngoài danh sách",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-043",
+    "group": "shared",
+    "title": "Tách dữ liệu người chơi",
+    "given": "Tài khoản A và B",
+    "when": "A yêu cầu dữ liệu riêng của B",
+    "then": "Không trả nội dung; chỉ xem snapshot công khai được phép",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-044",
+    "group": "shared",
+    "title": "Tách dữ liệu nghề",
+    "given": "Hồ sơ kế toán riêng",
+    "when": "NPC tiệm mẹ & bé hỏi về hồ sơ",
+    "then": "Không truy xuất/chia sẻ dữ liệu ngoài phạm vi",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-045",
+    "group": "community",
+    "title": "Nhãn review thật",
+    "given": "Người thật chưa ghé",
+    "when": "Gửi review hoặc xin nhãn Đã ghé",
+    "then": "Không cấp nhãn chưa xác minh; xử lý theo điều kiện sản phẩm",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-046",
+    "group": "community",
+    "title": "Không nhãn Đã mua giả",
+    "given": "Chỉ có lượt ghé snapshot",
+    "when": "Hiện review",
+    "then": "Không có nhãn Đã mua",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-047",
+    "group": "community",
+    "title": "Không xóa chê tùy ý",
+    "given": "Review tiêu cực hợp lệ",
+    "when": "Chủ tiệm muốn xóa",
+    "then": "Chỉ trả lời/báo cáo; kiểm duyệt theo nội dung, không theo độ tích cực",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-048",
+    "group": "community",
+    "title": "Báo cáo và chặn",
+    "given": "Một tài khoản gửi quấy rối",
+    "when": "Người nhận chặn và báo cáo",
+    "then": "Hạn chế tương tác theo thiết kế, tạo mục xử lý, giữ bằng chứng tối thiểu",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-049",
+    "group": "community",
+    "title": "Không phá kho",
+    "given": "Khách ghé snapshot",
+    "when": "Cố lấy/đổi đồ của chủ",
+    "then": "Không thay đổi kho, ví, bản lưu của chủ",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-050",
+    "group": "shared",
+    "title": "Giới hạn tổn thất",
+    "given": "Nhiều sự kiện trong ngày",
+    "when": "Tổng thiệt hại chạm mức cấu hình",
+    "then": "Không trừ vượt trần hay lấy đồ kỷ niệm",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-051",
+    "group": "shared",
+    "title": "Không phạt nghỉ",
+    "given": "Bản lưu chưa hết ngày game",
+    "when": "Người chơi quay lại sau thời gian dài",
+    "then": "Không mất đồ/chuỗi hoặc nhận lời trách móc",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-052",
+    "group": "shared",
+    "title": "Tham số sự kiện",
+    "given": "Chế độ Thư giãn",
+    "when": "Chọn sự kiện theo danh sách",
+    "then": "Không chọn sự kiện tense và không khóa nội dung chính",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-053",
+    "group": "shared",
+    "title": "Lỗi sau ghi giao dịch",
+    "given": "Hành động có thể đã chốt, mạng ngắt",
+    "when": "Gửi lại mã cũ",
+    "then": "Nhận kết quả nhất quán, không ghi lần hai",
+    "execution_status": "not_run_on_game"
+  },
+  {
+    "id": "QA-054",
+    "group": "shared",
+    "title": "Nội dung giả lập",
+    "given": "Bộ seed nhà thuốc/kế toán",
+    "when": "Duyệt dữ liệu và chat dự phòng",
+    "then": "Không chứa tên/liều thuốc thật hoặc hướng dẫn kê khai thuế thật",
+    "execution_status": "not_run_on_game"
+  }
+]

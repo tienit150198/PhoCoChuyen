@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "checks": [
+    "JSON parse",
+    "unique IDs",
+    "16 career catalog and split 4/12",
+    "24 events per launch career",
+    "6 NPCs per launch career",
+    "3 quests per launch career",
+    "10 onboarding days per launch career",
+    "command schema draft2020-12 valid",
+    "4 command examples validate",
+    "arithmetic examples checked"
+  ],
+  "gameplay_tests_executed": false,
+  "note": "Only document/data validation. Engine and gameplay are not implemented in this package."
+}

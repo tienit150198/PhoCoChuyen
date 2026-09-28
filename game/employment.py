@@ -1,0 +1,444 @@
+"""Job applications for employed careers (v0.4).
+
+Some jobs are not a shop you open: a teacher or an accountant first has to be
+hired. The flow mirrors real life: read the posting → build an honest CV from
+what you actually did in the game → cover letter → interview questions →
+reference check → offer (negotiate once) → probation → official contract.
+Everything is fictional; salaries are game coins.
+
+Work only starts after the interview and a signed offer. The one exception is
+luck: sometimes the big boss meets you (right after you apply, or by chance at
+the end of a day elsewhere) and offers the job directly. The roll is seeded
+from the save, so reloading never rerolls it.
+"""
+from __future__ import annotations
+
+import os
+import random
+
+STRENGTHS = [
+    dict(id='careful', name='Cẩn thận, tỉ mỉ', emoji='🔍'),
+    dict(id='communication', name='Giao tiếp rõ ràng', emoji='💬'),
+    dict(id='patience', name='Kiên nhẫn', emoji='🌱'),
+    dict(id='numbers', name='Nhạy với số liệu', emoji='🔢'),
+    dict(id='teamwork', name='Làm việc nhóm', emoji='🤝'),
+    dict(id='creative', name='Sáng tạo', emoji='🎨'),
+    dict(id='tech', name='Dùng phần mềm văn phòng', emoji='💻'),
+    dict(id='calm', name='Bình tĩnh khi áp lực', emoji='🧘'),
+    dict(id='learning', name='Ham học hỏi', emoji='📚'),
+]
+STRENGTH_IDS = {x['id'] for x in STRENGTHS}
+
+# CV lines must be backed by what really happened in the save (reference check).
+CLAIMS = [
+    dict(id='fresh', text='Mới vào nghề, sẵn sàng học việc', need=None),
+    dict(id='served5', text='Đã hoàn thành ít nhất 5 công việc ở nghề này', need=('served', 5)),
+    dict(id='served15', text='Đã hoàn thành ít nhất 15 công việc ở nghề này', need=('served', 15)),
+    dict(id='perfect3', text='Ít nhất 3 lần làm việc không sai sót', need=('perfect', 3)),
+    dict(id='situations', text='Từng xử lý tình huống phát sinh với khách/phụ huynh', need=('situations', 1)),
+    dict(id='replies', text='Có kinh nghiệm phản hồi góp ý của khách', need=('review_replies', 2)),
+    dict(id='other', text='Có kinh nghiệm ở một nghề khác trong phố (≥3 việc)', need=('other', 3)),
+]
+CLAIM_INDEX = {x['id']: x for x in CLAIMS}
+
+LETTER_SLOTS = [
+    dict(id='why', title='Vì sao chọn nơi này', options=[
+        dict(id='specific', label='Nêu một điều cụ thể về nơi tuyển dụng mà bạn đã tìm hiểu', score=3),
+        dict(id='generic', label='“Tôi muốn một môi trường chuyên nghiệp, năng động.”', score=1),
+        dict(id='wrong', label='Dán lại thư cũ… vẫn còn tên nơi tuyển dụng khác', score=-2)]),
+    dict(id='example', title='Một ví dụ về bản thân', options=[
+        dict(id='story', label='Kể một việc cụ thể đã làm và kết quả kiểm chứng được', score=3),
+        dict(id='adjectives', label='Liệt kê năm tính từ khen bản thân', score=0),
+        dict(id='salary', label='Nói ngay mức lương mong muốn', score=-1)]),
+    dict(id='close', title='Lời kết', options=[
+        dict(id='available', label='Nói rõ thời gian có thể bắt đầu và cảm ơn', score=2),
+        dict(id='demand', label='“Mong nhận phản hồi trong 24 giờ.”', score=-1),
+        dict(id='none', label='Không viết lời kết', score=0)]),
+]
+
+GENERIC_QUESTIONS = {
+    'weakness': dict(text='Điểm bạn còn cần cải thiện là gì?', options=[
+        dict(id='honest', label='Nêu một điểm thật và cách mình đang sửa', score=3, note='Người phỏng vấn thấy bạn tự biết mình.'),
+        dict(id='perfect', label='“Tôi quá cầu toàn.”', score=1, note='Câu trả lời quen thuộc, không nói được gì.'),
+        dict(id='none', label='“Tôi không có điểm yếu.”', score=0, note='Nghe thiếu thật thà.')]),
+    'mistake': dict(text='Kể về một lần bạn làm sai và đã xử lý thế nào?', options=[
+        dict(id='own', label='Nhận lỗi, sửa, báo người liên quan, rút quy trình', score=3, note='Bạn cho thấy trách nhiệm.'),
+        dict(id='blame', label='Kể lỗi là do đồng nghiệp', score=0, note='Người phỏng vấn nhíu mày.'),
+        dict(id='hide', label='Nói chưa từng sai', score=1, note='Khó tin.')]),
+    'conflict': dict(text='Nếu bạn không đồng ý với quản lý thì sao?', options=[
+        dict(id='data', label='Trao đổi riêng, mang dữ kiện, vẫn tôn trọng quyết định cuối', score=3, note='Chín chắn.'),
+        dict(id='silent', label='Im lặng làm theo dù thấy sai', score=1, note='An toàn nhưng thiếu đóng góp.'),
+        dict(id='public', label='Phản đối ngay giữa cuộc họp', score=0, note='Dễ gây căng thẳng.')]),
+}
+
+TEACHER_QUESTIONS = {
+    't_parent': dict(text='Một phụ huynh nhắn tin gay gắt lúc 22 giờ. Bạn làm gì?', options=[
+        dict(id='boundary', label='Nhắn ngắn hẹn trao đổi trong giờ hành chính, chuẩn bị sổ lớp', score=3, note='Hiệu trưởng gật đầu: ranh giới rõ, không bỏ mặc.'),
+        dict(id='argue', label='Trả lời ngay, giải thích tới khuya', score=1, note='Tận tâm nhưng dễ kiệt sức.'),
+        dict(id='ignore', label='Không trả lời', score=0, note='Dễ thành chuyện lớn.')]),
+    't_diverse': dict(text='Lớp có bạn học nhanh, có bạn học chậm. Bạn tổ chức tiết học thế nào?', options=[
+        dict(id='diff', label='Cùng mục tiêu, nhiều cách: hình ảnh, làm thử, kể chuyện; nhóm hỗ trợ', score=3, note='Đúng tinh thần dạy học phân hóa.'),
+        dict(id='fast', label='Dạy theo nhóm giỏi để kịp chương trình', score=1, note='Nhóm chậm sẽ bị bỏ lại.'),
+        dict(id='slow', label='Dạy thật chậm cho mọi người', score=1, note='Nhóm nhanh sẽ chán.')]),
+    't_event': dict(text='Trường giao lớp bạn tổ chức Trung thu. Việc đầu tiên?', options=[
+        dict(id='ask', label='Hỏi mong muốn của lớp, kiểm dị ứng và quỹ lớp', score=3, note='Chuẩn bị từ người tham gia.'),
+        dict(id='buy', label='Đặt mua bánh và đèn cho nhanh', score=1, note='Nhanh nhưng có thể bỏ sót ai đó.'),
+        dict(id='collect', label='Thu thêm tiền phụ huynh cho hoành tráng', score=0, note='Tạo áp lực cho gia đình.')]),
+}
+
+POSTINGS = {
+    'teacher': [
+        dict(id='tch-public', org='Trường Tiểu học Mầm Nắng', kind='public', title='Giáo viên chủ nhiệm lớp 2',
+             salary=(55, 75), probation_days=3, wants=['patience', 'communication', 'creative'],
+             perks=['Nghỉ hè', 'Đồng nghiệp hỗ trợ', 'Lịch ổn định'], culture='Trường công lập, sĩ số đông, coi trọng nề nếp và phối hợp phụ huynh.',
+             questions=['t_diverse', 't_parent', 'mistake'], reference=True),
+        dict(id='tch-center', org='Trung tâm Kỹ năng Sao Nhỏ', kind='private', title='Giáo viên lớp kỹ năng cuối tuần',
+             salary=(60, 90), probation_days=2, wants=['creative', 'communication', 'calm'],
+             perks=['Lương theo buổi cao', 'Lớp nhỏ', 'Phụ huynh kỳ vọng cao'], culture='Tư thục, lớp 8–10 bạn, phụ huynh phản hồi nhiều và nhanh.',
+             questions=['t_event', 't_parent', 'conflict'], reference=True),
+        dict(id='tch-trial', org='Lớp học cộng đồng Góc Phố', kind='community', title='Tình nguyện viên dạy thử',
+             salary=(35, 45), probation_days=1, wants=['patience', 'learning'],
+             perks=['Nhận ngay', 'Không phỏng vấn dài', 'Lương thấp'], culture='Lớp học miễn phí cuối tuần do khu phố tổ chức.',
+             questions=['t_diverse'], reference=False),
+    ],
+}
+QUESTIONS = {**GENERIC_QUESTIONS, **TEACHER_QUESTIONS}
+
+
+def _plugin_employment(career: str) -> dict | None:
+    from .careers import PLUGINS
+    mod = PLUGINS.get(career)
+    return mod.SPEC.get('employment') if mod else None
+
+
+def postings(career: str) -> list[dict]:
+    spec = _plugin_employment(career)
+    if spec:
+        return spec['postings']
+    return POSTINGS.get(career, [])
+
+
+def question(career: str, qid: str) -> dict | None:
+    spec = _plugin_employment(career)
+    if spec and qid in spec.get('questions', {}):
+        return spec['questions'][qid]
+    return QUESTIONS.get(qid)
+
+
+def required(career: str) -> bool:
+    return bool(postings(career))
+
+
+def initial() -> dict:
+    return dict(status='none', employer=None, title=None, salary=0, offer=None, probation=False, probation_left=0, hired_day=0,
+                application=None, cooldown_day=0, history=[], days_worked=0, reviews_during_probation=[], extended=False)
+
+
+def hired_record(career: str, posting_id: str | None = None, day: int = 1) -> dict:
+    """Used by migration of started careers and by tests: an already-signed contract."""
+    rows = postings(career)
+    x = initial()
+    if rows:
+        p = next((r for r in rows if r['id'] == posting_id), rows[0])
+        x.update(status='hired', employer=p['id'], title=p['title'], salary=p['salary'][1], probation=False, hired_day=day)
+    return x
+
+
+def _posting(career: str, pid) -> dict | None:
+    return next((p for p in postings(career) if p['id'] == pid), None)
+
+
+BOSS_APPLY = [
+    'Đúng lúc bạn nộp hồ sơ, {boss} {org} đi ngang quầy lễ tân, đọc lướt CV rồi mời bạn vào làm luôn.',
+    'Người ngồi cạnh bạn ở phòng chờ hóa ra là {boss} {org}. Hai người nói chuyện mười phút, và bạn được mời nhận việc ngay.',
+    'Cô {boss} {org} từng nghe hàng xóm khen bạn. Hồ sơ vừa tới, cô gọi điện mời bạn đi làm, khỏi phỏng vấn.',
+]
+BOSS_MEET = [
+    'Cuối ngày, một vị khách lịch sự nán lại trò chuyện. Hóa ra đó là {boss} {org}, và ông mời bạn về làm {title}.',
+    'Bạn giúp một bác lớn tuổi nhặt tập hồ sơ bị rơi. Bác là chủ {org} và muốn mời bạn về làm {title}.',
+    'Một chị khách quen để lại danh thiếp: {boss} {org}. Chị nhắn: “Bên chị đang cần {title}, em qua làm luôn nhé.”',
+]
+
+
+def _boss(career: str, post: dict) -> str:
+    if career == 'teacher':
+        return 'hiệu trưởng'
+    return 'tổng giám đốc' if post.get('kind') in ('corp', 'group') else 'giám đốc'
+
+
+def _rng(*parts) -> random.Random:
+    return random.Random('|'.join(map(str, parts)))
+
+
+def _boss_chance(s: dict, career: str) -> float:
+    """About one in ten, a bit more for people with experience elsewhere."""
+    others = sum(1 for k, v in s['careers'].items() if k != career and v.get('metrics', {}).get('served', 0) >= 3)
+    return min(.2, .08 + .02 * others)
+
+
+def _unlocked(s: dict, career: str) -> bool:
+    try:
+        from . import journey
+    except ImportError:
+        return True
+    check = getattr(journey, 'is_unlocked', None)
+    return bool(check(s, career)) if check else True
+
+
+def _direct_offer(s: dict, c: dict, career: str, post: dict, line: str) -> None:
+    from . import engine as e
+    low, high = post['salary']
+    salary = low + round((high - low) * .5)
+    job = c['job']
+    job['status'] = 'offer'
+    job['application'] = dict(posting=post['id'], stage='interview', strengths=[], claims=[], letter={}, answers={},
+                              score=None, honest=None, notes=[], feedback=[line], direct=True)
+    job['offer'] = dict(salary=salary, negotiated=False, score=None, day=c['day'], direct=True)
+    job['history'] = (job['history'] + [dict(day=c['day'], event='direct_offer', posting=post['id'])])[-40:]
+    e.metric(c, 'job_offers')
+    e.log(s, c, 'job', line)
+
+
+def meet_boss(s: dict, career: str, day: int) -> dict | None:
+    """Called when a day ends somewhere: rarely, a boss from an office job you
+    haven't got yet invites you in. Returns what happened, for the day summary."""
+    rng = _rng('boss-meet', career, day, s.get('seq', 0))
+    if rng.random() >= .04:
+        return None
+    options = [(k, p) for k in sorted(s['careers']) if k != career and required(k) and _unlocked(s, k)
+               and s['careers'][k].get('job', {}).get('status') in ('none', 'rejected') for p in postings(k)]
+    if not options:
+        return None
+    k, post = rng.choice(options)
+    line = rng.choice(BOSS_MEET).format(org=post['org'], title=post['title'].lower(), boss=_boss(k, post))
+    _direct_offer(s, s['careers'][k], k, post, line)
+    return dict(career=k, org=post['org'], title=post['title'], text=line)
+
+
+def _claim_ok(s: dict, c: dict, career: str, cid: str) -> bool:
+    need = CLAIM_INDEX[cid]['need']
+    if not need:
+        return True
+    metric, goal = need
+    if metric == 'other':
+        return any(k != career and v['metrics'].get('served', 0) >= goal for k, v in s['careers'].items())
+    return c['metrics'].get(metric, 0) >= goal
+
+
+def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
+    from . import engine as e
+    need = e.need
+    job = c['job']
+    need(required(career), 'Nghề này tự mở tiệm, không cần xin việc.')
+    if name == 'job_apply':
+        need(job['status'] in ('none', 'rejected'), 'Bạn đang có hồ sơ hoặc đã có việc.')
+        need(c['day'] >= job['cooldown_day'], 'Nơi tuyển dụng hẹn nộp lại vào ngày sau.')
+        post = _posting(career, p.get('posting'))
+        need(post, 'Tin tuyển dụng không tồn tại.')
+        job['status'] = 'applying'
+        job['application'] = dict(posting=post['id'], stage='cv', strengths=[], claims=[], letter={}, answers={}, score=None, honest=None, notes=[])
+        rng = _rng('boss-apply', career, post['id'], c['day'], len(job['history']))
+        if rng.random() < _boss_chance(s, career):
+            line = rng.choice(BOSS_APPLY).format(org=post['org'], boss=_boss(career, post))
+            _direct_offer(s, c, career, post, line)
+            return dict(message=line, celebrate=True, direct_offer=True)
+        return dict(message=f'Đã mở hồ sơ ứng tuyển: {post["title"]} · {post["org"]}.')
+    if name == 'job_quick':
+        # Dev tooling only (browser sweeps): players always go through the interview.
+        need(os.environ.get('MNL_DEV') == '1', 'Cần phỏng vấn xong và ký thư mời trước khi đi làm.')
+        need(job['status'] in ('none', 'rejected', 'applying'), 'Bạn đã có việc.')
+        post = _posting(career, p.get('posting'))
+        need(post, 'Tin tuyển dụng không tồn tại.')
+        need(p.get('confirm') is True, 'Xác nhận nhận việc thử với mức lương thử việc.')
+        job.update(status='hired', employer=post['id'], title=post['title'], salary=post['salary'][0], probation=True,
+                   probation_left=post['probation_days'] + 1, hired_day=c['day'], application=None, offer=None, extended=False, reviews_during_probation=[])
+        job['history'] = (job['history'] + [dict(day=c['day'], event='quick', posting=post['id'])])[-40:]
+        e.log(s, c, 'job', f'Nhận việc thử tại {post["org"]}: lương khởi điểm {post["salary"][0]} xu/ngày, thử việc {post["probation_days"] + 1} ngày.')
+        return dict(message=f'Bạn bắt đầu thử việc tại {post["org"]}. Làm tốt sẽ được ký chính thức!', celebrate=True)
+    if name == 'job_quit':
+        need(job['status'] == 'hired', 'Bạn chưa có việc để nghỉ.')
+        need(not c['open'], 'Kết thúc ca rồi mới xin nghỉ nhé.')
+        need(p.get('confirm') is True, 'Xác nhận nghỉ việc.')
+        job['history'] = (job['history'] + [dict(day=c['day'], event='quit', posting=job['employer'])])[-40:]
+        keep = job['history']
+        c['job'] = initial()
+        c['job']['history'] = keep
+        return dict(message='Đã bàn giao và nghỉ việc. Bạn có thể ứng tuyển nơi khác.')
+    app = job.get('application')
+    need(job['status'] in ('applying', 'offer') and app, 'Chưa có hồ sơ ứng tuyển nào đang mở.')
+    post = _posting(career, app['posting'])
+    need(post, 'Tin tuyển dụng không còn.')
+    if name == 'job_withdraw':
+        c['job']['status'] = 'none'
+        c['job']['application'] = None
+        c['job']['offer'] = None
+        return dict(message='Đã rút hồ sơ.')
+    if name == 'job_cv':
+        need(app['stage'] == 'cv', 'CV đã nộp.')
+        strengths = p.get('strengths')
+        need(isinstance(strengths, list) and 1 <= len(strengths) <= 3 and len(set(strengths)) == len(strengths) and all(x in STRENGTH_IDS for x in strengths), 'Chọn 1–3 điểm mạnh.')
+        claims = p.get('claims')
+        need(isinstance(claims, list) and 1 <= len(claims) <= 4 and len(set(claims)) == len(claims) and all(x in CLAIM_INDEX for x in claims), 'Chọn 1–4 dòng kinh nghiệm.')
+        app.update(strengths=strengths, claims=claims, stage='letter')
+        return dict(message='Đã hoàn thiện CV. Tiếp theo: thư ứng tuyển.')
+    if name == 'job_letter':
+        need(app['stage'] == 'letter', 'Chưa tới bước thư ứng tuyển.')
+        parts = p.get('parts')
+        need(isinstance(parts, dict) and set(parts) == {x['id'] for x in LETTER_SLOTS}, 'Chọn đủ ba phần của thư.')
+        for slot in LETTER_SLOTS:
+            need(parts[slot['id']] in [o['id'] for o in slot['options']], 'Nội dung thư không hợp lệ.')
+        app['letter'] = dict(parts)
+        app['stage'] = 'interview'
+        return dict(message=f'Thư đã gửi. {post["org"]} mời bạn phỏng vấn!')
+    if name == 'job_answer':
+        need(app['stage'] == 'interview', 'Chưa tới buổi phỏng vấn.')
+        qid = p.get('question')
+        need(qid in post['questions'] and qid not in app['answers'], 'Câu hỏi không hợp lệ hoặc đã trả lời.')
+        q = question(career, qid)
+        opt = next((o for o in q['options'] if o['id'] == p.get('option')), None)
+        need(opt, 'Câu trả lời không hợp lệ.')
+        app['answers'][qid] = opt['id']
+        app['notes'].append(opt['note'])
+        if len(app['answers']) < len(post['questions']):
+            return dict(message=opt['note'])
+        return _evaluate(s, c, career, post, app, opt['note'])
+    if name == 'job_negotiate':
+        need(job['status'] == 'offer' and job['offer'] and not job['offer']['negotiated'], 'Chỉ thương lượng một lần khi có thư mời.')
+        o = job['offer']
+        o['negotiated'] = True
+        if (o.get('direct') or (app['score'] or 0) >= 80) and o['salary'] < post['salary'][1]:
+            o['salary'] = min(post['salary'][1], o['salary'] + max(3, round(o['salary'] * .08)))
+            msg = f'{post["org"]} đồng ý nâng lên {o["salary"]} xu/ngày vì hồ sơ của bạn rất tốt.'
+        else:
+            msg = f'{post["org"]} giữ mức {o["salary"]} xu/ngày và hẹn xét lại sau thử việc.'
+        return dict(message=msg)
+    if name == 'job_accept':
+        need(job['status'] == 'offer' and job['offer'], 'Chưa có thư mời nhận việc.')
+        need(p.get('confirm') is True, 'Xác nhận ký hợp đồng thử việc.')
+        o = job['offer']
+        job.update(status='hired', employer=post['id'], title=post['title'], salary=o['salary'], probation=True, probation_left=post['probation_days'],
+                   hired_day=c['day'], application=None, offer=None, extended=False, reviews_during_probation=[])
+        job['history'] = (job['history'] + [dict(day=c['day'], event='hired', posting=post['id'])])[-40:]
+        e.metric(c, 'jobs_hired')
+        e.log(s, c, 'job', f'Ký hợp đồng thử việc tại {post["org"]}: {o["salary"]} xu/ngày.')
+        return dict(message=f'Chào mừng bạn tới {post["org"]}! Thử việc {post["probation_days"]} ngày làm việc.', celebrate=True)
+    if name == 'job_decline':
+        need(job['status'] == 'offer', 'Chưa có thư mời.')
+        c['job']['status'] = 'none'
+        c['job']['application'] = None
+        c['job']['offer'] = None
+        return dict(message='Đã cảm ơn và từ chối thư mời.')
+    raise e.GameError('Thao tác ứng tuyển không hợp lệ.')
+
+
+def _evaluate(s: dict, c: dict, career: str, post: dict, app: dict, last_note: str) -> dict:
+    from . import engine as e
+    job = c['job']
+    qscore = sum(next(o['score'] for o in question(career, q)['options'] if o['id'] == a) for q, a in app['answers'].items())
+    qmax = 3 * len(post['questions'])
+    letter = sum(next(o['score'] for o in slot['options'] if o['id'] == app['letter'][slot['id']]) for slot in LETTER_SLOTS)
+    match = len(set(app['strengths']) & set(post['wants']))
+    score = round(55 * qscore / qmax + 25 * max(0, letter) / 8 + 20 * min(match, 2) / 2)
+    honest = all(_claim_ok(s, c, career, x) for x in app['claims'])
+    app['honest'] = honest
+    app['score'] = score
+    lines = []
+    if post.get('reference') and not honest:
+        bad = [CLAIM_INDEX[x]['text'] for x in app['claims'] if not _claim_ok(s, c, career, x)]
+        lines.append('Kiểm tra tham chiếu: CV ghi “' + bad[0] + '” nhưng hồ sơ thực tế chưa có.')
+        score = min(score, 40)
+        app['score'] = score
+    if app['letter'].get('why') == 'wrong':
+        lines.append('Thư ứng tuyển còn tên nơi khác — người đọc bật cười nhưng trừ điểm cẩn thận.')
+    if score >= 60:
+        low, high = post['salary']
+        salary = low + round((high - low) * min(1, (score - 60) / 35))
+        job['status'] = 'offer'
+        job['offer'] = dict(salary=salary, negotiated=False, score=score, day=c['day'])
+        e.metric(c, 'job_offers')
+        msg = f'Kết quả: {score}/100. {post["org"]} gửi thư mời với lương {salary} xu/ngày (thử việc {post["probation_days"]} ngày).'
+    else:
+        job['status'] = 'rejected'
+        job['cooldown_day'] = c['day'] + 1
+        job['history'] = (job['history'] + [dict(day=c['day'], event='rejected', posting=post['id'], score=score)])[-40:]
+        app['stage'] = 'closed'
+        msg = f'Kết quả: {score}/100. {post["org"]} cảm ơn bạn và hẹn dịp khác. Bạn có thể ứng tuyển lại từ ngày sau.'
+    app['feedback'] = lines + [last_note]
+    return dict(message=msg, score=score, celebrate=score >= 60)
+
+
+def on_close(s: dict, c: dict, career: str) -> dict | None:
+    """Pay the day's salary if the employee actually worked; run probation review.
+    Any day's end can also bring a lucky meeting with a boss from another job."""
+    from . import engine as e
+    boss = meet_boss(s, career, c['day'])
+    if boss:
+        e.log(s, c, 'job', boss['text'])
+    job = c['job']
+    if job['status'] != 'hired' or c['day_completed'] < 1:
+        return dict(boss=boss) if boss else None
+    post = _posting(career, job['employer'])
+    pay = round(job['salary'] * (.85 if job['probation'] else 1))
+    e.money(s, c, pay, 'Lương ngày ' + str(c['day']) + (' (thử việc 85%)' if job['probation'] else ''), f'salary-{c["day"]}', category='salary')
+    job['days_worked'] += 1
+    note = dict(salary=pay, probation=job['probation'])
+    if job['probation']:
+        today = [f['stars'] for f in c['feed'] if f.get('stars') and f['day'] == c['day'] and f['kind'] == 'review']
+        job['reviews_during_probation'] = (job['reviews_during_probation'] + today)[-40:]
+        job['probation_left'] = max(0, job['probation_left'] - 1)
+        if job['probation_left'] == 0:
+            rows = job['reviews_during_probation']
+            avg = sum(rows) / len(rows) if rows else 4
+            if avg >= 3.5 or job['extended']:
+                job['probation'] = False
+                note['result'] = 'official'
+                e.log(s, c, 'job', f'Hết thử việc: ký hợp đồng chính thức tại {post["org"] if post else "nơi làm việc"} (đánh giá trung bình {avg:.1f}★).')
+                e.metric(c, 'contracts')
+            else:
+                job['probation_left'] = 2
+                job['extended'] = True
+                note['result'] = 'extended'
+                e.log(s, c, 'job', f'Thử việc được gia hạn 2 ngày: đánh giá trung bình {avg:.1f}★, cần ổn định hơn.')
+    if boss:
+        note['boss'] = boss
+    return note
+
+
+def public(c: dict, career: str) -> dict:
+    job = dict(c['job'])
+    job['required'] = required(career)
+    return job
+
+
+def content(career_ids) -> dict:
+    return dict(strengths=STRENGTHS, claims=[dict(id=x['id'], text=x['text']) for x in CLAIMS], letter=LETTER_SLOTS,
+                postings={cid: postings(cid) for cid in career_ids if postings(cid)},
+                questions={cid: {q: question(cid, q) for p in postings(cid) for q in p['questions']} for cid in career_ids if postings(cid)})
+
+
+def validate(c: dict, career: str) -> None:
+    from .engine import need, integer
+    job = c.get('job')
+    need(isinstance(job, dict) and set(initial()) <= set(job), 'Hồ sơ việc làm thiếu dữ liệu.')
+    need(job['status'] in ('none', 'applying', 'offer', 'hired', 'rejected'), 'Trạng thái việc làm sai.')
+    for k in ('salary', 'probation_left', 'hired_day', 'cooldown_day', 'days_worked'):
+        integer(job.get(k), 0, 10**7)
+    need(job['salary'] <= 200, 'Lương vượt trần.')
+    need(type(job['probation']) is bool and type(job['extended']) is bool, 'Cờ thử việc sai.')
+    need(isinstance(job['history'], list) and len(job['history']) <= 40, 'Lịch sử việc làm sai.')
+    need(isinstance(job['reviews_during_probation'], list) and len(job['reviews_during_probation']) <= 40 and all(x in (1, 2, 3, 4, 5) for x in job['reviews_during_probation']), 'Đánh giá thử việc sai.')
+    if job['status'] == 'hired':
+        post = _posting(career, job['employer'])
+        need(post, 'Nơi làm việc không tồn tại.')
+        need(post['salary'][0] <= job['salary'] <= post['salary'][1], 'Lương không thuộc khung của tin tuyển dụng.')
+    app = job['application']
+    if app is not None:
+        need(isinstance(app, dict) and _posting(career, app.get('posting')), 'Hồ sơ ứng tuyển sai.')
+        need(app.get('stage') in ('cv', 'letter', 'interview', 'closed'), 'Bước ứng tuyển sai.')
+        need(all(x in STRENGTH_IDS for x in app.get('strengths', [])) and all(x in CLAIM_INDEX for x in app.get('claims', [])), 'CV sai.')
+    if job['offer'] is not None:
+        o = job['offer']
+        need(isinstance(o, dict) and job['status'] == 'offer' and app, 'Thư mời sai.')
+        post = _posting(career, app['posting'])
+        need(post['salary'][0] <= integer(o.get('salary'), 0, 200) <= post['salary'][1], 'Lương thư mời sai.')
+        need(type(o.get('negotiated')) is bool, 'Cờ thương lượng sai.')

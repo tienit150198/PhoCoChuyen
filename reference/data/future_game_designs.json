@@ -1,0 +1,350 @@
+[
+  {
+    "id": "restaurant",
+    "title": "Quán ăn nhỏ",
+    "premise": "Một quán vài bàn, quầy gọi món và căn bếp nhìn được toàn bộ. Người chơi tự chọn món tủ, bố trí bếp và quyết định phục vụ nhanh hay mở ít bàn để trò chuyện nhiều hơn.",
+    "loop": "Chuẩn bị nguyên liệu → nhận và xác nhận món → chia việc bếp → chế biến theo công thức giả lập → bày món → phục vụ → thanh toán → dọn và đọc phản hồi.",
+    "actions": [
+      [
+        "Bếp có nhịp",
+        "Đặt nguyên liệu, chọn trạm và theo dõi mốc trong game. Có tạm dừng và chế độ không áp lực; không phải cứ bấm “nấu” rồi ngồi chờ."
+      ],
+      [
+        "Ghi nhớ yêu cầu",
+        "Đối chiếu món và tùy chọn đã xác nhận. Thông tin quan trọng được ghi lại trên phiếu; không bắt nhớ bằng đầu hoặc đoán nhu cầu ăn uống thật."
+      ],
+      [
+        "Phục vụ nhiều bàn",
+        "Chọn thứ tự hợp lý, gộp món có thể làm cùng và thông báo khi phải chờ. Có thể tạm ngừng nhận bàn mới."
+      ],
+      [
+        "Món riêng của quán",
+        "Phối cách bày, tên món hư cấu và bộ thực đơn nhỏ; mẫu lưu lại để làm nhanh. Không đưa hướng dẫn an toàn thực phẩm chuyên môn dưới dạng đáp án game."
+      ]
+    ],
+    "npcs": "Cô khách ghé buổi trưa thích yên tĩnh; nhóm học nghề muốn món vừa túi tiền game; người hàng xóm thỉnh thoảng phụ rửa bát. Quan hệ mở chuyện đời thường và buổi ăn chung, không chỉ giảm giá.",
+    "events": "Ăn ké phần dùng thử; quên ví hoặc cố tình không thanh toán; khách đổi món sau khi bếp đã làm; reviewer quay sát bàn khác; đơn nhóm bị hủy. Mỗi vụ kiểm phiếu và thỏa thuận trước khi kết luận.",
+    "conversation": "“Món này mình đã nhờ bỏ phần trang trí rồi mà?” → xem phiếu → nếu ghi sót thì xin lỗi và làm lại; nếu chưa xác nhận thì cùng chọn cách xử lý, không tranh thắng bằng lời.",
+    "progress": "Mở trạm bếp, tủ nguyên liệu, thực đơn theo chủ đề, phụ bếp và sân nhỏ. Review tập trung đúng món, nhịp phục vụ, không gian và cách khắc phục. Tuyến dài là chuẩn bị một bữa ăn khu phố.",
+    "guard": "Kỹ năng riêng cần chứng minh: phối hợp trạm bếp và phục vụ bàn, không sao chép vòng lấy hàng của tiệm mẹ & bé."
+  },
+  {
+    "id": "cafe_bakery",
+    "title": "Cà phê & tiệm bánh",
+    "premise": "Quầy pha, tủ bánh, bàn cửa sổ và góc sân. Đây là nghề thiên về sáng tạo thị giác và không gian, khác quán ăn thiên về nhịp bếp.",
+    "loop": "Chọn menu → chuẩn bị mẻ/đồ dùng → nhận khẩu vị giả lập → pha hoặc trang trí → giao → thu thập phản hồi → lưu mẫu và chỉnh không gian.",
+    "actions": [
+      [
+        "Pha theo mẫu",
+        "Chọn các thành phần hư cấu theo phiếu, điều chỉnh mức được khách chọn. Có thước trực quan và nút từng bước thay cho kéo chính xác."
+      ],
+      [
+        "Trang trí bánh",
+        "Chọn nền, họa tiết, thông điệp và màu. Chấm mức phù hợp với brief đã xác nhận; không có mẫu duy nhất đúng cho mọi khách."
+      ],
+      [
+        "Đơn hẹn",
+        "Bánh sự kiện có mẫu duyệt trước, mốc nhận và vật liệu giữ riêng. Chỉnh yêu cầu sau duyệt phải trao đổi lại."
+      ],
+      [
+        "Không gian sống",
+        "Chọn nhạc trong thư viện game, bàn, cây và ánh sáng. NPC dùng đúng ghế/góc mới; không chỉ thay nền ảnh."
+      ]
+    ],
+    "npcs": "Người làm việc từ xa thích góc yên; đôi bạn thường hẹn cùng giờ game; khách đặt bánh sinh nhật. Một NPC có thể chuyển từ tới dùng thử sang nhờ chuẩn bị một dịp quan trọng.",
+    "events": "Khách ngồi lâu nhưng chỉ gọi một món; yêu cầu quay clip cả quán; bánh bị đổi lời chúc phút cuối; khách làm đổ cốc; video tích cực khiến tiệm đông. Quy định chỗ ngồi và hợp tác được thiết lập trước.",
+    "conversation": "“Cho mình ngồi làm việc lâu một chút được không?” → người chơi chọn chính sách phù hợp: khu ngồi lâu, giới hạn theo mức đông hoặc chấp nhận bình thường; không có đáp án đạo đức duy nhất.",
+    "progress": "Mở tủ bánh, công cụ trang trí, góc yên tĩnh, đèn sân, lịch đặt và phụ quầy. Review đánh giá trải nghiệm đã dùng, không bịa giải thưởng. Tuyến dài là buổi triển lãm ảnh/bánh theo chủ đề của phố.",
+    "guard": "Mỗi mẫu sáng tạo có thể lưu và chia sẻ bản xem trước; nội dung người thật phải qua kiểm duyệt như các bài đăng khác."
+  },
+  {
+    "id": "freelancer",
+    "title": "Freelancer sáng tạo",
+    "premise": "Bàn làm việc ở nhà, bảng brief, máy tính và góc portfolio. Chọn đề tài thiết kế đơn giản trong game, không yêu cầu người chơi biết code hay sử dụng phần mềm chuyên nghiệp.",
+    "loop": "Đọc lời mời → hỏi yêu cầu → xác nhận phạm vi → ghép sản phẩm nhỏ → gửi bản duyệt → trao đổi sửa đổi → bàn giao → nhận đánh giá và trang trí studio.",
+    "actions": [
+      [
+        "Làm rõ brief",
+        "Hỏi đối tượng, mục tiêu, phong cách và đầu ra. Những câu hỏi cần thiết mở điều kiện chấm; không cho khách bí mật đổi đáp án sau khi bạn nộp."
+      ],
+      [
+        "Làm sản phẩm",
+        "Ghép bố cục poster, chọn ảnh trong kho game, sắp màu/chữ hoặc dựng một trang mô phỏng bằng mảnh kéo thả. Có nhiều cách đạt brief."
+      ],
+      [
+        "Quản lý phiên bản",
+        "Giữ bản cũ, tạo bản mới và so sánh phần thay đổi. Khách chỉ nhận đúng bản người chơi đã gửi."
+      ],
+      [
+        "Thương lượng sửa đổi",
+        "Phân biệt lỗi chưa đúng brief và yêu cầu mới. Chọn sửa trong phạm vi, đề nghị thêm hạng mục hoặc từ chối lịch sự."
+      ]
+    ],
+    "npcs": "Khách mới chưa biết diễn đạt; người chủ tiệm có gu rõ; bạn cộng tác mạnh về một phần việc. Quan hệ mở dự án thú vị hơn, không tự biến khách khó thành trả nhiều tiền.",
+    "events": "Khách đổi ý sau duyệt; góp ý mâu thuẫn giữa hai người; chậm phản hồi; xin file trước bước bàn giao; đòi làm thử vô hạn; lời mời hợp tác đáng tin. Mọi mốc dựa trên thỏa thuận giả lập được lưu.",
+    "conversation": "“Sửa thêm toàn bộ bố cục nhé, chỉ một chút thôi.” → xem phạm vi và bản duyệt → hỏi mục tiêu mới → đề xuất phiên bản bổ sung hoặc phương án nhỏ trong phạm vi.",
+    "progress": "Từ góc bàn nhỏ tới studio, kho mẫu, bảng quản lý phiên bản, cộng tác viên và triển lãm portfolio. Review tập trung đúng brief, rõ ràng, chất lượng và đúng hẹn, không chỉ chiều khách.",
+    "guard": "Đây là trò giải quyết brief và tạo tác phẩm nhỏ; không bắt người chơi thực hiện công việc thật miễn phí hoặc đưa tệp riêng ngoài đời vào game."
+  },
+  {
+    "id": "farm",
+    "title": "Nông trại ngoại ô",
+    "premise": "Vài luống cây, nhà kho, góc ủ phân hư cấu và quầy chợ. Nhịp chơi dài hơi nhưng không trừng phạt người chơi vì nghỉ ngoài đời.",
+    "loop": "Chọn kế hoạch luống → gieo → chăm theo dấu hiệu trong game → thu hoạch → phân loại → đóng giỏ/đổi đồ → bán ở chợ → mở khu mới.",
+    "actions": [
+      [
+        "Bố trí luống",
+        "Chọn vị trí theo quy tắc ánh sáng/nước đơn giản của game; có bản xem trước và hoàn tác khi chưa gieo."
+      ],
+      [
+        "Chăm sóc quan sát",
+        "Xem trạng thái trực quan để tưới, che hoặc nghỉ. Không có cây chết chỉ vì người chơi chưa đăng nhập; tiến trình quan trọng theo nhịp ngày game."
+      ],
+      [
+        "Thu hoạch và phân loại",
+        "Chọn lứa, nhóm chất lượng theo quy tắc công khai, giữ một phần làm giống hoặc chuẩn bị đơn."
+      ],
+      [
+        "Chợ và trao đổi",
+        "Đóng giỏ theo yêu cầu hàng xóm, chọn quầy, trao đổi vật liệu và nhận lời nhờ. Không có đầu cơ bằng tiền thật."
+      ]
+    ],
+    "npcs": "Người hàng xóm thích thử giống mới; chủ quán đặt giỏ theo tuần game; người bán hạt trao đổi kinh nghiệm giả lập. Mối quan hệ gắn với những mùa vụ đã cùng chuẩn bị.",
+    "events": "Mưa đúng lúc thu hoạch; giao hạt nhầm; khách hủy giỏ; đồ để nhầm bị tưởng mất; mùa bội thu cần chia sẻ; hàng xóm giúp thu hoạch. Biến cố có cách giảm thiệt hại và mức trần.",
+    "conversation": "“Giỏ tuần này ít món hơn lần trước?” → xem đơn đã chốt và số thu → đề nghị đổi giỏ, hẹn phần thiếu hoặc giảm giá đúng phần, không bịa đã giao đủ.",
+    "progress": "Mở luống, kho phân loại, bàn đóng giỏ, chợ, góc nghỉ và nhà kính giả lập. Đánh giá gắn với đơn đã giao và sự ổn định, không ép tối đa hóa sản lượng. Tuyến dài là hội chợ mùa vụ.",
+    "guard": "Kỹ năng riêng là quan sát chu kỳ và lên kế hoạch không gian; mọi hướng dẫn canh tác chỉ là luật mô phỏng, không chuyển thành tư vấn dùng hóa chất thật."
+  },
+  {
+    "id": "sales",
+    "title": "Chuyên viên tư vấn bán hàng",
+    "premise": "Một showroom đồ dùng hư cấu với khu trải nghiệm, bàn tư vấn và khu giao nhận. Trọng tâm là hiểu nhu cầu và so sánh phương án, không chỉ quét giá.",
+    "loop": "Đón khách → hỏi nhu cầu/ràng buộc → demo → so phương án → xác nhận lựa chọn → phối hợp giao → theo dõi sử dụng trong game.",
+    "actions": [
+      [
+        "Khám phá nhu cầu",
+        "Khách có mục tiêu, ngân sách và ưu tiên khác nhau. Hỏi đúng mở thông tin; không suy đoán nhu cầu từ ngoại hình hay thông tin cá nhân nhạy cảm."
+      ],
+      [
+        "Demo tương tác",
+        "Cho khách thử hai hoặc ba sản phẩm giả lập với tính năng khác. Người chơi bật chức năng, bố trí phụ kiện và giải thích dữ liệu trong game."
+      ],
+      [
+        "So sánh minh bạch",
+        "Kéo các lựa chọn cạnh nhau, chỉ điểm phù hợp và hạn chế. Không có đáp án luôn là món đắt nhất."
+      ],
+      [
+        "Chốt và theo dõi",
+        "Tạo đề nghị rõ giá, món, phụ kiện và mốc giao. Nếu khách chưa sẵn sàng, ghi hẹn hoặc kết thúc bình thường."
+      ]
+    ],
+    "npcs": "Khách thích tìm hiểu kỹ; khách đã chọn sai ở lần trước; người mua cho gia đình; đồng nghiệp hỗ trợ demo. Tuyến chuyện có thể là khách từ cân nhắc đến quay lại kể trải nghiệm.",
+    "events": "Khách đòi hứa tính năng không có; yêu cầu giảm giá ngoài quyền; đổi ý sau demo; người quay clip chỉ trích giá; giao thiếu phụ kiện; đối thủ được nhắc tới nhưng không có thương hiệu thật.",
+    "conversation": "“Bạn bảo đảm món này làm được việc X chứ?” → kiểm đặc tính của sản phẩm giả lập → nói đúng giới hạn hoặc đề xuất món khác; game không thưởng lời hứa không có căn cứ.",
+    "progress": "Mở khu demo, mẫu so sánh, lịch hẹn, bộ phụ kiện và trợ lý. Thu nhập cân bằng mức phù hợp, giữ lời và kết quả; không phạt việc khuyên khách chưa cần mua. Review phản ánh trải nghiệm tư vấn và giao nhận.",
+    "guard": "Khác tiệm mẹ & bé ở chiều sâu khám phá nhu cầu và demo; người chơi phải kiểm chứng điểm phù hợp, không chỉ tìm đúng kệ."
+  },
+  {
+    "id": "grocery",
+    "title": "Tạp hóa khu phố",
+    "premise": "Tiệm nhỏ nhiều món thiết yếu hư cấu, quầy tính tiền, góc hàng đặt và sổ hẹn. Không gian có khách ra vào và chuyện hàng xóm.",
+    "loop": "Kiểm hàng → sắp kệ → nhận danh sách mua → lấy/quét → tính tiền → giữ hàng hoặc giao → kiểm tồn và nhập cho ngày sau.",
+    "actions": [
+      [
+        "Nhớ vị trí và nhóm hàng",
+        "Danh sách mua có nhiều món; người chơi tối ưu đường lấy và giữ giỏ riêng từng khách. Có nhãn hỗ trợ thay vì bắt ghi nhớ mù."
+      ],
+      [
+        "Tính đơn",
+        "Quét món và kiểm ưu đãi giả lập. Hiển thị lý do giá thay đổi; tiền thừa có bước xác nhận, không chỉ bấm nhận xu."
+      ],
+      [
+        "Giữ hàng / sổ hẹn",
+        "Giữ một món cho khách quen có mốc game rõ. Hẹn thanh toán được ghi riêng, không tự biến thành tiền mặt."
+      ],
+      [
+        "Bày hàng",
+        "Chọn vị trí để dễ lấy và dễ nhìn, điều chỉnh theo nhu cầu đã quan sát. Không cần dashboard phân tích phức tạp."
+      ]
+    ],
+    "npcs": "Khách mua đồ cho bữa tối, bác hàng xóm nhờ giữ món, người giao hàng theo tuyến. Mỗi người có lịch và lời nhờ khác nhau; thân quen mở trao đổi chứ không miễn mọi quy định.",
+    "events": "Tranh lượt, giá trên kệ chưa cập nhật, người quên ví, khách dùng tên người quen để xin nợ, nghi mất hàng, hàng nhập sai và đồ để quên. Kiểm log trước khi kết luận ai gian.",
+    "conversation": "“Cứ ghi sổ như mọi lần nhé.” → kiểm đúng NPC và thỏa thuận cũ → nhận hẹn hoặc đề nghị thanh toán; không mặc định tin mọi lời tự nhận quen chủ.",
+    "progress": "Mở kệ phân khu, giỏ đặt trước, quầy phụ, tủ trưng bày và điểm nhận hàng. Review về đủ món, giá rõ và đối xử, không bịa hóa đơn. Tuyến dài là chuẩn bị quầy phục vụ ngày hội phố.",
+    "guard": "Nét riêng là gom danh sách nhiều món, phối dòng khách và quản lý hẹn; tránh biến thành bản sao của game gói quà."
+  },
+  {
+    "id": "fashion",
+    "title": "Tiệm thời trang",
+    "premise": "Quầy tư vấn, tủ đồ, gương thử, bàn chỉnh sửa đơn giản và góc chụp ảnh. Nhân vật thử đồ bằng hoạt ảnh trực quan; không đánh giá cơ thể khách.",
+    "loop": "Hỏi dịp mặc và sở thích → chọn vài phối đồ → thử → điều chỉnh → chốt món → đóng gói → nhận ảnh/feedback sau dịp sử dụng.",
+    "actions": [
+      [
+        "Phối theo brief",
+        "Kéo món, màu và phụ kiện lên bảng phối. Điều kiện dựa trên điều khách nói, không dựa vào giới tính hay dáng người suy đoán."
+      ],
+      [
+        "Thử và sửa",
+        "Khách cho phản hồi về màu, kiểu hoặc kích cỡ giả lập. Chỉnh bằng thao tác đơn giản; không đưa chuẩn cơ thể đẹp/xấu vào điểm số."
+      ],
+      [
+        "Sắp bộ sưu tập",
+        "Chọn chủ đề cửa sổ, cách trưng bày và phối mannequin hư cấu. Có thể lưu bộ để khách khác thử."
+      ],
+      [
+        "Đơn dịp đặc biệt",
+        "Hẹn chỉnh và nhận, giữ món đúng đơn, gửi bản phối cho khách duyệt trong game."
+      ]
+    ],
+    "npcs": "Khách muốn thử phong cách mới, người cần đồ cho sự kiện, bạn thích phụ kiện cá tính. Quan hệ mở album những dịp đã cùng chuẩn bị, không yêu cầu mua liên tục để được thân.",
+    "events": "Khách đổi ý sau thử, đồ đặt sai màu, yêu cầu quay phòng thử, người đòi mượn đồ để chụp rồi trả, hỏng phụ kiện, review chê không giống mẫu. Luôn bảo vệ khu riêng và kiểm nội dung đã chốt.",
+    "conversation": "“Mình muốn nổi bật hơn nhưng vẫn thoải mái.” → hỏi ưu tiên → đưa hai phối khác nhau → cho khách phản hồi; có nhiều kết quả được chấp nhận.",
+    "progress": "Mở tủ, bàn phụ kiện, mẫu chỉnh sửa giả lập, khu chụp ảnh và buổi trình diễn nhỏ tự chọn. Review về hiểu brief, đúng món và thoải mái trong phục vụ. Album lưu lựa chọn của NPC đã đồng ý.",
+    "guard": "Không chấm điểm theo vóc dáng, màu da hoặc định kiến giới; câu đố là đáp ứng sở thích được nói ra."
+  },
+  {
+    "id": "pet_care",
+    "title": "Tiệm chăm sóc thú cưng",
+    "premise": "Khu đón, góc làm quen, bàn chải lông, khu vệ sinh nhẹ, sân chơi và chỗ nghỉ. Đây là nghề chăm sóc tại tiệm, không thay thế game nuôi pet dài hạn.",
+    "loop": "Nhận thông tin hư cấu từ chủ → làm quen → chọn hoạt động phù hợp → chăm sóc nhẹ → chơi/nghỉ → bàn giao → nhận phản hồi.",
+    "actions": [
+      [
+        "Quan sát tín hiệu",
+        "Thú cưng có biểu hiện trong hoạt ảnh. Người chơi cho nghỉ hoặc đổi hoạt động; không ép liên tục để đầy thanh tiến độ."
+      ],
+      [
+        "Chải và vệ sinh nhẹ",
+        "Thao tác đơn giản có nút từng bước, không yêu cầu thao tác gây đau hoặc quy trình y khoa. Sai nhẹ dừng để thử cách khác."
+      ],
+      [
+        "Chơi và làm quen",
+        "Chọn đồ chơi, nhịp tương tác và nơi nghỉ theo sở thích được ghi nhận. Mỗi con có tính cách riêng, không chỉ thay màu lông."
+      ],
+      [
+        "Bàn giao",
+        "Đối chiếu đúng thú cưng, đồ gửi kèm, các việc đã làm và điều cần báo cho chủ trong game."
+      ]
+    ],
+    "npcs": "Người chủ lần đầu mang pet đi chăm, khách quen có pet nhút nhát, nhân viên mới học quan sát. Thú cưng cũng có ký ức game về đồ chơi và khu nghỉ ưa thích.",
+    "events": "Chủ đến muộn, đồ chơi gửi kèm bị nhầm, pet không hợp hoạt động, người quay clip chưa được đồng ý, lịch quá tải và lời cảm ơn sau khi pet dần quen tiệm.",
+    "conversation": "“Bé có vẻ không thích phần này, mình cho nghỉ rồi đổi sang chải nhẹ nhé?” → chọn nghỉ thật trong cảnh → theo dõi biểu hiện; không chỉ đổi câu nói cho dễ nghe.",
+    "progress": "Mở khu nghỉ, đồ chơi, bàn chăm, lịch hẹn và phụ tá. Review tập trung sự rõ ràng, đúng bàn giao và trải nghiệm mô phỏng. Tuyến dài là một buổi chơi pet có số lượng giới hạn.",
+    "guard": "Không làm chữa bệnh, kê thuốc hoặc hướng dẫn can thiệp y tế; tình huống sức khỏe ngoài phạm vi chuyển NPC chuyên môn mà không đưa chỉ dẫn thật."
+  },
+  {
+    "id": "florist",
+    "title": "Tiệm hoa",
+    "premise": "Kệ hoa hư cấu, bàn phối bó, tủ giữ nguyên liệu, bàn thiệp và quầy hẹn giao. Sáng tạo gắn với chuyện người nhận.",
+    "loop": "Hỏi dịp tặng → xác nhận gu và ngân sách → phối bó → viết/duyệt thiệp → đóng gói → giao đúng hẹn → nhận câu chuyện sau món quà.",
+    "actions": [
+      [
+        "Đọc câu chuyện",
+        "Khách có thể muốn chúc mừng, cảm ơn hoặc xin lỗi. Người chơi hỏi mức trang trọng và sở thích, không tự suy đoán quan hệ riêng tư."
+      ],
+      [
+        "Phối bó",
+        "Chọn hình, màu, chiều cao và giấy bọc bằng thao tác trực quan. Nhiều mẫu phù hợp cùng brief; có lưu mẫu."
+      ],
+      [
+        "Thiệp có xác nhận",
+        "Người chơi soạn hoặc chọn câu; khách NPC duyệt trước khi gắn. Nội dung người thật chia sẻ cần kiểm duyệt."
+      ],
+      [
+        "Giữ và giao hẹn",
+        "Đặt lịch game, giữ nguyên liệu, chuẩn bị từng đơn. Nếu thiếu món, xin đổi trước khi tự thay."
+      ]
+    ],
+    "npcs": "Người mua bó đầu tiên, khách định kỳ tặng người thân, người tổ chức sự kiện và hàng xóm tặng hoa cho tiệm. Tuyến chuyện mở từ ý nghĩa khách tự kể.",
+    "events": "Người nhận đổi giờ, thiệp viết nhầm, nguồn hoa giao thiếu, khách muốn đổi cả bó sau duyệt, clip phàn nàn màu không giống và bó hoa không người nhận. Có phương án làm lại hoặc tái phối để giảm lãng phí.",
+    "conversation": "“Mình không muốn quá nổi bật, chỉ một lời cảm ơn nhỏ thôi.” → phối bó nhẹ và hỏi lại thông điệp → không tự biến thành tình huống tình cảm lãng mạn.",
+    "progress": "Mở loại hoa hư cấu, bàn phối, giấy bọc, góc chụp, lịch giao và trợ lý. Review về hiểu ý, mẫu đã duyệt và đúng hẹn. Tuyến dài là cùng trang trí một góc khu phố.",
+    "guard": "Nét riêng là biểu đạt câu chuyện bằng thiết kế; không sao chép hoàn toàn cơ chế chọn quà và không áp nghĩa văn hóa như một sự thật bắt buộc."
+  },
+  {
+    "id": "salon",
+    "title": "Salon tóc",
+    "premise": "Ghế tư vấn, gương, bàn dụng cụ giả lập, góc tạo kiểu và khu chờ. Thay đổi tóc được xem trước; người chơi không cần kỹ năng cắt tóc thật.",
+    "loop": "Hỏi mong muốn → xem mẫu → thống nhất phương án → tạo kiểu bằng thao tác game → cùng xem kết quả → chỉnh phần phù hợp → nhận feedback.",
+    "actions": [
+      [
+        "Tư vấn bằng mẫu",
+        "Cho khách chọn ưu tiên về độ gọn, hình và màu hư cấu; xem trước trên nhân vật. Không chấm ngoại hình khách."
+      ],
+      [
+        "Tạo kiểu đơn giản",
+        "Chọn vùng và mảnh kiểu trong game. Có bước xem trước và hoàn tác trước chốt để người mới không bị phạt vì bấm lệch."
+      ],
+      [
+        "Chia lịch ghế",
+        "Giữ chỗ, hẹn lại và phân nhân viên; không nhận vô hạn rồi đổ lỗi cho khách chờ."
+      ],
+      [
+        "Chăm sau dịch vụ",
+        "Ghi lựa chọn đã chốt, gửi ảnh game và xử lý phản hồi về khác biệt so với mẫu được duyệt."
+      ]
+    ],
+    "npcs": "Khách đổi kiểu lần đầu, người chỉ muốn chỉnh nhẹ, người chuẩn bị một dịp quan trọng và nhân viên đang học nghề. Nhân vật nhớ kiểu đã chọn, không đòi thân mật với người chơi.",
+    "events": "Khách đưa hai mẫu mâu thuẫn, đổi ý giữa chừng, đến trễ, không đồng ý quay clip, khiếu nại khác bản xem trước và khách quen giới thiệu bạn. Cần làm rõ thỏa thuận, không luôn đổ lỗi cho khách.",
+    "conversation": "“Mình muốn thay đổi nhưng đừng quá nhiều.” → hỏi phần muốn giữ → dựng bản xem trước → khách đồng ý rồi mới thực hiện.",
+    "progress": "Mở ghế, bộ kiểu, gương, khu chờ, lịch hẹn và học việc. Review về lắng nghe, đúng mẫu và xử lý chỉnh sửa; không về việc làm khách “đẹp chuẩn”. Tuyến dài là buổi tạo kiểu cộng đồng tự chọn.",
+    "guard": "Không có hướng dẫn hóa chất hoặc thao tác nguy hiểm ngoài đời; các công cụ chỉ là cơ chế tạo hình trong game."
+  },
+  {
+    "id": "repair",
+    "title": "Tiệm sửa chữa đồ dùng",
+    "premise": "Quầy nhận đồ, bàn kiểm tra, khay linh kiện hư cấu và kệ đồ đã sửa. Vật phẩm có câu chuyện: chiếc đèn kỷ niệm, máy phát nhạc tưởng tượng hoặc món đồ chơi.",
+    "loop": "Nhận mô tả → kiểm tra bằng câu đố → xác định phương án → báo và chờ duyệt → lắp/sửa giả lập → chạy kiểm thử → bàn giao và theo dõi.",
+    "actions": [
+      [
+        "Kiểm tra có giả thuyết",
+        "Chọn phép thử an toàn trong mô phỏng, đọc kết quả và loại trừ khả năng. Không chọn bừa linh kiện thay rồi may rủi đúng."
+      ],
+      [
+        "Ghép cơ cấu",
+        "Lắp các khối hình hoặc nối mô-đun hư cấu theo điều kiện câu đố. Không dựng hướng dẫn sửa điện, pin hay thiết bị thật."
+      ],
+      [
+        "Báo phương án",
+        "Giải thích phần đã biết, phần chưa biết, số xu và thời gian game. Chỉ sửa sau khi khách duyệt phạm vi."
+      ],
+      [
+        "Kiểm thử và bàn giao",
+        "Chạy bộ thử của vật phẩm, ghi kết quả và trả đúng món/đồ kèm. Sửa chưa đạt không thể bấm bàn giao nhận thưởng."
+      ]
+    ],
+    "npcs": "Khách giữ món đồ có kỷ niệm, người muốn sửa nhanh, nhân viên thích tìm nguyên nhân và nhà cung cấp linh kiện giả lập. Câu chuyện không buộc người chơi hy sinh xu để được coi là tử tế.",
+    "events": "Khách mô tả sai triệu chứng, linh kiện giao nhầm, phát hiện thêm vấn đề, khách đổi ý sau báo giá, vật gửi kèm thất lạc và review vì chưa được giải thích đủ.",
+    "conversation": "“Bạn sửa luôn mọi thứ giúp mình.” → xác nhận phạm vi và dự toán game → người chơi chỉ làm những phần được duyệt, phát sinh thì hỏi lại.",
+    "progress": "Mở khay phân loại, bàn thử, bộ mô-đun, kệ giữ đồ và phụ tá. Review về giải thích, kết quả kiểm thử và đúng hẹn. Tuyến dài là khôi phục một đồ vật trang trí cho khu phố.",
+    "guard": "Giá trị riêng là chẩn đoán nguyên nhân trong câu đố và kiểm thử sau sửa; không chỉ ghép mảnh theo hình có sẵn."
+  },
+  {
+    "id": "homestay",
+    "title": "Homestay nhỏ",
+    "premise": "Sảnh đón, vài phòng, bếp chung và sân nhỏ. Mỗi phòng là một không gian có thể bước vào, dọn và trang trí, không chỉ là dòng trên lịch đặt.",
+    "loop": "Nhận đặt → xác nhận nhu cầu → chuẩn bị phòng → đón và giới thiệu → đáp ứng yêu cầu → kết thúc lưu trú → kiểm phòng và đọc review.",
+    "actions": [
+      [
+        "Lịch phòng",
+        "Giữ phòng theo ngày game, tránh trùng đặt, chuyển lựa chọn trước khi chốt. Không tự nhận vượt số phòng để tăng thử thách."
+      ],
+      [
+        "Chuẩn bị thực tế",
+        "Đặt vật dụng, dọn và kiểm danh sách gọn; đồ đã đặt hiện trong phòng. Nhiệm vụ không dài thành công việc lau từng pixel."
+      ],
+      [
+        "Đón và hỗ trợ",
+        "Hỏi giờ đến, nhu cầu trong game và giới thiệu khu chung; đáp ứng theo thỏa thuận, không suy đoán từ ngoại hình khách."
+      ],
+      [
+        "Hoạt động nhỏ",
+        "Tổ chức buổi trà, góc chụp ảnh hoặc giới thiệu khu phố bằng nội dung hư cấu. Người chơi quyết định mức giao lưu."
+      ]
+    ],
+    "npcs": "Khách thích yên tĩnh, gia đình đi nghỉ trong truyện, người quay nội dung du lịch và hàng xóm hỗ trợ. Khách quay lại nhắc đúng phòng hoặc hoạt động từng trải nghiệm.",
+    "events": "Khách tới sớm, hủy đặt, phòng chưa sẵn sàng, gây ồn, làm hỏng vật dụng, quay người khác chưa được đồng ý và review mâu thuẫn. Kiểm thỏa thuận và tình trạng, không tự khấu trừ hoặc kết tội.",
+    "conversation": "“Mình muốn nhận phòng sớm hơn.” → xem phòng có sẵn chưa → cho nhận, giữ hành lý giả lập hoặc hẹn lại; không hứa khi phòng vẫn đang có khách.",
+    "progress": "Mở phòng, sân, khu chung, lịch chuẩn bị và phụ việc. Review dựa trên phòng đã ở hoặc tương tác đã trải nghiệm, không giả nhãn. Tuyến dài là ngày đón những khách quen trở lại.",
+    "guard": "Nét riêng là chuẩn bị không gian, phối lịch và hỗ trợ trong một thời gian lưu trú, không chỉ đổi cảnh của tiệm bán hàng."
+  }
+]

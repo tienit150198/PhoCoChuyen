@@ -1,0 +1,242 @@
+[
+  {
+    "career_id": "mother_baby",
+    "game_day": 1,
+    "new_experience": "Một khách, lấy đúng món, thu tiền, đóng cửa; luôn có gợi ý.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "mother_baby",
+    "game_day": 2,
+    "new_experience": "Hỏi nhu cầu và gói quà bằng mẫu có sẵn.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "mother_baby",
+    "game_day": 3,
+    "new_experience": "Nhập hàng, kiểm kiện, đặt lại kệ.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "mother_baby",
+    "game_day": 4,
+    "new_experience": "Đơn hẹn nhận sau và tin nhắn xác nhận.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "mother_baby",
+    "game_day": 5,
+    "new_experience": "Review đầu tiên; trả lời và làm việc bổ sung nếu có.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "mother_baby",
+    "game_day": 6,
+    "new_experience": "Khách quen quay lại; mở phối quà tự do.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "mother_baby",
+    "game_day": 7,
+    "new_experience": "Chọn một tình huống đời thường; có thể giảm độ căng.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "mother_baby",
+    "game_day": 8,
+    "new_experience": "Nhận phụ việc và hướng dẫn bổ sung hàng.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "mother_baby",
+    "game_day": 9,
+    "new_experience": "Chuẩn bị hoạt động cộng đồng hoặc một đơn lớn tự chọn.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "mother_baby",
+    "game_day": 10,
+    "new_experience": "Khép tuyến chuyện đầu, mở trang trí sâu và chơi tự do.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "pharmacy",
+    "game_day": 1,
+    "new_experience": "Đọc một phiếu đủ và lấy một mã hàng.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "pharmacy",
+    "game_day": 2,
+    "new_experience": "Phân biệt bao bì giống, kiểm số lượng.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "pharmacy",
+    "game_day": 3,
+    "new_experience": "Phiếu thiếu dữ kiện và cách hỏi/chuyển.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "pharmacy",
+    "game_day": 4,
+    "new_experience": "Lô hàng, khu tạm giữ và kiểm nhận nhập.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "pharmacy",
+    "game_day": 5,
+    "new_experience": "Hai lượt khách, tạm dừng đọc và giải thích thời gian chờ.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "pharmacy",
+    "game_day": 6,
+    "new_experience": "Hỗ trợ Khoa, mở công cụ đối chiếu.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "pharmacy",
+    "game_day": 7,
+    "new_experience": "Review và quyền riêng tư khi quay clip.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "pharmacy",
+    "game_day": 8,
+    "new_experience": "Xử lý sai giao nhận bằng chứng cứ.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "pharmacy",
+    "game_day": 9,
+    "new_experience": "Tổ chức hoạt động vật dụng giả lập cho khu phố.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "pharmacy",
+    "game_day": 10,
+    "new_experience": "Kiểm một ca đầy đủ, nhận kỷ niệm và tiếp tục tự do.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "accounting",
+    "game_day": 1,
+    "new_experience": "Lật thẻ, phân loại và đối chiếu một cặp.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "accounting",
+    "game_day": 2,
+    "new_experience": "Tìm một lỗi nhập và ghi lý do sửa.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "accounting",
+    "game_day": 3,
+    "new_experience": "Ghép nhiều phiếu với một khoản trả.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "accounting",
+    "game_day": 4,
+    "new_experience": "Thiếu nguồn, gửi yêu cầu và chuyển vụ khác.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "accounting",
+    "game_day": 5,
+    "new_experience": "Đối chiếu khoản hoàn và thanh toán từng phần.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "accounting",
+    "game_day": 6,
+    "new_experience": "Giúp Huy, mở khay và bảng ghim mới.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "accounting",
+    "game_day": 7,
+    "new_experience": "Mâu thuẫn nguồn và phiên bản.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "accounting",
+    "game_day": 8,
+    "new_experience": "Trình bày một báo cáo giả lập có giải thích.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "accounting",
+    "game_day": 9,
+    "new_experience": "Xử lý áp lực, bàn giao và kiểm quyền.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "accounting",
+    "game_day": 10,
+    "new_experience": "Khép kỳ mô phỏng, nhận kỷ niệm và mở vụ biến thể.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "customer_care",
+    "game_day": 1,
+    "new_experience": "Một vụ tra cứu đơn, trả lời ngắn và đóng đúng điều kiện.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "customer_care",
+    "game_day": 2,
+    "new_experience": "Giao chậm và tạo hẹn cập nhật.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "customer_care",
+    "game_day": 3,
+    "new_experience": "Giao thiếu, đề nghị gửi bù và chờ thực thi.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "customer_care",
+    "game_day": 4,
+    "new_experience": "Hai nguồn mâu thuẫn, mở xác minh.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "customer_care",
+    "game_day": 5,
+    "new_experience": "Đổi/hoàn theo chính sách giả lập và quyền.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "customer_care",
+    "game_day": 6,
+    "new_experience": "Bàn giao với đầy đủ dữ kiện và lời hẹn.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "customer_care",
+    "game_day": 7,
+    "new_experience": "Review công khai, trả lời không lộ thông tin riêng.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "customer_care",
+    "game_day": 8,
+    "new_experience": "Khách nóng giận; giới hạn và hỗ trợ trưởng ca.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "customer_care",
+    "game_day": 9,
+    "new_experience": "Ca cao điểm tự chọn; phân loại và chia việc.",
+    "wall_clock_day_required": false
+  },
+  {
+    "career_id": "customer_care",
+    "game_day": 10,
+    "new_experience": "Tổng kết nguyên nhân lặp, đề xuất cải tiến và mở chơi tự do.",
+    "wall_clock_day_required": false
+  }
+]

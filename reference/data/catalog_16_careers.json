@@ -1,0 +1,114 @@
+[
+  {
+    "id": "mother_baby",
+    "name": "Tiệm mẹ & bé",
+    "release": "launch",
+    "focus": "Tìm hàng, gói quà, phục vụ và chăm chút tiệm",
+    "fantasy": "Làm chủ một tiệm nhỏ được khách quen yêu mến"
+  },
+  {
+    "id": "pharmacy",
+    "name": "Nhà thuốc nhỏ",
+    "release": "launch",
+    "focus": "Kiểm phiếu, đối chiếu sản phẩm, số lượng, lô hàng",
+    "fantasy": "Phục vụ cẩn thận, biết lúc nào cần hỏi thêm hoặc chuyển người phụ trách"
+  },
+  {
+    "id": "accounting",
+    "name": "Một ngày làm kế toán",
+    "release": "launch",
+    "focus": "Ghép chứng từ, tìm sai lệch, đối chiếu và giải thích số liệu",
+    "fantasy": "Giải những câu đố dữ liệu và giúp văn phòng hoạt động rõ ràng hơn"
+  },
+  {
+    "id": "customer_care",
+    "name": "Chăm sóc khách hàng",
+    "release": "launch",
+    "focus": "Hiểu yêu cầu, kiểm chứng, giải quyết và theo dõi lời hứa",
+    "fantasy": "Biến một trải nghiệm khó chịu thành một vấn đề đã được xử lý"
+  },
+  {
+    "id": "restaurant",
+    "name": "Quán ăn nhỏ",
+    "release": "future_proposal",
+    "focus": "Nhận món, chuẩn bị, nấu theo công thức, phục vụ",
+    "fantasy": "Tạo một quán ăn có món tủ và khách ruột"
+  },
+  {
+    "id": "cafe_bakery",
+    "name": "Cà phê & tiệm bánh",
+    "release": "future_proposal",
+    "focus": "Pha chế, trang trí bánh, phối không gian, nhận đơn hẹn",
+    "fantasy": "Xây một góc hẹn hò ấm áp của khu phố"
+  },
+  {
+    "id": "freelancer",
+    "name": "Freelancer sáng tạo",
+    "release": "future_proposal",
+    "focus": "Đọc brief, hỏi yêu cầu, làm sản phẩm nhỏ, quản lý sửa đổi",
+    "fantasy": "Từ bàn làm việc ở nhà đến studio mang phong cách riêng"
+  },
+  {
+    "id": "farm",
+    "name": "Nông trại ngoại ô",
+    "release": "future_proposal",
+    "focus": "Gieo trồng, chăm sóc, thu hoạch, đóng giỏ và bán ở chợ",
+    "fantasy": "Xây một trang trại nhỏ gắn với đời sống khu phố"
+  },
+  {
+    "id": "sales",
+    "name": "Chuyên viên tư vấn bán hàng",
+    "release": "future_proposal",
+    "focus": "Khám phá nhu cầu, demo, so sánh, đề xuất và chăm sóc sau mua",
+    "fantasy": "Bán đúng thứ khách cần thay vì cố chốt mọi đơn"
+  },
+  {
+    "id": "grocery",
+    "name": "Tạp hóa khu phố",
+    "release": "future_proposal",
+    "focus": "Sắp kệ, tính tiền, giữ hàng, quản lý tồn và sổ hẹn",
+    "fantasy": "Làm nơi mọi người ghé mua đồ và kể chuyện mỗi ngày"
+  },
+  {
+    "id": "fashion",
+    "name": "Tiệm thời trang",
+    "release": "future_proposal",
+    "focus": "Phối đồ, tư vấn kích cỡ, chỉnh sửa, trưng bày",
+    "fantasy": "Giúp mỗi khách tìm ra phong cách riêng"
+  },
+  {
+    "id": "pet_care",
+    "name": "Tiệm chăm sóc thú cưng",
+    "release": "future_proposal",
+    "focus": "Làm quen, chải lông, chơi, vệ sinh nhẹ, bàn giao",
+    "fantasy": "Xây một nơi thú cưng cảm thấy thoải mái"
+  },
+  {
+    "id": "florist",
+    "name": "Tiệm hoa",
+    "release": "future_proposal",
+    "focus": "Hỏi dịp tặng, phối bó, viết thiệp, giữ hoa và giao hẹn",
+    "fantasy": "Kể câu chuyện của khách bằng những bó hoa"
+  },
+  {
+    "id": "salon",
+    "name": "Salon tóc",
+    "release": "future_proposal",
+    "focus": "Tư vấn mẫu, tạo kiểu bằng thao tác đơn giản, chăm sóc sau làm",
+    "fantasy": "Tạo một salon có gu và những vị khách thân quen"
+  },
+  {
+    "id": "repair",
+    "name": "Tiệm sửa chữa đồ dùng",
+    "release": "future_proposal",
+    "focus": "Nhận đồ, tìm lỗi, báo phương án, sửa và thử",
+    "fantasy": "Giúp những đồ vật có kỷ niệm được sử dụng tiếp"
+  },
+  {
+    "id": "homestay",
+    "name": "Homestay nhỏ",
+    "release": "future_proposal",
+    "focus": "Chuẩn bị phòng, nhận khách, xử lý yêu cầu và tổ chức trải nghiệm",
+    "fantasy": "Biến một căn nhà thành nơi khách muốn quay lại"
+  }
+]

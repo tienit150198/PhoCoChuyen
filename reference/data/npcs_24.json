@@ -1,0 +1,362 @@
+[
+  {
+    "id": "mother_baby_npc_01",
+    "career_id": "mother_baby",
+    "display_name": "Linh",
+    "role": "Khách mua quà",
+    "personality": "Kỹ tính, thích màu kem; hỏi rõ trước khi mua.",
+    "memory_policy": "Nhớ màu giấy gói và lời hẹn nhận hàng đã chốt.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "mother_baby_npc_02",
+    "career_id": "mother_baby",
+    "display_name": "Bác Tư",
+    "role": "Hàng xóm",
+    "personality": "Điềm đạm, hay mua quà cho gia đình; thích được giải thích chậm.",
+    "memory_policy": "Nhớ chiếc ghế bạn đặt và món quà đã giúp chọn.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "mother_baby_npc_03",
+    "career_id": "mother_baby",
+    "display_name": "Mai",
+    "role": "Khách thường ghé",
+    "personality": "Thường vội; ưu tiên đặt trước và tới lấy nhanh.",
+    "memory_policy": "Nhớ lần tiệm thực hiện đúng hoặc lỡ giờ hẹn.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "mother_baby_npc_04",
+    "career_id": "mother_baby",
+    "display_name": "An",
+    "role": "Phụ việc",
+    "personality": "Nhiệt tình nhưng mới làm; cần nhãn và chỉ dẫn rõ.",
+    "memory_policy": "Nhớ quy tắc người chơi đã hướng dẫn, không tự thành giỏi ngay.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "mother_baby_npc_05",
+    "career_id": "mother_baby",
+    "display_name": "Bảo",
+    "role": "Người làm nội dung",
+    "personality": "Thích hình ảnh; có thể hợp tác tốt hoặc gây va chạm về cách quay.",
+    "memory_policy": "Nhớ thỏa thuận đã xác nhận, không mặc định là người xấu.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "mother_baby_npc_06",
+    "career_id": "mother_baby",
+    "display_name": "Hạnh",
+    "role": "Người giao nguồn hàng",
+    "personality": "Thực tế, có lịch giao và khả năng bổ sung hữu hạn.",
+    "memory_policy": "Nhớ những đơn đã xác nhận thiếu/thừa và lời hẹn giao bù.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "pharmacy_npc_01",
+    "career_id": "pharmacy",
+    "display_name": "Cô Thu",
+    "role": "Người phụ trách",
+    "personality": "Cẩn thận, khuyến khích hỏi lại khi thiếu dữ kiện.",
+    "memory_policy": "Nhớ các lần chuyển yêu cầu đúng phạm vi.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "pharmacy_npc_02",
+    "career_id": "pharmacy",
+    "display_name": "Bác Năm",
+    "role": "Khách quen",
+    "personality": "Thích hướng dẫn rõ từng bước giao nhận; không thích bị giục.",
+    "memory_policy": "Nhớ cách tiệm kiểm phiếu và giữ thông tin riêng.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "pharmacy_npc_03",
+    "career_id": "pharmacy",
+    "display_name": "Lan",
+    "role": "Người mua hộ",
+    "personality": "Hay quên mã; sẵn lòng kiểm lại với người nhờ mua.",
+    "memory_policy": "Nhớ phiếu đã được bổ sung, không lưu suy đoán sức khỏe.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "pharmacy_npc_04",
+    "career_id": "pharmacy",
+    "display_name": "Khoa",
+    "role": "Nhân viên mới",
+    "personality": "Nhanh nhưng dễ nhầm bao bì; cần quy trình đối chiếu.",
+    "memory_policy": "Nhớ lỗi mã hàng đã được sửa và bước kiểm tra mới.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "pharmacy_npc_05",
+    "career_id": "pharmacy",
+    "display_name": "Minh",
+    "role": "Nhà cung cấp",
+    "personality": "Ưu tiên phiếu giao và kiểm đếm; có thể giao nhầm.",
+    "memory_policy": "Nhớ các kiện tạm giữ và yêu cầu điều chỉnh.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "pharmacy_npc_06",
+    "career_id": "pharmacy",
+    "display_name": "Vy",
+    "role": "Người kể chuyện khu phố",
+    "personality": "Muốn giới thiệu nơi phục vụ cẩn thận; cần nhắc về quyền riêng tư.",
+    "memory_policy": "Nhớ khu được quay và điều không được công khai.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "accounting_npc_01",
+    "career_id": "accounting",
+    "display_name": "Huy",
+    "role": "Đồng nghiệp mới",
+    "personality": "Chịu học nhưng dễ vội; thích ví dụ cụ thể.",
+    "memory_policy": "Nhớ cách đối chiếu đã được hướng dẫn.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "accounting_npc_02",
+    "career_id": "accounting",
+    "display_name": "Chị Vân",
+    "role": "Người quản lý",
+    "personality": "Muốn biết số liệu có căn cứ và việc nào còn chờ.",
+    "memory_policy": "Nhớ cam kết, điều chỉnh và các lần bàn giao rõ ràng.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "accounting_npc_03",
+    "career_id": "accounting",
+    "display_name": "Cô Hoa",
+    "role": "Khách thuê làm sổ",
+    "personality": "Giỏi bán hàng nhưng không quen thuật ngữ; hỏi thực tế.",
+    "memory_policy": "Nhớ cách giải thích số liệu và danh sách cần bổ sung.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "accounting_npc_04",
+    "career_id": "accounting",
+    "display_name": "Nam",
+    "role": "Bộ phận mua hàng",
+    "personality": "Thường gửi tài liệu rời rạc; hợp tác khi yêu cầu cụ thể.",
+    "memory_policy": "Nhớ những trường thông tin đã thống nhất phải có.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "accounting_npc_05",
+    "career_id": "accounting",
+    "display_name": "Lộc",
+    "role": "Người giữ quỹ",
+    "personality": "Cẩn thận với bàn giao; khó chịu nếu bị kết luận vội.",
+    "memory_policy": "Nhớ vụ đối chiếu đã xác minh, không bị gắn nhãn từ nghi vấn.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "accounting_npc_06",
+    "career_id": "accounting",
+    "display_name": "Trâm",
+    "role": "Người kiểm tra nội bộ",
+    "personality": "Đặt câu hỏi về nguồn và phiên bản; không phải đối thủ.",
+    "memory_policy": "Nhớ các thay đổi có nhật ký và việc được chuyển đúng quyền.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "customer_care_npc_01",
+    "career_id": "customer_care",
+    "display_name": "Lan",
+    "role": "Khách mới",
+    "personality": "Muốn biết rõ bước tiếp theo; không quen quy trình.",
+    "memory_policy": "Nhớ lời hẹn và kết quả thật, không chỉ lời xin lỗi.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "customer_care_npc_02",
+    "career_id": "customer_care",
+    "display_name": "Phúc",
+    "role": "Khách đang bức xúc",
+    "personality": "Nói ngắn, dễ nóng khi phải kể lại nhiều lần.",
+    "memory_policy": "Nhớ nhân viên có đọc hồ sơ và thực hiện cam kết không.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "customer_care_npc_03",
+    "career_id": "customer_care",
+    "display_name": "Hà",
+    "role": "Khách quen",
+    "personality": "Lịch sự nhưng yêu cầu được xử lý chính xác.",
+    "memory_policy": "Nhớ các lần sửa lỗi và phương án đã chọn.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "customer_care_npc_04",
+    "career_id": "customer_care",
+    "display_name": "Duy",
+    "role": "Đầu mối kho",
+    "personality": "Có hàng đợi riêng; cần yêu cầu đủ mã và số lượng.",
+    "memory_policy": "Nhớ việc đã nhận và trạng thái thực hiện.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "customer_care_npc_05",
+    "career_id": "customer_care",
+    "display_name": "Ngọc",
+    "role": "Đầu mối giao nhận",
+    "personality": "Chỉ xác nhận khi có chứng cứ giao; có thể cần đối soát.",
+    "memory_policy": "Nhớ mốc cập nhật và dữ liệu đã cung cấp.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  },
+  {
+    "id": "customer_care_npc_06",
+    "career_id": "customer_care",
+    "display_name": "Chị Mai",
+    "role": "Trưởng ca",
+    "personality": "Hỗ trợ việc vượt quyền và bàn giao; không ép đóng cho đẹp số.",
+    "memory_policy": "Nhớ lý do ưu tiên, ngoại lệ đã duyệt và chất lượng theo dõi.",
+    "is_fictional_npc": true,
+    "relationship_states": [
+      "new",
+      "familiar",
+      "trusted"
+    ],
+    "never_infer_real_player_sensitive_traits": true
+  }
+]

@@ -1,0 +1,206 @@
+/* Pet Care Mèo Mập — scoped workbench styles.
+   Colours come only from theme tokens; the literal fallbacks keep the bench
+   readable while a theme has not defined a token yet. */
+.career-job.pc{
+  --pc-bg:var(--bg,#f7f4ec);--pc-s1:var(--surface,#fffdf7);--pc-s2:var(--surface-2,#f4ece4);
+  --pc-ink:var(--ink,#3f3a36);--pc-muted:var(--muted,#86786e);--pc-line:var(--line,#eadfd5);
+  --pc-accent:var(--accent,#c07a5a);--pc-accent-ink:var(--accent-ink,#ffffff);
+  --pc-good:var(--good,#4f8a4f);--pc-warn:var(--warn,#c98a2b);--pc-bad:var(--bad,#c0504d);--pc-info:var(--info,#4a7fb0);
+  --pc-r:var(--radius,18px);--pc-rs:var(--radius-sm,10px);--pc-shadow:var(--shadow,0 6px 20px #0000001a);
+  color:var(--pc-ink);display:grid;gap:14px;min-width:0
+}
+.career-job.pc *{box-sizing:border-box}
+.career-job.pc>*,.career-job.pc .wb-main>*,.career-job.pc .wb-side>*{min-width:0}
+.career-job.pc .btn{min-height:44px}
+.career-job.pc small{display:block}
+.career-job.pc .row small,.career-job.pc .kv small,.career-job.pc .btn small{display:inline}
+.career-job.pc h5{margin:12px 0 4px;font-size:.95em}
+
+/* ---------- shared-class fallbacks (zero specificity: a theme rule wins) */
+:where(.career-job.pc) :where(.card){background:var(--pc-s1);border:1px solid var(--pc-line);border-radius:var(--pc-r);padding:14px;box-shadow:var(--pc-shadow)}
+:where(.career-job.pc) :where(.ticket) h3{margin:0}
+:where(.career-job.pc) :where(.ticket) p{margin:6px 0;line-height:1.5}
+:where(.career-job.pc) :where(.patience){display:flex;align-items:center;gap:8px}
+:where(.career-job.pc) :where(.patience .bar){flex:1;height:10px;border-radius:99px;background:var(--pc-s2);border:1px solid var(--pc-line);overflow:hidden}
+:where(.career-job.pc) :where(.patience .bar i){display:block;height:100%;background:var(--pc-good);transition:width .3s}
+:where(.career-job.pc) :where(.patience .bar.low i){background:var(--pc-warn)}
+:where(.career-job.pc) :where(.workbench){display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,310px);gap:14px;align-items:start}
+:where(.career-job.pc) :where(.wb-main,.wb-side){min-width:0;display:grid;gap:12px;align-content:start}
+:where(.career-job.pc) :where(.wb-side){position:sticky;top:0;background:var(--pc-s1);border:1px solid var(--pc-line);border-radius:var(--pc-r);padding:12px}
+:where(.career-job.pc) :where(.tile-grid){display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+:where(.career-job.pc) :where(.tile){position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:84px;padding:8px 6px;
+  background:var(--pc-s1);color:var(--pc-ink);border:2px solid var(--pc-line);border-radius:var(--pc-rs);text-align:center;cursor:pointer;font:inherit}
+:where(.career-job.pc) :where(.tile .tile-emoji){font-size:1.6em;line-height:1}
+:where(.career-job.pc) :where(.tile small){color:var(--pc-muted);font-size:.8em}
+:where(.career-job.pc) :where(.tile.selected){border-color:var(--pc-accent);background:var(--pc-s2);box-shadow:inset 0 0 0 2px var(--pc-accent)}
+:where(.career-job.pc) :where(.tile.empty){opacity:.6}
+:where(.career-job.pc) :where(.tile.locked,.tile:disabled){opacity:.45;cursor:not-allowed}
+:where(.career-job.pc) :where(.checklist){list-style:none;margin:0;padding:0;display:grid;gap:4px}
+:where(.career-job.pc) :where(.checklist li){display:grid;grid-template-columns:22px 1fr;align-items:start;gap:4px;font-size:.92em;color:var(--pc-muted)}
+:where(.career-job.pc) :where(.checklist li>span){font-weight:800}
+:where(.career-job.pc) :where(.checklist li small){grid-column:2;font-size:.85em}
+:where(.career-job.pc) :where(.checklist li.ok){color:var(--pc-good)}
+:where(.career-job.pc) :where(.checklist li.bad){color:var(--pc-bad)}
+:where(.career-job.pc) :where(.kv){display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:.95em}
+:where(.career-job.pc) :where(.kv.total){border-top:1px dashed var(--pc-line);margin-top:4px;padding-top:6px;font-size:1.05em}
+:where(.career-job.pc) :where(.kv.muted){color:var(--pc-muted)}
+:where(.career-job.pc) :where(.btn.big){min-height:52px;font-size:1.05em}
+:where(.career-job.pc) :where(.btn.full){width:100%}
+:where(.career-job.pc) :where(.stack){display:grid;gap:6px}
+
+/* ---------- cards */
+.career-job.pc .pc-card{background:var(--pc-s1);border:1px solid var(--pc-line);border-radius:var(--pc-r);padding:12px}
+.career-job.pc .pc-card>h4{margin:0 0 8px;font-size:1em}
+.career-job.pc .pc-pet{font-weight:800}
+.career-job.pc .pc-row{display:grid;grid-template-columns:minmax(84px,120px) 1fr;gap:8px;padding:4px 0;border-bottom:1px dashed var(--pc-line);font-size:.93em}
+.career-job.pc .pc-row>span{color:var(--pc-muted)}
+.career-job.pc .pc-row>b{font-weight:600;min-width:0}
+.career-job.pc .pc-form .bubble{margin:8px 0 0}
+
+/* ---------- inspection */
+.career-job.pc .pc-parts{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.career-job.pc .pc-part{min-height:64px}
+.career-job.pc .pc-found{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:var(--pc-rs);background:var(--pc-s2);border:1px solid var(--pc-line)}
+.career-job.pc .pc-found .tile-emoji{font-size:1.3em}
+.career-job.pc .pc-found small{color:var(--pc-ink);line-height:1.4;font-size:.85em}
+.career-job.pc .pc-found.warn{border-color:var(--pc-warn);box-shadow:inset 4px 0 0 var(--pc-warn)}
+
+/* ---------- stress & tools */
+.career-job.pc .pc-stress{display:grid;gap:4px;margin:8px 0}
+.career-job.pc .pc-meter{position:relative;height:16px;border-radius:99px;background:var(--pc-s2);border:1px solid var(--pc-line);overflow:hidden}
+.career-job.pc .pc-meter i{display:block;height:100%;background:var(--pc-good);transition:width .3s}
+.career-job.pc .pc-meter em{position:absolute;top:0;bottom:0;width:2px;background:var(--pc-bad)}
+.career-job.pc .pc-stress.warn .pc-meter i{background:var(--pc-warn)}
+.career-job.pc .pc-stress.bad .pc-meter i{background:var(--pc-bad)}
+.career-job.pc .pc-stress.bad small{color:var(--pc-bad);font-weight:700}
+.career-job.pc .pc-tools{gap:6px}
+.career-job.pc .btn.pc-no{text-decoration:line-through;opacity:.8}
+
+/* ---------- step strip */
+.career-job.pc .pc-steps{list-style:none;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;margin:0;padding:0}
+.career-job.pc .pc-steps li{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;border-radius:var(--pc-rs);background:var(--pc-s2);font-size:.78em;text-align:center;color:var(--pc-muted)}
+.career-job.pc .pc-steps li span{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--pc-s1);border:1px solid var(--pc-line);font-size:1.3em}
+.career-job.pc .pc-steps li.done{color:var(--pc-good)}
+.career-job.pc .pc-steps li.done span{background:var(--pc-good);border-color:var(--pc-good);color:var(--pc-accent-ink);font-size:1em;font-weight:800}
+.career-job.pc .pc-steps li.now{color:var(--pc-ink);font-weight:800;outline:2px solid var(--pc-accent)}
+.career-job.pc .pc-steps li.skip{opacity:.35;text-decoration:line-through}
+
+/* ---------- bath controls */
+.career-job.pc .pc-tiles{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}
+.career-job.pc .pc-thermo{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:8px 10px;margin:8px 0;border-radius:var(--pc-rs);background:var(--pc-s2);border:2px solid var(--pc-line)}
+.career-job.pc .pc-thermo>b{font-size:1.4em;min-width:64px;text-align:center;font-variant-numeric:tabular-nums}
+.career-job.pc .pc-thermo small{flex:1 1 100%}
+.career-job.pc .pc-thermo.ok{border-color:var(--pc-good)}
+.career-job.pc .pc-thermo.cold{border-color:var(--pc-info)}
+.career-job.pc .pc-thermo.hot{border-color:var(--pc-warn)}
+.career-job.pc .pc-thermo.burn{border-color:var(--pc-bad);color:var(--pc-bad)}
+.career-job.pc .pc-q{min-width:44px;padding:0 8px}
+
+/* ---------- real-time bars */
+.career-job.pc .pc-timer{display:grid;gap:4px;margin:6px 0}
+.career-job.pc .pc-track{position:relative;height:20px;border-radius:99px;background:var(--pc-s2);border:1px solid var(--pc-line);overflow:hidden}
+.career-job.pc .pc-track .fill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--pc-info);opacity:.75}
+.career-job.pc .pc-timer.dry .fill{background:var(--pc-warn)}
+.career-job.pc .pc-track em{position:absolute;top:0;bottom:0;width:3px;background:var(--pc-good)}
+.career-job.pc .pc-timer-label{font-weight:700;font-variant-numeric:tabular-nums;color:var(--pc-muted)}
+.career-job.pc .pc-timer.ready .pc-timer-label{color:var(--pc-good)}
+.career-job.pc .pc-timer.ready .pc-track{box-shadow:0 0 0 2px var(--pc-good)}
+.career-job.pc .pc-timer.over .pc-timer-label{color:var(--pc-bad)}
+.career-job.pc .pc-timer.over .fill{background:var(--pc-bad)}
+
+/* ---------- report */
+.career-job.pc .pc-report h4{margin:4px 0}
+.career-job.pc .pc-say{display:flex;gap:8px;align-items:flex-start;min-height:44px;padding:8px 10px;text-align:left;font:inherit;font-size:.9em;color:var(--pc-ink);
+  background:var(--pc-s1);border:1px solid var(--pc-line);border-radius:var(--pc-rs);cursor:pointer}
+.career-job.pc .pc-say span{font-size:1.2em;line-height:1}
+.career-job.pc .pc-say.on{border-color:var(--pc-accent);background:var(--pc-s2)}
+.career-job.pc .pc-say.risky{font-style:italic}
+.career-job.pc .pc-say.risky.on{border-color:var(--pc-bad)}
+.career-job.pc .pc-receipt{background:var(--pc-s2);border:1px dashed var(--pc-line);border-radius:var(--pc-rs);padding:10px 12px;font-variant-numeric:tabular-nums}
+.career-job.pc .pc-receipt h4{margin:0 0 6px}
+
+/* ---------- kennel */
+.career-job.pc .pc-pens{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.career-job.pc .pc-pen{display:grid;gap:3px;align-content:start;min-height:44px;padding:10px;text-align:left;font:inherit;color:var(--pc-ink);
+  background:var(--pc-s1);border:2px solid var(--pc-line);border-radius:var(--pc-rs)}
+.career-job.pc button.pc-pen{cursor:pointer;border-style:dashed}
+.career-job.pc .pc-pen small{color:var(--pc-muted);font-size:.82em}
+.career-job.pc .pc-pen.busy{background:var(--pc-s2)}
+.career-job.pc .pc-pen.locked{opacity:.5}
+.career-job.pc .pc-pen.no{opacity:.55}
+.career-job.pc .pc-pen.selected{border-style:solid;border-color:var(--pc-accent);box-shadow:inset 0 0 0 2px var(--pc-accent)}
+.career-job.pc .pc-pen.small-pen small{color:var(--pc-warn)}
+
+/* ---------- feeding */
+.career-job.pc .pc-steppers{align-items:center;gap:6px;margin:8px 0}
+.career-job.pc .pc-steppers>b{min-width:40px;text-align:center;font-size:1.15em;font-variant-numeric:tabular-nums}
+.career-job.pc .pc-steppers>span{color:var(--pc-muted);font-size:.9em}
+.career-job.pc .pc-chart{display:grid;gap:4px;padding:10px;border-radius:var(--pc-rs);background:var(--pc-s2);margin:8px 0}
+.career-job.pc .pc-chart p{margin:0}
+.career-job.pc .pc-bands{display:flex;flex-wrap:wrap;gap:4px}
+.career-job.pc .pc-bands span{font-size:.8em;padding:3px 8px;border-radius:99px;background:var(--pc-s1);border:1px solid var(--pc-line)}
+.career-job.pc .pc-bands span.on{border-color:var(--pc-accent);font-weight:700}
+.career-job.pc .pc-bowl{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px;border-radius:var(--pc-rs);background:var(--pc-s1);border:1px solid var(--pc-line)}
+.career-job.pc .pc-bowl>span{font-size:1.4em}
+.career-job.pc .pc-bowl small{flex:1 1 100%;color:var(--pc-muted)}
+
+/* ---------- v0.5: the day, the counter, body language, escapes, medicine, adoption */
+.career-job.pc .pc-today{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;margin:0;padding:8px 12px;border-radius:var(--pc-rs);background:var(--pc-s2);border:1px solid var(--pc-line);font-size:.92em}
+.career-job.pc .pc-today small{display:inline;color:var(--pc-muted)}
+.career-job.pc .pc-last{margin:0;padding:8px 12px;border-radius:var(--pc-rs);background:var(--pc-s1);border:1px solid var(--pc-line);border-left:4px solid var(--pc-info);font-size:.92em}
+.career-job.pc .pc-last.good{border-left-color:var(--pc-good)}
+.career-job.pc .pc-last.bad{border-left-color:var(--pc-bad)}
+.career-job.pc .pc-desk{display:grid;gap:8px;padding:14px;border-radius:var(--pc-r);background:var(--pc-s1);border:2px solid var(--pc-accent);box-shadow:var(--pc-shadow);animation:pc-pop .25s ease-out}
+.career-job.pc .pc-desk.tense{border-color:var(--pc-warn)}
+.career-job.pc .pc-desk p{margin:0;line-height:1.5}
+.career-job.pc .pc-desk-head{display:flex;align-items:center;gap:10px}
+.career-job.pc .pc-desk-head small{color:var(--pc-muted);font-size:.78em;letter-spacing:.06em;font-weight:800}
+.career-job.pc .pc-desk-head h3{margin:0;font-size:1.05em}
+.career-job.pc .pc-desk-emoji{font-size:1.8em;line-height:1}
+.career-job.pc .pc-opts{display:grid;gap:8px}
+.career-job.pc .btn.pc-opt{display:grid;justify-items:start;justify-content:start;gap:2px;width:100%;min-height:52px;padding:10px 12px;text-align:left;white-space:normal;height:auto;line-height:1.35}
+.career-job.pc .btn.pc-opt small{display:block;color:var(--pc-muted);font-weight:500;font-size:.85em}
+.career-job.pc .pc-note{margin:0;font-size:.8em;color:var(--pc-muted)}
+.career-job.pc .pc-foot{gap:6px;margin:0}
+.career-job.pc .pc-stats{gap:6px}
+.career-job.pc .pc-rules{padding:10px 12px;border-radius:var(--pc-rs);background:var(--pc-s1);border:1px solid var(--pc-line)}
+.career-job.pc .pc-rules summary,.career-job.pc .pc-kennel-box>summary,.career-job.pc .pc-cues summary{cursor:pointer;min-height:40px;padding:9px 0;line-height:1.4}
+.career-job.pc .pc-rules ul{margin:6px 0 0;padding-left:18px;display:grid;gap:4px;font-size:.9em;line-height:1.45}
+.career-job.pc .pc-kennel-box>summary small{display:inline;color:var(--pc-muted)}
+.career-job.pc .pc-kennel-box[open]>summary{margin-bottom:8px}
+.career-job.pc .pc-tags{gap:4px;margin:4px 0}
+.career-job.pc .pc-cues{display:grid;gap:4px;margin:8px 0;padding:10px 12px;border-radius:var(--pc-rs);background:var(--pc-s2);border:1px solid var(--pc-line)}
+.career-job.pc .pc-cues>ul{margin:0;padding-left:18px;display:grid;gap:2px;font-weight:600}
+.career-job.pc .pc-guide{margin:6px 0;padding-left:18px;display:grid;gap:4px;font-size:.85em;line-height:1.4}
+.career-job.pc .pc-bolt{display:grid;gap:8px;padding:14px;border-radius:var(--pc-r);background:var(--pc-s1);border:2px solid var(--pc-bad);box-shadow:var(--pc-shadow);animation:pc-pop .25s ease-out}
+.career-job.pc .pc-bolt h4{margin:0;color:var(--pc-bad)}
+.career-job.pc .pc-bolt p{margin:0}
+.career-job.pc .pc-label{margin:4px 0 8px;padding:8px 10px;border-radius:var(--pc-rs);background:var(--pc-s2);border:1px dashed var(--pc-line);font-weight:600;line-height:1.45}
+.career-job.pc .pc-med{border-color:var(--pc-info)}
+.career-job.pc .pc-adoptees{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.career-job.pc .pc-adoptee{display:grid;gap:3px;align-content:start;min-height:44px;padding:10px 12px;text-align:left;font:inherit;color:var(--pc-ink);cursor:pointer;
+  background:var(--pc-s1);border:2px solid var(--pc-line);border-radius:var(--pc-rs)}
+.career-job.pc .pc-adoptee small{color:var(--pc-muted);font-size:.85em}
+.career-job.pc .pc-adoptee b small{display:inline;font-weight:500}
+.career-job.pc .pc-adoptee ul{margin:4px 0 0;padding:0;list-style:none;display:grid;gap:2px;font-size:.82em}
+.career-job.pc .pc-adoptee-emoji{font-size:1.6em;line-height:1}
+.career-job.pc .pc-adoptee.selected{border-color:var(--pc-accent);background:var(--pc-s2);box-shadow:inset 0 0 0 2px var(--pc-accent)}
+.career-job.pc .pc-adoptee:disabled{opacity:.6;cursor:not-allowed}
+.career-job.pc .pc-adoptee.none{border-style:dashed}
+.career-job.pc .pc-running{position:sticky;top:0;z-index:2;border-color:var(--pc-info)}
+.career-job.pc :is(button,summary,.btn):focus-visible{outline:3px solid var(--pc-accent);outline-offset:2px}
+@keyframes pc-pop{from{transform:scale(.97);opacity:.4}to{transform:none;opacity:1}}
+
+/* ---------- phones */
+@media (max-width:720px){
+  :where(.career-job.pc) :where(.workbench){grid-template-columns:1fr}
+  :where(.career-job.pc) :where(.wb-side){position:static}
+  .career-job.pc .pc-steps{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:400px){
+  .career-job.pc .pc-parts,.career-job.pc .pc-pens{grid-template-columns:1fr 1fr}
+  .career-job.pc .pc-tiles{grid-template-columns:1fr 1fr}
+  .career-job.pc .pc-adoptees{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){.career-job.pc *{transition:none!important;animation:none!important}}
+:is(body,html).reduce-motion .career-job.pc *{transition:none!important;animation:none!important}

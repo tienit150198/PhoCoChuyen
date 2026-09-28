@@ -1,0 +1,11 @@
+.git
+.env
+storage
+artifacts
+__pycache__
+**/__pycache__
+*.zip
+node_modules
+i18n/todo
+i18n/done
+tests

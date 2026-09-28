@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#faf3e8">
+  <meta name="color-scheme" content="light dark">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Làm nghề">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="description" content="Phố Có Chuyện · Một ngày làm nghề — game mô phỏng hơn 20 nghề: nấu mì, pha cà phê, bán hoa, dạy học, kế toán… gặp đủ chuyện đời thật và chơi cùng mọi người.">
+  <meta property="og:title" content="Phố Có Chuyện · Một ngày làm nghề">
+  <meta property="og:description" content="Thử làm hơn 20 nghề, gặp chuyện đời thật, chơi cùng mọi người.">
+  <meta property="og:image" content="/icons/icon-512.png">
+  <title>Phố Có Chuyện · Một ngày làm nghề</title>
+  <link rel="icon" href="/icons/logo-64.png" type="image/png" sizes="64x64">
+<link rel="icon" href="/icons/logo-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="preload" href="/fonts/be-vietnam-pro-vietnamese-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="stylesheet" href="/css/journey.css">
+  <script type="module" src="/js/app.js"></script>
+</head>
+<body>
+  <div id="loading" role="status"><div class="loading-leaf">✦</div><h1>Phố Có Chuyện</h1><p>Một ngày làm nghề · Đang mở cửa khu phố…</p></div>
+  <div id="app" hidden>
+    <button type="button" class="brand" data-action="home" aria-label="Hành trình của bạn"><img src="/icons/icon-192.png" alt="Phố Có Chuyện" width="42" height="42"></button>
+    <header id="topbar" class="topbar"></header>
+    <aside id="rail" class="rail" aria-label="Menu"></aside>
+    <main id="stage" class="stage">
+      <canvas id="world" tabindex="0" aria-label="Cảnh game. Bấm vào sàn để đi, bấm nhân vật hoặc đồ vật để tương tác. Có thể dùng các nút công việc ở thanh dưới thay cho canvas."></canvas>
+      <div id="sceneHeading" class="scene-heading"></div>
+      <div id="sceneBadge" class="scene-badge"></div>
+      <div id="sceneHint" class="scene-hint"></div>
+      <div id="ambientCaption" class="ambient-caption"></div>
+      <div id="pauseOverlay" class="pause-overlay" hidden><div><span class="eyebrow">MỘT NHỊP NGHỈ</span><h2>Không cần vội.</h2><p>Mọi câu chuyện vẫn ở đây khi bạn quay lại.</p><button class="btn primary" data-action="resume">Tiếp tục chơi</button></div></div>
+    </main>
+    <div id="side" class="side">
+      <section id="taskHUD" class="task-hud" aria-label="Công việc đang làm"></section>
+      <nav id="dock" class="dock" aria-label="Tương tác trong cảnh"></nav>
+    </div>
+    <footer class="tiny-footer"><span id="saveState">Tiến trình lưu trên máy</span><span>v0.5 · Không có tiền thật · <a href="/privacy" target="_blank" rel="noopener">Quyền riêng tư</a> · <a href="/terms" target="_blank" rel="noopener">Điều khoản</a></span></footer>
+  </div>
+  <dialog id="sheet" class="sheet"><div id="sheetContent"></div></dialog>
+  <dialog id="confirmDialog" class="confirm-dialog"><div id="confirmContent"></div></dialog>
+  <div id="toasts" class="toasts" role="status" aria-live="polite" aria-atomic="false"></div>
+  <noscript>Trò chơi cần bật JavaScript. Chạy python server.py rồi mở địa chỉ server.</noscript>
+</body>
+</html>

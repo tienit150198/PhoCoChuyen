@@ -1,0 +1,60 @@
+[
+  {
+    "command_id": "demo-mb-0001",
+    "career_id": "mother_baby",
+    "actor_id": "demo_player",
+    "expected_state_version": 12,
+    "action": "reserve_items",
+    "confirmation_token": "demo_confirmation_only",
+    "payload": {
+      "target_id": "demo_order_001",
+      "item_id": "demo_gift_cream",
+      "quantity": 1
+    }
+  },
+  {
+    "command_id": "demo-ph-0001",
+    "career_id": "pharmacy",
+    "actor_id": "demo_player",
+    "expected_state_version": 21,
+    "action": "request_approval",
+    "payload": {
+      "target_id": "demo_slip_001",
+      "reason": "Thiếu mã hàng trên phiếu giả lập",
+      "evidence_ids": [
+        "demo_slip_source_001"
+      ]
+    }
+  },
+  {
+    "command_id": "demo-ac-0001",
+    "career_id": "accounting",
+    "actor_id": "demo_player",
+    "expected_state_version": 33,
+    "action": "submit_document_correction",
+    "confirmation_token": "demo_confirmation_only",
+    "payload": {
+      "target_id": "demo_reconcile_001",
+      "choice_id": "mark_confirmed_duplicate",
+      "reason": "Hai bản có cùng tham chiếu nguồn",
+      "evidence_ids": [
+        "demo_source_250a",
+        "demo_source_250b"
+      ]
+    }
+  },
+  {
+    "command_id": "demo-cs-0001",
+    "career_id": "customer_care",
+    "actor_id": "demo_player",
+    "expected_state_version": 41,
+    "action": "create_followup",
+    "confirmation_token": "demo_confirmation_only",
+    "payload": {
+      "target_id": "demo_case_001",
+      "scheduled_game_day": 3,
+      "scheduled_game_slot": "afternoon",
+      "reason": "Kiểm kết quả đối soát giao nhận"
+    }
+  }
+]

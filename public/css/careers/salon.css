@@ -1,0 +1,215 @@
+/* Salon Tóc Gió — scoped styles. Colours come only from theme tokens (with
+   fallbacks to the older base tokens); hair/tube swatches come from game data. */
+.career-job.sl{
+  --sl-s1:var(--surface,var(--paper,var(--bg)));--sl-s2:var(--surface-2,var(--bg));
+  --sl-ink:var(--ink);--sl-muted:var(--muted);--sl-line:var(--line);--sl-accent:var(--accent);
+  --sl-accent-ink:var(--accent-ink,var(--surface,var(--paper,var(--bg))));
+  --sl-good:var(--good,var(--green,var(--accent)));--sl-warn:var(--warn,var(--accent));--sl-bad:var(--bad,var(--accent));--sl-info:var(--info,var(--accent));
+  --sl-r:var(--radius,18px);--sl-rs:var(--radius-sm,10px);
+  color:var(--sl-ink);display:grid;gap:14px;min-width:0
+}
+.career-job.sl *{box-sizing:border-box}
+.career-job.sl h3,.career-job.sl h4,.career-job.sl h5{margin:0}
+.career-job.sl .btn{min-height:44px}
+.career-job.sl button:focus-visible{outline:3px solid var(--sl-info);outline-offset:2px}
+
+/* Client ticket */
+.career-job.sl .sl-ticket{background:var(--sl-s1);border:1px solid var(--sl-line);border-radius:var(--sl-r);padding:14px;box-shadow:var(--shadow);display:grid;gap:8px}
+.career-job.sl .sl-want{margin:4px 0;font-weight:700}
+.career-job.sl .sl-photo{display:flex;gap:10px;align-items:center;padding:8px;border-radius:var(--sl-rs);background:var(--sl-s2);border:1px dashed var(--sl-line)}
+.career-job.sl .sl-photo .grow{display:grid;gap:2px;min-width:0}
+.career-job.sl .sl-swatch{flex:none;width:46px;height:46px;border-radius:50% 50% 40% 40%;background:var(--sw);border:2px solid var(--sl-s1);box-shadow:0 0 0 1px var(--sl-line);display:grid;place-items:center}
+.career-job.sl .sl-swatch.cut{background:var(--sl-s1)}
+.career-job.sl .patience{display:flex;align-items:center;gap:8px}
+.career-job.sl .patience .bar{flex:1;height:10px;border-radius:99px;background:var(--sl-s2);border:1px solid var(--sl-line);overflow:hidden}
+.career-job.sl .patience .bar i{display:block;height:100%;background:var(--sl-good)}
+.career-job.sl .patience .bar.low i{background:var(--sl-warn)}
+
+/* Bench: two columns, one on phones */
+.career-job.sl .sl-bench{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,290px);gap:14px;align-items:start}
+.career-job.sl .sl-main,.career-job.sl .sl-side{display:grid;gap:12px;min-width:0}
+.career-job.sl .sl-side{position:sticky;top:0}
+.career-job.sl .sl-sec{background:var(--sl-s1);border:1px solid var(--sl-line);border-radius:var(--sl-r);padding:12px;display:grid;gap:8px;min-width:0}
+.career-job.sl .sl-sec.focus{box-shadow:0 0 0 2px var(--sl-accent) inset}
+.career-job.sl .sl-sec p{margin:0}
+.career-job.sl .sl-sub{margin:6px 0 0;font-size:.8em;color:var(--sl-muted);text-transform:uppercase;letter-spacing:.05em}
+.career-job.sl .sl-note{padding:8px 10px;border-radius:var(--sl-rs);background:var(--sl-s2);border-left:4px solid var(--sl-info);font-size:.9em}
+.career-job.sl .sl-note.good{border-left-color:var(--sl-good)}
+
+/* Consultation */
+.career-job.sl .sl-qa-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.career-job.sl .sl-qa .btn{width:100%;justify-content:flex-start}
+.career-job.sl .sl-qa.done{grid-column:1/-1;padding:8px 10px;border-radius:var(--sl-rs);background:var(--sl-s2)}
+.career-job.sl .sl-q{font-size:.85em;color:var(--sl-muted)}
+.career-job.sl .sl-a{font-weight:600}
+.career-job.sl .sl-a::before{content:'“'}.career-job.sl .sl-a::after{content:'”'}
+.career-job.sl .sl-zones{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.career-job.sl .sl-zone{display:grid;gap:4px;align-content:start;text-align:left;min-height:56px;padding:10px;border-radius:var(--sl-rs);border:1px solid var(--sl-line);background:var(--sl-s2);color:var(--sl-ink);font:inherit;cursor:pointer}
+.career-job.sl .sl-zone small{font-size:.82em;color:var(--sl-muted);line-height:1.35;overflow-wrap:anywhere}
+.career-job.sl .sl-zone.seen{background:var(--sl-s1);border-color:var(--sl-good);cursor:default}
+.career-job.sl .sl-zone.seen small{color:var(--sl-ink)}
+.career-job.sl .sl-zone.scalp.seen{border-style:dashed}
+
+/* Tiles, segments, chips */
+.career-job.sl .sl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.career-job.sl .sl-tile{position:relative;display:grid;gap:2px;justify-items:start;text-align:left;min-height:64px;padding:8px 10px;border-radius:var(--sl-rs);border:1px solid var(--sl-line);background:var(--sl-s2);color:var(--sl-ink);font:inherit;cursor:pointer}
+.career-job.sl .sl-tile small{font-size:.76em;color:var(--sl-muted)}
+.career-job.sl .sl-tile.extra{border-style:dashed}
+.career-job.sl .sl-tile.selected{background:var(--sl-s1);border-color:var(--sl-accent);box-shadow:0 0 0 2px var(--sl-accent) inset}
+.career-job.sl .sl-tile:disabled{cursor:default;opacity:.75}
+.career-job.sl .sl-emoji{font-size:1.4em;line-height:1}
+.career-job.sl .sl-segs{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.sl .sl-seg{min-height:44px;min-width:56px;padding:6px 12px;border-radius:99px;border:1px solid var(--sl-line);background:var(--sl-s2);color:var(--sl-ink);font:inherit;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.career-job.sl .sl-seg small{font-weight:400;color:var(--sl-muted);font-size:.78em}
+.career-job.sl .sl-seg.on{background:var(--sl-accent);color:var(--sl-accent-ink);border-color:var(--sl-accent)}
+.career-job.sl .sl-seg.on small{color:inherit}
+.career-job.sl .sl-seg.hot{border-color:var(--sl-bad)}
+.career-job.sl .sl-chips{display:grid;gap:6px}
+.career-job.sl .sl-chip{min-height:44px;display:grid;text-align:left;padding:6px 10px;border-radius:var(--sl-rs);border:1px solid var(--sl-line);background:var(--sl-s2);color:var(--sl-ink);font:inherit;font-size:.88em;cursor:pointer}
+.career-job.sl .sl-chip small{color:var(--sl-muted);font-size:.8em}
+.career-job.sl .sl-chip.on{border-color:var(--sl-good);box-shadow:0 0 0 2px var(--sl-good) inset;background:var(--sl-s1)}
+.career-job.sl .sl-chip:disabled{opacity:.5}
+
+/* Colour bar: tubes with caps in the shade colour, a bowl, a live timer */
+.career-job.sl .sl-tubes{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.career-job.sl .sl-tube{position:relative;display:grid;justify-items:center;gap:2px;min-height:96px;padding:8px 6px;border-radius:var(--sl-rs) var(--sl-rs) 22px 22px;border:1px solid var(--sl-line);background:var(--sl-s2);color:var(--sl-ink);font:inherit;text-align:center;cursor:pointer}
+.career-job.sl .sl-tube small{font-size:.78em;color:var(--sl-muted);line-height:1.2}
+.career-job.sl .sl-tube em{position:absolute;top:4px;right:6px;font-style:normal;font-size:.78em;color:var(--sl-muted)}
+.career-job.sl .sl-tube.selected{border-color:var(--sl-accent);box-shadow:0 0 0 2px var(--sl-accent) inset;background:var(--sl-s1)}
+.career-job.sl .sl-tube:disabled{opacity:.45}
+.career-job.sl .sl-cap{width:30px;height:30px;border-radius:8px 8px 50% 50%;background:var(--sw);border:2px solid var(--sl-s1);box-shadow:0 0 0 1px var(--sl-line)}
+.career-job.sl .sl-bowl{display:flex;gap:12px;align-items:center;padding:10px;border-radius:var(--sl-rs);background:var(--sl-s2);border:1px solid var(--sl-line)}
+.career-job.sl .sl-bowl .grow{display:grid;gap:4px;min-width:0}
+.career-job.sl .sl-bowl.on{border-color:var(--sl-accent)}
+.career-job.sl .sl-dish{flex:none;width:58px;height:32px;border-radius:0 0 30px 30px;background:linear-gradient(var(--sw,var(--sl-s1)),var(--sw,var(--sl-s1))) center 6px/80% 60% no-repeat,var(--sl-s1);border:2px solid var(--sl-line)}
+.career-job.sl .sl-timer{display:grid;gap:4px}
+.career-job.sl .sl-track{position:relative;height:18px;border-radius:99px;overflow:hidden;background:var(--sl-s1);border:1px solid var(--sl-line)}
+.career-job.sl .sl-track .z{position:absolute;top:0;bottom:0;left:0;opacity:.35}
+.career-job.sl .sl-track .z.under{background:var(--sl-muted)}
+.career-job.sl .sl-track .z.ideal{background:var(--sl-good);opacity:.6}
+.career-job.sl .sl-track .z.over{background:var(--sl-warn)}
+.career-job.sl .sl-track .z.damage{background:var(--sl-bad)}
+.career-job.sl .sl-fill{position:absolute;top:5px;bottom:5px;left:0;border-radius:99px;background:var(--sl-ink);transition:width .2s linear}
+.career-job.sl .sl-timer.ready .sl-label{color:var(--sl-good);font-weight:800}
+.career-job.sl .sl-timer.late .sl-label{color:var(--sl-bad);font-weight:800}
+.career-job.sl .sl-results{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:.88em}
+.career-job.sl .sl-results li{padding:6px 8px;border-radius:var(--sl-rs);background:var(--sl-s2);border-left:4px solid var(--sl-muted)}
+.career-job.sl .sl-results li.ok{border-left-color:var(--sl-good)}
+.career-job.sl .sl-results li.warn{border-left-color:var(--sl-warn)}
+.career-job.sl .sl-results li.bad{border-left-color:var(--sl-bad)}
+
+/* Cutting station */
+.career-job.sl .sl-len{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.career-job.sl .sl-len .btn{min-width:44px}
+.career-job.sl .sl-len b{min-width:48px;text-align:center;font-size:1.1em}
+.career-job.sl .sl-steps{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.career-job.sl .sl-steps li .btn{width:100%}
+.career-job.sl .sl-steps li.done .btn{border-color:var(--sl-good)}
+
+/* Mirror */
+.career-job.sl .sl-mirror{display:grid;justify-items:center;gap:6px;padding:12px;border-radius:var(--sl-r);background:var(--sl-s1);border:1px solid var(--sl-line)}
+.career-job.sl .sl-glass{width:150px;height:170px;border-radius:75px 75px 18px 18px;border:6px solid var(--sl-line);background:var(--sl-s2);display:grid;place-items:center;overflow:hidden}
+.career-job.sl .sl-head{position:relative;width:84px;height:130px}
+.career-job.sl .sl-back{position:absolute;left:4px;right:4px;top:6px;height:calc(40px + var(--len) * 2px);border-radius:40px 40px 14px 14px;background:var(--hair);transition:background .4s,height .4s}
+.career-job.sl .sl-face{position:absolute;left:18px;right:18px;top:24px;height:60px;border-radius:24px 24px 26px 26px;background:var(--sl-s1);box-shadow:0 0 0 1px var(--sl-line)}
+.career-job.sl .sl-fringe{position:absolute;left:14px;right:14px;top:10px;height:22px;border-radius:30px 30px 8px 8px;background:var(--hair);transition:background .4s}
+
+/* Bill */
+.career-job.sl .sl-bill{display:grid;gap:8px;padding:12px;border-radius:var(--sl-r);background:var(--sl-s1);border:1px solid var(--sl-line);box-shadow:var(--shadow)}
+.career-job.sl .sl-bill ul{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:.9em}
+.career-job.sl .sl-bill li{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px dashed var(--sl-line)}
+.career-job.sl .sl-bill li.ok span{color:var(--sl-good)}
+.career-job.sl .sl-bill p{margin:0}
+
+/* Rules */
+.career-job.sl .sl-rules{background:var(--sl-s1);border:1px solid var(--sl-line);border-radius:var(--sl-r);padding:10px 12px}
+.career-job.sl .sl-rules summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:700}
+.career-job.sl .sl-rules ul{margin:6px 0;padding-left:18px;display:grid;gap:4px;font-size:.9em}
+.career-job.sl .sl-levels{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:3px;margin:8px 0}
+.career-job.sl .sl-levels span{display:grid;justify-items:center;gap:2px;font-size:.78em;color:var(--sl-muted)}
+.career-job.sl .sl-levels i{width:100%;height:18px;border-radius:4px;background:var(--sw);box-shadow:0 0 0 1px var(--sl-line)}
+
+/* v0.5: today chip, desk surprises, step nav, mixer preview, kid calm meter */
+.career-job.sl .sl-today{margin:0;padding:8px 12px;border-radius:var(--sl-rs);background:var(--sl-s2);border:1px dashed var(--sl-line);display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline}
+.career-job.sl .sl-today small{color:var(--sl-muted)}
+.career-job.sl .sl-last{margin:0;padding:8px 12px;border-radius:var(--sl-rs);background:var(--sl-s2);border-left:4px solid var(--sl-info);font-size:.9em}
+.career-job.sl .sl-last.good{border-left-color:var(--sl-good)}
+.career-job.sl .sl-last.bad{border-left-color:var(--sl-bad)}
+.career-job.sl .sl-desk{background:var(--sl-s1);border:2px solid var(--sl-accent);border-radius:var(--sl-r);padding:14px;display:grid;gap:10px;box-shadow:var(--shadow);animation:sl-pop .35s ease-out}
+.career-job.sl .sl-desk.tense{border-color:var(--sl-warn)}
+.career-job.sl .sl-desk p{margin:0;line-height:1.45}
+.career-job.sl .sl-desk-head{display:flex;align-items:center;gap:10px}
+.career-job.sl .sl-desk-head>div{flex:1;min-width:0}
+.career-job.sl .sl-desk-head small{letter-spacing:.08em;color:var(--sl-muted);font-size:.78em;font-weight:800}
+.career-job.sl .sl-desk-head h3{font-size:1.05em}
+.career-job.sl .sl-desk-emoji{font-size:32px;line-height:1}
+.career-job.sl .sl-opts{display:grid;gap:8px}
+.career-job.sl .sl-opt{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:2px;min-height:48px;white-space:normal}
+.career-job.sl .sl-opt small{font-weight:400;opacity:.85}
+@keyframes sl-pop{from{transform:translateY(6px);opacity:0}to{transform:none;opacity:1}}
+.career-job.sl .sl-nav{display:grid;grid-template-columns:repeat(var(--n,7),minmax(0,1fr));gap:4px}
+.career-job.sl .sl-nav button{display:flex;flex-direction:column;align-items:center;gap:3px;min-height:52px;padding:6px 2px;font:inherit;font-size:.76em;line-height:1.15;text-align:center;color:var(--sl-muted);background:var(--sl-s2);border:1px solid var(--sl-line);border-radius:var(--sl-rs);cursor:pointer;overflow-wrap:anywhere}
+.career-job.sl .sl-nav button span{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:1px solid var(--sl-line);background:var(--sl-s1);font-weight:800}
+.career-job.sl .sl-nav button.done{color:var(--sl-good)}
+.career-job.sl .sl-nav button.done span{background:var(--sl-good);color:var(--sl-accent-ink);border-color:var(--sl-good)}
+.career-job.sl .sl-nav button.now{color:var(--sl-ink);font-weight:800}
+.career-job.sl .sl-nav button.open{border-color:var(--sl-accent);background:var(--sl-s1);box-shadow:0 0 0 1px var(--sl-accent) inset}
+.career-job.sl .sl-nav button:disabled{cursor:default;opacity:.55}
+.career-job.sl .sl-panel .section-title{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.career-job.sl .sl-ticket .patience{min-width:110px;flex:0 1 150px}
+.career-job.sl .sl-more summary{min-height:40px;display:flex;align-items:center;cursor:pointer;font-size:.88em;color:var(--sl-muted)}
+.career-job.sl .sl-more p{margin:4px 0 0}
+.career-job.sl .sl-timer-card{position:sticky;top:0;z-index:2}
+.career-job.sl .sl-cta{display:grid;gap:8px;margin-top:6px}
+.career-job.sl .sl-cta .btn{width:100%}
+.career-job.sl .sl-cta .btn.small{width:auto;justify-self:start}
+.career-job.sl .sl-tags{gap:6px}
+.career-job.sl .sl-case{border-style:dashed}
+.career-job.sl .sl-real{margin:0;padding:6px 10px;border-radius:var(--sl-rs);background:var(--sl-s2);border-left:4px solid var(--sl-info);font-weight:700;font-size:.9em}
+.career-job.sl .sl-note.bad{border-left-color:var(--sl-bad)}
+.career-job.sl .sl-calm{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;font-size:.9em}
+.career-job.sl .sl-calm .bar{height:12px;border-radius:99px;background:var(--sl-s2);border:1px solid var(--sl-line);overflow:hidden}
+.career-job.sl .sl-calm .bar i{display:block;height:100%;background:var(--sl-good);transition:width .3s}
+.career-job.sl .sl-calm.warn .bar i{background:var(--sl-warn)}
+.career-job.sl .sl-calm.bad .bar i{background:var(--sl-bad)}
+.career-job.sl .sl-kid{display:grid;gap:8px;padding:10px;border-radius:var(--sl-rs);background:var(--sl-s2);border:1px dashed var(--sl-line)}
+.career-job.sl .sl-calm-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.career-job.sl .sl-calm-tools .sl-chip{background:var(--sl-s1)}
+.career-job.sl .sl-tube{padding-top:10px}
+.career-job.sl .sl-role{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--sl-accent);color:var(--sl-accent-ink);font-style:normal;font-weight:800;font-size:.75em}
+.career-job.sl .sl-tube .sl-role{position:absolute;top:4px;left:6px}
+.career-job.sl .sl-parts{display:grid;gap:6px}
+.career-job.sl .sl-part{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.career-job.sl .sl-part>span{min-width:76px;font-weight:700;display:inline-flex;align-items:center;gap:6px}
+.career-job.sl .sl-part .btn{min-width:44px}
+.career-job.sl .sl-part b{min-width:56px;text-align:center}
+.career-job.sl .sl-preview{margin:0;display:flex;gap:12px;align-items:center;padding:10px;border-radius:var(--sl-rs);background:var(--sl-s2);border:1px solid var(--sl-line)}
+.career-job.sl .sl-preview .grow{display:grid;gap:4px;min-width:0}
+.career-job.sl .sl-preview .row{gap:6px}
+.career-job.sl .sl-dish.big{width:64px;height:38px}
+.career-job.sl .sl-dot{display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--sw);vertical-align:-2px;box-shadow:0 0 0 1px var(--sl-line)}
+.career-job.sl .sl-foot{margin:0;gap:8px}
+.career-job.sl .sl-stats{gap:6px}
+.career-job.sl.sl-idle{gap:10px}
+
+@media (max-width:720px){
+  .career-job.sl .sl-bench{grid-template-columns:minmax(0,1fr)}
+  .career-job.sl .sl-side{position:static}
+  .career-job.sl .sl-mirror{grid-template-columns:auto 1fr;justify-items:start;align-items:center}
+  .career-job.sl .sl-glass{width:96px;height:112px;border-width:4px}
+  .career-job.sl .sl-head{transform:scale(.66)}
+}
+@media (max-width:400px){
+  .career-job.sl .sl-zones{grid-template-columns:minmax(0,1fr)}
+  .career-job.sl .sl-nav button{font-size:.62em;padding:5px 1px}
+  .career-job.sl .sl-nav button span{width:22px;height:22px}
+  .career-job.sl .sl-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .career-job.sl .sl-tubes{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (prefers-reduced-motion:reduce){
+  .career-job.sl .sl-fill,.career-job.sl .sl-back,.career-job.sl .sl-fringe,.career-job.sl .sl-calm .bar i{transition:none}
+  .career-job.sl .sl-desk{animation:none}
+}
+body.reduce-motion .career-job.sl .sl-desk,html.reduce-motion .career-job.sl .sl-desk{animation:none}
+body.reduce-motion .career-job.sl .sl-fill,html.reduce-motion .career-job.sl .sl-fill,
+body.reduce-motion .career-job.sl .sl-calm .bar i,html.reduce-motion .career-job.sl .sl-calm .bar i{transition:none}

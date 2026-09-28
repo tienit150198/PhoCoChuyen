@@ -1,0 +1,356 @@
+/** Giao Nhanh Mây Chiều — courier dashboard (plugin career UI).
+ * The server owns the clock, fuel, fees and COD; this view only builds a draft
+ * route, a change-count and a settlement count before sending them. */
+import {t,language} from '../v4/i18n.js';
+
+const CELL=60,PAD=30;
+/** "Cỏ May Office Tower" → "Office Tower"; "Bồ Câu School" → "School". */
+const enLabel=name=>{
+  const w=name.split(' '),viet=s=>/[^\x00-\x7F]/.test(s);
+  return w.length>1&&viet(w[w.length-2])&&!viet(w[w.length-1])?w[w.length-1]:w.slice(-2).join(' ');
+};
+const DONE=['completed','referred','cancelled'];
+const PACK_TAG={bubble:'fragile',rainbag:'rain',coldpack:'cold',strap:'size'};
+
+const nodes=x=>x.cc.nodes||{};
+const nodeOf=(x,id)=>nodes(x)[id]||{name:id,emoji:'📍',x:0,y:0};
+const dist=(x,a,b)=>{const A=nodeOf(x,a),B=nodeOf(x,b);return Math.abs(A.x-B.x)+Math.abs(A.y-B.y);};
+const hm=m=>{const t=17*60+Math.round(Number(m)||0);return `${String(Math.floor(t/60)%24).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`;};
+const kg=w=>`${(Number(w||0)/10).toLocaleString('vi-VN')} kg`;
+const items=x=>x.content.inventory?.items?.delivery||[];
+const itemOf=(x,id)=>items(x).find(i=>i.id===id)||{id,name:id,emoji:'•'};
+const ui=x=>x.ui.dl??={draft:[],change:{},settle:[],report:{}};
+const live=x=>(x.room.tasks||[]).filter(t=>t.career==='delivery'&&!DONE.includes(t.status));
+const destOf=t=>t.dest||t.run?.dest||t.needs?.dest;
+const sum=a=>a.reduce((s,v)=>s+Number(v||0),0);
+const cmdAttr=(x,command,payload)=>`data-command="${command}" data-payload="${x.esc(JSON.stringify(payload))}"`;
+const carAttr=(x,action,data={})=>`data-action="car:${action}" ${Object.entries(data).map(([k,v])=>`data-${k}="${x.esc(v)}"`).join(' ')}`;
+function tile(x,{emoji,label,sub='',cls='',attr='',off=false,badge=''}){
+  return `<button type="button" class="tile ${cls}" ${attr} ${off?'disabled':''}><span class="tile-emoji" aria-hidden="true">${x.esc(emoji)}</span><b>${x.esc(label)}</b>${sub!==''?`<small>${x.esc(sub)}</small>`:''}${badge}</button>`;
+}
+
+function stage(t){
+  if(!t.known)return 'new';
+  const r=t.run;
+  if(r.outcome)return 'done';
+  return r.loaded?'bag':'pickup';
+}
+function tags(t,x){
+  const n=t.needs,d=x.room.data||{},out=[];
+  if(n.fragile)out.push(['🥚','Dễ vỡ','warn']);
+  if(n.cold)out.push(['🧊','Giữ lạnh','info']);
+  if(n.paper)out.push(['📄','Giấy tờ gốc','info']);
+  if(n.size==='L')out.push(['📐','Cồng kềnh','warn']);
+  if(n.cod)out.push(['💵',`COD ${n.cod} xu`,'good']);
+  if(n.safe_drop)out.push(['🛡️','Cho gửi bảo vệ','']);
+  if(n.kind==='parcel'&&d.weather==='rain')out.push(['🌧️','Trời mưa','info']);
+  if(n.soup)out.push(['🍲','Có nước lèo · tránh hẻm xóc','warn']);
+  if(t.run?.dest)out.push(['📍',`Địa chỉ mới: ${nodeOf(x,t.run.dest).name}`,'info']);
+  return out.map(([e,l,k])=>`<span class="dl-tag ${k}">${e} ${x.esc(l)}</span>`).join('');
+}
+function stopsAt(x,node){
+  const rows=live(x),pick=rows.filter(t=>t.known&&!t.run.loaded&&t.needs.pickup===node),drop=rows.filter(t=>t.known&&t.run.loaded&&destOf(t)===node);
+  return {pick,drop};
+}
+
+/* ---------- status bar ---------- */
+function status(x){
+  const d=x.room.data||{},fuel=Number(d.fuel)||0,load=Number(d.load)||0,limit=Number(d.limit)||200,cap=Number(d.cap)||250;
+  const wx=d.weather==='rain'?['🌧️','Mưa',`${d.mpu} phút/ô · ${d.rate}% xăng/ô`]:['☀️','Nắng',`${d.mpu} phút/ô · ${d.rate}% xăng/ô`];
+  const meter=(label,val,max,cls)=>`<div class="dl-meter ${cls}"><div class="dl-meter-top"><span>${label}</span><b>${x.esc(val)}</b></div><div class="bar"><i style="width:${Math.max(0,Math.min(100,max))}%"></i></div></div>`;
+  return `<div class="dl-status" role="status">
+    <div class="dl-clock"><span aria-hidden="true">🕔</span><b>${x.esc(hm(d.clock))}</b><small>${wx[0]} ${wx[1]} · ${x.esc(wx[2])}</small></div>
+    ${meter('⛽ Xăng',`${fuel}%`,fuel,fuel<20?'bad':fuel<35?'warn':'')}
+    ${meter('📦 Tải',`${kg(load)} / ${kg(limit)}`,load/limit*100,load>limit*.8?'warn':'')}
+    ${meter('💵 Túi COD',`${d.owed||0} / ${cap} xu`,(d.owed||0)/cap*100,(d.owed||0)>cap*.7?'warn':'')}
+    ${d.bike?meter('🛞 Lốp',`${d.bike.tyre}%`,d.bike.tyre,d.bike.tyre<d.bike.flat_at?'bad':d.bike.tyre<d.bike.flat_at+15?'warn':''):''}
+  </div>`;
+}
+
+/* ---------- road board, courier score, surprises ---------- */
+function roadBoard(x){
+  const r=x.room.data?.road;if(!r)return '';
+  const signs=(r.signs||[]).map(g=>`<span class="dl-sign ${g.kind} ${g.now?'now':''}">${x.esc(g.text)}</span>`).join('');
+  return `<section class="dl-road" aria-label="Đường hôm nay"><div class="dl-road-head"><span class="dl-road-emoji" aria-hidden="true">${x.esc(r.mod.emoji)}</span><div><b>Đường hôm nay: ${x.esc(r.mod.name)}</b><small>${x.esc(r.mod.text)}</small></div></div>${signs?`<div class="dl-signs">${signs}</div>`:''}</section>`;
+}
+function scoreStrip(x){
+  const sc=x.room.data?.score;if(!sc)return '';
+  const num=v=>(v/10).toLocaleString('vi-VN',{minimumFractionDigits:1});
+  const star=sc.rating==null?`⭐ Chấm điểm sau ${Math.max(1,5-(sc.rated||0))} đơn`:`⭐ ${num(sc.rating)}${sc.top?` · ưu tiên +${sc.top_bonus} xu/đơn`:` · ${num(sc.top_at)} được ưu tiên`}`;
+  const q=sc.quest;
+  const chips=[`<span class="dl-chip ${sc.top?'good':''}">${x.esc(star)}</span>`,
+    `<span class="dl-chip" title="Mỗi ${sc.every} đơn sạch liên tiếp thưởng ${sc.streak_bonus} xu">🔥 Chuỗi sạch ${sc.streak} · +${sc.streak_bonus} xu mỗi ${sc.every} đơn</span>`];
+  if(q)chips.push(`<span class="dl-chip ${q.paid?'good':''}">🎯 Mốc ca ${q.done}/${q.goal}${q.paid?' ✓':` · +${q.bonus} xu`}</span>`);
+  return `<div class="dl-score" aria-label="Điểm tài xế">${chips.join('')}</div>`;
+}
+function deskCard(x){
+  const desk=x.room.data?.desk;if(!desk)return '';
+  const ev=desk.ev;
+  if(ev){
+    const opts=ev.options.map(o=>{
+      const poor=o.cost>(Number(x.room.money)||0);
+      const inner=`<span class="dl-opt-label">${x.esc(o.label)}</span>${o.hint?`<small>${x.esc(o.hint)}</small>`:''}${o.cost?`<em class="dl-cost">−${x.fmt(o.cost)} xu${poor?' · ví chưa đủ':''}</em>`:''}`;
+      return o.cost?x.confirmCmd(inner,'dl_decide',{option:o.id},`Lựa chọn này tốn ${x.fmt(o.cost)} xu. Đồng ý?`,'dl-opt',poor):x.cmd(inner,'dl_decide',{option:o.id},'dl-opt');
+    }).join('');
+    return `<section class="dl-event ${ev.tone==='tense'?'tense':''}" role="group" aria-labelledby="dl-ev-title"><div class="dl-ev-head"><span class="dl-ev-emoji" aria-hidden="true">${x.esc(ev.emoji)}</span><div><small>Chuyện dọc đường · quyết xong rồi chạy tiếp</small><h3 id="dl-ev-title">${x.esc(ev.title)}</h3></div></div>
+      <p>${x.esc(ev.text)}</p><div class="dl-opts">${opts}</div></section>`;
+  }
+  const last=desk.last,key=last?`${last.script}-${last.choice}-${last.day}-${(desk.log||[]).length}`:'';
+  if(last&&last.day===x.room.day&&ui(x).seen!==key){
+    return `<div class="dl-last ${last.good===true?'good':last.good===false?'bad':''}" role="status"><span aria-hidden="true">${x.esc(last.emoji)}</span><p><b>${x.esc(last.title)}</b> · ${x.esc(last.outcome)}</p><button type="button" class="btn ghost small dl-x" ${carAttr(x,'seen',{key})} aria-label="Đã đọc">✕</button></div>`;
+  }
+  return '';
+}
+
+/* ---------- map ---------- */
+function lPath(x,from,route){
+  const pts=[];let cur=nodeOf(x,from);pts.push([cur.x,cur.y]);
+  for(const id of route){const n=nodeOf(x,id);pts.push([n.x,cur.y]);pts.push([n.x,n.y]);cur=n;}
+  return pts.map(([a,b])=>`${PAD+a*CELL},${PAD+b*CELL}`).join(' ');
+}
+function map(x){
+  const d=x.room.data||{},u=ui(x),all=nodes(x),W=PAD*2+6*CELL,H=PAD*2+4*CELL;
+  const streets=[...Array(7).keys()].map(i=>`<line x1="${PAD+i*CELL}" y1="${PAD}" x2="${PAD+i*CELL}" y2="${H-PAD}"/>`).join('')+[...Array(5).keys()].map(i=>`<line x1="${PAD}" y1="${PAD+i*CELL}" x2="${W-PAD}" y2="${PAD+i*CELL}"/>`).join('');
+  const marks=Object.entries(all).map(([id,n])=>{
+    const s=stopsAt(x,id),cls=[s.pick.length?'pick':'',s.drop.length?'drop':'',id===d.at?'here':''].join(' ');
+    const sign=(d.road?.signs||[]).find(g=>g.node===id),hz=sign?{jam:'🚦',works:'🚧',flood:'🌊'}[sign.kind]||'':'';
+    // Short map label: the kind of place ("Chung cư" / "Apartments"), which
+    // comes first in Vietnamese and last in English.
+    const label=language()==='en'?enLabel(t(n.name)):n.name.split(' ').slice(0,2).join(' ');
+    return `<g class="dl-node ${cls}" transform="translate(${PAD+n.x*CELL},${PAD+n.y*CELL})"><circle r="17"/><text class="e" y="6">${x.esc(n.emoji)}</text><text class="l" y="31" data-no-translate>${x.esc(label)}</text>${s.pick.length||s.drop.length?`<text class="n" x="15" y="-12">${s.pick.length+s.drop.length}</text>`:''}${hz?`<text class="h" x="-24" y="-10">${hz}</text>`:''}</g>`;
+  }).join('');
+  const here=nodeOf(x,d.at);
+  const planned=(d.route||[]).length?`<polyline class="dl-route" points="${lPath(x,d.at,d.route)}"/>`:'';
+  const draftFrom=(d.route||[]).length?d.route[d.route.length-1]:d.at;
+  const draft=u.draft.length?`<polyline class="dl-draft" points="${lPath(x,draftFrom,u.draft)}"/>`:'';
+  return `<figure class="dl-map"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Bản đồ khu phố: bạn đang ở ${x.esc(here.name)}"><g class="dl-streets">${streets}</g>${planned}${draft}${marks}<text class="dl-rider" x="${PAD+here.x*CELL-24}" y="${PAD+here.y*CELL-16}">🛵</text></svg>
+    <figcaption class="small muted"><span class="dl-key pick"></span> có hàng cần lấy · <span class="dl-key drop"></span> có hàng cần giao · mỗi ô phố ${x.esc(d.mpu)} phút</figcaption></figure>`;
+}
+
+/* ---------- route planner ---------- */
+function planner(x){
+  const d=x.room.data||{},u=ui(x),all=nodes(x),mpu=Number(d.mpu)||3,rate=Number(d.rate)||2;
+  const planned=d.route||[],eta=d.eta||[];
+  let body='';
+  if(planned.length){
+    const next=eta[0]||{node:planned[0],blocks:dist(x,d.at,planned[0]),minutes:dist(x,d.at,planned[0])*mpu,at:(d.clock||0)+dist(x,d.at,planned[0])*mpu,fuel:(d.fuel||0)-dist(x,d.at,planned[0])*rate,notes:[]};
+    body+=`<ol class="dl-eta">${eta.map((r,i)=>`<li class="${r.fuel<0?'bad':''}"><span>${i+1}</span><b>${x.esc(nodeOf(x,r.node).emoji)} ${x.esc(nodeOf(x,r.node).name)}</b><small>${x.esc(hm(r.at))} · ${r.blocks} ô · xăng còn ${r.fuel}%${(r.notes||[]).length?' · '+x.esc(r.notes.join(', ')):''}</small></li>`).join('')}</ol>`+rideChoice(x,next);
+  }
+  const from=u.draft.length?u.draft[u.draft.length-1]:(planned.length?planned[planned.length-1]:d.at);
+  let clock=planned.length&&eta.length?eta[eta.length-1].at:(d.clock||0),fuel=planned.length&&eta.length?eta[eta.length-1].fuel:(d.fuel||0),prev=planned.length?planned[planned.length-1]:d.at;
+  const draftRows=u.draft.map((id,i)=>{const b=dist(x,prev,id);clock+=b*mpu;fuel-=b*rate;prev=id;return `<li class="${fuel<0?'bad':''}"><span>${planned.length+i+1}</span><b>${x.esc(nodeOf(x,id).emoji)} ${x.esc(nodeOf(x,id).name)}</b><small>~${x.esc(hm(clock))} · ${b} ô · xăng ~${fuel}%</small></li>`;}).join('');
+  const tiles=Object.entries(all).map(([id,n])=>{
+    const s=stopsAt(x,id),b=dist(x,from,id),bits=[];
+    if(s.pick.length)bits.push(`lấy ${s.pick.length}`);
+    if(s.drop.length)bits.push(`giao ${s.drop.length}`);
+    if(id==='hub'&&(d.owed||0)>0)bits.push('nộp COD');
+    if(id==='gas')bits.push('đổ xăng');
+    const hot=s.pick.length||s.drop.length||(id==='hub'&&(d.owed||0)>0);
+    return tile(x,{emoji:n.emoji,label:n.name,sub:`${b} ô · ${b*mpu} phút${bits.length?' · '+bits.join(', '):''}`,cls:`${hot?'hot':''} ${id===from?'here':''}`,attr:carAttr(x,'stop',{node:id}),off:id===from});
+  }).join('');
+  const sameAsPlan=!u.draft.length;
+  return `${body}
+    <p class="dl-sub">${planned.length?'Thêm điểm sau tuyến đang chạy':'Chọn điểm dừng theo thứ tự'}</p>
+    ${u.draft.length?`<ol class="dl-eta draft">${draftRows}</ol>`:''}
+    <div class="row wrap">
+      <button type="button" class="btn primary" ${carAttr(x,'plan')} ${sameAsPlan?'disabled':''}>🗺️ Chốt lộ trình</button>
+      <button type="button" class="btn ghost small" ${carAttr(x,'undo')} ${u.draft.length?'':'disabled'}>↶ Bỏ điểm cuối</button>
+      <button type="button" class="btn ghost small" ${carAttr(x,'clear')} ${u.draft.length?'':'disabled'}>✕ Xóa nháp</button>
+    </div>
+    <div class="dl-grid stops">${tiles}</div>`;
+}
+
+function rideChoice(x,next){
+  const name=x.esc(nodeOf(x,next.node).name),alt=next.short,soup=live(x).some(t=>t.known&&t.run.loaded&&t.needs.soup&&!t.run.spilled);
+  const main=`<button type="button" class="btn primary big dl-way" ${cmdAttr(x,'dl_ride',{way:'main'})}><span>🛣️ Đường chính tới ${name}</span><small>${next.minutes??next.blocks*(x.room.data?.mpu||3)} phút · ${next.blocks} ô${(next.notes||[]).length?' · '+x.esc(next.notes.join(', ')):''}</small></button>`;
+  if(!alt)return `<div class="dl-ways">${main}</div>`;
+  const warn=[...(alt.notes||[]),...(soup?['đổ nước lèo trên xe']:[]),'lốp mòn gấp đôi'];
+  return `<div class="dl-ways">${main}<button type="button" class="btn ghost dl-way ${alt.stall||soup?'risky':''}" ${cmdAttr(x,'dl_ride',{way:'short'})}><span>🏍️ Hẻm tắt</span><small>${alt.minutes} phút · ${alt.blocks} ô · ${x.esc(warn.join(', '))}</small></button></div>`;
+}
+
+/* ---------- orders at the current stop ---------- */
+function head(t,x){
+  const n=t.needs,who=x.npc(t.npc);
+  return `<div class="dl-ohead"><span class="dl-oemoji" aria-hidden="true">${x.esc(n.emoji)}</span><div class="grow"><b>${x.esc(n.item)}</b><small>${x.esc(who.display_name)} · ${x.esc(n.address)}${t.run.unit?` · <strong>${x.esc(t.run.unit)}</strong>`:''}</small><div class="dl-tags">${tags(t,x)}</div></div></div>`;
+}
+function packTiles(t,x){
+  const r=t.run,inv=x.room.inventory||{stock:{},locked:[]};
+  return `<div class="dl-grid pack">${items(x).map(i=>{
+    const used=r.packed.includes(i.id),locked=(inv.locked||[]).includes(i.id),q=inv.stock?.[i.id]??0;
+    const off=used||locked||!q||(r.loaded&&i.id!=='rainbag');
+    return tile(x,{emoji:i.emoji,label:i.name,sub:used?'✓ đã dùng':locked?`🔒 cấp ${i.unlock}`:`còn ${q} ${i.unit||''}`,cls:`${used?'selected':''} ${locked?'locked':''} ${!q&&!used?'empty':''}`,attr:cmdAttr(x,'dl_pack',{task:t.id,item:i.id}),off});
+  }).join('')}</div>`;
+}
+function pickupCard(t,x){
+  const n=t.needs,r=t.run,d=x.room.data||{},u=ui(x),limit=Number(d.limit)||200;
+  let body='';
+  if(n.kind==='food'){
+    const wait=(d.clock||0)<t.ready;
+    body+=`<p class="dl-line">🍳 Quán báo xong lúc <b>${x.esc(hm(t.ready))}</b> · hẹn khách trước <b>${x.esc(hm(t.due))}</b></p>`;
+    if(wait)body+=`<p class="notice amber">Món chưa xong — còn khoảng ${t.ready-(d.clock||0)} phút.</p>`;
+    body+=`<div class="row wrap">${wait?x.cmd('⏳ Chờ quán 5 phút','dl_wait',{},'ghost'):''}
+      ${x.cmd(r.checked?'✓ Đã so túi với bill':'🧾 So túi với bill','dl_check',{task:t.id},r.checked?'ghost':'',r.checked||wait)}
+      ${x.cmd('🛵 Nhận món lên thùng','dl_load',{task:t.id},'primary',wait)}</div>`;
+    if(r.missing)body+=`<p class="small">Đã bổ sung: ${x.esc(r.missing)}.</p>`;
+    return body;
+  }
+  body+=`<div class="row wrap">${x.cmd(r.checked?'✓ Đã cân & kiểm':'⚖️ Cân & kiểm hàng','dl_check',{task:t.id},r.checked?'ghost':'primary',r.checked)}</div>`;
+  if(r.checked){
+    const diff=r.w!==n.w;
+    body+=`<dl class="dl-kv"><dt>Cân thực tế</dt><dd class="${diff?'warn-text':''}">${kg(r.w)} ${diff?`(khai ${kg(n.w)})`:'— khớp'}</dd><dt>Vỏ thùng</dt><dd>${r.seam?'⚠️ hở mép keo':'nguyên vẹn'}</dd></dl>`;
+    if(diff&&r.w<=limit){const on=!!u.report[t.id];body+=`<button type="button" class="btn dl-toggle ${on?'on':''}" ${carAttr(x,'report',{task:t.id})} aria-pressed="${on}">${on?'☑':'☐'} Báo lệch cân lên app (phụ phí đúng quy định)</button>`;}
+  }
+  body+=`<p class="dl-sub">Đóng gói</p>${packTiles(t,x)}`;
+  const tooHeavy=r.checked&&r.w>limit,noStrap=n.size==='L'&&!r.packed.includes('strap');
+  body+=`<div class="row wrap space-top">${x.cmd('🛵 Nhận hàng lên xe','dl_load',{task:t.id,report:!!u.report[t.id]},'primary',!r.checked||tooHeavy)}
+    ${r.checked&&(tooHeavy||noStrap)?x.confirmCmd('🚫 Từ chối nhận','dl_refuse',{task:t.id},tooHeavy?`Hàng ${kg(r.w)} vượt tải ${kg(limit)} của xe máy. Từ chối và báo bưu cục chuyển xe tải?`:'Hàng cồng kềnh mà không có dây ràng. Từ chối nhận?','danger'):''}</div>`;
+  return body;
+}
+function keypad(x,action,key,total,extra={}){
+  const notes=x.cc.notes||[50,20,10,5,2,1];
+  return `<div class="dl-keypad">${notes.map(v=>`<button type="button" class="btn dl-note" ${carAttr(x,action,{...extra,v})}>${v}</button>`).join('')}
+    <button type="button" class="btn ghost dl-note" ${carAttr(x,action+'Clear',extra)} ${total?'':'disabled'}>Đếm lại</button></div>`;
+}
+function dropCard(t,x){
+  const n=t.needs,r=t.run,d=x.room.data||{},u=ui(x);
+  let body='';
+  if(t.due!=null)body+=`<p class="dl-line">⏰ Hẹn trước <b>${x.esc(hm(t.due))}</b>${(d.clock||0)>t.due?` · <span class="bad-text">đang trễ ${(d.clock||0)-t.due} phút</span>`:''}</p>`;
+  if(r.back!=null)body+=`<p class="dl-line">🏃 Khách hẹn về lúc <b>${x.esc(hm(r.back))}</b></p>`;
+  if(r.discount)body+=`<p class="notice amber">Đã hứa bớt ${r.discount} xu: khách trả ${n.cod-r.discount} xu, túi COD hụt ${r.discount} xu (tự bù khi nộp).</p>`;
+  if(r.dog==='ok')body+=`<p class="dl-line">🐕 Chó đã được giữ lại, vào giao được rồi.</p>`;
+  if(r.knocks)body+=`<p class="notice amber">Đã bấm chuông ${r.knocks} lần, chưa ai mở.</p>`;
+  if(r.broken_seen)body+=`<p class="notice red">Khách đồng kiểm thấy hàng hỏng và từ chối nhận.</p>`;
+  if(r.expired)body+=`<p class="notice red">Khách đã hủy đơn vì chờ quá lâu.</p>`;
+  const blocked=r.broken_seen||r.expired;
+  body+=`<div class="row wrap">${x.cmd(r.called?'✓ Đã gọi khách':'📞 Gọi khách','dl_call',{task:t.id},r.called?'ghost':'',r.called||blocked)}</div>`;
+  if(n.cod&&!blocked){
+    const coins=u.change[t.id]||[],given=sum(coins);
+    body+=`<div class="dl-cash"><p>Khách đưa <b>${n.cash} xu</b> · tiền hàng <b>${n.cod} xu</b></p>
+      <p class="dl-change">Tiền thối đang đếm: <b>${given} xu</b> ${coins.length?`<small>(${coins.join(' + ')})</small>`:''}</p>
+      ${keypad(x,'note',given,given,{task:t.id})}</div>
+      <div class="row wrap">${x.cmd(`💵 Thu ${n.cash}, thối ${given} & giao`,'dl_deliver',{task:t.id,change:given},'primary big')}</div>`;
+  }else if(!blocked){
+    body+=`<div class="row wrap">${x.cmd('✅ Giao tận tay','dl_deliver',{task:t.id},'primary big')}
+      ${n.safe_drop&&!n.cod?x.confirmCmd('📸 Gửi chòi bảo vệ','dl_safedrop',{task:t.id},'Gửi hàng ở chòi bảo vệ và chụp ảnh làm bằng chứng? Khách đã cho phép trong ghi chú.',''):''}
+      ${!n.safe_drop&&!n.cod&&!n.paper?x.confirmCmd('📦 Gửi người nhận hộ','dl_safedrop',{task:t.id},'Khách chưa cho phép gửi người khác. Vẫn gửi nhận hộ và chụp ảnh?','ghost small'):''}</div>`;
+  }
+  if(r.knocks||blocked)body+=`<div class="row wrap">${x.confirmCmd('📝 Báo giao thất bại','dl_fail',{task:t.id},r.broken_seen?'Lập biên bản hàng hỏng? Bạn đền một nửa giá trị hàng.':'Báo giao thất bại cho đơn này?','danger small')}</div>`;
+  return body;
+}
+function hubPanel(x){
+  const d=x.room.data||{},u=ui(x),given=sum(u.settle);
+  if(!(d.owed>0))return '';
+  const rows=(d.cod||[]).map(r=>`<li><span>${x.esc(r.item)}</span><b>${r.cod} xu</b>${r.day<x.room.day?'<small>từ hôm trước</small>':''}</li>`).join('');
+  return `<section class="dl-sec"><h4 class="section-title">💵 Nộp tiền COD</h4>
+    <ul class="dl-statement">${rows}</ul>
+    <p class="small muted">Cộng các dòng trên rồi đếm đúng số tiền nộp. Túi đang có ${d.bag} xu tiền mặt.</p>
+    <p class="dl-change">Đang đếm: <b>${given} xu</b></p>${keypad(x,'snote',given,given)}
+    <div class="row wrap">${x.confirmCmd(`Nộp ${given} xu cho kế toán`,'dl_settle',{amount:given},`Nộp ${given} xu COD cho kế toán bưu cục?`,'primary',!given)}</div></section>`;
+}
+function servicePanel(x){
+  const d=x.room.data||{},b=d.bike;if(!b||d.at!=='gas')return '';
+  const need=b.tyre<100||b.rim;
+  return `<section class="dl-sec"><h4 class="section-title">🔧 Bảo dưỡng xe</h4><p class="small">Lốp còn <b>${b.tyre}%</b>${b.rim?' · vành móp vì chạy bánh xẹp':''}. Dưới ${b.flat_at}% là dễ xẹp bánh giữa đường.</p>
+    <div class="row wrap">${x.confirmCmd(`🔧 Thay ruột, chỉnh sên · ${b.service} xu`,'dl_service',{},`Bảo dưỡng xe hết ${b.service} xu (mất 6 phút)?`,b.tyre<b.flat_at?'primary':'ghost',!need)}</div></section>`;
+}
+function fuelPanel(x){
+  const d=x.room.data||{},fuel=Number(d.fuel)||0,gas=d.at==='gas'&&!d.bike?.nogas,step=x.cc.fuel_step||5,price=x.cc.fuel_price||{gas:1,bottle:2};
+  if(d.at==='gas'&&d.bike?.nogas&&fuel>=30)return '<p class="notice amber">🔌 Cây xăng mất điện tới 18:00, bơm chưa chạy.</p>';
+  if(!gas&&fuel>=30)return '';
+  const room=100-fuel,opts=(gas?[10,20,30,40,room]:[10,20]).filter((v,i,a)=>v>0&&v<=room&&v%step===0&&a.indexOf(v)===i);
+  if(!opts.length)return '';
+  const unit=gas?price.gas:price.bottle;
+  return `<section class="dl-sec"><h4 class="section-title">${gas?'⛽ Cây xăng':'🍾 Xăng chai ven đường'}</h4>
+    ${gas?'':'<p class="small muted">Đắt gấp đôi, tối đa 20% — chỉ để chạy tới cây xăng.</p>'}
+    <div class="row wrap">${opts.map(v=>x.confirmCmd(`+${v}% · ${v/step*unit} xu`,'dl_refuel',{amount:v},`Đổ thêm ${v}% xăng hết ${v/step*unit} xu?`,gas?'':'ghost')).join('')}</div></section>`;
+}
+function stopPanel(x){
+  const d=x.room.data||{},here=nodeOf(x,d.at),s=stopsAt(x,d.at);
+  const cards=[...s.pick.map(t=>`<article class="dl-order pick">${head(t,x)}${pickupCard(t,x)}</article>`),
+               ...s.drop.map(t=>`<article class="dl-order drop">${head(t,x)}${dropCard(t,x)}</article>`)].join('');
+  const expired=live(x).filter(t=>t.known&&t.needs.kind==='food'&&t.run.expired&&destOf(t)!==d.at);
+  return `<section class="dl-sec focus"><h4 class="section-title">📍 Đang ở ${x.esc(here.emoji)} ${x.esc(here.name)} <small class="muted">${x.esc(here.note||'')}</small></h4>
+    ${cards||'<p class="muted">Không có đơn cần lấy hay giao ở đây. Lên lộ trình để chạy tiếp.</p>'}
+    ${expired.map(t=>`<p class="notice red">${x.esc(t.needs.item)}: khách đã hủy đơn. ${x.confirmCmd('Báo thất bại','dl_fail',{task:t.id},'Báo giao thất bại cho đơn đã bị hủy?','danger small')}</p>`).join('')}
+    <div class="row wrap">${x.cmd('⏳ Chờ 5 phút','dl_wait',{},'ghost small')} ${x.button('📦 Kho vật tư','inventory',{},'ghost small')}</div></section>
+    ${d.at==='hub'?hubPanel(x):''}${fuelPanel(x)}${servicePanel(x)}`;
+}
+
+/* ---------- order board & checklist ---------- */
+function board(x,active){
+  const rows=live(x);
+  return `<section class="dl-board"><h4 class="section-title">📱 Đơn trên app (${rows.length})</h4>${rows.map(t=>{
+    const st=stage(t),n=t.needs,p=t.preview||{};
+    const who=x.npc(t.npc);
+    if(st==='new')return `<article class="dl-card new ${t.id===active?'active':''}"><div class="row"><span class="dl-oemoji">${x.esc(p.emoji||'📦')}</span><div class="grow"><b>${x.esc(nodeOf(x,p.pickup).name)} → ${x.esc(nodeOf(x,p.dest).name)}</b><small>${x.esc(who.display_name)}: “${x.esc(t.opening)}”</small></div></div>${x.cmd('✋ Nhận đơn','ask',{task:t.id},'primary full')}</article>`;
+    const label={pickup:`Chờ lấy · ${nodeOf(x,n.pickup).name}`,bag:`Trên xe → ${nodeOf(x,destOf(t)).name}`}[st]||'';
+    return `<article class="dl-card ${st} ${t.id===active?'active':''}"><div class="row"><span class="dl-oemoji">${x.esc(n.emoji)}</span><div class="grow"><b>${x.esc(n.item)}</b><small>${x.esc(label)}${t.due!=null?` · hẹn ${x.esc(hm(t.due))}`:''}${n.cod?` · COD ${n.cod}`:''}</small></div>${t.id===active?'':x.cmd('Xem','task_select',{task:t.id},'ghost small')}</div></article>`;
+  }).join('')||'<p class="muted small">Chưa có đơn.</p>'}</section>`;
+}
+function checklist(t,x){
+  if(!t.known||!t.needs)return '';
+  const n=t.needs,r=t.run,d=x.room.data||{},rows=[];
+  rows.push([true,'Nhận đơn','']);
+  if(n.kind==='food'){rows.push([r.checked?true:null,'So túi với bill',r.missing?`bổ sung ${r.missing}`:'']);}
+  else{
+    rows.push([r.checked?true:null,'Cân & kiểm hàng',r.checked?kg(r.w):'']);
+    if(r.checked&&r.w!==n.w)rows.push([r.loaded?r.reported:null,'Báo lệch cân','']);
+    const want=[...(n.fragile?['bubble']:[]),...(r.seam?['tape']:[]),...(d.weather==='rain'?['rainbag']:[]),...(n.cold?['coldpack']:[]),...(n.size==='L'?['strap']:[])];
+    for(const id of want)rows.push([r.packed.includes(id)?true:r.loaded?false:null,itemOf(x,id).name,'']);
+  }
+  rows.push([r.loaded?true:null,'Hàng lên xe','']);
+  if(n.unit_missing)rows.push([r.unit?true:null,'Hỏi số phòng',r.unit||'']);
+  if(n.cod)rows.push([r.change!=null?(r.short||r.over?false:true):null,'Thối tiền đúng',r.change!=null?`${r.change} xu`:'']);
+  rows.push([r.outcome==='delivered'||r.outcome==='safedrop'?true:r.outcome?false:null,'Giao xong',r.fee!=null?`+${r.fee} xu`:'']);
+  return `<ul class="checklist">${rows.map(([ok,label,note])=>`<li class="${ok===true?'ok':ok===false?'bad':''}"><span>${ok===true?'✓':ok===false?'✗':'○'}</span>${x.esc(label)}${note?`<small>${x.esc(note)}</small>`:''}</li>`).join('')}</ul>`;
+}
+
+export default {
+  id:'delivery',
+  css:true,
+  next(t){
+    if(!t.known)return 'Nhận đơn trên app';
+    const r=t.run,n=t.needs;
+    if(r.outcome)return 'Đơn đã xong';
+    if(!r.loaded){
+      if(n.kind==='parcel'&&!r.checked)return 'Tới điểm lấy, cân & kiểm hàng';
+      return n.kind==='food'?'Tới quán, chờ món, so bill rồi nhận':'Đóng gói đúng loại và nhận lên xe';
+    }
+    if(n.unit_missing&&!r.unit)return 'Gọi khách hỏi số phòng';
+    if(r.dest)return `Giao tới địa chỉ mới`;
+    return n.cod?'Tới nơi, thối tiền đúng và giao':'Tới nơi và giao hàng';
+  },
+  job(t,x){
+    if(x.room.data?.desk?.ev)return `<div class="career-job dl">${status(x)}${deskCard(x)}<p class="dl-hold small muted" role="note">Các việc khác tạm dừng: quyết xong chuyện này rồi chạy tiếp nhé.</p></div>`;
+    return `<div class="career-job dl">${status(x)}${roadBoard(x)}${scoreStrip(x)}${deskCard(x)}<div class="workbench"><section class="wb-main">
+      ${stopPanel(x)}
+      <section class="dl-sec"><h4 class="section-title">🗺️ Lộ trình</h4>${map(x)}${planner(x)}</section>
+    </section><aside class="wb-side">${board(x,t.id)}${checklist(t,x)}</aside></div></div>`;
+  },
+  // Between orders: still ride to the hub to hand in COD cash or to refuel.
+  idle(x){
+    if(x.room.data?.desk?.ev)return `<div class="career-job dl">${status(x)}${deskCard(x)}<p class="dl-hold small muted" role="note">Các việc khác tạm dừng: quyết xong chuyện này rồi chạy tiếp nhé.</p></div>`;
+    return `<div class="career-job dl">${status(x)}${roadBoard(x)}${scoreStrip(x)}${deskCard(x)}<div class="workbench"><section class="wb-main">
+      ${stopPanel(x)}
+      <section class="dl-sec"><h4 class="section-title">🗺️ Lộ trình</h4>${map(x)}${planner(x)}</section>
+    </section><aside class="wb-side">${board(x,null)}</aside></div></div>`;
+  },
+  actions:{
+    async stop(data,el,x){const u=ui(x);if(u.draft.length<10&&u.draft[u.draft.length-1]!==data.node)u.draft.push(data.node);x.render();},
+    async undo(data,el,x){ui(x).draft.pop();x.render();},
+    async clear(data,el,x){ui(x).draft=[];x.render();},
+    async plan(data,el,x){
+      const u=ui(x),d=x.room.data||{},route=[...(d.route||[]),...u.draft];
+      if(!route.length)return;
+      const ok=await x.send('dl_plan',{route});
+      if(ok){u.draft=[];x.render();}
+    },
+    async report(data,el,x){const u=ui(x);u.report[data.task]=!u.report[data.task];x.render();},
+    async note(data,el,x){const u=ui(x);(u.change[data.task]??=[]).push(Number(data.v));x.render();},
+    async noteClear(data,el,x){ui(x).change[data.task]=[];x.render();},
+    async snote(data,el,x){ui(x).settle.push(Number(data.v));x.render();},
+    async snoteClear(data,el,x){ui(x).settle=[];x.render();},
+    async seen(data,el,x){ui(x).seen=data.key;x.render();},
+  },
+  dock:[['inventory','box','Vật tư','Xốp, keo, túi mưa']],
+};

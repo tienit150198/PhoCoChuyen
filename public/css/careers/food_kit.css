@@ -1,0 +1,100 @@
+/* Shared shop pieces for restaurant / café-bakery / florist (public/js/careers/food_kit.js).
+   Scoped to .career-job.food; theme tokens only. Imported by each career stylesheet. */
+.career-job.food{--fk-foot:0px;min-width:0;max-width:100%}
+html[data-layout="phone"] .career-job.food{--fk-foot:68px}
+
+/* Today strip */
+.career-job.food .fk-day{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;padding:10px 12px;border-radius:var(--radius,16px);background:var(--accent-soft,#fdf0e6);border:1px solid var(--line,#e6dccb)}
+.career-job.food .fk-mod{display:flex;align-items:center;gap:10px;margin:0;min-width:0;flex:1 1 220px}
+.career-job.food .fk-mod>span:first-child{font-size:1.6rem;line-height:1}
+.career-job.food .fk-mod>span:last-child{display:grid;min-width:0}
+.career-job.food .fk-mod b{font-size:.933rem}
+.career-job.food .fk-mod small{font-size:.8rem;color:var(--ink-2,var(--muted));line-height:1.35}
+.career-job.food .fk-stats{display:flex;gap:6px;margin:0;flex:none}
+.career-job.food .fk-stats>span{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:var(--radius-pill,99px);background:var(--surface,#fff);border:1px solid var(--line,#e6dccb);font-size:.833rem;font-weight:800;font-variant-numeric:tabular-nums}
+.career-job.food .fk-streak{color:var(--accent-text,#9a3f1f)}
+
+/* One-line result */
+.career-job.food .fk-flash{margin:0;min-height:0;padding:0;font-size:.867rem;line-height:1.45;font-weight:700}
+.career-job.food .fk-flash:not(:empty){padding:8px 12px;border-radius:var(--radius-sm,10px);background:var(--surface-2,#f5efe4);border-left:4px solid var(--line-strong,#cdbfa8)}
+.career-job.food .fk-flash.good{border-left-color:var(--good,#4f8a4b);background:var(--good-soft,#e7f3e4)}
+.career-job.food .fk-flash.bad{border-left-color:var(--bad,#c0533f);background:var(--bad-soft,#fbe7e3)}
+.career-job.food .fk-flash.event{border-left-color:var(--warn,#c98a2b);background:var(--warn-soft,#fbf0dc)}
+@media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .career-job.food .fk-flash.new{animation:fk-pop .45s ease-out}}
+@keyframes fk-pop{0%{transform:scale(.96);opacity:.2}60%{transform:scale(1.02);opacity:1}100%{transform:none}}
+
+/* Patience meter */
+.career-job.food .fk-patience{position:relative;display:flex;align-items:center;gap:8px;margin-top:8px}
+.career-job.food .fk-patience::before{content:"Kiên nhẫn";font-size:.75rem;font-weight:800;letter-spacing:.04em;color:var(--muted)}
+.career-job.food .fk-patience>i{display:block;flex:1;height:10px;border-radius:6px;background:var(--good,#4f8a4b);box-shadow:inset 0 0 0 1px rgb(0 0 0 / 6%);max-width:100%}
+.career-job.food .fk-patience.mid>i{background:var(--warn,#c98a2b)}
+.career-job.food .fk-patience.low>i{background:var(--bad,#c0533f)}
+.career-job.food .fk-patience small{font-size:.767rem;color:var(--muted);font-variant-numeric:tabular-nums;min-width:3ch;text-align:right}
+
+/* Queue */
+.career-job.food .fk-queue{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:thin;overscroll-behavior-x:contain}
+.career-job.food .fk-guest{position:relative;flex:none;display:grid;justify-items:center;gap:4px;width:64px;min-height:72px;padding:6px 4px 8px;border-radius:14px;background:var(--surface,#fff);border:2px solid var(--line,#e6dccb);color:var(--ink);cursor:pointer}
+.career-job.food .fk-guest:hover{border-color:var(--accent)}
+.career-job.food .fk-guest.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px var(--accent-soft)}
+.career-job.food .fk-guest>svg{width:34px;height:34px}
+.career-job.food .fk-guest>em{position:absolute;right:4px;top:3px;font-style:normal;font-size:.95rem;line-height:1}
+.career-job.food .fk-pat{display:block;width:48px;height:6px;border-radius:4px;background:var(--surface-3,#eee);overflow:hidden}
+.career-job.food .fk-pat>b{display:block;height:100%;background:var(--good,#4f8a4b)}
+.career-job.food .fk-guest.low .fk-pat>b{background:var(--bad,#c0533f)}
+.career-job.food .fk-more{border-style:dashed;align-content:center;color:var(--accent-text)}
+.career-job.food .fk-more>span{font-size:1.4rem;line-height:1;font-weight:800}
+.career-job.food .fk-more>small{font-size:.75rem;font-weight:700}
+
+/* Surprise card */
+.career-job.food .fk-event{padding:14px;border-radius:var(--radius-lg,20px);background:var(--warn-soft,#fbf0dc);border:2px solid var(--warn,#c98a2b);box-shadow:var(--shadow-sm)}
+.career-job.food .fk-ev-head{display:flex;align-items:center;gap:12px}
+.career-job.food .fk-ev-emoji{display:grid;place-items:center;flex:none;width:48px;height:48px;border-radius:50%;background:var(--surface,#fff);font-size:1.6rem}
+.career-job.food .fk-ev-head small{display:block;font-size:.75rem;font-weight:800;letter-spacing:.04em;color:var(--ink-2,var(--muted));text-transform:uppercase}
+.career-job.food .fk-ev-head h3{margin:2px 0 0;font-size:1.05rem;line-height:1.3}
+.career-job.food .fk-event>p{margin:10px 0 12px;line-height:1.55}
+.career-job.food .fk-ev-choices{display:grid;gap:8px}
+.career-job.food .fk-choice{display:grid;gap:2px;width:100%;min-height:48px;padding:10px 14px;border-radius:var(--radius,16px);background:var(--surface,#fff);border:1px solid var(--line-strong,#cdbfa8);color:var(--ink);text-align:left;cursor:pointer;transition:border-color var(--dur,.2s),box-shadow var(--dur,.2s)}
+.career-job.food .fk-choice:hover:not(:disabled){border-color:var(--accent);box-shadow:var(--shadow-sm)}
+.career-job.food .fk-choice b{font-size:.933rem;line-height:1.35}
+.career-job.food .fk-choice small{font-size:.8rem;color:var(--ink-2,var(--muted));line-height:1.35}
+.career-job.food .fk-choice:disabled{opacity:.55;cursor:not-allowed}
+@container sheet (min-width:640px){.career-job.food .fk-ev-choices{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}}
+
+/* Handled surprises */
+.career-job.food .fk-evlog{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.food .fk-evlog li{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:var(--radius-sm,10px);background:var(--surface-2);font-size:.867rem}
+.career-job.food .fk-evlog li>span:last-child{display:grid;gap:2px}
+.career-job.food .fk-evlog li small{color:var(--ink-2,var(--muted))}
+.career-job.food .fk-evlog li.good{box-shadow:inset 3px 0 0 var(--good)}
+.career-job.food .fk-evlog li.bad{box-shadow:inset 3px 0 0 var(--bad)}
+.career-job.food .fk-empty{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0;padding:12px;border-radius:var(--radius);background:var(--surface-2)}
+
+/* Padlocks: on a tile the lock sits over the (dimmed) picture so the name stays readable */
+.career-job.food .tile.is-locked::after,.career-job.food .rs-tile.is-locked::after{top:10px;margin-top:0}
+.career-job.food .fk-lock{display:inline-block;padding:0 6px;border-radius:var(--radius-pill,99px);background:var(--surface-3,#eee);color:var(--ink-2,var(--muted));font-size:.75rem;font-weight:800;white-space:nowrap}
+
+/* Sticky action bar (phones and narrow sheets; the side panel does this on wide ones) */
+.career-job.food .fk-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:4;display:flex;align-items:center;gap:10px;margin:4px -4px 0;padding:10px 12px;border-radius:var(--radius-lg,20px);background:var(--surface,#fff);border:1px solid var(--line-strong,#cdbfa8);box-shadow:0 -6px 18px rgb(0 0 0 / 10%)}
+.career-job.food .fk-next{flex:1;min-width:0;margin:0;font-size:.867rem;font-weight:700;line-height:1.35}
+.career-job.food .fk-bar-btns{display:flex;gap:8px;flex:none}
+.career-job.food .fk-bar-btns .btn{min-height:44px}
+@container sheet (min-width:760px){.career-job.food .fk-bar{display:none}}
+.career-job.food .fk-wide-only{display:grid;gap:8px}
+@container sheet (max-width:759px){.career-job.food .fk-wide-only{display:none}}
+.career-job.food .fk-day.short{padding:6px 12px}
+.career-job.food .fk-day.short .fk-mod>span:first-child{font-size:1.25rem}
+
+/* End-of-day card */
+.fk-grade .fk-grade-head{display:flex;align-items:center;gap:14px}
+.fk-grade .fk-grade-head h4{margin:0}
+.fk-grade .fk-grade-head small{color:var(--ink-2,var(--muted))}
+.fk-grade .fk-letter{display:grid;place-items:center;flex:none;width:56px;height:56px;border-radius:50%;font-size:1.8rem;font-weight:900;background:var(--surface-2);border:3px solid var(--line-strong)}
+.fk-grade .fk-letter.g-S{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-text)}
+.fk-grade .fk-letter.g-A{background:var(--good-soft);border-color:var(--good)}
+.fk-grade .fk-letter.g-D,.fk-grade .fk-letter.g-C{background:var(--bad-soft);border-color:var(--bad)}
+.fk-grade .fk-evsum{list-style:none;margin:8px 0;padding:0;display:grid;gap:4px;font-size:.867rem}
+.fk-grade .fk-evsum li.good{color:var(--good)}
+.fk-grade .fk-evsum li.bad{color:var(--bad)}
+.fk-grade .fk-tomorrow{display:grid;grid-template-columns:auto 1fr;gap:0 8px;margin:10px 0 0;padding:10px 12px;border-radius:var(--radius-sm,10px);background:var(--accent-soft)}
+.fk-grade .fk-tomorrow>span{grid-row:1/span 2;font-size:1.5rem}
+.fk-grade .fk-tomorrow small{color:var(--ink-2,var(--muted))}

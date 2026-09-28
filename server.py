@@ -1,0 +1,400 @@
+#!/usr/bin/env python3
+"""Game server: Python 3.10+, standard library only.
+
+Launch locally: python server.py --open
+Public: put it behind an HTTPS reverse proxy, set ALLOWED_HOSTS=<domain> and
+TRUST_PROXY=1 (see docs/DEPLOY.md). Static assets are restricted to public/.
+Runtime state is never served as files; secrets stay in the server environment.
+"""
+from __future__ import annotations
+import argparse
+from collections import defaultdict,deque
+import gzip
+import hashlib
+import json
+import mimetypes
+import os
+from pathlib import Path
+import secrets
+import sys
+import threading
+import time
+from http.cookies import SimpleCookie
+from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
+from urllib.parse import unquote,urlsplit,parse_qs
+import webbrowser
+
+ROOT=Path(__file__).resolve().parent
+PUBLIC=ROOT/"public"
+
+def load_env():
+    env=ROOT/".env"
+    if not env.exists():return
+    for line in env.read_text(encoding="utf-8").splitlines():
+        line=line.strip()
+        if not line or line.startswith("#") or "=" not in line:continue
+        key,value=line.split("=",1)
+        if key.strip().replace("_","").isalnum():os.environ.setdefault(key.strip(),value.strip().strip('"\''))
+load_env()
+from game import __version__
+from game import ai
+from game import social
+from game import push
+from game import accounts
+from game.content import public_content,CAREERS
+from game.engine import GameError,public_state
+from game.storage import Store,Conflict
+from game.dialogue import public_config,rephrase
+
+MAX_BODY=16*1024*1024
+COOKIE="mnl_session"
+CSP=("default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; "
+     "connect-src 'self'; font-src 'self'; media-src 'self' blob:; worker-src 'self'; manifest-src 'self'; "
+     "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'")
+STATIC_TYPES={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",
+              ".json":"application/json; charset=utf-8",".svg":"image/svg+xml",".png":"image/png",".webp":"image/webp",
+              ".ico":"image/x-icon",".webmanifest":"application/manifest+json",".woff2":"font/woff2",".txt":"text/plain; charset=utf-8",
+              ".xml":"application/xml; charset=utf-8"}
+COMPRESSIBLE=(".html",".js",".css",".json",".svg",".webmanifest",".txt",".xml")
+PAGES={"/privacy":"privacy.html","/terms":"terms.html","/":"index.html"}
+env_flag=lambda k,d="0":os.environ.get(k,d).strip().lower() in ("1","true","yes","on")
+
+class GameServer(ThreadingHTTPServer):
+    daemon_threads=True
+    allow_reuse_address=True
+    request_queue_size=64
+    def __init__(self,address,store:Store,allowed_hosts:set[str]|None=None):
+        super().__init__(address,Handler)
+        self.store=store
+        self.allowed_hosts=allowed_hosts or {"localhost","127.0.0.1","::1"}
+        self.limits=defaultdict(deque)
+        self.limits_lock=threading.Lock()
+        self.static_cache={}
+        self.trust_proxy=env_flag("TRUST_PROXY")
+        social.ensure(store)
+        push.ensure(store)
+
+    def rate_limit(self,key:str,limit:int,seconds:int=60)->bool:
+        now=time.monotonic()
+        with self.limits_lock:
+            q=self.limits[key]
+            while q and q[0]<now-seconds:q.popleft()
+            if len(q)>=limit:return False
+            q.append(now)
+            if len(self.limits)>20000:
+                stale=[k for k,v in self.limits.items() if not v or v[-1]<now-seconds]
+                for k in stale:self.limits.pop(k,None)
+            return True
+
+class Handler(BaseHTTPRequestHandler):
+    server_version="MotNgayLamNghe/"+__version__
+    sys_version=""
+    protocol_version="HTTP/1.1"
+
+    def setup(self):
+        super().setup();self.connection.settimeout(20)
+
+    def log_message(self,format,*args):
+        if not os.environ.get("QUIET"):
+            # Never log cookies, request bodies, endpoint keys or dialogue text.
+            sys.stderr.write("[%s] %s\n"%(self.log_date_time_string(),format%args))
+
+    # ---- request helpers -------------------------------------------------
+    def client_ip(self)->str:
+        if self.server.trust_proxy:
+            # The right-most entry is the one our own proxy appended; earlier ones are client-supplied.
+            fwd=self.headers.get("X-Forwarded-For","").split(",")[-1].strip()
+            if fwd:return fwd[:64]
+        return self.client_address[0]
+
+    def secure(self)->bool:
+        if env_flag("COOKIE_SECURE"):return True
+        return self.server.trust_proxy and self.headers.get("X-Forwarded-Proto","").lower()=="https"
+
+    def respond(self,status:int,data:bytes,ctype:str,extra:dict|None=None,compress:bool=False,cache:str|None=None):
+        if compress and len(data)>1400 and "gzip" in self.headers.get("Accept-Encoding",""):
+            data=gzip.compress(data,5);extra=dict(extra or {},**{"Content-Encoding":"gzip"})
+        self.send_response(status)
+        self.send_header("Content-Type",ctype)
+        self.send_header("Content-Length",str(len(data)))
+        self.send_header("X-Content-Type-Options","nosniff")
+        self.send_header("Referrer-Policy","no-referrer")
+        self.send_header("Content-Security-Policy",CSP)
+        self.send_header("Permissions-Policy","camera=(), microphone=(), geolocation=(), payment=()")
+        self.send_header("Cross-Origin-Opener-Policy","same-origin")
+        if self.secure():self.send_header("Strict-Transport-Security","max-age=31536000")
+        if compress:self.send_header("Vary","Accept-Encoding")
+        self.send_header("Cache-Control",cache or ("no-store" if self.path.startswith("/api/") else "no-cache"))
+        for k,v in (extra or {}).items():self.send_header(k,v)
+        self.end_headers()
+        if self.command!="HEAD":
+            try:self.wfile.write(data)
+            except (BrokenPipeError,ConnectionResetError):pass
+
+    def json(self,status:int,data:dict,extra:dict|None=None):
+        if isinstance(data,dict):data=dict(data,server_time=round(time.time(),3))
+        self.respond(status,json.dumps(data,ensure_ascii=False,allow_nan=False).encode(),"application/json; charset=utf-8",extra,compress=True)
+
+    def error(self,status:int,message:str,code:str="error"):
+        self.json(status,dict(error=message,code=code))
+
+    def valid_host(self)->bool:
+        try:hostname=urlsplit("//"+self.headers.get("Host","")).hostname
+        except ValueError:return False
+        return bool(hostname in self.server.allowed_hosts or "*" in self.server.allowed_hosts)
+
+    def token(self)->str|None:
+        try:
+            cookie=SimpleCookie();cookie.load(self.headers.get("Cookie",""))
+            return cookie[COOKIE].value if COOKIE in cookie else None
+        except Exception:return None
+
+    def cookie(self,token:str,max_age:int=31536000)->str:
+        return f"{COOKIE}={token}; HttpOnly; SameSite=Strict; Path=/; Max-Age={max_age}"+("; Secure" if self.secure() else "")
+
+    def require_session(self)->tuple[str,dict,int,str]:
+        token=self.token()
+        if not token:raise GameError("Tải lại trang để bắt đầu phiên chơi.","session_missing")
+        state,revision,csrf=self.server.store.read(token)
+        return token,state,revision,csrf
+
+    def guarded(self)->tuple[str,dict,int,str]:
+        if not self.valid_host():raise PermissionError("Host không được phép.")
+        session=self.require_session()
+        if not secrets.compare_digest(self.headers.get("X-Game-CSRF",""),session[3]):raise PermissionError("Mã bảo vệ phiên không hợp lệ. Tải lại trang nhé.")
+        origin=self.headers.get("Origin")
+        if origin:
+            parsed=urlsplit(origin)
+            if parsed.scheme not in ("http","https") or parsed.netloc!=self.headers.get("Host"):raise PermissionError("Không nhận thao tác từ website khác.")
+        if self.headers.get("Sec-Fetch-Site") in ("cross-site",):raise PermissionError("Không nhận thao tác từ website khác.")
+        return session
+
+    # ---- static files -----------------------------------------------------
+    def static(self,route:str):
+        rel=PAGES.get(route) or unquote(route).lstrip("/")
+        try:path=(PUBLIC/rel).resolve()
+        except (OSError,ValueError):self.error(404,"Không tìm thấy tài nguyên.");return
+        suffix=path.suffix.lower()
+        if not path.is_relative_to(PUBLIC.resolve()) or suffix not in STATIC_TYPES or not path.is_file():
+            self.error(404,"Không tìm thấy tài nguyên.");return
+        st=path.stat();key=str(path)
+        cached=self.server.static_cache.get(key)
+        if not cached or cached[0]!=(st.st_mtime_ns,st.st_size):
+            raw=path.read_bytes()
+            etag='"'+hashlib.sha1(raw).hexdigest()[:20]+'"'
+            gz=gzip.compress(raw,6) if suffix in COMPRESSIBLE and len(raw)>1400 else None
+            cached=((st.st_mtime_ns,st.st_size),raw,gz,etag)
+            if len(self.server.static_cache)<600:self.server.static_cache[key]=cached
+        _,raw,gz,etag=cached
+        extra={"ETag":etag}
+        if path.name=="sw.js":extra["Service-Worker-Allowed"]="/"
+        if self.headers.get("If-None-Match")==etag:
+            self.send_response(304);self.send_header("ETag",etag);self.send_header("Cache-Control","no-cache");self.send_header("Content-Length","0");self.end_headers();return
+        body=raw
+        if gz is not None and "gzip" in self.headers.get("Accept-Encoding",""):
+            body=gz;extra["Content-Encoding"]="gzip"
+        if suffix in COMPRESSIBLE:extra["Vary"]="Accept-Encoding"
+        cache="public, max-age=31536000, immutable" if suffix==".woff2" else "no-cache"
+        self.respond(200,body,STATIC_TYPES[suffix],extra,cache=cache)
+
+    # ---- routes -----------------------------------------------------------
+    def do_HEAD(self):self.do_GET()
+
+    def do_GET(self):
+        if not self.valid_host():self.error(403,"Host không được phép.");return
+        split=urlsplit(self.path);route=split.path
+        try:
+            if route=="/api/health":
+                self.json(200,dict(status="ok",version=__version__,careers=len(CAREERS)));return
+            if route=="/api/bootstrap":
+                ip=self.client_ip()
+                if not self.server.rate_limit("bootstrap:"+ip,120):self.error(429,"Chờ một chút rồi tải lại nhé.");return
+                existing=self.token()
+                if not existing and not self.server.rate_limit("newsession:"+ip,int(os.environ.get("NEW_SESSIONS_PER_MINUTE","20"))):
+                    self.error(429,"Quá nhiều phiên mới từ mạng này. Chờ một chút nhé.");return
+                token,csrf,created=self.server.store.session(existing)
+                state,revision,_=self.server.store.read(token)
+                if not created:
+                    try:
+                        if social.settle(self.server.store,token,state):state,revision,_=self.server.store.read(token)
+                    except social.SocialError:pass
+                extra={"Set-Cookie":self.cookie(token)} if created else {}
+                self.json(200,dict(state=public_state(state),revision=revision,csrf=csrf,content=public_content(),ai=dict(public_config(),configured=ai.available()),
+                                   social=social.bootstrap(self.server.store,token,state),push=push.public_config(),account=accounts.status(self.server.store,token)),extra);return
+            if route=="/api/state":
+                _,state,revision,_=self.require_session();self.json(200,dict(state=public_state(state),revision=revision));return
+            if route=="/api/save/export":
+                _,state,revision,_=self.require_session()
+                data=dict(format="mot-ngay-lam-nghe/save-v4",app_version=__version__,state=state)
+                self.json(200,data,{"Content-Disposition":"attachment; filename=mot-ngay-lam-nghe-save.json"});return
+            if route.startswith("/api/social/"):
+                token,state,_,_=self.require_session()
+                if not self.server.rate_limit("social-get:"+token,240):self.error(429,"Chậm lại một chút nhé.");return
+                query={k:v[0] for k,v in parse_qs(split.query).items()}
+                self.json(200,social.get(self.server.store,token,state,route[len("/api/social/"):],query));return
+            if route=="/api/push/pending":
+                token,state,_,_=self.require_session()
+                self.json(200,dict(push.pending(self.server.store,token),lang=state["settings"].get("lang","vi")));return
+            if route.startswith("/api/"):self.error(404,"Không có API này.");return
+            self.static(route)
+        except social.SocialError as e:self.error(e.status,e.message,e.code)
+        except GameError as e:self.error(401 if e.code=="session_missing" else 400,e.message,e.code)
+        except (OSError,ValueError):self.error(500,"Không đọc được dữ liệu. Kiểm tra thư mục storage và tải lại.")
+
+    def do_POST(self):
+        try:
+            token,state,revision,csrf=self.guarded()
+            length=int(self.headers.get("Content-Length","0"))
+            if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
+            if not self.headers.get("Content-Type","").startswith("application/json"):self.error(415,"Cần gửi JSON.");self.close_connection=True;return
+            data=json.loads(self.rfile.read(length),parse_constant=lambda x:(_ for _ in ()).throw(ValueError("nonfinite")))
+            if not isinstance(data,dict):raise GameError("Dữ liệu cần là đối tượng JSON.")
+            route=urlsplit(self.path).path
+            max_commands=int(os.environ.get("COMMANDS_PER_MINUTE","360"))
+            if route=="/api/command":
+                if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
+                if length>256*1024 and data.get("action")!="import_save":self.error(413,"Thao tác quá lớn.");return
+                result=self.server.store.command(token,data.get("request_id"),data.get("expected_revision"),data.get("career"),data.get("action"),data.get("payload",{}))
+                self.json(200,result);return
+            if length>64*1024:self.error(413,"Nội dung quá lớn.");return
+            if route=="/api/ai/rephrase":
+                if not self.ai_budget(token):self.json(200,dict(mode="scripted",reason="rate_limit"));return
+                self.json(200,rephrase(state,data.get("career"),data.get("npc")));return
+            if route=="/api/ai/feedback":
+                self.json(200,self.ai_feedback(token,state,revision,data));return
+            if route=="/api/ai/review":
+                self.json(200,self.ai_review(token,state,revision,data));return
+            if route=="/api/account/delete":
+                if data.get("confirm")!="XOA":raise GameError("Gõ XOA để xác nhận xóa dữ liệu.")
+                social.forget(self.server.store,token);push.forget(self.server.store,token);self.server.store.delete(token)
+                self.json(200,dict(deleted=True,message="Đã xóa toàn bộ dữ liệu chơi của bạn trên máy chủ."),{"Set-Cookie":self.cookie("",0)});return
+            if route.startswith("/api/account/"):
+                self.account_post(route[len("/api/account/"):],token,data);return
+            if route.startswith("/api/social/"):
+                if not self.server.rate_limit("social:"+token,60):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
+                self.json(200,social.post(self.server.store,token,state,route[len("/api/social/"):],data));return
+            if route in ("/api/push/subscribe","/api/push/unsubscribe"):
+                if not self.server.rate_limit("push:"+token,20):self.error(429,"Chờ một chút nhé.");return
+                self.json(200,push.subscribe(self.server.store,token,data) if route.endswith("/subscribe") else push.unsubscribe(self.server.store,token,data));return
+            self.error(404,"Không có API này.")
+        except Conflict as e:
+            try:
+                _,current,rev,_=self.require_session();self.json(409,dict(error=e.message,code=e.code,state=public_state(current),revision=rev))
+            except GameError:self.error(409,e.message,e.code)
+        except PermissionError as e:self.error(403,str(e),"forbidden");self.close_connection=True
+        except social.SocialError as e:self.error(e.status,e.message,e.code)
+        except accounts.AccountError as e:self.error(e.status,e.message,e.code)
+        except GameError as e:self.error(401 if e.code=="session_missing" else 400,e.message,e.code)
+        except (ValueError,TypeError,KeyError,IndexError,RecursionError,AttributeError):self.error(400,"Dữ liệu không đúng cấu trúc hoặc bản lưu không hợp lệ.","invalid_data")
+        except Exception as e:
+            self.log_error("Internal error: %s",type(e).__name__)
+            self.error(500,"Không thực hiện được thao tác. Tiến trình trước đó vẫn được giữ.","internal_error")
+
+    # ---- optional accounts ------------------------------------------------
+    def account_post(self,name:str,token:str,data:dict):
+        """Register / login / logout / change password. Bodies are never logged."""
+        store,ip,limit=self.server.store,self.client_ip(),self.server.rate_limit
+        slow=lambda:accounts.AccountError("Thử quá nhiều lần. Chờ vài phút rồi thử lại nhé.","rate_limited",429)
+        if name=="register":
+            if not (limit("acct-reg:"+ip,5,600) and limit("acct-reg-h:"+ip,20,3600)):raise slow()
+            out=accounts.register(store,token,data)
+        elif name=="login":
+            accounts.check_replace(store,token,data)
+            user=data.get("username") if isinstance(data.get("username"),str) else ""
+            user=user.strip().lower()[:32]
+            if not (limit("acct-login:"+ip,10,60) and limit("acct-login-h:"+ip,60,3600) and limit("acct-user:"+user,5,60) and limit("acct-user-h:"+user,20,3600)):raise slow()
+            out=accounts.login(store,token,data)
+            if out.pop("drop_anonymous"):
+                social.forget(store,token);push.forget(store,token);store.delete(token)
+        elif name=="logout":
+            accounts.logout(store,token)
+            fresh,_,_=store.session(None)
+            out=dict(token=fresh,message="Đã đăng xuất. Máy này bắt đầu một phiên chơi mới.")
+        elif name=="password":
+            if not limit("acct-pw:"+ip,10,600):raise slow()
+            out=accounts.change_password(store,token,data)
+        else:
+            self.error(404,"Không có API này.");return
+        fresh=out.pop("token",None)
+        self.json(200,out,{"Set-Cookie":self.cookie(fresh)} if fresh else None)
+
+    # ---- AI reviewer personas -------------------------------------------
+    def ai_budget(self,token:str)->bool:
+        return self.server.rate_limit("ai:"+token,int(os.environ.get("AI_PER_MINUTE","10"))) and self.server.rate_limit("ai-global",int(os.environ.get("AI_GLOBAL_PER_MINUTE","60")))
+
+    def _feedback_post(self,state:dict,data:dict):
+        career=data.get("career")
+        if career not in CAREERS:raise GameError("Nghề không hợp lệ.")
+        c=state["careers"][career];pid=data.get("post")
+        post=next((p for p in c["feed"] if p.get("id")==pid and p.get("feedback")),None)
+        return career,c,post
+
+    def _internal(self,token:str,rid:str,career:str,action:str,payload:dict,fallback:tuple):
+        try:return self.server.store.command(token,rid[:100],None,career,action,payload,internal=True)
+        except (Conflict,GameError):
+            # Someone (another tab, the auto-resolve tick) got there first.
+            _,state,revision,_=self.server.store.read(token)
+            return dict(state=public_state(state),revision=revision,result=dict(message=""),replayed=True)
+
+    def ai_feedback(self,token:str,state:dict,revision:int,data:dict)->dict:
+        career,c,post=self._feedback_post(state,data)
+        if not post or post["feedback"]["status"]!="awaiting":
+            return dict(state=public_state(state),revision=revision,result=dict(message=""),mode="none")
+        proposal=None
+        if state["settings"].get("aiConsent") and ai.available() and self.ai_budget(token):
+            proposal=ai.feedback_decision(c,post,state["settings"].get("lang","vi"))
+        payload=dict(post=post["id"],**(proposal or dict(mode="scripted")))
+        rid="srv-fb-"+hashlib.sha256(f'{career}|{post["id"]}'.encode()).hexdigest()[:24]+f'-{post["feedback"]["rounds"]}'
+        out=self._internal(token,rid,career,"fb_resolve",payload,(state,revision))
+        return dict(out,mode="ai" if proposal else "scripted")
+
+    def ai_review(self,token:str,state:dict,revision:int,data:dict)->dict:
+        career,c,post=self._feedback_post(state,data)
+        fb=(post or {}).get("feedback") or {}
+        if not post or fb.get("voice")!="scripted" or fb.get("thread") or not state["settings"].get("aiConsent") or not ai.available():
+            return dict(mode="none")
+        if not self.ai_budget(token):return dict(mode="none",reason="rate_limit")
+        text=ai.review_voice(c,post,state["settings"].get("lang","vi"))
+        if not text:return dict(mode="none",reason="unavailable")
+        rid="srv-rv-"+hashlib.sha256(f'{career}|{post["id"]}'.encode()).hexdigest()[:24]
+        return dict(self._internal(token,rid,career,"fb_voice",dict(post=post["id"],text=text),(state,revision)),mode="ai")
+
+
+def maintenance(store:Store,stop:threading.Event):
+    """Background housekeeping: prune stale saves/receipts, deliver due pushes."""
+    last_prune=0.0
+    while not stop.wait(30):
+        try:
+            if time.time()-last_prune>6*3600:
+                store.prune(int(os.environ.get("SESSION_IDLE_DAYS","180")));social.prune(store);last_prune=time.time()
+            push.deliver_due(store)
+        except Exception as e:  # never kill the server for housekeeping
+            sys.stderr.write(f"[maintenance] {type(e).__name__}\n")
+
+
+def main():
+    parser=argparse.ArgumentParser(description="Một ngày làm nghề — web game")
+    parser.add_argument("--host",default=os.environ.get("HOST","127.0.0.1"))
+    parser.add_argument("--port",type=int,default=int(os.environ.get("PORT","8765")))
+    parser.add_argument("--open",action="store_true",help="Open the game in your default browser")
+    parser.add_argument("--db",default=os.environ.get("GAME_DB",str(ROOT/"storage"/"game.sqlite3")))
+    args=parser.parse_args()
+    allowed={"localhost","127.0.0.1","::1",args.host}|set(filter(None,(h.strip() for h in os.environ.get("ALLOWED_HOSTS","").split(","))))
+    if args.host=="0.0.0.0" and not os.environ.get("ALLOWED_HOSTS"):
+        print("Public/LAN mode: set ALLOWED_HOSTS to your domain or IP in .env (see docs/DEPLOY.md).")
+    # Real players get the journey story; MNL_DEV=1 (browser sweeps) keeps every workplace open.
+    store=Store(args.db,story=os.environ.get("MNL_DEV")!="1")
+    try:server=GameServer((args.host,args.port),store,allowed)
+    except OSError as e:
+        print(f"Không mở được cổng {args.port}: {e}. Thử --port 8766.");return 1
+    stop=threading.Event()
+    threading.Thread(target=maintenance,args=(store,stop),daemon=True).start()
+    url=f"http://127.0.0.1:{server.server_port}"
+    print(f"\n  PHỐ CÓ CHUYỆN · v{__version__}\n  Chơi tại: {url}\n  Lưu tại: {args.db}\n  AI phản hồi: {'bật' if ai.available() else 'tắt (lời thoại có sẵn)'} · Web push: {'bật' if push.public_config()['enabled'] else 'tắt'}\n  Nhấn Ctrl+C để dừng.\n",flush=True)
+    if args.open:threading.Timer(.5,lambda:webbrowser.open(url)).start()
+    try:server.serve_forever(poll_interval=.3)
+    except KeyboardInterrupt:print("\nĐã dừng. Tiến trình đã lưu trong SQLite.")
+    finally:stop.set();server.server_close()
+    return 0
+
+if __name__=="__main__":raise SystemExit(main())

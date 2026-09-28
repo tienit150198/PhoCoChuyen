@@ -1,0 +1,470 @@
+{
+  "mother_baby": {
+    "name": "Tiệm mẹ & bé",
+    "subtitle": "Bán đúng nhu cầu, làm quà đẹp, tạo một tiệm có người nhớ tới.",
+    "scene": "Tiệm Mây Nhỏ: quầy thu ngân, kệ đồ dùng/đồ mặc/đồ chơi, bàn gói quà, kho sau và góc cửa sổ. Ngoài cửa có điểm giao hàng, bảng tin khu phố và ghế nghỉ. Mèo tiệm là bạn đồng hành trang trí, không phải một thanh nhu cầu bắt chăm liên tục.",
+    "loop": "Xem hẹn và kho → mở cửa → hỏi nhu cầu → chọn món → gói/kiểm → thanh toán → giao → đọc phản hồi → nhập/trang trí cho ngày sau.",
+    "hotspots": [
+      [
+        "Khách và giỏ",
+        "Nhận yêu cầu; hỏi thêm; xem ngân sách và lựa chọn đã xác nhận."
+      ],
+      [
+        "Kệ và kho",
+        "Lấy/đặt món, đọc nhãn, chuyển hàng; không tự trừ kho khi chỉ xem."
+      ],
+      [
+        "Bàn gói quà",
+        "Chọn hộp, giấy, nơ, thiệp; có mẫu nhanh và chế độ tự phối."
+      ],
+      [
+        "Quầy / máy tính",
+        "Kiểm đơn, áp dụng ưu đãi trong game, xác nhận tiền và bàn giao."
+      ],
+      [
+        "Điện thoại / cửa",
+        "Đặt nguồn hàng, đọc review, hẹn nhận; tạm ngừng nhận khách mới."
+      ]
+    ],
+    "session": "Khách mua quà chỉ nói “đừng màu hồng”. Bạn hỏi người nhận và ngân sách, chọn hai phương án, cho khách xem, phối giấy gói, kiểm giỏ và thu tiền. Nếu chọn quá ngân sách, khách nhắc; bạn sửa trước khi chốt. Cuối ca khách gửi ảnh, mở một lời nhờ mới thay vì chỉ nhận xu.",
+    "skills": "Quan sát, hỏi đúng điều còn thiếu, nhớ vị trí, phối màu, sắp xếp lượt và giữ lời hẹn. Không tư vấn sức khỏe hay lựa chọn dinh dưỡng cho trẻ ngoài phạm vi vật phẩm giả lập.",
+    "mechanics": [
+      [
+        "Khám phá nhu cầu",
+        "Yêu cầu ban đầu có thể thiếu dịp tặng, sở thích hoặc ngân sách. Câu hỏi phù hợp mở dữ kiện; khách không giấu điều thiết yếu để đánh đố vô lý. Có thể đề xuất hai món để khách chọn."
+      ],
+      [
+        "Lấy và so hàng",
+        "Món đang cầm xuất hiện rõ; nhãn gồm mã, màu/cỡ game, giá. Kéo vào giỏ hoặc bấm-chọn-bấm. Đặt nhầm được bỏ ra trước thanh toán; lúc chốt kiểm số lượng và tồn thật."
+      ],
+      [
+        "Gói quà sáng tạo",
+        "Ghép hộp, giấy, nơ và thiệp. Điểm phù hợp dựa trên điều khách đã nói; không có một màu luôn thắng. Tự phối tạo mẫu lưu lại; mẫu nhanh giúp người không thích trang trí vẫn chơi đủ."
+      ],
+      [
+        "Hẹn và đơn online",
+        "Nhận đơn tạo khung giờ trong ngày game, khóa lượng hàng cần giữ. Có thể đề nghị giờ khác trước khi nhận. Việc chốt hẹn có nhắc và đường bàn giao, không chỉ nằm trong chat."
+      ],
+      [
+        "Kho và nguồn hàng",
+        "Đặt theo khả năng bán và chỗ chứa, kiểm kiện trước khi nhập. Nhà cung cấp có thể giao thiếu theo sự kiện. Đặt hàng không được tự cộng kho; chỉ cộng lượng nhận đủ điều kiện."
+      ],
+      [
+        "Trang trí và phụ việc",
+        "Kệ mới mở vị trí; bàn mới mở mẫu quà; phụ việc bổ sung hàng theo quy tắc. Nhân viên thực sự đi làm và có thể cần kiểm tra, không thay người chơi bằng nút auto thu tiền."
+      ]
+    ],
+    "economy": "Ví dụ cân bằng giả lập: bán bộ quà 140 xu, giá vốn 80 xu, vật liệu gói 10 xu → phần còn lại trước chi phí khác là 50 xu. Không gọi 140 xu là lợi nhuận. Hàng giữ cho đơn hẹn không được đồng thời bán cho khách khác.",
+    "states": "requested → needs_known → reserved → picked → packed → checked → paid → delivered. Nhánh riêng: waiting_for_reply, rescheduled, cancelled, return_requested, remedied. Không bắt mọi đơn phải gói quà; bước packed có thể được bỏ qua theo loại đơn.",
+    "stories": [
+      [
+        "Món quà của bác Tư",
+        "Gặp lần đầu và hỏi người nhận → cùng chọn quà → nhận phản hồi lần sau → chuẩn bị một món quà đặc biệt → nhận ảnh kỷ niệm. Chọn nhầm có nhánh đổi/sửa, không khóa tuyến truyện."
+      ],
+      [
+        "Một clip, nhiều góc nhìn",
+        "Bảo đề nghị quay và xin tài trợ → người chơi đặt ranh giới/thỏa thuận → bài đăng và khách tới hỏi → trao đổi lại khi có đủ dữ kiện. Có đường hợp tác tử tế, từ chối bình thường hoặc xử lý gây rối; cộng đồng không tự bênh chủ tiệm."
+      ],
+      [
+        "Buổi gói quà khu phố",
+        "Khách bình luận gợi ý hoạt động → bạn nhận hoặc để sau → đặt dụng cụ, bố trí bàn, mời khách → tổ chức → ảnh nhóm xuất hiện trên bảng tin. Không biến sự kiện thành kiểm tra doanh số."
+      ]
+    ],
+    "dialogue": "Linh: “Mình muốn tặng chị gái, khoảng 150 xu, chị không thích màu hồng.”\nBạn: “Mình có bộ màu kem, mình lấy bạn xem nhé?”\nHệ thống: làm nổi vị trí bộ quà, không tự hoàn thành lấy hàng.\nLinh: “Bộ này được, thêm thiệp nhỏ giúp mình.”\nBạn chọn thiệp và xác nhận giá cuối trước khi thanh toán.",
+    "days": [
+      [
+        "1",
+        "Một khách, lấy đúng món, thu tiền, đóng cửa; luôn có gợi ý."
+      ],
+      [
+        "2",
+        "Hỏi nhu cầu và gói quà bằng mẫu có sẵn."
+      ],
+      [
+        "3",
+        "Nhập hàng, kiểm kiện, đặt lại kệ."
+      ],
+      [
+        "4",
+        "Đơn hẹn nhận sau và tin nhắn xác nhận."
+      ],
+      [
+        "5",
+        "Review đầu tiên; trả lời và làm việc bổ sung nếu có."
+      ],
+      [
+        "6",
+        "Khách quen quay lại; mở phối quà tự do."
+      ],
+      [
+        "7",
+        "Chọn một tình huống đời thường; có thể giảm độ căng."
+      ],
+      [
+        "8",
+        "Nhận phụ việc và hướng dẫn bổ sung hàng."
+      ],
+      [
+        "9",
+        "Chuẩn bị hoạt động cộng đồng hoặc một đơn lớn tự chọn."
+      ],
+      [
+        "10",
+        "Khép tuyến chuyện đầu, mở trang trí sâu và chơi tự do."
+      ]
+    ],
+    "upgrades": "Kệ hai mặt; nhãn vị trí; bàn gói quà; máy in thiệp giả lập; góc chụp ảnh; ghế khách; quầy nhận hẹn; phụ việc. Chỉ mở công cụ khi vòng chơi đã giới thiệu nhu cầu sử dụng.",
+    "checks": "Đặt nhầm rồi sửa được; không bán hàng đã giữ hai lần; kho chỉ tăng sau kiểm nhận; tặng/hoàn tiền có xác nhận; review có đơn/sự kiện gốc; cả chọn nhanh và tự gõ đều hoàn thành được tuyến chính."
+  },
+  "pharmacy": {
+    "name": "Nhà thuốc nhỏ",
+    "subtitle": "Trò chơi về sự cẩn thận, kiểm chứng và biết giới hạn của mình.",
+    "scene": "Quầy Bình An giả lập: bàn nhận phiếu, các kệ mã hàng, khay kiểm tra, khu tạm giữ lô, bàn của người phụ trách, kho và hàng chờ. Phiếu và bao bì chỉ dùng tên/mã hư cấu. Bố cục cho thấy người chơi đang thao tác tại quầy, không là bảng quản lý kho toàn màn hình.",
+    "loop": "Nhận phiếu → kiểm dữ kiện → đối chiếu mã/số lượng/lô → hỏi hoặc chuyển khi thiếu → kiểm cuối → giao nhận → cập nhật kho → theo dõi phản hồi.",
+    "hotspots": [
+      [
+        "Khách / phiếu",
+        "Đọc yêu cầu và thông tin còn thiếu; không tự tạo chẩn đoán."
+      ],
+      [
+        "Kệ mã hàng",
+        "Chọn hộp theo mã giả lập; xoay xem nhãn bằng thao tác đơn giản."
+      ],
+      [
+        "Khay kiểm tra",
+        "So danh sách phiếu với các hộp đã chọn, số lượng và điều kiện lô."
+      ],
+      [
+        "Khu tạm giữ",
+        "Cách ly vật phẩm chưa đủ điều kiện game, không bán lẫn."
+      ],
+      [
+        "Người phụ trách",
+        "Hỏi lại, xin xác nhận hoặc chuyển yêu cầu ngoài phạm vi."
+      ]
+    ],
+    "session": "Một người mua hộ chỉ nhớ hộp màu xanh. Bạn hỏi phiếu hoặc mã thay vì đoán. Sau khi họ bổ sung, bạn chọn giữa hai hộp có bao bì gần giống, xem mã và lô, lấy đúng hai hộp, kiểm khay rồi giao. Cảm giác hoàn thành đến từ việc làm đúng và hỗ trợ rõ ràng, không phải bán được nhiều nhất.",
+    "skills": "Đối chiếu chi tiết, quản lý trạng thái, ưu tiên lượt, giải thích giới hạn và giữ thông tin riêng. Không có bài đoán bệnh từ triệu chứng, khuyến nghị thuốc thật hoặc chỉ dẫn liều dùng.",
+    "mechanics": [
+      [
+        "Phiếu đủ điều kiện",
+        "Phiếu có danh sách trường do nhiệm vụ quy định. Dữ kiện thiếu phải được hỏi lại hoặc chuyển người phụ trách. Trò luôn cho đường tiếp tục hợp lệ, không bắt người chơi bịa dữ liệu để thông qua."
+      ],
+      [
+        "Tìm đúng mã",
+        "Kệ có các vật phẩm tên hư cấu và hình gần nhau. Thử thách là đọc mã, hình dấu và số lượng, không yêu cầu kiến thức y khoa. Có hỗ trợ đọc nhãn lớn để tránh thành bài kiểm tra thị lực."
+      ],
+      [
+        "Quản lý lô",
+        "Mỗi lô có trạng thái hiệu lực theo ngày game. Lô tạm giữ không xuất được. Nhận nhập phải đối chiếu số lượng/lô; hộp nhận trả không tự trở thành hàng có thể bán."
+      ],
+      [
+        "Kiểm hai bước",
+        "Khay đối chiếu hiển thị yêu cầu và vật đã lấy. Có thể sửa trước giao; chốt xuất kho chỉ chạy một lần. Nâng cấp hỗ trợ tìm sai khác, không loại bỏ trách nhiệm quyết định."
+      ],
+      [
+        "Chuyển người phụ trách",
+        "Yêu cầu vượt dữ liệu nhiệm vụ chuyển cho NPC phù hợp. Khách có thể chưa hài lòng, nhưng game vẫn công nhận xử lý đúng; không thưởng bỏ kiểm tra để lấy review đẹp."
+      ],
+      [
+        "Phản hồi và theo dõi",
+        "Review chỉ nói về giao nhận, sự rõ ràng, chờ và cách phục vụ. Sự kiện giao nhầm/giữ lô tạo công việc thực, không tự suy diễn tác dụng hay kết quả sức khỏe của khách."
+      ]
+    ],
+    "economy": "Thưởng chính xác và hoàn thành quy trình; không có hoa hồng để khuyến khích bán sai. Tồn theo lô được tách thành có thể dùng, đã giữ cho đơn và tạm giữ. Từ chối đúng phạm vi không làm người chơi mất đường nâng cấp.",
+    "states": "received → checked / needs_clarification → authorized_in_simulation → picked → double_checked → handed_over. Nhánh: referred, waiting_for_stock, held_for_review, cancelled. “authorized_in_simulation” chỉ là điều kiện nhiệm vụ, không phải xác nhận pháp lý hay chuyên môn ngoài đời.",
+    "stories": [
+      [
+        "Người mua hộ cẩn thận hơn",
+        "Lan tới với mô tả thiếu → được hướng dẫn lấy đúng thông tin → lần sau mang phiếu đủ → giúp chuẩn bị một danh mục vật dụng giả lập cho gia đình. Ký ức chỉ gồm quy trình, không lưu suy đoán bệnh."
+      ],
+      [
+        "Khoa học cách kiểm hai bước",
+        "Bạn phát hiện Khoa chọn nhầm bao bì → cùng kiểm mã → thiết lập vị trí và nhãn → trong ca đông Khoa chủ động phát hiện sai khác. Sự tiến bộ được thể hiện qua hành động trong cảnh."
+      ],
+      [
+        "Góc chia sẻ của khu phố",
+        "Vy muốn làm bài giới thiệu → bạn thống nhất vùng quay và dữ liệu được chia sẻ → thực hiện hoạt động danh mục vật dụng đã duyệt trong game → nhận phản hồi về sự cẩn thận. Không tạo nội dung tư vấn thuốc thật."
+      ]
+    ],
+    "dialogue": "Lan: “Mình chỉ nhớ hộp màu xanh.”\nBạn: “Mình cần mã trên phiếu để lấy đúng, bạn kiểm tra lại giúp mình nhé.”\nHệ thống: giữ yêu cầu ở trạng thái cần bổ sung; khách khác vẫn có thể được phục vụ.\nLan cung cấp mã P-03, số lượng 2.\nBạn chọn hộp, đối chiếu lô và kiểm khay trước khi chốt.",
+    "days": [
+      [
+        "1",
+        "Đọc một phiếu đủ và lấy một mã hàng."
+      ],
+      [
+        "2",
+        "Phân biệt bao bì giống, kiểm số lượng."
+      ],
+      [
+        "3",
+        "Phiếu thiếu dữ kiện và cách hỏi/chuyển."
+      ],
+      [
+        "4",
+        "Lô hàng, khu tạm giữ và kiểm nhận nhập."
+      ],
+      [
+        "5",
+        "Hai lượt khách, tạm dừng đọc và giải thích thời gian chờ."
+      ],
+      [
+        "6",
+        "Hỗ trợ Khoa, mở công cụ đối chiếu."
+      ],
+      [
+        "7",
+        "Review và quyền riêng tư khi quay clip."
+      ],
+      [
+        "8",
+        "Xử lý sai giao nhận bằng chứng cứ."
+      ],
+      [
+        "9",
+        "Tổ chức hoạt động vật dụng giả lập cho khu phố."
+      ],
+      [
+        "10",
+        "Kiểm một ca đầy đủ, nhận kỷ niệm và tiếp tục tự do."
+      ]
+    ],
+    "upgrades": "Kệ nhãn rõ; kính đọc nhãn giả lập; khay chia đơn; bàn kiểm hai bước; khu tạm giữ; bảng gọi lượt; ghế chờ; phụ tá kiểm kho. Tăng khả năng tổ chức, không mở quyền chẩn đoán hoặc bán thuốc thật.",
+    "checks": "Không hoàn thành phiếu thiếu dữ kiện; không bán lô tạm giữ; không tự thay mã; trò vẫn tiếp tục khi chuyển người phụ trách; review không tiết lộ phiếu; không có tên/liều thuốc thật trong dữ liệu seed."
+  },
+  "accounting": {
+    "name": "Một ngày làm kế toán",
+    "subtitle": "Một bàn làm việc đầy câu đố, không phải công việc nhập liệu kéo dài.",
+    "scene": "Góc Sổ Xinh: bàn nhận tài liệu, khay việc mới/đang kiểm/chờ bổ sung, bảng ghim nguồn, máy tính, máy in giả lập và bàn đồng nghiệp. Tài liệu nằm thành thẻ có thể lật, nhóm và đối chiếu. Máy tính chỉ mở bảng chi tiết đúng vụ đang chơi, không phủ toàn cảnh bằng biểu mẫu.",
+    "loop": "Nhận vụ → đọc mục tiêu → gom chứng cứ → phân loại/ghép → hỏi nguồn thiếu → tìm sai lệch → đề xuất điều chỉnh → trình kết quả → nhận phản hồi và lưu nguồn.",
+    "hotspots": [
+      [
+        "Khay tài liệu",
+        "Nhận, phân loại và chuyển trạng thái từng vụ."
+      ],
+      [
+        "Bảng ghim",
+        "Đặt hai nguồn cạnh nhau, nối các khoản liên quan."
+      ],
+      [
+        "Máy tính",
+        "Lọc bảng nhỏ, xem tổng có diễn giải và lịch sử thay đổi."
+      ],
+      [
+        "Đồng nghiệp",
+        "Hỏi thông tin, yêu cầu bổ sung, bàn giao hoặc giải thích."
+      ],
+      [
+        "Kệ hồ sơ",
+        "Tra cứu nguồn đã xác minh, phiên bản và báo cáo mô phỏng."
+      ]
+    ],
+    "session": "Ba phiếu 120, 180 và 250 xu có tổng 550. Hai giao dịch 300 và 250 cũng có tổng 550, nhưng bản tổng hợp đang hiển thị 800 vì bản 250 bị tính hai lần. Bạn ghép 120+180 với 300, kiểm tham chiếu của hai bản 250, loại trùng có lý do rồi giải thích kết quả cho đồng nghiệp.",
+    "skills": "Đọc mục tiêu, phân loại, so khớp, tìm nguồn mâu thuẫn, giải thích và quản lý việc chờ. Số liệu và quy ước hạch toán chỉ là câu đố giả lập, không dùng chuẩn thuế hay chế độ kế toán thực tế để đánh giá người chơi.",
+    "mechanics": [
+      [
+        "Phân loại tài liệu",
+        "Thẻ có mã, ngày game, số xu và nguồn. Người chơi đặt vào khay theo mục đích nhiệm vụ. Khi chưa rõ, giữ “chờ xác minh”; không buộc mỗi thẻ phải vào một đáp án ngay."
+      ],
+      [
+        "Ghép và tách giao dịch",
+        "Hỗ trợ một-một, nhiều-một và một-nhiều theo câu đố. Tổng cập nhật khi người chơi nối thẻ. Sai cho biết điều chưa khớp để kiểm tiếp, không hiện đáp án hoàn chỉnh ngay."
+      ],
+      [
+        "Phát hiện lỗi có nguồn",
+        "So bản gốc, dữ liệu nhập và phiên bản. Loại trùng hoặc chỉnh số phải gắn lý do và nguồn. Không cho gõ số bất kỳ để biến bảng đỏ thành xanh rồi nhận thưởng."
+      ],
+      [
+        "Hỏi bổ sung",
+        "Tin nhắn yêu cầu chọn đúng người, chứng từ và thông tin còn thiếu. Người nhận phản hồi theo tiến trình game; có thể chuyển vụ khác trong lúc chờ. Không chờ theo giờ ngoài đời."
+      ],
+      [
+        "Trình bày kết quả",
+        "Chọn bảng, nhóm hoặc cách giải thích phù hợp câu hỏi. Báo cáo mẫu phải chỉ ra phạm vi, tổng và phần còn chờ. Không chấm đẹp hình cao hơn số liệu đúng."
+      ],
+      [
+        "Bàn giao và sửa sau chốt",
+        "Bàn giao gồm nguồn, việc đã làm và bước tiếp. Kết quả đã chốt có phiên bản; thay đổi sau đó là điều chỉnh có nhật ký, không ghi đè âm thầm."
+      ]
+    ],
+    "economy": "Xu trong tài liệu là dữ liệu của khách/công ty giả lập, không vào ví người chơi. Ví nghề nhận thù lao hoàn thành vụ và dùng trang trí/nâng cấp công cụ. Không trả thưởng cao cho sửa dữ liệu sai hoặc giấu chênh lệch.",
+    "states": "received → scoped → inspecting → needs_source / reconciled → reviewed → delivered → archived. Nhánh: handed_over, corrected_with_version, cancelled. Tách trạng thái công việc khỏi trạng thái từng tài liệu và từng dòng dữ liệu.",
+    "stories": [
+      [
+        "Huy hết sợ đối chiếu",
+        "Giúp Huy xử lý một lỗi nhập → cùng tạo thói quen kiểm nguồn → Huy nhận phần phân loại sơ bộ → hai người hoàn thành một kỳ giả lập. Nếu người chơi bỏ qua hướng dẫn, Huy vẫn cần hỗ trợ chứ không tự được nâng cấp."
+      ],
+      [
+        "Sổ của cô Hoa",
+        "Cô Hoa gửi giấy tờ lộn xộn → bạn hỏi đúng phần thiếu → dựng bản tổng hợp dễ hiểu → cô chủ động chuẩn bị dữ liệu tốt hơn lần sau. Giá trị nằm ở hiểu dữ liệu, không bắt người chơi dùng nhiều thuật ngữ."
+      ],
+      [
+        "Áp lực trước giờ chốt",
+        "Một vụ lệch số và lời đề nghị “sửa cho khớp” → bạn kiểm nguồn/chuyển quyền → tìm được bản thay thế hoặc giữ kết luận chưa đủ → trình bày minh bạch. Không cho đường gian lận thành đáp án bắt buộc để mở nội dung."
+      ]
+    ],
+    "dialogue": "Cô Hoa: “Sao bảng này nhiều tiền hơn số cô nhận?”\nBạn: “Cháu đang kiểm bản 250 xu có bị tính lặp không, cô cho cháu xem phiếu gốc nhé.”\nHệ thống: tạo yêu cầu nguồn, không tự sửa bảng.\nCó nguồn xác nhận → bạn đánh dấu trùng và kiểm lại tổng 550 xu.\nCô Hoa nhận giải thích kèm các khoản đã đối chiếu.",
+    "days": [
+      [
+        "1",
+        "Lật thẻ, phân loại và đối chiếu một cặp."
+      ],
+      [
+        "2",
+        "Tìm một lỗi nhập và ghi lý do sửa."
+      ],
+      [
+        "3",
+        "Ghép nhiều phiếu với một khoản trả."
+      ],
+      [
+        "4",
+        "Thiếu nguồn, gửi yêu cầu và chuyển vụ khác."
+      ],
+      [
+        "5",
+        "Đối chiếu khoản hoàn và thanh toán từng phần."
+      ],
+      [
+        "6",
+        "Giúp Huy, mở khay và bảng ghim mới."
+      ],
+      [
+        "7",
+        "Mâu thuẫn nguồn và phiên bản."
+      ],
+      [
+        "8",
+        "Trình bày một báo cáo giả lập có giải thích."
+      ],
+      [
+        "9",
+        "Xử lý áp lực, bàn giao và kiểm quyền."
+      ],
+      [
+        "10",
+        "Khép kỳ mô phỏng, nhận kỷ niệm và mở vụ biến thể."
+      ]
+    ],
+    "upgrades": "Khay phân loại; bảng ghim rộng; nhãn tài liệu; công cụ tìm trùng; mẫu yêu cầu bổ sung; góc báo cáo; tủ phiên bản; phụ tá. Công cụ gợi ý phải cho xem lý do, không tự làm hết bài.",
+    "checks": "Tổng chỉ đổi từ nguồn/hành động hợp lệ; phát hiện cặp nhiều-một; tài liệu không mất khi bàn giao; thiếu dữ liệu có đường chờ; ví cá nhân không cộng tiền công ty; bản điều chỉnh giữ phiên bản cũ."
+  },
+  "customer_care": {
+    "name": "Chăm sóc khách hàng",
+    "subtitle": "Giải quyết việc cho khách, không chỉ trả lời thật nhiều tin nhắn.",
+    "scene": "Trạm Lắng Nghe: bàn máy tính, tai nghe, bảng hẹn, khay bàn giao, ghế trao đổi trưởng ca và khu phối hợp kho/giao nhận. Nhân vật vẫn hiện trong cảnh, đi trao đổi và phản ứng. Khi xử lý một vụ, màn chi tiết chia gọn hội thoại, chứng cứ và bước tiếp theo.",
+    "loop": "Nhận yêu cầu → hỏi rõ vấn đề → xác minh dữ kiện/quyền → kiểm tra đơn → đề xuất phương án → xin duyệt khi cần → thực hiện/phối hợp → kiểm kết quả → theo dõi và đóng.",
+    "hotspots": [
+      [
+        "Hộp tin / chuông",
+        "Chọn vụ, xem mức cần xử lý và mục tiêu khách."
+      ],
+      [
+        "Bảng chứng cứ",
+        "So trạng thái đơn, ảnh game, giao dịch và lịch trao đổi."
+      ],
+      [
+        "Đầu mối phối hợp",
+        "Gửi yêu cầu đủ dữ kiện cho kho, giao nhận hoặc trưởng ca."
+      ],
+      [
+        "Bảng hẹn",
+        "Theo dõi lời hứa, đặt mốc cập nhật và bàn giao."
+      ],
+      [
+        "Khu tổng kết",
+        "Xem nhóm nguyên nhân, phản hồi thật và đề xuất cải tiến."
+      ]
+    ],
+    "session": "Khách nói chưa nhận hàng trong khi màn đơn ghi đã giao. Bạn hỏi mã giả lập, kiểm chứng cứ và thấy ảnh giao không khớp địa điểm. Bạn mở đối soát, hẹn cập nhật, xử lý một vụ ngắn khác, nhận kết quả rồi đưa phương án. Chỉ đóng khi hành động khắc phục đã thực hiện hoặc có kết luận được xác minh.",
+    "skills": "Lắng nghe, hỏi vừa đủ, nhận diện dữ liệu mâu thuẫn, lựa chọn phương án hợp lệ, phối hợp và giữ lời hẹn. Không thưởng đóng nhiều vụ bằng cách bỏ qua yêu cầu hoặc ép khách chấp nhận.",
+    "mechanics": [
+      [
+        "Hiểu vấn đề",
+        "Chat mở mục tiêu, bối cảnh và mong muốn. Câu trả lời nhanh gồm hỏi cần thiết, xác nhận và tra cứu; tự gõ có tác dụng tương đương. Không bắt hỏi lại thông tin đã có chỉ để kéo dài lượt chat."
+      ],
+      [
+        "Kiểm chứng và quyền",
+        "Mỗi bằng chứng có nguồn và thời điểm game. Kiểm quyền trước khi mở thông tin đơn. Lời khách nói là lời khai; trạng thái công cụ có thể chưa đủ kết luận. Hai nguồn mâu thuẫn mở bước xác minh, không tự chọn một bên."
+      ],
+      [
+        "Đề xuất phương án",
+        "Gửi bù, đổi, hoàn, chờ xác minh hoặc hướng dẫn theo chính sách giả lập. Mỗi phương án có điều kiện, chi phí thuộc hệ thống và quyền phê duyệt. Người chơi thấy vì sao chưa thể làm, không chỉ nút bị khóa."
+      ],
+      [
+        "Phối hợp thực thi",
+        "Tạo công việc cho kho/giao nhận; NPC phải nhận việc và trả kết quả theo nhịp game. Câu “mình gửi bù rồi” không tự làm tồn hoặc giao nhận thay đổi. Có cách nhắc lại và chuyển hỗ trợ nếu bị chờ."
+      ],
+      [
+        "Theo dõi lời hứa",
+        "Hẹn tạo mục trên bảng việc, liên kết vụ và người nhận bàn giao. Mốc quá hạn được giữ trong lịch sử; đổi hẹn phải thông báo và xác nhận, không xóa dấu vết cũ."
+      ],
+      [
+        "Đóng và cải tiến",
+        "Điều kiện đóng kiểm kết quả theo loại vụ. Khách có thể đánh giá chưa tốt dù đã giải quyết; dùng phản hồi để nhận diện nguyên nhân lặp. Nâng cấp quy trình làm giảm lỗi cụ thể thay vì cộng sao vô điều kiện."
+      ]
+    ],
+    "economy": "Ví nghề là thu nhập/tiền thưởng giả lập cho chất lượng và hoàn thành ca. Giá trị đơn, tiền hoàn và bồi hoàn là ngân sách công ty trong nhiệm vụ, không phải tiền của người chơi. Điểm chất lượng cân bằng đúng dữ kiện, hiệu quả, tôn trọng và giữ hẹn.",
+    "states": "new → understood → verifying → proposed → approved_if_needed → executing → awaiting_confirmation → resolved → closed. Nhánh: waiting_customer, waiting_internal, handed_over, reopened. Không bắt chờ khách vô hạn; từng loại vụ có điều kiện kết luận rõ do luật game quy định.",
+    "stories": [
+      [
+        "Khách phải kể lại quá nhiều lần",
+        "Phúc đã liên hệ nhiều lần → bạn đọc hồ sơ và xác định điểm thiếu → phối hợp một đầu mối → cập nhật đúng hẹn → nhận phản hồi. Lịch sự chỉ là bước đầu; cần xử lý điều còn dang dở."
+      ],
+      [
+        "Bàn giao không đánh rơi lời hứa",
+        "Một ca phải chuyển → bạn tóm tắt và giao người nhận → người đó cần thông tin bổ sung hoặc xử lý tiếp → khách thấy không phải kể lại. Mở công cụ bàn giao sau khi hiểu vấn đề thực tế."
+      ],
+      [
+        "Từ một review tới thay đổi quy trình",
+        "Hà phản hồi giao thiếu → bạn xử lý đúng vụ → phát hiện nhiều vụ cùng nguyên nhân → đề xuất kiểm đóng gói → ngày sau thấy loại lỗi giảm theo luật game. Phát hiện dựa trên hồ sơ, không do AI bịa một insight."
+      ]
+    ],
+    "dialogue": "Khách: “Mình chưa nhận, sao bên bạn ghi đã giao?”\nBạn: “Mình sẽ kiểm chứng cứ giao, bạn cho mình mã đơn trong game nhé.”\nHệ thống mở vụ và dữ kiện được phép xem.\nBạn: “Mình thấy thông tin đang không khớp. Mình mở đối soát và cập nhật cho bạn ở mốc này.”\nXác nhận hẹn → tạo việc theo dõi; chưa đóng vụ.",
+    "days": [
+      [
+        "1",
+        "Một vụ tra cứu đơn, trả lời ngắn và đóng đúng điều kiện."
+      ],
+      [
+        "2",
+        "Giao chậm và tạo hẹn cập nhật."
+      ],
+      [
+        "3",
+        "Giao thiếu, đề nghị gửi bù và chờ thực thi."
+      ],
+      [
+        "4",
+        "Hai nguồn mâu thuẫn, mở xác minh."
+      ],
+      [
+        "5",
+        "Đổi/hoàn theo chính sách giả lập và quyền."
+      ],
+      [
+        "6",
+        "Bàn giao với đầy đủ dữ kiện và lời hẹn."
+      ],
+      [
+        "7",
+        "Review công khai, trả lời không lộ thông tin riêng."
+      ],
+      [
+        "8",
+        "Khách nóng giận; giới hạn và hỗ trợ trưởng ca."
+      ],
+      [
+        "9",
+        "Ca cao điểm tự chọn; phân loại và chia việc."
+      ],
+      [
+        "10",
+        "Tổng kết nguyên nhân lặp, đề xuất cải tiến và mở chơi tự do."
+      ]
+    ],
+    "upgrades": "Bảng hẹn; mẫu hỏi theo ngữ cảnh; khay ưu tiên; bảng đối chiếu chứng cứ; bàn giao có cấu trúc; kênh phối hợp; thư viện hướng dẫn; góc thư giãn. Không có nâng cấp tự ép khách hài lòng.",
+    "checks": "Không đóng khi chỉ mới hứa; tạo hẹn sinh việc thật; không hoàn tiền lặp; người không có quyền không thấy đơn; lời chê không tự bị xóa; mất dịch vụ AI vẫn xử lý được bằng lựa chọn có sẵn."
+  }
+}

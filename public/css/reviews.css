@@ -1,0 +1,27 @@
+/* Reviews: reply tones, bystanders in a thread (loaded by feedbackView in v4/views.js). */
+.rv-tones{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:6px;margin:0 0 8px}
+.rv-tone{display:flex;align-items:center;gap:6px;min-height:42px;padding:6px 10px;border-radius:var(--radius-sm);border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.867rem;text-align:left;cursor:pointer;transition:background var(--dur,.15s),border-color var(--dur,.15s)}
+.rv-tone>span[aria-hidden]{flex:none;font-size:1.05rem;line-height:1}
+.rv-tone-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.rv-tone-txt>b{font-weight:700;line-height:1.25;overflow-wrap:anywhere}
+.rv-tone-txt>small{font-size:.72rem;font-weight:600;line-height:1.2;color:var(--warn)}
+.rv-tone.risky{border-color:var(--warn-soft)}
+.rv-tone.bad{border-color:var(--bad-soft);color:var(--bad)}
+.rv-tone.bad .rv-tone-txt>small{color:var(--bad)}
+.rv-tone.free{border-style:dashed}
+.rv-tone:hover{background:var(--surface-2)}
+.rv-tone.selected{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.rv-tone:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+.rv-offer{flex-wrap:wrap}
+.rv-offer>label{flex:1 1 40%}
+.rv-offer>label>span{white-space:normal;text-align:center;line-height:1.25}
+.bubble.rv-guest{align-self:center;max-width:min(88%,520px);background:transparent;border-style:dashed;font-size:.867rem}
+.bubble.rv-guest.fan{border-color:var(--good);background:var(--good-soft)}
+.bubble.rv-guest.troll{border-color:var(--line-strong)}
+.bubble.rv-guest.other{border-color:var(--warn);background:var(--warn-soft)}
+.bubble.rv-said.revise_up{border-left:3px solid var(--good)}
+.bubble.rv-said.revise_down{border-left:3px solid var(--bad)}
+.bubble.rv-said.argue{border-left:3px solid var(--warn)}
+@media (max-width:420px){.rv-tones{grid-template-columns:1fr 1fr}.rv-tone{padding:6px 8px;font-size:.833rem}}
+@media (prefers-reduced-motion:reduce){.rv-tone{transition:none}}
+html.reduce-motion .rv-tone{transition:none}

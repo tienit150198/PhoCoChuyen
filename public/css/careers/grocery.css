@@ -1,0 +1,230 @@
+/* Tạp Hoá Cô Ba — scoped workbench styles (.career-job.gr).
+   Chrome uses theme tokens only (with fallbacks while tokens roll out). */
+.career-job.gr{
+  --gr-bg:var(--bg,#fff7ec);--gr-surface:var(--surface,#fffdf8);--gr-surface-2:var(--surface-2,#f6efe3);--gr-ink:var(--ink,#3b2a22);
+  --gr-muted:var(--muted,#86705f);--gr-line:var(--line,#ecdcc6);--gr-accent:var(--accent,#d9573b);--gr-accent-ink:var(--accent-ink,#fff);
+  --gr-good:var(--good,#4f8a4b);--gr-warn:var(--warn,#c98a2b);--gr-bad:var(--bad,#c0533f);--gr-info:var(--info,#4d7b9a);
+  --gr-r:var(--radius,16px);--gr-rs:var(--radius-sm,10px);--gr-shadow:var(--shadow,0 6px 18px rgb(0 0 0 / 8%));
+  color:var(--gr-ink)}
+
+/* Zero-specificity fallbacks for shared utility classes (shared styles win). */
+:where(.career-job.gr) :where(.card){background:var(--gr-surface);border:1px solid var(--gr-line);border-radius:var(--gr-r);padding:14px;box-shadow:var(--gr-shadow)}
+:where(.career-job.gr) :where(.workbench){display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,310px);gap:16px;align-items:start;margin-top:12px}
+:where(.career-job.gr) :where(.wb-side){position:sticky;top:0;display:flex;flex-direction:column;gap:10px}
+:where(.career-job.gr) :where(.tile-grid){display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+:where(.career-job.gr) :where(.tile){position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:72px;min-width:44px;padding:8px 6px;border:1px solid var(--gr-line);border-radius:var(--gr-rs);background:var(--gr-surface);color:var(--gr-ink);font:inherit;text-align:center;cursor:pointer}
+:where(.career-job.gr) :where(.tile:disabled){opacity:.5;cursor:not-allowed}
+:where(.career-job.gr) :where(.tile.selected){border-color:var(--gr-accent);box-shadow:inset 0 0 0 2px var(--gr-accent)}
+:where(.career-job.gr) :where(.tile .tile-emoji){font-size:24px;line-height:1}
+:where(.career-job.gr) :where(.tile small){color:var(--gr-muted);font-size:12px}
+:where(.career-job.gr) :where(.tile-count){position:absolute;top:4px;right:6px;font-style:normal;font-weight:700;color:var(--gr-accent)}
+:where(.career-job.gr) :where(.checklist){list-style:none;margin:0;padding:10px;border:1px dashed var(--gr-line);border-radius:var(--gr-rs);background:var(--gr-surface)}
+:where(.career-job.gr) :where(.checklist li){display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;padding:4px 0;font-size:14px}
+:where(.career-job.gr) :where(.checklist li>span){width:18px;font-weight:700;color:var(--gr-muted)}
+:where(.career-job.gr) :where(.checklist li.ok>span){color:var(--gr-good)}
+:where(.career-job.gr) :where(.checklist li.bad>span){color:var(--gr-bad)}
+:where(.career-job.gr) :where(.checklist small){margin-left:auto;color:var(--gr-muted)}
+:where(.career-job.gr) :where(.bar){height:8px;border-radius:99px;background:var(--gr-surface-2);overflow:hidden}
+:where(.career-job.gr) :where(.bar i){display:block;height:100%;background:var(--gr-good);border-radius:inherit}
+:where(.career-job.gr) :where(.bar.low i){background:var(--gr-bad)}
+:where(.career-job.gr) :where(.kv){display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:8px 0}
+:where(.career-job.gr) :where(.kv dt){color:var(--gr-muted)}
+:where(.career-job.gr) :where(.kv dd){margin:0}
+:where(.career-job.gr) :where(.section-title){margin:16px 0 8px}
+:where(.career-job.gr) :where(.patience){display:flex;align-items:center;gap:8px}
+:where(.career-job.gr) :where(.patience .bar){flex:1}
+
+.career-job.gr .btn{min-height:44px}
+.career-job.gr .gr-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:10px 0}
+.career-job.gr .gr-tabs .btn{padding-inline:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.career-job.gr .gr-badge.soft{background:var(--gr-surface-2);color:var(--gr-ink);border:1px solid var(--gr-line)}
+.career-job.gr .gr-short{color:var(--gr-bad)!important;font-weight:600}
+
+/* Customer basket on the counter */
+.career-job.gr .gr-basket{display:flex;flex-direction:column;gap:6px}
+.career-job.gr .gr-line{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--gr-line);border-radius:var(--gr-rs);background:var(--gr-surface)}
+.career-job.gr .gr-line small{display:block;color:var(--gr-muted)}
+.career-job.gr .gr-line.done{border-color:var(--gr-good);background:var(--gr-surface-2)}
+.career-job.gr .gr-line.blocked{opacity:.7;text-decoration:line-through}
+.career-job.gr .gr-emoji{font-size:26px;width:32px;text-align:center}
+
+/* Scale */
+.career-job.gr .gr-scale{margin-top:10px;border-color:var(--gr-info)}
+.career-job.gr .gr-scale-screen{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0;padding:10px 12px;border-radius:var(--gr-rs);background:var(--gr-ink);color:var(--gr-bg);font-family:ui-monospace,monospace}
+.career-job.gr .gr-scale-screen span{font-size:12px;opacity:.8}
+
+/* Promotions board */
+.career-job.gr .gr-promos{display:flex;flex-direction:column;gap:6px}
+.career-job.gr .gr-promo{display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px dashed var(--gr-warn);border-radius:var(--gr-rs);background:var(--gr-surface)}
+.career-job.gr .gr-promo.on{border-style:solid;border-color:var(--gr-good)}
+
+/* Receipt */
+.career-job.gr .gr-receipt{padding:14px 12px;background:var(--gr-surface);border:1px solid var(--gr-line);border-radius:var(--gr-rs);font-family:ui-monospace,monospace;font-size:13px;box-shadow:var(--gr-shadow)}
+.career-job.gr .gr-receipt-head{text-align:center;font-weight:700;border-bottom:1px dashed var(--gr-line);padding-bottom:6px;margin-bottom:6px}
+.career-job.gr .gr-receipt-head small{font-weight:400;color:var(--gr-muted)}
+.career-job.gr .gr-rline{display:flex;align-items:center;gap:6px;padding:2px 0}
+.career-job.gr .gr-rline span{flex:1;min-width:0}
+.career-job.gr .gr-rline.promo{color:var(--gr-good)}
+.career-job.gr .gr-void{min-width:44px;min-height:44px;border:0;background:none;color:var(--gr-bad);font-size:16px;cursor:pointer}
+.career-job.gr .gr-rtotal{display:flex;justify-content:space-between;border-top:2px solid var(--gr-ink);margin-top:6px;padding-top:6px;font-size:16px}
+
+/* Money */
+.career-job.gr .gr-tender,.career-job.gr .gr-tray{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:44px}
+.career-job.gr .gr-money{display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+.career-job.gr .gr-money.note{min-width:54px;height:30px;padding:0 6px;border-radius:4px;background:var(--gr-surface-2);border:1px solid var(--gr-good);color:var(--gr-good)}
+.career-job.gr .gr-money.coin{width:30px;height:30px;border-radius:50%;background:var(--gr-surface-2);border:2px solid var(--gr-warn);color:var(--gr-warn);font-size:12px}
+.career-job.gr .gr-due{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:4px 10px;align-items:baseline}
+.career-job.gr .gr-due b.ok{color:var(--gr-good)}
+.career-job.gr .gr-due b.over{color:var(--gr-warn)}
+.career-job.gr .gr-due-bar{margin:6px 0}
+.career-job.gr .gr-denoms{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:6px;margin:8px 0}
+.career-job.gr .gr-denom{min-height:48px;border-radius:var(--gr-rs);font:inherit;font-weight:700;cursor:pointer;background:var(--gr-surface);color:var(--gr-ink)}
+.career-job.gr .gr-denom.note{border:2px solid var(--gr-good)}
+.career-job.gr .gr-denom.coin{border:2px solid var(--gr-warn);border-radius:999px}
+.career-job.gr .gr-pay{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+
+/* Bank transfer */
+.career-job.gr .gr-phones{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.career-job.gr .gr-phone{display:flex;flex-direction:column;gap:4px;padding:12px;border-radius:18px;border:3px solid var(--gr-ink);background:var(--gr-surface);min-height:140px}
+.career-job.gr .gr-phone small{color:var(--gr-muted);font-size:11px;overflow-wrap:anywhere}
+.career-job.gr .gr-phone.shop{border-color:var(--gr-info)}
+.career-job.gr .gr-phone-ok{color:var(--gr-good)}
+.career-job.gr .gr-phone-amt{font-size:22px;font-weight:700}
+
+/* Ledger */
+.career-job.gr .gr-lrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--gr-line)}
+.career-job.gr .gr-lrow small{display:block;color:var(--gr-muted)}
+.career-job.gr .gr-lrow.overdue b{color:var(--gr-bad)}
+.career-job.gr .gr-lnum{min-width:100px;text-align:right}
+
+/* Shelf rotation */
+.career-job.gr .gr-shelf{display:flex;gap:8px;overflow-x:auto;padding:10px;border-radius:var(--gr-rs);background:var(--gr-surface-2);border-bottom:6px solid var(--gr-line)}
+.career-job.gr .gr-lot{flex:0 0 150px;display:flex;flex-direction:column;gap:4px;padding:8px;border-radius:var(--gr-rs);border:2px solid var(--gr-line);background:var(--gr-surface)}
+.career-job.gr .gr-lot small{color:var(--gr-muted)}
+.career-job.gr .gr-lot.new{border-style:dashed;border-color:var(--gr-info)}
+.career-job.gr .gr-lot.expired,.career-job.gr .gr-lot.today{border-color:var(--gr-bad)}
+.career-job.gr .gr-lot.expired small,.career-job.gr .gr-lot.today small{color:var(--gr-bad);font-weight:700}
+.career-job.gr .gr-lot.near{border-color:var(--gr-warn)}
+.career-job.gr .gr-lot.fresh{border-color:var(--gr-good)}
+.career-job.gr .gr-lot-art{position:relative;font-size:20px;letter-spacing:-4px;min-height:28px}
+.career-job.gr .gr-sticker{position:absolute;top:-6px;right:-4px;padding:1px 6px;border-radius:99px;background:var(--gr-warn);color:var(--gr-accent-ink);font-size:11px;font-style:normal;letter-spacing:0;font-weight:700}
+.career-job.gr .gr-lot .btn{min-height:44px;padding-inline:10px}
+.career-job.gr .gr-tag{gap:12px;align-items:center}
+.career-job.gr .gr-pricetag{display:flex;flex-direction:column;align-items:center;padding:8px 14px;border-radius:6px;background:var(--gr-warn);color:var(--gr-accent-ink)}
+.career-job.gr .gr-pricetag b{font-size:22px}
+.career-job.gr .gr-policy{padding-left:18px}
+
+/* Today strip: mood of the street + Mây Mart flyer */
+.career-job.gr .gr-today{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;padding:10px 12px;border-radius:var(--gr-r);background:var(--gr-surface-2);border:1px solid var(--gr-line)}
+.career-job.gr .gr-mood{display:flex;align-items:center;gap:10px}
+.career-job.gr .gr-mood small{display:block;color:var(--gr-muted)}
+.career-job.gr .gr-mood-emoji{font-size:28px;line-height:1}
+.career-job.gr .gr-flyers{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.career-job.gr .gr-flyer-head{flex-basis:100%;color:var(--gr-muted)}
+.career-job.gr .gr-flyer{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:99px;border:1px solid var(--gr-line);background:var(--gr-surface);font-size:13px}
+.career-job.gr .gr-flyer small{color:var(--gr-muted)}
+.career-job.gr .gr-flyer.hi{border-color:var(--gr-bad)}
+.career-job.gr .gr-flyer.hi b{color:var(--gr-bad)}
+.career-job.gr .gr-mini-flyer{color:var(--gr-bad);font-weight:600}
+.career-job.gr .gr-badge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:99px;background:var(--gr-bad);color:var(--gr-accent-ink);font-size:12px;font-weight:700}
+
+/* Surprise at the shop */
+.career-job.gr .gr-event{margin-bottom:12px;padding:14px;border-radius:var(--gr-r);border:2px solid var(--gr-warn);background:var(--gr-surface);box-shadow:var(--gr-shadow)}
+.career-job.gr .gr-event.tense{border-color:var(--gr-bad)}
+.career-job.gr .gr-ev-head{display:flex;gap:10px;align-items:center}
+.career-job.gr .gr-ev-head h3{margin:2px 0 0}
+.career-job.gr .gr-ev-head small{color:var(--gr-muted)}
+.career-job.gr .gr-ev-emoji{font-size:34px;line-height:1}
+.career-job.gr .gr-opts{display:flex;flex-direction:column;gap:8px}
+.career-job.gr .gr-opt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;white-space:normal;height:auto;padding:10px 12px}
+.career-job.gr .gr-opt small{color:var(--gr-muted);font-weight:400}
+.career-job.gr .gr-opt-label{font-weight:700}
+.career-job.gr .gr-cost{font-style:normal;color:var(--gr-bad);font-weight:700}
+.career-job.gr .gr-last{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:8px 10px;border-radius:var(--gr-rs);border:1px solid var(--gr-line);background:var(--gr-surface)}
+.career-job.gr .gr-last.good{border-color:var(--gr-good)}
+.career-job.gr .gr-last.bad{border-color:var(--gr-bad)}
+.career-job.gr .gr-last p{flex:1;margin:0;font-size:14px}
+.career-job.gr .gr-last>span{font-size:22px}
+.career-job.gr .gr-x{min-width:44px}
+
+/* Haggle */
+.career-job.gr .gr-haggle{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;padding:12px;border-radius:var(--gr-rs);border:2px dashed var(--gr-bad);background:var(--gr-surface)}
+.career-job.gr .gr-haggle p{margin:0}
+.career-job.gr .gr-haggle-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* Sticky bill bar: the one primary action */
+.career-job.gr .gr-billbar{position:sticky;bottom:0;z-index:2;display:flex;align-items:center;gap:10px;margin-top:12px;padding:10px 12px;border-radius:var(--gr-r);background:var(--gr-surface);border:1px solid var(--gr-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
+.career-job.gr .gr-billsum{display:flex;flex-direction:column;min-width:78px}
+.career-job.gr .gr-billsum small{color:var(--gr-muted);font-size:12px}
+.career-job.gr .gr-billsum b{font-size:18px}
+.career-job.gr .gr-billbar .btn.grow{flex:1}
+
+/* Rush hour */
+.career-job.gr .gr-queue{margin:10px 0}
+.career-job.gr .gr-queue small{color:var(--gr-muted)}
+.career-job.gr .gr-queue ol{display:flex;gap:8px;list-style:none;margin:6px 0 0;padding:4px;overflow-x:auto}
+.career-job.gr .gr-qp{position:relative;flex:0 0 auto;padding:3px;border-radius:50%;border:2px solid var(--gr-line)}
+.career-job.gr .gr-qp b{position:absolute;right:-4px;bottom:-4px;display:grid;place-items:center;min-width:20px;height:20px;padding:0 4px;border-radius:99px;background:var(--gr-surface);border:1px solid var(--gr-line);font-size:11px}
+.career-job.gr .gr-qp.now{border-color:var(--gr-accent)}
+.career-job.gr .gr-qp.hurry{border-color:var(--gr-bad)}
+.career-job.gr .gr-qp.hurry b{background:var(--gr-bad);color:var(--gr-accent-ink)}
+.career-job.gr .gr-qp.served{border-color:var(--gr-good);opacity:.6}
+.career-job.gr .gr-qp.gone{opacity:.35}
+.career-job.gr .gr-rush-now{display:flex;flex-direction:column;gap:10px}
+.career-job.gr .gr-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
+.career-job.gr .gr-choice{min-height:52px;font-size:18px;font-weight:700}
+
+/* Bulk order */
+.career-job.gr .gr-bulk{display:flex;flex-direction:column;gap:10px}
+.career-job.gr .gr-bulk .bad,.career-job.gr .gr-stock .bad{color:var(--gr-bad)}
+.career-job.gr .gr-stock .warn{color:var(--gr-warn)}
+.career-job.gr .gr-stock .ok{color:var(--gr-good)}
+
+/* Stock & price tags */
+.career-job.gr .gr-stock{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.career-job.gr .gr-stock h4{margin:0}
+.career-job.gr .gr-orderbar{display:flex;flex-direction:column;gap:6px}
+.career-job.gr .gr-orderbar>small{color:var(--gr-muted)}
+.career-job.gr .gr-sups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.career-job.gr .gr-sup{display:flex;flex-direction:column;gap:2px;min-height:48px;padding:6px 8px;border-radius:var(--gr-rs);border:1px solid var(--gr-line);background:var(--gr-surface);color:var(--gr-ink);font:inherit;text-align:left;cursor:pointer}
+.career-job.gr .gr-sup small{color:var(--gr-muted);font-size:11px}
+.career-job.gr .gr-sup.on{border-color:var(--gr-accent);box-shadow:inset 0 0 0 2px var(--gr-accent)}
+.career-job.gr .gr-qty{display:flex;gap:6px}
+.career-job.gr .gr-qty .btn{flex:1;min-width:44px}
+.career-job.gr .gr-stock-list{display:flex;flex-direction:column;gap:6px}
+.career-job.gr .gr-srow{display:grid;grid-template-columns:32px minmax(0,1fr) auto;grid-template-areas:"e i p" "a a a";gap:4px 10px;align-items:center;padding:8px 10px;border-radius:var(--gr-rs);border:1px solid var(--gr-line);background:var(--gr-surface)}
+.career-job.gr .gr-srow>.gr-emoji{grid-area:e}
+.career-job.gr .gr-sinfo{grid-area:i;min-width:0;display:flex;flex-direction:column;gap:2px}
+.career-job.gr .gr-sinfo small{color:var(--gr-muted);font-size:12px}
+.career-job.gr .gr-sprice{grid-area:p;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.career-job.gr .gr-sprice small{font-size:12px}
+.career-job.gr .gr-sact{grid-area:a;display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.career-job.gr .gr-sact:empty{display:none}
+.career-job.gr .gr-srow.low{border-color:var(--gr-warn)}
+.career-job.gr .gr-srow.exp{border-color:var(--gr-bad)}
+.career-job.gr .gr-srow.locked{opacity:.55;grid-template-areas:"e i i"}
+.career-job.gr .gr-sbar{height:6px;border-radius:99px;background:var(--gr-surface-2);overflow:hidden}
+.career-job.gr .gr-sbar i{display:block;height:100%;background:var(--gr-info)}
+.career-job.gr .gr-srow.low .gr-sbar i{background:var(--gr-warn)}
+.career-job.gr .gr-tagbox{display:flex;align-items:center;gap:4px}
+.career-job.gr .gr-step{min-width:40px;padding-inline:0;font-size:18px}
+.career-job.gr .gr-ptag{display:flex;flex-direction:column;align-items:center;min-width:52px;padding:2px 6px;border-radius:6px;background:var(--gr-warn);color:var(--gr-accent-ink);font-weight:700;line-height:1.1}
+.career-job.gr .gr-ptag small{font-size:10px;font-weight:400}
+.career-job.gr .gr-incoming{display:flex;flex-direction:column;gap:6px;padding:8px 10px;border-radius:var(--gr-rs);border:1px dashed var(--gr-info)}
+.career-job.gr .gr-incoming h4{margin:0}
+.career-job.gr .gr-inrow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px}
+
+@media (prefers-reduced-motion:reduce){
+  .career-job.gr *{transition:none!important;animation:none!important}
+}
+@media (max-width:720px){
+  :where(.career-job.gr) :where(.workbench){grid-template-columns:1fr}
+  :where(.career-job.gr) :where(.wb-side){position:static}
+  .career-job.gr .gr-phones{grid-template-columns:1fr}
+}
+@media (max-width:400px){
+  .career-job.gr .gr-lot{flex-basis:132px}
+  .career-job.gr .gr-sup{padding:6px}
+  .career-job.gr .gr-sup b{font-size:13px}
+  .career-job.gr .gr-due{grid-template-columns:auto 1fr}
+}

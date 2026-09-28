@@ -1,0 +1,338 @@
+"""Chuyện bất ngờ trong ca: live happenings you can see in the scene.
+
+A thief walks in and grabs goods or the till, a drunk guest breaks glasses,
+kids knock a shelf over, a football smashes the window, a stray dog runs
+through, a customer breaks something and walks off, somebody broke in at
+night… and sometimes it is you (or your helper) who damaged a customer's
+things and must pay. Rules live in game/happenings.py; this file is content.
+
+Script fields: id, kind ('trom' theft · 'pha' damage · 'den' you must
+compensate · 'dem' night break-in found in the morning), emoji, title, text,
+careers, anim (how the scene shows it), actor (who does it), target (where),
+loss (what can be lost: stock=(lo,hi) units · cash=(lo,hi) from the till ·
+damage=(lo,hi) repair cost · comp=(lo,hi) compensation · wallet=(lo,hi) your
+own money), label (the loss line: "Trộm lấy hàng trên kệ"), reactions (ids
+from REACTIONS), default (taken when the moment passes), min_day, weight,
+gossip (what the neighbours post afterwards).
+"""
+from __future__ import annotations
+
+ALL = ('mother_baby', 'pharmacy', 'accounting', 'customer_care', 'teacher', 'tour_guide', 'milk_tea', 'restaurant',
+       'cafe_bakery', 'florist', 'grocery', 'repair', 'farm', 'delivery', 'homestay', 'pet_care', 'salon',
+       'corp_accounting', 'tax_payroll', 'group_accounting')
+EMPLOYEE = ('teacher', 'corp_accounting', 'tax_payroll', 'group_accounting')
+OFFICE = ('accounting', 'customer_care', 'corp_accounting', 'tax_payroll', 'group_accounting')
+FOOD = ('milk_tea', 'cafe_bakery', 'restaurant')
+SHOPS = ('mother_baby', 'pharmacy', 'milk_tea', 'grocery', 'florist', 'cafe_bakery', 'restaurant', 'pet_care', 'salon',
+         'repair', 'homestay')
+STOCKED = ('mother_baby', 'pharmacy', 'milk_tea', 'grocery', 'florist', 'cafe_bakery', 'restaurant', 'pet_care', 'salon',
+           'repair', 'farm', 'delivery', 'homestay')
+TILL = SHOPS + ('delivery', 'tour_guide')
+
+KINDS = {
+    'trom': ('🥷', 'Có trộm'),
+    'pha': ('💥', 'Bị phá đồ'),
+    'den': ('🙇', 'Phải đền'),
+    'dem': ('🌙', 'Đột nhập ban đêm'),
+}
+
+# ------------------------------------------------------------------ reactions
+# p: chance (in %) the moment goes your way; bonus from what the place has.
+# case: a police file is opened (follow-up days later). hurt: chance (in %)
+# of getting hurt when it goes wrong. needs: 'camera' (installed before).
+# Outcome text per kind; win/lose. share: how much of the loss still hits
+# you when it goes your way (0 = nothing lost), pay: compensation factor.
+REACTIONS = {
+    # ---- theft in front of you
+    'shout': dict(label='Hô to “Trộm! Trộm!”', hint='An toàn, có khi giữ lại được đồ', p=40, bonus=dict(bell=10, light=5, staff=10),
+                  win='Bạn hô to, người đi đường quay lại nhìn. Kẻ gian hoảng hốt vứt đồ lại rồi chạy mất.',
+                  lose='Bạn hô to nhưng kẻ gian đã phóng ra cửa, lẫn vào dòng xe.', trust_win=2),
+    'chase': dict(label='Đuổi theo', hint='Dễ giữ được đồ, nhưng có thể bị ngã', p=60, bonus=dict(staff=10), hurt=45,
+                  win='Bạn đuổi kịp ở đầu hẻm. Kẻ gian quăng đồ xuống đất rồi chạy thoát.',
+                  lose='Kẻ gian nhảy lên chiếc xe máy đồng bọn chờ sẵn. Bạn hụt hơi đứng nhìn.', witness=True, trust_win=3),
+    'block': dict(label='Chặn cửa lại', hint='Cần người phụ một tay', p=25, bonus=dict(staff=40, bell=5), hurt=25,
+                  win='Bạn cùng mọi người đứng chắn cửa. Kẻ gian đành trả lại đồ rồi lủi đi.',
+                  lose='Kẻ gian xô bạn sang một bên rồi lao ra ngoài.', trust_win=2),
+    'call': dict(label='Gọi 113 báo công an', hint='Mở hồ sơ, vài hôm sau có tin', p=10, case=True,
+                 win='Nghe bạn gọi công an, kẻ gian bỏ lại đồ rồi chạy.',
+                 lose='Kẻ gian đi mất. Công an khu vực ghi nhận tin báo, hẹn vài hôm nữa báo kết quả.', trust_win=1),
+    'camera': dict(label='Xem camera rồi báo công an', hint='Đoạn ghi hình giúp phá án', p=0, case=True, needs='camera',
+                   win='Camera ghi rõ mặt kẻ gian. Bạn gửi đoạn ghi hình cho công an khu vực.',
+                   lose='Camera ghi rõ mặt kẻ gian. Bạn gửi đoạn ghi hình cho công an khu vực.'),
+    'let': dict(label='Đứng yên cho an toàn', hint='Mất đồ, nhưng không ai bị gì', p=0,
+                win='Bạn đứng yên. Mất của, nhưng người thì an toàn.',
+                lose='Bạn đứng yên. Mất của, nhưng người thì an toàn.'),
+    # ---- somebody damaged your things
+    'ask': dict(label='Yêu cầu đền', hint='Có khi được đền, có khi cãi nhau', p=45, bonus=dict(staff=5),
+                win='Người gây chuyện gãi đầu xin lỗi rồi đền đủ tiền.',
+                lose='Họ chối phắt rồi bỏ đi. Bạn đành tự chịu.', trust_lose=-1),
+    'parents': dict(label='Tìm phụ huynh nói chuyện', hint='Phụ huynh có thể đền', p=60,
+                    win='Phụ huynh tới xin lỗi, gửi tiền đền rồi dắt con về.',
+                    lose='Không ai nhận là con mình. Bạn tự bỏ tiền sửa.', trust_win=1),
+    'ward': dict(label='Báo công an khu vực', hint='Mở hồ sơ, người gây chuyện có thể bị mời lên', p=0, case=True,
+                 win='Công an khu vực ghi biên bản, hẹn mời người gây chuyện lên làm việc.',
+                 lose='Công an khu vực ghi biên bản, hẹn mời người gây chuyện lên làm việc.'),
+    'shoo': dict(label='Lùa con vật ra ngoài', hint='Nhanh tay thì đỡ đổ vỡ', p=55, share=50,
+                 win='Bạn nhanh tay lùa nó ra cửa. Chỉ đổ vỡ một ít.',
+                 lose='Nó hoảng lên, chạy vòng quanh làm đổ thêm mấy món.'),
+    'owner': dict(label='Tìm chủ con vật', hint='Chủ nuôi có thể đền', p=45,
+                  win='Chủ nuôi chạy tới, rối rít xin lỗi rồi đền tiền.',
+                  lose='Hỏi quanh cả buổi, không ai nhận nuôi con vật đó.', trust_win=1),
+    'forgive': dict(label='Bỏ qua, tự dọn', hint='Tự chịu, nhưng giữ hòa khí', p=0, trust=3,
+                    win='Bạn thở dài rồi tự dọn. Hàng xóm thấy bạn dễ chịu.',
+                    lose='Bạn thở dài rồi tự dọn. Hàng xóm thấy bạn dễ chịu.'),
+    # ---- you (or your helper) damaged someone's things
+    'pay': dict(label='Xin lỗi và đền đủ', hint='Tốn tiền, giữ được uy tín', p=0, pay=100, trust=4, good=True,
+                win='Khách dịu lại, cảm ơn vì bạn nhận lỗi đàng hoàng.',
+                lose='Khách dịu lại, cảm ơn vì bạn nhận lỗi đàng hoàng.'),
+    'half': dict(label='Thương lượng đền một nửa', hint='Có khi khách chịu, có khi mất lòng', p=50, pay=50, pay_lose=100,
+                 win='Khách đồng ý nhận một nửa, còn dặn lần sau cẩn thận.',
+                 lose='Khách nổi nóng, đòi đủ. Bạn vẫn phải đền, lại còn mất lòng.', trust_lose=-3),
+    'refuse': dict(label='Không nhận lỗi', hint='Liều: có khi thoát, có khi mang tiếng', p=30, pay=0, pay_lose=120,
+                   win='Khách lầm bầm bỏ đi, không đòi nữa. Nhưng mấy người xung quanh đã nhìn thấy.',
+                   lose='Khách gọi công an khu vực tới hòa giải. Bạn vẫn phải đền, lại thêm tiếng xấu.',
+                   trust_win=-4, trust_lose=-8, review_lose=(1, 'Làm hỏng đồ của khách mà còn cãi. Không quay lại nữa.')),
+    # ---- night break-in found in the morning
+    'report': dict(label='Báo công an, giữ nguyên hiện trường', hint='Có hồ sơ thì bảo hiểm mới chi', p=0, case=True,
+                   win='Công an khu vực tới chụp ảnh, lấy dấu vết và lập biên bản.',
+                   lose='Công an khu vực tới chụp ảnh, lấy dấu vết và lập biên bản.'),
+    'fix': dict(label='Thay khóa chắc hơn và báo công an', hint='Tốn thêm tiền khóa, lần sau khó cạy hơn', p=0, case=True,
+                extra=('damage', 35, 'Thay ổ khóa mới'), flag='new_lock',
+                win='Thợ khóa thay ổ mới ngay trong sáng. Công an khu vực cũng đã lập biên bản.',
+                lose='Thợ khóa thay ổ mới ngay trong sáng. Công an khu vực cũng đã lập biên bản.'),
+    'clean': dict(label='Tự dọn, không báo', hint='Không hồ sơ, không ai tìm lại đồ', p=0,
+                  win='Bạn lặng lẽ dọn dẹp. Không báo thì cũng chẳng ai tìm lại đồ giúp.',
+                  lose='Bạn lặng lẽ dọn dẹp. Không báo thì cũng chẳng ai tìm lại đồ giúp.'),
+}
+
+HURT = dict(text='Lúc giằng co bạn trượt chân ngã, trầy cả tay. Tiền thuốc men tự lo.', cost=(10, 25))
+
+THEFT = ['shout', 'chase', 'block', 'call', 'camera', 'let']
+THEFT_SOLO = ['shout', 'chase', 'call', 'camera', 'let']
+DAMAGE = ['ask', 'ward', 'camera', 'forgive']
+KIDS = ['parents', 'ward', 'forgive']
+ANIMAL = ['shoo', 'owner', 'forgive']
+COMP = ['pay', 'half', 'refuse']
+NIGHT = ['report', 'fix', 'clean']
+
+
+def H(hid, kind, emoji, title, text, careers, anim, actor, target, label, loss, reactions=None, default=None,
+      min_day=3, weight=1, gossip=None, morning=None, over=None):
+    reactions = list(reactions or {'trom': THEFT, 'pha': DAMAGE, 'den': COMP, 'dem': NIGHT}[kind])
+    return dict(id=hid, kind=kind, emoji=emoji, title=title, text=text, careers=tuple(careers), anim=anim, actor=actor,
+                target=target, label=label, loss=loss, reactions=reactions, over=over or {},
+                morning=kind == 'dem' if morning is None else morning,
+                default=default or {'trom': 'let', 'pha': 'forgive', 'den': 'pay', 'dem': 'clean'}[kind],
+                min_day=min_day, weight=weight, gossip=gossip)
+
+
+HAPPENINGS = [
+    # ================================================================ theft in the shift
+    H('grab_shelf', 'trom', '🥷', 'Kẻ gian vơ hàng trên kệ',
+      'Một người đội mũ lưỡi trai sụp xuống, đeo khẩu trang, đi thẳng tới kệ. Tay vơ vội mấy món nhét vào áo khoác rồi quay ra cửa.',
+      STOCKED, 'snatch', 'thief', 'shelf', 'Trộm lấy hàng trên kệ', dict(stock=(2, 4)), weight=3,
+      gossip='Nghe nói tiệm đầu hẻm vừa bị vơ hàng giữa ban ngày. Mọi người để ý người đội mũ sụp, đeo khẩu trang nha!'),
+    H('grab_till', 'trom', '💸', 'Giật tiền ở quầy thu ngân',
+      'Lúc bạn quay lưng lấy đồ cho khách, một bàn tay thò qua quầy, rút xấp tiền trong ngăn kéo rồi chạy vụt ra cửa.',
+      TILL, 'snatch', 'thief', 'till', 'Trộm lấy tiền trong ngăn kéo', dict(cash=(40, 120)), weight=3, min_day=4,
+      gossip='Cẩn thận ngăn kéo tiền nha mọi người, hôm nay có đứa thò tay qua quầy giật tiền đó.'),
+    H('grab_phone', 'trom', '📱', 'Điện thoại trên quầy bị cuỗm',
+      'Bạn đặt điện thoại cạnh máy tính tiền. Một người giả hỏi giá, lấy tờ giấy che lên, lúc nhấc tờ giấy đi thì điện thoại cũng biến mất.',
+      SHOPS + ('delivery',), 'pick', 'pickpocket', 'till', 'Mất điện thoại cá nhân', dict(wallet=(60, 140)), THEFT_SOLO, min_day=5),
+    H('dine_dash', 'trom', '🏃', 'Ăn xong rồi bỏ chạy',
+      'Nhóm khách bàn ngoài gọi đầy bàn, ăn uống no nê. Vừa lúc quán đông, cả nhóm đứng dậy đi thẳng ra xe, không ai trả tiền.',
+      FOOD, 'snatch', 'thief', 'table', 'Khách ăn quỵt, mất tiền nguyên liệu', dict(cash=(30, 80)), weight=2,
+      gossip='Quán mình cũng từng bị ăn quỵt y chang. Tụi nó hay chọn lúc đông nhất để chuồn đó.'),
+    H('milk_tins', 'trom', '🍼', 'Nhét hộp sữa vào xe đẩy',
+      'Một phụ nữ đẩy xe nôi đi vòng vòng giữa các kệ. Bạn thoáng thấy hai hộp hàng biến mất xuống dưới tấm chăn của em bé.',
+      ('mother_baby', 'grocery', 'pharmacy'), 'pick', 'pickpocket', 'shelf', 'Trộm giấu hàng dưới xe đẩy', dict(stock=(2, 3)), weight=2),
+    H('flower_bucket', 'trom', '💐', 'Ôm cả xô hoa chạy mất',
+      'Xô hoa để ngoài hiên cho đẹp. Một thanh niên chạy xe chậm lại, cúi xuống nhấc cả xô rồi rồ ga.',
+      ('florist',), 'snatch', 'biker', 'door', 'Trộm lấy cả xô hoa ngoài hiên', dict(stock=(4, 7)), THEFT_SOLO, weight=2),
+    H('tool_bag', 'trom', '🧰', 'Mất túi linh kiện trên bàn',
+      'Khách mang máy tới sửa, đứng chờ cạnh bàn. Lúc bạn vào trong lấy tua vít, túi linh kiện trên bàn cũng đi theo khách luôn.',
+      ('repair',), 'snatch', 'thief', 'till', 'Trộm lấy linh kiện trên bàn', dict(stock=(1, 3), cash=(10, 30)), weight=2),
+    H('tip_jar', 'trom', '🫙', 'Hũ tiền boa không cánh mà bay',
+      'Hũ tiền boa trên quầy vừa đầy một nửa. Một người đứng chờ lấy nước, lúc đi ra cửa thì trên quầy chỉ còn vòng nước đọng.',
+      ('salon', 'cafe_bakery', 'milk_tea', 'pet_care'), 'pick', 'pickpocket', 'till', 'Trộm lấy hũ tiền boa', dict(cash=(15, 45)), THEFT_SOLO),
+    H('pet_food', 'trom', '🦴', 'Vác bao hạt ra cửa',
+      'Một người vào hỏi mua vòng cổ, lúc bạn cúi xuống tủ kính thì họ vác luôn bao hạt thú cưng đặt sát cửa.',
+      ('pet_care',), 'snatch', 'thief', 'shelf', 'Trộm vác bao hạt ra cửa', dict(stock=(2, 3), cash=(10, 25))),
+    H('bike_stolen', 'trom', '🛵', 'Xe giao hàng bị dắt mất',
+      'Bạn chạy vào quầy lấy đơn, xe để ngay cửa, chìa còn cắm. Quay ra thì thấy một người đã nổ máy, đang rồ ga.',
+      ('delivery',), 'ride', 'biker', 'door', 'Mất xe giao hàng, thuê xe khác chạy tạm', dict(damage=(80, 160)), THEFT_SOLO, weight=3, min_day=4,
+      gossip='Anh em shipper nhớ rút chìa khóa nha, hôm nay lại có vụ dắt xe ngay trước cửa.'),
+    H('parcel_snatch', 'trom', '📦', 'Bị giật túi hàng trên đường',
+      'Bạn dừng đèn đỏ, túi hàng treo phía trước. Một chiếc xe áp sát, người ngồi sau giật phăng túi hàng rồi vượt đèn.',
+      ('delivery',), 'ride', 'biker', 'door', 'Mất túi hàng, phải đền tiền hàng cho khách', dict(comp=(40, 110)), ['shout', 'chase', 'call', 'let'], weight=2),
+    H('towel_guest', 'trom', '🧳', 'Khách trả phòng mang theo đồ',
+      'Khách trả phòng sớm, vali căng phồng. Dọn phòng thì thiếu hai bộ khăn, máy sấy tóc và cả cái điều khiển.',
+      ('homestay',), 'snatch', 'guest', 'door', 'Khách mang đồ trong phòng đi', dict(stock=(2, 3), damage=(20, 45)), ['ask', 'call', 'camera', 'let'], weight=2,
+      over=dict(ask=dict(label='Gọi khách, trừ vào tiền cọc', hint='Khách có thể trả lại hoặc cãi',
+                         win='Khách ấp úng xin lỗi, gửi lại đồ và chịu trừ cọc phần hư hỏng.',
+                         lose='Khách chặn số, tiền cọc không đủ bù. Bạn đành tự chịu.'))),
+    H('medicine_box', 'trom', '💊', 'Hộp thực phẩm chức năng biến mất',
+      'Một người đàn ông hỏi han rất lâu, cầm lên đặt xuống mấy hộp thuốc bổ. Lúc ông đi, trên kệ thiếu đúng hộp đắt nhất.',
+      ('pharmacy',), 'pick', 'pickpocket', 'shelf', 'Trộm lấy hàng đắt tiền trên kệ', dict(stock=(1, 2), cash=(20, 50))),
+    H('veg_night_cart', 'trom', '🥬', 'Giật giỏ rau trên xe',
+      'Bạn chất rau lên xe chuẩn bị giao cho mối. Quay vào lấy sổ, ra đã thấy một người xách giỏ rau đi nhanh về phía chợ.',
+      ('farm',), 'snatch', 'thief', 'door', 'Trộm xách mất giỏ hàng', dict(stock=(2, 4), cash=(10, 30)), THEFT_SOLO, weight=2),
+    H('tour_bag', 'trom', '👜', 'Khách trong đoàn bị giật túi',
+      'Đoàn đang chụp ảnh ở phố đi bộ. Một chiếc xe máy lướt qua, giật túi của một cô trong đoàn. Cô ấy hoảng hốt gọi bạn.',
+      ('tour_guide',), 'ride', 'biker', 'door', 'Công ty hỗ trợ khách bị mất túi', dict(comp=(40, 100)), ['shout', 'chase', 'call', 'let'], weight=3,
+      gossip='Đi phố đi bộ nhớ đeo túi phía trước nha, hôm nay có đoàn khách bị giật túi ngay trước mặt hướng dẫn viên.'),
+    H('office_wallet', 'trom', '👛', 'Ví bị móc trong thang máy',
+      'Thang máy giờ tan tầm chật cứng. Ra tới sảnh bạn mới thấy khóa túi mở toang, ví không còn.',
+      OFFICE + ('teacher', 'tour_guide'), 'pick', 'pickpocket', 'door', 'Bị móc ví', dict(wallet=(40, 110)), ['shout', 'call', 'camera', 'let'], weight=2),
+    H('office_laptop', 'trom', '💻', 'Người lạ ôm laptop ra khỏi văn phòng',
+      'Một người mặc áo công ty giao nước đi vào, lát sau đi ra với chiếc túi laptop của đồng nghiệp bàn bên. Bạn là người duy nhất để ý.',
+      OFFICE, 'snatch', 'thief', 'till', 'Laptop công ty bị lấy, bạn phải đền một phần vì trực phòng', dict(wallet=(40, 90)), weight=2, min_day=5),
+    H('class_phone', 'trom', '📵', 'Điện thoại mất trong lớp',
+      'Giờ ra chơi bạn để điện thoại trên bàn giáo viên. Vào lớp thì bàn trống trơn, cả lớp im phăng phắc nhìn nhau.',
+      ('teacher',), 'pick', 'student', 'till', 'Mất điện thoại trong lớp', dict(wallet=(60, 140)), ['ask', 'camera', 'ward', 'let'], weight=3,
+      over=dict(ask=dict(label='Bình tĩnh hỏi cả lớp', hint='Có khi em nào đó trả lại',
+                         win='Bạn nói nhẹ nhàng: ai lỡ cầm thì để lại bàn giờ ra chơi. Tới trưa, điện thoại nằm lại trên bàn.',
+                         lose='Cả lớp lắc đầu. Điện thoại không quay về nữa.')),
+      gossip='Trường mình có vụ mất điện thoại trong giờ ra chơi. Các thầy cô nhớ cất đồ vào tủ có khóa nha.'),
+    H('class_fund', 'trom', '🪙', 'Hộp quỹ lớp bị mở',
+      'Hộp quỹ lớp để trong ngăn bàn giáo viên. Sáng nay nắp hộp bị cạy, tiền quỹ thiếu gần một nửa. Nhà trường nhắc bạn là người giữ chìa khóa.',
+      ('teacher',), 'night', 'student', 'till', 'Mất quỹ lớp, bạn bù một phần', dict(cash=(30, 70)), ['ask', 'camera', 'ward', 'let'], min_day=5,
+      morning=True, over=dict(ask=dict(label='Nói chuyện riêng với cả lớp', hint='Có khi em nào đó tự trả lại',
+                                        win='Cuối giờ, một em rụt rè mang phong bì tiền lên bàn, xin lỗi cô thầy. Quỹ lớp đủ lại.',
+                                        lose='Cả lớp im lặng. Không ai nhận, quỹ lớp vẫn thiếu.'))),
+    H('salon_bag', 'trom', '👝', 'Túi xách khách để ở ghế chờ',
+      'Khách đang gội đầu, túi xách để ở ghế chờ. Một người vào hỏi giá cắt tóc, lúc đi ra thì túi cũng đi theo. Khách nhìn bạn chờ câu trả lời.',
+      ('salon', 'pet_care', 'cafe_bakery'), 'pick', 'pickpocket', 'table', 'Đền cho khách mất túi ở tiệm', dict(comp=(40, 100)), THEFT_SOLO, min_day=5),
+    # ================================================================ damage: people
+    H('drunk_glass', 'pha', '🍺', 'Khách say làm vỡ ly, đổ bàn',
+      'Bàn nhậu cuối quán cụng ly càng lúc càng to. Một người đứng dậy lảo đảo, kéo đổ cả bàn. Ly vỡ tung tóe, khách bàn bên giật mình.',
+      ('restaurant', 'cafe_bakery', 'milk_tea', 'homestay'), 'smash', 'drunk', 'table', 'Ly chén vỡ, bàn gãy chân', dict(damage=(30, 80), stock=(1, 2)), weight=3,
+      gossip='Tối qua quán bên có bàn nhậu say quá làm vỡ hết ly. Mấy anh uống vừa thôi nha.'),
+    H('rowdy_teens', 'pha', '🛹', 'Nhóm thanh niên quậy phá trước tiệm',
+      'Mấy cậu thanh niên ngồi trên xe trước cửa, cười đùa ầm ĩ. Một cậu đá đổ chậu cây, cậu khác lấy chìa khóa vạch một đường dài lên biển hiệu.',
+      SHOPS, 'smash', 'teens', 'door', 'Chậu cây vỡ, biển hiệu trầy xước', dict(damage=(30, 90)), min_day=5, weight=2),
+    H('break_refuse', 'pha', '🫙', 'Khách làm vỡ hàng rồi không chịu đền',
+      'Một vị khách cầm món hàng lên xem rồi tuột tay. Món đồ vỡ tan dưới sàn. Khách nhún vai: “Hàng để dễ rơi thế thì ai chịu?”',
+      ('mother_baby', 'pharmacy', 'grocery', 'florist', 'cafe_bakery', 'milk_tea', 'salon', 'pet_care'), 'drop', 'customer', 'shelf',
+      'Hàng bị làm vỡ', dict(stock=(1, 2), damage=(10, 40)), ['ask', 'camera', 'ward', 'forgive'], weight=3,
+      gossip='Làm vỡ đồ người ta mà còn bảo tại hàng để dễ rơi. Thời buổi gì không biết!'),
+    H('car_scratch', 'pha', '🚗', 'Xe khách đỗ trước tiệm bị cào xước',
+      'Khách đỗ ô tô trước cửa tiệm. Một đứa trẻ đi ngang cầm cây sắt vạch một đường trên cửa xe rồi chạy. Khách quay sang bảo tiệm phải có trách nhiệm.',
+      SHOPS, 'scratch', 'teens', 'car', 'Hỗ trợ khách sơn lại vết xước', dict(comp=(40, 110)), ['ask', 'camera', 'ward', 'forgive'], min_day=6),
+    H('tv_broken', 'pha', '📺', 'Khách làm vỡ ti vi rồi trả phòng',
+      'Khách phòng hai trả phòng lúc sáng sớm. Lên dọn thì màn hình ti vi nứt một đường dài, cạnh đó là cái điều khiển văng pin.',
+      ('homestay',), 'smash', 'guest', 'table', 'Ti vi phòng hai bị vỡ', dict(damage=(80, 160)), ['ask', 'camera', 'ward', 'forgive'], weight=3),
+    H('salon_mirror', 'pha', '🪞', 'Khách nóng tính đập vỡ gương',
+      'Khách không vừa ý kiểu tóc, cãi một hồi rồi đập tay xuống bàn. Tấm gương trước mặt nứt toác.',
+      ('salon',), 'smash', 'drunk', 'till', 'Gương soi bị vỡ', dict(damage=(50, 110))),
+    H('cage_bite', 'pha', '🐕', 'Chó khách cắn hỏng lồng',
+      'Chó của khách gửi lại buổi trưa sủa suốt, rồi cắn gãy cửa lồng, cào rách luôn đệm nằm.',
+      ('pet_care',), 'knock', 'dog', 'shelf', 'Lồng và đệm bị hỏng', dict(damage=(30, 70)), ['ask', 'forgive'], weight=2),
+    H('graffiti', 'pha', '🖌️', 'Cửa cuốn bị vẽ bậy',
+      'Sáng ra mở cửa, cửa cuốn bị ai xịt sơn chữ nguệch ngoạc, dán chồng mấy tờ quảng cáo vay tiền.',
+      SHOPS + ('farm',), 'night', 'teens', 'door', 'Tiền sơn lại cửa cuốn', dict(damage=(25, 60)), ['ward', 'camera', 'forgive'], min_day=4,
+      morning=True),
+    H('classroom_vandal', 'pha', '🪑', 'Lớp học bị phá bàn ghế',
+      'Đầu giờ vào lớp: hai chiếc ghế gãy chân, bảng bị vẽ bậy, hộp phấn và bút màu vương vãi. Nhà trường nhắc giáo viên chủ nhiệm lo sửa trước.',
+      ('teacher',), 'night', 'kids', 'table', 'Bạn ứng tiền sửa bàn ghế và mua lại đồ dùng', dict(wallet=(25, 60)), ['parents', 'camera', 'forgive'], weight=2,
+      morning=True),
+    H('kids_shelf', 'pha', '🧸', 'Mấy đứa nhỏ nghịch làm đổ kệ',
+      'Hai đứa nhỏ chạy đuổi nhau giữa các kệ trong lúc mẹ đang chọn đồ. Một đứa níu vào kệ, cả tầng hàng đổ ào xuống sàn.',
+      ('mother_baby', 'grocery', 'pharmacy', 'florist', 'pet_care'), 'knock', 'kids', 'shelf', 'Hàng đổ vỡ', dict(stock=(2, 4)), KIDS, weight=3),
+    H('ball_window', 'pha', '⚽', 'Bóng đá bay vỡ kính',
+      '“Choang!” Quả bóng từ bãi đất trống bên kia đường bay thẳng vào cửa kính. Mấy cậu nhóc đứng xa xa, đứa nào cũng chối.',
+      SHOPS + ('teacher', 'farm', 'accounting', 'customer_care'), 'ball', 'kid_ball', 'window', 'Kính cửa sổ vỡ', dict(damage=(40, 110)), KIDS, weight=3,
+      gossip='Bọn nhỏ đá bóng ngoài bãi trống lại làm vỡ kính nhà người ta rồi. Phụ huynh nhắc con giùm nha.'),
+    H('spill_customer', 'pha', '🥤', 'Khách làm đổ nước lên hàng',
+      'Một vị khách cầm ly trà sữa đi xem hàng. Ly nước sóng sánh rồi đổ ụp lên chồng hàng mới xếp.',
+      ('mother_baby', 'florist', 'grocery', 'pharmacy'), 'spill', 'customer', 'shelf', 'Hàng bị ướt, không bán được', dict(stock=(1, 3)), ['ask', 'forgive']),
+    # ================================================================ damage: animals
+    H('stray_dog', 'pha', '🐕', 'Chó hoang chạy vào tiệm',
+      'Một con chó hoang lông xù phóng vào tiệm, đuổi theo mùi đồ ăn. Nó sục vào góc hàng, hất đổ mấy món xuống sàn.',
+      ('restaurant', 'cafe_bakery', 'grocery', 'florist', 'milk_tea', 'farm'), 'knock', 'dog', 'shelf', 'Hàng bị cắn xé, đổ vỡ', dict(stock=(1, 3)), ANIMAL, weight=2),
+    H('neighbour_cat', 'pha', '🐈', 'Mèo hàng xóm nhảy lên quầy',
+      'Con mèo mướp nhà bên nhảy phốc lên quầy, đuôi quét qua một hàng đồ. Mấy món lăn xuống sàn vỡ loảng xoảng.',
+      ('mother_baby', 'florist', 'cafe_bakery', 'milk_tea', 'pharmacy', 'salon'), 'knock', 'cat', 'till', 'Đồ trên quầy bị vỡ', dict(stock=(1, 2), damage=(5, 20)), ANIMAL),
+    H('chicken_run', 'pha', '🐔', 'Gà nhà bên sổng chuồng',
+      'Đàn gà nhà bên sổng chuồng, kéo nhau sang bới tung luống mới gieo.',
+      ('farm',), 'knock', 'dog', 'shelf', 'Luống mới gieo bị bới tung', dict(stock=(2, 4)), ANIMAL, weight=2),
+    # ================================================================ you must compensate
+    H('spill_phone', 'den', '🧋', 'Làm đổ nước lên điện thoại khách',
+      'Khay đồ uống trượt tay lúc đi ngang bàn khách. Cả ly đổ ụp lên chiếc điện thoại đặt trên bàn. Màn hình chớp mấy cái rồi tắt.',
+      FOOD, 'spill', 'self', 'table', 'Đền điện thoại cho khách', dict(comp=(50, 120)), weight=3),
+    H('dye_stain', 'den', '🎨', 'Thuốc nhuộm lem lên áo khách',
+      'Lúc pha màu bạn lỡ tay, thuốc nhuộm bắn lên chiếc áo sơ mi trắng của khách. Khách nhìn vết loang rồi nhìn bạn.',
+      ('salon',), 'spill', 'self', 'till', 'Đền áo cho khách', dict(comp=(30, 80)), weight=2),
+    H('car_bump', 'den', '🚙', 'Va quẹt xước xe ô tô khi giao hàng',
+      'Hẻm chật, bạn lách xe qua thì tay lái quệt một đường dài lên cửa xe ô tô đang đỗ. Chủ xe bước xuống.',
+      ('delivery',), 'scratch', 'self', 'car', 'Đền tiền sơn xe cho chủ xe', dict(comp=(60, 140)), weight=3),
+    H('suitcase_drop', 'den', '🧳', 'Làm vỡ vali của khách',
+      'Bạn xách vali giúp khách lên cầu thang. Tay cầm bật ra, vali lăn mấy bậc, bánh xe gãy, vỏ nứt.',
+      ('homestay', 'tour_guide'), 'drop', 'self', 'door', 'Đền vali cho khách', dict(comp=(40, 100)), weight=2),
+    H('vase_customer', 'den', '🏺', 'Làm vỡ bình gốm khách mang tới',
+      'Khách mang bình gốm của nhà tới nhờ cắm hoa. Bạn xoay bình lấy góc đẹp thì bình trượt khỏi mép bàn.',
+      ('florist',), 'drop', 'self', 'till', 'Đền bình gốm cho khách', dict(comp=(40, 90))),
+    H('eggs_bag', 'den', '🥚', 'Làm đổ khay trứng lên túi khách',
+      'Bạn bưng khay trứng ra kệ, vấp phải thùng hàng. Cả khay đổ lên chiếc túi xách khách đặt trên quầy.',
+      ('grocery',), 'spill', 'self', 'till', 'Đền túi xách cho khách', dict(comp=(40, 100))),
+    H('device_crack', 'den', '🔧', 'Lỡ tay làm nứt màn hình máy khách',
+      'Máy khách chỉ nhờ thay pin. Lúc tháo nắp lưng bạn cạy mạnh tay, một vết nứt chạy dọc màn hình.',
+      ('repair',), 'drop', 'self', 'till', 'Đền màn hình cho khách', dict(comp=(40, 100)), weight=2),
+    H('glasses_pe', 'den', '👓', 'Làm vỡ kính của học sinh',
+      'Giờ sinh hoạt ngoài sân, quả bóng bạn ném cho cả lớp bắt bay trúng mặt một em. Em không sao, nhưng cặp kính gãy gọng.',
+      ('teacher',), 'drop', 'self', 'table', 'Đền kính cho học sinh', dict(wallet=(30, 70)), weight=2),
+    H('coffee_laptop', 'den', '☕', 'Đổ cà phê lên laptop đồng nghiệp',
+      'Bạn với tay lấy tập hồ sơ, khuỷu tay gạt đổ ly cà phê sang bàn bên. Laptop của đồng nghiệp tắt phụt.',
+      OFFICE, 'spill', 'self', 'table', 'Đền tiền sửa laptop cho đồng nghiệp', dict(wallet=(40, 100)), weight=2),
+    H('pet_escape', 'den', '🐾', 'Để sổng thú cưng của khách',
+      'Bạn mở cửa lồng thay nước, chú chó nhỏ lách qua chân chạy vọt ra đường. Tìm lại được, nhưng chân em bị trầy phải đi khám.',
+      ('pet_care',), 'knock', 'dog', 'door', 'Trả tiền khám cho thú cưng của khách', dict(comp=(30, 70)), weight=2),
+    H('guest_vase', 'pha', '🏺', 'Khách trong đoàn làm vỡ bình ở nhà hàng',
+      'Đoàn ăn trưa ở nhà hàng quen. Một vị khách đứng dậy chụp ảnh, vai quệt đổ chiếc bình sứ trang trí. Chủ nhà hàng quay sang hướng dẫn viên.',
+      ('tour_guide',), 'drop', 'guest', 'table', 'Đền bình sứ cho nhà hàng', dict(comp=(30, 80)), ['ask', 'forgive'], weight=2,
+      over=dict(ask=dict(label='Nhờ vị khách tự đền', hint='Khách có thể vui vẻ trả, có thể phật ý',
+                         win='Vị khách ngại ngùng xin lỗi rồi tự trả tiền bình. Chủ nhà hàng còn tặng cả đoàn đĩa trái cây.',
+                         lose='Vị khách bảo công ty lữ hành phải lo. Bạn đành ứng tiền đền trước.'))),
+    H('tour_bus_phone', 'trom', '🚌', 'Mất điện thoại trên xe đoàn',
+      'Xe dừng đổ xăng, cả đoàn xuống nghỉ. Lên xe lại, điện thoại bạn để ở ghế đầu đã không còn. Tài xế nhớ có một người lạ lên xe hỏi đường.',
+      ('tour_guide',), 'pick', 'pickpocket', 'door', 'Mất điện thoại cá nhân', dict(wallet=(60, 130)), ['shout', 'call', 'let'], min_day=5),
+    H('office_bike', 'trom', '🛵', 'Mất xe ở hầm gửi xe',
+      'Tan làm xuống hầm, chỗ để xe của bạn trống trơn. Vé xe vẫn còn trong ví, bảo vệ gãi đầu bảo không để ý.',
+      OFFICE + ('teacher',), 'ride', 'biker', 'door', 'Thuê xe ôm đi làm và sửa khóa', dict(wallet=(40, 90)), ['call', 'camera', 'let'], min_day=6,
+      over=dict(call=dict(label='Báo công an, đòi bãi xe bồi thường', hint='Mở hồ sơ, bãi xe có thể phải đền'))),
+    H('printer_jam', 'den', '🖨️', 'Làm hỏng máy in chung',
+      'Bạn cố kéo tờ giấy kẹt trong máy in. “Rắc!” một tiếng, khay nạp giấy gãy đôi. Cả phòng đang chờ in hồ sơ gấp.',
+      OFFICE + ('teacher',), 'drop', 'self', 'table', 'Góp tiền sửa máy in', dict(wallet=(25, 60))),
+    H('dog_bite_bag', 'den', '🐕', 'Chó nhà khách cắn rách túi hàng',
+      'Bạn giao hàng tới cổng, con chó trong nhà lao ra cắn rách túi, hộp bánh bên trong bẹp dúm. Khách vẫn cần hàng nguyên vẹn.',
+      ('delivery',), 'knock', 'dog', 'door', 'Đền hàng hỏng cho khách', dict(comp=(20, 60))),
+    H('goat_greens', 'pha', '🐐', 'Dê nhà bên gặm rau',
+      'Mấy con dê nhà hàng xóm sổng dây, chui qua hàng rào, gặm trụi nửa luống rau sắp thu hoạch.',
+      ('farm',), 'knock', 'dog', 'shelf', 'Rau sắp thu bị gặm mất', dict(stock=(2, 4), damage=(10, 25)), ANIMAL),
+    # ================================================================ night break-ins (found at opening)
+    H('night_shop', 'dem', '🔓', 'Đêm qua tiệm bị đột nhập',
+      'Sáng ra mở cửa, ổ khóa bị cắt, cửa cuốn hé một khoảng. Trong tiệm, kệ hàng trống mấy chỗ, ngăn kéo tiền bị lật tung.',
+      SHOPS, 'night', 'thief', 'shelf', 'Trộm đột nhập lấy hàng và tiền', dict(stock=(3, 6), cash=(20, 70), damage=(20, 40)), weight=3, min_day=5,
+      gossip='Đêm qua khu mình có trộm cắt khóa vào tiệm. Mọi người kiểm tra lại cửa nẻo nha!'),
+    H('night_farm', 'dem', '🌾', 'Đêm qua vườn bị trộm',
+      'Sáng ra thăm vườn, hàng rào bị cắt một lỗ. Kho dụng cụ mở toang, mấy bao hạt giống và phân bón không còn.',
+      ('farm',), 'night', 'thief', 'shelf', 'Trộm vào vườn lấy đồ', dict(stock=(3, 5), damage=(15, 35)), weight=3, min_day=5),
+    H('night_depot', 'dem', '🌙', 'Kho hàng bị cạy cửa',
+      'Sáng tới kho, cửa sau bị cạy. Mấy thùng vật tư đóng gói bị lấy, két tiền lẻ để giao hàng cũng trống trơn.',
+      ('delivery',), 'night', 'thief', 'shelf', 'Trộm cạy kho lấy đồ và tiền lẻ', dict(stock=(2, 4), cash=(20, 60)), weight=2, min_day=5),
+    H('night_office', 'dem', '🗄️', 'Văn phòng bị cạy ngăn kéo',
+      'Sáng đến văn phòng, bảo vệ báo đêm qua có người vào. Ngăn kéo bàn bạn bị cạy, phong bì tiền để dành và tai nghe không còn.',
+      OFFICE, 'night', 'thief', 'till', 'Mất tiền và đồ trong ngăn kéo', dict(wallet=(30, 80)), weight=2, min_day=6),
+    H('night_class', 'dem', '🏫', 'Phòng học bị đột nhập',
+      'Sáng vào lớp, cửa sổ bị cạy, tủ đồ dùng dạy học mở toang. Chiếc loa bạn tự mua cho lớp cũng không còn.',
+      ('teacher',), 'night', 'thief', 'till', 'Mất đồ dùng dạy học của bạn', dict(wallet=(40, 90)), weight=2, min_day=6),
+]
+INDEX = {x['id']: x for x in HAPPENINGS}
+
+# Police follow-up texts (case result shown as a notification).
+POLICE = {
+    'solved': ('🚓', 'Công an phá án', 'Công an khu vực báo tin: đã bắt được người gây chuyện. Tang vật được trả lại cho bạn.'),
+    'partial': ('🚓', 'Công an phá án', 'Công an khu vực đã tìm ra người gây chuyện. Một phần đồ đã bị bán mất, phần còn lại được trả về.'),
+    'cold': ('📁', 'Hồ sơ tạm dừng', 'Công an khu vực báo: chưa đủ dấu vết để tìm ra người gây chuyện. Hồ sơ tạm dừng, có tin mới sẽ báo lại.'),
+}
+INSURANCE_TEXT = 'Bảo hiểm tài sản chi trả phần thiệt hại chưa thu hồi được.'

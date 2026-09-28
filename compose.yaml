@@ -1,0 +1,29 @@
+# Public deployment: the game listens only on localhost; Caddy terminates HTTPS.
+# 1) cp .env.example .env and set ALLOWED_HOSTS=<your domain>, TRUST_PROXY=1 (+ optional LLM_*)
+# 2) set the domain in deploy/Caddyfile   3) docker compose up -d --build
+services:
+  game:
+    build: .
+    env_file: .env
+    environment:
+      HOST: 0.0.0.0
+      PORT: "8765"
+    ports:
+      - "127.0.0.1:8765:8765"
+    volumes:
+      - game-data:/app/storage
+    restart: unless-stopped
+  caddy:
+    image: caddy:2
+    depends_on: [game]
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    restart: unless-stopped
+    profiles: ["public"]
+volumes:
+  game-data:
+  caddy-data:

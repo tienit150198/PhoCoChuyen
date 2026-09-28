@@ -1,0 +1,1508 @@
+{
+  "project": "Một ngày làm nghề",
+  "version": "0.5.0",
+  "created_at_utc": "2026-09-28T11:59:13.608944+00:00",
+  "scope": "public web game: one character journey across 20 careers, multiplayer street, AI personas, web push, vi/en",
+  "files": [
+    {
+      "path": ".dockerignore",
+      "bytes": 100,
+      "sha256": "e3a1027b30cdcc7abeffa5799c04f43a04175c44de0a607ee02c92c6613e31b5"
+    },
+    {
+      "path": ".env.example",
+      "bytes": 1276,
+      "sha256": "884ac1dd6de88e436fe7512e4b768eb41fa9fd30c18a8bec910bde9c537e38b9"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 112,
+      "sha256": "1347fdb7c999536115bdc95274640aa2daefa13e39fd44cca4520b4cd9597356"
+    },
+    {
+      "path": ".ruff_cache\\.gitignore",
+      "bytes": 35,
+      "sha256": "9e3a60f1e6ec4ae60215c11d54b171392745ec25e9dded433d5bd921363af316"
+    },
+    {
+      "path": ".ruff_cache\\0.15.12\\15664034957362848733",
+      "bytes": 94,
+      "sha256": "fb65d433a70016ccc871ec2908908f6a025880a0ccedee93b7174415bbb0db95"
+    },
+    {
+      "path": ".ruff_cache\\0.15.12\\1845137235914409726",
+      "bytes": 94,
+      "sha256": "a5c53d929ef50194ac170e9befb084979574b948d5056434a9cbe66cbdf9b94e"
+    },
+    {
+      "path": ".ruff_cache\\CACHEDIR.TAG",
+      "bytes": 43,
+      "sha256": "5953156d7e0c564a427251316eaf26f8870e6483ae2197f916b630e4f93e31ae"
+    },
+    {
+      "path": "artifacts\\01-career-select.png",
+      "bytes": 525883,
+      "sha256": "a90a8c089d633ae3aa80d6e01d7052b8a6ddd5ba4300c1d6a7ec5a165e40ffb3"
+    },
+    {
+      "path": "artifacts\\02-mother-baby-scene.png",
+      "bytes": 238709,
+      "sha256": "98e2ece517d8809482404dc1fee8fbfc52fd65b8e5b010382deaaff060560ce2"
+    },
+    {
+      "path": "artifacts\\03-shop-workbench.png",
+      "bytes": 187701,
+      "sha256": "5f835fe0ebf3b79947f58e88c45ef4962e1e9dad604e01a13e9f1b1f29f1ba1b"
+    },
+    {
+      "path": "artifacts\\04-influencer-story.png",
+      "bytes": 276966,
+      "sha256": "f3c6374a3076d6c844e95eaa7386766c6cbc0c2f6ed79889f6ae457b3ffaa282"
+    },
+    {
+      "path": "artifacts\\05-neighbourhood-feed.png",
+      "bytes": 216350,
+      "sha256": "0313bf5029a551e1255c209571b7b3b717027a5a8edc09af0d15208ff0f8f52e"
+    },
+    {
+      "path": "artifacts\\06-npc-conversation.png",
+      "bytes": 262355,
+      "sha256": "5009575cb8727edfdfdcf9125e4acd53f30993b4932b178682255667b1c0a766"
+    },
+    {
+      "path": "artifacts\\07-pharmacy-scene.png",
+      "bytes": 231920,
+      "sha256": "58faaccc4a8513e199111ddae3e494ddf27be9d981c70585a1b46c025641c747"
+    },
+    {
+      "path": "artifacts\\08-pharmacy-workbench.png",
+      "bytes": 214573,
+      "sha256": "7b9eaf83f4fab330013f11bbc2af8c08c137f89b6a976d352c65494bc915bdad"
+    },
+    {
+      "path": "artifacts\\09-accounting-scene.png",
+      "bytes": 234155,
+      "sha256": "56a3ea2345310d06e0695bf89bb9390f4afd03045a6e41b1086eff02993c6288"
+    },
+    {
+      "path": "artifacts\\10-accounting-workbench.png",
+      "bytes": 169116,
+      "sha256": "d78185103b4f970161f5582435a9423481a561bec8d2207f7dedbdacef83ffde"
+    },
+    {
+      "path": "artifacts\\11-customer-care-scene.png",
+      "bytes": 233062,
+      "sha256": "a36eb9fd3626d39a3d75687eae66585545417550fe069486812205f350f81597"
+    },
+    {
+      "path": "artifacts\\12-customer-care-workbench.png",
+      "bytes": 195546,
+      "sha256": "88d655d151a911ba882dfba24ffc9062a1197de022723d6d0fcdc6630172ac1f"
+    },
+    {
+      "path": "artifacts\\13-mobile-career-select.png",
+      "bytes": 148525,
+      "sha256": "ec6d5bf44918db7fc502f9cbeed8a4894717720d8c9d0209028f588a79848846"
+    },
+    {
+      "path": "artifacts\\14-mobile-scene.png",
+      "bytes": 99186,
+      "sha256": "4aa7caece8f9685fce3b7e190f6793819cbae2980bb2f4d257ea46c36fec5b8a"
+    },
+    {
+      "path": "artifacts\\15-mobile-workbench.png",
+      "bytes": 62402,
+      "sha256": "8dfd120eab67598d90f882f0c8a62c40a5f51038181e620bc30c1cf7f947205f"
+    },
+    {
+      "path": "artifacts\\20-staff-notebook.png",
+      "bytes": 215376,
+      "sha256": "b2bd36c5cb77736adcceb4b87683a0d6e978cb297e230483b6e20f11515a9b01"
+    },
+    {
+      "path": "artifacts\\21-staff-damage-evidence.png",
+      "bytes": 235067,
+      "sha256": "1c643ef8b442d48973f4379fd84c512343031f5cd8b6c9905ce4f4ead7a999d0"
+    },
+    {
+      "path": "artifacts\\22-property-upgrade.png",
+      "bytes": 237836,
+      "sha256": "48a1a570b43a272673d255a143a4f9367a839e6bf1fd65045b2c8f255f058cc0"
+    },
+    {
+      "path": "artifacts\\23-boba-shop-with-team.png",
+      "bytes": 255503,
+      "sha256": "c20d4967790075c46895ff6d1c64b164d255f36990babe5ae488549d31a568f3"
+    },
+    {
+      "path": "artifacts\\24-police-at-storefront.png",
+      "bytes": 263533,
+      "sha256": "7da7e986ca93472e2f3eaff1332d567c690c39ebf14d463011a96ad52d6a3541"
+    },
+    {
+      "path": "artifacts\\25-police-recovery-reward.png",
+      "bytes": 227692,
+      "sha256": "b7ec866223f1a0efcc60e348c8400a2f465281673e28f094624c16065656f097"
+    },
+    {
+      "path": "artifacts\\26-finance-period-bills.png",
+      "bytes": 280224,
+      "sha256": "ad2c22782f428ec6cbc107ab91e1dae941901b2c7fca75f107cbe8efc4727207"
+    },
+    {
+      "path": "artifacts\\27-mobile-boba-team.png",
+      "bytes": 99911,
+      "sha256": "a349b49617a2f289fe5507c229439a5bd0775a4cf1a6e56aec4c39a144fe21a9"
+    },
+    {
+      "path": "artifacts\\28-mobile-staff.png",
+      "bytes": 68549,
+      "sha256": "46aaae9fec7fdc8fc3af85654d73de16067c6de6b52e5072a32e6260cf1e5f35"
+    },
+    {
+      "path": "artifacts\\29-mobile-scenarios.png",
+      "bytes": 67227,
+      "sha256": "b6e66cec57cce8a24e2bc241a60d078f2f64bad9b25863a096ab2efd4b8dbc03"
+    },
+    {
+      "path": "artifacts\\30-accounting-boba-team.png",
+      "bytes": 239344,
+      "sha256": "8a634182300fe97d78f485b41e5e4307efeaffee45ffff35bee781a8c64415a6"
+    },
+    {
+      "path": "artifacts\\30-customer_care-boba-team.png",
+      "bytes": 238416,
+      "sha256": "0b13173fdc90aff757c129b65163d86c8bbb7483ce7326d9b3abbf5f816c6836"
+    },
+    {
+      "path": "artifacts\\30-pharmacy-boba-team.png",
+      "bytes": 236872,
+      "sha256": "3c7334d4d654d6518441652ae980c2e132a41a1211920013803c2d6529e76a5e"
+    },
+    {
+      "path": "artifacts\\browser-operations-report.json",
+      "bytes": 1752,
+      "sha256": "791ea8a0d836f8d380f556247ca65d39d98a0e332acac8624d37171f6091b997"
+    },
+    {
+      "path": "artifacts\\browser-test-report.json",
+      "bytes": 1394,
+      "sha256": "5505350a7d8de78df700bbb3ea3e31b556ed9c611c4ec8950f3f6059a60fd461"
+    },
+    {
+      "path": "artifacts\\browser-v03-report.json",
+      "bytes": 2193,
+      "sha256": "5c08c5a5828350d1b3b430a35c6674cad68000b240fabfc3af3065ecb231c377"
+    },
+    {
+      "path": "artifacts\\browser-v04-report.json",
+      "bytes": 3672,
+      "sha256": "9957c4506b6563aca8ff723858c6734f75834ab8e292485d4243d75f724051cf"
+    },
+    {
+      "path": "artifacts\\index.html",
+      "bytes": 6473,
+      "sha256": "5e3527d5cfd15197f22d4b6c216cc74ddc1b3a8e46c4b9a8eaf294a51f65598e"
+    },
+    {
+      "path": "artifacts\\javascript-syntax.log",
+      "bytes": 330,
+      "sha256": "83dc8f404b7203dbd92781e5fb07c0efd1d3e09f0a4672d648538e7758cdbbae"
+    },
+    {
+      "path": "artifacts\\python-test-report.json",
+      "bytes": 64492,
+      "sha256": "21e9671a1d9929e52c78a74fcd4126faf722b62295a169ed339f5bf730ff27ac"
+    },
+    {
+      "path": "artifacts\\python-tests.log",
+      "bytes": 66047,
+      "sha256": "13725160d13562feaed7e02357538a2e5c1ad3cd7a473f2002a7bb5e746fe783"
+    },
+    {
+      "path": "artifacts\\v03-01-seven-careers.png",
+      "bytes": 528004,
+      "sha256": "0bd1aba57a7c520b25463f14fd20382078f3f4c8d09609701cd9f5c9bb4192a3"
+    },
+    {
+      "path": "artifacts\\v03-02-teacher-preparation.png",
+      "bytes": 231148,
+      "sha256": "1261031dc769f78ac8b95647b344ae4e845cd3b3b0695bca4674c39343a2f2ee"
+    },
+    {
+      "path": "artifacts\\v03-03-teacher-scene.png",
+      "bytes": 239738,
+      "sha256": "fc3b943c7cb7ae49f4135490d2d8b4fd297970c2791222428cc2dc56b4354e25"
+    },
+    {
+      "path": "artifacts\\v03-04-teacher-teaching.png",
+      "bytes": 189729,
+      "sha256": "5f198ed895eef72a90610cc741759873e0cd5a996c665bec02ffabd6870864f1"
+    },
+    {
+      "path": "artifacts\\v03-05-teacher-feedback.png",
+      "bytes": 170485,
+      "sha256": "fcb9fad2c245fae4b0e54585f8f537e0f001d9146c7f1f9f3cbc4298521b36ac"
+    },
+    {
+      "path": "artifacts\\v03-06-tour-route-planning.png",
+      "bytes": 202768,
+      "sha256": "ce31077e9a0657795fbd2c2a0dddb49a3a8ba9128f628111886f4cafdd1c3ae1"
+    },
+    {
+      "path": "artifacts\\v03-07-tour-story-photo.png",
+      "bytes": 186166,
+      "sha256": "fb672dfc5df160e3bfde994f952d0647a34eeb370a643496e41bf2eff9b047c9"
+    },
+    {
+      "path": "artifacts\\v03-08-tea-preparation-menu.png",
+      "bytes": 223242,
+      "sha256": "2bf703e4f9feb68bf89582fd0a5b0cee7c2ec72d01237cb499c775bf506e31f1"
+    },
+    {
+      "path": "artifacts\\v03-09-tea-scene.png",
+      "bytes": 247321,
+      "sha256": "34879790f10544794ae9ea1cce1a03896952a47567edb9f7e375966624e176df"
+    },
+    {
+      "path": "artifacts\\v03-10-tea-counter.png",
+      "bytes": 185458,
+      "sha256": "75d0d2048fcbf889c14b9f6a03a7451b87f72635e993ef4c3c5d9bce32f9b137"
+    },
+    {
+      "path": "artifacts\\v03-11-review-owner-response.png",
+      "bytes": 229399,
+      "sha256": "598788a1b85200869d4f08d6971b7d039bdf20905aee3930627a60c0d2abcda5"
+    },
+    {
+      "path": "artifacts\\v03-12-memory-minigame.png",
+      "bytes": 225774,
+      "sha256": "1e54ea4660ece6318ba4e9a43c9b69a6e7c1a5d7a94db6b4fc75be4cdc28745f"
+    },
+    {
+      "path": "artifacts\\v03-13-pair-label-minigame.png",
+      "bytes": 221710,
+      "sha256": "03c75e6b556569f37aa674ae6e824c4cb9bbef2a3d09e040ed1d8173a61c6900"
+    },
+    {
+      "path": "artifacts\\v03-14-passport.png",
+      "bytes": 230659,
+      "sha256": "f3b032b7a0dd62fa8421d9ea12e882e757584ac9529e70a8f0dea9752847e157"
+    },
+    {
+      "path": "artifacts\\v03-15-neighbourhood-map.png",
+      "bytes": 243869,
+      "sha256": "74d7a868f5895d0336900c4753c5a78d476429c59fd3ddd6d7c4e7d7cdc643f9"
+    },
+    {
+      "path": "artifacts\\v03-16-end-day.png",
+      "bytes": 304632,
+      "sha256": "839a718171cc58db83a9713a64fcc6d9c3fbec007252d16324a84b7d805a6339"
+    },
+    {
+      "path": "artifacts\\v03-17-mobile-summary.png",
+      "bytes": 60305,
+      "sha256": "fbd22ca31c17abc1719622d4473c512f1525d48cb6e5afa8c2a6555bbe9c70d3"
+    },
+    {
+      "path": "artifacts\\v03-18-mobile-preparation.png",
+      "bytes": 62655,
+      "sha256": "984744aa7480b93e8659b51fa33aa8cda585dda282e542e212b697b2dd62c262"
+    },
+    {
+      "path": "artifacts\\v03-19-mobile-tea-counter.png",
+      "bytes": 61650,
+      "sha256": "a44ec3c7328866c796d2106542bf12cdb589db989b3bd6143de024cfe8999683"
+    },
+    {
+      "path": "artifacts\\v03-20-mobile-classroom.png",
+      "bytes": 59205,
+      "sha256": "78f5345605ced66efcf495c9a8b5321c9d4db747ffb39ccb4e5a7593f14531fd"
+    },
+    {
+      "path": "artifacts\\v03-21-mobile-tour.png",
+      "bytes": 70911,
+      "sha256": "ddc684bb8b8aada8cb78ce312b62ea4a2bac939e8cd2528d79a2450a9f6c33b2"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "bytes": 12456,
+      "sha256": "d03b0054aa844f19f0baeed2c59b3c6c808424298de3d85168095696b21a9a8f"
+    },
+    {
+      "path": "compose.yaml",
+      "bytes": 744,
+      "sha256": "fdfce0296d5ba4e8b60d091bba7855656f3e3af33fad5a4df57aa04e14bba840"
+    },
+    {
+      "path": "deploy\\Caddyfile",
+      "bytes": 189,
+      "sha256": "dd61d0c652a7d142fefdc3beaef0985807e60ff2f248ea3d14c88c32a494b0d3"
+    },
+    {
+      "path": "Dockerfile",
+      "bytes": 631,
+      "sha256": "9b8a5f3549c4018e24e63e275a640a82cf15dd0b63dafe42be8e325c14ef66ca"
+    },
+    {
+      "path": "docs\\API.md",
+      "bytes": 7610,
+      "sha256": "d682413222f2b9e9a96880bb898b6f8d3b1b53297e6f6e12f2a545b65e63937d"
+    },
+    {
+      "path": "docs\\API_V03.md",
+      "bytes": 4717,
+      "sha256": "7731414de6b290f680e0678ca156e2348373d2ad32d1eae9b18a3f26b19a842f"
+    },
+    {
+      "path": "docs\\API_V04.md",
+      "bytes": 8027,
+      "sha256": "e5ed7260f94b544a4d016b4de1a68ed5cd93737a7d51aad07754db5dc6a474cb"
+    },
+    {
+      "path": "docs\\ARCHITECTURE.md",
+      "bytes": 7081,
+      "sha256": "47dea86b8bc0f06c7371e1b8c4492d8054365dccbbcb75c034d7c7a8feb90f9c"
+    },
+    {
+      "path": "docs\\ARCHIVE_V02_README.md",
+      "bytes": 16927,
+      "sha256": "c3ae015b31b6edd1fb1b386b92d12ddce93f21b222f4cdd9f9f49fc9fdd8ea88"
+    },
+    {
+      "path": "docs\\ARCHIVE_V02_SCOPE.md",
+      "bytes": 7960,
+      "sha256": "6b36567f935c9680aaf3f6b484aab95e656d22673674d8e624f60f67357ebbcb"
+    },
+    {
+      "path": "docs\\DEPLOY.md",
+      "bytes": 5524,
+      "sha256": "386d105b3833af3bf5b43abc9956f2d6a4fa889a55aa065dfb1c7bd9c6034df9"
+    },
+    {
+      "path": "docs\\DESIGN.md",
+      "bytes": 10311,
+      "sha256": "03e947d14ad0fc1f576a8c45c990f0a8a228a0ea1bbad4a0ac19fddcce71c890"
+    },
+    {
+      "path": "docs\\IMPLEMENTED_VS_DESIGN.md",
+      "bytes": 5083,
+      "sha256": "096dc0507da29deddafa66b49acbf21ab680a9523eed8472e1a5988405c7f87c"
+    },
+    {
+      "path": "docs\\INSPIRATION.md",
+      "bytes": 2670,
+      "sha256": "706faddb3a0f95964689568520f90ecda7a4c4a11ada49e138ac74e79ab5811d"
+    },
+    {
+      "path": "docs\\JOURNEY.md",
+      "bytes": 7444,
+      "sha256": "7e5123bb7d2f330aa8e4d4384a5e247a723c527aea973ae3add5486a5bbaef50"
+    },
+    {
+      "path": "docs\\PLUGIN_CAREERS.md",
+      "bytes": 13913,
+      "sha256": "2ad2accb7155c83db1918c6d65dbeba21f25df46588f006c64eecf094d9f8b64"
+    },
+    {
+      "path": "docs\\SECURITY_AND_PRIVACY.md",
+      "bytes": 6045,
+      "sha256": "0fa24da19125e2894ea99e43d686bbff5c5442d5268564106d729853c3628782"
+    },
+    {
+      "path": "docs\\TEST_RESULTS_V03.md",
+      "bytes": 2851,
+      "sha256": "01444bf2e7673d53bebad5b0aa40d0119ec07f5157935df62789bbf6b0683f38"
+    },
+    {
+      "path": "docs\\TESTING.md",
+      "bytes": 9430,
+      "sha256": "9c93e7f7d7f4f62880730388b233e6986305300bb68a59c7173b3f2b22f98fdf"
+    },
+    {
+      "path": "docs\\V02_GUIDE.md",
+      "bytes": 11566,
+      "sha256": "a259d190fe3dc1ec2897eae5734c8b783480385dc45d002fc9191a522e376e6c"
+    },
+    {
+      "path": "docs\\V03_GUIDE.md",
+      "bytes": 15375,
+      "sha256": "96e314554f179e7de86ef6d693e19b039c255995e60f7e2e445b2c5b704322a0"
+    },
+    {
+      "path": "game\\__init__.py",
+      "bytes": 105,
+      "sha256": "3f190b430283408084ca650c53cd12d666eaaa2475f52a1511cd3675d87efd9f"
+    },
+    {
+      "path": "game\\ai.py",
+      "bytes": 9699,
+      "sha256": "f09024efaa2877d9c0424e751495f9a0143f04d0fc31095ae904997077198e8d"
+    },
+    {
+      "path": "game\\boba.py",
+      "bytes": 92446,
+      "sha256": "2e62d7fd03cec0f03a41d7d7964c5a922999e6c978c5e75920a87ef614cd3efa"
+    },
+    {
+      "path": "game\\careers\\__init__.py",
+      "bytes": 1281,
+      "sha256": "d85fbf2784df481b2b74626399b21d89a6eff7a00043b96adaa7f2aec5455c98"
+    },
+    {
+      "path": "game\\careers\\cafe_bakery.py",
+      "bytes": 150868,
+      "sha256": "e2785291f8f97137e573c05d823ff828a5fa13b304923ed6f604425be9b86065"
+    },
+    {
+      "path": "game\\careers\\corp_accounting.py",
+      "bytes": 178445,
+      "sha256": "02271d65df2372aee5dc1fcf2e5fbf4077d03aab19a5c5c593015194f98af4bd"
+    },
+    {
+      "path": "game\\careers\\delivery.py",
+      "bytes": 118964,
+      "sha256": "aec1d7284c2b772aa35891bd4485931ad0c51c7b032522e1f28db050529ea71b"
+    },
+    {
+      "path": "game\\careers\\farm.py",
+      "bytes": 115605,
+      "sha256": "79b0b952bc7c488ae6541e6eae322a0c1c9565a4bcfd8af17b6a2878e9fb45c7"
+    },
+    {
+      "path": "game\\careers\\florist.py",
+      "bytes": 122952,
+      "sha256": "3b061d60c325dda78c3c0b6496fe31949eb9c7deaf83f911cb59030f5e27b41f"
+    },
+    {
+      "path": "game\\careers\\food_service.py",
+      "bytes": 17026,
+      "sha256": "d78a0d9eea47764a7526277e8f7caebbee6bcdc98b114f5c3afd2227dbd281da"
+    },
+    {
+      "path": "game\\careers\\grocery.py",
+      "bytes": 167606,
+      "sha256": "ca295e0b2f7562eb6362d578096db1a1e18f9d1005d642bf3a668f9ca2127b16"
+    },
+    {
+      "path": "game\\careers\\group_accounting.py",
+      "bytes": 154041,
+      "sha256": "cf10959aad37c016711b43b16d74220ff4060b8d2f0e05ac40d6c5962dfad9a9"
+    },
+    {
+      "path": "game\\careers\\homestay.py",
+      "bytes": 183639,
+      "sha256": "a8235ad922f1361b082965518af0cd1b4120ffd2499631beb6172e60c593d8e8"
+    },
+    {
+      "path": "game\\careers\\kit.py",
+      "bytes": 20019,
+      "sha256": "01259c62eaed7af0a79ac1206e06bfc3a2ee76c2b891e061003b76156d17add3"
+    },
+    {
+      "path": "game\\careers\\office.py",
+      "bytes": 11685,
+      "sha256": "e9f2c87ccf5d7cd305410eac6bac766e009f4b799bdd128a2e10ef3f0dfd63a8"
+    },
+    {
+      "path": "game\\careers\\pet_care.py",
+      "bytes": 166615,
+      "sha256": "bde40c27195596ec14ad01cf06caf43efa7b81b8fda5afb198cc67ea533754d4"
+    },
+    {
+      "path": "game\\careers\\repair.py",
+      "bytes": 153236,
+      "sha256": "297c931e07166564dab5690b0f3e6dea0faf2edb2e173d67ffce94847e5ca409"
+    },
+    {
+      "path": "game\\careers\\restaurant.py",
+      "bytes": 98037,
+      "sha256": "e19564caf128a9d2589f016bd27b1933d5e9acd7dcdbdb73ee12ed6f2afc51c6"
+    },
+    {
+      "path": "game\\careers\\salon.py",
+      "bytes": 151321,
+      "sha256": "f56c9f0ddfc1c4ee1d13796f589203ab10ca07c86060d0f9741b36af7ab68448"
+    },
+    {
+      "path": "game\\careers\\tax_payroll.py",
+      "bytes": 133737,
+      "sha256": "3c7e1a789f4439fe9fa13d02db7bec0f92d8bf8ceb07de8321039abb403dd89d"
+    },
+    {
+      "path": "game\\classroom.py",
+      "bytes": 75547,
+      "sha256": "3568689d60e846a9dd8e2372ada1d1c1c74e6710d6391e3b4c3aab29d205c8ad"
+    },
+    {
+      "path": "game\\content.py",
+      "bytes": 20597,
+      "sha256": "4dae203614504bb50f2dded72aacf625a9eecce2248e250912b6543cc842fa35"
+    },
+    {
+      "path": "game\\desk.py",
+      "bytes": 36078,
+      "sha256": "b283464b24411bdf1d6300a7c0833e9151585b5b3de323ac2ae64a23d624df8f"
+    },
+    {
+      "path": "game\\desk_content.py",
+      "bytes": 110584,
+      "sha256": "3c4bb9f8ac2351050d18c9afb4d73bb994eb135c777128136fbddd207560640c"
+    },
+    {
+      "path": "game\\dialogue.py",
+      "bytes": 4087,
+      "sha256": "9edf833b1bd3841c4b2a0a8bbafe3e4e15e65e268cbb08164cf99ea7a2f96404"
+    },
+    {
+      "path": "game\\employment.py",
+      "bytes": 27121,
+      "sha256": "65ea0f0aff8f8f312ce6cab11ce4f161984924d82ece81071c10b8580104122d"
+    },
+    {
+      "path": "game\\engine.py",
+      "bytes": 80441,
+      "sha256": "70a085195971702ac0af51b3cc372fd1c4b1f13e1fc5c5c68d138527509b1309"
+    },
+    {
+      "path": "game\\events.py",
+      "bytes": 17564,
+      "sha256": "d8799cdccd7a4ce10b324026c7290e4e7a8cf746a35865afc4546c599a18b628"
+    },
+    {
+      "path": "game\\experiences.py",
+      "bytes": 40403,
+      "sha256": "082c8aabb8b71292eba3d5b2980cf7b77172fc03cbcea6ffcf682e95211f9774"
+    },
+    {
+      "path": "game\\extra_content.py",
+      "bytes": 31847,
+      "sha256": "d4f0eea5aa51cecb7e4047191186b07723698a40fbf69b5286c4fb91bfdb17f1"
+    },
+    {
+      "path": "game\\feedback.py",
+      "bytes": 81894,
+      "sha256": "e76b6f97af6340cdb011336a9e0f64174074f6735461c37b25462ba52b87e7f5"
+    },
+    {
+      "path": "game\\giftshop.py",
+      "bytes": 69126,
+      "sha256": "f3bef7ad504eb954e966e082b3ce776383322dcaeb63fb1beb95988eee807780"
+    },
+    {
+      "path": "game\\incident_content.py",
+      "bytes": 121937,
+      "sha256": "285822ffedaf0193db7ecf349adb186fd35e23283dae3f8ff926c20102f1f079"
+    },
+    {
+      "path": "game\\incidents.py",
+      "bytes": 22884,
+      "sha256": "6a38642866684c4450666bdc4a79717d9830e3678ebc54198bf9660905744cc4"
+    },
+    {
+      "path": "game\\inventory.py",
+      "bytes": 16663,
+      "sha256": "407276ee87a19f1d5ae230936a5a991fc458f46464539d8800e781f0f1767dd0"
+    },
+    {
+      "path": "game\\journey.py",
+      "bytes": 47534,
+      "sha256": "aa1e0136d84aa749b78d52ea721d01bc6d5c804b4b52cf90808adc0ddaee740c"
+    },
+    {
+      "path": "game\\operations.py",
+      "bytes": 62174,
+      "sha256": "999f5e34594f0ea9d7641e00638def58f5015f1226828ea91012b50339375cb5"
+    },
+    {
+      "path": "game\\procedures.py",
+      "bytes": 7765,
+      "sha256": "84a4a1d4258a2b7fd1de92a04f6d6359bffa5ef8b0f4a78a54a09992f2a97136"
+    },
+    {
+      "path": "game\\push.py",
+      "bytes": 13510,
+      "sha256": "b335e3f00052642d36be23e476d21c2076a068a76385f49a8d7dd37fda494cb1"
+    },
+    {
+      "path": "game\\situation_content.py",
+      "bytes": 39243,
+      "sha256": "f8299f3a5f8fb024090d4d9350293b9fd944dd2f06e62f1777d97b0fe23c2da1"
+    },
+    {
+      "path": "game\\situations.py",
+      "bytes": 8561,
+      "sha256": "aa45c4185d31ab2bfa2136f25bd6f21225e9964727c2f2ef7efe5099d56c522d"
+    },
+    {
+      "path": "game\\social.py",
+      "bytes": 43486,
+      "sha256": "050b289a9cf1b1fd25a7a6619eb192c1c2356be01a06f92d2b102a4cb2810f23"
+    },
+    {
+      "path": "game\\storage.py",
+      "bytes": 9101,
+      "sha256": "9e460771a43d248b4798d9ed58b59ef1a59ac1afbaf64b3699de087d396d5ac6"
+    },
+    {
+      "path": "game\\teach_lesson.py",
+      "bytes": 49837,
+      "sha256": "b2344e35c2b1dc32d4e10e073dd60e1239080680bf2875a95931ac695bc58afa"
+    },
+    {
+      "path": "game\\tour_trip.py",
+      "bytes": 45151,
+      "sha256": "14cff2159cfd8c87a250bf617018e23503e8e3267fd825a0e6da71627d39263a"
+    },
+    {
+      "path": "i18n\\GLOSSARY.md",
+      "bytes": 5896,
+      "sha256": "2b8bd3f2aab127018703c20a324988a456146c40534fa601cd6aebdd611d3d5d"
+    },
+    {
+      "path": "i18n\\overrides.json",
+      "bytes": 5560,
+      "sha256": "01a37d8d126d7b11cf8df00c4584eab617d5c033d3e37814a385f28494294061"
+    },
+    {
+      "path": "i18n\\source.json",
+      "bytes": 2194984,
+      "sha256": "1c24d22b30d60aaf7de2b9ad9be4d7baa8c120dac4a97a1d6d321ca322976d19"
+    },
+    {
+      "path": "i18n\\translations.json",
+      "bytes": 2899988,
+      "sha256": "456a7092355ca408109bfc273cffa5f1606766ff79f180baa27b395f50bb693d"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 1316,
+      "sha256": "1674ad69c549883a05ec9c688afd77bb051b25aa4b55f4e7d119b3ecc59836df"
+    },
+    {
+      "path": "package.json",
+      "bytes": 293,
+      "sha256": "8cc952c7f8a1b38d0d1d79a64d1f17a5f58b30c169b32c02ebde0ee5848533b1"
+    },
+    {
+      "path": "public\\css\\app.css",
+      "bytes": 182707,
+      "sha256": "d40af4edf3d283bd67db3ead0aecf7017707cabe9dc53a76ad690b6f74d56b03"
+    },
+    {
+      "path": "public\\css\\boba.css",
+      "bytes": 83,
+      "sha256": "19860e913065288ffc842ff6cea18eb161e885c925d4b015775bfdd6f422d644"
+    },
+    {
+      "path": "public\\css\\careers\\cafe_bakery.css",
+      "bytes": 21470,
+      "sha256": "31a635e4bbd7d4a347d7730102c9114121893a4dd0fd2b359db0c6c6db309285"
+    },
+    {
+      "path": "public\\css\\careers\\corp_accounting.css",
+      "bytes": 25122,
+      "sha256": "2d4588f947889f90bffba83683fc978c3785655d3305ec313c5eadc6c97fa35b"
+    },
+    {
+      "path": "public\\css\\careers\\delivery.css",
+      "bytes": 13847,
+      "sha256": "160cefc3bccf4206a3412b545b97f412966d1ccc9dcb4b6b36bc501d54d11e0b"
+    },
+    {
+      "path": "public\\css\\careers\\farm.css",
+      "bytes": 13955,
+      "sha256": "23af5d15f3773cdaa19f8fdf10223a7f8174a56c73b09173032337c089526271"
+    },
+    {
+      "path": "public\\css\\careers\\florist.css",
+      "bytes": 23739,
+      "sha256": "f3c82e9376d254b3b702391e6d93d2c2d06e49fe76463bc9e9c88306c86af6db"
+    },
+    {
+      "path": "public\\css\\careers\\food_kit.css",
+      "bytes": 9081,
+      "sha256": "df7fd4a588d1bb70ecb14f448d93496b78807548487f5d2bde194568b14879ce"
+    },
+    {
+      "path": "public\\css\\careers\\grocery.css",
+      "bytes": 18132,
+      "sha256": "67d1603de96ed021b0ee6b0fdd780b67cf80799533686c119db9d513694a8b24"
+    },
+    {
+      "path": "public\\css\\careers\\group_accounting.css",
+      "bytes": 21915,
+      "sha256": "c8039c80746a194e82c0e1cb0de2df511eeedc3efd0908fc822a2ae85e1301b9"
+    },
+    {
+      "path": "public\\css\\careers\\homestay.css",
+      "bytes": 19526,
+      "sha256": "2cd6da2f5138a126afd7d6077d25218ce2288766f739f9e15583e8fa436709f0"
+    },
+    {
+      "path": "public\\css\\careers\\milk_tea.css",
+      "bytes": 16164,
+      "sha256": "1443b9a880c664b2f7391115d739e8a4bee4e164fd9ccf329fb33109f0ddaf88"
+    },
+    {
+      "path": "public\\css\\careers\\mother_baby.css",
+      "bytes": 11572,
+      "sha256": "4f068708f26994eeaf54091e658fcebb2a4e647940fd522c2a3a5dc595a37b69"
+    },
+    {
+      "path": "public\\css\\careers\\pet_care.css",
+      "bytes": 16515,
+      "sha256": "ebc199d4630b45c5c6f95cb326c4fb9b0951a5f57a7f250bbe751ba20653f407"
+    },
+    {
+      "path": "public\\css\\careers\\repair.css",
+      "bytes": 12054,
+      "sha256": "717adcc693af6d8a907f6095c6e8c15fe57509226ebc086de0c9510b2483cfe0"
+    },
+    {
+      "path": "public\\css\\careers\\restaurant.css",
+      "bytes": 10868,
+      "sha256": "640e9bd68a785b79a452ccc67991f8487e5c64e7c39534ad41938b0c367ba1a4"
+    },
+    {
+      "path": "public\\css\\careers\\salon.css",
+      "bytes": 18246,
+      "sha256": "607b40d25815d81f3a230ae3f1d0742c385bc6ce025bd9f15f50326d938678d4"
+    },
+    {
+      "path": "public\\css\\careers\\tax_payroll.css",
+      "bytes": 18552,
+      "sha256": "08efaca8a47bdd4b76c4548985e0e58ffc3c28ed844167dedd0b5190176521b0"
+    },
+    {
+      "path": "public\\css\\cozy.css",
+      "bytes": 83,
+      "sha256": "19860e913065288ffc842ff6cea18eb161e885c925d4b015775bfdd6f422d644"
+    },
+    {
+      "path": "public\\css\\desk.css",
+      "bytes": 12155,
+      "sha256": "d5eadccf775399d17f76d598ed7670b8d63a53ba23d212cd858c2ba36a4cd0b5"
+    },
+    {
+      "path": "public\\css\\game.css",
+      "bytes": 175,
+      "sha256": "01f88f02c41473b6510cdbda284871e5e26720c8da6a85dece794805bc9f42bc"
+    },
+    {
+      "path": "public\\css\\incidents.css",
+      "bytes": 5961,
+      "sha256": "5d9a9ce3a0d18148158f3043ff3ce912d1a8642fc592a3a203616082f743fa97"
+    },
+    {
+      "path": "public\\css\\journey.css",
+      "bytes": 20788,
+      "sha256": "0a089049fc6d6d5db2c765b2ff84197f6f8477c341d8fae639ddfe37ad808d10"
+    },
+    {
+      "path": "public\\css\\legal.css",
+      "bytes": 1384,
+      "sha256": "0dc1430f0c7b02d0c4543a8370807cef4ba12f6cf3653fa73bd5c54250b92dd2"
+    },
+    {
+      "path": "public\\css\\teach.css",
+      "bytes": 15227,
+      "sha256": "239dd58d5d854cd0261943bdc25eaa316b029641caf8f1b2826eb813df0f1d2f"
+    },
+    {
+      "path": "public\\favicon.svg",
+      "bytes": 1014,
+      "sha256": "2f0807bd779aacb2f1bba876a35d4165ea7865d8daa82a7ca4796ad1615b6653"
+    },
+    {
+      "path": "public\\fonts\\be-vietnam-pro-latin-400-normal.woff2",
+      "bytes": 21168,
+      "sha256": "03d1b589cff172e1a670b3573e731d3380bc326f80cf83b0d3504e3188e2e074"
+    },
+    {
+      "path": "public\\fonts\\be-vietnam-pro-latin-600-normal.woff2",
+      "bytes": 22032,
+      "sha256": "9503dec2a7c532c8331e9600bcafea287a4fd208573b8668d85ab8d8de1863c7"
+    },
+    {
+      "path": "public\\fonts\\be-vietnam-pro-latin-700-normal.woff2",
+      "bytes": 22152,
+      "sha256": "a193dd87699bd2e18ddf72dc271493ea82a23dad9f5c334d9f2a257b1e05fc30"
+    },
+    {
+      "path": "public\\fonts\\be-vietnam-pro-latin-800-normal.woff2",
+      "bytes": 22320,
+      "sha256": "7c5d0871188c09339a6eb46948420ed9b11f3d06ea3ff1c5d1cf41b06a3504e7"
+    },
+    {
+      "path": "public\\fonts\\be-vietnam-pro-vietnamese-400-normal.woff2",
+      "bytes": 11532,
+      "sha256": "dc085e2fba3414e5c5bf1e6172f921a9f81c5859946a4ed3d63c1e470d96a9e2"
+    },
+    {
+      "path": "public\\fonts\\be-vietnam-pro-vietnamese-600-normal.woff2",
+      "bytes": 12176,
+      "sha256": "97658c6f9a384f29a3005c3d96e2a0d1c810192cf68979071c290f5a377a9f99"
+    },
+    {
+      "path": "public\\fonts\\be-vietnam-pro-vietnamese-700-normal.woff2",
+      "bytes": 12468,
+      "sha256": "4f58af2d1c3e28a9ba14c51c82db2751d78344b75bdcb34de24a1031ebe59da6"
+    },
+    {
+      "path": "public\\fonts\\be-vietnam-pro-vietnamese-800-normal.woff2",
+      "bytes": 12404,
+      "sha256": "26b241d1d5f489c8a65c1a3c4cdcdb48dd114a9ed7e0c0180182191f087cbe96"
+    },
+    {
+      "path": "public\\fonts\\OFL.txt",
+      "bytes": 4564,
+      "sha256": "cac27e70693f93055ed3aa1653375faff2936eefd28f6277c8d01f7c7c5cf811"
+    },
+    {
+      "path": "public\\i18n\\en.json",
+      "bytes": 3646657,
+      "sha256": "17b779bb359672526d378ea1df79ca69d76bfdb60a94dabb835d85cf7d771966"
+    },
+    {
+      "path": "public\\icons\\apple-touch-icon.png",
+      "bytes": 65856,
+      "sha256": "4e9208a42172aa9c03d63e764e015a4220db5d1f70515b9fb63a07c6c128a111"
+    },
+    {
+      "path": "public\\icons\\badge-72.png",
+      "bytes": 3057,
+      "sha256": "362cf7f24934dac00daa99c76e48854c5506310d041ca6aa1303f9b72951212c"
+    },
+    {
+      "path": "public\\icons\\icon-192.png",
+      "bytes": 80194,
+      "sha256": "a1b1e1c076c5a03d4b473ef7bdd91d6c9d34bd6da724f49e4395b3ab6bf36419"
+    },
+    {
+      "path": "public\\icons\\icon-512.png",
+      "bytes": 418508,
+      "sha256": "4094004c7b75c9c8cbeb76014eacd6b254cf45012d588db8b5486d51ed87a819"
+    },
+    {
+      "path": "public\\icons\\icon.svg",
+      "bytes": 1014,
+      "sha256": "2f0807bd779aacb2f1bba876a35d4165ea7865d8daa82a7ca4796ad1615b6653"
+    },
+    {
+      "path": "public\\icons\\logo-32.png",
+      "bytes": 3335,
+      "sha256": "68f59e8e59f29d5516566818ef2d346c79eadb76ee8fe635c18d8b23f8dde09d"
+    },
+    {
+      "path": "public\\icons\\logo-64.png",
+      "bytes": 11891,
+      "sha256": "de727f520d6eb6ccd0cec9f3675ba30b629c7e57f287427dc1b576c8bfab8e38"
+    },
+    {
+      "path": "public\\icons\\maskable-512.png",
+      "bytes": 383543,
+      "sha256": "539af8beb9467a7e913117bfcc19ca35e0a9f11508393d9e36296059af5abd3d"
+    },
+    {
+      "path": "public\\index.html",
+      "bytes": 3885,
+      "sha256": "d3f7e6fe7367dae95aa229bcae7be37f1eca652e4c3358f1f3796e8f313d26cc"
+    },
+    {
+      "path": "public\\js\\api.js",
+      "bytes": 4698,
+      "sha256": "3a07a120d5aea871a615fd55fd6ef6b71ec28da5fb06d9d83328fa4f08cffaec"
+    },
+    {
+      "path": "public\\js\\app.js",
+      "bytes": 102000,
+      "sha256": "dc92a80ee9869ca3c38163fccb35bfd22b1e297a41ed252ab297605ce6b635ba"
+    },
+    {
+      "path": "public\\js\\audio.js",
+      "bytes": 1181,
+      "sha256": "d3cf3316caa11de2b5a045a91889040e4e55800fd9124fb2698bd38f3dc67d25"
+    },
+    {
+      "path": "public\\js\\boba-world.js",
+      "bytes": 46820,
+      "sha256": "381decc645707cda002ad3a69964fb22b190d67d8b43a7d857effb7063e04b2b"
+    },
+    {
+      "path": "public\\js\\careers\\cafe_bakery.js",
+      "bytes": 48198,
+      "sha256": "8d06d5eae57bf794226b2770b74fee350f45ec36fbc8be5c7f89240248738e26"
+    },
+    {
+      "path": "public\\js\\careers\\corp_accounting.js",
+      "bytes": 37173,
+      "sha256": "2641e53e104ddbd95ccad008c4f5c826ba9cf1970d1c747e6397036df9428e54"
+    },
+    {
+      "path": "public\\js\\careers\\delivery.js",
+      "bytes": 28995,
+      "sha256": "5431e75aa6dcc060d1170777177f5311c7351222ca89cecfeb969d4beaebb816"
+    },
+    {
+      "path": "public\\js\\careers\\farm.js",
+      "bytes": 26310,
+      "sha256": "6106d696b60cafc04d0b96618a84486985c8e311f0c69f661db9b099b2a8246d"
+    },
+    {
+      "path": "public\\js\\careers\\florist.js",
+      "bytes": 40514,
+      "sha256": "217f0345215ca45f919c19f610b1e8ca1adfcca79bd6828febbcaf81426bef38"
+    },
+    {
+      "path": "public\\js\\careers\\food_kit.js",
+      "bytes": 7507,
+      "sha256": "3cc67ca09550b750f96515d11919b276b6a67cb4c79d37af693fe7971597bb40"
+    },
+    {
+      "path": "public\\js\\careers\\grocery.js",
+      "bytes": 42075,
+      "sha256": "7933f94a7aa91f846b23b3ed58298a241b9660333e1e167b5f8006d288c700f2"
+    },
+    {
+      "path": "public\\js\\careers\\group_accounting.js",
+      "bytes": 34008,
+      "sha256": "b1ceb917bf1fa3d509f65fca5cac3d572039e9d782866b1d7d085c2aaae8947c"
+    },
+    {
+      "path": "public\\js\\careers\\homestay.js",
+      "bytes": 48521,
+      "sha256": "5a0a734bb9fbcde145d9b6f18fff944fe365ee6972a8b7ea4811842d251af402"
+    },
+    {
+      "path": "public\\js\\careers\\milk_tea.js",
+      "bytes": 35447,
+      "sha256": "c721a302503df9063fb5f9427fbac45132e88ed13351e45c0b3de38fed2968c9"
+    },
+    {
+      "path": "public\\js\\careers\\mother_baby.js",
+      "bytes": 24580,
+      "sha256": "0cfae637c4cabbb030589387a8c7fcf3bd306af0fa598011dce3dfdc7d32a317"
+    },
+    {
+      "path": "public\\js\\careers\\pet_care.js",
+      "bytes": 45815,
+      "sha256": "62cce8c30eb7c37a2f9612c8fcb4515f822d8093fa9b0858fb2ef30f7f1994c7"
+    },
+    {
+      "path": "public\\js\\careers\\repair.js",
+      "bytes": 29012,
+      "sha256": "68b854c1dcaf4b72c0839f3611e76555b0370a3b70a486c58e55678cdf37e9d9"
+    },
+    {
+      "path": "public\\js\\careers\\restaurant.js",
+      "bytes": 29592,
+      "sha256": "b01571be3cd23506d76bbc5bb443efa9915d26ac04cf468c41497320578cb820"
+    },
+    {
+      "path": "public\\js\\careers\\salon.js",
+      "bytes": 36072,
+      "sha256": "ff5fa2a1850c15ff99818386afd19d585d24c18b51c7e831288cc1afdaddb00c"
+    },
+    {
+      "path": "public\\js\\careers\\tax_payroll.js",
+      "bytes": 25616,
+      "sha256": "0037ed6e2e7f4fefcea2655192cad0ac4cdc6fc025aa3ebc5c46c550631bfd82"
+    },
+    {
+      "path": "public\\js\\desk.js",
+      "bytes": 13574,
+      "sha256": "1fa663a5d2ad3f25d0ef9e5ce629c1c70ac7dadd6989281bf2556794d839c166"
+    },
+    {
+      "path": "public\\js\\experience-ui.js",
+      "bytes": 36599,
+      "sha256": "51a845b0a6db33b8f9cdc3774838bf1733939accfbb4c157bee5c99f56750123"
+    },
+    {
+      "path": "public\\js\\icons.js",
+      "bytes": 11769,
+      "sha256": "8f2a5bc015026704ab979747f88b44a90a72435cbcbc413de7f2af94fc1afe6c"
+    },
+    {
+      "path": "public\\js\\operations-ui.js",
+      "bytes": 24014,
+      "sha256": "0c545286999bc8e808b30d2a49eccda53522857478f4fa4fe99319413a4713e7"
+    },
+    {
+      "path": "public\\js\\v4\\careers.js",
+      "bytes": 4624,
+      "sha256": "01693f52195aac92079556493478aade8b340a9dba866c562f3d2c5bac0cf9df"
+    },
+    {
+      "path": "public\\js\\v4\\classroom.js",
+      "bytes": 5601,
+      "sha256": "860feb52457c70c1a6929e30ae69b731a2d8a8601208618b629caedb99ecbfc2"
+    },
+    {
+      "path": "public\\js\\v4\\home.js",
+      "bytes": 424,
+      "sha256": "1dcbc9fc4d752d48ac190402f79830f6214c00dafb94a56d210804fe11481566"
+    },
+    {
+      "path": "public\\js\\v4\\i18n.js",
+      "bytes": 9387,
+      "sha256": "0b8d3f9ec700ef764765c42ae688120cd7f7854e26e91ee58b63d67e7a8ff132"
+    },
+    {
+      "path": "public\\js\\v4\\incidents.js",
+      "bytes": 10539,
+      "sha256": "34bb30f9453e0620f2a84002b6468b04003ceaa0f0be056f50cafd4b8b726f2c"
+    },
+    {
+      "path": "public\\js\\v4\\journey.js",
+      "bytes": 34160,
+      "sha256": "5102d891b7bed3906042a11dd13c5707567ffe08627b4a0cf9122d5123e28cae"
+    },
+    {
+      "path": "public\\js\\v4\\music.js",
+      "bytes": 6605,
+      "sha256": "6d2c00c67b8e0431e6189f6e12b3b864f978f583089e89edd18e1eb544560144"
+    },
+    {
+      "path": "public\\js\\v4\\procedure.js",
+      "bytes": 5971,
+      "sha256": "0a086d0032a880e4a0969083d6b42ff0b57a7b46672accd6ae2c62aa2f77d34c"
+    },
+    {
+      "path": "public\\js\\v4\\push.js",
+      "bytes": 2866,
+      "sha256": "3f411fdb733ae3910d8ce6823cea670f5050c2db16a445da693e6f102b0282f3"
+    },
+    {
+      "path": "public\\js\\v4\\settings.js",
+      "bytes": 11928,
+      "sha256": "d86f4fb6fa6cc4aeadd871628a421f670bad3cca44be514eca5d631c9ecdb5ca"
+    },
+    {
+      "path": "public\\js\\v4\\shell.js",
+      "bytes": 4796,
+      "sha256": "2a41eeb51575a43896752173873245b359fe07a0a0c46e2a8e43deb6c8da6b7f"
+    },
+    {
+      "path": "public\\js\\v4\\social.js",
+      "bytes": 25569,
+      "sha256": "bf8c7b6232c3d15c779745f9bb7027daeb0dc8bb667639f93cd4793d675aaed6"
+    },
+    {
+      "path": "public\\js\\v4\\teach-tour.js",
+      "bytes": 21696,
+      "sha256": "66e0530ee805b925382d27e2f43d9209f0bfcf184d3481c7e5cee8741a8a8c1e"
+    },
+    {
+      "path": "public\\js\\v4\\views.js",
+      "bytes": 44551,
+      "sha256": "b5f5f18f53c31e213c08ebdc3094d60f11e63cab6ac8de0d6d4b53e7a746b281"
+    },
+    {
+      "path": "public\\js\\world.js",
+      "bytes": 40274,
+      "sha256": "f8486a538273886d57a68487397587728d52e0970821bebb27531a3b7dd3f3bb"
+    },
+    {
+      "path": "public\\manifest.webmanifest",
+      "bytes": 783,
+      "sha256": "b1197575a66e85282cf5b68be2b1ba68110328e972622d62817a0caaeb413df7"
+    },
+    {
+      "path": "public\\privacy.html",
+      "bytes": 11369,
+      "sha256": "8507c5c394f8e690be5ac4f45e930addef337cc37859d335ee7922be4402e035"
+    },
+    {
+      "path": "public\\sw.js",
+      "bytes": 3275,
+      "sha256": "2a5050e43b2662e26376835c168d52e7f8ee9f7dfd071bde7654931cc10ae476"
+    },
+    {
+      "path": "public\\terms.html",
+      "bytes": 7389,
+      "sha256": "bf9e9bddb32cdb2c6137d2d2d639f4719e749456fdeade27035d8846a901d9fe"
+    },
+    {
+      "path": "README.md",
+      "bytes": 9324,
+      "sha256": "c73d365b9d6829674091589b7181c73de679735671bc3f9b192a4b9242fa7a36"
+    },
+    {
+      "path": "reference\\data\\acceptance_tests.json",
+      "bytes": 17823,
+      "sha256": "1be80b9351a1548f9f8d5c8bdb60f7b99f5ae75904bc020eff3c1e0db693e19c"
+    },
+    {
+      "path": "reference\\data\\backlog.json",
+      "bytes": 11310,
+      "sha256": "445700eb3ac7c88ee4200a424a5adeed836ea8ae9f8ffef7fe523d4c9ebe6634"
+    },
+    {
+      "path": "reference\\data\\catalog_16_careers.json",
+      "bytes": 4324,
+      "sha256": "f9b891c42418b241758a804ef179046bcb4a1fba44c7b9e3423b5ea8d78fa584"
+    },
+    {
+      "path": "reference\\data\\command.schema.json",
+      "bytes": 2285,
+      "sha256": "6f756b03eebd218a01687a39caa09ecd6f058d217b9e5bb762d71d3134bb3ddd"
+    },
+    {
+      "path": "reference\\data\\command_examples.json",
+      "bytes": 1611,
+      "sha256": "3544798f417d6965217aaa0c8356b62869176569078165224565f1aeebfb17fc"
+    },
+    {
+      "path": "reference\\data\\core_game_designs.json",
+      "bytes": 30024,
+      "sha256": "4fd6e823de39ec33a4e744115565d849d79fd910482d6021ef34e178ca10ff85"
+    },
+    {
+      "path": "reference\\data\\events_96.json",
+      "bytes": 121895,
+      "sha256": "c277db6c459b40ce34b3d7affb58710efac3a514f77e9464efe2458125f39bd8"
+    },
+    {
+      "path": "reference\\data\\future_game_designs.json",
+      "bytes": 29924,
+      "sha256": "418b71772b759c3df84399692b64bb5cbb89a13418751d3baeb44aa231a16137"
+    },
+    {
+      "path": "reference\\data\\npcs_24.json",
+      "bytes": 11718,
+      "sha256": "fa002198ce0802f987ca7c655622b265af5a25f8a733f4ba81cca4adeb01b0a1"
+    },
+    {
+      "path": "reference\\data\\progression_40_days.json",
+      "bytes": 7213,
+      "sha256": "baa3735559419f56f790e748175aec71563f1fa995e61251a7314d261579f646"
+    },
+    {
+      "path": "reference\\data\\quests_12.json",
+      "bytes": 5937,
+      "sha256": "8efdb7d8bd3fe16952566a9918f8de6c83bc5a06af579bc1611590c9bfc5cabb"
+    },
+    {
+      "path": "reference\\data_validation_report.json",
+      "bytes": 511,
+      "sha256": "19b5126b924b4b3456a442eaccca46bfecf8b9ab9da75bd01147b3485c360e85"
+    },
+    {
+      "path": "reference\\docs\\Hop_dong_thuc_thi.md",
+      "bytes": 2622,
+      "sha256": "e99f033f30d8e6195f1b167d6306d3a15595f59128a5bcd1c58b8032e3410af9"
+    },
+    {
+      "path": "reference\\MANIFEST.json",
+      "bytes": 3029,
+      "sha256": "87f1630ce53e736ea071044bc073e9e1216c48b862635af0c3effccf7541241f"
+    },
+    {
+      "path": "reference\\Mot_ngay_lam_nghe_Thiet_ke_day_du_v1.docx",
+      "bytes": 89384,
+      "sha256": "1b7f78005ec7d2ddb82694fe6482bdb2bd0b7041747865ce572fd30e7ed989ad"
+    },
+    {
+      "path": "reference\\Mot_ngay_lam_nghe_Thiet_ke_day_du_v1.md",
+      "bytes": 119078,
+      "sha256": "f49175489c154568c21bfc22190b78d5b860fb2753a5e8a23478aa08863a3594"
+    },
+    {
+      "path": "reference\\README.md",
+      "bytes": 3095,
+      "sha256": "be9dba74eed38b7e4ffa3aa776ed5858a17edb42d9067e3e4bd2483650670aa4"
+    },
+    {
+      "path": "scripts\\browser_harness.py",
+      "bytes": 3893,
+      "sha256": "b663cfb4d93557ed4903cf0c399d2093059553ffd40e67d5263965bc5b11b5b4"
+    },
+    {
+      "path": "scripts\\browser_operations.py",
+      "bytes": 14209,
+      "sha256": "e2901575e7e241cefe99deca94e1c73aff999281e685fdfa9efa7d9af9e4b151"
+    },
+    {
+      "path": "scripts\\browser_smoke.py",
+      "bytes": 13147,
+      "sha256": "ad6ad97e8b5f64f44c0de8f44072ca5d2aa728b1c8b843ea7ecd1d1545adce2f"
+    },
+    {
+      "path": "scripts\\browser_v03.py",
+      "bytes": 11714,
+      "sha256": "ec4e282e588b79c6b299a073802237a7aef7865f61ef132f147f2411d834f77a"
+    },
+    {
+      "path": "scripts\\browser_v04.py",
+      "bytes": 12207,
+      "sha256": "8c9b2c0bd5f794640d3fa3eb6de8da1574a722f8d1fe6b7a2c5d01292ff17ac8"
+    },
+    {
+      "path": "scripts\\check_js.mjs",
+      "bytes": 660,
+      "sha256": "9c88180185f7039794395d49731eb8ab50f5046103f77661b115df99bfcc0048"
+    },
+    {
+      "path": "scripts\\check_nav.mjs",
+      "bytes": 7378,
+      "sha256": "a9e11ea90d1a9a5be498dc71e7bd0c82129ad724e5ac35017f4fba107f486f2b"
+    },
+    {
+      "path": "scripts\\i18n_extract.py",
+      "bytes": 22488,
+      "sha256": "49d6560c8e6c9c67a99268e2b7100a6e48ad31a52caf8d43e12887dba5c41e45"
+    },
+    {
+      "path": "scripts\\package.py",
+      "bytes": 2283,
+      "sha256": "bdc7227f0341e3f8bb66399d72e1491ff25c540f54a69c7528e17b102e2a153a"
+    },
+    {
+      "path": "scripts\\run_checks.py",
+      "bytes": 1453,
+      "sha256": "a4305cdf1f0ad3dad1fe1de6dd0d204c6e7deb930e2c133fe685c5f1304a3c90"
+    },
+    {
+      "path": "scripts\\verify_package.py",
+      "bytes": 5985,
+      "sha256": "064d5c7258c16eea39e27487a7e4a2f9531e29919e5b3743fa39ac6780db8e25"
+    },
+    {
+      "path": "server.py",
+      "bytes": 22477,
+      "sha256": "b3534b51aa4fbfd86912a30111f17ea8f8989a06d65e3b85a1c55216e2af4a52"
+    },
+    {
+      "path": "start.bat",
+      "bytes": 274,
+      "sha256": "5b2c77adb6849c1871ff960b33c628ea854395544da906501dc1e0ce23842fef"
+    },
+    {
+      "path": "start.command",
+      "bytes": 76,
+      "sha256": "9d7c3e6c05dcb61a87c174e31f58079d2e470e0ae9bbb6ef796e48c3b6fede35"
+    },
+    {
+      "path": "start.sh",
+      "bytes": 82,
+      "sha256": "fbf9da20ddb43922bd45a31447213a202af356281981bf66e442ec6baf3a5a48"
+    },
+    {
+      "path": "START_HERE.txt",
+      "bytes": 2127,
+      "sha256": "0806cddf1a528ad686fbfab3d070eb442defff5a9f69985f3fb4661497795b7d"
+    },
+    {
+      "path": "storage\\.gitkeep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests\\__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests\\desk_support.py",
+      "bytes": 1660,
+      "sha256": "68b67fb9cf6be1d315c2613c30ea77f86c6d06abe9dc8ecc74ff2a26d518b593"
+    },
+    {
+      "path": "tests\\helpers.py",
+      "bytes": 8284,
+      "sha256": "32bd8470f81171a0a3737ae96841a1b74ff586949db7557395492569f3af0085"
+    },
+    {
+      "path": "tests\\test_accounting_desk.py",
+      "bytes": 9680,
+      "sha256": "878cca7dd709e1531b2ec7e4e3fc93023df23453f29872783472b0a9cd8981db"
+    },
+    {
+      "path": "tests\\test_career_cafe_bakery.py",
+      "bytes": 44643,
+      "sha256": "4aaf61a7cdeaa0fdd3c4e640baed2284897dbd0f1a66d8a7ced5c9db7173fa8a"
+    },
+    {
+      "path": "tests\\test_career_corp_accounting.py",
+      "bytes": 41825,
+      "sha256": "d6399640c6dd54afeee29f09bbb05465b1127222b21b7ef84cd1660928270960"
+    },
+    {
+      "path": "tests\\test_career_delivery.py",
+      "bytes": 45809,
+      "sha256": "bb5c9e9f01768d466079848c58b9d97707fe5e2610ae80b45790b10fa0050ef4"
+    },
+    {
+      "path": "tests\\test_career_farm.py",
+      "bytes": 42887,
+      "sha256": "e5b303ee0ac9f2236ff72f19f6df6d351302ed6205f97f6622aec4dbd09278f6"
+    },
+    {
+      "path": "tests\\test_career_florist.py",
+      "bytes": 54952,
+      "sha256": "ab5db70d3a016b7fe2d4b225ad12b5141f19a40c585b6e2c8ddcdcbd30a583eb"
+    },
+    {
+      "path": "tests\\test_career_grocery.py",
+      "bytes": 52793,
+      "sha256": "bf507f1c285a951158bfb35fdd587fdc51f48a9eb1e680441512ab29910a7836"
+    },
+    {
+      "path": "tests\\test_career_group_accounting.py",
+      "bytes": 40362,
+      "sha256": "9a33872f78b07e3c70b3c08d952dc36492d6b5e98d2abd64ca5b01e81b65c3a0"
+    },
+    {
+      "path": "tests\\test_career_homestay.py",
+      "bytes": 68773,
+      "sha256": "2af9bcf6b2f24f86d225f3eff0cf8938eb6bf12614d9b596bf27480b9d6ea250"
+    },
+    {
+      "path": "tests\\test_career_pet_care.py",
+      "bytes": 56682,
+      "sha256": "d23842304cc36a3a0550fa36d5bca39c7be9b9ac93a48a5bc32851ca849cb043"
+    },
+    {
+      "path": "tests\\test_career_repair.py",
+      "bytes": 49209,
+      "sha256": "670986ffe067f75829f0957fbb48e721867cd81484e16cce50550f443d72650d"
+    },
+    {
+      "path": "tests\\test_career_restaurant.py",
+      "bytes": 38896,
+      "sha256": "ac64e94c00dc8d682c7f2ca8faec8d57a121b41f19ce943eb9503d29314b2fa0"
+    },
+    {
+      "path": "tests\\test_career_salon.py",
+      "bytes": 52125,
+      "sha256": "d1eeb8398515937abecb3bef30bbcfa7634cd21609480a4aaccddf94678eaa6c"
+    },
+    {
+      "path": "tests\\test_career_tax_payroll.py",
+      "bytes": 31759,
+      "sha256": "9ec843842cd3b31aabfb96e6eee59be5c3c3217eda7ec8ea6dee8f189f413609"
+    },
+    {
+      "path": "tests\\test_classroom.py",
+      "bytes": 4397,
+      "sha256": "d06a93b2a73a188071f0c8c6d03d211f84f22216c600b36dfc2301ec1835a882"
+    },
+    {
+      "path": "tests\\test_customer_care.py",
+      "bytes": 9924,
+      "sha256": "f3174061fbff7243a8cf58bcbfeba6fa065852b26f026c0f02bf30ecce137d69"
+    },
+    {
+      "path": "tests\\test_desk.py",
+      "bytes": 29539,
+      "sha256": "d2e5300f2dabd14def037cddb4df1ce41027442e5fe0b394a810b7f6a0820592"
+    },
+    {
+      "path": "tests\\test_dialogue.py",
+      "bytes": 2409,
+      "sha256": "69d5958f981ee118dd2bf3826cbc4bc9d610eee7d648c52faa3d8578515f406f"
+    },
+    {
+      "path": "tests\\test_employment_luck.py",
+      "bytes": 4612,
+      "sha256": "856e12cda130d5dbb53259f195d32a2cffbd26818547a4cba2075767bbd4287a"
+    },
+    {
+      "path": "tests\\test_engine.py",
+      "bytes": 14971,
+      "sha256": "536032f89ce0b639fd18e2f262d2ec802ef65b07d60d6c8330d697f83d6233a4"
+    },
+    {
+      "path": "tests\\test_experiences.py",
+      "bytes": 16006,
+      "sha256": "0fe36b2429e1f6aedb0448e2da116b1d4183f6df44eeb39797cc8c52d57b3539"
+    },
+    {
+      "path": "tests\\test_feedback_reviews.py",
+      "bytes": 14044,
+      "sha256": "cad0efa38463ed15b9963eaf1c6b748818628306d8d2c0b125930a89b13e85f4"
+    },
+    {
+      "path": "tests\\test_feedback_titles.py",
+      "bytes": 1710,
+      "sha256": "d93431a21f31d3137c6e15241138c93383b1c23e0b6ed9c491da1c57548eb07c"
+    },
+    {
+      "path": "tests\\test_http.py",
+      "bytes": 5208,
+      "sha256": "396d1abc7964beeeee3a7c4b05705507287dab18f8b0b4c53fbde31ff9cfebca"
+    },
+    {
+      "path": "tests\\test_http_v4.py",
+      "bytes": 8030,
+      "sha256": "0ed7188dc2b1f0e2829a2b71d5cfd18d2a01691ffe1bb859dd8c310555c1e22e"
+    },
+    {
+      "path": "tests\\test_i18n_pack.py",
+      "bytes": 2252,
+      "sha256": "74f28d31497b8e672d676886f556372b7f4d37db37b3cee0e5e8b56d7d00d68e"
+    },
+    {
+      "path": "tests\\test_incidents.py",
+      "bytes": 24393,
+      "sha256": "8a616be9cb81d028aa6478ab201c97d24407e95a5372e0d9b8a5f1e74d52399a"
+    },
+    {
+      "path": "tests\\test_inventory_flow.py",
+      "bytes": 13162,
+      "sha256": "a90064dcd2b2717288ccbc9f2adfc5cc3314f7a29a19902ff3ee87688cca9c9f"
+    },
+    {
+      "path": "tests\\test_journey.py",
+      "bytes": 24925,
+      "sha256": "b9120c864d5bbb20e3574533f434ddd0d4a942ad2de95d3c56d9ec95fdd63573"
+    },
+    {
+      "path": "tests\\test_milk_tea.py",
+      "bytes": 26798,
+      "sha256": "4e5cf593d5fd3cfd4394acb1f0c82cc007667dc23adf81c110b6bb946647c514"
+    },
+    {
+      "path": "tests\\test_mother_baby.py",
+      "bytes": 21371,
+      "sha256": "a95a2785191f8cbfffa96738c47f118a821e87f79dc520cc66c33de8a371d85b"
+    },
+    {
+      "path": "tests\\test_operations.py",
+      "bytes": 27437,
+      "sha256": "369ef01801ebf9d45127c80f0a30b99befbaaed455e2deb2517d3a5ef9574a80"
+    },
+    {
+      "path": "tests\\test_pharmacy.py",
+      "bytes": 11473,
+      "sha256": "1a75bea2b5a972d5a8eed9a3e640e1cb874ef5332e181fd72db090de4c0afea2"
+    },
+    {
+      "path": "tests\\test_social.py",
+      "bytes": 10772,
+      "sha256": "b77db4f1d47dc226b6c53d9eb8fc7187c17470aa43c35ebb12ac001ed5da0dc8"
+    },
+    {
+      "path": "tests\\test_storage.py",
+      "bytes": 4153,
+      "sha256": "ef23ae2358879098f3613896ac45af61e3a649449473cc061ec5c08d231131d0"
+    },
+    {
+      "path": "tests\\test_teacher_lesson.py",
+      "bytes": 19694,
+      "sha256": "ead8aee5a8878f0a4ef2ce2a2bdc909fea17a64c18de2008efa2fb43c2a74a0c"
+    },
+    {
+      "path": "tests\\test_tour_trip.py",
+      "bytes": 19574,
+      "sha256": "d25da16229f4ca2364399b7a2d251205ea0014ff266a30d60bd6eb0d1e0c8d3d"
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "bytes": 1661,
+      "sha256": "91ba4c5c4b83ece23fc329f5b493ee5097893261a95e4a82b44c37ff860dffe6"
+    }
+  ]
+}
