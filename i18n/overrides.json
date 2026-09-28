@@ -96,6 +96,8 @@
   "$1 đang bảo trì trong những đêm này.": "$1 is under maintenance on these nights.",
   "$1 còn khách ở tới ngày $2 trong những đêm này.": "$1 still has guests until day $2 on these nights.",
   "$1 đã có khách đặt từ ngày $2 trong những đêm này.": "$1 is already booked from day $2 on these nights.",
-  "$1 chưa sạch hoặc chưa trống — bỏ chọn, dọn xong rồi giao.": "$1 isn't clean or isn't free — unselect it, finish cleaning, then hand it over."
+  "$1 chưa sạch hoặc chưa trống — bỏ chọn, dọn xong rồi giao.": "$1 isn't clean or isn't free — unselect it, finish cleaning, then hand it over.",
+  "$1/$2 chuồng có bé": "$1/$2 kennels in use",
+  "$1 trên 100, $2": "$1 out of 100, $2"
  }
 }
