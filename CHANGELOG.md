@@ -1,3 +1,14 @@
+# Chưa phát hành — Dễ nhìn hơn
+
+## Giao diện
+- Quán mì cay: phiếu order giờ là danh sách từng dòng (nước dùng, topping, cấp cay, mang về, dị ứng) có dấu ✓/✗/○ theo tô đang làm, thay cho câu dài và mục "Kiểm tô" bị ẩn.
+- Lời khách và câu chuyện được gập gọn thành một dòng, bấm để mở.
+- Nút mới "📖 Thực đơn": giá, còn bao nhiêu, mở ở cấp mấy, món có hải sản/thịt/chay được và vài luật bếp cần nhớ.
+- Trên máy tính, phiếu order đứng cạnh bếp; dải "Hôm nay" gọn một dòng khi đang làm.
+
+## Nhạc nền
+- Thay nhạc tự sinh bằng 6 bản nhạc CC0 (miễn bản quyền) từ OpenGameArt, mỗi nhóm nghề một bài, chuyển bài mượt khi đổi nghề. Nguồn và tác giả ở `public/music/CREDITS.md`.
+
 # v0.5.0 — Một người, một khu phố
 
 ## Hành trình của một nhân vật

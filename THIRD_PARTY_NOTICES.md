@@ -1,8 +1,8 @@
 # Dependencies and asset provenance
 
-Runtime application code uses the Python standard library and browser APIs; no third-party JavaScript bundle, CDN, image stock pack or audio recording is shipped. The only bundled third-party asset is the font listed below.
+Runtime application code uses the Python standard library and browser APIs; no third-party JavaScript bundle, CDN or image stock pack is shipped. The bundled third-party assets are the font and the CC0 background music listed below.
 
-Room geometry, character drawing, item icons and audio tones are authored procedurally in `public/js/`. The visual style is an original 2D vector interpretation; no logo or branded illustration from the user reference images is embedded in the runtime.
+Room geometry, character drawing, item icons and UI sound effects are authored procedurally in `public/js/`. The visual style is an original 2D vector interpretation; no logo or branded illustration from the user reference images is embedded in the runtime.
 
 `reference/` contains the user's previously generated design baseline. It is retained for traceability and further development, not relabeled as a new third-party asset license.
 
@@ -15,3 +15,15 @@ Copyright 2021 The Be Vietnam Pro Project Authors (https://github.com/bettergui/
 Licensed under the SIL Open Font License, Version 1.1; the full license text ships next to the files as `public/fonts/OFL.txt`.
 The WOFF2 subsets were taken unmodified from the `@fontsource/be-vietnam-pro` 5.3.0 package. The font is self-hosted (CSP `font-src 'self'`); no font CDN is contacted.
 System font stacks remain as fallbacks, and the legal pages (`public/css/legal.css`) still use system fonts only.
+
+## Music
+
+Six background-music tracks in `public/music/`, all released under **CC0 1.0** (public domain) on OpenGameArt.org:
+
+- *Apple Cider* by Zane Little Music
+- *Hot Springs Town* by kistol
+- *Happy Lullaby (song17)* by cynicmusic
+- *Good Morning* by Cakeflaps
+- *Urban Shop* and *Cozy Puzzle Title* by mintodog
+
+`public/music/CREDITS.md` has the source links and what each track is used for. The files were re-encoded to MP3 and loudness-levelled; the music itself is unchanged.

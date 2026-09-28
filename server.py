@@ -53,7 +53,7 @@ CSP=("default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; i
      "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'")
 STATIC_TYPES={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",
               ".json":"application/json; charset=utf-8",".svg":"image/svg+xml",".png":"image/png",".webp":"image/webp",
-              ".ico":"image/x-icon",".webmanifest":"application/manifest+json",".woff2":"font/woff2",".txt":"text/plain; charset=utf-8",
+              ".ico":"image/x-icon",".webmanifest":"application/manifest+json",".woff2":"font/woff2",".mp3":"audio/mpeg",".txt":"text/plain; charset=utf-8",
               ".xml":"application/xml; charset=utf-8"}
 COMPRESSIBLE=(".html",".js",".css",".json",".svg",".webmanifest",".txt",".xml")
 PAGES={"/privacy":"privacy.html","/terms":"terms.html","/":"index.html"}
