@@ -334,7 +334,7 @@ export default {
   next(t,x){return nextStep(t,x);},
   idle(x){
     const d=data(x);
-    return idlePanel(x,d.day,'rs_event',extras(x),v=>floor(v,null));
+    return idlePanel(x,d.day,'rs_event',extras(x),v=>floor(v,null),'rs');
   },
   job(t,x){
     const d=data(x),day=d.day;
