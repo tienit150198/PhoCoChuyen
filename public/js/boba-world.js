@@ -11,6 +11,8 @@
  */
 import {World} from './world.js';
 import {t as tr} from './v4/i18n.js';
+import {R,E,L,T,P,fit,heart,bloom,plantAt,mascot} from './scenes/kit.js';
+import {sceneFor,wordsFor} from './scenes/index.js';
 const themes={
  teacher:{primary:'#8ca97c',dark:'#556e46',light:'#f0f2dc',mint:'#e5d8ac',wall:'#fcf5df',awning:'#b5c897',title:'Lớp học Mầm Nắng',sub:'CÙNG THỬ · CÙNG HIỂU · CÙNG TIẾN BỘ',shelves:['Góc học liệu','Hộp đồ lớp mình']},
  tour_guide:{primary:'#78b3b6',dark:'#467c7f',light:'#eaf4e5',mint:'#e2caae',wall:'#eef5e8',awning:'#b3d2c4',title:'Mây Lang Thang',sub:'ĐI CÙNG NHAU · MANG VỀ MỘT CÂU CHUYỆN',shelves:['Bưu thiếp khu phố','Bản đồ & hành trang']},
@@ -29,40 +31,9 @@ function pluginTheme(m){
   return {primary:col,dark:mix(col,'#000000',.32),light,mint:mix(col,'#a8d8c8',.65),wall:mix(light,'#fff8ee',.45),awning:mix(col,'#ffffff',.38),
     title:m.place||m.short||'',sub:[tr(m.short||''),tr(motto)].filter(Boolean).join(' · ').toUpperCase(),shelves:[m.station||m.short||'',m.work||'']};
 }
-const R=(c,x,y,w,h,fill,r=12,stroke=null,lw=2)=>{c.beginPath();c.roundRect(x,y,w,h,r);c.fillStyle=fill;c.fill();if(stroke){c.strokeStyle=stroke;c.lineWidth=lw;c.stroke();}};
-const E=(c,x,y,rx,ry,fill)=>{c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);c.fillStyle=fill;c.fill();};
-const L=(c,x,y,x2,y2,color,width=2)=>{c.strokeStyle=color;c.lineWidth=width;c.lineCap='round';c.beginPath();c.moveTo(x,y);c.lineTo(x2,y2);c.stroke();};
-const fit=(c,s,max,size,weight=700)=>{c.font=`${weight} ${size}px "Trebuchet MS", "Segoe UI", sans-serif`;const w=c.measureText(tr(String(s))).width;return w>max?Math.max(10,Math.floor(size*max/w)):size;};
-const T=(c,s,x,y,size=16,color='#765952',weight=700,align='center')=>{c.font=`${weight} ${size}px "Trebuchet MS", "Segoe UI", sans-serif`;c.fillStyle=color;c.textAlign=align;c.textBaseline='middle';c.fillText(tr(String(s)),x,y);};
-const P=(c,points,fill)=>{c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.fillStyle=fill;c.fill();};
-function heart(c,x,y,scale=1,col='#cf839c'){c.save();c.translate(x,y);c.scale(scale,scale);c.beginPath();c.moveTo(0,6);c.bezierCurveTo(-25,-9,-15,-27,0,-13);c.bezierCurveTo(15,-27,25,-9,0,6);c.fillStyle=col;c.fill();c.restore();}
-function bloom(c,x,y,size=12,color='#efb5ca'){for(let i=0;i<5;i++){const a=i*Math.PI*2/5;E(c,x+Math.cos(a)*size*.6,y+Math.sin(a)*size*.6,size*.5,size*.5,color);}E(c,x,y,size*.33,size*.33,'#f3d590');}
-
 /* ------------------------------------------------------------ Floor plan */
 const CLEAR={x:22,y:7};          // walker's own half-size around footprints
 const PERSON={rx:46,ry:15};       // two people closer than this overlap badly
-// Rect footprints are [x0,y0,x1,y1] of the feet area a prop stands on.
-// spots: id → [hit anchor, hit range, approach points (feet)].
-const PLAN={
- land:{floor:[130,452,1070,682],lane:505,line:563,home:[600,505],kx:82,ky:45,sway:38,
-   blocks:[[220,540,872,586],[140,445,209,536],[979,544,1085,566],[100,570,136,582],[970,652,1082,668]],
-   bench:[148,652,273,676],garden:[[780,684],[835,684]],
-   customers:[[540,616],[665,621],[790,614],[605,668]],event:[440,662],officer:[330,662],
-   staff:{x:300,step:125,y:460},cat:[660,410],counterSpan:[245,850],
-   decor:{corner:[138,640],front:[905,672],center:[712,672]},sill:{plant:[452,410],lamp:[505,410],seat:[565,410],rug:[575,648]},
-   spots:{shelf:[[264,330],100,[[264,505]]],evidence:[[876,330],100,[[876,505]]],workbench:[[480,436],62,[[480,505]]],counter:[[740,436],60,[[740,505]]],
-     warehouse:[[175,488],48,[[175,562],[246,505]]],board:[[1054,365],48,[[1040,505]]],finance:[[1032,515],42,[[946,556],[1032,600]]],
-     property:[[999,288],35,[[990,505]]],security:[[190,228],30,[[250,505]]],door:[[1026,640],45,[[930,640],[1026,602]]],pet:[[660,392],38,[[660,505]]]}},
- port:{floor:[62,512,638,822],lane:572,line:626,home:[330,572],kx:51,ky:57,sway:24,
-   blocks:[[95,604,555,650],[57,506,113,612],[556,738,654,752],[46,783,78,795],[629,812,655,824],[470,806,584,820]],
-   bench:[80,810,201,826],garden:[[279,826],[330,826],[381,826]],
-   customers:[[215,698],[335,694],[455,700],[250,768]],event:[160,738],officer:[455,772],
-   staff:{x:175,step:95,y:524},cat:[395,467],counterSpan:[120,540],
-   decor:{corner:[520,690],front:[410,812],center:[335,760]},sill:{plant:[262,467],lamp:[300,467],seat:[340,467],rug:[330,735]},
-   spots:{shelf:[[145,340],100,[[175,572]]],evidence:[[545,340],100,[[545,572]]],workbench:[[268,512],58,[[268,572]]],counter:[[458,505],56,[[458,572]]],
-     warehouse:[[85,570],45,[[90,672],[140,572]]],board:[[603,463],45,[[605,572]]],finance:[[605,712],42,[[605,690],[520,745]]],
-     property:[[600,255],35,[[600,572]]],security:[[90,242],30,[[175,572]]],door:[[527,802],45,[[440,790],[527,772]]],pet:[[395,450],38,[[395,572]]]}},
-};
 /** Does segment AB pass through the open rectangle (x0,y0)-(x1,y1)? */
 function segHitsRect(A,B,x0,y0,x1,y1){let t0=0,t1=1;const dx=B.x-A.x,dy=B.y-A.y;
   for(const [p,q] of [[-dx,A.x-x0],[dx,x1-A.x],[-dy,A.y-y0],[dy,y1-A.y]]){if(p===0){if(q<=0)return false;continue;}const t=q/p;if(p<0){if(t>t0)t0=t;}else if(t<t1)t1=t;if(t0>=t1)return false;}
@@ -77,7 +48,10 @@ const OUTFIT={pharmacy:'coat',pet_care:'coat',salon:'coat',accounting:'shirt',co
 
 export class BobaWorld extends World {
  isPortrait(){return !this.previewRendering&&this.width<=620;}
- plan(){return this.isPortrait()?PLAN.port:PLAN.land;}
+ /** The scene kind for this career (public/js/scenes); redraws once a lazily loaded kind arrives. */
+ scene(){return sceneFor(this.career,()=>{if(this.c&&this.width)this.setupObjects();});}
+ words(){return wordsFor(this.career);}
+ plan(){const s=this.scene();return this.isPortrait()?s.plan.port:s.plan.land;}
  preview(career){this.previewRendering=true;try{return super.preview(career);}finally{this.previewRendering=false;}}
  resize(){const was=this.isPortrait();super.resize();if(this.c){if(was!==this.isPortrait()){this.player.path=[];this.player.goal=null;this.pending=null;}this.setupObjects();}}
  say(text,npc=null){super.say(text,npc);this.speech.npc=npc;}
@@ -131,7 +105,7 @@ export class BobaWorld extends World {
  decorFootprints(){const pl=this.plan(),out=[];
    for(const [id,entry] of Object.entries(this.c?.decor||{})){const at=pl.decor[entry?.spot],f=DECOR_FOOT[id];if(at&&f)out.push([at[0]+f[0],at[1]+f[1],at[0]+f[2],at[1]+f[3]]);}
    return out;}
- setupObjects(){const c=this.c||{},pl=this.plan(),shop=['mother_baby','pharmacy'].includes(this.career),tile=([x,y])=>this.unproject(x,y),tier=c.ops?.property?.tier||'cozy';
+ setupObjects(){const c=this.c||{},pl=this.plan(),tile=([x,y])=>this.unproject(x,y),tier=c.ops?.property?.tier||'cozy';
    this.hotspots=[];this.people=[];
    this.props=[...pl.blocks,...(tier!=='cozy'?[pl.bench]:[]),...(tier==='garden'?pl.garden.map(([x,y])=>[x-12,y-6,x+12,y+4]):[]),...this.decorFootprints()];
    const add=(id,label,at,range,go,z=0)=>{const t=tile(at);this.hotspots.push({id,label,x:t.x,y:t.y,z,range,point:this.project(t.x,t.y,z),approach:go.map(tile)});};
@@ -142,17 +116,18 @@ export class BobaWorld extends World {
    const person=(id,label,feet,{across=false,sway=0,go=null}={})=>{const t=tile(feet);
      const spots=go||[...(across&&feet[0]>=pl.counterSpan[0]&&feet[0]<=pl.counterSpan[1]?[[feet[0],pl.lane]]:[]),...beside(feet)];
      add(id,label,feet,39,spots,49);this.people.push({id,x:t.x,y:t.y,rx:PERSON.rx+sway,ry:PERSON.ry});};
-   spot('shelf','shelf',shop?'Kệ hàng xinh':'Kệ hồ sơ');
-   spot('evidence','evidence',shop?'Đối chiếu yêu cầu':'Bản gốc & chứng cứ');
-   spot('workbench','workbench',this.career==='mother_baby'?'Gói một món quà':this.career==='pharmacy'?'Khay kiểm phiếu':this.career==='accounting'?'Bàn đối chiếu':this.career==='teacher'?'Bảng & lớp học':this.career==='tour_guide'?'Bản đồ hành trình':this.career==='milk_tea'?'Quầy pha chế':'Bàn hỗ trợ');
-   spot('counter','counter',shop?'Kiểm & bàn giao':'Tiếp tục công việc');
-   spot('warehouse','warehouse',shop?'Kho sau tiệm':this.career==='milk_tea'?'Kho nguyên liệu':c.inventory?'Kho & nhập hàng':'Tủ hồ sơ · việc chờ');
-   spot('board','board','Chuyện phố');
-   spot('finance','ops:finance','Sổ thu chi');
-   spot('property','ops:property','Mặt bằng của tiệm');
-   spot('security','ops:security','An ninh khu phố');
-   spot('door','door',c.open?'Khép một ngày':'Mở cửa tiệm');
-   spot('pet','pet','Chơi với Mướp');
+   const w=this.words(),station=this.game?.catalogue?.find(x=>x.id===this.career)?.station;
+   spot('shelf','shelf',w.shelf);
+   spot('evidence','evidence',w.evidence);
+   spot('workbench','workbench',station||'Bàn làm việc');
+   spot('counter','counter',w.counter);
+   spot('warehouse','warehouse',this.career==='milk_tea'||!c.inventory||w.warehouse!=='Kho sau tiệm'?w.warehouse:'Kho & nhập hàng');
+   spot('board','board',w.board);
+   spot('finance','ops:finance',w.finance);
+   spot('property','ops:property',w.property);
+   spot('security','ops:security',w.security);
+   spot('door','door',c.open?w.door_open:w.door_closed);
+   spot('pet','pet',w.pet);
    const active=c.tasks?.filter(t=>!['completed','referred','cancelled'].includes(t.status))||[],used=new Set();let slot=0;
    for(const t of active){if(slot>=4)break;if(used.has(t.npc))continue;used.add(t.npc);person('npc:'+t.npc,this.npcName(t.npc),pl.customers[slot++],{across:true});}
    if(c.event&&c.event.stage!=='resolved')person('event','Chuyện mới',pl.event);
@@ -178,9 +153,10 @@ export class BobaWorld extends World {
    (this.c?.ops?.staff||[]).filter(e=>e.status==='hired').forEach((e,i)=>{const h=this.hotspots.find(h=>h.id==='staff:'+e.id);if(h){Object.assign(h,this.staffPosition(i,e));h.point=this.project(h.x,h.y,h.z);}});
  }
  palette(){const meta=!themes[this.career]&&this.game?.catalogue?.find(x=>x.id===this.career);const p={...(themes[this.career]||(meta?pluginTheme(meta):themes.mother_baby))};if(this.c?.life?.shop_name)p.title=this.c.life.shop_name;if(this.c?.theme==='sage')p.wall='#edf5e8';if(this.c?.theme==='lavender')p.wall='#f3e9fb';if(this.c?.theme==='warm')p.wall='#fff0da';return p;}
- plantAt(x,y,size=1){const c=this.ctx;c.save();c.translate(x,y);c.scale(size,size);E(c,0,5,23,7,'#8b73531a');R(c,-17,-30,34,32,'#efcab9',8,'#c79b85',1.5);R(c,-20,-34,40,9,'#e4b19a',3);L(c,0,-34,0,-92,'#6c9f78',3);
-   for(let i=0;i<5;i++){const dir=i%2?1:-1;c.save();c.translate(0,-40-i*10);c.rotate(dir*.7);E(c,dir*12,-5,20,8,i%2?'#a4c896':'#78ad91');c.restore();}c.restore();}
- drawRoom(){if(this.isPortrait()){this.portraitRoom();return;}const c=this.ctx,p=this.palette();
+ plantAt(x,y,size=1){plantAt(this.ctx,x,y,size);}
+ drawRoom(){this.scene().room(this,this.palette());}
+ /** Storefront back wall (scenes/shop.js). */
+ shopRoom(){if(this.isPortrait()){this.portraitRoom();return;}const c=this.ctx,p=this.palette();
    E(c,605,724,503,30,'#cba88d22');R(c,85,165,1030,550,'#e3b694',35);R(c,96,168,1008,533,'#fff9ee',30,'#d9ac90',3);
    // Windowed back wall and soft checkerboard floor.
    R(c,108,179,984,301,p.wall,22);R(c,108,445,984,244,'#fbecd7',16);
@@ -209,24 +185,29 @@ export class BobaWorld extends World {
    this.securityProps();
  }
  /** Things standing on the floor, as [depth, draw] pairs sorted with people. */
- floorProps(){const c=this.ctx,p=this.palette(),tier=this.c?.ops?.property?.tier||'cozy',open=this.c?.open,items=this.c?.ops?.security?.items||[],out=[];
+ floorProps(){const c=this.ctx,p=this.palette(),out=this.scene().props(this,p);
+   out.push(...this.decorProps(p));return out;}
+ /** Storefront furniture (scenes/shop.js): counter, store, ledger, door sign, bench. */
+ shopProps(){const c=this.ctx,p=this.palette(),w=this.words(),tier=this.c?.ops?.property?.tier||'cozy',open=this.c?.open,items=this.c?.ops?.security?.items||[],out=[];
    if(this.isPortrait()){
-     out.push([626,()=>this.portraitCounter()],[612,()=>{R(c,24,524,62,92,'#c6a27f',6);R(c,30,530,50,78,'#ecd1af',4);T(c,'KHO',55,570,17,p.dark,800);if(items.includes('lock')){R(c,62,553,17,20,'#d8c596',5);L(c,66,553,66,546,'#a09675',3);L(c,75,553,75,546,'#a09675',3);}}]);
-     out.push([752,()=>{R(c,560,701,90,50,'#d6b492',10);R(c,553,693,104,13,'#eed3b0',5);R(c,576,668,57,28,'#fff8e9',5,'#d5b395',1);L(c,577,671,604,685,p.primary,1.5);L(c,632,671,604,685,p.primary,1.5);T(c,'SỔ TIỆM',605,730,16,p.dark,800);}]);
+     out.push([626,()=>this.portraitCounter()],[612,()=>{R(c,24,524,62,92,'#c6a27f',6);R(c,30,530,50,78,'#ecd1af',4);T(c,w.store,55,570,17,p.dark,800);if(items.includes('lock')){R(c,62,553,17,20,'#d8c596',5);L(c,66,553,66,546,'#a09675',3);L(c,75,553,75,546,'#a09675',3);}}]);
+     out.push([752,()=>{R(c,560,701,90,50,'#d6b492',10);R(c,553,693,104,13,'#eed3b0',5);R(c,576,668,57,28,'#fff8e9',5,'#d5b395',1);L(c,577,671,604,685,p.primary,1.5);L(c,632,671,604,685,p.primary,1.5);T(c,w.ledger,605,730,16,p.dark,800);}]);
      out.push([795,()=>this.plantAt(62,791,1.03)],[824,()=>this.plantAt(642,822,.75)]);
-     out.push([820,()=>{R(c,470,786,114,32,'#fff8e8',13,'#c6a182',2);T(c,open?'ĐANG MỞ':'HẸN GẶP LẠI',527,803,12,p.dark);}]);
+     out.push([820,()=>{R(c,470,786,114,32,'#fff8e8',13,'#c6a182',2);T(c,open?w.open_sign:w.closed_sign,527,803,12,p.dark);}]);
      if(tier!=='cozy')out.push([826,()=>{R(c,80,793,121,16,p.mint,7);R(c,80,765,121,30,p.mint,9);L(c,90,810,90,825,'#af8b6c',6);L(c,193,810,193,825,'#af8b6c',6);T(c,'ngồi nghỉ nhé',140,780,12,p.dark);if(tier==='garden')bloom(c,190,758,12,p.primary);}]);
-     if(tier==='garden')for(const [x,y] of PLAN.port.garden)out.push([y+4,()=>this.plantAt(x,y,.7)]);
+     if(tier==='garden')for(const [x,y] of this.plan().garden)out.push([y+4,()=>this.plantAt(x,y,.7)]);
    }else{
-     out.push([563,()=>this.drawCounter()],[536,()=>{R(c,140,438,69,95,'#c8a27e',7);R(c,146,444,57,81,'#e8c6a4',4);T(c,'KHO',173,484,13,'#826249');R(c,151,517,7,4,'#a88e70',2);if(items.includes('lock')){R(c,180,448,18,24,'#d2c290',5,'#a59470',1);c.beginPath();c.arc(189,448,6,Math.PI,0);c.strokeStyle='#968f79';c.lineWidth=3;c.stroke();}}]);
-     out.push([566,()=>{R(c,985,503,94,61,'#d4b391',12);R(c,979,494,106,15,'#f0d2ad',7);R(c,1000,469,65,29,'#fff8e7',5,'#d9b596',1);L(c,1001,470,1032,486,p.primary,1.5);L(c,1064,470,1032,486,p.primary,1.5);T(c,'SỔ TIỆM',1032,548,11,'#7c604e');}]);
+     out.push([563,()=>this.drawCounter()],[536,()=>{R(c,140,438,69,95,'#c8a27e',7);R(c,146,444,57,81,'#e8c6a4',4);T(c,w.store,173,484,13,'#826249');R(c,151,517,7,4,'#a88e70',2);if(items.includes('lock')){R(c,180,448,18,24,'#d2c290',5,'#a59470',1);c.beginPath();c.arc(189,448,6,Math.PI,0);c.strokeStyle='#968f79';c.lineWidth=3;c.stroke();}}]);
+     out.push([566,()=>{R(c,985,503,94,61,'#d4b391',12);R(c,979,494,106,15,'#f0d2ad',7);R(c,1000,469,65,29,'#fff8e7',5,'#d9b596',1);L(c,1001,470,1032,486,p.primary,1.5);L(c,1064,470,1032,486,p.primary,1.5);T(c,w.ledger,1032,548,11,'#7c604e');}]);
      out.push([582,()=>this.plantAt(118,578,1.25)]);
-     out.push([668,()=>{R(c,970,625,112,42,'#fdf7e8',16,'#b99171',2);T(c,open?'ĐANG MỞ':'HẸN GẶP LẠI',1026,642,12,p.dark);T(c,'một nhịp thật dịu',1026,657,8,'#a38a7a',500);}]);
+     out.push([668,()=>{R(c,970,625,112,42,'#fdf7e8',16,'#b99171',2);T(c,open?w.open_sign:w.closed_sign,1026,642,12,p.dark);T(c,'một nhịp thật dịu',1026,657,8,'#a38a7a',500);}]);
      if(tier!=='cozy')out.push([676,()=>{R(c,148,625,125,19,p.mint,8);L(c,162,644,162,674,'#af8b6c',7);L(c,261,644,261,674,'#af8b6c',7);R(c,149,587,125,45,p.mint,13);T(c,'ngồi nghỉ nhé ♡',211,608,11,'#50796b');if(tier==='garden')bloom(c,262,575,15,p.primary);}]);
-     if(tier==='garden')for(const [x,y] of PLAN.land.garden)out.push([y+2,()=>this.plantAt(x,y,.6)]);
+     if(tier==='garden')for(const [x,y] of this.plan().garden)out.push([y+2,()=>this.plantAt(x,y,.6)]);
    }
-   // Decor bought by the player stands on its chosen floor spot.
-   const pl=this.plan();
+   return out;
+ }
+ /** Decor bought by the player stands on its chosen floor spot. */
+ decorProps(p){const c=this.ctx,pl=this.plan(),out=[];
    for(const [id,entry] of Object.entries(this.c?.decor||{})){const at=pl.decor[entry?.spot];if(!at||id==='rug'||id==='poster')continue;const [x,y]=at;
      if(id==='plant')out.push([y,()=>this.plantAt(x,y,.8)]);
      if(id==='lamp')out.push([y,()=>{L(c,x,y,x,y-83,'#c6a47f',5);P(c,[[x-13,y-100],[x+13,y-100],[x+26,y-70],[x-26,y-70]],'#f5ddb1');E(c,x,y,18,5,'#cead8e');}]);
@@ -260,7 +241,7 @@ export class BobaWorld extends World {
    else if(['accounting','customer_care'].includes(this.career)){R(c,x-14,y-30,29,36,col,4,'#b89d97',1);R(c,x-11,y-27,4,29,'#ffffff60',2);R(c,x-3,y-19,14,12,'#fff8e8',2);L(c,x,y-15,x+7,y-15,p.primary,1);L(c,x,y-11,x+7,y-11,p.primary,1);}
    else{R(c,x-14,y-29,28,35,col,5,'#c0ac97',1);R(c,x-12,y-27,24,7,'#ffffff80',2);R(c,x-8,y-15,16,11,'#fff9eb',2);T(c,this.career==='pharmacy'?'P-'+(index+1):'♡',x,y-9,this.career==='pharmacy'?7:12,p.dark);}
  }
- mascot(x,y,scale=1){const c=this.ctx;c.save();c.translate(x,y);c.scale(scale,scale);E(c,-20,-24,12,14,'#e2b892');E(c,20,-24,12,14,'#e2b892');E(c,0,-4,33,30,'#f2d6b0');E(c,-10,-8,3,4,'#805a49');E(c,10,-8,3,4,'#805a49');E(c,-20,1,6,3,'#e9a89c');E(c,20,1,6,3,'#e9a89c');E(c,0,1,5,3,'#a97764');L(c,0,4,0,8,'#a97764',1.5);c.restore();}
+ mascot(x,y,scale=1){mascot(this.ctx,x,y,scale);}
  securityProps(){if(this.isPortrait()){this.portraitSecurity();return;}const c=this.ctx,p=this.palette(),items=this.c?.ops?.security?.items||[];
    if(items.includes('camera')){L(c,148,241,162,232,'#b79b85',5);R(c,151,220,39,21,'#f5f2eb',7,'#a7aaa2',2);E(c,185,230,8,9,'#7a8992');E(c,186,230,4,5,'#b4d9df');E(c,157,225,2,2,'#90bd8b');}
    else {R(c,183,206,43,24,'#fff6e9',8,'#d5b59a',1);T(c,'♧',204,218,15,p.dark);}
@@ -350,7 +331,7 @@ export class BobaWorld extends World {
        const pt=this.project(h.x,h.y,141),name=isNPC?this.npcName(h.id.slice(4)):staff?staff.name:h.label,selected=isNPC&&h.id.slice(4)===activeNPC;const w=Math.min(250,Math.max(60,name.length*(this.isPortrait()?10:7)+22+(staff?12:0)));R(c,pt.x-w/2,pt.y-(this.isPortrait()?16:13),w,this.isPortrait()?32:26,selected?p.primary:'#fff9ef',13,selected?p.dark:'#d9bca6',1.5);T(c,name,pt.x+(staff?6:0),pt.y,this.isPortrait()?18:11,selected?'#fffaf2':p.dark);
        if(staff)E(c,pt.x-w/2+13,pt.y,4.5,4.5,this.staffWorking(staff)?'#6fae7c':'#c9b8a6');
      }else if(['workbench','counter','shelf','board','ops:finance'].includes(h.id)){
-       const pt=this.project(h.x,h.y,h.z+15);if(h.id==='board'&&this.isPortrait()){pt.x+=36;pt.y-=44;}E(c,pt.x,pt.y,13,13,'#fff9ee');E(c,pt.x,pt.y,9,9,p.light);T(c,'+',pt.x,pt.y,16,p.dark,700);
+       const pt=this.project(h.x,h.y,h.z+15),nudge=this.plan().badge?.[h.id];if(nudge){pt.x+=nudge[0];pt.y+=nudge[1];}E(c,pt.x,pt.y,13,13,'#fff9ee');E(c,pt.x,pt.y,9,9,p.light);T(c,'+',pt.x,pt.y,16,p.dark,700);
      }
      if(hover){const pt=this.project(h.x,h.y,h.z+52),w=Math.min(290,h.label.length*7+25);R(c,pt.x-w/2,pt.y-17,w,32,p.dark,12);T(c,h.label,pt.x,pt.y,12,'#fff8ed');}
    }

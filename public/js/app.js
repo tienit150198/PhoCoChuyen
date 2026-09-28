@@ -1,6 +1,7 @@
 /** Front-end orchestration. Economic rules live on the Python server, not in chat. */
 import {GameAPI} from './api.js';
 import {BobaWorld} from './boba-world.js';
+import {wordsFor} from './scenes/index.js';
 import {operationsView} from './operations-ui.js';
 import {nextStep,lifeNav,guestRibbon,experienceView,extendedJob,experienceSummary} from './experience-ui.js';
 import {icon,portrait,itemArt,escapeHTML as esc} from './icons.js';
@@ -126,8 +127,8 @@ function hudHTML(c,m){
   const money=layout()==='phone'?shortMoney(c.money):fmt(c.money);
   return `<button type="button" class="icon-btn day-control" data-action="${c.open?'pause':'prepare'}" aria-label="${c.open?(ui.paused?'Tiếp tục':'Tạm dừng'):'Chuẩn bị ngày mới'}">${icon(c.open?(ui.paused?'play':'pause'):'sun',24)}</button>`+
     `<button type="button" class="cozy-day" data-action="prepare"><strong>Ngày ${c.day}</strong><small>${w?`<span class="hud-weather" title="${esc(w.name||'')}">${esc(w.emoji)}</span> `:''}${clk?`<span class="hud-clock">${esc(clk)}</span><span class="hud-sub"> · ${sub}</span>`:sub}</small></button>`+
-    `<button type="button" class="cozy-till" data-action="finance" aria-label="Ví của tiệm: ${fmt(c.money)} xu"><small>${esc(c.life.shop_name||m.place)}</small><strong data-testid="money"${money.length>=6?' class="long"':''}>${money}<span> xu</span></strong></button>`+
-    `<button type="button" class="cozy-rating" data-action="feedback" aria-label="${c.rating?`Đánh giá ${c.rating} sao, ${reviews} lượt`:'Chưa có đánh giá'}"><b class="rating-num">${c.rating?Number(c.rating).toFixed(1):'—'}</b><small>${reviews} đánh giá</small></button>`+
+    `<button type="button" class="cozy-till" data-action="finance" aria-label="${esc(wordsFor(career()).till)}: ${fmt(c.money)} xu"><small>${esc(c.life.shop_name||m.place)}</small><strong data-testid="money"${money.length>=6?' class="long"':''}>${money}<span> xu</span></strong></button>`+
+    `<button type="button" class="cozy-rating" data-action="feedback" aria-label="${c.rating?`Đánh giá ${c.rating} sao, ${reviews} lượt`:'Chưa có đánh giá'}"><b class="rating-num">${c.rating?Number(c.rating).toFixed(1):'—'}</b><small>${reviews} ${esc(wordsFor(career()).rating)}</small></button>`+
     `<button type="button" class="icon-btn top-social" data-action="social" aria-label="Phố nghề">${icon('store',20)}${api.social?.unread?`<em class="badge">${api.social.unread}</em>`:''}</button><button type="button" class="icon-btn top-settings" data-action="settings" aria-label="Cài đặt">${icon('settings',20)}</button>`;
 }
 function taskCards(c){
