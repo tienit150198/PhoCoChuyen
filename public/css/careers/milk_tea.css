@@ -212,3 +212,79 @@ html.reduce-motion .mt-event{animation:none}
 @media (prefers-reduced-motion:reduce){.mt-needle,.mt-bar i,.mt-tile{transition:none}}
 .mt-said{display:flex;flex-direction:column;gap:4px;min-width:0}
 .mt-flash{margin:0;padding:4px 8px;border-radius:8px;background:var(--surface);border:1px solid var(--line);font-size:.8rem;font-weight:600;color:var(--ink-2,var(--ink))}
+
+/* Sticky bar on phones: order recap + serve (actionBar from food_kit.js; same look as the food counters) */
+.career-job.mt .fk-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:4;display:flex;align-items:center;gap:10px;margin:4px -4px 0;padding:10px 12px;border-radius:var(--radius-lg,20px);background:var(--surface);border:1px solid var(--line-strong);box-shadow:0 -6px 18px rgb(0 0 0 / 10%)}
+.career-job.mt .fk-next{flex:1;min-width:0;margin:0;font-size:.867rem;font-weight:700;line-height:1.35;overflow-wrap:anywhere}
+.career-job.mt .fk-bar-btns{display:flex;gap:8px;flex:none}
+.career-job.mt .fk-bar-btns .btn{min-height:44px}
+@media (max-width:899px){.mt-finish .mt-serve{display:none}}
+@media (min-width:900px){.career-job.mt .fk-bar{display:none}}
+
+/* Care list (counter fold + Kho tab) */
+.mt-care-fold{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+.mt-care-fold>summary{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;padding:8px 12px;font-weight:800;font-size:.9rem;cursor:pointer;list-style:none}
+.mt-care-fold>summary::-webkit-details-marker{display:none}
+.mt-care-fold>summary:after{content:"▾";color:var(--muted);transition:transform .15s}
+.mt-care-fold[open]>summary:after{transform:rotate(180deg)}
+.mt-care-fold>summary>span{flex:1}
+.mt-care-count{min-width:24px;padding:0 8px;border-radius:99px;background:var(--warn-soft);color:var(--warn);font:800 .75rem/22px var(--font,inherit);font-style:normal;text-align:center}
+.mt-care-count.danger{background:var(--bad);color:var(--on-bad,#fff)}
+.mt-care-count.ok{background:var(--good-soft);color:var(--good)}
+.mt-care-fold .mt-care{padding:0 10px 10px}
+.mt-care{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.mt-care li{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;padding:8px 10px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-size:.867rem;line-height:1.4}
+.mt-care li.warn{background:var(--warn-soft);border-color:var(--warn)}
+.mt-care li.danger{background:var(--bad-soft);border-color:var(--bad)}
+.mt-care-mark{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;flex:none;font-weight:900;font-size:.8rem;background:var(--good-soft);color:var(--good)}
+.mt-care li.warn .mt-care-mark{background:var(--surface);color:var(--warn)}
+.mt-care li.danger .mt-care-mark{background:var(--bad);color:var(--on-bad,#fff)}
+.mt-care-icon{flex:none}
+.mt-care-text{flex:1;min-width:160px}
+.mt-care-btns{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.mt-care-btns .btn,.mt-row-btns .btn,.mt-out-btns .btn,.mt-wear .btn,.mt-greet .btn{min-height:40px}
+
+/* Out of a syrup / topping / cup size for the order in hand */
+.mt-out{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.mt-out-btns{display:flex;gap:6px;flex-wrap:wrap}
+.mt-tile.restock.wait{border-style:dashed;border-color:var(--info);background:var(--info-soft)}
+.mt-tile.tired{border-color:var(--warn)}
+.mt-tile.tired small{color:var(--warn);font-weight:700}
+
+/* Sealer wear */
+.mt-wear{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;margin:0;padding:6px 8px;border-radius:10px;background:var(--warn-soft);font-size:.8rem;font-weight:700}
+.mt-wear.dirty{background:var(--bad-soft)}
+
+/* Regulars' card */
+.mt-notes{margin:4px 0;padding:0;list-style:none;display:grid;gap:4px}
+.mt-notes li{font-size:.85rem;line-height:1.4}
+.mt-greet{margin-top:6px}
+.mt-notebook summary{cursor:pointer;font-weight:800;min-height:32px}
+.mt-regular .mt-note{display:block;color:var(--ink);margin-top:2px}
+
+/* Kho: clock, night notes, made-at-the-counter rows, orders, supplier picker */
+.mt-now{margin:0 0 8px;padding:8px 12px;border-radius:12px;background:var(--surface-2);font-size:.9rem}
+.mt-night{margin:0 0 8px;padding:8px 12px;border-radius:12px;background:var(--info-soft);border:1px dashed var(--info)}
+.mt-night p{margin:0;font-size:.85rem;line-height:1.45}
+.mt-row-btns{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.mt-row{flex-wrap:wrap}
+.mt-row .grow{min-width:150px}
+.mt-order .mt-bar{margin-top:6px;flex:none}
+.mt-order.late{border-color:var(--warn)}
+.mt-late{color:var(--warn)!important;font-weight:700}
+.mt-orders h4{margin:0 0 6px}
+.mt-buy{border-radius:12px}
+.mt-buy.on{box-shadow:0 0 0 2px var(--accent-soft);background:var(--surface-2);padding-bottom:8px}
+.mt-buy.on>.mt-row{border-color:var(--accent)}
+.mt-picker{display:grid;gap:8px;padding:8px 6px 0}
+.mt-qty{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+.mt-sups{display:grid;gap:6px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.mt-sup{display:flex;flex-direction:column;gap:4px;padding:10px;border-radius:12px;border:1px solid var(--line-strong);background:var(--surface)}
+.mt-sup.off{opacity:.55;border-style:dashed}
+.mt-sup-head{display:flex;gap:6px;align-items:center;font-size:.9rem}
+.mt-sup-when{margin:0;font-weight:800;font-size:.95rem;color:var(--accent-text)}
+.mt-sup small{color:var(--muted);font-size:.8rem;line-height:1.35}
+.mt-sup .btn{margin-top:auto;align-self:stretch;min-height:44px}
+.mt-tomorrow .prep-weather-em{opacity:.85}
+.mt-tomorrow-line{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:baseline;margin:10px 0 0;padding:8px 10px;border-radius:12px;background:var(--accent-soft)}
+.mt-tomorrow-line small{flex-basis:100%;color:var(--ink-2,var(--ink))}

@@ -33,13 +33,26 @@ def unchanged(test, j, action, **payload):
     test.assertEqual(j.state, before)
 
 
+def restock(j, item):
+    """Brew / cook at the counter, or order express and wait for the courier."""
+    if item in boba.MADE:
+        j.act('tea_prepare', item=item, qty=5, confirm=True)
+        return
+    j.act('tea_order', item=item, qty=5, supplier='express', confirm=True)
+    for _ in range(12):
+        if boba.stock(j.c)[item]:
+            return
+        j.act('tea_wait')
+    raise AssertionError('express order never arrived')
+
+
 def make_cup(j, tid, skip_seal=False):
     t = j.get(tid)
     for action, payload in boba.solution(t):
         if skip_seal and action in ('tea_seal', 'tea_serve'):
             continue
         if action == 'tea_add' and boba.stock(j.c)[payload['item']] == 0:
-            j.act('tea_prepare', item=payload['item'], qty=5, confirm=True)
+            restock(j, payload['item'])
         if action == 'tea_serve':
             break
         j.act(action, **payload)
@@ -390,10 +403,17 @@ class DayAndUpgrades(unittest.TestCase):
         self.assertEqual((j.c['turn'], r['seal']), (turn, 'perfect'))
 
     def test_buy_cups(self):
+        # Cups are ordered now: the pack arrives with the supplier's next run, not instantly.
         j = Journey('milk_tea')
         cups = state_of(j)['cups']['L']
         unchanged(self, j, 'tea_cups', size='L')
-        j.act('tea_cups', size='L', confirm=True)
+        cash = j.c['money']
+        r = j.act('tea_cups', size='L', confirm=True, supplier='express')
+        self.assertEqual(state_of(j)['cups']['L'], cups)
+        self.assertIn('phút', r['eta']['left_label'])
+        self.assertEqual(j.c['money'], cash - round(boba.CUP_PACK['cost'] * boba.SUP_INDEX['express']['factor']))
+        for _ in range(6):
+            j.act('tea_wait')
         self.assertEqual(state_of(j)['cups']['L'], cups + boba.CUP_PACK['qty'])
 
     def test_warning_when_pearls_are_not_cooked(self):
@@ -419,6 +439,10 @@ class Surprises(unittest.TestCase):
         j.act('end_day', carry_event=True)
         j.act('start_day')
         j.solve()
+        state_of(j)['event'] = None
+        for base in ('milk', 'black', 'matcha'):  # tea is brewed fresh every morning
+            if not boba.stock(j.c)[base]:
+                j.act('tea_prepare', item=base, qty=5, confirm=True)
         state_of(j)['event'] = None
         return j
 

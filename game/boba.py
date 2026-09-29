@@ -30,7 +30,7 @@ CUP_START = {'M': 30, 'L': 20}
 CUP_CAP = 120
 CUP_PACK = dict(qty=20, cost=4)
 MAX_TOPPINGS = 3
-BEAT_ACTIONS = {'cup', 'add', 'ice', 'sugar', 'config', 'check', 'seal_start', 'seal', 'serve', 'discard', 'wipe', 'event'}
+BEAT_ACTIONS = {'cup', 'add', 'ice', 'sugar', 'config', 'check', 'seal_start', 'seal', 'serve', 'discard', 'wipe', 'event', 'clean', 'wait', 'greet', 'swap'}
 UNSAFE_MESS = 2
 # Heat-sealer timing (seconds between "Ép nắp" and "Nhả"), measured on the server.
 SEAL = dict(loose=0.8, good_lo=1.4, good_hi=2.6, burn=4.2, max=5.0)
@@ -42,7 +42,7 @@ APP_NAMES = [dict(id='app-maichi', name='Chị Mai Chi', kind='app', me='mình',
 
 UPGRADES = [
     dict(id='bell', name='Chuông gọi món', emoji='🔔', level=2, price=60, text='Khách đang xếp hàng mất kiên nhẫn chậm một nửa.'),
-    dict(id='pot', name='Nồi ủ trân châu', emoji='🍲', level=2, price=90, text='Trân châu nấu xong giữ được thêm một ngày.'),
+    dict(id='pot', name='Nồi ủ trân châu', emoji='🍲', level=2, price=90, text='Trân châu nấu xong giữ dẻo thêm 2 giờ.'),
     dict(id='fridge', name='Tủ mát topping', emoji='🧊', level=3, price=120, text='Siro và topping giữ thêm một ngày.'),
     dict(id='sealer', name='Máy dán nắp tự động', emoji='⚙️', level=4, price=140, text='Dán nắp không tốn nhịp; cúp điện vẫn dán được bằng pin dự phòng.'),
 ]
@@ -74,6 +74,59 @@ REGULARS = {
 }
 FALLBACK = {'q3': 'jelly', 'pudding': 'jelly', 'white_pearl': 'pearls', 'aloe': 'jelly', 'cheese': 'foam', 'coconut': 'jelly',
             'red_bean': 'pearls', 'flan': 'popping', 'green': 'black', 'oolong': 'black', 'thai': 'milk', 'passion': 'peach'}
+
+# ---------------------------------------------------------------- care loop (docs/superpowers/specs/2026-09-29-milk-tea-care-design.md)
+DAY_MIN = 24 * 60
+OPEN_MIN, CLOSE_MIN = 8 * 60, 20 * 60
+LATE_MIN, OVERTIME_STEP = 23 * 60, 5  # a busy day runs over: suppliers are closed, the pots keep ageing slowly
+# Made at the counter (instant, paid at cost): tea brewed in pots, pearls cooked in the pot, foam and cheese whipped.
+MADE = set(BASES) | {'pearls', 'white_pearl', 'foam', 'cheese'}
+# Bought from suppliers with a real delivery window: syrups, jellies, puddings… and cups.
+BOUGHT = [x for x in ING if x not in MADE]
+CUP_ITEMS = {'cup_M': 'M', 'cup_L': 'L'}
+ORDERABLE = BOUGHT + list(CUP_ITEMS)
+# Freshness of a pot/batch in shop minutes: (good until, still OK until). After that it is thrown away.
+FRESH = {'pearls': (240, 360), 'white_pearl': (240, 360), **{b: (360, 540) for b in BASES}}
+POT_BONUS = 120  # the warming pot keeps pearls soft two more hours
+FRESH_WORD = {'pearls': ('dẻo mềm', 'hơi cứng', 'cứng'), 'white_pearl': ('dẻo mềm', 'hơi cứng', 'cứng')}
+TEA_WORD = ('thơm', 'hơi chát', 'ôi')
+SEALER_STICKY, SEALER_DIRTY = 12, 20  # seals since the last clean
+MAX_ORDERS = 12
+NOTES = {  # regulars' card: note 1 after the first cup, note 2 after the third
+    'milk_tea_npc_01': [('less_sweet', '🍯', 'Kỹ chuyện đường: dặn bao nhiêu phần trăm là đúng bấy nhiêu.'),
+                        ('exam', '📚', 'Đang ôn thi, hay mang về học: nắp dán phải thật kín.')],
+    'milk_tea_npc_02': [('teeth', '🦷', 'Răng yếu: ít đá thôi, đá to bác không nhai được.'),
+                        ('doctor', '🩺', 'Bác sĩ dặn bớt ngọt: hỏi bác trước khi pha 100%.')],
+    'milk_tea_npc_03': [('photo', '📸', 'Chụp ảnh ly trước khi uống: topping xếp đẹp, nắp căng.'),
+                        ('lactose', '🥛', 'Hơi kém sữa: không kem cheese, foam sữa thì hỏi lại.')],
+}
+ADVICE = {
+    'quiet': 'Khách thưa: ủ ít trà, nấu một mẻ trân châu nhỏ thôi.',
+    'students': 'Nấu thêm một mẻ trân châu buổi chiều, xếp đủ ly L.',
+    'heat': 'Đặt thêm siro trái cây, đủ ly L.',
+    'rain': 'Khách thưa, đơn app nhiều. Ủ trà vừa đủ, đừng nấu dư.',
+    'office': 'Đơn nhiều ly: ủ sẵn trà nền trước trưa.',
+    'market': 'Khách quen ghé nhiều: xem lại sổ khách quen.',
+    'review': 'Lau máy dán nắp từ sớm để nắp căng đẹp.',
+}
+V_MARKET = dict(late='Xe ba gác của chị kẹt ở đầu chợ, tới trễ chút nha em.')
+SUPPLIERS = [
+    dict(id='market', name='Chợ đầu mối Mây', emoji='🧺', kind='next', cutoff=17 * 60, at=(-75, -35), factor=0.8, late=10,
+         items=['lychee', 'peach', 'strawberry', 'passion', 'jelly', 'q3', 'aloe', 'coconut', 'red_bean', 'cup_M', 'cup_L'],
+         note='Rẻ nhất. Đặt trước 17:00, hàng tới sáng mai trước giờ mở cửa.', voice=V_MARKET),
+    dict(id='partner', name='Nhà phân phối Hạt Nắng', emoji='🚚', kind='runs',
+         runs=((11 * 60, 13 * 60, 14 * 60), (15 * 60, 16 * 60 + 30, 17 * 60 + 30)), factor=1.0, late=8, items=None,
+         note='Giá niêm yết. Hai chuyến: đặt trước 11:00 tới trưa, trước 15:00 tới chiều.',
+         voice=dict(late='Xe giao của Hạt Nắng kẹt ở cầu Mây, bên em báo trễ khoảng một tiếng ạ.')),
+    dict(id='express', name='Giao hỏa tốc Mây Xanh', emoji='⚡', kind='rush', mins=(30, 60), factor=1.35, late=12, items=None,
+         note='Đắt nhất, tới trong 30–60 phút. Dùng khi hết hàng giữa ca.',
+         voice=dict(late='Tài xế phải vòng tránh đoạn đường ngập, tới trễ vài chục phút ạ.')),
+    dict(id='factory', name='Xưởng topping Đài Mây', emoji='✈️', kind='days', days=(2, 3), at=(60, 180), factor=0.65, late=15,
+         items=['popping', 'pudding', 'flan', 'coconut', 'q3', 'aloe', 'red_bean', 'jelly', 'cup_M', 'cup_L'],
+         note='Topping đóng hộp và ly in logo giá xưởng: rẻ hẳn nhưng 2–3 ngày mới tới. Đặt sớm cho cả tuần.',
+         voice=dict(late='Xe tuyến về trễ một ngày vì kẹt ở trạm, xưởng xin lỗi quán.')),
+]
+SUP_INDEX = {x['id']: x for x in SUPPLIERS}
 
 
 def opening(kind: str, me: str) -> str:
@@ -116,7 +169,7 @@ def fresh() -> dict:
                 served=0, perfect=0, returned=0, walkouts=0, revenue=0, fines=0, bonus=0, total=0,
                 event=None, events_today=0, last_event_beat=-99, today_kinds=[], ev_seq=0, ev_history=[],
                 history=[], notebook={}, story=dict(step=0, day=0, choices=[]), sold_out=[], sealer_off=0, dome=False,
-                promises=[], office=None)
+                promises=[], office=None, span=0, orders=[], order_seq=0, sealer_wear=0, cleaned=0, night=[])
 
 
 def view(c: dict) -> dict:
@@ -153,20 +206,49 @@ def roll_mod(day: int) -> str:
     return rng(CAREER, 'mod', day).choices(pool, weights)[0]
 
 
+def _raw(c: dict) -> dict:
+    """The stored counter state without copying (read-only lookups on hot paths)."""
+    raw = ((c.get('ext') or {}).get('data') or {}).get('boba')
+    return raw if isinstance(raw, dict) else {}
+
+
 def beats(c: dict) -> int:
-    return max(0, c['turn'] - view(c)['turn0'])
-
-
-def clock(c: dict) -> str:
-    b = view(c)
-    span = max(24, (b['quota'] or 4) * 9)
-    minutes = 8 * 60 + round(12 * 60 * min(1.0, beats(c) / span)) if c['open'] else 8 * 60
-    return f'{minutes // 60:02d}:{minutes % 60:02d}'
+    return max(0, c['turn'] - (_raw(c).get('turn0') or 0))
 
 
 def clock_minutes(c: dict) -> int:
-    h, m = clock(c).split(':')
-    return int(h) * 60 + int(m)
+    """08:00 at start_day; the opening hours are spread over `span` beats (fixed at start_day, so the
+    clock never runs backwards). A busy day runs into overtime: 5 minutes a beat, up to 23:00."""
+    if not c['open']:
+        return OPEN_MIN
+    b = _raw(c)
+    span = b.get('span') or max(30, (b.get('quota') or 4) * 12)
+    n = beats(c)
+    if n <= span:
+        return OPEN_MIN + round((CLOSE_MIN - OPEN_MIN) * n / span)
+    return min(LATE_MIN, CLOSE_MIN + (n - span) * OVERTIME_STEP)
+
+
+def hm(minute: int) -> str:
+    m = int(minute) % DAY_MIN
+    return f'{m // 60:02d}:{m % 60:02d}'
+
+
+def clock(c: dict) -> str:
+    return hm(clock_minutes(c))
+
+
+def now_abs(c: dict) -> int:
+    """Shop time in absolute minutes (day × 1440 + minute). Closed: the evening of
+    the day that just closed, so goods due before the next opening wait at the door."""
+    if c['open']:
+        return c['day'] * DAY_MIN + clock_minutes(c)
+    return (c['day'] - 1) * DAY_MIN + CLOSE_MIN
+
+
+def opening_abs(c: dict) -> int:
+    """When a pot brewed now counts as made: now while open, else the next opening."""
+    return now_abs(c) if c['open'] else c['day'] * DAY_MIN + OPEN_MIN
 
 
 # ---------------------------------------------------------------- orders
@@ -317,13 +399,30 @@ def setup_task(s: dict, c: dict, t: dict, fixed: dict | None = None) -> None:
             t['src'] = dict(fixed=copy.deepcopy(book['usual']))
             t['usual'] = True
         elif book:
-            t['src'] = dict(tier=lv, mod=mod, avoid=sorted(b['sold_out']))
+            t['src'] = dict(tier=lv, mod=mod, avoid=_avoid(c, b))
         else:
             t['src'] = dict(fixed=fit_usual(REGULARS[t['npc']]['usual'], lv))
     else:
-        t['src'] = dict(tier=lv, mod=mod, avoid=sorted(b['sold_out']))
+        t['src'] = dict(tier=lv, mod=mod, avoid=_avoid(c, b))
     t['needs'] = derive(t)
     t['quoted_price'] = price(c, t['needs'])
+
+
+def swap_to(c: dict, t: dict, item: str) -> str | None:
+    """What the counter can offer instead of a syrup or topping it has run out of."""
+    st = stock(c)
+    n = t['needs']
+    if ING[item]['group'] == 'flavor':
+        return next((x for x in FLAVORS if x != item and unlocked(c, x) and st[x] > 0), None)
+    pool = [FALLBACK.get(item)] + TOPPINGS
+    return next((x for x in pool if x and x != item and x not in n['toppings'] and unlocked(c, x) and st[x] > 0), None)
+
+
+def _avoid(c: dict, b: dict) -> list[str]:
+    """The menu board marks what is out: walk-ins do not order a syrup or topping the shop does not have.
+    (Pearls, tea and foam are made at the counter, so they are never off the menu.)"""
+    st = stock(c)
+    return sorted(set(b['sold_out']) | {x for x in BOUGHT if st[x] == 0})
 
 
 def customer_name(t: dict) -> str:
@@ -366,16 +465,59 @@ def cup_text(n: dict) -> str:
 
 
 # ---------------------------------------------------------------- stock
+def fresh_window(c: dict, item: str) -> tuple[int, int]:
+    good, ok = FRESH[item]
+    if item in ('pearls', 'white_pearl') and 'pot' in (_raw(c).get('upgrades') or []):
+        good, ok = good + POT_BONUS, ok + POT_BONUS
+    return good, ok
+
+
+def band(c: dict, lot: dict, now: int | None = None) -> str:
+    """'fresh' / 'tired' (hơi cứng, hơi chát: a small slip) / 'stale' (thrown away).
+    Lots without a brewing time (opening stock, older saves) count as fresh today."""
+    if lot['item'] not in FRESH or lot.get('made') is None:
+        return 'fresh'
+    good, ok = fresh_window(c, lot['item'])
+    age = max(0, (now_abs(c) if now is None else now) - lot['made'])
+    return 'fresh' if age <= good else 'tired' if age <= ok else 'stale'
+
+
+def _lots(c: dict, item: str | None = None, now: int | None = None, usable: bool = True) -> list[dict]:
+    now = now_abs(c) if now is None else now
+    return [l for l in c['life']['pantry'] if (item is None or l['item'] == item) and l['expires'] >= c['day'] and l['qty'] > 0
+            and (not usable or band(c, l, now) != 'stale')]
+
+
 def stock(c: dict) -> dict:
-    return {k: sum(l['qty'] for l in c['life']['pantry'] if l['item'] == k and l['expires'] >= c['day']) for k in ING}
+    """Portions that can go into a cup right now (expired and stale batches do not count)."""
+    now = now_abs(c)
+    out = {k: 0 for k in ING}
+    for l in _lots(c, now=now):
+        if l['item'] in out:
+            out[l['item']] += l['qty']
+    return out
 
 
-def _use(c: dict, item: str) -> int:
+def held(c: dict) -> dict:
+    """Everything on the shelf that has not expired by date (the 60-portion shelf limit)."""
+    out = {k: 0 for k in ING}
+    for l in c['life']['pantry']:
+        if l['item'] in out and l['expires'] >= c['day']:
+            out[l['item']] += l['qty']
+    return out
+
+
+def _fifo(l: dict) -> tuple:
+    return (l.get('made') or 0, l['expires'], l['received'])
+
+
+def _use(c: dict, item: str) -> tuple[int, str]:
     e = _e()
-    e.need(stock(c)[item] > 0, 'Hết ' + ING[item]['name'] + '. Mở Kho để chuẩn bị thêm một mẻ nhé.')
-    lot = min((l for l in c['life']['pantry'] if l['item'] == item and l['expires'] >= c['day'] and l['qty'] > 0), key=lambda l: (l['expires'], l['received']))
+    e.need(stock(c)[item] > 0, 'Hết ' + ING[item]['name'] + '. ' + ('Nấu hoặc ủ thêm một mẻ nhé.' if item in MADE else 'Mở Kho để đặt thêm hàng nhé.'))
+    now = now_abs(c)
+    lot = min(_lots(c, item, now), key=_fifo)
     lot['qty'] -= 1
-    return lot['unit_cost']
+    return lot['unit_cost'], band(c, lot, now)
 
 
 def shelf_life(c: dict, item: str) -> int:
@@ -383,15 +525,154 @@ def shelf_life(c: dict, item: str) -> int:
     life = ING[item]['life']
     if 'fridge' in b['upgrades'] and ING[item]['group'] in ('topping', 'flavor'):
         life += 1
-    if 'pot' in b['upgrades'] and item in ('pearls', 'white_pearl'):
-        life += 1
     return life
 
 
-def add_lot(s: dict, c: dict, item: str, qty: int, unit_cost: int, note: str = '') -> None:
+def add_lot(s: dict, c: dict, item: str, qty: int, unit_cost: int, note: str = '', made: int | None = None) -> None:
+    """A new batch on the shelf. Brewed tea and cooked pearls remember when they were made."""
     from . import experiences as life
-    c['life']['pantry'].append(dict(id=life._id(c, 'batch'), item=item, qty=qty, unit_cost=unit_cost,
-                                    expires=c['day'] + shelf_life(c, item) - 1, received=c['day']))
+    lot = dict(id=life._id(c, 'batch'), item=item, qty=qty, unit_cost=unit_cost,
+               expires=c['day'] + shelf_life(c, item) - 1, received=c['day'])
+    if item in FRESH:
+        lot['made'] = opening_abs(c) if made is None else made
+    c['life']['pantry'].append(lot)
+
+
+def _waste(c: dict, item: str, qty: int, value: int, reason: str) -> None:
+    x = c['life']
+    x['day_waste'] += value
+    x['waste'].append(dict(day=c['day'], item=item, qty=min(60, qty), value=min(10000, value), reason=reason))
+    x['waste'] = x['waste'][-120:]
+
+
+def till(minute: int, made: int) -> str:
+    """'14:20', or 'hết ca' when the batch outlasts the day (it is thrown away at closing anyway)."""
+    if minute // DAY_MIN > made // DAY_MIN or minute % DAY_MIN >= CLOSE_MIN:
+        return 'hết ca'
+    return hm(minute)
+
+
+def fresh_word(item: str, bnd: str) -> str:
+    words = FRESH_WORD.get(item, TEA_WORD)
+    return words[('fresh', 'tired', 'stale').index(bnd)]
+
+
+def _spoil(s: dict, c: dict) -> list[str]:
+    """Batches past their time are thrown away (logged as waste once)."""
+    now = now_abs(c)
+    gone = {}
+    for l in c['life']['pantry']:
+        if l['qty'] > 0 and l['expires'] >= c['day'] and l['item'] in FRESH and band(c, l, now) == 'stale':
+            _waste(c, l['item'], l['qty'], l['qty'] * l['unit_cost'], f"{'Trân châu' if l['item'] in ('pearls', 'white_pearl') else 'Trà'} để quá giờ ({hm(l['made'])})")
+            gone[l['item']] = gone.get(l['item'], 0) + l['qty']
+            l['qty'] = 0
+    notes = []
+    for item, n in gone.items():
+        what = 'đã cứng' if item in ('pearls', 'white_pearl') else 'đã ôi'
+        notes.append(f"{ING[item]['name']} {what}: bỏ {n} phần.")
+        _e().log(s, c, 'stock', f"{ING[item]['name']} để quá giờ, bỏ {n} phần.")
+    return notes
+
+
+def _pending(b: dict, item: str) -> int:
+    return sum(o['qty'] for o in b['orders'] if o['item'] == item)
+
+
+def _deliver(s: dict, c: dict, b: dict, now: int | None = None) -> list[str]:
+    """Orders whose time has come are unpacked onto the shelf."""
+    now = now_abs(c) if now is None else now
+    due = [o for o in b['orders'] if o['at'] <= now]
+    if not due:
+        return []
+    b['orders'] = [o for o in b['orders'] if o['at'] > now]
+    e = _e()
+    notes = []
+    for o in sorted(due, key=lambda o: o['at']):
+        sup = SUP_INDEX.get(o['supplier'], SUP_INDEX['partner'])
+        if o['item'] in CUP_ITEMS:
+            size = CUP_ITEMS[o['item']]
+            got = min(o['qty'] * CUP_PACK['qty'], CUP_CAP - b['cups'][size])
+            b['cups'][size] += max(0, got)
+            text = f"{o['qty'] * CUP_PACK['qty']} ly {size}"
+        else:
+            got = min(o['qty'], 60 - held(c)[o['item']])
+            if got > 0:
+                add_lot(s, c, o['item'], got, o['unit'])
+            text = f"{o['qty']} phần {low(ING[o['item']]['name'])}"
+        notes.append(f"📦 {sup['name']} giao tới {text}.")
+        e.log(s, c, 'stock', f"Nhận hàng: {text} từ {sup['name']} lúc {hm(o['at'])}.", ref=o['id'])
+    return notes
+
+
+def _order_name(item: str) -> str:
+    return f'ly {CUP_ITEMS[item]}' if item in CUP_ITEMS else low(ING[item]['name'])
+
+
+def sells(sup: dict, item: str) -> bool:
+    return sup.get('items') is None or item in sup['items']
+
+
+def _place(s: dict, c: dict, b: dict, item: str, qty: int, sup: dict, cost: int, unit: int, reason: str) -> dict:
+    """Pay now, get a promised window from the supplier's schedule (shared with game/inventory.py)."""
+    from . import inventory as inv
+    e = _e()
+    if cost:
+        e.money(s, c, -cost, reason, category='materials' if item in CUP_ITEMS else 'stock')
+    now = now_abs(c)
+    b['order_seq'] += 1
+    oid = f"tea-po-{b['order_seq']}"
+    sch = inv._schedule(sup, CAREER, now, f"{CAREER}|po|{c['day']}|{b['order_seq']}|{item}|{sup['id']}")
+    o = dict(id=oid, item=item, qty=qty, supplier=sup['id'], cost=cost, unit=unit, placed=sch['placed'], lo=sch['lo'],
+             hi=sch['hi'], at=sch['at'], late=sch['late'])
+    b['orders'].append(o)
+    e.log(s, c, 'stock', f"Đặt {qty} {'thùng ' if item in CUP_ITEMS else 'phần '}{_order_name(item)} từ {sup['name']}.", ref=oid)
+    return o
+
+
+def _when(t: int, now: int, approx: bool = False) -> str:
+    from . import inventory as inv
+    return inv.when(t, now, approx=approx)
+
+
+def order_view(c: dict, o: dict, now: int | None = None) -> dict:
+    """Public ETA of an order. The real arrival (`at`) and a delay stay hidden until due."""
+    from . import inventory as inv
+    now = now_abs(c) if now is None else now
+    sup = SUP_INDEX.get(o['supplier'], SUP_INDEX['partner'])
+    late = bool(o['late']) and now > o['hi']
+    eta = o['at'] if late else int(round((o['lo'] + o['hi']) / 10.0)) * 5
+    left = max(0, eta - now)
+    if o['lo'] == o['hi']:
+        window = hm(o['lo'])
+    elif o['lo'] // DAY_MIN == o['hi'] // DAY_MIN:
+        window = f"{hm(o['lo'])}–{hm(o['hi'])}"
+    else:
+        window = f"ngày {o['lo'] // DAY_MIN}–{o['hi'] // DAY_MIN}"
+    days = eta // DAY_MIN - now // DAY_MIN
+    if days <= 0:
+        left_label = 'còn ' + inv._duration(left) if left else 'sắp tới'
+    elif days == 1:
+        left_label = 'mai, trước giờ mở cửa' if eta % DAY_MIN < OPEN_MIN else 'ngày mai'
+    else:
+        left_label = f'còn {days} ngày'
+    span = max(1, eta - o['placed'])
+    return dict(id=o['id'], item=o['item'], name=_order_name(o['item']), qty=o['qty'], cups=o['item'] in CUP_ITEMS,
+                supplier=sup['id'], supplier_name=sup['name'], emoji=sup['emoji'], cost=o['cost'],
+                eta_label=_when(eta, now, approx=not late), window=window, left_label=left_label,
+                progress=round(min(1.0, max(0.0, (now - o['placed']) / span)), 2),
+                late_note=o['late'] if late else None)
+
+
+def supplier_view(c: dict, sup: dict, now: int | None = None) -> dict:
+    from . import inventory as inv
+    now = now_abs(c) if now is None else now
+    q = inv.quote(sup, CAREER, now)
+    k = sup['kind']
+    window = (f"{sup['mins'][0]}–{sup['mins'][1]} phút" if k == 'rush' else 'Hai chuyến · ' + ' & '.join(hm(r[1]) for r in sup['runs']) if k == 'runs'
+              else f"Sáng mai · đặt trước {hm(sup['cutoff'])}" if k == 'next' else f"{sup['days'][0]}–{sup['days'][1]} ngày")
+    return dict(id=sup['id'], name=sup['name'], emoji=sup['emoji'], kind=k, factor=sup['factor'], note=sup['note'],
+                items=list(sup['items']) if sup.get('items') is not None else None, window=window, late=sup['late'],
+                quote=dict(label=q['label'], eta_label=q['eta_label'], day=q['day'], time=q['time']))
 
 
 def warnings(c: dict) -> list[dict]:
@@ -403,13 +684,101 @@ def warnings(c: dict) -> list[dict]:
         out.append(dict(id='pearls', text='Chưa nấu trân châu', where='stock'))
     empty = [ING[x]['name'] for x in BASES if unlocked(c, x) and st[x] == 0]
     if empty:
-        out.append(dict(id='base', text='Hết trà nền: ' + ', '.join(empty), where='stock'))
+        out.append(dict(id='base', text='Chưa ủ trà: ' + ', '.join(empty), where='stock'))
     low = [k for k, v in b['cups'].items() if v < 5]
     if low:
         out.append(dict(id='cups', text='Sắp hết ly ' + '/'.join(low), where='stock'))
     if b['mess'] >= UNSAFE_MESS:
         out.append(dict(id='mess', text='Quầy còn vệt trà đổ', where='counter'))
+    if b['sealer_wear'] >= SEALER_DIRTY:
+        out.append(dict(id='sealer', text='Máy dán nắp bám keo, cần lau', where='counter'))
     return out
+
+
+def sealer_state(b: dict) -> str:
+    w = b['sealer_wear']
+    return 'clean' if w < SEALER_STICKY else 'sticky' if w < SEALER_DIRTY else 'dirty'
+
+
+def seal_zones(b: dict) -> dict:
+    """Green zone of the heat sealer: glue on the plate narrows it."""
+    st = sealer_state(b)
+    if st == 'sticky':
+        return dict(SEAL, good_lo=1.7, good_hi=2.3, burn=3.8)
+    if st == 'dirty':
+        return dict(SEAL, good_lo=1.9, good_hi=2.1, burn=3.4)
+    return dict(SEAL)
+
+
+def forecast(c: dict) -> dict:
+    """Tomorrow's luck of the day is already fixed by the day number, so it can be shown tonight."""
+    day = c['day'] + 1 if c['open'] else c['day']
+    m = MOD_INDEX[roll_mod(day)]
+    return dict(day=day, id=m['id'], title=m['title'], emoji=m['emoji'], text=m['text'], advice=ADVICE[m['id']])
+
+
+def batches(c: dict, now: int | None = None) -> list[dict]:
+    """Pots and pearl batches on the counter, oldest first, with their freshness."""
+    now = now_abs(c) if now is None else now
+    out = []
+    for item in [x for x in ING if x in FRESH]:
+        rows = []
+        for l in sorted(_lots(c, item, now), key=_fifo):
+            bnd = band(c, l, now)
+            row = dict(qty=l['qty'], band=bnd, word=fresh_word(item, bnd))
+            if l.get('made') is not None:
+                good, ok = fresh_window(c, item)
+                row.update(made=hm(l['made']), good_until=till(l['made'] + good, l['made']), ok_until=till(l['made'] + ok, l['made']))
+            rows.append(row)
+        if rows:
+            out.append(dict(item=item, name=ING[item]['name'], emoji=ING[item]['emoji'], lots=rows))
+    return out
+
+
+def care(c: dict) -> list[dict]:
+    """Today's care list, computed on the server (ok / warn / danger)."""
+    b = view(c)
+    now = now_abs(c)
+    st = stock(c)
+    rows = []
+    cooked = [x for x in ('pearls', 'white_pearl') if unlocked(c, x)]
+    for item in cooked:
+        lots = sorted(_lots(c, item, now), key=_fifo)
+        name = ING[item]['name']
+        if not lots:
+            rows.append(dict(id='pot-' + item, icon='🟤', tone='danger' if c['open'] else 'warn', text=f'{name}: chưa nấu mẻ nào. Nấu mất 20 phút.'))
+            continue
+        worst = band(c, lots[0], now)
+        good, ok = fresh_window(c, item)
+        made = lots[0].get('made')
+        when = f" · dẻo tới {till(made + good, made)}" if made is not None and worst == 'fresh' else f" · cứng lúc {till(made + ok, made)}" if made is not None else ''
+        rows.append(dict(id='pot-' + item, icon='🟤', tone='ok' if worst == 'fresh' else 'warn',
+                         text=f"{name}: {st[item]} phần {fresh_word(item, worst)}{when}" + (' · đổ mẻ cũ hoặc nấu mẻ mới' if worst == 'tired' else '')))
+    tired = [x for x in BASES if unlocked(c, x) and any(band(c, l, now) == 'tired' for l in _lots(c, x, now))]
+    if tired:
+        rows.append(dict(id='tea', icon='🫖', tone='warn', text='Trà ủ lâu, hơi chát: ' + ', '.join(ING[x]['name'] for x in tired) + '. Ủ bình mới nhé.'))
+    empty = [ING[x]['name'] for x in BASES if unlocked(c, x) and st[x] == 0]
+    if empty:
+        rows.append(dict(id='tea-empty', icon='🫖', tone='warn', text='Chưa ủ: ' + ', '.join(empty) + '.'))
+    wear = b['sealer_wear']
+    sst = sealer_state(b)
+    rows.append(dict(id='sealer', icon='⚙️', tone='ok' if sst == 'clean' else 'warn' if sst == 'sticky' else 'danger',
+                     text=f'Máy dán nắp: {wear} ly từ lần lau trước' + ('' if sst == 'clean' else ' · bám keo, vùng xanh hẹp lại' if sst == 'sticky' else ' · bẩn, khó dán đẹp. Lau ngay!')))
+    lowcups = [k for k, v in b['cups'].items() if v < 8 and not _pending(b, 'cup_' + k)]
+    if lowcups:
+        rows.append(dict(id='cups', icon='🥤', tone='warn', text='Sắp hết ly ' + '/'.join(lowcups) + '. Đặt thêm trước khi cạn.'))
+    if b['orders']:
+        first = min(b['orders'], key=lambda o: o['lo'])
+        v = order_view(c, first, now)
+        rows.append(dict(id='orders', icon='📦', tone='ok', text=f"{len(b['orders'])} đơn đang giao · sớm nhất {v['name']}: {v['eta_label']}"))
+    if c['open'] and clock_minutes(c) >= 17 * 60:
+        left = sum(l['qty'] for l in _lots(c, now=now) if l['item'] in FRESH)
+        if left:
+            rows.append(dict(id='night', icon='🌙', tone='warn', text=f'Trà ủ và trân châu không để qua đêm: {left} phần sẽ bỏ khi khép ca.'))
+    if not c['open'] or clock_minutes(c) >= 14 * 60:
+        f = forecast(c)
+        rows.append(dict(id='tomorrow', icon=f['emoji'], tone='ok', text=f"Mai: {f['title']}. {f['advice']}"))
+    return rows
 
 
 # ---------------------------------------------------------------- day hooks
@@ -444,6 +813,10 @@ def on_start(s: dict, c: dict) -> None:
         elif pr['kind'] == 'coins':
             e.log(s, c, 'promise', 'Bạn học sinh hôm trước chưa ghé trả tiền. Chuyện nhỏ, quán vẫn vui.', ref=pr['ref'])
     b['promises'] = keep[-10:]
+    # The shop clock runs over a fixed number of beats today; goods due before opening wait at the door.
+    b['span'] = max(30, b['quota'] * 12)
+    arrived = _deliver(s, c, b, now=c['day'] * DAY_MIN + OPEN_MIN)
+    b['night'] = (b['night'] + arrived)[-8:]
     # Keep a short queue at the counter; more guests arrive as cups go out.
     for t in active:
         t.setdefault('changes', [])
@@ -561,10 +934,23 @@ def on_close(s: dict, c: dict) -> dict:
     for t in c['tasks']:
         if t['status'] not in ('completed', 'referred', 'cancelled') and t.get('cup', {}).get('placed') and not t['cup']['items']:
             t['cup'] = new_cup()
+    # Brewed tea and cooked pearls never stay overnight: what is left is logged as waste once.
+    dumped = {}
+    for l in c['life']['pantry']:
+        if l['qty'] > 0 and l['item'] in FRESH and l['expires'] >= c['day']:
+            _waste(c, l['item'], l['qty'], l['qty'] * l['unit_cost'], 'Trà ủ và trân châu không để qua đêm')
+            dumped[l['item']] = dumped.get(l['item'], 0) + l['qty']
+            l['qty'] = 0
+    tomorrow = forecast(c)
     summary = dict(day=c['day'], served=b['served'], perfect=b['perfect'], returned=b['returned'], walkouts=b['walkouts'],
                    revenue=b['revenue'], fines=b['fines'], bonus=b['bonus'], events=b['events_today'], modifier=b['mod'],
-                   level=level(c))
+                   level=level(c), dumped=sum(dumped.values()), sealer=b['sealer_wear'], orders=len(b['orders']),
+                   tomorrow=dict(title=tomorrow['title'], emoji=tomorrow['emoji'], advice=tomorrow['advice']))
     b['history'] = (b['history'] + [summary])[-14:]
+    lines = []
+    if dumped:
+        lines.append('🌙 Cuối ca bỏ ' + ', '.join(f"{n} phần {low(ING[k]['name'])}" for k, n in dumped.items()) + ' (không để qua đêm).')
+    b['night'] = lines
     b['turn0'] = 0
     return summary
 
@@ -679,10 +1065,38 @@ def handle(s: dict, c: dict, action: str, p: dict) -> dict:
     need = e.need
     name = action[4:]
     b = state(c)
+    # Time may have passed through other commands: unpack deliveries, throw out batches past their time.
+    before = _deliver(s, c, b) + _spoil(s, c)
+    r = _dispatch(s, c, b, name, p)
+    after = []
+    if r.pop('_tick', False):
+        c['turn'] += 1
+        after = _beat(s, c, r.pop('_active', None) or c.get('active_task'))
+        after += _deliver(s, c, b) + _spoil(s, c)
+    r.pop('_active', None)
+    if r.pop('_arrivals', False):
+        arrived = _top_up(s, c, b)
+        if arrived:
+            after.append('Có khách mới tới quầy: ' + ', '.join(customer_name(t) for t in arrived) + '.')
+    if r.pop('_events', False):
+        _maybe_event(s, c, b)
+    notes = before + after
+    if notes:
+        r['message'] = (r.get('message', '') + ' ' + ' '.join(notes)).strip()
+    return r
+
+
+def _dispatch(s: dict, c: dict, b: dict, name: str, p: dict) -> dict:
+    e = _e()
+    need = e.need
     if name == 'prepare':
         return _prepare(s, c, p)
     if name == 'cups':
-        return _buy_cups(s, c, p)
+        return _order(s, c, dict(item='cup_' + str(p.get('size')), qty=1, supplier=p.get('supplier', 'partner'), confirm=p.get('confirm')))
+    if name == 'order':
+        return _order(s, c, p)
+    if name == 'toss':
+        return _toss(s, c, p)
     if name == 'upgrade':
         return _upgrade(s, c, p)
     if name == 'event_ok':
@@ -698,53 +1112,127 @@ def handle(s: dict, c: dict, action: str, p: dict) -> dict:
         need(b['mess'] > 0, 'Quầy đang sạch bong rồi.')
         b['mess'] = 0
         r = dict(message='Đã lau sạch quầy. Khách nhìn vào thấy yên tâm hơn.')
+    elif name == 'clean':
+        need(b['sealer_wear'] > 0, 'Máy dán nắp vừa lau, còn sạch lắm.')
+        n = b['sealer_wear']
+        b['sealer_wear'] = 0
+        b['cleaned'] = c['day']
+        r = dict(message=f'Đã tháo khuôn dán, lau sạch keo sau {n} ly. Vùng dán đẹp rộng trở lại.')
+    elif name == 'wait':
+        need(b['orders'] or any(t['status'] not in ('completed', 'referred', 'cancelled') for t in c['tasks']), 'Không có gì phải chờ lúc này.')
+        r = dict(message='Bạn tranh thủ lau ly, xếp lại quầy (20 phút).')
+    elif name == 'greet':
+        return _greet(s, c, b, p)
     elif name == 'event':
         r = _answer(s, c, b, p)
     else:
         t = _task(c, p)
         active = t['id']
         r = _station(s, c, b, t, name, p)
-    notes = []
-    if not r.pop('_free', False):
-        c['turn'] += 1
-        notes = _beat(s, c, active or c.get('active_task'))
-    if r.pop('_arrivals', False):
-        arrived = _top_up(s, c, b)
-        if arrived:
-            notes.append('Có khách mới tới quầy: ' + ', '.join(customer_name(t) for t in arrived) + '.')
-    _maybe_event(s, c, b)
-    if notes:
-        r['message'] = r.get('message', '') + ' ' + ' '.join(notes)
+    r['_tick'] = not r.pop('_free', False)
+    r['_active'] = active
+    r['_events'] = True
     return r
 
 
 def _prepare(s: dict, c: dict, p: dict) -> dict:
+    """Brew a pot of tea, cook a batch of pearls or whip foam at the counter (paid at cost, ready now).
+    Brewing and cooking take 20 minutes of shop time while the shop is open."""
     e = _e()
     need = e.need
     item = p.get('item')
     need(item in ING, 'Không có nguyên liệu này.')
     need(unlocked(c, item), f"{ING[item]['name']} mở ở cấp {ING[item].get('level', 1)}. Phục vụ thêm vài ly nhé.")
+    need(item in MADE, f"{ING[item]['name']} mua từ nhà cung cấp: mở Kho → Đặt hàng (hỏa tốc 30–60 phút).")
     qty = e.integer(p.get('qty'), 1, 20)
     need(p.get('confirm') is True, 'Xác nhận chi phí trước khi nhập.')
-    need(stock(c)[item] + qty <= 60, 'Kho chứa tối đa 60 phần mỗi loại.')
+    need(held(c)[item] + qty <= 60, 'Kho chứa tối đa 60 phần mỗi loại.')
     ing = ING[item]
     cost = qty * ing['cost']
-    e.money(s, c, -cost, 'Chuẩn bị ' + ing['name'], category='stock')
-    add_lot(s, c, item, qty, ing['cost'])
-    verb = 'nấu' if item in ('pearls', 'white_pearl') else 'nhập'
-    return dict(message=f"Đã {verb} {qty} phần {ing['name']}. Dùng đến hết ngày {c['day'] + shelf_life(c, item) - 1}.")
+    verb = 'Nấu' if item in ('pearls', 'white_pearl') else 'Ủ' if item in BASES else 'Đánh'
+    e.money(s, c, -cost, f"{verb} {ing['name'].lower()}", category='stock')
+    made = opening_abs(c)
+    add_lot(s, c, item, qty, ing['cost'], made=made)
+    if item in FRESH:
+        good, ok = fresh_window(c, item)
+        word = 'dẻo' if item in ('pearls', 'white_pearl') else 'ngon'
+        end = till(made + ok, made)
+        msg = f"{verb} xong {qty} phần {ing['name'].lower()} lúc {hm(made)}: {word} tới {till(made + good, made)}" + (f", bỏ sau {end}." if end != 'hết ca' else '.')
+    else:
+        msg = f"{verb} {qty} phần {ing['name'].lower()}. Dùng đến hết ngày {c['day'] + shelf_life(c, item) - 1}."
+    r = dict(message=msg)
+    if c['open'] and item in FRESH:
+        r.update(_tick=True, _events=True)
+    return r
 
 
-def _buy_cups(s: dict, c: dict, p: dict) -> dict:
+def _order(s: dict, c: dict, p: dict) -> dict:
+    """Order from a supplier: paid now, delivered at a real time of day (see SUPPLIERS)."""
     e = _e()
+    need = e.need
     b = state(c)
-    size = p.get('size')
-    e.need(size in ('M', 'L'), 'Cỡ ly không hợp lệ.')
-    e.need(p.get('confirm') is True, 'Xác nhận chi phí trước khi nhập ly.')
-    e.need(b['cups'][size] + CUP_PACK['qty'] <= CUP_CAP, f'Chồng ly {size} đã đầy.')
-    e.money(s, c, -CUP_PACK['cost'], f'Nhập {CUP_PACK["qty"]} ly {size}', category='materials')
-    b['cups'][size] += CUP_PACK['qty']
-    return dict(message=f'Đã xếp thêm {CUP_PACK["qty"]} ly size {size} lên chồng ly.')
+    item = p.get('item')
+    need(item in ORDERABLE, 'Mặt hàng này không đặt được. Trà nền, trân châu, foam và kem cheese làm ngay tại quầy.')
+    cups = item in CUP_ITEMS
+    if not cups:
+        need(unlocked(c, item), f"{ING[item]['name']} mở ở cấp {ING[item].get('level', 1)}. Phục vụ thêm vài ly nhé.")
+    qty = e.integer(p.get('qty'), 1, 5 if cups else 20)
+    sup = SUP_INDEX.get(p.get('supplier'))
+    need(sup, 'Nhà cung cấp không hợp lệ.')
+    need(sells(sup, item), f"{sup['name']} không bán {_order_name(item)}. Chọn nhà khác nhé.")
+    need(p.get('confirm') is True, 'Xác nhận chi phí trước khi đặt hàng.')
+    need(len(b['orders']) < MAX_ORDERS, f'Đang chờ {MAX_ORDERS} đơn rồi. Đợi hàng tới bớt đã nhé.')
+    if cups:
+        size = CUP_ITEMS[item]
+        need(b['cups'][size] + (_pending(b, item) + qty) * CUP_PACK['qty'] <= CUP_CAP, f'Chồng ly {size} không còn chỗ cho ngần ấy ly.')
+        base = CUP_PACK['cost']
+    else:
+        need(held(c)[item] + _pending(b, item) + qty <= 60, 'Kho chứa tối đa 60 phần mỗi loại (tính cả hàng đang giao).')
+        base = ING[item]['cost']
+    cost = max(1, round(qty * base * sup['factor']))
+    unit = min(20, max(0, round(base * sup['factor'])))
+    label = f"{qty} thùng {_order_name(item)} ({qty * CUP_PACK['qty']} ly)" if cups else f"{qty} phần {_order_name(item)}"
+    o = _place(s, c, b, item, qty, sup, cost, unit, f"Đặt {label} · {sup['name']}")
+    v = order_view(c, o)
+    return dict(message=f"Đã đặt {label}, {cost} xu. {sup['name']} giao {v['eta_label']} ({v['window']}).", eta=v)
+
+
+def _toss(s: dict, c: dict, p: dict) -> dict:
+    """Pour out an old pot / batch that is past its best, so the next cup uses the fresh one."""
+    e = _e()
+    item = p.get('item')
+    e.need(item in FRESH, 'Chỉ đổ được trà ủ hoặc trân châu đã nấu.')
+    now = now_abs(c)
+    have = _lots(c, item, now)
+    e.need(have, f"Không còn mẻ {ING[item]['name'].lower()} nào để đổ.")
+    lots = [l for l in have if band(c, l, now) == 'tired']
+    e.need(lots, f"{ING[item]['name']} vẫn còn {fresh_word(item, 'fresh')}, chưa cần đổ.")
+    n = sum(l['qty'] for l in lots)
+    _waste(c, item, n, sum(l['qty'] * l['unit_cost'] for l in lots), 'Đổ mẻ cũ trước khi hết ngon')
+    for l in lots:
+        l['qty'] = 0
+    return dict(message=f"Đã đổ {n} phần {ING[item]['name'].lower()} {fresh_word(item, 'tired')}. Ly sau dùng mẻ mới.")
+
+
+def _greet(s: dict, c: dict, b: dict, p: dict) -> dict:
+    """“Như mọi khi hả?” — a regular whose card has a note feels remembered (no beat)."""
+    e = _e()
+    t = _task(c, p)
+    e.need(not t.get('walkin') and t['npc'] in REGULARS, 'Khách này chưa có trong sổ khách quen.')
+    notes = notes_for(b, t['npc'])
+    e.need(notes, 'Sổ chưa ghi gì về khách này. Pha cho khách một ly trước đã.')
+    e.need(not t.get('greeted'), 'Đã chào khách rồi.')
+    t['greeted'] = True
+    t['patience'] = min(100, t.get('patience', 100) + 8)
+    c['relationships'][t['npc']] = min(100, c['relationships'].get(t['npc'], 0) + 1)
+    name = customer_name(t)
+    return dict(message=f"{name} cười tít: “Nhớ cả chuyện đó luôn hả?” ({notes[-1]['text']})")
+
+
+def notes_for(b: dict, npc: str) -> list[dict]:
+    visits = (b['notebook'].get(npc) or {}).get('visits', 0)
+    rows = NOTES.get(npc, [])
+    return [dict(id=k, emoji=em, text=text) for i, (k, em, text) in enumerate(rows) if visits >= (1, 3)[i]]
 
 
 def _upgrade(s: dict, c: dict, p: dict) -> dict:
@@ -807,12 +1295,15 @@ def _station(s: dict, c: dict, b: dict, t: dict, name: str, p: dict) -> dict:
         need(len(have) < limit, {'base': 'Ly chỉ nhận một loại trà nền.', 'flavor': 'Ly chỉ nhận một loại siro.', 'topping': f'Ly nhận tối đa {MAX_TOPPINGS} topping.'}[group])
         if group != 'base':
             need(any(ING[k]['group'] == 'base' for k in cup['items']), 'Rót trà nền trước đã nhé.')
-        cost = _use(c, item)
+        cost, bnd = _use(c, item)
         cup['items'].append(item)
         cup['cost'] += cost
         cup['checked'] = False
+        if bnd == 'tired':
+            cup['tired'] = cup.get('tired', []) + [item]
         verb = {'base': 'Rót', 'flavor': 'Thêm siro', 'topping': 'Múc'}[group]
-        return dict(message=f"{verb} {ING[item]['name'].lower() if group != 'base' else ING[item]['name']}.")
+        note = f" ({fresh_word(item, 'tired')}: mẻ này để lâu rồi)" if bnd == 'tired' else ''
+        return dict(message=f"{verb} {ING[item]['name'].lower() if group != 'base' else ING[item]['name']}{note}.")
     if name == 'ice':
         lv = p.get('level')
         need(lv in ICES, 'Mức đá không hợp lệ.')
@@ -827,6 +1318,35 @@ def _station(s: dict, c: dict, b: dict, t: dict, name: str, p: dict) -> dict:
         cup['sugar'] = lv
         cup['checked'] = False
         return dict(message=f'Đường: {lv}%.')
+    if name == 'swap':
+        # Out of a syrup, a topping or a cup size: ask the guest to take something else (a little patience, no beat).
+        item = p.get('item')
+        n = t['needs']
+        if item in CUP_ITEMS:
+            size = CUP_ITEMS[item]
+            other = 'L' if size == 'M' else 'M'
+            need(n['size'] == size, 'Khách không gọi cỡ ly này.')
+            need(b['cups'][size] == 0 and not (cup['placed'] and cup['size'] == size), f'Chồng ly {size} vẫn còn, không cần đổi cỡ.')
+            need(b['cups'][other] > 0, 'Hết cả hai cỡ ly. Đặt hỏa tốc rồi chờ nhé.')
+            _change(c, t, dict(set='size', to=other))
+            if other == 'L':
+                t['discount'] = min(50, t.get('discount', 0) + SIZE_L_PRICE)  # free upgrade: the shop ran out, not the guest
+            t['patience'] = max(25, t.get('patience', 100) - 4)
+            said = 'lên ly L, giữ giá ly M' if other == 'L' else 'xuống ly M, trả tiền ly M'
+            return dict(message=f"Quầy hết ly {size}. {customer_name(t)} đồng ý {said}.", _free=True)
+        need(item in BOUGHT and (item in n['toppings'] or item == n['flavor']), 'Món này không có trong ly khách gọi.')
+        need(item not in cup['items'], 'Món này đã vào ly rồi.')
+        need(stock(c)[item] == 0, f"Quầy vẫn còn {ING[item]['name'].lower()}, không cần mời khách đổi.")
+        to = swap_to(c, t, item)
+        if ING[item]['group'] == 'topping':
+            need(to, 'Không còn topping nào khác để mời đổi. Đặt hỏa tốc rồi chờ nhé.')
+            _change(c, t, dict(swap=item, to=to))
+            said = f"thay {ING[item]['name'].lower()} bằng {ING[to]['name'].lower()}"
+        else:
+            _change(c, t, dict(set='flavor', to=to))
+            said = f"đổi siro {ING[item]['name'].lower()} sang {ING[to]['name'].lower()}" if to else f"bỏ siro {ING[item]['name'].lower()}"
+        t['patience'] = max(25, t.get('patience', 100) - 6)
+        return dict(message=f"Quầy hết {ING[item]['name'].lower()}. {customer_name(t)} gật đầu {said}. Giá mới {t['quoted_price']} xu.", _free=True)
     if name == 'check':
         need(cup['placed'] and cup['items'], 'Ly còn trống.')
         ok = not _diff(cup, t['needs'])
@@ -856,15 +1376,22 @@ def _station(s: dict, c: dict, b: dict, t: dict, name: str, p: dict) -> dict:
         elif 'sealer' in b['upgrades']:
             quality = 'perfect'
         elif cup.get('seal_t') is not None:
-            held = max(0.0, now() - cup['seal_t'])
+            took = max(0.0, now() - cup['seal_t'])
             cup['seal_t'] = None
-            if held < SEAL['loose']:
+            z = seal_zones(b)
+            if took < z['loose']:
                 return dict(message='Nhả tay sớm quá, màng chưa dính. Ép lại nhé.')
-            quality = 'perfect' if SEAL['good_lo'] <= held <= SEAL['good_hi'] else 'burnt' if held > SEAL['burn'] else 'ok'
+            quality = 'perfect' if z['good_lo'] <= took <= z['good_hi'] else 'burnt' if took > z['burn'] else 'ok'
+        if quality == 'perfect' and 'sealer' in b['upgrades'] and sealer_state(b) == 'dirty':
+            quality = 'ok'  # even the automatic sealer cannot make a clean film on a sticky plate
+        if not dome:
+            b['sealer_wear'] = min(999, b['sealer_wear'] + 1)
         cup.update(sealed=True, dome=dome, seal_q=quality, seal_t=None)
         text = {'perfect': 'Tách! Màng nắp căng bóng, kín đều — hoàn hảo.', 'ok': 'Máy dán nắp kêu “tách” — ly đã kín.',
                 'burnt': 'Ép lâu quá, màng nắp hơi cháy xém. Vẫn kín, nhưng khách sẽ để ý.'}[quality]
         r = dict(message='Nắp cầu đã đậy chặt.' if dome else text, seal=quality)
+        if not dome and b['sealer_wear'] in (SEALER_STICKY, SEALER_DIRTY):
+            r['message'] += ' Khuôn dán bắt đầu bám keo: lau máy khi rảnh tay nhé.' if b['sealer_wear'] == SEALER_STICKY else ' Máy dán nắp bẩn rồi, lau ngay để nắp đẹp lại.'
         if 'sealer' in b['upgrades']:
             r['_free'] = True
         return r
@@ -955,6 +1482,8 @@ def _serve(s: dict, c: dict, b: dict, t: dict) -> dict:
     late = bool(t.get('app')) and c['turn'] > t['app']['deadline']
     if late:
         issues.append('late')
+    if [x for x in cup.get('tired', []) if x in cup['items']]:
+        issues.append('tired')
     _slips(t, cup, issues)
     if issues and not t.get('remade') and not t.get('app') and cq.decide(c, t, remake=True) == 'remake':
         # A strict customer hands a clearly wrong cup back: new cup, same order.
@@ -978,7 +1507,7 @@ def _serve(s: dict, c: dict, b: dict, t: dict) -> dict:
     said = cq.react(s, c, t, reward, who=name)
     reward = said['pay']
     c['life']['consumed_cost'] += cup['cost']
-    words = {'sugar': 'độ ngọt', 'ice': 'lượng đá', 'seal': 'nắp dán', 'late': 'giờ giao'}
+    words = {'sugar': 'độ ngọt', 'ice': 'lượng đá', 'seal': 'nắp dán', 'late': 'giờ giao', 'tired': 'độ tươi'}
     note = 'Đúng từng lớp: trà, topping, đường và đá.' if not issues else 'Ly được nhận, nhưng ' + ' và '.join(words[x] for x in issues) + ' chưa như ý.'
     e.task_done(s, c, t, reward, f'Đã nhận ly {low(ING[t["needs"]["base"]]["name"])} từ quầy. {note}')
     post = next((f for f in c['feed'] if f.get('source') == t['id'] and f.get('kind') == 'review'), None)
@@ -1003,10 +1532,18 @@ def _serve(s: dict, c: dict, b: dict, t: dict) -> dict:
 
     if not issues:
         b['perfect'] += 1
+    extra = []
     if not t.get('walkin') and t['npc'] in REGULARS:
         book = b['notebook'].get(t['npc'])
+        known = len(notes_for(b, t['npc']))
         b['notebook'][t['npc']] = dict(usual=copy.deepcopy(t['needs']), visits=(book or {}).get('visits', 0) + 1, day=c['day'])
-    extra = []
+        learned = notes_for(b, t['npc'])
+        if len(learned) > known:
+            extra.append(f"📒 Sổ khách quen ghi thêm: {learned[-1]['text']}")
+        if t.get('greeted') and not issues:
+            e.money(s, c, 2, 'Khách quen vui vì được nhớ', t['id'], category='tip')
+            b['bonus'] += 2
+            extra.append('Khách quen vui vì được nhớ: +2 xu.')
     if t.get('vip'):
         if not issues:
             e.money(s, c, 20, 'Video của Hân giới thiệu quán', t['id'], category='promotion')
@@ -1073,6 +1610,10 @@ def _slips(t: dict, cup: dict, issues: list) -> None:
         cq.slip(t, 'seal', 1, 'Nắp dán cháy xém, cầm lên thấy ngại.', 'nắp dán cháy xém')
     if 'late' in issues:
         cq.slip(t, 'late', 1, 'Đơn giao trễ giờ hẹn.', 'giao trễ giờ hẹn')
+    if 'tired' in issues:
+        pearls = any(x in ('pearls', 'white_pearl') for x in cup.get('tired', []))
+        cq.slip(t, 'tired', 1, 'Trân châu hơi cứng, nhai mỏi cả hàm.' if pearls else 'Trà ủ lâu quá nên hơi chát.',
+                'trân châu để lâu, hơi cứng' if pearls else 'trà ủ lâu, hơi chát')
 
 
 # ---------------------------------------------------------------- events
@@ -1312,7 +1853,7 @@ def event_choices(c: dict, ev: dict) -> list[dict]:
         return [dict(id='open', label='Mời kiểm tra, mở sổ nhập hàng'), dict(id='clean', label='Xin 2 phút lau quầy trước', hint='Khách đang chờ mất kiên nhẫn'),
                 dict(id='envelope', label='Dúi phong bì “uống nước”', hint='Không nên đâu…')]
     if k == 'pearls_out':
-        return [dict(id='cook', label='Nấu gấp một nồi', cost=16, hint='8 phần, khách chờ thêm 3 nhịp'),
+        return [dict(id='cook', label='Nấu gấp một nồi', cost=16, hint='8 phần, khách chờ thêm một lúc'),
                 dict(id='swap', label='Mời khách đổi topping khác', hint='Thay bằng thạch'),
                 dict(id='sign', label='Treo bảng “Tạm hết trân châu”', hint='Có khách sẽ tiếc mà về')]
     if k == 'rush':
@@ -1335,7 +1876,7 @@ def event_choices(c: dict, ev: dict) -> list[dict]:
     if k == 'short_delivery':
         return [dict(id='count', label=f"Đếm lại, ký nhận {f['got']} phần", cost=f['got'] * f['cost']),
                 dict(id='sign', label=f"Ký đủ {f['billed']} phần cho nhanh", cost=f['billed'] * f['cost']),
-                dict(id='refuse', label='Trả cả thùng, hẹn giao lại')]
+                dict(id='refuse', label='Trả cả thùng, hẹn giao lại', hint=f"Đặt lại đủ {f['billed']} phần chuyến sau của Hạt Nắng, trả {f['billed'] * f['cost']} xu nếu đủ tiền")]
     if k == 'power_cut':
         return [dict(id='dome', label='Dùng nắp cầu thay màng dán', hint='1 xu mỗi ly'), dict(id='wait', label='Mời khách chờ, tặng thêm thạch', hint='Khách vui hơn, quầy chậm lại')]
     if k == 'short_money':
@@ -1548,7 +2089,15 @@ def _resolve(s: dict, c: dict, b: dict, ev: dict, choice: str) -> None:
             result = f"Ký đủ {f['billed']} phần cho nhanh, nhưng thùng chỉ có {f['got']}. Bình hứa mai mang bù."
             eff.append(f"+{f['got']} phần, trả tiền {f['billed']}")
         else:
-            result = 'Bạn trả thùng, hẹn Bình giao lại đủ số. Kho vẫn đang thiếu.'
+            sup = SUP_INDEX['partner']
+            cost = f['billed'] * f['cost']
+            if c['money'] >= cost and held(c)[f['item']] + _pending(b, f['item']) + f['billed'] <= 60 and len(b['orders']) < MAX_ORDERS:
+                o = _place(s, c, b, f['item'], f['billed'], sup, cost, f['cost'], 'Đặt lại ' + ING[f['item']]['name'])
+                v = order_view(c, o)
+                result = f"Bạn trả thùng. Bình hẹn giao lại đủ {f['billed']} phần theo chuyến Hạt Nắng: {v['eta_label']}."
+                eff.append(f'-{cost} xu · tới {v["eta_label"]}')
+            else:
+                result = 'Bạn trả thùng, hẹn Bình giao lại đủ số khi quán đặt đơn mới. Kho vẫn đang thiếu.'
         c['relationships']['milk_tea_npc_05'] = min(100, c['relationships'].get('milk_tea_npc_05', 0) + (2 if choice == 'count' else 0))
     elif k == 'power_cut':
         if choice == 'dome':
@@ -1618,21 +2167,37 @@ def public(c: dict) -> dict:
     for npc, row in REGULARS.items():
         entry = b['notebook'].get(npc)
         notebook.append(dict(npc=npc, name=_e().NPC_INDEX[npc]['display_name'], usual=copy.deepcopy(entry['usual']) if entry else None,
-                             visits=entry['visits'] if entry else 0))
+                             visits=entry['visits'] if entry else 0, notes=notes_for(b, npc),
+                             next_note=next((n for n in (1, 3) if (entry['visits'] if entry else 0) < n), None)))
     left = max(0, b['quota'] - b['arrived']) + len([t for t in active])
+    now = now_abs(c)
+    tired = {}
+    for l in _lots(c, now=now):
+        if band(c, l, now) == 'tired':
+            tired[l['item']] = tired.get(l['item'], 0) + l['qty']
+    express = SUP_INDEX['express']
+    care_loop = dict(
+        now=dict(time=hm(now), day=now // DAY_MIN, is_open=bool(c['open']), open=hm(OPEN_MIN), close=hm(CLOSE_MIN)),
+        orders=[order_view(c, o, now) for o in sorted(b['orders'], key=lambda o: (o['lo'], o['id']))],
+        suppliers=[supplier_view(c, x, now) for x in SUPPLIERS], batches=batches(c, now), care=care(c), tomorrow=forecast(c),
+        night=list(b['night']), made=sorted(MADE), orderable=list(ORDERABLE),
+        pending={k: _pending(b, k) for k in ORDERABLE + list(BASES) if _pending(b, k)},
+        express=dict(eta=supplier_view(c, express, now)['quote']['eta_label'], factor=express['factor']),
+        sealer=dict(wear=b['sealer_wear'], state=sealer_state(b), sticky=SEALER_STICKY, dirty=SEALER_DIRTY, cleaned=b['cleaned']))
     return _clean(dict(
         cups=b['cups'], cup_pack=CUP_PACK, mess=b['mess'], level=lv, total=b['total'], next_tier=next_tier(c), clock=clock(c), beats=beats(c), rate=rate(c),
         modifier=dict(id=mod['id'], title=mod['title'], emoji=mod['emoji'], text=mod['text']),
         quota=b['quota'], arrived=b['arrived'], left=left if c['open'] else None, served=b['served'], perfect=b['perfect'],
         returned=b['returned'], walkouts=b['walkouts'], revenue=b['revenue'], fines=b['fines'], streak=c['life'].get('streak', 0),
         best_streak=c['life'].get('best_streak', 0),
-        stations=[dict(id=x['id'], group=x['group'], level=x.get('level', 1), unlocked=x.get('level', 1) <= lv, stock=st[x['id']]) for x in data.INGREDIENTS],
+        stations=[dict(id=x['id'], group=x['group'], level=x.get('level', 1), unlocked=x.get('level', 1) <= lv, stock=st[x['id']],
+                       tired=tired.get(x['id'], 0), made=x['id'] in MADE, fresh=x['id'] in FRESH) for x in data.INGREDIENTS],
         upgrades=[dict(u, owned=u['id'] in b['upgrades'], ready=lv >= u['level']) for u in UPGRADES],
         event=ev_view, notebook=notebook, warnings=warnings(c), history=b['history'][-7:], sold_out=b['sold_out'],
         sealer_off=b['sealer_off'] > c['turn'] and 'sealer' not in b['upgrades'], dome=b['dome'],
         office=dict(count=b['office']['count'], done=b['office']['done'], deadline_in=max(0, b['office']['deadline'] - c['turn']), bonus=b['office']['bonus']) if b.get('office') else None,
         story_step=b['story']['step'], prices=dict(base=BASE_PRICE, flavor=FLAVOR_PRICE, topping=TOPPING_PRICE, size_l=SIZE_L_PRICE),
-        sugars=list(SUGARS), ices=list(ICES), seal=SEAL, app_fee=APP_FEE_PCT, turn=c['turn']))
+        sugars=list(SUGARS), ices=list(ICES), seal=seal_zones(b), app_fee=APP_FEE_PCT, turn=c['turn'], **care_loop))
 
 
 def public_task(t: dict) -> dict:
@@ -1664,7 +2229,8 @@ def _valid_change(ch) -> bool:
         return False
     if 'set' in ch:
         return (ch['set'] == 'size' and ch.get('to') in ('M', 'L')) or (ch['set'] == 'ice' and ch.get('to') in ICES) or \
-               (ch['set'] == 'sugar' and type(ch.get('to')) is int and ch['to'] in SUGARS)
+               (ch['set'] == 'sugar' and type(ch.get('to')) is int and ch['to'] in SUGARS) or \
+               (ch['set'] == 'flavor' and 'to' in ch and (ch['to'] is None or ch['to'] in FLAVORS))
     if 'swap' in ch:
         return ch['swap'] in TOPPINGS and ch.get('to') in TOPPINGS
     if 'add' in ch:
@@ -1693,7 +2259,7 @@ def validate_task(t: dict) -> None:
         need(isinstance(w, dict) and w.get('kind') in ('student', 'office', 'elder', 'young', 'app'), 'Khách vãng lai sai.')
         for k in ('id', 'name', 'emoji', 'me'):
             e.clean_text(w.get(k, 'mình'), 40)
-    for k in ('usual', 'vip', 'office', 'combo', 'walked'):
+    for k in ('usual', 'vip', 'office', 'combo', 'walked', 'greeted'):
         need(type(t.get(k, False)) is bool, 'Cờ khách sai.')
     e.integer(t.get('beats', 0), 0, 10**6)
     e.integer(t.get('discount', 0), 0, 50)
@@ -1710,6 +2276,8 @@ def validate_task(t: dict) -> None:
         need(type(cup.get(k, False)) is bool, 'Trạng thái ly sai.')
     st = cup.get('seal_t')
     need(st is None or (type(st) in (int, float) and 0 <= st < 10**11), 'Giờ ép nắp sai.')
+    tired = cup.get('tired', [])
+    need(isinstance(tired, list) and len(tired) == len(set(tired)) and all(k in FRESH and k in cup['items'] for k in tired), 'Độ tươi trong ly sai.')
     need(cup.get('seal_q') in SEAL_QUALITY and (cup.get('seal_q') is None or cup['sealed']), 'Chất lượng nắp sai.')
     g = t.get('group')
     if g is not None:
@@ -1753,6 +2321,36 @@ def validate(c: dict) -> None:
     need(isinstance(b['notebook'], dict) and all(k in REGULARS and isinstance(v, dict) and _valid_needs(v.get('usual')) for k, v in b['notebook'].items()), 'Sổ khách quen sai.')
     st = b['story']
     need(isinstance(st, dict) and type(st.get('step')) is int and 0 <= st['step'] <= 3 and isinstance(st.get('choices'), list), 'Chuyện khách quen sai.')
+    for k in ('span', 'order_seq', 'cleaned'):
+        e.integer(b[k], 0, 10**9)
+    e.integer(b['sealer_wear'], 0, 999)
+    need(isinstance(b['night'], list) and len(b['night']) <= 8, 'Ghi chú đầu ngày sai.')
+    for line in b['night']:
+        e.clean_text(line, 300)
+    need(isinstance(b['orders'], list) and len(b['orders']) <= MAX_ORDERS, 'Đơn đặt hàng sai.')
+    ids = set()
+    for o in b['orders']:
+        need(isinstance(o, dict) and set(o) == {'id', 'item', 'qty', 'supplier', 'cost', 'unit', 'placed', 'lo', 'hi', 'at', 'late'}, 'Đơn đặt hàng thiếu dữ liệu.')
+        e.clean_text(o['id'], 40)
+        need(o['id'] not in ids, 'Trùng mã đơn đặt hàng.')
+        ids.add(o['id'])
+        need(o['item'] in ING or o['item'] in CUP_ITEMS, 'Mặt hàng đặt sai.')
+        need(o['supplier'] in SUP_INDEX, 'Nhà cung cấp sai.')
+        e.integer(o['qty'], 1, 5 if o['item'] in CUP_ITEMS else 20)
+        e.integer(o['cost'], 0, 10000)
+        e.integer(o['unit'], 0, 20)
+        for k in ('placed', 'lo', 'hi', 'at'):
+            e.integer(o[k], 0, 10**9)
+        need(o['placed'] <= o['lo'] <= o['hi'], 'Giờ giao hẹn sai.')
+        if o['late'] is None:
+            need(o['lo'] <= o['at'] <= o['hi'], 'Giờ giao sai.')
+        else:
+            e.clean_text(o['late'], 200)
+            need(o['at'] > o['hi'], 'Giờ giao trễ sai.')
+    for lot in c['life']['pantry']:
+        if 'made' in lot:
+            need(lot['item'] in FRESH, 'Chỉ trà ủ và trân châu mới ghi giờ làm.')
+            e.integer(lot['made'], 0, 10**9)
     need(isinstance(b['promises'], list) and len(b['promises']) <= 10, 'Lời hẹn sai.')
     for pr in b['promises']:
         need(isinstance(pr, dict) and pr.get('kind') in ('portions', 'coins'), 'Lời hẹn sai.')
@@ -1816,12 +2414,22 @@ def next_move(c: dict, t: dict) -> tuple[str, dict]:
         return 'tea_discard', dict(task=tid, confirm=True)
     if not cup['placed'] or cup['size'] != n['size']:
         if b['cups'][n['size']] <= 0:
-            return 'tea_cups', dict(size=n['size'], confirm=True)
+            if b['cups']['L' if n['size'] == 'M' else 'M'] > 0 and not cup['items']:
+                return 'tea_swap', dict(task=tid, item='cup_' + n['size'])
+            if _pending(b, 'cup_' + n['size']):
+                return 'tea_wait', {}
+            return 'tea_order', dict(item='cup_' + n['size'], qty=1, supplier='express', confirm=True)
         return 'tea_cup', dict(task=tid, size=n['size'])
     for item in [n['base']] + ([n['flavor']] if n['flavor'] else []) + n['toppings']:
         if item not in cup['items']:
             if stock(c)[item] <= 0:
-                return 'tea_prepare', dict(item=item, qty=3, confirm=True)
+                if item in MADE:
+                    return 'tea_prepare', dict(item=item, qty=3, confirm=True)
+                if (item in n['toppings'] and swap_to(c, t, item)) or item == n['flavor']:
+                    return 'tea_swap', dict(task=tid, item=item)
+                if _pending(b, item):
+                    return 'tea_wait', {}
+                return 'tea_order', dict(item=item, qty=3, supplier='express', confirm=True)
             return 'tea_add', dict(task=tid, item=item)
     if cup['ice'] != n['ice']:
         return 'tea_ice', dict(task=tid, level=n['ice'])
