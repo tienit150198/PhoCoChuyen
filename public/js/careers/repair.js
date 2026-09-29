@@ -3,6 +3,7 @@
  * Local state here is only what the player is ticking before sending, and which step tab is open.
  * Phone first: one step panel at a time, one primary button per panel. */
 import {reqList,fold} from '../ui-kit.js';
+import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,highlight} from '../v4/guide.js';
 const STEPS=['Nhận máy','Đo kiểm','Báo giá','Sửa','Bàn giao'];
 const MODE={live:'cấp điện',open:'mở máy',any:'đo ngoài'};
 
@@ -25,7 +26,20 @@ function line(x,t,fault,grade){const item=fault.parts[grade];const part=item?(it
 function defaultGrade(x,t,fault){const keys=Object.keys(fault.parts).filter(g=>!locked(x,fault.parts[g]));const pref=['compatible','standard','none','genuine','used'];
   if(t.needs.genuine_only)return keys.find(g=>g==='genuine')||keys.find(g=>g!=='compatible'&&g!=='used')||keys[0];
   return pref.find(g=>keys.includes(g))||keys[0]||Object.keys(fault.parts)[0];}
-function gradeFor(x,t,f){const u=local(x,t),fault=faultOf(x,t.needs.device,f);const g=u.grades[f];return g&&g in fault.parts?g:defaultGrade(x,t,fault);}
+/** Grades this customer can take: not locked, genuine only when asked. */
+function allowed(x,t,fault){const keys=Object.keys(fault.parts).filter(g=>!locked(x,fault.parts[g]));
+  return t.needs.genuine_only?keys.filter(g=>g!=='compatible'&&g!=='used'):keys;}
+/** First task: the usual part unless it breaks the budget or is out of stock, then the cheapest that fits (used parts last). */
+function suggestGrade(x,t,fault){
+  const def=defaultGrade(x,t,fault),b=t.bench,dev=t.needs.device,scope=t.open_scope||[];
+  const spent=Object.entries(b.approved||{}).reduce((a,[f,v])=>a+(f in b.fixed||scope.includes(f)?v.price:0),0);
+  const rest=scope.filter(f=>!b.approved[f]&&f!==fault.id).reduce((a,f)=>{const fd=faultOf(x,dev,f);return a+line(x,t,fd,defaultGrade(x,t,fd)).price;},0);
+  const room=t.needs.budget-spent-rest,have=g=>!fault.parts[g]||x.stock(fault.parts[g])>0,fits=g=>line(x,t,fault,g).price<=room;
+  if(fits(def)&&have(def))return def;
+  const opts=allowed(x,t,fault).sort((a,c)=>(a==='used')-(c==='used')||line(x,t,fault,a).price-line(x,t,fault,c).price);
+  return opts.find(g=>fits(g)&&have(g))||opts.find(fits)||def;
+}
+function gradeFor(x,t,f){const u=local(x,t),fault=faultOf(x,t.needs.device,f);const g=u.grades[f];return g&&g in fault.parts?g:firstTime(x)?suggestGrade(x,t,fault):defaultGrade(x,t,fault);}
 function stage(t){const b=t.bench,open=t.open_scope||[];if(!b.intake)return 0;if(b.final==='pass')return 4;if(!b.diagnosis&&!open.length)return 1;if(open.some(f=>!b.approved[f]))return 2;if(open.length||b.opened)return 3;return 4;}
 const caseOf=t=>t.needs?.case||null;
 const rushLeft=(t,x)=>t.due_turn==null?null:t.due_turn-(x.room.turn||0);
@@ -112,9 +126,9 @@ function promiseFold(t,x){
   if(b.shelf||!b.intake||b.returned||caseOf(t)==='buyin')return '';
   const words=['Hôm nay','Mai','Ngày kia','3 ngày nữa'];
   const btns=(x.cc.promise_days||[0,1,2,3]).map(d=>{const early=d<(v.eta_days||0);
-    return x.confirmCmd(`${early?'⚠️ ':''}${words[d]||d+' ngày'}`,'rp_shelf',{task:t.id,days:d},`Hẹn ${who(x,t.npc)} ${lowerFirst(words[d]||'')} tới lấy máy?${early?' Đồ chưa về kịp ngày đó — dễ trễ hẹn.':''}`,early?'small ghost':'small',full);}).join('');
+    return x.confirmCmd(`${early?'⚠️ ':''}${words[d]||d+' ngày'}`,'rp_shelf',{task:t.id,days:d},`Hẹn ${who(x,t.npc)} ${lowerFirst(words[d]||'')} tới lấy máy?${early?' Đồ chưa về kịp ngày đó — dễ trễ hẹn.':''}`,`${early?'small ghost':'small'} rp-pr-${d}`,full);}).join('');
   const eta=v.eta?`Đồ về ${v.eta} → hẹn sớm nhất: ${lowerFirst(words[v.eta_days]||v.eta_days+' ngày nữa')}.`:'Đồ đã đủ: hẹn hôm nay cũng được.';
-  return fold('🗄️ Hẹn khách, để máy lại tiệm',`<p class="small">${x.esc(eta)}</p><div class="rp-btns">${btns}</div>${full?`<p class="small muted">Kệ đã đủ ${k.shelf_max||2} máy hẹn — làm xong bớt một máy trước.</p>`:''}`);
+  return fold('🗄️ Hẹn khách, để máy lại tiệm',`<p class="small">${x.esc(eta)}</p><div class="rp-btns rp-promise">${btns}</div>${full?`<p class="small muted">Kệ đã đủ ${k.shelf_max||2} máy hẹn — làm xong bớt một máy trước.</p>`:''}`);
 }
 function toolRows(x){
   const tl=x.room.data?.tools||{tip:100,meter:100},info=x.cc.tools||{};
@@ -199,9 +213,9 @@ function intakeView(t,x){
   const markTiles=dev.marks.map(m=>{const v=x.cc.marks[m]||{emoji:'•',label:m},on=u.marks.includes(m);return tile(x,{emoji:v.emoji,label:v.label,sub:on?'đã ghi':'',cls:on?'selected':'',attr:carAttr(x,'mark',{task:t.id,id:m})+` aria-pressed="${on}"`});}).join('');
   const accTiles=dev.accessories.map(a=>{const v=x.cc.accessories[a]||{emoji:'•',label:a},on=u.acc.includes(a);return tile(x,{emoji:v.emoji,label:v.label,sub:on?'đã nhận':'',cls:on?'selected':'',attr:carAttr(x,'acc',{task:t.id,id:a})+` aria-pressed="${on}"`});}).join('');
   return `<p class="small muted">Nhìn máy trên thảm, chạm đúng những vết thật sự thấy.</p>
-    <div class="tile-grid rp-grid">${markTiles}</div>
+    <div class="tile-grid rp-grid rp-marks">${markTiles}</div>
     <p class="small muted space-top">Khách đưa kèm những gì?</p>
-    <div class="tile-grid rp-grid">${accTiles}</div>
+    <div class="tile-grid rp-grid rp-accs">${accTiles}</div>
     ${dd?`<button type="button" class="btn rp-consent ${u.consent?'on':''}" ${carAttr(x,'consent',{task:t.id})} aria-pressed="${u.consent}">${u.consent?'☑️':'⬜'} Đã hỏi khách có cho mở khóa / xem dữ liệu không</button>`:''}
     <div class="rp-cta"><button type="button" class="btn primary" ${carAttr(x,'intake',{task:t.id})} ${dd&&!u.consent?'disabled':''}>📝 Ghi phiếu nhận máy</button></div>`;
 }
@@ -228,7 +242,7 @@ function testsView(t,x){
     return `<li class="rp-hyp ${out?'out':''} ${chosen?'chosen':''}"><div class="grow"><b>${x.esc(fd.name)}</b><small>${fixed?'✓ đã xử lý':chosen?'📌 đang chốt':out?'✗ số đo đã loại':'? còn khả nghi'}</small></div>
       ${chosen||fixed||b.final==='pass'?'':x.cmd('Chốt','rp_diagnose',{task:t.id,fault:f},out?'ghost small':'small')}</li>`;}).join('');
   const found=(b.found||[]).map(f=>`<li class="rp-hyp found"><div class="grow"><b>🔎 ${x.esc(faultOf(x,dev,f).name)}</b><small>${f in b.fixed?'✓ đã xử lý':'phát hiện khi mở máy — cần báo giá thêm'}</small></div></li>`).join('');
-  return `${toolWarn(x,'meter')}${shellBar(t,x,false)}<div class="tile-grid rp-grid space-top">${tiles}</div>${log}<h5 class="rp-sub">Bảng giả thuyết</h5><ul class="rp-hyps">${hyp}${found}</ul>`;
+  return `${toolWarn(x,'meter')}${shellBar(t,x,false)}<div class="tile-grid rp-grid rp-tests space-top">${tiles}</div>${log}<h5 class="rp-sub">Bảng giả thuyết</h5><ul class="rp-hyps">${hyp}${found}</ul>`;
 }
 
 /* ---------- 2 · quote (+ warranty book, water evidence) ---------- */
@@ -240,7 +254,7 @@ function claimPanel(t,x){
   const book=`<dl class="kv rp-kv rp-book"><dt>Phiếu</dt><dd>${x.esc(bk.slip)} · sửa cách đây ${bk.ago} ngày</dd><dt>Đã sửa</dt><dd>${x.esc(faultOf(x,dev,bk.fault).name)} (${x.esc(x.cc.grades[bk.grade]?.short||bk.grade)})</dd><dt>Bảo hành</dt><dd>${bk.days} ngày ${state}</dd><dt>Tình trạng lúc đó</dt><dd>${x.esc(marks)}</dd></dl>`;
   const decided=b.claim?`<p class="small"><span class="tag ${b.claim==='cover'?'green':'amber'}">${b.claim==='cover'?'Đã ghi: bảo hành':'Đã ghi: tính tiền'}</span></p>`:'';
   const can=!!b.diagnosis&&!Object.keys(b.approved||{}).length;
-  return `<div class="rp-claim">${book}${decided}<div class="row wrap">${x.cmd('🛡️ Bảo hành, khách không trả','rp_claim',{task:t.id,choice:'cover'},b.claim?'ghost small':'small',!can||b.claim==='cover')}${x.cmd('🧾 Ngoài bảo hành, tính tiền','rp_claim',{task:t.id,choice:'charge'},b.claim?'ghost small':'small',!can||b.claim==='charge')}</div>
+  return `<div class="rp-claim">${book}${decided}<div class="row wrap">${x.cmd('🛡️ Bảo hành, khách không trả','rp_claim',{task:t.id,choice:'cover'},`${b.claim?'ghost small':'small'} rp-claim-cover`,!can||b.claim==='cover')}${x.cmd('🧾 Ngoài bảo hành, tính tiền','rp_claim',{task:t.id,choice:'charge'},`${b.claim?'ghost small':'small'} rp-claim-charge`,!can||b.claim==='charge')}</div>
     ${!b.diagnosis?'<p class="small muted">Chốt lỗi trước đã — bảo hành chỉ tính cho đúng lỗi cũ.</p>':''}</div>`;
 }
 function quoteView(t,x){
@@ -262,7 +276,7 @@ function quoteView(t,x){
       const src=x.cc.source_of?.[g],q=ln.item?x.stock(ln.item):null;
       const have=ln.item?(q>0?`còn ${q}`:src?`hết · ${src==='city'?'hãng về':'Lâm giao'} ${care(x).sources?.[src]?.when||''}`:'hết trên kệ'):'';
       const sub=`${have?have+' · ':''}${ln.price} xu · BH ${gr.warranty} ngày${gr.durable?' · '+gr.durable:''}`;
-      return tile(x,{emoji:it?it.emoji:'🧽',label:gr.name,sub:lk?`🔒 mở ở cấp ${it.unlock} (bạn cấp ${level})`:sub,cls:(g===sel?'selected ':'')+(lk?'locked ':'')+(g==='used'?'rp-used':''),attr:carAttr(x,'grade',{task:t.id,fault:f,grade:g})+` aria-pressed="${g===sel}"`,off:lk});}).join('');
+      return tile(x,{emoji:it?it.emoji:'🧽',label:gr.name,sub:lk?`🔒 mở ở cấp ${it.unlock} (bạn cấp ${level})`:sub,cls:(g===sel?'selected ':'')+(lk?'locked ':'')+(g==='used'?'rp-used ':'')+`rp-g-${f}-${g}`,attr:carAttr(x,'grade',{task:t.id,fault:f,grade:g})+` aria-pressed="${g===sel}"`,off:lk});}).join('');
     return `<div class="rp-qrow"><b>${x.esc(fd.name)}</b><div class="tile-grid rp-grid">${opts}</div></div>`;}).join('');
   const cover=cs==='warranty'&&b.claim==='cover';
   const spent=(b.quote?.rounds||0)>=(x.cc.quote_rounds||6);
@@ -310,9 +324,9 @@ function finishView(t,x){
     const why=b.opened?'Lắp máy lại trước khi chạy thử.':!fixedAny?'Chưa sửa gì — chạy thử lúc này vẫn y như cũ.':'';
     return `${b.final==='fail'?'<p class="notice amber small">Lần chạy thử trước chưa đạt — xem lại bảng giả thuyết.</p>':''}<div class="rp-cta">${x.cmd('▶️ Chạy thử lần cuối','rp_final',{task:t.id},'primary',b.opened||!fixedAny)}</div>${why?`<p class="small muted">${x.esc(why)}</p>`:''}${fixedAny&&!b.opened?`<div class="rp-return">${x.confirmCmd('📦 Giao máy luôn, không chạy thử','rp_handover',{task:t.id},'Giao máy khi chưa chạy thử và không có phiếu bảo hành? Nếu máy vẫn hỏng, khách sẽ không vui đâu.','ghost small')}</div>`:''}`;
   }
-  const days=(x.cc.warranty||[0,7,30,90]).map(d=>x.cmd(d?`${d} ngày`:'Không BH','rp_warranty',{task:t.id,days:d},b.warranty===d?'primary small':'ghost small',b.warranty!=null)).join('');
+  const days=(x.cc.warranty||[0,7,30,90]).map(d=>x.cmd(d?`${d} ngày`:'Không BH','rp_warranty',{task:t.id,days:d},`${b.warranty===d?'primary small':'ghost small'} rp-w-${d}`,b.warranty!=null)).join('');
   let privacy='';
-  if(cs==='privacy'&&b.data_req==null)privacy=`<div class="rp-privacy"><p class="small"><b>Khách nhờ:</b> “${x.esc(t.needs.request)}”</p><div class="row wrap">${x.cmd('🙅 Từ chối, chỉ sửa phần cứng','rp_data',{task:t.id,choice:'refuse'},'small')}${x.confirmCmd(`📂 Làm theo, thu thêm ${x.cc.data_fee||15} xu`,'rp_data',{task:t.id,choice:'copy'},'Dữ liệu này không phải của người đang nhờ. Vẫn làm theo lời khách?','ghost small')}</div></div>`;
+  if(cs==='privacy'&&b.data_req==null)privacy=`<div class="rp-privacy"><p class="small"><b>Khách nhờ:</b> “${x.esc(t.needs.request)}”</p><div class="row wrap">${x.cmd('🙅 Từ chối, chỉ sửa phần cứng','rp_data',{task:t.id,choice:'refuse'},'small rp-refuse')}${x.confirmCmd(`📂 Làm theo, thu thêm ${x.cc.data_fee||15} xu`,'rp_data',{task:t.id,choice:'copy'},'Dữ liệu này không phải của người đang nhờ. Vẫn làm theo lời khách?','ghost small')}</div></div>`;
   else if(cs==='privacy')privacy=`<p class="small"><span class="tag ${b.data_req==='refuse'?'green':'amber'}">${b.data_req==='refuse'?'Đã từ chối chuyện dữ liệu':'Đã làm theo lời khách'}</span></p>`;
   const ready=b.warranty!=null&&!b.opened&&!(cs==='privacy'&&b.data_req==null);
   return `<p class="notice green small">✅ Chạy thử đạt.</p>
@@ -334,18 +348,203 @@ function buyinView(t,x){
     <dl class="kv rp-kv"><dt>Giá khách đòi</dt><dd><b>${x.esc(x.money(n.offer))}</b> ${cheap?'<span class="tag amber">rẻ bất thường</span>':''}</dd><dt>Giá chợ máy cùng đời</dt><dd>${x.esc(x.money(n.worth))}</dd></dl>
     <div class="stack space-top">${imei}${papers}</div>
     <h5 class="rp-sub">Quyết định</h5>
-    <div class="row wrap rp-deal">${x.confirmCmd(`🤝 Mua ${x.esc(x.money(n.offer))}`,'rp_deal',{task:t.id,choice:'buy'},'Mua lại máy này? Máy sạch thì tháo được màn và pin để dành; máy gian thì mất trắng.','small')}
-      ${x.confirmCmd('🙅 Từ chối khéo','rp_deal',{task:t.id,choice:'refuse'},'Từ chối mua máy này?','ghost small')}
-      ${x.confirmCmd('🚓 Báo công an phường','rp_deal',{task:t.id,choice:'report'},'Báo công an phường về chiếc máy này? Nếu máy sạch, người bán bị nghi oan.','ghost small')}</div></section>`;
+    <div class="row wrap rp-deal">${x.confirmCmd(`🤝 Mua ${x.esc(x.money(n.offer))}`,'rp_deal',{task:t.id,choice:'buy'},'Mua lại máy này? Máy sạch thì tháo được màn và pin để dành; máy gian thì mất trắng.','small rp-deal-buy')}
+      ${x.confirmCmd('🙅 Từ chối khéo','rp_deal',{task:t.id,choice:'refuse'},'Từ chối mua máy này?','ghost small rp-deal-refuse')}
+      ${x.confirmCmd('🚓 Báo công an phường','rp_deal',{task:t.id,choice:'report'},'Báo công an phường về chiếc máy này? Nếu máy sạch, người bán bị nghi oan.','ghost small rp-deal-report')}</div></section>`;
 }
 
 function book(x){const rows=(x.room.data?.book||[]).slice().reverse().slice(0,5);if(!rows.length)return '';
   return `<details class="rp-bookbox"><summary>📒 Sổ bảo hành (${(x.room.data?.book||[]).length})</summary><ul>${rows.map(r=>`<li><b>${x.esc(r.slip)}</b> · ${x.esc(r.title)} · ${r.days?`${r.days} ngày`:'không BH'}</li>`).join('')}</ul></details>`;}
 
+/* ---------- next step (guide.js) ----------
+ * One list of steps for the stage in front of the player. The same list drives the "Bước tiếp theo"
+ * hint in the header, the tappable rows in the panel and the bottom button. On a first task every
+ * step is one tap (the right mark, the next useful test, the fault the readings left, a budget-fitting
+ * part, the warranty the part carries); later tasks point at the choice and keep the judgement. */
+const remaining=t=>(t.needs.hypotheses||[]).filter(f=>!t.bench.ruled_out.includes(f)&&!(f in t.bench.fixed));
+/** The next test that can run right now: outside tests before opening the case, case tests once open. */
+function nextTest(t,x){
+  const b=t.bench,done=b.tests.map(r=>r.id),all=(x.cc.tests?.[t.needs.device]||[]).filter(ts=>!done.includes(ts.id)&&!(ts.consent&&!b.data_ok));
+  const now=all.filter(ts=>b.opened?ts.mode!=='live':ts.mode!=='open');
+  return {now:now[0]||null,later:all.find(ts=>!now.includes(ts))||null};
+}
+/** Make the device safe (in order), then open it. */
+function openSteps(t,x){
+  const b=t.bench,dev=devOf(x,t),done=b.safe||[];
+  if(b.opened)return [];
+  const s=dev.safety.map(k=>{const v=x.cc.safety?.[k]||{emoji:'•',label:k};
+    return {ok:done.includes(k)||null,label:v.label,go:{cmd:'rp_safety',payload:{task:t.id,step:k},label:`${x.esc(v.emoji)} ${x.esc(v.label)}`}};});
+  // only the first unsafe step can be done now (order matters)
+  const i=s.findIndex(v=>v.ok!==true);s.forEach((v,j)=>{if(j>i&&i>=0)v.go=null;});
+  s.push({ok:null,label:dev.open,go:i<0?{cmd:'rp_open',payload:{task:t.id},label:`🔧 ${x.esc(dev.open)}`}:null});
+  return s;
+}
+function toolStep(x,tool){
+  const tl=x.room.data?.tools||{},v=x.cc.tools?.[tool],cost=(x.cc.tool_costs||{})[tool]||0;
+  if(!v||(tl[tool]??100)>=v.low)return null;
+  if(tool==='tip'&&x.stock('solder'))return {ok:null,label:`Lau ${v.name.toLowerCase()}`,go:{cmd:'rp_tool',payload:{tool:'tip',how:'clean'},label:'🧽 Lau mũi hàn'}};
+  const how=tool==='tip'?'replace':'battery',q=tool==='tip'?`Thay mũi hàn mới (${cost} xu)?`:`Thay pin 9V cho đồng hồ đo (${cost} xu)?`;
+  return {ok:null,label:tool==='tip'?'Thay mũi hàn mới':'Thay pin đồng hồ đo',go:(x.room.money??0)>=cost?{cmd:'rp_tool',payload:{tool,how},confirm:q,label:tool==='tip'?`🔥 Thay mũi hàn · ${x.esc(x.money(cost))}`:`📟 Thay pin 9V · ${x.esc(x.money(cost))}`}:null};
+}
+function intakeSteps(t,x){
+  const n=t.needs,u=local(x,t),dev=devOf(x,t),s=[],id=t.id;
+  const lbl=(set,k)=>(set[k]||{label:k}).label;
+  if(firstTime(x)){
+    for(const m of n.marks||[])s.push({ok:u.marks.includes(m)||null,label:`Ghi vết: ${lbl(x.cc.marks,m)}`,go:{act:'car:mark',data:{task:id,id:m},label:`${x.esc(x.cc.marks[m]?.emoji||'•')} Ghi vết: ${x.esc(lbl(x.cc.marks,m))}`}});
+    for(const m of u.marks.filter(m=>!(n.marks||[]).includes(m)))s.push({ok:false,label:`Bỏ chọn “${lbl(x.cc.marks,m)}”: máy không có`,go:{act:'car:mark',data:{task:id,id:m}}});
+    for(const a of n.accessories||[])s.push({ok:u.acc.includes(a)||null,label:`Nhận kèm: ${lbl(x.cc.accessories,a)}`,go:{act:'car:acc',data:{task:id,id:a},label:`${x.esc(x.cc.accessories[a]?.emoji||'•')} Nhận kèm: ${x.esc(lbl(x.cc.accessories,a))}`}});
+    for(const a of u.acc.filter(a=>!(n.accessories||[]).includes(a)))s.push({ok:false,label:`Bỏ chọn “${lbl(x.cc.accessories,a)}”: khách không đưa`,go:{act:'car:acc',data:{task:id,id:a}}});
+  }else{
+    s.push({ok:u.lookM||u.marks.length?true:null,label:'Chạm đúng các vết thấy trên máy',go:{act:'car:look',data:{task:id,what:'marks'},label:'👀 Xem máy, ghi các vết'}});
+    s.push({ok:u.lookA||u.acc.length?true:null,label:'Chạm những món khách đưa kèm',go:{act:'car:look',data:{task:id,what:'accs'},label:'🎒 Ghi phụ kiện khách đưa'}});
+  }
+  if(dataDevice(x,t))s.push({ok:u.consent||null,label:'Hỏi khách có cho mở khóa / xem dữ liệu',go:{act:'car:consent',data:{task:id},label:'🙋 Hỏi quyền xem dữ liệu'}});
+  s.push({ok:null,label:'Ghi phiếu nhận máy',go:{act:'car:intake',data:{task:id},label:'📝 Ghi phiếu nhận máy'}});
+  return s;
+}
+function testSteps(t,x){
+  const b=t.bench,dev=t.needs.device,left=remaining(t),s=[],id=t.id;
+  if(left.length>1){
+    const meter=toolStep(x,'meter');if(meter)s.push(meter);
+    const {now,later}=nextTest(t,x),note=`còn ${left.length} khả nghi`;
+    if(now)s.push({ok:null,label:'Đo kiểm để loại dần giả thuyết',note,
+      go:firstTime(x)?{cmd:'rp_test',payload:{task:id,test:now.id},label:`${x.esc(now.emoji)} Đo: ${x.esc(now.name)}`}:{sel:'.rp-tests',label:'🔎 Chọn một phép đo'}});
+    else if(later&&later.mode==='open')s.push(...openSteps(t,x));
+    else if(later)s.push({ok:null,label:'Lắp máy lại để đo khi cấp điện',go:{cmd:'rp_close',payload:{task:id},label:`🔩 ${x.esc(devOf(x,t).close)}`}});
+    else s.push({ok:null,label:'Hết phép đo: chốt lỗi khả nghi nhất',go:{sel:'.rp-hyps'}});
+    return s;
+  }
+  s.push({ok:true,label:'Đo kiểm, loại dần giả thuyết'});
+  const f=left[0];
+  if(f){const name=faultOf(x,dev,f).name;s.push({ok:null,label:`Chốt lỗi: ${name}`,go:{cmd:'rp_diagnose',payload:{task:id,fault:f},label:`📌 Chốt lỗi: ${x.esc(name)}`}});}
+  else s.push({ok:null,label:'Chốt lỗi',go:{sel:'.rp-hyps'}});
+  return s;
+}
+function quoteSteps(t,x){
+  const b=t.bench,dev=t.needs.device,cs=caseOf(t),open=t.open_scope||[],pend=open.filter(f=>!b.approved[f]),s=[],id=t.id,u=local(x,t);
+  if(cs==='warranty'){
+    s.push({ok:b.book?true:null,label:'Tra sổ bảo hành',go:b.book?null:{cmd:'rp_book',payload:{task:id},label:'📒 Tra sổ bảo hành'}});
+    if(b.book){const guess=b.book.left>=0&&b.diagnosis===b.book.fault?'cover':'charge';
+      s.push({ok:b.claim?true:null,label:'Quyết: bảo hành hay tính tiền',go:b.claim?null:{sel:'.rp-claim'},pulse:`.rp-claim-${guess}`});}
+  }
+  if(pend.includes('water')&&!b.shown){
+    if(b.tests.some(r=>r.id==='water_tag'))s.push({ok:null,label:'Cho khách xem tem báo nước',go:{cmd:'rp_show',payload:{task:id},label:'📸 Cho khách xem tem báo nước'}});
+    else if(!b.opened)s.push(...openSteps(t,x));
+    else s.push({ok:null,label:'Soi tem báo nước trong máy',go:{cmd:'rp_test',payload:{task:id,test:'water_tag'},label:'💧 Soi tem báo nước'}});
+  }
+  const spent=(b.quote?.rounds||0)>=(x.cc.quote_rounds||6);
+  if(spent){s.push({ok:null,label:'Khách không nghe báo giá nữa: làm phần đã duyệt hoặc trả máy',go:{sel:'.rp-return,.rp-fixrow'}});return s;}
+  const declined=b.quote?.status==='declined'&&(u.graded||0)<b.quote.rounds;
+  if(declined){const f=pend[0],fd=f&&faultOf(x,dev,f),cur=f&&gradeFor(x,t,f);
+    const cheap=f?allowed(x,t,fd).filter(g=>g!==cur).sort((a,c)=>line(x,t,fd,a).price-line(x,t,fd,c).price)[0]:null;
+    s.push({ok:null,label:'Khách chê: chọn loại linh kiện khác',go:{sel:'.rp-qrow'},pulse:cheap?`.rp-g-${f}-${cheap}`:''});}
+  let total=0;for(const f of pend)total+=line(x,t,faultOf(x,dev,f),gradeFor(x,t,f)).price;
+  const cover=cs==='warranty'&&b.claim==='cover';
+  s.push({ok:null,label:'Gửi báo giá cho khách duyệt',note:cover?'bảo hành':`${total} / ${t.needs.budget} xu`,go:cs==='warranty'&&!b.claim?null:{act:'car:quote',data:{task:id},label:`📨 Gửi báo giá · ${cover?'0 xu':x.esc(x.money(total))}`}});
+  return s;
+}
+function fixSteps(t,x){
+  const b=t.bench,dev=t.needs.device,open=t.open_scope||[],s=[],id=t.id,v=tview(x,t);
+  const others=openTasks(x).some(o=>o.id!==t.id&&!o.deferred);
+  const away=others?{act:'nextJob',label:'➡️ Sang khách đang chờ'}:{cmd:'more_work',payload:{},label:'➕ Đón khách mới'};
+  let wait=null;
+  for(const f of open){const ap=b.approved[f];if(!ap)continue;
+    const item=faultOf(x,dev,f).parts[ap.grade],o=v.orders?.[f],mine=o&&!o.used&&o.item===item,src=x.cc.source_of?.[ap.grade];
+    if(mine&&!o.arrived){wait=wait||o;continue;}
+    if(item&&!mine&&!x.stock(item)){const it=itemOf(x,item),sv=x.cc.sources?.[src]||{},cost=(it.cost||0)+(sv.ship||0);
+      s.push({ok:null,label:`Hết ${it.name}: đặt riêng`,go:src?((x.room.money??0)>=cost?{cmd:'rp_order',payload:{task:id,fault:f},confirm:`Đặt riêng ${it.name} cho máy này: ${cost} xu (gồm ${sv.ship||0} xu giao). ${sv.rule||''}`,label:`📦 Đặt riêng ${x.esc(it.name)} · ${x.esc(x.money(cost))}`}:null)
+        :{act:'inventory',label:'📦 Mở Kho nhập thêm'}});}
+  }
+  const waiting=f=>{const o=v.orders?.[f];return !!o&&!o.used&&!o.arrived;};
+  const ready=open.filter(f=>b.approved[f]&&!waiting(f));
+  if(ready.length){
+    s.push(...openSteps(t,x));
+    if(open.some(f=>(faultOf(x,dev,f).supplies||[]).includes('solder'))){const tip=toolStep(x,'tip');if(tip)s.push(tip);}
+    for(const f of ready){const ap=b.approved[f],fd=faultOf(x,dev,f),item=fd.parts[ap.grade];
+      if(ap.grade==='used'&&!(b.checked||[]).includes(f))s.push({ok:null,label:`Cắm thử ${itemOf(x,item).name.toLowerCase()}`,go:b.opened?{cmd:'rp_parttest',payload:{task:id,fault:f},label:`🧪 Cắm thử ${x.esc(itemOf(x,item).name.toLowerCase())}`}:null});
+      s.push({ok:null,label:`Sửa: ${fd.name}`,go:b.opened&&(!item||x.stock(item)||v.orders?.[f]?.arrived)?{cmd:'rp_fix',payload:{task:id,fault:f},label:`🛠️ Sửa: ${x.esc(fd.name)}`}:null});}
+  }
+  if(wait){
+    const it=itemOf(x,wait.item),d=v.eta_days||0,word=['hôm nay','mai','ngày kia'][d]||`${d} ngày nữa`;
+    if(!b.shelf)s.push({ok:null,label:`${it.name} về ${wait.when}: hẹn khách để máy lại tiệm`,
+      go:firstTime(x)?{cmd:'rp_shelf',payload:{task:id,days:d},confirm:`Hẹn ${who(x,t.npc)} ${word} tới lấy máy?`,label:`🗄️ Hẹn khách ${word} tới lấy`}:{sel:'.rp-promise',label:'🗄️ Hẹn ngày khách tới lấy'},pulse:`.rp-pr-${d}`});
+    else s.push({ok:null,label:`Chờ ${it.name} về ${wait.when}`,go:away});
+  }
+  if(!open.length&&b.opened)s.push({ok:null,label:devOf(x,t).close,go:{cmd:'rp_close',payload:{task:id},label:`🔩 ${x.esc(devOf(x,t).close)}`}});
+  return s;
+}
+function finishSteps(t,x){
+  const b=t.bench,cs=caseOf(t),s=[],id=t.id,dev=devOf(x,t);
+  if(b.opened)s.push({ok:null,label:dev.close,go:{cmd:'rp_close',payload:{task:id},label:`🔩 ${x.esc(dev.close)}`}});
+  s.push({ok:b.final==='pass'||(b.final==='fail'?false:null),label:'Chạy thử lần cuối',go:b.final==='pass'||b.opened?null:{cmd:'rp_final',payload:{task:id},label:'▶️ Chạy thử lần cuối'}});
+  if(b.final!=='pass')return s;
+  const rec=t.recommended??0;
+  s.push({ok:b.warranty!=null||null,label:'Ghi phiếu bảo hành',note:b.warranty!=null?`${b.warranty} ngày`:'',go:b.warranty!=null?null:firstTime(x)?{cmd:'rp_warranty',payload:{task:id,days:rec},label:`🛡️ Ghi bảo hành ${rec?rec+' ngày':': không BH'}`}:{sel:'.rp-days',label:'🛡️ Chọn số ngày bảo hành'},pulse:`.rp-w-${rec}`});
+  if(cs==='privacy')s.push({ok:b.data_req!=null||null,label:'Trả lời khách chuyện dữ liệu',go:b.data_req!=null?null:{sel:'.rp-privacy'},pulse:'.rp-privacy .rp-refuse'});
+  return s;
+}
+function buyinSteps(t,x){
+  const b=t.bench,id=t.id,n=t.needs;
+  const pick=b.imei==='reported'?'report':b.papers==='ok'&&n.offer>=n.worth*0.45?'buy':'refuse';
+  return [
+    {ok:b.imei!=null||null,label:'Tra IMEI máy báo mất',go:b.imei==null?{cmd:'rp_imei',payload:{task:id},label:'📡 Tra IMEI máy báo mất'}:null},
+    {ok:b.papers!=null||null,label:'Hỏi hóa đơn & căn cước',go:b.papers==null?{cmd:'rp_papers',payload:{task:id},label:'🪪 Hỏi hóa đơn & căn cước'}:null},
+    {ok:null,label:'Quyết: mua, từ chối hay báo công an',go:{sel:'.rp-deal'},pulse:`.rp-deal-${pick}`},
+  ];
+}
+/** {steps, final, pulse, at, tab} for the task on screen. */
+function taskGuide(t,x){
+  const id=t.id;
+  if(x.room.data?.desk?.ev)return {steps:[{ok:null,label:'Có chuyện ở quầy: chọn cách xử lý',go:{sel:'.rp-opts'},pulse:'.rp-opts .rp-opt'}]};
+  const pre=[];
+  if((x.room.data?.comebacks||[]).length)pre.push({ok:null,label:'Máy quay lại bảo hành: chọn cách xử lý',go:{sel:'.rp-back'},pulse:'.rp-back .btn'});
+  if(shelved(x).some(v=>tview(x,v).call))pre.push({ok:null,label:'Khách gọi hỏi máy: trả lời điện thoại',go:{sel:'.rp-call'},pulse:'.rp-call .btn'});
+  if(!t.known)return {steps:[...pre,{ok:null,label:'Hỏi khách kể bệnh của máy',go:{cmd:'ask',payload:{task:id},label:'📝 Hỏi khách kể bệnh của máy'}}]};
+  if(caseOf(t)==='buyin')return {steps:[...pre,...buyinSteps(t,x)]};
+  const at=stage(t),b=t.bench;
+  // Opened before the readings settled: finish the diagnosis first, so one quote covers everything.
+  const dx=at>=2&&at<4&&!b.diagnosis&&b.final!=='pass'&&remaining(t).length?testSteps(t,x):[];
+  const steps=[...pre,...dx,...[intakeSteps,testSteps,quoteSteps,fixSteps,finishSteps][at](t,x)];
+  const ready=at===4&&b.final==='pass'&&b.warranty!=null&&!b.opened&&!(caseOf(t)==='privacy'&&b.data_req==null);
+  const final={label:'✅ Bàn giao &amp; thu tiền',go:finalGo(steps,'rp_handover',{task:id},{question:'Trả máy, phụ kiện và phiếu bảo hành, thu tiền đúng báo giá?',confirm:true}),ready,
+    why:at<4?'sửa xong và chạy thử đạt trước':''};
+  return {steps,final,at};
+}
+/** On another stage tab, a "go to" step first brings the current stage back. */
+function guideFor(t,x){
+  const g=taskGuide(t,x);if(g.at==null)return g;
+  const u=local(x,t),tab=u.tab!=null&&u.tab<=g.at?u.tab:g.at;
+  if(tab===g.at)return g;
+  const back={act:'car:tab',data:{task:t.id,tab:g.at}};
+  return {...g,steps:g.steps.map(s=>s.go?.sel?{...s,go:{...back,label:s.go.label}}:s)};
+}
+function hintFor(g,x){
+  const f=g.final,final=f&&f.ready!==false?{label:f.label.replace(/^[^\p{L}]+/u,'').replace('&amp;','&'),go:f.go}:null;
+  return nextHint(x,g.steps,{final,pulse:g.pulse||''});
+}
+/** The latest result of the step in hand (a reading, the customer's reply, the final test), shown right above the button. */
+function lastResult(t,x){
+  if(!t.known||caseOf(t)==='buyin')return '';
+  const b=t.bench,at=stage(t);
+  if(at===4&&b.final)return b.final==='pass'?'✅ Chạy thử đạt':'❌ Chạy thử chưa đạt';
+  if(at===2&&b.quote)return `📨 Khách: “${b.quote.reason}”`;
+  const r=b.tests[b.tests.length-1];
+  if(r&&(at===1||!b.diagnosis)){const ts=(x.cc.tests?.[t.needs.device]||[]).find(v=>v.id===r.id)||{emoji:'•',name:r.id};const left=remaining(t).length;
+    return `${ts.emoji} ${ts.name}: ${r.reading}${left>1?` · còn ${left} khả nghi`:''}`;}
+  return '';
+}
+function bar(g,x,t){
+  const n=pending(g.steps),last=t?lastResult(t,x):'',head=last?`<p class="rp-bar-last" aria-live="polite">${x.esc(last)}</p>`:'';
+  if(!g.final&&(!n||!n.go))return n?`<div class="rp-bar">${head}<p class="rp-bar-why">${x.esc(n.label)}</p></div>`:'';
+  return `<div class="rp-bar">${head}${stepCta(x,g.steps,g.final||{label:'',go:null,ready:false})}</div>`;
+}
+let shownStage='';
+
 export default {
   id:'repair',
   css:true,
   next(t,x){
+    try{const n=x&&pending(taskGuide(t,x).steps);if(n)return x.esc(n.label);}catch{/* fall back to the fixed lines */}
     if(x?.room?.data?.desk?.ev)return 'Có chuyện ở quầy cần quyết';
     if(t.bench?.shelf&&x?.room?.data?.care?.tasks?.[t.id]?.call)return 'Khách gọi hỏi — trả lời điện thoại';
     if(!t.known)return 'Nghe khách kể bệnh của máy';
@@ -370,23 +569,37 @@ export default {
     return `<div class="career-job rp rp-idle">${deskCard(x)}${alerts(x)}${lastDesk(x)}${todayChip(x)}${shelfPanel(x)}${stats}${toolsFold(x)}${regularsBook(x)}${book(x)}</div>`;
   },
   job(t,x){
-    const desk=deskCard(x);
+    const desk=deskCard(x),g=guideFor(t,x),hint=hintFor(g,x),cta=bar(g,x,t);
     if(!t.known){
       const who=x.npc(t.npc);
-      return `<div class="career-job rp">${desk}${alerts(x)}${todayChip(x)}<article class="card rp-ticket"><div class="row">${x.portrait(who,52)}<div class="grow"><h3>${x.esc(who.display_name)}</h3><p>“${x.esc(t.opening)}”</p></div></div><div class="rp-cta">${x.cmd('📝 Hỏi khách kể bệnh của máy','ask',{task:t.id},'primary full',!!desk)}</div></article>${shelfFold(x)}</div>`;
+      return `<div class="career-job rp" data-rp-key="${x.esc(t.id)}:ask">${hint}${desk}${alerts(x)}${todayChip(x)}<article class="card rp-ticket"><div class="row">${x.portrait(who,52)}<div class="grow"><h3>${x.esc(who.display_name)}</h3><p>“${x.esc(t.opening)}”</p></div></div></article>${shelfFold(x)}${cta}</div>`;
     }
-    if(desk)return `<div class="career-job rp">${desk}${ticket(t,x)}</div>`;
+    if(desk)return `<div class="career-job rp">${hint}${desk}${ticket(t,x)}</div>`;
     const top=alerts(x,true);
-    if(caseOf(t)==='buyin')return `<div class="career-job rp">${top}${lastDesk(x)}${ticket(t,x)}${buyinView(t,x)}${shelfFold(x)}</div>`;
+    if(caseOf(t)==='buyin')return `<div class="career-job rp">${hint}${top}${lastDesk(x)}${ticket(t,x)}${buyinView(t,x)}${shelfFold(x)}${cta}</div>`;
     const at=stage(t),u=local(x,t);
     const tab=u.tab!=null&&u.tab<=at?u.tab:at;
     const views=[intakeView,testsView,quoteView,fixView,finishView];
     const titles=['Phiếu nhận máy','Đo kiểm & giả thuyết','Báo giá cho khách','Mở máy & thay sửa','Chạy thử, bảo hành, bàn giao'];
-    const panel=`<section class="rp-panel ${tab===at?'focus':''}" aria-live="polite"><h4 class="section-title">${tab+1} · ${x.esc(titles[tab])}${tab!==at?` <button type="button" class="btn ghost small" ${carAttr(x,'tab',{task:t.id,tab:at})}>Về bước đang làm</button>`:''}</h4>${views[tab](t,x)}</section>`;
+    const rows=tab===at&&g.steps.length>1?stepRows(x,g.steps,'Việc ở bước này'):'';
+    const panel=`<section class="rp-panel ${tab===at?'focus':''}" aria-live="polite"><h4 class="section-title">${tab+1} · ${x.esc(titles[tab])}${tab!==at?` <button type="button" class="btn ghost small" ${carAttr(x,'tab',{task:t.id,tab:at})}>Về bước đang làm</button>`:''}</h4>${views[tab](t,x)}${rows}</section>`;
     const banner=t.bench.shelf?shelfBanner(t,x):'';
-    return `<div class="career-job rp">${top}${lastDesk(x)}${banner}${ticket(t,x)}${steps(t,x,at,tab)}<div class="workbench"><div class="wb-main">${panel}${promiseFold(t,x)}${t.bench.intake?returnLink(t,x):''}
+    return `<div class="career-job rp ${at?'rp-later':'rp-intake'}" data-rp-key="${x.esc(t.id)}:${at}:${tab}">${hint}${top}${lastDesk(x)}${banner}${ticket(t,x)}${steps(t,x,at,tab)}<div class="workbench"><div class="wb-main">${panel}${promiseFold(t,x)}${t.bench.intake?returnLink(t,x):''}
       <p class="rp-foot">${x.button('📦 Kho & nhập linh kiện','inventory',{},'ghost small')}</p>${shelfFold(x,t.id)}</div>
-      <aside class="wb-side">${device(t,x)}</aside></div></div>`;
+      <aside class="wb-side">${device(t,x)}</aside></div>${cta}</div>`;
+  },
+  // The sticky bottom button rides above the sheet's own sticky footer.
+  tick(root){
+    const foot=root.closest('dialog')?.querySelector('.sheet-foot');
+    const h=foot&&getComputedStyle(foot).position==='sticky'?foot.offsetHeight:0;
+    if(root.dataset.rpFoot!==String(h)){root.dataset.rpFoot=String(h);root.style.setProperty('--rp-foot',h+'px');}
+    // A new stage (or tab) on the same device: bring its panel into view once, so its controls and results share the screen.
+    const key=root.dataset.rpKey||'',wb=root.querySelector('.workbench');
+    if(key&&key!==shownStage){const prev=shownStage;shownStage=key;
+      if(wb&&prev&&prev.split(':')[0]===key.split(':')[0]&&matchMedia('(max-width:760px)').matches){
+        const head=root.closest('dialog')?.querySelector('.sheet-head');
+        wb.style.scrollMarginTop=`${(head&&getComputedStyle(head).position==='sticky'?head.offsetHeight:0)+8}px`;
+        wb.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}}
   },
   actions:{
     async mark(data,el,x){const u=x.ui.rp?.[data.task];if(!u)return;u.marks=u.marks.includes(data.id)?u.marks.filter(v=>v!==data.id):[...u.marks,data.id];x.render();},
@@ -394,7 +607,11 @@ export default {
     async consent(data,el,x){const u=x.ui.rp?.[data.task];if(!u)return;u.consent=!u.consent;x.render();},
     async tab(data,el,x){x.ui.rp??={};const u=x.ui.rp[data.task]??={marks:[],acc:[],consent:false,grades:{},tab:null};u.tab=Number(data.tab);x.render();},
     async intake(data,el,x){const u=x.ui.rp?.[data.task]||{marks:[],acc:[],consent:false};await x.send('rp_intake',{task:data.task,marks:u.marks,accessories:u.acc,consent:u.consent});const v=x.ui.rp?.[data.task];if(v)v.tab=null;},
-    async grade(data,el,x){x.ui.rp??={};const u=x.ui.rp[data.task]??={marks:[],acc:[],consent:false,grades:{},tab:null};u.grades[data.fault]=data.grade;x.render();},
+    async grade(data,el,x){x.ui.rp??={};const u=x.ui.rp[data.task]??={marks:[],acc:[],consent:false,grades:{},tab:null};u.grades[data.fault]=data.grade;
+      u.graded=x.room.tasks.find(v=>v.id===data.task)?.bench?.quote?.rounds||0;x.render();},
+    // Later tasks: show where to look (marks / accessories) and count that part of the slip as seen.
+    async look(data,el,x){const u=x.ui.rp?.[data.task];if(!u)return;if(data.what==='marks')u.lookM=true;else u.lookA=true;x.render();
+      requestAnimationFrame(()=>highlight(document.querySelector(`#sheet[open] .rp-${data.what==='marks'?'marks':'accs'}`)));},
     async quote(data,el,x){
       const t=x.room.tasks.find(v=>v.id===data.task);if(!t)return;
       const grades={};for(const f of (t.open_scope||[]).filter(f=>!t.bench.approved[f]))grades[f]=gradeFor(x,t,f);

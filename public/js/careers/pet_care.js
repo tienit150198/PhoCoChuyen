@@ -2,6 +2,8 @@
  *  station with medicine by the label, adoption interviews, and the surprises that walk in at the counter.
  *  Care loop: regulars' cards and trust, a daily care card per boarder, vaccine/deworming reminders, adoption follow-ups. */
 import {reqList,fold} from '../ui-kit.js';
+import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,goAttrs,highlight} from '../v4/guide.js';
+import {keepBarAboveFooter} from './food_kit.js';
 const JOB_ICON={groom:'🛁',board:'🏠',feed:'🥣',adopt:'🏡'};
 const SPECIES_EMOJI={dog:'🐶',cat:'🐱'};
 const MOOD={calm:'hiền',nervous:'nhát, dễ run',bitey:'hay cắn/cào',dog_aggressive:'ghét chó khác'};
@@ -90,7 +92,7 @@ function foot(x){
   const d=x.room.data||{},busy=deskOpen(x);
   return `<p class="row wrap pc-foot">${x.cmd(d.sanitized_today?'✅ Đã khử khuẩn chuồng hôm nay':'🧽 Khử khuẩn chuồng & bàn tắm','pc_sanitize',{},'ghost small',!!d.sanitized_today||busy)}${x.button('📦 Kho & nhập hàng','inventory',{},'ghost small')}</p>`;
 }
-function rules(x){return `<details class="pc-rules"><summary>📋 Nội quy tiệm</summary><ul>${(x.cc.rules||[]).map(r=>`<li>${x.esc(r)}</li>`).join('')}</ul></details>`;}
+function rules(x){return `<details class="pc-rules fold gd-rules"><summary>📜 Nội quy tiệm</summary><ul>${(x.cc.rules||[]).map(r=>`<li>${x.esc(r)}</li>`).join('')}</ul></details>`;}
 function kennelBox(x,open=false){
   const d=x.room.data||{},pens=d.pens||{},busy=Object.values(pens).filter(Boolean).length,free=x.cc.pens.filter(p=>p.unlock<=(d.level||1)).length;
   const todo=Object.values(d.stay||{}).reduce((a,s)=>a+(s.todo||0),0);
@@ -266,7 +268,7 @@ function dryBox(t,x){
   const n=t.needs,g=t.g,heat=g.heat||'warm',need=dryNeed(t,x,heat),off=g.stopped||g.bolt;
   const label=g.dry?'Đang sấy…':`Khô ${Math.min(100,g.dry_pct)}%`;
   return `<h5>💨 Lau & sấy</h5>${timerBar('dry',g.dry,g.dry_pct,100,x.cc.dry_over*100,100/need,label)}
-    <div class="row wrap">${g.dry?x.cmd('⏹️ Tắt máy sấy','pc_dry',{task:t.id,mode:'stop'},'primary'):['cool','warm','hot'].map(h=>x.cmd(HEAT[h],'pc_dry',{task:t.id,mode:'start',heat:h},h==='hot'?'ghost small pc-no':'ghost small',!g.shampoo||!g.rinse_s||!!g.rinse||off)).join('')}</div>
+    <div class="row wrap pc-heats">${g.dry?x.cmd('⏹️ Tắt máy sấy','pc_dry',{task:t.id,mode:'stop'},'primary'):['cool','warm','hot'].map(h=>x.cmd(HEAT[h],'pc_dry',{task:t.id,mode:'start',heat:h},(h==='hot'?'ghost small pc-no':'ghost small')+' pc-heat-'+h,!g.shampoo||!g.rinse_s||!!g.rinse||off)).join('')}</div>
     <p class="small muted">Lông ${n.coat==='long'?'dài':'ngắn'}: khoảng ${Math.round(need*10)/10} giây ở nấc ${heat==='cool'?'mát':'ấm'}${n.humid?' (trời ẩm, lâu gấp rưỡi)':''}.</p>`;
 }
 function groomJob(t,x){
@@ -274,7 +276,7 @@ function groomJob(t,x){
   const wet=g.shampoo!=null&&g.dry_pct<100&&!g.stopped;
   let html=section('🛁 Bàn tắm tỉa',stepStrip(t,x)+calmTools(t,x));
   if(sv.includes('brush'))html+=section('🪮 Chải & gỡ rối',g.brush&&(g.flea||g.shampoo)?`<p class="small">✓ Đã chải gỡ rối${g.flea?' · đã chải bọ chét':''}.</p>`:`<div class="row wrap">${x.cmd(g.brush?'✓ Đã chải gỡ rối':'🪮 Chải gỡ rối','pc_brush',{task:t.id,tool:'brush'},st(t,x,'brush'),g.brush||g.shampoo!=null||off)}
-    ${x.cmd(g.flea?'✓ Đã chải bọ chét':'🐜 Lược bọ chét','pc_brush',{task:t.id,tool:'flea'},'ghost',g.flea||g.shampoo!=null||off)}</div><p class="small muted">Luôn gỡ rối trước khi tắm: nước làm cục rối bết thành nùi.</p>`);
+    ${x.cmd(g.flea?'✓ Đã chải bọ chét':'🐜 Lược bọ chét','pc_brush',{task:t.id,tool:'flea'},'ghost',g.flea||g.shampoo!=null||off)}</div>`);
   if(sv.includes('bath')){
     let body;
     if(g.shampoo){
@@ -284,11 +286,10 @@ function groomJob(t,x){
       const tiles=x.cc.shampoos.map(s=>{const q=s.item?x.stock(s.item):null;return `<button type="button" class="tile ${v.shampoo===s.id?'selected':''} ${q===0?'empty':''}" data-action="car:set" data-key="shampoo" data-val="${x.esc(s.id)}" aria-pressed="${v.shampoo===s.id}"><span class="tile-emoji">${s.emoji}</span><b>${x.esc(s.name)}</b><small>${q===null?'chai của chủ':'kho '+q}</small></button>`;}).join('');
       const tp=x.cc.temp,temp=v.temp,zone=temp>=tp.burn?'burn':temp>tp.high?'hot':temp<tp.low?'cold':'ok';
       const condItem=itemInfo(x,'conditioner'),condLocked=(x.room.level||1)<(condItem.unlock||1);
-      body=`<div class="tile-grid pc-tiles">${tiles}</div>
+      body=`<div class="tile-grid pc-tiles pc-shampoos">${tiles}</div>
         <p class="small muted">${x.esc(x.cc.shampoos.find(s=>s.id===v.shampoo)?.note||'Chọn sữa tắm hợp với bé: tuổi, da, loài, đơn thuốc.')}</p>
         <div class="pc-thermo ${zone}"><span>🌡️</span>${stepBtn(x,'−','temp',-1,30,45)}<b>${temp}°C</b>${stepBtn(x,'+','temp',1,30,45)}
-          <small>${zone==='ok'?'Ấm vừa — thử cổ tay thấy dễ chịu':zone==='cold'?'Lạnh — bé sẽ run':zone==='hot'?'Hơi nóng':'BỎNG! Tuyệt đối không'}</small></div>
-        <p class="small muted">Nước tắm thú: ${tp.low}–${tp.high}°C.</p>
+          <small>${zone==='ok'?'✓ Ấm vừa':zone==='cold'?'🥶 Lạnh':zone==='hot'?'🥵 Hơi nóng':'⛔ BỎNG!'} · chuẩn ${tp.low}–${tp.high}°C</small></div>
         <div class="row wrap">${condLocked?`<span class="tag">🔒 Dầu xả mở ở cấp ${condItem.unlock}</span>`:setBtn(x,`✨ Dầu xả (${x.stock('conditioner')})`,'cond',!v.cond,v.cond)}
           ${x.cmd('🛁 Tắm','pc_bath',{task:t.id,shampoo:v.shampoo,temp:v.temp,cond:!!v.cond&&!condLocked},st(t,x,'bath'),!v.shampoo||off||busy)}</div>`;
     }
@@ -296,13 +297,13 @@ function groomJob(t,x){
   }
   if(sv.includes('nails')){
     html+=section('✂️ Cắt móng',g.nails?`<p class="small">✓ ${g.nails==='short'?'Cắt ngắn':'Tỉa đầu móng'}.</p>${g.nick?(g.stanched?'<span class="tag amber">🩹 Đã cầm máu — nhớ báo chủ</span>':x.cmd(`🩹 Rắc bột cầm máu (${x.stock('styptic')})`,'pc_styptic',{task:t.id},'danger')):''}`
-      :`<div class="row wrap">${x.cmd('✂️ Tỉa đầu móng','pc_nails',{task:t.id,cut:'tip'},'ghost',wet||busy||off)}${x.cmd('✂️ Cắt thật ngắn','pc_nails',{task:t.id,cut:'short'},'ghost',wet||busy||off)}</div>
-       <p class="small muted">Móng trắng thấy được tủy hồng; móng đen thì không — chỉ tỉa từng chút.${wet?' Bé còn ướt, sấy xong đã.':''}</p>`);
+      :`<div class="row wrap pc-cuts">${x.cmd('✂️ Tỉa đầu móng','pc_nails',{task:t.id,cut:'tip'},'ghost pc-cut-tip',wet||busy||off)}${x.cmd('✂️ Cắt thật ngắn','pc_nails',{task:t.id,cut:'short'},'ghost pc-cut-short',wet||busy||off)}</div>
+       <p class="small muted">⚫ Móng đen: chỉ tỉa đầu.${wet?' 💧 Sấy khô trước.':''}</p>`);
   }
   if(sv.includes('ears')){
     html+=section('👂 Vệ sinh tai',g.ears?`<p class="small">✓ ${g.ears==='clean'?'Đã lau tai':'Bỏ qua lau tai'}.</p>`
-      :`<div class="row wrap">${x.cmd(`☁️ Lau tai (bông ${x.stock('cotton')})`,'pc_ears',{task:t.id,how:'clean'},'ghost',wet||busy||off)}${x.cmd('🙅 Bỏ qua — tai có vấn đề','pc_ears',{task:t.id,how:'skip'},'ghost',wet||busy||g.bolt)}</div>
-       <p class="small muted">Tai đỏ, mùi hôi, bé đau: không lau sâu — báo chủ đưa đi bác sĩ thú y.</p>`);
+      :`<div class="row wrap pc-ears-opts">${x.cmd(`☁️ Lau tai (bông ${x.stock('cotton')})`,'pc_ears',{task:t.id,how:'clean'},'ghost pc-ears-clean',wet||busy||off)}${x.cmd('🙅 Bỏ qua — tai có vấn đề','pc_ears',{task:t.id,how:'skip'},'ghost pc-ears-skip',wet||busy||g.bolt)}</div>
+       <p class="small muted">🔴 Tai đỏ, hôi: bỏ qua, báo chủ đi thú y.</p>`);
   }
   return html;
 }
@@ -315,21 +316,10 @@ function groomSide(t,x){
   if(n.services.includes('nails'))lines.push([g.nick?'Cắt móng (miễn phí nếu báo sự cố)':'Cắt móng',price(x,'nails'),!!g.nails&&!(g.nick&&(t.report||[]).includes('nick'))]);
   if(n.services.includes('ears'))lines.push(['Vệ sinh tai',price(x,'ears'),g.ears==='clean']);
   const total=lines.filter(l=>l[2]).reduce((a,l)=>a+l[1],0);
-  const rows=[[t.inspected.length>=4||null,'Kiểm bé trước khi làm',`${t.inspected.length}/${x.cc.job_parts.groom.length} phần`]];
-  // Same list as the server's _required: steps the owner paid for that are not done yet.
-  const sv=n.services,miss=[];
-  if(sv.includes('brush')&&!g.brush)miss.push('chải lông');
-  if(sv.includes('bath')){if(g.shampoo==null)miss.push('tắm');else if(!(g.rinse_s>0))miss.push('xả');else if(!(g.dry_pct>0))miss.push('sấy');}
-  if(sv.includes('nails')&&g.nails==null)miss.push('cắt móng');
-  if(sv.includes('ears')&&g.ears==null)miss.push('xử lý tai');
-  if(n.services.includes('bath'))rows.push([g.shampoo?true:null,'Tắm đúng nhiệt độ',g.temp?g.temp+'°C':''],[g.rinse_s>=x.cc.rinse_min?true:g.rinse_s>0?false:null,'Xả sạch bọt',''],[g.dry_pct>=100?true:g.dry_pct>0?false:null,'Khô tới chân lông',g.dry_pct?g.dry_pct+'%':'']);
-  if(g.nick)rows.push([g.stanched,'Cầm máu móng','']);
-  if(isGen(t))rows.push([g.bolt?false:g.bolts?false:null,'Bé ở yên trên bàn',g.bolts?`nhảy khỏi bàn ${g.bolts} lần`:'']);
-  else rows.push([g.stress<x.cc.stress_stop,'Bé không hoảng',`stress ${g.stress}`]);
+  const status=isGen(t)?(g.bolts?`<p class="small muted">🏃 Bé đã nhảy khỏi bàn ${g.bolts} lần.</p>`:''):g.stress>=x.cc.stress_stop?`<p class="small muted">💓 Stress ${g.stress}: bé đang hoảng.</p>`:'';
   return `<div class="pc-receipt"><h4>🧾 Phiếu thu</h4>${lines.map(([l,p,on])=>`<div class="kv ${on?'':'muted'}"><span>${x.esc(l)}</span><b>${on?x.money(p):'—'}</b></div>`).join('')}<div class="kv total"><span>Thu khi trả bé</span><b>${x.money(total)}</b></div></div>
-    ${checklist(x,rows)}${reportBox(t,x)}
-    ${miss.length&&!g.stopped?`<p class="small muted">Còn: ${x.esc(miss.join(', '))}</p>`:''}${g.nick&&!g.stanched?`<div class="notice amber">🩸 Móng còn rỉ máu — rắc bột cầm máu trước khi trả bé.</div>`:''}
-    ${x.confirmCmd('🐾 Trả bé & thu tiền','pc_handover',{task:t.id},'Trả bé cho chủ? Chủ sẽ nghe đúng những ý bạn đã chọn để báo.',st(t,x,'handover','ghost')+' big full',!!(g.rinse||g.dry||g.bolt)||(!g.stopped&&miss.length>0)||!!(g.nick&&!g.stanched))}`;
+    ${stepRows(x,taskGuide(t,x).steps,'Việc cần làm')}${status}${reportBox(t,x)}
+    ${g.nick&&!g.stanched?`<div class="notice amber">🩸 Móng còn rỉ máu — rắc bột cầm máu trước khi trả bé.</div>`:''}`;
 }
 
 /* ---------------------------------------------------------------- report to the owner */
@@ -341,7 +331,7 @@ function reportBox(t,x){
   return `<div class="pc-report"><h4>💬 Báo lại cho chủ</h4>${seen.length?`<p class="small">Bạn đã thấy: <b>${seen.map(x.esc).join(', ')}</b></p>`:''}
     <div class="stack">${opts.map(r=>`<button type="button" class="pc-say ${say.includes(r.id)?'on':''} ${r.id==='diagnose'?'risky':''}" data-action="car:say" data-id="${x.esc(r.id)}" aria-pressed="${say.includes(r.id)}"><span>${say.includes(r.id)?'☑':'☐'}</span>${x.esc(r.text)}</button>`).join('')}</div>
     <div class="row wrap space-top">${x.cmd(same&&saved.length?'✓ Đã ghi lời báo':'📝 Ghi lời báo','pc_report',{task:t.id,say},same?'ghost small':st(t,x,'report')+' small',same)}</div>
-    <p class="small muted">Thấy dấu hiệu lạ thì khuyên đi bác sĩ thú y. Không tự chẩn đoán, không khuyên thuốc.</p></div>`;
+    <p class="small muted">🩺 Lạ thì khuyên đi thú y, không tự đoán bệnh.</p></div>`;
 }
 
 /* ---------------------------------------------------------------- kennel */
@@ -351,7 +341,7 @@ function kennel(x,{pick=null,task=null,species=null,kg=null}={}){
     const o=pens[p.id],locked=p.unlock>(d.level||1),wrongZone=species&&p.zone!==species,tooSmall=kg!=null&&kg>p.max_kg;
     const body=o?`<b>${SPECIES_EMOJI[o.species]} ${x.esc(o.pet)}</b><small>${x.esc(o.owner)} · về ngày ${o.until}</small><small>${o.meals} × ${o.grams} g · ${o.food==='own'?'đồ chủ gửi':'hạt tiệm'}</small>`
       :locked?`<small>🔒 mở ở cấp ${p.unlock}</small>`:`<small>Trống · ${p.zone==='dog'?'chó ≤ '+p.max_kg+' kg':'mèo'}</small>`;
-    const cls=`pc-pen ${o?'busy':''} ${locked?'locked':''} ${pick===p.id?'selected':''} ${task&&(o||locked||wrongZone||tooSmall)?'no':''} ${task&&tooSmall&&!o?'small-pen':''}`;
+    const cls=`pc-pen pc-pen-${p.id} ${o?'busy':''} ${locked?'locked':''} ${pick===p.id?'selected':''} ${task&&(o||locked||wrongZone||tooSmall)?'no':''} ${task&&tooSmall&&!o?'small-pen':''}`;
     const head=`<div class="row spread"><b>${p.emoji} ${x.esc(p.name)}</b><span class="tag ${p.zone==='dog'?'amber':'blue'}">${p.zone==='dog'?'Khu chó':'Tầng mèo'}</span></div>`;
     return task&&!o&&!locked&&!wrongZone&&!tooSmall?`<button type="button" class="${cls}" ${cmdAttr(x,'pc_pen',{task,pen:p.id})} aria-pressed="${pick===p.id}">${head}${body}</button>`:`<div class="${cls}">${head}${body}</div>`;
   }).join('')}</div>`;
@@ -363,7 +353,7 @@ function chartBox(t,x,kg,known,meals,grams){
   const bands=(x.cc.chart[n.species]||[]).map(([top,val],i,a)=>`<span class="${val===g?'on':''}">${i?`${a[i-1][0]}–`:'≤'}${top>=999?'∞':top} kg: ${val} g/kg</span>`).join('');
   return `<div class="pc-chart"><div class="pc-bands">${bands}</div>
     <p class="small">Giai đoạn <b>${x.esc(x.cc.stage_names[sg])}</b>: × ${x.cc.stage_pct[sg]}% · nên chia <b>${x.cc.meals[sg]} bữa</b>.</p>
-    <p class="small">${kg} kg × ${g} g/kg × ${x.cc.stage_pct[sg]}% ≈ <b>${day} g/ngày</b>${known?'':' <span class="tag amber">theo cân chủ khai — cân lại cho chắc</span>'}</p>
+    <p class="small">${kg} kg × ${g} g/kg × ${x.cc.stage_pct[sg]}% ≈ <b>${day} g/ngày</b> → chia ${meals} bữa ≈ <b>${Math.max(5,R(day/meals))} g/bữa</b>${known?'':' <span class="tag amber">theo cân chủ khai — cân lại cho chắc</span>'}</p>
     <div class="pc-bowl"><span>🥣</span><b>${meals} bữa × ${grams} g = ${meals*grams} g/ngày</b><small>lệch bảng cho phép ±${x.cc.tol}%</small></div></div>`;
 }
 
@@ -382,20 +372,25 @@ function boardJob(t,x){
     ${chartBox(t,x,kg,f.kg!=null,vv.meals,vv.grams)}
     <div class="row wrap">${x.cmd(t.plan?'💾 Ghi lại kế hoạch':'💾 Ghi kế hoạch ăn','pc_plan',{task:t.id,food:vv.food,meals:vv.meals,grams:vv.grams,solo:!!vv.solo},t.plan?'ghost':st(t,x,'plan'),vv.food==='own'&&!n.food_own)}
       ${t.plan?`<span class="tag green">Thẻ: ${t.plan.meals} × ${t.plan.grams} g · ${t.plan.food==='own'?'đồ chủ':'hạt tiệm'}${t.plan.solo?' · chơi riêng':''}</span>`:''}</div>`;
-  return intake(t,x)+section('🏠 Chọn chuồng',pens)+section('🥣 Kế hoạch ăn',plan);
+  return intake(t,x)+section('🏠 Chọn chuồng',pens)+section('🥣 Kế hoạch ăn',plan,'pc-plan');
 }
 function boardSide(t,x){
   const n=t.needs,f=t.facts||{},key=n.species==='dog'?'board_dog':'board_cat',signs=f.signs||[],by=pickup(t,x);
   const vaxOk=f.vax?(f.vax==='valid'&&(f.vax_until==null||f.vax_until>=by)):null;
-  const rows=[[vaxOk,'Sổ tiêm còn hạn tới ngày đón',f.vax?(f.vax_until!=null?`hạn tới ngày ${f.vax_until} · chủ đón ngày ${by}`:VAX[f.vax][0]):'chưa xem'],[f.kg!=null||null,'Cân bé',f.kg!=null?f.kg+' kg':''],
-    [t.inspected.includes('temp')?!signs.includes('fever'):null,'Nhiệt độ bình thường',signs.includes('fever')?'đang sốt':''],
-    [t.inspected.includes('body')?!signs.includes('cough'):null,'Không có dấu hiệu bệnh lây',signs.includes('cough')?'đang ho':''],
-    [t.inspected.includes('mood')||null,'Biết tính khí',f.mood?MOOD[f.mood]:''],[t.pen?true:null,'Đã chọn chuồng',t.pen?pen(x,t.pen).name:''],[t.plan?true:null,'Đã ghi kế hoạch ăn',t.plan?`${t.plan.meals} × ${t.plan.grams} g`:'']];
+  // Each row checks one thing; an unchecked one is a tap that checks it (or points at the control).
+  const look=part=>t.inspected.includes(part)?null:{cmd:'pc_inspect',payload:{task:t.id,part}};
+  const rows=[{ok:vaxOk,label:'Sổ tiêm còn hạn tới ngày đón',note:f.vax?(f.vax_until!=null?`hạn tới ngày ${f.vax_until} · chủ đón ngày ${by}`:VAX[f.vax][0]):'chưa xem',go:look('vaccine')},
+    {ok:f.kg!=null||null,label:'Cân bé',note:f.kg!=null?f.kg+' kg':'',go:look('scale')},
+    {ok:t.inspected.includes('temp')?!signs.includes('fever'):null,label:'Nhiệt độ bình thường',note:signs.includes('fever')?'đang sốt':'',go:look('temp')},
+    {ok:t.inspected.includes('body')?!signs.includes('cough'):null,label:'Không có dấu hiệu bệnh lây',note:signs.includes('cough')?'đang ho':'',go:look('body')},
+    {ok:t.inspected.includes('mood')||null,label:'Biết tính khí',note:f.mood?MOOD[f.mood]:'',go:look('mood')},
+    {ok:t.inspected.includes('gait')||null,label:'Xem dáng đi',note:signs.includes('limp')?'đi khập khiễng':'',go:look('gait')},
+    {ok:t.pen?true:null,label:'Đã chọn chuồng',note:t.pen?pen(x,t.pen).name:'',go:t.pen?null:{sel:'.pc-pens'}},
+    {ok:t.plan?true:null,label:'Đã ghi kế hoạch ăn',note:t.plan?`${t.plan.meals} × ${t.plan.grams} g`:'',go:t.plan?null:{sel:'.pc-plan'}}];
   const reasons=[['vaccine','📒 Sổ tiêm không đủ hạn'],['sick','🤧 Bé có dấu hiệu bệnh'],['full','🚫 Hết chuồng phù hợp']];
   return `<div class="pc-receipt"><h4>🧾 Phiếu lưu trú</h4><div class="kv"><span>${n.nights} đêm × ${x.money(price(x,key))}</span><b>${x.money(n.nights*price(x,key))}</b></div></div>
-    ${checklist(x,rows)}
-    ${x.confirmCmd('🏠 Nhận bé & thu tiền','pc_admit',{task:t.id},'Nhận bé vào chuồng và thu tiền lưu trú?',st(t,x,'admit')+' big full',!t.pen||!t.plan||!t.inspected.includes('vaccine'))}
-    <h4 class="space-top">Hoặc từ chối lịch sự</h4><div class="stack">${reasons.map(([id,l])=>x.confirmCmd(l,'pc_refuse',{task:t.id,reason:id},`Từ chối nhận bé với lý do này? Tiệm sẽ giới thiệu ${x.cc.vet} khi cần.`,'ghost small')).join('')}</div>`;
+    ${stepRows(x,rows,'Kiểm trước khi nhận')}
+    <h4 class="space-top">Hoặc từ chối lịch sự</h4><div class="stack pc-refuse">${reasons.map(([id,l])=>x.confirmCmd(l,'pc_refuse',{task:t.id,reason:id},`Từ chối nhận bé với lý do này? Tiệm sẽ giới thiệu ${x.cc.vet} khi cần.`,'ghost small')).join('')}</div>`;
 }
 
 function medCard(t,x){
@@ -421,16 +416,13 @@ function feedJob(t,x){
   const care=n.species==='dog'?(t.walked?'<span class="tag green">✓ Đã dắt đi dạo</span>':x.cmd(`🦮 Dắt đi dạo (túi ${x.stock('poop_bag')})`,'pc_walk',{task:t.id},st(t,x,'walk'),!x.stock('poop_bag')))
     :(t.litter?'<span class="tag green">✓ Khay cát sạch</span>':x.cmd('🧹 Dọn khay cát','pc_litter',{task:t.id},st(t,x,'litter')));
   const treat=x.cmd(`🍪 Bánh thưởng (${x.stock('treat')})`,'pc_treat',{task:t.id},'ghost small',!x.stock('treat')||t.treats>=3);
-  return intake(t,x)+section('🥣 Bát ăn',bowl)+medCard(t,x)+section('🐾 Vận động & vệ sinh',`<div class="row wrap">${care}${treat}</div>`);
+  return intake(t,x)+section('🥣 Bát ăn',bowl,'pc-feedbox')+medCard(t,x)+section('🐾 Vận động & vệ sinh',`<div class="row wrap">${care}${treat}</div>`);
 }
 function feedSide(t,x){
-  const n=t.needs,f=t.facts||{};
-  const rows=[[t.inspected.includes('bowl')||null,'Xem bát tối qua',''],[t.inspected.includes('energy')||null,'Quan sát tinh thần',''],
-    [t.fed||null,'Cho ăn đúng thẻ',t.bowl?t.bowl.grams+' g':''],...(n.med?[[t.med?true:null,'Cho thuốc theo nhãn','']]:[]),[(t.walked||t.litter)||null,n.species==='dog'?'Dắt đi dạo':'Dọn khay cát',''],
-    ...(f.signs||[]).map(s=>[(t.report||[]).includes('vet_'+s),'Báo chủ: '+(x.cc.signs[s]?.label||s),''])];
+  const f=t.facts||{},said=t.report||[];
+  const signs=(f.signs||[]).map(s=>({ok:said.includes('vet_'+s)||null,label:'Báo chủ: '+(x.cc.signs[s]?.label||s),go:said.includes('vet_'+s)?null:{sel:'.pc-report .stack'}}));
   return `<div class="pc-receipt"><h4>🧾 Phí chăm sóc</h4><div class="kv total"><span>Hôm nay</span><b>${x.money(price(x,'care'))}</b></div></div>
-    ${checklist(x,rows)}${reportBox(t,x)}
-    ${x.confirmCmd('📸 Gửi ảnh & cập nhật cho chủ','pc_handover',{task:t.id},'Gửi cập nhật cho chủ? Chủ sẽ đọc đúng những ý bạn đã chọn.',st(t,x,'handover','ghost')+' big full',!t.fed||(!!n.med&&!t.med))}`;
+    ${stepRows(x,[...taskGuide(t,x).steps,...signs],'Việc cần làm')}${reportBox(t,x)}`;
 }
 
 /* ---------------------------------------------------------------- adoption day */
@@ -451,13 +443,201 @@ function adoptJob(t,x){
   return section('🏡 Phỏng vấn nhận nuôi',qs)+section('🐾 Các bé đang chờ nhà',`<div class="pc-adoptees">${pets}${none}</div>`);
 }
 function adoptSide(t,x){
-  const n=t.needs,vv=ui(x,t),asked=t.inspected.length,total=(x.cc.job_parts.adopt||[]).length;
-  const pick=vv.pet==='none'?'chưa giao bé nào':(x.cc.adoptees||[]).find(a=>a.id===vv.pet)?.name;
-  const rows=[[asked>=total?true:asked?null:false,'Hỏi đủ nếp nhà',`${asked}/${total} câu`],[vv.pet?true:null,'Chọn bé hợp nếp nhà',pick||'']];
   return `<div class="pc-receipt"><h4>🧾 Phí nhận nuôi</h4><div class="kv"><span>Tiêm phòng, triệt sản</span><b>${x.money(price(x,'adopt'))}</b></div></div>
-    ${checklist(x,rows)}
-    ${x.confirmCmd(vv.pet==='none'?'🤝 Hẹn ngày hội sau':'🏡 Giao bé về nhà mới','pc_match',{task:t.id,pet:vv.pet},vv.pet==='none'?`Chưa giao bé nào cho ${n.family}?`:`Giao bé ${pick||''} cho ${n.family}?`,'primary big full',!vv.pet||!asked)}
-    <p class="small muted">Nhà có người dị ứng lông thì chưa giao bé nào.</p>`;
+    ${stepRows(x,taskGuide(t,x).steps,'Việc cần làm')}`;
+}
+
+/* ---------------------------------------------------------------- next steps (guide.js)
+ * One list per task drives the header hint, the tappable rows and the bottom bar. On a first task every
+ * choice has a one-tap step for the right answer (from what the screen already shows: the ticket, the
+ * checks), so the glowing bottom button always does it;
+ * later tasks point at the choice and keep the challenge. Timers get a live button that turns off the tap
+ * or the dryer at the right moment (pressed early it only says how long is left). */
+const RINSE_PAD=0.5,DRY_PAD=6;          // stop a little past the line: server clock and rounding
+const liveRinse=(t,x)=>t.g.rinse_s+(t.g.rinse?Math.max(0,x.now()-t.g.rinse):0);
+const liveDry=(t,x)=>t.g.dry_pct+(t.g.dry?Math.max(0,x.now()-t.g.dry)*100/dryNeed(t,x,t.g.heat||'warm'):0);
+const timerReady=(kind,t,x)=>kind==='rinse'?liveRinse(t,x)>=x.cc.rinse_min+RINSE_PAD:liveDry(t,x)>=100+DRY_PAD;
+function liveLabel(kind,t,x){
+  if(kind==='rinse'){const left=x.cc.rinse_min+RINSE_PAD-liveRinse(t,x);return left>0?`⏳ Đang xả… còn ${Math.max(0.1,left).toFixed(1)} giây`:'🚰 Khóa vòi · nước đã trong';}
+  const v=liveDry(t,x);
+  return v<100+DRY_PAD?`⏳ Đang sấy… khô ${Math.floor(Math.min(99,v))}%`:v<x.cc.dry_over*100?'⏹️ Tắt máy sấy · khô rồi':'⏹️ Tắt máy sấy ngay!';
+}
+/** Mood band the pet shows: the cue words on new tasks, the stress number on old ones. */
+function bandOf(t,x){
+  const g=t.g;
+  if(!isGen(t))return (x.cc.bands||[]).find(b=>(g.stress||0)<=b.top)?.id||'relaxed';
+  const book=x.cc.cues?.[t.needs.species]||{},cues=t.cues||[];
+  return ['panic','stressed','uneasy'].find(b=>(book[b]||[]).some(c=>cues.includes(c)))||'relaxed';
+}
+const runnerSeen=t=>/chực nhảy/.test([...(t.cues||[]),t.found?.mood||''].join(' ').normalize('NFC'));
+const knownBitey=t=>t.needs.mood_said==='bitey'||t.facts?.mood==='bitey';
+function rightShampoo(t,x){
+  const n=t.needs,f=t.facts||{},have=id=>{const s=x.cc.shampoos.find(v=>v.id===id);return !!s&&(!s.item||x.stock(s.item)>0);};
+  const pool=n.rx?['medicated']:n.stage==='young'?['puppy','sensitive']:n.species==='cat'||f.skin==='sensitive'?['sensitive','puppy']:['normal','sensitive','puppy'];
+  return pool.find(have)||pool[0];
+}
+const rightHeat=t=>t.needs.flat?'cool':'warm';
+const rightCut=t=>t.facts?.nails==='clear'&&t.needs.short_nails?'short':'tip';
+const rightEars=t=>(t.facts?.signs||[]).includes('ears')?'skip':'clean';
+function rightSay(t,x){
+  const ok=new Set(x.cc.reports.filter(r=>r.jobs.includes(t.job)).map(r=>r.id)),g=t.g||{};
+  return ['done',...(t.facts?.signs||[]).map(s=>'vet_'+s),g.nick?'nick':'',g.stopped?'stopped':''].filter(id=>ok.has(id));
+}
+/** Same list as the server's _required: steps the owner paid for that are not done yet. */
+function groomMiss(t){
+  const g=t.g,sv=t.needs.services,miss=[];
+  if(sv.includes('brush')&&!g.brush)miss.push('chải lông');
+  if(sv.includes('bath')){if(g.shampoo==null)miss.push('tắm');else if(!(g.rinse_s>0))miss.push('xả');else if(!(g.dry_pct>0))miss.push('sấy');}
+  if(sv.includes('nails')&&g.nails==null)miss.push('cắt móng');
+  if(sv.includes('ears')&&g.ears==null)miss.push('xử lý tai');
+  return miss;
+}
+/** Chart portion for a meal (the same maths the chart box shows). */
+function portionOf(t,x){
+  const n=t.needs,kg=t.job==='feed'?n.kg:(t.facts?.kg??n.kg_said),meals=t.job==='feed'?n.meals:x.cc.meals[stageOf(x,n.species,n.months)];
+  return {meals,grams:Math.max(5,R(daily(x,n.species,kg,n.months)/meals))};
+}
+const within=(g,target,tol=10)=>Math.abs(g-target)*100<=tol*target;
+
+function inspectStep(t,x,label){
+  const parts=x.cc.job_parts[t.job]||[],left=parts.filter(p=>!t.inspected.includes(p)),p=left[0],info=p&&(x.cc.parts[p]||{emoji:'🔎',label:p});
+  const k=parts.length-left.length;
+  return {ok:left.length?null:true,label:`${label} (${k}/${parts.length})`,go:p?{cmd:'pc_inspect',payload:{task:t.id,part:p},label:`${info.emoji} ${x.esc(info.label)} <small>· ${k+1}/${parts.length}</small>`}:null};
+}
+const greetStep=t=>t.regular!=null&&!t.greeted?[{ok:null,label:'Chào bé khách quen, hỏi thăm lần trước',go:{cmd:'pc_greet',payload:{task:t.id},label:'👋 Gọi tên bé, hỏi thăm'}}]:[];
+function reportStep(t,x,first){
+  const vv=ui(x,t),saved=t.report||[],done=saidDone(t,x),signs=(t.facts?.signs||[]).length;
+  const go=done?null:first?{act:'car:report',data:{say:rightSay(t,x).join(',')},label:`💬 Báo chủ: kể các bước${signs?', khuyên đi thú y':''}`}
+    :vv.say.length?{cmd:'pc_report',payload:{task:t.id,say:vv.say},label:'📝 Ghi lời báo cho chủ'}:{sel:'.pc-report .stack',label:'💬 Chọn ý báo lại cho chủ'};
+  return {ok:done||null,label:'Báo lại cho chủ',note:saved.length?`${saved.length} ý`:'',go};
+}
+function timerSteps(t,x){
+  const g=t.g,live=kind=>`<span data-pc-live="${kind}">${liveLabel(kind,t,x)}</span>`;
+  return [g.rinse&&{ok:null,label:`Xả đủ ${x.cc.rinse_min} giây rồi khóa vòi`,go:{act:'car:tapoff',data:{kind:'rinse'},label:live('rinse')}},
+    g.dry&&{ok:null,label:'Sấy khô tới chân lông rồi tắt máy',go:{act:'car:tapoff',data:{kind:'dry'},label:live('dry')}}].filter(Boolean);
+}
+/** Finishing command: asks what is still open when finishing early, else the usual question. */
+function finish(steps,cmd,payload,question){
+  return pending(steps)?finalGo(steps,cmd,payload,{question,confirm:true}):{cmd,payload,confirm:question};
+}
+
+function groomGuide(t,x){
+  const n=t.needs,g=t.g,sv=n.services,v=ui(x,t),first=firstTime(x),id=t.id,task={task:id};
+  if(g.bolt)return {steps:[...timerSteps(t,x),{ok:null,label:'Bé nhảy khỏi bàn: đưa bé về an toàn',go:first?{cmd:'pc_catch',payload:{task:id,how:'corner'},label:'🚪 Đóng cửa, ngồi thấp, gọi tên nhỏ nhẹ'}:{sel:'.pc-bolt .pc-opts'}}]};
+  const steps=[...timerSteps(t,x)],off=!!(g.rinse||g.dry);
+  if(g.nick&&!g.stanched)steps.push({ok:null,label:'Móng rỉ máu: rắc bột cầm máu',go:{cmd:'pc_styptic',payload:task,label:`🩹 Rắc bột cầm máu (${x.stock('styptic')})`}});
+  steps.push(...greetStep(t),inspectStep(t,x,'Kiểm bé trước khi làm'));
+  const work=[];
+  if(!g.stopped){
+    if(isGen(t)&&!g.loop&&runnerSeen(t))work.push({ok:null,label:'Bé hay nhảy khỏi bàn: đeo vòng giữ',go:{cmd:'pc_loop',payload:task,label:'🔗 Đeo vòng giữ cổ trên bàn'}});
+    if(sv.includes('brush'))work.push({ok:g.brush?true:g.shampoo!=null?false:null,label:'Chải gỡ rối trước khi tắm',go:!g.brush&&g.shampoo==null?{cmd:'pc_brush',payload:{task:id,tool:'brush'},label:'🪮 Chải gỡ rối'}:null});
+    const bathed=g.shampoo!=null,dried=g.dry_pct>=100,wet=bathed&&!dried;
+    if(sv.includes('bath')){
+      const right=rightShampoo(t,x),sh=sid=>x.cc.shampoos.find(s=>s.id===sid)||{name:sid,emoji:'🧴'},tp=x.cc.temp;
+      work.push({ok:bathed||(v.shampoo?(first?v.shampoo===right:true):null),label:'Chọn sữa tắm hợp với bé',note:!bathed&&v.shampoo?sh(v.shampoo).name:'',
+        go:bathed?null:first?{act:'car:set',data:{key:'shampoo',val:right},label:`${sh(right).emoji} Chọn ${x.esc(sh(right).name)}`}:{sel:'.pc-shampoos',label:'🧴 Chọn sữa tắm hợp với bé'}});
+      work.push({ok:bathed||(v.temp>=tp.low&&v.temp<=tp.high)||(v.temp>=tp.burn?false:null),label:`Pha nước ấm ${tp.low}–${tp.high}°C`,note:bathed?`${g.temp}°C`:`đang ${v.temp}°C`,
+        go:bathed?null:first?{act:'car:temp',data:{val:tp.low+1},label:`🌡️ Pha nước ${tp.low+1}°C`}:{sel:'.pc-thermo',label:`🌡️ Chỉnh nước ${tp.low}–${tp.high}°C`}});
+      const condItem=itemInfo(x,'conditioner'),cond=!!v.cond&&(x.room.level||1)>=(condItem.unlock||1);
+      work.push({ok:bathed||null,label:'Tắm cho bé',go:bathed||!v.shampoo||off?null:{cmd:'pc_bath',payload:{task:id,shampoo:v.shampoo,temp:v.temp,cond},label:'🛁 Tắm'}});
+      const rinsed=g.rinse_s>=x.cc.rinse_min;
+      if(!g.rinse)work.push({ok:rinsed?true:g.dry_pct>0||g.dry?false:null,label:`Xả sạch bọt (${x.cc.rinse_min} giây)`,note:g.rinse_s?`${Number(g.rinse_s).toFixed(1)} giây`:'',
+        go:!rinsed&&bathed&&!g.dry&&!g.dry_pct?{cmd:'pc_rinse',payload:{task:id,mode:'start'},label:g.rinse_s?'🚿 Mở vòi xả thêm':'🚿 Mở vòi xả'}:null});
+      const heat=rightHeat(t);
+      if(!g.dry)work.push({ok:dried||null,label:'Sấy khô tới chân lông',note:g.dry_pct?`${Math.min(100,g.dry_pct)}%`:'',
+        go:dried||!bathed||!(g.rinse_s>0)||g.rinse?null:first?{cmd:'pc_dry',payload:{task:id,mode:'start',heat},label:`💨 Bật máy sấy nấc ${heat==='cool'?'mát':'ấm'}`}:{sel:'.pc-heats',label:'💨 Chọn nấc sấy'}});
+    }
+    const hands=sv.includes('nails')||(sv.includes('ears')&&rightEars(t)==='clean'&&g.ears!=='skip');
+    if(hands&&n.species==='dog'&&knownBitey(t)){
+      work.push({ok:g.consent||null,label:'Hỏi chủ đồng ý rọ mõm mềm',go:g.consent?null:{cmd:'pc_consent',payload:task,label:'🙋 Hỏi chủ đồng ý rọ mõm'}});
+      work.push({ok:g.muzzle||null,label:'Đeo rọ mõm trước khi cầm chân bé',go:!g.muzzle&&g.consent&&!wet&&!off?{cmd:'pc_muzzle',payload:task,label:'🧢 Đeo rọ mõm mềm'}:null});
+    }
+    if(sv.includes('nails')&&n.species==='cat'&&knownBitey(t))
+      work.push({ok:g.wrap||null,label:'Quấn khăn giữ bé trước khi cắt móng',go:!g.wrap&&!wet&&!off&&x.stock('towel')?{cmd:'pc_calm',payload:{task:id,how:'wrap'},label:'🌯 Quấn khăn giữ bé'}:null});
+    if(sv.includes('nails')){
+      const cut=rightCut(t);
+      work.push({hard:true,ok:g.nails?true:null,label:'Cắt móng an toàn',note:g.nails?(g.nails==='short'?'cắt ngắn':'tỉa đầu móng'):'',
+        go:g.nails||wet||off?null:first?{cmd:'pc_nails',payload:{task:id,cut},label:cut==='short'?'✂️ Cắt thật ngắn':`✂️ Tỉa đầu móng${t.facts?.nails==='dark'?' (móng đen)':''}`}:{sel:'.pc-cuts',label:'✂️ Chọn cách cắt móng'}});
+    }
+    if(sv.includes('ears')){
+      const how=rightEars(t);
+      work.push({ok:g.ears?true:null,label:'Vệ sinh tai',note:g.ears==='skip'?'bỏ qua':'',
+        go:g.ears||wet||off?null:first?{cmd:'pc_ears',payload:{task:id,how},label:how==='skip'?'🙅 Bỏ qua lau tai · tai có vấn đề':'☁️ Lau tai'}:{sel:'.pc-ears-opts',label:'👂 Lau tai hay bỏ qua?'}});
+    }
+    // Calm the pet before the next thing that upsets it (never while the tap or the dryer runs);
+    // before the nails (the scariest step) until it is relaxed again.
+    const band=bandOf(t,x),next=work.find(s=>s.ok!==true&&s.go);
+    if(next&&!off&&(band==='stressed'||band==='panic'||(band==='uneasy'&&next.hard))){
+      const how=band==='panic'?'break':'voice',c=x.cc.calm.find(k=>k.id===how)||{emoji:'🗣️',name:how};
+      steps.push({ok:null,label:band==='panic'?'Bé đang hoảng: cho bé nghỉ đã':'Bé đang căng thẳng: dỗ bé đã',go:{cmd:'pc_calm',payload:{task:id,how},label:`${c.emoji} ${x.esc(c.name)}`}});
+    }
+  }
+  steps.push(...work,reportStep(t,x,first));
+  const miss=groomMiss(t);
+  const ready=!(g.rinse||g.dry)&&(g.stopped||!miss.length)&&!(g.nick&&!g.stanched);
+  return {steps,final:{label:'🐾 Trả bé & thu tiền',go:finish(steps,'pc_handover',task,'Trả bé cho chủ? Chủ sẽ nghe đúng những ý bạn đã chọn để báo.'),ready,
+    why:miss.length?'Còn: '+miss.join(', '):off?'Tắt vòi / máy sấy trước':''}};
+}
+
+const REFUSE={vaccine:'Sổ tiêm không đủ hạn: từ chối lịch sự',sick:'Bé có dấu hiệu bệnh: từ chối, mời đi khám',full:'Hết chuồng phù hợp: từ chối lịch sự'};
+function boardFits(t,x){
+  const n=t.needs,d=x.room.data||{},kg=t.facts?.kg??n.kg_said;
+  return x.cc.pens.filter(p=>p.zone===n.species&&p.unlock<=(d.level||1)&&!d.pens?.[p.id]&&kg<=p.max_kg).sort((a,b)=>a.max_kg-b.max_kg);
+}
+function boardGuide(t,x){
+  const n=t.needs,f=t.facts||{},vv=ui(x,t),first=firstTime(x),id=t.id,signs=f.signs||[],by=pickup(t,x),fits=boardFits(t,x);
+  const steps=[...greetStep(t),inspectStep(t,x,'Kiểm bé trước khi nhận')];
+  const why=f.vax&&(f.vax!=='valid'||(f.vax_until!=null&&f.vax_until<by))?'vaccine':signs.includes('fever')||signs.includes('cough')?'sick':!t.pen&&!fits.length&&f.kg!=null?'full':null;
+  if(why){
+    steps.push({ok:null,label:REFUSE[why],go:first?{cmd:'pc_refuse',payload:{task:id,reason:why},confirm:`Từ chối nhận bé? Tiệm sẽ giới thiệu ${x.cc.vet} khi cần.`,label:`🙏 ${x.esc(REFUSE[why])}`}:{sel:'.pc-refuse',label:'🙏 Chọn lý do từ chối'}});
+    return {steps,final:null};
+  }
+  const p0=fits[0],want=portionOf(t,x),right=vv.meals===want.meals&&within(vv.grams,want.grams,x.cc.tol)&&vv.food===(n.food_own?'own':'house')&&(!!vv.solo)===(f.mood==='dog_aggressive');
+  steps.push({ok:t.pen?true:null,label:'Chọn chuồng hợp loài, hợp cân nặng',note:t.pen?pen(x,t.pen).name:'',
+    go:t.pen?null:first&&p0?{cmd:'pc_pen',payload:{task:id,pen:p0.id},label:`${p0.emoji} Chọn ${x.esc(p0.name)}`}:{sel:'.pc-pens',label:'🏠 Chọn chuồng'}});
+  steps.push({ok:t.plan?true:null,label:'Ghi kế hoạch ăn theo bảng',note:t.plan?`${t.plan.meals} × ${t.plan.grams} g`:'',
+    go:t.plan?null:!first?{sel:'.pc-plan',label:'🥣 Tính khẩu phần rồi bấm 💾 Ghi'}:right?{cmd:'pc_plan',payload:{task:id,food:vv.food,meals:vv.meals,grams:vv.grams,solo:!!vv.solo},label:'💾 Ghi kế hoạch ăn'}
+      :{act:'car:chart',label:`📐 Điền theo bảng: ${want.meals} bữa × ${want.grams} g`}});
+  return {steps,final:{label:'🏠 Nhận bé & thu tiền',go:finish(steps,'pc_admit',{task:id},'Nhận bé vào chuồng và thu tiền lưu trú?'),ready:!!(t.pen&&t.plan&&t.inspected.includes('vaccine')),
+    why:'Xem sổ tiêm, chọn chuồng và ghi kế hoạch ăn trước'}};
+}
+function feedGuide(t,x){
+  const n=t.needs,vv=ui(x,t),first=firstTime(x),id=t.id,want=portionOf(t,x),dog=n.species==='dog';
+  const steps=[...greetStep(t),inspectStep(t,x,'Xem bé trước khi cho ăn')];
+  const right=vv.food===n.food&&within(vv.grams,want.grams,x.cc.tol);
+  steps.push({ok:t.fed||null,label:'Cho ăn đúng loại, đúng bảng',note:t.bowl?`${t.bowl.grams} g`:'',
+    go:t.fed?null:!first?{sel:'.pc-feedbox',label:'🥣 Cân khẩu phần rồi cho ăn'}:right?{cmd:'pc_feed',payload:{task:id,food:vv.food,grams:vv.grams},label:`🥣 Cân ${vv.grams} g & cho ăn`}
+      :{act:'car:chart',label:`📐 Cân theo bảng: ${want.grams} g`}});
+  if(n.med)steps.push({ok:t.med?true:null,label:'Cho thuốc đúng nhãn',go:t.med||!t.fed?null:{sel:'.pc-med .row',label:'💊 Đọc nhãn, chọn liều'}});
+  steps.push({ok:(t.walked||t.litter)||null,label:dog?'Dắt đi dạo':'Dọn khay cát',
+    go:t.walked||t.litter?null:dog?(x.stock('poop_bag')?{cmd:'pc_walk',payload:{task:id},label:'🦮 Dắt bé đi dạo'}:null):{cmd:'pc_litter',payload:{task:id},label:'🧹 Dọn khay cát'}});
+  steps.push(reportStep(t,x,first));
+  return {steps,final:{label:'📸 Gửi ảnh & cập nhật cho chủ',go:finish(steps,'pc_handover',{task:id},'Gửi cập nhật cho chủ? Chủ sẽ đọc đúng những ý bạn đã chọn.'),
+    ready:!!t.fed&&(!n.med||!!t.med),why:n.med?'Cho bé ăn và uống thuốc trước':'Cho bé ăn trước'}};
+}
+function adoptGuide(t,x){
+  const n=t.needs,vv=ui(x,t),id=t.id,pick=vv.pet==='none'?'chưa giao bé nào':(x.cc.adoptees||[]).find(a=>a.id===vv.pet)?.name;
+  const steps=[inspectStep(t,x,'Hỏi nếp nhà của gia đình'),{ok:vv.pet?true:null,label:'Chọn bé hợp nếp nhà',note:pick||'',go:vv.pet?null:{sel:'.pc-adoptees',label:'🐾 Chọn bé hợp nếp nhà'}}];
+  return {steps,final:{label:vv.pet==='none'?'🤝 Hẹn ngày hội sau':'🏡 Giao bé về nhà mới',
+    go:finish(steps,'pc_match',{task:id,pet:vv.pet},vv.pet==='none'?`Chưa giao bé nào cho ${n.family}?`:`Giao bé ${pick||''} cho ${n.family}?`),
+    ready:!!vv.pet&&t.inspected.length>0,why:'Hỏi nếp nhà rồi chọn một bé'}};
+}
+/** {steps, final, pulse} for the task on screen. */
+function taskGuide(t,x){
+  if(!t.known)return {steps:[{ok:null,label:'Nhận phiếu của chủ',go:{cmd:'ask',payload:{task:t.id},label:'📋 Nhận phiếu'}}],pulse:'.pc-ask'};
+  const timers=t.job==='groom'&&t.g?timerSteps(t,x):[];
+  if(deskOpen(x))return {steps:[...timers,{ok:null,label:'Chọn cách xử lý chuyện ở quầy',go:{sel:'.pc-desk .pc-opts',label:'🔔 Ra quầy quyết giúp'}}]};
+  return (t.job==='groom'?groomGuide:t.job==='board'?boardGuide:t.job==='feed'?feedGuide:adoptGuide)(t,x);
+}
+function hintOf(x,gd){
+  const final=gd.final&&gd.final.ready!==false?{label:gd.final.label.replace(/^[^\p{L}]+/u,''),go:gd.final.go}:null;
+  return nextHint(x,gd.steps,{final,pulse:gd.pulse||''});
+}
+/** Sticky bottom bar: the next step as one big button (the finish stays a small link when allowed). */
+function barOf(x,gd){
+  if(gd.final)return `<div class="pc-bar">${stepCta(x,gd.steps,gd.final)}</div>`;
+  const n=pending(gd.steps);
+  return n?.go?`<div class="pc-bar"><button type="button" class="btn primary big grow gd-cta"${goAttrs(n.go)}>${n.go.label||'👉 '+x.esc(n.label)}</button></div>`:'';
 }
 
 const JOBS={groom:[(t,x)=>intake(t,x)+groomJob(t,x),groomSide],board:[boardJob,boardSide],feed:[feedJob,feedSide],adopt:[adoptJob,adoptSide]};
@@ -482,6 +662,7 @@ export default {
   id:'pet_care',
   css:true,
   next(t,x){
+    try{const n=x&&pending(taskGuide(t,x).steps);if(n)return x.esc(n.label);}catch{/* fall back to the fixed lines */}
     if(t.job==='groom'&&t.g){
       if(t.g.rinse)return 'Khóa vòi khi đủ giây';
       if(t.g.dry)return 'Tắt máy sấy khi khô';
@@ -524,19 +705,30 @@ export default {
   },
   job(t,x){
     const desk=deskCard(x),who=x.npc(t.npc);
+    if(t.known)ui(x,t);
+    const gd=taskGuide(t,x),hint=hintOf(x,gd);
     if(!t.known){
-      return `<div class="career-job pc">${desk}${todayChip(x)}<article class="card ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><div class="row spread"><h3>${x.esc(who.display_name)}</h3><span class="tag blue">${JOB_ICON[t.job]||''} ${x.esc(x.cc.jobs?.[t.job]||t.job)}</span></div><p>“${x.esc(t.opening)}”</p></div></div>${x.cmd('📋 Nhận phiếu','ask',{task:t.id},'primary full',!!desk)}</article>
+      return `<div class="career-job pc">${hint}${desk}${todayChip(x)}<article class="card ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><div class="row spread"><h3>${x.esc(who.display_name)}</h3><span class="tag blue">${JOB_ICON[t.job]||''} ${x.esc(x.cc.jobs?.[t.job]||t.job)}</span></div><p>“${x.esc(t.opening)}”</p></div></div>${x.cmd('📋 Nhận phiếu','ask',{task:t.id},'primary full pc-ask',!!desk)}</article>
         ${kennelBox(x)}</div>`;
     }
-    if(desk)return `<div class="career-job pc">${runningTimers(t,x)}${desk}${ticket(t,x)}</div>`;
-    if(t.job==='groom'&&t.g.bolt)return `<div class="career-job pc">${runningTimers(t,x)}${boltAlert(t,x)}${ticket(t,x)}</div>`;
+    const bar=barOf(x,gd);
+    if(desk)return `<div class="career-job pc">${hint}${runningTimers(t,x)}${desk}${ticket(t,x)}${bar}</div>`;
+    if(t.job==='groom'&&t.g.bolt)return `<div class="career-job pc">${hint}${runningTimers(t,x)}${boltAlert(t,x)}${ticket(t,x)}${bar}</div>`;
     const [main,side]=JOBS[t.job]||JOBS.groom;
     const extra=t.job==='board'||t.job==='adopt'?'':kennelBox(x);
     const n=careCount(x),care=n?`<section class="pc-card">${fold(`📋 Việc chăm sóc khác · ${n} việc`,careBoard(x))}</section>`:'';
-    return `<div class="career-job pc">${lastDesk(x)}${todayChip(x)}${ticket(t,x)}${regularCard(t,x)}<div class="workbench"><section class="wb-main">${main(t,x)}${extra}
-      ${care}${foot(x)}${rules(x)}</section><aside class="wb-side">${side(t,x)}</aside></div></div>`;
+    return `<div class="career-job pc">${hint}${lastDesk(x)}${todayChip(x)}${ticket(t,x)}${regularCard(t,x)}<div class="workbench"><section class="wb-main">${main(t,x)}${extra}
+      ${care}${foot(x)}${rules(x)}</section><aside class="wb-side">${side(t,x)}</aside></div>${bar}</div>`;
   },
   tick(root,x){
+    keepBarAboveFooter(root);
+    // Live timer buttons (hint + bottom bar): text only, the buttons themselves stay put.
+    const t=x.room.tasks.find(v=>v.id===x.ui.tid);
+    if(t?.g)(root.closest('dialog')||document).querySelectorAll('[data-pc-live]').forEach(el=>{
+      const kind=el.dataset.pcLive;if(!t.g[kind])return;
+      const label=liveLabel(kind,t,x);if(el.textContent!==label)el.textContent=label;
+      el.closest('button')?.classList.toggle('pc-ready',timerReady(kind,t,x));
+    });
     root.querySelectorAll('[data-pc-timer]').forEach(el=>{
       const start=Number(el.dataset.start);if(!start)return;
       const kind=el.dataset.pcTimer,base=Number(el.dataset.base)||0,need=Number(el.dataset.need)||1,over=Number(el.dataset.over)||need*2,rate=Number(el.dataset.rate)||1;
@@ -563,6 +755,34 @@ export default {
       if(!['temp','meals','grams'].includes(key))return;
       vv[key]=Math.max(Number(data.min),Math.min(Number(data.max),(Number(vv[key])||0)+Number(data.delta)));
       x.render();
+    },
+    async temp(data,el,x){
+      const t=x.room.tasks.find(v=>v.id===x.ui.tid);if(!t)return;
+      ui(x,t).temp=Math.max(30,Math.min(45,Number(data.val)||37));x.render();
+    },
+    // Fill the portion from the chart (a first task's one-tap help).
+    async chart(data,el,x){
+      const t=x.room.tasks.find(v=>v.id===x.ui.tid);if(!t)return;
+      const vv=ui(x,t),n=t.needs,want=portionOf(t,x);
+      vv.grams=want.grams;
+      if(t.job==='board'){vv.meals=want.meals;vv.food=n.food_own?'own':'house';vv.solo=t.facts?.mood==='dog_aggressive';}
+      if(t.job==='feed')vv.food=n.food;
+      x.render();
+    },
+    async report(data,el,x){
+      const t=x.room.tasks.find(v=>v.id===x.ui.tid);if(!t)return;
+      const vv=ui(x,t);vv.say=String(data.say||'').split(',').filter(Boolean);
+      await x.send('pc_report',{task:t.id,say:vv.say});
+    },
+    // Live timer button: turns the tap / dryer off once it is time, else says how long is left.
+    async tapoff(data,el,x){
+      const t=x.room.tasks.find(v=>v.id===x.ui.tid);if(!t?.g)return;
+      const kind=data.kind==='dry'?'dry':'rinse';
+      if(!t.g[kind]){x.render();return;}
+      if(timerReady(kind,t,x)){await x.send(kind==='rinse'?'pc_rinse':'pc_dry',{task:t.id,mode:'stop'});return;}
+      highlight(document.querySelector(`#sheet[open] [data-pc-timer="${kind}"]`));
+      const now=Date.now();
+      if(now-(x.ui.waitToast||0)>2500){x.ui.waitToast=now;x.toast(kind==='rinse'?'Nước còn đục bọt. Nút sáng lên khi xả đủ.':'Chân lông còn ẩm. Nút sáng lên khi khô.','hint');}
     },
     async say(data,el,x){
       const t=x.room.tasks.find(v=>v.id===x.ui.tid);if(!t)return;

@@ -157,7 +157,7 @@
 .career-job.sl .sl-nav button:disabled{cursor:default;opacity:.72}
 .career-job.sl .sl-panel .section-title{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
 .career-job.sl .sl-ticket .patience{min-width:110px;flex:0 1 150px}
-.career-job.sl .sl-more summary{min-height:40px;display:flex;align-items:center;cursor:pointer;font-size:.88em;color:var(--sl-muted)}
+.career-job.sl .sl-more summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-size:.88em;color:var(--sl-muted)}
 .career-job.sl .sl-more p{margin:4px 0 0}
 .career-job.sl .sl-timer-card{position:sticky;top:0;z-index:2}
 .career-job.sl .sl-cta{display:grid;gap:8px;margin-top:6px}
@@ -231,6 +231,14 @@
 .career-job.sl .sl-regular summary small{color:var(--sl-muted);font-weight:400}
 .career-job.sl .sl-stats{gap:6px}
 .career-job.sl.sl-idle{gap:10px}
+
+/* Next step (guide.js): the bottom bar always does, or names, the next step. */
+.career-job.sl{--fk-foot:0px}
+.career-job.sl .sl-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:4;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--sl-r);background:var(--sl-s1);border:1px solid var(--sl-line);box-shadow:0 -6px 18px rgb(0 0 0 / 10%)}
+.career-job.sl .sl-bar>.btn,.career-job.sl .sl-bar .gd-ctas>.btn{flex:1 1 auto;min-height:52px}
+.career-job.sl .sl-bar [hidden]{display:none!important}
+.career-job.sl .sl-bar .sl-left{font-variant-numeric:tabular-nums}
+.career-job.sl .sl-side .gd-list{margin:0;padding:10px 12px;border-radius:var(--sl-r);background:var(--sl-s1);border:1px solid var(--sl-line)}
 
 @media (max-width:720px){
   .career-job.sl .sl-bench{grid-template-columns:minmax(0,1fr)}

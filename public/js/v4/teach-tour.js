@@ -13,22 +13,41 @@ import {keepBarAboveFooter} from '../careers/food_kit.js';
 import {reqList} from '../ui-kit.js';
 import {GameAPI} from '../api.js';
 import {asset} from '../assets.js';
+import {nextHint,stepCta,finalGo,pending,firstTime} from './guide.js';
 
 if(typeof document!=='undefined'){
   if(!document.querySelector('link[data-teach-css]')){
     const l=document.createElement('link');l.rel='stylesheet';l.href=asset('/css/teach.css');l.dataset.teachCss='1';document.head.append(l);
   }
   // The sticky bar sits above the sheet's own sticky footer; measure it after every render.
+  let seen='';
   const fit=()=>{
     const r=document.querySelector('dialog[open] .tt');if(!r)return;
     keepBarAboveFooter(r);
     // Keep the current period in view in the timetable strip.
     const on=r.querySelector('.tt-period.on'),wrap=on?.closest('.tt-periods-wrap');
     if(wrap&&wrap.scrollWidth>wrap.clientWidth){const a=on.getBoundingClientRect(),b=wrap.getBoundingClientRect();if(a.left<b.left||a.right>b.right)wrap.scrollLeft+=a.left-b.left-(b.width-a.width)/2;}
+    // A new next step: bring its controls into view once (no scrolling up and down to find them).
+    const key=r.dataset.focusKey||'';
+    if(key&&key!==seen){
+      const el=r.dataset.focus&&[...r.querySelectorAll(r.dataset.focus)].find(e=>e.offsetParent!==null);
+      if(!el)return;
+      seen=key;
+      const d=r.closest('dialog'),head=d?.querySelector('.sheet-head')?.getBoundingClientRect().bottom??0;
+      const foot=r.querySelector('.tt-bar')?.getBoundingClientRect().top??innerHeight;
+      const a=el.getBoundingClientRect();
+      // Just under the header: the lower middle of the screen is where messages pop up.
+      if(a.top<head||a.bottom>foot){
+        let s=el.parentElement;
+        while(s&&s!==d&&!(s.scrollHeight>s.clientHeight&&/auto|scroll/.test(getComputedStyle(s).overflowY)))s=s.parentElement;
+        // Instant: a re-render right after keeps the sheet's scroll position, a smooth scroll would be cut short.
+        (s||document.scrollingElement).scrollBy(0,a.top-head-12);
+      }
+    }
   };
   const host=document.getElementById('sheetContent');
-  if(host&&typeof MutationObserver!=='undefined')new MutationObserver(fit).observe(host,{childList:true});
-  document.addEventListener('sheetrender',fit);  // re-renders are morphed in place (app.js), not always a childList change
+  if(host&&typeof MutationObserver!=='undefined')new MutationObserver(()=>{fit();requestAnimationFrame(fit);}).observe(host,{childList:true});
+  document.addEventListener('sheetrender',()=>{fit();requestAnimationFrame(fit);});  // re-renders are morphed in place (app.js), not always a childList change
   addEventListener('resize',fit);addEventListener('layoutchange',fit);
 }
 
@@ -45,7 +64,7 @@ export function titled(v,state){
   return walk(v);
 }
 
-const act=(label,op,payload,cls='',o={})=>`<button type="button" class="btn ${cls}" data-action="expDo" data-op="${op}" data-payload="${esc(JSON.stringify(payload))}"${o.confirm?` data-confirm="${esc(o.confirm)}"`:''}${o.disabled?' disabled':''}${o.aria?` aria-label="${esc(o.aria)}"`:''}>${label}</button>`;
+const act=(label,op,payload,cls='',o={})=>`<button type="button" class="btn ${cls}" data-action="expDo" data-op="${op}" data-payload="${esc(JSON.stringify(payload))}"${o.confirm?` data-confirm="${esc(o.confirm)}"`:''}${o.disabled?' disabled':''}${o.aria?` aria-label="${esc(o.aria)}"`:''}${o.attr||''}>${label}</button>`;
 const local=(label,action,data,cls,disabled=false,aria='',pressed=null)=>`<button type="button" class="${cls}" data-action="${action}" ${Object.entries(data).map(([k,v])=>`data-${k}="${esc(v)}"`).join(' ')}${disabled?' disabled':''}${aria?` aria-label="${esc(aria)}"`:''}${pressed===null?'':` aria-pressed="${pressed}"`}>${label}</button>`;
 const em=s=>`<span aria-hidden="true">${s}</span>`;
 const signed=n=>n>0?'+'+n:String(n);
@@ -70,11 +89,37 @@ function eventCard(ev,op,task){
     const mood=ev.mood??ev.focus??0;
     return `<article class="tt-event done ${ev.mistake?'oops':''}"><header>${em(ev.emoji)}<b>${esc(ev.title)}</b></header><p class="tt-outcome">${esc(ev.outcome)}</p><div class="tt-chips">${mood?`<span class="tag ${mood>0?'green':'amber'}">${mood>0?'😊':'😕'} ${signed(mood)}</span>`:''}${(ev.trust||[]).map(x=>`<span class="tag ${x.delta>0?'green':'amber'}">${x.delta>0?'💛':'💔'} ${esc(x.name)} ${signed(x.delta)}</span>`).join('')}${ev.minutes?`<span class="tag">⏱ +${ev.minutes}′</span>`:''}${ev.mistake?'<span class="tag danger">Chưa ổn</span>':''}</div></article>`;
   }
-  return `<article class="tt-event" aria-live="polite"><header>${em(ev.emoji)}<div><small>Cần bạn quyết</small><b>${esc(ev.title)}</b></div></header><p>${esc(ev.text)}</p><div class="tt-options">${ev.options.map(o=>act(`<span>${esc(o.label)}</span>${o.cost?`<small>−${o.cost} xu quỹ đoàn</small>`:''}`,op,{task,event:ev.id,option:o.id},'tt-option')).join('')}</div></article>`;
+  return `<article class="tt-event" aria-live="polite" data-ev="${esc(ev.id)}"><header>${em(ev.emoji)}<div><small>Cần bạn quyết</small><b>${esc(ev.title)}</b></div></header><p>${esc(ev.text)}</p><div class="tt-options">${ev.options.map(o=>act(`<span>${esc(o.label)}</span>${o.cost?`<small>−${o.cost} xu quỹ đoàn</small>`:''}`,op,{task,event:ev.id,option:o.id},'tt-option',{attr:` data-opt="${esc(o.id)}"`})).join('')}</div></article>`;
 }
 function logList(log){
   return log.length?`<ul class="tt-log">${log.map(e=>`<li>${em(e.emoji)} <span>${esc(e.title)}</span> ${e.mistake?'<b class="bad-text">chưa ổn</b>':'<b class="good-text">✓</b>'}</li>`).join('')}</ul>`:'';
 }
+
+/* ------------------------------------------------------------ next step (guide.js)
+ * Every stage lists what is left as steps; the same steps drive the header hint, the main
+ * button in the sticky bar and (first task in the career) the glow on the control to press.
+ * On that first task a decision glows on the fitting choice: the tables below mirror the
+ * server's rules (game/teach_lesson.py, game/tour_trip.py). Later tasks only point at the
+ * choice area and keep the challenge. */
+const ROLL_GOOD={here:'present',sick:'excused',late:'let_in',missing:'report'};
+const CLASS_GOOD={phone:'step_out',shy:'boards',copy:'move',push:'talk',accent:'teach',tears:'grow',projector:'draw',bee:'window',sleepy:'ask',toilet:'buddy',candy:'keep',visit:'same',leak:'fix'};
+const KID_STYLE={minh:'look',an:'hands',vy:'talk',bao:'short',khoa:'look',linh:'short',tu:'hands',mai:'talk'};
+const COND_WANT={fresh:['calm','game','move'],noisy:['calm'],sleepy:['move'],nervous:['game'],hot:['calm','game'],friday:['game','move']};
+const TRIP_GOOD={late:'call',lost:'point',coconut:'board',bus:'walk',parade:'watch',commission:'decline',heat:'shade',peanut:'ask',shower:'shelter',flash:'quiet',toilet:'escort',threat:'firm',wallet:'warn',dress:'scarf'};
+const BEST_ANGLE={culture:'history',nature:'fun',food:'fun',shop:'fun',photo:'photo',rest:'history'};
+const nfc=s=>String(s??'').normalize('NFC');
+
+/** Hint (moved into the sheet header by the host), the bar's main button and where to scroll. */
+function guided(x,t,stage,view){
+  const steps=view.steps||[],final=view.final||{label:'',go:null,ready:false};
+  const fin=final.go&&final.ready!==false?{label:final.hint||final.label.replace(/<[^>]*>/g,'').replace(/[→]/g,'').trim(),go:final.go}:null;
+  const n=pending(steps);
+  const focus=n?(n.pulse&&firstTime(x)?n.pulse:n.go?.sel||''):'';
+  return {hint:nextHint(x,steps,{final:fin}),cta:stepCta(x,steps,final,{style:'primary'}),
+    attrs:focus?` data-focus="${esc(focus)}" data-focus-key="${esc(`${t.id}|${stage}|${n.label}`)}"`:''};
+}
+/** Name the fitting choice only on the first task. */
+const glow=(first,sel)=>first&&sel?{pulse:sel}:{};
 
 /* ------------------------------------------------------------ teacher */
 const LESSON_STEPS=[['roll','Điểm danh'],['plan','Soạn bài'],['teach','Dạy'],['check','Chấm phiếu'],['ready','Khép tiết']];
@@ -142,15 +187,36 @@ function seating(t,c,R,reach=new Set()){
   return section('🪑','Sơ đồ lớp',`<div class="tt-room${R.stage==='plan'?' wide':''}"><p class="tt-front" aria-hidden="true">Bục giảng</p><ul class="tt-seats" aria-label="Chỗ ngồi của các bạn">${seats}</ul></div>`,aside,'tt-class');
 }
 
-function rollStage(t,c,R){
+function rollStage(t,c,R,first){
   const odd=R.kids.filter(k=>k.status!=='here'),todo=R.kids.filter(k=>k.status==='here'&&!k.done),left=odd.filter(k=>!k.done);
-  const card=k=>`<article class="tt-kid st-${k.status}"><div class="tt-kid-top"><span class="tt-face" aria-hidden="true">${k.emoji}</span><div><b>${esc(k.name)}</b><small>${k.mark_emoji} ${esc(k.clue)}</small></div></div><div class="tt-options">${k.options.map(o=>act(esc(o.label),'lesson_roll',{task:t.id,kid:k.id,choice:o.id},'tt-option')).join('')}</div></article>`;
+  const card=k=>`<article class="tt-kid st-${k.status}" data-kid="${esc(k.id)}"><div class="tt-kid-top"><span class="tt-face" aria-hidden="true">${k.emoji}</span><div><b>${esc(k.name)}</b><small>${k.mark_emoji} ${esc(k.clue)}</small></div></div><div class="tt-options">${k.options.map(o=>act(esc(o.label),'lesson_roll',{task:t.id,kid:k.id,choice:o.id},'tt-option',{attr:` data-opt="${esc(o.id)}"`})).join('')}</div></article>`;
   const cases=left.length?section('📋','Sổ điểm danh',`<div class="tt-kids">${left.map(card).join('')}</div>`,`${left.length} bạn cần ghi riêng`):'';
-  const next=left.length&&!todo.length?`Chọn cách ghi cho ${left.length} bạn ở trên`:todo.length?`${todo.length} bạn đang ngồi ở chỗ${left.length?` · còn ${left.length} bạn ghi riêng`:''}`:'Điểm danh xong';
-  return {body:seating(t,c,R)+cases,bar:bar(esc(next),todo.length?act(`✓ Có mặt · ${todo.length} bạn`,'lesson_roll',{task:t.id,kid:'all'},'primary'):'')};
+  const next=`📋 ${R.kids.filter(k=>k.done).length}/${R.kids.length}${left.length?` · ${left.length} bạn ghi riêng`:''}`;
+  const steps=[];
+  if(todo.length)steps.push({ok:null,label:`Điểm danh ${todo.length} bạn đang ngồi`,go:{cmd:'lesson_roll',payload:{task:t.id,kid:'all'},label:`✓ Có mặt · ${todo.length} bạn`}});
+  for(const k of left){const box=`.tt-kid[data-kid="${k.id}"]`;
+    steps.push({ok:null,label:`Ghi điểm danh cho ${k.name}`,go:{sel:box,label:`📋 Ghi điểm danh cho ${esc(k.name)}`},...glow(first,ROLL_GOOD[k.status]&&`${box} [data-opt="${ROLL_GOOD[k.status]}"]`)});}
+  // The pupils to write down one by one sit right under the board; the seating chart follows.
+  return {body:cases+seating(t,c,R),status:esc(next),steps,final:{label:'Soạn bài →',ready:false}};
 }
 
-function planStage(t,c,R,ui){
+/** A plan that fits (most stars) from today's hand: what the first period glows on. */
+function bestPlan(R){
+  const need=R.kids.filter(isHere).map(k=>KID_STYLE[k.id]).filter(Boolean),want=COND_WANT[R.cond.id]||[];
+  let best=null,top=-1;
+  for(const a of R.hand)for(const b of R.hand)for(const d of R.hand){
+    if(a===b||b===d||a===d)continue;
+    const p=[a,b,d],mins=p.reduce((s,x)=>s+x.minutes,0);
+    if(mins>R.limit||mins<R.min||!p.some(x=>x.role==='core'))continue;
+    const reach=new Set(p.flatMap(x=>x.styles));
+    // Stars first; among equals the textbook shape: opener, main activity, check.
+    const stars=(want.includes(a.energy)?1:0)+(need.every(v=>reach.has(v))?1:0)+(d.role==='check'?1:0);
+    const score=stars*10+(a.role==='open'?2:0)+(b.role==='core'?1:0);
+    if(score>top){top=score;best=p.map(x=>x.id);}
+  }
+  return best;
+}
+function planStage(t,c,R,ui,first){
   ui.lessonSequence??=[];const seq=ui.lessonSequence.filter(id=>R.hand.some(x=>x.id===id)).slice(0,3);
   const cards=seq.map(id=>R.hand.find(x=>x.id===id)),mins=cards.reduce((s,x)=>s+x.minutes,0);
   const reach=new Set(cards.flatMap(x=>x.styles));
@@ -159,45 +225,81 @@ function planStage(t,c,R,ui){
   const over=mins>R.limit,short=seq.length===3&&mins<R.min,core=cards.some(x=>x.role==='core'),ready=seq.length===3&&!over&&!short&&core;
   const why=over?'Quá giờ tiết học: bớt một hoạt động dài':short?`Mới ${mins} phút, cần ít nhất ${R.min}`:seq.length===3&&!core?'Thiếu hoạt động chính':seq.length<3?`Chọn thêm ${3-seq.length} hoạt động`:'Giáo án đã đủ. Chốt nhé!';
   const styles=['look','hands','talk','short'].map(s=>`<span class="tt-style ${reach.has(s)?'on':''}">${STYLE_ICON[s]} ${esc(STYLE_SHORT[s])}</span>`).join('');
-  const planner=section('📝','Giáo án tiết này',`<p class="tt-tip">${esc(R.cond.emoji)} ${esc(R.cond.tip)} Tiết ${R.min}–${R.limit} phút, có một hoạt động chính, hợp cách học của các bạn và kết thúc bằng kiểm tra.</p>
+  const planner=section('📝','Giáo án tiết này',`<p class="tt-tip">${esc(R.cond.emoji)} ${esc(R.cond.tip)}</p>
     <ol class="tt-tray">${[0,1,2].map(slot).join('')}</ol>
-    <div class="tt-reach" aria-label="Cách học đã có trong giáo án">${styles}</div>`,`⏱ ${mins}/${R.limit}′`,'tt-planner');
+    <div class="tt-reach" aria-label="Cách học đã có trong giáo án">${styles}</div>
+    <details class="fold gd-rules"><summary>📜 Quy tắc</summary><ul><li>⏱ ${R.min}–${R.limit} phút</li><li>⭐ Mở đầu hợp không khí lớp</li><li>⭐ Có đủ cách học của các bạn có mặt</li><li>⭐ Kết thúc bằng thẻ Kiểm tra</li></ul></details>`,`⏱ ${mins}/${R.limit}′`,'tt-planner');
   const pick=section('🗂️','Thẻ hoạt động',`<div class="tt-hand">${hand}</div>`,'Chạm theo thứ tự');
   const next=`<b class="${over||short?'bad-text':''}">⏱ ${mins}/${R.limit}′ · ${seq.length}/3</b> · ${esc(why)}`;
-  return {body:seating(t,c,R,reach)+planner+pick,bar:bar(next,local('↶ Chọn lại','lessonReset',{},'btn ghost',!seq.length)+local('Chốt giáo án →','lessonPlan',{},'btn primary',!ready))};
+  const steps=[],best=first?bestPlan(R):null,reset={act:'lessonReset',label:'↶ Soạn lại'};
+  if(best&&seq.every((id,i)=>best[i]===id))best.forEach((id,i)=>{const x=R.hand.find(h=>h.id===id);
+    steps.push({ok:i<seq.length||null,label:`Thẻ ${i+1}: ${x.name}`,go:{act:'lessonStep',data:{step:id},label:`🗂️ Chọn thẻ ${i+1}: ${esc(x.name)}`},pulse:`.tt-card[data-step="${id}"]`});});
+  else if(best)steps.push({ok:false,label:'Soạn lại cho hợp lớp',go:reset});
+  else{
+    steps.push({ok:seq.length===3||null,label:'Chọn 3 thẻ hoạt động theo thứ tự',go:{sel:'.tt-hand',label:`🗂️ Chọn thẻ ${Math.min(3,seq.length+1)}/3`}});
+    if(seq.length===3&&!ready)steps.push({ok:false,label:why,go:{...reset,label:`↶ Soạn lại · ${esc(why)}`}});
+  }
+  return {body:planner+pick+seating(t,c,R,reach),status:next,extra:seq.length?local('↶','lessonReset',{},'btn ghost',false,'Chọn lại'):'',steps,
+    final:{label:'Chốt giáo án →',hint:'Chốt giáo án',go:{act:'lessonPlan'},ready}};
 }
 
-function teachStage(t,c,R){
+function teachStage(t,c,R,first){
   const events=R.events.map(ev=>eventCard(ev,'lesson_call',t.id)).join('');
   const need=R.lost.filter(k=>!k.helped&&!k.away);
-  const help=k=>`<article class="tt-kid"><div class="tt-kid-top"><span class="tt-face" aria-hidden="true">${k.emoji}</span><div><b>${esc(k.name)}</b><small>${esc(k.clue)}</small></div></div><div class="tt-methods" role="group" aria-label="Cách giúp ${esc(k.name)}">${R.methods.map(m=>act(`${em(m.emoji)}<span>${esc(m.name)}</span>`,'lesson_help',{task:t.id,kid:k.id,method:m.id},'tt-method')).join('')}</div></article>`;
+  const help=k=>`<article class="tt-kid" data-kid="${esc(k.id)}"><div class="tt-kid-top"><span class="tt-face" aria-hidden="true">${k.emoji}</span><div><b>${esc(k.name)}</b><small>${esc(k.clue)}</small></div></div><div class="tt-methods" role="group" aria-label="Cách giúp ${esc(k.name)}">${R.methods.map(m=>act(`${em(m.emoji)}<span>${esc(m.name)}</span>`,'lesson_help',{task:t.id,kid:k.id,method:m.id},'tt-method',{attr:` data-method="${esc(m.id)}"`})).join('')}</div></article>`;
   const helpBox=need.length?section('🙋','Bạn cần giúp',`<div class="tt-kids">${need.map(help).join('')}</div>`,`${need.length} bạn`):'';
-  const pending=R.pending.length>0,last=R.phase>=2,hand=R.ask&&R.ask.state==='up';
-  const next=pending?'Xử lý chuyện trong lớp trước':hand?`${R.ask.name} đang giơ tay`:need.length?`Còn ${need.length} bạn chưa hiểu bài`:'Cả lớp đang theo kịp bài 🌟';
-  return {body:(events?section('💬','Chuyện trong lớp',events):'')+seating(t,c,R)+askPanel(t,R)+helpBox,bar:bar(esc(next),act(last?'Thu phiếu →':`Sang hoạt động ${R.phase+2} →`,'lesson_next',{task:t.id},'primary',{disabled:pending,confirm:hand?`${R.ask.name} vẫn đang giơ tay. Sang hoạt động khác thì bạn ấy sẽ hạ tay xuống.`:''}))};
+  const waiting=R.pending.length>0,last=R.phase>=2,A=R.ask,hand=A&&A.state==='up'&&!A.result;
+  const next=`▶ ${R.phase+1}/3${need.length?` · 🙋 ${need.length}`:' · 🌟'}`;
+  const steps=[];
+  for(const ev of R.events.filter(e=>!e.chosen)){const box=`.tt-event[data-ev="${ev.id}"]`;
+    steps.push({ok:null,label:`Xử lý: ${ev.title}`,go:{sel:box,label:`${esc(ev.emoji)} Xử lý: ${esc(ev.title)}`},...glow(first,CLASS_GOOD[ev.id]&&`${box} [data-opt="${CLASS_GOOD[ev.id]}"]`)});}
+  if(A&&A.state==='quiet')steps.push({ok:null,label:`Lại gần hỏi ${A.name}`,go:{cmd:'lesson_invite',payload:{task:t.id},label:`✏️ Lại gần hỏi ${esc(A.name)}`}});
+  if(hand&&A.options?.length&&!classWaiting('ask:'+t.id)){
+    // The answer that explains why is the one that helps; the scripted ones differ a lot in length.
+    const k=A.options.reduce((b,o,i)=>o.label.length>A.options[b].label.length?i:b,0);
+    steps.push({ok:null,label:`Trả lời ${A.name}`,go:{sel:'.cl-ask .cl-chips',label:`🙋 Trả lời ${esc(A.name)}`},...glow(first,`.cl-ask .cl-chip:nth-child(${k+1})`)});
+  }
+  for(const k of need){const box=`.tt-kid[data-kid="${k.id}"]`;
+    steps.push({ok:null,label:`Giúp ${k.name} hiểu bài`,go:{sel:box,label:`🙋 Giúp ${esc(k.name)} hiểu bài`},...glow(first,KID_STYLE[k.id]&&`${box} [data-method="${KID_STYLE[k.id]}"]`)});}
+  const label=last?'Thu phiếu →':`Sang hoạt động ${R.phase+2} →`;
+  const go=finalGo(steps,'lesson_next',{task:t.id},{question:hand?`${A.name} đang giơ tay sẽ hạ tay xuống.`:''});
+  return {body:(events?section('💬','Chuyện trong lớp',events):'')+askPanel(t,R)+helpBox+seating(t,c,R),status:esc(next),steps,
+    final:{label,hint:last?'Thu phiếu cuối tiết':`Sang hoạt động ${R.phase+2}`,go,ready:!waiting}};
 }
 
-function checkStage(t,c,R){
+/** The feedback that fits a ticket: most tickets carry the right answer on a guided first period. */
+function rightMark(t,R,x){
+  if(nfc(x.note).includes(nfc('Giống hệt')))return 'private';
+  const n={};for(const v of R.tickets)n[v.answer]=(n[v.answer]||0)+1;
+  const fact=nfc(t.lesson.fact).toLowerCase(),top=Object.keys(n).sort((a,b)=>(n[b]-n[a])||(fact.includes(nfc(b).toLowerCase())-fact.includes(nfc(a).toLowerCase())))[0];
+  return String(x.answer)===top?'praise':'hint';
+}
+function checkStage(t,c,R,first){
   const todo=R.tickets.filter(x=>!x.mark),done=R.tickets.length-todo.length;
-  const card=x=>`<article class="tt-ticket"><div class="tt-kid-top"><span class="tt-face" aria-hidden="true">${x.emoji}</span><div><b>${esc(x.name)}</b><small>${esc(x.note)}</small></div><strong class="tt-answer" aria-label="Bài làm: ${esc(x.answer)}">${esc(x.answer)}</strong></div><div class="tt-marks">${R.marks.map(m=>act(`${em(m.emoji)} <span>${esc(m.label)}</span>`,'lesson_mark',{task:t.id,kid:x.kid,mark:m.id},'tt-option')).join('')}</div></article>`;
+  const card=x=>`<article class="tt-ticket" data-kid="${esc(x.kid)}"><div class="tt-kid-top"><span class="tt-face" aria-hidden="true">${x.emoji}</span><div><b>${esc(x.name)}</b><small>${esc(x.note)}</small></div><strong class="tt-answer" aria-label="Bài làm: ${esc(x.answer)}">${esc(x.answer)}</strong></div><div class="tt-marks">${R.marks.map(m=>act(`${em(m.emoji)} <span>${esc(m.label)}</span>`,'lesson_mark',{task:t.id,kid:x.kid,mark:m.id},'tt-option',{attr:` data-mark="${esc(m.id)}"`})).join('')}</div></article>`;
   const key=`<div class="tt-key"><b>Đáp án đúng</b><p>${esc(t.lesson.fact)}</p></div>`;
-  return {body:section('🎫','Chấm phiếu cuối tiết',`${key}<div class="tt-tickets">${todo.map(card).join('')}</div>`,`${done}/${R.tickets.length} đã chấm`)+seating(t,c,R),bar:bar(esc(todo.length?`Còn ${todo.length} phiếu chờ phản hồi`:'Đã chấm hết phiếu'))};
+  const steps=todo.map(x=>{const box=`.tt-ticket[data-kid="${x.kid}"]`;
+    return {ok:null,label:`Chấm phiếu của ${x.name}`,go:{sel:box,label:`🎫 Chấm phiếu của ${esc(x.name)}`},...glow(first,`${box} [data-mark="${rightMark(t,R,x)}"]`)};});
+  return {body:section('🎫','Chấm phiếu cuối tiết',`${key}<div class="tt-tickets">${todo.map(card).join('')}</div>`,`${done}/${R.tickets.length} đã chấm`)+seating(t,c,R),
+    status:`🎫 ${done}/${R.tickets.length}`,steps,final:{label:'Khép tiết',ready:false}};
 }
 
 function readyStage(t,c,R){
   const stars='⭐'.repeat(R.stars)+'☆'.repeat(3-R.stars);
   const res=`<section class="tt-result" aria-live="polite">${em('🌱')}<h3>Tiết học trọn vẹn</h3><div class="tt-stats"><div><b>${stars}</b><small>Giáo án</small></div><div><b>${R.understood}/${R.of}</b><small>Bạn hiểu bài</small></div><div><b>${t.patience??100}%</b><small>Nhịp lớp</small></div></div>${logList(R.log)}</section>`;
   const inbox=c.classroom?.care,mail=inbox?.waiting?`<button type="button" class="btn ghost cl-inbox-link" data-action="classroom">💌 ${inbox.waiting} phụ huynh đang chờ trả lời · Mở sổ lớp</button>`:'';
-  return {body:res+askPanel(t,R)+mail+seating(t,c,R),bar:bar(`Gửi lời nhắn phụ huynh · <b>+${R.estimate} xu</b>`,act('Khép tiết','lesson_complete',{task:t.id,confirm:true},'primary',{confirm:'Khép tiết và gửi lời nhắn cho phụ huynh. Thù lao chỉ nhận một lần.'}))};
+  return {body:res+askPanel(t,R)+mail+seating(t,c,R),status:`Gửi lời nhắn phụ huynh · <b>+${R.estimate} xu</b>`,steps:[],
+    final:{label:'Khép tiết',hint:'Khép tiết, nhận thù lao',go:finalGo([],'lesson_complete',{task:t.id},{confirm:true})}};
 }
 
 export function lessonV2(t,c,content,ui,state){
-  const R=titled(t.room,state),person=content.npcs.find(n=>n.id===t.npc);
+  const R=titled(t.room,state),person=content.npcs.find(n=>n.id===t.npc),first=firstTime({room:c});
   const periods=(c.tasks||[]).filter(x=>x.career==='teacher'&&(x.day===c.day||!ENDED.includes(x.status)));
   const index=Math.max(1,periods.sort((a,b)=>(a.day-b.day)||String(a.id).localeCompare(String(b.id),undefined,{numeric:true})).findIndex(x=>x.id===t.id)+1);
-  const view=R.stage==='roll'?rollStage(t,c,R):R.stage==='plan'?planStage(t,c,R,ui):R.stage==='teach'?teachStage(t,c,R):R.stage==='check'?checkStage(t,c,R):readyStage(t,c,R);
+  const view=R.stage==='roll'?rollStage(t,c,R,first):R.stage==='plan'?planStage(t,c,R,ui,first):R.stage==='teach'?teachStage(t,c,R,first):R.stage==='check'?checkStage(t,c,R,first):readyStage(t,c,R);
+  const g=guided({room:c},t,R.stage,view);
   const focus=c.life?.mode==='calm'?100:(t.patience??100);
-  return `<div class="tt tt-lesson">${timetable(t,c)}${board(t,R,index)}${hud('Nhịp lớp',focus,t,person)}<div class="tt-body">${view.body}</div>${view.bar}</div>`;
+  return `<div class="tt tt-lesson"${g.attrs}>${g.hint}${timetable(t,c)}${board(t,R,index)}${hud('Nhịp lớp',focus,t,person)}<div class="tt-body">${view.body}</div>${bar(view.status,(view.extra||'')+g.cta)}</div>`;
 }
 
 /* ------------------------------------------------------------ teacher: AI in class
@@ -253,13 +355,14 @@ export function clBubbles(lines,key,{typing='',mine=''}={}){
 /** Scripted answers as full-width choices + a short typed answer (≤ max chars). */
 export function clReply(key,body,options,max,placeholder){
   const busy=!!clPending[key],id='cl-in-'+key.replace(/[^a-z0-9]/gi,'-');
-  const chips=options.map(o=>`<button type="button" class="cl-chip" data-cl="${esc(key)}" data-body="${esc(JSON.stringify({...body,option:o.id}))}" data-label="${esc(o.label)}"${busy?' disabled':''}>${esc(o.label)}</button>`).join('');
+  const chips=options.map(o=>`<button type="button" class="cl-chip" data-action="clChip" data-cl="${esc(key)}" data-body="${esc(JSON.stringify({...body,option:o.id}))}" data-label="${esc(o.label)}"${busy?' disabled':''}>${esc(o.label)}</button>`).join('');
   return `<div class="cl-reply"><div class="cl-chips" role="group" aria-label="Câu soạn sẵn">${chips}</div><form class="cl-form" data-cl-form="${esc(key)}" data-body="${esc(JSON.stringify(body))}"><textarea id="${id}" name="text" data-preserve rows="2" maxlength="${max}" required placeholder="${esc(placeholder)}" aria-label="${esc(placeholder)}"></textarea><button type="submit" class="btn primary"${busy?' disabled':''}>Gửi</button></form><small class="cl-mode">${classAiOn()?'✨ Nhân vật trả lời bằng AI · đừng gõ thông tin thật':'Gõ câu của bạn hoặc chọn một câu ở trên'} · tối đa ${max} ký tự</small></div>`;
 }
 if(typeof document!=='undefined'){
   document.addEventListener('click',e=>{
-    const b=e.target.closest?.('[data-cl]');if(!b||!classApi)return;
-    e.preventDefault();e.stopPropagation();if(b.disabled)return;
+    const b=e.target.closest?.('[data-cl]');if(!b)return;
+    e.preventDefault();e.stopPropagation();if(b.disabled||!classApi)return;
+    b.classList.add('is-pressed');setTimeout(()=>b.classList.remove('is-pressed'),700);
     classSend({...JSON.parse(b.dataset.body||'{}'),op:'reply'},b.dataset.cl,b.dataset.label);
   },true);
   document.addEventListener('submit',e=>{
@@ -386,7 +489,7 @@ function sickCard(t,T,G){
   if(C?.sick&&C.call)return `<article class="tt-event done ${C.mistake?'oops':''}"><header>${em(C.emoji||'🤒')}<b>${esc(C.name)} · ${esc(CALL_DONE[C.call]||'')}</b></header><p class="tt-outcome">${esc(C.outcome||'')}</p>${C.mistake?'<div class="tt-chips"><span class="tag danger">Chưa ổn</span></div>':''}</article>`;
   const who=C?.sick?C:G?.sick&&sickPending(T,G)?(()=>{const m=G.members.find(x=>x.id===G.sick);return {name:m?.name||'',emoji:m?.emoji||'🤒',text:`Sáng nay ${m?.name||''} ${G.sick_text}.`,options:FALLBACK_CARE.map(([id,label,note])=>({id,label,note}))};})():null;
   if(!who)return '';
-  return `<article class="tt-event tt-sick" aria-live="polite"><header>${em('🤒')}<div><small>Cần bạn quyết trước khi chốt lộ trình</small><b>${esc(who.text)}</b></div></header><div class="tt-options">${who.options.map(o=>act(`<span>${esc(o.label)}</span>${o.note?`<small>${esc(o.note)}</small>`:''}`,'tour_care',{task:t.id,option:o.id},'tt-option')).join('')}</div></article>`;
+  return `<article class="tt-event tt-sick" aria-live="polite"><header>${em('🤒')}<div><small>Cần bạn quyết trước khi chốt lộ trình</small><b>${esc(who.text)}</b></div></header><div class="tt-options">${who.options.map(o=>act(`<span>${esc(o.label)}</span>${o.note?`<small>${esc(o.note)}</small>`:''}`,'tour_care',{task:t.id,option:o.id},'tt-option',{attr:` data-opt="${esc(o.id)}"`})).join('')}</div></article>`;
 }
 
 /** Việc chăm hôm nay: partners to call, the kit, tomorrow's weather. */
@@ -431,7 +534,28 @@ function bookPanel(T,c){
     `<h4>🤝 Bạn hàng</h4>${partners}<h4>⭐ Trang đặt tour</h4>${rating}<h4>📖 Sổ tay điểm đến${opened?` · mở ${opened}/${X.know.length}`:''}</h4><p class="tt-tip">Kể hợp đoàn ${X.know_at?.[0]??4} lần ở một điểm để mở chuyện ít ai biết, ${X.know_at?.[1]??10} lần để mở góc ẩn.</p>${know}${diary}`);
 }
 
-function planTrip(t,T,ui,c){
+/** The route the first trip glows on: every wish met if possible, then the fewest warnings,
+ * the fewest stops and the shortest walk (the order is the quickest one). */
+function bestRoute(T,G){
+  const open=T.places.filter(p=>!p.closed).map(p=>p.id),ppl=T.members.filter(m=>!m.away);
+  const place=id=>T.places.find(p=>p.id===id),leg=(a,b)=>T.legs[`${a}>${b}`]||0;
+  const mins=r=>{let s=0,prev='gate';for(const id of r){s+=leg(prev,id)+place(id).minutes;prev=id;}return s;};
+  const perms=a=>a.length<2?[a]:a.flatMap((v,i)=>perms([...a.slice(0,i),...a.slice(i+1)]).map(p=>[v,...p]));
+  let best=null,key=null;
+  const walk=(start,acc)=>{
+    if(acc.length>=3){
+      const order=perms(acc).reduce((b,p)=>mins(p)<mins(b)?p:b),S=tripSummary(T,order,G);
+      if(S.ok){const tags=new Set(acc.flatMap(id=>place(id).tags)),k=[ppl.filter(m=>tags.has(m.wish)).length,-S.warn.length,-acc.length,-S.mins];
+        const i=key?k.findIndex((v,j)=>v!==key[j]):0;
+        if(!key||(i>=0&&k[i]>key[i])){key=k;best=order;}}
+    }
+    if(acc.length===5)return;
+    for(let i=start;i<open.length;i++)walk(i+1,[...acc,open[i]]);
+  };
+  walk(0,[]);
+  return best;
+}
+function planTrip(t,T,ui,c,first){
   const G=legGroup(T,c);
   ui.tourRoute??=[];const route=ui.tourRoute.filter(id=>T.places.some(p=>p.id===id&&!p.closed)).slice(0,5),S=tripSummary(T,route,G);
   const row=p=>{const n=route.indexOf(p.id),full=route.length>=5&&n<0;return local(`${n>=0?`<i class="tt-badge">${n+1}</i>`:'<i class="tt-badge off" aria-hidden="true">＋</i>'}<span class="tt-place-emoji" aria-hidden="true">${p.emoji}</span><span class="tt-place-main"><b>${esc(p.name)}</b><small>${p.closed?`🚧 ${esc(p.closed)}`:`${p.tags.map(g=>T.tags[g].emoji).join(' ')} · ${p.indoor?'trong nhà':'ngoài trời'}`}</small></span><span class="tt-place-cost"><b>${p.minutes}′</b><small>${p.fee?p.fee+' xu':'miễn phí'}</small></span>`,'tourRoute',{place:p.id},'tt-place'+(n>=0?' picked':''),Boolean(p.closed)||full,n>=0?`Bỏ điểm ${n+1}: ${p.name}`:`Thêm ${p.name}`,n>=0);};
@@ -440,48 +564,78 @@ function planTrip(t,T,ui,c){
   const next=sick?'Quyết định cho người ốm trước đã':!route.length?'Chạm 3–5 điểm theo thứ tự đi':S.warn[0]||`${route.length} điểm · đủ điều kiện. Chốt nhé!`;
   const card=sickCard(t,T,G);
   const places=section('🗺️','Chọn điểm theo thứ tự đi',`<p class="tt-tip">${esc(T.weather.emoji)} ${esc(T.weather.text)}</p><div class="tt-split">${tripMap(T,route)}<div class="tt-places">${T.places.map(row).join('')}</div></div>${S.warn.length>1?`<ul class="tt-warn">${S.warn.map(w=>`<li>⚠️ ${esc(w)}</li>`).join('')}</ul>`:''}`,`${route.length}/5 điểm`);
-  return {first:card?section('🤒','Người ốm sáng nay',card):'',body:roster(T,route,G)+places,bar:bar(esc(next),local('↶ Chọn lại','tourReset',{},'btn ghost',!route.length)+act('Chốt lộ trình →','tour_plan',{task:t.id,route,v:2},'primary',{disabled:!S.ok||sick}),top)};
+  const steps=[],reset={act:'tourReset',label:'↶ Chọn lại lộ trình'};
+  if(sick)steps.push({ok:null,label:'Quyết cho người ốm trước',go:{sel:'.tt-sick',label:'🤒 Quyết cho người ốm'},...glow(first,'.tt-sick [data-opt="rest"]')});
+  const best=first?bestRoute(T,G):null;
+  if(best&&route.every((id,i)=>best[i]===id))best.forEach((id,i)=>{const p=T.places.find(x=>x.id===id);
+    steps.push({ok:i<route.length||null,label:`Điểm ${i+1}: ${p.name}`,go:{act:'tourRoute',data:{place:id},label:`${esc(p.emoji)} Chọn điểm ${i+1}: ${esc(p.name)}`},pulse:`.tt-place[data-place="${id}"]`});});
+  else if(best)steps.push({ok:false,label:'Chọn lại cho hợp đoàn',go:reset});
+  else{
+    steps.push({ok:route.length>=3||null,label:'Chạm 3–5 điểm theo thứ tự đi',go:{sel:'.tt-places',label:`🗺️ Chọn điểm ${route.length+1} (3–5 điểm)`}});
+    if(route.length>=3&&!S.ok)steps.push({ok:false,label:S.warn[0]||'Lộ trình chưa hợp',go:{sel:'.tt-places',label:`⚠️ ${esc(S.warn[0]||'Sửa lộ trình')}`}});
+  }
+  return {first:card?section('🤒','Người ốm sáng nay',card):'',body:roster(T,route,G)+places,status:esc(next),top,steps,
+    extra:route.length?local('↶','tourReset',{},'btn ghost',false,'Chọn lại'):'',
+    final:{label:'Chốt lộ trình →',hint:'Chốt lộ trình',go:{cmd:'tour_plan',payload:{task:t.id,route,v:2}},ready:S.ok&&!sick}};
 }
 
-function gatherTrip(t,T,c){
+function eventSteps(T,first){
+  return (T.events||[]).filter(e=>!e.chosen).map(ev=>{const box=`.tt-event[data-ev="${ev.id}"]`;
+    return {ok:null,label:`Xử lý: ${ev.title}`,go:{sel:box,label:`${esc(ev.emoji)} Xử lý: ${esc(ev.title)}`},...glow(first,TRIP_GOOD[ev.id]&&`${box} [data-opt="${TRIP_GOOD[ev.id]}"]`)};});
+}
+/** Free partner calls for a multi-day group (lunch before the group leaves, the homestay for tonight). */
+function careSteps(T,c,lunch){
+  const X=c.life?.tour,G=X?.group?.active&&legGroup(T,c)?X.group:null,out=[],k=X?.kit;
+  if(k&&!k.charging&&k.mic<k.mic_use*3)out.push({ok:null,label:'Cắm sạc loa qua đêm',go:{cmd:'tour_kit',payload:{item:'mic'},label:`🔋 Cắm sạc loa · ${k.mic}%`}});
+  if(lunch&&G&&!G.lunch&&!G.departed)out.push({ok:null,label:'Đặt cơm trưa cho đoàn',go:{cmd:'tour_partner',payload:{partner:'restaurant'},label:'🍚 Đặt cơm trưa cho đoàn'}});
+  if(G?.night&&!G.called)out.push({ok:null,label:'Báo homestay tối nay',go:{cmd:'tour_partner',payload:{partner:'homestay'},label:'🏡 Báo homestay tối nay'}});
+  return out;
+}
+function gatherTrip(t,T,c,first){
   const G=legGroup(T,c),late=(T.events||[]).find(e=>!e.chosen);
   const events=(T.events||[]).map(ev=>eventCard(ev,'tour_call',t.id)).join('');
   const route=section('🧭','Lộ trình đã chốt',`<div class="tt-split">${tripMap(T,T.route)}${itinerary(T)}</div>`,`${T.route.length} điểm`);
   const n=T.present??T.members.length,sick=T.care?.sick&&T.care.call?section('🤒','Người ốm sáng nay',sickCard(t,T,G)):'';
   return {body:(events?section('📍',`Điểm hẹn · ${esc(T.gate.name)}`,events):'')+sick+roster(T,T.route,G)+route,
-    bar:bar(esc(late?'Đoàn chưa đủ người: xử lý trước khi đi':`Đủ ${n}/${n} người ở ${T.gate.name}`),act('Xuất phát →','tour_depart',{task:t.id},'primary',{disabled:Boolean(late)}))};
+    status:esc(late?'Đoàn chưa đủ người: xử lý trước khi đi':`Đủ ${n}/${n} người ở ${T.gate.name}`),steps:[...eventSteps(T,first),...careSteps(T,c,true)],
+    final:{label:'Xuất phát →',hint:'Xuất phát',go:{cmd:'tour_depart',payload:{task:t.id}},ready:!late}};
 }
 
-function stopTrip(t,T,c){
+function stopTrip(t,T,c,first){
   const H=T.here,pending=(T.events||[]).some(e=>!e.chosen),last=T.at===T.route.length-1,X=c.life?.tour;
   const fans=a=>T.members.filter(m=>m.angle===a&&!m.away).length;
-  const tell=H.told?`<blockquote class="tt-quote">${ANGLE_ICON[H.told]} “${esc(H.line)}”</blockquote>`:`<div class="tt-angles" role="group" aria-label="Cách kể ở điểm này">${T.angles.map(a=>act(`${em(a.emoji)}<span>${esc(a.label)}</span><small>${fans(a.id)} người thích</small>`,'tour_tell',{task:t.id,angle:a.id},'tt-angle')).join('')}</div>`;
+  const tell=H.told?`<blockquote class="tt-quote">${ANGLE_ICON[H.told]} “${esc(H.line)}”</blockquote>`:`<div class="tt-angles" role="group" aria-label="Cách kể ở điểm này">${T.angles.map(a=>act(`${em(a.emoji)}<span>${esc(a.label)}</span><small>${fans(a.id)} người thích</small>`,'tour_tell',{task:t.id,angle:a.id},'tt-angle',{attr:` data-angle="${esc(a.id)}"`})).join('')}</div>`;
   const K=X?.know?.find(k=>k.id===H.id);
   const book=K?`<p class="tt-note">${K.level===2?`🗝️ Sổ tay: kể hợp đoàn là dẫn được vào ${esc(K.spot||'góc ẩn')}`:K.level===1?`📖 Sổ tay: có chuyện ít ai biết · kể hay thêm ${K.need} lần để mở góc ẩn`:`📖 Sổ tay: kể hay thêm ${K.need} lần để mở chuyện ít ai biết`}</p>`:'';
   const mic=X?.kit?`<span class="${X.kit.mic<X.kit.mic_use?'bad-text':X.kit.mic<X.kit.mic_use*3?'tt-low':''}">🔋 ${X.kit.mic}%</span>`:'';
   const nextStop=last?null:T.places.find(p=>p.id===T.route[T.at+1]);
   const here=`<div class="tt-here"><span aria-hidden="true">${H.emoji}</span><div><small>Điểm ${T.at+1}/${T.route.length} · đang ở đây</small><h3>${esc(H.name)}</h3><p>${H.tags.map(g=>`${T.tags[g].emoji} ${esc(T.tags[g].label)}`).join(' · ')}</p></div></div>`;
   const events=(T.events||[]).map(ev=>eventCard(ev,'tour_call',t.id)).join('');
-  const next=pending?'Còn chuyện cần xử lý':!H.told?'Kể chuyện cho đoàn trước đã':nextStop?`Tiếp theo: ${nextStop.emoji} ${nextStop.name}`:'Điểm cuối. Đếm đoàn rồi về bến';
+  const next=nextStop?`➜ ${nextStop.emoji} ${nextStop.name}`:`➜ ${T.gate.emoji} ${T.gate.name}`;
+  // The angle most of the group enjoys, plus the one that suits the place (as the server scores it).
+  const ppl=T.members.filter(m=>!m.away),score=a=>{const f=ppl.filter(m=>m.angle===a).length;return 3*f-(ppl.length-f)+(H.tags.some(g=>BEST_ANGLE[g]===a)?2:0);};
+  const angle=T.angles.map(a=>a.id).reduce((b,a)=>score(a)>score(b)?a:b);
+  const steps=[...eventSteps(T,first),...careSteps(T,c,false),{ok:H.told?true:null,label:'Kể chuyện cho đoàn nghe',go:{sel:'.tt-angles',label:'🎙️ Chọn cách kể chuyện'},...glow(first,`.tt-angle[data-angle="${angle}"]`)}];
   return {body:tripMap(T,T.route,T.at,true)+here+(events?section('⚠️','Chuyện trên đường',events):'')+section('🎙️','Kể gì cho đoàn nghe?',tell+book,H.told?'✓ Đã kể':mic)+roster(T,T.route,legGroup(T,c)),
-    bar:bar(esc(next),act(last?'Đếm đoàn & về bến →':'Đếm đoàn & đi tiếp →','tour_next',{task:t.id},'primary',{disabled:pending||!H.told}))};
+    status:esc(next),steps,final:{label:last?'Đếm đoàn & về bến →':'Đếm đoàn & đi tiếp →',hint:last?'Đếm đoàn, về bến':'Đếm đoàn, đi tiếp',go:{cmd:'tour_next',payload:{task:t.id}},ready:!pending&&!!H.told}};
 }
 
 function readyTrip(t,T){
   const stamps=T.stamps.map(id=>T.places.find(p=>p.id===id)?.emoji).join(' ');
   const res=`<section class="tt-result" aria-live="polite">${em('🧭')}<h3>Cùng đi, cùng về đủ</h3><p class="tt-stamps" aria-label="Tem các điểm đã ghé">${stamps}</p><div class="tt-stats"><div><b>${T.clock}/${T.limit}′</b><small>${T.over?`Trễ ${T.over}′`:'Đúng giờ'}</small></div><div><b>${T.fund_left} xu</b><small>Quỹ còn · thưởng +${T.saving}</small></div><div><b>${t.patience??100}%</b><small>Nhịp đoàn</small></div></div>${logList(T.log)}${T.commission?`<p class="tt-tip">🎁 Đã nhận ${T.commission} xu hoa hồng tiệm lưu niệm.</p>`:''}</section>`;
-  return {body:res+section('🧭','Lịch trình',itinerary(T)),
-    bar:bar(`Đoàn đã về bến · <b>+${T.estimate} xu</b>${T.tips_estimate?` · tip ~${T.tips_estimate}`:''}`,act('Khép chuyến','tour_complete',{task:t.id,confirm:true},'primary',{confirm:'Khép chuyến và gửi lời cảm ơn cho đoàn. Thù lao chỉ nhận một lần.'}))};
+  return {body:res+section('🧭','Lịch trình',itinerary(T)),status:`Đoàn đã về bến · <b>+${T.estimate} xu</b>${T.tips_estimate?` · tip ~${T.tips_estimate}`:''}`,steps:[],
+    final:{label:'Khép chuyến',hint:'Khép chuyến, nhận thù lao',go:finalGo([],'tour_complete',{task:t.id},{confirm:true})}};
 }
 
 export function tripV2(t,c,content,ui){
-  const T=t.trip,person=content.npcs.find(n=>n.id===t.npc);
-  const view=T.stage==='plan'?planTrip(t,T,ui,c):T.stage==='gather'?gatherTrip(t,T,c):T.stage==='stop'?stopTrip(t,T,c):readyTrip(t,T);
+  const T=t.trip,person=content.npcs.find(n=>n.id===t.npc),first=firstTime({room:c});
+  const view=T.stage==='plan'?planTrip(t,T,ui,c,first):T.stage==='gather'?gatherTrip(t,T,c,first):T.stage==='stop'?stopTrip(t,T,c,first):readyTrip(t,T);
+  const g=guided({room:c},t,T.stage,view);
   const mood=c.life?.mode==='calm'?100:(t.patience??100);
   const at=TRIP_STEPS.findIndex(x=>x[0]===T.stage);
   const chips=`${T.group?`<span class="tag blue">👥 Đoàn ${T.group.days} ngày · ${T.group.leg+1}/${T.group.days}</span>`:''}<span class="tag">${esc(T.weather.emoji)} ${esc(T.weather.name)}</span><span class="tag">🎟 Quỹ ${T.stage==='plan'?T.fund:T.fund_left} xu</span>${T.wallet?`<span class="tag amber">👛 Bù ${T.wallet} xu</span>`:''}<span class="tag">⏱ ${T.stage==='plan'?'≤ '+T.limit:T.clock+'/'+T.limit}′</span>${T.tier>1?`<span class="tt-tier" aria-label="Độ khó ${T.tier}">${'★'.repeat(T.tier)}</span>`:''}`;
   const steps=`<ol class="tt-trail" aria-label="Các chặng">${TRIP_STEPS.map(([,l],i)=>`<li class="${i<at?'done':i===at?'now':''}"${i===at?' aria-current="step"':''}><i aria-hidden="true">${i<at?'✓':i+1}</i><span>${esc(l)}</span></li>`).join('')}</ol>`;
-  return `<div class="tt tt-trip"><div class="tt-trip-top">${chips}</div>${steps}${hud('Nhịp đoàn',mood,t,person)}<div class="tt-body">${view.first||''}${carePanel(t,T,c)}${view.body}${bookPanel(T,c)}</div>${view.bar}</div>`;
+  return `<div class="tt tt-trip"${g.attrs}>${g.hint}<div class="tt-trip-top">${chips}</div>${steps}${hud('Nhịp đoàn',mood,t,person)}<div class="tt-body">${view.first||''}${carePanel(t,T,c)}${view.body}${bookPanel(T,c)}</div>${bar(view.status,(view.extra||'')+g.cta,view.top||'')}</div>`;
 }
 
 export const v2Stage=t=>t?.room?({roll:'Điểm danh đầu giờ',plan:'Soạn ba hoạt động',teach:'Dạy và giúp từng bạn',check:'Phản hồi phiếu cuối tiết',ready:'Khép tiết'}[t.room.stage]):t?.trip?({plan:'Chọn lộ trình hợp đoàn',gather:'Tập trung ở điểm hẹn',stop:'Kể chuyện và giữ đoàn',ready:'Khép chuyến'}[t.trip.stage]):null;

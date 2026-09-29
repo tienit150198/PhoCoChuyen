@@ -1144,7 +1144,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         return _appt(s, c, p)
     t = kit.task(c, p)
     kit.need(t['career'] == ID, 'Công việc không thuộc salon.')
-    kit.need(t['known'], 'Mời khách ngồi ghế tư vấn và nghe mong muốn trước (bấm “Hỏi”).')
+    kit.need(t['known'], 'Mời khách ngồi ghế tư vấn và nghe mong muốn trước (bấm “Mời ngồi & nghe mong muốn”).')
     key, hair, n, who = t['_key'], t['_hair'], t['needs'], _who(t)
     plan = t['plan']
 

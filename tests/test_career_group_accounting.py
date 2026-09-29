@@ -93,6 +93,22 @@ class GroupAccountingTests(unittest.TestCase):
         self.assertEqual(self.j.task['variant'], kind)
         return self.j.task['id']
 
+    def test_first_board_coach_pairs_every_line(self):
+        tid = self.board(day=1)
+        t = self.j.get(tid)
+        coach = public_state(self.j.state)['careers'][CAR]['data']['coach'][tid]['lines']
+        self.assertEqual(set(coach), {x['id'] for x in t['lines']})
+        for lid, k in coach.items():
+            if 'tag' in k:
+                r = self.j.act('ga_tag', task=tid, line=lid, tag=k['tag'])
+            elif lid.startswith('a'):
+                r = self.j.act('ga_pair', task=tid, a=lid, b=k['mate'], **({'cause': k['cause']} if k['cause'] else {}))
+            else:
+                continue
+            self.assertTrue(r['correct'], r)
+        self.assertTrue(self.j.act('ga_submit', task=tid, confirm=True)['message'])
+        self.assertEqual(public_state(self.j.state)['careers'][CAR]['data']['coach'], {})
+
     def board(self, day=None, pred=None, chase=True):
         if day is not None:
             day, slot = day, GA._match_slot(day)

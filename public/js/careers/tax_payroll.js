@@ -2,7 +2,9 @@
  *  📥 Hộp thư (việc chị Hồng giao, khiếu nại lương), 📂 Hồ sơ (bảng lương nháp soát từng người, hoặc
  *  tờ khai làm từng bước với giấy tờ gốc và máy tính bàn), 📋 Quy định (quy định kỳ lương + sổ tay luật),
  *  and a sticky bar with the next step and the main action. */
-import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,dueOf,openTasks,planCard,mateCards,trackFold,careSummary,foldToggle} from './office_kit.js';
+import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,dueOf,openTasks,planCard,mateCards,trackFold,careSummary,foldToggle,
+  coachOf,goto,gotoAction,guideOf} from './office_kit.js';
+import {pending} from '../v4/guide.js';
 
 const BOSS='Chị Hồng';
 const fmtN=n=>Number(n).toLocaleString('vi-VN');
@@ -90,7 +92,7 @@ function worksheet(t,x){
   if(cur&&cur.state==='current'){
     const tries=p.attempts[cur.id]||0;
     const hint=tries>0?`<p class="tp-hint">💡 ${x.esc(cur.hints[Math.min(cur.hints.length,tries)-1])}</p>`:'';
-    body=`<article class="tp-work"><header class="tp-work-head"><span class="tp-no" aria-hidden="true">${p.at+1}</span><div class="grow"><small>Bước ${p.at+1}/${p.total}${p.total-p.at-1?` · còn ${p.total-p.at-1} bước sau`:''}${tries>1?` · ${tries} lần kiểm`:''}</small><h3>${x.esc(cur.title)}</h3></div>${cur.tag==='ethic'?'<span class="ok-tag warn">🔒 bảo mật & quy trình</span>':''}</header>
+    body=`<article class="tp-work" data-step-card="${x.esc(t.id)}:${x.esc(cur.id)}"><header class="tp-work-head"><span class="tp-no" aria-hidden="true">${p.at+1}</span><div class="grow"><small>Bước ${p.at+1}/${p.total}${p.total-p.at-1?` · còn ${p.total-p.at-1} bước sau`:''}${tries>1?` · ${tries} lần kiểm`:''}</small><h3>${x.esc(cur.title)}</h3></div>${cur.tag==='ethic'?'<span class="ok-tag warn">🔒 bảo mật & quy trình</span>':''}</header>
       <p class="tp-prompt">${x.esc(cur.prompt)}</p>${inputView(cur,t,x)}${hint}</article>`;
   }else if(!t.filed)body=`<article class="tp-work done"><header class="tp-work-head"><span class="tp-no" aria-hidden="true">📤</span><div class="grow"><small>Bước cuối</small><h3>Nộp / bàn giao hồ sơ</h3></div></header></article>`;
   const pct=p.total?Math.round(p.at/p.total*100):0;
@@ -147,7 +149,7 @@ function rowCard(t,r,x){
   }else{
     foot=`${r.tip?`<p class="tp-hint">💡 ${x.esc(r.tip)}</p>`:''}<div class="tp-row-tools"><small>${flags.size?`🚩 ${flags.size}/${max} ô nghi sai`:'Chạm vào ô sai để đánh dấu'}</small>${r.hinted?'':x.cmd('💡 Gợi ý','tp_hint',{task:t.id,row:r.id},'ghost small')}</div>`;
   }
-  return `<section class="tp-person"><header><span class="tp-avatar" aria-hidden="true">${x.esc(nameOf(r).split(' ').pop().slice(0,1))}</span><b>${x.esc(nameOf(r))}</b><small>Dòng ${x.esc(r.id.slice(1))}</small></header>
+  return `<section class="tp-person"${r.reviewed||t.filed?'':` data-step-card="${x.esc(t.id)}:${x.esc(r.id)}"`}><header><span class="tp-avatar" aria-hidden="true">${x.esc(nameOf(r).split(' ').pop().slice(0,1))}</span><b>${x.esc(nameOf(r))}</b><small>Dòng ${x.esc(r.id.slice(1))}</small></header>
     <div class="tp-cells-grid">${(r.cells||[]).map(cell).join('')}</div>${foot}</section>`;
 }
 function gridRecap(x){
@@ -174,16 +176,34 @@ function gridDoc(t,x){
     ${r?rowCard(t,r,x):''}
     <section class="tp-tray"><h3 class="ok-h">🗃️ Hồ sơ gốc để đối chiếu</h3>${html}<article class="tp-paper"><h4>${x.esc(t.papers[idx].title)}</h4>${refList(t.papers[idx],x)}</article></section>`;
 }
-function gridBar(t,x){
-  const rows=t.rows||[],r=rowOf(t,x),g=t.grid||{};
-  if(!t.filed&&g.reviewed===g.total)return bar(x,t,`Đã soát đủ ${g.total} người.`,x.confirmCmd(`💸 Chuyển lương ${g.total} người`,'tp_pay',{task:t.id},'Chuyển lương theo bảng đã soát? Ô đánh dấu sẽ được sửa trước khi chuyển; ô sót thì chuyển nguyên như bảng nháp.','primary'));
+function gridBar(t,x,gd){
+  const r=rowOf(t,x),g=t.grid||{};
+  if(!t.filed&&g.reviewed===g.total)return bar(x,t,`Đã soát đủ ${g.total} người.`,gd.cta);
   if(!r||t.filed)return bar(x,t,'Bảng lương đã chuyển.');
+  if(r.reviewed)return bar(x,t,`${x.esc(nameOf(r))}: đã soát`,gd.cta);
+  const n=(r.flags||[]).length;
+  return bar(x,t,`👤 ${x.esc(nameOf(r))}${n?` · 🚩 ${n}`:''}`,gd.cta);
+}
+const cellSel=(r,z)=>`.tp-cell[data-row="${r.id}"][data-cell="${z}"]`;
+const cellName=(r,z)=>(r.cells||[]).find(c=>c.z===z)?.k||z;
+/* One person at a time. The first payroll (coach) lights each wrong cell, then “Xong dòng”. */
+function gridSteps(t,x){
+  const rows=t.rows||[],r=rowOf(t,x),g=t.grid||{};
+  if(t.filed||!r||g.reviewed===g.total)return [];
+  const who=nameOf(r);
   if(r.reviewed){
     const next=rows.find(v=>!v.reviewed);
-    return bar(x,t,`${x.esc(nameOf(r))}: đã soát`,next?x.button('Người tiếp theo ›','car:gpick',{task:t.id,row:next.id},'primary'):'');
+    return next?[{ok:null,label:`Soát tiếp: ${nameOf(next)}`,go:{act:'car:gpick',data:{task:t.id,row:next.id},label:'Người tiếp theo ›'}}]:[];
   }
-  const n=(r.flags||[]).length;
-  return bar(x,t,`${x.esc(nameOf(r))} · ${n?`${n} ô nghi sai`:'so từng ô với hồ sơ gốc'}`,x.cmd(n?`✓ Xong dòng · ${n} ô cần sửa`:'✓ Xong dòng · không thấy sai','tp_row',{task:t.id,row:r.id},'primary'));
+  const flags=r.flags||[],co=coachOf(x,t)?.rows?.[r.id],want=co?.z,out=[];
+  if(want){
+    for(const z of flags.filter(v=>!want.includes(v)))out.push({ok:false,label:`${who}: ô “${cellName(r,z)}” đúng — bỏ dấu`,go:goto(x,t,cellSel(r,z),`↩️ Bỏ dấu ô “${x.esc(cellName(r,z))}”`),pulse:cellSel(r,z)});
+    want.forEach((z,i)=>{if(!flags.includes(z))out.push({ok:null,label:`Ô “${cellName(r,z)}” sai: ${co.why?.[i]||'đối chiếu hồ sơ gốc'}`,go:goto(x,t,cellSel(r,z),`🚩 Đánh dấu ô “${x.esc(cellName(r,z))}”`),pulse:cellSel(r,z)});});
+  }
+  const n=flags.length;
+  out.push({ok:null,label:want?`${who}: xong dòng`:`${who}: so từng ô rồi xong dòng`,go:{cmd:'tp_row',payload:{task:t.id,row:r.id},label:n?`✓ Xong dòng · ${n} ô cần sửa`:'✓ Xong dòng · không thấy sai'},
+    ...(want?{}:{hintGo:goto(x,t,'.tp-person')})});
+  return out;
 }
 
 /* ---------------------------------------------------------------- a form (tờ khai) done step by step */
@@ -191,11 +211,45 @@ function formDoc(t,x){
   const {idx,html}=paperTabs(t,x,'Giấy tờ');
   return `${worksheet(t,x)}<section class="tp-tray"><h3 class="ok-h">🗃️ Giấy tờ khách gửi <small>${t.papers.length} tờ</small></h3>${html}${paperView(t.papers[idx],x)}</section>${calculator(x)}`;
 }
-function formBar(t,x){
+function formBar(t,x,gd){
   const p=t.progress||{},cur=(t.steps||[])[p.at];
-  if(cur&&cur.state==='current')return bar(x,t,`Bước ${p.at+1}/${p.total}: ${x.esc(cur.title)}`,x.button('✔ Kiểm tra','car:check',{task:t.id,step:cur.id,kind:cur.kind},'primary'));
-  if(!t.filed)return bar(x,t,'Hồ sơ đã khớp hết — nộp cho khách.',x.confirmCmd('📤 Nộp / bàn giao hồ sơ','tp_file',{task:t.id,confirm:true},'Nộp hồ sơ này? Sau khi nộp không sửa được nữa; thưởng hồ sơ phụ thuộc số lần chưa khớp và hạn nộp.','primary'));
+  if(cur&&cur.state==='current')return bar(x,t,'',gd.cta);
+  if(!t.filed)return bar(x,t,'Hồ sơ đã khớp hết — nộp cho khách.',gd.cta);
   return bar(x,t,'Đã nộp hồ sơ.');
+}
+/* A form step by step. The first dossier (coach) lights the right choice / the next item, or fills the cells. */
+function formSteps(t,x){
+  const p=t.progress||{},cur=(t.steps||[])[p.at];
+  if(!cur||cur.state!=='current')return [];
+  const u=state(x,t),co=coachOf(x,t),key=co&&co.step===cur.id?co.key:undefined;
+  const label=`Bước ${p.at+1}/${p.total}: ${cur.title}`,check={act:'car:check',data:{task:t.id,step:cur.id,kind:cur.kind},label:'✔ Kiểm tra'};
+  const lit=(sel,note)=>[{ok:null,label,note,go:goto(x,t,sel),pulse:sel}];
+  if(key===undefined)return [{ok:null,label,go:check,hintGo:goto(x,t,'.tp-work')}];
+  const opt=v=>`.tp-choice[data-step="${cur.id}"][data-v="${v}"]`;
+  if(cur.kind==='choice'&&u.sel[cur.id]!==key)return lit(opt(key));
+  if(cur.kind==='multi'){
+    const on=u.multi[cur.id]||[],v=on.find(q=>!key.includes(q))??key.find(q=>!on.includes(q));
+    if(v!==undefined)return lit(opt(v));
+  }
+  if(cur.kind==='order'){
+    const picked=u.order[cur.id]||[],bad=picked.findIndex((v,i)=>v!==key[i]);
+    if(bad>=0)return lit(`.tp-order button[data-action="car:unpick"][data-i="${bad}"]`);
+    if(picked.length<key.length)return lit(`.tp-choice[data-action="car:opick"][data-v="${key[picked.length]}"]`);
+  }
+  if(['number','fields','match'].includes(cur.kind)&&!u.coached?.[cur.id])
+    return [{ok:null,label,go:{act:'car:coach',data:{task:t.id,step:cur.id},label:'✍️ Điền theo giấy tờ'}}];
+  return [{ok:null,label,go:check}];
+}
+/** {steps, final} for the header hint and the bottom button. */
+function guideFor(t,x){
+  const grid=t.form==='grid';
+  if(!t.known)return {steps:[{ok:null,label:grid?'Nhận bảng lương nháp':'Nhận hồ sơ, đọc yêu cầu',go:{cmd:'ask',payload:{task:t.id},label:grid?'📥 Nhận bảng lương nháp':'📥 Nhận hồ sơ & đọc yêu cầu'}}]};
+  if(grid){
+    const g=t.grid||{};
+    return {steps:gridSteps(t,x),final:!t.filed&&g.reviewed===g.total?{label:`💸 Chuyển lương ${g.total} người`,go:{cmd:'tp_pay',payload:{task:t.id},confirm:'Chuyển lương theo bảng đã soát? Ô đánh dấu sẽ được sửa trước khi chuyển; ô sót thì chuyển nguyên như bảng nháp.'}}:null};
+  }
+  const steps=formSteps(t,x);
+  return {steps,final:!steps.length&&!t.filed?{label:'📤 Nộp / bàn giao hồ sơ',go:{cmd:'tp_file',payload:{task:t.id},confirm:'Nộp hồ sơ này? Sau khi nộp không sửa được nữa; thưởng hồ sơ phụ thuộc số lần chưa khớp và hạn nộp.'}}:null};
 }
 
 /* ---------------------------------------------------------------- care: the filing calendar, colleagues, the track */
@@ -238,7 +292,10 @@ function nextText(t){
 export default {
   id:'tax_payroll',
   css:true,
-  next:nextText,
+  next(t,x){
+    try{const n=x&&pending(guideFor(t,x).steps);if(n)return n.label;}catch{/* the fixed lines below */}
+    return nextText(t);
+  },
   job(t,x){
     const grid=t.form==='grid',claims=(x.room.data?.claims||[]).length,fresh=(x.room.data?.today?.rules||[]).filter(r=>r.new).length;
     x.ui.lastGrid=grid?t.id:null;
@@ -246,11 +303,12 @@ export default {
     const tabs=[{id:'inbox',icon:'📥',label:'Hộp thư',badge:unread||'',tone:claims?'bad':''},{id:'doc',icon:'📂',label:'Hồ sơ'},{id:'rules',icon:'📋',label:'Quy định',badge:fresh||'',tone:'warn'}];
     const inbox=inboxPane(x,{tasks:taskMails(x,t,currentMail(t,x)),other:[...claimMails(x),...dayMails(x,{boss:BOSS,key:`${t.id}:${t.known?1:0}`})],...care(x,t)});
     const rules=todayRules(x)+lawBook(x);
-    if(!t.known)return desk(x,t,{cls:'tp',tabs,strip:strip(x,t),panes:{inbox,rules,
+    const gd=guideFor(t,x),g=guideOf(x,t,gd.steps,gd.final);
+    if(!t.known)return desk(x,t,{cls:'tp',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules,
       doc:`<p class="ok-empty"><span aria-hidden="true">✉️</span><b>${x.esc(t.title)}</b><span>${grid?'Bảng lương nháp còn nằm trên bàn chị Hồng.':'Hồ sơ còn trong phong bì.'}</span></p>`},
-      bar:bar(x,t,x.esc(nextText(t)),x.cmd(grid?'📥 Nhận bảng lương nháp':'📥 Nhận hồ sơ & đọc yêu cầu','ask',{task:t.id},'primary'),true)});
-    if(grid)return desk(x,t,{cls:'tp',tabs,strip:strip(x,t),panes:{inbox,rules,doc:gridDoc(t,x)},bar:gridBar(t,x)});
-    return desk(x,t,{cls:'tp',tabs,strip:strip(x,t),panes:{inbox,rules,doc:formDoc(t,x)},bar:formBar(t,x)});
+      bar:bar(x,t,'',g.cta,true)});
+    if(grid)return desk(x,t,{cls:'tp',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules,doc:gridDoc(t,x)},bar:gridBar(t,x,g)});
+    return desk(x,t,{cls:'tp',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules,doc:formDoc(t,x)},bar:formBar(t,x,g)});
   },
   idle(x){
     const d=x.room.data||{};if(!d.office)return '';
@@ -280,6 +338,16 @@ export default {
   actions:{
     tab:switchTab,
     fold:foldToggle,
+    goto:gotoAction,
+    /** First dossier: type the key into the step's cells (inputs keep their typed value across renders). */
+    coach(d,el,x){
+      const t=x.room.tasks.find(q=>q.id===d.task),st=t?.steps?.find(s=>s.id===d.step),co=t&&x.room.data?.coach?.[t.id];
+      if(!st||co?.step!==st.id)return;
+      const put=(id,v)=>{const i=document.getElementById(id);if(i)i.value=String(v);};
+      if(st.kind==='number')put(fid(t,st.id),co.key);
+      else for(const [k,v] of Object.entries(co.key||{}))put(fid(t,st.id,k),v);
+      (state(x,t).coached??={})[st.id]=true;x.render();
+    },
     gpick(d,el,x){gsel(x)[d.task]=d.row;x.render();document.querySelector('.career-job.tp .tp-queue')?.scrollIntoView({block:'nearest'});},
     async flag(d,el,x){
       const on=el.getAttribute('aria-pressed')==='true';
@@ -308,7 +376,7 @@ export default {
       else if(st.kind==='number')answer=parseIntVN(val(fid(t,st.id)));
       else if(st.kind==='match'){answer={};for(const l of st.left){const v=val(fid(t,st.id,l.id));if(!v){answer=null;break;}answer[l.id]=v;}}
       else if(st.kind==='fields'){answer={};for(const f of st.fields){const raw=val(fid(t,st.id,f.id));const v=f.options?raw:parseIntVN(raw);if(v===null||v===''){answer=null;break;}answer[f.id]=v;}}
-      if(answer===null){x.toast('Điền đủ và đúng dạng số nguyên (vd 12.400) trước khi kiểm tra nhé.',true);return;}
+      if(answer===null){x.toast(st.kind==='choice'?'Chạm chọn một đáp án trước nhé.':st.kind==='multi'?'Chạm chọn ít nhất một ô trước nhé.':st.kind==='order'?'Chạm đủ các việc theo thứ tự trước nhé.':st.kind==='match'?'Chọn đủ từng dòng trước nhé.':'Điền đủ và đúng dạng số nguyên (vd 12.400) trước khi kiểm tra nhé.',true);return;}
       await x.send('tp_submit',{task:t.id,step:st.id,answer});
     },
   },
