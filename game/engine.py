@@ -117,6 +117,7 @@ def migrate_state(state:dict) -> dict:
         incs.migrate(s)  # chuyện đời: an empty incident book per workplace
         haps.migrate(s)  # chuyện bất ngờ trong ca: live happenings in the scene
         cst.migrate(s)  # truyện nghề: an empty story book for older saves
+        emp.migrate(s)  # xin việc: nơi đã làm trước khi cần tuyển dụng thì coi như đã ký hợp đồng
         inv.migrate(s)  # kho: đơn nhập cũ theo nhịp → giờ giao dự kiến
     if isinstance(s.get('settings'),dict):
         if ai_unasked:s['settings'].update(aiConsent=True,aiAsked=True)

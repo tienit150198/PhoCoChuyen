@@ -10,11 +10,20 @@ Work only starts after the interview and a signed offer. The one exception is
 luck: sometimes the big boss meets you (right after you apply, or by chance at
 the end of a day elsewhere) and offers the job directly. The roll is seeded
 from the save, so reloading never rerolls it.
+
+v0.5: the pipeline is data. A posting may list its `stages`; besides CV,
+letter and interview there are a licence `exam` (pharmacy, tour guide: pass
+mark, retake the next day, the certificate is kept), a situational `test`
+(customer care) and a hands-on `trial` with the owner (salon, pet care,
+repair, delivery). Postings without `stages` keep the old CV → letter →
+interview flow and scoring. Content lives in employment_content.py.
 """
 from __future__ import annotations
 
 import os
 import random
+
+from . import employment_content as EC
 
 STRENGTHS = [
     dict(id='careful', name='Cẩn thận, tỉ mỉ', emoji='🔍'),
@@ -102,7 +111,53 @@ POSTINGS = {
              questions=['t_diverse'], reference=False),
     ],
 }
-QUESTIONS = {**GENERIC_QUESTIONS, **TEACHER_QUESTIONS}
+POSTINGS.update(EC.POSTINGS)
+QUESTIONS = {**GENERIC_QUESTIONS, **TEACHER_QUESTIONS, **EC.QUESTIONS}
+EXAMS = EC.EXAMS
+
+LEGACY_STAGES = ('cv', 'letter', 'interview')
+STAGES = ('exam', 'cv', 'letter', 'interview', 'test', 'trial')
+STEP_STAGES = {'interview': 'questions', 'test': 'test', 'trial': 'trial'}   # stage → posting key of its step ids
+STAGE_NAMES = dict(exam='Thi chứng chỉ', cv='CV', letter='Thư ứng tuyển', interview='Phỏng vấn',
+                   test='Bài thử tình huống', trial='Làm thử tại tiệm')
+FATAL_CAP = 45
+LATER_FIELDS = {'certs'}   # job fields added after v0.4: older saves may lack them
+
+
+def stages(post: dict) -> list[str]:
+    return list(post.get('stages') or LEGACY_STAGES)
+
+
+def stage_steps(post: dict, stage: str) -> list[str]:
+    key = STEP_STAGES.get(stage)
+    return list(post.get(key) or []) if key else []
+
+
+def all_steps(post: dict) -> list[str]:
+    return [q for st in stages(post) for q in stage_steps(post, st)]
+
+
+def _next_stage(post: dict, stage: str) -> str | None:
+    rows = stages(post)
+    i = rows.index(stage) if stage in rows else len(rows)
+    return rows[i + 1] if i + 1 < len(rows) else None
+
+
+def exam(career: str) -> dict | None:
+    return EXAMS.get(career)
+
+
+def has_cert(job: dict, career: str) -> bool:
+    ex = exam(career)
+    return bool(ex) and any(x.get('id') == ex['id'] for x in job.get('certs') or [])
+
+
+def _needs_exam(job: dict, career: str, post: dict) -> bool:
+    return 'exam' in stages(post) and not has_cert(job, career)
+
+
+def _cap(text: str) -> str:
+    return text[:1].upper() + text[1:]
 
 
 def _plugin_employment(career: str) -> dict | None:
@@ -131,17 +186,43 @@ def required(career: str) -> bool:
 
 def initial() -> dict:
     return dict(status='none', employer=None, title=None, salary=0, offer=None, probation=False, probation_left=0, hired_day=0,
-                application=None, cooldown_day=0, history=[], days_worked=0, reviews_during_probation=[], extended=False)
+                application=None, cooldown_day=0, history=[], days_worked=0, reviews_during_probation=[], extended=False,
+                certs=[])
 
 
 def hired_record(career: str, posting_id: str | None = None, day: int = 1) -> dict:
-    """Used by migration of started careers and by tests: an already-signed contract."""
+    """Used by migration of started careers and by tests: an already-signed contract
+    (and, for a licensed job, the certificate that goes with it)."""
     rows = postings(career)
     x = initial()
     if rows:
         p = next((r for r in rows if r['id'] == posting_id), rows[0])
         x.update(status='hired', employer=p['id'], title=p['title'], salary=p['salary'][1], probation=False, hired_day=day)
+        ex = exam(career)
+        if ex:
+            x['certs'] = [dict(id=ex['id'], day=day, score=ex['draw'])]
     return x
+
+
+def migrate(s: dict) -> None:
+    """Engine hook (engine.migrate_state): a workplace you already worked at before
+    it started hiring keeps you — signed contract, no probation. Only a job record
+    that was never used is touched, so quitting later is never undone."""
+    cs = s.get('careers')
+    if not isinstance(cs, dict):
+        return
+    for cid, c in cs.items():
+        if not isinstance(c, dict) or not required(cid):
+            continue
+        job = c.get('job')
+        if not isinstance(job, dict) or job.get('status') != 'none' or job.get('application') or job.get('history'):
+            continue
+        worked = c.get('started') is True or (c.get('metrics') or {}).get('served', 0) > 0
+        if not worked:
+            continue
+        day = c['day'] if type(c.get('day')) is int and c['day'] >= 1 else 1
+        c['job'] = hired_record(cid, None, day)
+        c['job']['history'] = [dict(day=day, event='migrated', posting=c['job']['employer'])]
 
 
 def _posting(career: str, pid) -> dict | None:
@@ -161,6 +242,8 @@ BOSS_MEET = [
 
 
 def _boss(career: str, post: dict) -> str:
+    if post.get('boss'):
+        return post['boss']
     if career == 'teacher':
         return 'hiệu trưởng'
     return 'tổng giám đốc' if post.get('kind') in ('corp', 'group') else 'giám đốc'
@@ -191,7 +274,7 @@ def _direct_offer(s: dict, c: dict, career: str, post: dict, line: str) -> None:
     salary = low + round((high - low) * .5)
     job = c['job']
     job['status'] = 'offer'
-    job['application'] = dict(posting=post['id'], stage='interview', strengths=[], claims=[], letter={}, answers={},
+    job['application'] = dict(posting=post['id'], stage=stages(post)[-1], strengths=[], claims=[], letter={}, answers={},
                               score=None, honest=None, notes=[], feedback=[line], direct=True)
     job['offer'] = dict(salary=salary, negotiated=False, score=None, day=c['day'], direct=True)
     job['history'] = (job['history'] + [dict(day=c['day'], event='direct_offer', posting=post['id'])])[-40:]
@@ -206,11 +289,13 @@ def meet_boss(s: dict, career: str, day: int) -> dict | None:
     if rng.random() >= .04:
         return None
     options = [(k, p) for k in sorted(s['careers']) if k != career and required(k) and _unlocked(s, k)
-               and s['careers'][k].get('job', {}).get('status') in ('none', 'rejected') for p in postings(k)]
+               and s['careers'][k].get('job', {}).get('status') in ('none', 'rejected') for p in postings(k)
+               if not _needs_exam(s['careers'][k]['job'], k, p)]   # luck never replaces a licence exam
     if not options:
         return None
     k, post = rng.choice(options)
-    line = rng.choice(BOSS_MEET).format(org=post['org'], title=post['title'].lower(), boss=_boss(k, post))
+    lines = EC.BOSS_MEET if post.get('boss') else BOSS_MEET
+    line = _cap(rng.choice(lines).format(org=post['org'], title=post['title'].lower(), boss=_boss(k, post)))
     _direct_offer(s, s['careers'][k], k, post, line)
     return dict(career=k, org=post['org'], title=post['title'], text=line)
 
@@ -236,12 +321,21 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         post = _posting(career, p.get('posting'))
         need(post, 'Tin tuyển dụng không tồn tại.')
         job['status'] = 'applying'
-        job['application'] = dict(posting=post['id'], stage='cv', strengths=[], claims=[], letter={}, answers={}, score=None, honest=None, notes=[])
+        first = stages(post)[0]
+        if first == 'exam' and has_cert(job, career):
+            first = _next_stage(post, 'exam')
+        job['application'] = dict(posting=post['id'], stage=first, strengths=[], claims=[], letter={}, answers={}, score=None, honest=None, notes=[])
+        if first == 'exam':
+            job['application']['exam'] = _draw_exam(career, job, c['day'])
         rng = _rng('boss-apply', career, post['id'], c['day'], len(job['history']))
-        if rng.random() < _boss_chance(s, career):
-            line = rng.choice(BOSS_APPLY).format(org=post['org'], boss=_boss(career, post))
+        if rng.random() < _boss_chance(s, career) and not _needs_exam(job, career, post):
+            lines = EC.BOSS_APPLY if post.get('boss') else BOSS_APPLY
+            line = _cap(rng.choice(lines).format(org=post['org'], boss=_boss(career, post)))
             _direct_offer(s, c, career, post, line)
             return dict(message=line, celebrate=True, direct_offer=True)
+        if first == 'exam':
+            ex = exam(career)
+            return dict(message=f'Đã mở hồ sơ: {post["title"]} · {post["org"]}. Bước đầu: bài thi “{ex["name"]}”, cần đúng {ex["pass_mark"]}/{ex["draw"]} câu.')
         return dict(message=f'Đã mở hồ sơ ứng tuyển: {post["title"]} · {post["org"]}.')
     if name == 'job_quick':
         # Dev tooling only (browser sweeps): players always go through the interview.
@@ -252,6 +346,8 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         need(p.get('confirm') is True, 'Xác nhận nhận việc thử với mức lương thử việc.')
         job.update(status='hired', employer=post['id'], title=post['title'], salary=post['salary'][0], probation=True,
                    probation_left=post['probation_days'] + 1, hired_day=c['day'], application=None, offer=None, extended=False, reviews_during_probation=[])
+        if _needs_exam(job, career, post):
+            job['certs'] = list(job.get('certs') or []) + [dict(id=exam(career)['id'], day=c['day'], score=exam(career)['pass_mark'])]
         job['history'] = (job['history'] + [dict(day=c['day'], event='quick', posting=post['id'])])[-40:]
         e.log(s, c, 'job', f'Nhận việc thử tại {post["org"]}: lương khởi điểm {post["salary"][0]} xu/ngày, thử việc {post["probation_days"] + 1} ngày.')
         return dict(message=f'Bạn bắt đầu thử việc tại {post["org"]}. Làm tốt sẽ được ký chính thức!', celebrate=True)
@@ -273,14 +369,25 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         c['job']['application'] = None
         c['job']['offer'] = None
         return dict(message='Đã rút hồ sơ.')
+    if name == 'job_exam':
+        need(job['status'] == 'applying' and app['stage'] == 'exam' and isinstance(app.get('exam'), dict), 'Chưa tới bài thi chứng chỉ.')
+        ex, sheet = exam(career), app['exam']
+        qid = p.get('question')
+        need(qid in sheet['qs'] and qid not in sheet['answers'], 'Câu hỏi không hợp lệ hoặc đã trả lời.')
+        row = next(x for x in ex['bank'] if x['id'] == qid)
+        need(p.get('option') in [o['id'] for o in row['options']], 'Câu trả lời không hợp lệ.')
+        sheet['answers'][qid] = p['option']
+        if len(sheet['answers']) < len(sheet['qs']):
+            return dict(message=f'Đã trả lời câu {len(sheet["answers"])}/{len(sheet["qs"])}.')
+        return _grade_exam(s, c, career, post, app)
     if name == 'job_cv':
         need(app['stage'] == 'cv', 'CV đã nộp.')
         strengths = p.get('strengths')
         need(isinstance(strengths, list) and 1 <= len(strengths) <= 3 and len(set(strengths)) == len(strengths) and all(x in STRENGTH_IDS for x in strengths), 'Chọn 1–3 điểm mạnh.')
         claims = p.get('claims')
         need(isinstance(claims, list) and 1 <= len(claims) <= 4 and len(set(claims)) == len(claims) and all(x in CLAIM_INDEX for x in claims), 'Chọn 1–4 dòng kinh nghiệm.')
-        app.update(strengths=strengths, claims=claims, stage='letter')
-        return dict(message='Đã hoàn thiện CV. Tiếp theo: thư ứng tuyển.')
+        app.update(strengths=strengths, claims=claims)
+        return _advance(s, c, career, post, app, 'Đã hoàn thiện CV.')
     if name == 'job_letter':
         need(app['stage'] == 'letter', 'Chưa tới bước thư ứng tuyển.')
         parts = p.get('parts')
@@ -288,19 +395,22 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         for slot in LETTER_SLOTS:
             need(parts[slot['id']] in [o['id'] for o in slot['options']], 'Nội dung thư không hợp lệ.')
         app['letter'] = dict(parts)
-        app['stage'] = 'interview'
-        return dict(message=f'Thư đã gửi. {post["org"]} mời bạn phỏng vấn!')
+        return _advance(s, c, career, post, app, 'Thư đã gửi.')
     if name == 'job_answer':
-        need(app['stage'] == 'interview', 'Chưa tới buổi phỏng vấn.')
+        stage = app['stage']
+        need(job['status'] == 'applying' and stage in STEP_STAGES, 'Chưa tới buổi phỏng vấn.')
+        steps = stage_steps(post, stage)
         qid = p.get('question')
-        need(qid in post['questions'] and qid not in app['answers'], 'Câu hỏi không hợp lệ hoặc đã trả lời.')
+        need(qid in steps and qid not in app['answers'], 'Câu hỏi không hợp lệ hoặc đã trả lời.')
         q = question(career, qid)
         opt = next((o for o in q['options'] if o['id'] == p.get('option')), None)
         need(opt, 'Câu trả lời không hợp lệ.')
         app['answers'][qid] = opt['id']
-        app['notes'].append(opt['note'])
-        if len(app['answers']) < len(post['questions']):
+        app['notes'] = (app['notes'] + [opt['note']])[-40:]
+        if any(x not in app['answers'] for x in steps):
             return dict(message=opt['note'])
+        if _next_stage(post, stage):
+            return _advance(s, c, career, post, app, opt['note'])
         return _evaluate(s, c, career, post, app, opt['note'])
     if name == 'job_negotiate':
         need(job['status'] == 'offer' and job['offer'] and not job['offer']['negotiated'], 'Chỉ thương lượng một lần khi có thư mời.')
@@ -331,14 +441,68 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
     raise e.GameError('Thao tác ứng tuyển không hợp lệ.')
 
 
+NEXT_LINE = dict(
+    exam='Tiếp theo: bài thi chứng chỉ.', cv='Tiếp theo: CV.', letter='Tiếp theo: thư ứng tuyển.',
+    interview='{org} mời bạn phỏng vấn!', test='{Boss} mời bạn làm bài thử tình huống: một vị khách khó tính đang chờ.',
+    trial='{Boss} hẹn bạn {trial}.')
+
+
+def _advance(s: dict, c: dict, career: str, post: dict, app: dict, prefix: str) -> dict:
+    nxt = _next_stage(post, app['stage'])
+    if nxt is None:
+        return _evaluate(s, c, career, post, app, prefix)
+    app['stage'] = nxt
+    boss = _boss(career, post)
+    trial = post.get('trial_title', STAGE_NAMES['trial']).lower()
+    return dict(message=prefix + ' ' + NEXT_LINE[nxt].format(org=post['org'], Boss=_cap(boss), trial=trial))
+
+
+def _draw_exam(career: str, job: dict, day: int) -> dict:
+    """Five questions from the bank; a retake (another attempt or day) draws again."""
+    ex = exam(career)
+    attempt = 1 + sum(1 for h in job.get('history', []) if h.get('event') in ('exam_failed', 'exam_passed'))
+    rng = _rng('exam', career, attempt, day)
+    qs = rng.sample([q['id'] for q in ex['bank']], ex['draw'])
+    return dict(qs=qs, answers={}, score=None, passed=None, attempt=attempt)
+
+
+def _grade_exam(s: dict, c: dict, career: str, post: dict, app: dict) -> dict:
+    from . import engine as e
+    job, ex, sheet = c['job'], exam(career), app['exam']
+    key = {q['id']: q['answer'] for q in ex['bank']}
+    right = sum(1 for q in sheet['qs'] if sheet['answers'].get(q) == key[q])
+    passed = right >= ex['pass_mark']
+    sheet.update(score=right, passed=passed)
+    job['history'] = (job['history'] + [dict(day=c['day'], event='exam_passed' if passed else 'exam_failed', posting=post['id'], score=right)])[-40:]
+    head = f'Bài thi “{ex["name"]}”: đúng {right}/{len(sheet["qs"])} câu (cần {ex["pass_mark"]}).'
+    if passed:
+        job['certs'] = (list(job.get('certs') or []) + [dict(id=ex['id'], day=c['day'], score=right)])[-10:]
+        e.metric(c, 'certs')
+        e.log(s, c, 'job', f'Đạt {ex["name"]} ({right}/{len(sheet["qs"])}).')
+        out = _advance(s, c, career, post, app, head + ' Đạt! Chứng chỉ đã được cấp.')
+        out['celebrate'] = True
+        out['exam'] = dict(score=right, passed=True)
+        return out
+    job['status'] = 'rejected'
+    job['cooldown_day'] = c['day'] + 1
+    app['stage'] = 'closed'
+    app['feedback'] = [head, 'Chưa đạt. Xem lại lời giải từng câu; có thể thi lại từ ngày sau với bộ câu hỏi khác.']
+    return dict(message=head + ' Chưa đạt, thi lại từ ngày sau nhé.', exam=dict(score=right, passed=False))
+
+
 def _evaluate(s: dict, c: dict, career: str, post: dict, app: dict, last_note: str) -> dict:
     from . import engine as e
     job = c['job']
-    qscore = sum(next(o['score'] for o in question(career, q)['options'] if o['id'] == a) for q, a in app['answers'].items())
-    qmax = 3 * len(post['questions'])
-    letter = sum(next(o['score'] for o in slot['options'] if o['id'] == app['letter'][slot['id']]) for slot in LETTER_SLOTS)
+    steps = all_steps(post)
+    chosen = [next(o for o in question(career, q)['options'] if o['id'] == app['answers'][q]) for q in steps if q in app['answers']]
+    qscore = sum(o['score'] for o in chosen)
+    qmax = 3 * max(1, len(steps))
     match = len(set(app['strengths']) & set(post['wants']))
-    score = round(55 * qscore / qmax + 25 * max(0, letter) / 8 + 20 * min(match, 2) / 2)
+    if 'letter' in stages(post):
+        letter = sum(next(o['score'] for o in slot['options'] if o['id'] == app['letter'][slot['id']]) for slot in LETTER_SLOTS)
+        score = round(55 * qscore / qmax + 25 * max(0, letter) / 8 + 20 * min(match, 2) / 2)
+    else:
+        score = round(80 * qscore / qmax + 20 * min(match, 2) / 2)
     honest = all(_claim_ok(s, c, career, x) for x in app['claims'])
     app['honest'] = honest
     app['score'] = score
@@ -350,19 +514,33 @@ def _evaluate(s: dict, c: dict, career: str, post: dict, app: dict, last_note: s
         app['score'] = score
     if app['letter'].get('why') == 'wrong':
         lines.append('Thư ứng tuyển còn tên nơi khác — người đọc bật cười nhưng trừ điểm cẩn thận.')
+    fatal = [o for o in chosen if o.get('fatal')]
+    if fatal:
+        what = 'buổi làm thử' if 'trial' in stages(post) else 'bài thử'
+        lines.append(f'{_cap(_boss(career, post))} dừng {what} ở lựa chọn “{fatal[0]["label"]}”: một bước không an toàn là chưa thể nhận.')
+        score = min(score, FATAL_CAP)
+        app['score'] = score
+    trial = 'trial' in stages(post)
     if score >= 60:
         low, high = post['salary']
         salary = low + round((high - low) * min(1, (score - 60) / 35))
         job['status'] = 'offer'
         job['offer'] = dict(salary=salary, negotiated=False, score=score, day=c['day'])
         e.metric(c, 'job_offers')
-        msg = f'Kết quả: {score}/100. {post["org"]} gửi thư mời với lương {salary} xu/ngày (thử việc {post["probation_days"]} ngày).'
+        if trial:
+            msg = (f'Kết quả làm thử: {score}/100. {_cap(_boss(career, post))} nhận bạn làm {post["title"].lower()}: '
+                   f'lương cứng {salary} xu/ngày (thử việc {post["probation_days"]} ngày).')
+        else:
+            msg = f'Kết quả: {score}/100. {post["org"]} gửi thư mời với lương {salary} xu/ngày (thử việc {post["probation_days"]} ngày).'
     else:
         job['status'] = 'rejected'
         job['cooldown_day'] = c['day'] + 1
         job['history'] = (job['history'] + [dict(day=c['day'], event='rejected', posting=post['id'], score=score)])[-40:]
         app['stage'] = 'closed'
-        msg = f'Kết quả: {score}/100. {post["org"]} cảm ơn bạn và hẹn dịp khác. Bạn có thể ứng tuyển lại từ ngày sau.'
+        if trial:
+            msg = f'Kết quả làm thử: {score}/100. {_cap(_boss(career, post))} cảm ơn bạn, hẹn tập thêm rồi thử lại từ ngày sau.'
+        else:
+            msg = f'Kết quả: {score}/100. {post["org"]} cảm ơn bạn và hẹn dịp khác. Bạn có thể ứng tuyển lại từ ngày sau.'
     app['feedback'] = lines + [last_note]
     return dict(message=msg, score=score, celebrate=score >= 60)
 
@@ -407,19 +585,75 @@ def on_close(s: dict, c: dict, career: str) -> dict | None:
 def public(c: dict, career: str) -> dict:
     job = dict(c['job'])
     job['required'] = required(career)
+    job['certs'] = list(job.get('certs') or [])
+    ex = exam(career)
+    app = job.get('application')
+    sheet = app.get('exam') if isinstance(app, dict) else None
+    if ex and isinstance(sheet, dict) and sheet.get('score') is not None:
+        # The answer key stays on the server until the paper is graded; then it teaches.
+        bank = {q['id']: q for q in ex['bank']}
+        job['exam_review'] = [dict(id=q, text=bank[q]['text'], picked=sheet['answers'].get(q), answer=bank[q]['answer'],
+                                   ok=sheet['answers'].get(q) == bank[q]['answer'], why=bank[q]['why'],
+                                   options={o['id']: o['label'] for o in bank[q]['options']}) for q in sheet['qs']]
     return job
 
 
+def _public_exam(ex: dict) -> dict:
+    return dict({k: ex[k] for k in ('id', 'name', 'issuer', 'pass_mark', 'draw', 'emoji', 'intro')},
+                questions={q['id']: dict(text=q['text'], options=q['options']) for q in ex['bank']})
+
+
 def content(career_ids) -> dict:
+    ids = [cid for cid in career_ids if postings(cid)]
     return dict(strengths=STRENGTHS, claims=[dict(id=x['id'], text=x['text']) for x in CLAIMS], letter=LETTER_SLOTS,
-                postings={cid: postings(cid) for cid in career_ids if postings(cid)},
-                questions={cid: {q: question(cid, q) for p in postings(cid) for q in p['questions']} for cid in career_ids if postings(cid)})
+                postings={cid: [dict(p, stages=stages(p)) for p in postings(cid)] for cid in ids},
+                questions={cid: {q: question(cid, q) for p in postings(cid) for q in all_steps(p)} for cid in ids},
+                exams={cid: _public_exam(exam(cid)) for cid in ids if exam(cid)},
+                stage_names=STAGE_NAMES)
+
+
+def _validate_app(job: dict, career: str, app: dict) -> None:
+    from .engine import need, integer
+    need(isinstance(app, dict), 'Hồ sơ ứng tuyển sai.')
+    post = _posting(career, app.get('posting'))
+    need(post, 'Hồ sơ ứng tuyển sai.')
+    need(app.get('stage') in STAGES + ('closed',), 'Bước ứng tuyển sai.')
+    if job['status'] == 'applying':
+        need(app['stage'] in stages(post), 'Bước ứng tuyển không thuộc quy trình của tin này.')
+    need(isinstance(app.get('strengths', []), list) and isinstance(app.get('claims', []), list), 'CV sai.')
+    need(all(x in STRENGTH_IDS for x in app.get('strengths', [])) and all(x in CLAIM_INDEX for x in app.get('claims', [])), 'CV sai.')
+    answers = app.get('answers', {})
+    need(isinstance(answers, dict), 'Câu trả lời sai.')
+    steps = all_steps(post)
+    for qid, oid in answers.items():
+        need(qid in steps, 'Câu trả lời không thuộc tin tuyển dụng.')
+        need(oid in [o['id'] for o in question(career, qid)['options']], 'Câu trả lời sai.')
+    need(isinstance(app.get('notes', []), list) and len(app.get('notes', [])) <= 60, 'Ghi chú phỏng vấn sai.')
+    sheet = app.get('exam')
+    if app['stage'] == 'exam':
+        need(isinstance(sheet, dict), 'Thiếu bài thi.')
+    if sheet is not None:
+        ex = exam(career)
+        need(ex and 'exam' in stages(post) and isinstance(sheet, dict), 'Bài thi sai.')
+        bank = {q['id']: q for q in ex['bank']}
+        qs = sheet.get('qs')
+        need(isinstance(qs, list) and len(qs) == ex['draw'] and len(set(qs)) == len(qs) and all(q in bank for q in qs), 'Đề thi sai.')
+        ans = sheet.get('answers')
+        need(isinstance(ans, dict) and set(ans) <= set(qs), 'Bài làm sai.')
+        for q, oid in ans.items():
+            need(oid in [o['id'] for o in bank[q]['options']], 'Bài làm sai.')
+        need(sheet.get('score') is None or integer(sheet['score'], 0, ex['draw']) >= 0, 'Điểm thi sai.')
+        need(sheet.get('passed') in (None, True, False), 'Kết quả thi sai.')
+        need((sheet.get('score') is None) == (sheet.get('passed') is None), 'Kết quả thi sai.')
+        if sheet.get('score') is not None:
+            need(len(ans) == len(qs) and sheet['passed'] == (sheet['score'] >= ex['pass_mark']), 'Kết quả thi sai.')
+        integer(sheet.get('attempt'), 1, 10**6)
 
 
 def validate(c: dict, career: str) -> None:
     from .engine import need, integer
     job = c.get('job')
-    need(isinstance(job, dict) and set(initial()) <= set(job), 'Hồ sơ việc làm thiếu dữ liệu.')
+    need(isinstance(job, dict) and set(initial()) - LATER_FIELDS <= set(job), 'Hồ sơ việc làm thiếu dữ liệu.')
     need(job['status'] in ('none', 'applying', 'offer', 'hired', 'rejected'), 'Trạng thái việc làm sai.')
     for k in ('salary', 'probation_left', 'hired_day', 'cooldown_day', 'days_worked'):
         integer(job.get(k), 0, 10**7)
@@ -431,11 +665,18 @@ def validate(c: dict, career: str) -> None:
         post = _posting(career, job['employer'])
         need(post, 'Nơi làm việc không tồn tại.')
         need(post['salary'][0] <= job['salary'] <= post['salary'][1], 'Lương không thuộc khung của tin tuyển dụng.')
+    certs = job.get('certs', [])
+    ex = exam(career)
+    need(isinstance(certs, list) and len(certs) <= 10, 'Chứng chỉ sai.')
+    for cert in certs:
+        need(ex and isinstance(cert, dict) and cert.get('id') == ex['id'], 'Chứng chỉ không thuộc nghề này.')
+        integer(cert.get('day'), 1, 10**7)
+        integer(cert.get('score'), 0, ex['draw'])
     app = job['application']
+    if job['status'] in ('applying', 'offer'):
+        need(app is not None, 'Thiếu hồ sơ ứng tuyển.')
     if app is not None:
-        need(isinstance(app, dict) and _posting(career, app.get('posting')), 'Hồ sơ ứng tuyển sai.')
-        need(app.get('stage') in ('cv', 'letter', 'interview', 'closed'), 'Bước ứng tuyển sai.')
-        need(all(x in STRENGTH_IDS for x in app.get('strengths', [])) and all(x in CLAIM_INDEX for x in app.get('claims', [])), 'CV sai.')
+        _validate_app(job, career, app)
     if job['offer'] is not None:
         o = job['offer']
         need(isinstance(o, dict) and job['status'] == 'offer' and app, 'Thư mời sai.')

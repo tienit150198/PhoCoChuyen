@@ -94,7 +94,7 @@ class AccountStoreTests(unittest.TestCase):
         a = accounts.register(self.store, self.token, REG)['token']
         self.play(a)
         phone, _, _ = self.store.session()
-        self.play(phone, career='pharmacy')  # this device has its own progress
+        self.play(phone, career='florist')  # this device has its own progress (a shop: no hiring step)
         with self.assertRaises(accounts.AccountError) as e:
             accounts.check_replace(self.store, phone, dict(username='mai.chi_9', password=REG['password']))
         self.assertEqual(e.exception.code, 'confirm_replace')
@@ -106,7 +106,7 @@ class AccountStoreTests(unittest.TestCase):
         sb, rb, cb = self.store.read(b)
         self.assertEqual((sa, ra), (sb, rb))
         self.assertNotEqual(ca, cb)  # CSRF is per device
-        self.assertFalse(sb['careers']['pharmacy']['started'])
+        self.assertFalse(sb['careers']['florist']['started'])
         # A write on one device bumps the shared revision; the other device's stale write conflicts.
         self.store.command(a, 'acct-share-0001', ra, 'mother_baby', 'settings', {'sound': False})
         with self.assertRaises(Conflict):

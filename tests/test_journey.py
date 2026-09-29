@@ -284,8 +284,7 @@ class Wallet(unittest.TestCase):
         # Broke everywhere and nowhere else to work: the neighbours help, no soft-lock.
         s, _ = act(s, None, 'jr_pause', career='milk_tea', confirm=True)
         s['journey']['unlocked'] = ['milk_tea', 'grocery', 'delivery']
-        s['careers']['delivery']['started'] = True
-        s, _ = act(s, None, 'jr_pause', career='delivery', confirm=True)
+        # Delivery hires through a trial now: while not hired it is not somewhere else to work either.
         s['journey']['wallet'] = 0
         set_money(s['careers']['grocery'], 0)
         validate_state(s)
