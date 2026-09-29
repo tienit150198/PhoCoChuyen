@@ -22,6 +22,8 @@ from __future__ import annotations
 
 import os
 import random
+import re as _re
+import unicodedata as _ud
 
 from . import employment_content as EC
 
@@ -405,13 +407,24 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         q = question(career, qid)
         opt = next((o for o in q['options'] if o['id'] == p.get('option')), None)
         need(opt, 'Câu trả lời không hợp lệ.')
+        ask = _open_ask(app)
+        if ask:
+            ask['status'] = 'skipped'   # moving on without answering the follow-up
         app['answers'][qid] = opt['id']
         app['notes'] = (app['notes'] + [opt['note']])[-40:]
-        if any(x not in app['answers'] for x in steps):
-            return dict(message=opt['note'])
-        if _next_stage(post, stage):
-            return _advance(s, c, career, post, app, opt['note'])
-        return _evaluate(s, c, career, post, app, opt['note'])
+        remaining = any(x not in app['answers'] for x in steps)
+        idx = _after_answer(s, c, career, post, app, stage, qid, opt, remaining)
+        if remaining:
+            out = dict(message=opt['note'])
+        elif _next_stage(post, stage):
+            out = _advance(s, c, career, post, app, opt['note'])
+        else:
+            out = _evaluate(s, c, career, post, app, opt['note'])
+        if idx is not None:
+            out['talk'] = idx
+        return out
+    if name == 'job_followup':
+        return _followup(s, c, career, post, app, p)
     if name == 'job_negotiate':
         need(job['status'] == 'offer' and job['offer'] and not job['offer']['negotiated'], 'Chỉ thương lượng một lần khi có thư mời.')
         o = job['offer']
@@ -503,10 +516,15 @@ def _evaluate(s: dict, c: dict, career: str, post: dict, app: dict, last_note: s
         score = round(55 * qscore / qmax + 25 * max(0, letter) / 8 + 20 * min(match, 2) / 2)
     else:
         score = round(80 * qscore / qmax + 20 * min(match, 2) / 2)
+    bonus = talk_bonus(app)
+    score = max(0, min(100, score + bonus))
     honest = all(_claim_ok(s, c, career, x) for x in app['claims'])
     app['honest'] = honest
     app['score'] = score
     lines = []
+    said = _talk_feedback(app)
+    if said:
+        lines.append(said)
     if post.get('reference') and not honest:
         bad = [CLAIM_INDEX[x]['text'] for x in app['claims'] if not _claim_ok(s, c, career, x)]
         lines.append('Kiểm tra tham chiếu: CV ghi “' + bad[0] + '” nhưng hồ sơ thực tế chưa có.')
@@ -606,10 +624,11 @@ def _public_exam(ex: dict) -> dict:
 def content(career_ids) -> dict:
     ids = [cid for cid in career_ids if postings(cid)]
     return dict(strengths=STRENGTHS, claims=[dict(id=x['id'], text=x['text']) for x in CLAIMS], letter=LETTER_SLOTS,
-                postings={cid: [dict(p, stages=stages(p)) for p in postings(cid)] for cid in ids},
+                postings={cid: [dict(p, stages=stages(p), interviewer=public_interviewer(cid, p)) for p in postings(cid)] for cid in ids},
                 questions={cid: {q: question(cid, q) for p in postings(cid) for q in all_steps(p)} for cid in ids},
                 exams={cid: _public_exam(exam(cid)) for cid in ids if exam(cid)},
-                stage_names=STAGE_NAMES)
+                stage_names=STAGE_NAMES, reply_rules={k: dict(points=v[0], label=v[1]) for k, v in REPLY_RULES.items()},
+                reply_max=REPLY_MAX)
 
 
 def _validate_app(job: dict, career: str, app: dict) -> None:
@@ -629,6 +648,7 @@ def _validate_app(job: dict, career: str, app: dict) -> None:
         need(qid in steps, 'Câu trả lời không thuộc tin tuyển dụng.')
         need(oid in [o['id'] for o in question(career, qid)['options']], 'Câu trả lời sai.')
     need(isinstance(app.get('notes', []), list) and len(app.get('notes', [])) <= 60, 'Ghi chú phỏng vấn sai.')
+    _validate_talk(career, post, app)
     sheet = app.get('exam')
     if app['stage'] == 'exam':
         need(isinstance(sheet, dict), 'Thiếu bài thi.')
@@ -683,3 +703,384 @@ def validate(c: dict, career: str) -> None:
         post = _posting(career, app['posting'])
         need(post['salary'][0] <= integer(o.get('salary'), 0, 200) <= post['salary'][1], 'Lương thư mời sai.')
         need(type(o.get('negotiated')) is bool, 'Cờ thương lượng sai.')
+
+
+# ---- the interviewer talks back (v0.6) ----------------------------------------
+# After a scripted interview answer the interviewer may ask ONE short follow-up; the
+# player types a short reply or skips. Owners in trials (and chị Mai playing the angry
+# customer in the test) react to each step. Lines are stored scripted first; the AI
+# (server route /api/ai/interview) may only reword the newest one. The typed reply
+# moves the score by transparent word rules below — never by what a model thinks.
+# Spec: docs/superpowers/specs/2026-09-29-ai-interviewer-design.md
+MAX_ASKS = 2            # follow-ups per interview stage (never after its last question)
+TALK_MAX = 16           # talk entries kept per application
+REPLY_MAX = 200         # typed reply, characters
+LINE_MAX = 600          # stored interviewer line, characters
+STEP_BONUS = (-3, 3)    # one reply
+TOTAL_BONUS = (-5, 5)   # all replies of one application
+REPLY_RULES = dict(     # rule id → (points, label shown to the player)
+    example=(2, 'có ví dụ cụ thể'), reason=(1, 'nêu lý do'), short=(0, 'quá ngắn để cộng điểm'),
+    overclaim=(-2, 'kể quá những gì hồ sơ có'), blame=(-1, 'đổ lỗi cho người khác'), rude=(-3, 'lời lẽ thiếu tôn trọng'))
+_EXAMPLE = _re.compile(r'\d|ví dụ|chẳng hạn|có lần|một lần|lần trước|lần đó|hôm trước|hôm qua|hôm đó|tuần trước|tháng trước|năm ngoái|'
+                       r'hồi đó|hồi trước|lúc đó|khi đó|kết quả là|for example|for instance|\bonce\b|last (?:time|week|month|year)', _re.I)
+_REASON = _re.compile(r'(?<!\w)(vì|bởi vì|bởi|để|nên|cho nên|vậy nên|nhờ vậy|because|so that|since)(?!\w)', _re.I)
+_BOAST = _re.compile(r'nhiều năm|lâu năm|dày dạn|rất nhiều kinh nghiệm|hàng trăm|hàng nghìn|hàng ngàn|chuyên gia|giỏi nhất|'
+                     r'chưa bao giờ sai|years of experience|\bexpert\b|hundreds of', _re.I)
+_BLAME = _re.compile(r'(?<!\w)(lỗi|tại|do) (của )?(khách|đồng nghiệp|sếp|người khác|họ)(?!\w)|không phải lỗi (của )?(em|con|tôi|mình|cháu)(?!\w)|'
+                     r"(their|not my) fault", _re.I)
+_RUDE = _re.compile(r'(?<!\w)(ngu|đồ ngu|mặc kệ|kệ nó|kệ khách|liên quan gì|hỏi làm gì|hỏi chi|biến đi|im đi|phiền quá|vô duyên|'
+                    r'nhảm|stupid|shut up|whatever|none of your business)(?!\w)', _re.I)
+_PROMISE = _re.compile(r'(?<!ghi )(nhận|tuyển) (em|con|cháu|bạn)( vào làm| luôn| rồi| chắc)|được nhận( vào| rồi| luôn|$)|trúng tuyển|đậu rồi|chắc chắn (nhận|đậu|được)|'
+                       r'(hứa|cam kết) (với )?(em|con|cháu|bạn)|tăng lương|thưởng thêm|lương (sẽ|là|được)|điểm (của )?(em|con|cháu|bạn)|'
+                       r'\b(you\'re hired|you are hired|promise|raise)\b', _re.I)
+_CTRL = _re.compile(r'[\x00-\x1f\x7f​-‏ -‮⁦-⁩]')
+
+
+def _fold(text: str) -> str:
+    return _ud.normalize('NFC', text).lower()
+
+
+def interviewer(s: dict | None, career: str, post: dict) -> dict:
+    """Who sits across the table: the posting's own card, the career's, or a neutral one."""
+    card = EC.INTERVIEWERS.get(post.get('id')) or EC.INTERVIEWERS.get(career)
+    if not card:
+        boss = _cap(_boss(career, post))
+        card = dict(name=boss, role=f'{boss} · {post["org"]}', self='tôi', you='bạn', style='lịch sự, rõ ràng', face='🧑‍💼',
+                    npc=None, region='miền Nam', particles=[], cares=[])
+    card = dict(card)
+    npc = card.get('npc')
+    if npc and s is not None:
+        try:
+            from .content import NPC_INDEX
+            from . import personas
+            if npc in NPC_INDEX:
+                addr = personas.persona(s, career, npc)['address']
+                card.update(self=addr['self'], you=addr['player'])
+            else:
+                card['npc'] = None
+        except (ImportError, KeyError, TypeError):
+            card['npc'] = None
+    return card
+
+
+def public_interviewer(career: str, post: dict) -> dict:
+    card = interviewer(None, career, post)
+    return dict(name=card['name'], role=card['role'], face=card['face'])
+
+
+def _fill(line: str, who: dict, **more) -> str:
+    you = who.get('you') or 'bạn'
+    return _cap(line.format(self=who.get('self') or 'tôi', you=you, You=_cap(you), Who=who['name'], **more))
+
+
+def _talk(app: dict) -> list:
+    rows = app.get('talk')
+    if not isinstance(rows, list):
+        rows = app['talk'] = []
+    return rows
+
+
+def _open_ask(app: dict) -> dict | None:
+    rows = app.get('talk') or []
+    last = rows[-1] if rows else None
+    return last if isinstance(last, dict) and last.get('kind') == 'ask' and last.get('status') == 'open' else None
+
+
+def _ask_line(s: dict, c: dict, career: str, post: dict, app: dict, qid: str, opt: dict, who: dict) -> str:
+    n = sum(1 for x in _talk(app) if x.get('kind') == 'ask' and x.get('stage') == 'interview')
+    rng = _rng('ask', post['id'], qid, c['day'], len(c['job']['history']))
+    if n == 0:
+        pool = EC.ASKS['good' if opt['score'] >= 3 else 'mid' if opt['score'] >= 1 else 'weak']
+        return _fill(rng.choice(pool), who, answer=opt['label'])
+    claims = [CLAIM_INDEX[x]['text'] for x in app.get('claims', []) if CLAIM_INDEX[x]['need']]
+    if claims:
+        return _fill(rng.choice(EC.ASKS['claim']), who, claim=claims[0])
+    names = [x['name'] for x in STRENGTHS if x['id'] in app.get('strengths', [])]
+    if names:
+        return _fill(rng.choice(EC.ASKS['strength']), who, strength=names[0])
+    return _fill(rng.choice(EC.ASKS['fresh']), who)
+
+
+def _after_answer(s: dict, c: dict, career: str, post: dict, app: dict, stage: str, qid: str, opt: dict, remaining: bool) -> int | None:
+    """Open a follow-up (interview) or record the owner's reaction (trial/test). Returns the talk index."""
+    who = interviewer(s, career, post)
+    rows = _talk(app)
+    asks = sum(1 for x in rows if x.get('kind') == 'ask' and x.get('stage') == 'interview')
+    if stage == 'interview' and remaining and asks < MAX_ASKS:
+        line = _ask_line(s, c, career, post, app, qid, opt, who)
+        rows.append(dict(kind='ask', stage=stage, q=qid, who=who['name'], text=line, mode='scripted', canonical=line,
+                         status='open', reply=None, bonus=0, rules=[], react=None, react_mode=None, react_canonical=None))
+    elif stage in ('trial', 'test'):
+        line = str(opt['note'])[:LINE_MAX]
+        rows.append(dict(kind='react', stage=stage, q=qid, who=who['name'], text=line, mode='scripted', canonical=line))
+    else:
+        return None
+    del rows[:-TALK_MAX]
+    return len(rows) - 1
+
+
+def score_reply(s: dict, c: dict, career: str, text: str) -> tuple[int, list[str]]:
+    """Transparent word rules for a typed follow-up reply → (bonus, rule ids)."""
+    folded = _fold(text)
+    rules = []
+    rude = bool(_RUDE.search(folded))
+    if not rude:
+        try:
+            from .ai import abusive
+            rude = abusive(folded)
+        except ImportError:
+            pass
+    if rude:
+        rules.append('rude')
+    served = max([int((v.get('metrics') or {}).get('served', 0) or 0) for v in (s.get('careers') or {}).values()] or [0])
+    if _BOAST.search(folded) and served < 15:
+        rules.append('overclaim')
+    if _BLAME.search(folded):
+        rules.append('blame')
+    if len(folded.split()) < 3:
+        rules.append('short')
+    elif not rules:
+        if _EXAMPLE.search(folded):
+            rules.append('example')
+        if _REASON.search(folded):
+            rules.append('reason')
+    bonus = sum(REPLY_RULES[r][0] for r in rules)
+    return max(STEP_BONUS[0], min(STEP_BONUS[1], bonus)), rules
+
+
+def _react_line(who: dict, rules: list[str]) -> str:
+    key = next((r for r in ('rude', 'overclaim', 'blame', 'example', 'reason', 'short') if r in rules), 'plain')
+    return _fill(EC.REACTS[key], who)
+
+
+def clean_reply_text(text: str) -> str:
+    """Player's reply as stored: one line, no control characters, no contact details."""
+    text = _re.sub(r'\s+', ' ', _CTRL.sub(' ', _ud.normalize('NFC', text))).strip()[:REPLY_MAX]
+    try:
+        from .ai import redact
+        text = redact(text)[:REPLY_MAX]
+    except ImportError:
+        pass
+    return text
+
+
+def _followup(s: dict, c: dict, career: str, post: dict, app: dict, p: dict) -> dict:
+    from .engine import need
+    need(c['job']['status'] == 'applying', 'Buổi phỏng vấn đã kết thúc.')
+    ask = _open_ask(app)
+    need(ask, 'Không có câu hỏi thêm nào đang chờ.')
+    idx = len(app['talk']) - 1
+    if p.get('skip') is True:
+        ask['status'] = 'skipped'
+        return dict(message=f'Bạn bỏ qua câu hỏi thêm của {ask["who"]}.', talk=idx, followup='skipped')
+    text = p.get('text')
+    need(isinstance(text, str) and text.strip(), 'Gõ vài chữ trả lời, hoặc bấm Bỏ qua.')
+    need(len(text.strip()) <= REPLY_MAX, f'Trả lời tối đa {REPLY_MAX} ký tự nhé.')
+    reply = clean_reply_text(text)
+    need(reply, 'Gõ vài chữ trả lời, hoặc bấm Bỏ qua.')
+    bonus, rules = score_reply(s, c, career, reply)
+    who = interviewer(s, career, post)
+    line = _react_line(who, rules)
+    ask.update(status='answered', reply=reply, bonus=bonus, rules=rules, react=line, react_mode='scripted', react_canonical=line)
+    return dict(message=line, talk=idx, followup='answered', bonus=bonus)
+
+
+def talk_bonus(app: dict) -> int:
+    total = sum(int(x.get('bonus') or 0) for x in app.get('talk') or [] if isinstance(x, dict) and x.get('status') == 'answered')
+    return max(TOTAL_BONUS[0], min(TOTAL_BONUS[1], total))
+
+
+def _talk_feedback(app: dict) -> str | None:
+    rows = [x for x in app.get('talk') or [] if isinstance(x, dict) and x.get('status') == 'answered']
+    if not rows:
+        return None
+    total = talk_bonus(app)
+    why = list(dict.fromkeys(f'{REPLY_RULES[r][1]} {REPLY_RULES[r][0]:+d}' for x in rows for r in x.get('rules', []) if REPLY_RULES[r][0]))
+    sign = f'+{total}' if total > 0 else str(total)
+    return f'Trả lời thêm với {rows[0]["who"]}: {sign} điểm' + (f' ({", ".join(why)}).' if why else '.')
+
+
+# ---- voicing (called by the server route; pure with respect to the save) ---------
+def voice_command(data: dict) -> tuple[str, dict]:
+    """Validate the /api/ai/interview body → (action, payload) for Store.command."""
+    from .engine import need
+    step = data.get('step')
+    need(step in ('answer', 'reply', 'skip'), 'Bước phỏng vấn không hợp lệ.')
+    if step == 'answer':
+        q, o = data.get('question'), data.get('option')
+        need(isinstance(q, str) and isinstance(o, str) and 0 < len(q) <= 64 and 0 < len(o) <= 64, 'Câu trả lời không hợp lệ.')
+        return 'job_answer', dict(question=q, option=o)
+    if step == 'skip':
+        return 'job_followup', dict(skip=True)
+    text = data.get('text')
+    need(isinstance(text, str) and text.strip(), 'Gõ vài chữ trả lời, hoặc bấm Bỏ qua.')
+    need(len(text.strip()) <= REPLY_MAX, f'Trả lời tối đa {REPLY_MAX} ký tự nhé.')
+    return 'job_followup', dict(text=text)
+
+
+def pending_voice(s: dict, career: str, idx) -> dict | None:
+    """The interviewer line at talk[idx] that is still in its scripted wording, with what
+    the model may know: posting facts, the CV, the step, the player's words."""
+    c = (s.get('careers') or {}).get(career) or {}
+    app = (c.get('job') or {}).get('application')
+    rows = app.get('talk') if isinstance(app, dict) else None
+    if type(idx) is not int or not isinstance(rows, list) or not 0 <= idx < len(rows):
+        return None
+    e = rows[idx]
+    post = _posting(career, app.get('posting'))
+    q = question(career, e.get('q')) if post else None
+    if not q:
+        return None
+    opt = next((o for o in q['options'] if o['id'] == app['answers'].get(e['q'])), None)
+    if e['kind'] == 'ask' and e['status'] == 'open' and e['mode'] == 'scripted':
+        field, canonical, said = 'text', e['canonical'], (opt or {}).get('label', '')
+        goal = ('Hỏi ĐÚNG MỘT câu hỏi phụ ngắn (kết thúc bằng dấu ?), bám theo ý của canonical và câu trả lời/CV của ứng viên. '
+                'Có thể mở đầu bằng nửa câu phản ứng với câu trả lời.')
+        tone = 'tò mò'
+    elif e['kind'] == 'ask' and e['status'] == 'answered' and e['react_mode'] == 'scripted':
+        field, canonical, said = 'react', e['react_canonical'], e['reply']
+        goal = 'Phản ứng ngắn với câu trả lời thêm của ứng viên, đúng ý của canonical. Không hỏi thêm, không kết luận kết quả.'
+        tone = 'chưa hài lòng' if e['bonus'] < 0 else 'hài lòng' if e['bonus'] > 0 else 'trung tính'
+    elif e['kind'] == 'react' and e['mode'] == 'scripted':
+        field, canonical, said = 'text', e['canonical'], (opt or {}).get('label', '')
+        goal = ('Phản ứng ngắn, đúng ý canonical, với việc ứng viên vừa làm trong buổi làm thử.' if e['stage'] == 'trial' else
+                'Bạn đang ĐÓNG VAI vị khách khó tính trong bài thử; phản ứng đúng ý canonical với câu ứng viên vừa nói.')
+        tone = 'theo canonical'
+    else:
+        return None
+    if not canonical or not said:
+        return None
+    who = interviewer(s, career, post)
+    low, high = post['salary']
+    ctx = dict(
+        interview=dict(org=post['org'], title=post['title'], stage=STAGE_NAMES.get(e['stage'], e['stage']),
+                       wage=f'{low}–{high} xu/ngày (chỉ nói con số này nếu được hỏi)', culture=post.get('culture', ''),
+                       interviewer=dict(name=who['name'], role=who['role'], style=who['style'])),
+        applicant=dict(strengths=[x['name'] for x in STRENGTHS if x['id'] in app.get('strengths', [])],
+                       cv=[CLAIM_INDEX[x]['text'] for x in app.get('claims', []) if x in CLAIM_INDEX]),
+        step=dict(question=q['text'], applicant_answer=(opt or {}).get('label', ''), note=(opt or {}).get('note', '')),
+        goal=goal, tone=tone,
+        rules='Không hứa nhận việc, không nói điểm hay kết quả, không nói mức lương nào ngoài khung trong interview.wage, '
+              'không hỏi thông tin cá nhân thật (số điện thoại, địa chỉ, giấy tờ).')
+    history = []
+    for x in rows[:idx]:
+        if x.get('kind') == 'ask':
+            history.append(dict(role='npc', text=x.get('text', '')))
+            if x.get('reply'):
+                history.append(dict(role='user', text=x['reply']))
+            if x.get('react'):
+                history.append(dict(role='npc', text=x['react']))
+    return dict(idx=idx, field=field, canonical=canonical, said=said, context=ctx, history=history[-8:], who=who,
+                ask=field == 'text' and e['kind'] == 'ask')
+
+
+def _local_reply(s: dict, career: str, who: dict, said: str, ctx: dict, canonical: str, history: list) -> dict:
+    """Same prompt and guardrails as ai.persona_reply, for interviewers who are not town NPCs."""
+    import json
+    import os
+    from . import ai
+    settings = s.get('settings') or {}
+    lang = settings.get('lang', 'vi')
+    fallback = dict(mode='scripted', text=canonical, reason=None)
+    if not settings.get('aiConsent'):
+        return dict(fallback, reason='no_consent')
+    if not ai.available():
+        return dict(fallback, reason='not_configured')
+    card = dict(id='interviewer', name=who['name'], role=who['role'], career=career, age='middle', age_label='người lớn',
+                temperament='interviewer', temperament_label='người phỏng vấn', style=who['style'], personality=who['style'],
+                traits=[], address=dict(self=who['self'], player=who['you']), region=who.get('region') or 'miền Nam',
+                particles=list(who.get('particles') or [])[:4], cares=list(who.get('cares') or []), memory={})
+    turns = [dict(who='player' if r['role'] == 'user' else 'npc', text=ai.redact(str(r['text'])[:300])) for r in history[-8:]]
+    data = json.dumps(dict(persona=card, task=ctx, canonical=canonical, recent_turns=turns, player_says=ai.redact(said)[:300]),
+                      ensure_ascii=False)
+    name = s.get('name') if isinstance(s.get('name'), str) else ''
+    if len(name.strip()) >= 2 and name.strip() != 'Mây':
+        data = _re.sub(r'(?<!\w)' + _re.escape(name.strip()) + r'(?!\w)', who['you'], data)
+    try:
+        timeout = float(os.environ.get('AI_CHAT_TIMEOUT', '9') or 9)
+    except ValueError:
+        timeout = 9.0
+    msgs = [dict(role='system', content=ai._persona_system(card, 'interview', lang)), dict(role='user', content=data)]
+    text, reason = ai.chat(msgs, max_tokens=160, temperature=0.85, timeout=timeout)
+    if not text:
+        return dict(fallback, reason=reason or 'unavailable')
+    allowed = ai._numbers(dict(persona=card, task=ctx, canonical=canonical, turns=[t['text'] for t in turns if t['who'] == 'npc']))
+    line, why = ai.clean_reply(text, allowed, who['name'])
+    if not line:
+        return dict(fallback, reason=why)
+    return dict(mode='ai', text=line, reason=None)
+
+
+def voice(s: dict, career: str, pend: dict) -> dict:
+    """AI wording for one pending interviewer line → {mode:'ai'|'scripted', text, reason}.
+    Reads the save, never writes it; `text` is the scripted canonical unless mode is 'ai'."""
+    from . import ai
+    canonical = pend['canonical']
+    fallback = dict(mode='scripted', text=canonical, reason=None)
+    if ai.abusive(pend['said']):
+        return dict(fallback, reason='unsafe_request')   # the scripted rude-reply reaction stands
+    who = pend['who']
+    if who.get('npc'):
+        out = ai.persona_reply(s, career, who['npc'], pend['said'], context=pend['context'], canonical=canonical,
+                               history=pend['history'], purpose='interview')
+    else:
+        out = _local_reply(s, career, who, pend['said'], pend['context'], canonical, pend['history'])
+    if out.get('mode') != 'ai' or not out.get('text'):
+        return dict(fallback, reason=out.get('reason') or ('guard' if out.get('mode') == 'guard' else 'unavailable'))
+    line = out['text'][:LINE_MAX]
+    if _PROMISE.search(_fold(line)):
+        return dict(fallback, reason='promise')
+    if pend['ask'] and '?' not in line:
+        return dict(fallback, reason='not_a_question')
+    return dict(mode='ai', text=line, reason=None)
+
+
+def apply_voice(raw: dict, career: str, idx: int, field: str, canonical: str, line: str) -> bool:
+    """Store the AI wording of talk[idx] only if that line is still the same scripted one."""
+    c = (raw.get('careers') or {}).get(career) or {}
+    app = (c.get('job') or {}).get('application')
+    rows = app.get('talk') if isinstance(app, dict) else None
+    if not isinstance(rows, list) or type(idx) is not int or not 0 <= idx < len(rows) or not isinstance(line, str):
+        return False
+    e = rows[idx]
+    line = line.strip()[:LINE_MAX]
+    if not line:
+        return False
+    if field == 'text' and e.get('mode') == 'scripted' and e.get('canonical') == canonical and e.get('text') == canonical:
+        if e.get('kind') == 'ask' and e.get('status') != 'open':
+            return False
+        e.update(text=line, mode='ai')
+        return True
+    if field == 'react' and e.get('kind') == 'ask' and e.get('react_mode') == 'scripted' and e.get('react_canonical') == canonical:
+        e.update(react=line, react_mode='ai')
+        return True
+    return False
+
+
+def _validate_talk(career: str, post: dict, app: dict) -> None:
+    from .engine import need, integer
+    rows = app.get('talk')
+    if rows is None:
+        return
+    need(isinstance(rows, list) and len(rows) <= TALK_MAX, 'Lời phỏng vấn sai.')
+    steps = all_steps(post)
+    txt = lambda v, n=LINE_MAX: isinstance(v, str) and 0 < len(v) <= n
+    for i, e in enumerate(rows):
+        need(isinstance(e, dict) and e.get('kind') in ('ask', 'react'), 'Lời phỏng vấn sai.')
+        need(e.get('stage') in STEP_STAGES and e.get('q') in steps and e['q'] in app.get('answers', {}), 'Lời phỏng vấn không thuộc buổi này.')
+        need(txt(e.get('who'), 60) and txt(e.get('text')) and txt(e.get('canonical')) and e.get('mode') in ('scripted', 'ai'), 'Lời phỏng vấn sai.')
+        if e['kind'] == 'react':
+            need(set(e) == {'kind', 'stage', 'q', 'who', 'text', 'mode', 'canonical'}, 'Lời phỏng vấn sai.')
+            continue
+        need(set(e) == {'kind', 'stage', 'q', 'who', 'text', 'mode', 'canonical', 'status', 'reply', 'bonus', 'rules',
+                        'react', 'react_mode', 'react_canonical'}, 'Lời phỏng vấn sai.')
+        need(e['status'] in ('open', 'answered', 'skipped'), 'Lời phỏng vấn sai.')
+        need(e['status'] != 'open' or i == len(rows) - 1, 'Chỉ câu hỏi cuối cùng mới được để ngỏ.')
+        integer(e.get('bonus'), STEP_BONUS[0], STEP_BONUS[1])
+        need(isinstance(e.get('rules'), list) and len(e['rules']) <= len(REPLY_RULES) and all(r in REPLY_RULES for r in e['rules']), 'Lời phỏng vấn sai.')
+        if e['status'] == 'answered':
+            need(txt(e.get('reply'), REPLY_MAX) and txt(e.get('react')) and txt(e.get('react_canonical')) and e.get('react_mode') in ('scripted', 'ai'),
+                 'Lời phỏng vấn sai.')
+        else:
+            need(e['reply'] is None and e['react'] is None and e['react_mode'] is None and e['react_canonical'] is None
+                 and e['bonus'] == 0 and e['rules'] == [], 'Lời phỏng vấn sai.')

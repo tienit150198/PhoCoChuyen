@@ -253,7 +253,11 @@ function jobStepper(E,p,cur,skipExam){
   return `<ol class="jb-steps" style="--n:${rows.length}" aria-label="Các bước tuyển dụng">${rows.map((st,i)=>`<li class="${i<at?'done':i===at?'now':''}"${i===at?' aria-current="step"':''}><span class="jb-dot">${i<at?'✓':JOB_ICON[st]||i+1}</span><small>${esc(stageName(E,p,st))}</small></li>`).join('')}</ol>`;
 }
 function jobPipe(E,p){return `<p class="jb-pipe small">${jobStages(p).map(st=>`<span>${JOB_ICON[st]||''} ${esc(stageName(E,p,st))}</span>`).join('<i aria-hidden="true">→</i>')}</p>`;}
-function jobOpt(command,payload,label,i){return `<button type="button" class="choice jb-opt" data-command="${command}" data-payload="${esc(JSON.stringify(payload))}"><span class="jb-key" aria-hidden="true">${'ABCD'[i]||i+1}</span><span>${esc(label)}</span></button>`;}
+function jobOpt(command,payload,label,i){
+  // No command: an interview/test/trial answer, sent through v4JbAnswer (AI interviewer when allowed).
+  const how=command?`data-command="${command}" data-payload="${esc(JSON.stringify(payload))}"`:`data-action="v4JbAnswer"${attrs(payload)}`;
+  return `<button type="button" class="choice jb-opt" ${how}><span class="jb-key" aria-hidden="true">${'ABCD'[i]||i+1}</span><span>${esc(label)}</span></button>`;
+}
 function jobMeter(k,n,label){const pct=Math.round(100*k/Math.max(1,n));return `<div class="row spread jb-count"><span class="eyebrow">${label}</span><b>${k}/${n}</b></div><div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${n}" aria-valuenow="${k}"><i style="width:${pct}%"></i></div>`;}
 
 function examCard(ex,app){
@@ -263,16 +267,60 @@ function examCard(ex,app){
     ${k===0?`<p class="small">${esc(ex.intro||'')}</p>`:''}
     <p class="jb-q">Câu ${k+1}. ${esc(q.text)}</p><div class="stack jb-opts">${q.options.map((o,i)=>jobOpt('job_exam',{question:next,option:o.id},o.label,i)).join('')}</div></section>`;
 }
-function stepCard(E,qs,p,app,stage){
+/* The interviewer talks back: after a scripted answer they may ask one follow-up (typed
+ * reply ≤200 or skip); owners in trials react to each step. Lines come from the save
+ * (scripted first, AI wording when it passed the server's guards). The typed reply only
+ * moves the score by the word rules in E.reply_rules. Spec: 2026-09-29-ai-interviewer-design.md */
+const JB_MAX=200;
+let jbWait=null; // {career,step,text} while /api/ai/interview is in flight
+const aiOn=api=>!!(api.ai?.configured&&api.state?.settings?.aiConsent);
+const jbWho=p=>p?.interviewer||{name:bossName(p)||'Người phỏng vấn',face:'🧑‍💼',role:''};
+function jbLine(who,text,mode,canonical){
+  const ai=mode==='ai';
+  return `<div class="jb-line"><span class="jb-face" aria-hidden="true">${esc(who.face||'💬')}</span><div class="bubble npc jb-bubble${ai?' ai':''}"${ai?' data-no-translate':''}><span class="jb-who">${esc(who.name)}${ai?` <span class="ai-badge" title="${esc('Lời gốc: '+(canonical||''))}" aria-label="Lời do AI viết">AI</span>`:''}</span><div>${esc(text)}</div></div></div>`;
+}
+const jbMine=(text,pending)=>`<div class="bubble user jb-mine${pending?' pending':''}" data-no-translate><div>${esc(text)}</div></div>`;
+const jbTyping=who=>`<div class="jb-line"><span class="jb-face" aria-hidden="true">${esc(who.face||'💬')}</span><div class="bubble npc typing" role="status" aria-label="${esc(who.name)} đang nói…"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span></div></div>`;
+function jbScore(E,x){
+  const rules=(x.rules||[]).filter(r=>E.reply_rules?.[r]);if(!rules.length&&!x.bonus)return '';
+  return `<p class="jb-points ${x.bonus>0?'up':x.bonus<0?'down':''}"><b>${x.bonus>0?'+':''}${x.bonus} điểm</b>${rules.map(r=>`<span>${esc(E.reply_rules[r].label)}</span>`).join('')}</p>`;
+}
+function jbReplyForm(E,who,api){
+  const rules=E.reply_rules||{},plus=Object.values(rules).filter(r=>r.points>0).map(r=>`${r.label} +${r.points}`).join(', ');
+  return `<form class="jb-reply" data-v4-jb="reply"><textarea id="jb-reply" class="input" data-preserve rows="2" maxlength="${JB_MAX}" placeholder="Trả lời ${esc(who.name)}…" aria-label="Trả lời ${esc(who.name)}" aria-describedby="jb-reply-hint"></textarea>
+    <div class="jb-reply-row"><output id="jb-reply-count" class="chat-count" aria-live="off">0/${JB_MAX}</output><button type="button" class="btn ghost small" data-action="v4JbSkip">Bỏ qua</button><button type="submit" class="btn primary small">${icon('send',15)}<span>Gửi</span></button></div>
+    <p id="jb-reply-hint" class="small muted">Không bắt buộc · ${esc(plus)} · đổ lỗi, nói quá hồ sơ, thiếu tôn trọng bị trừ (±3 mỗi câu).${aiOn(api)?` ${icon('sparkle',13)} AI đóng vai người phỏng vấn, đừng gõ thông tin thật.`:''}</p></form>`;
+}
+/** The owner's last word after the final trial/test step (shown on the result). */
+function jbLast(p,app){const x=(app?.talk||[]).slice(-1)[0];return x&&x.kind==='react'?`<div class="jb-chat">${jbLine(x.stage==='test'?{...jbWho(p),face:'😤'}:jbWho(p),x.text,x.mode,x.canonical)}</div>`:'';}
+function stepCard(E,qs,p,app,stage,api){
   const ids=p[stepKey[stage]]||[],next=ids.find(q=>!(q in app.answers)),q=qs[next],k=ids.filter(q=>q in app.answers).length;
-  const note=(app.notes||[]).slice(-1)[0];
+  const note=(app.notes||[]).slice(-1)[0],who=jbWho(p);
   const label=stage==='trial'?`${JOB_ICON.trial} ${esc(stageName(E,p,'trial'))} · Bước`:stage==='test'?`${JOB_ICON.test} Tình huống`:`${JOB_ICON.interview} Câu hỏi`;
-  const who=stage==='test'?'😤':'💬';
+  const face=stage==='test'?'😤':who.face||'💬';
   const intro=k>0?'':stage==='trial'?`<p class="notice blue small">${icon('leaf',15)}<span>${esc(bossName(p))} quan sát bạn làm từng việc thật ở tiệm. Làm ẩu một bước mất an toàn là trượt, dù các bước khác tốt.</span></p>`
     :stage==='test'?`<p class="notice blue small">${icon('leaf',15)}<span>${esc(bossName(p))} đóng vai một vị khách khó tính. Giữ bình tĩnh, nói rõ việc mình làm được.</span></p>`:'';
-  return `${intro}<section class="card jb-card">${jobMeter(k+1,ids.length,label)}
-    ${note&&k>0?`<p class="bubble small jb-note">${esc(note)}</p>`:''}
-    ${q?`<div class="jb-say"><span class="jb-face" aria-hidden="true">${who}</span><p class="jb-q">${esc(q.text)}</p></div><div class="stack jb-opts">${q.options.map((o,i)=>jobOpt('job_answer',{question:next,option:o.id},o.label,i)).join('')}</div>`:''}</section>`;
+  const talk=(app.talk||[]).filter(x=>x.stage===stage),last=talk[talk.length-1];
+  const lastQ=Object.keys(app.answers).filter(x=>ids.includes(x)).pop();
+  const wait=jbWait&&jbWait.career===api.state.current?jbWait:null;
+  let chat='';
+  if(k>0&&last&&last.q===lastQ&&last.kind==='react')chat=jbLine(stage==='test'?{...who,face:'😤'}:who,last.text,last.mode,last.canonical);
+  else if(k>0&&note)chat=`<p class="jb-narr">${esc(note)}</p>`;
+  const ask=k>0&&last&&last.q===lastQ&&last.kind==='ask'?last:null;
+  if(ask){
+    chat+=jbLine(who,ask.text,ask.mode,ask.canonical);
+    if(ask.status==='answered')chat+=jbMine(ask.reply)+jbLine(who,ask.react,ask.react_mode,ask.react_canonical)+jbScore(E,ask);
+    else if(ask.status==='skipped')chat+=`<p class="jb-skip small muted">Bạn bỏ qua câu hỏi thêm.</p>`;
+  }
+  const open=ask?.status==='open';
+  if(wait&&wait.step!=='answer')chat+=(wait.step==='reply'?jbMine(wait.text,true):'')+jbTyping(who);
+  let body='';
+  if(wait&&wait.step==='answer')body=`<div class="jb-line"><span class="jb-face" aria-hidden="true">${esc(face)}</span><p class="jb-q">${esc(q?.text||'')}</p></div>${jbMine(wait.text,true)}${jbTyping(who)}`;
+  else if(open)body=wait?'':jbReplyForm(E,who,api);
+  else if(q)body=`<div class="jb-say"><span class="jb-face" aria-hidden="true">${esc(face)}</span><p class="jb-q">${esc(q.text)}</p></div><div class="stack jb-opts">${q.options.map((o,i)=>jobOpt('',{question:next,option:o.id,label:o.label},o.label,i)).join('')}</div>`;
+  const with_=stage==='test'?'':`<p class="jb-with small muted">${esc(who.face||'')} ${esc(who.name)}${who.role?` · ${esc(who.role)}`:''}</p>`;
+  return `${intro}<section class="card jb-card">${jobMeter(Math.min(ids.length,k+(open?0:1)),ids.length,label)}${with_}
+    ${chat?`<div class="jb-chat" role="log" aria-live="polite">${chat}</div>`:''}${body}</section>`;
 }
 function examReview(job){
   const rows=job.exam_review||[];if(!rows.length)return '';
@@ -286,7 +334,7 @@ function resultCard(p,job,day,ex){
   const next=examFail?`Thi lại ${when} — mỗi lần thi là một bộ câu khác.`:`Ứng tuyển lại ${when}. ${jobStages(p).includes('trial')?'Tập thêm rồi xin làm thử lại nhé.':'Chọn tin phù hợp hơn hoặc sửa CV cho thật.'}`;
   return `<section class="card jb-result bad"><span class="eyebrow">${examFail?'KẾT QUẢ BÀI THI':'KẾT QUẢ ỨNG TUYỂN'}</span><h3>${examFail?`Chưa đạt: ${sh.score}/${sh.qs.length} câu`:'Chưa được nhận lần này'}</h3>
     <p class="small muted">${esc(p?.title||'')} · ${esc(p?.org||'')}</p>
-    ${examFail?'':app.score!=null?scoreBar(app.score):''}
+    ${examFail?'':app.score!=null?scoreBar(app.score):''}${examFail?'':jbLast(p,app)}
     ${examFail?'':(app.feedback||[]).map(x=>`<p class="small">• ${esc(x)}</p>`).join('')}
     <p class="notice amber small">${icon('leaf',15)}<span><b>Bước tiếp theo:</b> ${esc(next)}</span></p>
     ${examFail?`<p class="small">Cần đúng ${ex?.pass_mark??4}/${sh.qs.length} câu. Lời giải các câu sai:</p>${examReview(job)}`:''}</section>`;
@@ -302,7 +350,7 @@ export function jobView(env){
   const app=job.application;
   if(job.status==='offer'){
     const p=posts.find(x=>x.id===app.posting),o=job.offer,trial=jobStages(p).includes('trial');
-    return head(trial?'Được nhận vào làm 🎉':'Thư mời nhận việc 🎉',esc(p.org),'VIỆC LÀM')+`<div class="sheet-body">${o.direct?'':jobStepper(E,p,'done',!!cert)}<article class="card jb-result good"><h3>${esc(p.title)}</h3>${o.direct?'<p>Được mời thẳng, không cần phỏng vấn.</p>':scoreBar(o.score)}<p>Mức lương ${trial?'cứng ':''}đề nghị: <b>${o.salary} xu/ngày</b> (thử việc ${p.probation_days} ngày, nhận 85%).${p.wage_note?` ${esc(p.wage_note)}`:''}</p>${(app.feedback||[]).map(x=>`<p class="small muted">• ${esc(x)}</p>`).join('')}<div class="row wrap space-top">${confirmCmd(trial?'Nhận việc':'Ký hợp đồng thử việc','job_accept',{},`Nhận việc tại ${p.org} với ${o.salary} xu/ngày?`,'primary')}${o.negotiated?'':cmdBtn('Thương lượng lương','job_negotiate',{},'cream')}${cmdBtn('Từ chối','job_decline',{},'ghost')}</div></article></div>`;
+    return head(trial?'Được nhận vào làm 🎉':'Thư mời nhận việc 🎉',esc(p.org),'VIỆC LÀM')+`<div class="sheet-body">${o.direct?'':jobStepper(E,p,'done',!!cert)}<article class="card jb-result good"><h3>${esc(p.title)}</h3>${o.direct?'<p>Được mời thẳng, không cần phỏng vấn.</p>':scoreBar(o.score)+jbLast(p,app)}<p>Mức lương ${trial?'cứng ':''}đề nghị: <b>${o.salary} xu/ngày</b> (thử việc ${p.probation_days} ngày, nhận 85%).${p.wage_note?` ${esc(p.wage_note)}`:''}</p>${(app.feedback||[]).map(x=>`<p class="small muted">• ${esc(x)}</p>`).join('')}<div class="row wrap space-top">${confirmCmd(trial?'Nhận việc':'Ký hợp đồng thử việc','job_accept',{},`Nhận việc tại ${p.org} với ${o.salary} xu/ngày?`,'primary')}${o.negotiated?'':cmdBtn('Thương lượng lương','job_negotiate',{},'cream')}${cmdBtn('Từ chối','job_decline',{},'ghost')}</div></article></div>`;
   }
   if(job.status==='applying'&&app){
     const p=posts.find(x=>x.id===app.posting);
@@ -320,7 +368,7 @@ export function jobView(env){
       step=`<h3>${JOB_ICON.letter} Thư ứng tuyển</h3>${E.letter.map(slot=>`<label class="field">${esc(slot.title)}</label><div class="stack">${slot.options.map(o=>`<button class="choice ${parts[slot.id]===o.id?'selected':''}" data-action="v4Letter" data-slot="${slot.id}" data-id="${o.id}">${esc(o.label)}</button>`).join('')}</div>`).join('')}
         <div class="row space-top">${cmdBtn('Gửi thư','job_letter',{parts},'primary',Object.keys(parts).length<E.letter.length)}</div>`;
     }else if(stepKey[app.stage]){
-      step=stepCard(E,qs,p,app,app.stage);
+      step=stepCard(E,qs,p,app,app.stage,api);
     }
     return head(esc(p.title),esc(p.org),'ỨNG TUYỂN')+`<div class="sheet-body">${jobStepper(E,p,app.stage,!!cert&&!app.exam)}${passed}${step}<div class="row space-top">${cmdBtn('Rút hồ sơ','job_withdraw',{},'ghost small')}</div></div>`;
   }
@@ -330,6 +378,34 @@ export function jobView(env){
   const sub=posts.some(p=>jobStages(p).includes('trial'))?'Chủ tiệm cần gặp bạn trước. Gửi vài dòng giới thiệu, làm thử một buổi rồi nhận việc.':'Nghề này cần được tuyển dụng. Chọn nơi phù hợp, viết CV trung thực và đi phỏng vấn.';
   return head('Xin việc: '+esc(place),sub,'TUYỂN DỤNG')+`<div class="sheet-body">${rejected}${certLine}<div class="stack">${posts.map(p=>`<article class="card posting"><div class="row spread"><div><span class="eyebrow">${esc(p.kind==='private'?(id==='teacher'?'TƯ THỤC':'TƯ NHÂN'):JOB_KIND[p.kind]||'')}</span><h3>${esc(p.title)}</h3><small class="muted">${esc(p.org)}</small></div><b>${p.salary[0]}–${p.salary[1]} xu/ngày</b></div>${p.wage_note?`<p class="small muted">${esc(p.wage_note)}</p>`:''}<p class="small">${esc(p.culture)}</p>${jobPipe(E,p)}<div class="chip-row">${p.perks.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>
     <div class="row wrap space-top">${cmdBtn(jobStages(p).includes('trial')?'Xin làm thử':'Ứng tuyển','job_apply',{posting:p.id},'primary')}</div></article>`).join('')}</div></div>`;
+}
+
+/** One interview move. AI on: POST /api/ai/interview (runs the command, then the
+ * interviewer's newest line may be reworded); otherwise, or when the route is unreachable,
+ * the plain command. Returns the command result or null. */
+function jbQueued(api,fn){const job=api.queue.then(fn,fn);api.queue=job.catch(()=>{});return job;}
+const jbRid=()=>globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`;
+async function jbSend(env,step,payload,text){
+  const {api,cmd,toast,renderSheet}=env,career=api.state.current;
+  const action=step==='answer'?'job_answer':'job_followup',body=step==='answer'?payload:step==='skip'?{skip:true}:{text:payload.text};
+  if(jbWait)return null;
+  if(!aiOn(api))return cmd(action,body);
+  const phase=()=>{const j=api.state.careers[career]?.job;return `${j?.status}|${j?.application?.stage}`;},before=phase();
+  jbWait={career,step,text};renderSheet();
+  const send=()=>jbQueued(api,()=>api.post('/api/ai/interview',{career,step,...payload,request_id:jbRid(),expected_revision:api.revision},20000));
+  try{
+    let data;
+    try{data=await send();}
+    catch(error){if(error.status===409&&error.data?.state){api.accept(error.data);data=await send();}else throw error;}
+    jbWait=null;api.accept(data);
+    const r=data.result||{};
+    if(phase()!==before&&r.message)toast(r.message,r.celebrate?'good':false);
+    return r;
+  }catch(error){
+    jbWait=null;
+    if(!error.status)return cmd(action,body); // AI route unreachable: the scripted command
+    toast(error.message||'Chưa gửi được câu trả lời.',true);return null;
+  }finally{jbWait=null;renderSheet();}
 }
 
 /* ------------------------------------------------------------- Actions */
@@ -380,6 +456,8 @@ export async function v4Action(action,data,el,env){
     }
     case'v4Cv':{const key=data.kind==='strength'?'cvStrengths':'cvClaims';const cur=ui[key]||(key==='cvClaims'?['fresh']:[]);const max=key==='cvStrengths'?3:4;ui[key]=cur.includes(data.id)?cur.filter(x=>x!==data.id):cur.length<max?[...cur,data.id]:cur;renderSheet();return true;}
     case'v4Letter':ui.letter={...(ui.letter||{}),[data.slot]:data.id};renderSheet();return true;
+    case'v4JbAnswer':await jbSend(env,'answer',{question:data.question,option:data.option},data.label||'');return true;
+    case'v4JbSkip':await jbSend(env,'skip',{},'');return true;
   }
   return false;
 }
@@ -387,6 +465,12 @@ export async function v4Submit(form,env){
   const {api,cmd}=env;
   if(form.dataset.v4Receive){const id=form.dataset.v4Receive,count=Number(form.querySelector('input').value);
     if(await cmd('inv_receive',{order:id,count})){if(env.ui.invCount)delete env.ui.invCount[id];if(env.ui.invOpen===id)env.ui.invOpen=null;}return true;}
+  if(form.dataset.v4Jb){
+    const ta=form.querySelector('textarea'),text=String(ta?.value||'').trim().slice(0,JB_MAX);
+    if(!text){ta?.focus();return true;}
+    if(await jbSend(env,'reply',{text},text)&&ta)ta.value='';
+    return true;
+  }
   if(form.dataset.v4Fb){
     const post=form.dataset.v4Fb,text=form.querySelector('textarea').value.trim(),offer=form.querySelector('input[name=offer]:checked')?.value||'none';
     const tone=form.querySelector('input[name=tone]')?.value||'free';
@@ -402,6 +486,7 @@ export async function v4Submit(form,env){
   return false;
 }
 export function v4Input(el,env){
+  if(el.id==='jb-reply'){const out=document.getElementById('jb-reply-count');if(out)out.textContent=`${el.value.length}/${JB_MAX}`;return true;}
   if(el.name==='offer'&&el.closest('[data-v4-fb]')){env.ui.fbOffer=el.value;return true;}
   if(el.id==='fb-text'&&el.closest('[data-v4-fb]')){
     // Clearing the box means writing your own words.

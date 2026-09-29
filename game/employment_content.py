@@ -339,3 +339,80 @@ BOSS_MEET = [
     'Cuối ngày, {boss} của {org} ghé ngang, nghe hàng xóm khen bạn, rồi mời bạn về làm {title}.',
     'Bạn chỉ đường cho một người đang tìm hẻm. Hóa ra đó là {boss} của {org}, và họ mời bạn về làm {title}.',
 ]
+
+# ---------------------------------------------------------------- interviewers (v0.6)
+# The person across the table. Town characters (cô Thu, chị Mai, Hải, chị Hạnh…) keep
+# their NPC id so the AI voices them from their own persona card (game/personas.py);
+# the others get a small card here in the same shape. `self`/`you` are how they call
+# themselves and the applicant in the scripted lines. See
+# docs/superpowers/specs/2026-09-29-ai-interviewer-design.md.
+def _iv(name, role, self_word, you, style, face='🧑‍💼', npc=None, region='miền Nam', particles=(), cares=()):
+    return dict(name=name, role=role, self=self_word, you=you, style=style, face=face, npc=npc, region=region,
+                particles=list(particles), cares=list(cares))
+
+
+INTERVIEWERS = {
+    # career defaults
+    'teacher': _iv('Cô Ngọc', 'Hiệu trưởng Trường Tiểu học Mầm Nắng', 'cô', 'em',
+                   'nghiêm mà hiền, nói chậm, hay hỏi "em làm cụ thể thế nào?"', face='👩‍🏫', region='miền Bắc',
+                   particles=('nhé', 'ạ'), cares=('học trò được đối xử công bằng', 'phối hợp phụ huynh')),
+    'pharmacy': _iv('Cô Thu', 'Người phụ trách chuyên môn, Quầy thuốc Bình An', 'cô', 'con',
+                    'ít nói, cẩn thận, khen đúng chỗ', face='👩‍⚕️', npc='pharmacy_npc_01'),
+    'customer_care': _iv('Chị Mai', 'Trưởng ca, Trạm Lắng Nghe', 'chị', 'em',
+                         'thẳng, soi chi tiết, thích cam kết cụ thể', face='🎧', npc='customer_care_npc_06'),
+    'tour_guide': _iv('Anh Hải', 'Điều phối, Công ty Lữ hành Mây Lang Thang', 'anh', 'em',
+                      'hay kể chuyện dẫn đoàn, hỏi lại từng chi tiết an toàn', face='🧭', npc='tour_guide_npc_06'),
+    'salon': _iv('Chị Phượng', 'Chủ Salon Tóc Gió', 'chị', 'em',
+                 'nhanh nhảu, nói thẳng, mê nghề, ghét làm ẩu', face='💇‍♀️',
+                 particles=('nha', 'á', 'nè'), cares=('tóc khách', 'sạch sẽ', 'hỏi trước khi làm')),
+    'pet_care': _iv('Chị Nhàn', 'Chủ Pet Care Mèo Mập', 'chị', 'em',
+                    'dịu dàng, thương thú, nghiêm khi bé bị sợ', face='🐾',
+                    particles=('nha', 'hen'), cares=('không bé nào phải sợ', 'kiểm trước làm sau')),
+    'repair': _iv('Chú Tư', 'Chủ Tiệm Sửa Đồ Chú Tư', 'chú', 'con',
+                  'ít nói, chậm rãi, hay nói "đo trước, thay sau"', face='🔧',
+                  particles=('nghen', 'hen', 'à'), cares=('an toàn điện', 'báo giá thật', 'đồ của khách')),
+    'delivery': _iv('Chị Hạnh', 'Điều phối viên, Giao Nhanh Mây Chiều', 'chị', 'em',
+                    'bình tĩnh, nói gọn, lo cho người chạy xe', face='🛵', npc='delivery_npc_07'),
+    'corp_accounting': _iv('Chị Hạnh', 'Kế toán trưởng, Công ty CP Mây Tre Xanh', 'chị', 'em',
+                           'kỹ từng dấu phẩy, thương người mới', face='📒', npc='corp_accounting_npc_01'),
+    'tax_payroll': _iv('Chị Hồng', 'Kế toán trưởng', 'chị', 'em',
+                       'kỹ tính, ghét nhất câu "chắc là đúng"', face='🧾', npc='tax_payroll_npc_01'),
+    'group_accounting': _iv('Chị Mai Anh', 'Giám đốc tài chính tập đoàn', 'chị', 'em',
+                            'bình tĩnh, thích con số có nguồn', face='📊', npc='group_accounting_npc_01'),
+    # postings with someone else at the table
+    'tch-center': _iv('Chị Thùy', 'Quản lý Trung tâm Kỹ năng Sao Nhỏ', 'chị', 'em',
+                      'nhanh, thực tế, hay hỏi phụ huynh sẽ nghĩ gì', face='🌟',
+                      particles=('nha', 'nè'), cares=('phụ huynh hài lòng', 'lớp vui mà có nề nếp')),
+    'tch-trial': _iv('Bác Sáu', 'Trưởng ban Lớp học cộng đồng Góc Phố', 'bác', 'cháu',
+                     'hiền, xởi lởi, quý người chịu khó', face='👴',
+                     particles=('nghen', 'hen'), cares=('trẻ trong xóm được học', 'người dạy kiên nhẫn')),
+}
+
+# Follow-up questions (scripted canon; the AI rewords them in voice). Placeholders:
+# {self} {you} {You} {claim} {strength} {answer}. `good`/`mid`/`weak` follow the score of
+# the option just picked; `claim`/`strength`/`fresh` ask about the CV.
+ASKS = dict(
+    good=['{You} từng gặp chuyện giống vậy thật chưa? Kể {self} nghe một lần đi.',
+          'Nghe ổn đó. Lần gần nhất {you} làm đúng như vậy là khi nào?'],
+    mid=['Vì sao {you} chọn cách đó? Nếu làm lại, {you} có đổi gì không?',
+         'Cách đó được một phần. {You} sẽ làm gì thêm để không ai bị thiệt?'],
+    weak=['Nếu cách đó gây rắc rối thì {you} xử lý tiếp thế nào?',
+          'Giả sử người ta phàn nàn vì cách đó, {you} nói gì với họ?'],
+    claim=['CV ghi “{claim}”. Kể {self} nghe một việc cụ thể trong số đó?',
+           'Trong CV {you} viết “{claim}”. Việc nào {you} nhớ nhất?'],
+    strength=['{You} ghi điểm mạnh là “{strength}”. Có lần nào {you} thấy rõ điều đó không?',
+              '“{strength}” — {you} cho {self} một ví dụ nhỏ được không?'],
+    fresh=['{You} mới vào nghề. Tuần đầu {you} định học việc gì trước?',
+           'Chưa có kinh nghiệm cũng không sao. {You} học một việc mới thường theo cách nào?'],
+)
+
+# Reactions to a typed reply, picked by the scoring rule that fired (see employment.REPLY_RULES).
+REACTS = dict(
+    rude='{Who} khẽ nhíu mày: “Ở đây mình nói với nhau nhẹ nhàng thôi {you}.”',
+    overclaim='{Who} ghi một dấu hỏi nhỏ: “Cái này {self} sẽ hỏi lại người giới thiệu nhé.”',
+    blame='{Who} gõ nhẹ bút: “Thử kể phần việc của chính {you} xem.”',
+    example='{Who} gật gù ghi chép: “Có ví dụ cụ thể, {self} dễ hình dung.”',
+    reason='{Who} gật đầu: “Hiểu vì sao {you} làm vậy rồi.”',
+    short='{Who}: “Ừ, {self} ghi lại rồi. Mình qua câu tiếp nhé.”',
+    plain='{Who}: “Cảm ơn {you}. Mình qua câu tiếp nhé.”',
+)

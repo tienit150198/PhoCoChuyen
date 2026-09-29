@@ -2262,3 +2262,28 @@ html[data-layout="phone"][data-orientation="landscape"] .sheet-foot .btn{min-hei
 .jb-passed{display:block;margin-bottom:12px}
 .jb-passed>summary{cursor:pointer;min-height:28px;list-style-position:inside}
 .jb-passed .jb-review{margin-top:10px}
+/* Interviewer talks back: follow-up bubble, reply box, owner reactions (stepCard). */
+.jb-with{margin:-4px 0 0;overflow-wrap:anywhere}
+.jb-chat{display:flex;flex-direction:column;gap:8px}
+.jb-line{display:flex;align-items:flex-start;gap:8px;min-width:0}
+.jb-line>.jb-face{width:32px;height:32px;font-size:1.05rem}
+.jb-line>.bubble{flex:0 1 auto;min-width:0;max-width:100%;margin:0}
+.jb-line>.jb-q{flex:1 1 auto;min-width:0;padding:10px 12px;border-radius:14px;border-top-left-radius:4px;background:var(--surface-2);border:1px solid var(--line)}
+.jb-bubble>div{line-height:1.5}
+.jb-who{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:2px;color:var(--ink-2);font-size:.8rem;font-weight:800}
+.jb-who .ai-badge{margin:0}
+.jb-mine{max-width:88%;margin:0}
+.jb-card>.jb-mine{justify-self:end}
+.jb-points{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin:0 0 0 40px;font-size:.8rem;color:var(--ink-2)}
+.jb-points>b{padding:1px 8px;border-radius:var(--radius-pill);background:var(--surface-2);border:1px solid var(--line);font-variant-numeric:tabular-nums}
+.jb-points.up>b{background:var(--good-soft);color:var(--good);border-color:transparent}
+.jb-points.down>b{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.jb-points>span+span::before{content:"· ";color:var(--muted)}
+.jb-skip{margin:0 0 0 40px}
+.jb-narr{margin:0;padding:2px 0 2px 10px;border-left:3px solid var(--line-strong);color:var(--ink-2);font-size:.867rem;font-style:italic;line-height:1.5}
+.jb-reply{display:grid;gap:8px;margin:0}
+.jb-reply textarea{width:100%;min-height:64px;resize:vertical;box-sizing:border-box;font:inherit}
+.jb-reply-row{display:flex;align-items:center;justify-content:flex-end;gap:8px}
+.jb-reply-row>.chat-count{margin:0 auto 0 0}
+.jb-reply-row .btn{min-height:40px}
+.jb-reply>p{margin:0;line-height:1.45}
