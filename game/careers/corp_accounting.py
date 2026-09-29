@@ -23,6 +23,7 @@ import copy
 from . import kit, office
 from .. import consequences as cq
 from .. import procedures
+from .. import archive as ar
 
 ID = 'corp_accounting'
 PREFIX = 'ca_'
@@ -1416,7 +1417,7 @@ def _post(c: dict, t: dict, st: dict) -> None:
         led[dr] = led.get(dr, 0) + a
         led[cr] = led.get(cr, 0) - a
     d['ledger'] = {k: v for k, v in led.items() if v}
-    d['entries'] = (d['entries'] + [dict(day=c['day'], task=t['id'], title=st['title'], lines=[list(x) for x in st['_key']])])[-12:]
+    d['entries'] = ar.last(d['entries'] + [dict(day=c['day'], task=t['id'], title=st['title'], lines=[list(x) for x in st['_key']])], 12, 'office.entries', c)
     d['posted'] += 1
     d['day_posted'] += 1
 
@@ -1511,7 +1512,7 @@ def _stamp(s: dict, c: dict, d: dict, o: dict, t: dict, p: dict) -> dict:
             office.trust(o, -1)
             msg = f'✗ Cần {VERDICT_LABEL[truth["v"]]}, không phải {VERDICT_LABEL[verdict]}. {truth["why"]}'
     t['results'][case['id']] = result
-    d['day_stamps'] = (d['day_stamps'] + [dict(task=t['id'], case=case['id'], ok=result == 'ok', slip=result == 'wrong' and verdict == 'approve')])[-40:]
+    d['day_stamps'] = ar.last(d['day_stamps'] + [dict(task=t['id'], case=case['id'], ok=result == 'ok', slip=result == 'wrong' and verdict == 'approve')], 40, 'office.stamps', c)
     left = sum(1 for x in t['cases'] if x['id'] not in t['stamps'])
     tail = f'Còn {left} bộ.' if left else ''
     return dict(message=' '.join(x for x in (msg, lunch, tail) if x), correct=result == 'ok', result=result, stamp=verdict)
@@ -2169,7 +2170,7 @@ def care_close(s: dict, c: dict, cr: dict, cfg: dict, o: dict, ok: bool, why: st
         cr['streak'] += 1
     else:
         cr['streak'] = 0
-    cr['days'] = (cr['days'] + [dict(day=day, ok=bool(ok), why=str(why)[:120])])[-TRACK_DAYS:]
+    cr['days'] = ar.last(cr['days'] + [dict(day=day, ok=bool(ok), why=str(why)[:120])], TRACK_DAYS, 'office.days', c)
     up = None
     while cr['rank'] < 3 and cr['reliable'] >= RANK_NEEDS[cr['rank'] + 1][0] and o['trust'] >= RANK_NEEDS[cr['rank'] + 1][1]:
         cr['rank'] += 1

@@ -21,6 +21,7 @@ from __future__ import annotations
 import hashlib
 import re
 import unicodedata
+from . import archive as ar
 
 PERSONAS = {
     'sour': dict(name='Chanh chua', emoji='🍋', style='Nói thẳng, hơi đá đểu, châm chọc nhưng công bằng nếu thấy người ta sửa thật.', group='customer', bias=-0.4),
@@ -842,7 +843,7 @@ def action(s: dict, c: dict, career: str, name: str, p: dict, internal: bool = F
             fb['viral'] = True
             n = _pile_on(s, c, career, post, 2, 'phot')
             fb['thread'].append(dict(role='customer', text='Im lặng thì mình đăng nhé. Mọi người tự đánh giá.', day=c['day'], decision='keep', stars=post['stars'], mode='scripted'))
-            fb['thread'] = fb['thread'][-8:]
+            fb['thread'] = ar.last(fb['thread'], 8, 'review.thread', c)
             return dict(message=f'{post["author"]} đăng bài bóc phốt: thêm {n} đánh giá 1★.', viral=n)
         return dict(message='Đã bỏ qua. Đánh giá vẫn giữ nguyên.')
     if name == 'fb_report':
@@ -869,7 +870,7 @@ def action(s: dict, c: dict, career: str, name: str, p: dict, internal: bool = F
         new = max(1, post['stars'] - 1)
         fb['thread'].append(dict(role='customer', text=teacher_title(s, rows[seed % len(rows)]), day=c['day'],
                                  decision='revise_down' if new < post['stars'] else 'keep', stars=new, mode='scripted'))
-        fb['thread'] = fb['thread'][-8:]
+        fb['thread'] = ar.last(fb['thread'], 8, 'review.thread', c)
         extra = 0
         if new == post['stars']:
             # Already at 1★: the story spreads instead.
@@ -938,7 +939,7 @@ def resolve(s: dict, c: dict, post: dict, decision, stars, text, mode: str) -> d
             c['relationships'][npc] = max(0, c['relationships'].get(npc, 0) - 6)
     label = {'revise_up': 'đã nâng đánh giá', 'revise_down': 'đã hạ đánh giá', 'argue': 'muốn đối chất lại', 'keep': 'giữ nguyên đánh giá'}[decision]
     extra = _fv.after_resolve(s, c, post, pending, decision)  # friends, sass fallout, bystanders
-    fb['thread'] = fb['thread'][-8:]
+    fb['thread'] = ar.last(fb['thread'], 8, 'review.thread', c)
     message = f'{post["author"]} {label}: “{text}”'
     if extra:
         message += ' ' + ' '.join(extra)

@@ -12,6 +12,7 @@ import random
 import re
 
 from . import procedures as P
+from . import archive as ar
 
 S = P.step
 MONTHS = ('Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12', 'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5')
@@ -508,7 +509,7 @@ def _action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         voice = a['perspectives'][c['day'] % len(a['perspectives'])]
         e.add_feed(s, c, NPC['lan'] if a['kind'] in ('meeting', 'event') else NPC['ha'], _say(s, f'{voice["who"]}: “{voice["text"]}”'), 'classroom')
         d['done'][a['id']] = c['day']
-        d['history'] = (d['history'] + [dict(id=a['id'], day=c['day'], grade=grade, mistakes=mistakes)])[-30:]
+        d['history'] = ar.last(d['history'] + [dict(id=a['id'], day=c['day'], grade=grade, mistakes=mistakes)], 30, 'classroom.history', c)
         d['active'] = None
         label = dict(great='Tuyệt vời', ok='Khá ổn', rough='Còn vụng')[grade]
         return dict(message=f'{label}! {a["title"]} hoàn thành · +{reward} xu thưởng.', celebrate=grade == 'great',
@@ -721,7 +722,7 @@ def care(c: dict) -> dict:
 
 
 def _log(cr: dict, text: str) -> None:
-    cr['log'] = (cr['log'] + [dict(day=cr['day'], text=text[:200])])[-12:]
+    cr['log'] = ar.last(cr['log'] + [dict(day=cr['day'], text=text[:200])], 12, 'classroom.log', None)
 
 
 def _hw_result(cr: dict, kid: str, hw: dict) -> str:
@@ -760,7 +761,7 @@ def _sync(cr: dict, day: int) -> None:
                 cr['pupils'][b['kid']]['well'] = _clamp(cr['pupils'][b['kid']]['well'] - 1)
                 continue
             keep.append(b)
-        cr['books'] = keep[-24:]
+        cr['books'] = ar.last(keep, 24, 'classroom.books', None)
         for p in cr['pupils'].values():
             p['well'] += max(-2, min(2, 55 - p['well']))
         for kid, par in cr['parents'].items():

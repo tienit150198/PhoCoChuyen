@@ -24,6 +24,7 @@ c['slipbook'] per workplace (created lazily, optional for old saves).
 from __future__ import annotations
 
 import hashlib
+from . import archive as ar
 
 MAX_SLIPS = 8
 BOOK_LOG = 40
@@ -225,7 +226,7 @@ def _escalate(s: dict, c: dict, t: dict) -> list[str]:
     b['today'] += pts
     b['total'] += 1
     worst = max(slips(t), key=lambda r: r['sev'])
-    b['log'] = (b['log'] + [dict(task=t['id'], day=c['day'], code=worst['code'], sev=pts, report=False)])[-BOOK_LOG:]
+    b['log'] = ar.last(b['log'] + [dict(task=t['id'], day=c['day'], code=worst['code'], sev=pts, report=False)], BOOK_LOG, 'complaints.log', c)
     repeat = sum(1 for x in b['log'] if x['day'] == c['day']) >= 3 and b['today'] >= 5
     serious = pts >= 3 or safety(t)
     notes = []

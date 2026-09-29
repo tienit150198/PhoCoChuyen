@@ -13,6 +13,7 @@ from __future__ import annotations
 import copy
 import math
 import random
+from . import archive as ar
 
 VERSION = 1
 UNLOCK = 500            # the wallet must have held this much once (stats.max_wallet)
@@ -133,7 +134,7 @@ def unlocked(s: dict) -> bool:
 
 
 def _log(iv: dict, day: int, kind: str, text: str) -> None:
-    iv['log'] = (iv['log'] + [dict(day=int(day), kind=kind, text=text[:160])])[-LOG_MAX:]
+    iv['log'] = ar.last(iv['log'] + [dict(day=int(day), kind=kind, text=text[:160])], LOG_MAX, 'invest.log', ar.JOURNEY)
 
 
 def _badge(iv: dict, bid: str) -> bool:
@@ -168,7 +169,7 @@ def _tick(s: dict, iv: dict, d: int, notes: list[str]) -> None:
     # Market.
     old = iv['price']
     iv['price'], kind = _step(old, random.Random(f'may|{seed}|{d}'))
-    iv['prices'] = (iv['prices'] + [iv['price']])[-HISTORY:]
+    iv['prices'] = ar.last(iv['prices'] + [iv['price']], HISTORY, 'invest.prices', ar.JOURNEY)
     if kind:
         pct = _pct(old, iv['price'])
         text = (f'Mây Coin tăng vọt {pct}% sau tin đồn “sắp lên sàn lớn”.' if kind == 'pump'

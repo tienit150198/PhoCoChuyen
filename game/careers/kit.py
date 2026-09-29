@@ -9,6 +9,7 @@ import hashlib
 import random
 import time
 from typing import Any
+from .. import archive as ar
 
 # Wall clock for real-time kitchen/oven timers. Tests replace `clock`.
 clock = time.time
@@ -132,7 +133,7 @@ def price(c: dict, key: str, default: int) -> int:
 def waste(c: dict, item_id: str, qty: int, value: int, reason: str) -> None:
     x = c['life']
     x['day_waste'] += value
-    x['waste'] = (x['waste'] + [dict(day=c['day'], item=item_id, qty=qty, value=value, reason=reason)])[-120:]
+    x['waste'] = ar.last(x['waste'] + [dict(day=c['day'], item=item_id, qty=qty, value=value, reason=reason)], 120, 'life.waste', c)
 
 
 def task(c: dict, p: dict) -> dict:
@@ -397,7 +398,7 @@ def desk_choose(s: dict, c: dict, career: str, desk: dict, scripts: list, option
     outcome = ' '.join([result.get('outcome', opt.get('outcome', ''))] + notes).strip()   # hook notes belong to the outcome
     desk['last'] = dict(script=x['id'], title=x['title'], emoji=x['emoji'], choice=opt['id'], label=opt['label'],
                         outcome=outcome, good=good, day=c['day'], auto=auto)
-    desk['log'] = (desk['log'] + [dict(id=ev['id'], script=x['id'], choice=opt['id'], day=c['day'], good=good, won=won)])[-DESK_LOG:]
+    desk['log'] = ar.last(desk['log'] + [dict(id=ev['id'], script=x['id'], choice=opt['id'], day=c['day'], good=good, won=won)], DESK_LOG, 'desk.log', c)
     desk['ev'] = None
     metric(c, 'surprises')
     if good is True:

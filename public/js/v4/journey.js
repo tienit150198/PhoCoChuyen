@@ -4,6 +4,7 @@
  * game/journey.py. Buttons use data-action="jr…" (journeyAction) or the app's
  * `choose`/`close`; forms use data-jr-form (journeySubmit). */
 import {icon,escapeHTML as esc} from '../icons.js';
+import {olderRows,olderButton} from '../archive.js';
 import {accountChip} from './account.js';
 import {storiesBoot,storiesCard,storiesAction,maybeStory} from './stories.js';
 import {investView,investEntry,investAction} from './invest.js';
@@ -224,7 +225,8 @@ function walletView(env){
       <div class="jr-fund-actions">${draw}${invest}<div class="row wrap">${pause}</div></div></details>`;
   }).join('')||`<p class="muted">Chưa có nơi làm việc nào. Bắt đầu ở một tiệm trong hẻm nhé.</p>`;
   const kinds={living:'🏠',upkeep:'💡',draw:'👛',invest:'📈',salary:'💵',reopen:'🔑',incident:'⚖️',life:'🌿'};
-  const hist=J.history.map(h=>`<li><span aria-hidden="true">${kinds[h.kind]||'•'}</span><span class="grow">${esc(h.label)}<small>Ngày sống ${fmt(h.day)}</small></span><b class="${h.amount<0?'out':'in'}">${h.amount<0?'−':'+'}${fmt(Math.abs(h.amount))} xu</b></li>`).join('')||`<li class="muted">Chưa có khoản nào.</li>`;
+  const row=h=>`<li><span aria-hidden="true">${kinds[h.kind]||'•'}</span><span class="grow">${esc(h.label)}<small>Ngày sống ${fmt(h.day)}</small></span><b class="${h.amount<0?'out':'in'}">${h.amount<0?'−':'+'}${fmt(Math.abs(h.amount))} xu</b></li>`;
+  const hist=[...J.history,...olderRows('','wallet')].map(row).join('')||`<li class="muted">Chưa có khoản nào.</li>`;
   const L=J.living;
   return head('Ví của bạn','',{back:true})+`<div class="sheet-body jr-body">
     <section class="jr-card jr-purse ${J.debt?'bad':''}" aria-live="polite"><small>${J.debt?'Đang nợ tiền phòng':'Số dư'}</small><strong>${J.debt?`${fmt(J.debt)} xu`:`${fmt(J.wallet)} xu`}</strong>
@@ -232,7 +234,7 @@ function walletView(env){
       ${J.debt?`<p class="jr-debt-note">Khi ví còn nợ, câu chuyện tạm dừng. Rút tiền lời về ví để trả nhé.</p>`:''}</section>
     ${investEntry(env)}${lifeEntry(env)}
     <h3 class="jr-sub">Quỹ các nơi làm việc</h3><div class="jr-funds">${places}</div>
-    <h3 class="jr-sub">Sổ ví gần đây</h3><ul class="jr-history">${hist}</ul></div>`;
+    <h3 class="jr-sub">Sổ ví gần đây</h3><ul class="jr-history">${hist}</ul>${olderButton('','wallet',J.history.length,J.history.length>=30)}</div>`;
 }
 
 /* ------------------------------------------------------------------ future (locked) */

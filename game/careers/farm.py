@@ -51,6 +51,7 @@ from __future__ import annotations
 import copy
 from . import kit
 from .. import consequences as cq
+from .. import archive as ar
 
 ID = 'farm'
 PLOT_IDS = ('P1', 'P2', 'P3', 'P4', 'P5', 'P6')
@@ -465,7 +466,7 @@ def _plot_of(d: dict, pid) -> dict:
 
 
 def _diary(d: dict, c: dict, pid: str, text: str) -> None:
-    d['diary'] = (d['diary'] + [dict(day=c['day'], plot=pid, text=text[:200])])[-40:]
+    d['diary'] = ar.last(d['diary'] + [dict(day=c['day'], plot=pid, text=text[:200])], 40, 'farm.diary', c)
 
 
 def _price(c: dict, crop: str) -> int:

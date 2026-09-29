@@ -30,6 +30,7 @@ import random
 
 from .life_content import (ASK, CATS, COMFORT, COPE, COPE_INDEX, FACTS, FRIENDS, GIFTS, GOSSIPS, HARD, IMPULSE,
                            JOYS, SICK, TOKENS, WORK)
+from . import archive as ar
 
 VERSION = 1
 KIND = 'life'                 # journey wallet history kind
@@ -224,7 +225,7 @@ def _log(s: dict, L: dict, card: dict, text: str, choice: str | None = None) -> 
     row = dict(id=card['id'], day=card['day'], kind=card['kind'], cat=card['cat'], title=_title(s, card)[:80],
                emoji=_emoji(card), who=list(card['who'])[:8], text=text[:160], spirit=card['spirit'],
                money=card['money'], fact=card.get('fact'), gossip=card.get('gossip'))
-    L['log'] = (L['log'] + [row])[-LOG_MAX:]
+    L['log'] = ar.last(L['log'] + [row], LOG_MAX, 'life.log', ar.JOURNEY)
     _tell_board(s, row, card, choice)
     return row
 
@@ -521,7 +522,7 @@ def _apply(s: dict, L: dict, card: dict, cid: str, auto: bool = False) -> list[s
     else:
         card['trail'].append(text)
         card['stage'] = 'done'
-    card['trail'] = [t for t in card['trail'] if t][-6:]
+    card['trail'] = ar.last([t for t in card['trail'] if t], 6, 'life.trail', ar.JOURNEY)
     if card['stage'] == 'done':
         _finish(s, L, card, cid)
     return lines
@@ -714,7 +715,7 @@ def facts(s: dict, career: str | None, summary: dict | None, day: int) -> set:
 def _queue(L: dict, src: str, key: str, loss: int, text: str) -> None:
     if key in L['seen'] or loss <= 0:
         return
-    L['seen'] = (L['seen'] + [key])[-SEEN_MAX:]
+    L['seen'] = ar.last(L['seen'] + [key], SEEN_MAX, 'life.seen', ar.JOURNEY)
     if len(L['queue']) < QUEUE_MAX:
         L['queue'].append(dict(src=src, key=key[:60], loss=int(min(loss, 10**6)), text=text[:160]))
 

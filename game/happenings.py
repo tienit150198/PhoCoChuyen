@@ -30,6 +30,7 @@ import hashlib
 import random
 
 from .happening_content import HAPPENINGS, INDEX, KINDS, REACTIONS, HURT, EMPLOYEE, OFFICE, POLICE, INSURANCE_TEXT
+from . import archive as ar
 
 VERSION = 1
 HISTORY = 60
@@ -560,7 +561,7 @@ def _police(s: dict, c: dict, career: str, result: dict) -> None:
         emoji, title, text = POLICE[outcome]
         news = dict(id=k['id'], script=k['script'], outcome=outcome, day=c['day'], lines=lines, items=items, insurance=insurance,
                     seen=False)
-        box['news'] = (box['news'] + [news])[-NEWS_MAX:]
+        box['news'] = ar.last(box['news'] + [news], NEWS_MAX, 'happen.news', c)
         box['history'] = [dict(h, police=outcome) if h['id'] == k['src'] else h for h in box['history']]
         _eng().log(s, c, 'happen', f'{emoji} {title}: {x["title"]}', ref=k['id'])
         result.setdefault('effects', []).append(f'{emoji} {title}: {x["title"]}')

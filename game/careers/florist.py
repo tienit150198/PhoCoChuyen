@@ -33,6 +33,7 @@ import unicodedata
 from . import kit
 from . import food_service as FS
 from .. import consequences as cq
+from .. import archive as ar
 ID = 'florist'
 
 def _one_of(value, options, message: str):
@@ -1950,7 +1951,7 @@ def _sub(s: dict, c: dict, d: dict, p: dict) -> dict:
     kit.money(s, c, SUB_PRICE, f'Gói hoa định kỳ của bà Tám (lần {sub["round"] + 1})', f'sub-{sub["round"] + 1}', 'revenue')
     text = ' '.join(said) if said else 'Bình hoa xinh, bông nào cũng nở đẹp. Bà để phòng khách ngắm cả tuần.'
     kit.review(s, c, kit.npc_id(ID, SUB_NPC), stars, text, f'sub-{sub["round"] + 1}')
-    sub['stars'] = (sub['stars'] + [stars])[-6:]
+    sub['stars'] = ar.last(sub['stars'] + [stars], 6, 'florist.sub_stars', c)
     sub.update(next=day + SUB_EVERY, round=sub['round'] + 1, misses=0)
     c['xp'] += 3
     kit.metric(c, 'sub_vases')

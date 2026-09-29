@@ -10,6 +10,7 @@ rules stay the same in all three careers.
 from __future__ import annotations
 import copy
 from . import kit
+from .. import archive as ar
 
 OPEN, LUNCH, CLOSE, LOCK = 480, 720, 1050, 1200      # 08:00, 12:00, 17:30, 20:00
 LUNCH_MIN = 60
@@ -100,7 +101,7 @@ def trust_label(v: int) -> str:
 
 
 def note(o: dict, day: int, text: str, kind: str = 'info') -> None:
-    o['notes'] = (o['notes'] + [dict(day=int(day), text=str(text)[:200], kind=kind)])[-NOTES:]
+    o['notes'] = ar.last(o['notes'] + [dict(day=int(day), text=str(text)[:200], kind=kind)], NOTES, 'office.notes', None)
 
 
 def fine(s: dict, c: dict, o: dict, amount: int, reason: str, ref: str | None = None) -> int:

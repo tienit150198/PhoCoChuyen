@@ -15,6 +15,7 @@ import random
 
 from . import extra_content as data
 from . import consequences as cq
+from . import archive as ar
 
 CAREER = 'milk_tea'
 ING = data.INGREDIENT_INDEX
@@ -542,7 +543,7 @@ def _waste(c: dict, item: str, qty: int, value: int, reason: str) -> None:
     x = c['life']
     x['day_waste'] += value
     x['waste'].append(dict(day=c['day'], item=item, qty=min(60, qty), value=min(10000, value), reason=reason))
-    x['waste'] = x['waste'][-120:]
+    x['waste'] = ar.last(x['waste'], 120, 'life.waste', c)
 
 
 def till(minute: int, made: int) -> str:
@@ -812,11 +813,11 @@ def on_start(s: dict, c: dict) -> None:
             e.add_feed(s, c, 'milk_tea_npc_01', 'Hôm qua em thiếu tiền lẻ, quán vẫn cho em ly trà. Hôm nay em ghé trả rồi nha, cảm ơn nhiều 🥹', pr['ref'], kind='story')
         elif pr['kind'] == 'coins':
             e.log(s, c, 'promise', 'Bạn học sinh hôm trước chưa ghé trả tiền. Chuyện nhỏ, quán vẫn vui.', ref=pr['ref'])
-    b['promises'] = keep[-10:]
+    b['promises'] = ar.last(keep, 10, 'boba.promises', c)
     # The shop clock runs over a fixed number of beats today; goods due before opening wait at the door.
     b['span'] = max(30, b['quota'] * 12)
     arrived = _deliver(s, c, b, now=c['day'] * DAY_MIN + OPEN_MIN)
-    b['night'] = (b['night'] + arrived)[-8:]
+    b['night'] = ar.last(b['night'] + arrived, 8, 'boba.night', c)
     # Keep a short queue at the counter; more guests arrive as cups go out.
     for t in active:
         t.setdefault('changes', [])
@@ -946,7 +947,7 @@ def on_close(s: dict, c: dict) -> dict:
                    revenue=b['revenue'], fines=b['fines'], bonus=b['bonus'], events=b['events_today'], modifier=b['mod'],
                    level=level(c), dumped=sum(dumped.values()), sealer=b['sealer_wear'], orders=len(b['orders']),
                    tomorrow=dict(title=tomorrow['title'], emoji=tomorrow['emoji'], advice=tomorrow['advice']))
-    b['history'] = (b['history'] + [summary])[-14:]
+    b['history'] = ar.last(b['history'] + [summary], 14, 'boba.history', c)
     lines = []
     if dumped:
         lines.append('🌙 Cuối ca bỏ ' + ', '.join(f"{n} phần {low(ING[k]['name'])}" for k, n in dumped.items()) + ' (không để qua đêm).')
@@ -1413,7 +1414,7 @@ def _waste_cup(c: dict, t: dict, reason: str) -> None:
     value = t['cup']['cost']
     x['day_waste'] += value
     x['waste'].append(dict(day=c['day'], item='cup', qty=1, value=value, reason=reason))
-    x['waste'] = x['waste'][-120:]
+    x['waste'] = ar.last(x['waste'], 120, 'life.waste', c)
     t['cup'] = new_cup()
 
 
@@ -1513,6 +1514,7 @@ def _serve(s: dict, c: dict, b: dict, t: dict) -> dict:
     post = next((f for f in c['feed'] if f.get('source') == t['id'] and f.get('kind') == 'review'), None)
     if post and rest:
         # One customer, one review: earlier cups of a group wait for the last one.
+        ar.record([post], 'feed.retracted', c)
         c['feed'].remove(post)
         e.metric(c, 'reviews_' + str(post['stars']), -1)
         post = None
@@ -2033,7 +2035,7 @@ def _resolve(s: dict, c: dict, b: dict, ev: dict, choice: str) -> None:
             good = True
         st['step'] += 1
         st['day'] = c['day']
-        st['choices'] = (st['choices'] + [choice])[-3:]
+        st['choices'] = ar.last(st['choices'] + [choice], 3, 'boba.story_choices', c)
         c['relationships'][npc] = min(100, c['relationships'].get(npc, 0) + 3)
     elif k == 'change_mind':
         t = _task_by(c, f['task'])
@@ -2138,7 +2140,7 @@ def _resolve(s: dict, c: dict, b: dict, ev: dict, choice: str) -> None:
         else:
             result = 'Hân vui vẻ hẹn dịp khác, không sao cả.'
     ev.update(stage='done', choice=choice, result=result, effects=eff, good=good)
-    b['ev_history'] = (b['ev_history'] + [dict(kind=k, choice=choice, day=c['day'])])[-30:]
+    b['ev_history'] = ar.last(b['ev_history'] + [dict(kind=k, choice=choice, day=c['day'])], 30, 'boba.events', c)
     e.log(s, c, 'counter_event', EVENTS[k]['title'] + ': ' + result, ref=ev['id'])
 
 

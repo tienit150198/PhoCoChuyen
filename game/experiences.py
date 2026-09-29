@@ -9,6 +9,9 @@ from . import extra_content as data
 from . import teach_lesson, tour_trip
 from .careers import PLUGINS
 from .jsoncopy import tree_copy
+from . import archive as ar
+
+GOALS_KEPT=10  # day recaps kept in the save (nothing reads older ones; the rest is archived)
 
 NEW_ACTION_PREFIXES=('life_','lesson_','tour_','tea_','gift_')
 DONE=('completed','referred','cancelled')
@@ -70,7 +73,7 @@ def after_task(s:dict,c:dict,t:dict):
  x=c['life'];ref=t['id']
  if ref in x['served_sources']:return
  mod=PLUGINS.get(t['career'])
- x['served_sources'].append(ref);x['served_sources']=x['served_sources'][-240:]
+ x['served_sources'].append(ref);x['served_sources']=ar.last(x['served_sources'], 240, 'life.served', c)
  x['day_metrics']['served']=x['day_metrics'].get('served',0)+1
  if t['mistakes']==0:
   _metric(c,'perfect');x['streak']+=1;x['best_streak']=max(x['best_streak'],x['streak'])
@@ -105,15 +108,15 @@ def on_close(s:dict,c:dict,career:str)->dict:
     value=t['cup']['cost'];waste+=value
     x['waste'].append(dict(day=c['day'],item='cup',qty=1,value=value,reason='Ly đang làm được bỏ khi khép ca'))
     t['cup']=boba.new_cup();t['stage']='order'
-  x['pantry']=[lot for lot in x['pantry'] if lot['qty']>0][-250:]
+  x['pantry']=ar.last([lot for lot in x['pantry'] if lot['qty']>0], 250, 'life.pantry', c)
  if career=='mother_baby':
   from . import giftshop
   counter=giftshop.on_close(s,c)
  if career=='tour_guide':tour_trip.on_close(s,c)
- x['day_waste']+=waste;x['waste']=x['waste'][-120:]
+ x['day_waste']+=waste;x['waste']=ar.last(x['waste'], 120, 'life.waste', c)
  _metric(c,'days_closed')
  recap=dict(day=c['day'],served=x['day_metrics'].get('served',0),perfect=x['day_metrics'].get('perfect',0),activities=x['day_metrics'].get('activities',0),tips=x['tips'],staff_tips=x['staff_tips'],waste_value=x['day_waste'],consumed_cost=x['consumed_cost'],streak=x['best_streak'],goals=goals(c),festival=x['festival'],note='Chi phí hàng đã trả khi nhập; hao hụt chỉ ghi giá trị, không trừ két lần nữa.',counter=counter)
- x['recap']=recap;x['goals_history']=(x['goals_history']+[recap])[-30:]
+ x['recap']=recap;x['goals_history']=ar.last(x['goals_history']+[recap], GOALS_KEPT, 'life.goals_history', c)
  x['day_metrics']={};x['goals_claimed']=[];x['day_talked']=[];x['activity_rewards']=[]
  x['tips']=0;x['staff_tips']=0;x['consumed_cost']=0;x['day_waste']=0;x['streak']=0;x['festival_claimed']=False
  return recap
@@ -165,7 +168,7 @@ def _activity_finish(s:dict,c:dict,a:dict):
   c['xp']+=10;x['activity_rewards'].append(a['spec']);_metric(c,'activities')
   _sticker(c,a['spec'],data.ACTIVITY_INDEX[a['spec']]['title'],data.ACTIVITY_INDEX[a['spec']]['emoji'])
  x['activity_best'][a['spec']]=max(score,x['activity_best'].get(a['spec'],0))
- x['activity_history']=(x['activity_history']+[dict(id=a['id'],spec=a['spec'],day=c['day'],score=score,practice=a['practice'],reward=a['reward'])])[-100:]
+ x['activity_history']=ar.last(x['activity_history']+[dict(id=a['id'],spec=a['spec'],day=c['day'],score=score,practice=a['practice'],reward=a['reward'])], 100, 'life.activities', c)
 
 def _activity_action(s,c,name,p):
  e=core();x=c['life'];need=e.need;a=x['activity'];r=dict(message='Đã thử một bước.')
@@ -234,7 +237,7 @@ def handle(s:dict,c:dict,career:str,action:str,p:dict)->dict:
    else:raise e.GameError('Nghề này nhận thù lao công việc, không bán sản phẩm để đổi giá.')
    need(round(base*.75)<=value<=round(base*1.25),'Giá thử nghiệm trong khoảng 75%–125% giá gốc để giữ khả năng hoàn tất đơn.')
    if career=='mother_baby':need(not any(t['status'] not in DONE and t['needs'].get('product')==item for t in c['tasks']),'Món này còn trong đơn được giữ từ ca trước; hoàn thành đơn trước khi đổi giá.')
-   x['prices'][item]=value;x['price_history']=(x['price_history']+[dict(day=c['day'],item=item,price=value)])[-100:];r['message']='Đã cập nhật bảng giá cho đơn mới.'
+   x['prices'][item]=value;x['price_history']=ar.last(x['price_history']+[dict(day=c['day'],item=item,price=value)], 100, 'life.prices', c);r['message']='Đã cập nhật bảng giá cho đơn mới.'
   elif name=='reply_edit':
    post=next((f for f in c['feed'] if f['id']==p.get('post')),None);need(post,'Không thấy bài đăng.');index=e.integer(p.get('index'),0,59);need(index<len(post['comments']) and post['comments'][index]['npc']=='player','Chỉ sửa phản hồi của bạn.')
    comment=post['comments'][index];comment['text']=e.clean_text(p.get('text'),500);comment['edited']=True;r['message']='Đã sửa phản hồi của bạn; đánh giá gốc vẫn được giữ.'

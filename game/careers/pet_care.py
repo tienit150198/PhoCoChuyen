@@ -41,6 +41,7 @@ import copy
 import math
 from . import kit
 from .. import consequences as cq
+from .. import archive as ar
 
 ID = 'pet_care'
 TEMP = dict(low=36, high=39, burn=42)      # bath water °C: comfortable window, scald from `burn`
@@ -1988,7 +1989,9 @@ def _visit(c: dict, t: dict) -> str:
     rec = book.get(key)
     if rec is None:
         while len(book) >= BOOK_MAX:
-            del book[min(book, key=lambda k: (book[k]['last'], book[k]['visits']))]
+            gone = min(book, key=lambda k: (book[k]['last'], book[k]['visits']))
+            ar.record([dict(key=gone, pet=book[gone])], 'pet.book', c)
+            del book[gone]
         rec = book[key] = dict(name=n['name'], species=n['species'], breed=n['breed'], npc=npc, visits=0, first=c['day'], last=c['day'],
                                trust=0, mood=None, allergy=None, nails=None, kg=None, fav=False, told=[], job=t['job'], stars=0,
                                vax_due=None, worm_due=c['day'] + kit.rng(ID, 'worm', key).randint(*WORM_FIRST))
@@ -2009,7 +2012,7 @@ def _visit(c: dict, t: dict) -> str:
     told = [r[4:] for r in t.get('report') or [] if r.startswith('vet_') and r[4:] in signs]
     if t['job'] == 'board' and t.get('reason') == 'sick':
         told += [sg for sg in ('fever', 'cough') if sg in signs and SIGNS[sg]['part'] in insp]
-    rec['told'] = list(dict.fromkeys(told))[:4]
+    rec['told'] = ar.first(list(dict.fromkeys(told)), 4, 'pet.told', c)
     if t['job'] == 'board' and 'vaccine' in insp:
         if x['vax'] != 'valid':
             rec['vax_due'] = c['day']
@@ -2194,7 +2197,7 @@ def _night(c: dict, pid: str, st: dict) -> str:
     if good:
         _data(c)['stays_good'] += 1
     word = f'{_word(MOOD_WORDS, st["mood"]).lower()}, {_word(HEALTH_WORDS, st["health"]).lower()}'
-    st['log'] = (st['log'] + [f'Ngày {c["day"]}: ' + ('chăm đủ' if good else ', '.join(miss) or 'ổn') + f' — {word}.'])[-STAY_LOG:]
+    st['log'] = ar.last(st['log'] + [f'Ngày {c["day"]}: ' + ('chăm đủ' if good else ', '.join(miss) or 'ổn') + f' — {word}.'], STAY_LOG, 'pet.stay_log', c)
     rec = _data(c)['book'].get(st['key']) or {}
     st['warn'] = _roll(st['key'], c['day'] + 1, False, rec.get('trust', 0))
     return f'{v["pet"]} {word}' + (f' ({", ".join(miss)})' if miss else '')

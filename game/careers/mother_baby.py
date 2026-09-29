@@ -39,6 +39,7 @@ from __future__ import annotations
 import hashlib
 import random
 import re
+from .. import archive as ar
 
 CAREER = 'mother_baby'
 V = 1
@@ -201,7 +202,7 @@ def _trust(r: dict, delta: int) -> int:
 
 
 def _log(cr: dict, day: int, text: str) -> None:
-    cr['log'] = (cr['log'] + [dict(day=day, text=text)])[-12:]
+    cr['log'] = ar.last(cr['log'] + [dict(day=day, text=text)], 12, 'baby.log', None)
 
 
 def _zero() -> dict:
@@ -281,7 +282,7 @@ def on_start(s: dict, c: dict) -> None:
             cr['lots'].append(dict(id=f"{o['item'].upper()}-{cr['seq']:02d}", p=o['item'], qty=o['qty'], exp=exp, recalled=False, got=day))
         _log(cr, day, f"Nhận hàng đặt hôm qua: {o['qty']} × {_item_name(o['item'])}.")
     cr['orders'] = keep
-    cr['lots'] = [lot for lot in cr['lots'] if lot['qty'] > 0][-30:]
+    cr['lots'] = ar.last([lot for lot in cr['lots'] if lot['qty'] > 0], 30, 'baby.lots', c)
     _recall(s, c, cr, day)
     # Pickup windows: a family that was never seen (odd saves) moves on quietly.
     for f in FAMILIES:
@@ -300,7 +301,7 @@ def on_start(s: dict, c: dict) -> None:
             continue
         f = FAM[fu['fam']]
         _post(s, c, f, fu['text'], fu['ref'], fu['stars'])
-    cr['follow'] = rest[-8:]
+    cr['follow'] = ar.last(rest, 8, 'baby.follow', c)
     reg = cr['reg']
     if reg['state'] == 'soon' and day >= cr['start'] + REGISTRY['open']:
         reg['state'] = 'open'
@@ -348,7 +349,7 @@ def _recall(s: dict, c: dict, cr: dict, day: int) -> None:
     rr = _rng(cr['start'], 'recall', day)
     lot = rr.choices(lots, [3 if x['p'] in soon else 1 for x in lots])[0]
     lot['recalled'] = True
-    cr['notices'] = (cr['notices'] + [dict(day=day, lot=lot['id'], p=lot['p'])])[-6:]
+    cr['notices'] = ar.last(cr['notices'] + [dict(day=day, lot=lot['id'], p=lot['p'])], 6, 'baby.notices', c)
     _log(cr, day, f"📣 Hãng {BRANDS[FORMULAS[lot['p']]['brand']]} thu hồi lô {lot['id']} (lỗi hàn nắp). Rút khỏi kệ, hãng hoàn tiền.")
     _e().log(s, c, 'shop_event', f"Thông báo thu hồi lô sữa {lot['id']}.", ref=f"care-recall-{day}")
 
@@ -527,7 +528,7 @@ def _hand(s, c, cr, p):
             e.money(s, c, opt['gain'], 'Hoa hồng bán kèm', ref, category='revenue')
             notes.append(f"Bán kèm thêm, hoa hồng +{opt['gain']} xu.")
             cr['follow'].append(dict(day=day + 1, fam=f['id'], ref=ref + '-regret', stars=2, text=opt['regret']))
-            cr['follow'] = cr['follow'][-8:]
+            cr['follow'] = ar.last(cr['follow'], 8, 'baby.follow', c)
         else:
             delta -= 1
             notes.append('Lời khuyên chưa đúng: bé đủ sáu tháng nên chuyển sữa số 2.')
