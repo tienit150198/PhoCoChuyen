@@ -143,6 +143,11 @@ async def play(browser, base: str, cid: str, shots: Path | None, max_steps: int 
             await dev_start(page, cid)
         else:
             # The story intro: arrive → who are you → first workplace.
+            # The first-run welcome card (tutorial) comes first: this script plays without the tour.
+            try:
+                await page.click('[data-tut-w="explore"]', timeout=4000)
+            except Exception:
+                pass
             await page.click('[data-action="jrStep"][data-step="who"]')
             await page.click('[data-action="jrGender"][data-gender="female"]')
             await page.fill('#sheet[open] input', 'Lan')
