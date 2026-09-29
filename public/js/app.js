@@ -28,6 +28,7 @@ import {happenBoot,happenSummary} from './v4/happenings.js';
 import {lifeSummary} from './v4/life.js';
 import {feedbackPageView,feedbackAction,feedbackSubmit,feedbackInput} from './v4/feedback.js';
 import {boardView,boardAction,boardSubmit,boardBoot,boardUnread} from './v4/board.js';
+import {tutorialBoot,tutorialAction,guideHelp} from './tutorial/index.js';
 
 const $=s=>document.querySelector(s), api=new GameAPI(), sound=new Sound();
 const ended=t=>['completed','referred','cancelled'].includes(t.status);
@@ -71,7 +72,7 @@ async function cmd(action,payload={},options={}){
 }
 function closeSheet(){if($('#sheet').open)$('#sheet').close();ui.view=null;ui.ai={};world.paused=ui.paused;}
 function openSheet(view,data={}){if(view!=='job'&&view!=='chat'){ui.task=null;}Object.assign(ui,data);ui.view=view;renderSheet(false);if(!$('#sheet').open){const d=$('#sheet');d.showModal();d.scrollTop=0;d.tabIndex=-1;d.focus({preventScroll:true});}}
-function header(title,subtitle='',eyebrow='MỘT NGÀY LÀM NGHỀ',extra=''){return `<header class="sheet-head"><div class="grow"><span class="eyebrow">${eyebrow}</span><h2>${title}</h2>${subtitle?`<p>${subtitle}</p>`:''}</div>${extra}<button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;}
+function header(title,subtitle='',eyebrow='MỘT NGÀY LÀM NGHỀ',extra=''){return `<header class="sheet-head"><div class="grow"><span class="eyebrow">${eyebrow}</span><h2>${title}</h2>${subtitle?`<p>${subtitle}</p>`:''}</div>${extra}${ui.view==='job'?guideHelp(career()):''}<button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;}
 function footer(left='',right=''){return `<footer class="sheet-foot"><p>${left}</p><div class="row wrap">${right}</div></footer>`;}
 function setPaused(value){ui.paused=value;world.paused=value;$('#pauseOverlay').hidden=!value;renderMain();if(value)sound.stopMusic();else sound.configure(api.state.settings);}
 function draft(t){return ui.drafts[t.id]??={paper:t.pack?.paper||'cream',ribbon:t.pack?.ribbon||'gold',card:t.pack?.card||'Gửi bạn một ngày dịu dàng.',checks:[]};}
@@ -144,7 +145,7 @@ function navItems(c){
 const railItem=([a,i,label,badge])=>`<button type="button" class="rail-item ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}>${icon(i,21)}<span>${label}</span>${badge==='dot'?'<i class="dot" aria-hidden="true"></i>':badge?`<em class="badge">${badge}</em>`:''}</button>`;
 function railHTML(c){
   const extra=layout()==='phone'?sceneActions().slice(4):[];
-  return (extra.length?`<p class="rail-title">Trong tiệm</p>${extra.map(([a,i,l])=>railItem([a,i,l])).join('')}<p class="rail-title">Sổ & khu phố</p>`:'')+navItems(c).map(railItem).join('')+`<button type="button" class="rail-item rail-bottom" data-action="help">${icon('question',21)}<span>Cách chơi</span></button>`+railItem(['gopy','chat','Góp ý']);
+  return (extra.length?`<p class="rail-title">Trong tiệm</p>${extra.map(([a,i,l])=>railItem([a,i,l])).join('')}<p class="rail-title">Sổ & khu phố</p>`:'')+navItems(c).map(railItem).join('')+`<button type="button" class="rail-item rail-bottom" data-action="help">${icon('question',21)}<span>Hướng dẫn</span></button>`+railItem(['tutReplay','play','Xem lại hướng dẫn'])+railItem(['gopy','chat','Góp ý']);
 }
 function dockHTML(c){
   const phone=layout()==='phone',low=lowOpen(c);let items=sceneActions();
@@ -759,7 +760,7 @@ async function handleAction(action,data,el){
     case'pause':setPaused(!ui.paused);break;
     case'resume':setPaused(false);break;
     case'sound':await cmd('settings',{sound:!api.state.settings.sound},{quiet:true});break;
-    case'help':case'people':case'phone':case'queue':case'decor':case'settings':case'album':case'summary':case'event':openSheet(action);break;
+    case'people':case'phone':case'queue':case'decor':case'settings':case'album':case'summary':case'event':openSheet(action);break;
     case'journal':if(['teacher','tour_guide','milk_tea'].includes(career()))openSheet('passport');else openSheet('journal',{journalTab:'quests'});break;
     case'library':if(['teacher','tour_guide','milk_tea'].includes(career()))openSheet('workshop');else openSheet('journal',{journalTab:'library'});break;
     case'journalTab':ui.journalTab=data.tab;renderSheet(false);break;
@@ -802,6 +803,7 @@ async function handleAction(action,data,el){
     case'import':$('#import-file').click();break;
     case'resetCareer':if(await confirmAction('Xóa tiến trình riêng nghề này?','Tiền, đồ, công việc, hội thoại và album của nghề đang chọn sẽ được đặt lại. Các nghề khác giữ nguyên. Nên xuất bản lưu trước.','Xóa & bắt đầu lại')){const r=await cmd('reset_career',{confirm:'BAT DAU LAI'});if(r){ui.task=null;closeSheet();await start();}}break;
     default:{
+      if(await tutorialAction(action,data,el,env()))break;
       if(await deskAction(action,data,el,env()))break;
       if(await boardAction(action,data,el,env()))break;
       if(await journeyAction(action,data,el,env()))break;
@@ -917,4 +919,5 @@ try{
   const deep=new URLSearchParams(location.search);
   if(deep.get('social')){history.replaceState(null,'','/');openSocial(deep.get('social'));}
   else if(!api.state.current)openSheet('home');else{world.say('Chào bạn trở lại. Mọi việc đã xác nhận vẫn ở đây.');if(!room().open)openSheet(room().shift_summary?'summary':'prepare');}
+  tutorialBoot(env());
 }catch(error){$('#loading').innerHTML=`<div class="loading-leaf">${icon('leaf',45)}</div><h1>Khu phố đang đợi mở cửa</h1><p>Chưa kết nối được. Kiểm tra mạng rồi thử lại nhé.</p><button class="btn primary big" id="reload-btn">Thử kết nối lại</button>`;console.warn(error);$('#reload-btn').onclick=()=>location.reload();}

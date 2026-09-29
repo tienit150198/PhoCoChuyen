@@ -65,9 +65,17 @@ def new_state() -> dict:
         settings=default_settings(),
         careers={cid:initial_career(cid) for cid in CAREERS},journey=jr.initial(),stories=cst.initial())
 
+def notes_seen(v) -> str:
+    """Comma list of announcement ids the player has seen (tutorial helper)."""
+    need(isinstance(v,str) and len(v)<=320,"Thiết lập không hợp lệ.")
+    ids=[x for x in v.split(",") if x]
+    need(len(ids)<=12 and all(re.fullmatch(r"[a-z0-9-]{1,24}",x) for x in ids),"Thiết lập không hợp lệ.")
+    return ",".join(ids)
+
 def default_settings() -> dict:
     return dict(mode="everyday",sound=True,music=False,reduceMotion=False,largeText=False,aiConsent=True,aiAsked=True,aiNoticeSeen=False,securityEvents=True,
-        lang="vi",uiTheme="kem",musicTrack="auto",musicVolume=45,sfxVolume=70,notify=False,publicProfile=False)
+        lang="vi",uiTheme="kem",musicTrack="auto",musicVolume=45,sfxVolume=70,notify=False,publicProfile=False,
+        tutorialDone=False,notesSeen="")
 
 _SCALARS=(str,int,float,bool,type(None))
 
@@ -385,6 +393,9 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
                 need(v in SETTING_CHOICES[k],"Thiết lập không hợp lệ.");s["settings"][k]=v
             elif k in ("musicVolume","sfxVolume"):
                 s["settings"][k]=integer(v,0,100)
+            elif k=="tutorialDone":  # first-run tour seen (follows the account across devices)
+                need(type(v) is bool,"Thiết lập không hợp lệ.");s["settings"][k]=v
+            elif k=="notesSeen":s["settings"][k]=notes_seen(v)  # announcements already shown ("guide-v1,…")
             elif k in s["settings"]:
                 need(type(v) is bool,"Thiết lập không hợp lệ.");s["settings"][k]=v
             else:raise GameError("Thiết lập không được hỗ trợ.")
@@ -1019,6 +1030,7 @@ workflow references, quantities and maximum sizes are validated before commit.
     for k,choices in SETTING_CHOICES.items():need(settings.get(k) in choices,"Thiết lập bản lưu không hợp lệ.")
     for k in ("musicVolume","sfxVolume"):integer(settings.get(k),0,100)
     need(set(settings)<=set(default_settings()),"Thiết lập lạ trong bản lưu.")
+    need(type(settings.get("tutorialDone",False)) is bool,"Thiết lập bản lưu không hợp lệ.");notes_seen(settings.get("notesSeen",""))
     for cid,c in s["careers"].items():
         need(isinstance(c,dict),"Tiến trình nghề không hợp lệ.")
         template=initial_career(cid)
