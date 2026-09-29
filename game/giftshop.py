@@ -1446,3 +1446,7 @@ def next_move(c: dict, t: dict) -> tuple[str, dict]:
     if not t['checked']:
         return 'shop_check', dict(task=tid)
     return 'shop_deliver', dict(task=tid)
+
+# Care loop: regular families, subscriptions, the diaper & formula shelf, registry.
+from .careers import mother_baby as _care  # noqa: E402
+_care.install(globals())

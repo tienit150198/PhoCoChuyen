@@ -1,8 +1,11 @@
 /** Tiệm quà mẹ & bé — shelf with age labels, wrapping desk with occasion cards,
  * safety advice, first-time-parent kits, a returns desk and shop surprises.
- * game/giftshop.py (day 2+) and the engine's shop_* actions are the referee. */
+ * game/giftshop.py (day 2+) and the engine's shop_* actions are the referee.
+ * The care corner (regular families, subscription pickups, the diaper & formula
+ * shelf, the baby-shower registry) is refereed by game/careers/mother_baby.py. */
 import {itemArt} from '../icons.js';
 import {Sound} from '../audio.js';
+import {reqList,fold} from '../ui-kit.js';
 
 const DONE=['completed','referred','cancelled'];
 const USE_EMOJI={sleep:'🌙',bath:'🛁',feed:'🍼',play:'🧸',wear:'🧦',card:'💌'};
@@ -77,7 +80,7 @@ function hud(x){
   const g=G(x),mod=g.modifier||{},left=x.room.tasks.filter(open).length,today=g.today||{};
   return `<div class="mb-hud" role="status">${mod.title?`<span class="mb-chip mod">${x.esc(mod.emoji||'')} ${x.esc(mod.title)}</span>`:''}
     ${g.date?`<span class="mb-chip">📅 ${x.esc(g.date)}</span>`:''}<span class="mb-chip">🛍️ Còn <b>${left}</b> khách</span>
-    ${today.sold?`<span class="mb-chip">🎁 ${today.sold} đơn</span>`:''}${today.advised?`<span class="mb-chip good">🛡️ ${today.advised} lần tư vấn</span>`:''}</div>`;
+    ${today.sold?`<span class="mb-chip">🎁 ${today.sold} đơn</span>`:''}${g.care?.due?`<span class="mb-chip warn">📦 ${g.care.due} hẹn lấy gói</span>`:''}${today.advised?`<span class="mb-chip good">🛡️ ${today.advised} lần tư vấn</span>`:''}</div>`;
 }
 function eventCard(x){
   const ev=G(x).event;if(!ev)return '';
@@ -172,6 +175,103 @@ function returnDesk(t,x){
     <div class="mb-resolve">${RESOLVE.map(([id,l,sub])=>`<button type="button" class="btn ${ready?'cream':'ghost'}" data-action="v4Cmd" data-op="gift_resolve" data-payload="${pay(x,{task:t.id,choice:id})}" data-confirm="${x.esc(`${l.replace(/^\S+\s/,'')}: chốt cách này với khách?`)}"><span>${l}</span><small>${sub}</small></button>`).join('')}</div>
     ${r.verdict?`<p class="mb-note">${x.esc(r.verdict)}</p>`:''}</section>`;
 }
+/* ---------------------------------------------------------------- pinned request: what the customer asked, always in view */
+function requestStrip(t,x){
+  if(!t.known||!t.needs)return '';
+  const v=t.gift||{},n=t.needs,g=G(x),bits=[];
+  if(v.kind==='return'){const r=v.ret||{};bits.push(`↩️ Đổi trả ${product(x,r.item).name}`,`mua ngày ${r.said_date||'?'}`);}
+  else if(v.kind==='kit'){const k=v.kit||{},left=3-(k.asked||[]).length;bits.push(`🍼 Bộ đồ gọn cho bố mẹ lần đầu${v.age!=null?` · bé ${v.age?`${v.age} tháng`:'vài tuần'}`:''}`);if(left>0)bits.push(`còn ${left} câu nên hỏi`);}
+  else if(v.kind==='bulk'){bits.push('🎉 '+Object.entries(v.items||{}).map(([k,q])=>`${q} ${product(x,k).name}`).join(' · '));}
+  else if(v.kind==='occasion'&&v.pick==='open')bits.push(`🎁 1 món hợp dịp${v.age!=null?` · bé ${v.age>=12?`${Math.floor(v.age/12)} tuổi`:`${v.age} tháng`}`:''}`);
+  else{const id=v.swap||n.product;if(id)bits.push(`🎯 ${n.qty} × ${product(x,id).name}`);if(v.kind==='safety'&&v.age!=null)bits.push(`bé ${v.age} tháng`);}
+  if(v.kind!=='return'){
+    if(n.budget!=null)bits.push(`≤ ${n.budget} xu`);
+    if(n.gift)bits.push(`gói ${(g.papers||{})[n.paper]||n.paper}${v.kind==='occasion'||v.kind==='bulk'?' + thiệp đúng dịp':''}`);
+  }
+  const sum=total(x,t.basket),over=n.budget!=null&&sum>n.budget,cnt=count(t.basket);
+  const tray=v.kind==='return'?'':`<b class="mb-strip-tray ${over?'bad':''}" aria-label="Giỏ ${cnt} món, ${sum} xu">🧺 ${cnt?`${cnt} món · ${sum} xu`:'trống'}</b>`;
+  return `<div class="mb-strip" role="note" aria-label="Khách dặn"><span class="mb-strip-text">${x.esc(bits.join(' · '))}</span>${tray}</div>`;
+}
+
+/* ---------------------------------------------------------------- care corner: families, pickups, shelf, registry */
+const C=x=>G(x).care||{};
+const hearts=n=>'♥'.repeat(n)+'♡'.repeat(Math.max(0,5-n));
+const kg=v=>v==null?'':`${Math.floor(v/10)},${v%10} kg`;
+const pickOf=(x,fid)=>((x.ui.pick??={})[fid]??={});
+function carePriceOf(x,f,pk){const c=C(x),pr=c.prices||{};return (pr.diaper||0)+(f.milk&&pk.lot&&pk.lot!=='none'?pr.formula||0:0);}
+function pickupCard(x,f){
+  const c=C(x),pk=pickOf(x,f.id),busy=!x.room.open;
+  const last=f.visits?`Lần trước (ngày ${f.last}): size <b>${x.esc(f.last_size||'?')}</b>${f.last_kg?` · ${kg(f.last_kg)}`:''}${f.last_prod_name?` · ${x.esc(f.last_prod_name)}`:''}`:'Lần đầu lấy gói ở tiệm.';
+  const news=f.news?`<p class="mb-care-say">“${x.esc(f.news)}”</p>`:f.can_ask?`<div class="row wrap">${qb(x,'⚖️ Hỏi thăm & cân bé','gift_care_ask',{family:f.id},'cream',busy)}<small class="muted">Chưa biết hôm nay bé nặng bao nhiêu.</small></div>`:'';
+  const sizes=(c.sizes||[]).map(sz=>{const n=(c.diapers||{})[sz.id]??0,on=pk.size===sz.id;return `<button type="button" class="mb-opt ${on?'on':''}" data-action="car:pick" data-fam="${f.id}" data-k="size" data-v="${sz.id}" aria-pressed="${on}"${n<1?' disabled':''}><b>${x.esc(sz.id)}</b><small>${x.esc(sz.range)}</small><em>${n<1?'hết':`còn ${n}`}</em></button>`;}).join('');
+  let milk='';
+  if(f.milk){
+    const lots=(c.lots||[]).map(l=>{const on=pk.lot===l.id,bad=l.expired||l.recalled;return `<button type="button" class="mb-opt lot ${on?'on':''} ${bad?'bad':''}" data-action="car:pick" data-fam="${f.id}" data-k="lot" data-v="${x.esc(l.id)}" aria-pressed="${on}"><b>${x.esc(l.name)}</b><small>${x.esc(l.id)} · HSD ${x.esc(l.date)} · ${l.qty} hộp</small>${l.recalled?'<em class="bad">⚠️ Bị thu hồi</em>':l.expired?'<em class="bad">⛔ Quá hạn</em>':l.left<=1?'<em>Sắp hết hạn</em>':''}</button>`;}).join('');
+    const none=pk.lot==='none';
+    milk=`<h5>🥫 Hộp sữa · bé dùng ${x.esc(f.feeding.replace(/^Sữa /,''))} <small class="muted">(số 1: ${x.esc((c.formulas||[])[0]?.range||'')}, số 2: từ ${c.stage_weeks||26} tuần)</small></h5><div class="mb-opts">${lots}<button type="button" class="mb-opt ${none?'on':''}" data-action="car:pick" data-fam="${f.id}" data-k="lot" data-v="none" aria-pressed="${none}"><b>🚫 Không có hộp hợp</b><small>Chỉ trao bỉm, hẹn sữa lần sau</small></button></div>`;
+  }
+  const q=f.question?`<div class="mb-care-q"><p class="mb-care-say">${x.esc(f.parent)} hỏi: “${x.esc(f.question.text)}”</p><div class="mb-opts one">${f.question.options.map(o=>{const on=pk.advice===o.id;return `<button type="button" class="mb-opt ${on?'on':''}" data-action="car:pick" data-fam="${f.id}" data-k="advice" data-v="${o.id}" aria-pressed="${on}"><span>💬 ${x.esc(o.label)}</span></button>`;}).join('')}</div></div>`:'';
+  const ready=pk.size&&(!f.milk||pk.lot)&&(!f.question||pk.advice);
+  const rows=[{ok:pk.size?true:null,icon:'🧷',label:'Chọn size bỉm theo cân nặng hôm nay',value:pk.size||''}];
+  if(f.milk)rows.push({ok:pk.lot?true:null,icon:'🥫',label:'Chọn hộp sữa đúng loại, còn hạn',value:pk.lot&&pk.lot!=='none'?pk.lot:pk.lot?'không có':''});
+  if(f.question)rows.push({ok:pk.advice?true:null,icon:'💬',label:'Trả lời câu khách hỏi'});
+  return `<article class="mb-pick ${f.late?'late':''}"><header><span class="mb-face" style="--s:40px" aria-hidden="true">${x.esc(f.emoji)}</span><div class="grow"><b>${x.esc(f.parent)} · bé ${x.esc(f.baby)}</b><small>${f.weeks} tuần · ${x.esc(f.feeding)} · <span class="mb-hearts" aria-label="${x.esc(f.trust_name)}">${hearts(f.trust)}</span> ${x.esc(f.trust_name)}</small></div>${f.late?'<span class="tag amber">Hạn cuối hôm nay</span>':''}</header>
+    <p class="small mb-care-last">${last}</p>${news}
+    <h5>🧷 Size bỉm</h5><div class="mb-opts sizes">${sizes}</div>${milk}${q}
+    ${reqList(rows,x.esc,'Gói định kỳ của '+f.parent)}
+    <button type="button" class="btn primary full" data-action="car:hand" data-fam="${f.id}"${ready&&!busy?'':' disabled'}>🤲 Trao gói · ${carePriceOf(x,f,pk)} xu</button></article>`;
+}
+function registryCard(x){
+  const c=C(x),reg=c.reg;if(!reg||reg.state!=='open')return '';
+  const busy=!x.room.open,names=c.item_names||{};
+  const rows=reg.lines.map(l=>{
+    const mark=l.aside?'✓':l.bought?'!':'○',state=l.aside?'Đã để riêng vào hộp':l.bought?'Bạn bè đã mua · cần để riêng':`Chưa ai mua`;
+    const btns=[!l.aside&&l.bought?qb(x,`📦 Để riêng <small>(kệ ${l.stock})</small>`,'gift_care_aside',{line:l.id},l.stock>=l.qty?'primary small':'ghost small',busy||l.stock<l.qty):'',
+      !l.aside&&!l.swapped?`<button type="button" class="btn ghost small" data-action="car:swapOpen" data-line="${l.id}" aria-expanded="${x.ui.swapLine===l.id}">💬 Gợi ý đổi</button>`:''].join('');
+    const picker=x.ui.swapLine===l.id&&!l.aside&&!l.swapped?`<div class="mb-opts one">${(reg.swaps[l.orig]||[]).map(k=>qb(x,`→ ${x.esc(names[k]||k)}`,'gift_care_swap',{line:l.id,item:k},'cream small',busy)).join('')}<small class="muted">Chỉ đổi khi nhãn hộp chưa hợp bé sơ sinh. Chị Ly đồng ý thì bạn bè mua món mới.</small></div>`:'';
+    return `<li class="mb-reg-line ${l.aside?'ok':l.bought?'todo':''}"><span class="mb-reg-mark" aria-hidden="true">${mark}</span><div class="grow"><b>${l.qty} × ${x.esc(l.name)}</b><span class="mb-label ${l.warn?'warn':''}">🏷️ ${x.esc(l.label)}</span><small class="mb-reg-state">${x.esc(state)}${l.bought||l.aside?'':` · dự kiến ngày ${l.bought_day}`}${l.swapped?` · đã đổi từ ${x.esc(l.orig_name)}`:''}</small>${btns?`<div class="row wrap">${btns}</div>`:''}${picker}</div></li>`;
+  }).join('');
+  const boxed=reg.lines.filter(l=>l.aside).length,missing=reg.lines.filter(l=>l.bought&&!l.aside).length;
+  const canGo=c.day>=reg.shower-1&&boxed>0;
+  return `<article class="mb-reg"><header><b>🎀 Quà mừng bé ${x.esc(c.fam?.find(f=>f.id===reg.family)?.baby||'')} · ${x.esc(c.fam?.find(f=>f.id===reg.family)?.parent||'')}</b><small>Tiệc ngày ${x.esc(reg.shower_date)} · giao hộp từ ngày ${reg.shower-1}</small></header>
+    <p class="small muted">Bạn bè đặt từng món trong danh sách. Món đã có người mua thì lấy trên kệ để riêng; đọc nhãn tuổi, món nào chưa hợp bé sơ sinh thì gợi ý đổi.</p>
+    <ul class="mb-reg-list">${rows}</ul>
+    <button type="button" class="btn ${canGo?'primary':'ghost'} full" data-action="car:shower" data-missing="${missing}"${canGo&&!busy?'':' disabled'}>🎁 Giao hộp quà mừng${missing?` · còn ${missing} món chưa để riêng`:''}</button></article>`;
+}
+function shelfFold(x){
+  const c=C(x),busy=!x.room.open,pr=c.prices||{},qty=id=>(x.ui.oq??={})[id]??2;
+  const coming=id=>(c.orders||[]).filter(o=>o.item===id).reduce((a,o)=>a+o.qty,0);
+  const stepper=(id,cost)=>`<span class="mb-step"><button type="button" class="btn ghost small" data-action="car:oq" data-item="${id}" data-d="-1" aria-label="Bớt">−</button><b>${qty(id)}</b><button type="button" class="btn ghost small" data-action="car:oq" data-item="${id}" data-d="1" aria-label="Thêm">＋</button><button type="button" class="btn small" data-action="car:order" data-item="${id}" data-cost="${cost}"${busy?' disabled':''}>Đặt · ${cost*qty(id)} xu</button></span>`;
+  const drows=(c.sizes||[]).map(sz=>{const n=(c.diapers||{})[sz.id]??0,on=coming(sz.id);return `<li class="mb-shelf-row ${n?'':'out'}"><div class="grow"><b>Bỉm ${x.esc(sz.id)} <small>· ${x.esc(sz.range)}</small></b><small>Còn <b>${n}</b> gói${on?` · +${on} về sáng mai`:''}</small></div>${stepper(sz.id,pr.diaper_cost||0)}</li>`;}).join('');
+  const lots=(c.lots||[]).map(l=>{const bad=l.expired||l.recalled;return `<li class="mb-shelf-row ${bad?'bad':''}"><div class="grow"><b>${x.esc(l.name)}</b> <small>${x.esc(l.id)} · ${l.qty} hộp · HSD ${x.esc(l.date)}</small>${l.recalled?'<small class="bad">⚠️ Lô bị thu hồi: rút ra, hãng hoàn tiền</small>':l.expired?'<small class="bad">⛔ Quá hạn: rút khỏi kệ</small>':l.left<=2?`<small>Còn ${l.left} ngày: bán lô này trước</small>`:''}</div>${bad?qb(x,'🧹 Rút khỏi kệ','gift_care_pull',{lot:l.id},'danger small',busy):''}</li>`;}).join('')||'<li class="muted small">Kệ sữa trống.</li>';
+  const frows=(c.formulas||[]).map(fm=>{const n=(c.lots||[]).filter(l=>l.p===fm.id).reduce((a,l)=>a+l.qty,0),on=coming(fm.id);return `<li class="mb-shelf-row"><div class="grow"><b>${x.esc(fm.name)} <small>· ${x.esc(fm.range)}</small></b><small>Còn <b>${n}</b> hộp${on?` · +${on} về sáng mai`:''}</small></div>${stepper(fm.id,pr.formula_cost||0)}</li>`;}).join('');
+  const notices=(c.notices||[]).map(n=>`<p class="mb-note">📣 Ngày ${x.esc(n.date)}: hãng thu hồi lô <b>${x.esc(n.lot)}</b> (${x.esc(n.name)}) vì lỗi hàn nắp.</p>`).join('');
+  const nPacks=Object.values(c.diapers||{}).reduce((a,v)=>a+v,0),nCans=(c.lots||[]).reduce((a,l)=>a+l.qty,0);
+  const body=`${notices}<h5>🥫 Lô sữa trên kệ</h5><ul class="mb-shelf-list">${lots}</ul><h5>🧷 Bỉm theo size</h5><ul class="mb-shelf-list">${drows}</ul><h5>🛒 Đặt thêm sữa</h5><ul class="mb-shelf-list">${frows}</ul><p class="small muted">Hàng đặt hôm nay về sáng mai. Bán: bỉm ${pr.diaper} xu/gói, sữa ${pr.formula} xu/hộp.</p>`;
+  const tag=c.alerts?` <span class="tag danger">${c.alerts} lô cần rút</span>`:'';
+  return fold(`🧺 Kệ bỉm sữa · ${nPacks} gói · ${nCans} hộp${tag}`,body,!!c.alerts);
+}
+function bookFold(x){
+  const c=C(x);
+  const rows=(c.fam||[]).map(f=>{
+    const when=f.status==='expecting'?`dự sinh ngày ${x.esc(f.born_date)}`:f.status==='soon'?`lần đầu ghé ngày ${f.first}`:f.due?'<b>hẹn lấy gói hôm nay</b>':`lấy gói ngày ${f.next}`;
+    const sz=f.last_size?` · size ${x.esc(f.last_size)}`:'',w=f.last_kg?` · ${kg(f.last_kg)}`:'';
+    return `<li><span class="mb-face" style="--s:34px" aria-hidden="true">${x.esc(f.emoji)}</span><div class="grow"><b>${x.esc(f.parent)} · bé ${x.esc(f.baby)}</b><small>${f.weeks!=null?`${f.weeks} tuần · `:''}${x.esc(f.feeding)}${sz}${w}</small><small>${when}${f.missed?` · lỡ hẹn ${f.missed} lần`:''}</small></div><span class="mb-hearts" title="${x.esc(f.trust_name)}" aria-label="${x.esc(f.trust_name)}">${hearts(f.trust)}</span></li>`;
+  }).join('');
+  const log=(c.log||[]).length?`<h5>📓 Gần đây</h5><ul class="mb-care-log">${c.log.slice().reverse().map(l=>`<li><small>Ngày ${l.day}</small> ${x.esc(l.text)}</li>`).join('')}</ul>`:'';
+  return fold(`📒 Sổ bé quen · ${(c.fam||[]).length} gia đình`,`<ul class="mb-book-list">${rows}</ul><p class="small muted">${x.esc(c.rule||'')} Từ “${x.esc((c.trust_names||[])[c.tells_weight||2]||'')}”, bố mẹ tự kể cân nặng; từ “${x.esc((c.trust_names||[])[c.tips_from||3]||'')}”, họ gửi chút bồi dưỡng khi gói đúng.</p>${log}`);
+}
+function careCount(x){const c=C(x);return (c.due||0)+(c.alerts||0)+(c.reg?.state==='open'&&c.reg.lines.some(l=>l.bought&&!l.aside)?1:0);}
+function careCorner(x,always){
+  const c=C(x);if(!c.ready)return '';
+  const open=always||x.ui.careOpen===true,n=careCount(x);
+  const due=(c.fam||[]).filter(f=>f.due);
+  const inner=`<span class="mb-care-title">🍼 Góc bỉm sữa & khách quen</span>${c.due?`<span class="tag amber">📦 ${c.due} hẹn lấy gói</span>`:''}${c.alerts?`<span class="tag danger">⚠️ ${c.alerts} lô cần rút</span>`:''}${!c.due&&!c.alerts?`<small>${n?'Có việc cần làm':'Không có hẹn hôm nay'}</small>`:''}`;
+  const head=always?`<h4 class="mb-care-head static">${inner}</h4>`:`<button type="button" class="mb-care-head" data-action="car:careToggle" aria-expanded="${open}">${inner}<i aria-hidden="true">${open?'▴':'▾'}</i></button>`;
+  if(!open)return `<section class="mb-care">${head}</section>`;
+  return `<section class="mb-care">${head}<div class="mb-care-body">${due.map(f=>pickupCard(x,f)).join('')}${registryCard(x)}${shelfFold(x)}${bookFold(x)}</div></section>`;
+}
+
 function nextStep(t,x){
   if(!t)return 'Chờ khách ghé tiệm';
   const ev=G(x).event;if(ev?.stage==='open')return 'Xử lý chuyện đang xảy ra ở tiệm';
@@ -204,10 +304,10 @@ export default {
       main=`${top}${steps(t,x,tab)}${basket}${panel}`;
     }
     const legacyEvent=x.room.event&&x.room.event.stage!=='resolved'?`<p class="mb-note">📣 Có chuyện ở tiệm đang chờ bạn. ${x.button('Xem ngay','event',{},'small')}</p>`:'';
-    return `<div class="career-job mb">${hud(x)}<p class="mb-hint" aria-live="polite">💡 ${x.esc(nextStep(t,x))}</p>${x.ui.flash?`<p class="mb-flash" role="status">${x.esc(x.ui.flash)}</p>`:''}${eventCard(x)}${legacyEvent}${customer(t,x)}${main}
+    return `<div class="career-job mb">${requestStrip(t,x)}${hud(x)}<p class="mb-hint" aria-live="polite">💡 ${x.esc(nextStep(t,x))}</p>${x.ui.flash?`<p class="mb-flash" role="status">${x.esc(x.ui.flash)}</p>`:''}${eventCard(x)}${legacyEvent}${customer(t,x)}${main}${careCorner(x,false)}
       <div class="mb-tools">${x.button('🧺 Kho & nhập hàng','warehouse',{},'ghost small')}${x.button('⭐ Đánh giá','feedback',{},'ghost small')}</div></div>`;
   },
-  idle(x){return `<div class="career-job mb">${hud(x)}${eventCard(x)}</div>`;},
+  idle(x){return `<div class="career-job mb">${hud(x)}${eventCard(x)}${careCorner(x,true)}</div>`;},
   actions:{
     async tab(data,el,x){x.ui.tab=data.tab;x.render();},
     async filter(data,el,x){x.ui.filter=data.use;x.render();},
@@ -233,22 +333,45 @@ export default {
         x.ui.flash=msg;x.toast(msg,['discount','refund','walkout','refuse'].includes(re.kind)?'error':false);x.render();
       }
     },
+    async careToggle(data,el,x){x.ui.careOpen=!x.ui.careOpen;x.render();},
+    async pick(data,el,x){const pk=pickOf(x,data.fam);pk[data.k]=pk[data.k]===data.v?undefined:data.v;x.ui.careOpen=true;x.render();},
+    async swapOpen(data,el,x){x.ui.swapLine=x.ui.swapLine===data.line?null:data.line;x.ui.careOpen=true;x.render();},
+    async oq(data,el,x){const q=(x.ui.oq??={});q[data.item]=Math.max(1,Math.min(4,(q[data.item]??2)+Number(data.d||0)));x.ui.careOpen=true;x.render();},
+    async order(data,el,x){
+      const q=(x.ui.oq??={})[data.item]??2,cost=Number(data.cost||0)*q,c=C(x);
+      const name=(c.sizes||[]).some(s=>s.id===data.item)?`bỉm ${data.item}`:`hộp ${(c.formulas||[]).find(f=>f.id===data.item)?.name||data.item}`;
+      if(!await x.ask('Đặt thêm hàng?',`Đặt ${q} × ${name}, trả ${cost} xu ngay. Hàng về kệ sáng mai.`,'Đặt hàng'))return;
+      await run(x,'gift_care_order',{item:data.item,qty:q,confirm:true});
+    },
+    async hand(data,el,x){
+      const f=(C(x).fam||[]).find(v=>v.id===data.fam);if(!f)return;
+      const pk=pickOf(x,f.id),lot=f.milk&&pk.lot&&pk.lot!=='none'?pk.lot:null;
+      const what=`bỉm ${pk.size}${lot?` + hộp sữa ${lot}`:''}`;
+      if(!await x.ask(`Trao gói cho ${f.parent}?`,`Trao ${what}, thu ${carePriceOf(x,f,pk)} xu.`,'Trao gói'))return;
+      const r=await run(x,'gift_care_hand',{family:f.id,size:pk.size,lot,advice:f.question?pk.advice:null,confirm:true});
+      if(r)delete x.ui.pick[f.id];
+    },
+    async shower(data,el,x){
+      const miss=Number(data.missing||0);
+      if(!await x.ask('Giao hộp quà mừng?',miss?`Còn ${miss} món bạn bè đã mua mà chưa để riêng. Giao hộp thiếu món đó?`:'Gói hộp quà (5 xu giấy gói) và giao cho chị Ly trước tiệc?','Giao hộp'))return;
+      await run(x,'gift_care_shower',{confirm:true});
+    },
     async go(data,el,x){
       let payload={};try{payload=JSON.parse(data.payload||'{}');}catch{return;}
       await run(x,data.op,payload);
     },
   },
   tick(root){
+    // The sheet head is sticky; the modal and the pinned request strip sit just under it.
+    const d=root.closest('dialog'),h=`${d?.querySelector('.sheet-head')?.offsetHeight||0}px`;
+    if(d&&d.style.getPropertyValue('--job-head')!==h)d.style.setProperty('--job-head',h);
     const modal=root.querySelector('.mb-modal');
-    if(modal){
-      const d=root.closest('dialog'),h=`${d?.querySelector('.sheet-head')?.offsetHeight||0}px`;
-      if(d&&d.style.getPropertyValue('--job-head')!==h)d.style.setProperty('--job-head',h);
-      if(!modal.contains(document.activeElement))modal.querySelector('button:not([disabled])')?.focus({preventScroll:true});
-    }
+    if(modal&&!modal.contains(document.activeElement))modal.querySelector('button:not([disabled])')?.focus({preventScroll:true});
   },
   summary(data,x){
     if(!data||data.sold==null)return '';
     const row=(l,v)=>`<div class="kv-row"><span>${l}</span><b>${v}</b></div>`;
-    return `<article class="card space-top"><h4 class="section-title">🎁 Tiệm quà hôm nay</h4><div class="kv">${row('Đơn quà đã trao',data.sold)}${data.advised?row('Lần tư vấn an toàn',data.advised):''}${data.returns?row('Ca đổi trả',data.returns):''}${data.events?row('Chuyện bất ngờ',data.events):''}${data.fines?row('Tiền phạt',`${data.fines} xu`):''}</div></article>`;
+    const care=Array.isArray(data.care?.lines)&&data.care.lines.length?`<h4 class="section-title space-top">🍼 Góc bỉm sữa & khách quen</h4><ul class="mb-care-log">${data.care.lines.map(l=>`<li>${x.esc(l)}</li>`).join('')}</ul>`:'';
+    return `<article class="card space-top"><h4 class="section-title">🎁 Tiệm quà hôm nay</h4><div class="kv">${row('Đơn quà đã trao',data.sold)}${data.advised?row('Lần tư vấn an toàn',data.advised):''}${data.returns?row('Ca đổi trả',data.returns):''}${data.events?row('Chuyện bất ngờ',data.events):''}${data.fines?row('Tiền phạt',`${data.fines} xu`):''}</div>${care}</article>`;
   },
 };
