@@ -5,7 +5,8 @@
 import shop from './shop.js';
 
 export const KIND_OF={
-  milk_tea:'shop',cafe_bakery:'shop',restaurant:'shop',grocery:'shop',florist:'shop',mother_baby:'shop',pharmacy:'shop',
+  // Each storefront career has its own scene (falls back to the shared 'shop' storefront until it loads).
+  milk_tea:'teabar',cafe_bakery:'cafe',restaurant:'kitchen',grocery:'minimart',florist:'flowershop',mother_baby:'babyshop',pharmacy:'drugstore',
   salon:'service',pet_care:'service',repair:'service',
   teacher:'classroom',
   accounting:'office',corp_accounting:'office',tax_payroll:'office',group_accounting:'office',customer_care:'office',
@@ -25,7 +26,7 @@ const BASE={
   people_sub:'Những người bạn gặp quanh tiệm.',feed_sub:'Lời nhắn và đánh giá quanh tiệm.',
 };
 const KIND_WORDS={
-  shop:{},
+  shop:{},teabar:{},cafe:{},kitchen:{},minimart:{},flowershop:{},babyshop:{},drugstore:{},
   service:{cat_line:'Mrrr… hôm nay có ai ghé làm đẹp không?',store:'VẬT TƯ',ledger:'SỔ THU CHI',open_sign:'ĐANG NHẬN KHÁCH',idle_line:'Khách hẹn sắp tới.',warehouse:'Kho vật tư',shelf:'Tủ dụng cụ',evidence:'Sổ hẹn & phiếu',counter:'Quầy thanh toán'},
   classroom:{cat_line:'Mrrr… hôm nay lớp mình học gì thế?',rating:'phụ huynh',till:'Quỹ lớp',door_open:'Tan lớp',door_closed:'Vào lớp',open_sign:'ĐANG HỌC',closed_sign:'ĐÃ TAN LỚP',
     shelf:'Góc học liệu',evidence:'Sổ liên lạc',counter:'Bàn giáo viên',warehouse:'Tủ đồ dùng',finance:'Sổ quỹ lớp',property:'Phòng học',ledger:'SỔ LỚP',store:'TỦ ĐỒ',
