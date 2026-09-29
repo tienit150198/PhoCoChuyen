@@ -43,7 +43,10 @@ FRESH=""
 PRAGMAS=("PRAGMA foreign_keys=ON",f"PRAGMA busy_timeout={BUSY_MS}",
          "PRAGMA synchronous=NORMAL",       # safe with WAL: no fsync per commit, only at checkpoints
          "PRAGMA temp_store=MEMORY","PRAGMA cache_size=-4000",
-         "PRAGMA mmap_size=268435456","PRAGMA journal_size_limit=67108864")
+         "PRAGMA mmap_size=268435456","PRAGMA journal_size_limit=67108864",
+         # No checkpoint inside a player's commit (SQLite's default runs one every ~4 MB of WAL,
+         # holding that writer); the server's checkpointer thread does it every few seconds.
+         f"PRAGMA wal_autocheckpoint={int(os.environ.get('WAL_AUTOCHECKPOINT','0') or 0)}")
 
 class Conflict(GameError):
     pass
@@ -493,7 +496,10 @@ class Store:
 
     def _store(self,sid:str,revision:int,serialized:str,request_id:str,fingerprint:str,receipt:str,cut:list=())->bool:
         """Compare-and-set: write the new save, its archive rows and its receipt only if the save is still at `revision`."""
+        tw=time.perf_counter()
         if not self.writing():raise sqlite3.OperationalError("database is locked")
+        tx=time.perf_counter()
+        if (tx-tw)*1000>=SLOW_MS/2:sys.stderr.write(f"[slow-lock] waited {(tx-tw)*1000:.0f}ms for the writer turn pid={os.getpid()}\n")
         db=self.connect()
         try:
             db.execute("BEGIN IMMEDIATE")
@@ -502,7 +508,10 @@ class Store:
                 db.rollback();return False
             _write_archive(db,sid,cut)
             db.execute("INSERT INTO receipts(sid,request_id,request_hash,result) VALUES(?,?,?,?)",(sid,request_id,fingerprint,receipt))
-            db.commit();return True
+            db.commit()
+            te=(time.perf_counter()-tx)*1000
+            if te>=SLOW_MS/2:sys.stderr.write(f"[slow-write] {te:.0f}ms to write {len(serialized)//1024}KB + {len(cut)} archive rows pid={os.getpid()}\n")
+            return True
         except sqlite3.IntegrityError:  # the same request id landed first: the caller replays it
             db.rollback();return False
         except BaseException:

@@ -854,6 +854,14 @@ class Handler(BaseHTTPRequestHandler):
         return dict(self._internal(token,rid,career,"fb_voice",dict(post=post["id"],text=text),(state,revision)),mode="ai")
 
 
+def checkpointer(store:Store,stop:threading.Event,every:float=2.0):
+    """Copy the WAL into the database every few seconds, off the request path
+    (request connections run with wal_autocheckpoint=0; see game/storage.py PRAGMAS)."""
+    while not stop.wait(every):
+        try:store.checkpoint()
+        except Exception as e:sys.stderr.write(f"[checkpoint] {type(e).__name__}\n")
+
+
 def maintenance(store:Store,stop:threading.Event,limits:SharedLimits|None=None):
     """Background housekeeping (one process only): WAL checkpoints, pruning of
     receipts, abandoned guest saves and stale saves, due pushes.
@@ -928,7 +936,9 @@ def _worker(server:GameServer,store:Store,limits:SharedLimits,i:int,n:int)->int:
     server.shared_limits=limits;server.worker=i
     ai._gate=threading.BoundedSemaphore(max(1,math.ceil(max(1,int(os.environ.get("LLM_CONCURRENCY","4") or 4))/n)))
     stop=threading.Event()
-    if i==0:threading.Thread(target=maintenance,args=(store,stop,limits),daemon=True,name="maintenance").start()
+    if i==0:
+        threading.Thread(target=maintenance,args=(store,stop,limits),daemon=True,name="maintenance").start()
+        threading.Thread(target=checkpointer,args=(store,stop,float(os.environ.get("CHECKPOINT_SECONDS","2"))),daemon=True,name="checkpointer").start()
     try:server.serve_forever(poll_interval=.3)
     except KeyboardInterrupt:pass
     finally:stop.set()
@@ -966,6 +976,7 @@ def main():
     if workers>1:return serve_workers(server,store,workers,args.db)
     stop=threading.Event()
     threading.Thread(target=maintenance,args=(store,stop),daemon=True).start()
+    threading.Thread(target=checkpointer,args=(store,stop,float(os.environ.get("CHECKPOINT_SECONDS","2"))),daemon=True).start()
     try:server.serve_forever(poll_interval=.3)
     except KeyboardInterrupt:print("\nĐã dừng. Tiến trình đã lưu trong SQLite.")
     finally:stop.set();server.server_close()
