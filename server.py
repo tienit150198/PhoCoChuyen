@@ -219,7 +219,7 @@ class Handler(BaseHTTPRequestHandler):
                         if social.settle(self.server.store,token,state):state,revision,_=self.server.store.read(token)
                     except social.SocialError:pass
                 extra={"Set-Cookie":self.cookie(token)} if created else {}
-                self.json(200,dict(state=public_state(state),revision=revision,csrf=csrf,content=public_content(),ai=dict(public_config(),configured=ai.available()),
+                self.json(200,dict(state=public_state(state),revision=revision,csrf=csrf,content=public_content(),ai=dict(public_config(),configured=ai.available(),chat=True),
                                    social=social.bootstrap(self.server.store,token,state),push=push.public_config(),account=accounts.status(self.server.store,token)),extra);return
             if route=="/api/state":
                 _,state,revision,_=self.require_session();self.json(200,dict(state=public_state(state),revision=revision));return
@@ -260,6 +260,9 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/ai/rephrase":
                 if not self.ai_budget(token):self.json(200,dict(mode="scripted",reason="rate_limit"));return
                 self.json(200,rephrase(state,data.get("career"),data.get("npc")));return
+            if route=="/api/ai/chat":
+                if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
+                self.json(200,self.ai_chat(token,state,revision,data));return
             if route=="/api/ai/feedback":
                 self.json(200,self.ai_feedback(token,state,revision,data));return
             if route=="/api/ai/review":
@@ -321,6 +324,70 @@ class Handler(BaseHTTPRequestHandler):
     # ---- AI reviewer personas -------------------------------------------
     def ai_budget(self,token:str)->bool:
         return self.server.rate_limit("ai:"+token,int(os.environ.get("AI_PER_MINUTE","10"))) and self.server.rate_limit("ai-global",int(os.environ.get("AI_GLOBAL_PER_MINUTE","60")))
+
+    def ai_chat_budget(self,token:str)->bool:
+        """Free chat: per session per minute and per rolling day, plus the server-wide AI budget."""
+        per_min=int(os.environ.get("AI_CHAT_PER_MINUTE","8"));per_day=int(os.environ.get("AI_CHAT_PER_DAY","200"))
+        return (self.server.rate_limit("ai-chat:"+token,per_min) and self.server.rate_limit("ai-chat-day:"+token,per_day,86400)
+                and self.server.rate_limit("ai-global",int(os.environ.get("AI_GLOBAL_PER_MINUTE","60"))))
+
+    def ai_chat(self,token:str,state:dict,revision:int,data:dict)->dict:
+        """POST /api/ai/chat: the scripted `talk` runs first (and is stored); an AI persona
+        line then replaces the wording of that one stored NPC line when it passes the guards."""
+        career,npc,text=data.get("career"),data.get("npc"),data.get("text")
+        if career not in CAREERS:raise GameError("Nghề không hợp lệ.")
+        if not isinstance(text,str) or not text.strip():raise GameError("Tin nhắn trống.")
+        text=text.strip()
+        if len(text)>200:raise GameError("Tin nhắn tối đa 200 ký tự nhé.")
+        rid=data.get("request_id")
+        if not (isinstance(rid,str) and 8<=len(rid)<=100):rid="ai-chat-"+secrets.token_hex(12)
+        expected=data.get("expected_revision")
+        out=self.server.store.command(token,rid,expected if type(expected) is int else revision,career,"talk",dict(npc=npc,text=text))
+        canonical=str(out["result"].get("reply") or "")
+        mode,reason,line="scripted",None,canonical
+        if out.get("replayed"):reason="replayed"
+        else:
+            fresh,_,_=self.server.store.read(token)
+            rows=fresh["careers"][career]["chats"].get(npc) or []
+            history=rows[:-2][-8:]  # the pair just stored is this turn
+            settings=fresh["settings"]
+            if ai.abusive(text):allowed,why=True,None
+            elif not settings.get("aiConsent"):allowed,why=False,"no_consent"
+            elif not ai.available():allowed,why=False,"not_configured"
+            elif not self.ai_chat_budget(token):allowed,why=False,"rate_limit"
+            else:allowed,why=True,None
+            if allowed:
+                answer=ai.persona_reply(fresh,career,npc,text,canonical=canonical,history=history)
+                reason=answer.get("reason")
+                if answer["mode"] in ("ai","guard") and answer["text"]:
+                    stored=self._store_chat_line(token,career,npc,canonical,answer["text"],answer["mode"])
+                    if stored:
+                        out=dict(out,state=stored[0],revision=stored[1]);mode,line=answer["mode"],answer["text"]
+                    else:reason="superseded"
+            else:reason=why
+        result=dict(out["result"],reply=line,message=line)
+        return dict(state=out["state"],revision=out["revision"],result=result,mode=mode,reason=reason,reply=line)
+
+    def _store_chat_line(self,token:str,career:str,npc:str,canonical:str,line:str,mode:str):
+        """Reword the NPC line just stored by `talk`, only if it is still the last scripted line."""
+        store=self.server.store;sid=store.key(token);db=store.connect()
+        try:
+            db.execute("BEGIN IMMEDIATE")
+            row=db.execute("SELECT * FROM sessions WHERE sid=?",(sid,)).fetchone()
+            if not row:db.rollback();return None
+            raw=json.loads(row["state"])
+            rows=(((raw.get("careers") or {}).get(career) or {}).get("chats") or {}).get(npc) or []
+            last=rows[-1] if rows else None
+            if not last or last.get("role")!="npc" or last.get("mode")!="scripted" or last.get("text")!=canonical:
+                db.rollback();return None
+            last.update(text=line[:600],mode=mode,canonical=canonical[:600])
+            revision=row["revision"]+1
+            db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?",(json.dumps(raw,ensure_ascii=False,allow_nan=False),revision,sid))
+            db.commit()
+            return public_state(raw),revision
+        except Exception:
+            db.rollback();raise
+        finally:db.close()
 
     def _feedback_post(self,state:dict,data:dict):
         career=data.get("career")

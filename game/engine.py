@@ -63,13 +63,15 @@ def new_state() -> dict:
         careers={cid:initial_career(cid) for cid in CAREERS},journey=jr.initial(),stories=cst.initial())
 
 def default_settings() -> dict:
-    return dict(mode="everyday",sound=True,music=False,reduceMotion=False,largeText=False,aiConsent=False,securityEvents=True,
+    return dict(mode="everyday",sound=True,music=False,reduceMotion=False,largeText=False,aiConsent=True,aiAsked=True,aiNoticeSeen=False,securityEvents=True,
         lang="vi",uiTheme="kem",musicTrack="auto",musicVolume=45,sfxVolume=70,notify=False,publicProfile=False)
 
 def migrate_state(state:dict) -> dict:
     """Upgrade v1 locally without replaying wages, rent, tax or past incidents."""
     need(isinstance(state,dict),"Bản lưu cần là một đối tượng.","invalid_save")
     s=copy.deepcopy(state)
+    # AI characters are on by default: saves that never went through that change get it once.
+    ai_unasked=not isinstance(s.get('settings'),dict) or 'aiAsked' not in s['settings']
     need(s.get("schema") in (1,2,3,4),"Phiên bản bản lưu chưa được hỗ trợ.","invalid_save")
     if s["schema"]==1:
         need(isinstance(s.get("careers"),dict),"Bản lưu thiếu các nghề.","invalid_save")
@@ -115,11 +117,14 @@ def migrate_state(state:dict) -> dict:
         incs.migrate(s)  # chuyện đời: an empty incident book per workplace
         haps.migrate(s)  # chuyện bất ngờ trong ca: live happenings in the scene
         cst.migrate(s)  # truyện nghề: an empty story book for older saves
+    if isinstance(s.get('settings'),dict):
+        if ai_unasked:s['settings'].update(aiConsent=True,aiAsked=True)
+        s['settings'].setdefault('aiNoticeSeen',False)
     return s
 
 
 def needs_migration(state:dict) -> bool:
-    return state.get('schema')!=4 or not isinstance(state.get('careers'),dict) or set(state['careers'])!=set(CAREERS) or 'journey' not in state or 'stories' not in state
+    return state.get('schema')!=4 or not isinstance(state.get('careers'),dict) or set(state['careers'])!=set(CAREERS) or 'journey' not in state or 'stories' not in state or 'aiAsked' not in (state.get('settings') or {})
 
 
 def metric(c: dict,key: str,value: int=1) -> None:
@@ -923,7 +928,7 @@ workflow references, quantities and maximum sizes are validated before commit.
     iv.validate(s)
     cst.validate(s)
     settings=s.get("settings",{});need(settings.get("mode") in ("relaxed","everyday","challenge"),"Chế độ bản lưu không hợp lệ.")
-    for k in ("sound","music","reduceMotion","largeText","aiConsent","securityEvents","notify","publicProfile"):need(type(settings.get(k)) is bool,"Thiếu thiết lập bản lưu.")
+    for k in ("sound","music","reduceMotion","largeText","aiConsent","aiAsked","aiNoticeSeen","securityEvents","notify","publicProfile"):need(type(settings.get(k)) is bool,"Thiếu thiết lập bản lưu.")
     for k,choices in SETTING_CHOICES.items():need(settings.get(k) in choices,"Thiết lập bản lưu không hợp lệ.")
     for k in ("musicVolume","sfxVolume"):integer(settings.get(k),0,100)
     need(set(settings)<=set(default_settings()),"Thiết lập lạ trong bản lưu.")

@@ -22,6 +22,7 @@ import {homeView as homeV4,futureView as futureV4,journeyBoot,journeyAction,jour
 import {procedureSubmit,procedureAction} from './v4/procedure.js';
 import {deskJob,deskDone,deskNext,deskAction} from './desk.js';
 import {incidentView,incidentSummary,incidentNote,incidentBadge,incidentAction,incidentBoot} from './v4/incidents.js';
+import {chatMessages,chatFooter,aiTalk,aiNoticeBoot,chatBusy} from './v4/ai-chat.js';
 import {happenBoot,happenSummary} from './v4/happenings.js';
 
 const $=s=>document.querySelector(s), api=new GameAPI(), sound=new Sound();
@@ -368,14 +369,13 @@ function supportJob(t){
 }
 function chatView(){
   const id=ui.npc||activeTask()?.npc||api.content.npcs.find(n=>n.career_id===career()).id,n=npc(id),c=room();ui.npc=id;
-  const messages=c.chats[id]||[],memories=c.memories.filter(m=>m.npc===id),t=c.tasks.find(t=>t.npc===id&&!ended(t)),relation=c.relationships[id]||0,ai=ui.ai[id];
+  const messages=c.chats[id]||[],memories=c.memories.filter(m=>m.npc===id),t=c.tasks.find(t=>t.npc===id&&!ended(t)),relation=c.relationships[id]||0;
   const rel=relation>=40?'Thân thiết':relation>5?'Bạn quen':relation?'Đã từng giúp nhau':'Lần đầu gặp';
-  const bubbles=messages.length?messages.map((m,i)=>`<div class="bubble ${m.role==='user'?'user':'npc'}">${m.role==='npc'&&ai&&i===messages.length-1&&ai.mode==='ai'?pill('AI'):''}<div>${esc(ai&&i===messages.length-1&&ai.mode==='ai'?ai.text:m.text)}</div></div>`).join(''):`<div class="bubble npc"><div>${esc(t?.opening||'Chào bạn! Hôm nay mình trò chuyện một chút nhé?')}</div></div>`;
   const quick=[['Bạn cần gì hôm nay?','Bạn cần gì hôm nay?'],['Nhớ lần trước không?','Bạn nhớ lần trước mình giúp gì không?'],['Hôm nay thế nào?','Hôm nay bạn thấy thế nào?']];
   return `<header class="sheet-head chat-head"><span class="chat-avatar">${portrait(n,48)}</span><div class="grow"><span class="eyebrow">${esc(n.role||'Trò chuyện')}</span><h2>${esc(n.display_name)}</h2><p>${rel}${memories.length?` · ${memories.length} kỷ niệm chung`:''}</p></div><button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`+
-    `<div class="sheet-body chat-body">${t?`<div class="chat-task"><span class="grow">${icon('flag',14)} ${esc(t.title)}</span>${t.known?'':commandButton('Hỏi rõ nhu cầu','ask',{task:t.id},'small ghost')}${button('Mở việc '+icon('arrow',13),'job',{task:t.id},'small primary')}</div>`:''}<div id="messages" class="chat-messages" role="log" aria-live="polite">${bubbles}</div>`+
+    `<div class="sheet-body chat-body">${t?`<div class="chat-task"><span class="grow">${icon('flag',14)} ${esc(t.title)}</span>${t.known?'':commandButton('Hỏi rõ nhu cầu','ask',{task:t.id},'small ghost')}${button('Mở việc '+icon('arrow',13),'job',{task:t.id},'small primary')}</div>`:''}${chatMessages(env(),{npc:id,name:n.display_name,messages,opening:t?.opening})}`+
     `<details class="chat-about"><summary>Về ${esc(n.display_name)}</summary>${n.personality?`<p class="small">${esc(n.personality)}</p>`:''}<div class="progress" aria-hidden="true"><i style="width:${Math.min(100,Math.max(4,relation))}%"></i></div>${memories.slice(-3).reverse().map(m=>`<div class="memory">${esc(m.text)}${m.day?`<br><small class="muted">Ngày ${m.day}</small>`:''}</div>`).join('')}${messages.length?button('Xóa tin nhắn','clearChat',{},'small ghost space-top'):''}</details></div>`+
-    `<footer class="sheet-foot chat-foot"><div class="quick-replies">${quick.map(([l,text])=>button(l,'quickChat',{text},'ghost small')).join('')}</div><form id="chatForm" class="chat-form"><textarea id="chat-input" data-preserve rows="1" placeholder="Nói gì đó với ${esc(n.display_name)}…" maxlength="500" required aria-label="Tin nhắn tới ${esc(n.display_name)}"></textarea><button type="submit" class="btn primary" aria-label="Gửi">${icon('send',17)}<span>Gửi</span></button></form>${api.ai.configured&&api.state.settings.aiConsent?'<small class="chat-mode">AI có thể diễn đạt lại câu trả lời.</small>':''}</footer>`;
+    chatFooter(env(),{npc:id,name:n.display_name,quick,suggestions:ui.suggestions[id]});
 }
 function phoneView(){const c=room(),reviews=c.feed.filter(p=>p.stars).length;markFeedSeen();
   const posts=c.feed.map(p=>`<article class="post" id="${p.id}"><div class="row">${p.npc==='player'?`<span class="avatar-small">${esc(p.author.slice(0,1))}</span>`:portrait(npc(p.npc),42)}<div class="grow"><span class="author">${esc(p.author)}</span><div class="post-meta">Ngày ${p.day}${p.npc==='player'?' · Bài của bạn':''}</div></div>${p.kind==='review'?pill('Đánh giá','amber'):''}</div><div class="post-text">${p.stars?`<div class="stars" aria-label="${p.stars} trên 5 sao">${'★'.repeat(p.stars)}${'☆'.repeat(5-p.stars)}</div>`:''}${esc(p.text)}</div>`+
@@ -489,7 +489,7 @@ function interact(id){sound.unlock();sound.click();if(ui.paused)return;
   if(id==='warehouse'){openSheet(career()==='milk_tea'?'prepare':['mother_baby','pharmacy'].includes(career())?'warehouse':room().inventory?'inventory':'queue');return;}
   if(['shelf','workbench','counter','evidence'].includes(id)){const tab=career()==='mother_baby'?(id==='workbench'?'pack':id==='counter'?'checkout':'shelf'):'shelf';openJob(null,tab);return;}
 }
-async function talk(text){if(!ui.npc||!text.trim())return;const id=ui.npc;delete ui.ai[id];const r=await cmd('talk',{npc:id,text},{quiet:true});if(!r)return;ui.suggestions[id]=r.suggestions||[];world.say(r.reply,id);renderSheet();if(api.state.settings.aiConsent&&api.ai.configured){const answer=await api.aiReply(id);if(answer.mode==='ai'){ui.ai[id]=answer;if(ui.view==='chat'&&ui.npc===id)renderSheet();}}}
+async function talk(text){if(!ui.npc||!text.trim())return;const id=ui.npc;const r=await aiTalk(env(),id,text);if(!r)return;ui.suggestions[id]=r.suggestions||[];world.say(r.reply,id);renderSheet();}
 async function handleAction(action,data,el){
   switch(action){
     case'close':closeSheet();break;
@@ -610,7 +610,7 @@ document.addEventListener('submit',async e=>{
   if(await procedureSubmit(f,env()))return;
   if(await shell.submit(f,env()))return;
   if(f.id==='staffTalkForm'){const input=$('#staff-message'),text=input.value.trim();if(!text)return;input.value='';await cmd('ops_staff_talk',{employee:f.dataset.employee,text},{quiet:true});}
-  else if(f.id==='chatForm'){const input=$('#chat-input'),text=input.value.trim();if(!text)return;input.value='';await talk(text);}
+  else if(f.id==='chatForm'){const input=$('#chat-input'),text=input.value.trim();if(!text||chatBusy(ui.npc))return;input.value='';const count=$('#chat-count');if(count)count.textContent='0/200';await talk(text);}
   else if(f.id==='postForm'){const input=$('#post-text'),text=input.value.trim();if(!text)return;input.value='';await cmd('feed_post',{text});}
   else if(f.dataset.replyPost){const input=f.querySelector('input'),text=input.value.trim();if(!text)return;input.value='';await cmd('feed_reply',{post:f.dataset.replyPost,text});}
   else if(f.dataset.receive){const count=Number(f.querySelector('input').value);await cmd('receive_stock',{shipment:f.dataset.receive,count});}
@@ -645,7 +645,7 @@ api.addEventListener('offline',()=>renderMain());
 window.addEventListener('online',()=>{if(api.state)api.refresh().then(()=>renderMain()).catch(()=>{});});
 window.addEventListener('error',e=>{console.error('Game UI:',e.error||e.message);});
 try{
-  await api.init();await loadCareerModules([...Object.keys(api.content.careers||{}),'milk_tea','mother_baby']);await setLanguage(api.state.settings.lang);shell.boot(env());journeyBoot(env());incidentBoot(env());happenBoot(env());startTicker(()=>env());$('#loading').hidden=true;$('#app').hidden=false;world.resize();renderMain();
+  await api.init();await loadCareerModules([...Object.keys(api.content.careers||{}),'milk_tea','mother_baby']);await setLanguage(api.state.settings.lang);shell.boot(env());journeyBoot(env());incidentBoot(env());happenBoot(env());startTicker(()=>env());$('#loading').hidden=true;$('#app').hidden=false;world.resize();renderMain();aiNoticeBoot(env());
   registerWorker();startSocialPoll(env());
   const openSocial=tab=>{ui.socTab=tab||'street';ui.socShop=null;socialInvalidate(ui);openSheet('social');};
   listenWorker(url=>{const q=new URL(url,location.origin).searchParams;if(q.get('social'))openSocial(q.get('social'));});

@@ -31,8 +31,11 @@
     <h2>2. Cookie và bộ nhớ trình duyệt</h2>
     <p>Chỉ có một cookie cần thiết là <code>mnl_session</code> (HttpOnly, giữ tối đa 1 năm) để nhận ra bản lưu của bạn. Trình duyệt còn lưu vài lựa chọn giao diện như bố cục và ngôn ngữ. Game <b>không có quảng cáo, không có công cụ theo dõi hay phân tích của bên thứ ba</b>.</p>
 
-    <h2>3. AI trong game (chỉ khi bạn đồng ý)</h2>
-    <p>Khi bạn bật “Cho phép AI” trong Cài đặt, nội dung review hư cấu, lời trả lời của bạn và một số dữ kiện của lượt chơi sẽ được gửi tới nhà cung cấp mô hình ngôn ngữ mà máy chủ cấu hình. Mục đích là để nhân vật khách hàng hoặc phụ huynh trả lời theo tính cách riêng. Đừng gõ thông tin cá nhân thật vào game. Khi AI tắt hoặc gặp lỗi, game dùng lời thoại có sẵn. Khóa truy cập AI chỉ nằm trên máy chủ, không bao giờ gửi tới trình duyệt.</p>
+    <h2>3. AI trong game (bật mặc định, tắt được bất cứ lúc nào)</h2>
+    <p>Nếu máy chủ có cấu hình AI, tính năng “Nhân vật trò chuyện bằng AI” <b>được bật sẵn</b> để khách hàng, học sinh, phụ huynh… nói chuyện tự nhiên theo tính cách riêng. Lần đầu, game hiện một thông báo nhỏ có nút “Tắt AI”.</p>
+    <p>Khi AI bật, những nội dung sau được gửi tới nhà cung cấp mô hình ngôn ngữ mà máy chủ cấu hình: <b>tin nhắn bạn gõ trong mục Trò chuyện</b> (kèm vài lượt chat gần nhất với nhân vật đó), <b>lời bạn trả lời review</b>, nội dung review hư cấu và một số dữ kiện của lượt chơi (tên, tính cách nhân vật hư cấu, việc đang làm). Trước khi gửi, máy chủ tự xóa đường link, email và dãy số giống số điện thoại trong lời bạn gõ; tên bạn tự đặt được thay bằng cách xưng hô chung, mã phiên và tài khoản không được gửi. Đừng gõ thông tin cá nhân thật vào game.</p>
+    <p>AI chỉ viết lời thoại: không thay đổi tiền, hàng hay kết quả trong game. Câu trả lời bị lọc (không link, không số liệu bịa, không nội dung nhạy cảm); khi AI tắt, quá tải hoặc gặp lỗi, game dùng lời thoại có sẵn. Khóa truy cập AI chỉ nằm trên máy chủ, không bao giờ gửi tới trình duyệt.</p>
+    <p><b>Cách tắt</b>: bấm “Tắt AI” trong thông báo, hoặc vào Cài đặt → Cách chơi → tắt “Nhân vật trò chuyện bằng AI”. Sau khi tắt, không nội dung nào được gửi tới nhà cung cấp AI nữa.</p>
 
     <h2>4. Chúng tôi dùng dữ liệu để làm gì?</h2>
     <ul>
@@ -46,7 +49,7 @@
     <p>Chúng tôi không bán hay cho thuê dữ liệu. Dữ liệu chỉ đi qua:</p>
     <ul>
       <li>Nhà cung cấp máy chủ (hosting).</li>
-      <li>Nhà cung cấp AI, chỉ khi bạn bật AI.</li>
+      <li>Nhà cung cấp AI, khi AI đang bật (mặc định bật nếu máy chủ có cấu hình; tắt trong Cài đặt).</li>
       <li>Dịch vụ thông báo của trình duyệt (Google, Mozilla, Apple, Microsoft). Các dịch vụ này chỉ nhận một tín hiệu rỗng: nội dung thông báo được trình duyệt của bạn tải trực tiếp từ máy chủ game.</li>
     </ul>
     <p>Chúng tôi chỉ cung cấp dữ liệu cho cơ quan chức năng khi pháp luật yêu cầu.</p>
@@ -93,8 +96,11 @@
     </ul>
     <h2>2. Cookies and browser storage</h2>
     <p>We use one essential cookie, <code>mnl_session</code> (HttpOnly, up to 1 year). Your browser also keeps a few UI preferences such as layout and language. There are no ads, no trackers and no third-party analytics.</p>
-    <h2>3. AI (only with your consent)</h2>
-    <p>If you enable “Allow AI” in Settings, fictional review text, your replies and a few game facts are sent to the language-model provider configured by the server operator. This lets reviewer characters answer in their own voice. Please do not type real personal information. When AI is off or fails, the game uses built-in dialogue. The AI key stays on the server and is never sent to your browser.</p>
+    <h2>3. AI (on by default, you can turn it off any time)</h2>
+    <p>If the server operator configured an AI provider, “Characters chat using AI” is <b>on by default</b>, so customers, pupils, parents and others talk naturally in their own personality. The first time, the game shows a small notice with a “Turn AI off” button.</p>
+    <p>While AI is on, the following is sent to that language-model provider: <b>the messages you type in Chat</b> (with the last few chat turns with that character), <b>your replies to reviews</b>, the fictional review text and a few game facts (the fictional character’s name, personality and current task). Before sending, the server removes links, e-mail addresses and phone-like numbers from what you typed; the player name you chose is replaced by a generic form of address, and your session id and account are never sent. Please do not type real personal information.</p>
+    <p>AI only writes dialogue: it never changes coins, stock or results. Replies are filtered (no links, no invented numbers, no sensitive content); when AI is off, busy or fails, the game uses built-in dialogue. The AI key stays on the server and is never sent to your browser.</p>
+    <p><b>How to turn it off</b>: press “Turn AI off” in the notice, or go to Settings → Play → switch off “Characters chat using AI”. Once off, nothing is sent to the AI provider.</p>
     <h2>4. How we use data</h2>
     <p>We use your data to:</p>
     <ul>
@@ -107,7 +113,7 @@
     <p>We do not sell or rent data. It passes only through:</p>
     <ul>
       <li>our hosting provider;</li>
-      <li>the AI provider, if you enabled AI;</li>
+      <li>the AI provider, while AI is on (on by default when the server has one; turn it off in Settings);</li>
       <li>browser push services (Google, Mozilla, Apple, Microsoft), which receive only an empty signal. Your browser fetches the notification text directly from the game server.</li>
     </ul>
     <p>We disclose data to authorities only when the law requires it.</p>

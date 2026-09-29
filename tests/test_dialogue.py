@@ -10,6 +10,7 @@ class DialogueTests(unittest.TestCase):
     def setUp(self):
         self.j=Journey();self.npc=self.j.task['npc'];self.j.act('talk',npc=self.npc,text='Chào bạn, hôm nay thế nào?')
     def test_no_consent_never_calls_endpoint(self):
+        self.j.act('settings',aiConsent=False)  # AI is on by default now; the player can switch it off
         with patch('urllib.request.urlopen') as urlopen:
             self.assertEqual(rephrase(self.j.state,'mother_baby',self.npc)['reason'],'no_consent');urlopen.assert_not_called()
     def test_no_config_falls_back(self):

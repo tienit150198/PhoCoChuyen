@@ -36,8 +36,8 @@ export function settingsView(env){
     </form>
     <section class="settings-block">${toggle('reduceMotion','Giảm chuyển động',s.reduceMotion)}${toggle('largeText','Chữ lớn',s.largeText)}</section>
     ${api.ai?.configured?`<section class="settings-block"><h3>${icon('chat',18)} Trò chuyện bằng AI</h3>
-      <p class="small muted">Khi bật, khách trả lời theo đúng tính cách riêng (chanh chua, bố đời, ấm áp…). Tắt thì dùng lời thoại có sẵn.</p>
-      ${toggle('aiConsent','Cho phép gửi nội dung review và lời trả lời của tôi tới AI',s.aiConsent,'Đừng gõ thông tin cá nhân thật. Xem <a href="/privacy" target="_blank" rel="noopener">Quyền riêng tư</a>.')}
+      <p class="small muted">Mặc định bật: khách, học sinh, phụ huynh… trò chuyện và trả lời review theo đúng tính cách riêng (chanh chua, bố đời, ấm áp…). AI chỉ nói, không đổi tiền, hàng hay kết quả. Tắt thì dùng lời thoại có sẵn.</p>
+      ${toggle('aiConsent','Nhân vật trò chuyện bằng AI',s.aiConsent,'Khi bật, tin nhắn bạn gõ trong Trò chuyện, lời trả lời review và vài dữ kiện của lượt chơi được gửi tới nhà cung cấp AI của máy chủ. Đừng gõ thông tin cá nhân thật. Xem <a href="/privacy" target="_blank" rel="noopener">Quyền riêng tư</a>.')}
     </section>`:''}`;
   if(tab==='look'){
     const pref=layoutPref(),mode=document.documentElement.dataset.layout;
