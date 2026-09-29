@@ -1387,11 +1387,12 @@ def safe_swap(c: dict, t: dict, in_stock: bool = True) -> str | None:
 
 def _stock_step(c: dict, k: str) -> tuple[str, dict]:
     ship = next((x for x in c['shipments'] if x['item'] == k and x['status'] != 'received'), None)
-    if ship and ship['ready'] <= c['turn']:
+    if ship and _e().shipment_here(c, 'mother_baby', ship):
         return 'receive_stock', dict(shipment=ship['id'], count=ship['actual'])
     if ship:
         return 'advance', {}
-    return 'order_stock', dict(item=k, qty=min(6, 24 - c['stock'][k]))
+    # A customer is waiting: the express courier (30–60 minutes on the shop clock).
+    return 'order_stock', dict(item=k, qty=min(6, 24 - c['stock'][k]), supplier='express')
 
 
 def next_move(c: dict, t: dict) -> tuple[str, dict]:

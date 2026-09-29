@@ -193,18 +193,21 @@ class RestockTests(unittest.TestCase):
         j = Journey('pharmacy')
         lot = next(k for k, v in LOT_INDEX.items() if v['status'] == 'available')
         before = j.c['stock'].get(lot, 0)
-        j.act('order_stock', item=lot, qty=1)
+        j.act('order_stock', item=lot, qty=1)  # the distributor's midday run (order before 11:00)
         sid = j.c['shipments'][-1]['id']
 
         def shown():
             return next(x for x in public_state(j.state)['careers']['pharmacy']['shipments'] if x['id'] == sid)['ready_now']
 
-        for _ in range(2):
-            self.assertFalse(shown())
-            with self.assertRaises(GameError):  # not a beat earlier than the parcel card says
+        waited = 0
+        while not shown():
+            with self.assertRaises(GameError) as err:  # not a moment earlier than the parcel card says
                 j.act('receive_stock', shipment=sid, count=1)
+            self.assertNotIn('nhịp', err.exception.message)
             j.act('advance')
-        self.assertTrue(shown())
+            waited += 1
+            self.assertLess(waited, 40)
+        self.assertGreaterEqual(waited, 12)  # 13:00 at the earliest, four hours and more after opening
         j.act('receive_stock', shipment=sid, count=1)
         self.assertEqual(j.c['stock'][lot], before + 1)
         validate_state(j.state)

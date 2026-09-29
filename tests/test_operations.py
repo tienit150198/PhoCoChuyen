@@ -96,7 +96,7 @@ class OperationsTests(unittest.TestCase):
 
     def test_stock_helper_receives_paid_actual_quantity_once(self):
         self.hire(3);item=next(iter(self.c['stock']));before=self.c['stock'][item]
-        self.j.act('order_stock',item=item,qty=2)
+        self.j.act('order_stock',item=item,qty=2,supplier='express')  # 30–60 minutes on the shop clock
         sh=self.c['shipments'][-1];sh['actual']=1
         self.advance(5);self.assertEqual(self.c['shipments'][-1]['status'],'received')
         self.assertEqual(self.c['stock'][item],before+1)

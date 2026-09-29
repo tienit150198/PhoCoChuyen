@@ -289,10 +289,10 @@ def _assist(s:dict,c:dict,career:str,e:dict) -> str|None:
         return note
     if role=='patrol':return 'Đã kiểm một vòng quầy và cửa kho; chưa kết luận về người nào.'
     if role=='stock':
-        delivery=next((x for x in c['shipments'] if x['status']=='in_transit' and x['ready']<=c['turn']),None)
+        delivery=next((x for x in c['shipments'] if eng.shipment_here(c,career,x)),None)
         if delivery:
-            # Actual received quantity only; paid supplier order already exists.
-            c['stock'][delivery['item']]+=delivery['actual'];delivery['status']='received'
+            # Actual received quantity only, once it is at the door on the shop clock; the paid order already exists.
+            eng.stock_received(s,c,career,delivery,delivery['actual'])
             eng.metric(c,'restocked');eng.log(s,c,'stock',f"{e['name']} kiểm {delivery['actual']} món thật nhận từ {delivery['id']}.",ref=delivery['id'])
             return 'Đã kiểm số thực nhận và nhập kiện '+delivery['id']+'.'
         return 'Đã kiểm vị trí và số lượng kệ, chưa nhập thêm món nào.'

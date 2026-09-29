@@ -222,3 +222,112 @@ html[data-layout="phone"] .career-job.dw{--dw-foot:calc(73px + var(--safe-b,0px)
 @container sheet (min-width:760px){
   .dw-cs-grid{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);align-items:start;column-gap:20px}
 }
+
+/* ---------- many days at the three desks + the stock room (app.js warehouseView, csCallPanel).
+   Kho (mother & baby, pharmacy): parcels on the shop clock, supplier picker. Pharmacy: lot book,
+   fridge log, regulars. Bookkeeping: client files. Support: follow-up board and the call panel.
+   Text ≥ 14px, taps ≥ 44px, tokens only; phone first. */
+.wh-tabs{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:14px}
+.wh h3,.cb h3{margin:14px 0 8px;font-size:1.067rem}
+.wh .btn,.cb .btn,.cb-strip .btn,.cs-call .btn{min-height:44px;font-size:.933rem}
+.wh small,.cb small{font-size:.933rem}
+.wh .inv-chip{font-size:.933rem;min-height:44px}
+.wh-next{margin:0;font-size:.933rem;color:var(--ink-2)}
+.wh .inv-cta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.wh .inv-cta .wh-next{flex:1 1 200px}
+.wh-parcel{display:grid;gap:8px}
+.wh-eta{margin:0;font-size:.933rem;color:var(--ink-2)}
+.wh-prog{display:block;height:8px;border-radius:8px;background:var(--surface-3);overflow:hidden}
+.wh-prog i{display:block;height:100%;border-radius:8px;background:var(--info)}
+.wh-late{margin:0;padding:8px 10px;border-radius:var(--radius-sm);background:var(--warn-soft);color:var(--ink-2);font-size:.933rem}
+.wh-bad{color:var(--bad);font-weight:700;font-size:.933rem}
+p.wh-bad,.card p.wh-bad{margin:0;color:var(--bad)}
+.wh-sups{display:grid;gap:8px;margin:0 0 6px}
+.wh-sups h3{margin:6px 0 0}
+.wh-sup-list{display:grid;gap:8px;grid-template-columns:minmax(0,1fr)}
+.wh-sup{display:grid;gap:2px;min-height:64px;padding:10px 12px;border-radius:var(--radius-sm);border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.wh-sup b{font-size:.967rem}
+.wh-sup small{color:var(--muted)}
+.wh-sup-name{font-weight:700;font-size:.967rem}
+.wh-sup.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.wh-sup:focus-visible,.cb-check:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.wh .inventory-row small.block{display:block;margin-top:2px}
+.wh .inv-row-act{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.wh .inv-row-act .input{min-height:44px}
+.wh-fridge{display:grid;gap:8px;margin-bottom:14px}
+.wh-fridge h3{margin:0}
+.wh-slots,.wh-batches{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.wh-slot,.wh-batch{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;min-height:52px;padding:8px 10px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--line-strong)}
+.wh-slot>.grow,.wh-batch>.grow{flex:1 1 160px;min-width:0;display:flex;flex-direction:column}
+.wh-slot small,.wh-batch small{color:var(--muted);overflow-wrap:anywhere}
+.wh-slot.ok{border-color:transparent;background:var(--good-soft)}
+.wh-slot.warn{border-color:var(--warn);background:var(--warn-soft)}
+.wh-slot.bad,.wh-batch.bad{border-color:transparent;background:var(--bad-soft)}
+.wh-slot.warn small,.wh-slot.bad small,.wh-batch.bad small{color:var(--ink-2)}
+.wh-temp{font-size:1.2rem;font-variant-numeric:tabular-nums}
+.wh-fix{flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px}
+.wh .dw-lotgroup{margin-top:8px}
+.cb-strip{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 12px;border-radius:var(--radius);background:var(--info-soft);border:1px solid var(--line)}
+.cb-strip ul{flex:1 1 220px;margin:0;padding:0;list-style:none;display:grid;gap:4px;font-size:.933rem;color:var(--ink)}
+.cb-alerts{margin:0 0 12px;padding:10px 12px;list-style:none;display:grid;gap:4px;border-radius:var(--radius-sm);background:var(--surface-2);border:1px solid var(--line);font-size:.933rem;color:var(--ink-2)}
+.cb-card{display:grid;gap:10px;margin:0 0 12px;min-width:0}
+.cb-head{display:flex;align-items:center;gap:10px;min-width:0}
+.cb-head>.grow{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
+.cb-head small{color:var(--muted)}
+.cb-head .dw-state{flex:none}
+.cb-emoji{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--surface-2);font-size:1.4rem}
+.cb-hearts{flex:none;color:var(--bad);font-size:1rem;letter-spacing:1px;white-space:nowrap}
+.cb-hearts i{font-style:normal;color:var(--line-strong)}
+.cb-meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;font-size:.933rem;color:var(--ink-2)}
+.cb-dots{display:inline-flex;gap:4px}
+.cb-dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--good)}
+.cb-dot.late{background:var(--warn)}
+.cb-dot.missed{background:var(--bad)}
+.cb-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:.933rem;color:var(--ink-2)}
+.cb-facts{margin:0;font-size:.933rem;color:var(--ink-2)}
+.cb-checks{display:grid;gap:6px;grid-template-columns:minmax(0,1fr)}
+.cb-check{display:flex;align-items:center;gap:10px;min-height:52px;padding:8px 12px;border-radius:var(--radius-sm);border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.cb-check>span:last-child{display:flex;flex-direction:column;min-width:0}
+.cb-check b{font-size:.967rem}
+.cb-check small{color:var(--muted)}
+.cb-check.hint{border-color:var(--accent);background:var(--accent-soft)}
+.cb-check.done{cursor:default;background:var(--good-soft);border-color:transparent}
+.cb-check.done small{color:var(--ink-2)}
+.cb-check:disabled{opacity:.6;cursor:default}
+.cb-habits{margin:0;padding:0;list-style:none;display:grid;gap:4px;font-size:.933rem;color:var(--ink-2)}
+.cb-more{color:var(--muted)}
+.cb-past{margin:0;padding-left:18px;display:grid;gap:4px;font-size:.933rem;color:var(--ink-2)}
+.cb-hand{display:grid;gap:10px;margin:0 0 12px;border-color:var(--accent)}
+.cb-hand.read{border-color:var(--line)}
+.cb-hand h3{margin:0}
+.cb-list,.cb-cases{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.cb-list li,.cb-case{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:8px 10px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--line-strong);font-size:.933rem}
+.cb-list .grow,.cb-case>.grow{flex:1 1 200px;min-width:0;display:flex;flex-direction:column;gap:2px}
+.cb-list small,.cb-case small{color:var(--muted)}
+.cb-case.late{border-left:4px solid var(--bad)}
+.cb-chips{display:flex;flex-wrap:wrap;gap:4px 6px;margin-top:4px}
+.cb-trend{display:grid;gap:8px;margin:0 0 12px}
+.cb-trend h3{margin:0}
+.cb-bars{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;align-items:end}
+.cb-bars li{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;font-size:.933rem}
+.cb-bars small{color:var(--muted);white-space:nowrap}
+.cb-bars b{font-size:.933rem;white-space:nowrap}
+.cb-bar{display:flex;align-items:flex-end;width:100%;height:72px;border-radius:6px;background:var(--surface-2)}
+.cb-bar i{display:block;width:100%;border-radius:6px;background:var(--star,var(--warn))}
+.cb-history{display:grid;gap:6px;padding:10px 12px;border-radius:var(--radius-sm);background:var(--info-soft);border:1px solid var(--line)}
+.cb-history h3{margin:0;font-size:.967rem}
+.cs-timers{display:flex;flex-wrap:wrap;gap:6px}
+.cs-call{padding:12px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line-strong)}
+.cs-call .chat-messages{min-height:0;max-height:min(300px,40dvh)}
+.cs-call .quick-replies{margin:4px 0}
+.cs-call .quick-replies button{min-height:44px;font-size:.933rem}
+.cs-call .chat-form textarea{min-height:52px;font-size:1rem}
+.cs-call .chat-form .btn{min-height:52px}
+.cs-call-meta{margin:0;font-size:.933rem;color:var(--muted)}
+@container sheet (min-width:620px){
+  .wh-sup-list{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+  .cb-checks{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+/* newest line in view: the log scrolls from the bottom */
+.cs-call-log{flex-direction:column-reverse}
+.cs-call-rows{display:flex;flex-direction:column;gap:10px}

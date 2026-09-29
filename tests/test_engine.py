@@ -41,9 +41,14 @@ class EngineTests(unittest.TestCase):
     def test_remove_basket_releases_stock(self):
         j=Journey();j.act('ask');j.act('shop_pick',item='cat_bag');j.act('basket_remove',item='cat_bag');self.assertEqual(j.task['basket'],{});self.assertEqual(j.c['stock']['cat_bag'],6)
     def test_restock_requires_delivery_and_correct_count(self):
-        j=Journey();j.act('order_stock',item='cat_bag',qty=2);ship=j.c['shipments'][0];self.assertEqual(j.c['stock']['cat_bag'],6)
+        # Express courier: 30–60 minutes on the shop clock (20 minutes per action).
+        j=Journey();j.act('order_stock',item='cat_bag',qty=2,supplier='express');ship=j.c['shipments'][0];self.assertEqual(j.c['stock']['cat_bag'],6)
         with self.assertRaises(GameError):j.act('receive_stock',shipment=ship['id'],count=2)
-        j.act('advance');j.act('advance')
+        here=lambda:next(x for x in public_state(j.state)['careers']['mother_baby']['shipments'] if x['id']==ship['id'])['ready_now']
+        for _ in range(8):
+            if here():break
+            j.act('advance')
+        self.assertTrue(here())
         with self.assertRaises(GameError):j.act('receive_stock',shipment=ship['id'],count=1)
         j.act('receive_stock',shipment=ship['id'],count=2);self.assertEqual(j.c['stock']['cat_bag'],8)
         with self.assertRaises(GameError):j.act('receive_stock',shipment=ship['id'],count=2)
