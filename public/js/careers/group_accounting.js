@@ -6,7 +6,7 @@
  *  No inline handlers: every button goes through data-command / data-action="car:*". */
 import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,openTasks,hhmm,planCard,mateCards,trackFold,careSummary,foldToggle,
   coachOf,goto,gotoAction,guideOf,procSteps,coachFill} from './office_kit.js';
-import {pending} from '../v4/guide.js';
+import {pending,stepLine} from '../v4/guide.js';
 
 const P='ga_';
 const BOSS='Chị Mai Anh';
@@ -324,7 +324,7 @@ export default {
   id:'group_accounting',
   css:true,
   next(t,x){
-    try{const n=x&&pending(guideFor(t,x).steps);if(n)return n.label;}catch{/* the fixed lines below */}
+    try{const n=x&&pending(guideFor(t,x).steps);if(n)return stepLine(n);}catch{/* the fixed lines below */}
     if(!t.known)return t.variant==='match'?'Nhận hai sổ đối chiếu':'Nhận hồ sơ từ người giao việc';
     if(t.variant==='match'){
       const m=t.meter||{};

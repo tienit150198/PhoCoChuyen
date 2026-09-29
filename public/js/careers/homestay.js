@@ -3,7 +3,7 @@
 const PAN_SCALE=24;   // seconds shown on the frying-pan bar
 const AIR_SCALE=120;  // seconds shown on the window-airing bar
 import {reqList} from '../ui-kit.js';
-import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,todoAttrs,todoArrow} from '../v4/guide.js';
+import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,todoAttrs,todoArrow,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 const JOB_ICON={checkin:'🔑',checkout:'🧾',breakfast:'🍳',booking:'📅',recommend:'🗺️',claim:'📞'};
 const STATUS={clean:['Sạch','green'],dirty:['Cần dọn','amber'],occupied:['Có khách','blue'],maintenance:['Bảo trì','danger']};
@@ -768,7 +768,7 @@ export default {
   id:'homestay',
   css:true,
   next(t,x){
-    try{const n=x&&pending(taskGuide(t,x).steps);if(n)return x.esc(n.label);}catch{/* fall back to the fixed lines */}
+    try{const n=x&&pending(taskGuide(t,x).steps);if(n)return x.esc(stepLine(n));}catch{/* fall back to the fixed lines */}
     if(x?.room?.data?.desk?.ev)return 'Có chuyện ở quầy cần quyết';
     if(!t.known)return t.job==='claim'?'Nghe cuộc gọi':'Nghe khách nói';
     const n=t.needs;

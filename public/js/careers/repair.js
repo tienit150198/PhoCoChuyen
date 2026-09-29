@@ -3,7 +3,7 @@
  * Local state here is only what the player is ticking before sending, and which step tab is open.
  * Phone first: one step panel at a time, one primary button per panel. */
 import {reqList,fold} from '../ui-kit.js';
-import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,highlight} from '../v4/guide.js';
+import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,highlight,stepLine} from '../v4/guide.js';
 const STEPS=['Nhận máy','Đo kiểm','Báo giá','Sửa','Bàn giao'];
 const MODE={live:'cấp điện',open:'mở máy',any:'đo ngoài'};
 
@@ -544,7 +544,7 @@ export default {
   id:'repair',
   css:true,
   next(t,x){
-    try{const n=x&&pending(taskGuide(t,x).steps);if(n)return x.esc(n.label);}catch{/* fall back to the fixed lines */}
+    try{const n=x&&pending(taskGuide(t,x).steps);if(n)return x.esc(stepLine(n));}catch{/* fall back to the fixed lines */}
     if(x?.room?.data?.desk?.ev)return 'Có chuyện ở quầy cần quyết';
     if(t.bench?.shelf&&x?.room?.data?.care?.tasks?.[t.id]?.call)return 'Khách gọi hỏi — trả lời điện thoại';
     if(!t.known)return 'Nghe khách kể bệnh của máy';

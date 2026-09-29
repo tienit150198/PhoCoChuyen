@@ -86,6 +86,19 @@ export function nextHint(x,steps,{done='',final=null,cta=true,pulse=''}={}){
   return `<div class="gd-next" role="status"${first}${sel?` data-pulse="${esc(sel)}"`:''}><small>Bước tiếp theo</small><button type="button" class="gd-hint"${tap}><b>${n.go?.label||esc(n.label)}</b>${n.note?`<span class="gd-note">${esc(n.note)}</span>`:''}<i aria-hidden="true">→</i></button></div>`;
 }
 
+/** Markup or escaped text as plain text (tags dropped, the usual entities decoded). */
+export function plainText(s){
+  return String(s??'').replace(/<[^>]*>/g,'').replace(/&(amp|lt|gt|quot|#39);/g,(_,k)=>({amp:'&',lt:'<',gt:'>',quot:'"','#39':"'"})[k]).replace(/\s+/g,' ').trim();
+}
+/** The next step as one plain line, worded like the "Bước tiếp theo" hint (its button label when it
+ * has one, "📷 Quét 2 ổ bánh mì" rather than the checklist row "2 ổ bánh mì"). Career modules return it
+ * from next(), which the main screen's task card shows as its one line. */
+export function stepLine(n){
+  if(!n)return '';
+  const line=plainText(n.go?.label||'').replace(/^👉\s*/,'').replace(/\s*[→›]$/,'').trim();
+  return line||plainText(n.label);
+}
+
 /** The bottom button. `final` = {label, go, ready, style?}: the finishing action (label is HTML).
  * - nothing left, or the next step has no way to do it: the finishing button;
  * - otherwise a big button that does (or points to) the next step; when the finish is

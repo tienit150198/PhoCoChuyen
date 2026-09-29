@@ -6,7 +6,7 @@
  *  No inline handlers: every button goes through data-command / data-action="car:*". */
 import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,openTasks,planCard,mateCards,trackFold,careSummary,foldToggle,
   coachOf,goto,gotoAction,guideOf,procSteps,coachFill} from './office_kit.js';
-import {pending} from '../v4/guide.js';
+import {pending,stepLine} from '../v4/guide.js';
 
 const P='ca_';
 const BOSS='Chị Hạnh';
@@ -331,7 +331,7 @@ export default {
   id:'corp_accounting',
   css:true,
   next(t,x){
-    try{const n=x&&pending(guideFor(t,x).steps);if(n)return n.label;}catch{/* the fixed lines below */}
+    try{const n=x&&pending(guideFor(t,x).steps);if(n)return stepLine(n);}catch{/* the fixed lines below */}
     return nextText(t);
   },
   job(t,x){

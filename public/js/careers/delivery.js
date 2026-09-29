@@ -3,7 +3,7 @@
  * route, a change-count and a settlement count before sending them. */
 import {t,language} from '../v4/i18n.js';
 import {reqList} from '../ui-kit.js';
-import {stepRows,nextHint,stepCta,finalGo,pending,firstTime} from '../v4/guide.js';
+import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 
 const CELL=60,PAD=30;
@@ -496,7 +496,7 @@ export default {
   id:'delivery',
   css:true,
   next(t,x){
-    try{const n=x&&pending(guide(t,x).steps);if(n)return x.esc(n.label);}catch{/* fall back to the fixed lines */}
+    try{const n=x&&pending(guide(t,x).steps);if(n)return x.esc(stepLine(n));}catch{/* fall back to the fixed lines */}
     if(!t.known)return 'Nhận đơn trên app';
     const r=t.run,n=t.needs;
     if(r.outcome)return 'Đơn đã xong';

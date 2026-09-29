@@ -5,7 +5,7 @@
  *  trust / lean days / repayment plans in the credit book, weekly regular lists. */
 import {keepBarAboveFooter} from './food_kit.js';
 import {reqList,fold} from '../ui-kit.js';
-import {stepRows,nextHint,stepCta,finalGo,pending} from '../v4/guide.js';
+import {stepRows,nextHint,stepCta,finalGo,pending,stepLine} from '../v4/guide.js';
 const ID='grocery';
 const catalogue=x=>x.content.inventory?.items?.[ID]||[];
 const item=(x,id)=>catalogue(x).find(i=>i.id===id)||{id,name:id,emoji:'•',unit:''};
@@ -563,7 +563,7 @@ export default {
   css:true,
   next(t,x){
     if(!t.known)return ASK[t.kind]||ASK.checkout;
-    try{const n=x&&pending(taskGuide(t,x).steps);if(n)return x.esc(n.label);}catch{/* fall back to the fixed lines */}
+    try{const n=x&&pending(taskGuide(t,x).steps);if(n)return x.esc(stepLine(n));}catch{/* fall back to the fixed lines */}
     if(t.kind==='shelf'){
       const sh=t.shelf;
       if(!sh.placed||sh.cart.length)return 'Đọc hạn, rút/dán tem rồi xếp kệ';

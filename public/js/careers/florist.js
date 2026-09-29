@@ -11,7 +11,7 @@
  * one; on the first order the right flowers glow (and the button picks them). */
 import {dayStrip,flash,eventCard,queue,keepBarAboveFooter,idlePanel,gradeCard,patience,openTasks} from './food_kit.js';
 import {reqList,fold} from '../ui-kit.js';
-import {nextHint,stepCta,finalGo,pending,firstTime,todoAttrs,todoArrow,highlight} from '../v4/guide.js';
+import {nextHint,stepCta,finalGo,pending,firstTime,todoAttrs,todoArrow,highlight,stepLine} from '../v4/guide.js';
 
 const METER_SCALE=20;   // seconds shown on the soak / foam bars
 const VALUE_SCALE=1.2;  // value bar runs to 120% of the budget
@@ -673,7 +673,7 @@ export default {
   css:true,
   next(t,x){
     // Plain text like the old line (the host translates it before it is shown); labels hold no markup.
-    try{const n=pending(taskGuide(t,x).steps);if(n)return n.label;}catch{/* fall back to a fixed line */}
+    try{const n=pending(taskGuide(t,x).steps);if(n)return stepLine(n);}catch{/* fall back to a fixed line */}
     return t.known?'Trao hoa cho khách!':'Hỏi dịp tặng & ngân sách';
   },
   idle(x){

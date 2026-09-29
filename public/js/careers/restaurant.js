@@ -5,7 +5,7 @@
  * checks every rule (and keeps order details hidden until they are known). */
 import {reqList,fold,refTable} from '../ui-kit.js';
 import {dayStrip,flash,eventCard,keepBarAboveFooter,idlePanel,gradeCard,patience,openTasks} from './food_kit.js';
-import {nextHint,stepCta,finalGo,pending as nextOpen,firstTime,todoAttrs,todoArrow} from '../v4/guide.js';
+import {nextHint,stepCta,finalGo,pending as nextOpen,firstTime,todoAttrs,todoArrow,stepLine} from '../v4/guide.js';
 
 const BASE_SCALE=25; // seconds shown on the boiling bar
 const NOODLE={raw:'sống',perfect:'chín tới',soft:'hơi mềm',mushy:'nát'};
@@ -597,7 +597,7 @@ export default {
   id:'restaurant',
   css:true,
   next(t,x){
-    try{const n=x&&nextOpen(taskGuide(t,x).steps);if(n)return x.esc(n.label);}catch{/* fall back to the fixed lines */}
+    try{const n=x&&nextOpen(taskGuide(t,x).steps);if(n)return x.esc(stepLine(n));}catch{/* fall back to the fixed lines */}
     return nextStep(t,x);
   },
   idle(x){

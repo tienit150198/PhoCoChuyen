@@ -4,7 +4,7 @@
  * The two-tube bowl preview mirrors the server maths (average level, tone band) using only what the stylist has found out.
  * Care loop: the client card (formula, hair health, patch test, last cut), follow-up bookings and the jar of clean tool sets. */
 import {reqList,fold} from '../ui-kit.js';
-import {stepRows,nextHint,stepCta,finalGo,pending,firstTime} from '../v4/guide.js';
+import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 const CHEM=['color','bleach','toner'];
 const ZONE_TEXT={under:'chưa đủ giờ',ideal:'đúng giờ',over:'hơi quá giờ',damage:'quá giờ, tóc gãy'};
@@ -633,7 +633,7 @@ export default {
   id:'salon',
   css:true,
   next(t,x){
-    try{const n=x?.room&&pending(guideOf(t,x).steps);if(n)return n.label;}catch{/* fall back to the fixed lines */}
+    try{const n=x?.room&&pending(guideOf(t,x).steps);if(n)return stepLine(n);}catch{/* fall back to the fixed lines */}
     if(t.timer)return 'Xả thuốc khi thanh vào vùng xanh';
     if(x?.room?.data?.desk?.ev)return 'Có chuyện ở quầy cần quyết';
     if(!t.known)return x?.room?.data&&!x.room.data.clean?'Khử khuẩn dụng cụ, rồi mời khách ngồi':'Mời khách ngồi, nghe mong muốn';

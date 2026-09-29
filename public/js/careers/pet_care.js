@@ -2,7 +2,7 @@
  *  station with medicine by the label, adoption interviews, and the surprises that walk in at the counter.
  *  Care loop: regulars' cards and trust, a daily care card per boarder, vaccine/deworming reminders, adoption follow-ups. */
 import {reqList,fold} from '../ui-kit.js';
-import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,goAttrs,highlight} from '../v4/guide.js';
+import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,goAttrs,highlight,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 const JOB_ICON={groom:'🛁',board:'🏠',feed:'🥣',adopt:'🏡'};
 const SPECIES_EMOJI={dog:'🐶',cat:'🐱'};
@@ -662,7 +662,7 @@ export default {
   id:'pet_care',
   css:true,
   next(t,x){
-    try{const n=x&&pending(taskGuide(t,x).steps);if(n)return x.esc(n.label);}catch{/* fall back to the fixed lines */}
+    try{const n=x&&pending(taskGuide(t,x).steps);if(n)return x.esc(stepLine(n));}catch{/* fall back to the fixed lines */}
     if(t.job==='groom'&&t.g){
       if(t.g.rinse)return 'Khóa vòi khi đủ giây';
       if(t.g.dry)return 'Tắt máy sấy khi khô';

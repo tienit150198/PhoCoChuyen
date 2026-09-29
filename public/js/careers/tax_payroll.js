@@ -4,7 +4,7 @@
  *  and a sticky bar with the next step and the main action. */
 import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,dueOf,openTasks,planCard,mateCards,trackFold,careSummary,foldToggle,
   coachOf,goto,gotoAction,guideOf} from './office_kit.js';
-import {pending} from '../v4/guide.js';
+import {pending,stepLine} from '../v4/guide.js';
 
 const BOSS='Chị Hồng';
 const fmtN=n=>Number(n).toLocaleString('vi-VN');
@@ -293,7 +293,7 @@ export default {
   id:'tax_payroll',
   css:true,
   next(t,x){
-    try{const n=x&&pending(guideFor(t,x).steps);if(n)return n.label;}catch{/* the fixed lines below */}
+    try{const n=x&&pending(guideFor(t,x).steps);if(n)return stepLine(n);}catch{/* the fixed lines below */}
     return nextText(t);
   },
   job(t,x){

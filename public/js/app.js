@@ -11,7 +11,7 @@ import {icon,portrait,itemArt,escapeHTML as esc} from './icons.js';
 import {reqList,fold} from './ui-kit.js';
 import {Sound} from './audio.js';
 import {careerSubmit,careerInput,loadCareerModules,careerUI,hasCareerUI,careerContext,startTicker,tickNow} from './v4/careers.js';
-import {applyGuide,guideAction,nextHint,stepCta} from './v4/guide.js';
+import {applyGuide,guideAction,nextHint,stepCta,plainText} from './v4/guide.js';
 import {inventoryView,feedbackView,situationView,jobView as jobAppView,v4Action,v4Submit,v4Input} from './v4/views.js';
 import {setLanguage,t as i18nT} from './v4/i18n.js';
 import {shell} from './v4/shell.js';
@@ -228,9 +228,9 @@ function taskCards(c){
   let main;
   if(needsJob())main=`<article class="note-card calm-card">${button('Xin việc '+icon('chevron',13),'jobapp',{},'primary big grow gd-pulse')}${bell}</article>`;
   else if(!c.open)main=`<article class="note-card calm-card">${button(icon('sun',16)+' Chuẩn bị ngày mới','prepare',{},'primary big grow'+first)}${c.shift_summary?`<button type="button" class="icon-btn hud-sum" data-action="summary" aria-label="Xem ngày vừa qua">${icon('clipboard',18)}</button>`:''}${bell}</article>`;
-  // The one line is the work screen's "Bước tiếp theo" (career modules' next() reads the guide's steps);
-  // "Làm tiếp" opens the work screen, whose bottom button (stepCta) does that step.
-  else if(t)main=`<article class="note-card calm-card task-card"><button type="button" class="calm-what" data-action="job" data-task="${esc(t.id)}" title="${esc(t.title)}"><span class="npc-mini">${portrait(npc(t.npc),34)}</span><b>${esc(taskNext(t))}</b></button>${bell}${button('Làm tiếp '+icon('arrow',14),'job',{task:t.id},'primary'+first)}</article>`;
+  // The one line is the work screen's "Bước tiếp theo" (career modules' next() = guide.stepLine of the next
+  // step, plain text); "Làm tiếp" opens the work screen, whose bottom button (stepCta) does that step.
+  else if(t)main=`<article class="note-card calm-card task-card"><button type="button" class="calm-what" data-action="job" data-task="${esc(t.id)}" title="${esc(t.title)}"><span class="npc-mini">${portrait(npc(t.npc),34)}</span><b>${esc(plainText(taskNext(t)))}</b></button>${bell}${button('Làm tiếp '+icon('arrow',14),'job',{task:t.id},'primary'+first)}</article>`;
   // Day one, its three jobs done: closing the day is the next step (and the chapter goal).
   else if(wrapUp(c))main=`<article class="note-card calm-card">${button('Khép ca hôm nay','end',{},'primary big grow gd-pulse')}<button type="button" class="icon-btn hud-sum" data-command="more_work" data-payload="{}" aria-label="${desk?'Nhận thêm một việc':esc(W.more_btn)}">${icon('plus',18)}</button>${bell}</article>`;
   else main=`<article class="note-card calm-card">${commandButton(desk?'Nhận thêm một việc':esc(W.more_btn),'more_work',{},'primary big grow')}<button type="button" class="icon-btn hud-sum" data-action="end" aria-label="Khép ca hôm nay">${icon('exit',18)}</button>${bell}</article>`;

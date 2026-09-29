@@ -2,7 +2,7 @@
  *  table. Field state is persistent and turn-based; everything is recomputed
  *  on the server, the client only shows it. */
 import {reqList} from '../ui-kit.js';
-import {stepRows,nextHint,stepCta,finalGo,pending,firstTime} from '../v4/guide.js';
+import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 const ID='farm';
 const STAGE={empty:'Luống trống',sprout:'Mới nhú',young:'Đang lớn',almost:'Sắp tới lứa',ripe:'Đúng lứa · thu được',over:'Quá lứa · xơ',rotten:'Hỏng · dọn luống'};
@@ -342,7 +342,7 @@ export default {
   id:ID,
   css:true,
   next(t,x){
-    try{const n=x&&pending(taskGuide(t,x).steps);if(n)return x.esc(n.label);}catch{/* fall back to the fixed lines */}
+    try{const n=x&&pending(taskGuide(t,x).steps);if(n)return x.esc(stepLine(n));}catch{/* fall back to the fixed lines */}
     if(!t.known)return 'Nghe khách đặt hàng';
     const missing=Object.entries(t.needs.items).filter(([k,q])=>packed(t,k)<q);
     if(missing.length)return 'Thu hoạch, rồi xếp hàng vào thùng';

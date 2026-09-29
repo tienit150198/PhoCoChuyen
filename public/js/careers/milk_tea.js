@@ -6,7 +6,7 @@
  * keeps the order recap and the serve button in reach. */
 import {Sound} from '../audio.js';
 import {keepBarAboveFooter} from './food_kit.js';
-import {stepRows,nextHint,stepCta,finalGo,pending as nextOf,firstTime} from '../v4/guide.js';
+import {stepRows,nextHint,stepCta,finalGo,pending as nextOf,firstTime,stepLine} from '../v4/guide.js';
 
 const ICE=[['none','Không đá'],['little','Ít đá'],['normal','Đá vừa'],['extra','Nhiều đá']];
 const ICE_TEXT={none:'không đá',little:'ít đá',normal:'đá vừa',extra:'nhiều đá'};
@@ -502,7 +502,7 @@ export default {
   css:true,
   autoNext:true,
   next(t,x){
-    try{const n=x&&nextOf(teaGuide(t,x).steps);if(n)return x.esc(n.label);}catch{/* fall back to the fixed lines */}
+    try{const n=x&&nextOf(teaGuide(t,x).steps);if(n)return x.esc(stepLine(n));}catch{/* fall back to the fixed lines */}
     return nextStep(t,x,(B(x).level||1)<=3);
   },
   clock(c){return c.data?.boba?.clock||'';},
