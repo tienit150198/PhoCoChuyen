@@ -1,6 +1,6 @@
 /** Guide content: short Vietnamese lines + real screenshots (public/icons/tutorial,
 * served by nginx with the other icons). Marks are [x%, y%, n, badge side?] over the picture.
-* Pictures: real 390×844 phone screenshots, cropped, WebP under 60 KB each. */
+* Pictures: real 390×844 phone screenshots, cropped, WebP under 60 KB each (the restock page: under 30 KB). */
 export const IMG='/icons/tutorial/';
 
 /** "Cách chơi": three cards (what a new player touches first). `art` = an inline illustration, `pic` = a screenshot, points = [mark number (0 = none), words]. */
@@ -10,7 +10,8 @@ export const OVERVIEW=[
   {id:"money",emoji:"💰",title:"Ví và quỹ tiệm",pic:{img:"ov-money.webp",w:720,h:720,marks:[[50.0, 23.1, 1], [50.0, 90.5, 2]]},points:[[1, "Ví: tiền của bạn"], [2, "Quỹ tiệm: tiền của tiệm"], [0, "Tiền phòng trừ từ ví"]]},
 ];
 
-/** "Cách làm": 4 steps for the places new players start in, one picture per step. */
+/** "Cách làm": 4 steps for the places new players start in, one picture per step. `pages`: extra
+ * pages of one workplace (chips under the workplace chips), e.g. grocery "Nhập hàng & xếp kệ". */
 export const CAREERS={
   milk_tea:{emoji:"🧋",name:"Trà sữa",steps:[
     {text:"👂 Nghe khách gọi món",img:"milk-tea-1.webp",w:720,h:351,marks:[[60.5, 56.3, 1]]},
@@ -23,6 +24,14 @@ export const CAREERS={
     {text:"📷 Quét đủ từng món",img:"grocery-2.webp",w:720,h:369,marks:[[82.8, 37.0, 1], [82.8, 72.0, 2]]},
     {text:"🏷️ Áp khuyến mãi, chốt bill",img:"grocery-3.webp",w:720,h:535,marks:[[87.4, 47.2, 1], [61.3, 87.6, 2]]},
     {text:"💵 Đủ tiền mới giao",img:"grocery-4.webp",w:720,h:609,marks:[[36.2, 57.6, 1], [61.3, 86.1, 2]]},
+  ],pages:[
+    // "Xếp hàng mới lên kệ như nào?": goods reach the shelf only after the crate is opened and counted.
+    {id:"restock",emoji:"📦",name:"Nhập hàng & xếp kệ",steps:[
+      {text:"📦 Kệ hết? Bấm Nhập hàng",img:"grocery-restock-1.webp",w:720,h:277,marks:[[77.7, 63.3, 1]]},
+      {text:"🚚 Chọn nhà cung cấp, bấm Đặt",img:"grocery-restock-2.webp",w:720,h:770,marks:[[50.0, 21.1, 1], [50.0, 91.4, 2]]},
+      {text:"⏳ Chờ hàng về: xem còn mấy phút",img:"grocery-restock-3.webp",w:720,h:427,marks:[[60.3, 52.5, 1], [50.0, 79.8, 2]]},
+      {text:"👆 Mở thùng, chạm đếm, nhận lên kệ",img:"grocery-restock-4.webp",w:720,h:565,marks:[[68.2, 33.7, 1], [27.4, 88.2, 2]]},
+    ]},
   ]},
   delivery:{emoji:"🛵",name:"Giao hàng",steps:[
     {text:"✋ Nhận đơn trên app",img:"delivery-1.webp",w:720,h:441,marks:[[50.0, 70.3, 1]]},

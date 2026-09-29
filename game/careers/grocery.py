@@ -436,6 +436,17 @@ def on_task(s: dict, c: dict, t: dict) -> None:
         quote(c, t)
 
 
+def on_stock(s: dict, c: dict, action: str) -> None:
+    """After a stock-room action (a crate counted onto the shelf, a lot thrown out): the rush
+    customer at the counter sees the shelf as it is now, unless their money is already on the counter."""
+    if action not in ('inv_receive', 'inv_discard'):
+        return
+    for t in c['tasks']:
+        if (t.get('career') == ID and t.get('kind') == 'rush' and t['status'] not in ('completed', 'cancelled', 'referred')
+                and t['rush']['start'] is not None and not (t['rush']['offer'] and t['rush']['offer']['charged'] is not None)):
+            _rush_offer(c, t)
+
+
 def on_start(s: dict, c: dict) -> None:
     d = _data(c)
     mod = mod_of(c['day'])

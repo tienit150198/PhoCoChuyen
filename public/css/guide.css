@@ -52,3 +52,33 @@ dialog.cozy-job .sheet-body :is(.btn,.tile,.chip,.choice,[role="button"]){-webki
 /* Work screens on a phone: every control is at least a thumb wide and tall. */
 html[data-layout="phone"] dialog.cozy-job .sheet-body :is(.btn,.icon-btn,.chip){min-height:44px}
 html[data-layout="phone"] dialog.cozy-job .sheet-body :is(.icon-btn,.btn.icon-btn){min-width:44px}
+
+/* "📦 Nhập hàng" (public/js/v4/restock.js): one short line + one button wherever a shelf is short,
+   and the stock room it leads to (views.js inventoryView). Theme tokens only. */
+.rs-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;padding:8px 10px;border-radius:12px;background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent)}
+.rs-line{flex:1 1 180px;min-width:0;margin:0;font-size:.867rem;line-height:1.35;color:var(--ink);overflow-wrap:anywhere}
+.rs-line>b{color:var(--warn)}
+.rs-item{white-space:nowrap}
+.rs-bar .rs-btn{flex:none;min-height:40px;white-space:nowrap}
+.rs-btn.ready{box-shadow:0 0 0 3px var(--good-soft)}
+.lx-restock{padding:4px 8px}
+.lx-restock .rs-bar{margin:4px 0;background:transparent;border:0;padding:4px 2px}
+.gr-rush-empty{display:grid;gap:8px;margin-top:8px}
+/* Stock room: crates at the door on top, a filter chip, tap-to-count goods, a calm empty state. */
+.inv-door{display:grid;gap:10px;margin:0 0 14px}
+.inv-door .section-title{margin:0}
+.inv-door .inv-crate-card+.inv-crate-card{margin-top:0}
+.btn.inv-open{width:100%}
+.inv-tip{margin:0;font-size:.833rem;font-weight:700;color:var(--accent-text)}
+.inv-next{display:block;font-size:.867rem;color:var(--ink-2)}
+.inv-focus{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:0 0 10px;padding:8px 10px;border-radius:12px;background:var(--accent-soft);font-size:.867rem;font-weight:700}
+.inv-crate li:has(.inv-good){width:auto;height:auto;padding:0;background:none}
+.inv-good{display:grid;place-items:center;width:44px;height:44px;border-radius:9px;background:rgba(255,248,236,.94);border:2px solid transparent;font-size:1.4rem;line-height:1;position:relative;touch-action:manipulation}
+.inv-good.on{opacity:.55;border-color:var(--good)}
+.inv-good.on::after{content:"✓";position:absolute;right:-5px;top:-7px;display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--good);color:#fff;font-size:.7rem;font-weight:800}
+.inv-good:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.order-row.mine{border-left:4px solid var(--info)}
+.inv-empty p b{color:var(--ink)}
+.inv-empty .btn{margin-top:8px}
+.rs-inline{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px}
+.rs-inline>span{flex:1 1 160px;min-width:0}

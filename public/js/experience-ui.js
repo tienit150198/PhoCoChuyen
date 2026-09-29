@@ -1,6 +1,7 @@
 /** Original warm counter UI. No reference website code/assets are reused. */
 import {icon,portrait,itemArt,escapeHTML as esc} from './icons.js';
 import {lessonV2,tripV2,v2Stage} from './v4/teach-tour.js';
+import {lowItems,restockBar} from './v4/restock.js';
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const b=(label,action,payload={},cls='')=>`<button type="button" class="btn ${cls}" data-action="${action}" ${Object.entries(payload).map(([k,v])=>`data-${k}="${esc(v)}"`).join(' ')}>${label}</button>`;
 const doB=(label,op,payload={},cls='',confirm='')=>b(label,'expDo',{op,payload:JSON.stringify(payload),confirm},cls);
@@ -56,7 +57,9 @@ function prepView(cid,c,content,meta){
  else {const link=(e,label,action)=>b(tile(e)+`<span class="grow">${label}</span>`+icon('chevron',16),action,{},'lx-link');
   stock=`<section class="lx-card">${h3('Trước giờ mở cửa')}<div class="lx-links">${link('🧺',cid==='mother_baby'||cid==='pharmacy'?'Kiểm kho & nhập hàng':'Xem công việc được giữ','warehouse')}${link('👥','Xếp ca nhân viên','staff')}${link('🪴','Trang trí góc của mình','decor')}${link('💌','Đọc chuyện đang chờ','passport')}</div></section>`;}
  const grid=`<div class="lx-grid">${today}${goalCard(c)}</div>${stock}`;
- return shell('prepare',c,meta,level+grid,`<footer class="life-sticky">${b(c.open?'Về quầy · tiếp tục chơi':'Mở cửa ngày '+c.day,c.open?'close':'start',{},'primary jumbo')}</footer>`);
+ // Stocked shops: one line before opening when shelves are empty or low, with the way to restock.
+ const short=cid!=='milk_tea'&&c.inventory?restockBar(c,lowItems(c,content,cid),{urgent:false}):'';
+ return shell('prepare',c,meta,(short?`<section class="lx-card lx-restock">${short}</section>`:'')+level+grid,`<footer class="life-sticky">${b(c.open?'Về quầy · tiếp tục chơi':'Mở cửa ngày '+c.day,c.open?'close':'start',{},'primary jumbo')}</footer>`);
 }
 function priceRow(i,value,lo,hi,open,art=''){
  return `<li class="lx-price">${art||tile(i.emoji||'🏷️')}<label class="grow" for="price-${i.id}">${esc(i.name)}</label><span class="lx-price-in"><input class="input" type="number" inputmode="numeric" id="price-${i.id}" min="${lo}" max="${hi}" value="${value}" data-preserve aria-label="Giá ${esc(i.name)}" ${open?'disabled':''}><small>xu</small></span>${b('Lưu giá','expPrice',{item:i.id},'small')}</li>`;

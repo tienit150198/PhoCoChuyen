@@ -34,7 +34,7 @@ function boot(env){
 
 export async function tutorialAction(action,data,el,env){
   switch(action){
-    case'help':case'tutGuide':openGuide(env,{career:data?.career||undefined,tab:data?.tab||undefined});return true;
+    case'help':case'tutGuide':openGuide(env,{career:data?.career||undefined,tab:data?.tab||undefined,page:data?.page||undefined});return true;
     case'tutReplay':
       closeGuide();if(document.getElementById('sheet')?.open)env.closeSheet();
       if(tourRunning())stopTour('restart');

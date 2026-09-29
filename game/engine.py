@@ -511,6 +511,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         result.update(dk.handle(s,c,career,action,p))
     elif action.startswith("inv_"):
         result.update(inv.action(s,c,career,action,p))
+        if mod and hasattr(mod,"on_stock"):mod.on_stock(s,c,action)  # e.g. a rush queue sees the goods just shelved
     elif action.startswith("sit_"):
         result.update(sit.action(s,c,career,action,p))
     elif action.startswith("inc_"):

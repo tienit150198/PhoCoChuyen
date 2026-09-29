@@ -12,6 +12,7 @@
 import {dayStrip,flash,eventCard,queue,keepBarAboveFooter,idlePanel,gradeCard,patience,openTasks} from './food_kit.js';
 import {reqList,fold} from '../ui-kit.js';
 import {nextHint,stepCta,finalGo,pending,firstTime,todoAttrs,todoArrow,highlight,stepLine} from '../v4/guide.js';
+import {restockFor,restockButton} from '../v4/restock.js';
 
 const METER_SCALE=20;   // seconds shown on the soak / foam bars
 const VALUE_SCALE=1.2;  // value bar runs to 120% of the budget
@@ -247,7 +248,7 @@ function preCard(x,b){
   let btns='';
   if(b.status==='offer')btns=`${x.confirmCmd(`✓ Nhận, lấy cọc ${b.deposit} xu`,'fl_pre',{id:b.id,do:'accept'},`Nhận “${b.title}” giao ${dayWord(b.left,b.due)}? Nhận cọc ${b.deposit} xu; không kịp làm thì hoàn cọc và khách chê.`,'primary small')}${x.cmd('Từ chối khéo','fl_pre',{id:b.id,do:'decline'},'ghost small')}`;
   else if(due)btns=x.confirmCmd('💐 Cắm & giao đơn này','fl_pre',{id:b.id,do:'make'},`Cắm “${b.title}” từ hàng trong tủ? Tiệm dùng cành nở đẹp trước; khách đang chờ sẽ chờ thêm chút.`,'primary small',!!(b.short||[]).length||!x.room.open)
-    +((b.short||[]).length?x.button('📦 Mở Kho nhập hoa','inventory',{},'ghost small'):'');
+    +((b.short||[]).length?restockButton(x.room,(b.rows||[]).filter(r=>r.item&&r.have<r.need).map(r=>({id:r.item,target:r.need})),{urgent:false},'ghost small'):'');
   const say=b.status==='offer'?`<p class="fl-note">“${x.esc(b.call)}”</p>`:'';
   const tip=due?((b.short||[]).length?`<p class="small fl-warn">Thiếu: ${x.esc(b.short.join(', '))}.</p>`:''):'';
   return `<li class="fl-pre${due?' due':''}">${head}${say}${list}${tip}${btns?`<div class="fl-care-btns">${btns}</div>`:''}</li>`;
@@ -585,7 +586,7 @@ function orderSteps(t,x){
   push('base',{ok:w.base?w.base===sp.format:null,label:`Chọn kiểu: ${fm.name}`,tab:'design',
     note:w.base&&w.base!==sp.format?`đang làm ${lower(format(x,w.base).name)}`:!w.base&&short.length?`thiếu ${short.map(([k])=>lower(item(x,k).name)).join(', ')}`:'',
     go:w.base?(w.base===sp.format?null:inPail?unlockGo(t):{cmd:'fl_dump',payload:{task},confirm:'Sai kiểu cắm: bỏ bó và làm lại từ đầu?',label:'🗑️ Bỏ bó, làm lại đúng kiểu'})
-      :short.length?{act:'inventory',label:'📦 Mở Kho nhập vật tư'}:{cmd:'fl_base',payload:{task,kind:sp.format},label:`${x.esc(fm.emoji)} Chuẩn bị ${x.esc(lower(fm.name))}`}});
+      :short.length?restockFor(x,short.map(([k])=>k),short.map(([k])=>lower(item(x,k).name)).join(', ')):{cmd:'fl_base',payload:{task,kind:sp.format},label:`${x.esc(fm.emoji)} Chuẩn bị ${x.esc(lower(fm.name))}`}});
   if(sp.card){
     const tone=t.card_tone,ok=w.card?(tone==='fit'?true:tone==='wrong'?false:null):null;
     push('card',{ok,label:'Viết thiệp đúng dịp',note:tone==='plain'?'lời hơi chung chung':tone==='wrong'?'lời không hợp dịp':'',tab:'card',
@@ -606,17 +607,17 @@ function orderSteps(t,x){
   if(fm.wrap){
     const pp=paperPick(t,x);
     push('wrap',{ok:w.paper?true:null,label:'Gói giấy',note:w.paper?paper(x,w.paper).name:'',tab:'design',
-      go:!w.arranged||w.paper?null:!pp?{act:'inventory',label:'📦 Hết giấy gói: mở Kho'}
+      go:!w.arranged||w.paper?null:!pp?restockFor(x,(cc(x).papers||[]).map(p=>p.item).filter(Boolean),'giấy gói')
         :!w.ribbon&&stock(x,'ribbon')?seqGo([['fl_wrap',{task,paper:pp}],['fl_ribbon',{task,color:ribbonPick(t,x)}]],`🎁 Gói ${x.esc(lower(paper(x,pp).name))} & thắt nơ`)
         :{cmd:'fl_wrap',payload:{task,paper:pp},label:`🎁 Gói ${x.esc(lower(paper(x,pp).name))}`}});
   }
   const rb=ribbonPick(t,x),canRibbon=w.arranged&&!w.ribbon&&(sp.format!=='bouquet'||w.paper);
   push('ribbon',{ok:w.ribbon?true:null,label:'Thắt ruy băng',note:w.ribbon?ribbon(x,w.ribbon).name:'',tab:'design',
-    go:!canRibbon?null:stock(x,'ribbon')?{cmd:'fl_ribbon',payload:{task,color:rb},label:`🎀 Thắt ruy băng ${x.esc(lower(ribbon(x,rb).name))}`}:{act:'inventory',label:'📦 Hết ruy băng: mở Kho'}});
+    go:!canRibbon?null:stock(x,'ribbon')?{cmd:'fl_ribbon',payload:{task,color:rb},label:`🎀 Thắt ruy băng ${x.esc(lower(ribbon(x,rb).name))}`}:restockFor(x,'ribbon','ruy băng')});
   if(sp.banner){
     const right=!!w.banner&&letters(w.banner)===letters(sp.banner);
     push('banner',{ok:w.banner?right:null,label:'In băng rôn đúng chữ',note:w.banner&&!right?`đang in “${w.banner}”`:'',tab:'design',
-      go:!w.arranged||right?null:stock(x,'banner')?{act:'car:bannertpl',data:{task,text:sp.banner},label:'🖨️ In băng rôn đúng chữ khách dặn'}:{act:'inventory',label:'📦 Hết băng rôn: mở Kho'}});
+      go:!w.arranged||right?null:stock(x,'banner')?{act:'car:bannertpl',data:{task,text:sp.banner},label:'🖨️ In băng rôn đúng chữ khách dặn'}:restockFor(x,'banner','băng rôn')});
   }
   if(rainy(x)&&deliver(t))push('cover',{ok:w.cover||null,label:'Bọc nylon chống mưa',tab:'design',
     go:!w.cover&&w.arranged&&(sp.format!=='bouquet'||w.paper)?{cmd:'fl_cover',payload:{task},label:'🌂 Bọc nylon chống mưa'}:null});

@@ -75,11 +75,12 @@ function pulseSel(step,cta){
 /** One line: "Bước tiếp theo · <label> →", tapping it does the step (or jumps to it).
  * When nothing is left it offers `final` ({label (text), go}) or just says `done`. The host
  * moves it into the sticky sheet header, so it is always in view. */
-export function nextHint(x,steps,{done='',final=null,cta=true,pulse=''}={}){
+export function nextHint(x,steps,{done='',final=null,cta=true,pulse='',glow=false}={}){
   let n=pending(steps);
   if(!n&&final?.go)n={label:final.label,go:final.go};
   if(!n&&!done)return '';
-  const first=firstTime(x)?' data-first="1"':'';
+  // `glow`: pulse the next control even after the first task (a detour the player was sent on, e.g. restocking).
+  const first=glow||firstTime(x)?' data-first="1"':'';
   if(!n)return `<div class="gd-next done" role="status"${first}${pulse?` data-pulse="${esc(pulse)}"`:''}><small>Bước tiếp theo</small><b>${esc(done)}</b></div>`;
   const sel=pulse||pulseSel(n,cta);
   const tap=goAttrs(n.go);

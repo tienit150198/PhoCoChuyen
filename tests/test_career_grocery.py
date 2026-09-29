@@ -889,6 +889,31 @@ class GroceryRushTests(unittest.TestCase):
         self.assertEqual(j.get(tid)['rush']['log'][-1]['status'], 'empty')
         self.assertNotEqual(j.get(tid)['rush']['i'], i)
 
+    def test_a_crate_counted_onto_the_shelf_brings_the_rush_customer_back(self):
+        # "Kệ hết món khách cần": the counter offers the stock room; once the crate is counted the
+        # customer at the counter is served from the new stock, not sent away.
+        from tests.test_inventory_flow import wait_until_ready
+        day, slot = find(lambda t: t['kind'] == 'rush')
+        j = Journey('grocery', slot=slot, day=day)
+        restock(j)
+        tid = j.task['id']
+        want = G.make_task(day, slot, 1)['needs']['queue'][0]['items']
+        for it, _ in want:
+            kit.take(j.c, it, kit.stock(j.c, it))
+        j.act('ask')
+        self.assertFalse(j.get(tid)['rush']['offer']['units'])
+        item, qty = want[0]
+        j.act('inv_order', item=item, qty=max(qty, 5), supplier='express', confirm=True)
+        o = j.c['ext']['inv']['orders'][-1]
+        wait_until_ready(j, o['id'])
+        self.assertFalse(j.get(tid)['rush']['offer']['units'], 'nothing changes before the crate is counted')
+        j.act('inv_receive', order=o['id'], count=o['actual'])
+        offer = j.get(tid)['rush']['offer']
+        self.assertEqual(offer['units'].get(item), min(qty, o['actual']))
+        self.assertIsNone(offer['charged'])
+        self.assertIn(sum(G._price(j.c, k) * v for k, v in offer['units'].items()), offer['totals'])
+        roundtrip(j)
+
     def test_wrong_total_is_caught_and_counted(self):
         j = self._rush()
         j.act('ask')

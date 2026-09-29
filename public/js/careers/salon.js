@@ -5,6 +5,7 @@
  * Care loop: the client card (formula, hair health, patch test, last cut), follow-up bookings and the jar of clean tool sets. */
 import {reqList,fold} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
+import {restockFor,restockButton} from '../v4/restock.js';
 import {keepBarAboveFooter} from './food_kit.js';
 const CHEM=['color','bleach','toner'];
 const ZONE_TEXT={under:'chưa đủ giờ',ideal:'đúng giờ',over:'hơi quá giờ',damage:'quá giờ, tóc gãy'};
@@ -346,7 +347,7 @@ function colorPanel(t,x){
   const devs=x.cc.devs.map(v=>{const q=x.stock('dev_'+v);return `<button type="button" class="sl-seg ${u.dev===v?'on':''} ${v===40?'hot':''}" ${carAttr(x,'dev',{task:t.id,v})} aria-pressed="${u.dev===v}" ${q||u.dev===v?'':'disabled'}>${v} vol<small>${q}</small></button>`;}).join('');
   const ratios=x.cc.ratios.map(r=>`<button type="button" class="sl-seg ${u.ratio===r?'on':''}" ${carAttr(x,'ratio',{task:t.id,v:r})} aria-pressed="${u.ratio===r}">${fmtRatio(r)}</button>`).join('');
   const {payload,ready,out,blocked}=bowlOrder(t,x,u);
-  const outNote=out.length?`<p class="sl-note bad">📦 Hết ${out.map(id=>x.esc(itemName(x,id))).join(', ')} — mở Kho nhập thêm hoặc chọn loại khác.</p>`:'';
+  const outNote=out.length?`<div class="sl-note bad rs-inline"><span>📦 Hết ${out.map(id=>x.esc(itemName(x,id))).join(', ')} · hoặc chọn loại khác</span>${restockButton(x.room,out,{task:t.id},'small')}</div>`:'';
   return `${tabs}${pick}
     <h5 class="sl-sub">Oxy trợ nhuộm</h5><div class="sl-segs sl-devs">${devs}</div>
     <h5 class="sl-sub">Tỷ lệ thuốc ∶ oxy</h5><div class="sl-segs sl-ratios">${ratios}</div>
@@ -576,7 +577,7 @@ function guideOf(t,x){
       steps.push({ok:u.dev?true:null,label:'Chọn oxy',go:u.dev?null:go('.sl-devs')});
       steps.push({ok:u.ratio?true:null,label:'Chọn tỷ lệ thuốc ∶ oxy',go:u.ratio?null:go('.sl-ratios')});
     }
-    steps.push({ok:null,label:`Trộn bát ${svc(x,kind).name.toLowerCase()}`,go:o.ready?{cmd:'sl_mix',payload:o.payload,label:'🥣 Trộn bát'}:o.out.length?{sel:'.sl-foot',label:'📦 Hết thuốc: mở Kho nhập thêm'}:null});
+    steps.push({ok:null,label:`Trộn bát ${svc(x,kind).name.toLowerCase()}`,go:o.ready?{cmd:'sl_mix',payload:o.payload,label:'🥣 Trộn bát'}:o.out.length?restockFor(x,o.out,o.out.map(k=>itemName(x,k)).join(', '),{task:id}):null});
     return {steps};
   }
   if(at==='wash'){steps.push({ok:null,label:'Gội & xả cho khách',go:{cmd:'sl_wash',payload:{task:id},label:'🫧 Gội & xả'}});return {steps};}

@@ -35,6 +35,8 @@ import {tutorialBoot,tutorialAction,guideHelp} from './tutorial/index.js';
 
 const $=s=>document.querySelector(s), api=new GameAPI(), sound=new Sound();
 const ended=t=>['completed','referred','cancelled'].includes(t.status);
+/** The stock room opened from the scene or the dock: no restock filter left over (views.js v4Restock). */
+const INV_PLAIN={invFocus:null,invNeed:null,invReturn:null,orderRush:false};
 /** First day at a place, its three jobs done: closing the day is the next step (and the chapter goal). */
 const wrapUp=c=>Boolean(c?.open&&c.day===1&&c.day_completed>=3&&!c.tasks.some(x=>!ended(x)));
 const ui={opsTab:'staff',staffId:null,lessonSequence:[],tourRoute:[],activityCard:null,view:null,tab:'',task:null,npc:null,jobTab:'shelf',journalTab:'quests',libraryQuery:'',docs:new Set(),transactions:new Set(),drafts:{},ai:{},suggestions:{},busy:false,paused:false};
@@ -416,7 +418,7 @@ function pharmacyJob(t){
     :refer?`<section class="dw-slip refer" aria-label="Phiếu lấy hàng"><span class="dw-eyebrow">📋 Phiếu lấy hàng</span><p class="dw-slip-miss">Yêu cầu nằm ngoài phiếu.</p><p class="dw-hint">Không lấy hộp thay thế.</p>${button('Chuyển cô Thu '+icon('arrow',15),'referPH',{},'primary')}</section>`
     :`<section class="dw-slip" aria-label="Phiếu lấy hàng"><span class="dw-eyebrow">📋 Phiếu lấy hàng</span><dl class="dw-slip-grid"><div><dt>Mã hộp</dt><dd>${esc(n.product)}<small>${esc(name(n.product))}</small></dd></div><div><dt>Số lượng</dt><dd>${n.qty} hộp</dd></div><div class="wide"><dt>Ghi chú</dt><dd>Chỉ lô hợp lệ, không tạm giữ.</dd></div></dl></section>`;
   const lotRow=l=>{const s=state(l),[label,tone]=LOT_STATE[s]||LOT_STATE.expired;
-    return `<li class="dw-lot ${s}">${itemArt('box',36,l.color)}<div class="dw-lot-id"><b>${esc(l.id)}</b>${dwState(label,tone)}${s!=='unread'?`<small>Còn ${fmt(c.available?.[l.id])} hộp${s==='available'&&use(l.id)?` · HSD ngày ${use(l.id).exp}`:''}</small>`:''}</div><div class="dw-lot-act">${s==='unread'?commandButton(icon('eye',15)+' Đọc nhãn','ph_inspect',{task:t.id,lot:l.id},'ghost'):s==='available'?commandButton(icon('plus',15)+' Lấy 1','ph_pick',{task:t.id,item:l.id},'',!t.known||refer||!c.open):s==='pull'?openBoard('Sổ lô','lots'):''}</div></li>`;};
+    return `<li class="dw-lot ${s}">${itemArt('box',36,l.color)}<div class="dw-lot-id"><b>${esc(l.id)}</b>${dwState(label,tone)}${s!=='unread'?`<small>Còn ${fmt(c.available?.[l.id])} hộp${s==='available'&&use(l.id)?` · HSD ngày ${use(l.id).exp}`:''}</small>`:''}</div><div class="dw-lot-act">${s==='unread'?commandButton(icon('eye',15)+' Đọc nhãn','ph_inspect',{task:t.id,lot:l.id},'ghost'):s==='available'?(!(c.available?.[l.id]>0)&&t.known&&!refer?button('📦 Hết · nhập hàng','warehouse',{},'small ghost'):commandButton(icon('plus',15)+' Lấy 1','ph_pick',{task:t.id,item:l.id},'',!t.known||refer||!c.open)):s==='pull'?openBoard('Sổ lô','lots'):''}</div></li>`;};
   const lots=`<section class="dw-sec dw-lots" aria-label="Kệ lô hàng"><div class="dw-sec-head"><h3>Kệ lô hàng</h3><label class="dw-filter"><span>Xem mã</span><select id="ph-filter" aria-label="Chọn mã hộp" data-action-change="ph-filter"><option value="all">Tất cả mã</option>${api.content.ph_products.map(p=>`<option value="${p.id}"${f===p.id?' selected':''}>${p.id}${p.id===want?' · trên phiếu':''}</option>`).join('')}</select></label></div><p class="dw-hint">Màu hộp không cho biết lô có được xuất.</p>`+
     api.content.ph_products.filter(p=>!f||p.id===f).map(p=>`<div class="dw-lotgroup${p.id===want?' want':''}"><h4><b>${p.id}</b> ${esc(p.name)}${p.id===want?dwState('Mã trên phiếu','blue'):''}</h4><ul class="dw-lotlist">${api.content.lots.filter(l=>l.product===p.id).map(lotRow).join('')}</ul></div>`).join('')+`</section>`;
   const facts={code:`Phiếu ${want||'—'} · khay ${codes.join(', ')||'—'}`,quantity:`Phiếu ${n&&!refer?n.qty:'—'} · khay ${count}`,lot:tray.length?'Khay: '+tray.map(([id])=>id).join(', '):'Khay chưa có lô'};
@@ -834,7 +836,7 @@ function interact(id){sound.unlock();sound.click();if(ui.paused)return;
   if(id==='assistant'){cmd('assistant_help');return;}
   if(id==='door'){if(room().open)handleAction('end',{});else openSheet('prepare');return;}
   if(id==='board'){openSheet('phone');return;}
-  if(id==='warehouse'){openSheet(career()==='milk_tea'?'prepare':['mother_baby','pharmacy','accounting','customer_care'].includes(career())?'warehouse':room().inventory?'inventory':'queue');return;}
+  if(id==='warehouse'){openSheet(career()==='milk_tea'?'prepare':['mother_baby','pharmacy','accounting','customer_care'].includes(career())?'warehouse':room().inventory?'inventory':'queue',INV_PLAIN);return;}
   if(['shelf','workbench','counter','evidence'].includes(id)){const tab=career()==='mother_baby'?(id==='workbench'?'pack':id==='counter'?'checkout':'shelf'):'shelf';openJob(null,tab);return;}
 }
 async function talk(text){if(!ui.npc||!text.trim())return;const id=ui.npc;const r=await aiTalk(env(),id,text);if(!r)return;ui.suggestions[id]=r.suggestions||[];world.say(r.reply,id);renderSheet();}
@@ -888,7 +890,7 @@ async function handleAction(action,data,el){
     case'library':if(['teacher','tour_guide','milk_tea'].includes(career()))openSheet('workshop');else openSheet('journal',{journalTab:'library'});break;
     case'journalTab':ui.journalTab=data.tab;renderSheet(false);break;
     case'loadOlder':{const p=loadOlder(api,data.career,data.kind,data.shown);renderSheet();try{await p;}catch(e){toast(e.message,true);}renderSheet();break;}
-    case'warehouse':openSheet(career()==='milk_tea'?'prepare':['mother_baby','pharmacy','accounting','customer_care'].includes(career())?'warehouse':room().inventory?'inventory':'queue');break;
+    case'warehouse':openSheet(career()==='milk_tea'?'prepare':['mother_baby','pharmacy','accounting','customer_care'].includes(career())?'warehouse':room().inventory?'inventory':'queue',INV_PLAIN);break;
     case'job':await openJob(data.task);break;
     case'nextJob':ui.task=null;await openJob(null,'shelf');break;
     case'shelf':await openJob(null,'shelf');break;

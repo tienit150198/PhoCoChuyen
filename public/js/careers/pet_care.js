@@ -3,6 +3,7 @@
  *  Care loop: regulars' cards and trust, a daily care card per boarder, vaccine/deworming reminders, adoption follow-ups. */
 import {reqList,fold} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,goAttrs,highlight,stepLine} from '../v4/guide.js';
+import {restockFor} from '../v4/restock.js';
 import {keepBarAboveFooter} from './food_kit.js';
 const JOB_ICON={groom:'🛁',board:'🏠',feed:'🥣',adopt:'🏡'};
 const SPECIES_EMOJI={dog:'🐶',cat:'🐱'};
@@ -553,7 +554,7 @@ function groomGuide(t,x){
       work.push({ok:g.muzzle||null,label:'Đeo rọ mõm trước khi cầm chân bé',go:!g.muzzle&&g.consent&&!wet&&!off?{cmd:'pc_muzzle',payload:task,label:'🧢 Đeo rọ mõm mềm'}:null});
     }
     if(sv.includes('nails')&&n.species==='cat'&&knownBitey(t))
-      work.push({ok:g.wrap||null,label:'Quấn khăn giữ bé trước khi cắt móng',go:!g.wrap&&!wet&&!off&&x.stock('towel')?{cmd:'pc_calm',payload:{task:id,how:'wrap'},label:'🌯 Quấn khăn giữ bé'}:null});
+      work.push({ok:g.wrap||null,label:'Quấn khăn giữ bé trước khi cắt móng',go:!g.wrap&&!wet&&!off?(x.stock('towel')?{cmd:'pc_calm',payload:{task:id,how:'wrap'},label:'🌯 Quấn khăn giữ bé'}:restockFor(x,'towel','khăn',{task:id})):null});
     if(sv.includes('nails')){
       const cut=rightCut(t);
       work.push({hard:true,ok:g.nails?true:null,label:'Cắt móng an toàn',note:g.nails?(g.nails==='short'?'cắt ngắn':'tỉa đầu móng'):'',
@@ -610,7 +611,7 @@ function feedGuide(t,x){
       :{act:'car:chart',label:`📐 Cân theo bảng: ${want.grams} g`}});
   if(n.med)steps.push({ok:t.med?true:null,label:'Cho thuốc đúng nhãn',go:t.med||!t.fed?null:{sel:'.pc-med .row',label:'💊 Đọc nhãn, chọn liều'}});
   steps.push({ok:(t.walked||t.litter)||null,label:dog?'Dắt đi dạo':'Dọn khay cát',
-    go:t.walked||t.litter?null:dog?(x.stock('poop_bag')?{cmd:'pc_walk',payload:{task:id},label:'🦮 Dắt bé đi dạo'}:null):{cmd:'pc_litter',payload:{task:id},label:'🧹 Dọn khay cát'}});
+    go:t.walked||t.litter?null:dog?(x.stock('poop_bag')?{cmd:'pc_walk',payload:{task:id},label:'🦮 Dắt bé đi dạo'}:restockFor(x,'poop_bag','túi nhặt phân',{task:id})):{cmd:'pc_litter',payload:{task:id},label:'🧹 Dọn khay cát'}});
   steps.push(reportStep(t,x,first));
   return {steps,final:{label:'📸 Gửi ảnh & cập nhật cho chủ',go:finish(steps,'pc_handover',{task:id},'Gửi cập nhật cho chủ? Chủ sẽ đọc đúng những ý bạn đã chọn.'),
     ready:!!t.fed&&(!n.med||!!t.med),why:n.med?'Cho bé ăn và uống thuốc trước':'Cho bé ăn trước'}};

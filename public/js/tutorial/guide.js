@@ -8,7 +8,7 @@ import {dayArt} from './art.js';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const X='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
 const ART={day:dayArt};
-let view={tab:'play',career:null};
+let view={tab:'play',career:null,page:null};
 
 /** One mark: a dot on the control, an arrow, and a numbered badge placed
  * towards the middle of the picture (so it never falls off the edge). */
@@ -43,9 +43,12 @@ function workTab(){
   const ids=Object.keys(CAREERS),cid=ids.includes(view.career)?view.career:null;
   const chips=`<div class="chip-row tut-chips" role="tablist" aria-label="Chọn nghề">${ids.map(id=>{const c=CAREERS[id];return `<button type="button" role="tab" class="chip${id===cid?' selected':''}" aria-selected="${id===cid}" data-tut-career="${id}"><span aria-hidden="true">${c.emoji}</span> ${esc(c.name)}</button>`;}).join('')}</div>`;
   if(!cid)return chips+generic();
-  const c=CAREERS[cid];
-  const steps=c.steps.map((s,i)=>`<li class="tut-step"><div class="tut-step-head"><span class="tut-step-n" aria-hidden="true">${i+1}</span><p>${esc(s.text)}</p></div>${figure(s,s.text,{finger:true})}</li>`).join('');
-  return chips+`<ol class="tut-steps">${steps}</ol>`;
+  const c=CAREERS[cid],pages=c.pages||[],page=pages.find(p=>p.id===view.page)||null;
+  // A workplace with more than one page ("Nhập hàng & xếp kệ"): a second row of chips.
+  const sub=pages.length?`<div class="chip-row tut-chips tut-pages" role="tablist" aria-label="Trang">${[{id:'',emoji:c.emoji,name:c.main||'Bán hàng'},...pages].map(p=>{const on=(page?.id||'')===p.id;
+    return `<button type="button" role="tab" class="chip${on?' selected':''}" aria-selected="${on}" data-tut-page="${esc(p.id)}"><span aria-hidden="true">${p.emoji}</span> ${esc(p.name)}</button>`;}).join('')}</div>`:'';
+  const steps=(page||c).steps.map((s,i)=>`<li class="tut-step"><div class="tut-step-head"><span class="tut-step-n" aria-hidden="true">${i+1}</span><p>${esc(s.text)}</p></div>${figure(s,s.text,{finger:true})}</li>`).join('');
+  return chips+sub+`<ol class="tut-steps">${steps}</ol>`;
 }
 /** Any other workplace: the same rhythm, in words. */
 function generic(){
@@ -68,10 +71,11 @@ function dialog(){
   d.addEventListener('click',e=>{
     const t=e.target;
     if(t===d){d.close();return;}   // tap on the backdrop
-    const tab=t.closest('[data-tut-tab]'),car=t.closest('[data-tut-career]');
+    const tab=t.closest('[data-tut-tab]'),car=t.closest('[data-tut-career]'),page=t.closest('[data-tut-page]');
     if(t.closest('[data-tut-close]'))d.close();
     else if(tab){view.tab=tab.dataset.tutTab;render();}
-    else if(car){view.career=car.dataset.tutCareer;render();}
+    else if(car){view.career=car.dataset.tutCareer;view.page=null;render();}
+    else if(page){view.page=page.dataset.tutPage||null;render();}
   });
   // Keep the app's toasts visible above this dialog while it is open.
   d.addEventListener('close',()=>{const t=document.getElementById('toasts');if(t&&d.contains(t))(document.querySelector('dialog[open]')||document.body).append(t);});
@@ -79,17 +83,17 @@ function dialog(){
 }
 function render(){const d=dialog(),inner=d.querySelector('.tut-guide-inner');inner.innerHTML=html();d.scrollTop=0;}
 
-/** Open the guide: `career` picks the "Cách làm" page of that workplace. */
-export function openGuide(env,{career,tab}={}){
+/** Open the guide: `career` picks the "Cách làm" page of that workplace, `page` one of its extra pages. */
+export function openGuide(env,{career,tab,page}={}){
   const cur=env?.api?.state?.current||env?.api?.state?.focus;
-  view={tab:tab||(career?'work':'play'),career:career||cur||null};
+  view={tab:tab||(career?'work':'play'),career:career||cur||null,page:page||null};
   const d=dialog();render();
   if(!d.open)d.showModal();
   d.tabIndex=-1;d.focus({preventScroll:true});
 }
 export const closeGuide=()=>{const d=document.getElementById('tutGuide');if(d?.open)d.close();};
 
-/** "?" for a work screen header: opens this workplace's quick guide. */
-export function helpButton(career){
-  return `<button type="button" class="icon-btn tut-help" data-action="tutGuide" data-career="${esc(career||'')}" data-tab="work" aria-label="Cách làm">?</button>`;
+/** "?" for a work screen header: opens this workplace's quick guide (`page`: one of its extra pages). */
+export function helpButton(career,page=''){
+  return `<button type="button" class="icon-btn tut-help" data-action="tutGuide" data-career="${esc(career||'')}" data-tab="work"${page?` data-page="${esc(page)}"`:''} aria-label="Cách làm">?</button>`;
 }

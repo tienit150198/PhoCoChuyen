@@ -6,6 +6,7 @@
 import {reqList,fold,refTable} from '../ui-kit.js';
 import {dayStrip,flash,eventCard,keepBarAboveFooter,idlePanel,gradeCard,patience,openTasks} from './food_kit.js';
 import {nextHint,stepCta,finalGo,pending as nextOpen,firstTime,todoAttrs,todoArrow,stepLine} from '../v4/guide.js';
+import {restockFor} from '../v4/restock.js';
 
 const BASE_SCALE=25; // seconds shown on the boiling bar
 const NOODLE={raw:'sống',perfect:'chín tới',soft:'hơi mềm',mushy:'nát'};
@@ -231,7 +232,7 @@ function potFix(x,id,t){
   if(!p)return null;
   if(st==='stale')return {cmd:'rs_toss',payload:{broth:id,confirm:true},confirm:`Đổ phần nước dùng ${p.name} để quá hạn? Phần mới hơn vẫn giữ lại.`,label:`🗑️ Đổ phần ${x.esc(p.name)} quá hạn`};
   if(st==='cold')return once(t,'rs_reheat',{},`🔥 Đun lại nồi ${x.esc(p.name)}`);
-  if(q<need)return stockOf(x,p.pack)?once(t,'rs_pot',{broth:id},`🔥 Nấu thêm nồi ${x.esc(p.name)}`):{act:'v4Go',data:{sel:'[data-action="inventory"]'},label:`📦 Hết gói ${x.esc(p.name)}: nhập hàng`};
+  if(q<need)return stockOf(x,p.pack)?once(t,'rs_pot',{broth:id},`🔥 Nấu thêm nồi ${x.esc(p.name)}`):restockFor(x,p.pack,'gói '+p.name);
   return null;
 }
 /** Steps for the bowl in hand, in kitchen order. Each has a key so the ticket rows can reuse its tap.

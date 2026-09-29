@@ -4,6 +4,7 @@
  * Phone first: one step panel at a time, one primary button per panel. */
 import {reqList,fold} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,highlight,stepLine} from '../v4/guide.js';
+import {restockFor,restockButton} from '../v4/restock.js';
 const STEPS=['Nhận máy','Đo kiểm','Báo giá','Sửa','Bàn giao'];
 const MODE={live:'cấp điện',open:'mở máy',any:'đo ngoài'};
 
@@ -301,7 +302,7 @@ function fixView(t,x){
       if(mine)order=`<span class="tag ${o.arrived?'green':'amber'} rp-order">${x.esc(x.cc.sources?.[o.src]?.emoji||'📦')} ${x.esc(itemOf(x,item).name)} ${o.arrived?'đã về':'về '+x.esc(o.when)}</span>`;
       else if(lacking&&src){const sv=x.cc.sources?.[src]||{},cost=(itemOf(x,item).cost||0)+(sv.ship||0);
         order=x.confirmCmd(`<b>${x.esc(sv.emoji||'📦')} Hết trên kệ — đặt riêng · ${x.esc(x.money(cost))}</b><small>${x.esc(sv.name||'')} giao ${x.esc(care(x).sources?.[src]?.when||'')}</small>`,'rp_order',{task:t.id,fault:f},`Đặt riêng ${itemOf(x,item).name} cho máy này: ${cost} xu (gồm ${sv.ship||0} xu giao). ${sv.rule||''}`,'small rp-orderbtn',(x.room.money??0)<cost);}
-      else if(lacking)order=`<p class="small muted">Hết ${x.esc(itemOf(x,item).name)} trên kệ — mở Kho nhập thêm, hoặc báo giá lại loại khác.</p>`;
+      else if(lacking)order=`<div class="small muted rs-inline"><span>Hết ${x.esc(itemOf(x,item).name)} trên kệ · hoặc báo giá lại loại khác</span>${restockButton(x.room,[item],{task:t.id},'small')}</div>`;
       const test=used&&!tested?x.cmd(`🧪 Cắm thử ${x.esc(itemOf(x,item).name.toLowerCase())} (còn ${x.stock(item)})`,'rp_parttest',{task:t.id,fault:f},b.opened?'primary':'small',!x.stock(item)):'';
       const fix=x.cmd(`🛠️ Sửa: ${x.esc(fd.name)} · ${x.esc(x.cc.grades[ap.grade]?.short||'')}${used&&tested?' ✓ đã thử':''}${waiting?' · chờ đồ':''}`,'rp_fix',{task:t.id,fault:f},b.opened&&(!used||tested)&&!waiting&&!lacking?'primary':'ghost',!b.opened||waiting||(lacking&&!mine));
       return `<div class="rp-fixrow">${order}${test}${fix}</div>`;
@@ -453,7 +454,7 @@ function fixSteps(t,x){
     if(mine&&!o.arrived){wait=wait||o;continue;}
     if(item&&!mine&&!x.stock(item)){const it=itemOf(x,item),sv=x.cc.sources?.[src]||{},cost=(it.cost||0)+(sv.ship||0);
       s.push({ok:null,label:`Hết ${it.name}: đặt riêng`,go:src?((x.room.money??0)>=cost?{cmd:'rp_order',payload:{task:id,fault:f},confirm:`Đặt riêng ${it.name} cho máy này: ${cost} xu (gồm ${sv.ship||0} xu giao). ${sv.rule||''}`,label:`📦 Đặt riêng ${x.esc(it.name)} · ${x.esc(x.money(cost))}`}:null)
-        :{act:'inventory',label:'📦 Mở Kho nhập thêm'}});}
+        :restockFor(x,item,it.name,{task:id})});}
   }
   const waiting=f=>{const o=v.orders?.[f];return !!o&&!o.used&&!o.arrived;};
   const ready=open.filter(f=>b.approved[f]&&!waiting(f));

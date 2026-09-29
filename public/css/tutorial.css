@@ -94,3 +94,4 @@
 .tut-note-btns{grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px}
 .tut-note-btns .btn{min-height:40px}
 @media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .tut-note{animation:tut-pop .3s var(--ease)}}
+.tut-pages{margin-top:-4px;padding-top:10px;border-top:1px dashed var(--line-strong)}
