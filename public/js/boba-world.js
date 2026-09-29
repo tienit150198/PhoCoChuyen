@@ -76,7 +76,14 @@ export class BobaWorld extends World {
  }
  project(x,y,z=0){return this.isPortrait()?{x:45+x*51,y:285+y*57-z}:{x:150+x*82,y:238+y*45-z};}
  unproject(x,y){return this.isPortrait()?{x:(x-45)/51,y:(y-285)/57}:{x:(x-150)/82,y:(y-238)/45};}
- layout(){if(this.isPortrait()){this.scale=Math.min(this.width/705,Math.max(180,this.height-205)/890);this.offset={x:(this.width-700*this.scale)/2,y:106+Math.max(0,(this.height-215-890*this.scale)/2)};return;}
+ layout(){if(this.isPortrait()){
+     // Phones: fit the room between the title card and the task card that float over the canvas, measured
+     // live. The sign drawn at the top of the scene (y < 140) repeats the title card, so it may go under it.
+     const doc=globalThis.document,cv=this.canvas?.getBoundingClientRect?.(),box=sel=>{const r=doc?.querySelector?.(sel)?.getBoundingClientRect?.();return r&&r.height?r:null;};
+     const head=box('.scene-heading'),hud=box('#taskHUD');
+     const top=cv&&head?Math.max(8,head.bottom-cv.top+6):106,bottom=cv&&hud?Math.max(0,cv.bottom-hud.top+4):110,band=Math.max(180,this.height-top-bottom);
+     const from=140,to=850,span=to-from;this.scale=Math.min(this.width/705,band/span);
+     this.offset={x:(this.width-700*this.scale)/2,y:top+(band-span*this.scale)/2-from*this.scale};return;}
    // Tablets float the task card over the canvas's right edge, so keep that strip clear. The desktop layout
    // puts the task panel in its own column beside the stage: nothing covers the canvas, use all of it.
    const beside=globalThis.document?.documentElement?.dataset?.layout==='desktop';
@@ -387,7 +394,7 @@ export class BobaWorld extends World {
    c.restore();}
  draw(){const c=this.ctx;if(!this.width)this.resize();c.setTransform(this.dpr,0,0,this.dpr,0,0);c.fillStyle='#fff6ed';c.fillRect(0,0,this.width,this.height);
    for(let x=14;x<this.width;x+=34)for(let y=14;y<this.height;y+=34)E(c,x,y,1,1,'#dec6b838');
-   c.translate(this.offset.x,this.offset.y);c.scale(this.scale,this.scale);this.drawRoom();this.drawFurnitureAndActors();this.labels();
+   c.translate(this.offset.x,this.offset.y);c.scale(this.scale,this.scale);if(this.isPortrait()){c.save();c.beginPath();c.roundRect(22,140,656,760,[26,26,0,0]);c.clip();this.drawRoom();c.restore();}else this.drawRoom();this.drawFurnitureAndActors();this.labels();
    this.fx?.draw(this); // live happenings (v4/scene-events.js)
    for(const p of this.particles){c.globalAlpha=Math.max(0,p.life/p.max);R(c,p.x,p.y,p.size,p.size,p.color,2);}c.globalAlpha=1;this.drawSpeech();
    if(this.navDebug)this.drawNavDebug();
