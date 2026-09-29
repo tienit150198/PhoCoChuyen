@@ -10,6 +10,7 @@ import {icon,portrait,itemArt,escapeHTML as esc} from './icons.js';
 import {reqList,fold} from './ui-kit.js';
 import {Sound} from './audio.js';
 import {careerSubmit,careerInput,loadCareerModules,careerUI,careerContext,startTicker} from './v4/careers.js';
+import {applyGuide,guideAction} from './v4/guide.js';
 import {inventoryView,feedbackView,situationView,jobView as jobAppView,v4Action,v4Submit,v4Input} from './v4/views.js';
 import {setLanguage} from './v4/i18n.js';
 import {shell} from './v4/shell.js';
@@ -139,9 +140,9 @@ function hudHTML(c,m){
 function taskCards(c){
   const t=c.tasks.find(x=>x.id===c.active_task&&!ended(x))||c.tasks.find(x=>!ended(x)),left=c.tasks.filter(x=>!ended(x)).length,W=wordsFor(career()),desk=deskWork();
   let main;
-  if(needsJob())main=`<article class="note-card"><span class="eyebrow">Việc làm</span><h3>Nơi này cần tuyển bạn trước đã</h3>${button('Xin việc '+icon('chevron',13),'jobapp',{},'primary full')}</article>`;
-  else if(!c.open)main=`<article class="note-card"><span class="eyebrow">Ngày ${c.day}</span><h3>${c.shift_summary?'Sẵn sàng cho ngày mới?':esc(W.idle_line)}</h3>${button(icon('sun',14)+' Chuẩn bị ngày mới','prepare',{},'primary full')}${c.shift_summary?button('Xem ngày vừa qua','summary',{},'ghost small full'):''}</article>`;
-  else if(t)main=`<article class="note-card task-card"><span class="eyebrow">Việc trước mắt</span><div class="row"><span class="npc-mini">${portrait(npc(t.npc),35)}</span><div class="grow"><h3>${esc(t.title)}</h3><small class="muted npc-mini">${esc(npc(t.npc).display_name)}</small></div></div>${t.known?'':`<p class="hud-quote">“${esc(t.opening)}”</p>`}<div class="task-step">${icon('flag',13)} ${esc(taskNext(t))}</div>${button('Làm tiếp '+icon('arrow',14),'job',{task:t.id},'primary full')}<div class="hud-extra small muted">${left} việc đang chờ · ${c.day_completed} việc đã xong</div></article>`;
+  if(needsJob())main=`<article class="note-card"><span class="eyebrow">Việc làm</span><h3>Nơi này cần tuyển bạn trước đã</h3>${button('Xin việc '+icon('chevron',13),'jobapp',{},'primary full gd-pulse')}</article>`;
+  else if(!c.open)main=`<article class="note-card"><span class="eyebrow">Ngày ${c.day}</span><h3>${c.shift_summary?'Sẵn sàng cho ngày mới?':esc(W.idle_line)}</h3>${button(icon('sun',14)+' Chuẩn bị ngày mới','prepare',{},'primary full'+(c.metrics?.served>0?'':' gd-pulse'))}${c.shift_summary?button('Xem ngày vừa qua','summary',{},'ghost small full'):''}</article>`;
+  else if(t)main=`<article class="note-card task-card"><span class="eyebrow">Việc trước mắt</span><div class="row"><span class="npc-mini">${portrait(npc(t.npc),35)}</span><div class="grow"><h3>${esc(t.title)}</h3><small class="muted npc-mini">${esc(npc(t.npc).display_name)}</small></div></div>${t.known?'':`<p class="hud-quote">“${esc(t.opening)}”</p>`}<div class="task-step">${icon('flag',13)} ${esc(taskNext(t))}</div>${button('Làm tiếp '+icon('arrow',14),'job',{task:t.id},'primary full'+(c.metrics?.served>0?'':' gd-pulse'))}<div class="hud-extra small muted">${left} việc đang chờ · ${c.day_completed} việc đã xong</div></article>`;
   else main=`<article class="note-card"><span class="eyebrow">${esc(W.free_eyebrow)}</span><h3>${desk?'Hết việc trong khay rồi!':esc(W.free_title)}</h3>${commandButton(desk?'Nhận thêm một việc':esc(W.more_btn),'more_work',{},'primary full')}${button('Khép ca hôm nay','end',{},'ghost small full')}</article>`;
   const notes=[],x=openSituation(c),cl=c.classroom,low=lowOpen(c),alert=c.ops?.alerts?.[0];
   if(c.event)notes.push(['event',{},c.event.practice?'play':'flag',c.event.practice?'Diễn tập':'Chuyện ở góc phố',c.event.stage==='resolved'?'Đã có kết quả · xem lại':c.event.title]);
@@ -224,6 +225,7 @@ function renderSheet(preserve=true){
     default:html=header('Một khoảng thảnh thơi')+`<div class="sheet-body">${empty('Cửa sổ chưa mở','Quay lại cảnh để tiếp tục nhé.')}</div>`;
   }
   $('#sheetContent').innerHTML=html;
+  applyGuide(dialog);
   if(preserve){dialog.querySelectorAll('details').forEach((el,i)=>{el.open=openedDetails[i]||false;});dialog.querySelectorAll('[data-preserve]').forEach(el=>{const data=fields[fkey(el)];if(data){el.value=data.value;if(el.type==='checkbox')el.checked=data.checked;}});dialog.scrollTop=scroll;if(focusKey){const el=[...dialog.querySelectorAll('[data-preserve],input,textarea,select')].find(x=>fkey(x)===focusKey);el?.focus({preventScroll:true});try{el?.setSelectionRange(selection,selection);}catch{/* not a text input */}}}
   if(!preserve)dialog.scrollTop=0;
   if(ui.view==='chat'){$('#messages')?.scrollTo(0,$('#messages').scrollHeight);}
@@ -739,6 +741,7 @@ async function handleAction(action,data,el){
       if(await deskAction(action,data,el,env()))break;
       if(await journeyAction(action,data,el,env()))break;
       if(await incidentAction(action,data,el,env()))break;
+      if(guideAction(action,data,el))break;
       if(await v4Action(action,data,el,env()))break;
       if(action.startsWith('car:')){const mod=careerUI(career()),fn=mod?.actions?.[action.slice(4)];if(fn){await fn(data,el,careerContext(env()));break;}}
       if(await settingsAction(action,data,el,env()))break;

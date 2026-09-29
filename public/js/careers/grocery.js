@@ -5,6 +5,7 @@
  *  trust / lean days / repayment plans in the credit book, weekly regular lists. */
 import {keepBarAboveFooter} from './food_kit.js';
 import {reqList,fold} from '../ui-kit.js';
+import {stepRows,nextHint,stepCta,finalGo,pending} from '../v4/guide.js';
 const ID='grocery';
 const catalogue=x=>x.content.inventory?.items?.[ID]||[];
 const item=(x,id)=>catalogue(x).find(i=>i.id===id)||{id,name:id,emoji:'•',unit:''};
@@ -16,7 +17,6 @@ const methodOf=t=>t.needs.pay==='credit'&&t.pay.declined?'cash':t.needs.pay;
 const METHOD={cash:['💵','Tiền mặt'],transfer:['📱','Chuyển khoản'],credit:['📒','Xin ghi sổ']};
 const tile=(x,command,payload,inner,cls='',disabled=false)=>`<button type="button" class="tile ${cls}" data-command="${command}" data-payload="${x.esc(JSON.stringify(payload))}"${disabled?' disabled':''}>${inner}</button>`;
 const carBtn=(x,label,action,data={},cls='')=>`<button type="button" class="btn ${cls}" data-action="car:${action}"${Object.entries(data).map(([k,v])=>` data-${k}="${x.esc(v)}"`).join('')}>${label}</button>`;
-const checklist=(x,rows)=>`<ul class="checklist">${rows.map(([ok,label,note])=>`<li class="${ok===true?'ok':ok===false?'bad':''}"><span>${ok===true?'✓':ok===false?'✗':'○'}</span>${x.esc(label)}${note?`<small>${x.esc(note)}</small>`:''}</li>`).join('')}</ul>`;
 const stockUnit=(x,id)=>id in (x.cc.weighed||{})?(id==='rice'?'kg':'lạng'):item(x,id).unit;
 const priceUnit=(x,id)=>id in (x.cc.weighed||{})?'kg':item(x,id).unit;
 const who=(x,idx)=>x.npc(`${ID}_npc_${String(idx+1).padStart(2,'0')}`);
@@ -94,6 +94,8 @@ function tabs(x,idle=false){
   return `<div class="gr-tabs ${idle?'three':''}" role="tablist">${idle?'':b('🛒 Quầy','counter')}${b(`🏷️ Kho${n?` <span class="gr-badge">${n}</span>`:''}`,'stock',n?`Kho & giá, ${n} việc cần xem`:'Kho & giá')}${b(`📒 Sổ nợ${worry?' <span class="gr-badge">!</span>':owed?` <span class="gr-badge soft">${x.fmt(owed)}</span>`:''}`,'ledger',`Sổ nợ, hàng xóm đang nợ ${owed} xu`)}${b(`🧺 Giỏ quen${due?` <span class="gr-badge">${due}</span>`:''}`,'lists',due?`Giỏ quen, ${due} giỏ cần soạn hôm nay`:'Giỏ quen')}</div>`;
 }
 const curTab=(x,idle)=>{const t=x.ui.tab||(idle?'stock':'counter');return idle&&t==='counter'?'stock':t;};
+/* House rules stay one tap away instead of a wall of text. */
+const rules=(x,list,title='Quy tắc')=>list?.length?`<details class="fold gd-rules"><summary>📜 ${x.esc(title)}</summary><ul class="small gr-policy">${list.map(v=>`<li>${x.esc(v)}</li>`).join('')}</ul></details>`:'';
 function billbar(x,total,cta,note=''){
   return `<div class="gr-billbar">${total!=null?`<div class="gr-billsum"><small>${x.esc(note||'Tổng bill')}</small><b>${x.money(total)}</b></div>`:''}${cta}</div>`;
 }
@@ -158,21 +160,50 @@ function receipt(t,x){
     ${rows.join('')||'<p class="muted small">Chưa có món nào.</p>'}
     <div class="gr-rtotal"><span>TỔNG</span><b>${x.money(total)}</b></div></div>`;
 }
-function basketChecklist(t,x){
-  const want=wantUnits(t),rows=[];
-  for(const [k,q] of Object.entries(want)){
-    const have=t.scanned[k]||0,it=item(x,k);
-    if(k==='beer'&&minor(t))rows.push([!have,`${it.name}: không bán cho khách dưới 18`,'']);
-    else if(dropped(t,k))rows.push([!have,`${it.name}: khách bỏ, sang Mây Mart mua`,'']);
-    else rows.push([have?have===q:null,`${q} ${it.unit} ${it.name}`,have?`${have}/${q}`:'']);
+/* Next steps at the counter (guide.js): the same facts as the checklist, each with the tap that does it. */
+function greedyDenom(x,rest){return [...(x.cc.denoms||[])].sort((a,b)=>b-a).find(v=>v<=rest)||null;}
+function checkoutSteps(t,x){
+  const id=t.id,rows=[];
+  if(t.stage==='basket'){
+    const want=wantUnits(t),inv=x.room.inventory||{stock:{}},held=x.room.data?.held||{};
+    if(t.haggle&&t.haggle.state==='ask')rows.push({ok:null,label:'Trả lời khách chuyện giá Mây Mart',go:{sel:'.gr-haggle'}});
+    if(hasBeer(t))rows.push({ok:t.age==null?null:true,label:'Kiểm tuổi khách mua bia',note:t.age==null?'':t.age+' tuổi',go:{cmd:'gr_id',payload:{task:id},label:'🪪 Kiểm tuổi khách'}});
+    for(const [k,q] of Object.entries(want)){
+      const have=t.scanned[k]||0,it=item(x,k),drop={cmd:'gr_void',payload:{task:id,item:k},label:`✕ Bỏ ${x.esc(it.name)} ra khỏi bill`};
+      if(k==='beer'&&minor(t)){rows.push({ok:!have,label:`${it.name}: không bán cho khách dưới 18`,go:have?drop:null});continue;}
+      if(dropped(t,k)){rows.push({ok:!have,label:`${it.name}: khách bỏ, sang Mây Mart mua`,go:have?drop:null});continue;}
+      const more=Math.min(q-have,Math.max(0,(inv.stock?.[k]||0)-(held[k]||0)));
+      rows.push({ok:have?have===q:null,label:`${q} ${it.unit} ${it.name}`,note:have>q?`quét dư ${have-q}`:have?`${have}/${q}`:more<=0?'kệ hết hàng: bán phần đang có':'',
+        go:have>q?{...drop,label:`✕ Xóa ${x.esc(it.name)} (quét dư) để quét lại`}:more>0?{cmd:'gr_scan',payload:{task:id,item:k,qty:more},label:`📷 Quét ${more} ${x.esc(it.unit)} ${x.esc(it.name)}`}:null});
+    }
+    t.needs.lines.forEach((l,i)=>{if(!l.weighed)return;
+      const w=t.weighed[String(i)],it=item(x,l.item),right=!!w&&w.plu===l.item&&(!l.container||w.tare);
+      const open=x.ui.scaleFor===t.id&&Number(x.ui.scale)===i,name=x.esc(it.name.toLowerCase());
+      const go=w&&!right?{cmd:'gr_void',payload:{task:id,line:i},label:`✕ Xóa dòng cân ${name} để cân lại`}
+        :w?null:!open?{act:'car:scale',data:{line:i,task:id},label:`⚖️ Đặt ${name} lên cân`}
+        :l.container&&x.ui.tare!==true?{act:'car:tare',label:'⚖️ Trừ bì cái rổ (tare)'}
+        :{cmd:'gr_weigh',payload:{task:id,line:i,plu:l.item,tare:x.ui.tare===true},label:`⚖️ Bấm mã ${x.esc(it.name)} trên cân`};
+      rows.push({ok:w?right:null,label:`Cân ${it.name.toLowerCase()}${l.container?' (trừ bì rổ)':''}`,note:w?`${w.grams} g · mã ${item(x,w.plu).name}`:'',go});
+    });
+    for(const k of Object.keys(t.scanned))if(!want[k])rows.push({ok:false,label:`${item(x,k).name} (khách không mua)`,go:{cmd:'gr_void',payload:{task:id,item:k},label:`✕ Xóa ${x.esc(item(x,k).name)} khỏi bill`}});
+    for(const p of x.cc.promos){if(discount(p,t.scanned[p.item]||0,unitPrice(t,x,p.item))>0){const on=t.promos.includes(p.id);
+      rows.push({ok:on||null,label:`Khuyến mãi: ${p.label}`,go:on?null:{cmd:'gr_promo',payload:{task:id,promo:p.id},label:'🏷️ Áp khuyến mãi'}});}}
+    return rows;
   }
-  t.needs.lines.forEach((l,i)=>{if(!l.weighed)return;const w=t.weighed[String(i)],it=item(x,l.item);
-    rows.push([w?w.plu===l.item&&(!l.container||w.tare):null,`Cân ${it.name.toLowerCase()}${l.container?' (trừ bì rổ)':''}`,w?`${w.grams} g · mã ${item(x,w.plu).name}`:'']);});
-  for(const k of Object.keys(t.scanned))if(!want[k])rows.push([false,`${item(x,k).name} (khách không mua)`,'']);
-  for(const p of x.cc.promos){if(discount(p,t.scanned[p.item]||0,unitPrice(t,x,p.item))>0)rows.push([t.promos.includes(p.id),`Khuyến mãi: ${p.label}`,'']);}
-  if(hasBeer(t))rows.push([t.age==null?null:true,'Kiểm tuổi khách mua bia',t.age==null?'':t.age+' tuổi']);
-  if(t.haggle&&t.haggle.state==='ask')rows.push([null,'Trả lời khách chuyện giá Mây Mart','']);
-  return checklist(x,rows);
+  if(t.stage!=='pay')return rows;
+  const pay=t.pay,m=methodOf(t);
+  if(m==='cash'){
+    const due=sum(pay.tender)-t.total,given=sum(pay.change),d=greedyDenom(x,due-given);
+    rows.push({ok:pay.checked||null,label:'Soi & sờ tiền khách đưa',go:{cmd:'gr_check_note',payload:{task:id},label:'🔦 Soi & sờ tiền'}});
+    if(pay.note_check==='fake')rows.push({ok:null,label:'Tiền giả: nhờ khách đổi tờ khác',go:{cmd:'gr_reject_note',payload:{task:id},label:'🙏 Nhờ khách đổi tờ khác'}});
+    if(due>0||given)rows.push({ok:given===due,label:due>0?`Thối đúng ${x.fmt(due)} xu`:'Không cần thối tiền',note:`đang đặt ${x.fmt(given)} xu`,
+      go:given>due?{cmd:'gr_change_undo',payload:{task:id},label:'↩︎ Bớt tờ vừa đặt'}:given<due&&d?{cmd:'gr_change',payload:{task:id,denom:d},label:`➕ Đặt ${x.fmt(d)} xu vào khay thối`}:null});
+  }else if(m==='transfer'){
+    const bank=pay.bank||0,fix=pay.verified&&bank>0&&bank<t.total&&!pay.fixed;
+    rows.push({ok:pay.verified&&bank>=t.total||null,label:'Kiểm loa/app ngân hàng của tiệm',note:pay.verified?(bank?`nhận ${x.fmt(bank)}/${x.fmt(t.total)} xu`:'chưa thấy tiền về, kiểm lại'):'',
+      go:fix?{cmd:'gr_transfer_fix',payload:{task:id},label:'🙏 Nhờ khách chuyển bù'}:{cmd:'gr_verify',payload:{task:id},label:pay.verified?'🔄 Kiểm lại app ngân hàng':'🔔 Kiểm loa/app ngân hàng'}});
+  }
+  return rows;
 }
 
 /* ------------------------------------------------------------ checkout · payment */
@@ -212,11 +243,17 @@ function creditPanel(t,x){
     <div class="bar ${after>row.limit?'low':''}"><i style="width:${pct}%"></i></div><small class="muted">Quy định: ${x.esc((x.cc.credit_rules||[]).join(' '))}</small>
     <div class="row wrap space-top">${x.cmd('🙏 Từ chối khéo, nhận tiền mặt','gr_decline_credit',{task:t.id},'small ghost')}</div></div>`;
 }
-function payCta(t,x){
+function basketFinal(t,x,steps){
+  const empty=!Object.keys(t.scanned).length&&!Object.keys(t.weighed).length;
+  return {label:'🧾 CHỐT BILL',go:finalGo(steps,'gr_total',{task:t.id},{question:'Khách sẽ soi lại hóa đơn.'}),ready:!empty&&t.haggle?.state!=='ask',why:empty?'quét hàng trước':''};
+}
+function payFinal(t,x,steps){
   const m=methodOf(t);
   const label=m==='credit'?'📒 GHI SỔ & GIAO HÀNG':'✅ THU TIỀN & GIAO HÀNG';
   const q=m==='cash'?'Giao hàng và tiền thối cho khách? Khách sẽ đếm lại tiền thối.':m==='transfer'?'Cho khách mang hàng về? Chỉ nên giao khi app ngân hàng của tiệm đã báo đủ tiền.':'Ghi khoản này vào sổ nợ và giao hàng?';
-  return x.confirmCmd(label,'gr_pay',{task:t.id},q,'primary big grow');
+  // Ghi sổ is a judgement call: always ask. Otherwise ask only when a step is still open.
+  const go=m==='credit'?{cmd:'gr_pay',payload:{task:t.id},confirm:q}:finalGo(steps,'gr_pay',{task:t.id},{question:q,confirm:true});
+  return {label,go,ready:true};
 }
 
 function checkoutJob(t,x){
@@ -228,9 +265,10 @@ function checkoutJob(t,x){
       <h4 class="section-title">2 · Kệ hàng (quét thêm từng món)</h4>${shelfTiles(t,x)}
       <h4 class="section-title">3 · Bảng khuyến mãi tuần này</h4>${promoBoard(t,x)}`
     :`<h4 class="section-title">Thanh toán · ${x.esc(METHOD[m][1])}</h4>${m==='cash'?cashPanel(t,x):m==='transfer'?transferPanel(t,x):creditPanel(t,x)}`;
-  const side=`${receipt(t,x)}${basket?basketChecklist(t,x):''}`;
+  const steps=checkoutSteps(t,x);
+  const side=`${receipt(t,x)}${steps.length?stepRows(x,steps,basket?'Giỏ của khách':'Thanh toán'):''}`;
   const empty=!Object.keys(t.scanned).length&&!Object.keys(t.weighed).length;
-  const cta=basket?x.cmd('🧾 CHỐT BILL','gr_total',{task:t.id},'primary big grow',empty||t.haggle?.state==='ask'):payCta(t,x);
+  const cta=stepCta(x,steps,basket?basketFinal(t,x,steps):payFinal(t,x,steps));
   return `<div class="workbench"><section class="wb-main">${main}</section><aside class="wb-side">${side}</aside></div>${billbar(x,t.total??cartTotal(t,x),cta,basket?'Đang tính':'Tổng bill')}`;
 }
 
@@ -298,31 +336,86 @@ function lotCard(t,l,x,pos){
       ${left!=null&&!l.marked?x.cmd('🏷️ −30%','gr_mark',{task:t.id,lot:l.id},'small ghost'):''}
       ${pos!=null?`${carBtn(x,'◀','move',{lot:l.id,dir:-1},'small ghost')}${carBtn(x,'▶','move',{lot:l.id,dir:1},'small ghost')}`:''}</div></div>`;
 }
+/* Shelf steps, in the order Cô Ba checks them: read every date, pull what is expired, sticker
+ * what is near, oldest in front, right price tag, then put the new crate on the shelf. */
+function shelfSteps(t,x){
+  const sh=t.shelf,lots=Object.fromEntries(t.lots.map(l=>[l.id,l])),p=price(x,t.needs.item);
+  const plan=planned(t,x),day=x.room.day,left=l=>l.exp==null?null:l.exp-day;
+  const all=plan.map(id=>lots[id]),name=l=>l.new?'thùng mới':`lô ${l.id}`;
+  const unread=all.filter(l=>l.exp==null),known=!unread.length;
+  const expired=sh.order.map(id=>lots[id]).filter(l=>l.exp!=null&&left(l)<=0);
+  const near=all.filter(l=>l.exp!=null&&left(l)>=1&&left(l)<=2&&!l.marked);
+  const exps=plan.map(id=>lots[id].exp),sorted=known&&exps.every((v,i)=>!i||exps[i-1]<=v);
+  const onShelf=sh.placed&&!sh.cart.length&&plan.length===sh.order.length&&plan.every((v,i)=>v===sh.order[i]);
+  const tagged=sh.tag!=null;
+  return [
+    {ok:known||null,label:'Đọc hạn tất cả các lô',note:`${all.length-unread.length}/${all.length}`,go:unread[0]&&{cmd:'gr_check',payload:{task:t.id,lot:unread[0].id},label:`🔍 Đọc hạn ${name(unread[0])}`}},
+    {ok:known?!expired.length:null,label:'Rút lô hết hạn khỏi kệ',note:expired.map(name).join(', '),go:expired[0]&&{cmd:'gr_pull',payload:{task:t.id,lot:expired[0].id},label:`🗑️ Rút ${name(expired[0])} (hết hạn)`}},
+    {ok:known?!near.length:null,label:`Dán tem giảm ${x.cc.markdown}% cho lô còn 1–2 ngày`,note:near.map(name).join(', '),go:near[0]&&{cmd:'gr_mark',payload:{task:t.id,lot:near[0].id},label:`🏷️ Dán tem −${x.cc.markdown}% cho ${name(near[0])}`}},
+    {ok:known?sorted:null,label:'Hạn gần ở trước, hàng mới ở sau (FIFO)',go:known&&!sorted?{act:'car:autosort',label:'↕️ Sắp theo hạn: cũ trước, mới sau'}:null},
+    {ok:tagged?sh.tag===p:null,label:'Tem giá khớp bảng giá',note:tagged?`${sh.tag} / ${p} xu`:'',go:tagged&&sh.tag!==p?{cmd:'gr_retag',payload:{task:t.id},label:'🖨️ In lại tem giá'}:null},
+    {ok:onShelf||null,label:'Xếp thùng mới lên kệ',note:sh.placed&&!onShelf?'thứ tự mới chưa xếp':'',go:onShelf?null:{cmd:'gr_place',payload:{task:t.id,order:plan},label:'📐 Xếp thùng lên kệ'}},
+  ];
+}
+const shelfFinal=(t,x,steps)=>({label:'✅ Báo cô Ba đã xếp xong',go:finalGo(steps,'gr_shelf_done',{task:t.id},{question:'Cô Ba sẽ đi một vòng kiểm hạn, tem và thứ tự kệ.',confirm:true}),ready:t.shelf.placed&&!t.shelf.cart.length});
 function shelfJob(t,x){
   const sh=t.shelf,lots=Object.fromEntries(t.lots.map(l=>[l.id,l])),it=item(x,t.needs.item),p=price(x,t.needs.item);
-  const plan=planned(t,x);
-  const all=[...sh.order,...sh.cart].map(id=>lots[id]);
-  const day=x.room.day,left=l=>l.exp==null?null:l.exp-day;
-  const known=all.every(l=>l.exp!=null);
-  const exps=plan.map(id=>lots[id].exp);
-  const sorted=known&&exps.every((v,i)=>!i||exps[i-1]<=v);
-  const rows=[
-    [known?true:null,'Đọc hạn tất cả các lô',`${all.filter(l=>l.exp!=null).length}/${all.length}`],
-    [known?!sh.order.some(id=>left(lots[id])<=0):null,'Không còn lô hết hạn trên kệ',''],
-    [known?all.filter(l=>left(l)>=1&&left(l)<=2).every(l=>l.marked):null,`Dán tem giảm ${x.cc.markdown}% cho lô còn 1–2 ngày`,''],
-    [known?sorted:null,'Hạn gần ở trước, hàng mới ở sau (FIFO)',''],
-    [sh.tag===p,'Tem giá khớp bảng giá',`${sh.tag} / ${p} xu`],
-    [sh.placed&&!sh.cart.length?true:null,'Đã xếp thùng mới lên kệ',''],
-  ];
+  const plan=planned(t,x),steps=shelfSteps(t,x);
   const main=`<h4 class="section-title">1 · Kệ ${x.esc(it.name)} (mặt kệ → trong cùng)</h4>
     <div class="gr-shelf">${plan.map((id,i)=>lotCard(t,lots[id],x,i)).join('')}</div>
     ${sh.pulled.length?`<p class="muted small">Đã rút khỏi kệ: ${sh.pulled.map(v=>x.esc(v)).join(', ')}</p>`:''}
     <div class="row wrap space-top">${x.cmd('📐 Xếp kệ theo thứ tự này','gr_place',{task:t.id,order:plan},'primary')}${carBtn(x,'Sắp theo hạn đã đọc','autosort',{},'ghost small')}</div>
     <h4 class="section-title">2 · Tem giá</h4><div class="gr-tag row"><div class="gr-pricetag"><small>${x.esc(it.name)}</small><b>${x.fmt(sh.tag)} xu</b><small>/${x.esc(it.unit)}</small></div>
     <div class="grow"><p class="small">Bảng giá hiện hành: <b>${x.money(p)}</b></p>${x.cmd('🖨️ In lại tem giá','gr_retag',{task:t.id},'small ghost',sh.retagged||sh.tag===p)}</div></div>
-    <ul class="muted small gr-policy">${(x.cc.policy||[]).map(v=>`<li>${x.esc(v)}</li>`).join('')}</ul>`;
-  const cta=x.confirmCmd('✅ BÁO CÔ BA ĐÃ XẾP XONG','gr_shelf_done',{task:t.id},'Cô Ba sẽ đi một vòng kiểm hạn, tem và thứ tự kệ. Báo xong nhé?','primary big grow',!sh.placed||sh.cart.length>0);
-  return `<div class="workbench"><section class="wb-main">${main}</section><aside class="wb-side">${checklist(x,rows)}</aside></div>${billbar(x,null,cta)}`;
+    ${rules(x,x.cc.policy)}`;
+  const cta=stepCta(x,steps,shelfFinal(t,x,steps));
+  return `<div class="workbench"><section class="wb-main">${main}</section><aside class="wb-side">${stepRows(x,steps,'Việc xếp kệ')}</aside></div>${billbar(x,null,cta)}`;
+}
+
+/* ------------------------------------------------------------ next step for any task */
+function rushSteps(t,x){
+  const r=t.rush,o=r.offer,q=t.needs.queue[r.i];
+  if(!q||!o)return [];
+  if(!Object.keys(o.units||{}).length&&o.charged==null)return [{ok:null,label:'Kệ hết món khách cần: xin lỗi, mời khách sau',go:{cmd:'gr_rush_total',payload:{task:t.id,total:o.totals[0]},label:'🙏 Xin lỗi, mời khách sau'}}];
+  const rows=[];
+  if(q.items.some(([id])=>id==='beer')&&r.ages?.[String(r.i)]==null&&o.charged==null)rows.push({ok:null,label:'Kiểm tuổi khách mua bia',go:{cmd:'gr_rush_id',payload:{task:t.id},label:'🪪 Kiểm tuổi'}});
+  rows.push({ok:o.charged!=null||null,label:'Bấm đúng tổng tiền giỏ này',go:o.charged==null?{sel:'.gr-rush-now .gr-choices'}:null});
+  if(o.charged!=null)rows.push({ok:null,label:`Chọn đúng tiền thối (khách đưa ${x.fmt(sum(o.tender))} xu)`,go:{sel:'.gr-rush-now .gr-choices'}});
+  return rows;
+}
+function bulkSteps(t,x){
+  const b=t.bulk,inv=x.room.inventory||{stock:{}},held=x.room.data?.held||{};
+  if(b.stage==='quote')return [{ok:null,label:'Chọn giá sỉ để báo khách',go:{sel:'.gr-bulk .gr-choices'}}];
+  if(b.stage!=='deliver')return [];
+  return t.needs.lines.map(l=>{
+    const it=item(x,l.item),s=Math.max(0,l.qty-Math.max(0,(inv.stock?.[l.item]||0)-(held[l.item]||0)));
+    if(!s)return {ok:true,label:`Đủ ${l.qty} ${it.unit} ${it.name}`};
+    const o=(inv.orders||[]).find(v=>v.item===l.item&&v.status==='in_transit'),n=Math.min(30,s);
+    const go=o?(o.ready_now?{act:'v4InvOpen',data:{order:o.id},label:'📦 Mở thùng & đếm hàng mới về'}:null)
+      :{cmd:'inv_order',payload:{item:l.item,qty:n,supplier:'express'},confirm:`Nhập hỏa tốc ${n} ${it.unit} ${it.name} · khoảng ${x.fmt(Math.ceil(it.cost*n*1.35))} xu?`,label:`⚡ Nhập gấp ${n} ${x.esc(it.name)}`};
+    return {ok:null,label:`Đủ ${l.qty} ${it.unit} ${it.name}`,note:o&&!o.ready_now?`thiếu ${s} · hàng đang về`:`thiếu ${s}`,go};
+  });
+}
+const bulkFinal=(t,x,steps)=>({label:'🚚 SOẠN HÀNG & GIAO',go:finalGo(steps,'gr_bulk_deliver',{task:t.id},{question:`Soạn hàng và giao, thu nốt ${x.fmt(t.bulk.price-t.bulk.deposit)} xu?`,confirm:true}),ready:!steps.some(s=>s.ok!==true)});
+const ASK={shelf:'Nghe Cô Ba dặn việc kệ',rush:'Mời hàng chờ vào',bulk:'Nghe khách đặt đơn sỉ',checkout:'Mời khách đặt giỏ lên quầy'};
+/** {steps, final, done, pulse} for the header hint; the job views use the same step lists. */
+function taskGuide(t,x){
+  if(x.room.data?.desk?.ev)return {steps:[{ok:null,label:'Chọn cách xử lý chuyện bất ngờ',go:{sel:'.gr-opts'}}]};
+  if(!t.known)return {steps:[{ok:null,label:ASK[t.kind]||ASK.checkout,go:{cmd:'ask',payload:{task:t.id}}}],pulse:'.gr-ask'};
+  if(t.kind==='shelf'){const steps=shelfSteps(t,x);return {steps,final:shelfFinal(t,x,steps)};}
+  if(t.kind==='rush')return {steps:rushSteps(t,x),done:'Hàng chờ đã vãn'};
+  if(t.kind==='bulk'){const steps=bulkSteps(t,x);return {steps,final:t.bulk.stage==='deliver'?bulkFinal(t,x,steps):null};}
+  const steps=checkoutSteps(t,x);
+  if(t.stage==='basket')return {steps,final:basketFinal(t,x,steps)};
+  if(t.stage==='pay'&&methodOf(t)==='credit'&&!steps.length)return {steps:[{ok:null,label:'Xem sổ nợ rồi quyết: ghi sổ hay từ chối khéo',go:{sel:'.gr-book'}}],final:null};
+  return {steps,final:t.stage==='pay'?payFinal(t,x,steps):null};
+}
+function hintFor(t,x){
+  const g=taskGuide(t,x),away=curTab(x,false)!=='counter';
+  // On another tab, a "go to" step first brings the counter back.
+  const steps=away?g.steps.map(s=>s.go?.sel?{...s,go:{act:'car:tab',data:{tab:'counter'}}}:s):g.steps;
+  const final=g.final&&g.final.ready!==false?(away&&!g.final.go.cmd?null:{label:g.final.label.replace(/^[^\p{L}]+/u,''),go:g.final.go}):null;
+  return nextHint(x,steps,{final,done:g.done,pulse:g.pulse});
 }
 
 /* ------------------------------------------------------------ stock & price tags */
@@ -364,7 +457,7 @@ function stockView(x){
     ${rotationNotes(x)}${incoming(x)}
     <div class="gr-orderbar"><small>Nhập từ</small>${supplierPick(x)}<div class="gr-qty" role="radiogroup" aria-label="Số lượng mỗi lần nhập">${[5,10,20,30].map(v=>`<button type="button" role="radio" aria-checked="${v===qty}" class="btn small ${v===qty?'primary':'ghost'}" data-action="car:qty" data-qty="${v}">${v}</button>`).join('')}</div></div>
     <div class="gr-stock-list">${rows}</div>
-    <ul class="muted small gr-policy">${(x.cc.stock_rules||[]).map(v=>`<li>${x.esc(v)}</li>`).join('')}</ul></div>`;
+    ${rules(x,x.cc.stock_rules,'Quy tắc kho')}</div>`;
 }
 
 /* ------------------------------------------------------------ ledger */
@@ -468,8 +561,9 @@ function tabBody(x,work,idle=false){
 export default {
   id:ID,
   css:true,
-  next(t){
-    if(!t.known)return t.kind==='shelf'?'Nghe Cô Ba dặn việc kệ':t.kind==='rush'?'Mời hàng chờ vào':t.kind==='bulk'?'Nghe khách đặt đơn sỉ':'Mời khách đặt giỏ lên quầy';
+  next(t,x){
+    if(!t.known)return ASK[t.kind]||ASK.checkout;
+    try{const n=x&&pending(taskGuide(t,x).steps);if(n)return x.esc(n.label);}catch{/* fall back to the fixed lines */}
     if(t.kind==='shelf'){
       const sh=t.shelf;
       if(!sh.placed||sh.cart.length)return 'Đọc hạn, rút/dán tem rồi xếp kệ';
@@ -486,12 +580,12 @@ export default {
     return m==='cash'?'Soi tiền và thối đúng':m==='transfer'?'Kiểm app ngân hàng của tiệm':'Xem sổ nợ rồi quyết định';
   },
   job(t,x){
-    const w=x.npc(t.npc),top=`${todayStrip(x)}${deskCard(x)}`;
+    const w=x.npc(t.npc),top=`${hintFor(t,x)}${todayStrip(x)}${deskCard(x)}`;
     if(x.room.data?.desk?.ev)return `<div class="career-job gr">${top}</div>`;
     if(!t.known){
       const label=t.kind==='shelf'?'📋 Nhận việc':t.kind==='rush'?'⏱️ Mở quầy cho hàng chờ':t.kind==='bulk'?'📦 Nghe đơn sỉ':'🛒 Mời khách đặt hàng lên quầy';
       return `<div class="career-job gr">${top}<article class="card ticket"><div class="row">${x.portrait(w,56)}<div class="grow"><h3>${x.esc(w.display_name)}</h3><p class="small"><b>${x.esc(t.title)}</b></p><p>“${x.esc(t.opening)}”</p></div></div>
-        ${x.cmd(label,'ask',{task:t.id},'primary full')}</article>${careCard(x)}${forecastCard(x)}${tabs(x)}${(x.ui.tab||'counter')!=='counter'?tabBody(x,()=>''):''}</div>`;
+        ${x.cmd(label,'ask',{task:t.id},'primary full gr-ask')}</article>${careCard(x)}${forecastCard(x)}${tabs(x)}${(x.ui.tab||'counter')!=='counter'?tabBody(x,()=>''):''}</div>`;
     }
     const work=()=>t.kind==='shelf'?shelfJob(t,x):t.kind==='rush'?rushJob(t,x):t.kind==='bulk'?bulkJob(t,x):checkoutJob(t,x);
     const tab=curTab(x,false),side=tab==='counter'?'':`${careCard(x)}${tab==='stock'?forecastCard(x):''}`;

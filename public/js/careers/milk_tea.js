@@ -410,7 +410,7 @@ function prepare(x,tab){
     <nav class="mt-tabs" role="tablist" aria-label="Chuẩn bị quầy">${TABS.map(([id,e,l])=>`<button type="button" role="tab" class="mt-tab ${tab===id?'on':''}" data-action="car:prep" data-tab="${id}" aria-selected="${tab===id}"><span aria-hidden="true">${e}</span> ${l}</button>`).join('')}</nav>
     <section class="mt-panel" role="tabpanel">${panel}</section>
   </div>
-  <footer class="life-sticky">${x.button(c.open?'Về quầy · pha tiếp':`Mở cửa ngày ${c.day}`,c.open?'workbench':'start',{},'primary jumbo')}</footer>`;
+  <footer class="life-sticky">${x.button(c.open?'Về quầy · pha tiếp':`Mở cửa ngày ${c.day}`,c.open?'workbench':'start',{},'primary jumbo'+(c.metrics?.served>0?'':' gd-pulse'))}</footer>`;
 }
 
 /* ---------------------------------------------------------------- module */
