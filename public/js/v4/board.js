@@ -205,18 +205,10 @@ async function openBoard(env){
   }
 }
 
+/** The stage no longer carries a floating "Nhóm phố" pill (calm screen): the board lives in the rail /
+ * "Thêm" menu with its unread badge, and as a tile in the status sheet. Drop a pill left by an older build. */
 function fab(){
-  if(!E)return;const api=E.api,stage=document.getElementById('stage');if(!stage)return;
-  let el=document.getElementById('bdFab');
-  if(!el){el=document.createElement('button');el.type='button';el.id='bdFab';el.className='bd-fab';el.dataset.action='nhom';stage.append(el);}
-  const n=boardUnread(api),rum=!!api.state?.board?.rumour;
-  el.hidden=!api.state?.current||!api.state?.board;
-  el.setAttribute('aria-label',`Nhóm Cư Dân Phố${n?`, ${n} tin mới`:''}`);
-  const html=`<span aria-hidden="true">💬</span><b>Nhóm phố</b>${n?`<em>${n}</em>`:''}`;
-  if(el._html!==html){el.innerHTML=html;el._html=html;}
-  el.classList.toggle('alert',rum);
-  if(n>(el._n||0)){el.classList.remove('ping');void el.offsetWidth;el.classList.add('ping');}
-  el._n=n;
+  document.getElementById('bdFab')?.remove();
 }
 
 export function boardBoot(env){

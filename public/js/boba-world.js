@@ -73,7 +73,7 @@ export class BobaWorld extends World {
    const lines=[];let current='';
    for(const word of tr(this.speech.text).split(/\s+/)){const next=current?current+' '+word:word;if(current&&c.measureText(next).width>width-28){lines.push(current);current=word;}else current=next;}
    if(current)lines.push(current);
-   const shown=lines.slice(0,3);if(lines.length>3)shown[2]=shown[2].slice(0,-1)+'…';
+   const shown=lines.slice(0,2);if(lines.length>2)shown[1]=shown[1].slice(0,-1)+'…';
    const height=shown.length*lineHeight+24,frame=portrait?700:1200;
    const x=Math.max(width/2+20,Math.min(frame-width/2-20,point.x)),y=Math.max(height+145,point.y);
    R(c,x-width/2,y-height,width,height,'#fff9ea',15,'#daccb0',1.5);
@@ -95,9 +95,9 @@ export class BobaWorld extends World {
    const beside=globalThis.document?.documentElement?.dataset?.layout==='desktop';
    const reserve=beside?0:this.width>1100?260:this.width>780?210:0;const avail=this.width-reserve;
    this.scale=Math.min(avail/1150,(this.height-55)/780);this.offset={x:(avail-1200*this.scale)/2+10,y:(this.height-790*this.scale)/2+20};
-   // Desktop: fit the drawn scene (scene y ≈30…775, the farm's sky sign is the tallest) between the title card /
-   // journey chip band at the top and the badges / hint band at the bottom, so the bigger scene never slides under them.
-   if(beside&&this.width>780){const top=110,bottom=64,band=this.height-top-bottom;
+   // Desktop: fit the drawn scene (scene y ≈30…775, the farm's sky sign is the tallest) between the small title card
+   // at the top and the (day-1) hint band at the bottom, so the bigger scene never slides under them.
+   if(beside&&this.width>780){const top=64,bottom=40,band=this.height-top-bottom;
      this.scale=Math.min(this.width/1150,band/745);this.offset={x:(this.width-1200*this.scale)/2+10,y:top+(band-745*this.scale)/2-30*this.scale};}
    if(this.width<=780){this.scale=Math.min(this.width/1130,(this.height-190)/650);this.offset={x:(this.width-1200*this.scale)/2,y:Math.max(76,(this.height-790*this.scale)/2-25)};}
  }
@@ -343,16 +343,22 @@ export class BobaWorld extends World {
  /** Soft ring where a floor tap will take the player. */
  drawMarker(){const m=this.marker;if(!m||this.time>m.until||!Number.isFinite(m.x))return;const c=this.ctx,p=this.project(m.x,m.y),k=Math.max(0,(m.until-this.time)/1.1),pal=this.palette();
    c.save();c.globalAlpha=.35+.5*k;c.strokeStyle=pal.primary;c.lineWidth=3;c.beginPath();c.ellipse(p.x,p.y,18+10*(1-k),6+3*(1-k),0,0,Math.PI*2);c.stroke();c.restore();}
- labels(){const c=this.ctx,p=this.palette(),activeNPC=this.c?.tasks?.find(t=>t.id===this.c.active_task)?.npc;
+ /** The one hotspot worth a marker right now (calm screen): the station while a task is in hand. Closed, the
+  * task card's "Chuẩn bị ngày mới" is the only call to action, so no marker (it would sit on the door sign). */
+ focusSpot(){const c=this.c;if(!c?.open)return null;return c.tasks?.some(t=>t.id===c.active_task&&!['completed','referred','cancelled'].includes(t.status))?'workbench':null;}
+ labels(){const c=this.ctx,p=this.palette(),activeNPC=this.c?.tasks?.find(t=>t.id===this.c.active_task)?.npc,focus=this.focusSpot();
    for(const h of this.hotspots){const isNPC=h.id.startsWith('npc:'),isStaff=h.id.startsWith('staff:'),hover=this.hover?.id===h.id;
+     // Name tags: only the customer in hand (and a new event / the officer); the others show on hover or tap.
+     if(isNPC&&h.id.slice(4)!==activeNPC||isStaff){if(hover){const pt=this.project(h.x,h.y,h.z+52),w=Math.min(290,h.label.length*7+25);R(c,pt.x-w/2,pt.y-17,w,32,p.dark,12);T(c,h.label,pt.x,pt.y,12,'#fff8ed');}continue;}
      if(isNPC||isStaff||h.id==='event'||h.id==='officer'){
        // Staff tags show just the name plus a dot (green: on shift); the full
        // status is in the hover label, so neighbouring tags don't collide.
        const staff=isStaff?this.c?.ops?.staff?.find(e=>'staff:'+e.id===h.id):null;
        const pt=this.project(h.x,h.y,141),name=isNPC?this.npcName(h.id.slice(4)):staff?staff.name:h.label,selected=isNPC&&h.id.slice(4)===activeNPC;const w=Math.min(250,Math.max(60,name.length*(this.isPortrait()?10:7)+22+(staff?12:0)));R(c,pt.x-w/2,pt.y-(this.isPortrait()?16:13),w,this.isPortrait()?32:26,selected?p.primary:'#fff9ef',13,selected?p.dark:'#d9bca6',1.5);T(c,name,pt.x+(staff?6:0),pt.y,this.isPortrait()?18:11,selected?'#fffaf2':p.dark);
        if(staff)E(c,pt.x-w/2+13,pt.y,4.5,4.5,this.staffWorking(staff)?'#6fae7c':'#c9b8a6');
-     }else if(['workbench','counter','shelf','board','ops:finance'].includes(h.id)){
-       const pt=this.project(h.x,h.y,h.z+15),nudge=this.plan().badge?.[h.id];if(nudge){pt.x+=nudge[0];pt.y+=nudge[1];}E(c,pt.x,pt.y,13,13,'#fff9ee');E(c,pt.x,pt.y,9,9,p.light);T(c,'+',pt.x,pt.y,16,p.dark,700);
+     }else if(h.id===focus&&!hover){
+       // A single marker on the next useful spot (no "+" on every piece of furniture).
+       const pt=this.project(h.x,h.y,h.z+15),nudge=this.plan().badge?.[h.id];if(nudge){pt.x+=nudge[0];pt.y+=nudge[1];}E(c,pt.x,pt.y,15,15,'#fff9ee');E(c,pt.x,pt.y,11,11,p.primary);T(c,'+',pt.x,pt.y,17,'#fffaf2',800);
      }
      if(hover){const pt=this.project(h.x,h.y,h.z+52),w=Math.min(290,h.label.length*7+25);R(c,pt.x-w/2,pt.y-17,w,32,p.dark,12);T(c,h.label,pt.x,pt.y,12,'#fff8ed');}
    }

@@ -238,7 +238,7 @@ export class World {
     const tries=[[mx,my],[mx,0],[0,my]];
     for(const [ax,ay] of tries){if(!ax&&!ay)continue;const nx=p.x+ax,ny=p.y+ay;if(this.navFree(nx,ny)){p.x=nx;p.y=ny;if(ax)p.look=ax>0?1:-1;break;}}
     p.path=[];p.goal=null;this.pending=null;}
-  say(text,npc=null){const h=this.hotspots.find(h=>h.id===`npc:${npc}`)||(npc==='event'?this.hotspots.find(h=>h.id==='event'):null);const point=h?this.project(h.x,h.y,84):this.project(this.player.x,this.player.y,92);this.speech={text,point,expires:this.time+5.5};this.wake(true);}
+  say(text,npc=null){const h=this.hotspots.find(h=>h.id===`npc:${npc}`)||(npc==='event'?this.hotspots.find(h=>h.id==='event'):null);const point=h?this.project(h.x,h.y,84):this.project(this.player.x,this.player.y,92);this.speech={text,point,expires:this.time+Math.min(4,1.8+String(text||'').length/30)};this.wake(true);}
   ping(x,y,color='#b99456'){this.wake(true);for(let i=0;i<8;i++)this.particles.push({x,y,vx:Math.cos(i*Math.PI/4)*24,vy:Math.sin(i*Math.PI/4)*17-13,life:1.1,max:1.1,color,size:3});}
   celebrate(){this.wake(true);const p=this.project(this.player.x,this.player.y,60);for(let i=0;i<32;i++)this.particles.push({x:p.x,y:p.y,vx:(Math.random()-.5)*140,vy:-30-Math.random()*100,life:1.7,max:1.7,color:['#d4b06f','#97aa85','#b797a9','#e6cdb2'][i%4],size:3+Math.random()*3});}
   pet(){this.say('Mrrr… chỗ này ấm quá.');const p=this.project(2.7,7.4,30);this.ping(p.x,p.y,'#c58b85');this.petUntil=this.time+4;}
