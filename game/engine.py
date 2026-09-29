@@ -918,9 +918,10 @@ def career_summary(raw:dict,cid:str) -> dict:
 def public_state(s:dict,full:str|None=None) -> dict:
     """Public projection. Only the current career (or `full`) gets the full view."""
     s=migrate_state(s)
-    focus=full or s.get("current") or "mother_baby"
+    focus=full or s.get("current") or jr.default_career(s)
     v={k:copy.deepcopy(x) for k,x in s.items() if k!="careers"}
     v["careers"]={cid:(copy.deepcopy(c) if cid==focus else career_summary(c,cid)) for cid,c in s["careers"].items()}
+    v["focus"]=focus
     v["journey"]=jr.public(s)
     v["invest"]=iv.public(s)
     v["stories"]=cst.public(s)

@@ -36,9 +36,10 @@ HISTORY_KINDS = ('living', 'upkeep', 'draw', 'invest', 'salary', 'reopen', 'inci
 NEWS_KINDS = ('chapter', 'titles')
 
 CH_UNLOCKS = {
-    1: ('milk_tea', 'grocery', 'delivery'),
-    2: ('cafe_bakery', 'florist', 'mother_baby', 'restaurant'),
-    3: ('pet_care', 'salon', 'repair', 'farm', 'homestay'),
+    # New players get every storefront at once; the service places follow after the first day.
+    1: ('milk_tea', 'grocery', 'delivery', 'cafe_bakery', 'florist', 'mother_baby', 'restaurant'),
+    2: ('pet_care', 'salon', 'repair', 'farm', 'homestay'),
+    3: (),
     4: ('customer_care', 'pharmacy', 'tour_guide', 'teacher', 'accounting'),
     5: ('corp_accounting', 'tax_payroll'),
     6: ('group_accounting',),
@@ -68,7 +69,9 @@ CHAPTERS = [
                 _line('co_ba', 'Mới tới hả? Đầu hẻm đang thiếu người: tiệm trà sữa, tạp hóa của cô, rồi bên giao hàng. Thử một chỗ đi con.')],
          outro=[_line('co_ba', 'Ngày đầu mà làm tới nơi tới chốn vậy là cô yên tâm rồi.'),
                 _line('ba_tam', 'Tối nay bà nấu canh chua, xuống ăn chung cho vui nghe.'),
-                _line('anh_khoa', 'Nghe nói có người mới về hẻm? Tiệm bánh, tiệm hoa, quán mì đầu phố đều đang cần người phụ đó.')],
+                _line('anh_khoa', 'Nghe nói có người mới về hẻm? Tiệm bánh, tiệm hoa, quán mì đầu phố đều đang cần người phụ đó.'),
+                _line('chu_tu', 'Tiệm chú đang cần người phụ. Tay chân nhanh nhẹn vậy, ghé đây chú chỉ nghề cho.'),
+                _line('ba_sau', 'Mèo nhà bà cũng cần người tắm, salon đầu dốc thì thiếu thợ. Con ghé thử nghe.')],
          goals=[dict(id='days', goal=1, text='Khép lại ngày làm việc đầu tiên'),
                 dict(id='tasks', goal=3, text='Hoàn thành 3 việc cho hàng xóm')]),
     dict(n=2, title='Hàng xóm quen mặt', art='🥐',
@@ -79,9 +82,7 @@ CHAPTERS = [
                 _line('be_ti', dict(male='Anh ơi, mai anh ghé tiệm bánh không? Em mê bánh su kem ở đó lắm!',
                                     female='Chị ơi, mai chị ghé tiệm bánh không? Em mê bánh su kem ở đó lắm!',
                                     none='Mai ghé tiệm bánh không? Em mê bánh su kem ở đó lắm!'))],
-         outro=[_line('co_lua', 'Mới mấy hôm mà đi đâu trong hẻm cũng có người nhắc tên cháu rồi.'),
-                _line('chu_tu', 'Tiệm chú đang cần người phụ. Tay chân nhanh nhẹn vậy, ghé đây chú chỉ nghề cho.'),
-                _line('ba_sau', 'Mèo nhà bà cũng cần người tắm, salon đầu dốc thì thiếu thợ. Con ghé thử nghe.')],
+         outro=[_line('co_lua', 'Mới mấy hôm mà đi đâu trong hẻm cũng có người nhắc tên cháu rồi.')],
          goals=[dict(id='places', goal=2, text='Làm việc ở 2 nơi khác nhau'),
                 dict(id='tasks', goal=10, text='Hoàn thành 10 việc'),
                 dict(id='draw', goal=1, text='Rút tiền lời về ví một lần')]),
@@ -385,6 +386,9 @@ def upgrade(j: dict) -> None:
         j.setdefault(k, copy.deepcopy(v))
     for k in STATS:
         j['stats'].setdefault(k, 0)
+    if j.get('story'):
+        for n in range(1, min(int(j.get('chapter', 1)), LAST) + 1):
+            _unlock_chapter(j, n)
 
 
 def roll_mode(s: dict, career: str, day: int) -> str:
@@ -659,6 +663,16 @@ def _goals_view(ctx: dict, n: int) -> list[dict]:
         return []
     return [dict(id=g['id'], text=g['text'], goal=g['goal'], cur=min(int(ctx[g['id']]), 10**6), done=_goal_done(ctx, g))
             for g in ch['goals']]
+
+
+def default_career(s: dict) -> str:
+    """The workplace shown before the player picks one: open in the story, the suggested one first."""
+    j = s.get('journey') or {}
+    if not j.get('story'):
+        return 'mother_baby'
+    open_ids = [cid for cid in j.get('unlocked', ()) if cid in s['careers']]
+    pick = suggested(s)
+    return pick if pick in open_ids else (open_ids or ['mother_baby'])[0]
 
 
 def suggested(s: dict, ctx: dict | None = None) -> str | None:

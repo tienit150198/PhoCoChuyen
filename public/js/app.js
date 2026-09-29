@@ -30,7 +30,7 @@ const $=s=>document.querySelector(s), api=new GameAPI(), sound=new Sound();
 const ended=t=>['completed','referred','cancelled'].includes(t.status);
 const ui={opsTab:'staff',staffId:null,lessonSequence:[],tourRoute:[],activityCard:null,view:null,tab:'',task:null,npc:null,jobTab:'shelf',journalTab:'quests',libraryQuery:'',docs:new Set(),transactions:new Set(),drafts:{},ai:{},suggestions:{},busy:false,paused:false};
 const world=new BobaWorld($('#world'),interact);
-const career=()=>api.state?.current||'mother_baby';
+const career=()=>api.state?.current||api.state?.focus||'mother_baby';
 const room=()=>api.state?.careers[career()];
 const meta=()=>api.content?.catalogue.find(c=>c.id===career())||{};
 const npc=id=>api.content?.npcs.find(n=>n.id===id)||{display_name:api.state?.name||'Bạn',role:'Bạn',personality:''};
