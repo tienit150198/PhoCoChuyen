@@ -24,7 +24,7 @@ def initial(career:str)->dict:
   pantry=pantry,prices=dict(mod.SPEC.get('prices',{})) if mod else {'milk':30,'black':25,'matcha':35} if career=='milk_tea' else {},price_history=[],
   streak=0,best_streak=0,tips=0,staff_tips=0,consumed_cost=0,waste=[],day_waste=0,activity=None,activity_rewards=[],activity_history=[],
   activity_best={},badges=[],stickers=[],chapters={},visits=[],festival=False,festival_claimed=False,goals_history=[],
-  day_guests=[],title_style='milk',onboarding=False,served_sources=[],day_talked=[],recap=None)
+  day_guests=[],title_style='milk',onboarding=False,served_sources=[],day_talked=[],recap=None,**({'tour':tour_trip.fresh_care()} if career=='tour_guide' else {}))
 
 def _id(c:dict,prefix:str)->str:
  c['life']['seq']+=1
@@ -61,6 +61,7 @@ def on_start(s:dict,c:dict,career:str):
  if career=='mother_baby':
   from . import giftshop
   giftshop.on_start(s,c)
+ if career=='tour_guide':tour_trip.on_start(s,c)  # multi-day group's morning, featured booking, today's leg
  if x['festival']:
   core().log(s,c,'festival','Ngày hội khu phố: hoàn thành 3 việc và 1 trò nhỏ để chuẩn bị góc của nghề mình.')
 
@@ -107,6 +108,7 @@ def on_close(s:dict,c:dict,career:str)->dict:
  if career=='mother_baby':
   from . import giftshop
   counter=giftshop.on_close(s,c)
+ if career=='tour_guide':tour_trip.on_close(s,c)
  x['day_waste']+=waste;x['waste']=x['waste'][-120:]
  _metric(c,'days_closed')
  recap=dict(day=c['day'],served=x['day_metrics'].get('served',0),perfect=x['day_metrics'].get('perfect',0),activities=x['day_metrics'].get('activities',0),tips=x['tips'],staff_tips=x['staff_tips'],waste_value=x['day_waste'],consumed_cost=x['consumed_cost'],streak=x['best_streak'],goals=goals(c),festival=x['festival'],note='Chi phí hàng đã trả khi nhập; hao hụt chỉ ghi giá trị, không trừ két lần nữa.',counter=counter)
@@ -268,6 +270,8 @@ def handle(s:dict,c:dict,career:str,action:str,p:dict)->dict:
   need(career=='mother_baby','Đây là quầy của tiệm quà mẹ & bé.')
   from . import giftshop
   return giftshop.handle(s,c,action,p)
+ if action.startswith('tour_') and action[5:] in tour_trip.CARE_ACTIONS:
+  need(career=='tour_guide','Đây là công việc dẫn đoàn.');return tour_trip.care_action(s,c,action[5:],p)  # partners and kit: no task
  need(c['open'],'Mở ca trước khi thao tác công việc nhé.');t=e.current_task(c,p.get('task'));need(t['career']==career,'Sai nghề công việc.');c['turn']+=1
  if action.startswith('lesson_'):
   need(career=='teacher','Đây là tiết học.');name=action[7:]
@@ -296,7 +300,7 @@ def handle(s:dict,c:dict,career:str,action:str,p:dict)->dict:
   else:raise e.GameError('Thao tác tiết học không hợp lệ.')
  elif action.startswith('tour_'):
   need(career=='tour_guide','Đây là công việc dẫn đoàn.');name=action[5:]
-  if 'trip' in t or (name=='plan' and p.get('v')==2 and tour_trip.eligible(t)):r.update(tour_trip.handle(s,c,t,name,p));return r
+  if 'trip' in t or (name=='plan' and p.get('v')==2 and tour_trip.eligible(t)) or (name=='care' and tour_trip.eligible(t)):r.update(tour_trip.handle(s,c,t,name,p));return r
   if name=='plan':
    need(t['stage']=='plan','Đoàn đã khởi hành; không sửa vé đã dùng.');route=p.get('route');need(isinstance(route,list) and 3<=len(route)<=5 and len(route)==len(set(route)) and all(k in data.PLACE_INDEX and k!='gate' for k in route),'Chọn 3–5 điểm khác nhau, không gồm bến xuất phát.')
    need(set(t['required']+['cafe'])<=set(route),'Cần có các điểm khách muốn và Hiên Trà nghỉ chân.');need(t['weather']!='rain' or 'river' not in route,'Lối Bờ Mây đóng khi mưa; chọn đường khác.')
@@ -351,6 +355,7 @@ def on_talk(c:dict,npc:str):
 
 def public_life(c:dict)->dict:
  x=copy.deepcopy(c['life']);x['goals']=goals(c);x['stock']=stock(c);x['weather']=data.WEATHERS[(c['day']-1)%3];x['forecast']={'calm':2,'normal':3,'festival':4}[x['mode']]
+ if 'tour' in x:x['tour']=tour_trip.public_care(c)  # tour guide: the group, partners, kit, notebook, reviews
  x['badges_view']=[dict(b,current=c['metrics'].get(b['metric'],0),claimed=b['id'] in x['badges']) for b in data.ACHIEVEMENTS]
  a=x['activity']
  if a:
@@ -404,6 +409,7 @@ def validate(c:dict,career:str):
  if career=='mother_baby':
   from . import giftshop
   giftshop.validate(c)
+ if career=='tour_guide':tour_trip.validate_care(c)
  need(all(k in {'serve','play','talk'} for k in x['goals_claimed']),'Mục tiêu không hợp lệ.')
  need(all(k in [b['id'] for b in data.ACHIEVEMENTS] for k in x['badges']) and len(x['badges'])==len(set(x['badges'])),'Huy hiệu không hợp lệ.')
  for key,ch in x['chapters'].items():
@@ -463,6 +469,8 @@ def upgrade_save(s:dict):
   else:
    from . import giftshop
    giftshop.upgrade(c)
+ c=s['careers'].get('tour_guide')
+ if isinstance(c,dict):tour_trip.upgrade(c)  # tour guide: an empty care record (life.tour)
 
 def public_counter(raw:dict,cid:str,out:dict):
  """Public view of the counter state (hidden rolls stay on the server)."""
