@@ -1235,5 +1235,462 @@ class SalonConsequenceTests(unittest.TestCase):
         self.assertLessEqual(self.stars(tid), 4)
 
 
+
+# ==================================================================== care loop: cards, hair health, bookings, clean tools
+OFFICE = 'c_office'
+
+
+def plan_slot(key, after=0):
+    """(day, slot) of the first v0.5 client with this template key on a day after `after`."""
+    return slot_for(lambda t: S._pick_v2(t['day'], int(t['id'][-2:]))['key'] == key, days=range(after + 1, 45), slots=6)
+
+
+class SalonCareTests(unittest.TestCase):
+    def setUp(self):
+        self.clock = Clock()
+        self.old = kit.clock
+        kit.clock = self.clock
+
+    def tearDown(self):
+        kit.clock = self.old
+
+    def ok(self):
+        validate_state(json.loads(json.dumps(self.j.state)))
+
+    def data(self):
+        return self.j.c['ext']['data']
+
+    def visit(self, key, after=0):
+        """The next client with this template, on a later day of the same save (the card carries over)."""
+        day, slot = plan_slot(key, after)
+        if not hasattr(self, 'j'):
+            self.j = Journey('salon', slot=slot, day=day)
+            return self.j.task
+        c = self.j.c
+        c.update(day=day, turn=c['turn'] + 1)
+        t = S.make_task(day, slot, c['turn'])
+        c['tasks'].append(t)
+        c['active_task'] = t['id']
+        S.on_task(self.j.state, c, t)
+        self.ok()
+        return t
+
+    def office(self, mix=None, book=(), sanitize=True, products=('rt_colorsafe',)):
+        t = self.visit(OFFICE, self.j.c['day'] if hasattr(self, 'j') else 0)
+        j, tid = self.j, t['id']
+        if sanitize and self.data()['clean'] == 0:
+            j.act('sl_sanitize')
+        j.act('ask', task=tid)
+        for topic in ('history', 'patch', 'length', 'budget'):
+            j.act('sl_consult', task=tid, topic=topic)
+        j.act('sl_inspect', task=tid, zone='ends')
+        j.act('sl_plan', task=tid, services=['color', 'cut', 'style'], sessions=1)
+        j.act('sl_mix', task=tid, kind='color', dev=20, ratio='1:1', **(mix or dict(shade='dye_6_1')))
+        j.act('sl_apply', task=tid)
+        self.clock.t += 14
+        j.act('sl_rinse', task=tid)
+        j.act('sl_cut', task=tid, step='section')
+        j.act('sl_cut', task=tid, step='guide', length=3)
+        j.act('sl_cut', task=tid, step='check')
+        j.act('sl_style', task=tid, finish='sleek')
+        self.r = j.act('sl_checkout', task=tid, products=list(products), book=list(book), confirm=True)
+        self.ok()
+        return j.get(tid)
+
+    def crit(self, tid):
+        return crit(self.j, tid)
+
+    def stars_of(self, tid):
+        return next(p for p in self.j.c['feed'] if p['kind'] == 'review' and p.get('source') == tid)['stars']
+
+    # ---------------------------------------------------------------- the client card
+    def test_first_visit_writes_the_card(self):
+        t = self.office()
+        card = self.data()['cards'][t['npc']]
+        self.assertEqual((card['visits'], card['trust'], card['hist']), (1, 1, 'virgin'))
+        self.assertEqual(card['formula']['shade'], 'dye_6_1')
+        self.assertEqual((card['formula']['dev'], card['formula']['level'], card['formula']['band'], card['formula']['hit']), (20, 6, 'ash', True))
+        self.assertEqual(card['cut'], dict(removed=3, short=False, day=t['day']))
+        self.assertEqual(card['health'], 80 + S.HEALTH_HIT['color']['ideal'])
+        self.assertIn('📇 Thẻ khách mới', self.r['message'])
+        view = public_state(self.j.state)['careers']['salon']['data']['cards'][t['npc']]
+        self.assertEqual(view['name'], 'Chị Thảo')
+        self.assertEqual(view['formula']['text'], '6.1 · oxy 20 vol · 1:1')
+        self.assertEqual(view['trust_name'], S.TRUST_NAMES[1])
+
+    def test_regular_is_recognised_and_the_same_formula_is_remembered(self):
+        first = self.office()
+        t = self.visit(OFFICE, first['day'])
+        self.assertEqual(t['regular'], 1)
+        days = t['day'] - first['day']
+        self.assertEqual(t['health'], min(S.HEALTH_NATURAL_CAP, 74 + S.HEALTH_RECOVER * days))
+        self.assertIn(t['id'], public_state(self.j.state)['careers']['salon']['data']['card_for'])
+        self.j.c['tasks'].remove(t)
+        second = self.office()
+        self.assertEqual(second['memo'], 'same')
+        self.assertEqual(self.crit(second['id'])['memory']['score'], 5)
+        self.assertEqual(self.data()['cards'][second['npc']]['trust'], 2)
+
+    def test_a_different_bowl_that_hits_still_counts_but_drifts(self):
+        self.office()
+        t = self.office(mix=dict(shade='dye_5_0', shade2='dye_6_1', parts=[1, 3]))
+        self.assertTrue(t['results']['color']['hit'])
+        self.assertEqual(t['memo'], 'drift')
+        self.assertEqual(self.crit(t['id'])['memory']['score'], 4)
+        self.assertEqual(S._parts('dye_6_1', 'dye_5_0', 3, 1), S._parts('dye_5_0', 'dye_6_1', 1, 3))
+
+    def test_first_timers_have_no_memory_row_and_health_is_felt_not_shown(self):
+        t = self.visit(OFFICE)
+        self.j.act('ask')
+        view = next(v for v in public_state(self.j.state)['careers']['salon']['tasks'] if v['id'] == t['id'])
+        self.assertIsNone(view['health'])
+        self.j.act('sl_inspect', zone='ends')
+        view = next(v for v in public_state(self.j.state)['careers']['salon']['tasks'] if v['id'] == t['id'])
+        self.assertEqual((view['health'], view['health_word']), (80, 'Khá'))
+
+    # ---------------------------------------------------------------- hair health
+    def test_weak_hair_may_get_an_advised_treatment_healthy_hair_may_not(self):
+        first = self.office()
+        self.data()['cards'][first['npc']]['health'] = 20
+        t = self.visit(OFFICE, first['day'])
+        self.assertLess(t['health'], S.WEAK)
+        j, tid = self.j, t['id']
+        j.act('sl_sanitize')
+        j.act('ask', task=tid)
+        for topic in ('history', 'patch', 'length'):
+            j.act('sl_consult', task=tid, topic=topic)
+        j.act('sl_inspect', task=tid, zone='ends')
+        r = j.act('sl_plan', task=tid, services=['color', 'cut', 'treatment', 'style'], sessions=1)
+        self.assertNotIn('refused', r)
+        self.assertTrue(j.get(tid)['advised'])
+        self.assertNotIn('pushy', j.get(tid)['flags'])
+        self.ok()
+        tampered = copy.deepcopy(j.state)
+        next(x for x in tampered['careers']['salon']['tasks'] if x['id'] == tid)['health'] = 90
+        with self.assertRaises(GameError):
+            validate_state(tampered)
+        # A healthy client asked for no treatment: offering it is still an upsell.
+        other = Journey('salon', *reversed(plan_slot(OFFICE)))
+        other.act('ask')
+        r = other.act('sl_plan', services=['color', 'cut', 'treatment', 'style'], sessions=1)
+        self.assertTrue(r.get('refused'))
+        self.assertIn('pushy', other.task['flags'])
+
+    def test_chemistry_on_weak_hair_without_treatment_costs_care(self):
+        first = self.office()
+        self.data()['cards'][first['npc']]['health'] = 20
+        self.j.c['tasks'] = [x for x in self.j.c['tasks'] if x['status'] == 'completed']
+        t = self.office()
+        self.assertIn('tóc yếu mà không được phục hồi', self.crit(t['id'])['care']['note'])
+        self.assertIn('care', S._bookable(t))
+
+    def test_hair_too_weak_to_bleach_is_stopped_and_may_be_postponed(self):
+        day, slot = plan_slot('c_idol')
+        self.j = j = Journey('salon', slot=slot, day=day)
+        self.data()['cards'][j.task['npc']] = dict(visits=1, first=1, last=day, trust=0, health=20, hist='box_dye', formula=None, cut=None,
+                                                  services=['bleach'], stars=4, patch_file=True)
+        t = j.task
+        del t['health']
+        S.on_task(j.state, j.c, t)
+        self.assertEqual(t['health'], 20)
+        self.ok()
+        j.act('ask')
+        j.act('sl_strand')
+        j.act('sl_plan', services=['bleach', 'toner', 'treatment'], sessions=3)
+        r = j.act('sl_mix', kind='bleach', dev=20, ratio='1:2')
+        self.assertTrue(r.get('refused'))
+        self.assertIn('weak_stop', j.task['flags'])
+        self.assertEqual(j.task['plan']['services'], ['treatment'])
+        r = j.act('sl_plan', services=['treatment'], sessions=3)
+        self.assertNotIn('refused', r)
+        self.ok()
+
+    # ---------------------------------------------------------------- bookings and appointments
+    def test_booking_brings_the_client_back_for_her_roots(self):
+        first = self.office(book=['roots', 'trim'])
+        appts = self.data()['appts']
+        self.assertEqual([(a['kind'], a['due']) for a in appts], [('roots', first['day'] + 4), ('trim', first['day'] + 5)])
+        self.assertEqual(first['booked'], ['roots', 'trim'])
+        roots = appts[0]['id']
+        with self.assertRaises(GameError):
+            self.j.act('sl_appt', id=roots, shade='dye_6_1', parts=[1, 0], dev=20)       # not due yet
+        self.j.c['day'] = first['day'] + 4
+        with self.assertRaises(GameError):
+            self.j.act('sl_appt', id=roots, shade='dye_6_1', parts=[1, 0], dev=40)       # never 40 vol on the scalp
+        money, stock = self.j.c['money'], kit.stock(self.j.c, 'dye_6_1')
+        r = self.j.act('sl_appt', id=roots, shade='dye_6_1', parts=[1, 0], dev=20)
+        self.assertIn('5★', r['message'])
+        self.assertEqual(self.j.c['money'], money + S.APPTS['roots']['price'])
+        self.assertEqual(kit.stock(self.j.c, 'dye_6_1'), stock - 1)
+        self.assertEqual(self.data()['appts'][0]['state'], 'done')
+        post = next(p for p in self.j.c['feed'] if p.get('source') == f'appt-{roots}')
+        self.assertEqual(post['stars'], 5)
+        with self.assertRaises(GameError):
+            self.j.act('sl_appt', id=roots, shade='dye_6_1', parts=[1, 0], dev=20)       # served once
+        self.ok()
+
+    def test_roots_with_another_formula_show_a_band(self):
+        self.office(book=['roots'])
+        a = self.data()['appts'][0]
+        self.j.c['day'] = a['due']
+        money = self.j.c['money']
+        r = self.j.act('sl_appt', id=a['id'], shade='dye_4_6', parts=[1, 0], dev=10)
+        self.assertIn('2★', r['message'])
+        self.assertEqual(self.j.c['money'], money + S.APPTS['roots']['price'] // 2)
+        self.ok()
+
+    def test_trim_and_care_appointments(self):
+        first = self.office(book=['trim'])
+        a = self.data()['appts'][0]
+        self.j.c['day'] = a['due']
+        r = self.j.act('sl_appt', id=a['id'], length=3)
+        self.assertIn('3★', r['message'])
+        self.assertTrue(self.data()['cards'][first['npc']]['cut']['short'])
+        self.assertEqual(self.data()['cards'][first['npc']]['visits'], 2)
+        self.data()['cards'][first['npc']]['health'] = 40
+        self.data()['appts'].append(dict(id='H99', npc=first['npc'], kind='care', due=self.j.c['day'], booked=first['day'], state='open', stars=0))
+        self.ok()
+        keratin = kit.stock(self.j.c, 'keratin')
+        self.j.act('sl_appt', id='H99')
+        self.assertEqual(self.data()['cards'][first['npc']]['health'], 40 + S.HEALTH_TREAT)
+        self.assertEqual(kit.stock(self.j.c, 'keratin'), keratin - 1)
+
+    def test_only_bookings_the_visit_calls_for(self):
+        with self.assertRaises(GameError):
+            self.office(book=['care'])                  # healthy hair needs no follow-up treatment
+        self.assertEqual(self.data().get('appts', []), [])
+        with self.assertRaises(GameError):
+            self.j.act('sl_checkout', products=[], book=['roots', 'roots'], confirm=True)
+
+    def test_missed_booking_lapses_and_costs_a_little_trust(self):
+        first = self.office(book=['roots'])
+        a = self.data()['appts'][0]
+        self.j.c['day'] = a['due'] + S.APPT_KEEP + 1
+        S.on_start(self.j.state, self.j.c)
+        self.assertEqual(a['state'], 'lapsed')
+        self.assertEqual(self.data()['cards'][first['npc']]['trust'], 0)
+        self.ok()
+
+    def test_same_work_in_a_visit_closes_the_booking(self):
+        self.office(book=['roots', 'trim'])
+        self.office()
+        self.assertEqual([a['state'] for a in self.data()['appts']], ['merged', 'merged'])
+
+    def test_due_bookings_are_announced_in_the_morning(self):
+        self.office(book=['roots'])
+        a = self.data()['appts'][0]
+        self.j.c['day'] = a['due']
+        S.on_start(self.j.state, self.j.c)
+        self.assertIn('Hôm nay có hẹn: Chị Thảo — dặm chân tóc', ' '.join(x['text'] for x in self.j.c['journal'][-4:]))
+        view = public_state(self.j.state)['careers']['salon']['data']['appts'][0]
+        self.assertTrue(view['ready'])
+        self.assertEqual(view['who'], 'Chị Thảo')
+
+    # ---------------------------------------------------------------- clean tool sets
+    def test_tool_sets_are_used_client_by_client(self):
+        t = self.visit(OFFICE)
+        j = self.j
+        self.assertEqual(self.data()['clean'], 0)
+        j.act('sl_sanitize')
+        self.assertEqual(self.data()['clean'], S.CLEAN_SETS)
+        with self.assertRaises(GameError):
+            j.act('sl_sanitize')                        # the jar is full
+        j.act('ask')
+        j.act('sl_plan', services=['color', 'cut', 'style'], sessions=1)
+        r = j.act('sl_mix', kind='color', shade='dye_6_1', dev=20, ratio='1:1')
+        self.assertEqual(self.data()['clean'], S.CLEAN_SETS)       # mixing a bowl uses no comb
+        r = j.act('sl_apply')
+        self.assertIn('bộ lược kéo đã khử khuẩn', r['message'])
+        self.assertEqual((self.data()['clean'], j.get(t['id'])['tools']), (S.CLEAN_SETS - 1, 'clean'))
+        j.act('sl_sanitize')                            # topping up a used set is allowed
+        self.assertEqual(self.data()['clean'], S.CLEAN_SETS)
+        S.on_start(j.state, j.c)
+        self.assertEqual(self.data()['clean'], 0)       # fresh disinfectant every morning
+
+    def test_dirty_tools_cost_a_point_of_care(self):
+        t = self.office(sanitize=False)
+        self.assertEqual(t['tools'], 'dirty')
+        care = self.crit(t['id'])['care']
+        self.assertEqual(care['score'], 4)
+        self.assertIn('chưa khử khuẩn', care['note'])
+        self.assertEqual(self.stars_of(t['id']), 5)      # one point of care, not a ruined visit
+
+    def test_cutter_on_staff_tops_up_the_jar(self):
+        self.visit(OFFICE)
+        d = self.data()
+        d['clean'], d['sanitize_day'] = 1, self.j.c['day']
+        note = S.assist(self.j.state, self.j.c, dict(role='cut'), None)
+        self.assertEqual(d['clean'], 2)
+        self.assertIn('2/4', note)
+        d['sanitize_day'] = 0
+        S.assist(self.j.state, self.j.c, dict(role='cut'), None)
+        self.assertEqual(d['clean'], 2)                 # the morning change is the stylist's own job
+
+    # ---------------------------------------------------------------- saves
+    def test_old_save_gains_the_care_loop(self):
+        self.visit(OFFICE)
+        s = copy.deepcopy(self.j.state)
+        c = s['careers']['salon']
+        d = c['ext']['data']
+        for k in ('cards', 'appts', 'appt_seq', 'appts_done', 'clean'):
+            d.pop(k)
+        d['sanitize_day'] = c['day']
+        for k in ('health', 'regular', 'tools', 'memo', 'advised', 'booked'):
+            c['tasks'][0].pop(k)
+        validate_state(s)
+        self.assertEqual((d['cards'], d['appts'], d['clean']), ({}, [], S.CLEAN_SETS))
+        self.assertIsNotNone(public_state(s)['careers']['salon']['data']['cards'])
+
+    def test_tampered_care_data_is_rejected(self):
+        first = self.office(book=['roots'])
+        npc = first['npc']
+        bad = [
+            lambda d: d.update(clean=9),
+            lambda d: d['cards'][npc].update(health=140),
+            lambda d: d['cards'][npc].update(trust=9),
+            lambda d: d['cards'].update(stranger=d['cards'][npc]),
+            lambda d: d['cards'][npc]['formula'].update(shade='dye_9_9'),
+            lambda d: d['cards'][npc]['formula'].update(b='dye_6_1'),
+            lambda d: d['cards'][npc].update(extra=1),
+            lambda d: d['appts'][0].update(kind='perm'),
+            lambda d: d['appts'][0].update(state='maybe'),
+            lambda d: d['appts'][0].update(npc='salon_npc_17') if 'salon_npc_17' not in d['cards'] else d['appts'][0].update(due='x'),
+            lambda d: d['appts'].append(dict(d['appts'][0])),
+        ]
+        for i, hack in enumerate(bad):
+            s = copy.deepcopy(self.j.state)
+            hack(s['careers']['salon']['ext']['data'])
+            with self.assertRaises(GameError, msg=str(i)):
+                validate_state(s)
+        s = copy.deepcopy(self.j.state)
+        s['careers']['salon']['tasks'][0]['booked'] = ['perm']
+        with self.assertRaises(GameError):
+            validate_state(s)
+
+    def test_a_week_of_regulars_bookings_and_clean_tools(self):
+        """A careful stylist over a week: sanitise every morning, use the card formula, book what each visit calls for,
+        serve whoever comes back. Every save along the way validates."""
+        j = self.j = Journey('salon')
+        memos, appts = [], []
+        for day in range(1, 9):
+            if day > 1:
+                j.act('start_day')
+            for it in S.ITEMS:                          # the stock screens are tested elsewhere
+                if kit.stock(j.c, it['id']) < 4:
+                    kit.add_lot(j.c, it['id'], 6, it['cost'], 60, 'market')
+            self.assertEqual(self.data()['clean'], 0)
+            for a in [a for a in self.data()['appts'] if a['state'] == 'open' and a['due'] <= j.c['day']]:
+                careful_desk(j)
+                if self.data()['clean'] == 0:
+                    j.act('sl_sanitize')
+                f = self.data()['cards'][a['npc']]['formula']
+                p = (dict(shade=f['shade'], parts=[f['pa'], f['pb']], dev=f['dev'], **({'shade2': f['b']} if f['b'] else {}))
+                     if a['kind'] == 'roots' else dict(length=1) if a['kind'] == 'trim' else {})
+                appts.append(j.act('sl_appt', id=a['id'], **p)['message'])
+            for _ in range(8):
+                t = next((t for t in j.c['tasks'] if t['career'] == 'salon' and t['status'] not in ('completed', 'referred', 'cancelled')), None)
+                if not t:
+                    break
+                t = careful_visit(self, j, t)
+                memos.append(t.get('memo'))
+                self.assertEqual(t.get('tools'), 'clean')
+            self.ok()
+            j.act('end_day')
+        self.assertIn('same', memos)
+        self.assertTrue(appts and all('5★' in m for m in appts), appts)
+        cards = self.data()['cards']
+        self.assertGreaterEqual(max(x['visits'] for x in cards.values()), 3)
+        self.assertTrue(all(x['health'] >= S.WEAK for x in cards.values()))
+        self.ok()
+
+
+def careful_desk(j):
+    ev = j.c['ext']['data']['desk'].get('ev')
+    if ev:
+        x = S.DESK_INDEX[ev['script']]
+        j.act('sl_desk', option=next((o for o in x['options'] if o.get('good')), x['options'][0])['id'])
+
+
+def careful_mix(t, card):
+    """The card formula when it applies, else the first bowl that hits the target (the stylist's own mixing is tested above)."""
+    want = t['_key']['color']
+    if card:
+        return dict(shade=card['shade'], parts=[card['pa'], card['pb']], dev=card['dev'], ratio=card['ratio'], **({'shade2': card['b']} if card['b'] else {}))
+    warm = t['_hair'].get('warm', 0)
+    rows = [(a, None, 1, 0) for a in S.DYE_INDEX] + [(a, b, pa, pb) for a in S.DYE_INDEX for b in S.DYE_INDEX if a != b
+                                                     for pa in S.MIX_PARTS for pb in S.MIX_PARTS]
+    for a, b, pa, pb in rows:
+        m = S._mix(a, b, pa, pb, warm)
+        if S._level_ok(m, want['level']) and m['band'] == want['tone'] and (not want.get('grey') or 2 * m['nat'] >= m['den']):
+            return dict(shade=a, parts=[pa, pb], dev=want['dev'], ratio=want['ratio'], **({'shade2': b} if b else {}))
+    raise AssertionError('no bowl for ' + t['title'])
+
+
+def careful_visit(case, j, t):
+    tid = t['id']
+    g = lambda: j.get(tid)
+    step = lambda name, **p: (careful_desk(j), j.act(name, task=tid, **p))[1]
+    careful_desk(j)
+    if j.c['ext']['data']['clean'] == 0:
+        j.act('sl_sanitize')
+    step('ask')
+    k, n = g()['_key'], g()['needs']
+    for topic in S.TOPIC_IDS:
+        step('sl_consult', topic=topic)
+    for z in S.ZONE_IDS:
+        step('sl_inspect', zone=z)
+    if n.get('case') == 'photo':
+        step('sl_photo')
+    services = list(n['services'])
+    if any(x in S.DYE_SERVICES for x in services) and g()['patch_record'] == 'none':
+        step('sl_patch')
+        if g()['status'] in ('completed', 'referred'):
+            return g()
+        services = [x for x in services if x not in S.DYE_SERVICES]
+    if g()['patch_record'] == 'allergy':
+        services = [x for x in services if x not in S.DYE_SERVICES]
+    if 'bleach' in services:
+        step('sl_strand')
+    services = [x for x in services if x not in k['postpone']]
+    if S._weak(g()) and 'treatment' not in services:
+        services.append('treatment')
+    r = step('sl_plan', services=services, sessions=k['sessions'])
+    case.assertNotIn('refused', r)
+    if n.get('case') == 'kid':
+        step('sl_calm', tool=g()['_x']['soothe'])
+    plan = g()['plan']['services']
+    for kind in ('bleach', 'toner', 'color'):
+        if kind not in plan:
+            continue
+        if kind == 'color':
+            step('sl_mix', kind='color', **careful_mix(g(), S._card_formula(j.c, g())))
+        else:
+            step('sl_mix', kind=kind, dev=k[kind]['dev'], ratio=k[kind]['ratio'], **({'shade': k[kind]['shade']} if kind == 'toner' else {}))
+        step('sl_apply')
+        tm = g()['timer']
+        w = S._window(tm['kind'], tm['fragile'], tm.get('fast', False))
+        case.clock.t += (w['under'] + w['ideal']) / 2
+        j.act('sl_rinse', task=tid)
+    if not g()['washed']:
+        step('sl_wash')
+    if 'cut' in plan:
+        step('sl_cut', step='section')
+        step('sl_cut', step='guide', length=k['cut']['min'])
+        if k['cut']['layers']:
+            step('sl_cut', step='layers')
+        step('sl_cut', step='check')
+    if 'treatment' in plan:
+        step('sl_treat')
+    if 'style' in plan:
+        step('sl_style', finish=k['finish'] or 'natural')
+    t = g()
+    left, products = k['budget'] - t['quote'] - t['patch_fee'], []
+    for pid in k['fit']:
+        if S.ITEM_INDEX[pid]['price'] <= left:
+            products.append(pid)
+            left -= S.ITEM_INDEX[pid]['price']
+    step('sl_checkout', products=products, book=S._bookable(t), confirm=True)
+    return g()
+
 if __name__ == '__main__':
     unittest.main()

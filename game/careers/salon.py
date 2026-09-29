@@ -110,7 +110,7 @@ ZONES = [
 ]
 ZONE_IDS = [x['id'] for x in ZONES]
 FLAGS = ('overpromise', 'pushy', 'breakage', 'no_patch', 'skip_patch', 'scalp_stop', 'wet_color', 'cut_short', 'no_strand', 'layers_wrong', 'finish_wrong',
-         'slip', 'grey_show', 'photo_blind', 'dye_no_patch', 'allergy_hit')
+         'slip', 'grey_show', 'photo_blind', 'dye_no_patch', 'allergy_hit', 'weak_stop')
 RULES = [
     'Nhuộm cùng tông hoặc tối hơn: oxy 10 vol (3%).',
     'Nâng 1–2 tông trên tóc tự nhiên, phủ bạc: oxy 20 vol (6%).',
@@ -660,21 +660,153 @@ def _empty_cut() -> dict:
 
 DATA_V2 = dict(today=None, allergy={}, mixes=0, rush_on_time=0, kids_calm=0, day_served=0)
 
+# ------------------------------------------------------------------ care loop: client cards, hair health, bookings, clean tool sets
+# (docs/superpowers/specs/2026-09-29-salon-care-design.md) — all game rules, nothing random.
+TRUST_MAX = 5
+TRUST_NAMES = ('Khách mới', 'Quen mặt', 'Khách quen', 'Thân thiết', 'Khách ruột', 'Như người nhà')
+TRUST_PATIENCE = 3                      # a regular arrives this much more patient per trust level
+HEALTH_RECOVER, HEALTH_NATURAL_CAP = 3, 85
+WEAK, BLEACH_STOP, CARE_BELOW = 50, 30, 60
+HEALTH_HIT = {'bleach': dict(under=-12, ideal=-20, over=-28, damage=-40),
+              'color': dict(under=-4, ideal=-6, over=-10, damage=-25),
+              'toner': dict(under=-2, ideal=-2, over=-2, damage=-8)}
+HEALTH_TREAT = 25
+HEALTH_RETAIL = {'rt_mask': 5, 'rt_heat': 3}
+HEALTH_WORDS = ((85, 'Khỏe'), (70, 'Khá'), (50, 'Hơi yếu'), (30, 'Yếu'), (0, 'Rất yếu'))
+HIST = {'virgin': 'Tóc zin · độ xốp thấp, ăn màu chậm mà đều',
+        'box_dye': 'Từng nhuộm hộp · độ xốp không đều, dễ loang',
+        'bleached': 'Đã tẩy · độ xốp cao, hút thuốc rất nhanh',
+        'relaxed': 'Đã duỗi · xốp vừa, dễ khô'}
+APPTS = {
+    'roots': dict(days=4, label='Dặm chân tóc', emoji='🎨', price=35, why='Chân tóc mọc khoảng 4 tuần (4 ngày trong game)'),
+    'trim': dict(days=5, label='Tỉa giữ dáng', emoji='✂️', price=20, why='Giữ dáng tóc vừa cắt'),
+    'care': dict(days=2, label='Hấp phục hồi', emoji='💧', price=None, why='Tóc còn yếu sau lần làm này'),
+}
+APPT_KINDS = tuple(APPTS)
+APPT_KEEP, APPT_MAX = 2, 40
+APPT_STATES = ('open', 'done', 'merged', 'lapsed', 'void')
+ROOT_HIT = -3                           # a root touch-up only touches the regrowth
+TRIM_CAP = (2, 1)                       # cm a keep-the-shape trim may take (after a too-short cut: 1)
+CLEAN_SETS = 4
+CARD_KEYS = ('visits', 'first', 'last', 'trust', 'health', 'hist', 'formula', 'cut', 'services', 'stars', 'patch_file')
+FORMULA_KEYS = ('shade', 'b', 'pa', 'pb', 'dev', 'ratio', 'level', 'band', 'hit', 'zone', 'day')
+DATA_CARE = dict(cards={}, appts=[], appt_seq=0, appts_done=0)
+
 
 def initial() -> dict:
     d = dict(served=0, dumped=0, sanitize_day=0, patch_log={})
     d.update(copy.deepcopy(DATA_V2))
+    d.update(copy.deepcopy(DATA_CARE))
+    d['clean'] = 0
     d['desk'] = kit.desk_initial()
     return d
 
 
 def _data(c: dict) -> dict:
-    """Plugin data with the v0.5 fields (old saves get them here)."""
+    """Plugin data with the v0.5 fields and the care loop (old saves get them here)."""
     d = kit.data(c)
     for k, v in DATA_V2.items():
         d.setdefault(k, copy.deepcopy(v))
+    for k, v in DATA_CARE.items():
+        d.setdefault(k, copy.deepcopy(v))
+    if 'clean' not in d:
+        # A save from before the tool sets: tools sterilised today count as a full jar.
+        d['clean'] = CLEAN_SETS if d.get('sanitize_day') == c.get('day') else 0
     d.setdefault('desk', kit.desk_initial())
     return d
+
+
+# ---- hair health
+def _health_word(h: int) -> str:
+    return next(w for lim, w in HEALTH_WORDS if h >= lim)
+
+
+def _hp(t: dict) -> int:
+    """Hair health of this visit: set on arrival (v0.5 tasks), else from the template damage."""
+    h = t.get('health')
+    return h if type(h) is int else max(10, 100 - 20 * t['_hair'].get('damage', 0))
+
+
+def _arrival_health(c: dict, t: dict) -> int:
+    card = _data(c)['cards'].get(t['npc'])
+    if not card:
+        return max(10, 100 - 20 * t['_hair'].get('damage', 0))
+    h = card['health']
+    if h < HEALTH_NATURAL_CAP:     # new growth and home care; only a treatment lifts hair above the cap
+        h = min(HEALTH_NATURAL_CAP, h + HEALTH_RECOVER * max(0, c['day'] - card['last']))
+    return h
+
+
+def _health_after(t: dict, sold=()) -> int:
+    h = _hp(t)
+    for kind, r in t['results'].items():
+        h += HEALTH_HIT[kind][r['zone']]
+    if 'treatment' in t['done']:
+        h += HEALTH_TREAT
+    h += sum(HEALTH_RETAIL.get(x, 0) for x in sold)
+    return max(10, min(100, h))
+
+
+def _weak(t: dict) -> bool:
+    return bool(t.get('gen')) and _hp(t) < WEAK
+
+
+def _health_known(t: dict) -> bool:
+    return t.get('regular') is not None or bool({'lengths', 'ends'} & set(t['inspected']))
+
+
+# ---- clean tool sets
+def _take_set(c: dict) -> bool:
+    d = _data(c)
+    if d['clean'] > 0:
+        d['clean'] -= 1
+        return True
+    return False
+
+
+def _use_tools(c: dict, t: dict) -> str:
+    """The client's first hands-on step takes a sterilised set from the jar (or a used one when the jar is empty)."""
+    if not t.get('gen') or t.get('tools'):
+        return ''
+    if _take_set(c):
+        t['tools'] = 'clean'
+        return f' 🧼 Lấy bộ lược kéo đã khử khuẩn (còn {_data(c)["clean"]}/{CLEAN_SETS}).'
+    t['tools'] = 'dirty'
+    return ' ⚠️ Hết bộ lược kéo đã khử khuẩn — đành dùng bộ vừa dùng. Khử khuẩn trước khách sau nhé.'
+
+
+# ---- formulas on the card
+def _parts(shade: str, b, pa: int, pb: int) -> dict:
+    rows = {shade: pa}
+    if b and pb:
+        rows[b] = rows.get(b, 0) + pb
+    g = 0
+    for v in rows.values():
+        a, g2 = v, g
+        while g2:
+            a, g2 = g2, a % g2
+        g = a
+    return {k: v // g for k, v in rows.items()}
+
+
+def _same_formula(f: dict, shade: str, b, pa: int, pb: int, dev: int, ratio: str) -> bool:
+    return _parts(f['shade'], f['b'], f['pa'], f['pb']) == _parts(shade, b, pa, pb) and f['dev'] == dev and f['ratio'] == ratio
+
+
+def _formula_text(f: dict) -> str:
+    a = DYE_INDEX[f['shade']]['code']
+    tubes = f'{f["pa"]} phần {a} + {f["pb"]} phần {DYE_INDEX[f["b"]]["code"]}' if f['b'] else f'{a}'
+    return f'{tubes} · oxy {f["dev"]} vol · {f["ratio"]}'
+
+
+def _card_formula(c: dict, t: dict):
+    """The formula on this regular's card when it worked and today's colour target is the same one."""
+    card = kit.data(c).get('cards', {}).get(t['npc'])
+    f = card and card.get('formula')
+    want = t['_key'].get('color') if t.get('gen') else None
+    if not (f and f['hit'] and want and 'level' in want):
+        return None
+    return f if (f['level'], f['band']) == (want['level'], want['tone']) else None
 
 
 def _case(t: dict) -> str | None:
@@ -713,8 +845,13 @@ def _dye_requested(t: dict) -> bool:
     return any(x in DYE_SERVICES for x in t['needs']['services'])
 
 
+def _too_weak_to_bleach(t: dict) -> bool:
+    return bool(t.get('gen')) and 'bleach' in t['needs']['services'] and _hp(t) < BLEACH_STOP
+
+
 def _may_postpone(c: dict, t: dict, service: str) -> bool:
-    return service in t['_key']['postpone'] or (service in DYE_SERVICES and not _has_record(c, t))
+    return (service in t['_key']['postpone'] or (service in DYE_SERVICES and not _has_record(c, t))
+            or (service in ('bleach', 'toner') and _too_weak_to_bleach(t)))
 
 
 def _quote(c: dict, services) -> int:
@@ -979,6 +1116,7 @@ def _desk_hook(s: dict, c: dict, key: str, v) -> str | None:
         if d['sanitize_day'] != c['day']:
             d['sanitize_day'] = c['day']
             kit.metric(c, 'salon_sanitized')
+        d['clean'] = CLEAN_SETS
         return None
     if key == 'inspect':
         if d['sanitize_day'] == c['day']:
@@ -994,10 +1132,16 @@ def _desk_hook(s: dict, c: dict, key: str, v) -> str | None:
 def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
     d = kit.data(c)
     if name == 'sl_sanitize':
-        kit.need(d['sanitize_day'] != c['day'], 'Hôm nay đã khử khuẩn dụng cụ rồi.')
-        d['sanitize_day'] = c['day']
-        kit.metric(c, 'salon_sanitized')
-        return dict(message=f'Đã ngâm khử khuẩn kéo, lược, tông đơ; giặt khăn, lau ghế gội. Sổ vệ sinh ký ngày {c["day"]}.')
+        kit.need(d['clean'] < CLEAN_SETS, f'Cả {CLEAN_SETS} bộ lược kéo trong hũ đều đã khử khuẩn — dùng hết rồi ngâm lại.')
+        d['clean'] = CLEAN_SETS
+        if d['sanitize_day'] != c['day']:
+            d['sanitize_day'] = c['day']
+            kit.metric(c, 'salon_sanitized')
+            return dict(message=f'Thay dung dịch khử khuẩn đầu ngày, ngâm kéo, lược, tông đơ; giặt khăn, lau ghế gội. '
+                                f'Sổ vệ sinh ký ngày {c["day"]} · {CLEAN_SETS}/{CLEAN_SETS} bộ sạch.')
+        return dict(message=f'Ngâm lại các bộ vừa dùng: {CLEAN_SETS}/{CLEAN_SETS} bộ lược kéo sạch.')
+    if name == 'sl_appt':
+        return _appt(s, c, p)
     t = kit.task(c, p)
     kit.need(t['career'] == ID, 'Công việc không thuộc salon.')
     kit.need(t['known'], 'Mời khách ngồi ghế tư vấn và nghe mong muốn trước (bấm “Hỏi”).')
@@ -1049,7 +1193,9 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         kit.need(services, 'Chọn ít nhất một dịch vụ.')
         sessions = kit.integer(p.get('sessions'), 1, 3)
         services = [x for x in SERVICE_IDS if x in services]
-        extra = [x for x in services if x not in n['services']]
+        # Weak hair: recommending a treatment the client did not ask for is care, not an upsell.
+        advised = _weak(t) and 'treatment' in services and 'treatment' not in n['services']
+        extra = [x for x in services if x not in n['services'] and not (x == 'treatment' and advised)]
         if extra:
             t['mistakes'] += 1
             _flag(t, 'pushy')
@@ -1065,7 +1211,8 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
             t['mistakes'] += 1
             return dict(message=f'{who}: “Tới {sessions} buổi lận hả? Tóc mình đâu cần lâu vậy?”', refused=True)
         quote = _quote(c, services)
-        if quote > key['budget']:
+        # The client agrees to pay for a treatment her hair really needs, beyond what she planned to spend.
+        if quote - (_quote(c, ['treatment']) if advised else 0) > key['budget']:
             return dict(message=f'{who}: “{quote} xu hả… vượt ngân sách mất rồi.” Xem lại giá dịch vụ nhé.', refused=True)
         informed = set(key['must_ask']) <= set(t['asked']) and set(key['must_inspect']) <= set(t['inspected'])
         if _case(t) == 'photo' and not t['photo_seen']:
@@ -1076,8 +1223,12 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         overpromise = sessions < key['sessions']
         t['plan'] = dict(services=services, sessions=sessions, informed=informed, overpromise=overpromise)
         t['quote'] = quote
+        if t.get('gen'):
+            t['advised'] = advised
         kit.start_work(t)
         msg = f'Đã chốt: {_names(services)} · {quote} xu.'
+        if advised:
+            msg += f' {who} sờ ngọn tóc, gật đầu: “Tóc yếu thật, làm thêm phục hồi cho chắc.”'
         if overpromise:
             msg += f' {who} reo lên: “Hôm nay là giống ảnh luôn hả!”'
         elif sessions > 1:
@@ -1108,12 +1259,12 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
                     'Lau sạch, chườm mát, ghi sổ dị ứng: không nhuộm hóa chất cho khách này.')
             if not rest:
                 kit.complete(s, c, t, t['patch_fee'], f'Bạn thử dị ứng lại cho {who}, phát hiện phản ứng và không nhuộm.', status='referred')
-                return dict(message=f'{head} {who} run run: “May mà chưa nhuộm cả đầu…”', celebrate=True)
+                return dict(message=f'{head} {who} run run: “May mà chưa nhuộm cả đầu…”' + _visit(c, t), celebrate=True)
             return dict(message=f'{head} Hôm nay vẫn làm được: {_names(rest)}. Chốt lại phương án nhé.', celebrate=True)
         d['patch_log'][t['npc']] = c['day']
         if not rest:
             kit.complete(s, c, t, t['patch_fee'], f'Bạn đã thử dị ứng cho {who} và hẹn nhuộm vào ngày sau thay vì liều nhuộm ngay.', status='referred')
-            return dict(message=f'Đã chấm thử thuốc sau tai và ghi sổ. Hẹn {who} nhuộm từ ngày sau · +{t["patch_fee"]} xu phí thử.', celebrate=True)
+            return dict(message=f'Đã chấm thử thuốc sau tai và ghi sổ. Hẹn {who} nhuộm từ ngày sau · +{t["patch_fee"]} xu phí thử.' + _visit(c, t), celebrate=True)
         return dict(message=f'Đã chấm thử thuốc sau tai, ghi sổ. Màu hẹn ngày sau; hôm nay vẫn làm được: {_names(rest)}. Chốt lại phương án nhé.')
 
     if name == 'sl_strand':
@@ -1178,7 +1329,14 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
             msg = 'Rẽ ngôi thì thấy da đầu có vết trầy đỏ. Luật an toàn của salon: không thoa hóa chất lên da đầu tổn thương. Phần này đã được gạch khỏi phương án, hẹn khi da lành.'
             if not t['plan'] and not [x for x in n['services'] if x not in key['postpone'] and x not in DYE_SERVICES]:
                 kit.complete(s, c, t, 0, f'Bạn phát hiện da đầu {who} bị trầy và hẹn làm màu khi da lành.', status='referred')
+                msg += _visit(c, t)
             return dict(message=msg, refused=True)
+        if kind == 'bleach' and _too_weak_to_bleach(t):
+            t['mistakes'] += 1
+            _flag(t, 'weak_stop')
+            _drop(c, t, ('bleach', 'toner'))
+            return dict(message=f'Linh vuốt thử ngọn tóc rồi lắc đầu: tóc {who} chỉ còn sức khỏe {_hp(t)}/100 — tẩy lúc này là gãy. '
+                                'Hôm nay phục hồi trước, hẹn tẩy khi tóc khỏe lại. Phần tẩy đã được gạch khỏi phương án.', refused=True)
         cost = kit.take(c, shade, 1) + kit.take(c, DEV_ITEM[dev], 1) + kit.take(c, 'gloves', 1)
         if mx and mx['b']:
             cost += kit.take(c, mx['b'], 1)
@@ -1222,7 +1380,8 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
             t['mistakes'] += 1
             _flag(t, 'no_strand')
             return dict(message='Linh (thợ màu) cản lại: tóc nhuộm hộp phải thử lọn trước khi tẩy cả đầu — thuốc hộp có thể phản ứng nóng và làm gãy tóc. Thử lọn trước nhé.', refused=True)
-        fragile = b['kind'] == 'bleach' and hair['history'] in ('box_dye', 'bleached')
+        fragile = b['kind'] == 'bleach' and (hair['history'] in ('box_dye', 'bleached') or _weak(t))
+        tools = _use_tools(c, t)
         t['timer'] = dict(kind=b['kind'], start=round(kit.now(), 3), fragile=fragile, bowl=b)
         fast = False
         if t.get('gen'):
@@ -1232,14 +1391,15 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         w = _window(b['kind'], fragile, fast)
         return dict(message=f'Đã thoa đều từ chân tới ngọn. Xả khi thanh ủ vào vùng xanh ({w["under"]}–{w["ideal"]} giây).'
                     + (' Tóc đã qua hóa chất: cửa sổ ngắn hơn, canh kỹ!' if fragile else '')
-                    + (' Trời nóng: thuốc lên nhanh hơn thường lệ!' if fast else ''))
+                    + (' Trời nóng: thuốc lên nhanh hơn thường lệ!' if fast else '') + tools)
 
     if name == 'sl_rinse':
         tm = t['timer']
         kit.need(tm, 'Chưa có thuốc nào đang ủ.')
         secs = max(0.0, kit.now() - tm['start'])
         zone = _zone(secs, _window(tm['kind'], tm['fragile'], tm.get('fast', False)))
-        res = dict(zone=zone, secs=round(min(secs, 10**6), 1), ok=tm['bowl']['ok'], shade=tm['bowl']['shade'], dev=tm['bowl']['dev'])
+        res = dict(zone=zone, secs=round(min(secs, 10**6), 1), ok=tm['bowl']['ok'], shade=tm['bowl']['shade'], dev=tm['bowl']['dev'],
+                   ratio=tm['bowl']['ratio'])
         mix_note = ''
         if tm['bowl'].get('mix'):
             res.update(mix=dict(tm['bowl']['mix']), hit=tm['bowl']['hit'])
@@ -1283,15 +1443,16 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         kit.need(t['timer'] is None, 'Đang ủ thuốc, dùng nút “Xả” để xả thuốc.')
         t['cost'] += kit.take(c, 'shampoo', 1) + kit.take(c, 'conditioner', 1) + kit.take(c, 'towel', 1)
         t['washed'] = True
+        tools = _use_tools(c, t)
         pending = [x for x in plan['services'] if x in ('color', 'bleach') and x not in t['done']]
         if pending:
             t['mistakes'] += 1
             _flag(t, 'wet_color')
-            return dict(message='Đã gội, massage da đầu. Linh nhắc: nhuộm, tẩy nên làm trên tóc khô chưa gội để dầu tự nhiên bảo vệ da đầu.')
+            return dict(message='Đã gội, massage da đầu. Linh nhắc: nhuộm, tẩy nên làm trên tóc khô chưa gội để dầu tự nhiên bảo vệ da đầu.' + tools)
         if _case(t) == 'kid':
             t['calm'] = max(0, t['calm'] - 8)
-            return dict(message=f'Gội xong, bé Bin lắc đầu vẩy nước tung tóe (bình tĩnh còn {t["calm"]}).')
-        return dict(message=f'Đã gội, massage da đầu, lau khô bằng khăn sạch. {who} thư giãn thấy rõ.')
+            return dict(message=f'Gội xong, bé Bin lắc đầu vẩy nước tung tóe (bình tĩnh còn {t["calm"]}).' + tools)
+        return dict(message=f'Đã gội, massage da đầu, lau khô bằng khăn sạch. {who} thư giãn thấy rõ.' + tools)
 
     if name == 'sl_cut':
         kit.need(plan and 'cut' in plan['services'], 'Phương án đã chốt không có cắt.')
@@ -1305,6 +1466,8 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         if _case(t) == 'kid' and len(t['cut']['steps']) > before:
             # Every snip on the chair wears a wriggly child down a little more.
             t['calm'] = max(0, t['calm'] - (12 + 3 * kit.tier(t['day'])))
+        if len(t['cut']['steps']) > before:
+            out['message'] += _use_tools(c, t)
         return out
 
     if name == 'sl_treat':
@@ -1316,7 +1479,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         t['cost'] += kit.take(c, 'keratin', 1)
         t['treated'] = True
         t['done'].append('treatment')
-        return dict(message='Thoa keratin từng lớp, hấp ấm 10 phút, xả mát. Sợi tóc mềm và bóng hơn hẳn.')
+        return dict(message='Thoa keratin từng lớp, hấp ấm 10 phút, xả mát. Sợi tóc mềm và bóng hơn hẳn.' + _use_tools(c, t))
 
     if name == 'sl_style':
         kit.need(plan and 'style' in plan['services'], 'Phương án đã chốt không có sấy tạo kiểu.')
@@ -1328,11 +1491,12 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         finish = kit.one_of(p.get('finish'), FINISH_IDS, 'Kiểu sấy không hợp lệ.')
         t['styled'] = finish
         t['done'].append('style')
+        tools = _use_tools(c, t)
         if key['finish'] and finish != key['finish']:
             t['mistakes'] += 1
             _flag(t, 'finish_wrong')
-            return dict(message=f'{who}: “Đẹp thì đẹp… nhưng không hợp thói quen và dịp của mình.”')
-        return dict(message=f'Sấy xong: {FINISHES[FINISH_IDS.index(finish)]["name"].lower()}. {who} xoay trái xoay phải trước gương.')
+            return dict(message=f'{who}: “Đẹp thì đẹp… nhưng không hợp thói quen và dịp của mình.”' + tools)
+        return dict(message=f'Sấy xong: {FINISHES[FINISH_IDS.index(finish)]["name"].lower()}. {who} xoay trái xoay phải trước gương.' + tools)
 
     if name == 'sl_checkout':
         kit.confirm(p, 'Xác nhận thanh toán với khách.')
@@ -1341,6 +1505,8 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         kit.need(not pending, 'Còn dịch vụ chưa làm: ' + _names(pending) + '.')
         kit.need(t['timer'] is None and t['bowl'] is None, 'Còn bát thuốc hoặc lượt ủ chưa xử lý.')
         products = kit.id_list(p.get('products', []), RETAIL_IDS, 3, 'Sản phẩm tư vấn không hợp lệ.')
+        book = kit.id_list(p.get('book', []), APPT_KINDS, len(APPT_KINDS), 'Lịch hẹn lần tới không hợp lệ.')
+        kit.need(all(k in _bookable(t) for k in book), 'Lần làm hôm nay không cần hẹn này.')
         # The hand-off: the client looks in the mirror and holds us to what was agreed.
         _record_slips(c, t, products)
         redo = bool(cq.slips(t)) and all(x['code'] == 'finish' for x in cq.slips(t))
@@ -1356,6 +1522,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
             return dict(message=f'{r["message"]} Khách ngồi lại ghế — sấy lại theo đúng dịp của khách nhé.', correct=False)
         if mood in ('walkout', 'refuse'):
             products = []                  # nobody buys shampoo on the way out of a bad visit
+            book = []                      # …nor books the next visit
         left = key['budget'] - t['quote'] - t['patch_fee']
         sold, declined, retail, notes = [], [], 0, []
         for pid in products:
@@ -1390,6 +1557,8 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
                 rush_note = f' Trễ hẹn {-left_turns} nhịp — {who} vội chạy đi, không còn tiền gấp.'
         if _case(t) == 'kid' and 'slip' not in t['flags']:
             d['kids_calm'] += 1
+        if t.get('gen'):
+            t['memo'] = _memo(c, t)
         # Money for a job done wrong is settled once, by the client's reaction (services only; products are their own sale).
         r = cq.react(s, c, t, t['quote'] + t['patch_fee'], who=who)
         reward = r['pay'] + retail + bonus
@@ -1400,6 +1569,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
             kit.metric(c, 'salon_retail', len(sold))
         kit.complete(s, c, t, reward, f'Bạn đã làm tóc cho {who}: {_names(plan["services"])}.')
         tail = (' ' + ' '.join(notes)) if notes else ''
+        tail += _visit(c, t, sold, book)
         if reward:
             head = f'Thanh toán {reward} xu' + (f' (gồm {retail} xu sản phẩm)' if retail else '') + f'. {who} sẽ để lại đánh giá.'
         else:
@@ -1408,6 +1578,213 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         return dict(message=msg, celebrate=not cq.slips(t), correct=not cq.slips(t))
 
     raise kit.eng().GameError('Thao tác salon không hợp lệ.')
+
+
+# ------------------------------------------------------------------ care loop: the client card, bookings, appointments
+def _npc_name(npc: str) -> str:
+    return PEOPLE[int(npc.rsplit('_', 1)[1]) - 1][0]
+
+
+def _bookable(t: dict) -> list:
+    """What this visit calls for next time (computed from the finished work only)."""
+    if not t.get('gen') or not t.get('plan'):
+        return []
+    out = []
+    col = t['results'].get('color')
+    if (col and col.get('mix') and col['zone'] in ('ideal', 'over') and col['ok'] and col.get('hit')
+            and not {'dye_no_patch', 'allergy_hit'} & set(t['flags'])):
+        out.append('roots')
+    if 'cut' in t['done'] and not t['cut']['short']:
+        out.append('trim')
+    if _health_after(t) < CARE_BELOW:
+        out.append('care')
+    return out
+
+
+def _memo(c: dict, t: dict):
+    """Did a regular get the colour on her card again? ('same' formula, a different bowl that still hit, or not relevant)."""
+    f, col = _card_formula(c, t), t['results'].get('color')
+    if not f or not col or not col.get('mix') or col['zone'] == 'under':
+        return None
+    mx = col['mix']
+    if _same_formula(f, col['shade'], mx['b'], mx['pa'], mx['pb'], col['dev'], col.get('ratio', '1:1')):
+        return 'same'
+    return 'drift' if col.get('hit') else None
+
+
+def _stars(c: dict, t: dict) -> int:
+    post = next((p for p in reversed(c['feed']) if p.get('source') == t['id'] and p.get('kind') == 'review'), None)
+    if not post:
+        return 0
+    fb = post.get('feedback') or {}
+    return int(fb.get('fair') or post.get('stars') or 0)
+
+
+def _trim_appts(d: dict) -> None:
+    rows = d['appts']
+    while len(rows) > APPT_MAX:
+        old = next((a for a in rows if a['state'] != 'open'), rows[0])
+        rows.remove(old)
+
+
+def _visit(c: dict, t: dict, sold=(), book=()) -> str:
+    """After a finished v0.5 visit: write the client card (health, formula, cut, trust), close bookings the visit
+    already covered and book the next ones. Returns a short line for the checkout message."""
+    if not t.get('gen'):
+        return ''
+    d = _data(c)
+    npc, cards = t['npc'], d['cards']
+    card = cards.get(npc)
+    new = card is None
+    if new:
+        card = cards[npc] = dict(visits=0, first=c['day'], last=c['day'], trust=0, health=_hp(t), hist=None, formula=None,
+                                 cut=None, services=[], stars=0, patch_file=False)
+    stars = _stars(c, t)
+    before = card['health']
+    card.update(visits=min(10 ** 6, card['visits'] + 1), last=c['day'], stars=max(0, min(5, stars)),
+                services=list((t['plan'] or {}).get('services', [])), health=_health_after(t, sold))
+    if 'history' in t['asked'] and t['_hair'].get('history') in HIST:
+        card['hist'] = t['_hair']['history']
+    if t['patch_record'] == 'file':
+        card['patch_file'] = True
+    col, want = t['results'].get('color'), t['_key'].get('color')
+    if col and col.get('mix') and want and 'level' in want:
+        mx = col['mix']
+        card['formula'] = dict(shade=col['shade'], b=mx['b'], pa=mx['pa'], pb=mx['pb'], dev=col['dev'], ratio=col.get('ratio', '1:1'),
+                               level=want['level'], band=want['tone'], hit=bool(col.get('hit')) and col['ok'], zone=col['zone'], day=c['day'])
+    if 'cut' in t['done']:
+        card['cut'] = dict(removed=t['cut']['removed'], short=t['cut']['short'], day=c['day'])
+    parts = []
+    if cq.safety(t):
+        if card['trust']:
+            card['trust'] -= 1
+            parts.append('khách bớt tin tiệm một chút')
+    elif t['status'] in ('completed', 'referred') and stars >= 4 and not cq.slips(t) and card['trust'] < TRUST_MAX:
+        card['trust'] += 1
+        parts.append(TRUST_NAMES[card['trust']].lower())
+    covered = {'roots': 'color', 'trim': 'cut', 'care': 'treatment'}
+    for a in d['appts']:
+        if a['state'] == 'open' and a['npc'] == npc and covered[a['kind']] in t['done']:
+            a['state'] = 'merged'
+    if t['status'] == 'completed' and ('treatment' in t['done'] or 'bleach' in t['done'] or before != card['health']):
+        parts.append(f'sức khỏe tóc {card["health"]}/100 ({_health_word(card["health"]).lower()})')
+    msg = f' 📇 Thẻ khách {"mới" if new else "cập nhật"}: ' + (', '.join(parts) if parts else f'{card["visits"]} lần ghé') + '.'
+    if book:
+        booked = []
+        for k in book:
+            due = c['day'] + APPTS[k]['days']
+            a = next((a for a in d['appts'] if a['state'] == 'open' and a['npc'] == npc and a['kind'] == k), None)
+            if a:
+                a.update(due=due, booked=c['day'])
+            else:
+                d['appt_seq'] += 1
+                d['appts'].append(dict(id=f'H{d["appt_seq"]}', npc=npc, kind=k, due=due, booked=c['day'], state='open', stars=0))
+            booked.append(f'{APPTS[k]["label"].lower()} ngày {due}')
+        _trim_appts(d)
+        t['booked'] = list(book)
+        kit.metric(c, 'salon_booked', len(book))
+        msg += f' 📅 Đã hẹn: {", ".join(booked)}.'
+    return msg
+
+
+def _appt(s: dict, c: dict, p: dict) -> dict:
+    """A booked client is back: serve the appointment in one sitting (roots, trim or care)."""
+    d = _data(c)
+    aid = p.get('id')
+    a = next((a for a in d['appts'] if a['id'] == aid), None) if isinstance(aid, str) else None
+    kit.need(a is not None and a['state'] == 'open', 'Lịch hẹn này không còn.')
+    kit.need(a['due'] <= c['day'], f'Khách hẹn ngày {a["due"]} mới tới.')
+    kit.need(c['day'] <= a['due'] + APPT_KEEP, 'Lịch hẹn này đã quá hạn.')
+    card = d['cards'].get(a['npc'])
+    kit.need(card is not None, 'Chưa có thẻ khách này.')
+    who, kind, info = _npc_name(a['npc']), a['kind'], APPTS[a['kind']]
+    notes, stars = [], 5
+    if kind == 'roots':
+        f = card['formula']
+        kit.need(f is not None, 'Thẻ khách chưa có công thức màu.')
+        if a['npc'] in d['allergy']:
+            a['state'] = 'void'
+            return dict(message=f'Sổ dị ứng ghi {who} từng phản ứng với thuốc nhuộm — không dặm màu. Đã gọi báo hủy hẹn, khách cảm ơn vì tiệm cẩn thận.',
+                        refused=True)
+        shade = kit.one_of(p.get('shade'), DYE_INDEX, 'Chọn tuýp thuốc nhuộm.')
+        shade2 = p.get('shade2')
+        if shade2 is not None:
+            kit.one_of(shade2, DYE_INDEX, 'Tuýp thứ hai không hợp lệ.')
+            kit.need(shade2 != shade, 'Tuýp thứ hai phải khác tuýp thứ nhất.')
+        parts = p.get('parts', [1, 0] if shade2 is None else None)
+        kit.need(isinstance(parts, list) and len(parts) == 2 and all(type(v) is int for v in parts), 'Số phần pha không hợp lệ.')
+        kit.need(parts[0] in MIX_PARTS and (parts[1] == 0 if shade2 is None else parts[1] in MIX_PARTS), 'Mỗi tuýp pha 1–3 phần.')
+        dev = kit.integer(p.get('dev'), 10, 40)
+        kit.need(dev in DEVS, 'Chọn oxy 10, 20, 30 hoặc 40 vol.')
+        kit.need(dev != 40, 'Chân tóc sát da đầu: không bao giờ dùng oxy 40 vol.')
+        kit.take(c, shade, 1)
+        if shade2:
+            kit.take(c, shade2, 1)
+        kit.take(c, DEV_ITEM[dev], 1)
+        kit.take(c, 'gloves', 1)
+        m = _mix(shade, shade2, parts[0], parts[1])
+        if _same_formula(f, shade, shade2, parts[0], parts[1], dev, f['ratio']):
+            text, done = f'Dặm chân tóc đúng công thức cũ, chân và thân liền một màu như chưa từng mọc.', 'chân tóc liền màu thân tóc'
+        elif _level_ok(m, f['level']) and m['band'] == f['band'] and dev == f['dev']:
+            stars = 4
+            text, done = 'Chân tóc đã phủ, nhìn kỹ dưới nắng thấy ánh hơi khác phần thân.', 'chân tóc hơi khác ánh thân tóc'
+        else:
+            stars = 2
+            text, done = 'Chân tóc ra một màu, thân tóc một màu, lộ vệt ngang như đội mũ.', 'chân tóc lệch màu, lộ vệt'
+        card['health'] = max(10, card['health'] + ROOT_HIT)
+    elif kind == 'trim':
+        length = kit.integer(p.get('length'), 1, 6)
+        cap = TRIM_CAP[1] if card['cut'] and card['cut']['short'] else TRIM_CAP[0]
+        if length <= cap:
+            text, done = f'Tỉa đúng {length} cm, giữ nguyên dáng tóc lần trước.', f'tỉa {length} cm giữ dáng'
+        else:
+            stars = 3
+            text, done = f'Dặn chỉ tỉa giữ dáng mà cắt mất {length} cm.', f'tỉa {length} cm, quá mức giữ dáng {cap} cm'
+        card['cut'] = dict(removed=length, short=length > cap, day=c['day'])
+    else:
+        kit.take(c, 'keratin', 1)
+        card['health'] = min(100, card['health'] + HEALTH_TREAT)
+        text, done = 'Hấp phục hồi đúng hẹn, tóc mềm và bóng lại hẳn.', f'sức khỏe tóc lên {card["health"]}/100'
+    if kind in ('roots', 'trim'):
+        if _take_set(c):
+            notes.append(f'🧼 bộ sạch, còn {d["clean"]}/{CLEAN_SETS}')
+        else:
+            stars = max(1, stars - 1)
+            text += ' Lược kéo dùng lại chưa khử khuẩn, thấy ngại.'
+            notes.append('⚠️ dùng bộ lược kéo chưa khử khuẩn')
+    price = info['price'] if info['price'] is not None else kit.price(c, 'treatment', PRICES['treatment'])
+    pay = price if stars >= 3 else price // 2
+    kit.money(s, c, pay, f'Lịch hẹn: {info["label"].lower()} — {who}', a['id'], 'revenue')
+    kit.review(s, c, a['npc'], stars, text, f'appt-{a["id"]}')
+    a.update(state='done', stars=stars)
+    card.update(visits=min(10 ** 6, card['visits'] + 1), last=c['day'], stars=stars)
+    if stars == 5 and card['trust'] < TRUST_MAX:
+        card['trust'] += 1
+    d['appts_done'] += 1
+    kit.metric(c, 'salon_appts')
+    tail = f' ({"; ".join(notes)})' if notes else ''
+    return dict(message=f'{info["emoji"]} {who} tới đúng hẹn — {done}. +{pay} xu · {stars}★.{tail}', celebrate=stars == 5)
+
+
+def _appt_view(c: dict, a: dict) -> dict:
+    info = APPTS[a['kind']]
+    return dict(a, who=_npc_name(a['npc']), label=info['label'], emoji=info['emoji'], until=a['due'] + APPT_KEEP,
+                ready=a['state'] == 'open' and a['due'] <= c['day'] <= a['due'] + APPT_KEEP)
+
+
+def _card_view(c: dict, npc: str, card: dict) -> dict:
+    d = kit.data(c)
+    v = dict(card, npc=npc, name=_npc_name(npc), trust_name=TRUST_NAMES[card['trust']], health_word=_health_word(card['health']),
+             hair=HIST.get(card['hist']) if card['hist'] else None, patch_day=d.get('patch_log', {}).get(npc),
+             allergy=npc in d.get('allergy', {}), trim_cap=TRIM_CAP[1] if card['cut'] and card['cut']['short'] else TRIM_CAP[0])
+    f = card['formula']
+    if f:
+        m = _mix(f['shade'], f['b'], f['pa'], f['pb'])
+        v['formula'] = dict(f, text=_formula_text(f), mix_level=_level_text(m), mix_band=m['band'], color=m['color'],
+                            target=f'level {f["level"]} · {BAND_NAME[f["band"]].lower()}')
+    v['next'] = next((dict(kind=a['kind'], due=a['due'], label=APPTS[a['kind']]['label'])
+                      for a in sorted(d.get('appts', []), key=lambda a: a['due']) if a['state'] == 'open' and a['npc'] == npc), None)
+    return v
 
 
 # ------------------------------------------------------------------ review
@@ -1470,13 +1847,16 @@ def feedback(c: dict, t: dict) -> dict:
     for f, pen, note in (('breakage', 2, 'tóc gãy vì ủ quá lâu'), ('no_strand', 1, 'suýt tẩy khi chưa thử lọn'),
                          ('no_patch', 1, 'suýt nhuộm khi chưa thử dị ứng'), ('scalp_stop', 1, 'suýt thoa thuốc lên da đầu trầy'),
                          ('wet_color', 1, 'gội trước khi nhuộm'), ('skip_patch', 1, 'không thử dị ứng để hẹn màu lần sau'),
-                         ('slip', 1, 'bé giãy, kéo trượt vì chưa dỗ được bé')):
+                         ('slip', 1, 'bé giãy, kéo trượt vì chưa dỗ được bé'), ('weak_stop', 1, 'suýt tẩy trên tóc quá yếu')):
         if f in flags:
             care -= pen
             cn.append(note)
-    if h['damage'] >= 2 and any(x in t['done'] for x in ('bleach', 'color')) and not t['treated']:
+    if (h['damage'] >= 2 or _weak(t)) and any(x in t['done'] for x in ('bleach', 'color')) and not t['treated']:
         care -= 1
         cn.append('tóc yếu mà không được phục hồi')
+    if t.get('tools') == 'dirty':
+        care -= 1
+        cn.append('dùng lược kéo chưa khử khuẩn')
     if t.get('reacted'):
         cn.append('thử dị ứng lại, phát hiện phản ứng kịp thời')
     att, tnotes = 5, []
@@ -1488,6 +1868,8 @@ def feedback(c: dict, t: dict) -> dict:
     if 'pushy' in flags:
         att -= 1
         tnotes.append('mời thứ không cần')
+    if t.get('advised'):
+        tnotes.append('khuyên phục hồi vì tóc yếu thật')
     if plan['overpromise']:
         att = 1
         tnotes.append('hứa giống ảnh mẫu trong một buổi')
@@ -1496,7 +1878,16 @@ def feedback(c: dict, t: dict) -> dict:
         dict(key='quality', label='Tay nghề màu & cắt', score=max(1, qual), note=', '.join(qn) or 'màu và đường cắt chuẩn'),
         dict(key='care', label='An toàn & sức khỏe tóc', score=max(1, care), note=', '.join(cn) or 'an toàn từng bước'),
         dict(key='attitude', label='Tư vấn thật lòng', score=max(1, att), note=', '.join(tnotes) or 'hỏi kỹ, nói thật, không ép mua'),
-        dict(key='speed', label='Thời gian chờ', score=speed, note=speed_note)])
+        dict(key='speed', label='Thời gian chờ', score=speed, note=speed_note)] + _memory_row(t))
+
+
+def _memory_row(t: dict) -> list:
+    memo = t.get('memo') if t.get('gen') else None
+    if memo == 'same':
+        return [dict(key='memory', label='Nhớ khách', score=5, note='pha đúng công thức trong thẻ, màu y lần trước')]
+    if memo == 'drift':
+        return [dict(key='memory', label='Nhớ khách', score=4, note='màu đúng nhưng khác công thức lần trước, ánh hơi khác')]
+    return []
 
 
 # ------------------------------------------------------------------ projection & validation
@@ -1518,6 +1909,9 @@ def known_request(c: dict, t: dict) -> str:
 
 def public_task(t: dict) -> dict:
     v = {k: copy.deepcopy(val) for k, val in t.items() if not k.startswith('_')}
+    # Hair health is felt with the hands (lengths, ends) or read on a regular's card.
+    v['health'] = _hp(t) if t['known'] and t.get('gen') and _health_known(t) else None
+    v['health_word'] = _health_word(v['health']) if v['health'] is not None else None
     if not t['known']:
         v['needs'] = None
         return v
@@ -1543,6 +1937,9 @@ def public_task(t: dict) -> dict:
             v['mix_result'] = dict(level=_level_text(m), band=m['band'], color=m['color'])
         if t['status'] in ('completed', 'referred', 'cancelled') and _case(t) == 'kid':
             v['truth'] = dict(soothe=t['_x']['soothe'])
+        pending = [x for x in (t['plan'] or {}).get('services', []) if x not in t['done']]
+        v['bookable'] = _bookable(t) if t['plan'] and not pending else []
+        v['weak'] = _weak(t) if v['health'] is not None else None
     return v
 
 
@@ -1560,6 +1957,15 @@ def public_data(c: dict) -> dict:
         kit.rng(ID, 'desk-order', d['desk']['ev']['id'], c['day']).shuffle(d['desk']['ev']['options'])
     d['tier'] = kit.tier(c['day'])
     d['allergy'] = len(d['allergy'])
+    # Care loop: cards, the appointment book, the tool jar.
+    real = kit.data(c)
+    d['cards'] = {npc: _card_view(c, npc, card) for npc, card in real.get('cards', {}).items()}
+    d['appts'] = [_appt_view(c, a) for a in sorted(real.get('appts', []), key=lambda a: (a['due'], a['id']))
+                  if a['state'] == 'open' or (a['state'] == 'done' and a['due'] >= c['day'] - APPT_KEEP)]
+    d.setdefault('clean', CLEAN_SETS if d['sanitized_today'] else 0)
+    d['clean_max'] = CLEAN_SETS
+    d['card_for'] = [t['id'] for t in c['tasks'] if t.get('career') == ID and t.get('gen') and t['status'] not in ('completed', 'referred', 'cancelled')
+                     and _card_formula(c, t)]
     return d
 
 
@@ -1605,7 +2011,8 @@ def validate_task(t: dict, original: dict) -> None:
     if pl is not None:
         kit.need(isinstance(pl, dict) and set(pl) == {'services', 'sessions', 'informed', 'overpromise'}, 'Phương án sai.')
         ids(pl['services'], SERVICE_IDS, 'Dịch vụ trong phương án sai.')
-        kit.need(pl['services'] and all(x in t['needs']['services'] for x in pl['services']), 'Phương án có dịch vụ khách không yêu cầu.')
+        kit.need(pl['services'] and all(x in t['needs']['services'] or (x == 'treatment' and t.get('advised')) for x in pl['services']),
+                 'Phương án có dịch vụ khách không yêu cầu.')
         kit.integer(pl['sessions'], 1, 3)
         kit.need(type(pl['informed']) is bool and type(pl['overpromise']) is bool, 'Phương án sai.')
         kit.need(t['quote'] is not None, 'Thiếu báo giá.')
@@ -1631,6 +2038,17 @@ def validate_task(t: dict, original: dict) -> None:
             kit.integer(t.get('calm'), 0, 100)
         else:
             kit.need(t.get('calm') is None and not soothed, 'Cách dỗ bé sai.')
+        # Care loop fields (tasks saved before it have none of them).
+        h, reg = t.get('health'), t.get('regular')
+        kit.need(h is None or (type(h) is int and 0 <= h <= 100), 'Sức khỏe tóc sai.')
+        kit.need(reg is None or (type(reg) is int and 0 <= reg <= TRUST_MAX), 'Thẻ khách quen sai.')
+        kit.need(t.get('tools') in (None, 'clean', 'dirty') and t.get('memo') in (None, 'same', 'drift'), 'Trạng thái salon sai.')
+        kit.need(type(t.get('advised', False)) is bool, 'Trạng thái salon sai.')
+        kit.need(not t.get('advised') or (h is not None and h < WEAK and 'treatment' not in t['needs']['services']),
+                 'Phục hồi khuyên thêm chỉ dành cho tóc yếu.')
+        ids(t.get('booked', []), APPT_KINDS, 'Lịch hẹn sai.')
+    else:
+        kit.need(not t.get('advised') and not t.get('booked') and t.get('tools') is None, 'Trạng thái salon sai.')
     kit.need(isinstance(t['results'], dict) and all(k in CHEM for k in t['results']), 'Kết quả màu sai.')
     for kind, r in t['results'].items():
         kit.need(isinstance(r, dict) and r.get('zone') in ZONES_T and type(r.get('ok')) is bool and kind in t['done'], 'Kết quả màu sai.')
@@ -1658,6 +2076,55 @@ def validate_data(c: dict) -> None:
             kit.integer(day, 1, 10**7)
     kit.need(d['today'] is None or (isinstance(d['today'], dict) and d['today'].get('id') in TODAY_INDEX), 'Chuyện hôm nay sai.')
     kit.desk_validate(d['desk'], DESK)
+    _validate_care(d, people)
+
+
+def _day(v, msg: str) -> int:
+    kit.need(type(v) is int, msg)
+    return kit.integer(v, 0, 10 ** 7)
+
+
+def _validate_care(d: dict, people: list) -> None:
+    kit.integer(d['clean'], 0, CLEAN_SETS)
+    kit.integer(d['appt_seq'], 0, 10 ** 9)
+    kit.integer(d['appts_done'], 0, 10 ** 9)
+    cards = d['cards']
+    kit.need(isinstance(cards, dict) and len(cards) <= len(PEOPLE), 'Thẻ khách sai.')
+    for npc, x in cards.items():
+        kit.need(npc in people and isinstance(x, dict) and set(x) == set(CARD_KEYS), 'Thẻ khách sai.')
+        kit.need(type(x['visits']) is int and 1 <= x['visits'] <= 10 ** 6, 'Số lần ghé sai.')
+        kit.need(_day(x['first'], 'Ngày ghé sai.') <= _day(x['last'], 'Ngày ghé sai.'), 'Ngày ghé sai.')
+        kit.need(type(x['trust']) is int and 0 <= x['trust'] <= TRUST_MAX, 'Độ thân thiết sai.')
+        kit.need(type(x['health']) is int and 0 <= x['health'] <= 100, 'Sức khỏe tóc sai.')
+        kit.need(x['hist'] is None or x['hist'] in HIST, 'Lịch sử tóc sai.')
+        kit.need(isinstance(x['services'], list) and len(set(x['services'])) == len(x['services']) and all(v in SERVICE_IDS for v in x['services']),
+                 'Dịch vụ lần trước sai.')
+        kit.need(type(x['stars']) is int and 0 <= x['stars'] <= 5 and type(x['patch_file']) is bool, 'Thẻ khách sai.')
+        f = x['formula']
+        if f is not None:
+            kit.need(isinstance(f, dict) and set(f) == set(FORMULA_KEYS), 'Công thức màu sai.')
+            kit.need(f['shade'] in DYE_INDEX and f['dev'] in DEVS and type(f['dev']) is int and f['ratio'] in RATIOS, 'Công thức màu sai.')
+            kit.need(type(f['pa']) is int and f['pa'] in MIX_PARTS and type(f['pb']) is int, 'Công thức màu sai.')
+            kit.need(f['pb'] == 0 if f['b'] is None else (f['b'] in DYE_INDEX and f['b'] != f['shade'] and f['pb'] in MIX_PARTS), 'Công thức màu sai.')
+            kit.need(type(f['level']) is int and 1 <= f['level'] <= 10 and f['band'] in BAND_IDS, 'Công thức màu sai.')
+            kit.need(type(f['hit']) is bool and f['zone'] in ZONES_T, 'Công thức màu sai.')
+            _day(f['day'], 'Công thức màu sai.')
+        cut = x['cut']
+        if cut is not None:
+            kit.need(isinstance(cut, dict) and set(cut) == {'removed', 'short', 'day'} and type(cut['short']) is bool, 'Lần cắt trước sai.')
+            kit.need(type(cut['removed']) is int and 0 <= cut['removed'] <= 160, 'Lần cắt trước sai.')
+            _day(cut['day'], 'Lần cắt trước sai.')
+    appts = d['appts']
+    kit.need(isinstance(appts, list) and len(appts) <= APPT_MAX, 'Sổ hẹn sai.')
+    seen = set()
+    for a in appts:
+        kit.need(isinstance(a, dict) and set(a) == {'id', 'npc', 'kind', 'due', 'booked', 'state', 'stars'}, 'Lịch hẹn sai.')
+        kit.need(isinstance(a['id'], str) and a['id'][:1] == 'H' and a['id'][1:].isdigit() and len(a['id']) <= 12 and a['id'] not in seen, 'Lịch hẹn sai.')
+        seen.add(a['id'])
+        kit.need(a['npc'] in people and a['kind'] in APPT_KINDS and a['state'] in APPT_STATES, 'Lịch hẹn sai.')
+        kit.need(_day(a['booked'], 'Lịch hẹn sai.') <= _day(a['due'], 'Lịch hẹn sai.'), 'Lịch hẹn sai.')
+        kit.need(type(a['stars']) is int and 0 <= a['stars'] <= 5, 'Lịch hẹn sai.')
+        kit.need(a['npc'] in cards, 'Lịch hẹn của khách chưa có thẻ.')
 
 
 def on_task(s: dict, c: dict, t: dict) -> None:
@@ -1667,6 +2134,12 @@ def on_task(s: dict, c: dict, t: dict) -> None:
     tier = kit.tier(t['day'])
     start = 100 - 4 * tier - (8 if _today(c)['id'] == 'walkin' else 0) - (6 if _case(t) in ('bride', 'walkin') else 0)
     t['patience'] = max(60, min(t.get('patience', 100), start))
+    if t['status'] == 'new' and 'health' not in t:
+        # The client card: a regular is recognised, arrives more patient, with the hair health the card remembers.
+        card = _data(c)['cards'].get(t['npc'])
+        t.update(regular=card['trust'] if card else None, health=_arrival_health(c, t), tools=None, memo=None, advised=False, booked=[])
+        if card:
+            t['patience'] = min(100, t['patience'] + TRUST_PATIENCE * card['trust'])
 
 
 def on_start(s: dict, c: dict) -> None:
@@ -1674,6 +2147,25 @@ def on_start(s: dict, c: dict) -> None:
     mod = today(c['day'])
     d['today'] = dict(id=mod['id'], day=c['day'])
     kit.log(s, c, 'today', f'{mod["emoji"]} Hôm nay: {mod["title"]} — {mod["text"]}')
+    # A new morning: fresh disinfectant, so every tool set needs soaking again.
+    d['clean'] = 0
+    kit.log(s, c, 'salon', f'🧴 Đầu ngày thay dung dịch khử khuẩn: 0/{CLEAN_SETS} bộ lược kéo sạch — ngâm dụng cụ trước khi nhận khách.')
+    due, lapsed = [], []
+    for a in d['appts']:
+        if a['state'] != 'open':
+            continue
+        if c['day'] > a['due'] + APPT_KEEP:
+            a['state'] = 'lapsed'
+            card = d['cards'].get(a['npc'])
+            if card and card['trust']:
+                card['trust'] -= 1
+            lapsed.append(f'{_npc_name(a["npc"])} ({APPTS[a["kind"]]["label"].lower()})')
+        elif a['due'] <= c['day']:
+            due.append(f'{_npc_name(a["npc"])} — {APPTS[a["kind"]]["label"].lower()}')
+    if due:
+        kit.log(s, c, 'salon', '📅 Hôm nay có hẹn: ' + '; '.join(due) + '. Xem Sổ hẹn ở bàn làm việc.')
+    if lapsed:
+        kit.log(s, c, 'salon', '📅 Lỡ hẹn quá 2 ngày, khách đã đi tiệm khác: ' + ', '.join(lapsed) + '. Thẻ khách bớt thân một bậc.')
     kit.desk_start(s, c, ID, d['desk'], DESK, mod['id'], c['life'].get('mode') == 'festival')
 
 
@@ -1687,6 +2179,17 @@ def on_close(s: dict, c: dict) -> dict:
         lines.append(f'Sổ dị ứng đang ghi {len(d["allergy"])} khách không được nhuộm.')
     if note:
         lines.append(note)
+    waiting = [a for a in d['appts'] if a['state'] == 'open' and a['due'] <= c['day']]
+    tomorrow = [a for a in d['appts'] if a['state'] == 'open' and a['due'] == c['day'] + 1]
+    if d['appts_done']:
+        lines.append(f'Lịch hẹn đã phục vụ (tính từ đầu): {d["appts_done"]}.')
+    if waiting:
+        last = [a for a in waiting if c['day'] >= a['due'] + APPT_KEEP]
+        lines.append(f'Còn {len(waiting)} khách hẹn chưa làm' + (f' — {len(last)} khách hết hạn chờ hôm nay.' if last else ' (vẫn chờ được thêm ít hôm).'))
+    if tomorrow:
+        lines.append('Ngày mai có hẹn: ' + ', '.join(f'{_npc_name(a["npc"])} ({APPTS[a["kind"]]["label"].lower()})' for a in tomorrow) + '.')
+    if d['cards']:
+        lines.append(f'Sổ khách quen: {len(d["cards"])} thẻ.')
     nxt = today(c['day'] + 1)
     lines.append(f'Dự báo ngày mai: {nxt["emoji"]} {nxt["title"]} — {nxt["text"]}')
     d['day_served'] = 0
@@ -1697,6 +2200,11 @@ def on_close(s: dict, c: dict) -> dict:
 def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
     role = e.get('role')
     if role == 'cut':
+        d = _data(c)
+        if d['sanitize_day'] == c['day'] and d['clean'] < CLEAN_SETS:
+            # Tops up the jar you prepared this morning; the morning change of disinfectant is still yours.
+            d['clean'] += 1
+            return f'Đã quét tóc, ngâm khử khuẩn thêm một bộ lược kéo ({d["clean"]}/{CLEAN_SETS} bộ sạch).'
         return 'Đã quét tóc, sát khuẩn kéo, lược và tông đơ giữa hai lượt khách.'
     if not t or t['career'] != ID or not t['known']:
         return 'Đã gấp khăn, lau gương và châm nước ấm cho bồn gội.' if role == 'assist' else None
@@ -1728,6 +2236,10 @@ def hint(c: dict, t: dict) -> str:
            'walkin': ' Khách vội: hỏi độ dài rồi cắt gọn, ít thao tác mà trúng.',
            'grey': ' Tóc bạc nhiều: một nửa bát là tuýp nền tự nhiên, oxy 20 vol.',
            'fix': ' Nền tóc ánh cam: xem thân tóc, pha lạnh hơn để bù phần ấm.'}.get(_case(t) or '', '')
+    if t.get('regular') is not None:
+        tip += ' Khách quen: lật thẻ khách xem công thức màu, sức khỏe tóc và lần cắt trước.'
+    if t.get('gen') and _weak(t):
+        tip += ' Tóc yếu: khuyên phục hồi là thật lòng, không phải ép mua.'
     if not t['plan']:
         return 'Hỏi lịch sử hóa chất, hồ sơ thử dị ứng, độ dài; xem chân – thân – ngọn – da đầu rồi mới chốt. Ảnh mẫu có thể cần nhiều buổi.' + tip
     return 'Pha đúng bảng luật → thoa → xả trong vùng xanh → gội → cắt theo trình tự → phục hồi, sấy → tư vấn sản phẩm vừa túi tiền.' + tip
@@ -1739,6 +2251,9 @@ def content() -> dict:
                 retail=[dict(id=x['id'], name=x['name'], emoji=x['emoji'], price=x['price'], unlock=x.get('unlock', 1)) for x in ITEMS if x['group'] == 'goods'],
                 rules=RULES, disclaimer=DISCLAIMER,
                 bands=BANDS, tone=TONE, mix_parts=list(MIX_PARTS), cases=CASES, calm_tools=CALM_TOOLS,
+                care=dict(appts={k: dict(v, id=k) for k, v in APPTS.items()}, keep=APPT_KEEP, clean_sets=CLEAN_SETS, weak=WEAK,
+                          bleach_stop=BLEACH_STOP, trust_names=list(TRUST_NAMES), trim_cap=list(TRIM_CAP),
+                          health_words=[list(x) for x in HEALTH_WORDS]),
                 today=[dict(id=x['id'], title=x['title'], emoji=x['emoji'], text=x['text']) for x in TODAY])
 
 
@@ -2102,7 +2617,7 @@ SPEC = dict(
     inventory=dict(items=ITEMS, capacity=40),
     prices=dict(PRICES),
     tip=3,
-    physical=('sl_wash', 'sl_mix', 'sl_cut', 'sl_treat', 'sl_style', 'sl_checkout'),
+    physical=('sl_wash', 'sl_mix', 'sl_cut', 'sl_treat', 'sl_style', 'sl_checkout', 'sl_appt'),
     free_actions=(),
     no_tick=('sl_rinse', 'sl_desk'),
     waste_items=('bowl',),

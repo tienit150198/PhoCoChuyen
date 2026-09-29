@@ -1,7 +1,9 @@
 /** Salon Tóc Gió — phone-first stylist chair (plugin career UI).
  * The server decides every result: answers, the bowl formula, timer zones, the mirror, the review and the money.
  * Local state is only what is being picked before sending (services, tubes, parts, length, products) and the open step tab.
- * The two-tube bowl preview mirrors the server maths (average level, tone band) using only what the stylist has found out. */
+ * The two-tube bowl preview mirrors the server maths (average level, tone band) using only what the stylist has found out.
+ * Care loop: the client card (formula, hair health, patch test, last cut), follow-up bookings and the jar of clean tool sets. */
+import {reqList,fold} from '../ui-kit.js';
 const CHEM=['color','bleach','toner'];
 const ZONE_TEXT={under:'chưa đủ giờ',ideal:'đúng giờ',over:'hơi quá giờ',damage:'quá giờ, tóc gãy'};
 const STAGES={consult:['💬','Tư vấn'],plan:['🤝','Chốt'],color:['🎨','Pha màu'],wash:['🫧','Gội'],cut:['✂️','Cắt'],finish:['💨','Hoàn thiện'],bill:['🧾','Thanh toán']};
@@ -21,9 +23,13 @@ const bandName=(x,id)=>x.cc.bands?.find(b=>b.id===id)?.name||id||'';
 const cmdAttr=(x,command,payload)=>`data-command="${command}" data-payload="${x.esc(JSON.stringify(payload))}"`;
 const itemName=(x,id)=>(x.content.inventory?.items?.salon||[]).find(i=>i.id===id)?.name||id;
 const carAttr=(x,action,data)=>`data-action="car:${action}" ${Object.entries(data).map(([k,v])=>`data-${k}="${x.esc(v)}"`).join(' ')}`;
+const care=x=>x.cc.care||{};
+const cardOf=(x,t)=>x.room.data?.cards?.[t.npc]||null;
+const cardFormula=(x,t)=>(x.room.data?.card_for||[]).includes(t.id)?cardOf(x,t)?.formula||null:null;
+const deskBusy=x=>!!x.room.data?.desk?.ev;
 
 function ui(x,t){
-  const u=x.ui[t.id]??={services:[],sessions:1,kind:null,a:null,b:null,pa:1,pb:1,shade:null,dev:null,ratio:null,len:2,products:[],tab:null,tabAt:null,init:false};
+  const u=x.ui[t.id]??={services:[],sessions:1,kind:null,a:null,b:null,pa:1,pb:1,shade:null,dev:null,ratio:null,len:2,products:[],book:[],tab:null,tabAt:null,init:false};
   if(!u.init&&t.needs){u.services=[...t.needs.services];u.init=true;}
   if(t.patch_done&&!u.patchSync){u.services=u.services.filter(s=>s!=='color'&&s!=='toner');u.patchSync=true;}
   const key=t.plan?t.plan.services.join(',')+'/'+t.plan.sessions:'';
@@ -95,9 +101,91 @@ function calmBar(t){
   const v=Math.max(0,Math.min(100,Number(t.calm)||0));
   return `<div class="sl-calm ${v<20?'bad':v<40?'warn':'ok'}" role="meter" aria-label="Bé bình tĩnh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${v}"><span>🧒 Bé bình tĩnh</span><div class="bar"><i style="width:${v}%"></i></div><b>${v}</b></div>`;
 }
+function jar(x){
+  const d=x.room.data||{},n=Number(d.clean)||0,max=d.clean_max||care(x).clean_sets||4;
+  return `<span class="sl-jar ${n?'':'nil'}" role="meter" aria-label="Bộ lược kéo đã khử khuẩn" aria-valuemin="0" aria-valuemax="${max}" aria-valuenow="${n}">${Array.from({length:max},(_,i)=>`<i class="${i<n?'on':''}"></i>`).join('')}<b>🧼 ${n}/${max} bộ sạch</b></span>`;
+}
 function foot(x){
-  const d=x.room.data||{},busy=!!d.desk?.ev;
-  return `<p class="row wrap sl-foot">${x.cmd(d.sanitized_today?'✅ Đã khử khuẩn hôm nay':'🧴 Khử khuẩn dụng cụ','sl_sanitize',{},'ghost small',!!d.sanitized_today||busy)}${x.button('📦 Kho thuốc & vật tư','inventory',{},'ghost small')}</p>`;
+  const d=x.room.data||{},busy=deskBusy(x),n=Number(d.clean)||0,max=d.clean_max||4;
+  const label=n>=max?'✅ Hũ khử khuẩn đầy':n?'🧴 Ngâm lại bộ':'🧴 Khử khuẩn dụng cụ';
+  return `<div class="sl-foot">${jar(x)}<p class="row wrap">${x.cmd(label,'sl_sanitize',{},n?'ghost small':'primary small',n>=max||busy)}${x.button('📦 Kho thuốc & vật tư','inventory',{},'ghost small')}</p>${n?'':'<small class="muted">Mỗi khách dùng một bộ sạch; đầu ngày thay dung dịch nên hũ trống.</small>'}</div>`;
+}
+
+/* ---------- care loop: client card, bookings ---------- */
+function healthWord(x,h){return (care(x).health_words||[]).find(([lim])=>h>=lim)?.[1]||'';}
+function healthBar(x,h,label='Sức khỏe tóc'){
+  const weak=h<(care(x).weak||50);
+  return `<div class="sl-hp ${weak?'weak':h<70?'mid':''}" role="meter" aria-label="${x.esc(label)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${h}"><span>💧 ${x.esc(label)}</span><div class="bar"><i style="width:${h}%"></i></div><b>${h} · ${x.esc(healthWord(x,h))}</b></div>`;
+}
+function cardRows(x,cd,withHealth=true){
+  const f=cd.formula,rows=[];
+  rows.push(['💇','Tóc',cd.hair||'Chưa hỏi lịch sử hóa chất']);
+  if(f)rows.push(['🎨',`Công thức màu · ngày ${f.day}`,`${f.text}`,`ra ${f.target}${f.hit?'':' · lần đó lệch màu, đừng chép y'}`,f.hit?'':'warn']);
+  rows.push(['🩹','Thử dị ứng',cd.allergy?'Sổ dị ứng: từng phản ứng — không nhuộm':cd.patch_file?'Có hồ sơ thử dị ứng':cd.patch_day?`Sổ tiệm: thử ngày ${cd.patch_day}`:'Chưa có kết quả',null,cd.allergy?'danger':'']);
+  if(cd.cut)rows.push(['✂️',`Lần cắt trước · ngày ${cd.cut.day}`,`bớt ${cd.cut.removed} cm`,cd.cut.short?'bị lẹm — lần sau chỉ tỉa ít':`giữ dáng: tỉa tối đa ${cd.trim_cap} cm`,cd.cut.short?'warn':'']);
+  if(cd.next)rows.push(['📅','Lịch hẹn',`${cd.next.label} ngày ${cd.next.due}`]);
+  return `${withHealth?healthBar(x,cd.health):''}<ul class="sl-card-rows">${rows.map(([i,l,v,n,tone])=>`<li class="${tone?'tone-'+tone:''}"><span aria-hidden="true">${i}</span><span><small>${x.esc(l)}</small><b>${x.esc(v)}</b>${n?`<em>${x.esc(n)}</em>`:''}</span></li>`).join('')}</ul>`;
+}
+function cardFold(t,x){
+  const cd=cardOf(x,t);if(!cd||t.regular==null)return '';
+  const match=!!cardFormula(x,t),weak=t.weak;
+  const lead=match?'<p class="sl-note good">📇 Hôm nay khách muốn đúng màu trong thẻ — pha y công thức cũ để chân và thân tóc liền màu.</p>':'';
+  const hp=t.health!=null?healthBar(x,t.health,'Sức khỏe tóc hôm nay'):'';
+  return `<section class="sl-card">${fold(`📇 Thẻ khách quen · ${x.esc(cd.trust_name)} · ${cd.visits} lần ghé`,`${lead}${hp}${cardRows(x,cd,false)}`,!t.plan&&(match||!!weak))}</section>`;
+}
+function apptUi(x,a){return x.ui['appt:'+a.id]??={a:null,b:null,pa:1,pb:1,dev:null,len:1};}
+function apptCard(x,a){
+  const cd=x.room.data?.cards?.[a.npc]||{},busy=deskBusy(x),who=x.npc(a.npc),u=apptUi(x,a);
+  let body='',payload={id:a.id},ready=true;
+  if(a.kind==='roots'&&cd.formula){
+    const f=cd.formula;
+    const tubes=x.cc.dyes.map(d=>{const role=u.a===d.id?'A':u.b===d.id?'B':'',q=x.stock(d.id);return `<button type="button" class="sl-tube mini ${role?'selected':''}" ${carAttr(x,'aTube',{id:a.id,v:d.id})} aria-pressed="${!!role}" aria-label="Tuýp ${x.esc(d.code)}, còn ${q}" ${q||role?'':'disabled'}>${role?`<i class="sl-role" aria-hidden="true">${role}</i>`:''}<span class="sl-cap" style="--sw:${x.esc(d.color)}"></span><b>${x.esc(d.code)}</b></button>`;}).join('');
+    const part=(w,id,p)=>id?`<div class="sl-part"><span><i class="sl-role" aria-hidden="true">${w.toUpperCase()}</i> ${x.esc(dyeOf(x,id)?.code||'')}</span><button type="button" class="btn small ghost" ${carAttr(x,'aPart',{id:a.id,which:w,d:-1})} aria-label="Bớt một phần" ${p<=1?'disabled':''}>−</button><b>${p} phần</b><button type="button" class="btn small ghost" ${carAttr(x,'aPart',{id:a.id,which:w,d:1})} aria-label="Thêm một phần" ${p>=3?'disabled':''}>+</button></div>`:'';
+    const devs=[10,20,30].map(v=>`<button type="button" class="sl-seg ${u.dev===v?'on':''}" ${carAttr(x,'aDev',{id:a.id,v})} aria-pressed="${u.dev===v}">${v} vol</button>`).join('');
+    const m=u.a?mixOf(x,u.a,u.b,u.pa,u.b?u.pb:0,0):null;
+    const prev=m?`<p class="sl-preview small"><span class="sl-dish" style="--sw:${x.esc(m.color)}" aria-hidden="true"></span><span>Bát: level ${x.esc(levelText(m))} · ${x.esc(bandName(x,m.band))}</span></p>`:'';
+    body=`<p class="sl-note">📇 Thẻ: <b>${x.esc(f.text)}</b> → ${x.esc(f.target)}</p>
+      <div class="row wrap">${x.button('📇 Pha theo thẻ','car:aCard',{id:a.id},'small')}</div>
+      <div class="sl-tubes mini">${tubes}</div><div class="sl-parts">${part('a',u.a,u.pa)}${part('b',u.b,u.pb)}</div>
+      <div class="sl-segs">${devs}</div>${prev}`;
+    payload={id:a.id,shade:u.a,parts:[u.pa,u.b?u.pb:0],dev:u.dev};if(u.b)payload.shade2=u.b;
+    ready=!!(u.a&&u.dev);
+  }else if(a.kind==='trim'){
+    body=`<p class="sl-note">📇 Thẻ: tỉa giữ dáng tối đa <b>${cd.trim_cap||2} cm</b>${cd.cut?.short?' (lần trước bị lẹm)':''}.</p>
+      <div class="sl-len"><span>Tỉa</span><button type="button" class="btn small ghost" ${carAttr(x,'aLen',{id:a.id,d:-1})} aria-label="Bớt 1 cm" ${u.len<=1?'disabled':''}>−</button><b>${u.len} cm</b><button type="button" class="btn small ghost" ${carAttr(x,'aLen',{id:a.id,d:1})} aria-label="Thêm 1 cm" ${u.len>=6?'disabled':''}>+</button></div>`;
+    payload={id:a.id,length:u.len};
+  }else{
+    body=`${cd.health!=null?healthBar(x,cd.health):''}<p class="small">💧 Keratin còn ${x.stock('keratin')} lượt.</p>`;
+    ready=x.stock('keratin')>0;
+  }
+  const late=(x.room.day||0)-a.due;
+  const inChair=(x.room.tasks||[]).some(v=>v.npc===a.npc&&v.day===x.room.day&&!['completed','referred','cancelled'].includes(v.status));
+  const covers={roots:'nhuộm màu',trim:'cắt',care:'phục hồi'}[a.kind];
+  if(inChair)body=`<p class="sl-note good">💺 ${x.esc(a.who)} cũng đang chờ ghế hôm nay — nếu lượt đó có ${covers}, lịch hẹn này được gộp luôn.</p>`+body;
+  return `<article class="sl-appt"><div class="row">${x.portrait(who,40)}<div class="grow"><b>${x.esc(a.emoji)} ${x.esc(a.label)} · ${x.esc(a.who)}</b><small class="muted">Hẹn ngày ${a.due}${late>0?` · đã chờ ${late} ngày, hạn chót ngày ${a.until}`:` · chờ được tới ngày ${a.until}`}</small></div></div>
+    ${body}<div class="sl-cta">${x.cmd(`${a.emoji} Làm ${a.label.toLowerCase()} cho khách`,'sl_appt',payload,'primary full',!ready||busy)}</div></article>`;
+}
+function apptBook(x,open){
+  const list=x.room.data?.appts||[],day=x.room.day||0;
+  const ready=list.filter(a=>a.ready),later=list.filter(a=>a.state==='open'&&!a.ready),done=list.filter(a=>a.state==='done'&&a.due<=day);
+  if(!ready.length&&!later.length&&!done.length)return '';
+  const checklist=ready.length||done.length?reqList([...ready.map(a=>({ok:null,icon:a.emoji,label:`${a.who} — ${a.label.toLowerCase()}`,value:`ngày ${a.due}`,tone:day>=a.until?'danger':''})),...done.filter(a=>a.due>=day-(care(x).keep||2)).map(a=>({ok:true,icon:a.emoji,label:`${a.who} — ${a.label.toLowerCase()}`,value:`${a.stars}★`}))],x.esc,'Khách hẹn hôm nay'):'';
+  const soon=later.length?fold(`🗓️ Hẹn sắp tới · ${later.length}`,`<ul class="sl-soon">${later.map(a=>`<li><span>${x.esc(a.emoji)} ${x.esc(a.who)}</span><small>${x.esc(a.label)} · ngày ${a.due}</small></li>`).join('')}</ul>`):'';
+  const body=`${checklist}${ready.map(a=>apptCard(x,a)).join('')}${soon}`;
+  const head=ready.length?`📅 Sổ hẹn · ${ready.length} khách tới hôm nay`:`📅 Sổ hẹn · ${later.length} hẹn sắp tới`;
+  return `<section class="sl-book">${fold(head,body,open&&ready.length>0)}</section>`;
+}
+function regularsBook(x){
+  const cards=Object.values(x.room.data?.cards||{}).sort((a,b)=>b.last-a.last);
+  if(!cards.length)return '';
+  const rows=cards.map(cd=>`<li class="sl-regular">${fold(`<b>${x.esc(cd.name)}</b> <small>${x.esc(cd.trust_name)} · ${cd.visits} lần · tóc ${cd.health} ${x.esc(cd.health_word.toLowerCase())}</small>`,cardRows(x,cd))}</li>`).join('');
+  return `<section class="sl-book">${fold(`📇 Sổ khách quen · ${cards.length} thẻ`,`<ul class="sl-regulars">${rows}</ul>`)}</section>`;
+}
+function bookBlock(t,x){
+  const kinds=t.bookable||[],u=ui(x,t),ap=care(x).appts||{},day=x.room.day||t.day;
+  if(!kinds.length)return '';
+  const chips=kinds.map(k=>{const a=ap[k]||{label:k,emoji:'📅',days:0},on=u.book.includes(k);return `<button type="button" class="sl-chip ${on?'on':''}" ${carAttr(x,'book',{task:t.id,id:k})} aria-pressed="${on}">${x.esc(a.emoji)} ${x.esc(a.label)} · ngày ${day+a.days}<small>${x.esc(a.why||'')}</small></button>`;}).join('');
+  return `<h5 class="sl-sub">📅 Hẹn lần tới (khách quay lại, nhớ làm trong ${care(x).keep||2} ngày)</h5><div class="sl-chips">${chips}</div>`;
 }
 function rules(x){
   return `<details class="sl-rules"><summary>📋 Bảng pha màu</summary><ul>${x.cc.rules.map(r=>`<li>${x.esc(r)}</li>`).join('')}</ul>
@@ -114,6 +202,7 @@ function ticket(t,x){
   if(patch)tags.push(x.pill(patch[0],patch[1]));
   if(t.reacted)tags.push(x.pill('🚫 Không nhuộm: có phản ứng','danger'));
   if(t.plan)tags.push(x.pill(`🗓️ ${t.plan.sessions} buổi`,t.plan.overpromise?'danger':''));
+  if(t.health!=null)tags.push(x.pill(`💧 Tóc ${t.health}/100 · ${healthWord(x,t.health).toLowerCase()}`,t.weak?'danger':''));
   if(t.mistakes)tags.push(x.pill(`⚠️ ${t.mistakes} lỗi`,'danger'));
   const photoLine=ph.level?`<small>${x.esc(ph.tone)} · level ${ph.level}${ph.filtered&&!t.real?' · ảnh có filter?':''}</small>`:'';
   const real=t.real?`<p class="sl-real">📸 Ảnh gốc: level ${t.real.level} · ${x.esc(bandName(x,t.real.tone))}</p>`:'';
@@ -125,6 +214,7 @@ function ticket(t,x){
     ${t.plan?`<details class="sl-more"><summary>Lời dặn của khách</summary><p class="small">${x.esc(n.want)}</p><p class="muted small">“${x.esc(n.note)}”</p></details>`:`<p class="muted small">“${x.esc(n.note)}”</p>`}
     ${t.calm!=null&&!t.done.includes('cut')?calmBar(t):''}
     <div class="row wrap sl-tags">${tags.join('')}</div>
+    ${cardFold(t,x)}
   </article>`;
 }
 
@@ -159,12 +249,13 @@ function planPanel(t,x){
   const u=ui(x,t),n=t.needs;
   if(started(t)&&t.plan)return `<p>${t.plan.services.map(s=>`${svc(x,s).emoji} ${x.esc(svc(x,s).name)}`).join(' · ')}</p><p class="small muted">${t.plan.sessions>1?`Lộ trình ${t.plan.sessions} buổi — hôm nay là buổi 1.`:'Làm trong một buổi.'} Báo giá ${x.money(t.quote)}.</p>`;
   const tiles=x.cc.services.map(s=>{
-    const on=u.services.includes(s.id),asked=n.services.includes(s.id);
-    return `<button type="button" class="sl-tile ${on?'selected':''} ${asked?'':'extra'}" ${carAttr(x,'svc',{task:t.id,id:s.id})} aria-pressed="${on}"><span class="sl-emoji" aria-hidden="true">${s.emoji}</span><b>${x.esc(s.name)}</b><small>${x.money(price(x,s.id))} · ${asked?'khách yêu cầu':'mời thêm'}</small></button>`;
+    const on=u.services.includes(s.id),asked=n.services.includes(s.id),advise=!asked&&s.id==='treatment'&&t.weak;
+    return `<button type="button" class="sl-tile ${on?'selected':''} ${asked?'':advise?'advise':'extra'}" ${carAttr(x,'svc',{task:t.id,id:s.id})} aria-pressed="${on}"><span class="sl-emoji" aria-hidden="true">${s.emoji}</span><b>${x.esc(s.name)}</b><small>${x.money(price(x,s.id))} · ${asked?'khách yêu cầu':advise?'tóc yếu — nên phục hồi':'mời thêm'}</small></button>`;
   }).join('');
   const quote=u.services.reduce((a,s)=>a+price(x,s),0);
   const seg=[1,2,3].map(v=>`<button type="button" class="sl-seg ${u.sessions===v?'on':''}" ${carAttr(x,'sessions',{task:t.id,v})} aria-pressed="${u.sessions===v}">${v} buổi</button>`).join('');
-  const warn=caseOf(t)==='photo'&&!t.photo_seen?'<p class="sl-note">📸 Chưa soi ảnh gốc — hứa theo ảnh filter là dễ vỡ mộng.</p>':'';
+  let warn=caseOf(t)==='photo'&&!t.photo_seen?'<p class="sl-note">📸 Chưa soi ảnh gốc — hứa theo ảnh filter là dễ vỡ mộng.</p>':'';
+  if(t.weak)warn+=`<p class="sl-note bad">💧 Tóc ${t.health}/100 — yếu. Khuyên phục hồi là thật lòng (khách chịu thêm phí này); tóc dưới ${care(x).bleach_stop||30} thì chưa tẩy được.</p>`;
   const picked=x.cc.services.map(s=>s.id).filter(s=>u.services.includes(s));
   const same=!!t.plan&&u.sessions===t.plan.sessions&&picked.length===t.plan.services.length&&picked.every(s=>t.plan.services.includes(s));
   const label=!t.plan?'🤝 Chốt với khách':same?'✓ Đã chốt phương án này':'🔁 Chốt lại phương án';
@@ -217,12 +308,13 @@ function mixer(t,x,u){
     if((t.grey||0)>=50){const g=2*m.nat>=m.den;chips.push(`<span class="tag ${g?'green':'danger'}">${g?'✓':'≠'} nền tự nhiên ${m.nat}/${m.den}</span>`);}
     preview=`<div class="sl-preview" aria-live="polite"><span class="sl-dish big" style="--sw:${x.esc(m.color)}" aria-hidden="true"></span><div class="grow"><b>Bát ra: level ${x.esc(levelText(m))} · ${x.esc(bandName(x,m.band))}</b>${tg?`<small>Cần: level ${tg.level} · ${x.esc(bandName(x,tg.band))}${t.real?' (theo ảnh gốc)':''}</small>`:''}<div class="row wrap">${chips.join('')}</div></div></div>`;
   }
-  const notes=[];
+  const notes=[],cf=cardFormula(x,t);
+  const cardLine=cf?`<div class="sl-note good sl-cardmix"><span>📇 Thẻ khách: <b>${x.esc(cf.text)}</b> → ${x.esc(cf.target)}</span>${x.button('📇 Pha theo thẻ','car:mixCard',{task:t.id},'small')}</div>`:'';
   if(caseOf(t)==='photo'&&!t.photo_seen)notes.push('📸 Ảnh mẫu có filter: soi ảnh gốc ở bước tư vấn để biết màu thật.');
   if(!t.findings?.lengths)notes.push('〰️ Chưa xem thân tóc: nền màu cũ có thể kéo lệch ánh mà ô xem trước chưa biết.');
   else if(warm)notes.push('🟠 Thân tóc ánh cam đồng: trên tóc này bát ấm thêm một bậc (ô xem trước đã tính).');
   if(t.grey==null&&!t.findings?.roots)notes.push('🌱 Chưa xem chân tóc: có tóc bạc thì cần đủ nền tự nhiên.');
-  return `<h5 class="sl-sub">Tủ tuýp · chọn 1–2 tuýp</h5><div class="sl-tubes">${tubes}</div>
+  return `${cardLine}<h5 class="sl-sub">Tủ tuýp · chọn 1–2 tuýp</h5><div class="sl-tubes">${tubes}</div>
     ${u.a?`<div class="sl-parts">${part('a',u.a,u.pa)}${u.b?part('b',u.b,u.pb):''}</div>`:''}
     ${preview}${notes.map(v=>`<p class="sl-note">${x.esc(v)}</p>`).join('')}`;
 }
@@ -315,9 +407,10 @@ function billPanel(t,x){
   const ready=t.plan&&!pending.length&&!t.bowl&&!t.timer;
   return `${receipt(t,x)}
     <h5 class="sl-sub">Tư vấn sản phẩm (chỉ khi hợp tóc & ngân sách)</h5><div class="sl-chips">${shelf}</div>
+    ${bookBlock(t,x)}
     <p class="row spread"><span>Tạm tính</span><b>${x.money((t.quote||0)+(t.patch_fee||0)+retailSum)}</b></p>
     ${left!=null?`<p class="small">⏱️ ${left>=0?`Còn ${left} nhịp để kịp giờ khách hẹn.`:'Đã trễ giờ khách hẹn.'}</p>`:''}
-    <div class="sl-cta">${x.confirmCmd('💳 Thanh toán & tiễn khách','sl_checkout',{task:t.id,products:u.products,confirm:true},'Thanh toán cho khách? Khách sẽ soi gương và đánh giá đúng những gì đã làm; sản phẩm không hợp sẽ bị từ chối.','primary full',!ready)}</div>
+    <div class="sl-cta">${x.confirmCmd('💳 Thanh toán & tiễn khách','sl_checkout',{task:t.id,products:u.products,book:u.book.filter(k=>(t.bookable||[]).includes(k)),confirm:true},'Thanh toán cho khách? Khách sẽ soi gương và đánh giá đúng những gì đã làm; sản phẩm không hợp sẽ bị từ chối.','primary full',!ready)}</div>
     ${pending.length&&t.plan?`<small class="muted">Còn: ${pending.map(s=>x.esc(svc(x,s).name.toLowerCase())).join(', ')}</small>`:''}`;
 }
 
@@ -337,7 +430,7 @@ export default {
   next(t,x){
     if(t.timer)return 'Xả thuốc khi thanh vào vùng xanh';
     if(x?.room?.data?.desk?.ev)return 'Có chuyện ở quầy cần quyết';
-    if(!t.known)return 'Mời khách ngồi, nghe mong muốn';
+    if(!t.known)return x?.room?.data&&!x.room.data.clean?'Khử khuẩn dụng cụ, rồi mời khách ngồi':'Mời khách ngồi, nghe mong muốn';
     if(!t.plan){
       if(caseOf(t)==='photo'&&!t.photo_seen&&t.asked.length)return 'Soi ảnh gốc trước khi hứa màu';
       return t.asked.length<2?'Hỏi lịch sử tóc & xem tận tay':'Chốt phương án thật lòng';
@@ -354,13 +447,14 @@ export default {
   },
   idle(x){
     const d=x.room.data||{};
-    const stats=`<div class="row wrap sl-stats">${x.pill(`💇 ${d.day_served||0} khách hôm nay`)}${x.pill(`🧾 ${d.served||0} khách tất cả`)}${d.mixes?x.pill(`🎨 ${d.mixes} bát pha trúng`,'green'):''}${d.rush_on_time?x.pill(`⏱️ ${d.rush_on_time} lần kịp giờ`,'green'):''}${d.kids_calm?x.pill(`🧒 ${d.kids_calm} bé cắt êm`,'green'):''}${d.allergy?x.pill(`🩹 ${d.allergy} khách trong sổ dị ứng`,'amber'):''}</div>`;
-    return `<div class="career-job sl sl-idle">${deskCard(x)}${lastDesk(x)}${todayChip(x)}${stats}${foot(x)}${rules(x)}</div>`;
+    const stats=`<div class="row wrap sl-stats">${x.pill(`💇 ${d.day_served||0} khách hôm nay`)}${x.pill(`🧾 ${d.served||0} khách tất cả`)}${d.appts_done?x.pill(`📅 ${d.appts_done} lượt hẹn`,'green'):''}${d.mixes?x.pill(`🎨 ${d.mixes} bát pha trúng`,'green'):''}${d.rush_on_time?x.pill(`⏱️ ${d.rush_on_time} lần kịp giờ`,'green'):''}${d.kids_calm?x.pill(`🧒 ${d.kids_calm} bé cắt êm`,'green'):''}${d.allergy?x.pill(`🩹 ${d.allergy} khách trong sổ dị ứng`,'amber'):''}</div>`;
+    return `<div class="career-job sl sl-idle">${deskCard(x)}${lastDesk(x)}${todayChip(x)}${foot(x)}${apptBook(x,true)}${stats}${regularsBook(x)}${rules(x)}</div>`;
   },
   job(t,x){
     const desk=deskCard(x),who=x.npc(t.npc);
     if(!t.known){
-      return `<div class="career-job sl">${desk}${todayChip(x)}<article class="sl-ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3><p>“${x.esc(t.opening)}”</p></div></div><div class="sl-cta">${x.cmd('💬 Mời ngồi & nghe mong muốn','ask',{task:t.id},'primary full',!!desk)}</div></article></div>`;
+      const back=t.regular!=null?`<p class="sl-note good">📇 Khách quen quay lại — thẻ khách đã có công thức, sức khỏe tóc và lần cắt trước.</p>`:'';
+      return `<div class="career-job sl">${desk}${todayChip(x)}<article class="sl-ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3><p>“${x.esc(t.opening)}”</p></div></div>${back}<div class="sl-cta">${x.cmd('💬 Mời ngồi & nghe mong muốn','ask',{task:t.id},'primary full',!!desk)}</div></article>${foot(x)}${apptBook(x,false)}</div>`;
     }
     if(desk)return `<div class="career-job sl">${t.timer?timerCard(t,x):''}${desk}${ticket(t,x)}</div>`;
     const u=ui(x,t),list=stages(t),at=current(t),ai=list.indexOf(at);
@@ -370,7 +464,7 @@ export default {
     const back=tab!==at&&!(tab==='plan'&&!t.plan)?` <button type="button" class="btn ghost small" ${carAttr(x,'tab',{task:t.id,tab:at,at})}>Về bước đang làm</button>`:'';
     const panel=`<section class="sl-sec sl-panel ${tab===at?'focus':''}" aria-live="polite"><h4 class="section-title">${STAGES[tab][0]} ${x.esc(TITLES[tab])}${back}</h4>${PANELS[tab](t,x)}</section>`;
     return `<div class="career-job sl">${t.timer?timerCard(t,x):''}${lastDesk(x)}${ticket(t,x)}${nav(t,x,list,at,tab)}
-      <div class="sl-bench"><div class="sl-main">${panel}${foot(x)}</div>
+      <div class="sl-bench"><div class="sl-main">${panel}${foot(x)}${apptBook(x,false)}</div>
       <aside class="sl-side">${mirror(t,x)}${tab==='bill'?'':receipt(t,x)}</aside></div></div>`;
   },
   actions:{
@@ -392,6 +486,23 @@ export default {
     ratio(d,el,x){const u=x.ui[d.task];if(u){u.ratio=d.v;x.render();}},
     len(d,el,x){const u=x.ui[d.task];if(u){u.len=Math.max(1,Math.min(10,u.len+Number(d.d)));x.render();}},
     product(d,el,x){const u=x.ui[d.task];if(!u)return;u.products=u.products.includes(d.id)?u.products.filter(p=>p!==d.id):[...u.products,d.id].slice(-3);x.render();},
+    book(d,el,x){const u=x.ui[d.task];if(!u)return;u.book=u.book.includes(d.id)?u.book.filter(k=>k!==d.id):[...u.book,d.id];x.render();},
+    mixCard(d,el,x){
+      const u=x.ui[d.task],t=(x.room.tasks||[]).find(v=>v.id===d.task),f=t&&cardFormula(x,t);if(!u||!f)return;
+      Object.assign(u,{a:f.shade,b:f.b,pa:f.pa,pb:f.b?f.pb:1,dev:f.dev,ratio:f.ratio});x.render();
+    },
+    aTube(d,el,x){
+      const u=x.ui['appt:'+d.id];if(!u)return;const v=d.v;
+      if(u.a===v){u.a=u.b;u.pa=u.b?u.pb:1;u.b=null;u.pb=1;}else if(u.b===v){u.b=null;u.pb=1;}else if(!u.a){u.a=v;u.pa=1;}else{u.b=v;}
+      x.render();
+    },
+    aPart(d,el,x){const u=x.ui['appt:'+d.id];if(!u)return;const k=d.which==='b'?'pb':'pa';u[k]=Math.max(1,Math.min(3,(u[k]||1)+Number(d.d)));x.render();},
+    aDev(d,el,x){const u=x.ui['appt:'+d.id];if(u){u.dev=Number(d.v);x.render();}},
+    aLen(d,el,x){const u=x.ui['appt:'+d.id];if(u){u.len=Math.max(1,Math.min(6,u.len+Number(d.d)));x.render();}},
+    aCard(d,el,x){
+      const u=x.ui['appt:'+d.id],a=(x.room.data?.appts||[]).find(v=>v.id===d.id),f=a&&x.room.data?.cards?.[a.npc]?.formula;if(!u||!f)return;
+      Object.assign(u,{a:f.shade,b:f.b,pa:f.pa,pb:f.b?f.pb:1,dev:f.dev});x.render();
+    },
   },
   tick(root,x){
     root.querySelectorAll('[data-sl-start]').forEach(el=>{

@@ -148,7 +148,7 @@
 .career-job.sl .sl-opt small{font-weight:400;opacity:.85}
 @keyframes sl-pop{from{transform:translateY(6px);opacity:0}to{transform:none;opacity:1}}
 .career-job.sl .sl-nav{display:grid;grid-template-columns:repeat(var(--n,7),minmax(0,1fr));gap:4px}
-.career-job.sl .sl-nav button{display:flex;flex-direction:column;align-items:center;gap:3px;min-height:52px;padding:6px 2px;font:inherit;font-size:.76em;line-height:1.15;text-align:center;color:var(--sl-muted);background:var(--sl-s2);border:1px solid var(--sl-line);border-radius:var(--sl-rs);cursor:pointer;overflow-wrap:anywhere}
+.career-job.sl .sl-nav button{display:flex;flex-direction:column;align-items:center;gap:3px;min-height:52px;padding:6px 2px;font:inherit;font-size:max(.8em,.8rem);line-height:1.15;text-align:center;color:var(--sl-muted);background:var(--sl-s2);border:1px solid var(--sl-line);border-radius:var(--sl-rs);cursor:pointer;overflow-wrap:normal}
 .career-job.sl .sl-nav button span{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:1px solid var(--sl-line);background:var(--sl-s1);font-weight:800}
 .career-job.sl .sl-nav button.done{color:var(--sl-good)}
 .career-job.sl .sl-nav button.done span{background:var(--sl-good);color:var(--sl-accent-ink);border-color:var(--sl-good)}
@@ -188,7 +188,47 @@
 .career-job.sl .sl-preview .row{gap:6px}
 .career-job.sl .sl-dish.big{width:64px;height:38px}
 .career-job.sl .sl-dot{display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--sw);vertical-align:-2px;box-shadow:0 0 0 1px var(--sl-line)}
-.career-job.sl .sl-foot{margin:0;gap:8px}
+.career-job.sl .sl-foot{display:grid;gap:6px;margin:0}
+.career-job.sl .sl-foot p{margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.career-job.sl .sl-foot p .btn{width:100%;white-space:normal;line-height:1.2}
+.career-job.sl .sl-foot small{font-size:.82rem}
+
+/* Care loop: tool jar, hair health, client card, bookings */
+.career-job.sl .sl-jar{display:flex;align-items:center;gap:4px;flex-wrap:wrap;font-size:.9rem}
+.career-job.sl .sl-jar i{width:12px;height:20px;border-radius:3px 3px 6px 6px;border:1px solid var(--sl-line);background:var(--sl-s2)}
+.career-job.sl .sl-jar i.on{background:var(--sl-good);border-color:var(--sl-good)}
+.career-job.sl .sl-jar b{margin-left:4px}
+.career-job.sl .sl-jar.nil b{color:var(--sl-bad)}
+.career-job.sl .sl-hp{display:grid;grid-template-columns:auto minmax(40px,1fr) auto;align-items:center;gap:8px;font-size:.9rem}
+.career-job.sl .sl-hp .bar{height:10px;border-radius:99px;background:var(--sl-s2);border:1px solid var(--sl-line);overflow:hidden}
+.career-job.sl .sl-hp .bar i{display:block;height:100%;background:var(--sl-good)}
+.career-job.sl .sl-hp.mid .bar i{background:var(--sl-warn)}
+.career-job.sl .sl-hp.weak .bar i{background:var(--sl-bad)}
+.career-job.sl .sl-hp.weak b{color:var(--sl-bad)}
+.career-job.sl .sl-card .fold,.career-job.sl .sl-book>.fold{border-radius:var(--sl-rs)}
+.career-job.sl .sl-card .fold-body,.career-job.sl .sl-book .fold-body{display:grid;gap:8px}
+.career-job.sl .sl-card-rows{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.sl .sl-card-rows li{display:grid;grid-template-columns:24px minmax(0,1fr);gap:6px;align-items:start;padding:6px 8px;border-radius:var(--sl-rs);background:var(--sl-s2);border-left:4px solid var(--sl-line)}
+.career-job.sl .sl-card-rows li.tone-warn{border-left-color:var(--sl-warn)}
+.career-job.sl .sl-card-rows li.tone-danger{border-left-color:var(--sl-bad)}
+.career-job.sl .sl-card-rows li>span:last-child{display:grid;gap:1px;min-width:0}
+.career-job.sl .sl-card-rows small{color:var(--sl-muted);font-size:.8rem}
+.career-job.sl .sl-card-rows b{overflow-wrap:anywhere}
+.career-job.sl .sl-card-rows em{font-style:normal;font-size:.82rem;color:var(--sl-muted)}
+.career-job.sl .sl-cardmix{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.career-job.sl .sl-tile.advise{border-style:dashed;border-color:var(--sl-good)}
+.career-job.sl .sl-book{display:grid;gap:8px}
+.career-job.sl .sl-appt{display:grid;gap:8px;padding:10px;border-radius:var(--sl-rs);background:var(--sl-s1);border:1px solid var(--sl-accent)}
+.career-job.sl .sl-appt .grow{display:grid;gap:2px;min-width:0}
+.career-job.sl .sl-appt .sl-note{margin:0}
+.career-job.sl .sl-tubes.mini{grid-template-columns:repeat(auto-fill,minmax(64px,1fr))}
+.career-job.sl .sl-tube.mini{min-height:64px;padding:8px 4px 6px}
+.career-job.sl .sl-tube.mini .sl-cap{width:22px;height:22px}
+.career-job.sl .sl-preview.small{padding:6px 10px}
+.career-job.sl .sl-soon,.career-job.sl .sl-regulars{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.sl .sl-soon li{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 10px;padding:6px 8px;border-radius:var(--sl-rs);background:var(--sl-s2)}
+.career-job.sl .sl-soon small{color:var(--sl-muted)}
+.career-job.sl .sl-regular summary small{color:var(--sl-muted);font-weight:400}
 .career-job.sl .sl-stats{gap:6px}
 .career-job.sl.sl-idle{gap:10px}
 
@@ -196,13 +236,14 @@
   .career-job.sl .sl-bench{grid-template-columns:minmax(0,1fr)}
   .career-job.sl .sl-side{position:static}
   .career-job.sl .sl-mirror{grid-template-columns:auto 1fr;justify-items:start;align-items:center}
+  /* Step tabs: one scrolling row with readable labels instead of seven squeezed columns. */
+  .career-job.sl .sl-nav{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(84px,max-content);overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding-bottom:4px;scrollbar-width:thin}
+  .career-job.sl .sl-nav button{font-size:.8rem;padding:6px 8px;scroll-snap-align:start;white-space:nowrap}
   .career-job.sl .sl-glass{width:96px;height:112px;border-width:4px}
   .career-job.sl .sl-head{transform:scale(.66)}
 }
 @media (max-width:400px){
   .career-job.sl .sl-zones{grid-template-columns:minmax(0,1fr)}
-  .career-job.sl .sl-nav{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:76px;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:4px}
-  .career-job.sl .sl-nav button{font-size:.75rem;padding:5px 2px;scroll-snap-align:start}
   .career-job.sl .sl-nav button span{width:22px;height:22px}
   .career-job.sl .sl-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .career-job.sl .sl-tubes{grid-template-columns:repeat(3,minmax(0,1fr))}
