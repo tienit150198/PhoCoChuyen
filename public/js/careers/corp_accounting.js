@@ -4,7 +4,9 @@
  *  phiếu kế toán Nợ/Có tự cân), 📋 Quy định (quy định tháng + sổ tra cứu), 📒 Sổ sách (cân đối thử)
  *  and a sticky bar with the next step and the main action.
  *  No inline handlers: every button goes through data-command / data-action="car:*". */
-import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,openTasks,planCard,mateCards,trackFold,careSummary,foldToggle} from './office_kit.js';
+import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,openTasks,planCard,mateCards,trackFold,careSummary,foldToggle,
+  coachOf,goto,gotoAction,guideOf,procSteps,coachFill} from './office_kit.js';
+import {pending} from '../v4/guide.js';
 
 const P='ca_';
 const BOSS='Chị Hạnh';
@@ -99,7 +101,7 @@ function voucher(t,st,x){
 }
 function widget(t,st,x){
   const k=dkey(t,st),dr=drafts(x);
-  if(st.kind==='choice')return `<div class="ca-options">${(st.options||[]).map(o=>x.cmd(x.esc(o.label),P+'step',{task:t.id,step:st.id,answer:o.id},'ca-opt')).join('')}</div>`;
+  if(st.kind==='choice')return `<div class="ca-options">${(st.options||[]).map(o=>x.cmd(x.esc(o.label),P+'step',{task:t.id,step:st.id,answer:o.id},'ca-opt').replace('<button ',`<button data-opt="${x.esc(o.id)}" `)).join('')}</div>`;
   if(st.kind==='multi'){
     const sel=dr[k]||[];
     return `<div class="ca-checks" data-multi="${x.esc(k)}">${(st.options||[]).map(o=>`<label class="ca-check"><input type="checkbox" value="${x.esc(o.id)}" ${sel.includes(o.id)?'checked':''}><span>${x.esc(o.label)}</span></label>`).join('')}</div>`;
@@ -121,10 +123,9 @@ function widget(t,st,x){
   if(st.kind==='entry')return voucher(t,st,x);
   return '';
 }
-/** The confirm button of a step (it lives in the sticky bar; choices answer on tap). */
+/** Confirm label + action of each step kind (office_kit.procSteps puts it on the bottom button; choices answer on tap). */
 const CONFIRM={multi:['✔ Xác nhận lựa chọn','car:multi'],number:['✔ Xác nhận','car:num'],order:['✔ Chốt thứ tự','car:order'],
   match:['✔ Xác nhận ghép','car:match'],fields:['✔ Xác nhận số liệu','car:fields'],entry:['✍️ Ghi bút toán','car:entry']};
-function confirmBtn(t,st,x){const c=CONFIRM[st.kind];return c?btn(x,c[0],c[1],{task:t.id,step:st.id},'primary'):'';}
 /** The work sheet: the current step big, done steps folded away. */
 function stepCard(t,x){
   const ps=t.proc_state||{},steps=t.proc||[],cur=steps.find(s=>s.state==='current');
@@ -135,7 +136,7 @@ function stepCard(t,x){
   if(cur){
     const i=steps.indexOf(cur),tries=(ps.attempts||{})[cur.id]||0;
     const missing=(cur.docs||[]).filter(id=>t.docs.find(d=>d.id===id)?.closed);
-    body=`<article class="ca-work"><header class="ca-work-head"><span class="ca-dot" aria-hidden="true">${i+1}</span><div class="grow"><small>Bước ${i+1}/${total}${locked?` · còn ${locked} bước sau`:''}</small><h3>${x.esc(cur.title)}</h3></div></header>
+    body=`<article class="ca-work" data-step-card="${x.esc(t.id)}:${x.esc(cur.id)}"><header class="ca-work-head"><span class="ca-dot" aria-hidden="true">${i+1}</span><div class="grow"><small>Bước ${i+1}/${total}${locked?` · còn ${locked} bước sau`:''}</small><h3>${x.esc(cur.title)}</h3></div></header>
       <p class="ca-prompt">${x.esc(cur.prompt||'')}</p>
       ${missing.length?`<p class="ca-warn">📁 Mở trước: ${missing.map(id=>x.esc(t.docs.find(d=>d.id===id).title)).join(', ')}</p>`:''}
       ${cur.tip?`<p class="ca-tip">💡 ${x.esc(cur.tip)}</p>`:''}
@@ -202,7 +203,7 @@ function caseCard(t,c,x){
     return `<section class="ca-case done">${memo}${paperView(t,c,x)}
       <div class="ca-verdict ${x.esc(c.result||'')}" role="status"><b>${ic} ${label}</b><span>Dấu của bạn: ${VLAB[c.stamp]}${c.result!=='ok'?` · Cần: ${VLAB[c.truth?.v]||''}`:''}</span><p>${x.esc(c.truth?.why||'')}</p></div></section>`;
   }
-  return `<section class="ca-case">${memo}${paperView(t,c,x)}${c.tip?`<p class="ca-tip">💡 ${x.esc(c.tip)}</p>`:''}
+  return `<section class="ca-case" data-step-card="${x.esc(t.id)}:${x.esc(c.id)}">${memo}${paperView(t,c,x)}${c.tip?`<p class="ca-tip">💡 ${x.esc(c.tip)}</p>`:''}
     <div class="ca-tools"><small>${n?`⭕ Đã khoanh ${n}/${max} chỗ`:'Chạm vào ô trên giấy để khoanh chỗ nghi sai'}</small>${c.hinted?'':x.cmd('💡 Gợi ý','ca_hint',{task:t.id,case:c.id},'ghost small')}</div></section>`;
 }
 function deskDoc(t,x){
@@ -215,17 +216,36 @@ function deskDoc(t,x){
   return `<nav class="ca-queue" aria-label="Khay chứng từ"><span class="ca-qlabel">🗂️ Khay</span>${chips}<small>${tray.stamped||0}/${tray.total||cs.length} đã đóng dấu</small></nav>
     ${c?caseCard(t,c,x):''}`;
 }
-function deskBar(t,x){
+function deskBar(t,x,g){
   const cs=t.cases||[],c=caseOf(t,x),tray=t.tray||{},i=cs.indexOf(c);
-  if(tray.ready&&t.status!=='completed')return bar(x,t,`Đã đóng dấu đủ ${tray.total} bộ.`,x.confirmCmd(`📤 Chốt khay · ${tray.ok}/${tray.total} chuẩn`,'ca_submit',{task:t.id},'Chốt khay và báo kết quả cho chị Hạnh?','primary'));
+  if(tray.ready&&t.status!=='completed')return bar(x,t,`Đã đóng dấu đủ ${tray.total} bộ.`,g.cta);
   if(!c)return bar(x,t,'Khay đang trống.');
-  if(c.stamp){
-    const next=cs.find(v=>!v.stamp),[ic,label]=RES[c.result]||['•',''];
-    return bar(x,t,`Bộ ${i+1}: ${ic} ${label}`,next?btn(x,'Bộ tiếp theo ›','car:pick',{task:t.id,case:next.id},'primary'):'');
-  }
+  if(c.stamp){const [ic,label]=RES[c.result]||['•',''];return bar(x,t,`Bộ ${i+1}: ${ic} ${label}`,g.cta);}
   const n=(c.circles||[]).length;
   const stamps=['approve','escalate','reject'].map(v=>btn(x,`<span>${VLAB[v]}</span>`,'car:stamp',{task:t.id,case:c.id,verdict:v},`ca-sbtn ${v}`)).join('');
-  return bar(x,t,`Bộ ${i+1}/${cs.length} · ${n?`đã khoanh ${n} chỗ — chọn dấu`:'soi giấy rồi đóng dấu'}`,`<div class="ca-stampbar" role="group" aria-label="Đóng dấu">${stamps}</div>`);
+  return bar(x,t,`🗂️ Bộ ${i+1}/${cs.length}${n?` · ⭕ ${n}`:''}`,`<div class="ca-stampbar" role="group" aria-label="Đóng dấu">${stamps}</div>`);
+}
+/** What a zone on the paper is called (“MST”, “Số tiền”…), for the first tray's hint. */
+function zoneName(c,z){
+  const p=c.paper||{},row=[...(p.rows||[]),...(p.foot||[])].find(r=>r.z===z);
+  return row?row.k:p.table?.z===z?'bảng hàng hóa':z==='note'?'giấy kẹp kèm':'chỗ sai';
+}
+/* The tray, one set at a time. The first tray (coach) lights the zone to circle and the right stamp. */
+function deskSteps(t,x){
+  const cs=t.cases||[],c=caseOf(t,x);
+  if(!c||(t.tray||{}).ready)return [];
+  if(c.stamp){
+    const next=cs.find(v=>!v.stamp);
+    return next?[{ok:null,label:`Sang bộ ${cs.indexOf(next)+1}/${cs.length}`,go:{act:'car:pick',data:{task:t.id,case:next.id},label:'Bộ tiếp theo ›'}}]:[];
+  }
+  const i=cs.indexOf(c)+1,k=coachOf(x,t)?.cases?.[c.id],circ=c.circles||[],out=[];
+  if(!k)return [{ok:null,label:`Bộ ${i}/${cs.length}: soi giấy, khoanh chỗ sai rồi đóng dấu`,go:goto(x,t,'.ca-case:not(.done) .ca-sheet')}];
+  if(k.v!=='approve'&&!k.z.some(z=>circ.includes(z))){
+    const z=k.z.find(v=>(c.zones||[]).includes(v))||k.z[0],sel=`.ca-pz[data-case="${c.id}"][data-zone="${z}"]`;
+    out.push({ok:null,label:`Bộ ${i}: ô “${zoneName(c,z)}” có vấn đề — khoanh lại`,go:goto(x,t,sel,`⭕ Khoanh ô “${x.esc(zoneName(c,z))}”`),pulse:sel});
+  }
+  out.push({ok:null,label:`Bộ ${i}: đóng dấu ${VLAB[k.v]}`,go:{act:'car:stamp',data:{task:t.id,case:c.id,verdict:k.v},label:`🖋️ Đóng dấu ${VLAB[k.v]}`},pulse:`.ca-sbtn.${k.v}`});
+  return out;
 }
 /** Reference tables as scannable cards: first column is the name, the rest are labelled facts. */
 function refList(d,x){
@@ -290,21 +310,30 @@ function nextText(t){
   }
   return t.handover?'Đã nộp hồ sơ':'Chọn ghi chú bàn giao và nộp hồ sơ';
 }
-function dossierBar(t,x){
-  const st=currentStep(t);
-  if(st){
-    const miss=(st.docs||[]).filter(id=>(t.docs||[]).find(d=>d.id===id)?.closed);
-    const text=miss.length?`Mở “${(t.docs||[]).find(d=>d.id===miss[0])?.title||'chứng từ'}” trước`:st.kind==='choice'?`${st.title}: chạm một đáp án`:nextText(t);
-    return bar(x,t,x.esc(text),confirmBtn(t,st,x));
-  }
-  if(t.handover_options)return bar(x,t,'Chọn ghi chú bàn giao rồi nộp.',btn(x,'📤 Nộp hồ sơ','car:submit',{task:t.id},'primary'));
+function dossierBar(t,x,g){
+  if(currentStep(t))return bar(x,t,'',g.cta);
+  if(t.handover_options)return bar(x,t,'Chọn ghi chú bàn giao rồi nộp.',g.cta);
   return bar(x,t,x.esc(nextText(t)));
+}
+/** {steps, final} for the header hint and the bottom button. */
+function guideFor(t,x){
+  const isDesk=t.variant==='desk';
+  if(!t.known)return {steps:[{ok:null,label:isDesk?'Nhận khay chứng từ':'Nhận hồ sơ',go:{cmd:'ask',payload:{task:t.id},label:isDesk?'📥 Nhận khay chứng từ':'📥 Nhận hồ sơ'}}]};
+  if(isDesk){
+    const tray=t.tray||{};
+    return {steps:deskSteps(t,x),final:tray.ready&&t.status!=='completed'?{label:`📤 Chốt khay · ${tray.ok}/${tray.total} chuẩn`,go:{cmd:'ca_submit',payload:{task:t.id},confirm:'Chốt khay và báo kết quả cho chị Hạnh?'}}:null};
+  }
+  const steps=procSteps(x,t,{pre:'ca',confirm:CONFIRM});
+  return {steps,final:!steps.length&&t.handover_options?{label:'📤 Nộp hồ sơ',go:{act:'car:submit',data:{task:t.id}}}:null};
 }
 
 export default {
   id:'corp_accounting',
   css:true,
-  next:nextText,
+  next(t,x){
+    try{const n=x&&pending(guideFor(t,x).steps);if(n)return n.label;}catch{/* the fixed lines below */}
+    return nextText(t);
+  },
   job(t,x){
     const isDesk=t.variant==='desk',rules=x.room.data?.today?.rules||[],fresh=rules.filter(r=>r.new).length;
     x.ui.lastTray=isDesk?t.id:null;
@@ -312,15 +341,15 @@ export default {
       {id:'doc',icon:'📂',label:'Hồ sơ'},{id:'rules',icon:'📋',label:'Quy định',badge:fresh||'',tone:'warn'},
       ...(isDesk?[]:[{id:'books',icon:'📒',label:'Sổ sách'}])];
     const inbox=inboxPane(x,{tasks:taskMails(x,t,currentMail(t,x)),other:dayMails(x,{boss:BOSS,key:`${t.id}:${t.known?1:0}`}),...care(x,t)});
+    const gd=guideFor(t,x),g=guideOf(x,t,gd.steps,gd.final);
     if(!t.known){
-      const label=isDesk?'📥 Nhận khay chứng từ':'📥 Nhận hồ sơ';
-      return desk(x,t,{cls:'ca',tabs,strip:strip(x,t),panes:{inbox,
+      return desk(x,t,{cls:'ca',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,
         doc:`<p class="ok-empty"><span aria-hidden="true">✉️</span><b>${x.esc(t.title)}</b><span>${isDesk?'Khay chứng từ còn nằm trên bàn chị Hạnh.':'Hồ sơ còn trong phong bì.'}</span></p>`,
         rules:todayRules(x),books:booksPane(x)},
-        bar:bar(x,t,x.esc(nextText(t)),x.cmd(label,'ask',{task:t.id},'primary'),true)});
+        bar:bar(x,t,'',g.cta,true)});
     }
-    if(isDesk)return desk(x,t,{cls:'ca',tabs,strip:strip(x,t),panes:{inbox,doc:deskDoc(t,x),rules:todayRules(x)+binder(t,x)},bar:deskBar(t,x)});
-    return desk(x,t,{cls:'ca',tabs,strip:strip(x,t),panes:{inbox,doc:stepCard(t,x)+docsPanel(t,x),rules:todayRules(x)||'<p class="ok-note">Hôm nay chưa có quy định mới.</p>',books:booksPane(x)},bar:dossierBar(t,x)});
+    if(isDesk)return desk(x,t,{cls:'ca',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,doc:deskDoc(t,x),rules:todayRules(x)+binder(t,x)},bar:deskBar(t,x,g)});
+    return desk(x,t,{cls:'ca',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,doc:stepCard(t,x)+docsPanel(t,x),rules:todayRules(x)||'<p class="ok-note">Hôm nay chưa có quy định mới.</p>',books:booksPane(x)},bar:dossierBar(t,x,g)});
   },
   idle(x){
     const d=x.room.data||{};if(!d.office)return '';
@@ -365,6 +394,8 @@ export default {
   actions:{
     tab:switchTab,
     fold:foldToggle,
+    goto:gotoAction,
+    coach:coachFill,
     async open(data,el,x){views(x)[data.task]=data.doc;await x.send(P+'open',{task:data.task,doc:data.doc});},
     view(data,el,x){sync(rootOf(el),x);views(x)[data.task]=data.doc;x.render();},
     pick(data,el,x){sels(x)[data.task]=data.case;x.ui.fresh=null;x.render();document.querySelector('.career-job.ca .ca-queue')?.scrollIntoView({block:'nearest'});},
@@ -406,7 +437,7 @@ export default {
     move(data,el,x){
       sync(rootOf(el),x);const list=drafts(x)[data.key];if(!list)return;
       const i=Number(data.i),j=i+Number(data.dir);if(j<0||j>=list.length)return;
-      [list[i],list[j]]=[list[j],list[i]];x.render();
+      [list[i],list[j]]=[list[j],list[i]];(x.ui.moved??={})[data.key]=true;x.render();
     },
     async order(data,el,x){const [t,st]=stepOf(x,data);if(!st)return;await send(x,t,st,drafts(x)[dkey(t,st)]||st.items.map(i=>i.id));},
     async match(data,el,x){

@@ -4,6 +4,8 @@
  * The two-tube bowl preview mirrors the server maths (average level, tone band) using only what the stylist has found out.
  * Care loop: the client card (formula, hair health, patch test, last cut), follow-up bookings and the jar of clean tool sets. */
 import {reqList,fold} from '../ui-kit.js';
+import {stepRows,nextHint,stepCta,finalGo,pending,firstTime} from '../v4/guide.js';
+import {keepBarAboveFooter} from './food_kit.js';
 const CHEM=['color','bleach','toner'];
 const ZONE_TEXT={under:'chưa đủ giờ',ideal:'đúng giờ',over:'hơi quá giờ',damage:'quá giờ, tóc gãy'};
 const STAGES={consult:['💬','Tư vấn'],plan:['🤝','Chốt'],color:['🎨','Pha màu'],wash:['🫧','Gội'],cut:['✂️','Cắt'],finish:['💨','Hoàn thiện'],bill:['🧾','Thanh toán']};
@@ -184,10 +186,10 @@ function bookBlock(t,x){
   const kinds=t.bookable||[],u=ui(x,t),ap=care(x).appts||{},day=x.room.day||t.day;
   if(!kinds.length)return '';
   const chips=kinds.map(k=>{const a=ap[k]||{label:k,emoji:'📅',days:0},on=u.book.includes(k);return `<button type="button" class="sl-chip ${on?'on':''}" ${carAttr(x,'book',{task:t.id,id:k})} aria-pressed="${on}">${x.esc(a.emoji)} ${x.esc(a.label)} · ngày ${day+a.days}<small>${x.esc(a.why||'')}</small></button>`;}).join('');
-  return `<h5 class="sl-sub">📅 Hẹn lần tới (khách quay lại, nhớ làm trong ${care(x).keep||2} ngày)</h5><div class="sl-chips">${chips}</div>`;
+  return `<h5 class="sl-sub" title="Khách quay lại, nhớ làm trong ${care(x).keep||2} ngày">📅 Hẹn lần tới</h5><div class="sl-chips">${chips}</div>`;
 }
 function rules(x){
-  return `<details class="sl-rules"><summary>📋 Bảng pha màu</summary><ul>${x.cc.rules.map(r=>`<li>${x.esc(r)}</li>`).join('')}</ul>
+  return `<details class="sl-rules gd-rules"><summary>📜 Quy tắc pha màu</summary><ul>${x.cc.rules.map(r=>`<li>${x.esc(r)}</li>`).join('')}</ul>
     <div class="sl-levels">${x.cc.levels.map(l=>`<span style="--sw:${x.esc(l.color)}" title="${x.esc(l.name)}"><i></i>${l.level}</span>`).join('')}</div></details>`;
 }
 
@@ -210,7 +212,7 @@ function ticket(t,x){
       <p class="sl-want">${n.services.map(s=>`${svc(x,s).emoji} ${x.esc(svc(x,s).name)}`).join(' · ')}</p>
       ${t.plan?'':`<p class="small">${x.esc(n.want)}</p>`}</div></div>
     <div class="sl-photo">${sw}<div class="grow"><small class="muted">Ảnh mẫu khách đưa</small><b>${x.esc(ph.style)}</b>${photoLine}</div></div>${real}
-    ${t.plan?`<details class="sl-more"><summary>Lời dặn của khách</summary><p class="small">${x.esc(n.want)}</p><p class="muted small">“${x.esc(n.note)}”</p></details>`:`<p class="muted small">“${x.esc(n.note)}”</p>`}
+    <details class="sl-more"><summary>💬 Lời dặn của khách</summary>${t.plan?`<p class="small">${x.esc(n.want)}</p>`:''}<p class="muted small">“${x.esc(n.note)}”</p></details>
     ${t.calm!=null&&!t.done.includes('cut')?calmBar(t):''}
     <div class="row wrap sl-tags">${tags.join('')}</div>
     ${cardFold(t,x)}
@@ -221,7 +223,7 @@ function ticket(t,x){
 function consult(t,x){
   const qa=x.cc.topics.map(q=>{
     const a=t.answers?.[q.id];
-    return `<div class="sl-qa ${a?'done':''}">${a?`<p class="sl-q">${q.emoji} ${x.esc(q.ask)}</p><p class="sl-a">${x.esc(a)}</p>`:x.cmd(`${q.emoji} ${x.esc(q.label)}`,'sl_consult',{task:t.id,topic:q.id},'ghost small')}</div>`;
+    return `<div class="sl-qa ${a?'done':''}">${a?`<p class="sl-q" title="${x.esc(q.ask)}">${q.emoji} ${x.esc(q.label)}</p><p class="sl-a">${x.esc(a)}</p>`:x.cmd(`${q.emoji} ${x.esc(q.label)}`,'sl_consult',{task:t.id,topic:q.id},'ghost small')}</div>`;
   }).join('');
   const zones=x.cc.zones.map(z=>{
     const f=t.findings?.[z.id];
@@ -237,10 +239,10 @@ function consult(t,x){
       :x.cmd('🩹 Thử dị ứng sau tai','sl_patch',{task:t.id},'small',t.patch_record==='file'||t.patch_record==='log'));
   }
   if(bleach)tests.push(t.strand_text?`<p class="sl-note">🧵 ${x.esc(t.strand_text)}</p>`:x.cmd('🧵 Thử một lọn sau gáy','sl_strand',{task:t.id},'small'));
-  const cta=t.plan?'':`<div class="sl-cta">${x.button('🤝 Sang chốt phương án →','car:tab',{task:t.id,tab:'plan',at:'consult'},'primary full')}</div>`;
+  const cta=t.plan?'':`<div class="sl-cta">${x.button('🤝 Sang chốt phương án →','car:tab',{task:t.id,tab:'plan',at:'consult'},'full')}</div>`;
   return `<div class="sl-qa-list">${qa}</div>
-    <h5 class="sl-sub">Xem tóc tận tay</h5><div class="sl-zones">${zones}</div>
-    ${tests.length?`<h5 class="sl-sub">Thử & soi trước khi làm</h5><div class="stack">${tests.join('')}</div>`:''}${cta}`;
+    <div class="sl-look"><h5 class="sl-sub">Xem tóc tận tay</h5><div class="sl-zones">${zones}</div></div>
+    ${tests.length?`<div class="sl-tests"><h5 class="sl-sub">Thử & soi trước khi làm</h5><div class="stack">${tests.join('')}</div></div>`:''}${cta}`;
 }
 
 function planPanel(t,x){
@@ -257,10 +259,10 @@ function planPanel(t,x){
   const picked=x.cc.services.map(s=>s.id).filter(s=>u.services.includes(s));
   const same=!!t.plan&&u.sessions===t.plan.sessions&&picked.length===t.plan.services.length&&picked.every(s=>t.plan.services.includes(s));
   const label=!t.plan?'🤝 Chốt với khách':same?'✓ Đã chốt phương án này':'🔁 Chốt lại phương án';
-  return `<p class="muted small">Bỏ bớt dịch vụ phải có lý do an toàn; ảnh mẫu xa quá thì chia buổi.</p>${warn}
+  return `${warn}
     <div class="sl-grid">${tiles}</div>
     <h5 class="sl-sub">Số buổi để tới ảnh mẫu</h5><div class="sl-segs">${seg}</div>
-    <div class="sl-cta"><b>Báo giá hôm nay: ${x.money(quote)}</b>${x.cmd(label,'sl_plan',{task:t.id,services:picked,sessions:u.sessions},same?'full':'primary full',!u.services.length||same)}</div>`;
+    <div class="sl-cta"><b>Báo giá hôm nay: ${x.money(quote)}</b>${x.cmd(label,'sl_plan',{task:t.id,services:picked,sessions:u.sessions},'full',!u.services.length||same)}</div>`;
 }
 
 function timerBar(t,x){
@@ -273,7 +275,7 @@ function timerBar(t,x){
   </div>`;
 }
 function timerCard(t,x){
-  return `<section class="sl-sec focus sl-timer-card"><div class="sl-bowl on"><span class="sl-emoji" aria-hidden="true">⏱️</span><div class="grow"><b>Đang ủ ${x.esc(svc(x,t.timer.kind).name.toLowerCase())}</b>${timerBar(t,x)}</div></div>${x.cmd('🚿 Xả thuốc ngay','sl_rinse',{task:t.id},'primary full')}</section>`;
+  return `<section class="sl-sec focus sl-timer-card"><div class="sl-bowl on"><span class="sl-emoji" aria-hidden="true">⏱️</span><div class="grow"><b>Đang ủ ${x.esc(svc(x,t.timer.kind).name.toLowerCase())}</b>${timerBar(t,x)}</div></div>${x.cmd('🚿 Xả thuốc ngay','sl_rinse',{task:t.id},'full sl-rinse-top')}</section>`;
 }
 function bowlLabel(x,b){
   if(b.kind==='bleach')return 'Bột tẩy';
@@ -327,7 +329,7 @@ function colorPanel(t,x){
     const b=t.bowl;
     return `<div class="sl-bowl"><span class="sl-dish" style="--sw:${x.esc(bowlColour(x,b))}" aria-hidden="true"></span><div class="grow"><b>Bát ${x.esc(svc(x,b.kind).name.toLowerCase())}</b><small>${x.esc(bowlLabel(x,b))} + oxy ${b.dev} vol · ${fmtRatio(b.ratio)}</small></div></div>
       ${b.ok?'':'<p class="sl-note bad">⚠️ Linh chê công thức bát này — nên đổ đi pha lại.</p>'}
-      <div class="sl-cta">${x.cmd('🖌️ Thoa từ chân tới ngọn','sl_apply',{task:t.id},b.ok?'primary full':'full')}${x.confirmCmd('🗑️ Đổ bát, pha lại','sl_dump',{task:t.id,confirm:true},'Đổ bát thuốc này? Thuốc đã pha được ghi hao hụt.',b.ok?'danger small':'primary full')}</div>${tail}`;
+      <div class="sl-cta">${x.cmd('🖌️ Thoa từ chân tới ngọn','sl_apply',{task:t.id},'full')}${x.confirmCmd('🗑️ Đổ bát, pha lại','sl_dump',{task:t.id,confirm:true},'Đổ bát thuốc này? Thuốc đã pha được ghi hao hụt.',b.ok?'danger small':'full')}</div>${tail}`;
   }
   if(!left.length)return tail||'<p class="muted small">Không còn phần hóa chất nào.</p>';
   if(!u.kind||!left.includes(u.kind))u.kind=left[0];
@@ -343,6 +345,17 @@ function colorPanel(t,x){
   }
   const devs=x.cc.devs.map(v=>{const q=x.stock('dev_'+v);return `<button type="button" class="sl-seg ${u.dev===v?'on':''} ${v===40?'hot':''}" ${carAttr(x,'dev',{task:t.id,v})} aria-pressed="${u.dev===v}" ${q||u.dev===v?'':'disabled'}>${v} vol<small>${q}</small></button>`;}).join('');
   const ratios=x.cc.ratios.map(r=>`<button type="button" class="sl-seg ${u.ratio===r?'on':''}" ${carAttr(x,'ratio',{task:t.id,v:r})} aria-pressed="${u.ratio===r}">${fmtRatio(r)}</button>`).join('');
+  const {payload,ready,out,blocked}=bowlOrder(t,x,u);
+  const outNote=out.length?`<p class="sl-note bad">📦 Hết ${out.map(id=>x.esc(itemName(x,id))).join(', ')} — mở Kho nhập thêm hoặc chọn loại khác.</p>`:'';
+  return `${tabs}${pick}
+    <h5 class="sl-sub">Oxy trợ nhuộm</h5><div class="sl-segs sl-devs">${devs}</div>
+    <h5 class="sl-sub">Tỷ lệ thuốc ∶ oxy</h5><div class="sl-segs sl-ratios">${ratios}</div>
+    ${blocked?'<p class="sl-note">Tẩy và xả xong rồi mới phủ toner.</p>':''}${outNote}
+    <div class="sl-cta">${x.cmd('🥣 Trộn bát','sl_mix',payload,'full sl-mix-go',!ready||blocked)}</div>${tail}`;
+}
+/** What "Trộn bát" sends with the current picks, and whether it can be sent. */
+function bowlOrder(t,x,u){
+  const mixing=u.kind==='color'&&t.gen;
   const blocked=u.kind==='toner'&&t.plan.services.includes('bleach')&&!t.done.includes('bleach');
   let payload,ready;
   if(mixing){payload={task:t.id,kind:'color',shade:u.a,parts:[u.pa,u.b?u.pb:0],dev:u.dev,ratio:u.ratio};if(u.b)payload.shade2=u.b;ready=!!(u.a&&u.dev&&u.ratio);}
@@ -350,31 +363,26 @@ function colorPanel(t,x){
   const need=[u.dev?'dev_'+u.dev:null,...(mixing?[u.a,u.b]:[u.kind==='bleach'?'bleach':u.shade]),u.kind==='bleach'?'foil':null].filter(Boolean);
   const out=need.filter(id=>!x.stock(id));
   if(out.length)ready=false;
-  const outNote=out.length?`<p class="sl-note bad">📦 Hết ${out.map(id=>x.esc(itemName(x,id))).join(', ')} — mở Kho nhập thêm hoặc chọn loại khác.</p>`:'';
-  return `${tabs}${pick}
-    <h5 class="sl-sub">Oxy trợ nhuộm</h5><div class="sl-segs">${devs}</div>
-    <h5 class="sl-sub">Tỷ lệ thuốc ∶ oxy</h5><div class="sl-segs">${ratios}</div>
-    ${blocked?'<p class="sl-note">Tẩy và xả xong rồi mới phủ toner.</p>':''}${outNote}
-    <div class="sl-cta">${x.cmd('🥣 Trộn bát','sl_mix',payload,'primary full',!ready||blocked)}</div>${tail}`;
+  return {payload,ready:ready&&!blocked,out,blocked,mixing};
 }
 
 function washPanel(t,x){
   const kid=caseOf(t)==='kid'&&t.calm!=null;
   return `${t.washed?'<p class="small">✅ Tóc đã gội, xả sạch.</p>':''}
     ${kid&&!t.washed?'<p class="sl-note">🧒 Bé nào gội xong cũng hay vẩy nước, bớt ngồi yên một chút.</p>':''}
-    <div class="sl-cta">${x.cmd('🫧 Gội & xả','sl_wash',{task:t.id},'primary full',t.washed||!!t.timer)}</div>`;
+    <div class="sl-cta">${x.cmd('🫧 Gội & xả','sl_wash',{task:t.id},'full',t.washed||!!t.timer)}</div>`;
 }
 
 function cutPanel(t,x){
   const u=ui(x,t),c=t.cut,s=c.steps,done=t.done.includes('cut'),kid=caseOf(t)==='kid'&&t.calm!=null;
   const next=!s.includes('section')?'section':!s.includes('guide')?'guide':'check';
-  const step=(id,label,cond,payload={})=>`<li class="${s.includes(id)?'done':''}">${x.cmd(label,'sl_cut',{task:t.id,step:id,...payload},id===next&&!done?'primary':s.includes(id)&&id!=='guide'?'ghost small':'small',done||!cond||!t.washed)}</li>`;
+  const step=(id,label,cond,payload={})=>`<li class="${s.includes(id)?'done':''}">${(id==='check'?(l,c,p,st,dis)=>x.button(l,'car:cutCheck',{task:t.id,n:s.length},st,dis):x.cmd)(label,'sl_cut',{task:t.id,step:id,...payload},id===next&&!done?'primary':s.includes(id)&&id!=='guide'?'ghost small':'small',done||!cond||!t.washed)}</li>`;
   let calm='';
   if(kid&&!done){
     const tools=(x.cc.calm_tools||[]).map(k=>`<button type="button" class="sl-chip ${t.soothed.includes(k.id)?'on':''}" ${cmdAttr(x,'sl_calm',{task:t.id,tool:k.id})} ${t.soothed.includes(k.id)?'disabled':''}><b>${k.emoji} ${x.esc(k.label)}</b></button>`).join('');
     calm=`<div class="sl-kid">${calmBar(t)}${t.calm<40?'<p class="sl-note bad">⚠️ Bé đang giãy — cầm kéo lúc này dễ lẹm. Dỗ bé trước đã.</p>':''}<h5 class="sl-sub">Dỗ bé (nghe bố kể thói quen của bé)</h5><div class="sl-calm-tools">${tools}</div></div>`;
   }
-  return `${calm}<p class="muted small">Cắt lẹm thì không nối lại được — cắt ít, kiểm nhiều.</p>
+  return `${calm}
     <div class="sl-len"><span>Độ dài cắt bớt</span><button type="button" class="btn small ghost" ${carAttr(x,'len',{task:t.id,d:-1})} aria-label="Bớt 1 cm">−</button><b>${u.len} cm</b><button type="button" class="btn small ghost" ${carAttr(x,'len',{task:t.id,d:1})} aria-label="Thêm 1 cm">+</button><small class="muted">Đã bớt tổng ${c.removed} cm${c.short?' · ⚠️ lẹm':''}</small></div>
     <ol class="sl-steps">${step('section','1 · Chia vùng',!s.length)}${step('guide',`2 · Cắt đường chuẩn (${u.len} cm)`,s.includes('section')&&!s.includes('layers'),{length:u.len})}${step('layers','3 · Tỉa tầng',s.includes('guide')&&!s.includes('layers'))}${step('check','4 · Soi đối xứng & chốt',s.includes('guide'))}</ol>
     ${done?'<p class="sl-note good">✂️ Đã cắt xong.</p>':''}`;
@@ -382,10 +390,10 @@ function cutPanel(t,x){
 
 function finishPanel(t,x){
   const ps=t.plan.services,parts=[];
-  if(ps.includes('treatment'))parts.push(`<div class="sl-cta"><p class="small">💧 Keratin phục hồi · còn ${x.stock('keratin')} lượt</p>${x.cmd(t.done.includes('treatment')?'✅ Đã phục hồi':'💧 Thoa keratin & hấp','sl_treat',{task:t.id},t.done.includes('treatment')?'full':'primary full',t.done.includes('treatment'))}</div>`);
+  if(ps.includes('treatment'))parts.push(`<div class="sl-cta"><p class="small">💧 Keratin phục hồi · còn ${x.stock('keratin')} lượt</p>${x.cmd(t.done.includes('treatment')?'✅ Đã phục hồi':'💧 Thoa keratin & hấp','sl_treat',{task:t.id},'full',t.done.includes('treatment'))}</div>`);
   if(ps.includes('style')){
     const wait=ps.includes('treatment')&&!t.done.includes('treatment');
-    parts.push(`<h5 class="sl-sub">Kiểu sấy hợp thói quen & dịp của khách</h5><div class="sl-grid">${x.cc.finishes.map(f=>`<button type="button" class="sl-tile ${t.styled===f.id?'selected':''}" ${cmdAttr(x,'sl_style',{task:t.id,finish:f.id})} ${t.done.includes('style')||wait?'disabled':''}><span class="sl-emoji" aria-hidden="true">${f.emoji}</span><b>${x.esc(f.name)}</b><small>${x.esc(f.note)}</small></button>`).join('')}</div>`);
+    parts.push(`<h5 class="sl-sub">Kiểu sấy hợp thói quen & dịp của khách</h5><div class="sl-grid sl-finishes">${x.cc.finishes.map(f=>`<button type="button" class="sl-tile ${t.styled===f.id?'selected':''}" ${cmdAttr(x,'sl_style',{task:t.id,finish:f.id})} ${t.done.includes('style')||wait?'disabled':''}><span class="sl-emoji" aria-hidden="true">${f.emoji}</span><b>${x.esc(f.name)}</b><small>${x.esc(f.note)}</small></button>`).join('')}</div>`);
   }
   return parts.join('')||'<p class="muted small">Không có phần hoàn thiện.</p>';
 }
@@ -404,10 +412,10 @@ function billPanel(t,x){
   const pending=ps.filter(s=>!t.done.includes(s));
   const ready=t.plan&&!pending.length&&!t.bowl&&!t.timer;
   return `${receipt(t,x)}
-    <h5 class="sl-sub">Tư vấn sản phẩm (chỉ khi hợp tóc & ngân sách)</h5><div class="sl-chips">${shelf}</div>
+    <h5 class="sl-sub" title="Chỉ mời khi hợp tóc và vừa ngân sách">🛍️ Sản phẩm hợp tóc (tùy chọn)</h5><div class="sl-chips">${shelf}</div>
     ${bookBlock(t,x)}
     <p class="row spread"><span>Tạm tính</span><b>${x.money((t.quote||0)+(t.patch_fee||0)+retailSum)}</b></p>
-    <div class="sl-cta">${x.confirmCmd('💳 Thanh toán & tiễn khách','sl_checkout',{task:t.id,products:u.products,book:u.book.filter(k=>(t.bookable||[]).includes(k)),confirm:true},'Thanh toán cho khách? Khách sẽ soi gương và đánh giá đúng những gì đã làm; sản phẩm không hợp sẽ bị từ chối.','primary full',!ready)}</div>
+    <div class="sl-cta">${x.confirmCmd('💳 Thanh toán & tiễn khách','sl_checkout',{task:t.id,products:u.products,book:u.book.filter(k=>(t.bookable||[]).includes(k)),confirm:true},'Thanh toán cho khách? Khách sẽ soi gương và đánh giá đúng những gì đã làm; sản phẩm không hợp sẽ bị từ chối.','full',!ready)}</div>
     ${pending.length&&t.plan?`<small class="muted">Còn: ${pending.map(s=>x.esc(svc(x,s).name.toLowerCase())).join(', ')}</small>`:''}`;
 }
 
@@ -419,12 +427,213 @@ function mirror(t,x){
     <small>Level ${lk.level||'?'} · dài ~${lk.length||'?'} cm</small></div>`;
 }
 
+/** Scroll the sheet so `el` sits just under the sticky header (only when it is out of view). */
+let revealed='';
+function reveal(root,el){
+  const dialog=root.closest('dialog');if(!dialog||!el)return;
+  let box=root.parentElement;
+  while(box&&box!==dialog.parentElement&&!(box.scrollHeight>box.clientHeight&&/(auto|scroll)/.test(getComputedStyle(box).overflowY)))box=box.parentElement;
+  if(!box||box===dialog.parentElement)return;
+  const top=(dialog.querySelector('.sheet-head')?.getBoundingClientRect().bottom||box.getBoundingClientRect().top)+8;
+  const bottom=root.querySelector('.sl-bar')?.getBoundingClientRect().top||innerHeight;
+  const r=el.getBoundingClientRect(),room=bottom-8-top;
+  if(r.top>=top&&r.bottom<=bottom-8)return;
+  // Fits: show all of it (its end first, where new results land); too tall: its top under the header.
+  const by=r.height<=room?(r.bottom>bottom-8?r.bottom-(bottom-8):r.top-top):r.top-top;
+  box.scrollBy({top:by,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+}
+
 const PANELS={consult,plan:planPanel,color:colorPanel,wash:washPanel,cut:cutPanel,finish:finishPanel,bill:billPanel};
+
+/* ---------- next step (v4/guide.js) ----------
+ * The chair as steps: the header hint, the bottom button and the checklist all come from guideOf().
+ * On a first task every decision is made for the stylist from what the screen already shows
+ * (answers, findings, the photo, the colour table); later the button points at the choice instead. */
+const nfc=s=>String(s||'').normalize('NFC');
+const NUM_WORD={'một':1,'hai':2,'ba':3,'bốn':4,'năm':5,'sáu':6};
+/** What to ask and which zones to look at before planning these services. */
+function consultNeeds(t){
+  const s=t.needs.services,chem=s.some(k=>CHEM.includes(k)),care=s.includes('treatment'),asks=[],looks=[];
+  if(chem||care)asks.push('history');
+  if(s.includes('color')||s.includes('toner'))asks.push('patch');
+  if(s.includes('style')||caseOf(t)==='kid')asks.push('lifestyle');
+  if(s.includes('cut'))asks.push('length');
+  if(s.includes('color'))looks.push('roots');
+  if(chem||care)looks.push('lengths');
+  if(s.includes('cut')||care)looks.push('ends');
+  if(chem)looks.push('scalp');
+  return {asks,looks};
+}
+/** The honest plan from what was found out: no dye without a patch result, no chemicals on a hurt scalp, sessions from the strand test. */
+function smartPlan(t,x){
+  const noDye=t.patch_done||t.reacted||['none','allergy'].includes(t.patch_record);
+  const hurt=/không thoa hóa chất/.test(nfc(t.findings?.scalp));
+  const weak=t.health!=null&&t.health<(care(x).bleach_stop||30);
+  const keep=t.needs.services.filter(s=>!(noDye&&(s==='color'||s==='toner'))&&!(hurt&&CHEM.includes(s))&&!(weak&&(s==='bleach'||s==='toner')));
+  const m=/(\d)\s*buổi/.exec(nfc(t.strand_text));
+  return {services:x.cc.services.map(s=>s.id).filter(id=>keep.includes(id)),sessions:m?Number(m[1]):1};
+}
+/** The bowl the colour table gives for this client (tubes that hit level and tone, developer by lift, ratio by kind). */
+function smartMix(t,x,kind){
+  if(kind==='bleach')return {kind,dev:20,ratio:'1:2'};
+  if(kind==='toner')return {kind,shade:/khói|bạc|tro|lạnh/i.test(nfc(t.needs.photo?.tone))?'toner_silver':'toner_beige',dev:10,ratio:'1:2'};
+  const tg=target(t);if(!tg||!t.gen)return null;
+  const warm=t.base_warm||0,grey=(t.grey||0)>=50,dyes=x.cc.dyes.filter(d=>x.stock(d.id)>0);
+  const hit=m=>m&&levelOk(m,tg.level)&&m.band===tg.band&&(!grey||2*m.nat>=m.den);
+  let best=null;
+  for(const d of dyes)if(!best&&hit(mixOf(x,d.id,null,1,0,warm)))best={a:d.id,b:null,pa:1,pb:1};
+  for(let den=2;den<=6&&!best;den++)for(const a of dyes)for(const b of dyes)for(let pa=1;pa<=3&&!best;pa++){
+    const pb=den-pa;if(a!==b&&pb>=1&&pb<=3&&hit(mixOf(x,a.id,b.id,pa,pb,warm)))best={a:a.id,b:b.id,pa,pb};
+  }
+  if(!best)return null;
+  const lift=tg.level-(t.look?.level||tg.level),cover=(t.grey||0)>0||/phủ bạc/i.test(nfc(t.needs.want));
+  return {kind,...best,dev:lift>=3?30:lift>=1||cover?20:10,ratio:'1:1'};
+}
+function mixText(x,m){
+  const code=id=>dyeOf(x,id)?.code||x.cc.toners.find(d=>d.id===id)?.code||'';
+  const tubes=m.kind==='bleach'?'bột tẩy':m.kind==='toner'?code(m.shade):m.b?`${m.pa} phần ${code(m.a)} + ${m.pb} phần ${code(m.b)}`:code(m.a);
+  return `${tubes} · oxy ${m.dev} vol · ${fmtRatio(m.ratio)}`;
+}
+const sameMix=(u,m)=>u.dev===m.dev&&u.ratio===m.ratio&&(m.kind==='bleach'||(m.kind==='toner'?u.shade===m.shade:u.a===m.a&&(u.b||null)===m.b&&u.pa===m.pa&&(!m.b||u.pb===m.pb)));
+/** Centimetres to take off, read from what the client said about length and what the ends showed. */
+function smartLen(t){
+  const say=nfc(t.answers?.length),ends=nfc(t.findings?.ends);
+  let m=/dài\s*(\d+)\s*phân.*?(\d+)\s*[–-]\s*(\d+)\s*phân/.exec(say);
+  if(m)return Math.max(1,Number(m[1])-Math.round((Number(m[2])+Number(m[3]))/2));
+  for(const s of [say,ends]){
+    m=/(\d+)\s*(?:[–-]\s*\d+\s*)?(?:cm|phân)/.exec(s);if(m)return Math.max(1,Math.min(10,Number(m[1])));
+    m=/(một|hai|ba|bốn|năm|sáu)(?:\s+(?:một|hai|ba|bốn|năm|sáu))?\s+phân/.exec(s);if(m)return NUM_WORD[m[1]];
+  }
+  return null;
+}
+const wantsLayers=t=>/tầng/.test(nfc(`${t.needs.want} ${t.needs.photo?.style||''}`));
+function smartFinish(t){
+  const s=nfc(`${t.needs.want} ${t.needs.photo?.style||''}`).toLowerCase();
+  return /búi/.test(s)?'updo':/phồng|sóng/.test(s)?'volume':/suôn|thẳng/.test(s)?'sleek':'natural';
+}
+function smartCalm(t){
+  const s=nfc(t.answers?.lifestyle);
+  return /hoạt hình/.test(s)?'cartoon':/khủng long/.test(s)?'toy':/tượng đá/.test(s)?'game':/bố/.test(s)?'lap':null;
+}
+/** The tab on screen (same rule as job()). */
+function viewTab(t,u){
+  const list=stages(t),at=current(t),ai=list.indexOf(at);
+  if(u.tab!=null&&u.tabAt!==at)u.tab=null;
+  const reach=s=>list.includes(s)&&(list.indexOf(s)<=ai||(s==='plan'&&!t.plan));
+  return {list,at,tab:u.tab&&reach(u.tab)?u.tab:at};
+}
+const svcNames=(x,ids)=>ids.map(s=>svc(x,s).name.toLowerCase()).join(', ');
+
+/** {steps, final, timer} for this client right now. */
+function guideOf(t,x){
+  const id=t.id,first=firstTime(x),d=x.room.data||{};
+  if(t.timer)return {steps:[{ok:null,label:'Chờ vùng xanh rồi xả thuốc',go:{sel:'.sl-timer'}}],timer:true};
+  if(d.desk?.ev)return {steps:[{ok:null,label:'Ra quầy: chọn một cách xử lý',go:{sel:'.sl-desk .sl-opts'},pulse:first?'.sl-desk .sl-opt':''}]};
+  const steps=[];
+  if(!t.tools&&!(Number(d.clean)>0)&&current(t)!=='bill')
+    steps.push({ok:null,label:'Khử khuẩn dụng cụ',go:{cmd:'sl_sanitize',payload:{},label:'🧴 Khử khuẩn dụng cụ'}});
+  if(!t.known){
+    steps.push({ok:null,label:'Mời khách ngồi, nghe mong muốn',go:{cmd:'ask',payload:{task:id},label:'💬 Mời ngồi & nghe mong muốn'}});
+    return {steps};
+  }
+  const u=ui(x,t),{at,tab}=viewTab(t,u);
+  if(!t.plan){
+    const {asks,looks}=consultNeeds(t),topic=k=>x.cc.topics.find(q=>q.id===k),zone=k=>x.cc.zones.find(z=>z.id===k);
+    const q=asks.find(k=>!t.asked.includes(k)),z=looks.find(k=>!t.inspected.includes(k));
+    if(asks.length)steps.push({ok:q?null:true,label:`Hỏi: ${asks.map(k=>topic(k).label.toLowerCase()).join(', ')}`,note:`${asks.filter(k=>t.asked.includes(k)).length}/${asks.length}`,
+      go:q&&{cmd:'sl_consult',payload:{task:id,topic:q},label:`${topic(q).emoji} Hỏi khách: ${x.esc(topic(q).label.toLowerCase())}`}});
+    if(looks.length)steps.push({ok:z?null:true,label:`Xem tận tay: ${looks.map(k=>zone(k).label.toLowerCase()).join(', ')}`,note:`${looks.filter(k=>t.inspected.includes(k)).length}/${looks.length}`,
+      go:z&&{cmd:'sl_inspect',payload:{task:id,zone:z},label:`${zone(z).emoji} Xem ${x.esc(zone(z).label.toLowerCase())}`}});
+    if(caseOf(t)==='photo'&&!t.photo_seen)steps.push({ok:null,label:'Soi ảnh gốc chưa qua filter',go:{cmd:'sl_photo',payload:{task:id},label:'📸 Soi ảnh gốc'}});
+    const dye=t.needs.services.some(s=>s==='color'||s==='toner');
+    if(dye&&t.patch_record==='none'&&!t.patch_done&&!t.reacted)
+      steps.push({ok:null,label:'Thử dị ứng sau tai',go:{cmd:'sl_patch',payload:{task:id},label:'🩹 Thử dị ứng sau tai'}});
+    if(t.needs.services.includes('bleach')&&!t.strand)steps.push({ok:null,label:'Thử một lọn trước khi tẩy',go:{cmd:'sl_strand',payload:{task:id},label:'🧵 Thử một lọn sau gáy'}});
+    let go=null;
+    if(first){const p=smartPlan(t,x);if(p.services.length)go={cmd:'sl_plan',payload:{task:id,...p},label:`🤝 Chốt: ${x.esc(svcNames(x,p.services))}${p.sessions>1?` · ${p.sessions} buổi`:''}`};}
+    else if(tab!=='plan')go={act:'car:tab',data:{task:id,tab:'plan',at},label:'🤝 Sang chốt phương án'};
+    else if(u.services.length){const picked=x.cc.services.map(s=>s.id).filter(s=>u.services.includes(s));
+      go={cmd:'sl_plan',payload:{task:id,services:picked,sessions:u.sessions},label:`🤝 Chốt: ${x.esc(svcNames(x,picked))}${u.sessions>1?` · ${u.sessions} buổi`:''}`};}
+    else go={sel:'.sl-grid',label:'👉 Chọn dịch vụ cho khách'};
+    steps.push({ok:null,label:'Chốt phương án với khách',go});
+    return {steps};
+  }
+  if(at==='color'){
+    const b=t.bowl;
+    if(b){
+      if(b.ok)steps.push({ok:null,label:'Thoa thuốc',go:{cmd:'sl_apply',payload:{task:id},label:'🖌️ Thoa thuốc từ chân tới ngọn'}});
+      else steps.push({ok:false,label:'Bát sai: đổ, pha lại',go:{cmd:'sl_dump',payload:{task:id,confirm:true},confirm:'Đổ bát thuốc này? Thuốc đã pha được ghi hao hụt.',label:'🗑️ Đổ bát, pha lại'}});
+      return {steps};
+    }
+    const left=chemLeft(t);if(!u.kind||!left.includes(u.kind))u.kind=left[0];
+    const o=bowlOrder(t,x,u),kind=u.kind,sm=first?smartMix(t,x,kind):null,here=tab==='color';
+    const go=sel=>here?{sel}:{act:'car:tab',data:{task:id,tab:'color',at},label:'🎨 Về bàn pha màu'};
+    if(sm){
+      steps.push({ok:sameMix(u,sm)||null,label:`Lấy thuốc theo bảng pha: ${mixText(x,sm)}`,go:sameMix(u,sm)?null:{act:'car:autoMix',data:{task:id},label:`✨ Lấy theo bảng: ${x.esc(mixText(x,sm))}`}});
+    }else{
+      const tube=kind==='bleach'||(o.mixing?!!u.a:!!u.shade);
+      steps.push({ok:tube||null,label:kind==='bleach'?'Bột tẩy':kind==='toner'?'Chọn tuýp toner':'Chọn tuýp màu',go:tube?null:go('.sl-tubes')});
+      steps.push({ok:u.dev?true:null,label:'Chọn oxy',go:u.dev?null:go('.sl-devs')});
+      steps.push({ok:u.ratio?true:null,label:'Chọn tỷ lệ thuốc ∶ oxy',go:u.ratio?null:go('.sl-ratios')});
+    }
+    steps.push({ok:null,label:`Trộn bát ${svc(x,kind).name.toLowerCase()}`,go:o.ready?{cmd:'sl_mix',payload:o.payload,label:'🥣 Trộn bát'}:o.out.length?{sel:'.sl-foot',label:'📦 Hết thuốc: mở Kho nhập thêm'}:null});
+    return {steps};
+  }
+  if(at==='wash'){steps.push({ok:null,label:'Gội & xả cho khách',go:{cmd:'sl_wash',payload:{task:id},label:'🫧 Gội & xả'}});return {steps};}
+  if(at==='cut'){
+    const s=t.cut.steps,cut=(step,extra={})=>({cmd:'sl_cut',payload:{task:id,step,...extra}});
+    if(caseOf(t)==='kid'&&t.calm!=null&&!s.includes('guide')&&t.calm<40+(s.includes('section')?0:12+3*(Number(d.tier)||0))){
+      const best=first&&smartCalm(t),tool=best&&!t.soothed.includes(best)?best:null;
+      steps.push({ok:null,label:'Dỗ bé ngồi yên',go:tool?{cmd:'sl_calm',payload:{task:id,tool},label:`${x.cc.calm_tools.find(k=>k.id===tool)?.emoji||'🧒'} Dỗ bé: ${x.esc(x.cc.calm_tools.find(k=>k.id===tool)?.label||'')}`}:{sel:'.sl-calm-tools',label:'🧒 Chọn cách dỗ bé'}});
+      return {steps};
+    }
+    const len=first?smartLen(t)??u.len:u.len;
+    // A symmetry check the client did not accept ("còn dài" / "mẫu có tầng") reopens the step it asks for.
+    const fail=u.checkFail&&u.checkFail.at===s.length?u.checkFail.why:null;
+    steps.push({ok:s.includes('section')||null,label:'Chia vùng tóc',go:s.includes('section')?null:{...cut('section'),label:'✂️ Chia vùng tóc'}});
+    const more=fail==='long',canGuide=s.includes('section')&&(!s.includes('guide')||more)&&!s.includes('layers');
+    const guideGo=!canGuide?null:first&&!more||u.lenSet?{...cut('guide',{length:len}),label:`✂️ ${more?'Cắt thêm':'Cắt đường chuẩn · bớt'} ${len} cm`}:{sel:'.sl-len',label:`📏 Chọn số cm cắt ${more?'thêm':'bớt'}`};
+    steps.push({ok:s.includes('guide')&&!more||null,label:more?'Khách thấy còn dài: cắt thêm':'Cắt đường chuẩn',note:s.includes('guide')?`đã bớt ${t.cut.removed} cm`:'',go:guideGo});
+    const layers=(first&&wantsLayers(t))||fail==='layers';
+    if(layers)steps.push({ok:s.includes('layers')||null,label:'Tỉa tầng nhẹ (mẫu có tầng)',go:s.includes('guide')&&!s.includes('layers')?{...cut('layers'),label:'✂️ Tỉa tầng'}:null});
+    steps.push({ok:null,label:'Soi đối xứng & chốt',go:s.includes('guide')&&!more&&(!layers||s.includes('layers'))?{act:'car:cutCheck',data:{task:id,n:s.length},label:'🪞 Soi đối xứng & chốt'}:null});
+    return {steps};
+  }
+  if(at==='finish'){
+    const ps=t.plan.services;
+    if(ps.includes('treatment'))steps.push({ok:t.done.includes('treatment')||null,label:'Thoa keratin & hấp',go:t.done.includes('treatment')?null:{cmd:'sl_treat',payload:{task:id},label:'💧 Thoa keratin & hấp'}});
+    if(ps.includes('style')&&!t.done.includes('style')){
+      const wait=ps.includes('treatment')&&!t.done.includes('treatment'),f=first?smartFinish(t):null,fin=x.cc.finishes.find(v=>v.id===f);
+      steps.push({ok:null,label:'Sấy tạo kiểu',go:wait?null:fin?{cmd:'sl_style',payload:{task:id,finish:fin.id},label:`${fin.emoji} Sấy: ${x.esc(fin.name.toLowerCase())}`}:{sel:'.sl-finishes',label:'💨 Chọn kiểu sấy hợp khách'}});
+    }
+    return {steps};
+  }
+  return {steps,bill:true};
+}
+/** The finishing button: pay and see the client off once every service is done. */
+function billFinal(t,x,steps){
+  const u=ui(x,t),ps=t.plan?.services||[],ready=!!t.plan&&ps.every(s=>t.done.includes(s))&&!t.bowl&&!t.timer;
+  return {label:'💳 Thanh toán & tiễn khách',ready,go:finalGo(steps,'sl_checkout',{task:t.id,products:u.products,book:u.book.filter(k=>(t.bookable||[]).includes(k))},{question:'Khách sẽ soi gương và đánh giá.',confirm:true})};
+}
+/** While the dye processes: the bottom button counts down, then turns into "rinse" in the green zone (tick() swaps them). */
+function timerCta(t,x){
+  const tm=t.timer,w=tm.window||{under:0},s=Math.max(0,x.now()-tm.start),on=s>=w.under;
+  return `<button type="button" class="btn primary big grow gd-cta sl-wait" data-action="v4Go" data-sel=".sl-timer"${on?' hidden':''}><span>⏳ Chờ vùng xanh · còn <b class="sl-left">${Math.max(1,Math.ceil(w.under-s))}</b> giây</span></button>`
+    +`<button type="button" class="btn primary big grow gd-cta sl-rinse-go" ${cmdAttr(x,'sl_rinse',{task:t.id})}${on?'':' hidden'}>🚿 Xả thuốc ngay!</button>`;
+}
+function guideBits(t,x){
+  const g=guideOf(t,x),first=firstTime(x);
+  const final=g.bill?billFinal(t,x,g.steps):null;
+  const hint=nextHint(x,g.steps,{final:final?.ready?{label:'Thanh toán & tiễn khách',go:final.go}:null});
+  const cta=g.timer?timerCta(t,x):stepCta(x,g.steps,final||{label:'💳 Thanh toán & tiễn khách',go:null,ready:false});
+  return {g,hint,bar:`<div class="sl-bar"${first?' data-first="1"':''}>${cta}</div>`,rows:g.steps.length?stepRows(x,g.steps,'Việc cần làm'):''};
+}
 
 export default {
   id:'salon',
   css:true,
   next(t,x){
+    try{const n=x?.room&&pending(guideOf(t,x).steps);if(n)return n.label;}catch{/* fall back to the fixed lines */}
     if(t.timer)return 'Xả thuốc khi thanh vào vùng xanh';
     if(x?.room?.data?.desk?.ev)return 'Có chuyện ở quầy cần quyết';
     if(!t.known)return x?.room?.data&&!x.room.data.clean?'Khử khuẩn dụng cụ, rồi mời khách ngồi':'Mời khách ngồi, nghe mong muốn';
@@ -445,24 +654,27 @@ export default {
   idle(x){
     const d=x.room.data||{};
     const stats=`<div class="row wrap sl-stats">${x.pill(`💇 ${d.day_served||0} khách hôm nay`)}${x.pill(`🧾 ${d.served||0} khách tất cả`)}${d.appts_done?x.pill(`📅 ${d.appts_done} lượt hẹn`,'green'):''}${d.mixes?x.pill(`🎨 ${d.mixes} bát pha trúng`,'green'):''}${d.rush_on_time?x.pill(`⏱️ ${d.rush_on_time} lần kịp giờ`,'green'):''}${d.kids_calm?x.pill(`🧒 ${d.kids_calm} bé cắt êm`,'green'):''}${d.allergy?x.pill(`🩹 ${d.allergy} khách trong sổ dị ứng`,'amber'):''}</div>`;
-    return `<div class="career-job sl sl-idle">${deskCard(x)}${lastDesk(x)}${todayChip(x)}${foot(x)}${apptBook(x,true)}${stats}${regularsBook(x)}${rules(x)}</div>`;
+    const steps=d.desk?.ev?[{ok:null,label:'Ra quầy: chọn một cách xử lý',go:{sel:'.sl-desk .sl-opts'},pulse:firstTime(x)?'.sl-desk .sl-opt':''}]
+      :!(Number(d.clean)>0)&&x.room.open?[{ok:null,label:'Khử khuẩn dụng cụ',go:{cmd:'sl_sanitize',payload:{},label:'🧴 Khử khuẩn dụng cụ'}}]:[];
+    return `<div class="career-job sl sl-idle">${nextHint(x,steps,{cta:false})}${deskCard(x)}${lastDesk(x)}${todayChip(x)}${foot(x)}${apptBook(x,true)}${stats}${regularsBook(x)}${rules(x)}</div>`;
   },
   job(t,x){
-    const desk=deskCard(x),who=x.npc(t.npc);
+    const desk=deskCard(x),who=x.npc(t.npc),gb=guideBits(t,x);
     if(!t.known){
       const back=t.regular!=null?`<p class="sl-note good">📇 Khách quen quay lại — thẻ khách đã có công thức, sức khỏe tóc và lần cắt trước.</p>`:'';
-      return `<div class="career-job sl">${desk}${todayChip(x)}<article class="sl-ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3><p>“${x.esc(t.opening)}”</p></div></div>${back}<div class="sl-cta">${x.cmd('💬 Mời ngồi & nghe mong muốn','ask',{task:t.id},'primary full',!!desk)}</div></article>${foot(x)}${apptBook(x,false)}</div>`;
+      return `<div class="career-job sl">${gb.hint}${desk}${todayChip(x)}<article class="sl-ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3><p>“${x.esc(t.opening)}”</p></div></div>${back}</article>${foot(x)}${apptBook(x,false)}${gb.bar}</div>`;
     }
-    if(desk)return `<div class="career-job sl">${t.timer?timerCard(t,x):''}${desk}${ticket(t,x)}</div>`;
-    const u=ui(x,t),list=stages(t),at=current(t),ai=list.indexOf(at);
-    if(u.tab!=null&&u.tabAt!==at)u.tab=null;
-    const reach=s=>list.includes(s)&&(list.indexOf(s)<=ai||(s==='plan'&&!t.plan));
-    const tab=u.tab&&reach(u.tab)?u.tab:at;
+    if(desk)return `<div class="career-job sl">${gb.hint}${t.timer?timerCard(t,x):''}${desk}${ticket(t,x)}${gb.bar}</div>`;
+    const u=ui(x,t),{list,at,tab}=viewTab(t,u);
     const back=tab!==at&&!(tab==='plan'&&!t.plan)?` <button type="button" class="btn ghost small" ${carAttr(x,'tab',{task:t.id,tab:at,at})}>Về bước đang làm</button>`:'';
-    const panel=`<section class="sl-sec sl-panel ${tab===at?'focus':''}" aria-live="polite"><h4 class="section-title">${STAGES[tab][0]} ${x.esc(TITLES[tab])}${back}</h4>${PANELS[tab](t,x)}</section>`;
-    return `<div class="career-job sl">${t.timer?timerCard(t,x):''}${lastDesk(x)}${ticket(t,x)}${nav(t,x,list,at,tab)}
+    // After a step the panel (or the running timer) scrolls up under the header so the result is in view (tick → reveal).
+    const key=[t.id,tab,at,t.asked.length,t.inspected.length,t.bowl?1:0,t.timer?1:0,t.cut.steps.length,t.done.length].join('|');
+    const moved=!!t.plan||t.asked.length+t.inspected.length>0||tab!==at;
+    const nx=pending(gb.g.steps)?.go?.cmd,focus=tab!=='consult'?'':nx==='sl_inspect'?'.sl-look':nx==='sl_consult'?'.sl-qa-list':/^sl_(patch|photo|strand)$/.test(nx||'')?'.sl-tests':'';
+    const panel=`<section class="sl-sec sl-panel ${tab===at?'focus':''}" data-sl-key="${x.esc(key)}" data-sl-reveal="${moved?1:0}" data-sl-focus="${focus}" aria-live="polite"><h4 class="section-title">${STAGES[tab][0]} ${x.esc(TITLES[tab])}${back}</h4>${PANELS[tab](t,x)}</section>`;
+    return `<div class="career-job sl">${gb.hint}${t.timer?timerCard(t,x):''}${lastDesk(x)}${ticket(t,x)}${nav(t,x,list,at,tab)}
       <div class="sl-bench"><div class="sl-main">${panel}${foot(x)}${apptBook(x,false)}</div>
-      <aside class="sl-side">${mirror(t,x)}${tab==='bill'?'':receipt(t,x)}</aside></div></div>`;
+      <aside class="sl-side">${gb.rows}${mirror(t,x)}${tab==='bill'?'':receipt(t,x)}</aside></div>${gb.bar}</div>`;
   },
   actions:{
     tab(d,el,x){const u=x.ui[d.task];if(!u)return;u.tab=d.tab;u.tabAt=d.at;x.render();},
@@ -481,7 +693,21 @@ export default {
     part(d,el,x){const u=x.ui[d.task];if(!u)return;const k=d.which==='b'?'pb':'pa';u[k]=Math.max(1,Math.min(3,(u[k]||1)+Number(d.d)));x.render();},
     dev(d,el,x){const u=x.ui[d.task];if(u){u.dev=Number(d.v);x.render();}},
     ratio(d,el,x){const u=x.ui[d.task];if(u){u.ratio=d.v;x.render();}},
-    len(d,el,x){const u=x.ui[d.task];if(u){u.len=Math.max(1,Math.min(10,u.len+Number(d.d)));x.render();}},
+    len(d,el,x){const u=x.ui[d.task];if(u){u.len=Math.max(1,Math.min(10,u.len+Number(d.d)));u.lenSet=true;x.render();}},
+    async cutCheck(d,el,x){
+      const u=x.ui[d.task];if(!u)return;
+      const r=await x.send('sl_cut',{task:d.task,step:'check'});if(!r)return;
+      const msg=nfc(r.message);
+      if(!/Kiểm đối xứng bằng gương/.test(msg)){u.checkFail={at:Number(d.n)||0,why:/tầng/.test(msg)?'layers':'long'};u.lenSet=false;}
+      x.render();
+    },
+    autoMix(d,el,x){
+      const u=x.ui[d.task],t=(x.room.tasks||[]).find(v=>v.id===d.task);if(!u||!t)return;
+      const left=chemLeft(t);if(!u.kind||!left.includes(u.kind))u.kind=left[0];
+      const m=smartMix(t,x,u.kind);if(!m)return;
+      if(m.kind==='color')Object.assign(u,{a:m.a,b:m.b,pa:m.pa,pb:m.b?m.pb:1});else if(m.kind==='toner')u.shade=m.shade;
+      Object.assign(u,{dev:m.dev,ratio:m.ratio,tab:null});x.render();
+    },
     product(d,el,x){const u=x.ui[d.task];if(!u)return;u.products=u.products.includes(d.id)?u.products.filter(p=>p!==d.id):[...u.products,d.id].slice(-3);x.render();},
     book(d,el,x){const u=x.ui[d.task];if(!u)return;u.book=u.book.includes(d.id)?u.book.filter(k=>k!==d.id):[...u.book,d.id];x.render();},
     mixCard(d,el,x){
@@ -502,6 +728,9 @@ export default {
     },
   },
   tick(root,x){
+    keepBarAboveFooter(root);
+    const p=root.querySelector('.sl-panel[data-sl-key]');
+    if(p&&p.dataset.slKey!==revealed){revealed=p.dataset.slKey;if(p.dataset.slReveal==='1')reveal(root,root.querySelector('.sl-timer-card')||(p.dataset.slFocus&&p.querySelector(p.dataset.slFocus))||p.querySelector('.sl-preview')||p);}
     root.querySelectorAll('[data-sl-start]').forEach(el=>{
       const start=Number(el.dataset.slStart);if(!start)return;
       const s=Math.max(0,x.now()-start),w=el.dataset;
@@ -509,6 +738,12 @@ export default {
       el.querySelector('.sl-fill').style.width=Math.min(100,s/scale*100)+'%';
       el.querySelector('.sl-label').textContent=s.toFixed(1)+' giây · '+(s<under?'chưa đủ giờ':s<=ideal?'XẢ NGAY!':s<=over?'quá giờ rồi':'tóc đang cháy!');
       el.classList.toggle('ready',s>=under&&s<=ideal);el.classList.toggle('late',s>ideal);
+      // Bottom bar: count down, then swap to "rinse" in the green zone (attributes and text only, never new nodes).
+      const on=s>=under,wait=root.querySelector('.sl-wait'),go=root.querySelector('.sl-rinse-go'),left=root.querySelector('.sl-wait .sl-left');
+      if(left)left.textContent=String(Math.max(1,Math.ceil(under-s)));
+      if(wait&&wait.hidden!==on)wait.hidden=on;
+      if(go&&go.hidden===on){go.hidden=!on;if(on&&root.querySelector('.sl-bar[data-first]'))go.classList.add('gd-pulse');}
+      root.querySelector('.sl-rinse-top')?.classList.toggle('primary',on);
     });
   },
   dock:[['inventory','box','Kho','Thuốc & vật tư']],

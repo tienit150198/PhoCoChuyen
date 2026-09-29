@@ -1520,13 +1520,27 @@ def public_data(c: dict) -> dict:
     view = care_public(cr, CARE, c, o)
     view.update(calendar=_calendar(c, cr), plan=_plan_view(c, cr))
     d['care'] = view
+    d['coach'] = office.coach(c, ID, _coach)
     return d
+
+
+def _coach(t: dict) -> dict | None:
+    """First dossier only (office.coach): each open line's partner (and why they differ) or its reason, or the step's key."""
+    if t.get('variant') == 'match':
+        out = {}
+        for x in t['lines']:
+            if x['id'] in t['board']:
+                continue
+            tr = x['_truth']
+            out[x['id']] = dict(mate=tr['mate'], cause=tr['cause']) if tr['k'] == 'pair' else dict(tag=tr['tag'])
+        return dict(lines=out)
+    return office.coach_step(t)
 
 
 def known_request(c: dict, t: dict) -> str:
     if t.get('variant') == 'match':
-        return t['brief'] + f' Hai sổ có {len(t["lines"])} dòng; bằng chứng: ' + (', '.join(x['title'] for x in t['docs']) or 'không có') + '.'
-    return t['brief'] + ' Tài liệu: ' + ', '.join(x['title'] for x in t['docs']) + '.'
+        return f'Hai sổ có {len(t["lines"])} dòng — ghép từng cặp, dòng lẻ chọn lý do.'
+    return f'Hồ sơ có {len(t["docs"])} tài liệu — làm lần lượt từng bước.'
 
 
 # ---------------------------------------------------------------- day hooks

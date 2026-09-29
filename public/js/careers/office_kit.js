@@ -8,6 +8,8 @@
  * Pure string builders plus two client-only helpers (tab switch, bar offset):
  * every game action still goes through the career's own commands. */
 
+import {nextHint,stepCta,pending,goAttrs,firstTime,highlight} from '../v4/guide.js';
+
 const DONE=['completed','cancelled','referred'];
 export const openTasks=x=>(x.room.tasks||[]).filter(t=>!DONE.includes(t.status));
 export const hhmm=m=>`${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
@@ -176,12 +178,14 @@ export function inboxPane(x,{tasks=[],other=[],title='Hộp thư đến',plan=''
     ${track}`;
 }
 
-/** Today's rule cards (new ones first). */
+/** Today's rules: the ones new today stay in view, the whole list folds under “📜 Quy tắc”. */
 export function rulesList(x,rules,title){
   if(!rules?.length)return '';
-  const fresh=rules.filter(r=>r.new).length,sorted=[...rules].sort((a,b)=>(b.new?1:0)-(a.new?1:0));
-  return `<section class="ok-rules"><h3 class="ok-h">📋 ${x.esc(title)}${fresh?` <span class="ok-tag warn">${fresh} mới</span>`:''}</h3>
-    <ul class="ok-rule-list">${sorted.map(r=>`<li class="ok-rule${r.new?' new':''}"><span class="ok-rule-ico" aria-hidden="true">${x.esc(r.emoji)}</span><span class="ok-rule-txt"><b>${x.esc(r.title)}${r.new?' <em class="ok-newtag">MỚI</em>':''}</b><span>${x.esc(r.text)}</span></span></li>`).join('')}</ul></section>`;
+  const card=r=>`<li class="ok-rule${r.new?' new':''}"><span class="ok-rule-ico" aria-hidden="true">${x.esc(r.emoji)}</span><span class="ok-rule-txt"><b>${x.esc(r.title)}${r.new?' <em class="ok-newtag">MỚI</em>':''}</b><span>${x.esc(r.text)}</span></span></li>`;
+  const fresh=rules.filter(r=>r.new),rest=rules.filter(r=>!r.new);
+  return `<section class="ok-rules"><h3 class="ok-h">📋 ${x.esc(title)}${fresh.length?` <span class="ok-tag warn">${fresh.length} mới</span>`:''}</h3>
+    ${fresh.length?`<ul class="ok-rule-list">${fresh.map(card).join('')}</ul>`:''}
+    ${rest.length?`<details class="fold gd-rules ok-fold"><summary>📜 Quy tắc <small>${rest.length} quy định${fresh.length?' khác':''}</small></summary><div class="ok-fold-body"><ul class="ok-rule-list">${rest.map(card).join('')}</ul></div></details>`:''}</section>`;
 }
 
 /* ---------------------------------------------------------------- the desk frame */
@@ -189,12 +193,12 @@ export const tabKey=t=>`${t.id}:${t.known?1:0}`;
 const TAB_TONE={warn:'warn',bad:'bad'};
 
 /** tabs: [{id:'inbox'|'doc'|'rules'|'books', icon, label, badge, tone}]; panes: {id: html}. */
-export function desk(x,t,{cls,tabs,panes,strip,bar,def}){
+export function desk(x,t,{cls,tabs,panes,strip,bar,def,hint=''}){
   const key=tabKey(t),want=x.ui.okTab?.[key]||def||(t.known?'doc':'inbox');
   const tab=tabs.some(v=>v.id===want)?want:tabs[0].id;
   const nav=tabs.map(v=>`<button type="button" role="tab" class="ok-tab ok-tab-${v.id}" id="ok-tab-${v.id}" data-action="car:tab" data-tab="${v.id}" data-key="${x.esc(key)}" aria-controls="ok-pane-${v.id}" aria-selected="${v.id===tab}">
       <span class="ok-tab-ico" aria-hidden="true">${v.icon}</span><span class="ok-tab-label">${x.esc(v.label)}</span>${v.badge?`<em class="ok-badge ${TAB_TONE[v.tone]||''}">${x.esc(String(v.badge))}</em>`:''}</button>`).join('');
-  return `<div class="career-job ok ${cls}" data-ok-tab="${tab}">${strip}
+  return `<div class="career-job ok ${cls}" data-ok-tab="${tab}">${hint}${strip}
     <nav class="ok-tabs" role="tablist" aria-label="Bàn làm việc">${nav}</nav>
     ${tabs.map(v=>`<section class="ok-pane ok-pane-${v.id}" id="ok-pane-${v.id}" role="tabpanel" aria-labelledby="ok-tab-${v.id}">${panes[v.id]||''}</section>`).join('')}
     ${bar}</div>`;
@@ -212,14 +216,88 @@ const echoes=(next,main)=>{
 export function bar(x,t,next,main='',always=false){
   const cap=String(next).replace(/^\s*(\S)/,(m,c)=>m.replace(c,c.toUpperCase()));
   const label=next&&!echoes(next,main)?`<p class="ok-next" aria-live="polite">${cap}</p>`:'';
+  const back=main?'primary big grow gd-cta':'ghost';
   return `<div class="ok-bar${always?' always':''}${main?'':' bare'}">${label}
     ${main?`<div class="ok-bar-btns ok-main">${main}</div>`:''}
-    <div class="ok-bar-btns ok-back"><button type="button" class="btn ghost" data-action="car:tab" data-tab="doc" data-key="${x.esc(tabKey(t))}">📂 Về hồ sơ</button></div></div>`;
+    <div class="ok-bar-btns ok-back"><button type="button" class="btn ${back}" data-action="car:tab" data-tab="doc" data-key="${x.esc(tabKey(t))}">📂 Về hồ sơ</button></div></div>`;
+}
+
+/* ---------------------------------------------------------------- next step (v4/guide.js) */
+/** What the server tells the first dossier's screen (office.coach): null on every later dossier. */
+export const coachOf=(x,t)=>firstTime(x)&&x.room.data?.coach?.[t.id]||null;
+/** A step that lives on the document: bring the 📂 tab forward, then scroll to `sel` and flash it. */
+export const goto=(x,t,sel,label='')=>({act:'car:goto',data:{tab:'doc',key:tabKey(t),sel},...(label?{label}:{})});
+export function gotoAction(data,el,x){
+  switchTab(data,el,x);
+  const root=rootOf(el);if(!root||!data.sel)return;
+  requestAnimationFrame(()=>{const all=[...root.querySelectorAll(data.sel)];highlight(all.find(e=>e.offsetParent!==null)||all[0]);});
+}
+const plainLabel=s=>String(s||'').replace(/<[^>]*>/g,'').replace(/^[^\p{L}\p{N}]+/u,'').trim();
+/** The one-line hint (top of the job, pinned in the sheet header) and the bar's main button, from one step list.
+ * `final` = {label (HTML), go, ready?}: the finishing action once nothing is left. A step may carry `hintGo`: what the
+ * hint does when it should point rather than act (the bottom button still acts). */
+export function guideOf(x,t,steps,final=null,{done='',main=''}={}){
+  // The hint says the step (the button says the action): drop the button label unless the step points elsewhere.
+  const hs=steps.map(s=>s.hintGo?{...s,go:s.hintGo}:s.go?{...s,go:{...s.go,label:''}}:s);
+  const hint=nextHint(x,hs,{final:final&&final.ready!==false?{label:plainLabel(final.label),go:final.go}:null,done});
+  let cta=main;
+  if(!cta){
+    if(final)cta=stepCta(x,steps,final,{style:'primary big grow'});
+    else{const n=pending(steps);cta=n?.go?`<button type="button" class="btn primary big grow gd-cta"${goAttrs(n.go)}>${n.go.label||`👉 ${x.esc(n.label)}`}</button>`:'';}
+  }
+  return {hint,cta};
+}
+
+/** Steps of a step-by-step dossier (corp & group share the widgets: `pre` = 'ca' | 'ga', `confirm` = {kind: [label, action]}).
+ * Papers the step needs are opened first. On a first dossier a choice lights the right option and any other
+ * step offers “✍️ Điền theo chứng từ” (coachFill) before its confirm button; later the hint points at the step. */
+export function procSteps(x,t,{pre,confirm}){
+  const st=(t.proc||[]).find(s=>s.state==='current');if(!st)return [];
+  const out=[],co=coachOf(x,t),key=co&&co.step===st.id?co.key:undefined;
+  for(const id of st.docs||[]){
+    const d=(t.docs||[]).find(v=>v.id===id);
+    if(d?.closed)out.push({ok:null,label:`Mở “${d.title}”`,go:{act:'car:open',data:{task:t.id,doc:d.id},label:`📂 Mở “${x.esc(d.title)}”`}});
+  }
+  const at=(t.proc_state?.at||0)+1,total=t.proc_state?.total||(t.proc||[]).length,label=`Bước ${at}/${total}: ${st.title}`;
+  if(st.kind==='choice'){
+    if(key===undefined)out.push({ok:null,label,go:goto(x,t,`.${pre}-options`,'👇 Chọn một đáp án')});
+    else{
+      const o=(st.options||[]).find(v=>v.id===key),sel=`.${pre}-opt[data-opt="${key}"]`;
+      out.push({ok:null,label,go:goto(x,t,sel,`👉 ${x.esc(o?.label||'Chọn đáp án đang sáng')}`),pulse:sel});
+    }
+    return out;
+  }
+  const [cl,act]=confirm[st.kind]||['✔ Xác nhận',''],k=`${t.id}:${st.id}`;
+  // An order list starts complete: until the player moves an item (or has tried once) the button points at the list.
+  if(key===undefined&&st.kind==='order'&&!x.ui.moved?.[k]&&!(t.proc_state?.attempts||{})[st.id]){
+    out.push({ok:null,label,go:goto(x,t,`.${pre}-order`,'↕️ Xếp lại bằng ↑ ↓')});
+    return out;
+  }
+  if(key!==undefined&&!x.ui.coached?.[k])
+    out.push({ok:null,label,go:{act:'car:coach',data:{task:t.id,step:st.id},label:'✍️ Điền theo chứng từ'}});
+  else out.push({ok:null,label,go:{act,data:{task:t.id,step:st.id},label:cl},...(key===undefined?{hintGo:goto(x,t,`.${pre}-work`)}:{})});
+  return out;
+}
+/** car:coach — fills the current step's sheet from the first dossier's key (drafts are `${task}:${step}`), then re-renders. */
+export function coachFill(data,el,x){
+  const t=(x.room.tasks||[]).find(v=>v.id===data.task),st=(t?.proc||[]).find(s=>s.id===data.step),co=t&&x.room.data?.coach?.[t.id];
+  if(!st||co?.step!==st.id)return;
+  const k=`${t.id}:${st.id}`,key=co.key,dr=(x.ui.drafts??={});
+  if(st.kind==='multi'||st.kind==='order')dr[k]=[...key];
+  else if(st.kind==='number')dr[k]=String(key);
+  else if(st.kind==='match')dr[k]={...key};
+  else if(st.kind==='fields')dr[k]=Object.fromEntries(Object.entries(key).map(([f,v])=>[f,String(v)]));
+  else if(st.kind==='entry'){
+    const side=i=>{const m=new Map();for(const r of key)m.set(r[i],(m.get(r[i])||0)+Number(r[2]));return [...m].map(([account,amount])=>({account,amount:String(amount)}));};
+    dr[k]={debit:side(0),credit:side(1)};
+  }
+  (x.ui.coached??={})[k]=true;x.render();
 }
 
 /** Client-only tab switch (no re-render, so typed numbers and ticks stay). */
+const rootOf=el=>el.closest('.career-job.ok')||el.closest('dialog')?.querySelector('.career-job.ok')||document.querySelector('dialog[open] .career-job.ok');
 export function switchTab(data,el,x){
-  const root=el.closest('.career-job.ok');if(!root||!data.tab)return;
+  const root=rootOf(el);if(!root||!data.tab)return;
   if(data.key)(x.ui.okTab??={})[data.key]=data.tab;
   root.dataset.okTab=data.tab;
   root.querySelectorAll('.ok-tab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===data.tab)));
@@ -231,11 +309,32 @@ export function switchTab(data,el,x){
   if(el.classList.contains('ok-mail')||el.closest('.ok-bar'))root.querySelector(`#ok-tab-${CSS.escape(data.tab)}`)?.focus({preventScroll:true});
 }
 
-/** Keeps the sticky bar above the sheet's own sticky footer (call from tick). */
+/** Keeps the sticky bar above the sheet's own sticky footer (call from tick). It also keeps the work in view:
+ * on a first dossier the glowing control once per render; otherwise the card of the step / set / person on the
+ * desk ([data-step-card]) once each time it changes. Scrolling only, the DOM is never replaced. */
+let followed='';
 export function keepBarAboveFooter(root){
-  const foot=root.closest('dialog')?.querySelector('.sheet-foot');
+  const dlg=root.closest('dialog'),foot=dlg?.querySelector('.sheet-foot');
   const h=foot&&getComputedStyle(foot).position==='sticky'?foot.offsetHeight:0;
   if(root.dataset.okFoot!==String(h)){root.dataset.okFoot=String(h);root.style.setProperty('--ok-foot',h+'px');}
+  if(root.dataset.okFollow||!dlg)return;
+  const smooth=matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth';
+  const top=dlg.querySelector('.sheet-head')?.getBoundingClientRect().bottom||0,low=root.querySelector(':scope>.ok-bar')?.getBoundingClientRect().top||innerHeight;
+  const el=root.querySelector('.ok-pane .gd-pulse');
+  if(el){
+    if(el.offsetParent===null)return;
+    root.dataset.okFollow='1';
+    const r=el.getBoundingClientRect();
+    if(r.top<top||r.bottom>low)el.scrollIntoView({block:'center',behavior:smooth});
+    return;
+  }
+  const card=root.querySelector('.ok-pane-doc [data-step-card]');
+  if(!card||card.offsetParent===null)return;
+  root.dataset.okFollow='1';
+  if(card.dataset.stepCard===followed)return;
+  followed=card.dataset.stepCard;
+  const r=card.getBoundingClientRect();
+  if(r.top<top||r.top>top+(low-top)*.45)dlg.scrollBy({top:r.top-top-8,behavior:smooth});
 }
 
 /** A folded section (native details; the summary is HTML). */

@@ -1134,8 +1134,8 @@ def feedback(c: dict, t: dict) -> dict:
 # ------------------------------------------------------------------ projection & validation
 def known_request(c: dict, t: dict) -> str:
     if t['form'] == 'grid':
-        return t['brief'] + f' Bảng có {len(t["rows"])} người; giấy tờ gốc: ' + ', '.join(x['title'] for x in t['papers']) + '.'
-    return t['brief']
+        return f'Bảng lương có {len(t["rows"])} người — soát từng dòng rồi chuyển lương.'
+    return f'Hồ sơ có {len(t["proc"])} bước — làm lần lượt.'
 
 
 def _strip(v):
@@ -1247,7 +1247,15 @@ def public_data(c: dict) -> dict:
     view = care_public(cr, CARE, c, o, _can_cover)
     view.update(calendar=_calendar(c, cr), plan=_plan_view(c, cr))
     d['care'] = view
+    d['coach'] = office.coach(c, ID, _coach)
     return d
+
+
+def _coach(t: dict) -> dict | None:
+    """First dossier only (office.coach): the wrong cells of each row still to check, or the step's key."""
+    if t.get('form') == 'grid':
+        return dict(rows={r['id']: dict(z=list(r['_truth']['z']), why=list(r['_truth']['why'])) for r in t['rows'] if r['id'] not in t['reviewed']})
+    return office.coach_step(t)
 
 
 # ------------------------------------------------------------------ day hooks

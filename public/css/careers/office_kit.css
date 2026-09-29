@@ -214,3 +214,19 @@ html[data-layout="phone"] .career-job.ok{--ok-foot:68px}
 .career-job.ok .ok-perks li.on{color:var(--ink)}
 .career-job.ok .ok-story{display:grid;gap:4px;padding:8px 12px;border-radius:var(--radius-sm);background:var(--surface-2);font-size:.967rem}
 .career-job.ok .ok-story li.next{color:var(--muted);font-style:italic}
+
+/* ---------------------------------------------------------------- phone, working on the document
+   The five-day calendar waits in the inbox and the status strip shrinks, so the step, the paper and the
+   bottom bar fit one screen. */
+html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-cal{display:none}
+html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-strip{padding:6px 10px;gap:4px 10px}
+html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-clock{grid-auto-flow:column;align-items:center;gap:8px}
+html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-clock>small{display:none}
+html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-clock .ok-energy{margin-top:0}
+html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-trust{min-width:120px}
+html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle)>.ok-pane{padding:10px}
+/* The bottom button (the next step) spans the bar; the back-to-document button is the main one on other tabs. */
+.career-job.ok .ok-bar-btns>.gd-ctas{flex:1 1 100%}
+.career-job.ok .ok-bar .btn.big{min-height:52px;font-size:1.05rem}
+html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-trust,
+html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-clock .ok-energy:not(.warn):not(.bad){display:none}

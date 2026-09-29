@@ -8,6 +8,7 @@ old saves get it through ensure(). Every change goes through these helpers so th
 rules stay the same in all three careers.
 """
 from __future__ import annotations
+import copy
 from . import kit
 
 OPEN, LUNCH, CLOSE, LOCK = 480, 720, 1050, 1200      # 08:00, 12:00, 17:30, 20:00
@@ -207,6 +208,36 @@ def public_task(t: dict, o: dict, day: int) -> dict | None:
     overdue = day > t.get('due_day', day) or clock > t['due']
     left = t['due'] - clock if not overdue else 0
     return dict(due=t['due'], time=hhmm(t['due']), overdue=overdue, soon=not overdue and left <= 45, left=max(0, left))
+
+
+# ---------------------------------------------------------------- first dossier: a coached screen
+# A new player's first dossier in an office career (nothing handed in yet) is a guided tutorial: the
+# screen lights the right option, the right cell and the right stamp. The office screens only ever
+# show documents, and the answers are judgements the client cannot derive from them, so the view
+# carries them for that first dossier only (data['coach'], keyed by task id). Rules stay the same.
+def first_dossier(c: dict) -> bool:
+    return not (c.get('metrics') or {}).get('served')
+
+
+def coach_step(t: dict) -> dict | None:
+    """The current step of a step-by-step dossier and its answer key."""
+    proc, ps = t.get('proc') or [], t.get('proc_state') or {}
+    at = ps.get('at', 0)
+    if at >= len(proc):
+        return None
+    return dict(step=proc[at]['id'], key=copy.deepcopy(proc[at]['_key']))
+
+
+def coach(c: dict, career: str, fn) -> dict:
+    if not first_dossier(c):
+        return {}
+    out = {}
+    for t in c.get('tasks') or []:
+        if t.get('career') == career and t.get('known') and t['status'] not in ('completed', 'referred', 'cancelled'):
+            v = fn(t)
+            if v:
+                out[t['id']] = v
+    return out
 
 
 def validate(o) -> None:

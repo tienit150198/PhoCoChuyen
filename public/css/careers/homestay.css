@@ -188,7 +188,7 @@
 .career-job.hs .hs-foot{gap:6px;margin:0}
 .career-job.hs .hs-stats{gap:6px}
 .career-job.hs .hs-rules{padding:10px 12px;border-radius:var(--hs-rs);background:var(--hs-s1);border:1px solid var(--hs-line)}
-.career-job.hs .hs-rules summary,.career-job.hs .hs-ota>summary{cursor:pointer;min-height:40px;padding:9px 0;line-height:1.4}
+.career-job.hs .hs-rules summary,.career-job.hs .hs-ota>summary{cursor:pointer;min-height:44px;padding:9px 0;line-height:1.4}
 .career-job.hs .hs-rules ul{margin:6px 0 0;padding-left:18px;display:grid;gap:4px;font-size:.9em;line-height:1.45}
 .career-job.hs .hs-running{border-color:var(--hs-warn)}
 .career-job.hs .hs-bubble{padding:8px 12px;border-radius:var(--hs-rs);background:var(--hs-s2);border:1px solid var(--hs-line);font-size:.92em;line-height:1.45}
@@ -252,7 +252,7 @@
 .career-job.hs .hs-panel-body{padding:0 10px 10px;display:grid;gap:8px}
 .career-job.hs .hs-care{border-left:4px solid var(--hs-accent)}
 .career-job.hs .hs-mini{background:transparent;border:0}
-.career-job.hs .hs-mini .hs-panel-head{min-height:40px;padding:6px 0;font-weight:600;font-size:.88em}
+.career-job.hs .hs-mini .hs-panel-head{min-height:44px;padding:6px 0;font-weight:600;font-size:.88em}
 .career-job.hs .hs-mini .hs-panel-body{padding:0}
 .career-job.hs .hs-door{display:inline-block;margin-left:4px;padding:0 6px;border-radius:99px;background:var(--hs-s2);border:1px solid var(--hs-line);font-size:.72em;font-weight:700;color:var(--hs-muted);vertical-align:middle}
 .career-job.hs .hs-lock{font-weight:700;color:var(--hs-muted)}
@@ -306,3 +306,10 @@
 
 @media (prefers-reduced-motion:reduce){.career-job.hs *{transition:none!important;animation:none!important}}
 :is(body,html).reduce-motion .career-job.hs *{transition:none!important;animation:none!important}
+
+/* ---------- next-step bar (guide.js): the one button that does the next step rides at the bottom of the sheet */
+.career-job.hs .hs-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--hs-r);
+  background:var(--hs-s1);border:1px solid var(--hs-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
+.career-job.hs .hs-bar .btn{flex:1 1 auto;min-height:48px}
+.career-job.hs .hs-bar .btn:disabled{opacity:.7}
+.career-job.hs .hs-step-card{scroll-margin-top:8px}

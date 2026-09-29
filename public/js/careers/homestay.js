@@ -3,6 +3,8 @@
 const PAN_SCALE=24;   // seconds shown on the frying-pan bar
 const AIR_SCALE=120;  // seconds shown on the window-airing bar
 import {reqList} from '../ui-kit.js';
+import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,todoAttrs,todoArrow} from '../v4/guide.js';
+import {keepBarAboveFooter} from './food_kit.js';
 const JOB_ICON={checkin:'🔑',checkout:'🧾',breakfast:'🍳',booking:'📅',recommend:'🗺️',claim:'📞'};
 const STATUS={clean:['Sạch','green'],dirty:['Cần dọn','amber'],occupied:['Có khách','blue'],maintenance:['Bảo trì','danger']};
 const CELL={occ:'🛏️',book:'📌',maint:'🔧',free:''};
@@ -28,7 +30,8 @@ function panel(x,key,head,body,def=false,cls=''){
 }
 
 function checklist(x,rows){
-  return `<ul class="checklist">${rows.map(([ok,label,note])=>`<li class="${ok===true?'ok':ok===false?'bad':''}"><span>${ok===true?'✓':ok===false?'✗':'○'}</span>${x.esc(label)}${note?`<small>${x.esc(note)}</small>`:''}</li>`).join('')}</ul>`;
+  // A row may carry a 4th item, a guide.js `go`: an open row then jumps to (or does) its step.
+  return `<ul class="checklist">${rows.map(([ok,label,note,go])=>{const s={ok,go};return `<li class="${ok===true?'ok':ok===false?'bad':''}${todoAttrs(s)?' gd-todo':''}"${todoAttrs(s)}><span>${ok===true?'✓':ok===false?'✗':'○'}</span>${x.esc(label)}${note?`<small>${x.esc(note)}</small>`:''}${todoArrow(s)}</li>`;}).join('')}</ul>`;
 }
 function selection(x,t){
   if(x.ui.selTask!==t.id){x.ui.selTask=t.id;x.ui.sel=[];}
@@ -76,14 +79,14 @@ function deskCard(x){
   const who=x.npc(ev.npc);
   const opts=ev.options.map(o=>`<button type="button" class="btn ghost hs-opt" ${cmdAttr(x,'hs_desk',{option:o.id})} ${o.cost>x.room.money?'disabled':''}><b>${x.esc(o.label)}</b>${o.hint?`<small>${x.esc(o.hint)}</small>`:''}</button>`).join('');
   return `<section class="hs-desk ${x.esc(ev.tone||'')}" role="alert" aria-live="assertive"><div class="hs-desk-head"><span class="hs-desk-emoji" aria-hidden="true">${x.esc(ev.emoji)}</span><div class="grow"><small>CHUYỆN Ở QUẦY</small><h3>${x.esc(ev.title)}</h3></div>${x.portrait(who,40)}</div>
-    <p>${x.esc(ev.text)}</p><div class="hs-opts">${opts}</div><p class="hs-note">Trứng trong chảo, phòng đang mở cửa sổ vẫn xử lý được; việc khác chờ quyết xong chuyện này.</p></section>`;
+    <p>${x.esc(ev.text)}</p><div class="hs-opts">${opts}</div></section>`;
 }
 function lastDesk(x){const l=x.room.data?.desk?.last;if(!l||l.day!==x.room.day)return '';return `<p class="hs-last ${l.good===true?'good':l.good===false?'bad':''}" aria-live="polite"><span aria-hidden="true">${x.esc(l.emoji)}</span> <b>${x.esc(l.title)}:</b> ${x.esc(l.outcome)}</p>`;}
 function foot(x){
   const d=x.room.data||{},busy=deskOpen(x);
   return `<p class="row wrap hs-foot">${x.cmd(d.safe_today?'✅ Đã ký sổ an toàn hôm nay':'🧯 Kiểm tra an toàn & ký sổ','hs_safety',{},'ghost small',!!d.safe_today||busy)}${x.button('📦 Kho & nhập hàng','inventory',{},'ghost small')}</p>`;
 }
-function rules(x){return `<details class="hs-rules"><summary>📋 Nội quy nhà Mây</summary><ul>${(x.cc.rules||[]).map(r=>`<li>${x.esc(r)}</li>`).join('')}</ul></details>`;}
+function rules(x){return `<details class="hs-rules fold gd-rules"><summary>📜 Quy tắc</summary><ul>${(x.cc.rules||[]).map(r=>`<li>${x.esc(r)}</li>`).join('')}</ul></details>`;}
 
 /* ---------------------------------------------------------------- app orders (OTA inbox) */
 const pendingOrders=x=>(x.room.data?.ota||[]).filter(o=>o.status==='new');
@@ -143,7 +146,6 @@ function otaPanel(x,open=false){
   if(!list.length)return '';
   const clashes=list.filter(o=>roomFree(x,o.room,o.start,o.nights,o.id)).length;
   return `<details class="hs-ota" ${open||clashes?'open':''}><summary>📥 Hộp đơn OTA · ${list.length} chờ đồng bộ${clashes?` · <b class="hs-bad">${clashes} trùng phòng</b>`:''}</summary>
-    <p class="small muted">App bán phòng mà không nhìn lịch nhà. Đồng bộ trước khi khách tới; đơn trùng để tới tối là khách tới nơi không có phòng.</p>
     ${waiting(x)}<ul class="hs-ota-list">${list.map(o=>otaRow(x,o)).join('')}</ul></details>`;
 }
 
@@ -202,7 +204,7 @@ function turnover(x,rid,room){
     return `<button type="button" class="hs-hkstep ${ok?'done':''}" ${cmdAttr(x,'hs_clean',{room:rid,step:s.id})} ${ok||wait||(busy&&!free)?'disabled':''}><span class="n">${ok?'✓':i+1}</span><span class="e">${s.emoji}</span><span class="grow">${x.esc(s.name)}${use.length?`<small>−${x.esc(use.join(', '))}</small>`:''}</span></button>`;
   }).join('');
   return `<div class="hs-turnover card"><div class="row spread"><h4>🧹 Dọn phòng ${r.emoji} ${x.esc(r.name)}</h4>${x.button('Đóng','car:hk',{room:rid},'ghost small')}</div>
-    <p class="small muted">Đúng thứ tự: tháo ga → phòng tắm → ga mới → khăn & minibar → kiểm → báo sạch. Mở cửa sổ ${air.damp}–${air.cold} giây cho hết mùi ẩm mà phòng không lạnh.${air.damp>(x.cc.air?.damp||15)?' 🌧️ Hôm nay mưa ẩm: mở lâu hơn thường lệ.':''}</p>
+    <p class="small muted">🪟 ${air.damp}–${air.cold} giây${air.damp>(x.cc.air?.damp||15)?' · 🌧️ mưa ẩm':''}</p>
     ${bar('air',room.hk?.start,[['damp',0,air.damp],['fresh',air.damp,air.cold],['cold',air.cold,AIR_SCALE]],AIR_SCALE)}
     <div class="hs-hksteps">${steps}</div></div>`;
 }
@@ -291,9 +293,9 @@ function regularCard(t,x){
 }
 
 /* While a surprise waits at the counter: only the pan and rooms being aired can still be finished. */
-function running(t,x){
+function running(t,x,pan=true){
   const d=x.room.data||{},parts=[];
-  if(t&&t.known&&t.job==='breakfast'&&t.tray.pan){
+  if(pan&&t&&t.known&&t.job==='breakfast'&&t.tray.pan){
     const w=x.cc.egg||{raw:5,runny:11,well:18};
     parts.push(`<div class="hs-pan">${bar('pan',t.tray.pan,[['raw',0,w.raw],['runny',w.raw,w.runny],['well',w.runny,w.well],['burnt',w.well,PAN_SCALE]],PAN_SCALE)}${x.cmd('🥄 Nhấc trứng ra đĩa','hs_plate',{task:t.id},'primary')}</div>`);
   }
@@ -313,24 +315,24 @@ function checkinJob(t,x){
   const n=t.needs,ci=t.ci,d=x.room.data,sel=selection(x,t);
   const booked=counted(x,n.adults,n.kids),arr=t.arrived?counted(x,t.arrived.adults,t.arrived.kids):null,extra=arr!==null?arr-booked:0;
   const staying=ci.extra==='refuse'?booked:(arr??booked);
-  const list=n.list.map(e=>`<button type="button" class="hs-entry ${ci.verified&&e.code===n.code&&e.start===t.day?'ok':''}" ${cmdAttr(x,'hs_verify',{task:t.id,entry:e.id})} ${ci.verified?'disabled':''}>
+  const list=n.list.map(e=>`<button type="button" class="hs-entry ${ci.verified&&e.code===n.code&&e.start===t.day?'ok':''}" data-entry="${x.esc(e.id)}" ${cmdAttr(x,'hs_verify',{task:t.id,entry:e.id})} ${ci.verified?'disabled':''}>
       <b>${x.esc(e.id)}</b><span class="grow">${x.esc(e.name)} · <code>${x.esc(e.code)}</code><small>nhận ngày ${e.start}${e.start===d.today?' (hôm nay)':''} · ${e.nights} đêm · ${e.guests} khách</small></span></button>`).join('');
   let proof='';
   if(n.proof==='bank'){
     const res={ok:['green','🏦 Sao kê đã có khoản cọc — đối chiếu xong.'],missing:['danger','🏦 Sao kê KHÔNG có khoản cọc: chuyển nhầm số tài khoản. Thu đủ tại quầy.']}[t.bank];
     proof=`<div class="hs-proof"><p class="small">💸 Cọc ${x.money(n.paid)} chuyển khoản qua ${x.esc(n.platform)} — khách đưa <b>ảnh chụp màn hình</b>.</p>${res?`<p class="tag ${res[0]}">${res[1]}</p>`:x.cmd('🏦 Mở app ngân hàng đối chiếu','hs_bank',{task:t.id},'ghost small')}</div>`;
   }
-  const s1=step(1,'Khớp đặt phòng trên app',ci.verified,`<p class="small">Khách đọc mã <b>${x.esc(n.code)}</b>, tên <b>${x.esc(n.name)}</b> (${x.esc(n.platform)}). Chọn đúng dòng — coi chừng tên gần giống, số đảo, sai ngày.</p><div class="stack">${list}</div>${proof}`);
+  const s1=step(1,'Khớp đặt phòng trên app',ci.verified,`<p class="small">🔎 <b>${x.esc(n.code)}</b> · <b>${x.esc(n.name)}</b> · hôm nay</p><div class="stack hs-entries">${list}</div>${proof}`);
   const idText={ok:'Người lớn đều có giấy tờ tùy thân.',app:'Khách dùng ứng dụng định danh điện tử thay thẻ giấy — hợp lệ.'}[t.id_status]||'';
   const s2=step(2,'Giấy tờ & khai báo lưu trú',ci.ids,ci.ids?`<p class="small">🪪 ${x.esc(idText)} Đã khai báo lưu trú. <b>Không</b> ghi hay chụp số giấy tờ.</p>`:
-    `<div class="row wrap">${x.cmd('👀 Xem giấy tờ & khai báo','hs_ids',{task:t.id,mode:'look'},st(t,x,'ids'),!ci.verified)}${x.cmd('📸 Chụp lưu giấy tờ vào máy','hs_ids',{task:t.id,mode:'photo'},'ghost small',!ci.verified)}</div><p class="small muted">🔒 Giấy tờ chỉ để xem và khai báo, trả lại ngay cho khách.</p>`);
+    `<div class="row wrap">${x.cmd('👀 Xem giấy tờ & khai báo','hs_ids',{task:t.id,mode:'look'},st(t,x,'ids'),!ci.verified)}${x.cmd('📸 Chụp lưu giấy tờ vào máy','hs_ids',{task:t.id,mode:'photo'},'ghost small',!ci.verified)}</div><p class="small muted">🔒 Chỉ xem, không lưu.</p>`);
   let s3body;
   if(!ci.counted)s3body=x.cmd('🧮 Đếm khách đang đứng ở quầy','hs_count',{task:t.id},st(t,x,'count'),!ci.verified);
   else{
     const kids=t.arrived.kids.length?`, ${t.arrived.kids.length} bé (${t.arrived.kids.join(', ')} tuổi)`:'';
     s3body=`<p class="small">👥 Có mặt ${t.arrived.adults} người lớn${x.esc(kids)} → <b>${arr} người tính chỗ</b> (đặt ${booked}).${t.arrived.kids.length?` <span class="muted">Bé dưới ${x.cc.kid_free_age} tuổi ngủ chung không tính.</span>`:''}</p>`;
     if(extra>0)s3body+=ci.extra&&ci.extra!=='none'?`<p class="tag ${ci.extra==='surcharge'?'green':'amber'}">${ci.extra==='surcharge'?`Phụ thu ${x.cc.extra_guest} xu/người/đêm + nệm phụ`:'Chỉ nhận đúng số người đã đặt'}</p>`:
-      `<div class="notice amber">Dư ${extra} người so với đặt phòng.</div><div class="row wrap">${x.cmd(`➕ Phụ thu ${x.cc.extra_guest} xu/người/đêm`,'hs_extra',{task:t.id,choice:'surcharge'},'ghost small')}${x.cmd('🙅 Chỉ nhận đúng số đã đặt','hs_extra',{task:t.id,choice:'refuse'},'ghost small')}</div>`;
+      `<div class="notice amber">Dư ${extra} người so với đặt phòng.</div><div class="row wrap hs-extra">${x.cmd(`➕ Phụ thu ${x.cc.extra_guest} xu/người/đêm`,'hs_extra',{task:t.id,choice:'surcharge'},'ghost small')}${x.cmd('🙅 Chỉ nhận đúng số đã đặt','hs_extra',{task:t.id,choice:'refuse'},'ghost small')}</div>`;
   }
   const s3=step(3,'Đếm khách',ci.counted&&ci.extra,s3body);
   const busyOf=id=>(d.grid?.[id]||[]).slice(0,n.nights).some(c=>c.kind!=='free')||!['clean','dirty'].includes(d.rooms[id].status);
@@ -347,7 +349,7 @@ function checkinJob(t,x){
   const caps=x.cc.rooms.filter(r=>r.unlock<=d.level&&!busyOf(r.id)).map(r=>r.cap).sort((a,b)=>b-a);
   const full=ci.counted&&ci.extra&&!ci.rooms.length&&(caps[0]||0)+(caps[1]||0)<staying;
   const fee=(x.cc.walk_fee||15)+(t.bank==='missing'?0:n.paid);
-  const walk=full?`<div class="notice amber space-top">Chưa phòng nào sạch và trống đủ ${n.nights} đêm cho ${staying} người. Dọn phòng bẩn hoặc làm xong trả phòng trước — nếu vẫn hết thật thì:</div>
+  const walk=full?`<div class="notice amber space-top">Hết phòng trống ${n.nights} đêm cho ${staying} người.</div>
     <div class="row wrap">${x.confirmCmd(`🏡 Chuyển sang Nhà Gỗ Cô Ba (−${fee} xu)`,'hs_relocate',{task:t.id},`Chỉ chọn khi không còn phòng nào dọn kịp hay sắp trả. Xin lỗi ${n.name}, hoàn cọc và trả ${x.cc.walk_fee||15} xu chênh lệch + taxi?`,'ghost small')}</div>`:'';
   const s4=step(4,n.size>staying?`Giao phòng (${n.nights} đêm, cần chỗ cho ${staying} người, khách đặt phòng ${n.size} người)`:`Giao phòng (${n.nights} đêm, cần chỗ cho ${staying} người)`,given,`<div class="tile-grid hs-tiles">${tiles}</div>
     <div class="row wrap space-top">${x.cmd(`🗝️ Giao ${pick.length?pick.map(id=>x.esc(roomInfo(x,id).name)).join(' + '):'phòng'} (${cap} chỗ)`,'hs_assign',{task:t.id,rooms:pick},st(t,x,'assign'),!(ci.counted&&ci.extra)||!pick.length||given||stale.length>0||(!given&&cap<staying))}</div>${stale.length?`<p class="small hs-warn">${x.esc(stale.map(id=>roomInfo(x,id).name).join(', '))} chưa sạch hoặc chưa trống — bỏ chọn, dọn xong rồi giao.</p>`:''}${!given&&pick.length&&cap<staying&&!stale.length?`<p class="small hs-warn">Mới đủ ${cap}/${staying} chỗ — chọn thêm một phòng (tối đa 2).</p>`:''}${pick.some(dirtyOf)?`<p class="small hs-warn">🧹 ${x.esc(pick.filter(dirtyOf).map(id=>roomInfo(x,id).name).join(', '))} chưa dọn — khách vào là thấy ngay. Dọn xong rồi hẵng trao chìa khóa.</p>`:''}${walk}`);
@@ -369,8 +371,7 @@ function checkinSide(t,x){
     ${n.paid?`<div class="kv"><span>${paidLabel}</span><b>−${x.money(credit)}</b></div>`:''}
     ${extra?`<div class="kv"><span>Phụ thu ${extra} người × ${n.nights} đêm</span><b>${x.money(x.cc.extra_guest*extra*n.nights)}</b></div>`:''}
     <div class="kv total"><span>Thu tại quầy</span><b>${x.money(due)}</b></div></div>
-    ${checklist(x,rows)}
-    ${x.confirmCmd('🔑 Trao chìa khóa & thu tiền','hs_welcome',{task:t.id},`Trao chìa khóa và thu ${due} xu?`,st(t,x,'welcome')+' big full',!(ci.verified&&ci.ids&&ci.counted&&ci.extra&&ci.rooms.length))}`;
+    ${stepRows(x,checkinSteps(t,x),'Việc nhận phòng')}`;
 }
 
 function checkoutJob(t,x){
@@ -378,7 +379,7 @@ function checkoutJob(t,x){
   const free=t.truth_hint?.free_water??pkg?.water_free??x.cc.free_water;
   const where=r?`${r.emoji} Phòng ${x.esc(r.name)}`:'Phòng khách (ca đêm xếp)';
   let s1;
-  if(!t.checked)s1=step(1,'Kiểm phòng trước khi tính tiền',false,`<p class="small">${where} · ${n.nights} đêm. Kiểm minibar, hư hỏng, đồ bỏ quên trong lúc khách chờ ở quầy.</p>${x.cmd('🔍 Báo buồng phòng kiểm','hs_inspect',{task:t.id},st(t,x,'inspect'))}`);
+  if(!t.checked)s1=step(1,'Kiểm phòng trước khi tính tiền',false,`<p class="small">${where} · ${n.nights} đêm</p>${x.cmd('🔍 Báo buồng phòng kiểm','hs_inspect',{task:t.id},st(t,x,'inspect'))}`);
   else s1=step(1,'Kết quả kiểm phòng',true,`<div class="hs-minibar">
       <span>💧 ${c.water} chai <small>(${free} chai tặng)</small></span><span>🍜 ${c.noodles} ly mì</span><span>🍪 ${c.snack} gói bánh</span><span>☕ ${c.coffee} gói <small>(miễn phí)</small></span></div>
       <p class="small">${c.damage?`🏺 Hư hỏng: <b>${x.esc(c.damage)}</b>`:'✅ Không có hư hỏng.'}</p>
@@ -387,15 +388,14 @@ function checkoutJob(t,x){
     return `<div class="hs-line ${q?'on':''}"><span class="e">${l.emoji}</span><span class="grow">${x.esc(l.name)}<small>${l.price} xu/${x.esc(l.unit)}</small></span>
       ${x.cmd('−','hs_line',{task:t.id,line:l.id,delta:-1},'ghost small hs-qbtn',!t.checked||!q)}<b class="q">${q}</b>${x.cmd('+','hs_line',{task:t.id,line:l.id,delta:1},'ghost small hs-qbtn',!t.checked||q>=9)}</div>`;}).join('');
   const banner=pkg?`<div class="hs-package">🎁 <b>${x.esc(pkg.name)}</b>: ${x.esc(pkg.text)}.</div>`:'';
-  const s2=step(2,'Lập hóa đơn từng dòng',false,`${banner}<p class="small muted">Khách nói: “${x.esc(n.claim)}”${n.laundry?` · Gửi giặt ${n.laundry} túi`:''}${n.late?' · Xin trả phòng sau 12h':''}. Nước: chỉ tính chai thứ ${free+1} trở đi.</p>${lines}`);
+  const s2=step(2,'Lập hóa đơn từng dòng',false,`${banner}<p class="small muted">💧 tính từ chai thứ ${free+1}${n.laundry?` · 👕 ${n.laundry} túi`:''}${n.late?' · 🕑 trả muộn':''}</p>${lines}`);
   return s1+s2;
 }
 function checkoutSide(t,x){
   const rows=x.cc.bill_lines.filter(l=>t.bill[l.id]).map(l=>`<div class="kv"><span>${l.emoji} ${x.esc(l.name)} × ${t.bill[l.id]}</span><b>${x.money(l.price*t.bill[l.id])}</b></div>`).join('');
   const total=x.cc.bill_lines.reduce((a,l)=>a+l.price*(t.bill[l.id]||0),0);
   return `<div class="hs-receipt"><h4>🧾 Hóa đơn trả phòng</h4>${rows||'<p class="small muted">Chưa có dòng nào. Tiền phòng đã thu khi nhận phòng.</p>'}<div class="kv total"><span>Tổng</span><b>${x.money(total)}</b></div></div>
-    ${checklist(x,[[t.checked||null,'Kiểm phòng',''],...(t.check?.lost?[[t.returned||null,'Trả đồ bỏ quên',t.check.lost]]:[]),[t.disputes?false:null,'Khách đồng ý hóa đơn',t.disputes?`đã phải sửa ${t.disputes} lần`:'']])}
-    ${x.confirmCmd('🧾 In hóa đơn & thu tiền','hs_settle',{task:t.id},`Thu ${total} xu theo hóa đơn này? Khách sẽ đọc từng dòng.`,st(t,x,'settle')+' big full',!t.checked)}`;
+    ${stepRows(x,checkoutSteps(t,x),'Việc trả phòng')}${t.disputes?`<p class="small hs-warn">Khách đã chỉ ra hóa đơn sai ${t.disputes} lần.</p>`:''}`;
 }
 
 function breakfastJob(t,x){
@@ -403,26 +403,18 @@ function breakfastJob(t,x){
   const ask=t.gen?(t.diet?bubble(x,'Khách:',t.diet_say||''):`<div class="row wrap">${x.cmd('💬 Hỏi dị ứng, ăn kiêng','hs_diet',{task:t.id},'ghost small')}</div>`):'';
   const pan=`<div class="hs-pan">${bar('pan',tray.pan,[['raw',0,w.raw],['runny',w.raw,w.runny],['well',w.runny,w.well],['burnt',w.well,PAN_SCALE]],PAN_SCALE)}
     <div class="row wrap">${tray.pan?x.cmd('🥄 Nhấc trứng ra đĩa','hs_plate',{task:t.id},st(t,x,'plate')):x.cmd(`🍳 Đập trứng vào chảo (${x.stock('egg')})`,'hs_egg',{task:t.id},st(t,x,'egg',''),!x.stock('egg')||tray.eggs.length>=6)}</div>
-    <p class="small muted">Lòng đào: ${w.raw}–${w.runny} giây · chín kỹ: ${w.runny}–${w.well} giây · sau ${w.well} giây là cháy.</p></div>`;
+    <p class="small muted">⏱️ ${w.raw}–${w.runny}s lòng đào · ${w.runny}–${w.well}s chín kỹ · >${w.well}s cháy</p></div>`;
   const tiles=[['bread','🥖','Bánh mì nướng','hs_bread',6],['milk','🥛','Sữa tươi ấm','hs_milk',4],['coffee','☕','Cà phê','hs_coffee',4]].map(([k,e,l,cmd,cap])=>{
     const q=x.stock(k),have=tray[k],want=n[k];
     return `<button type="button" class="tile ${!q?'empty':''} ${want?'wanted':''}" ${cmdAttr(x,cmd,{task:t.id})} ${!q||have>=cap?'disabled':''}><span class="tile-emoji">${e}</span><b>${l}</b><small>kho ${q}</small>${have?`<em class="tile-count">×${have}</em>`:''}</button>`;}).join('');
   return (ask?step('💬','Hỏi trước khi nấu',!!t.diet,ask):'')+step(1,'Chảo trứng',false,pan)+step(2,'Bánh mì & đồ uống',false,`<div class="tile-grid hs-tiles">${tiles}</div>`);
 }
 function breakfastSide(t,x){
-  const n=t.needs,tray=t.tray,want=t.eggs_fix||n.eggs;
+  const n=t.needs,tray=t.tray;
   const eggs=tray.eggs.map(e=>`<span class="hs-egg ${e}" title="${EGG_LABEL[e]}">🍳<small>${EGG_LABEL[e]}</small></span>`).join('');
-  const got={runny:tray.eggs.filter(e=>e==='runny').length,well:tray.eggs.filter(e=>e==='well').length};
-  const rows=[];
-  if(want.runny||got.runny)rows.push([got.runny?got.runny===want.runny:null,`${want.runny} trứng lòng đào`,`${got.runny}/${want.runny}`]);
-  if(want.well||got.well)rows.push([got.well?got.well===want.well:null,`${want.well} trứng chín kỹ`,`${got.well}/${want.well}`]);
-  for(const [k,l] of [['bread','bánh mì'],['milk','sữa'],['coffee','cà phê']])if(n[k]||tray[k])rows.push([tray[k]?tray[k]===n[k]:null,`${n[k]} ${l}`,`${tray[k]}/${n[k]}`]);
-  if(tray.eggs.some(e=>e==='raw'||e==='burnt'))rows.push([false,'Trứng hỏng trên khay','dọn khay làm lại']);
-  if(n.allergy==='egg'||t.eggs_fix)rows.push([tray.eggs.length<=want.runny+want.well,'⚠️ Một người dị ứng trứng','không thêm trứng']);
   return `<div class="hs-tray"><h4>🍽️ Khay ${x.esc(n.where.toLowerCase())} · ${n.people} người</h4><div class="hs-eggs">${eggs||'<small class="muted">Chưa có trứng</small>'}</div>
-    <p class="small">${'🥖'.repeat(tray.bread)}${'🥛'.repeat(tray.milk)}${'☕'.repeat(tray.coffee)}</p></div>${checklist(x,rows)}
-    <div class="stack">${x.confirmCmd(`✅ Mang ra cho khách · ${x.money(t.quoted_price||0)}`,'hs_serve',{task:t.id},'Mang khay này ra? Khách ăn và đánh giá đúng những gì trên khay.',st(t,x,'serve')+' big full',!!tray.pan||!(tray.bread||tray.eggs.length)||tray.eggs.includes('raw'))}
-    ${x.confirmCmd('🗑️ Dọn khay làm lại','hs_toss',{task:t.id},'Bỏ khay này? Nguyên liệu đã dùng ghi vào hao hụt.',st(t,x,'toss','danger')+' small',!(tray.eggs.length||tray.bread||tray.milk||tray.coffee||tray.pan))}</div>`;
+    <p class="small">${'🥖'.repeat(tray.bread)}${'🥛'.repeat(tray.milk)}${'☕'.repeat(tray.coffee)}</p></div>${stepRows(x,breakfastSteps(t,x),'Khay ăn sáng')}${n.allergy==='egg'||t.eggs_fix?'<p class="small hs-warn">⚠️ Một người dị ứng trứng: không thêm trứng.</p>':''}
+    <div class="stack">${x.confirmCmd('🗑️ Dọn khay làm lại','hs_toss',{task:t.id},'Bỏ khay này? Nguyên liệu đã dùng ghi vào hao hụt.',st(t,x,'toss','danger')+' small',!(tray.eggs.length||tray.bread||tray.milk||tray.coffee||tray.pan))}</div>`;
 }
 
 function localRate(x,t){x.ui.rate=x.ui.rate||{};return t.hold.length?(t.rate||'std'):(x.ui.rate[t.id]||'std');}
@@ -434,7 +426,7 @@ function bookingJob(t,x){
   const total=Math.ceil(pick.reduce((a,id)=>a+price(x,id,0),0)*n.nights*pct/100);
   const stale=n.start<d.today;
   let body=calendar(x,{range:[n.start,n.nights],picked:pick,selectable:!held,task:t.id})+(held?'':waiting(x));
-  body+=`<p class="small">Chạm tên phòng để chọn (tối đa 2). Đang chọn: <b>${pick.map(id=>x.esc(roomInfo(x,id).name)).join(' + ')||'—'}</b> · ${cap}/${need} chỗ · ~${x.money(total)}</p>`;
+  body+=`<p class="small">👆 Chọn: <b>${pick.map(id=>x.esc(roomInfo(x,id).name)).join(' + ')||'—'}</b> · ${cap}/${need} chỗ · ~${x.money(total)}</p>`;
   const clash=held?[]:sel.map(id=>holdBlock(x,id,n.start,n.nights)).filter(Boolean);
   const short=!held&&sel.length&&cap<need?`Mới đủ ${cap}/${need} chỗ — chọn thêm hoặc đổi phòng rộng hơn.`:'';
   if(!held)body+=`<div class="row wrap">${x.cmd('📌 Giữ phòng trên lịch','hs_hold',t.gen?{task:t.id,rooms:sel,rate}:{task:t.id,rooms:sel},st(t,x,'hold'),!sel.length||stale||clash.length>0||!!short)}${sel.length?x.button('Bỏ chọn','car:clear',{},'ghost small'):''}</div>${clash.length||short?`<p class="small hs-warn">${x.esc([...clash.map(v=>v+' trong những đêm này.'),short].filter(Boolean).join(' '))}</p>`:''}`;
@@ -445,7 +437,7 @@ function bookingJob(t,x){
       return held?`<button type="button" class="hs-chip ${on?'on':''}" ${cmdAttr(x,'hs_rate',{task:t.id,rate:r.id})} aria-pressed="${on}" ${on?'disabled':''}>${r.emoji} ${x.esc(r.name)}<small>${x.esc(r.short)}</small></button>`
         :`<button type="button" class="hs-chip ${on?'on':''}" data-action="car:rate" data-task="${x.esc(t.id)}" data-rate="${x.esc(r.id)}" aria-pressed="${on}">${r.emoji} ${x.esc(r.name)}<small>${x.esc(r.short)}</small></button>`;}).join('');
     const said=t.budget_say?bubble(x,'Khách:',t.budget_say):x.cmd('💬 Hỏi khách ngân sách','hs_budget',{task:t.id},'ghost small');
-    price2=step(2,'Báo giá theo mùa',false,`<div class="hs-chips" role="group" aria-label="Mức giá">${chips}</div>${t.haggles?`<p class="hs-warn">Khách đã chê giá ${t.haggles} lần — báo lại mức khác.</p>`:''}<div class="space-top">${said}</div>`);
+    price2=step(2,'Báo giá theo mùa',false,`<div class="hs-chips hs-rates" role="group" aria-label="Mức giá">${chips}</div>${t.haggles?`<p class="hs-warn">Khách đã chê giá ${t.haggles} lần — báo lại mức khác.</p>`:''}<div class="space-top">${said}</div>`);
   }
   return step(1,`Lịch phòng · đêm ${n.start}${n.nights>1?'–'+(n.start+n.nights-1):''}`,held,body)+price2;
 }
@@ -461,9 +453,8 @@ function bookingSide(t,x){
   return `<div class="hs-receipt"><h4>📅 Yêu cầu đặt phòng</h4><div class="kv"><span>Nhận phòng</span><b>ngày ${n.start}</b></div><div class="kv"><span>Số đêm</span><b>${n.nights}</b></div>
     <div class="kv"><span>Khách</span><b>${n.adults} lớn${n.kids.length?` + ${n.kids.length} bé`:''}</b></div><div class="kv"><span>Kênh</span><b>${x.esc(n.channel)}</b></div>
     ${t.gen?`<div class="kv"><span>Mức giá</span><b>${x.esc(rateInfo(x,localRate(x,t)).name)}</b></div>`:''}</div>
-    ${stale?'<div class="notice amber">Ngày khách hỏi đã qua. Báo lại lịch sự thôi.</div>':''}${checklist(x,rows)}
-    <div class="stack">${x.confirmCmd(`💰 Nhận cọc${t.quote?' '+x.money(t.quote.deposit):''} & gửi xác nhận`,'hs_book',{task:t.id},'Nhận cọc và ghi lịch? Tin xác nhận kèm nội quy sẽ gửi cho khách.',st(t,x,'book')+' big full',!t.hold.length||stale)}
-    ${x.confirmCmd('🙏 Báo hết phòng, giới thiệu Nhà Gỗ Cô Ba','hs_decline',{task:t.id},'Báo khách không còn phòng phù hợp và giới thiệu homestay hàng xóm?','ghost small')}</div>`;
+    ${stale?'<div class="notice amber">Ngày khách hỏi đã qua. Báo lại lịch sự thôi.</div>':''}${checklist(x,t.hold.length?rows:rows.map(r=>[...r,{sel:'.hs-cal'}]))}
+    <div class="stack">${x.confirmCmd('🙏 Báo hết phòng, giới thiệu Nhà Gỗ Cô Ba','hs_decline',{task:t.id},'Báo khách không còn phòng phù hợp và giới thiệu homestay hàng xóm?','ghost small')}</div>`;
 }
 
 function recommendJob(t,x){
@@ -484,8 +475,7 @@ function recommendSide(t,x){
   const tagsOf=id=>x.cc.places.find(p=>p.id===id)?.tags||[];
   const rows=wants.map(w=>[t.picks.length?t.picks.some(id=>tagsOf(id).includes(w)):null,'Có nơi '+(x.cc.tag_names[w]||w),'']).concat(avoid.map(a=>[t.picks.length?!t.picks.some(id=>tagsOf(id).includes(a)):null,'Tránh: '+(x.cc.tag_names[a]||a),'']));
   return `<div class="hs-receipt"><h4>🗺️ Lịch trình vẽ tay</h4>${t.picks.map((id,i)=>{const p=x.cc.places.find(v=>v.id===id);return `<div class="kv"><span>${i+1}. ${p.emoji} ${x.esc(p.name)}</span></div>`;}).join('')||'<p class="small muted">Chưa chọn nơi nào.</p>'}</div>
-    ${checklist(x,rows)}<p class="small muted">Chỉ thấy điều khách đã kể. Hỏi thêm để biết điều cần tránh.</p>
-    ${x.confirmCmd('✉️ Gửi lịch trình cho khách','hs_advise',{task:t.id},'Gửi lịch trình này? Khách sẽ đi đúng những nơi bạn gợi ý.',st(t,x,'advise')+' big full',t.picks.length<n.count)}`;
+    ${stepRows(x,recommendSteps(t,x),'Việc gợi ý')}${checklist(x,rows.map(r=>[...r,{sel:'.hs-places'}]))}`;
 }
 
 function claimJob(t,x){
@@ -494,13 +484,267 @@ function claimJob(t,x){
     <ul class="hs-facts"><li>🚪 Tìm thấy ở <b>${x.esc(r.name)}</b></li><li>📅 Khách trả phòng <b>ngày ${e.day}</b></li><li>🧾 Đặt phòng: <b>${x.esc(e.booker)}</b></li></ul></div></div>`;
   const qs=(x.cc.claim_qs||[]).map(q=>ans[q.id]?`<div class="hs-bubble"><b>${q.emoji} ${x.esc(q.label)}</b> “${x.esc(ans[q.id])}”</div>`
     :x.cmd(`${q.emoji} ${x.esc(q.label)}`,'hs_quiz',{task:t.id,q:q.id},'ghost small')).join('');
-  return step(1,'Sổ đồ thất lạc ghi',true,log)+step(2,'Hỏi người gọi để xác minh',Object.keys(ans).length>=2,`<div class="stack hs-claim-q">${qs}</div><p class="small muted">So từng câu với sổ: món đồ, phòng, ngày, tên người đặt. Người khác gọi hộ thì phải có xác nhận của người đặt phòng.</p>`);
+  return step(1,'Sổ đồ thất lạc ghi',true,log)+step(2,'Hỏi người gọi để xác minh',Object.keys(ans).length>=2,`<div class="stack hs-claim-q">${qs}</div>`);
 }
 function claimSide(t,x){
   const asked=Object.keys(t.answers||{}).length;
   const btns=CLAIM_CHOICES.map(([id,label,q])=>x.confirmCmd(label,'hs_claim',{task:t.id,choice:id},q,'ghost full')).join('');
   return `<div class="hs-receipt"><h4>📞 Cuộc gọi hỏi đồ</h4><p class="small">“${x.esc(t.needs.note)}”</p><div class="kv"><span>Đã hỏi</span><b>${asked}/${(x.cc.claim_qs||[]).length} câu</b></div></div>
-    <div class="stack">${btns}</div><p class="small muted">Nội quy: chỉ giao cho người đặt phòng hoặc người được họ xác nhận qua kênh đặt phòng.</p>`;
+    <div class="stack hs-claim-pick">${btns}</div>`;
+}
+
+/* ---------------------------------------------------------------- next steps (guide.js)
+ * Every job lists what is left as steps; the header hint, the tappable rows and the bottom
+ * button all come from them. Mechanical steps (read, count, add a line) are one tap on every
+ * task; judgement calls (the right booking row, the room, extra guests, the place, the caller)
+ * do the right thing on the very first task and point at the choices after that. */
+const capOf=(x,ids)=>ids.reduce((a,id)=>a+roomInfo(x,id).cap,0);
+const inv=(x,item,what)=>({act:'inventory',label:`📦 Hết ${x.esc(what)}: mở Kho nhập thêm`});
+/* The best 1–2 rooms for `need` people among those `ok` accepts: one room, no stairs, clean, not smaller than booked, the favourite. */
+function bestRooms(x,ok,need,{size=0,prefer=[],stairs=true}={}){
+  const d=x.room.data||{},ids=x.cc.rooms.filter(r=>r.unlock<=(d.level||1)&&ok(r.id)&&(stairs||!r.stairs)).map(r=>r.id);
+  const combos=[];ids.forEach((a,i)=>{combos.push([a]);ids.slice(i+1).forEach(b=>combos.push([a,b]));});
+  const cost=c=>{const cap=capOf(x,c);
+    return (c.length-1)*100+(c.some(id=>d.rooms?.[id]?.status==='dirty')?60:0)+(cap<size?40:0)+(c.some(id=>roomInfo(x,id).stairs)?8:0)-(c.some(id=>prefer.includes(id))?20:0)+cap;};
+  return combos.filter(c=>capOf(x,c)>=need).sort((a,b)=>cost(a)-cost(b))[0]||null;
+}
+/* Turnover of one dirty room, in the house order; the last step waits for the airing window (tick). */
+function hkSteps(x,rid){
+  const room=x.room.data?.rooms?.[rid];if(!room||room.status!=='dirty')return [];
+  const r=roomInfo(x,rid),done=room.hk?.done||[];
+  return x.cc.hk_steps.map(s=>{
+    const use=Object.entries(s.use||{}),short=use.find(([k,q])=>x.stock(k)<q);
+    return {ok:done.includes(s.id)||null,label:`Dọn ${r.name}: ${s.name}`,go:short&&!done.includes(s.id)?inv(x,short[0],itemInfo(x,short[0]).name.toLowerCase()):{cmd:'hs_clean',payload:{room:rid,step:s.id},label:`${s.emoji} ${x.esc(s.name)} · ${x.esc(r.name)}`}};
+  });
+}
+function checkinSteps(t,x){
+  const n=t.needs,ci=t.ci,d=x.room.data,id=t.id,first=firstTime(x),rows=[];
+  const right=n.list.find(e=>e.code===n.code&&e.name===n.name&&e.start===d.today);
+  rows.push({ok:ci.verified||null,label:`Khớp mã ${n.code} trên app`,go:first&&right?{cmd:'hs_verify',payload:{task:id,entry:right.id},label:`🔎 Chọn dòng ${right.id} · ${x.esc(n.code)} · hôm nay`}:{sel:'.hs-entries'},
+    pulse:first&&right?`.hs-entry[data-entry="${right.id}"]`:''});
+  if(t.gen&&n.proof==='bank')rows.push({ok:t.bank?true:null,label:'Đối chiếu cọc trên app ngân hàng',go:{cmd:'hs_bank',payload:{task:id},label:'🏦 Mở app ngân hàng đối chiếu'}});
+  rows.push({ok:ci.ids||null,label:'Xem giấy tờ, khai báo lưu trú',go:ci.verified?{cmd:'hs_ids',payload:{task:id,mode:'look'},label:'👀 Xem giấy tờ & khai báo'}:null});
+  rows.push({ok:ci.counted||null,label:'Đếm khách ở quầy',go:ci.verified?{cmd:'hs_count',payload:{task:id},label:'🧮 Đếm khách ở quầy'}:null});
+  if(!ci.counted)return rows;
+  const booked=counted(x,n.adults,n.kids),arr=counted(x,t.arrived.adults,t.arrived.kids);
+  const busy=rid=>(d.grid?.[rid]||[]).slice(0,n.nights).some(c=>c.kind!=='free')||!['clean','dirty'].includes(d.rooms[rid]?.status);
+  if(!ci.extra){
+    const fits=bestRooms(x,rid=>!busy(rid)&&d.rooms[rid].status==='clean',arr),pick=fits?'surcharge':'refuse';
+    rows.push({ok:null,label:`Dư ${arr-booked} người: phụ thu hay chỉ nhận đúng số đặt`,go:first?{cmd:'hs_extra',payload:{task:id,choice:pick},label:pick==='surcharge'?`➕ Phụ thu ${x.cc.extra_guest} xu/người/đêm (còn phòng rộng)`:'🙅 Chỉ nhận đúng số đã đặt (hết phòng rộng)'}:{sel:'.hs-extra'}});
+    return rows;
+  }
+  const staying=ci.extra==='refuse'?booked:arr,sel=selection(x,t);
+  if(!ci.rooms.length){
+    const valid=sel.length&&!sel.some(busy)&&capOf(x,sel)>=staying;
+    const best=bestRooms(x,rid=>!busy(rid),staying,{size:n.size,prefer:[(d.book||[]).find(b=>b.npc===t.npc)?.fav].filter(Boolean)});
+    const plan=valid?sel:best;
+    if(!plan){
+      rows.push({ok:null,label:'Hết phòng trống đủ đêm',go:{cmd:'hs_relocate',payload:{task:id},confirm:`Không còn phòng nào dọn kịp hay sắp trả? Xin lỗi ${n.name}, chuyển sang Nhà Gỗ Cô Ba?`,label:'🏡 Chuyển sang Nhà Gỗ Cô Ba'}});
+      return rows;
+    }
+    if(valid||first)for(const rid of plan)rows.push(...hkSteps(x,rid));
+    const names=plan.map(rid=>roomInfo(x,rid).name).join(' + ');
+    const why=sel.length&&!valid?(sel.some(busy)?'phòng đã chọn chưa trống đủ đêm':`mới đủ ${capOf(x,sel)}/${staying} chỗ, chọn thêm (tối đa 2)`):'';
+    const taken=sel.find(busy);
+    rows.push({ok:null,label:`Giao phòng sạch, đủ ${staying} chỗ`,note:why,go:valid||first?{cmd:'hs_assign',payload:{task:id,rooms:plan},label:`🗝️ Giao ${x.esc(names)} (${capOf(x,plan)} chỗ)`}
+      :taken?{act:'car:sel',data:{task:id,room:taken},label:`↺ Bỏ chọn ${x.esc(roomInfo(x,taken).name)}, chọn phòng khác`}:{sel:'.hs-tiles',label:'👉 Chọn phòng sạch, trống đủ đêm'}});
+  }else rows.push({ok:true,label:`Giao ${ci.rooms.map(rid=>roomInfo(x,rid).name).join(' + ')}`});
+  if(n.cold)rows.push({ok:ci.heater||null,label:'Lắp gas máy sưởi (đêm lạnh)',go:!ci.rooms.length?null:x.stock('heater_gas')?{cmd:'hs_heater',payload:{task:id},label:'🔥 Lắp gas máy sưởi'}:inv(x,'heater_gas','gas máy sưởi')});
+  return rows;
+}
+const checkinDue=(t,x)=>{const n=t.needs,ci=t.ci,booked=counted(x,n.adults,n.kids),arr=t.arrived?counted(x,t.arrived.adults,t.arrived.kids):booked;
+  return n.rate*n.nights-(t.bank==='missing'?0:n.paid)+x.cc.extra_guest*(ci.extra==='surcharge'?Math.max(0,arr-booked):0)*n.nights;};
+const checkinFinal=(t,x,steps)=>{const ci=t.ci;
+  return {label:'🔑 Trao chìa khóa & thu tiền',go:finalGo(steps,'hs_welcome',{task:t.id},{question:`Thu ${checkinDue(t,x)} xu.`,confirm:true}),ready:!!(ci.verified&&ci.ids&&ci.counted&&ci.extra&&ci.rooms.length),why:'giao phòng trước'};};
+
+function billTruth(t,x){
+  const n=t.needs,c=t.check||{},pkg=n.package||{},free=new Set(pkg.free||[]),wf=t.truth_hint?.free_water??pkg.water_free??x.cc.free_water;
+  return {water:free.has('water')?0:Math.max(0,(c.water||0)-wf),noodles:free.has('noodles')?0:c.noodles||0,snack:free.has('snack')?0:c.snack||0,
+    laundry:free.has('laundry')?0:n.laundry||0,late:n.late?1:0,damage:c.damage?1:0};
+}
+function checkoutSteps(t,x){
+  const id=t.id,rows=[{ok:t.checked||null,label:'Kiểm phòng trước khi tính tiền',go:{cmd:'hs_inspect',payload:{task:id},label:'🔍 Báo buồng phòng kiểm'}}];
+  if(!t.checked)return rows;
+  const lost=t.check?.lost;
+  if(lost)rows.push({ok:t.returned||null,label:`Trả ${lost} khách để quên`,go:{cmd:'hs_return',payload:{task:id},label:`🎒 Trả ${x.esc(lost)} cho khách`}});
+  const truth=billTruth(t,x);
+  for(const l of x.cc.bill_lines){
+    const want=truth[l.id]||0,have=t.bill[l.id]||0;if(!want&&!have)continue;
+    rows.push({ok:have===want?true:have>want?false:null,label:`${l.emoji} ${l.name}: ${want} ${l.unit}`,note:have!==want?`${have}/${want}`:'',
+      go:have===want?null:{cmd:'hs_line',payload:{task:id,line:l.id,delta:have<want?1:-1},label:`${have<want?'➕ Thêm':'➖ Bớt'} 1 ${x.esc(l.unit)} · ${x.esc(l.name)}`}});
+  }
+  return rows;
+}
+const checkoutFinal=(t,x,steps)=>{const total=x.cc.bill_lines.reduce((a,l)=>a+l.price*(t.bill[l.id]||0),0);
+  return {label:`🧾 In hóa đơn & thu ${x.money(total)}`,go:finalGo(steps,'hs_settle',{task:t.id},{question:`Thu ${total} xu, khách sẽ đọc từng dòng.`,confirm:true}),ready:!!t.checked,why:'kiểm phòng trước'};};
+
+const eggNext=t=>{const want=t.eggs_fix||t.needs.eggs||{},got=t.tray.eggs.filter(e=>e==='runny').length;return got<(want.runny||0)?'runny':'well';};
+function breakfastSteps(t,x){
+  const n=t.needs,tray=t.tray,id=t.id,want=t.eggs_fix||n.eggs||{},w=x.cc.egg||{raw:5,runny:11,well:18},rows=[];
+  if(t.gen)rows.push({ok:t.diet||null,label:'Hỏi dị ứng, ăn kiêng trước khi nấu',go:{cmd:'hs_diet',payload:{task:id},label:'💬 Hỏi dị ứng, ăn kiêng'}});
+  const got={runny:tray.eggs.filter(e=>e==='runny').length,well:tray.eggs.filter(e=>e==='well').length};
+  if(tray.eggs.some(e=>e==='raw'||e==='burnt')||got.runny>(want.runny||0)||got.well>(want.well||0))
+    rows.push({ok:false,label:'Trứng hỏng hoặc dư: dọn khay làm lại',go:{cmd:'hs_toss',payload:{task:id},confirm:'Bỏ khay này? Nguyên liệu đã dùng ghi vào hao hụt.',label:'🗑️ Dọn khay làm lại'}});
+  const plate=k=>({cmd:'hs_plate',payload:{task:id},label:`🥄 Nhấc trứng ra lúc ${EGG_LABEL[k]} (${k==='runny'?w.raw:w.runny}–${k==='runny'?w.runny:w.well} giây)`});
+  let pan=!!tray.pan;
+  for(const k of ['runny','well']){
+    if(!want[k]&&!got[k])continue;
+    const open=got[k]<(want[k]||0);
+    const go=!open?null:pan?plate(k):tray.pan?null:x.stock('egg')?{cmd:'hs_egg',payload:{task:id},label:`🍳 Đập 1 trứng vào chảo (${EGG_LABEL[k]})`}:inv(x,'egg','trứng');
+    if(open&&pan)pan=false;
+    rows.push({ok:got[k]?got[k]===want[k]:null,label:`${want[k]||0} trứng ${EGG_LABEL[k]}`,note:`${got[k]}/${want[k]||0}`,go});
+  }
+  if(pan)rows.push({ok:null,label:'Nhấc trứng ra khỏi chảo',go:plate(eggNext(t))});
+  for(const [k,l,cmd] of [['bread','bánh mì','hs_bread'],['milk','sữa','hs_milk'],['coffee','cà phê','hs_coffee']]){
+    if(!n[k]&&!tray[k])continue;
+    rows.push({ok:tray[k]?tray[k]===n[k]:null,label:`${n[k]} ${l}`,note:`${tray[k]}/${n[k]}`,go:tray[k]<n[k]?(x.stock(k)?{cmd,payload:{task:id},label:`➕ Thêm 1 ${l}`}:inv(x,k,l)):null});
+  }
+  return rows;
+}
+const breakfastFinal=(t,x,steps)=>{const tray=t.tray;
+  return {label:`✅ Mang ra cho khách · ${x.money(t.quoted_price||0)}`,go:finalGo(steps,'hs_serve',{task:t.id},{question:'Khách ăn và đánh giá đúng những gì trên khay.',confirm:true}),
+    ready:!tray.pan&&!!(tray.bread||tray.eggs.length)&&!tray.eggs.includes('raw'),why:'làm khay trước'};};
+
+function bookingSteps(t,x){
+  const n=t.needs,d=x.room.data,id=t.id,first=firstTime(x),need=counted(x,n.adults,n.kids),rows=[];
+  if(n.start<d.today)return rows;
+  if(t.gen)rows.push({ok:t.asked_budget||null,label:'Hỏi khách ngân sách',go:{cmd:'hs_budget',payload:{task:id},label:'💬 Hỏi khách ngân sách'}});
+  if(!t.hold.length){
+    const sel=selection(x,t),valid=sel.length&&capOf(x,sel)>=need&&!sel.some(rid=>holdBlock(x,rid,n.start,n.nights));
+    const best=bestRooms(x,rid=>!holdBlock(x,rid,n.start,n.nights),need,{size:need,prefer:n.prefer,stairs:n.stairs_ok});
+    const plan=valid?sel:first?best:null,rate=d.mod?.id==='low'?'low':'std';
+    if(!best&&!valid){rows.push({ok:null,label:'Không còn phòng hợp những đêm này'});return rows;}
+    const payload=t.gen?{task:id,rooms:plan||[],rate:valid?localRate(x,t):rate}:{task:id,rooms:plan||[]};
+    const why=sel.length&&!valid?(sel.map(rid=>holdBlock(x,rid,n.start,n.nights)).find(Boolean)||`mới đủ ${capOf(x,sel)}/${need} chỗ, chọn thêm (tối đa 2)`):'';
+    const taken=sel.find(rid=>holdBlock(x,rid,n.start,n.nights));
+    rows.push({ok:null,label:`Giữ phòng trống mọi đêm, đủ ${need} chỗ`,note:why,go:plan?{cmd:'hs_hold',payload,label:`📌 Giữ ${x.esc(plan.map(rid=>roomInfo(x,rid).name).join(' + '))} trên lịch`}
+      :taken?{act:'car:sel',data:{task:id,room:taken},label:`↺ Bỏ chọn ${x.esc(roomInfo(x,taken).name)} (đã có khách), chọn phòng khác`}:{sel:'.hs-cal',label:'👉 Chạm tên phòng trên lịch để chọn'}});
+    return rows;
+  }
+  rows.push({ok:true,label:`Đã giữ ${t.hold.map(rid=>roomInfo(x,rid).name).join(' + ')}`});
+  if(t.gen&&t.haggles){
+    const said=(x.ui.hag??={})[id];
+    if(!said||said.n!==t.haggles)x.ui.hag[id]={n:t.haggles,rate:t.rate};
+    const was=x.ui.hag[id].rate,lower=(x.cc.rates||[])[Math.max(0,(x.cc.rates||[]).findIndex(r=>r.id===was)-1)];
+    if(t.rate===was)rows.push({ok:null,label:'Khách chê giá: báo mức thấp hơn',go:first&&lower&&lower.id!==was?{cmd:'hs_rate',payload:{task:id,rate:lower.id},label:`${lower.emoji} Báo ${x.esc(lower.name.toLowerCase())}`}:{sel:'.hs-rates'}});
+  }
+  return rows;
+}
+const bookingFinal=(t,x,steps)=>{
+  const n=t.needs,stale=n.start<x.room.data.today;
+  if(stale||(!t.hold.length&&steps.some(s=>s.ok===null&&!s.go&&/Không còn phòng/.test(s.label))))
+    return {label:'🙏 Báo hết phòng, giới thiệu Nhà Gỗ Cô Ba',go:{cmd:'hs_decline',payload:{task:t.id},confirm:'Báo khách không còn phòng phù hợp và giới thiệu homestay hàng xóm?'},ready:true};
+  return {label:`💰 Nhận cọc${t.quote?' '+x.money(t.quote.deposit):''} & gửi xác nhận`,go:finalGo(steps,'hs_book',{task:t.id},{question:'Tin xác nhận kèm nội quy sẽ gửi cho khách.',confirm:true}),ready:!!t.hold.length,why:'giữ phòng trước'};
+};
+
+function recommendSteps(t,x){
+  const n=t.needs,ans=t.answers||{},id=t.id,first=firstTime(x),rows=[];
+  const q=x.cc.probes.find(p=>!ans[p.id]);
+  rows.push({ok:q?null:true,label:'Hỏi khách cho chắc',note:`${Object.keys(ans).length}/${x.cc.probes.length}`,go:q?{cmd:'hs_probe',payload:{task:id,q:q.id},label:`${q.emoji} Hỏi: ${x.esc(q.label)}`}:null});
+  if(q&&Object.keys(ans).length<3)return rows;
+  const avoid=new Set([...n.avoid,...Object.values(ans).flatMap(a=>a.avoid)]),wants=new Set([...n.wants,...Object.values(ans).flatMap(a=>a.want)]);
+  const place=pid=>x.cc.places.find(p=>p.id===pid)||{id:pid,name:pid,tags:[]};
+  const clash=pid=>place(pid).tags.some(tag=>avoid.has(tag));
+  for(const pid of t.picks.filter(clash))rows.push({ok:false,label:`${place(pid).name} vướng điều khách cần tránh`,go:{cmd:'hs_pick',payload:{task:id,place:pid},label:`✕ Bỏ ${x.esc(place(pid).name)}`}});
+  const good=t.picks.filter(pid=>!clash(pid)).length;
+  if(good<n.count){
+    const best=x.cc.places.filter(p=>!t.picks.includes(p.id)&&!clash(p.id)).sort((a,b)=>b.tags.filter(g=>wants.has(g)).length-a.tags.filter(g=>wants.has(g)).length)[0];
+    rows.push({ok:null,label:`Chọn ${n.count} nơi hợp khách`,note:`${good}/${n.count}`,go:first&&best&&t.picks.length<3?{cmd:'hs_pick',payload:{task:id,place:best.id},label:`${best.emoji} Chọn ${x.esc(best.name)}`}:{sel:'.hs-places',label:'👉 Chọn nơi hợp khách (thẻ xanh, không thẻ đỏ)'}});
+  }else rows.push({ok:true,label:`Đã chọn ${good} nơi`});
+  return rows;
+}
+const recommendFinal=(t,x,steps)=>({label:'✉️ Gửi lịch trình cho khách',go:finalGo(steps,'hs_advise',{task:t.id},{question:'Khách sẽ đi đúng những nơi bạn gợi ý.',confirm:true}),ready:t.picks.length>=t.needs.count,why:`chọn ít nhất ${t.needs.count} nơi`});
+
+function claimSteps(t,x){
+  const ans=t.answers||{},id=t.id,qs=x.cc.claim_qs||[],q=qs.find(v=>!ans[v.id]),rows=[];
+  rows.push({ok:q?null:true,label:'Hỏi người gọi để xác minh',note:`${Object.keys(ans).length}/${qs.length}`,go:q?{cmd:'hs_quiz',payload:{task:id,q:q.id},label:`${q.emoji} Hỏi: ${x.esc(q.label)}`}:null});
+  const safe=CLAIM_CHOICES.find(c=>c[0]==='channel');
+  if(!q)rows.push({ok:null,label:'Quyết định giao đồ',go:firstTime(x)?{cmd:'hs_claim',payload:{task:id,choice:safe[0]},confirm:safe[2],label:safe[1]}:{sel:'.hs-claim-pick',label:'👉 So câu trả lời với sổ rồi quyết định'}});
+  return rows;
+}
+const claimFinal=()=>({label:'📞 Quyết định giao đồ',go:{sel:'.hs-claim-pick'},ready:false});
+
+const GUIDES={checkin:[checkinSteps,checkinFinal],checkout:[checkoutSteps,checkoutFinal],breakfast:[breakfastSteps,breakfastFinal],booking:[bookingSteps,bookingFinal],recommend:[recommendSteps,recommendFinal],claim:[claimSteps,claimFinal]};
+/** {steps, final, pulse} for the task on screen. */
+function taskGuide(t,x){
+  if(x.room.data?.desk?.ev){
+    const steps=[];
+    if(t?.known&&t.job==='breakfast'&&t.tray.pan)steps.push({ok:null,label:'Nhấc trứng khỏi chảo',go:{cmd:'hs_plate',payload:{task:t.id},label:'🥄 Nhấc trứng ra đĩa'}});
+    steps.push({ok:null,label:'Quyết chuyện ở quầy',go:{sel:'.hs-opts',label:'👉 Chọn cách xử lý chuyện ở quầy'}});
+    return {steps,final:{label:'Quyết chuyện ở quầy',go:{sel:'.hs-opts'},ready:false}};
+  }
+  if(!t.known)return {steps:[{ok:null,label:t.job==='claim'?'Nghe máy':'Nghe khách nói',go:{cmd:'ask',payload:{task:t.id},label:t.job==='claim'?'📞 Nghe máy':'👂 Nghe khách'}}],pulse:'.hs-ask'};
+  const [make,fin]=GUIDES[t.job]||[()=>[],()=>({label:'',go:null,ready:false})];
+  const steps=make(t,x),final=fin(t,x,steps);
+  const first=pending(steps);
+  return {steps,final,pulse:firstTime(x)&&first?.pulse||''};
+}
+function hintFor(g,x){
+  const f=g.final&&g.final.ready!==false&&g.final.go?{label:g.final.label.replace(/<[^>]*>/g,'').replace(/^[^\p{L}]+/u,''),go:g.final.go}:null;
+  // Only steps with no way to do them are left: the hint offers the finish, like the bottom button.
+  const steps=f&&!pending(g.steps)?.go?g.steps.filter(s=>s.ok===true||s.go):g.steps;
+  return nextHint(x,steps,{final:f,pulse:g.pulse});
+}
+const bottomBar=(g,x)=>g.final?`<div class="hs-bar">${stepCta(x,g.steps,g.final)}</div>`:'';
+
+/* Between guests: the chores that cost the house if forgotten (app orders, rooms for tonight's arrivals, guests who stay on). */
+function idleSteps(x){
+  const d=x.room.data||{},rows=[],busy=deskOpen(x);
+  if(busy)return [{ok:null,label:'Quyết chuyện ở quầy',go:{sel:'.hs-opts',label:'👉 Chọn cách xử lý chuyện ở quầy'}}];
+  for(const o of pendingOrders(x)){
+    const clash=roomFree(x,o.room,o.start,o.nights,o.id),pick=(x.ui.ota||{})[o.id]||[];
+    const fits=pick.length&&capOf(x,pick)>=o.guests&&pick.every(id=>!roomFree(x,id,o.start,o.nights,o.id));
+    const names=ids=>x.esc(ids.map(id=>roomInfo(x,id).name).join(' + '));
+    rows.push({ok:null,label:`Đồng bộ đơn ${o.ota} của ${o.name}`,note:clash&&pick.length&&!fits?`mới đủ ${capOf(x,pick)}/${o.guests} chỗ`:'',
+      go:!clash?{cmd:'hs_sync',payload:{order:o.id,rooms:[o.room]},label:`📥 Đồng bộ đơn ${x.esc(o.name)} vào ${names([o.room])}`}
+        :fits?{cmd:'hs_sync',payload:{order:o.id,rooms:pick},label:`🔁 Xếp ${x.esc(o.name)} vào ${names(pick)}`}
+        :{sel:'.hs-ota-row.clash .hs-chips',label:`📥 Đơn ${x.esc(o.name)} trùng phòng: chạm phòng trống đủ ${o.guests} chỗ`}});
+  }
+  const tonight=new Set((d.bookings||[]).filter(b=>b.start<=d.today&&b.start+b.nights>d.today).flatMap(b=>b.rooms));
+  for(const rid of tonight)if(d.rooms?.[rid]?.status==='dirty')rows.push(...hkSteps(x,rid).map(s=>({...s,label:s.label+' (khách tới tối nay)'})));
+  for(const [rid,st] of Object.entries(d.stays||{})){
+    if(st.rolled!==d.today)continue;
+    const r=roomInfo(x,rid);
+    if(st.tidy==null&&x.stock('towel')>=2)rows.push({ok:null,label:`${r.name}: ${st.dnd?'để khăn ở cửa (biển đừng làm phiền)':'dọn phòng giữa kỳ'}`,go:{cmd:'hs_stay',payload:{room:rid,do:st.dnd?'door':'tidy'},label:st.dnd?`🚪 Để khăn ở cửa ${x.esc(r.name)}`:`🧺 Vào dọn ${x.esc(r.name)}`}});
+    if(st.cold&&!st.warmed&&(d.wood||x.stock('heater_gas')))rows.push({ok:null,label:`${r.name}: sưởi đêm lạnh`,go:{cmd:'hs_stay',payload:{room:rid,do:'warm',how:d.wood?'wood':'gas'},label:d.wood?`🪵 Nhóm lò củi ${x.esc(r.name)}`:`🔥 Máy sưởi gas ${x.esc(r.name)}`}});
+    if(st.ask&&!st.asked){
+      const a=(x.cc.asks||[]).find(v=>v.id===st.ask)||{emoji:'💬',label:st.ask,use:{}};
+      if(st.ask==='trip')rows.push({ok:null,label:`${r.name}: ${a.label.toLowerCase()}`,go:{sel:'.hs-trip',label:`🗺️ Gợi ý nơi đi cho khách ${x.esc(r.name)}`}});
+      else if(Object.entries(a.use||{}).every(([k,q])=>x.stock(k)>=q))rows.push({ok:null,label:`${r.name}: ${a.label.toLowerCase()}`,go:{cmd:'hs_stay',payload:{room:rid,do:'ask'},label:`${a.emoji} ${x.esc(a.act||a.label)} · ${x.esc(r.name)}`}});
+    }
+  }
+  return rows;
+}
+
+/* Buttons that must wait for real seconds (egg in the pan, windows airing): greyed with a countdown until the window opens. */
+function waitFor(x,el){
+  let p;try{p=JSON.parse(el.dataset.payload||'{}');}catch{return null;}
+  if(el.dataset.command==='hs_plate'){
+    const t=(x.room.tasks||[]).find(v=>v.id===p.task),pan=t?.tray?.pan;if(!pan)return null;
+    const w=x.cc.egg||{raw:5,runny:11,well:18};return eggNext(t)==='runny'?[pan,w.raw,'trứng lòng đào']:[pan,w.runny,'trứng chín kỹ'];
+  }
+  if(el.dataset.command==='hs_clean'&&p.step==='ready'){const hk=x.room.data?.rooms?.[p.room]?.hk;return hk?.start?[hk.start,airOf(x).damp,'phòng hết mùi ẩm']:null;}
+  return null;
+}
+function holdUntilReady(root,x){
+  const box=root.closest('dialog')||root;
+  box.querySelectorAll('.gd-cta[data-command],.gd-hint[data-command]').forEach(el=>{
+    const w=waitFor(x,el);if(!w)return;
+    const left=w[1]-(x.now()-w[0]),label=el.querySelector('b')||el;
+    if(el.dataset.hsLabel==null)el.dataset.hsLabel=label.innerHTML;
+    const wait=`⏳ Chờ ${Math.ceil(left)} giây cho ${w[2]}…`;
+    if(left>0){el.disabled=true;if(label.textContent!==wait)label.textContent=wait;}
+    else if(el.disabled){el.disabled=false;label.innerHTML=el.dataset.hsLabel;}
+  });
+}
+
+/* When a step is finished, bring the next step's card into view (once per change, never while the player just scrolls). */
+function followStep(root,x){
+  const cards=[...root.querySelectorAll('.wb-main>.hs-step-card')],cur=cards.find(c=>!c.classList.contains('done'));
+  const key=`${x.room.active_task||''}:${cards.indexOf(cur)}`;
+  const was=x.ui.hsFollow;x.ui.hsFollow=key;
+  if(!cur||was==null||was===key||was.split(':')[0]!==key.split(':')[0])return;
+  cur.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
 }
 
 const JOBS={checkin:[checkinJob,checkinSide],checkout:[checkoutJob,checkoutSide],breakfast:[breakfastJob,breakfastSide],booking:[bookingJob,bookingSide],recommend:[recommendJob,recommendSide],claim:[claimJob,claimSide]};
@@ -524,6 +768,7 @@ export default {
   id:'homestay',
   css:true,
   next(t,x){
+    try{const n=x&&pending(taskGuide(t,x).steps);if(n)return x.esc(n.label);}catch{/* fall back to the fixed lines */}
     if(x?.room?.data?.desk?.ev)return 'Có chuyện ở quầy cần quyết';
     if(!t.known)return t.job==='claim'?'Nghe cuộc gọi':'Nghe khách nói';
     const n=t.needs;
@@ -535,25 +780,29 @@ export default {
     return t.picks.length>=n.count?'Gửi lịch trình':'Hỏi thêm rồi chọn nơi';
   },
   idle(x){
-    const d=x.room.data||{};
+    const d=x.room.data||{},steps=idleSteps(x),todo=pending(steps)?.go;
+    const hint=todo?nextHint(x,steps,{}):'',bar=todo?`<div class="hs-bar">${stepCta(x,steps,{label:'',go:null,ready:false})}</div>`:'';
     const stats=`<div class="row wrap hs-stats">${d.synced?x.pill(`📥 ${d.synced} đơn OTA đã đồng bộ`,'green'):''}${d.claims_ok?x.pill(`🎁 ${d.claims_ok} món đồ về đúng chủ`,'green'):''}${d.ota_walked?x.pill(`🏡 ${d.ota_walked} khách phải chuyển nhà hàng xóm`,'amber'):''}${d.claims_bad?x.pill(`⚠️ ${d.claims_bad} lần giao nhầm đồ`,'amber'):''}${d.lost_deposit?x.pill(`💸 mất ${d.lost_deposit} xu cọc ảo`,'amber'):''}</div>`;
-    return `<div class="career-job hs hs-idle">${deskCard(x)}${lastDesk(x)}${todayChip(x)}${stats}${careList(x,true)}${otaPanel(x,true)}${running(null,x)}
-      <h4 class="section-title">🗓️ Lịch phòng 7 ngày</h4>${calendar(x)}<h4 class="section-title">🧹 Buồng phòng</h4>${housekeeping(x)}${gardenCard(x)}${bookPanel(x)}${foot(x)}${rules(x)}</div>`;
+    return `<div class="career-job hs hs-idle">${hint}${deskCard(x)}${lastDesk(x)}${todayChip(x)}${stats}${careList(x,true)}${otaPanel(x,true)}${running(null,x)}
+      <h4 class="section-title">🗓️ Lịch phòng 7 ngày</h4>${calendar(x)}<h4 class="section-title">🧹 Buồng phòng</h4>${housekeeping(x)}${gardenCard(x)}${bookPanel(x)}${foot(x)}${rules(x)}${bar}</div>`;
   },
   job(t,x){
-    const desk=deskCard(x),who=x.npc(t.npc);
+    const desk=deskCard(x),who=x.npc(t.npc),g=taskGuide(t,x),hint=hintFor(g,x);
+    // The calendar and the rooms are shared state: folded under the task so the task comes first.
+    const more=`<section class="hs-board">${panel(x,'board','🗓️ Lịch phòng, buồng phòng, vườn & sổ',board(x,t),false,'hs-boardp')}${foot(x)}${rules(x)}</section>`;
     if(!t.known){
       const pill=`<span class="tag blue">${JOB_ICON[t.job]||''} ${x.esc(x.cc.jobs?.[t.job]||t.job)}</span>`;
       const anon=t.job==='claim';
-      return `<div class="career-job hs">${desk}${desk?running(t,x):lastDesk(x)}${todayChip(x)}<article class="card ticket"><div class="row">${anon?caller(56):x.portrait(who,56)}<div class="grow"><div class="row spread"><h3>${anon?'Có cuộc gọi':x.esc(who.display_name)}</h3>${pill}</div><p>“${x.esc(t.opening)}”</p>${anon?'':regularCard(t,x)}</div></div>${x.cmd(t.job==='claim'?'📞 Nghe máy':'👂 Nghe khách','ask',{task:t.id},desk?'ghost full':'primary full',!!desk)}</article>${desk?'':board(x,t)+foot(x)+rules(x)}</div>`;
+      return `<div class="career-job hs">${hint}${desk}${desk?running(t,x):lastDesk(x)}${todayChip(x)}<article class="card ticket"><div class="row">${anon?caller(56):x.portrait(who,56)}<div class="grow"><div class="row spread"><h3>${anon?'Có cuộc gọi':x.esc(who.display_name)}</h3>${pill}</div><p>“${x.esc(t.opening)}”</p>${anon?'':regularCard(t,x)}</div></div>${x.cmd(t.job==='claim'?'📞 Nghe máy':'👂 Nghe khách','ask',{task:t.id},desk?'ghost full':'primary full gd-cta hs-ask',!!desk)}</article>${desk?bottomBar(g,x):more}</div>`;
     }
-    if(desk)return `<div class="career-job hs">${desk}${running(t,x)}${ticketCard(t,x)}</div>`;
+    if(desk)return `<div class="career-job hs">${hint}${desk}${running(t,x)}${ticketCard(t,x)}${bottomBar(g,x)}</div>`;
     const [main,side]=JOBS[t.job]||[()=>'',()=>''];
-    // The receipt and its one button sit right after the steps; the shared calendar and rooms come below.
-    return `<div class="career-job hs">${lastDesk(x)}${todayChip(x)}${ticketCard(t,x)}<div class="workbench"><section class="wb-main">${main(t,x)}</section><aside class="wb-side">${side(t,x)}</aside></div>
-      <section class="hs-board">${board(x,t)}${foot(x)}${rules(x)}</section></div>`;
+    // The steps and the receipt first; the one next-step button rides at the bottom of the sheet.
+    return `<div class="career-job hs">${hint}${lastDesk(x)}${todayChip(x)}${ticketCard(t,x)}${running(t,x,false)}<div class="workbench"><section class="wb-main">${main(t,x)}</section><aside class="wb-side">${side(t,x)}</aside></div>
+      ${more}${bottomBar(g,x)}</div>`;
   },
   tick(root,x){
+    keepBarAboveFooter(root);holdUntilReady(root,x);followStep(root,x);
     const w=x.cc.egg||{raw:5,runny:11,well:18},air=airOf(x);
     root.querySelectorAll('[data-hs-timer]').forEach(el=>{
       const start=Number(el.dataset.start);if(!start)return;

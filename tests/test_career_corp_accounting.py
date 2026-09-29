@@ -881,6 +881,34 @@ class CorpAccountingTests(unittest.TestCase):
         self.assertEqual(len(t['inspected']), 1)
         validate_state(j.state)
 
+    def test_first_dossier_coached_then_never_again(self):
+        """Only the player's first dossier carries its answers in the view (the screen lights them); the task view never does."""
+        j = self.j
+        tid = j.task['id']
+        view = lambda: public_state(j.state)['careers'][CAR]
+        self.assertEqual(view()['data']['coach'], {})
+        j.act('ask', task=tid)
+        t = j.get(tid)
+        self.assertEqual(view()['data']['coach'][tid]['cases'], {x['id']: dict(v=x['_truth']['v'], z=x['_truth']['z']) for x in t['cases']})
+        self.assertNotIn('_truth', json.dumps(view()['tasks'], ensure_ascii=False))
+        first = t['cases'][0]
+        self.stamp_right(tid, first)
+        self.assertNotIn(first['id'], view()['data']['coach'][tid]['cases'])
+        for case in t['cases'][1:]:
+            self.stamp_right(tid, case)
+        j.act('ca_submit', task=tid, confirm=True)
+        nxt = next(x for x in j.c['tasks'] if x['status'] not in ('completed', 'cancelled'))
+        j.act('ask', task=nxt['id'])
+        self.assertEqual(view()['data']['coach'], {})
+        roundtrip(j)
+
+    def test_first_step_dossier_coach_is_the_current_key(self):
+        tid = self.use('journal')
+        j = self.j
+        j.act('ask', task=tid)
+        st = j.get(tid)['proc'][0]
+        self.assertEqual(public_state(j.state)['careers'][CAR]['data']['coach'][tid], dict(step=st['id'], key=st['_key']))
+
 
 class ConsequenceTests(unittest.TestCase):
     """A tray handed in with wrong stamps costs the bonus, stars and chị Hạnh's trust."""

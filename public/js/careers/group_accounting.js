@@ -4,7 +4,9 @@
  *  📋 Quy định (quy định đối chiếu + tỷ giá), 📒 Sổ sách (cơ cấu tập đoàn, sổ bút toán hợp nhất)
  *  and a sticky bar with the next step and the main action.
  *  No inline handlers: every button goes through data-command / data-action="car:*". */
-import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,openTasks,hhmm,planCard,mateCards,trackFold,careSummary,foldToggle} from './office_kit.js';
+import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,openTasks,hhmm,planCard,mateCards,trackFold,careSummary,foldToggle,
+  coachOf,goto,gotoAction,guideOf,procSteps,coachFill} from './office_kit.js';
+import {pending} from '../v4/guide.js';
 
 const P='ga_';
 const BOSS='Chị Mai Anh';
@@ -76,7 +78,7 @@ function voucher(t,st,x){
 }
 function widget(t,st,x){
   const k=dkey(t,st),dr=drafts(x);
-  if(st.kind==='choice')return `<div class="ga-options">${(st.options||[]).map(o=>x.cmd(x.esc(o.label),P+'step',{task:t.id,step:st.id,answer:o.id},'ga-opt')).join('')}</div>`;
+  if(st.kind==='choice')return `<div class="ga-options">${(st.options||[]).map(o=>x.cmd(x.esc(o.label),P+'step',{task:t.id,step:st.id,answer:o.id},'ga-opt').replace('<button ',`<button data-opt="${x.esc(o.id)}" `)).join('')}</div>`;
   if(st.kind==='multi'){
     const sel=dr[k]||[];
     return `<div class="ga-checks" data-multi="${x.esc(k)}">${(st.options||[]).map(o=>`<label class="ga-check"><input type="checkbox" value="${x.esc(o.id)}" ${sel.includes(o.id)?'checked':''}><span>${x.esc(o.label)}</span></label>`).join('')}</div>`;
@@ -98,10 +100,9 @@ function widget(t,st,x){
   if(st.kind==='entry')return voucher(t,st,x);
   return '';
 }
-/** The confirm button of a step (it lives in the sticky bar; choices answer on tap). */
+/** Confirm label + action of each step kind (office_kit.procSteps puts it on the bottom button; choices answer on tap). */
 const CONFIRM={multi:['✔ Xác nhận lựa chọn','car:multi'],number:['✔ Xác nhận','car:num'],order:['✔ Chốt thứ tự','car:order'],
   match:['✔ Xác nhận ghép','car:match'],fields:['✔ Xác nhận số liệu','car:fields'],entry:['✂️ Ghi bút toán hợp nhất','car:entry']};
-function confirmBtn(t,st,x){const c=CONFIRM[st.kind];return c?btn(x,c[0],c[1],{task:t.id,step:st.id},'primary'):'';}
 /** The work sheet: the current step big, done steps folded away. */
 function stepCard(t,x){
   const ps=t.proc_state||{},steps=t.proc||[],cur=steps.find(s=>s.state==='current');
@@ -112,7 +113,7 @@ function stepCard(t,x){
   if(cur){
     const i=steps.indexOf(cur),tries=(ps.attempts||{})[cur.id]||0;
     const missing=(cur.docs||[]).filter(id=>t.docs.find(d=>d.id===id)?.closed);
-    body=`<article class="ga-work"><header class="ga-work-head"><span class="ga-dot" aria-hidden="true">${i+1}</span><div class="grow"><small>Bước ${i+1}/${total}${locked?` · còn ${locked} bước sau`:''}</small><h3>${x.esc(cur.title)}</h3></div></header>
+    body=`<article class="ga-work" data-step-card="${x.esc(t.id)}:${x.esc(cur.id)}"><header class="ga-work-head"><span class="ga-dot" aria-hidden="true">${i+1}</span><div class="grow"><small>Bước ${i+1}/${total}${locked?` · còn ${locked} bước sau`:''}</small><h3>${x.esc(cur.title)}</h3></div></header>
       <p class="ga-prompt">${x.esc(cur.prompt||'')}</p>
       ${missing.length?`<p class="ga-warn">📁 Mở trước: ${missing.map(id=>x.esc(t.docs.find(d=>d.id===id).title)).join(', ')}</p>`:''}
       ${cur.tip?`<p class="ga-tip">💡 ${x.esc(cur.tip)}</p>`:''}
@@ -218,21 +219,52 @@ function boardDoc(t,x){
   return `${meterBox(t,x)}${hot?fxCard(x,true):''}
     <div class="ga-cols">${col('a','Sổ phải thu · '+(n.a||''))}${col('b','Sổ phải trả · '+(n.b||''))}</div>${evidence(t,x)}`;
 }
-function boardBar(t,x){
+function boardBar(t,x,g){
   const m=t.meter||{},sel=msel(x,t),L=Object.fromEntries((t.lines||[]).map(l=>[l.id,l])),a=L[sel.a],b=L[sel.b];
-  if(waiting(t,x))return bar(x,t,`Chờ gói báo cáo về lúc ${hhmm(t.wait)}`,x.cmd('📞 Gọi giục anh Phong (10 phút)','ga_chase',{task:t.id},'primary'));
-  if(m.ready&&t.status!=='completed')return bar(x,t,`Hai sổ đã khớp: ${num(m.agreed)} xu.`,x.confirmCmd(`✂️ Loại trừ ${num(m.agreed)} xu`,'ga_submit',{task:t.id},`Chốt đối chiếu và ghi bút toán loại trừ Nợ 331 / Có 131: ${num(m.agreed)} xu?`,'primary'));
+  if(waiting(t,x))return bar(x,t,`Chờ gói báo cáo về lúc ${hhmm(t.wait)}`,g.cta);
+  if(m.ready&&t.status!=='completed')return bar(x,t,`Hai sổ đã khớp: ${num(m.agreed)} xu.`,g.cta);
   const clear=btn(x,'✕ Bỏ chọn','car:mclear',{task:t.id},'ghost ga-x');
   if(a&&b){
-    if(a.amount===b.amount)return bar(x,t,`<b>${x.esc(a.ref)}</b> ↔ <b>${x.esc(b.ref)}</b> · cùng ${num(a.amount)} xu`,clear+x.cmd('🔗 Ghép cặp này','ga_pair',{task:t.id,a:a.id,b:b.id},'primary'));
+    if(a.amount===b.amount)return bar(x,t,`<b>${x.esc(a.ref)}</b> ↔ <b>${x.esc(b.ref)}</b> · cùng ${num(a.amount)} xu`,clear+x.cmd('🔗 Ghép cặp này','ga_pair',{task:t.id,a:a.id,b:b.id},'primary ga-dopair'));
     return bar(x,t,`<b>${x.esc(a.ref)}</b> ↔ <b>${x.esc(b.ref)}</b> · lệch ${num(Math.abs(a.amount-b.amount))} xu — vì sao?`,
-      (t.causes||[]).map(c=>x.cmd(`${x.esc(c.emoji)} ${x.esc(c.label)}`,'ga_pair',{task:t.id,a:a.id,b:b.id,cause:c.id},'ga-chipbtn')).join('')+clear);
+      (t.causes||[]).map(c=>x.cmd(`${x.esc(c.emoji)} ${x.esc(c.label)}`,'ga_pair',{task:t.id,a:a.id,b:b.id,cause:c.id},`ga-chipbtn ga-cause-${x.esc(c.id)}`)).join('')+clear);
   }
   const one=a||b;
   if(one)return bar(x,t,`<b>${x.esc(one.ref)}</b> · ${money(one)} xu — chạm dòng ${one.side==='a'?'bên mua':'bên bán'} để ghép, hoặc chọn lý do:${one.tip?`<span class="ga-bartip">💡 ${x.esc(one.tip)}</span>`:''}`,
-    (t.tags||[]).map(g=>x.cmd(`${x.esc(g.emoji)} ${x.esc(g.label)}`,'ga_tag',{task:t.id,line:one.id,tag:g.id},'ga-chipbtn')).join('')
+    (t.tags||[]).map(g=>x.cmd(`${x.esc(g.emoji)} ${x.esc(g.label)}`,'ga_tag',{task:t.id,line:one.id,tag:g.id},`ga-chipbtn ga-tag-${x.esc(g.id)}`)).join('')
     +(one.hinted?'':x.cmd('💡 Gợi ý','ga_hint',{task:t.id,line:one.id},'ghost'))+clear);
-  return bar(x,t,`Còn ${(m.total||0)-(m.resolved||0)} dòng: chạm hai dòng cùng chứng từ để ghép, dòng lẻ thì chọn lý do.`);
+  return bar(x,t,`🔗 Còn ${(m.total||0)-(m.resolved||0)} dòng`,g.cta);
+}
+/* The matching board. The first board (coach) walks line by line: light the line, its partner (or the reason),
+ * then the pair / cause button. Later boards just point at the two ledgers. */
+function boardSteps(t,x){
+  const m=t.meter||{};
+  if(waiting(t,x))return [{ok:null,label:`Chờ gói báo cáo về lúc ${hhmm(t.wait)} — hoặc gọi giục`,go:{cmd:'ga_chase',payload:{task:t.id},label:'📞 Gọi giục anh Phong (10 phút)'}}];
+  if(m.ready||t.status==='completed')return [];
+  const sel=msel(x,t),L=Object.fromEntries((t.lines||[]).map(l=>[l.id,l])),a=L[sel.a]&&!L[sel.a].state?L[sel.a]:null,b=L[sel.b]&&!L[sel.b].state?L[sel.b]:null;
+  const left=(m.total||0)-(m.resolved||0),co=coachOf(x,t)?.lines;
+  const line=id=>`.ga-line[data-line="${id}"]`,step=(label,sel,go)=>({ok:null,label,go:go||goto(x,t,sel),pulse:sel});
+  if(!co)return [{ok:null,label:`Còn ${left} dòng: ghép hai dòng cùng chứng từ, dòng lẻ chọn lý do`,go:goto(x,t,'.ga-cols','👆 Chạm một dòng để bắt đầu')}];
+  const open=(t.lines||[]).filter(l=>!l.state&&co[l.id]);
+  const one=a||b,cur=one||open.find(l=>l.side==='a')||open[0];
+  if(!cur)return [];
+  const k=co[cur.id]||{};
+  if(k.tag){
+    if(!one||one.id!==cur.id)return [step(`${cur.ref}: dòng lẻ — chạm để chọn lý do`,line(cur.id))];
+    if(a&&b)return [{ok:null,label:'Bỏ chọn dòng thừa',go:{act:'car:mclear',data:{task:t.id},label:'✕ Bỏ chọn'}}];
+    const tg=(t.tags||[]).find(g=>g.id===k.tag);
+    return [step(`${cur.ref}: lý do “${tg?.label||k.tag}”`,`.ga-tag-${k.tag}`,{cmd:'ga_tag',payload:{task:t.id,line:cur.id,tag:k.tag},label:`${tg?.emoji||''} ${x.esc(tg?.label||k.tag)}`})];
+  }
+  const mate=L[k.mate];
+  if(!mate||mate.state)return [{ok:null,label:`Ghép ${cur.ref} với dòng cùng chứng từ bên kia`,go:goto(x,t,'.ga-cols')}];
+  const [pa,pb]=cur.side==='a'?[cur,mate]:[mate,cur];
+  const wrong=(a&&a.id!==pa.id)||(b&&b.id!==pb.id);
+  if(wrong)return [{ok:null,label:'Chọn nhầm dòng — bỏ chọn rồi làm lại',go:{act:'car:mclear',data:{task:t.id},label:'✕ Bỏ chọn'}}];
+  if(!a)return [step(`Chạm ${pa.ref} (sổ bên bán)`,line(pa.id))];
+  if(!b)return [step(`Chạm ${pb.ref} (sổ bên mua) — cùng chứng từ`,line(pb.id))];
+  if(pa.amount===pb.amount)return [step(`Ghép ${pa.ref} ↔ ${pb.ref}`,'.ga-dopair',{cmd:'ga_pair',payload:{task:t.id,a:pa.id,b:pb.id},label:'🔗 Ghép cặp này'})];
+  const c=(t.causes||[]).find(v=>v.id===k.cause);
+  return [step(`Lệch ${num(Math.abs(pa.amount-pb.amount))} xu: ${c?.label||''}`,`.ga-cause-${k.cause}`,{cmd:'ga_pair',payload:{task:t.id,a:pa.id,b:pb.id,cause:k.cause},label:`${c?.emoji||''} ${x.esc(c?.label||'')}`})];
 }
 function boardRecap(x){
   const t=(x.room.tasks||[]).find(v=>v.id===x.ui.lastBoard);
@@ -271,21 +303,28 @@ function currentMail(t,x){
   const help=!t.known&&t.variant==='match'?'<p class="ok-note">Mỗi lần ghép sai tốn 20 phút soát lại.</p>':'';
   return `<p class="ok-quote">“${x.esc(t.opening)}”</p>${t.brief?`<p class="ok-brief">🎯 ${x.esc(t.brief)}</p>`:''}<div class="ok-chips">${chips}</div>${help}`;
 }
-function dossierBar(t,x){
-  const st=currentStep(t);
-  if(st){
-    const miss=(st.docs||[]).filter(id=>(t.docs||[]).find(d=>d.id===id)?.closed);
-    const text=miss.length?`Mở “${(t.docs||[]).find(d=>d.id===miss[0])?.title||'tài liệu'}” trước`:st.kind==='choice'?`${st.title}: chạm một đáp án`:`Bước ${(t.proc_state?.at||0)+1}/${t.proc_state?.total||0}: ${st.title}`;
-    return bar(x,t,x.esc(text),confirmBtn(t,st,x));
-  }
-  if(t.handover_options)return bar(x,t,'Chọn ghi chú bàn giao rồi nộp.',btn(x,'📤 Nộp hồ sơ','car:submit',{task:t.id},'primary'));
+function dossierBar(t,x,g){
+  if(currentStep(t))return bar(x,t,'',g.cta);
+  if(t.handover_options)return bar(x,t,'Chọn ghi chú bàn giao rồi nộp.',g.cta);
   return bar(x,t,'Đã nộp hồ sơ.');
+}
+/** {steps, final} for the header hint and the bottom button. */
+function guideFor(t,x){
+  const board=t.variant==='match';
+  if(!t.known)return {steps:[{ok:null,label:board?'Nhận hai sổ đối chiếu':'Nhận hồ sơ',go:{cmd:'ask',payload:{task:t.id},label:board?'📥 Nhận hai sổ đối chiếu':'📥 Nhận hồ sơ'}}]};
+  if(board){
+    const m=t.meter||{};
+    return {steps:boardSteps(t,x),final:m.ready&&t.status!=='completed'?{label:`✂️ Loại trừ ${num(m.agreed)} xu`,go:{cmd:'ga_submit',payload:{task:t.id},confirm:`Chốt đối chiếu và ghi bút toán loại trừ Nợ 331 / Có 131: ${num(m.agreed)} xu?`}}:null};
+  }
+  const steps=procSteps(x,t,{pre:'ga',confirm:CONFIRM});
+  return {steps,final:!steps.length&&t.handover_options?{label:'📤 Nộp hồ sơ',go:{act:'car:submit',data:{task:t.id}}}:null};
 }
 
 export default {
   id:'group_accounting',
   css:true,
   next(t,x){
+    try{const n=x&&pending(guideFor(t,x).steps);if(n)return n.label;}catch{/* the fixed lines below */}
     if(!t.known)return t.variant==='match'?'Nhận hai sổ đối chiếu':'Nhận hồ sơ từ người giao việc';
     if(t.variant==='match'){
       const m=t.meter||{};
@@ -307,11 +346,16 @@ export default {
       {id:'doc',icon:'📂',label:'Hồ sơ'},{id:'rules',icon:'📋',label:'Quy định',badge:fresh||'',tone:'warn'},{id:'books',icon:'📒',label:'Sổ sách'}];
     const inbox=inboxPane(x,{tasks:taskMails(x,t,currentMail(t,x)),other:dayMails(x,{boss:BOSS,key:`${t.id}:${t.known?1:0}`}),...care(x,t)});
     const rules=todayRules(x)+fxCard(x,false);
-    if(!t.known)return desk(x,t,{cls:'ga',tabs,strip:strip(x,t),panes:{inbox,rules,books:booksPane(x),
+    const gd=guideFor(t,x),g=guideOf(x,t,gd.steps,gd.final);
+    if(!t.known)return desk(x,t,{cls:'ga',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules,books:booksPane(x),
       doc:`<p class="ok-empty"><span aria-hidden="true">✉️</span><b>${x.esc(t.title)}</b><span>${board?'Hai sổ đối chiếu còn nằm trong hộp thư của công ty con.':'Hồ sơ còn trong phong bì.'}</span></p>`},
-      bar:bar(x,t,x.esc(this.next(t,x)),x.cmd(board?'📥 Nhận hai sổ đối chiếu':'📥 Nhận hồ sơ','ask',{task:t.id},'primary'),true)});
-    if(board)return desk(x,t,{cls:'ga',tabs,strip:strip(x,t),panes:{inbox,rules,books:booksPane(x),doc:boardDoc(t,x)},bar:boardBar(t,x)});
-    return desk(x,t,{cls:'ga',tabs,strip:strip(x,t),panes:{inbox,rules,books:booksPane(x),doc:stepCard(t,x)+docsPanel(t,x)},bar:dossierBar(t,x)});
+      bar:bar(x,t,'',g.cta,true)});
+    if(board){
+      // Picking lines and choosing why stay in the bar; the guide's button covers the rest (waiting, ready, nothing picked).
+      const sel=msel(x,t),picked=!waiting(t,x)&&!(t.meter||{}).ready&&(sel.a||sel.b);
+      return desk(x,t,{cls:'ga',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules,books:booksPane(x),doc:boardDoc(t,x)},bar:boardBar(t,x,picked?{cta:''}:g)});
+    }
+    return desk(x,t,{cls:'ga',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules,books:booksPane(x),doc:stepCard(t,x)+docsPanel(t,x)},bar:dossierBar(t,x,g)});
   },
   idle(x){
     const d=x.room.data||{};if(!d.office)return '';
@@ -357,6 +401,8 @@ export default {
   actions:{
     tab:switchTab,
     fold:foldToggle,
+    goto:gotoAction,
+    coach:coachFill,
     msel(d,el,x){const t=(x.room.tasks||[]).find(v=>v.id===d.task);if(!t)return;const s=msel(x,t);s[d.side]=s[d.side]===d.line?null:d.line;x.render();},
     mclear(d,el,x){const t=(x.room.tasks||[]).find(v=>v.id===d.task);if(!t)return;const s=msel(x,t);s.a=s.b=null;x.render();},
     async open(data,el,x){views(x)[data.task]=data.doc;await x.send(P+'open',{task:data.task,doc:data.doc});},
@@ -376,7 +422,7 @@ export default {
     move(data,el,x){
       sync(rootOf(el),x);const list=drafts(x)[data.key];if(!list)return;
       const i=Number(data.i),j=i+Number(data.dir);if(j<0||j>=list.length)return;
-      [list[i],list[j]]=[list[j],list[i]];x.render();
+      [list[i],list[j]]=[list[j],list[i]];(x.ui.moved??={})[data.key]=true;x.render();
     },
     async order(data,el,x){const [t,st]=stepOf(x,data);if(!st)return;await send(x,t,st,drafts(x)[dkey(t,st)]||st.items.map(i=>i.id));},
     async match(data,el,x){

@@ -616,6 +616,18 @@ class TaxPayrollTests(unittest.TestCase):
                 blob = json.dumps(T.make_task(day, slot, 1), ensure_ascii=False)
                 self.assertNotIn('chị cũng không rõ', blob)
 
+    def test_first_payroll_coach_names_the_wrong_cells(self):
+        j = self.grid()
+        tid = j.task['id']
+        self.assertEqual(public_state(j.state)['careers'][CAR]['data']['coach'], {})
+        j.act('ask', task=tid)
+        coach = public_state(j.state)['careers'][CAR]['data']['coach'][tid]['rows']
+        t = j.get(tid)
+        self.assertEqual(coach, {r['id']: dict(z=r['_truth']['z'], why=r['_truth']['why']) for r in t['rows']})
+        self.assertNotIn('_truth', json.dumps(public_state(j.state)['careers'][CAR]['tasks'], ensure_ascii=False))
+        j.c['metrics']['served'] = 1
+        self.assertEqual(public_state(j.state)['careers'][CAR]['data']['coach'], {})
+
     def test_public_data_shape(self):
         j = self.grid()
         data = public_state(j.state)['careers'][CAR]['data']

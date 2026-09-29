@@ -2,6 +2,8 @@
  *  table. Field state is persistent and turn-based; everything is recomputed
  *  on the server, the client only shows it. */
 import {reqList} from '../ui-kit.js';
+import {stepRows,nextHint,stepCta,finalGo,pending,firstTime} from '../v4/guide.js';
+import {keepBarAboveFooter} from './food_kit.js';
 const ID='farm';
 const STAGE={empty:'Luống trống',sprout:'Mới nhú',young:'Đang lớn',almost:'Sắp tới lứa',ripe:'Đúng lứa · thu được',over:'Quá lứa · xơ',rotten:'Hỏng · dọn luống'};
 const ART={sprout:'🌱',young:'🌿'};
@@ -21,7 +23,6 @@ const sum=a=>a.reduce((s,v)=>s+v,0);
 const pct=(v,max)=>Math.max(0,Math.min(100,v/max*100)).toFixed(1)+'%';
 const tile=(x,command,payload,inner,cls='',disabled=false)=>`<button type="button" class="tile ${cls}" data-command="${command}" data-payload="${x.esc(JSON.stringify(payload))}"${disabled?' disabled':''}>${inner}</button>`;
 const carBtn=(x,label,action,data={},cls='',extra='')=>`<button type="button" class="btn ${cls}" data-action="car:${action}"${Object.entries(data).map(([k,v])=>` data-${k}="${x.esc(v)}"`).join('')}${extra}>${label}</button>`;
-const checklist=(x,rows)=>`<ul class="checklist">${rows.map(([ok,label,note])=>`<li class="${ok===true?'ok':ok===false?'bad':''}"><span>${ok===true?'✓':ok===false?'✗':'○'}</span>${x.esc(label)}${note?`<small>${x.esc(note)}</small>`:''}</li>`).join('')}</ul>`;
 const data=x=>x.room.data||{plots:[],cold:[],coop:{},diary:[]};
 const packed=(t,crop)=>sum((t.crate||[]).filter(e=>e.crop===crop).map(e=>e.qty));
 /* Wholesale prices come in tenths of a xu. */
@@ -32,7 +33,7 @@ const estimate=(row,grade,qty,slip)=>{let t=0;const base=grade==='A'?row.a:row.b
 function weatherBar(x){
   const d=data(x),w=d.weather||{},f=d.forecast||{},se=d.season,out=d.outlook||[];
   const flags=[d.nopump?'<span class="fa-flag bad">🚱 Trạm bơm cúp nước: chỉ tưới từng luống</span>':'',d.bees?'<span class="fa-flag">🐝 Ong đang ở cạnh vườn: đừng phun thuốc hóa học</span>':''].join('');
-  const season=se?`<div class="fa-season"><span class="fa-sky" aria-hidden="true">${x.esc(se.emoji)}</span><div class="grow"><b>${x.esc(se.name)} · ngày ${se.day}/${se.days}</b><small>${x.esc(se.text)}</small></div>${se.day===se.days?`<span class="fa-flag">Mai: ${x.esc(se.next.emoji)} ${x.esc(se.next.name)}</span>`:''}</div>`:'';
+  const season=se?`<div class="fa-season"><span class="fa-sky" aria-hidden="true">${x.esc(se.emoji)}</span><div class="grow"><b>${x.esc(se.name)} · ngày ${se.day}/${se.days}</b>${se.good?.length?`<small>được mùa: ${x.esc(se.good.join(', '))}</small>`:''}</div>${se.day===se.days?`<span class="fa-flag">Mai: ${x.esc(se.next.emoji)} ${x.esc(se.next.name)}</span>`:''}</div>`:'';
   const strip=out.length?`<ol class="fa-outlook" aria-label="Dự báo ba ngày tới">${out.map((o,i)=>`<li class="${o.id}"><small>${i===0?'Mai':i===1?'Ngày kia':'Ngày '+o.day}</small><span aria-hidden="true">${x.esc(o.emoji)}</span><b>${x.esc(o.name)}</b><small class="fa-night">${o.night>0?'đêm ẩm +'+o.night:'đêm khô '+o.night}%</small>${o.season?`<em>${x.esc(o.season_emoji)} ${x.esc(o.season)}</em>`:''}</li>`).join('')}</ol>`
     :`<div class="fa-forecast"><small>Mai</small><span aria-hidden="true">${x.esc(f.emoji||'')}</span><small>${x.esc(f.name||'')}</small></div>`;
   return `<div class="fa-weather card"><div class="fa-wrow"><span class="fa-sky" aria-hidden="true">${x.esc(w.emoji||'🌤️')}</span><div class="grow"><b>Hôm nay: ${x.esc(w.name||'')}</b><small>${x.esc(w.tip||'')}</small></div></div>
@@ -58,7 +59,7 @@ function deskCard(x){
 }
 function orderTicket(t,x){
   const who=x.npc(t.npc);
-  if(!t.known)return `<article class="card ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3><p>${x.esc(t.opening)}</p></div></div>${x.cmd('📞 Nhận đơn hàng','ask',{task:t.id},'primary full')}</article>`;
+  if(!t.known)return `<article class="card ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3><p>${x.esc(t.opening)}</p></div></div>${x.cmd('📞 Nhận đơn hàng','ask',{task:t.id},'primary full gd-cta fa-ask')}</article>`;
   const n=t.needs;
   return `<article class="card ticket"><div class="row">${x.portrait(who,48)}<div class="grow">
     <div class="row spread"><h3>${x.esc(who.display_name)}</h3><b class="price">${x.money(t.quoted_price||0)}</b></div>
@@ -159,7 +160,7 @@ function coopTab(x){
     <div class="fa-mood"><div class="row spread"><b>Tinh thần đàn · ${x.esc(face)}</b><small>${mood}/100</small></div><span class="fa-meter mood ${mood<ok?'low':''}" style="--lo:${ok}%"><i style="width:${mood}%"></i></span>
       <small class="muted">Mai đẻ khoảng ${coop.lay_pct??100}% đàn${d.fed_today?'':' (chưa ăn: chỉ nửa đàn)'}.</small></div>
     <dl class="kv"><dt>Đàn gà</dt><dd>${coop.hens||0} mái</dd><dt>Trứng trong ổ</dt><dd>${coop.nest||0}${coop.stale?` · ${coop.stale} quả từ hôm qua`:''}</dd><dt>Hôm nay</dt><dd>${d.fed_today?'✓ đã cho ăn':'<b class="fa-bad">chưa cho ăn</b>'} · ${coop.cleaned_today?'✓ chuồng sạch':'<b class="fa-bad">chưa dọn chuồng</b>'}</dd><dt>Cám trong kho</dt><dd>${st.feed||0} bao</dd></dl>
-    <p class="muted small">Trứng để qua đêm trong ổ chỉ còn loại B. Trứng lau khô, không rửa nước.</p>
+    <p class="muted small">🥚 qua đêm → loại B</p>
     <div class="row wrap">${x.cmd('🌾 Cho gà ăn & thay nước','fa_feed',{},'primary',d.fed_today||!st.feed)}${x.cmd('🧹 Dọn chuồng','fa_clean',{},'',!!coop.cleaned_today)}${x.cmd('🧺 Nhặt trứng','fa_collect',{},'',!coop.nest)}
       ${(coop.hens||0)<(x.cc.hens||10)?x.confirmCmd(`🐔 Mua gà mái đẻ · ${x.cc.hen_cost} xu`,'fa_hen',{},`Mua một gà mái đẻ giá ${x.cc.hen_cost} xu?`,'ghost small',(Number(x.room.money)||0)<x.cc.hen_cost):''}</div></div>`;
 }
@@ -168,7 +169,7 @@ function coopTab(x){
 function coldTab(t,x){
   const d=data(x),order=t&&t.known?t.needs:null;
   const lots=[...(d.cold||[])].sort((a,b)=>a.crop.localeCompare(b.crop)||a.expires-b.expires);
-  return `<div class="row spread wrap"><p class="muted small grow">Kho mát ${d.cold_units||0}/${x.cc.cold_cap} đơn vị. Lô hết hạn tươi bị bỏ khi khép ca.</p>${x.button('📦 Kho vật tư','inventory',{},'ghost small')}</div>
+  return `<div class="row spread wrap"><p class="muted small grow">❄️ ${d.cold_units||0}/${x.cc.cold_cap}</p>${x.button('📦 Kho vật tư','inventory',{},'ghost small')}</div>
     <div class="fa-lots">${lots.map(l=>{
       const p=produce(x,l.crop),inOrder=order&&l.crop in order.items;
       const need=inOrder?Math.max(0,order.items[l.crop]-packed(t,l.crop)):0,n=Math.min(need,l.qty);
@@ -207,38 +208,141 @@ function marketTab(x){
     return `<div class="fa-lot ${l.left<=0?'expiring':''}"><span class="fa-lot-art" aria-hidden="true">${p.emoji}</span><div class="grow"><b>${x.esc(p.name)} · ${l.qty} ${x.esc(p.unit)} · loại ${x.esc(l.grade)}</b><small>Lô ${x.esc(l.id)} · ${l.left<=0?'hết hạn hôm nay':'còn '+l.left+' ngày'}</small>${need?`<span class="tag amber">📦 ${x.esc(need)} đang cần</span>`:''}</div>
       <div class="fa-lot-btns">${n?(few<n?btn(few,'small ghost'):'')+btn(n,need?'small ghost':'small primary'):'<small class="muted">chợ đủ hàng</small>'}</div></div>`;}).join('');
   return `${pledge}<section class="fa-market card"><div class="row spread"><h4>📈 Chợ đầu mối hôm nay</h4>${mk.income?`<span class="tag green">+${x.fmt(mk.income)} xu</span>`:''}</div>
-    <p class="muted small">Giá sỉ cho mỗi đơn vị loại A (xu), khoảng ${mk.wholesale}% giá bán lẻ. Mỗi ${slip} đơn vị bán thêm, giá hạ 10%; chợ chỉ nhận có hạn mỗi mặt hàng.</p>
+    <p class="muted small">Giá sỉ loại A (xu) · bán thêm ${slip} → −10%</p>
     <ul class="fa-board">${board}</ul>
     ${rp?`<p class="fa-rumour">🗣️ Anh Tuấn rỉ tai: “Mai ${x.esc(rp.name.toLowerCase())} ${ru.up?'lên giá':'rớt giá'} đó.”</p>`:''}</section>
     <section class="fa-sell"><h4 class="section-title">Bán sỉ từ kho mát</h4>${sell||'<p class="muted small">Kho mát chưa có lô nào bán được.</p>'}</section>`;
 }
 function crateSide(t,x){
   if(!t.known)return `<div class="card"><p class="small">Nhận đơn để mở bàn đóng thùng.</p></div>`;
-  const n=t.needs,st=(x.room.inventory||{}).stock||{};
-  const crate=t.crate||[];
-  const eggs=packed(t,'egg'),veg=crate.some(e=>e.crop!=='egg');
-  const pack={};if(n.kind==='contract')pack.carton=1;else if(veg)pack.bag=1;if(eggs)pack.egg_tray=Math.ceil(eggs/10);
-  const rows=Object.entries(n.items).map(([k,q])=>{
-    const a=sum(crate.filter(e=>e.crop===k&&e.grade==='A').map(e=>e.qty)),b=sum(crate.filter(e=>e.crop===k&&e.grade==='B').map(e=>e.qty)),p=produce(x,k);
-    return [a+b?a+b>=q&&!(n.kind==='contract'&&b):null,`${q} ${p.unit} ${p.name.toLowerCase()}${n.kind==='contract'?' loại A':''}`,a+b?`A ${a} · B ${b} / ${q}`:''];
-  });
-  const notOrganic=crate.filter(e=>!e.organic);
-  if(t.label==='organic')rows.push([!notOrganic.length,'Nhãn hữu cơ khớp nhật ký',notOrganic.length?`lô ${notOrganic.map(e=>e.lot).join(', ')} không hữu cơ`:'']);
-  if(n.organic)rows.push([t.label?t.label==='organic':null,'Hợp đồng yêu cầu nhãn hữu cơ + QR','']);
-  rows.push([t.label?true:null,'Đã dán nhãn','']);
-  for(const [k,q] of Object.entries(pack))rows.push([(st[k]||0)>=q,`${supply(x,k).name} ×${q}`,`kho còn ${st[k]||0}`]);
+  const n=t.needs,crate=t.crate||[];
   const label=(id,e,title,sub)=>tile(x,'fa_label',{task:t.id,label:id},`<span class="tile-emoji">${e}</span><b>${title}</b><small>${sub}</small>`,t.label===id?'selected':'');
   return `<div class="fa-crate card"><h4>${n.kind==='contract'?'📦 Thùng carton':'🛍️ Túi giấy'} cho ${x.esc(x.npc(t.npc).display_name)}</h4>
     <div class="fa-crate-box">${crate.map(e=>{const p=produce(x,e.crop);return `<div class="fa-crate-line"><span>${p.emoji} ${e.qty} ${x.esc(p.unit)} · ${x.esc(e.grade)}${e.organic?' 🌿':''}</span><small>lô ${x.esc(e.lot)}</small><button type="button" class="icon-btn" aria-label="Trả lô ${x.esc(e.lot)} về kho" data-command="fa_unpack" data-payload="${x.esc(JSON.stringify({task:t.id,lot:e.lot}))}">↩︎</button></div>`;}).join('')||'<small class="muted">Thùng trống — xếp hàng từ Kho mát.</small>'}</div>
     <h4 class="section-title">Nhãn</h4><div class="tile-grid fa-labels">${label('plain','🏷️','Nhãn thường','tên trại · ngày thu')}${label('organic','🌿','Nhãn hữu cơ','QR nhật ký canh tác')}</div>
-    ${checklist(x,rows)}
-    ${x.confirmCmd('🚚 GIAO HÀNG','fa_deliver',{task:t.id},'Giao thùng hàng này? Khách sẽ kiểm số lượng, loại hàng và quét QR trên nhãn.','primary big full',!crate.length||!t.label)}</div>`;
+    ${stepRows(x,orderSteps(t,x),'Việc của đơn')}</div>`;
+}
+
+/* ------------------------------------------------------------ next steps (guide.js)
+ * An order is: produce in the cold room (harvest a ripe bed, look after a bed that ripens
+ * today, collect eggs) → packed in the crate → an honest label → delivered. Farm work is
+ * one tap on every order; the label is a judgement call: the right one on the first order,
+ * after that the step points at the two labels. */
+const inv=(x,what)=>({act:'inventory',label:`📦 Hết ${x.esc(what)}: mở Kho nhập thêm`});
+const harvestGo=(x,p,c)=>({cmd:'fa_harvest',payload:{plot:p.id},confirm:p.growth<x.cc.thresholds.ripe?`${c.name} còn non: thu bây giờ chỉ đạt loại B. Vẫn thu?`:`Thu hoạch ${c.name.toLowerCase()} luống ${p.id} vào kho mát?`,
+  label:`🧺 Thu hoạch ${x.esc(c.name.toLowerCase())} luống ${x.esc(p.id)}`});
+/* How to get `need` more units of crop k today: a lot to pack, eggs to collect, a bed to harvest or to look after. */
+function sourceStep(t,x,k,need){
+  const d=data(x),n=t.needs,c=produce(x,k),th=x.cc.thresholds,m=x.cc.moisture,contract=n.kind==='contract';
+  const fits=l=>l.crop===k&&l.left>=0&&!l.unsafe&&(!n.organic||l.organic);
+  const lots=(d.cold||[]).filter(fits).sort((a,b)=>(a.grade>b.grade)-(a.grade<b.grade)||a.left-b.left);
+  const A=lots.find(l=>l.grade==='A'),any=lots[0];
+  const pack=l=>{const q=Math.min(need,l.qty);return {cmd:'fa_pack',payload:{task:t.id,lot:l.id,qty:q},label:`📦 Xếp ${q} ${x.esc(c.unit)} ${x.esc(c.name.toLowerCase())} loại ${l.grade} vào thùng`};};
+  if(A||(any&&!contract))return {go:pack(A||any)};
+  if(k==='egg'){
+    const nest=d.coop?.nest||0;
+    if(nest)return {go:{cmd:'fa_collect',payload:{},label:`🧺 Nhặt ${nest} trứng trong ổ`}};
+    return any?{go:pack(any)}:{note:'gà đẻ thêm qua đêm'};
+  }
+  const beds=(d.plots||[]).filter(p=>p.crop===k&&!p.safe_in&&(!n.organic||p.organic)&&p.growth<th.rotten).sort((a,b)=>b.growth-a.growth);
+  const ripe=beds.find(p=>p.growth>=th.ripe);
+  if(ripe)return {plot:ripe.id,go:harvestGo(x,ripe,c)};
+  const st=(x.room.inventory||{}).stock||{};
+  for(const p of beds){
+    const room=(p.cap||0)-(p.grown||0),today=p.eta===0||p.growth+room>=th.ripe;
+    const boost=!today&&!p.compost&&(st.compost||0)>0&&p.growth+5+room+4>=th.ripe;
+    if(!today&&!boost)continue;
+    const tag=`${p.id}: ${p.growth}/${th.ripe}`;
+    if(p.weeds)return {plot:p.id,note:tag,go:{cmd:'fa_weed',payload:{plot:p.id},label:`🌾 Nhổ cỏ luống ${x.esc(p.id)} cho ${x.esc(c.name.toLowerCase())} mau lớn`}};
+    if(boost)return {plot:p.id,note:tag,go:{cmd:'fa_fertilize',payload:{plot:p.id,kind:'compost'},label:`🟫 Bón compost luống ${x.esc(p.id)}: chín kịp hôm nay`}};
+    if(p.moisture<m.low)return {plot:p.id,note:tag,go:{cmd:'fa_water',payload:{plot:p.id},label:`💧 Tưới luống ${x.esc(p.id)} (${p.moisture}%)`}};
+    return {plot:p.id,go:{cmd:'advance',payload:{},label:`⏳ Chờ ${x.esc(c.name.toLowerCase())} luống ${x.esc(p.id)} chín · ${p.growth}/${th.ripe}`}};
+  }
+  if(any)return {go:pack(any)};
+  const young=beds.find(p=>p.growth>=th.young);
+  if(young&&!contract)return {plot:young.id,go:harvestGo(x,young,c)};
+  const soon=beds.find(p=>p.eta!=null);
+  return {note:soon?`${soon.id} chín ${DAYS(soon.eta)}`:'chưa có luống nào trồng'};
+}
+function orderSteps(t,x){
+  const d=data(x),n=t.needs,id=t.id,rows=[],crate=t.crate||[];
+  for(const e of crate){
+    if(e.unsafe)rows.push({ok:false,label:`Lô ${e.lot} chưa hết cách ly thuốc`,go:{cmd:'fa_unpack',payload:{task:id,lot:e.lot},label:`↩︎ Bỏ lô ${x.esc(e.lot)} ra khỏi thùng`}});
+    else if(n.organic&&!e.organic)rows.push({ok:false,label:`Lô ${e.lot} không hữu cơ`,go:{cmd:'fa_unpack',payload:{task:id,lot:e.lot},label:`↩︎ Bỏ lô ${x.esc(e.lot)} (không hữu cơ)`}});
+  }
+  for(const [k,q] of Object.entries(n.items)){
+    const c=produce(x,k),have=packed(t,k),label=`${q} ${c.unit} ${c.name.toLowerCase()}${n.kind==='contract'?' loại A':''}`;
+    const b=sum(crate.filter(e=>e.crop===k&&e.grade==='B').map(e=>e.qty)),note=b?`A ${have-b} · B ${b} / ${q}`:`${have}/${q}`;
+    if(have>=q){rows.push({ok:!(n.kind==='contract'&&b),label,note});continue;}
+    const s=sourceStep(t,x,k,q-have);
+    rows.push({ok:null,label,note:s.note||note,go:s.go,plot:s.plot});
+  }
+  if(crate.length){
+    // Honest = no organic label over a lot that is not organic, and the organic label when the contract asks for it.
+    const all=crate.every(e=>e.organic),right=n.organic||all?'organic':'plain',name={organic:'🌿 Nhãn hữu cơ + QR',plain:'🏷️ Nhãn thường'};
+    const fine=t.label&&!(t.label==='organic'&&!all)&&!(n.organic&&t.label!=='organic');
+    rows.push({ok:t.label?!!fine:null,label:'Dán nhãn đúng sự thật',note:t.label&&!fine?(n.organic&&t.label!=='organic'?'hợp đồng cần nhãn hữu cơ':'có lô không hữu cơ'):'',
+      go:fine?null:firstTime(x)?{cmd:'fa_label',payload:{task:id,label:right},label:`${name[right]}`}:{sel:'.fa-labels',label:'🏷️ Chọn nhãn: hữu cơ chỉ khi mọi lô đều hữu cơ'}});
+    const st=(x.room.inventory||{}).stock||{},eggs=packed(t,'egg'),veg=crate.some(e=>e.crop!=='egg');
+    const pack={};if(n.kind==='contract')pack.carton=1;else if(veg)pack.bag=1;if(eggs)pack.egg_tray=Math.ceil(eggs/10);
+    for(const [k,q] of Object.entries(pack))if((st[k]||0)<q)rows.push({ok:false,label:`${supply(x,k).name} ×${q}`,note:`kho còn ${st[k]||0}`,go:inv(x,supply(x,k).name.toLowerCase())});
+  }
+  return rows;
+}
+const deliverFinal=(t,x,steps)=>({label:'🚚 GIAO HÀNG',go:finalGo(steps,'fa_deliver',{task:t.id},{question:'Khách sẽ kiểm số lượng, loại hàng và quét QR trên nhãn.',confirm:true}),
+  ready:!!((t.crate||[]).length&&t.label),why:(t.crate||[]).length?'dán nhãn trước':'xếp hàng vào thùng trước'});
+function taskGuide(t,x){
+  if(data(x).desk?.ev)return {steps:[{ok:null,label:'Quyết chuyện ở trại',go:{sel:'.fa-opts',label:'👉 Chọn cách xử lý chuyện ở trại'}}],final:{label:'Quyết chuyện ở trại',go:{sel:'.fa-opts'},ready:false}};
+  if(!t.known)return {steps:[{ok:null,label:'Nghe khách đặt hàng',go:{cmd:'ask',payload:{task:t.id},label:'📞 Nhận đơn hàng'}}],pulse:'.fa-ask'};
+  const steps=orderSteps(t,x);
+  return {steps,final:deliverFinal(t,x,steps)};
+}
+function hintFor(g,x){
+  const f=g.final&&g.final.ready!==false&&g.final.go?{label:g.final.label.replace(/^[^\p{L}]+/u,''),go:g.final.go}:null;
+  // Only steps with no way to do them today are left: the hint offers the finish, like the bottom button.
+  const steps=f&&!pending(g.steps)?.go?g.steps.filter(s=>s.ok===true||s.go):g.steps;
+  return nextHint(x,steps,{final:f,pulse:g.pulse});
+}
+/* The bottom bar: what the crate holds (icons and numbers) over the one next-step button. */
+function bottomBar(t,x,g){
+  if(!g.final)return '';
+  // When the next step works a bed, that bed's numbers ride along, so the result of each tap shows next to the button.
+  const bed=(data(x).plots||[]).find(p=>p.id===pending(g.steps)?.plot),th=x.cc.thresholds,m=x.cc.moisture;
+  const plot=bed?`<span class="fa-bed">${x.esc(bed.id)} ${bed.crop?produce(x,bed.crop).emoji:''} ${bed.growth}/${th.ripe} · 💧${bed.moisture}%${bed.moisture<m.low?'↓':''}${bed.weeds?` · 🌾${bed.weeds}`:''}</span>`:'';
+  const strip=t.known?`<div class="fa-strip" aria-label="Thùng hàng">${Object.entries(t.needs.items).map(([k,q])=>{const h=packed(t,k);return `<span class="${h>=q?'ok':''}">${produce(x,k).emoji} ${h}/${q}</span>`;}).join('')}<span class="${t.label?'ok':''}">${t.label==='organic'?'🌿':'🏷️'} ${t.label?'✓':'—'}</span>${plot}</div>`:'';
+  return `<div class="fa-bar">${strip}${stepCta(x,g.steps,g.final)}</div>`;
+}
+/* Between orders: the daily chores that cost tomorrow's harvest or eggs when forgotten. */
+function idleSteps(x){
+  const d=data(x),st=(x.room.inventory||{}).stock||{},coop=d.coop||{},m=x.cc.moisture,rows=[];
+  if(d.desk?.ev)return [{ok:null,label:'Quyết chuyện ở trại',go:{sel:'.fa-opts',label:'👉 Chọn cách xử lý chuyện ở trại'}}];
+  if(!d.fed_today&&st.feed)rows.push({ok:null,label:'Cho gà ăn & thay nước',go:{cmd:'fa_feed',payload:{},label:'🌾 Cho gà ăn & thay nước'}});
+  if(!coop.cleaned_today)rows.push({ok:null,label:'Dọn chuồng gà',go:{cmd:'fa_clean',payload:{},label:'🧹 Dọn chuồng gà'}});
+  if(coop.nest)rows.push({ok:null,label:`Nhặt ${coop.nest} trứng`,go:{cmd:'fa_collect',payload:{},label:`🧺 Nhặt ${coop.nest} trứng trong ổ`}});
+  const planted=(d.plots||[]).filter(p=>p.crop),dry=planted.filter(p=>p.moisture<m.low);
+  // Several dry beds and none close to waterlogged: one turn of the valve waters them all.
+  const valve=!d.nopump&&dry.length>=2&&planted.every(p=>p.moisture+(x.cc.water?.all||22)<=m.wet);
+  if(valve)rows.push({ok:null,label:`Tưới ${dry.map(p=>p.id).join(', ')}`,go:{cmd:'fa_water',payload:{plot:'all'},label:`🚿 Mở van tưới cả vườn (${dry.length} luống khô)`}});
+  const pl=d.pledge;
+  if(pl&&pl.done<pl.qty){
+    const lot=(d.cold||[]).find(l=>l.crop===pl.crop&&l.grade==='A'&&!l.unsafe&&l.left>=0);
+    if(lot){const q=Math.min(pl.qty-pl.done,lot.qty);rows.push({ok:null,label:'Góp hàng cho HTX',go:{cmd:'fa_pledge',payload:{lot:lot.id,qty:q},label:`🤝 Góp ${q} ${x.esc(produce(x,pl.crop).unit)} ${x.esc(produce(x,pl.crop).name.toLowerCase())} cho HTX`}});}
+  }
+  // An empty bed with seeds in the store: open it so the seed choice is right there.
+  const empty=(d.plots||[]).find(p=>!p.crop),seeds=(x.cc.crops||[]).some(c=>c.unlock<=(x.room.level||1)&&(st[c.seed]||0)>0);
+  if(empty&&seeds)rows.push({ok:null,label:`Gieo luống trống ${empty.id}`,go:x.ui.plot===empty.id&&(x.ui.tab||'field')==='field'?{sel:'.fa-seeds',label:`🌱 Chọn hạt gieo luống ${x.esc(empty.id)}`}:{act:'car:open',data:{plot:empty.id},label:`🌱 Gieo luống trống ${x.esc(empty.id)}`}});
+  for(const p of planted){
+    if(p.moisture<m.low&&!valve)rows.push({ok:null,label:`Tưới luống ${p.id}`,go:{cmd:'fa_water',payload:{plot:p.id},label:`💧 Tưới luống ${x.esc(p.id)} (${p.moisture}%)`}});
+    else if(p.weeds>=2)rows.push({ok:null,label:`Nhổ cỏ luống ${p.id}`,go:{cmd:'fa_weed',payload:{plot:p.id},label:`🌾 Nhổ cỏ luống ${x.esc(p.id)}`}});
+  }
+  return rows;
 }
 
 export default {
   id:ID,
   css:true,
-  next(t){
+  next(t,x){
+    try{const n=x&&pending(taskGuide(t,x).steps);if(n)return x.esc(n.label);}catch{/* fall back to the fixed lines */}
     if(!t.known)return 'Nghe khách đặt hàng';
     const missing=Object.entries(t.needs.items).filter(([k,q])=>packed(t,k)<q);
     if(missing.length)return 'Thu hoạch, rồi xếp hàng vào thùng';
@@ -246,22 +350,30 @@ export default {
     return 'Giao hàng cho khách';
   },
   job(t,x){
-    if(data(x).desk?.ev)return `<div class="career-job fa">${weatherBar(x)}${deskCard(x)}</div>`;
+    const g=taskGuide(t,x),hint=hintFor(g,x);
+    if(data(x).desk?.ev)return `<div class="career-job fa">${hint}${deskCard(x)}${weatherBar(x)}${bottomBar(t,x,g)}</div>`;
     const tab=x.ui.tab||'field';
     const main=tab==='coop'?coopTab(x):tab==='cold'?coldTab(t,x):tab==='market'?marketTab(x):fieldTab(x);
-    return `<div class="career-job fa">${weatherBar(x)}${deskCard(x)}${orderTicket(t,x)}${tabs(x)}
-      <div class="workbench"><section class="wb-main">${main}</section><aside class="wb-side">${crateSide(t,x)}</aside></div></div>`;
+    // The order first; the weather and the farm's tabs below it. The bar keeps the next step in reach.
+    return `<div class="career-job fa">${hint}${deskCard(x)}${orderTicket(t,x)}${weatherBar(x)}${tabs(x)}
+      <div class="workbench"><section class="wb-main">${main}</section><aside class="wb-side">${crateSide(t,x)}</aside></div>${bottomBar(t,x,g)}</div>`;
   },
   idle(x){
-    if(data(x).desk?.ev)return `<div class="career-job fa">${weatherBar(x)}${deskCard(x)}</div>`;
+    const steps=idleSteps(x),todo=pending(steps)?.go;
+    const hint=todo?nextHint(x,steps,{}):'',bar=todo?`<div class="fa-bar">${stepCta(x,steps,{label:'',go:null,ready:false})}</div>`:'';
+    if(data(x).desk?.ev)return `<div class="career-job fa">${hint}${deskCard(x)}${weatherBar(x)}${bar}</div>`;
     const tab=x.ui.tab||'field';
     const main=tab==='coop'?coopTab(x):tab==='cold'?coldTab(null,x):tab==='market'?marketTab(x):fieldTab(x);
-    return `<div class="career-job fa">${weatherBar(x)}${deskCard(x)}${tabs(x)}
-      <div class="workbench single"><section class="wb-main">${main}</section></div></div>`;
+    return `<div class="career-job fa">${hint}${weatherBar(x)}${deskCard(x)}${tabs(x)}
+      <div class="workbench single"><section class="wb-main">${main}</section></div>${bar}</div>`;
   },
+  // The next-step bar rides above the sheet's own sticky footer.
+  tick(root){keepBarAboveFooter(root);},
   actions:{
     async tab(data,el,x){x.ui.tab=['field','coop','cold','market'].includes(data.tab)?data.tab:'field';x.render();},
     async plot(data,el,x){x.ui.plot=x.ui.plot===data.plot?null:data.plot;x.render();},
+    // A next step that works a bed: show the field with that bed open (never toggles it shut).
+    async open(data,el,x){if(!/^P[1-6]$/.test(data.plot||''))return;x.ui.tab='field';x.ui.plot=data.plot;x.render();},
     async seen(data,el,x){x.ui.seen=data.key;x.render();},
     async care(data,el,x){x.ui.careOpen=!x.ui.careOpen;x.render();},
   },

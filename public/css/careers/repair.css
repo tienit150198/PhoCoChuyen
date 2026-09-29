@@ -206,3 +206,19 @@
 @media (prefers-reduced-motion:reduce){.career-job.rp .rp-big{transition:none}.career-job.rp .rp-desk{animation:none}}
 body.reduce-motion .career-job.rp .rp-desk,html.reduce-motion .career-job.rp .rp-desk{animation:none}
 body.reduce-motion .career-job.rp .rp-big,html.reduce-motion .career-job.rp .rp-big{transition:none}
+
+/* Next step (guide.js): the sticky bottom button rides above the sheet footer. */
+.career-job.rp .rp-bar{position:sticky;bottom:var(--rp-foot,0px);z-index:4;display:flex;align-items:center;gap:10px;margin:4px -4px 0;padding:10px 12px;border-radius:var(--rp-r);background:var(--rp-s1);border:1px solid var(--line-strong,var(--rp-line));box-shadow:0 -6px 18px rgb(0 0 0 / 10%)}
+.career-job.rp .rp-bar>.btn,.career-job.rp .rp-bar>.gd-ctas{flex:1 1 auto;width:100%;min-width:0}
+.career-job.rp .rp-bar .btn{min-height:48px}
+.career-job.rp .rp-bar-why{margin:0;flex:1;text-align:center;font-weight:600;color:var(--rp-muted)}
+.career-job.rp .rp-panel>.gd-list{margin:0 0 10px}
+.career-job.rp .rp-bar{flex-wrap:wrap;gap:6px 10px}
+.career-job.rp .rp-bar-last{flex:1 1 100%;margin:0;font-size:.86em;line-height:1.35;color:var(--rp-ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.career-job.rp .rp-panel .rp-cta{position:static;box-shadow:none;padding:0}
+.career-job.rp .rp-panel{scroll-margin-top:8px}
+.career-job.rp .btn.small{min-height:44px}
+@media (max-width:760px){
+  /* after intake the step panel comes first; the device card follows it */
+  .career-job.rp.rp-later .wb-side{order:1}
+}
