@@ -1,3 +1,9 @@
+# v0.9.1 — Sửa đặt phòng homestay trên điện thoại
+
+- Chọn phòng đã có khách hoặc không đủ chỗ không còn làm khung "Bước tiếp theo" phình to che hết lịch; ghi chú xuống dòng gọn.
+- Bấm cả hàng phòng để chọn (không chỉ ô tên), có dấu ✓ và thông báo "Đã chọn … · 1/2 chỗ"; màn 360px thấy đủ 7 đêm, cột tên phòng đứng yên.
+- Thông báo nhỏ không còn đè lên lịch; màn ngang có chỗ để thao tác.
+
 # Chưa phát hành — Dễ nhìn hơn
 
 ## Giao diện

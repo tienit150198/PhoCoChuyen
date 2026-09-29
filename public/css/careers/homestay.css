@@ -237,9 +237,10 @@
 @media (max-width:400px){
   .career-job.hs .hs-rooms{grid-template-columns:1fr}
   /* Room names stay on one line: a fixed name column, narrow day cells; the frame scrolls if a phone is narrower still. */
-  .career-job.hs .hs-cal{min-width:328px}
-  .career-job.hs .hs-row{grid-template-columns:118px repeat(7,minmax(29px,1fr))}
+  .career-job.hs .hs-cal{min-width:282px}
+  .career-job.hs .hs-row{grid-template-columns:clamp(100px,30vw,118px) repeat(7,minmax(26px,1fr))}
   .career-job.hs .hs-rname{padding:4px 6px;font-size:.8em}
+  .career-job.hs .hs-rn,.career-job.hs .hs-rname small{white-space:normal;overflow-wrap:anywhere}
   .career-job.hs .hs-cell{font-size:.85em}
 }
 /* ---------- care loop: panels, upkeep, guests who stay, garden & wood, guest book (care-wave1) */
@@ -307,9 +308,30 @@
 @media (prefers-reduced-motion:reduce){.career-job.hs *{transition:none!important;animation:none!important}}
 :is(body,html).reduce-motion .career-job.hs *{transition:none!important;animation:none!important}
 
+/* ---------- picking rooms on the calendar (phones first) */
+/* A selectable row is one button: name + nights, at least 44px tall, full width. */
+.career-job.hs button.hs-row{width:100%;margin:0;padding:0;font:inherit;color:inherit;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--hs-line);
+  border-radius:0;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;align-items:stretch}  /* buttons do not stretch grid cells by default */
+.career-job.hs button.hs-row:last-child{border-bottom:0}
+.career-job.hs button.hs-row:focus-visible{outline:3px solid var(--hs-accent);outline-offset:-3px}
+@media (hover:hover){.career-job.hs button.hs-row:hover{background:var(--hs-s2)}}
+.career-job.hs button.hs-row[aria-pressed="true"]{background:color-mix(in srgb,var(--hs-accent) 16%,var(--hs-s1));box-shadow:inset 0 0 0 2px var(--hs-accent)}
+.career-job.hs button.hs-row[aria-pressed="true"] .hs-rname{font-weight:700;box-shadow:inset 4px 0 0 var(--hs-accent)}
+.career-job.hs .hs-tick{display:inline-grid;place-items:center;width:1.3em;height:1.3em;margin-right:4px;border-radius:50%;background:var(--hs-accent);color:var(--hs-accent-ink);font-size:.8em;line-height:1}
+/* The room column stays put when the nights scroll sideways on a narrow phone. */
+.career-job.hs .hs-row>.hs-rname{position:sticky;left:0;z-index:1;background:var(--hs-s1)}
+.career-job.hs .hs-row.head>.hs-rname,.career-job.hs div.hs-row.picked>.hs-rname{background:var(--hs-s2)}
+.career-job.hs button.hs-row[aria-pressed="true"]>.hs-rname{background:color-mix(in srgb,var(--hs-accent) 16%,var(--hs-s1))}
+/* Anything scrolled into view (guide jumps, focus) lands clear of the sticky header and the next-step bar. */
+.career-job.hs .wb-main :is(button,.hs-cal-wrap){scroll-margin:calc(var(--hs-head,0px) + 8px) 0 calc(var(--hs-barh,0px) + var(--fk-foot,0px) + 8px)}
+
 /* ---------- next-step bar (guide.js): the one button that does the next step rides at the bottom of the sheet */
 .career-job.hs .hs-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--hs-r);
   background:var(--hs-s1);border:1px solid var(--hs-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
 .career-job.hs .hs-bar .btn{flex:1 1 auto;min-height:48px}
 .career-job.hs .hs-bar .btn:disabled{opacity:.7}
-.career-job.hs .hs-step-card{scroll-margin-top:8px}
+.career-job.hs .hs-step-card{scroll-margin-top:calc(var(--hs-head,0px) + 8px)}
+/* Phones: a slimmer bar; on a short screen (landscape) it stays at the end of the steps, since the header's
+   "Bước tiếp theo" does the same step and the work needs the height. */
+html[data-layout="phone"] .career-job.hs .hs-bar{padding:6px 8px;gap:6px}
+@media (max-height:520px){.career-job.hs .hs-bar{position:static}}

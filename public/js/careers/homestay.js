@@ -159,14 +159,16 @@ function calendar(x,{range=null,picked=[],selectable=false,task=''}={}){
   const head=`<div class="hs-row head"><span class="hs-rname">Phòng</span>${days.map(day=>`<span class="hs-day ${inRange(day)?'want':''}">${day===d.today?'Nay':'N'+day}</span>`).join('')}</div>`;
   const rows=x.cc.rooms.map(r=>{
     const locked=r.unlock>d.level,room=d.rooms[r.id];
-    const name=`<span class="hs-rn">${r.emoji} ${x.esc(r.name)}</span><small>số ${r.no} · ${r.cap}👤${r.stairs?' · 🪜':''}${locked?' · 🔒':''}</small>`;
-    const label=selectable&&!locked?`<button type="button" class="hs-rname" data-action="car:sel" data-task="${x.esc(task)}" data-room="${x.esc(r.id)}" aria-pressed="${picked.includes(r.id)}">${name}</button>`:`<span class="hs-rname">${name}</span>`;
+    const on=picked.includes(r.id),tick=on?'<b class="hs-tick" aria-hidden="true">✓</b>':'';
+    const label=`<span class="hs-rname"><span class="hs-rn">${tick}${r.emoji} ${x.esc(r.name)}</span><small>số ${r.no} · ${r.cap}👤${r.stairs?' · 🪜':''}${locked?' · 🔒':''}</small></span>`;
     const cells=(d.grid[r.id]||[]).map(c=>{
       const ota=wanted[r.id+':'+c.day],clash=ota&&(c.kind!=='free'||ota.length>1);
       const label=(c.label||'Trống')+(ota?` · đơn OTA chờ: ${ota.join(', ')}`:'');
       return `<span class="hs-cell ${c.kind} ${inRange(c.day)?'want':''} ${ota?'ota':''} ${clash?'clash':''}" title="${x.esc(label)}" aria-label="Ngày ${c.day}: ${x.esc(label)}">${c.anniv?'🗝️':CELL[c.kind]||''}${ota?'<i aria-hidden="true">📥</i>':''}</span>`;
     }).join('');
-    return `<div class="hs-row ${picked.includes(r.id)?'picked':''} ${locked?'locked':''} st-${x.esc(room?.status||'')}">${label}${cells}</div>`;
+    // Picking a room on a phone: the whole row (name and nights) is one big tap target.
+    if(selectable&&!locked)return `<button type="button" class="hs-row hs-pick ${on?'picked':''} st-${x.esc(room?.status||'')}" data-action="car:sel" data-task="${x.esc(task)}" data-room="${x.esc(r.id)}" aria-pressed="${on}">${label}${cells}</button>`;
+    return `<div class="hs-row ${on?'picked':''} ${locked?'locked':''} st-${x.esc(room?.status||'')}">${label}${cells}</div>`;
   }).join('');
   return `<div class="hs-cal-wrap"><div class="hs-cal">${head}${rows}</div></div>
     <p class="hs-legend small muted">🛏️ có khách · 📌 đã đặt · 🗝️ cô chú phòng số 3 · 📥 đơn OTA chưa đồng bộ · 🔧 bảo trì · 🪜 phải leo cầu thang${range?' · cột tô màu = đêm khách hỏi':''}</p>`;
@@ -738,6 +740,13 @@ function holdUntilReady(root,x){
   });
 }
 
+/* Scroll targets stay clear of the sticky sheet header and the sticky next-step bar (phones). */
+function keepClear(root){
+  const d=root.closest('dialog'),head=d?.querySelector('.sheet-head'),bar=root.querySelector('.hs-bar');
+  const h=head&&getComputedStyle(head).position==='sticky'?head.offsetHeight:0;
+  const b=bar&&getComputedStyle(bar).position==='sticky'?bar.offsetHeight:0;
+  if(root.dataset.hsClear!==h+':'+b){root.dataset.hsClear=h+':'+b;root.style.setProperty('--hs-head',h+'px');root.style.setProperty('--hs-barh',b+'px');}
+}
 /* When a step is finished, bring the next step's card into view (once per change, never while the player just scrolls). */
 function followStep(root,x){
   const cards=[...root.querySelectorAll('.wb-main>.hs-step-card')],cur=cards.find(c=>!c.classList.contains('done'));
@@ -802,7 +811,7 @@ export default {
       ${more}${bottomBar(g,x)}</div>`;
   },
   tick(root,x){
-    keepBarAboveFooter(root);holdUntilReady(root,x);followStep(root,x);
+    keepBarAboveFooter(root);keepClear(root);holdUntilReady(root,x);followStep(root,x);
     const w=x.cc.egg||{raw:5,runny:11,well:18},air=airOf(x);
     root.querySelectorAll('[data-hs-timer]').forEach(el=>{
       const start=Number(el.dataset.start);if(!start)return;
@@ -816,9 +825,11 @@ export default {
   actions:{
     async sel(data,el,x){
       const t=(x.room.tasks||[]).find(v=>v.id===data.task);if(!t)return;
-      const sel=selection(x,t),id=data.room;
-      x.ui.sel=sel.includes(id)?sel.filter(v=>v!==id):[...sel,id].slice(-2);
+      const sel=selection(x,t),id=data.room,on=sel.includes(id),drop=!on&&sel.length>=2?sel[0]:null;
+      x.ui.sel=on?sel.filter(v=>v!==id):[...sel,id].slice(-2);
       x.render();
+      const name=roomInfo(x,id).name,seats=t.job==='booking'&&t.needs?` · ${capOf(x,x.ui.sel)}/${counted(x,t.needs.adults,t.needs.kids)} chỗ`:'';
+      x.toast(on?`Đã bỏ chọn ${name}${seats}.`:drop?`Tối đa 2 phòng: bỏ ${roomInfo(x,drop).name}, chọn ${name}${seats}.`:`Đã chọn ${name}${seats}.`,'hint');
     },
     async clear(data,el,x){x.ui.sel=[];x.render();},
     async hk(data,el,x){x.ui.hk=x.ui.hk===data.room?null:data.room;x.render();},

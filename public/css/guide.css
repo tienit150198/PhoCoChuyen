@@ -8,6 +8,11 @@
 .gd-hint b{flex:1 1 auto;min-width:0;font-weight:700;font-size:.933rem;overflow-wrap:anywhere}
 .gd-hint .gd-note{flex:none;font-size:.8rem;color:var(--ink-2);font-variant-numeric:tabular-nums}
 .gd-hint>i{flex:none;font-style:normal;font-weight:800;color:var(--accent-text)}
+/* A long note (e.g. why the picked room cannot be held) wraps under the label: as flex:none it squeezed the
+   label to one letter per line and the sticky header grew taller than a phone screen, covering the work. */
+.gd-hint{flex-wrap:wrap}
+.gd-hint b{flex:1 1 10em}
+.gd-hint .gd-note{flex:0 1 auto;min-width:0}
 .gd-hint:hover{border-color:var(--accent)}
 .gd-hint:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .gd-next.done>b{display:block;padding:7px 12px;border-radius:12px;background:var(--good-soft);font-size:.933rem}
@@ -43,8 +48,9 @@
 .gd-rules ul{margin:6px 0 0;padding-left:18px}
 
 /* On a phone work sheet the header holds the next step and the bottom holds the button:
-   messages float in between so they never cover either. */
-html[data-layout="phone"] dialog.cozy-job .toasts{top:auto;bottom:calc(200px + var(--safe-b))}
+   messages sit over the sheet's footer (its secondary buttons stay tappable underneath), so they never
+   cover the header, the next-step button or the work in between. */
+html[data-layout="phone"] dialog.cozy-job .toasts{top:auto;bottom:calc(8px + var(--safe-b))}
 
 /* Instant tap feedback (app.js adds .is-pressed on click, before the server answers). */
 .is-pressed:not(:disabled){filter:brightness(.92);transform:scale(.97);transition:none}
