@@ -6,8 +6,12 @@ an atomic SQLite transaction with revision checking and command receipts.
 """
 from __future__ import annotations
 import base64
+import contextvars
 import copy
+import hashlib
 import math
+import os
+import secrets
 import random
 import re
 import unicodedata
@@ -50,9 +54,12 @@ def integer(value: Any, low: int=0, high: int=999999) -> int:
     need(type(value) is int and low<=value<=high,"Số lượng không hợp lệ.")
     return value
 
+_CONTROL=re.compile(r"[\x00-\x08\x0b-\x1f]")  # control characters except tab and newline
+
 def clean_text(value: Any, max_length: int=500, minimum: int=1) -> str:
     need(isinstance(value,str),"Nội dung cần là văn bản.")
-    text="".join(c for c in value.strip() if c in "\n\t" or ord(c)>=32)
+    text=value.strip()
+    if _CONTROL.search(text):text=_CONTROL.sub("",text)
     need(minimum<=len(text)<=max_length,f"Nội dung cần từ {minimum} đến {max_length} ký tự.")
     return text
 
@@ -77,22 +84,41 @@ def default_settings() -> dict:
         lang="vi",uiTheme="kem",musicTrack="auto",musicVolume=45,sfxVolume=70,notify=False,publicProfile=False,
         tutorialDone=False,notesSeen="")
 
-_SCALARS=(str,int,float,bool,type(None))
+from .jsoncopy import tree_copy,_SCALARS  # noqa: F401 (re-exported)
 
-def tree_copy(x):
-    """Deep copy of a JSON-shaped save (dicts, lists, scalars), about 4x faster than
-    copy.deepcopy. Anything else (tuples, sets...) still goes through copy.deepcopy."""
-    t=type(x)
-    if t is dict:return {k:(v if type(v) in _SCALARS else tree_copy(v)) for k,v in x.items()}
-    if t is list:return [v if type(v) in _SCALARS else tree_copy(v) for v in x]
-    if t in _SCALARS:return x
-    return copy.deepcopy(x)
+def _build_id() -> str:
+    """Fingerprint of this game code (every game/*.py and the career list). The storage
+    layer stamps it on a save (state["check"]["build"]) once the save has been migrated
+    and fully validated by this code; a stamped save skips migrate_state, and commands
+    on it only re-validate what they changed (see Store._compute). Any code change, so
+    any deploy, gives a new build: every save is migrated and fully validated again."""
+    h=hashlib.sha256(",".join(CAREERS).encode())
+    root=os.path.dirname(os.path.abspath(__file__))
+    try:
+        for folder,dirs,files in os.walk(root):
+            dirs[:]=sorted(d for d in dirs if d!="__pycache__")
+            for name in sorted(f for f in files if f.endswith(".py")):
+                with open(os.path.join(folder,name),"rb") as fh:
+                    h.update(os.path.relpath(os.path.join(folder,name),root).encode()+b"\0"+fh.read()+b"\0")
+    except OSError:
+        return "unknown-"+secrets.token_hex(8)  # never matches: always the full migrate + validation
+    return h.hexdigest()[:20]
+
+BUILD=_build_id()
+
+def stamped(state:dict) -> bool:
+    """The save was migrated and fully validated by this build (see _build_id)."""
+    check=state.get("check")
+    return type(check) is dict and check.get("build")==BUILD
 
 def migrate_state(state:dict,owned:bool=False) -> dict:
     """Upgrade v1 locally without replaying wages, rent, tax or past incidents.
     `owned`: the caller hands over a private copy (freshly parsed JSON) that may be
-    upgraded in place; otherwise the supplied state is never mutated."""
+    upgraded in place; otherwise the supplied state is never mutated.
+    A save stamped with this BUILD already went through every step below, and they
+    are idempotent on what the reducer produces: it is returned as it is."""
     need(isinstance(state,dict),"Bản lưu cần là một đối tượng.","invalid_save")
+    if stamped(state) and not needs_migration(state):return state if owned else tree_copy(state)
     s=state if owned else tree_copy(state)
     # AI characters are on by default: saves that never went through that change get it once.
     ai_unasked=not isinstance(s.get('settings'),dict) or 'aiAsked' not in s['settings']
@@ -373,11 +399,22 @@ def chat_reply(s:dict,c:dict,career:str,npc:str,text:str) -> tuple[str,list[dict
 
 LEARNING_TASKS=2  # onboarding: while a career's first jobs are done, waiting costs no patience
 
+# Set by apply_action(scoped=True): validate_state leaves the careers to the storage layer.
+_SCOPED=contextvars.ContextVar("scoped_validation",default=False)
 
-def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,internal:bool=False,owned:bool=False) -> tuple[dict,dict]:
+def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,internal:bool=False,owned:bool=False,scoped:bool=False) -> tuple[dict,dict]:
     """Functional transaction: failure cannot partly mutate the supplied state.
     `owned=True` (the storage layer, with a freshly parsed save it throws away on
-    failure) skips the defensive copy: the state is changed in place."""
+    failure) skips the defensive copy: the state is changed in place.
+    `scoped=True` (the storage layer, on a save this build already validated):
+    validate_state checks only what lies outside the careers; the caller must run
+    validate_career on every career the command changed before storing."""
+    if not scoped:return _apply_action(state,career,action,payload,internal,owned)
+    token=_SCOPED.set(True)
+    try:return _apply_action(state,career,action,payload,internal,owned)
+    finally:_SCOPED.reset(token)
+
+def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,internal:bool,owned:bool) -> tuple[dict,dict]:
     s=migrate_state(state,owned=owned)
     p=payload or {}
     need(isinstance(p,dict),"Dữ liệu thao tác không hợp lệ.")
@@ -958,11 +995,12 @@ def task_view(t:dict) -> dict:
 
 def career_summary(raw:dict,cid:str) -> dict:
     """What the home picker / Phố nghề need from careers that are not open
-    on screen. Keeps each response small; the full view arrives with select_career."""
-    job=emp.public(raw,cid)
+    on screen. Keeps each response small; the full view arrives with select_career.
+    Same values as emp.public(...)["required"/"status"] and bool(inv.public(...))
+    (a stock room's view is never empty), without building those full views."""
     return dict(summary=True,started=raw["started"],open=raw["open"],day=raw["day"],xp=raw["xp"],level=1+raw["xp"]//90,money=raw["money"],
-                job=dict(required=job.get("required"),status=job.get("status")) if isinstance(job,dict) else job,
-                inventory=bool(inv.public(raw,cid)),life=dict(shop_name=raw.get("life",{}).get("shop_name")))
+                job=dict(required=emp.required(cid),status=raw["job"].get("status")),
+                inventory=raw.get("ext",{}).get("inv") is not None,life=dict(shop_name=raw.get("life",{}).get("shop_name")))
 
 
 def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
@@ -971,7 +1009,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     (already upgraded), so the defensive migrate copy is skipped."""
     if not migrated:s=migrate_state(s)
     focus=full or s.get("current") or jr.default_career(s)
-    v={k:tree_copy(x) for k,x in s.items() if k!="careers"}
+    v={k:tree_copy(x) for k,x in s.items() if k not in ("careers","check")}
     v["careers"]={cid:(tree_copy(c) if cid==focus else career_summary(c,cid)) for cid,c in s["careers"].items()}
     v["focus"]=focus
     v["journey"]=jr.public(s)
@@ -1023,11 +1061,37 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     return v
 
 
+_TEMPLATE_KEYS:dict={}
+
+def _template_keys(cid:str) -> tuple[frozenset,frozenset]:
+    """Keys every career record (and its `ext`) must have: those of initial_career."""
+    keys=_TEMPLATE_KEYS.get(cid)
+    if keys is None:
+        template=initial_career(cid)
+        keys=_TEMPLATE_KEYS[cid]=(frozenset(template),frozenset(template["ext"]))
+    return keys
+
+_LEAVES=(str,int,bool,type(None))
+
+def _finite(obj) -> None:
+    """No NaN/Infinity anywhere (plain leaves are skipped without a call)."""
+    if isinstance(obj,float):need(math.isfinite(obj),"Bản lưu chứa số không hữu hạn.")
+    elif isinstance(obj,dict):
+        for value in obj.values():
+            if type(value) not in _LEAVES:_finite(value)
+    elif isinstance(obj,list):
+        for value in obj:
+            if type(value) not in _LEAVES:_finite(value)
+
 def validate_state(s:dict) -> None:
     """Structural and economic invariants, also run on imported save envelopes.
 
 Import is single-player backup, not a competitive anti-cheat boundary. Keys,
 workflow references, quantities and maximum sizes are validated before commit.
+
+Inside apply_action(scoped=True) (the storage layer, on a save this build already
+validated) only what lies outside the careers is checked here: the storage layer
+then runs validate_career on every career the command changed (see Store._compute).
 """
     need(isinstance(s,dict) and s.get("schema")==4,"Phiên bản bản lưu không được hỗ trợ.","invalid_save")
     need(set(s.get("careers",{}))==set(CAREERS),"Bản lưu cần đủ các nghề.","invalid_save")
@@ -1044,169 +1108,172 @@ workflow references, quantities and maximum sizes are validated before commit.
     for k in ("musicVolume","sfxVolume"):integer(settings.get(k),0,100)
     need(set(settings)<=set(default_settings()),"Thiết lập lạ trong bản lưu.")
     need(type(settings.get("tutorialDone",False)) is bool,"Thiết lập bản lưu không hợp lệ.");notes_seen(settings.get("notesSeen",""))
-    for cid,c in s["careers"].items():
-        need(isinstance(c,dict),"Tiến trình nghề không hợp lệ.")
-        template=initial_career(cid)
-        ops.validate(c,cid)
-        life.validate(c,cid)
-        ext=c.get("ext");need(isinstance(ext,dict) and set(template["ext"])<=set(ext),"Bản lưu thiếu dữ liệu v0.4.")
-        integer(ext.get("seq"),0,10**9);need(isinstance(ext.get("data"),dict),"Dữ liệu nghề không hợp lệ.")
-        sit.validate(c,cid);inv.validate(c,cid);emp.validate(c,cid);incs.validate(c,cid);haps.validate(c,cid)
-        from . import consequences as cq;cq.validate(c)  # complaints book (optional in older saves)
-        if cid in PLUGINS and hasattr(PLUGINS[cid],"validate_data"):PLUGINS[cid].validate_data(c)
-        if cid in dk.CAREERS:dk.validate_data(c)
-        care_validate(c,cid)  # nhiều ngày: sổ khách quen, sổ lô, tủ hồ sơ, bảng theo dõi, kiện theo giờ
-        if cid=="teacher":
-            from . import classroom
-            classroom.validate(c)
-        need(set(template)<=set(c),"Bản lưu thiếu trường tiến trình.")
-        for k in ("money","xp","day","turn","day_completed","day_events","earnings","costs","assistant_day","day_start_money"):
-            integer(c.get(k),1 if k=="day" else 0,10**9)
-        for k in ("open","started"):need(type(c[k]) is bool,"Trạng thái ca không hợp lệ.")
-        for k in ("tasks","upgrades","memories","journal","feed","pending","quests_claimed","album","shipments","completed_ids","held_lots","event_history"):
-            need(isinstance(c.get(k),list) and len(c[k])<=5000,"Danh sách bản lưu không hợp lệ.")
-        need(isinstance(c["stock"],dict) and isinstance(c["metrics"],dict) and isinstance(c["chats"],dict),"Kho hoặc nhật ký không hợp lệ.")
-        expected_items=PRODUCT_INDEX if cid=="mother_baby" else LOT_INDEX if cid=="pharmacy" else {}
-        need(set(c["stock"])==set(expected_items),"Danh mục kho không hợp lệ.")
-        for k,n in c["stock"].items():integer(n,0,24)
-        need(all(u in UPGRADE_INDEX for u in c["upgrades"]) and len(c["upgrades"])==len(set(c["upgrades"])),"Nâng cấp không hợp lệ.")
-        need(all(l in LOT_INDEX for l in c["held_lots"]),"Lô tạm giữ không hợp lệ.")
-        need(len(c["tasks"])<=80,"Quá nhiều công việc trong bản lưu.")
-        taskids=[]
-        for t in c["tasks"]:
-            if "patience" in t:integer(t["patience"],25,100)
-            need(isinstance(t,dict) and t.get("career")==cid and t.get("npc") in NPC_INDEX,"Công việc không hợp lệ.")
-            need(NPC_INDEX[t["npc"]]["career_id"]==cid,"Nhân vật sai nghề.")
-            for key in ("id","title","opening","status"):clean_text(t.get(key),1000)
-            need(t["status"] in ("new","understood","in_progress","completed","referred","cancelled","proposed","executing","awaiting_confirmation","resolved","handed_over"),"Trạng thái công việc không hợp lệ.")
-            need(re.fullmatch(re.escape(cid)+r"-\d{4,}-\d{2,}",t["id"]),"Mã công việc không hợp lệ.")
-            integer(t.get("day"),1,99999);integer(t.get("created_turn"),0,10**9);integer(t.get("mistakes"),0,100000)
-            slot=int(t["id"].rsplit("-",1)[1]);need(slot<12,"Chỉ số lượt công việc không hợp lệ.")
-            # Tasks made before the paperwork desks keep the original counter task of their slot.
-            original=make_task(cid,t["day"],slot,t["created_turn"],(cid in dk.CAREERS and not t.get("desk")) or (cid=="mother_baby" and not t.get("gen")))
-            need(t["id"]==original["id"],"Mã công việc sai ngày.")
-            need(set(original)<=set(t),"Bản lưu thiếu trường công việc.")
-            for key in ("npc","title","opening","kind","needs","variant","solution","value","evidence"):
-                # Milk tea: the counter relabels guests and re-rolls orders; boba.validate_task checks them.
-                if cid=="milk_tea" and key in ("title","opening","needs"):continue
-                if key in original:need(t.get(key)==original[key],"Dữ kiện gốc của nhiệm vụ không hợp lệ: "+key)
-            taskids.append(t["id"]);cq.validate_task(t)
-            for key in ("known","deferred"):need(type(t.get(key)) is bool,"Trạng thái công việc thiếu.")
-            for key in ("inspected","notes","chat"):need(isinstance(t.get(key),list),"Dữ kiện công việc thiếu.")
-            if cid in dk.CAREERS and t.get("desk"):dk.validate_task(t,original)
-            elif cid in ("mother_baby","pharmacy"):
-                need(isinstance(t.get("needs"),dict) and isinstance(t.get("basket"),dict),"Khay công việc không hợp lệ.")
-                integer(t["needs"].get("qty"),1,6)
-                need(t["needs"].get("product") in (PRODUCT_INDEX if cid=="mother_baby" else {x["product"] for x in LOT_INDEX.values()}),"Mã yêu cầu không hợp lệ.")
-                for item,qty in t["basket"].items():need(item in expected_items,"Mã trong khay sai.");integer(qty,1,6)
-                need(type(t.get("checked")) is bool,"Thiếu bước kiểm khay.")
-                if cid=="mother_baby":
-                    if t.get("gen"):gifts.validate_task(t)
-                    integer(t["needs"].get("budget"),0,10000)
-                    need(t["needs"].get("paper") in [x["id"] for x in PAPERS],"Màu giấy sai.")
-                    need("pack" in t,"Thiếu dữ liệu gói quà.")
-                    if t["pack"]:
-                        need(isinstance(t["pack"],dict) and t["pack"].get("paper") in [x["id"] for x in PAPERS] and t["pack"].get("ribbon") in [x["id"] for x in RIBBONS],"Gói quà không hợp lệ.")
-                        clean_text(t["pack"].get("card"),100,0)
-                else:need(type(t["needs"].get("referral")) is bool,"Thiếu phạm vi phiếu.")
-            elif cid in extra.NEW_CAREERS or cid in PLUGINS:
-                life.validate_task(t,original)
-            elif cid=="accounting":
-                need(all(isinstance(t.get(k),list) for k in ("docs","transactions","groups","removed")),"Thiếu dữ liệu đối chiếu.")
-                need(1<=len(t["docs"])<=8 and 1<=len(t["transactions"])<=8,"Hồ sơ quá lớn.")
-                for d in t["docs"]:
-                    for key in ("id","ref","source"):clean_text(d.get(key),300)
-                    for key in ("amount","original"):integer(d.get(key),-100000,100000)
-                need(t["transactions"]==original["transactions"],"Giao dịch nguồn đã thay đổi.")
-                originals={d["id"]:d for d in original["docs"]}
-                need(len({d["id"] for d in t["docs"]})==len(t["docs"]) and {d["id"] for d in t["docs"]}==set(originals),"Danh sách chứng từ không hợp lệ.")
-                for d in t["docs"]:
-                    base=originals[d["id"]]
-                    need(set(base)<=set(d),"Chứng từ thiếu dữ kiện.")
-                    for key in ("ref","source","kind","duplicate_of","original"):
-                        need(d.get(key)==base.get(key),"Nguồn gốc chứng từ đã thay đổi.")
-                    need(d["amount"] in (base["amount"],base["original"]),"Số nhập không thuộc nguồn gốc.")
-                    need(type(d.get("missing",False)) is bool,"Trạng thái nguồn thiếu sai.")
-                need(all(x in originals for x in t["inspected"]+t["removed"]),"Tham chiếu chứng từ không tồn tại.")
-                txids={x["id"]:x for x in t["transactions"]};docs_by_id={d["id"]:d for d in t["docs"]}
-                used_d=set();used_t=set()
-                for g in t["groups"]:
-                    need(isinstance(g,dict) and isinstance(g.get("docs"),list) and isinstance(g.get("transactions"),list),"Nhóm đối chiếu không hợp lệ.")
-                    ds=g["docs"];ts=g["transactions"]
-                    need(ds and ts and (len(ds)==1 or len(ts)==1),"Quan hệ nhóm đối chiếu không hợp lệ.")
-                    need(all(x in originals for x in ds) and all(x in txids for x in ts),"Nhóm chứa mã không tồn tại.")
-                    need(len(set(ds))==len(ds) and len(set(ts))==len(ts) and not used_d.intersection(ds) and not used_t.intersection(ts),"Nhóm dùng thẻ lặp.")
-                    need(all(x in t["inspected"] and x not in t["removed"] and not docs_by_id[x].get("missing",False) and not docs_by_id[x].get("duplicate_of") for x in ds),"Nhóm chưa đủ nguồn.")
-                    total=sum(docs_by_id[x]["amount"] for x in ds)
-                    need(total==g.get("total")==sum(txids[x]["amount"] for x in ts),"Tổng nhóm không đúng.")
-                    need({docs_by_id[x]["ref"] for x in ds}=={r for x in ts for r in txids[x]["refs"]},"Nhóm sai nguồn tham chiếu.")
-                    used_d.update(ds);used_t.update(ts)
-                for tx in t["transactions"]:
-                    clean_text(tx.get("id"),80);integer(tx.get("amount"),-100000,100000)
-                    need(isinstance(tx.get("refs"),list) and all(isinstance(r,str) for r in tx["refs"]),"Tham chiếu giao dịch không hợp lệ.")
-            else:
-                need(isinstance(t.get("evidence"),list) and len(t["evidence"])==3,"Thiếu hồ sơ hỗ trợ.")
-                need(t.get("solution") in ("reship","trace","exchange","refund","guide"),"Phương án hỗ trợ sai.")
-                for e in t["evidence"]:
-                    for key in ("id","title","text"):clean_text(e.get(key),2000)
-                need(isinstance(t.get("timeline"),list),"Thiếu lịch sử phối hợp.")
-                integer(t.get("ready_turn"),0,10**9)
-                for key in ("identity","confirmed","handed_over"):need(type(t.get(key)) is bool,"Trạng thái xử lý thiếu.")
-                need(t.get("proposal") in (None,"reship","trace","exchange","refund","guide"),"Phương án đề nghị không hợp lệ.")
-        need(len(taskids)==len(set(taskids)),"Công việc bị trùng mã.")
-        need(c["active_task"] is None or c["active_task"] in taskids,"Công việc đang chọn không tồn tại.")
-        for k in c["stock"]:need(available(c,k)>=0,"Hàng đã giữ nhiều hơn tồn kho.")
-        if c["event"]:
-            e=c["event"];need(e.get("script") in SCRIPTS and SCRIPTS[e["script"]]["career"]==cid,"Tình huống bản lưu không hợp lệ.")
-            need(e.get("stage") in ("noticed","investigating","proposed","executing","resolved"),"Bước sự kiện sai.")
-            need(e.get("chosen") in (None,"a","b") and isinstance(e.get("read"),list) and type(e.get("practice")) is bool,"Dữ liệu sự kiện thiếu.")
-            integer(e.get("step"),0,2)
-        for f in c["feed"]:
-            need(isinstance(f,dict) and f.get("npc") in ["player",*NPC_INDEX] and isinstance(f.get("comments"),list),"Bài đăng không hợp lệ.")
-            clean_text(f.get("text"),3000);clean_text(f.get("id"),100)
-            need(f.get("stars") in (None,1,2,3,4,5),"Số sao không hợp lệ.")
-            fbk.validate_post(f)
-        for npc,chat in c["chats"].items():
-            need(npc in NPC_INDEX and isinstance(chat,list) and len(chat)<=40,"Chat bản lưu không hợp lệ.")
-            for row in chat:need(row.get("role") in ("user","npc"),"Vai chat không hợp lệ.");clean_text(row.get("text"),2000)
-        need(isinstance(c["relationships"],dict) and isinstance(c["decor"],dict),"Dữ liệu quan hệ/trang trí không hợp lệ.")
-        for key,value in c["relationships"].items():need(key in NPC_INDEX and NPC_INDEX[key]["career_id"]==cid,"Quan hệ sai nghề.");integer(value,0,100)
-        for key,value in c["metrics"].items():clean_text(key,150);integer(value,0,10**9)
-        for item,position in c["decor"].items():
-            need(item in c["upgrades"] and UPGRADE_INDEX[item]["kind"]=="decor" and isinstance(position,dict),"Món trang trí chưa sở hữu.")
-            need(position.get("spot") in ("window","corner","front","center","wall"),"Vị trí trang trí không hợp lệ.")
-        for shipment in c["shipments"]:
-            need(isinstance(shipment,dict) and shipment.get("item") in expected_items,"Kiện hàng sai mã.")
-            clean_text(shipment.get("id"),100);integer(shipment.get("qty"),1,6);integer(shipment.get("actual"),1,6);integer(shipment.get("cost"),0,10000)
-            if "at" not in shipment:integer(shipment.get("ready"),0,10**9)
-            need(shipment.get("status") in ("in_transit","received"),"Trạng thái kiện sai.")
-        for pending in c["pending"]:
-            need(isinstance(pending,dict) and pending.get("kind") in ("return_note","event_followup","comment"),"Thông báo chờ không hợp lệ.")
-            integer(pending.get("day"),1,999999);integer(pending.get("turn"),0,10**9);clean_text(pending.get("ref"),200);clean_text(pending.get("text"),3000)
-            need(pending.get("npc") in NPC_INDEX,"Thông báo thiếu nhân vật.")
-        for memory in c["memories"]:
-            need(isinstance(memory,dict) and memory.get("npc") in NPC_INDEX,"Ký ức sai nhân vật.")
-            clean_text(memory.get("text"),3000);clean_text(memory.get("source"),200)
-        for row in c["journal"]:
-            for key in ("id","kind","text"):clean_text(row.get(key),4000)
-            integer(row.get("day"),1,999999);integer(row.get("turn"),0,10**9)
-        for post in c["feed"]:
-            for key in ("author","source","kind"):clean_text(post.get(key),200)
-            integer(post.get("day"),1,999999);need(type(post.get("liked")) is bool,"Trạng thái bài đăng thiếu.")
-            for comment in post["comments"]:
-                clean_text(comment.get("author"),100);clean_text(comment.get("text"),3000);integer(comment.get("day"),1,999999)
-                need(comment.get("npc") in ("player",*NPC_INDEX),"Người bình luận không hợp lệ.")
-        need(len(c["album"])<=6,"Album quá lớn.")
-        for photo in c["album"]:
-            need(isinstance(photo.get("image"),str) and len(photo["image"])<=450000 and photo["image"].startswith(("data:image/webp;base64,","data:image/png;base64,")),"Ảnh lưu không hợp lệ.")
-    # Reject non-finite numbers anywhere; no NaN/Infinity in imported state.
-    def finite(obj):
-        if isinstance(obj,float):need(math.isfinite(obj),"Bản lưu chứa số không hữu hạn.")
-        elif isinstance(obj,dict):
-            for value in obj.values():finite(value)
-        elif isinstance(obj,list):
-            for value in obj:finite(value)
-    finite(s)
+    if _SCOPED.get():
+        for k,value in s.items():
+            if k!="careers":_finite(value)
+        return
+    for cid,c in s["careers"].items():validate_career(c,cid,finite=False)
+    _finite(s)  # no NaN/Infinity anywhere
+
+
+def validate_career(c:dict,cid:str,finite:bool=True) -> None:
+    """Every check of one career record. It reads only that record and the fixed
+    content, so a record equal to one that passed with this build still passes."""
+    from . import consequences as cq
+    from . import classroom
+    need(isinstance(c,dict),"Tiến trình nghề không hợp lệ.")
+    template_keys,ext_keys=_template_keys(cid)
+    ops.validate(c,cid)
+    life.validate(c,cid)
+    ext=c.get("ext");need(isinstance(ext,dict) and ext_keys<=set(ext),"Bản lưu thiếu dữ liệu v0.4.")
+    integer(ext.get("seq"),0,10**9);need(isinstance(ext.get("data"),dict),"Dữ liệu nghề không hợp lệ.")
+    sit.validate(c,cid);inv.validate(c,cid);emp.validate(c,cid);incs.validate(c,cid);haps.validate(c,cid)
+    cq.validate(c)  # complaints book (optional in older saves)
+    if cid in PLUGINS and hasattr(PLUGINS[cid],"validate_data"):PLUGINS[cid].validate_data(c)
+    if cid in dk.CAREERS:dk.validate_data(c)
+    care_validate(c,cid)  # nhiều ngày: sổ khách quen, sổ lô, tủ hồ sơ, bảng theo dõi, kiện theo giờ
+    if cid=="teacher":classroom.validate(c)
+    need(template_keys<=set(c),"Bản lưu thiếu trường tiến trình.")
+    for k in ("money","xp","day","turn","day_completed","day_events","earnings","costs","assistant_day","day_start_money"):
+        integer(c.get(k),1 if k=="day" else 0,10**9)
+    for k in ("open","started"):need(type(c[k]) is bool,"Trạng thái ca không hợp lệ.")
+    for k in ("tasks","upgrades","memories","journal","feed","pending","quests_claimed","album","shipments","completed_ids","held_lots","event_history"):
+        need(isinstance(c.get(k),list) and len(c[k])<=5000,"Danh sách bản lưu không hợp lệ.")
+    need(isinstance(c["stock"],dict) and isinstance(c["metrics"],dict) and isinstance(c["chats"],dict),"Kho hoặc nhật ký không hợp lệ.")
+    expected_items=PRODUCT_INDEX if cid=="mother_baby" else LOT_INDEX if cid=="pharmacy" else {}
+    need(set(c["stock"])==set(expected_items),"Danh mục kho không hợp lệ.")
+    for k,n in c["stock"].items():integer(n,0,24)
+    need(all(u in UPGRADE_INDEX for u in c["upgrades"]) and len(c["upgrades"])==len(set(c["upgrades"])),"Nâng cấp không hợp lệ.")
+    need(all(l in LOT_INDEX for l in c["held_lots"]),"Lô tạm giữ không hợp lệ.")
+    need(len(c["tasks"])<=80,"Quá nhiều công việc trong bản lưu.")
+    taskids=[]
+    for t in c["tasks"]:
+        if "patience" in t:integer(t["patience"],25,100)
+        need(isinstance(t,dict) and t.get("career")==cid and t.get("npc") in NPC_INDEX,"Công việc không hợp lệ.")
+        need(NPC_INDEX[t["npc"]]["career_id"]==cid,"Nhân vật sai nghề.")
+        for key in ("id","title","opening","status"):clean_text(t.get(key),1000)
+        need(t["status"] in ("new","understood","in_progress","completed","referred","cancelled","proposed","executing","awaiting_confirmation","resolved","handed_over"),"Trạng thái công việc không hợp lệ.")
+        need(re.fullmatch(re.escape(cid)+r"-\d{4,}-\d{2,}",t["id"]),"Mã công việc không hợp lệ.")
+        integer(t.get("day"),1,99999);integer(t.get("created_turn"),0,10**9);integer(t.get("mistakes"),0,100000)
+        slot=int(t["id"].rsplit("-",1)[1]);need(slot<12,"Chỉ số lượt công việc không hợp lệ.")
+        # Tasks made before the paperwork desks keep the original counter task of their slot.
+        original=make_task(cid,t["day"],slot,t["created_turn"],(cid in dk.CAREERS and not t.get("desk")) or (cid=="mother_baby" and not t.get("gen")))
+        need(t["id"]==original["id"],"Mã công việc sai ngày.")
+        need(set(original)<=set(t),"Bản lưu thiếu trường công việc.")
+        for key in ("npc","title","opening","kind","needs","variant","solution","value","evidence"):
+            # Milk tea: the counter relabels guests and re-rolls orders; boba.validate_task checks them.
+            if cid=="milk_tea" and key in ("title","opening","needs"):continue
+            if key in original:need(t.get(key)==original[key],"Dữ kiện gốc của nhiệm vụ không hợp lệ: "+key)
+        taskids.append(t["id"]);cq.validate_task(t)
+        for key in ("known","deferred"):need(type(t.get(key)) is bool,"Trạng thái công việc thiếu.")
+        for key in ("inspected","notes","chat"):need(isinstance(t.get(key),list),"Dữ kiện công việc thiếu.")
+        if cid in dk.CAREERS and t.get("desk"):dk.validate_task(t,original)
+        elif cid in ("mother_baby","pharmacy"):
+            need(isinstance(t.get("needs"),dict) and isinstance(t.get("basket"),dict),"Khay công việc không hợp lệ.")
+            integer(t["needs"].get("qty"),1,6)
+            need(t["needs"].get("product") in (PRODUCT_INDEX if cid=="mother_baby" else {x["product"] for x in LOT_INDEX.values()}),"Mã yêu cầu không hợp lệ.")
+            for item,qty in t["basket"].items():need(item in expected_items,"Mã trong khay sai.");integer(qty,1,6)
+            need(type(t.get("checked")) is bool,"Thiếu bước kiểm khay.")
+            if cid=="mother_baby":
+                if t.get("gen"):gifts.validate_task(t)
+                integer(t["needs"].get("budget"),0,10000)
+                need(t["needs"].get("paper") in [x["id"] for x in PAPERS],"Màu giấy sai.")
+                need("pack" in t,"Thiếu dữ liệu gói quà.")
+                if t["pack"]:
+                    need(isinstance(t["pack"],dict) and t["pack"].get("paper") in [x["id"] for x in PAPERS] and t["pack"].get("ribbon") in [x["id"] for x in RIBBONS],"Gói quà không hợp lệ.")
+                    clean_text(t["pack"].get("card"),100,0)
+            else:need(type(t["needs"].get("referral")) is bool,"Thiếu phạm vi phiếu.")
+        elif cid in extra.NEW_CAREERS or cid in PLUGINS:
+            life.validate_task(t,original)
+        elif cid=="accounting":
+            need(all(isinstance(t.get(k),list) for k in ("docs","transactions","groups","removed")),"Thiếu dữ liệu đối chiếu.")
+            need(1<=len(t["docs"])<=8 and 1<=len(t["transactions"])<=8,"Hồ sơ quá lớn.")
+            for d in t["docs"]:
+                for key in ("id","ref","source"):clean_text(d.get(key),300)
+                for key in ("amount","original"):integer(d.get(key),-100000,100000)
+            need(t["transactions"]==original["transactions"],"Giao dịch nguồn đã thay đổi.")
+            originals={d["id"]:d for d in original["docs"]}
+            need(len({d["id"] for d in t["docs"]})==len(t["docs"]) and {d["id"] for d in t["docs"]}==set(originals),"Danh sách chứng từ không hợp lệ.")
+            for d in t["docs"]:
+                base=originals[d["id"]]
+                need(set(base)<=set(d),"Chứng từ thiếu dữ kiện.")
+                for key in ("ref","source","kind","duplicate_of","original"):
+                    need(d.get(key)==base.get(key),"Nguồn gốc chứng từ đã thay đổi.")
+                need(d["amount"] in (base["amount"],base["original"]),"Số nhập không thuộc nguồn gốc.")
+                need(type(d.get("missing",False)) is bool,"Trạng thái nguồn thiếu sai.")
+            need(all(x in originals for x in t["inspected"]+t["removed"]),"Tham chiếu chứng từ không tồn tại.")
+            txids={x["id"]:x for x in t["transactions"]};docs_by_id={d["id"]:d for d in t["docs"]}
+            used_d=set();used_t=set()
+            for g in t["groups"]:
+                need(isinstance(g,dict) and isinstance(g.get("docs"),list) and isinstance(g.get("transactions"),list),"Nhóm đối chiếu không hợp lệ.")
+                ds=g["docs"];ts=g["transactions"]
+                need(ds and ts and (len(ds)==1 or len(ts)==1),"Quan hệ nhóm đối chiếu không hợp lệ.")
+                need(all(x in originals for x in ds) and all(x in txids for x in ts),"Nhóm chứa mã không tồn tại.")
+                need(len(set(ds))==len(ds) and len(set(ts))==len(ts) and not used_d.intersection(ds) and not used_t.intersection(ts),"Nhóm dùng thẻ lặp.")
+                need(all(x in t["inspected"] and x not in t["removed"] and not docs_by_id[x].get("missing",False) and not docs_by_id[x].get("duplicate_of") for x in ds),"Nhóm chưa đủ nguồn.")
+                total=sum(docs_by_id[x]["amount"] for x in ds)
+                need(total==g.get("total")==sum(txids[x]["amount"] for x in ts),"Tổng nhóm không đúng.")
+                need({docs_by_id[x]["ref"] for x in ds}=={r for x in ts for r in txids[x]["refs"]},"Nhóm sai nguồn tham chiếu.")
+                used_d.update(ds);used_t.update(ts)
+            for tx in t["transactions"]:
+                clean_text(tx.get("id"),80);integer(tx.get("amount"),-100000,100000)
+                need(isinstance(tx.get("refs"),list) and all(isinstance(r,str) for r in tx["refs"]),"Tham chiếu giao dịch không hợp lệ.")
+        else:
+            need(isinstance(t.get("evidence"),list) and len(t["evidence"])==3,"Thiếu hồ sơ hỗ trợ.")
+            need(t.get("solution") in ("reship","trace","exchange","refund","guide"),"Phương án hỗ trợ sai.")
+            for e in t["evidence"]:
+                for key in ("id","title","text"):clean_text(e.get(key),2000)
+            need(isinstance(t.get("timeline"),list),"Thiếu lịch sử phối hợp.")
+            integer(t.get("ready_turn"),0,10**9)
+            for key in ("identity","confirmed","handed_over"):need(type(t.get(key)) is bool,"Trạng thái xử lý thiếu.")
+            need(t.get("proposal") in (None,"reship","trace","exchange","refund","guide"),"Phương án đề nghị không hợp lệ.")
+    need(len(taskids)==len(set(taskids)),"Công việc bị trùng mã.")
+    need(c["active_task"] is None or c["active_task"] in taskids,"Công việc đang chọn không tồn tại.")
+    for k in c["stock"]:need(available(c,k)>=0,"Hàng đã giữ nhiều hơn tồn kho.")
+    if c["event"]:
+        e=c["event"];need(e.get("script") in SCRIPTS and SCRIPTS[e["script"]]["career"]==cid,"Tình huống bản lưu không hợp lệ.")
+        need(e.get("stage") in ("noticed","investigating","proposed","executing","resolved"),"Bước sự kiện sai.")
+        need(e.get("chosen") in (None,"a","b") and isinstance(e.get("read"),list) and type(e.get("practice")) is bool,"Dữ liệu sự kiện thiếu.")
+        integer(e.get("step"),0,2)
+    for f in c["feed"]:
+        need(isinstance(f,dict) and f.get("npc") in ["player",*NPC_INDEX] and isinstance(f.get("comments"),list),"Bài đăng không hợp lệ.")
+        clean_text(f.get("text"),3000);clean_text(f.get("id"),100)
+        need(f.get("stars") in (None,1,2,3,4,5),"Số sao không hợp lệ.")
+        fbk.validate_post(f)
+    for npc,chat in c["chats"].items():
+        need(npc in NPC_INDEX and isinstance(chat,list) and len(chat)<=40,"Chat bản lưu không hợp lệ.")
+        for row in chat:need(row.get("role") in ("user","npc"),"Vai chat không hợp lệ.");clean_text(row.get("text"),2000)
+    need(isinstance(c["relationships"],dict) and isinstance(c["decor"],dict),"Dữ liệu quan hệ/trang trí không hợp lệ.")
+    for key,value in c["relationships"].items():need(key in NPC_INDEX and NPC_INDEX[key]["career_id"]==cid,"Quan hệ sai nghề.");integer(value,0,100)
+    for key,value in c["metrics"].items():clean_text(key,150);integer(value,0,10**9)
+    for item,position in c["decor"].items():
+        need(item in c["upgrades"] and UPGRADE_INDEX[item]["kind"]=="decor" and isinstance(position,dict),"Món trang trí chưa sở hữu.")
+        need(position.get("spot") in ("window","corner","front","center","wall"),"Vị trí trang trí không hợp lệ.")
+    for shipment in c["shipments"]:
+        need(isinstance(shipment,dict) and shipment.get("item") in expected_items,"Kiện hàng sai mã.")
+        clean_text(shipment.get("id"),100);integer(shipment.get("qty"),1,6);integer(shipment.get("actual"),1,6);integer(shipment.get("cost"),0,10000)
+        if "at" not in shipment:integer(shipment.get("ready"),0,10**9)
+        need(shipment.get("status") in ("in_transit","received"),"Trạng thái kiện sai.")
+    for pending in c["pending"]:
+        need(isinstance(pending,dict) and pending.get("kind") in ("return_note","event_followup","comment"),"Thông báo chờ không hợp lệ.")
+        integer(pending.get("day"),1,999999);integer(pending.get("turn"),0,10**9);clean_text(pending.get("ref"),200);clean_text(pending.get("text"),3000)
+        need(pending.get("npc") in NPC_INDEX,"Thông báo thiếu nhân vật.")
+    for memory in c["memories"]:
+        need(isinstance(memory,dict) and memory.get("npc") in NPC_INDEX,"Ký ức sai nhân vật.")
+        clean_text(memory.get("text"),3000);clean_text(memory.get("source"),200)
+    for row in c["journal"]:
+        for key in ("id","kind","text"):clean_text(row.get(key),4000)
+        integer(row.get("day"),1,999999);integer(row.get("turn"),0,10**9)
+    for post in c["feed"]:
+        for key in ("author","source","kind"):clean_text(post.get(key),200)
+        integer(post.get("day"),1,999999);need(type(post.get("liked")) is bool,"Trạng thái bài đăng thiếu.")
+        for comment in post["comments"]:
+            clean_text(comment.get("author"),100);clean_text(comment.get("text"),3000);integer(comment.get("day"),1,999999)
+            need(comment.get("npc") in ("player",*NPC_INDEX),"Người bình luận không hợp lệ.")
+    need(len(c["album"])<=6,"Album quá lớn.")
+    for photo in c["album"]:
+        need(isinstance(photo.get("image"),str) and len(photo["image"])<=450000 and photo["image"].startswith(("data:image/webp;base64,","data:image/png;base64,")),"Ảnh lưu không hợp lệ.")
+    if finite:_finite(c)  # no NaN/Infinity
 
 
 # =====================================================================================

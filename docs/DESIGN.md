@@ -89,7 +89,7 @@ Each career tints a few pieces of chrome with its own colour, so the 20 workplac
 
 Before a career is known, the tokens fall back to the theme's `--accent` family.
 
-**Where it shows:** `.task-hud` (the "Việc trước mắt" card's top border, eyebrow, step chip and "Làm tiếp"), `.dock` (main action and the phone's active pill), `.day-control` (the day ring), `.scene-heading` (the title card's eyebrow and the `.scene-mark` emoji badge, from `emojiOf` in `v4/journey.js`), `.sheet-head .eyebrow` and everything inside `.career-job`. These containers re-point `--accent`, `--accent-strong`, `--accent-soft`, `--accent-text` and `--accent-ink` at the `--career-*` tokens. Components inside them stay on the plain accent tokens and pick up the career colour.
+**Where it shows:** the task card's primary button (`.task-hud`), the phone dock's "Thêm" dot, the `.scene-mark` emoji badge (from `emojiOf` in `v4/journey.js`), `.sheet-head .eyebrow` and everything inside `.career-job`. Since the calm screen (3b) the dock and title card no longer carry accent fills or rings: the accent is kept for the primary action. These containers re-point `--accent`, `--accent-strong`, `--accent-soft`, `--accent-text` and `--accent-ink` at the `--career-*` tokens. Components inside them stay on the plain accent tokens and pick up the career colour.
 
 Rules:
 
@@ -134,6 +134,17 @@ Rules for all modes:
   - `env(safe-area-inset-*)` pads the top bar, the dock, the sheet foot and the menu.
 - **Toasts:** they are `position: fixed`. `toast()` moves them into the open dialog so they stay above the backdrop. Dialogs therefore must not have a `transform` at rest; animate with keyframes only.
 - **Dark theme:** the canvas draws fixed light colours, so it is dimmed with `filter: var(--scene-filter)`. Overlays on the stage (`.scene-heading`, badges, hint) are small surface plates, so they stay readable on any scene.
+
+### 3b. The calm main screen (v0.8.1)
+
+Players said the main screen was "rối mắt". The rule is **one primary thing at a time, few words**: show what to do next, not what things are.
+
+- **Top bar:** only the day and the money. Tapping the day opens the **status sheet** (`ui.view='status'`, `statusView` in `app.js`): pause, clock and tasks left, rating, weather/mode, wallet, spirit, Nhóm phố, Phố nghề, settings, plus the "Cần để ý" list. A small dot on the day means something new is inside. A rating change shows as a brief pop, not a permanent chip.
+- **Title card:** the emoji mark and the shop name on a faint pill. No eyebrow, tagline, status/weather badges or ambient quote. The walking hint shows on day 1 only (desktop/tablet) and fades.
+- **Task card:** the next step on one line (two on phone) with the customer's portrait, and one verb button. Closed: one "Chuẩn bị ngày mới" button. Other notes collapse to a bell with a count (phone/tablet); desktop lists them quietly in the side column.
+- **Canvas:** name tags only for the customer in hand (and events/officer); others on hover. A single "+" marker on the station while a task is in hand, none elsewhere. Speech bubbles are one at a time, at most two lines, a few seconds long. No welcome-back bubble.
+- **Dock:** phone keeps 3 scene actions (the workbench always) + "Thêm"; the rest move to the Thêm menu's "Trong tiệm". No sub-lines. Desktop/tablet rail shows Hành trình, Chuẩn bị, Đánh giá, Sổ tiệm, Việc làm and anything with a badge; the rest fold under the rail's "Thêm" (`html.rail-more`). Nhóm phố and Phố nghề are rail entries now (no floating pill, no top-bar button); the journey chip is gone from the stage.
+- **Toasts:** one at a time, newest wins (a hint never replaces an error), 2.4–4.5 s.
 
 ## 4. Components
 

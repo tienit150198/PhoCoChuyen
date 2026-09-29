@@ -135,6 +135,8 @@ export const shell={
     switch(action){
       case'v4Layout':setLayoutPref(data.value);env.renderSheet();return true;
       case'v4Menu':document.documentElement.classList.toggle('menu-open');syncMenu();return true;
+      // Desktop/tablet rail: the less-used entries fold under "Thêm".
+      case'v4RailMore':{const open=document.documentElement.classList.toggle('rail-more');document.querySelectorAll('[data-action="v4RailMore"]').forEach(b=>b.setAttribute('aria-expanded',String(open)));return true;}
       case'homeCat':env.ui.homeCat=data.cat;env.renderSheet();return true;
       case'v4Setting':{
         let value=data.value;

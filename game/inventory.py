@@ -15,6 +15,7 @@ from __future__ import annotations
 import copy
 import math
 import random
+from .jsoncopy import tree_copy
 
 # ---------------------------------------------------------------- the shop clock
 DAY_MIN = 24 * 60
@@ -727,7 +728,7 @@ def public(c: dict, career: str) -> dict | None:
     x = c.get('ext', {}).get('inv')
     if x is None:
         return None
-    v = copy.deepcopy(x)
+    v = tree_copy(x)
     _upgrade_orders(v, c, career)
     level = 1 + c['xp'] // 90
     v['stock'] = {i['id']: count(c, i['id']) for i in catalogue(career)}

@@ -319,24 +319,9 @@ function maybeScene(){
 }
 
 /* ------------------------------------------------------------------ HUD */
-/** Phone chip keeps the wallet short (1.000.000 → 1tr) so it never runs into the scene's title card. */
-const shortXu=n=>Math.abs(n)>=999950?`${(n/1e6).toLocaleString('vi-VN',{maximumFractionDigits:2})}tr`:Math.abs(n)>=1e5?`${(n/1e3).toLocaleString('vi-VN',{maximumFractionDigits:1})}k`:fmt(n);
-let hudWatch=null;
-function hud(){
-  if(!E?.api.state?.journey)return;
-  let el=document.getElementById('jrHud');
-  const stage=document.getElementById('stage');
-  if(!el&&stage){el=document.createElement('button');el.type='button';el.id='jrHud';el.className='jr-hud';el.dataset.action='home';stage.appendChild(el);}
-  if(!el)return;
-  const J=E.api.state.journey;
-  el.hidden=!J.story||!E.api.state.current;
-  if(el.hidden)return;
-  const eq=J.equipped_title;
-  el.setAttribute('aria-label','Mở hành trình của bạn');
-  el.innerHTML=`${avatar(J.gender,34)}<span class="jr-hud-text"><b>${E.api.state.life?.pending?'<i class="lf-dot" aria-hidden="true"></i>':''}${esc(E.api.state.name)}</b><small>${eq?`${eq.emoji} ${esc(eq.name)}`:`Cấp ${J.maturity.level} · ${esc(J.maturity.name)}`}</small></span><span class="jr-hud-wallet ${J.debt?'bad':''}"><span class="jr-hud-long">${J.debt?`Nợ ${fmt(J.debt)} xu`:`👛 ${fmt(J.wallet)} xu`}</span><span class="jr-hud-short">${J.debt?`Nợ ${shortXu(J.debt)}`:`👛 ${shortXu(J.wallet)}`}</span></span>`;
-  // The title card leaves exactly the chip's width free (CSS var), whatever the layout or wallet length.
-  if(!hudWatch&&typeof ResizeObserver!=='undefined'){hudWatch=new ResizeObserver(()=>{el.parentElement?.style.setProperty('--jr-hud-w',`${Math.ceil(el.offsetWidth)}px`);});hudWatch.observe(el);}
-}
+/** The journey chip (name, title, wallet) left the stage for a calm screen: the same facts are in the
+ * status sheet (tap the day) and the journey home. Removes a chip an older build left. */
+function hud(){document.getElementById('jrHud')?.remove();}
 
 /* ------------------------------------------------------------------ wiring */
 export function journeyBoot(env){
