@@ -732,7 +732,7 @@ QUESTIONS = {
                  ('ok', 'Thì con tìm khắp lớp.'),
                  ('poor', 'Thư ghi rồi mà, hỏi làm gì.'))),
     'Những chiếc lá giấy': dict(
-        text='{Title} ơi, con gấp 3 lá mà rách mất 1 lá thì còn mấy lá ạ?',
+        text='{Title} ơi, con gấp 8 lá mà rách mất 1 lá thì còn mấy lá ạ?',
         keys=('bot', 'tru', 'con lai', 'dem lai', '7 la', 'con 7'),
         answers=(('good', 'Rách 1 lá thì mình bớt đi 1: 8 lá bớt 1 còn 7 lá. Con đếm lại bằng que tính xem.'),
                  ('ok', 'Còn ít hơn một chút con ạ.'),
