@@ -41,18 +41,24 @@ def chat(messages: list[dict], max_tokens: int = 400, temperature: float = 0.7, 
         return None, 'busy'
     c = config()
     try:
-        body = dict(model=c['model'], temperature=temperature, max_tokens=max_tokens, stream=False, messages=messages)
+        # Models behind the gateway (claude-opus-4-8, sonnet-5, opus-5) always think first and
+        # spend ~400-450 hidden tokens before the visible reply: without this headroom every
+        # reply came back empty (finish_reason "length"). The visible length is still capped
+        # by the callers (clean_reply limits).
+        extra = int(os.environ.get('LLM_THINKING_TOKENS', '1024') or 0)
+        body = dict(model=c['model'], temperature=temperature, max_tokens=max_tokens + extra, stream=False, messages=messages)
         headers = {'Content-Type': 'application/json'}
         if c['key']:
             headers['Authorization'] = 'Bearer ' + c['key']
         req = urllib.request.Request(c['base'] + '/chat/completions', json.dumps(body).encode(), headers=headers, method='POST')
         with urllib.request.urlopen(req, timeout=timeout) as response:
             data = json.loads(response.read(200000))
-        text = data['choices'][0]['message']['content']
+        choice = data['choices'][0]
+        text = choice['message']['content']
         if isinstance(text, list):  # some gateways return content parts
             text = ''.join(x.get('text', '') for x in text if isinstance(x, dict))
         if not isinstance(text, str) or not text.strip():
-            return None, 'invalid_response'
+            return None, 'out_of_tokens' if choice.get('finish_reason') == 'length' else 'invalid_response'
         return text.strip(), None
     except (urllib.error.URLError, TimeoutError, ValueError, KeyError, IndexError, TypeError, OSError):
         return None, 'unavailable'
@@ -438,7 +444,7 @@ def persona_reply(state: dict, career: str, npc: str, player_text: str, *, conte
     msgs = [dict(role='system', content=_persona_system(p, purpose, lang, lim)),
             dict(role='user', content=data)]
     try:
-        timeout = float(os.environ.get('AI_CHAT_TIMEOUT', '9') or 9)
+        timeout = float(os.environ.get('AI_CHAT_TIMEOUT', '15') or 15)
     except ValueError:
         timeout = 9.0
     text, reason = chat(msgs, max_tokens=lim['max_tokens'], temperature=voices.temperature(p['voice'], p.get('mood')), timeout=timeout)
