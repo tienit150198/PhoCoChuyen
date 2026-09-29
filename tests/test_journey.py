@@ -283,7 +283,9 @@ class Wallet(unittest.TestCase):
         self.assertEqual(s2['journey']['wallet'], wallet - jr.REOPEN_FEE)
         # Broke everywhere and nowhere else to work: the neighbours help, no soft-lock.
         s, _ = act(s, None, 'jr_pause', career='milk_tea', confirm=True)
-        s['journey']['unlocked'] = ['milk_tea', 'grocery', 'delivery']
+        for cid in CH1:  # every other storefront of chapter 1 is closed too
+            if cid not in ('milk_tea', 'grocery', 'delivery'):
+                s['journey']['paused'][cid] = s['journey']['life_day']
         # Delivery hires through a trial now: while not hired it is not somewhere else to work either.
         s['journey']['wallet'] = 0
         set_money(s['careers']['grocery'], 0)
@@ -479,7 +481,7 @@ class Integrity(unittest.TestCase):
         for edit in (lambda j: j['unlocked'].append('group_accounting'), lambda j: j.update(wallet='9'),
                      lambda j: j['titles'].update(fake=1), lambda j: j.update(chapter=3),
                      lambda j: j.update(gender='x'), lambda j: j.update(equipped='g_first'),
-                     lambda j: j['paused'].update(restaurant=1), lambda j: j['stats'].update(hack=1)):
+                     lambda j: j['paused'].update(teacher=1), lambda j: j['stats'].update(hack=1)):
             bad = copy.deepcopy(s)
             edit(bad['journey'])
             with self.assertRaises(GameError):
@@ -523,3 +525,20 @@ class Storage(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class Onboarding(unittest.TestCase):
+    def test_old_first_chapter_save_gets_every_storefront(self):
+        from game.engine import migrate_state, public_state
+        s = story_state()
+        s['journey']['unlocked'] = ['milk_tea', 'grocery', 'delivery']  # a save from before the wider chapter 1
+        s = migrate_state(s)
+        self.assertTrue(set(CH1) <= set(s['journey']['unlocked']))
+        validate_state(s)
+
+    def test_first_view_shows_an_open_workplace(self):
+        from game.engine import public_state
+        s = story_state()
+        v = public_state(s)
+        self.assertIn(v['focus'], s['journey']['unlocked'])
+        self.assertIn('feed', v['careers'][v['focus']])
