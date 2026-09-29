@@ -899,6 +899,8 @@ def on_close(s: dict, c: dict) -> dict:
                 label = (f'{b["ota"]} chuyển tiền phòng (đã trừ {OTA_COMMISSION}% hoa hồng) · {b["name"]}' if b.get('ota')
                          else f'Khách đặt trước nhận phòng · {b["name"]}')
                 kit.money(s, c, due, label, b['id'], category='room')
+                if b.get('ota'):
+                    kit.bank(due)   # the platform's payout lands in the account
             d['arrivals'] += 1
             d['nights_sold'] += nights * len(chosen)
             arrived.append(b['name'])
@@ -2664,6 +2666,7 @@ def _anniv_call(s: dict, c: dict) -> None:
                                           name=f'{ANNIV_NAME} (năm thứ {year})', total=total, deposit=deposit, task=None, npc=ANNIV_NPC,
                                           anniv=year)])[-60:]
     kit.money(s, c, deposit, f'{ANNIV_NAME} chuyển cọc phòng ngày {start}', f'anniv-{year}', category='room')
+    kit.bank(deposit)
     where = 'phòng số 3 như mọi năm' if rid == ANNIV_ROOM else f'phòng {ROOM_INDEX[rid]["name"]} (phòng số 3 đã có khách)'
     kit.log(s, c, 'homestay', f'📞 {ANNIV_NAME} gọi đặt {where} từ ngày {start}, {ANNIV_NIGHTS} đêm — năm thứ {year}. Đã nhận {deposit} xu cọc.')
 

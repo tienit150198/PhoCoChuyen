@@ -1,17 +1,72 @@
 /** Tiny original synthesised sounds. No audio files or third-party recordings. */
+// One AudioContext for every Sound (app.js, the career desks, v4/sounds.js): phones cap how many can run.
+let shared=null,noise=null;
+const AC=()=>window.AudioContext||window.webkitAudioContext;
+// Vietnamese tone marks (NFD) → pitch glide of a babble syllable: sắc up, huyền down, hỏi dip, ngã up-hop, nặng short low.
+const TONES={'\u0301':[1,1.18],'\u0300':[1,.84],'\u0309':[.94,1.04],'\u0303':[1.02,1.2],'\u0323':[.86,.8]};
+const VOWEL={a:1500,e:1900,i:2500,o:950,u:750,y:2400};  // brightness of the syllable's filter by its vowel
 export class Sound {
-  constructor(){this.ctx=null;this.enabled=true;this.volume=1;}
+  constructor(){this.enabled=true;this.volume=1;this.detail=true;this.voices=true;this.talk=null;}
+  get ctx(){return shared;}
+  set ctx(value){shared=value;}
   /** Create the (suspended) context ahead of time, in idle time: creating it is slow on phones (~100 ms
    * on a throttled CPU) and used to land on the player's very first tap. unlock() then only resumes it. */
-  prepare(){try{this.ctx??=new (window.AudioContext||window.webkitAudioContext)();}catch{/* no Web Audio */}}
-  unlock(){try{this.ctx??=new (window.AudioContext||window.webkitAudioContext)();if(this.ctx.state==='suspended')this.ctx.resume();}catch{/* Silent play remains fully usable. */}}
-  tone(freq,time=.08,volume=.045,delay=0,type='sine'){
-    if(!this.ctx||!this.enabled)return;const t=this.ctx.currentTime+delay,o=this.ctx.createOscillator(),g=this.ctx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(volume*this.volume,t+.015);g.gain.exponentialRampToValueAtTime(.0001,t+time);o.connect(g);g.connect(this.ctx.destination);o.start(t);o.stop(t+time+.03);
+  prepare(){try{shared??=new (AC())();}catch{/* no Web Audio */}}
+  unlock(){try{shared??=new (AC())();if(shared.state==='suspended')shared.resume();}catch{/* Silent play remains fully usable. */}}
+  ready(){return !!(shared&&this.enabled&&shared.state!=='closed');}
+  tone(freq,time=.08,volume=.045,delay=0,type='sine',out=null){
+    if(!this.ready())return;const t=shared.currentTime+delay,o=shared.createOscillator(),g=shared.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(volume*this.volume,t+.015);g.gain.exponentialRampToValueAtTime(.0001,t+time);o.connect(g);g.connect(out||shared.destination);o.start(t);o.stop(t+time+.03);
   }
   click(){this.tone(660,.07,.024);}
   success(){[523.25,659.25,783.99,1046.5].forEach((f,i)=>this.tone(f,.36,.038,i*.11));}
   error(){this.tone(245,.14,.03);}
   // Background music lives in v4/music.js; this class only plays short UI sounds.
-  configure(settings){this.enabled=settings.sound!==false;this.volume=Math.max(0,Math.min(1.5,(settings.sfxVolume??70)/70));}
+  configure(settings){this.enabled=settings.sound!==false;this.volume=Math.max(0,Math.min(1.5,(settings.sfxVolume??70)/70));this.detail=settings.detailSfx!==false;this.voices=settings.npcVoices!==false;}
   stopMusic(){}
+  /* ---- detail sounds (Cài đặt → Âm thanh chi tiết) ---- */
+  bell(freq,delay=0,time=.5,volume=.03){this.tone(freq,time,volume,delay);this.tone(freq*2.76,time*.45,volume*.35,delay);}
+  /** "Ting ting": the bank speaker's two bright dings (the caller checks Loa báo tiền). */
+  ting(){this.bell(1975.5,0,.32,.026);this.bell(1975.5,.17,.42,.026);}
+  coins(){if(this.detail){this.bell(1568,0,.18,.02);this.bell(2093,.07,.26,.02);}}
+  /** Cash register "ka-ching": drawer clack, then the bell. */
+  register(){if(!this.detail||!this.ready())return;this.hiss(.035,2400,.05,0);[1318.5,1760,2637].forEach((f,i)=>this.bell(f,.06+i*.012,.5,.016));}
+  pop(){if(!this.detail||!this.ready())return;const t=shared.currentTime,o=shared.createOscillator(),g=shared.createGain();o.frequency.setValueAtTime(620,t);o.frequency.exponentialRampToValueAtTime(260,t+.07);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.03*this.volume+.0001,t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+.09);o.connect(g);g.connect(shared.destination);o.start(t);o.stop(t+.12);}
+  /** Gentle chime: day closed, level up. */
+  chime(){if(this.detail)[783.99,987.77,1174.66,1567.98].forEach((f,i)=>this.bell(f,i*.16,.9,.016));}
+  /** Shop door bell: a customer walks in. */
+  doorbell(){if(this.detail){this.bell(1318.5,0,.55,.018);this.bell(1046.5,.22,.7,.018);}}
+  /** Paper rustle: a sheet slides open. */
+  paper(){if(this.detail&&this.ready()){this.hiss(.09,3200,.018,0);this.hiss(.07,4200,.012,.07);}}
+  hiss(time,freq,volume,delay){
+    if(!this.ready())return;
+    if(!noise){const n=Math.floor(shared.sampleRate*.25);noise=shared.createBuffer(1,n,shared.sampleRate);const d=noise.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;}
+    const t=shared.currentTime+delay,src=shared.createBufferSource(),f=shared.createBiquadFilter(),g=shared.createGain();
+    src.buffer=noise;f.type='bandpass';f.frequency.value=freq;f.Q.value=.9;
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(volume*this.volume+.0001,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+time);
+    src.connect(f);f.connect(g);g.connect(shared.destination);src.start(t,Math.random()*.1);src.stop(t+time+.02);
+  }
+  /* ---- character voices (Cài đặt → Giọng nhân vật) ---- */
+  /** Cute syllable babble in the Animal Crossing manner: one blip per Vietnamese syllable, tone marks bend
+   * the pitch, the vowel colours it. `voice` = {base Hz, wave, step s, gain}. The newest line cuts the old one. */
+  babble(text,voice){
+    if(!this.voices||!this.ready()||shared.state!=='running')return;
+    const words=String(text||'').normalize('NFD').toLowerCase().split(/\s+/).filter(w=>/[a-z]/.test(w));
+    if(!words.length)return;
+    this.hush();
+    const step=voice.step||.085,max=Math.max(1,Math.floor(1.2/step)),t0=shared.currentTime+.02;
+    const bus=shared.createGain(),f=shared.createBiquadFilter();
+    bus.gain.value=(voice.gain||1)*this.volume;f.type='lowpass';f.Q.value=4;f.connect(bus);bus.connect(shared.destination);
+    const o=shared.createOscillator(),env=shared.createGain();o.type=voice.wave||'triangle';env.gain.value=0;o.connect(env);env.connect(f);
+    const list=words.length>max?words.filter((_,i)=>i%Math.ceil(words.length/max)===0).slice(0,max):words;
+    list.forEach((w,i)=>{
+      const t=t0+i*step,[a,b]=TONES[[...w].find(ch=>TONES[ch])]||[1,1],v=VOWEL[w.replace(/[^a-z]/g,'').match(/[aeiouy]/)?.[0]]||1400;
+      const jitter=1+((w.charCodeAt(0)*7+i*13)%9-4)/100,p=voice.base*jitter,d=step*(w.includes('\u0323')?0.6:0.78);
+      o.frequency.setValueAtTime(p*a,t);o.frequency.linearRampToValueAtTime(p*b,t+d);
+      f.frequency.setValueAtTime(v*(voice.base>400?1.25:1),t);
+      env.gain.setValueAtTime(0,t);env.gain.linearRampToValueAtTime(.05,t+.012);env.gain.setValueAtTime(.05,t+d*.55);env.gain.linearRampToValueAtTime(0,t+d);
+    });
+    const end=t0+list.length*step+.05;o.start(t0);o.stop(end);
+    const talk={bus,end};this.talk=talk;o.onended=()=>{if(this.talk===talk)this.talk=null;try{bus.disconnect();}catch{/* gone */}};
+  }
+  hush(){const old=this.talk;if(!old||!shared)return;this.talk=null;const t=shared.currentTime;try{old.bus.gain.cancelScheduledValues(t);old.bus.gain.setTargetAtTime(0,t,.012);}catch{/* already stopped */}setTimeout(()=>{try{old.bus.disconnect();}catch{/* gone */}},120);}
 }

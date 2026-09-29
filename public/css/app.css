@@ -2413,3 +2413,7 @@ html[data-layout="phone"] .calm-what b{font-size:.933rem;white-space:normal;disp
 .scene-mark,html[data-layout="phone"] .scene-mark{border-radius:50%}
 html:not(.reduce-motion) .calm-card.pulse{animation:calm-pulse .6s var(--ease)}
 @keyframes calm-pulse{40%{transform:scale(1.025)}}
+/* Bank speaker fallback (v4/sounds.js): no Vietnamese voice on this device, show the amount instead. */
+.bank-chip{position:fixed;left:50%;top:calc(var(--safe-t) + 72px);transform:translateX(-50%);z-index:210;padding:8px 14px;border-radius:999px;background:var(--inverse);color:var(--on-inverse);font-weight:700;font-size:.95rem;box-shadow:var(--shadow);pointer-events:none;animation:mnl-toast-in .22s var(--ease);max-width:calc(100vw - 32px);white-space:nowrap;transition:opacity .3s}
+.bank-chip.leaving{opacity:0}
+html.reduce-motion .bank-chip{animation:none}

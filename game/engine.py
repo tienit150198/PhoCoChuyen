@@ -37,6 +37,7 @@ from . import giftshop as gifts
 from . import incidents as incs
 from . import happenings as haps
 from . import archive as ar
+from . import bank_speaker
 
 ORIGINAL=("mother_baby","pharmacy","accounting","customer_care")
 UI_THEMES=("kem","tra_xanh","dem","bien","keo")
@@ -83,7 +84,8 @@ def notes_seen(v) -> str:
 def default_settings() -> dict:
     return dict(mode="everyday",sound=True,music=False,reduceMotion=False,largeText=False,aiConsent=True,aiAsked=True,aiNoticeSeen=False,securityEvents=True,
         lang="vi",uiTheme="kem",musicTrack="auto",musicVolume=45,sfxVolume=70,notify=False,publicProfile=False,
-        tutorialDone=False,notesSeen="")
+        tutorialDone=False,notesSeen="",
+        npcVoices=True,detailSfx=True,bankVoice=True)  # Cài đặt → Âm thanh: giọng nhân vật, âm thanh chi tiết, loa báo tiền
 
 from .jsoncopy import tree_copy,_SCALARS  # noqa: F401 (re-exported)
 
@@ -178,7 +180,7 @@ def migrate_state(state:dict,owned:bool=False) -> dict:
             if isinstance(_c,dict) and isinstance(_c.get('shipments'),list) and type(_c.get('day')) is int and type(_c.get('turn')) is int:_upgrade_shipments(_c,_cid)
     if isinstance(s.get('settings'),dict):
         if ai_unasked:s['settings'].update(aiConsent=True,aiAsked=True)
-        s['settings'].setdefault('aiNoticeSeen',False)
+        for k,v in default_settings().items():s['settings'].setdefault(k,v)
     return s
 
 
@@ -432,8 +434,9 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
     validate_state checks only what lies outside the careers; the caller must run
     validate_career on every career the command changed before storing."""
     acting=ar.acting(career if career in CAREERS else None)  # whose rows cut lists archive by default
+    # bank_speaker: transfers into the shop's account during the command ride along as result['bank'].
     token=_SCOPED.set(True) if scoped else None
-    try:return _apply_action(state,career,action,payload,internal,owned)
+    try:return bank_speaker.collect(lambda:_apply_action(state,career,action,payload,internal,owned))
     finally:
         if token is not None:_SCOPED.reset(token)
         ar.done_acting(acting)
@@ -1132,6 +1135,7 @@ then runs validate_career on every career the command changed (see Store._comput
     for k in ("sound","music","reduceMotion","largeText","aiConsent","aiAsked","aiNoticeSeen","securityEvents","notify","publicProfile"):need(type(settings.get(k)) is bool,"Thiếu thiết lập bản lưu.")
     for k,choices in SETTING_CHOICES.items():need(settings.get(k) in choices,"Thiết lập bản lưu không hợp lệ.")
     for k in ("musicVolume","sfxVolume"):integer(settings.get(k),0,100)
+    for k in ("npcVoices","detailSfx","bankVoice"):need(type(settings.get(k,True)) is bool,"Thiết lập bản lưu không hợp lệ.")
     need(set(settings)<=set(default_settings()),"Thiết lập lạ trong bản lưu.")
     need(type(settings.get("tutorialDone",False)) is bool,"Thiết lập bản lưu không hợp lệ.");notes_seen(settings.get("notesSeen",""))
     if _SCOPED.get():

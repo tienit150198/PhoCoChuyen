@@ -65,7 +65,10 @@ export class GameAPI extends EventTarget {
             await new Promise(r=>setTimeout(r,300));
           }
         }
-        this.accept(data);return data.result;
+        this.accept(data);
+        // v4/sounds.js: detail sounds and the bank speaker (result.bank) follow each confirmed command.
+        this.dispatchEvent(new CustomEvent('result',{detail:{action,career,result:data.result}}));
+        return data.result;
       }catch(error){
         if(!error.status){this.connected=false;this.dispatchEvent(new Event('offline'));error.message='Mất kết nối máy chủ. Tiến trình đã xác nhận vẫn được lưu. Khởi động lại server rồi thử lại nhé.';}
         throw error;

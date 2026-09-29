@@ -915,7 +915,7 @@ class CafeBakeryTests(unittest.TestCase):
             j.act('cb_box_send')
         self.ensure_case(j, 'croissant', 4)
         n0 = len(self.ledger())
-        j.act('cb_box_send')
+        self.assertEqual(j.act('cb_box_send').get('bank'), [3 * box['pay']])   # paid by transfer: bank speaker
         self.assertEqual(sum(e['amount'] for e in self.ledger()[n0:]), 3 * box['pay'])
         self.assertEqual(CB._case_count(j.c['ext']['data'], 'croissant'), 1)
         pl = CB._plan(j.c)
