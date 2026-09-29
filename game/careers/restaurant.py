@@ -1375,6 +1375,7 @@ def _batch(s: dict, c: dict, d: dict, pl: dict) -> dict:
     b['status'] = 'sent'
     pay = b['goal'] * b['pay']
     kit.money(s, c, pay, 'Đơn đặt của văn phòng đầu hẻm', f'batch-{c["day"]}', category='revenue')
+    kit.bank(pay)   # the office pays its order by transfer
     kit.metric(c, 'catering_sent')
     _event_outcome(pl, 'catering', True, f'Giao đủ {b["goal"]} hộp cho văn phòng đúng hẹn.')
     FS.flash(pl, 'good', f'📦 Giao đủ {b["goal"]} hộp cho văn phòng · +{pay} xu!')

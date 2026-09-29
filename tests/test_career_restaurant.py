@@ -722,7 +722,7 @@ class RestaurantTests(unittest.TestCase):
         money = j.c['money']
         j.act('rs_batch')
         self.assertEqual(R._plan(j.c)['rules']['batch']['done'], 1)
-        j.act('rs_batch')
+        self.assertEqual(j.act('rs_batch').get('bank'), [2 * 36])   # the office pays by transfer: bank speaker
         self.assertEqual(R._plan(j.c)['rules']['batch']['status'], 'sent')
         self.assertEqual(j.c['money'], money + 2 * 36)
         with self.assertRaises(GameError):

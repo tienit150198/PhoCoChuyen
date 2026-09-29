@@ -66,6 +66,13 @@ def money(s: dict, c: dict, amount: int, reason: str, ref: str | None = None, ca
     eng().money(s, c, amount, reason, ref, category)
 
 
+def bank(amount: int) -> None:
+    """A customer's transfer / QR payment just reached the shop's own account: the browser's
+    bank speaker reads it out ("ting ting · Đã nhận N xu"). Announcement only: book the money with money()."""
+    from .. import bank_speaker
+    bank_speaker.transfer(amount)
+
+
 def log(s: dict, c: dict, kind: str, message: str, npc: str | None = None, ref: str | None = None) -> str:
     return eng().log(s, c, kind, message, npc, ref)
 

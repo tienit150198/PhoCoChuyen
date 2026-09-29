@@ -36,6 +36,7 @@ from . import desk as dk
 from . import giftshop as gifts
 from . import incidents as incs
 from . import happenings as haps
+from . import bank_speaker
 
 ORIGINAL=("mother_baby","pharmacy","accounting","customer_care")
 UI_THEMES=("kem","tra_xanh","dem","bien","keo")
@@ -74,7 +75,8 @@ def new_state() -> dict:
 
 def default_settings() -> dict:
     return dict(mode="everyday",sound=True,music=False,reduceMotion=False,largeText=False,aiConsent=True,aiAsked=True,aiNoticeSeen=False,securityEvents=True,
-        lang="vi",uiTheme="kem",musicTrack="auto",musicVolume=45,sfxVolume=70,notify=False,publicProfile=False)
+        lang="vi",uiTheme="kem",musicTrack="auto",musicVolume=45,sfxVolume=70,notify=False,publicProfile=False,
+        npcVoices=True,detailSfx=True,bankVoice=True)  # Cài đặt → Âm thanh: giọng nhân vật, âm thanh chi tiết, loa báo tiền
 
 from .jsoncopy import tree_copy,_SCALARS  # noqa: F401 (re-exported)
 
@@ -168,7 +170,7 @@ def migrate_state(state:dict,owned:bool=False) -> dict:
             if isinstance(_c,dict) and isinstance(_c.get('shipments'),list) and type(_c.get('day')) is int and type(_c.get('turn')) is int:_upgrade_shipments(_c,_cid)
     if isinstance(s.get('settings'),dict):
         if ai_unasked:s['settings'].update(aiConsent=True,aiAsked=True)
-        s['settings'].setdefault('aiNoticeSeen',False)
+        for k,v in default_settings().items():s['settings'].setdefault(k,v)
     return s
 
 
@@ -399,9 +401,10 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
     `scoped=True` (the storage layer, on a save this build already validated):
     validate_state checks only what lies outside the careers; the caller must run
     validate_career on every career the command changed before storing."""
-    if not scoped:return _apply_action(state,career,action,payload,internal,owned)
+    # bank_speaker: transfers into the shop's account during the command ride along as result['bank'].
+    if not scoped:return bank_speaker.collect(lambda:_apply_action(state,career,action,payload,internal,owned))
     token=_SCOPED.set(True)
-    try:return _apply_action(state,career,action,payload,internal,owned)
+    try:return bank_speaker.collect(lambda:_apply_action(state,career,action,payload,internal,owned))
     finally:_SCOPED.reset(token)
 
 def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,internal:bool,owned:bool) -> tuple[dict,dict]:
@@ -1083,6 +1086,7 @@ then runs validate_career on every career the command changed (see Store._comput
     for k in ("sound","music","reduceMotion","largeText","aiConsent","aiAsked","aiNoticeSeen","securityEvents","notify","publicProfile"):need(type(settings.get(k)) is bool,"Thiếu thiết lập bản lưu.")
     for k,choices in SETTING_CHOICES.items():need(settings.get(k) in choices,"Thiết lập bản lưu không hợp lệ.")
     for k in ("musicVolume","sfxVolume"):integer(settings.get(k),0,100)
+    for k in ("npcVoices","detailSfx","bankVoice"):need(type(settings.get(k,True)) is bool,"Thiết lập bản lưu không hợp lệ.")
     need(set(settings)<=set(default_settings()),"Thiết lập lạ trong bản lưu.")
     if _SCOPED.get():
         for k,value in s.items():

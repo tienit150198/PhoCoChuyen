@@ -10,6 +10,7 @@ import {nextStep,lifeNav,guestRibbon,experienceView,extendedJob,experienceSummar
 import {icon,portrait,itemArt,escapeHTML as esc} from './icons.js';
 import {reqList,fold} from './ui-kit.js';
 import {Sound} from './audio.js';
+import {soundsBoot} from './v4/sounds.js';
 import {careerSubmit,careerInput,loadCareerModules,careerUI,hasCareerUI,careerContext,startTicker,tickNow} from './v4/careers.js';
 import {inventoryView,feedbackView,situationView,jobView as jobAppView,v4Action,v4Submit,v4Input} from './v4/views.js';
 import {setLanguage,t as i18nT} from './v4/i18n.js';
@@ -33,6 +34,7 @@ const $=s=>document.querySelector(s), api=new GameAPI(), sound=new Sound();
 const ended=t=>['completed','referred','cancelled'].includes(t.status);
 const ui={opsTab:'staff',staffId:null,lessonSequence:[],tourRoute:[],activityCard:null,view:null,tab:'',task:null,npc:null,jobTab:'shelf',journalTab:'quests',libraryQuery:'',docs:new Set(),transactions:new Set(),drafts:{},ai:{},suggestions:{},busy:false,paused:false};
 const world=new BobaWorld($('#world'),interact);
+soundsBoot({api,world,sound});  // character voices, detail sounds, bank speaker
 // Before a workplace is chosen the server picks one that is open (state.focus) and sends its full view.
 const career=()=>api.state?.current||api.state?.focus||'mother_baby';
 const room=()=>api.state?.careers[career()];

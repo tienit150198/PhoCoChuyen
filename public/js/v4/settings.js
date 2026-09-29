@@ -4,6 +4,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {layoutPref,setLayoutPref} from './shell.js';
 import {pushState,enablePush,disablePush,isIOS,isStandalone} from './push.js';
 import {accountPane,accountAction,accountNudge} from './account.js';
+import {soundToggles} from './sounds.js';
 
 const attrs=obj=>Object.entries(obj).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 const button=(label,action,data={},style='')=>`<button type="button" class="btn ${style}" data-action="${action}"${attrs(data)}>${label}</button>`;
@@ -48,6 +49,7 @@ export function settingsView(env){
   }
   if(tab==='sound')body=`<section class="settings-block">${toggle('sound','Âm thanh thao tác',s.sound)}
       <label class="field">Âm lượng hiệu ứng <output>${s.sfxVolume}</output><input type="range" min="0" max="100" step="5" value="${s.sfxVolume}" data-setting-range="sfxVolume"></label></section>
+    ${soundToggles(s,toggle)}
     <section class="settings-block"><h3>${icon('music',18)} Nhạc nền</h3>
       ${toggle('music','Bật nhạc nền',s.music)}
       <div class="field">Kiểu nhạc${segment('musicTrack',TRACKS,s.musicTrack)}</div>

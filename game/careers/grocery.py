@@ -774,6 +774,8 @@ def _checkout_action(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         pay['verified'] = True
         kit.metric(c, 'transfers_checked')
         arrived = _bank_amount(c, t)
+        if arrived and not pay['bank']:
+            kit.bank(arrived)   # the shop's speaker reads the transfer out once, when it lands
         pay['bank'] = arrived
         if arrived == 0:
             return dict(message='Loa chưa báo, app ngân hàng của tiệm chưa thấy tiền. Nhờ khách chờ một chút rồi kiểm lại, đừng tin ảnh chụp màn hình.')
@@ -784,6 +786,7 @@ def _checkout_action(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         kit.need(method == 'transfer' and pay['verified'] and n['_transfer'] == 'typo' and not pay['fixed'] and (pay['bank'] or 0) < t['total'],
                  'Không có khoản thiếu nào cần nhờ khách chuyển bù.')
         pay['fixed'] = True
+        kit.bank(t['total'] - (pay['bank'] or 0))
         pay['bank'] = t['total']
         return dict(message=f'{_who(t)} coi lại điện thoại: “Trời, chị gõ thiếu!” rồi chuyển thêm {t["total"] - pay["screen"]["amount"]} xu. Loa đã báo đủ.')
     if name == 'gr_decline_credit':
@@ -999,6 +1002,8 @@ def _finish(s: dict, c: dict, t: dict) -> dict:
             flags['unverified'] = 1
             notes.append('Chưa thấy tiền về app ngân hàng của tiệm mà đã cho khách đi — may rủi.')
         received = _bank_amount(c, dict(t, pay=dict(pay, ready=0)))
+        if not pay['verified'] or not pay['bank']:
+            kit.bank(received)   # not heard at the till yet: the speaker reads it now
         if received < total:
             loss += total - received
             flags['transfer_loss'] = total - received
@@ -2043,6 +2048,8 @@ def _pickups(s: dict, c: dict, d: dict) -> list[str]:
             paid = f'ghi sổ {value} xu'
         else:
             kit.money(s, c, value, f'{name} lấy giỏ quen hàng tuần', f'list-{key}-{c["day"]}', 'revenue')
+            if method == 'transfer':
+                kit.bank(value)
             d['sales'] += value
             d['day_sales'] += value
             paid = f'{"chuyển khoản" if method == "transfer" else "trả tiền mặt"} {value} xu'
