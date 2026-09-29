@@ -76,16 +76,7 @@ def default_settings() -> dict:
     return dict(mode="everyday",sound=True,music=False,reduceMotion=False,largeText=False,aiConsent=True,aiAsked=True,aiNoticeSeen=False,securityEvents=True,
         lang="vi",uiTheme="kem",musicTrack="auto",musicVolume=45,sfxVolume=70,notify=False,publicProfile=False)
 
-_SCALARS=(str,int,float,bool,type(None))
-
-def tree_copy(x):
-    """Deep copy of a JSON-shaped save (dicts, lists, scalars), about 4x faster than
-    copy.deepcopy. Anything else (tuples, sets...) still goes through copy.deepcopy."""
-    t=type(x)
-    if t is dict:return {k:(v if type(v) in _SCALARS else tree_copy(v)) for k,v in x.items()}
-    if t is list:return [v if type(v) in _SCALARS else tree_copy(v) for v in x]
-    if t in _SCALARS:return x
-    return copy.deepcopy(x)
+from .jsoncopy import tree_copy,_SCALARS  # noqa: F401 (re-exported)
 
 def _build_id() -> str:
     """Fingerprint of this game code (every game/*.py and the career list). The storage
@@ -981,11 +972,12 @@ def task_view(t:dict) -> dict:
 
 def career_summary(raw:dict,cid:str) -> dict:
     """What the home picker / Phố nghề need from careers that are not open
-    on screen. Keeps each response small; the full view arrives with select_career."""
-    job=emp.public(raw,cid)
+    on screen. Keeps each response small; the full view arrives with select_career.
+    Same values as emp.public(...)["required"/"status"] and bool(inv.public(...))
+    (a stock room's view is never empty), without building those full views."""
     return dict(summary=True,started=raw["started"],open=raw["open"],day=raw["day"],xp=raw["xp"],level=1+raw["xp"]//90,money=raw["money"],
-                job=dict(required=job.get("required"),status=job.get("status")) if isinstance(job,dict) else job,
-                inventory=bool(inv.public(raw,cid)),life=dict(shop_name=raw.get("life",{}).get("shop_name")))
+                job=dict(required=emp.required(cid),status=raw["job"].get("status")),
+                inventory=raw.get("ext",{}).get("inv") is not None,life=dict(shop_name=raw.get("life",{}).get("shop_name")))
 
 
 def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:

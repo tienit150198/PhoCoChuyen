@@ -8,6 +8,7 @@ from __future__ import annotations
 import copy
 import math
 from typing import Any
+from .jsoncopy import tree_copy
 
 CAREERS = ('mother_baby', 'pharmacy', 'accounting', 'customer_care', 'teacher', 'tour_guide', 'milk_tea')
 RULES = {
@@ -566,7 +567,7 @@ def action(s:dict,c:dict,career:str,name:str,p:dict) -> dict:
 
 
 def public_operations(c:dict) -> dict:
-    o=copy.deepcopy(c['ops']);f=o['finance'];sec=o['security'];active=next((x for x in sec['cases'] if x['id']==sec['active']),None)
+    o=tree_copy(c['ops']);f=o['finance'];sec=o['security'];active=next((x for x in sec['cases'] if x['id']==sec['active']),None)
     for case in sec['cases']:
         case.pop('_truth',None);case.pop('_roll',None)
         for ev in case['evidence']:
