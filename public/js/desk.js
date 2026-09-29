@@ -3,6 +3,7 @@
    Phone first: one quote, the papers, a short rulebook, and one row of stamps. */
 import {icon,portrait,escapeHTML as esc} from './icons.js';
 import {asset} from './assets.js';
+import {nextHint} from './v4/guide.js';
 
 if(typeof document!=='undefined'&&!document.querySelector('link[data-desk-css]')){
   const link=document.createElement('link');link.rel='stylesheet';link.href=asset('/css/desk.css');link.dataset.deskCss='';document.head.append(link);
@@ -106,9 +107,27 @@ function progress(t){
   return `<p class="dk-progress">✔ ${found} chỗ sai đã chỉ ra${wrong?` · × ${wrong} lần đánh dấu nhầm`:''}</p>`;
 }
 
+/** Next steps at a desk (guide.js): answer, take the papers, run the extra checks, count the
+ * till, read every line, stamp. Which line is wrong stays the player's call. */
+function deskSteps(t,api){
+  const c=room(api),rows=[];
+  if(t.career==='customer_care'&&t.reply==null)rows.push({ok:null,label:'Chọn câu trả lời đầu tiên cho khách',go:{sel:'.dk-replies .dk-reply'}});
+  if(!t.known){rows.push({ok:null,label:t.career==='customer_care'?'Mở hồ sơ đơn':'Nhận giấy tờ của khách',go:{cmd:'ask',payload:{task:t.id}},pulse:'.dk-start .dk-cta'});return rows;}
+  for(const k of (t.checks||[]).filter(k=>k.id!=='count')){
+    const done=t.verified.includes(k.id),wait=t.pending?.[k.id];
+    rows.push({ok:done||null,label:`${k.icon} ${k.label}`,note:wait!=null?`⏳ ${Math.max(0,wait-c.turn)} nhịp`:'',
+      go:done?null:wait!=null?{cmd:'advance',label:'⏳ Chờ kết quả một nhịp'}:{cmd:'desk_check',payload:{task:t.id,check:k.id},label:`${esc(k.icon)} ${esc(k.label)}`}});
+  }
+  if(t.drawer&&!t.verified.includes('count'))rows.push({ok:null,label:'Đếm két: chạm từng tờ rồi chốt số',go:{sel:'.dk-drawer .dk-note'}});
+  const marks=t.marks||[];
+  if(!marks.length)rows.push({ok:null,label:'Soát từng dòng: chạm dòng sai, chọn quy định nó trái',go:{sel:'.dk-docs .dk-field:not(.locked)'}});
+  rows.push({ok:null,label:'Đóng dấu quyết định',go:{sel:'.dk-stamps .dk-stamp'}});
+  return rows;
+}
+
 export function deskJob(t,ctx){
   const {api}=ctx;
-  let body='';
+  let body=nextHint({room:room(api)},deskSteps(t,api),{cta:false});
   if(t.career==='customer_care')body+=queueStrip(t,api)+replies(t,api);
   if(!t.known){
     body+=`<div class="dk-start">${cmdBtn('📥 '+(t.career==='customer_care'?'Mở hồ sơ đơn':'Nhận giấy tờ'),'ask',{task:t.id},'primary full dk-cta',!room(api).open)}</div>`;

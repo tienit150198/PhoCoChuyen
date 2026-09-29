@@ -268,3 +268,36 @@ html.reduce-motion .career-job .cb-fill{transition:none}
   .career-job.cb .cb-guess .tile{padding:12px 2px 6px}
   .career-job.cb .cb-tab{flex:1 1 0;min-width:0;white-space:normal;padding:5px 3px;font-size:12px;line-height:1.15}
 }
+
+/* Next-step guide (onboarding v0.7): the bottom bar holds what is in hand and the one button
+   for the next step, so a whole drink is made from here without scrolling. Timed steps carry
+   a small live bar inside the button (and the header hint); the control glows in the green. */
+.career-job.cb .fk-bar.cb-dock{flex-direction:column;align-items:stretch;gap:6px;padding:8px 10px}
+.career-job.cb .cb-dock-status{margin:0;font-size:.8rem;font-weight:700;line-height:1.3;color:var(--cb-accent);overflow-wrap:anywhere}
+.career-job.cb .fk-bar.cb-dock>.btn,.career-job.cb .fk-bar.cb-dock>.gd-ctas{flex:none;width:100%;min-width:0}
+.career-job.cb .fk-bar.cb-dock .btn{min-height:48px}
+.career-job.cb .cb-side .fk-wide-only .gd-ctas .btn{width:100%}
+.career-job.cb .req-row.gd-todo{min-height:44px;align-items:center}
+.btn:has(>.cb-mini){flex-wrap:wrap;row-gap:4px}
+.cb-mini{display:flex;align-items:center;gap:8px;flex:1 0 100%;min-width:0;margin-top:2px}
+.cb-mini-track{position:relative;flex:1 1 auto;height:10px;border-radius:99px;overflow:hidden;
+  background:linear-gradient(90deg,transparent var(--a),color-mix(in srgb,var(--good,#4f8a4b) 70%,#fff) var(--a),color-mix(in srgb,var(--good,#4f8a4b) 70%,#fff) var(--b),transparent var(--b)),color-mix(in srgb,currentColor 22%,transparent)}
+.cb-mini .cb-fill{position:absolute;left:0;top:2px;bottom:2px;width:0;border-radius:99px;background:currentColor;transition:width .2s linear}
+.cb-mini .cb-meter-label{flex:none;margin:0;font-size:.75rem;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.gd-hint .cb-mini{margin-top:4px}
+.btn.cb-now,.gd-hint.cb-now,
+.career-job.cb .cb-meter.shot.ready+.row [data-command="cb_stop"],
+.career-job.cb .cb-meter.therm.ready+.row [data-command="cb_milk_stop"],
+.career-job .cb-meter.rack.ready+[data-command="cb_unload"]{animation:gd-pulse 1s ease-in-out infinite;position:relative;z-index:1}
+@media (prefers-reduced-motion:reduce){
+  .cb-mini .cb-fill{transition:none}
+  .btn.cb-now,.gd-hint.cb-now,
+  .career-job.cb .cb-meter.shot.ready+.row [data-command="cb_stop"],
+  .career-job.cb .cb-meter.therm.ready+.row [data-command="cb_milk_stop"],
+  .career-job .cb-meter.rack.ready+[data-command="cb_unload"]{animation:none;outline:3px solid var(--good,#4f8a4b);outline-offset:2px}
+}
+/* Wide sheets hide the bottom bar and show the same button in the side column: glow it too. */
+.career-job.cb:has(.cb-dock .gd-pulse) .fk-wide-only>.btn:first-child,
+.career-job.cb:has(.cb-dock .gd-pulse) .fk-wide-only>.gd-ctas>.btn{animation:gd-pulse 1.8s ease-in-out infinite;position:relative;z-index:1}
+/* Phone tap targets: the "or finish now" link and the regular's notes fold. */
+.career-job.cb .gd-alt,.career-job.cb .cb-regular>.fold>summary{min-height:44px}

@@ -371,6 +371,9 @@ def chat_reply(s:dict,c:dict,career:str,npc:str,text:str) -> tuple[str,list[dict
     return reply,suggestions
 
 
+LEARNING_TASKS=2  # onboarding: while a career's first jobs are done, waiting costs no patience
+
+
 def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,internal:bool=False,owned:bool=False) -> tuple[dict,dict]:
     """Functional transaction: failure cannot partly mutate the supplied state.
     `owned=True` (the storage layer, with a freshly parsed save it throws away on
@@ -384,7 +387,8 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
         need(career in CAREERS,"Nghề này đang ở danh mục mở rộng, chưa chơi được.")
         jr.gate(s,career,action,internal);jr.on_select(s,career)
         s["current"]=career
-        return s,dict(message="Chào mừng tới "+CAREER_META[career]["place"]+".")
+        hired=emp.first_day_hire(s,s["careers"][career],career)  # story day one: no CV/trial for a first-chapter job
+        return s,dict(message=hired or "Chào mừng tới "+CAREER_META[career]["place"]+".",hired=bool(hired))
     if action=="settings":
         for k,v in p.items():
             if k=="name":s["name"]=clean_text(v,24)
@@ -415,6 +419,9 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
     c=s["careers"][career]
     s["current"]=career
     prior_mistakes={t["id"]:t["mistakes"] for t in c["tasks"]}
+    # Story players learning a place (its first LEARNING_TASKS jobs): customers wait kindly, patience never drops.
+    learning=s.get("journey",{}).get("story") and c["metrics"].get("served",0)<LEARNING_TASKS
+    prior_patience={t["id"]:t.get("patience",100) for t in c["tasks"]} if learning else None  # no field yet = full
     mod=PLUGINS.get(career)
     plugin_action=bool(mod) and action.startswith(mod.SPEC['prefix'])
     if action.startswith(("shop_","ac_","cs_")) or action in ("ph_pick","ph_check","ph_deliver","ph_refer","ph_inspect"):
@@ -458,7 +465,9 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
         result.update(social.apply_internal(s,c,career,action,p))
     elif action=="start_day":
         need(not c["open"],"Ca đã mở rồi.")
-        if emp.required(career):need(c["job"]["status"]=="hired","Nghề này cần được tuyển dụng trước. Mở mục Xin việc để ứng tuyển nhé.","not_hired")
+        if emp.required(career):
+            emp.first_day_hire(s,c,career)
+            need(c["job"]["status"]=="hired","Nghề này cần được tuyển dụng trước. Mở mục Xin việc để ứng tuyển nhé.","not_hired")
         c["open"]=True;c["started"]=True;c["shift_summary"]=None
         ops.on_start(s,c,career)
         inv.on_open(s,c,career)  # kho: ghi nhịp mở ca cho đồng hồ giao hàng
@@ -919,6 +928,10 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
     bd.after(s,career,action,result)  # nhóm cư dân phố: one beat of neighbourhood posts
     doi.after(s,career,action,result)  # tinh thần, hard days, neighbours (after invest: sees its scam losses)
     cst.after(s,career,action,result)
+    if prior_patience is not None:
+        for t in s["careers"][career]["tasks"]:
+            was=prior_patience.get(t["id"])
+            if isinstance(was,int) and isinstance(t.get("patience"),int) and t["patience"]<was:t["patience"]=was
     validate_state(s)
     return s,result
 

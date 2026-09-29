@@ -296,3 +296,31 @@ html.reduce-motion .career-job.fl .fl-fill{transition:none}
 .career-job .fl-carefold.due>.fold>summary{color:var(--ink,#3a2a30);background:var(--warn-soft,#fbf0dc);border-radius:var(--radius-sm,10px)}
 .career-job .fl-water-line{margin-bottom:4px}
 .fl-night ul{margin:6px 0 0;padding-left:18px;display:grid;gap:4px;font-size:.9rem;line-height:1.45}
+
+/* Next-step guide: one bottom button on every width (it does the next step, then the hand-off) */
+/* min-width:0 + a zero-width status line: the bar never widens the sheet (a squeezed bar once
+   pushed its text into one word per line) */
+.career-job.fl .fk-bar.fl-bar{display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:8px 10px;min-width:0}
+.career-job.fl .fl-bar-now{display:flex;align-items:center;gap:8px;min-width:0;min-height:22px}
+.career-job.fl .fl-bar-stems{display:flex;flex:none;max-width:48%;overflow:hidden;font-size:16px;line-height:1}
+.career-job.fl .fl-bar-stems small{font-size:.75rem;font-weight:800;align-self:center;margin-left:2px}
+.career-job.fl .fl-bar-now>small{flex:1 1 0;width:0;min-width:0;font-size:.78rem;font-weight:700;line-height:1.3;color:var(--ink-2,var(--fl-muted));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.career-job.fl .fl-bar-n{flex:none;font-size:.75rem;font-variant-numeric:tabular-nums;color:var(--accent-text,var(--fl-accent))}
+/* Picking: the order as chips that tick off, and ×1/×2/×3 per tap */
+.career-job.fl .fl-pickbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:4px 0 10px}
+.career-job.fl .fl-strip{display:flex;flex-wrap:wrap;gap:6px;margin:0;flex:1 1 220px;min-width:0}
+.career-job.fl .fl-chip{display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:4px 10px;border-radius:99px;border:1px solid var(--fl-line);background:var(--fl-surface);font-size:.85rem;font-weight:800;font-variant-numeric:tabular-nums;color:var(--fl-ink)}
+.career-job.fl .fl-chip i{font-style:normal}
+.career-job.fl .fl-chip.ok{border-color:var(--fl-good);background:var(--good-soft,#e7f3e4)}
+.career-job.fl .fl-chip.ok i{color:var(--fl-good)}
+.career-job.fl .fl-chip.bad{border-color:var(--fl-bad);background:var(--bad-soft,#fbe4e4);color:var(--fl-bad)}
+.career-job.fl .fl-qty{display:flex;gap:4px;flex:none}
+.career-job.fl .fl-qty .fl-seg{min-width:44px;padding:8px 10px;font-size:.9rem;font-weight:800}
+/* Tap targets: folds are at least 44px tall (req rows already are) */
+.career-job.fl details>summary{min-height:44px;cursor:pointer}
+.career-job.fl .fl-bar>.btn,.career-job.fl .fl-bar>.gd-ctas{flex:1 1 auto;min-width:0;width:100%}
+.career-job.fl .fl-bar .btn.gd-cta,.career-job.fl .fl-bar .gd-final{min-height:48px}
+.career-job.fl .fl-bar [data-fl-count]{font-variant-numeric:tabular-nums}
+.career-job.fl .fl-suggest{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:6px 0 0}
+.career-job.fl .fl-suggest small{flex:1 1 200px;min-width:0;font-style:italic;color:var(--ink-2,var(--muted));line-height:1.4}
+.career-job.fl .fl-suggest .btn{min-height:40px}

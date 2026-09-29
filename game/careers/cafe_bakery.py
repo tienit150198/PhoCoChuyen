@@ -69,6 +69,12 @@ MILK_TEX = ('cool', 'silky', 'hot', 'scalded')
 MILK_TEX_LABEL = dict(cool='còn nguội', silky='mịn, 55–68 °C', hot='quá nóng, mất vị ngọt', scalded='khét sữa')
 MAX_GROUPS = 2      # two group heads on the machine
 MAX_WANDS = 1       # one steam wand
+# Onboarding (v0.7), day one only: the machine's timer does the timing. A pull or a steam
+# sent with auto=true ends at once at these marks (grind, beans, milk kind and foam still
+# count as chosen). From day 2 the barista stops every shot and jug by hand.
+AUTO_DAYS = 1
+AUTO_SHOT = 27.5    # effective seconds, the middle of the balanced window
+AUTO_MILK = 62.0    # °C, the middle of the silky window
 
 BEANS = [
     dict(id='house', item='beans_house', name='Arabica Đồi Mây', emoji='🫘', note='Chua thanh, hậu vị sô-cô-la', unlock=1),
@@ -659,6 +665,11 @@ def _wanted_anywhere(c: dict, item: str) -> bool:
     return any(_open(t) and t['known'] and item in _wanted_bakes(t['needs']) for t in c['tasks'])
 
 
+def _auto(c: dict, p: dict) -> bool:
+    """The first-day timer (see AUTO_DAYS): asked for, and still the shop's first day."""
+    return p.get('auto') is True and c['day'] <= AUTO_DAYS
+
+
 def _flow(dose: dict) -> float:
     grams = dose['grams']
     return GRIND[dose['grind']] * max(0.7, min(1.4, 1 + (DOSE_TARGET - grams) * 0.06))
@@ -926,12 +937,15 @@ def _bar(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         kit.need(dr['dose'], 'Xay và định lượng bột vào tay cầm trước.')
         kit.need(not dr['pulling'], 'Shot của ly này đang chiết.')
         kit.need(len(_pulling(c)) < MAX_GROUPS, 'Cả hai họng pha đang bận. Dừng một shot trước nhé.')
-        dr['pulling'] = round(kit.now(), 3)
-        return dict(message=f'Đang chiết… Dừng khi vào vùng cân bằng ({EXTRACT["bright"]}–{EXTRACT["balanced"]} giây).')
-    if name == 'cb_stop':
-        kit.need(dr['pulling'], 'Chưa chiết shot nào.')
-        raw = max(0.0, kit.now() - dr['pulling'])
-        eff = raw * _flow(dr['dose'])
+        if not _auto(c, p):
+            dr['pulling'] = round(kit.now(), 3)
+            return dict(message=f'Đang chiết… Dừng khi vào vùng cân bằng ({EXTRACT["bright"]}–{EXTRACT["balanced"]} giây).')
+    if name in ('cb_pull', 'cb_stop'):
+        if name == 'cb_stop':
+            kit.need(dr['pulling'], 'Chưa chiết shot nào. Bấm “Chiết shot” trước nhé.')
+            eff = max(0.0, kit.now() - dr['pulling']) * _flow(dr['dose'])
+        else:
+            eff = AUTO_SHOT
         x = _shot_class(eff, dr['dose']['grind'])
         dr['shots'].append(dict(beans=dr['dose']['beans'], grind=dr['dose']['grind'], grams=dr['dose']['grams'], x=x, sec=round(min(eff, 999), 1)))
         dr['dose'] = None
@@ -940,7 +954,8 @@ def _bar(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
             t['mistakes'] += 1
         if len(dr['shots']) > n['shots']:
             t['mistakes'] += 1
-        return dict(message=f'Shot {SHOT_LABEL[x]} · {eff:.1f} giây chiết.')
+        auto = 'Máy hẹn giờ ngày đầu tự dừng. ' if name == 'cb_pull' else ''
+        return dict(message=f'{auto}Shot {SHOT_LABEL[x]} · {eff:.1f} giây chiết.')
     if name == 'cb_milk':
         kit.need(dr['milk'] is None and not dr['steaming'], 'Ly đã có sữa.')
         kind = _one_of(p.get('milk'), MILKS, 'Loại sữa không có trong tiệm.')
@@ -956,23 +971,28 @@ def _bar(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
             dr['steam'] = dict(kind=kind, foam=foam)
             if kind != n['milk'] or n['iced'] or not spec['milk'] or foam != n['foam']:
                 t['mistakes'] += 1
-            return dict(message=f'Đã cắm vòi hơi vào ca {m["name"].lower()}. Tắt khi nhiệt kế vào vùng {STEAM["cool"]}–{STEAM["silky"]} °C.')
-        dr['cost'] += kit.take(c, m['item'], 1)
-        dr['milk'] = dict(kind=kind, mode='cold', foam=None, temp=None, tex=None)
-        if kind != n['milk'] or not n['iced'] or not spec['milk']:
-            t['mistakes'] += 1
-        return dict(message=f'Đã rót {m["name"].lower()} lạnh.')
-    if name == 'cb_milk_stop':
-        kit.need(dr['steaming'], 'Vòi hơi chưa bật.')
-        sec = max(0.0, kit.now() - dr['steaming'])
-        temp = min(99.0, steam_temp(sec))
+            if not _auto(c, p):
+                return dict(message=f'Đã cắm vòi hơi vào ca {m["name"].lower()}. Tắt khi nhiệt kế vào vùng {STEAM["cool"]}–{STEAM["silky"]} °C.')
+        else:
+            dr['cost'] += kit.take(c, m['item'], 1)
+            dr['milk'] = dict(kind=kind, mode='cold', foam=None, temp=None, tex=None)
+            if kind != n['milk'] or not n['iced'] or not spec['milk']:
+                t['mistakes'] += 1
+            return dict(message=f'Đã rót {m["name"].lower()} lạnh.')
+    if name in ('cb_milk', 'cb_milk_stop'):
+        if name == 'cb_milk_stop':
+            kit.need(dr['steaming'], 'Vòi hơi chưa bật. Bấm “Đánh nóng” trước nhé.')
+            temp = min(99.0, steam_temp(max(0.0, kit.now() - dr['steaming'])))
+        else:
+            temp = AUTO_MILK
         tex = _milk_tex(temp)
         dr['milk'] = dict(kind=dr['steam']['kind'], mode='steam', foam=dr['steam']['foam'], temp=temp, tex=tex)
         dr['steaming'] = None
         dr['steam'] = None
         if tex in ('cool', 'scalded'):
             t['mistakes'] += 1
-        return dict(message=f'Sữa {MILK_TEX_LABEL[tex]} · {temp:.0f} °C.')
+        auto = 'Vòi hơi hẹn giờ ngày đầu tự tắt. ' if name == 'cb_milk' else ''
+        return dict(message=f'{auto}Sữa {MILK_TEX_LABEL[tex]} · {temp:.0f} °C.')
     if name == 'cb_art':
         kit.need(dr['milk'] and dr['milk']['mode'] == 'steam', 'Latte art cần sữa đánh nóng vừa xong.')
         kit.need(dr['shots'], 'Rót sữa lên espresso — chiết shot trước đã.')

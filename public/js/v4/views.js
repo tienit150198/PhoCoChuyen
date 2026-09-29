@@ -3,6 +3,7 @@
  * HTML strings; clicks go through the global data-action/data-command delegate. */
 import {icon,portrait,escapeHTML as esc} from '../icons.js';
 import {asset} from '../assets.js';
+import {nextHint,stepCta} from './guide.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const attrs=obj=>Object.entries(obj).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
@@ -355,23 +356,29 @@ export function jobView(env){
   }
   if(job.status==='applying'&&app){
     const p=posts.find(x=>x.id===app.posting);
-    let step='';
+    let step='',guide='';
     const passed=app.exam?.passed?`<details class="notice success small jb-passed"><summary>✅ <b>Đạt ${app.exam.score}/${app.exam.qs.length}</b> · ${esc(ex?.name||'Chứng chỉ')} đã được cấp</summary>${examReview(job)}</details>`:'';
     if(app.stage==='exam'&&ex&&app.exam){
       step=examCard(ex,app);
     }else if(app.stage==='cv'){
       const sel=ui.cvStrengths||[],claims=ui.cvClaims||['fresh'];
+      // What the place wants comes first, so a first CV is one tap away from a good one.
+      const cvSteps=[{ok:sel.length>0||null,label:'Chọn 1–3 điểm mạnh',go:{sel:`[data-action="v4Cv"][data-kind="strength"][data-id="${esc(p.wants[0]||'')}"]`}},
+        {ok:claims.length>0||null,label:'Chọn kinh nghiệm thật của bạn',go:{sel:'[data-action="v4Cv"][data-kind="claim"][data-id="fresh"]'}}];
       step=`<h3>${JOB_ICON.cv} CV</h3><p class="muted small">Nơi tuyển mong: ${p.wants.map(w=>esc(E.strengths.find(s=>s.id===w)?.name||w)).join(', ')}.</p><label class="field">Điểm mạnh (1–3)</label><div class="chip-row">${E.strengths.map(s=>`<button class="chip ${sel.includes(s.id)?'selected':''}" data-action="v4Cv" data-kind="strength" data-id="${s.id}">${esc(s.emoji)} ${esc(s.name)}</button>`).join('')}</div>
         <label class="field">Kinh nghiệm (1–4 dòng)${p.reference?' — nơi tuyển sẽ kiểm tra tham chiếu':''}</label><div class="stack">${E.claims.map(x=>`<button class="choice ${claims.includes(x.id)?'selected':''}" data-action="v4Cv" data-kind="claim" data-id="${x.id}">${esc(x.text)}</button>`).join('')}</div>
-        <div class="row space-top">${cmdBtn('Nộp CV','job_cv',{strengths:sel,claims},'primary',!sel.length||!claims.length)}</div>`;
+        <div class="row space-top">${stepCta({room:c},cvSteps,{label:'Nộp CV',go:{cmd:'job_cv',payload:{strengths:sel,claims}},ready:!!(sel.length&&claims.length)},{style:'primary'})}</div>`;
+      guide=nextHint({room:c},cvSteps,{final:{label:'Nộp CV',go:{cmd:'job_cv',payload:{strengths:sel,claims}}}});
     }else if(app.stage==='letter'){
       const parts=ui.letter||{};
+      const letterSteps=E.letter.map(slot=>({ok:parts[slot.id]!=null||null,label:`Chọn: ${slot.title}`,go:{sel:`[data-action="v4Letter"][data-slot="${esc(slot.id)}"]`}}));
+      guide=nextHint({room:c},letterSteps,{final:{label:'Gửi thư',go:{cmd:'job_letter',payload:{parts}}}});
       step=`<h3>${JOB_ICON.letter} Thư ứng tuyển</h3>${E.letter.map(slot=>`<label class="field">${esc(slot.title)}</label><div class="stack">${slot.options.map(o=>`<button class="choice ${parts[slot.id]===o.id?'selected':''}" data-action="v4Letter" data-slot="${slot.id}" data-id="${o.id}">${esc(o.label)}</button>`).join('')}</div>`).join('')}
-        <div class="row space-top">${cmdBtn('Gửi thư','job_letter',{parts},'primary',Object.keys(parts).length<E.letter.length)}</div>`;
+        <div class="row space-top">${stepCta({room:c},letterSteps,{label:'Gửi thư',go:{cmd:'job_letter',payload:{parts}},ready:Object.keys(parts).length>=E.letter.length},{style:'primary'})}</div>`;
     }else if(stepKey[app.stage]){
       step=stepCard(E,qs,p,app,app.stage,api);
     }
-    return head(esc(p.title),esc(p.org),'ỨNG TUYỂN')+`<div class="sheet-body">${jobStepper(E,p,app.stage,!!cert&&!app.exam)}${passed}${step}<div class="row space-top">${cmdBtn('Rút hồ sơ','job_withdraw',{},'ghost small')}</div></div>`;
+    return head(esc(p.title),esc(p.org),'ỨNG TUYỂN')+`<div class="sheet-body">${guide}${jobStepper(E,p,app.stage,!!cert&&!app.exam)}${passed}${step}<div class="row space-top">${cmdBtn('Rút hồ sơ','job_withdraw',{},'ghost small')}</div></div>`;
   }
   const lastPost=job.application&&posts.find(x=>x.id===job.application.posting);
   const rejected=job.status==='rejected'&&lastPost?resultCard(lastPost,job,c.day,ex):'';

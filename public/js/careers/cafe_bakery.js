@@ -7,8 +7,9 @@
  * The order is a requirement list (ui-kit reqList) checked live against the cup.
  * Care loop: Bé Men the sourdough starter, dough chilled overnight in the fridge,
  * yesterday's pastries each morning, and the regulars' notes card. */
-import {dayStrip,flash,eventCard,queue,actionBar,keepBarAboveFooter,idlePanel,gradeCard,patience} from './food_kit.js';
-import {reqList,fold} from '../ui-kit.js';
+import {dayStrip,flash,eventCard,queue,keepBarAboveFooter,idlePanel,gradeCard,patience,openTasks} from './food_kit.js';
+import {fold} from '../ui-kit.js';
+import {nextHint,stepCta,finalGo,todoAttrs,todoArrow} from '../v4/guide.js';
 
 const SHOT_SCALE=45;   // effective seconds shown on the extraction bar
 const TEMP_SCALE=90;   // °C shown on the milk thermometer
@@ -51,7 +52,7 @@ function tile(x,o){
 }
 const seg=(x,action,key,value,label,current)=>`<button type="button" class="cb-seg ${current===value?'on is-selected':''}" data-action="car:${action}" data-${key}="${x.esc(value)}" aria-pressed="${current===value}">${x.esc(label)}</button>`;
 /** One requirement row for ui-kit reqList (ok: true ✓ / false ✗ / null ○). */
-const R=(ok,icon,label,value='',note='',tone='')=>({ok,icon,label,value,note,tone});
+const R=(ok,icon,label,value='',note='',tone='',go=null)=>({ok,icon,label,value,note,tone,go});
 const bar=(cls,attrs,zones,fill,label)=>`<div class="cb-meter ${cls}" ${attrs}><div class="cb-track">${zones.map(([k,a,b])=>`<i class="cb-zone ${k}" style="left:${a}%;width:${Math.max(0,b-a)}%"></i>`).join('')}<b class="cb-fill" style="width:${Math.min(100,Math.max(0,fill))}%"></b></div><small class="cb-meter-label">${label}</small></div>`;
 
 /* ---------- real-time meters (the server decides the result from its own clock) ---------- */
@@ -126,57 +127,145 @@ function status(t,x){
   return tag+parts.join(' · ');
 }
 
-/* ---------- the order as a requirement list (checked live against what is in hand) ---------- */
+/* ---------- the order as a requirement list (checked live against what is in hand) ----------
+ * Each row is also a step for the guide (guide.js): `go` is the one tap that does it (right cup,
+ * right beans, right milk…), or the fix when it went wrong. The same rows drive the ticket, the
+ * "Bước tiếp theo" hint and the bottom button. */
 const CUP_ICON={paper:'🥤',glass:'🥃',mug:'☕'};
+/** The shop's first day: the machine's timer stops shots and the steam wand (server AUTO_DAYS). */
+const timer=x=>(x.room.day||1)<=1;
+const dumpGo=(t,part='drink')=>part==='cake'?{cmd:'cb_dump',payload:{task:t.id,part},confirm:'Bỏ bánh này và làm lại? Nguyên liệu đã dùng được ghi hao hụt.',label:'🗑️ Bỏ bánh, làm lại'}
+  :{cmd:'cb_dump',payload:{task:t.id,part},confirm:'Đổ ly này và làm lại từ đầu? Nguyên liệu đã dùng được ghi hao hụt.',label:'🗑️ Đổ ly, làm lại'};
+const restock=(x,name)=>({act:'inventory',label:`📦 Hết ${x.esc(name)}: mở Kho nhập thêm`});
+/** The lot to pick: today's bake first (yesterday's −50% when the guest asked for it). */
+const lotFor=(x,id,old)=>(data(x).case||[]).find(l=>l.item===id&&l.qty>0&&(old?l.state==='day_old':l.state==='fresh'&&!l.sale));
+function pickGo(t,x,id,old=false){
+  const l=lotFor(x,id,old)||(old?lotFor(x,id,false):null),b=bake(x,id);
+  if(!l)return bakeGo(t,x,id);
+  return {cmd:'cb_pick',payload:{task:t.id,lot:l.id},label:`${x.esc(b.emoji)} Gắp ${x.esc(lower(b.name))}${l.state==='day_old'?' hôm qua':''}`};
+}
+const backGo=(t,x,i)=>({cmd:'cb_return',payload:{task:t.id,index:i},label:`↩️ Trả ${x.esc(lower(bake(x,t.bag.items[i].item).name))} về tủ`});
+const bagGo=(t,x)=>t.bag.bagged||!t.bag.items.length?null:!t.bag.has_bag&&!stock(x,'bag')?restock(x,'túi giấy'):{cmd:'cb_bag',payload:{task:t.id},label:'🛍️ Cho bánh vào túi'};
+/** A small live bar for the bottom button and the hint (tick() moves it). */
+const mini=(attrs,a,b)=>`<span class="cb-mini" ${attrs} style="--a:${a}%;--b:${b}%"><span class="cb-mini-track"><b class="cb-fill"></b></span><small class="cb-meter-label"></small></span>`;
+const pct=(v,s)=>(v/s*100).toFixed(1);
+function shotMini(x,start,flow){const e=cc(x).extract||{bright:25,balanced:30};return mini(`data-shot-start="${start}" data-flow="${flow||1}"`,pct(e.bright,SHOT_SCALE),pct(e.balanced,SHOT_SCALE));}
+function thermMini(x,start){const st=cc(x).steam||{cool:55,silky:68};return mini(`data-steam-start="${start}"`,pct(st.cool,TEMP_SCALE),pct(st.silky,TEMP_SCALE));}
+function rackMini(x,r){const [a,g,z]=bake(x,r.item).window;return mini(`data-oven-start="${r.start}" data-shift="${Number(r.shift)||0}" data-w="${a},${g},${z}"`,pct(a,z+6),pct(g,z+6));}
+
 function drinkRows(t,x){
-  if(hidden(t))return [R(null,'💭','Đoán đúng món khách đang thèm')];
+  if(hidden(t))return [R(null,'💭','Đoán đúng món khách đang thèm','','','',{sel:'.cb-guess'})];
   if(plated(t))return [R(true,'🛎️',`Đủ ${t.cups.length} ly trên khay, giao một lượt`)];
-  const n=spec(t),d=t.drink,dk=drink(x,n.drink),rows=[],sl=cc(x).shot_label||{};
-  if(n.lactose)rows.push(R(d.milk?!milk(x,d.milk.kind).lactose:null,'⚠️','Không sữa bò','','Khách không dung nạp lactose','danger'));
-  if(n.decaf)rows.push(R(d.shots.length?d.shots.every(s=>s.beans==='decaf'):null,'⚠️','Chỉ hạt decaf','','Khách phải kiêng caffeine','danger'));
+  const n=spec(t),d=t.drink,dk=drink(x,n.drink),rows=[],sl=cc(x).shot_label||{},id=t.id,dump=dumpGo(t),auto=timer(x);
+  const cowMilk=!!(d.milk&&milk(x,d.milk.kind).lactose);
+  if(n.lactose)rows.push(R(d.milk?!cowMilk:null,'⚠️','Không sữa bò','','Khách không dung nạp lactose','danger',cowMilk?dump:null));
+  if(n.decaf){const bad=d.shots.some(s=>s.beans!=='decaf');rows.push(R(d.shots.length?!bad:null,'⚠️','Chỉ hạt decaf','','Khách phải kiêng caffeine','danger',bad?dump:null));}
   const want=n.takeaway?'paper':n.iced?'glass':'mug';
-  const cname={paper:'Ly giấy mang về',glass:'Ly thủy tinh',mug:'Tách sứ'}[want];
+  const cname={paper:'Ly giấy mang về',glass:'Ly thủy tinh',mug:'Tách sứ'}[want],size=n.size==='L'?'ly lớn':'ly nhỏ';
   const wrongCup=d.container&&(d.container!==want||d.size!==n.size);
-  rows.push(R(d.container?!wrongCup:null,CUP_ICON[want],cname,n.size==='L'?'ly lớn':'ly nhỏ',wrongCup?`đang dùng ${lower((cc(x).containers||[]).find(c=>c.id===d.container)?.name||'')} ${d.size==='L'?'lớn':'nhỏ'}`:''));
-  if(n.iced)rows.push(R(d.ice?true:null,'🧊','Đá đầy ly'));
-  else if(d.ice)rows.push(R(false,'🧊','Món nóng: không bỏ đá'));
-  const good=d.shots.filter(s=>['balanced','bright','strong'].includes(s.x)&&s.beans===n.beans).length;
-  rows.push(R(d.shots.length?d.shots.length===n.shots&&good===n.shots:null,'☕',`${n.shots} shot ${bean(x,n.beans).name}`,d.shots.length?`${d.shots.length}/${n.shots}`:'25–30 giây',d.shots.map(s=>`${s.sec}s ${sl[s.x]||s.x}`).join(' · ')));
-  if(dk.water)rows.push(R(d.water?true:null,'💧',n.iced?'Nước lạnh':'Nước nóng 90 °C'));
-  else if(d.water)rows.push(R(false,'💧','Món này không pha nước'));
+  const cupGo=d.container?(wrongCup?dump:null):want==='paper'&&!stock(x,'cup')?restock(x,'ly giấy')
+    :{cmd:'cb_cup',payload:{task:id,kind:want,size:n.size},label:`${CUP_ICON[want]} ${x.esc(cname)} · ${n.size==='L'?'lớn':'nhỏ'}`};
+  rows.push(R(d.container?!wrongCup:null,CUP_ICON[want],cname,size,wrongCup?`đang dùng ${lower((cc(x).containers||[]).find(c=>c.id===d.container)?.name||'')} ${d.size==='L'?'lớn':'nhỏ'}`:'','',cupGo));
+  if(n.iced)rows.push(R(d.ice?true:null,'🧊','Đá đầy ly','','','',d.ice?null:{cmd:'cb_ice',payload:{task:id},label:'🧊 Múc đá đầy ly'}));
+  else if(d.ice)rows.push(R(false,'🧊','Món nóng: không bỏ đá','','','',dump));
+  const got=d.shots.length,good=d.shots.filter(s=>['balanced','bright','strong'].includes(s.x)&&s.beans===n.beans).length;
+  const grams=cc(x).dose?.target||18;
+  let shotGo=null;
+  if(d.pulling)shotGo={cmd:'cb_stop',payload:{task:id},label:`⏹️ Dừng chiết ở vạch xanh${shotMini(x,d.pulling,(data(x).groups||[]).find(g=>g.task===id)?.flow)}`};
+  else if(d.dose)shotGo={cmd:'cb_pull',payload:auto?{task:id,auto:true}:{task:id},label:auto?'▶️ Chiết shot · tự dừng':'▶️ Chiết shot'};
+  else if(got<n.shots)shotGo=stock(x,'beans_'+n.beans)?{cmd:'cb_dose',payload:{task:id,beans:n.beans,grind:'fine',grams},label:`⚖️ Xay ${grams} g ${x.esc(bean(x,n.beans).name)}`}:restock(x,'hạt '+bean(x,n.beans).name);
+  else if(got>n.shots)shotGo=dump;
+  rows.push(R(!got?null:got<n.shots&&good===got?null:got===n.shots&&good===got,'☕',`${n.shots} shot ${bean(x,n.beans).name}`,got?`${got}/${n.shots}`:'25–30 giây',d.shots.map(s=>`${s.sec}s ${sl[s.x]||s.x}`).join(' · '),'',shotGo));
+  if(dk.water)rows.push(R(d.water?true:null,'💧',n.iced?'Nước lạnh':'Nước nóng 90 °C','','','',d.water?null:{cmd:'cb_water',payload:{task:id},label:'💧 Thêm nước'}));
+  else if(d.water)rows.push(R(false,'💧','Món này không pha nước','','','',dump));
   if(n.milk){
-    const m=milk(x,n.milk);
-    const ok=d.milk?d.milk.kind===n.milk&&(n.iced?d.milk.mode==='cold':d.milk.mode==='steam'&&d.milk.tex==='silky'&&d.milk.foam===n.foam):null;
-    const temp=d.milk?.temp?Math.round(d.milk.temp)+' °C':'';
-    rows.push(R(ok,m.emoji||'🥛',m.name,temp||(n.iced?'rót lạnh':'55–68 °C'),n.iced?'':`bọt ${n.foam==='thick'?'dày':'mỏng'}`));
-  }else if(d.milk)rows.push(R(false,'🚫','Món này không có sữa'));
-  if(n.art){const a=art(x,n.art);rows.push(R(d.art?d.art===n.art:null,a?.emoji||'🎨',`Vẽ ${lower(a?.name||n.art)}`,'',d.art==='blob'?'hình bị loang — sữa phải 55–68 °C':''));}
-  for(const [k,q] of Object.entries(n.pastry||{})){const have=t.bag.items.filter(i=>i.item===k).length,b=bake(x,k);rows.push(R(have?have===q:null,b.emoji,`${q} ${lower(b.name)}`,have?`${have}/${q}`:'','bánh ra lò hôm nay'));}
-  if(Object.keys(n.pastry||{}).length&&n.takeaway)rows.push(R(t.bag.bagged?true:null,'🛍️','Cho bánh vào túi'));
-  if(want==='paper')rows.push(R(d.lid?true:null,'🏷️','Đậy nắp + tem tên'));
+    const m=milk(x,n.milk),mm=d.milk,wrong=!!(mm&&(mm.kind!==n.milk||mm.mode!==(n.iced?'cold':'steam')));
+    const ok=mm?!wrong&&(n.iced||(mm.foam===n.foam&&['silky','hot'].includes(mm.tex))):null;
+    const foam=n.foam==='thick'?'dày':'mỏng';
+    const go=d.steaming?{cmd:'cb_milk_stop',payload:{task:id},label:`⏹️ Tắt vòi ở vạch xanh${thermMini(x,d.steaming)}`}
+      :mm?(wrong?dump:null):!stock(x,n.milk)?restock(x,lower(m.name))
+      :n.iced?{cmd:'cb_milk',payload:{task:id,milk:n.milk,mode:'cold'},label:`${x.esc(m.emoji||'🥛')} Rót ${x.esc(lower(m.name))} lạnh`}
+      :{cmd:'cb_milk',payload:auto?{task:id,milk:n.milk,mode:'steam',foam:n.foam,auto:true}:{task:id,milk:n.milk,mode:'steam',foam:n.foam},label:`♨️ Đánh ${x.esc(lower(m.name))}${auto?' · tự tắt':''}`};
+    rows.push(R(ok,m.emoji||'🥛',n.iced?m.name:`${m.name}, bọt ${foam}`,mm?.temp?Math.round(mm.temp)+' °C':n.iced?'rót lạnh':'55–68 °C','','',go));
+  }else if(d.milk)rows.push(R(false,'🚫','Món này không có sữa','','','',dump));
+  if(n.art){
+    const a=art(x,n.art),hot=d.milk&&d.milk.mode==='steam'&&d.milk.tex!=='silky';
+    rows.push(R(d.art?d.art===n.art:null,a?.emoji||'🎨',`Vẽ ${lower(a?.name||n.art)}`,'',d.art==='blob'?'hình bị loang — sữa phải 55–68 °C':!d.art&&hot?'sữa không mịn, hình sẽ loang':'','',
+      d.art?null:{cmd:'cb_art',payload:{task:id,pattern:n.art},label:`${x.esc(a?.emoji||'🎨')} Rót hình ${x.esc(lower(a?.name||n.art))}`}));
+  }
+  const items=t.bag.items;
+  for(const [k,q] of Object.entries(n.pastry||{})){
+    const have=items.filter(i=>i.item===k).length,b=bake(x,k);
+    const go=t.bag.bagged?null:have<q?pickGo(t,x,k):have>q?backGo(t,x,items.findIndex(i=>i.item===k)):null;
+    rows.push(R(have===q?true:have>q?false:null,b.emoji,`${q} ${lower(b.name)} ra lò hôm nay`,have?`${have}/${q}`:'','','',go));
+  }
+  if(Object.keys(n.pastry||{}).length&&n.takeaway)rows.push(R(t.bag.bagged?true:null,'🛍️','Cho bánh vào túi','','','',bagGo(t,x)));
+  if(want==='paper')rows.push(R(d.lid?true:null,'🏷️','Đậy nắp + tem tên','','','',d.lid||d.container!=='paper'?null:{cmd:'cb_lid',payload:{task:id},label:'🥤 Đậy nắp + dán tem tên'}));
   return rows;
 }
 function pastryRows(t,x){
-  const n=t.needs,rows=[],items=t.bag.items,day=x.room.day;
-  if(n.allergy){const a=(cc(x).allergen_label||{})[n.allergy]||n.allergy;rows.push(R(items.length?!items.some(i=>bake(x,i.item).allergens.includes(n.allergy)):null,'⚠️',`Không có ${a}`,'',`Khách dị ứng ${a}`,'danger'));}
-  for(const [k,q] of Object.entries(n.items)){const have=items.filter(i=>i.item===k).length,b=bake(x,k);rows.push(R(have?have===q:null,b.emoji,`${q} ${lower(b.name)}`,have?`${have}/${q}`:''));}
-  for(const k of new Set(items.map(i=>i.item)))if(!n.items[k])rows.push(R(false,bake(x,k).emoji,`${bake(x,k).name}: khách không gọi`));
-  const old=items.filter(i=>day-i.day>bake(x,i.item).fresh).length,weak=items.filter(i=>['pale','flat','dense'].includes(i.q)).length;
-  rows.push(R(items.length?(n.day_old_ok||!old):null,'🕐',n.day_old_ok?'Bánh hôm qua −50% (khách đồng ý)':'Bánh ra lò hôm nay',old?`${old} bánh hôm qua`:'',weak?`${weak} bánh nướng chưa đạt`:''));
-  if(n.takeaway)rows.push(R(t.bag.bagged?true:null,'🛍️','Túi giấy + tem ngày'));
+  const n=t.needs,rows=[],items=t.bag.items,day=x.room.day,open=!t.bag.bagged;
+  if(n.allergy){const a=(cc(x).allergen_label||{})[n.allergy]||n.allergy,hit=items.findIndex(i=>bake(x,i.item).allergens.includes(n.allergy));
+    rows.push(R(items.length?hit<0:null,'⚠️',`Không có ${a}`,'',`Khách dị ứng ${a}`,'danger',hit>=0?backGo(t,x,hit):null));}
+  for(const [k,q] of Object.entries(n.items)){const have=items.filter(i=>i.item===k).length,b=bake(x,k);
+    rows.push(R(have===q?true:have>q?false:null,b.emoji,`${q} ${lower(b.name)}`,have?`${have}/${q}`:'','','',!open?null:have<q?pickGo(t,x,k,n.day_old_ok):have>q?backGo(t,x,items.findIndex(i=>i.item===k)):null));}
+  for(const k of new Set(items.map(i=>i.item)))if(!n.items[k])rows.push(R(false,bake(x,k).emoji,`${bake(x,k).name}: khách không gọi`,'','','',backGo(t,x,items.findIndex(i=>i.item===k))));
+  const old=items.findIndex(i=>day-i.day>bake(x,i.item).fresh),weak=items.filter(i=>['pale','flat','dense'].includes(i.q)).length,olds=items.filter(i=>day-i.day>bake(x,i.item).fresh).length;
+  rows.push(R(items.length?(n.day_old_ok||old<0):null,'🕐',n.day_old_ok?'Bánh hôm qua −50% (khách đồng ý)':'Bánh ra lò hôm nay',olds?`${olds} bánh hôm qua`:'',weak?`${weak} bánh nướng chưa đạt`:'','',!n.day_old_ok&&old>=0?backGo(t,x,old):null));
+  if(n.takeaway)rows.push(R(t.bag.bagged?true:null,'🛍️','Túi giấy + tem ngày','','','',bagGo(t,x)));
   return rows;
 }
+/** Waiting some beats (a sponge cooling, dough rising): something useful that lets time pass. */
+function waitGo(t,x,why='chờ bánh nguội'){
+  const d=data(x),s=d.starter||{},w=` · ${x.esc(why)}`;
+  if(d.clean_day!==x.room.day)return {cmd:'cb_clean',payload:{},label:`🧽 Vệ sinh máy${w}`};
+  if(s.fed_today===false&&stock(x,'flour')>=1)return {cmd:'cb_feed',payload:{},label:`🫙 Cho Bé Men ăn${w}`};
+  const o=openTasks(x).find(v=>v.id!==t.id);
+  return o?{act:'job',data:{task:o.id},label:`👉 Làm order khác${w}`}:{cmd:'more_work',payload:{},label:`＋ Đón khách mới${w}`};
+}
+/** The case has none of this bake: the next step of making it (shape → rise → bake → take out).
+ * `early` steps go first in the guide: shaping (the dough rises while the drink is made) and
+ * taking a tray out (it burns if it waits). Baking itself waits for its turn, so a tray is not
+ * left in the oven while the barista times a shot. */
+function bakeGo(t,x,id){
+  const d=data(x),b=bake(x,id),name=x.esc(lower(b.name)),oven=d.oven||[],full={act:'car:tab',data:{tab:'oven'},label:'🔥 Lò đầy: lấy bớt một khay ra'};
+  const rack=oven.find(r=>r.item===id&&!r.task);
+  if(rack)return {cmd:'cb_unload',payload:{rack:rack.id},label:`🧤 Lấy ${name} ra ở vạch xanh${rackMini(x,rack)}`,early:true};
+  const tray=[...(d.proof||[]).filter(p=>!p.left),...(d.cold||[]).filter(c=>c.bakeable)].find(p=>p.item===id);
+  if(tray)return oven.length>=2?full:{cmd:'cb_bake',payload:{item:id,tray:tray.id},label:`🔥 Cho khay ${name} vào lò`};
+  const rising=(d.proof||[]).find(p=>p.item===id);
+  if(rising)return waitGo(t,x,`bột nở, còn ${rising.left} nhịp`);
+  if(!Object.entries(b.recipe||{}).every(([k,q])=>stock(x,k)>=q))return restock(x,'nguyên liệu '+lower(b.name));
+  if(!b.proof)return oven.length>=2?full:{cmd:'cb_bake',payload:{item:id},label:`🔥 Nướng một mẻ ${name}`};
+  if((d.proof||[]).length>=2)return {act:'car:tab',data:{tab:'oven'},label:'🔥 Tủ ủ đầy: nướng bớt một khay'};
+  return {cmd:'cb_shape',payload:{item:id},label:`${x.esc(b.emoji)} Nhào một khay ${name}`,early:true};
+}
 function cakeRows(t,x){
-  const n=t.needs,k=t.cake,cool=data(x).cooling?.[t.id];
-  const wrongText=k.text&&letters(k.text)!==letters(n.text);
+  const n=t.needs,k=t.cake,cool=data(x).cooling?.[t.id],id=t.id,oven=data(x).oven||[];
+  const wrongText=k.text&&letters(k.text)!==letters(n.text),rack=oven.find(r=>r.task===id),cr=cream(x,n.cream),col=color(x,n.color);
+  const spongeGo=k.baking?(rack?{cmd:'cb_unload',payload:{rack:rack.id},label:`🧤 Lấy cốt bánh ra ở vạch xanh${rackMini(x,rack)}`}:null)
+    :!k.sponge?(oven.length>=2?{act:'car:tab',data:{tab:'oven'},label:'🔥 Lò đầy: lấy bớt một khay ra'}:{cmd:'cb_bake',payload:{item:'sponge',task:id},label:'🎂 Nướng cốt bánh kem'})
+    :['pale','burnt'].includes(k.sponge)?dumpGo(t,'cake'):null;
+  const warm=k.sponge&&!k.cream&&cool;
+  const frostGo=['golden','dark'].includes(k.sponge)&&!k.cream&&!cool?{cmd:'cb_frost',payload:{task:id,cream:n.cream,color:n.color},label:`${x.esc(cr.emoji)} Phủ ${x.esc(lower(cr.name))} ${x.esc(lower(col.name))}`}:null;
+  const textGo=wrongText?(k.boxed?null:{cmd:'cb_scrape',payload:{task:id},confirm:'Cạo lớp chữ và láng lại mặt kem?',label:'🧽 Cạo chữ, viết lại'}):k.cream&&!k.text?{act:'car:write',data:{task:id},label:'✍️ Viết chữ lên bánh'}:null;
+  const boxGo=k.cream&&k.text&&!wrongText&&!k.boxed?(stock(x,'cake_box')?{cmd:'cb_box',payload:{task:id},label:'📦 Đóng hộp + nến + dao'}:restock(x,'hộp bánh')):null;
   return [
-    R(k.sponge?['golden','dark'].includes(k.sponge):null,'🍰','Cốt bông lan vàng đều',k.sponge?{pale:'sống ruột',golden:'vàng đều',dark:'hơi sậm',burnt:'cháy'}[k.sponge]:''),
-    R(k.cream?!k.melted:k.sponge?(cool?null:true):null,'🌬️','Để nguội rồi mới phủ kem',k.sponge&&!k.cream&&cool?`chờ ${cool} nhịp`:'',k.melted?'kem chảy xệ':''),
-    R(k.cream?k.cream===n.cream&&k.color===n.color:null,cream(x,n.cream).emoji,cream(x,n.cream).name,lower(color(x,n.color).name)),
-    R(k.text?!wrongText:null,'✍️',`“${n.text}”`,'',wrongText?`đang ghi “${k.text}”`:'Viết đúng từng dấu',k.text&&!wrongText?'':'warn'),
-    R(k.boxed?true:null,'📦','Hộp + nến + dao')];
+    R(k.sponge?['golden','dark'].includes(k.sponge):null,'🍰','Cốt bông lan vàng đều',k.sponge?{pale:'sống ruột',golden:'vàng đều',dark:'hơi sậm',burnt:'cháy'}[k.sponge]:k.baking?'đang trong lò':'','','',spongeGo),
+    R(k.cream?!k.melted:k.sponge?(cool?null:true):null,'🌬️','Để nguội rồi mới phủ kem',warm?`chờ ${cool} nhịp`:'',k.melted?'kem chảy xệ':'','',warm?waitGo(t,x):null),
+    R(k.cream?k.cream===n.cream&&k.color===n.color:null,cr.emoji,cr.name,lower(col.name),'','',frostGo),
+    R(k.text?!wrongText:null,'✍️',`“${n.text}”`,'',wrongText?`đang ghi “${k.text}”`:'Viết đúng từng dấu',k.text&&!wrongText?'':'warn',textGo),
+    R(k.boxed?true:null,'📦','Hộp + nến + dao','','','',boxGo)];
 }
 const rowsOf=(t,x)=>t.needs.kind==='drink'?drinkRows(t,x):t.needs.kind==='pastry'?pastryRows(t,x):cakeRows(t,x);
+const MARK={true:['ok','✓','đúng'],false:['bad','✗','sai'],null:['','○','chưa làm']};
+/** ui-kit reqList, with rows that are not done yet tappable (they do the step). */
+function rlist(rows,x,label){
+  return `<ul class="req-list" aria-label="${x.esc(label)}">${rows.map(r=>{
+    const [cls,mark,said]=MARK[r.ok===true?'true':r.ok===false?'false':'null'],tap=todoAttrs(r);
+    return `<li class="req-row ${cls}${r.tone?' tone-'+x.esc(r.tone):''}${tap?' gd-todo':''}"${tap}><span class="req-mark" aria-label="${said}">${mark}</span>${r.icon?`<span class="req-icon" aria-hidden="true">${x.esc(r.icon)}</span>`:''}<span class="req-label">${x.esc(r.label)}${r.note?`<small>${x.esc(r.note)}</small>`:''}</span>${r.value?`<b class="req-value">${x.esc(r.value)}</b>`:''}${todoArrow(r)}</li>`;
+  }).join('')}</ul>`;
+}
 
 /* ---------- today: rules, the office box, the display case ---------- */
 function banners(x){
@@ -236,17 +325,17 @@ function ticket(t,x){
     if(hidden(t)){tags.push('<span class="tag amber">💭 Đoán ý khách</span>');body=moodCard(t,x);}
     else{
       if(n.style==='mood')tags.push(`<span class="tag green">💡 Đã hiểu ý${(t.guesses||[]).length===1?' ngay':''}</span>`);
-      const list=reqList(drinkRows(t,x),x.esc,isTray(t)?`Phiếu ly ${t.cur+1}`:'Phiếu order');
+      const list=rlist(drinkRows(t,x),x,isTray(t)?`Phiếu ly ${t.cur+1}`:'Phiếu order');
       if(isTray(t)){tags.push(`<span class="tag">☕ Khay ${n.party.length} ly</span>`);body=trayTabs(t,x)+list;}
       else body=`<p class="cb-order-head">${drinkLine(n,x)}</p>${list}`;
       if(n.style==='mood'&&n.mood?.text)body=`<p class="cb-bubble small">💭 “${x.esc(n.mood.text)}”</p>`+body;
     }
   }else if(n.kind==='pastry'){
-    body=`<p class="cb-order-head">🛍️ <b>Bánh ở tủ kính</b> · ${n.takeaway?'mang về':'tại quán'}</p>${reqList(pastryRows(t,x),x.esc,'Phiếu order')}`;
+    body=`<p class="cb-order-head">🛍️ <b>Bánh ở tủ kính</b> · ${n.takeaway?'mang về':'tại quán'}</p>${rlist(pastryRows(t,x),x,'Phiếu order')}`;
     if(n.day_old_ok)tags.push('<span class="tag amber">Bánh hôm qua −50%</span>');
     if(n.allergy)tags.push(`<span class="tag danger">⚠️ Dị ứng ${x.esc((cc(x).allergen_label||{})[n.allergy]||n.allergy)}</span>`);
   }else{
-    body=`<p class="cb-order-head">🎂 <b>Bánh kem đặt trước</b> · <i class="cb-dot" style="background:${x.esc(color(x,n.color).hex)}"></i> ${x.esc(lower(color(x,n.color).name))}</p>${reqList(cakeRows(t,x),x.esc,'Phiếu đặt bánh')}`;
+    body=`<p class="cb-order-head">🎂 <b>Bánh kem đặt trước</b> · <i class="cb-dot" style="background:${x.esc(color(x,n.color).hex)}"></i> ${x.esc(lower(color(x,n.color).name))}</p>${rlist(cakeRows(t,x),x,'Phiếu đặt bánh')}`;
   }
   const price=t.quoted_price!=null?x.money(t.quoted_price):'…';
   return `<article class="card ticket cb-ticket"><div class="cb-ticket-head">${x.portrait(who,44)}<div class="grow"><div class="row spread"><h3>${x.esc(who.display_name)}</h3><b class="price">${price}</b></div>
@@ -281,7 +370,7 @@ function barPanel(t,x){
   const dose=`<div class="cb-stepper" role="group" aria-label="Định lượng bột"><button type="button" class="btn ghost small" data-action="car:grams" data-step="-1" aria-label="Bớt 1 gam">−</button><b>${grams} g</b><button type="button" class="btn ghost small" data-action="car:grams" data-step="1" aria-label="Thêm 1 gam">+</button></div>`;
   const canDose=d.container&&!d.dose&&!d.pulling&&ui.beans&&ui.grind&&d.shots.length<3&&stock(x,'beans_'+ui.beans)>0;
   const full=groups.length>=(cc(x).groups||2);
-  const pullBtn=d.pulling?x.cmd('⏹️ Dừng chiết','cb_stop',{task:t.id},'primary'):x.cmd('▶️ Chiết shot','cb_pull',{task:t.id},d.dose?'primary':'',!d.dose||full);
+  const auto=timer(x),pullBtn=d.pulling?x.cmd('⏹️ Dừng chiết','cb_stop',{task:t.id},'primary'):x.cmd(auto?'▶️ Chiết shot (máy tự dừng)':'▶️ Chiết shot','cb_pull',auto?{task:t.id,auto:true}:{task:t.id},d.dose?'primary':'',!d.dose||full);
   const myFlow=groups.find(g=>g.task===t.id)?.flow||1;
   const others=groups.filter(g=>g.task!==t.id).map(g=>`<div class="cb-other"><small class="muted">Họng pha kia · ly khác</small>${shotMeter(x,g.start,g.flow)}${x.cmd('⏹️ Dừng ly đó','cb_stop',{task:g.task},'ghost small')}</div>`).join('');
   const shots=d.shots.length?`<div class="row wrap cb-shots">${d.shots.map((s,i)=>`<span class="tag ${s.x==='balanced'?'green':['sour','bitter'].includes(s.x)?'danger':'amber'}">Shot ${i+1}: ${s.sec}s · ${x.esc((cc(x).shot_label||{})[s.x]||s.x)}</span>`).join('')}</div>`:'';
@@ -291,12 +380,12 @@ function barPanel(t,x){
   const foam=`<div class="cb-segs" role="group" aria-label="Độ bọt">${seg(x,'foam','foam','thin','Bọt mỏng (latte)',ui.foam)}${seg(x,'foam','foam','thick','Bọt dày (cappu)',ui.foam)}</div>`;
   const mk=ui.milk?milk(x,ui.milk):null,busyWand=wand.some(w=>w.task!==t.id);
   const milkBtns=d.steaming?x.cmd('⏹️ Tắt vòi hơi','cb_milk_stop',{task:t.id},'primary')
-    :`${x.cmd('♨️ Đánh nóng','cb_milk',{task:t.id,milk:ui.milk||'',mode:'steam',foam:ui.foam||''},'',!d.container||!!d.milk||!mk||!mk.steam||!ui.foam||busyWand||!stock(x,ui.milk))}${x.cmd('🧊 Rót lạnh','cb_milk',{task:t.id,milk:ui.milk||'',mode:'cold'},'ghost',!d.container||!!d.milk||!mk||!stock(x,ui.milk))}`;
+    :`${x.cmd(auto?'♨️ Đánh nóng (máy tự tắt)':'♨️ Đánh nóng','cb_milk',{task:t.id,milk:ui.milk||'',mode:'steam',foam:ui.foam||'',...(auto?{auto:true}:{})},'',!d.container||!!d.milk||!mk||!mk.steam||!ui.foam||busyWand||!stock(x,ui.milk))}${x.cmd('🧊 Rót lạnh','cb_milk',{task:t.id,milk:ui.milk||'',mode:'cold'},'ghost',!d.container||!!d.milk||!mk||!stock(x,ui.milk))}`;
   const arts=(cc(x).arts||[]).map(a=>{const locked=a.unlock>level&&n.art!==a.id;
     return tile(x,{emoji:a.emoji,name:a.name,sub:locked?`cấp ${a.unlock}`:'rót tạo hình',cmd:'cb_art',payload:{task:t.id,pattern:a.id},locked,selected:d.art===a.id,wanted:!d.art&&n.art===a.id,
       disabled:!d.milk||d.milk.mode!=='steam'||!!d.art||!d.shots.length,label:locked?`Hình ${a.name}, mở ở cấp ${a.unlock}`:`Rót hình ${a.name}`});}).join('');
   const pastryPick=Object.keys(n.pastry||{}).length?`<h4 class="section-title">7 · Bánh gọi kèm</h4>${casePicker(t,x,true)}`:'';
-  return `<p class="cb-recipe small">📋 Công thức quầy: <b>xay mịn · 18 g · chiết 25–30 giây</b> · sữa nóng <b>55–68 °C</b></p>
+  return `<p class="cb-recipe small">📋 <b>☕ xay mịn 18 g · 25–30 giây</b> · <b>🥛 55–68 °C</b></p>
     <h4 class="section-title">1 · Ly</h4>${sizes}<div class="tile-grid cb-grid3">${cups}</div>${extra}
     <h4 class="section-title">2 · Xay & định lượng</h4><div class="tile-grid cb-grid3">${beans}</div>${grinds}
     <div class="row wrap spread">${dose}${x.cmd('⚖️ Xay & nén','cb_dose',{task:t.id,beans:ui.beans||'',grind:ui.grind||'',grams},'',!canDose)}</div>
@@ -312,7 +401,7 @@ function casePicker(t,x,compact){
   const canPick=!!(t&&t.known&&t.needs&&t.needs.kind!=='cake'&&!hidden(t)&&!t.bag.bagged);
   const stateTag={fresh:'hôm nay',day_old:'hôm qua',expired:'quá hạn'};
   const want=id=>!!(t?.needs&&((t.needs.items||t.needs.pastry||{})[id]));
-  return `<div class="tile-grid cb-case">${lots.map(l=>{const b=bake(x,l.item);
+  return `<div class="tile-grid cb-lots">${lots.map(l=>{const b=bake(x,l.item);
     return tile(x,{emoji:b.emoji,name:b.name,sub:`${stateTag[l.state]} · ${(cc(x).lot_q_label||{})[l.q]||l.q}${l.sale?' · −50%':''}${b.allergens?.length?' · '+b.allergens.map(a=>(cc(x).allergen_label||{})[a]||a).join('/'):''}`,
       count:l.qty,cmd:'cb_pick',payload:{task:t?.id,lot:l.id},disabled:!canPick||l.state==='expired',wanted:want(l.item)&&l.state==='fresh',cls:`lot-${l.state}`,label:`${b.name}, ${l.qty} cái, ${stateTag[l.state]}`});}).join('')}</div>
     ${compact?'':`<div class="cb-lot-actions">${lots.filter(l=>l.state!=='fresh').map(l=>{const b=bake(x,l.item);return `<div class="cb-lot-row"><span>${x.esc(b.emoji)} <b>${x.esc(b.name)}</b> <small class="muted">${l.qty} cái · ${stateTag[l.state]}</small></span><span class="row wrap">
@@ -323,7 +412,7 @@ function casePicker(t,x,compact){
 function casePanel(t,x){
   const n=t.needs,bag=t.bag;
   const tray=bag.items.length?`<div class="cb-tray">${bag.items.map((i,ix)=>`<button type="button" class="cb-chip" data-command="cb_return" data-payload="${pay(x,{task:t.id,index:ix})}" title="Trả về tủ">${x.esc(bake(x,i.item).emoji)} ${x.esc(bake(x,i.item).name)}${x.room.day-i.day>bake(x,i.item).fresh?' · hôm qua':''} ✕</button>`).join('')}</div>`:'<p class="muted small">Khay bánh còn trống</p>';
-  const rules=`<details class="cb-rules"><summary>Quy định tủ kính</summary><ul class="small"><li>Bánh khô (croissant, bánh mì): bán trong ngày; hôm sau lên rổ −50% hoặc tặng kèm nhãn ngày; ngày thứ ba bỏ.</li><li>Cookie giữ được 3 ngày.</li><li>Bông lan trứng muối có sốt: chỉ bán trong ngày, không tặng.</li><li>Khách mua lẻ lấy bánh mới trước, hết bánh mới mới lấy rổ −50%.</li></ul></details>`;
+  const rules=`<details class="fold gd-rules cb-rules"><summary>📜 Quy tắc tủ kính</summary><ul class="small"><li>Bánh khô (croissant, bánh mì): bán trong ngày; hôm sau lên rổ −50% hoặc tặng kèm nhãn ngày; ngày thứ ba bỏ.</li><li>Cookie giữ được 3 ngày.</li><li>Bông lan trứng muối có sốt: chỉ bán trong ngày, không tặng.</li><li>Khách mua lẻ lấy bánh mới trước, hết bánh mới mới lấy rổ −50%.</li></ul></details>`;
   return `${shelf(x)}<h4 class="section-title">Tủ kính</h4>${casePicker(t,x,false)}${rules}
     ${n.kind!=='cake'&&!hidden(t)?`<h4 class="section-title">Khay của order</h4>${tray}<div class="row wrap">${x.cmd(`🛍️ Cho vào túi (${stock(x,'bag')})`,'cb_bag',{task:t.id},'',!bag.items.length||bag.bagged||(!bag.has_bag&&!stock(x,'bag')))}</div>`:''}`;
 }
@@ -342,7 +431,7 @@ function ovenPanel(t,x){
   const direct=(cc(x).bakes||[]).filter(b=>!b.proof&&!b.cake).map(b=>bakeTile(b,{name:b.name,cmd:'cb_bake',payload:{item:b.id},disabled:racksFull})).join('');
   const cold=d.cold||[],fridgeFull=cold.length>=2;
   const trays=proof.length?proof.map(p=>{const b=bake(x,p.item);return `<div class="cb-slot ${p.left?'':'ready'}"><span class="tile-emoji" aria-hidden="true">${x.esc(b.emoji)}</span><div class="grow"><b>${p.qty} ${x.esc(lower(b.name))}</b><small class="muted">${p.left?`đang nở · còn ${p.left} nhịp`:p.over?'⚠️ ủ quá lâu, bánh sẽ xẹp':'✓ bột đã nở, sẵn sàng nướng'}${p.dense?' · men đói: sẽ đặc ruột':''}</small></div>
-    <div class="cb-slot-btns">${x.cmd('🔥 Vào lò','cb_bake',{item:p.item,tray:p.id},p.left||racksFull?'small':'primary small',!!p.left||racksFull)}${x.cmd('❄️ Cất tủ mát','cb_chill',{tray:p.id},'ghost small',fridgeFull)}</div></div>`;}).join(''):'<p class="muted small">Tủ ủ trống (2 ngăn). Bột còn ở đây lúc khép ca sẽ hỏng qua đêm.</p>';
+    <div class="cb-slot-btns">${x.cmd('🔥 Vào lò','cb_bake',{item:p.item,tray:p.id},p.left||racksFull?'small':'primary small',!!p.left||racksFull)}${x.cmd('❄️ Cất tủ mát','cb_chill',{tray:p.id},'ghost small',fridgeFull)}</div></div>`;}).join(''):'<p class="muted small">Tủ ủ trống (2 ngăn).</p>';
   const fridge=[0,1].map(i=>{const c=cold[i];if(!c)return `<div class="cb-slot empty"><span class="tile-emoji" aria-hidden="true">❄️</span><small class="muted">Ngăn ${i+1} trống</small></div>`;const b=bake(x,c.item);
     const when=c.bakeable?(c.last?'⚠️ đêm cuối — nướng hôm nay kẻo chua':`✓ ủ lạnh ${c.nights} đêm · vào lò ngay`):'đang ủ lạnh · nướng từ sáng mai';
     return `<div class="cb-slot cold${c.bakeable?' ready':''}${c.last?' last':''}"><span class="tile-emoji" aria-hidden="true">${x.esc(b.emoji)}</span><div class="grow"><b>${c.qty} ${x.esc(lower(b.name))}</b><small class="muted">${when}${c.dense?' · men đói':''}</small></div>
@@ -391,7 +480,7 @@ function careCard(x,open){
   const chip=tm?`<p class="cb-tomorrow small"><span aria-hidden="true">${x.esc(tm.emoji)}</span> Ngày mai: <b>${x.esc(tm.label)}</b>${tm.busy?' · đông khách mua lẻ':''}</p>`:'';
   const s=d.starter||{};
   const feed=s.fed_today===false?`<div class="row wrap">${x.cmd(`🫙 Cho Bé Men ăn (+${s.gain}%)`,'cb_feed',{},'primary small',!x.room.open||stock(x,'flour')<1)}</div>`:'';
-  return `<section class="cb-care">${fold(`🫙 Việc chăm tiệm · ${left?`${left} việc chờ`:'xong hết ✓'}`,`${news}${reqList(rows,x.esc,'Việc chăm tiệm hôm nay')}${feed}${chip}`,open)}</section>`;
+  return `<section class="cb-care">${fold(`🫙 Việc chăm tiệm · ${left?`${left} việc chờ`:'xong hết ✓'}`,`${news}${rlist(rows,x,'Việc chăm tiệm hôm nay')}${feed}${chip}`,open)}</section>`;
 }
 /** The regulars' notes card: only what the shop has learned. */
 function bookFold(x){
@@ -408,7 +497,8 @@ function prep(x){
   return `<details class="card cb-prep"${open?' open':''}><summary data-action="car:prep"><span>🔥 Lò nướng & tủ kính${busy?' · <b>đang có mẻ bánh</b>':''}</span></summary>${ovenPanel(null,x)}<h4 class="section-title">Bánh trong tủ</h4>${casePicker(null,x,false)}</details>`;
 }
 
-/* ---------- next step & the one primary action ---------- */
+/* ---------- next step & the one primary action (guide.js) ---------- */
+/** Short action line for the task card and the queue (the hint says the exact tap). */
 function nextStep(t,x){
   if(!t.known)return 'Nhận order của khách';
   const n=t.needs;
@@ -440,17 +530,29 @@ function canServe(t){
   const d=t.drink;
   return !!(d.container&&d.shots.length&&!d.pulling&&!d.steaming&&!d.dose);
 }
-function primary(t,x,rows,big){
-  const cls='primary'+(big?' big':''),d=t.drink;
-  if(t.needs.kind==='drink'&&!hidden(t)&&pendingOthers(t).length&&!plated(t)){
-    const ready=d.container&&d.shots.length&&!d.pulling&&!d.steaming&&!d.dose&&(d.container!=='paper'||d.lid);
-    return x.cmd(`✅ Xong ly ${t.cur+1}`,'cb_done',{task:t.id},cls,!ready);
-  }
-  const blocked=!!data(x).day?.open_event,label=big?'🛎️ Giao cho khách':'🛎️ Giao';
-  const allOk=rows.every(r=>r.ok===true);
-  return allOk&&!blocked?x.cmd(label,'cb_serve',{task:t.id,confirm:true},cls,!canServe(t))
-    :x.confirmCmd(label,'cb_serve',{task:t.id,confirm:true},blocked?'Có chuyện bất ngờ đang chờ bạn quyết. Xử lý xong rồi hãy giao nhé.':'Chưa khớp hết phiếu. Vẫn giao?',cls,!canServe(t));
+function serveFinal(t,x,steps){
+  const ev=!!data(x).day?.open_event;
+  return {label:t.needs.kind==='cake'?'🛎️ Giao bánh kem':'🛎️ Giao cho khách',go:finalGo(steps,'cb_serve',{task:t.id},{question:'Khách sẽ nhận và nếm thử.',confirm:true}),
+    ready:canServe(t)&&!ev,why:ev?'chọn cách xử lý chuyện bất ngờ trước':'làm món trước đã'};
 }
+/** {steps, final, pulse}: the order's rows as steps, and what finishes it. */
+function taskGuide(t,x){
+  if(data(x).day?.open_event)return {steps:[{ok:null,label:'Chọn cách xử lý chuyện bất ngờ',go:{sel:'.fk-ev-choices .fk-choice'},pulse:''}]};
+  if(!t.known)return {steps:[{ok:null,label:'Nhận order của khách',go:{cmd:'ask',payload:{task:t.id},label:'📝 Nhận order'}}],pulse:'.cb-ask'};
+  // Starting a batch of pastry goes first: the dough rises while the drink is made.
+  const rows=rowsOf(t,x),early=r=>r.ok!==true&&r.go?.early,steps=[...rows.filter(early),...rows.filter(r=>!early(r))],d=t.drink;
+  if(t.needs.kind==='drink'&&hidden(t))return {steps,final:null};
+  if(t.needs.kind==='drink'&&isTray(t)&&pendingOthers(t).length&&!plated(t)){
+    const ready=!!(d.container&&d.shots.length&&!d.pulling&&!d.steaming&&!d.dose&&(d.container!=='paper'||d.lid));
+    return {steps,final:{label:`✅ Xong ly ${t.cur+1}, đặt lên khay`,go:finalGo(steps,'cb_done',{task:t.id},{question:'Đặt ly này lên khay?'}),ready,why:'làm ly này trước đã'}};
+  }
+  return {steps,final:serveFinal(t,x,steps)};
+}
+function hintFor(x,g){
+  const f=g.final&&g.final.ready!==false?{label:g.final.label.replace(/^[^\p{L}]+/u,''),go:g.final.go}:null;
+  return nextHint(x,g.steps,{final:f,pulse:g.pulse||''});
+}
+const ctaFor=(x,g)=>stepCta(x,g.steps,g.final||{label:'🛎️ Giao cho khách',go:null,ready:false,why:''});
 
 export default {
   id:'cafe_bakery',
@@ -462,13 +564,13 @@ export default {
     return idlePanel(x,d.day,'cb_event',extras(x)+careCard(x,pending)+shelf(x)+prep(x)+bookFold(x),null,'cb');
   },
   job(t,x){
-    const d=data(x),day=d.day;
+    const d=data(x),day=d.day,g=taskGuide(t,x),hint=hintFor(x,g);
     const head=`${dayStrip(x,day,true)}${flash(x,day)}${eventCard(x,day,'cb_event')}${queue(x,t)}`;
     if(!t.known){
-      const who=x.npc(t.npc),g=t.guest||{};
-      return `<div class="career-job cb food">${head}<article class="card ticket cb-ticket"><div class="cb-ticket-head">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3>
-        <p class="cb-tags"><span class="tag">${x.esc(g.emoji||'🙂')} ${x.esc(g.label||'Khách')}</span></p></div></div>
-        <p class="cb-say">“${x.esc(t.opening)}”</p>${regularNotes(t,x)}${patience(t.patience)}${x.cmd('📝 Nhận order','ask',{task:t.id},'primary full')}</article>${extras(x)}${careCard(x,false)}</div>`;
+      const who=x.npc(t.npc),gu=t.guest||{};
+      return `<div class="career-job cb food">${hint}${head}<article class="card ticket cb-ticket"><div class="cb-ticket-head">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3>
+        <p class="cb-tags"><span class="tag">${x.esc(gu.emoji||'🙂')} ${x.esc(gu.label||'Khách')}</span></p></div></div>
+        <p class="cb-say">“${x.esc(t.opening)}”</p>${regularNotes(t,x)}${patience(t.patience)}${x.cmd('📝 Nhận order','ask',{task:t.id},'primary full cb-ask')}</article>${extras(x)}${careCard(x,false)}</div>`;
     }
     const n=t.needs,ui=x.ui;
     if(ui.tabFor!==t.id){ui.tabFor=t.id;ui.tab=n.kind==='drink'?'bar':n.kind==='pastry'?'case':'cake';ui.cakeText='';}
@@ -478,15 +580,16 @@ export default {
     const tabBar=`<div class="cb-tabs" role="tablist" aria-label="Khu làm việc">${tabs.map(([k,e,l])=>`<button type="button" role="tab" class="cb-tab ${ui.tab===k?'on':''}" data-action="car:tab" data-tab="${k}" aria-selected="${ui.tab===k}">${e} ${l}${badge(k)}</button>`).join('')}</div>`;
     const panel={bar:()=>n.kind==='drink'?barPanel(t,x):'<p class="notice">Order này không có đồ uống.</p>',oven:()=>ovenPanel(t,x),case:()=>casePanel(t,x),cake:()=>n.kind==='cake'?cakePanel(t,x):'<p class="notice">Order này không phải bánh kem.</p>'}[ui.tab]?.()||'';
     const preview=n.kind==='drink'?cupArt(t,x)+(Object.keys(n.pastry||{}).length?bagArt(t,x):''):n.kind==='pastry'?bagArt(t,x):cakeArt(t,x);
-    const rows=rowsOf(t,x);
     const part=n.kind==='cake'?'cake':'drink';
     const dumpable=n.kind==='drink'?!plated(t)&&!!(t.drink.container||t.drink.shots.length||t.drink.milk):n.kind==='cake'?!!(t.cake.sponge||t.cake.cream):false;
     const dump=n.kind!=='pastry'?x.confirmCmd(n.kind==='cake'?'🗑️ Bỏ bánh':'🗑️ Đổ ly','cb_dump',{task:t.id,part},'Đổ bỏ và làm lại? Nguyên liệu đã dùng được ghi hao hụt.','danger small',!dumpable):'';
+    // One bottom button (phones) and the same one in the side column (wide screens); only the
+    // phone one is the guide's .gd-cta, so the first-time pulse lands on the visible one.
+    const cta=ctaFor(x,g);
     const side=`<div class="cb-side"><div class="cb-look">${preview}<div class="cb-look-txt"><p class="cb-status" aria-live="polite">${x.esc(status(t,x))}</p>${trayCups(t)}</div></div>
-      <div class="fk-wide-only">${primary(t,x,rows,true)}${dump}</div></div>`;
+      <div class="fk-wide-only">${cta.replace(/ gd-cta/g,'')}${dump}</div></div>`;
     const tools=`<p class="row wrap cb-tools">${dump?`<span class="cb-narrow-only">${dump}</span>`:''}${d.clean_day===x.room.day?'<span class="tag green">🧽 Đã vệ sinh máy hôm nay</span>':x.cmd('🧽 Vệ sinh máy pha','cb_clean',{},'ghost small')} ${x.button('📦 Kho & nhập hàng','inventory',{},'ghost small')}</p>`;
-    const barEl=actionBar(x.esc(nextStep(t,x)),primary(t,x,rows,false));
-    return `<div class="career-job cb food">${head}${extras(x)}${careCard(x,false)}${ticket(t,x)}${tabBar}<div class="workbench"><section class="wb-main" role="tabpanel">${panel}${tools}</section><aside class="wb-side">${side}</aside></div>${barEl}</div>`;
+    return `<div class="career-job cb food">${hint}${head}${extras(x)}${careCard(x,false)}${ticket(t,x)}${tabBar}<div class="workbench"><section class="wb-main" role="tabpanel">${panel}${tools}</section><aside class="wb-side">${side}</aside></div><div class="fk-bar cb-dock"><p class="cb-dock-status" aria-hidden="true">${x.esc(status(t,x))}</p>${cta}</div></div>`;
   },
   actions:{
     async tab(data,el,x){x.ui.tab=data.tab;x.render();},
@@ -500,36 +603,44 @@ export default {
     async color(data,el,x){x.ui.color=data.color;x.render();},
     async prep(data,el,x){const d=el.closest('details');x.ui.cbPrep=d?!d.open:!x.ui.cbPrep;},
     async write(data,el,x){
-      const input=el.closest('.career-job')?.querySelector('#cb-cake-text');
+      // Also sent from the header hint / bottom button: find the box anywhere in the sheet.
+      const input=document.querySelector('#sheet[open] #cb-cake-text')||document.querySelector('#cb-cake-text');
       const text=(input?.value||'').trim();
       x.ui.cakeText=text;
-      if(text.length<2){x.toast('Gõ chữ cần viết lên bánh trước nhé.');return;}
+      if(text.length<2){
+        if(!input||x.ui.tab!=='cake'){x.ui.tab='cake';x.render();}
+        setTimeout(()=>{const box=document.querySelector('#cb-cake-text');if(box){box.scrollIntoView({block:'center'});box.focus();}},60);
+        x.toast('Gõ đúng chữ trên phiếu vào ô, rồi bấm “Viết lên bánh”.');return;
+      }
       await x.send('cb_write',{task:data.task,text});
     },
   },
   tick(root,x){
     keepBarAboveFooter(root);
+    // The hint sits in the sheet header (outside root): move every live bar in the sheet.
+    // A bar inside a button (bottom button, hint) makes that button glow in the good window.
+    const scope=root.closest('dialog')||root,now=(el,on)=>el.closest('button')?.classList.toggle('cb-now',on);
     const e=x.cc.extract||{sour:20,bright:25,balanced:30,strong:35},st=x.cc.steam||{base:5,rate:4.2,cool:55,silky:68,hot:76};
-    root.querySelectorAll('[data-shot-start]').forEach(el=>{
+    scope.querySelectorAll('[data-shot-start]').forEach(el=>{
       const start=Number(el.dataset.shotStart);if(!start)return;
       const s=Math.max(0,x.now()-start)*Number(el.dataset.flow||1);
       el.querySelector('.cb-fill').style.width=Math.min(100,s/SHOT_SCALE*100)+'%';
       el.querySelector('.cb-meter-label').textContent=s.toFixed(1)+' giây · '+(s<e.sour?'chua':s<e.bright?'hơi chua':s<=e.balanced?'DỪNG NGAY!':s<=e.strong?'hơi đậm':'đắng khét');
-      el.classList.toggle('ready',s>=e.bright&&s<=e.balanced);el.classList.toggle('over',s>e.strong);
+      el.classList.toggle('ready',s>=e.bright&&s<=e.balanced);el.classList.toggle('over',s>e.strong);now(el,s>=e.bright&&s<=e.balanced);
     });
-    root.querySelectorAll('[data-steam-start]').forEach(el=>{
+    scope.querySelectorAll('[data-steam-start]').forEach(el=>{
       const start=Number(el.dataset.steamStart);if(!start)return;
       const temp=st.base+st.rate*Math.max(0,x.now()-start);
       el.querySelector('.cb-fill').style.width=Math.min(100,temp/TEMP_SCALE*100)+'%';
       el.querySelector('.cb-meter-label').textContent=Math.round(temp)+' °C · '+(temp<st.cool?'còn nguội':temp<=st.silky?'TẮT VÒI!':temp<=st.hot?'quá nóng':'khét sữa');
-      el.classList.toggle('ready',temp>=st.cool&&temp<=st.silky);el.classList.toggle('over',temp>st.hot);
+      el.classList.toggle('ready',temp>=st.cool&&temp<=st.silky);el.classList.toggle('over',temp>st.hot);now(el,temp>=st.cool&&temp<=st.silky);
     });
-    root.querySelectorAll('[data-oven-start]').forEach(el=>{
+    scope.querySelectorAll('[data-oven-start]').forEach(el=>{
       const start=Number(el.dataset.ovenStart);if(!start)return;
       const [a,g,z]=(el.dataset.w||'10,20,30').split(',').map(Number),shift=Number(el.dataset.shift)||0,sec=Math.max(0,x.now()-start)+shift;
       el.querySelector('.cb-fill').style.width=Math.min(100,sec/(z+6)*100)+'%';
       el.querySelector('.cb-meter-label').textContent=sec.toFixed(1)+' giây · '+(sec<a?'còn nhạt':sec<g?'VÀNG ĐỀU, LẤY RA!':sec<z?'sậm màu':'cháy rồi!');
-      el.classList.toggle('ready',sec>=a&&sec<g);el.classList.toggle('over',sec>=z);
+      el.classList.toggle('ready',sec>=a&&sec<g);el.classList.toggle('over',sec>=z);now(el,sec>=a&&sec<g);
     });
   },
   summary(data,x){

@@ -177,6 +177,31 @@ class CafeBakeryTests(unittest.TestCase):
         j.act('cb_art', pattern='heart')
         self.assertEqual(j.task['drink']['art'], 'blob')
 
+    def test_first_day_timer_does_the_timing(self):
+        """Onboarding: on day 1 a pull or a steam with auto=true ends at once in the good window."""
+        j = self.journey(lambda n: n['kind'] == 'drink' and n['milk'] and not n['iced'], days=[1])
+        self.assertEqual(j.c['day'], 1)
+        j.act('ask')
+        n = j.task['needs']
+        j.act('cb_cup', kind='paper' if n['takeaway'] else 'mug', size=n['size'])
+        j.act('cb_dose', beans=n['beans'], grind='fine', grams=18)
+        j.act('cb_pull', auto=True)
+        self.assertIsNone(j.task['drink']['pulling'])
+        self.assertEqual(j.task['drink']['shots'][-1]['x'], 'balanced')
+        j.act('cb_milk', milk=n['milk'], mode='steam', foam=n['foam'], auto=True)
+        self.assertIsNone(j.task['drink']['steaming'])
+        self.assertEqual(j.task['drink']['milk']['tex'], 'silky')
+        self.assertEqual(j.task['mistakes'], 0)
+        # The timer only times: a coarse grind still runs sour.
+        j.act('cb_dose', beans=n['beans'], grind='coarse', grams=18)
+        j.act('cb_pull', auto=True)
+        self.assertEqual(j.task['drink']['shots'][-1]['x'], 'sour')
+        # From day 2 there is no timer: the same request starts a hand-timed pull.
+        j.c['day'] = 2
+        j.act('cb_dose', beans=n['beans'], grind='fine', grams=18)
+        j.act('cb_pull', auto=True)
+        self.assertIsNotNone(j.task['drink']['pulling'])
+
     def three_drinks(self):
         """A journey whose queue holds three drink orders (tasks may come from different days)."""
         slots = [(d, s) for d in range(1, 6) for s in range(3)

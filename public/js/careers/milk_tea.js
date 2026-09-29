@@ -5,7 +5,8 @@
  * cleaning, the regulars' card and tomorrow's forecast. A sticky bar on phones
  * keeps the order recap and the serve button in reach. */
 import {Sound} from '../audio.js';
-import {actionBar,keepBarAboveFooter} from './food_kit.js';
+import {keepBarAboveFooter} from './food_kit.js';
+import {stepRows,nextHint,stepCta,finalGo,pending as nextOf,firstTime} from '../v4/guide.js';
 
 const ICE=[['none','Không đá'],['little','Ít đá'],['normal','Đá vừa'],['extra','Nhiều đá']];
 const ICE_TEXT={none:'không đá',little:'ít đá',normal:'đá vừa',extra:'nhiều đá'};
@@ -179,7 +180,7 @@ function customer(t,x){
     <div class="mt-bubble">${t.app?`<span class="mt-ticket-head">PHIẾU APP ${x.esc(t.app.code)}</span>`:''}<p>“${x.esc(words)}”</p>
       ${tags.length?`<div class="mt-tags">${tags.map(v=>`<span>${x.esc(v)}</span>`).join('')}</div>`:''}
       ${meter}
-      ${!t.known?jb(x,'👂 Nghe gọi món','ask',{task:t.id},'primary'):''}
+      ${!t.known?jb(x,'👂 Nghe gọi món','ask',{task:t.id},'primary mt-ask'):''}
       ${notebookFor(t,x)}
       <b class="mt-price">${t.quoted_price!=null?`${t.quoted_price} xu`:''}</b>
     </div></section>`;
@@ -187,7 +188,7 @@ function customer(t,x){
 function tile(x,o){
   const zero=o.count===0&&!o.locked;
   const act=o.locked||o.disabled?'':o.cmd?cmdAttr(x,o.cmd,o.payload):'';
-  return `<button type="button" class="mt-tile ${o.cls||''}${o.on?' on':''}${o.locked?' locked':''}${zero?' zero':''}" ${act} ${o.locked||o.disabled?'disabled':''} aria-pressed="${!!o.on}" aria-label="${x.esc(o.label||o.name)}">
+  return `<button type="button" class="mt-tile ${o.cls||''}${o.on?' on':''}${o.locked?' locked':''}${zero?' zero':''}"${o.k?` data-k="${x.esc(o.k)}"`:''} ${act} ${o.locked||o.disabled?'disabled':''} aria-pressed="${!!o.on}" aria-label="${x.esc(o.label||o.name)}">
     ${o.art||`<span class="mt-emo" aria-hidden="true">${o.emoji}</span>`}<b>${x.esc(o.name)}</b>${o.sub?`<small>${x.esc(o.sub)}</small>`:''}
     ${o.locked?`<small class="mt-lock">🔒 Cấp ${o.level}</small>`:o.count!=null?`<em class="mt-count${o.count===0?' zero':''}" aria-hidden="true">${o.count}</em>`:''}</button>`;
 }
@@ -201,14 +202,14 @@ function shelf(t,x,group,title){
     const s=station(x,i.id),inCup=items.includes(i.id);
     if(!s.unlocked)return tile(x,{name:i.name,emoji:i.emoji,locked:true,level:s.level,label:`${i.name}, mở ở cấp ${s.level}`});
     if(s.stock===0&&!inCup){
-      if(s.made){const v=verb(i.id);return tile(x,{name:i.name,emoji:i.emoji,count:0,cls:'restock',cmd:'tea_prepare',payload:{item:i.id,qty:5,confirm:true},sub:`${v} +5 · ${i.cost*5} xu`,label:`${i.name} đã hết. ${v} 5 phần, ${i.cost*5} xu${s.fresh?', mất 20 phút':''}`});}
+      if(s.made){const v=verb(i.id);return tile(x,{k:i.id,name:i.name,emoji:i.emoji,count:0,cls:'restock',cmd:'tea_prepare',payload:{item:i.id,qty:5,confirm:true},sub:`${v} +5 · ${i.cost*5} xu`,label:`${i.name} đã hết. ${v} 5 phần, ${i.cost*5} xu${s.fresh?', mất 20 phút':''}`});}
       const o=soonest(x,i.id);
       if(o)return tile(x,{name:i.name,emoji:i.emoji,count:0,cls:'restock wait',disabled:true,sub:`📦 ${o.eta_label}`,label:`${i.name} đã hết, hàng tới ${o.eta_label}`});
       const cost=expressCost(x,i.id,5);
       return tile(x,{name:i.name,emoji:i.emoji,count:0,cls:'restock',cmd:'tea_order',payload:{item:i.id,qty:5,supplier:'express',confirm:true},sub:`⚡ +5 · ${cost} xu`,label:`${i.name} đã hết. Gọi hỏa tốc 5 phần, ${cost} xu, tới trong 30–60 phút`});
     }
     const disabled=!ready||inCup||have>=limit||needBase;
-    return tile(x,{name:i.name,emoji:i.emoji,count:s.stock,on:inCup,disabled,cls:s.tired?'tired':'',sub:s.tired?(s.tired>=s.stock?(i.group==='base'?'hơi chát':'hơi cứng'):`${s.tired} phần cũ`):'',cmd:'tea_add',payload:{task:t.id,item:i.id},label:`${i.name}, còn ${s.stock} phần${s.tired?`, ${s.tired} phần để lâu`:''}${inCup?', đã có trong ly':''}`});
+    return tile(x,{k:i.id,name:i.name,emoji:i.emoji,count:s.stock,on:inCup,disabled,cls:s.tired?'tired':'',sub:s.tired?(s.tired>=s.stock?(i.group==='base'?'hơi chát':'hơi cứng'):`${s.tired} phần cũ`):'',cmd:'tea_add',payload:{task:t.id,item:i.id},label:`${i.name}, còn ${s.stock} phần${s.tired?`, ${s.tired} phần để lâu`:''}${inCup?', đã có trong ly':''}`});
   }).join('')}</div></section>`;
 }
 const verb=id=>['pearls','white_pearl'].includes(id)?'Nấu':['foam','cheese'].includes(id)?'Đánh':'Ủ';
@@ -222,12 +223,12 @@ function cupStack(t,x){
       const cost=expressCost(x,'cup_'+size,1);
       return tile(x,{name:`Ly ${size}`,emoji:'🥤',count:0,cls:'restock',cmd:'tea_order',payload:{item:'cup_'+size,qty:1,supplier:'express',confirm:true},sub:`⚡ +${b.cup_pack?.qty||20} · ${cost} xu`,label:`Hết ly ${size}. Gọi hỏa tốc ${b.cup_pack?.qty||20} ly, ${cost} xu`});
     }
-    return tile(x,{name:`Ly ${size}`,emoji:size==='L'?'🥤':'🧋',count:cups[size],on,disabled:!t.known||cup.sealed||locked,cmd:'tea_cup',payload:{task:t.id,size},label:`Ly size ${size}, còn ${cups[size]} ly`});
+    return tile(x,{k:'cup_'+size,name:`Ly ${size}`,emoji:size==='L'?'🥤':'🧋',count:cups[size],on,disabled:!t.known||cup.sealed||locked,cmd:'tea_cup',payload:{task:t.id,size},label:`Ly size ${size}, còn ${cups[size]} ly`});
   }).join('')}</div></section>`;
 }
 function dials(t,x){
   const cup=t.cup,ok=t.known&&cup.placed&&!cup.sealed,sugars=B(x).sugars||[0,30,50,70,100];
-  const seg=(cmd,val,label,on)=>`<button type="button" class="mt-seg ${on?'on':''}" ${ok?cmdAttr(x,cmd,{task:t.id,level:val}):'disabled'} aria-pressed="${on}">${label}</button>`;
+  const seg=(cmd,val,label,on)=>`<button type="button" class="mt-seg ${on?'on':''}" data-k="${cmd.slice(4)}-${val}" ${ok?cmdAttr(x,cmd,{task:t.id,level:val}):'disabled'} aria-pressed="${on}">${label}</button>`;
   return `<section class="mt-shelf dials"><h4>🧊 Đá</h4><div class="mt-segs four">${ICE.map(([v,l])=>seg('tea_ice',v,l,cup.ice===v)).join('')}</div>
     <h4>🍯 Đường</h4><div class="mt-segs five">${sugars.map(v=>seg('tea_sugar',v,v+'%',cup.sugar===v)).join('')}</div></section>`;
 }
@@ -239,11 +240,10 @@ function sealer(t,x){
   if(b.sealer_off)return `<div class="mt-sealer">${b.dome?jb(x,'🫧 Đậy nắp cầu · 1 xu','tea_seal',{task:t.id},'cream full',!ready):'<p class="muted small">Máy dán nắp đang ngưng.</p>'}</div>`;
   const pct=v=>v/S.max*100,start=cup.seal_t||0,held=start?Math.max(0,x.now()-start):0;
   const zones=[['loose',0,S.loose],['ok',S.loose,S.good_lo],['good',S.good_lo,S.good_hi],['ok',S.good_hi,S.burn],['burn',S.burn,S.max]];
-  const quick=x.state?.settings?.reduceMotion;
   return `<div class="mt-sealer ${start?'running':''}">
     <div class="mt-gauge" data-seal-start="${start||''}" data-s="${[S.loose,S.good_lo,S.good_hi,S.burn,S.max].join(',')}" aria-hidden="true">${zones.map(([k,a,z])=>`<i class="z ${k}" style="left:${pct(a)}%;width:${pct(z-a)}%"></i>`).join('')}<b class="mt-needle" style="left:${Math.min(100,pct(held))}%"></b></div>
-    <small class="mt-gauge-label" aria-live="polite">${start?'Đang ép nhiệt…':`Ép nắp rồi nhả tay khi kim vào vùng xanh (${S.good_lo}–${S.good_hi} giây)`}</small>
-    <div class="mt-seal-btns">${start?jb(x,'✋ Nhả tay!','tea_seal',{task:t.id},'primary big'):jb(x,'🔥 Ép nắp','tea_seal_start',{task:t.id},quick?'cream':'primary',!ready)}
+    <small class="mt-gauge-label" aria-live="polite">${start?'Đang ép nhiệt…':ready?`Nắp đẹp +1 xu: ép rồi nhả tay khi kim vào vùng xanh (${S.good_lo}–${S.good_hi} giây)`:'Pha xong trà, đá, đường rồi mới dán nắp'}</small>
+    <div class="mt-seal-btns">${start?jb(x,'✋ Nhả tay!','tea_seal',{task:t.id},'primary big'):jb(x,'🔥 Ép nắp','tea_seal_start',{task:t.id},'cream',!ready)}
     ${start?'':jb(x,'Dán thường','tea_seal',{task:t.id},'ghost small',!ready)}</div>${start?'':wear(x)}</div>`;
 }
 /** Glue on the sealing plate: the green zone narrows until someone cleans it. */
@@ -261,21 +261,12 @@ function recap(t,x){
   return [`${tick(cup.placed&&cup.size===want.size)}Ly ${want.size}`,`${tick(cup.placed&&want.toppings.every(k=>items.includes(k)))}${tops}`,
     `${tick(cup.sugar===want.sugar)}${want.sugar}% đường`,`${tick(cup.ice===want.ice)}${ICE_TEXT[want.ice]}`].map(v=>v.replace(/ /g,'\u00a0')).join(' · ');
 }
-function serveBtn(t,x,cls,short=false){
-  const label=t.app?(short?'🛵 Giao':'🛵 Giao tài xế'):(short?'🛎️ Giao':'🛎️ Giao món');
-  return jb(x,`${label}${t.quoted_price!=null?` · ${t.quoted_price} xu`:''}`,'tea_serve',{task:t.id,confirm:true},cls,!t.cup?.sealed);
-}
 function finish(t,x){
   const cup=t.cup;
   return `<div class="mt-finish">${sealer(t,x)}
-    ${serveBtn(t,x,'primary jumbo mt-serve')}
     <div class="mt-minor">${x.confirmCmd('🗑️ Đổ ly','tea_discard',{task:t.id},'Đổ ly đang làm? Nguyên liệu đã dùng được ghi hao hụt và tính là một lần làm lại.','ghost small',!(cup.placed||(cup.items||[]).length))}
     ${jb(x,'🔎 So phiếu','tea_check',{task:t.id},'ghost small',!t.known||!(cup.items||[]).length||cup.sealed)}</div>
     <p class="muted small">So phiếu sai sẽ tính một lỗi.</p></div>`;
-}
-function hint(t,x){
-  const lv=B(x).level||1,text=nextStep(t,x,lv<=3);
-  return `<p class="mt-hint" aria-live="polite"><span aria-hidden="true">💡</span> ${x.esc(text)}</p>`;
 }
 function nextStep(t,x,detail=true){
   if(!t)return 'Chờ khách ghé quầy';
@@ -297,6 +288,84 @@ function nextStep(t,x,detail=true){
     if(cup.sugar==null)return 'Chọn mức đường khách dặn';
   }
   return 'Ép nắp, nhả tay khi kim vào vùng xanh';
+}
+
+/* ---------------------------------------------------------------- next step (v4/guide.js) */
+// A step's tap goes through actions.go like every counter tap (quiet, feedback next to the cup).
+const run=(op,payload,label)=>({act:'car:go',data:{op,payload:JSON.stringify(payload)},label});
+const kSel=k=>`.mt-stations [data-k="${k}"]`;
+const CRIT=new Set(['cup','base','flavor','topping']);
+/** The order as steps: cup, tea, syrup, toppings, ice, sugar, lid. On a first task the bottom
+ * button does each step and the right tile glows; later it names the step and points at the tile. */
+function brewSteps(t,x){
+  const b=B(x),cup=t.cup||{},items=cup.items||[],n=t.needs,id=t.id,first=firstTime(x),sealed=!!cup.sealed;
+  if(!n)return [];
+  const redo={cmd:'tea_discard',payload:{task:id,confirm:true},confirm:'Ly này sai rồi. Đổ ly và pha lại từ đầu?',label:'🗑️ Đổ ly, pha lại'};
+  // The right tile: tap it for the player on a first task, otherwise point at it.
+  const tap=(k,op,payload,label)=>first?run(op,payload,label):{sel:kSel(k),label};
+  // A needed ingredient that has run out: make more at the counter, or ask the guest to swap.
+  const refill=k=>{const s=station(x,k),i=ing(x,k);
+    if(s.made)return run('tea_prepare',{item:k,qty:5,confirm:true},`${verb(k)} thêm ${x.esc(low(i.name))} · ${i.cost*5} xu`);
+    return {sel:'.mt-out',label:`🙏 Hết ${x.esc(low(i.name))}: mời khách đổi`};};
+  const rows=[],name=k=>low(ing(x,k).name);
+  const cupOk=cup.placed?cup.size===n.size:null;
+  let go=null;
+  if(!sealed&&cupOk!==true){
+    if(cup.placed&&items.length)go=redo;
+    else if(!(b.cups||{})[n.size])go={sel:'.mt-out',label:`🙏 Hết ly ${n.size}: mời khách đổi cỡ`};
+    else go=tap('cup_'+n.size,'tea_cup',{task:id,size:n.size},`${n.size==='L'?'🥤':'🧋'} Lấy ly ${n.size}`);
+  }
+  rows.push({k:'cup',at:kSel('cup_'+n.size),ok:cupOk,label:`Lấy ly ${n.size}`,go,pulse:first&&go?.act?kSel('cup_'+n.size):go?.sel?'.mt-out .btn':''});
+  const base=items.find(k=>ing(x,k).group==='base'),bOk=base?base===n.base:null;
+  go=null;
+  if(!sealed&&base&&!bOk)go=redo;
+  else if(!sealed&&!base&&cup.placed)go=station(x,n.base).stock?tap(n.base,'tea_add',{task:id,item:n.base},`🫖 Rót ${x.esc(name(n.base))}`):refill(n.base);
+  rows.push({k:'base',at:kSel(n.base),ok:bOk,label:`Rót ${name(n.base)}`,go,pulse:first&&go?.act&&go.data.op==='tea_add'?kSel(n.base):go?.sel?'.mt-out .btn':''});
+  const add=(k,group,label,icon)=>{
+    const has=items.includes(k);let g=null;
+    if(!sealed&&!has&&base)g=station(x,k).stock?tap(k,'tea_add',{task:id,item:k},`${icon} ${x.esc(label)}`):refill(k);
+    rows.push({k:group,at:kSel(k),ok:has||null,label,go:g,pulse:first&&g?.act&&g.data.op==='tea_add'?kSel(k):g?.sel?'.mt-out .btn':''});
+  };
+  if(n.flavor)add(n.flavor,'flavor',`Thêm siro ${name(n.flavor)}`,'🍑');
+  for(const k of n.toppings)add(k,'topping',`Múc ${name(k)}`,'🧋');
+  // Something the guest did not ask for: only a new cup takes it out.
+  for(const k of items)if(k!==base&&k!==n.flavor&&!n.toppings.includes(k))rows.push({k:'topping',ok:false,label:`Bỏ ${name(k)} (khách không gọi)`,go:redo});
+  const dial=(kind,want,have,label,icon)=>{
+    const ok=have==null?null:have===want;
+    const g=!sealed&&cup.placed&&!ok?tap(`${kind}-${want}`,'tea_'+kind,{task:id,level:want},`${icon} ${x.esc(label)}`):null;
+    rows.push({k:kind,at:kSel(`${kind}-${want}`),ok,label,go:g,pulse:first&&g?kSel(`${kind}-${want}`):''});
+  };
+  dial('ice',n.ice,cup.ice,`Đá: ${ICE_TEXT[n.ice]}`,'🧊');
+  dial('sugar',n.sugar,cup.sugar,`Đường ${n.sugar}%`,'🍯');
+  // The lid: the bottom button always does a plain press (safe); the press-and-release game for a
+  // perfect lid (+1 xu) stays on the sealer, and once it runs the bottom button lets go.
+  const ready=rows.every(r=>r.ok===true),auto=(b.upgrades||[]).some(u=>u.id==='sealer'&&u.owned);
+  let lid=null,note='';
+  if(!sealed&&ready){
+    if(auto)lid=run('tea_seal',{task:id},'⚙️ Dán nắp');
+    else if(b.sealer_off){if(b.dome)lid=run('tea_seal',{task:id},'🫧 Đậy nắp cầu · 1 xu');else note='máy dán nắp đang ngưng, chờ có điện';}
+    else if(cup.seal_t)lid=run('tea_seal',{task:id},'✋ Nhả tay!');
+    else lid=run('tea_seal',{task:id},'✅ Dán nắp');
+  }
+  rows.push({k:'seal',at:'.mt-sealer',ok:sealed||null,label:'Dán nắp',note,go:lid});
+  // After the lid only a wrong cup, tea, syrup or topping still matters (the guest hands it back).
+  return sealed?rows.filter(r=>r.ok!==false||CRIT.has(r.k)):rows;
+}
+/** {steps, final} for the counter: the hint, the ticket rows and the bottom button all read it. */
+function teaGuide(t,x){
+  const ev=B(x).event,id=t.id;
+  if(ev&&ev.stage==='open')return {steps:[{ok:null,label:'Chọn cách xử lý chuyện ở quầy',go:{sel:'.mt-event .mt-choices'},pulse:'.mt-event .mt-choices .btn'}]};
+  if(ev&&ev.stage==='done')return {steps:[{ok:null,label:'Đọc kết quả rồi làm tiếp',go:run('tea_event_ok',{},'👍 Làm tiếp')}]};
+  if(!t.known)return {steps:[{ok:null,label:'Nghe khách gọi món',go:run('ask',{task:id},'👂 Nghe gọi món'),pulse:'.mt-ask',at:'.mt-ask'}]};
+  const steps=brewSteps(t,x),sealed=!!t.cup?.sealed;
+  const label=`${t.app?'🛵 Giao tài xế':'🛎️ Giao món'}${t.quoted_price!=null?` · ${t.quoted_price} xu`:''}`;
+  const go=nextOf(steps)?finalGo(steps,'tea_serve',{task:id},{question:'Khách có thể trả ly.',confirm:true}):run('tea_serve',{task:id,confirm:true},label);
+  return {steps,final:{label,go,ready:sealed}};
+}
+function hintFor(t,x){
+  const g=teaGuide(t,x);
+  const final=g.final?.ready?{label:g.final.label.replace(/^[^\p{L}]+/u,''),go:g.final.go}:null;
+  return nextHint(x,g.steps.filter(s=>s.ok!==false||s.go),{final});
 }
 
 /* ---------------------------------------------------------------- care loop */
@@ -410,31 +479,56 @@ function prepare(x,tab){
     <nav class="mt-tabs" role="tablist" aria-label="Chuẩn bị quầy">${TABS.map(([id,e,l])=>`<button type="button" role="tab" class="mt-tab ${tab===id?'on':''}" data-action="car:prep" data-tab="${id}" aria-selected="${tab===id}"><span aria-hidden="true">${e}</span> ${l}</button>`).join('')}</nav>
     <section class="mt-panel" role="tabpanel">${panel}</section>
   </div>
-  <footer class="life-sticky">${x.button(c.open?'Về quầy · pha tiếp':`Mở cửa ngày ${c.day}`,c.open?'workbench':'start',{},'primary jumbo')}</footer>`;
+  <footer class="life-sticky">${x.button(c.open?'Về quầy · pha tiếp':`Mở cửa ngày ${c.day}`,c.open?'workbench':'start',{},'primary jumbo'+(c.metrics?.served>0?'':' gd-pulse'))}</footer>`;
 }
 
 /* ---------------------------------------------------------------- module */
+let focusKey='';
+/** Bring the next step's control into view once when the step changes, unless it is already
+ * visible between the sheet header and the pinned bar. Scrolls only; never rebuilds the DOM. */
+function focusStep(root){
+  const key=root.dataset.mtKey||'';
+  if(!key||key===focusKey)return;
+  focusKey=key;
+  const at=root.dataset.mtAt,el=at&&[...root.querySelectorAll(at)].find(e=>e.offsetParent!==null);
+  if(!el)return;
+  const r=el.getBoundingClientRect(),head=root.closest('dialog')?.querySelector('.sheet-head')?.getBoundingClientRect().bottom||0;
+  const bar=root.querySelector('.fk-bar'),bottom=bar&&bar.offsetParent!==null?bar.getBoundingClientRect().top:innerHeight;
+  if(r.top>=head&&r.bottom<=bottom)return;
+  el.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+}
 export default {
   id:'milk_tea',
   css:true,
   autoNext:true,
-  next(t,x){return nextStep(t,x,(B(x).level||1)<=3);},
+  next(t,x){
+    try{const n=x&&nextOf(teaGuide(t,x).steps);if(n)return x.esc(n.label);}catch{/* fall back to the fixed lines */}
+    return nextStep(t,x,(B(x).level||1)<=3);
+  },
   clock(c){return c.data?.boba?.clock||'';},
   job(t,x){
-    const layout=`<div class="mt-bench"><div class="mt-side"><section class="mt-preview">${cupArt(x,t.cup)}<div class="mt-said"><p class="mt-status">${x.esc(status(x,t.cup))}</p>${x.ui.flash?`<p class="mt-flash" role="status">${x.esc(x.ui.flash)}</p>`:''}</div></section>${finish(t,x)}</div>
+    const g=teaGuide(t,x),ticket=t.known&&g.final?stepRows(x,g.steps,'Phiếu gọi món'):'';
+    const layout=`<div class="mt-bench"><div class="mt-side"><section class="mt-preview">${cupArt(x,t.cup)}<div class="mt-said">${ticket?`<small class="mt-ticket-head">🧾 Phiếu gọi món</small>`:`<p class="mt-status">${x.esc(status(x,t.cup))}</p>`}${x.ui.flash?`<p class="mt-flash" role="status">${x.esc(x.ui.flash)}</p>`:''}</div>${ticket}</section>${finish(t,x)}</div>
       <div class="mt-stations">${cupStack(t,x)}${shelf(t,x,'base','🫖 Trà nền')}${shelf(t,x,'flavor','🍑 Siro')}${shelf(t,x,'topping','🧋 Topping')}${dials(t,x)}</div></div>`;
-    // Phones: the order recap and the serve button stay pinned above the sheet footer.
-    const bar=t.known?actionBar(x.esc(recap(t,x)),serveBtn(t,x,'primary',true)):'';
-    return `<div class="career-job mt">${hud(x)}${hint(t,x)}${eventCard(x)}${alerts(x)}${careFold(x)}${appRow(t,x)}${queueRow(t,x)}${customer(t,x)}${tabs(t,x)}${outOfStock(t,x)}${t.known?layout:''}
+    // The order recap and the next step (then the hand-over) stay pinned above the sheet footer.
+    // The mini cup keeps the result in view next to whichever station the step scrolled to.
+    const cta=stepCta(x,g.steps,g.final||{label:'',go:null,ready:false},{style:'primary big grow'});
+    const bar=`<div class="fk-bar mt-bar">${t.known?`<span class="mt-bar-cup" aria-hidden="true">${cupArt(x,t.cup,true)}</span>`:''}<p class="fk-next" aria-live="polite">${x.esc(recap(t,x))}</p><div class="fk-bar-btns">${cta}</div></div>`;
+    // After each step the screen scrolls to the control of the next one (tick), once per step.
+    const n=nextOf(g.steps),at=!n||B(x).event?'':n.go?.sel||(n.go?.cmd==='tea_discard'?'.mt-minor':'')||n.at||'';
+    return `<div class="career-job mt" data-mt-at="${x.esc(at)}" data-mt-key="${x.esc(`${t.id}|${n?.label||''}|${n?.ok}`)}">${hintFor(t,x)}${hud(x)}${eventCard(x)}${alerts(x)}${careFold(x)}${appRow(t,x)}${queueRow(t,x)}${customer(t,x)}${tabs(t,x)}${outOfStock(t,x)}${t.known?layout:''}
       <div class="mt-tools">${x.button('🧺 Kho & đặt hàng','prepare',{},'ghost small')}${x.button('⭐ Đánh giá','feedback',{},'ghost small')}</div>${bar}</div>`;
   },
   idle(x){
     const b=B(x),waiting=x.room.tasks.filter(open),left=b.left||0,orders=b.orders||[];
-    const next=waiting.length?x.button(`👋 Mời ${x.esc(waiting[0].customer||'khách')} lên quầy`,'job',{task:waiting[0].id},'primary'):left?jb(x,'🔔 Mời khách tiếp theo','more_work',{},'primary'):x.button('🌙 Khép ca hôm nay','end',{},'primary');
-    const tip=waiting.length||left?'':'<p class="mt-hint">💡 Hết khách hôm nay rồi.</p>';
+    const who=waiting[0]?.customer||'khách';
+    const step=waiting.length?{ok:null,label:`Mời ${who} lên quầy`,go:{act:'job',data:{task:waiting[0].id},label:`👋 Mời ${x.esc(who)} lên quầy`}}
+      :left?{ok:null,label:'Mời khách tiếp theo',go:run('more_work',{},'🔔 Mời khách tiếp theo')}
+      :{ok:null,label:'Khép ca hôm nay',go:{act:'end',label:'🌙 Khép ca hôm nay'}};
+    const next=stepCta(x,[step],{label:'',go:null,ready:false},{style:'primary'});
     const wait=x.room.open&&orders.length&&!waiting.length?jb(x,'⏳ Chờ hàng · 20 phút','tea_wait',{},'ghost'):'';
     const night=(b.night||[]).length?`<div class="mt-night">${b.night.map(l=>`<p>${x.esc(l)}</p>`).join('')}</div>`:'';
-    return `<div class="career-job mt">${hud(x)}${eventCard(x)}${alerts(x)}${night}${careFold(x)}${tip}${orders.length?`<section class="mt-orders"><h4>📦 Đang giao</h4>${orderRows(x)}</section>`:''}<div class="row wrap">${next}${wait}${x.button('🧺 Kho & đặt hàng','prepare',{},'ghost')}</div></div>`;
+    return `<div class="career-job mt">${B(x).event?'':nextHint(x,[step])}${hud(x)}${eventCard(x)}${alerts(x)}${night}${careFold(x)}${orders.length?`<section class="mt-orders"><h4>📦 Đang giao</h4>${orderRows(x)}</section>`:''}<div class="row wrap">${next}${wait}${x.button('🧺 Kho & đặt hàng','prepare',{},'ghost')}</div></div>`;
   },
   page(view,x){
     if(!['prepare','prices'].includes(view))return '';
@@ -463,6 +557,9 @@ export default {
   },
   tick(root,x){
     keepBarAboveFooter(root);
+    focusStep(root);
+    // First task: the pinned bottom button glows too, since the glowing tile may be out of view on a phone.
+    if(root.closest('dialog')?.querySelector('.gd-next[data-first]'))root.querySelector('.fk-bar .gd-cta:not([disabled])')?.classList.add('gd-pulse');
     const modal=root.querySelector('.mt-modal');
     if(modal){
       const d=root.closest('dialog'),h=`${d?.querySelector('.sheet-head')?.offsetHeight||0}px`;
