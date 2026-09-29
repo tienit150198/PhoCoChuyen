@@ -44,7 +44,7 @@ EXPECT = {
     'pick': ['#sheet .jr-first-jobs .jr-job', '#sheet .jr-cta', '#sheet [data-action="choose"]'],
     'open': ['#sheet [data-action="start"]', '#taskHUD [data-action="prepare"]'],
     'money': ['#topbar .cozy-till'],
-    'wallet': ['#jrHud .jr-hud-wallet', '#jrHud'],
+    'wallet': ['#jrHud .jr-hud-wallet', '#jrHud', '#topbar .hud-day'],
     'task': ['#taskHUD .task-card', '#taskHUD .note-card'],
     'do': ['#sheet .sheet-body .btn.primary', '#sheet .sheet-body [data-command]'],
     'close': [],
@@ -208,8 +208,9 @@ async def main_run(base, shots: Path | None):
             # 1) the whole tour as a brand-new story player
             ctx, page, r = await fresh(browser, f'{vname}-tour', w, h, touch, shots, base)
             await play_tour(r)
-            # Replay from Cài đặt → Cách chơi.
-            await r.click('#topbar [data-action="settings"]')
+            # Replay from Cài đặt → Cách chơi (calm screen: the day opens the status sheet, Cài đặt is in it).
+            await r.click('#topbar [data-action="status"]')
+            await r.click('#sheet [data-action="settings"]')
             await r.shot('settings-play')
             await r.click('#sheet .tut-settings [data-action="tutReplay"]')
             await r.wait(900)
@@ -314,9 +315,12 @@ async def main_run(base, shots: Path | None):
                 await r.click('#sheet [data-action="choose"][data-career="delivery"]')
                 await r.wait(1200)
                 st = await r.tour()
-                r.log.append(f"hire: {st and st['step']} ring={st and st['spot'] is not None}")
-                if not st or st['step'] != 'hire' or not st['spot']:
-                    r.problem(f'hiring workplace: expected the hire step on the job form, got {st}')
+                # Story day one hires a chapter-1 player at once (no CV + trial): then the tour goes straight on.
+                job = await page.evaluate("fetch('/api/state').then(r=>r.json()).then(s=>(s.state.careers.delivery.job||{}).status||null)")
+                r.log.append(f"hire: {st and st['step']} ring={st and st['spot'] is not None} job={job}")
+                want = ('open',) if job == 'hired' else ('hire',)
+                if not st or st['step'] not in want or not st['spot']:
+                    r.problem(f'hiring workplace (job {job}): expected the {want[0]} step, got {st}')
                 await r.shot('hire')
                 for _ in range(8):   # "Tiếp" through to the end: never stuck
                     if not await r.tour():
