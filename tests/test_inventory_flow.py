@@ -1,6 +1,6 @@
 """Buying and stocking, end to end through the reducer (v0.4 inventory).
 
-order → arrive → count and receive → shelve → sell, plus the guard rails:
+order → arrive (on the shop clock) → count and receive → shelve → sell, plus the guard rails:
 no overdraw, no over-capacity orders, no double receipt, one claim and one
 rating per order, expiry at closing and a bounded order book that never
 forgets goods still on the way.
@@ -36,6 +36,23 @@ def public_inv(j):
     return public_state(j.state)['careers'][j.career]['inventory']
 
 
+def wait_until_ready(j, oid, limit=120):
+    """Let shop time pass (20 minutes a wait, a new day when the shop has
+    closed) until the order is at the door. Returns how many waits it took."""
+    for n in range(limit):
+        pub = public_inv(j)
+        if next(x for x in pub['orders'] if x['id'] == oid)['ready_now']:
+            return n
+        clk = pub['clock']
+        if clk['is_open'] and clk['minute'] < clk['close']:
+            j.act('inv_wait')
+        else:
+            if clk['is_open']:
+                j.act('end_day', carry_event=True)
+            j.act('start_day')
+    raise AssertionError(f'order {oid} never arrived')
+
+
 class InventoryFlow(unittest.TestCase):
     def setUp(self):
         self.clock = Clock()
@@ -63,10 +80,14 @@ class InventoryFlow(unittest.TestCase):
         self.assertFalse(po['ready_now'])
         self.assertIsNone(po['count_hint'])
         self.assertNotIn('actual', po, 'the real count stays hidden until the box is opened')
-        # Straight after ordering the 1-beat delivery has not arrived.
-        with self.assertRaises(GameError):
+        self.assertTrue(po['eta_label'] and po['window'] and po['left_label'])
+        self.assertNotIn('at', po, 'the real arrival stays hidden until it happens')
+        # Straight after ordering the distributor's van has not come.
+        with self.assertRaises(GameError) as err:
             j.act('inv_receive', order=o['id'], count=o['actual'])
-        j.act('advance')
+        self.assertIn('Dự kiến', str(err.exception))
+        self.assertNotIn('nhịp', str(err.exception))
+        self.assertGreater(wait_until_ready(j, o['id']), 0)
         po = next(x for x in public_inv(j)['orders'] if x['id'] == o['id'])
         self.assertTrue(po['ready_now'])
         self.assertNotIn('actual', po)
@@ -147,7 +168,7 @@ class InventoryFlow(unittest.TestCase):
         o = self.order('noodle', 5)
         # Goods bought elsewhere (market, gifts) filled the shelf meanwhile.
         inventory.add_lot(j.c, 'noodle', cap - 1, 1, 3, 'market')
-        j.act('advance')
+        wait_until_ready(j, o['id'])
         with self.assertRaises(GameError) as err:
             j.act('inv_receive', order=o['id'], count=o['actual'])
         self.assertIn('chỉ còn chỗ cho 1', str(err.exception))
@@ -155,11 +176,17 @@ class InventoryFlow(unittest.TestCase):
         j.act('inv_receive', order=o['id'], count=o['actual'])
         self.assertEqual(kit.stock(j.c, 'noodle'), o['actual'])
 
-    def test_express_is_ready_in_the_same_beat(self):
+    def test_express_arrives_within_the_hour(self):
         j = self.j
         empty(j.c, 'egg')
         o = self.order('egg', 4, 'express')
-        self.assertTrue(next(x for x in public_inv(j)['orders'] if x['id'] == o['id'])['ready_now'])
+        po = next(x for x in public_inv(j)['orders'] if x['id'] == o['id'])
+        self.assertFalse(po['ready_now'])
+        self.assertIn('phút', po['left_label'])
+        # 30–60 minutes (a late courier adds at most 30): a few 20-minute waits.
+        waits = wait_until_ready(j, o['id'])
+        self.assertGreaterEqual(waits, 1)
+        self.assertLessEqual(waits, 5)
         j.act('inv_receive', order=o['id'], count=o['actual'])
         self.assertEqual(kit.stock(j.c, 'egg'), 4)
 
@@ -175,8 +202,8 @@ class InventoryFlow(unittest.TestCase):
         self.assertLess(o['actual'], o['qty'])
         with self.assertRaises(GameError):
             j.act('inv_claim', order=o['id'])
-        j.act('advance')
-        j.act('advance')
+        # The market delivers tomorrow before opening.
+        wait_until_ready(j, o['id'])
         with self.assertRaises(GameError):
             j.act('inv_receive', order=o['id'], count=o['qty'])
         j.act('inv_receive', order=o['id'], count=o['actual'])
@@ -200,6 +227,7 @@ class InventoryFlow(unittest.TestCase):
     def test_full_delivery_cannot_be_claimed(self):
         j = self.j
         o = self.order('egg', 3, 'express')
+        wait_until_ready(j, o['id'])
         j.act('inv_receive', order=o['id'], count=o['actual'])
         if o['actual'] == o['qty']:
             with self.assertRaises(GameError):
@@ -210,6 +238,7 @@ class InventoryFlow(unittest.TestCase):
         empty(j.c, 'beef')
         life = inventory.item('restaurant', 'beef')['life']
         o = self.order('beef', 3, 'express')
+        wait_until_ready(j, o['id'])
         j.act('inv_receive', order=o['id'], count=o['actual'])
         self.assertEqual(public_inv(j)['days_left']['beef'], life)
         for n in range(life):
@@ -252,7 +281,7 @@ class InventoryFlow(unittest.TestCase):
         self.assertIn(old['id'], ids, 'an unreceived paid order is kept')
         self.assertIn(new['id'], ids)
         self.assertNotIn('po-old-0', ids)
-        j.act('advance')
+        wait_until_ready(j, old['id'])
         j.act('inv_receive', order=old['id'], count=old['actual'])
         validate_state(j.state)
 
@@ -286,7 +315,8 @@ class EveryStockedCareer(unittest.TestCase):
                 o = j.c['ext']['inv']['orders'][-1]
                 with self.assertRaises(GameError):
                     j.act('inv_receive', order=o['id'], count=o['actual'])
-                j.act('advance')
+                wait_until_ready(j, o['id'])
+                stock = kit.stock(j.c, it['id'])  # a closing on the way may have expired old lots
                 j.act('inv_receive', order=o['id'], count=o['actual'])
                 self.assertEqual(kit.stock(j.c, it['id']), stock + o['actual'])
                 with self.assertRaises(GameError):

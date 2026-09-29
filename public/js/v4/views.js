@@ -24,7 +24,11 @@ export function inventoryView(env){
   const items=content.inventory.items[api.state.current]||[],byId=Object.fromEntries(items.map(i=>[i.id,i]));
   const cap=inv.capacity,arriving=inv.arriving||{},unit=i=>i?.unit||'phần',stock=id=>inv.stock[id]||0;
   const room=id=>inv.room?.[id]??Math.max(0,cap-stock(id)-(arriving[id]||0));
-  const orders=inv.orders||[],ready=orders.filter(o=>o.status==='in_transit'&&o.ready_now),transit=orders.filter(o=>o.status==='in_transit'&&!o.ready_now);
+  const orders=inv.orders||[],ready=orders.filter(o=>o.status==='in_transit'&&o.ready_now);
+  // Soonest first: the server gives each order its arrival day and time of day.
+  const soon=o=>(Number(o.arrives_day)||0)*1440+(String(o.arrives_time||'').split(':').reduce((h,m)=>h*60+Number(m||0),0));
+  const transit=orders.filter(o=>o.status==='in_transit'&&!o.ready_now).sort((a,b)=>soon(a)-soon(b));
+  const clk=inv.clock||null;
   const open=items.filter(i=>!inv.locked.includes(i.id)),lowLine=Math.max(2,Math.floor(cap*.08));
   const low=open.filter(i=>stock(i.id)+(arriving[i.id]||0)<=lowLine).sort((a,b)=>stock(a.id)-stock(b.id));
   const tonight=open.reduce((n,i)=>n+(inv.expiring[i.id]||0),0);
@@ -37,7 +41,9 @@ export function inventoryView(env){
   else if(tonight)cta=button(`${icon('clock',15)} Xem hàng hết hạn tối nay`,'v4InvTab',{tab:'lots'},'primary');
   const chip=(n,label,kind,tabId)=>n?`<button type="button" class="inv-chip ${kind}" data-action="v4InvTab" data-tab="${tabId}"><b>${n}</b> ${label}</button>`:'';
   const calm=!ready.length&&!transit.length&&!tonight&&!low.length?`<span class="inv-calm">${icon('check',14)} Kho ổn. Chạm một ô để nhập thêm.</span>`:'';
-  const strip=`<section class="inv-status" aria-label="Tình trạng kho"><div class="inv-chips">${chip(ready.length,'thùng đã tới','accent','orders')}${chip(transit.length,'đơn đang giao','info','orders')}${chip(tonight,'hết hạn tối nay','bad','lots')}${chip(low.length,'loại sắp hết','warn','stock')}${calm}</div>${cta?`<div class="inv-cta">${cta}</div>`:''}</section>`;
+  const now=clk?`<div class="row spread"><span class="tag blue">🕑 ${esc(clk.label)}</span><small class="muted">Mở cửa ${esc(clk.open_time)}–${esc(clk.close_time)}</small></div>`:'';
+  const next=!ready.length&&transit[0]?`<small class="muted">${icon('truck',13)} Thùng gần nhất: ${name(byId[transit[0].item])} · <b>${esc(transit[0].eta_label||'')}</b>${transit[0].left_label?` (${esc(transit[0].left_label)})`:''}</small>`:'';
+  const strip=`<section class="inv-status" aria-label="Tình trạng kho">${now}<div class="inv-chips">${chip(ready.length,'thùng đã tới','accent','orders')}${chip(transit.length,'đơn đang giao','info','orders')}${chip(tonight,'hết hạn tối nay','bad','lots')}${chip(low.length,'loại sắp hết','warn','stock')}${calm}</div>${next}${cta?`<div class="inv-cta">${cta}</div>`:''}</section>`;
   let body='';
   if(tab==='stock'){
     const pct=v=>Math.max(0,Math.min(100,Math.round(v/cap*100)));
@@ -60,7 +66,7 @@ export function inventoryView(env){
     const pick=ui.orderItem&&byId[ui.orderItem];
     if(pick&&!inv.locked.includes(pick.id))body=orderCard(env,pick,{cap,stock:stock(pick.id),on:arriving[pick.id]||0,space:room(pick.id),unit:unit(pick),name:name(pick)})+body;
   }else if(tab==='orders'){
-    const sup=o=>content.inventory.suppliers.find(x=>x.id===o.supplier);
+    const sup=o=>supplierList(env).find(x=>x.id===o.supplier)||content.inventory.suppliers.find(x=>x.id===o.supplier);
     const crate=o=>{
       const i=byId[o.item]||{name:o.item},s=sup(o),n=Number(o.count_hint)||0;
       // Scatter the goods a little (stable per order) so counting is looking, not reading.
@@ -70,9 +76,16 @@ export function inventoryView(env){
       const form=`<div class="inv-slip"><span>Phiếu giao ghi</span><b>${o.qty} ${esc(unit(i))}</b></div><ul class="inv-crate" aria-label="Trong thùng">${goods}</ul>`+
         `<form class="inv-receive" data-v4-receive="${esc(o.id)}"><label for="count-${esc(o.id)}">Bạn đếm được</label><div class="inv-stepper"><button type="button" class="btn ghost" data-action="v4Count" data-target="count-${esc(o.id)}" data-step="-1" aria-label="Bớt một">−</button><input id="count-${esc(o.id)}" class="input" type="number" min="0" max="60" inputmode="numeric" value="${esc(ui.invCount?.[o.id]??'')}" placeholder="0" data-v4-count="${esc(o.id)}" required><button type="button" class="btn ghost" data-action="v4Count" data-target="count-${esc(o.id)}" data-step="1" aria-label="Thêm một">+</button></div><button class="btn primary" type="submit">${icon('check',15)} Nhận vào kệ</button></form>`+
         `<p class="muted small">Đếm từng món thật trong thùng. Phiếu có thể ghi khác; thiếu thì nhận đúng số có rồi khiếu nại.</p>`;
-      return `<article class="card inv-crate-card${opened?' open':''}" id="crate-${esc(o.id)}"><div class="row spread"><div><strong>${name(i)}</strong><small class="muted block">${esc(s?.emoji||'')} ${esc(s?.name||'')} · đã trả ${fmt(o.cost)} xu</small></div>${pill('ĐÃ TỚI','green')}</div>${opened?form:button(`${icon('box',15)} Mở thùng & đếm`,'v4InvOpen',{order:o.id},'primary')}</article>`;};
-    const waiting=o=>{const i=byId[o.item]||{name:o.item},s=sup(o),left=Math.max(1,(o.ready||0)-(c.turn||0));
-      return `<article class="card order-row"><div class="row spread"><div><strong>${name(i)} · ${o.qty} ${esc(unit(i))}</strong><small class="muted block">${esc(s?.emoji||'')} ${esc(s?.name||'')} · đã trả ${fmt(o.cost)} xu</small></div>${pill(`TỚI SAU ${left} NHỊP`,'amber')}</div><div class="row wrap"><span class="muted small grow">Làm việc khác một chút, hoặc chờ một nhịp rồi mở thùng.</span>${cmdBtn('Chờ một nhịp','advance',{},'ghost small')}</div></article>`;};
+      return `<article class="card inv-crate-card${opened?' open':''}" id="crate-${esc(o.id)}"><div class="row spread"><div><strong>${name(i)}</strong><small class="muted block">${esc(s?.emoji||'')} ${esc(s?.name||'')} · đã trả ${fmt(o.cost)} xu${o.arrives_time?` · tới lúc ${esc(o.arrives_time)}`:''}</small></div>${pill('ĐÃ TỚI','green')}</div>${opened?form:button(`${icon('box',15)} Mở thùng & đếm`,'v4InvOpen',{order:o.id},'primary')}</article>`;};
+    const waiting=o=>{const i=byId[o.item]||{name:o.item},s=sup(o),late=Boolean(o.late_note),pct=Math.round(Math.max(0,Math.min(1,Number(o.progress)||0))*100);
+      // Waiting helps only for goods due later today; the rest arrive while you work or overnight.
+      const today=clk&&Number(o.arrives_day)===Number(clk.day),wait=today&&clk.is_open&&clk.minute<clk.close?cmdBtn(`⏳ Chờ thêm ${Number(clk.step)||20} phút`,'inv_wait',{},'ghost small'):'';
+      const hint=wait?'Làm việc khác trong lúc chờ, hàng tới sẽ báo ở đây.':!clk?.is_open?'Hàng tới trước giờ mở cửa sẽ chờ sẵn ở cửa.':today?'Đã tới giờ đóng cửa. Hàng về tối nay chờ sẵn ở cửa, sáng mai mở thùng.':`Tới ngày ${esc(o.arrives_day)}. Cứ làm việc và khép ca như thường, thùng tới sẽ báo ở đây.`;
+      return `<article class="card order-row"><div class="row spread"><div class="grow"><strong>${name(i)} · ${o.qty} ${esc(unit(i))}</strong><small class="muted block">${esc(s?.emoji||'')} ${esc(s?.name||'')} · đã trả ${fmt(o.cost)} xu</small></div>${pill(late?'TRỄ HẸN':`⏱ ${esc(o.left_label||'đang giao')}`,late?'amber':'blue')}</div>`+
+        `<div><span class="small">Dự kiến nhận: <b>${esc(o.eta_label||'đang trên đường')}</b></span>${o.window?`<small class="muted block">Hẹn giao ${esc(o.window)}</small>`:''}</div>`+
+        `<span class="inv-bar" role="progressbar" aria-label="Quãng đường đã đi" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i class="on" style="width:${pct}%"></i></span>`+
+        `${late?`<p class="notice amber small">${icon('truck',15)} <span><b>${esc(s?.name||'')}:</b> “${esc(o.late_note)}”</span></p>`:''}`+
+        `<div class="row wrap"><span class="muted small grow">${hint}</span>${wait}</div></article>`;};
     const received=o=>{const i=byId[o.item]||{name:o.item},s=sup(o),short=o.actual<o.qty;
       let act='';
       if(short&&!o.claimed)act+=cmdBtn('Khiếu nại phần thiếu','inv_claim',{order:o.id},'small cream');
@@ -97,22 +110,34 @@ export function inventoryView(env){
 /** Order card: stepper + quick chips (never past the room left), suppliers,
  * a live total and the reason when ordering is not possible. */
 function orderCard(env,pick,{cap,stock,on,space,unit,name}){
-  const {api,ui}=env,c=api.state.careers[api.state.current],inv=c.inventory,sups=api.content.inventory.suppliers;
-  const sup=sups.find(x=>x.id===(ui.orderSupplier||'partner'))||sups[0],max=Math.min(30,space);
+  const {api,ui}=env,c=api.state.careers[api.state.current],sups=supplierList(env);
+  const sup=pickSupplier(env,pick.id),max=Math.min(30,space);
   // First suggestion: up to 10, never past the room left or what the till can pay.
   const afford=Math.floor(c.money/Math.max(1e-9,pick.cost*sup.factor)),qty=Math.max(1,Math.min(max||1,ui.orderQty||Math.min(10,max||1,Math.max(1,afford))));
   const cost=Math.max(1,Math.ceil(pick.cost*qty*sup.factor));
   const why=!space?'Kệ đã đầy (tính cả hàng đang giao).':cost>c.money?`Chưa đủ xu: cần ${fmt(cost)}, két có ${fmt(c.money)}.`:'';
   const chips=[5,10].filter(n=>n<max).map(n=>`<button type="button" class="chip ${n===qty?'selected':''}" data-action="v4Qty" data-set="${n}">${n}</button>`).join('')+(max?`<button type="button" class="chip ${qty===max?'selected':''}" data-action="v4Qty" data-set="${max}">${space<=30?'Đầy kệ':'Tối đa'} · ${max}</button>`:'');
-  const supplier=x=>{const r=inv.suppliers.find(y=>y.id===x.id)?.rating;return `<button type="button" class="choice ${x.id===sup.id?'selected':''}" data-action="v4Supplier" data-supplier="${x.id}" aria-pressed="${x.id===sup.id}"><strong>${esc(x.emoji)} ${esc(x.name)}</strong><small>${x.lead===0?'Có ngay':`Tới sau ${x.lead} nhịp`} · ${x.factor<1?'rẻ hơn':x.factor>1?'đắt hơn':'giá niêm yết'} ×${x.factor}${r?` · ${r}★`:''}</small><small class="muted">${esc(x.note)}</small></button>`;};
+  const cheapest=Math.min(...sups.filter(x=>sells(x,pick.id)).map(x=>x.factor));
+  const supplier=x=>{const ok=sells(x,pick.id),on=ok&&x.id===sup.id;
+    const price=`${x.factor===cheapest&&x.factor<1?'rẻ nhất':x.factor<1?'rẻ hơn':x.factor>1?'đắt hơn':'giá niêm yết'} ×${String(x.factor).replace('.',',')}`;
+    const notes=[price,x.short>=15?'hay thiếu hàng':'',x.late>=12?'hay trễ hẹn':'',x.fresh?`tươi thêm ${x.fresh} ngày`:'',x.rating?`${x.rating}★`:''].filter(Boolean).join(' · ');
+    return `<button type="button" class="choice ${on?'selected':''}" data-action="v4Supplier" data-supplier="${esc(x.id)}" aria-pressed="${on}"${ok?'':' disabled'}><span class="grow" style="display:grid;gap:3px;min-width:0"><strong>${esc(x.emoji)} ${esc(x.name)}</strong>`+
+      `<span style="font-weight:800;color:var(--accent-text)">${ok?esc(x.quote?.label||x.window||''):'Không bán mặt hàng này'}</span>`+
+      `${ok?`<small style="margin:0">${x.kind==='rush'||!x.window?'':`${esc(x.window)} · `}${esc(notes)}</small><small class="muted" style="margin:0">${esc(x.note||'')}</small>`:''}</span></button>`;};
   return `<section class="card order-card inv-order" aria-label="Nhập ${esc(pick.name)}"><div class="row spread"><h3>Nhập ${name}</h3>${button(icon('x',14),'v4Order',{item:''},'ghost small')}</div>`+
     `<p class="inv-facts"><span>Trên kệ <b>${stock}</b></span><span>Đang giao <b>${on}</b></span><span>Còn chỗ <b>${space}</b></span><span>Giá gốc <b>${pick.cost}</b> xu/${esc(unit)}</span>${pick.life?`<span>Dùng trong <b>${pick.life}</b> ngày</span>`:''}</p>`+
     `<label class="field" for="order-qty">Số lượng</label><div class="inv-qty"><div class="inv-stepper"><button type="button" class="btn ghost" data-action="v4Qty" data-step="-1" aria-label="Bớt một"${qty<=1?' disabled':''}>−</button><input id="order-qty" class="input" type="number" inputmode="numeric" min="1" max="${Math.max(1,max)}" value="${qty}" data-v4-qty aria-describedby="order-total"><button type="button" class="btn ghost" data-action="v4Qty" data-step="1" aria-label="Thêm một"${qty>=max?' disabled':''}>+</button></div><span class="chip-row">${chips}</span></div>`+
     `<label class="field">Nhà cung cấp</label><div class="choice-grid">${sups.map(supplier).join('')}</div>`+
-    `<div class="inv-total"><div class="grow"><strong id="order-total" data-cost="${pick.cost}" data-factor="${sup.factor}" data-money="${c.money}" data-shelf="${stock+on}" data-cap="${cap}" data-max="${max}">Tổng: ${fmt(cost)} xu</strong><small class="muted block" id="order-after">Két còn ${fmt(Math.max(0,c.money-cost))} xu · kệ sau khi nhận ${stock+on+qty}/${cap}</small><small class="danger-text block" id="order-why" role="status">${esc(why)}</small></div>`+
+    `<div class="inv-total"><div class="grow"><strong id="order-total" data-cost="${pick.cost}" data-factor="${sup.factor}" data-money="${c.money}" data-shelf="${stock+on}" data-cap="${cap}" data-max="${max}">Tổng: ${fmt(cost)} xu</strong><small class="block" id="order-eta">Dự kiến nhận: <b>${esc(sup.quote?.eta_label||sup.window||'')}</b></small><small class="muted block" id="order-after">Két còn ${fmt(Math.max(0,c.money-cost))} xu · kệ sau khi nhận ${stock+on+qty}/${cap}</small><small class="danger-text block" id="order-why" role="status">${esc(why)}</small></div>`+
     `<button type="button" class="btn primary" id="order-go" data-action="v4OrderGo" data-item="${esc(pick.id)}"${why?' disabled':''}>${icon('truck',15)} Đặt hàng</button></div>`+
     `<p class="muted small">Trả tiền khi đặt. Hàng vào kệ sau khi bạn mở thùng và đếm đúng.</p></section>`;
 }
+/** The career's suppliers with live quotes (older servers: the shared list). */
+function supplierList(env){const {api}=env,c=api.state.careers[api.state.current];return c.inventory?.suppliers?.length?c.inventory.suppliers:(api.content.inventory.by_career?.[api.state.current]||api.content.inventory.suppliers);}
+function sells(x,item){return !Array.isArray(x?.items)||x.items.includes(item);}
+/** The chosen supplier if it sells the item, else the distributor, else the first that does. */
+function pickSupplier(env,item){const sups=supplierList(env),want=sups.find(x=>x.id===(env.ui.orderSupplier||'partner'));
+  return want&&sells(want,item)?want:sups.find(x=>x.id==='partner'&&sells(x,item))||sups.find(x=>sells(x,item))||sups[0];}
 function groupName(g){return {base:'Nguyên liệu chính',pack:'Bao bì',sauce:'Sốt',broth:'Nước dùng',topping:'Topping',flower:'Hoa',filler:'Lá & hoa phụ',wrap:'Giấy gói & ruy băng',supply:'Vật tư',goods:'Hàng hóa',tool:'Dụng cụ',part:'Linh kiện',seed:'Hạt giống',feed:'Thức ăn',product:'Sản phẩm',ingredient:'Nguyên liệu',drink:'Đồ uống',bake:'Bánh',room:'Phòng',care:'Chăm sóc',coffee:'Cà phê',dry:'Hàng khô',fridge:'Tủ mát',milk:'Sữa',bike:'Xe đạp',cooker:'Nồi cơm',fan:'Quạt',headphone:'Tai nghe',laptop:'Máy tính',phone:'Điện thoại'}[g]||g;}
 
 /* ------------------------------------------------------------ Feedback */
@@ -267,9 +292,9 @@ export async function v4Action(action,data,el,env){
       const item=api.content.inventory.items[api.state.current].find(i=>i.id===data.item);if(!item)return true;
       const inp=document.getElementById('order-qty'),max=Math.max(1,Number(inp?.max)||30);
       const qty=Math.max(1,Math.min(max,Number(inp?.value)||ui.orderQty||1));ui.orderQty=qty;
-      const sup=api.content.inventory.suppliers.find(x=>x.id===(ui.orderSupplier||'partner'));
-      const cost=Math.max(1,Math.ceil(item.cost*qty*sup.factor));
-      if(!await confirmAction('Đặt hàng?',`${qty} ${item.unit||'phần'} ${item.name} từ ${sup.name}: trả ${cost} xu ngay. Hàng chỉ vào kho sau khi bạn đếm nhận.`,'Đặt hàng'))return true;
+      const sup=pickSupplier(env,item.id);
+      const cost=Math.max(1,Math.ceil(item.cost*qty*sup.factor)),eta=sup.quote?.eta_label||sup.window||'';
+      if(!await confirmAction('Đặt hàng?',`${qty} ${item.unit||'phần'} ${item.name} từ ${sup.name}: trả ${cost} xu ngay.${eta?` Dự kiến nhận: ${eta}.`:''} Hàng chỉ vào kho sau khi bạn đếm nhận.`,'Đặt hàng'))return true;
       const r=await cmd('inv_order',{item:item.id,qty,supplier:sup.id,confirm:true});if(r){ui.orderItem=null;ui.orderQty=0;ui.invTab='orders';renderSheet(false);}
       return true;}
     case'v4FbFilter':ui.fbFilter=data.tab;ui.fbStars=0;ui.fbPost=null;renderSheet(false);return true;
