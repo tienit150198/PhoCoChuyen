@@ -603,6 +603,14 @@ def make_review(s: dict, c: dict, t: dict, status: str) -> dict:
         if persona in ('rude', 'parent_rude') and seed % 3 == 0:
             clues = ['Tài khoản mới, đây là đánh giá đầu tiên']
     item = _fv.topic(t)
+    gripe = None
+    if text is None and status == 'completed' and not (unfair or t.get('slips')):
+        # Off-topic gripes ("con mèo nằm trên quầy") and trivial five-star reasons (review_gripes.py).
+        g = _rg.roll(s, c, t, persona, group, fair, stars, ev['criteria'], seed, item)
+        if g:
+            gripe, stars, text, unfair = g['gripe'], g['stars'], g['text'], g['unfair']
+            if g['clue']:
+                clues.append(g['clue'])
     style = None
     if text is None and status == 'completed' and not (unfair or t.get('slips') or persona in HARSH):
         # Mixed signals and odd voices: "ok", emoji only, long rants, 5★ for the owner's smile…
@@ -624,6 +632,8 @@ def make_review(s: dict, c: dict, t: dict, status: str) -> dict:
               value=int(t.get('_value', 0) or 0), item=item[:80])
     if style:
         fb['style'] = style
+    if gripe:
+        fb['gripe'] = gripe
     if twist:
         fb['twist'] = twist
     if clues:
@@ -631,7 +641,7 @@ def make_review(s: dict, c: dict, t: dict, status: str) -> dict:
     if out:
         fb['stranger'] = True
     # Happy asides ("Trà ngon, mai ghé tiếp!") only fit a plain, friendly review.
-    return dict(text=text, stars=stars, feedback=fb, aside=not (twist or unfair or style or persona in HARSH or t.get('slips')), **out)
+    return dict(text=text, stars=stars, feedback=fb, aside=not (twist or unfair or style or gripe or persona in HARSH or t.get('slips')), **out)
 
 
 def _kind(fb: dict):
@@ -711,7 +721,11 @@ def scripted_decision(persona: str, fb: dict, stars: int, reply: str, offer: str
             return dict(decision='argue', stars=stars, text=pick(v['argue']))
         return dict(decision='keep', stars=stars, text=pick(v['keep']))
     if fb.get('unfair'):
-        if sig['facts'] or (sig['apology'] and persona in ('warm', 'genz', 'parent_kind', 'quiet')):
+        if fb['unfair'].get('gripe'):
+            # An off-topic gripe: a kind or factual reply lets most people drop it.
+            if sig['facts'] or (sig['apology'] and persona not in HARSH):
+                return dict(decision='revise_up', stars=high, text=pick(TWIST_REPLY['gripe_soft_parent' if parent else 'gripe_soft']))
+        elif sig['facts'] or (sig['apology'] and persona in ('warm', 'genz', 'parent_kind', 'quiet')):
             return dict(decision='revise_up', stars=high, text=pick(v['sorry']))
         if sig['blame']:
             return dict(decision='argue', stars=stars, text=pick(v['argue']))
@@ -981,6 +995,7 @@ def validate_post(post: dict) -> None:
     for k in ('stranger', 'viral', 'ignored'):
         need(type(fb.get(k, False)) is bool, 'Cờ đánh giá sai.')
     _fv.validate_extra(fb)
+    _rg.validate(fb)
 
 
 def public_post(post: dict) -> dict:
@@ -1034,7 +1049,7 @@ def ai_context(c: dict, post: dict, lang: str = 'vi') -> dict:
     low, high = _bounds(fb, post['stars'])
     return dict(language='English' if lang == 'en' else 'tiếng Việt', persona=dict(name=per['name'], style=per['style'], reviewer=post['author']),
                 role='phụ huynh học sinh phản hồi giáo viên' if per['group'] == 'parent' else 'khách hàng phản hồi cửa hàng/dịch vụ',
-                facts=dict(task=fb.get('title'), criteria=fb['criteria'], unfair_claim=fb.get('unfair'), situation=TWIST_AI.get(_kind(fb))),
+                facts=dict(task=fb.get('title'), criteria=fb['criteria'], unfair_claim=fb.get('unfair'), situation=TWIST_AI.get(_kind(fb)) or _rg.situation(fb)),
                 review=dict(stars_now=post['stars'], stars_original=fb['stars_original'], text=post['text']),
                 thread=fb['thread'][-6:], allowed_stars=[low, high], offers=[x.get('offer') for x in fb['thread'] if x['role'] == 'owner'],
                 reply_tone=next((_fv.TONES[x['tone']]['label'] for x in reversed(fb['thread']) if x['role'] == 'owner' and x.get('tone') in _fv.TONES), None),
@@ -1078,3 +1093,6 @@ def day_summary(c: dict, day: int) -> dict:
 # Livelier threads: extra voices, reply tones, third parties (feedback_voices.py).
 from . import feedback_voices as _fv  # noqa: E402
 _fv.install(globals())
+# Off-topic gripes and trivial five-star reasons (review_gripes.py).
+from . import review_gripes as _rg  # noqa: E402
+_rg.install(globals())

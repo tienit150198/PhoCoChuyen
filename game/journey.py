@@ -32,7 +32,7 @@ BREADTH_XP = 80       # maturity bonus for every workplace you really worked at
 LIVING = {1: 10, 2: 12, 3: 14, 4: 16, 5: 18, 6: 20, 7: 20}
 UPKEEP = {'cozy': 4, 'sunny': 7, 'garden': 11}
 MODES = (('calm', .25), ('normal', .55), ('festival', .20))
-HISTORY_KINDS = ('living', 'upkeep', 'draw', 'invest', 'salary', 'reopen', 'incident')
+HISTORY_KINDS = ('living', 'upkeep', 'draw', 'invest', 'salary', 'reopen', 'incident', 'life')
 NEWS_KINDS = ('chapter', 'titles')
 
 CH_UNLOCKS = {
@@ -659,6 +659,16 @@ def _goals_view(ctx: dict, n: int) -> list[dict]:
         return []
     return [dict(id=g['id'], text=g['text'], goal=g['goal'], cur=min(int(ctx[g['id']]), 10**6), done=_goal_done(ctx, g))
             for g in ch['goals']]
+
+
+def default_career(s: dict) -> str:
+    """The workplace shown before the player picks one: open in the story, the suggested one first."""
+    j = s.get('journey') or {}
+    if not j.get('story'):
+        return 'mother_baby'
+    open_ids = [cid for cid in j.get('unlocked', ()) if cid in s['careers']]
+    pick = suggested(s)
+    return pick if pick in open_ids else (open_ids or ['mother_baby'])[0]
 
 
 def suggested(s: dict, ctx: dict | None = None) -> str | None:

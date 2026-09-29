@@ -7,6 +7,8 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {accountChip} from './account.js';
 import {storiesBoot,storiesCard,storiesAction,maybeStory} from './stories.js';
 import {investView,investEntry,investAction} from './invest.js';
+import {boardEntry} from './board.js';
+import {lifeView,lifeEntry,lifeCard,lifeAction,lifeBoot} from './life.js';
 
 export const EMOJI={restaurant:'🍜',cafe_bakery:'🥐',grocery:'🛒',repair:'🔧',homestay:'🏡',corp_accounting:'🧮',tax_payroll:'🧾',group_accounting:'🏢',
   mother_baby:'🎁',pharmacy:'💊',accounting:'📒',customer_care:'🎧',teacher:'🍎',tour_guide:'🧭',milk_tea:'🧋',florist:'💐',salon:'💇',
@@ -58,6 +60,7 @@ export function journeyHome(env){
   if(ui.jrView==='titles')return titlesView(env);
   if(ui.jrView==='wallet')return walletView(env);
   if(ui.jrView==='invest')return investView(env);
+  if(ui.jrView==='life')return lifeView(env);
   if(ui.jrView==='profile')return profileView(env);
   return homeMain(env);
 }
@@ -151,7 +154,7 @@ function placesSection(env){
 function homeMain(env){
   const {api}=env,J=api.state.journey;
   const top=`<header class="jr-top"><div class="grow"><span class="eyebrow">${J.story?`Khu phố nhỏ · Ngày sống ${fmt(J.life_day)}`:'Khu phố nhỏ · mọi nơi đều mở'}</span><h1>Hành trình của bạn</h1></div>${accountChip(env)}${api.state.current?btn(icon('x',20),'close',{},'ghost small jr-close','aria-label="Đóng"'):''}</header>`;
-  return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col">${meCard(env)}${J.story?chapterCard(env):''}${storiesCard(env)}</div><div class="jr-col wide">${placesSection(env)}</div></div></div>`;
+  return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col">${meCard(env)}${lifeCard(env)}${boardEntry(env)}${J.story?chapterCard(env):''}${storiesCard(env)}</div><div class="jr-col wide">${placesSection(env)}</div></div></div>`;
 }
 
 /* ------------------------------------------------------------------ intro */
@@ -220,14 +223,14 @@ function walletView(env){
     return `<details class="jr-fundrow ${p.paused?'paused':''}"><summary><span class="jr-place-emoji" aria-hidden="true">${emojiOf(m)}</span><span class="grow"><b>${esc(m.place||m.short)}</b><small>${p.employed?'Làm thuê · lương về ví':p.paused?'Tạm đóng · không tốn phí duy trì':`Duy trì ${fmt(p.upkeep)} xu/ngày khi vắng chủ`}</small></span><b class="jr-amt">${fmt(p.fund)} xu</b></summary>
       <div class="jr-fund-actions">${draw}${invest}<div class="row wrap">${pause}</div></div></details>`;
   }).join('')||`<p class="muted">Chưa có nơi làm việc nào. Bắt đầu ở một tiệm trong hẻm nhé.</p>`;
-  const kinds={living:'🏠',upkeep:'💡',draw:'👛',invest:'📈',salary:'💵',reopen:'🔑',incident:'⚖️'};
+  const kinds={living:'🏠',upkeep:'💡',draw:'👛',invest:'📈',salary:'💵',reopen:'🔑',incident:'⚖️',life:'🌿'};
   const hist=J.history.map(h=>`<li><span aria-hidden="true">${kinds[h.kind]||'•'}</span><span class="grow">${esc(h.label)}<small>Ngày sống ${fmt(h.day)}</small></span><b class="${h.amount<0?'out':'in'}">${h.amount<0?'−':'+'}${fmt(Math.abs(h.amount))} xu</b></li>`).join('')||`<li class="muted">Chưa có khoản nào.</li>`;
   const L=J.living;
   return head('Ví của bạn','',{back:true})+`<div class="sheet-body jr-body">
     <section class="jr-card jr-purse ${J.debt?'bad':''}" aria-live="polite"><small>${J.debt?'Đang nợ tiền phòng':'Số dư'}</small><strong>${J.debt?`${fmt(J.debt)} xu`:`${fmt(J.wallet)} xu`}</strong>
       <p>Mỗi ngày sống: tiền phòng ${fmt(L.rent)} xu và cơm nước ${fmt(L.meals)} xu.</p>
       ${J.debt?`<p class="jr-debt-note">Khi ví còn nợ, câu chuyện tạm dừng. Rút tiền lời về ví để trả nhé.</p>`:''}</section>
-    ${investEntry(env)}
+    ${investEntry(env)}${lifeEntry(env)}
     <h3 class="jr-sub">Quỹ các nơi làm việc</h3><div class="jr-funds">${places}</div>
     <h3 class="jr-sub">Sổ ví gần đây</h3><ul class="jr-history">${hist}</ul></div>`;
 }
@@ -330,14 +333,14 @@ function hud(){
   if(el.hidden)return;
   const eq=J.equipped_title;
   el.setAttribute('aria-label','Mở hành trình của bạn');
-  el.innerHTML=`${avatar(J.gender,34)}<span class="jr-hud-text"><b>${esc(E.api.state.name)}</b><small>${eq?`${eq.emoji} ${esc(eq.name)}`:`Cấp ${J.maturity.level} · ${esc(J.maturity.name)}`}</small></span><span class="jr-hud-wallet ${J.debt?'bad':''}"><span class="jr-hud-long">${J.debt?`Nợ ${fmt(J.debt)} xu`:`👛 ${fmt(J.wallet)} xu`}</span><span class="jr-hud-short">${J.debt?`Nợ ${shortXu(J.debt)}`:`👛 ${shortXu(J.wallet)}`}</span></span>`;
+  el.innerHTML=`${avatar(J.gender,34)}<span class="jr-hud-text"><b>${E.api.state.life?.pending?'<i class="lf-dot" aria-hidden="true"></i>':''}${esc(E.api.state.name)}</b><small>${eq?`${eq.emoji} ${esc(eq.name)}`:`Cấp ${J.maturity.level} · ${esc(J.maturity.name)}`}</small></span><span class="jr-hud-wallet ${J.debt?'bad':''}"><span class="jr-hud-long">${J.debt?`Nợ ${fmt(J.debt)} xu`:`👛 ${fmt(J.wallet)} xu`}</span><span class="jr-hud-short">${J.debt?`Nợ ${shortXu(J.debt)}`:`👛 ${shortXu(J.wallet)}`}</span></span>`;
   // The title card leaves exactly the chip's width free (CSS var), whatever the layout or wallet length.
   if(!hudWatch&&typeof ResizeObserver!=='undefined'){hudWatch=new ResizeObserver(()=>{el.parentElement?.style.setProperty('--jr-hud-w',`${Math.ceil(el.offsetWidth)}px`);});hudWatch.observe(el);}
 }
 
 /* ------------------------------------------------------------------ wiring */
 export function journeyBoot(env){
-  E=env;sceneDialog();storiesBoot(env);
+  E=env;sceneDialog();storiesBoot(env);lifeBoot(env);
   const sheet=document.getElementById('sheet');
   // The first-run intro cannot be dismissed into an empty scene.
   sheet?.addEventListener('cancel',e=>{const J=E.api.state?.journey;if(E.ui.view==='home'&&J?.story&&!J.intro)e.preventDefault();});
@@ -347,6 +350,7 @@ export function journeyBoot(env){
 
 export async function journeyAction(action,data,el,env){
   if(action?.startsWith('iv'))return investAction(action,data,el,env);
+  if(action?.startsWith('lf'))return lifeAction(action,data,el,env);
   if(!action?.startsWith('jr'))return false;
   E=E||env;
   if(action.startsWith('jrArc'))return storiesAction(action,data,el,env);

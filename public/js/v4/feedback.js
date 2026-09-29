@@ -3,6 +3,7 @@
  * bootstrap `admin` flag, re-checked by the server on every call) also get the
  * "📥 Hộp góp ý" inbox. See docs/superpowers/specs/2026-09-29-player-feedback-design.md. */
 import {icon,escapeHTML as esc} from '../icons.js';
+import {statsView,statsAction} from './admin-stats.js';
 
 const TEXT_MAX=1000,REPLY_MAX=300;
 export const KINDS=[['bug','🐞','Lỗi'],['idea','💡','Ý tưởng'],['praise','💖','Khen'],['hard','🤔','Khó dùng']];
@@ -122,10 +123,14 @@ function inboxView(env){
 
 export function feedbackPageView(env){
   const {api,ui}=env,fb=fbState(ui),admin=!!api.admin;
-  if(!admin&&fb.tab==='inbox')fb.tab='write';
-  const tabs=admin?`<nav class="pill-tabs" role="tablist">${[['write','💬 Góp ý'],['inbox','📥 Hộp góp ý']].map(([id,l])=>`<button type="button" role="tab" aria-selected="${fb.tab===id}" class="${fb.tab===id?'active':''}" data-action="fbTab" data-tab="${id}">${l}</button>`).join('')}</nav>`:'';
+  if(!admin&&(fb.tab==='inbox'||fb.tab==='stats'))fb.tab='write';
+  if(fb.tab==='stats')return head('Thống kê','Chỉ tài khoản vận hành thấy mục này.').replace('>GÓP Ý<','>VẬN HÀNH<')+`<div class="sheet-body fb-sheet">${adminTabs(fb)}${statsView(env)}</div>`;
+  const tabs=admin?adminTabs(fb):'';
   const body=fb.tab==='inbox'?inboxView(env):writeForm(env)+mineList(env);
   return head(fb.tab==='inbox'?'Hộp góp ý':'Góp ý cho nhà làm game',fb.tab==='inbox'?'Chỉ tài khoản vận hành thấy mục này.':'Lỗi, ý tưởng, lời khen hay chỗ khó dùng: viết vài dòng là đủ.')+`<div class="sheet-body fb-sheet">${tabs}${body}</div>`;
+}
+function adminTabs(fb){
+  return `<nav class="pill-tabs" role="tablist">${[['write','💬 Góp ý'],['inbox','📥 Hộp góp ý'],['stats','📊 Thống kê']].map(([id,l])=>`<button type="button" role="tab" aria-selected="${fb.tab===id}" class="${fb.tab===id?'active':''}" data-action="fbTab" data-tab="${id}">${l}</button>`).join('')}</nav>`;
 }
 
 /* ---- actions ---------------------------------------------------------------- */
@@ -156,7 +161,7 @@ export async function feedbackAction(action,data,el,env){
     case'fbSetStatus':{const it=await adminUpdate(env,{id:Number(data.id),status:data.status});if(it)env.toast('Đã đổi trạng thái.');return true;}
     case'fbClearReply':{const it=await adminUpdate(env,{id:Number(data.id),reply:''});if(it)env.toast('Đã xóa lời đáp.');return true;}
   }
-  return false;
+  return statsAction(action,data,el,env);
 }
 
 export async function feedbackSubmit(f,env){

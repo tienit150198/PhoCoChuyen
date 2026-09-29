@@ -81,7 +81,7 @@ export function careerPalette(color,theme){
   }
   return {career,strong,soft,ink,text};
 }
-let careerMeta=null,careerKey='';
+let careerMeta=null,careerKey='',themeKey='';
 /** Set html[data-career] and the --career-* tokens (again when the theme changes). */
 function applyCareer(m){
   if(m)careerMeta=m;m=careerMeta;if(!m)return;
@@ -124,7 +124,10 @@ export const shell={
     window.addEventListener('keydown',e=>{if(e.key==='Escape'&&root.classList.contains('menu-open')){root.classList.remove('menu-open');syncMenu();e.stopPropagation();}},true);
   },
   update(env){
-    applyTheme(env.api.state.settings);
+    // Every command lands here: re-theme only when a theme setting changed (applyTheme reads computed
+    // style, which would force a full style recalc right after each re-render).
+    const st=env.api.state.settings,key=[st.uiTheme,st.reduceMotion,st.largeText].join('|');
+    if(key!==themeKey){themeKey=key;applyTheme(st);}
     if(env.api.state.settings.lang!==language())setLanguage(env.api.state.settings.lang).then(()=>{if(env.api.state.settings.lang==='vi')location.reload();});
     if(music||env.api.state.settings.music)syncMusic(env);
   },

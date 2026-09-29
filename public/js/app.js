@@ -1,17 +1,18 @@
 /** Front-end orchestration. Economic rules live on the Python server, not in chat. */
 import {GameAPI} from './api.js';
 import {BobaWorld} from './boba-world.js';
-import {wordsFor,loadAllScenes} from './scenes/index.js';
+import {wordsFor,kindOf} from './scenes/index.js';
 import {pnlCard} from './v4/pnl.js';
-loadAllScenes(); // warm the scene kinds so no career flashes the storefront
+// Scene kinds load on demand: the current career's before the first frame, another career's before switching
+// to it (careerAssets below), so no career flashes the storefront and startup isn't waiting on all of them.
 import {operationsView} from './operations-ui.js';
 import {nextStep,lifeNav,guestRibbon,experienceView,extendedJob,experienceSummary} from './experience-ui.js';
 import {icon,portrait,itemArt,escapeHTML as esc} from './icons.js';
 import {reqList,fold} from './ui-kit.js';
 import {Sound} from './audio.js';
-import {careerSubmit,careerInput,loadCareerModules,careerUI,careerContext,startTicker} from './v4/careers.js';
+import {careerSubmit,careerInput,loadCareerModules,careerUI,hasCareerUI,careerContext,startTicker,tickNow} from './v4/careers.js';
 import {inventoryView,feedbackView,situationView,jobView as jobAppView,v4Action,v4Submit,v4Input} from './v4/views.js';
-import {setLanguage} from './v4/i18n.js';
+import {setLanguage,t as i18nT} from './v4/i18n.js';
 import {shell} from './v4/shell.js';
 import {settingsView as settingsV4,settingsAction,settingsChange,settingsInput} from './v4/settings.js';
 import {accountSubmit,accountNudge} from './v4/account.js';
@@ -24,13 +25,16 @@ import {deskJob,deskDone,deskNext,deskAction} from './desk.js';
 import {incidentView,incidentSummary,incidentNote,incidentBadge,incidentAction,incidentBoot} from './v4/incidents.js';
 import {chatMessages,chatFooter,aiTalk,aiNoticeBoot,chatBusy} from './v4/ai-chat.js';
 import {happenBoot,happenSummary} from './v4/happenings.js';
+import {lifeSummary} from './v4/life.js';
 import {feedbackPageView,feedbackAction,feedbackSubmit,feedbackInput} from './v4/feedback.js';
+import {boardView,boardAction,boardSubmit,boardBoot,boardUnread} from './v4/board.js';
 
 const $=s=>document.querySelector(s), api=new GameAPI(), sound=new Sound();
 const ended=t=>['completed','referred','cancelled'].includes(t.status);
 const ui={opsTab:'staff',staffId:null,lessonSequence:[],tourRoute:[],activityCard:null,view:null,tab:'',task:null,npc:null,jobTab:'shelf',journalTab:'quests',libraryQuery:'',docs:new Set(),transactions:new Set(),drafts:{},ai:{},suggestions:{},busy:false,paused:false};
 const world=new BobaWorld($('#world'),interact);
-const career=()=>api.state?.current||'mother_baby';
+// Before a workplace is chosen the server picks one that is open (state.focus) and sends its full view.
+const career=()=>api.state?.current||api.state?.focus||'mother_baby';
 const room=()=>api.state?.careers[career()];
 const meta=()=>api.content?.catalogue.find(c=>c.id===career())||{};
 const npc=id=>api.content?.npcs.find(n=>n.id===id)||{display_name:api.state?.name||'Bạn',role:'Bạn',personality:''};
@@ -75,8 +79,41 @@ function taskNext(t){if(!t)return'Chọn một việc nhỏ để bắt đầu';
 /* ---- Shell (v0.6): HUD, navigation and task cards. Render-only; every number comes from the server state. ---- */
 const EXT=['teacher','tour_guide','milk_tea'];
 const layout=()=>document.documentElement.dataset.layout;
-/** Replace markup only when it changed: keeps focus, scroll and running animations. */
-function setHTML(el,html){if(el&&el._html!==html){el.innerHTML=html;el._html=html;}}
+/** Update markup only when it changed, and then only the nodes that changed (morph): keeps focus, scroll
+ * and running animations. */
+function setHTML(el,html){if(el&&el._html!==html){if(el._html===undefined)el.innerHTML=html;else morph(el,html);el._html=html;}}
+/* Morph: patch a region to match new markup instead of replacing it. Unchanged nodes keep their identity,
+ * so a re-render after every command no longer replays entry animations, re-decodes images, drops focus or
+ * jumps the scroll. Nodes are matched by position + tag (+ id); a mismatch is replaced like innerHTML would.
+ * Form fields follow the new markup unless the player is in them (focused) or they are data-preserve;
+ * <details> keep the player's open/closed state. English mode: text the i18n layer already translated
+ * from the same Vietnamese source is left alone. */
+const morphTpl=document.createElement('template');
+const morphSame=(cur,src)=>cur===src||cur===i18nT(src);
+function morph(el,html){morphTpl.innerHTML=html;morphKids(el,morphTpl.content);morphTpl.innerHTML='';}
+function morphKids(from,to){
+  let a=from.firstChild,b=to.firstChild;
+  while(b){
+    const nb=b.nextSibling;
+    if(a&&a.nodeType===b.nodeType&&a.nodeName===b.nodeName&&(a.nodeType!==1||a.id===b.id)){morphNode(a,b);a=a.nextSibling;}
+    else if(a){const na=a.nextSibling;from.replaceChild(b,a);a=na;}
+    else from.appendChild(b);
+    b=nb;
+  }
+  while(a){const na=a.nextSibling;a.remove();a=na;}
+}
+function morphNode(a,b){
+  if(a.nodeType!==1){if(!morphSame(a.nodeValue,b.nodeValue))a.nodeValue=b.nodeValue;return;}
+  const tag=a.nodeName,skipOpen=tag==='DETAILS';
+  for(const at of b.attributes){if(skipOpen&&at.name==='open')continue;const cur=a.getAttribute(at.name);if(cur===null||!morphSame(cur,at.value)){if(at.namespaceURI)a.setAttributeNS(at.namespaceURI,at.name,at.value);else a.setAttribute(at.name,at.value);}}
+  for(let i=a.attributes.length-1;i>=0;i--){const n=a.attributes[i].name;if(!(skipOpen&&n==='open')&&!b.hasAttribute(n))a.removeAttribute(n);}
+  morphKids(a,b);
+  if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'){
+    if(a.hasAttribute('data-preserve')||a===document.activeElement||a.type==='file')return;
+    if(tag==='SELECT'){for(let i=0;i<b.options.length;i++)if(a.options[i]&&a.options[i].selected!==b.options[i].selected)a.options[i].selected=b.options[i].selected;}
+    else{if(a.value!==b.value)a.value=b.value;if(a.checked!==b.checked)a.checked=b.checked;}
+  }
+}
 const lowOpen=c=>(c.feed||[]).filter(p=>p.feedback&&p.feedback.status==='open'&&p.stars<=3).length;
 const openSituation=c=>c.situation&&c.situation.stage!=='resolved'&&!c.situation.practice?c.situation:null;
 function feedUnread(c){
@@ -97,6 +134,7 @@ function sceneActions(){
 }
 function navItems(c){
   const items=[['home','grid','Hành trình'],['prepare','coffee','Chuẩn bị'],['feedback','star','Đánh giá',lowOpen(c)],['phone','phone','Chuyện phố',feedUnread(c)?'dot':0],['situation','flag','Tình huống',openSituation(c)?'dot':0],['incident','shield','Chuyện đời',incidentBadge(c)]];
+  items.splice(4,0,['nhom','chat','Nhóm phố',boardUnread(api)]);  // Nhóm Cư Dân Phố (v4/board.js)
   if(c.job?.required)items.push(['jobapp','briefcase','Việc làm',needsJob()?'dot':0]);
   items.push(['operations','store','Sổ tiệm',c.ops?.alerts?.length?'dot':0]);
   if(!EXT.includes(career()))items.push(['journal','book','Sổ tay']);
@@ -166,14 +204,19 @@ function hudFeedback(c){
   const prev=ui.hudPrev;ui.hudPrev={career:career(),money:c.money,rating:c.rating};
   if(!prev||prev.career!==career())return;
   const d=c.money-prev.money,till=$('#topbar .cozy-till');
+  // Layout is read and animations restarted in the next frames, not mid-render (no forced synchronous layout).
   if(d&&till){
-    const r=till.getBoundingClientRect(),pop=document.createElement('span');
-    pop.className=`coin-pop ${d>0?'up':'down'}`;pop.setAttribute('aria-hidden','true');pop.textContent=`${d>0?'+':'−'}${fmt(Math.abs(d))} xu`;
-    pop.style.left=`${Math.round(r.left+r.width/2)}px`;pop.style.top=`${Math.round(r.bottom-6)}px`;document.body.append(pop);setTimeout(()=>pop.remove(),1500);
-    till.classList.remove('bump');void till.offsetWidth;till.classList.add('bump');
+    requestAnimationFrame(()=>{
+      if(!till.isConnected)return;const r=till.getBoundingClientRect(),pop=document.createElement('span');
+      pop.className=`coin-pop ${d>0?'up':'down'}`;pop.setAttribute('aria-hidden','true');pop.textContent=`${d>0?'+':'−'}${fmt(Math.abs(d))} xu`;
+      pop.style.left=`${Math.round(r.left+r.width/2)}px`;pop.style.top=`${Math.round(r.bottom-6)}px`;document.body.append(pop);setTimeout(()=>pop.remove(),1500);
+    });
+    replay(till,['bump']);
   }
-  if(c.rating&&prev.rating!==c.rating){const el=$('#topbar .cozy-rating');if(el){el.classList.remove('bump','down');void el.offsetWidth;el.classList.add('bump');if(prev.rating&&c.rating<prev.rating)el.classList.add('down');}}
+  if(c.rating&&prev.rating!==c.rating){const el=$('#topbar .cozy-rating');if(el)replay(el,prev.rating&&c.rating<prev.rating?['bump','down']:['bump'],['bump','down']);}
 }
+/** Restart a CSS animation class without forcing layout: off now, back on two frames later. */
+function replay(el,add,off=add){el.classList.remove(...off);requestAnimationFrame(()=>requestAnimationFrame(()=>el.isConnected&&el.classList.add(...add)));}
 function renderMain(){
   if(!api.state||!api.content)return;const c=room(),m=meta();
   document.body.classList.toggle('reduce-motion',api.state.settings.reduceMotion);document.body.classList.toggle('large-text',api.state.settings.largeText);shell.career(m);
@@ -194,12 +237,13 @@ function renderSheet(preserve=true){
   if(!ui.view)return;const dialog=$('#sheet'),openedDetails=[...dialog.querySelectorAll('details')].map(el=>el.open),scroll=dialog.scrollTop,active=document.activeElement,focusId=active?.id,selection=active?.selectionStart;
   const fkey=el=>el.id||(el.name&&el.form?`${el.form.dataset.socForm||el.form.id||''}|${el.form.dataset.pid||el.form.dataset.post||el.form.dataset.id||''}|${el.name}`:null);
   const fields={};if(preserve)dialog.querySelectorAll('[data-preserve]').forEach(el=>{const k=fkey(el);if(k)fields[k]={value:el.value,checked:el.checked};});const focusKey=active&&dialog.contains(active)?fkey(active):null;
-  let html;dialog.className='sheet';
-  switch(ui.view){
+  // Class names are collected off-DOM and written once, only when they differ (no style invalidation per render).
+  let html;const cls=document.createElement('i');cls.className='sheet';
+  {const dialog=cls;switch(ui.view){
     case'home':dialog.classList.add('home');html=homeView();break;
     case'future':html=futureView();break;
     case'job':dialog.classList.add('cozy-job');html=jobView();break;
-    case'prepare':case'prices':case'workshop':case'passport':case'town':dialog.classList.add('cozy-sheet',ui.view==='prepare'?'prep-sheet':'life-sheet');html=careerUI(career())?.page?.(ui.view,careerContext(env()))||experienceView(ui.view,career(),room(),api.content,meta(),ui);break;
+    case'prepare':case'prices':case'workshop':case'passport':case'town':dialog.classList.add('cozy-sheet',ui.view==='prepare'?'prep-sheet':'life-sheet');html=careerUI(career())?.page?.(ui.view,careerContext(env()))||experienceView(ui.view,career(),room(),api.content,meta(),ui,api.state);break;
     case'queue':dialog.classList.add('medium');html=queueView();break;
     case'chat':dialog.classList.add('medium');html=chatView();break;
     case'phone':dialog.classList.add('medium');html=phoneView();break;
@@ -212,6 +256,7 @@ function renderSheet(preserve=true){
     case'settings':dialog.classList.add('medium','v4-sheet','drawer');html=settingsV4(env());break;
     case'social':dialog.classList.add('wide','v4-sheet');html=socialView(env());break;
     case'gopy':dialog.classList.add('medium','v4-sheet','fb-dialog');html=feedbackPageView(env());break;
+    case'nhom':dialog.classList.add('medium','v4-sheet','bd-sheet');html=boardView(env());break;
     case'summary':dialog.classList.add('narrow','cozy-summary');html=summaryView();break;
     case'help':dialog.classList.add('medium');html=helpView();break;
     case'inventory':dialog.classList.add('medium','v4-sheet');html=inventoryView(env());break;
@@ -222,8 +267,14 @@ function renderSheet(preserve=true){
     case'classroom':dialog.classList.add('wide','v4-sheet');html=classroomView(env());break;
     case'operations':dialog.classList.add('operations');html=operationsView(career(),room(),api.content.operations,ui,api.state);break;
     default:html=header('Một khoảng thảnh thơi')+`<div class="sheet-body">${empty('Cửa sổ chưa mở','Quay lại cảnh để tiếp tục nhé.')}</div>`;
-  }
-  $('#sheetContent').innerHTML=html;
+  }}
+  if(dialog.className!==cls.className)dialog.className=cls.className;
+  // A fresh view is written whole; a re-render of the same view is morphed (or skipped when unchanged).
+  const box=$('#sheetContent');
+  const changed=!preserve||box._html!==html;
+  if(!preserve||box._html===undefined)box.innerHTML=html;else if(changed)morph(box,html);
+  box._html=html;
+  if(changed){tickNow(env());document.dispatchEvent(new Event('sheetrender'));}
   if(preserve){dialog.querySelectorAll('details').forEach((el,i)=>{el.open=openedDetails[i]||false;});dialog.querySelectorAll('[data-preserve]').forEach(el=>{const data=fields[fkey(el)];if(data){el.value=data.value;if(el.type==='checkbox')el.checked=data.checked;}});dialog.scrollTop=scroll;if(focusKey){const el=[...dialog.querySelectorAll('[data-preserve],input,textarea,select')].find(x=>fkey(x)===focusKey);el?.focus({preventScroll:true});try{el?.setSelectionRange(selection,selection);}catch{/* not a text input */}}}
   if(!preserve)dialog.scrollTop=0;
   if(ui.view==='chat'){$('#messages')?.scrollTo(0,$('#messages').scrollHeight);}
@@ -592,6 +643,7 @@ function summaryView(){
   if(job?.boss)notes.push(`<article class="sum-boss"><span class="eyebrow">Một cuộc gặp may mắn</span><h3>${esc(job.boss.org)} · ${esc(job.boss.title)}</h3><p>${esc(job.boss.text)}</p>${button(icon('mail',15)+' Xem thư mời','bossOffer',{career:job.boss.career},'primary small')}</article>`);
   if(s.incidents)notes.push(incidentSummary(s.incidents));
   if(s.happen)notes.push(happenSummary(s.happen));
+  if(s.life)notes.push(lifeSummary(s.life));
   const jr=s.journey;
   if(jr&&(jr.living||jr.upkeep||jr.salary))notes.push(notice(`<b>Ngày sống thứ ${jr.life_day}</b><p>Tiền phòng và cơm nước: −${fmt(jr.living)} xu.</p>${jr.upkeep?`<p>Duy trì các nơi làm khác: −${fmt(jr.upkeep)} xu.</p>`:''}${jr.salary?`<p>Lương về ví: +${fmt(jr.salary)} xu.</p>`:''}<p>Ví của bạn còn <b>${fmt(jr.wallet)} xu</b>.</p>${jr.wallet<0?'<p>Ví đang nợ: trả hết nợ thì câu chuyện mới đi tiếp.</p>':''}`,jr.wallet<0?'amber':'','home'));
   if(job?.salary)notes.push(notice(`<b>Lương hôm nay +${fmt(job.salary)} xu</b>${job.result==='official'?'<p>Hết thử việc: bạn đã được ký hợp đồng chính thức! 🎉</p>':job.result==='extended'?'<p>Thử việc được gia hạn thêm 2 ngày. Cố lên nhé!</p>':job.probation?'<p>Đang thử việc: nhận 85% lương.</p>':''}`,'success','briefcase'));
@@ -618,6 +670,16 @@ function inputPrompt(title,value,maxLength=100){
 function finishConfirm(value){$('#confirmDialog').close();confirmResolve?.(value);confirmResolve=null;document.body.append($('#toasts'));}
 $('#confirmDialog').addEventListener('cancel',e=>{e.preventDefault();finishConfirm(false);});
 $('#sheet').addEventListener('cancel',e=>{e.preventDefault();if(api.state?.current)closeSheet();});
+/* Phone bottom sheets show a grab handle: dragging the sheet head down now really closes the sheet (it
+ * used to do nothing). Only transform moves while dragging; past 90 px or a quick flick it slides away and
+ * closes through the same 'cancel' path as Escape (so sheets that may not close yet stay put). */
+{const d=$('#sheet'),HANDLE='.sheet-head,.home-top';let y0=0,t0=0,dy=0,drag=false;
+  d.addEventListener('pointerdown',e=>{if(layout()!=='phone'||e.pointerType==='mouse'||d.scrollTop>2||!e.target.closest?.(HANDLE)||e.target.closest('button,a,input,select,textarea,summary,label'))return;drag=true;y0=e.clientY;t0=e.timeStamp;dy=0;});
+  d.addEventListener('pointermove',e=>{if(!drag)return;dy=Math.max(0,e.clientY-y0);d.style.transition='none';d.style.transform=dy?`translateY(${dy}px)`:'';},{passive:true});
+  const end=e=>{if(!drag)return;drag=false;const flick=dy>40&&dy/Math.max(1,e.timeStamp-t0)>.5;d.style.transition='transform .2s ease-out';
+    if(dy>90||flick){d.style.transform='translateY(100%)';setTimeout(()=>{d.style.transition='';d.style.transform='';d.dispatchEvent(new Event('cancel',{cancelable:true}));},190);}
+    else{d.style.transform='';setTimeout(()=>{if(!drag)d.style.transition='';},220);}};
+  d.addEventListener('pointerup',end);d.addEventListener('pointercancel',end);}
 $('#sheet').addEventListener('close',()=>{document.body.append($('#toasts'));
   // The close event is async: the sheet may already be reopened with another view.
   if($('#sheet').open)return;
@@ -627,6 +689,7 @@ $('#sheet').addEventListener('close',()=>{document.body.append($('#toasts'));
 async function start(){if(needsJob()){openSheet('jobapp');return;}const r=await cmd('start_day');if(r){ui.task=null;closeSheet();world.say(meta().greeting);}}
 async function selectCareer(id){
   ui.task=null;ui.docs.clear();ui.transactions.clear();ui.ai={};ui.phFilter='';ui.jobTab='shelf';
+  await careerAssets(id);  // its workbench, stylesheet and scene first: the new place never renders half-styled
   const r=await cmd('select_career',{}, {career:id,quiet:true});if(!r)return;
   closeSheet();world.say(meta().greeting);setPaused(false);if(needsJob())openSheet('jobapp');else if(!room().open)openSheet('prepare');
 }
@@ -634,8 +697,11 @@ async function openJob(id,tab){
   const target=id||room().active_task||room().tasks.find(t=>!ended(t))?.id;
   if(target!==ui.task){ui.docs.clear();ui.transactions.clear();ui.phFilter='';ui.lessonSequence=[];ui.tourRoute=[];}
   ui.task=target;ui.jobTab=tab||(ui.jobTab||'shelf');
-  if(target){const t=room().tasks.find(t=>t.id===target);if(t&&!ended(t)&&target!==room().active_task)await cmd('task_select',{task:target},{quiet:true});}
+  const t=target&&room().tasks.find(x=>x.id===target),select=t&&!ended(t)&&target!==room().active_task;
+  // The workbench opens at once; the selection is confirmed in the background (commands are queued in
+  // order, so a step sent meanwhile still lands after it). On failure fall back to the server's task.
   openSheet('job',{task:target,jobTab:tab||ui.jobTab});
+  if(select){const r=await cmd('task_select',{task:target},{quiet:true});if(!r&&ui.view==='job'&&ui.task===target){ui.task=room().active_task||null;renderSheet(false);}}
 }
 function interact(id){sound.unlock();sound.click();if(ui.paused)return;
   if(id.startsWith('staff:')){ui.staffId=id.slice(6);openSheet('operations',{opsTab:'staff'});return;}
@@ -737,6 +803,7 @@ async function handleAction(action,data,el){
     case'resetCareer':if(await confirmAction('Xóa tiến trình riêng nghề này?','Tiền, đồ, công việc, hội thoại và album của nghề đang chọn sẽ được đặt lại. Các nghề khác giữ nguyên. Nên xuất bản lưu trước.','Xóa & bắt đầu lại')){const r=await cmd('reset_career',{confirm:'BAT DAU LAI'});if(r){ui.task=null;closeSheet();await start();}}break;
     default:{
       if(await deskAction(action,data,el,env()))break;
+      if(await boardAction(action,data,el,env()))break;
       if(await journeyAction(action,data,el,env()))break;
       if(await incidentAction(action,data,el,env()))break;
       if(await v4Action(action,data,el,env()))break;
@@ -765,6 +832,7 @@ document.addEventListener('submit',async e=>{
   const f=e.target;if(!(f instanceof HTMLFormElement))return;e.preventDefault();sound.unlock();if(ui.busy)return;
   if(await careerSubmit(f,env()))return;
   if(await journeySubmit(f,env()))return;
+  if(await boardSubmit(f,env()))return;
   if(await v4Submit(f,env()))return;
   if(await accountSubmit(f,env()))return;
   if(await socialSubmit(f,env()))return;
@@ -798,17 +866,51 @@ document.addEventListener('change',async e=>{
   if(el.id==='import-file'&&el.files[0]){const file=el.files[0];try{if(file.size>14500000)throw new Error('Bản lưu quá lớn.');const save=JSON.parse(await file.text());if(await confirmAction('Khôi phục bản lưu này?','Các nghề của phiên hiện tại sẽ được thay thế bằng dữ liệu trong tệp. Hãy xuất bản hiện tại trước nếu cần.','Khôi phục')){const r=await cmd('import_save',{save});if(r){ui.task=null;ui.docs.clear();ui.transactions.clear();closeSheet();if(!api.state.current)openSheet('home');}}}catch(error){toast('Không nhập được: '+error.message,true);}}
 });
 window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').open&&!$('#confirmDialog').open&&api.state?.current){setPaused(!ui.paused);}});
-window.addEventListener('focus',()=>{if(api.state&&!ui.busy)api.refresh().catch(()=>{});});
+// Back in the tab: re-sync, unless the state is fresh anyway (every focus used to refetch and re-render all).
+window.addEventListener('focus',()=>{if(api.state&&!ui.busy&&Date.now()-(api.syncedAt||0)>15000)api.refresh().catch(()=>{});});
 let responsiveTimer;
 window.addEventListener('resize',()=>{clearTimeout(responsiveTimer);responsiveTimer=setTimeout(()=>{if(api.state&&api.content)renderMain();},140);});
 window.addEventListener('layoutchange',()=>{world.resize();if(api.state&&api.content)renderMain();});
-api.addEventListener('state',()=>{renderMain();if(ui.view)renderSheet();shell.update(env());});
+api.addEventListener('state',()=>{ensureCareerUI();renderMain();if(ui.view)renderSheet();shell.update(env());});
 api.addEventListener('busy',e=>{ui.busy=e.detail;document.body.classList.toggle('busy',ui.busy);$('#saveState')?.setAttribute('aria-busy',String(ui.busy));});
+/* Tap feedback. A control that starts a server request within 400 ms of its tap is marked at once
+ * (.is-pending + aria-busy; CSS dims it and adds a spinner after 150 ms) until the requests settle; a
+ * re-render drops the mark too. A second tap on a pending control is swallowed (no double submit). */
+const tap={el:null,at:0,pending:new Set()};
+document.addEventListener('touchstart',()=>{},{passive:true});  // iOS Safari shows :active only with a touch listener
+document.addEventListener('click',e=>{
+  const el=e.target.closest?.('button,[data-action],[data-command]');
+  if(el?.classList.contains('is-pending')){e.preventDefault();e.stopImmediatePropagation();return;}
+  tap.el=el&&!el.disabled?el:null;tap.at=performance.now();
+},true);
+document.addEventListener('submit',e=>{tap.el=e.submitter||e.target.querySelector?.('button:not([type=button])')||null;tap.at=performance.now();},true);
+api.addEventListener('net',e=>{
+  if(e.detail>0){const el=tap.el;if(el?.isConnected&&performance.now()-tap.at<400&&!tap.pending.has(el)){el.classList.add('is-pending');el.setAttribute('aria-busy','true');tap.pending.add(el);}}
+  else{for(const el of tap.pending){el.classList.remove('is-pending');el.removeAttribute('aria-busy');}tap.pending.clear();}
+});
+/* Career workbenches and scene kinds load on demand (startup: the current one; selectCareer: the next one).
+ * Anything else that switches careers is covered by ensureCareerUI (re-renders once the module is in). */
+const CAREER_MODULES=[];
+const careerAssets=(id,waitCss=true)=>Promise.all([CAREER_MODULES.includes(id)&&!hasCareerUI(id)?loadCareerModules([id],waitCss):null,import(`./scenes/${kindOf(id)}.js`).catch(()=>{})]);
+function ensureCareerUI(){
+  const id=api.state?.current;if(!id||hasCareerUI(id)||!CAREER_MODULES.includes(id)||ensureCareerUI.busy===id)return;
+  ensureCareerUI.busy=id;loadCareerModules([id],true).then(()=>{ensureCareerUI.busy=null;if(api.state?.current===id){renderMain();if(ui.view)renderSheet();}});
+}
 api.addEventListener('offline',()=>renderMain());
 window.addEventListener('online',()=>{if(api.state)api.refresh().then(()=>renderMain()).catch(()=>{});});
 window.addEventListener('error',e=>{console.error('Game UI:',e.error||e.message);});
 try{
-  await api.init();await loadCareerModules([...Object.keys(api.content.careers||{}),'milk_tea','mother_baby']);await setLanguage(api.state.settings.lang);shell.boot(env());journeyBoot(env());incidentBoot(env());happenBoot(env());startTicker(()=>env());$('#loading').hidden=true;$('#app').hidden=false;world.resize();renderMain();aiNoticeBoot(env());
+  await api.init();
+  // Only the current workplace's workbench (+ its stylesheet and scene) gates the first frame; the others load
+  // when the player switches to them (startup used to wait on ~45 requests for every career and scene).
+  CAREER_MODULES.push(...Object.keys(api.content.careers||{}),'milk_tea','mother_baby');
+  // Its stylesheet only styles the workbench: wait for it only when a sheet opens right away (day closed).
+  await Promise.all([careerAssets(career(),Boolean(api.state.current&&(!room()?.open||needsJob()))),setLanguage(api.state.settings.lang)]);
+  shell.boot(env());journeyBoot(env());incidentBoot(env());happenBoot(env());boardBoot(env());startTicker(()=>env());$('#loading').hidden=true;$('#app').hidden=false;world.resize();renderMain();aiNoticeBoot(env());
+  // Stylesheets of pages nobody opens in the first second (Góp ý, admin stats) no longer block the first
+  // paint from index.html: on HTTP/1.1 they held back app.js by a whole round trip.
+  for(const href of ['/css/feedback.css','/css/admin-stats.css'])if(!document.querySelector(`link[href="${href}"]`)){const l=document.createElement('link');l.rel='stylesheet';l.href=href;document.head.append(l);}
+  (window.requestIdleCallback||setTimeout)(()=>{if(api.state.settings.sound!==false)sound.prepare();},{timeout:3000});
   registerWorker();startSocialPoll(env());
   const openSocial=tab=>{ui.socTab=tab||'street';ui.socShop=null;socialInvalidate(ui);openSheet('social');};
   listenWorker(url=>{const q=new URL(url,location.origin).searchParams;if(q.get('social'))openSocial(q.get('social'));});

@@ -6,13 +6,17 @@ import {procedureView} from './procedure.js';
 const modules={};
 const scratch={};
 
-export async function loadCareerModules(ids){
+/** Import career workbenches (+ their stylesheets). `waitCss`: also wait (max 1.5 s) until the stylesheets
+ * are in, so the first frame of a workbench is never unstyled (startup loads only the current career). */
+export async function loadCareerModules(ids,waitCss=false){
   await Promise.all(ids.map(async id=>{
     try{
       const mod=modules[id]=(await import(`../careers/${id}.js`)).default;
       // Optional scoped stylesheet: public/css/careers/<id>.css
       if(mod?.css&&!document.querySelector(`link[data-career-css="${id}"]`)){
-        const link=document.createElement('link');link.rel='stylesheet';link.href=`/css/careers/${id}.css`;link.dataset.careerCss=id;document.head.append(link);
+        const link=document.createElement('link');link.rel='stylesheet';link.href=`/css/careers/${id}.css`;link.dataset.careerCss=id;
+        const ready=new Promise(done=>{link.onload=link.onerror=done;setTimeout(done,1500);});
+        document.head.append(link);if(waitCss)await ready;
       }
     }
     catch(error){console.warn('Chưa có giao diện nghề',id,error);}
@@ -72,11 +76,18 @@ export function careerInput(el,env,type){
   return false;
 }
 
+/** Run the current workbench's tick once, right after a render: its measured layout (e.g. the action bar
+ * kept above the sheet footer) is back in the same frame instead of jumping up to 200 ms later. */
+export function tickNow(env){
+  const id=env?.api?.state?.current,mod=modules[id],root=document.querySelector('#sheet[open] .career-job');
+  if(mod?.tick&&root){try{mod.tick(root,careerContext(env));}catch(error){console.error(error);}}
+}
 let timer=null;
 /** Runs module.tick while the job sheet is visible (real-time bars). */
 export function startTicker(getEnv){
   if(timer)return;
   timer=setInterval(()=>{
+    if(document.hidden)return;   // nothing to tick in a background tab
     const env=getEnv();if(!env||!env.api.state)return;
     const id=env.api.state.current,mod=modules[id];
     const root=document.querySelector('#sheet[open] .career-job');

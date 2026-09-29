@@ -1,22 +1,30 @@
 /** Ordered mutations + idempotent retry. A lost response never doubles a sale. */
 export class GameAPI extends EventTarget {
   constructor(){super();this.state=null;this.content=null;this.revision=0;this.csrf='';this.ai={configured:false};this.social=null;this.push={enabled:false};this.clockOffset=0;this.connected=false;this.queue=Promise.resolve();}
-  async json(url,options={},timeout=12000){
+  /** In-flight request count, announced as a 'net' event (app.js ties it to the tapped button). */
+  net(delta){this.inflight=(this.inflight||0)+delta;this.dispatchEvent(new CustomEvent('net',{detail:this.inflight}));}
+  async json(url,options={},timeout=12000,early=null){
     const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),timeout);
+    this.net(1);
     try {
-      const sent=Date.now();
-      const response=await fetch(url,{credentials:'same-origin',...options,signal:controller.signal});
+      const sent=early?.sent??Date.now();
+      // `early`: a request already on the wire (public/js/boot.js), still bound by the same timeout.
+      const response=await (early?Promise.race([early.response,new Promise((_,reject)=>controller.signal.addEventListener('abort',()=>reject(new DOMException('Timeout','AbortError'))))])
+        :fetch(url,{credentials:'same-origin',...options,signal:controller.signal}));
       const data=await response.json();
       // Server clock for real-time workbenches (boiling, ovens, dye timers).
       if(typeof data?.server_time==='number'){const rtt=Date.now()-sent;if(rtt<1500)this.clockOffset=data.server_time-(sent+rtt/2)/1000;}
       if(!response.ok){const error=new Error(data.error||`Lỗi ${response.status}`);error.status=response.status;error.data=data;throw error;}
       this.connected=true;return data;
-    } finally {clearTimeout(timer);}
+    } finally {clearTimeout(timer);this.net(-1);}
   }
   async init(){
-    const data=await this.json('/api/bootstrap');this.content=data.content;this.csrf=data.csrf;this.ai=data.ai;this.social=data.social||null;this.push=data.push||{enabled:false};this.account=data.account||null;this.admin=data.admin===true;this.accept(data);return data;
+    // boot.js starts /api/bootstrap while the modules download; use it (a network hiccup asks again).
+    const early=globalThis.__mnlBoot;globalThis.__mnlBoot=null;let data=null;
+    if(early?.response)try{data=await this.json('/api/bootstrap',{},12000,early);}catch(error){if(error.status)throw error;}
+    data??=await this.json('/api/bootstrap');this.content=data.content;this.csrf=data.csrf;this.ai=data.ai;this.social=data.social||null;this.push=data.push||{enabled:false};this.account=data.account||null;this.admin=data.admin===true;this.accept(data);return data;
   }
-  accept(data){this.state=data.state;this.revision=data.revision;this.connected=true;this.dispatchEvent(new CustomEvent('state',{detail:data}));}
+  accept(data){this.state=data.state;this.revision=data.revision;this.connected=true;this.syncedAt=Date.now();this.dispatchEvent(new CustomEvent('state',{detail:data}));}
   async refresh(){const data=await this.json('/api/state');this.accept(data);return data;}
   command(action,payload={},career=this.state?.current){
     const execute=async()=>{

@@ -54,6 +54,9 @@ Nếu chạy tạm ở cổng khác 80/443 (ví dụ `http://IP:8080` khi chưa 
 | `FEEDBACK_PER_10MIN`, `FEEDBACK_PER_DAY` | Số góp ý tối đa mỗi phiên trong 10 phút (mặc định 5) và trong 24 giờ (mặc định 30). Mỗi IP được gấp 4 lần mức 10 phút. |
 | `ADMIN_USERS` | Tên đăng nhập (cách nhau bằng dấu phẩy) được xem **📥 Hộp góp ý** trong mục Góp ý: đọc, đổi trạng thái, trả lời người chơi. Mặc định trống = không ai. Tài khoản phải đăng nhập; tạo bằng nút Đăng ký trong game. |
 | `SESSION_IDLE_DAYS` | Số ngày không hoạt động trước khi bản lưu bị xóa (mặc định 180). |
+| `WORKERS` | Số tiến trình phục vụ cùng một cổng (mặc định 1). Đặt bằng số CPU (ví dụ `WORKERS=4`). Không cần đổi cấu hình proxy: các tiến trình cùng nhận kết nối trên một socket. Giới hạn AI, đăng nhập, phiên mới và góp ý được chia sẻ giữa các tiến trình (tệp `*-limits.sqlite3` cạnh cơ sở dữ liệu); việc dọn dẹp và gửi thông báo chỉ chạy ở một tiến trình. |
+| `PRUNE_GUEST_DAYS` | Bản lưu khách chưa từng chơi thật (không tài khoản, không tên công khai, `revision <= 1`, không có tiến trình) bị xóa sau số ngày này (mặc định 3, `0` = tắt). Chạy mỗi giờ, từng nhóm nhỏ. |
+| `RECEIPT_DAYS`, `RECEIPTS_PER_SAVE` | Biên nhận chống gửi trùng được giữ bao lâu (mặc định 2 ngày) và tối đa bao nhiêu cho mỗi bản lưu (mặc định 200). |
 | `LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY`, `LLM_CONCURRENCY` | AI cho nhân vật review/phụ huynh. Người chơi phải tự bật “Cho phép AI” trong Cài đặt. |
 | `MNL_DEV` | **Không bao giờ đặt trên máy chủ thật.** `MNL_DEV=1` tắt hành trình (mở mọi nghề, không trừ tiền sinh hoạt) và cho nhận việc không cần phỏng vấn. Chỉ dùng cho script kiểm trình duyệt. |
 | `VAPID_SUBJECT`, `VAPID_PRIVATE_KEY`, `PUSH_DISABLED` | Web push. Mặc định khóa được tự tạo ở `storage/vapid.json`; đừng xóa tệp này, nếu mất thì mọi đăng ký thông báo cũ hết hiệu lực. |
@@ -65,7 +68,8 @@ Nếu chạy tạm ở cổng khác 80/443 (ví dụ `http://IP:8080` khi chưa 
 - Phố nghề lọc link, e-mail, số điện thoại và từ thô tục. Nội dung bị 3 người báo cáo sẽ tự ẩn. Để gỡ hay khôi phục thủ công, sửa cột `hidden` trong SQLite (bảng `board`, `comments`, `previews`, `market`, `profiles`).
 - Người chơi tự xóa dữ liệu được trong Cài đặt → Dữ liệu. Nếu ai đó gửi yêu cầu qua email `trachanhtv.works@gmail.com`, hãy tìm hồ sơ theo tên hiển thị trong bảng `profiles`, rồi xóa bằng `sid` tương ứng.
 - Nhật ký (log) không ghi cookie hay nội dung người chơi gõ. Bật `QUIET=1` để tắt hẳn access log.
-- Một tiến trình chịu được vài trăm người chơi đồng thời. Khi cần hơn, hãy nâng cấp máy (SQLite WAL chạy tốt trên SSD) trước khi nghĩ tới việc tách dịch vụ.
+- Một tiến trình Python chỉ dùng được một CPU. Máy nhiều CPU: đặt `WORKERS` bằng số CPU. Nên để proxy (Nginx/Caddy) phục vụ thẳng thư mục `public/` để Python chỉ lo `/api/`.
+- Tệp SQLite không tự nhỏ lại khi dữ liệu được dọn (chỗ trống được dùng lại). Muốn thu nhỏ: lúc vắng người, dừng game rồi chạy `sqlite3 storage/game.sqlite3 'VACUUM'` (cần trống đĩa gấp đôi kích thước tệp).
 
 ## Kiểm tra trước khi mở
 

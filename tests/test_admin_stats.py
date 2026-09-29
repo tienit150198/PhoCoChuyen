@@ -1,0 +1,386 @@
+"""Admin statistics ("Thống kê"): metrics on a seeded DB, privacy of the payload,
+the cache, the AI counters and the admin-only HTTP route (game/admin_stats.py)."""
+import copy, datetime, http.client, json, os, tempfile, threading, time, unittest
+from pathlib import Path
+from unittest.mock import patch
+
+from game import accounts, admin_stats as st, player_feedback as pfb, social
+from game.engine import new_state
+from game.journey import enable_story
+from game.storage import Store
+from server import GameServer
+
+REG = dict(password='matkhau-rat-dai', confirm='matkhau-rat-dai', display='Người Thử')
+SECRET_NAME = 'Tên Riêng Bí Mật'
+
+
+def vn_today():
+    return datetime.datetime.now(st.VN).date()
+
+
+class Seeded(unittest.TestCase):
+    def setUp(self):
+        st.clear_cache()
+        self.tmp = tempfile.TemporaryDirectory()
+        self.store = Store(Path(self.tmp.name) / 'g.db', story=True)
+        social.ensure(self.store)
+        st.ensure(self.store)
+        self.tokens = []
+
+    def tearDown(self):
+        st.clear_cache()
+        self.tmp.cleanup()
+
+    def save(self, edit=None, played=True):
+        """A new save; `edit(state)` shapes it, then it is written like a command would."""
+        token, _, _ = self.store.session()
+        self.tokens.append(token)
+        if played:
+            s = self.store.read(token)[0]
+            if edit:
+                edit(s)
+            with self.store.connect() as db:
+                db.execute('UPDATE sessions SET state=?, revision=revision+1, updated_at=CURRENT_TIMESTAMP WHERE sid=?',
+                           (json.dumps(s, ensure_ascii=False), self.store.key(token)))
+        return token
+
+    def sid(self, token):
+        return self.store.key(token)
+
+
+def english_dark(s):
+    s['name'] = SECRET_NAME
+    s['settings'].update(lang='en', uiTheme='dem', aiConsent=False, music=True, musicTrack='calm')
+    c = s['careers']['mother_baby']
+    c.update(started=True, day=5, xp=200)          # 4 days played, level 3
+    s['careers']['pharmacy'].update(started=True, day=2, xp=0)
+    s['journey'].update(wallet=-50, in_debt=True, chapter=2, life_day=9)
+    s['journey'].setdefault('invest', {}).update(coin=dict(units=3, basis=10, realised=0, fees=0, trades=2),
+                                                 stats=dict(declined=0, joined=1, lost=120, next_scam=0))
+
+
+def vietnamese(s):
+    s['settings'].update(lang='vi', uiTheme='kem', aiConsent=True, music=False)
+    s['careers']['mother_baby'].update(started=True, day=3, xp=90)   # 2 days, level 2
+    s['journey'].update(wallet=300, life_day=4)
+    s['journey']['life'] = dict(spirit=60, stats=dict(outings=2, scams=1, rumours=0, warm=3, hard=1, given=0))
+    s['journey']['board'] = dict(posts=[{}, {}, {}], stats=dict(player_posts=2, player_replies=1, reacts=4))
+
+
+def fresh_player(s):
+    s['journey'].update(wallet=1000)
+
+
+class MetricsTests(Seeded):
+    def seed(self):
+        self.a = self.save(english_dark)
+        self.b = self.save(vietnamese)
+        self.c = self.save(fresh_player)
+        self.bounce = self.save(played=False)   # opened the page, never played
+
+    def test_players_and_activity(self):
+        self.seed()
+        data = st.compute(self.store, 7)
+        p = data['players']
+        self.assertEqual(len(p['days']), 7)
+        self.assertEqual(p['days'][-1], vn_today().isoformat())
+        self.assertEqual((p['total'], p['played'], p['accounts'], p['guests']), (4, 3, 0, 3))   # guests: played, no account
+        self.assertEqual(p['dau'][-1], 3)
+        self.assertEqual(sum(p['dau']), 3)
+        self.assertEqual((p['wau'], p['mau']), (3, 3))
+        self.assertEqual(p['new_sessions'][-1], 4)
+        self.assertEqual(p['new_players'][-1], 3)
+        self.assertEqual(p['tracked_since'], vn_today().isoformat())
+        # An account turns one guest save into an account save.
+        accounts.register(self.store, self.a, dict(REG, username='someone_x'))
+        p = st.compute(self.store, 30)['players']
+        self.assertEqual((p['accounts'], p['account_saves'], p['guests']), (1, 1, 2))
+        self.assertEqual(p['new_accounts'][-1], 1)
+        self.assertEqual(len(p['dau']), 30)
+
+    def test_play_economy_life_board(self):
+        self.seed()
+        d = st.compute(self.store, 7)
+        play, eco = d['play'], d['economy']
+        self.assertEqual(d['sample']['size'], 3)
+        self.assertEqual(play['sample'], 3)
+        by = {c['id']: c for c in play['careers']}
+        self.assertEqual((by['mother_baby']['players'], by['mother_baby']['days']), (2, 6))
+        self.assertEqual(by['mother_baby']['avg_level'], 2.5)
+        self.assertEqual((by['pharmacy']['players'], by['pharmacy']['days']), (1, 1))
+        self.assertEqual(play['careers'][0]['id'], 'mother_baby')
+        self.assertEqual({x['key']: x['n'] for x in play['levels']}, {'2': 1, '3': 1})
+        self.assertEqual({x['key']: x['n'] for x in play['lang']}, {'vi': 2, 'en': 1})
+        self.assertEqual({x['key']: x['n'] for x in play['theme']}, {'kem': 2, 'dem': 1})
+        self.assertEqual((play['story'], play['ai_on'], play['music_on']), (3, 2, 1))
+        self.assertEqual({x['key']: x['n'] for x in play['chapters']}, {'1': 2, '2': 1})
+        self.assertEqual(play['life_day']['median'], 4)
+        self.assertEqual(eco['wallet']['median'], 300)
+        self.assertEqual((eco['debt'], eco['investors'], eco['scam_lost'], eco['scam_victims'], eco['scam_joined']), (1, 1, 120, 1, 1))
+        self.assertEqual({b['label']: b['n'] for b in eco['buckets']}['Nợ (< 0)'], 1)
+        self.assertEqual(sum(b['n'] for b in eco['buckets']), 3)
+        life, board = d['life'], d['board']
+        self.assertGreaterEqual(life['saves'], 1)
+        self.assertGreaterEqual(life['outings'], 2)
+        self.assertEqual(board['posts'] >= 3 and board['player_posts'] >= 2 and board['active'] >= 1, True)
+
+    def test_sql_and_python_readers_agree(self):
+        self.seed()
+        with self.store.connect() as db:
+            rows, engine = st.sample(db)
+            states = [json.loads(r[0]) for r in db.execute('SELECT state FROM sessions WHERE revision>0 ORDER BY updated_at DESC')]
+        self.assertEqual(engine, 'sql')
+        self.assertEqual(st.play_stats(rows), st.play_stats([st.compact(s) for s in states]))
+
+    def test_missing_new_keys_are_guarded(self):
+        def bare(s):
+            s['journey'].pop('life', None); s['journey'].pop('board', None); s['journey'].pop('invest', None)
+        self.save(bare)
+        d = st.compute(self.store, 7)
+        self.assertEqual((d['life']['saves'], d['board']['saves'], d['economy']['investors']), (0, 0, 0))
+        self.assertIsNone(d['life']['avg_spirit'])
+        # Weird values do not break the aggregation either.
+        weird = st.compact({'settings': {'lang': 7}, 'journey': {'wallet': 'x', 'life': [], 'board': 3}, 'careers': {'x': 5}})
+        out = st.play_stats([weird, {}])
+        self.assertEqual(out['play']['lang'][0]['key'], 'khác')
+        self.assertIsNone(out['economy']['wallet']['median'])
+
+    def test_retention_d1_d7(self):
+        today = vn_today()
+        born = (today - datetime.timedelta(days=10)).isoformat()
+        plus = lambda n: (today - datetime.timedelta(days=10 - n)).isoformat()
+        sids = ['s1', 's2', 's3']
+        with self.store.connect() as db:
+            for sid in sids:
+                db.execute('INSERT INTO stat_births(sid,day) VALUES(?,?)', (sid, born))
+                db.execute('INSERT INTO stat_active(day,sid) VALUES(?,?)', (born, sid))
+            db.execute('INSERT INTO stat_births(sid,day) VALUES(?,?)', ('bounce', born))      # never played: not in the cohort
+            db.execute('INSERT INTO stat_active(day,sid) VALUES(?,?)', (plus(1), 's1'))
+            db.execute('INSERT INTO stat_active(day,sid) VALUES(?,?)', (plus(1), 's2'))
+            db.execute('INSERT INTO stat_active(day,sid) VALUES(?,?)', (plus(7), 's3'))
+            # A player born yesterday is too young for D1.
+            db.execute('INSERT INTO stat_births(sid,day) VALUES(?,?)', ('young', (today - datetime.timedelta(days=1)).isoformat()))
+            db.execute('INSERT INTO stat_active(day,sid) VALUES(?,?)', ((today - datetime.timedelta(days=1)).isoformat(), 'young'))
+            r = st.retention(db, today, 30)
+        self.assertEqual(r['cohort'], 4)
+        self.assertEqual((r['d1_n'], r['d7_n']), (3, 3))
+        self.assertEqual((r['d1'], r['d7']), (66.7, 33.3))
+
+    def test_triggers_follow_the_save(self):
+        tok = self.save(fresh_player)
+        sid = self.sid(tok)
+        with self.store.connect() as db:
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM stat_births WHERE sid=?', (sid,)).fetchone()[0], 1)
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM stat_active WHERE sid=?', (sid,)).fetchone()[0], 1)
+        # A real command marks the day active too (idempotent per day).
+        self.store.command(tok, 'req-000001', 1, None, 'settings', dict(lang='en'))
+        with self.store.connect() as db:
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM stat_active WHERE sid=?', (sid,)).fetchone()[0], 1)
+        self.store.delete(tok)
+        with self.store.connect() as db:
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM stat_births WHERE sid=?', (sid,)).fetchone()[0], 0)
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM stat_active WHERE sid=?', (sid,)).fetchone()[0], 0)
+        st.ensure(self.store)   # idempotent
+
+    def test_feedback_counts_newest_and_ack_time(self):
+        tok = self.save(fresh_player)
+        s = self.store.read(tok)[0]
+        ids = [pfb.submit(self.store, tok, s, dict(kind=k, text=f'Góp ý loại {k}\ndòng hai'))['id'] for k in ('bug', 'bug', 'idea', 'praise')]
+        with self.store.connect() as db:
+            db.execute('UPDATE player_feedback SET created_at=created_at-7200')
+        pfb.update(self.store, ids[0], status='seen')
+        pfb.update(self.store, ids[0], status='done')     # a second change keeps the first time
+        pfb.update(self.store, ids[2], status='done')
+        fb = st.compute(self.store, 7)['feedback']
+        kinds = {k['kind']: k for k in fb['kinds']}
+        self.assertEqual((kinds['bug']['new'], kinds['bug']['done'], kinds['idea']['done'], kinds['praise']['new']), (1, 1, 1, 1))
+        self.assertEqual((fb['open'], fb['unread'], fb['total'], fb['in_range']), (2, 2, 4, 4))
+        self.assertEqual(fb['ack']['n'], 2)
+        self.assertAlmostEqual(fb['ack']['median_h'], 2.0, delta=0.1)
+        self.assertEqual([x['id'] for x in fb['newest']], ids[::-1])
+        self.assertEqual(fb['newest'][0]['text'], 'Góp ý loại praise')
+        with self.store.connect() as db:
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM stat_fb_ack').fetchone()[0], 2)
+        pfb.forget(self.store, tok)
+        with self.store.connect() as db:
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM stat_fb_ack').fetchone()[0], 0)
+
+    def test_server_section(self):
+        self.seed()
+        srv = st.compute(self.store, 7)['server']
+        tables = {t['name']: t['rows'] for t in srv['tables']}
+        self.assertEqual(tables['sessions'], 4)
+        self.assertIn('player_feedback', tables)
+        self.assertGreater(srv['db_bytes'], 0)
+        self.assertGreaterEqual(srv['uptime'], 0)
+        self.assertTrue(srv['version'])
+
+    def test_payload_has_no_personal_data(self):
+        self.seed()
+        accounts.register(self.store, self.b, dict(REG, username='private_user', display='Hiển Thị Riêng'))
+        data = st.get(self.store, 30)
+        text = json.dumps(data, ensure_ascii=False)
+        with self.store.connect() as db:
+            secrets_ = [r[0] for r in db.execute('SELECT sid FROM sessions')] + [r[0] for r in db.execute('SELECT csrf FROM sessions')]
+            secrets_ += [r[0] for r in db.execute('SELECT pw FROM accounts')] + [r[0] for r in db.execute('SELECT token FROM logins')]
+        for value in secrets_ + self.tokens + ['private_user', 'Hiển Thị Riêng', SECRET_NAME]:
+            self.assertNotIn(value, text)
+        for key in ('"sid"', '"token"', '"csrf"', '"pw"', '"password"', '"email"', '"username"', '"account"'):
+            self.assertNotIn(key, text)
+
+
+class CacheTests(Seeded):
+    def test_cached_for_a_minute_then_refreshed_in_background(self):
+        self.save(fresh_player)
+        calls = []
+        real = st.compute
+        def counting(store, days):
+            calls.append(days)
+            return real(store, days)
+        with patch.object(st, 'compute', counting):
+            first = st.get(self.store, '7')
+            self.assertFalse(first['cached'])
+            second = st.get(self.store, 7)
+            self.assertTrue(second['cached'])
+            self.assertEqual(calls, [7])
+            st.get(self.store, 30)
+            self.assertEqual(calls, [7, 30])
+            # fresh=1 only recomputes when the copy is older than 10 s.
+            self.assertTrue(st.get(self.store, 7, fresh=True)['cached'])
+            key = (self.store.path, 7)
+            stamp, data = st._cache[key]
+            st._cache[key] = (stamp - 11, data)
+            self.assertFalse(st.get(self.store, 7, fresh=True)['cached'])
+            self.assertEqual(calls, [7, 30, 7])
+            # Past the TTL: the stale copy comes back at once, one thread recomputes.
+            stamp, data = st._cache[key]
+            st._cache[key] = (stamp - st.TTL - 1, data)
+            self.save(fresh_player)
+            stale = st.get(self.store, 7)
+            self.assertTrue(stale['cached'])
+            self.assertEqual(stale['players']['total'], 1)
+            for _ in range(200):
+                if len(calls) == 4 and key not in st._running:
+                    break
+                time.sleep(0.02)
+            self.assertEqual(len(calls), 4)
+            self.assertEqual(st.get(self.store, 7)['players']['total'], 2)
+
+    def test_bad_range(self):
+        for bad in ('1', 'x', '365', -7):
+            with self.assertRaises(ValueError):
+                st.parse_range(bad)
+        self.assertEqual(st.parse_range(None), 7)
+
+
+class AICounterTests(unittest.TestCase):
+    def setUp(self):
+        with st._ai_lock:
+            st._ai.clear(); st._blocked.clear()
+
+    def test_wrappers_count_and_pass_through(self):
+        answers = iter([('Xin chào', None), (None, 'busy'), (None, 'unavailable'), (None, 'not_configured')])
+        chat = st._counted_chat(lambda *a, **k: next(answers))
+        self.assertEqual(chat([]), ('Xin chào', None))
+        self.assertEqual(chat([])[1], 'busy')
+        chat([]); chat([])
+        clean = st._counted_clean(lambda text, *a, **k: (None, 'numbers') if 'x' in text else (text, None))
+        self.assertEqual(clean('ok'), ('ok', None))
+        clean('x')
+        abusive = st._counted_abusive(lambda text: 'bậy' in text)
+        self.assertTrue(abusive('nói bậy'))
+        self.assertTrue(abusive('nói bậy'))        # same message checked twice: counted once
+        self.assertFalse(abusive('lịch sự'))
+        total = st.ai_usage()['total']
+        self.assertEqual(total, dict(calls=3, ok=1, failed=1, busy=1, rejected=1, guard=1))
+
+    def test_install_is_idempotent(self):
+        from game import ai
+        st.install_ai_counters(); st.install_ai_counters()
+        self.assertTrue(ai.chat._counted)
+        self.assertFalse(getattr(ai.chat.__wrapped__, '_counted', False))
+        self.assertTrue(ai.abusive._counted and ai.clean_reply._counted)
+
+
+class StatsHTTPTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.temp = tempfile.TemporaryDirectory()
+        cls.server = GameServer(('127.0.0.1', 0), Store(Path(cls.temp.name) / 'state.db'))
+        cls.thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
+        cls.thread.start()
+        cls.port = cls.server.server_port
+        cls.env = patch.dict(os.environ, {'QUIET': '1', 'ADMIN_USERS': 'op_admin'})
+        cls.env.start()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.server.shutdown(); cls.server.server_close(); cls.thread.join(); cls.temp.cleanup(); cls.env.stop()
+        st.clear_cache()
+
+    def setUp(self):
+        self.server.limits.clear()
+        st.clear_cache()
+
+    def req(self, dev, path, csrf=True):
+        h = {'Host': f'127.0.0.1:{self.port}'}
+        if dev.get('cookie'): h['Cookie'] = dev['cookie']
+        if csrf and dev.get('csrf'): h['X-Game-CSRF'] = dev['csrf']
+        body = None
+        method = 'GET'
+        if isinstance(path, tuple):
+            path, body = path
+            method = 'POST'; h['Content-Type'] = 'application/json'; body = json.dumps(body)
+        con = http.client.HTTPConnection('127.0.0.1', self.port, timeout=15)
+        con.request(method, path, body=body, headers=h)
+        res = con.getresponse(); data = json.loads(res.read() or b'{}'); hdrs = dict(res.getheaders()); con.close()
+        if 'Set-Cookie' in hdrs: dev['cookie'] = hdrs['Set-Cookie'].split(';')[0]
+        if isinstance(data, dict) and data.get('csrf'): dev['csrf'] = data['csrf']
+        return res.status, data
+
+    def device(self):
+        dev = {}
+        self.assertEqual(self.req(dev, '/api/bootstrap')[0], 200)
+        return dev
+
+    def signed(self, name):
+        dev = self.device()
+        status, data = self.req(dev, ('/api/account/register', dict(REG, username=name)))
+        self.assertEqual(status, 200, data)
+        self.req(dev, '/api/bootstrap')
+        return dev
+
+    def test_admin_only(self):
+        anon, player = self.device(), self.signed('regular_joe')
+        for dev in (anon, player):
+            status, data = self.req(dev, '/api/admin/stats')
+            self.assertEqual(status, 403)
+            self.assertNotIn('players', data)
+        self.assertEqual(self.req({}, '/api/admin/stats')[0], 401)
+        admin = self.signed('op_admin')
+        self.assertEqual(self.req(admin, '/api/admin/stats', csrf=False)[0], 403)   # cookie alone is not enough
+        status, data = self.req(admin, '/api/admin/stats?range=30')
+        self.assertEqual(status, 200, data)
+        self.assertEqual(data['range'], 30)
+        self.assertEqual(len(data['players']['dau']), 30)
+        self.assertGreaterEqual(data['players']['total'], 3)
+        for key in ('play', 'economy', 'life', 'board', 'feedback', 'ai', 'server', 'sample'):
+            self.assertIn(key, data)
+        self.assertEqual(self.req(admin, '/api/admin/stats?range=365')[0], 400)
+        status, again = self.req(admin, '/api/admin/stats?range=30')
+        self.assertTrue(again['cached'])
+        self.assertNotIn('op_admin', json.dumps(again))
+        # Leaving ADMIN_USERS closes it at once, even with a warm cache.
+        with patch.dict(os.environ, {'ADMIN_USERS': ''}):
+            self.assertEqual(self.req(admin, '/api/admin/stats?range=30')[0], 403)
+
+    def test_rate_limited(self):
+        admin = self.signed('op_admin2')
+        with patch.dict(os.environ, {'ADMIN_USERS': 'op_admin2'}):
+            codes = [self.req(admin, '/api/admin/stats')[0] for _ in range(31)]
+        self.assertEqual(codes[:30], [200] * 30)
+        self.assertEqual(codes[30], 429)
+
+
+if __name__ == '__main__':
+    unittest.main()

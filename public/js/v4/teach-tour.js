@@ -27,6 +27,7 @@ if(typeof document!=='undefined'){
   };
   const host=document.getElementById('sheetContent');
   if(host&&typeof MutationObserver!=='undefined')new MutationObserver(fit).observe(host,{childList:true});
+  document.addEventListener('sheetrender',fit);  // re-renders are morphed in place (app.js), not always a childList change
   addEventListener('resize',fit);addEventListener('layoutchange',fit);
 }
 

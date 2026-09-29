@@ -182,3 +182,48 @@ job interviews):
 - Wiring `persona_reply` into class Q&A / parent messages / support calls / interviews.
 - Docs outside this note (README, DEPLOY, SECURITY_AND_PRIVACY, .env.example) still say
   "AI off by default"; they should be updated by whoever owns them.
+
+## Voices, verbosity, moods (game/voices.py) — 2026-09-29, branch career-identity
+
+The owner found the characters "still boring". Every AI surface now speaks through a shared
+voice library on top of the review temperaments:
+
+- `voices.VOICES`: 40 voices (ấm áp, lạnh lùng kiệm lời, tsundere, nhiều chuyện, camera chạy
+  bằng cơm, phán xét xã hội, anh hùng bàn phím, lầy lội, cằn nhằn, biết tuốt, nhút nhát, drama,
+  thực dụng, sống ảo, tâm linh, mẹ bỉm, bia hơi triết lý, lạc quan tếu, than thở, đa nghi,
+  ngây thơ, hoài niệm, Gen Z, văn phòng, tâm lý, thẳng tính, lịch sự, hướng nội, buôn bán,
+  nóng tính, mơ mộng, kỷ luật, hay dỗi, sĩ diện, hài mặt lạnh, two child voices, three
+  interviewer voices). Each has attitude, habits, catchphrases, particles, emoji/teencode use,
+  dialect hint, topics, reactions to kind/rude/sad players, 3–5 few-shot lines (no digits),
+  plus scripted `idle`/`greet` lines.
+- `for_npc(npc_id, role, age, temper, career)`: deterministic, fitted to role (neighbours lean
+  to watchers/gossips, staff to professional voices, children to child voices, teacher-mode
+  parents by parent temperament) and distinct inside one workplace. `for_card(card)` covers
+  pupil/interviewer cards; `professional(voice)` maps any voice to pv_am / pv_nghiem / pv_lanh.
+- `verbosity_for(npc, voice)`: kiệm lời / vừa / nói nhiều ≈ 25 / 45 / 30 % of NPCs.
+  `limits(v)`: 1 sentence / 60 chars, 3 / 240, 7 / 600, with matching `max_tokens`.
+- `mood_for(npc, life_day)`: vui, mệt, bực, buồn, hào hứng (+ a small private reason).
+- `street_talk(...)`: what the character saw today, a harmless rumour for gossips/watchers
+  (and now and then anyone), a comfort cue for kind voices when reviews or rumours go bad.
+- `prompt_block(voice, verbosity, mood, lang)` is the voice section of a system prompt.
+
+`personas.persona` adds `voice`, `voice_label`, `verbosity`, `mood`, `mood_why`,
+`street_talk`. `ai._persona_system` is rebuilt around the voice block (concrete local detail,
+answer first, remember recent turns, never copy canonical, no assistant tone) and keeps every
+guardrail. `ai.persona_reply` keeps its signature; length, `max_tokens` and temperature follow
+the voice (`ai.reply_limits`; interviews, class questions and support calls are capped at
+"vừa", interviews switch to a professional voice). `ai.clean_reply` takes
+`sentences=`/`chars=`; `MAX_SENTENCES`/`MAX_CHARS` stay as the "vừa" default. Scripted chat
+(engine `chat_reply` greeting and idle lines) uses the voice's small talk, rumours and comfort
+lines in Vietnamese; English saves keep the translated line.
+
+## Review gripes (game/review_gripes.py)
+
+About a fifth of completed reviews now carry an off-topic gripe or a trivial five-star reason,
+per career group (shops, office clients, support callers, tour and homestay guests, parents,
+delivery, farm), tied to real state when possible (dirty counter / worn equipment, cozy or
+garden premises, sun or rain, festival/calm day, queue, long day, pet shop cats, decor).
+Forms: backhanded, passive-aggressive, one word, Gen Z, formal, essay, off-topic. A gripe that
+costs a star is stored as `unfair` (`key: 'gripe'`), so replies and AI decisions work through
+the existing flow and a kind or factual reply restores the fair grade (`gripe_soft` lines).
+`ai.review_voice` rewrites in the reviewer's voice and verbosity and must keep the gripe.

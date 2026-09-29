@@ -1,6 +1,9 @@
 /** Tiny original synthesised sounds. No audio files or third-party recordings. */
 export class Sound {
   constructor(){this.ctx=null;this.enabled=true;this.volume=1;}
+  /** Create the (suspended) context ahead of time, in idle time: creating it is slow on phones (~100 ms
+   * on a throttled CPU) and used to land on the player's very first tap. unlock() then only resumes it. */
+  prepare(){try{this.ctx??=new (window.AudioContext||window.webkitAudioContext)();}catch{/* no Web Audio */}}
   unlock(){try{this.ctx??=new (window.AudioContext||window.webkitAudioContext)();if(this.ctx.state==='suspended')this.ctx.resume();}catch{/* Silent play remains fully usable. */}}
   tone(freq,time=.08,volume=.045,delay=0,type='sine'){
     if(!this.ctx||!this.enabled)return;const t=this.ctx.currentTime+delay,o=this.ctx.createOscillator(),g=this.ctx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(volume*this.volume,t+.015);g.gain.exponentialRampToValueAtTime(.0001,t+time);o.connect(g);g.connect(this.ctx.destination);o.start(t);o.stop(t+time+.03);

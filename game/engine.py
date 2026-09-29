@@ -25,6 +25,8 @@ from . import employment as emp
 from .careers import PLUGINS
 from . import journey as jr
 from . import invest as iv
+from . import board as bd
+from . import life as doi
 from . import career_stories as cst
 from . import desk as dk
 from . import giftshop as gifts
@@ -67,10 +69,23 @@ def default_settings() -> dict:
     return dict(mode="everyday",sound=True,music=False,reduceMotion=False,largeText=False,aiConsent=True,aiAsked=True,aiNoticeSeen=False,securityEvents=True,
         lang="vi",uiTheme="kem",musicTrack="auto",musicVolume=45,sfxVolume=70,notify=False,publicProfile=False)
 
-def migrate_state(state:dict) -> dict:
-    """Upgrade v1 locally without replaying wages, rent, tax or past incidents."""
+_SCALARS=(str,int,float,bool,type(None))
+
+def tree_copy(x):
+    """Deep copy of a JSON-shaped save (dicts, lists, scalars), about 4x faster than
+    copy.deepcopy. Anything else (tuples, sets...) still goes through copy.deepcopy."""
+    t=type(x)
+    if t is dict:return {k:(v if type(v) in _SCALARS else tree_copy(v)) for k,v in x.items()}
+    if t is list:return [v if type(v) in _SCALARS else tree_copy(v) for v in x]
+    if t in _SCALARS:return x
+    return copy.deepcopy(x)
+
+def migrate_state(state:dict,owned:bool=False) -> dict:
+    """Upgrade v1 locally without replaying wages, rent, tax or past incidents.
+    `owned`: the caller hands over a private copy (freshly parsed JSON) that may be
+    upgraded in place; otherwise the supplied state is never mutated."""
     need(isinstance(state,dict),"Bản lưu cần là một đối tượng.","invalid_save")
-    s=copy.deepcopy(state)
+    s=state if owned else tree_copy(state)
     # AI characters are on by default: saves that never went through that change get it once.
     ai_unasked=not isinstance(s.get('settings'),dict) or 'aiAsked' not in s['settings']
     need(s.get("schema") in (1,2,3,4),"Phiên bản bản lưu chưa được hỗ trợ.","invalid_save")
@@ -113,6 +128,8 @@ def migrate_state(state:dict) -> dict:
         if 'journey' not in s:jr.migrate(s)
         elif isinstance(s['journey'],dict):jr.upgrade(s['journey'])
         iv.migrate(s)  # đầu tư: savings, Mây Coin, scam offers under journey.invest
+        bd.migrate(s)  # nhóm cư dân phố: the neighbourhood group board under journey.board
+        doi.migrate(s)  # chuyện đời thường & tình làng nghĩa xóm: journey.life
         life.upgrade_save(s)
         dk.migrate(s)  # paperwork desks: desk memory + refreshed wording of older tasks
         incs.migrate(s)  # chuyện đời: an empty incident book per workplace
@@ -313,6 +330,7 @@ def director(s:dict,c:dict,career:str) -> None:
 
 def chat_reply(s:dict,c:dict,career:str,npc:str,text:str) -> tuple[str,list[dict]]:
     """Rule-based baseline. Text alone never completes an economic action."""
+    from . import voices  # voice-flavoured small talk for greetings and idle chat
     msg=normalize(text)
     t=next((t for t in c["tasks"] if t["npc"]==npc and t["status"] not in ("completed","referred","cancelled")),None)
     suggestions=[]
@@ -336,16 +354,20 @@ def chat_reply(s:dict,c:dict,career:str,npc:str,text:str) -> tuple[str,list[dict
     elif any(w in msg for w in ["xin loi","cam on"]):reply="Cảm ơn bạn đã nói rõ. Mình cùng làm nốt việc đang có nhé, không cần vội."
     elif any(w in msg for w in ["chao","hello","hi "]):
         reply=f'Chào {s["name"]}! '+(t["opening"] if t else "Hôm nay mình ghé phố chào bạn một chút.")
+        # Each character greets in their own voice (game/voices.py); English keeps the line above.
+        if s["settings"].get("lang")!="en":reply=(voices.scripted(s,career,npc,"greet",f'Chào {s["name"]}!')+" "+(t["opening"] if t else voices.scripted(s,career,npc,"idle",""))).strip()
     elif t:
         reply="Mình đang trao đổi về: "+t["title"]+". Bạn có thể hỏi ‘Bạn cần gì?’ hoặc mở công việc để cùng xem dữ kiện nhé."
         suggestions=[dict(label="Hỏi nhu cầu",action="ask",task=t["id"]),dict(label="Mở công việc",action="open_task",task=t["id"])]
-    else:reply="Hôm nay phố khá yên. Mình thích ngồi ở một góc và nhìn mọi người làm việc. Bạn cứ làm theo nhịp của mình nhé."
+    else:reply=voices.scripted(s,career,npc,"idle","Hôm nay phố khá yên. Mình thích ngồi ở một góc và nhìn mọi người làm việc. Bạn cứ làm theo nhịp của mình nhé.")
     return reply,suggestions
 
 
-def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,internal:bool=False) -> tuple[dict,dict]:
-    """Functional transaction: failure cannot partly mutate the supplied state."""
-    s=migrate_state(state)
+def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,internal:bool=False,owned:bool=False) -> tuple[dict,dict]:
+    """Functional transaction: failure cannot partly mutate the supplied state.
+    `owned=True` (the storage layer, with a freshly parsed save it throws away on
+    failure) skips the defensive copy: the state is changed in place."""
+    s=migrate_state(state,owned=owned)
     p=payload or {}
     need(isinstance(p,dict),"Dữ liệu thao tác không hợp lệ.")
     result=dict(message="Đã thực hiện.",effects=[])
@@ -374,6 +396,8 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
         return fresh,dict(message="Đã tạo hành trình mới.")
     if action.startswith("jr_"):return jr.action(s,career,action,p)
     if action.startswith("iv_"):return iv.action(s,action,p)
+    if action.startswith("bd_"):return bd.action(s,career,action,p,internal)
+    if action.startswith("lf_"):return doi.action(s,action,p)
     if action.startswith("st_"):return cst.action(s,career,action,p)
     need(career in CAREERS,"Chọn một nghề trước nhé.")
     jr.gate(s,career,action,internal)
@@ -881,6 +905,8 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
     haps.after(s,c,career,action,result)
     jr.after(s,career,action,p,result)
     iv.on_life_day(s,result)  # prices, interest and offers move once per life day
+    bd.after(s,career,action,result)  # nhóm cư dân phố: one beat of neighbourhood posts
+    doi.after(s,career,action,result)  # tinh thần, hard days, neighbours (after invest: sees its scam losses)
     cst.after(s,career,action,result)
     validate_state(s)
     return s,result
@@ -889,7 +915,7 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
 def task_view(t:dict) -> dict:
     if t["career"] in extra.NEW_CAREERS or t["career"] in PLUGINS:return life.public_task(t)
     if t.get("desk"):return dk.public_task(t)
-    v=copy.deepcopy(t)
+    v=tree_copy(t)
     career=t["career"]
     if career in ("mother_baby","pharmacy") and not t["known"]:v["needs"]=None
     if career=="mother_baby" and t.get("gen"):return gifts.public_task(t,v)
@@ -915,14 +941,19 @@ def career_summary(raw:dict,cid:str) -> dict:
                 inventory=bool(inv.public(raw,cid)),life=dict(shop_name=raw.get("life",{}).get("shop_name")))
 
 
-def public_state(s:dict,full:str|None=None) -> dict:
-    """Public projection. Only the current career (or `full`) gets the full view."""
-    s=migrate_state(s)
-    focus=full or s.get("current") or "mother_baby"
-    v={k:copy.deepcopy(x) for k,x in s.items() if k!="careers"}
-    v["careers"]={cid:(copy.deepcopy(c) if cid==focus else career_summary(c,cid)) for cid,c in s["careers"].items()}
+def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
+    """Public projection. Only the current career (or `full`) gets the full view.
+    `migrated=True`: `s` is a disposable state that apply_action just returned
+    (already upgraded), so the defensive migrate copy is skipped."""
+    if not migrated:s=migrate_state(s)
+    focus=full or s.get("current") or jr.default_career(s)
+    v={k:tree_copy(x) for k,x in s.items() if k!="careers"}
+    v["careers"]={cid:(tree_copy(c) if cid==focus else career_summary(c,cid)) for cid,c in s["careers"].items()}
+    v["focus"]=focus
     v["journey"]=jr.public(s)
     v["invest"]=iv.public(s)
+    v["board"]=bd.summary(s)
+    v["life"]=doi.public(s)
     v["stories"]=cst.public(s)
     for cid,c in v["careers"].items():
         if c.get("summary"):continue
@@ -933,7 +964,7 @@ def public_state(s:dict,full:str|None=None) -> dict:
         c["happen"]=haps.public(raw,cid,s)
         c["inventory"]=inv.public(raw,cid)
         c["job"]=emp.public(raw,cid)
-        c["data"]=mod.public_data(raw) if mod and hasattr(mod,'public_data') else copy.deepcopy(raw["ext"]["data"])
+        c["data"]=mod.public_data(raw) if mod and hasattr(mod,'public_data') else tree_copy(raw["ext"]["data"])
         if cid in CARE_CAREERS:
             cp=care_public(raw,cid)
             if cp is None:c["data"].pop("care",None)
@@ -980,6 +1011,8 @@ workflow references, quantities and maximum sizes are validated before commit.
     clean_text(s.get("name"),24);integer(s.get("seq"),0,10**9)
     jr.validate(s)
     iv.validate(s)
+    bd.validate(s)
+    doi.validate(s)
     cst.validate(s)
     settings=s.get("settings",{});need(settings.get("mode") in ("relaxed","everyday","challenge"),"Chế độ bản lưu không hợp lệ.")
     for k in ("sound","music","reduceMotion","largeText","aiConsent","aiAsked","aiNoticeSeen","securityEvents","notify","publicProfile"):need(type(settings.get(k)) is bool,"Thiếu thiết lập bản lưu.")

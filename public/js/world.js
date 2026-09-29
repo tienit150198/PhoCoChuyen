@@ -8,6 +8,13 @@ const PALETTE={mother_baby:{wall:'#f1e2c8',side:'#e4d3b5',accent:'#8da181',count
 PALETTE.teacher={...PALETTE.accounting};PALETTE.tour_guide={...PALETTE.customer_care};PALETTE.milk_tea={...PALETTE.mother_baby};
 const CLOTHES=['#8c9a7e','#aa8d9a','#9eacbd','#c2957e','#82a5a0','#b2a36b'];
 function lerp(a,b,t){return a+(b-a)*t;}
+const now=()=>globalThis.performance?.now?.()??Date.now();
+/* Frame budget (ms between drawn frames). Phones got hot repainting the whole diorama 60–120 times a
+ * second, also under sheets and in the background. Now: full rate (≤60 fps) only while something moves or
+ * right after a touch; slow ambient life (bobbing, blinking, steam, clouds) at AMBIENT; a quieter IDLE rate
+ * after LONG_IDLE ms without any activity; reduced motion or pause draw on change (plus a slow safety
+ * refresh); nothing at all while the tab is hidden, the canvas is off screen or a sheet covers it. */
+const FULL=1000/60,AMBIENT=100,IDLE=200,STILL=500,LONG_IDLE=20000,TOUCH=1500,SLACK=4;
 function rounded(c,x,y,w,h,r=8){c.beginPath();c.roundRect(x,y,w,h,r);}
 function rr(c,x,y,w,h,fill,r=8,stroke){rounded(c,x,y,w,h,r);c.fillStyle=fill;c.fill();if(stroke){c.strokeStyle=stroke;c.lineWidth=1.4;c.stroke();}}
 function ell(c,x,y,rx,ry,fill){c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);c.fillStyle=fill;c.fill();}
@@ -21,17 +28,46 @@ export class World {
     this.career='mother_baby';this.game=null;this.state=null;this.player={x:NaN,y:NaN,path:[],goal:null,look:1};
     this.hotspots=[];this.hover=null;this.particles=[];this.speech=null;this.time=0;this.last=0;this.paused=false;this.keys=new Set();this.pending=null;this.scale=1;this.offset={x:0,y:0};this.previewCache=new Map();this.ambientPeople=[];this.actionTimer=0;
     this.resizeObserver=new ResizeObserver(()=>this.resize());this.resizeObserver.observe(canvas);
-    canvas.addEventListener('pointermove',e=>this.pointerMove(e));canvas.addEventListener('pointerleave',()=>{this.hover=null;});
-    canvas.addEventListener('pointerdown',e=>{canvas.focus({preventScroll:true});this.pointerDown(e);});
-    canvas.addEventListener('keydown',e=>this.keydown(e));canvas.addEventListener('keyup',e=>this.keys.delete(e.key.toLowerCase()));canvas.addEventListener('blur',()=>this.keys.clear());
+    canvas.addEventListener('pointermove',e=>{this.poke(true);this.pointerMove(e);});canvas.addEventListener('pointerleave',()=>{this.hover=null;this.poke(true);});
+    canvas.addEventListener('pointerdown',e=>{this.poke(true);canvas.focus({preventScroll:true});this.pointerDown(e);});
+    canvas.addEventListener('keydown',e=>{this.poke(true);this.keydown(e);});canvas.addEventListener('keyup',e=>{this.keys.delete(e.key.toLowerCase());this.poke(true);});canvas.addEventListener('blur',()=>this.keys.clear());
     this.navDebug=/[?&]navdebug=1\b/.test(location.search);if(this.navDebug)globalThis.__navWorld=this;
-    this.frame=this.frame.bind(this);this.raf=requestAnimationFrame(this.frame);
+    // Frame budget: see frame(). Any tap or key on the page counts as activity; closing a dialog, showing the
+    // tab again or scrolling the canvas back into view wakes a stopped loop.
+    this.frame=this.frame.bind(this);this.tick=()=>{this.timer=0;this.wake();};
+    this.lastDraw=-1e9;this.lastTouch=-1e9;this.lastActive=now();this.dirty=true;this.onScreen=true;
+    const doc=globalThis.document;
+    this.listeners=[['visibilitychange',()=>this.wake(true)],['close',e=>{if(e.target?.tagName==='DIALOG')this.wake(true);},true],
+      ['pointerdown',()=>this.poke(),true],['keydown',()=>this.poke(),true]];
+    for(const [type,fn,capture] of this.listeners)doc?.addEventListener?.(type,fn,capture?{capture:true,passive:true}:undefined);
+    if(typeof IntersectionObserver==='function'){this.visibleObserver=new IntersectionObserver(entries=>{this.onScreen=entries.at(-1).isIntersecting;this.wake(true);});this.visibleObserver.observe(canvas);}
+    this.raf=requestAnimationFrame(this.frame);
   }
-  destroy(){cancelAnimationFrame(this.raf);this.resizeObserver.disconnect();}
+  destroy(){cancelAnimationFrame(this.raf);clearTimeout(this.timer);this.resizeObserver.disconnect();this.visibleObserver?.disconnect();
+    for(const [type,fn,capture] of this.listeners||[])globalThis.document?.removeEventListener?.(type,fn,capture?{capture:true}:undefined);}
+  /* World time: an accessor so the cached room layer (BobaWorld.backdrop) can tell whether a scene's room
+   * drawing animates with time (timeRead) or is static. */
+  get time(){this.timeRead=true;return this._time||0;}
+  set time(v){this._time=v;}
+  get navDebug(){return !!this._navDebug;}
+  set navDebug(v){this._navDebug=!!v;if(this.listeners)this.wake(true);}
+  get paused(){return !!this._paused;}
+  set paused(v){v=!!v;if(v!==this._paused){this._paused=v;if(this.listeners)this.wake(true);}}
+  /** Something changed that must be shown: draw at the next frame (the loop may be sleeping). */
+  wake(dirty=false){if(dirty)this.dirty=true;if(this.timer){clearTimeout(this.timer);this.timer=0;}if(!this.raf)this.raf=requestAnimationFrame(this.frame);}
+  /** Player activity: keeps the ambient rate up; `touch` (on the canvas itself) also runs full rate briefly. */
+  poke(touch=false){const t=now();this.lastActive=t;if(touch){this.lastTouch=t;this.wake(true);}}
+  /** A modal sheet or dialog is open over the stage (the side drawer on desktop leaves it visible). */
+  covered(){const d=globalThis.document?.querySelector?.('dialog[open]');return !!d&&!d.classList?.contains('drawer');}
+  /** Something moves for real right now: walking, keys, sparkles, the tap ring, a live happening, the petted cat. */
+  busy(){const p=this.player,t=this._time||0;return !!(p?.path?.length||this.keys.size||this.particles.length||(this.marker&&t<this.marker.until)||(this.fx?.busy&&!this.reduced)||this.petUntil>t);}
   project(x,y,z=0){return {x:600+(x-y)*TW,y:205+(x+y)*TH-z};}
   unproject(x,y){const a=(x-600)/TW,b=(y-205)/TH;return {x:(a+b)/2,y:(b-a)/2};}
   screen(p){return {x:this.offset.x+p.x*this.scale,y:this.offset.y+p.y*this.scale};}
-  resize(){const r=this.canvas.getBoundingClientRect();this.width=r.width||1200;this.height=r.height||790;this.dpr=Math.min(devicePixelRatio||1,2);this.canvas.width=Math.round(this.width*this.dpr);this.canvas.height=Math.round(this.height*this.dpr);this.layout();}
+  resize(){const r=this.canvas.getBoundingClientRect();this.width=r.width||1200;this.height=r.height||790;
+    // Small screens start at 2× (sharp) and drop to 1.5× when drawing turns out slow (watchCost).
+    this.small=Math.min(this.width,this.height)<=520;this.dprCap??=2;this.costFrames=0;this.cost=null;
+    this.dpr=Math.min(devicePixelRatio||1,this.small?this.dprCap:2);this.dirty=true;this.wake?.();this.canvas.width=Math.round(this.width*this.dpr);this.canvas.height=Math.round(this.height*this.dpr);this.layout();}
   layout(){const reserve=this.width>1050?215:this.width>760?145:0;const available=this.width-reserve;this.scale=Math.min(available/(this.width<760?1000:1160),this.height/(this.width<760?680:760));this.offset={x:(available-W*this.scale)/2+15,y:(this.height-H*this.scale)/2+(this.width<760?-25:8)};}
   update(state,content){
     const career=state.current||'mother_baby';
@@ -39,7 +75,7 @@ export class World {
     // Cached career previews show the player too: redraw them when the chosen look changes.
     const look=state.journey?.gender??null;if(look!==this.lookKey){this.lookKey=look;this.previewCache.clear();}
     this.career=career;this.game=content;this.state=state;this.c=state.careers[career];this.reduced=state.settings.reduceMotion;
-    this.layout();this.setupObjects();
+    this.layout();this.setupObjects();this.rev=(this.rev||0)+1;this.wake(true);
   }
   setupObjects(){
     const shop=this.career==='mother_baby'||this.career==='pharmacy';
@@ -174,7 +210,7 @@ export class World {
   }
   pathLength(path){let len=0,a=this.player;for(const b of path){len+=this.navDist(a,b);a=b;}return len;}
   walkTo(x,y,callback=null,{marker=true}={}){
-    const path=this.navPath(x,y);
+    const path=this.navPath(x,y);this.wake(true);
     if(!path){this.pending=null;return false;}
     this.player.path=path;this.player.goal=path.at(-1)||{x:this.player.x,y:this.player.y};this.pending=callback;
     if(marker&&path.length){const end=path.at(-1);this.marker={x:end.x,y:end.y,until:this.time+1.1};}
@@ -202,11 +238,34 @@ export class World {
     const tries=[[mx,my],[mx,0],[0,my]];
     for(const [ax,ay] of tries){if(!ax&&!ay)continue;const nx=p.x+ax,ny=p.y+ay;if(this.navFree(nx,ny)){p.x=nx;p.y=ny;if(ax)p.look=ax>0?1:-1;break;}}
     p.path=[];p.goal=null;this.pending=null;}
-  say(text,npc=null){const h=this.hotspots.find(h=>h.id===`npc:${npc}`)||(npc==='event'?this.hotspots.find(h=>h.id==='event'):null);const point=h?this.project(h.x,h.y,84):this.project(this.player.x,this.player.y,92);this.speech={text,point,expires:this.time+5.5};}
-  ping(x,y,color='#b99456'){for(let i=0;i<8;i++)this.particles.push({x,y,vx:Math.cos(i*Math.PI/4)*24,vy:Math.sin(i*Math.PI/4)*17-13,life:1.1,max:1.1,color,size:3});}
-  celebrate(){const p=this.project(this.player.x,this.player.y,60);for(let i=0;i<32;i++)this.particles.push({x:p.x,y:p.y,vx:(Math.random()-.5)*140,vy:-30-Math.random()*100,life:1.7,max:1.7,color:['#d4b06f','#97aa85','#b797a9','#e6cdb2'][i%4],size:3+Math.random()*3});}
+  say(text,npc=null){const h=this.hotspots.find(h=>h.id===`npc:${npc}`)||(npc==='event'?this.hotspots.find(h=>h.id==='event'):null);const point=h?this.project(h.x,h.y,84):this.project(this.player.x,this.player.y,92);this.speech={text,point,expires:this.time+5.5};this.wake(true);}
+  ping(x,y,color='#b99456'){this.wake(true);for(let i=0;i<8;i++)this.particles.push({x,y,vx:Math.cos(i*Math.PI/4)*24,vy:Math.sin(i*Math.PI/4)*17-13,life:1.1,max:1.1,color,size:3});}
+  celebrate(){this.wake(true);const p=this.project(this.player.x,this.player.y,60);for(let i=0;i<32;i++)this.particles.push({x:p.x,y:p.y,vx:(Math.random()-.5)*140,vy:-30-Math.random()*100,life:1.7,max:1.7,color:['#d4b06f','#97aa85','#b797a9','#e6cdb2'][i%4],size:3+Math.random()*3});}
   pet(){this.say('Mrrr… chỗ này ấm quá.');const p=this.project(2.7,7.4,30);this.ping(p.x,p.y,'#c58b85');this.petUntil=this.time+4;}
-  frame(now){const dt=Math.min((now-this.last)/1000||0,.05);this.last=now;if(!this.paused&&!document.hidden){this.time+=dt;this.animate(dt);}this.draw();this.raf=requestAnimationFrame(this.frame);}
+  frame(at){
+    this.raf=0;const dt=Math.min((at-this.last)/1000||0,.25);this.last=at;
+    if(globalThis.document?.hidden||this.onScreen===false){this.dirty=true;return;}   // visibilitychange / IntersectionObserver wake us
+    const covered=this.covered(),moving=this.busy(),walking=!!(this.player?.path?.length||this.keys.size);
+    // Under a sheet the player keeps walking (a pending tap still arrives) but nothing is painted.
+    if(!this.paused&&(!covered||walking)){this.time+=dt;this.animate(dt);}
+    const t=now(),motion=this.busy(),touched=t-this.lastTouch<TOUCH;
+    if(moving&&!motion)this.dirty=true;   // the last sparkle or step: show the settled frame
+    if(covered){
+      if(this.dirty)this.paint(t);
+      // Closing a dialog wakes us; poll slowly as a fallback, and keep stepping while someone walks.
+      this.next(walking&&!this.paused?0:1000);
+      return;}
+    const still=this.paused||this.reduced;this.longIdle=t-this.lastActive>LONG_IDLE;
+    const gap=(motion&&!this.paused)||touched?FULL:still?STILL:this.longIdle?IDLE:AMBIENT;
+    if(this.dirty||t-this.lastDraw>=gap-SLACK)this.paint(t);
+    this.next(gap===FULL?0:Math.max(1,this.lastDraw+gap-now()-SLACK));
+  }
+  /** Schedule the next frame: 0 = next display frame, else a timer (no vsync wake-ups while waiting). */
+  next(ms){if(this.raf)return;clearTimeout(this.timer);this.timer=0;if(ms<=0)this.raf=requestAnimationFrame(this.frame);else this.timer=setTimeout(this.tick,ms);}
+  paint(t){this.dirty=false;this.lastDraw=t;const a=now();this.draw();this.watchCost(now()-a);}
+  /** Phones: if drawing stays slow, render the canvas at a lower pixel ratio (never below 1.5). */
+  watchCost(ms){if(!this.small||this.dprCap<=1.5)return;this.cost=this.cost==null?ms:this.cost*.9+ms*.1;
+    if(++this.costFrames>30&&this.cost>12){this.dprCap=1.5;this.resize();}}
   animate(dt){
     if(this.keys.size){const k=this.keys;let dx=0,dy=0;if(k.has('w')||k.has('arrowup')){dx-=1;dy-=1;}if(k.has('s')||k.has('arrowdown')){dx+=1;dy+=1;}if(k.has('a')||k.has('arrowleft')){dx-=1;dy+=1;}if(k.has('d')||k.has('arrowright')){dx+=1;dy-=1;}
       const nx=this.player.x+dx*dt*2.2,ny=this.player.y+dy*dt*2.2;if(this.navFree(nx,ny)){this.player.x=nx;this.player.y=ny;this.player.path=[];this.player.goal=null;this.pending=null;}}
@@ -215,7 +274,7 @@ export class World {
       if(dist<=step){this.player.x=target.x;this.player.y=target.y;this.player.path.shift();if(!this.player.path.length){this.player.goal=null;const fn=this.pending;this.pending=null;fn?.();}}
       else{this.player.x+=px/dist*step/m.kx;this.player.y+=py/dist*step/m.ky;if(Math.abs(px)>1)this.player.look=px>=0?1:-1;}}
     this.particles.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=55*dt;p.life-=dt;});this.particles=this.particles.filter(p=>p.life>0);
-    if(this.speech&&this.time>this.speech.expires)this.speech=null;
+    if(this.speech&&this.time>this.speech.expires){this.speech=null;this.dirty=true;}
   }
   cube(x,y,w,d,h,top,front,side){const c=this.ctx,pr=(a,b,z)=>this.project(a,b,z);const a=pr(x,y,h),b=pr(x+w,y,h),e=pr(x+w,y+d,h),f=pr(x,y+d,h);poly(c,[b,e,pr(x+w,y+d,0),pr(x+w,y,0)],side||shade(top,-20),'#795f4420');poly(c,[f,e,pr(x+w,y+d,0),pr(x,y+d,0)],front||shade(top,-8),'#795f4420');poly(c,[a,b,e,f],top,'#fff5e645');}
   shadow(x,y,w=30,d=13){const p=this.project(x,y);ell(this.ctx,p.x,p.y+2,w,d,'#4e443520');}

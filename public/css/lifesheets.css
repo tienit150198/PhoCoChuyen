@@ -1,0 +1,219 @@
+/* ==========================================================================
+   Life sheets (experience-ui.js): Chuẩn bị · Bảng giá · Trò nhỏ · Hộ chiếu ·
+   Khu phố. One sticky top (back, shop, close + tab bar), then cards.
+   Theme tokens only (docs/DESIGN.md); phone first (390 px); columns via
+   container queries on the .life-content "sheet" container. The sheets sit in
+   .sheet.life-sheet / .sheet.prep-sheet, which take the career accent (app.css).
+   ========================================================================== */
+
+/* Sticky top: head + tabs */
+.lx-top{position:sticky;top:0;z-index:6;background:var(--surface);border-bottom:1px solid var(--line)}
+.lx-top>.sheet-head{position:relative;align-items:center;border-bottom:0;padding-bottom:10px}
+.lx-head .grow{min-width:0}
+.lx-head .eyebrow{margin:0 0 2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lx-head h2{margin:0;font-size:1.3rem;line-height:1.3;overflow-wrap:anywhere}
+.lx-back{margin-left:-6px}
+
+.lx-nav{display:flex;gap:4px;margin:0 20px 12px;padding:4px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.lx-nav::-webkit-scrollbar{display:none}
+.lx-tab{flex:1 0 auto;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:6px 12px;border:0;border-radius:10px;background:transparent;color:var(--ink-2);font:inherit;font-size:.867rem;font-weight:700;line-height:1.2;white-space:nowrap;cursor:pointer;transition:background var(--dur),color var(--dur)}
+.lx-tab .em{margin:0;font-size:1.05rem;line-height:1}
+.lx-tab:hover{background:var(--surface);color:var(--ink)}
+.lx-tab.active{background:var(--surface);color:var(--accent-text);box-shadow:var(--shadow-sm)}
+html[data-layout="phone"] .lx-top>.sheet-head{padding-bottom:8px}
+html[data-layout="phone"] .lx-head h2{font-size:1.133rem}
+html[data-layout="phone"] .lx-nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0;margin:0 max(8px,var(--safe-r)) 10px max(8px,var(--safe-l));padding:3px}
+html[data-layout="phone"] .lx-tab{flex-direction:column;gap:2px;min-width:0;min-height:50px;padding:5px 0;font-size:.68rem;letter-spacing:-.01em;white-space:normal;text-align:center;overflow-wrap:anywhere}
+html[data-layout="phone"] .lx-tab .em{font-size:1.2rem}
+
+/* Content + cards */
+.life-content.lx{display:grid;gap:12px;align-content:start}
+.life-content.lx>*{min-width:0;margin:0}
+.lx-card{position:relative;min-width:0;padding:16px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-sm)}
+.lx-card>*{margin:0}
+.lx-card>*+*{margin-top:10px}
+.lx-h{margin:0;font-size:1rem;font-weight:800;line-height:1.35}
+.lx-sec{margin:10px 0 -2px;font-size:1rem;font-weight:800;color:var(--ink-2)}
+.lx-hint{font-size:.833rem;line-height:1.5;color:var(--muted)}
+.lx-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;align-items:start}
+.lx-col{display:grid;gap:12px;min-width:0}
+@container sheet (min-width:680px){.lx-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.lx-tile{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--surface-2);font-size:1.3rem;line-height:1}
+.lx-tile.big{width:52px;height:52px;border-radius:16px;font-size:1.8rem}
+.lx-tile.art{background:var(--surface-2);overflow:hidden}
+.lx-tile.art svg{width:36px;height:36px}
+.lx-actions{display:flex;flex-wrap:wrap;gap:8px}
+.lx-actions .btn{white-space:normal}
+.lx-mini{display:block;height:6px;margin-top:6px;border-radius:var(--radius-pill);background:var(--surface-3);overflow:hidden}
+.lx-mini>i{display:block;height:100%;min-width:3px;border-radius:inherit;background:var(--accent)}
+.lx-none{max-width:none;margin:0;padding:14px;border-radius:var(--radius);border:1.5px dashed var(--line-strong);background:var(--surface-2);color:var(--muted);font-size:.9rem;text-align:center}
+
+/* Level strip (Chuẩn bị) */
+.lx-level{display:flex;align-items:center;gap:14px}
+.lx-level>*+*{margin-top:0}
+.lx-level .grow{min-width:0}
+.lx-level-row{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.lx-level-row b{font-size:1rem}
+.lx-level-row small{font-size:.833rem;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.lx-bar{height:10px;margin-top:6px;border-radius:var(--radius-pill);background:var(--surface-3);overflow:hidden}
+.lx-bar>i{display:block;height:100%;min-width:4px;border-radius:inherit;background:var(--accent)}
+.lx-level>.btn{flex:none}
+
+/* Weather */
+.lx-weather{display:flex;align-items:flex-start;gap:12px}
+.lx-weather b{font-size:1rem}
+.lx-weather p{margin:4px 0 6px;color:var(--ink-2);line-height:1.5}
+.lx-weather small{display:block;font-size:.833rem;color:var(--muted)}
+
+/* Checklist (today's goals, festival) */
+.lx-goals{display:grid;gap:0;padding:0;list-style:none}
+.lx-goals li{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.lx-goals li:first-child{border-top:0;padding-top:2px}
+.lx-goals li:last-child{padding-bottom:0}
+.lx-goals .grow{min-width:0}
+.lx-goals b{display:block;font-size:.95rem;line-height:1.35}
+.lx-goals small{display:block;margin-top:1px;font-size:.8rem;color:var(--muted)}
+.lx-check{flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:2px solid var(--field-line);color:var(--accent-ink)}
+.lx-goals li.ready .lx-check{background:var(--accent);border-color:var(--accent)}
+.lx-goals li.claimed .lx-check{background:var(--good);border-color:var(--good);color:var(--surface)}
+.lx-goals li.claimed b{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line-strong)}
+.lx-goal-end{flex:none}
+.lx-goal-end>b{font-size:1rem;color:var(--accent-text);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* Shortcut rows */
+.lx-links{display:grid;gap:6px}
+.lx-card>.lx-links{margin-top:10px}
+.btn.lx-link{justify-content:flex-start;gap:12px;min-height:52px;padding:6px 10px 6px 6px;border-radius:14px;background:var(--surface);border-color:var(--line);box-shadow:none;text-align:left;white-space:normal}
+.btn.lx-link:hover:not(:disabled){background:var(--surface-2)}
+.btn.lx-link .grow{min-width:0}
+.btn.lx-link>svg{flex:none;color:var(--muted)}
+@container sheet (min-width:520px){.lx-links{grid-template-columns:repeat(2,minmax(0,1fr))}.lx-grid .lx-links{grid-template-columns:minmax(0,1fr)}}
+
+/* Bảng giá */
+.lx-prices,.lx-rows,.lx-steps{display:grid;gap:0;margin:0;padding:0;list-style:none}
+.lx-price,.lx-rows li{display:flex;align-items:center;gap:10px;min-width:0;padding:8px 0;border-top:1px solid var(--line)}
+.lx-price:first-child,.lx-rows li:first-child{border-top:0}
+.lx-price label{min-width:0;font-weight:700;line-height:1.3}
+.lx-price-in{position:relative;flex:none;display:flex;align-items:center}
+.lx-price-in input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]){width:92px;min-height:40px;padding:6px 32px 6px 10px;font-size:1rem;font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
+.lx-price-in small{position:absolute;right:10px;font-size:.8rem;color:var(--muted);pointer-events:none}
+.lx-price>.btn{flex:none}
+.lx-rows .grow{min-width:0;font-weight:600}
+.lx-rows small{flex:none;font-size:.833rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.lx-rows b{flex:none;min-width:48px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.lx-rows .lx-tile{width:34px;height:34px;border-radius:10px;font-size:1.1rem}
+html[data-layout="phone"] .lx-price{flex-wrap:wrap}
+html[data-layout="phone"] .lx-price label{flex:1 1 0}
+.lx-steps{counter-reset:lx;gap:6px}
+.lx-steps li{counter-increment:lx;display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;background:var(--surface-2);font-weight:600}
+.lx-steps li::before{content:counter(lx);flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--accent-soft);color:var(--accent-text);font-size:.8rem;font-weight:800}
+.lx-empty,.lx-locked{display:grid;justify-items:center;gap:8px;text-align:center}
+.lx-empty>*+*,.lx-locked>*+*{margin-top:0}
+.lx-empty p{color:var(--ink-2);max-width:40ch}
+.lx-locked{padding:28px 18px}
+.lx-locked b{font-size:1.2rem}
+.lx-locked small{color:var(--muted);font-size:.9rem}
+.lx-locked .btn{margin-top:6px}
+
+/* Trò nhỏ */
+.lx-games{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+@container sheet (min-width:620px){.lx-games{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.lx-game{display:grid;gap:10px;align-content:start}
+.lx-game>*+*{margin-top:0}
+.lx-game.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.lx-game-head,.lx-play-head{display:flex;align-items:flex-start;gap:12px}
+.lx-game-head .grow,.lx-play-head .grow{min-width:0}
+.lx-game h4{margin:0;font-size:1.05rem;line-height:1.3}
+.lx-game p{margin:2px 0 0;font-size:.867rem;line-height:1.5;color:var(--ink-2)}
+.lx-chips{display:flex;flex-wrap:wrap;gap:6px}
+.lx-chips .chip{min-height:28px;padding:3px 10px;font-size:.8rem;white-space:normal}
+.lx-chips .chip.done{background:var(--good-soft);color:var(--good);border-color:transparent}
+.lx-play{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),var(--shadow-sm)}
+.lx-play-head{align-items:center}
+.lx-play-head h3{margin:0;font-size:1.1rem}
+.lx-play .memory-grid{margin-top:10px}
+.lx-play .sequence-tray{margin:10px 0}
+.lx-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.lx-cards .paper-tile{min-height:52px;padding:10px}
+.lx-play .match-layout{gap:12px}
+.lx-play .match-source{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.lx-play .match-target{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.lx-play .paper-tile{min-height:52px;padding:10px 8px;font-size:.9rem;line-height:1.35}
+.lx-play .match-bin{min-height:76px;padding:12px;border-width:2px;border-radius:var(--radius)}
+.lx-play .match-bin strong{font-size:.95rem}
+.lx-play .match-bin span,.lx-play .match-bin small{margin-top:4px;font-size:.8rem}
+.lx-play .memory-card{min-height:56px}
+.lx-play>.lx-actions{margin-top:12px}
+.lx-result{padding:8px 0}
+.lx-result>.em{font-size:3rem}
+.lx-result h2{font-size:1.4rem}
+
+/* Hộ chiếu */
+.lx-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.lx-stats>div{display:grid;gap:0;padding:10px 12px;border-radius:14px;background:var(--accent-soft);text-align:center}
+.lx-stats b{font-size:1.3rem;line-height:1.25;color:var(--accent-text);font-variant-numeric:tabular-nums}
+.lx-stats small{font-size:.8rem;font-weight:700;color:var(--ink-2)}
+.lx-stories{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+@container sheet (min-width:680px){.lx-stories{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.lx-story{display:grid;gap:6px;align-content:start}
+.lx-story>*+*{margin-top:0}
+.lx-story-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.lx-story-top small{font-size:.75rem;font-weight:800;letter-spacing:.06em;color:var(--muted)}
+.lx-dots{display:flex;gap:4px}
+.lx-dots i{width:8px;height:8px;border-radius:50%;background:var(--surface-3)}
+.lx-dots i.on{background:var(--accent)}
+.lx-story h4{margin:0;font-size:1.05rem;line-height:1.35}
+.lx-story p{font-size:.9rem;line-height:1.55;color:var(--ink-2)}
+.lx-story .lx-actions{margin-top:4px}
+.lx-story.locked{background:var(--surface-2);box-shadow:none}
+.lx-story.locked h4{color:var(--ink-2)}
+.lx-story.locked p{font-size:.833rem;color:var(--muted)}
+.lx-story.done{border-color:var(--good)}
+.lx-story .tag{justify-self:start}
+.lx-badges{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@container sheet (min-width:560px){.lx-badges{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@container sheet (min-width:820px){.lx-badges{grid-template-columns:repeat(6,minmax(0,1fr))}}
+.lx-badge{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;padding:12px 6px 10px;border-radius:var(--radius);background:var(--surface-2);text-align:center}
+.lx-badge h4{margin:2px 0 0;font-size:.8rem;line-height:1.3;overflow-wrap:anywhere}
+.lx-badge small{font-size:.75rem;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.lx-badge .lx-mini{width:70%;margin-top:0}
+.lx-medal{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:var(--surface);border:2px dashed var(--line-strong);font-size:1.5rem;line-height:1;filter:grayscale(1);opacity:.55}
+.lx-badge.ready{background:var(--accent-soft)}
+.lx-badge.ready .lx-medal{filter:none;opacity:1;border-style:solid;border-color:var(--accent)}
+.lx-badge.owned{background:var(--good-soft)}
+.lx-badge.owned .lx-medal{filter:none;opacity:1;border-style:solid;border-color:var(--good);background:var(--surface)}
+.lx-badge .lx-got{color:var(--good)}
+.lx-badge .btn{min-height:32px;margin-top:2px;padding:4px 12px}
+.lx-postcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.lx-postcard{display:grid;justify-items:center;gap:4px;padding:12px 10px;border-radius:14px;background:var(--surface);border:1px solid var(--line);box-shadow:0 3px 0 var(--line-strong);text-align:center}
+.lx-postcard>span{font-size:2rem;line-height:1.1}
+.lx-postcard b{font-size:.867rem;line-height:1.35}
+.lx-postcard small{font-size:.75rem;color:var(--muted)}
+
+/* Khu phố */
+.lx-map.town-map{height:400px}
+.town-pin.selected{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent),0 4px 0 #c6b596}
+html[data-layout="phone"] .lx-map.town-map{height:340px}
+html[data-layout="phone"] .lx-map .town-pin{width:96px}
+.lx-visit h3,.lx-fest h3{margin:0;font-size:1.05rem;line-height:1.35}
+.lx-visit p,.lx-fest p{margin:2px 0 0;font-size:.9rem;line-height:1.5;color:var(--ink-2)}
+.lx-fest .lx-goals .grow{font-weight:700;font-variant-numeric:tabular-nums}
+
+/* Chuẩn bị: the sticky open button sits under cards */
+.sheet.prep-sheet .life-content.lx{padding-bottom:16px}
+
+/* Milk tea's own price tab (careers/milk_tea.js) reuses .chalkboard.mt-board and
+   .price-editor: shown as the same clean menu card + price rows as above. */
+html .mt-panel .chalkboard.mt-board{padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--ink);box-shadow:var(--shadow-sm)}
+.mt-panel .mt-board h2{margin:0 0 6px;font-size:1rem;font-weight:800;color:var(--ink);text-align:left}
+.mt-panel .mt-board .chalk-columns>div{padding:8px 0;border-bottom:1px solid var(--line);font-size:.933rem}
+.mt-panel .mt-board .chalk-columns>div b{font-weight:800;color:var(--accent-text);font-variant-numeric:tabular-nums}
+.mt-panel .mt-board .chalk-columns>div.locked b{color:var(--muted)}
+.mt-panel .mt-board p{margin:10px 0 0;font-size:.833rem;line-height:1.5;color:var(--muted);text-align:left}
+.price-editor{grid-template-columns:minmax(0,1fr);gap:0;margin-top:10px;padding:2px 16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow-sm)}
+.price-editor>div{gap:10px;padding:10px 0;border:0;border-top:1px solid var(--line);border-radius:0;background:none}
+.price-editor>div:first-child{border-top:0}
+.price-editor strong{line-height:1.35}
+.price-editor input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]){flex:none;width:84px;min-height:40px;padding:6px 10px;font-size:1rem;font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
+.price-editor .btn{flex:none}
+html[data-theme="dem"] .lx-medal{opacity:.8}

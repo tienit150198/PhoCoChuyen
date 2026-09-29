@@ -707,7 +707,7 @@ def _facts_ok(fb: dict, kind) -> bool:
 
 def outcome_code(fb: dict, persona: str, tone: str, stars: int, offer: str, seed: int) -> tuple[str, str | None]:
     """(code, text key override) for this tone, persona and kind of review."""
-    from .feedback import _kind
+    from .feedback import _kind, PERSONAS
     kind = _kind(fb)
     style = fb.get('style')
     if tone == 'harsh':
@@ -737,10 +737,13 @@ def outcome_code(fb: dict, persona: str, tone: str, stars: int, offer: str, seed
     code = TABLE[persona][TONE_ORDER.index(tone)]
     fact_ok = _facts_ok(fb, kind)
     if fb.get('unfair') or kind == 'rumor':
+        # An off-topic gripe ("con mèo nằm trên quầy") is dropped, not "misremembered".
+        gripe = bool((fb.get('unfair') or {}).get('gripe'))
+        soft = ('gripe_soft_parent' if PERSONAS[persona]['group'] == 'parent' else 'gripe_soft') if gripe else 'sorry'
         if tone in ('facts', 'process'):
-            return 'W', 'sorry'
-        if tone in ('warm', 'sorry', 'invite', 'genz', 'funny') and persona in SOFT + ('parent_worried',):
-            return 'W', 'sorry'
+            return 'W', soft
+        if tone in ('warm', 'sorry', 'invite', 'genz', 'funny') and (persona in SOFT + ('parent_worried',) or (gripe and persona not in HARSHP)):
+            return 'W', soft
     elif tone in ('facts', 'process') and not fact_ok:
         # The records show a real fault: "facts" read as denial.
         code = 'D' if persona in HARSHP else ('K' if persona in SOFT and tone == 'process' else 'A')

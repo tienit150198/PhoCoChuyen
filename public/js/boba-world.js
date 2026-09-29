@@ -13,6 +13,7 @@ import {World} from './world.js';
 import {t as tr} from './v4/i18n.js';
 import {R,E,L,T,P,fit,heart,bloom,plantAt,mascot} from './scenes/kit.js';
 import {sceneFor,wordsFor} from './scenes/index.js';
+import {language} from './v4/i18n.js';
 const themes={
  teacher:{primary:'#8ca97c',dark:'#556e46',light:'#f0f2dc',mint:'#e5d8ac',wall:'#fcf5df',awning:'#b5c897',title:'Lớp học Mầm Nắng',sub:'CÙNG THỬ · CÙNG HIỂU · CÙNG TIẾN BỘ',shelves:['Góc học liệu','Hộp đồ lớp mình']},
  tour_guide:{primary:'#78b3b6',dark:'#467c7f',light:'#eaf4e5',mint:'#e2caae',wall:'#eef5e8',awning:'#b3d2c4',title:'Mây Lang Thang',sub:'ĐI CÙNG NHAU · MANG VỀ MỘT CÂU CHUYỆN',shelves:['Bưu thiếp khu phố','Bản đồ & hành trang']},
@@ -41,6 +42,11 @@ function segHitsRect(A,B,x0,y0,x1,y1){let t0=0,t1=1;const dx=B.x-A.x,dy=B.y-A.y;
 /** Does segment AB come strictly inside the ellipse at o with radii rx, ry? */
 function segHitsEllipse(A,B,o,rx,ry){const u0=(A.x-o.x)/rx,v0=(A.y-o.y)/ry,du=(B.x-A.x)/rx,dv=(B.y-A.y)/ry,len=du*du+dv*dv;
   const t=len?Math.max(0,Math.min(1,-(u0*du+v0*dv)/len)):0,u=u0+t*du,v=v0+t*dv;return u*u+v*v<1;}
+/** Seconds between redraws of a time-animated room backdrop (its slow ambience runs at ~10 fps). */
+const ROOM_TICK=.1;
+const PEN=['fillStyle','strokeStyle','lineWidth','lineCap','lineJoin','miterLimit','font','textAlign','textBaseline','globalAlpha','globalCompositeOperation','shadowBlur','shadowColor','shadowOffsetX','shadowOffsetY','lineDashOffset','imageSmoothingEnabled'];
+/** Copy drawing state (not the transform) between the stage and its cached backdrop. */
+function copyPen(from,to){for(const k of PEN)if(to[k]!==from[k])to[k]=from[k];to.setLineDash?.(from.getLineDash?.()||[]);}
 const DECOR_FOOT={plant:[-14,-6,14,2],lamp:[-18,-5,18,5],seat:[-25,-2,25,9]};
 // Outfit per career for the male player look; the female look keeps the apron.
 const OUTFIT={pharmacy:'coat',pet_care:'coat',salon:'coat',accounting:'shirt',corp_accounting:'shirt',tax_payroll:'shirt',group_accounting:'shirt',customer_care:'shirt',teacher:'shirt',
@@ -153,7 +159,7 @@ export class BobaWorld extends World {
    if(caseNow&&['reported','result'].includes(caseNow.status))person('officer','Công an khu phố',pl.officer);
    // Staff hit targets start at their base spot; animate() keeps them in step.
    hired.forEach((e,i)=>{const h=this.hotspots.find(h=>h.id==='staff:'+e.id);if(h){Object.assign(h,this.staffPosition(i,e));h.point=this.project(h.x,h.y,h.z);}});
-   this.navBuild();
+   this.navBuild();this.rev=(this.rev||0)+1;this.wake?.(true);
  }
  staffBase(i){const s=this.plan().staff;return [s.x+i*s.step,s.y];}
  staffWorking(e){return !!(this.c?.open&&e.on_shift&&e.rest_until<=this.c.turn);}
@@ -322,7 +328,7 @@ export class BobaWorld extends World {
    else{P(c,[[-13,-46],[13,-46],[18,-16],[-18,-16]],pal.dark);L(c,-14,-48,-10,-59,pal.dark,3);L(c,14,-48,10,-59,pal.dark,3);R(c,-8,-31,16,9,'#ffffff28',3);heart(c,0,-26,.2,'#fff7e8');}
  }
  drawFurnitureAndActors(){const staff=this.c?.ops?.staff?.filter(e=>e.status==='hired')||[],items=[];
-   this.wallDecor();
+   if(!this.decorCached)this.wallDecor();   // live frames have it in the cached backdrop
    // Mướp naps on the window sill, out of everyone's way.
    const cat=this.plan().cat,ct=this.unproject(cat[0],cat[1]);this.cat(ct.x,ct.y);
    this.drawMarker();
@@ -392,9 +398,29 @@ export class BobaWorld extends World {
    const f=this.plan();c.strokeStyle='rgba(20,20,160,.5)';c.setLineDash([8,6]);L(c,f.floor[0],f.line,f.floor[2],f.line,'rgba(20,20,160,.5)',1);c.setLineDash([]);
    const path=[this.player,...(this.player.path||[])];if(path.length>1){c.strokeStyle='#0a0';c.lineWidth=2.5;c.beginPath();path.forEach((q,i)=>{const s=this.project(q.x,q.y);i?c.lineTo(s.x,s.y):c.moveTo(s.x,s.y);});c.stroke();}
    c.restore();}
- draw(){const c=this.ctx;if(!this.width)this.resize();c.setTransform(this.dpr,0,0,this.dpr,0,0);c.fillStyle='#fff6ed';c.fillRect(0,0,this.width,this.height);
+ /** Page background, dotted paper, the room and flat wall decor: everything under the floor props. */
+ paintBackdrop(){const c=this.ctx;c.setTransform(this.dpr,0,0,this.dpr,0,0);c.fillStyle='#fff6ed';c.fillRect(0,0,this.width,this.height);
    for(let x=14;x<this.width;x+=34)for(let y=14;y<this.height;y+=34)E(c,x,y,1,1,'#dec6b838');
-   c.translate(this.offset.x,this.offset.y);c.scale(this.scale,this.scale);if(this.isPortrait()){c.save();c.beginPath();c.roundRect(22,140,656,760,[26,26,0,0]);c.clip();this.drawRoom();c.restore();}else this.drawRoom();this.drawFurnitureAndActors();this.labels();
+   c.translate(this.offset.x,this.offset.y);c.scale(this.scale,this.scale);if(this.isPortrait()){c.save();c.beginPath();c.roundRect(22,140,656,760,[26,26,0,0]);c.clip();this.drawRoom();c.restore();}else this.drawRoom();this.wallDecor();}
+ /** The backdrop is drawn once into an offscreen canvas and blitted each frame. It is redrawn when the
+  * state, size, pixel ratio, layout, scene or language changes (rev counts update()/setupObjects()), and,
+  * for scenes whose room animates with world time (clouds, steam, lanterns…), at most every ROOM_TICK
+  * seconds, so walking and people stay at full rate while the room's slow ambience ticks along. After a
+  * long idle spell (World.longIdle) that ambience holds still until the player is back. */
+ backdrop(){const cv=this.canvas,main=this.ctx;
+   const key=[this.rev,cv.width,cv.height,this.dpr,this.scale,this.offset.x,this.offset.y,this.isPortrait(),this.career,this.scene().id,language()].join('|');
+   let L=this.layer;
+   if(!L||L.canvas.width!==cv.width||L.canvas.height!==cv.height){const canvas=globalThis.document.createElement('canvas');canvas.width=cv.width;canvas.height=cv.height;L=this.layer={canvas,ctx:canvas.getContext('2d',{alpha:false}),key:null};}
+   if(L.key!==key||L.animated&&!this.reduced&&!this.longIdle&&Math.abs(this.time-L.at)>=ROOM_TICK){
+     // Same pen state as painting straight onto the stage would have had, in and out.
+     copyPen(main,L.ctx);this.ctx=L.ctx;this.timeRead=false;
+     try{this.paintBackdrop();}finally{this.ctx=main;}
+     L.key=key;L.animated=this.timeRead;L.at=this.time;}
+   main.setTransform(1,0,0,1,0,0);main.drawImage(L.canvas,0,0);copyPen(L.ctx,main);}
+ draw(){const c=this.ctx;if(!this.width)this.resize();
+   if(this.layers===false)this.paintBackdrop();else this.backdrop();
+   c.setTransform(this.dpr,0,0,this.dpr,0,0);c.translate(this.offset.x,this.offset.y);c.scale(this.scale,this.scale);
+   this.decorCached=true;try{this.drawFurnitureAndActors();}finally{this.decorCached=false;}this.labels();
    this.fx?.draw(this); // live happenings (v4/scene-events.js)
    for(const p of this.particles){c.globalAlpha=Math.max(0,p.life/p.max);R(c,p.x,p.y,p.size,p.size,p.color,2);}c.globalAlpha=1;this.drawSpeech();
    if(this.navDebug)this.drawNavDebug();

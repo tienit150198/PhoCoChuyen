@@ -103,7 +103,7 @@ def main() -> None:
     try:
         db.execute('BEGIN IMMEDIATE')
         row = db.execute('SELECT state,revision FROM sessions WHERE sid=?', (sid,)).fetchone()
-        state = max_out(migrate_state(json.loads(row['state'])))
+        state = max_out(migrate_state(store.parse_state(row['state'], sid)))
         validate_state(state)
         db.execute('UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?',
                    (json.dumps(state, ensure_ascii=False), row['revision'] + 1, sid))

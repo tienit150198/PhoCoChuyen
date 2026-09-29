@@ -1,0 +1,126 @@
+/* ==========================================================================
+   Đời thường (life.js): the life card dialog (#lfScene), the spirit meter,
+   the journey-home card, the wallet entry, the "Đời thường" sheet and the
+   day-summary line. Theme tokens only (docs/DESIGN.md); phone first (390 px).
+   Reuses .jr-scene / .jr-card / .jr-sub from journey.css.
+   ========================================================================== */
+
+/* Dialog */
+.lf-scene{width:min(480px,calc(100vw - 20px))}
+.lf-card{display:grid;gap:12px;padding:18px 16px 16px;text-align:left}
+.lf-card>*{min-width:0;margin:0}
+.lf-top{display:flex;align-items:flex-start;gap:12px}
+.lf-top .grow{min-width:0}
+.lf-top h2{font-size:1.25rem;line-height:1.3;margin:2px 0 0}
+.lf-top .eyebrow{color:var(--accent-text)}
+.lf-portrait{flex:none;display:grid;place-items:center;width:58px;height:58px;border-radius:20px;background:var(--surface-2);border:1px solid var(--line);font-size:2rem;line-height:1}
+.lf-later{flex:none;min-width:40px;min-height:40px;margin:-4px -6px 0 0}
+.lf-cat-that_tinh .lf-portrait{background:var(--bad-soft)}
+.lf-cat-lua .lf-portrait,.lf-cat-dat_dieu .lf-portrait{background:var(--warn-soft)}
+.lf-cat-vui .lf-portrait,.lf-cat-xom .lf-portrait,.lf-cat-ru .lf-portrait{background:var(--good-soft)}
+.lf-note{font-size:.9rem;font-weight:700;color:var(--bad)}
+.lf-gossip{display:flex;align-items:center;gap:6px;font-size:.867rem;color:var(--ink-2)}
+.lf-gossip small{color:var(--muted)}
+
+.lf-lines,.lf-trail{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.lf-lines li,.lf-trail li{position:relative;padding:8px 12px 8px 26px;border-radius:12px;background:var(--surface-2);font-size:.933rem;line-height:1.5}
+.lf-lines li::before{content:'';position:absolute;left:12px;top:17px;width:6px;height:6px;border-radius:50%;background:var(--muted)}
+.lf-trail li::before{content:'💛';position:absolute;left:7px;top:8px;font-size:.8rem}
+.lf-h{font-size:1rem;margin:2px 0 0}
+
+.lf-chips{display:flex;flex-wrap:wrap;gap:6px}
+.lf-chip{display:inline-flex;align-items:center;min-height:28px;padding:3px 10px;border-radius:var(--radius-pill);font-size:.8rem;font-weight:800;background:var(--surface-2);border:1px solid var(--line)}
+.lf-chip.out{color:var(--bad);background:var(--bad-soft);border-color:transparent}
+.lf-chip.up,.lf-chip.in{color:var(--good);background:var(--good-soft);border-color:transparent}
+
+/* Choices: big tap targets, the cost and the effect under the label. */
+.lf-choices{display:grid;gap:8px}
+.lf-choices.grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.lf-choice{display:flex;align-items:center;gap:10px;width:100%;min-height:56px;padding:10px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line-strong);color:var(--ink);text-align:left;cursor:pointer;font:inherit}
+.lf-choice:hover:not([disabled]){border-color:var(--accent);background:var(--accent-soft)}
+.lf-choice:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.lf-choice[disabled]{opacity:.6;cursor:not-allowed;background:var(--surface-2)}
+.lf-ch-emoji{flex:none;font-size:1.5rem;line-height:1}
+.lf-ch-text{display:grid;gap:2px;min-width:0}
+.lf-ch-text b{font-size:.933rem;line-height:1.35}
+.lf-ch-text small{font-size:.8rem;font-weight:700;color:var(--muted)}
+.lf-ch-text em{display:flex;align-items:center;gap:4px;font-style:normal;font-size:.767rem;font-weight:700;color:var(--bad)}
+.lf-choice .out,.lf-log .out,.lf-sum .out{color:var(--bad)}
+.lf-choice .up,.lf-choice .in,.lf-log .up,.lf-log .in,.lf-sum .up{color:var(--good)}
+.lf-choice .risk{color:var(--warn)}
+.lf-choices.grid .lf-choice{flex-direction:column;align-items:flex-start;gap:6px;min-height:92px}
+
+/* A neighbour speaks. */
+.lf-say{display:flex;align-items:flex-end;gap:10px}
+.lf-face{flex:none;display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:var(--good-soft);border:1px solid var(--line);font-size:1.6rem;line-height:1}
+.lf-face.sm{width:38px;height:38px;font-size:1.25rem;background:var(--surface-2)}
+.lf-bubble{flex:1 1 auto;min-width:0;display:grid;gap:4px;padding:10px 13px;border-radius:16px 16px 16px 6px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-sm)}
+.lf-bubble b{font-size:.8rem;color:var(--accent-text)}
+.lf-bubble p{margin:0;font-size:.933rem;line-height:1.5}
+
+/* Cả xóm góp */
+.lf-gop{display:grid;gap:2px;margin:0;padding:8px 10px;list-style:none;border-radius:14px;background:var(--good-soft)}
+.lf-gop li{display:flex;align-items:center;gap:10px;min-height:34px;font-size:.9rem}
+.lf-gop li b{white-space:nowrap}
+.lf-gop li.total{border-top:1px dashed var(--line-strong);margin-top:4px;padding-top:4px;font-weight:800}
+.lf-gop li.total b{color:var(--good);font-size:1.05rem}
+.lf-gift{display:flex;align-items:flex-start;gap:12px;padding:12px;border-radius:14px;background:var(--good-soft)}
+.lf-gift>span{font-size:2rem;line-height:1}
+.lf-gift p{margin:2px 0 0;font-size:.9rem;line-height:1.5}
+
+.lf-actions{display:grid}
+.lf-foot{padding-top:4px;border-top:1px solid var(--line)}
+
+/* Spirit meter */
+.lf-meter{display:flex;align-items:center;gap:10px}
+.lf-meter .grow{min-width:0;display:grid;gap:4px}
+.lf-meter-row{display:flex;justify-content:space-between;gap:8px;font-size:.867rem}
+.lf-meter-row span{color:var(--ink-2);white-space:nowrap}
+.lf-mood{flex:none;font-size:1.7rem;line-height:1}
+.lf-bar{height:10px;border-radius:var(--radius-pill);background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
+.lf-bar i{display:block;height:100%;border-radius:inherit;background:var(--good);transition:width var(--dur,.3s) var(--ease,ease)}
+.lf-meter.mid .lf-bar i{background:var(--warn)}
+.lf-meter.low .lf-bar i{background:var(--bad)}
+.lf-meter.small .lf-mood{font-size:1.3rem}
+.lf-meter.small .lf-bar{height:7px}
+.lf-meter.small .lf-meter-row{font-size:.8rem}
+
+/* Journey home card + wallet entry + sheet */
+.lf-home{display:grid;gap:10px}
+.lf-warm{display:flex;align-items:center;gap:8px;font-size:.867rem;color:var(--ink-2)}
+.lf-warm b{color:var(--ink);text-align:right}
+.lf-waiting{display:flex;align-items:center;gap:10px;width:100%;min-height:56px;padding:8px 12px;border-radius:14px;border:2px solid var(--accent);background:var(--accent-soft);color:var(--ink);text-align:left;cursor:pointer;font:inherit}
+.lf-waiting>span:first-child{font-size:1.6rem;line-height:1}
+.lf-waiting .grow{display:grid;min-width:0}
+.lf-waiting small{font-size:.767rem;font-weight:700;color:var(--accent-text)}
+.lf-waiting b{font-size:.933rem;overflow:hidden;text-overflow:ellipsis}
+.lf-home-actions{display:flex;flex-wrap:wrap;gap:8px}
+.lf-home-actions .btn{flex:1 1 auto;min-height:42px}
+.lf-entry{display:flex;align-items:center;gap:12px;width:100%;min-height:64px;margin:12px 0 0;text-align:left;color:var(--ink);cursor:pointer;font:inherit}
+.lf-entry:hover{border-color:var(--accent)}
+.lf-entry .grow{display:grid;gap:2px;min-width:0}
+.lf-entry b{font-size:.95rem}
+.lf-entry small{font-size:.8rem;color:var(--muted)}
+.lf-view{display:grid;gap:12px}
+.lf-view>*{margin:0;min-width:0}
+.lf-view .jr-sub small{font-weight:600;color:var(--muted)}
+.lf-bonds,.lf-log{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.lf-bonds li{display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.lf-bonds .grow,.lf-log .grow{display:grid;min-width:0}
+.lf-bonds small,.lf-log small{font-size:.767rem;color:var(--muted)}
+.lf-hearts{flex:none;font-size:.7rem;letter-spacing:-1px;white-space:nowrap}
+.lf-log li{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.lf-log li>span:first-child{font-size:1.3rem;line-height:1.2}
+.lf-log p{margin:3px 0 0;font-size:.833rem;line-height:1.45;color:var(--ink-2)}
+.lf-log-num{flex:none;display:grid;justify-items:end;gap:2px;font-size:.767rem;font-weight:800}
+.lf-log-num i{font-style:normal;white-space:nowrap}
+.lf-sum{align-items:flex-start}
+.lf-sum p{margin:2px 0 0}
+
+/* HUD dot: a story is waiting. */
+.lf-dot{display:inline-block;width:8px;height:8px;margin-right:5px;border-radius:50%;background:var(--bad);vertical-align:middle}
+
+@media (prefers-reduced-motion:no-preference){
+  html:not(.reduce-motion) .lf-dot{animation:lf-blink 1.8s ease-in-out infinite}
+}
+@keyframes lf-blink{50%{opacity:.35}}

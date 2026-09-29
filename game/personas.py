@@ -5,6 +5,11 @@ content (NPC_INDEX, plugin people rows, feedback personalities, classroom facts)
 short memory of what the player and this character did together in the save.
 `task_context(state, career, npc)` describes the character's open task in plain words.
 Both are data for the prompt in game/ai.py; nothing here talks to a model.
+
+Each card also carries a speaking voice from game/voices.py (stable per NPC, fitted to
+role, age and temperament), a verbosity level (kiệm lời / vừa / nói nhiều), a mood for
+the current life day, and a little "street talk" (what they saw, a rumour for the
+gossips, a comfort cue for the kind ones).
 """
 from __future__ import annotations
 import hashlib
@@ -12,6 +17,7 @@ import re
 
 from .content import NPC_INDEX, CAREER_META, PRODUCT_INDEX
 from . import feedback as fbk
+from . import voices
 
 DONE = ('completed', 'referred', 'cancelled')
 PLACEHOLDER_LIKES = {'Những câu chuyện có thật'}
@@ -23,6 +29,8 @@ REGION = (('miền Nam', ['nha', 'hen', 'á', 'nè']), ('miền Bắc', ['nhé',
 TEMPER_PARTICLES = dict(genz=['khum', 'xỉu', 'nha'], sour=['cơ', 'đấy', 'hả'], bossy=['đấy', 'cơ mà'],
                         warm=['nha', 'hihi'], picky=['nhé', 'đã'], quiet=[], child=['ạ'],
                         parent_worried=['ạ', 'nhé'], parent_strict=['đấy'], parent_kind=['ạ', 'nhé'])
+SOUTH = {'nha', 'hén', 'nghen', 'nè', 'hông', 'cưng', 'ha', 'hen'}
+NORTH = {'nhé', 'cơ', 'đấy', 'nhá', 'chứ', 'cơ mà'}
 CHILD_STYLE = 'trẻ con hồn nhiên, câu ngắn, hay kể chuyện nhỏ của mình, lễ phép với người lớn'
 
 
@@ -132,16 +140,34 @@ def _memory(state: dict, career: str, npc: str) -> dict:
                 last_review=dict(stars=review['stars'], text=review.get('text', '')[:140]) if review else None)
 
 
+def life_day(state: dict, career: str):
+    """The player's life day (journey), else the workplace day: moods change once per day."""
+    j = state.get('journey') if isinstance(state.get('journey'), dict) else {}
+    if isinstance(j.get('life_day'), int):
+        return j['life_day']
+    return ((state.get('careers') or {}).get(career) or {}).get('day', 1)
+
+
 def persona(state: dict, career: str, npc: str) -> dict:
     """Deterministic persona card for any NPC id (unknown ids get a neutral card)."""
     n = NPC_INDEX.get(npc) or dict(display_name='Khách', role='Khách', personality='')
     age = _age(n, career)
     temper = _temper(career, npc, n, age)
     per = fbk.PERSONAS.get(temper)
+    voice = voices.for_npc(npc, n.get('role', ''), age, temper, career)
     region_name, particles = REGION[_h(npc) % 2]
-    particles = list(dict.fromkeys(TEMPER_PARTICLES.get(temper, []) + particles))[:4]
-    if temper == 'quiet':
+    # The voice's own particles pick the region when they lean one way ("nghen, hén" vs "nhé, cơ").
+    lean = sum(x in SOUTH for x in voice['particles']) - sum(x in NORTH for x in voice['particles'])
+    dialect = voice.get('dialect') or ''
+    if 'Bắc' in dialect or 'Nam' in dialect or lean:
+        region_name, particles = REGION[1] if 'Bắc' in dialect or (lean < 0 and 'Nam' not in dialect) else REGION[0]
+    particles = list(dict.fromkeys(voice['particles'] + TEMPER_PARTICLES.get(temper, []) + particles))[:4]
+    if not voice['particles'] and voice.get('talk') == 'it':
+        particles = []
+    elif temper == 'quiet' or voice.get('talk') == 'it':
         particles = particles[:1]
+    day = life_day(state, career)
+    mood = voices.mood_for(npc, day)
     cares = []
     likes = [x for x in (n.get('likes') or []) if x not in PLACEHOLDER_LIKES]
     if likes:
@@ -156,7 +182,7 @@ def persona(state: dict, career: str, npc: str) -> dict:
         cares.append('được phục vụ đúng điều mình dặn')
     traits = _pupil_traits(npc) if career == 'teacher' else []
     style = CHILD_STYLE if temper == 'child' else (per or {}).get('style', '')
-    return dict(
+    card = dict(
         id=npc, name=n.get('display_name', 'Khách'), role=n.get('role', ''), career=career,
         place=(CAREER_META.get(career) or {}).get('place', ''),
         age=age, age_label=AGE_LABEL[age],
@@ -164,7 +190,13 @@ def persona(state: dict, career: str, npc: str) -> dict:
         style=style, personality=n.get('personality', ''), traits=traits,
         address=_address(state, career, n, age, temper), region=region_name, particles=particles,
         cares=cares, memory=_memory(state, career, npc) if career in state.get('careers', {}) else {},
+        voice=voice['id'], voice_label=voice['label'], verbosity=voices.verbosity_for(npc, voice),
+        mood=mood, mood_why=voices.mood_reason(npc, day, mood),
     )
+    street = voices.street_talk(state, career, npc, voice, day, card['address']) if career in state.get('careers', {}) else None
+    if street:
+        card['street_talk'] = street
+    return card
 
 
 # ---- the open task, in words ------------------------------------------------
