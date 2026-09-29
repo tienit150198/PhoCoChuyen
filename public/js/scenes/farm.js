@@ -246,7 +246,8 @@ function portRoom(w,p){const c=w.ctx,t=w.reduced?0:w.time,wd=w.words(),items=w.c
   hayBale(c,540,504,.75);
   boardPost(c,p,625,504,1.1);
   c.restore();
-  woodSign(c,p,50,24,600,120,34,16,300);}
+  // Phones: the title card above the stage names the farm, so no sign or posts here (the top is clipped).
+  }
 
 function landProps(w,p){const c=w.ctx,t=w.reduced?0:w.time,wd=w.words(),pl=PLAN.land,tier=w.c?.ops?.property?.tier||'cozy',open=!!w.c?.open,broken=(w.c?.ops?.equipment?.condition??100)<100,out=[];
   out.push([596,()=>bed(c,pl.blocks[1],['cabbage','lettuce'],1,t)],[596,()=>bed(c,pl.blocks[2],['carrot','lettuce'],1,t)]);
