@@ -205,8 +205,52 @@ def snapshot(state: dict) -> dict:
     return dict(current=state.get('current'), careers=careers[:14], title=title), served
 
 
+SEEN_EVERY = 120   # seconds between "last seen" refreshes of a profile
+SHOP_EVERY = 180   # seconds between shop snapshot refreshes (directory + weekly goal)
+QUICK_MS = 250     # a busy database skips these refreshes instead of queueing for the lock
+
+
+def touch(store, sid: str, state: dict | None, must: bool = False) -> dict:
+    """My profile row, created/refreshed in its own short transaction (committed
+    before the caller's reads, so reads never run under the write lock).
+    Refreshing `seen` and the shop snapshot is best-effort and throttled: when the
+    database is busy it is skipped, never a failed request. Creating the row waits
+    normally only when `must` (write routes need the row to exist)."""
+    pid = pid_of(sid)
+    with store.connect() as db:
+        p = _profile(db, pid)
+    t = now()
+    shop = state is not None and (not p or t - p['updated'] > SHOP_EVERY)
+    if p and not shop and t - p['seen'] <= SEEN_EVERY:
+        return p
+    snap = snapshot(state) if shop else None  # CPU work stays outside the lock
+
+    def write(db):
+        cur = _profile(db, pid)
+        if not cur:
+            db.execute('INSERT INTO profiles(pid,sid,created,updated,seen,week_key) VALUES(?,?,?,?,?,?)', (pid, sid, t, 0, t, week()))
+            cur = _profile(db, pid)
+        if snap:
+            wk = week()
+            base = cur['week_base'] if cur['week_key'] == wk else cur['served']
+            db.execute('UPDATE profiles SET shop=?,served=?,week_key=?,week_base=?,updated=?,seen=? WHERE pid=?',
+                       (json.dumps(snap[0], ensure_ascii=False), snap[1], wk, min(base, snap[1]), t, t, pid))
+        else:
+            db.execute('UPDATE profiles SET seen=? WHERE pid=?', (t, pid))
+        return _profile(db, pid)
+    out = store.transaction(write, None if (must and not p) else QUICK_MS)
+    if out:
+        return out
+    if p:
+        return p
+    # Busy and no row yet: an anonymous stand-in; the row is created on a later visit.
+    return dict(pid=pid, sid=sid, name=None, name_key=None, bio='', avatar='🌸', visible=0, shop='{}', served=0, week_key='',
+                week_base=0, reports=0, hidden=0, created=t, updated=0, seen=t)
+
+
 def _touch(db, sid: str, state: dict | None) -> dict:
-    """Create/refresh my profile row (hidden until I choose a name)."""
+    """Create/refresh my profile row (hidden until I choose a name), inside the
+    caller's transaction (accounts._adopt_name). Requests use touch()."""
     pid = pid_of(sid)
     p = _profile(db, pid)
     t = now()
@@ -377,9 +421,9 @@ def get(store, token: str, state: dict, route: str, q: dict) -> dict:
         notes = settle(store, token, state)
     else:
         notes = []
+    me = touch(store, sid, state)
+    mine = me['pid']
     with store.connect() as db:
-        me = _touch(db, sid, state)
-        mine = me['pid']
         if route == 'me':
             unread = _count(db, 'SELECT COUNT(*) FROM inbox WHERE pid=? AND read=0', (mine,))
             return dict(me=_public_profile(me) | dict(visible=bool(me['visible'])) if me['name'] else None, unread=unread, community=community(db))
@@ -408,6 +452,7 @@ def get(store, token: str, state: dict, route: str, q: dict) -> dict:
                 fresh = db.execute('INSERT OR IGNORE INTO visits(from_pid,to_pid,day,at) VALUES(?,?,?,?)', (mine, t['pid'], today(), now())).rowcount
                 if fresh:
                     notify(store, db, t['pid'], 'visit', f'{me["name"]} vừa ghé thăm quán của bạn 👀', mine)
+                db.commit()  # the reads below must not run under the write lock
             reviews = _rows(db, '''SELECT r.*, p.name AS author, p.avatar AS avatar FROM previews r JOIN profiles p ON p.pid=r.from_pid
                                    WHERE r.to_pid=? AND r.hidden=0 ORDER BY r.id DESC LIMIT 30''', (t['pid'],))
             listings = _rows(db, "SELECT * FROM market WHERE seller=? AND status='active' AND hidden=0 ORDER BY id DESC LIMIT 10", (t['pid'],))
@@ -480,8 +525,7 @@ def _board(db, b: dict, me: str) -> dict:
 # ---------------------------------------------------------------- write API
 def post(store, token: str, state: dict, route: str, d: dict) -> dict:
     sid = store.key(token)
-    with store.connect() as db:
-        me = _touch(db, sid, state)
+    me = touch(store, sid, state, must=True)
     mine = me['pid']
     if route == 'profile':
         name = clean(d.get('name'), 24, 2, 'Tên hiển thị')

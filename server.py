@@ -12,12 +12,16 @@ from collections import defaultdict,deque
 import gzip
 import hashlib
 import json
+import math
 import mimetypes
 import os
 from pathlib import Path
 import secrets
+import signal
+import sqlite3
 import sys
 import threading
+import traceback
 import time
 from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
@@ -42,6 +46,8 @@ from game import social
 from game import push
 from game import accounts
 from game import player_feedback as pfb
+from game import board_ai
+from game import admin_stats
 from game.content import public_content,CAREERS
 from game.engine import GameError,public_state
 from game.storage import Store,Conflict
@@ -57,13 +63,58 @@ STATIC_TYPES={".html":"text/html; charset=utf-8",".js":"text/javascript; charset
               ".ico":"image/x-icon",".webmanifest":"application/manifest+json",".woff2":"font/woff2",".mp3":"audio/mpeg",".txt":"text/plain; charset=utf-8",
               ".xml":"application/xml; charset=utf-8"}
 COMPRESSIBLE=(".html",".js",".css",".json",".svg",".webmanifest",".txt",".xml")
-PAGES={"/privacy":"privacy.html","/terms":"terms.html","/":"index.html"}
+PAGES={"/privacy":"privacy.html","/terms":"terms.html","/admin":"admin.html","/":"index.html"}
 env_flag=lambda k,d="0":os.environ.get(k,d).strip().lower() in ("1","true","yes","on")
+STATIC_RECHECK=2.0  # seconds a resolved static route is trusted before its file is stat()ed again
+# Budgets that must not multiply with WORKERS: AI spend, sign-in attempts, new saves, feedback.
+SHARED_LIMITS=("ai","acct-","newsession:","fb:","fb-day:","fb-ip:")
+
+class SharedLimits:
+    """Sliding-window rate limits shared by all worker processes (WORKERS>1), kept in
+    a small side database next to the game database. Only the rare, security-relevant
+    keys above use it; per-request anti-spam limits stay in each process's memory."""
+    def __init__(self,path:str):
+        self.path=path
+        db=self._db()
+        try:
+            db.execute("PRAGMA journal_mode=WAL")
+            db.execute("CREATE TABLE IF NOT EXISTS hits (k TEXT NOT NULL, at REAL NOT NULL)")
+            db.execute("CREATE INDEX IF NOT EXISTS hits_k ON hits(k, at)")
+        finally:db.close()
+
+    def _db(self):
+        db=sqlite3.connect(self.path,timeout=5,isolation_level=None)
+        db.execute("PRAGMA synchronous=NORMAL")
+        return db
+
+    def hit(self,key:str,limit:int,seconds:float)->bool:
+        now=time.time();db=None
+        try:
+            db=self._db()
+            db.execute("BEGIN IMMEDIATE")
+            db.execute("DELETE FROM hits WHERE k=? AND at<?",(key,now-seconds))
+            ok=db.execute("SELECT COUNT(*) FROM hits WHERE k=?",(key,)).fetchone()[0]<limit
+            if ok:db.execute("INSERT INTO hits(k,at) VALUES(?,?)",(key,now))
+            db.execute("COMMIT")
+            return ok
+        except sqlite3.Error:
+            # Fail closed (no extra AI spend or sign-in attempts), except for starting a new save.
+            return key.startswith("newsession:")
+        finally:
+            if db is not None:db.close()
+
+    def prune(self)->None:
+        db=self._db()
+        try:db.execute("DELETE FROM hits WHERE at<?",(time.time()-86400,))
+        finally:db.close()
 
 class GameServer(ThreadingHTTPServer):
     daemon_threads=True
     allow_reuse_address=True
-    request_queue_size=64
+    # A page load opens ~100 connections at once (one per static file behind a proxy
+    # without upstream keep-alive); a short accept queue drops SYNs and the client only
+    # retries after 1 s. The kernel caps this at net.core.somaxconn.
+    request_queue_size=1024
     def __init__(self,address,store:Store,allowed_hosts:set[str]|None=None):
         super().__init__(address,Handler)
         self.store=store
@@ -71,11 +122,23 @@ class GameServer(ThreadingHTTPServer):
         self.limits=defaultdict(deque)
         self.limits_lock=threading.Lock()
         self.static_cache={}
+        self.static_routes={}
+        self.shared_limits=None  # SharedLimits in worker processes (WORKERS>1)
+        self.worker=0
+        self._content=None
         self.trust_proxy=env_flag("TRUST_PROXY")
         social.ensure(store)
         push.ensure(store)
+        admin_stats.ensure(store)
+
+    def content_json(self)->str:
+        """The static game catalogue (~0.4 MB of JSON), serialized once per process."""
+        if self._content is None:self._content=json.dumps(public_content(),ensure_ascii=False,allow_nan=False)
+        return self._content
 
     def rate_limit(self,key:str,limit:int,seconds:int=60)->bool:
+        if self.shared_limits is not None and key.startswith(SHARED_LIMITS):
+            return self.shared_limits.hit(key,limit,seconds)
         now=time.monotonic()
         with self.limits_lock:
             q=self.limits[key]
@@ -132,9 +195,12 @@ class Handler(BaseHTTPRequestHandler):
             try:self.wfile.write(data)
             except (BrokenPipeError,ConnectionResetError):pass
 
-    def json(self,status:int,data:dict,extra:dict|None=None):
+    def json(self,status:int,data:dict,extra:dict|None=None,raw:dict|None=None):
+        """`raw`: extra top-level members whose values are already JSON text."""
         if isinstance(data,dict):data=dict(data,server_time=round(time.time(),3))
-        self.respond(status,json.dumps(data,ensure_ascii=False,allow_nan=False).encode(),"application/json; charset=utf-8",extra,compress=True)
+        body=json.dumps(data,ensure_ascii=False,allow_nan=False)
+        if raw:body=body[:-1]+"".join(f",{json.dumps(k)}:{v}" for k,v in raw.items())+"}"
+        self.respond(status,body.encode(),"application/json; charset=utf-8",extra,compress=True)
 
     def error(self,status:int,message:str,code:str="error"):
         self.json(status,dict(error=message,code=code))
@@ -159,9 +225,15 @@ class Handler(BaseHTTPRequestHandler):
         state,revision,csrf=self.server.store.read(token)
         return token,state,revision,csrf
 
-    def guarded(self)->tuple[str,dict,int,str]:
+    def guarded(self,light:bool=False)->tuple[str,dict,int,str]:
+        """`light`: only check the CSRF (state and revision come back as None); the
+        command route loads the save itself, so parsing it here would be wasted work."""
         if not self.valid_host():raise PermissionError("Host không được phép.")
-        session=self.require_session()
+        if light:
+            token=self.token()
+            if not token:raise GameError("Tải lại trang để bắt đầu phiên chơi.","session_missing")
+            session=(token,None,None,self.server.store.csrf(token))
+        else:session=self.require_session()
         if not secrets.compare_digest(self.headers.get("X-Game-CSRF",""),session[3]):raise PermissionError("Mã bảo vệ phiên không hợp lệ. Tải lại trang nhé.")
         origin=self.headers.get("Origin")
         if origin:
@@ -171,24 +243,36 @@ class Handler(BaseHTTPRequestHandler):
         return session
 
     # ---- static files -----------------------------------------------------
-    def static(self,route:str):
+    def static_entry(self,route:str):
+        """(signature, bytes, gzip bytes, etag, suffix, name) of a file under public/, or None."""
         rel=PAGES.get(route) or unquote(route).lstrip("/")
         try:path=(PUBLIC/rel).resolve()
-        except (OSError,ValueError):self.error(404,"Không tìm thấy tài nguyên.");return
+        except (OSError,ValueError):return None
         suffix=path.suffix.lower()
-        if not path.is_relative_to(PUBLIC.resolve()) or suffix not in STATIC_TYPES or not path.is_file():
-            self.error(404,"Không tìm thấy tài nguyên.");return
+        if not path.is_relative_to(PUBLIC.resolve()) or suffix not in STATIC_TYPES or not path.is_file():return None
         st=path.stat();key=str(path)
         cached=self.server.static_cache.get(key)
         if not cached or cached[0]!=(st.st_mtime_ns,st.st_size):
             raw=path.read_bytes()
             etag='"'+hashlib.sha1(raw).hexdigest()[:20]+'"'
             gz=gzip.compress(raw,6) if suffix in COMPRESSIBLE and len(raw)>1400 else None
-            cached=((st.st_mtime_ns,st.st_size),raw,gz,etag)
+            cached=((st.st_mtime_ns,st.st_size),raw,gz,etag,suffix,path.name)
             if len(self.server.static_cache)<600:self.server.static_cache[key]=cached
-        _,raw,gz,etag=cached
+        return cached
+
+    def static(self,route:str):
+        # Hot path (a page load asks for ~100 files, mostly answered 304): a route resolved in
+        # the last STATIC_RECHECK seconds skips resolve()/stat(); a deploy is picked up after that.
+        now=time.monotonic();hit=self.server.static_routes.get(route)
+        if hit and now-hit[1]<STATIC_RECHECK:cached=hit[0]
+        else:
+            cached=self.static_entry(route)
+            if cached is None:self.error(404,"Không tìm thấy tài nguyên.");return
+            if len(self.server.static_routes)<2000 or route in self.server.static_routes:self.server.static_routes[route]=(cached,now)
+        _,raw,gz,etag,suffix,name=cached
         extra={"ETag":etag}
-        if path.name=="sw.js":extra["Service-Worker-Allowed"]="/"
+        if name=="sw.js":extra["Service-Worker-Allowed"]="/"
+        if name=="admin.html":extra["X-Robots-Tag"]="noindex, nofollow"  # operator site (public/js/admin/)
         if self.headers.get("If-None-Match")==etag:
             self.send_response(304);self.send_header("ETag",etag);self.send_header("Cache-Control","no-cache");self.send_header("Content-Length","0");self.end_headers();return
         body=raw
@@ -220,9 +304,9 @@ class Handler(BaseHTTPRequestHandler):
                         if social.settle(self.server.store,token,state):state,revision,_=self.server.store.read(token)
                     except social.SocialError:pass
                 extra={"Set-Cookie":self.cookie(token)} if created else {}
-                self.json(200,dict(state=public_state(state),revision=revision,csrf=csrf,content=public_content(),ai=dict(public_config(),configured=ai.available(),chat=True),
+                self.json(200,dict(state=public_state(state),revision=revision,csrf=csrf,ai=dict(public_config(),configured=ai.available(),chat=True),
                                    social=social.bootstrap(self.server.store,token,state),push=push.public_config(),account=accounts.status(self.server.store,token),
-                                   admin=pfb.is_admin(self.server.store,token)),extra);return
+                                   admin=pfb.is_admin(self.server.store,token)),extra,raw=dict(content=self.server.content_json()));return
             if route=="/api/state":
                 _,state,revision,_=self.require_session();self.json(200,dict(state=public_state(state),revision=revision));return
             if route=="/api/save/export":
@@ -237,6 +321,10 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/push/pending":
                 token,state,_,_=self.require_session()
                 self.json(200,dict(push.pending(self.server.store,token),lang=state["settings"].get("lang","vi")));return
+            if route=="/api/board":  # Nhóm Cư Dân Phố feed (game/board_ai.py)
+                _,state,_,_=self.require_session()
+                if not self.server.rate_limit("board-get:"+self.token(),240):self.error(429,"Chậm lại một chút nhé.");return
+                self.json(200,board_ai.get_view(state,{k:v[0] for k,v in parse_qs(split.query).items()}));return
             if route=="/api/feedback/mine":
                 token,_,_,_=self.require_session()
                 if not self.server.rate_limit("fb-mine:"+token,60):self.error(429,"Chậm lại một chút nhé.");return
@@ -247,6 +335,15 @@ class Handler(BaseHTTPRequestHandler):
                 self.require_admin(token)
                 query={k:v[0] for k,v in parse_qs(split.query).items()}
                 self.json(200,pfb.list_admin(self.server.store,query.get("status"),query.get("kind"),query.get("before")));return
+            if route=="/api/admin/stats":  # Thống kê (game/admin_stats.py): admin only, cached ~60 s
+                try:token,_,_,_=self.guarded()
+                except PermissionError as e:self.error(403,str(e),"forbidden");return
+                self.require_admin(token)
+                if not self.server.rate_limit("admin-stats:"+token,30):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                query={k:v[0] for k,v in parse_qs(split.query).items()}
+                try:days=admin_stats.parse_range(query.get("range"))
+                except ValueError:self.error(400,"Khoảng ngày chỉ nhận 7, 30 hoặc 90.","bad_range");return
+                self.json(200,admin_stats.get(self.server.store,days,fresh=query.get("fresh")=="1"));return
             if route.startswith("/api/"):self.error(404,"Không có API này.");return
             self.static(route)
         except pfb.FeedbackError as e:self.error(e.status,e.message,e.code)
@@ -256,13 +353,13 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         try:
-            token,state,revision,csrf=self.guarded()
+            route=urlsplit(self.path).path
+            token,state,revision,csrf=self.guarded(light=route=="/api/command")
             length=int(self.headers.get("Content-Length","0"))
             if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
             if not self.headers.get("Content-Type","").startswith("application/json"):self.error(415,"Cần gửi JSON.");self.close_connection=True;return
             data=json.loads(self.rfile.read(length),parse_constant=lambda x:(_ for _ in ()).throw(ValueError("nonfinite")))
             if not isinstance(data,dict):raise GameError("Dữ liệu cần là đối tượng JSON.")
-            route=urlsplit(self.path).path
             max_commands=int(os.environ.get("COMMANDS_PER_MINUTE","360"))
             if route=="/api/command":
                 if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
@@ -282,6 +379,9 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/ai/class":
                 if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
                 self.json(200,self.ai_class(token,state,revision,data));return
+            if route=="/api/ai/board":  # Nhóm Cư Dân Phố: post/reply (+ AI replies), open (+ AI exchange)
+                if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
+                self.json(200,board_ai.ai_board(self,token,state,revision,data));return
             if route=="/api/ai/support_call":
                 if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
                 self.json(200,self.ai_support_call(token,state,revision,data));return
@@ -464,7 +564,7 @@ class Handler(BaseHTTPRequestHandler):
             db.execute("BEGIN IMMEDIATE")
             row=db.execute("SELECT * FROM sessions WHERE sid=?",(sid,)).fetchone()
             if not row:db.rollback();return None
-            raw=json.loads(row["state"])
+            raw=store.parse_state(row["state"],sid)
             tasks=(((raw.get("careers") or {}).get("customer_care") or {}).get("tasks") or [])
             t=next((x for x in tasks if isinstance(x,dict) and x.get("id")==task),None)
             rows=(t or {}).get("call") or []
@@ -487,7 +587,7 @@ class Handler(BaseHTTPRequestHandler):
             db.execute("BEGIN IMMEDIATE")
             row=db.execute("SELECT * FROM sessions WHERE sid=?",(sid,)).fetchone()
             if not row:db.rollback();return None
-            raw=json.loads(row["state"])
+            raw=store.parse_state(row["state"],sid)
             rows=(((raw.get("careers") or {}).get(career) or {}).get("chats") or {}).get(npc) or []
             last=rows[-1] if rows else None
             if not last or last.get("role")!="npc" or last.get("mode")!="scripted" or last.get("text")!=canonical:
@@ -541,7 +641,7 @@ class Handler(BaseHTTPRequestHandler):
             db.execute("BEGIN IMMEDIATE")
             row=db.execute("SELECT * FROM sessions WHERE sid=?",(sid,)).fetchone()
             if not row:db.rollback();return None
-            raw=json.loads(row["state"])
+            raw=store.parse_state(row["state"],sid)
             if not emp.apply_voice(raw,career,pend["idx"],pend["field"],pend["canonical"],line):db.rollback();return None
             try:emp.validate(raw["careers"][career],career)
             except GameError:db.rollback();return None
@@ -613,7 +713,7 @@ class Handler(BaseHTTPRequestHandler):
             db.execute("BEGIN IMMEDIATE")
             row=db.execute("SELECT * FROM sessions WHERE sid=?",(sid,)).fetchone()
             if not row:db.rollback();return None
-            raw=json.loads(row["state"])
+            raw=store.parse_state(row["state"],sid)
             if not classroom.rewrite(raw,ref,canonical,line,"ai"):db.rollback();return None
             revision=row["revision"]+1
             db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?",(json.dumps(raw,ensure_ascii=False,allow_nan=False),revision,sid))
@@ -661,16 +761,85 @@ class Handler(BaseHTTPRequestHandler):
         return dict(self._internal(token,rid,career,"fb_voice",dict(post=post["id"],text=text),(state,revision)),mode="ai")
 
 
-def maintenance(store:Store,stop:threading.Event):
-    """Background housekeeping: prune stale saves/receipts, deliver due pushes."""
-    last_prune=0.0
-    while not stop.wait(30):
-        try:
-            if time.time()-last_prune>6*3600:
-                store.prune(int(os.environ.get("SESSION_IDLE_DAYS","180")));social.prune(store);pfb.prune(store);last_prune=time.time()
-            push.deliver_due(store)
+def maintenance(store:Store,stop:threading.Event,limits:SharedLimits|None=None):
+    """Background housekeeping (one process only): WAL checkpoints, pruning of
+    receipts, abandoned guest saves and stale saves, due pushes.
+    PRUNE_GUEST_DAYS (default 3, 0 = off): never-played guest saves idle that long.
+    RECEIPT_DAYS (default 2) / RECEIPTS_PER_SAVE (default 200): idempotency receipts kept."""
+    last_prune=last_hourly=0.0;last_checkpoint=time.time()
+    def step(name,fn):
+        try:fn()
         except Exception as e:  # never kill the server for housekeeping
-            sys.stderr.write(f"[maintenance] {type(e).__name__}\n")
+            sys.stderr.write(f"[maintenance] {name}: {type(e).__name__}\n")
+    while not stop.wait(30):
+        now=time.time()
+        if now-last_checkpoint>=60:
+            last_checkpoint=now;step("checkpoint",store.checkpoint)
+        if now-last_hourly>3600:
+            last_hourly=now
+            step("receipts",lambda:store.prune_receipts(float(os.environ.get("RECEIPT_DAYS","2")),int(os.environ.get("RECEIPTS_PER_SAVE","200"))))
+            guest_days=float(os.environ.get("PRUNE_GUEST_DAYS","3") or 0)
+            if guest_days>0:step("guests",lambda:store.prune_guests(guest_days))
+            if limits:step("limits",limits.prune)
+        if now-last_prune>6*3600:
+            last_prune=now
+            step("prune",lambda:(store.prune(int(os.environ.get("SESSION_IDLE_DAYS","180"))),social.prune(store),pfb.prune(store)))
+        step("push",lambda:push.deliver_due(store))
+
+
+def limits_path(db_path:str)->str:
+    """The shared rate-limit database lives next to the game database (GAME_DB/--db),
+    i.e. in the writable data directory, never beside the code."""
+    db=Path(os.path.abspath(db_path))
+    return str(db.with_name(db.stem+"-limits.sqlite3"))
+
+
+def serve_workers(server:GameServer,store:Store,n:int,db_path:str)->int:
+    """WORKERS=n: pre-fork n processes that all accept() on the one listening socket
+    (like SO_REUSEPORT, but portable and it balances by who is free; no proxy change).
+    Worker 0 alone runs housekeeping. AI, sign-in, new-save and feedback budgets are
+    shared through SharedLimits; the LLM concurrency gate is split between workers.
+    A worker that dies is restarted; SIGTERM/SIGINT stop them all."""
+    limits=SharedLimits(limits_path(db_path))
+    server.socket.setblocking(False)  # every worker wakes on a new connection; the others get EAGAIN
+    store.close_pool()  # no SQLite connection may cross fork()
+    children:dict[int,int]={};stopping=threading.Event()
+    def spawn(i:int):
+        pid=os.fork()
+        if pid==0:
+            code=1
+            try:code=_worker(server,store,limits,i,n)
+            except BaseException:traceback.print_exc()
+            finally:os._exit(code)
+        children[pid]=i
+    def stop(signum,frame):
+        stopping.set()
+        for pid in list(children):
+            try:os.kill(pid,signal.SIGTERM)
+            except ProcessLookupError:pass
+    signal.signal(signal.SIGTERM,stop);signal.signal(signal.SIGINT,stop)
+    for i in range(n):spawn(i)
+    while children:
+        try:pid,status=os.wait()
+        except ChildProcessError:break
+        i=children.pop(pid,None)
+        if i is not None and not stopping.is_set():
+            sys.stderr.write(f"[workers] worker {i} stopped (status {status}); restarting\n");time.sleep(1);spawn(i)
+    server.server_close()
+    print("\nĐã dừng. Tiến trình đã lưu trong SQLite.")
+    return 0
+
+
+def _worker(server:GameServer,store:Store,limits:SharedLimits,i:int,n:int)->int:
+    signal.signal(signal.SIGTERM,signal.SIG_DFL);signal.signal(signal.SIGINT,signal.default_int_handler)
+    server.shared_limits=limits;server.worker=i
+    ai._gate=threading.BoundedSemaphore(max(1,math.ceil(max(1,int(os.environ.get("LLM_CONCURRENCY","4") or 4))/n)))
+    stop=threading.Event()
+    if i==0:threading.Thread(target=maintenance,args=(store,stop,limits),daemon=True,name="maintenance").start()
+    try:server.serve_forever(poll_interval=.3)
+    except KeyboardInterrupt:pass
+    finally:stop.set()
+    return 0
 
 
 def main():
@@ -688,11 +857,15 @@ def main():
     try:server=GameServer((args.host,args.port),store,allowed)
     except OSError as e:
         print(f"Không mở được cổng {args.port}: {e}. Thử --port 8766.");return 1
+    # WORKERS=n (n>1, POSIX only): n processes share the port; see serve_workers().
+    workers=max(1,int(os.environ.get("WORKERS","1") or 1)) if hasattr(os,"fork") else 1
+    url=f"http://127.0.0.1:{server.server_port}"
+    print(f"\n  PHỐ CÓ CHUYỆN · v{__version__}\n  Chơi tại: {url}\n  Lưu tại: {args.db}\n  AI phản hồi: {'bật' if ai.available() else 'tắt (lời thoại có sẵn)'} · Web push: {'bật' if push.public_config()['enabled'] else 'tắt'}"
+          +(f" · {workers} tiến trình" if workers>1 else "")+"\n  Nhấn Ctrl+C để dừng.\n",flush=True)
+    if args.open:threading.Timer(.5,lambda:webbrowser.open(url)).start()
+    if workers>1:return serve_workers(server,store,workers,args.db)
     stop=threading.Event()
     threading.Thread(target=maintenance,args=(store,stop),daemon=True).start()
-    url=f"http://127.0.0.1:{server.server_port}"
-    print(f"\n  PHỐ CÓ CHUYỆN · v{__version__}\n  Chơi tại: {url}\n  Lưu tại: {args.db}\n  AI phản hồi: {'bật' if ai.available() else 'tắt (lời thoại có sẵn)'} · Web push: {'bật' if push.public_config()['enabled'] else 'tắt'}\n  Nhấn Ctrl+C để dừng.\n",flush=True)
-    if args.open:threading.Timer(.5,lambda:webbrowser.open(url)).start()
     try:server.serve_forever(poll_interval=.3)
     except KeyboardInterrupt:print("\nĐã dừng. Tiến trình đã lưu trong SQLite.")
     finally:stop.set();server.server_close()

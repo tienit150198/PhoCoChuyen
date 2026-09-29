@@ -56,6 +56,7 @@ Nếu chạy tạm ở cổng khác 80/443 (ví dụ `http://IP:8080` khi chưa 
 | `SESSION_IDLE_DAYS` | Số ngày không hoạt động trước khi bản lưu bị xóa (mặc định 180). |
 | `WORKERS` | Số tiến trình phục vụ cùng một cổng (mặc định 1). Đặt bằng số CPU (ví dụ `WORKERS=4`). Không cần đổi cấu hình proxy: các tiến trình cùng nhận kết nối trên một socket. Giới hạn AI, đăng nhập, phiên mới và góp ý được chia sẻ giữa các tiến trình (tệp `*-limits.sqlite3` cạnh cơ sở dữ liệu); việc dọn dẹp và gửi thông báo chỉ chạy ở một tiến trình. |
 | `PRUNE_GUEST_DAYS` | Bản lưu khách chưa từng chơi thật (không tài khoản, không tên công khai, `revision <= 1`, không có tiến trình) bị xóa sau số ngày này (mặc định 3, `0` = tắt). Chạy mỗi giờ, từng nhóm nhỏ. |
+| `LAZY_SAVES` | `1` = phiên mới chỉ lưu một dấu nhỏ (~200 byte) cho tới thao tác đầu tiên, thay vì cả bản lưu ~90 KB (khách vào rồi đi không làm phình cơ sở dữ liệu). Mặc định `0`. Chỉ bật khi MỌI tiến trình dùng chung cơ sở dữ liệu đã chạy bản mới: bản cũ không đọc được dấu này. |
 | `RECEIPT_DAYS`, `RECEIPTS_PER_SAVE` | Biên nhận chống gửi trùng được giữ bao lâu (mặc định 2 ngày) và tối đa bao nhiêu cho mỗi bản lưu (mặc định 200). |
 | `LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY`, `LLM_CONCURRENCY` | AI cho nhân vật review/phụ huynh. Người chơi phải tự bật “Cho phép AI” trong Cài đặt. |
 | `MNL_DEV` | **Không bao giờ đặt trên máy chủ thật.** `MNL_DEV=1` tắt hành trình (mở mọi nghề, không trừ tiền sinh hoạt) và cho nhận việc không cần phỏng vấn. Chỉ dùng cho script kiểm trình duyệt. |

@@ -275,6 +275,25 @@ class BestEffortTests(Base):
         self.store.session(token)
         self.assertEqual(self.raw("SELECT seen_at>datetime('now','-10 minutes') FROM logins")[0][0], 1)
 
+    @unittest.skipUnless(hasattr(os, 'fork'), 'flock is POSIX')
+    def test_writer_turn_is_shared_between_processes(self):
+        other = Store(self.path)  # another worker: its own lock-file descriptor
+        self.addCleanup(other.close_pool)
+        self.assertTrue(self.store.writing(100))
+        try:
+            t = time.monotonic()
+            got = []
+            th = threading.Thread(target=lambda: got.append(other.writing(150)))
+            th.start()
+            th.join()
+            self.assertEqual(got, [False])
+            self.assertGreaterEqual(time.monotonic() - t, 0.14)
+        finally:
+            self.store.done_writing()
+        self.assertTrue(other.writing(100))
+        other.done_writing()
+        self.assertTrue(os.path.exists(str(self.path) + '-writer.lock'))  # next to the database
+
     def test_pool_rolls_back_uncommitted_work(self):
         db = self.store.connect()
         db.execute("UPDATE sessions SET revision=99")
@@ -286,6 +305,33 @@ class BestEffortTests(Base):
 
 class LazySaveTests(Base):
     story = True
+
+    def setUp(self):
+        env = unittest.mock.patch.dict(os.environ, {'LAZY_SAVES': '1'})
+        env.start()
+        self.addCleanup(env.stop)
+        super().setUp()
+
+    def test_off_by_default_writes_a_full_save(self):
+        with unittest.mock.patch.dict(os.environ, {'LAZY_SAVES': '0'}):
+            token, _, _ = self.store.session()
+        text = self.raw('SELECT state FROM sessions WHERE sid=?', (self.store.digest(token),))[0][0]
+        self.assertEqual(json.loads(text), self.store.read(token)[0])  # old servers can read it
+
+    def test_never_played_guest_registers_exports_and_is_skipped_by_stats(self):
+        from game import accounts, admin_stats
+        social.ensure(self.store)
+        admin_stats.ensure(self.store)
+        with self.store.connect() as db:
+            rows, _ = admin_stats.sample(db)
+        self.assertEqual(rows, [])  # revision 0: never sampled
+        out = accounts.register(self.store, self.token, dict(username='freshguest', password='mat-khau-1', confirm='mat-khau-1', display='Khach Moi'))
+        state, rev, _ = self.store.read(out['token'])
+        self.assertEqual(state['name'], 'Khach Moi')  # the adopted name was a real first command
+        self.assertEqual(rev, 1)
+        self.assertNotEqual(self.raw('SELECT state FROM sessions')[0][0], FRESH)
+        other, _, _ = self.store.session()
+        self.assertTrue(accounts.has_progress(self.store.read(other)[0]) is False)
 
     def test_new_session_stores_a_marker_not_a_save(self):
         text, rev = self.raw('SELECT state, revision FROM sessions')[0]
@@ -362,6 +408,18 @@ class PruneTests(Base):
 
 
 class SharedLimitTests(unittest.TestCase):
+    def test_limits_db_follows_game_db(self):
+        import server
+        self.assertEqual(server.limits_path('/var/lib/mot-ngay-lam-nghe/game.sqlite3'), '/var/lib/mot-ngay-lam-nghe/game-limits.sqlite3')
+        with tempfile.TemporaryDirectory() as tmp:
+            os.makedirs(os.path.join(tmp, 'data'))
+            here = os.getcwd()
+            os.chdir(tmp)
+            try:
+                self.assertEqual(server.limits_path('data/g.sqlite3'), os.path.join(os.getcwd(), 'data', 'g-limits.sqlite3'))
+            finally:
+                os.chdir(here)
+
     def test_shared_between_processes(self):
         import server
         with tempfile.TemporaryDirectory() as tmp:
@@ -426,6 +484,8 @@ class WorkersTests(unittest.TestCase):
                 p.send_signal(signal.SIGTERM)
                 p.wait(10)
             self.assertEqual(p.returncode, 0)
+            self.assertTrue(os.path.exists(os.path.join(tmp, 'g-limits.sqlite3')))  # next to --db, not beside the code
+            self.assertFalse(os.path.exists(ROOT / 'storage' / 'g-limits.sqlite3'))
             time.sleep(0.3)
             for pid in children:
                 with self.assertRaises(ProcessLookupError):
