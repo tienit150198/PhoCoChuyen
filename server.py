@@ -15,6 +15,7 @@ import json
 import math
 import mimetypes
 import os
+import re
 from pathlib import Path
 import secrets
 import signal
@@ -52,6 +53,7 @@ from game.content import public_content,CAREERS
 from game.engine import GameError,public_state
 from game.storage import Store,Conflict
 from game.dialogue import public_config,rephrase
+from game.webassets import WebAssets,IMMUTABLE,content_hash
 
 MAX_BODY=16*1024*1024
 COOKIE="mnl_session"
@@ -65,6 +67,7 @@ STATIC_TYPES={".html":"text/html; charset=utf-8",".js":"text/javascript; charset
 COMPRESSIBLE=(".html",".js",".css",".json",".svg",".webmanifest",".txt",".xml")
 PAGES={"/privacy":"privacy.html","/terms":"terms.html","/admin":"admin.html","/":"index.html"}
 env_flag=lambda k,d="0":os.environ.get(k,d).strip().lower() in ("1","true","yes","on")
+CAS_HASH=re.compile(r"[0-9a-f]{12}")
 STATIC_RECHECK=2.0  # seconds a resolved static route is trusted before its file is stat()ed again
 # Budgets that must not multiply with WORKERS: AI spend, sign-in attempts, new saves, feedback.
 SHARED_LIMITS=("ai","acct-","newsession:","fb:","fb-day:","fb-ip:")
@@ -125,7 +128,11 @@ class GameServer(ThreadingHTTPServer):
         self.static_routes={}
         self.shared_limits=None  # SharedLimits in worker processes (WORKERS>1)
         self.worker=0
+        self.cas_dir=None  # Path of STATIC_CAS_DIR once main() has filled it (see Handler.cas_static)
         self._content=None
+        self._content_blob=None
+        # index.html rendered with ?v=<hash> asset URLs, an import map and CSP hashes (game/webassets.py).
+        self.assets=WebAssets(PUBLIC,CSP,self.content_version,__version__)
         self.trust_proxy=env_flag("TRUST_PROXY")
         social.ensure(store)
         push.ensure(store)
@@ -135,6 +142,22 @@ class GameServer(ThreadingHTTPServer):
         """The static game catalogue (~0.4 MB of JSON), serialized once per process."""
         if self._content is None:self._content=json.dumps(public_content(),ensure_ascii=False,allow_nan=False)
         return self._content
+
+    def content_blob(self)->tuple[bytes,bytes,str]:
+        """(JSON bytes, gzip bytes, content hash) of the catalogue for GET /api/content?v=<hash>.
+        Identical for every player of a release, so it is cached by the browser for a year."""
+        if self._content_blob is None:
+            raw=self.content_json().encode()
+            self._content_blob=(raw,gzip.compress(raw,6),content_hash(raw))
+        return self._content_blob
+
+    def content_version(self)->str:return self.content_blob()[2]
+
+    def game_version(self)->str:
+        """`<release>+<build>`: sent as X-Game-Version on every API response; the page compares it with
+        the one it was served with and offers a reload when they differ (public/js/update.js)."""
+        try:return self.assets.snapshot().version
+        except (OSError,ValueError):return __version__
 
     def rate_limit(self,key:str,limit:int,seconds:int=60)->bool:
         if self.shared_limits is not None and key.startswith(SHARED_LIMITS):
@@ -175,7 +198,7 @@ class Handler(BaseHTTPRequestHandler):
         if env_flag("COOKIE_SECURE"):return True
         return self.server.trust_proxy and self.headers.get("X-Forwarded-Proto","").lower()=="https"
 
-    def respond(self,status:int,data:bytes,ctype:str,extra:dict|None=None,compress:bool=False,cache:str|None=None):
+    def respond(self,status:int,data:bytes,ctype:str,extra:dict|None=None,compress:bool=False,cache:str|None=None,csp:str=CSP):
         if compress and len(data)>1400 and "gzip" in self.headers.get("Accept-Encoding",""):
             data=gzip.compress(data,5);extra=dict(extra or {},**{"Content-Encoding":"gzip"})
         self.send_response(status)
@@ -183,7 +206,9 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Length",str(len(data)))
         self.send_header("X-Content-Type-Options","nosniff")
         self.send_header("Referrer-Policy","no-referrer")
-        self.send_header("Content-Security-Policy",CSP)
+        self.send_header("Content-Security-Policy",csp)
+        # Not on cacheable responses (/api/content): a copy from the browser cache would carry an old version.
+        if self.path.startswith("/api/") and cache is None:self.send_header("X-Game-Version",self.server.game_version())
         self.send_header("Permissions-Policy","camera=(), microphone=(), geolocation=(), payment=()")
         self.send_header("Cross-Origin-Opener-Policy","same-origin")
         if self.secure():self.send_header("Strict-Transport-Security","max-age=31536000")
@@ -244,7 +269,7 @@ class Handler(BaseHTTPRequestHandler):
 
     # ---- static files -----------------------------------------------------
     def static_entry(self,route:str):
-        """(signature, bytes, gzip bytes, etag, suffix, name) of a file under public/, or None."""
+        """(signature, bytes, gzip bytes, etag, suffix, name, content hash) of a file under public/, or None."""
         rel=PAGES.get(route) or unquote(route).lstrip("/")
         try:path=(PUBLIC/rel).resolve()
         except (OSError,ValueError):return None
@@ -256,30 +281,83 @@ class Handler(BaseHTTPRequestHandler):
             raw=path.read_bytes()
             etag='"'+hashlib.sha1(raw).hexdigest()[:20]+'"'
             gz=gzip.compress(raw,6) if suffix in COMPRESSIBLE and len(raw)>1400 else None
-            cached=((st.st_mtime_ns,st.st_size),raw,gz,etag,suffix,path.name)
+            cached=((st.st_mtime_ns,st.st_size),raw,gz,etag,suffix,path.name,content_hash(raw))
             if len(self.server.static_cache)<600:self.server.static_cache[key]=cached
         return cached
 
-    def static(self,route:str):
+    def page(self):
+        """GET / : index.html rendered with ?v=<hash> asset URLs, an import map, the inlined boot script
+        and a CSP that allows exactly those two inline scripts by hash (game/webassets.py). no-cache + ETag:
+        the page is revalidated on every visit, so a deploy is picked up on the next load."""
+        try:snap=self.server.assets.snapshot()
+        except (OSError,ValueError) as e:
+            self.log_error("page render failed: %s",type(e).__name__);self.static("/");return
+        if self.headers.get("If-None-Match")==snap.html_etag:
+            self.send_response(304);self.send_header("ETag",snap.html_etag);self.send_header("Cache-Control","no-cache");self.send_header("Content-Length","0");self.end_headers();return
+        extra={"ETag":snap.html_etag,"Vary":"Accept-Encoding"};body=snap.html
+        if "gzip" in self.headers.get("Accept-Encoding",""):body=snap.html_gz;extra["Content-Encoding"]="gzip"
+        self.respond(200,body,"text/html; charset=utf-8",extra,cache="no-cache",csp=snap.csp)
+
+    def content(self,query:str):
+        """GET /api/content?v=<hash>: the game catalogue, split out of /api/bootstrap. A matching ?v= is
+        cached for a year (the URL changes with the content); anything else must revalidate."""
+        raw,gz,version=self.server.content_blob();etag=f'"{version}"'
+        v=(parse_qs(query).get("v") or [""])[0]
+        cache=IMMUTABLE if v==version else "no-cache"
+        if self.headers.get("If-None-Match")==etag:
+            self.send_response(304);self.send_header("ETag",etag);self.send_header("Cache-Control",cache);self.send_header("Content-Length","0");self.end_headers();return
+        extra={"ETag":etag,"Vary":"Accept-Encoding"};body=raw
+        if "gzip" in self.headers.get("Accept-Encoding",""):body=gz;extra["Content-Encoding"]="gzip"
+        self.respond(200,body,"application/json; charset=utf-8",extra,cache=cache)
+
+    def cas_static(self,route:str,v:str,suffix:str)->bool:
+        """An older (or newer) ?v= than the file on disk: serve those exact bytes from the content-addressed
+        store (STATIC_CAS_DIR/<hash>/<path>), as the proxy does; False when it is not there."""
+        cas=self.server.cas_dir
+        if not cas or not CAS_HASH.fullmatch(v):return False
+        try:
+            path=(cas/v/unquote(route).lstrip("/")).resolve()
+            if not path.is_relative_to((cas/v).resolve()) or not path.is_file():return False
+            raw=path.read_bytes()
+        except (OSError,ValueError):return False
+        if content_hash(raw)!=v:return False
+        etag=f'"{v}"'
+        if self.headers.get("If-None-Match")==etag:
+            self.send_response(304);self.send_header("ETag",etag);self.send_header("Cache-Control",IMMUTABLE);self.send_header("Content-Length","0");self.end_headers();return True
+        extra={"ETag":etag}
+        if suffix in COMPRESSIBLE:
+            extra["Vary"]="Accept-Encoding"
+            if len(raw)>1400 and "gzip" in self.headers.get("Accept-Encoding",""):raw=gzip.compress(raw,6);extra["Content-Encoding"]="gzip"
+        self.respond(200,raw,STATIC_TYPES[suffix],extra,cache=IMMUTABLE)
+        return True
+
+    def static(self,route:str,query:str=""):
         # Hot path (a page load asks for ~100 files, mostly answered 304): a route resolved in
         # the last STATIC_RECHECK seconds skips resolve()/stat(); a deploy is picked up after that.
         now=time.monotonic();hit=self.server.static_routes.get(route)
         if hit and now-hit[1]<STATIC_RECHECK:cached=hit[0]
         else:
             cached=self.static_entry(route)
-            if cached is None:self.error(404,"Không tìm thấy tài nguyên.");return
+            if cached is None:
+                # A file this release removed, still asked for by a page of an older one.
+                v=(parse_qs(query).get("v") or [""])[0] if query else "";suffix=Path(route).suffix.lower()
+                if v and suffix in STATIC_TYPES and self.cas_static(route,v,suffix):return
+                self.error(404,"Không tìm thấy tài nguyên.");return
             if len(self.server.static_routes)<2000 or route in self.server.static_routes:self.server.static_routes[route]=(cached,now)
-        _,raw,gz,etag,suffix,name=cached
+        _,raw,gz,etag,suffix,name,vhash=cached
+        # /js/x.js?v=<hash> (see game/webassets.py): a year when the hash names these very bytes.
+        v=(parse_qs(query).get("v") or [""])[0] if query else ""
+        if v and v!=vhash and self.cas_static(route,v,suffix):return
+        cache=IMMUTABLE if suffix==".woff2" or (v and v==vhash) else "no-cache"
         extra={"ETag":etag}
         if name=="sw.js":extra["Service-Worker-Allowed"]="/"
         if name=="admin.html":extra["X-Robots-Tag"]="noindex, nofollow"  # operator site (public/js/admin/)
         if self.headers.get("If-None-Match")==etag:
-            self.send_response(304);self.send_header("ETag",etag);self.send_header("Cache-Control","no-cache");self.send_header("Content-Length","0");self.end_headers();return
+            self.send_response(304);self.send_header("ETag",etag);self.send_header("Cache-Control",cache);self.send_header("Content-Length","0");self.end_headers();return
         body=raw
         if gz is not None and "gzip" in self.headers.get("Accept-Encoding",""):
             body=gz;extra["Content-Encoding"]="gzip"
         if suffix in COMPRESSIBLE:extra["Vary"]="Accept-Encoding"
-        cache="public, max-age=31536000, immutable" if suffix==".woff2" else "no-cache"
         self.respond(200,body,STATIC_TYPES[suffix],extra,cache=cache)
 
     # ---- routes -----------------------------------------------------------
@@ -290,7 +368,8 @@ class Handler(BaseHTTPRequestHandler):
         split=urlsplit(self.path);route=split.path
         try:
             if route=="/api/health":
-                self.json(200,dict(status="ok",version=__version__,careers=len(CAREERS)));return
+                self.json(200,dict(status="ok",version=__version__,game_version=self.server.game_version(),careers=len(CAREERS)));return
+            if route=="/api/content":self.content(split.query);return
             if route=="/api/bootstrap":
                 ip=self.client_ip()
                 if not self.server.rate_limit("bootstrap:"+ip,120):self.error(429,"Chờ một chút rồi tải lại nhé.");return
@@ -304,9 +383,14 @@ class Handler(BaseHTTPRequestHandler):
                         if social.settle(self.server.store,token,state):state,revision,_=self.server.store.read(token)
                     except social.SocialError:pass
                 extra={"Set-Cookie":self.cookie(token)} if created else {}
+                # ?lite=1 (current client): the catalogue comes from GET /api/content?v=<content_version>, cached
+                # by the browser. Without it (a page from before the split, during a deploy) it is still inlined.
+                version=self.server.content_version()
+                lite=(parse_qs(split.query).get("lite") or [""])[0]=="1"
                 self.json(200,dict(state=public_state(state),revision=revision,csrf=csrf,ai=dict(public_config(),configured=ai.available(),chat=True),
                                    social=social.bootstrap(self.server.store,token,state),push=push.public_config(),account=accounts.status(self.server.store,token),
-                                   admin=pfb.is_admin(self.server.store,token)),extra,raw=dict(content=self.server.content_json()));return
+                                   admin=pfb.is_admin(self.server.store,token),content_version=version,content_url=f"/api/content?v={version}",
+                                   game_version=self.server.game_version()),extra,raw=None if lite else dict(content=self.server.content_json()));return
             if route=="/api/state":
                 _,state,revision,_=self.require_session();self.json(200,dict(state=public_state(state),revision=revision));return
             if route=="/api/save/export":
@@ -345,7 +429,8 @@ class Handler(BaseHTTPRequestHandler):
                 except ValueError:self.error(400,"Khoảng ngày chỉ nhận 7, 30 hoặc 90.","bad_range");return
                 self.json(200,admin_stats.get(self.server.store,days,fresh=query.get("fresh")=="1"));return
             if route.startswith("/api/"):self.error(404,"Không có API này.");return
-            self.static(route)
+            if route in ("/","/index.html"):self.page();return
+            self.static(route,split.query)
         except pfb.FeedbackError as e:self.error(e.status,e.message,e.code)
         except social.SocialError as e:self.error(e.status,e.message,e.code)
         except GameError as e:self.error(401 if e.code=="session_missing" else 400,e.message,e.code)
@@ -857,6 +942,13 @@ def main():
     try:server=GameServer((args.host,args.port),store,allowed)
     except OSError as e:
         print(f"Không mở được cổng {args.port}: {e}. Thử --port 8766.");return 1
+    # Before any worker forks: serialise the catalogue, hash the static files and copy them into the
+    # content-addressed store that the proxy serves ?v= URLs from (STATIC_CAS_DIR, docs/DEPLOY.md).
+    cas=Path(os.environ.get("STATIC_CAS_DIR") or PUBLIC/"_v")
+    try:server.content_blob();written=server.assets.write_cas(cas);server.cas_dir=cas
+    except OSError as e:print(f"  Không ghi được bản tĩnh theo mã băm vào {cas} ({type(e).__name__}); các URL ?v= sẽ về no-cache.",flush=True)
+    else:
+        if written:print(f"  Bản tĩnh theo mã băm: {written} tệp mới trong {cas}",flush=True)
     # WORKERS=n (n>1, POSIX only): n processes share the port; see serve_workers().
     workers=max(1,int(os.environ.get("WORKERS","1") or 1)) if hasattr(os,"fork") else 1
     url=f"http://127.0.0.1:{server.server_port}"

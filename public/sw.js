@@ -3,11 +3,19 @@
 const OFFLINE=`<!doctype html><html lang="vi"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mất kết nối · Phố Có Chuyện</title><body style="margin:0;min-height:100vh;display:grid;place-items:center;background:#fff7ec;color:#3b2a22;font:16px/1.6 system-ui,sans-serif;text-align:center;padding:24px"><div><div style="font-size:48px">🏮</div><h1 style="margin:.2em 0">Mất kết nối</h1><p>Kiểm tra mạng rồi tải lại trang nhé.<br>Tiến trình đã xác nhận vẫn được lưu trên máy chủ.</p><p style="opacity:.7">You are offline. Check your connection and reload — your saved progress is safe.</p></div></body></html>`;
 
 self.addEventListener('install',()=>self.skipWaiting());
-self.addEventListener('activate',event=>event.waitUntil(self.clients.claim()));
+// Navigation preload: the page request starts while this worker boots (~100 ms on a slow phone),
+// instead of after it. Only navigations pass through here; assets never do.
+self.addEventListener('activate',event=>event.waitUntil((async()=>{
+  try{await self.registration.navigationPreload?.enable();}catch{/* unsupported */}
+  await self.clients.claim();
+})()));
 
 self.addEventListener('fetch',event=>{
   if(event.request.mode!=='navigate')return;
-  event.respondWith(fetch(event.request).catch(()=>new Response(OFFLINE,{headers:{'Content-Type':'text/html; charset=utf-8'}})));
+  event.respondWith((async()=>{
+    try{return (await event.preloadResponse)||await fetch(event.request);}
+    catch{return new Response(OFFLINE,{headers:{'Content-Type':'text/html; charset=utf-8'}});}
+  })());
 });
 
 /** Minimal copy of the page's English layer (exact strings, then patterns). */

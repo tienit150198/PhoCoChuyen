@@ -18,7 +18,8 @@ const FADE=1.5;
 
 export class Music{
   constructor(){this.ctx=null;this.on=false;this.volume=.45;this.hidden=false;this.want='cider';this.cur=null;this.pending=null;this.buffers=new Map();}
-  unlock(){if(this.ctx?.state==='suspended'&&this.on&&!this.hidden)this.ctx.resume().catch(()=>{});this.refresh();}
+  // armed by the first tap/key (shell.js): a song is 0.3-1.6 MB, never fetched while the game is still loading.
+  unlock(){this.armed=true;if(this.ctx?.state==='suspended'&&this.on&&!this.hidden)this.ctx.resume().catch(()=>{});this.refresh();}
   setHidden(h){this.hidden=h;this.refresh();}
   configure({on,volume,track,career}){
     this.on=!!on&&track!=='off';this.volume=Math.max(0,Math.min(1,(volume??45)/100));
@@ -36,13 +37,14 @@ export class Music{
   }
   refresh(){
     if(!(this.on&&!this.hidden)){if(this.ctx?.state==='running')this.ctx.suspend().catch(()=>{});return;}
+    if(!this.armed)return;
     this.init();if(!this.ctx)return;
     if(this.ctx.state==='suspended')this.ctx.resume().catch(()=>{});
     if(this.cur?.name!==this.want&&this.pending!==this.want)this.play(this.want);
   }
   load(name){
     if(!this.buffers.has(name)){
-      const p=fetch(`/music/${FILES[name]}.mp3`).then(r=>{if(!r.ok)throw new Error(r.status);return r.arrayBuffer();})
+      const p=fetch(globalThis.__mnlBoot?.asset?.(`/music/${FILES[name]}.mp3`)||`/music/${FILES[name]}.mp3`).then(r=>{if(!r.ok)throw new Error(r.status);return r.arrayBuffer();})
         .then(data=>new Promise((ok,fail)=>this.ctx.decodeAudioData(data,ok,fail)));  // callback form: older Safari
       this.buffers.set(name,p);p.catch(()=>this.buffers.delete(name));
     }

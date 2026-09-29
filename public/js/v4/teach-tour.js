@@ -12,10 +12,11 @@ import {t as tr,language} from './i18n.js';
 import {keepBarAboveFooter} from '../careers/food_kit.js';
 import {reqList} from '../ui-kit.js';
 import {GameAPI} from '../api.js';
+import {asset} from '../assets.js';
 
 if(typeof document!=='undefined'){
   if(!document.querySelector('link[data-teach-css]')){
-    const l=document.createElement('link');l.rel='stylesheet';l.href='/css/teach.css';l.dataset.teachCss='1';document.head.append(l);
+    const l=document.createElement('link');l.rel='stylesheet';l.href=asset('/css/teach.css');l.dataset.teachCss='1';document.head.append(l);
   }
   // The sticky bar sits above the sheet's own sticky footer; measure it after every render.
   const fit=()=>{

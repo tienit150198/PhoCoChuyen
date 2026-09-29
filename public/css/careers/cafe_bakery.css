@@ -1,4 +1,4 @@
-@import url('food_kit.css');
+/* Shared shop pieces: careers/food_kit.css, loaded as its own <link> before this sheet (public/js/v4/careers.js CSS_KIT). */
 /* Tiệm Bánh & Cà Phê Sớm Mai — scoped workbench styles.
    Chrome uses theme tokens only; fixed colours are reserved for the drawn
    objects themselves (coffee, milk, sponge, kraft bag). Shared shop pieces

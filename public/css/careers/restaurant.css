@@ -1,4 +1,4 @@
-@import url('food_kit.css');
+/* Shared shop pieces: careers/food_kit.css, loaded as its own <link> before this sheet (public/js/v4/careers.js CSS_KIT). */
 /* Quán Mì Cay Mây — kitchen desk: tables + app orders, the guest's words, pots,
    two boiling baskets, the bowl with a live status line, chili, toppings.
    Theme tokens only; nothing truncates (names wrap) at 390 px. */

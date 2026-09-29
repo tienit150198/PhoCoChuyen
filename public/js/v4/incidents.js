@@ -4,6 +4,7 @@
  * what it cost and how the street sees you now. Render-only: every rule, roll
  * and amount lives in game/incidents.py. */
 import {icon,escapeHTML as esc} from '../icons.js';
+import {asset} from '../assets.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const signed=n=>`${n<0?'−':'+'}${fmt(Math.abs(n))}`;
@@ -111,7 +112,7 @@ export async function incidentAction(action,data,el,env){
 
 /** Pops the decision card up when the server opens a new incident. */
 export function incidentBoot(env){
-  if(!document.querySelector('link[data-incidents-css]')){const l=document.createElement('link');l.rel='stylesheet';l.href='/css/incidents.css';l.dataset.incidentsCss='1';document.head.append(l);}
+  if(!document.querySelector('link[data-incidents-css]')){const l=document.createElement('link');l.rel='stylesheet';l.href=asset('/css/incidents.css');l.dataset.incidentsCss='1';document.head.append(l);}
   const seen=new Set();
   const check=()=>{
     const s=env.api.state,c=s?.current&&s.careers?.[s.current],a=c?.incidents?.active;

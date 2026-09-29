@@ -2,9 +2,10 @@
    Render-only: every fact and grade comes from the server (game/desk.py).
    Phone first: one quote, the papers, a short rulebook, and one row of stamps. */
 import {icon,portrait,escapeHTML as esc} from './icons.js';
+import {asset} from './assets.js';
 
 if(typeof document!=='undefined'&&!document.querySelector('link[data-desk-css]')){
-  const link=document.createElement('link');link.rel='stylesheet';link.href='/css/desk.css';link.dataset.deskCss='';document.head.append(link);
+  const link=document.createElement('link');link.rel='stylesheet';link.href=asset('/css/desk.css');link.dataset.deskCss='';document.head.append(link);
 }
 
 const local={sel:null,task:null,tally:{}};

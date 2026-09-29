@@ -43,6 +43,41 @@ location / {
 ```
 Nếu chạy tạm ở cổng khác 80/443 (ví dụ `http://IP:8080` khi chưa có tên miền), dùng `proxy_set_header Host $http_host;` để giữ cả số cổng. Máy chủ so `Origin` với `Host` gồm cả cổng, nên nếu thiếu cổng thì mọi thao tác sẽ bị từ chối.
 
+### Tài nguyên tĩnh có phiên bản (tải nhanh, không trộn phiên bản)
+
+Trang `/` được server dựng lúc phục vụ: mọi URL `/js/`, `/css/`, `/i18n/`, `/music/`, `/icons/` mang `?v=<mã băm nội dung>` và một import map đưa mọi module ES (kể cả `import()` động) về đúng URL đó. Một URL `?v=` không bao giờ đổi nội dung, nên được giữ một năm (`immutable`); lần vào lại gần như không tải gì. Danh mục game nằm ở `GET /api/content?v=<mã>` (cũng giữ một năm) thay vì trong `/api/bootstrap`.
+
+Để một URL `?v=` luôn trả đúng các byte nó gọi tên (kể cả trong lúc deploy, và cho tab cũ còn mở), mỗi tiến trình khi khởi động chép các tệp đó vào kho theo mã băm `STATIC_CAS_DIR/<mã>/<đường dẫn>` (mặc định `public/_v`). Nên đặt kho này **ngoài thư mục release** để các bản cũ vẫn còn:
+
+```bash
+sudo install -d -o <user chạy game> -m 755 /opt/mot-ngay-lam-nghe/shared/_v
+# mỗi unit systemd: Environment=STATIC_CAS_DIR=/opt/mot-ngay-lam-nghe/shared/_v
+```
+
+Nginx (khối `map` đặt trong `http {}`; `location` đặt trong `server {}`):
+```nginx
+map $arg_v $asset_v { "~^[0-9a-f]{12}$" $arg_v; default ""; }
+
+location ~ ^/(js|css|i18n|icons|music)/ {
+    if ($asset_v) { rewrite ^ /_v/$asset_v$uri last; }
+    root /opt/mot-ngay-lam-nghe/current/public;   # URL không có ?v=: như cũ, no-cache
+    try_files $uri =404;
+    add_header Cache-Control "no-cache" always;
+}
+location ^~ /_v/ {
+    internal;
+    root /opt/mot-ngay-lam-nghe/shared;            # = STATIC_CAS_DIR không có "/_v"
+    try_files $uri @asset_miss;
+    add_header Cache-Control "public, max-age=31536000, immutable" always;
+}
+location @asset_miss {                              # mã chưa có trong kho: tệp hiện tại, no-cache
+    rewrite ^/_v/[0-9a-f]+(/.*)$ $1 break;
+    root /opt/mot-ngay-lam-nghe/current/public;
+    add_header Cache-Control "no-cache" always;
+}
+```
+(giữ nguyên `etag`, `gzip` và các header bảo mật như các location tĩnh hiện có). Thiếu kho hay thiếu cấu hình này thì game vẫn chạy đúng, chỉ là tài nguyên về lại `no-cache`. Khi server chạy bản mới hơn trang đang mở, người chơi thấy nút nhỏ “Đã có phiên bản mới, bạn tải lại để cập nhật nha” (header `X-Game-Version` trên mọi phản hồi `/api/`); game không tự tải lại. Kiểm tra: `python scripts/browser_deploy.py`.
+
 ## Biến môi trường quan trọng
 
 | Biến | Ý nghĩa |
@@ -59,13 +94,14 @@ Nếu chạy tạm ở cổng khác 80/443 (ví dụ `http://IP:8080` khi chưa 
 | `LAZY_SAVES` | `1` = phiên mới chỉ lưu một dấu nhỏ (~200 byte) cho tới thao tác đầu tiên, thay vì cả bản lưu ~90 KB (khách vào rồi đi không làm phình cơ sở dữ liệu). Mặc định `0`. Chỉ bật khi MỌI tiến trình dùng chung cơ sở dữ liệu đã chạy bản mới: bản cũ không đọc được dấu này. |
 | `RECEIPT_DAYS`, `RECEIPTS_PER_SAVE` | Biên nhận chống gửi trùng được giữ bao lâu (mặc định 2 ngày) và tối đa bao nhiêu cho mỗi bản lưu (mặc định 200). |
 | `LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY`, `LLM_CONCURRENCY` | AI cho nhân vật review/phụ huynh. Người chơi phải tự bật “Cho phép AI” trong Cài đặt. |
+| `STATIC_CAS_DIR` | Kho tệp tĩnh theo mã băm mà proxy phục vụ cho URL `?v=` (mặc định `public/_v`). Xem mục “Tài nguyên tĩnh có phiên bản”. |
 | `MNL_DEV` | **Không bao giờ đặt trên máy chủ thật.** `MNL_DEV=1` tắt hành trình (mở mọi nghề, không trừ tiền sinh hoạt) và cho nhận việc không cần phỏng vấn. Chỉ dùng cho script kiểm trình duyệt. |
 | `VAPID_SUBJECT`, `VAPID_PRIVATE_KEY`, `PUSH_DISABLED` | Web push. Mặc định khóa được tự tạo ở `storage/vapid.json`; đừng xóa tệp này, nếu mất thì mọi đăng ký thông báo cũ hết hiệu lực. |
 
 ## Bảo mật và vận hành
 
 - **Khóa API AI** chỉ để trong `.env` hoặc biến môi trường của máy chủ. Không commit, không đưa vào ảnh Docker (`.dockerignore` đã loại `.env`). Nếu khóa từng bị dán vào chat, email hay issue, hãy **đổi khóa** ở nhà cung cấp.
-- Máy chủ đã bật sẵn: CSP chặt (không có script inline), cookie HttpOnly + SameSite=Strict, token CSRF, kiểm tra Origin/Host, giới hạn tần suất, giới hạn kích thước request và gzip. Tài nguyên tĩnh có ETag.
+- Máy chủ đã bật sẵn: CSP chặt (script inline chỉ gồm import map và boot script, được cho phép bằng mã băm SHA-256), cookie HttpOnly + SameSite=Strict, token CSRF, kiểm tra Origin/Host, giới hạn tần suất, giới hạn kích thước request và gzip. Tài nguyên tĩnh có ETag.
 - Phố nghề lọc link, e-mail, số điện thoại và từ thô tục. Nội dung bị 3 người báo cáo sẽ tự ẩn. Để gỡ hay khôi phục thủ công, sửa cột `hidden` trong SQLite (bảng `board`, `comments`, `previews`, `market`, `profiles`).
 - Người chơi tự xóa dữ liệu được trong Cài đặt → Dữ liệu. Nếu ai đó gửi yêu cầu qua email `trachanhtv.works@gmail.com`, hãy tìm hồ sơ theo tên hiển thị trong bảng `profiles`, rồi xóa bằng `sid` tương ứng.
 - Nhật ký (log) không ghi cookie hay nội dung người chơi gõ. Bật `QUIET=1` để tắt hẳn access log.

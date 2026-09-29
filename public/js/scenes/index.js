@@ -74,8 +74,11 @@ function load(kind){
 /** The scene module for a career, or `shop` while its kind is still loading.
  * `onReady` runs once when the real one arrives (the latest caller wins; the
  * draw loop asks every frame, so nothing piles up). */
+let hinted=null;
 export function sceneFor(career,onReady){
   const kind=kindOf(career);
+  // boot.js preloads this scene on the next visit (sceneFor runs every frame: store only on change).
+  if(kind!==hinted){hinted=kind;try{localStorage.setItem('mnl.scene',`/js/scenes/${kind}.js`);}catch{/* storage blocked */}}
   if(loaded[kind])return loaded[kind];
   if(onReady)listener[kind]=onReady;
   load(kind);

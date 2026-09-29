@@ -7,6 +7,7 @@
  * Render-only: every roll, amount and outcome comes from game/happenings.py. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {SceneFx} from './scene-events.js';
+import {asset} from '../assets.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const signed=n=>`${n<0?'−':'+'}${fmt(Math.abs(n))}`;
@@ -59,7 +60,7 @@ export function happenSummary(x){
 }
 
 export function happenBoot(env){
-  if(!document.querySelector('link[data-happen-css]')){const l=document.createElement('link');l.rel='stylesheet';l.href='/css/happenings.css';l.dataset.happenCss='1';document.head.append(l);}
+  if(!document.querySelector('link[data-happen-css]')){const l=document.createElement('link');l.rel='stylesheet';l.href=asset('/css/happenings.css');l.dataset.happenCss='1';document.head.append(l);}
   const world=env.world,fx=new SceneFx();world.fx=fx;
   const layer=document.createElement('div');layer.className='hap-layer';layer.innerHTML=`<div class="hap-top"><div class="hap-banner" role="alert" hidden></div><div class="hap-news" role="status" aria-live="polite" hidden></div><button type="button" class="hap-pill" hidden></button></div><section class="hap-panel" role="dialog" aria-modal="false" aria-labelledby="hapTitle" hidden></section>`;
   document.body.append(layer);

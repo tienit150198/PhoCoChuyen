@@ -3,7 +3,7 @@
 from pathlib import Path
 import argparse,datetime,hashlib,json,zipfile
 ROOT=Path(__file__).resolve().parents[1]
-BLOCKED_DIRS={'.git','.venv','node_modules','__pycache__','.pytest_cache','test-results','todo','done','screens'}
+BLOCKED_DIRS={'_v','.git','.venv','node_modules','__pycache__','.pytest_cache','test-results','todo','done','screens'}
 BLOCKED_SUFFIXES={'.zip','.sqlite','.sqlite3','.db','.pyc','.pyo','.ttf','.otf','.eot'}
 
 def main():
