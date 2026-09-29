@@ -48,9 +48,15 @@ class Conflict(GameError):
 def _digest(text:str)->str:
     return hashlib.blake2b(text.encode(),digest_size=10).hexdigest()
 
+SEPARATORS=(",",":")  # compact: ~10% fewer bytes to store, read and parse than ", " / ": "
+
+def _dumps(v)->str:
+    return json.dumps(v,ensure_ascii=False,allow_nan=False,separators=SEPARATORS)
+
 def serialize(raw:dict,known:dict|None=None,full:bool=False)->str:
-    """The save as stored: exactly json.dumps(raw, ensure_ascii=False), with each
-    career serialized on its own so that its digest can be kept in raw["check"].
+    """The save as stored: exactly json.dumps(raw, ensure_ascii=False, separators=
+    SEPARATORS), with each career serialized on its own so that its digest can be
+    kept in raw["check"].
 
     `known`: career digests of the stored save the command started from, when that
     save is stamped by this build. A career whose digest moved was changed by the
@@ -60,19 +66,18 @@ def serialize(raw:dict,known:dict|None=None,full:bool=False)->str:
     careers=raw.get("careers")
     if type(careers) is not dict or any(type(k) is not str for k in careers):
         raw.pop("check",None)
-        return json.dumps(raw,ensure_ascii=False,allow_nan=False)
+        return _dumps(raw)
     pieces=[];digests={}
     for cid,c in careers.items():
-        try:piece=json.dumps(c,ensure_ascii=False,allow_nan=False)
+        try:piece=_dumps(c)
         except ValueError:
             validate_career(c,cid);raise  # NaN/Infinity: the same GameError as a full validation
         d=_digest(piece)
         if known is not None and known.get(cid)!=d:validate_career(c,cid)
-        pieces.append(json.dumps(cid,ensure_ascii=False)+": "+piece);digests[cid]=d
+        pieces.append(_dumps(cid)+":"+piece);digests[cid]=d
     if known is not None or full:raw["check"]=dict(build=BUILD,careers=digests)
     else:raw.pop("check",None)
-    return "{"+", ".join(json.dumps(k,ensure_ascii=False)+": "+("{"+", ".join(pieces)+"}" if k=="careers" else json.dumps(v,ensure_ascii=False,allow_nan=False))
-                         for k,v in raw.items())+"}"
+    return "{"+",".join(_dumps(k)+":"+("{"+",".join(pieces)+"}" if k=="careers" else _dumps(v)) for k,v in raw.items())+"}"
 
 _ORPHANS:list=[]  # connections inherited across fork(): never used, never closed in the child
 

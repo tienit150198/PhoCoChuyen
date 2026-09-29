@@ -52,11 +52,12 @@ class ScopedValidationTests(unittest.TestCase):
         self.assertNotIn('check', out['state'])
         self.assertNotIn('check', public_state(s))
 
-    def test_serialize_is_plain_json_dumps(self):
+    def test_serialize_is_plain_compact_json_dumps(self):
         self.cmd('start_day')
         s = json.loads(self.stored())
-        self.assertEqual(self.stored(), json.dumps(s, ensure_ascii=False))
-        self.assertEqual(serialize(s, None, True), json.dumps(s, ensure_ascii=False))
+        compact = json.dumps(s, ensure_ascii=False, separators=(',', ':'))
+        self.assertEqual(self.stored(), compact)
+        self.assertEqual(serialize(s, None, True), compact)
 
     def test_stamped_save_skips_migration(self):
         self.cmd('start_day')
@@ -117,7 +118,7 @@ class ScopedValidationTests(unittest.TestCase):
         """An invalid idle career whose digest was forged to match: only a full check sees it."""
         s = json.loads(self.stored())
         s['careers']['pharmacy']['money'] = -5
-        piece = json.dumps(s['careers']['pharmacy'], ensure_ascii=False)
+        piece = json.dumps(s['careers']['pharmacy'], ensure_ascii=False, separators=(',', ':'))
         s['check']['careers']['pharmacy'] = storage._digest(piece)
         return s
 
