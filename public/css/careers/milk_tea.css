@@ -80,7 +80,7 @@ html.reduce-motion .mt-event{animation:none}
 
 /* Multi-cup tabs */
 .mt-cuptabs{display:flex;flex-wrap:wrap;gap:6px}
-.mt-cuptab{min-height:40px;padding:6px 14px;border-radius:12px 12px 4px 4px;border:1px solid var(--line-strong);background:var(--surface-2);color:var(--ink);font:inherit;font-weight:800;font-size:.85rem;cursor:pointer}
+.mt-cuptab{min-height:44px;padding:6px 14px;border-radius:12px 12px 4px 4px;border:1px solid var(--line-strong);background:var(--surface-2);color:var(--ink);font:inherit;font-weight:800;font-size:.85rem;cursor:pointer}
 .mt-cuptab.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .mt-cuptab.done{text-decoration:line-through;opacity:.6;cursor:default}
 
@@ -125,7 +125,7 @@ html.reduce-motion .mt-event{animation:none}
 .mt-segs.four{grid-template-columns:repeat(4,minmax(0,1fr))}
 .mt-segs.five{grid-template-columns:repeat(5,minmax(0,1fr))}
 .mt-segs.three{grid-template-columns:repeat(3,minmax(0,1fr))}
-.mt-seg{min-height:42px;padding:4px 2px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.78rem;font-weight:800;line-height:1.2;cursor:pointer}
+.mt-seg{min-height:44px;padding:4px 2px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.78rem;font-weight:800;line-height:1.2;cursor:pointer}
 .mt-seg.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-text);box-shadow:0 0 0 2px var(--accent-soft)}
 .mt-seg:disabled{opacity:.5;cursor:not-allowed}
 
@@ -218,8 +218,25 @@ html.reduce-motion .mt-event{animation:none}
 .career-job.mt .fk-next{flex:1;min-width:0;margin:0;font-size:.867rem;font-weight:700;line-height:1.35;overflow-wrap:anywhere}
 .career-job.mt .fk-bar-btns{display:flex;gap:8px;flex:none}
 .career-job.mt .fk-bar-btns .btn{min-height:44px}
-@media (max-width:899px){.mt-finish .mt-serve{display:none}}
-@media (min-width:900px){.career-job.mt .fk-bar{display:none}}
+/* The bar's button is the next step (v4/guide.js stepCta), on every screen size: recap on top, button full width. */
+.career-job.mt .fk-bar{flex-wrap:wrap;gap:6px 10px}
+.career-job.mt .fk-next{flex:1 1 0;font-size:.8rem;font-weight:600;color:var(--ink-2,var(--ink))}
+.mt-bar-cup{flex:none;display:grid;place-items:center;width:34px;height:40px;margin:-4px 0}
+.mt-bar-cup .mt-cup{width:34px;height:40px}
+.career-job.mt .fk-bar-btns{flex:1 1 100%;min-width:0}
+.career-job.mt .fk-bar-btns>.btn,.career-job.mt .fk-bar-btns>.gd-ctas{flex:1 1 auto;width:100%}
+/* The order ticket next to the cup: tappable rows that do (or point at) each step. */
+.mt-ticket-head{font-size:.733rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.mt-said{flex:1 1 0}
+.mt-preview:has(>.gd-list){flex-wrap:wrap}
+/* Rows as chips under the cup: every open one is a 44px tap target that does (or points at) its step. */
+.mt-preview>.gd-list{flex:1 1 100%;display:flex;flex-wrap:wrap;gap:6px}
+.mt-preview>.gd-list li{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:.833rem;line-height:1.25}
+.mt-preview>.gd-list li>span{grid-row:auto;flex:none;width:20px;height:20px}
+.mt-preview>.gd-list li small{font-size:.75rem}
+.mt-preview>.gd-list li.ok{min-height:32px;border-color:transparent;background:transparent;color:var(--muted)}
+.mt-preview>.gd-list li.gd-todo{padding-right:26px!important;border-color:var(--line-strong)}
+.mt-preview>.gd-list li.bad{border-color:var(--bad)}
 
 /* Care list (counter fold + Kho tab) */
 .mt-care-fold{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
@@ -242,7 +259,7 @@ html.reduce-motion .mt-event{animation:none}
 .mt-care-icon{flex:none}
 .mt-care-text{flex:1;min-width:160px}
 .mt-care-btns{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
-.mt-care-btns .btn,.mt-row-btns .btn,.mt-out-btns .btn,.mt-wear .btn,.mt-greet .btn{min-height:40px}
+.mt-care-btns .btn,.mt-row-btns .btn,.mt-out-btns .btn,.mt-wear .btn,.mt-greet .btn{min-height:44px}
 
 /* Out of a syrup / topping / cup size for the order in hand */
 .mt-out{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
@@ -259,7 +276,7 @@ html.reduce-motion .mt-event{animation:none}
 .mt-notes{margin:4px 0;padding:0;list-style:none;display:grid;gap:4px}
 .mt-notes li{font-size:.85rem;line-height:1.4}
 .mt-greet{margin-top:6px}
-.mt-notebook summary{cursor:pointer;font-weight:800;min-height:32px}
+.mt-notebook summary{cursor:pointer;font-weight:800;min-height:44px;display:flex;align-items:center}
 .mt-regular .mt-note{display:block;color:var(--ink);margin-top:2px}
 
 /* Kho: clock, night notes, made-at-the-counter rows, orders, supplier picker */
@@ -288,3 +305,5 @@ html.reduce-motion .mt-event{animation:none}
 .mt-tomorrow .prep-weather-em{opacity:.85}
 .mt-tomorrow-line{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:baseline;margin:10px 0 0;padding:8px 10px;border-radius:12px;background:var(--accent-soft)}
 .mt-tomorrow-line small{flex-basis:100%;color:var(--ink-2,var(--ink))}
+.mt-bar-cup text{display:none}
+@media (min-width:900px){.career-job.mt .fk-bar{flex-wrap:nowrap}.career-job.mt .fk-bar-btns{flex:0 1 380px}}

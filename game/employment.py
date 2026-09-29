@@ -227,6 +227,33 @@ def migrate(s: dict) -> None:
         c['job']['history'] = [dict(day=day, event='migrated', posting=c['job']['employer'])]
 
 
+def first_day_hire(s: dict, c: dict, career: str) -> dict | None:
+    """Onboarding (v0.7): in the story, a first-chapter workplace that hires (delivery)
+    takes a brand-new player on at once, on probation, so day one is play and not a CV
+    plus a trial. Only a job record that was never used; probation still applies and the
+    other postings keep the full pipeline. Returns the line to show, or None."""
+    j = s.get('journey') or {}
+    if not j.get('story') or not required(career):
+        return None
+    try:
+        from .journey import CH_UNLOCKS
+    except ImportError:
+        return None
+    if career not in CH_UNLOCKS.get(1, ()):
+        return None
+    job = c.get('job')
+    if not isinstance(job, dict) or job.get('status') != 'none' or job.get('application') or job.get('history'):
+        return None
+    post = postings(career)[0]
+    day = c['day'] if type(c.get('day')) is int and c['day'] >= 1 else 1
+    job.update(status='hired', employer=post['id'], title=post['title'], salary=post['salary'][0], probation=True,
+               probation_left=post['probation_days'], hired_day=day, application=None, offer=None, extended=False,
+               reviews_during_probation=[])
+    job['history'] = [dict(day=day, event='first_day', posting=post['id'])]
+    boss = _cap(_boss(career, post))
+    return f'{boss} ở {post["org"]}: “Ngày đầu cứ chạy thử với chị, vừa làm vừa học. Thử việc {post["probation_days"]} ngày nha.”'
+
+
 def _posting(career: str, pid) -> dict | None:
     return next((p for p in postings(career) if p['id'] == pid), None)
 

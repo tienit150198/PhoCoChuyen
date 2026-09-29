@@ -50,7 +50,7 @@
 .career-job.rs .rs-picture{margin:0;font-size:1.7rem;line-height:1.45;letter-spacing:.04em;overflow-wrap:anywhere}
 .career-job.rs .rs-recall{gap:8px}
 .career-job.rs .rs-tabs{display:flex;flex-wrap:wrap;gap:6px}
-.career-job.rs .rs-tab{min-height:40px;min-width:64px;padding:6px 14px;border-radius:var(--radius-pill,99px);background:var(--surface);border:2px solid var(--line-strong);color:var(--ink);font-weight:800;cursor:pointer}
+.career-job.rs .rs-tab{min-height:44px;min-width:64px;padding:6px 14px;border-radius:var(--radius-pill,99px);background:var(--surface);border:2px solid var(--line-strong);color:var(--ink);font-weight:800;cursor:pointer}
 .career-job.rs .rs-tab.on{background:var(--bad,#c0533f);border-color:var(--bad,#c0533f);color:var(--on-bad,#fff);opacity:1}
 .career-job.rs .rs-tab.done{text-decoration:line-through;color:var(--good);border-color:var(--good)}
 .career-job.rs .rs-tab:disabled:not(.on){opacity:.5;cursor:not-allowed}
@@ -75,13 +75,13 @@
 .career-job.rs .rs-have{position:absolute;left:4px;bottom:4px;padding:0 5px;border-radius:var(--radius-pill,99px);background:var(--good);color:var(--surface);font-size:.75rem;font-style:normal;font-weight:800}
 .career-job.rs .rs-cook{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
 .career-job.rs .rs-cook>small{font-weight:800;color:var(--muted)}
-.career-job.rs .rs-cook .btn{min-height:40px}
+.career-job.rs .rs-cook .btn{min-height:44px}
 
 /* Cook line: baskets · bowl · chili */
 .career-job.rs .rs-cookline{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr) 76px;gap:8px;align-items:stretch}
 .career-job.rs .rs-stove{display:grid;gap:6px;align-content:start}
 .career-job.rs .rs-basket{display:grid;gap:4px;padding:6px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
-.career-job.rs .rs-basket .btn{min-height:40px;width:100%;padding-inline:6px}
+.career-job.rs .rs-basket .btn{min-height:44px;width:100%;padding-inline:6px}
 .career-job.rs .rs-basket>small{display:grid;place-items:center;min-height:40px}
 .career-job.rs .rs-basket .boil-track{height:18px;border-radius:9px}
 .career-job.rs .rs-basket .boil-label{font-size:.75rem}
@@ -183,3 +183,16 @@ html[data-layout="desktop"] .career-job.rs .rs-side{position:sticky;top:0;z-inde
 .rs-care-sum .rs-outlook{display:grid;gap:4px}
 .rs-care-sum .rs-outlook>p{margin:0}
 .rs-care-sum .rs-advice{margin:2px 0 0;padding-left:1.2em;display:grid;gap:3px;font-size:.867rem;line-height:1.4}
+
+/* ---------- Guide: one bottom button on every width (it does the next step), the bowl in hand above it ---------- */
+.career-job.rs .fk-bar.rs-bar{display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:8px 10px}
+.career-job.rs .rs-bar>.btn,.career-job.rs .rs-bar>.gd-ctas{flex:none;width:100%;min-width:0}
+.career-job.rs .rs-bar .btn{min-height:48px}
+.career-job.rs .rs-bar-now{display:grid;gap:4px;min-width:0}
+.career-job.rs .rs-bar-now>p{margin:0;font-size:.833rem;font-weight:700;line-height:1.3;color:var(--ink-2,var(--ink));overflow-wrap:anywhere}
+.career-job.rs .rs-bar-now .boil{grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px}
+.career-job.rs .rs-bar-now .boil-track{height:12px;border-radius:6px}
+.career-job.rs .rs-bar-now .boil-label{font-size:.767rem;white-space:nowrap}
+.career-job.rs .gd-cta.rs-now{background:var(--good);border-color:var(--good);color:var(--on-good,#fff)}
+.career-job.rs .req-row.gd-todo{padding-right:28px}
+.career-job.rs .rs-order .fold>summary{min-height:44px;padding-top:11px;padding-bottom:11px}

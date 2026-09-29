@@ -65,8 +65,10 @@ html.reduce-motion .mb-event{animation:none}
 .mb-basket{margin:0;font-size:.87rem;padding:6px 10px;border-radius:10px;background:var(--surface-2)}
 
 /* shelf */
-.mb-filters{display:flex;flex-wrap:wrap;gap:6px}
-.mb-filter{min-height:40px;padding:4px 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.8rem;font-weight:700;cursor:pointer}
+.mb-filters{display:flex;flex-wrap:nowrap;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -2px;padding:2px}
+.mb-filters::-webkit-scrollbar{display:none}
+.mb-filter{flex:none}
+.mb-filter{min-height:44px;padding:4px 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.8rem;font-weight:700;cursor:pointer}
 .mb-filter.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-text)}
 .mb-shelf{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .mb-card{display:flex;flex-direction:column;gap:4px;padding:8px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);min-width:0}
@@ -83,7 +85,7 @@ html.reduce-motion .mb-event{animation:none}
 .mb-card-foot{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:auto}
 .mb-price{font-size:.85rem;color:var(--accent-text)}
 .mb-card-btns{display:flex;gap:4px}
-.mb-card-btns .btn{min-width:42px;padding:6px 10px;font-size:1.05rem}
+.mb-card-btns .btn{min-width:44px;padding:6px 10px;font-size:1.05rem}
 .mb-card .btn.full{width:100%}
 
 /* kit / bulk / safety desks */
@@ -107,7 +109,7 @@ html.reduce-motion .mb-event{animation:none}
 .mb-bow{position:absolute;left:50%;top:-18px;width:60px;height:30px;margin-left:-30px;z-index:1;background:radial-gradient(circle at 25% 60%,var(--ribbon) 0 40%,transparent 42%),radial-gradient(circle at 75% 60%,var(--ribbon) 0 40%,transparent 42%)}
 .mb-card-tag{position:absolute;right:-10px;bottom:-12px;z-index:2;max-width:130px;padding:4px 8px;border-radius:8px;background:#fffaf0;color:#5a4436;border:1px solid #d9c2a5;font-size:.75rem;font-weight:700;transform:rotate(-4deg)}
 .mb-swatches{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
-.mb-swatch{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:4px 10px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.8rem;font-weight:700;cursor:pointer}
+.mb-swatch{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:4px 10px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.8rem;font-weight:700;cursor:pointer}
 .mb-swatch i{width:18px;height:18px;border-radius:50%;border:1px solid #00000022}
 .mb-swatch.on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 .mb-pack-form .field{display:block;margin:6px 0 10px;font-weight:700;font-size:.85rem}
@@ -210,3 +212,14 @@ html.reduce-motion .mb-event{animation:none}
   .mb-opts{grid-template-columns:repeat(3,minmax(0,1fr))}
   .mb-opts.one{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+/* next-step guide: what the customer named, and the bottom button (above the sheet footer) */
+.mb-card.want{border-color:var(--accent);border-style:dashed}
+.mb-want{font-size:.75rem;font-weight:800;color:var(--accent-text)}
+.mb-card-btns .btn.mb-out{font-size:.75rem;min-width:0;padding:6px 8px}
+.mb-till .gd-list{margin:10px 0 0}
+.mb-ctabar{position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;margin-top:4px;padding:10px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line);box-shadow:0 -4px 14px -6px var(--overlay,#0003)}
+.mb-ctabar>.btn,.mb-ctabar>.gd-ctas{flex:1 1 auto;width:100%}
+.mb-card-btns .btn{min-height:44px}
+/* After a desk change the view lands on the desk, clear of the sticky header and request strip. */
+.mb-steps{scroll-margin-top:calc(var(--job-head,84px) + 64px)}

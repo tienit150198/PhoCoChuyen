@@ -3,9 +3,15 @@
  * set), station tabs whose tiles carry stock badges and padlocks, live soak /
  * foam bars with a green zone, and one big "Giao". Only renders server state
  * and sends commands; the server checks every rule and keeps what the customer
- * has not said yet out of the public view. */
-import {dayStrip,flash,eventCard,queue,actionBar,keepBarAboveFooter,idlePanel,gradeCard,patience} from './food_kit.js';
+ * has not said yet out of the public view.
+ *
+ * Next-step guide (guide.js): every order is a list of steps (ask → pick → cut →
+ * strip → soak → base → card → arrange → wrap → ribbon → slot), each with the tap
+ * that does it. The header hint and the one bottom button always do the next
+ * one; on the first order the right flowers glow (and the button picks them). */
+import {dayStrip,flash,eventCard,queue,keepBarAboveFooter,idlePanel,gradeCard,patience,openTasks} from './food_kit.js';
 import {reqList,fold} from '../ui-kit.js';
+import {nextHint,stepCta,finalGo,pending,firstTime,todoAttrs,todoArrow,highlight} from '../v4/guide.js';
 
 const METER_SCALE=20;   // seconds shown on the soak / foam bars
 const VALUE_SCALE=1.2;  // value bar runs to 120% of the budget
@@ -51,15 +57,26 @@ const deliver=t=>!!(t.needs?.deliver??t.needs?.delivery);
 /* ---------- building blocks ---------- */
 /** A tile button: stock badge (red at 0), selected outline, padlock, dot for what the order needs. */
 function tile(x,o){
-  const attrs=o.cmd?`data-command="${o.cmd}" data-payload="${pay(x,o.payload||{})}"`
-    :o.action?`data-action="car:${o.action}"${Object.entries(o.data||{}).map(([k,v])=>` data-${k}="${x.esc(v)}"`).join('')}`:'';
+  const attrs=(o.cmd?`data-command="${o.cmd}" data-payload="${pay(x,o.payload||{})}"`
+    :o.action?`data-action="car:${o.action}"${Object.entries(o.data||{}).map(([k,v])=>` data-${k}="${x.esc(v)}"`).join('')}`:'')+(o.item?` data-fl-item="${x.esc(o.item)}"`:'');
   const cls=['tile',o.cls||'',o.selected?'is-selected':'',o.locked?'is-locked':'',o.empty?'is-empty':'',o.wanted?'wanted':''].filter(Boolean).join(' ');
   const badge=o.count!=null&&!o.locked?`<span class="count-badge${o.empty?' is-empty':''}" data-count="${x.esc(String(o.count))}">${x.esc(String(o.count))}</span>`:'';
   return `<button type="button" class="${cls}" ${attrs}${o.disabled||o.locked?' disabled':''} aria-pressed="${o.selected?'true':'false'}"${o.label?` aria-label="${x.esc(o.label)}"`:''}>${badge}<span class="tile-emoji" aria-hidden="true">${o.glyph||x.esc(o.emoji||'')}</span><b>${x.esc(o.name)}</b>${o.sub?`<small>${x.esc(o.sub)}</small>`:''}${o.flag?`<small class="fl-flag ${o.flagCls||''}">${x.esc(o.flag)}</small>`:''}</button>`;
 }
 const swatch=(x,o)=>`<button type="button" class="fl-swatch ${o.selected?'on is-selected':''}" data-command="${o.cmd}" data-payload="${pay(x,o.payload)}"${o.disabled?' disabled':''} aria-pressed="${o.selected?'true':'false'}"><i style="background:${x.esc(o.hex)}"></i>${x.esc(o.name)}${o.count!=null?`<span class="fl-swatch-n${o.count?'':' zero'}">${x.esc(String(o.count))}</span>`:''}</button>`;
 const seg=(x,action,key,value,label,current)=>`<button type="button" class="fl-seg ${current===value?'on is-selected':''}" data-action="car:${action}" data-${key}="${x.esc(value)}" aria-pressed="${current===value}">${x.esc(label)}</button>`;
-const checklist=(x,rows,label)=>reqList(rows.map(([ok,lab,note])=>({ok,label:lab,note})),x.esc,label);
+/** ui-kit reqList markup, except that a row which is not done and has a way to do it
+ * (its own guide step, or `r.step`) is a button: tap it to do that step. */
+const MARK={true:['ok','✓','đúng'],false:['bad','✗','sai'],null:['','○','chưa làm']};
+function reqRows(x,rows,label){
+  return `<ul class="req-list" aria-label="${x.esc(label)}">${rows.map(r=>{
+    const [cls,mark,said]=MARK[r.ok===true?'true':r.ok===false?'false':'null'];
+    const s=r.ok===true?null:(r.step||r),tap=s&&s.ok!==true?todoAttrs(s):'';
+    return `<li class="req-row ${cls}${r.tone?' tone-'+x.esc(r.tone):''}${tap?' gd-todo':''}"${tap}><span class="req-mark" aria-label="${said}">${mark}</span>${r.icon?`<span class="req-icon" aria-hidden="true">${x.esc(r.icon)}</span>`:''}<span class="req-label">${x.esc(r.label)}${r.note?`<small>${x.esc(r.note)}</small>`:''}</span>${r.value?`<b class="req-value">${x.esc(r.value)}</b>`:''}${tap?todoArrow(s):''}</li>`;
+  }).join('')}</ul>`;
+}
+/** The bench steps as the florist's own requirement rows (tappable when open). */
+const checklist=(x,steps,label)=>reqRows(x,steps.filter(Boolean),label);
 const meter=(cls,attrs,zones,fill,label)=>`<div class="fl-meter ${cls}" ${attrs}><div class="fl-track">${zones.map(([k,a,b])=>`<i class="fl-zone ${k}" style="left:${a}%;width:${Math.max(0,b-a)}%"></i>`).join('')}<b class="fl-fill" style="width:${Math.min(100,Math.max(0,fill))}%"></b></div><small class="fl-meter-label">${label}</small></div>`;
 const freshLabel=left=>left==null?'hết hàng':left<=0?'⚠️ sắp héo':left===1?'còn 1 ngày':'tươi';
 
@@ -75,8 +92,8 @@ function foamMeter(x,foam,min){
 }
 function valueMeter(t,x){
   const sp=spec(t),b=sp.budget||1,v=t.work.value||0,p=r=>r/VALUE_SCALE*100;
-  const note=v>b?' · vượt ngân sách, tiệm chịu phần dư':'';
-  return meter('value','',[['thin',0,p(.5)],['low',p(.5),p(.7)],['ok',p(.7),p(.85)],['full',p(.85),p(1)],['over',p(1),100]],p(v/b),`Hoa trên bàn đáng ~${v} xu · ${Math.round(v/b*100)}% ngân sách hoa${note}`);
+  const note=v>b?' · tiệm bù phần dư':'';
+  return meter('value','',[['thin',0,p(.5)],['low',p(.5),p(.7)],['ok',p(.7),p(.85)],['full',p(.85),p(1)],['over',p(1),100]],p(v/b),`💰 ${v}/${b} xu hoa (${Math.round(v/b*100)}%)${note}`);
 }
 
 /* ---------- preview ---------- */
@@ -137,54 +154,34 @@ function status(t,x){
   return tag+parts.join(' · ');
 }
 
-/* ---------- the brief (ticket) and the bench steps (side), live ✓/✗/○ ---------- */
-/** What the customer asked for, checked against what is on the bench (ui-kit reqList rows). */
-function briefRows(t,x){
+/* ---------- the brief (ticket), live ✓/✗/○; each open row does its step (K = steps by key) ---------- */
+/** What the customer asked for, checked against what is on the bench (reqList rows). */
+function briefRows(t,x,K={}){
   const n=t.needs,sp=spec(t),w=t.work,st=plated(t)?[]:w.stems,c=counts(st),total=st.length,any=total?true:null,f=format(x,sp.format),out=[];
   if(plated(t))return [{ok:true,icon:'🎁',label:`Đủ ${t.pieces.length} món, giao cả bộ một lượt`}];
-  out.push({ok:w.base?w.base===sp.format:null,icon:f.emoji,label:f.name,note:w.base&&w.base!==sp.format?`đang làm ${lower(format(x,w.base).name)}`:''});
+  out.push({ok:w.base?w.base===sp.format:null,icon:f.emoji,label:f.name,note:w.base&&w.base!==sp.format?`đang làm ${lower(format(x,w.base).name)}`:'',step:K.base});
   // Still picking: too few is "not yet" (○), too many or finished short is wrong (✗).
   const upTo=(have,lo,hi)=>!have?null:have>hi?false:have>=lo?true:w.arranged?false:null;
-  out.push({ok:upTo(total,sp.stems[0],sp.stems[1]),icon:'🌿',label:`${sp.stems[0]}–${sp.stems[1]} cành`,value:total?`${total} cành`:''});
-  if(sp.focal){const have=c[sp.focal.item]||0;out.push({ok:upTo(have,sp.focal.count,sp.focal.count),icon:look(x,sp.focal.item).emoji,label:`Đúng ${sp.focal.count} cành ${lower(flower(x,sp.focal.item).name)}`,value:have?`${have}/${sp.focal.count}`:''});}
+  out.push({ok:upTo(total,sp.stems[0],sp.stems[1]),icon:'🌿',label:`${sp.stems[0]}–${sp.stems[1]} cành`,value:total?`${total} cành`:'',step:K.pick});
+  if(sp.focal){const have=c[sp.focal.item]||0;out.push({ok:upTo(have,sp.focal.count,sp.focal.count),icon:look(x,sp.focal.item).emoji,label:`Đúng ${sp.focal.count} cành ${lower(flower(x,sp.focal.item).name)}`,value:have?`${have}/${sp.focal.count}`:'',step:K.pick});}
   if(sp.palette){
     const allowed=new Set([...sp.palette,'green']);
     const off=[...new Set(st.map(s=>flower(x,s.i)).filter(fl=>fl.role!=='filler'&&!allowed.has(fl.color)).map(fl=>colour(x,fl.color).name))];
-    out.push({ok:any&&!off.length,icon:'🎨',label:`Tông ${sp.palette.map(p=>colour(x,p).name).join(' – ')}`,note:off.length?`lệch: ${off.join(', ')}`:''});
-  }else out.push({ok:null,icon:'🎨',label:'Màu người nhận thích: chưa hỏi',tone:'warn'});
+    out.push({ok:any&&!off.length,icon:'🎨',label:`Tông ${sp.palette.map(p=>colour(x,p).name).join(' – ')}`,note:off.length?`lệch: ${off.join(', ')}`:'',step:K.pick});
+  }else out.push({ok:null,icon:'🎨',label:'Màu người nhận thích: chưa hỏi',tone:'warn',step:K.palette});
   if(n.cats===true){
     const toxic=st.some(s=>flower(x,s.i).cats==='toxic'),caution=st.some(s=>flower(x,s.i).cats==='caution');
-    out.push({ok:toxic?false:any,icon:'🐈',label:'Nhà có mèo: không hoa ly (độc với mèo)',tone:'danger',note:toxic?'Trên bàn đang có hoa ly — bỏ ra!':caution?'Baby, bạch đàn: mèo gặm dễ đau bụng, nên tránh.':''});
-  }else if(n.cats==null)out.push({ok:null,icon:'🏠',label:'Nhà người nhận: chưa hỏi',tone:'warn',note:'Có nuôi mèo không? Hoa ly độc với mèo.'});
-  if(sp.card)out.push({ok:w.card?t.card_tone!=='wrong':null,icon:'💌',label:'Kèm thiệp viết tay',note:t.card_tone==='plain'?'lời hơi chung chung':t.card_tone==='wrong'?'lời không hợp dịp':''});
-  if(sp.banner)out.push({ok:w.banner?letters(w.banner)===letters(sp.banner):null,icon:'🎗️',label:`Băng rôn “${sp.banner}”`,note:w.banner&&letters(w.banner)!==letters(sp.banner)?`đang in “${w.banner}”`:''});
+    out.push({ok:toxic?false:any,icon:'🐈',label:'Nhà có mèo: không hoa ly (độc với mèo)',tone:'danger',note:toxic?'Trên bàn đang có hoa ly — bỏ ra!':caution?'Baby, bạch đàn: mèo gặm dễ đau bụng, nên tránh.':'',step:K.pick});
+  }else if(n.cats==null)out.push({ok:null,icon:'🏠',label:'Nhà người nhận: chưa hỏi',tone:'warn',note:'Có nuôi mèo không? Hoa ly độc với mèo.',step:K.recipient});
+  if(sp.card)out.push({ok:w.card?t.card_tone!=='wrong':null,icon:'💌',label:'Kèm thiệp viết tay',note:t.card_tone==='plain'?'lời hơi chung chung':t.card_tone==='wrong'?'lời không hợp dịp':'',step:K.card});
+  if(sp.banner)out.push({ok:w.banner?letters(w.banner)===letters(sp.banner):null,icon:'🎗️',label:`Băng rôn “${sp.banner}”`,note:w.banner&&letters(w.banner)!==letters(sp.banner)?`đang in “${w.banner}”`:'',step:K.banner});
   if(deliver(t)){
-    if(n.delivery)out.push({ok:x.ui.slot?x.ui.slot===n.delivery:null,icon:'🛵',label:`Giao ${slotName(x,n.delivery)}`,note:x.ui.slot&&x.ui.slot!==n.delivery?`đang chọn ${slotName(x,x.ui.slot)}`:''});
-    else out.push({ok:null,icon:'🛵',label:'Giao tận nơi · chưa hỏi giờ',tone:'warn'});
-    if(rainy(x))out.push({ok:w.cover?true:null,icon:'🌧️',label:'Bọc nylon chống mưa'});
+    if(n.delivery)out.push({ok:x.ui.slot?x.ui.slot===n.delivery:null,icon:'🛵',label:`Giao ${slotName(x,n.delivery)}`,note:x.ui.slot&&x.ui.slot!==n.delivery?`đang chọn ${slotName(x,x.ui.slot)}`:'',step:K.slot});
+    else out.push({ok:null,icon:'🛵',label:'Giao tận nơi · chưa hỏi giờ',tone:'warn',step:K.slotAsk||K.slot});
+    if(rainy(x))out.push({ok:w.cover?true:null,icon:'🌧️',label:'Bọc nylon chống mưa',step:K.cover});
   }
   return out;
 }
-/** How the piece is made: freshness, conditioning, base, wrapping. */
-function stepRows(t,x){
-  const sp=spec(t),w=t.work,f=format(x,sp.format),st=w.stems,day=today(x),out=[];
-  if(plated(t))return [];
-  const total=st.length,any=total?true:null;
-  const wilt=st.filter(s=>s.e-day<=0).length;
-  out.push([any&&!wilt,'Cành tươi, không héo',wilt?`${wilt} cành sắp héo`:'']);
-  const uncut=st.filter(s=>!s.c).length,straight=st.filter(s=>s.c===2).length;
-  out.push([total?(uncut?null:!straight):null,'Cắt xéo gốc 45°',straight?`${straight} gốc cắt thẳng`:uncut?`${uncut} cành chưa cắt`:'']);
-  const bare=st.filter(s=>!s.s).length;
-  out.push([total?(bare?null:true):null,'Tuốt lá dưới mực nước',bare?`${bare} cành còn lá gốc`:'']);
-  if(f.soak){const dry=st.filter(s=>!s.h).length;out.push([total?(dry?null:true):null,`Ngâm nước ≥ ${soakMin(t,x)} giây`,soaking(t)?'đang ngâm…':dry?`${dry} cành chưa ngâm`:'']);}
-  if(f.foam)out.push([w.foam?(w.foam.pushed?false:(w.arranged||x.now()-w.foam.start>=(t.foam_min||10))?true:null):null,'Mút tự chìm, ngấm đều',w.foam?.pushed?'đã ấn chìm':'']);
-  out.push([w.arranged||null,{bouquet:'Bó xoắn ốc',vase:'Cắm bình',basket:'Cắm giỏ',wreath:'Cắm kệ'}[sp.format]||'Cắm hoa','']);
-  if(f.wrap)out.push([w.paper?true:null,'Gói giấy',w.paper?paper(x,w.paper).name:'']);
-  out.push([w.ribbon?true:null,'Thắt ruy băng',w.ribbon?ribbon(x,w.ribbon).name:'']);
-  return out;
-}
-/** Both lists as [ok,…] pairs, for "is everything right?" before the hand-off. */
-function rows(t,x){return [...briefRows(t,x).map(r=>[r.ok]),...stepRows(t,x)];}
 
 /* ---------- today: rules and the wedding pins ---------- */
 function banners(x){
@@ -329,14 +326,14 @@ function pieceTabs(t,x){
 /** What the customer has told so far, and what is still worth asking. */
 function consult(t,x){
   const clues=Object.entries(t.needs.clues||{});
-  const heard=clues.length?`<ul class="fl-heard">${clues.map(([k,v])=>`<li><span aria-hidden="true">${x.esc(topic(x,k).emoji)}</span>“${x.esc(v)}”</li>`).join('')}</ul>`:'';
+  const heard=clues.length?fold(`💬 Khách kể thêm · ${clues.length}`,`<ul class="fl-heard">${clues.map(([k,v])=>`<li><span aria-hidden="true">${x.esc(topic(x,k).emoji)}</span>“${x.esc(v)}”</li>`).join('')}</ul>`):'';
   const left=unasked(t);
   if(!left.length)return heard;
   const rush=t.guest?.kind==='rush',cost=rush?(cc(x).ask_cost_rush||7):(cc(x).ask_cost||5);
-  return `${heard}<div class="fl-ask"><p class="fl-ask-head"><b>💬 Khách chưa nói hết</b><small>Mỗi câu hỏi tốn chút kiên nhẫn (−${cost}%), nhưng đoán sai thì người nhận có thể trả hoa.</small></p>
+  return `${heard}<div class="fl-ask"><p class="fl-ask-head"><b>💬 Khách chưa nói hết</b><small>−${cost}% kiên nhẫn mỗi câu</small></p>
     <div class="fl-ask-btns">${left.map(k=>{const tp=topic(x,k);return `<button type="button" class="btn ghost fl-ask-btn" data-command="fl_ask" data-payload="${pay(x,{task:t.id,topic:k})}"><span aria-hidden="true">${x.esc(tp.emoji)}</span> ${x.esc(tp.label)}</button>`;}).join('')}</div></div>`;
 }
-function ticket(t,x){
+function ticket(t,x,K={}){
   const who=x.npc(t.npc),n=t.needs,g=t.guest||{},o=occasion(x,n.occasion);
   const tags=[`<span class="tag">${x.esc(g.emoji||'🙂')} ${x.esc(g.label||'Khách')}</span>`,`<span class="tag">${x.esc(o.emoji)} ${x.esc(o.name)}</span>`];
   if(isSet(t))tags.push(`<span class="tag">🎁 Bộ ${n.party.length} món</span>`);
@@ -344,15 +341,30 @@ function ticket(t,x){
   // The price is said once, here; the list below is what has to be right.
   const price=t.quoted_price!=null?`<b class="price" aria-label="Giá đơn">${x.money(t.quoted_price)}</b>`:'';
   const cap=isSet(t)&&!plated(t)?`Món ${t.cur+1}: ${spec(t).label}`:'Khách dặn';
-  const list=`<p class="fl-brief-cap">${x.esc(cap)}</p>${reqList(briefRows(t,x),x.esc,cap)}`;
+  const list=`<p class="fl-brief-cap">${x.esc(cap)}</p>${reqRows(x,briefRows(t,x,K),cap)}`;
   return `<article class="card ticket fl-ticket"><div class="fl-ticket-head">${x.portrait(who,44)}<div class="grow"><div class="row spread"><h3>${x.esc(who.display_name)}</h3>${price}</div>
     <p class="fl-tags">${tags.join(' ')}</p></div></div>
     <p class="fl-note">“${x.esc(n.note)}”</p>${consult(t,x)}${isSet(t)?pieceTabs(t,x):''}${list}${regularCard(t,x)}${patience(t.patience)}</article>`;
 }
 
 /* ---------- station panels ---------- */
+/** The order as chips that tick off while picking: focal count, stems, palette, cats, value. */
+function needStrip(t,x){
+  const sp=spec(t),n=t.needs,st=t.work.stems,c=counts(st),total=st.length,[lo,hi]=sp.stems,out=[];
+  const chip=(ok,icon,text,label)=>`<span class="fl-chip${ok===true?' ok':ok===false?' bad':''}" title="${x.esc(label)}"><i aria-hidden="true">${ok===true?'✓':ok===false?'✗':icon}</i>${x.esc(text)}</span>`;
+  if(sp.focal){const h=c[sp.focal.item]||0;out.push(chip(h===sp.focal.count?true:h>sp.focal.count?false:null,flower(x,sp.focal.item).emoji,`${h}/${sp.focal.count}`,`Đúng ${sp.focal.count} cành ${lower(flower(x,sp.focal.item).name)}`));}
+  out.push(chip(total>hi?false:total>=lo?true:null,'🌿',`${total}/${lo}–${hi}`,'Số cành'));
+  if(sp.palette){
+    const pal=new Set([...sp.palette,'green']),off=st.some(s=>{const f=flower(x,s.i);return f.role!=='filler'&&!pal.has(f.color);});
+    out.push(chip(off?false:total?true:null,'🎨',sp.palette.map(p=>colour(x,p).name).join('·'),'Tông màu'));
+  }
+  if(n.cats===true)out.push(chip(st.some(s=>flower(x,s.i).cats==='toxic')?false:total?true:null,'🐈','không ly','Nhà có mèo'));
+  const v=Math.round(benchValue(t,x)/(sp.budget||1)*100);
+  out.push(chip(v>=70?true:null,'💰',`${v}%`,'Giá trị hoa so với ngân sách'));
+  return `<p class="fl-strip" aria-label="Phiếu đơn">${out.join('')}</p>`;
+}
 function coolerPanel(t,x){
-  const sp=spec(t),w=t.work,d=data(x),level=lvl(x),c=counts(w.stems);
+  const sp=spec(t),w=t.work,d=data(x),level=lvl(x),c=counts(w.stems),qty=Number(x.ui.flQty)||1;
   const busy=w.arranged||soaking(t)||w.stems.length>=(cc(x).max_stems||30);
   const tiles=(cc(x).flowers||[]).map(f=>{
     const info=d.cooler?.[f.id]||{},have=stock(x,f.id)+(info.spare||0),wanted=sp.focal?.item===f.id;
@@ -360,7 +372,8 @@ function coolerPanel(t,x){
     // Only for a home with cats, and in words.
     const flag=t.needs.cats!==true?'':f.cats==='toxic'?'🐈 độc với mèo':f.cats==='caution'?'🐈 mèo nên tránh':'';
     const sub=locked?`cấp ${f.unlock}`:[on?`×${on} trên bàn`:'',freshLabel(left)].filter(Boolean).join(' · ');
-    return tile(x,{glyph:glyph(x,f.id),name:f.name,sub,count:have,empty:!have,cmd:'fl_pick',payload:{task:t.id,item:f.id},selected:on>0,
+    const tap=qty>1?{action:'picks',data:{task:t.id,item:f.id,n:qty}}:{cmd:'fl_pick',payload:{task:t.id,item:f.id}};
+    return tile(x,{item:f.id,glyph:glyph(x,f.id),name:f.name,sub,count:have,empty:!have,...tap,selected:on>0,
       locked,disabled:busy||!have,wanted:wanted&&(c[f.id]||0)<sp.focal.count,flag,flagCls:f.cats||'',cls:`fl-flower c-${f.color} ${left!=null&&left<=0?'old':''}`,
       label:locked?`${f.name}, mở ở cấp ${f.unlock}`:`${f.name}: tủ còn ${have}, ${freshLabel(left)}${on?`, ${on} cành trên bàn`:''}`});
   }).join('');
@@ -369,9 +382,10 @@ function coolerPanel(t,x){
   const book=(cc(x).flowers||[]).map(f=>{const taboo=f.taboo.length>=6?'chỉ dùng cho viếng':f.taboo.map(o=>occasion(x,o).name).join(', ');
     return `<li><b>${glyph(x,f.id)} ${x.esc(f.name)}</b> — ${x.esc(f.meaning)}${f.good.length<8?`<small>Hợp: ${x.esc(f.good.map(o=>occasion(x,o).name).join(', '))}</small>`:''}${taboo?`<small class="fl-warn">Kiêng: ${x.esc(taboo)}</small>`:''}${f.cats==='toxic'?'<small class="fl-warn">Rất độc với mèo (cả phấn, lá, nước bình)</small>':f.cats==='caution'?'<small>Mèo gặm dễ đau bụng</small>':''}</li>`;}).join('');
   const water=care(x).water?.done?'':`<div class="fl-water-line">${waterRow(x)}</div>`;
-  return `${water}<h4 class="section-title">Tủ mát · cành cũ nhất ra trước</h4><div class="tile-grid fl-grid">${tiles}</div>
+  const qtys=`<div class="fl-qty" role="group" aria-label="Mỗi lần chạm lấy">${[1,2,3].map(k=>`<button type="button" class="fl-seg${qty===k?' on is-selected':''}" data-action="car:qty" data-n="${k}" aria-pressed="${qty===k}">×${k}</button>`).join('')}</div>`;
+  return `<div class="fl-pickbar">${needStrip(t,x)}${qtys}</div><div class="tile-grid fl-grid">${tiles}</div>
     <h4 class="section-title">Trên bàn (${w.stems.length} cành)</h4>${bench?`<ul class="fl-bench">${bench}</ul>`:'<p class="muted small">Chưa lấy cành nào.</p>'}
-    <details class="fl-book"><summary>📖 Sổ tay ý nghĩa hoa</summary><ul>${book}</ul></details>`;
+    <details class="fl-book"><summary>📖 Sổ tay ý nghĩa hoa</summary><ul>${book}</ul></details>${water}`;
 }
 function prepPanel(t,x){
   const w=t.work,f=format(x,spec(t).format),d=data(x),min=soakMin(t,x);
@@ -386,7 +400,7 @@ function prepPanel(t,x){
     <div class="fl-pails">${soakMeter(x,w.soak,min)}${others.map(()=>`<div class="fl-other small">🪣 Xô bên cạnh đang ngâm hoa của đơn khác</div>`).join('')}</div>
     <div class="row wrap">${x.cmd('🪣 Thả vào xô','fl_soak',{task:t.id},'',!w.stems.length||!!uncut||w.arranged||soaking(t)||full)}${x.cmd('🙌 Nhấc ra','fl_lift',{task:t.id},soaking(t)?'primary':'',!soaking(t))}</div>
     ${full?'<p class="notice small">Cả hai xô đang bận. Nhấc hoa của đơn khác ra trước.</p>':''}
-    ${f.soak?'':'<p class="muted small">Cắm mút: mút giữ nước, ngâm xô là tùy chọn — nhưng vẫn cắt xéo và tuốt lá.</p>'}`;
+    ${f.soak?'':'<p class="muted small">Cắm mút: không cần ngâm xô.</p>'}`;
 }
 function designPanel(t,x){
   const sp=spec(t),w=t.work,level=lvl(x),min=t.foam_min||cc(x).foam_min||10;
@@ -407,7 +421,8 @@ function designPanel(t,x){
   const ribbons=`<h4 class="section-title">${step++} · Ruy băng <span class="fl-swatch-n${stock(x,'ribbon')?'':' zero'}">${stock(x,'ribbon')}</span></h4><div class="fl-swatches">${(cc(x).ribbons||[]).map(r=>swatch(x,{cmd:'fl_ribbon',payload:{task:t.id,color:r.id},hex:r.hex,name:r.name,selected:w.ribbon===r.id,disabled:!w.arranged||!!w.ribbon||(w.base==='bouquet'&&!w.paper)||!stock(x,'ribbon')})).join('')}</div>
     ${x.cmd('✂️ Gỡ giấy & ruy băng','fl_unwrap',{task:t.id},'ghost small',!w.paper&&!w.ribbon)}`;
   const banner=w.base==='wreath'?`<h4 class="section-title">${step++} · Băng rôn chữ <span class="fl-swatch-n${stock(x,'banner')?'':' zero'}">${stock(x,'banner')}</span></h4>${w.banner?`<p class="fl-printed">🎗️ “${x.esc(w.banner)}”</p>`:''}
-    <div class="fl-write"><label class="field grow">Nội dung in<input id="fl-banner-text" class="input" maxlength="60" autocomplete="off" spellcheck="false" value="${x.esc(x.ui.bannerText||'')}" placeholder="Gõ đúng từng chữ, có dấu"></label>${x.button(w.banner?'🖨️ In lại':'🖨️ In & treo','car:banner',{task:t.id},'primary')}</div>`:'';
+    <div class="fl-write"><label class="field grow">Nội dung in<input id="fl-banner-text" class="input" maxlength="60" autocomplete="off" spellcheck="false" value="${x.esc(x.ui.bannerText||'')}" placeholder="Gõ đúng từng chữ, có dấu"></label>${x.button(w.banner?'🖨️ In lại':'🖨️ In & treo','car:banner',{task:t.id},'primary')}</div>
+    ${sp.banner&&letters(w.banner||'')!==letters(sp.banner)?`<p class="fl-suggest">${x.button('📋 In đúng chữ khách dặn','car:bannertpl',{task:t.id,text:sp.banner},'ghost small',!w.arranged)}</p>`:''}`:'';
   const cover=rainy(x)&&deliver(t)?`<h4 class="section-title">${step++} · Chống mưa</h4><div class="row wrap">${x.cmd(w.cover?'✓ Đã bọc nylon':'🌂 Bọc nylon chống mưa','fl_cover',{task:t.id},w.cover?'ghost small':'',!!w.cover||!w.arranged||(w.base==='bouquet'&&!w.paper))}</div>`:'';
   return `<h4 class="section-title">1 · Kiểu cắm</h4><div class="tile-grid fl-grid">${bases}</div>${foam}
     <h4 class="section-title">2 · Cắm / bó</h4>${arrange}${papers}${ribbons}${banner}${cover}`;
@@ -417,7 +432,8 @@ function cardPanel(t,x){
   const toneLine=w.card?`<p class="fl-tone ${tone||''}">${{fit:'✓ Lời thiệp hợp dịp.',plain:'○ Lời hơi chung chung — thêm một câu đúng dịp sẽ ấm hơn.',wrong:'✗ Lời thiệp không hợp dịp này!'}[tone]||''}</p>`:'';
   const card=`<h4 class="section-title">Thiệp viết tay <span class="fl-swatch-n${stock(x,'card')?'':' zero'}">${stock(x,'card')}</span></h4>
     <div class="fl-write"><label class="field grow">Lời nhắn<textarea id="fl-card-text" class="input" rows="3" maxlength="160" spellcheck="false" placeholder="Viết đúng dịp: ${x.esc(lower(occasion(x,n.occasion).name))}…">${x.esc(x.ui.cardText??w.card??'')}</textarea></label>
-    ${x.button(w.card?'✍️ Viết lại thiệp mới':'✍️ Viết thiệp','car:card',{task:t.id},'primary')}</div>${toneLine}`;
+    ${x.button(w.card?'✍️ Viết lại thiệp mới':'✍️ Viết thiệp','car:card',{task:t.id},'primary')}</div>${toneLine}
+    ${w.card&&tone==='fit'?'':`<p class="fl-suggest"><small>Gợi ý: “${x.esc(cardLine(t))}”</small>${x.button('✨ Dùng lời này','car:cardtpl',{task:t.id,text:cardLine(t)},'ghost small')}</p>`}`;
   let slots='';
   if(deliver(t)){
     slots=`<h4 class="section-title">Khung giờ giao</h4>${n.delivery?'':'<p class="notice amber small">🕒 Chưa hỏi khách giờ giao.</p>'}
@@ -426,7 +442,7 @@ function cardPanel(t,x){
   return card+slots;
 }
 
-/* ---------- next step & the one primary action ---------- */
+/* ---------- next steps (guide.js): the same facts as the lists, each with the tap that does it ---------- */
 function pieceReady(t){
   const sp=spec(t),w=t.work;
   if(!w.base||!w.arranged||soaking(t))return false;
@@ -435,84 +451,317 @@ function pieceReady(t){
   if(sp.card&&!w.card)return false;
   return true;
 }
-function nextStep(t,x){
-  if(!t.known)return 'Hỏi dịp tặng & ngân sách';
-  if(plated(t))return `Đủ ${t.pieces.length} món, giao cả bộ!`;
-  const sp=spec(t),w=t.work,f=format(x,sp.format),tag=isSet(t)?`Món ${t.cur+1}: `:'';
-  const ask=unasked(t);
-  if(ask.length&&!w.stems.length)return 'Hỏi thêm khách: '+lower(topic(x,ask[0]).label);
-  if(soaking(t))return tag+'chờ hoa hút nước rồi nhấc ra';
-  if(!w.stems.length)return tag+'chọn hoa trong tủ mát';
-  if(w.stems.some(s=>!s.c))return tag+'cắt xéo gốc';
-  if(w.stems.some(s=>!s.s))return tag+'tuốt lá dưới mực nước';
-  if(f.soak&&w.stems.some(s=>!s.h))return tag+'ngâm hoa vào xô';
-  if(!w.base)return tag+'chuẩn bị '+lower(f.name);
-  if(w.foam&&!w.foam.pushed&&!w.arranged&&x.now()-w.foam.start<(t.foam_min||10))return tag+'chờ mút tự chìm';
-  if(!w.arranged)return tag+'cắm / bó hoa';
-  if(w.base==='bouquet'&&!w.paper)return tag+'gói giấy';
-  if(!w.ribbon)return tag+'thắt ruy băng';
-  if(w.base==='wreath'&&!w.banner)return tag+'in băng rôn';
-  if(sp.card&&!w.card)return tag+'viết thiệp';
-  const next=pendingOthers(t);
-  if(next.length)return `Món ${t.cur+1} xong! Đặt sang bàn chờ rồi làm món ${next[0]+1}`;
-  if(deliver(t)&&rainy(x)&&!w.cover)return 'Bọc nylon chống mưa';
-  if(deliver(t)&&!x.ui.slot)return 'Chọn khung giờ giao';
-  return deliver(t)?'Giao hoa!':'Trao hoa cho khách!';
+const BASE_PRICE={bouquet:25,vase:40,basket:45,wreath:70};
+const worth=(x,id,base)=>x.room.life?.prices?.[id]??base;
+const stemPrice=(x,id)=>worth(x,id,item(x,id).price||10);
+const learning=x=>((x?.room?.metrics?.served)||0)<3;
+const onHand=(x,id)=>stock(x,id)+(data(x).cooler?.[id]?.spare||0);
+/** The bench as the server values it: the stems plus the base the brief asks for. */
+const benchValue=(t,x)=>{const f=spec(t).format;return t.work.stems.reduce((v,s)=>v+stemPrice(x,s.i),0)+worth(x,f,BASE_PRICE[f]||0);};
+/** One card line per occasion that reads as "fits the occasion" (one tap; writing your own still works). */
+const CARD={birthday:'Chúc mừng sinh nhật! Tuổi mới thật khỏe mạnh, bình an và nhiều niềm vui nhé.',
+  condolence:'Thành kính chia buồn cùng gia đình. Cầu mong người đã khuất được yên nghỉ.',
+  opening:'Chúc mừng khai trương! Chúc tiệm hồng phát, đắt khách, vạn sự thành công.',
+  apology:'Thành thật xin lỗi. Mong em tha thứ, thương em nhiều lắm.',
+  oct20:'Chúc mừng ngày Phụ nữ Việt Nam 20/10! Cảm ơn vì tất cả yêu thương.',
+  mar8:'Chúc mừng ngày 8/3! Luôn xinh đẹp và hạnh phúc nhé.',
+  graduation:'Chúc mừng tốt nghiệp! Tự hào về bạn, chặng đường mới thật thành công nhé.',
+  proposal:'Làm vợ anh nhé? Anh muốn mãi mãi bên nhau, trọn đời yêu em.'};
+const cardLine=t=>CARD[t.needs.occasion]||CARD.birthday;
+/** A control on another tab: switch there first, then glow it. */
+const point=(x,tab,sel,label)=>x.ui.tab===tab?{sel,label}:{act:'car:goto',data:{tab,sel},label};
+/** A step that needs real seconds: one tap waits (live countdown in the label), then does it. */
+function waitGo(t,x,cmd,at,what,done,then=''){
+  const left=Math.ceil(at-x.now());
+  if(left<=0)return then?seqGo([[cmd,{task:t.id}],[then,{task:t.id}]],done):{cmd,payload:{task:t.id},label:done};
+  return {act:'car:wait',data:{task:t.id,cmd,then,at:at.toFixed(2)},label:`<span>⏱ ${what} · <span data-fl-count data-at="${at.toFixed(2)}">còn ${left} giây</span></span>`};
 }
-function primary(t,x,rs,big){
-  const cls='primary'+(big?' big':''),n=t.needs;
-  if(isSet(t)&&!plated(t)&&pendingOthers(t).length)return x.cmd(`✅ Xong món ${t.cur+1}`,'fl_done',{task:t.id},cls,!pieceReady(t));
-  const blocked=!!data(x).day?.open_event;
-  const payload={task:t.id,confirm:true};
+/** Two bench commands that always go together, as one tap (e.g. cut + strip). */
+const seqGo=(list,label)=>({act:'car:seq',data:{seq:JSON.stringify(list)},label});
+/** What frees the bench for a fix: out of the bucket, then paper/ribbon off, then untie. */
+function unlockGo(t){
+  const w=t.work,task=t.id;
+  if(soaking(t))return {cmd:'fl_lift',payload:{task},label:'🙌 Nhấc hoa khỏi xô để sửa'};
+  if(w.paper||w.ribbon)return {cmd:'fl_unwrap',payload:{task},confirm:'Gỡ giấy và ruy băng (bỏ vật liệu cũ) để sửa bó?',label:'✂️ Gỡ giấy & ruy băng để sửa'};
+  if(w.arranged&&!w.banner)return {cmd:'fl_untie',payload:{task},label:'↩️ Tháo bó ra để sửa'};
+  return {cmd:'fl_dump',payload:{task},confirm:'Bỏ toàn bộ hoa và vật liệu đang dùng, làm lại từ đầu?',label:'🗑️ Bỏ bó, làm lại'};
+}
+/** The first order: which stems make this brief right from what is in the cooler now ({id:count});
+ * null while the brief still has unknowns (ask first). Suits the occasion, stays on the palette,
+ * never a cat hazard, fills to ~85% of the budget and at least the minimum count. */
+function recipe(t,x){
+  const sp=spec(t),n=t.needs,occ=n.occasion,d=data(x),lv=lvl(x);
+  if(!sp.palette||n.cats==null)return null;
+  const pal=new Set([...sp.palette,'green']),plan={};
+  const fits=f=>(f.unlock<=lv||sp.focal?.item===f.id)&&!f.taboo.includes(occ)&&!f.bad.includes(occ)&&!(n.cats&&f.cats)
+    &&onHand(x,f.id)>0&&(d.cooler?.[f.id]?.next??1)>0&&(f.role==='filler'||pal.has(f.color));
+  const all=(cc(x).flowers||[]).filter(fits),[lo,hi]=sp.stems;
+  let stems=0,value=worth(x,sp.format,BASE_PRICE[sp.format]||0);
+  const room=id=>(plan[id]||0)<onHand(x,id);
+  const add=id=>{plan[id]=(plan[id]||0)+1;stems++;value+=stemPrice(x,id);};
+  if(sp.focal)for(let i=0;i<sp.focal.count&&room(sp.focal.item);i++)add(sp.focal.item);
+  const heads=all.filter(f=>f.role==='focal'&&f.id!==sp.focal?.item);
+  const good=heads.filter(f=>f.good.includes(occ)),other=heads.filter(f=>!f.good.includes(occ)),fill=all.filter(f=>f.role!=='focal');
+  const take=(group,more)=>{for(let i=0,g=0;more()&&g<60;g++){const open=group.filter(f=>room(f.id));if(!open.length)return;const f=open[i++%open.length];if(add(f.id)===false)return;}};
+  for(const group of [good,other])take(group,()=>stems<hi&&value<sp.budget*.85);
+  for(const group of [fill,good,other])take(group,()=>stems<lo);
+  return plan;
+}
+/** Pick the stems: first what is wrong on the bench (one tap each), then what is missing. */
+function pickStep(t,x){
+  const sp=spec(t),n=t.needs,w=t.work,occ=n.occasion,c=counts(w.stems),total=w.stems.length,[lo,hi]=sp.stems;
+  const label='Chọn hoa đúng phiếu',note=`${total} cành (cần ${lo}–${hi})`,locked=w.arranged||soaking(t);
+  const pal=sp.palette?new Set([...sp.palette,'green']):null;
+  const fix=id=>locked?unlockGo(t):{cmd:'fl_remove',payload:{task:t.id,item:id},label:`➖ Bỏ 1 cành ${x.esc(lower(flower(x,id).name))}`};
+  for(const id of Object.keys(c)){
+    const f=flower(x,id);
+    const why=n.cats===true&&f.cats==='toxic'?`${f.name} độc với mèo`:f.taboo.includes(occ)?`${f.name} không hợp dịp ${lower(occasion(x,occ).name)}`
+      :f.bad.includes(occ)?`${f.name} dễ bị hiểu sai ý`:pal&&f.role!=='filler'&&!pal.has(f.color)?`${f.name} lệch tông màu`
+      :sp.focal?.item===id&&c[id]>sp.focal.count?`thừa ${lower(f.name)}, cần đúng ${sp.focal.count}`:'';
+    if(why)return {ok:false,label:`Bỏ ra: ${why}`,note,go:fix(id),tab:'cooler'};
+  }
+  if(total>hi){const id=Object.keys(c).find(k=>k!==sp.focal?.item)||Object.keys(c)[0];return {ok:false,label:`Quá nhiều cành: tối đa ${hi}`,note,go:fix(id),tab:'cooler'};}
+  const focalShort=sp.focal?sp.focal.count-(c[sp.focal.item]||0):0,thin=benchValue(t,x)<sp.budget*.7;
+  if(focalShort<=0&&total>=lo&&!thin)return {ok:true,label,note,tab:'cooler'};
+  const miss=focalShort>0?`thiếu ${focalShort} cành ${lower(flower(x,sp.focal.item).name)}`:total<lo?`thêm ${lo-total} cành nữa`:'bó còn thưa so với ngân sách';
+  if(locked)return {ok:w.arranged?false:null,label,note:miss,go:w.arranged?unlockGo(t):null,tab:'cooler'};
+  // While learning (the first orders): one tap picks exactly what the order needs, and on the very
+  // first order the right flower glows too. Later orders: the button points at the cooler.
+  if(learning(x)){
+    const plan=recipe(t,x),left=plan&&Object.entries(plan).map(([id,q])=>[id,q-(c[id]||0)]).filter(([,q])=>q>0);
+    if(left?.length){
+      const s={ok:null,label,tab:'cooler',go:{act:'car:fill',data:{task:t.id,items:left.map(([id,q])=>`${id}:${q}`).join(',')},
+        label:`✨ Lấy đúng hoa · ${left.map(([id,q])=>`${q}${x.esc(flower(x,id).emoji)}`).join(' ')}`}};
+      if(firstTime(x))s.pulse=`.fl-flower[data-fl-item="${left[0][0]}"]`;
+      return s;
+    }
+  }
+  return {ok:null,label,note:miss,tab:'cooler',go:point(x,'cooler','.fl-grid','🧊 Chọn hoa trong tủ mát')};
+}
+function paperPick(t,x){
+  const pal=spec(t).palette||[];
+  const pref=t.needs.occasion==='condolence'?['white','kraft','black']:pal.includes('pink')?['pink','kraft','white']:['kraft','white','pink'];
+  return pref.find(p=>stock(x,paper(x,p).item)>0)||null;
+}
+function ribbonPick(t,x){
+  const ids=(cc(x).ribbons||[]).map(r=>r.id),pal=spec(t).palette||[];
+  const pref=t.needs.occasion==='condolence'?['white','black']:[...pal.map(c=>c==='yellow'?'gold':c),'white','gold'];
+  return pref.find(r=>ids.includes(r))||ids[0]||'white';
+}
+function slotStep(t,x){
+  const n=t.needs,s=x.ui.slot;
+  if(n.delivery)return {ok:s?s===n.delivery:null,label:`Chọn giờ giao: ${slotName(x,n.delivery)}`,note:s&&s!==n.delivery?`đang chọn ${slotName(x,s)}`:'',tab:'card',
+    go:s===n.delivery?null:{act:'car:slot',data:{slot:n.delivery},label:`🕒 Giao lúc ${x.esc(slotName(x,n.delivery))}`}};
+  return {ok:s?true:null,label:'Chọn khung giờ giao',tab:'card',go:s?null:point(x,'card','.fl-segs','🕒 Chọn khung giờ giao')};
+}
+const STEP_ICON={event:'⚡',palette:'🎨',recipient:'🏠',slotAsk:'🕒',pick:'💐',cut:'✂️',strip:'🍃',soak:'🪣',base:'🧺',card:'💌',lift:'🙌',arrange:'🌀',
+  wrap:'🎁',ribbon:'🎀',banner:'🎗️',cover:'🌂',wilt:'🥀',slot:'🛵'};
+/** Every step of the order, in working order; K names them for the ticket rows. */
+function orderSteps(t,x){
+  const K={},S=[],n=t.needs,task=t.id;
+  const push=(k,s)=>{if(s){s.icon??=STEP_ICON[k];K[k]=s;S.push(s);}};
+  if(data(x).day?.open_event)push('event',{ok:null,label:'Chuyện bất ngờ: chọn cách xử lý',go:{sel:'.fk-event .fk-choice:not([disabled])',label:'⚡ Chọn cách xử lý chuyện bất ngờ'}});
+  for(const k of unasked(t)){const tp=topic(x,k);push(k==='slot'?'slotAsk':k,{ok:null,label:tp.label,go:{cmd:'fl_ask',payload:{task,topic:k},label:`💬 Hỏi khách: ${x.esc(lower(tp.label))}`}});}
+  if(plated(t)){if(deliver(t))push('slot',slotStep(t,x));return {S,K};}
+  const sp=spec(t),w=t.work,st=w.stems,total=st.length,fm=format(x,sp.format),inPail=soaking(t),locked=w.arranged||inPail;
+  push('pick',pickStep(t,x));
+  const uncut=st.filter(s=>!s.c).length,straight=st.filter(s=>s.c===2).length,bare=st.filter(s=>!s.s).length,dry=st.filter(s=>!s.h).length;
+  push('cut',{ok:total&&!uncut?true:null,label:'Cắt xéo gốc 45°',note:straight?`${straight} gốc cắt thẳng, hút nước kém`:'',tab:'prep',
+    go:!uncut||locked?null:bare?seqGo([['fl_cut',{task,angle:'angled'}],['fl_strip',{task}]],`✂️ Cắt xéo gốc & tuốt lá ${uncut} cành`)
+      :{cmd:'fl_cut',payload:{task,angle:'angled'},label:`✂️ Cắt xéo 45° ${uncut} gốc`}});
+  push('strip',{ok:total&&!bare?true:null,label:'Tuốt lá dưới mực nước',tab:'prep',
+    go:bare&&!locked?{cmd:'fl_strip',payload:{task},label:`🍃 Tuốt lá ${bare} cành`}:null});
+  if(fm.soak){
+    const pails=data(x).buckets||[],full=!inPail&&pails.length>=(cc(x).buckets||2),other=pails.find(b=>b.task!==task);
+    push('soak',{ok:total&&(inPail||!dry)?true:null,label:'Thả hoa vào xô nước',note:full?'cả hai xô đang bận':'',tab:'prep',
+      go:!total||inPail||!dry||uncut||w.arranged?null:full?(other?{cmd:'task_select',payload:{task:other.task},label:'🪣 Sang đơn đang ngâm để nhấc hoa ra'}:null)
+        :{cmd:'fl_soak',payload:{task},label:'🪣 Thả hoa vào xô nước'}});
+  }
+  // While the stems soak: the base and the card.
+  const short=Object.entries(fm.uses||{}).filter(([k,q])=>stock(x,k)<q);
+  const soakStep=K.soak;
+  if(soakStep?.go?.cmd==='fl_soak'&&!w.base&&!short.length)
+    soakStep.go=seqGo([['fl_soak',{task}],['fl_base',{task,kind:sp.format}]],`🪣 Ngâm hoa & chuẩn bị ${x.esc(lower(fm.name))}`);
+  push('base',{ok:w.base?w.base===sp.format:null,label:`Chọn kiểu: ${fm.name}`,tab:'design',
+    note:w.base&&w.base!==sp.format?`đang làm ${lower(format(x,w.base).name)}`:!w.base&&short.length?`thiếu ${short.map(([k])=>lower(item(x,k).name)).join(', ')}`:'',
+    go:w.base?(w.base===sp.format?null:inPail?unlockGo(t):{cmd:'fl_dump',payload:{task},confirm:'Sai kiểu cắm: bỏ bó và làm lại từ đầu?',label:'🗑️ Bỏ bó, làm lại đúng kiểu'})
+      :short.length?{act:'inventory',label:'📦 Mở Kho nhập vật tư'}:{cmd:'fl_base',payload:{task,kind:sp.format},label:`${x.esc(fm.emoji)} Chuẩn bị ${x.esc(lower(fm.name))}`}});
+  if(sp.card){
+    const tone=t.card_tone,ok=w.card?(tone==='fit'?true:tone==='wrong'?false:null):null;
+    push('card',{ok,label:'Viết thiệp đúng dịp',note:tone==='plain'?'lời hơi chung chung':tone==='wrong'?'lời không hợp dịp':'',tab:'card',
+      go:ok===true?null:{act:'car:cardtpl',data:{task,text:cardLine(t)},label:w.card?'✍️ Viết lại thiệp bằng lời gợi ý':'✍️ Viết thiệp (lời gợi ý hợp dịp)'}});
+  }
+  if(fm.soak){
+    const min=soakMin(t,x);
+    push('lift',{ok:total&&!dry&&!inPail?true:null,label:`Ngâm đủ ${min} giây rồi nhấc ra`,tab:'prep',
+      go:inPail?(w.base===sp.format&&total>=3&&!uncut
+        ?waitGo(t,x,'fl_lift',w.soak+min,'Chờ đủ nước rồi nhấc ra & bó','🙌 Nhấc hoa ra & bó','fl_arrange')
+        :waitGo(t,x,'fl_lift',w.soak+min,'Chờ hoa hút đủ nước rồi nhấc ra','🙌 Nhấc hoa ra (đủ nước)')):null});
+  }
+  const foamAt=w.foam&&!w.foam.pushed&&!w.arranged?w.foam.start+(t.foam_min||cc(x).foam_min||10):0;
+  const verb={bouquet:'🌀 Bó xoắn ốc & buộc dây',vase:'🏺 Cắm vào bình',basket:'🧺 Cắm vào giỏ',wreath:'🕊️ Cắm kín mặt kệ'}[sp.format]||'Cắm hoa';
+  const canArrange=w.base&&!w.arranged&&total>=3&&!inPail&&!uncut;
+  push('arrange',{ok:w.arranged||null,label:{bouquet:'Bó xoắn ốc',vase:'Cắm bình',basket:'Cắm giỏ',wreath:'Cắm kệ'}[sp.format]||'Cắm hoa',tab:'design',
+    go:!canArrange?null:foamAt?waitGo(t,x,'fl_arrange',foamAt,'Chờ mút tự chìm rồi cắm',verb):{cmd:'fl_arrange',payload:{task},label:verb}});
+  if(fm.wrap){
+    const pp=paperPick(t,x);
+    push('wrap',{ok:w.paper?true:null,label:'Gói giấy',note:w.paper?paper(x,w.paper).name:'',tab:'design',
+      go:!w.arranged||w.paper?null:!pp?{act:'inventory',label:'📦 Hết giấy gói: mở Kho'}
+        :!w.ribbon&&stock(x,'ribbon')?seqGo([['fl_wrap',{task,paper:pp}],['fl_ribbon',{task,color:ribbonPick(t,x)}]],`🎁 Gói ${x.esc(lower(paper(x,pp).name))} & thắt nơ`)
+        :{cmd:'fl_wrap',payload:{task,paper:pp},label:`🎁 Gói ${x.esc(lower(paper(x,pp).name))}`}});
+  }
+  const rb=ribbonPick(t,x),canRibbon=w.arranged&&!w.ribbon&&(sp.format!=='bouquet'||w.paper);
+  push('ribbon',{ok:w.ribbon?true:null,label:'Thắt ruy băng',note:w.ribbon?ribbon(x,w.ribbon).name:'',tab:'design',
+    go:!canRibbon?null:stock(x,'ribbon')?{cmd:'fl_ribbon',payload:{task,color:rb},label:`🎀 Thắt ruy băng ${x.esc(lower(ribbon(x,rb).name))}`}:{act:'inventory',label:'📦 Hết ruy băng: mở Kho'}});
+  if(sp.banner){
+    const right=!!w.banner&&letters(w.banner)===letters(sp.banner);
+    push('banner',{ok:w.banner?right:null,label:'In băng rôn đúng chữ',note:w.banner&&!right?`đang in “${w.banner}”`:'',tab:'design',
+      go:!w.arranged||right?null:stock(x,'banner')?{act:'car:bannertpl',data:{task,text:sp.banner},label:'🖨️ In băng rôn đúng chữ khách dặn'}:{act:'inventory',label:'📦 Hết băng rôn: mở Kho'}});
+  }
+  if(rainy(x)&&deliver(t))push('cover',{ok:w.cover||null,label:'Bọc nylon chống mưa',tab:'design',
+    go:!w.cover&&w.arranged&&(sp.format!=='bouquet'||w.paper)?{cmd:'fl_cover',payload:{task},label:'🌂 Bọc nylon chống mưa'}:null});
+  const wilt=st.filter(s=>s.e-today(x)<=0).length;
+  if(wilt)push('wilt',{ok:false,label:`${wilt} cành sắp héo`,note:'khách sẽ chê: bỏ ra, thay cành tươi',tab:'cooler'});
+  if(deliver(t)&&!pendingOthers(t).length)push('slot',slotStep(t,x));
+  return {S,K};
+}
+/** The finishing action: "piece done" inside a set, otherwise the hand-off. */
+function finalFor(t,x,S){
+  const n=t.needs,task=t.id;
+  if(isSet(t)&&!plated(t)&&pendingOthers(t).length)
+    return {label:`✅ Xong món ${t.cur+1}, đặt sang bàn chờ`,go:finalGo(S,'fl_done',{task}),ready:pieceReady(t),why:'cắm, gói xong món này'};
+  const blocked=!!data(x).day?.open_event,payload={task},made=plated(t)||pieceReady(t),slot=!deliver(t)||!!x.ui.slot;
   if(deliver(t)&&x.ui.slot)payload.slot=x.ui.slot;
-  const can=(plated(t)||pieceReady(t))&&(!deliver(t)||!!x.ui.slot);
-  const label=deliver(t)?(big?'🛵 Giao hoa':'🛵 Giao'):(big?'💐 Trao hoa cho khách':'💐 Trao');
-  const allOk=rs.every(r=>r[0]===true);
-  const q=deliver(t)?`Giao lúc ${slotName(x,x.ui.slot||n.delivery||'')}? Người nhận sẽ xem kỹ hoa, thiệp và màu sắc.`:'Trao hoa? Khách sẽ xem kỹ hoa, thiệp và màu sắc.';
-  return allOk&&!blocked?x.cmd(label,'fl_deliver',payload,cls,!can)
-    :x.confirmCmd(label,'fl_deliver',payload,blocked?'Có chuyện bất ngờ đang chờ bạn quyết. Xử lý xong rồi hãy giao nhé.':'Chưa khớp hết phiếu. Vẫn giao? '+q,cls,!can);
+  const q=deliver(t)?`Giao lúc ${slotName(x,x.ui.slot||n.delivery||'')}? Người nhận sẽ xem kỹ hoa, thiệp và màu sắc.`:'Khách sẽ xem kỹ hoa, thiệp và màu sắc.';
+  return {label:deliver(t)?'🛵 Giao hoa':'💐 Trao hoa cho khách',go:finalGo(S,'fl_deliver',payload,{question:q,confirm:true}),ready:made&&slot&&!blocked,
+    why:blocked?'xử lý chuyện bất ngờ trước':!made?'cắm, gói xong bó hoa':'chọn khung giờ giao'};
+}
+/* The bench follows the guide: after a tap on the hint, the bottom button or a step row, the next
+ * render shows the tab of the next step. A tap on the bench's own controls (a flower tile, a tab)
+ * leaves the player where they are, so picking by hand is never pulled away mid-choice. */
+let follow=true;
+globalThis.document?.addEventListener('click',e=>{
+  const el=e.target?.closest?.('[data-command],[data-action]');
+  if(el?.closest('#sheet .career-job.fl')||el?.closest('#sheet .gd-next'))follow=!!el.closest('.gd-cta,.gd-hint,.gd-todo,.gd-alt,.gd-final');
+},true);
+/** {steps, K, final, pulse} for the header hint, the lists and the bottom button. */
+function taskGuide(t,x){
+  if(!t.known)return {steps:[{ok:null,label:'Hỏi dịp tặng & ngân sách',go:{cmd:'ask',payload:{task:t.id},label:'📝 Nghe yêu cầu'}}],K:{},pulse:'.fl-listen'};
+  const {S,K}=orderSteps(t,x);
+  return {steps:S,K,final:finalFor(t,x,S)};
+}
+/** Several commands from one tap, in order; stops at the first refusal. While they run the hint and
+ * the button say "Đang làm…"; the flag drops before the last command so its own render is the real one. */
+async function run(x,list){
+  if(x.ui.flBusy||!list.length)return;
+  x.ui.flBusy=true;
+  for(let i=0;i<list.length;i++){
+    if(i===list.length-1)x.ui.flBusy=false;
+    if(!await x.send(list[i][0],list[i][1])){x.ui.flBusy=false;x.render();return;}
+  }
+}
+// While a one-tap sequence is still sending, the hint and the button wait instead of offering its middle step.
+const BUSY={ok:null,label:'Đang làm…',go:{act:'car:busy',label:'⏳ Đang làm…'}};
+function hintFor(g,x){
+  if(x.ui.flBusy)return nextHint(x,[BUSY]);
+  const f=g.final&&g.final.ready!==false?{label:g.final.label.replace(/^[^\p{L}]+/u,''),go:g.final.go}:null;
+  return nextHint(x,g.steps,{final:f,pulse:g.pulse||''});
 }
 
 export default {
   id:'florist',
   css:true,
-  next(t,x){return nextStep(t,x);},
+  next(t,x){
+    // Plain text like the old line (the host translates it before it is shown); labels hold no markup.
+    try{const n=pending(taskGuide(t,x).steps);if(n)return n.label;}catch{/* fall back to a fixed line */}
+    return t.known?'Trao hoa cho khách!':'Hỏi dịp tặng & ngân sách';
+  },
   idle(x){
-    const d=data(x);
-    return idlePanel(x,d.day,'fl_event',extras(x)+careBoard(x)+coolerStrip(x)+bookFold(x),null,'fl');
+    const d=data(x),open=openTasks(x);
+    // Between orders the hint names the way on: the surprise, else the next waiting guest
+    // (no guest waiting: the host's own button — new guest or close the day — leads).
+    const steps=d.day?.open_event?[{ok:null,label:'Chuyện bất ngờ: chọn cách xử lý',go:{sel:'.fk-event .fk-choice:not([disabled])'}}]
+      :open.length?[{ok:null,label:'Làm đơn tiếp theo',go:{act:'nextJob',label:'👉 Làm đơn tiếp theo'}}]:[];
+    const html=idlePanel(x,d.day,'fl_event',extras(x)+careBoard(x)+coolerStrip(x)+bookFold(x),null,'fl');
+    return html.replace(/^(<div[^>]*>)/,`$1${nextHint(x,steps,{cta:false})}`);
   },
   job(t,x){
-    const d=data(x),day=d.day;
-    const head=`${dayStrip(x,day,true)}${flash(x,day)}${eventCard(x,day,'fl_event')}${queue(x,t)}`;
+    const d=data(x),day=d.day,ui=x.ui;
+    const top=g=>`${hintFor(g,x)}${dayStrip(x,day,true)}${flash(x,day)}${eventCard(x,day,'fl_event')}${queue(x,t)}`;
     if(!t.known){
-      const who=x.npc(t.npc),g=t.guest||{};
-      return `<div class="career-job fl food">${head}<article class="card ticket fl-ticket"><div class="fl-ticket-head">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3>
-        <p class="fl-tags"><span class="tag">${x.esc(g.emoji||'🙂')} ${x.esc(g.label||'Khách')}</span></p></div></div>
-        <p class="fl-say">“${x.esc(t.opening)}”</p>${regularCard(t,x)}${patience(t.patience)}${x.cmd('📝 Nghe yêu cầu','ask',{task:t.id},'primary full')}</article>${extras(x)}${careFold(x)}</div>`;
+      const who=x.npc(t.npc),gs=t.guest||{};
+      return `<div class="career-job fl food">${top(taskGuide(t,x))}<article class="card ticket fl-ticket"><div class="fl-ticket-head">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3>
+        <p class="fl-tags"><span class="tag">${x.esc(gs.emoji||'🙂')} ${x.esc(gs.label||'Khách')}</span></p></div></div>
+        <p class="fl-say">“${x.esc(t.opening)}”</p>${regularCard(t,x)}${patience(t.patience)}${x.cmd('📝 Nghe yêu cầu','ask',{task:t.id},'primary full fl-listen')}</article>${extras(x)}${careFold(x)}</div>`;
     }
-    const w=t.work,ui=x.ui;
-    if(ui.tabFor!==t.id){ui.tabFor=t.id;ui.tab=w.arranged?'design':'cooler';ui.cardText=null;ui.bannerText='';ui.slot=null;ui.pieceFor=t.cur;}
-    if(ui.pieceFor!==t.cur){ui.pieceFor=t.cur;ui.cardText=null;ui.bannerText='';ui.tab=w.arranged?'design':'cooler';}
+    const w=t.work;
+    if(ui.tabFor!==t.id){ui.tabFor=t.id;ui.cardText=null;ui.bannerText='';ui.slot=null;ui.pieceFor=t.cur;ui.flSig=null;}
+    if(ui.pieceFor!==t.cur){ui.pieceFor=t.cur;ui.cardText=null;ui.bannerText='';ui.flSig=null;}
+    let g=taskGuide(t,x);
+    // The bench follows the work: whenever something changed on it, show the tab of the next step.
+    const sig=[t.id,t.cur,w.stems.map(s=>`${s.i}${s.c}${+s.s}${+s.h}`).join(','),!!w.soak,w.base,w.arranged,w.paper,w.ribbon,w.card,w.banner,w.cover,(t.asked||[]).length].join('|');
+    if(ui.flSig!==sig&&(ui.flSig==null||follow)){
+      ui.flSig=sig;
+      const tab=pending(g.steps)?.tab||(ui.tab||(w.arranged?'design':'cooler'));
+      if(tab!==ui.tab){ui.tab=tab;g=taskGuide(t,x);}
+    }
+    const S=g.steps,done=S.filter(s=>s.ok===true).length;
     const tabs=[['cooler','🧊','Tủ hoa'],['prep','✂️','Sơ chế'],['design','💐','Cắm & gói'],['card','💌',deliver(t)?'Thiệp & giao':'Thiệp']];
     const onBench=w.stems.length;
     const badge=k=>k==='prep'&&soaking(t)?'<em class="fl-badge">⏱</em>':k==='cooler'&&onBench?`<em class="fl-badge calm">${onBench}</em>`:'';
     const tabBar=`<div class="fl-tabs" role="tablist" aria-label="Khu làm việc">${tabs.map(([k,e,l])=>`<button type="button" role="tab" class="fl-tab ${ui.tab===k?'on':''}" data-action="car:tab" data-tab="${k}" aria-selected="${ui.tab===k}">${e} ${l}${badge(k)}</button>`).join('')}</div>`;
     const panel=plated(t)?''
       :({cooler:coolerPanel,prep:prepPanel,design:designPanel,card:cardPanel}[ui.tab]?.(t,x)||'');
-    const rs=rows(t,x),steps=stepRows(t,x),ok=steps.filter(r=>r[0]===true).length;
     const dump=x.confirmCmd('🗑️ Bỏ bó, làm lại','fl_dump',{task:t.id},'Bỏ toàn bộ hoa và vật liệu đang dùng? Giá trị ghi hao hụt.','danger small',plated(t)||(!w.stems.length&&!w.base)||soaking(t));
     const side=`<div class="fl-side"><div class="fl-look">${stage(t,x)}<div class="fl-look-txt"><p class="fl-status" aria-live="polite">${x.esc(status(t,x))}</p>${pieceChips(t)}</div></div>
       ${plated(t)?'':cardPreview(t,x)+valueMeter(t,x)}
-      ${steps.length?`<div class="fk-wide-only"><p class="fl-brief-cap">Các bước làm</p>${checklist(x,steps,'Các bước làm')}</div>`:''}<div class="fk-wide-only">${primary(t,x,rs,true)}${dump}</div>
-      ${steps.length?`<details class="fl-check fl-narrow-only"${ui.flCheck?' open':''}><summary data-action="car:check">📋 Các bước làm · ${ok}/${steps.length} xong</summary>${checklist(x,steps,'Các bước làm')}</details>`:''}</div>`;
-    const tools=`<p class="row wrap fl-tools"><span class="fl-narrow-only">${dump}</span> ${x.button('📦 Kho & nhập hoa','inventory',{},'ghost small')}</p>`;
-    const barEl=actionBar(x.esc(nextStep(t,x)),primary(t,x,rs,false));
-    return `<div class="career-job fl food">${head}${extras(x)}${careFold(x)}${ticket(t,x)}${tabBar}<div class="workbench"><section class="wb-main" role="tabpanel">${panel}${tools}</section><aside class="wb-side">${side}</aside></div>${barEl}</div>`;
+      ${S.length?`<div class="fk-wide-only"><p class="fl-brief-cap">Các bước làm</p>${checklist(x,S,'Các bước làm')}</div>`:''}
+      ${S.length?`<details class="fl-check fl-narrow-only"${ui.flCheck?' open':''}><summary data-action="car:check">📋 Các bước làm · ${done}/${S.length} xong</summary>${checklist(x,S,'Các bước làm')}</details>`:''}</div>`;
+    const tools=`<p class="row wrap fl-tools">${dump} ${x.button('📦 Kho & nhập hoa','inventory',{},'ghost small')}</p>`;
+    // One bottom button (phone and wide): it does the next step, or the hand-off once nothing is left.
+    // Right above it, what is on the bench now, so the result of each tap shows next to the button.
+    const n=pending(S),heads=w.stems.slice(0,14).map(s=>glyph(x,s.i)).join('')+(w.stems.length>14?`<small>+${w.stems.length-14}</small>`:'');
+    const now=`<div class="fl-bar-now">${heads?`<span class="fl-bar-stems" aria-hidden="true">${heads}</span>`:''}<small>${x.esc(status(t,x))}${n?.note?` · ${x.esc(n.note)}`:''}</small><b class="fl-bar-n">${done}/${S.length}</b></div>`;
+    const bar=`<div class="fk-bar fl-bar">${now}${ui.flBusy?stepCta(x,[BUSY],g.final):stepCta(x,S,g.final)}</div>`;
+    // Shop care (water, pre-orders) waits below the order: the order on the bench comes first.
+    return `<div class="career-job fl food">${top(g)}${extras(x)}${ticket(t,x,g.K)}${tabBar}<div class="workbench"><section class="wb-main" role="tabpanel">${panel}${tools}</section><aside class="wb-side">${side}</aside></div>${careFold(x)}${bar}</div>`;
   },
   actions:{
     async tab(data,el,x){x.ui.tab=data.tab;x.render();},
     async slot(data,el,x){x.ui.slot=data.slot;x.render();},
     async check(data,el,x){x.ui.flCheck=!x.ui.flCheck;},
+    async busy(){/* a sequence is still running: nothing to add */},
+    async qty(data,el,x){x.ui.flQty=Number(data.n)||1;x.render();},
+    /** Commands that go together, one after the other; stops at the first refusal. */
+    async seq(data,el,x){let list=[];try{list=JSON.parse(data.seq||'[]');}catch{/* bad markup: nothing to do */}await run(x,list);},
+    /** Learning orders: one tap picks exactly the stems the order needs ("id:n,id:n"). */
+    async fill(data,el,x){
+      const list=[];
+      for(const part of String(data.items||'').split(',')){const [item,n]=part.split(':');for(let i=0;i<Math.min(20,Number(n)||0);i++)list.push(['fl_pick',{task:data.task,item}]);}
+      await run(x,list);
+    },
+    /** One tap, several stems of one flower (tiles in ×2 / ×3 mode). */
+    async picks(data,el,x){await run(x,Array.from({length:Math.max(1,Math.min(20,Number(data.n)||1))},()=>['fl_pick',{task:data.task,item:data.item}]));},
+    /** Soak / foam: wait until the server's clock says it is time, then do it (the label counts down). */
+    async wait(data,el,x){
+      const key=`${data.task}:${data.cmd}`;
+      if(x.ui.flWait===key)return;
+      x.ui.flWait=key;
+      try{
+        const ms=(Number(data.at)-x.now())*1000+300;
+        if(ms>0){x.toast(data.cmd==='fl_lift'?`Chờ thêm ${Math.ceil(ms/1000)} giây, đủ nước là tự nhấc ra.`:`Chờ thêm ${Math.ceil(ms/1000)} giây, mút chìm là tự cắm.`);await new Promise(r=>setTimeout(r,ms));}
+        const w=(x.api.state?.careers?.florist?.tasks||[]).find(v=>v.id===data.task)?.work;
+        if(!w||(data.cmd==='fl_lift'&&!w.soak)||(data.cmd==='fl_arrange'&&w.arranged))return;
+        if(await x.send(data.cmd,{task:data.task})&&data.then)await x.send(data.then,{task:data.task});
+      }finally{x.ui.flWait=null;}
+    },
+    async cardtpl(data,el,x){x.ui.cardText=null;await x.send('fl_card',{task:data.task,text:data.text});},
+    async bannertpl(data,el,x){x.ui.bannerText=data.text;await x.send('fl_banner',{task:data.task,text:data.text});},
+    /** Hint / row on another tab: open that tab, then glow the control. */
+    async goto(data,el,x){
+      x.ui.tab=data.tab;x.render();
+      requestAnimationFrame(()=>{const root=document.querySelector('#sheet[open]')||document;highlight([...root.querySelectorAll(data.sel)].find(e=>e.offsetParent!==null)||root.querySelector(data.sel));});
+    },
     async card(data,el,x){
       const input=el?.closest('.career-job')?.querySelector('#fl-card-text');
       const text=(input?.value||'').trim();
@@ -531,6 +780,11 @@ export default {
   },
   tick(root,x){
     keepBarAboveFooter(root);
+    // Countdown in the "wait, then lift / arrange" button and hint (the hint lives in the sheet header).
+    (root.closest('dialog')||root).querySelectorAll('[data-fl-count]').forEach(el=>{
+      const left=Math.max(0,Math.ceil(Number(el.dataset.at)-x.now())),text=left?`còn ${left} giây`:'xong!';
+      if(el.textContent!==text)el.textContent=text;
+    });
     const p=v=>Math.min(100,v/METER_SCALE*100);
     root.querySelectorAll('[data-soak-start]').forEach(el=>{
       const start=Number(el.dataset.soakStart);if(!start)return;

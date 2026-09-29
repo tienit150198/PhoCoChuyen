@@ -44,11 +44,11 @@ const dropped=(t,id)=>t.haggle&&t.haggle.state==='dropped'&&t.haggle.item===id;
 const rivalOf=x=>Object.fromEntries((x.room.data?.today_view?.rival||[]).map(r=>[r.item,r.theirs]));
 
 /* ------------------------------------------------------------ today + surprises */
-function todayStrip(x){
+function todayStrip(x,compact=false){
   const tv=x.room.data?.today_view;if(!tv)return '';
   const chips=(tv.rival||[]).map(r=>{const it=item(x,r.item),hi=r.ours>r.theirs;
     return `<span class="gr-flyer ${hi?'hi':'ok'}"><span aria-hidden="true">${it.emoji}</span><span>${x.esc(it.name)}</span><b>${x.fmt(r.theirs)}</b><small>${hi?`tiệm ${x.fmt(r.ours)}`:'tiệm ngang giá'}</small></span>`;}).join('');
-  return `<section class="gr-today" aria-label="Hôm nay ở tiệm"><div class="gr-mood"><span class="gr-mood-emoji" aria-hidden="true">${tv.mod.emoji}</span><div><b>Hôm nay: ${x.esc(tv.mod.name)}</b><small>${x.esc(tv.mod.text)}</small></div></div>
+  return `<section class="gr-today" aria-label="Hôm nay ở tiệm"><div class="gr-mood"><span class="gr-mood-emoji" aria-hidden="true">${tv.mod.emoji}</span><div><b>Hôm nay: ${x.esc(tv.mod.name)}</b>${compact?'':`<small>${x.esc(tv.mod.text)}</small>`}</div></div>
     ${chips?`<div class="gr-flyers"><small class="gr-flyer-head">📣 Tờ rơi Mây Mart${tv.calm?' · khách quen hôm nay không so giá':''}</small>${chips}</div>`:''}</section>`;
 }
 function deskCard(x){
@@ -350,8 +350,8 @@ function shelfSteps(t,x){
   const tagged=sh.tag!=null;
   return [
     {ok:known||null,label:'Đọc hạn tất cả các lô',note:`${all.length-unread.length}/${all.length}`,go:unread[0]&&{cmd:'gr_check',payload:{task:t.id,lot:unread[0].id},label:`🔍 Đọc hạn ${name(unread[0])}`}},
-    {ok:known?!expired.length:null,label:'Rút lô hết hạn khỏi kệ',note:expired.map(name).join(', '),go:expired[0]&&{cmd:'gr_pull',payload:{task:t.id,lot:expired[0].id},label:`🗑️ Rút ${name(expired[0])} (hết hạn)`}},
-    {ok:known?!near.length:null,label:`Dán tem giảm ${x.cc.markdown}% cho lô còn 1–2 ngày`,note:near.map(name).join(', '),go:near[0]&&{cmd:'gr_mark',payload:{task:t.id,lot:near[0].id},label:`🏷️ Dán tem −${x.cc.markdown}% cho ${name(near[0])}`}},
+    {ok:known?!expired.length:null,label:'Rút lô hết hạn khỏi kệ',go:expired[0]&&{cmd:'gr_pull',payload:{task:t.id,lot:expired[0].id},label:`🗑️ Rút ${name(expired[0])} (hết hạn)`}},
+    {ok:known?!near.length:null,label:`Dán tem giảm ${x.cc.markdown}% cho lô còn 1–2 ngày`,go:near[0]&&{cmd:'gr_mark',payload:{task:t.id,lot:near[0].id},label:`🏷️ Dán tem −${x.cc.markdown}% cho ${name(near[0])}`}},
     {ok:known?sorted:null,label:'Hạn gần ở trước, hàng mới ở sau (FIFO)',go:known&&!sorted?{act:'car:autosort',label:'↕️ Sắp theo hạn: cũ trước, mới sau'}:null},
     {ok:tagged?sh.tag===p:null,label:'Tem giá khớp bảng giá',note:tagged?`${sh.tag} / ${p} xu`:'',go:tagged&&sh.tag!==p?{cmd:'gr_retag',payload:{task:t.id},label:'🖨️ In lại tem giá'}:null},
     {ok:onShelf||null,label:'Xếp thùng mới lên kệ',note:sh.placed&&!onShelf?'thứ tự mới chưa xếp':'',go:onShelf?null:{cmd:'gr_place',payload:{task:t.id,order:plan},label:'📐 Xếp thùng lên kệ'}},
@@ -580,7 +580,8 @@ export default {
     return m==='cash'?'Soi tiền và thối đúng':m==='transfer'?'Kiểm app ngân hàng của tiệm':'Xem sổ nợ rồi quyết định';
   },
   job(t,x){
-    const w=x.npc(t.npc),top=`${hintFor(t,x)}${todayStrip(x)}${deskCard(x)}`;
+    // At work the day's mood is one line; the task and its next step lead.
+    const w=x.npc(t.npc),top=`${hintFor(t,x)}${todayStrip(x,t.known)}${deskCard(x)}`;
     if(x.room.data?.desk?.ev)return `<div class="career-job gr">${top}</div>`;
     if(!t.known){
       const label=t.kind==='shelf'?'📋 Nhận việc':t.kind==='rush'?'⏱️ Mở quầy cho hàng chờ':t.kind==='bulk'?'📦 Nghe đơn sỉ':'🛒 Mời khách đặt hàng lên quầy';

@@ -7,7 +7,9 @@
  *   {cmd, payload, confirm?}     one tap sends the command (confirm asks first)
  *   {act:'car:tab', data:{…}}    one tap runs a client action (module or shell)
  *   {sel:'css selector'}         scroll to the control that does it and highlight it
- * plus an optional `label` for the button (defaults to the step's label).
+ * plus an optional `label` for the button (defaults to the step's label). A step may also
+ * name `pulse`: the exact control to glow on a first task (e.g. the right choice when the
+ * step is a decision), since a first task must be doable by pressing what glows.
  *
  * The same steps drive three things: tappable checklist rows (stepRows), the
  * one-line "Bước tiếp theo" hint that the host pins in the sheet header
@@ -64,6 +66,7 @@ export const todoArrow=s=>s&&s.ok!==true&&s.go?'<i class="gd-go" aria-hidden="tr
 
 /** Where the first-time pulse goes: the bottom button when it does the step, else the control. */
 function pulseSel(step,cta){
+  if(step&&'pulse' in step)return step.pulse||'';   // '' = nothing to light (the right choice is unknown)
   if(!step?.go)return '';
   if(step.go.sel)return step.go.sel;
   return cta?'.gd-cta':'.gd-next .gd-hint';

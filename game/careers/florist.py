@@ -581,7 +581,7 @@ def _take_many(c: dict, uses: dict) -> int:
 def _unfinished(sp: dict, w: dict) -> str | None:
     """Why this piece cannot leave the bench yet (None = it can)."""
     if not (w['base'] and w['arranged']):
-        return 'Hoa chưa hoàn thành dáng.'
+        return 'Hoa chưa cắm/bó xong: vào “Cắm & gói”, chọn kiểu cắm rồi bấm cắm/bó.'
     if w['soak']:
         return 'Nhấc hoa khỏi xô trước.'
     if w['base'] == 'bouquet' and not (w['paper'] and w['ribbon']):
@@ -701,8 +701,8 @@ def _act(s: dict, c: dict, d: dict, pl: dict, t: dict, name: str, p: dict) -> di
         item = _one_of(p.get('item'), FLOWERS, 'Loại hoa này tiệm không có.')
         f = FLOWERS[item]
         kit.need(f['unlock'] <= kit.level(c) or _wanted(t, item), f'{f["name"]} mở ở cấp {f["unlock"]}.')
-        kit.need(not w['arranged'], 'Bó đã hoàn thành dáng. Tháo ra nếu muốn thêm cành.')
-        kit.need(not w['soak'], 'Hoa đang ngâm trong xô. Nhấc ra trước đã.')
+        kit.need(not w['arranged'], 'Bó đã hoàn thành dáng. Bấm “Tháo ra” ở “Cắm & gói” nếu muốn thêm cành.')
+        kit.need(not w['soak'], 'Hoa đang ngâm trong xô: vào “Sơ chế”, bấm “Nhấc ra” trước đã.')
         kit.need(len(w['stems']) < MAX_STEMS, f'Tối đa {MAX_STEMS} cành một đơn.')
         spare = _spare(d, item)
         if spare:
@@ -721,7 +721,7 @@ def _act(s: dict, c: dict, d: dict, pl: dict, t: dict, name: str, p: dict) -> di
         return dict(message=f'Lấy 1 cành {f["name"].lower()}{tag}.')
     if name == 'fl_remove':
         item = _one_of(p.get('item'), FLOWERS, 'Loại hoa này không có trên bàn.')
-        kit.need(not w['arranged'] and not w['soak'], 'Tháo bó hoặc nhấc hoa khỏi xô trước.')
+        kit.need(not w['arranged'] and not w['soak'], 'Nhấc hoa khỏi xô (Sơ chế) hoặc tháo bó (Cắm & gói) trước.')
         idx = max((i for i, st in enumerate(w['stems']) if st['i'] == item), default=None)
         kit.need(idx is not None, 'Không có cành này trên bàn.')
         st = w['stems'].pop(idx)
@@ -753,8 +753,8 @@ def _act(s: dict, c: dict, d: dict, pl: dict, t: dict, name: str, p: dict) -> di
         kit.need(w['stems'], 'Chưa có cành nào để ngâm.')
         kit.need(not w['arranged'], 'Bó đã hoàn thành dáng.')
         kit.need(not w['soak'], 'Hoa đang ngâm rồi.')
-        kit.need(all(st['c'] for st in w['stems']), 'Cắt lại gốc trước khi ngâm — gốc cũ đã khô, hút nước kém.')
-        kit.need(len(_soaking(c)) < MAX_BUCKETS, 'Cả hai xô ngâm đang có hoa của đơn khác.')
+        kit.need(all(st['c'] for st in w['stems']), 'Cắt gốc trước khi ngâm (bấm “Cắt xéo 45°”) — gốc cũ đã khô, hút nước kém.')
+        kit.need(len(_soaking(c)) < MAX_BUCKETS, 'Cả hai xô ngâm đang có hoa của đơn khác. Mở đơn đó, bấm “Nhấc ra” để trống một xô.')
         w['soak'] = round(kit.now(), 3)
         return dict(message=f'Đã thả hoa vào xô nước mát. Ngâm ít nhất {_soak_min(c)} giây cho cành hút no nước.')
     if name == 'fl_lift':
@@ -787,11 +787,11 @@ def _act(s: dict, c: dict, d: dict, pl: dict, t: dict, name: str, p: dict) -> di
         t['mistakes'] += 1
         return dict(message='Mút chìm ngay… nhưng lõi bên trong còn khô, cành cắm vào chỗ đó sẽ thiếu nước.')
     if name == 'fl_arrange':
-        kit.need(w['base'], 'Chọn kiểu cắm (bó, bình, giỏ, kệ) trước.')
+        kit.need(w['base'], 'Chọn kiểu cắm trước: “Cắm & gói”, mục 1 · Kiểu cắm.')
         kit.need(not w['arranged'], 'Đã hoàn thành dáng.')
-        kit.need(len(w['stems']) >= 3, 'Cần ít nhất 3 cành.')
-        kit.need(not w['soak'], 'Nhấc hoa khỏi xô trước.')
-        kit.need(all(st['c'] for st in w['stems']), 'Còn cành chưa cắt gốc.')
+        kit.need(len(w['stems']) >= 3, 'Cần ít nhất 3 cành: lấy thêm hoa ở “Tủ hoa”.')
+        kit.need(not w['soak'], 'Hoa còn trong xô: vào “Sơ chế”, bấm “Nhấc ra” trước.')
+        kit.need(all(st['c'] for st in w['stems']), 'Còn cành chưa cắt gốc: vào “Sơ chế”, bấm “Cắt xéo 45°”.')
         if w['foam']:
             sec = kit.now() - w['foam']['start']
             kit.need(w['foam']['pushed'] or sec >= FOAM_MIN, f'Mút đang tự ngấm nước (còn {max(0.0, FOAM_MIN - sec):.0f} giây). Đừng ấn xuống — chờ nó tự chìm.')
@@ -811,15 +811,15 @@ def _act(s: dict, c: dict, d: dict, pl: dict, t: dict, name: str, p: dict) -> di
         return dict(message='Đã tháo dây, có thể thêm hoặc bớt cành.')
     if name == 'fl_wrap':
         kit.need(w['base'] == 'bouquet', 'Chỉ bó hoa cầm tay mới gói giấy.')
-        kit.need(w['arranged'], 'Bó hoa xong rồi mới gói.')
+        kit.need(w['arranged'], 'Bó hoa xong trước (bấm “Bó xoắn ốc & buộc dây”), rồi mới gói giấy.')
         kit.need(w['paper'] is None, 'Bó đã gói giấy.')
         paper = _one_of(p.get('paper'), PAPERS, 'Loại giấy này tiệm không có.')
         w['cost'] += kit.take(c, PAPERS[paper]['item'], 1)
         w['paper'] = paper
         return dict(message=f'Đã gói {PAPERS[paper]["name"].lower()} hai lớp, gấp nếp gọn.')
     if name == 'fl_ribbon':
-        kit.need(w['arranged'], 'Hoàn thành dáng trước khi thắt ruy băng.')
-        kit.need(w['base'] != 'bouquet' or w['paper'], 'Gói giấy trước rồi thắt ruy băng.')
+        kit.need(w['arranged'], 'Cắm/bó hoa xong trước (ở “Cắm & gói”), rồi mới thắt ruy băng.')
+        kit.need(w['base'] != 'bouquet' or w['paper'], 'Gói giấy trước (chọn một màu giấy ở “Cắm & gói”), rồi mới thắt ruy băng.')
         kit.need(w['ribbon'] is None, 'Đã thắt ruy băng.')
         color = _one_of(p.get('color'), RIBBONS, 'Màu ruy băng không có.')
         w['cost'] += kit.take(c, 'ribbon', 1)
@@ -987,7 +987,7 @@ def _deliver(s: dict, c: dict, d: dict, pl: dict, t: dict, p: dict) -> dict:
     kit.need(not ev, 'Có chuyện cần bạn quyết trước: ' + (EVENT_INDEX[ev['id']]['title'] if ev else '') + '.')
     slot = None
     if n['delivery']:
-        slot = _one_of(p.get('slot'), SLOTS, 'Chọn khung giờ giao hoa.')
+        slot = _one_of(p.get('slot'), SLOTS, 'Chọn khung giờ giao ở “Thiệp & giao” trước nhé.')
     made = [x if x is not None else w for x in pieces] if many else [w]
     for i, work in enumerate(made):
         why = _refusal(_spec(t, i), work, c['day'])

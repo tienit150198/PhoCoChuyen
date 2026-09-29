@@ -10,7 +10,7 @@ import {icon,portrait,itemArt,escapeHTML as esc} from './icons.js';
 import {reqList,fold} from './ui-kit.js';
 import {Sound} from './audio.js';
 import {careerSubmit,careerInput,loadCareerModules,careerUI,careerContext,startTicker} from './v4/careers.js';
-import {applyGuide,guideAction} from './v4/guide.js';
+import {applyGuide,guideAction,nextHint,stepCta} from './v4/guide.js';
 import {inventoryView,feedbackView,situationView,jobView as jobAppView,v4Action,v4Submit,v4Input} from './v4/views.js';
 import {setLanguage} from './v4/i18n.js';
 import {shell} from './v4/shell.js';
@@ -29,6 +29,8 @@ import {feedbackPageView,feedbackAction,feedbackSubmit,feedbackInput} from './v4
 
 const $=s=>document.querySelector(s), api=new GameAPI(), sound=new Sound();
 const ended=t=>['completed','referred','cancelled'].includes(t.status);
+/** First day at a place, its three jobs done: closing the day is the next step (and the chapter goal). */
+const wrapUp=c=>Boolean(c?.open&&c.day===1&&c.day_completed>=3&&!c.tasks.some(x=>!ended(x)));
 const ui={opsTab:'staff',staffId:null,lessonSequence:[],tourRoute:[],activityCard:null,view:null,tab:'',task:null,npc:null,jobTab:'shelf',journalTab:'quests',libraryQuery:'',docs:new Set(),transactions:new Set(),drafts:{},ai:{},suggestions:{},busy:false,paused:false};
 const world=new BobaWorld($('#world'),interact);
 const career=()=>api.state?.current||api.state?.focus||'mother_baby';
@@ -143,6 +145,7 @@ function taskCards(c){
   if(needsJob())main=`<article class="note-card"><span class="eyebrow">Việc làm</span><h3>Nơi này cần tuyển bạn trước đã</h3>${button('Xin việc '+icon('chevron',13),'jobapp',{},'primary full gd-pulse')}</article>`;
   else if(!c.open)main=`<article class="note-card"><span class="eyebrow">Ngày ${c.day}</span><h3>${c.shift_summary?'Sẵn sàng cho ngày mới?':esc(W.idle_line)}</h3>${button(icon('sun',14)+' Chuẩn bị ngày mới','prepare',{},'primary full'+(c.metrics?.served>0?'':' gd-pulse'))}${c.shift_summary?button('Xem ngày vừa qua','summary',{},'ghost small full'):''}</article>`;
   else if(t)main=`<article class="note-card task-card"><span class="eyebrow">Việc trước mắt</span><div class="row"><span class="npc-mini">${portrait(npc(t.npc),35)}</span><div class="grow"><h3>${esc(t.title)}</h3><small class="muted npc-mini">${esc(npc(t.npc).display_name)}</small></div></div>${t.known?'':`<p class="hud-quote">“${esc(t.opening)}”</p>`}<div class="task-step">${icon('flag',13)} ${esc(taskNext(t))}</div>${button('Làm tiếp '+icon('arrow',14),'job',{task:t.id},'primary full'+(c.metrics?.served>0?'':' gd-pulse'))}<div class="hud-extra small muted">${left} việc đang chờ · ${c.day_completed} việc đã xong</div></article>`;
+  else if(wrapUp(c))main=`<article class="note-card"><span class="eyebrow">${esc(W.free_eyebrow)}</span><h3>Xong ngày đầu rồi! Khép ca để nhận lương.</h3>${button('Khép ca hôm nay','end',{},'primary full gd-pulse')}${commandButton(desk?'Nhận thêm một việc':esc(W.more_btn),'more_work',{},'ghost small full')}</article>`;
   else main=`<article class="note-card"><span class="eyebrow">${esc(W.free_eyebrow)}</span><h3>${desk?'Hết việc trong khay rồi!':esc(W.free_title)}</h3>${commandButton(desk?'Nhận thêm một việc':esc(W.more_btn),'more_work',{},'primary full')}${button('Khép ca hôm nay','end',{},'ghost small full')}</article>`;
   const notes=[],x=openSituation(c),cl=c.classroom,low=lowOpen(c),alert=c.ops?.alerts?.[0];
   if(c.event)notes.push(['event',{},c.event.practice?'play':'flag',c.event.practice?'Diễn tập':'Chuyện ở góc phố',c.event.stage==='resolved'?'Đã có kết quả · xem lại':c.event.title]);
@@ -247,11 +250,11 @@ function jobView(){
   const idle=mod?.idle&&(!t||ended(t))?`<div class="career-idle space-top">${mod.idle(careerContext(env()))}</div>`:'';
   if(!t){
     // Between customers there is always one clear way on: the next customer (unless the career's own panel offers it).
-    const more=c.open&&!idle.includes('data-command="more_work"')?commandButton(icon('plus',14)+' '+(deskWork()?'Nhận thêm một việc':esc(wordsFor(career()).next_btn)),'more_work',{},'primary'):'';
+    const more=wrapUp(c)?button('Khép ca hôm nay','end',{},'primary gd-pulse'):c.open&&!idle.includes('data-command="more_work"')?commandButton(icon('plus',14)+' '+(deskWork()?'Nhận thêm một việc':esc(wordsFor(career()).next_btn)),'more_work',{},'primary'):'';
     return header(deskWork()?'Bàn làm việc đang trống':esc(wordsFor(career()).none_waiting),c.open?'':'Ca đang nghỉ.')+`<div class="sheet-body">${idle||empty('Làm điều mình thích một chút','','coffee')}<div class="row wrap space-top">${more}${button('Xem sổ việc','queue',{},more||idle.includes('more_work')?'ghost':'primary')}${button('Chăm chút không gian','decor',{},'ghost')}</div></div>`;
   }
   if(ended(t)&&t.desk)return header('Hồ sơ đã đóng dấu',esc(t.title),'KẾT QUẢ HỒ SƠ')+`<div class="sheet-body">${deskDone(t,env())}<div class="row wrap space-top" style="justify-content:center">${button('Công việc tiếp theo','nextJob',{},'primary')}${button('Đọc lời nhắn','phone',{},'ghost')}${c.event?button('Chuyện vừa xảy ra','event',{},'cream'):''}</div>${idle}</div>`;
-  if(ended(t))return header('Một việc đã được làm tới nơi',t.title,'THÀNH QUẢ HÔM NAY')+`<div class="sheet-body center"><div class="celebration">${icon('sparkle',55)}</div><h2>Cảm ơn bạn đã giúp!</h2><div class="row wrap" style="justify-content:center">${c.tasks.some(x=>!ended(x))?button('Công việc tiếp theo','nextJob',{},'primary'):c.open?commandButton(deskWork()?'Nhận thêm một việc':esc(wordsFor(career()).more_btn),'more_work',{},'primary'):''}${button('Đọc lời nhắn','phone',{},'ghost')}${c.event?button('Chuyện vừa xảy ra','event',{},'cream'):''}</div>${idle}</div>`;
+  if(ended(t))return header('Một việc đã được làm tới nơi',t.title,'THÀNH QUẢ HÔM NAY')+`<div class="sheet-body center"><div class="celebration">${icon('sparkle',55)}</div><h2>Cảm ơn bạn đã giúp!</h2><div class="row wrap" style="justify-content:center">${c.tasks.some(x=>!ended(x))?button('Công việc tiếp theo','nextJob',{},'primary'):wrapUp(c)?button('Khép ca hôm nay','end',{},'primary gd-pulse'):c.open?commandButton(deskWork()?'Nhận thêm một việc':esc(wordsFor(career()).more_btn),'more_work',{},'primary'):''}${button('Đọc lời nhắn','phone',{},'ghost')}${c.event?button('Chuyện vừa xảy ra','event',{},'cream'):''}</div>${idle}</div>`;
   ui.task=t.id;let inner;
   if(careerUI(career()))inner=careerUI(career()).job(t,careerContext(env()));else if(['teacher','tour_guide','milk_tea'].includes(career()))inner=extendedJob(t,c,api.content,ui,api.state);else if(t.desk)inner=deskJob(t,env());else if(career()==='mother_baby')inner=motherBabyJob(t);else if(career()==='pharmacy')inner=pharmacyJob(t);else if(career()==='accounting')inner=accountingJob(t);else inner=supportJob(t);
   return header(esc(t.title),taskNext(t),esc(meta().work).toUpperCase()+' · NGÀY '+t.day)+`<div class="sheet-body">${!c.open?notice('Ca đang nghỉ. '+button('Bắt đầu ngày','start',{},'primary small'),'amber'):''}${['teacher','tour_guide','milk_tea'].includes(career())||plugin()||t.desk||careerUI(career())?'':guestRibbon(t,c,api.content)}${inner}</div>`+footer('',commandButton('Để lát nữa','defer',{task:t.id},'ghost small')+button('Xem các việc khác','queue',{},'small'));
@@ -282,6 +285,25 @@ function dwWho(t,sub){
 const dwBar=(text,btns='')=>`<div class="dw-bar"><div class="dw-bar-text" aria-live="polite">${text}</div>${btns?`<div class="dw-bar-btns">${btns}</div>`:''}</div>`;
 
 const LOT_STATE={unread:['Chưa đọc',''],available:['Hợp lệ','green'],held:['Tạm giữ','amber'],expired:['Hết hiệu lực','danger'],pull:['Có hộp cần rút','amber']};
+/** Pharmacy slip, step by step (guide.js): ask, read the labels, take valid boxes, self-check, hand over. */
+function pharmacySteps(t){
+  const c=room(),n=t.known?t.needs:null;
+  if(!t.known)return [{ok:null,label:'Hỏi rõ phiếu',go:{cmd:'ask',payload:{task:t.id},label:'💬 Hỏi rõ phiếu'}}];
+  if(n.referral)return [{ok:null,label:'Yêu cầu ngoài phiếu: chuyển cô Thu',go:{act:'referPH',label:'Chuyển cô Thu →'}}];
+  const care=careData(),pull=id=>(care?.batches||[]).some(b=>b.lot===id&&b.flag);
+  const lots=api.content.lots.filter(l=>l.product===n.product),tray=Object.entries(t.basket||{}),count=tray.reduce((a,[,q])=>a+q,0);
+  const valid=id=>{const l=api.content.lots.find(x=>x.id===id);return !!l&&l.product===n.product&&t.inspected.includes(id)&&l.status==='available'&&!c.held_lots.includes(id)&&!pull(id);};
+  const unread=lots.filter(l=>!t.inspected.includes(l.id)),bad=tray.find(([id])=>!valid(id));
+  const good=lots.find(l=>valid(l.id)&&(c.available?.[l.id]??0)>(t.basket?.[l.id]||0));
+  const rows=[{ok:!unread.length||null,label:`Đọc nhãn các lô ${n.product}`,note:`${lots.length-unread.length}/${lots.length}`,go:unread[0]?{cmd:'ph_inspect',payload:{task:t.id,lot:unread[0].id},label:`👁️ Đọc nhãn lô ${esc(unread[0].id)}`}:null}];
+  if(bad)rows.push({ok:false,label:`Bỏ hộp ${bad[0]} ra khỏi khay`,go:{cmd:'basket_remove',payload:{task:t.id,item:bad[0]},label:`➖ Bỏ một hộp ${esc(bad[0])}`}});
+  rows.push({ok:!bad&&count===n.qty||null,label:`Lấy đủ ${n.qty} hộp ${n.product} từ lô hợp lệ`,note:`${count}/${n.qty}`,
+    go:count>n.qty&&tray[0]?{cmd:'basket_remove',payload:{task:t.id,item:tray[0][0]},label:`➖ Bỏ bớt một hộp`}:count<n.qty&&good?{cmd:'ph_pick',payload:{task:t.id,item:good.id},label:`➕ Lấy 1 hộp lô ${esc(good.id)}`}:count<n.qty&&!unread.length?{act:'referPH',label:'Không lô nào xuất được: chuyển cô Thu'}:null});
+  const d=draft(t).checks;
+  rows.push({ok:['code','quantity','lot'].every(k=>d.includes(k))||t.checked||null,label:'Tự kiểm khay: mã, số lượng, lô',go:{act:'phTickAll',label:'☑️ Đã so mã, số lượng, lô'}});
+  rows.push({ok:t.checked||null,label:'Kiểm khay',go:{act:'verifyPH',label:'✓ Kiểm khay'}});
+  return rows;
+}
 function pharmacyJob(t){
   const c=room(),d=draft(t),n=t.known?t.needs:null,refer=!!n?.referral,want=n&&!refer?n.product:'',f=ui.phFilter==='all'?'':(ui.phFilter||want);
   const lotOf=id=>api.content.lots.find(l=>l.id===id),tray=Object.entries(t.basket||{}),count=tray.reduce((a,[,q])=>a+q,0);
@@ -305,10 +327,38 @@ function pharmacyJob(t){
   const barText=!t.known?'Hỏi rõ phiếu trước khi lấy hàng.':`Phiếu <b>${esc(want)} × ${n.qty}</b> · Khay <b>${count}/${n.qty}</b>${t.checked?' · đã kiểm':count<n.qty?' · lấy thêm':count>n.qty?' · thừa hộp':' · tự kiểm khay'}`;
   // A slip that must be referred has nothing to pick: only the slip and its one action.
   const today=care?.alerts?.length?`<section class="cb-strip" aria-label="Việc quầy hôm nay"><ul>${care.alerts.map(a=>`<li>${esc(a)}</li>`).join('')}</ul>${openBoard('Kho & sổ quầy',care.alerts.some(a=>a.startsWith('💊')||a.startsWith('📞'))?'regulars':'lots')}</section>`:'';
-  if(refer)return `<div class="career-job dw dw-ph">${dwWho(t,'Phiếu đã rõ')}${slip}${today}</div>`;
-  return `<div class="career-job dw dw-ph">${dwWho(t,t.known?'Phiếu đã rõ':'Phiếu chưa rõ')}${today}<div class="dw-ph-grid">${slip}${lots}${trayBox}${referBox}</div>${dwBar(barText,t.checked?button('Bàn giao '+icon('arrow',15),'deliverPH',{},'primary'):'')}</div>`;
+  const steps=pharmacySteps(t),hint=nextHint({room:c},steps,{final:t.checked?{label:'Bàn giao phiếu',go:{act:'deliverPH'}}:null});
+  if(refer)return `<div class="career-job dw dw-ph">${hint}${dwWho(t,'Phiếu đã rõ')}${slip}${today}</div>`;
+  return `<div class="career-job dw dw-ph">${hint}${dwWho(t,t.known?'Phiếu đã rõ':'Phiếu chưa rõ')}${today}<div class="dw-ph-grid">${slip}${lots}${trayBox}${referBox}</div>${dwBar(barText,stepCta({room:c},steps,{label:'Bàn giao '+icon('arrow',15),go:{act:'deliverPH'},ready:!!t.checked},{style:'primary'}))}</div>`;
 }
 
+/** Bookkeeping board, step by step (guide.js): open every original, fix what differs, get the
+ * missing source, then match documents and transactions that carry the same HD code. */
+function acGroup(t){
+  const inG=(k,id)=>t.groups.some(g=>g[k].includes(id)),free=d=>!t.removed.includes(d.id)&&!inG('docs',d.id)&&!d.missing;
+  const tx=t.transactions.find(x=>!inG('transactions',x.id));if(!tx)return null;
+  const key=x=>[...x.refs].sort().join('|'),txs=t.transactions.filter(x=>!inG('transactions',x.id)&&key(x)===key(tx));
+  const docs=t.docs.filter(d=>free(d)&&tx.refs.includes(d.ref)),want=txs.reduce((s,x)=>s+x.amount,0),have=docs.reduce((s,d)=>s+d.amount,0);
+  // Same code, same amount, counted twice: the later card is the copy.
+  const twin=have!==want?docs.find((d,i)=>docs.some((e,j)=>j<i&&e.ref===d.ref&&e.amount===d.amount)):null;
+  return {tx,txs,docs,twin,refs:tx.refs};
+}
+function accountingSteps(t){
+  const inG=(k,id)=>t.groups.some(g=>g[k].includes(id));
+  const unread=t.docs.filter(d=>!t.inspected.includes(d.id)&&!d.missing&&!t.removed.includes(d.id)&&!inG('docs',d.id));
+  const off=t.docs.find(d=>t.inspected.includes(d.id)&&d.original!==undefined&&d.original!==d.amount&&!t.removed.includes(d.id)&&!inG('docs',d.id));
+  const miss=t.docs.find(d=>d.missing);
+  const rows=[{ok:!unread.length||null,label:'Mở bản gốc từng chứng từ',note:`${t.docs.length-unread.length}/${t.docs.length}`,go:unread[0]?{cmd:'ac_inspect',payload:{task:t.id,doc:unread[0].id},label:`👁️ Mở gốc ${esc(unread[0].id)}`}:null}];
+  if(off)rows.push({ok:false,label:`Sửa ${off.id} theo bản gốc`,go:{cmd:'ac_correct',payload:{task:t.id,doc:off.id},label:`✏️ Sửa ${esc(off.id)} theo gốc`}});
+  if(miss)rows.push({ok:null,label:'Xin nguồn cho phiếu còn thiếu',go:!t.source_requested?{cmd:'ac_request_source',payload:{task:t.id},label:'📨 Xin nguồn bổ sung'}:(!t.source_at||sameDay(t.source_at))?{cmd:'advance',label:'⏳ Chờ thêm 20 phút'}:null});
+  const g=acGroup(t);
+  if(g){
+    const picked=g.docs.length&&g.docs.every(d=>ui.docs.has(d.id))&&ui.docs.size===g.docs.length&&g.txs.every(x=>ui.transactions.has(x.id))&&ui.transactions.size===g.txs.length;
+    rows.push(g.twin?{ok:null,label:`${g.twin.id} trùng với một phiếu khác`,go:{cmd:'ac_duplicate',payload:{task:t.id,doc:g.twin.id},label:`🗂️ Đánh dấu ${esc(g.twin.id)} là bản trùng`}}
+      :{ok:null,label:`Ghép các thẻ mã ${g.refs.join(' + ')}`,go:picked?{act:'match',label:'🔗 Ghép nhóm'}:{act:'acPick',data:{tx:g.tx.id},label:`👉 Chọn các thẻ mã ${esc(g.refs.join(' + '))}`}});
+  }
+  return rows;
+}
 function accountingJob(t){
   const inG=(k,id)=>t.groups.some(g=>g[k].includes(id)),sum=a=>a.reduce((s,x)=>s+x.amount,0);
   const selD=t.docs.filter(d=>ui.docs.has(d.id)),selT=t.transactions.filter(x=>ui.transactions.has(x.id)),ds=sum(selD),ts=sum(selT);
@@ -340,7 +390,8 @@ function accountingJob(t){
       `<button type="button" class="btn ghost icon-btn" data-action="clearSelection" aria-label="Bỏ chọn">${icon('x',18)}</button>`+(both?button(icon('link',16)+' Ghép nhóm','match',{},'primary')
         :button(selD.length?'Chọn giao dịch →':'← Chọn chứng từ','jobTab',{tab:selD.length?'acTx':'acDocs'},'primary dw-swap')+`<button type="button" class="btn dw-wide-only" disabled>${icon('link',16)} Ghép nhóm</button>`))
     :dwBar(read<t.docs.length?'Mở bản gốc, rồi chọn chứng từ và giao dịch cùng mã HD.':'Chọn chứng từ và giao dịch cùng mã HD.');
-  return `<div class="career-job dw dw-ac">${dwWho(t,'Gửi hồ sơ đối chiếu')}${missing}${tabs}${board}${groups}${hand}${bar}</div>`;
+  const steps=accountingSteps(t),hint=nextHint({room:room()},steps,{final:allDone?{label:'Kiểm & bàn giao hồ sơ',go:{act:'completeAC'}}:null,cta:false});
+  return `<div class="career-job dw dw-ac">${hint}${dwWho(t,'Gửi hồ sơ đối chiếu')}${missing}${tabs}${board}${groups}${hand}${bar}</div>`;
 }
 
 const solutions=[['reship','Gửi bù món thiếu','box','Gửi phần còn thiếu của đơn'],['trace','Đối soát giao nhận','search','Nhờ đầu mối kiểm chặng giao'],['exchange','Đổi đúng món','refresh','Tạo yêu cầu đổi đúng mã'],['refund','Thực hiện hoàn','coin','Hoàn từ quỹ công ty'],['guide','Hướng dẫn khách','book','Chỉ khách tự làm từng bước']];
@@ -348,6 +399,21 @@ const CS_STEPS=['Xác minh','Chứng cứ','Phương án','Thực hiện','Kiể
 const CS_CHANNELS=['💬 Tin nhắn','📞 Gọi điện','✉️ Thư điện tử'];
 /** Where a support case stands (0–5), from server fields only. */
 function csStep(t){if(!t.identity)return 0;if(t.evidence.some(e=>e.text==null))return 1;return {proposed:3,executing:3,awaiting_confirmation:4,resolved:5}[t.status]??2;}
+/** Support case, one move at a time (the "Việc bây giờ" card already holds the action). */
+function supportSteps(t){
+  const step=csStep(t),e=t.evidence.find(e=>e.text==null),read=t.evidence.filter(e=>e.text!=null).length,now='.dw-now .btn.primary';
+  const one=(label,go)=>[{ok:null,label,go,pulse:now}];
+  if(t.status==='handed_over')return one('Chờ chị Mai phản hồi',{cmd:'advance',label:'⏳ Chờ thêm 20 phút'});
+  if(step===0)return one('Xác minh người yêu cầu',{cmd:'cs_identity',payload:{task:t.id},label:'🔐 Xác minh mã đơn'});
+  if(step===1&&e)return [{ok:null,label:'Mở chứng cứ',note:`${read}/${t.evidence.length}`,go:{cmd:'cs_evidence',payload:{task:t.id,evidence:e.id},label:`📂 Mở: ${esc(e.title)}`},pulse:now}];
+  // The evidence names the fix (thiếu món → gửi bù …); only a first case gets the right card lit.
+  const fix={missing:'reship',delivered:'trace',delay:'trace',wrong:'exchange',refund:'refund',guide:'guide'}[t.variant];
+  if(step===2)return [{ok:null,label:'Chọn một phương án có căn cứ',go:{sel:'.dw-now .dw-choice'},pulse:fix?`.dw-now .dw-choice[data-payload*='"solution":"${fix}"']`:''}];
+  if(t.status==='proposed')return one('Gửi việc cho đầu mối',{act:'executeCS',label:'Gửi việc cho đầu mối →'});
+  if(t.status==='executing')return one('Chờ kết quả từ đầu mối',t.ready_at==null||sameDay(t.ready_at)?{cmd:'advance',label:'⏳ Chờ thêm 20 phút'}:{act:'queue',label:'Xem các việc khác'});
+  if(step===4)return one('Kiểm kết quả đã về',{cmd:'cs_confirm',payload:{task:t.id},label:'🔍 Kiểm kết quả'});
+  return one('Hoàn tất & đóng vụ',{act:'closeCS',label:'✓ Hoàn tất & đóng vụ'});
+}
 function supportJob(t){
   const step=csStep(t),read=t.evidence.filter(e=>e.text!=null).length,sol=solutions.find(x=>x[0]===t.proposal);
   const channel=CS_CHANNELS[[...String(t.id)].reduce((a,ch)=>a+ch.charCodeAt(0),0)%CS_CHANNELS.length];
@@ -375,7 +441,7 @@ function supportJob(t){
   const timers=[t.sla_label?dwState(`⏳ Phản hồi đầu: còn ${esc(t.sla_label)}`,'amber'):'',t.sla==='late'?dwState('Trễ hạn phản hồi đầu','danger'):'',t.upd_label?dwState(`📞 Gọi cập nhật: ${esc(t.upd_label)}`,t.upd?.done?'green':t.upd?.late?'danger':'amber'):''].join('');
   const seen=careData()?.people?.find(p=>p.npc===t.npc),past=seen?.last?.filter(x=>!x.title||x.title!==t.title||x.day!==t.day)||[];
   const history=seen&&past.length?`<section class="cb-history" aria-label="Thẻ khách"><h3>🗂️ ${esc(seen.name)} đã gọi ${seen.n} lần</h3><ul class="cb-past">${past.slice().reverse().map(x=>`<li>Ngày ${x.day}: ${esc(x.title)} · ${esc(x.note)}${x.stars?` · ${x.stars}★`:''}</li>`).join('')}</ul></section>`:'';
-  return `<div class="career-job dw dw-cs">${dwWho(t,sub)}${timers?`<div class="cs-timers">${timers}</div>`:''}${tracker}<div class="dw-cs-grid"><div class="dw-cs-work">${card}${change}${handover}${csCallPanel(t)}</div><div class="dw-cs-facts">${history}${evidence}${notes}${log}${careData()?openBoard('🗂️ Bảng theo dõi'):''}</div></div></div>`;
+  return `<div class="career-job dw dw-cs">${nextHint({room:room()},supportSteps(t),{cta:false})}${dwWho(t,sub)}${timers?`<div class="cs-timers">${timers}</div>`:''}${tracker}<div class="dw-cs-grid"><div class="dw-cs-work">${card}${change}${handover}${csCallPanel(t)}</div><div class="dw-cs-facts">${history}${evidence}${notes}${log}${careData()?openBoard('🗂️ Bảng theo dõi'):''}</div></div></div>`;
 }
 function chatView(){
   const id=ui.npc||activeTask()?.npc||api.content.npcs.find(n=>n.career_id===career()).id,n=npc(id),c=room();ui.npc=id;
@@ -629,7 +695,7 @@ $('#sheet').addEventListener('close',()=>{document.body.append($('#toasts'));
 async function start(){if(needsJob()){openSheet('jobapp');return;}const r=await cmd('start_day');if(r){ui.task=null;closeSheet();world.say(meta().greeting);}}
 async function selectCareer(id){
   ui.task=null;ui.docs.clear();ui.transactions.clear();ui.ai={};ui.phFilter='';ui.jobTab='shelf';
-  const r=await cmd('select_career',{}, {career:id,quiet:true});if(!r)return;
+  const r=await cmd('select_career',{}, {career:id,quiet:true});if(!r)return;if(r.hired)toast(r.message,'good');
   closeSheet();world.say(meta().greeting);setPaused(false);if(needsJob())openSheet('jobapp');else if(!room().open)openSheet('prepare');
 }
 async function openJob(id,tab){
@@ -714,11 +780,13 @@ async function handleAction(action,data,el){
     case'ribbon':draft(activeTask()).ribbon=data.value;renderSheet(false);break;
     case'pack':{const t=activeTask(),d=draft(t);const r=await cmd('shop_pack',{task:t.id,paper:d.paper,ribbon:d.ribbon,card:d.card});if(r)world.say('Một món quà được gói bằng cả sự chăm chút.');break;}
     case'deliverMB':{const t=activeTask();if(!t.checked){toast('Kiểm đơn trước khi xác nhận thanh toán nhé.',true);break;}const total=Object.entries(t.basket).reduce((s,[id,q])=>s+(room().life.prices[id]||product(id).price)*q,0);if(await confirmAction('Trao món quà cho khách?',`Thu ${total} xu tiền hàng${t.pack?', trừ 5 xu vật liệu gói':''} và xuất đúng số hàng đang giữ.`, 'Thanh toán & giao'))await cmd('shop_deliver',{task:t.id});break;}
+    case'phTickAll':{const t=activeTask();draft(t).checks=['code','quantity','lot'];renderSheet();break;}
     case'verifyPH':{const t=activeTask(),selected=draft(t).checks;await cmd('ph_check',{task:t.id,checks:['code','quantity','lot'].filter(k=>selected.includes(k))});break;}
     case'deliverPH':{const t=activeTask();if(await confirmAction('Bàn giao phiếu?','Hoàn tất nhận 40 xu thù lao.'))await cmd('ph_deliver',{task:t.id});break;}
     case'referPH':{const t=activeTask();if(await confirmAction('Chuyển cô Thu kiểm tiếp?','Hàng đang giữ được trả về kệ. Người phụ trách nhận việc; bạn nhận 25 xu thù lao chuyển đúng phạm vi.','Chuyển phiếu'))await cmd('ph_refer',{task:t.id});break;}
     case'selectDoc':ui.docs.has(data.id)?ui.docs.delete(data.id):ui.docs.add(data.id);renderSheet();break;
     case'selectTx':ui.transactions.has(data.id)?ui.transactions.delete(data.id):ui.transactions.add(data.id);renderSheet();break;
+    case'acPick':{const t=activeTask(),g=t&&acGroup(t);if(g){ui.docs=new Set(g.docs.map(d=>d.id));ui.transactions=new Set(g.txs.map(x=>x.id));}renderSheet();break;}
     case'clearSelection':ui.docs.clear();ui.transactions.clear();renderSheet();break;
     case'match':{const r=await cmd('ac_match',{task:activeTask().id,docs:[...ui.docs],transactions:[...ui.transactions]});if(r){ui.docs.clear();ui.transactions.clear();renderSheet();}break;}
     case'completeAC':if(await confirmAction('Bàn giao bản đối chiếu?','Mọi thẻ phải được xử lý trước khi nhận thù lao.','Kiểm & bàn giao'))await cmd('ac_complete',{task:activeTask().id,explanation:'source_report'});break;
@@ -754,10 +822,25 @@ async function handleAction(action,data,el){
     }
   }
 }
+/* Taps answer at once: the pressed control dims before the server replies. A tap that lands while
+   a command is on the wire is kept (the last one only) and replayed on the re-rendered control with
+   the same attributes, instead of being dropped ("phải bấm mấy lần mới vô"). */
+let heldTap=null,flightTap=null;
+const tapKey=el=>el.dataset.command?`[data-command="${CSS.escape(el.dataset.command)}"][data-payload="${CSS.escape(el.dataset.payload||'')}"]`
+  :`[data-action="${CSS.escape(el.dataset.action)}"]`+Object.entries(el.dataset).filter(([k])=>k!=='action').map(([k,v])=>`[data-${k.replace(/[A-Z]/g,m=>'-'+m.toLowerCase())}="${CSS.escape(v)}"]`).join('');
+function pressed(el){el.classList.add('is-pressed');setTimeout(()=>el.classList.remove('is-pressed'),700);}
+function replayHeld(){
+  const key=heldTap;heldTap=null;if(!key)return;
+  const el=[...document.querySelectorAll(key)].find(x=>!x.disabled&&x.offsetParent!==null);
+  el?.click();
+}
 document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-action],[data-command]');if(!el||el.disabled)return;sound.unlock();sound.configure(api.state?.settings||{sound:true,music:false});
-  // Ignore additional input while a mutation is on the wire; retries carry an idempotency key.
-  if(ui.busy&&!['close','confirmNo','confirmYes'].includes(el.dataset.action))return;
+  pressed(el);
+  // Additional input while a mutation is on the wire waits for it; retries carry an idempotency key.
+  // A second tap on the control already on the wire is a double tap, not a new wish.
+  if(ui.busy&&!['close','confirmNo','confirmYes'].includes(el.dataset.action)){try{const k=tapKey(el);heldTap=k===flightTap?null:k;}catch{heldTap=null;}return;}
+  try{flightTap=tapKey(el);}catch{flightTap=null;}
   if(el.dataset.command){const action=el.dataset.command,payload=JSON.parse(el.dataset.payload||'{}');const result=await cmd(action,payload);if(result){if(action==='defer'){ui.task=null;openSheet('queue');}if(action==='event_dismiss'){openSheet('journal',{journalTab:'library'});}if(action==='more_work'){ui.task=null;await openJob(null,'shelf');}if(action==='ask'){world.say(result.message,activeTask()?.npc);}}}
   else{try{await handleAction(el.dataset.action,el.dataset,el);}catch(error){console.error(error);toast('Thao tác chưa hoàn tất. '+error.message,true);}}
 });
@@ -806,7 +889,7 @@ let responsiveTimer;
 window.addEventListener('resize',()=>{clearTimeout(responsiveTimer);responsiveTimer=setTimeout(()=>{if(api.state&&api.content)renderMain();},140);});
 window.addEventListener('layoutchange',()=>{world.resize();if(api.state&&api.content)renderMain();});
 api.addEventListener('state',()=>{renderMain();if(ui.view)renderSheet();shell.update(env());});
-api.addEventListener('busy',e=>{ui.busy=e.detail;document.body.classList.toggle('busy',ui.busy);$('#saveState')?.setAttribute('aria-busy',String(ui.busy));});
+api.addEventListener('busy',e=>{ui.busy=e.detail;document.body.classList.toggle('busy',ui.busy);$('#saveState')?.setAttribute('aria-busy',String(ui.busy));if(!ui.busy&&heldTap)setTimeout(replayHeld,60);});
 api.addEventListener('offline',()=>renderMain());
 window.addEventListener('online',()=>{if(api.state)api.refresh().then(()=>renderMain()).catch(()=>{});});
 window.addEventListener('error',e=>{console.error('Game UI:',e.error||e.message);});

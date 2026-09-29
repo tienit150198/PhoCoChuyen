@@ -1259,7 +1259,7 @@ def _station(s: dict, c: dict, b: dict, t: dict, name: str, p: dict) -> dict:
     if name == 'cup':
         size = p.get('size')
         need(size in ('M', 'L'), 'Chỉ có ly M hoặc L.')
-        need(not cup['items'], 'Ly đã có trà. Muốn đổi cỡ thì làm lại ly nhé.')
+        need(not cup['items'], 'Ly đã có trà. Muốn đổi cỡ thì bấm 🗑️ Đổ ly rồi lấy ly mới nhé.')
         if cup['placed'] and cup['size'] == size:
             return dict(message=f'Ly {size} đã nằm sẵn trên quầy.', _free=True)
         need(b['cups'][size] > 0, f'Hết ly {size}. Mở Kho để xếp thêm ly.')
@@ -1274,7 +1274,7 @@ def _station(s: dict, c: dict, b: dict, t: dict, name: str, p: dict) -> dict:
         need(size in ('M', 'L') and type(sugar) is int and sugar in SUGARS and ice in ICES, 'Cỡ, đường hoặc đá không hợp lệ.')
         need(not cup['sealed'], 'Ly đã đóng nắp.')
         if not cup['placed'] or cup['size'] != size:
-            need(not cup['items'], 'Ly đã có trà. Muốn đổi cỡ thì làm lại ly nhé.')
+            need(not cup['items'], 'Ly đã có trà. Muốn đổi cỡ thì bấm 🗑️ Đổ ly rồi lấy ly mới nhé.')
             need(b['cups'][size] > 0, f'Hết ly {size}. Mở Kho để xếp thêm ly.')
             if cup['placed']:
                 b['cups'][cup['size']] += 1
@@ -1357,10 +1357,10 @@ def _station(s: dict, c: dict, b: dict, t: dict, name: str, p: dict) -> dict:
         t['mistakes'] += 1
         return dict(message='Ly chưa khớp phiếu: soi lại trà, siro, topping, cỡ, đường và đá.')
     if name in ('seal_start', 'seal'):
-        need(cup['placed'] and any(ING[k]['group'] == 'base' for k in cup['items']), 'Ly chưa có trà nền.')
+        need(cup['placed'] and any(ING[k]['group'] == 'base' for k in cup['items']), 'Ly chưa có trà nền: rót trà ở hàng 🫖 Trà nền trước nhé.')
         need(not cup['sealed'], 'Ly đã dán nắp rồi.')
-        need(cup['sugar'] is not None, 'Chưa chọn mức đường.')
-        need(cup['ice'] is not None, 'Chưa chọn mức đá.')
+        need(cup['sugar'] is not None, 'Chưa chọn mức đường: chọn ở hàng 🍯 Đường rồi dán nắp nhé.')
+        need(cup['ice'] is not None, 'Chưa chọn mức đá: chọn ở hàng 🧊 Đá rồi dán nắp nhé.')
         cut = b['sealer_off'] > c['turn'] and 'sealer' not in b['upgrades']
         if name == 'seal_start':
             need(not cut, 'Máy dán nắp đang tạm ngưng vì cúp điện.')
@@ -1380,7 +1380,7 @@ def _station(s: dict, c: dict, b: dict, t: dict, name: str, p: dict) -> dict:
             cup['seal_t'] = None
             z = seal_zones(b)
             if took < z['loose']:
-                return dict(message='Nhả tay sớm quá, màng chưa dính. Ép lại nhé.')
+                return dict(message='Nhả tay sớm quá, màng chưa dính. Ép lại, hoặc bấm “Dán thường”.')
             quality = 'perfect' if z['good_lo'] <= took <= z['good_hi'] else 'burnt' if took > z['burn'] else 'ok'
         if quality == 'perfect' and 'sealer' in b['upgrades'] and sealer_state(b) == 'dirty':
             quality = 'ok'  # even the automatic sealer cannot make a clean film on a sticky plate

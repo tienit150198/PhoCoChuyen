@@ -45,3 +45,10 @@
 /* On a phone work sheet the header holds the next step and the bottom holds the button:
    messages float in between so they never cover either. */
 html[data-layout="phone"] dialog.cozy-job .toasts{top:auto;bottom:calc(200px + var(--safe-b))}
+
+/* Instant tap feedback (app.js adds .is-pressed on click, before the server answers). */
+.is-pressed:not(:disabled){filter:brightness(.92);transform:scale(.97);transition:none}
+dialog.cozy-job .sheet-body :is(.btn,.tile,.chip,.choice,[role="button"]){-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+/* Work screens on a phone: every control is at least a thumb wide and tall. */
+html[data-layout="phone"] dialog.cozy-job .sheet-body :is(.btn,.icon-btn,.chip){min-height:44px}
+html[data-layout="phone"] dialog.cozy-job .sheet-body :is(.icon-btn,.btn.icon-btn){min-width:44px}

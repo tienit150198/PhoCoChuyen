@@ -3,6 +3,8 @@
  * route, a change-count and a settlement count before sending them. */
 import {t,language} from '../v4/i18n.js';
 import {reqList} from '../ui-kit.js';
+import {stepRows,nextHint,stepCta,finalGo,pending,firstTime} from '../v4/guide.js';
+import {keepBarAboveFooter} from './food_kit.js';
 
 const CELL=60,PAD=30;
 /** "Cỏ May Office Tower" → "Office Tower"; "Bồ Câu School" → "School". */
@@ -323,7 +325,7 @@ function hubPanel(x){
   const d=x.room.data||{},u=ui(x),given=sum(u.settle);
   if(!(d.owed>0))return '';
   const rows=(d.cod||[]).map(r=>`<li><span>${x.esc(r.item)}</span><b>${r.cod} xu</b>${r.day<x.room.day?'<small>từ hôm trước</small>':''}</li>`).join('');
-  return `<section class="dl-sec"><h4 class="section-title">💵 Nộp tiền COD</h4>
+  return `<section class="dl-sec dl-hub"><h4 class="section-title">💵 Nộp tiền COD</h4>
     <ul class="dl-statement">${rows}</ul>
     <p class="small muted">Túi đang có ${d.bag} xu tiền mặt.</p>
     <p class="dl-change">Đang đếm: <b>${given} xu</b></p>${keypad(x,'snote',given,given)}
@@ -369,28 +371,132 @@ function board(x,active){
     return `<article class="dl-card ${st} ${t.id===active?'active':''}"><div class="row"><span class="dl-oemoji">${x.esc(n.emoji)}</span><div class="grow"><b>${x.esc(n.item)}</b><small>${x.esc(label)}${t.due!=null?` · hẹn ${x.esc(hm(t.due))}`:''}${n.cod?` · COD ${n.cod}`:''}</small></div>${t.id===active?'':x.cmd('Xem','task_select',{task:t.id},'ghost small')}</div></article>`;
   }).join('')||'<p class="muted small">Chưa có đơn.</p>'}</section>`;
 }
-function checklist(t,x){
-  if(!t.known||!t.needs)return '';
-  const n=t.needs,r=t.run,d=x.room.data||{},rows=[];
-  rows.push([true,'Nhận đơn','']);
-  if(n.kind==='food'){rows.push([r.checked?true:null,'So túi với bill',r.missing?`bổ sung ${r.missing}`:'']);}
-  else{
-    rows.push([r.checked?true:null,'Cân & kiểm hàng',r.checked?kg(r.w):'']);
-    if(r.checked&&r.w!==n.w)rows.push([r.loaded?r.reported:null,'Báo lệch cân','']);
-    const want=[...(n.fragile?['bubble']:[]),...(r.seam?['tape']:[]),...(d.weather==='rain'?['rainbag']:[]),...(n.cold?['coldpack']:[]),...(n.size==='L'?['strap']:[])];
-    for(const id of want)rows.push([r.packed.includes(id)?true:r.loaded?false:null,itemOf(x,id).name,'']);
+/* ---------- next step: one list of steps drives the checklist, the header hint and the bottom button ---------- */
+/** The biggest note that still fits: how a courier counts change. */
+const nextNote=(x,rest)=>(x.cc.notes||[50,20,10,5,2,1]).find(v=>v<=rest)||1;
+const place=(x,id)=>`${nodeOf(x,id).emoji} ${nodeOf(x,id).name}`;
+/** Ride the planned leg, or plan one to `to` (the player's own draft first). */
+function rideGo(x,to){
+  const d=x.room.data||{},next=(d.route||[])[0];
+  if(next){const e=(d.eta||[])[0];return {cmd:'dl_ride',payload:{way:'main'},label:`🛵 Chạy tới ${x.esc(place(x,next))}${e?` · ${e.minutes} phút`:''}`};}
+  if(ui(x).draft.length)return {act:'car:plan',label:'🗺️ Chốt lộ trình'};
+  return {cmd:'dl_plan',payload:{route:[to]},label:`🗺️ Lên lộ trình tới ${x.esc(place(x,to))}`};
+}
+/** Not enough fuel for the next leg: fill up at the station, ride there, or buy a bottle. */
+function fuelGo(x){
+  const d=x.room.data||{},fuel=Number(d.fuel)||0,rate=Number(d.rate)||2,step=x.cc.fuel_step||5,price=x.cc.fuel_price||{gas:1,bottle:2};
+  const fill=(amount,unit,label)=>({cmd:'dl_refuel',payload:{amount},confirm:`Đổ thêm ${amount}% xăng hết ${amount/step*unit} xu?`,label:`${label} · ${amount/step*unit} xu`});
+  if(d.at==='gas'&&d.bike?.nogas)return {cmd:'dl_wait',payload:{},label:'⏳ Cây xăng mất điện — chờ 5 phút'};
+  if(d.at==='gas')return fill(Math.floor((100-fuel)/step)*step,price.gas,'⛽ Đổ đầy bình');
+  if(fuel>=dist(x,d.at,'gas')*rate+1)return (d.route||[])[0]==='gas'?rideGo(x,'gas'):{cmd:'dl_plan',payload:{route:['gas']},label:'⛽ Sắp hết xăng: lên lộ trình tới cây xăng'};
+  return fill(Math.min(x.cc.bottle_max||20,Math.floor((100-fuel)/step)*step),price.bottle,'🍾 Mua xăng chai');
+}
+function travel(x,to){
+  const d=x.room.data||{},row={ok:d.at===to?true:null,label:`Tới ${place(x,to)}`};
+  if(d.at===to)return row;
+  const hop=(d.route||[])[0]||to,fuel=Number(d.fuel)||0,low=fuel<dist(x,d.at,hop)*(Number(d.rate)||2)+1;
+  return {...row,go:low?fuelGo(x):rideGo(x,to)};
+}
+/** Hand the COD cash in at the hub: count what the statement says, then give it to the accountant. */
+function settleSteps(x){
+  const d=x.room.data||{},owed=Number(d.owed)||0,given=sum(ui(x).settle),here=d.at==='hub';
+  if(!(owed>0))return [];
+  let go=null,pulse='';
+  if(here&&given>owed)go={act:'car:snoteClear',label:'↺ Đếm lại tiền nộp'};
+  else if(here&&given<owed){const v=nextNote(x,owed-given);go={act:'car:snote',data:{v},label:`➕ Đếm thêm tờ ${v} xu · ${given}/${owed}`};pulse=`.dl-hub [data-action="car:snote"][data-v="${v}"]`;}
+  return [{ok:given===owed?true:given>owed?false:null,label:`Đếm đủ ${owed} xu COD theo bảng kê`,note:given&&!here?`đang đếm ${given} xu`:'',go,pulse},
+    {ok:null,label:'Nộp tiền cho kế toán',go:here&&given===owed?{cmd:'dl_settle',payload:{amount:given},confirm:`Nộp ${given} xu COD cho kế toán bưu cục?`,label:`💵 Nộp ${given} xu cho kế toán`}:null}];
+}
+function packWant(t,x){
+  const n=t.needs,r=t.run,rain=x.room.data?.weather==='rain';
+  return [...(n.fragile?['bubble']:[]),...(r.seam?['tape']:[]),...(rain?['rainbag']:[]),...(n.cold?['coldpack']:[]),...(n.size==='L'?['strap']:[])];
+}
+function pickupSteps(t,x,S){
+  const n=t.needs,r=t.run,d=x.room.data||{},u=ui(x),here=d.at===n.pickup,limit=Number(d.limit)||200;
+  S.push(travel(x,n.pickup));
+  if(n.kind==='food'){
+    const wait=(d.clock||0)<t.ready;
+    if(wait)S.push({ok:null,label:`Chờ quán làm món (xong ${hm(t.ready)})`,go:here?{cmd:'dl_wait',payload:{},label:`⏳ Chờ quán 5 phút · xong ${hm(t.ready)}`}:null});
+    S.push({ok:r.checked?true:null,label:'So túi với bill',note:r.missing?`bổ sung ${r.missing}`:'',go:here&&!wait?{cmd:'dl_check',payload:{task:t.id},label:'🧾 So túi với bill'}:null});
+    S.push({ok:null,label:'Nhận món lên thùng',go:here&&!wait?{cmd:'dl_load',payload:{task:t.id},label:'🛵 Nhận món lên thùng'}:null});
+    return S;
   }
-  rows.push([r.loaded?true:null,'Hàng lên xe','']);
-  if(n.unit_missing)rows.push([r.unit?true:null,'Hỏi số phòng',r.unit||'']);
-  if(n.cod)rows.push([r.change!=null?(r.short||r.over?false:true):null,'Thối tiền đúng',r.change!=null?`${r.change} xu`:'']);
-  rows.push([r.outcome==='delivered'||r.outcome==='safedrop'?true:r.outcome?false:null,'Giao xong',r.fee!=null?`+${r.fee} xu`:'']);
-  return `<ul class="checklist">${rows.map(([ok,label,note])=>`<li class="${ok===true?'ok':ok===false?'bad':''}"><span>${ok===true?'✓':ok===false?'✗':'○'}</span>${x.esc(label)}${note?`<small>${x.esc(note)}</small>`:''}</li>`).join('')}</ul>`;
+  S.push({ok:r.checked?true:null,label:'Cân & kiểm hàng',note:r.checked?kg(r.w):'',go:here?{cmd:'dl_check',payload:{task:t.id},label:'⚖️ Cân & kiểm hàng'}:null});
+  if(r.checked){
+    const inv=x.room.inventory||{},strap=!(inv.locked||[]).includes('strap')&&(inv.stock?.strap??0)>0;
+    const heavy=r.w>limit,noStrap=n.size==='L'&&!r.packed.includes('strap')&&!strap;
+    if(heavy||noStrap){
+      S.push({ok:null,label:heavy?`Nặng ${kg(r.w)}, quá tải xe máy: từ chối nhận`:'Hàng cồng kềnh, không có dây ràng: từ chối nhận',
+        go:{cmd:'dl_refuse',payload:{task:t.id},confirm:heavy?`Hàng ${kg(r.w)} vượt tải ${kg(limit)} của xe máy. Từ chối và báo bưu cục chuyển xe tải?`:'Hàng cồng kềnh mà không có dây ràng. Từ chối nhận?',label:'🚫 Từ chối nhận'}});
+      return S;
+    }
+    if(r.w!==n.w)S.push({ok:u.report[t.id]?true:null,label:'Báo lệch cân lên app',note:`shop khai ${kg(n.w)}`,go:{act:'car:report',data:{task:t.id},label:'☑ Báo lệch cân lên app'}});
+  }
+  for(const id of packWant(t,x)){
+    const it=itemOf(x,id),q=x.room.inventory?.stock?.[id]??0,done=r.packed.includes(id);
+    S.push({ok:done?true:null,label:`Gói: ${it.name}`,go:!here||done?null:q?{cmd:'dl_pack',payload:{task:t.id,item:id},label:`${x.esc(it.emoji)} Dùng ${x.esc(it.name.toLowerCase())}`}:{act:'inventory',label:`📦 Hết ${x.esc(it.name.toLowerCase())}: mở kho vật tư`}});
+  }
+  S.push({ok:null,label:'Nhận hàng lên xe',go:here&&r.checked?{cmd:'dl_load',payload:{task:t.id,report:!!u.report[t.id]},label:'🛵 Nhận hàng lên xe'}:null});
+  return S;
+}
+function dropSteps(t,x,S){
+  const n=t.needs,r=t.run,d=x.room.data||{},u=ui(x),dest=destOf(t),here=d.at===dest,first=firstTime(x);
+  const owed=Number(d.owed)||0,cap=Number(d.cap)||250,full=n.cod&&owed+n.cod>cap;
+  S.push({ok:true,label:n.kind==='food'?'Món lên thùng':'Hàng lên xe'});
+  const notes=(d.book||[]).find(b=>b.npc===t.npc)?.notes||[];
+  if(n.unit_missing||r.knocks||notes.some(o=>o.kind==='call'))
+    S.push({ok:r.called?true:null,label:n.unit_missing?'Gọi khách hỏi số phòng':'Gọi khách trước khi tới',note:r.unit||(r.back!=null?`khách về lúc ${hm(r.back)}`:''),go:{cmd:'dl_call',payload:{task:t.id},label:'📞 Gọi khách'}});
+  // The COD bag is full: hand the cash in at the hub before collecting more.
+  if(full)S.push({...travel(x,'hub'),label:`Về ${place(x,'hub')} nộp COD (túi đầy)`},...settleSteps(x));
+  S.push(travel(x,dest));
+  const kinds=x.cc.care_kinds||{};
+  for(const o of notes)if(kinds[o.kind])S.push({ok:r.care.includes(o.kind)?true:null,label:`${kinds[o.kind].label} (khách dặn)`,go:here&&!r.care.includes(o.kind)?{cmd:'dl_care',payload:{task:t.id,kind:o.kind},label:`${KIND_EMOJI[o.kind]} ${x.esc(kinds[o.kind].label)}`}:null});
+  let given=0;
+  if(n.cod){
+    const right=n.cash-n.cod;given=sum(u.change[t.id]||[]);
+    let go=null,pulse='';
+    if(here&&first&&given>right)go={act:'car:noteClear',data:{task:t.id},label:'↺ Đếm lại tiền thối'};
+    else if(here&&first&&given<right){const v=nextNote(x,right-given);go={act:'car:note',data:{task:t.id,v},label:`➕ Thối thêm tờ ${v} xu · ${given}/${right}`};pulse=`.dl-cash [data-action="car:note"][data-v="${v}"]`;}
+    else if(here&&!first&&!given)go={sel:'.dl-cash .dl-keypad .dl-note'};
+    S.push({ok:first?(given===right?true:given>right?false:null):(given?true:null),
+      label:first?`Thối lại ${right} xu (khách đưa ${n.cash}, hàng ${n.cod})`:`Đếm tiền thối (khách đưa ${n.cash}, hàng ${n.cod})`,note:given&&!first?`đang đếm ${given} xu`:'',go,pulse});
+  }
+  const stairs=(x.cc.stairs||{})[dest]||0;
+  if(here&&r.back!=null&&(d.clock||0)+stairs<r.back)
+    S.push({ok:null,label:`Chờ khách về (hẹn ${hm(r.back)})`,go:{cmd:'dl_wait',payload:{},label:`⏳ Chờ khách 5 phút · hẹn ${hm(r.back)}`}});
+  const final={label:n.cod?`💵 Thu ${n.cash}, thối ${given} & giao`:'✅ Giao tận tay',go:finalGo(S,'dl_deliver',n.cod?{task:t.id,change:given}:{task:t.id}),ready:here&&!full,why:here?'':`tới ${nodeOf(x,dest).name}`};
+  return {steps:S,final};
+}
+const FAIL_ASK='Báo giao thất bại cho đơn này?';
+/** {steps, final} for the active order. */
+function guide(t,x){
+  const d=x.room.data||{};
+  if(d.desk?.ev)return {steps:[{ok:null,label:'Chọn cách xử lý chuyện dọc đường',go:{sel:'.dl-opts .dl-opt'}}]};
+  if(!t.known)return {steps:[{ok:null,label:'Nhận đơn trên app',go:{cmd:'ask',payload:{task:t.id},label:'✋ Nhận đơn'}}]};
+  const n=t.needs,r=t.run,S=[{ok:true,label:'Nhận đơn'}];
+  if(r.outcome)return {steps:S};
+  const fail=label=>({ok:null,label,go:{cmd:'dl_fail',payload:{task:t.id},confirm:FAIL_ASK,label:'📝 Báo giao thất bại'}});
+  if(r.expired||n.kind==='food'&&t.due!=null&&(d.clock||0)>t.due+(x.cc.grace||25))return {steps:[...S,fail('Khách đã hủy vì chờ quá lâu')]};
+  if(r.broken_seen)return {steps:[...S,fail('Hàng hỏng, khách không nhận: lập biên bản')]};
+  if(!r.loaded)return {steps:pickupSteps(t,x,S)};
+  return dropSteps(t,x,S);
+}
+/** Bottom bar: the next step as one big button. */
+function bar(t,x,g){
+  // Every screen has a step to do; this only shows if something unexpected leaves none.
+  const final=g.final||{label:'📍 Xem điểm dừng',go:{sel:'.dl-sec.focus'},ready:!pending(g.steps)?.go};
+  return `<div class="dl-bar">${stepCta(x,g.steps,final)}</div>`;
+}
+function hintFor(t,x,g){
+  const f=g.final&&g.final.ready!==false?{label:g.final.label.replace(/^[^\p{L}\d]+/u,''),go:g.final.go}:null;
+  return nextHint(x,g.steps,{final:f});
 }
 
 export default {
   id:'delivery',
   css:true,
-  next(t){
+  next(t,x){
+    try{const n=x&&pending(guide(t,x).steps);if(n)return x.esc(n.label);}catch{/* fall back to the fixed lines */}
     if(!t.known)return 'Nhận đơn trên app';
     const r=t.run,n=t.needs;
     if(r.outcome)return 'Đơn đã xong';
@@ -403,12 +509,13 @@ export default {
     return n.cod?'Tới nơi, thối tiền đúng và giao':'Tới nơi và giao hàng';
   },
   job(t,x){
-    if(x.room.data?.desk?.ev)return `<div class="career-job dl">${status(x)}${deskCard(x)}</div>`;
-    return `<div class="career-job dl">${status(x)}${roadBoard(x)}${scoreStrip(x)}${deskCard(x)}<div class="workbench"><section class="wb-main">
+    const g=guide(t,x),hint=hintFor(t,x,g);
+    if(x.room.data?.desk?.ev)return `<div class="career-job dl">${hint}${status(x)}${deskCard(x)}</div>`;
+    return `<div class="career-job dl">${hint}${status(x)}${t.known?'':board(x,t.id)}${deskCard(x)}<div class="workbench"><section class="wb-main">
       ${stopPanel(x)}
-      <section class="dl-sec"><h4 class="section-title">🗺️ Lộ trình</h4>${map(x)}${areaLine(x)}${planner(x)}</section>
-      ${careSection(x)}
-    </section><aside class="wb-side">${board(x,t.id)}${checklist(t,x)}</aside></div></div>`;
+      <section class="dl-sec dl-route-sec"><h4 class="section-title">🗺️ Lộ trình</h4>${map(x)}${areaLine(x)}${planner(x)}</section>
+      ${roadBoard(x)}${scoreStrip(x)}${careSection(x)}
+    </section><aside class="wb-side">${t.known?`${stepRows(x,g.steps,'Việc của đơn')}${board(x,t.id)}`:''}</aside></div>${bar(t,x,g)}</div>`;
   },
   // Between orders: still ride to the hub to hand in COD cash or to refuel.
   idle(x){
@@ -439,5 +546,7 @@ export default {
     async fold(data,el,x){const u=ui(x);(u.open??={})[data.key]=!!el.closest('details')?.open;},
     async fix(data,el,x){const u=ui(x),f=u.fix||[];u.fix=f.includes(data.part)?f.filter(p=>p!==data.part):[...f,data.part];x.render();},
   },
+  // The sticky next-step bar rides above the sheet's own sticky footer.
+  tick(root){keepBarAboveFooter(root);},
   dock:[['inventory','box','Vật tư','Xốp, keo, túi mưa']],
 };

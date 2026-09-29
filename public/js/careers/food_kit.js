@@ -39,7 +39,9 @@ export function queue(x,active){
     return `<button type="button" class="fk-guest${on?' on':''}${p<50?' low':''}" data-command="task_select" data-payload="${x.esc(JSON.stringify({task:t.id}))}" aria-label="${x.esc(label)}"${on?' aria-current="true"':''}>
       ${x.portrait(who,34)}<em aria-hidden="true">${badge}</em><i class="fk-pat" aria-hidden="true"><b style="width:${Math.max(0,Math.min(100,p))}%"></b></i><small class="fk-name" aria-hidden="true">${x.esc(who.display_name)}</small></button>`;
   }).join('');
-  const more=x.room.open&&tasks.length>0&&tasks.length<4?`<button type="button" class="fk-guest fk-more" data-command="more_work" data-payload="{}" aria-label="Đón thêm một khách"><span aria-hidden="true">＋</span><small>Đón khách</small></button>`:'';
+  // While learning the place (first two jobs), no extra guests: one clear order at a time.
+  const learning=(x.room.metrics?.served||0)<2;
+  const more=x.room.open&&!learning&&tasks.length>0&&tasks.length<4?`<button type="button" class="fk-guest fk-more" data-command="more_work" data-payload="{}" aria-label="Đón thêm một khách"><span aria-hidden="true">＋</span><small>Đón khách</small></button>`:'';
   if(!chips&&!more)return '';
   return `<nav class="fk-queue" aria-label="Hàng chờ">${chips}${more}</nav>`;
 }

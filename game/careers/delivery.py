@@ -701,6 +701,10 @@ def _needs_pack(t: dict, day: int) -> list[str]:
 
 def known_request(c: dict, t: dict) -> str:
     n = t['needs']
+    # Day 1 is forgiving: an order's clock (cooking, promised time, customer out) starts when the
+    # courier accepts it, so a new player who takes the orders one by one is never cancelled for it.
+    if c['day'] <= 1 and not t['known'] and not t['run']['loaded']:
+        t['run']['t0'] = max(t['run']['t0'], kit.data(c)['clock'])
     parts = [f'Lấy tại {NODES[n["pickup"]]["name"]} → giao {n["address"]}', f'{n["item"]} (khai {kg(n["w"])})']
     parts.append(f'Thu hộ COD {n["cod"]} xu — khách chuẩn bị tờ {n["cash"]} xu' if n['cod'] else 'Đã thanh toán online')
     tags = [x for x, on in (('dễ vỡ', n['fragile']), ('giữ lạnh', n['cold']), ('giấy tờ gốc', n['paper']),

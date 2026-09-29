@@ -218,3 +218,8 @@
 .career-job.dl .dl-wish .dl-sub{margin-top:4px}
 .career-job.dl .dl-areas{margin:0 0 6px;color:var(--dl-muted);overflow-wrap:anywhere}
 .career-job.dl .dl-way.known{border-color:var(--dl-good)}
+
+/* Sticky next-step bar (guide.js stepCta): the one big button, above the sheet footer. */
+.career-job.dl .dl-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:2;display:flex;align-items:center;gap:10px;padding:10px 12px;
+  border-radius:var(--dl-r);background:var(--dl-s1);border:1px solid var(--dl-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
+.career-job.dl .dl-bar>.btn{flex:1}
