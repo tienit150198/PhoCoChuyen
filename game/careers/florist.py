@@ -343,7 +343,7 @@ def _empty_work() -> dict:
 
 
 def initial() -> dict:
-    return dict(spare=[], delivered=0, dumped=0, wreaths=0, pins=0, regulars={}, grades=[], ev_hist=[])
+    return dict(spare=[], delivered=0, dumped=0, wreaths=0, pins=0, regulars={}, grades=[], ev_hist=[], **_care_defaults(1))
 
 
 # --- order shape ---------------------------------------------------------------
@@ -405,6 +405,8 @@ def _upgrade_task(t: dict, c: dict | None) -> None:
 def _migrate(c: dict) -> dict:
     d = FS.migrate(c)
     d.setdefault('pins', 0)
+    for k, v in _care_defaults(c['day']).items():
+        d.setdefault(k, v)
     for t in c['tasks']:
         if t['career'] == ID and t.get('gen') != GEN:
             _upgrade_task(t, c)
@@ -451,11 +453,12 @@ def on_task(s: dict | None, c: dict, t: dict) -> None:
 
 
 def on_start(s: dict, c: dict) -> None:
-    _migrate(c)
+    d = _migrate(c)
     pl = _plan(c)
     for t in c['tasks']:
         if _open(t):
             on_task(s, c, t)
+    _care_start(s, c, d, pl)
     if pl['mod'] == 'market' and not pl['rules'].get('market_gift'):
         pl['rules']['market_gift'] = True
         if kit.stock(c, 'rose_pink') + 6 <= SPEC['inventory']['capacity']:
@@ -609,6 +612,12 @@ def _handle(s: dict, c: dict, d: dict, pl: dict, name: str, p: dict) -> dict:
         return FS.resolve(s, c, pl, EVENT_INDEX, p)
     if name == 'fl_pin':
         return _pin(s, c, d, pl)
+    if name == 'fl_water':
+        return _water(s, c, d)
+    if name == 'fl_pre':
+        return _pre(s, c, d, p)
+    if name == 'fl_sub':
+        return _sub(s, c, d, p)
     t = kit.task(c, p)
     kit.need(t['career'] == ID, 'Công việc không thuộc tiệm hoa.')
     kit.need(t['known'], 'Hỏi khách về dịp tặng và ngân sách trước nhé (bấm “Nghe yêu cầu”).')
@@ -1037,7 +1046,9 @@ def _deliver(s: dict, c: dict, d: dict, pl: dict, t: dict, p: dict) -> dict:
     price = r['pay']
     how = f'giao lúc {SLOTS[slot]}' if slot else 'trao tận tay tại tiệm'
     kit.complete(s, c, t, price, f'Bạn đã làm “{t["title"]}” và {how}.')
+    told = _visit(d, int(t['npc'].rsplit('_', 1)[1]) - 1)
     lines = FS.after_serve(s, c, ID, pl, t, _walkin_chance(c, pl))
+    lines += ['📒 Ghi vào sổ khách quen: ' + x for x in told]
     lines += _after_rules(s, c, pl, t)
     opened = FS.trigger(s, c, pl, EVENT_INDEX)
     if opened:
@@ -1235,7 +1246,10 @@ def public_data(c: dict) -> dict:
             if l['item'] == item and l['expires'] >= c['day'] and l['qty'] > 0:
                 k = min(3, l['expires'] - c['day'])
                 by_left[k] = by_left.get(k, 0) + l['qty']
-        cooler[item] = dict(next=None if nxt is None else nxt - c['day'], spare=len(spare), fresh=by_left)
+        stages = dict(bud=0, bloom=0, wilt=0)
+        for l in _flower_lots(c, item):
+            stages[_stage(c['day'], l)] += l['qty']
+        cooler[item] = dict(next=None if nxt is None else nxt - c['day'], spare=len(spare), fresh=by_left, stages=stages)
     d['cooler'] = cooler
     d['buckets'] = [dict(task=t['id'], start=t['work']['soak']) for t in _soaking(c)]
     pl = _peek_plan(c)
@@ -1244,6 +1258,9 @@ def public_data(c: dict) -> dict:
     for k, v in (('regulars', {}), ('grades', []), ('pins', 0)):
         d.setdefault(k, v)
     d['day'] = FS.public_plan(c, pl, MODS, EVENT_INDEX)
+    for k in ('water', 'kept', 'book', 'pre', 'sub'):
+        d.pop(k, None)
+    d['care'] = _public_care(c, kit.data(c))
     d['rules'] = {k: copy.deepcopy(v) for k, v in pl['rules'].items() if not k.startswith('_')}
     d['soak_min'] = _soak_min(c)
     d['rain'] = pl['mod'] == 'rain'
@@ -1309,6 +1326,7 @@ def validate_data(c: dict) -> None:
         kit.integer(x.get('k'), 0, 10000)
     for k in ('delivered', 'dumped', 'wreaths', 'pins'):
         kit.integer(d.get(k), 0, 10**9)
+    _valid_care(d)
     FS.validate(c, MODS, EVENT_INDEX)
     p = d.get('plan')
     if p is not None:
@@ -1348,8 +1366,10 @@ def on_close(s: dict, c: dict) -> dict:
     lines = [f'{lost} cành chờ trong xô đã héo, ghi hao hụt.'] if lost else []
     if lines:
         kit.log(s, c, 'florist', lines[0])
+    care = _care_close(s, c, d)
     out = FS.close(s, c, ID, pl, MODS)
     out['lines'] = lines + out['lines']
+    out['care'] = care
     out.update(wilted=lost, wilted_value=value)
     return out
 
@@ -1372,7 +1392,11 @@ def _assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
                     st['c'] = st['c'] or 1
                     st['s'] = True
                 return f'Đã cắt xéo và tuốt lá {len(todo)} cành trên bàn. Bạn vẫn là người ngâm nước và bó.'
-        return 'Đã thay nước xô, cắt lại gốc hoa trong tủ mát, loại cánh dập.'
+        d = _migrate(c)
+        if c['open'] and d['water'] != c['day']:
+            d['water'] = c['day']
+            return 'Đã thay nước tủ mát, cắt lại gốc hoa trong tủ: đêm nay hoa không già thêm.'
+        return 'Đã lau tủ mát, loại cánh dập, xếp lô cũ ra phía trước.'
     if role == 'courier':
         if t and _open(t) and t['known'] and t['needs']['delivery'] and _known(t, 'slot'):
             return f'Đã gọi xác nhận địa chỉ và khung giờ {SLOTS[t["needs"]["delivery"]]} với người nhận.'
@@ -1396,7 +1420,7 @@ def content() -> dict:
                 formats=list(FORMATS.values()), papers=list(PAPERS.values()), ribbons=list(RIBBONS.values()),
                 slots=[dict(id=k, name=v) for k, v in SLOTS.items()], soak_min=SOAK_MIN, foam_min=FOAM_MIN,
                 delivery_fee=DELIVERY_FEE, max_stems=MAX_STEMS, buckets=MAX_BUCKETS, topics=list(TOPICS.values()),
-                ask_cost=ASK_COST, ask_cost_rush=ASK_COST_RUSH, pin_recipe=PIN_RECIPE)
+                ask_cost=ASK_COST, ask_cost_rush=ASK_COST_RUSH, pin_recipe=PIN_RECIPE, buds=list(BUDS))
 
 
 # --- surprises of the day --------------------------------------------------------
@@ -1651,6 +1675,440 @@ EVENTS = [
 ]
 EVENT_INDEX = {e['id']: e for e in EVENTS}
 RULE_KEYS = {'bruised', 'warm', 'pins', 'influencer', 'market_gift'}
+
+
+# --- care loop: the cooler, pre-orders, the subscription, the regulars' card ------
+# (docs/superpowers/specs/2026-09-29-florist-care-design.md)
+BUDS = ('rose_red', 'rose_pink', 'rose_white', 'rose_yellow', 'lily')   # arrive as tight buds
+STAGES = dict(bud='nụ', bloom='nở đẹp', wilt='sắp héo')
+KEEP_MAX = 2       # nights one lot can be kept from ageing by fresh water
+MAX_PRE = 3        # open pre-orders (offers + bookings) at once
+PRE_STATUS = ('offer', 'booked', 'done', 'failed')
+PRE = {
+    'wedding': dict(id='wedding', npc=4, emoji='💒', title='Bó hoa cô dâu cho chị gái Linh', lead=3, price=240, deposit=80,
+                    recipe={'rose_white': 9, 'rose_pink': 4, 'babys_breath': 4, 'paper_white': 1, 'ribbon': 1},
+                    call='Chị gái em cưới vào ngày {due}! Tiệm làm giùm bó hoa cô dâu tông trắng – hồng nha, em đặt cọc trước.',
+                    good='Bó hoa cô dâu nở đúng ngày, trắng – hồng tinh khôi. Chị em cầm lên là cả rạp trầm trồ!'),
+    'opening': dict(id='opening', npc=3, emoji='🎉', title='Giỏ hoa khai trương tiệm bánh', lead=2, price=260, deposit=80,
+                    recipe={'sunflower': 8, 'rose_yellow': 5, 'eucalyptus': 4, 'basket': 1, 'foam': 1},
+                    call='Em gái anh mở tiệm bánh ngày {due}. Làm giùm anh một giỏ hướng dương thật rực rỡ, anh cọc trước.',
+                    good='Giỏ hướng dương tươi rói đặt ngay cửa tiệm bánh, khách đi ngang ai cũng chụp hình.'),
+    'funeral': dict(id='funeral', npc=2, emoji='🕊️', title='Kệ hoa viếng cụ Bảy xóm trên', lead=1, price=300, deposit=100,
+                    recipe={'mum_white': 16, 'lily': 4, 'eucalyptus': 3, 'stand': 1, 'foam': 2, 'banner': 1},
+                    banner='Thành kính phân ưu · Tổ dân phố 5',
+                    call='Cụ Bảy xóm trên mất rồi con. Sáng ngày {due} làm giùm cô kệ hoa viếng của tổ dân phố, cô gửi cọc.',
+                    good='Kệ hoa trắng trang nghiêm, băng rôn đúng từng chữ. Gia đình cụ Bảy cảm ơn tổ dân phố.'),
+    'anniv': dict(id='anniv', npc=5, emoji='💞', title='Bó hồng kỷ niệm 30 năm ngày cưới', lead=2, price=200, deposit=60,
+                  recipe={'rose_red': 11, 'babys_breath': 3, 'eucalyptus': 2, 'paper_pink': 1, 'ribbon': 1},
+                  call='Ngày {due} là kỷ niệm 30 năm ngày cưới của chú. Lần này chú nhớ trước rồi nhé, 11 hồng đỏ!',
+                  good='Vợ chú mở cửa thấy 11 bông hồng đỏ nở đẹp, cười như hồi mới cưới.'),
+}
+SUB_PRICE = 60
+SUB_EVERY = 3      # days between two vases for Bà Tám
+SUB_NPC = 6
+SUB_STATUS = ('none', 'offer', 'on', 'off')
+SUB_NOTES = {
+    'fresh': 'Nhìn cánh là biết hoa mấy ngày: chỉ lấy hoa nở đẹp, không nụ chặt, không sắp héo.',
+    'lily': 'Dị ứng phấn hoa ly: hắt hơi cả ngày.',
+    'mum': 'Cúc trắng chỉ để bàn thờ, đừng cắm bình phòng khách.',
+    'pink': 'Thích hồng phấn, cẩm chướng: nhìn là vui.',
+}
+TEMPLATES = [
+    dict(id='pinkrose', name='Hồng phấn – baby', stems={'rose_pink': 5, 'babys_breath': 2, 'eucalyptus': 2}, tags=('pink',)),
+    dict(id='whitepink', name='Hồng trắng – hồng phấn', stems={'rose_white': 3, 'rose_pink': 3, 'eucalyptus': 2}, tags=('pink',)),
+    dict(id='carn', name='Cẩm chướng – hồng trắng', stems={'carnation': 5, 'rose_white': 2, 'eucalyptus': 2}, tags=('pink',)),
+    dict(id='lily', name='Ly trắng thơm nức', stems={'lily': 3, 'eucalyptus': 3}, tags=('lily',)),
+    dict(id='mum', name='Cúc trắng giản dị', stems={'mum_white': 7, 'eucalyptus': 2}, tags=('mum',)),
+    dict(id='sun', name='Hướng dương rực rỡ', stems={'sunflower': 3, 'eucalyptus': 3}, tags=()),
+    dict(id='redyel', name='Hồng đỏ – hồng vàng', stems={'rose_red': 3, 'rose_yellow': 3, 'babys_breath': 2}, tags=()),
+]
+TEMPLATE_INDEX = {x['id']: x for x in TEMPLATES}
+SUB_WRAP = {'paper_kraft': 1, 'ribbon': 1}
+# What regulars tell the shop: the first note after the first finished order, the second after the third.
+NOTE_AT = (1, 3)
+NOTES = {
+    0: [('card', 'Luôn muốn kèm thiệp viết tay; anh đọc, tiệm viết giùm.'), ('redwhite', 'Người yêu anh mê hồng đỏ điểm chút trắng.')],
+    1: [('cats', 'Mẹ chị nuôi 3 bé mèo: không hoa ly; baby, bạch đàn cũng nên tránh.'), ('pastel', 'Nhà chị chuộng tông pastel: hồng phấn, trắng.')],
+    2: [('banner', 'Việc hiếu hỉ: đọc lại băng rôn với cô từng chữ trước khi in.'), ('early', 'Lễ viếng thường sáng sớm, hoa phải tới trước giờ.')],
+    3: [('ontime', 'Chỉ cần đúng giờ, đúng việc, không cần nói nhiều.'), ('sun', 'Mê hướng dương: “nhìn là thấy nắng”.')],
+    4: [('budget', 'Ngân sách mỏng: gợi ý cẩm chướng, baby thay hồng nhập.'), ('pollen', 'Dị ứng phấn hoa ly: hắt hơi cả ngày.')],
+    5: [('forget', 'Hay quên ngày kỷ niệm: nhắc chú trước vài hôm.'), ('pink', 'Vợ chú thích hồng nhạt, nhẹ nhàng.')],
+    6: [('fresh', SUB_NOTES['fresh']), ('mum', SUB_NOTES['mum'])],
+}
+
+
+def _care_defaults(day: int) -> dict:
+    return dict(water=max(0, day - 1), kept={}, book={}, pre=[],
+                sub=dict(status='none', next=0, round=0, misses=0, known=[], stars=[], retry=3))
+
+
+def _name(npc: int) -> str:
+    return PEOPLE[npc][0]
+
+
+def _stage(day: int, lot: dict) -> str:
+    """nụ on the day roses/lilies arrive, sắp héo on a lot's last day, nở đẹp otherwise."""
+    if lot['expires'] <= day:
+        return 'wilt'
+    if lot['item'] in BUDS and lot['received'] >= day and lot.get('supplier') != 'opening':
+        return 'bud'
+    return 'bloom'
+
+
+def _flower_lots(c: dict, item: str | None = None) -> list:
+    return [l for l in c['ext']['inv']['lots'] if l['item'] in FLOWERS and (item is None or l['item'] == item)
+            and l['expires'] >= c['day'] and l['qty'] > 0]
+
+
+def _take_best(c: dict, item: str, qty: int) -> tuple[int, int]:
+    """Take stems for a made-to-order piece: open ones first (oldest open first),
+    then buds, then wilting. Returns (buds, wilting) used."""
+    order = dict(bloom=0, bud=1, wilt=2)
+    lots = sorted(_flower_lots(c, item), key=lambda l: (order[_stage(c['day'], l)], l['expires'], l['received']))
+    buds = wilts = 0
+    for lot in lots:
+        if not qty:
+            break
+        used = min(qty, lot['qty'])
+        st = _stage(c['day'], lot)
+        buds += used if st == 'bud' else 0
+        wilts += used if st == 'wilt' else 0
+        lot['qty'] -= used
+        qty -= used
+    c['ext']['inv']['lots'] = [l for l in c['ext']['inv']['lots'] if l['qty'] > 0]
+    return buds, wilts
+
+
+def _short(c: dict, recipe: dict) -> list[str]:
+    return [f'{q - kit.stock(c, k)} {ITEM_INDEX[k]["unit"]} {ITEM_INDEX[k]["name"].lower()}' for k, q in recipe.items() if kit.stock(c, k) < q]
+
+
+def _use(c: dict, recipe: dict) -> tuple[int, int]:
+    short = _short(c, recipe)
+    kit.need(not short, 'Chưa đủ hàng: thiếu ' + ', '.join(short) + '. Mở Kho để nhập thêm.')
+    buds = wilts = 0
+    for k, q in recipe.items():
+        if k in FLOWERS:
+            b, w = _take_best(c, k, q)
+            buds, wilts = buds + b, wilts + w
+        else:
+            kit.take(c, k, q)
+    return buds, wilts
+
+
+def _visit(d: dict, npc: int) -> list[str]:
+    """One more finished order for a regular; returns what they told the shop today."""
+    r = d['book'].setdefault(str(npc), dict(visits=0, notes=[]))
+    r['visits'] = min(9999, r['visits'] + 1)
+    told = []
+    for i, at in enumerate(NOTE_AT):
+        nid, text = NOTES[npc][i]
+        if r['visits'] >= at and nid not in r['notes']:
+            r['notes'].append(nid)
+            told.append(text)
+    return told
+
+
+def _open_pre(d: dict) -> list:
+    return [b for b in d['pre'] if b['status'] in ('offer', 'booked')]
+
+
+def _pre_offer(day: int, mod: str) -> str | None:
+    """Seeded by the day: does a customer call to book an event piece today?"""
+    if day < 2:
+        return None
+    r = kit.rng(ID, 'pre', day)
+    if r.random() >= (0.8 if mod == 'wedding' else 0.55):
+        return None
+    pool = sorted(PRE)
+    return r.choices(pool, [3 if (mod == 'wedding' and k == 'wedding') else 1 for k in pool])[0]
+
+
+def _sub_menu(c: dict, rnd: int) -> list[str]:
+    """Three vases to choose from on a delivery round; at least one avoids all she dislikes."""
+    pool = [x['id'] for x in TEMPLATES if all(FLOWERS[k]['unlock'] <= kit.level(c) for k in x['stems'])]
+    r = kit.rng(ID, 'sub', rnd)
+    menu = r.sample(pool, 3)
+    good = [k for k in pool if TEMPLATE_INDEX[k]['tags'] == ('pink',)]
+    if not any(k in good for k in menu):
+        menu[r.randrange(3)] = r.choice(good)
+    return menu
+
+
+def _care_start(s: dict, c: dict, d: dict, pl: dict) -> None:
+    day = c['day']
+    if not any(b['id'] == f'pre-{day}' for b in d['pre']) and len(_open_pre(d)) < MAX_PRE:
+        kind = _pre_offer(day, pl['mod'])
+        if kind:
+            d['pre'].append(dict(id=f'pre-{day}', kind=kind, day=day, due=day + PRE[kind]['lead'], status='offer', stars=None))
+            kit.log(s, c, 'florist', f'{_name(PRE[kind]["npc"])} gọi đặt trước: {PRE[kind]["title"]}.')
+    sub = d['sub']
+    if sub['status'] in ('none', 'off') and day >= sub['retry']:
+        sub['status'] = 'offer'
+
+
+def _water(s: dict, c: dict, d: dict) -> dict:
+    kit.need(d['water'] != c['day'], 'Hôm nay đã thay nước tủ mát rồi.')
+    d['water'] = c['day']
+    lots = _flower_lots(c)
+    kept = sum(1 for l in lots if l['expires'] > c['day'] and d['kept'].get(l['id'], 0) < KEEP_MAX)
+    kit.metric(c, 'cooler_care')
+    tail = f' Đêm nay {kept} lô hoa không già thêm.' if kept else ' Các lô trong tủ đã được giữ đủ 2 đêm hoặc sắp héo.'
+    return dict(message='Đã thay nước sạch, cắt lại gốc hoa trong tủ mát, bỏ lá úng.' + tail)
+
+
+def _pre(s: dict, c: dict, d: dict, p: dict) -> dict:
+    bid = p.get('id')
+    b = next((x for x in d['pre'] if x['id'] == bid), None) if isinstance(bid, str) else None
+    kit.need(b is not None, 'Không tìm thấy đơn đặt trước này.')
+    do = _one_of(p.get('do'), ('accept', 'decline', 'make'), 'Chọn nhận, từ chối hoặc cắm đơn đặt trước.')
+    sp = PRE[b['kind']]
+    who = _name(sp['npc'])
+    if do in ('accept', 'decline'):
+        kit.need(b['status'] == 'offer', 'Đơn này đã trả lời rồi.')
+        if do == 'decline':
+            d['pre'].remove(b)
+            return dict(message=f'Bạn từ chối khéo vì sợ không kịp. {who} cảm ơn và đặt chỗ khác.')
+        kit.confirm(p, 'Xác nhận nhận đơn đặt trước và nhận tiền cọc.')
+        kit.need(sum(x['status'] == 'booked' for x in d['pre']) < MAX_PRE, f'Tiệm chỉ nhận tối đa {MAX_PRE} đơn đặt trước cùng lúc.')
+        b['status'] = 'booked'
+        kit.money(s, c, sp['deposit'], f'Cọc đơn đặt trước: {sp["title"]}', b['id'], 'revenue')
+        return dict(message=f'Đã nhận đơn “{sp["title"]}” cho ngày {b["due"]}, cọc {sp["deposit"]} xu. '
+                            'Nhập hoa trước 1–2 ngày để hoa nở đúng ngày.')
+    kit.need(b['status'] == 'booked', 'Đơn này chưa nhận hoặc đã xong.')
+    kit.need(b['due'] == c['day'], f'Đơn hẹn ngày {b["due"]}. Cắm đúng ngày cho hoa tươi nhất.')
+    kit.confirm(p, 'Xác nhận cắm và giao đơn đặt trước.')
+    buds, wilts = _use(c, sp['recipe'])
+    stars = 5 - (1 if buds else 0) - (1 if wilts else 0)
+    notes = ([f'{buds} bông còn nụ chặt'] if buds else []) + ([f'{wilts} cành sắp héo'] if wilts else [])
+    off = 10 * (5 - stars)
+    pay = sp['price'] - sp['deposit'] - off
+    kit.money(s, c, pay, f'Hoàn thành đơn đặt trước: {sp["title"]}', b['id'], 'revenue')
+    text = sp['good'] if stars == 5 else f'Hoa tới đúng ngày nhưng {" và ".join(notes)}. Tiệm bớt cho {off} xu.'
+    kit.review(s, c, kit.npc_id(ID, sp['npc']), stars, text, b['id'])
+    b['status'], b['stars'] = 'done', stars
+    c['xp'] += 6
+    kit.metric(c, 'preorders_done')
+    _drain_patience(c, 6)
+    told = _visit(d, sp['npc'])
+    msg = f'Đã cắm và giao “{sp["title"]}” · +{pay} xu (đã cọc {sp["deposit"]}). {who}: {stars}★.'
+    if notes:
+        msg += ' ' + ' và '.join(notes).capitalize() + ' — lần sau nhập hoa trước 1–2 ngày.'
+    if told:
+        msg += ' 📒 Ghi vào sổ khách quen: ' + ' '.join(told)
+    return dict(message=msg, celebrate=stars == 5)
+
+
+def _sub(s: dict, c: dict, d: dict, p: dict) -> dict:
+    sub = d['sub']
+    do = _one_of(p.get('do'), ('accept', 'decline', 'stop', 'make'), 'Chọn thao tác với gói hoa định kỳ.')
+    day = c['day']
+    if do in ('accept', 'decline'):
+        kit.need(sub['status'] == 'offer', 'Bà Tám chưa hỏi đặt gói hoa định kỳ.')
+        if do == 'decline':
+            sub.update(status='off', retry=day + 5)
+            return dict(message='Bạn cảm ơn bà Tám, hẹn khi tiệm rảnh tay hơn.')
+        kit.confirm(p, 'Xác nhận nhận gói hoa định kỳ.')
+        sub.update(status='on', next=day + 1, misses=0)
+        if 'fresh' not in sub['known']:
+            sub['known'].append('fresh')
+        return dict(message=f'Bà Tám đặt gói hoa: cứ {SUB_EVERY} ngày một bình nhỏ, {SUB_PRICE} xu/lần, bình đầu vào ngày {day + 1}. '
+                            f'Bà dặn: “{SUB_NOTES["fresh"]}”')
+    if do == 'stop':
+        kit.need(sub['status'] == 'on', 'Chưa có gói hoa định kỳ nào.')
+        kit.confirm(p, 'Xác nhận ngừng gói hoa định kỳ.')
+        sub.update(status='off', retry=day + 5, misses=0)
+        return dict(message='Đã báo bà Tám ngừng gói hoa. Bà hơi buồn nhưng hiểu.')
+    kit.need(sub['status'] == 'on', 'Chưa có gói hoa định kỳ nào.')
+    kit.need(sub['next'] == day, f'Bình hoa của bà Tám hẹn ngày {sub["next"]}.')
+    menu = _sub_menu(c, sub['round'])
+    pick = _one_of(p.get('pick'), menu, 'Chọn một trong ba mẫu bình hôm nay.')
+    tp = TEMPLATE_INDEX[pick]
+    buds, wilts = _use(c, {**tp['stems'], **SUB_WRAP})
+    stars, said, learn = 5, [], []
+    if 'lily' in tp['tags']:
+        stars -= 2
+        said.append('Bà hắt hơi cả buổi vì phấn hoa ly.')
+        learn.append('lily')
+    if 'mum' in tp['tags']:
+        stars -= 2
+        said.append('Cúc trắng để bàn thờ, cắm phòng khách bà thấy buồn.')
+        learn.append('mum')
+    if 'pink' not in tp['tags']:
+        stars -= 1
+        said.append('Bà thích hồng phấn, cẩm chướng hơn.')
+        learn.append('pink')
+    if buds:
+        stars -= 1
+        said.append('Vài bông còn nụ chặt, mai mới nở.')
+    if wilts:
+        stars -= 1
+        said.append('Có bông sắp héo, bà nhìn là biết.')
+    stars = max(1, stars)
+    new = [k for k in learn if k not in sub['known']]
+    sub['known'].extend(new)
+    kit.money(s, c, SUB_PRICE, f'Gói hoa định kỳ của bà Tám (lần {sub["round"] + 1})', f'sub-{sub["round"] + 1}', 'revenue')
+    text = ' '.join(said) if said else 'Bình hoa xinh, bông nào cũng nở đẹp. Bà để phòng khách ngắm cả tuần.'
+    kit.review(s, c, kit.npc_id(ID, SUB_NPC), stars, text, f'sub-{sub["round"] + 1}')
+    sub['stars'] = (sub['stars'] + [stars])[-6:]
+    sub.update(next=day + SUB_EVERY, round=sub['round'] + 1, misses=0)
+    c['xp'] += 3
+    kit.metric(c, 'sub_vases')
+    msg = f'Đã giao bình “{tp["name"]}” cho bà Tám · +{SUB_PRICE} xu · {stars}★. {text}'
+    if new:
+        msg += ' 📒 Ghi vào thẻ của bà: ' + ' '.join(SUB_NOTES[k] for k in new)
+    return dict(message=msg, celebrate=stars == 5)
+
+
+def _care_close(s: dict, c: dict, d: dict) -> list[str]:
+    """Night in the cooler, bookings and the subscription at day close."""
+    day, lines = c['day'], []
+    lots = [l for l in _flower_lots(c) if l['expires'] > day]
+    if d['water'] == day:
+        kept = 0
+        for l in lots:
+            k = d['kept'].get(l['id'], 0)
+            if k < KEEP_MAX:
+                l['expires'] += 1
+                d['kept'][l['id']] = k + 1
+                kept += 1
+        if kept:
+            lines.append(f'💧 Nước tủ mát sạch: {kept} lô hoa đêm nay không già thêm.')
+    elif d['water'] <= day - 2:
+        # Cloudy water: open lots age one day faster, but never straight from usable to gone.
+        aged = [l for l in lots if l['expires'] > day + 1]
+        for l in aged:
+            l['expires'] -= 1
+        if aged:
+            lines.append(f'🫧 Nước tủ mát đục 2 ngày: {len(aged)} lô hoa già nhanh thêm 1 ngày. Mai nhớ thay nước.')
+    live = {l['id'] for l in c['ext']['inv']['lots']}
+    d['kept'] = {k: v for k, v in d['kept'].items() if k in live}
+    for b in list(d['pre']):
+        sp = PRE[b['kind']]
+        if b['status'] == 'offer':
+            d['pre'].remove(b)
+        elif b['status'] == 'booked' and b['due'] <= day:
+            b['status'] = 'failed'
+            back = min(sp['deposit'], c['money'])
+            if back:
+                kit.money(s, c, -back, f'Hoàn cọc đơn đặt trước không làm kịp: {sp["title"]}', b['id'], 'refund')
+            kit.review(s, c, kit.npc_id(ID, sp['npc']), 1, f'Đặt trước cả mấy ngày mà tới ngày {b["due"]} tiệm không giao. May mà còn kịp mua chỗ khác.', b['id'])
+            lines.append(f'✗ Không kịp làm “{sp["title"]}”: hoàn {back} xu cọc, {_name(sp["npc"])} rất buồn.')
+    closed = [b for b in d['pre'] if b['status'] in ('done', 'failed')]
+    d['pre'] = _open_pre(d) + closed[-4:]
+    sub = d['sub']
+    if sub['status'] == 'offer':
+        sub.update(status='none', retry=day + 2)
+    elif sub['status'] == 'on' and sub['next'] <= day:
+        kit.review(s, c, kit.npc_id(ID, SUB_NPC), 2, 'Bà chờ bình hoa cả ngày mà tiệm quên mất.', f'sub-miss-{day}')
+        if sub['misses'] >= 1:
+            sub.update(status='off', retry=day + 5, misses=0)
+            lines.append('✗ Bà Tám ngừng gói hoa định kỳ vì tiệm quên giao hai lần liền.')
+        else:
+            sub.update(next=day + SUB_EVERY, misses=1)
+            lines.append(f'✗ Quên bình hoa của bà Tám hôm nay. Lần tới: ngày {day + SUB_EVERY}.')
+    soon = [PRE[b['kind']]['title'] for b in d['pre'] if b['status'] == 'booked' and b['due'] == day + 1]
+    if sub['status'] == 'on' and sub['next'] == day + 1:
+        soon.append('bình hoa của bà Tám')
+    if soon:
+        lines.append('📅 Ngày mai: ' + ', '.join(soon) + '.')
+    return lines
+
+
+def _plan_rows(c: dict, recipe: dict, due: int) -> list[dict]:
+    """For each ingredient: needed, in stock now, and stems that will be open on the due day."""
+    day, rows = c['day'], []
+    for k, q in recipe.items():
+        it = ITEM_INDEX[k]
+        row = dict(item=k, name=it['name'], emoji=it['emoji'], unit=it['unit'], need=q, have=kit.stock(c, k), flower=k in FLOWERS)
+        if k in FLOWERS:
+            lots = _flower_lots(c, k)
+            row['ready'] = sum(l['qty'] for l in lots if l['expires'] > due and not (due == day and _stage(day, l) == 'bud'))
+            first = max(day, due - it['life'] + 2)
+            last = due - 1 if k in BUDS else due
+            row['buy'] = [first, last] if first <= last else None
+        rows.append(row)
+    return rows
+
+
+def _public_care(c: dict, raw: dict) -> dict:
+    """The care loop as the player may see it (unlearned notes stay here)."""
+    day = c['day']
+    base = _care_defaults(day)
+    water = raw.get('water', base['water'])
+    water = water if isinstance(water, int) else base['water']
+    out = dict(water=dict(done=water == day, last=water, risk=water <= day - 1))
+    pre = []
+    for b in raw.get('pre') or []:
+        sp = PRE.get(b.get('kind')) if isinstance(b, dict) else None
+        if not sp:
+            continue
+        row = dict(id=b['id'], kind=sp['id'], emoji=sp['emoji'], title=sp['title'], npc=kit.npc_id(ID, sp['npc']), due=b['due'],
+                   left=b['due'] - day, status=b['status'], stars=b.get('stars'), price=sp['price'], deposit=sp['deposit'],
+                   call=sp['call'].format(due=b['due']), banner=sp.get('banner'))
+        if b['status'] in ('offer', 'booked'):
+            row['rows'] = _plan_rows(c, sp['recipe'], b['due'])
+            row['short'] = _short(c, sp['recipe'])
+        pre.append(row)
+    out['pre'] = pre
+    sub = raw.get('sub') if isinstance(raw.get('sub'), dict) else base['sub']
+    sv = dict(status=sub.get('status', 'none'), next=sub.get('next', 0), left=sub.get('next', 0) - day, price=SUB_PRICE, every=SUB_EVERY,
+              stars=list(sub.get('stars') or []), misses=sub.get('misses', 0), npc=kit.npc_id(ID, SUB_NPC),
+              notes=[SUB_NOTES[k] for k in SUB_NOTES if k in (sub.get('known') or [])])
+    if sv['status'] == 'on' and sv['next'] == day:
+        sv['menu'] = [dict(id=k, name=TEMPLATE_INDEX[k]['name'], rows=_plan_rows(c, {**TEMPLATE_INDEX[k]['stems'], **SUB_WRAP}, day),
+                           short=_short(c, {**TEMPLATE_INDEX[k]['stems'], **SUB_WRAP})) for k in _sub_menu(c, sub.get('round', 0))]
+    out['sub'] = sv
+    book = []
+    for k, r in sorted((raw.get('book') or {}).items(), key=lambda kv: int(kv[0]) if str(kv[0]).isdigit() else 99):
+        if not (str(k).isdigit() and int(k) in NOTES and isinstance(r, dict)):
+            continue
+        npc = int(k)
+        texts = dict(NOTES[npc])
+        notes = [texts[n] for n in r.get('notes', []) if n in texts]
+        if npc == SUB_NPC:
+            notes += [SUB_NOTES[n] for n in (sub.get('known') or []) if SUB_NOTES.get(n) not in notes]
+        nxt = next((a for a in NOTE_AT if a > r.get('visits', 0)), None)
+        book.append(dict(npc=kit.npc_id(ID, npc), visits=r.get('visits', 0), notes=notes, more=None if nxt is None else nxt - r.get('visits', 0)))
+    out['book'] = book
+    return out
+
+
+def _valid_care(d: dict) -> None:
+    need = kit.need
+    kit.integer(d.get('water'), 0, 10**7)
+    kept = d.get('kept')
+    need(isinstance(kept, dict) and len(kept) <= 300, 'Sổ tủ mát sai.')
+    for k, v in kept.items():
+        need(isinstance(k, str) and len(k) <= 80, 'Sổ tủ mát sai.')
+        kit.integer(v, 1, KEEP_MAX)
+    book = d.get('book')
+    need(isinstance(book, dict) and len(book) <= len(NOTES), 'Sổ khách quen sai.')
+    for k, r in book.items():
+        need(isinstance(k, str) and k.isdigit() and int(k) in NOTES, 'Sổ khách quen sai.')
+        need(isinstance(r, dict) and set(r) == {'visits', 'notes'}, 'Sổ khách quen sai.')
+        v = kit.integer(r['visits'], 0, 9999)
+        allowed = [n for (n, _), at in zip(NOTES[int(k)], NOTE_AT) if v >= at]
+        need(isinstance(r['notes'], list) and len(set(r['notes'])) == len(r['notes']) and set(r['notes']) <= set(allowed), 'Ghi chú khách quen sai.')
+    pre = d.get('pre')
+    need(isinstance(pre, list) and len(pre) <= 12, 'Đơn đặt trước sai.')
+    ids = set()
+    for b in pre:
+        need(isinstance(b, dict) and set(b) == {'id', 'kind', 'day', 'due', 'status', 'stars'} and b['kind'] in PRE, 'Đơn đặt trước sai.')
+        day = kit.integer(b['day'], 1, 10**7)
+        need(b['id'] == f'pre-{day}' and b['id'] not in ids and b['due'] == day + PRE[b['kind']]['lead'], 'Đơn đặt trước sai.')
+        ids.add(b['id'])
+        need(b['status'] in PRE_STATUS, 'Trạng thái đơn đặt trước sai.')
+        need((b['stars'] is None) if b['status'] != 'done' else (type(b['stars']) is int and 3 <= b['stars'] <= 5), 'Sao đơn đặt trước sai.')
+    need(len(_open_pre(d)) <= MAX_PRE, 'Quá nhiều đơn đặt trước.')
+    sub = d.get('sub')
+    need(isinstance(sub, dict) and set(sub) == {'status', 'next', 'round', 'misses', 'known', 'stars', 'retry'}, 'Gói hoa định kỳ sai.')
+    need(sub['status'] in SUB_STATUS, 'Gói hoa định kỳ sai.')
+    for k in ('next', 'round', 'retry'):
+        kit.integer(sub[k], 0, 10**7)
+    kit.integer(sub['misses'], 0, 1)
+    need(isinstance(sub['known'], list) and len(set(sub['known'])) == len(sub['known']) and set(sub['known']) <= set(SUB_NOTES), 'Thẻ của bà Tám sai.')
+    need(isinstance(sub['stars'], list) and len(sub['stars']) <= 6 and all(type(x) is int and 1 <= x <= 5 for x in sub['stars']), 'Sao gói hoa sai.')
 
 
 SITUATIONS = [

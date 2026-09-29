@@ -42,9 +42,10 @@
 .career-job.fl .fl-flower.c-yellow{border-bottom-color:#f5c83a}
 .career-job.fl .fl-flower.c-purple{border-bottom-color:#a878c8}
 .career-job.fl .fl-flower.c-green{border-bottom-color:#6f9a6a}
-.career-job.fl .fl-flag{position:absolute;left:6px;bottom:4px;font-style:normal;font-size:10px;font-weight:800}
-.career-job.fl .fl-flag.toxic{color:var(--fl-bad)}
-.career-job.fl .fl-flag.caution{color:var(--fl-warn)}
+/* Cat warning on a flower tile: only for a home with cats, in words, readable size */
+.career-job.fl .tile>.fl-flag{display:block;margin-top:2px;padding:1px 6px;border-radius:99px;font-size:12px;line-height:1.3;font-weight:800;opacity:1}
+.career-job.fl .tile>.fl-flag.toxic{background:var(--bad-soft,#fbe3de);color:var(--fl-bad)}
+.career-job.fl .tile>.fl-flag.caution{background:var(--warn-soft,#fbf0dc);color:var(--ink,#3a2a30)}
 .career-job.fl .fl-warn{color:var(--fl-bad)}
 
 /* Ticket */
@@ -54,11 +55,14 @@
 .career-job.fl .fl-ticket-head h3{margin:0;font-size:1rem}
 .career-job.fl .fl-tags{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 0}
 .career-job.fl .fl-say{margin:0;font-size:.95rem;line-height:1.5}
-.career-job.fl .fl-ticket .order-line{margin:0;font-size:13px;line-height:1.6}
+/* The brief as a requirement list (ui-kit reqList): one caption, then the rows */
+.career-job .fl-brief-cap{margin:2px 0 -2px;font-size:.8rem;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:var(--ink-2,var(--fl-muted))}
+.career-job.fl .fl-ticket .req-row small{display:block;font-size:.8rem;line-height:1.35;color:var(--ink-2,var(--fl-muted))}
+.career-job.fl .fl-ticket .req-row.tone-danger small{color:var(--fl-bad)}
+.career-job.fl .fl-ticket .fold{margin-top:2px}
 .career-job.fl .fl-note{font-size:.867rem;line-height:1.5;color:var(--ink-2,var(--fl-muted));font-style:italic}
 .career-job.fl .fl-dot{display:inline-block;width:12px;height:12px;margin-right:2px;border-radius:50%;border:1px solid var(--fl-line);vertical-align:-1px}
 .career-job.fl .fl-unknown{display:inline-block;padding:0 6px;border-radius:99px;border:1px dashed var(--fl-warn);color:var(--fl-ink);font-weight:700;font-size:12px}
-.career-job.fl .fl-budget{font-weight:800;white-space:nowrap}
 .career-job.fl .fl-order-banner{padding:6px 10px;border-radius:var(--fl-rs);border:1px dashed var(--fl-line);background:var(--fl-surface-2);font-weight:700;letter-spacing:.01em}
 
 /* Consultation: what was heard, what is still worth asking */
@@ -260,3 +264,35 @@ html.reduce-motion .career-job.fl .fl-fill{transition:none}
   .career-job.fl .fl-tab{flex:1 1 0;min-width:0;white-space:normal;padding:5px 3px;font-size:12px;line-height:1.15}
   .career-job.fl .fl-look{grid-template-columns:104px minmax(0,1fr)}
 }
+
+/* Care loop: the cooler water, pre-orders, the subscription, the regulars' book */
+.career-job .fl-care{display:grid;gap:8px}
+.career-job .fl-care>.section-title{margin:6px 0 0}
+.career-job .fl-care-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.career-job .fl-care-btns .btn{min-height:44px}
+.career-job .fl-pres{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.career-job .fl-pre{display:grid;gap:8px;padding:12px;border-radius:var(--radius,16px);background:var(--surface,#fff);border:1px solid var(--line,#ecd9df)}
+.career-job .fl-pre.due{border:2px solid var(--accent,#c2577a)}
+.career-job .fl-pre.done,.career-job .fl-pre.failed{padding:8px 12px;background:var(--surface-2,#f8eef1)}
+.career-job .fl-pre>p{margin:0}
+.career-job .fl-pre-head{display:flex;gap:10px;align-items:flex-start;min-width:0}
+.career-job .fl-pre-head .grow{display:grid;gap:2px;min-width:0}
+.career-job .fl-pre-head b{font-size:.95rem;line-height:1.35;overflow-wrap:anywhere}
+.career-job .fl-pre-head small{font-size:.8rem;line-height:1.4;color:var(--ink-2,var(--muted))}
+.career-job .fl-pre-emoji{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:var(--surface-2,#f8eef1);font-size:1.2rem}
+.career-job .fl-pre .fl-note{font-size:.867rem;line-height:1.5;font-style:italic;color:var(--ink-2,var(--muted))}
+.career-job .fl-pre .req-row small{display:block;font-size:.8rem;line-height:1.35;color:var(--ink-2,var(--muted))}
+.career-job .fl-prefs-head{margin:0;font-weight:700;font-size:.867rem}
+.career-job .fl-prefs{margin:4px 0 0;padding-left:18px;display:grid;gap:4px;font-size:.867rem;line-height:1.45}
+.career-job .fl-tpls{display:grid;gap:10px}
+.career-job .fl-tpl{display:grid;gap:6px;padding:10px;border-radius:12px;background:var(--surface-2,#f8eef1);border:1px solid var(--line,#ecd9df)}
+.career-job .fl-tpl-head{display:grid;gap:2px;margin:0}
+.career-job .fl-tpl-head small{font-size:.8rem;color:var(--ink-2,var(--muted))}
+.career-job .fl-tpl .btn{justify-self:start;min-height:44px}
+.career-job .fl-stage-txt{font-size:.75rem;color:var(--ink-2,var(--muted))}
+.career-job .fl-regs{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.career-job .fl-regs>li{display:grid;gap:2px}
+.career-job .fl-regs>li>small{font-size:.8rem;color:var(--ink-2,var(--muted))}
+.career-job .fl-carefold.due>.fold>summary{color:var(--ink,#3a2a30);background:var(--warn-soft,#fbf0dc);border-radius:var(--radius-sm,10px)}
+.career-job .fl-water-line{margin-bottom:4px}
+.fl-night ul{margin:6px 0 0;padding-left:18px;display:grid;gap:4px;font-size:.9rem;line-height:1.45}

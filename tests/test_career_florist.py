@@ -1263,5 +1263,378 @@ class FloristConsequenceTests(unittest.TestCase):
         validate_state(json.loads(json.dumps(j.state)))
 
 
+class FloristCareTests(unittest.TestCase):
+    """Chăm tiệm qua nhiều ngày: tủ mát, đơn đặt trước, gói hoa định kỳ, sổ khách quen."""
+
+    def setUp(self):
+        self.clock = Clock()
+        self.old = kit.clock
+        kit.clock = self.clock
+        self.j = Journey('florist')
+        self.shop = Shop(self, self.j)
+
+    def tearDown(self):
+        kit.clock = self.old
+
+    @property
+    def d(self):
+        return self.j.c['ext']['data']
+
+    def next_day(self):
+        j = self.j
+        FL._plan(j.c)['events'] = [e for e in FL._plan(j.c)['events'] if e['status'] != 'open']
+        r = j.act('end_day', carry_event=True)
+        j.act('start_day')
+        validate_state(json.loads(json.dumps(j.state)))
+        return r['summary']['career']
+
+    def lot(self, item, qty, life=4):
+        return inventory.add_lot(self.j.c, item, qty, 2, life, 'partner')['id']
+
+    def exp(self, lid):
+        return next(l for l in self.j.c['ext']['inv']['lots'] if l['id'] == lid)['expires']
+
+    def money(self):
+        return self.j.c['money']
+
+    def drop(self, *items):
+        x = self.j.c['ext']['inv']
+        x['lots'] = [l for l in x['lots'] if l['item'] not in items]
+
+    def view(self):
+        return public_state(self.j.state)['careers']['florist']['data']['care']
+
+    def book(self, kind, due_in=None):
+        c = self.j.c
+        day = c['day']
+        self.d['pre'] = [b for b in self.d['pre'] if b['id'] != f'pre-{day}']
+        self.d['pre'].append(dict(id=f'pre-{day}', kind=kind, day=day, due=day + FL.PRE[kind]['lead'], status='offer', stars=None))
+        validate_state(self.j.state)
+        return f'pre-{day}'
+
+    def posts(self, ref):
+        return [p for p in self.j.c['feed'] if p['kind'] == 'review' and p['source'] == ref]
+
+    # --- the cooler ------------------------------------------------------------
+    def test_stages_bud_bloom_wilt(self):
+        c = self.j.c
+        bud = inventory.add_lot(c, 'rose_red', 3, 2, 4, 'partner')
+        old = inventory.add_lot(c, 'rose_pink', 2, 2, 1, 'partner')
+        self.assertEqual(FL._stage(c['day'], bud), 'bud')
+        self.assertEqual(FL._stage(c['day'], old), 'wilt')
+        self.assertEqual(FL._stage(c['day'] + 1, bud), 'bloom')
+        opening = next(l for l in c['ext']['inv']['lots'] if l['item'] == 'rose_white' and l['supplier'] == 'opening')
+        self.assertEqual(FL._stage(c['day'], opening), 'bloom')   # opening stock is already open
+        st = public_state(self.j.state)['careers']['florist']['data']['cooler']['rose_red']['stages']
+        self.assertGreaterEqual(st['bud'], 3)
+
+    def test_water_change_keeps_lots_two_nights(self):
+        j = self.j
+        lot = self.lot('lily', 4)
+        exp = self.exp(lot)
+        r = j.act('fl_water')
+        self.assertIn('không già thêm', r['message'])
+        with self.assertRaises(GameError):
+            j.act('fl_water')
+        self.assertTrue(self.view()['water']['done'])
+        care = self.next_day()['care']
+        self.assertEqual(self.exp(lot), exp + 1)
+        self.assertEqual(self.d['kept'][lot], 1)
+        self.assertTrue(any('không già thêm' in x for x in care))
+        for _ in range(2):
+            j.act('fl_water')
+            self.next_day()
+        self.assertEqual(self.exp(lot), exp + 2)                   # at most two nights per lot
+        self.assertEqual(self.d['kept'][lot], 2)
+
+    def test_one_skipped_day_is_free_two_age_the_cooler(self):
+        lot = self.lot('lily', 4)
+        exp = self.exp(lot)
+        self.next_day()                                             # day 1 closes: water was "yesterday" → free
+        self.assertEqual(self.exp(lot), exp)
+        last = self.lot('rose_pink', 3, life=2)                     # expires tomorrow: never jumps straight to gone
+        exp2 = self.exp(last)
+        care = self.next_day()['care']                              # day 2: two days without fresh water
+        self.assertEqual(self.exp(lot), exp - 1)
+        self.assertTrue(any('đục' in x for x in care))
+        self.assertEqual(self.exp(last), exp2)
+        self.assertFalse(self.view()['water']['done'])
+
+    def test_prep_helper_changes_the_water(self):
+        note = FL.assist(self.j.state, self.j.c, dict(role='prep', name='Tuấn'), None)
+        self.assertIn('thay nước', note)
+        self.assertEqual(self.d['water'], self.j.c['day'])
+        self.assertNotIn('thay nước tủ mát', FL.assist(self.j.state, self.j.c, dict(role='prep', name='Tuấn'), None))
+
+    # --- pre-orders ---------------------------------------------------------------
+    def test_offers_are_seeded_and_capped(self):
+        self.assertEqual([FL._pre_offer(d, 'normal') for d in range(1, 30)], [FL._pre_offer(d, 'normal') for d in range(1, 30)])
+        self.assertIsNone(FL._pre_offer(1, 'normal'))
+        days = [d for d in range(2, 60) if FL._pre_offer(d, 'normal')]
+        self.assertTrue(10 < len(days) < 50)
+        self.assertGreater(sum(1 for d in range(2, 60) if FL._pre_offer(d, 'wedding')), len(days))
+        self.d['pre'] = [dict(id=f'pre-{d}', kind='funeral', day=d, due=d + 1, status='booked', stars=None) for d in (1, 2, 3)]
+        self.j.c['day'] = days[0]
+        FL._care_start(self.j.state, self.j.c, self.d, FL._plan(self.j.c))
+        self.assertEqual(len(self.d['pre']), 3)                     # three open: no new call
+
+    def test_preorder_planned_ahead_is_five_stars(self):
+        j = self.j
+        bid = self.book('anniv')                                    # due in 2 days
+        money = self.money()
+        with self.assertRaises(GameError):
+            j.act('fl_pre', id=bid, do='accept')                    # needs confirm
+        j.act('fl_pre', id=bid, do='accept', confirm=True)
+        self.assertEqual(self.money(), money + 60)
+        with self.assertRaises(GameError):
+            j.act('fl_pre', id=bid, do='make', confirm=True)        # not the due day yet
+        v = next(b for b in self.view()['pre'] if b['id'] == bid)
+        roses = next(r for r in v['rows'] if r['item'] == 'rose_red')
+        day = j.c['day']
+        self.assertEqual(roses['buy'], [day, day + 1])              # roses: 1–2 days ahead
+        self.next_day()
+        self.drop('rose_red', 'babys_breath', 'eucalyptus')
+        self.lot('rose_red', 12)
+        self.lot('babys_breath', 4, life=3)
+        self.lot('eucalyptus', 3, life=5)
+        v = next(b for b in self.view()['pre'] if b['id'] == bid)
+        self.assertTrue(all(r['ready'] >= r['need'] for r in v['rows'] if r['flower']))
+        j.act('fl_water')                                           # a careful florist keeps the water fresh
+        self.next_day()
+        self.assertEqual(j.c['day'], day + 2)
+        money = self.money()
+        r = j.act('fl_pre', id=bid, do='make', confirm=True)
+        self.assertIn('+140 xu', r['message'])
+        self.assertEqual(self.money(), money + 140)
+        self.assertEqual(self.posts(bid)[0]['stars'], 5)
+        b = next(b for b in self.d['pre'] if b['id'] == bid)
+        self.assertEqual((b['status'], b['stars']), ('done', 5))
+        self.assertEqual(self.d['book']['5']['visits'], 1)
+        with self.assertRaises(GameError):
+            j.act('fl_pre', id=bid, do='make', confirm=True)
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_preorder_with_stems_bought_on_the_day_has_buds(self):
+        j = self.j
+        bid = self.book('funeral')
+        j.act('fl_pre', id=bid, do='accept', confirm=True)
+        self.next_day()
+        self.drop('lily', 'mum_white')
+        self.lot('lily', 4)                                         # lilies bought this morning: buds
+        self.lot('mum_white', 16)
+        money = self.money()
+        r = j.act('fl_pre', id=bid, do='make', confirm=True)
+        self.assertIn('nụ', r['message'])
+        self.assertEqual(self.money(), money + 300 - 100 - 10)
+        self.assertEqual(self.posts(bid)[0]['stars'], 4)
+
+    def test_preorder_short_stock_is_refused_and_named(self):
+        j = self.j
+        bid = self.book('funeral')
+        j.act('fl_pre', id=bid, do='accept', confirm=True)
+        self.next_day()
+        self.drop('stand')
+        with self.assertRaises(GameError) as e:
+            j.act('fl_pre', id=bid, do='make', confirm=True)
+        self.assertIn('chân kệ', str(e.exception).lower())
+        v = next(b for b in self.view()['pre'] if b['id'] == bid)
+        self.assertTrue(v['short'])
+
+    def test_preorder_not_made_refunds_the_deposit(self):
+        j = self.j
+        bid = self.book('funeral')
+        j.act('fl_pre', id=bid, do='accept', confirm=True)
+        self.next_day()
+        care = self.next_day()['care']
+        refund = [e for e in j.c['ops']['finance']['ledger'] if e['ref'] == bid and e['amount'] < 0]
+        self.assertEqual(refund[0]['amount'], -100)
+        self.assertEqual(self.posts(bid)[0]['stars'], 1)
+        self.assertEqual(next(b for b in self.d['pre'] if b['id'] == bid)['status'], 'failed')
+        self.assertTrue(any('Không kịp' in x for x in care))
+
+    def test_offer_decline_and_lapse(self):
+        j = self.j
+        bid = self.book('wedding')
+        j.act('fl_pre', id=bid, do='decline')
+        self.assertFalse(any(b['id'] == bid for b in self.d['pre']))
+        bid = self.book('wedding')
+        self.next_day()
+        self.assertFalse(any(b['id'] == bid for b in self.d['pre']))
+        with self.assertRaises(GameError):
+            j.act('fl_pre', id='pre-999', do='accept', confirm=True)
+        with self.assertRaises(GameError):
+            j.act('fl_pre', id=['x'], do='accept', confirm=True)
+        with self.assertRaises(GameError):
+            j.act('fl_pre', id=bid, do='steal', confirm=True)
+
+    # --- the subscription ---------------------------------------------------------
+    def subscribe(self):
+        j = self.j
+        self.d['sub'].update(status='offer')
+        j.act('fl_sub', do='accept', confirm=True)
+        self.assertEqual(self.d['sub']['known'], ['fresh'])
+        self.next_day()
+
+    def round_with(self, tid):
+        return next(r for r in range(200) if tid in FL._sub_menu(self.j.c, r))
+
+    def test_subscription_offered_from_day_three(self):
+        for _ in range(2):
+            self.assertEqual(self.d['sub']['status'], 'none')
+            self.next_day()
+        self.assertEqual(self.d['sub']['status'], 'offer')
+        self.assertEqual(self.view()['sub']['status'], 'offer')
+        self.j.act('fl_sub', do='decline')
+        self.assertEqual(self.d['sub']['retry'], self.j.c['day'] + 5)
+
+    def test_every_menu_has_a_vase_she_likes(self):
+        for r in range(60):
+            menu = FL._sub_menu(self.j.c, r)
+            self.assertEqual(len(set(menu)), 3)
+            self.assertTrue(any(FL.TEMPLATE_INDEX[k]['tags'] == ('pink',) for k in menu))
+
+    def test_lily_vase_teaches_her_card(self):
+        j = self.j
+        self.subscribe()
+        self.d['sub']['round'] = self.round_with('lily')
+        self.shop.stock_up('lily', 3)
+        money = self.money()
+        r = j.act('fl_sub', do='make', pick='lily', confirm=True)
+        self.assertIn('hắt hơi', r['message'])
+        self.assertEqual(self.money(), money + FL.SUB_PRICE)
+        self.assertEqual(self.d['sub']['stars'][-1], 2)             # lily −2, not pink −1
+        self.assertEqual(set(self.d['sub']['known']), {'fresh', 'lily', 'pink'})
+        self.assertIn(FL.SUB_NOTES['lily'], self.view()['sub']['notes'])
+        self.assertEqual(self.d['sub']['next'], j.c['day'] + FL.SUB_EVERY)
+        with self.assertRaises(GameError):
+            j.act('fl_sub', do='make', pick='lily', confirm=True)   # not due again today
+
+    def test_liked_vase_is_five_stars_and_menu_is_enforced(self):
+        j = self.j
+        self.subscribe()
+        c = j.c
+        rnd = self.round_with('pinkrose')
+        self.d['sub']['round'] = rnd
+        menu = FL._sub_menu(c, rnd)
+        other = next(k for k in FL.TEMPLATE_INDEX if k not in menu)
+        with self.assertRaises(GameError):
+            j.act('fl_sub', do='make', pick=other, confirm=True)
+        for k in ('rose_pink', 'babys_breath', 'eucalyptus'):
+            x = c['ext']['inv']
+            x['lots'] = [l for l in x['lots'] if l['item'] != k]
+            inventory.add_lot(c, k, 6, 1, 3, 'partner')
+            next(l for l in x['lots'][::-1] if l['item'] == k)['received'] = c['day'] - 1   # bought yesterday: open
+        j.act('fl_sub', do='make', pick='pinkrose', confirm=True)
+        self.assertEqual(self.d['sub']['stars'][-1], 5)
+        self.assertEqual(self.posts(f'sub-{rnd + 1}')[0]['stars'], 5)
+
+    def test_two_missed_vases_end_the_subscription(self):
+        self.subscribe()
+        self.next_day()                                             # due day passes
+        self.assertEqual(self.d['sub']['misses'], 1)
+        for _ in range(FL.SUB_EVERY):
+            self.next_day()
+        self.assertEqual(self.d['sub']['status'], 'off')
+        self.assertEqual(len([p for p in self.j.c['feed'] if p['kind'] == 'review' and p['source'].startswith('sub-miss')]), 2)
+
+    def test_stop_subscription(self):
+        self.subscribe()
+        with self.assertRaises(GameError):
+            self.j.act('fl_sub', do='stop')
+        self.j.act('fl_sub', do='stop', confirm=True)
+        self.assertEqual(self.d['sub']['status'], 'off')
+
+    # --- the regulars' book, projection and saves -------------------------------------
+    def test_regulars_book_learns_after_visits_and_hides_the_rest(self):
+        j = self.j
+        FL._plan(j.c)['events'] = []
+        t = j.task
+        npc = int(t['npc'].rsplit('_', 1)[1]) - 1
+        r = self.shop.make(t['id'])
+        first, second = FL.NOTES[npc][0][1], FL.NOTES[npc][1][1]
+        self.assertIn(first, r['message'])
+        self.assertEqual(self.d['book'][str(npc)], dict(visits=1, notes=[FL.NOTES[npc][0][0]]))
+        text = json.dumps(public_state(j.state), ensure_ascii=False)
+        self.assertIn(first, text)
+        self.assertNotIn(second, text)
+        row = next(b for b in self.view()['book'] if b['npc'] == t['npc'])
+        self.assertEqual(row['more'], 2)
+
+    def test_tampered_care_data_rejected(self):
+        cases = [
+            lambda d: d.update(water='x'),
+            lambda d: d['kept'].update({'lot-1': 3}),
+            lambda d: d['book'].update({'2': dict(visits=1, notes=['banner', 'early'])}),
+            lambda d: d['book'].update({'9': dict(visits=1, notes=[])}),
+            lambda d: d['pre'].append(dict(id='pre-1', kind='wedding', day=1, due=2, status='offer', stars=None)),
+            lambda d: d['pre'].append(dict(id='pre-1', kind='cake', day=1, due=4, status='offer', stars=None)),
+            lambda d: d['pre'].append(dict(id='pre-1', kind='wedding', day=1, due=4, status='done', stars=None)),
+            lambda d: d['sub'].update(misses=2),
+            lambda d: d['sub'].update(known=['secret']),
+            lambda d: d['sub'].update(status='forever'),
+        ]
+        for i, bad in enumerate(cases):
+            s = copy.deepcopy(self.j.state)
+            bad(s['careers']['florist']['ext']['data'])
+            with self.assertRaises(GameError, msg=str(i)):
+                validate_state(s)
+
+    def test_old_save_without_care_keys(self):
+        s = copy.deepcopy(self.j.state)
+        d = s['careers']['florist']['ext']['data']
+        for k in ('water', 'kept', 'book', 'pre', 'sub'):
+            d.pop(k)
+        view = public_state(s)['careers']['florist']['data']['care']
+        self.assertFalse(view['water']['done'])
+        self.assertEqual(view['pre'], [])
+        validate_state(s)
+        self.assertEqual(d['water'], s['careers']['florist']['day'] - 1)
+        from game.engine import apply_action
+        s, _ = apply_action(s, 'florist', 'fl_water', {})
+        validate_state(s)
+
+    def test_public_view_does_not_write(self):
+        s = copy.deepcopy(self.j.state)
+        d = s['careers']['florist']['ext']['data']
+        for k in ('water', 'kept', 'book', 'pre', 'sub'):
+            d.pop(k)
+        before = json.dumps(s, sort_keys=True)
+        public_state(s)
+        self.assertEqual(json.dumps(s, sort_keys=True), before)
+
+    def test_autoplay_a_caring_week(self):
+        """Eight days of a florist who changes the water, takes bookings and keeps Bà Tám's vases."""
+        j, shop = self.j, self.shop
+        made = subs = 0
+        for _ in range(8):
+            j.c['xp'] = max(j.c['xp'], 90)
+            if self.d['water'] != j.c['day']:
+                j.act('fl_water')
+            for b in list(self.d['pre']):
+                if b['status'] == 'offer':
+                    j.act('fl_pre', id=b['id'], do='accept', confirm=True)
+                if b['status'] == 'booked' and b['due'] == j.c['day']:
+                    for k, q in FL.PRE[b['kind']]['recipe'].items():
+                        shop.stock_up(k, q)
+                    j.act('fl_pre', id=b['id'], do='make', confirm=True)
+                    made += 1
+            sub = self.d['sub']
+            if sub['status'] == 'offer':
+                j.act('fl_sub', do='accept', confirm=True)
+            elif sub['status'] == 'on' and sub['next'] == j.c['day']:
+                pick = next(k for k in FL._sub_menu(j.c, sub['round']) if FL.TEMPLATE_INDEX[k]['tags'] == ('pink',))
+                for k, q in {**FL.TEMPLATE_INDEX[pick]['stems'], **FL.SUB_WRAP}.items():
+                    shop.stock_up(k, q)
+                j.act('fl_sub', do='make', pick=pick, confirm=True)
+                subs += 1
+            shop.play_day(max_orders=2)
+            j.act('start_day')
+            validate_state(json.loads(json.dumps(j.state)))
+        self.assertGreaterEqual(made, 1)
+        self.assertGreaterEqual(subs, 1)
+        self.assertFalse(any(b['status'] == 'failed' for b in self.d['pre']))
+        self.assertTrue(self.d['book'])
+
+
 if __name__ == '__main__':
     unittest.main()
