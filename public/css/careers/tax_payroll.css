@@ -1,6 +1,6 @@
 /* Dịch vụ Thuế & Tiền lương Minh Bạch — the payroll desk inside the shared office desktop.
    Colours come only from theme tokens. Text is at least 14px (.933rem). */
-@import url('office_kit.css');
+/* Shared office desktop: careers/office_kit.css, loaded as its own <link> before this sheet (public/js/v4/careers.js CSS_KIT). */
 
 .career-job.tp h3,.career-job.tp h4,.career-job.tp h5{margin:0}
 .career-job.tp p{margin:0}

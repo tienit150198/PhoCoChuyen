@@ -2,6 +2,7 @@
  * situations with several points of view, and job applications. Views return
  * HTML strings; clicks go through the global data-action/data-command delegate. */
 import {icon,portrait,escapeHTML as esc} from '../icons.js';
+import {asset} from '../assets.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const attrs=obj=>Object.entries(obj).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
@@ -144,7 +145,7 @@ function groupName(g){return {base:'Nguyên liệu chính',pack:'Bao bì',sauce:
  * entry, and the thread. Wide sheets show list + thread side by side; narrow
  * sheets show one at a time with a back button. */
 export function feedbackView(env){
-  if(typeof document!=='undefined'&&!document.querySelector('link[data-reviews-css]')){const l=document.createElement('link');l.rel='stylesheet';l.href='/css/reviews.css';l.dataset.reviewsCss='1';document.head.append(l);}
+  if(typeof document!=='undefined'&&!document.querySelector('link[data-reviews-css]')){const l=document.createElement('link');l.rel='stylesheet';l.href=asset('/css/reviews.css');l.dataset.reviewsCss='1';document.head.append(l);}
   const {api,ui}=env,c=api.state.careers[api.state.current];
   // Removed (reported) reviews stay in the list, struck through, but never count.
   const all=c.feed.filter(p=>p.stars||p.feedback?.removed),rated=all.filter(p=>p.stars),count=rated.length;

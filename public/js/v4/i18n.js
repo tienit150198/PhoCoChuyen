@@ -20,7 +20,8 @@ export const language=()=>lang;
 
 async function load(){
   if(dict)return;
-  loading??=fetch('/i18n/en.json',{credentials:'same-origin'}).then(r=>r.ok?r.json():{strings:{},patterns:[]}).catch(()=>({strings:{},patterns:[]}));
+  const url=globalThis.__mnlBoot?.asset?.('/i18n/en.json')||'/i18n/en.json',early=globalThis.__mnlBoot?.i18n||Promise.resolve(null);
+  loading??=early.then(pack=>pack||fetch(url,{credentials:'same-origin'}).then(r=>r.ok?r.json():{strings:{},patterns:[]})).catch(()=>({strings:{},patterns:[]}));
   const data=await loading;
   dict=data.strings||{};
   outputs=new Set(Object.values(dict));

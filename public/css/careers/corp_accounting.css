@@ -1,6 +1,6 @@
 /* Kế toán doanh nghiệp · Mây Tre Xanh — the accounting desk inside the shared office desktop.
    Colours come only from theme tokens. Text is at least 14px (.933rem). */
-@import url('office_kit.css');
+/* Shared office desktop: careers/office_kit.css, loaded as its own <link> before this sheet (public/js/v4/careers.js CSS_KIT). */
 
 .career-job.ca .grow{flex:1;min-width:0}
 .career-job.ca .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}

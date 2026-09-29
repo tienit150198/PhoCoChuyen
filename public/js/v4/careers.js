@@ -2,9 +2,13 @@
 import {icon,portrait,escapeHTML as esc} from '../icons.js';
 import {t as tr} from './i18n.js';
 import {procedureView} from './procedure.js';
+import {asset} from '../assets.js';
 
 const modules={};
 const scratch={};
+// Careers whose stylesheet builds on a shared kit. The kit is its own <link> (loaded in parallel, placed
+// before the career's sheet) instead of an @import inside it, which cost a second round trip.
+export const CSS_KIT={cafe_bakery:'food_kit',florist:'food_kit',restaurant:'food_kit',tax_payroll:'office_kit',group_accounting:'office_kit',corp_accounting:'office_kit'};
 
 /** Import career workbenches (+ their stylesheets). `waitCss`: also wait (max 1.5 s) until the stylesheets
  * are in, so the first frame of a workbench is never unstyled (startup loads only the current career). */
@@ -12,12 +16,15 @@ export async function loadCareerModules(ids,waitCss=false){
   await Promise.all(ids.map(async id=>{
     try{
       const mod=modules[id]=(await import(`../careers/${id}.js`)).default;
-      // Optional scoped stylesheet: public/css/careers/<id>.css
-      if(mod?.css&&!document.querySelector(`link[data-career-css="${id}"]`)){
-        const link=document.createElement('link');link.rel='stylesheet';link.href=`/css/careers/${id}.css`;link.dataset.careerCss=id;
-        const ready=new Promise(done=>{link.onload=link.onerror=done;setTimeout(done,1500);});
-        document.head.append(link);if(waitCss)await ready;
-      }
+      // Optional scoped stylesheet: public/css/careers/<id>.css (+ its kit, see CSS_KIT)
+      const sheets=mod?.css?[CSS_KIT[id],id].filter(Boolean):[];
+      // boot.js preloads the last opened workplace on the next visit, before bootstrap and app.js.
+      try{localStorage.setItem('mnl.warm',JSON.stringify([`/js/careers/${id}.js`,...sheets.map(n=>`/css/careers/${n}.css`)]));}catch{/* storage blocked */}
+      const ready=sheets.filter(n=>!document.querySelector(`link[data-career-css="${n}"]`)).map(n=>{
+        const link=document.createElement('link');link.rel='stylesheet';link.href=asset(`/css/careers/${n}.css`);link.dataset.careerCss=n;
+        document.head.append(link);return new Promise(done=>{link.onload=link.onerror=done;setTimeout(done,1500);});
+      });
+      if(waitCss)await Promise.all(ready);
     }
     catch(error){console.warn('Chưa có giao diện nghề',id,error);}
   }));
