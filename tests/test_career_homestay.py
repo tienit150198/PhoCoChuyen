@@ -1659,5 +1659,501 @@ class HomestayConsequenceTests(unittest.TestCase):
         validate_state(json.loads(json.dumps(j2.state)))
 
 
+class HomestayCareTests(unittest.TestCase):
+    """Care loop: rooms that age, guests who stay, regulars and the couple of room 3, garden, firewood, the app rating.
+    Actions return a fresh state, so data is always read again through self.data / self.st after j.act."""
+
+    def setUp(self):
+        self.clock = Clock()
+        self.old = kit.clock
+        kit.clock = self.clock
+
+    def tearDown(self):
+        kit.clock = self.old
+
+    def at(self, day=3, slot=0):
+        j = Journey('homestay', slot=slot, day=day)
+        if j.c['money'] < 500:
+            kit.money(j.state, j.c, 500 - j.c['money'], 'Vốn đầu mùa', None, 'event_income')
+        for item in ('towel', 'bread', 'milk', 'heater_gas'):
+            if kit.stock(j.c, item) < 10:
+                kit.add_lot(j.c, item, 10, 0, 5, 'test')
+        self.data(j)['bookings'] = []
+        return j
+
+    def data(self, j):
+        return j.c['ext']['data']
+
+    def room(self, j, rid):
+        return self.data(j)['rooms'][rid]
+
+    def st(self, j, rid):
+        return self.data(j)['stays'][rid]
+
+    def ok(self, j):
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def bad(self, j, mutate):
+        s = json.loads(json.dumps(j.state))
+        mutate(s['careers']['homestay']['ext']['data'])
+        with self.assertRaises(GameError):
+            validate_state(s)
+
+    def pub(self, j):
+        return public_state(j.state)['careers']['homestay']['data']
+
+    def guest(self, j, rid='quy', name='Cô Diệp', nights=2, **needs):
+        """A guest who arrived yesterday and sleeps here again tonight, with today's needs set by the test."""
+        self.room(j, rid).update(status='occupied', guest=name, task=None, until=j.c['day'] + nights, hk=None)
+        st = H._stay_open(j.c, rid, name, H._guest_npc(name))
+        st['since'] = j.c['day'] - 1
+        H._roll_stays(j.c)
+        self.assertEqual(st['rolled'], j.c['day'])
+        st.update(dict(dnd=False, cold=False, ask=None, trip=None, opts=[]), **needs)
+        return st
+
+    def rows(self, j):
+        return {r['label']: r for r in self.pub(j)['care']}
+
+    # ------------------------------------------------------------ saves
+    def test_old_save_gains_the_care_loop(self):
+        j = self.at()
+        d = self.data(j)
+        d['rooms']['quy'].update(status='occupied', guest='Anh Kiệt', until=j.c['day'] + 2)
+        for k in list(H.DATA_CARE):
+            d.pop(k, None)
+        for r in d['rooms'].values():
+            r.pop('wear', None)
+            r.pop('snag', None)
+        old = json.loads(json.dumps(j.state))
+        validate_state(old)
+        dd = old['careers']['homestay']['ext']['data']
+        self.assertEqual({r['wear'] for r in dd['rooms'].values()}, {100})
+        self.assertEqual(dd['stays']['quy']['npc'], 6)
+        self.assertEqual((dd['garden'], dd['wood'], dd['anniv']['next']), (80, 4, H.ANNIV_FIRST))
+        j.state = old
+        j.act('ask', task=j.task['id'])      # and it plays on
+        self.ok(j)
+
+    def test_initial_rooms_have_upkeep_and_door_numbers(self):
+        d = H.initial()
+        self.assertEqual(d['rooms']['gac']['wear'], 75)
+        self.assertIsNone(d['rooms']['gac']['snag'])
+        self.assertEqual(set(d['stays']), {'suong'})
+        self.assertEqual(sorted(r['no'] for r in H.ROOMS), [1, 2, 3, 4, 5])
+        self.assertEqual(H.ROOM_INDEX['thong']['no'], 3)
+        self.assertNotIn('🌫', json.dumps(H.content(), ensure_ascii=False))
+
+    # ------------------------------------------------------------ room upkeep
+    def test_rooms_age_with_occupied_nights_and_get_small_repairs(self):
+        j = self.at()
+        d = self.data(j)
+        d['rooms']['quy'].update(status='occupied', guest='Anh Kiệt', until=j.c['day'] + 5, wear=65)
+        d['rooms']['ho'].update(status='occupied', guest='Chị Thu Hà', until=j.c['day'] + 5, wear=100)
+        d['rooms']['thong'].update(status='clean', wear=65)
+        rain = H.today(j.c['day'])['id'] == 'rain'
+        H._wear_night(j.c)
+        self.assertEqual(d['rooms']['quy']['wear'], 65 - H.WEAR_NIGHT - (H.WEAR_RAIN if rain else 0))
+        self.assertEqual(d['rooms']['ho']['wear'], 100 - H.WEAR_NIGHT - H.WEAR_BALCONY - (H.WEAR_RAIN if rain else 0))
+        self.assertEqual(d['rooms']['thong']['wear'], 65)          # empty rooms do not age
+        self.assertIn(d['rooms']['quy']['snag'], H.SNAGS)
+        self.assertIsNone(d['rooms']['ho']['snag'])
+        self.ok(j)
+
+    def test_turnover_of_a_worn_room_with_a_snag_loses_quality(self):
+        j = self.at()
+        self.room(j, 'gac').update(status='dirty', wear=40, snag='Vòi lavabo nhỏ giọt', hk=None)
+        j.act('hs_clean', room='gac', step='strip')
+        for step in ('bath', 'bed', 'amenity', 'inspect'):
+            j.act('hs_clean', room='gac', step=step)
+        self.clock.t += (H._air(j.c)['damp'] + H._air(j.c)['cold']) / 2
+        r = j.act('hs_clean', room='gac', step='ready')
+        self.assertEqual(self.room(j, 'gac')['q'], 3)
+        self.assertIn('tổng vệ sinh', r['message'])
+        self.assertIn('vòi lavabo', r['message'])
+
+    def test_deep_clean_and_fix(self):
+        j = self.at()
+        self.room(j, 'thong').update(status='clean', wear=30, snag='Rèm cửa sổ tuột móc')
+        rows = self.rows(j)
+        self.assertIn('Tổng vệ sinh Đồi Thông', rows)
+        self.assertIn('Sửa vặt Đồi Thông: rèm cửa sổ tuột móc', rows)
+        money = j.c['money']
+        with self.assertRaises(GameError):
+            j.act('hs_deep', room='thong')                          # spends coins: needs a confirmation
+        j.act('hs_deep', room='thong', confirm=True)
+        j.act('hs_fix', room='thong', confirm=True)
+        self.assertEqual((self.room(j, 'thong')['wear'], self.room(j, 'thong')['snag']), (100, None))
+        self.assertEqual(j.c['money'], money - H.DEEP_COST - H.FIX_COST)
+        with self.assertRaises(GameError):
+            j.act('hs_deep', room='thong', confirm=True)            # already fresh
+        with self.assertRaises(GameError):
+            j.act('hs_fix', room='thong', confirm=True)             # nothing to fix
+        self.room(j, 'quy').update(status='occupied', guest='Anh Kiệt', until=j.c['day'] + 2, wear=20, snag='Ổ cắm đầu giường lỏng')
+        with self.assertRaises(GameError):
+            j.act('hs_deep', room='quy', confirm=True)              # guests inside
+        j.act('hs_fix', room='quy', confirm=True)                   # small repairs while the guests are out
+        self.assertIsNone(self.room(j, 'quy')['snag'])
+        with self.assertRaises(GameError):
+            j.act('hs_deep', room='ho', confirm=True)               # locked room
+        self.ok(j)
+
+    def test_a_big_repair_also_fixes_the_snag(self):
+        j = self.at()
+        self.room(j, 'suong').update(status='maintenance', note='Vòi sen rỉ nước', snag='Bản lề cửa kêu cót két', guest=None, until=0, task=None)
+        j.act('hs_repair', room='suong', confirm=True)
+        self.assertIsNone(self.room(j, 'suong')['snag'])
+
+    # ------------------------------------------------------------ guests who stay
+    def test_needs_are_seeded_and_only_for_guests_who_stay(self):
+        j = self.at(day=5)
+        d = self.data(j)
+        d['rooms']['quy'].update(status='occupied', guest='Anh Tuấn', task=None, until=7, hk=None)
+        d['rooms']['thong'].update(status='occupied', guest='Anh Kiệt', task=None, until=5, hk=None)   # leaves today
+        d['rooms']['suong'].update(status='occupied', guest='Mai Chi', task=None, until=7, hk=None)    # arrived today
+        H._data(j.c)
+        d['stays']['quy']['since'] = d['stays']['thong']['since'] = 4
+        twin = copy.deepcopy(j.state)
+        H._roll_stays(j.c)
+        self.assertEqual(d['stays']['quy']['rolled'], 5)
+        self.assertEqual((d['stays']['thong']['rolled'], d['stays']['suong']['rolled']), (0, 0))
+        H._roll_stays(twin['careers']['homestay'])
+        self.assertEqual(twin['careers']['homestay']['ext']['data']['stays']['quy'], d['stays']['quy'])
+        seen = set()
+        for day in range(2, 40):
+            jj = self.at(day=day)
+            dd = self.data(jj)
+            dd['rooms']['quy'].update(status='occupied', guest='Anh Tuấn', task=None, until=day + 1, hk=None)
+            H._data(jj.c)['stays']['quy']['since'] = day - 1
+            H._roll_stays(jj.c)
+            st = dd['stays']['quy']
+            seen.add((st['dnd'], st['cold'], st['ask']))
+            if st['cold']:
+                self.assertIn(H.today(day)['id'], ('cold', 'rain'))
+            if st['ask'] == 'trip':
+                fits = [p for p in st['opts'] if H._trip_fits(H.TRIP_INDEX[st['trip']], H.PLACE_INDEX[p])]
+                self.assertEqual(len(st['opts']), 4)
+                self.assertGreaterEqual(len(fits), 1)
+            if st['ask'] == 'umbrella':
+                self.assertEqual(H.today(day)['id'], 'rain')
+        self.assertTrue(any(x[0] for x in seen) and any(x[1] for x in seen) and len({x[2] for x in seen}) >= 3)
+
+    def test_tidy_or_door_depends_on_the_sign(self):
+        j = self.at()
+        self.guest(j, dnd=False)
+        towels = kit.stock(j.c, 'towel')
+        j.act('hs_stay', room='quy', do='tidy')
+        self.assertEqual((self.st(j, 'quy')['tidy'], kit.stock(j.c, 'towel')), ('tidy', towels - 2))
+        with self.assertRaises(GameError):
+            j.act('hs_stay', room='quy', do='door')
+        self.guest(j, rid='thong', name='Anh Kiệt', dnd=True)
+        self.assertIsNone(self.rows(j)['Đồi Thông (số 3): để khăn ở cửa']['ok'])
+        r = j.act('hs_stay', room='thong', do='tidy')
+        self.assertTrue(r.get('refused'))
+        self.assertEqual(self.st(j, 'thong')['tidy'], 'intrude')
+        self.guest(j, rid='suong', name='Mai Chi', dnd=True)
+        j.act('hs_stay', room='suong', do='door')
+        self.assertEqual(self.st(j, 'suong')['tidy'], 'door')
+        with self.assertRaises(GameError):
+            j.act('hs_stay', room='gac', do='tidy')                 # nobody staying there
+        with self.assertRaises(GameError):
+            j.act('hs_stay', room='quy', do='sweep')
+        self.ok(j)
+
+    def test_warm_a_cold_night_with_wood_or_gas(self):
+        j = self.at()
+        self.guest(j, cold=True)
+        with self.assertRaises(GameError):
+            j.act('hs_stay', room='quy', do='warm', how='coal')
+        self.data(j)['wood'] = 0
+        with self.assertRaises(GameError):
+            j.act('hs_stay', room='quy', do='warm', how='wood')     # no wood: it only comes tomorrow
+        gas = kit.stock(j.c, 'heater_gas')
+        j.act('hs_stay', room='quy', do='warm', how='gas')
+        self.assertEqual((self.st(j, 'quy')['warmed'], kit.stock(j.c, 'heater_gas')), ('gas', gas - 1))
+        self.guest(j, rid='thong', name='Anh Kiệt', cold=True)
+        self.data(j)['wood'] = 2
+        j.act('hs_stay', room='thong', do='warm', how='wood')
+        self.assertEqual((self.st(j, 'thong')['warmed'], self.data(j)['wood']), ('wood', 1))
+        self.guest(j, rid='suong', name='Mai Chi', cold=False)
+        with self.assertRaises(GameError):
+            j.act('hs_stay', room='suong', do='warm', how='wood')   # not a cold night
+        self.ok(j)
+
+    def test_suggest_a_place_that_fits_the_wish(self):
+        j = self.at()
+        opts = ['vuon_dau', 'thac', 'cafe_may', 'trail']
+        self.guest(j, ask='trip', trip='gentle', opts=opts)
+        with self.assertRaises(GameError):
+            j.act('hs_stay', room='quy', do='ask', place='ho_xuan')     # not one of the four on the card
+        r = j.act('hs_stay', room='quy', do='ask', place='cafe_may')
+        self.assertTrue(r.get('refused'))
+        self.assertIn('bậc thang', r['message'])
+        self.assertEqual(self.st(j, 'quy')['asked'], 'bad')
+        with self.assertRaises(GameError):
+            j.act('hs_stay', room='quy', do='ask', place='vuon_dau')    # no second try
+        self.guest(j, rid='thong', name='Anh Kiệt', ask='trip', trip='gentle', opts=opts)
+        j.act('hs_stay', room='thong', do='ask', place='vuon_dau')
+        self.assertEqual(self.st(j, 'thong')['asked'], 'ok')
+        self.guest(j, rid='suong', name='Mai Chi', ask='box')
+        bread, milk = kit.stock(j.c, 'bread'), kit.stock(j.c, 'milk')
+        j.act('hs_stay', room='suong', do='ask')
+        self.assertEqual((self.st(j, 'suong')['asked'], kit.stock(j.c, 'bread'), kit.stock(j.c, 'milk')), ('ok', bread - 1, milk - 1))
+        self.ok(j)
+
+    def test_close_turns_the_day_into_mood_and_departure_into_a_review(self):
+        j = self.at()
+        self.data(j)['garden'] = 50
+        good = self.guest(j, rid='quy', name='Cô Diệp', nights=1, cold=True, ask='tea')['mood']
+        poor = self.guest(j, rid='thong', name='Anh Kiệt', nights=1, cold=True, ask='tea')['mood']
+        j.act('hs_stay', room='quy', do='tidy')
+        j.act('hs_stay', room='quy', do='warm', how='gas')
+        j.act('hs_stay', room='quy', do='ask')
+        j.act('end_day')
+        good_after, poor_after = self.st(j, 'quy')['mood'], self.st(j, 'thong')['mood']
+        self.assertEqual(good_after, min(100, good + H.DELTA['warm'] + H.DELTA['ask_ok'] + H.DELTA['full']))
+        self.assertEqual(poor_after, max(H.MOOD_MIN, poor + H.DELTA['tidy_miss'] + H.DELTA['cold_miss'] + H.DELTA['ask_miss']))
+        self.assertTrue(any('Khách ở tiếp: 2 phòng' in x for x in j.c['shift_summary']['career']['lines']))
+        self.assertIn('lạnh buốt', self.st(j, 'thong')['log'][-1])
+        self.ok(j)
+        seen = {p['id'] for p in j.c['feed']}
+        j.act('start_day')                                              # both leave this morning
+        stays = [p for p in j.c['feed'] if p['id'] not in seen and p['kind'] == 'review' and str(p['source']).startswith('stay-')]
+        stars = {p['npc']: p['stars'] for p in stays}
+        self.assertEqual(stars[kit.npc_id('homestay', 2)], H._stars(good_after))
+        self.assertEqual(stars[kit.npc_id('homestay', 6)], 2)
+        text = next(p['text'] for p in stays if p['npc'] == kit.npc_id('homestay', 6))
+        self.assertIn('rét buốt', text)
+        book = self.data(j)['book']
+        self.assertNotIn('quy', self.data(j)['stays'])
+        self.assertEqual((book['2']['visits'], book['2']['fav'], book['6']['fav']), (1, 'quy', None))
+        self.ok(j)
+
+    def test_mood_has_a_floor_and_one_good_day_recovers(self):
+        j = self.at()
+        st = self.guest(j, cold=True, ask='tea', dnd=True)
+        st['mood'] = H.MOOD_MIN
+        H._score_stays(j.c)
+        self.assertEqual(st['mood'], H.MOOD_MIN)
+        st.update(rolled=j.c['day'], tidy='door', cold=True, warmed='wood', ask='tea', asked='ok')
+        H._score_stays(j.c)
+        self.assertGreaterEqual(st['mood'], H.MOOD_MIN + 15)
+
+    def test_checkout_ticket_carries_the_stay_row_instead_of_a_second_review(self):
+        day, slot = find('checkout', lambda t: True, range(3, 40))
+        j = Journey('homestay', slot=slot, day=day)
+        t = j.task
+        rid = t['room']
+        self.assertTrue(rid)
+        self.st(j, rid).update(scored=2, mood=90, low=None)
+        tid = t['id']
+        j.act('ask', task=tid)
+        j.act('hs_inspect', task=tid)
+        t = j.get(tid)
+        for k, q in H._truth_bill(t).items():
+            for _ in range(q):
+                j.act('hs_line', task=tid, line=k, delta=1)
+        if t['_x']['lost']:
+            j.act('hs_return', task=tid)
+        seen = {p['id'] for p in j.c['feed']}
+        j.act('hs_settle', task=tid, confirm=True)
+        t = j.get(tid)
+        self.assertEqual(t['stay']['stars'], 5)
+        post = next(p for p in j.c['feed'] if p['kind'] == 'review' and p['source'] == tid)
+        self.assertEqual(next(x for x in post['feedback']['criteria'] if x['key'] == 'stay')['score'], 5)
+        self.assertFalse(any(str(p['source']).startswith('stay-') for p in j.c['feed'] if p['id'] not in seen))
+        self.assertNotIn(rid, self.data(j)['stays'])
+        self.ok(j)
+
+    def test_housekeeper_tidies_and_respects_the_sign(self):
+        j = self.at()
+        a = self.guest(j, rid='quy', name='Anh Tuấn', dnd=True)
+        b = self.guest(j, rid='thong', name='Anh Kiệt', dnd=False)
+        for rid in ('gac', 'suong'):
+            self.room(j, rid).update(status='clean', hk=None)
+        H.assist(j.state, j.c, dict(role='housekeeping'), None)
+        H.assist(j.state, j.c, dict(role='housekeeping'), None)
+        self.assertEqual((a['tidy'], b['tidy']), ('door', 'tidy'))
+
+    # ------------------------------------------------------------ regulars and the couple of room 3
+    def test_guest_book_learns_notes_one_visit_at_a_time(self):
+        j = self.at()
+        self.data(j)['book']['6'] = dict(visits=1, first=1, last=2, room='thong', fav='thong', stars=5)
+        blob = json.dumps(public_state(j.state), ensure_ascii=False)
+        first, second = H.GUEST_NOTES[6]
+        self.assertIn(first[1], blob)
+        self.assertNotIn(second[1], blob)                                # unlearned notes stay on the server
+        row = next(r for r in self.pub(j)['book'] if r['npc'] == kit.npc_id('homestay', 6))
+        self.assertEqual((row['visits'], row['more'], len(row['notes'])), (1, 1, 1))
+        self.data(j)['book']['6']['visits'] = 2
+        self.assertIn(second[1], json.dumps(public_state(j.state), ensure_ascii=False))
+        self.ok(j)
+
+    def test_regular_gets_a_review_row_for_their_room(self):
+        pred = lambda t: (t['job'] == 'checkin' and not t['_x'].get('case') and t['gen'] and t['needs']['size'] == 2
+                          and t['_x']['adults'] == t['needs']['adults'] and t['_x']['kids'] == t['needs']['kids'] and not t['needs']['cold'])
+        for fav, give, score in (('thong', 'thong', 5), ('thong', 'suong', 4), ('ho', 'suong', 5)):
+            day, slot = pick(pred, range(2, 60))
+            j = Journey('homestay', slot=slot, day=day)
+            d = self.data(j)
+            d['bookings'] = []
+            for rid in ('thong', 'suong', 'gac', 'quy'):
+                d['rooms'][rid].update(status='clean', q=5, guest=None, task=None, until=0, hk=None)
+            t = j.task
+            npc = H._npc_index(t)
+            d['book'][str(npc)] = dict(visits=2, first=1, last=1, room=fav, fav=fav, stars=5)
+            tid = t['id']
+            j.act('ask', task=tid)
+            j.act('hs_verify', task=tid, entry=t['_x']['match'])
+            j.act('hs_ids', task=tid, mode='look')
+            j.act('hs_count', task=tid)
+            j.act('hs_assign', task=tid, rooms=[give])
+            j.act('hs_welcome', task=tid, confirm=True)
+            post = next(p for p in j.c['feed'] if p['kind'] == 'review' and p['source'] == tid)
+            row = next(x for x in post['feedback']['criteria'] if x['key'] == 'regular')
+            self.assertEqual(row['score'], score, (fav, give))
+            self.assertTrue(self.st(j, give)['regular'])
+            self.assertGreater(self.st(j, give)['mood'], H.MOOD_START)
+            self.ok(j)
+
+    def next_day(self, j):
+        j.act('end_day', carry_event=True)
+        j.act('start_day')
+
+    def test_the_couple_of_room_three_book_their_room_every_year(self):
+        j = Journey('homestay')
+        self.data(j)['bookings'] = []
+        while j.c['day'] < H.ANNIV_FIRST - H.ANNIV_LEAD:
+            self.next_day(j)
+        b = next(b for b in self.data(j)['bookings'] if b.get('anniv'))
+        self.assertEqual((b['rooms'], b['start'], b['nights'], b['npc'], b['anniv']), (['thong'], H.ANNIV_FIRST, 2, 2, 12))
+        self.assertEqual(self.data(j)['anniv']['next'], H.ANNIV_FIRST + H.ANNIV_EVERY)
+        self.assertTrue(any('phòng số 3 như mọi năm' in x['text'] for x in j.c['journal']))
+        self.assertTrue(H._blocked(j.c, 'thong', H.ANNIV_FIRST, 1))      # the calendar holds room 3 for them
+        self.assertEqual(self.pub(j)['anniv']['booked']['room'], 'thong')
+        self.ok(j)
+        # they arrive on their day (room 3 made clean), stay two nights and leave with a page in the book
+        while j.c['day'] < H.ANNIV_FIRST:
+            self.next_day(j)
+        self.room(j, 'thong').update(status='clean', q=5, guest=None, task=None, until=0, hk=None)
+        j.act('end_day', carry_event=True)
+        self.assertEqual(self.room(j, 'thong')['status'], 'occupied')
+        self.assertEqual(self.st(j, 'thong')['anniv'], 12)
+        j.act('start_day')
+        self.assertEqual(self.st(j, 'thong')['rolled'], j.c['day'])     # a full day at the house …
+        self.assertFalse(self.room(j, 'thong')['task'])                   # … and no departing ticket takes their room
+        self.next_day(j)
+        self.assertNotIn('thong', self.data(j)['stays'])
+        self.assertEqual([p['year'] for p in self.data(j)['anniv']['pages']], [12])
+        self.assertEqual(self.data(j)['book']['2']['visits'], 1)
+        self.ok(j)
+
+    def test_heads_up_to_keep_room_three_free(self):
+        j = self.at(day=H.ANNIV_FIRST - H.ANNIV_LEAD - 1)
+        label = f'Giữ phòng số 3 trống đêm {H.ANNIV_FIRST}–{H.ANNIV_FIRST + H.ANNIV_NIGHTS - 1}'
+        self.assertTrue(self.rows(j)[label]['ok'])
+        self.data(j)['bookings'].append(dict(id='bk-x', rooms=['thong'], start=H.ANNIV_FIRST, nights=1, guests=2, name='Khách khác',
+                                             total=30, deposit=9, task=None))
+        self.assertEqual((self.rows(j)[label]['ok'], self.rows(j)[label]['tone']), (False, 'danger'))
+        self.assertNotIn(label, self.rows(self.at(day=1)))
+
+    def test_room_three_taken_falls_back_to_a_ground_floor_room(self):
+        j = self.at(day=H.ANNIV_FIRST - H.ANNIV_LEAD)
+        d = self.data(j)
+        d['bookings'] = [dict(id='bk-x', rooms=['thong'], start=H.ANNIV_FIRST, nights=1, guests=2, name='Khách khác', total=30, deposit=9, task=None)]
+        H._anniv_call(j.state, j.c)
+        b = next(b for b in d['bookings'] if b.get('anniv'))
+        self.assertNotEqual(b['rooms'], ['thong'])
+        self.assertFalse(H.ROOM_INDEX[b['rooms'][0]]['stairs'])
+        self.ok(j)
+
+    # ------------------------------------------------------------ garden, firewood, rating
+    def test_garden_dries_and_is_tended(self):
+        j = self.at()
+        self.data(j)['garden'] = 40
+        j.act('hs_garden')
+        self.assertEqual(self.data(j)['garden'], 40 + H.GARDEN_TEND)
+        self.data(j)['garden'] = 100
+        with self.assertRaises(GameError):
+            j.act('hs_garden')
+        mod = H.today(j.c['day'])['id']
+        j.act('end_day')
+        self.assertEqual(self.data(j)['garden'], 100 - H.GARDEN_DECAY.get(mod, 10))
+
+    def test_firewood_ordered_today_arrives_tomorrow(self):
+        j = self.at()
+        money = j.c['money']
+        with self.assertRaises(GameError):
+            j.act('hs_wood')
+        j.act('hs_wood', confirm=True)
+        d = self.data(j)
+        self.assertEqual((d['wood'], d['wood_order'], j.c['money']), (4, H.WOOD_PACK, money - H.WOOD_COST))
+        j.act('hs_wood', confirm=True)
+        with self.assertRaises(GameError):
+            j.act('hs_wood', confirm=True)                              # one delivery a morning is enough
+        j.act('end_day')
+        j.act('start_day')
+        self.assertEqual((self.data(j)['wood'], self.data(j)['wood_order']), (4 + 2 * H.WOOD_PACK, 0))
+        self.ok(j)
+
+    def test_rating_is_logged_and_a_loved_house_is_featured(self):
+        j = self.at(day=3)
+        j.act('end_day')
+        self.assertEqual(self.data(j)['rating'][-1], [3, int(round(H._ota_score(j.c) * 10))])
+        self.assertIn('trend', self.pub(j)['rating_view'])
+        base = copy.deepcopy(j.state)
+        H._ota_new(j.state, j.c, 'steady')
+        normal = len(self.data(j)['ota'])
+        j.state = base
+        for i in range(H.FEATURE_MIN):
+            kit.review(j.state, j.c, kit.npc_id('homestay', 0), 5, 'Tuyệt vời', f'r{i}')
+        self.assertTrue(H._featured(j.c))
+        H._ota_new(j.state, j.c, 'steady')
+        self.assertEqual(len(self.data(j)['ota']), normal + 1)
+
+    # ------------------------------------------------------------ validation, projection, words
+    def test_tampered_care_data_is_rejected(self):
+        j = self.at()
+        self.guest(j)
+        self.ok(j)
+        self.bad(j, lambda d: d['stays']['quy'].update(mood=140))
+        self.bad(j, lambda d: d['stays']['quy'].update(tidy='mopped'))
+        self.bad(j, lambda d: d['stays']['quy'].update(extra=1))
+        self.bad(j, lambda d: d['stays']['quy'].update(ask='trip', trip=None))
+        self.bad(j, lambda d: d['stays']['quy'].update(opts=['nowhere']))
+        self.bad(j, lambda d: d['rooms']['thong'].update(wear=101))
+        self.bad(j, lambda d: d['rooms']['thong'].update(snag='Sập mái'))
+        self.bad(j, lambda d: d['book'].update({'8': dict(visits=1, first=1, last=1, room='thong', fav=None, stars=None)}))
+        self.bad(j, lambda d: d.update(wood=H.WOOD_MAX + 1))
+        self.bad(j, lambda d: d.update(garden=-1))
+        self.bad(j, lambda d: d['anniv'].update(pages=[dict(year=1, day=1, room='lobby', stars=None)]))
+        self.bad(j, lambda d: d.update(rating=[[1, 99]]))
+        self.bad(j, lambda d: d['bookings'].append(dict(id='x', rooms=['thong'], start=9, nights=1, guests=1, name='x', total=1, deposit=0,
+                                                         task=None, npc=99)))
+        # a stay card on an empty room is simply dropped: stays always follow the rooms
+        s = json.loads(json.dumps(j.state))
+        dd = s['careers']['homestay']['ext']['data']
+        dd['stays']['gac'] = copy.deepcopy(dd['stays']['quy'])
+        validate_state(s)
+        self.assertNotIn('gac', dd['stays'])
+
+    def test_care_list_shows_todays_work(self):
+        j = self.at()
+        self.guest(j, rid='quy', name='Anh Tuấn', dnd=True, cold=True, ask='tea')
+        self.data(j)['garden'] = 20
+        rows = self.rows(j)
+        self.assertEqual(rows['Dã Quỳ (số 2): sưởi đêm lạnh']['tone'], 'danger')
+        self.assertIn('Tưới, tỉa vườn cẩm tú cầu', rows)
+        self.assertIn('Dã Quỳ (số 2): pha ấm trà gừng nóng buổi tối', rows)
+        view = self.pub(j)['stays']['quy']
+        self.assertEqual((view['todo'], view['word']), (3, 'Vui vẻ'))
+        self.assertTrue(view['say'])
+
+    def test_new_texts_never_assume_the_hosts_gender(self):
+        texts = json.dumps([H.ASKS, H.TRIPS, H.LOW, H.GUEST_NOTES, H.REVIEW_TEXT, H.SNAGS], ensure_ascii=False)
+        for bad in ('Chị chủ', 'chị chủ', 'anh chủ', 'Anh chủ', 'cô chủ', 'nha anh', 'không anh?', 'thôi anh', 'Anh ơi', 'con bé', 'các anh'):
+            self.assertNotIn(bad, texts)
+
+
 if __name__ == '__main__':
     unittest.main()

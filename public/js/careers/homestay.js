@@ -2,9 +2,11 @@
  *  lost-and-found calls and the surprises that walk in at the counter. */
 const PAN_SCALE=24;   // seconds shown on the frying-pan bar
 const AIR_SCALE=120;  // seconds shown on the window-airing bar
+import {reqList} from '../ui-kit.js';
 const JOB_ICON={checkin:'🔑',checkout:'🧾',breakfast:'🍳',booking:'📅',recommend:'🗺️',claim:'📞'};
 const STATUS={clean:['Sạch','green'],dirty:['Cần dọn','amber'],occupied:['Có khách','blue'],maintenance:['Bảo trì','danger']};
 const CELL={occ:'🛏️',book:'📌',maint:'🔧',free:''};
+const MOOD_EMOJI={'Rất vui':'😊','Vui vẻ':'🙂','Tạm ổn':'😐','Không vui':'😟'};
 const EGG_LABEL={raw:'sống',runny:'lòng đào',well:'chín kỹ',burnt:'cháy'};
 const CLAIM_CHOICES=[['give','🎁 Giao đồ cho người gọi','Giao món đồ cho người đang gọi? Nếu không phải chủ đồ, nhà phải chịu trách nhiệm.'],
   ['channel','🧾 Nhắn người đặt phòng xác nhận trước','Nhắn qua kênh đặt phòng để người đặt xác nhận rồi mới gửi đồ?'],
@@ -18,6 +20,12 @@ const rateInfo=(x,id)=>(x.cc.rates||[]).find(r=>r.id===id)||{id,name:'Giá niêm
 const deskOpen=x=>!!x.room.data?.desk?.ev;
 const airOf=x=>x.room.data?.air||x.cc.air||{damp:15,cold:90};
 const cmdAttr=(x,command,payload)=>`data-command="${x.esc(command)}" data-payload="${x.esc(JSON.stringify(payload))}"`;
+const carBtn=(x,label,action,data={},cls='',extra='')=>`<button type="button" class="${cls}" data-action="car:${action}"${Object.entries(data).map(([k,v])=>` data-${k}="${x.esc(v)}"`).join('')}${extra}>${label}</button>`;
+/* A section whose open/closed state survives re-renders (x.ui.open[key]); `def` is the state before the player touches it. */
+function panel(x,key,head,body,def=false,cls=''){
+  const open=(x.ui.open||{})[key]??def;
+  return `<section class="hs-panel ${cls} ${open?'open':''}">${carBtn(x,`<span class="grow">${head}</span><i aria-hidden="true">${open?'▴':'▾'}</i>`,'fold',{key,open:open?'1':''},'hs-panel-head',` aria-expanded="${open}"`)}${open?`<div class="hs-panel-body">${body}</div>`:''}</section>`;
+}
 
 function checklist(x,rows){
   return `<ul class="checklist">${rows.map(([ok,label,note])=>`<li class="${ok===true?'ok':ok===false?'bad':''}"><span>${ok===true?'✓':ok===false?'✗':'○'}</span>${x.esc(label)}${note?`<small>${x.esc(note)}</small>`:''}</li>`).join('')}</ul>`;
@@ -58,7 +66,9 @@ const st=(t,x,key,alt='ghost')=>focus(t,x)===key?'primary':alt;
 /* ---------------------------------------------------------------- the day, the counter */
 function todayChip(x){
   const d=x.room.data||{},m=d.mod;if(!m)return '';
-  const score=d.score!=null?`<span class="hs-score" title="Điểm trung bình trên app đặt phòng">⭐ ${Number(d.score).toFixed(1)} trên app</span>`:'';
+  const rv=d.rating_view,tr=rv?.trend||0;
+  const spark=rv?.days?.length>2?`<span class="hs-spark" aria-hidden="true">${rv.days.map(([day,v])=>`<i style="height:${Math.max(12,(v-10)/40*100)}%" title="Ngày ${day}: ${(v/10).toFixed(1)}"></i>`).join('')}</span>`:'';
+  const score=d.score!=null?`<span class="hs-score" title="Điểm trung bình trên app đặt phòng">${spark}⭐ ${Number(d.score).toFixed(1)} trên app${tr?` <small class="${tr>0?'hs-up':'hs-down'}">${tr>0?'↑':'↓'}${Math.abs(tr).toFixed(1)}</small>`:''}${rv?.featured?' <small class="hs-up">· nổi bật</small>':''}</span>`:'';
   return `<p class="hs-today"><span aria-hidden="true">${x.esc(m.emoji)}</span> <b>Hôm nay: ${x.esc(m.title)}</b> <small>${x.esc(m.text)}</small>${score}</p>`;
 }
 function deskCard(x){
@@ -113,10 +123,20 @@ function otaRow(x,o){
   const actions=clash?`<p class="small">Xếp sang phòng trống đủ ${o.guests} chỗ (tối đa 2 phòng):</p><div class="hs-chips">${chips}</div>
       <div class="row wrap">${x.cmd(`🔁 Xếp vào ${pick.map(id=>x.esc(roomInfo(x,id).name)).join(' + ')||'…'}${pick.length?` (${cap} chỗ)`:''}`,'hs_sync',{order:o.id,rooms:pick},'ghost small',!pick.length||cap<o.guests||busy)}
       ${x.confirmCmd(`🏡 Nhờ Nhà Gỗ Cô Ba (−${x.cc.walk_fee||15} xu)`,'hs_walk',{order:o.id},`Chuyển ${o.name} sang Nhà Gỗ Cô Ba? Nhà trả ${x.cc.walk_fee||15} xu chênh lệch và taxi.`,'ghost small',busy)}</div>`
+    :annivHint(x,o)?`<div class="row wrap">${x.cmd(`✅ Đồng bộ vào ${x.esc(r.name)}`,'hs_sync',{order:o.id,rooms:[o.room]},'ghost small',busy)}</div>
+      <p class="small">Hoặc xếp sang phòng khác đủ ${o.guests} chỗ:</p><div class="hs-chips">${chips}</div>
+      <div class="row wrap">${x.cmd(`🔁 Xếp vào ${pick.map(id=>x.esc(roomInfo(x,id).name)).join(' + ')||'…'}${pick.length?` (${cap} chỗ)`:''}`,'hs_sync',{order:o.id,rooms:pick},'ghost small',!pick.length||cap<o.guests||busy)}</div>`
     :`<div class="row wrap">${x.cmd(`✅ Đồng bộ vào ${x.esc(r.name)}`,'hs_sync',{order:o.id,rooms:[o.room]},'ghost small',busy)}</div>`;
   return `<li class="hs-ota-row ${clash?'clash':''}"><div class="row spread"><b>${x.esc(o.ota)} · ${x.esc(o.name)}</b><span class="tag ${clash?'danger':'green'}">${clash?'⚠️ Trùng':'Trống'}</span></div>
     <small>${r.emoji} ${x.esc(r.name)} · đêm ${o.start}${o.nights>1?'–'+end:''} · ${o.guests} khách · app chuyển ${x.money(o.net)} (đã trừ ${x.cc.commission||15}%)</small>
-    ${clash?`<p class="hs-warn">⚠️ ${x.esc(clash)} — app đã bán trùng.</p>`:''}${actions}</li>`;
+    ${clash?`<p class="hs-warn">⚠️ ${x.esc(clash)} — app đã bán trùng.</p>`:''}${annivHint(x,o)}${actions}</li>`;
+}
+/* Room 3 is the couple's every year: warn before an app order takes their nights (they have not called yet). */
+function annivHint(x,o){
+  const d=x.room.data||{},a=d.anniv||{},nights=2;
+  if(a.booked||!a.next||o.room!==x.cc.anniv_room||d.today<a.call-2)return '';
+  if(!(o.start<a.next+nights&&a.next<o.start+o.nights))return '';
+  return `<p class="small hs-anniv-hint">🗝️ Đêm ${a.next}–${a.next+nights-1} ${x.esc(x.cc.anniv_name||'Cô Diệp & Chú Khang')} hay xin phòng số 3 — có thể xếp khách app sang phòng khác.</p>`;
 }
 function otaPanel(x,open=false){
   const list=pendingOrders(x);
@@ -137,30 +157,35 @@ function calendar(x,{range=null,picked=[],selectable=false,task=''}={}){
   const head=`<div class="hs-row head"><span class="hs-rname">Phòng</span>${days.map(day=>`<span class="hs-day ${inRange(day)?'want':''}">${day===d.today?'Nay':'N'+day}</span>`).join('')}</div>`;
   const rows=x.cc.rooms.map(r=>{
     const locked=r.unlock>d.level,room=d.rooms[r.id];
-    const name=`${r.emoji} ${x.esc(r.name)}<small>${r.cap}👤${r.stairs?' · 🪜':''}${locked?' · 🔒':''}</small>`;
+    const name=`<span class="hs-rn">${r.emoji} ${x.esc(r.name)}</span><small>số ${r.no} · ${r.cap}👤${r.stairs?' · 🪜':''}${locked?' · 🔒':''}</small>`;
     const label=selectable&&!locked?`<button type="button" class="hs-rname" data-action="car:sel" data-task="${x.esc(task)}" data-room="${x.esc(r.id)}" aria-pressed="${picked.includes(r.id)}">${name}</button>`:`<span class="hs-rname">${name}</span>`;
     const cells=(d.grid[r.id]||[]).map(c=>{
       const ota=wanted[r.id+':'+c.day],clash=ota&&(c.kind!=='free'||ota.length>1);
       const label=(c.label||'Trống')+(ota?` · đơn OTA chờ: ${ota.join(', ')}`:'');
-      return `<span class="hs-cell ${c.kind} ${inRange(c.day)?'want':''} ${ota?'ota':''} ${clash?'clash':''}" title="${x.esc(label)}" aria-label="Ngày ${c.day}: ${x.esc(label)}">${CELL[c.kind]||''}${ota?'<i aria-hidden="true">📥</i>':''}</span>`;
+      return `<span class="hs-cell ${c.kind} ${inRange(c.day)?'want':''} ${ota?'ota':''} ${clash?'clash':''}" title="${x.esc(label)}" aria-label="Ngày ${c.day}: ${x.esc(label)}">${c.anniv?'🗝️':CELL[c.kind]||''}${ota?'<i aria-hidden="true">📥</i>':''}</span>`;
     }).join('');
     return `<div class="hs-row ${picked.includes(r.id)?'picked':''} ${locked?'locked':''} st-${x.esc(room?.status||'')}">${label}${cells}</div>`;
   }).join('');
   return `<div class="hs-cal-wrap"><div class="hs-cal">${head}${rows}</div></div>
-    <p class="hs-legend small muted">🛏️ có khách · 📌 đã đặt · 📥 đơn OTA chưa đồng bộ · 🔧 bảo trì · 🪜 phải leo cầu thang${range?' · cột tô màu = đêm khách hỏi':''}</p>`;
+    <p class="hs-legend small muted">🛏️ có khách · 📌 đã đặt · 🗝️ cô chú phòng số 3 · 📥 đơn OTA chưa đồng bộ · 🔧 bảo trì · 🪜 phải leo cầu thang${range?' · cột tô màu = đêm khách hỏi':''}</p>`;
 }
 
 /* ---------------------------------------------------------------- housekeeping */
 function housekeeping(x){
   const d=x.room.data||{};if(!d.rooms)return '';
+  const busy=deskOpen(x);
   const cards=x.cc.rooms.map(r=>{
-    const room=d.rooms[r.id],locked=r.unlock>d.level,[label,kind]=STATUS[room.status]||['?',''];
+    const room=d.rooms[r.id],locked=r.unlock>d.level,[label,kind]=STATUS[room.status]||['?',''],st=d.stays?.[r.id];
     let body='';
-    if(room.status==='occupied')body=`<small>${x.esc(room.guest||'Khách')} · trả phòng ngày ${room.until}</small>`;
+    if(room.status==='occupied')body=st?stayCard(x,r,room,st):`<small>${x.esc(room.guest||'Khách')} · trả phòng ngày ${room.until}</small>`;
     else if(room.status==='clean')body=`<small class="hs-stars" aria-label="Điểm buồng phòng ${room.q}/5">${'★'.repeat(room.q)}${'☆'.repeat(Math.max(0,5-room.q))}</small>`;
-    else if(room.status==='maintenance')body=`<small>${x.esc(room.note||'Đang sửa')}</small>${locked?(/cấp \d/.test(room.note||'')?'':`<small>🔒 mở ở cấp ${r.unlock}</small>`):x.confirmCmd('🔧 Gọi thợ','hs_repair',{room:r.id},'Gọi thợ sửa phòng này? Tiền công trả ngay, sau đó phòng cần dọn lại.','ghost small',deskOpen(x))}`;
+    else if(room.status==='maintenance'){
+      // The note of a locked room already ends with “mở ở cấp N”: show the lock once, on its own line.
+      const note=String(room.note||'Đang sửa').replace(/\s*[—-]\s*mở ở cấp \d+\s*$/,'');
+      body=`<small>${x.esc(note)}</small>${locked?`<small class="hs-lock">🔒 Mở ở cấp ${r.unlock}</small>`:x.confirmCmd('🔧 Gọi thợ','hs_repair',{room:r.id},'Gọi thợ sửa phòng này? Tiền công trả ngay, sau đó phòng cần dọn lại.','ghost small',busy)}`;
+    }
     else body=x.button(room.hk?'🧹 Dọn tiếp':'🧹 Dọn phòng','car:hk',{room:r.id},'small ghost');
-    return `<article class="hs-roomcard ${x.esc(room.status)} ${x.ui.hk===r.id?'active':''}"><div class="row spread"><b>${r.emoji} ${x.esc(r.name)}</b><span class="tag ${kind}">${label}</span></div><small class="muted">${r.cap} người · ${x.esc(r.beds)}</small>${body}</article>`;
+    return `<article class="hs-roomcard ${x.esc(room.status)} ${x.ui.hk===r.id?'active':''}"><div class="row spread"><b>${r.emoji} ${x.esc(r.name)} <span class="hs-door">số ${r.no}</span></b><span class="tag ${kind}">${label}</span></div><small class="muted">${r.cap} người · ${x.esc(r.beds)}</small>${locked?'':upkeep(x,r,room)}${body}</article>`;
   }).join('');
   const rid=x.ui.hk,room=rid&&d.rooms[rid];
   const lost=(d.lost||[]).filter(l=>l.status==='kept');
@@ -181,6 +206,90 @@ function turnover(x,rid,room){
     ${bar('air',room.hk?.start,[['damp',0,air.damp],['fresh',air.damp,air.cold],['cold',air.cold,AIR_SCALE]],AIR_SCALE)}
     <div class="hs-hksteps">${steps}</div></div>`;
 }
+/* ---------------------------------------------------------------- care loop: upkeep, guests who stay, garden & wood, guest book */
+const wearTone=w=>w>=80?'good':w>=50?'ok':w>=25?'warn':'bad';
+function upkeep(x,r,room){
+  const w=room.wear??100,busy=deskOpen(x),empty=['clean','dirty'].includes(room.status)&&!room.hk&&!room.task;
+  const deep=empty&&w<80?x.confirmCmd(`🧽 Tổng vệ sinh (−${x.cc.deep_cost||3} xu)`,'hs_deep',{room:r.id},`Tổng vệ sinh phòng ${r.name}: giặt rèm, lau gầm giường, xịt chống ẩm${r.id==='ho'?', lau lan can gỗ và tưới hoa ban công':''}? Độ tươm tất về 100%.`,w<(x.cc.wear_low||50)?'small':'ghost small',busy):'';
+  const snag=room.snag?`<div class="hs-snag"><span>🔧 ${x.esc(room.snag)}</span>${x.confirmCmd(`Sửa (−${x.cc.fix_cost||4} xu)`,'hs_fix',{room:r.id},`Mua đồ sửa: ${room.snag.toLowerCase()}?`,'ghost small',busy||room.status==='maintenance')}</div>`:'';
+  return `<div class="hs-wear ${wearTone(w)}" title="Độ tươm tất: mỗi đêm có khách giảm dần, tổng vệ sinh để phục hồi"><div class="bar"><i style="width:${w}%"></i></div><small>Tươm tất ${w}% · ${x.esc(room.wear_word||'')}</small></div>${snag}${deep?`<div class="row wrap">${deep}</div>`:''}`;
+}
+function stayCard(x,r,room,st){
+  const d=x.room.data,today=d.today,busy=deskOpen(x);
+  const head=`<div class="hs-stay-head"><span class="hs-mood" aria-hidden="true">${MOOD_EMOJI[st.word]||'🙂'}</span><span class="grow"><b>${x.esc(st.guest)}</b><small>${x.esc(st.word)} · trả phòng ngày ${room.until}${st.regular?' · khách quen':''}</small></span></div>`;
+  const moodBar=`<div class="hs-moodbar"><i style="width:${st.mood}%"></i></div>`;
+  if(st.rolled!==today){
+    const why=room.task?'Đang làm thủ tục trả phòng.':room.until<=today?'Trả phòng hôm nay.':'Mới nhận phòng — từ mai mới cần chăm.';
+    return `<div class="hs-stay">${head}${moodBar}<small class="muted">${why}</small>${stayLog(x,r,st)}</div>`;
+  }
+  const rows=[],btns=[];
+  const tidyDone=st.tidy!=null;
+  rows.push({ok:st.tidy==='tidy'||st.tidy==='door'?true:st.tidy==='intrude'||st.tidy==='basket'?false:null,icon:st.dnd?'🚪':'🧺',label:st.dnd?'Để khăn ở cửa':'Dọn phòng giữa kỳ',
+    note:{intrude:'đã vào phòng dù có biển',basket:'chỉ để khăn, phòng chưa dọn'}[st.tidy]||(st.dnd?'2 khăn tắm, không gõ cửa':'2 khăn tắm')});
+  if(!tidyDone)btns.push(x.cmd('🧺 Vào dọn phòng','hs_stay',{room:r.id,do:'tidy'},st.dnd?'ghost small':'small',busy),x.cmd('🚪 Để khăn ở cửa','hs_stay',{room:r.id,do:'door'},st.dnd?'small':'ghost small',busy));
+  if(st.cold){
+    rows.push({ok:st.warmed?true:null,icon:'🔥',label:'Sưởi đêm lạnh',note:st.warmed?(st.warmed==='wood'?'lò củi + chăn dày':'máy sưởi gas + chăn dày'):'1 bó củi hoặc 1 bình gas',tone:st.warmed?'':'danger'});
+    if(!st.warmed)btns.push(x.cmd(`🪵 Nhóm lò củi (${d.wood||0})`,'hs_stay',{room:r.id,do:'warm',how:'wood'},'small',busy||!d.wood),x.cmd(`🔥 Máy sưởi gas (${x.stock('heater_gas')})`,'hs_stay',{room:r.id,do:'warm',how:'gas'},'ghost small',busy||!x.stock('heater_gas')));
+  }
+  let ask='';
+  if(st.ask){
+    const a=(x.cc.asks||[]).find(v=>v.id===st.ask)||{emoji:'💬',label:st.ask};
+    rows.push({ok:st.asked==='ok'?true:st.asked==='bad'?false:null,icon:a.emoji,label:a.label,note:st.asked==='bad'?'gợi ý chưa hợp':''});
+    if(!st.asked){
+      if(st.ask==='trip'){
+        const want=new Set(st.want||[]),avoid=new Set(st.avoid||[]);
+        const opts=(st.opts||[]).map(id=>{const p=x.cc.places.find(v=>v.id===id)||{name:id,emoji:'📍',tags:[]};
+          return `<button type="button" class="hs-trip-opt" ${cmdAttr(x,'hs_stay',{room:r.id,do:'ask',place:id})} ${busy?'disabled':''}><b>${p.emoji} ${x.esc(p.name)}</b><span class="hs-tags">${p.tags.map(tag=>`<i class="${avoid.has(tag)?'bad':want.has(tag)?'good':''}">${x.esc(x.cc.tag_names[tag]||tag)}</i>`).join('')}</span></button>`;}).join('');
+        ask=`${bubble(x,'Khách:',st.say||'')}<div class="hs-trip">${opts}</div>`;
+      }else{
+        const use=Object.entries(a.use||{}).map(([k,q])=>`${q} ${itemInfo(x,k).name.toLowerCase()}`).join(', ');
+        ask=`${bubble(x,'Khách:',st.say||'')}<div class="row wrap">${x.cmd(`${a.emoji} ${x.esc(a.act||a.label)}${use?` (${x.esc(use)})`:''}`,'hs_stay',{room:r.id,do:'ask'},'small',busy)}</div>`;
+      }
+    }
+  }
+  const sign=st.dnd?'<p class="hs-dnd">🚪 Cửa treo biển <b>“Xin đừng làm phiền”</b></p>':'';
+  return `<div class="hs-stay">${head}${moodBar}${sign}${reqList(rows,x.esc,'Việc chăm khách phòng '+r.name)}${btns.length?`<div class="row wrap hs-stay-btns">${btns.join('')}</div>`:''}${ask}${stayLog(x,r,st)}</div>`;
+}
+function stayLog(x,r,st){
+  if(!(st.log||[]).length)return '';
+  const key='log-'+r.id;
+  return panel(x,key,'📓 Nhật ký mấy ngày ở',`<ul class="hs-log">${st.log.map(l=>`<li>${x.esc(l)}</li>`).join('')}</ul>`,false,'hs-mini');
+}
+function careList(x,open){
+  const rows=x.room.data?.care||[];if(!rows.length)return '';
+  const done=rows.filter(r=>r.ok===true).length,next=rows.find(r=>r.ok!==true);
+  const head=`📋 Việc chăm hôm nay <b>${done}/${rows.length}</b>${next?`<small>Tiếp: ${x.esc(next.label)}</small>`:'<small>Xong hết rồi.</small>'}`;
+  return panel(x,'care',head,reqList(rows.map(r=>({ok:r.ok,icon:r.icon,label:r.label,note:r.note||'',tone:r.tone||''})),x.esc,'Việc chăm hôm nay'),open&&!!next,'hs-care');
+}
+function gardenCard(x){
+  const d=x.room.data||{};if(d.garden==null)return '';
+  const g=d.garden,bloom=x.cc.garden_bloom||70,wilt=x.cc.garden_wilt||35,busy=deskOpen(x);
+  const gw=g>=bloom?'🌸 nở rộ — khách ở tiếp vui hơn':g>=wilt?'🌿 cần tưới sớm':'🥀 đang héo — khách ở tiếp phàn nàn';
+  const tm=d.tomorrow||{},cold=['cold','rain'].includes(tm.id);
+  const staying=Object.entries(d.rooms||{}).filter(([id,r])=>r.status==='occupied'&&r.until>d.today+1).length;
+  const tip=cold?`Mai ${x.esc(tm.emoji||'')} ${x.esc((tm.title||'').toLowerCase())}: ${staying} phòng có khách ở tiếp${staying?` — cần ${staying} bó củi hoặc ${staying} bình gas.`:'.'}`:`Mai ${x.esc(tm.emoji||'')} ${x.esc((tm.title||'').toLowerCase())}: không cần sưởi thêm.`;
+  const full=(d.wood||0)+(d.wood_order||0)+(x.cc.wood_pack||5)>(x.cc.wood_max||30)||(d.wood_order||0)>=2*(x.cc.wood_pack||5);
+  return `<section class="hs-garden">
+    <div class="hs-gline"><span class="hs-gicon" aria-hidden="true">🌸</span><span class="grow"><b>Vườn cẩm tú cầu</b><small>${g}% · ${gw}</small><span class="hs-gbar ${g>=bloom?'good':g>=wilt?'ok':'bad'}"><i style="width:${g}%"></i></span></span>${x.cmd('💧 Tưới, tỉa','hs_garden',{},g<50?'small':'ghost small',busy||g>=100)}</div>
+    <div class="hs-gline"><span class="hs-gicon" aria-hidden="true">🪵</span><span class="grow"><b>Củi khô: ${d.wood||0} bó</b><small>${d.wood_order?`+${d.wood_order} bó Chú Tư chở tới sáng mai · `:''}${tip}</small></span>${x.confirmCmd(`🪵 Đặt ${x.cc.wood_pack||5} bó (−${x.cc.wood_cost||6} xu)`,'hs_wood',{},`Đặt ${x.cc.wood_pack||5} bó củi của Chú Tư? Củi chở tới sáng mai — đêm nay chỉ dùng được củi đang có hoặc gas.`,cold&&(d.wood||0)+(d.wood_order||0)<staying?'small':'ghost small',busy||full)}</div></section>`;
+}
+function bookPanel(x){
+  const d=x.room.data||{},book=d.book||[],a=d.anniv||{};
+  const roomName=id=>id?roomInfo(x,id).name:'—';
+  const pages=(a.pages||[]).map(p=>`<li>Năm thứ ${p.year} · ngày ${p.day} · ${p.room?x.esc(roomName(p.room)):'không có phòng'}${p.stars?` · ${'★'.repeat(p.stars)}`:''}</li>`).join('');
+  const when=a.here?`Cô chú đang ở phòng ${x.esc(roomName(a.here))}.`:a.booked?`Đã đặt phòng ${x.esc(roomName(a.booked.room))} từ ngày ${a.booked.start} (năm thứ ${a.booked.year}).`:`Cô chú thường gọi đặt vào ngày ${a.call}.`;
+  const three=`<article class="hs-anniv"><span class="hs-anniv-key" aria-hidden="true">🗝️</span><div class="grow"><b>Phòng số 3 · ${x.esc(x.cc.anniv_name||'Cô Diệp & Chú Khang')}</b><small>Năm nào cũng xin phòng Đồi Thông, cửa sổ nhìn đồi thông. ${when}</small>${pages?`<ul class="hs-pages">${pages}</ul>`:''}</div></article>`;
+  const rows=book.map(b=>{const who=x.npc(b.npc);
+    return `<li class="hs-guest">${x.portrait(who,36)}<div class="grow"><b>${x.esc(b.name)}</b><small>${b.visits} lần ở · lần cuối ngày ${b.last}${b.fav?` · thích ${x.esc(roomName(b.fav))}`:''}${b.stars?` · ${'★'.repeat(b.stars)}`:''}</small>
+      ${b.notes.length?`<ul class="hs-notes">${b.notes.map(n=>`<li><span aria-hidden="true">${x.esc(n.emoji)}</span> ${x.esc(n.text)}</li>`).join('')}</ul>`:''}${b.more?`<small class="muted">Ở thêm ${b.more} lần nữa để biết thêm.</small>`:''}</div></li>`;}).join('');
+  return panel(x,'book',`📖 Sổ lưu bút · ${book.length} khách quen`,`${three}${rows?`<ul class="hs-book">${rows}</ul>`:'<p class="small muted">Khách ở xong sẽ được ghi vào sổ; lần sau họ quay lại, sổ nhắc bạn điều họ thích.</p>'}`,false,'hs-bookp');
+}
+function regularCard(t,x){
+  const b=(x.room.data?.book||[]).find(v=>v.npc===t.npc);if(!b||!b.visits)return '';
+  const fav=b.fav?roomInfo(x,b.fav):null;
+  return `<div class="hs-regular"><b>📖 Khách quen · ${b.visits} lần ở${fav?` · thích ${fav.emoji} ${x.esc(fav.name)}`:''}</b>${b.notes.map(n=>`<small>${x.esc(n.emoji)} ${x.esc(n.text)}</small>`).join('')}</div>`;
+}
+
 /* While a surprise waits at the counter: only the pan and rooms being aired can still be finished. */
 function running(t,x){
   const d=x.room.data||{},parts=[];
@@ -226,11 +335,12 @@ function checkinJob(t,x){
   const s3=step(3,'Đếm khách',ci.counted&&ci.extra,s3body);
   const busyOf=id=>(d.grid?.[id]||[]).slice(0,n.nights).some(c=>c.kind!=='free')||!['clean','dirty'].includes(d.rooms[id].status);
   const dirtyOf=id=>d.rooms[id].status==='dirty';
+  const fav=(d.book||[]).find(b=>b.npc===t.npc)?.fav;
   const tiles=x.cc.rooms.map(r=>{
     const room=d.rooms[r.id],locked=r.unlock>d.level;
     const busy=busyOf(r.id);
     const on=sel.includes(r.id)||(!sel.length&&ci.rooms.includes(r.id));
-    return `<button type="button" class="tile ${on?'selected':''} ${locked?'locked':''} ${busy?'empty':''}" data-action="car:sel" data-task="${x.esc(t.id)}" data-room="${x.esc(r.id)}" aria-pressed="${on}" ${locked||(busy&&!on)?'disabled':''}><span class="tile-emoji">${r.emoji}</span><b>${x.esc(r.name)}</b><small>${locked?'🔒 cấp '+r.unlock:busy?x.esc(STATUS[room.status]?.[0]||'')+(room.status==='clean'?' · vướng lịch':''):room.status==='dirty'?`🧹 Cần dọn · ${r.cap} người`:r.cap+' người'}</small></button>`;
+    return `<button type="button" class="tile ${on?'selected':''} ${locked?'locked':''} ${busy?'empty':''}" data-action="car:sel" data-task="${x.esc(t.id)}" data-room="${x.esc(r.id)}" aria-pressed="${on}" ${locked||(busy&&!on)?'disabled':''}><span class="tile-emoji">${r.emoji}</span><b>${x.esc(r.name)}</b>${fav===r.id?'<small class="hs-fav">⭐ phòng quen</small>':''}<small>${locked?'🔒 cấp '+r.unlock:busy?x.esc(STATUS[room.status]?.[0]||'')+(room.status==='clean'?' · vướng lịch':''):room.status==='dirty'?`🧹 Cần dọn · ${r.cap} người`:r.cap+' người'}</small></button>`;
   }).join('');
   const pick=sel.length?sel:ci.rooms,cap=pick.reduce((a,id)=>a+roomInfo(x,id).cap,0),stale=pick.filter(id=>!ci.rooms.includes(id)&&busyOf(id));
   const given=ci.rooms.length>0&&(!sel.length||(sel.length===ci.rooms.length&&sel.every(id=>ci.rooms.includes(id))));
@@ -397,8 +507,8 @@ const JOBS={checkin:[checkinJob,checkinSide],checkout:[checkoutJob,checkoutSide]
 
 function board(x,t){
   return `<h4 class="section-title">🗓️ Lịch phòng 7 ngày</h4>${t&&t.job==='booking'&&t.known?'<p class="small muted">Lịch ở ngay bước 1 phía trên.</p>':calendar(x)}
-    ${otaPanel(x)}
-    <h4 class="section-title">🧹 Buồng phòng</h4>${housekeeping(x)}`;
+    ${otaPanel(x)}${careList(x,false)}
+    <h4 class="section-title">🧹 Buồng phòng</h4>${housekeeping(x)}${gardenCard(x)}${bookPanel(x)}`;
 }
 const caller=size=>`<span class="hs-caller" style="width:${size}px;height:${size}px" aria-hidden="true">📞</span>`;
 function ticketCard(t,x,size=48){
@@ -406,7 +516,7 @@ function ticketCard(t,x,size=48){
   const pill=`<span class="tag blue">${JOB_ICON[t.job]||''} ${x.esc(x.cc.jobs?.[t.job]||t.job)}</span>`;
   const line=t.job==='recommend'?t.needs.request:t.job==='checkout'?t.needs.claim:t.job==='claim'?t.needs.note:t.needs.note||t.opening;
   return `<article class="card ticket"><div class="row">${anon?caller(size):x.portrait(who,size)}<div class="grow"><div class="row spread"><h3>${anon?'Người gọi':x.esc(who.display_name)}</h3>${pill}</div>
-      <p class="small">${x.esc(line)}</p>
+      <p class="small">${x.esc(line)}</p>${regularCard(t,x)}
       <div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></div><small>${t.patience}%</small></div></div></div></article>`;
 }
 
@@ -427,15 +537,15 @@ export default {
   idle(x){
     const d=x.room.data||{};
     const stats=`<div class="row wrap hs-stats">${d.synced?x.pill(`📥 ${d.synced} đơn OTA đã đồng bộ`,'green'):''}${d.claims_ok?x.pill(`🎁 ${d.claims_ok} món đồ về đúng chủ`,'green'):''}${d.ota_walked?x.pill(`🏡 ${d.ota_walked} khách phải chuyển nhà hàng xóm`,'amber'):''}${d.claims_bad?x.pill(`⚠️ ${d.claims_bad} lần giao nhầm đồ`,'amber'):''}${d.lost_deposit?x.pill(`💸 mất ${d.lost_deposit} xu cọc ảo`,'amber'):''}</div>`;
-    return `<div class="career-job hs hs-idle">${deskCard(x)}${lastDesk(x)}${todayChip(x)}${stats}${otaPanel(x,true)}${running(null,x)}
-      <h4 class="section-title">🗓️ Lịch phòng 7 ngày</h4>${calendar(x)}<h4 class="section-title">🧹 Buồng phòng</h4>${housekeeping(x)}${foot(x)}${rules(x)}</div>`;
+    return `<div class="career-job hs hs-idle">${deskCard(x)}${lastDesk(x)}${todayChip(x)}${stats}${careList(x,true)}${otaPanel(x,true)}${running(null,x)}
+      <h4 class="section-title">🗓️ Lịch phòng 7 ngày</h4>${calendar(x)}<h4 class="section-title">🧹 Buồng phòng</h4>${housekeeping(x)}${gardenCard(x)}${bookPanel(x)}${foot(x)}${rules(x)}</div>`;
   },
   job(t,x){
     const desk=deskCard(x),who=x.npc(t.npc);
     if(!t.known){
       const pill=`<span class="tag blue">${JOB_ICON[t.job]||''} ${x.esc(x.cc.jobs?.[t.job]||t.job)}</span>`;
       const anon=t.job==='claim';
-      return `<div class="career-job hs">${desk}${desk?running(t,x):lastDesk(x)}${todayChip(x)}<article class="card ticket"><div class="row">${anon?caller(56):x.portrait(who,56)}<div class="grow"><div class="row spread"><h3>${anon?'Có cuộc gọi':x.esc(who.display_name)}</h3>${pill}</div><p>“${x.esc(t.opening)}”</p></div></div>${x.cmd(t.job==='claim'?'📞 Nghe máy':'👂 Nghe khách','ask',{task:t.id},desk?'ghost full':'primary full',!!desk)}</article>${desk?'':board(x,t)+foot(x)+rules(x)}</div>`;
+      return `<div class="career-job hs">${desk}${desk?running(t,x):lastDesk(x)}${todayChip(x)}<article class="card ticket"><div class="row">${anon?caller(56):x.portrait(who,56)}<div class="grow"><div class="row spread"><h3>${anon?'Có cuộc gọi':x.esc(who.display_name)}</h3>${pill}</div><p>“${x.esc(t.opening)}”</p>${anon?'':regularCard(t,x)}</div></div>${x.cmd(t.job==='claim'?'📞 Nghe máy':'👂 Nghe khách','ask',{task:t.id},desk?'ghost full':'primary full',!!desk)}</article>${desk?'':board(x,t)+foot(x)+rules(x)}</div>`;
     }
     if(desk)return `<div class="career-job hs">${desk}${running(t,x)}${ticketCard(t,x)}</div>`;
     const [main,side]=JOBS[t.job]||[()=>'',()=>''];
@@ -463,6 +573,7 @@ export default {
     },
     async clear(data,el,x){x.ui.sel=[];x.render();},
     async hk(data,el,x){x.ui.hk=x.ui.hk===data.room?null:data.room;x.render();},
+    async fold(data,el,x){if(!/^[a-z][a-z0-9-]{0,20}$/.test(data.key||''))return;x.ui.open=x.ui.open||{};x.ui.open[data.key]=!data.open;x.render();},
     async rate(data,el,x){
       if(!(x.cc.rates||[]).some(r=>r.id===data.rate))return;
       x.ui.rate=x.ui.rate||{};x.ui.rate[data.task]=data.rate;x.render();

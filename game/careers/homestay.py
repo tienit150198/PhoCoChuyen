@@ -41,11 +41,11 @@ REPAIR_COST = 12
 RENOVATION_COST = 25
 
 ROOMS = [
-    dict(id='thong', name='Đồi Thông', emoji='🌲', cap=2, beds='1 giường đôi', floor='Tầng trệt', stairs=False, unlock=1, view='rừng thông'),
-    dict(id='suong', name='Sương Sớm', emoji='🌫️', cap=2, beds='2 giường đơn', floor='Tầng trệt', stairs=False, unlock=1, view='vườn cải'),
-    dict(id='gac', name='Gác Mái', emoji='🛖', cap=3, beds='1 đôi + 1 đơn', floor='Gác gỗ · cầu thang dốc', stairs=True, unlock=1, view='mái ngói'),
-    dict(id='quy', name='Dã Quỳ', emoji='🌼', cap=4, beds='2 giường đôi', floor='Tầng trệt', stairs=False, unlock=1, view='đồi dã quỳ'),
-    dict(id='ho', name='Ban Công Hồ', emoji='🌅', cap=2, beds='1 giường đôi · bồn tắm', floor='Lầu 1 · cầu thang', stairs=True, unlock=3, view='hồ'),
+    dict(id='thong', no=3, name='Đồi Thông', emoji='🌲', cap=2, beds='1 giường đôi', floor='Tầng trệt', stairs=False, unlock=1, view='rừng thông'),
+    dict(id='suong', no=1, name='Sương Sớm', emoji='🌁', cap=2, beds='2 giường đơn', floor='Tầng trệt', stairs=False, unlock=1, view='vườn cải'),
+    dict(id='gac', no=5, name='Gác Mái', emoji='🛖', cap=3, beds='1 đôi + 1 đơn', floor='Gác gỗ · cầu thang dốc', stairs=True, unlock=1, view='mái ngói'),
+    dict(id='quy', no=2, name='Dã Quỳ', emoji='🌼', cap=4, beds='2 giường đôi', floor='Tầng trệt', stairs=False, unlock=1, view='đồi dã quỳ'),
+    dict(id='ho', no=4, name='Ban Công Hồ', emoji='🌅', cap=2, beds='1 giường đôi · bồn tắm', floor='Lầu 1 · cầu thang', stairs=True, unlock=3, view='hồ'),
 ]
 ROOM_INDEX = {r['id']: r for r in ROOMS}
 ROOM_STATUS = ('clean', 'dirty', 'occupied', 'maintenance')
@@ -663,32 +663,45 @@ def _empty_tray() -> dict:
     return dict(eggs=[], pan=None, bread=0, milk=0, coffee=0, cost=0)
 
 
-def _room_state(status: str, guest=None, until=0, q=0) -> dict:
-    return dict(status=status, guest=guest, task=None, until=until, q=q, mini=0, note=None, hk=None)
+def _room_state(status: str, guest=None, until=0, q=0, wear=100) -> dict:
+    return dict(status=status, guest=guest, task=None, until=until, q=q, mini=0, note=None, hk=None, wear=wear, snag=None)
 
 
 def initial() -> dict:
-    rooms = dict(thong=_room_state('clean', q=5), suong=_room_state('occupied', 'Khách đêm qua (ca đêm nhận)', 1),
-                 gac=_room_state('dirty'), quy=_room_state('clean', q=4), ho=_room_state('maintenance'))
+    rooms = dict(thong=_room_state('clean', q=5, wear=90), suong=_room_state('occupied', 'Khách đêm qua (ca đêm nhận)', 1, wear=80),
+                 gac=_room_state('dirty', wear=75), quy=_room_state('clean', q=4, wear=85), ho=_room_state('maintenance'))
     rooms['gac']['mini'] = 1
     rooms['ho']['note'] = 'Đang sửa ban công — mở ở cấp 3'
     bookings = [dict(id='bk-0', rooms=['quy'], start=2, nights=2, guests=4, name='Đoàn cô Liên (gọi điện)', total=96, deposit=29, task=None)]
-    return dict(rooms=rooms, bookings=bookings, lost=[], nights_sold=0, walked=0, cleaned=0, arrivals=0, seq=0,
-                desk=kit.desk_initial(), **copy.deepcopy(DATA_V2))
+    d = dict(rooms=rooms, bookings=bookings, lost=[], nights_sold=0, walked=0, cleaned=0, arrivals=0, seq=0,
+             desk=kit.desk_initial(), **copy.deepcopy(DATA_V2))
+    return _migrate(d, 1)
 
 
 DATA_V2 = dict(ota=[], safety_day=0, synced=0, ota_walked=0, strikes=0, claims_ok=0, claims_bad=0, lost_deposit=0, day_synced=0, day_walked=0)
 
 
-def _data(c: dict) -> dict:
-    """Career data with the v0.5 fields and the desk book (old saves get them on first touch)."""
-    d = kit.data(c)
-    for k, v in DATA_V2.items():
+def _migrate(d: dict, day: int) -> dict:
+    """v0.5 fields, the desk book and the care loop (room upkeep, stays, guest book, garden, firewood, rating) — idempotent.
+    Stays follow the rooms: an occupied room without a stay gets a neutral one, any other room loses its stay."""
+    for k, v in {**DATA_V2, **DATA_CARE}.items():
         if k not in d:
             d[k] = copy.deepcopy(v)
     if 'desk' not in d:
         d['desk'] = kit.desk_initial()
+    rooms = d.get('rooms')
+    if isinstance(rooms, dict):
+        for r in rooms.values():
+            if isinstance(r, dict):
+                r.setdefault('wear', 100)
+                r.setdefault('snag', None)
+        _sync_stays(d, day)
     return d
+
+
+def _data(c: dict) -> dict:
+    """Career data with the v0.5 fields, the desk book and the care loop (old saves get them on first touch)."""
+    return _migrate(kit.data(c), c['day'])
 
 
 def _npc_index(t: dict) -> int:
@@ -782,15 +795,20 @@ def _bind_checkout(c: dict, t: dict) -> None:
     name = _guest(t)
     rooms = d['rooms']
     free = [rid for rid in ROOM_INDEX if rooms[rid]['status'] == 'occupied' and not rooms[rid]['task']]
+    stays = _data(c)['stays']
     pick = (next((r for r in free if rooms[r]['guest'] == name), None)
             or next((r for r in free if rooms[r]['until'] <= c['day']), None)
-            or (free[0] if free else None))
+            # the couple of room 3 are never mistaken for someone else's departure
+            or next((r for r in free if not (stays.get(r) or {}).get('anniv')), None))
     if pick is None:
         # The night shift checked this guest into a clean room that nobody booked for tonight.
         pick = next((rid for rid in ROOM_INDEX if rooms[rid]['status'] == 'clean' and not rooms[rid]['task']
                      and ROOM_INDEX[rid]['unlock'] <= kit.level(c) and _blocked(c, rid, c['day'], 1) is None), None)
     if pick:
         r = rooms[pick]
+        st = _data(c)['stays'].get(pick)
+        if st:
+            st.update(guest=name, npc=_npc_index(t))
         r.update(status='occupied', guest=name, task=t['id'], until=max(r['until'], c['day']))
     t['room'] = pick
     t['bound'] = True
@@ -814,6 +832,7 @@ def on_start(s: dict, c: dict) -> None:
     for rid, r in d['rooms'].items():
         if r['status'] == 'occupied' and not r['task'] and r['until'] <= day:
             left.append(ROOM_INDEX[rid]['name'])
+            _depart(s, c, rid)
             r.update(status='dirty', guest=None, until=0, mini=min(6, r['mini'] + (day + len(rid)) % 2))
     if left:
         kit.log(s, c, 'homestay', 'Sáng nay khách trả phòng ' + ', '.join(left) + ' (đã thanh toán trước). Phòng cần dọn.')
@@ -829,6 +848,7 @@ def on_start(s: dict, c: dict) -> None:
         if t['career'] == ID and t['status'] not in ('completed', 'cancelled', 'referred'):
             on_task(s, c, t)
     d = _data(c)
+    _care_start(s, c)
     mod = today(day)
     if day >= 2:
         kit.log(s, c, 'homestay', f'{mod["emoji"]} Hôm nay: {mod["title"]}. {mod["text"]}')
@@ -842,6 +862,7 @@ def on_close(s: dict, c: dict) -> dict:
     day = c['day']
     lines = [f'Hôm nay xong {c.get("day_completed", 0)} việc.']
     lines += _ota_close(s, c)
+    lines += _care_close(s, c)
     arrived, walked, moved = [], [], []
     keep = []
     for b in d['bookings']:
@@ -868,6 +889,10 @@ def on_close(s: dict, c: dict) -> dict:
         if chosen:
             for rid in chosen:
                 d['rooms'][rid].update(status='occupied', guest=b['name'], task=None, until=day + nights)
+                _stay_open(c, rid, b['name'], b.get('npc', -1) if not b.get('ota') else -1, b.get('anniv', 0) if rid == chosen[0] else 0)
+            if b.get('anniv'):
+                there = 'phòng số 3 như mọi năm' if chosen[0] == ANNIV_ROOM else f'phòng {ROOM_INDEX[chosen[0]]["name"]} — năm nay không được phòng số 3'
+                lines.append(f'🗝️ {ANNIV_NAME} lên tới nơi, nhận {there}.')
             due = max(0, b['total'] - b['deposit'])
             if due:
                 label = (f'{b["ota"]} chuyển tiền phòng (đã trừ {OTA_COMMISSION}% hoa hồng) · {b["name"]}' if b.get('ota')
@@ -895,7 +920,10 @@ def on_close(s: dict, c: dict) -> dict:
             d['walked'] += 1
             d['day_walked'] += 1
             walked.append(b['name'])
+            if b.get('anniv'):
+                _anniv_page(d, b['anniv'], day, None, None)
     d['bookings'] = keep[-60:]
+    lines += _care_night(s, c)
     if d['day_synced'] or d['day_walked']:
         lines.append(f'Đơn OTA đã đồng bộ hôm nay: {d["day_synced"]}. Khách phải chuyển sang nhà hàng xóm: {d["day_walked"]}.')
     waiting = [o for o in d['ota'] if o['status'] == 'new']
@@ -991,6 +1019,9 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         return _ota_sync(s, c, p)
     if name == 'hs_walk':
         return _ota_walk(s, c, p)
+    care = dict(hs_deep=_deep, hs_fix=_fix, hs_garden=_garden, hs_wood=_wood, hs_stay=_stay_act).get(name)
+    if care:
+        return care(s, c, p)
     t = _task(s, c, p)
     job = t['job']
     prefix = {'hs_hold': 'booking', 'hs_release': 'booking', 'hs_book': 'booking', 'hs_decline': 'booking', 'hs_rate': 'booking', 'hs_budget': 'booking',
@@ -1046,7 +1077,8 @@ def _ota_new(s: dict, c: dict, mod: str) -> None:
     d = _data(c)
     day = c['day']
     tier = kit.tier(day)
-    n = OTA_COUNT[tier] + (1 if mod in ('festival', 'weekend') else 0) - (1 if mod == 'low' else 0) - (1 if _ota_score(c) < 3.5 else 0)
+    n = (OTA_COUNT[tier] + (1 if mod in ('festival', 'weekend') else 0) - (1 if mod == 'low' else 0) - (1 if _ota_score(c) < 3.5 else 0)
+         + (1 if _featured(c) else 0))
     warn = d['desk']['marks'].get('ota_warn')
     if warn is not None and day - warn <= 2:
         n -= 1
@@ -1244,13 +1276,15 @@ def _clean(s: dict, c: dict, p: dict) -> dict:
         kit.need(all(x in hk['done'] for x in MIDDLE), 'Còn bước chưa làm, chưa thể báo phòng sạch.')
         air = max(0.0, kit.now() - hk['start'])
         lim = _air(c)
-        q = 5 - hk['slips'] - (1 if air < lim['damp'] else 0) - (1 if air > lim['cold'] else 0)
+        worn = 2 if r['wear'] < WEAR_BAD else 1 if r['wear'] < WEAR_LOW else 0
+        q = 5 - hk['slips'] - (1 if air < lim['damp'] else 0) - (1 if air > lim['cold'] else 0) - worn - (1 if r['snag'] else 0)
         r.update(status='clean', q=max(1, q), hk=None, mini=0, note=None)
         d['cleaned'] += 1
         kit.metric(c, 'rooms_cleaned')
         air_note = ('phòng còn mùi ẩm vì mở cửa sổ quá ngắn' if air < lim['damp'] else
                     'phòng hơi lạnh vì mở cửa sổ quá lâu' if air > lim['cold'] else 'phòng thơm mùi gỗ thông')
-        return dict(message=f'Phòng {ROOM_INDEX[rid]["name"]} sạch: {air_note} ({air:.0f} giây). Điểm buồng phòng {max(1, q)}/5.', celebrate=q >= 5)
+        care = (' Rèm bụi, góc tường ẩm lâu ngày — nên tổng vệ sinh.' if worn else '') + (f' Còn “{r["snag"].lower()}” chưa sửa.' if r['snag'] else '')
+        return dict(message=f'Phòng {ROOM_INDEX[rid]["name"]} sạch: {air_note} ({air:.0f} giây).{care} Điểm buồng phòng {max(1, q)}/5.', celebrate=q >= 5)
     msgs = []
     rank = MIDDLE.index(step)
     for earlier in MIDDLE[:rank]:
@@ -1295,7 +1329,7 @@ def _repair(s: dict, c: dict, p: dict) -> dict:
     kit.confirm(p, 'Xác nhận gọi thợ và trả tiền sửa.')
     cost = RENOVATION_COST if info['unlock'] > 1 and (r['note'] or '').startswith('Đang sửa ban công') else REPAIR_COST
     kit.money(s, c, -cost, f'Thợ sửa phòng {info["name"]}', rid, category='repair')
-    r.update(status='dirty', note=None, hk=None)
+    r.update(status='dirty', note=None, hk=None, snag=None)
     kit.metric(c, 'repairs')
     return dict(message=f'Thợ đã sửa xong phòng {info["name"]} (−{cost} xu). Bụi sửa chữa còn đầy, cần dọn lại trước khi đón khách.')
 
@@ -1521,6 +1555,7 @@ def _checkin(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
     dirty = [r for r in ci['rooms'] if d['rooms'][r]['status'] == 'dirty']
     ci['q'] = 1 if dirty else min(d['rooms'][r]['q'] for r in ci['rooms'])
     _checkin_slips(t, dirty)
+    _regular(c, t)
     # The deposit was paid earlier; only tonight's balance is at stake at the counter.
     said = cq.react(s, c, t, due, who=_guest(t))
     ci['paid'] = said['pay']
@@ -1534,6 +1569,7 @@ def _checkin(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         return dict(message=f'{said["message"]} Khách lấy lại {back} xu cọc rồi kéo vali đi.', refused=True)
     for rid in ci['rooms']:
         d['rooms'][rid].update(status='occupied', guest=_guest(t), task=None, until=c['day'] + n['nights'], hk=None)
+        _stay_open(c, rid, _guest(t), _npc_index(t))
     d['nights_sold'] += n['nights'] * len(ci['rooms'])
     kit.metric(c, 'checkins')
     kit.complete(s, c, t, said['pay'], f'Bạn đã đón {_guest(t)} nhận phòng {", ".join(ROOM_INDEX[r]["name"] for r in ci["rooms"])}.')
@@ -1543,6 +1579,20 @@ def _checkin(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
 
 
 OOPS = ('entry', 'photo')
+
+
+def _regular(c: dict, t: dict) -> None:
+    """A guest the book remembers: was the room they liked given back to them (when it was free)?"""
+    if not t.get('gen'):
+        return
+    rec = _data(c)['book'].get(str(_npc_index(t)))
+    if not rec or not rec['visits']:
+        return
+    fav, ci, n, x = rec['fav'], t['ci'], t['needs'], t['_x']
+    staying = _counted(n['adults'], n['kids']) if ci['extra'] == 'refuse' else _counted(x['adults'], x['kids'])
+    free = (fav is not None and fav not in ci['rooms'] and ROOM_INDEX[fav]['cap'] >= staying and ROOM_INDEX[fav]['unlock'] <= kit.level(c)
+            and _blocked(c, fav, c['day'], n['nights']) is None and _data(c)['rooms'][fav]['status'] == 'clean')
+    t['regular'] = dict(score=4 if free else 5, fav=fav, visits=rec['visits'])
 ELDERS = (2, 14)          # guests whose profile says they cannot climb stairs
 
 
@@ -1676,6 +1726,9 @@ def _checkout(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
     said = cq.react(s, c, t, total, who=_guest(t))
     d = kit.data(c)
     if t['room'] and d['rooms'][t['room']]['task'] == t['id']:
+        stay = _depart(s, c, t['room'], t)
+        if stay:
+            t['stay'] = stay
         r = d['rooms'][t['room']]
         r.update(status='dirty', guest=None, task=None, until=0, mini=min(6, x['noodles'] + x['snack']), hk=None)
     kit.metric(c, 'checkouts')
@@ -1961,6 +2014,11 @@ def feedback(c: dict, t: dict) -> dict:
             else:
                 rows.append(dict(key='fair', label='Xử lý người đi thêm', score=3 if ci['could_fit'] else 4,
                                  note='còn phòng mà vẫn mời bạn mình đi' if ci['could_fit'] else 'đúng nội quy an toàn'))
+        reg = t.get('regular')
+        if reg:
+            given = reg['fav'] in ci['rooms']
+            rows.append(dict(key='regular', label='Nhớ khách quen', score=reg['score'],
+                             note='lại được phòng quen' if given else 'phòng quen hôm nay đã kín' if reg['score'] == 5 else 'phòng quen còn trống mà xếp phòng khác'))
         if t.get('gen') and n.get('proof') == 'bank':
             if t.get('bank'):
                 rows.append(dict(key='deposit', label='Đối chiếu tiền cọc', score=5,
@@ -1980,6 +2038,11 @@ def feedback(c: dict, t: dict) -> dict:
                              note=f'được trả lại {lost.lower()}' if t['returned'] else f'về tới nhà mới nhớ {lost.lower()}'))
         if t['_x']['damage'] and t['bill']['damage'] == 0:
             rows.append(dict(key='goodwill', label='Cách xử lý hư hỏng', score=5, note='homestay bỏ qua chiếc cốc mẻ'))
+        stay = t.get('stay')
+        if stay:
+            rows.append(dict(key='stay', label='Mấy ngày lưu trú', score=stay['stars'],
+                             note={5: 'được chăm như ở nhà', 4: 'thoải mái, có người để ý', 3: 'ổn, nhưng ít được hỏi han'}.get(stay['stars'])
+                             or (stay['low'] or 'ở dài ngày không ai lo').rstrip('.').lower()))
     elif job == 'breakfast':
         tray = t['served']
         n = t['needs']
@@ -2061,7 +2124,7 @@ def public_task(t: dict) -> dict:
 
 
 def public_data(c: dict) -> dict:
-    d = copy.deepcopy(kit.data(c))
+    d = copy.deepcopy(_data(c))
     desk = d.pop('desk', None) or kit.desk_initial()
     for k, v in DATA_V2.items():
         d.setdefault(k, copy.deepcopy(v))
@@ -2073,12 +2136,12 @@ def public_data(c: dict) -> dict:
             night = day + k
             cell = dict(day=night, kind='free', label='')
             if r['status'] == 'occupied' and (night < r['until'] or (k == 0 and r['task'])):
-                cell.update(kind='occ', label=r['guest'] or 'Có khách')
+                cell.update(kind='occ', label=r['guest'] or 'Có khách', anniv=bool((d['stays'].get(rid) or {}).get('anniv')))
             elif r['status'] == 'maintenance' and k == 0:
                 cell.update(kind='maint', label=r['note'] or 'Bảo trì')
             for b in d['bookings']:
                 if rid in b['rooms'] and b['start'] <= night < b['start'] + b['nights']:
-                    cell.update(kind='book', label=b['name'])
+                    cell.update(kind='book', label=b['name'], anniv=bool(b.get('anniv')))
             row.append(cell)
         grid[rid] = row
     d['grid'] = grid
@@ -2096,6 +2159,7 @@ def public_data(c: dict) -> dict:
     d['safe_today'] = d['safety_day'] == day
     d['air'] = _air(c)
     d['ota'] = [o for o in d['ota'] if o['status'] == 'new' or o['day'] >= day - 1]
+    _care_public(c, d)
     return d
 
 
@@ -2121,6 +2185,11 @@ def validate_task(t: dict, original: dict) -> None:
             kit.need(isinstance(ci['oops'], list) and len(set(ci['oops'])) == len(ci['oops']) and all(x in OOPS for x in ci['oops']), 'Ghi chú quầy sai.')
         if t.get('gen'):
             kit.need(t.get('bank') in (None, 'ok', 'missing'), 'Đối chiếu cọc sai.')
+        reg = t.get('regular')
+        if reg is not None:
+            kit.need(isinstance(reg, dict) and set(reg) == {'score', 'fav', 'visits'} and reg['score'] in (4, 5)
+                     and (reg['fav'] is None or reg['fav'] in ROOM_INDEX), 'Ghi chú khách quen sai.')
+            kit.integer(reg['visits'], 1, 99)
     elif job == 'checkout':
         kit.need(t['room'] is None or t['room'] in ROOM_INDEX, 'Phòng trả sai.')
         for k in ('bound', 'checked', 'returned'):
@@ -2129,6 +2198,12 @@ def validate_task(t: dict, original: dict) -> None:
         for q in t['bill'].values():
             kit.integer(q, 0, 9)
         kit.integer(t['disputes'], 0, 1000)
+        stay = t.get('stay')
+        if stay is not None:
+            kit.need(isinstance(stay, dict) and set(stay) == {'mood', 'nights', 'stars', 'low'} and stay['stars'] in (2, 3, 4, 5)
+                     and (stay['low'] is None or (isinstance(stay['low'], str) and len(stay['low']) <= 200)), 'Ghi chú lưu trú sai.')
+            kit.integer(stay['mood'], MOOD_MIN, 100)
+            kit.integer(stay['nights'], 0, 60)
     elif job == 'breakfast':
         tray = t['tray']
         kit.need(isinstance(tray, dict) and set(_empty_tray()) <= set(tray), 'Khay ăn sáng thiếu dữ liệu.')
@@ -2183,6 +2258,8 @@ def validate_data(c: dict) -> None:
         kit.integer(r['until'], 0, 10**7)
         kit.integer(r['q'], 0, 5)
         kit.integer(r['mini'], 0, 6)
+        kit.integer(r['wear'], 0, 100)
+        kit.need(r['snag'] is None or r['snag'] in SNAGS, 'Việc sửa vặt sai.')
         hk = r['hk']
         if hk is not None:
             kit.need(r['status'] == 'dirty' and isinstance(hk, dict) and set(hk) == {'done', 'start', 'slips', 'cost'}, 'Tiến độ dọn phòng sai.')
@@ -2205,6 +2282,8 @@ def validate_data(c: dict) -> None:
         kit.integer(b['deposit'], 0, b['total'])
         kit.need(b['task'] is None or (isinstance(b['task'], str) and len(b['task']) <= 80), 'Liên kết đặt phòng sai.')
         kit.need(b.get('ota') in (None,) + OTAS, 'Kênh đặt phòng sai.')
+        kit.need(type(b.get('npc', -1)) is int and -1 <= b.get('npc', -1) < len(PEOPLE), 'Khách đặt phòng sai.')
+        kit.need(type(b.get('anniv', 0)) is int and 0 <= b.get('anniv', 0) <= 10**4, 'Đặt phòng số 3 sai.')
     kit.need(isinstance(d.get('lost'), list) and len(d['lost']) <= 40, 'Sổ đồ thất lạc sai.')
     for x in d['lost']:
         kit.need(isinstance(x, dict) and x.get('room') in ROOM_INDEX and x.get('status') in ('kept', 'returned'), 'Đồ thất lạc sai.')
@@ -2231,6 +2310,637 @@ def validate_data(c: dict) -> None:
         kit.need(isinstance(o['rooms'], list) and len(o['rooms']) <= 2 and len(set(o['rooms'])) == len(o['rooms'])
                  and all(r in ROOM_INDEX for r in o['rooms']), 'Phòng của đơn OTA sai.')
     kit.desk_validate(d['desk'], DESK)
+    _validate_care(d)
+
+
+def _validate_care(d: dict) -> None:
+    kit.need(isinstance(d['stays'], dict) and set(d['stays']) <= set(ROOM_INDEX), 'Sổ khách ở tiếp sai.')
+    for rid, st in d['stays'].items():
+        kit.need(isinstance(st, dict) and set(st) == set(STAY_KEYS), 'Phiếu khách ở tiếp thiếu dữ liệu.')
+        kit.need(d['rooms'][rid]['status'] == 'occupied', 'Phòng trống mà còn phiếu khách ở tiếp.')
+        kit.text(st['guest'], 80)
+        kit.need(type(st['npc']) is int and -1 <= st['npc'] < len(PEOPLE), 'Khách ở tiếp sai.')
+        for k in ('since', 'rolled'):
+            kit.integer(st[k], 0, 10**7)
+        kit.integer(st['mood'], MOOD_MIN, 100)
+        kit.integer(st['nights'], 0, 60)
+        kit.integer(st['scored'], 0, 60)
+        kit.integer(st['anniv'], 0, 10**4)
+        for k in ('dnd', 'cold', 'regular'):
+            _bool(st[k])
+        kit.need(st['tidy'] in (None,) + TIDY and st['warmed'] in (None, 'wood', 'gas') and st['asked'] in (None, 'ok', 'bad'), 'Việc chăm khách sai.')
+        kit.need(st['ask'] in (None,) + tuple(ASK_INDEX) and st['trip'] in (None,) + tuple(TRIP_INDEX) and (st['trip'] is None) == (st['ask'] != 'trip'),
+                 'Lời nhờ của khách sai.')
+        kit.need(isinstance(st['opts'], list) and len(st['opts']) <= 4 and len(set(st['opts'])) == len(st['opts'])
+                 and all(x in PLACE_INDEX for x in st['opts']) and (st['place'] is None or st['place'] in st['opts']), 'Gợi ý đi chơi sai.')
+        kit.need(st['low'] is None or (isinstance(st['low'], str) and len(st['low']) <= 200), 'Ghi chú khách sai.')
+        kit.need(isinstance(st['log'], list) and len(st['log']) <= STAY_LOG and all(isinstance(x, str) and len(x) <= 200 for x in st['log']),
+                 'Nhật ký khách sai.')
+    kit.need(isinstance(d['book'], dict) and len(d['book']) <= BOOK_MAX, 'Sổ lưu bút sai.')
+    for key, b in d['book'].items():
+        kit.need(key in {str(n) for n in BOOK_NPCS} and isinstance(b, dict) and set(b) == set(BOOK_KEYS), 'Trang sổ lưu bút sai.')
+        kit.integer(b['visits'], 0, 99)
+        kit.integer(b['first'], 1, 10**7)
+        kit.integer(b['last'], b['first'], 10**7)
+        kit.need(b['room'] in ROOM_INDEX and (b['fav'] is None or b['fav'] in ROOM_INDEX) and b['stars'] in (None, 2, 3, 4, 5), 'Trang sổ lưu bút sai.')
+    a = d['anniv']
+    kit.need(isinstance(a, dict) and set(a) == {'next', 'year', 'pages'} and isinstance(a['pages'], list) and len(a['pages']) <= 12,
+             'Sổ phòng số 3 sai.')
+    kit.integer(a['next'], 1, 10**7)
+    kit.integer(a['year'], 1, 10**4)
+    for pg in a['pages']:
+        kit.need(isinstance(pg, dict) and set(pg) == {'year', 'day', 'room', 'stars'} and (pg['room'] is None or pg['room'] in ROOM_INDEX)
+                 and pg['stars'] in (None, 2, 3, 4, 5), 'Trang sổ phòng số 3 sai.')
+        kit.integer(pg['year'], 1, 10**4)
+        kit.integer(pg['day'], 1, 10**7)
+    kit.integer(d['garden'], 0, 100)
+    kit.integer(d['wood'], 0, WOOD_MAX)
+    kit.integer(d['wood_order'], 0, 2 * WOOD_PACK)
+    for k in ('deep', 'fixed', 'stay_reviews'):
+        kit.integer(d[k], 0, 10**9)
+    kit.need(isinstance(d['rating'], list) and len(d['rating']) <= RATING_DAYS
+             and all(isinstance(x, list) and len(x) == 2 for x in d['rating']), 'Nhật ký điểm app sai.')
+    for day, v in d['rating']:
+        kit.integer(day, 1, 10**7)
+        kit.integer(v, 10, 50)
+
+
+# ======================================================================== care loop (sub-project 3)
+# Rooms age with every night slept in them, guests who stay have small daily needs, regulars remember the house,
+# the hydrangeas and the woodpile need tending, and the app rating follows how people felt. See
+# docs/superpowers/specs/2026-09-29-homestay-care-design.md.
+WEAR_NIGHT = 10            # upkeep lost per occupied night …
+WEAR_RAIN = 4              # … more on a damp, rainy day …
+WEAR_BALCONY = 4           # … and on the wooden lake balcony
+WEAR_LOW = 50              # a turnover loses a quality point below this …
+WEAR_BAD = 25              # … and two below this
+WEAR_STAY = 40             # a staying guest notices a worn room below this
+SNAG_AT = 60               # crossing below this at night brings a small repair
+DEEP_COST = 3
+FIX_COST = 4
+SNAGS = ['Bản lề cửa kêu cót két', 'Vòi lavabo nhỏ giọt', 'Rèm cửa sổ tuột móc', 'Ổ cắm đầu giường lỏng', 'Chân ghế ban công lung lay']
+MOOD_START = 70
+MOOD_MIN = 25
+REGULAR_MOOD = 5           # per earlier visit, up to two
+DND_P = 0.25
+ASK_P = 0.6
+STAY_LOG = 3
+DELTA = dict(full=8, tidy_miss=-10, basket=-4, intrude=-15, cold_miss=-18, warm=4, ask_miss=-8, ask_bad=-10, ask_ok=4,
+             bloom=3, wilt=-4, worn=-5, snag=-5)
+LOW = dict(tidy_miss='Ở mấy hôm mà phòng không ai dọn, khăn ướt để nguyên cả ngày.',
+           intrude='Đã treo biển xin đừng làm phiền mà vẫn có người mở cửa vào phòng.',
+           cold_miss='Đêm rét buốt mà phòng không sưởi, không ai mang thêm chăn.',
+           ask_bad='Nhờ gợi ý chỗ đi chơi mà được chỉ tới nơi chẳng hợp với nhà mình.',
+           ask_miss='Nhờ một việc nhỏ mà cả ngày không thấy ai làm.',
+           worn='Phòng ở lâu mới thấy ẩm mốc, rèm bám bụi.',
+           snag='Đồ trong phòng hỏng lặt vặt mà mấy hôm không ai sửa.')
+ASKS = [dict(id='trip', emoji='🗺️', label='Gợi ý một nơi đi chơi hôm nay', act='Gợi ý', use={}),
+        dict(id='box', emoji='🥡', label='Gói phần ăn sáng mang đi săn mây', act='Gói phần ăn sáng', use={'bread': 1, 'milk': 1},
+             say='Sáng mai đi săn mây từ 4 giờ, gói giúp một phần ăn sáng mang theo nhé.'),
+        dict(id='tea', emoji='🫖', label='Pha ấm trà gừng nóng buổi tối', act='Pha trà gừng', use={},
+             say='Tối nay pha giúp một ấm trà gừng nóng nhé, trời se lạnh quá.'),
+        dict(id='umbrella', emoji='☂️', label='Cho mượn ô và áo mưa', act='Đưa ô, áo mưa', use={}, mods=('rain',),
+             say='Mưa quá, nhà mình có ô với áo mưa cho mượn không?')]
+ASK_INDEX = {x['id']: x for x in ASKS}
+TRIPS = [dict(id='gentle', say='Hôm nay đi dạo chỗ nào nhẹ nhàng, không leo dốc, không bậc thang?', want=['flat'], avoid=['stairs', 'slope']),
+         dict(id='indoor', say='Mưa thế này, có chỗ nào trong nhà mà vẫn vui không?', want=['indoor'], avoid=[], mods=('rain',)),
+         dict(id='cheap', say='Có chỗ nào miễn phí mà chụp ảnh đẹp không?', want=['free', 'photo'], avoid=[]),
+         dict(id='kids', say='Có bé nhỏ đi cùng, chỗ nào gần mà hợp trẻ con?', want=['kids', 'near'], avoid=[]),
+         dict(id='night', say='Tối nay đi đâu ăn uống cho vui?', want=['night', 'food'], avoid=[]),
+         dict(id='quiet', say='Muốn một chỗ yên tĩnh, không đông người.', want=['quiet'], avoid=['crowd'])]
+TRIP_INDEX = {x['id']: x for x in TRIPS}
+TRIP_BY = {0: 'quiet', 1: 'cheap', 2: 'gentle', 3: 'kids', 4: 'night', 5: 'quiet', 14: 'gentle'}
+TIDY = ('tidy', 'door', 'basket', 'intrude')
+WOOD_PACK = 5
+WOOD_COST = 6
+WOOD_MAX = 30
+GARDEN_TEND = 35
+GARDEN_BLOOM = 70
+GARDEN_WILT = 35
+GARDEN_DECAY = dict(rain=0, cold=6)        # other days: 10
+RATING_DAYS = 7
+FEATURE_AT = 4.8
+FEATURE_MIN = 6
+ANNIV_FIRST = 6            # the couple of room 3 first arrive on this day …
+ANNIV_EVERY = 12           # … and come back every 12 days (their “year”)
+ANNIV_LEAD = 2             # they call this many days ahead
+ANNIV_NIGHTS = 2
+ANNIV_NPC = 2
+ANNIV_NAME = 'Cô Diệp & Chú Khang'
+ANNIV_ROOM = 'thong'       # door number 3, the window over the pine hill
+BOOK_NPCS = (0, 1, 2, 3, 4, 5, 6, 9, 10, 14)
+BOOK_MAX = 20
+GUEST_NOTES = {
+    0: [('🤫', 'Ngủ tỉnh: xếp phòng yên, xa cầu thang gỗ.'), ('🌅', 'Mê view: thích Đồi Thông hoặc Ban Công Hồ.')],
+    1: [('🛵', 'Đi xe máy: cần chỗ dựng xe qua đêm.'), ('🥖', 'Ăn sáng nhiều bánh mì, ví mỏng.')],
+    2: [('🥶', 'Sợ lạnh: đêm lạnh nhớ sưởi, thêm chăn.'), ('🗝️', 'Năm nào cũng xin phòng số 3 (Đồi Thông).')],
+    3: [('🧸', 'Hai bé hay để quên đồ chơi: kiểm phòng thật kỹ.'), ('🥛', 'Hai bé uống sữa ấm buổi sáng.')],
+    4: [('📸', 'Săn ảnh: hỏi giờ mây đẹp, thích chỗ miễn phí.'), ('🌙', 'Hay về khuya: nhắc giờ yên tĩnh thật nhẹ nhàng.')],
+    5: [('🍵', 'Thích trà, ghét ồn.'), ('🌸', 'Hay khen vườn cẩm tú cầu.')],
+    6: [('🧾', 'Cần hóa đơn công ty rõ ràng.'), ('⏰', 'Đi sớm: bữa sáng trước 7 giờ.')],
+    9: [('🎧', 'Hay để quên tai nghe.'), ('🛏️', 'Thích phòng Sương Sớm, hai giường đơn.')],
+    10: [('💻', 'Làm việc từ xa: cần bàn và wifi mạnh.'), ('💬', 'Hay mặc cả, thích giá ở dài ngày.')],
+    14: [('🪜', 'Sợ cầu thang: chỉ xếp tầng trệt.'), ('🫚', 'Thích trà gừng.')],
+}
+MOOD_WORDS = [(85, 'Rất vui'), (70, 'Vui vẻ'), (50, 'Tạm ổn'), (0, 'Không vui')]
+WEAR_WORDS = [(80, 'Sạch thơm'), (50, 'Hơi cũ'), (25, 'Cần tổng vệ sinh'), (0, 'Ẩm mốc')]
+STAY_KEYS = ('guest', 'npc', 'since', 'mood', 'rolled', 'dnd', 'tidy', 'cold', 'warmed', 'ask', 'trip', 'opts', 'asked', 'place',
+             'nights', 'scored', 'regular', 'anniv', 'low', 'log')
+BOOK_KEYS = ('visits', 'first', 'last', 'room', 'fav', 'stars')
+DATA_CARE = dict(stays={}, book={}, anniv=dict(next=ANNIV_FIRST, year=12, pages=[]), garden=80, wood=4, wood_order=0, rating=[],
+                 deep=0, fixed=0, stay_reviews=0)
+REVIEW_TEXT = {5: 'Mấy ngày ở nhà Mây như ở nhà mình: phòng ấm, khăn thơm, nhờ gì cũng có người lo.',
+               4: 'Ở mấy hôm thoải mái, chủ nhà để ý tới khách.',
+               3: 'Phòng ổn, nhưng ở dài ngày thì thấy chưa được chăm lắm.'}
+
+
+def _word(words: list, v: int) -> str:
+    return next(w for top, w in words if v >= top)
+
+
+def _guest_npc(name) -> int:
+    return next((i for i, p in enumerate(PEOPLE) if p[0] == name), -1)
+
+
+def _stay_new(guest: str, npc: int, since: int, visits: int = 0, anniv: int = 0) -> dict:
+    return dict(guest=guest, npc=npc, since=since, mood=min(100, MOOD_START + REGULAR_MOOD * min(2, visits)), rolled=0, dnd=False, tidy=None,
+                cold=False, warmed=None, ask=None, trip=None, opts=[], asked=None, place=None, nights=0, scored=0, regular=visits > 0,
+                anniv=anniv, low=None, log=[])
+
+
+def _sync_stays(d: dict, day: int) -> None:
+    stays = d.get('stays')
+    if not isinstance(stays, dict):
+        return
+    for rid in list(stays):
+        r, st = d['rooms'].get(rid), stays[rid]
+        if (rid not in ROOM_INDEX or not isinstance(r, dict) or r.get('status') != 'occupied' or not isinstance(st, dict)
+                or st.get('guest') != r.get('guest')):
+            del stays[rid]
+    for rid, r in d['rooms'].items():
+        if rid in ROOM_INDEX and isinstance(r, dict) and r.get('status') == 'occupied' and rid not in stays and isinstance(r.get('guest'), str):
+            stays[rid] = _stay_new(r['guest'][:80], _guest_npc(r['guest']), day)
+
+
+def _stay_open(c: dict, rid: str, guest: str, npc: int, anniv: int = 0) -> dict:
+    """A guest moves in (check-in at the desk or a booked arrival in the evening)."""
+    d = _data(c)
+    rec = d['book'].get(str(npc)) if npc in BOOK_NPCS else None
+    st = _stay_new(guest[:80], npc, c['day'], rec['visits'] if rec else 0, anniv)
+    d['stays'][rid] = st
+    return st
+
+
+def _stay_log(st: dict, text: str) -> None:
+    st['log'] = (st['log'] + [text])[-STAY_LOG:]
+
+
+def _stars(mood: int) -> int:
+    return 5 if mood >= 85 else 4 if mood >= 70 else 3 if mood >= 50 else 2
+
+
+def _trip_fits(trip: dict, place: dict) -> bool:
+    tags = set(place['tags'])
+    return all(w in tags for w in trip['want']) and not tags & set(trip['avoid'])
+
+
+def _roll_stays(c: dict) -> None:
+    """Morning: what each guest who sleeps here again tonight will need today (seeded by room, guest and day)."""
+    d = _data(c)
+    day, mod = c['day'], today(c['day'])['id']
+    for rid in ROOM_INDEX:
+        st, r = d['stays'].get(rid), d['rooms'][rid]
+        if not st or r['task'] or r['until'] <= day or st['since'] >= day or st['rolled'] == day:
+            continue
+        rng = kit.rng(ID, 'stay', rid, st['guest'], day)
+        st.update(rolled=day, dnd=rng.random() < DND_P, tidy=None, warmed=None, ask=None, trip=None, opts=[], asked=None, place=None)
+        st['cold'] = mod == 'cold' or (mod == 'rain' and rng.random() < 0.5)
+        if rng.random() < ASK_P:
+            ask = rng.choice([a for a in ASKS if mod in a.get('mods', (mod,))])
+            st['ask'] = ask['id']
+            if ask['id'] == 'trip':
+                pool = [x for x in TRIPS if mod in x.get('mods', (mod,))]
+                pick = TRIP_BY.get(st['npc'])
+                trip = TRIP_INDEX['indoor'] if mod == 'rain' and rng.random() < 0.5 else TRIP_INDEX[pick] if pick else rng.choice(pool)
+                fits = [p['id'] for p in PLACES if _trip_fits(trip, p)]
+                other = [p['id'] for p in PLACES if p['id'] not in fits]
+                opts = [rng.choice(fits)] + rng.sample(other, 3)
+                rng.shuffle(opts)
+                st.update(trip=trip['id'], opts=opts)
+
+
+def _stay_todo(st: dict, day: int) -> int:
+    if st['rolled'] != day:
+        return 0
+    return (st['tidy'] is None) + bool(st['cold'] and not st['warmed']) + bool(st['ask'] and not st['asked'])
+
+
+def _score_stays(c: dict) -> tuple[int, int]:
+    """Evening: each staying guest's day becomes mood. Returns (guests scored, needs missed)."""
+    d = _data(c)
+    day = c['day']
+    garden = d['garden']
+    scored = missed = 0
+    for rid, st in d['stays'].items():
+        if st['rolled'] != day:
+            continue
+        r = d['rooms'][rid]
+        rows, words = [], []
+        tidy = st['tidy']
+        if tidy in ('tidy', 'door'):
+            words.append('phòng gọn' if tidy == 'tidy' else 'khăn để ở cửa')
+        elif tidy == 'basket':
+            rows.append((DELTA['basket'], None))
+            words.append('chỉ để khăn ở cửa')
+        elif tidy == 'intrude':
+            rows.append((DELTA['intrude'], LOW['intrude']))
+            words.append('bị làm phiền')
+        else:
+            rows.append((DELTA['tidy_miss'], LOW['tidy_miss']))
+            words.append('không ai dọn')
+            missed += 1
+        if st['cold']:
+            if st['warmed']:
+                rows.append((DELTA['warm'], None))
+                words.append('ấm áp')
+            else:
+                rows.append((DELTA['cold_miss'], LOW['cold_miss']))
+                words.append('lạnh buốt')
+                missed += 1
+        if st['ask']:
+            if st['asked'] == 'ok':
+                rows.append((DELTA['ask_ok'], None))
+                words.append('được giúp')
+            elif st['asked'] == 'bad':
+                rows.append((DELTA['ask_bad'], LOW['ask_bad']))
+                words.append('đi nhầm chỗ')
+            else:
+                rows.append((DELTA['ask_miss'], LOW['ask_miss']))
+                words.append('nhờ không ai làm')
+                missed += 1
+        if tidy in ('tidy', 'door') and (not st['cold'] or st['warmed']) and (not st['ask'] or st['asked'] == 'ok'):
+            rows.append((DELTA['full'], None))
+        if garden >= GARDEN_BLOOM:
+            rows.append((DELTA['bloom'], None))
+        elif garden < GARDEN_WILT:
+            rows.append((DELTA['wilt'], None))
+            words.append('vườn héo')
+        if r['wear'] < WEAR_STAY:
+            rows.append((DELTA['worn'], LOW['worn']))
+            words.append('phòng ẩm')
+        if r['snag']:
+            rows.append((DELTA['snag'], f'{r["snag"]} mà mấy hôm không ai sửa.'))
+            words.append(r['snag'].lower())
+        delta = sum(x for x, _ in rows)
+        worst = min(rows, key=lambda x: x[0]) if rows else (0, None)
+        if worst[1] and worst[0] <= -5:
+            st['low'] = worst[1]
+        st['mood'] = max(MOOD_MIN, min(100, st['mood'] + delta))
+        st['scored'] += 1
+        _stay_log(st, f'Ngày {day}: {", ".join(words)} → {_word(MOOD_WORDS, st["mood"]).lower()} ({delta:+d})')
+        scored += 1
+    for st in d['stays'].values():
+        st['nights'] = min(60, st['nights'] + 1)
+    return scored, missed
+
+
+def _depart(s: dict, c: dict, rid: str | None, t: dict | None = None) -> dict | None:
+    """A guest leaves: the guest book remembers them, and a stay that was looked after (or not) becomes a review.
+    Leaving through a check-out ticket, the stay becomes a row of that ticket's review instead."""
+    if not rid:
+        return None
+    d = _data(c)
+    st = d['stays'].pop(rid, None)
+    if not st:
+        return None
+    npc = _npc_index(t) if t else st['npc']
+    stars = _stars(st['mood']) if st['scored'] else None
+    if npc in BOOK_NPCS:
+        b = d['book'].setdefault(str(npc), dict(visits=0, first=c['day'], last=c['day'], room=rid, fav=None, stars=None))
+        b.update(visits=min(99, b['visits'] + 1), last=c['day'], room=rid)
+        if stars:
+            b['stars'] = stars
+        if st['mood'] >= 70:
+            b['fav'] = rid
+        if len(d['book']) > BOOK_MAX:
+            del d['book'][min(d['book'], key=lambda k: d['book'][k]['last'])]
+    if st['anniv']:
+        _anniv_page(d, st['anniv'], c['day'], rid, stars)
+    if stars is None:
+        return None
+    if t is None:
+        text = REVIEW_TEXT.get(stars) or f'Ở dài ngày mới thấy: {(st["low"] or "chẳng ai hỏi han gì").lower()}'
+        if stars == 3 and st['low']:
+            text += ' ' + st['low']
+        kit.review(s, c, kit.npc_id(ID, npc if 0 <= npc < len(PEOPLE) else 8), stars, text, f'stay-{rid}-{c["day"]}')
+        d['stay_reviews'] += 1
+    return dict(mood=st['mood'], nights=st['nights'], stars=stars, low=st['low'])
+
+
+def _anniv_page(d: dict, year: int, day: int, rid: str | None, stars) -> None:
+    pages = d['anniv']['pages']
+    if not any(p['year'] == year for p in pages):
+        d['anniv']['pages'] = (pages + [dict(year=year, day=day, room=rid, stars=stars)])[-12:]
+
+
+def _anniv_call(s: dict, c: dict) -> None:
+    """Two days ahead, Cô Diệp calls for room 3 — as every year."""
+    d = _data(c)
+    a, day = d['anniv'], c['day']
+    if day < a['next'] - ANNIV_LEAD:
+        return
+    start, year = max(a['next'], day + 1), a['year']
+    a.update(next=start + ANNIV_EVERY, year=year + 1)
+    ground = [ANNIV_ROOM] + [r['id'] for r in ROOMS if r['id'] != ANNIV_ROOM and not r['stairs'] and r['cap'] >= 2]
+    rid = next((x for x in ground if ROOM_INDEX[x]['unlock'] <= kit.level(c) and _blocked(c, x, start, ANNIV_NIGHTS) is None), None)
+    if rid is None:
+        _anniv_page(d, year, day, None, None)
+        kit.log(s, c, 'homestay', f'📞 {ANNIV_NAME} gọi xin phòng số 3 cho ngày {start}, nhưng lịch kín hết phòng tầng trệt. Cô hẹn năm sau.')
+        return
+    total = kit.price(c, rid, SPEC['prices'][rid]) * ANNIV_NIGHTS
+    deposit = math.ceil(total * DEPOSIT_PCT / 100)
+    d['bookings'] = (d['bookings'] + [dict(id=f'anniv-{year}', rooms=[rid], start=start, nights=ANNIV_NIGHTS, guests=2,
+                                          name=f'{ANNIV_NAME} (năm thứ {year})', total=total, deposit=deposit, task=None, npc=ANNIV_NPC,
+                                          anniv=year)])[-60:]
+    kit.money(s, c, deposit, f'{ANNIV_NAME} chuyển cọc phòng ngày {start}', f'anniv-{year}', category='room')
+    where = 'phòng số 3 như mọi năm' if rid == ANNIV_ROOM else f'phòng {ROOM_INDEX[rid]["name"]} (phòng số 3 đã có khách)'
+    kit.log(s, c, 'homestay', f'📞 {ANNIV_NAME} gọi đặt {where} từ ngày {start}, {ANNIV_NIGHTS} đêm — năm thứ {year}. Đã nhận {deposit} xu cọc.')
+
+
+def _wear_night(c: dict) -> list:
+    """The night passes: occupied rooms age; a room slipping under the line gets a small repair."""
+    d = _data(c)
+    rain = today(c['day'])['id'] == 'rain'
+    found = []
+    for i, r in enumerate(ROOMS):
+        room = d['rooms'][r['id']]
+        if room['status'] != 'occupied':
+            continue
+        before = room['wear']
+        room['wear'] = max(0, before - WEAR_NIGHT - (WEAR_RAIN if rain else 0) - (WEAR_BALCONY if r['id'] == 'ho' else 0))
+        if before >= SNAG_AT > room['wear'] and not room['snag']:
+            room['snag'] = SNAGS[4] if r['id'] == 'ho' and c['day'] % 2 == 0 else SNAGS[(c['day'] + i) % 4]
+            found.append(f'{r["name"]}: {room["snag"].lower()}')
+    return found
+
+
+def _featured(c: dict) -> bool:
+    stars = [p['stars'] for p in c.get('feed', []) if p.get('kind') == 'review' and type(p.get('stars')) is int][:12]
+    return len(stars) >= FEATURE_MIN and sum(stars) / len(stars) >= FEATURE_AT
+
+
+def _care_close(s: dict, c: dict) -> list:
+    """Evening chores of the care loop, before the arrivals: stays scored, the garden dries, the rating is logged."""
+    d = _data(c)
+    lines = []
+    n, missed = _score_stays(c)
+    if n:
+        lines.append(f'Khách ở tiếp: {n} phòng' + (f' · {missed} việc chăm bị bỏ lỡ.' if missed else ' · chăm đủ cả.'))
+    mod = today(c['day'])['id']
+    d['garden'] = max(0, d['garden'] - GARDEN_DECAY.get(mod, 10))
+    if d['garden'] < GARDEN_WILT:
+        lines.append(f'🌸 Vườn cẩm tú cầu đang héo ({d["garden"]}%) — mai nhớ tưới, tỉa.')
+    return lines
+
+
+def _care_night(s: dict, c: dict) -> list:
+    """After the arrivals: rooms age overnight, the rating is logged, tomorrow's cold is announced."""
+    d = _data(c)
+    lines = []
+    found = _wear_night(c)
+    if found:
+        lines.append('🔧 Cần sửa vặt: ' + '; '.join(found) + '.')
+    score = _ota_score(c)
+    if not d['rating'] or d['rating'][-1][0] != c['day']:
+        d['rating'] = (d['rating'] + [[c['day'], int(round(score * 10))]])[-RATING_DAYS:]
+    nxt = today(c['day'] + 1)['id']
+    staying = sum(1 for rid, r in d['rooms'].items() if r['status'] == 'occupied' and r['until'] > c['day'] + 1)
+    if nxt in ('cold', 'rain') and staying:
+        lines.append(f'🪵 Mai {"rét đậm" if nxt == "cold" else "mưa lạnh"}: {staying} phòng có khách ở tiếp, còn {d["wood"]} bó củi'
+                     + (f' (+{d["wood_order"]} bó sáng mai tới).' if d['wood_order'] else '.'))
+    return lines
+
+
+def _care_start(s: dict, c: dict) -> None:
+    """Morning: the woodpile delivery, the room-3 call, today's needs of the guests who stay."""
+    d = _data(c)
+    if d['wood_order']:
+        d['wood'] = min(WOOD_MAX, d['wood'] + d['wood_order'])
+        kit.log(s, c, 'homestay', f'🪵 Chú Tư chở {d["wood_order"]} bó củi khô lên dốc, xếp dưới mái hiên.')
+        d['wood_order'] = 0
+    _anniv_call(s, c)
+    _roll_stays(c)
+
+
+# ---------------------------------------------------------------- care commands
+def _room_arg(c: dict, p: dict) -> tuple[str, dict]:
+    rid = kit.one_of(p.get('room'), ROOM_INDEX, 'Phòng không tồn tại.')
+    kit.need(ROOM_INDEX[rid]['unlock'] <= kit.level(c), f'Phòng {ROOM_INDEX[rid]["name"]} mở ở cấp {ROOM_INDEX[rid]["unlock"]}.')
+    return rid, _data(c)['rooms'][rid]
+
+
+def _deep(s: dict, c: dict, p: dict) -> dict:
+    rid, r = _room_arg(c, p)
+    name = ROOM_INDEX[rid]['name']
+    kit.need(r['status'] in ('clean', 'dirty') and not r['hk'] and not r['task'],
+             f'Phòng {name} đang có khách, đang sửa hoặc đang dọn dở — tổng vệ sinh khi phòng trống.')
+    kit.need(r['wear'] < 100, f'Phòng {name} vừa tổng vệ sinh, còn tươm tất lắm.')
+    kit.confirm(p, 'Xác nhận tổng vệ sinh phòng (vật tư chống ẩm, dầu lau gỗ).')
+    kit.money(s, c, -DEEP_COST, f'Vật tư tổng vệ sinh phòng {name}', rid, category='repair')
+    r['wear'] = 100
+    d = _data(c)
+    d['deep'] += 1
+    kit.metric(c, 'hs_deep')
+    extra = ' Lau lan can gỗ ban công, quét lá, tưới giàn hoa ngoài lan can.' if rid == 'ho' else ''
+    return dict(message=f'Tổng vệ sinh phòng {name}: giặt rèm, lau gầm giường, xịt chống ẩm góc tường, phơi nệm.{extra} Phòng thơm lại mùi gỗ thông (−{DEEP_COST} xu).',
+                celebrate=True)
+
+
+def _fix(s: dict, c: dict, p: dict) -> dict:
+    rid, r = _room_arg(c, p)
+    name = ROOM_INDEX[rid]['name']
+    kit.need(r['snag'], f'Phòng {name} không có gì cần sửa vặt.')
+    kit.need(r['status'] != 'maintenance', f'Phòng {name} đang chờ thợ sửa lớn — thợ sẽ sửa luôn.')
+    kit.confirm(p, 'Xác nhận mua đồ sửa vặt.')
+    kit.money(s, c, -FIX_COST, f'Sửa vặt phòng {name}: {r["snag"].lower()}', rid, category='repair')
+    snag, r['snag'] = r['snag'], None
+    d = _data(c)
+    d['fixed'] += 1
+    kit.metric(c, 'hs_fix')
+    st = d['stays'].get(rid)
+    if st:
+        _stay_log(st, f'Ngày {c["day"]}: đã sửa {snag.lower()}')
+    return dict(message=f'Đã sửa xong: {snag.lower()} (−{FIX_COST} xu).' + (' Khách đi chơi về không còn phải phiền.' if st else ''))
+
+
+def _garden(s: dict, c: dict, p: dict) -> dict:
+    d = _data(c)
+    kit.need(d['garden'] < 100, 'Vườn cẩm tú cầu đang đẹp nhất rồi.')
+    before = d['garden']
+    d['garden'] = min(100, before + GARDEN_TEND)
+    kit.metric(c, 'hs_garden')
+    word = 'nở rộ' if d['garden'] >= GARDEN_BLOOM else 'tươi lại dần'
+    return dict(message=f'Tưới gốc, ngắt hoa tàn, tỉa lá úa quanh lối đi. Vườn cẩm tú cầu {word} ({before}% → {d["garden"]}%).')
+
+
+def _wood(s: dict, c: dict, p: dict) -> dict:
+    d = _data(c)
+    kit.need(d['wood'] + d['wood_order'] + WOOD_PACK <= WOOD_MAX, f'Mái hiên chỉ chứa {WOOD_MAX} bó củi.')
+    kit.need(d['wood_order'] < 2 * WOOD_PACK, 'Đã đặt đủ củi cho chuyến sáng mai rồi.')
+    kit.confirm(p, 'Xác nhận đặt củi (sáng mai mới chở tới).')
+    kit.money(s, c, -WOOD_COST, f'Đặt {WOOD_PACK} bó củi khô của Chú Tư', None, category='stock')
+    d['wood_order'] += WOOD_PACK
+    return dict(message=f'Đã đặt {WOOD_PACK} bó củi (−{WOOD_COST} xu). Chú Tư chở lên sáng mai — đêm nay vẫn dùng củi đang có ({d["wood"]} bó) hoặc gas.')
+
+
+def _stay_act(s: dict, c: dict, p: dict) -> dict:
+    d = _data(c)
+    rid = kit.one_of(p.get('room'), ROOM_INDEX, 'Phòng không tồn tại.')
+    name = ROOM_INDEX[rid]['name']
+    st = d['stays'].get(rid)
+    kit.need(st and st['rolled'] == c['day'], f'Phòng {name} hôm nay không có khách ở tiếp cần chăm.')
+    do = kit.one_of(p.get('do'), ('tidy', 'door', 'warm', 'ask'), 'Việc chăm khách không hợp lệ.')
+    if do in ('tidy', 'door'):
+        kit.need(st['tidy'] is None, f'Phòng {name} hôm nay đã lo khăn và dọn rồi.')
+        kit.need(kit.stock(c, 'towel') >= 2, 'Thiếu khăn tắm (cần 2). Mở Kho để nhập thêm.')
+        kit.take(c, 'towel', 2)
+        kit.metric(c, 'hs_stay')
+        if do == 'tidy' and st['dnd']:
+            st['tidy'] = 'intrude'
+            _stay_log(st, f'Ngày {c["day"]}: bị gõ cửa dù đã treo biển')
+            return dict(message='Gõ cửa bước vào… khách đang nghỉ, biển “Xin đừng làm phiền” treo ngay tay nắm cửa. Khách khó chịu ra mặt.',
+                        refused=True)
+        if do == 'tidy':
+            st['tidy'] = 'tidy'
+            return dict(message=f'Phòng {name}: thay khăn, đổ rác, kéo phẳng chăn, lau bàn — gọn như lúc mới nhận.')
+        st['tidy'] = 'door' if st['dnd'] else 'basket'
+        if st['dnd']:
+            return dict(message='Để giỏ khăn sạch và túi rác mới trước cửa, không gõ. Khách nhắn cảm ơn vì được yên tĩnh.', celebrate=True)
+        return dict(message='Để giỏ khăn trước cửa. Phòng hôm nay vẫn chưa ai vào dọn, khăn ướt vẫn nằm đó.')
+    if do == 'warm':
+        kit.need(st['cold'], f'Đêm nay phòng {name} không cần sưởi thêm.')
+        kit.need(st['warmed'] is None, 'Đã sưởi phòng này rồi.')
+        how = kit.one_of(p.get('how'), ('wood', 'gas'), 'Chọn củi hoặc gas.')
+        if how == 'wood':
+            kit.need(d['wood'] >= 1, 'Hết củi rồi. Đặt củi hôm nay thì sáng mai mới có — đêm nay dùng gas.')
+            d['wood'] -= 1
+        else:
+            kit.need(kit.stock(c, 'heater_gas') >= 1, 'Hết bình gas máy sưởi. Mở Kho để nhập, hoặc dùng củi.')
+            kit.take(c, 'heater_gas', 1)
+        st['warmed'] = how
+        kit.metric(c, 'hs_stay')
+        what = 'Nhóm lò củi nhỏ trong phòng, chắn lưới, mở hé cửa thông gió' if how == 'wood' else 'Lắp bình gas mới cho máy sưởi, thử lửa, mở hé cửa thông gió'
+        return dict(message=f'{what}, trải thêm chăn lông. Đêm nay phòng {name} ấm áp.')
+    kit.need(st['ask'], 'Hôm nay khách không nhờ gì thêm.')
+    kit.need(st['asked'] is None, 'Đã làm việc khách nhờ rồi.')
+    ask = ASK_INDEX[st['ask']]
+    kit.metric(c, 'hs_stay')
+    if st['ask'] == 'trip':
+        place = kit.one_of(p.get('place'), st['opts'], 'Chọn một trong bốn nơi trên phiếu.')
+        trip, pl = TRIP_INDEX[st['trip']], PLACE_INDEX[place]
+        ok = _trip_fits(trip, pl)
+        st.update(asked='ok' if ok else 'bad', place=place)
+        if ok:
+            return dict(message=f'Gợi ý {pl["emoji"]} {pl["name"]}: {pl["blurb"]} Khách gật gù, chụp lại bản đồ.', celebrate=True)
+        clash = [TAG_NAMES[x] for x in pl['tags'] if x in trip['avoid']]
+        miss = [TAG_NAMES[x] for x in trip['want'] if x not in pl['tags']]
+        why = ('chỗ đó ' + ', '.join(clash)) if clash else ('không ' + ', '.join(miss))
+        _stay_log(st, f'Ngày {c["day"]}: được chỉ tới {pl["name"]} — {why}')
+        return dict(message=f'Khách đi {pl["name"]} về, thở dài: “{why[0].upper() + why[1:]}, không đúng cái mình cần.”', refused=True)
+    for item, q in ask['use'].items():
+        kit.need(kit.stock(c, item) >= q, f'Thiếu {ITEM_INDEX[item]["name"]} (cần {q}). Mở Kho để nhập thêm.')
+    for item, q in ask['use'].items():
+        kit.take(c, item, q)
+    st['asked'] = 'ok'
+    return dict(message={'box': 'Gói ổ bánh mì nướng giòn và hộp sữa ấm vào túi giấy, kèm khăn ướt. Khách hẹn mang ảnh biển mây về khoe.',
+                         'tea': 'Đun ấm trà gừng mật ong, mang lên kèm đĩa mứt. Khách ngồi ban công nhâm nhi.',
+                         'umbrella': 'Đưa hai cái ô và áo mưa của nhà, dặn đường đất trơn.'}[st['ask']])
+
+
+# ---------------------------------------------------------------- care: public view
+def _care_rows(c: dict, d: dict) -> list:
+    day, rows = c['day'], []
+    for r in ROOMS:
+        st = d['stays'].get(r['id'])
+        if not st or st['rolled'] != day:
+            continue
+        name = f'{r["name"]} (số {r["no"]})'
+        tidy = st['tidy']
+        rows.append(dict(ok=True if tidy in ('tidy', 'door') else False if tidy in ('intrude', 'basket') else None, icon='🚪' if st['dnd'] else '🧺',
+                         label=f'{name}: ' + ('để khăn ở cửa' if st['dnd'] else 'dọn phòng giữa kỳ'),
+                         note='biển “Xin đừng làm phiền” — không gõ cửa' if st['dnd'] else '2 khăn tắm',
+                         tone='warn' if st['dnd'] and tidy is None else ''))
+        if st['cold']:
+            rows.append(dict(ok=True if st['warmed'] else None, icon='🔥', label=f'{name}: sưởi đêm lạnh', note='1 bó củi hoặc 1 bình gas',
+                             tone='danger' if not st['warmed'] else ''))
+        if st['ask']:
+            a = ASK_INDEX[st['ask']]
+            rows.append(dict(ok=True if st['asked'] == 'ok' else False if st['asked'] == 'bad' else None, icon=a['emoji'], label=f'{name}: {a["label"].lower()}',
+                             note=''))
+    for r in ROOMS:
+        room = d['rooms'][r['id']]
+        if r['unlock'] > kit.level(c):
+            continue
+        if room['snag']:
+            rows.append(dict(ok=None, icon='🔧', label=f'Sửa vặt {r["name"]}: {room["snag"].lower()}', note=f'{FIX_COST} xu', tone='warn'))
+        if room['wear'] < WEAR_LOW and room['status'] in ('clean', 'dirty'):
+            rows.append(dict(ok=None, icon='🧽', label=f'Tổng vệ sinh {r["name"]}', note=f'độ tươm tất {room["wear"]}% · {DEEP_COST} xu', tone='warn'))
+    if d['garden'] < 50:
+        rows.append(dict(ok=None, icon='🌸', label='Tưới, tỉa vườn cẩm tú cầu', note=f'vườn {d["garden"]}%', tone='warn' if d['garden'] < GARDEN_WILT else ''))
+    nxt = today(day + 1)['id']
+    staying = sum(1 for x in d['rooms'].values() if x['status'] == 'occupied' and x['until'] > day + 1)
+    if nxt in ('cold', 'rain') and staying and d['wood'] + d['wood_order'] < staying:
+        rows.append(dict(ok=None, icon='🪵', label='Đặt củi cho đêm mai', note=f'mai {"rét" if nxt == "cold" else "mưa lạnh"}, {staying} phòng ở tiếp · còn {d["wood"]} bó'))
+    a = d['anniv']
+    booked = any(b.get('anniv') and b['start'] + b['nights'] > day for b in d['bookings'])
+    if not booked and a['next'] - ANNIV_LEAD - 2 <= day < a['next'] - ANNIV_LEAD and ROOM_INDEX[ANNIV_ROOM]['unlock'] <= kit.level(c):
+        # A heads-up before their call: keep room 3 free for their nights.
+        free = _blocked(c, ANNIV_ROOM, a['next'], ANNIV_NIGHTS) is None
+        rows.append(dict(ok=True if free else False, icon='🗝️', label=f'Giữ phòng số 3 trống đêm {a["next"]}–{a["next"] + ANNIV_NIGHTS - 1}',
+                         note=f'{ANNIV_NAME} sẽ gọi đặt vào ngày {a["next"] - ANNIV_LEAD}' + ('' if free else ' — phòng số 3 đã có khách những đêm đó'),
+                         tone='' if free else 'danger'))
+    for b in d['bookings']:
+        if b.get('anniv') and b['start'] == day:
+            ok = all(d['rooms'][x]['status'] == 'clean' for x in b['rooms'])
+            rows.append(dict(ok=True if ok else None, icon='🗝️', label=f'Phòng {ROOM_INDEX[b["rooms"][0]]["name"]} sạch trước tối cho {ANNIV_NAME}',
+                             note=f'năm thứ {b["anniv"]}', tone='' if ok else 'warn'))
+    return rows
+
+
+def _book_public(d: dict) -> list:
+    rows = []
+    for key, b in sorted(d['book'].items(), key=lambda kv: -kv[1]['last']):
+        npc = int(key)
+        notes = GUEST_NOTES.get(npc, [])[:min(2, b['visits'])]
+        rows.append(dict(npc=kit.npc_id(ID, npc), name=PEOPLE[npc][0], visits=b['visits'], last=b['last'], stars=b['stars'],
+                         fav=b['fav'], room=b['room'], notes=[dict(emoji=e, text=t) for e, t in notes],
+                         more=max(0, min(2, len(GUEST_NOTES.get(npc, []))) - b['visits'])))
+    return rows
+
+
+def _care_public(c: dict, d: dict) -> None:
+    """Fields the client needs for the care loop (d is already a copy)."""
+    day = c['day']
+    for rid, st in d['stays'].items():
+        st['word'] = _word(MOOD_WORDS, st['mood'])
+        st['todo'] = _stay_todo(st, day)
+        if st['ask'] and st['ask'] != 'trip':
+            st['say'] = ASK_INDEX[st['ask']]['say']
+        if st['trip']:
+            st['say'] = TRIP_INDEX[st['trip']]['say']
+            st['want'], st['avoid'] = TRIP_INDEX[st['trip']]['want'], TRIP_INDEX[st['trip']]['avoid']
+    for rid, r in d['rooms'].items():
+        r['wear_word'] = _word(WEAR_WORDS, r['wear'])
+    d['care'] = _care_rows(c, d)
+    d['book'] = _book_public(d)
+    rating = d['rating']
+    score = _ota_score(c)
+    back = next((v for dd, v in rating if dd <= day - 3), rating[0][1] if rating else None)
+    d['rating_view'] = dict(score=score, days=rating, trend=round(score - back / 10, 1) if back is not None else 0.0, featured=_featured(c))
+    booked = next((b for b in d['bookings'] if b.get('anniv') and b['start'] + b['nights'] > day), None)
+    here = next((rid for rid, st in d['stays'].items() if st['anniv']), None)
+    d['anniv'] = dict(d['anniv'], booked=dict(start=booked['start'], room=booked['rooms'][0], year=booked['anniv']) if booked else None,
+                      here=here, call=d['anniv']['next'] - ANNIV_LEAD)
 
 
 # ---------------------------------------------------------------- staff, hints, content
@@ -2266,6 +2976,12 @@ def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
                     r['hk']['cost'] += kit.take(c, k, q)
                 r['hk']['done'].append(step)
             return f'Phòng {ROOM_INDEX[rid]["name"]}: {HK_INDEX[step]["name"].lower()}. Bạn báo phòng sạch khi kiểm lại.'
+        for rid, st in d['stays'].items():
+            if st['rolled'] == c['day'] and st['tidy'] is None and kit.stock(c, 'towel') >= 2:
+                kit.take(c, 'towel', 2)
+                st['tidy'] = 'door' if st['dnd'] else 'tidy'
+                return f'Phòng {ROOM_INDEX[rid]["name"]}: ' + ('thấy biển “Xin đừng làm phiền”, để giỏ khăn trước cửa.' if st['dnd']
+                                                              else 'dọn giữa kỳ, thay khăn, đổ rác.')
         return 'Đã gấp khăn, phân loại đồ giặt và lau hành lang.'
     if not t or t['career'] != ID or not t['known']:
         return None
@@ -2301,7 +3017,9 @@ def content() -> dict:
     return dict(rooms=ROOMS, hk_steps=HK_STEPS, air=AIR, egg=EGG, bill_lines=BILL_LINES, free_water=FREE_WATER, extra_guest=EXTRA_GUEST,
                 kid_free_age=KID_FREE_AGE, deposit_pct=DEPOSIT_PCT, places=PLACES, tag_names=TAG_NAMES, probes=PROBES, horizon=HORIZON,
                 jobs=JOB_NAMES, repair_cost=REPAIR_COST, renovation_cost=RENOVATION_COST, today=TODAY, rates=RATES, claim_qs=CLAIM_QS,
-                rules=HOUSE_RULES, walk_fee=WALK_FEE, commission=OTA_COMMISSION, air_rain=AIR_RAIN, otas=list(OTAS))
+                rules=HOUSE_RULES, walk_fee=WALK_FEE, commission=OTA_COMMISSION, air_rain=AIR_RAIN, otas=list(OTAS),
+                asks=ASKS, trips=TRIPS, wood_pack=WOOD_PACK, wood_cost=WOOD_COST, wood_max=WOOD_MAX, deep_cost=DEEP_COST, fix_cost=FIX_COST,
+                wear_low=WEAR_LOW, garden_bloom=GARDEN_BLOOM, garden_wilt=GARDEN_WILT, anniv_name=ANNIV_NAME, anniv_room=ANNIV_ROOM)
 
 
 def _p(who, emoji, text):
@@ -2586,7 +3304,7 @@ DESK = [
                                  lose=dict(effects=dict(money=-6), good=False, outcome='Tổ trật tự nhắc lấn lối thoát hiểm: dẹp hàng, phạt 30 xu, lời chẳng còn bao nhiêu.'))),
                   dict(id='skip', label='Thôi, lo khách trong nhà', good=None, outcome='Nhà Cô Ba bày một mình, cuối ngày gửi sang một ấm trà.')],
          default='skip'),
-    dict(id='fog', title='Nhóm khách muốn chạy xe trong sương', emoji='🌫️', npc=4, min_day=2, mods=('rain', 'cold'), tone='tense',
+    dict(id='fog', title='Nhóm khách muốn chạy xe trong sương', emoji='🌁', npc=4, min_day=2, mods=('rain', 'cold'), tone='tense',
          text='4 giờ sáng, nhóm Mai Chi dắt xe máy ra cổng định lên đồi săn mây. Sương dày tới mức không thấy cột điện: “Đi được không ạ?”',
          options=[dict(id='warn', label='Khuyên chờ sương tan, gọi xe jeep hợp tác xã đưa đi', hint='Không tốn xu',
                        effects=dict(review=[5, 'Chủ nhà can đi đường sương mù, gọi xe jeep. An toàn mà vẫn săn được mây!']), good=True,
@@ -2656,7 +3374,7 @@ SPEC = dict(
     inventory=dict(items=ITEMS, capacity=40),
     prices={'thong': 30, 'suong': 28, 'gac': 36, 'quy': 48, 'ho': 44, 'breakfast': 12, 'guide': 8},
     tip=2,
-    physical=('hs_clean', 'hs_welcome', 'hs_settle', 'hs_serve', 'hs_egg', 'hs_repair', 'hs_safety'),
+    physical=('hs_clean', 'hs_welcome', 'hs_settle', 'hs_serve', 'hs_egg', 'hs_repair', 'hs_safety', 'hs_deep', 'hs_garden'),
     free_actions=(),
     no_tick=('hs_line', 'hs_pick', 'hs_release', 'hs_plate', 'hs_rate', 'hs_desk'),
     waste_items=('tray',),

@@ -74,14 +74,15 @@
 /* ---------- 7-day calendar */
 .career-job.hs .hs-cal-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;border:1px solid var(--hs-line);border-radius:var(--hs-rs);background:var(--hs-s1)}
 .career-job.hs .hs-cal{display:grid;min-width:320px}
-.career-job.hs .hs-row{display:grid;grid-template-columns:minmax(92px,1.4fr) repeat(7,minmax(30px,1fr));border-bottom:1px solid var(--hs-line)}
+.career-job.hs .hs-row{display:grid;grid-template-columns:minmax(128px,1.4fr) repeat(7,minmax(30px,1fr));border-bottom:1px solid var(--hs-line)}
 .career-job.hs .hs-row:last-child{border-bottom:0}
 .career-job.hs .hs-row.head{background:var(--hs-s2);font-size:.8em;font-weight:700}
 .career-job.hs .hs-row.picked{background:var(--hs-s2)}
 .career-job.hs .hs-row.locked{opacity:.5}
 .career-job.hs .hs-rname{display:flex;flex-direction:column;justify-content:center;gap:1px;padding:6px 8px;min-height:44px;font:inherit;font-size:.86em;text-align:left;
   background:transparent;border:0;border-right:1px solid var(--hs-line);color:var(--hs-ink)}
-.career-job.hs .hs-rname small{color:var(--hs-muted);font-size:.85em;display:block}
+.career-job.hs .hs-rname small{color:var(--hs-muted);font-size:.85em;display:block;white-space:nowrap}
+.career-job.hs .hs-rn{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .career-job.hs button.hs-rname{cursor:pointer}
 .career-job.hs button.hs-rname[aria-pressed="true"]{box-shadow:inset 4px 0 0 var(--hs-accent);font-weight:700}
 .career-job.hs .hs-day{display:grid;place-items:center;padding:4px 0;color:var(--hs-muted)}
@@ -195,6 +196,8 @@
 .career-job.hs .hs-bad{color:var(--hs-bad)}
 .career-job.hs .hs-proof{display:grid;gap:6px;margin-top:8px;padding:8px 10px;border-radius:var(--hs-rs);background:var(--hs-s2);border:1px dashed var(--hs-line)}
 .career-job.hs .hs-proof p{margin:0}
+.career-job.hs .hs-proof{grid-template-columns:minmax(0,1fr)}
+.career-job.hs .hs-proof .tag{display:block;white-space:normal;height:auto;line-height:1.4;padding:6px 10px;overflow-wrap:anywhere}
 .career-job.hs .hs-package{margin:0 0 8px;padding:8px 10px;border-radius:var(--hs-rs);background:color-mix(in srgb,var(--hs-good) 14%,transparent);border:1px solid var(--hs-good);font-size:.92em;line-height:1.45}
 
 /* ---------- app orders (OTA inbox) */
@@ -233,9 +236,73 @@
 }
 @media (max-width:400px){
   .career-job.hs .hs-rooms{grid-template-columns:1fr}
-  .career-job.hs .hs-cal{min-width:0}
-  .career-job.hs .hs-row{grid-template-columns:100px repeat(7,minmax(0,1fr))}
+  /* Room names stay on one line: a fixed name column, narrow day cells; the frame scrolls if a phone is narrower still. */
+  .career-job.hs .hs-cal{min-width:328px}
+  .career-job.hs .hs-row{grid-template-columns:118px repeat(7,minmax(29px,1fr))}
   .career-job.hs .hs-rname{padding:4px 6px;font-size:.8em}
+  .career-job.hs .hs-cell{font-size:.85em}
 }
+/* ---------- care loop: panels, upkeep, guests who stay, garden & wood, guest book (care-wave1) */
+.career-job.hs .hs-panel{border-radius:var(--hs-rs);background:var(--hs-s1);border:1px solid var(--hs-line)}
+.career-job.hs .hs-panel-head{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:8px 12px;font:inherit;font-weight:700;text-align:left;
+  color:var(--hs-ink);background:transparent;border:0;border-radius:var(--hs-rs);cursor:pointer}
+.career-job.hs .hs-panel-head .grow{min-width:0}
+.career-job.hs .hs-panel-head small{display:block;font-weight:500;color:var(--hs-muted);font-size:.84em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.career-job.hs .hs-panel-head i{font-style:normal;color:var(--hs-muted);flex:none}
+.career-job.hs .hs-panel-body{padding:0 10px 10px;display:grid;gap:8px}
+.career-job.hs .hs-care{border-left:4px solid var(--hs-accent)}
+.career-job.hs .hs-mini{background:transparent;border:0}
+.career-job.hs .hs-mini .hs-panel-head{min-height:40px;padding:6px 0;font-weight:600;font-size:.88em}
+.career-job.hs .hs-mini .hs-panel-body{padding:0}
+.career-job.hs .hs-door{display:inline-block;margin-left:4px;padding:0 6px;border-radius:99px;background:var(--hs-s2);border:1px solid var(--hs-line);font-size:.72em;font-weight:700;color:var(--hs-muted);vertical-align:middle}
+.career-job.hs .hs-lock{font-weight:700;color:var(--hs-muted)}
+.career-job.hs .hs-roomcard{min-width:0}
+.career-job.hs .hs-roomcard>*{min-width:0}
+.career-job.hs .hs-wear{display:grid;gap:3px}
+.career-job.hs .hs-wear .bar,.career-job.hs .hs-moodbar,.career-job.hs .hs-gbar{display:block;height:6px;border-radius:99px;background:var(--hs-s2);border:1px solid var(--hs-line);overflow:hidden}
+.career-job.hs .hs-wear .bar i,.career-job.hs .hs-moodbar i,.career-job.hs .hs-gbar i{display:block;height:100%;background:var(--hs-good)}
+.career-job.hs .hs-wear small{font-size:.8em;color:var(--hs-muted)}
+.career-job.hs .hs-wear.warn .bar i,.career-job.hs .hs-gbar.ok i{background:var(--hs-warn)}
+.career-job.hs .hs-wear.bad .bar i,.career-job.hs .hs-gbar.bad i{background:var(--hs-bad)}
+.career-job.hs .hs-wear.warn small,.career-job.hs .hs-wear.bad small{color:var(--hs-bad);font-weight:600}
+.career-job.hs .hs-snag{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;padding:4px 8px;border-radius:var(--hs-rs);
+  background:color-mix(in srgb,var(--hs-warn) 14%,transparent);font-size:.88em}
+.career-job.hs .hs-stay{display:grid;gap:6px;margin-top:4px;padding-top:8px;border-top:1px dashed var(--hs-line)}
+.career-job.hs .hs-stay-head{display:flex;align-items:center;gap:8px}
+.career-job.hs .hs-stay-head small{color:var(--hs-muted);font-size:.84em}
+.career-job.hs .hs-mood{font-size:1.5em;line-height:1}
+.career-job.hs .hs-moodbar i{background:var(--hs-info)}
+.career-job.hs .hs-dnd{margin:0;padding:6px 10px;border-radius:var(--hs-rs);background:color-mix(in srgb,var(--hs-warn) 18%,transparent);border:1px solid var(--hs-warn);font-size:.9em}
+.career-job.hs .hs-stay-btns{gap:6px}
+.career-job.hs .hs-stay-btns .btn{flex:1 1 140px}
+.career-job.hs .hs-trip{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.career-job.hs .hs-trip-opt{display:grid;gap:4px;justify-items:start;min-height:44px;padding:8px;text-align:left;font:inherit;font-size:.9em;color:var(--hs-ink);
+  background:var(--hs-s1);border:2px solid var(--hs-line);border-radius:var(--hs-rs);cursor:pointer}
+.career-job.hs .hs-trip-opt:disabled{opacity:.55;cursor:not-allowed}
+.career-job.hs .hs-log{margin:0;padding-left:18px;display:grid;gap:3px;font-size:.84em;color:var(--hs-muted)}
+.career-job.hs .hs-garden{display:grid;gap:10px;padding:10px 12px;border-radius:var(--hs-rs);background:var(--hs-s1);border:1px solid var(--hs-line)}
+.career-job.hs .hs-gline{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.career-job.hs .hs-gline>.grow{flex:1 1 180px;min-width:0;display:grid;gap:3px}
+.career-job.hs .hs-gline small{color:var(--hs-muted);font-size:.85em;line-height:1.4}
+.career-job.hs .hs-gicon{font-size:1.5em;line-height:1;flex:none}
+.career-job.hs .hs-anniv{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:var(--hs-rs);background:var(--hs-s2);border:1px dashed var(--hs-warn)}
+.career-job.hs .hs-anniv small{color:var(--hs-muted);line-height:1.45}
+.career-job.hs .hs-anniv-key{font-size:1.6em;line-height:1}
+.career-job.hs .hs-pages{margin:4px 0 0;padding-left:18px;font-size:.86em}
+.career-job.hs .hs-book{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.career-job.hs .hs-guest{display:flex;gap:10px;align-items:flex-start;padding:8px;border-radius:var(--hs-rs);background:var(--hs-s2)}
+.career-job.hs .hs-guest small{color:var(--hs-muted)}
+.career-job.hs .hs-notes{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:2px;font-size:.88em}
+.career-job.hs .hs-regular{display:grid;gap:2px;margin:4px 0;padding:6px 10px;border-radius:var(--hs-rs);background:var(--hs-s2);border-left:3px solid var(--hs-accent);font-size:.9em}
+.career-job.hs .hs-regular small{color:var(--hs-muted)}
+.career-job.hs .hs-spark{display:inline-flex;align-items:flex-end;gap:2px;height:16px;margin-right:6px;vertical-align:middle}
+.career-job.hs .hs-spark i{display:block;width:4px;border-radius:2px;background:var(--hs-accent);opacity:.7}
+.career-job.hs .hs-up{color:var(--hs-good)}
+.career-job.hs .hs-down{color:var(--hs-bad)}
+.career-job.hs .hs-score small{display:inline}
+.career-job.hs .tile .hs-fav{color:var(--hs-accent);font-weight:700}
+.career-job.hs .hs-anniv-hint{margin:2px 0;padding:6px 8px;border-radius:var(--hs-rs);background:color-mix(in srgb,var(--hs-warn) 14%,transparent);line-height:1.4}
+@media (max-width:400px){.career-job.hs .hs-trip{grid-template-columns:1fr}}
+
 @media (prefers-reduced-motion:reduce){.career-job.hs *{transition:none!important;animation:none!important}}
 :is(body,html).reduce-motion .career-job.hs *{transition:none!important;animation:none!important}
