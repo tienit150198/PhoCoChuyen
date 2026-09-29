@@ -24,6 +24,13 @@ Real work of the job, at two stations:
   sponges for birthday-cake pre-orders, frost them and write the name exactly
   as ordered.
 
+Care from one day to the next (docs/superpowers/specs/2026-09-29-cafe-bakery-care-design.md):
+Bé Men, the sourdough starter fed once a day, sets how fast the bánh mì dough
+rises and whether it comes out dense; shaped dough can proof overnight in the
+fridge for tomorrow (warm dough does not survive the night); the care list
+names yesterday's pastries each morning; the regulars' notes card remembers
+what each guest always wants.
+
 Imperfect drinks and pastries can still be served, and the guest reacts to what
 they actually got (consequences: grumble, money back, send it back, or leave;
 the review names the mistake). The wrong drink, an undercooked sponge or a
@@ -103,7 +110,7 @@ BAKES = {
     'croissant': dict(id='croissant', name='Croissant bơ', emoji='🥐', proof=True, qty=6, window=(14, 20, 25),
                       recipe={'flour': 1, 'butter': 2, 'egg': 1}, allergens=['gluten', 'lactose'], fresh=0, max_age=1, donate=True, unlock=1),
     'banhmi': dict(id='banhmi', name='Bánh mì que', emoji='🥖', proof=True, qty=6, window=(12, 18, 23),
-                   recipe={'flour': 2}, allergens=['gluten'], fresh=0, max_age=1, donate=True, unlock=1),
+                   recipe={'flour': 2}, allergens=['gluten'], fresh=0, max_age=1, donate=True, unlock=1, starter=True),
     'cookie': dict(id='cookie', name='Cookie hạnh nhân', emoji='🍪', proof=False, qty=8, window=(8, 12, 16),
                    recipe={'flour': 1, 'butter': 1, 'sugar': 1, 'egg': 1, 'almond': 1}, allergens=['gluten', 'nuts', 'lactose'], fresh=2, max_age=3, donate=True, unlock=1),
     'bonglan': dict(id='bonglan', name='Bông lan trứng muối', emoji='🍰', proof=False, qty=6, window=(16, 22, 27),
@@ -114,8 +121,41 @@ BAKES = {
 }
 CASE_ITEMS = ('croissant', 'banhmi', 'cookie', 'bonglan')
 DONENESS = ('pale', 'golden', 'dark', 'burnt')
-LOT_Q = ('golden', 'dark', 'pale', 'flat')
-LOT_Q_LABEL = dict(golden='vàng đều', dark='hơi sậm', pale='nhạt màu', flat='xẹp vì ủ quá lâu')
+LOT_Q = ('golden', 'dark', 'pale', 'flat', 'dense')
+LOT_Q_LABEL = dict(golden='vàng đều', dark='hơi sậm', pale='nhạt màu', flat='xẹp vì ủ quá lâu', dense='đặc ruột vì men đói')
+LOT_Q_SCORE = dict(golden=5, dark=4, pale=3, flat=3, dense=3)
+
+# --- Care from one day to the next ----------------------------------------------
+# Bé Men, the sourdough starter: fed once a day; its strength sets how fast the
+# bánh mì dough rises and whether the bread comes out dense. It never dies.
+STARTER_START, STARTER_MIN, STARTER_MAX = 70, 10, 100
+FEED_GAIN, FEED_GAIN_HUNGRY = 20, 30     # +30 when it is hungry (< 40)
+NIGHT_FED, NIGHT_UNFED = 5, 25           # overnight loss
+STARTER_BANDS = [   # (from strength, id, emoji, label, proof beats, what it does)
+    (80, 'strong', '💪', 'Sung sức', 2, 'bột bánh mì nở nhanh: ủ 2 nhịp'),
+    (40, 'ok', '🙂', 'Ổn', 3, 'bột bánh mì nở bình thường: ủ 3 nhịp'),
+    (0, 'hungry', '😴', 'Đói', 5, 'bột bánh mì nở chậm (5 nhịp), bánh ra lò đặc ruột'),
+]
+COLD_MAX = 2         # fridge shelves for overnight dough
+COLD_NIGHTS = 2      # a chilled tray keeps for two nights
+# The regulars' notes card: note 1 after the first served order, note 2 after the third.
+NOTE_AT = (1, 3)
+NOTES = {
+    0: [dict(id='lam_shot', icon='☕', text='Espresso không đường, chiết đúng 25–30 giây — chú nếm là biết liền.'),
+        dict(id='lam_mug', icon='🔥', text='Thích tách sứ hâm nóng, đứng uống ngay tại quầy rồi mới đi.')],
+    1: [dict(id='thao_oat', icon='⚠️', text='Không dung nạp lactose: chỉ sữa yến mạch, tráng ca đánh sữa trước.', tone='danger'),
+        dict(id='thao_time', icon='⏰', text='Rất đúng giờ, hay mang về phòng họp — đậy nắp, ghi tên lên ly.')],
+    2: [dict(id='mo_sale', icon='🏷️', text='Săn bánh hôm qua −50% cuối ngày, sinh viên cuối tháng.'),
+        dict(id='mo_kitchen', icon='💛', text='Hay xin bánh dư cho Bếp Cơm 0 Đồng — nhớ dán nhãn ngày ra lò.')],
+    3: [dict(id='diep_foam', icon='☁️', text='Thích bọt sữa dày và hình trái tim để chụp gửi cháu.'),
+        dict(id='diep_names', icon='🎂', text='Đặt bánh kem cho cả họ: đọc lại tên có dấu với cô trước khi viết.')],
+    4: [dict(id='khoa_double', icon='🥃', text='Hay gọi americano ly lớn rồi ngồi làm việc cả buổi — hôm deadline là xin hai shot.'),
+        dict(id='khoa_seat', icon='🔌', text='Thích ghế quầy bar sát ổ cắm, ngại gọi thêm khi đang tiết kiệm.')],
+    5: [dict(id='sau_decaf', icon='⚠️', text='Bị tim: không caffeine, chỉ pha hạt decaf.', tone='danger'),
+        dict(id='sau_soft', icon='🥖', text='Răng yếu: bánh mì phải mới ra lò, bánh hôm qua là bà chê.')],
+    6: [dict(id='tung_rush', icon='🛵', text='Lúc nào cũng vội: đồ mang về, đậy nắp kỹ vì chạy xe.'),
+        dict(id='tung_change', icon='💵', text='Hay quên tiền thừa — cất phong bì ghi tên chờ anh quay lại.')],
+}
 CREAMS = {
     'whipped': dict(id='whipped', name='Kem tươi', emoji='🍦', recipe={'cream': 1}),
     'butter': dict(id='butter', name='Kem bơ', emoji='🧈', recipe={'butter': 2, 'sugar': 1}),
@@ -422,7 +462,11 @@ def initial() -> dict:
             dict(id='open-banhmi', item='banhmi', qty=8, day=1, q='golden', sale=False, cost=0),
             dict(id='open-cookie', item='cookie', qty=8, day=1, q='golden', sale=False, cost=0)]
     return dict(proof=[], oven=[], case=case, drinks=0, pastries=0, cakes=0, donated=0, markdown_sold=0, discarded=0, clean_day=0,
-                counter_sold=0, regulars={}, grades=[], ev_hist=[])
+                counter_sold=0, regulars={}, grades=[], ev_hist=[], **_care_initial())
+
+
+def _care_initial() -> dict:
+    return dict(starter=dict(strength=STARTER_START, fed=0, feeds=0), cold=[], book={}, night=None)
 
 
 # --- old saves & the day plan -------------------------------------------------
@@ -453,6 +497,11 @@ def _upgrade_task(t: dict, c: dict | None) -> None:
 def _migrate(c: dict) -> dict:
     d = FS.migrate(c)
     d.setdefault('counter_sold', 0)
+    for k, v in _care_initial().items():
+        d.setdefault(k, v)
+    for x in d['proof'] if isinstance(d.get('proof'), list) else []:
+        if isinstance(x, dict):
+            x.setdefault('dense', False)
     for t in c['tasks']:
         if t['career'] == ID and t.get('gen') != GEN:
             _upgrade_task(t, c)
@@ -521,6 +570,10 @@ def on_task(s: dict, c: dict, t: dict) -> None:
         _upgrade_task(t, c)
     if t.get('quoted_price') is None:
         t['quoted_price'] = quote(c, t['needs'])
+    if 'regular' not in t:
+        # How much the notes card knew about this guest when they walked in.
+        t['regular'] = len(_book(kit.data(c)).get(t['npc'], {}).get('notes', []))
+        t['greeted'] = False
 
 
 def on_start(s: dict, c: dict) -> None:
@@ -733,8 +786,14 @@ def _handle(s: dict, c: dict, d: dict, pl: dict, name: str, p: dict) -> dict:
         return _unload(s, c, d, p)
     if name in ('cb_markdown', 'cb_donate', 'cb_discard'):
         return _case_action(s, c, d, name, p)
+    if name == 'cb_feed':
+        return _feed(s, c, d)
+    if name == 'cb_chill':
+        return _chill(s, c, d, p)
     t = kit.task(c, p)
     kit.need(t['career'] == ID, 'Công việc không thuộc tiệm bánh.')
+    if name == 'cb_greet':
+        return _greet(s, c, d, t)
     kit.need(t['known'], 'Hỏi khách order trước nhé (bấm “Nhận order”).')
     if t.get('quoted_price') is None:
         on_task(s, c, t)
@@ -1027,10 +1086,94 @@ def _shape(s: dict, c: dict, d: dict, p: dict) -> dict:
     kit.need(_usable(c, b['unlock'], wanted=_wanted_anywhere(c, item)), f'{b["name"]} mở ở cấp {b["unlock"]}.')
     kit.need(len(d['proof']) < 2, 'Tủ ủ chỉ có 2 ngăn. Nướng bớt một khay trước.')
     cost = _consume(c, b['recipe'])
-    tray = dict(id=kit.next_id(c, 'pf'), item=item, qty=b['qty'], since=c['turn'], ready=c['turn'] + PROOF_TURNS, cost=cost)
+    beats, dense, extra = PROOF_TURNS, False, ''
+    if b.get('starter'):
+        band = _band(d['starter']['strength'])
+        beats, dense = band[4], band[1] == 'hungry'
+        extra = f' Bé Men {band[3].lower()} ({d["starter"]["strength"]}%): {band[5]}.'
+    tray = dict(id=kit.next_id(c, 'pf'), item=item, qty=b['qty'], since=c['turn'], ready=c['turn'] + beats, cost=cost, dense=dense)
     d['proof'].append(tray)
     kit.metric(c, 'doughs_shaped')
-    return dict(message=f'Đã nhào và tạo hình {b["qty"]} {b["name"].lower()}, cho vào tủ ủ. Bột cần nở thêm vài nhịp.')
+    return dict(message=f'Đã nhào và tạo hình {b["qty"]} {b["name"].lower()}, cho vào tủ ủ. Bột cần nở thêm vài nhịp.{extra}')
+
+
+# --- care: Bé Men, the fridge, the regulars ---------------------------------------
+
+def _band(strength: int) -> tuple:
+    return next(b for b in STARTER_BANDS if strength >= b[0])
+
+
+def _feed(s: dict, c: dict, d: dict) -> dict:
+    st = d['starter']
+    kit.need(st['fed'] != c['day'], 'Hôm nay Bé Men đã được cho ăn rồi. Mai cho ăn tiếp nhé.')
+    kit.need(kit.stock(c, 'flour') >= 1, 'Hết bột mì để cho Bé Men ăn. Mở Kho nhập thêm nhé.')
+    kit.take(c, 'flour', 1)
+    before = st['strength']
+    st['strength'] = min(STARTER_MAX, before + (FEED_GAIN_HUNGRY if before < 40 else FEED_GAIN))
+    st['fed'] = c['day']
+    st['feeds'] += 1
+    kit.metric(c, 'starter_feeds')
+    band = _band(st['strength'])
+    return dict(message=f'Đã bỏ bớt men cũ, cho Bé Men ăn bột mì và nước ấm. Hũ men sủi bọt lên {before}% → {st["strength"]}% '
+                        f'({band[2]} {band[3]}: {band[5]}).')
+
+
+def _chill(s: dict, c: dict, d: dict, p: dict) -> dict:
+    tray = next((x for x in d['proof'] if x['id'] == p.get('tray')), None)
+    kit.need(tray, 'Không có khay bột này trong tủ ủ.')
+    kit.need(len(d['cold']) < COLD_MAX, f'Tủ mát chỉ có {COLD_MAX} ngăn ủ bột, đều đang có khay. Nướng bớt một khay ủ lạnh trước.')
+    d['proof'] = [x for x in d['proof'] if x['id'] != tray['id']]
+    flat = c['turn'] > tray['ready'] + OVERPROOF
+    d['cold'].append(dict(id=tray['id'], item=tray['item'], qty=tray['qty'], day=c['day'], cost=tray['cost'],
+                          dense=bool(tray.get('dense')), flat=flat))
+    kit.metric(c, 'doughs_chilled')
+    b = BAKES[tray['item']]
+    return dict(message=f'Đã bọc kín khay {b["name"].lower()}, cất ngăn ủ bột của tủ mát. Bột nở chậm qua đêm — từ mai nướng được ngay, '
+                        f'trong vòng {COLD_NIGHTS} ngày.')
+
+
+def _book(d: dict) -> dict:
+    b = d.get('book')
+    return b if isinstance(b, dict) else {}
+
+
+def _learned(npc: int, visits: int) -> list[str]:
+    return [n['id'] for n, at in zip(NOTES.get(npc, []), NOTE_AT) if visits >= at]
+
+
+def _npc_index(npc_id: str) -> int | None:
+    return next((i for i in range(len(PEOPLE)) if kit.npc_id(ID, i) == npc_id), None)
+
+
+def _notes_of(d: dict, npc_id: str) -> list[dict]:
+    i = _npc_index(npc_id)
+    ids = set(_book(d).get(npc_id, {}).get('notes', []))
+    return [n for n in NOTES.get(i, []) if n['id'] in ids] if i is not None else []
+
+
+def _book_visit(c: dict, d: dict, t: dict) -> str | None:
+    """A served order: the guest comes back to the notes card; returns a line when a note is learned."""
+    i = _npc_index(t['npc'])
+    if i is None:
+        return None
+    rec = d['book'].setdefault(t['npc'], dict(visits=0, notes=[]))
+    rec['visits'] = min(999, rec['visits'] + 1)
+    learned = _learned(i, rec['visits'])
+    new = [n for n in NOTES[i] if n['id'] in learned and n['id'] not in rec['notes']]
+    rec['notes'] = learned
+    if not new:
+        return None
+    return f'📒 Sổ khách quen · {PEOPLE[i][0]}: {new[0]["text"]}'
+
+
+def _greet(s: dict, c: dict, d: dict, t: dict) -> dict:
+    notes = _notes_of(d, t['npc'])
+    kit.need(t.get('regular') and notes, 'Tiệm chưa biết gì về khách này. Phục vụ vài lần, sổ khách quen sẽ ghi lại.')
+    kit.need(not t.get('greeted'), 'Đã chào hỏi khách rồi.')
+    t['greeted'] = True
+    t['patience'] = min(100, t.get('patience', 100) + 8)
+    who = PEOPLE[_npc_index(t['npc'])][0]
+    return dict(message=f'“{who} tới rồi! Như mọi khi hả?” — {notes[0]["text"]} Khách cười tít mắt: “Nhớ dai ghê!” (+8 kiên nhẫn)')
 
 
 def _bake(s: dict, c: dict, d: dict, p: dict) -> dict:
@@ -1038,7 +1181,7 @@ def _bake(s: dict, c: dict, d: dict, p: dict) -> dict:
     b = BAKES[item]
     kit.need(len(d['oven']) < 2, 'Lò chỉ có 2 tầng, đều đang nướng.')
     task = None
-    flat = False
+    flat = dense = chilled = False
     if b.get('cake'):
         task = kit.task(c, p)
         kit.need(task['career'] == ID and task['needs']['kind'] == 'cake', 'Cốt bánh kem chỉ nướng cho đơn bánh kem.')
@@ -1053,20 +1196,33 @@ def _bake(s: dict, c: dict, d: dict, p: dict) -> dict:
         kit.need(_case_count(d, item) + b['qty'] <= CASE_MAX, 'Tủ kính đã đầy loại bánh này.')
         if b['proof']:
             trays = [x for x in d['proof'] if x['item'] == item]
-            tray = next((x for x in trays if x['id'] == p.get('tray')), None) if p.get('tray') else (trays[0] if trays else None)
-            kit.need(tray, f'Chưa có khay {b["name"].lower()} nào đang ủ. Nhào và tạo hình trước.')
-            kit.need(c['turn'] >= tray['ready'], f'Bột chưa nở đủ (còn {tray["ready"] - c["turn"]} nhịp). Nướng non bột sẽ chai cứng.')
-            flat = c['turn'] > tray['ready'] + OVERPROOF
-            cost = tray['cost']
-            d['proof'] = [x for x in d['proof'] if x['id'] != tray['id']]
+            colds = [x for x in d['cold'] if x['item'] == item]
+            want = p.get('tray')
+            tray = next((x for x in trays if x['id'] == want), None) if want else (trays[0] if trays else None)
+            cold = None
+            if not tray:
+                cold = next((x for x in colds if x['id'] == want), None) if want else \
+                    next((x for x in colds if x['day'] < c['day']), colds[0] if colds else None)
+            if cold:
+                kit.need(cold['day'] < c['day'], 'Khay này mới cất tủ mát hôm nay — bột cần ủ lạnh qua một đêm. Mai nướng nhé.')
+                flat, cost, dense, chilled = bool(cold.get('flat')), cold['cost'], bool(cold.get('dense')), True
+                d['cold'] = [x for x in d['cold'] if x['id'] != cold['id']]
+            else:
+                kit.need(tray, f'Chưa có khay {b["name"].lower()} nào đang ủ. Nhào và tạo hình trước.')
+                kit.need(c['turn'] >= tray['ready'], f'Bột chưa nở đủ (còn {tray["ready"] - c["turn"]} nhịp). Nướng non bột sẽ chai cứng.')
+                flat = c['turn'] > tray['ready'] + OVERPROOF
+                cost, dense = tray['cost'], bool(tray.get('dense'))
+                d['proof'] = [x for x in d['proof'] if x['id'] != tray['id']]
         else:
             cost = _consume(c, b['recipe'])
     shift = HOT_OVEN if _plan(c)['rules'].get('hot_oven') else 0
-    rack = dict(id=kit.next_id(c, 'ov'), item=item, qty=b['qty'], start=round(kit.now(), 3), task=task['id'] if task else None, cost=cost, flat=flat, shift=shift)
+    rack = dict(id=kit.next_id(c, 'ov'), item=item, qty=b['qty'], start=round(kit.now(), 3), task=task['id'] if task else None, cost=cost, flat=flat, shift=shift,
+                dense=dense)
     d['oven'].append(rack)
     a, g, z = (max(1, x - shift) for x in b['window'])
     hot = ' Lò đang nóng hơn thường, bánh chín nhanh hơn!' if shift else ''
-    return dict(message=f'Đã cho {b["name"].lower()} vào lò. Lấy ra khi vàng đều ({a}–{g} giây).{hot}')
+    cold = ' Bột ủ lạnh qua đêm vào lò luôn, không phải chờ nở.' if chilled else ''
+    return dict(message=f'Đã cho {b["name"].lower()} vào lò. Lấy ra khi vàng đều ({a}–{g} giây).{hot}{cold}')
 
 
 def _unload(s: dict, c: dict, d: dict, p: dict) -> dict:
@@ -1094,10 +1250,11 @@ def _unload(s: dict, c: dict, d: dict, p: dict) -> dict:
         kit.waste(c, rack['item'], rack['qty'], rack['cost'], 'Khay bánh cháy')
         d['discarded'] += rack['qty']
         return dict(message=f'Khay {b["name"].lower()} cháy đen ({sec:.1f} giây) — bỏ và ghi hao hụt.')
-    q = 'pale' if done == 'pale' else 'dark' if done == 'dark' else ('flat' if rack['flat'] else 'golden')
+    dense = bool(rack.get('dense'))
+    q = 'pale' if done == 'pale' else 'dense' if dense else 'dark' if done == 'dark' else ('flat' if rack['flat'] else 'golden')
     _add_case(c, rack['item'], rack['qty'], c['day'], q, rack['cost'] // max(1, rack['qty']))
     kit.metric(c, 'trays_baked')
-    extra = ' Bột ủ quá lâu nên bánh hơi xẹp.' if rack['flat'] else ''
+    extra = ' Bé Men đói nên bánh đặc ruột, không nở xốp — cho Bé Men ăn rồi mới nhào mẻ sau.' if q == 'dense' else ' Bột ủ quá lâu nên bánh hơi xẹp.' if rack['flat'] else ''
     return dict(message=f'Ra lò {rack["qty"]} {b["name"].lower()} {label} ({sec:.1f} giây), đã xếp lên tủ kính.{extra}')
 
 
@@ -1250,6 +1407,9 @@ def _serve(s: dict, c: dict, d: dict, pl: dict, t: dict, p: dict) -> dict:
     price = r['pay']
     kit.complete(s, c, t, price, f'Bạn đã làm “{t["title"]}” cho khách.')
     lines = FS.after_serve(s, c, ID, pl, t, _walkin_chance(c, pl))
+    learned = _book_visit(c, d, t)
+    if learned:
+        lines.append(learned)
     lines += _after_rules(s, c, pl, t)
     lines += _counter_buyers(s, c, d, pl)
     opened = FS.trigger(s, c, pl, EVENT_INDEX)
@@ -1356,6 +1516,8 @@ def _bag_slips(c: dict, t: dict, want: dict, allergy: str | None, day_old_ok: bo
         cq.slip(t, 'day_old', 1, 'Dặn bánh mới ra lò mà đưa bánh hôm qua, cứng rồi.', 'đưa bánh hôm qua')
     if any(x['q'] in ('pale', 'flat') for x in items):
         cq.slip(t, 'bake_q', 1, 'Bánh nhạt màu, xẹp lép, nhìn không muốn ăn.', 'bánh nướng chưa đạt')
+    elif any(x['q'] == 'dense' for x in items):
+        cq.slip(t, 'bake_q', 1, 'Bánh mì đặc ruột, nhai mỏi cả hàm.', 'bánh mì đặc ruột')
 
 
 def _cake_slips(t: dict) -> None:
@@ -1480,7 +1642,7 @@ def _pastry_rows(t: dict, want: dict, day: int) -> tuple[int, str, int, str]:
     for x in items:
         age = max(0, day - x['day'])
         b = BAKES[x['item']]
-        sc = dict(golden=5, dark=4, pale=3, flat=3)[x['q']]
+        sc = LOT_Q_SCORE[x['q']]
         if age > b['fresh'] and not n.get('day_old_ok'):
             sc = min(sc, 3)
             notes.append(f'{b["name"].lower()} là bánh hôm qua')
@@ -1601,6 +1763,9 @@ def feedback(c: dict, t: dict) -> dict:
         rows.append(dict(key='accuracy', label='Đúng phiếu đặt', score=max(1, 5 - pen), note=', '.join(notes) or 'đúng kem, đúng màu, đúng tên'))
         rows.append(dict(key='presentation', label='Chữ & hộp', score=4 if ck['scraped'] else 5, note='chữ phải viết lại, mặt kem hơi lem' if ck['scraped'] else 'chữ rõ, hộp đẹp'))
     rows.append(_speed(t))
+    if t.get('regular'):
+        rows.append(dict(key='regular', label='Nhớ khách quen', score=5 if t.get('greeted') else 4,
+                         note='được chào đúng món quen, thấy mình được nhớ' if t.get('greeted') else 'tiệm chưa hỏi han món quen'))
     if t['refused']:
         rows.append(dict(key='care', label='Cẩn thận', score=2, note='phải làm lại sau khi khách trả'))
     cap = 5
@@ -1656,7 +1821,76 @@ def public_data(c: dict) -> dict:
     d['oven_shift'] = HOT_OVEN if pl['rules'].get('hot_oven') else 0
     d['buyers'] = MOD_INDEX[pl['mod']].get('buyers', 1)
     d['wants'] = [k for k in CASE_ITEMS if BAKES[k]['unlock'] <= kit.level(c)]
+    d.update(_public_care(c, kit.data(c)))
     return d
+
+
+def _tomorrow(c: dict) -> dict:
+    m = FS.pick_mod(ID, c['day'] + 1, MODS)
+    return dict(emoji=m['emoji'], label=m['label'], hint=m['hint'], busy=m.get('buyers', 1) >= 2)
+
+
+def _starter_view(c: dict, st: dict) -> dict:
+    band = _band(st['strength'])
+    return dict(strength=st['strength'], fed_today=st['fed'] == c['day'], feeds=st['feeds'], band=band[1], emoji=band[2], label=band[3],
+                effect=band[5], beats=band[4], gain=FEED_GAIN_HUNGRY if st['strength'] < 40 else FEED_GAIN,
+                night=NIGHT_FED if st['fed'] == c['day'] else NIGHT_UNFED)
+
+
+def _public_care(c: dict, raw: dict) -> dict:
+    """Read-only projection of the care loop (works on an old, unmigrated save too)."""
+    st = raw.get('starter') or _care_initial()['starter']
+    starter = _starter_view(c, st)
+    cold = [dict(copy.deepcopy(x), nights=c['day'] - x['day'], bakeable=x['day'] < c['day'], last=c['day'] + 1 - x['day'] > COLD_NIGHTS)
+            for x in raw.get('cold') or []]
+    book = []
+    for npc, rec in _book(raw).items():
+        i = _npc_index(npc)
+        if i is None or not rec.get('visits'):
+            continue
+        nxt = next((at for at in NOTE_AT if at > rec['visits']), None)
+        book.append(dict(npc=npc, name=PEOPLE[i][0], visits=rec['visits'], notes=copy.deepcopy(_notes_of(raw, npc)),
+                         next=nxt - rec['visits'] if nxt else None))
+    book.sort(key=lambda r: (-len(r['notes']), -r['visits']))
+    tm = _tomorrow(c)
+    night = raw.get('night')
+    return dict(starter=starter, cold=cold, book=book, tomorrow=tm, care=_care_rows(c, raw, starter, cold, tm),
+                night=copy.deepcopy(night['lines']) if isinstance(night, dict) and night.get('day') == c['day'] else [])
+
+
+def _care_rows(c: dict, raw: dict, starter: dict, cold: list, tm: dict) -> list[dict]:
+    """Today's care list (rows for ui-kit reqList: ok True/False/None, icon, label, value, note, tone)."""
+    rows = []
+    if starter['fed_today']:
+        rows.append(dict(ok=True, icon='🫙', label='Bé Men đã ăn hôm nay', value=f'{starter["strength"]}%',
+                         note=f'{starter["emoji"]} {starter["label"]}: {starter["effect"]}'))
+    else:
+        rows.append(dict(ok=None, icon='🫙', label='Cho Bé Men ăn (1 bột mì)', value=f'{starter["strength"]}%',
+                         note=f'{starter["emoji"]} {starter["label"]}: {starter["effect"]}. Không cho ăn: đêm nay −{NIGHT_UNFED}%.',
+                         tone='warn' if starter['band'] == 'hungry' else ''))
+    old = [l for l in raw.get('case') or [] if l['qty'] > 0 and lot_state(c, l['item'], l['day']) == 'day_old']
+    waiting = sum(l['qty'] for l in old if not l['sale'])
+    if waiting:
+        rows.append(dict(ok=None, icon='🧺', label=f'{waiting} bánh hôm qua chờ xử lý', note='Lên rổ −50%, tặng bếp cơm (kèm nhãn ngày) hoặc bỏ.'))
+    elif old:
+        rows.append(dict(ok=True, icon='🧺', label='Bánh hôm qua đã lên rổ −50%', value=str(sum(l['qty'] for l in old))))
+    for x in cold:
+        b = BAKES[x['item']]
+        if x['bakeable']:
+            rows.append(dict(ok=None, icon='❄️', label=f'Nướng khay {b["name"].lower()} ủ lạnh', value=f'đêm {x["nights"]}',
+                             note='Đêm cuối: nướng hôm nay kẻo bột quá chua.' if x['last'] else 'Vào lò ngay, không phải chờ nở.',
+                             tone='warn' if x['last'] else ''))
+        else:
+            rows.append(dict(ok=True, icon='❄️', label=f'{b["name"]} đang ủ lạnh cho ngày mai'))
+    warm = raw.get('proof') or []
+    if warm:
+        rows.append(dict(ok=None, icon='🌡️', label=f'{len(warm)} khay bột đang ủ ấm', note='Nướng trước khi khép ca hoặc cất tủ mát — để qua đêm sẽ hỏng.',
+                         tone='warn'))
+    if tm['busy']:
+        chilled = any(x['day'] == c['day'] for x in cold)
+        rows.append(dict(ok=True if chilled else None, icon='📅', label=f'Mai {tm["label"].lower()}: ủ lạnh sẵn 1 khay bột tối nay',
+                         note='Sáng mai có bánh ra lò ngay cho khách mua lẻ.'))
+    return rows
 
 
 def _valid_ts(v) -> bool:
@@ -1733,6 +1967,9 @@ def validate_task(t: dict, original: dict) -> None:
     kit.integer(t['refused'], 0, 1000)
     need(t['quoted_price'] is None or 1 <= kit.integer(t['quoted_price'], 1, 5000), 'Giá sai.')
     need(t['served'] is None or (isinstance(t['served'], dict) and {'drink', 'bag', 'cake'} <= set(t['served'])), 'Món đã giao sai.')
+    # Regulars' notes card (tasks saved before it simply have neither key).
+    regular = kit.integer(t.get('regular', 0), 0, 2)
+    need(type(t.get('greeted', False)) is bool and (regular or not t.get('greeted')), 'Lời chào khách quen sai.')
 
 
 def validate_data(c: dict) -> None:
@@ -1745,10 +1982,12 @@ def validate_data(c: dict) -> None:
         need(isinstance(x, dict) and x.get('item') in BAKES and BAKES[x['item']]['proof'] and isinstance(x.get('id'), str), 'Khay ủ sai.')
         for k in ('qty', 'since', 'ready', 'cost'):
             kit.integer(x.get(k), 0, 10**9)
+    for x in d['proof']:
+        need(type(x.get('dense', False)) is bool, 'Khay ủ sai.')
     for x in d['oven']:
         need(isinstance(x, dict) and x.get('item') in BAKES and isinstance(x.get('id'), str) and _valid_ts(x.get('start')) and x['start'] is not None, 'Tầng lò sai.')
         need(x.get('task') is None or isinstance(x['task'], str), 'Tầng lò sai.')
-        need(type(x.get('flat')) is bool, 'Tầng lò sai.')
+        need(type(x.get('flat')) is bool and type(x.get('dense', False)) is bool, 'Tầng lò sai.')
         kit.integer(x.get('shift', 0), 0, 10)
         kit.integer(x.get('qty'), 1, 12)
         kit.integer(x.get('cost'), 0, 10000)
@@ -1763,6 +2002,7 @@ def validate_data(c: dict) -> None:
     for k in ('drinks', 'pastries', 'cakes', 'donated', 'markdown_sold', 'discarded', 'clean_day'):
         kit.integer(d.get(k), 0, 10**9)
     kit.integer(d.get('counter_sold', 0), 0, 10**9)
+    _validate_care(c, d)
     FS.validate(c, MODS, EVENT_INDEX)
     p = d.get('plan')
     if p is not None:
@@ -1775,6 +2015,80 @@ def validate_data(c: dict) -> None:
                 kit.integer(box.get(k), 0, 1000)
 
 
+def _validate_care(c: dict, d: dict) -> None:
+    need = kit.need
+    st = d['starter']
+    need(isinstance(st, dict) and set(st) == {'strength', 'fed', 'feeds'}, 'Hũ men sai.')
+    kit.integer(st['strength'], STARTER_MIN, STARTER_MAX)
+    kit.integer(st['fed'], 0, c['day'])
+    kit.integer(st['feeds'], 0, 10**6)
+    cold = d['cold']
+    need(isinstance(cold, list) and len(cold) <= COLD_MAX, 'Tủ mát ủ bột sai.')
+    for x in cold:
+        need(isinstance(x, dict) and set(x) == {'id', 'item', 'qty', 'day', 'cost', 'dense', 'flat'}, 'Khay ủ lạnh sai.')
+        need(isinstance(x['id'], str) and x['item'] in BAKES and BAKES[x['item']]['proof'], 'Khay ủ lạnh sai.')
+        need(type(x['dense']) is bool and type(x['flat']) is bool, 'Khay ủ lạnh sai.')
+        kit.integer(x['day'], max(1, c['day'] - COLD_NIGHTS), c['day'])
+        kit.integer(x['qty'], 1, 12)
+        kit.integer(x['cost'], 0, 10000)
+    ids = [x['id'] for x in d['proof']] + [x['id'] for x in cold]
+    need(len(set(ids)) == len(ids), 'Trùng mã khay bột.')
+    book = d['book']
+    need(isinstance(book, dict) and len(book) <= len(PEOPLE), 'Sổ khách quen sai.')
+    for npc, rec in book.items():
+        i = _npc_index(npc) if isinstance(npc, str) else None
+        need(i is not None and isinstance(rec, dict) and set(rec) == {'visits', 'notes'}, 'Sổ khách quen sai.')
+        visits = kit.integer(rec['visits'], 0, 999)
+        need(rec['notes'] == _learned(i, visits), 'Ghi chú khách quen không khớp số lần ghé.')
+    night = d['night']
+    if night is not None:
+        need(isinstance(night, dict) and set(night) == {'day', 'lines'} and isinstance(night['lines'], list) and len(night['lines']) <= 8, 'Nhật ký qua đêm sai.')
+        kit.integer(night['day'], 1, c['day'] + 1)
+        for line in night['lines']:
+            need(isinstance(line, str) and len(line) <= 300, 'Nhật ký qua đêm sai.')
+
+
+def _close_care(s: dict, c: dict) -> dict:
+    """Overnight: warm dough spoils, old chilled dough spoils, Bé Men gets hungrier."""
+    d = kit.data(c)
+    lines = []
+    lost = 0
+    for tray in d['proof']:
+        kit.waste(c, tray['item'], tray['qty'], tray['cost'], 'Bột ủ ấm để qua đêm bị chua')
+        lost += 1
+    if lost:
+        lines.append(f'Bỏ {lost} khay bột còn trong tủ ủ ấm — để qua đêm là quá nở, chua. Lần sau nướng kịp hoặc cất vào tủ mát.')
+    d['proof'] = []
+    keep = []
+    for tray in d['cold']:
+        if c['day'] + 1 - tray['day'] > COLD_NIGHTS:
+            kit.waste(c, tray['item'], tray['qty'], tray['cost'], f'Bột ủ lạnh quá {COLD_NIGHTS} đêm')
+            lines.append(f'Khay {BAKES[tray["item"]]["name"].lower()} ủ lạnh đã {COLD_NIGHTS} đêm chưa nướng — bột chua gắt, phải bỏ.')
+            lost += 1
+        else:
+            keep.append(tray)
+    d['cold'] = keep
+    ready = [BAKES[x['item']]['name'].lower() for x in keep]
+    if ready:
+        lines.append('Sáng mai ra lò ngay: ' + ', '.join(ready) + ' ủ lạnh qua đêm.')
+    st = d['starter']
+    fed = st['fed'] == c['day']
+    before = st['strength']
+    st['strength'] = max(STARTER_MIN, before - (NIGHT_FED if fed else NIGHT_UNFED))
+    band = _band(st['strength'])
+    if fed:
+        lines.append(f'Bé Men được ăn hôm nay, sáng mai còn {st["strength"]}% ({band[2]} {band[3]}).')
+    else:
+        lines.append(f'Bé Men bị bỏ đói: {before}% → {st["strength"]}% ({band[2]} {band[3]}: {band[5]}). Mai nhớ cho ăn trước khi nhào bột.')
+    waiting = sum(l['qty'] for l in d['case'] if l['qty'] and not l['sale'] and c['day'] + 1 - l['day'] > BAKES[l['item']]['fresh'])
+    if waiting:
+        lines.append(f'Sáng mai: {waiting} bánh hôm qua chờ xử lý (rổ −50%, tặng hoặc bỏ).')
+    tm = _tomorrow(c)
+    tip = f'Mai {tm["label"].lower()}: khách mua lẻ đông — ủ lạnh sẵn bột tối nay.' if tm['busy'] else ''
+    d['night'] = dict(day=c['day'] + 1, lines=lines[:8])
+    return dict(care=dict(starter=_starter_view(dict(day=c['day'] + 1), st), lines=lines[:8], dough_lost=lost, tip=tip))
+
+
 def on_close(s: dict, c: dict) -> dict:
     """Markdown basket sells, overnight rules apply, the oven is switched off;
     then the day is graded (food_service)."""
@@ -1785,9 +2099,11 @@ def on_close(s: dict, c: dict) -> dict:
         box['status'] = 'failed'
         _event_outcome(pl, 'box_order', False, 'Hết ca mà chưa gửi hộp bánh cho văn phòng.')
     res = _close_case(s, c)
+    care = _close_care(s, c)
     out = FS.close(s, c, ID, pl, MODS)
     out['lines'] = res.pop('lines') + out['lines']
     out.update(res)
+    out.update(care)
     return out
 
 
@@ -1843,9 +2159,12 @@ def _assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
     d = kit.data(c)
     role = e['role']
     if role == 'baker':
+        if d['starter']['fed'] != c['day'] and kit.stock(c, 'flour') >= 1:
+            _feed(s, c, d)
+            return f'Đã cho Bé Men ăn bột mì và nước ấm, hũ men sủi bọt lên {d["starter"]["strength"]}%.'
         for item in ('croissant', 'banhmi'):
             b = BAKES[item]
-            proofing = sum(x['qty'] for x in d['proof'] if x['item'] == item)
+            proofing = sum(x['qty'] for x in d['proof'] + d['cold'] if x['item'] == item)
             if _case_count(d, item) + proofing < 4 and len(d['proof']) < 2 and _recipe_ok(c, b['recipe']):
                 _shape(s, c, d, dict(item=item))
                 return f'Đã nhào và tạo hình một khay {b["name"].lower()}, đang ủ trong tủ. Bạn canh lò khi bột nở.'
@@ -2373,7 +2692,7 @@ SPEC = dict(
     tip=3,
     physical=('cb_pull', 'cb_milk', 'cb_pick', 'cb_serve', 'cb_dump', 'cb_bake', 'cb_frost', 'cb_done', 'cb_box_send'),
     free_actions=(),
-    no_tick=('cb_stop', 'cb_milk_stop', 'cb_unload', 'cb_lid', 'cb_ice', 'cb_return', 'cb_tab'),
+    no_tick=('cb_stop', 'cb_milk_stop', 'cb_unload', 'cb_lid', 'cb_ice', 'cb_return', 'cb_tab', 'cb_greet'),
     waste_items=('drink', 'sponge', *CASE_ITEMS),
     activity=('🥐', 'Quầy bánh gọn gàng', [('Sữa tươi', 'Tủ mát'), ('Bột mì', 'Kệ khô'), ('Kem tươi', 'Tủ mát'), ('Hạt cà phê', 'Kệ khô')],
               ['Nhận order', 'Xay mịn và chiết shot', 'Đánh sữa và rót', 'Kiểm ly rồi giao']),
@@ -2389,5 +2708,6 @@ SPEC = dict(
     review_asides=['Crema vàng óng, uống xong còn muốn ngửi ly 😌', 'Bánh còn ấm tay, giòn tới vụn cuối cùng.', 'Latte art đẹp tới mức tiếc không nỡ khuấy.', 'Mai lại ghé, giữ cho mình một croissant nha!'],
     situations=SITUATIONS,
     guide='Ly → xay & định lượng → chiết 25–30 giây → sữa/đá/nước → vẽ hình → nắp → giao. Khay nhiều ly: xong từng ly rồi giao cả khay. '
-          'Khách tả tâm trạng: chọn đúng món hợp ý. Lò: nhào → ủ → nướng → tủ kính đầy bánh mới cho khách mua lẻ.',
+          'Khách tả tâm trạng: chọn đúng món hợp ý. Lò: nhào → ủ → nướng → tủ kính đầy bánh mới cho khách mua lẻ. '
+          'Mỗi ngày cho Bé Men ăn; bột chưa kịp nướng thì cất tủ mát cho sáng mai.',
 )

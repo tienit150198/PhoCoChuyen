@@ -1070,5 +1070,290 @@ class CafeConsequenceTests(unittest.TestCase):
         self.assertIn('mùi chua', r['message'])
 
 
+
+
+class CafeCareTests(unittest.TestCase):
+    """Care from one day to the next: Bé Men, overnight dough, the morning case, the notes card."""
+    setUp, tearDown = CafeBakeryTests.setUp, CafeBakeryTests.tearDown
+    journey, stock_up, fresh_lot, ensure_case = CafeBakeryTests.journey, CafeBakeryTests.stock_up, CafeBakeryTests.fresh_lot, CafeBakeryTests.ensure_case
+    drink, ledger, review = CafeBakeryTests.drink, CafeBakeryTests.ledger, CafeBakeryTests.review
+
+    def data(self):
+        return self.j.c['ext']['data']
+
+    def pub(self):
+        return public_state(self.j.state)['careers']['cafe_bakery']['data']
+
+    def next_day(self, feed=False):
+        j = self.j
+        if feed:
+            j.act('cb_feed')
+        out = j.act('end_day', carry_event=True)['summary']['career']
+        validate_state(json.loads(json.dumps(j.state)))
+        j.act('start_day')
+        self.stock_up(j)
+        return out
+
+    def test_starter_is_fed_once_a_day_and_changes_overnight(self):
+        j = self.j
+        self.stock_up(j)
+        st = self.data()['starter']
+        self.assertEqual((st['strength'], st['fed']), (CB.STARTER_START, 0))
+        flour = kit.stock(j.c, 'flour')
+        r = j.act('cb_feed')
+        self.assertIn('70% → 90%', r['message'])
+        self.assertEqual(kit.stock(j.c, 'flour'), flour - 1)
+        with self.assertRaises(GameError):
+            j.act('cb_feed')
+        out = self.next_day()
+        self.assertEqual(self.data()['starter']['strength'], 85)
+        self.assertIn('85%', ' '.join(out['care']['lines']))
+        for want in (60, 35, 10, 10):            # unfed nights: −25 each, never below 10
+            self.next_day()
+            self.assertEqual(self.data()['starter']['strength'], want)
+        j.act('cb_feed')                          # a hungry starter eats more: back to "ổn" the same day
+        self.assertEqual(self.data()['starter']['strength'], 40)
+        self.assertEqual(self.pub()['starter']['band'], 'ok')
+
+    def test_starter_strength_sets_bread_proofing_and_density(self):
+        j = self.j
+        self.stock_up(j)
+        d = self.data()
+        d['starter']['strength'] = 90
+        j.act('cb_shape', item='banhmi')
+        tray = self.data()['proof'][-1]
+        self.assertEqual(tray['ready'] - tray['since'], 2)
+        self.assertFalse(tray['dense'])
+        self.data()['starter']['strength'] = 20
+        j.act('cb_shape', item='croissant')          # croissants use yeast, not Bé Men
+        self.assertEqual(self.data()['proof'][-1]['ready'] - self.data()['proof'][-1]['since'], CB.PROOF_TURNS)
+        j.act('cb_bake', item='banhmi')
+        self.clock.t += 14
+        j.act('cb_unload', rack=self.data()['oven'][0]['id'])
+        j.act('advance')
+        j.act('cb_bake', item='croissant')
+        self.clock.t += 17
+        j.act('cb_unload', rack=self.data()['oven'][0]['id'])
+        self.data()['proof'] = []
+        r = j.act('cb_shape', item='banhmi')
+        self.assertIn('Bé Men đói (20%)', r['message'])
+        tray = self.data()['proof'][-1]
+        self.assertTrue(tray['dense'])
+        self.assertEqual(tray['ready'] - tray['since'], 5)
+        for _ in range(4):
+            j.act('advance')
+        j.act('cb_bake', item='banhmi')
+        self.clock.t += 14
+        r = j.act('cb_unload', rack=self.data()['oven'][0]['id'])
+        self.assertIn('đặc ruột', r['message'])
+        self.assertTrue(any(l['item'] == 'banhmi' and l['q'] == 'dense' for l in self.data()['case']))
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_dense_bread_is_named_in_the_review(self):
+        j = self.journey(lambda n: n['kind'] == 'pastry' and 'banhmi' in n['items'] and not n['day_old_ok'] and not n['allergy'], days=[1])
+        d = j.c['ext']['data']
+        d['case'] = [dict(id='dense-1', item='banhmi', qty=6, day=j.c['day'], q='dense', sale=False, cost=1)]
+        tid = j.task['id']
+        j.act('ask')
+        for item, q in j.task['needs']['items'].items():
+            if item != 'banhmi':
+                self.ensure_case(j, item)
+            for _ in range(q):
+                j.act('cb_pick', lot=self.fresh_lot(j, item)['id'])
+        j.act('cb_bag')
+        j.act('cb_serve', confirm=True)
+        if j.get(tid)['status'] != 'completed':      # the guest may hand it back once
+            j.act('cb_bag')
+            j.act('cb_serve', confirm=True)
+        crit = {x['key']: x for x in self.review(tid)['feedback']['criteria']}
+        self.assertEqual(crit['fresh']['score'], 3)
+        self.assertIn('đặc ruột', crit['fresh']['note'])
+
+    def test_dough_chilled_overnight_bakes_next_morning_and_warm_dough_spoils(self):
+        j = self.j
+        self.stock_up(j)
+        j.act('cb_shape', item='banhmi')
+        j.act('cb_shape', item='croissant')
+        chilled = self.data()['proof'][0]['id']
+        j.act('cb_chill', tray=chilled)
+        self.assertEqual([x['id'] for x in self.data()['cold']], [chilled])
+        with self.assertRaises(GameError):          # it needs the night
+            j.act('cb_bake', item='banhmi', tray=chilled)
+        with self.assertRaisesRegex(GameError, 'qua một đêm'):
+            j.act('cb_bake', item='banhmi')
+        with self.assertRaises(GameError):
+            j.act('cb_chill', tray='nope')
+        rows = {r['icon']: r for r in self.pub()['care']}
+        self.assertEqual(rows['🌡️']['tone'], 'warn')        # warm croissant dough left
+        waste = len(j.c['life']['waste'])
+        out = self.next_day()
+        self.assertEqual(self.data()['proof'], [])         # the warm tray spoiled overnight
+        self.assertEqual(len(j.c['life']['waste']), waste + 1)
+        self.assertTrue(any('ủ ấm' in l for l in out['care']['lines']))
+        self.assertTrue(any('ủ ấm' in l for l in self.pub()['night']))
+        cold = self.pub()['cold'][0]
+        self.assertTrue(cold['bakeable'])
+        before = CB._case_count(self.data(), 'banhmi')
+        r = j.act('cb_bake', item='banhmi')                 # straight in, no proofing wait
+        self.assertIn('ủ lạnh', r['message'])
+        self.assertEqual(self.data()['cold'], [])
+        self.clock.t += 14
+        j.act('cb_unload', rack=self.data()['oven'][0]['id'])
+        self.assertEqual(CB._case_count(self.data(), 'banhmi'), before + 6)
+        self.assertTrue(any(l['item'] == 'banhmi' and l['q'] == 'golden' and l['day'] == j.c['day'] for l in self.data()['case']))
+
+    def test_fridge_has_two_shelves_and_old_cold_dough_spoils(self):
+        j = self.j
+        self.stock_up(j)
+        for item in ('banhmi', 'croissant'):
+            j.act('cb_shape', item=item)
+            j.act('cb_chill', tray=self.data()['proof'][0]['id'])
+        j.act('cb_shape', item='banhmi')
+        with self.assertRaises(GameError):
+            j.act('cb_chill', tray=self.data()['proof'][0]['id'])
+        self.next_day()
+        self.assertEqual(len(self.data()['cold']), 2)
+        self.assertFalse(any(x['last'] for x in self.pub()['cold']))
+        self.next_day()
+        self.assertEqual(len(self.data()['cold']), 2)
+        self.assertTrue(all(x['last'] and x['nights'] == 2 for x in self.pub()['cold']))
+        self.assertTrue(any(r['icon'] == '❄️' and r['tone'] == 'warn' for r in self.pub()['care']))
+        out = self.next_day()
+        self.assertEqual(self.data()['cold'], [])
+        self.assertTrue(any('2 đêm' in l for l in out['care']['lines']))
+
+    def test_morning_care_list_names_yesterdays_pastries_and_tomorrow(self):
+        j = self.j
+        self.stock_up(j)
+        self.next_day(feed=True)
+        rows = self.pub()['care']
+        self.assertTrue(any(r['icon'] == '🧺' and r['ok'] is None for r in rows))   # the 5 a.m. bake is day-old now
+        fed = next(r for r in rows if r['icon'] == '🫙')
+        self.assertIsNone(fed['ok'])
+        j.act('cb_feed')
+        self.assertTrue(next(r for r in self.pub()['care'] if r['icon'] == '🫙')['ok'])
+        for lot in [l for l in self.data()['case'] if CB.lot_state(j.c, l['item'], l['day']) == 'day_old']:
+            j.act('cb_markdown', lot=lot['id'])
+        self.assertTrue(next(r for r in self.pub()['care'] if r['icon'] == '🧺')['ok'])
+        # Tomorrow's luck is fixed: a busy day asks for dough chilled tonight.
+        busy = next(day for day in range(2, 40) if CB.FS.pick_mod(CB.ID, day + 1, CB.MODS).get('buyers', 1) >= 2)
+        j.c['day'] = busy
+        self.data()['starter']['fed'] = 0
+        rows = self.pub()['care']
+        self.assertTrue(self.pub()['tomorrow']['busy'])
+        self.assertTrue(any('ủ lạnh sẵn' in r['label'] and r['ok'] is None for r in rows))
+
+    def test_notes_card_learns_visit_by_visit_and_greeting_helps(self):
+        j = self.journey(lambda n: n['kind'] == 'drink' and not n['iced'] and n['milk'] == 'milk', days=[1])
+        npc = j.task['npc']
+        i = CB._npc_index(npc)
+        raw = json.dumps(public_state(j.state), ensure_ascii=False)
+        self.assertNotIn(CB.NOTES[i][0]['text'], raw)                 # unlearned notes never leave the server
+        with self.assertRaises(GameError):
+            j.act('cb_greet')
+        tid = self.drink()
+        r = j.act('cb_serve', task=tid, confirm=True)
+        self.assertIn('Sổ khách quen', r['message'])
+        self.assertEqual(self.data()['book'][npc], dict(visits=1, notes=[CB.NOTES[i][0]['id']]))
+        book = self.pub()['book']
+        self.assertEqual(book[0]['next'], 2)
+        self.assertNotIn(CB.NOTES[i][1]['text'], json.dumps(public_state(j.state), ensure_ascii=False))
+        self.data()['book'][npc]['visits'] = 3
+        with self.assertRaises(GameError):                             # notes must match the visits
+            validate_state(json.loads(json.dumps(j.state)))
+        self.data()['book'][npc]['notes'] = CB._learned(i, 3)
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_greeting_a_regular_adds_patience_and_a_review_row(self):
+        j = self.journey(lambda n: n['kind'] == 'drink' and not n['iced'] and n['milk'] == 'milk', days=[1])
+        t = j.task
+        i = CB._npc_index(t['npc'])
+        self.data()['book'][t['npc']] = dict(visits=1, notes=CB._learned(i, 1))
+        t.pop('regular')
+        CB.on_task(j.state, j.c, t)
+        self.assertEqual(t['regular'], 1)
+        t['patience'] = 80
+        r = j.act('cb_greet')
+        self.assertIn(CB.NOTES[i][0]['text'], r['message'])
+        self.assertEqual(j.task['patience'], 88)
+        with self.assertRaises(GameError):
+            j.act('cb_greet')
+        tid = self.drink()
+        j.act('cb_serve', task=tid, confirm=True)
+        crit = {x['key']: x for x in self.review(tid)['feedback']['criteria']}
+        self.assertEqual(crit['regular']['score'], 5)
+        self.assertEqual(self.data()['book'][t['npc']]['visits'], 2)
+
+    def test_baker_feeds_the_starter_first(self):
+        j = self.j
+        self.stock_up(j)
+        note = CB.assist(j.state, j.c, dict(role='baker', name='Hậu'), None)
+        self.assertIn('Bé Men', note)
+        self.assertEqual(self.data()['starter']['fed'], j.c['day'])
+        note = CB.assist(j.state, j.c, dict(role='baker', name='Hậu'), None)
+        self.assertNotIn('Bé Men', note)
+
+    def test_old_save_without_care_data_loads(self):
+        s = copy.deepcopy(self.j.state)
+        c = s['careers']['cafe_bakery']
+        for k in ('starter', 'cold', 'book', 'night'):
+            c['ext']['data'].pop(k)
+        for t in c['tasks']:
+            t.pop('regular', None)
+            t.pop('greeted', None)
+        c['ext']['data']['proof'] = [dict(id='pf-old', item='banhmi', qty=6, since=1, ready=4, cost=2)]
+        public_state(s)                              # the projection copes before migration
+        validate_state(s)
+        d = s['careers']['cafe_bakery']['ext']['data']
+        self.assertEqual(d['starter']['strength'], CB.STARTER_START)
+        self.assertEqual((d['cold'], d['book']), ([], {}))
+        self.assertFalse(d['proof'][0]['dense'])
+
+    def test_tampered_care_data_is_rejected(self):
+        self.j.act('cb_shape', item='banhmi')
+        self.j.act('cb_chill', tray=self.data()['proof'][0]['id'])
+        npc = CB.kit.npc_id(CB.ID, 0)
+        mutations = (
+            lambda d, t: d['starter'].__setitem__('strength', 150),
+            lambda d, t: d['starter'].__setitem__('strength', 3),
+            lambda d, t: d['starter'].__setitem__('fed', 99),
+            lambda d, t: d['starter'].__setitem__('extra', 1),
+            lambda d, t: d['cold'].append(dict(d['cold'][0], id='x2')) or d['cold'].append(dict(d['cold'][0], id='x3')),
+            lambda d, t: d['cold'][0].__setitem__('item', 'cookie'),
+            lambda d, t: d['cold'][0].__setitem__('day', 99),
+            lambda d, t: d['cold'][0].__setitem__('dense', 'yes'),
+            lambda d, t: d['book'].__setitem__('stranger', dict(visits=1, notes=[])),
+            lambda d, t: d['book'].__setitem__(npc, dict(visits=0, notes=['lam_shot'])),
+            lambda d, t: d['book'].__setitem__(npc, dict(visits=5, notes=['thao_oat'])),
+            lambda d, t: d.__setitem__('night', dict(day=1, lines=['x'] * 9)),
+            lambda d, t: t.__setitem__('greeted', True),
+            lambda d, t: t.__setitem__('regular', 7),
+        )
+        for mutate in mutations:
+            state = json.loads(json.dumps(self.j.state))
+            c = state['careers']['cafe_bakery']
+            mutate(c['ext']['data'], c['tasks'][0])
+            with self.assertRaises(GameError):
+                validate_state(state)
+
+    def test_several_days_of_care(self):
+        """Feed, shape, chill, close and bake again over four shifts: all of it carries over and stays valid."""
+        j = self.j
+        self.stock_up(j)
+        for day in range(4):
+            if day:
+                self.assertEqual(len(self.data()['cold']), 1)
+                j.act('cb_bake', item='banhmi')
+                self.clock.t += 14
+                j.act('cb_unload', rack=self.data()['oven'][0]['id'])
+            j.act('cb_feed')
+            j.act('cb_shape', item='banhmi')
+            self.assertEqual(self.data()['proof'][0]['ready'] - self.data()['proof'][0]['since'], 2)   # fed: 💪 sung sức
+            j.act('cb_chill', tray=self.data()['proof'][0]['id'])
+            out = self.next_day()
+            self.assertGreaterEqual(self.data()['starter']['strength'], 85)
+            self.assertEqual(out['care']['dough_lost'], 0)
+        self.assertEqual(self.data()['starter']['feeds'], 4)
+
 if __name__ == '__main__':
     unittest.main()

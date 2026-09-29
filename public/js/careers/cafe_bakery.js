@@ -3,8 +3,12 @@
  * station tabs whose tiles carry stock badges and padlocks, live timing bars
  * with a green zone, the display case that walk-in buyers shop from, and one
  * big "Giao". Only renders server state and sends commands; the server checks
- * every rule and keeps a mood order's drink hidden until it is found. */
+ * every rule and keeps a mood order's drink hidden until it is found.
+ * The order is a requirement list (ui-kit reqList) checked live against the cup.
+ * Care loop: Bé Men the sourdough starter, dough chilled overnight in the fridge,
+ * yesterday's pastries each morning, and the regulars' notes card. */
 import {dayStrip,flash,eventCard,queue,actionBar,keepBarAboveFooter,idlePanel,gradeCard,patience} from './food_kit.js';
+import {reqList,fold} from '../ui-kit.js';
 
 const SHOT_SCALE=45;   // effective seconds shown on the extraction bar
 const TEMP_SCALE=90;   // °C shown on the milk thermometer
@@ -46,7 +50,8 @@ function tile(x,o){
   return `<button type="button" class="${cls}" ${attrs}${o.disabled||o.locked?' disabled':''} aria-pressed="${o.selected?'true':'false'}"${o.label?` aria-label="${x.esc(o.label)}"`:''}>${badge}<span class="tile-emoji" aria-hidden="true">${x.esc(o.emoji||'')}</span><b>${x.esc(o.name)}</b>${o.sub?`<small>${x.esc(o.sub)}</small>`:''}</button>`;
 }
 const seg=(x,action,key,value,label,current)=>`<button type="button" class="cb-seg ${current===value?'on is-selected':''}" data-action="car:${action}" data-${key}="${x.esc(value)}" aria-pressed="${current===value}">${x.esc(label)}</button>`;
-const checklist=(x,rows)=>`<ul class="checklist">${rows.map(([ok,label,note])=>`<li class="${ok===true?'ok':ok===false?'bad':''}"><span aria-hidden="true">${ok===true?'✓':ok===false?'✗':'○'}</span>${x.esc(label)}${note?`<small>${x.esc(note)}</small>`:''}</li>`).join('')}</ul>`;
+/** One requirement row for ui-kit reqList (ok: true ✓ / false ✗ / null ○). */
+const R=(ok,icon,label,value='',note='',tone='')=>({ok,icon,label,value,note,tone});
 const bar=(cls,attrs,zones,fill,label)=>`<div class="cb-meter ${cls}" ${attrs}><div class="cb-track">${zones.map(([k,a,b])=>`<i class="cb-zone ${k}" style="left:${a}%;width:${Math.max(0,b-a)}%"></i>`).join('')}<b class="cb-fill" style="width:${Math.min(100,Math.max(0,fill))}%"></b></div><small class="cb-meter-label">${label}</small></div>`;
 
 /* ---------- real-time meters (the server decides the result from its own clock) ---------- */
@@ -121,49 +126,55 @@ function status(t,x){
   return tag+parts.join(' · ');
 }
 
-/* ---------- checklists ---------- */
+/* ---------- the order as a requirement list (checked live against what is in hand) ---------- */
+const CUP_ICON={paper:'🥤',glass:'🥃',mug:'☕'};
 function drinkRows(t,x){
-  if(hidden(t))return [[null,'Đoán đúng món khách đang thèm','']];
-  if(plated(t))return [[true,`Đủ ${t.cups.length} ly trên khay, giao một lượt`,'']];
-  const n=spec(t),d=t.drink,dk=drink(x,n.drink),rows=[];
+  if(hidden(t))return [R(null,'💭','Đoán đúng món khách đang thèm')];
+  if(plated(t))return [R(true,'🛎️',`Đủ ${t.cups.length} ly trên khay, giao một lượt`)];
+  const n=spec(t),d=t.drink,dk=drink(x,n.drink),rows=[],sl=cc(x).shot_label||{};
+  if(n.lactose)rows.push(R(d.milk?!milk(x,d.milk.kind).lactose:null,'⚠️','Không sữa bò','','Khách không dung nạp lactose','danger'));
+  if(n.decaf)rows.push(R(d.shots.length?d.shots.every(s=>s.beans==='decaf'):null,'⚠️','Chỉ hạt decaf','','Khách phải kiêng caffeine','danger'));
   const want=n.takeaway?'paper':n.iced?'glass':'mug';
   const cname={paper:'Ly giấy mang về',glass:'Ly thủy tinh',mug:'Tách sứ'}[want];
-  rows.push([d.container?d.container===want&&d.size===n.size:null,`${cname} · ly ${n.size==='L'?'lớn':'nhỏ'}`,'']);
-  if(n.iced)rows.push([d.ice?true:null,'Đá đầy ly','']);
+  const wrongCup=d.container&&(d.container!==want||d.size!==n.size);
+  rows.push(R(d.container?!wrongCup:null,CUP_ICON[want],cname,n.size==='L'?'ly lớn':'ly nhỏ',wrongCup?`đang dùng ${lower((cc(x).containers||[]).find(c=>c.id===d.container)?.name||'')} ${d.size==='L'?'lớn':'nhỏ'}`:''));
+  if(n.iced)rows.push(R(d.ice?true:null,'🧊','Đá đầy ly'));
+  else if(d.ice)rows.push(R(false,'🧊','Món nóng: không bỏ đá'));
   const good=d.shots.filter(s=>['balanced','bright','strong'].includes(s.x)&&s.beans===n.beans).length;
-  rows.push([d.shots.length?d.shots.length===n.shots&&good===n.shots:null,`${n.shots} shot ${bean(x,n.beans).name} · 25–30 giây`,d.shots.map(s=>`${s.sec}s ${(cc(x).shot_label||{})[s.x]||s.x}`).join(' · ')]);
-  if(dk.water)rows.push([d.water?true:null,n.iced?'Nước lạnh':'Nước nóng','']);
+  rows.push(R(d.shots.length?d.shots.length===n.shots&&good===n.shots:null,'☕',`${n.shots} shot ${bean(x,n.beans).name}`,d.shots.length?`${d.shots.length}/${n.shots}`:'25–30 giây',d.shots.map(s=>`${s.sec}s ${sl[s.x]||s.x}`).join(' · ')));
+  if(dk.water)rows.push(R(d.water?true:null,'💧',n.iced?'Nước lạnh':'Nước nóng 90 °C'));
+  else if(d.water)rows.push(R(false,'💧','Món này không pha nước'));
   if(n.milk){
-    const m=milk(x,n.milk),mode=n.iced?'rót lạnh':`đánh 55–68 °C, bọt ${n.foam==='thick'?'dày':'mỏng'}`;
+    const m=milk(x,n.milk);
     const ok=d.milk?d.milk.kind===n.milk&&(n.iced?d.milk.mode==='cold':d.milk.mode==='steam'&&d.milk.tex==='silky'&&d.milk.foam===n.foam):null;
-    rows.push([ok,`${m.name} · ${mode}`,d.milk?.temp?Math.round(d.milk.temp)+' °C':'']);
-  }else if(d.milk)rows.push([false,'Món này không có sữa','']);
-  if(n.art)rows.push([d.art?d.art===n.art:null,`Vẽ ${lower(art(x,n.art)?.name||n.art)}`,d.art==='blob'?'hình bị loang':'']);
-  for(const [k,q] of Object.entries(n.pastry||{})){const have=t.bag.items.filter(i=>i.item===k).length;rows.push([have?have===q:null,`${q} ${lower(bake(x,k).name)} (bánh hôm nay)`,have?`${have}/${q}`:'']);}
-  if(Object.keys(n.pastry||{}).length&&n.takeaway)rows.push([t.bag.bagged?true:null,'Cho bánh vào túi','']);
-  if(want==='paper')rows.push([d.lid?true:null,'Đậy nắp + tem tên','']);
-  if(n.lactose)rows.push([d.milk?!milk(x,d.milk.kind).lactose:null,'⚠️ Không sữa bò (không dung nạp lactose)','']);
-  if(n.decaf)rows.push([d.shots.length?d.shots.every(s=>s.beans==='decaf'):null,'⚠️ Chỉ hạt decaf','']);
+    const temp=d.milk?.temp?Math.round(d.milk.temp)+' °C':'';
+    rows.push(R(ok,m.emoji||'🥛',m.name,temp||(n.iced?'rót lạnh':'55–68 °C'),n.iced?'':`bọt ${n.foam==='thick'?'dày':'mỏng'}`));
+  }else if(d.milk)rows.push(R(false,'🚫','Món này không có sữa'));
+  if(n.art){const a=art(x,n.art);rows.push(R(d.art?d.art===n.art:null,a?.emoji||'🎨',`Vẽ ${lower(a?.name||n.art)}`,'',d.art==='blob'?'hình bị loang — sữa phải 55–68 °C':''));}
+  for(const [k,q] of Object.entries(n.pastry||{})){const have=t.bag.items.filter(i=>i.item===k).length,b=bake(x,k);rows.push(R(have?have===q:null,b.emoji,`${q} ${lower(b.name)}`,have?`${have}/${q}`:'','bánh ra lò hôm nay'));}
+  if(Object.keys(n.pastry||{}).length&&n.takeaway)rows.push(R(t.bag.bagged?true:null,'🛍️','Cho bánh vào túi'));
+  if(want==='paper')rows.push(R(d.lid?true:null,'🏷️','Đậy nắp + tem tên'));
   return rows;
 }
 function pastryRows(t,x){
   const n=t.needs,rows=[],items=t.bag.items,day=x.room.day;
-  for(const [k,q] of Object.entries(n.items)){const have=items.filter(i=>i.item===k).length;rows.push([have?have===q:null,`${q} ${lower(bake(x,k).name)}`,have?`${have}/${q}`:'']);}
-  for(const i of items)if(!n.items[i.item])rows.push([false,`${bake(x,i.item).name} (khách không gọi)`,'']);
-  const old=items.filter(i=>day-i.day>bake(x,i.item).fresh).length;
-  rows.push([items.length?(n.day_old_ok||!old):null,n.day_old_ok?'Bánh hôm qua −50% (khách đồng ý)':'Bánh ra lò hôm nay',old?`${old} bánh hôm qua`:'']);
-  if(n.allergy)rows.push([items.length?!items.some(i=>bake(x,i.item).allergens.includes(n.allergy)):null,`⚠️ Không có ${(cc(x).allergen_label||{})[n.allergy]||n.allergy}`,'']);
-  if(n.takeaway)rows.push([t.bag.bagged?true:null,'Túi giấy + tem ngày','']);
+  if(n.allergy){const a=(cc(x).allergen_label||{})[n.allergy]||n.allergy;rows.push(R(items.length?!items.some(i=>bake(x,i.item).allergens.includes(n.allergy)):null,'⚠️',`Không có ${a}`,'',`Khách dị ứng ${a}`,'danger'));}
+  for(const [k,q] of Object.entries(n.items)){const have=items.filter(i=>i.item===k).length,b=bake(x,k);rows.push(R(have?have===q:null,b.emoji,`${q} ${lower(b.name)}`,have?`${have}/${q}`:''));}
+  for(const k of new Set(items.map(i=>i.item)))if(!n.items[k])rows.push(R(false,bake(x,k).emoji,`${bake(x,k).name}: khách không gọi`));
+  const old=items.filter(i=>day-i.day>bake(x,i.item).fresh).length,weak=items.filter(i=>['pale','flat','dense'].includes(i.q)).length;
+  rows.push(R(items.length?(n.day_old_ok||!old):null,'🕐',n.day_old_ok?'Bánh hôm qua −50% (khách đồng ý)':'Bánh ra lò hôm nay',old?`${old} bánh hôm qua`:'',weak?`${weak} bánh nướng chưa đạt`:''));
+  if(n.takeaway)rows.push(R(t.bag.bagged?true:null,'🛍️','Túi giấy + tem ngày'));
   return rows;
 }
 function cakeRows(t,x){
   const n=t.needs,k=t.cake,cool=data(x).cooling?.[t.id];
+  const wrongText=k.text&&letters(k.text)!==letters(n.text);
   return [
-    [k.sponge?['golden','dark'].includes(k.sponge):null,'Cốt bông lan vàng đều',k.sponge?{pale:'sống ruột',golden:'vàng đều',dark:'hơi sậm',burnt:'cháy'}[k.sponge]:''],
-    [k.cream?!k.melted:k.sponge?(cool?null:true):null,'Để nguội trước khi phủ kem',k.sponge&&!k.cream&&cool?`chờ ${cool} nhịp`:''],
-    [k.cream?k.cream===n.cream&&k.color===n.color:null,`${cream(x,n.cream).name} · ${lower(color(x,n.color).name)}`,''],
-    [k.text?letters(k.text)===letters(n.text):null,`Chữ: “${n.text}”`,k.text&&letters(k.text)!==letters(n.text)?`đang ghi “${k.text}”`:''],
-    [k.boxed?true:null,'Hộp + nến + dao','']];
+    R(k.sponge?['golden','dark'].includes(k.sponge):null,'🍰','Cốt bông lan vàng đều',k.sponge?{pale:'sống ruột',golden:'vàng đều',dark:'hơi sậm',burnt:'cháy'}[k.sponge]:''),
+    R(k.cream?!k.melted:k.sponge?(cool?null:true):null,'🌬️','Để nguội rồi mới phủ kem',k.sponge&&!k.cream&&cool?`chờ ${cool} nhịp`:'',k.melted?'kem chảy xệ':''),
+    R(k.cream?k.cream===n.cream&&k.color===n.color:null,cream(x,n.cream).emoji,cream(x,n.cream).name,lower(color(x,n.color).name)),
+    R(k.text?!wrongText:null,'✍️',`“${n.text}”`,'',wrongText?`đang ghi “${k.text}”`:'Viết đúng từng dấu',k.text&&!wrongText?'':'warn'),
+    R(k.boxed?true:null,'📦','Hộp + nến + dao')];
 }
 const rowsOf=(t,x)=>t.needs.kind==='drink'?drinkRows(t,x):t.needs.kind==='pastry'?pastryRows(t,x):cakeRows(t,x);
 
@@ -195,9 +206,10 @@ function shelf(x){
 const extras=x=>banners(x)+boxCard(x);
 
 /* ---------- the order ---------- */
+/** Short headline of one drink: what it is, hot or iced, where it is drunk. */
 function drinkLine(n,x){
   const d=drink(x,n.drink);
-  return `${x.esc(d.emoji)} <b>${x.esc(d.name)}</b> ${n.iced?'đá':'nóng'} · ly ${n.size==='L'?'lớn':'nhỏ'} · ${n.takeaway?'🥤 mang về':'☕ tại quán'} · ${n.shots} shot ${x.esc(bean(x,n.beans).name)}${n.milk?' · '+x.esc(lower(milk(x,n.milk).name)):''}${n.art?' · vẽ '+x.esc(lower(art(x,n.art)?.name||'')):''}${n.lactose?' · <b class="cb-warn">⚠️ không lactose</b>':''}${n.decaf?' · <b class="cb-warn">⚠️ không caffeine</b>':''}`;
+  return `${x.esc(d.emoji)} <b>${x.esc(d.name)}</b> · ${n.iced?'đá':'nóng'} · ${n.takeaway?'mang về':'tại quán'}`;
 }
 /** Mood order: the guest's feeling and three drinks to pick from. */
 function moodCard(t,x){
@@ -213,7 +225,7 @@ function trayTabs(t,x){
   return `<div class="cb-party" role="tablist" aria-label="Các ly trong khay">${t.needs.party.map((p,i)=>{
     const sp={...t.needs,...p},done=!!t.cups[i],on=i===t.cur&&!done,off=on||(busy&&!on);
     return `<button type="button" role="tab" class="cb-cupline${on?' on is-selected':''}${done?' done':''}" data-command="cb_tab" data-payload="${pay(x,{task:t.id,index:i})}" aria-selected="${on}"${off?' disabled':''}>
-      <span class="cb-cupno" aria-hidden="true">${done?'✓':i+1}</span><span class="cb-cuptext"><small>Ly ${i+1} · ${done?'đã trên khay, bấm để lấy xuống sửa':on?'đang làm':busy?'chờ ly đang làm xong':'bấm để làm ly này'}</small>${drinkLine(sp,x)}</span></button>`;
+      <span class="cb-cupno" aria-hidden="true">${done?'✓':i+1}</span><span class="cb-cuptext"><small>Ly ${i+1} · ${done?'trên khay · bấm để sửa':on?'đang làm':busy?'chờ ly đang làm':'bấm để làm'}</small><span>${drinkLine(sp,x)}${sp.lactose||sp.decaf?' <b class="cb-warn">⚠️</b>':''}</span></span></button>`;
   }).join('')}</div>`;
 }
 function ticket(t,x){
@@ -224,22 +236,31 @@ function ticket(t,x){
     if(hidden(t)){tags.push('<span class="tag amber">💭 Đoán ý khách</span>');body=moodCard(t,x);}
     else{
       if(n.style==='mood')tags.push(`<span class="tag green">💡 Đã hiểu ý${(t.guesses||[]).length===1?' ngay':''}</span>`);
-      if(isTray(t)){tags.push(`<span class="tag">☕ Khay ${n.party.length} ly</span>`);body=trayTabs(t,x);}
-      else body=`<p class="order-line">${drinkLine(n,x)}${Object.entries(n.pastry||{}).map(([k,q])=>` · +${q} ${x.esc(bake(x,k).emoji)} ${x.esc(lower(bake(x,k).name))}`).join('')}</p>`;
+      const list=reqList(drinkRows(t,x),x.esc,isTray(t)?`Phiếu ly ${t.cur+1}`:'Phiếu order');
+      if(isTray(t)){tags.push(`<span class="tag">☕ Khay ${n.party.length} ly</span>`);body=trayTabs(t,x)+(plated(t)?'':`<p class="cb-order-head small">Ly ${t.cur+1} đang làm:</p>`)+list;}
+      else body=`<p class="cb-order-head">${drinkLine(n,x)}</p>${list}`;
       if(n.style==='mood'&&n.mood?.text)body=`<p class="cb-bubble small">💭 “${x.esc(n.mood.text)}”</p>`+body;
     }
   }else if(n.kind==='pastry'){
-    body=`<p class="order-line">${Object.entries(n.items).map(([k,q])=>`${x.esc(bake(x,k).emoji)} ${q} ${x.esc(lower(bake(x,k).name))}`).join(' · ')}${n.takeaway?' · 🛍️ mang về':''}</p>`;
+    body=`<p class="cb-order-head">🛍️ <b>Bánh ở tủ kính</b> · ${n.takeaway?'mang về':'tại quán'}</p>${reqList(pastryRows(t,x),x.esc,'Phiếu order')}`;
     if(n.day_old_ok)tags.push('<span class="tag amber">Bánh hôm qua −50%</span>');
     if(n.allergy)tags.push(`<span class="tag danger">⚠️ Dị ứng ${x.esc((cc(x).allergen_label||{})[n.allergy]||n.allergy)}</span>`);
   }else{
-    body=`<p class="order-line">🎂 ${x.esc(cream(x,n.cream).name)} · <i class="cb-dot" style="background:${x.esc(color(x,n.color).hex)}"></i> ${x.esc(lower(color(x,n.color).name))} · chữ: <b class="cb-order-text">“${x.esc(n.text)}”</b></p>`;
+    body=`<p class="cb-order-head">🎂 <b>Bánh kem đặt trước</b> · <i class="cb-dot" style="background:${x.esc(color(x,n.color).hex)}"></i> ${x.esc(lower(color(x,n.color).name))}</p>${reqList(cakeRows(t,x),x.esc,'Phiếu đặt bánh')}`;
   }
   const price=t.quoted_price!=null?x.money(t.quoted_price):'…';
   return `<article class="card ticket cb-ticket"><div class="cb-ticket-head">${x.portrait(who,44)}<div class="grow"><div class="row spread"><h3>${x.esc(who.display_name)}</h3><b class="price">${price}</b></div>
     <p class="cb-tags">${tags.join(' ')}</p></div></div>
-    ${body}${n.note?`<p class="muted small">“${x.esc(n.note)}”</p>`:''}${patience(t.patience)}</article>`;
+    ${body}${n.note?`<p class="cb-note">💬 “${x.esc(n.note)}”</p>`:''}${regularNotes(t,x)}${patience(t.patience)}</article>`;
 }
+/** What the notes card knows about this guest, with a greeting (once per visit). */
+function regularNotes(t,x){
+  const r=(data(x).book||[]).find(b=>b.npc===t.npc);
+  if(!t.regular||!r?.notes?.length)return '';
+  const greet=t.greeted?'<span class="tag green">👋 Đã chào món quen</span>':x.cmd('👋 Chào món quen','cb_greet',{task:t.id},'small');
+  return `<div class="cb-regular">${fold(`📒 Khách quen · ${r.visits} lần ghé${t.greeted?' · đã chào':''}`,`${noteList(r.notes,x)}<div class="row wrap">${greet}</div>`,!t.greeted&&!t.known)}</div>`;
+}
+const noteList=(notes,x)=>`<ul class="cb-notes">${notes.map(n=>`<li class="${n.tone==='danger'?'danger':''}"><span aria-hidden="true">${x.esc(n.icon)}</span><span>${x.esc(n.text)}</span></li>`).join('')}</ul>`;
 
 /* ---------- station panels ---------- */
 function barPanel(t,x){
@@ -314,11 +335,19 @@ function ovenPanel(t,x){
   const wanted=id=>(x.room.tasks||[]).some(v=>v.known&&v.needs&&((v.needs.items||v.needs.pastry||{})[id]))||(d.rules?.box?.status==='open'&&d.rules.box.item===id);
   const racksFull=oven.length>=2;
   const bakeTile=(b,o)=>{const locked=b.unlock>level&&!wanted(b.id),q=freshCount(x,b.id);
-    return tile(x,{emoji:b.emoji,name:o.name,sub:locked?`cấp ${b.unlock}`:recipe(b),count:locked?null:q,empty:!q,cmd:o.cmd,payload:o.payload,locked,wanted:wanted(b.id)&&!q,disabled:o.disabled||!enough(b),
+    return tile(x,{emoji:b.emoji,name:o.name,sub:locked?`cấp ${b.unlock}`:recipe(b)+(o.extra?' · '+o.extra:''),count:locked?null:q,empty:!q,cmd:o.cmd,payload:o.payload,locked,wanted:wanted(b.id)&&!q,disabled:o.disabled||!enough(b),
       label:locked?`${b.name}, mở ở cấp ${b.unlock}`:`${o.name}: tủ kính còn ${q} cái mới`});};
-  const shape=(cc(x).bakes||[]).filter(b=>b.proof).map(b=>bakeTile(b,{name:'Nhào '+lower(b.name),cmd:'cb_shape',payload:{item:b.id},disabled:proof.length>=2})).join('');
+  const st=d.starter||{};
+  const shape=(cc(x).bakes||[]).filter(b=>b.proof).map(b=>bakeTile(b,{name:'Nhào '+lower(b.name),cmd:'cb_shape',payload:{item:b.id},disabled:proof.length>=2,
+    extra:b.starter&&st.beats?`ủ ${st.beats} nhịp · men ${lower(st.label)}`:''})).join('');
   const direct=(cc(x).bakes||[]).filter(b=>!b.proof&&!b.cake).map(b=>bakeTile(b,{name:b.name,cmd:'cb_bake',payload:{item:b.id},disabled:racksFull})).join('');
-  const trays=proof.length?proof.map(p=>{const b=bake(x,p.item);return `<div class="cb-slot ${p.left?'':'ready'}"><span class="tile-emoji" aria-hidden="true">${x.esc(b.emoji)}</span><div class="grow"><b>${p.qty} ${x.esc(lower(b.name))}</b><small class="muted">${p.left?`đang nở · còn ${p.left} nhịp`:p.over?'⚠️ ủ quá lâu, bánh sẽ xẹp':'✓ bột đã nở, sẵn sàng nướng'}</small></div>${x.cmd('🔥 Vào lò','cb_bake',{item:p.item,tray:p.id},p.left||racksFull?'small':'primary small',!!p.left||racksFull)}</div>`;}).join(''):'<p class="muted small">Tủ ủ trống (2 ngăn).</p>';
+  const cold=d.cold||[],fridgeFull=cold.length>=2;
+  const trays=proof.length?proof.map(p=>{const b=bake(x,p.item);return `<div class="cb-slot ${p.left?'':'ready'}"><span class="tile-emoji" aria-hidden="true">${x.esc(b.emoji)}</span><div class="grow"><b>${p.qty} ${x.esc(lower(b.name))}</b><small class="muted">${p.left?`đang nở · còn ${p.left} nhịp`:p.over?'⚠️ ủ quá lâu, bánh sẽ xẹp':'✓ bột đã nở, sẵn sàng nướng'}${p.dense?' · men đói: sẽ đặc ruột':''}</small></div>
+    <div class="cb-slot-btns">${x.cmd('🔥 Vào lò','cb_bake',{item:p.item,tray:p.id},p.left||racksFull?'small':'primary small',!!p.left||racksFull)}${x.cmd('❄️ Cất tủ mát','cb_chill',{tray:p.id},'ghost small',fridgeFull)}</div></div>`;}).join(''):'<p class="muted small">Tủ ủ trống (2 ngăn). Bột còn ở đây lúc khép ca sẽ hỏng qua đêm.</p>';
+  const fridge=[0,1].map(i=>{const c=cold[i];if(!c)return `<div class="cb-slot empty"><span class="tile-emoji" aria-hidden="true">❄️</span><small class="muted">Ngăn ${i+1} trống</small></div>`;const b=bake(x,c.item);
+    const when=c.bakeable?(c.last?'⚠️ đêm cuối — nướng hôm nay kẻo chua':`✓ ủ lạnh ${c.nights} đêm · vào lò ngay`):'đang ủ lạnh · nướng từ sáng mai';
+    return `<div class="cb-slot cold${c.bakeable?' ready':''}${c.last?' last':''}"><span class="tile-emoji" aria-hidden="true">${x.esc(b.emoji)}</span><div class="grow"><b>${c.qty} ${x.esc(lower(b.name))}</b><small class="muted">${when}${c.dense?' · men đói':''}</small></div>
+      ${c.bakeable?`<div class="cb-slot-btns">${x.cmd('🔥 Vào lò','cb_bake',{item:c.item,tray:c.id},racksFull?'small':'primary small',racksFull)}</div>`:''}</div>`;}).join('');
   const sp=bake(x,'sponge');
   const sponge=t&&t.known&&t.needs?.kind==='cake'?`<div class="row wrap">${x.cmd(`🎂 Nướng cốt bánh kem (${x.esc(recipe(sp))})`,'cb_bake',{item:'sponge',task:t.id},'primary',racksFull||!!t.cake.sponge||t.cake.baking||!enough(sp))}</div>`:'';
   const racks=[0,1].map(i=>{const r=oven[i];if(!r)return `<div class="cb-rack-row empty"><b>Tầng ${i+1}</b><small class="muted">trống</small></div>`;const b=bake(x,r.item);
@@ -327,6 +356,8 @@ function ovenPanel(t,x){
     <p class="muted small">Lấy bánh ra khi thanh vào vùng xanh (vàng đều). Bánh cháy phải bỏ; bánh nhạt màu bán được nhưng khách chê. Số trên góc là bánh mới đang có trong tủ kính.</p>
     ${sponge}
     <h4 class="section-title">Tủ ủ bột</h4><div class="stack cb-proof">${trays}</div>
+    <h4 class="section-title">❄️ Tủ mát ủ lạnh qua đêm</h4><div class="stack cb-proof">${fridge}</div>
+    ${starterCard(x)}
     <h4 class="section-title">Nhào & tạo hình (cần ủ)</h4><div class="tile-grid">${shape}</div>
     <h4 class="section-title">Trộn & nướng ngay</h4><div class="tile-grid">${direct}</div>`;
 }
@@ -346,11 +377,38 @@ function cakePanel(t,x){
     <h4 class="section-title">4 · Đóng hộp</h4>${x.cmd(`📦 Đóng hộp (${stock(x,'cake_box')})`,'cb_box',{task:t.id},'',!k.cream||!k.text||k.boxed||!stock(x,'cake_box'))}
     <p class="muted small space-top">Mẹo nghề: đọc lại tên với khách, có dấu, trước khi bắt bông viết.</p>`;
 }
+/* ---------- care from one day to the next ---------- */
+/** Bé Men, the sourdough starter: strength, what it does to the bread, feed once a day. */
+function starterCard(x){
+  const s=data(x).starter;if(!s)return '';
+  const feed=s.fed_today?'<span class="tag green">✓ Đã ăn hôm nay</span>':x.cmd(`🥄 Cho ăn (+${s.gain}%)`,'cb_feed',{},'primary small',!x.room.open||stock(x,'flour')<1);
+  return `<section class="cb-starter ${x.esc(s.band)}" aria-label="Bé Men, hũ men tự nhiên"><div class="cb-starter-head"><span class="cb-jar" aria-hidden="true">🫙</span><p class="grow"><b>Bé Men · ${x.esc(s.emoji)} ${x.esc(s.label)}</b><small>Men tự nhiên cho bánh mì que</small></p><b class="cb-starter-pct">${s.strength}%</b></div>
+    <div class="cb-progress" role="meter" aria-label="Sức men" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${s.strength}"><i style="width:${s.strength}%"></i></div>
+    <p class="small cb-starter-note">${x.esc(s.effect)}.${s.fed_today?'':` Chưa ăn: đêm nay −${s.night}%.`}</p><div class="row wrap">${feed}</div></section>`;
+}
+/** Today's care list (computed on the server), with last night's news on top. */
+function careCard(x,open){
+  const d=data(x),rows=d.care||[],left=rows.filter(r=>r.ok!==true).length,night=d.night||[];
+  const news=night.length?`<div class="cb-night"><p class="eyebrow">🌙 Qua đêm</p><ul>${night.map(l=>`<li>${x.esc(l)}</li>`).join('')}</ul></div>`:'';
+  const tm=d.tomorrow;
+  const chip=tm?`<p class="cb-tomorrow small"><span aria-hidden="true">${x.esc(tm.emoji)}</span> Ngày mai: <b>${x.esc(tm.label)}</b>${tm.busy?' · đông khách mua lẻ':''}</p>`:'';
+  const s=d.starter||{};
+  const feed=s.fed_today===false?`<div class="row wrap">${x.cmd(`🫙 Cho Bé Men ăn (+${s.gain}%)`,'cb_feed',{},'primary small',!x.room.open||stock(x,'flour')<1)}</div>`:'';
+  return `<section class="cb-care">${fold(`🫙 Việc chăm tiệm · ${left?`${left} việc chờ`:'xong hết ✓'}`,`${news}${reqList(rows,x.esc,'Việc chăm tiệm hôm nay')}${feed}${chip}`,open)}</section>`;
+}
+/** The regulars' notes card: only what the shop has learned. */
+function bookFold(x){
+  const book=data(x).book||[];
+  if(!book.length)return '';
+  const rows=book.map(r=>{const who=x.npc(r.npc);return `<li class="cb-book-row">${x.portrait(who,36)}<div class="grow"><p><b>${x.esc(who.display_name||r.name)}</b> <small class="muted">${r.visits} lần ghé${r.next?` · ghé thêm ${r.next} lần để biết thêm`:''}</small></p>${r.notes.length?noteList(r.notes,x):'<p class="muted small">Chưa ghi được gì.</p>'}</div></li>`;}).join('');
+  return `<section class="cb-bookcard">${fold(`📒 Sổ khách quen · ${book.length} khách`,`<ul class="cb-book">${rows}</ul>`)}</section>`;
+}
+
 /** Between guests: bake for the case (walk-in buyers, the office box). */
 function prep(x){
-  const d=data(x),busy=(d.oven||[]).length||(d.proof||[]).some(p=>!p.left);
+  const d=data(x),busy=(d.oven||[]).length||(d.proof||[]).some(p=>!p.left)||(d.cold||[]).some(c=>c.bakeable);
   const open=x.ui.cbPrep??!!busy;
-  return `<details class="card cb-prep"${open?' open':''}><summary data-action="car:prep">🔥 Lò nướng & tủ kính${busy?' · <b>đang có mẻ bánh</b>':''}</summary>${ovenPanel(null,x)}<h4 class="section-title">Bánh trong tủ</h4>${casePicker(null,x,false)}</details>`;
+  return `<details class="card cb-prep"${open?' open':''}><summary data-action="car:prep"><span>🔥 Lò nướng & tủ kính${busy?' · <b>đang có mẻ bánh</b>':''}</span></summary>${ovenPanel(null,x)}<h4 class="section-title">Bánh trong tủ</h4>${casePicker(null,x,false)}</details>`;
 }
 
 /* ---------- next step & the one primary action ---------- */
@@ -392,7 +450,7 @@ function primary(t,x,rows,big){
     return x.cmd(`✅ Xong ly ${t.cur+1}`,'cb_done',{task:t.id},cls,!ready);
   }
   const blocked=!!data(x).day?.open_event,label=big?'🛎️ Giao cho khách':'🛎️ Giao';
-  const allOk=rows.every(r=>r[0]===true);
+  const allOk=rows.every(r=>r.ok===true);
   return allOk&&!blocked?x.cmd(label,'cb_serve',{task:t.id,confirm:true},cls,!canServe(t))
     :x.confirmCmd(label,'cb_serve',{task:t.id,confirm:true},blocked?'Có chuyện bất ngờ đang chờ bạn quyết. Xử lý xong rồi hãy giao nhé.':'Chưa khớp hết phiếu. Vẫn giao? Khách sẽ đánh giá đúng những gì bạn làm.',cls,!canServe(t));
 }
@@ -403,7 +461,8 @@ export default {
   next(t,x){return nextStep(t,x);},
   idle(x){
     const d=data(x);
-    return idlePanel(x,d.day,'cb_event',extras(x)+shelf(x)+prep(x),null,'cb');
+    const pending=(d.care||[]).some(r=>r.ok!==true);
+    return idlePanel(x,d.day,'cb_event',extras(x)+careCard(x,pending)+shelf(x)+prep(x)+bookFold(x),null,'cb');
   },
   job(t,x){
     const d=data(x),day=d.day;
@@ -412,26 +471,25 @@ export default {
       const who=x.npc(t.npc),g=t.guest||{};
       return `<div class="career-job cb food">${head}<article class="card ticket cb-ticket"><div class="cb-ticket-head">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3>
         <p class="cb-tags"><span class="tag">${x.esc(g.emoji||'🙂')} ${x.esc(g.label||'Khách')}</span></p></div></div>
-        <p class="cb-say">“${x.esc(t.opening)}”</p>${patience(t.patience)}${x.cmd('📝 Nhận order','ask',{task:t.id},'primary full')}</article>${extras(x)}</div>`;
+        <p class="cb-say">“${x.esc(t.opening)}”</p>${regularNotes(t,x)}${patience(t.patience)}${x.cmd('📝 Nhận order','ask',{task:t.id},'primary full')}</article>${extras(x)}${careCard(x,false)}</div>`;
     }
     const n=t.needs,ui=x.ui;
     if(ui.tabFor!==t.id){ui.tabFor=t.id;ui.tab=n.kind==='drink'?'bar':n.kind==='pastry'?'case':'cake';ui.cakeText='';}
     const tabs=[['bar','☕','Quầy pha'],['oven','🔥','Lò & ủ bột'],['case','🥐','Tủ kính'],['cake','🎂','Bánh kem']];
-    const racks=(d.oven||[]).length,ready=(d.proof||[]).filter(p=>!p.left).length,inCase=(d.case||[]).filter(l=>l.state==='fresh'&&!l.sale).reduce((a,l)=>a+l.qty,0);
+    const racks=(d.oven||[]).length,ready=(d.proof||[]).filter(p=>!p.left).length+(d.cold||[]).filter(c=>c.bakeable).length+(d.starter&&!d.starter.fed_today?1:0),inCase=(d.case||[]).filter(l=>l.state==='fresh'&&!l.sale).reduce((a,l)=>a+l.qty,0);
     const badge=k=>k==='oven'&&(racks||ready)?`<em class="cb-badge">${racks+ready}</em>`:k==='case'?`<em class="cb-badge${inCase?' calm':' zero'}">${inCase}</em>`:'';
     const tabBar=`<div class="cb-tabs" role="tablist" aria-label="Khu làm việc">${tabs.map(([k,e,l])=>`<button type="button" role="tab" class="cb-tab ${ui.tab===k?'on':''}" data-action="car:tab" data-tab="${k}" aria-selected="${ui.tab===k}">${e} ${l}${badge(k)}</button>`).join('')}</div>`;
     const panel={bar:()=>n.kind==='drink'?barPanel(t,x):'<p class="notice">Order này không có đồ uống. Bạn vẫn có thể xem máy pha.</p>',oven:()=>ovenPanel(t,x),case:()=>casePanel(t,x),cake:()=>n.kind==='cake'?cakePanel(t,x):'<p class="notice">Order này không phải bánh kem.</p>'}[ui.tab]?.()||'';
     const preview=n.kind==='drink'?cupArt(t,x)+(Object.keys(n.pastry||{}).length?bagArt(t,x):''):n.kind==='pastry'?bagArt(t,x):cakeArt(t,x);
-    const rows=rowsOf(t,x),ok=rows.filter(r=>r[0]===true).length;
+    const rows=rowsOf(t,x);
     const part=n.kind==='cake'?'cake':'drink';
     const dumpable=n.kind==='drink'?!plated(t)&&!!(t.drink.container||t.drink.shots.length||t.drink.milk):n.kind==='cake'?!!(t.cake.sponge||t.cake.cream):false;
     const dump=n.kind!=='pastry'?x.confirmCmd(n.kind==='cake'?'🗑️ Bỏ bánh':'🗑️ Đổ ly','cb_dump',{task:t.id,part},'Đổ bỏ và làm lại? Nguyên liệu đã dùng được ghi hao hụt.','danger small',!dumpable):'';
     const side=`<div class="cb-side"><div class="cb-look">${preview}<div class="cb-look-txt"><p class="cb-status" aria-live="polite">${x.esc(status(t,x))}</p>${trayCups(t)}</div></div>
-      <div class="fk-wide-only">${checklist(x,rows)}${primary(t,x,rows,true)}${dump}</div>
-      <details class="cb-check cb-narrow-only"${ui.cbCheck?' open':''}><summary data-action="car:check">📋 Kiểm ly · ${ok}/${rows.length} đúng</summary>${checklist(x,rows)}</details></div>`;
+      <div class="fk-wide-only">${primary(t,x,rows,true)}${dump}</div></div>`;
     const tools=`<p class="row wrap cb-tools">${dump?`<span class="cb-narrow-only">${dump}</span>`:''}${d.clean_day===x.room.day?'<span class="tag green">🧽 Đã vệ sinh máy hôm nay</span>':x.cmd('🧽 Vệ sinh máy pha','cb_clean',{},'ghost small')} ${x.button('📦 Kho & nhập hàng','inventory',{},'ghost small')}</p>`;
     const barEl=actionBar(x.esc(nextStep(t,x)),primary(t,x,rows,false));
-    return `<div class="career-job cb food">${head}${extras(x)}${ticket(t,x)}${tabBar}<div class="workbench"><section class="wb-main" role="tabpanel">${panel}${tools}</section><aside class="wb-side">${side}</aside></div>${barEl}</div>`;
+    return `<div class="career-job cb food">${head}${extras(x)}${careCard(x,false)}${ticket(t,x)}${tabBar}<div class="workbench"><section class="wb-main" role="tabpanel">${panel}${tools}</section><aside class="wb-side">${side}</aside></div>${barEl}</div>`;
   },
   actions:{
     async tab(data,el,x){x.ui.tab=data.tab;x.render();},
@@ -443,7 +501,6 @@ export default {
     async foam(data,el,x){x.ui.foam=data.foam;x.render();},
     async cream(data,el,x){x.ui.cream=data.cream;x.render();},
     async color(data,el,x){x.ui.color=data.color;x.render();},
-    async check(data,el,x){x.ui.cbCheck=!x.ui.cbCheck;},
     async prep(data,el,x){const d=el.closest('details');x.ui.cbPrep=d?!d.open:!x.ui.cbPrep;},
     async write(data,el,x){
       const input=el.closest('.career-job')?.querySelector('#cb-cake-text');
@@ -478,6 +535,10 @@ export default {
       el.classList.toggle('ready',sec>=a&&sec<g);el.classList.toggle('over',sec>=z);
     });
   },
-  summary(data,x){return gradeCard(data,x);},
+  summary(data,x){
+    const care=data&&data.care;
+    const night=care?`<article class="card space-top cb-care-sum"><h4>🌙 Qua đêm ở tiệm</h4><ul class="small">${(care.lines||[]).map(l=>`<li>${x.esc(l)}</li>`).join('')}</ul>${care.tip?`<p class="fk-tomorrow"><span aria-hidden="true">❄️</span> <b>${x.esc(care.tip)}</b></p>`:''}</article>`:'';
+    return gradeCard(data,x)+night;
+  },
   dock:[['inventory','box','Kho','Nhập & đếm hàng']],
 };
