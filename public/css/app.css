@@ -23,7 +23,6 @@
   --topbar-h:64px;--rail-w:88px;--side-w:clamp(300px,26vw,380px);--dock-h:72px;--foot-h:28px;
   --safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px);--safe-l:env(safe-area-inset-left,0px);--safe-r:env(safe-area-inset-right,0px);
   --ease:cubic-bezier(.2,.8,.2,1);--dur:.18s;
-  --career:#c44b30;
   --toast-b:48px;
   font-size:16px;
 }
@@ -40,6 +39,11 @@ html[data-theme="bien"]{color-scheme:light;--bg:#ecf3f9;--surface:#fbfdff;--surf
 html[data-theme="keo"]{color-scheme:light;--bg:#fff1f6;--surface:#fffdfe;--surface-2:#fde5ee;--surface-3:#f6d0df;--ink:#3f1f38;--ink-2:#5c3454;--muted:#74506a;--line:#f2d2df;--line-strong:#e5b5c9;--field-line:#b27d96;--accent:#bf3f6d;--accent-strong:#9e3058;--accent-soft:#fbdce7;--accent-text:#a2325b;--accent-ink:#ffffff;--second:#7a6ad8;--second-soft:#ebe7fb;--good:#28744f;--good-soft:#dff1e6;--warn:#8f5510;--warn-soft:#fcecd6;--bad:#b02f43;--bad-soft:#fbe0e5;--on-bad:#ffffff;--info:#5446b8;--info-soft:#e8e5fa;--star:#dc9412;--focus:#5446b8;--inverse:#3f1f38;--on-inverse:#fff6fa;--overlay:rgba(60,20,48,.42);--shadow-sm:0 1px 2px rgba(120,40,80,.07),0 3px 10px -4px rgba(120,40,80,.14);--shadow:0 14px 36px -14px rgba(120,40,80,.30),0 2px 6px rgba(120,40,80,.07);--shadow-lg:0 30px 80px -24px rgba(70,20,50,.45);--scene-filter:none}
 /* Phố đêm — dark, coral lantern, mint */
 html[data-theme="dem"]{color-scheme:dark;--bg:#15141b;--surface:#201e28;--surface-2:#292632;--surface-3:#35313f;--ink:#f3ede5;--ink-2:#ddd3c8;--muted:#aca3b5;--line:#35313f;--line-strong:#4b4658;--field-line:#726b80;--accent:#ff8a6b;--accent-strong:#e86f4f;--accent-soft:#3d2926;--accent-text:#ff9c80;--accent-ink:#2a130c;--second:#7fd1b9;--second-soft:#1d3831;--good:#6fd0a4;--good-soft:#1c372d;--warn:#f0c14f;--warn-soft:#3a3120;--bad:#ff8585;--bad-soft:#41242a;--on-bad:#2a0d0d;--info:#8cbcff;--info-soft:#1f2c44;--star:#f5c451;--focus:#8cbcff;--inverse:#f3ede5;--on-inverse:#1b1a22;--overlay:rgba(4,4,10,.66);--shadow-sm:0 1px 2px rgba(0,0,0,.35),0 3px 10px -4px rgba(0,0,0,.45);--shadow:0 16px 40px -14px rgba(0,0,0,.65),0 2px 6px rgba(0,0,0,.3);--shadow-lg:0 30px 90px -20px rgba(0,0,0,.8);--scene-filter:brightness(.78) saturate(.9) contrast(1.04)}
+/* Career accent: html[data-career] + these tokens are set per career by
+   public/js/v4/shell.js (catalogue meta.color fitted to the theme: --career-ink
+   on --career >= 4.5:1, --career-text >= 4.5:1 on --bg/--surface/--surface-2/
+   --career-soft). Until a career is known they fall back to the theme accent. */
+:root{--career:var(--accent);--career-strong:var(--accent-strong);--career-soft:var(--accent-soft);--career-ink:var(--accent-ink);--career-text:var(--accent-text)}
 html.large-text{font-size:18px}
 @media (min-width:1600px){html.large-text{font-size:19px}}
 /* Aliases for names used by v0.2/v0.3 styles and early career modules. */
@@ -275,6 +279,10 @@ button.chip:hover{background:var(--surface-3)}
 @supports (backdrop-filter:blur(4px)){.scene-heading{background:color-mix(in srgb,var(--surface) 84%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}}
 .scene-heading:empty,.scene-badge:empty,.scene-hint:empty,.ambient-caption:empty{display:none}
 .scene-heading .eyebrow{font-size:.7rem;margin-bottom:2px;color:var(--accent-text)}
+.scene-heading:not(:empty){display:flex;align-items:center;gap:12px}
+.scene-title{min-width:0}
+.scene-mark{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:13px;background:var(--career-soft);box-shadow:inset 0 0 0 1.5px var(--career);font-size:1.5rem;line-height:1}
+@supports (color:color-mix(in srgb,red 50%,blue)){.scene-mark{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--career) 55%,transparent)}}
 .scene-heading h1{font-size:1.267rem;margin:0;line-height:1.25}
 .scene-heading p{font-size:.833rem;color:var(--muted);margin:2px 0 0;line-height:1.4}
 .scene-badge{position:absolute;left:16px;bottom:14px;z-index:2;display:flex;flex-wrap:wrap;gap:6px;pointer-events:none;max-width:60%}
@@ -301,6 +309,10 @@ button.chip:hover{background:var(--surface-3)}
 .note-card small.npc-mini{display:block;font-size:.8rem}
 .note-card>.btn+.btn{margin-top:8px}
 .task-hud .note-card:first-child{border-top:3px solid var(--accent)}
+/* Career-tinted chrome: the task card, the dock, the day ring, the scene
+   title card and the job sheet take the current career's accent (the theme
+   accent family is re-pointed at --career-*); surfaces and text stay the theme's. */
+.task-hud,.dock,.day-control,.scene-heading,.career-job{--accent:var(--career);--accent-strong:var(--career-strong);--accent-soft:var(--career-soft);--accent-text:var(--career-text);--accent-ink:var(--career-ink)}
 .note-card.event-note{box-shadow:inset 4px 0 0 var(--second),var(--shadow-sm)}
 .note-card.event-note .eyebrow{color:var(--ink-2)}
 .note-card.ops-alert{box-shadow:inset 4px 0 0 var(--info),var(--shadow-sm)}
@@ -400,6 +412,8 @@ html[data-layout="phone"] .tiny-footer:has(.offline)>span:last-child{display:non
 html[data-layout="phone"] .scene-heading{left:10px;top:10px;max-width:calc(100% - 20px);padding:7px 11px 8px;border-radius:12px}
 html[data-layout="phone"] .scene-heading .eyebrow{font-size:.667rem}
 html[data-layout="phone"] .scene-heading h1{font-size:1rem}
+html[data-layout="phone"] .scene-heading:not(:empty){gap:9px}
+html[data-layout="phone"] .scene-mark{width:34px;height:34px;border-radius:10px;font-size:1.15rem}
 html[data-layout="phone"] .scene-heading p,html[data-layout="phone"] .scene-badge,html[data-layout="phone"] .scene-hint,html[data-layout="phone"] .ambient-caption{display:none}
 html[data-layout="phone"] .task-hud{position:absolute;z-index:4;left:max(10px,var(--safe-l));right:max(10px,var(--safe-r));bottom:calc(var(--dock-h) + var(--safe-b) + 10px);flex-direction:row;align-items:flex-end;gap:10px;max-height:52%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
 html[data-layout="phone"] .task-hud::-webkit-scrollbar{display:none}
@@ -438,7 +452,7 @@ html[data-layout="phone"] .toasts{--toast-b:calc(var(--dock-h) + var(--safe-b) +
 .sheet-head>div:first-child,.sheet-head>.grow{min-width:0;flex:1 1 auto}
 .sheet-head h2{font-size:1.4rem;margin:0 0 3px;overflow-wrap:anywhere}
 .sheet-head p{margin:0;font-size:.9rem;color:var(--muted);line-height:1.5}
-.sheet-head .eyebrow{color:var(--accent-text);margin-bottom:4px}
+.sheet-head .eyebrow{color:var(--career-text);margin-bottom:4px}
 .sheet-head>.icon-btn,.sheet-head>.btn:last-child{flex:none;margin:-2px -4px 0 0}
 .sheet-head>.tag{align-self:center;flex:none}
 .sheet-head>.btn:last-child{width:42px;min-height:42px;padding:0;border-color:transparent;background:transparent;box-shadow:none}

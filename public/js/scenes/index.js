@@ -26,7 +26,14 @@ const BASE={
   people_sub:'Những người bạn gặp quanh tiệm.',feed_sub:'Lời nhắn và đánh giá quanh tiệm.',
 };
 const KIND_WORDS={
-  shop:{},teabar:{},cafe:{},kitchen:{},minimart:{},flowershop:{},babyshop:{},drugstore:{},
+  shop:{},
+  teabar:{shelf:'Hũ topping',evidence:'Màn hình đơn',counter:'Quầy nhận ly',cat_line:'Mrrr… cho Mướp một viên trân châu được không?'},
+  cafe:{shelf:'Tủ bánh',evidence:'Phiếu order',counter:'Quầy tính tiền',warehouse:'Kho bột',store:'KHO BỘT',cat_line:'Mrrr… thơm mùi bánh mới ra lò quá!'},
+  kitchen:{shelf:'Kệ gia vị & topping',evidence:'Dây phiếu gọi món',counter:'Quầy ra món',warehouse:'Kho lạnh',cat_line:'Mrrr… nồi nước dùng thơm quá đi.'},
+  minimart:{shelf:'Kệ hàng tạp hóa',evidence:'Sổ ghi nợ',counter:'Cân & tính tiền',cat_line:'Mrrr… cô Ba ơi cho con xin miếng khô mực.'},
+  flowershop:{shelf:'Kệ xô hoa',evidence:'Sổ đặt hoa',counter:'Quầy tính tiền',warehouse:'Tủ mát hoa',cat_line:'Mrrr… hoa hồng thơm nhưng gai quá.'},
+  babyshop:{shelf:'Kệ thú bông',evidence:'Bỉm & sữa theo cỡ',counter:'Quầy thanh toán',cat_line:'Mrrr… thú bông này mềm ghê.'},
+  drugstore:{shelf:'Kệ hộp theo mã',evidence:'Khay & phiếu',counter:'Quầy tư vấn',warehouse:'Kho thuốc',cat_line:'Mrrr… nằm trên tủ lạnh mát ghê.'},
   service:{cat_line:'Mrrr… hôm nay có ai ghé làm đẹp không?',store:'VẬT TƯ',ledger:'SỔ THU CHI',open_sign:'ĐANG NHẬN KHÁCH',idle_line:'Khách hẹn sắp tới.',warehouse:'Kho vật tư',shelf:'Tủ dụng cụ',evidence:'Sổ hẹn & phiếu',counter:'Quầy thanh toán'},
   classroom:{cat_line:'Mrrr… hôm nay lớp mình học gì thế?',rating:'phụ huynh',till:'Quỹ lớp',door_open:'Tan lớp',door_closed:'Vào lớp',open_sign:'ĐANG HỌC',closed_sign:'ĐÃ TAN LỚP',
     shelf:'Góc học liệu',evidence:'Sổ liên lạc',counter:'Bàn giáo viên',warehouse:'Tủ đồ dùng',finance:'Sổ quỹ lớp',property:'Phòng học',ledger:'SỔ LỚP',store:'TỦ ĐỒ',

@@ -55,7 +55,7 @@ All themes define these too.
 | `--shadow-sm` `--shadow-lg` | Small / dialog elevation |
 | `--scene-filter` | CSS filter for canvas and illustrated panels; dims them in the dark theme |
 | `--radius-lg` `--radius-pill` | 22px panels / pills |
-| `--career` | The current career's colour (from `meta.color`), set by `app.js`. Use it only for decoration such as stripes or tints, never for text. |
+| `--career` `--career-strong` `--career-soft` `--career-ink` `--career-text` | The current career's accent family. See section 2b. |
 | `--font` | Font stack |
 | `--safe-t` `--safe-r` `--safe-b` `--safe-l` | `env(safe-area-inset-*)` |
 
@@ -72,6 +72,32 @@ Themes are set as `html[data-theme]` by `public/js/v4/shell.js` from `settings.u
 | `dem` | Phố đêm | Dark night street, coral lantern, mint | `#15141b` / `#ff8a6b` / `#7fd1b9` |
 
 Every pair listed in section 1 is checked for contrast (WCAG AA). If you add a theme, copy a whole block in section 2 of `app.css` and re-check the pairs.
+
+### 2b. Career accent
+
+Each career tints a few pieces of chrome with its own colour, so the 20 workplaces don't look alike. The theme still owns surfaces, text, lines and the rail.
+
+`public/js/v4/shell.js` (`applyCareer`, called by `renderMain` through `shell.career(meta)` and again when the theme changes) sets `html[data-career="<id>"]` and five inline tokens on `<html>`. It starts from `meta.color` in the catalogue, the same colour source the scenes paint with, and fits it to the theme (`careerPalette`):
+
+| Token | Light themes | Dark theme (`dem`) |
+|---|---|---|
+| `--career` | `meta.color` darkened in HSL lightness (same hue) until white reads ≥ 4.6:1 on it | Lifted (saturation capped at 78%) to a relative luminance ≥ 0.32 |
+| `--career-ink` | `#ffffff` | A deep shade of the same hue, ≥ 4.6:1 on `--career` |
+| `--career-strong` | `--career` 8 points darker (3D edge, pressed) | `--career` 10 points darker |
+| `--career-soft` | 13% `--career` over `--surface` (selected fills, the step chip) | 20% `--career` over `--surface` |
+| `--career-text` | `--career`, darkened further until ≥ 4.6:1 on `--bg`, `--surface`, `--surface-2` and `--career-soft` | Lightened until the same holds |
+
+Before a career is known, the tokens fall back to the theme's `--accent` family.
+
+**Where it shows:** `.task-hud` (the "Việc trước mắt" card's top border, eyebrow, step chip and "Làm tiếp"), `.dock` (main action and the phone's active pill), `.day-control` (the day ring), `.scene-heading` (the title card's eyebrow and the `.scene-mark` emoji badge, from `emojiOf` in `v4/journey.js`), `.sheet-head .eyebrow` and everything inside `.career-job`. These containers re-point `--accent`, `--accent-strong`, `--accent-soft`, `--accent-text` and `--accent-ink` at the `--career-*` tokens. Components inside them stay on the plain accent tokens and pick up the career colour.
+
+Rules:
+
+- Put text only in `--career-text`. Text on a `--career` fill uses `--career-ink`.
+- To tint a new piece of chrome, add its container to the re-pointing rule in `app.css` rather than using `--career` directly.
+- Places that show another workplace (journey cards, stories) set their own `style="--career:…"` inline, for decoration only.
+
+The pairs above are checked for all 20 careers × 5 themes (`careerPalette` is pure; lift it from `shell.js` to re-check after a colour change).
 
 `shell.js` also toggles two classes on `<html>`:
 

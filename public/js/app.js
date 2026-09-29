@@ -176,10 +176,10 @@ function hudFeedback(c){
 }
 function renderMain(){
   if(!api.state||!api.content)return;const c=room(),m=meta();
-  document.body.classList.toggle('reduce-motion',api.state.settings.reduceMotion);document.body.classList.toggle('large-text',api.state.settings.largeText);document.documentElement.style.setProperty('--career',m.color||'#c44b30');
+  document.body.classList.toggle('reduce-motion',api.state.settings.reduceMotion);document.body.classList.toggle('large-text',api.state.settings.largeText);shell.career(m);
   setHTML($('#topbar'),hudHTML(c,m));
   setHTML($('#rail'),railHTML(c));
-  setHTML($('#sceneHeading'),`<span class="eyebrow">${esc(m.map_label)}</span><h1>${esc(c.life.shop_name||m.place)}</h1><p>${esc(m.tagline)}</p>`);
+  setHTML($('#sceneHeading'),`${shell.mark(m)}<div class="scene-title"><span class="eyebrow">${esc(m.map_label)}</span><h1>${esc(c.life.shop_name||m.place)}</h1><p>${esc(m.tagline)}</p></div>`);
   const w=c.life?.weather,mode=c.life?.mode&&c.life.mode!=='normal'?api.content.experiences?.modes?.find(x=>x.id===c.life.mode):null;
   setHTML($('#sceneBadge'),pill(c.open?'Đang mở cửa':'Đang nghỉ',c.open?'green':'')+(w?pill(`${esc(w.emoji)} ${esc(w.name)}`):'')+(mode?pill(esc(mode.name),c.life.mode==='festival'?'amber':'blue'):''));
   setHTML($('#taskHUD'),taskCards(c));
