@@ -633,6 +633,7 @@ html[data-layout="phone"] .home-empty{margin:8px 14px 16px}
 .queue-card h3{font-size:1rem;margin-bottom:4px}
 .queue-card p{font-size:.867rem;color:var(--muted);margin:10px 0}
 .queue-card .row:first-child{align-items:flex-start}
+.queue-card .row{flex-wrap:wrap;gap:8px}.queue-card .tag{white-space:normal;overflow-wrap:anywhere}
 .doc-board{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
 @container sheet (min-width:680px){.doc-board{grid-template-columns:1.1fr 1fr}}
 .board-column{min-width:0}
