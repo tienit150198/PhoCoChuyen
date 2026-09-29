@@ -28,6 +28,7 @@ import itertools
 import math
 from . import kit
 from .. import consequences as cq
+from .. import archive as ar
 
 ID = 'homestay'
 FREE_WATER = 2            # bottles of water per stay that are a gift of the house
@@ -922,7 +923,7 @@ def on_close(s: dict, c: dict) -> dict:
             walked.append(b['name'])
             if b.get('anniv'):
                 _anniv_page(d, b['anniv'], day, None, None)
-    d['bookings'] = keep[-60:]
+    d['bookings'] = ar.last(keep, 60, 'homestay.bookings', c)
     lines += _care_night(s, c)
     if d['day_synced'] or d['day_walked']:
         lines.append(f'Đơn OTA đã đồng bộ hôm nay: {d["day_synced"]}. Khách phải chuyển sang nhà hàng xóm: {d["day_walked"]}.')
@@ -1106,7 +1107,7 @@ def _ota_new(s: dict, c: dict, mod: str) -> None:
         d['ota'].append(dict(id=f'ota-{d["seq"]}', ota=OTAS[r.randrange(len(OTAS))], name=names[i % len(names)], room=pick, start=start,
                              nights=nights, guests=guests, total=gross, net=net, status='new', rooms=[], day=day))
         made += 1
-    d['ota'] = [o for o in d['ota'] if o['status'] == 'new' or o['day'] >= day - 2][-30:]
+    d['ota'] = ar.last([o for o in d['ota'] if o['status'] == 'new' or o['day'] >= day - 2], 30, 'homestay.ota', c)
     if made:
         kit.log(s, c, 'homestay', f'📥 {made} đơn OTA mới trong hộp thư — đồng bộ vào lịch trước khi khách tới.')
 
@@ -1128,7 +1129,7 @@ def _ota_book(c: dict, o: dict, rooms: list, status: str) -> None:
     d = _data(c)
     d['bookings'].append(dict(id=o['id'], rooms=list(rooms), start=o['start'], nights=o['nights'], guests=o['guests'],
                               name=f'{o["name"]} ({o["ota"]})', total=o['net'], deposit=0, task=None, ota=o['ota']))
-    d['bookings'] = d['bookings'][-60:]
+    d['bookings'] = ar.last(d['bookings'], 60, 'homestay.bookings', c)
     o.update(status=status, rooms=list(rooms))
 
 
@@ -1228,7 +1229,7 @@ def _claim(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
     d = _data(c)
     d['seq'] += 1
     back = choice == 'give' or (choice == 'channel' and kind != 'imposter')
-    d['lost'] = (d['lost'] + [dict(id=f'lf-{d["seq"]}', item=e['item'], room=e['room'], day=e['day'], status='returned' if back else 'kept')])[-40:]
+    d['lost'] = ar.last(d['lost'] + [dict(id=f'lf-{d["seq"]}', item=e['item'], room=e['room'], day=e['day'], status='returned' if back else 'kept')], 40, 'homestay.lost', c)
     if choice == 'give' and kind == 'imposter':
         d['claims_bad'] += 1
         d['desk']['marks']['lost_wrong'] = c['day']
@@ -1313,7 +1314,7 @@ def _clean(s: dict, c: dict, p: dict) -> dict:
         if (c['day'] * 7 + idx * 3 + d['cleaned']) % 4 == 0:
             item = FOUND_ITEMS[(c['day'] + idx + d['cleaned']) % len(FOUND_ITEMS)]
             d['seq'] += 1
-            d['lost'] = (d['lost'] + [dict(id=f'lf-{d["seq"]}', item=item, room=rid, day=c['day'], status='kept')])[-40:]
+            d['lost'] = ar.last(d['lost'] + [dict(id=f'lf-{d["seq"]}', item=item, room=rid, day=c['day'], status='kept')], 40, 'homestay.lost', c)
             kit.metric(c, 'lost_found')
             base += f' Tìm thấy “{item}” — ghi sổ đồ thất lạc, cất tủ khóa, chờ liên hệ khách qua kênh đặt phòng.'
     return dict(message=' '.join(msgs + [base]))
@@ -1399,7 +1400,7 @@ def _booking(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         d['seq'] += 1
         d['bookings'].append(dict(id=f'bk-{d["seq"]}', rooms=list(t['hold']), start=n['start'], nights=n['nights'], guests=need,
                                   name=_guest(t), total=t['quote']['total'] - cut, deposit=dep - cut, task=t['id']))
-        d['bookings'] = d['bookings'][-60:]
+        d['bookings'] = ar.last(d['bookings'], 60, 'homestay.bookings', c)
         kit.metric(c, 'bookings')
         kit.complete(s, c, t, said['pay'], f'Bạn đã nhận đặt phòng cho {_guest(t)} từ ngày {n["start"]}.')
         if said['message']:
@@ -1719,7 +1720,7 @@ def _checkout(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         t['mistakes'] += 1
         d = kit.data(c)
         d['seq'] += 1
-        d['lost'] = (d['lost'] + [dict(id=f'lf-{d["seq"]}', item=x['lost'], room=t['room'] or 'thong', day=c['day'], status='kept')])[-40:]
+        d['lost'] = ar.last(d['lost'] + [dict(id=f'lf-{d["seq"]}', item=x['lost'], room=t['room'] or 'thong', day=c['day'], status='kept')], 40, 'homestay.lost', c)
         cq.slip(t, 'forgot_item', 1, f'Về tới nhà mới nhớ để quên {x["lost"].lower()}, lúc trả phòng không ai nhắc.', 'không trả đồ khách để quên')
     total = _bill_total(t['bill'])
     # Forgetting a line is the house's loss, not the guest's complaint: only real slips reach react().
@@ -2492,7 +2493,7 @@ def _stay_open(c: dict, rid: str, guest: str, npc: int, anniv: int = 0) -> dict:
 
 
 def _stay_log(st: dict, text: str) -> None:
-    st['log'] = (st['log'] + [text])[-STAY_LOG:]
+    st['log'] = ar.last(st['log'] + [text], STAY_LOG, 'homestay.stay_log', None)
 
 
 def _stars(mood: int) -> int:
@@ -2712,7 +2713,7 @@ def _care_night(s: dict, c: dict) -> list:
         lines.append('🔧 Cần sửa vặt: ' + '; '.join(found) + '.')
     score = _ota_score(c)
     if not d['rating'] or d['rating'][-1][0] != c['day']:
-        d['rating'] = (d['rating'] + [[c['day'], int(round(score * 10))]])[-RATING_DAYS:]
+        d['rating'] = ar.last(d['rating'] + [[c['day'], int(round(score * 10))]], RATING_DAYS, 'homestay.rating', c)
     nxt = today(c['day'] + 1)['id']
     staying = sum(1 for rid, r in d['rooms'].items() if r['status'] == 'occupied' and r['until'] > c['day'] + 1)
     if nxt in ('cold', 'rain') and staying:

@@ -50,6 +50,7 @@ from __future__ import annotations
 import copy
 from . import kit
 from .. import consequences as cq
+from .. import archive as ar
 
 ID = 'delivery'
 DONE = ('completed', 'referred', 'cancelled')
@@ -847,7 +848,7 @@ def _score(s: dict, c: dict, t: dict, clean: bool | None) -> str:
     if not t.get('gen'):
         return ''
     d = _data(c)
-    d['stars'] = (d['stars'] + [_stars(c, t)])[-RATING_KEEP:]
+    d['stars'] = ar.last(d['stars'] + [_stars(c, t)], RATING_KEEP, 'delivery.stars', c)
     out = ''
     if clean:
         d['streak'] += 1

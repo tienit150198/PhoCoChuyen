@@ -32,6 +32,7 @@ import random
 import re
 
 from . import board_content as C
+from . import archive as ar
 
 VERSION = 1
 POSTS_MAX = 120          # kept posts (oldest dropped)
@@ -359,10 +360,10 @@ def _find(bd: dict, pid) -> dict | None:
 
 def _trim(bd: dict) -> None:
     if len(bd['posts']) > POSTS_MAX:
-        bd['posts'] = bd['posts'][-POSTS_MAX:]
+        bd['posts'] = ar.last(bd['posts'], POSTS_MAX, 'board.posts', ar.JOURNEY)
     for p in bd['posts']:
         if len(p['cmts']) > CMTS_MAX:
-            p['cmts'] = p['cmts'][-CMTS_MAX:]
+            p['cmts'] = ar.last(p['cmts'], CMTS_MAX, 'board.comments', ar.JOURNEY)
 
 
 def _new_post(bd: dict, key: str | None, day: int, t: int, who: str, kind: str, mood: str, text: str,

@@ -36,6 +36,7 @@ from . import desk as dk
 from . import giftshop as gifts
 from . import incidents as incs
 from . import happenings as haps
+from . import archive as ar
 
 ORIGINAL=("mother_baby","pharmacy","accounting","customer_care")
 UI_THEMES=("kem","tra_xanh","dem","bien","keo")
@@ -163,6 +164,7 @@ def migrate_state(state:dict,owned:bool=False) -> dict:
         cst.migrate(s)  # truyện nghề: an empty story book for older saves
         emp.migrate(s)  # xin việc: nơi đã làm trước khi cần tuyển dụng thì coi như đã ký hợp đồng
         inv.migrate(s)  # kho: đơn nhập cũ theo nhịp → giờ giao dự kiến
+        _trim_histories(s)  # v0.8.1: journal, cash book and day recaps beyond the new caps move to the archive
         for _cid in ("mother_baby","pharmacy"):  # kho cũ của hai nghề gốc: kiện theo nhịp → giờ giao
             _c=s['careers'].get(_cid)
             if isinstance(_c,dict) and isinstance(_c.get('shipments'),list) and type(_c.get('day')) is int and type(_c.get('turn')) is int:_upgrade_shipments(_c,_cid)
@@ -172,6 +174,23 @@ def migrate_state(state:dict,owned:bool=False) -> dict:
     return s
 
 
+def _trim_histories(s:dict) -> None:
+    """Older saves kept up to 1200 journal rows, 1500 cash-book rows and 30 day recaps per
+    career: what lies beyond what log(), ops.record_money and life.on_close keep now moves
+    to the archive (game/archive.py; written with the save by the storage layer)."""
+    for cid,c in s["careers"].items():
+        if not isinstance(c,dict):continue
+        if isinstance(c.get("journal"),list) and len(c["journal"])>JOURNAL_KEPT:c["journal"]=ar.last(c["journal"],JOURNAL_KEPT,"journal",cid)
+        f=(c.get("ops") or {}).get("finance") if isinstance(c.get("ops"),dict) else None
+        if (isinstance(f,dict) and isinstance(f.get("ledger"),list) and len(f["ledger"])>ops.LEDGER_HIGH and type(c.get("day")) is int
+                and type(f.get("opening_balance")) is int
+                and all(isinstance(x,dict) and type(x.get("day")) is int and type(x.get("amount")) is int for x in f["ledger"])):
+            ops.trim_ledger(c)
+        x=c.get("life")
+        if isinstance(x,dict) and isinstance(x.get("goals_history"),list) and len(x["goals_history"])>life.GOALS_KEPT:
+            x["goals_history"]=ar.last(x["goals_history"],life.GOALS_KEPT,"life.goals_history",cid)
+
+
 def needs_migration(state:dict) -> bool:
     return state.get('schema')!=4 or not isinstance(state.get('careers'),dict) or set(state['careers'])!=set(CAREERS) or 'journey' not in state or 'stories' not in state or 'aiAsked' not in (state.get('settings') or {})
 
@@ -179,18 +198,21 @@ def needs_migration(state:dict) -> bool:
 def metric(c: dict,key: str,value: int=1) -> None:
     c["metrics"][key]=c["metrics"].get(key,0)+value
 
+JOURNAL_KEPT=300  # rows kept in the save (the Sổ tay shows 80, "Xem cũ hơn" pages the archive)
+FEED_KEPT=100  # posts kept in the save: the rating and review follow-ups read them all
+
 def log(s:dict,c:dict,kind:str,text:str,npc:str|None=None,ref:str|None=None) -> str:
     s["seq"]+=1
     lid=f"log-{s['seq']}"
     c["journal"].append(dict(id=lid,kind=kind,text=text,npc=npc,ref=ref,day=c["day"],turn=c["turn"]))
-    # Keep a bounded display history. Every memory embeds its own source snapshot.
-    if len(c["journal"])>1200: c["journal"]=c["journal"][-1200:]
+    # Keep a bounded display history (older rows go to the archive). Every memory embeds its own source snapshot.
+    if len(c["journal"])>JOURNAL_KEPT: c["journal"]=ar.last(c["journal"],JOURNAL_KEPT,"journal",c)
     return lid
 
 def remember(s:dict,c:dict,npc:str,text:str,ref:str|None=None) -> None:
     lid=log(s,c,"memory",text,npc,ref)
     c["memories"].append(dict(id=lid,npc=npc,text=text,source=ref or lid,day=c["day"]))
-    c["memories"]=c["memories"][-120:]
+    c["memories"]=ar.last(c["memories"],120,"memories",c)
     c["relationships"][npc]=min(100,c["relationships"].get(npc,0)+4)
 
 def money(s:dict,c:dict,amount:int,reason:str,ref:str|None=None,category:str|None=None) -> None:
@@ -218,7 +240,7 @@ def add_feed(s:dict,c:dict,npc:str,text:str,source:str,stars:int|None=None,kind:
     post=dict(id=f"post-{s['seq']}",npc=npc,author=NPC_INDEX[npc]["display_name"] if npc in NPC_INDEX else s["name"],
         text=text,day=c["day"],source=source,stars=stars,kind=kind,comments=[],liked=False,npc_only=npc!="player")
     c["feed"].insert(0,post)
-    c["feed"]=c["feed"][:100]
+    c["feed"]=ar.first(c["feed"],FEED_KEPT,"feed",c)
     return post
 
 def available(c:dict,item:str) -> int:
@@ -332,7 +354,7 @@ def tick_pending(s:dict,c:dict) -> list[str]:
                 if post:post["comments"].append(dict(author=NPC_INDEX[p["npc"]]["display_name"],npc=p["npc"],text=p["text"],day=c["day"]))
             else: remaining.append(p)
         else:remaining.append(p)
-    c["pending"]=remaining[-80:]
+    c["pending"]=ar.last(remaining,80,"pending",c)
     return notes
 
 
@@ -399,10 +421,12 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
     `scoped=True` (the storage layer, on a save this build already validated):
     validate_state checks only what lies outside the careers; the caller must run
     validate_career on every career the command changed before storing."""
-    if not scoped:return _apply_action(state,career,action,payload,internal,owned)
-    token=_SCOPED.set(True)
+    acting=ar.acting(career if career in CAREERS else None)  # whose rows cut lists archive by default
+    token=_SCOPED.set(True) if scoped else None
     try:return _apply_action(state,career,action,payload,internal,owned)
-    finally:_SCOPED.reset(token)
+    finally:
+        if token is not None:_SCOPED.reset(token)
+        ar.done_acting(acting)
 
 def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,internal:bool,owned:bool) -> tuple[dict,dict]:
     s=migrate_state(state,owned=owned)
@@ -431,6 +455,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         need(p.get("confirm")=="BAT DAU LAI","Cần xác nhận trước khi xóa tiến trình.")
         fresh=new_state()
         if s["journey"]["story"]:jr.enable_story(fresh,s["journey"]["seed"]+1)
+        ar.record([s],"reset_all",ar.JOURNEY)  # the whole previous journey stays in the archive
         return fresh,dict(message="Đã tạo hành trình mới.")
     if action.startswith("jr_"):return jr.action(s,career,action,p)
     if action.startswith("iv_"):return iv.action(s,action,p)
@@ -497,7 +522,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
             c["tasks"].append(make_task(career,c["day"],first+i,c["turn"]))
             if mod and hasattr(mod,'on_task'):mod.on_task(s,c,c["tasks"][-1])
         # Keep unfinished work and the most recent completed tasks.
-        done=[t for t in c["tasks"] if t["status"] in ("completed","referred","cancelled")][-40:]
+        done=ar.last([t for t in c["tasks"] if t["status"] in ("completed","referred","cancelled")],40,"tasks",c)
         active=[t for t in c["tasks"] if t["status"] not in ("completed","referred","cancelled")]
         c["tasks"]=done+active
         for t in active:t["deferred"]=False
@@ -867,7 +892,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
                     if e["script"] in ("MB-E07","MB-E05","MB-E11"):follow=opt["follow_up"]
                     c["pending"].append(dict(kind="event_followup",day=c["day"]+1,turn=0,npc=e["npc"],ref=e["id"],text=follow))
                     c["event_history"].append(dict(id=e["id"],script=e["script"],choice=e["chosen"],day=c["day"],source=done,facts=[x["text"] for x in script["evidence"]]))
-                    c["event_history"]=c["event_history"][-120:]
+                    c["event_history"]=ar.last(c["event_history"],120,"event_history",c)
                 result.update(message="Chuyện đã được xử lý. "+("Diễn tập không tác động tiến trình." if e["practice"] else "Sẽ có lời nhắn tiếp theo khi sang ngày mới."),celebrate=True)
             else:result["message"]="Đã làm bước trước. Tiếp tục: "+opt["steps"][e["step"]]
         elif action=="event_dismiss":
@@ -879,11 +904,11 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         text=clean_text(p.get("text"),500)
         reply,suggestions=chat_reply(s,c,career,npc,text)
         messages=c["chats"].setdefault(npc,[])
-        messages.extend([dict(role="user",text=text),dict(role="npc",text=reply,mode="scripted")]);c["chats"][npc]=messages[-40:]
+        messages.extend([dict(role="user",text=text),dict(role="npc",text=reply,mode="scripted")]);c["chats"][npc]=ar.last(messages,40,"chat:"+npc,c)
         result.update(message=reply,reply=reply,suggestions=suggestions,npc=npc)
     elif action=="chat_clear":
         npc=p.get("npc");need(npc in NPC_INDEX,"Nhân vật không hợp lệ.")
-        c["chats"].pop(npc,None);result["message"]="Đã xóa lịch sử chat. Ký ức công việc có nguồn vẫn nằm trong Sổ tay."
+        ar.record(c["chats"].pop(npc,None) or [],"chat:"+npc,c);result["message"]="Đã xóa lịch sử chat. Ký ức công việc có nguồn vẫn nằm trong Sổ tay."
     elif action=="feed_post":
         text=clean_text(p.get("text"),500);post=add_feed(s,c,"player",text,"player-post",kind="post");metric(c,"posts")
         npcs=[n for n in NPCS if n["career_id"]==career]
@@ -921,10 +946,11 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         except (ValueError,IndexError):raise GameError("Ảnh không hợp lệ.")
         need(raw.startswith(b"\x89PNG\r\n\x1a\n") or (raw.startswith(b"RIFF") and raw[8:12]==b"WEBP"),"Ảnh không đúng định dạng.")
         s["seq"]+=1;c["album"].insert(0,dict(id=f"photo-{s['seq']}",image=image,day=c["day"],title=clean_text(p.get("title","Một góc ngày hôm nay"),60)))
-        c["album"]=c["album"][:6]
+        c["album"]=ar.first(c["album"],6,"album",c)
         result["message"]="Đã lưu ảnh trong album nghề này (giữ sáu ảnh gần nhất)."
     elif action=="reset_career":
         need(p.get("confirm")=="BAT DAU LAI","Cần xác nhận trước khi xóa nghề.")
+        ar.record([s["careers"][career]],"reset",career)  # the previous record stays in the archive
         s["careers"][career]=initial_career(career);return s,dict(message="Đã bắt đầu lại riêng nghề này.")
     else:raise GameError("Thao tác không được hỗ trợ.","unknown_action")
     life.update_patience(c,action,p,prior_mistakes)
@@ -1322,7 +1348,7 @@ def _risk(c:dict,n:int)->None:
 
 
 def _care_log(care:dict,day:int,text:str)->None:
-    care["log"]=(care["log"]+[dict(day=day,text=text[:300])])[-30:]
+    care["log"]=ar.last(care["log"]+[dict(day=day,text=text[:300])],30,"care.log")
 
 
 # ---------------------------------------------------------------- legacy stock on the shop clock
@@ -1466,7 +1492,7 @@ def _ph_sync(c:dict,care:dict)->None:
         for b in rows:
             if extra<=0:break
             used=min(extra,b["qty"]);b["qty"]-=used;extra-=used
-    care["batches"]=[b for b in care["batches"] if b["qty"]>0][-80:]
+    care["batches"]=ar.last([b for b in care["batches"] if b["qty"]>0],80,"care.batches",c)
 
 
 def _ph_init(c:dict)->dict:
@@ -1550,7 +1576,7 @@ def _ph_action(s:dict,c:dict,action:str,p:dict)->dict:
         on_time=r["called"] and day<=r["due"]
         r["trust"]=min(5,r["trust"]+1) if on_time else r["trust"]
         r.update(visits=r["visits"]+1,last=day,due=day+spec["every"],called=False)
-        r["hist"]=(r["hist"]+[[day,"ok" if on_time else "late"]])[-6:]
+        r["hist"]=ar.last(r["hist"]+[[day,"ok" if on_time else "late"]],6,"care.regular."+str(p["who"]),c)
         pay=PH_PAY+(5 if on_time and r["trust"]>=3 else 0)
         money(s,c,pay,"Phiếu lặp lại · "+spec["name"],"refill-"+spec["id"],"revenue")
         metric(c,"refills");c["xp"]+=6
@@ -1609,7 +1635,7 @@ def _ph_start(s:dict,c:dict)->list[str]:
             r["due"]+=PH_REG[rid]["every"];r["called"]=False
     since=day-care["start"]-3
     if since>=0 and since%RECALL_EVERY==0 and day not in care["recalls"]:
-        care["recalls"]=(care["recalls"]+[day])[-10:]
+        care["recalls"]=ar.last(care["recalls"]+[day],10,"care.recalls",c)
         soon={PH_REG[k]["product"] for k,r in care["regulars"].items() if r["due"]<=day+3}
         pool=[b for b in care["batches"] if b["qty"]>0 and not b["recalled"] and b["exp"]>=day]
         if pool:
@@ -1617,7 +1643,7 @@ def _ph_start(s:dict,c:dict)->list[str]:
             weighted=[b for b in pool for _ in range(3 if LOT_INDEX[b["lot"]]["product"] in soon else 1)]
             b=rnd.choice(weighted);b["recalled"]=RECALL_WHY[rnd.randrange(len(RECALL_WHY))]
             text=f'Thông báo thu hồi: lô {b["id"]} ({b["lot"]}, HSD ngày {b["exp"]}). {b["recalled"]}'
-            care["notices"]=(care["notices"]+[dict(day=day,text=text)])[-10:]
+            care["notices"]=ar.last(care["notices"]+[dict(day=day,text=text)],10,"care.notices",c)
             notes.append("📢 "+text+" Rút khỏi kệ để được hoàn tiền.")
     due=[PH_REG[k]["name"] for k,r in care["regulars"].items() if r["due"]-1<=day<=r["due"] and not r["called"]]
     if due:notes.append("📞 Tới lịch nhắc lấy phiếu lặp lại: "+", ".join(due)+".")
@@ -1629,7 +1655,7 @@ def _ph_close(s:dict,c:dict)->list[str]:
     for rid,r in care["regulars"].items():
         spec=PH_REG[rid]
         if day>=r["due"]+1:
-            r["trust"]=max(0,r["trust"]-1);r["missed"]+=1;r["hist"]=(r["hist"]+[[day,"missed"]])[-6:]
+            r["trust"]=max(0,r["trust"]-1);r["missed"]+=1;r["hist"]=ar.last(r["hist"]+[[day,"missed"]],6,"care.regular."+rid,c)
             r.update(due=r["due"]+spec["every"],called=False)
             lines.append(f'{spec["name"]} không lấy được phiếu lặp lại đợt này (mua nơi khác). Hẹn đợt sau ngày {r["due"]}.')
     f=_ph_fridge_today(care,day);pts=0;notes=[]
@@ -1648,7 +1674,7 @@ def _ph_close(s:dict,c:dict)->list[str]:
             risk+=1
     if not bad:pts+=1
     else:notes.append("vượt nhiệt chưa xử lý đúng")
-    care["flog"]=(care["flog"]+[dict(day=day,pts=pts,note=", ".join(notes))])[-7:]
+    care["flog"]=ar.last(care["flog"]+[dict(day=day,pts=pts,note=", ".join(notes))],7,"care.fridge",c)
     lines.append(f"Sổ nhiệt độ tủ mát: {pts}/3"+(" · "+", ".join(notes) if notes else " · đủ hai lượt đo."))
     flagged=[b for b in care["batches"] if _ph_flag(b,day)]
     if flagged:
@@ -1800,7 +1826,7 @@ def _ac_arrivals(c:dict,care:dict)->list[str]:
         m=(day-first)//AC_MONTH;arrive=first+AC_MONTH*m
         if rec["months"] and rec["months"][-1]["m"]>=m:continue
         if _ac_book(rec):continue
-        rec["months"]=(rec["months"]+[dict(m=m,arrive=arrive,due=arrive+3,opened=False,checks=[],chase=0,promise=None,source=False,late=False,closed=None)])[-4:]
+        rec["months"]=ar.last(rec["months"]+[dict(m=m,arrive=arrive,due=arrive+3,opened=False,checks=[],chase=0,promise=None,source=False,late=False,closed=None)],4,"care.client."+spec["id"],c)
         notes.append(f'📚 {spec["owner"]} mang sổ tháng {m+1} của {spec["name"]} tới · hạn khóa sổ ngày {arrive+3}.')
     for spec in AC_CLIENTS:
         b=_ac_book(care["clients"][spec["id"]])
@@ -2067,9 +2093,9 @@ def _cs_call(s:dict,c:dict,p:dict)->dict:
     if t["upd"] and not t["upd"]["done"] and intent in ("update","sorry") and _now(c,"customer_care")<=t["upd"]["by"]:
         t["upd"]["done"]=True;kept="Đã gọi cập nhật đúng hẹn trước 12:00."
     reply=_cs_customer_line(c,t,intent,tone)
-    t["call"]=(t["call"]+[dict(who="player",text=said),dict(who="npc",text=reply,mode="scripted",tone=tone)])[-20:]
+    t["call"]=ar.last(t["call"]+[dict(who="player",text=said),dict(who="npc",text=reply,mode="scripted",tone=tone)],20,"call:"+t["id"],c)
     t["timeline"].append(f'Gọi khách lúc {inv.hm(_clock(c,"customer_care")["minute"])}: {CS_PICKS.get(intent,"trao đổi")}.' if intent in CS_PICKS else f'Gọi khách lúc {inv.hm(_clock(c,"customer_care")["minute"])}.')
-    t["timeline"]=t["timeline"][-30:]
+    t["timeline"]=ar.last(t["timeline"],30,"timeline:"+t["id"],c)
     moved="dịu hơn" if CS_TONES.index(tone)<upset_before else "căng hơn" if CS_TONES.index(tone)>upset_before else None
     msg=f'{NPC_INDEX[t["npc"]]["display_name"]}: “{reply}”'
     return dict(message=msg,reply=reply,npc=t["npc"],intent=intent,tone=tone,tone_label=CS_TONE_LABEL[tone],tone_moved=moved,kept=kept)
@@ -2147,14 +2173,14 @@ def _cs_after_task(s:dict,c:dict,t:dict,status:str)->None:
     else:
         note={"perfect":"xử lý chuẩn","good":"đã xử lý","wrong":"xử lý chưa đúng"}.get(t.get("grade"),"đã xử lý")
     row["n"]+=1
-    row["last"]=(row["last"]+[dict(day=c["day"],title=t["title"][:120],note=note[:80],stars=post["stars"] if post and post.get("stars") else None)])[-4:]
+    row["last"]=ar.last(row["last"]+[dict(day=c["day"],title=t["title"][:120],note=note[:80],stars=post["stars"] if post and post.get("stars") else None)],4,"care.person."+t["npc"],c)
 
 
 def _cs_close(s:dict,c:dict)->list[str]:
     care=cs_care(c);day=c["day"];lines=[]
     stars=[f["stars"] for f in c["feed"] if f.get("kind")=="review" and f.get("day")==day and f.get("stars") and f.get("npc") in NPC_INDEX and NPC_INDEX[f["npc"]]["career_id"]=="customer_care"]
     if stars:
-        care["trend"]=(care["trend"]+[dict(day=day,avg10=round(sum(stars)*10/len(stars)),n=len(stars))])[-7:]
+        care["trend"]=ar.last(care["trend"]+[dict(day=day,avg10=round(sum(stars)*10/len(stars)),n=len(stars))],7,"care.trend",c)
         prev=care["trend"][-2]["avg10"] if len(care["trend"])>=2 else None
         now10=care["trend"][-1]["avg10"]
         arrow="" if prev is None else " ↑" if now10>prev else " ↓" if now10<prev else " ="

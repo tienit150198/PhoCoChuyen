@@ -30,6 +30,7 @@ import copy
 from . import kit
 from . import food_service as FS
 from .. import consequences as cq
+from .. import archive as ar
 
 ID = 'restaurant'
 BOIL = dict(raw=7, perfect=13, soft=19)          # seconds: <7 raw, 7–13 perfect, 13–19 soft, >19 mushy
@@ -1769,7 +1770,7 @@ def on_close(s: dict, c: dict) -> dict:
     out = FS.close(s, c, ID, pl, MODS)
     # The hygiene book gets today's line, then the pots cool down for the night.
     row = _hygiene_today(c, d)
-    d['hlog'] = ([r for r in d['hlog'] if r['day'] != c['day']] + [row])[-HLOG_DAYS:]
+    d['hlog'] = ar.last([r for r in d['hlog'] if r['day'] != c['day']] + [row], HLOG_DAYS, 'kitchen.health_log', c)
     score = hygiene(d)
     outlook = _outlook(c, d, closing=True)
     pots = _pot_rows(c, d, tomorrow=True)

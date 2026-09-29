@@ -17,6 +17,7 @@ import copy
 
 from . import consequences as cq
 from . import desk_content as dc
+from . import archive as ar
 
 CAREERS = dc.CAREERS
 ACTIONS = ('desk_flag', 'desk_check', 'desk_count', 'desk_reply', 'desk_decide')
@@ -322,9 +323,9 @@ def _decide(s, c, t, p):
     flag = STORY_FLAGS.get((career, t.get('chapter') or 0), {}).get(v) if t['variant'].endswith('_story') else None
     # stats + story memory
     d['stats'][grade] += 1
-    d['history'] = (d['history'] + [dict(day=c['day'], task=t['id'], variant=t['variant'], grade=grade, verdict=v)])[-60:]
+    d['history'] = ar.last(d['history'] + [dict(day=c['day'], task=t['id'], variant=t['variant'], grade=grade, verdict=v)], 60, 'desk.history', c)
     if flag and flag not in d['flags']:
-        d['flags'] = (d['flags'] + [flag])[-30:]
+        d['flags'] = ar.last(d['flags'] + [flag], 30, 'desk.flags', c)
     if viral:
         d['viral'] = min(9, d['viral'] + viral)
         lines.append(f'Bài chê lan thêm (mức ồn: {d["viral"]}).')
@@ -387,7 +388,7 @@ def _decide(s, c, t, p):
                 d['today']['fines'] += fine
             citation['fine'] = fine
             lines.append(f'📄 Phiếu phạt: {citation["rule"]} · −{fine} xu.')
-        d['citations'] = (d['citations'] + [dict(day=c['day'], task=t['id'], rule=citation['rule'], fine=citation['fine'])])[-40:]
+        d['citations'] = ar.last(d['citations'] + [dict(day=c['day'], task=t['id'], rule=citation['rule'], fine=citation['fine'])], 40, 'desk.citations', c)
         result['citation'] = citation
         result['fine'] = citation['fine']
     msg = {'perfect': 'Chuẩn từng dòng', 'good': 'Đã xử lý', 'wrong': 'Hồ sơ có sai sót'}[grade]
@@ -447,7 +448,7 @@ def tick(s: dict, c: dict, career: str) -> list[str]:
                 e.log(s, c, 'delivery', notes[-1] + ' · ' + _revealed(t, cid), t['npc'], t['id'])
         if (t['career'] == 'customer_care' and t['reply'] is None and not t['breached'] and t['due_turn'] is not None
                 and 0 <= t['due_turn'] - c['turn'] <= 3 and t['id'] not in d['warned']):
-            d['warned'] = (d['warned'] + [t['id']])[-20:]
+            d['warned'] = ar.last(d['warned'] + [t['id']], 20, 'desk.warned', c)
             notes.append(f'⏳ {t["title"]}: còn {t["due_turn"] - c["turn"]} nhịp để trả lời câu đầu.')
         if t['career'] == 'customer_care' and t['reply'] is None and not t['breached'] and t['due_turn'] is not None and c['turn'] > t['due_turn']:
             t['breached'] = True
@@ -508,7 +509,7 @@ def on_close(s: dict, c: dict, career: str) -> dict | None:
                 e.money(s, c, -fine, f'{who} lập biên bản quy trình', f'desk-inspect-{day}', 'fine')
             note = f'{who} lập biên bản: {risk} điểm rủi ro · trừ {fine} xu.'
             outcome = 'fine'
-        d['inspections'] = (d['inspections'] + [dict(day=day, risk=risk, outcome=outcome)])[-20:]
+        d['inspections'] = ar.last(d['inspections'] + [dict(day=day, risk=risk, outcome=outcome)], 20, 'desk.inspections', c)
         d['risk'] = 0
     if not lines and not note:
         return None

@@ -38,6 +38,7 @@ import copy
 import functools
 from . import kit
 from .. import consequences as cq
+from .. import archive as ar
 
 ID = 'grocery'
 DENOMS = (1, 2, 5, 10, 20, 50, 100, 200, 500)
@@ -2204,7 +2205,7 @@ def _tag(s: dict, c: dict, p: dict) -> dict:
     kit.need(value != _price(c, item), 'Tem giá đang đúng số này rồi.')
     x = c['life']
     x['prices'][item] = value
-    x['price_history'] = (x['price_history'] + [dict(day=c['day'], item=item, price=value)])[-100:]
+    x['price_history'] = ar.last(x['price_history'] + [dict(day=c['day'], item=item, price=value)], 100, 'life.prices', c)
     for t in c['tasks']:
         if t.get('career') == ID and t['status'] not in ('completed', 'referred', 'cancelled') and t['known']:
             if t['kind'] == 'checkout' and t['stage'] == 'basket' or t['kind'] == 'rush':
@@ -2441,7 +2442,7 @@ def _hook(s: dict, c: dict, key: str, v, flags: dict):
         for item, theirs in rival(c['day']).items():
             if _price(c, item) > theirs:
                 x['prices'][item] = theirs
-                x['price_history'] = (x['price_history'] + [dict(day=c['day'], item=item, price=theirs)])[-100:]
+                x['price_history'] = ar.last(x['price_history'] + [dict(day=c['day'], item=item, price=theirs)], 100, 'life.prices', c)
                 changed.append(f'{ITEM_INDEX[item]["name"]} {theirs} xu')
         for t in c['tasks']:
             if t.get('career') == ID and t['status'] not in ('completed', 'referred', 'cancelled') and t['known'] and t['kind'] in ('checkout', 'rush'):

@@ -23,6 +23,7 @@ import functools
 import itertools
 import math
 import random
+from . import archive as ar
 
 STAGES = ('plan', 'gather', 'stop', 'ready')
 MIN_STOPS, MAX_STOPS = 3, 5
@@ -972,7 +973,7 @@ def _group_for(c: dict, g: dict | None) -> dict | None:
 
 
 def _diary(G: dict, day: int, text: str) -> None:
-    G['diary'] = (G['diary'] + [f'Ngày {day}: {text}'])[-8:]
+    G['diary'] = ar.last(G['diary'] + [f'Ngày {day}: {text}'], 8, 'tour.diary', None)
 
 
 def hard(trip: dict, route) -> bool:
@@ -1078,7 +1079,7 @@ def _after_trip(s: dict, c: dict, t: dict, trip: dict) -> str:
     kit['flag'] = max(0, kit['flag'] - (18 if trip['weather'] in ('rain', 'wind') else 10))
     post = next((f for f in c['feed'] if f.get('source') == t['id'] and f.get('kind') == 'review' and f.get('stars')), None)
     if post:
-        x['reviews'] = (x['reviews'] + [post['stars']])[-12:]
+        x['reviews'] = ar.last(x['reviews'] + [post['stars']], 12, 'tour.reviews', c)
     tail = []
     if trip.get('group') and trip.get('care') is not None:
         tail += _leg_done(s, c, t, trip)
@@ -1153,7 +1154,7 @@ def _group_review(s: dict, c: dict, G: dict) -> str:
     post = e.add_feed(s, c, CARRIER['linh'], text, f'tour-group-{G["start"]}', stars, 'review')
     post['author'] = 'Linh · trưởng đoàn'
     x = state(c)
-    x['reviews'] = (x['reviews'] + [stars])[-12:]
+    x['reviews'] = ar.last(x['reviews'] + [stars], 12, 'tour.reviews', c)
     _diary(G, c['day'], f'đoàn chia tay, đánh giá {stars}★ trên trang đặt tour.')
     return f'👥 Đoàn {G["days"]} ngày chia tay: {stars}★ trên trang đặt tour.'
 

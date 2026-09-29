@@ -25,6 +25,7 @@ import copy
 import datetime
 import hashlib
 import random
+from . import archive as ar
 
 CAREER = 'mother_baby'
 GEN_FROM_DAY = 2
@@ -810,7 +811,7 @@ def on_start(s: dict, c: dict) -> None:
         elif f['kind'] == 'thanks':
             post = e.add_feed(s, c, f['npc'], 'Tối qua bé ngủ ngon hơn hẳn. Cảm ơn tiệm đã hỏi han kỹ mà không bán thừa món nào 🥹', f['ref'], 5, 'review')
             post['author'] = f['name']
-    b['followups'] = keep[-12:]
+    b['followups'] = ar.last(keep, 12, 'gift.followups', c)
 
 
 def after_task(s: dict, c: dict, t: dict) -> None:
@@ -857,7 +858,7 @@ def after_task(s: dict, c: dict, t: dict) -> None:
         n = min(bears, b['fake'])
         b['fake'] -= n
         b['followups'].append(dict(kind='fake', day=c['day'] + 1, ref=t['id'], npc=t['npc'], name=g['name'], amount=n * names['bear']['price']))
-    b['followups'] = b['followups'][-12:]
+    b['followups'] = ar.last(b['followups'], 12, 'gift.followups', c)
 
 
 def on_close(s: dict, c: dict) -> dict:
@@ -867,7 +868,7 @@ def on_close(s: dict, c: dict) -> dict:
         b['expired_left'] = sum(1 for x in ev['facts']['cans'] if x['exp'] < c['day'])
     b['event'] = None
     summary = dict(day=c['day'], modifier=b['mod'], **b['today'])
-    b['history'] = (b['history'] + [summary])[-14:]
+    b['history'] = ar.last(b['history'] + [summary], 14, 'gift.history', c)
     return summary
 
 
@@ -1241,7 +1242,7 @@ def _resolve(s: dict, c: dict, b: dict, ev: dict, choice: str) -> None:
         else:
             result = 'Các cô vui vẻ hẹn dịp khác.'
     ev.update(stage='done', choice=choice, result=result, effects=eff, good=good)
-    b['ev_history'] = (b['ev_history'] + [dict(kind=k, choice=choice, day=c['day'])])[-30:]
+    b['ev_history'] = ar.last(b['ev_history'] + [dict(kind=k, choice=choice, day=c['day'])], 30, 'gift.events', c)
     e.log(s, c, 'shop_event', EVENTS[k]['title'] + ': ' + result, ref=ev['id'])
 
 

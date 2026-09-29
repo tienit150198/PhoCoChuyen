@@ -17,6 +17,7 @@ texts and what a choice does (`apply(s, c, plan, choice) -> (text, good)`).
 """
 from __future__ import annotations
 from . import kit
+from .. import archive as ar
 
 DONE = ('completed', 'cancelled', 'referred')
 PERSONAS = dict(
@@ -166,7 +167,7 @@ def resolve(s: dict, c: dict, p: dict, index: dict, payload: dict) -> dict:
     text, good = spec['apply'](s, c, p, cid)
     e.update(status='done', choice=cid, good=good, note=text[:300])
     d = kit.data(c)
-    d['ev_hist'] = (d.get('ev_hist', []) + [dict(day=c['day'], id=e['id'], choice=cid, good=good)])[-30:]
+    d['ev_hist'] = ar.last(d.get('ev_hist', []) + [dict(day=c['day'], id=e['id'], choice=cid, good=good)], 30, 'kitchen.events', c)
     kit.metric(c, 'events_handled')
     if good:
         kit.metric(c, 'events_good')
@@ -295,7 +296,7 @@ def close(s: dict, c: dict, cid: str, p: dict, mods: list[dict], extra: float = 
     d = kit.data(c)
     lines = []
     if g:
-        d['grades'] = (d.get('grades', []) + [dict(day=c['day'], letter=g['letter'], score=g['score'])])[-14:]
+        d['grades'] = ar.last(d.get('grades', []) + [dict(day=c['day'], letter=g['letter'], score=g['score'])], 14, 'kitchen.grades', c)
         bonus = GRADE_BONUS.get(g['letter'], 0) if p['served'] >= 2 else 0
         if bonus:
             kit.money(s, c, bonus, f'Thưởng hạng {g["letter"]} cuối ngày', f'grade-{c["day"]}', category='skill_reward')

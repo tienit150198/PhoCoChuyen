@@ -55,6 +55,7 @@ PEOPLE.update({
 })
 
 from .careers import PLUGINS as _PLUGINS
+from . import archive as ar
 CAREER_ROLE_NAMES = {}
 
 
@@ -132,10 +133,28 @@ def record_money(c:dict, amount:int, reason:str, ref:str|None=None, category:str
     f=c['ops']['finance'];cat=classify_money(amount,reason,category)
     f['ledger'].append(dict(id=_id(c,'entry'),day=c['day'],turn=c['turn'],amount=amount,category=cat,reason=reason,ref=ref))
     if cat=='revenue' and amount>0:f['period_revenue']+=amount
-    # A compacted opening balance preserves the exact wallet identity.
-    if len(f['ledger'])>1500:
-        dropped=f['ledger'][:-1200];f['opening_balance']+=sum(x['amount'] for x in dropped)
-        f['ledger']=f['ledger'][-1200:]
+    trim_ledger(c)
+
+
+LEDGER_HIGH=400   # past this many rows the oldest move to the archive (game/archive.py),
+LEDGER_KEEP=300   # down to this many, but never rows of the last LEDGER_DAYS days
+LEDGER_DAYS=14    # (the lãi/lỗ chart reads 7 days), and never more than LEDGER_MAX rows.
+LEDGER_MAX=1200
+
+def trim_ledger(c:dict) -> None:
+    """Bounded cash book in the save. Rows moved to the archive are summed into the
+    opening balance, so opening_balance + the rows in the save == the wallet, and
+    the first opening balance + every archived row + the rows in the save == the
+    wallet too. Also run once on older saves by engine.migrate_state."""
+    f=c['ops']['finance'];rows=f['ledger']
+    if len(rows)<=LEDGER_HIGH:return
+    cut=len(rows)-LEDGER_KEEP;recent=c['day']-LEDGER_DAYS
+    while cut>0 and rows[cut-1]['day']>=recent:cut-=1
+    cut=max(cut,len(rows)-LEDGER_MAX)
+    if cut<=0:return
+    ar.record(rows[:cut],'ledger',c)
+    f['opening_balance']+=sum(x['amount'] for x in rows[:cut])
+    f['ledger']=rows[cut:]
 
 
 def bill(c:dict, bid:str, kind:str, label:str, amount:int, due:int, source:str) -> dict|None:
@@ -148,7 +167,7 @@ def bill(c:dict, bid:str, kind:str, label:str, amount:int, due:int, source:str) 
     f['bills'].append(row)
     # Keep unpaid invoices regardless of age. Trim only completed records.
     if len(f['bills'])>900:
-        paid=[b for b in f['bills'] if b['status']=='paid'][-300:]
+        paid=ar.last([b for b in f['bills'] if b['status']=='paid'], 300, 'bills', c)
         f['bills']=paid+[b for b in f['bills'] if b['status']!='paid']
     return row
 
@@ -195,7 +214,7 @@ def on_close(s:dict,c:dict,career:str) -> dict:
         bill(c,'rent-'+pid,'rent',f"Mặt bằng · kỳ {f['period_start']}–{day}",f['period_rent'],day+2,pid)
         bill(c,'tax-'+pid,'tax',f'Thuế {RULES["tax_percent"]}% · kỳ kết ngày {day}',tax,day+2,pid)
         period=dict(id=pid,start=f['period_start'],end=day,revenue=f['period_revenue'],tax=tax,rent=f['period_rent'],rate=RULES['tax_percent'])
-        f['history'].insert(0,period);f['history']=f['history'][:60]
+        f['history'].insert(0,period);f['history']=ar.first(f['history'], 60, 'finance.periods', c)
         f.update(period_start=day+1,period_days=0,period_revenue=0,period_rent=0,period_tax_adjustments=0)
         o['security']['period_rewards']=0;o['security']['period_claims']=0
         eng.log(s,c,'period',f'Kết kỳ: doanh thu {period["revenue"]} xu, thuế {tax} xu, thuê {period["rent"]} xu.',ref=pid)
@@ -252,7 +271,7 @@ def spawn_case(s:dict,c:dict,career:str,kind:str,practice:bool=False) -> dict:
         loss=loss,recovered_value=0,reward=0,protection=protection,insured_at_event=sec['insurance'],
         _truth=truth,_roll=_random(c),timeline=[opening],outcome=None)
     sec['cases'].append(row);sec['active']=cid
-    if len(sec['cases'])>100:sec['cases']=[x for x in sec['cases'] if x['status']!='closed']+[x for x in sec['cases'] if x['status']=='closed'][-70:]
+    if len(sec['cases'])>100:sec['cases']=[x for x in sec['cases'] if x['status']!='closed']+ar.last([x for x in sec['cases'] if x['status']=='closed'],70,'security.cases',c)
     if not practice:sec['last_event_day']=c['day']
     eng.log(s,c,'security_practice' if practice else 'security',title+(' · diễn tập, không mất/nhận xu' if practice else ''),ref=cid)
     return row
@@ -557,7 +576,7 @@ def action(s:dict,c:dict,career:str,name:str,p:dict) -> dict:
                     if i['choice']=='coach':e['precision']=min(99,e['precision']+4)
                     if i['choice']=='reassign':e['role']='patrol';e['progress']=0
                     if i['choice']=='warning':e['warnings']=min(3,e['warnings']+1);e['on_shift']=False
-                o['incident_history'].insert(0,copy.deepcopy(i));o['incident_history']=o['incident_history'][:60];eng.metric(c,'staff_incidents_resolved')
+                o['incident_history'].insert(0,copy.deepcopy(i));o['incident_history']=ar.first(o['incident_history'], 60, 'staff.incidents', c);eng.metric(c,'staff_incidents_resolved')
             result['message']='Đã kiểm dụng cụ và khép sự cố. Không khấu trừ lương nhân viên.'
         else:
             need(i['practice'] or i['status']=='resolved','Sự cố thật cần kiểm kết quả trước khi cất.');o['incident']=None;result['message']='Đã cất tình huống nhân viên.'

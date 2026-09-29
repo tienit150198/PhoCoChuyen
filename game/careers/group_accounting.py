@@ -24,6 +24,7 @@ from . import kit, office
 from .corp_accounting import (care_can_overtime, care_close, care_ensure, care_handle, care_public, care_rel, care_slow, care_start,
                               care_validate, care_validate_task)
 from .. import procedures
+from .. import archive as ar
 
 ID = 'group_accounting'
 PREFIX = 'ga_'
@@ -1205,7 +1206,7 @@ def _post_lines(c: dict, t: dict, title: str, lines) -> None:
         led[dr] = led.get(dr, 0) + a
         led[cr] = led.get(cr, 0) - a
     d['elim'] = {k: v for k, v in led.items() if v}
-    d['entries'] = (d['entries'] + [dict(day=c['day'], task=t['id'], title=title, lines=[list(x) for x in lines])])[-12:]
+    d['entries'] = ar.last(d['entries'] + [dict(day=c['day'], task=t['id'], title=title, lines=[list(x) for x in lines])], 12, 'office.entries', c)
     d['posted'] += 1
     d['day_posted'] += 1
 
@@ -1223,7 +1224,7 @@ def _finish(s: dict, c: dict, d: dict, o: dict, t: dict, base: int, lead: str = 
         d['milestones'].append(ms)
     d['done'] += 1
     d['day_done'] += 1
-    d['day_work'] = (d['day_work'] + [dict(task=t['id'], board=t['variant'] == 'match', mistakes=t['mistakes'], late=late)])[-12:]
+    d['day_work'] = ar.last(d['day_work'] + [dict(task=t['id'], board=t['variant'] == 'match', mistakes=t['mistakes'], late=late)], 12, 'office.day_work', c)
     reward = max(0, base + adj)
     kit.metric(c, 'ga_dossiers')
     if t['mistakes'] == 0:
@@ -1793,7 +1794,7 @@ def _ask_queries(c: dict, cr: dict) -> None:
             continue
         cr['queries'].append(dict(id=qid, day=day, due=day + QUERY_DAYS, sub=sub, topic=r.randrange(len(QUERY_TOPICS)), s='open',
                                   ready=pk['st'][sub]['s'] == 'ok'))
-    opened = [q for q in cr['queries'] if q['s'] == 'open'][-QUERY_KEEP:]
+    opened = ar.last([q for q in cr['queries'] if q['s'] == 'open'], QUERY_KEEP, 'office.queries', c)
     closed = [q for q in cr['queries'] if q['s'] != 'open']
     room = QUERY_KEEP - len(opened)
     cr['queries'] = sorted((closed[-room:] if room > 0 else []) + opened, key=lambda q: (q['day'], q['id']))

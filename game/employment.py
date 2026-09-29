@@ -26,6 +26,7 @@ import re as _re
 import unicodedata as _ud
 
 from . import employment_content as EC
+from . import archive as ar
 
 STRENGTHS = [
     dict(id='careful', name='Cẩn thận, tỉ mỉ', emoji='🔍'),
@@ -279,7 +280,7 @@ def _direct_offer(s: dict, c: dict, career: str, post: dict, line: str) -> None:
     job['application'] = dict(posting=post['id'], stage=stages(post)[-1], strengths=[], claims=[], letter={}, answers={},
                               score=None, honest=None, notes=[], feedback=[line], direct=True)
     job['offer'] = dict(salary=salary, negotiated=False, score=None, day=c['day'], direct=True)
-    job['history'] = (job['history'] + [dict(day=c['day'], event='direct_offer', posting=post['id'])])[-40:]
+    job['history'] = ar.last(job['history'] + [dict(day=c['day'], event='direct_offer', posting=post['id'])], 40, 'job.history', c)
     e.metric(c, 'job_offers')
     e.log(s, c, 'job', line)
 
@@ -350,14 +351,14 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
                    probation_left=post['probation_days'] + 1, hired_day=c['day'], application=None, offer=None, extended=False, reviews_during_probation=[])
         if _needs_exam(job, career, post):
             job['certs'] = list(job.get('certs') or []) + [dict(id=exam(career)['id'], day=c['day'], score=exam(career)['pass_mark'])]
-        job['history'] = (job['history'] + [dict(day=c['day'], event='quick', posting=post['id'])])[-40:]
+        job['history'] = ar.last(job['history'] + [dict(day=c['day'], event='quick', posting=post['id'])], 40, 'job.history', c)
         e.log(s, c, 'job', f'Nhận việc thử tại {post["org"]}: lương khởi điểm {post["salary"][0]} xu/ngày, thử việc {post["probation_days"] + 1} ngày.')
         return dict(message=f'Bạn bắt đầu thử việc tại {post["org"]}. Làm tốt sẽ được ký chính thức!', celebrate=True)
     if name == 'job_quit':
         need(job['status'] == 'hired', 'Bạn chưa có việc để nghỉ.')
         need(not c['open'], 'Kết thúc ca rồi mới xin nghỉ nhé.')
         need(p.get('confirm') is True, 'Xác nhận nghỉ việc.')
-        job['history'] = (job['history'] + [dict(day=c['day'], event='quit', posting=job['employer'])])[-40:]
+        job['history'] = ar.last(job['history'] + [dict(day=c['day'], event='quit', posting=job['employer'])], 40, 'job.history', c)
         keep = job['history']
         c['job'] = initial()
         c['job']['history'] = keep
@@ -411,7 +412,7 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         if ask:
             ask['status'] = 'skipped'   # moving on without answering the follow-up
         app['answers'][qid] = opt['id']
-        app['notes'] = (app['notes'] + [opt['note']])[-40:]
+        app['notes'] = ar.last(app['notes'] + [opt['note']], 40, 'job.notes', c)
         remaining = any(x not in app['answers'] for x in steps)
         idx = _after_answer(s, c, career, post, app, stage, qid, opt, remaining)
         if remaining:
@@ -441,7 +442,7 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         o = job['offer']
         job.update(status='hired', employer=post['id'], title=post['title'], salary=o['salary'], probation=True, probation_left=post['probation_days'],
                    hired_day=c['day'], application=None, offer=None, extended=False, reviews_during_probation=[])
-        job['history'] = (job['history'] + [dict(day=c['day'], event='hired', posting=post['id'])])[-40:]
+        job['history'] = ar.last(job['history'] + [dict(day=c['day'], event='hired', posting=post['id'])], 40, 'job.history', c)
         e.metric(c, 'jobs_hired')
         e.log(s, c, 'job', f'Ký hợp đồng thử việc tại {post["org"]}: {o["salary"]} xu/ngày.')
         return dict(message=f'Chào mừng bạn tới {post["org"]}! Thử việc {post["probation_days"]} ngày làm việc.', celebrate=True)
@@ -486,10 +487,10 @@ def _grade_exam(s: dict, c: dict, career: str, post: dict, app: dict) -> dict:
     right = sum(1 for q in sheet['qs'] if sheet['answers'].get(q) == key[q])
     passed = right >= ex['pass_mark']
     sheet.update(score=right, passed=passed)
-    job['history'] = (job['history'] + [dict(day=c['day'], event='exam_passed' if passed else 'exam_failed', posting=post['id'], score=right)])[-40:]
+    job['history'] = ar.last(job['history'] + [dict(day=c['day'], event='exam_passed' if passed else 'exam_failed', posting=post['id'], score=right)], 40, 'job.history', c)
     head = f'Bài thi “{ex["name"]}”: đúng {right}/{len(sheet["qs"])} câu (cần {ex["pass_mark"]}).'
     if passed:
-        job['certs'] = (list(job.get('certs') or []) + [dict(id=ex['id'], day=c['day'], score=right)])[-10:]
+        job['certs'] = ar.last(list(job.get('certs') or []) + [dict(id=ex['id'], day=c['day'], score=right)], 10, 'job.certs', c)
         e.metric(c, 'certs')
         e.log(s, c, 'job', f'Đạt {ex["name"]} ({right}/{len(sheet["qs"])}).')
         out = _advance(s, c, career, post, app, head + ' Đạt! Chứng chỉ đã được cấp.')
@@ -553,7 +554,7 @@ def _evaluate(s: dict, c: dict, career: str, post: dict, app: dict, last_note: s
     else:
         job['status'] = 'rejected'
         job['cooldown_day'] = c['day'] + 1
-        job['history'] = (job['history'] + [dict(day=c['day'], event='rejected', posting=post['id'], score=score)])[-40:]
+        job['history'] = ar.last(job['history'] + [dict(day=c['day'], event='rejected', posting=post['id'], score=score)], 40, 'job.history', c)
         app['stage'] = 'closed'
         if trial:
             msg = f'Kết quả làm thử: {score}/100. {_cap(_boss(career, post))} cảm ơn bạn, hẹn tập thêm rồi thử lại từ ngày sau.'
@@ -580,7 +581,7 @@ def on_close(s: dict, c: dict, career: str) -> dict | None:
     note = dict(salary=pay, probation=job['probation'])
     if job['probation']:
         today = [f['stars'] for f in c['feed'] if f.get('stars') and f['day'] == c['day'] and f['kind'] == 'review']
-        job['reviews_during_probation'] = (job['reviews_during_probation'] + today)[-40:]
+        job['reviews_during_probation'] = ar.last(job['reviews_during_probation'] + today, 40, 'job.probation_reviews', c)
         job['probation_left'] = max(0, job['probation_left'] - 1)
         if job['probation_left'] == 0:
             rows = job['reviews_during_probation']

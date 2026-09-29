@@ -29,6 +29,7 @@ from __future__ import annotations
 import copy
 from . import kit
 from .. import consequences as cq
+from .. import archive as ar
 
 ID = 'salon'
 
@@ -1624,6 +1625,7 @@ def _trim_appts(d: dict) -> None:
     rows = d['appts']
     while len(rows) > APPT_MAX:
         old = next((a for a in rows if a['state'] != 'open'), rows[0])
+        ar.record([old], 'salon.appts')
         rows.remove(old)
 
 

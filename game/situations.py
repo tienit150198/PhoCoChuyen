@@ -8,6 +8,7 @@ never change money, reviews or relationships.
 """
 from __future__ import annotations
 import copy
+from . import archive as ar
 
 MAX_COST = 80
 MAX_REWARD = 60
@@ -120,7 +121,7 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
                     post['situation'] = x['id']
                 else:
                     e.add_feed(s, c, npc, 'Chuyện ở quán: ' + x['title'] + '. ' + opt['outcome'], row['id'], kind='story')
-            ext['sit_history'] = (ext['sit_history'] + [dict(id=row['id'], script=x['id'], choice=opt['id'], day=c['day'], quality=opt.get('quality', 'ok'))])[-120:]
+            ext['sit_history'] = ar.last(ext['sit_history'] + [dict(id=row['id'], script=x['id'], choice=opt['id'], day=c['day'], quality=opt.get('quality', 'ok'))], 120, 'situations', c)
         row['stage'] = 'resolved'
         return dict(message=opt['outcome'], celebrate=opt.get('quality') == 'good')
     if name == 'sit_dismiss':

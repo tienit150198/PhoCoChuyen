@@ -20,6 +20,7 @@ from .corp_accounting import (care_can_overtime, care_close, care_ensure, care_h
                               care_validate, care_validate_task)
 from .. import consequences as cq
 from .. import procedures
+from .. import archive as ar
 
 ID = 'tax_payroll'
 
@@ -904,7 +905,7 @@ def _pay_grid(s: dict, c: dict, d: dict, o: dict, t: dict, mod: dict) -> dict:
                 risk += 1
     office.trust(o, min(3, caught) - 3 * over - 2 * risk - min(3, extra) - len(claims))
     paid = office.fine(s, c, o, fines, 'Trừ thưởng: chuyển lương sai', t['id']) if fines else 0
-    d['claims'] = (d['claims'] + claims)[-20:]
+    d['claims'] = ar.last(d['claims'] + claims, 20, 'office.claims', c)
     late, adj, note = office.settle(o, t, c['day'])
     t['late'] = late
     if late:
@@ -915,10 +916,10 @@ def _pay_grid(s: dict, c: dict, d: dict, o: dict, t: dict, mod: dict) -> dict:
     d['caught'] += caught
     d['missed'] += missed
     d['false_flags'] += extra
-    d['day_grids'] = (d['day_grids'] + [dict(task=t['id'], risk=risk + over, clean=missed == 0 and extra == 0)])[-10:]
+    d['day_grids'] = ar.last(d['day_grids'] + [dict(task=t['id'], risk=risk + over, clean=missed == 0 and extra == 0)], 10, 'office.day_grids', c)
     d['filed'] += 1
     d['late'] += int(late)
-    d['log'] = (d['log'] + [dict(day=c['day'], title=t['title'], late=late, mistakes=missed + extra)])[-12:]
+    d['log'] = ar.last(d['log'] + [dict(day=c['day'], title=t['title'], late=late, mistakes=missed + extra)], 12, 'office.log', c)
     t['mistakes'] += missed + extra
     _grid_slips(t, found, fines, extra)
     # The errors that went out with the transfer are taken out of the bonus by chị Hồng (react),
@@ -1080,7 +1081,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         t['late'] = late
         d['filed'] += 1
         d['late'] += int(late)
-        d['log'] = (d['log'] + [dict(day=c['day'], title=t['title'], late=late, mistakes=t['mistakes'])])[-12:]
+        d['log'] = ar.last(d['log'] + [dict(day=c['day'], title=t['title'], late=late, mistakes=t['mistakes'])], 12, 'office.log', c)
         kit.metric(c, 'tp_filed')
         kit.complete(s, c, t, reward, f'Bạn đã hoàn tất hồ sơ “{t["title"]}”' + (' nhưng trễ hạn nội bộ.' if late else ' đúng hạn.'))
         if late and not gen:

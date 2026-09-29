@@ -16,6 +16,7 @@ import copy
 import math
 import random
 from .jsoncopy import tree_copy
+from . import archive as ar
 
 # ---------------------------------------------------------------- the shop clock
 DAY_MIN = 24 * 60
@@ -718,7 +719,7 @@ def on_close(s: dict, c: dict, career: str) -> int:
             c['life']['waste'] = (c['life']['waste'] + [dict(day=c['day'], item=lot['item'], qty=min(60, lot['qty']), value=value, reason='Hết hạn sử dụng')])[-120:]
         else:
             keep.append(lot)
-    x['lots'] = keep[-300:]
+    x['lots'] = ar.last(keep, 300, 'stock.lots', c)
     x['day_bought'] = 0
     c['life']['day_waste'] += wasted
     return wasted

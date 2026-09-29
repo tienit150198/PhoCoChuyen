@@ -23,6 +23,8 @@ try:import fcntl
 except ImportError:fcntl=None  # Windows: one process, the thread lock is enough
 from .engine import GameError,new_state,apply_action,public_state,validate_state,validate_career,migrate_state,needs_migration,tree_copy,stamped,BUILD
 from .journey import enable_story
+from . import archive as ar
+from .content import CAREERS
 
 SCHEMA=4
 SAVE_FORMATS=("mot-ngay-lam-nghe/save-v1","mot-ngay-lam-nghe/save-v2","mot-ngay-lam-nghe/save-v3","mot-ngay-lam-nghe/save-v4")
@@ -44,6 +46,48 @@ PRAGMAS=("PRAGMA foreign_keys=ON",f"PRAGMA busy_timeout={BUSY_MS}",
 
 class Conflict(GameError):
     pass
+
+ARCHIVE_IMPORT_MAX=200000       # archive rows accepted with an imported backup
+ARCHIVE_ROW_MAX=2*1024*1024     # characters of one archived row (album photos are the largest)
+
+def _archive_rows(box,careers_before:dict,raw:dict,default:str)->list:
+    """(career, kind, day, row_json) for what the command cut off, oldest first per list.
+    A row's owner is a career record (found by identity, in the save before or after
+    the command), a career id, "" (the journey) or None (the acting career)."""
+    if not box.rows:return []
+    ids={id(c):cid for cid,c in careers_before.items()}
+    if isinstance(raw.get("careers"),dict):ids.update({id(c):cid for cid,c in raw["careers"].items()})
+    out=[]
+    for owner,kind,row in box.rows:
+        career=owner if isinstance(owner,str) else ids.get(id(owner),default) if owner is not None else default
+        day=row.get("day") if isinstance(row,dict) else row[0] if isinstance(row,list) and row and type(row[0]) is int else None
+        out.append((career or "",kind,day if type(day) is int else None,_dumps(row)))
+    return out
+
+def _write_archive(db,sid:str,rows:list)->None:
+    """Append rows to each (career, kind) history of this save, inside the caller's transaction."""
+    nxt={}
+    for career,kind,day,row in rows:
+        k=(career,kind)
+        if k not in nxt:
+            nxt[k]=db.execute("SELECT COALESCE(MAX(seq)+1,0) FROM archive WHERE sid=? AND career=? AND kind=?",(sid,career,kind)).fetchone()[0]
+        db.execute("INSERT INTO archive(sid,career,kind,seq,day,row) VALUES(?,?,?,?,?,?)",(sid,career,kind,nxt[k],day,row))
+        nxt[k]+=1
+
+def _imported_archive(rows)->list:
+    """Archive rows of an imported backup (the "archive" of an export), checked."""
+    if rows is None:return []
+    if not isinstance(rows,list) or len(rows)>ARCHIVE_IMPORT_MAX:raise GameError("Phần lưu trữ của tệp không hợp lệ.","invalid_save")
+    out=[]
+    for r in sorted((r for r in rows if isinstance(r,dict)),key=lambda r:(str(r.get("career")),str(r.get("kind")),r.get("seq") if type(r.get("seq")) is int else 0)):
+        career,kind,day=r.get("career"),r.get("kind"),r.get("day")
+        if not (career=="" or career in CAREERS) or not isinstance(kind,str) or not 1<=len(kind)<=80 or "row" not in r:
+            raise GameError("Phần lưu trữ của tệp không hợp lệ.","invalid_save")
+        row=_dumps(r["row"])
+        if len(row)>ARCHIVE_ROW_MAX:raise GameError("Phần lưu trữ của tệp quá lớn.","invalid_save")
+        out.append((career,kind,day if type(day) is int else None,row))
+    if len(out)!=len(rows):raise GameError("Phần lưu trữ của tệp không hợp lệ.","invalid_save")
+    return out
 
 def _digest(text:str)->str:
     return hashlib.blake2b(text.encode(),digest_size=10).hexdigest()
@@ -175,6 +219,14 @@ class Store:
             );
             CREATE INDEX IF NOT EXISTS player_feedback_sid ON player_feedback(sid, id);
             CREATE INDEX IF NOT EXISTS player_feedback_status ON player_feedback(status, id);
+            -- Rows that left a capped list of the save (game/archive.py), never dropped: `seq` is the
+            -- row's position in its (career, kind) history, 0 = oldest. career '' = the journey.
+            CREATE TABLE IF NOT EXISTS archive (
+              sid TEXT NOT NULL, career TEXT NOT NULL, kind TEXT NOT NULL, seq INTEGER NOT NULL,
+              day INTEGER, row TEXT NOT NULL, created_at REAL NOT NULL DEFAULT (unixepoch()),
+              FOREIGN KEY(sid) REFERENCES sessions(sid)
+            );
+            CREATE UNIQUE INDEX IF NOT EXISTS archive_rows ON archive(sid, career, kind, seq);
             """)
 
     def connect(self):
@@ -318,9 +370,15 @@ class Store:
         for _ in range(OPTIMISTIC_TRIES):
             if not needs_migration(state):return state,revision,csrf
             # Migrate outside the write lock; store it only if nobody changed the save meanwhile.
-            migrated=migrate_state(state,owned=True);validate_state(migrated)
-            text=serialize(migrated,None,True)
-            if self.transaction(lambda db:db.execute("UPDATE sessions SET state=?,revision=? WHERE sid=? AND revision=?",(text,revision+1,sid,revision)).rowcount):
+            before=dict(state["careers"]) if isinstance(state.get("careers"),dict) else {}
+            with ar.collect() as box:
+                migrated=migrate_state(state,owned=True)
+            validate_state(migrated)
+            text=serialize(migrated,None,True);cut=_archive_rows(box,before,migrated,"")
+            def write(db):
+                if not db.execute("UPDATE sessions SET state=?,revision=? WHERE sid=? AND revision=?",(text,revision+1,sid,revision)).rowcount:return False
+                _write_archive(db,sid,cut);return True
+            if self.transaction(write):
                 return migrated,revision+1,csrf
             with self.connect() as db:
                 row=db.execute("SELECT revision,state FROM sessions WHERE sid=?",(sid,)).fetchone()
@@ -348,13 +406,13 @@ class Store:
             if expected is not None and row["revision"]!=expected:raise Conflict("Tiến trình đã thay đổi ở tab khác. Đã đồng bộ lại; hãy xem trạng thái trước khi thao tác tiếp.","revision_conflict")
             # 2. The heavy part, lock-free.
             try:
-                raw,result,serialized=self._compute(sid,row["state"],career,action,tree_copy(payload),internal,row["revision"])
+                raw,result,serialized,cut=self._compute(sid,row["state"],career,action,tree_copy(payload),internal,row["revision"])
             except GameError:
                 if self._moved(sid,request_id,row["revision"]):continue  # judged on a save that has moved on: look again
                 raise
             receipt=json.dumps(result,ensure_ascii=False)
             # 3. Short compare-and-set under the write lock.
-            if self._store(sid,row["revision"],serialized,request_id,fingerprint,receipt):
+            if self._store(sid,row["revision"],serialized,request_id,fingerprint,receipt,cut):
                 return dict(state=public_state(raw,migrated=True),revision=row["revision"]+1,result=result,replayed=False)
         return self._command_locked(sid,request_id,expected,career,action,payload,internal,fingerprint)
 
@@ -362,8 +420,20 @@ class Store:
         if row["rhash"]!=fingerprint:raise Conflict("Mã thao tác đã dùng cho nội dung khác.","idempotency_conflict")
         return dict(state=public_state(self.parse_state(row["state"],sid)),revision=row["revision"],result=json.loads(row["rresult"]),replayed=True)
 
-    def _compute(self,sid:str,text:str,career,action:str,payload:dict,internal:bool,revision:int)->tuple[dict,dict,str]:
+    def _compute(self,sid:str,text:str,career,action:str,payload:dict,internal:bool,revision:int)->tuple[dict,dict,str,list]:
+        """(new save, result, its text, archive rows): what the command cut off from the save's
+        lists, to be written in the same transaction as the save (see game/archive.py)."""
         raw=self.parse_state(text,sid)
+        before=dict(raw["careers"]) if isinstance(raw.get("careers"),dict) else {}
+        with ar.collect() as box:
+            raw,result,full,known,extra=self._apply(raw,text,career,action,payload,internal,revision)
+        serialized=serialize(raw,known,full)
+        if len(serialized)>3*1024*1024 and len(serialized.encode())>14*1024*1024:raise GameError("Bản lưu quá lớn. Xóa bớt ảnh trong album trước khi nhập.")
+        # An imported backup's own archive is older than anything its migration moved out.
+        return raw,result,serialized,extra+_archive_rows(box,before,raw,career if career in CAREERS else "")
+
+    def _apply(self,raw:dict,text:str,career,action:str,payload:dict,internal:bool,revision:int):
+        extra=[]
         if action=="import_save" and not internal:
             envelope=payload.get("save")
             if not isinstance(envelope,dict) or envelope.get("format") not in SAVE_FORMATS:raise GameError("Không phải tệp lưu của Phố Có Chuyện.","invalid_save")
@@ -376,6 +446,10 @@ class Store:
             except GameError:raise
             except (TypeError,ValueError,KeyError,AttributeError,RecursionError) as exc:
                 raise GameError("Cấu trúc tệp lưu không hợp lệ.","invalid_save") from exc
+            imported=_imported_archive(envelope.get("archive"))
+            # The replaced save is not lost: it goes to the archive whole, before the backup's own archive.
+            ar.record([raw],"replaced_save",ar.JOURNEY)
+            extra=imported
             # Recoverable UI-only state is not accepted as a full backup.
             raw=candidate;known,full=None,True
             result=dict(message="Đã khôi phục bản lưu. Tiến trình trước đó được thay thế sau khi kiểm tra thành công.")
@@ -392,9 +466,7 @@ class Store:
                 # only if it passes every check (the action itself may not have validated anything).
                 try:validate_state(raw);full=True
                 except GameError:pass
-        serialized=serialize(raw,known,full)
-        if len(serialized)>3*1024*1024 and len(serialized.encode())>14*1024*1024:raise GameError("Bản lưu quá lớn. Xóa bớt ảnh trong album trước khi nhập.")
-        return raw,result,serialized
+        return raw,result,full,known,extra
 
     def _moved(self,sid:str,request_id:str,revision:int)->bool:
         with self.connect() as db:
@@ -402,8 +474,8 @@ class Store:
             if not row:return False
             return row["revision"]!=revision or bool(db.execute("SELECT 1 FROM receipts WHERE sid=? AND request_id=?",(sid,request_id)).fetchone())
 
-    def _store(self,sid:str,revision:int,serialized:str,request_id:str,fingerprint:str,receipt:str)->bool:
-        """Compare-and-set: write the new save and its receipt only if the save is still at `revision`."""
+    def _store(self,sid:str,revision:int,serialized:str,request_id:str,fingerprint:str,receipt:str,cut:list=())->bool:
+        """Compare-and-set: write the new save, its archive rows and its receipt only if the save is still at `revision`."""
         if not self.writing():raise sqlite3.OperationalError("database is locked")
         db=self.connect()
         try:
@@ -411,6 +483,7 @@ class Store:
             if db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=? AND revision=?",
                           (serialized,revision+1,sid,revision)).rowcount!=1:
                 db.rollback();return False
+            _write_archive(db,sid,cut)
             db.execute("INSERT INTO receipts(sid,request_id,request_hash,result) VALUES(?,?,?,?)",(sid,request_id,fingerprint,receipt))
             db.commit();return True
         except sqlite3.IntegrityError:  # the same request id landed first: the caller replays it
@@ -433,9 +506,10 @@ class Store:
             if row["rhash"] is not None:
                 db.rollback();return self._replay(sid,row,fingerprint)
             if expected is not None and row["revision"]!=expected:raise Conflict("Tiến trình đã thay đổi ở tab khác. Đã đồng bộ lại; hãy xem trạng thái trước khi thao tác tiếp.","revision_conflict")
-            raw,result,serialized=self._compute(sid,row["state"],career,action,payload,internal,row["revision"])
+            raw,result,serialized,cut=self._compute(sid,row["state"],career,action,payload,internal,row["revision"])
             revision=row["revision"]+1
             db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?",(serialized,revision,sid))
+            _write_archive(db,sid,cut)
             db.execute("INSERT INTO receipts(sid,request_id,request_hash,result) VALUES(?,?,?,?)",(sid,request_id,fingerprint,json.dumps(result,ensure_ascii=False)))
             db.commit()
             return dict(state=public_state(raw,migrated=True),revision=revision,result=result,replayed=False)
@@ -450,6 +524,7 @@ class Store:
         plus the account and every device signed in to it."""
         sid=self.key(token)
         with self.connect() as db:
+            db.execute("DELETE FROM archive WHERE sid=?",(sid,))
             db.execute("DELETE FROM receipts WHERE sid=?",(sid,))
             db.execute("DELETE FROM logins WHERE sid=?",(sid,))
             db.execute("DELETE FROM accounts WHERE sid=?",(sid,))
@@ -484,8 +559,12 @@ class Store:
             part=stale[i:i+50]
             def drop(db):
                 marks=",".join("?"*len(part))
-                db.execute(f"DELETE FROM receipts WHERE sid IN ({marks})",part)
-                return db.execute(f"DELETE FROM sessions WHERE sid IN ({marks}) AND {idle}",(*part,*age)).rowcount
+                gone=[r[0] for r in db.execute(f"SELECT sid FROM sessions WHERE sid IN ({marks}) AND {idle}",(*part,*age))]
+                if not gone:return 0
+                marks2=",".join("?"*len(gone))
+                db.execute(f"DELETE FROM archive WHERE sid IN ({marks2})",gone)
+                db.execute(f"DELETE FROM receipts WHERE sid IN ({marks2})",gone)
+                return db.execute(f"DELETE FROM sessions WHERE sid IN ({marks2})",gone).rowcount
             n+=self.transaction(drop)
         with self.connect() as db:
             db.execute("DELETE FROM logins WHERE seen_at<datetime('now',?) OR sid NOT IN (SELECT sid FROM sessions)",age)
@@ -528,11 +607,42 @@ class Store:
                     n=0
                     for sid in doomed:  # re-checked under the lock: it may have been played meanwhile
                         if not db.execute(f"SELECT 1 FROM sessions WHERE sid=? AND {cond}",(sid,age)).fetchone():continue
+                        db.execute("DELETE FROM archive WHERE sid=?",(sid,))
                         db.execute("DELETE FROM receipts WHERE sid=?",(sid,))
                         n+=db.execute("DELETE FROM sessions WHERE sid=?",(sid,)).rowcount
                     return n
                 deleted+=self.transaction(drop)
                 time.sleep(.02)
+
+    def archive_export(self,token:str)->list:
+        """Every archived row of this save, for the backup download (see /api/save/export)."""
+        sid=self.key(token)
+        with self.connect() as db:
+            return [dict(career=r["career"],kind=r["kind"],seq=r["seq"],day=r["day"],row=json.loads(r["row"]))
+                    for r in db.execute("SELECT career,kind,seq,day,row FROM archive WHERE sid=? ORDER BY career,kind,seq",(sid,))]
+
+    def archive_page(self,token:str,career:str,kind:str,before:int|None=None,skip:int=0,limit:int=50)->dict:
+        """One page of a (career, kind) history, newest first: the archived rows, then (for
+        the kinds in archive.IN_SAVE) the rows still in the save. Positions count from the
+        oldest row (0) and never change, so `before` (the smallest position of the previous
+        page) pages back; the first page can instead `skip` the newest rows already shown."""
+        if not (career=="" or career in CAREERS):raise GameError("Nghề không hợp lệ.")
+        if not isinstance(kind,str) or not 1<=len(kind)<=80:raise GameError("Loại sổ không hợp lệ.")
+        limit=max(1,min(int(limit),200));skip=max(0,int(skip))
+        state,_,_=self.read(token);sid=self.key(token)
+        live=ar.in_save(state,career,kind) or []
+        with self.connect() as db:
+            stored=db.execute("SELECT COALESCE(MAX(seq)+1,0) FROM archive WHERE sid=? AND career=? AND kind=?",(sid,career,kind)).fetchone()[0]
+            total=stored+len(live)
+            end=min(total,max(0,before)) if before is not None else max(0,total-skip)
+            start=max(0,end-limit)
+            rows=[dict(pos=r["seq"],day=r["day"],row=json.loads(r["row"])) for r in
+                  db.execute("SELECT seq,day,row FROM archive WHERE sid=? AND career=? AND kind=? AND seq>=? AND seq<? ORDER BY seq",(sid,career,kind,start,min(end,stored)))]
+        for pos in range(max(start,stored),end):
+            row=live[pos-stored];day=row.get("day") if isinstance(row,dict) else None
+            rows.append(dict(pos=pos,day=day if type(day) is int else None,row=row))
+        rows.reverse()
+        return dict(career=career,kind=kind,total=total,rows=rows,before=start if start>0 else None)
 
     def checkpoint(self)->None:
         """PASSIVE WAL checkpoint: never waits for readers or writers."""

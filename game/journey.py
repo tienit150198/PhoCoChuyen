@@ -23,6 +23,7 @@ import hashlib
 import random
 
 from .content import CAREERS, CAREER_META
+from . import archive as ar
 
 VERSION = 1
 START_WALLET = 60
@@ -417,7 +418,7 @@ def _playable(s: dict, cid: str) -> bool:
 # ---------------------------------------------------------------- wallet
 def _history(j: dict, amount: int, kind: str, label: str, career: str | None = None) -> None:
     j['history'].append(dict(day=j['life_day'], amount=int(amount), kind=kind, label=label[:120], career=career))
-    j['history'] = j['history'][-120:]
+    j['history'] = ar.last(j['history'], 120, 'wallet', ar.JOURNEY)
 
 
 def _wallet(j: dict, amount: int, kind: str, label: str, career: str | None = None) -> None:
@@ -479,7 +480,7 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
         return
     day = j['life_day']
     j['stats'][f'{ended_mode}_days'] = j['stats'].get(f'{ended_mode}_days', 0) + 1
-    j['days'] = (j['days'] + [dict(d=day, c=career, m=ended_mode)])[-60:]
+    j['days'] = ar.last(j['days'] + [dict(d=day, c=career, m=ended_mode)], 60, 'journey.days', ar.JOURNEY)
     notes = []
     # Salary is personal money: it lands in the wallet on payday.
     pay = int(((result.get('summary') or {}).get('job') or {}).get('salary') or 0)
@@ -524,7 +525,7 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
 def _news(j: dict, kind: str, ref: str, items: list | None = None) -> None:
     j['news_seq'] += 1
     j['news'].append(dict(id=f'n{j["news_seq"]}', kind=kind, ref=ref, day=j['life_day'], items=list(items or [])))
-    j['news'] = j['news'][-12:]
+    j['news'] = ar.last(j['news'], 12, 'journey.news', ar.JOURNEY)
 
 
 def _award(s: dict) -> list[str]:

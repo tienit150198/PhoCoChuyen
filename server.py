@@ -394,9 +394,17 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/state":
                 _,state,revision,_=self.require_session();self.json(200,dict(state=public_state(state),revision=revision));return
             if route=="/api/save/export":
-                _,state,revision,_=self.require_session()
-                data=dict(format="mot-ngay-lam-nghe/save-v4",app_version=__version__,state=state)
+                token,state,revision,_=self.require_session()
+                data=dict(format="mot-ngay-lam-nghe/save-v4",app_version=__version__,state=state,archive=self.server.store.archive_export(token))
                 self.json(200,data,{"Content-Disposition":"attachment; filename=mot-ngay-lam-nghe-save.json"});return
+            if route=="/api/archive":  # older rows of a history (game/archive.py), owner only
+                token=self.token()
+                if not token:raise GameError("Tải lại trang để bắt đầu phiên chơi.","session_missing")
+                if not self.server.rate_limit("archive:"+token,120):self.error(429,"Chậm lại một chút nhé.");return
+                q={k:v[0] for k,v in parse_qs(split.query).items()}
+                try:before=int(q["before"]) if q.get("before") else None;skip=int(q.get("skip") or 0);limit=int(q.get("limit") or 50)
+                except ValueError:self.error(400,"Tham số không hợp lệ.","bad_request");return
+                self.json(200,self.server.store.archive_page(token,q.get("career",""),q.get("kind",""),before,skip,limit));return
             if route.startswith("/api/social/"):
                 token,state,_,_=self.require_session()
                 if not self.server.rate_limit("social-get:"+token,240):self.error(429,"Chậm lại một chút nhé.");return
