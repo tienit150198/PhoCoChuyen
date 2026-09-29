@@ -117,6 +117,7 @@ def migrate_state(state:dict) -> dict:
         incs.migrate(s)  # chuyện đời: an empty incident book per workplace
         haps.migrate(s)  # chuyện bất ngờ trong ca: live happenings in the scene
         cst.migrate(s)  # truyện nghề: an empty story book for older saves
+        inv.migrate(s)  # kho: đơn nhập cũ theo nhịp → giờ giao dự kiến
     if isinstance(s.get('settings'),dict):
         if ai_unasked:s['settings'].update(aiConsent=True,aiAsked=True)
         s['settings'].setdefault('aiNoticeSeen',False)
@@ -414,6 +415,7 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
         if emp.required(career):need(c["job"]["status"]=="hired","Nghề này cần được tuyển dụng trước. Mở mục Xin việc để ứng tuyển nhé.","not_hired")
         c["open"]=True;c["started"]=True;c["shift_summary"]=None
         ops.on_start(s,c,career)
+        inv.on_open(s,c,career)  # kho: ghi nhịp mở ca cho đồng hồ giao hàng
         target={"calm":2,"festival":4}.get(c["life"]["mode"],3)  # the day's pace is rolled at the previous close
         unfinished=[t for t in c["tasks"] if t["status"] not in ("completed","referred","cancelled")]
         slots=[int(t["id"].split("-")[-1]) for t in c["tasks"] if t["day"]==c["day"]]
