@@ -670,7 +670,15 @@ class Store:
         rows.reverse()
         return dict(career=career,kind=kind,total=total,rows=rows,before=start if start>0 else None)
 
-    def checkpoint(self)->None:
-        """PASSIVE WAL checkpoint: never waits for readers or writers."""
-        with self.connect() as db:
-            db.execute("PRAGMA wal_checkpoint(PASSIVE)").fetchall()
+    def checkpoint(self,truncate_ms:int=0)->None:
+        """PASSIVE WAL checkpoint: never waits for readers or writers. With `truncate_ms`,
+        a TRUNCATE checkpoint that waits at most that long: under steady traffic some reader
+        is always inside the WAL, so a PASSIVE one never lets it restart and the file grows."""
+        if not truncate_ms:
+            with self.connect() as db:
+                db.execute("PRAGMA wal_checkpoint(PASSIVE)").fetchall()
+            return
+        db=sqlite3.connect(self.path,timeout=truncate_ms/1000)
+        try:db.execute("PRAGMA wal_checkpoint(TRUNCATE)").fetchall()
+        except sqlite3.OperationalError:pass  # busy: next round
+        finally:db.close()

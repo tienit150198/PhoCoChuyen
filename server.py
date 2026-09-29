@@ -857,8 +857,10 @@ class Handler(BaseHTTPRequestHandler):
 def checkpointer(store:Store,stop:threading.Event,every:float=2.0):
     """Copy the WAL into the database every few seconds, off the request path
     (request connections run with wal_autocheckpoint=0; see game/storage.py PRAGMAS)."""
+    rounds=0
     while not stop.wait(every):
-        try:store.checkpoint()
+        rounds+=1
+        try:store.checkpoint(250 if rounds%15==0 else 0)  # every ~30 s: TRUNCATE (waits at most 250 ms)
         except Exception as e:sys.stderr.write(f"[checkpoint] {type(e).__name__}\n")
 
 
