@@ -724,6 +724,8 @@ label.choice:has(input:focus-visible){outline:3px solid var(--focus);outline-off
 .npc-card h3{font-size:1rem;margin:10px 0 4px}
 .npc-card p{font-size:.833rem;color:var(--muted)}
 .npc-card .btn{margin-top:10px}
+/* Long roles ("Trưởng nhóm kiểm toán · Kiểm toán Sao Mai") wrap inside the card instead of widening the sheet. */
+.npc-card .tag{white-space:normal;justify-content:center;text-align:center;overflow-wrap:anywhere}
 .memory{margin:10px 0;padding:10px 14px;border-left:3px solid var(--second);border-radius:0 var(--radius-sm) var(--radius-sm) 0;background:var(--second-soft);font-size:.867rem;line-height:1.65}
 .quest-card{margin-bottom:14px;padding:18px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line)}
 .quest-card p{font-size:.867rem;color:var(--muted)}

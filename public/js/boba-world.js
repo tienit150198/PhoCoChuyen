@@ -76,8 +76,16 @@ export class BobaWorld extends World {
  }
  project(x,y,z=0){return this.isPortrait()?{x:45+x*51,y:285+y*57-z}:{x:150+x*82,y:238+y*45-z};}
  unproject(x,y){return this.isPortrait()?{x:(x-45)/51,y:(y-285)/57}:{x:(x-150)/82,y:(y-238)/45};}
- layout(){if(this.isPortrait()){this.scale=Math.min(this.width/705,Math.max(180,this.height-205)/890);this.offset={x:(this.width-700*this.scale)/2,y:106+Math.max(0,(this.height-215-890*this.scale)/2)};return;}const reserve=this.width>1100?260:this.width>780?210:0;const avail=this.width-reserve;
+ layout(){if(this.isPortrait()){this.scale=Math.min(this.width/705,Math.max(180,this.height-205)/890);this.offset={x:(this.width-700*this.scale)/2,y:106+Math.max(0,(this.height-215-890*this.scale)/2)};return;}
+   // Tablets float the task card over the canvas's right edge, so keep that strip clear. The desktop layout
+   // puts the task panel in its own column beside the stage: nothing covers the canvas, use all of it.
+   const beside=globalThis.document?.documentElement?.dataset?.layout==='desktop';
+   const reserve=beside?0:this.width>1100?260:this.width>780?210:0;const avail=this.width-reserve;
    this.scale=Math.min(avail/1150,(this.height-55)/780);this.offset={x:(avail-1200*this.scale)/2+10,y:(this.height-790*this.scale)/2+20};
+   // Desktop: fit the drawn scene (scene y ≈30…775, the farm's sky sign is the tallest) between the title card /
+   // journey chip band at the top and the badges / hint band at the bottom, so the bigger scene never slides under them.
+   if(beside&&this.width>780){const top=110,bottom=64,band=this.height-top-bottom;
+     this.scale=Math.min(this.width/1150,band/745);this.offset={x:(this.width-1200*this.scale)/2+10,y:top+(band-745*this.scale)/2-30*this.scale};}
    if(this.width<=780){this.scale=Math.min(this.width/1130,(this.height-190)/650);this.offset={x:(this.width-1200*this.scale)/2,y:Math.max(76,(this.height-790*this.scale)/2-25)};}
  }
  /* ------------------------------------------------------ Nav model */

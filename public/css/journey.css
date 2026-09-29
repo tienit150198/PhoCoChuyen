@@ -220,7 +220,10 @@ button.jr-stat:hover{border-color:var(--line-strong)}
 .jr-hud-text small{font-size:.8rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .jr-hud-wallet{flex:none;padding:3px 9px;border-radius:var(--radius-pill);background:var(--good-soft);color:var(--good);font-weight:800;font-size:.8rem;white-space:nowrap}
 .jr-hud-wallet.bad{background:var(--bad-soft);color:var(--bad)}
+.jr-hud-short{display:none}
 .stage:has(.jr-hud:not([hidden])) .ambient-caption{top:70px}
+/* Desktop: the chip sits top-right; a long title card (and its tagline) wraps before it reaches the chip. */
+html[data-layout="desktop"] .stage:has(.jr-hud:not([hidden])) .scene-heading{max-width:min(440px,calc(100% - 48px - var(--jr-hud-w,340px)))}
 
 /* ---------- Layouts -------------------------------------------------------- */
 html[data-layout="tablet"] .jr-columns{grid-template-columns:minmax(0,1fr)}
@@ -247,7 +250,12 @@ html[data-layout="phone"] .jr-scene-card{padding:24px 16px calc(20px + var(--saf
 html[data-layout="phone"] .jr-hud{top:10px;right:10px;max-width:none;padding:4px 8px 4px 4px;gap:6px}
 html[data-layout="phone"] .jr-hud .jr-av{width:30px;height:30px}
 html[data-layout="phone"] .jr-hud-text{display:none}
-html[data-layout="phone"] .stage:has(.jr-hud:not([hidden])) .scene-heading{max-width:calc(100% - 140px)}
+/* Phone: the chip shrinks to avatar + short wallet, and the title card keeps clear of its measured width
+   (--jr-hud-w, set by the HUD) plus a gap; a long place name wraps instead of running under the chip. */
+html[data-layout="phone"] .jr-hud-long{display:none}
+html[data-layout="phone"] .jr-hud-short{display:inline}
+html[data-layout="phone"] .stage:has(.jr-hud:not([hidden])) .scene-heading{max-width:calc(100% - 28px - var(--jr-hud-w,140px))}
+html[data-layout="phone"] .stage:has(.jr-hud:not([hidden])) .scene-heading h1{overflow-wrap:anywhere}
 @container sheet (max-width:420px){.jr-title-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 /* ---------- Motion --------------------------------------------------------- */
