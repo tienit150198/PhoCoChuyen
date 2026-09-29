@@ -8,6 +8,8 @@ Everything is fictional; school rules here are simplified game rules.
 """
 from __future__ import annotations
 import copy
+import random
+import re
 
 from . import procedures as P
 
@@ -515,6 +517,8 @@ def _action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         need(d['active'], 'Chưa chọn hoạt động nào.')
         d['active'] = None
         return dict(message='Đã tạm gác hoạt động. Có thể chọn lại nếu còn trong lịch.')
+    if name in CARE_ACTIONS:
+        return CARE_ACTIONS[name](s, c, p)
     raise e.GameError('Thao tác kế hoạch lớp không hợp lệ.')
 
 
@@ -537,7 +541,7 @@ def public(c: dict) -> dict:
         a = INDEX[last['id']]
         recap = dict(id=a['id'], title=a['title'], grade=last['grade'], perspectives=copy.deepcopy(a['perspectives']), lesson=a['lesson'])
     from .teach_lesson import notebook
-    return dict(month=MONTHS[month_index(day)], month_index=month_index(day), offers=offered, active=active, notebook=notebook(d),
+    return dict(month=MONTHS[month_index(day)], month_index=month_index(day), offers=offered, active=active, notebook=notebook(d), care=care_view(c),
                 history=[dict(h, title=INDEX[h['id']]['title'], emoji=INDEX[h['id']]['emoji']) for h in d.get('history', [])[-10:]][::-1],
                 recap=recap, calendar=[dict(month=MONTHS[i], events=[dict(emoji=a['emoji'], title=a['title']) for a in ACTIVITIES if i in a.get('months', ()) and a['kind'] == 'event']) for i in range(len(MONTHS))])
 
@@ -547,9 +551,11 @@ def validate(c: dict) -> None:
     d = c['ext']['data'].get('class')
     if d is None:
         return
-    need(isinstance(d, dict) and {'active', 'done', 'history'} <= set(d) <= {'active', 'done', 'history', 'kids'}, 'Dữ liệu kế hoạch lớp không hợp lệ.')
+    need(isinstance(d, dict) and {'active', 'done', 'history'} <= set(d) <= {'active', 'done', 'history', 'kids', 'care'}, 'Dữ liệu kế hoạch lớp không hợp lệ.')
     from .teach_lesson import validate_kids
     validate_kids(d)
+    if 'care' in d:
+        validate_care(d['care'], c['day'])
     need(isinstance(d['done'], dict) and all(k in INDEX for k in d['done']), 'Hoạt động lớp không hợp lệ.')
     for v in d['done'].values():
         integer(v, 1, 10 ** 9)
@@ -570,3 +576,758 @@ def validate(c: dict) -> None:
 
 def content() -> dict:
     return dict(months=list(MONTHS), kinds=KIND_LABEL, count=len(ACTIVITIES))
+
+
+# ------------------------------------------------------------ care loop (several days)
+# Each pupil carries progress per subject, wellbeing and "voice" (how openly they speak
+# up) from day to day. Homework given after class is handed in the next day and waits
+# to be marked; each parent expects to hear from the teacher about once a week (a game
+# day is a school week in the planner's calendar); the seat plan changes how pupils
+# learn. Every effect is a rule on the save, seeded by kid and day. The AI only rewords
+# lines (teach_lesson.voice, /api/ai/class). Old saves get the book on first use.
+# Spec: docs/superpowers/specs/2026-09-29-teacher-care-ai-design.md
+SUBJECTS = [dict(id='math', emoji='🧮', label='Toán'), dict(id='read', emoji='📖', label='Tiếng Việt'), dict(id='think', emoji='🔍', label='Tư duy')]
+SUBJECT = {x['id']: x for x in SUBJECTS}
+SUBJECT_IDS = [x['id'] for x in SUBJECTS]
+TOPIC_SUBJECT = {'Toán vui': 'math', 'Đếm hình': 'math', 'Đo lường': 'math', 'Đọc hiểu': 'read', 'Đọc bảng': 'read',
+                 'Quan sát': 'think', 'Phân loại': 'think'}
+PUPILS = ('minh', 'an', 'vy', 'bao', 'khoa', 'linh', 'tu', 'mai')
+# (math, read, think, wellbeing, voice) at the start of the year.
+START = dict(minh=(50, 44, 60, 50, 0), an=(55, 50, 62, 65, 3), vy=(50, 66, 50, 65, 5), bao=(42, 46, 55, 60, 4),
+             khoa=(66, 50, 64, 55, 3), linh=(60, 64, 56, 45, 2), tu=(52, 40, 55, 40, 1), mai=(55, 55, 50, 50, 3))
+VOICE_LABEL = ('Im lặng', 'Nói nhỏ với bạn', 'Dám hỏi khi được mời', 'Hay giơ tay', 'Tự tin phát biểu', 'Dẫn lời cả lớp')
+BEHIND, SLOW, STRONG = 40, 55, 75
+SAD, LOW = 35, 45
+DUE, OVERDUE, CONTACT_GOAL = 4, 6, 2
+MAX_TRUST_PARENT = 10
+LINES_PER_THREAD = 12
+# Seat i: row i // 2 counted from the board, the window seat is the even one.
+DEFAULT_SEATS = ['linh', 'khoa', 'bao', 'an', 'tu', 'mai', 'minh', 'vy']
+PAIRS = {  # deskmates → {kid: (progress per period, wellbeing per period)}, note
+    frozenset(('minh', 'vy')): (dict(minh=(0, 2)), 'Có Vy bên cạnh, Minh đỡ run.'),
+    frozenset(('an', 'tu')): (dict(an=(0, 1), tu=(0, 2)), 'An với Tú cùng mê làm thử, Tú có bạn mới.'),
+    frozenset(('khoa', 'minh')): (dict(khoa=(1, 0), minh=(1, 0)), 'Khoa với Minh cùng mê hình vẽ, vẽ cho nhau xem.'),
+    frozenset(('bao', 'vy')): (dict(bao=(-2, 0), vy=(-2, 0)), 'Bảo với Vy nói chuyện riêng suốt giờ.'),
+    frozenset(('bao', 'tu')): (dict(bao=(0, -2), tu=(0, -2)), 'Bảo với Tú hay cãi nhau.'),
+    frozenset(('linh', 'vy')): (dict(linh=(0, -2), vy=(-1, 0)), 'Vy hay liếc vở Linh, Linh khó chịu.'),
+}
+HW_SIZES = dict(light=dict(label='Nhẹ · 3 câu', gain=1), full=dict(label='Vừa · 6 câu', gain=2))
+HW_KINDS = dict(good=('Làm đủ, đúng hết, trình bày gọn.', 'praise'),
+                some=('Làm đủ, sai hai câu cùng một chỗ.', 'fix'),
+                missing=('Không nộp vở.', 'ask'),
+                tired=('Làm được một câu, nét chữ xiêu vẹo; cuối trang người nhà ghi: “Con buồn ngủ quá.”', 'ask'))
+HW_MARKS = [dict(id='praise', emoji='🌟', label='Khen cụ thể'), dict(id='fix', emoji='✏️', label='Chữa cùng con'),
+            dict(id='ask', emoji='🤝', label='Hỏi riêng vì sao')]
+HW_MARK_IDS = [m['id'] for m in HW_MARKS]
+HW_WHY = dict(mai='Mai kể sáng nào cũng dậy từ sớm phụ mẹ bán phở, tối về là ngủ gục.', bao='Bảo để quên vở ở nhà bà ngoại.',
+              tu='Tú chưa hiểu đề, bố đi làm ca tối nên không ai hỏi giúp.', minh='Minh làm rồi nhưng sợ sai nên không dám nộp.',
+              linh='Linh làm đi làm lại vì sợ bẩn vở, tới khuya vẫn chưa xong.', vy='Vy mải kể chuyện với em, quên mất bài.',
+              an='An mải làm mô hình bằng nắp chai, quên làm bài.', khoa='Bà nội không đọc được đề nên Khoa không biết hỏi ai.')
+PARENTS = dict(
+    minh=dict(name='Cô Lan', rel='mẹ của Minh', self='chị', temper='parent_kind', trust=6, region='miền Bắc', particles=['ạ', 'nhé'],
+              style='hiền, hay lo vì con nhút nhát, rất mừng khi con dám nói; nhắn tin nhẹ nhàng'),
+    an=dict(name='Bố An', rel='bố của An', self='anh', temper='parent_kind', trust=6, region='miền Nam', particles=['nha', 'hen'],
+            style='kỹ sư, vui tính, nhắn ngắn gọn, thích con tự tay làm thử'),
+    vy=dict(name='Mẹ Vy', rel='mẹ của Vy', self='chị', temper='parent_worried', trust=4, region='miền Nam', particles=['ạ', 'nha', 'á'],
+            style='hay lo, nhắn liền mấy tin, hỏi dồn, cần được trấn an bằng việc cụ thể'),
+    bao=dict(name='Mẹ Bảo', rel='mẹ của Bảo', self='chị', temper='parent_knowitall', trust=5, region='miền Bắc', particles=['đấy', 'nhé'],
+             style='tự nhận rành giáo dục, hay góp ý cách dạy, thương con, dễ tự ái khi con bị chê'),
+    khoa=dict(name='Bà nội Khoa', rel='bà nội của Khoa', self='bà', temper='parent_kind', trust=6, region='miền Bắc', particles=['nhé'],
+              style='lớn tuổi, không rành nhắn tin, gõ chậm, câu ngắn, rất thương cháu', age='elder'),
+    linh=dict(name='Mẹ Linh', rel='mẹ của Linh', self='chị', temper='parent_strict', trust=5, region='miền Bắc', particles=['ạ', 'nhé'],
+              style='cầu toàn, muốn con giỏi, đang tập cho con bớt sợ sai'),
+    tu=dict(name='Bố Tú', rel='bố của Tú', self='tôi', temper='parent_strict', trust=3, region='miền Trung (Quảng Ngãi)', particles=['hỉ', 'rứa'],
+            style='thẳng tính, nhắn cụt, làm ca tối, thương con mới chuyển trường'),
+    mai=dict(name='Mẹ Mai', rel='mẹ của Mai', self='chị', temper='parent_kind', trust=5, region='miền Nam', particles=['nha', 'ạ'],
+             style='bán phở từ sáng sớm, nhắn tin vội lúc rảnh tay, rất thương con'),
+)
+TOPICS = dict(sad='con buồn, không muốn đi học', worry='con kêu khó một môn', hw='bài về nhà làm tới khuya',
+              thanks='con về khoe tiến bộ', check='hỏi thăm việc học trong tuần', news='giáo viên báo tin vui',
+              help='giáo viên nhờ nhà phối hợp', brief='giáo viên hỏi thăm ngắn')
+OPEN = dict(sad='{Title} ơi, mấy hôm nay {child} không muốn đi học, hỏi gì con cũng im. Ở lớp có chuyện gì không ạ?',
+            worry='{Title} ơi, dạo này {child} về nhà hay kêu khó môn {subject}. Ở lớp con có theo kịp không ạ?',
+            hw='{Title} ơi, tối qua {child} làm bài về nhà muộn quá. Bài có nhiều không ạ?',
+            thanks='{Title} ơi, hôm nay {child} về khoe học {subject} vui lắm. Cảm ơn {title} nhiều!',
+            check='{Title} ơi, tuần này {child} học hành thế nào ạ? Nhà có cần kèm thêm gì không?')
+OPEN_KID = dict(tu=dict(check='{Title}, tuần ni thằng Tú học răng? Có chi cần nhà lo thì nói tôi.',
+                        worry='{Title}, thằng Tú về kêu môn {subject} khó quá. Ở lớp nó theo kịp không?'),
+                khoa=dict(check='{Title} giáo ơi, bà hỏi chút. Tuần này thằng Khoa học có ngoan không?',
+                          hw='{Title} giáo ơi, tối qua thằng Khoa làm bài khuya quá, bà không biết chỉ.'),
+                vy=dict(worry='{Title} ơi! Vy về kêu môn {subject} khó. Con có theo kịp không ạ? Có cần cho con đi học thêm không ạ?'))
+ANSWER = dict(good='{Self} cảm ơn {title}, nghe {title} nói cụ thể vậy {self} yên tâm hẳn. Tối nay nhà sẽ làm cùng con như {title} dặn.',
+              ok='Dạ vâng, {self} cảm ơn {title}.',
+              poor='{Self} hỏi về con mà {title} trả lời vậy thì {self} chưa yên tâm lắm.',
+              privacy='Chuyện con nhà khác {title} đừng kể với {self} thì hơn ạ.')
+ANSWER_KID = dict(tu=dict(good='Rứa thì tôi yên tâm. Cảm ơn {title}.', poor='Tôi hỏi thật mà {title} trả lời cho qua. Tôi không vui.'),
+                  khoa=dict(good='Bà cảm ơn {title} giáo nhiều. Tối nay bà dặn cháu.'),
+                  bao=dict(good='Được, cách đó chị thấy hợp lý đấy. Để chị kèm thêm ở nhà.', poor='Chị nghĩ {title} nên xem lại cách dạy đấy.'))
+METHOD_WORD = dict(look='hình vẽ', hands='đồ vật cho con cầm thử', talk='ví dụ kể bằng lời', short='cách chia nhỏ từng bước')
+HOME_TIP = dict(math='đếm đồ vật trong nhà', read='đọc to một đoạn ngắn', think='xếp đồ chơi theo nhóm')
+REPLY = dict(sad='Cảm ơn {sp} đã báo. Ở lớp {child} dạo này hơi trầm. {Title} sẽ để ý, cho con ngồi cạnh bạn thân và hỏi chuyện riêng; ở nhà mình cứ nghe con kể nhé.',
+             worry='Dạ, ở lớp {child} đang {weak_band} môn {subject}. Tuần này {title} kèm con thêm bằng {method}; ở nhà mình cho con {tip} nhé.',
+             hw='Dạ, {title} cảm ơn nhà đã báo. {Title} sẽ giao bài nhẹ hơn cho con; con làm được tới đâu thì làm, không thức khuya.',
+             thanks='Dạ, {child} dạo này tiến bộ rõ ở môn {subject}. Nhà mình cứ khen con đúng việc con làm nhé.',
+             check='Dạ, tuần này {child} {best_band} môn {best}, còn môn {weak} thì {weak_band}. Mỗi tối nhà mình cho con {tip} nhé.')
+VAGUE = 'Dạ {sp} yên tâm, con vẫn ổn ạ.'
+BLAMING = 'Con ở nhà cũng phải chịu khó hơn chứ ạ, các bạn khác vẫn làm được.'
+START_MSG = dict(news='{Title} báo tin vui: dạo này {child} làm môn {best} rất chắc tay. Nhà mình khen con giúp {title} nhé!',
+                 help='{Title} nhắn để nhà mình cùng biết: {child} đang {weak_band} môn {weak}. {Title} sẽ kèm thêm ở lớp; mỗi tối nhà mình cho con {tip} nhé.',
+                 brief='Dạ, {title} nhắn hỏi thăm nhà mình. Con ở lớp vẫn ổn ạ.')
+START_LABEL = dict(news='Báo tin vui', help='Nhờ nhà phối hợp', brief='Hỏi thăm ngắn')
+BLAME = ('luoi', 'hu', 'hoc kem', 'kem qua', 'yeu kem', 'dot', 'cham hieu', 'phai phat', 'tai nha', 'bo me phai', 'nha minh phai',
+         'chiu kho hon', 'khong chiu hoc', 'ngoc')
+COMPARE = ('so voi', 'ban khac', 'cac ban khac', 'hon ban', 'thua ban', 'dung thu', 'dung bet', 'xep hang', 'kem nhat')
+STEP = ('tuan nay', 'toi nay', 'moi toi', 'moi ngay', 'se', 'kem them', 'cung con', 'o nha', 'hen', 'buoc', 'thu', 'goi y', 'de y')
+WARM_P = ('cam on', 'yen tam', 'chia se', 'dong hanh', 'phoi hop', 'tien bo', 'khen', 'co gang', 'vui')
+CARE_KEYS = {'v', 'day', 'pupils', 'seats', 'hw', 'books', 'parents', 'threads', 'taught', 'subject', 'seen', 'mailed', 'called', 'seq', 'log'}
+
+
+def _clamp(v: int, lo: int = 0, hi: int = 100) -> int:
+    return max(lo, min(hi, int(v)))
+
+
+def subject_of(lesson: dict) -> str:
+    return TOPIC_SUBJECT.get((lesson or {}).get('topic'), 'math')
+
+
+def band(n: int) -> str:
+    return 'còn hổng' if n < BEHIND else 'cần kèm thêm' if n < SLOW else 'theo kịp' if n < STRONG else 'rất vững'
+
+
+def mood(n: int) -> str:
+    return 'buồn, thu mình' if n < SAD else 'cần động viên' if n < LOW else 'vui vẻ' if n >= 65 else 'bình thường'
+
+
+def _new_care(c: dict, d: dict | None = None) -> dict:
+    day = c['day']
+    old = (d or {}).get('kids') or {}
+    pupils = {}
+    for kid in PUPILS:
+        m, r, th, w, v = START[kid]
+        bonus = min(10, 2 * int((old.get(kid) or {}).get('trust', 0)))  # an old save's class notebook still counts
+        pupils[kid] = dict(prog=dict(math=m, read=r, think=th), well=_clamp(w + bonus), voice=v)
+    parents = {kid: dict(trust=PARENTS[kid]['trust'], last=day - DUE + i // 2, sent=0) for i, kid in enumerate(PUPILS)}
+    return dict(v=1, day=day, pupils=pupils, seats=list(DEFAULT_SEATS), hw=None, books=[], parents=parents,
+                threads={kid: [] for kid in PUPILS}, taught=0, subject=None, seen=[], mailed=0, called=[], seq=0, log=[])
+
+
+def care(c: dict) -> dict:
+    """The class care book, brought up to today (lazy day rollover; old saves get one here)."""
+    d = data(c)
+    if d.get('care') is None:
+        d['care'] = _new_care(c, d)
+    _sync(d['care'], c['day'])
+    return d['care']
+
+
+def _log(cr: dict, text: str) -> None:
+    cr['log'] = (cr['log'] + [dict(day=cr['day'], text=text[:200])])[-12:]
+
+
+def _hw_result(cr: dict, kid: str, hw: dict) -> str:
+    p, trust = cr['pupils'][kid], cr['parents'][kid]['trust']
+    prog = p['prog'][hw['subject']]
+    r = random.Random(f'mnl-teacher-hw|{kid}|{hw["day"]}|{hw["size"]}').random()
+    miss = 0.04 + (0.12 if p['well'] < SAD else 0) + (0.10 if trust <= 2 else 0) - (0.03 if trust >= 8 else 0)
+    tired = 0.0
+    if hw['size'] == 'full':
+        miss += 0.05
+        tired = 0.08 + (0.40 if kid == 'mai' else 0) + (0.12 if kid == 'linh' else 0)
+    good = max(0.15, min(0.85, (prog - 30) / 55))
+    if r < miss:
+        return 'missing'
+    if r < miss + tired:
+        return 'tired'
+    return 'good' if r < miss + tired + (1 - miss - tired) * good else 'some'
+
+
+def _sync(cr: dict, day: int) -> None:
+    if cr['day'] >= day:
+        return
+    for dd in range(max(cr['day'] + 1, day - 6), day + 1):
+        hw = cr['hw']
+        if hw and hw['day'] < dd:
+            for kid in hw['kids']:
+                cr['seq'] += 1
+                cr['books'].append(dict(id=f'hw{cr["seq"]}', day=hw['day'], kid=kid, subject=hw['subject'], size=hw['size'],
+                                        kind=_hw_result(cr, kid, hw), mark=None))
+            cr['hw'] = None
+        keep = []
+        for b in cr['books']:
+            if b['mark'] is not None:
+                continue
+            if dd - b['day'] >= 3:  # never marked: the book goes home without a word
+                cr['pupils'][b['kid']]['well'] = _clamp(cr['pupils'][b['kid']]['well'] - 1)
+                continue
+            keep.append(b)
+        cr['books'] = keep[-24:]
+        for p in cr['pupils'].values():
+            p['well'] += max(-2, min(2, 55 - p['well']))
+        for kid, par in cr['parents'].items():
+            if dd - par['last'] > OVERDUE:
+                par['trust'] = max(1, par['trust'] - 1)
+            th = cr['threads'][kid]
+            if th and th[-1]['who'] == 'parent' and th[-1].get('ask') and dd - th[-1]['day'] >= 2 and not th[-1].get('late'):
+                th[-1]['late'] = True
+                par['trust'] = max(0, par['trust'] - 1)
+    cr['day'] = day
+    cr['seen'] = []
+    cr['called'] = []
+
+
+def voices(c: dict) -> dict:
+    return {k: p['voice'] for k, p in care(c)['pupils'].items()}
+
+
+def pupil_change(c: dict, kid: str, subject: str | None = None, prog: int = 0, well: int = 0, voice: int = 0) -> None:
+    if kid not in PUPILS:
+        return
+    p = care(c)['pupils'][kid]
+    if subject and prog:
+        p['prog'][subject] = _clamp(p['prog'][subject] + prog)
+    p['well'] = _clamp(p['well'] + well)
+    p['voice'] = _clamp(p['voice'] + voice, 0, len(VOICE_LABEL) - 1)
+
+
+def on_trust(c: dict, kid: str, delta: int) -> None:
+    """Trust moves in the notebook (incidents, roll call, help) also move how a kid feels."""
+    pupil_change(c, kid, well=2 * delta, voice=1 if delta >= 2 else 0)
+
+
+def seat_notes(seats: list[str]) -> dict:
+    """{kid: [(progress, wellbeing, note)]} from where each kid sits and who sits next to them."""
+    from .teach_lesson import KID
+    out = {k: [] for k in seats}
+    for i, kid in enumerate(seats):
+        row, window, style = i // 2, i % 2 == 0, KID[kid]['style']
+        if style == 'look' and row >= 2:
+            out[kid].append((-2, 0, 'Ngồi xa bảng, khó xem hình mẫu.'))
+        elif style == 'look' and row == 0:
+            out[kid].append((1, 0, 'Ngồi gần bảng, nhìn rõ hình mẫu.'))
+        if style == 'short' and window:
+            out[kid].append((-2, 0, 'Ngồi cạnh cửa sổ, hay nhìn ra ngoài.'))
+        elif style == 'short' and row == 0:
+            out[kid].append((1, 0, 'Ngồi gần bàn giáo viên, dễ tập trung.'))
+        if i % 2 == 0:
+            mate = seats[i + 1]
+            pair = PAIRS.get(frozenset((kid, mate)))
+            if pair:
+                fx, note = pair
+                for k, (pg, wb) in fx.items():
+                    out[k].append((pg, wb, note))
+    return out
+
+
+def after_period(s: dict, c: dict, t: dict, room: dict) -> str:
+    """A period just closed: progress and wellbeing per pupil, seats, and (once a day) parents write."""
+    from . import teach_lesson as TL
+    cr = care(c)
+    day, subj = c['day'], subject_of(t['lesson'])
+    present = TL.present_ids(room)
+    notes = seat_notes(cr['seats'])
+    before = {k: band(cr['pupils'][k]['prog'][subj]) for k in PUPILS}
+    for row in room['kids']:
+        kid = row['id']
+        if kid not in present:
+            pupil_change(c, kid, subject=subj, prog=-1)
+            continue
+        tk, mark = room['tickets'].get(kid), room['marks'].get(kid)
+        if tk is None:
+            continue
+        right = mark == TL.MARK_FOR[tk['kind']]
+        prog = (4 if right else 2) if tk['kind'] in ('right', 'slip') else (1 if right else -1) if tk['kind'] == 'copy' else -2
+        well = 1 if right else -2
+        for pg, wb, _ in notes.get(kid, []):
+            prog, well = prog + pg, well + wb
+        pupil_change(c, kid, subject=subj, prog=prog, well=well)
+        if kid not in cr['seen']:
+            cr['seen'].append(kid)
+    cr['taught'], cr['subject'] = day, subj
+    order = ['còn hổng', 'cần kèm thêm', 'theo kịp', 'rất vững']
+    after = {k: band(cr['pupils'][k]['prog'][subj]) for k in PUPILS}
+    up = [k for k in present if order.index(after[k]) > order.index(before[k])]
+    down = [k for k in present if after[k] == 'còn hổng' and before[k] != 'còn hổng']
+    parts = []
+    if up:
+        parts.append(', '.join(TL.KID[k]['name'] for k in up) + f' tiến bộ môn {SUBJECT[subj]["label"]}')
+    if down:
+        parts.append(', '.join(TL.KID[k]['name'] for k in down) + f' đang hổng {SUBJECT[subj]["label"]}')
+    if parts:
+        _log(cr, '; '.join(parts) + '.')
+    wrote = _mail(s, c, cr, set(up), subj, room) if cr['mailed'] != day else 0
+    out = ('📒 ' + '; '.join(parts) + '.') if parts else ''
+    if wrote:
+        out += f' 💌 {wrote} phụ huynh vừa nhắn tin.'
+    return out.strip()
+
+
+def _words(state: dict, c: dict, cr: dict, kid: str) -> dict:
+    """Facts about a pupil in words, for scripted lines and the AI context."""
+    from . import teach_lesson as TL
+    p = cr['pupils'][kid]
+    best = max(SUBJECT_IDS, key=lambda x: (p['prog'][x], -SUBJECT_IDS.index(x)))
+    weak = min(SUBJECT_IDS, key=lambda x: (p['prog'][x], SUBJECT_IDS.index(x)))
+    known = ((data(c).get('kids') or {}).get(kid) or {}).get('known')
+    return dict(child=TL.KID[kid]['name'], best=SUBJECT[best]['label'], weak=SUBJECT[weak]['label'],
+                best_band=band(p['prog'][best]), weak_band=band(p['prog'][weak]), tip=HOME_TIP[weak],
+                method=METHOD_WORD[TL.KID[kid]['style']] if known else 'cách con dễ hiểu nhất', sp=PARENTS[kid]['self'],
+                best_id=best, weak_id=weak)
+
+
+def _fill(text: str, w: dict) -> str:
+    for k, v in w.items():
+        text = text.replace('{' + k + '}', str(v))
+    return text
+
+
+def _mail(s: dict, c: dict, cr: dict, improved: set, subj: str, room: dict) -> int:
+    """After class, up to two parents write about their child's real week."""
+    day = c['day']
+    arcs = {tag.split(':')[0] for tag in room.get('arcs', [])}
+    cands = []
+    for kid in PUPILS:
+        th = cr['threads'][kid]
+        if th and th[-1]['who'] == 'parent' and th[-1].get('ask'):
+            continue
+        p = cr['pupils'][kid]
+        w = _words(s, c, cr, kid)
+        if p['well'] < SAD:
+            cands.append((0, kid, 'sad', None))
+        elif p['prog'][w['weak_id']] < BEHIND:
+            cands.append((1, kid, 'worry', w['weak_id']))
+        elif any(b['kid'] == kid and b['day'] == day - 1 and b['kind'] in ('tired', 'missing') for b in cr['books']):
+            cands.append((2, kid, 'hw', None))
+        elif kid in improved or kid in arcs:
+            cands.append((3, kid, 'thanks', subj))
+        elif day - cr['parents'][kid]['last'] >= DUE:
+            cands.append((4, kid, 'check', None))
+    random.Random(f'mnl-teacher-mail|{day}').shuffle(cands)
+    cands.sort(key=lambda x: x[0])
+    for _, kid, topic, sid in cands[:2]:
+        w = _words(s, c, cr, kid)
+        text = OPEN_KID.get(kid, {}).get(topic) or OPEN[topic]
+        text = _say(s, _fill(text, dict(w, subject=SUBJECT[sid]['label'] if sid else w['weak'])))
+        line = dict(who='parent', text=text, mode='scripted', day=day, ask=True, topic=topic)
+        if sid:
+            line['subject'] = sid
+        cr['threads'][kid] = (cr['threads'][kid] + [line])[-LINES_PER_THREAD:]
+    cr['mailed'] = day
+    return len(cands[:2])
+
+
+# ---- parent messages: options, rules, effects ---------------------------------
+def _awaiting(cr: dict, kid: str) -> dict | None:
+    th = cr['threads'][kid]
+    return th[-1] if th and th[-1]['who'] == 'parent' and th[-1].get('ask') else None
+
+
+def parent_options(s: dict | None, c: dict, cr: dict, kid: str) -> list[dict]:
+    """Three scripted messages (reply to the waiting message, or start one), neutral ids."""
+    w = _words(s or {}, c, cr, kid)
+    p = cr['pupils'][kid]
+    msg = _awaiting(cr, kid)
+    if msg:
+        topic = msg['topic']
+        w['subject'] = SUBJECT[msg['subject']]['label'] if msg.get('subject') in SUBJECT else w['weak']
+        rows = [('good', REPLY.get(topic, REPLY['check']), topic), ('ok', VAGUE, topic), ('poor', BLAMING, topic)]
+    else:
+        news_ok = max(p['prog'].values()) >= 60 or p['well'] >= 60
+        help_ok = min(p['prog'].values()) < SLOW or p['well'] < LOW
+        rows = [('good' if news_ok else 'ok', START_MSG['news'], 'news'), ('good' if help_ok else 'ok', START_MSG['help'], 'help'),
+                ('ok', START_MSG['brief'], 'brief')]
+    random.Random(f'mnl-teacher-popt|{kid}|{cr["day"]}|{len(cr["threads"][kid])}').shuffle(rows)
+    out = []
+    for i, (quality, text, topic) in enumerate(rows):
+        label = _fill(text, w)
+        out.append(dict(id='abc'[i], quality=quality, topic=topic, label=_say(s, label) if s is not None else label))
+    return out
+
+
+def _names_other(text: str, kid: str) -> bool:
+    """Another pupil named in a message to this parent (privacy). Sentence starts are ignored."""
+    from .teach_lesson import KID
+    for other in PUPILS:
+        if other == kid:
+            continue
+        for m in re.finditer(r'(?<!\w)' + re.escape(KID[other]['name']) + r'(?!\w)', text):
+            before = text[:m.start()].rstrip()
+            if before and before[-1] not in '.!?…:"“\n':
+                return True
+    return False
+
+
+def judge_parent(text: str, kid: str, topic: str | None) -> tuple[str, str]:
+    """Rule-based quality of a typed message to a parent → (quality, why)."""
+    from . import ai
+    from .teach_lesson import _fold, _has, KID
+    folded = _fold(text)
+    if ai.abusive(text):
+        return 'poor', 'rude'
+    if _names_other(text, kid):
+        return 'privacy', 'privacy'
+    if _has(folded, BLAME) or _has(folded, COMPARE):
+        return 'poor', 'blame'
+    if len(folded.strip()) < 8:
+        return 'poor', 'short'
+    score = 0
+    if _has(folded, [_fold(KID[kid]['name']).strip()] + [_fold(x['label']).strip() for x in SUBJECTS]):
+        score += 2
+    if _has(folded, STEP):
+        score += 1
+    if _has(folded, WARM_P):
+        score += 1
+    if score >= 3:
+        return 'good', 'rules'
+    return ('ok', 'rules') if score >= 1 or len(folded.strip()) >= 20 else ('poor', 'short')
+
+
+def parent_answer(s: dict, kid: str, quality: str) -> str:
+    par = PARENTS[kid]
+    text = ANSWER_KID.get(kid, {}).get(quality) or ANSWER[quality]
+    text = text.replace('{Self}', par['self'].capitalize()).replace('{self}', par['self'])
+    return _say(s, text)
+
+
+def _cl_parent(s: dict, c: dict, p: dict) -> dict:
+    from . import engine as e
+    need = e.need
+    cr = care(c)
+    kid = p.get('kid')
+    need(kid in PUPILS, 'Không có phụ huynh này trong lớp.')
+    day = c['day']
+    par, msg = cr['parents'][kid], _awaiting(cr, kid)
+    if not msg:
+        need(par['sent'] != day and kid not in cr['called'], 'Hôm nay đã nhắn phụ huynh này rồi. Để mai nhé.')
+    opt, text = p.get('option'), p.get('text')
+    need((opt is None) != (text is None), 'Chọn một tin soạn sẵn hoặc gõ tin của bạn.')
+    if opt is not None:
+        row = next((o for o in parent_options(s, c, cr, kid) if o['id'] == opt), None)
+        need(row, 'Tin nhắn không hợp lệ.')
+        quality, said, topic = row['quality'], row['label'], row['topic']
+    else:
+        from .teach_lesson import ANSWER_MAX
+        said = e.clean_text(text, ANSWER_MAX, 2)
+        quality, _ = judge_parent(said, kid, msg['topic'] if msg else None)
+        topic = msg['topic'] if msg else 'brief'
+    trust = dict(good=1, ok=0, poor=-1, privacy=-2)[quality]
+    if quality == 'good' and msg and msg['day'] == day:
+        trust += 1  # answered the same day
+    par['trust'] = _clamp(par['trust'] + trust, 0, MAX_TRUST_PARENT)
+    if quality == 'good':
+        pupil_change(c, kid, well=4 if msg and msg['topic'] == 'sad' else 2)
+    elif quality in ('poor', 'privacy'):
+        pupil_change(c, kid, well=-1)
+    th = cr['threads'][kid]
+    if msg:
+        msg['ask'] = False
+    answer = parent_answer(s, kid, quality)
+    th.append(dict(who='teacher', text=said, mode='scripted', day=day))
+    th.append(dict(who='parent', text=answer, mode='scripted', day=day, topic=topic, q=quality))
+    cr['threads'][kid] = th[-LINES_PER_THREAD:]
+    par['last'] = day
+    if not msg:
+        par['sent'] = day
+    extra = ''
+    if kid not in cr['called']:
+        cr['called'].append(kid)
+        if len(cr['called']) == CONTACT_GOAL:
+            c['xp'] += 4
+            extra = f' Đã giữ nhịp liên lạc tuần này ({CONTACT_GOAL} phụ huynh) · +4 XP.'
+    e.metric(c, 'class_parent_messages')
+    if quality in ('poor', 'privacy') and par['trust'] <= 1:
+        from .teach_lesson import _post
+        _post(s, c, kid, PARENTS[kid]['name'], answer, f'care-parent-{kid}-{day}')
+    name = PARENTS[kid]['name']
+    label = dict(good=f'{name} yên tâm hơn.', ok=f'{name} đã đọc tin.', poor=f'{name} chưa hài lòng.',
+                 privacy=f'{name} thấy không nên kể chuyện con nhà khác.')[quality]
+    return dict(message=label + extra, correct=quality in ('good', 'ok'), quality=quality, reply=answer)
+
+
+# ---- seats and homework -------------------------------------------------------
+def _cl_seat(s: dict, c: dict, p: dict) -> dict:
+    from . import engine as e
+    need = e.need
+    cr = care(c)
+    a, b = p.get('a'), p.get('b')
+    need(a in PUPILS and b in PUPILS and a != b, 'Chọn hai bạn khác nhau để đổi chỗ.')
+    busy = any(isinstance(t.get('room'), dict) and t['room'].get('stage') in ('teach', 'check') and t['status'] not in ('completed', 'referred', 'cancelled')
+               for t in c['tasks'] if t.get('career') == 'teacher')
+    need(not busy, 'Đang trong giờ dạy. Khép tiết rồi hãy đổi chỗ nhé.')
+    seats = cr['seats']
+    i, j = seats.index(a), seats.index(b)
+    seats[i], seats[j] = b, a
+    from .teach_lesson import KID
+    notes = seat_notes(seats)
+    said = [f'{KID[k]["name"]}: {n}' for k in (a, b) for _, _, n in notes[k]]
+    return dict(message=f'Đã đổi chỗ {KID[a]["name"]} và {KID[b]["name"]}.' + (' ' + ' '.join(dict.fromkeys(said)) if said else ''))
+
+
+def _cl_hw(s: dict, c: dict, p: dict) -> dict:
+    from . import engine as e
+    need = e.need
+    cr = care(c)
+    size = p.get('size')
+    need(size in HW_SIZES, 'Chọn lượng bài về nhà.')
+    day = c['day']
+    need(cr['taught'] == day and cr['seen'], 'Dạy xong ít nhất một tiết hôm nay rồi mới giao bài về nhà.')
+    need(not (cr['hw'] and cr['hw']['day'] == day), 'Hôm nay đã giao bài về nhà rồi.')
+    cr['hw'] = dict(day=day, subject=cr['subject'], size=size, kids=list(cr['seen']))
+    return dict(message=f'Đã giao bài {SUBJECT[cr["subject"]]["label"]} ({HW_SIZES[size]["label"].lower()}) cho {len(cr["seen"])} bạn. Mai các bạn nộp vở.')
+
+
+def _cl_hw_mark(s: dict, c: dict, p: dict) -> dict:
+    from . import engine as e
+    from .teach_lesson import KID
+    need = e.need
+    cr = care(c)
+    book = next((b for b in cr['books'] if b['id'] == p.get('book')), None)
+    need(book, 'Không có vở này.')
+    need(book['mark'] is None, 'Vở này đã chấm rồi.')
+    mark = p.get('mark')
+    need(mark in HW_MARK_IDS, 'Cách chấm không hợp lệ.')
+    book['mark'] = mark
+    kid, kind, gain = book['kid'], book['kind'], HW_SIZES[book['size']]['gain']
+    name = KID[kid]['name']
+    right = mark == HW_KINDS[kind][1]
+    if right and kind == 'good':
+        pupil_change(c, kid, subject=book['subject'], prog=gain, well=2)
+        c['xp'] += 1
+        msg = f'{name} cười tít khi đọc lời khen.'
+    elif right and kind == 'some':
+        pupil_change(c, kid, subject=book['subject'], prog=gain + 1, well=1)
+        msg = f'{name} sửa lại hai câu sai, giờ hiểu chỗ nhầm rồi.'
+    elif right:
+        pupil_change(c, kid, well=1)
+        msg = HW_WHY[kid] + (' Lần sau giao bài nhẹ hơn cho con, hoặc nhắn phụ huynh.' if kind == 'tired' else ' Có thể nhắn phụ huynh để cùng nhắc con.')
+    elif kind in ('missing', 'tired'):
+        pupil_change(c, kid, well=-3)
+        cr['parents'][kid]['trust'] = max(0, cr['parents'][kid]['trust'] - 1)
+        msg = f'{name} bị ghi thiếu bài mà không ai hỏi vì sao. Về nhà con buồn.'
+    elif mark == 'praise':
+        msg = f'{name} tưởng mình làm đúng hết, chỗ sai vẫn còn đó.'
+    elif mark == 'fix':
+        pupil_change(c, kid, well=-2)
+        msg = f'Bài của {name} đúng hết mà bị bắt chữa lại. Con hơi buồn.'
+    else:
+        pupil_change(c, kid, well=-1)
+        msg = f'{name} làm bài đầy đủ mà bị gọi hỏi riêng, con thấy như mình có lỗi.'
+    e.metric(c, 'class_homework_marked')
+    return dict(message=msg, correct=right)
+
+
+CARE_ACTIONS = dict(cl_seat=_cl_seat, cl_hw=_cl_hw, cl_hw_mark=_cl_hw_mark, cl_parent=_cl_parent)
+
+
+# ---- projection ---------------------------------------------------------------
+def care_view(c: dict) -> dict:
+    """What the planner shows. Works on a synced copy: reading never changes the save."""
+    from .teach_lesson import KID
+    d = c['ext']['data'].get('class') or {}
+    cr = copy.deepcopy(d['care']) if d.get('care') else _new_care(c, d)
+    _sync(cr, c['day'])
+    day = c['day']
+    view_c = dict(c, ext=dict(c['ext'], data=dict(c['ext']['data'], **{'class': dict(d, care=cr)})))
+    notes = seat_notes(cr['seats'])
+    pupils = []
+    for kid in PUPILS:
+        p = cr['pupils'][kid]
+        behind = [SUBJECT[x]['label'] for x in SUBJECT_IDS if p['prog'][x] < BEHIND]
+        flags = (['behind'] if behind else []) + (['sad'] if p['well'] < SAD else ['low'] if p['well'] < LOW else []) + \
+                (['opening'] if kid == 'minh' and p['voice'] >= 2 else [])
+        pupils.append(dict(id=kid, name=KID[kid]['name'], emoji=KID[kid]['emoji'], prog=dict(p['prog']), well=p['well'], mood=mood(p['well']),
+                           voice=p['voice'], voice_label=VOICE_LABEL[p['voice']], behind=behind, flags=flags, seat=cr['seats'].index(kid)))
+    seats = []
+    for i, kid in enumerate(cr['seats']):
+        seats.append(dict(i=i, row=i // 2, window=i % 2 == 0, kid=kid, name=KID[kid]['name'], emoji=KID[kid]['emoji'],
+                          notes=[dict(tone='good' if pg + wb > 0 else 'bad', text=n) for pg, wb, n in notes[kid]]))
+    hw_today = cr['hw'] if cr['hw'] and cr['hw']['day'] == day else None
+    books = [dict(id=b['id'], kid=b['kid'], name=KID[b['kid']]['name'], emoji=KID[b['kid']]['emoji'], subject=SUBJECT[b['subject']]['label'],
+                  size=HW_SIZES[b['size']]['label'], clue=HW_KINDS[b['kind']][0], mark=b['mark'], day=b['day']) for b in cr['books']]
+    parents = []
+    for kid in PUPILS:
+        par, th, msg = cr['parents'][kid], cr['threads'][kid], _awaiting(cr, kid)
+        can = bool(msg) or (par['sent'] != day and kid not in cr['called'])
+        parents.append(dict(kid=kid, child=KID[kid]['name'], emoji=KID[kid]['emoji'], name=PARENTS[kid]['name'], rel=PARENTS[kid]['rel'],
+                            trust=par['trust'], waiting=bool(msg), late=bool(msg and msg.get('late')), due=day - par['last'] >= DUE,
+                            overdue=day - par['last'] > OVERDUE, called=kid in cr['called'], can=can,
+                            thread=[dict(who=x['who'], text=x['text'], mode=x['mode'], day=x['day'], **({'canonical': x['canonical']} if x.get('canonical') else {}))
+                                    for x in th],
+                            options=[dict(id=o['id'], label=o['label']) for o in parent_options(None, view_c, cr, kid)] if can else [],
+                            start_labels=[START_LABEL[k] for k in ('news', 'help', 'brief')] if not msg else None))
+    # A fixed order: the sheet keeps open threads by position across re-renders.
+    return dict(day=day, subjects=SUBJECTS, pupils=pupils, seats=seats, busy=any(
+        isinstance(t.get('room'), dict) and t['room'].get('stage') in ('teach', 'check') and t['status'] not in ('completed', 'referred', 'cancelled')
+        for t in c['tasks'] if t.get('career') == 'teacher'),
+        hw=dict(today=dict(subject=SUBJECT[hw_today['subject']]['label'], size=HW_SIZES[hw_today['size']]['label'], count=len(hw_today['kids'])) if hw_today else None,
+                can=cr['taught'] == day and bool(cr['seen']) and not hw_today,
+                subject=SUBJECT[cr['subject']]['label'] if cr['taught'] == day and cr['subject'] else None,
+                sizes=[dict(id=k, label=v['label']) for k, v in HW_SIZES.items()]),
+        books=books, marks=HW_MARKS, parents=parents, called=len(cr['called']), goal=CONTACT_GOAL,
+        waiting=sum(1 for x in parents if x['waiting']), log=list(reversed(cr['log']))[:6],
+        voices=list(VOICE_LABEL))
+
+
+# ---- validation ---------------------------------------------------------------
+def validate_care(cr: dict, day: int) -> None:
+    from .engine import need, integer, clean_text
+    need(isinstance(cr, dict) and set(cr) == CARE_KEYS and cr['v'] == 1, 'Sổ chăm lớp không hợp lệ.')
+    integer(cr['day'], 1, 10 ** 9)
+    need(cr['day'] <= day, 'Sổ chăm lớp đi trước ngày chơi.')
+    integer(cr['taught'], 0, 10 ** 9)
+    integer(cr['mailed'], 0, 10 ** 9)
+    integer(cr['seq'], 0, 10 ** 9)
+    need(cr['subject'] in (None, *SUBJECT_IDS), 'Môn học không hợp lệ.')
+    need(isinstance(cr['pupils'], dict) and set(cr['pupils']) == set(PUPILS), 'Sổ học sinh không hợp lệ.')
+    for p in cr['pupils'].values():
+        need(isinstance(p, dict) and set(p) == {'prog', 'well', 'voice'}, 'Sổ học sinh không hợp lệ.')
+        need(isinstance(p['prog'], dict) and set(p['prog']) == set(SUBJECT_IDS), 'Tiến bộ môn học không hợp lệ.')
+        for v in p['prog'].values():
+            integer(v, 0, 100)
+        integer(p['well'], 0, 100)
+        integer(p['voice'], 0, len(VOICE_LABEL) - 1)
+    need(isinstance(cr['seats'], list) and sorted(cr['seats']) == sorted(PUPILS), 'Sơ đồ chỗ ngồi không hợp lệ.')
+    for key in ('seen', 'called'):
+        need(isinstance(cr[key], list) and len(set(cr[key])) == len(cr[key]) and all(k in PUPILS for k in cr[key]), 'Danh sách học sinh không hợp lệ.')
+    hw = cr['hw']
+    if hw is not None:
+        need(isinstance(hw, dict) and set(hw) == {'day', 'subject', 'size', 'kids'}, 'Bài về nhà không hợp lệ.')
+        integer(hw['day'], 1, day)
+        need(hw['subject'] in SUBJECT_IDS and hw['size'] in HW_SIZES, 'Bài về nhà không hợp lệ.')
+        need(isinstance(hw['kids'], list) and 0 < len(hw['kids']) == len(set(hw['kids'])) and all(k in PUPILS for k in hw['kids']), 'Bài về nhà không hợp lệ.')
+    need(isinstance(cr['books'], list) and len(cr['books']) <= 24 and len({b.get('id') for b in cr['books'] if isinstance(b, dict)}) == len(cr['books']), 'Vở bài tập không hợp lệ.')
+    for b in cr['books']:
+        need(set(b) == {'id', 'day', 'kid', 'subject', 'size', 'kind', 'mark'} and isinstance(b['id'], str) and len(b['id']) <= 20, 'Vở bài tập không hợp lệ.')
+        integer(b['day'], 1, day)
+        need(b['kid'] in PUPILS and b['subject'] in SUBJECT_IDS and b['size'] in HW_SIZES and b['kind'] in HW_KINDS and b['mark'] in (None, *HW_MARK_IDS), 'Vở bài tập không hợp lệ.')
+    need(isinstance(cr['parents'], dict) and set(cr['parents']) == set(PUPILS), 'Sổ liên lạc không hợp lệ.')
+    for par in cr['parents'].values():
+        need(isinstance(par, dict) and set(par) == {'trust', 'last', 'sent'}, 'Sổ liên lạc không hợp lệ.')
+        integer(par['trust'], 0, MAX_TRUST_PARENT)
+        integer(par['last'], -DUE, day)
+        integer(par['sent'], 0, day)
+    need(isinstance(cr['threads'], dict) and set(cr['threads']) == set(PUPILS), 'Tin nhắn phụ huynh không hợp lệ.')
+    for th in cr['threads'].values():
+        need(isinstance(th, list) and len(th) <= LINES_PER_THREAD, 'Tin nhắn phụ huynh không hợp lệ.')
+        for x in th:
+            need(isinstance(x, dict) and {'who', 'text', 'mode', 'day'} <= set(x) <= {'who', 'text', 'mode', 'day', 'canonical', 'ask', 'topic', 'late', 'q', 'subject'}, 'Tin nhắn phụ huynh không hợp lệ.')
+            need(x.get('subject') in (None, *SUBJECT_IDS), 'Tin nhắn phụ huynh không hợp lệ.')
+            need(x['who'] in ('parent', 'teacher') and x['mode'] in ('scripted', 'ai', 'guard'), 'Tin nhắn phụ huynh không hợp lệ.')
+            clean_text(x['text'], 600)
+            integer(x['day'], 1, day)
+            if 'canonical' in x:
+                clean_text(x['canonical'], 600)
+            need(type(x.get('ask', False)) is bool and type(x.get('late', False)) is bool, 'Tin nhắn phụ huynh không hợp lệ.')
+            need(x.get('topic') in (None, *TOPICS) and x.get('q') in (None, 'good', 'ok', 'poor', 'privacy'), 'Tin nhắn phụ huynh không hợp lệ.')
+            need(not x.get('ask') or x['who'] == 'parent', 'Tin nhắn phụ huynh không hợp lệ.')
+    need(isinstance(cr['log'], list) and len(cr['log']) <= 12, 'Nhật ký lớp không hợp lệ.')
+    for row in cr['log']:
+        need(isinstance(row, dict) and set(row) == {'day', 'text'}, 'Nhật ký lớp không hợp lệ.')
+        integer(row['day'], 1, day)
+        clean_text(row['text'], 200)
+
+
+# ---- AI voice jobs (server route /api/ai/class) -------------------------------
+DIRECTION = dict(
+    ask='Bạn đang giơ tay hỏi {title} đúng câu hỏi trong canonical. Hỏi lại đúng ý đó bằng giọng của bạn, một hai câu; nhút nhát thì ngập ngừng.',
+    good='Câu trả lời của {title} giúp bạn hiểu ra: vui, có thể nói lại điều mình vừa hiểu hoặc cảm ơn.',
+    ok='Bạn nghe rồi nhưng vẫn còn hơi lăn tăn, chưa hiểu hẳn vì sao; nói lễ phép.',
+    poor='Câu trả lời làm bạn ngại, buồn: bạn thu mình lại, nói rất ít, không cãi, không hỗn.',
+    ignored='Bạn chờ mãi không được gọi nên hạ tay xuống, hơi buồn.',
+    open='Bạn đang nhắn tin cho {title} chủ nhiệm của con về đúng chuyện trong canonical. Viết như tin nhắn Zalo thật, đúng tính cách; chỉ dùng thông tin trong task.',
+    p_good='{Title} vừa trả lời cụ thể, có bước tiếp theo: bạn yên tâm hơn, cảm ơn, có thể hứa phối hợp ở nhà.',
+    p_ok='{Title} trả lời chung chung: bạn lịch sự nhưng vẫn còn băn khoăn.',
+    p_poor='{Title} trả lời đổ lỗi hoặc so con với bạn khác: bạn không vui, nói thẳng nhưng lịch sự, không xúc phạm.',
+    p_privacy='{Title} vừa kể chuyện của một bạn khác: bạn thấy không nên, nhắc khéo giữ chuyện riêng của trẻ.',
+)
+
+
+def parent_card(state: dict, kid: str) -> dict:
+    from . import ai
+    from .personas import AGE_LABEL
+    from .teach_lesson import titles, KID
+    par = PARENTS[kid]
+    age = par.get('age', 'adult')
+    return dict(id='parent:' + kid, name=par['name'], role='Phụ huynh, ' + par['rel'], career='teacher', place='Lớp học Mầm Nắng',
+                age=age, age_label=AGE_LABEL[age], temperament=par['temper'], temperament_label='Phụ huynh',
+                style=ai.STYLE_GUIDE.get(par['temper'], '') + '; ' + par['style'], personality=par['style'],
+                traits=[f'Con: {KID[kid]["name"]}, học lớp 2. {KID[kid]["trait"]}.'], address=dict(self=par['self'], player=titles(state)[1]),
+                region=par['region'], particles=list(par['particles']), cares=['con tiến bộ thật, được báo tin cụ thể'], memory={})
+
+
+def _facts(state: dict, c: dict, cr: dict, kid: str) -> dict:
+    p = cr['pupils'][kid]
+    return dict(progress={SUBJECT[x]['label']: f'{band(p["prog"][x])} ({p["prog"][x]}/100)' for x in SUBJECT_IDS},
+                wellbeing=mood(p['well']), speaking_up=VOICE_LABEL[p['voice']])
+
+
+def voice_job(state: dict, kind: str, kid: str, task: str | None, op: str) -> dict | None:
+    """The scripted line /api/ai/class may reword, with what the model may know. None = nothing to voice."""
+    from . import teach_lesson as TL
+    c = (state.get('careers') or {}).get('teacher')
+    if not c or kid not in PUPILS or op not in ('voice', 'reply'):
+        return None
+    d = (c.get('ext') or {}).get('data', {}).get('class') or {}
+    cr = d.get('care')
+    title = TL.titles(state)[1]
+    if kind == 'pupil':
+        t = next((x for x in c.get('tasks', []) if x.get('id') == task and isinstance(x.get('room'), dict)), None)
+        ask = t['room'].get('ask') if t else None
+        if not ask or ask['kid'] != kid:
+            return None
+        lines = ask['lines']
+        if op == 'voice':
+            idx = 0 if ask['state'] == 'up' and ask['result'] is None and lines and lines[0]['who'] == 'pupil' else None
+            said, direction = '(giơ tay xin hỏi)', DIRECTION['ask']
+        else:
+            idx = len(lines) - 1 if ask['state'] == 'done' and len(lines) >= 3 and lines[-1]['who'] == 'pupil' else None
+            said, direction = (lines[-2]['text'] if idx else ''), DIRECTION.get(ask['result'] or 'ok', '')
+        if idx is None or lines[idx]['mode'] != 'scripted':
+            return None
+        facts = _facts(state, c, cr, kid) if cr else {}
+        context = dict(lesson=t['lesson'].get('title'), lesson_goal=t['lesson'].get('prompt'), subject=SUBJECT[subject_of(t['lesson'])]['label'],
+                       question=lines[0]['text'], answer_quality=TL.QUALITY_NOTE.get(ask['result']) if ask['result'] in TL.QUALITY else None, pupil=facts)
+        who = {'npc': TL.CARRIER[kid]} if kid in TL.CARRIER else {'card': TL.pupil_card(state, kid, dict(pupil=facts))}
+        return dict(who=who, said=said, context={k: v for k, v in context.items() if v}, canonical=lines[idx]['text'],
+                    history=TL.history_rows(lines, idx), purpose='class_question', direction=direction.replace('{title}', title),
+                    ref=dict(kind='pupil', kid=kid, task=task, index=idx))
+    if kind != 'parent' or not cr:
+        return None
+    th = cr['threads'][kid]
+    if not th or th[-1]['who'] != 'parent' or th[-1]['mode'] != 'scripted':
+        return None
+    idx, last = len(th) - 1, th[-1]
+    if op == 'voice':
+        if not last.get('ask'):
+            return None
+        said, direction = '(mở tin nhắn gửi giáo viên)', DIRECTION['open']
+    else:
+        if last.get('ask') or len(th) < 2 or th[-2]['who'] != 'teacher':
+            return None
+        said, direction = th[-2]['text'], DIRECTION.get('p_' + (last.get('q') or 'ok'), '')
+    context = dict(child=TL.KID[kid]['name'], relation=PARENTS[kid]['rel'], class_name='lớp 2, Lớp học Mầm Nắng', topic=TOPICS.get(last.get('topic'), ''),
+                   child_facts=_facts(state, c, cr, kid), trust_in_teacher='cao' if cr['parents'][kid]['trust'] >= 7 else 'thấp' if cr['parents'][kid]['trust'] <= 3 else 'vừa',
+                   teacher_reply_quality=last.get('q'))
+    direction = direction.replace('{Title}', title.capitalize()).replace('{title}', title)
+    return dict(who={'card': parent_card(state, kid)}, said=said, context={k: v for k, v in context.items() if v}, canonical=last['text'],
+                history=TL.history_rows(th, idx), purpose='parent_message', direction=direction,
+                ref=dict(kind='parent', kid=kid, task=None, index=idx))
+
+
+def rewrite(raw: dict, ref: dict, canonical: str, text: str, mode: str) -> bool:
+    """Reword one stored line in a raw save, only if it still holds the same scripted text."""
+    c = ((raw.get('careers') or {}).get('teacher')) or {}
+    if ref['kind'] == 'pupil':
+        t = next((x for x in c.get('tasks', []) if x.get('id') == ref['task'] and isinstance(x.get('room'), dict)), None)
+        ask = (t or {}).get('room', {}).get('ask')
+        lines = ask['lines'] if ask and ask.get('kid') == ref['kid'] else []
+    else:
+        cr = ((c.get('ext') or {}).get('data', {}).get('class') or {}).get('care') or {}
+        lines = (cr.get('threads') or {}).get(ref['kid']) or []
+    i = ref['index']
+    if not 0 <= i < len(lines):
+        return False
+    line = lines[i]
+    if line.get('mode') != 'scripted' or line.get('text') != canonical:
+        return False
+    line.update(text=text[:600], mode=mode, canonical=canonical[:600])
+    return True

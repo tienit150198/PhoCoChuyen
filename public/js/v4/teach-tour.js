@@ -10,6 +10,8 @@
 import {escapeHTML as esc,portrait} from '../icons.js';
 import {t as tr,language} from './i18n.js';
 import {keepBarAboveFooter} from '../careers/food_kit.js';
+import {reqList} from '../ui-kit.js';
+import {GameAPI} from '../api.js';
 
 if(typeof document!=='undefined'){
   if(!document.querySelector('link[data-teach-css]')){
@@ -127,10 +129,12 @@ function seatCue(k,R,c,reach){
 }
 function seating(t,c,R,reach=new Set()){
   const here=R.kids.filter(isHere).length;
+  const A=R.stage==='teach'&&R.ask&&['up','quiet'].includes(R.ask.state)?R.ask:null;
   const seats=R.kids.map(k=>{
     const [tone,cue]=seatCue(k,R,c,reach);
     const hint=R.stage==='plan'&&isHere(k)&&!kidStyle(c,k.id)?`<em>${esc(k.trait)}</em>`:'';
-    return `<li class="tt-seat ${tone?'tone-'+tone:''}"><span class="tt-face" aria-hidden="true">${k.emoji}</span><b>${esc(k.name)}</b><small>${esc(cue)}</small>${hint}</li>`;
+    const hand=A&&A.kid===k.id?`<span class="cl-raise${A.state==='quiet'?' quiet':''}" role="img" aria-label="${esc(A.state==='up'?k.name+' đang giơ tay':k.name+' có điều muốn hỏi')}">${A.state==='up'?'🙋 ?':'✏️'}</span>`:'';
+    return `<li class="tt-seat ${tone?'tone-'+tone:''}${hand?' cl-asking':''}">${hand}<span class="tt-face" aria-hidden="true">${k.emoji}</span><b>${esc(k.name)}</b><small>${esc(cue)}</small>${hint}</li>`;
   }).join('');
   const aside=R.stage==='roll'?`${R.kids.filter(k=>k.done).length}/${R.kids.length} đã ghi`:`${here}/${R.kids.length} có mặt`;
   return section('🪑','Sơ đồ lớp',`<div class="tt-room${R.stage==='plan'?' wide':''}"><p class="tt-front" aria-hidden="true">Bục giảng</p><ul class="tt-seats" aria-label="Chỗ ngồi của các bạn">${seats}</ul></div>`,aside,'tt-class');
@@ -166,9 +170,9 @@ function teachStage(t,c,R){
   const need=R.lost.filter(k=>!k.helped&&!k.away);
   const help=k=>`<article class="tt-kid"><div class="tt-kid-top"><span class="tt-face" aria-hidden="true">${k.emoji}</span><div><b>${esc(k.name)}</b><small>${esc(k.clue)}</small></div></div><div class="tt-methods" role="group" aria-label="Cách giúp ${esc(k.name)}">${R.methods.map(m=>act(`${em(m.emoji)}<span>${esc(m.name)}</span>`,'lesson_help',{task:t.id,kid:k.id,method:m.id},'tt-method')).join('')}</div></article>`;
   const helpBox=need.length?section('🙋','Bạn cần giúp',`<div class="tt-kids">${need.map(help).join('')}</div>`,`${need.length} bạn`):'';
-  const pending=R.pending.length>0,last=R.phase>=2;
-  const next=pending?'Xử lý chuyện trong lớp trước':need.length?`Còn ${need.length} bạn chưa hiểu bài`:'Cả lớp đang theo kịp bài 🌟';
-  return {body:(events?section('💬','Chuyện trong lớp',events):'')+seating(t,c,R)+helpBox,bar:bar(esc(next),act(last?'Thu phiếu →':`Sang hoạt động ${R.phase+2} →`,'lesson_next',{task:t.id},'primary',{disabled:pending}))};
+  const pending=R.pending.length>0,last=R.phase>=2,hand=R.ask&&R.ask.state==='up';
+  const next=pending?'Xử lý chuyện trong lớp trước':hand?`${R.ask.name} đang giơ tay`:need.length?`Còn ${need.length} bạn chưa hiểu bài`:'Cả lớp đang theo kịp bài 🌟';
+  return {body:(events?section('💬','Chuyện trong lớp',events):'')+seating(t,c,R)+askPanel(t,R)+helpBox,bar:bar(esc(next),act(last?'Thu phiếu →':`Sang hoạt động ${R.phase+2} →`,'lesson_next',{task:t.id},'primary',{disabled:pending,confirm:hand?`${R.ask.name} vẫn đang giơ tay. Sang hoạt động khác thì bạn ấy sẽ hạ tay xuống.`:''}))};
 }
 
 function checkStage(t,c,R){
@@ -181,7 +185,8 @@ function checkStage(t,c,R){
 function readyStage(t,c,R){
   const stars='⭐'.repeat(R.stars)+'☆'.repeat(3-R.stars);
   const res=`<section class="tt-result" aria-live="polite">${em('🌱')}<h3>Tiết học trọn vẹn</h3><div class="tt-stats"><div><b>${stars}</b><small>Giáo án</small></div><div><b>${R.understood}/${R.of}</b><small>Bạn hiểu bài</small></div><div><b>${t.patience??100}%</b><small>Nhịp lớp</small></div></div>${logList(R.log)}</section>`;
-  return {body:res+seating(t,c,R),bar:bar(`Gửi lời nhắn phụ huynh · <b>+${R.estimate} xu</b>`,act('Khép tiết','lesson_complete',{task:t.id,confirm:true},'primary',{confirm:'Khép tiết và gửi lời nhắn cho phụ huynh. Thù lao chỉ nhận một lần.'}))};
+  const inbox=c.classroom?.care,mail=inbox?.waiting?`<button type="button" class="btn ghost cl-inbox-link" data-action="classroom">💌 ${inbox.waiting} phụ huynh đang chờ trả lời · Mở sổ lớp</button>`:'';
+  return {body:res+askPanel(t,R)+mail+seating(t,c,R),bar:bar(`Gửi lời nhắn phụ huynh · <b>+${R.estimate} xu</b>`,act('Khép tiết','lesson_complete',{task:t.id,confirm:true},'primary',{confirm:'Khép tiết và gửi lời nhắn cho phụ huynh. Thù lao chỉ nhận một lần.'}))};
 }
 
 export function lessonV2(t,c,content,ui,state){
@@ -193,16 +198,116 @@ export function lessonV2(t,c,content,ui,state){
   return `<div class="tt tt-lesson">${timetable(t,c)}${board(t,R,index)}${hud('Nhịp lớp',focus,t,person)}<div class="tt-body">${view.body}</div>${view.bar}</div>`;
 }
 
+/* ------------------------------------------------------------ teacher: AI in class
+ * A raised hand during the lesson and the parents' message threads (classroom.js)
+ * talk to POST /api/ai/class. The server applies the rules and stores the scripted
+ * line first; the AI only rewords it (docs/superpowers/specs/2026-09-29-teacher-care-ai-design.md).
+ * This module has no `env`, so it keeps a reference to the app's GameAPI instance
+ * (captured when it accepts a state; classroomView also binds it). */
+let classApi=null;
+try{
+  const orig=GameAPI.prototype.accept;
+  if(!orig.__classAi){const wrap=function(data){classApi=this;return orig.call(this,data);};wrap.__classAi=true;GameAPI.prototype.accept=wrap;}
+}catch{/* no api module (tests) */}
+export const bindClassApi=api=>{if(api)classApi=api;};
+const clPending={},clVoiced=new Set(),clError={};
+export const classAiOn=()=>!!(classApi?.ai?.configured&&classApi?.state?.settings?.aiConsent);
+const rerender=()=>classApi?.dispatchEvent(new CustomEvent('state',{detail:{}}));
+const clQueued=(api,fn)=>{const job=api.queue.then(fn,fn);api.queue=job.catch(()=>{});return job;};
+const clRid=()=>globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+async function classSend(body,key,text){
+  const api=classApi;if(!api||clPending[key])return null;
+  clPending[key]={text:text||''};delete clError[key];rerender();
+  const rid=clRid(),send=()=>clQueued(api,()=>api.post('/api/ai/class',{...body,request_id:rid,expected_revision:api.revision},25000));
+  try{
+    let data;
+    try{data=await send();}
+    catch(error){if(error.status===409&&error.data?.state){api.accept(error.data);data=await send();}else throw error;}
+    delete clPending[key];api.accept(data);return data;
+  }catch(error){
+    delete clPending[key];
+    if(body.op!=='voice')clError[key]=error.status?(error.message||'Chưa gửi được.'):'Mất kết nối máy chủ. Thử lại nhé.';
+    rerender();return null;
+  }
+}
+/** Ask the server once to reword a fresh scripted line (question / parent message) in character. */
+export function classVoice(key,body){
+  if(!classAiOn()||clVoiced.has(key)||clPending[key])return;
+  clVoiced.add(key);setTimeout(()=>classSend({...body,op:'voice'},key,''),30);
+}
+export const classWaiting=key=>!!clPending[key];
+
+/** Chat bubbles for class lines: the teacher on the right, AI lines carry a badge. */
+export function clBubbles(lines,key,{typing='',mine=''}={}){
+  const row=l=>{
+    const me=l.who==='teacher',ai=l.mode==='ai';
+    return `<div class="cl-bub ${me?'me':'them'}${ai?' ai':''}"${me||ai?' data-no-translate':''}>${ai?`<span class="cl-ai" title="${esc('Lời gốc: '+(l.canonical||''))}" aria-label="Câu này do AI viết">AI</span>`:''}<p>${esc(l.text)}</p></div>`;
+  };
+  const wait=clPending[key];
+  const pend=wait?`${wait.text?`<div class="cl-bub me pending" data-no-translate><p>${esc(wait.text)}</p></div>`:''}<div class="cl-bub them typing" role="status" aria-label="${esc(typing||'Đang trả lời…')}"><span class="cl-dots" aria-hidden="true"><i></i><i></i><i></i></span></div>`:'';
+  return `<div class="cl-thread" role="log" aria-live="polite">${lines.map(row).join('')}${pend}</div>${clError[key]?`<p class="cl-err" role="alert">${esc(clError[key])}</p>`:''}`;
+}
+/** Scripted answers as full-width choices + a short typed answer (≤ max chars). */
+export function clReply(key,body,options,max,placeholder){
+  const busy=!!clPending[key],id='cl-in-'+key.replace(/[^a-z0-9]/gi,'-');
+  const chips=options.map(o=>`<button type="button" class="cl-chip" data-cl="${esc(key)}" data-body="${esc(JSON.stringify({...body,option:o.id}))}" data-label="${esc(o.label)}"${busy?' disabled':''}>${esc(o.label)}</button>`).join('');
+  return `<div class="cl-reply"><div class="cl-chips" role="group" aria-label="Câu soạn sẵn">${chips}</div><form class="cl-form" data-cl-form="${esc(key)}" data-body="${esc(JSON.stringify(body))}"><textarea id="${id}" name="text" data-preserve rows="2" maxlength="${max}" required placeholder="${esc(placeholder)}" aria-label="${esc(placeholder)}"></textarea><button type="submit" class="btn primary"${busy?' disabled':''}>Gửi</button></form><small class="cl-mode">${classAiOn()?'✨ Nhân vật trả lời bằng AI · đừng gõ thông tin thật':'Gõ câu của bạn hoặc chọn một câu ở trên'} · tối đa ${max} ký tự</small></div>`;
+}
+if(typeof document!=='undefined'){
+  document.addEventListener('click',e=>{
+    const b=e.target.closest?.('[data-cl]');if(!b||!classApi)return;
+    e.preventDefault();e.stopPropagation();if(b.disabled)return;
+    classSend({...JSON.parse(b.dataset.body||'{}'),op:'reply'},b.dataset.cl,b.dataset.label);
+  },true);
+  document.addEventListener('submit',e=>{
+    const f=e.target;if(!(f instanceof HTMLFormElement)||!f.dataset.clForm||!classApi)return;
+    e.preventDefault();e.stopPropagation();
+    const ta=f.querySelector('textarea'),text=(ta?.value||'').trim();if(!text||clPending[f.dataset.clForm])return;
+    ta.value='';classSend({...JSON.parse(f.dataset.body||'{}'),op:'reply',text},f.dataset.clForm,text);
+  },true);
+  document.addEventListener('keydown',e=>{
+    if(e.target?.matches?.('form[data-cl-form] textarea')&&e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&e.keyCode!==229){e.preventDefault();e.target.form?.requestSubmit();}
+  });
+}
+
+/** The pupil with a raised hand (or a question kept on scrap paper) during the main activity. */
+function askPanel(t,R){
+  const A=R.ask;if(!A)return '';
+  const key='ask:'+t.id,body={kind:'pupil',pupil:A.kid,task:t.id};
+  if(A.state==='quiet')return section('✏️',`${esc(A.name)} có điều muốn hỏi`,`<div class="cl-ask quiet"><p class="tt-tip">${esc(A.clue)}</p><div class="tt-options">${act(esc(A.invite),'lesson_invite',{task:t.id},'tt-option')}</div></div>`,'Nhút nhát');
+  if(A.state==='up'&&A.lines[0]?.mode==='scripted'&&!A.result)classVoice(key,body);
+  const voicing=clPending[key]&&!clPending[key].text&&A.state==='up';
+  const lines=voicing?A.lines.slice(1):A.lines;
+  const thread=clBubbles(lines,key,{typing:`${A.name} đang hỏi…`});
+  const tag={good:['green','💡 Hiểu ra'],ok:['amber','🤔 Còn lăn tăn'],poor:['danger','😶 Ngại hỏi'],ignored:['danger','✋ Hạ tay']}[A.result];
+  const foot=A.state==='up'&&!A.result&&A.options?clReply(key,body,A.options,A.max||200,`Trả lời ${A.name}…`):`${A.note?`<p class="tt-tip">${esc(A.note)}</p>`:''}`;
+  const head=A.state==='up'?`${A.emoji} ${esc(A.name)} giơ tay`:`${A.emoji} Câu hỏi của ${esc(A.name)}`;
+  return `<section class="tt-sec cl-ask ${A.state}" aria-label="${esc(head)}"><div class="tt-sec-head"><h3>${em('🙋')} ${head}</h3>${tag?`<span class="tag ${tag[0]}">${tag[1]}</span>`:''}</div>${thread}${foot}</section>`;
+}
+
 /* ------------------------------------------------------------ tour guide */
 const TRIP_STEPS=[['plan','Lộ trình'],['gather','Điểm hẹn'],['stop','Tham quan'],['ready','Về bến']];
 const ANGLE_ICON={history:'📜',fun:'🎈',photo:'📸'};
 const ANGLE_LABEL={history:'chuyện xưa',fun:'trò vui',photo:'góc ảnh'};
+const CALL_DONE={rest:'nghỉ ở homestay',clinic:'đã đi khám',push:'cố đi cùng đoàn'};
 
-function tripSummary(T,route){
+// The sheet is re-rendered after every action: tour folds remember whether the player opened them.
+const tourFolds=new Map();
+if(typeof document!=='undefined')document.addEventListener('toggle',e=>{const d=e.target;if(d?.dataset?.tourFold)tourFolds.set(d.dataset.tourFold,d.open);},true);
+function tourFold(key,summary,body,open=false){
+  const on=tourFolds.has(key)?tourFolds.get(key):open;
+  return `<details class="fold tt-fold" data-tour-fold="${key}"${on?' open':''}><summary>${summary}</summary><div class="fold-body">${body}</div></details>`;
+}
+/** The career's record of this leg's group (c.life.tour.group), when the trip is a leg of it. */
+function legGroup(T,c){const G=c.life?.tour?.group;return G&&T.group&&G.start===T.group.start?G:null;}
+const hardRoute=(T,route,mins)=>route.includes('hill')||mins>100||(T.weather.id==='heat'&&route.filter(id=>!T.places.find(p=>p.id===id)?.indoor).length>1);
+
+function tripSummary(T,route,G=null){
   const leg=(a,b)=>T.legs[`${a}>${b}`]||0,place=id=>T.places.find(p=>p.id===id);
   let mins=0,prev='gate';for(const id of route){mins+=leg(prev,id)+place(id).minutes;prev=id;}
   const fee=route.reduce((s,id)=>s+place(id).fee,0),tags=new Set(route.flatMap(id=>place(id).tags));
-  const happy=T.members.filter(m=>tags.has(m.wish)).length;
+  const people=T.members.filter(m=>!m.away),happy=people.filter(m=>tags.has(m.wish)).length;
   const outdoor=route.filter(id=>!place(id).indoor).length,rest=route.some(id=>place(id).tags.includes('rest'));
   const warn=[];
   if(route.length&&route.length<3)warn.push(`Chọn thêm ${3-route.length} điểm (ít nhất 3).`);
@@ -210,8 +315,10 @@ function tripSummary(T,route){
   if(T.weather.outdoor_max!=null&&outdoor>T.weather.outdoor_max)warn.push(`Nắng gắt: tối đa ${T.weather.outdoor_max} điểm ngoài trời.`);
   if(fee>T.fund)warn.push('Vé vượt quỹ đoàn.');
   if(mins>T.limit)warn.push('Lộ trình quá giờ.');
-  if(route.includes('hill')&&T.members.some(m=>m.elder))warn.push('Đồi dốc: người lớn tuổi sẽ mệt.');
-  return {mins,fee,happy,tags,warn,ok:route.length>=3&&route.length<=5&&rest&&fee<=T.fund&&mins<=T.limit&&!(T.weather.outdoor_max!=null&&outdoor>T.weather.outdoor_max)};
+  if(route.includes('hill')&&people.some(m=>m.elder))warn.push('Đồi dốc: người lớn tuổi sẽ mệt.');
+  const tired=G?G.members.filter(m=>m.energy<50&&!T.members.find(x=>x.id===m.id)?.away):[];
+  if(tired.length&&route.length&&hardRoute(T,route,mins))warn.push(`😮‍💨 ${tired.map(m=>m.name).join(', ')} đang mệt: tránh dốc, đi ≤ 100′ (−5 nhịp mỗi người).`);
+  return {mins,fee,happy,people:people.length,tags,warn,ok:route.length>=3&&route.length<=5&&rest&&fee<=T.fund&&mins<=T.limit&&!(T.weather.outdoor_max!=null&&outdoor>T.weather.outdoor_max)};
 }
 
 /** Map with the numbered stops (the same numbers as the list), done stops ticked and "you are here". */
@@ -229,7 +336,9 @@ function tripMap(T,route,at=-1,small=false){
 
 /** The group: each person's wish (planning) or what they need right now (on the road). */
 function memberCue(m,T,route){
+  if(m.away)return ['dim','🏠 Nghỉ ở homestay'];
   if(T.stage==='plan'){
+    if(m.sick)return ['warn','🤒 Đang ốm'];
     if(m.elder&&route.includes('hill'))return ['warn','⛰️ Ngại dốc'];
     const w=T.tags[m.wish],ok=route.some(id=>T.places.find(p=>p.id===id)?.tags.includes(m.wish));
     return [ok?'good':'',`${w.emoji} ${w.label}${ok?' ✓':''}`];
@@ -240,17 +349,21 @@ function memberCue(m,T,route){
   if(T.stage==='stop')return ['',`${ANGLE_ICON[m.angle]} Thích ${ANGLE_LABEL[m.angle]}`];
   return ['good','✓ Về đủ'];
 }
-function roster(T,route){
-  const full=T.stage==='plan';
-  const aside=full?`😊 ${tripSummary(T,route).happy}/${T.members.length} có điều mong`:T.stage==='gather'?`${T.members.filter(m=>!(T.events||[]).some(e=>e.who===m.id&&!e.chosen)).length}/${T.members.length} đã tới`:`${T.members.length} người`;
+function energyBar(E){
+  return E?`<span class="tt-energy tone-${E.tone||'ok'}" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${E.energy}" aria-label="Sức: ${esc(E.word)}"><i><b style="width:${E.energy}%"></b></i>${esc(E.word)}</span>`:'';
+}
+function roster(T,route,G=null){
+  const full=T.stage==='plan',n=T.present??T.members.length;
+  const aside=full?`😊 ${tripSummary(T,route,G).happy}/${n} có điều mong`:T.stage==='gather'?`${T.members.filter(m=>!m.away&&!(T.events||[]).some(e=>e.who===m.id&&!e.chosen)).length}/${n} đã tới`:`${n} người`;
   const li=m=>{
-    const [tone,cue]=memberCue(m,T,route);
-    if(full)return `<li class="${tone?'tone-'+tone:''}"><span class="tt-face" aria-hidden="true">${m.emoji}</span><div><b>${esc(m.name)}</b><small>${esc(cue)}</small>${m.elder?`<em>${esc(m.note)}</em>`:''}</div></li>`;
+    const [tone,cue]=memberCue(m,T,route),E=G?.members.find(x=>x.id===m.id);
+    if(full)return `<li class="${tone?'tone-'+tone:''}"><span class="tt-face" aria-hidden="true">${m.emoji}</span><div><b>${esc(m.name)}</b><small>${esc(cue)}</small>${energyBar(E)}${m.elder&&!E?`<em>${esc(m.note)}</em>`:''}</div></li>`;
     // On the road: one pill per person; only someone who needs care spells it out.
-    const short=tone==='warn'?cue:T.stage==='stop'?ANGLE_ICON[m.angle]:'✓';
+    const short=tone==='warn'||tone==='dim'?cue:T.stage==='stop'?ANGLE_ICON[m.angle]:'✓';
     return `<li class="${tone?'tone-'+tone:''}" title="${esc(cue)}"><span class="tt-face" aria-hidden="true">${m.emoji}</span><b>${esc(m.name)}</b><small${short===cue?'':` aria-label="${esc(cue)}"`}>${esc(short)}</small></li>`;
   };
-  return section('👥','Đoàn hôm nay',`<ul class="tt-group${full?'':' compact'}">${T.members.map(li).join('')}</ul>`,aside);
+  const title=T.group?`Đoàn ${T.group.days} ngày · ngày ${T.group.leg+1}/${T.group.days}`:'Đoàn hôm nay';
+  return section('👥',title,`<ul class="tt-group${full?'':' compact'}">${T.members.map(li).join('')}</ul>`,aside);
 }
 
 function itinerary(T){
@@ -263,32 +376,92 @@ function itinerary(T){
   return `<ol class="tt-itin" aria-label="Lịch trình"><li class="gate ${T.stage==='gather'?'now':'done'}"><i aria-hidden="true">${T.gate.emoji}</i><span><b>${esc(T.gate.name)}</b><small>Điểm hẹn · xuất phát</small></span></li>${rows}</ol>`;
 }
 
-function planTrip(t,T,ui){
-  ui.tourRoute??=[];const route=ui.tourRoute.filter(id=>T.places.some(p=>p.id===id&&!p.closed)).slice(0,5),S=tripSummary(T,route);
-  const row=p=>{const n=route.indexOf(p.id),full=route.length>=5&&n<0;return local(`${n>=0?`<i class="tt-badge">${n+1}</i>`:'<i class="tt-badge off" aria-hidden="true">＋</i>'}<span class="tt-place-emoji" aria-hidden="true">${p.emoji}</span><span class="tt-place-main"><b>${esc(p.name)}</b><small>${p.closed?`🚧 ${esc(p.closed)}`:`${p.tags.map(g=>T.tags[g].emoji).join(' ')} · ${p.indoor?'trong nhà':'ngoài trời'}`}</small></span><span class="tt-place-cost"><b>${p.minutes}′</b><small>${p.fee?p.fee+' xu':'miễn phí'}</small></span>`,'tourRoute',{place:p.id},'tt-place'+(n>=0?' picked':''),Boolean(p.closed)||full,n>=0?`Bỏ điểm ${n+1}: ${p.name}`:`Thêm ${p.name}`,n>=0);};
-  const top=`<div class="tt-bar-stats"><span class="${S.mins>T.limit?'bad':''}">⏱ ${S.mins}/${T.limit}′</span><span class="${S.fee>T.fund?'bad':''}">🎟 ${S.fee}/${T.fund} xu</span><span>😊 ${S.happy}/${T.members.length}</span></div>`;
-  const next=!route.length?'Chạm 3–5 điểm theo thứ tự đi':S.warn[0]||`${route.length} điểm · đủ điều kiện. Chốt nhé!`;
-  const places=section('🗺️','Chọn điểm theo thứ tự đi',`<p class="tt-tip">${esc(T.weather.emoji)} ${esc(T.weather.text)}</p><div class="tt-split">${tripMap(T,route)}<div class="tt-places">${T.places.map(row).join('')}</div></div>${S.warn.length>1?`<ul class="tt-warn">${S.warn.map(w=>`<li>⚠️ ${esc(w)}</li>`).join('')}</ul>`:''}`,`${route.length}/5 điểm`);
-  return {body:roster(T,route)+places,bar:bar(esc(next),local('↶ Chọn lại','tourReset',{},'btn ghost',!route.length)+act('Chốt lộ trình →','tour_plan',{task:t.id,route,v:2},'primary',{disabled:!S.ok}),top)};
+/** Someone in a multi-day group woke up sick: decide before the route. */
+const FALLBACK_CARE=[['rest','Cho nghỉ ở homestay, để lại thuốc hạ sốt','1 món trong túi sơ cứu'],['clinic','Đưa ra trạm y tế khám, rồi đi nhẹ cùng đoàn','4 xu tiền khám'],['push','Động viên cố đi cho trọn chuyến','']];
+function sickPending(T,G){return Boolean(T.care?.sick?!T.care.call:T.stage==='plan'&&G?.sick&&!G.call&&T.group?.leg===G.leg);}
+function sickCard(t,T,G){
+  const C=T.care;
+  if(C?.sick&&C.call)return `<article class="tt-event done ${C.mistake?'oops':''}"><header>${em(C.emoji||'🤒')}<b>${esc(C.name)} · ${esc(CALL_DONE[C.call]||'')}</b></header><p class="tt-outcome">${esc(C.outcome||'')}</p>${C.mistake?'<div class="tt-chips"><span class="tag danger">Chưa ổn</span></div>':''}</article>`;
+  const who=C?.sick?C:G?.sick&&sickPending(T,G)?(()=>{const m=G.members.find(x=>x.id===G.sick);return {name:m?.name||'',emoji:m?.emoji||'🤒',text:`Sáng nay ${m?.name||''} ${G.sick_text}.`,options:FALLBACK_CARE.map(([id,label,note])=>({id,label,note}))};})():null;
+  if(!who)return '';
+  return `<article class="tt-event tt-sick" aria-live="polite"><header>${em('🤒')}<div><small>Cần bạn quyết trước khi chốt lộ trình</small><b>${esc(who.text)}</b></div></header><div class="tt-options">${who.options.map(o=>act(`<span>${esc(o.label)}</span>${o.note?`<small>${esc(o.note)}</small>`:''}`,'tour_care',{task:t.id,option:o.id},'tt-option')).join('')}</div></article>`;
 }
 
-function gatherTrip(t,T){
-  const late=(T.events||[]).find(e=>!e.chosen);
+/** Việc chăm hôm nay: partners to call, the kit, tomorrow's weather. */
+function carePanel(t,T,c){
+  const X=c.life?.tour;if(!X)return '';
+  const G=X.group?.active?X.group:null,k=X.kit,f=X.forecast,rows=[],btns=[];let todo=0,call=0,lunch=false;
+  if(G){
+    if(G.night){rows.push({ok:G.called?true:null,icon:'🏡',label:'Báo homestay tối nay',note:G.called?'Cô Hạnh đã dọn chỗ cho đoàn':'Số khách, giờ về, ai ăn kiêng',tone:G.called?'':'warn'});if(!G.called){todo++;call++;btns.push(act('🏡 Báo homestay','tour_partner',{partner:'homestay'},'small'));}}
+    rows.push({ok:G.lunch?true:G.departed?false:null,icon:'🍚',label:'Cơm trưa cho đoàn',note:G.lunch?'Dì Năm giữ sẵn bàn':G.departed?'Đoàn đã đi, không kịp đặt':'Đặt trước giờ xuất phát',tone:!G.lunch&&!G.departed?'warn':''});
+    if(!G.lunch&&!G.departed){todo++;call++;lunch=true;btns.push(act('🍚 Đặt cơm trưa','tour_partner',{partner:'restaurant'},'small'));}
+    if(G.tomorrow){rows.push({ok:G.boat_tomorrow?true:null,icon:'🛶',label:'Đò sớm ngày mai',note:G.boat_tomorrow?'Ông Bảy chờ ở bến lúc 6 giờ':f.boat?`Tùy chọn · nhịp đoàn +8 · ${X.boat_price} xu`:`Mai ${f.name.toLowerCase()}: đò nghỉ`});if(!G.boat_tomorrow&&f.boat)btns.push(act(`🛶 Đặt đò mai · ${X.boat_price} xu`,'tour_partner',{partner:'boat',when:'tomorrow'},'small'));}
+    else if(X.boat_same_day&&!G.boat_today&&!G.departed&&T.stage==='plan')btns.push(act(`🛶 Đò sáng nay · ${X.boat_price} xu`,'tour_partner',{partner:'boat',when:'today'},'small'));
+  }else if(X.upcoming)rows.push({ok:null,icon:'👥',label:X.upcoming.start===c.day?'Đoàn nhiều ngày tới hôm nay':`Đoàn ${X.upcoming.days} ngày tới vào ngày ${X.upcoming.start}`,note:'Cùng một đoàn, đi nhiều ngày'});
+  const low=k.mic<k.mic_use*3&&!k.charging;
+  rows.push({ok:k.charging||!low?true:null,icon:'🔋',label:'Pin loa cài áo',value:`${k.mic}%`,note:k.charging?'Đang sạc, sáng mai đầy':low?'Sắp hết: cắm sạc qua đêm':'',tone:k.mic<k.mic_use&&!k.charging?'danger':low?'warn':''});
+  if(low)todo++;
+  if(!k.charging&&k.mic<=60)btns.push(act('🔋 Cắm sạc loa','tour_kit',{item:'mic'},'small'));
+  rows.push({ok:k.aid>=2?true:null,icon:'🩹',label:'Túi sơ cứu',value:`${k.aid}/${k.aid_max}`,note:k.aid<2?'Dầu gió, gói bù nước, thuốc hạ sốt sắp hết':'',tone:k.aid===0?'danger':k.aid<2?'warn':''});
+  if(k.aid<2)todo++;
+  if(k.aid<k.aid_max&&(k.aid<4||f.id==='heat'))btns.push(act(`🩹 Bổ sung · ${(k.aid_max-k.aid)*k.aid_price} xu`,'tour_kit',{item:'aid'},'small'));
+  rows.push({ok:k.flag>=k.flag_worn?true:null,icon:'🚩',label:'Cờ dẫn đoàn',value:`${k.flag}%`,note:k.flag<k.flag_worn?'Bạc màu, khách khó nhìn thấy':'',tone:k.flag<k.flag_worn?'warn':''});
+  if(k.flag<k.flag_worn)todo++;
+  if(k.flag<60)btns.push(act(`🚩 Khâu cờ · ${k.flag_fix} xu`,'tour_kit',{item:'flag'},'small'));
+  const body=reqList(rows,esc,'Việc chăm hôm nay')+(btns.length?`<div class="tt-care-btns">${btns.join('')}</div>`:'')+`<p class="tt-forecast">${em(f.emoji)} <span><b>Ngày mai: ${esc(f.name)}</b> · ${esc(f.tip)}</span></p>`;
+  const sum=`${em('📋')} <span>Việc chăm hôm nay</span>${todo?`<b class="tt-count">${todo} việc chờ</b>`:'<small class="good-text">✓ Ổn</small>'}`;
+  // Open by itself only when a partner call is waiting before the group leaves (and no sick guest comes first).
+  return tourFold('care',sum,body,(call>0&&T.stage==='plan'&&!sickPending(T,G?legGroup(T,c):null))||(lunch&&T.stage==='gather'));
+}
+
+/** Partners, the place notebook, the booking page and the group's diary. */
+function bookPanel(T,c){
+  const X=c.life?.tour;if(!X)return '';
+  const hearts=n=>`<span class="tt-hearts" aria-label="Bậc ${n}/5">${'♥'.repeat(n)}<i>${'♥'.repeat(5-n)}</i></span>`;
+  const partners=`<ul class="tt-partners">${X.partners.map(p=>`<li><span class="tt-face" aria-hidden="true">${p.emoji}</span><div><b>${esc(p.name)}</b><small>${esc(p.who)} · ${esc(p.label)} ${hearts(p.level)}</small><em>${esc(p.perk)}</em></div></li>`).join('')}</ul>`;
+  const R=X.rating;
+  const rating=R.n?`<div class="tt-rating"><div class="tt-rating-bars" role="img" aria-label="${esc(`${R.n} đánh giá gần nhất: ${R.stars.join(', ')} sao`)}">${R.stars.map(s=>`<i class="s${s}" style="height:${s*20}%"></i>`).join('')}</div><p><b>${R.avg}★</b> · ${R.n} đánh giá gần nhất${R.featured?' <span class="tag green">⭐ Được đề xuất</span>':R.thin?' <span class="tag amber">Ít người đặt</span>':''}</p><small>Từ 5 đánh giá, trung bình ${R.goal}★ trở lên: trang đặt tour đề xuất bạn, thêm một đoàn mỗi sáng.</small></div>`:'<p class="tt-tip">Chưa có đánh giá nào trên trang đặt tour.</p>';
+  const know=`<ul class="tt-know">${X.know.map(k=>`<li class="lv${k.level}">${em(k.emoji)}<span>${esc(k.name)}</span><small>${k.level===2?'🗝️ Góc ẩn':k.level===1?`📖 còn ${k.need} → 🗝️`:`${k.n}/${X.know_at?.[0]??4}`}</small></li>`).join('')}</ul>`;
+  const G=legGroup(T,c)||X.group;
+  const diary=G?.diary?.length?`<h4>📔 Nhật ký đoàn ${G.days} ngày</h4><ol class="tt-diary">${G.diary.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`:'';
+  const opened=X.know.filter(k=>k.level).length;
+  return tourFold('book',`${em('🤝')} <span>Bạn hàng · Sổ tay · Đánh giá</span>${R.avg?`<small>${R.avg}★</small>`:''}`,
+    `<h4>🤝 Bạn hàng</h4>${partners}<h4>⭐ Trang đặt tour</h4>${rating}<h4>📖 Sổ tay điểm đến${opened?` · mở ${opened}/${X.know.length}`:''}</h4><p class="tt-tip">Kể hợp đoàn ${X.know_at?.[0]??4} lần ở một điểm để mở chuyện ít ai biết, ${X.know_at?.[1]??10} lần để mở góc ẩn.</p>${know}${diary}`);
+}
+
+function planTrip(t,T,ui,c){
+  const G=legGroup(T,c);
+  ui.tourRoute??=[];const route=ui.tourRoute.filter(id=>T.places.some(p=>p.id===id&&!p.closed)).slice(0,5),S=tripSummary(T,route,G);
+  const row=p=>{const n=route.indexOf(p.id),full=route.length>=5&&n<0;return local(`${n>=0?`<i class="tt-badge">${n+1}</i>`:'<i class="tt-badge off" aria-hidden="true">＋</i>'}<span class="tt-place-emoji" aria-hidden="true">${p.emoji}</span><span class="tt-place-main"><b>${esc(p.name)}</b><small>${p.closed?`🚧 ${esc(p.closed)}`:`${p.tags.map(g=>T.tags[g].emoji).join(' ')} · ${p.indoor?'trong nhà':'ngoài trời'}`}</small></span><span class="tt-place-cost"><b>${p.minutes}′</b><small>${p.fee?p.fee+' xu':'miễn phí'}</small></span>`,'tourRoute',{place:p.id},'tt-place'+(n>=0?' picked':''),Boolean(p.closed)||full,n>=0?`Bỏ điểm ${n+1}: ${p.name}`:`Thêm ${p.name}`,n>=0);};
+  const top=`<div class="tt-bar-stats"><span class="${S.mins>T.limit?'bad':''}">⏱ ${S.mins}/${T.limit}′</span><span class="${S.fee>T.fund?'bad':''}">🎟 ${S.fee}/${T.fund} xu</span><span>😊 ${S.happy}/${S.people}</span></div>`;
+  const sick=sickPending(T,G);
+  const next=sick?'Quyết định cho người ốm trước đã':!route.length?'Chạm 3–5 điểm theo thứ tự đi':S.warn[0]||`${route.length} điểm · đủ điều kiện. Chốt nhé!`;
+  const card=sickCard(t,T,G);
+  const places=section('🗺️','Chọn điểm theo thứ tự đi',`<p class="tt-tip">${esc(T.weather.emoji)} ${esc(T.weather.text)}</p><div class="tt-split">${tripMap(T,route)}<div class="tt-places">${T.places.map(row).join('')}</div></div>${S.warn.length>1?`<ul class="tt-warn">${S.warn.map(w=>`<li>⚠️ ${esc(w)}</li>`).join('')}</ul>`:''}`,`${route.length}/5 điểm`);
+  return {first:card?section('🤒','Người ốm sáng nay',card):'',body:roster(T,route,G)+places,bar:bar(esc(next),local('↶ Chọn lại','tourReset',{},'btn ghost',!route.length)+act('Chốt lộ trình →','tour_plan',{task:t.id,route,v:2},'primary',{disabled:!S.ok||sick}),top)};
+}
+
+function gatherTrip(t,T,c){
+  const G=legGroup(T,c),late=(T.events||[]).find(e=>!e.chosen);
   const events=(T.events||[]).map(ev=>eventCard(ev,'tour_call',t.id)).join('');
   const route=section('🧭','Lộ trình đã chốt',`<div class="tt-split">${tripMap(T,T.route)}${itinerary(T)}</div>`,`${T.route.length} điểm`);
-  return {body:(events?section('📍',`Điểm hẹn · ${esc(T.gate.name)}`,events):'')+roster(T,T.route)+route,
-    bar:bar(esc(late?'Đoàn chưa đủ người: xử lý trước khi đi':`Đủ ${T.members.length}/${T.members.length} người ở ${T.gate.name}`),act('Xuất phát →','tour_depart',{task:t.id},'primary',{disabled:Boolean(late)}))};
+  const n=T.present??T.members.length,sick=T.care?.sick&&T.care.call?section('🤒','Người ốm sáng nay',sickCard(t,T,G)):'';
+  return {body:(events?section('📍',`Điểm hẹn · ${esc(T.gate.name)}`,events):'')+sick+roster(T,T.route,G)+route,
+    bar:bar(esc(late?'Đoàn chưa đủ người: xử lý trước khi đi':`Đủ ${n}/${n} người ở ${T.gate.name}`),act('Xuất phát →','tour_depart',{task:t.id},'primary',{disabled:Boolean(late)}))};
 }
 
-function stopTrip(t,T){
-  const H=T.here,pending=(T.events||[]).some(e=>!e.chosen),last=T.at===T.route.length-1;
-  const fans=a=>T.members.filter(m=>m.angle===a).length;
+function stopTrip(t,T,c){
+  const H=T.here,pending=(T.events||[]).some(e=>!e.chosen),last=T.at===T.route.length-1,X=c.life?.tour;
+  const fans=a=>T.members.filter(m=>m.angle===a&&!m.away).length;
   const tell=H.told?`<blockquote class="tt-quote">${ANGLE_ICON[H.told]} “${esc(H.line)}”</blockquote>`:`<div class="tt-angles" role="group" aria-label="Cách kể ở điểm này">${T.angles.map(a=>act(`${em(a.emoji)}<span>${esc(a.label)}</span><small>${fans(a.id)} người thích</small>`,'tour_tell',{task:t.id,angle:a.id},'tt-angle')).join('')}</div>`;
+  const K=X?.know?.find(k=>k.id===H.id);
+  const book=K?`<p class="tt-note">${K.level===2?`🗝️ Sổ tay: kể hợp đoàn là dẫn được vào ${esc(K.spot||'góc ẩn')}`:K.level===1?`📖 Sổ tay: có chuyện ít ai biết · kể hay thêm ${K.need} lần để mở góc ẩn`:`📖 Sổ tay: kể hay thêm ${K.need} lần để mở chuyện ít ai biết`}</p>`:'';
+  const mic=X?.kit?`<span class="${X.kit.mic<X.kit.mic_use?'bad-text':X.kit.mic<X.kit.mic_use*3?'tt-low':''}">🔋 ${X.kit.mic}%</span>`:'';
   const nextStop=last?null:T.places.find(p=>p.id===T.route[T.at+1]);
   const here=`<div class="tt-here"><span aria-hidden="true">${H.emoji}</span><div><small>Điểm ${T.at+1}/${T.route.length} · đang ở đây</small><h3>${esc(H.name)}</h3><p>${H.tags.map(g=>`${T.tags[g].emoji} ${esc(T.tags[g].label)}`).join(' · ')}</p></div></div>`;
   const events=(T.events||[]).map(ev=>eventCard(ev,'tour_call',t.id)).join('');
   const next=pending?'Còn chuyện cần xử lý':!H.told?'Kể chuyện cho đoàn trước đã':nextStop?`Tiếp theo: ${nextStop.emoji} ${nextStop.name}`:'Điểm cuối. Đếm đoàn rồi về bến';
-  return {body:tripMap(T,T.route,T.at,true)+here+(events?section('⚠️','Chuyện trên đường',events):'')+section('🎙️','Kể gì cho đoàn nghe?',tell,H.told?'✓ Đã kể':'')+roster(T,T.route),
+  return {body:tripMap(T,T.route,T.at,true)+here+(events?section('⚠️','Chuyện trên đường',events):'')+section('🎙️','Kể gì cho đoàn nghe?',tell+book,H.told?'✓ Đã kể':mic)+roster(T,T.route,legGroup(T,c)),
     bar:bar(esc(next),act(last?'Đếm đoàn & về bến →':'Đếm đoàn & đi tiếp →','tour_next',{task:t.id},'primary',{disabled:pending||!H.told}))};
 }
 
@@ -301,12 +474,12 @@ function readyTrip(t,T){
 
 export function tripV2(t,c,content,ui){
   const T=t.trip,person=content.npcs.find(n=>n.id===t.npc);
-  const view=T.stage==='plan'?planTrip(t,T,ui):T.stage==='gather'?gatherTrip(t,T):T.stage==='stop'?stopTrip(t,T):readyTrip(t,T);
+  const view=T.stage==='plan'?planTrip(t,T,ui,c):T.stage==='gather'?gatherTrip(t,T,c):T.stage==='stop'?stopTrip(t,T,c):readyTrip(t,T);
   const mood=c.life?.mode==='calm'?100:(t.patience??100);
   const at=TRIP_STEPS.findIndex(x=>x[0]===T.stage);
-  const chips=`<span class="tag">${esc(T.weather.emoji)} ${esc(T.weather.name)}</span><span class="tag">🎟 Quỹ ${T.stage==='plan'?T.fund:T.fund_left} xu</span>${T.wallet?`<span class="tag amber">👛 Bù ${T.wallet} xu</span>`:''}<span class="tag">⏱ ${T.stage==='plan'?'≤ '+T.limit:T.clock+'/'+T.limit}′</span>${T.tier>1?`<span class="tt-tier" aria-label="Độ khó ${T.tier}">${'★'.repeat(T.tier)}</span>`:''}`;
+  const chips=`${T.group?`<span class="tag blue">👥 Đoàn ${T.group.days} ngày · ${T.group.leg+1}/${T.group.days}</span>`:''}<span class="tag">${esc(T.weather.emoji)} ${esc(T.weather.name)}</span><span class="tag">🎟 Quỹ ${T.stage==='plan'?T.fund:T.fund_left} xu</span>${T.wallet?`<span class="tag amber">👛 Bù ${T.wallet} xu</span>`:''}<span class="tag">⏱ ${T.stage==='plan'?'≤ '+T.limit:T.clock+'/'+T.limit}′</span>${T.tier>1?`<span class="tt-tier" aria-label="Độ khó ${T.tier}">${'★'.repeat(T.tier)}</span>`:''}`;
   const steps=`<ol class="tt-trail" aria-label="Các chặng">${TRIP_STEPS.map(([,l],i)=>`<li class="${i<at?'done':i===at?'now':''}"${i===at?' aria-current="step"':''}><i aria-hidden="true">${i<at?'✓':i+1}</i><span>${esc(l)}</span></li>`).join('')}</ol>`;
-  return `<div class="tt tt-trip"><div class="tt-trip-top">${chips}</div>${steps}${hud('Nhịp đoàn',mood,t,person)}<div class="tt-body">${view.body}</div>${view.bar}</div>`;
+  return `<div class="tt tt-trip"><div class="tt-trip-top">${chips}</div>${steps}${hud('Nhịp đoàn',mood,t,person)}<div class="tt-body">${view.first||''}${carePanel(t,T,c)}${view.body}${bookPanel(T,c)}</div>${view.bar}</div>`;
 }
 
 export const v2Stage=t=>t?.room?({roll:'Điểm danh đầu giờ',plan:'Soạn ba hoạt động',teach:'Dạy và giúp từng bạn',check:'Phản hồi phiếu cuối tiết',ready:'Khép tiết'}[t.room.stage]):t?.trip?({plan:'Chọn lộ trình hợp đoàn',gather:'Tập trung ở điểm hẹn',stop:'Kể chuyện và giữ đoàn',ready:'Khép chuyến'}[t.trip.stage]):null;

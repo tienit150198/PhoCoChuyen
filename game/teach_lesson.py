@@ -17,7 +17,10 @@ from __future__ import annotations
 import copy
 import functools
 import itertools
+import json
+import os
 import random
+import re
 
 PLAN_MINUTES = 35
 PLAN_MIN = 25
@@ -392,6 +395,9 @@ def _trust(c: dict, room: dict, kid: str, delta: int) -> None:
     while row['beat'] < 3 and row['trust'] >= (row['beat'] + 1) * 3:
         row['beat'] += 1
         room['arcs'].append(f'{kid}:{row["beat"]}')
+    # The care loop: every trust change also moves how the kid feels in class.
+    from . import classroom
+    classroom.on_trust(c, kid, delta)
 
 
 def _focus(t: dict, delta: int) -> None:
@@ -446,6 +452,9 @@ def handle(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         present = present_ids(room)
         lost = [k for k in present if KID[k]['style'] in parts['missing'] or k in room['stuck']]
         room.update(plan=list(plan), stars=stars, parts=parts, lost=lost, stage='teach', phase=0)
+        ask = make_ask(c, t, room, s)
+        if ask:
+            room['ask'] = ask
         _focus(t, (stars - 3) * 12)
         t['status'] = 'in_progress'
         return dict(message=f'Giáo án đã chốt: {stars}/3 sao. Vào tiết thôi!', celebrate=stars == 3)
@@ -490,7 +499,10 @@ def handle(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         need(stage == 'teach', 'Chưa tới phần dạy trên lớp.')
         pending = [x['id'] for x in room['events'] if x['phase'] == room['phase'] and x['id'] not in room['calls']]
         need(not pending, 'Còn một chuyện trong lớp cần xử lý trước.')
+        lowered = _lower_hand(c, room)
         room['phase'] += 1
+        if lowered and room['phase'] < 3:
+            return dict(message=f'{lowered} Sang hoạt động {room["phase"] + 1}: {CARD[room["plan"][room["phase"]]]["name"]}.')
         if room['phase'] < 3:
             return dict(message=f'Sang hoạt động {room["phase"] + 1}: {CARD[room["plan"][room["phase"]]]["name"]}.')
         room['stage'] = 'check'
@@ -521,6 +533,8 @@ def handle(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         need(stage == 'ready', 'Còn phiếu chưa có phản hồi.')
         need(p.get('confirm') is True, 'Xác nhận khép tiết trước nhé.')
         return _finish(s, c, t, room)
+    if name in ('invite', 'answer'):
+        return _ask_action(s, c, t, room, name, p)
     raise e.GameError('Thao tác tiết học không hợp lệ.')
 
 
@@ -644,6 +658,10 @@ def _finish(s: dict, c: dict, t: dict, room: dict) -> dict:
         _post(s, c, kid, KID[kid]['guardian'], parent, f'{t["id"]}:arc:{tag}')
         e.remember(s, c, CARRIER.get(kid, PARENT_NPC), line, t['id'])
     msg = f'Khép tiết: {got}/{total} bạn hiểu bài · +{r["pay"]} xu.'
+    from . import classroom
+    care_note = classroom.after_period(s, c, t, room)
+    if care_note:
+        msg += ' ' + care_note
     if cq.slips(t):
         msg += ' ' + parent_reaction(s, t, r)
     return dict(message=msg, celebrate=got == total and not cq.slips(t))
@@ -675,6 +693,354 @@ def parent_reaction(s: dict, t: dict, r: dict) -> str:
     if 'kiểm tra' in r['message']:
         out += ' Nhà trường sẽ kiểm tra lại chuyện này.'
     return out
+
+
+# ------------------------------------------------------------------ a raised hand
+# During the main activity one pupil may raise a hand with a question about the
+# lesson. The teacher taps a scripted answer or types a short one; simple rules
+# (never the model's words) decide how much it helped. The pupil's question and
+# reaction are scripted lines the server may reword in the pupil's own voice
+# (voice() below, guarded like /api/ai/chat). A shy pupil (low "voice") does not
+# raise a hand: the teacher can walk over and invite the question.
+ASK_PHASE = 1
+ANSWER_MAX = 200
+QUALITY = ('good', 'ok', 'poor')
+ASK_STATES = ('quiet', 'up', 'done', 'down')
+QUESTIONS = {
+    'Cộng những điều nhỏ': dict(
+        text='{Title} ơi, sao mình không đếm lại từ 1 mà đếm tiếp từ 3 được ạ?',
+        keys=('dem tiep', 'dem them', 'giu so', 'nho so', 'tu 3', 'so 3', 'dem roi', 'da dem'),
+        answers=(('good', 'Vì 3 ngôi sao đầu con đếm rồi. Con giữ số 3 trong đầu rồi đếm thêm: 4, 5, 6, 7.'),
+                 ('ok', 'Đếm kiểu nào cũng ra 7 con ạ.'),
+                 ('poor', '{Title} vừa giảng rồi mà, con chú ý vào.'))),
+    'Chia đều giỏ bút': dict(
+        text='Nếu một bàn lấy 5 bút thì có còn là chia đều không {Title}?',
+        keys=('bang nhau', 'nhu nhau', 'deu nhau', 'moi ban', '4 but', 'khong deu', 'khong con'),
+        answers=(('good', 'Không con ạ. Chia đều là bàn nào cũng bằng nhau: mỗi bàn 4 bút.'),
+                 ('ok', 'Chắc là không, con làm tiếp đi.'),
+                 ('poor', 'Hỏi linh tinh quá, làm bài đi con.'))),
+    'Nhìn nhịp hoa văn': dict(
+        text='Nếu con vẽ thêm một cái lá nữa thì hình tiếp theo là gì ạ?',
+        keys=('xen ke', 'luan phien', 'lap lai', 'nhip', 'sau la', 'la hoa'),
+        answers=(('good', 'Hoa và lá cứ xen kẽ nhau. Sau lá là hoa, con đọc to cái nhịp “hoa – lá” thử xem.'),
+                 ('ok', 'Là hoa đó con.'),
+                 ('poor', 'Nhìn bảng tự nghĩ đi.'))),
+    'Đọc lời nhắn nhỏ': dict(
+        text='Nếu thư không ghi màu kệ thì mình tìm sách ở đâu ạ?',
+        keys=('doc lai', 'chi tiet', 'trong thu', 'hoi lai', 'nguoi viet', 'tim chu', 'khong doan'),
+        answers=(('good', 'Mình đọc lại lời nhắn tìm chi tiết. Thư không ghi thì hỏi lại người viết, không đoán bừa.'),
+                 ('ok', 'Thì con tìm khắp lớp.'),
+                 ('poor', 'Thư ghi rồi mà, hỏi làm gì.'))),
+    'Những chiếc lá giấy': dict(
+        text='{Title} ơi, con gấp 3 lá mà rách mất 1 lá thì còn mấy lá ạ?',
+        keys=('bot', 'tru', 'con lai', 'dem lai', '7 la', 'con 7'),
+        answers=(('good', 'Rách 1 lá thì mình bớt đi 1: 8 lá bớt 1 còn 7 lá. Con đếm lại bằng que tính xem.'),
+                 ('ok', 'Còn ít hơn một chút con ạ.'),
+                 ('poor', 'Đừng làm rách là được.'))),
+    'Hình nào khác nhóm?': dict(
+        text='Hình tròn to với hình tròn nhỏ có cùng một nhóm không ạ?',
+        keys=('cung nhom', 'hinh dang', 'deu tron', 'deu la hinh tron', 'to nho', 'khong quan trong'),
+        answers=(('good', 'Cùng nhóm con ạ. Mình xếp theo hình dạng, to hay nhỏ vẫn là hình tròn.'),
+                 ('ok', 'Chắc là cùng nhóm.'),
+                 ('poor', 'Câu này dễ mà cũng hỏi.'))),
+    'Lịch trực thư viện': dict(
+        text='Nếu bạn Vy nghỉ ốm thì ai trực thứ ba ạ?',
+        keys=('bao co', 'bao thay', 'xep ban', 'ghi them', 'xem lai bang', 'ban khac', 'doi lich'),
+        answers=(('good', 'Bảng chỉ ghi Vy, nên mình báo {title} để {title} xếp bạn khác rồi ghi thêm vào bảng.'),
+                 ('ok', 'Thì bạn nào trực cũng được.'),
+                 ('poor', 'Chuyện đó không phải việc của con.'))),
+    'Đo bằng khối gỗ': dict(
+        text='Nếu con đo bằng bút chì thay cho khối gỗ thì có ra số khác không ạ?',
+        keys=('don vi', 'cung mot', 'but chi dai', 'dai hon', 'khac nhau', 'do bang'),
+        answers=(('good', 'Có thể khác con ạ, vì bút chì dài hơn khối gỗ. Muốn so hai dải thì đo bằng cùng một thứ.'),
+                 ('ok', 'Chắc cũng vậy thôi con.'),
+                 ('poor', 'Cứ làm theo sách đi.'))),
+}
+REACT = dict(good='{name} sáng mắt: “À, con hiểu rồi {title} ơi!”',
+             ok='{name} gật đầu, nhưng vẫn còn nhíu mày nhìn bảng.',
+             poor='{name} cúi đầu, hạ tay xuống, không hỏi thêm nữa.')
+REACT_KID = {
+    'minh': dict(good='Minh khẽ cười, gật đầu: “Dạ… con hiểu rồi ạ.”', poor='Minh đỏ mặt, rụt tay xuống, cúi gằm.'),
+    'an': dict(good='An lấy que tính xếp thử ngay: “Đúng rồi {title} ơi!”'),
+    'vy': dict(good='Vy reo lên: “A, con hiểu rồi! Để con kể lại cho bạn nghe nha {title}!”'),
+    'bao': dict(good='Bảo búng tay: “Dễ ợt! Con làm liền nè {title}!”', poor='Bảo xụ mặt, quay sang nghịch cây bút.'),
+    'khoa': dict(good='Khoa vẽ vội một sơ đồ nhỏ ra nháp: “Con hiểu nó chạy sao rồi ạ.”'),
+    'linh': dict(good='Linh thở phào, ghi cẩn thận vào vở: “Dạ, con hiểu rồi ạ.”', poor='Linh mím môi, mắt đỏ hoe, cúi xuống tẩy vở.'),
+    'tu': dict(good='Tú cười toe: “Rứa là con hiểu rồi {title} ơi!”'),
+    'mai': dict(good='Mai cười: “Giống mẹ con chia phở cho khách ha {title}! Con hiểu rồi.”'),
+}
+QUIET = '{name} viết câu hỏi ra góc giấy nháp, tay vẫn để dưới bàn.'
+INVITE = 'Lại gần, nói nhỏ: “Con muốn hỏi gì, nói {title} nghe nào?”'
+LOWERED = '{name} chờ mãi rồi lặng lẽ hạ tay xuống.'
+QUALITY_NOTE = dict(good='Trả lời đúng ý, có cách để con tự thấy.', ok='Có trả lời, nhưng chưa giúp con hiểu vì sao.',
+                    poor='Câu trả lời làm con ngại hỏi.')
+# Rules for a typed answer (accent-free, lower case). The model never judges.
+DISMISS = ('noi roi', 'giang roi', 'chu y vao', 'im di', 'ngoi xuong', 'hoi gi', 'hoi lam gi', 'tu nghi', 'dot', 'ngoc',
+           'luoi', 'linh tinh', 'de ma cung', 'khong phai viec', 'dung hoi', 'hoi hoai', 'khong biet thi')
+WARM = ('hoi hay', 'cau hoi hay', 'gioi lam', 'con gioi', 'dung roi', 'cam on con', 'tot lam', 'con thu', 'thu xem',
+        'khong sao', 'dung lo', 'co tin', 'hay lam')
+METHOD_WORDS = dict(look=('ve', 'hinh', 'nhin', 'so do', 'tranh'), hands=('thu', 'cam', 'que tinh', 'xep', 'do vat', 'tay'),
+                    talk=('vi du', 'ke', 'noi lai', 'giong nhu', 'chang han'), short=('tung buoc', 'buoc', 'truoc', 'sau do', 'roi moi'))
+# How each pupil sounds (for the AI card of pupils without an NPC entry).
+PUPIL_VOICE = dict(minh=('miền Bắc', ['ạ']), an=('miền Nam', ['ạ', 'nha']), vy=('miền Nam', ['ạ', 'nha', 'á']),
+                   bao=('miền Bắc', ['ạ', 'cơ']), khoa=('miền Bắc', ['ạ']), linh=('miền Bắc', ['ạ']),
+                   tu=('miền Trung (Quảng Ngãi)', ['ạ', 'mô', 'rứa']), mai=('miền Nam', ['ạ', 'nha']))
+PUPIL_STYLE = dict(minh='rất nhút nhát, nói nhỏ, câu ngắn, hay ngập ngừng “dạ…”',
+                   an='tò mò, thích tự tay làm thử, hay nói “cho con thử”',
+                   vy='nói nhiều, hào hứng, hay kể chuyện',
+                   bao='hiếu động, nói nhanh, mau chán',
+                   khoa='mê máy móc và sơ đồ, hay hỏi “tại sao”, “nó chạy sao”',
+                   linh='cầu toàn, sợ sai, rất lễ phép',
+                   tu='mới chuyển trường từ Quảng Ngãi, thật thà, đôi khi buột miệng từ quê (mô, răng, rứa)',
+                   mai='lanh lợi, sáng nào cũng phụ mẹ bán phở, hay lấy ví dụ ở quán phở')
+
+
+def _fold(text: str) -> str:
+    from .engine import normalize
+    return ' ' + re.sub(r'[^a-z0-9]+', ' ', normalize(text)).strip() + ' '
+
+
+def _has(folded: str, words) -> bool:
+    return any(' ' + w + ' ' in folded for w in words)
+
+
+def judge_answer(text: str, q: dict, kid: str) -> tuple[str, str]:
+    """Rule-based quality of a typed answer → (quality, why). Deterministic, no model."""
+    from . import ai
+    folded = _fold(text)
+    if ai.abusive(text):
+        return 'poor', 'rude'
+    if _has(folded, DISMISS):
+        return 'poor', 'dismiss'
+    if len(folded.strip()) < 6:
+        return 'poor', 'short'
+    score = 0
+    if _has(folded, q['keys']):
+        score += 2
+    methods = [m for m, words in METHOD_WORDS.items() if _has(folded, words)]
+    if methods:
+        score += 1 + (KID[kid]['style'] in methods)
+    if _has(folded, WARM):
+        score += 1
+    if score >= 3:
+        return 'good', 'rules'
+    return ('ok', 'rules') if score >= 1 or len(folded.strip()) >= 15 else ('poor', 'short')
+
+
+def _ask_options(s: dict | None, ask: dict) -> list[dict]:
+    """The three scripted answers, in a fixed shuffled order with neutral ids.
+    Without `s` the {Title} placeholders stay for the client to fill in."""
+    q = QUESTIONS[ask['q']]
+    rows = list(q['answers'])
+    random.Random(f'mnl-teacher-ask-opt|{ask["q"]}|{ask["kid"]}').shuffle(rows)
+    return [dict(id='abc'[i], quality=quality, label=say(s, text) if s is not None else text) for i, (quality, text) in enumerate(rows)]
+
+
+def _question_line(s: dict, ask: dict) -> dict:
+    return dict(who='pupil', text=say(s, QUESTIONS[ask['q']]['text']), mode='scripted')
+
+
+def reaction(s: dict, kid: str, quality: str) -> str:
+    text = REACT_KID.get(kid, {}).get(quality) or REACT[quality]
+    return say(s, text.replace('{name}', KID[kid]['name']))
+
+
+def make_ask(c: dict, t: dict, room: dict, s: dict | None = None) -> dict | None:
+    """Who raises a hand in this period (fixed by day, slot and how open each kid is)."""
+    title = t['lesson'].get('title')
+    if title not in QUESTIONS:
+        return None
+    from . import classroom
+    busy = {k for ev in room['events'] for k in INCIDENT[ev['id']]['kids']}
+    pool = [k for k in present_ids(room) if k not in busy]
+    if not pool:
+        return None
+    voices = classroom.voices(c)
+    weights = [4 if k == 'minh' and voices.get(k, 2) < 2 else 3 if voices.get(k, 2) < 2 else 1 + voices.get(k, 2) for k in pool]
+    kid = random.Random(f'mnl-teacher-ask|{t["day"]}|{slot_of(t)}').choices(pool, weights)[0]
+    shy = voices.get(kid, 2) < 2
+    ask = dict(kid=kid, q=title, phase=ASK_PHASE, state='quiet' if shy else 'up', lines=[], result=None, shy=shy)
+    if not shy:
+        ask['lines'].append(_question_line(s or {}, ask))
+    return ask
+
+
+def _lower_hand(c: dict, room: dict) -> str | None:
+    """Leaving the activity: an unanswered hand goes down (a little hurt); a quiet one stays quiet."""
+    ask = room.get('ask')
+    if not ask or ask['phase'] != room['phase'] or ask['state'] not in ('up', 'quiet'):
+        return None
+    if ask['state'] == 'quiet':
+        ask['state'] = 'down'
+        return None
+    ask.update(state='down', result='ignored')
+    text = LOWERED.replace('{name}', KID[ask['kid']]['name'])
+    ask['lines'].append(dict(who='pupil', text=text, mode='scripted'))
+    from . import classroom
+    classroom.pupil_change(c, ask['kid'], well=-2, voice=-1)
+    return text
+
+
+def _ask_action(s: dict, c: dict, t: dict, room: dict, name: str, p: dict) -> dict:
+    from . import engine as e
+    from . import classroom
+    need = e.need
+    need(room['stage'] == 'teach', 'Chỉ trả lời câu hỏi trong lúc dạy trên lớp.')
+    ask = room.get('ask')
+    need(bool(ask) and room['phase'] == ask['phase'], 'Không có bạn nào đang giơ tay.')
+    kid = ask['kid']
+    nm = KID[kid]['name']
+    if name == 'invite':
+        need(ask['state'] == 'quiet', 'Bạn ấy đang giơ tay rồi, trả lời bạn ấy nhé.' if ask['state'] == 'up' else 'Bạn ấy không còn muốn hỏi nữa.')
+        ask['state'] = 'up'
+        ask['lines'].append(_question_line(s, ask))
+        return dict(message=f'{nm} ngập ngừng, rồi hỏi nhỏ.')
+    need(ask['state'] == 'up' and ask['result'] is None, 'Bạn ấy không còn giơ tay nữa.')
+    opt, text = p.get('option'), p.get('text')
+    need((opt is None) != (text is None), 'Chọn một câu trả lời hoặc gõ câu của bạn.')
+    if opt is not None:
+        row = next((o for o in _ask_options(s, ask) if o['id'] == opt), None)
+        need(row, 'Câu trả lời không hợp lệ.')
+        quality, why, said = row['quality'], 'option', row['label']
+    else:
+        said = e.clean_text(text, ANSWER_MAX, 2)
+        quality, why = judge_answer(said, QUESTIONS[ask['q']], kid)
+    ask['lines'].append(dict(who='teacher', text=said, mode='scripted'))
+    reply = reaction(s, kid, quality)
+    ask['lines'].append(dict(who='pupil', text=reply, mode='scripted'))
+    ask.update(state='done', result=quality)
+    subject = classroom.subject_of(t['lesson'])
+    if quality == 'good':
+        _trust(c, room, kid, 1)
+        classroom.pupil_change(c, kid, subject=subject, prog=3, voice=1)
+    elif quality == 'ok':
+        classroom.pupil_change(c, kid, subject=subject, prog=1)
+    else:
+        _trust(c, room, kid, -1)
+        classroom.pupil_change(c, kid, voice=-1)
+    if why in ('dismiss', 'rude'):
+        t['mistakes'] += 1
+    e.metric(c, 'class_questions')
+    label = dict(good='Câu trả lời giúp ' + nm + ' hiểu ra.', ok=nm + ' nghe rồi, nhưng chưa hiểu hẳn vì sao.', poor=nm + ' không dám hỏi thêm.')[quality]
+    return dict(message=label, correct=quality != 'poor', quality=quality, reply=reply)
+
+
+def _ask_view(room: dict) -> dict | None:
+    ask = room.get('ask')
+    if not ask or room['stage'] not in ('teach', 'check', 'ready'):
+        return None
+    if room['stage'] == 'teach' and room['phase'] < ask['phase']:
+        return None
+    k = KID[ask['kid']]
+    view = dict(kid=k['id'], name=k['name'], emoji=k['emoji'], state=ask['state'], shy=ask['shy'], result=ask['result'],
+                lines=[dict(who=x['who'], text=x['text'], mode=x['mode'], **({'canonical': x['canonical']} if x.get('canonical') else {}))
+                       for x in ask['lines']])
+    if ask['state'] == 'quiet':
+        view.update(clue=QUIET.replace('{name}', k['name']), invite=INVITE)
+    if ask['state'] == 'up' and ask['result'] is None:
+        view['options'] = [dict(id=o['id'], label=o['label']) for o in _ask_options(None, ask)]
+        view['max'] = ANSWER_MAX
+    if ask['result'] in QUALITY:
+        view['note'] = QUALITY_NOTE[ask['result']]
+    return view
+
+
+def validate_ask(t: dict, room: dict) -> None:
+    from .engine import need, clean_text
+    ask = room['ask']
+    need(isinstance(ask, dict) and set(ask) == {'kid', 'q', 'phase', 'state', 'lines', 'result', 'shy'}, 'Câu hỏi giơ tay không hợp lệ.')
+    need(STAGES.index(room['stage']) >= 2, 'Chưa vào tiết mà đã có bạn giơ tay.')
+    need(ask['q'] == t['lesson'].get('title') and ask['q'] in QUESTIONS, 'Câu hỏi giơ tay không khớp bài.')
+    need(ask['kid'] in present_ids(room) and ask['phase'] == ASK_PHASE and type(ask['shy']) is bool, 'Câu hỏi giơ tay không hợp lệ.')
+    need(ask['state'] in ASK_STATES and ask['result'] in (None, 'ignored') + QUALITY, 'Câu hỏi giơ tay không hợp lệ.')
+    need((ask['state'] == 'done') == (ask['result'] in QUALITY), 'Câu hỏi giơ tay không hợp lệ.')
+    need(ask['result'] != 'ignored' or ask['state'] == 'down', 'Câu hỏi giơ tay không hợp lệ.')
+    if room['stage'] != 'teach' or room['phase'] > ask['phase']:
+        need(ask['state'] in ('done', 'down'), 'Câu hỏi giơ tay chưa khép.')
+    need(isinstance(ask['lines'], list) and len(ask['lines']) <= 4, 'Câu hỏi giơ tay không hợp lệ.')
+    for x in ask['lines']:
+        need(isinstance(x, dict) and {'who', 'text', 'mode'} <= set(x) <= {'who', 'text', 'mode', 'canonical'}, 'Lời thoại giơ tay không hợp lệ.')
+        need(x['who'] in ('pupil', 'teacher') and x['mode'] in ('scripted', 'ai', 'guard'), 'Lời thoại giơ tay không hợp lệ.')
+        clean_text(x['text'], 600)
+        if 'canonical' in x:
+            clean_text(x['canonical'], 600)
+
+
+# ------------------------------------------------------------------ AI voice
+def history_rows(lines: list[dict], upto: int) -> list[dict]:
+    """Earlier lines of a thread as chat turns (the teacher is the player)."""
+    return [dict(role='user' if x['who'] == 'teacher' else 'npc', text=x['text']) for x in lines[:upto]][-8:]
+
+
+def pupil_card(state: dict, kid: str, memory: dict | None = None) -> dict:
+    """Persona card for a pupil, same shape as game/personas.persona()."""
+    from .personas import CHILD_STYLE
+    k = KID[kid]
+    small = titles(state)[1]
+    region, particles = PUPIL_VOICE[kid]
+    traits = [k['trait'], 'Khi chưa hiểu: ' + say(state, CLUES[kid][1])]
+    return dict(id='pupil:' + kid, name=k['name'], role='Học sinh lớp 2', career='teacher', place='Lớp học Mầm Nắng',
+                age='child', age_label='trẻ nhỏ (tiểu học)', temperament='child', temperament_label='Hồn nhiên',
+                style=CHILD_STYLE + '; ' + PUPIL_STYLE[kid], personality=k['trait'], traits=traits,
+                address=dict(self='con', player=small), region=region, particles=list(particles),
+                cares=['được thầy cô để ý, khen đúng việc mình làm'], memory=memory or {})
+
+
+def voice(state: dict, who: dict, said: str, *, context: dict, canonical: str, history: list | None = None,
+          purpose: str = 'class_question', direction: str = '') -> dict:
+    """One in-character line for a pupil or a parent → {mode:'ai'|'scripted', text, reason}.
+
+    Reads `state`, never writes it; `text` is the scripted canonical unless mode is 'ai'.
+    `who` is {'npc': id} for characters that exist as NPCs (ai.persona_reply builds their
+    card) or {'card': persona_card} for the others (same prompt, guards and budget rules).
+    """
+    from . import ai
+    fallback = dict(mode='scripted', text=canonical, reason=None)
+    if not canonical:
+        return dict(fallback, reason='empty')
+    if not isinstance(said, str) or not said.strip():
+        return dict(fallback, reason='empty')
+    if ai.abusive(said):
+        return dict(fallback, reason='unsafe_request')   # the scripted reaction to a rude line stands
+    ctx = dict(context or {})
+    if direction:
+        ctx['direction'] = direction
+    rows = history or []
+    if who.get('npc'):
+        out = ai.persona_reply(state, 'teacher', who['npc'], said, context=ctx, canonical=canonical, history=rows, purpose=purpose)
+        if out.get('mode') == 'ai' and out.get('text'):
+            return dict(mode='ai', text=out['text'], reason=None)
+        return dict(fallback, reason=out.get('reason') or 'unavailable')
+    settings = state.get('settings') or {}
+    lang = settings.get('lang', 'vi')
+    if not settings.get('aiConsent'):
+        return dict(fallback, reason='no_consent')
+    if not ai.available():
+        return dict(fallback, reason='not_configured')
+    card = who['card']
+    turns = [dict(who='player' if r.get('role') == 'user' else 'npc', text=ai.redact(str(r.get('text', ''))[:300]))
+             for r in rows[-8:] if isinstance(r, dict)]
+    data = json.dumps(dict(persona=card, task=ctx, canonical=canonical, recent_turns=turns, player_says=ai.redact(said.strip())[:300]),
+                      ensure_ascii=False)
+    name = state.get('name') if isinstance(state.get('name'), str) else ''
+    if len(name.strip()) >= 2 and name.strip() != 'Mây':  # the player's own name never leaves the server
+        data = re.sub(r'(?<!\w)' + re.escape(name.strip()) + r'(?!\w)', card['address']['player'], data)
+    system = ai._persona_system(card, purpose, lang)
+    if direction:
+        system += ' Lượt này: ' + direction
+    try:
+        timeout = float(os.environ.get('AI_CHAT_TIMEOUT', '9') or 9)
+    except ValueError:
+        timeout = 9.0
+    text, reason = ai.chat([dict(role='system', content=system), dict(role='user', content=data)],
+                           max_tokens=160, temperature=0.85, timeout=timeout)
+    if not text:
+        return dict(fallback, reason=reason or 'unavailable')
+    allowed = ai._numbers(dict(persona=card, task=ctx, canonical=canonical, turns=[x['text'] for x in turns if x['who'] == 'npc']))
+    line, why = ai.clean_reply(text, allowed, card['name'])
+    if not line:
+        return dict(fallback, reason=why)
+    return dict(mode='ai', text=line, reason=None)
 
 
 # ------------------------------------------------------------------ projection
@@ -714,7 +1080,7 @@ def public(t: dict) -> dict:
                 parts=room['parts'], phase=room['phase'], events=shown,
                 pending=[x['id'] for x in shown if 'chosen' not in x], lost=lost, tickets=tickets,
                 marks=MARKS, methods=METHODS, reward=room['reward'] or None,
-                log=[_event_view(room, ev) for ev in room['events'] if ev['id'] in room['calls']])
+                log=[_event_view(room, ev) for ev in room['events'] if ev['id'] in room['calls']], ask=_ask_view(room))
     if stage in ('check', 'ready'):
         got, total = understood(room)
         view.update(understood=got, of=total, estimate=reward_for(t, room) if stage == 'ready' else None)
@@ -733,7 +1099,7 @@ def validate(t: dict) -> None:
     room = t['room']
     need(isinstance(room, dict), 'Tiết học không hợp lệ.')
     keys = set(FIXED) | {'stage', 'roll', 'plan', 'stars', 'parts', 'lost', 'phase', 'calls', 'helped', 'flags', 'tickets', 'marks', 'notes', 'arcs', 'reward'}
-    need(set(room) - {'tries'} == keys, 'Dữ liệu tiết học thiếu hoặc lạ.')
+    need(set(room) - {'tries', 'ask'} == keys, 'Dữ liệu tiết học thiếu hoặc lạ.')
     tries = room.get('tries', {})
     need(isinstance(tries, dict) and all(k in KID and type(v) is int and 1 <= v <= 9 for k, v in tries.items()), 'Số lần đổi cách giảng không hợp lệ.')
     base = roll(t['day'], slot_of(t))
@@ -778,6 +1144,8 @@ def validate(t: dict) -> None:
     need(isinstance(room['arcs'], list) and len(room['arcs']) <= 30, 'Câu chuyện học sinh không hợp lệ.')
     for tag in room['arcs']:
         need(isinstance(tag, str) and tag.count(':') == 1 and tag.split(':')[0] in KID and tag.split(':')[1] in ('1', '2', '3'), 'Câu chuyện học sinh không hợp lệ.')
+    if 'ask' in room:
+        validate_ask(t, room)
 
 
 def validate_kids(d: dict) -> None:

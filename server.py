@@ -263,6 +263,15 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/ai/chat":
                 if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
                 self.json(200,self.ai_chat(token,state,revision,data));return
+            if route=="/api/ai/interview":
+                if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
+                self.json(200,self.ai_interview(token,revision,data));return
+            if route=="/api/ai/class":
+                if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
+                self.json(200,self.ai_class(token,state,revision,data));return
+            if route=="/api/ai/support_call":
+                if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
+                self.json(200,self.ai_support_call(token,state,revision,data));return
             if route=="/api/ai/feedback":
                 self.json(200,self.ai_feedback(token,state,revision,data));return
             if route=="/api/ai/review":
@@ -368,6 +377,81 @@ class Handler(BaseHTTPRequestHandler):
         result=dict(out["result"],reply=line,message=line)
         return dict(state=out["state"],revision=out["revision"],result=result,mode=mode,reason=reason,reply=line)
 
+    def ai_support_call(self,token:str,state:dict,revision:int,data:dict)->dict:
+        """POST /api/ai/support_call: one line of a customer-care phone call (Trạm Lắng Nghe).
+        The rule-based `cs_call` command runs first and is stored (tone, SLA, satisfaction and a
+        scripted customer line built from the case facts); an AI persona may then reword only that
+        stored customer line when it passes the same guards as /api/ai/chat.
+        request  {career:"customer_care", task, pick? | text? (1..200), request_id?, expected_revision?}
+        response {state, revision, result:{reply, tone, tone_label, kept, intent, message}, mode:"ai"|"scripted"|"guard", reason, reply}"""
+        from game.engine import cs_call_context
+        if data.get("career","customer_care")!="customer_care":raise GameError("Cuộc gọi chỉ dùng ở trạm hỗ trợ.")
+        task,pick,text=data.get("task"),data.get("pick"),data.get("text")
+        if not isinstance(task,str) or not 1<=len(task)<=80:raise GameError("Thiếu mã vụ cần gọi.")
+        payload=dict(task=task)
+        if pick is not None:
+            if not isinstance(pick,str) or not 1<=len(pick)<=20 or text is not None:raise GameError("Câu chọn không hợp lệ.")
+            payload["pick"]=pick
+        else:
+            if not isinstance(text,str) or not text.strip():raise GameError("Tin nhắn trống.")
+            text=text.strip()
+            if len(text)>200:raise GameError("Tin nhắn tối đa 200 ký tự nhé.")
+            payload["text"]=text
+        rid=data.get("request_id")
+        if not (isinstance(rid,str) and 8<=len(rid)<=100):rid="ai-call-"+secrets.token_hex(12)
+        expected=data.get("expected_revision")
+        out=self.server.store.command(token,rid,expected if type(expected) is int else revision,"customer_care","cs_call",payload)
+        canonical=str(out["result"].get("reply") or "")
+        mode,reason,line="scripted",None,canonical
+        if out.get("replayed"):reason="replayed"
+        else:
+            fresh,_,_=self.server.store.read(token)
+            info=cs_call_context(fresh,task)
+            rows=(info or {}).get("history") or []
+            said=rows[-2]["text"] if len(rows)>=2 and rows[-2]["role"]=="user" else (text or "")
+            settings=fresh["settings"]
+            if not info:allowed,why=False,"no_case"
+            elif ai.abusive(said):allowed,why=True,None
+            elif not settings.get("aiConsent"):allowed,why=False,"no_consent"
+            elif not ai.available():allowed,why=False,"not_configured"
+            elif not self.ai_chat_budget(token):allowed,why=False,"rate_limit"
+            else:allowed,why=True,None
+            if allowed:
+                answer=ai.persona_reply(fresh,"customer_care",info["npc"],said,context=info["context"],canonical=canonical,
+                                        history=rows[:-2][-8:],purpose="support_call")
+                reason=answer.get("reason")
+                if answer["mode"] in ("ai","guard") and answer["text"]:
+                    stored=self._store_call_line(token,task,canonical,answer["text"],answer["mode"])
+                    if stored:
+                        out=dict(out,state=stored[0],revision=stored[1]);mode,line=answer["mode"],answer["text"]
+                    else:reason="superseded"
+            else:reason=why
+        result=dict(out["result"],reply=line,message=line)
+        return dict(state=out["state"],revision=out["revision"],result=result,mode=mode,reason=reason,reply=line)
+
+    def _store_call_line(self,token:str,task:str,canonical:str,line:str,mode:str):
+        """Reword the customer line just stored by `cs_call`, only if it is still the last scripted line."""
+        store=self.server.store;sid=store.key(token);db=store.connect()
+        try:
+            db.execute("BEGIN IMMEDIATE")
+            row=db.execute("SELECT * FROM sessions WHERE sid=?",(sid,)).fetchone()
+            if not row:db.rollback();return None
+            raw=json.loads(row["state"])
+            tasks=(((raw.get("careers") or {}).get("customer_care") or {}).get("tasks") or [])
+            t=next((x for x in tasks if isinstance(x,dict) and x.get("id")==task),None)
+            rows=(t or {}).get("call") or []
+            last=rows[-1] if rows else None
+            if not last or last.get("who")!="npc" or last.get("mode")!="scripted" or last.get("text")!=canonical:
+                db.rollback();return None
+            last.update(text=line[:600],mode=mode,canonical=canonical[:600])
+            revision=row["revision"]+1
+            db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?",(json.dumps(raw,ensure_ascii=False,allow_nan=False),revision,sid))
+            db.commit()
+            return public_state(raw),revision
+        except Exception:
+            db.rollback();raise
+        finally:db.close()
+
     def _store_chat_line(self,token:str,career:str,npc:str,canonical:str,line:str,mode:str):
         """Reword the NPC line just stored by `talk`, only if it is still the last scripted line."""
         store=self.server.store;sid=store.key(token);db=store.connect()
@@ -381,6 +465,128 @@ class Handler(BaseHTTPRequestHandler):
             if not last or last.get("role")!="npc" or last.get("mode")!="scripted" or last.get("text")!=canonical:
                 db.rollback();return None
             last.update(text=line[:600],mode=mode,canonical=canonical[:600])
+            revision=row["revision"]+1
+            db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?",(json.dumps(raw,ensure_ascii=False,allow_nan=False),revision,sid))
+            db.commit()
+            return public_state(raw),revision
+        except Exception:
+            db.rollback();raise
+        finally:db.close()
+
+    # ---- AI interviewer (docs/superpowers/specs/2026-09-29-ai-interviewer-design.md) ----
+    def ai_interview(self,token:str,revision:int,data:dict)->dict:
+        """POST /api/ai/interview: `job_answer` / `job_followup` run first (rule-scored, stored
+        scripted); an AI line then rewords the interviewer's newest line if it passes the guards."""
+        from game import employment as emp
+        career=data.get("career")
+        if career not in CAREERS:raise GameError("Nghề không hợp lệ.")
+        action,payload=emp.voice_command(data)
+        rid=data.get("request_id")
+        if not (isinstance(rid,str) and 8<=len(rid)<=100):rid="ai-iv-"+secrets.token_hex(12)
+        expected=data.get("expected_revision")
+        out=self.server.store.command(token,rid,expected if type(expected) is int else revision,career,action,payload)
+        idx=out["result"].get("talk");mode,reason,line="scripted",None,None
+        if out.get("replayed"):reason="replayed"
+        elif type(idx) is int:
+            fresh,_,_=self.server.store.read(token)
+            pend=emp.pending_voice(fresh,career,idx)
+            if not pend:reason="nothing_to_voice"
+            else:
+                line=pend["canonical"]
+                if not fresh["settings"].get("aiConsent"):reason="no_consent"
+                elif not ai.available():reason="not_configured"
+                elif ai.abusive(pend["said"]):reason="unsafe_request"
+                elif not self.ai_chat_budget(token):reason="rate_limit"
+                else:
+                    answer=emp.voice(fresh,career,pend);reason=answer.get("reason")
+                    if answer["mode"]=="ai":
+                        stored=self._store_interview_line(token,career,pend,answer["text"])
+                        if stored:out=dict(out,state=stored[0],revision=stored[1]);mode,line=answer["mode"],answer["text"]
+                        else:reason="superseded"
+        return dict(state=out["state"],revision=out["revision"],result=out["result"],mode=mode,reason=reason,line=line)
+
+    def _store_interview_line(self,token:str,career:str,pend:dict,line:str):
+        """Reword talk[idx] of the open application, only if it still holds the same scripted line."""
+        from game import employment as emp
+        store=self.server.store;sid=store.key(token);db=store.connect()
+        try:
+            db.execute("BEGIN IMMEDIATE")
+            row=db.execute("SELECT * FROM sessions WHERE sid=?",(sid,)).fetchone()
+            if not row:db.rollback();return None
+            raw=json.loads(row["state"])
+            if not emp.apply_voice(raw,career,pend["idx"],pend["field"],pend["canonical"],line):db.rollback();return None
+            try:emp.validate(raw["careers"][career],career)
+            except GameError:db.rollback();return None
+            revision=row["revision"]+1
+            db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?",(json.dumps(raw,ensure_ascii=False,allow_nan=False),revision,sid))
+            db.commit()
+            return public_state(raw),revision
+        except Exception:
+            db.rollback();raise
+        finally:db.close()
+
+    # ---- AI in the classroom (docs/superpowers/specs/2026-09-29-teacher-care-ai-design.md) ----
+    def ai_class(self,token:str,state:dict,revision:int,data:dict)->dict:
+        """POST /api/ai/class {kind:'pupil'|'parent', pupil, task?, op:'reply'|'voice', text?|option?}.
+        op 'reply' runs `lesson_answer` / `cl_parent` first (rules decide the effect, the scripted
+        reaction is stored); op 'voice' changes nothing but the wording. Then the newest pupil or
+        parent line is reworded in character when AI is allowed and the line passes the guards."""
+        from game import classroom
+        from game import teach_lesson as TL
+        kind,pupil,op,task=data.get("kind"),data.get("pupil"),data.get("op") or "reply",data.get("task")
+        if kind not in ("pupil","parent"):raise GameError("Loại tin nhắn không hợp lệ.")
+        if pupil not in classroom.PUPILS:raise GameError("Không có bạn này trong lớp.")
+        if op not in ("reply","voice"):raise GameError("Thao tác không hợp lệ.")
+        if kind=="pupil" and not (isinstance(task,str) and 0<len(task)<=64):raise GameError("Thiếu tiết học.")
+        out=dict(state=public_state(state),revision=revision,result=dict(message=""));said=""
+        if op=="reply":
+            text,option=data.get("text"),data.get("option")
+            if (text is None)==(option is None):raise GameError("Chọn một câu soạn sẵn hoặc gõ câu của bạn.")
+            if text is not None:
+                if not isinstance(text,str) or not text.strip():raise GameError("Tin nhắn trống.")
+                text=text.strip()
+                if len(text)>TL.ANSWER_MAX:raise GameError(f"Tối đa {TL.ANSWER_MAX} ký tự nhé.")
+                said=text
+            elif not (isinstance(option,str) and 0<len(option)<=8):raise GameError("Lựa chọn không hợp lệ.")
+            body=dict(text=text) if text is not None else dict(option=option)
+            action,payload=("lesson_answer",dict(task=task,**body)) if kind=="pupil" else ("cl_parent",dict(kid=pupil,**body))
+            rid=data.get("request_id")
+            if not (isinstance(rid,str) and 8<=len(rid)<=100):rid="ai-class-"+secrets.token_hex(12)
+            expected=data.get("expected_revision")
+            out=self.server.store.command(token,rid,expected if type(expected) is int else revision,"teacher",action,payload)
+        mode,reason,line="scripted",None,str(out["result"].get("reply") or "")
+        if out.get("replayed"):reason="replayed"
+        else:
+            fresh,_,_=self.server.store.read(token)
+            job=classroom.voice_job(fresh,kind,pupil,task,op)
+            if not job:reason="nothing_to_voice"
+            else:
+                line=job["canonical"]
+                if said and ai.abusive(said):reason="unsafe_request"
+                elif not fresh["settings"].get("aiConsent"):reason="no_consent"
+                elif not ai.available():reason="not_configured"
+                elif not self.ai_chat_budget(token):reason="rate_limit"
+                else:
+                    answer=TL.voice(fresh,job["who"],job["said"],context=job["context"],canonical=job["canonical"],history=job["history"],
+                                    purpose=job["purpose"],direction=job["direction"])
+                    reason=answer.get("reason")
+                    if answer["mode"]=="ai":
+                        stored=self._store_class_line(token,job["ref"],job["canonical"],answer["text"])
+                        if stored:out=dict(out,state=stored[0],revision=stored[1]);mode,line=answer["mode"],answer["text"]
+                        else:reason="superseded"
+        result=dict(out["result"],reply=line)
+        return dict(state=out["state"],revision=out["revision"],result=result,mode=mode,reason=reason,reply=line)
+
+    def _store_class_line(self,token:str,ref:dict,canonical:str,line:str):
+        """Reword one classroom line (pupil question/reaction or parent message), only if it is unchanged."""
+        from game import classroom
+        store=self.server.store;sid=store.key(token);db=store.connect()
+        try:
+            db.execute("BEGIN IMMEDIATE")
+            row=db.execute("SELECT * FROM sessions WHERE sid=?",(sid,)).fetchone()
+            if not row:db.rollback();return None
+            raw=json.loads(row["state"])
+            if not classroom.rewrite(raw,ref,canonical,line,"ai"):db.rollback();return None
             revision=row["revision"]+1
             db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?",(json.dumps(raw,ensure_ascii=False,allow_nan=False),revision,sid))
             db.commit()
