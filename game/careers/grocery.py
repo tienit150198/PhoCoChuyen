@@ -1554,15 +1554,15 @@ def _rush_action(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
     if name == 'gr_rush_total':
         kit.need(offer['charged'] is None, 'Đang chờ thối tiền cho khách này.')
         units = _rush_units(c, t, r['i'])
-        value = kit.integer(p.get('total'), 0, 100000)
-        kit.need(value in offer['totals'], 'Chọn một con số trên máy tính tiền.')
+        if not units and not offer['units']:  # nothing left on the shelf: apologise, no total to pick
+            r['log'].append(dict(i=r['i'], status='empty', paid=0))
+            return _rush_next(s, c, t, None, note + f'Kệ hết món {who} cần, khách đành về tay không.')
         if units != offer['units']:
             r['offer'] = None
             _rush_offer(c, t)
             return dict(message=note + 'Kệ vừa thay đổi — nhìn lại giỏ của khách rồi tính lại nhé.', refused=True)
-        if not units:
-            r['log'].append(dict(i=r['i'], status='empty', paid=0))
-            return _rush_next(s, c, t, None, note + f'Kệ hết món {who} cần, khách đành về tay không.')
+        value = kit.integer(p.get('total'), 0, 100000)
+        kit.need(value in offer['totals'], 'Chọn một con số trên máy tính tiền.')
         correct = sum(_price(c, k) * v for k, v in units.items())
         if value == correct:
             charged, say = correct, f'Chuẩn: {correct} xu.'

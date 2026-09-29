@@ -875,6 +875,20 @@ class GroceryRushTests(unittest.TestCase):
         self.assertGreaterEqual(post['stars'], 4)
         roundtrip(j)
 
+    def test_empty_shelf_customer_is_sent_away_without_a_total(self):
+        day, slot = find(lambda t: t['kind'] == 'rush')
+        j = Journey('grocery', slot=slot, day=day)
+        for it in G.ITEMS:                         # a bare shelf
+            kit.take(j.c, it['id'], kit.stock(j.c, it['id']))
+        j.act('ask')
+        tid = j.task['id']
+        r = j.get(tid)['rush']
+        self.assertFalse(r['offer']['units'])
+        i = r['i']
+        j.act('gr_rush_total', task=tid)          # the page sends no total ("Xin lỗi, mời khách sau")
+        self.assertEqual(j.get(tid)['rush']['log'][-1]['status'], 'empty')
+        self.assertNotEqual(j.get(tid)['rush']['i'], i)
+
     def test_wrong_total_is_caught_and_counted(self):
         j = self._rush()
         j.act('ask')
