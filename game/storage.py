@@ -15,6 +15,7 @@ import hashlib
 import json
 import os
 import secrets
+import sys
 import sqlite3
 import threading
 import time
@@ -63,6 +64,14 @@ def _archive_rows(box,careers_before:dict,raw:dict,default:str)->list:
         day=row.get("day") if isinstance(row,dict) else row[0] if isinstance(row,list) and row and type(row[0]) is int else None
         out.append((career or "",kind,day if type(day) is int else None,_dumps(row)))
     return out
+
+SLOW_MS=float(os.environ.get("SLOW_COMMAND_MS","250"))
+def _slow(action,career,size,t0,t1,t2,t3,t4)->None:
+    """Log the phases of a slow command (read, compute, store, public view), for tuning."""
+    total=(t4-t0)*1000
+    if total<SLOW_MS:return
+    ms=lambda a,b:round((b-a)*1000)
+    sys.stderr.write(f"[slow-cmd] {total:.0f}ms {action} {career} save={size//1024}KB read={ms(t0,t1)} compute={ms(t1,t2)} store={ms(t2,t3)} view={ms(t3,t4)} pid={os.getpid()}\n")
 
 def _write_archive(db,sid:str,rows:list)->None:
     """Append rows to each (career, kind) history of this save, inside the caller's transaction."""
@@ -397,6 +406,7 @@ class Store:
         if not isinstance(action,str) or not isinstance(payload,dict):raise GameError("Thao tác không hợp lệ.")
         fingerprint=hashlib.sha256(json.dumps([career,action,payload],sort_keys=True,ensure_ascii=False).encode()).hexdigest()
         h=self.digest(token)
+        t0=time.perf_counter()
         for _ in range(OPTIMISTIC_TRIES):
             # 1. A consistent snapshot of the save and of this request's receipt, without any lock.
             with self.connect() as db:
@@ -407,6 +417,7 @@ class Store:
             if row["rhash"] is not None:return self._replay(sid,row,fingerprint)
             if expected is not None and row["revision"]!=expected:raise Conflict("Tiến trình đã thay đổi ở tab khác. Đã đồng bộ lại; hãy xem trạng thái trước khi thao tác tiếp.","revision_conflict")
             # 2. The heavy part, lock-free.
+            t1=time.perf_counter()
             try:
                 raw,result,serialized,cut=self._compute(sid,row["state"],career,action,tree_copy(payload),internal,row["revision"])
             except GameError:
@@ -414,8 +425,12 @@ class Store:
                 raise
             receipt=json.dumps(result,ensure_ascii=False)
             # 3. Short compare-and-set under the write lock.
+            t2=time.perf_counter()
             if self._store(sid,row["revision"],serialized,request_id,fingerprint,receipt,cut):
-                return dict(state=public_state(raw,migrated=True),revision=row["revision"]+1,result=result,replayed=False)
+                t3=time.perf_counter()
+                view=public_state(raw,migrated=True)
+                _slow(action,career,len(row["state"] or ""),t0,t1,t2,t3,time.perf_counter())
+                return dict(state=view,revision=row["revision"]+1,result=result,replayed=False)
         return self._command_locked(sid,request_id,expected,career,action,payload,internal,fingerprint)
 
     def _replay(self,sid:str,row,fingerprint:str)->dict:
