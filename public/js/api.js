@@ -9,6 +9,8 @@ export class GameAPI extends EventTarget {
   net(delta){this.inflight=(this.inflight||0)+delta;this.dispatchEvent(new CustomEvent('net',{detail:this.inflight}));}
   async json(url,options={},timeout=12000,early=null){
     const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),timeout);
+    // Writes on the wire (commands, posts): the update pill never reloads the page under one (update.js).
+    const write=Boolean(options.method&&options.method!=='GET');if(write)this.writing=(this.writing||0)+1;
     this.net(1);
     try {
       const sent=early?.sent??Date.now();
@@ -23,7 +25,7 @@ export class GameAPI extends EventTarget {
       this.updates.seen(version,outdated);
       if(!response.ok){const error=new Error(data.error||`Lỗi ${response.status}`);error.status=response.status;error.data=data;throw error;}
       this.connected=true;return data;
-    } finally {clearTimeout(timer);this.net(-1);}
+    } finally {clearTimeout(timer);if(write)this.writing--;this.net(-1);}
   }
   async init(){
     // boot.js starts /api/bootstrap?lite=1 and /api/content?v=<hash> while the modules download; use them

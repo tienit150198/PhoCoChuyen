@@ -324,8 +324,10 @@ function renderSheet(preserve=true){
   if(dialog.className!==cls.className)dialog.className=cls.className;
   // A fresh view is written whole; a re-render of the same view is morphed (or skipped when unchanged).
   const box=$('#sheetContent');
-  const changed=!preserve||box._html!==html;
-  if(!preserve||box._html===undefined)box.innerHTML=html;else if(changed)morph(box,html);
+  // ui.freshSheet (repaintSheet): same view, but written whole once so the engine lays the text out anew.
+  const fresh=ui.freshSheet;ui.freshSheet=false;
+  const changed=!preserve||fresh||box._html!==html;
+  if(!preserve||fresh||box._html===undefined)box.innerHTML=html;else if(changed)morph(box,html);
   box._html=html;
   if(changed){tickNow(env());document.dispatchEvent(new Event('sheetrender'));}
   applyGuide(dialog);
@@ -1015,6 +1017,23 @@ window.addEventListener('resize',()=>{clearTimeout(responsiveTimer);responsiveTi
 window.addEventListener('layoutchange',()=>{world.resize();if(api.state&&api.content)renderMain();});
 api.addEventListener('state',()=>{syncOlder(api.revision);ensureCareerUI();renderMain();if(ui.view)renderSheet();shell.update(env());});
 api.addEventListener('busy',e=>{ui.busy=e.detail;document.body.classList.toggle('busy',ui.busy);$('#saveState')?.setAttribute('aria-busy',String(ui.busy));if(!ui.busy&&heldTap)setTimeout(replayHeld,60);});
+/* "Game mất chữ": an iPhone tab left open across a deploy came back with every card of the work sheet
+ * blank (containers, portrait and button shapes drawn, no words) while the DOM still held the text.
+ * - Coming back to such a tab reloads it onto the new release when nothing would be lost (update.js
+ *   autoReload asks idle()); otherwise the pill stays, as before.
+ * - Coming back without a new release, a page restored from the back/forward cache, or a web font that
+ *   finished loading late: the open sheet is written whole once (not morphed), so its text is laid out
+ *   and painted again. Never while the player is typing. */
+const TYPING='input:not([type=button]):not([type=checkbox]):not([type=radio]):not([type=range]):not([type=hidden]),textarea,select,[contenteditable="true"]';
+function typing(){
+  const a=document.activeElement;if(a&&a!==document.body&&a.matches?.(TYPING))return true;
+  return [...document.querySelectorAll('dialog[open] input,dialog[open] textarea')].some(e=>e.matches(TYPING)&&e.value&&e.value!==e.defaultValue);
+}
+api.updates.idle=()=>!ui.busy&&!(api.writing>0)&&!document.querySelector('#confirmDialog[open]')&&!typing();
+function repaintSheet(){if(ui.view&&$('#sheet')?.open&&!typing()){ui.freshSheet=true;renderSheet();}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')repaintSheet();});
+window.addEventListener('pageshow',e=>{if(e.persisted)repaintSheet();});
+document.fonts?.addEventListener?.('loadingdone',()=>repaintSheet());
 /* Tap feedback. A control that starts a server request within 400 ms of its tap is marked at once
  * (.is-pending + aria-busy; CSS dims it and adds a spinner after 150 ms) until the requests settle; a
  * re-render drops the mark too. A second tap on a pending control is swallowed (no double submit). */

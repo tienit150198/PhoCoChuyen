@@ -5,7 +5,8 @@ Copies the game to a temp dir and serves release v1; a phone browser loads it (f
 Then v2 is "deployed" (an eagerly imported module and a lazily imported career module change, the
 server restarts on the same port and content-addressed store, like the rolling deploy). Checks:
 - the tab still open on v1 lazily imports the career module and gets the v1 bytes (no mix), and
-  shows the "Đã có phiên bản mới" pill once it learns the server runs v2;
+  shows the "Đã có phiên bản mới" pill once it learns the server runs v2 while the player is typing;
+- brought back with nothing going on, that tab reloads onto v2 by itself;
 - a new load gets v2 for every module (nothing stale from the cache), lazily loads v2, no pill;
 - no console errors or CSP violations.
 usage: python scripts/browser_deploy.py
@@ -89,10 +90,19 @@ async def main() -> int:
             check(v1 != v2, 'version did not change')
             late = await a.evaluate("async()=>{await import('/js/careers/grocery.js');return globalThis.__lateMark;}")
             check(late == 'v1', f'open v1 tab lazily loaded {late!r} (mixed versions)')
+            # Back to the tab while typing: nothing reloads, the pill offers it.
+            await a.evaluate("()=>{const i=document.createElement('input');i.id='deploy-typing';(document.querySelector('dialog[open]')||document.body).append(i);i.value='chưa gửi';i.focus();}")
             await a.evaluate("()=>document.dispatchEvent(new Event('visibilitychange'))")
             await a.wait_for_selector('.update-pill', timeout=10000)
             pill = await a.inner_text('.update-pill .update-go')
             check('phiên bản mới' in pill, f'pill text {pill!r}')
+            # Back to the tab with nothing going on: it reloads onto v2 by itself (update.js autoReload).
+            await a.evaluate("()=>document.getElementById('deploy-typing').remove()")
+            async with a.expect_navigation(timeout=15000):
+                await a.evaluate("()=>document.dispatchEvent(new Event('visibilitychange'))")
+            await a.wait_for_selector('#app:not([hidden])', timeout=60000)
+            check(await a.evaluate('()=>globalThis.__eagerMark') == 'v2', 'the tab brought back did not reload onto v2')
+            check(await a.evaluate("()=>!document.querySelector('.update-pill')"), 'pill still shown after the reload')
             b = await ctx.new_page(); watch(b, 'v2 tab')
             await b.goto(base); await b.wait_for_selector('#app:not([hidden])', timeout=60000)
             check(await b.evaluate('()=>globalThis.__eagerMark') == 'v2', 'new load ran stale v1 code')

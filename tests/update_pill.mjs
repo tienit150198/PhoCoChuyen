@@ -51,4 +51,27 @@ const store=()=>{const m=new Map();return {getItem:k=>m.get(k)??null,setItem:(k,
   doc.visibilityState='hidden';doc.listeners.visibilitychange();assert.equal(checks,1);
   clearInterval(n.timer);
 }
+{ // back to the tab after a deploy: reload by itself when idle, once per version; otherwise the pill
+  const doc=fakeDoc(),session=store(),win={listeners:{},addEventListener(t,f){this.listeners[t]=f;}};
+  let reloads=0,idle=true,server='0.8.0+aaa';
+  const n=new UpdateNotice('0.8.0+aaa',{doc,storage:store(),session,reload:()=>reloads++,idle:()=>idle});
+  const check=async()=>{n.seen(server);};
+  n.watch(check,win);clearInterval(n.timer);
+  assert.equal(n.seen('0.8.0+bbb'),true);assert.equal(reloads,0,'on the page: the pill only');
+  doc.listeners.visibilitychange();await Promise.resolve();
+  assert.equal(reloads,0,'same release on the server: no reload');
+  server='0.8.1+bbb';doc.listeners.visibilitychange();await new Promise(r=>setTimeout(r,0));
+  assert.equal(reloads,1,'back to the tab, idle, new release: reloads');
+  assert.equal(n.returning,false);
+  doc.listeners.visibilitychange();await new Promise(r=>setTimeout(r,0));
+  assert.equal(reloads,1,'never twice for one version (no reload loop)');
+  server='0.8.2+ccc';idle=false;doc.listeners.visibilitychange();await new Promise(r=>setTimeout(r,0));
+  assert.equal(reloads,1,'typing or sending: no reload');assert.equal(n.shown,'0.8.2+ccc','the pill instead');
+  idle=true;win.listeners.pageshow({persisted:true});await new Promise(r=>setTimeout(r,0));
+  assert.equal(reloads,2,'a page restored from the back/forward cache counts as coming back');
+  assert.equal(n.seen('0.8.3+ddd'),true);assert.equal(reloads,2,'while on the page: never by itself');
+  assert.equal(n.seen('0.8.3+ddd',true),true);assert.equal(reloads,3,'incompatible + idle: reloads');
+  const broken=new UpdateNotice('0.8.0+aaa',{doc:fakeDoc(),storage:store(),session:{getItem(){throw new Error('blocked');},setItem(){throw new Error('blocked');}},reload:()=>reloads++,idle:()=>true});
+  broken.returning=true;assert.equal(broken.seen('0.9.0+x'),true);assert.equal(reloads,3,'no session storage: no auto reload (no loop guard), pill');
+}
 console.log('update pill: ok');
