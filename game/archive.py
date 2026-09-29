@@ -70,6 +70,16 @@ def done_acting(token) -> None:
     _ACTING.reset(token)
 
 
+FORGET = '!forget:'
+
+
+def forget(kind: str, owner: Any = None) -> None:
+    """The player erased this history on purpose (a cleared chat): its archived rows go too."""
+    box = _OUT.get()
+    if box is not None:
+        box.add(owner, FORGET + kind, [None])
+
+
 def record(rows: list, kind: str, owner: Any = None) -> None:
     """Archive rows the caller removes by other means (a replaced review, a cleared chat)."""
     box = _OUT.get()

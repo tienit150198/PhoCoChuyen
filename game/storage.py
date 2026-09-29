@@ -68,6 +68,8 @@ def _write_archive(db,sid:str,rows:list)->None:
     """Append rows to each (career, kind) history of this save, inside the caller's transaction."""
     nxt={}
     for career,kind,day,row in rows:
+        if kind.startswith(ar.FORGET):  # erased by the player: nothing of it is kept
+            kind=kind[len(ar.FORGET):];db.execute("DELETE FROM archive WHERE sid=? AND career=? AND kind=?",(sid,career,kind));nxt.pop((career,kind),None);continue
         k=(career,kind)
         if k not in nxt:
             nxt[k]=db.execute("SELECT COALESCE(MAX(seq)+1,0) FROM archive WHERE sid=? AND career=? AND kind=?",(sid,career,kind)).fetchone()[0]

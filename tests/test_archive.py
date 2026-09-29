@@ -267,3 +267,21 @@ class ArchiveHTTPTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class ClearedChat(unittest.TestCase):
+    def test_cleared_chat_is_erased_from_the_archive_too(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Store(Path(tmp) / 'game.db')
+            p = StoreJourney(store, 'milk_tea')
+            npc = next(n['id'] for n in E.NPCS if n['career_id'] == 'milk_tea')
+            for i in range(30):  # 60 messages: more than the 40 kept in the save
+                p.act('talk', npc=npc, text=f'chào {i}')
+            with store.connect() as db:
+                kept = db.execute("SELECT COUNT(*) FROM archive WHERE kind=?", ('chat:' + npc,)).fetchone()[0]
+            self.assertGreater(kept, 0)
+            p.act('chat_clear', npc=npc)
+            self.assertNotIn(npc, p.state['careers']['milk_tea']['chats'])
+            with store.connect() as db:
+                left = db.execute("SELECT COUNT(*) FROM archive WHERE kind=?", ('chat:' + npc,)).fetchone()[0]
+            self.assertEqual(left, 0)

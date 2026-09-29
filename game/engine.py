@@ -930,7 +930,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         result.update(message=reply,reply=reply,suggestions=suggestions,npc=npc)
     elif action=="chat_clear":
         npc=p.get("npc");need(npc in NPC_INDEX,"Nhân vật không hợp lệ.")
-        ar.record(c["chats"].pop(npc,None) or [],"chat:"+npc,c);result["message"]="Đã xóa lịch sử chat. Ký ức công việc có nguồn vẫn nằm trong Sổ tay."
+        c["chats"].pop(npc,None);ar.forget("chat:"+npc,c);result["message"]="Đã xóa lịch sử chat. Ký ức công việc có nguồn vẫn nằm trong Sổ tay."
     elif action=="feed_post":
         text=clean_text(p.get("text"),500);post=add_feed(s,c,"player",text,"player-post",kind="post");metric(c,"posts")
         npcs=[n for n in NPCS if n["career_id"]==career]
