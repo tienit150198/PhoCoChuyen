@@ -39,11 +39,13 @@ DATA_DEVICES = ('phone', 'laptop')
 GEN = 2
 
 GRADES = {
-    'genuine': dict(name='Chính hãng', short='Hãng', warranty=90, note='Đắt hơn, bền, bảo hành 90 ngày.'),
-    'compatible': dict(name='Tương thích', short='Tương thích', warranty=30, note='Rẻ hơn, độ bền vừa, bảo hành 30 ngày.'),
-    'standard': dict(name='Linh kiện thay', short='Thay mới', warranty=30, note='Chỉ có một loại, bảo hành 30 ngày.'),
-    'used': dict(name='Đồ tháo máy', short='Tháo máy', warranty=7, note='Rẻ nhất nhưng hên xui: cắm thử trước khi lắp, bảo hành 7 ngày.'),
-    'none': dict(name='Vệ sinh / chỉnh', short='Không thay đồ', warranty=7, note='Chỉ tính công, bảo hành 7 ngày.'),
+    'genuine': dict(name='Chính hãng', short='Hãng', warranty=90, note='Đắt hơn, bền, bảo hành 90 ngày.', durable='bền'),
+    'compatible': dict(name='Tương thích', short='Tương thích', warranty=30, note='Rẻ hơn, độ bền vừa, bảo hành 30 ngày.',
+                       durable='khá bền'),
+    'standard': dict(name='Linh kiện thay', short='Thay mới', warranty=30, note='Chỉ có một loại, bảo hành 30 ngày.', durable='khá bền'),
+    'used': dict(name='Đồ tháo máy', short='Tháo máy', warranty=7, note='Rẻ nhất nhưng hên xui: cắm thử trước khi lắp, bảo hành 7 ngày.',
+                 durable='hên xui'),
+    'none': dict(name='Vệ sinh / chỉnh', short='Không thay đồ', warranty=7, note='Chỉ tính công, bảo hành 7 ngày.', durable='khá bền'),
 }
 MARKS = {
     'crack': ('💥', 'Vết nứt'), 'scratch': ('〰️', 'Trầy xước'), 'dent': ('🔨', 'Móp méo'), 'rust': ('🟤', 'Gỉ sét'),
@@ -654,11 +656,16 @@ BENCH_V2 = dict(units={}, checked=[], shown=False, book=None, claim=None, data_r
                 unsafe=0)
 
 
+# Care loop (devices that stay for days): per-device part orders and the shelf tag.
+BENCH_V3 = dict(shelf=None, orders={}, cold=False)
+
+
 def _empty_bench() -> dict:
     b = dict(intake=None, data_ok=None, safe=[], opened=False, tests=[], ruled_out=[], diagnosis=None, found=[],
              quote=None, approved={}, fixed={}, fixcost={}, wrong=0, unauthorized=[], hazards=0, final=None,
              warranty=None, cost=0, paid=None, returned=False)
     b.update(copy.deepcopy(BENCH_V2))
+    b.update(copy.deepcopy(BENCH_V3))
     return b
 
 
@@ -668,16 +675,82 @@ DAILY_KEYS = ('day_repaired', 'day_returned', 'day_hazards')
 BOOK_MAX = 24
 DATA_FEE = 15
 
+# ------------------------------------------------------------------------------ care loop constants
+OPEN_MIN, CLOSE_MIN, MIN_PER_TURN = 8 * 60, 19 * 60, 10     # shop clock: 08:00, 10 minutes a turn, up to 19:00
+LAM_CUTOFF, LAM_ARRIVE = 12 * 60, 15 * 60                    # Lâm delivers at 15:00 what is ordered before noon
+SOURCES = {
+    'lam': dict(name='Lâm Linh Kiện', emoji='🛵', ship=2, grades=('compatible', 'standard'),
+                rule='Đặt trước 12:00 thì 15:00 chiều nay có, đặt sau thì sáng mai.'),
+    'city': dict(name='Nhà phân phối hàng hãng trên thành phố', emoji='🏙️', ship=3, grades=('genuine',),
+                 rule='Hàng hãng gửi xe khách về, ngày kia mở cửa là có.'),
+}
+SOURCE_OF = {g: sid for sid, v in SOURCES.items() for g in v['grades']}
+SHELF_MAX = 2              # devices the player may put on the shelf (closing time may add more)
+PROMISE_DAYS = (0, 1, 2, 3)
+REPLIES = ('truth', 'soothe')
+TRUST_NAMES = ('Khách mới', 'Quen mặt', 'Quen tay', 'Thân thiết', 'Khách ruột', 'Như người nhà')
+TRUST_MAX = 5
+TRUST_PATIENCE = 3         # patience per trust level when a regular comes back
+TRUST_STRETCH = 3          # from this trust the customer accepts a quote 10 % over budget
+# What the shop learns about each regular (shown from the second visit).
+REGULARS = {
+    0: 'Máy nào cũng chứa dữ liệu công việc: hỏi quyền trước khi động vào, báo giá rõ ràng qua tin nhắn.',
+    1: 'Muốn sửa chứ không mua mới, thích ngồi xem thợ làm và nghe giải thích.',
+    2: 'Ví mỏng: nói trước phương án rẻ nhất và rủi ro của nó, cần máy trước giờ học.',
+    3: 'Nồi là cần câu cơm: hẹn giờ nào phải đúng giờ đó, trễ là mất mẻ xôi.',
+    4: 'Nói ít, cần xe chạy lại ngay — hẹn lâu là mất đơn.',
+    5: 'Hỏi giá ba lần: báo giá rõ từng dòng thì bà gật nhanh, hứa lèo thì bà nhớ dai.',
+    7: 'Dễ tính, nhưng ghét bị hẹn lần hẹn lữa.',
+}
+REG_IDS = {kit.npc_id(ID, i): i for i in REGULARS}
+HISTORY_MAX = 4
+COMEBACK_MAX = 8
+GRADE_RISK = dict(genuine=0.0, standard=0.06, compatible=0.14, none=0.08, used=0.25)
+CAUSES = {
+    'part': 'linh kiện loại rẻ xuống cấp sớm',
+    'batch': 'linh kiện thay mới dính lô lỗi, hỏng sớm',
+    'redo': 'lần trước chỉ vệ sinh, chỉnh lại — bệnh cũ quay lại',
+    'joint': 'mối hàn nguội bong ra (lúc hàn mũi hàn đã mòn)',
+    'rust': 'muối gỉ từ lần vô nước ăn tiếp quanh IC',
+    'untested': 'hôm giao máy không chạy thử, lỗi phụ lộ ra sau',
+}
+TIP_WEAR, TIP_LOW, TIP_CLEAN, TIP_CLEAN_MAX, TIP_COST = 12, 30, 25, 80, 4
+METER_WEAR, METER_LOW, METER_COST = 6, 20, 2
+METER_TESTS = frozenset(('cap_meter', 'coil_meter', 'fuse_meter', 'heater_meter', 'cord_check', 'batt_meter',
+                         'driver_meter', 'battery_look'))
+TOOLS = {
+    'tip': dict(emoji='🔥', name='Mũi hàn', low=TIP_LOW,
+                effect='Dưới 30%: ăn thiếc kém, tốn thêm thiếc, mối hàn dễ nguội (máy dễ quay lại bảo hành); 0% là không hàn được.'),
+    'meter': dict(emoji='📟', name='Pin đồng hồ đo', low=METER_LOW,
+                  effect='Dưới 20%: số đo nhảy loạn, đo cũng như không.'),
+}
+CARE_STATS = ('shelf_seq', 'orders_placed', 'pickups_on_time', 'pickups_late', 'calls_answered', 'comebacks_seen',
+              'comebacks_honoured')
+DATA_V3 = dict(clock=None, tools=dict(tip=100, meter=100), regulars={}, comebacks=[], **{k: 0 for k in CARE_STATS})
+
 
 def initial() -> dict:
     d = dict(repaired=0, returned=0, hazards=0, unauthorized=0, wrong_parts=0, day_repaired=0, day_returned=0, day_hazards=0)
     d.update(copy.deepcopy(DATA_V2))
+    d.update(copy.deepcopy(DATA_V3))
     d['desk'] = kit.desk_initial()
     return d
 
 
+def _migrate(c: dict, d: dict) -> None:
+    """Care-loop keys for saves and tasks made before them."""
+    for k, v in DATA_V3.items():
+        d.setdefault(k, copy.deepcopy(v))
+    for t in c.get('tasks', []):
+        if isinstance(t, dict) and t.get('career') == ID and isinstance(t.get('bench'), dict):
+            for k, v in BENCH_V2.items():
+                t['bench'].setdefault(k, copy.deepcopy(v))
+            for k, v in BENCH_V3.items():
+                t['bench'].setdefault(k, copy.deepcopy(v))
+
+
 def _data(c: dict, stock: bool = True) -> dict:
-    """Plugin data with v0.5 fields (old saves get them here)."""
+    """Plugin data with v0.5 fields and the care loop (old saves get them here)."""
     d = kit.data(c)
     for k, v in DATA_V2.items():
         if k == 'v2_stock':
@@ -685,10 +758,71 @@ def _data(c: dict, stock: bool = True) -> dict:
         else:
             d.setdefault(k, copy.deepcopy(v))
     d.setdefault('desk', kit.desk_initial())
+    _migrate(c, d)
     if stock and d['v2_stock'] is not True and c.get('ext', {}).get('inv') is not None:
         _topup_stock(c)
         d['v2_stock'] = True
     return d
+
+
+# ------------------------------------------------------------------------------ clock and waiting words
+def _hm(minute: int) -> str:
+    return f'{minute // 60:02d}:{minute % 60:02d}'
+
+
+def _clock(c: dict) -> int:
+    """Minutes since midnight on the shop clock (08:00 before the shift opens)."""
+    ck = kit.data(c).get('clock')
+    if not c.get('open') or not isinstance(ck, dict) or ck.get('day') != c['day']:
+        return OPEN_MIN
+    return min(CLOSE_MIN, OPEN_MIN + MIN_PER_TURN * max(0, c['turn'] - int(ck.get('turn0', c['turn']))))
+
+
+def _sync_clock(c: dict, d: dict) -> None:
+    ck = d.get('clock')
+    if c.get('open') and not (isinstance(ck, dict) and ck.get('day') == c['day']):
+        d['clock'] = dict(day=c['day'], turn0=c['turn'])   # a shift opened before the clock existed starts it now
+
+
+def _when(c: dict, day: int, minute: int) -> str:
+    """A waiting time in words: 'chiều nay 15:00', 'sáng mai', 'ngày kia'."""
+    now = (c['day'], _clock(c))
+    if now >= (day, minute):
+        return 'đã về'
+    if day == c['day']:
+        return ('chiều nay ' if minute >= 12 * 60 else 'sáng nay ') + _hm(minute)
+    k = day - c['day']
+    return 'sáng mai' if k == 1 else 'ngày kia' if k == 2 else f'{k} ngày nữa'
+
+
+def _promise_word(c: dict, promise: int) -> str:
+    k = promise - c['day']
+    return 'hôm nay' if k == 0 else 'mai' if k == 1 else 'ngày kia' if k == 2 else f'{k} ngày nữa' if k > 0 else f'trễ {-k} ngày'
+
+
+def _ready(c: dict, src: str) -> tuple[int, int]:
+    if src == 'city':
+        return c['day'] + 2, OPEN_MIN
+    if c.get('open') and _clock(c) < LAM_CUTOFF:
+        return c['day'], LAM_ARRIVE
+    return c['day'] + 1, OPEN_MIN
+
+
+def _arrived(c: dict, o: dict) -> bool:
+    return (c['day'], _clock(c)) >= (o['day'], o['minute'])
+
+
+def _open_tasks(c: dict) -> list:
+    return [t for t in c.get('tasks', []) if t.get('career') == ID and t['status'] not in DONE and isinstance(t.get('bench'), dict)]
+
+
+def _shelved(c: dict) -> list:
+    return [t for t in _open_tasks(c) if t['bench'].get('shelf')]
+
+
+def _trust(d: dict, npc: str) -> int:
+    rec = d.get('regulars', {}).get(npc)
+    return rec['trust'] if rec else 0
 
 
 def _topup_stock(c: dict) -> None:
@@ -748,6 +882,17 @@ def _scope(b: dict) -> list[str]:
 
 def _open_scope(b: dict) -> list[str]:
     return [f for f in _scope(b) if f not in b['fixed']]
+
+
+def _eta(c: dict, t: dict) -> tuple[int, int]:
+    """When every part still on its way for the open work will be in the shop (now when none is pending)."""
+    b = t['bench']
+    best = (c['day'], _clock(c))
+    scope = _open_scope(b)
+    for f, o in (b.get('orders') or {}).items():
+        if not o['used'] and f in scope:
+            best = max(best, (o['day'], o['minute']))
+    return best
 
 
 def _line(c: dict, device: str, fd: dict, grade: str) -> dict:
@@ -810,11 +955,18 @@ def _need_bench(t: dict) -> dict:
 
 def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     d = _data(c)
+    _sync_clock(c, d)
     desk = d['desk']
     if name == 'rp_desk':
         return kit.desk_choose(s, c, ID, desk, DESK, p.get('option'))
     kit.desk_block(desk)
-    result = _handle(s, c, d, name, p)
+    if name == 'rp_tool':
+        result = _tool(s, c, d, p)
+    elif name == 'rp_back':
+        result = _comeback(s, c, d, p)
+    else:
+        result = _handle(s, c, d, name, p)
+    _after_action(c, d, result)
     fired = desk['fired']
     kit.desk_tick(s, c, ID, desk, DESK, _today(c)['id'])
     if desk['fired'] > fired and desk['ev']:
@@ -921,6 +1073,8 @@ def _handle(s: dict, c: dict, d: dict, name: str, p: dict) -> dict:
         return dict(message=msg)
     kit.need(b['intake'] is not None, 'Ghi phiếu nhận máy trước (tình trạng, phụ kiện' + (', quyền dữ liệu' if device in DATA_DEVICES else '') + ').')
     kit.need(not b['returned'], 'Máy đã trả khách.')
+    if name in ('rp_order', 'rp_shelf', 'rp_answer'):
+        return _care_task(s, c, d, t, name, p)
     if name == 'rp_safety':
         step = kit.one_of(p.get('step'), dev['safety'], 'Bước an toàn không dùng cho máy này.')
         kit.need(not b['opened'], 'Máy đang mở rồi.')
@@ -1031,6 +1185,16 @@ def _handle(s: dict, c: dict, d: dict, name: str, p: dict) -> dict:
             kit.need(b['opened'], f'Phép đo này cần mở máy. Làm an toàn rồi “{dev["open"]}”.')
         if test['consent']:
             kit.need(b['data_ok'], 'Khách không đồng ý cho mở khóa máy. Không xem dữ liệu — dùng phép đo phần cứng.', 'privacy')
+        if test['id'] in METER_TESTS:
+            tools = d['tools']
+            weak = tools['meter'] < METER_LOW
+            tools['meter'] = max(0, tools['meter'] - METER_WEAR)
+            if weak:
+                # A flat 9 V battery: the display wanders, the turn is spent and nothing is learned.
+                kit.start_work(t)
+                t['patience'] = max(25, t['patience'] - 2)
+                return dict(message=f'{test["emoji"]} {test["name"]}: số trên đồng hồ nhảy loạn xạ, đọc không ra — pin đồng hồ đo '
+                                    f'còn {tools["meter"]}%. Thay pin (🧰 Dụng cụ, {METER_COST} xu) rồi đo lại.', good=False)
         fuel = 0
         if test['mode'] == 'live' and t.get('gen') and _today(c)['id'] == 'outage':
             fuel = min(2, c['money'])
@@ -1097,7 +1261,7 @@ def _handle(s: dict, c: dict, d: dict, name: str, p: dict) -> dict:
             status, reason = 'declined', 'Vô nước gì mà vô nước! Máy tôi chưa dính giọt nào, đừng có đổ thừa.'
         elif n['genuine_only'] and any(x['grade'] in ('compatible', 'used') for x in lines.values()):
             status, reason = 'declined', 'Máy còn tốt, tôi chỉ muốn linh kiện chính hãng thôi.'
-        elif total + others > n['budget']:
+        elif total + others > n['budget'] + (n['budget'] // 10 if _trust(d, t['npc']) >= TRUST_STRETCH else 0):
             status = 'declined'
             reason = (f'Tổng {total + others} xu à? Quá sức rồi, tôi chỉ tính khoảng {n["budget"]} xu thôi.' if not others else
                       f'Phát sinh thêm {total} xu nữa thì thành {total + others} xu, vượt {n["budget"]} xu rồi.')
@@ -1105,6 +1269,8 @@ def _handle(s: dict, c: dict, d: dict, name: str, p: dict) -> dict:
             status = 'accepted'
             reason = (f'Được, {total} xu thì làm đi. Có phát sinh gì nhớ báo trước nhé.' if not requote else
                       f'Ừ, phát sinh {total} xu thì tôi đồng ý. Cảm ơn đã hỏi trước khi làm.')
+            if total + others > n['budget']:
+                reason = f'Hơi quá {n["budget"]} xu tôi định, nhưng tiệm quen nên tôi tin. Làm đi.'
             if case == 'warranty' and _covered(t):
                 reason = f'Còn hạn bảo hành mà vẫn tính {total} xu à? Thôi… làm đi, tôi cần máy.'
         b['quote'] = dict(lines=lines, total=total, status=status, rounds=rounds + 1, reason=reason)
@@ -1129,15 +1295,41 @@ def _handle(s: dict, c: dict, d: dict, name: str, p: dict) -> dict:
         if item:
             unlock = ITEM_INDEX[item].get('unlock', 1)
             kit.need(unlock <= kit.level(c), f'{ITEM_INDEX[item]["name"]} mở khóa ở cấp {unlock}.')
-        cost = kit.take(c, item, 1) if item else 0
+        tools = d['tools']
+        solder = 'solder' in fd['supplies']
+        if solder:
+            kit.need(tools['tip'] > 0, 'Mũi hàn đã mòn hỏng hẳn, không ăn thiếc — thay mũi hàn mới (🧰 Dụng cụ) rồi mới hàn được.')
+        order = b['orders'].get(fault)
+        if item and order and order['item'] == item and not order['used']:
+            src = SOURCES[order['src']]
+            kit.need(_arrived(c, order), f'{ITEM_INDEX[item]["name"]} đặt riêng cho máy này chưa về — {src["name"]} giao '
+                                         f'{_when(c, order["day"], order["minute"])}. Làm máy khác trong lúc chờ nhé.')
+            order['used'] = True
+            cost = order['cost']
+        elif item:
+            if kit.stock(c, item) < 1:
+                how = (f'Đặt riêng cho máy này ({SOURCES[SOURCE_OF[grade]]["name"]} giao '
+                       f'{_when(c, *_ready(c, SOURCE_OF[grade]))}) hoặc mở Kho nhập thêm.' if grade in SOURCE_OF
+                       else 'Mở Kho nhập thêm, hoặc báo giá lại loại linh kiện khác.')
+                kit.need(False, f'Hết {ITEM_INDEX[item]["name"]} trên kệ. {how}')
+            cost = kit.take(c, item, 1)
+        else:
+            cost = 0
         for sup in fd['supplies']:
             cost += kit.take(c, sup, 1)
+        cold = ''
+        if solder:
+            if tools['tip'] < TIP_LOW:
+                cost += kit.take(c, 'solder', 1)
+                b['cold'] = True
+                cold = ' (Mũi hàn mòn đen, ăn thiếc kém: tốn thêm thiếc, mối hàn dễ nguội — lau hoặc thay mũi hàn đi.)'
+            tools['tip'] = max(0, tools['tip'] - TIP_WEAR)
         if grade == 'used':
             d['used_fitted'] += 1
         b['fixed'][fault] = grade
         b['fixcost'][fault] = cost
         b['cost'] += cost
-        msg = fd['fix']
+        msg = fd['fix'] + cold
         if grade == 'used' and fault not in b['checked']:
             msg += ' (Đồ tháo máy này chưa cắm thử — hên xui lúc chạy thử.)'
         if not authorized:
@@ -1258,12 +1450,17 @@ def _handle(s: dict, c: dict, d: dict, name: str, p: dict) -> dict:
             d['book'] = (d['book'] + [dict(slip=slip, day=c['day'], npc=t['npc'], device=device, fault=main,
                                            grade=b['fixed'].get(main, 'none'), days=b['warranty'], title=t['title'])])[-BOOK_MAX:]
         acc = ', '.join(ACCESSORIES[a][1].lower() for a in b['intake']['accessories'])
+        shelf_note = _pickup_note(c, d, t)
         if tested:
             kit.complete(s, c, t, pay, f'Tiệm đã sửa “{t["title"]}”, trả máy kèm {acc or "phiếu"} và phiếu bảo hành {b["warranty"]} ngày.')
         else:
             kit.complete(s, c, t, pay, f'Tiệm giao lại “{t["title"]}” kèm {acc or "phiếu"} mà chưa chạy thử, không có phiếu bảo hành.')
+        _release_orders(c, t)
+        trust_note = _regular_after(c, d, t, returned=False)
+        _schedule_back(c, d, t, tested)
         tail = (' ' + ' '.join(extra_notes)) if extra_notes else ''
         tail += (' ' + r['message']) if r['message'] else ''
+        tail += shelf_note + trust_note
         if not tested:
             return dict(message=f'Đã giao máy khi chưa chạy thử · +{pay} xu.{tail}')
         if cq.slips(t):
@@ -1287,10 +1484,272 @@ def _handle(s: dict, c: dict, d: dict, name: str, p: dict) -> dict:
         d['returned'] += 1
         d['day_returned'] += 1
         kit.metric(c, 'repairs_returned')
+        shelf_note = _pickup_note(c, d, t)
         kit.complete(s, c, t, fee, f'Tiệm trả lại “{t["title"]}” nguyên trạng và giải thích vì sao không sửa.')
+        _release_orders(c, t)
+        trust_note = _regular_after(c, d, t, returned=True)
         tail = (' ' + r['message']) if r['message'] else ''
+        tail += shelf_note + trust_note
         return dict(message=f'Đã trả máy nguyên trạng kèm phụ kiện' + (f' · phí kiểm tra {fee} xu.' if fee else ', không thu phí.') + tail)
     raise kit.eng().GameError('Thao tác sửa chữa không hợp lệ.')
+
+
+# ------------------------------------------------------------------------------ care loop: orders, shelf, calls
+def _low(name: str) -> str:
+    """Lower-case the first letter only (keeps units like µF)."""
+    return name[:1].lower() + name[1:]
+
+
+def _tag(t: dict) -> str:
+    sh = t['bench'].get('shelf')
+    return sh['tag'] if sh else DEVICES[t['needs']['device']]['name'].lower()
+
+
+def _who(t: dict) -> str:
+    return PEOPLE[int(t['npc'].rsplit('_', 1)[1]) - 1][0]
+
+
+def _care_task(s: dict, c: dict, d: dict, t: dict, name: str, p: dict) -> dict:
+    b = t['bench']
+    device = t['needs']['device']
+    if name == 'rp_order':
+        fault = p.get('fault')
+        kit.need(fault in _open_scope(b), 'Hạng mục này chưa chốt hoặc đã sửa xong — không cần đặt đồ.')
+        ap = b['approved'].get(fault)
+        kit.need(ap, 'Khách chưa duyệt báo giá cho hạng mục này. Đặt đồ sau khi khách gật đầu, kẻo khách không sửa thì tiệm ôm đồ.')
+        grade = ap['grade']
+        src = SOURCE_OF.get(grade)
+        kit.need(src, 'Đồ tháo máy và việc vệ sinh không đặt riêng được — dùng đồ trên kệ tiệm.')
+        item = _fault_def(device, fault)['parts'][grade]
+        old = b['orders'].get(fault)
+        kit.need(not (old and old['item'] == item and not old['used']), 'Đã đặt món này cho máy rồi, chờ hàng về nhé.')
+        kit.confirm(p, 'Xác nhận đặt riêng linh kiện cho máy này (trả tiền hàng và phí giao ngay).')
+        it, sv = ITEM_INDEX[item], SOURCES[src]
+        cost = it['cost'] + sv['ship']
+        kit.money(s, c, -cost, f'Đặt riêng {_low(it["name"])} cho {_tag(t)}', t['id'], 'stock')
+        if old and not old['used']:
+            _release_one(c, old)      # the customer changed the part grade: the first unit goes to the shelf
+        day, minute = _ready(c, src)
+        b['orders'][fault] = dict(item=item, src=src, day=day, minute=minute, cost=cost, used=False, told=False)
+        d['orders_placed'] += 1
+        kit.start_work(t)
+        when = _when(c, day, minute)
+        tip = '' if b.get('shelf') else ' Chờ lâu thì hẹn khách để máy lại tiệm (🗄️ Hẹn khách).'
+        return dict(message=f'{sv["emoji"]} Đã đặt {_low(it["name"])} ({cost} xu, gồm {sv["ship"]} xu giao) — {sv["name"]} giao {when}.{tip}')
+    if name == 'rp_shelf':
+        kit.need(_case(t) != 'buyin', 'Máy khách muốn bán không để lên kệ sửa.')
+        kit.need(not b.get('shelf'), 'Máy đã nằm trên kệ rồi.')
+        days = kit.one_of(p.get('days'), PROMISE_DAYS, 'Chọn ngày hẹn: hôm nay, mai, ngày kia hoặc 3 ngày nữa.')
+        kit.need(len(_shelved(c)) < SHELF_MAX, f'Kệ máy chờ đã đủ {SHELF_MAX} máy. Làm xong bớt một máy rồi hẹn thêm nhé.')
+        kit.confirm(p, 'Xác nhận hẹn khách và để máy lại tiệm.')
+        _put_on_shelf(c, d, t, c['day'] + days, auto=False)
+        eta_day, _ = _eta(c, t)
+        warn = ' ⚠️ Đồ chưa về kịp ngày hẹn — nhớ gọi báo khách nếu phải dời.' if eta_day > c['day'] + days else ''
+        return dict(message=f'🏷️ Dán tem {b["shelf"]["tag"]} lên máy, xếp lên kệ. Hẹn {_who(t)} {_promise_word(c, c["day"] + days)} '
+                            f'tới lấy.{warn}')
+    # rp_answer — a phone call from the owner of a shelved device (no turn).
+    sh = b.get('shelf')
+    kit.need(sh and sh['call'] == c['day'], 'Không có cuộc gọi nào của khách đang chờ trả lời.')
+    reply = kit.one_of(p.get('reply'), REPLIES, 'Chọn nói thật tiến độ hoặc trấn an khách.')
+    sh['call'] = None
+    d['calls_answered'] += 1
+    eta_day, eta_min = _eta(c, t)
+    who = _who(t)
+    if reply == 'truth':
+        waiting = eta_day > c['day'] or (eta_day, eta_min) > (c['day'], _clock(c))
+        said = f'đồ về {_when(c, eta_day, eta_min)}' if waiting else 'đồ đã đủ, đang làm'
+        if eta_day > sh['promise']:
+            sh['promise'] = eta_day
+            sh['moved'] += 1
+            return dict(message=f'📞 Nói thật với {who}: {said}. Khách hơi tiếc nhưng cảm ơn tiệm báo trước. '
+                                f'Hẹn lại: {_promise_word(c, eta_day)}.')
+        return dict(message=f'📞 Nói thật với {who}: {said}. Khách yên tâm, vẫn hẹn {_promise_word(c, sh["promise"])}.')
+    sh['promise'] = c['day']
+    if eta_day > c['day']:
+        sh['lied'] = True
+        return dict(message=f'📞 Bảo {who} “chiều nay xong”. Khách mừng rỡ… nhưng đồ thay {_when(c, eta_day, eta_min)} mới về.')
+    return dict(message=f'📞 Hẹn {who} chiều nay ghé lấy — nhớ làm kịp trước giờ đóng cửa.')
+
+
+def _put_on_shelf(c: dict, d: dict, t: dict, promise: int, auto: bool) -> None:
+    d['shelf_seq'] += 1
+    t['bench']['shelf'] = dict(tag=f'#{d["shelf_seq"] % 1000:03d}', since=c['day'], promise=promise, late=0, moved=0,
+                               missed=0, calls=0, call=None, lied=False, auto=auto)
+    t['deferred'] = True
+    if c.get('active_task') == t['id']:
+        kit.eng().next_active(c)
+
+
+def _after_action(c: dict, d: dict, result: dict) -> None:
+    """Shelved devices never wait at the counter; a part that just arrived is announced once."""
+    news = []
+    for t in _open_tasks(c):
+        b = t['bench']
+        if b.get('shelf'):
+            t['deferred'] = True
+        for o in (b.get('orders') or {}).values():
+            if not o['used'] and not o['told'] and _arrived(c, o):
+                o['told'] = True
+                news.append(f'{SOURCES[o["src"]]["emoji"]} {ITEM_INDEX[o["item"]]["name"]} cho {_tag(t)} đã về.')
+    if news:
+        result['message'] = (result.get('message', '') + ' ' + ' '.join(news)).strip()
+
+
+def _release_one(c: dict, o: dict) -> None:
+    from .. import inventory
+    o['used'] = True
+    it = ITEM_INDEX[o['item']]
+    if inventory.capacity(ID) - kit.stock(c, o['item']) > 0:
+        kit.add_lot(c, o['item'], 1, it['cost'], it.get('life') or 999, 'order')
+    else:
+        kit.waste(c, o['item'], 1, o['cost'], 'Linh kiện đặt riêng còn thừa, kệ đã đầy')
+
+
+def _release_orders(c: dict, t: dict) -> None:
+    """A part ordered for this device but not fitted goes to the shop's stock when the job ends."""
+    for o in (t['bench'].get('orders') or {}).values():
+        if not o['used']:
+            _release_one(c, o)
+
+
+def _pickup_note(c: dict, d: dict, t: dict) -> str:
+    sh = t['bench'].get('shelf')
+    if not sh:
+        return ''
+    if sh['late']:
+        d['pickups_late'] += 1
+        return f' 📞 Gọi {_who(t)} tới lấy máy — trễ hẹn {sh["late"]} ngày.'
+    d['pickups_on_time'] += 1
+    return f' 📞 Gọi {_who(t)} tới lấy máy — đúng hẹn.'
+
+
+def _regular_after(c: dict, d: dict, t: dict, returned: bool) -> str:
+    """The regulars' card: visits, trust and what was done to their things."""
+    if t['npc'] not in REG_IDS or _case(t) == 'buyin':
+        return ''
+    rec = d['regulars'].setdefault(t['npc'], dict(visits=0, trust=0, ontime=0, late=0, history=[]))
+    b = t['bench']
+    rec['visits'] += 1
+    delta = 0
+    sh = b.get('shelf')
+    if sh:
+        if sh['late']:
+            rec['late'] += 1
+            delta -= 1
+        else:
+            rec['ontime'] += 1
+    if not returned and not cq.slips(t):
+        delta += 1
+    before = rec['trust']
+    rec['trust'] = max(0, min(TRUST_MAX, before + delta))
+    if not returned and b['fixed']:
+        main = t['_fault'] if t['_fault'] in b['fixed'] else next(iter(b['fixed']))
+        rec['history'] = (rec['history'] + [dict(day=c['day'], device=t['needs']['device'], fault=main, grade=b['fixed'][main],
+                                                 days=b['warranty'] or 0, title=t['title'])])[-HISTORY_MAX:]
+    if rec['trust'] > before:
+        return f' 💛 {_who(t)}: {TRUST_NAMES[rec["trust"]].lower()}.'
+    if rec['trust'] < before:
+        return f' 💔 {_who(t)} bớt tin tiệm ({TRUST_NAMES[rec["trust"]].lower()}).'
+    return ''
+
+
+def _schedule_back(c: dict, d: dict, t: dict, tested: bool) -> None:
+    """A repair that fixed everything may still come back days later (cheap part, no final test, water, cold joint)."""
+    if not t.get('gen') or len(d['comebacks']) >= COMEBACK_MAX:
+        return
+    b = t['bench']
+    actual = _actual(t)
+    if not actual or t['_fault'] not in b['fixed']:
+        return
+    dud = [f for f, g in b['fixed'].items() if g == 'used' and f not in b['checked'] and _unit_bad(t, f, b['units'].get(f, 0))]
+    if any(f not in b['fixed'] or f in dud for f in actual):
+        return     # still broken: the customer already said so at the counter
+    main = t['_fault']
+    grade = b['fixed'][main]
+    risk, cause = GRADE_RISK[grade], {'standard': 'batch', 'none': 'redo'}.get(grade, 'part')
+    if not tested:
+        risk, cause = risk + 0.3, 'untested'
+    if main == 'water':
+        risk, cause = risk + 0.15, 'rust'
+    if b.get('cold'):
+        risk, cause = risk + 0.2, 'joint'
+    r = kit.rng(ID, 'back', t['id'])
+    if r.random() >= min(0.6, risk):
+        return
+    handed = c['day']
+    d['comebacks'].append(dict(id='BL-' + t['id'][-7:].replace('-', ''), task=t['id'], npc=t['npc'], device=t['needs']['device'],
+                               fault=main, grade=grade, days=b['warranty'] or 0, paid=int(b['paid'] or 0), handed=handed,
+                               due=handed + r.randint(2, 5), cause=cause, state='wait', title=t['title']))
+
+
+def _back_covered(row: dict) -> bool:
+    return row['days'] > 0 and row['due'] - row['handed'] <= row['days']
+
+
+def _back_fee(row: dict) -> tuple[int, int]:
+    """(part cost the shop pays for a free redo, what a charged redo bills)."""
+    fd = _fault_def(row['device'], row['fault'])
+    item = fd['parts'].get(row['grade'])
+    cost = ITEM_INDEX[item]['cost'] if item else 1
+    price = (ITEM_INDEX[item]['price'] if item else 0) + _round(DEVICES[row['device']]['labor'] * fd['mult'] / 2)
+    return cost, price
+
+
+def _comeback(s: dict, c: dict, d: dict, p: dict) -> dict:
+    row = next((x for x in d['comebacks'] if x['id'] == p.get('id') and x['state'] == 'here'), None)
+    kit.need(row, 'Không có máy bảo hành nào đang chờ ở quầy.')
+    choice = kit.one_of(p.get('choice'), ('redo', 'charge'), 'Chọn sửa lại miễn phí hoặc tính tiền.')
+    kit.confirm(p, 'Xác nhận cách xử lý máy quay lại.')
+    covered = _back_covered(row)
+    cost, price = _back_fee(row)
+    who = PEOPLE[int(row['npc'].rsplit('_', 1)[1]) - 1][0]
+    rec = d['regulars'].get(row['npc'])
+    trust = 0
+    if choice == 'redo':
+        kit.money(s, c, -cost, f'Bảo hành lại “{row["title"]}”', row['id'], 'stock')
+        d['comebacks_honoured'] += 1
+        if covered:
+            kit.review(s, c, row['npc'], 4, 'Máy sửa rồi lại hỏng, nhưng tiệm nhận lại, sửa ngay không kỳ kèo. Giữ đúng lời bảo hành.', row['id'])
+            msg = f'🛡️ Bảo hành cho {who}: tiệm chịu {cost} xu linh kiện, sửa lại ngay. Khách yên tâm ra về.'
+        else:
+            trust = 1
+            kit.review(s, c, row['npc'], 5, 'Hết hạn bảo hành rồi mà tiệm vẫn sửa lại miễn phí. Quý hóa quá!', row['id'])
+            msg = f'🎁 Đã hết hạn bảo hành, tiệm vẫn sửa miễn phí cho {who} ({cost} xu linh kiện). Khách cảm động lắm.'
+    else:
+        kit.money(s, c, price, f'Sửa lại máy quay lại “{row["title"]}”', row['id'], 'revenue')
+        if covered:
+            trust = -2
+            kit.review(s, c, row['npc'], 1, 'Còn hạn bảo hành mà tiệm bắt trả tiền sửa lại. Phiếu bảo hành để làm gì?', row['id'])
+            msg = f'🧾 Thu {price} xu dù phiếu còn hạn — {who} trả tiền mà mặt nặng như chì.'
+        else:
+            msg = f'🧾 Phiếu đã hết hạn: báo giá sửa lại {price} xu, {who} gật đầu.'
+    if rec is not None and trust:
+        rec['trust'] = max(0, min(TRUST_MAX, rec['trust'] + trust))
+    d['comebacks'] = [x for x in d['comebacks'] if x is not row]
+    return dict(message=msg, celebrate=choice == 'redo')
+
+
+def _tool(s: dict, c: dict, d: dict, p: dict) -> dict:
+    tools = d['tools']
+    tool = kit.one_of(p.get('tool'), tuple(TOOLS), 'Dụng cụ không có trên bàn thợ.')
+    if tool == 'tip':
+        how = kit.one_of(p.get('how'), ('clean', 'replace'), 'Chọn lau mũi hàn hoặc thay mũi mới.')
+        if how == 'clean':
+            kit.need(tools['tip'] < TIP_CLEAN_MAX, f'Mũi hàn còn sáng ({tools["tip"]}%), chưa cần lau.')
+            kit.take(c, 'solder', 1)
+            tools['tip'] = min(TIP_CLEAN_MAX, tools['tip'] + TIP_CLEAN)
+            return dict(message=f'🧽 Lau mũi hàn qua bọt biển ướt, tráng một lớp thiếc mới: mũi hàn {tools["tip"]}%.')
+        kit.need(tools['tip'] < 100, 'Mũi hàn đang mới tinh.')
+        kit.confirm(p, f'Thay mũi hàn mới ({TIP_COST} xu)?')
+        kit.money(s, c, -TIP_COST, 'Thay mũi hàn', None, 'upkeep')
+        tools['tip'] = 100
+        return dict(message='🔥 Lắp mũi hàn mới, tráng thiếc lần đầu. Mối hàn lại bóng đẹp.')
+    kit.one_of(p.get('how'), ('battery',), 'Đồng hồ đo chỉ cần thay pin.')
+    kit.need(tools['meter'] < 100, 'Pin đồng hồ đo còn đầy.')
+    kit.confirm(p, f'Thay pin 9V cho đồng hồ đo ({METER_COST} xu)?')
+    kit.money(s, c, -METER_COST, 'Pin 9V cho đồng hồ đo', None, 'upkeep')
+    tools['meter'] = 100
+    return dict(message='📟 Thay pin 9V mới: đồng hồ đo lại số chắc nịch.')
 
 
 UNSAFE_SLIP = {
@@ -1312,6 +1771,14 @@ def _common_slips(t: dict, b: dict) -> None:
             cq.slip(t, 'unsafe', 2, UNSAFE_SLIP[device], 'để xe đổ, xước thêm')
         else:
             cq.slip(t, 'unsafe', 3, UNSAFE_SLIP[device], 'mở máy khi còn điện', safety=True)
+    sh = b.get('shelf')
+    if sh and sh['late']:
+        if sh['lied']:
+            cq.slip(t, 'late_pickup', 2, 'Tiệm bảo “chiều nay xong”, tôi tới thì máy vẫn nằm trên kệ, còn chưa có đồ thay.',
+                    'hứa lèo ngày trả máy')
+        else:
+            cq.slip(t, 'late_pickup', 2 if sh['late'] >= 2 else 1,
+                    f'Tiệm hẹn trả máy mà trễ {sh["late"]} ngày, tôi phải gọi hỏi mãi.', 'trễ hẹn trả máy')
     intake = b['intake'] or dict(marks=[], accessories=[])
     lost = [a for a in n['accessories'] if a not in intake['accessories']]
     if lost:
@@ -1425,8 +1892,19 @@ def feedback(c: dict, t: dict) -> dict:
                      note='ghi đủ tình trạng và phụ kiện' if intake_ok else 'ghi thiếu/sai tình trạng hoặc phụ kiện'))
     rows.append(dict(key='care', label='An toàn & cẩn thận', score=5 if b['hazards'] == 0 else 3,
                      note='làm đúng thứ tự an toàn' if b['hazards'] == 0 else 'có lúc thao tác thiếu an toàn'))
-    rows.append(dict(key='speed', label='Thời gian chờ', score=speed,
-                     note=f'kiên nhẫn còn {patience}%' if case != 'rush' else ('kịp giờ hẹn gấp' if speed == 5 else 'trễ giờ hẹn gấp')))
+    sh = b.get('shelf')
+    if sh:
+        # The customer went home: what counts is the promised pickup day, not waiting at the counter.
+        if sh['late']:
+            score = 2 if sh['late'] >= 2 or sh['lied'] else 3
+            note = 'hứa lèo ngày trả máy' if sh['lied'] else f'trễ hẹn {sh["late"]} ngày'
+        else:
+            score = max(3, (4 if sh['moved'] else 5) - sh['missed'])
+            note = ('đúng hẹn' if not sh['moved'] else 'báo dời hẹn trước') + (f', {sh["missed"]} lần gọi không ai nghe' if sh['missed'] else '')
+        rows.append(dict(key='promise', label='Giữ hẹn', score=score, note=note))
+    else:
+        rows.append(dict(key='speed', label='Thời gian chờ', score=speed,
+                         note=f'kiên nhẫn còn {patience}%' if case != 'rush' else ('kịp giờ hẹn gấp' if speed == 5 else 'trễ giờ hẹn gấp')))
     if cq.slips(t) and len(rows) >= 8:
         # the recorded mistakes add their own line; the review holds at most 8
         rows.remove(max(reversed(rows), key=lambda x: x['score']))
@@ -1539,6 +2017,28 @@ def validate_task(t: dict, original: dict) -> None:
     kit.need(b['imei'] is None or (case == 'buyin' and b['imei'] == x.get('imei')), 'Kết quả tra IMEI sai.')
     kit.need(b['papers'] is None or (case == 'buyin' and b['papers'] == x.get('papers')), 'Giấy tờ sai.')
     kit.need(b['deal'] in (None, 'buy', 'refuse', 'report') and (b['deal'] is None or case == 'buyin'), 'Quyết định thu mua sai.')
+    # care loop
+    kit.need(type(b['cold']) is bool, 'Mối hàn sai.')
+    orders = b['orders']
+    kit.need(isinstance(orders, dict) and len(orders) <= len(every) and (case != 'buyin' or not orders), 'Đơn linh kiện riêng sai.')
+    for f, o in orders.items():
+        kit.need(f in every and isinstance(o, dict), 'Đơn linh kiện riêng sai.')
+        ok = [(g, item) for g, item in _fault_def(device, f)['parts'].items() if item and g in SOURCE_OF]
+        kit.need(any(o.get('item') == item and o.get('src') == SOURCE_OF[g] for g, item in ok), 'Đơn linh kiện riêng sai.')
+        kit.integer(o.get('day'), 1, 10**7)
+        kit.integer(o.get('minute'), 0, 24 * 60)
+        kit.integer(o.get('cost'), 0, 5000)
+        kit.need(type(o.get('used')) is bool and type(o.get('told')) is bool, 'Đơn linh kiện riêng sai.')
+    sh = b['shelf']
+    if sh is not None:
+        kit.need(isinstance(sh, dict) and case != 'buyin' and b['intake'] is not None, 'Tem kệ máy chờ sai.')
+        kit.text(sh.get('tag'), 12)
+        since = kit.integer(sh.get('since'), 1, 10**7)
+        kit.integer(sh.get('promise'), since, since + 365)
+        for k in ('late', 'moved', 'missed', 'calls'):
+            kit.integer(sh.get(k), 0, 999)
+        kit.need(sh.get('call') is None or kit.integer(sh['call'], since, 10**7) >= since, 'Cuộc gọi của khách sai.')
+        kit.need(type(sh.get('lied')) is bool and type(sh.get('auto')) is bool, 'Tem kệ máy chờ sai.')
 
 
 def validate_data(c: dict) -> None:
@@ -1562,6 +2062,50 @@ def validate_data(c: dict) -> None:
         kit.text(row.get('slip'), 20)
         kit.text(row.get('title'), 200)
     kit.desk_validate(d['desk'], DESK)
+    # care loop
+    for k in CARE_STATS:
+        kit.integer(d.get(k), 0, 10**9)
+    ck = d['clock']
+    kit.need(ck is None or (isinstance(ck, dict) and set(ck) == {'day', 'turn0'}), 'Đồng hồ tiệm sai.')
+    if ck is not None:
+        kit.integer(ck['day'], 1, 10**7)
+        kit.integer(ck['turn0'], 0, 10**9)
+    tools = d['tools']
+    kit.need(isinstance(tools, dict) and set(tools) == set(TOOLS), 'Dụng cụ sai.')
+    for k in TOOLS:
+        kit.integer(tools[k], 0, 100)
+    regs = d['regulars']
+    kit.need(isinstance(regs, dict) and len(regs) <= len(REG_IDS) and all(k in REG_IDS for k in regs), 'Sổ khách quen sai.')
+    for rec in regs.values():
+        kit.need(isinstance(rec, dict), 'Sổ khách quen sai.')
+        kit.integer(rec.get('visits'), 0, 10**6)
+        kit.integer(rec.get('trust'), 0, TRUST_MAX)
+        kit.integer(rec.get('ontime'), 0, 10**6)
+        kit.integer(rec.get('late'), 0, 10**6)
+        hist = rec.get('history')
+        kit.need(isinstance(hist, list) and len(hist) <= HISTORY_MAX, 'Sổ khách quen sai.')
+        for h in hist:
+            kit.need(isinstance(h, dict) and h.get('device') in DEVICES and h.get('grade') in GRADES and h.get('days') in WARRANTY,
+                     'Sổ khách quen sai.')
+            kit.need(_fault_def(h['device'], h.get('fault')) is not None, 'Sổ khách quen sai.')
+            kit.integer(h.get('day'), 1, 10**7)
+            kit.text(h.get('title'), 200)
+    backs = d['comebacks']
+    npcs = {kit.npc_id(ID, i) for i in range(len(PEOPLE))}
+    kit.need(isinstance(backs, list) and len(backs) <= COMEBACK_MAX, 'Sổ máy quay lại sai.')
+    for row in backs:
+        kit.need(isinstance(row, dict) and row.get('npc') in npcs and row.get('device') in DEVICES and row.get('grade') in GRADES
+                 and row.get('days') in WARRANTY and row.get('cause') in CAUSES and row.get('state') in ('wait', 'here'),
+                 'Sổ máy quay lại sai.')
+        kit.need(_fault_def(row['device'], row.get('fault')) is not None and row['grade'] in _fault_def(row['device'], row['fault'])['parts'],
+                 'Sổ máy quay lại sai.')
+        kit.text(row.get('id'), 30)
+        kit.text(row.get('task'), 60)
+        kit.text(row.get('title'), 200)
+        kit.integer(row.get('paid'), 0, 5000)
+        handed = kit.integer(row.get('handed'), 1, 10**7)
+        kit.integer(row.get('due'), handed + 1, handed + 10)
+    kit.need(len({x['id'] for x in backs}) == len(backs), 'Sổ máy quay lại sai.')
 
 
 def on_task(s: dict, c: dict, t: dict) -> None:
@@ -1571,6 +2115,8 @@ def on_task(s: dict, c: dict, t: dict) -> None:
     tier = kit.tier(t['day'])
     start = 100 - 4 * tier - (8 if _today(c)['id'] == 'market' else 0)
     t['patience'] = max(60, min(t.get('patience', 100), start))
+    # A regular who trusts the shop waits more calmly.
+    t['patience'] = min(100, t['patience'] + TRUST_PATIENCE * _trust(d, t['npc']))
     if _case(t) == 'warranty':
         bk = t['_x']['book']
         if not any(r['slip'] == bk['slip'] for r in d['book']):
@@ -1583,7 +2129,32 @@ def on_start(s: dict, c: dict) -> None:
     d = _data(c)
     mod = today(c['day'])
     d['today'] = dict(id=mod['id'], day=c['day'])
+    d['clock'] = dict(day=c['day'], turn0=c['turn'])
     kit.log(s, c, 'today', f'{mod["emoji"]} Hôm nay: {mod["title"]} — {mod["text"]}')
+    # Devices on the shelf: their owners phone to ask, parts that came overnight are on the counter.
+    for t in _open_tasks(c):
+        b = t['bench']
+        sh = b.get('shelf')
+        if sh:
+            t['deferred'] = True
+            if b['final'] != 'pass' and sh['since'] < c['day']:
+                sh['call'] = c['day']
+                sh['calls'] += 1
+                kit.log(s, c, 'repair', f'📞 {_who(t)} gọi hỏi: “{DEVICES[t["needs"]["device"]]["name"]} ({sh["tag"]}) xong chưa?”',
+                        t['npc'], t['id'])
+        for o in (b.get('orders') or {}).values():
+            if not o['used'] and not o['told'] and _arrived(c, o):
+                o['told'] = True
+                kit.log(s, c, 'repair', f'{SOURCES[o["src"]]["emoji"]} Đồ về: {ITEM_INDEX[o["item"]]["name"]} cho {_tag(t)}.', ref=t['id'])
+    for row in d['comebacks']:
+        if row['state'] == 'wait' and row['due'] <= c['day']:
+            row['state'] = 'here'
+            d['comebacks_seen'] += 1
+            kit.log(s, c, 'repair', f'📒 {PEOPLE[int(row["npc"].rsplit("_", 1)[1]) - 1][0]} mang “{row["title"]}” quay lại tiệm.',
+                    row['npc'], row['id'])
+    active = next((t for t in c['tasks'] if t['id'] == c.get('active_task')), None)
+    if active and active.get('deferred'):
+        kit.eng().next_active(c)
     kit.desk_start(s, c, ID, d['desk'], DESK, mod['id'], c['life'].get('mode') == 'festival')
 
 
@@ -1595,6 +2166,7 @@ def on_close(s: dict, c: dict) -> dict:
     lines = [f'Hôm nay sửa xong {d["day_repaired"]} máy, trả lại nguyên trạng {d["day_returned"]} máy.']
     if d['day_hazards']:
         lines.append(f'Thao tác nguy hiểm: {d["day_hazards"]} lần — rút điện, xả tụ rồi mới mở máy.')
+    lines += _close_care(s, c, d)
     if note:
         out['surprise'] = note
         lines.append(note)
@@ -1603,6 +2175,48 @@ def on_close(s: dict, c: dict) -> dict:
     out['lines'] = lines
     d['day_repaired'] = d['day_returned'] = d['day_hazards'] = 0
     return out
+
+
+def _close_care(s: dict, c: dict, d: dict) -> list[str]:
+    """Closing time: late promises, unanswered calls, comebacks nobody saw, devices left overnight."""
+    lines = []
+    for t in _shelved(c):
+        sh = t['bench']['shelf']
+        if sh['call'] == c['day']:
+            sh['missed'] += 1
+            sh['call'] = None
+            lines.append(f'📵 {_who(t)} gọi hỏi máy {sh["tag"]} mà không ai trả lời.')
+        if sh['promise'] <= c['day']:
+            sh['late'] += 1
+            lines.append(f'⚠️ Hẹn {_who(t)} trả máy {sh["tag"]} mà tới giờ đóng cửa vẫn chưa xong.')
+    for t in _open_tasks(c):
+        b = t['bench']
+        if b['intake'] is not None and not b['returned'] and not b.get('shelf') and _case(t) != 'buyin':
+            _put_on_shelf(c, d, t, c['day'] + 1, auto=True)
+            lines.append(f'🏷️ {DEVICES[t["needs"]["device"]]["name"]} của {_who(t)} ở lại qua đêm (tem {b["shelf"]["tag"]}), hẹn mai.')
+    for row in [x for x in d['comebacks'] if x['state'] == 'here']:
+        who = PEOPLE[int(row['npc'].rsplit('_', 1)[1]) - 1][0]
+        kit.review(s, c, row['npc'], 2, 'Mang máy bảo hành tới mà tiệm bận tối mắt, chẳng ai tiếp. Hẹn lần hẹn lữa.', row['id'])
+        rec = d['regulars'].get(row['npc'])
+        if rec:
+            rec['trust'] = max(0, rec['trust'] - 1)
+        lines.append(f'😞 {who} chờ bảo hành “{row["title"]}” cả ngày không ai tiếp, đành mang về.')
+    d['comebacks'] = [x for x in d['comebacks'] if x['state'] != 'here']
+    # Tomorrow: what arrives and who is promised.
+    tomorrow = c['day'] + 1
+    for t in _shelved(c):
+        sh = t['bench']['shelf']
+        parts = [_low(ITEM_INDEX[o['item']]['name']) for o in t['bench']['orders'].values() if not o['used'] and o['day'] == tomorrow]
+        if parts:
+            lines.append(f'📦 Mai về: {", ".join(parts)} cho máy {sh["tag"]}.')
+        if sh['promise'] == tomorrow:
+            lines.append(f'🗓️ Mai hẹn trả: {DEVICES[t["needs"]["device"]]["name"].lower()} của {_who(t)} ({sh["tag"]}).')
+    tools = d['tools']
+    if tools['tip'] < TIP_LOW:
+        lines.append(f'🔥 Mũi hàn còn {tools["tip"]}% — lau hoặc thay trước khi hàn tiếp.')
+    if tools['meter'] < METER_LOW:
+        lines.append(f'📟 Pin đồng hồ đo còn {tools["meter"]}% — thay pin trước khi đo.')
+    return lines
 
 
 def public_data(c: dict) -> dict:
@@ -1618,7 +2232,37 @@ def public_data(c: dict) -> dict:
         kit.rng(ID, 'desk-order', d['desk']['ev']['id'], c['day']).shuffle(d['desk']['ev']['options'])
     d['tier'] = kit.tier(c['day'])
     d['book'] = d['book'][-10:]
+    for k, v in DATA_V3.items():
+        d.setdefault(k, copy.deepcopy(v))
+    # A comeback that has not happened yet stays a secret.
+    d['comebacks'] = [x for x in d['comebacks'] if x.get('state') == 'here']
+    for x in d['comebacks']:
+        cost, price = _back_fee(x)
+        x.update(covered=_back_covered(x), cost=cost, price=price, cause_text=CAUSES[x['cause']],
+                 left=_fault_def(x['device'], x['fault'])['left'], who=PEOPLE[int(x['npc'].rsplit('_', 1)[1]) - 1][0])
+    d['care'] = _care_view(c)
     return d
+
+
+def _care_view(c: dict) -> dict:
+    """Clock words, part arrivals and promises, computed here so the client never re-implements the rules."""
+    now = _clock(c)
+    tasks, shelf = {}, []
+    for t in _open_tasks(c):
+        b = t['bench']
+        view = dict(orders={f: dict(item=o['item'], src=o['src'], used=o['used'], arrived=_arrived(c, o),
+                                    when=_when(c, o['day'], o['minute']))
+                            for f, o in (b.get('orders') or {}).items()})
+        eta_day, eta_min = _eta(c, t)
+        view['eta_days'] = max(0, eta_day - c['day'])
+        view['eta'] = _when(c, eta_day, eta_min) if (eta_day, eta_min) > (c['day'], now) else None
+        sh = b.get('shelf')
+        if sh:
+            view.update(promise=_promise_word(c, sh['promise']), due=sh['promise'] - c['day'], call=sh['call'] == c['day'])
+            shelf.append(t['id'])
+        tasks[t['id']] = view
+    return dict(minute=now, clock=_hm(now), open=bool(c.get('open')), shelf=shelf, tasks=tasks, shelf_max=SHELF_MAX,
+                sources={sid: dict(when=_when(c, *_ready(c, sid))) for sid in SOURCES})
 
 
 def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
@@ -1626,6 +2270,11 @@ def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
     if role == 'front':
         return 'Đã dán tem tên khách lên máy, bỏ phụ kiện vào túi zip có ghi số phiếu.'
     if role == 'parts':
+        tools = _data(c)['tools']
+        if tools['meter'] < METER_LOW:
+            return f'Pin đồng hồ đo còn {tools["meter"]}% — số sẽ nhảy loạn, nên thay pin 9V ({METER_COST} xu) trước khi đo.'
+        if tools['tip'] < TIP_LOW:
+            return f'Mũi hàn còn {tools["tip"]}%, đen sì — lau qua bọt biển hoặc thay mũi mới trước khi hàn.'
         low = [i['name'] for i in ITEMS if i['group'] != 'supply' and i.get('unlock', 1) <= kit.level(c) and kit.stock(c, i['id']) == 0]
         return ('Kiểm kệ linh kiện: hết ' + ', '.join(low[:3]) + ' — nhớ đặt thêm.') if low else 'Đã xếp linh kiện theo ngăn, kiểm hạn keo tản nhiệt.'
     if not t or t['career'] != ID or not t['known'] or t['status'] in DONE:
@@ -1650,7 +2299,8 @@ def hint(c: dict, t: dict) -> str:
            'privacy': ' Khách nhờ chuyện dữ liệu: nghĩ xem dữ liệu đó là của ai.',
            'bargain': ' Ví mỏng: đồ tháo máy rẻ nhưng phải cắm thử trước khi lắp.'}.get(case, '')
     return ('Hỏi khách → ghi phiếu nhận (tình trạng, phụ kiện, quyền dữ liệu) → đo kiểm loại dần giả thuyết → chốt lỗi → '
-            'báo giá, chờ khách gật → làm an toàn, mở máy → thay/sửa → lắp lại → chạy thử → ghi bảo hành → bàn giao.' + tip)
+            'báo giá, chờ khách gật → làm an toàn, mở máy → thay/sửa → lắp lại → chạy thử → ghi bảo hành → bàn giao. '
+            'Thiếu đồ thì đặt riêng cho máy và hẹn khách để máy lại tiệm — hẹn ngày nào giữ ngày đó.' + tip)
 
 
 def content() -> dict:
@@ -1668,6 +2318,12 @@ def content() -> dict:
         grades=GRADES, warranty=list(WARRANTY), check_fee=CHECK_FEE, quote_rounds=QUOTE_ROUNDS,
         data_devices=list(DATA_DEVICES), cases=CASES, data_fee=DATA_FEE,
         today=[dict(id=x['id'], title=x['title'], emoji=x['emoji'], text=x['text']) for x in TODAY],
+        sources={k: dict(name=v['name'], emoji=v['emoji'], ship=v['ship'], grades=list(v['grades']), rule=v['rule'])
+                 for k, v in SOURCES.items()},
+        source_of=SOURCE_OF, promise_days=list(PROMISE_DAYS), shelf_max=SHELF_MAX, trust_names=list(TRUST_NAMES),
+        trust_stretch=TRUST_STRETCH, habits={kit.npc_id(ID, i): h for i, h in REGULARS.items()},
+        tools={k: dict(v) for k, v in TOOLS.items()}, tool_costs=dict(tip=TIP_COST, meter=METER_COST),
+        tip_clean=dict(add=TIP_CLEAN, max=TIP_CLEAN_MAX), causes=CAUSES,
     )
 
 
@@ -1982,7 +2638,7 @@ SPEC = dict(
     tip=2,
     physical=('rp_test', 'rp_open', 'rp_fix', 'rp_final', 'rp_parttest'),
     free_actions=(),
-    no_tick=('rp_warranty', 'rp_desk'),
+    no_tick=('rp_warranty', 'rp_desk', 'rp_answer'),
     waste_items=('job',),
     activity=('🔧', 'Bàn thợ ngăn nắp', [('Tụ quạt 1,5 µF', 'Ngăn đồ điện'), ('Săm xe đạp', 'Ngăn xe đạp'),
                                          ('Cầu chì nhiệt', 'Ngăn đồ điện'), ('Má phanh', 'Ngăn xe đạp')],

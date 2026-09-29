@@ -1133,5 +1133,489 @@ class RepairConsequenceTests(unittest.TestCase):
         validate_state(json.loads(json.dumps(j.state)))
 
 
+
+# ------------------------------------------------------------------------------ care loop (multi-day)
+def plain_journey(pred, days=range(1, 20), slots=6):
+    """An everyday job (no special case) matching pred, with every part unlocked."""
+    j = journey_for(pred, days=days, slots=slots)
+    j.c['xp'] = 400
+    return j
+
+
+def clear_desk(j):
+    ev = R._data(j.c)['desk']['ev']
+    if ev and j.c['open']:
+        j.act('rp_desk', option=R.DESK_INDEX[ev['script']]['default'])
+
+
+def act(j, name, **p):
+    clear_desk(j)
+    return j.act(name, **p)
+
+
+def new_day(j):
+    clear_desk(j)
+    j.act('end_day', carry_event=True)
+    j.act('start_day')
+    clear_desk(j)
+
+
+def drain(j, item):
+    q = kit.stock(j.c, item)
+    if q:
+        kit.take(j.c, item, q)
+
+
+def care_view(j, tid=None):
+    care = public_state(j.state)['careers']['repair']['data']['care']
+    return care['tasks'].get(tid) if tid else care
+
+
+def roundtrip(j):
+    validate_state(json.loads(json.dumps(j.state)))
+
+
+class CareLoopTests(unittest.TestCase):
+    def quoted(self, j, grade, drain_part=True):
+        """Take the device in, pin the real fault and have the customer accept `grade` for it."""
+        tid = j.task['id']
+        act(j, 'ask', task=tid)
+        n = j.get(tid)['needs']
+        act(j, 'rp_intake', task=tid, marks=n['marks'], accessories=n['accessories'], consent=n['device'] in R.DATA_DEVICES)
+        fault = j.get(tid)['_fault']
+        act(j, 'rp_diagnose', task=tid, fault=fault)
+        item = R._fault_def(n['device'], fault)['parts'][grade]
+        if drain_part and item:
+            drain(j, item)
+        r = act(j, 'rp_quote', task=tid, grades={fault: grade})
+        self.assertTrue(r['accepted'], r['message'])
+        return tid, fault, item
+
+    def finish(self, j, tid, test=True):
+        t = j.get(tid)
+        for step in R.DEVICES[t['needs']['device']]['safety'][len(t['bench']['safe']):]:
+            act(j, 'rp_safety', task=tid, step=step)
+        if not j.get(tid)['bench']['opened']:
+            act(j, 'rp_open', task=tid)
+        t = j.get(tid)
+        pending = [f for f in R._open_scope(t['bench']) if f not in t['bench']['approved']]
+        if pending:
+            grades = {f: RepairTests.grade_for(None, j, t, f) for f in pending}
+            self.assertTrue(act(j, 'rp_quote', task=tid, grades=grades)['accepted'])
+        for f in R._open_scope(j.get(tid)['bench']):
+            act(j, 'rp_fix', task=tid, fault=f)
+        act(j, 'rp_close', task=tid)
+        if test:
+            act(j, 'rp_final', task=tid)
+            self.assertEqual(j.get(tid)['bench']['final'], 'pass')
+            act(j, 'rp_warranty', task=tid, days=R._recommended(j.get(tid)))
+        return act(j, 'rp_handover', task=tid, confirm=True)
+
+    def review(self, j, tid):
+        return next(p for p in j.c['feed'] if p['kind'] == 'review' and p['source'] == tid)
+
+    # --- part orders ------------------------------------------------------------
+    def test_lam_order_arrives_this_afternoon_and_is_fitted(self):
+        j = plain_journey(lambda t: t['_fault'] == 'capacitor')
+        tid, fault, item = self.quoted(j, 'compatible')
+        for step in R.DEVICES['fan']['safety']:
+            act(j, 'rp_safety', task=tid, step=step)
+        act(j, 'rp_open', task=tid)
+        with self.assertRaises(GameError) as ctx:
+            act(j, 'rp_fix', task=tid, fault=fault)
+        self.assertIn('Đặt riêng', ctx.exception.message)
+        with self.assertRaises(GameError):
+            act(j, 'rp_order', task=tid, fault=fault)                  # needs confirm
+        money = j.c['money']
+        r = act(j, 'rp_order', task=tid, fault=fault, confirm=True)
+        self.assertIn('chiều nay 15:00', r['message'])
+        cost = R.ITEM_INDEX[item]['cost'] + R.SOURCES['lam']['ship']
+        self.assertEqual(j.c['money'], money - cost)
+        o = j.get(tid)['bench']['orders'][fault]
+        self.assertEqual((o['day'], o['minute'], o['src']), (j.c['day'], R.LAM_ARRIVE, 'lam'))
+        self.assertEqual(care_view(j, tid)['orders'][fault]['when'], 'chiều nay 15:00')
+        with self.assertRaises(GameError) as ctx:
+            act(j, 'rp_fix', task=tid, fault=fault)
+        self.assertIn('chưa về', ctx.exception.message)
+        with self.assertRaises(GameError):
+            act(j, 'rp_order', task=tid, fault=fault, confirm=True)    # already on its way
+        j.c['turn'] += 60                                               # the afternoon passes with other customers
+        r = act(j, 'rp_test', task=tid, test='coil_meter')
+        self.assertIn('đã về', r['message'])
+        self.assertTrue(j.get(tid)['bench']['orders'][fault]['told'])
+        stock = kit.stock(j.c, item)
+        act(j, 'rp_fix', task=tid, fault=fault)
+        b = j.get(tid)['bench']
+        self.assertTrue(b['orders'][fault]['used'])
+        self.assertEqual(kit.stock(j.c, item), stock)                   # the ordered unit, not the shelf's
+        self.assertEqual(b['fixcost'][fault], cost)
+        self.finish(j, tid)
+        self.assertEqual(j.get(tid)['status'], 'completed')
+        keys = [x['key'] for x in self.review(j, tid)['feedback']['criteria']]
+        self.assertIn('speed', keys)                                   # never shelved: judged on waiting at the counter
+        roundtrip(j)
+
+    def test_order_rules(self):
+        j = plain_journey(lambda t: t['_fault'] == 'capacitor')
+        tid = j.task['id']
+        act(j, 'ask', task=tid)
+        n = j.task['needs']
+        act(j, 'rp_intake', task=tid, marks=n['marks'], accessories=n['accessories'], consent=False)
+        act(j, 'rp_diagnose', task=tid, fault='capacitor')
+        with self.assertRaises(GameError) as ctx:
+            act(j, 'rp_order', task=tid, fault='capacitor', confirm=True)
+        self.assertIn('duyệt báo giá', ctx.exception.message)
+        with self.assertRaises(GameError):
+            act(j, 'rp_order', task=tid, fault='motor', confirm=True)
+        j2 = plain_journey(lambda t: t['_fault'] == 'bearing')
+        tid2, fault2, _ = self.quoted(j2, 'none')
+        with self.assertRaises(GameError) as ctx:
+            act(j2, 'rp_order', task=tid2, fault=fault2, confirm=True)
+        self.assertIn('không đặt riêng', ctx.exception.message)
+
+    def test_unused_order_goes_to_the_shelf_when_the_device_is_returned(self):
+        j = plain_journey(lambda t: t['_fault'] == 'capacitor')
+        tid, fault, item = self.quoted(j, 'compatible')
+        act(j, 'rp_order', task=tid, fault=fault, confirm=True)
+        act(j, 'rp_return', task=tid, confirm=True)
+        self.assertEqual(kit.stock(j.c, item), 1)
+        self.assertTrue(j.get(tid)['bench']['orders'][fault]['used'])
+        roundtrip(j)
+
+    # --- shelf, calls, promises ---------------------------------------------------
+    def genuine_battery(self):
+        j = plain_journey(lambda t: t['_fault'] == 'battery' and t['needs']['genuine_only'], days=range(2, 25))
+        tid, fault, item = self.quoted(j, 'genuine')
+        r = act(j, 'rp_order', task=tid, fault=fault, confirm=True)
+        self.assertIn('ngày kia', r['message'])
+        return j, tid, fault
+
+    def test_city_part_shelf_honest_call_and_pickup_on_the_moved_day(self):
+        j, tid, fault = self.genuine_battery()
+        day = j.c['day']
+        r = act(j, 'rp_shelf', task=tid, days=1, confirm=True)
+        self.assertIn('#001', r['message'])
+        self.assertIn('Đồ chưa về kịp', r['message'])
+        t = j.get(tid)
+        self.assertTrue(t['deferred'])
+        self.assertNotEqual(j.c['active_task'], tid)
+        self.assertEqual(care_view(j, tid)['promise'], 'mai')
+        roundtrip(j)
+        new_day(j)
+        v = care_view(j, tid)
+        self.assertTrue(v['call'])
+        self.assertTrue(j.get(tid)['deferred'])
+        self.assertIn(tid, care_view(j)['shelf'])
+        turn = j.c['turn']
+        r = act(j, 'rp_answer', task=tid, reply='truth')
+        self.assertEqual(j.c['turn'], turn)                            # a phone call takes no turn
+        self.assertIn('sáng mai', r['message'])
+        sh = j.get(tid)['bench']['shelf']
+        self.assertEqual((sh['promise'], sh['moved'], sh['call']), (day + 2, 1, None))
+        with self.assertRaises(GameError):
+            act(j, 'rp_answer', task=tid, reply='truth')
+        new_day(j)
+        self.assertTrue(j.get(tid)['bench']['orders'][fault]['told'])  # arrived overnight
+        act(j, 'rp_answer', task=tid, reply='truth')
+        self.assertEqual(j.get(tid)['bench']['shelf']['moved'], 1)
+        r = self.finish(j, tid)
+        self.assertIn('đúng hẹn', r['message'])
+        post = self.review(j, tid)
+        row = next(x for x in post['feedback']['criteria'] if x['key'] == 'promise')
+        self.assertEqual(row['score'], 4)
+        self.assertNotIn('speed', [x['key'] for x in post['feedback']['criteria']])
+        rec = R._data(j.c)['regulars'][j.get(tid)['npc']]
+        self.assertEqual((rec['visits'], rec['ontime'], rec['late'], rec['trust']), (1, 1, 0, 1))
+        self.assertEqual(rec['history'][-1]['grade'], 'genuine')
+        self.assertEqual(R._data(j.c)['pickups_on_time'], 1)
+        roundtrip(j)
+
+    def test_soothing_lie_and_late_pickup_cost_trust(self):
+        j, tid, fault = self.genuine_battery()
+        act(j, 'rp_shelf', task=tid, days=0, confirm=True)
+        new_day(j)                                                      # promised yesterday: late once
+        self.assertEqual(j.get(tid)['bench']['shelf']['late'], 1)
+        r = act(j, 'rp_answer', task=tid, reply='soothe')
+        self.assertIn('chiều nay xong', r['message'])
+        sh = j.get(tid)['bench']['shelf']
+        self.assertTrue(sh['lied'])
+        self.assertEqual(sh['promise'], j.c['day'])
+        new_day(j)
+        self.assertEqual(j.get(tid)['bench']['shelf']['late'], 2)
+        self.finish(j, tid)
+        t = j.get(tid)
+        slip = next(x for x in t['slips'] if x['code'] == 'late_pickup')
+        self.assertEqual(slip['sev'], 2)
+        row = next(x for x in self.review(j, tid)['feedback']['criteria'] if x['key'] == 'promise')
+        self.assertEqual(row['score'], 2)
+        rec = R._data(j.c)['regulars'][t['npc']]
+        self.assertEqual((rec['late'], rec['trust']), (1, 0))
+        roundtrip(j)
+
+    def test_devices_left_at_closing_stay_overnight_and_unanswered_calls_count(self):
+        j = plain_journey(lambda t: t['_fault'] == 'capacitor')
+        tid = j.task['id']
+        act(j, 'ask', task=tid)
+        n = j.task['needs']
+        act(j, 'rp_intake', task=tid, marks=n['marks'], accessories=n['accessories'], consent=False)
+        r = j.act('end_day', carry_event=True)
+        sh = j.get(tid)['bench']['shelf']
+        self.assertTrue(sh['auto'])
+        self.assertEqual(sh['promise'], j.c['day'])                    # the day has already turned: "mai" is today
+        self.assertTrue(any('qua đêm' in line for line in r['summary']['career']['lines']))
+        j.act('start_day')
+        self.assertEqual(j.get(tid)['bench']['shelf']['call'], j.c['day'])
+        self.assertNotEqual(j.c['active_task'], tid)
+        new_day(j)
+        sh = j.get(tid)['bench']['shelf']
+        self.assertEqual((sh['missed'], sh['late']), (1, 1))
+        roundtrip(j)
+
+    def test_shelf_rules(self):
+        j = Journey('repair')
+        tids = [t['id'] for t in j.c['tasks']]
+        self.assertGreaterEqual(len(tids), 3)
+        with self.assertRaises(GameError):
+            act(j, 'rp_shelf', task=tids[0], days=1, confirm=True)     # not asked yet
+        for tid in tids[:3]:
+            act(j, 'ask', task=tid)
+            t = j.get(tid)
+            if t['needs'].get('case') == 'buyin':
+                continue
+            n = t['needs']
+            act(j, 'rp_intake', task=tid, marks=n['marks'], accessories=n['accessories'], consent=n['device'] in R.DATA_DEVICES)
+        ready = [tid for tid in tids[:3] if j.get(tid)['bench']['intake']]
+        for bad in (True, 5, '1', None, -1):
+            with self.assertRaises(GameError):
+                act(j, 'rp_shelf', task=ready[0], days=bad, confirm=True)
+        with self.assertRaises(GameError):
+            act(j, 'rp_shelf', task=ready[0], days=1)                  # confirm
+        with self.assertRaises(GameError):
+            act(j, 'rp_answer', task=ready[0], reply='truth')          # nobody called
+        act(j, 'rp_shelf', task=ready[0], days=1, confirm=True)
+        with self.assertRaises(GameError):
+            act(j, 'rp_shelf', task=ready[0], days=2, confirm=True)    # already there
+        if len(ready) >= 3:
+            act(j, 'rp_shelf', task=ready[1], days=2, confirm=True)
+            with self.assertRaises(GameError) as ctx:
+                act(j, 'rp_shelf', task=ready[2], days=1, confirm=True)
+            self.assertIn('đủ', ctx.exception.message)
+        roundtrip(j)
+
+    # --- tools --------------------------------------------------------------------
+    def test_flat_meter_battery_wastes_the_test_until_replaced(self):
+        j = plain_journey(lambda t: t['_fault'] == 'capacitor')
+        tid = j.task['id']
+        act(j, 'ask', task=tid)
+        n = j.task['needs']
+        act(j, 'rp_intake', task=tid, marks=n['marks'], accessories=n['accessories'], consent=False)
+        for step in R.DEVICES['fan']['safety']:
+            act(j, 'rp_safety', task=tid, step=step)
+        act(j, 'rp_open', task=tid)
+        R._data(j.c)['tools']['meter'] = 15
+        r = act(j, 'rp_test', task=tid, test='cap_meter')
+        self.assertIn('nhảy loạn', r['message'])
+        self.assertEqual(j.get(tid)['bench']['tests'], [])
+        self.assertEqual(R._data(j.c)['tools']['meter'], 9)
+        with self.assertRaises(GameError):
+            act(j, 'rp_tool', tool='meter', how='battery')             # confirm
+        with self.assertRaises(GameError):
+            act(j, 'rp_tool', tool='meter', how='clean', confirm=True)
+        money = j.c['money']
+        act(j, 'rp_tool', tool='meter', how='battery', confirm=True)
+        self.assertEqual((R._data(j.c)['tools']['meter'], j.c['money']), (100, money - R.METER_COST))
+        act(j, 'rp_test', task=tid, test='cap_meter')
+        self.assertEqual(len(j.get(tid)['bench']['tests']), 1)
+        self.assertEqual(R._data(j.c)['tools']['meter'], 100 - R.METER_WEAR)
+        roundtrip(j)
+
+    def test_worn_soldering_tip_costs_solder_and_can_come_back(self):
+        j = plain_journey(lambda t: 'solder' in R._fault_def(t['needs']['device'], t['_fault'])['supplies'] and not t['_extra'])
+        tid, fault, item = self.quoted(j, next(g for g in R._fault_def(j.task['needs']['device'], j.task['_fault'])['parts']
+                                                 if g not in ('genuine', 'used')), drain_part=False)
+        tools = R._data(j.c)['tools']
+        tools['tip'] = 0
+        for step in R.DEVICES[j.task['needs']['device']]['safety']:
+            act(j, 'rp_safety', task=tid, step=step)
+        act(j, 'rp_open', task=tid)
+        with self.assertRaises(GameError) as ctx:
+            act(j, 'rp_fix', task=tid, fault=fault)
+        self.assertIn('Mũi hàn', ctx.exception.message)
+        act(j, 'rp_tool', tool='tip', how='clean')
+        self.assertEqual(R._data(j.c)['tools']['tip'], R.TIP_CLEAN)
+        solder = kit.stock(j.c, 'solder')
+        act(j, 'rp_fix', task=tid, fault=fault)
+        self.assertEqual(kit.stock(j.c, 'solder'), solder - 2)
+        self.assertTrue(j.get(tid)['bench']['cold'])
+        self.assertEqual(R._data(j.c)['tools']['tip'], R.TIP_CLEAN - R.TIP_WEAR)
+        R._data(j.c)['tools']['tip'] = 90
+        with self.assertRaises(GameError):
+            act(j, 'rp_tool', tool='tip', how='clean')                 # still shiny
+        money = j.c['money']
+        act(j, 'rp_tool', tool='tip', how='replace', confirm=True)
+        self.assertEqual((R._data(j.c)['tools']['tip'], j.c['money']), (100, money - R.TIP_COST))
+        roundtrip(j)
+
+    # --- comebacks ----------------------------------------------------------------
+    def comeback_journey(self):
+        """An everyday job whose seeded roll brings it back after an untested, cheap repair."""
+        for day in range(1, 30):
+            for slot in range(6):
+                t = R.make_task(day, slot, 1)
+                if t['needs'].get('case') or t['_extra'] or t['_fault'] not in ('chain', 'tube', 'brake', 'dirt', 'bearing'):
+                    continue
+                grade = next(iter(R._fault_def(t['needs']['device'], t['_fault'])['parts']))
+                if kit.rng('repair', 'back', t['id']).random() < R.GRADE_RISK[grade] + 0.3:
+                    j = Journey('repair', slot=slot, day=day)
+                    return j, grade
+        raise AssertionError('no comeback job')
+
+    def test_untested_cheap_repair_comes_back_and_is_honoured(self):
+        j, grade = self.comeback_journey()
+        tid, fault, _ = self.quoted(j, grade, drain_part=False)
+        self.finish(j, tid, test=False)
+        d = R._data(j.c)
+        row = d['comebacks'][0]
+        self.assertEqual((row['state'], row['cause'], row['task']), ('wait', 'untested', tid))
+        self.assertEqual(public_state(j.state)['careers']['repair']['data']['comebacks'], [])   # not yet at the counter
+        roundtrip(j)
+        while R._data(j.c)['comebacks'][0]['state'] == 'wait':
+            new_day(j)
+        pub = public_state(j.state)['careers']['repair']['data']['comebacks'][0]
+        self.assertFalse(pub['covered'])                               # no warranty slip on an untested hand-over
+        with self.assertRaises(GameError):
+            act(j, 'rp_back', id=row['id'], choice='redo')             # confirm
+        with self.assertRaises(GameError):
+            act(j, 'rp_back', id='nope', choice='redo', confirm=True)
+        money = j.c['money']
+        r = act(j, 'rp_back', id=row['id'], choice='redo', confirm=True)
+        self.assertEqual(j.c['money'], money - pub['cost'])
+        self.assertIn('hết hạn', r['message'])
+        post = next(p for p in j.c['feed'] if p['kind'] == 'review' and p['source'] == row['id'])
+        self.assertEqual(post['stars'], 5)
+        self.assertEqual(R._data(j.c)['comebacks'], [])
+        roundtrip(j)
+
+    def test_charging_a_covered_comeback_and_ignoring_one(self):
+        j, grade = self.comeback_journey()
+        tid, fault, _ = self.quoted(j, grade, drain_part=False)
+        self.finish(j, tid, test=False)
+        d = R._data(j.c)
+        row = d['comebacks'][0]
+        row['days'] = 30                                                # as if a 30-day slip had been written
+        extra = dict(row, id='BL-extra')
+        d['comebacks'].append(extra)
+        rec = d['regulars'].setdefault(row['npc'], dict(visits=1, trust=0, ontime=0, late=0, history=[]))
+        rec['trust'] = 3
+        while R._data(j.c)['comebacks'][0]['state'] == 'wait':
+            new_day(j)
+        money = j.c['money']
+        cost, price = R._back_fee(row)
+        act(j, 'rp_back', id=row['id'], choice='charge', confirm=True)
+        self.assertEqual(j.c['money'], money + price)
+        self.assertEqual(R._data(j.c)['regulars'][row['npc']]['trust'], 1)
+        post = next(p for p in j.c['feed'] if p['kind'] == 'review' and p['source'] == row['id'])
+        self.assertEqual(post['stars'], 1)
+        r = j.act('end_day', carry_event=True)                          # nobody saw the other one
+        self.assertEqual(R._data(j.c)['comebacks'], [])
+        self.assertEqual(R._data(j.c)['regulars'][row['npc']]['trust'], 0)
+        post = next(p for p in j.c['feed'] if p['kind'] == 'review' and p['source'] == 'BL-extra')
+        self.assertEqual(post['stars'], 2)
+        roundtrip(j)
+
+    def test_genuine_part_never_comes_back(self):
+        self.assertEqual(R.GRADE_RISK['genuine'], 0.0)
+        j, tid, fault = self.genuine_battery()
+        new_day(j)
+        new_day(j)
+        self.finish(j, tid)
+        self.assertEqual(R._data(j.c)['comebacks'], [])
+
+    # --- regulars -----------------------------------------------------------------
+    def test_trusted_regular_waits_calmer_and_stretches_the_budget(self):
+        j = plain_journey(lambda t: t['_fault'] == 'capacitor')
+        t = j.task
+        tid = t['id']
+        j.c['life']['prices']['fan'] = 54                               # labour 43 + part 6 = 49 xu, budget 45
+        act(j, 'ask', task=tid)
+        n = t['needs']
+        act(j, 'rp_intake', task=tid, marks=n['marks'], accessories=n['accessories'], consent=False)
+        act(j, 'rp_diagnose', task=tid, fault='capacitor')
+        r = act(j, 'rp_quote', task=tid, grades={'capacitor': 'compatible'})
+        self.assertFalse(r['accepted'])
+        R._data(j.c)['regulars'][t['npc']] = dict(visits=4, trust=3, ontime=2, late=0, history=[])
+        r = act(j, 'rp_quote', task=tid, grades={'capacitor': 'compatible'})
+        self.assertTrue(r['accepted'], r['message'])
+        self.assertIn('tiệm quen', r['message'])
+        fresh = R.make_task(t['day'], 5, 1)
+        fresh['npc'] = t['npc']
+        R.on_task(j.state, j.c, fresh)
+        base = max(60, 100 - 4 * kit.tier(t['day']) - (8 if R._today(j.c)['id'] == 'market' else 0))
+        self.assertEqual(fresh['patience'], min(100, base + 3 * R.TRUST_PATIENCE))
+        roundtrip(j)
+
+    def test_clean_repair_builds_the_regulars_card(self):
+        j = plain_journey(lambda t: t['_fault'] == 'capacitor')
+        tid, fault, item = self.quoted(j, 'compatible', drain_part=False)
+        r = self.finish(j, tid)
+        rec = R._data(j.c)['regulars'][j.get(tid)['npc']]
+        self.assertEqual((rec['visits'], rec['trust']), (1, 1))
+        self.assertIn('💛', r['message'])
+        self.assertEqual(rec['history'][0]['fault'], 'capacitor')
+
+    # --- saves ----------------------------------------------------------------------
+    def test_old_save_without_care_fields_migrates(self):
+        j = plain_journey(lambda t: t['_fault'] == 'capacitor')
+        tid = j.task['id']
+        d = j.c['ext']['data']
+        for k in R.DATA_V3:
+            d.pop(k, None)
+        for k in R.BENCH_V3:
+            j.task['bench'].pop(k, None)
+        old = json.loads(json.dumps(j.state))
+        validate_state(old)
+        public_state(json.loads(json.dumps(j.state)))
+        act(j, 'ask', task=tid)
+        n = j.get(tid)['needs']
+        act(j, 'rp_intake', task=tid, marks=n['marks'], accessories=n['accessories'], consent=False)
+        self.assertIn('shelf', j.get(tid)['bench'])
+        self.assertEqual(R._data(j.c)['tools'], dict(tip=100, meter=100))
+        self.assertIsNotNone(R._data(j.c)['clock'])                    # a shift opened before the clock starts it now
+        roundtrip(j)
+
+    def test_tampered_care_fields_are_rejected(self):
+        j, tid, fault = self.genuine_battery()
+        act(j, 'rp_shelf', task=tid, days=1, confirm=True)
+        roundtrip(j)
+        bad = []
+        def tweak(fn):
+            st = copy.deepcopy(j.state)
+            c = st['careers']['repair']
+            t = next(x for x in c['tasks'] if x['id'] == tid)
+            fn(c, c['ext']['data'], t['bench'])
+            bad.append(st)
+        tweak(lambda c, d, b: b['shelf'].update(promise=b['shelf']['since'] - 1))
+        tweak(lambda c, d, b: b['shelf'].update(lied='yes'))
+        tweak(lambda c, d, b: b['orders'][fault].update(src='lam'))
+        tweak(lambda c, d, b: b['orders'][fault].update(item='screen_g'))
+        tweak(lambda c, d, b: b['orders'][fault].update(cost=-1))
+        tweak(lambda c, d, b: b.update(cold=1))
+        tweak(lambda c, d, b: d['tools'].update(tip=150))
+        tweak(lambda c, d, b: d['tools'].update(hammer=5))
+        tweak(lambda c, d, b: d['regulars'].update(repair_npc_07=dict(visits=1, trust=0, ontime=0, late=0, history=[])))
+        tweak(lambda c, d, b: d['regulars'].update(repair_npc_01=dict(visits=1, trust=9, ontime=0, late=0, history=[])))
+        tweak(lambda c, d, b: d.update(clock=dict(day=1)))
+        tweak(lambda c, d, b: d.update(comebacks=[dict(id='BL-1', task='x', npc='repair_npc_01', device='fan', fault='capacitor',
+                                                       grade='compatible', days=30, paid=10, handed=2, due=40, cause='part',
+                                                       state='here', title='Quạt')]))
+        tweak(lambda c, d, b: d.update(comebacks=[dict(id='BL-1', task='x', npc='repair_npc_01', device='fan', fault='capacitor',
+                                                       grade='compatible', days=30, paid=10, handed=2, due=4, cause='ghost',
+                                                       state='here', title='Quạt')]))
+        tweak(lambda c, d, b: d.update(shelf_seq=-1))
+        for st in bad:
+            with self.assertRaises(GameError):
+                validate_state(json.loads(json.dumps(st)))
+
+
 if __name__ == '__main__':
     unittest.main()
