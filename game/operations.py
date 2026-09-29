@@ -132,10 +132,25 @@ def record_money(c:dict, amount:int, reason:str, ref:str|None=None, category:str
     f=c['ops']['finance'];cat=classify_money(amount,reason,category)
     f['ledger'].append(dict(id=_id(c,'entry'),day=c['day'],turn=c['turn'],amount=amount,category=cat,reason=reason,ref=ref))
     if cat=='revenue' and amount>0:f['period_revenue']+=amount
-    # A compacted opening balance preserves the exact wallet identity.
-    if len(f['ledger'])>1500:
-        dropped=f['ledger'][:-1200];f['opening_balance']+=sum(x['amount'] for x in dropped)
-        f['ledger']=f['ledger'][-1200:]
+    trim_ledger(c)
+
+
+LEDGER_HIGH=400   # past this many rows the oldest are folded into the opening balance,
+LEDGER_KEEP=300   # down to this many, but never rows of the last LEDGER_DAYS days
+LEDGER_DAYS=14    # (the lãi/lỗ chart reads 7 days), and never more than LEDGER_MAX rows.
+LEDGER_MAX=1200
+
+def trim_ledger(c:dict) -> None:
+    """Bounded cash book. A compacted opening balance preserves the exact wallet identity.
+    Also run once on older saves by engine.migrate_state (their books kept 1200-1500 rows)."""
+    f=c['ops']['finance'];rows=f['ledger']
+    if len(rows)<=LEDGER_HIGH:return
+    cut=len(rows)-LEDGER_KEEP;recent=c['day']-LEDGER_DAYS
+    while cut>0 and rows[cut-1]['day']>=recent:cut-=1
+    cut=max(cut,len(rows)-LEDGER_MAX)
+    if cut<=0:return
+    f['opening_balance']+=sum(x['amount'] for x in rows[:cut])
+    f['ledger']=rows[cut:]
 
 
 def bill(c:dict, bid:str, kind:str, label:str, amount:int, due:int, source:str) -> dict|None:
