@@ -4,7 +4,7 @@
  *  📋 Quy định (quy định đối chiếu + tỷ giá), 📒 Sổ sách (cơ cấu tập đoàn, sổ bút toán hợp nhất)
  *  and a sticky bar with the next step and the main action.
  *  No inline handlers: every button goes through data-command / data-action="car:*". */
-import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,openTasks,hhmm} from './office_kit.js';
+import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,openTasks,hhmm,planCard,mateCards,trackFold,careSummary,foldToggle} from './office_kit.js';
 
 const P='ga_';
 const BOSS='Chị Mai Anh';
@@ -245,6 +245,23 @@ function boardRecap(x){
 }
 
 /* ---------------------------------------------------------------- the office desktop */
+/* ---------------------------------------------------------------- care: reporting packs, audit questions, colleagues, the track */
+const PACK_TAG={wait:['Chưa tới hạn','wait'],late:['Trễ hạn','late'],in:['Đã về · chưa soát','in'],fixing:['Đang sửa','fixing'],ok:['✓ Đã soát','ok']};
+function packPlan(x){
+  const p=x.room.data?.care?.plan;if(!p||p.kind!=='packs')return '';
+  const rows=p.items.map(i=>{const [label,tone]=PACK_TAG[i.state]||[i.state,''];
+    const note=i.state==='fixing'?`${i.contact} gửi lại bản sửa ${i.back}`:i.promised?`${i.contact} hứa gửi sớm`:i.state==='wait'?`${i.contact} · hạn ${p.due}`:i.contact;
+    const act=!x.room.open?'':i.can_review?x.cmd(`🔎 Soát gói · ${p.review} phút`,'ga_review',{sub:i.sub},'primary small'):i.can_nudge?x.cmd(`📞 Gọi giục · ${p.nudge} phút`,'ga_nudge',{sub:i.sub},'ghost small'):'';
+    return {emoji:i.emoji,title:i.short,note,tag:{label,tone},act,tone:i.state==='late'?'bad':i.state==='in'?'warn':''};});
+  const qs=(p.queries||[]).map(q=>({emoji:'❓',title:q.text,note:`Chị Thảo · trả lời trước hết ${q.date} (${q.rel})${q.minutes>10?' · gói chưa soát nên lâu hơn':''}`,
+    tag:{label:q.rel,tone:q.rel==='Hôm nay'?'due':''},act:x.room.open?x.cmd(`✉️ Trả lời · ${q.minutes} phút`,'ga_answer',{query:q.id},'primary small'):'',tone:q.rel==='Hôm nay'?'warn':''}));
+  return planCard(x,{title:`📦 ${p.title}`,sub:`${p.done}/${p.total} đã soát`,rows,
+      foot:`Hạn nộp gói: ${x.esc(p.due)} (${x.esc(p.due_rel)}). Soát đủ 4 gói trước ngày chốt quý: thưởng ${p.bonus} xu. Gói trễ mà chưa gọi giục lần nào thì chị Mai Anh không vui.`})
+    +planCard(x,{title:'❓ Câu hỏi kiểm toán',sub:`${qs.length} câu chờ`,rows:qs,key:'plan2',foot:'Trả lời trong 2 ngày. Gói đã soát thì có sẵn giấy làm việc.'});
+}
+const care=(x,t)=>({plan:packPlan(x),people:mateCards(x,{prefix:P,t}),track:trackFold(x,{prefix:P,career:'group_accounting'})});
+const careBadge=x=>{const p=x.room.data?.care?.plan;return (x.room.data?.care?.asked?1:0)+((p?.items)||[]).filter(i=>i.can_review).length+((p?.queries)||[]).length;};
+
 const strip=(x,t)=>statusStrip(x,t,{boss:BOSS,op:'ga_overtime'});
 const todayRules=x=>rulesList(x,x.room.data?.today?.rules||[],'Quy định đối chiếu');
 function currentMail(t,x){
@@ -286,9 +303,9 @@ export default {
   job(t,x){
     const board=t.variant==='match',fresh=(x.room.data?.today?.rules||[]).filter(r=>r.new).length;
     x.ui.lastBoard=board?t.id:null;
-    const tabs=[{id:'inbox',icon:'📥',label:'Hộp thư',badge:openTasks(x).filter(v=>!v.known).length||''},
+    const tabs=[{id:'inbox',icon:'📥',label:'Hộp thư',badge:openTasks(x).filter(v=>!v.known).length+careBadge(x)||''},
       {id:'doc',icon:'📂',label:'Hồ sơ'},{id:'rules',icon:'📋',label:'Quy định',badge:fresh||'',tone:'warn'},{id:'books',icon:'📒',label:'Sổ sách'}];
-    const inbox=inboxPane(x,{tasks:taskMails(x,t,currentMail(t,x)),other:dayMails(x,{boss:BOSS,key:`${t.id}:${t.known?1:0}`})});
+    const inbox=inboxPane(x,{tasks:taskMails(x,t,currentMail(t,x)),other:dayMails(x,{boss:BOSS,key:`${t.id}:${t.known?1:0}`}),...care(x,t)});
     const rules=todayRules(x)+fxCard(x,false);
     if(!t.known)return desk(x,t,{cls:'ga',tabs,strip:strip(x,t),panes:{inbox,rules,books:booksPane(x),
       doc:`<p class="ok-empty"><span aria-hidden="true">✉️</span><b>${x.esc(t.title)}</b><span>${board?'Hai sổ đối chiếu còn nằm trong hộp thư của công ty con.':'Hồ sơ còn trong phong bì.'}</span></p>`},
@@ -298,7 +315,7 @@ export default {
   },
   idle(x){
     const d=x.room.data||{};if(!d.office)return '';
-    return idleDesk(x,{cls:'ga',strip:strip(x,null),recap:boardRecap(x),tasks:taskMails(x,null),other:dayMails(x,{boss:BOSS}),rules:todayRules(x)});
+    return idleDesk(x,{cls:'ga',strip:strip(x,null),recap:boardRecap(x),tasks:taskMails(x,null),other:dayMails(x,{boss:BOSS}),rules:todayRules(x),...care(x,null)});
   },
   summary(data,x){
     if(!data||typeof data!=='object')return '';
@@ -318,8 +335,11 @@ export default {
     const ch=Number(o.trust_change)||0;
     const trust=o.trust_label?`<p class="ga-sum-trust">👩‍💼 Chị Mai Anh: <b>${x.esc(o.trust_label)}</b> (${o.trust}/100${ch?`, ${ch>0?'+':''}${ch} hôm nay`:''})</p>`:'';
     const note=r=>r&&typeof r==='object'?`<p class="ga-sum-note ${r.ok?'ok':'bad'}">${r.ok?'🏅':'🔍'} ${x.esc(r.text||'')}</p>`:'';
-    if(!rows.length&&!trust&&!data.audit&&!data.board)return '';
-    return `<article class="card space-top ga-sum"><h4 class="section-title">🏢 Bàn hợp nhất hôm nay</h4>${note(data.audit)}${note(data.board)}${trust}${rows.length?`<div class="kv">${rows.join('')}</div>`:''}</article>`;
+    if(data.queries_late)row('Câu hỏi kiểm toán trả lời chậm',String(data.queries_late));
+    if(data.packs)row('Gói báo cáo quý',`${data.packs.ok}/${data.packs.total} đã soát${data.packs.bonus?` · thưởng +${data.packs.bonus} xu`:''}${data.packs.silent?.length?` · chưa gọi giục: ${data.packs.silent.join(', ')}`:''}`);
+    const life=careSummary(data.care,x);
+    if(!rows.length&&!trust&&!data.audit&&!data.board&&!life)return '';
+    return `<article class="card space-top ga-sum"><h4 class="section-title">🏢 Bàn hợp nhất hôm nay</h4>${note(data.audit)}${note(data.board)}${trust}${rows.length?`<div class="kv">${rows.join('')}</div>`:''}${life?`<h4 class="section-title">🧭 Đời sống văn phòng</h4><div class="kv">${life}</div>`:''}</article>`;
   },
   tick(root,x){
     keepBarAboveFooter(root);
@@ -336,6 +356,7 @@ export default {
   },
   actions:{
     tab:switchTab,
+    fold:foldToggle,
     msel(d,el,x){const t=(x.room.tasks||[]).find(v=>v.id===d.task);if(!t)return;const s=msel(x,t);s[d.side]=s[d.side]===d.line?null:d.line;x.render();},
     mclear(d,el,x){const t=(x.room.tasks||[]).find(v=>v.id===d.task);if(!t)return;const s=msel(x,t);s.a=s.b=null;x.render();},
     async open(data,el,x){views(x)[data.task]=data.doc;await x.send(P+'open',{task:data.task,doc:data.doc});},

@@ -4,7 +4,7 @@
  *  phiếu kế toán Nợ/Có tự cân), 📋 Quy định (quy định tháng + sổ tra cứu), 📒 Sổ sách (cân đối thử)
  *  and a sticky bar with the next step and the main action.
  *  No inline handlers: every button goes through data-command / data-action="car:*". */
-import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,openTasks} from './office_kit.js';
+import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,openTasks,planCard,mateCards,trackFold,careSummary,foldToggle} from './office_kit.js';
 
 const P='ca_';
 const BOSS='Chị Hạnh';
@@ -253,6 +253,17 @@ function trayRecap(x){
   return `<section class="ca-recap" role="status"><h3 class="ok-h">🗂️ Khay vừa chốt · ${ok}/${cs.length} bộ chuẩn</h3><ul>${li}</ul></section>`;
 }
 
+/* ---------------------------------------------------------------- care: the month-end close plan, colleagues, the track */
+const CLOSE_TAG={done:['✓ Kịp mốc','done'],late_done:['Xong · trễ mốc','late_done'],late:['Trễ mốc','late'],due:['Hạn hôm nay','due']};
+function closePlan(x){
+  const p=x.room.data?.care?.plan;if(!p||p.kind!=='close')return '';
+  const rows=p.items.map(i=>{const [label,tone]=CLOSE_TAG[i.state]||[i.rel,'todo'];
+    return {emoji:i.emoji,title:i.name,note:`${i.how} · mốc ${i.date}`,tag:{label,tone},tone:i.state==='late'?'bad':i.state==='due'?'warn':''};});
+  return planCard(x,{title:`📅 ${p.title}`,sub:`${p.done}/${p.total} mốc`,rows,foot:`Đủ 5 mốc kịp hạn: thưởng ${p.bonus} xu và chị Hạnh ghi nhận. Thiếu hồ sơ nào thì bấm “＋ Nhận thêm việc”.`});
+}
+const care=(x,t)=>({plan:closePlan(x),people:mateCards(x,{prefix:P,t}),track:trackFold(x,{prefix:P,career:'corp_accounting'})});
+const careBadge=x=>x.room.data?.care?.asked?1:0;
+
 /* ---------------------------------------------------------------- the office desktop */
 const strip=(x,t)=>statusStrip(x,t,{boss:BOSS,op:'ca_overtime'});
 const todayRules=x=>rulesList(x,x.room.data?.today?.rules||[],'Quy định đang áp dụng');
@@ -297,10 +308,10 @@ export default {
   job(t,x){
     const isDesk=t.variant==='desk',rules=x.room.data?.today?.rules||[],fresh=rules.filter(r=>r.new).length;
     x.ui.lastTray=isDesk?t.id:null;
-    const tabs=[{id:'inbox',icon:'📥',label:'Hộp thư',badge:openTasks(x).filter(v=>!v.known).length||''},
+    const tabs=[{id:'inbox',icon:'📥',label:'Hộp thư',badge:openTasks(x).filter(v=>!v.known).length+careBadge(x)||''},
       {id:'doc',icon:'📂',label:'Hồ sơ'},{id:'rules',icon:'📋',label:'Quy định',badge:fresh||'',tone:'warn'},
       ...(isDesk?[]:[{id:'books',icon:'📒',label:'Sổ sách'}])];
-    const inbox=inboxPane(x,{tasks:taskMails(x,t,currentMail(t,x)),other:dayMails(x,{boss:BOSS,key:`${t.id}:${t.known?1:0}`})});
+    const inbox=inboxPane(x,{tasks:taskMails(x,t,currentMail(t,x)),other:dayMails(x,{boss:BOSS,key:`${t.id}:${t.known?1:0}`}),...care(x,t)});
     if(!t.known){
       const label=isDesk?'📥 Nhận khay chứng từ':'📥 Nhận hồ sơ';
       return desk(x,t,{cls:'ca',tabs,strip:strip(x,t),panes:{inbox,
@@ -313,7 +324,7 @@ export default {
   },
   idle(x){
     const d=x.room.data||{};if(!d.office)return '';
-    return idleDesk(x,{cls:'ca',strip:strip(x,null),recap:trayRecap(x),tasks:taskMails(x,null),other:dayMails(x,{boss:BOSS}),rules:todayRules(x)});
+    return idleDesk(x,{cls:'ca',strip:strip(x,null),recap:trayRecap(x),tasks:taskMails(x,null),other:dayMails(x,{boss:BOSS}),rules:todayRules(x),...care(x,null)});
   },
   summary(data,x){
     if(!data||typeof data!=='object')return '';
@@ -331,8 +342,12 @@ export default {
     const ch=Number(o.trust_change)||0;
     const trust=o.trust_label?`<p class="ca-sum-trust">👩‍💼 Chị Hạnh: <b>${x.esc(o.trust_label)}</b> (${o.trust}/100${ch?`, ${ch>0?'+':''}${ch} hôm nay`:''})</p>`:'';
     const audit=data.audit?`<p class="ca-sum-audit ${data.audit.ok?'ok':'bad'}">${data.audit.ok?'🏅':'🔍'} ${x.esc(data.audit.text||'')}</p>`:'';
-    if(!rows.length&&!trust&&!audit)return '';
-    return `<article class="card space-top ca-sum"><h4 class="section-title">🗂️ Bàn kế toán hôm nay</h4>${audit}${trust}${rows.length?`<div class="kv">${rows.join('')}</div>`:''}</article>`;
+    const cl=data.close;
+    if(cl?.missed?.length)row('Trễ mốc khóa sổ',cl.missed.join(', '));
+    if(cl?.month_end)row('Khóa sổ tháng',`${cl.on_time}/${cl.total} mốc kịp hạn${cl.bonus?` · thưởng +${cl.bonus} xu`:''}${cl.left?.length?` · còn thiếu: ${cl.left.join(', ')}`:''}`);
+    const life=careSummary(data.care,x);
+    if(!rows.length&&!trust&&!audit&&!life)return '';
+    return `<article class="card space-top ca-sum"><h4 class="section-title">🗂️ Bàn kế toán hôm nay</h4>${audit}${trust}${rows.length?`<div class="kv">${rows.join('')}</div>`:''}${life?`<h4 class="section-title">🧭 Đời sống văn phòng</h4><div class="kv">${life}</div>`:''}</article>`;
   },
   tick(root,x){
     keepBarAboveFooter(root);
@@ -349,6 +364,7 @@ export default {
   },
   actions:{
     tab:switchTab,
+    fold:foldToggle,
     async open(data,el,x){views(x)[data.task]=data.doc;await x.send(P+'open',{task:data.task,doc:data.doc});},
     view(data,el,x){sync(rootOf(el),x);views(x)[data.task]=data.doc;x.render();},
     pick(data,el,x){sels(x)[data.task]=data.case;x.ui.fresh=null;x.render();document.querySelector('.career-job.ca .ca-queue')?.scrollIntoView({block:'nearest'});},

@@ -530,7 +530,8 @@ class CorpAccountingTests(unittest.TestCase):
         self.assertTrue(any(e['category'] == 'audit_bonus' and e['amount'] == 10 for e in j.c['ops']['finance']['ledger']))
         self.assertTrue(any(p['kind'] == 'review' and p['npc'] == kit.npc_id(CAR, 4) for p in j.c['feed']))
         self.assertGreaterEqual(j.c['money'], money + 10)
-        self.assertEqual(r['summary']['career']['office']['trust'], min(100, trust + 3))
+        missed = len((r['summary']['career'].get('close') or {}).get('missed', []))   # the month-end close plan's due item
+        self.assertEqual(r['summary']['career']['office']['trust'], min(100, trust + 3 - CA.CLOSE_MISS * missed))
 
     def test_audit_day_fines_a_slip(self):
         tid = self.use_day(3)
@@ -973,6 +974,345 @@ class ConsequenceTests(unittest.TestCase):
         t = j.get(tid)
         self.assertFalse(t.get('slips'))
         self.assertIn('+20', r['message'])
+
+
+
+# ---------------------------------------------------------------- office care: energy, colleagues, mentor track, close plan
+def solve_task(j, tid):
+    """Hand in any corp dossier correctly (hidden truth)."""
+    j.act('ask', task=tid)
+    for d in j.get(tid)['docs']:
+        j.act('ca_open', task=tid, doc=d['id'])
+    t = j.get(tid)
+    if t['variant'] == 'desk':
+        for case in t['cases']:
+            tr = case['_truth']
+            if tr['v'] != 'approve':
+                j.act('ca_circle', task=tid, case=case['id'], zone=tr['z'][0])
+            j.act('ca_stamp', task=tid, case=case['id'], verdict=tr['v'])
+        return j.act('ca_submit', task=tid, confirm=True)
+    for st in t['proc']:
+        j.act('ca_step', task=tid, step=st['id'], answer=answer(st))
+    return j.act('ca_submit', task=tid, note='specific', confirm=True)
+
+
+def next_day(j):
+    r = j.act('end_day', carry_event=True)
+    j.act('start_day')
+    return r
+
+
+class OfficeCareTests(unittest.TestCase):
+    def setUp(self):
+        self.j = Journey(CAR)
+
+    @property
+    def d(self):
+        return self.j.c['ext']['data']
+
+    @property
+    def care(self):
+        return self.d['care']
+
+    @property
+    def o(self):
+        return self.d['office']
+
+    def view(self):
+        return public_state(self.j.state)['careers'][CAR]['data']['care']
+
+    def open_tasks(self):
+        return [t for t in self.j.c['tasks'] if t['status'] not in ('completed', 'referred', 'cancelled')]
+
+    def ask(self, mate='na', i=0):
+        self.care['ask'] = dict(day=self.j.c['day'], mate=mate, i=i, state='open')
+        validate_state(self.j.state)
+
+    # ------------------------------------------------------------ the shape of it
+    def test_fresh_care_view(self):
+        v = self.view()
+        self.assertEqual(v['energy']['value'], CA.ENERGY_START)
+        self.assertEqual([m['id'] for m in v['mates']], ['na', 'lua', 'bao'])
+        self.assertTrue(all(m['npc'] and m['bond'] == 0 and m['owes'] == 0 for m in v['mates']))
+        self.assertEqual(v['track']['rank'], 0)
+        self.assertEqual(v['track']['next']['left'], CA.RANK_NEEDS[1][0])
+        cal = v['calendar']
+        self.assertEqual([c['rel'] for c in cal[:3]], ['Hôm nay', 'Mai', 'Ngày kia'])
+        self.assertEqual(len(cal), 5)
+        self.assertIn('Chốt chứng từ', [i['text'] for i in cal[1]['items']])          # docs is due on the 2nd day of the month
+        self.assertEqual(cal[4]['mod']['name'], CA.MOD_INDEX['crunch']['name'])        # day 5: the close day
+        plan = v['plan']
+        self.assertEqual(plan['kind'], 'close')
+        self.assertEqual([x['id'] for x in plan['items']], CA.CLOSE_IDS)
+        self.assertTrue(all(x['state'] == 'todo' for x in plan['items']))
+        self.assertNotIn('asks', json.dumps(v))                                        # only today's request goes out
+
+    def test_old_save_gets_care_and_counts_this_months_work(self):
+        self.d.pop('care')
+        self.d['milestones'] = ['docs', 'debts']
+        validate_state(self.j.state)
+        self.assertEqual(self.care['energy'], CA.ENERGY_START)
+        self.assertEqual(self.care['close']['done'], {'docs': 1})
+        roundtrip(self.j)
+
+    # ------------------------------------------------------------ colleagues
+    def test_asks_are_seeded_and_vary(self):
+        rolls = [CA.care_roll_ask(CA.CARE, d) for d in range(1, 60)]
+        self.assertIsNone(rolls[0])
+        self.assertEqual(rolls, [CA.care_roll_ask(CA.CARE, d) for d in range(1, 60)])
+        asked = [r for r in rolls if r]
+        self.assertTrue(30 <= len(asked) <= 55)
+        self.assertEqual({r['mate'] for r in asked}, {'na', 'lua', 'bao'})
+        for a, b in zip(rolls, rolls[1:]):
+            if a and b:
+                self.assertNotEqual(a['mate'], b['mate'])
+
+    def test_help_costs_minutes_and_earns_a_favour(self):
+        j = self.j
+        self.ask('na', 0)
+        text, minutes = CA.CARE['mates'][0]['asks'][0]
+        self.assertEqual(self.view()['mates'][0]['ask'], dict(text=text, minutes=minutes))
+        clock, turn = self.o['clock'], j.c['turn']
+        with self.assertRaises(GameError):
+            j.act('ca_help', mate='lua', answer='yes')                               # not the one asking
+        r = j.act('ca_help', mate='na', answer='yes')
+        self.assertIn('Na', r['message'])
+        self.assertEqual(self.o['clock'], clock + minutes)
+        self.assertEqual(j.c['turn'], turn)                                            # office clock, not the patience turn
+        st = self.care['mates']['na']
+        self.assertEqual((st['bond'], st['owes'], st['helped']), (1, 1, 1))
+        self.assertEqual(j.c['relationships'][kit.npc_id(CAR, 7)], 4)
+        with self.assertRaises(GameError):
+            j.act('ca_help', mate='na', answer='yes')                                  # answered already
+        self.assertIsNone(self.view()['mates'][0]['ask'])
+        roundtrip(j)
+
+    def test_declining_is_free(self):
+        self.ask('bao', 1)
+        clock = self.o['clock']
+        r = self.j.act('ca_help', mate='bao', answer='no')
+        self.assertIn('Bảo', r['message'])
+        self.assertEqual(self.o['clock'], clock)
+        self.assertEqual(self.care['mates']['bao'], dict(bond=0, owes=0, helped=0))
+        self.assertEqual(self.o['trust'], office.TRUST_START)
+        with self.assertRaises(GameError):
+            self.j.act('ca_help', mate='bao', answer='maybe')
+
+    def test_a_favour_pushes_one_deadline_once(self):
+        j = self.j
+        t = self.open_tasks()[0]
+        with self.assertRaises(GameError):
+            j.act('ca_cover', mate='na', task=t['id'])                                 # nobody owes you yet
+        self.ask('na', 1)
+        j.act('ca_help', mate='na', answer='yes')
+        self.assertIn(t['id'], self.view()['coverable'])
+        due = t['due']
+        r = j.act('ca_cover', mate='na', task=t['id'])
+        self.assertIn('lùi', ''.join(n['text'] for n in self.o['notes']))
+        self.assertIn(office.hhmm(due + CA.COVER_MIN), r['message'])
+        self.assertEqual(j.get(t['id'])['due'], due + CA.COVER_MIN)
+        self.assertEqual(j.get(t['id'])['cover'], 'na')
+        self.assertEqual(self.care['mates']['na']['owes'], 0)
+        self.assertNotIn(t['id'], self.view()['coverable'])
+        self.care['mates']['na']['owes'] = 1
+        with self.assertRaises(GameError):
+            j.act('ca_cover', mate='na', task=t['id'])                                 # once per dossier
+        roundtrip(j)
+
+    def test_no_favour_for_a_late_dossier(self):
+        j = self.j
+        t = self.open_tasks()[0]
+        self.care['mates']['lua'].update(bond=1, owes=1)
+        self.o['clock'] = t['due'] + 1
+        with self.assertRaises(GameError) as cm:
+            j.act('ca_cover', mate='lua', task=t['id'])
+        self.assertIn('trễ', str(cm.exception))
+        self.assertEqual(self.care['mates']['lua']['owes'], 1)
+
+    def test_a_close_colleague_can_owe_two(self):
+        self.care['mates']['lua'].update(bond=3, owes=1, helped=3)
+        self.ask('lua', 0)
+        self.j.act('ca_help', mate='lua', answer='yes')
+        st = self.care['mates']['lua']
+        self.assertEqual((st['bond'], st['owes']), (4, 2))
+        roundtrip(self.j)
+
+    # ------------------------------------------------------------ energy
+    def test_one_long_night_is_fine_two_cost_a_slow_day(self):
+        j = self.j
+        self.o['clock'] = office.CLOSE
+        j.act('ca_overtime', confirm=True)
+        r = next_day(j)
+        self.assertEqual(r['summary']['career']['care']['energy'], CA.ENERGY_START - CA.ENERGY_OT)
+        self.o['clock'] = office.CLOSE
+        j.act('ca_overtime', confirm=True)
+        r = next_day(j)
+        low = CA.ENERGY_START - 2 * CA.ENERGY_OT
+        self.assertEqual(self.care['energy'], low)
+        self.assertEqual(r['summary']['career']['care']['energy_label'], 'Kiệt sức')
+        self.assertTrue(self.view()['energy']['low'])
+        # exhausted: a fifth slower on the clock, and no overtime tonight
+        t = self.open_tasks()[0]
+        j.act('ask', task=t['id'])
+        clock = self.o['clock']
+        doc = j.get(t['id'])['docs'][0]
+        cost = office.COST['ref' if t['variant'] == 'desk' else 'open'] * (2 if CA._mod(j.c['day'])['id'] == 'lag' else 1)
+        r = j.act('ca_open', task=t['id'], doc=doc['id'])
+        self.assertEqual(self.o['clock'], clock + cost + cost // CA.SLOW_DIV)
+        self.o['clock'] = office.CLOSE
+        with self.assertRaises(GameError) as cm:
+            j.act('ca_overtime', confirm=True)
+        self.assertIn('Sức bền', str(cm.exception))
+        # one normal day brings you back above the line
+        next_day(j)
+        self.assertEqual(self.care['energy'], low + CA.ENERGY_REST)
+        self.assertGreaterEqual(self.care['energy'], CA.ENERGY_LOW)
+        self.assertFalse(self.view()['energy']['low'])
+        roundtrip(j)
+
+    def test_coffee_break_once_a_day(self):
+        j = self.j
+        self.care['energy'] = 50
+        clock = self.o['clock']
+        j.act('ca_break')
+        self.assertEqual(self.care['energy'], 50 + CA.BREAK_GAIN)
+        self.assertEqual(self.o['clock'], clock + CA.BREAK_MIN)
+        self.assertFalse(self.view()['energy']['can_break'])
+        with self.assertRaises(GameError):
+            j.act('ca_break')
+        next_day(j)
+        self.care['energy'] = 100
+        with self.assertRaises(GameError):
+            j.act('ca_break')                                                          # already full
+        roundtrip(j)
+
+    # ------------------------------------------------------------ reliable days and the mentor track
+    def test_reliable_day_and_rank_up(self):
+        j = self.j
+        self.care.update(reliable=2, streak=2)
+        solve_task(j, self.open_tasks()[0]['id'])
+        r = j.act('end_day', carry_event=True)
+        care = r['summary']['career']['care']
+        self.assertTrue(care['reliable'], care)
+        self.assertEqual(care['rank_up'], CA.CARE['ranks'][1])
+        self.assertEqual(self.care['rank'], 1)
+        self.assertTrue(any('Lộ trình' in e['text'] for e in j.c['journal']))
+        self.assertTrue(any(n['kind'] == 'care' for n in self.o['notes']))
+        self.assertEqual(self.care['days'][-1]['day'], 1)
+        roundtrip(j)
+
+    def test_an_empty_or_late_day_is_not_reliable(self):
+        j = self.j
+        r = j.act('end_day', carry_event=True)
+        self.assertFalse(r['summary']['career']['care']['reliable'])
+        self.assertEqual(self.care['streak'], 0)
+        j.act('start_day')
+        t = self.open_tasks()[0]
+        j.get(t['id'])['due'] = office.OPEN + 1
+        solve_task(j, t['id'])
+        r = j.act('end_day', carry_event=True)
+        self.assertIn('trễ', r['summary']['career']['care']['why'])
+        self.assertEqual(self.care['reliable'], 0)
+
+    def test_rank_two_needs_trust_and_pays_on_reliable_days(self):
+        j = self.j
+        self.care.update(reliable=5, streak=0, rank=1)
+        self.o['trust'] = 40
+        solve_task(j, self.open_tasks()[0]['id'])
+        self.o['trust'] = 40
+        r = j.act('end_day', carry_event=True)
+        self.assertIsNone(r['summary']['career']['care']['rank_up'])                   # trust too low
+        self.assertEqual(self.care['rank'], 1)
+        j.act('start_day')
+        self.o['trust'] = 80
+        solve_task(j, self.open_tasks()[0]['id'])
+        money = j.c['money']
+        r = j.act('end_day', carry_event=True)
+        self.assertEqual(r['summary']['career']['care']['rank_up'], CA.CARE['ranks'][2])
+        self.assertEqual(r['summary']['career']['care']['pay'], CA.RANK_PAY[2])
+        self.assertTrue(any(e['category'] == 'office_bonus' and e['amount'] == CA.RANK_PAY[2] for e in j.c['ops']['finance']['ledger']))
+        self.assertGreaterEqual(j.c['money'], money + CA.RANK_PAY[2])
+
+    # ------------------------------------------------------------ the month-end close plan
+    def test_close_plan_ticks_from_this_months_dossiers(self):
+        day, slot = slot_for('bank_rec')
+        j = self.j = Journey(CAR, slot=slot, day=day)
+        r = solve_task(j, j.task['id'])
+        self.assertIn('Kế hoạch khóa sổ', r['message'])
+        self.assertEqual(self.care['close']['done'], {'bank': day})
+        item = next(x for x in self.view()['plan']['items'] if x['id'] == 'bank')
+        self.assertEqual(item['state'], 'done')
+        roundtrip(j)
+
+    def test_last_months_dossier_does_not_tick_this_month(self):
+        day, slot = slot_for('bank_rec')
+        j = self.j = Journey(CAR, slot=slot, day=day)
+        j.c['day'] = day + 5
+        self.o['day'] = 0
+        solve_task(j, j.task['id'])
+        self.assertNotIn('bank', self.care['close']['done'])
+
+    def test_a_missed_mark_costs_trust_and_a_full_month_pays(self):
+        j = self.j
+        r = next_day(j)                                                                 # day 1: nothing due
+        self.assertNotIn('close', r['summary']['career'])
+        trust = self.o['trust']
+        self.care['close']['done'] = {}
+        r = j.act('end_day', carry_event=True)                                          # day 2: docs is due
+        self.assertEqual(r['summary']['career']['close']['missed'], [CA.CLOSE_PLAN[0][2]])
+        self.assertTrue(any(n['kind'] == 'late' and 'khóa sổ' in n['text'] for n in self.o['notes']))
+        self.assertEqual(self.care['close']['missed'], ['docs'])
+        self.assertLessEqual(r['summary']['career']['office']['trust'], trust - CA.CLOSE_MISS)
+        # month end with every mark done on time
+        j.act('start_day')
+        j.c['day'] = 5
+        self.o['day'] = 0
+        self.care['close'] = dict(month=0, done={'docs': 2, 'cash': 3, 'bank': 4, 'fixed': 4, 'close': 5}, missed=[])
+        validate_state(j.state)
+        money = j.c['money']
+        r = j.act('end_day', carry_event=True)
+        close = r['summary']['career']['close']
+        self.assertEqual((close['on_time'], close['bonus']), (5, CA.CLOSE_BONUS))
+        self.assertTrue(any(e['reason'] == 'Thưởng khóa sổ đúng hạn' for e in j.c['ops']['finance']['ledger']))
+        self.assertGreaterEqual(j.c['money'], money + CA.CLOSE_BONUS)
+        j.act('start_day')
+        self.assertEqual(self.care['close'], dict(month=1, done={}, missed=[]))       # a new month starts empty
+        roundtrip(j)
+
+    # ------------------------------------------------------------ validation
+    def test_tampered_care_is_rejected(self):
+        bad = [lambda cr: cr.update(energy=150), lambda cr: cr['mates']['na'].update(bond=9),
+               lambda cr: cr['mates']['na'].update(owes=2), lambda cr: cr.update(ask=dict(day=1, mate='boss', i=0, state='open')),
+               lambda cr: cr.update(ask=dict(day=1, mate='na', i=9, state='open')), lambda cr: cr.update(rank=3),
+               lambda cr: cr.update(streak=4), lambda cr: cr['mates'].update(boss=dict(bond=0, owes=0, helped=0)), lambda cr: cr['close']['done'].update(tea=1),
+               lambda cr: cr['close']['done'].update(docs=99), lambda cr: cr.update(days=[dict(day=1, ok='yes', why='x')])]
+        for i, f in enumerate(bad):
+            with self.subTest(i=i):
+                j = Journey(CAR)
+                f(j.c['ext']['data']['care'])
+                with self.assertRaises(GameError):
+                    validate_state(json.loads(json.dumps(j.state)))
+        j = Journey(CAR)
+        next(t for t in j.c['tasks'])['cover'] = 'stranger'
+        with self.assertRaises(GameError):
+            validate_state(json.loads(json.dumps(j.state)))
+
+    def test_several_days_play_through(self):
+        j = self.j
+        for day in range(1, 7):
+            if day > 1:
+                j.act('start_day')
+            a = CA.care_ask_today(self.care, j.c['day'])
+            if a:
+                j.act('ca_help', mate=a['mate'], answer='yes')
+            for t in self.open_tasks():
+                solve_task(j, t['id'])
+            roundtrip(j)
+            j.act('end_day', carry_event=True)
+        self.assertGreaterEqual(self.care['reliable'], 3)
+        self.assertGreaterEqual(self.care['rank'], 1)
+        self.assertEqual(len(self.care['days']), 6)
+        roundtrip(j)
 
 
 if __name__ == '__main__':

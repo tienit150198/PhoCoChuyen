@@ -1347,6 +1347,7 @@ def _data(c: dict) -> dict:
         if k not in d:
             d[k] = copy.deepcopy(v)
     office.ensure(d)
+    _care(c, d)
     return d
 
 
@@ -1538,6 +1539,7 @@ def _finish(s: dict, c: dict, d: dict, o: dict, t: dict, base: int, extra: str =
     info = KINDS[t['variant']]
     if info['milestone'] not in d['milestones']:
         d['milestones'].append(info['milestone'])
+    plan = _close_tick(c, d['care'], t, info['milestone'])
     d['done'] += 1
     d['day_done'] += 1
     reward = max(0, base + adj)
@@ -1548,7 +1550,7 @@ def _finish(s: dict, c: dict, d: dict, o: dict, t: dict, base: int, extra: str =
     reaction = cq.react(s, c, t, reward, who='Chị Hạnh')
     reward = reaction['pay']
     kit.complete(s, c, t, reward, f'Bạn đã hoàn tất hồ sơ “{t["title"]}”' + (' nhưng trễ hạn.' if late else '.'))
-    parts = [f'Đã nộp hồ sơ · thưởng hiệu suất +{reward} xu.', note, extra, reaction['message'], lunch]
+    parts = [f'Đã nộp hồ sơ · thưởng hiệu suất +{reward} xu.', note, extra, plan, reaction['message'], lunch]
     return dict(message=' '.join(x for x in parts if x), celebrate=not late and not cq.slips(t))
 
 
@@ -1556,8 +1558,22 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     d = _data(c)
     o = d['office']
     office.sync(o, c['day'])
+    before = o['clock']
+    res = care_handle(s, c, d, o, CARE, name, p)
+    if res is None:
+        res = _handle(s, c, name, p)
+    slow = care_slow(d['care'], o, before)
+    if slow:
+        res['message'] = ' '.join(x for x in (res.get('message', ''), slow) if x)
+    return res
+
+
+def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
+    d = _data(c)
+    o = d['office']
     mod = _mod(c['day'])
     if name == 'ca_overtime':
+        care_can_overtime(d['care'], CARE)
         kit.confirm(p, 'Xác nhận ở lại tăng ca tới 20:00.')
         return dict(message=office.overtime(s, c, o, 18 if mod['id'] == 'crunch' else 12, mod['id'] == 'crunch'))
     t = kit.task(c, p)
@@ -1664,6 +1680,8 @@ def on_start(s: dict, c: dict) -> None:
     office.begin(o, c['day'])
     office.carry(c, ID, o)
     d['day_stamps'] = []
+    care_start(d['care'], CARE, c['day'])
+    _close_plan(d['care'], c['day'])
     if mod['id'] != 'normal':
         kit.log(s, c, 'surprise', f'{mod["emoji"]} Hôm nay: {mod["name"]}. {mod["text"]}', kit.npc_id(ID, 0))
 
@@ -1755,6 +1773,7 @@ def _validate_desk(t: dict) -> None:
 
 def validate_task(t: dict, original: dict) -> None:
     office.validate_task(t)
+    care_validate_task(t, CARE)
     if t.get('variant') == 'desk':
         _validate_desk(t)
         return
@@ -1793,6 +1812,8 @@ def validate_data(c: dict) -> None:
     for k in ('posted', 'closes', 'rejected', 'done', 'day_posted', 'day_done', 'stamps', 'catches', 'slips', 'desks'):
         kit.integer(d.get(k), 0, 10**9)
     office.validate(d['office'])
+    care_validate(d['care'], CARE)
+    _validate_close(d['care'])
     kit.need(isinstance(d['day_stamps'], list) and len(d['day_stamps']) <= 40, 'Sổ đóng dấu trong ngày sai.')
     for x in d['day_stamps']:
         kit.need(isinstance(x, dict) and set(x) == {'task', 'case', 'ok', 'slip'} and type(x['ok']) is bool and type(x['slip']) is bool, 'Sổ đóng dấu trong ngày sai.')
@@ -1814,6 +1835,10 @@ def public_data(c: dict) -> dict:
     d['office'] = office.public(o, c['day'])
     d['milestone_names'] = [n for i, n in MILESTONES if i in d['milestones']]
     d.pop('day_stamps', None)
+    cr = _care(c, d)
+    view = care_public(cr, CARE, c, o)
+    view.update(calendar=_calendar(c, cr), plan=_plan_view(c, cr))
+    d['care'] = view
     return d
 
 
@@ -1843,7 +1868,12 @@ def on_close(s: dict, c: dict) -> dict:
             office.trust(o, 3)
             kit.review(s, c, kit.npc_id(ID, 4), 5, 'Rút mẫu chứng từ hôm nay: không có con dấu nào sai. Làm việc có căn cứ.', f'audit-{c["day"]}')
             out['audit'] = dict(ok=True, amount=10, text='Anh Khải rút mẫu cả khay: không có dấu nào sai. Thưởng 10 xu, chị Hạnh cười tít mắt.')
+    ok, why = _reliable(d, o)
+    close = _close_grade(s, c, d['care'], o)
+    if close:
+        out['close'] = close
     out['office'] = office.close_day(c, ID, o)
+    out['care'] = care_close(s, c, d['care'], CARE, o, ok, why)
     d['day_posted'] = 0
     d['day_done'] = 0
     d['day_stamps'] = []
@@ -1925,6 +1955,443 @@ def content() -> dict:
                 rules=['Thuế suất GTGT: 10% (hàng thông thường), 5% (mây sợi nguyên liệu).',
                        'Chỉ dùng các tài khoản có trong danh mục của công ty.',
                        'Mỗi tháng có 30 ngày; cứ 5 ngày làm việc là trọn một tháng kế toán.'])
+
+
+# ================================================================ office care (shared)
+# The day-to-day care loop of the three office careers: energy ("sức bền"), colleagues who ask for
+# help and cover you later, reliable days feeding a mentor / promotion track, and helpers for the
+# five-day calendar strip. office.py is shared by the three careers but outside this change, so the
+# helpers live here; tax_payroll and group_accounting import them. Each career passes its CARE dict:
+#   id, prefix, boss (the mentor), ranks (4 titles), lines (mentor note at ranks 1..3),
+#   mates [dict(id, name, role, npc (PEOPLE index or None), emoji, asks [(text, minutes)], thanks, no, cover)].
+# Every roll is kit.rng(career, …, day); nothing here reads player state inside make_task.
+ENERGY_START, ENERGY_REST, ENERGY_OT, ENERGY_MIN = 80, 15, 25, 5
+ENERGY_LOW, ENERGY_TIRED, ENERGY_FRESH = 35, 60, 80      # < 35 kiệt sức · < 60 hơi mệt · ≥ 80 tỉnh táo
+BREAK_MIN, BREAK_GAIN, BREAK_GAIN_R1 = 15, 6, 10
+SLOW_DIV = 5                                             # exhausted: every piece of work takes 1/5 longer
+COVER_MIN = 60
+ASK_FROM, ASK_CHANCE = 2, .75
+BOND_MAX = 5
+RANK_NEEDS = ((0, 0), (3, 0), (6, 55), (10, 70))         # (reliable days, boss trust) for ranks 0..3
+RANK_PAY = (0, 0, 4, 8)                                  # xu on each reliable day at that rank
+TRACK_DAYS = 7
+CARE_OPEN = ('new', 'understood', 'in_progress', 'proposed', 'executing', 'awaiting_confirmation')
+
+
+def care_initial(cfg: dict) -> dict:
+    return dict(v=1, energy=ENERGY_START, rest=0, mates={m['id']: dict(bond=0, owes=0, helped=0) for m in cfg['mates']},
+                ask=None, reliable=0, streak=0, rank=0, days=[])
+
+
+def care_ensure(d: dict, cfg: dict) -> dict:
+    """The care sub-state of a career's data (created for saves made before it existed)."""
+    cr = d.get('care')
+    if not isinstance(cr, dict):
+        cr = d['care'] = care_initial(cfg)
+    for k, v in care_initial(cfg).items():
+        cr.setdefault(k, copy.deepcopy(v))
+    if isinstance(cr['mates'], dict):
+        for m in cfg['mates']:
+            cr['mates'].setdefault(m['id'], dict(bond=0, owes=0, helped=0))
+    return cr
+
+
+def care_mate(cfg: dict, mid) -> dict | None:
+    return next((m for m in cfg['mates'] if m['id'] == mid), None)
+
+
+def care_energy_label(v: int) -> tuple[str, str]:
+    if v < ENERGY_LOW:
+        return 'Kiệt sức', 'bad'
+    if v < ENERGY_TIRED:
+        return 'Hơi mệt', 'warn'
+    return ('Tỉnh táo', 'good') if v >= ENERGY_FRESH else ('Ổn', '')
+
+
+def care_owe_cap(st: dict) -> int:
+    return 2 if st['bond'] >= 3 else 1
+
+
+_ASK_CHAIN: dict = {}
+
+
+def _roll_ask(cfg: dict, day: int, prev: dict | None) -> dict | None:
+    if day < ASK_FROM:
+        return None
+    r = kit.rng(cfg['id'], 'care-ask', day)
+    if r.random() >= ASK_CHANCE:
+        return None
+    m = r.choice([x for x in cfg['mates'] if not prev or x['id'] != prev['mate']])
+    return dict(day=day, mate=m['id'], i=r.randrange(len(m['asks'])))
+
+
+def care_roll_ask(cfg: dict, day: int) -> dict | None:
+    """Who asks for a hand today: seeded by the day, about three days in four from day 2, never the same
+    colleague two days running (a deterministic chain, cached like office.mod_of)."""
+    chain = _ASK_CHAIN.setdefault(cfg['id'], [None])
+    day = max(0, int(day))
+    while len(chain) <= day:
+        chain.append(_roll_ask(cfg, len(chain), chain[-1]))
+    return dict(chain[day], state='open') if chain[day] else None
+
+
+def care_start(cr: dict, cfg: dict, day: int) -> None:
+    cr['ask'] = care_roll_ask(cfg, day)
+
+
+def care_ask_today(cr: dict, day: int) -> dict | None:
+    a = cr.get('ask')
+    return a if isinstance(a, dict) and a.get('day') == day and a.get('state') == 'open' else None
+
+
+def care_rel(i: int) -> str:
+    return 'Hôm nay' if i == 0 else 'Mai' if i == 1 else 'Ngày kia' if i == 2 else f'{i} ngày nữa'
+
+
+def care_clock(o: dict, day: int) -> int:
+    return o['clock'] if o['day'] == day else office.OPEN + (office.TIRED_MIN if o['tired'] == day else 0)
+
+
+def care_cover_block(t: dict, o: dict, day: int) -> str:
+    """Why a favour cannot push this dossier's deadline ('' when it can)."""
+    if t.get('status') not in CARE_OPEN:
+        return 'Hồ sơ này đã xong.'
+    if type(t.get('due')) is not int:
+        return 'Hồ sơ này không có giờ hạn.'
+    if t.get('cover'):
+        return 'Hồ sơ này đã được đỡ một lần rồi.'
+    if t.get('due_day', day) != day or care_clock(o, day) > t['due']:
+        return 'Hồ sơ đã trễ hạn — nhờ đỡ không kịp nữa.'
+    if t['due'] >= office.LOCK:
+        return 'Hạn đã sát giờ khóa cửa, không lùi thêm được.'
+    return ''
+
+
+def care_can_overtime(cr: dict, cfg: dict) -> None:
+    kit.need(cr['energy'] >= ENERGY_LOW, f'Sức bền còn {cr["energy"]}/100 — {cfg["boss"]} bảo bạn về nghỉ, hôm nay không cho tăng ca. '
+             'Một ngày về đúng giờ là hồi lại.')
+
+
+def care_slow(cr: dict, o: dict, before: int) -> str:
+    """Exhausted: the work just done took a fifth longer on the office clock."""
+    if cr['energy'] >= ENERGY_LOW or o['clock'] <= before:
+        return ''
+    spent = o['clock'] - before - (office.LUNCH_MIN if before < office.LUNCH <= o['clock'] else 0)
+    extra = max(0, spent) // SLOW_DIV
+    if not extra:
+        return ''
+    o['clock'] = min(office.LOCK, o['clock'] + extra)
+    return f'😮‍💨 Mệt nên làm chậm hơn: +{extra} phút.'
+
+
+def _care_help(s: dict, c: dict, cr: dict, cfg: dict, o: dict, p: dict) -> dict:
+    a = care_ask_today(cr, c['day'])
+    kit.need(a, 'Hôm nay chưa ai nhờ bạn việc gì — hoặc bạn đã trả lời rồi.')
+    kit.need(p.get('mate') == a['mate'], 'Người này không nhờ bạn hôm nay.')
+    answer = kit.one_of(p.get('answer', 'yes'), ('yes', 'no'), 'Chọn giúp một tay hoặc để hôm khác.')
+    m = care_mate(cfg, a['mate'])
+    st = cr['mates'][m['id']]
+    if answer == 'no':
+        a['state'] = 'no'
+        return dict(message=f'Bạn nói khéo là hôm nay kín việc. {m["no"]}')
+    text, minutes = m['asks'][a['i']]
+    lunch = office.spend(o, minutes)
+    a['state'] = 'done'
+    st['bond'] = min(BOND_MAX, st['bond'] + 1)
+    st['helped'] += 1
+    owed = st['owes']
+    st['owes'] = min(care_owe_cap(st), st['owes'] + 1)
+    if m.get('npc') is not None:
+        kit.remember(s, c, kit.npc_id(cfg['id'], m['npc']), f'Bạn dành {minutes} phút giúp {m["name"]}. {m["thanks"]}')
+    kit.metric(c, cfg['prefix'] + 'helped')
+    tail = (f'Khi cần, {m["name"]} sẽ đỡ bạn một lần (đang nợ bạn {st["owes"]}).' if st['owes'] > owed else
+            f'{m["name"]} quý bạn thêm một chút (thân thiết {st["bond"]}/{BOND_MAX}).')
+    msg = f'🤝 Bạn giúp {m["name"]} ({minutes} phút). {m["thanks"]} {tail}'
+    return dict(message=' '.join(x for x in (msg, lunch) if x))
+
+
+def _care_cover(s: dict, c: dict, cr: dict, cfg: dict, o: dict, p: dict, can_cover=None) -> dict:
+    m = care_mate(cfg, p.get('mate'))
+    kit.need(m, 'Không có đồng nghiệp này.')
+    st = cr['mates'][m['id']]
+    kit.need(st['owes'] > 0, f'{m["name"]} chưa nợ bạn lần giúp nào — khi {m["name"]} nhờ, giúp một tay trước đã.')
+    t = kit.task(c, p)
+    kit.need(t['career'] == cfg['id'], 'Hồ sơ không thuộc phòng này.')
+    why = care_cover_block(t, o, c['day']) or (can_cover(t, c['day']) if can_cover else '')
+    kit.need(not why, why)
+    office.need_open(o)
+    t['due'] = min(office.LOCK, t['due'] + COVER_MIN)
+    t['cover'] = m['id']
+    st['owes'] -= 1
+    office.note(o, c['day'], f'{m["name"]} đỡ một tay: “{t["title"]}” lùi hạn tới {office.hhmm(t["due"])}.', 'care')
+    return dict(message=f'🙏 {m["cover"]} “{t["title"]}” giờ hạn {office.hhmm(t["due"])}.')
+
+
+def _care_break(cr: dict, o: dict, day: int) -> dict:
+    kit.need(cr['rest'] != day, 'Hôm nay bạn đã nghỉ giải lao rồi.')
+    kit.need(cr['energy'] < 100, 'Sức bền đang đầy — chưa cần nghỉ đâu.')
+    lunch = office.spend(o, BREAK_MIN)
+    gain = BREAK_GAIN_R1 if cr['rank'] >= 1 else BREAK_GAIN
+    before = cr['energy']
+    cr['energy'] = min(100, before + gain)
+    cr['rest'] = day
+    msg = f'☕ Bạn pha ấm trà, đứng vươn vai bên cửa sổ 15 phút. Sức bền +{cr["energy"] - before} ({cr["energy"]}/100).'
+    return dict(message=' '.join(x for x in (msg, lunch) if x))
+
+
+def care_handle(s: dict, c: dict, d: dict, o: dict, cfg: dict, name: str, p: dict, can_cover=None) -> dict | None:
+    """The shared care commands (<prefix>help / cover / break); None for any other command."""
+    cr = care_ensure(d, cfg)
+    if name == cfg['prefix'] + 'help':
+        return _care_help(s, c, cr, cfg, o, p)
+    if name == cfg['prefix'] + 'cover':
+        return _care_cover(s, c, cr, cfg, o, p, can_cover)
+    if name == cfg['prefix'] + 'break':
+        return _care_break(cr, o, c['day'])
+    return None
+
+
+def care_close(s: dict, c: dict, cr: dict, cfg: dict, o: dict, ok: bool, why: str) -> dict:
+    """End of day: energy, the reliable-day strip and the mentor track. Returns the summary part."""
+    day = c['day']
+    before = cr['energy']
+    cr['energy'] = max(ENERGY_MIN, min(100, before + (-ENERGY_OT if o['ot'] else ENERGY_REST)))
+    if ok:
+        cr['reliable'] += 1
+        cr['streak'] += 1
+    else:
+        cr['streak'] = 0
+    cr['days'] = (cr['days'] + [dict(day=day, ok=bool(ok), why=str(why)[:120])])[-TRACK_DAYS:]
+    up = None
+    while cr['rank'] < 3 and cr['reliable'] >= RANK_NEEDS[cr['rank'] + 1][0] and o['trust'] >= RANK_NEEDS[cr['rank'] + 1][1]:
+        cr['rank'] += 1
+        up = cfg['ranks'][cr['rank']]
+        line = cfg['lines'][cr['rank'] - 1]
+        office.note(o, day, f'{cfg["boss"]}: “{line}”', 'care')
+        kit.log(s, c, 'surprise', f'🧭 Lộ trình: {up}. {cfg["boss"]}: “{line}”', kit.npc_id(cfg['id'], 0))
+    pay = RANK_PAY[cr['rank']] if ok else 0
+    if pay:
+        kit.money(s, c, pay, 'Phụ cấp trách nhiệm: một ngày làm chắc tay', None, 'office_bonus')
+    label, tone = care_energy_label(cr['energy'])
+    if o['ot'] and cr['energy'] < ENERGY_LOW:
+        office.note(o, day, f'Sức bền còn {cr["energy"]}/100 — mai về đúng giờ cho lại sức nhé.', 'care')
+    return dict(energy=cr['energy'], energy_change=cr['energy'] - before, energy_label=label, energy_tone=tone,
+                reliable=bool(ok), why=str(why)[:120], streak=cr['streak'], total=cr['reliable'], rank=cfg['ranks'][cr['rank']],
+                rank_up=up, pay=pay)
+
+
+def care_public(cr: dict, cfg: dict, c: dict, o: dict, can_cover=None) -> dict:
+    day = c['day']
+    a = care_ask_today(cr, day)
+    mates = []
+    for m in cfg['mates']:
+        st = cr['mates'][m['id']]
+        ask = None
+        if a and a['mate'] == m['id']:
+            text, minutes = m['asks'][a['i']]
+            ask = dict(text=text, minutes=minutes)
+        mates.append(dict(id=m['id'], name=m['name'], role=m['role'], emoji=m['emoji'],
+                          npc=kit.npc_id(cfg['id'], m['npc']) if m.get('npc') is not None else None,
+                          bond=st['bond'], owes=st['owes'], cap=care_owe_cap(st), helped=st['helped'], ask=ask, cover=m['cover']))
+    label, tone = care_energy_label(cr['energy'])
+    r = cr['rank']
+    nxt = None
+    if r < 3:
+        need_days, need_trust = RANK_NEEDS[r + 1]
+        nxt = dict(title=cfg['ranks'][r + 1], days=need_days, left=max(0, need_days - cr['reliable']), trust=need_trust,
+                   trust_ok=o['trust'] >= need_trust)
+    perks = ['☕ Nghỉ giải lao hồi +10 sức bền', '💰 +4 xu mỗi ngày làm chắc tay', '💰 +8 xu mỗi ngày làm chắc tay']
+    cover = [t['id'] for t in c['tasks'] if t.get('career') == cfg['id'] and not care_cover_block(t, o, day)
+             and not (can_cover and can_cover(t, day))]
+    return dict(
+        energy=dict(value=cr['energy'], label=label, tone=tone, low=cr['energy'] < ENERGY_LOW, can_break=bool(c.get('open')) and cr['rest'] != day and cr['energy'] < 100,
+                    gain=BREAK_GAIN_R1 if r >= 1 else BREAK_GAIN, rest=ENERGY_REST, ot=ENERGY_OT, line=ENERGY_LOW),
+        mates=mates, asked=bool(a), coverable=cover, mentor=cfg['boss'],
+        track=dict(rank=r, title=cfg['ranks'][r], ranks=list(cfg['ranks']), reliable=cr['reliable'], streak=cr['streak'],
+                   days=copy.deepcopy(cr['days']), next=nxt, perks=[dict(rank=i + 1, text=x, on=r >= i + 1) for i, x in enumerate(perks)]))
+
+
+def care_validate(cr, cfg: dict) -> None:
+    kit.need(isinstance(cr, dict) and set(care_initial(cfg)) <= set(cr), 'Sổ đời sống văn phòng thiếu dữ liệu.')
+    kit.integer(cr['v'], 1, 1)
+    kit.integer(cr['energy'], 0, 100)
+    kit.integer(cr['rest'], 0, 10 ** 7)
+    ids = [m['id'] for m in cfg['mates']]
+    kit.need(isinstance(cr['mates'], dict) and set(cr['mates']) == set(ids), 'Sổ đồng nghiệp sai.')
+    for st in cr['mates'].values():
+        kit.need(isinstance(st, dict) and set(st) == {'bond', 'owes', 'helped'}, 'Sổ đồng nghiệp sai.')
+        kit.integer(st['bond'], 0, BOND_MAX)
+        kit.integer(st['helped'], 0, 10 ** 6)
+        kit.integer(st['owes'], 0, care_owe_cap(st))
+    a = cr['ask']
+    if a is not None:
+        kit.need(isinstance(a, dict) and set(a) == {'day', 'mate', 'i', 'state'} and a['mate'] in ids
+                 and a['state'] in ('open', 'done', 'no'), 'Lời nhờ của đồng nghiệp sai.')
+        kit.integer(a['day'], 1, 10 ** 7)
+        kit.integer(a['i'], 0, len(care_mate(cfg, a['mate'])['asks']) - 1)
+    kit.integer(cr['reliable'], 0, 10 ** 6)
+    kit.integer(cr['streak'], 0, cr['reliable'])
+    kit.integer(cr['rank'], 0, 3)
+    kit.need(cr['reliable'] >= RANK_NEEDS[cr['rank']][0], 'Lộ trình thăng tiến sai.')
+    kit.need(isinstance(cr['days'], list) and len(cr['days']) <= TRACK_DAYS, 'Sổ ngày làm việc sai.')
+    for x in cr['days']:
+        kit.need(isinstance(x, dict) and set(x) == {'day', 'ok', 'why'} and type(x['ok']) is bool, 'Sổ ngày làm việc sai.')
+        kit.integer(x['day'], 1, 10 ** 7)
+        kit.text(x['why'], 120)
+
+
+def care_validate_task(t: dict, cfg: dict) -> None:
+    if t.get('cover') is not None:
+        kit.need(t['cover'] in [m['id'] for m in cfg['mates']] and type(t.get('due')) is int, 'Lần nhờ đỡ hạn sai.')
+
+
+# ---------------------------------------------------------------- corp care: colleagues, mentor, month-end close plan
+CARE = dict(
+    id=ID, prefix=PREFIX, boss='Chị Hạnh',
+    ranks=('Thử việc', 'Kế toán viên chính thức', 'Giữ tủ chứng từ ngân hàng', 'Được đề cử kế toán tổng hợp'),
+    lines=('Ba ngày chắc tay rồi. Từ mai em là người của phòng mình.',
+           'Chị giao em giữ ngăn chứng từ ngân hàng. Số nào cũng phải có chứng từ nhé.',
+           'Chị đã đề xuất em lên kế toán tổng hợp. Giờ chờ anh Tùng ký thôi.'),
+    mates=[
+        dict(id='na', name='Na', role='Thực tập sinh kế toán', npc=7, emoji='🧑‍🎓',
+             asks=[('Soát giúp em phiếu chi nháp này với, em cộng ba lần ra ba số 😭', 20),
+                   ('Định khoản hàng mua đang đi đường là sao ạ? Chỉ em năm phút thôi!', 15),
+                   ('Mai em trình bày với chị Hạnh, nghe em tập thử một lượt được không?', 25)],
+             thanks='Na cười tít mắt: “Em nhớ đó nha!”', no='Na gật đầu: “Không sao, em hỏi Nguyên vậy.”',
+             cover='Na chạy trình ký và photo giúp —'),
+        dict(id='lua', name='Cô Lụa', role='Thủ quỹ', npc=2, emoji='💵',
+             asks=[('Két lệch 20 xu, con đếm lại cùng cô cho chắc nhé?', 20),
+                   ('Phiếu thu sáng nay nhòe mực, con ghi lại sổ quỹ giúp cô?', 15)],
+             thanks='Cô Lụa dúi cho bạn gói ô mai: “Cô ghi nhớ.”', no='Cô Lụa xua tay: “Ừ, con bận thì thôi, cô tự đếm.”',
+             cover='Cô Lụa sang nói đỡ với chị Hạnh —'),
+        dict(id='bao', name='Bảo', role='Nhân viên kinh doanh', npc=3, emoji='🧑‍💼',
+             asks=[('Khách đòi hóa đơn gấp mà em không biết ghi tên hàng sao cho đúng. Cứu em!', 20),
+                   ('Xấp chứng từ công tác phí của em lộn xộn quá, xếp giúp em theo ngày với?', 25)],
+             thanks='Bảo chắp tay: “Lần sau có gì em chạy giúp liền.”', no='Bảo cười: “Ok, để em tự mò, có gì hỏi sau.”',
+             cover='Bảo chạy xe qua ngân hàng lấy sổ phụ giúp —'),
+    ])
+CLOSE_PLAN = [('docs', '🧾', 'Chốt chứng từ & hóa đơn', 1, 'Khay chứng từ, hóa đơn hoặc định khoản'),
+              ('cash', '💵', 'Kiểm quỹ & kho', 2, 'Kiểm quỹ tiền mặt hoặc kiểm kê kho'),
+              ('bank', '🏦', 'Đối chiếu ngân hàng', 3, 'Hồ sơ đối chiếu ngân hàng'),
+              ('fixed', '🪑', 'Khấu hao TSCĐ', 3, 'Hồ sơ khấu hao tài sản cố định'),
+              ('close', '🔒', 'Khóa sổ & báo cáo', 4, 'Cân đối thử hoặc khóa sổ cuối tháng')]
+CLOSE_IDS = [x[0] for x in CLOSE_PLAN]
+CLOSE_SHORT = dict(docs='Chốt chứng từ', cash='Quỹ & kho', bank='Ngân hàng', fixed='Khấu hao', close='Khóa sổ')
+CLOSE_DUE = {x[0]: x[3] for x in CLOSE_PLAN}
+CLOSE_BONUS, CLOSE_MISS = 12, 2
+
+
+def _month(day: int) -> int:
+    return (max(1, day) - 1) // 5
+
+
+def _close_plan(cr: dict, day: int) -> dict:
+    """This month's close plan (a new month starts empty)."""
+    cp = cr.get('close')
+    if not isinstance(cp, dict) or cp.get('month') != _month(day):
+        cp = cr['close'] = dict(month=_month(day), done={}, missed=[])
+    return cp
+
+
+def _care(c: dict, d: dict) -> dict:
+    cr = care_ensure(d, CARE)
+    if 'close' not in cr:                      # saves made before the close plan: what is done this month counts, on time
+        start = c['day'] - (c['day'] - 1) % 5
+        cr['close'] = dict(month=_month(c['day']), done={m: start for m in d.get('milestones', []) if m in CLOSE_IDS}, missed=[])
+    return cr
+
+
+def _close_tick(c: dict, cr: dict, t: dict, ms: str) -> str:
+    cp = _close_plan(cr, c['day'])
+    if ms not in CLOSE_IDS or ms in cp['done'] or _month(t['day']) != cp['month']:
+        return ''
+    cp['done'][ms] = c['day']
+    name = next(x[2] for x in CLOSE_PLAN if x[0] == ms)
+    late = (c['day'] - 1) % 5 > CLOSE_DUE[ms]
+    return f'📅 Kế hoạch khóa sổ: ✓ {name}' + (' (trễ mốc).' if late else ' — kịp mốc.')
+
+
+def _close_grade(s: dict, c: dict, cr: dict, o: dict) -> dict | None:
+    day = c['day']
+    cp = _close_plan(cr, day)
+    phase = (day - 1) % 5
+    missed = []
+    for i, e, name, due, _ in CLOSE_PLAN:
+        if due == phase and i not in cp['done'] and i not in cp['missed']:
+            cp['missed'].append(i)
+            office.trust(o, -CLOSE_MISS)
+            office.note(o, day, f'Trễ mốc khóa sổ: {name}. Chị Hạnh nhắc làm cho xong.', 'late')
+            missed.append(name)
+    if phase != 4:
+        return dict(missed=missed) if missed else None
+    on_time = [i for i in CLOSE_IDS if i in cp['done'] and (cp['done'][i] - 1) % 5 <= CLOSE_DUE[i]]
+    bonus = 0
+    if len(on_time) == len(CLOSE_IDS):
+        bonus = CLOSE_BONUS
+        kit.money(s, c, bonus, 'Thưởng khóa sổ đúng hạn', None, 'office_bonus')
+        office.trust(o, 3)
+    left = [x[2] for x in CLOSE_PLAN if x[0] not in cp['done']]
+    return dict(missed=missed, on_time=len(on_time), total=len(CLOSE_IDS), bonus=bonus, left=left, month_end=True)
+
+
+def _reliable(d: dict, o: dict) -> tuple[bool, str]:
+    if not d['day_done']:
+        return False, 'Chưa nộp hồ sơ nào'
+    if o['day_late']:
+        return False, f'{o["day_late"]} hồ sơ nộp trễ hạn'
+    if any(x['slip'] for x in d['day_stamps']):
+        return False, 'Có chứng từ bị duyệt nhầm'
+    return True, f'{d["day_done"]} hồ sơ kịp hạn, không duyệt nhầm'
+
+
+def _calendar(c: dict, cr: dict) -> list:
+    day = c['day']
+    cp = _close_plan(copy.deepcopy(cr), day)
+    phase = (day - 1) % 5
+    cells = []
+    for i in range(5):
+        dd = day + i
+        ph, same = (dd - 1) % 5, _month(dd) == cp['month']
+        m, _, dom = _period(dd)
+        items = []
+        if i == 0:
+            items += [dict(emoji=e, text=CLOSE_SHORT[k], state='late') for k, e, name, due, _ in CLOSE_PLAN if due < phase and k not in cp['done']]
+        for k, e, name, due, _ in CLOSE_PLAN:
+            if due == ph:
+                items.append(dict(emoji=e, text=CLOSE_SHORT[k], state='done' if same and k in cp['done'] else 'due' if i == 0 else 'todo'))
+        mod = _mod(dd)
+        cells.append(dict(day=dd, date=_d(dom, m), rel=care_rel(i), mod=None if mod['id'] == 'normal' else dict(emoji=mod['emoji'], name=mod['name']),
+                          items=items))
+    return cells
+
+
+def _plan_view(c: dict, cr: dict) -> dict:
+    day = c['day']
+    cp = _close_plan(cr, day)
+    phase = (day - 1) % 5
+    m, _, _ = _period(day)
+    start = day - phase
+    items = []
+    for k, e, name, due, how in CLOSE_PLAN:
+        done = cp['done'].get(k)
+        state = ('done' if (done - 1) % 5 <= due else 'late_done') if done else 'late' if due < phase else 'due' if due == phase else 'todo'
+        dm, _, ddom = _period(start + due)
+        items.append(dict(id=k, emoji=e, name=name, how=how, date=_d(ddom, dm), rel=care_rel(due - phase) if due >= phase else 'Đã qua',
+                          state=state))
+    return dict(kind='close', title=f'Kế hoạch khóa sổ tháng {m}', items=items, bonus=CLOSE_BONUS,
+                done=sum(1 for x in items if x['state'] in ('done', 'late_done')), total=len(items))
+
+
+def _validate_close(cr: dict) -> None:
+    cp = cr.get('close')
+    kit.need(isinstance(cp, dict) and set(cp) == {'month', 'done', 'missed'}, 'Kế hoạch khóa sổ sai.')
+    kit.integer(cp['month'], 0, 10 ** 6)
+    kit.need(isinstance(cp['done'], dict) and set(cp['done']) <= set(CLOSE_IDS), 'Kế hoạch khóa sổ sai.')
+    for v in cp['done'].values():
+        kit.integer(v, 1, 10 ** 7)
+        kit.need(_month(v) == cp['month'], 'Kế hoạch khóa sổ sai.')
+    kit.need(isinstance(cp['missed'], list) and len(set(cp['missed'])) == len(cp['missed']) and set(cp['missed']) <= set(CLOSE_IDS),
+             'Kế hoạch khóa sổ sai.')
 
 
 # ---------------------------------------------------------------- situations
@@ -2157,7 +2624,7 @@ SPEC = dict(
     tip=0,
     physical=('ca_step', 'ca_submit', 'ca_stamp'),
     free_actions=(),
-    no_tick=('ca_open', 'ca_hint', 'ca_circle', 'ca_overtime'),
+    no_tick=('ca_open', 'ca_hint', 'ca_circle', 'ca_overtime', 'ca_help', 'ca_cover', 'ca_break'),
     activity=('🧾', 'Bàn kế toán Mây Tre', [('Tiền gửi ngân hàng', 'Tài sản'), ('Phải trả người bán', 'Nguồn vốn'),
                                             ('Hàng hóa trong kho', 'Tài sản'), ('Vốn góp chủ sở hữu', 'Nguồn vốn')],
               ['Nhận & kiểm chứng từ', 'Định khoản Nợ/Có', 'Đối chiếu ngân hàng', 'Khóa sổ cuối tháng']),

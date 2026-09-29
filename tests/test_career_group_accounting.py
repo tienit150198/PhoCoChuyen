@@ -879,5 +879,242 @@ class ConsequenceTests(unittest.TestCase):
         validate_state(json.loads(json.dumps(j.state)))
 
 
+
+# ---------------------------------------------------------------- office care: reporting packs, audit questions, colleagues
+def solve_task(j, tid):
+    j.act('ask', task=tid)
+    t = j.get(tid)
+    if t['variant'] == 'match':
+        if t.get('wait') and j.c['ext']['data']['office']['clock'] < t['wait']:
+            j.act('ga_chase', task=tid)
+        for action, p in moves(j.get(tid)):
+            j.act(action, task=tid, **p)
+        return j.act('ga_submit', task=tid, confirm=True)
+    for d in t['docs']:
+        j.act('ga_open', task=tid, doc=d['id'])
+    for st in j.get(tid)['proc']:
+        j.act('ga_step', task=tid, step=st['id'], answer=answer(st))
+    return j.act('ga_submit', task=tid, note='specific', confirm=True)
+
+
+class OfficeCareTests(unittest.TestCase):
+    def setUp(self):
+        self.j = Journey(CAR)
+
+    @property
+    def care(self):
+        return self.j.c['ext']['data']['care']
+
+    @property
+    def o(self):
+        return self.j.c['ext']['data']['office']
+
+    def st(self, sub):
+        return self.care['packs']['st'][sub]
+
+    def view(self):
+        return public_state(self.j.state)['careers'][CAR]['data']['care']
+
+    def roll(self, n=1):
+        for _ in range(n):
+            self.j.act('end_day', carry_event=True)
+            self.j.act('start_day')
+
+    def test_pack_seed_is_deterministic_and_fair(self):
+        for qi in range(12):
+            arrive, issue = GA._pack_seed(qi)
+            self.assertEqual((arrive, issue), GA._pack_seed(qi))
+            self.assertEqual(set(arrive), set(GA.SUBS))
+            late = [s for s, a in arrive.items() if a > GA.PACK_DUE]
+            self.assertEqual(len(late), 1 if qi < 2 else 2, qi)
+            self.assertTrue(all(a <= GA.PACK_DUE + 2 for a in arrive.values()))
+            self.assertIn(issue, GA.SUBS)
+
+    def test_view_has_packs_mates_and_calendar(self):
+        v = self.view()
+        self.assertEqual([m['id'] for m in v['mates']], ['ngoc', 'phong', 'linh', 'kien'])
+        self.assertEqual(v['plan']['kind'], 'packs')
+        self.assertEqual([x['sub'] for x in v['plan']['items']], GA.SUBS)
+        arrive, _ = GA._pack_seed(0)
+        for x in v['plan']['items']:
+            self.assertEqual(x['state'], 'in' if arrive[x['sub']] == 0 else 'wait')
+            self.assertFalse(x['can_nudge'])                                             # not due yet
+        self.assertTrue(any(i['text'].startswith('Hạn gói') for i in v['calendar'][1]['items']))
+
+    def test_review_catches_the_mistake_and_it_comes_back(self):
+        j = self.j
+        arrive, issue = GA._pack_seed(0)
+        clean = next(s for s in GA.SUBS if s != issue and arrive[s] == 0) if any(arrive[s] == 0 and s != issue for s in GA.SUBS) else None
+        if clean:
+            clock = self.o['clock']
+            r = j.act('ga_review', sub=clean)
+            self.assertIn('sạch', r['message'])
+            self.assertEqual(self.st(clean)['s'], 'ok')
+            self.assertEqual(self.o['clock'], clock + GA.REVIEW_MIN)
+            with self.assertRaises(GameError):
+                j.act('ga_review', sub=clean)
+        while self.st(issue)['s'] != 'in':
+            self.roll()
+        trust = self.o['trust']
+        r = j.act('ga_review', sub=issue)
+        self.assertIn(GA.PACK_ISSUES[issue], r['message'])
+        self.assertEqual(self.st(issue)['s'], 'fixing')
+        self.assertEqual(self.o['trust'], trust + 1)
+        self.roll()
+        self.assertEqual(self.st(issue)['s'], 'in')
+        j.act('ga_review', sub=issue)
+        self.assertEqual(self.st(issue)['s'], 'ok')
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_chasing_a_late_pack(self):
+        j = self.j
+        arrive, _ = GA._pack_seed(0)
+        late = next(s for s, a in arrive.items() if a > GA.PACK_DUE)
+        with self.assertRaises(GameError) as cm:
+            j.act('ga_nudge', sub=late)                                                   # day 1: not due yet
+        self.assertIn('Chưa tới hạn', str(cm.exception))
+        self.roll()                                                                       # day 2: due today
+        self.assertEqual(self.st(late)['s'], 'wait')
+        self.assertTrue(next(x for x in self.view()['plan']['items'] if x['sub'] == late)['can_nudge'])
+        clock = self.o['clock']
+        r = j.act('ga_nudge', sub=late)
+        self.assertIn('sáng mai', r['message'])
+        self.assertEqual(self.o['clock'], clock + GA.NUDGE_MIN)
+        with self.assertRaises(GameError):
+            j.act('ga_nudge', sub=late)                                                   # once a day
+        self.roll()
+        self.assertEqual(self.st(late)['s'], 'in')
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_a_friend_sends_at_once_and_a_close_friend_is_never_late(self):
+        j = self.j
+        arrive, _ = GA._pack_seed(0)
+        late = next(s for s, a in arrive.items() if a > GA.PACK_DUE)
+        mate = GA.SUB_MATE[late]
+        self.roll()
+        self.care['mates'][mate]['bond'] = 2
+        r = j.act('ga_nudge', sub=late)
+        self.assertIn('trong buổi chiều', r['message'])
+        self.assertEqual(self.st(late)['s'], 'in')
+        # next quarter: with bond 3 the pack is on time
+        self.j = Journey(CAR)
+        for m in self.care['mates'].values():
+            m.update(bond=3)
+        for _ in range(5):
+            self.roll()
+        due = self.care['packs']['q'] * 5 + 1 + GA.PACK_DUE
+        self.assertTrue(all(st['at'] <= due for st in self.care['packs']['st'].values()))
+
+    def test_audit_questions_and_answers(self):
+        j = self.j
+        self.roll(2)                                                                      # day 3: phase 2, chị Thảo starts asking
+        qs = [q for q in self.care['queries'] if q['s'] == 'open']
+        self.assertGreaterEqual(len(qs), 1)
+        self.assertEqual(qs[0]['due'], 3 + GA.QUERY_DAYS)
+        q = qs[0]
+        view = next(x for x in self.view()['plan']['queries'] if x['id'] == q['id'])
+        ready = self.st(q['sub'])['s'] == 'ok'
+        self.assertEqual(view['minutes'], GA.QUERY_READY if ready else GA.QUERY_DIG)
+        clock, trust = self.o['clock'], self.o['trust']
+        j.act('ga_answer', query=q['id'])
+        self.assertEqual(self.o['clock'], clock + view['minutes'])
+        self.assertEqual(self.o['trust'], trust + 1)
+        with self.assertRaises(GameError):
+            j.act('ga_answer', query=q['id'])
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_a_reviewed_pack_makes_the_answer_quick(self):
+        j = self.j
+        self.roll(2)
+        q = next(q for q in self.care['queries'] if q['s'] == 'open')
+        st = self.st(q['sub'])
+        st.update(s='in', issue=False, at=min(st['at'], j.c['day']))
+        j.act('ga_review', sub=q['sub'])
+        clock = self.o['clock']
+        j.act('ga_answer', query=q['id'])
+        self.assertEqual(self.o['clock'], clock + GA.QUERY_READY)
+
+    def test_an_unanswered_question_becomes_a_management_letter(self):
+        j = self.j
+        self.roll(2)
+        q = next(q for q in self.care['queries'] if q['s'] == 'open')
+        self.roll(q['due'] - j.c['day'])
+        self.assertEqual(j.c['day'], q['due'])
+        r = j.act('end_day', carry_event=True)                                           # the due day closes unanswered
+        self.assertGreaterEqual(r['summary']['career']['queries_late'], 1)
+        self.assertEqual(next(x for x in self.care['queries'] if x['id'] == q['id'])['s'], 'late')
+        self.assertTrue(any('Thư quản lý' in n['text'] for n in self.o['notes']))
+
+    def test_quarter_close_rewards_reviewed_packs(self):
+        j = self.j
+        self.roll(3)                                                                      # day 4
+        for st in self.care['packs']['st'].values():
+            st.update(s='ok', issue=False)
+        j.act('end_day', carry_event=True)
+        j.act('start_day')                                                                # day 5: the quarter close
+        money = j.c['money']
+        r = j.act('end_day', carry_event=True)
+        packs = r['summary']['career']['packs']
+        self.assertEqual((packs['ok'], packs['bonus']), (4, GA.PACK_BONUS))
+        self.assertGreaterEqual(j.c['money'], money + GA.PACK_BONUS)
+        j.act('start_day')
+        self.assertEqual(self.care['packs']['q'], 1)
+
+    def test_a_late_pack_never_chased_costs_trust(self):
+        j = self.j
+        arrive, _ = GA._pack_seed(0)
+        late = next(s for s, a in arrive.items() if a > GA.PACK_DUE)
+        self.roll(4)                                                                      # day 5, without chasing
+        self.st(late).update(s='wait', at=6, nudged=0)
+        r = j.act('end_day', carry_event=True)
+        self.assertIn(ENT_SHORT[late], r['summary']['career']['packs']['silent'])
+
+    def test_old_save_mid_quarter_counts_packs_as_handled(self):
+        j = self.j = Journey(CAR, slot=GA._match_slot(3), day=3)
+        j.c['ext']['data'].pop('care')
+        validate_state(j.state)
+        self.assertTrue(all(st['s'] == 'ok' for st in self.care['packs']['st'].values()))
+        self.assertEqual(self.care['queries'], [])
+
+    def test_tampered_packs_rejected(self):
+        for f in (lambda cr: cr['packs']['st']['food'].update(s='lost'), lambda cr: cr['packs']['st'].pop('nami'),
+                  lambda cr: cr['packs']['st']['food'].update(at=99), lambda cr: cr['packs']['st']['food'].update(issue='yes'),
+                  lambda cr: cr['queries'].append(dict(id='q1a', day=1, due=9, sub='food', topic=0, s='open', ready=False)),
+                  lambda cr: cr['queries'].append(dict(id='q1a', day=1, due=3, sub='mars', topic=0, s='open', ready=False))):
+            j = Journey(CAR)
+            f(j.c['ext']['data']['care'])
+            with self.assertRaises(GameError):
+                validate_state(json.loads(json.dumps(j.state)))
+
+    def test_a_quarter_of_days(self):
+        j = self.j
+        for day in range(1, 7):
+            if day > 1:
+                j.act('start_day')
+            v = self.view()
+            for m in v['mates']:
+                if m['ask']:
+                    j.act('ga_help', mate=m['id'], answer='yes')
+            for x in v['plan']['items']:
+                if x['can_nudge']:
+                    j.act('ga_nudge', sub=x['sub'])
+            for x in self.view()['plan']['items']:
+                if x['can_review']:
+                    j.act('ga_review', sub=x['sub'])
+            for q in self.view()['plan']['queries']:
+                j.act('ga_answer', query=q['id'])
+            for t in [t for t in j.c['tasks'] if t['status'] != 'completed']:
+                solve_task(j, t['id'])
+            validate_state(json.loads(json.dumps(j.state)))
+            r = j.act('end_day', carry_event=True)
+            self.assertNotIn('queries_late', r['summary']['career'])
+            if day == 5:
+                self.assertEqual(r['summary']['career']['packs']['silent'], [])
+        self.assertGreaterEqual(self.care['reliable'], 3)
+
+
+ENT_SHORT = {e['id']: e['short'] for e in GA.ENTITIES}
+
+
 if __name__ == '__main__':
     unittest.main()

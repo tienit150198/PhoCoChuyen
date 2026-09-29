@@ -21,6 +21,8 @@ people, countries, currencies and numbers are fictional; money is "xu".
 from __future__ import annotations
 import copy
 from . import kit, office
+from .corp_accounting import (care_can_overtime, care_close, care_ensure, care_handle, care_public, care_rel, care_slow, care_start,
+                              care_validate, care_validate_task)
 from .. import procedures
 
 ID = 'group_accounting'
@@ -1136,6 +1138,7 @@ def _data(c: dict) -> dict:
         if k not in d:
             d[k] = copy.deepcopy(v)
     office.ensure(d)
+    _care(c, d)
     return d
 
 
@@ -1236,8 +1239,22 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     d = _data(c)
     o = d['office']
     office.sync(o, c['day'])
+    before = o['clock']
+    res = care_handle(s, c, d, o, CARE, name, p)
+    if res is None:
+        res = _care_cmd(s, c, d, o, name, p) if name in ('ga_nudge', 'ga_review', 'ga_answer') else _handle(s, c, name, p)
+    slow = care_slow(d['care'], o, before)
+    if slow:
+        res['message'] = ' '.join(x for x in (res.get('message', ''), slow) if x)
+    return res
+
+
+def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
+    d = _data(c)
+    o = d['office']
     mod = _mod(c['day'])
     if name == 'ga_overtime':
+        care_can_overtime(d['care'], CARE)
         kit.confirm(p, 'Xác nhận ở lại tăng ca tới 20:00.')
         return dict(message=office.overtime(s, c, o, 18 if mod['id'] == 'crunch' else 12, mod['id'] == 'crunch'))
     t = kit.task(c, p)
@@ -1436,6 +1453,7 @@ def _validate_match(t: dict) -> None:
 
 def validate_task(t: dict, original: dict) -> None:
     office.validate_task(t)
+    care_validate_task(t, CARE)
     if t.get('variant') == 'match':
         _validate_match(t)
         return
@@ -1474,6 +1492,8 @@ def validate_data(c: dict) -> None:
     for k in ('posted', 'quarters', 'done', 'day_posted', 'day_done', 'boards', 'matched', 'tagged', 'slips'):
         kit.integer(d.get(k), 0, 10**9)
     office.validate(d['office'])
+    care_validate(d['care'], CARE)
+    _validate_packs(d['care'])
     kit.need(isinstance(d['day_work'], list) and len(d['day_work']) <= 12, 'Sổ việc trong ngày sai.')
     for w in d['day_work']:
         kit.need(isinstance(w, dict) and set(w) == {'task', 'board', 'mistakes', 'late'} and type(w['board']) is bool
@@ -1496,6 +1516,10 @@ def public_data(c: dict) -> dict:
     d['office'] = office.public(o, c['day'])
     d['milestone_names'] = [n for i, n in MILESTONES if i in d['milestones']]
     d.pop('day_work', None)
+    cr = _care(c, d)
+    view = care_public(cr, CARE, c, o)
+    view.update(calendar=_calendar(c, cr), plan=_plan_view(c, cr))
+    d['care'] = view
     return d
 
 
@@ -1530,6 +1554,9 @@ def on_start(s: dict, c: dict) -> None:
         if t.get('career') == ID and t.get('wait') is not None and t['day'] < c['day']:
             t['wait'] = None                                   # yesterday's late package has arrived overnight
     d['day_work'] = []
+    care_start(d['care'], CARE, c['day'])
+    _packs(d['care'], c['day'])
+    _ask_queries(c, d['care'])
     if mod['id'] != 'normal':
         kit.log(s, c, 'surprise', f'{mod["emoji"]} Hôm nay: {mod["name"]}. {mod["text"]}', kit.npc_id(ID, 0))
 
@@ -1565,7 +1592,10 @@ def on_close(s: dict, c: dict) -> dict:
         else:
             office.trust(o, -2)
             out['board'] = dict(ok=False, amount=0, text='HĐQT hỏi dồn vì số liệu hôm nay còn dở hoặc sửa nhiều lần; chị Mai Anh phải xin khất.')
+    ok, why = _reliable(d, o)
+    out.update(_care_close(s, c, d['care'], o))
     out['office'] = office.close_day(c, ID, o)
+    out['care'] = care_close(s, c, d['care'], CARE, o, ok, why)
     d['day_posted'] = 0
     d['day_done'] = 0
     d['day_work'] = []
@@ -1648,6 +1678,279 @@ def content() -> dict:
                 causes=[dict(id=i, emoji=e, label=label) for i, e, label in CAUSES_PAIR],
                 rules=['Quy tắc hợp nhất, tỷ giá và ngưỡng trọng yếu theo quy chế của tập đoàn.',
                        'SH Nami ghi sổ bằng đồng NM của nước Nami. Cứ 5 ngày làm việc là một kỳ khóa sổ quý.'])
+
+
+# ---------------------------------------------------------------- office care: colleagues, mentor, reporting packs, audit questions
+# The shared helpers (energy, colleagues, reliable days, mentor track) live in corp_accounting.py.
+CARE = dict(
+    id=ID, prefix=PREFIX, boss='Chị Mai Anh',
+    ranks=('Thử việc', 'Chuyên viên hợp nhất chính thức', 'Phụ trách đối chiếu nội bộ', 'Được đề cử trưởng nhóm hợp nhất'),
+    lines=('Ba ngày số liệu sạch. Từ mai em là người của nhóm hợp nhất.',
+           'Em phụ trách đối chiếu nội bộ cho cả bốn công ty con nhé. Họ nghe em rồi đấy.',
+           'Chị đã đề cử em làm trưởng nhóm hợp nhất. Ông Đại hỏi tên em rồi.'),
+    mates=[
+        dict(id='ngoc', name='Chị Ngọc', role='Kế toán trưởng SH Food', npc=3, emoji='🍜', sub='food',
+             asks=[('Chị cần bảng tỷ giá tháng trước để đối chiếu hàng nhập, gửi giúp chị nhé?', 15),
+                   ('Mẫu gói báo cáo mới có thêm phụ lục nội bộ, em xem giúp chị bản nháp?', 20)],
+             thanks='Chị Ngọc: “Cảm ơn em, gói của SH Food chị gửi sớm cho.”', no='Chị Ngọc: “Không sao, chị tự dò.”',
+             cover='Chị Ngọc gửi sẵn số liệu SH Food để bạn khỏi chờ —'),
+        dict(id='phong', name='Anh Phong', role='Kế toán trưởng SH Logistics', npc=2, emoji='🚚', sub='logi',
+             asks=[('Mẫu gói báo cáo quý này đổi cột, chỉ anh cột nào điền gì với?', 20),
+                   ('Anh cần số dư công nợ với SH Food cuối quý trước, tra giúp anh?', 15)],
+             thanks='Anh Phong gãi đầu: “Được, quý này anh nộp đúng hạn cho em.”', no='Anh Phong: “Ừ, để anh gọi chị Ngọc.”',
+             cover='Anh Phong gọi xác nhận số dư thay bạn —'),
+        dict(id='linh', name='Linh', role='Kế toán SH Pack', npc=6, emoji='📦', sub='pack',
+             asks=[('Phụ lục nội bộ của em lệch 30 xu, xem giúp em một chút được không?', 25),
+                   ('Em chưa hiểu hàng đi đường ghi thế nào, chỉ em với?', 15)],
+             thanks='Linh thở phào: “Em hiểu rồi! Có gì em làm giúp lại liền.”', no='Linh: “Dạ, em thử tự dò trước.”',
+             cover='Linh ngồi gõ giúp phần phụ lục —'),
+        dict(id='kien', name='Anh Kiên', role='Giám đốc tài chính SH Nami', npc=4, emoji='🌏', sub='nami',
+             asks=[('Bên em lệch múi giờ, dự giúp em 20 phút họp với ngân hàng Nami?', 20),
+                   ('Tỷ giá bình quân quý này tính thế nào cho đúng quy chế tập đoàn?', 15)],
+             thanks='Anh Kiên: “Thank you! Tối nay em gửi số sớm cho.”', no='Anh Kiên: “No problem, em hỏi chị Mai Anh.”',
+             cover='Anh Kiên thức khuya gửi sẵn bảng chuyển đổi —'),
+    ])
+SUB_MATE = {m['sub']: m['id'] for m in CARE['mates']}
+PACK_DUE = 1                     # phase: day 2 of the quarter close
+PACK_DOM = (3, 5, 8, 10, 12)     # the five working days after the quarter end, as dates
+PACK_STATES = ('wait', 'in', 'fixing', 'ok')
+NUDGE_MIN, REVIEW_MIN = 10, 15
+PACK_BONUS = 10
+PACK_ISSUES = dict(food='Phụ lục công nợ nội bộ với SH Logistics lệch 40 xu so với sổ chi tiết.',
+                   logi='Doanh thu cước ghi cả chuyến chạy sang quý sau.',
+                   pack='Thiếu biên bản kiểm kê kho cuối quý.',
+                   nami='Doanh thu quy đổi bằng tỷ giá cuối kỳ thay vì tỷ giá bình quân.')
+QUERY_TOPICS = ['Giải trình biến động doanh thu quý của {sub}', 'Xác nhận số dư công nợ nội bộ giữa {sub} và công ty mẹ',
+                'Bằng chứng kiểm kê hàng tồn kho cuối quý của {sub}', 'Tỷ giá dùng để chuyển đổi báo cáo của {sub}']
+QUERY_FROM, QUERY_DAYS, QUERY_READY, QUERY_DIG, QUERY_KEEP = 2, 2, 10, 35, 8
+
+
+def _quarter(day: int) -> int:
+    return (max(1, day) - 1) // 5
+
+
+def _qdate(day: int) -> str:
+    q, ph, _ = _period(day)
+    return f'{PACK_DOM[ph]:02d}/{q * 3 % 12 + 1:02d}'
+
+
+def _pack_seed(qi: int) -> tuple[dict, str]:
+    """Arrival phase of each subsidiary's pack this quarter, and the one pack with a mistake (seeded by the quarter)."""
+    r = kit.rng(ID, 'packs', qi)
+    arrive = {sub: r.choice([0, 0, 1]) for sub in SUBS}
+    late = ['logi'] if r.random() < .5 else [r.choice(SUBS)]
+    if qi >= 2:
+        late.append(r.choice([x for x in SUBS if x not in late]))
+    for sub in late:
+        arrive[sub] = PACK_DUE + r.choice([1, 2])
+    return arrive, r.choice(SUBS)
+
+
+def _packs(cr: dict, day: int) -> dict:
+    """This quarter's reporting packs (a new quarter starts from the seed; a good friend never sends late)."""
+    pk = cr.get('packs')
+    qi = _quarter(day)
+    if not isinstance(pk, dict) or pk.get('q') != qi:
+        arrive, issue = _pack_seed(qi)
+        start = qi * 5 + 1
+        pk = cr['packs'] = dict(q=qi, st={sub: dict(s='wait', at=start + arrive[sub], nudged=0, issue=sub == issue) for sub in SUBS})
+    _packs_arrive(cr, pk, day)
+    return pk
+
+
+def _packs_arrive(cr: dict, pk: dict, day: int) -> None:
+    due = pk['q'] * 5 + 1 + PACK_DUE
+    for sub, st in pk['st'].items():
+        if st['s'] == 'wait' and cr['mates'][SUB_MATE[sub]]['bond'] >= 3:
+            st['at'] = min(st['at'], due)
+        if st['s'] in ('wait', 'fixing') and st['at'] <= day:
+            st['s'] = 'in'
+
+
+def _care(c: dict, d: dict) -> dict:
+    cr = care_ensure(d, CARE)
+    cr.setdefault('queries', [])
+    if 'packs' not in cr:
+        # Saves made before the packs, in the middle of a quarter: this quarter's packs count as handled.
+        pk = _packs(cr, c['day'])
+        if (c['day'] - 1) % 5:
+            for st in pk['st'].values():
+                st.update(s='ok', at=pk['q'] * 5 + 1, issue=False)
+    return cr
+
+
+def _ask_queries(c: dict, cr: dict) -> None:
+    day = c['day']
+    phase = (day - 1) % 5
+    if phase < QUERY_FROM or day < 3:
+        return
+    r = kit.rng(ID, 'audit-q', day)
+    subs = r.sample(SUBS, 2 if _mod(day)['id'] == 'audit_visit' else 1)
+    pk = _packs(cr, day)
+    for i, sub in enumerate(subs):
+        qid = f'q{day}{"ab"[i]}'
+        if any(q['id'] == qid for q in cr['queries']):
+            continue
+        cr['queries'].append(dict(id=qid, day=day, due=day + QUERY_DAYS, sub=sub, topic=r.randrange(len(QUERY_TOPICS)), s='open',
+                                  ready=pk['st'][sub]['s'] == 'ok'))
+    opened = [q for q in cr['queries'] if q['s'] == 'open'][-QUERY_KEEP:]
+    closed = [q for q in cr['queries'] if q['s'] != 'open']
+    room = QUERY_KEEP - len(opened)
+    cr['queries'] = sorted((closed[-room:] if room > 0 else []) + opened, key=lambda q: (q['day'], q['id']))
+
+
+def _query_text(q: dict) -> str:
+    return QUERY_TOPICS[q['topic']].format(sub=ENT[q['sub']]['short'])
+
+
+def _care_cmd(s: dict, c: dict, d: dict, o: dict, name: str, p: dict) -> dict:
+    day = c['day']
+    cr = d['care']
+    if name == 'ga_answer':
+        q = next((x for x in cr['queries'] if x['id'] == p.get('query') and x['s'] == 'open'), None)
+        kit.need(q, 'Không có câu hỏi kiểm toán này đang chờ.')
+        pk = _packs(cr, day)
+        ready = q['ready'] or pk['st'][q['sub']]['s'] == 'ok'
+        minutes = QUERY_READY if ready else QUERY_DIG
+        lunch = office.spend(o, minutes)
+        q['s'] = 'done'
+        office.trust(o, 1)
+        kit.metric(c, 'ga_queries')
+        head = (f'❓ Đã gửi chị Thảo giấy làm việc: {_query_text(q)} ({minutes} phút — gói đã soát sẵn).' if ready else
+                f'❓ Bạn lục lại gói báo cáo {ENT[q["sub"]]["short"]} để trả lời chị Thảo ({minutes} phút). Soát gói trước thì nhanh hơn nhiều.')
+        return dict(message=' '.join(x for x in (head, 'Chị Thảo: “Đủ rồi, cảm ơn em.”', lunch) if x))
+    sub = kit.one_of(p.get('sub'), SUBS, 'Chọn một công ty con.')
+    pk = _packs(cr, day)
+    st = pk['st'][sub]
+    short = ENT[sub]['short']
+    mate = next(m for m in CARE['mates'] if m['sub'] == sub)
+    due = pk['q'] * 5 + 1 + PACK_DUE
+    if name == 'ga_nudge':
+        kit.need(st['s'] == 'wait', f'Gói báo cáo {short} đã về rồi.')
+        kit.need(day >= due, f'Chưa tới hạn nộp gói ({_qdate(due)}) — {short} vẫn còn thời gian.')
+        kit.need(st['nudged'] != day, f'Hôm nay bạn đã gọi {mate["name"]} rồi.')
+        lunch = office.spend(o, NUDGE_MIN)
+        st['nudged'] = day
+        if cr['mates'][mate['id']]['bond'] >= 2:
+            st['at'] = day
+            _packs_arrive(cr, pk, day)
+            msg = f'📞 {mate["name"]} xin lỗi rối rít, gửi ngay gói báo cáo {short} trong buổi chiều.'
+        else:
+            st['at'] = min(st['at'], day + 1)
+            msg = f'📞 {mate["name"]} hứa sáng mai gửi gói báo cáo {short}.'
+        return dict(message=' '.join(x for x in (msg, lunch) if x))
+    if name == 'ga_review':
+        kit.need(st['s'] == 'in', f'Gói báo cáo {short} chưa về hoặc đã soát rồi.')
+        lunch = office.spend(o, REVIEW_MIN)
+        if st['issue']:
+            st.update(s='fixing', at=day + 1, issue=False)
+            office.trust(o, 1)
+            msg = f'🔎 Bạn bắt được lỗi trong gói {short}: {PACK_ISSUES[sub]} Đã gửi trả, {mate["name"]} hứa sáng mai gửi bản sửa.'
+        else:
+            st['s'] = 'ok'
+            kit.metric(c, 'ga_packs')
+            msg = f'✓ Gói báo cáo {short} sạch: số khớp, đủ phụ lục.'
+        return dict(message=' '.join(x for x in (msg, lunch) if x))
+    raise kit.eng().GameError('Thao tác hợp nhất không hợp lệ.')
+
+
+def _care_close(s: dict, c: dict, cr: dict, o: dict) -> dict:
+    day = c['day']
+    out = {}
+    late = [q for q in cr['queries'] if q['s'] == 'open' and q['due'] <= day]
+    for q in late:
+        q['s'] = 'late'
+        office.trust(o, -3)
+        office.note(o, day, f'Thư quản lý: chậm trả lời kiểm toán — {_query_text(q)}.', 'late')
+    if late:
+        out['queries_late'] = len(late)
+    if (day - 1) % 5 == 4:
+        pk = _packs(cr, day)
+        ok = [sub for sub, st in pk['st'].items() if st['s'] == 'ok']
+        silent = [sub for sub, st in pk['st'].items() if st['s'] == 'wait' and not st['nudged']]
+        office.trust(o, len(ok) - 2 * len(silent))
+        bonus = PACK_BONUS if len(ok) == len(SUBS) else 0
+        if bonus:
+            kit.money(s, c, bonus, 'Thưởng khép quý đủ gói báo cáo đã soát', None, 'office_bonus')
+        out['packs'] = dict(ok=len(ok), total=len(SUBS), bonus=bonus, silent=[ENT[x]['short'] for x in silent])
+    return out
+
+
+def _reliable(d: dict, o: dict) -> tuple[bool, str]:
+    slips = sum(w['mistakes'] for w in d['day_work'])
+    if not d['day_done']:
+        return False, 'Chưa nộp hồ sơ nào'
+    if o['day_late']:
+        return False, f'{o["day_late"]} hồ sơ trễ hạn'
+    if slips > 1:
+        return False, f'Sửa sai {slips} lần'
+    return True, f'{d["day_done"]} hồ sơ kịp hạn, số liệu sạch'
+
+
+def _calendar(c: dict, cr: dict) -> list:
+    day = c['day']
+    tmp = copy.deepcopy(cr)
+    pk = _packs(tmp, day)
+    cells = []
+    for i in range(5):
+        dd = day + i
+        ph, same = (dd - 1) % 5, _quarter(dd) == pk['q']
+        items = []
+        if i == 0:
+            due = pk['q'] * 5 + 1 + PACK_DUE
+            items += [dict(emoji='📦', text=f'{ENT[sub]["short"]} trễ gói', state='late')
+                      for sub, st in pk['st'].items() if st['s'] == 'wait' and day > due]
+        if ph == PACK_DUE:
+            n = sum(1 for st in pk['st'].values() if st['s'] != 'wait') if same else 0
+            items.append(dict(emoji='📦', text=f'Hạn gói · {n}/{len(SUBS)} về',
+                              state='done' if n == len(SUBS) else 'due' if i == 0 else 'todo'))
+        for q in tmp['queries']:
+            if q['due'] == dd and q['s'] in ('open', 'done'):
+                items.append(dict(emoji='❓', text=f'Hỏi · {ENT[q["sub"]]["short"]}', state='done' if q['s'] == 'done' else 'due' if i == 0 else 'todo'))
+        mod = _mod(dd)
+        cells.append(dict(day=dd, date=_qdate(dd), rel=care_rel(i), mod=None if mod['id'] == 'normal' else dict(emoji=mod['emoji'], name=mod['name']),
+                          items=items))
+    return cells
+
+
+def _plan_view(c: dict, cr: dict) -> dict:
+    day = c['day']
+    pk = _packs(cr, day)
+    q, phase, year = _period(day)
+    due = pk['q'] * 5 + 1 + PACK_DUE
+    items = []
+    for m in CARE['mates']:
+        st = pk['st'][m['sub']]
+        state = 'late' if st['s'] == 'wait' and day > due else st['s']
+        items.append(dict(sub=m['sub'], emoji=ENT[m['sub']]['emoji'], short=ENT[m['sub']]['short'], contact=m['name'], state=state,
+                          back=_qdate(st['at']) if st['s'] == 'fixing' else None, promised=st['s'] == 'wait' and st['nudged'] == day,
+                          can_nudge=st['s'] == 'wait' and day >= due and st['nudged'] != day, can_review=st['s'] == 'in'))
+    queries = [dict(id=x['id'], sub=x['sub'], short=ENT[x['sub']]['short'], text=_query_text(x), date=_qdate(x['due']),
+                    rel=care_rel(x['due'] - day), minutes=QUERY_READY if x['ready'] or pk['st'][x['sub']]['s'] == 'ok' else QUERY_DIG)
+               for x in cr['queries'] if x['s'] == 'open']
+    return dict(kind='packs', title=f'Gói báo cáo quý {q}/{year}', due=_qdate(due), due_rel=care_rel(due - day) if due >= day else 'Đã qua',
+                items=items, queries=queries, bonus=PACK_BONUS, nudge=NUDGE_MIN, review=REVIEW_MIN,
+                done=sum(1 for x in items if x['state'] == 'ok'), total=len(items))
+
+
+def _validate_packs(cr: dict) -> None:
+    pk = cr.get('packs')
+    kit.need(isinstance(pk, dict) and set(pk) == {'q', 'st'} and isinstance(pk['st'], dict) and set(pk['st']) == set(SUBS), 'Gói báo cáo sai.')
+    kit.integer(pk['q'], 0, 10 ** 6)
+    for st in pk['st'].values():
+        kit.need(isinstance(st, dict) and set(st) == {'s', 'at', 'nudged', 'issue'} and st['s'] in PACK_STATES and type(st['issue']) is bool,
+                 'Gói báo cáo sai.')
+        kit.integer(st['at'], pk['q'] * 5 + 1, pk['q'] * 5 + 6)
+        kit.integer(st['nudged'], 0, 10 ** 7)
+    qs = cr.get('queries')
+    kit.need(isinstance(qs, list) and len(qs) <= QUERY_KEEP and len({q.get('id') for q in qs if isinstance(q, dict)}) == len(qs), 'Câu hỏi kiểm toán sai.')
+    for q in qs:
+        kit.need(isinstance(q, dict) and set(q) == {'id', 'day', 'due', 'sub', 'topic', 's', 'ready'} and q['sub'] in SUBS
+                 and q['s'] in ('open', 'done', 'late') and type(q['ready']) is bool, 'Câu hỏi kiểm toán sai.')
+        kit.text(q['id'], 20)
+        kit.integer(q['day'], 1, 10 ** 7)
+        kit.integer(q['due'], q['day'], q['day'] + QUERY_DAYS)
+        kit.integer(q['topic'], 0, len(QUERY_TOPICS) - 1)
 
 
 # ---------------------------------------------------------------- situations
@@ -1893,7 +2196,7 @@ SPEC = dict(
     tip=0,
     physical=('ga_step', 'ga_submit', 'ga_pair', 'ga_tag'),
     free_actions=(),
-    no_tick=('ga_open', 'ga_hint', 'ga_overtime', 'ga_chase'),
+    no_tick=('ga_open', 'ga_hint', 'ga_overtime', 'ga_chase', 'ga_help', 'ga_cover', 'ga_break', 'ga_nudge', 'ga_review', 'ga_answer'),
     activity=('🏢', 'Bàn hợp nhất Sông Hồng', [('Doanh thu bán cho công ty con', 'Loại trừ'), ('Doanh thu bán cho khách ngoài', 'Giữ lại'),
                                              ('Phải thu công ty con', 'Loại trừ'), ('Vay ngân hàng', 'Giữ lại')],
               ['Thu gói báo cáo', 'Đối chiếu nội bộ', 'Loại trừ giao dịch nội bộ', 'Trình HĐQT']),

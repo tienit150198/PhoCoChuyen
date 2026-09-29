@@ -16,6 +16,8 @@ from __future__ import annotations
 import copy
 import unicodedata
 from . import kit, office
+from .corp_accounting import (care_can_overtime, care_close, care_ensure, care_handle, care_public, care_rel, care_slow, care_start,
+                              care_validate, care_validate_task)
 from .. import consequences as cq
 from .. import procedures
 
@@ -834,6 +836,7 @@ def _data(c: dict) -> dict:
     for k, v in initial().items():
         d.setdefault(k, copy.deepcopy(v))
     office.ensure(d)
+    _care(c, d)
     return d
 
 
@@ -908,6 +911,7 @@ def _pay_grid(s: dict, c: dict, d: dict, o: dict, t: dict, mod: dict) -> dict:
         office.trust(o, -2)
         office.note(o, c['day'], 'Lỡ giờ chốt lệnh: lương về chậm một ngày, cả xưởng xôn xao.', 'late')
     d['grids'] += 1
+    _filings(d['care'], c['day'])['grids'] += 1
     d['caught'] += caught
     d['missed'] += missed
     d['false_flags'] += extra
@@ -979,8 +983,22 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     d = _data(c)
     o = d['office']
     office.sync(o, c['day'])
+    before = o['clock']
+    res = care_handle(s, c, d, o, CARE, name, p, _can_cover)
+    if res is None:
+        res = _declare(s, c, d, o, p) if name == 'tp_declare' else _handle(s, c, name, p)
+    slow = care_slow(d['care'], o, before)
+    if slow:
+        res['message'] = ' '.join(x for x in (res.get('message', ''), slow) if x)
+    return res
+
+
+def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
+    d = _data(c)
+    o = d['office']
     mod = _mod(c['day'])
     if name == 'tp_overtime':
+        care_can_overtime(d['care'], CARE)
         kit.confirm(p, 'Xác nhận ở lại tăng ca.')
         return dict(message=office.overtime(s, c, o, 18 if mod['id'] == 'crunch' else 12, mod['id'] == 'crunch'))
     if name == 'tp_claim':
@@ -1169,6 +1187,7 @@ def _validate_grid(t: dict) -> None:
 
 def validate_task(t: dict, original: dict) -> None:
     procedures.validate(t, original)
+    care_validate_task(t, CARE)
     kit.need(type(t['filed']) is bool and type(t['late']) is bool, 'Trạng thái hồ sơ sai.')
     kit.need(not t['filed'] or procedures.done(t), 'Hồ sơ nộp khi chưa xong.')
     office.validate_task(t)
@@ -1196,6 +1215,8 @@ def validate_data(c: dict) -> None:
     for k in ('grids', 'caught', 'missed', 'false_flags', 'claims_paid'):
         kit.integer(d[k], 0, 10 ** 9)
     office.validate(d['office'])
+    care_validate(d['care'], CARE)
+    _validate_filings(d['care'])
     kit.need(isinstance(d['claims'], list) and len(d['claims']) <= 20, 'Sổ khiếu nại sai.')
     for cl in d['claims']:
         kit.need(isinstance(cl, dict) and set(cl) == {'id', 'day', 'from_day', 'task', 'name', 'amount', 'why', 'status'}
@@ -1222,6 +1243,10 @@ def public_data(c: dict) -> dict:
     d['office'] = office.public(o, c['day'])
     d['claims'] = [x for x in d['claims'] if x['status'] == 'open' and x['from_day'] <= c['day']]
     d.pop('day_grids', None)
+    cr = _care(c, d)
+    view = care_public(cr, CARE, c, o, _can_cover)
+    view.update(calendar=_calendar(c, cr), plan=_plan_view(c, cr))
+    d['care'] = view
     return d
 
 
@@ -1246,6 +1271,8 @@ def on_start(s: dict, c: dict) -> None:
     office.begin(o, c['day'])
     office.carry(c, ID, o)
     d['day_grids'] = []
+    care_start(d['care'], CARE, c['day'])
+    _filings(d['care'], c['day'])
     office.note(o, c['day'], f'{mod["emoji"]} {mod["name"]}: {mod["text"]}', 'day')
 
 
@@ -1274,7 +1301,12 @@ def on_close(s: dict, c: dict) -> dict:
             office.trust(o, 3)
             kit.review(s, c, kit.npc_id(ID, 5), 5, 'Bảng lương hôm nay sạch: đúng người, đúng công, đúng mức đóng. Hồ sơ gọn gàng.', f'inspect-{c["day"]}')
             out['inspect'] = dict(ok=True, amount=10, text='Cô Lụa soát bảng lương: không chỗ nào sai quy định. Thưởng 10 xu, chị Hồng mừng ra mặt.')
+    ok, why = _reliable(c, d, o)
+    late = _filings_close(s, c, d['care'], o)
+    if late:
+        out['filings'] = late
     out['office'] = office.close_day(c, ID, o)
+    out['care'] = care_close(s, c, d['care'], CARE, o, ok, why)
     d['day_grids'] = []
     return out
 
@@ -1320,6 +1352,211 @@ def content() -> dict:
                 boss=dict(name='Chị Hồng', npc=kit.npc_id(ID, 0)), max_flags=MAX_FLAGS,
                 claim_choices=[dict(id='pay_now', label='Xin lỗi, chi bù ngay hôm nay'), dict(id='next', label='Hẹn cộng vào kỳ sau'),
                                dict(id='deny', label='Bảo là phần mềm tính, không sửa')])
+
+
+# ------------------------------------------------------------------ office care: colleagues, mentor, the filing calendar
+# The shared helpers (energy, colleagues, reliable days, mentor track) live in corp_accounting.py.
+CARE = dict(
+    id=ID, prefix='tp_', boss='Chị Hồng',
+    ranks=('Thử việc', 'Chuyên viên lương chính thức', 'Phụ trách hồ sơ Xưởng Chỉ Vàng', 'Được đề cử trưởng nhóm lương'),
+    lines=('Ba ngày không sai một dòng lương. Chị ký chính thức cho em nhé.',
+           'Từ nay em phụ trách hồ sơ Xưởng Chỉ Vàng. Diệu hỏi gì em trả lời giúp chị.',
+           'Chị đã đề cử em làm trưởng nhóm lương. Em làm chị yên tâm lắm.'),
+    mates=[
+        dict(id='binh', name='Bình', role='Chuyên viên lương mới vào', npc=None, emoji='🐣',
+             asks=[('Bảng chấm công tổ 2 em nhập mãi không khớp, soát cùng em một lượt nhé?', 20),
+                   ('Người phụ thuộc nộp sau mốc thì tính từ kỳ nào ạ? Em hỏi hơi ngố…', 15)],
+             thanks='Bình ghi ngay vào sổ tay: “Hiểu rồi! Cảm ơn nhiều.”', no='Bình gật đầu: “Dạ, em hỏi chị Ngân vậy.”',
+             cover='Bình nhập giúp phần số liệu —'),
+        dict(id='hoa', name='Chị Hoa', role='Tổ trưởng chuyền may · Xưởng Chỉ Vàng', npc=6, emoji='📋',
+             asks=[('Phiếu tăng ca tổ chị viết tay, em xem giúp chị ghi vậy đúng mẫu chưa?', 20),
+                   ('Công nhân mới hỏi phiếu lương, em giải thích giúp chị mấy dòng bảo hiểm nha?', 25)],
+             thanks='Chị Hoa cười: “Cần chữ ký tổ lúc nào cứ gọi chị.”', no='Chị Hoa: “Ừ, để chị hỏi chị Hồng.”',
+             cover='Chị Hoa mang bảng chấm công ký sẵn qua tận nơi —'),
+        dict(id='bay', name='Chú Bảy', role='Chủ quán Cà phê Mộc Miên', npc=3, emoji='☕',
+             asks=[('Hộp hóa đơn tháng này của chú lộn xộn quá, con phân loại giúp chú?', 25),
+                   ('Chú muốn mua máy xay mới: chuyển khoản hay trả tiền mặt thì đúng quy định hả con?', 15)],
+             thanks='Chú Bảy mang sang ly cà phê muối: “Chú mời.”', no='Chú Bảy: “Không sao, mai chú ghé.”',
+             cover='Chú Bảy tự gom đủ hóa đơn mang tới bàn —'),
+    ])
+DOM = (5, 12, 19, 26, 30)                     # the five working days of a pay month, as dates
+FILINGS = [
+    dict(id='pit', emoji='🧾', name='Tờ khai thuế TNCN tháng {prev}', who='Xưởng may Chỉ Vàng', open=0, due=1, minutes=25, needs=None,
+         what='Khai phần thuế thu nhập cá nhân đã khấu trừ của công nhân tháng trước.'),
+    dict(id='ins', emoji='🛡️', name='Hồ sơ BHXH tháng {m}', who='Xưởng may Chỉ Vàng', open=1, due=2, minutes=20, needs='grid',
+         what='Nộp tiền bảo hiểm theo bảng lương đã chuyển trong tháng.'),
+    dict(id='vat', emoji='📑', name='Báo cáo sử dụng hóa đơn tháng {prev}', who='Quán Cà phê Mộc Miên', open=1, due=3, minutes=30, needs=None,
+         what='Kê số hóa đơn quán Chú Bảy đã dùng, đã hủy trong tháng.'),
+]
+FILING_INDEX = {f['id']: f for f in FILINGS}
+FILING_SHORT = dict(pit='Thuế TNCN', ins='BHXH', vat='Báo cáo HĐ')
+FILING_STATES = ('todo', 'filed', 'boss')
+LATE_FEE = 3
+
+
+def _month(day: int) -> int:
+    return (max(1, day) - 1) // 5
+
+
+def _fname(f: dict, day: int) -> str:
+    r = _rules_raw(day)
+    return f['name'].format(prev=r['prev'], m=r['m'])
+
+
+def _fdate(day: int, phase: int) -> str:
+    return f'{DOM[phase]}/{_rules_raw(day)["m"]}'
+
+
+def _filings(cr: dict, day: int) -> dict:
+    """This pay month's filing calendar (a new month starts with every filing to do)."""
+    fl = cr.get('filings')
+    if not isinstance(fl, dict) or fl.get('month') != _month(day):
+        fl = cr['filings'] = dict(month=_month(day), grids=0, st={f['id']: dict(s='todo', day=0, fee=0) for f in FILINGS})
+    return fl
+
+
+def _care(c: dict, d: dict) -> dict:
+    cr = care_ensure(d, CARE)
+    if 'filings' not in cr:
+        # Saves made before the calendar, in the middle of a month: filings already past due count as handled.
+        fl = _filings(cr, c['day'])
+        phase = (c['day'] - 1) % 5
+        for f in FILINGS:
+            if f['due'] < phase:
+                fl['st'][f['id']].update(s='filed', day=c['day'] - phase)
+        fl['grids'] = sum(1 for x in d.get('log', []) if _month(x['day']) == fl['month'] and x['title'].startswith('Soát bảng lương'))
+    return cr
+
+
+def _declare(s: dict, c: dict, d: dict, o: dict, p: dict) -> dict:
+    day = c['day']
+    fl = _filings(d['care'], day)
+    f = FILING_INDEX.get(p.get('filing')) if isinstance(p.get('filing'), str) else None
+    kit.need(f, 'Không có tờ khai này trong lịch nộp.')
+    st = fl['st'][f['id']]
+    kit.need(st['s'] == 'todo', 'Tờ khai này đã nộp rồi.' if st['s'] == 'filed' else 'Chị Hồng đã nộp thay tờ khai này.')
+    phase = (day - 1) % 5
+    name = _fname(f, day)
+    kit.need(phase >= f['open'], f'Chưa tới kỳ khai {name} — mở từ ngày {_fdate(day, f["open"])}.')
+    if f['needs'] == 'grid':
+        kit.need(fl['grids'] >= 1, 'Chưa có bảng lương nào được chuyển trong tháng — soát và chuyển lương trước, rồi mới có số để nộp BHXH.')
+    kit.confirm(p, f'Xác nhận ký số và nộp {name}.')
+    lunch = office.spend(o, f['minutes'])
+    st.update(s='filed', day=day)
+    kit.metric(c, 'tp_filings')
+    late = phase - f['due']
+    if late <= 0:
+        office.trust(o, 1)
+        kit.metric(c, 'tp_filings_on_time')
+        msg = f'📨 Đã nộp {name} cho {f["who"]} — đúng hạn {_fdate(day, f["due"])}. Chị Hồng gật đầu.'
+    else:
+        msg = f'📨 Đã nộp {name}, muộn {late} ngày. Tiền chậm nộp Minh Bạch chịu thay khách: {st["fee"]} xu — từ giờ không tính thêm.'
+    return dict(message=' '.join(x for x in (msg, lunch) if x), celebrate=late <= 0)
+
+
+def _filings_close(s: dict, c: dict, cr: dict, o: dict) -> list:
+    """End of day: every filing past its due day costs a late fee; on the last day chị Hồng files what is left."""
+    day = c['day']
+    fl = _filings(cr, day)
+    phase = (day - 1) % 5
+    out = []
+    for f in FILINGS:
+        st = fl['st'][f['id']]
+        if st['s'] != 'todo' or phase < f['due']:
+            continue
+        name = _fname(f, day)
+        paid = office.fine(s, c, o, LATE_FEE, f'Tiền chậm nộp: {name}')
+        st['fee'] += paid
+        if phase == f['due']:
+            office.trust(o, -1)
+            office.note(o, day, f'Quá hạn {name} — mỗi ngày chậm là {LATE_FEE} xu tiền chậm nộp.', 'late')
+        boss = phase == 4
+        if boss:
+            st.update(s='boss', day=day)
+            office.trust(o, -3)
+            office.note(o, day, f'Chị Hồng tự nộp thay {name} cho kịp khép tháng.', 'late')
+        out.append(dict(name=name, fee=paid, boss=boss))
+    return out
+
+
+def _reliable(c: dict, d: dict, o: dict) -> tuple[bool, str]:
+    done = sum(1 for x in d['log'] if x['day'] == c['day'])
+    if not done:
+        return False, 'Chưa nộp hồ sơ nào'
+    if o['day_late']:
+        return False, f'{o["day_late"]} hồ sơ trễ hạn'
+    if sum(x['risk'] for x in d['day_grids']):
+        return False, 'Bảng lương để lọt lỗi sai quy định'
+    return True, f'{done} hồ sơ kịp hạn, bảng lương an toàn'
+
+
+def _can_cover(t: dict, day: int) -> str:
+    if t.get('form') == 'grid' and _mod(day)['id'] == 'cutoff':
+        return 'Hôm nay ngân hàng chốt lệnh đúng giờ — không ai xin lùi được.'
+    return ''
+
+
+def _filing_state(f: dict, st: dict, phase: int) -> str:
+    if st['s'] == 'boss':
+        return 'boss'
+    if st['s'] == 'filed':
+        return 'filed' if (st['day'] - 1) % 5 <= f['due'] else 'late_filed'
+    return 'late' if phase > f['due'] else 'due' if phase == f['due'] else 'todo' if phase >= f['open'] else 'locked'
+
+
+def _calendar(c: dict, cr: dict) -> list:
+    day = c['day']
+    fl = _filings(copy.deepcopy(cr), day)
+    phase = (day - 1) % 5
+    cells = []
+    for i in range(5):
+        dd = day + i
+        ph, same = (dd - 1) % 5, _month(dd) == fl['month']
+        items = []
+        if i == 0:
+            items += [dict(emoji=f['emoji'], text=FILING_SHORT[f['id']], state='late') for f in FILINGS if f['due'] < phase and fl['st'][f['id']]['s'] == 'todo']
+        for f in FILINGS:
+            if f['due'] == ph:
+                st = fl['st'][f['id']] if same else dict(s='todo', day=0, fee=0)
+                items.append(dict(emoji=f['emoji'], text=FILING_SHORT[f['id']], state='done' if st['s'] != 'todo' else 'due' if i == 0 else 'todo'))
+        if ph == 4:
+            items.append(dict(emoji='💸', text='Trả lương', state='info'))
+        mod = _mod(dd)
+        cells.append(dict(day=dd, date=_fdate(dd, ph), rel=care_rel(i), mod=None if mod['id'] == 'normal' else dict(emoji=mod['emoji'], name=mod['name']),
+                          items=items))
+    return cells
+
+
+def _plan_view(c: dict, cr: dict) -> dict:
+    day = c['day']
+    fl = _filings(cr, day)
+    phase = (day - 1) % 5
+    items = []
+    for f in FILINGS:
+        st = fl['st'][f['id']]
+        state = _filing_state(f, st, phase)
+        why = ''
+        if state == 'locked':
+            why = f'Mở từ ngày {_fdate(day, f["open"])}'
+        elif f['needs'] == 'grid' and not fl['grids'] and st['s'] == 'todo':
+            why = 'Cần chuyển một bảng lương trong tháng trước'
+        items.append(dict(id=f['id'], emoji=f['emoji'], name=_fname(f, day), who=f['who'], what=f['what'], minutes=f['minutes'],
+                          date=_fdate(day, f['due']), rel=care_rel(f['due'] - phase) if f['due'] >= phase else f'Trễ {phase - f["due"]} ngày',
+                          state=state, fee=st['fee'], can=st['s'] == 'todo' and not why, why=why))
+    return dict(kind='filings', title=f'Lịch nộp tháng {_rules_raw(day)["m"]}', items=items, fee=LATE_FEE, payday=_fdate(day, 4),
+                grids=fl['grids'], done=sum(1 for x in items if x['state'] in ('filed', 'late_filed', 'boss')), total=len(items))
+
+
+def _validate_filings(cr: dict) -> None:
+    fl = cr.get('filings')
+    kit.need(isinstance(fl, dict) and set(fl) == {'month', 'grids', 'st'} and isinstance(fl['st'], dict)
+             and set(fl['st']) == set(FILING_INDEX), 'Lịch nộp sai.')
+    kit.integer(fl['month'], 0, 10 ** 6)
+    kit.integer(fl['grids'], 0, 10 ** 4)
+    for st in fl['st'].values():
+        kit.need(isinstance(st, dict) and set(st) == {'s', 'day', 'fee'} and st['s'] in FILING_STATES, 'Lịch nộp sai.')
+        kit.integer(st['day'], 0 if st['s'] == 'todo' else 1, 0 if st['s'] == 'todo' else 10 ** 7)
+        kit.integer(st['fee'], 0, LATE_FEE * 5)
 
 
 # ------------------------------------------------------------------ people & situations
@@ -1624,7 +1861,7 @@ SPEC = dict(
     tip=0,
     physical=(),
     free_actions=(),
-    no_tick=('tp_flag', 'tp_hint', 'tp_claim', 'tp_overtime'),
+    no_tick=('tp_flag', 'tp_hint', 'tp_claim', 'tp_overtime', 'tp_help', 'tp_cover', 'tp_break', 'tp_declare'),
     employment=EMPLOYMENT,
     activity=('🧮', 'Bàn lương ngăn nắp', [('Bảng chấm công', 'Hồ sơ lương'), ('Hóa đơn mua vào', 'Hồ sơ thuế'),
                                          ('Phiếu lương', 'Hồ sơ lương'), ('Tờ khai GTGT', 'Hồ sơ thuế')],

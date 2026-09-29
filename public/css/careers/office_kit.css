@@ -138,3 +138,79 @@ html[data-layout="phone"] .career-job.ok{--ok-foot:68px}
   .career-job.ok .ok-mail-body{margin-left:0}
 }
 .career-idle .career-job.ok{text-align:left}
+
+/* ---------------------------------------------------------------- care: energy chip, five-day calendar strip */
+.career-job.ok .ok-energy{display:inline-flex;align-items:center;gap:4px;padding:0 8px;border-radius:var(--radius-pill);background:var(--surface-2);font-size:.933rem;font-weight:600;line-height:1.35;color:var(--ink-2);white-space:nowrap}
+.career-job.ok .ok-energy b{font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+.career-job.ok .ok-energy.good{background:var(--good-soft)}
+.career-job.ok .ok-clock .ok-energy{justify-self:start;margin-top:2px;padding:0 8px;font-size:.933rem}
+.career-job.ok .ok-clock .ok-energy b{font-size:inherit;font-weight:800}
+.career-job.ok .ok-energy.warn{background:var(--warn-soft);color:var(--warn)}
+.career-job.ok .ok-energy.bad{background:var(--bad-soft);color:var(--bad)}
+.career-job.ok .ok-cal{list-style:none;margin:0;padding:2px 2px 6px;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(112px,1fr);gap:6px;overflow-x:auto;scroll-snap-type:x proximity;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+.career-job.ok .ok-cal-day{display:grid;align-content:start;gap:4px;min-width:0;padding:6px 8px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--line);scroll-snap-align:start}
+.career-job.ok .ok-cal-day.today{border-color:var(--accent);box-shadow:inset 0 3px 0 var(--accent)}
+.career-job.ok .ok-cal-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 6px;min-width:0;line-height:1.25}
+.career-job.ok .ok-cal-head b{font-size:.933rem}
+.career-job.ok .ok-cal-head small{font-size:.933rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.career-job.ok .ok-cal-mod{margin-left:auto;font-size:1.05rem;line-height:1}
+.career-job.ok .ok-cal-items{list-style:none;margin:0;padding:0;display:grid;gap:3px}
+.career-job.ok .ok-cal-it{display:grid;grid-template-columns:16px minmax(0,1fr);gap:4px;align-items:start;font-size:.933rem;line-height:1.3;color:var(--ink-2)}
+.career-job.ok .ok-cal-txt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.career-job.ok .ok-cal-mark{font-weight:800;text-align:center}
+.career-job.ok .ok-cal-it.done{color:var(--good)}
+.career-job.ok .ok-cal-it.due{color:var(--warn);font-weight:700}
+.career-job.ok .ok-cal-it.late{color:var(--bad);font-weight:700}
+.career-job.ok .ok-cal-free{font-size:.933rem;line-height:1.3;color:var(--muted)}
+
+/* ---------------------------------------------------------------- care: plan cards (close plan, filings, packs) */
+.career-job.ok .ok-people{display:grid;gap:8px;min-width:0}
+.career-job.ok .ok-h2 small,.career-job.ok .ok-fold>summary small{font-size:.933rem;font-weight:400;color:var(--muted)}
+.career-job.ok .ok-plan>summary small{margin-left:auto;text-align:right;white-space:nowrap}
+.career-job.ok .ok-trackfold>summary{flex-wrap:wrap}
+.career-job.ok .ok-trackfold>summary small{flex:1 1 150px;min-width:0;text-align:right}
+.career-job.ok .ok-plan-list,.career-job.ok .ok-mates{list-style:none;margin:0;padding:0;display:grid;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface);overflow:hidden}
+.career-job.ok .ok-plan-row{display:grid;grid-template-columns:26px minmax(0,1fr);gap:4px 8px;align-items:start;min-height:48px;padding:8px 12px}
+.career-job.ok .ok-plan-title{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;min-width:0}
+.career-job.ok .ok-plan-row+.ok-plan-row,.career-job.ok .ok-mate+.ok-mate{border-top:1px solid var(--line)}
+.career-job.ok .ok-plan-row.tone-bad{box-shadow:inset 4px 0 0 var(--bad)}
+.career-job.ok .ok-plan-row.tone-warn{box-shadow:inset 4px 0 0 var(--warn)}
+.career-job.ok .ok-plan-ico{font-size:1.2rem;line-height:1.3}
+.career-job.ok .ok-plan-main{display:grid;gap:2px;min-width:0;font-size:.967rem;line-height:1.35}
+.career-job.ok .ok-plan-main b{overflow-wrap:anywhere}
+.career-job.ok .ok-plan-main small{font-size:.933rem;color:var(--ink-2)}
+.career-job.ok .ok-plan-act{grid-column:2/-1;display:flex;flex-wrap:wrap;gap:6px}
+.career-job.ok .ok-plan-act .btn,.career-job.ok .ok-people .btn,.career-job.ok .ok-trackfold .btn{min-height:44px;font-size:.933rem;white-space:normal}
+
+/* ---------------------------------------------------------------- care: colleague cards */
+.career-job.ok .ok-mate{display:grid;grid-template-columns:40px minmax(0,1fr);gap:6px 10px;padding:10px 12px;align-items:center}
+.career-job.ok .ok-mate.asking{background:var(--info-soft)}
+.career-job.ok .ok-mate-main{display:grid;gap:2px;min-width:0}
+.career-job.ok .ok-mate-name{font-size:.967rem;line-height:1.35;overflow-wrap:anywhere}
+.career-job.ok .ok-mate-name small{font-size:.933rem;color:var(--muted)}
+.career-job.ok .ok-mate-meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.career-job.ok .ok-bond{font-size:1rem;letter-spacing:1px;color:var(--bad);line-height:1.2}
+.career-job.ok .ok-bond i{font-style:normal;color:var(--muted)}
+.career-job.ok .ok-bond-name{font-size:.933rem;color:var(--ink-2)}
+.career-job.ok .ok-ask,.career-job.ok .ok-mate>.ok-btns{grid-column:1/-1;display:grid;gap:6px;min-width:0}
+.career-job.ok .ok-bubble{position:relative;margin:0;padding:8px 12px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--line);font-size:.967rem;line-height:1.45}
+.career-job.ok .ok-btns{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.ok .ok-btns>.btn{flex:1 1 auto}
+
+/* ---------------------------------------------------------------- care: mentor track & energy */
+.career-job.ok .ok-track,.career-job.ok .ok-energy-box{display:grid;gap:8px;min-width:0}
+.career-job.ok .ok-energy-box{padding-top:10px;border-top:1px solid var(--line)}
+.career-job.ok .ok-energy-row{font-size:.967rem}
+.career-job.ok .ok-days{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px}
+.career-job.ok .ok-days li{display:grid;justify-items:center;min-width:40px;padding:4px 6px;border-radius:var(--radius-sm);background:var(--surface-2);line-height:1.2}
+.career-job.ok .ok-days li.ok{background:var(--good-soft);color:var(--good)}
+.career-job.ok .ok-days li.miss{background:var(--bad-soft);color:var(--bad)}
+.career-job.ok .ok-days small{font-size:.933rem;color:var(--ink-2)}
+.career-job.ok .ok-ladder,.career-job.ok .ok-perks,.career-job.ok .ok-story ul{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:.967rem;line-height:1.4}
+.career-job.ok .ok-ladder li{color:var(--muted)}
+.career-job.ok .ok-ladder li.done{color:var(--good)}
+.career-job.ok .ok-ladder li.now{color:var(--ink);font-weight:800}
+.career-job.ok .ok-perks li{color:var(--muted)}
+.career-job.ok .ok-perks li.on{color:var(--ink)}
+.career-job.ok .ok-story{display:grid;gap:4px;padding:8px 12px;border-radius:var(--radius-sm);background:var(--surface-2);font-size:.967rem}
+.career-job.ok .ok-story li.next{color:var(--muted);font-style:italic}

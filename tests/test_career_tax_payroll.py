@@ -701,5 +701,207 @@ class ConsequenceTests(unittest.TestCase):
         validate_state(json.loads(json.dumps(j.state)))
 
 
+
+# ---------------------------------------------------------------- office care: the filing calendar, colleagues, energy
+def solve_task(j, tid):
+    j.act('ask', task=tid)
+    t = j.get(tid)
+    if t['form'] == 'grid':
+        for row in t['rows']:
+            for z in row['_truth']['z']:
+                j.act('tp_flag', task=tid, row=row['id'], cell=z)
+            j.act('tp_row', task=tid, row=row['id'])
+        return j.act('tp_pay', task=tid, confirm=True)
+    for st in copy.deepcopy(t['proc']):
+        j.act('tp_submit', task=tid, step=st['id'], answer=st['_key'])
+    return j.act('tp_file', task=tid, confirm=True)
+
+
+@unittest.skipUnless('tax_payroll' in PLUGINS, 'tax_payroll is filtered out by MNL_CAREERS')
+class OfficeCareTests(unittest.TestCase):
+    def setUp(self):
+        self.j = Journey(CAR)
+
+    @property
+    def care(self):
+        return self.j.c['ext']['data']['care']
+
+    @property
+    def o(self):
+        return self.j.c['ext']['data']['office']
+
+    def view(self):
+        return public_state(self.j.state)['careers'][CAR]['data']['care']
+
+    def plan(self, fid):
+        return next(x for x in self.view()['plan']['items'] if x['id'] == fid)
+
+    def roll(self, n=1):
+        for _ in range(n):
+            self.j.act('end_day', carry_event=True)
+            self.j.act('start_day')
+
+    def open_tasks(self):
+        return [t for t in self.j.c['tasks'] if t['status'] not in ('completed', 'referred', 'cancelled')]
+
+    def test_calendar_and_plan_view(self):
+        v = self.view()
+        self.assertEqual([m['id'] for m in v['mates']], ['binh', 'hoa', 'bay'])
+        self.assertIsNone(v['mates'][0]['npc'])                                        # Bình is a colleague without a portrait
+        self.assertEqual(v['mates'][1]['npc'], kit.npc_id(CAR, 6))
+        self.assertEqual([x['state'] for x in v['plan']['items']], ['todo', 'locked', 'locked'])
+        self.assertTrue(self.plan('pit')['can'])
+        self.assertFalse(self.plan('ins')['can'])
+        cal = v['calendar']
+        self.assertEqual([i['text'] for i in cal[1]['items']], ['Thuế TNCN'])
+        self.assertIn('Trả lương', [i['text'] for i in cal[4]['items']])
+
+    def test_file_on_time(self):
+        j = self.j
+        clock, trust, turn = self.o['clock'], self.o['trust'], j.c['turn']
+        with self.assertRaises(GameError):
+            j.act('tp_declare', filing='pit')                                           # needs confirm
+        with self.assertRaises(GameError) as cm:
+            j.act('tp_declare', filing='vat', confirm=True)
+        self.assertIn('Chưa tới kỳ', str(cm.exception))
+        r = j.act('tp_declare', filing='pit', confirm=True)
+        self.assertIn('đúng hạn', r['message'])
+        self.assertEqual(self.o['clock'], clock + T.FILING_INDEX['pit']['minutes'])
+        self.assertEqual(self.o['trust'], trust + 1)
+        self.assertEqual(j.c['turn'], turn)
+        self.assertEqual(self.plan('pit')['state'], 'filed')
+        with self.assertRaises(GameError):
+            j.act('tp_declare', filing='pit', confirm=True)
+        with self.assertRaises(GameError):
+            j.act('tp_declare', filing='tea', confirm=True)
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_insurance_needs_a_paid_payroll(self):
+        j = self.j
+        self.roll()
+        with self.assertRaises(GameError) as cm:
+            j.act('tp_declare', filing='ins', confirm=True)
+        self.assertIn('bảng lương', str(cm.exception))
+        self.assertIn('bảng lương', self.plan('ins')['why'])
+        grid = next(t for t in self.open_tasks() if t['form'] == 'grid')
+        solve_task(j, grid['id'])
+        self.assertEqual(self.care['filings']['grids'], 1)
+        j.act('tp_declare', filing='ins', confirm=True)
+        self.assertEqual(self.care['filings']['st']['ins']['s'], 'filed')
+
+    def test_late_fees_run_until_filed_and_the_boss_files_at_month_end(self):
+        j = self.j
+        self.roll()                                                                     # day 2: pit is due today
+        money, trust = j.c['money'], self.o['trust']
+        r = j.act('end_day', carry_event=True)
+        late = r['summary']['career']['filings']
+        self.assertEqual([x['name'] for x in late], [T._fname(T.FILING_INDEX['pit'], 2)])
+        self.assertEqual(self.care['filings']['st']['pit']['fee'], T.LATE_FEE)
+        self.assertTrue(any(n['kind'] == 'late' and 'Quá hạn' in n['text'] for n in self.o['notes']))
+        self.assertTrue(any(e['reason'].startswith('Tiền chậm nộp') for e in j.c['ops']['finance']['ledger']))
+        j.act('start_day')
+        self.assertEqual(self.plan('pit')['state'], 'late')
+        self.assertIn('Thuế TNCN', [i['text'] for i in self.view()['calendar'][0]['items'] if i['state'] == 'late'])
+        j.act('end_day', carry_event=True)                                              # day 3: a second late day
+        self.assertEqual(self.care['filings']['st']['pit']['fee'], 2 * T.LATE_FEE)
+        j.act('start_day')
+        r = j.act('tp_declare', filing='pit', confirm=True)                              # day 4: filed late, fees stop
+        self.assertIn('muộn 2 ngày', r['message'])
+        self.assertEqual(self.plan('pit')['state'], 'late_filed')
+        for fid in ('ins', 'vat'):
+            self.care['filings']['st'][fid].update(s='filed', day=3)
+        j.act('end_day', carry_event=True)
+        self.assertEqual(self.care['filings']['st']['pit']['fee'], 2 * T.LATE_FEE)
+        # day 5: a filing still open at the month end is filed by chị Hồng
+        j.act('start_day')
+        self.care['filings']['st']['vat'].update(s='todo', day=0)
+        trust = self.o['trust']
+        r = j.act('end_day', carry_event=True)
+        boss = [x for x in r['summary']['career']['filings'] if x['boss']]
+        self.assertEqual(len(boss), 1)
+        self.assertEqual(self.care['filings']['st']['vat']['s'], 'boss')
+        j.act('start_day')
+        self.assertEqual(self.care['filings']['month'], 1)                               # a new month, all to do again
+        self.assertTrue(all(st['s'] == 'todo' for st in self.care['filings']['st'].values()))
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_fees_never_exceed_the_wallet(self):
+        j = self.j
+        self.roll()
+        j.c['ops']['finance']['opening_balance'] -= j.c['money']
+        j.c['money'] = 0
+        validate_state(j.state)
+        j.act('end_day', carry_event=True)
+        self.assertEqual(self.care['filings']['st']['pit']['fee'], 0)
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_old_save_mid_month_is_not_charged_for_the_past(self):
+        day, slot = find('payslip')
+        j = self.j = Journey(CAR, slot=slot, day=4)
+        j.c['ext']['data'].pop('care')
+        validate_state(j.state)
+        st = self.care['filings']['st']
+        self.assertEqual([st[f]['s'] for f in ('pit', 'ins', 'vat')], ['filed', 'filed', 'todo'])
+        self.assertEqual(self.plan('pit')['state'], 'filed')
+
+    def test_no_favour_against_the_bank_cutoff(self):
+        day = next(d for d in range(2, 40) if T._mod(d)['id'] == 'cutoff')
+        j = self.j = Journey(CAR, slot=0, day=day)
+        t = j.task
+        self.assertEqual(t['form'], 'grid')
+        self.care['mates']['hoa'].update(bond=1, owes=1)
+        self.assertNotIn(t['id'], self.view()['coverable'])
+        with self.assertRaises(GameError) as cm:
+            j.act('tp_cover', mate='hoa', task=t['id'])
+        self.assertIn('ngân hàng', str(cm.exception))
+
+    def test_help_and_cover_on_a_form(self):
+        day, slot = find('payslip')
+        j = self.j = Journey(CAR, slot=slot, day=day)
+        self.care['ask'] = dict(day=day, mate='bay', i=1, state='open')
+        validate_state(j.state)
+        j.act('tp_help', mate='bay', answer='yes')
+        self.assertEqual(j.c['relationships'][kit.npc_id(CAR, 3)], 4)
+        due = j.task['due']
+        j.act('tp_cover', mate='bay', task=j.task['id'])
+        self.assertEqual(j.task['due'], due + 60)
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_exhausted_no_overtime(self):
+        self.care['energy'] = 20
+        self.o['clock'] = office.CLOSE
+        with self.assertRaises(GameError):
+            self.j.act('tp_overtime', confirm=True)
+        self.care['energy'] = 50
+        self.j.act('tp_overtime', confirm=True)
+        r = self.j.act('end_day', carry_event=True)
+        self.assertEqual(r['summary']['career']['care']['energy'], 50 - 25)
+
+    def test_tampered_filings_rejected(self):
+        for f in (lambda fl: fl['st']['pit'].update(s='sent'), lambda fl: fl['st'].pop('vat'), lambda fl: fl['st']['pit'].update(fee=99),
+                  lambda fl: fl['st']['pit'].update(s='filed', day=0), lambda fl: fl.update(grids=-1)):
+            j = Journey(CAR)
+            f(j.c['ext']['data']['care']['filings'])
+            with self.assertRaises(GameError):
+                validate_state(json.loads(json.dumps(j.state)))
+
+    def test_a_month_of_days(self):
+        j = self.j
+        for day in range(1, 7):
+            if day > 1:
+                j.act('start_day')
+            for f in self.view()['plan']['items']:
+                if f['can'] and f['id'] != 'ins':
+                    j.act('tp_declare', filing=f['id'], confirm=True)
+            for t in self.open_tasks():
+                solve_task(j, t['id'])
+            if self.plan('ins')['can']:
+                j.act('tp_declare', filing='ins', confirm=True)
+            validate_state(json.loads(json.dumps(j.state)))
+            r = j.act('end_day', carry_event=True)
+            self.assertNotIn('filings', r['summary']['career'], day)
+        self.assertGreaterEqual(self.care['reliable'], 3)
+
+
 if __name__ == '__main__':
     unittest.main()
