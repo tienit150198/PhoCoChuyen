@@ -6,7 +6,7 @@ const attrs=obj=>Object.entries(obj).map(([k,v])=>` data-${k}="${esc(v)}"`).join
 const button=(label,action,data={},style='')=>`<button type="button" class="btn ${style}" data-action="${action}"${attrs(data)}>${label}</button>`;
 const pill=(label,kind='')=>`<span class="tag ${kind}">${label}</span>`;
 const stars=n=>n?'★'.repeat(Math.round(n))+'☆'.repeat(5-Math.round(n)):'☆☆☆☆☆';
-const head=(title,sub,extra='')=>`<header class="sheet-head"><div class="grow"><span class="eyebrow">CHƠI CÙNG MỌI NGƯỜI</span><h2>${title}</h2><p>${sub}</p></div>${extra}<button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
+const head=(title,sub,extra='')=>`<header class="sheet-head"><div class="grow"><span class="eyebrow">CHƠI CÙNG MỌI NGƯỜI</span><h2>${title}</h2>${sub?`<p>${sub}</p>`:''}</div>${extra}<button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
 const ago=t=>{const s=Math.max(0,Date.now()/1000-t);if(s<60)return'vừa xong';if(s<3600)return`${Math.floor(s/60)} phút trước`;if(s<86400)return`${Math.floor(s/3600)} giờ trước`;return`${Math.floor(s/86400)} ngày trước`;};
 const AVATARS=['🌸','☕','🍜','🎉','💪','🌈','🍀','⭐','🧁','🎁','🧑‍🍳','👩‍🏫','🧑‍💼','🧑‍🌾','🐱','🐶'];
 const TABS=[['street','Phố','map'],['board','Bảng tin','chat'],['market','Chợ','cart'],['inbox','Hộp thư','inbox'],['me','Hồ sơ','user']];
@@ -28,12 +28,10 @@ const failed=d=>`<div class="notice danger">${icon('alert',17)}<div>${esc(d.erro
 function profileForm(env,me){
   const s=env.api.state.settings;
   return `<form class="settings-block soc-profile" data-soc-form="profile">
-    <h3>${icon('user',18)} ${me?'Hồ sơ của bạn':'Tạo hồ sơ để vào Phố nghề'}</h3>
-    ${me?'':`<p class="small muted">Chọn một cái tên để hàng xóm ghé quán, chấm sao và tặng quà cho bạn.</p>`}
-    <label class="field">Tên hiển thị<input class="input" name="name" data-preserve maxlength="24" minlength="2" required value="${esc(me?.name||env.api.state.name||'')}" autocomplete="nickname"></label>
+    <h3>${icon('user',18)} ${me?'Hồ sơ của bạn':'Tạo hồ sơ để vào Phố nghề'}</h3>    <label class="field">Tên hiển thị<input class="input" name="name" data-preserve maxlength="24" minlength="2" required value="${esc(me?.name||env.api.state.name||'')}" autocomplete="nickname"></label>
     <label class="field">Giới thiệu ngắn<input class="input" name="bio" data-preserve maxlength="140" value="${esc(me?.bio||'')}" placeholder="Quán mì cay nhất phố, chủ quán hiền"></label>
     <div class="field">Biểu tượng<div class="avatar-pick">${AVATARS.map(a=>`<label><input type="radio" name="avatar" value="${a}" ${(me?.avatar||'🌸')===a?'checked':''}><span>${a}</span></label>`).join('')}</div></div>
-    <label class="switch-row"><span class="grow"><b>Hiện quán của tôi cho mọi người</b><small class="muted block">Tắt thì bạn vẫn xem được Phố nghề nhưng người khác không thấy quán bạn.</small></span><input type="checkbox" name="visible" role="switch" ${me?(me.visible?'checked':''):(s.publicProfile||!me?'checked':'')}><i aria-hidden="true"></i></label>
+    <label class="switch-row"><span class="grow"><b>Hiện quán của tôi cho mọi người</b></span><input type="checkbox" name="visible" role="switch" ${me?(me.visible?'checked':''):(s.publicProfile||!me?'checked':'')}><i aria-hidden="true"></i></label>
     <p class="small muted">Phố nghề dành cho người từ 13 tuổi. Hãy tử tế, đừng đăng số điện thoại, địa chỉ hay đường link. <a href="/terms" target="_blank" rel="noopener">Quy tắc cộng đồng</a></p>
     <button class="btn primary full" type="submit">${me?'Lưu hồ sơ':'Vào Phố nghề'}</button>
   </form>`;
@@ -42,7 +40,7 @@ function profileForm(env,me){
 function community(c){
   if(!c)return'';
   const pct=Math.min(100,Math.round(c.progress/c.goal*100));
-  return `<article class="card community ${c.done?'done':''}"><div class="row spread"><span class="eyebrow">MỤC TIÊU CẢ PHỐ TUẦN NÀY</span>${c.done?pill('Hoàn thành 🎉','green'):pill(`${c.players} người góp sức`)}</div><h3>${esc(c.label)}</h3><div class="bar big"><i style="width:${pct}%"></i></div><p class="small muted">${c.progress.toLocaleString('vi-VN')} / ${c.goal.toLocaleString('vi-VN')} khách được phục vụ tuần này. Mỗi khách bạn phục vụ đều được tính.</p></article>`;
+  return `<article class="card community ${c.done?'done':''}"><div class="row spread"><span class="eyebrow">MỤC TIÊU CẢ PHỐ TUẦN NÀY</span>${c.done?pill('Hoàn thành 🎉','green'):pill(`${c.players} người góp sức`)}</div><h3>${esc(c.label)}</h3><div class="bar big"><i style="width:${pct}%"></i></div><p class="small muted">${c.progress.toLocaleString('vi-VN')} / ${c.goal.toLocaleString('vi-VN')} khách được phục vụ tuần này.</p></article>`;
 }
 
 function playerCard(env,p){
@@ -58,7 +56,7 @@ function street(env){
   const careers=Object.keys(api.state.careers);
   return `${community(d?.community||api.social?.community)}
     <form class="soc-filter row wrap" data-soc-form="filter"><input class="input grow" name="q" data-preserve placeholder="Tìm tên quán…" value="${esc(f.q||'')}" maxlength="30"><select name="career"><option value="">Mọi nghề</option>${careers.map(id=>`<option value="${id}" ${f.career===id?'selected':''}>${esc(careerName(api,id))}</option>`).join('')}</select><label class="check-label"><input type="checkbox" name="follow" ${f.follow?'checked':''}>Đang theo dõi</label><button class="btn small" type="submit">${icon('search',15)} Lọc</button></form>
-    ${!d?loading:d.error?failed(d):d.players.length?`<div class="player-list">${d.players.map(p=>playerCard(env,p)).join('')}</div>`:`<div class="empty">${icon('map',28)}<p>Chưa có quán nào ở đây. Rủ bạn bè cùng chơi nhé!</p></div>`}`;
+    ${!d?loading:d.error?failed(d):d.players.length?`<div class="player-list">${d.players.map(p=>playerCard(env,p)).join('')}</div>`:`<div class="empty">${icon('map',28)}<p>Chưa có quán nào ở đây.</p></div>`}`;
 }
 
 function shopView(env,pid){
@@ -89,7 +87,7 @@ function board(env){
   const cur=api.state.current;
   const compose=`<form class="card soc-compose" data-soc-form="board"><div class="row wrap"><select name="kind">${Object.entries(kinds).map(([k,v])=>`<option value="${k}">${esc(v)}</option>`).join('')}</select><select name="career"><option value="all">Mọi nghề</option>${cur?`<option value="${cur}" ${career===cur?'selected':''}>${esc(careerName(api,cur))}</option>`:''}</select></div><textarea name="text" data-preserve maxlength="400" minlength="4" required placeholder="Chia sẻ một mẹo, một chuyện nghề, hay hỏi mọi người…"></textarea><button class="btn primary small" type="submit">Đăng</button></form>`;
   const filters=`<nav class="pill-tabs">${[['all','Mọi nghề'],...(cur?[[cur,careerName(api,cur)]]:[])].map(([id,l])=>`<button class="${id===career?'active':''}" data-action="socBoardCareer" data-value="${esc(id)}">${esc(l)}</button>`).join('')}<span class="sep"></span>${[['','Tất cả'],...Object.entries(kinds)].map(([id,l])=>`<button class="${id===kind?'active':''}" data-action="socBoardKind" data-value="${id}">${esc(l)}</button>`).join('')}</nav>`;
-  const posts=!d?loading:d.error?failed(d):d.posts.length?d.posts.map(p=>`<article class="board-post"><div class="row"><span class="avatar">${esc(p.avatar||'🙂')}</span><div class="grow"><b>${esc(p.author)}</b> ${pill(esc(kinds[p.kind]||p.kind))}<small class="muted block">${p.career==='all'?'Mọi nghề':esc(careerName(api,p.career))} · ${ago(p.at)}</small></div>${p.mine?button(icon('trash',14),'socDeletePost',{post:p.id},'icon-btn small ghost'):button(icon('flag',13),'socReport',{kind:'board',id:p.id},'icon-btn small ghost')}</div><p class="post-text">${esc(p.text)}</p><div class="row wrap reactions">${reactions.map(e=>{const r=p.reactions[e];return `<button class="react ${r?.mine?'active':''}" data-action="socReact" data-post="${p.id}" data-emoji="${e}">${e}${r?` ${r.n}`:''}</button>`;}).join('')}</div><details class="comments"><summary>${p.comments.length} bình luận</summary>${p.comments.map(c=>`<p class="comment"><span>${esc(c.avatar||'🙂')}</span><b>${esc(c.author)}</b> ${esc(c.text)} <small class="muted">${ago(c.at)}</small></p>`).join('')}<form class="row" data-soc-form="comment" data-post="${p.id}"><input class="input grow" name="text" data-preserve maxlength="200" required placeholder="Viết bình luận…"><button class="btn small" type="submit">Gửi</button></form></details></article>`).join(''):`<div class="empty">${icon('chat',28)}<p>Chưa có bài nào. Mở hàng đi bạn!</p></div>`;
+  const posts=!d?loading:d.error?failed(d):d.posts.length?d.posts.map(p=>`<article class="board-post"><div class="row"><span class="avatar">${esc(p.avatar||'🙂')}</span><div class="grow"><b>${esc(p.author)}</b> ${pill(esc(kinds[p.kind]||p.kind))}<small class="muted block">${p.career==='all'?'Mọi nghề':esc(careerName(api,p.career))} · ${ago(p.at)}</small></div>${p.mine?button(icon('trash',14),'socDeletePost',{post:p.id},'icon-btn small ghost'):button(icon('flag',13),'socReport',{kind:'board',id:p.id},'icon-btn small ghost')}</div><p class="post-text">${esc(p.text)}</p><div class="row wrap reactions">${reactions.map(e=>{const r=p.reactions[e];return `<button class="react ${r?.mine?'active':''}" data-action="socReact" data-post="${p.id}" data-emoji="${e}">${e}${r?` ${r.n}`:''}</button>`;}).join('')}</div><details class="comments"><summary>${p.comments.length} bình luận</summary>${p.comments.map(c=>`<p class="comment"><span>${esc(c.avatar||'🙂')}</span><b>${esc(c.author)}</b> ${esc(c.text)} <small class="muted">${ago(c.at)}</small></p>`).join('')}<form class="row" data-soc-form="comment" data-post="${p.id}"><input class="input grow" name="text" data-preserve maxlength="200" required placeholder="Viết bình luận…"><button class="btn small" type="submit">Gửi</button></form></details></article>`).join(''):`<div class="empty">${icon('chat',28)}<p>Chưa có bài nào.</p></div>`;
   return filters+compose+`<div class="stack">${posts}</div>`;
 }
 
@@ -101,7 +99,7 @@ function market(env){
   const items=(api.content.inventory?.items?.[cur]||[]);
   const sell=room?.inventory?`<details class="card"><summary>${icon('box',16)} Đăng bán nguyên liệu của ${esc(careerName(api,cur))}</summary><form data-soc-form="list" data-career="${esc(cur)}" class="stack"><select name="item" required>${items.filter(i=>(room.inventory.stock[i.id]||0)>0).map(i=>`<option value="${esc(i.id)}" data-cost="${i.cost}">${esc(i.emoji||'')} ${esc(i.name)} · còn ${room.inventory.stock[i.id]} · giá nhập ${i.cost} xu</option>`).join('')||'<option value="">Kho đang trống</option>'}</select><div class="row"><label class="field grow">Số lượng<input class="input" type="number" name="qty" min="1" max="50" value="1" required></label><label class="field grow">Giá / đơn vị (xu)<input class="input" type="number" name="price" min="1" max="100000" required placeholder="0.5×–3× giá nhập"></label></div><button class="btn primary small" type="submit">Đưa lên chợ</button><p class="small muted">Hàng rời kho ngay (giữ hộ). Không bán được sau ${d?.rules?.days||3} ngày thì tự về kho, trừ phần đã hết hạn.</p></form></details>`:`<div class="notice">${icon('box',17)}<div>Nghề hiện tại không có kho. Chuyển sang nghề buôn bán (quán mì, tiệm hoa…) để đăng bán.</div></div>`;
   const filter=`<nav class="pill-tabs">${[['','Mọi nghề'],...invCareers.map(id=>[id,careerName(api,id)])].map(([id,l])=>`<button class="${id===view?'active':''}" data-action="socMarketCareer" data-value="${esc(id)}">${esc(l)}</button>`).join('')}</nav>`;
-  const body=!d?loading:d.error?failed(d):`${d.notes?.length?`<div class="notice success">${icon('check',17)}<div>${d.notes.map(esc).join('<br>')}</div></div>`:''}${d.mine.length?`<h4 class="section-title">Hàng của bạn</h4><div class="listing-grid">${d.mine.map(listingCard).join('')}</div>`:''}<h4 class="section-title">Đang bán ở chợ</h4>${d.listings.filter(m=>!m.mine).length?`<div class="listing-grid">${d.listings.filter(m=>!m.mine).map(listingCard).join('')}</div>`:`<div class="empty">${icon('cart',28)}<p>Chợ đang vắng. Hãy là người mở hàng!</p></div>`}`;
+  const body=!d?loading:d.error?failed(d):`${d.notes?.length?`<div class="notice success">${icon('check',17)}<div>${d.notes.map(esc).join('<br>')}</div></div>`:''}${d.mine.length?`<h4 class="section-title">Hàng của bạn</h4><div class="listing-grid">${d.mine.map(listingCard).join('')}</div>`:''}<h4 class="section-title">Đang bán ở chợ</h4>${d.listings.filter(m=>!m.mine).length?`<div class="listing-grid">${d.listings.filter(m=>!m.mine).map(listingCard).join('')}</div>`:`<div class="empty">${icon('cart',28)}<p>Chợ đang vắng.</p></div>`}`;
   return sell+filter+body+`<p class="small muted space-top">Mua ở chợ: hàng về kho của nghề tương ứng, xu trừ ở ví nghề đó. Người bán nhận xu lần tới họ vào game.</p>`;
 }
 
@@ -124,8 +122,8 @@ export function socialView(env){
   if(!me&&tab!=='street')body=profileForm(env,null);
   else if(ui.socShop)body=shopView(env,ui.socShop);
   else body={street:()=>street(env),board:()=>board(env),market:()=>market(env),inbox:()=>inbox(env),me:()=>profileForm(env,me)}[tab]();
-  const intro=!me&&tab==='street'?`<div class="notice soc-guest">${icon('user',17)}<div class="grow"><b>Bạn đang xem với tư cách khách.</b><p>Tạo hồ sơ để ghé quán, chấm sao, tặng quà và mua bán.</p></div>${button('Tạo hồ sơ','socTab',{tab:'me'},'small primary')}</div>`:'';
-  return head('Phố nghề','Ghé quán của mọi người, chấm sao, tặng quà và mua bán nguyên liệu.')+`<div class="sheet-body social-v4">${nav}${intro}${body}</div>`;
+  const intro=!me&&tab==='street'?`<div class="notice soc-guest">${icon('user',17)}<div class="grow"><b>Bạn đang xem với tư cách khách.</b></div>${button('Tạo hồ sơ','socTab',{tab:'me'},'small primary')}</div>`:'';
+  return head('Phố nghề','')+`<div class="sheet-body social-v4">${nav}${intro}${body}</div>`;
 }
 
 export async function socialAction(action,data,el,env){
@@ -159,7 +157,7 @@ async function pickReason(env,reasons){
   // Reuse the confirm dialog with a simple choice list.
   const dialog=document.getElementById('confirmDialog'),box=document.getElementById('confirmContent');
   return new Promise(resolve=>{
-    box.innerHTML=`<h3>Báo cáo nội dung</h3><p class="small muted">Nội dung bị nhiều người báo cáo sẽ tự ẩn.</p><div class="stack">${Object.entries(reasons).map(([k,v])=>`<button type="button" class="btn ghost full" data-reason="${k}">${esc(v)}</button>`).join('')}<button type="button" class="btn full" data-reason="">Hủy</button></div>`;
+    box.innerHTML=`<h3>Báo cáo nội dung</h3><div class="stack">${Object.entries(reasons).map(([k,v])=>`<button type="button" class="btn ghost full" data-reason="${k}">${esc(v)}</button>`).join('')}<button type="button" class="btn full" data-reason="">Hủy</button></div>`;
     const done=e=>{const b=e.target.closest('[data-reason]');if(!b)return;box.removeEventListener('click',done);dialog.close();resolve(b.dataset.reason||null);};
     box.addEventListener('click',done);dialog.showModal();
   });

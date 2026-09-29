@@ -1045,7 +1045,7 @@ def _miss(d: dict, o: dict, t: dict, text: str) -> dict:
 
 def _done_msg(t: dict, why: str, lunch: str) -> dict:
     left = _left(t)
-    tail = f'Còn {left} dòng.' if left else 'Hai sổ đã khớp — bấm “Loại trừ” để chốt.'
+    tail = f'Còn {left} dòng.' if left else ''
     return dict(message=' '.join(x for x in ('✓ ' + why, lunch, tail) if x), correct=True)
 
 

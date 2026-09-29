@@ -682,7 +682,7 @@ def _open_book(s, c, b, t, p):
     e.need(t['gift_kind'] == 'return', 'Đơn này không cần tra sổ bán hàng.')
     e.need('book' not in t['gs']['seen'], 'Sổ bán hàng đang mở sẵn.')
     t['gs']['seen'].append('book')
-    return dict(message='Đã mở sổ bán hàng mấy ngày gần đây. Dò đúng ngày và đúng món khách nói nhé.')
+    return dict(message='Đã mở sổ bán hàng mấy ngày gần đây.')
 
 
 def _inspect(s, c, b, t, p):

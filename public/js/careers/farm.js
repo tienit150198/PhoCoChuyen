@@ -47,7 +47,7 @@ function deskCard(x){
       const inner=`<span class="fa-opt-label">${x.esc(o.label)}</span>${o.hint?`<small>${x.esc(o.hint)}</small>`:''}${o.cost?`<em class="fa-cost">−${x.fmt(o.cost)} xu${poor?' · ví chưa đủ':''}</em>`:''}`;
       return o.cost?x.confirmCmd(inner,'fa_decide',{option:o.id},`Lựa chọn này tốn ${x.fmt(o.cost)} xu. Đồng ý?`,'fa-opt',poor):x.cmd(inner,'fa_decide',{option:o.id},'fa-opt');
     }).join('');
-    return `<section class="fa-event ${ev.tone==='tense'?'tense':''}" role="group" aria-labelledby="fa-ev-title"><div class="fa-ev-head"><span class="fa-ev-emoji" aria-hidden="true">${x.esc(ev.emoji)}</span><div><small>Chuyện bất ngờ ở trại · quyết xong rồi làm tiếp</small><h3 id="fa-ev-title">${x.esc(ev.title)}</h3></div></div>
+    return `<section class="fa-event ${ev.tone==='tense'?'tense':''}" role="group" aria-labelledby="fa-ev-title"><div class="fa-ev-head"><span class="fa-ev-emoji" aria-hidden="true">${x.esc(ev.emoji)}</span><div><small>Chuyện bất ngờ ở trại</small><h3 id="fa-ev-title">${x.esc(ev.title)}</h3></div></div>
       <p>${x.esc(ev.text)}</p><div class="fa-opts">${opts}</div></section>`;
   }
   const last=desk.last,key=last?`${last.script}-${last.choice}-${last.day}-${(desk.log||[]).length}`:'';
@@ -93,14 +93,12 @@ function plotCard(p,x){
     <span class="fa-icons">${c?`<em class="day">ngày ${p.day_no}</em>`:''}${'🌾'.repeat(p.weeds)}${'🐛'.repeat(p.seen||0)}${p.soil<soilLow(x)?'<em class="poor">bạc màu</em>':''}${c&&!p.organic?'<em class="chem">hóa chất</em>':''}${p.safe_in?`<em class="phi">⏳ ${p.safe_in}</em>`:''}</span></button>`;
 }
 function plotPanel(p,x){
-  if(!p)return `<p class="muted small">Chạm vào một luống để xem chi tiết và làm việc.</p>`;
+  if(!p)return '';
   const th=x.cc.thresholds,m=x.cc.moisture,inv=x.room.inventory||{stock:{}},st=inv.stock||{},level=x.room.level||1;
   if(!p.crop){
     const prev=p.prev?produce(x,p.prev):null,rot=p.rotation||{};
     return `<div class="card fa-panel"><h4>${x.esc(p.id)} · Luống trống</h4>
-      <dl class="kv"><dt>Đất màu</dt><dd>${p.soil}/100 ${p.soil<soilLow(x)?'<b class="fa-bad">bạc màu</b>':''}<small class="muted"> · để trống qua đêm +${x.cc.soil?.rest??8}</small></dd><dt>Độ ẩm · cỏ</dt><dd>${p.moisture}% · ${p.weeds}/3</dd><dt>Vụ trước</dt><dd>${prev?`${prev.emoji} ${x.esc(prev.name)}`:'chưa rõ'}</dd></dl>
-      <p class="small">Chọn giống để gieo (làm đất sẽ nhổ sạch cỏ). <b>Luân canh</b>: đổi nhóm rau lá ↔ cây trái thì đất thêm màu; trồng lại đúng cây cũ thì sâu bệnh còn trong đất.</p>
-      <div class="tile-grid fa-seeds">${x.cc.crops.map(c=>{const locked=c.unlock>level,q=st[c.seed]||0,r=rot[c.id];
+      <dl class="kv"><dt>Đất màu</dt><dd>${p.soil}/100 ${p.soil<soilLow(x)?'<b class="fa-bad">bạc màu</b>':''}<small class="muted"> · để trống qua đêm +${x.cc.soil?.rest??8}</small></dd><dt>Độ ẩm · cỏ</dt><dd>${p.moisture}% · ${p.weeds}/3</dd><dt>Vụ trước</dt><dd>${prev?`${prev.emoji} ${x.esc(prev.name)}`:'chưa rõ'}</dd></dl>      <div class="tile-grid fa-seeds">${x.cc.crops.map(c=>{const locked=c.unlock>level,q=st[c.seed]||0,r=rot[c.id];
         const tag=r==='rotate'?'<em class="fa-rot good">luân canh +màu</em>':r==='same'?'<em class="fa-rot bad">trùng vụ trước</em>':'';
         return tile(x,'fa_plant',{plot:p.id,crop:c.id},`<span class="tile-emoji">${c.emoji}</span><b>${x.esc(c.name)}</b><small>${locked?'🔒 cấp '+c.unlock:q+' '+x.esc(supply(x,c.seed).unit)}</small>${tag}`,`${locked?'locked':''} ${!q?'empty':''}`,locked||!q);}).join('')}</div>
       <div class="fa-actions space-top">${x.cmd(p.compost?'🟫 Đã bón lót compost':`🟫 Bón lót compost (${st.compost||0}) · +${x.cc.soil?.add?.compost??20} màu`,'fa_fertilize',{plot:p.id,kind:'compost'},'small ghost',p.compost||!st.compost)}</div></div>`;
@@ -159,7 +157,7 @@ function coopTab(x){
   return `<div class="card fa-coop"><div class="fa-hens ${mood<35?'sad':''}">${Array.from({length:coop.hens||0},(_,i)=>`<span style="--i:${i}">🐔</span>`).join('')}</div>
     <div class="fa-nest">${Array.from({length:Math.min(24,coop.nest||0)},(_,i)=>`<span class="${i<(coop.stale||0)?'stale':''}">🥚</span>`).join('')||'<small class="muted">Ổ trống</small>'}</div>
     <div class="fa-mood"><div class="row spread"><b>Tinh thần đàn · ${x.esc(face)}</b><small>${mood}/100</small></div><span class="fa-meter mood ${mood<ok?'low':''}" style="--lo:${ok}%"><i style="width:${mood}%"></i></span>
-      <small class="muted">Mai đẻ khoảng ${coop.lay_pct??100}% đàn${d.fed_today?'':' (chưa ăn: chỉ nửa đàn)'}. Ăn no +, chuồng sạch +, đói hoặc chuồng bẩn hai ngày −, nắng gắt mà không dọn chuồng −.</small></div>
+      <small class="muted">Mai đẻ khoảng ${coop.lay_pct??100}% đàn${d.fed_today?'':' (chưa ăn: chỉ nửa đàn)'}.</small></div>
     <dl class="kv"><dt>Đàn gà</dt><dd>${coop.hens||0} mái</dd><dt>Trứng trong ổ</dt><dd>${coop.nest||0}${coop.stale?` · ${coop.stale} quả từ hôm qua`:''}</dd><dt>Hôm nay</dt><dd>${d.fed_today?'✓ đã cho ăn':'<b class="fa-bad">chưa cho ăn</b>'} · ${coop.cleaned_today?'✓ chuồng sạch':'<b class="fa-bad">chưa dọn chuồng</b>'}</dd><dt>Cám trong kho</dt><dd>${st.feed||0} bao</dd></dl>
     <p class="muted small">Trứng để qua đêm trong ổ chỉ còn loại B. Trứng lau khô, không rửa nước.</p>
     <div class="row wrap">${x.cmd('🌾 Cho gà ăn & thay nước','fa_feed',{},'primary',d.fed_today||!st.feed)}${x.cmd('🧹 Dọn chuồng','fa_clean',{},'',!!coop.cleaned_today)}${x.cmd('🧺 Nhặt trứng','fa_collect',{},'',!coop.nest)}
@@ -170,7 +168,7 @@ function coopTab(x){
 function coldTab(t,x){
   const d=data(x),order=t&&t.known?t.needs:null;
   const lots=[...(d.cold||[])].sort((a,b)=>a.crop.localeCompare(b.crop)||a.expires-b.expires);
-  return `<div class="row spread wrap"><p class="muted small grow">Kho mát ${d.cold_units||0}/${x.cc.cold_cap} đơn vị. Lô hết hạn tươi bị bỏ khi khép ca. Xếp lô cũ đi trước; hàng dư đem bán sỉ ở tab 📈 Chợ.</p>${x.button('📦 Kho vật tư','inventory',{},'ghost small')}</div>
+  return `<div class="row spread wrap"><p class="muted small grow">Kho mát ${d.cold_units||0}/${x.cc.cold_cap} đơn vị. Lô hết hạn tươi bị bỏ khi khép ca.</p>${x.button('📦 Kho vật tư','inventory',{},'ghost small')}</div>
     <div class="fa-lots">${lots.map(l=>{
       const p=produce(x,l.crop),inOrder=order&&l.crop in order.items;
       const need=inOrder?Math.max(0,order.items[l.crop]-packed(t,l.crop)):0,n=Math.min(need,l.qty);
@@ -182,7 +180,7 @@ function coldTab(t,x){
         <span class="row wrap"><span class="tag ${l.grade==='A'?'green':'amber'}">Loại ${x.esc(l.grade)}</span>${l.organic?'<span class="tag green">🌿 hữu cơ</span>':''}${l.unsafe?'<span class="tag danger">⛔ chưa hết cách ly</span>':''}</span></div>
         <div class="fa-lot-btns">${canPack?pk('+1',1,'small'):''}${canPack&&n>1?pk(`+${n}`,n,'small primary'):''}
           ${x.confirmCmd('🗑️','fa_discard',{lot:l.id},`Hủy lô ${l.id} và ghi hao hụt?`,'small ghost')}</div></div>`;
-    }).join('')||'<p class="muted">Kho mát trống. Thu hoạch luống chín hoặc nhặt trứng.</p>'}</div>`;
+    }).join('')||'<p class="muted">Kho mát trống.</p>'}</div>`;
 }
 function marketTab(x){
   const d=data(x),mk=d.market;if(!mk)return '';
@@ -198,7 +196,7 @@ function marketTab(x){
     const lots=(d.cold||[]).filter(l=>l.crop===pl.crop&&l.grade==='A'&&!l.unsafe&&l.left>=0);
     pledge=`<section class="fa-pledge card"><div class="row spread"><h4>🤝 Phần góp HTX</h4><b>${pl.done}/${pl.qty} ${x.esc(p.unit)}</b></div><div class="bar"><i style="width:${pl.done/pl.qty*100}%"></i></div>
       <p class="small">${p.emoji} ${x.esc(p.name)} loại A · giá chốt <b>${pl.price} xu/${x.esc(p.unit)}</b>. ${left?`Còn thiếu ${left}: khép ca mà chưa đủ thì HTX phạt ${x.cc.pledge_fine} xu mỗi ${x.esc(p.unit)}.`:'Đã góp đủ, cảm ơn nông trại!'}</p>
-      ${left?(lots.length?`<div class="row wrap">${lots.map(l=>{const n=Math.min(left,l.qty);return x.cmd(`Góp ${n} từ lô ${x.esc(l.id)} · +${n*pl.price} xu`,'fa_pledge',{lot:l.id,qty:n},'small primary');}).join('')}</div>`:`<p class="notice amber small">Kho mát chưa có ${x.esc(p.name.toLowerCase())} loại A. Thu hoạch luống đúng lứa rồi quay lại góp.</p>`):''}</section>`;
+      ${left?(lots.length?`<div class="row wrap">${lots.map(l=>{const n=Math.min(left,l.qty);return x.cmd(`Góp ${n} từ lô ${x.esc(l.id)} · +${n*pl.price} xu`,'fa_pledge',{lot:l.id,qty:n},'small primary');}).join('')}</div>`:`<p class="notice amber small">Kho mát chưa có ${x.esc(p.name.toLowerCase())} loại A.</p>`):''}</section>`;
   }
   const lots=[...(d.cold||[])].filter(l=>!l.unsafe&&l.left>=0).sort((a,b)=>a.left-b.left||a.crop.localeCompare(b.crop));
   // Produce an accepted order or the HTX still needs: warn before it goes to the wholesale market.
@@ -211,11 +209,11 @@ function marketTab(x){
   return `${pledge}<section class="fa-market card"><div class="row spread"><h4>📈 Chợ đầu mối hôm nay</h4>${mk.income?`<span class="tag green">+${x.fmt(mk.income)} xu</span>`:''}</div>
     <p class="muted small">Giá sỉ cho mỗi đơn vị loại A (xu), khoảng ${mk.wholesale}% giá bán lẻ. Mỗi ${slip} đơn vị bán thêm, giá hạ 10%; chợ chỉ nhận có hạn mỗi mặt hàng.</p>
     <ul class="fa-board">${board}</ul>
-    ${rp?`<p class="fa-rumour">🗣️ Anh Tuấn rỉ tai: “Mai ${x.esc(rp.name.toLowerCase())} ${ru.up?'lên giá':'rớt giá'} đó.” <small>Tin đồn, không chắc đúng.</small></p>`:''}</section>
-    <section class="fa-sell"><h4 class="section-title">Bán sỉ từ kho mát</h4>${sell||'<p class="muted small">Kho mát chưa có lô nào bán được. Thu hoạch luống chín hoặc nhặt trứng.</p>'}</section>`;
+    ${rp?`<p class="fa-rumour">🗣️ Anh Tuấn rỉ tai: “Mai ${x.esc(rp.name.toLowerCase())} ${ru.up?'lên giá':'rớt giá'} đó.”</p>`:''}</section>
+    <section class="fa-sell"><h4 class="section-title">Bán sỉ từ kho mát</h4>${sell||'<p class="muted small">Kho mát chưa có lô nào bán được.</p>'}</section>`;
 }
 function crateSide(t,x){
-  if(!t.known)return `<div class="card"><p class="small">Nhận đơn để mở bàn đóng thùng. Trong lúc chờ, cứ chăm vườn và gà.</p></div>`;
+  if(!t.known)return `<div class="card"><p class="small">Nhận đơn để mở bàn đóng thùng.</p></div>`;
   const n=t.needs,st=(x.room.inventory||{}).stock||{};
   const crate=t.crate||[];
   const eggs=packed(t,'egg'),veg=crate.some(e=>e.crop!=='egg');
@@ -248,7 +246,7 @@ export default {
     return 'Giao hàng cho khách';
   },
   job(t,x){
-    if(data(x).desk?.ev)return `<div class="career-job fa">${weatherBar(x)}${deskCard(x)}<p class="small muted" role="note">Vườn, chuồng và đơn hàng chờ một chút: quyết xong chuyện này rồi làm tiếp nhé.</p></div>`;
+    if(data(x).desk?.ev)return `<div class="career-job fa">${weatherBar(x)}${deskCard(x)}</div>`;
     const tab=x.ui.tab||'field';
     const main=tab==='coop'?coopTab(x):tab==='cold'?coldTab(t,x):tab==='market'?marketTab(x):fieldTab(x);
     return `<div class="career-job fa">${weatherBar(x)}${deskCard(x)}${orderTicket(t,x)}${tabs(x)}
@@ -258,7 +256,7 @@ export default {
     if(data(x).desk?.ev)return `<div class="career-job fa">${weatherBar(x)}${deskCard(x)}</div>`;
     const tab=x.ui.tab||'field';
     const main=tab==='coop'?coopTab(x):tab==='cold'?coldTab(null,x):tab==='market'?marketTab(x):fieldTab(x);
-    return `<div class="career-job fa">${weatherBar(x)}${deskCard(x)}<p class="notice small">Chưa có đơn hàng đang chờ: chăm vườn, cho gà ăn, bán sỉ hàng dư — hoặc đón thêm khách.</p>${tabs(x)}
+    return `<div class="career-job fa">${weatherBar(x)}${deskCard(x)}${tabs(x)}
       <div class="workbench single"><section class="wb-main">${main}</section></div></div>`;
   },
   actions:{

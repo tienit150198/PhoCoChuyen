@@ -73,7 +73,7 @@ function coinCard(env,I){
       <div class="iv-kv"><span>Trị giá hôm nay</span><b>${xu(C.value)}</b></div>
       <div class="iv-kv"><span>Tiền đã bỏ vào (gồm phí)</span><b>${xu(C.basis)}</b></div>
       <div class="iv-kv iv-pnl ${C.unrealised>=0?'gain':'loss'}"><span>${C.unrealised>=0?'Lãi tạm tính':'Lỗ tạm tính'}</span><b>${signed(C.unrealised)}</b></div></div>`
-    :`<p class="muted small">Bạn chưa có Mây Coin. Mua thử một ít để xem giá lên xuống thế nào.</p>`;
+    :`<p class="muted small">Bạn chưa có Mây Coin.</p>`;
   const buyAmt=v==='all'?I.wallet:amt,sellAmt=v==='all'?C.value:amt;
   const preview=buyAmt>=R.min_trade?`Mua ${xu(buyAmt)}: phí ${R.fee_pct}% = ${xu(fee(buyAmt))}.`:`Lệnh ít nhất ${xu(R.min_trade)}.`;
   return `<section class="jr-card iv-card iv-coin" aria-labelledby="ivCoinT">
@@ -84,7 +84,7 @@ function coinCard(env,I){
     ${C.realised||C.fees?`<div class="iv-kv small"><span>Đã chốt lãi/lỗ · phí đã trả</span><b class="${C.realised>=0?'gain':'loss'}">${signed(C.realised)} · ${xu(C.fees)}</b></div>`:''}
     ${chips(env,'coin')}
     <div class="iv-actions">${btn(`Mua ${v==='all'?'hết ví':label(v)}`,'ivBuy',{},'primary',buyAmt<R.min_trade||buyAmt>I.wallet?' disabled':'')}${btn(`Bán ${v==='all'?'hết coin':label(v)}`,'ivSell',{},'cream',!C.units||(v!=='all'&&(sellAmt>C.value||sellAmt<R.min_trade))?' disabled':'')}</div>
-    <p class="iv-hint">${esc(preview)} Giá đổi mỗi ngày sống; có hôm tăng vọt, có hôm lao dốc.</p>
+    <p class="iv-hint">${esc(preview)}</p>
   </section>`;
 }
 
@@ -102,7 +102,7 @@ function scamCard(env,I){
   if(X.stage==='joined')return `<section class="jr-card iv-card iv-scam" aria-label="Dự án bạn đã góp tiền">${top}
       <div class="iv-kv"><span>Bạn đã góp</span><b>${xu(X.stake)}</b></div><div class="iv-kv"><span>Đã nhận “lãi”</span><b>${xu(X.paid)}</b></div>
       <button type="button" class="btn ghost small full" disabled>Rút vốn · hệ thống đang bảo trì…</button>${flags}</section>`;
-  return `<section class="jr-card iv-card iv-scam quiet" aria-label="Lời mời đầu tư đã qua">${top}<p class="muted small">${X.stage==='declined'?'Bạn đã từ chối lời mời này.':'Lời mời đã hết hạn, bạn không tham gia.'} Vài hôm nữa sẽ biết chuyện gì xảy ra với dự án.</p></section>`;
+  return `<section class="jr-card iv-card iv-scam quiet" aria-label="Lời mời đầu tư đã qua">${top}<p class="muted small">${X.stage==='declined'?'Bạn đã từ chối lời mời này.':'Lời mời đã hết hạn, bạn không tham gia.'}</p></section>`;
 }
 
 function logList(I){
@@ -117,9 +117,8 @@ function badges(I){
 
 function teaser(env,I){
   const pct=Math.min(100,Math.round(Math.max(0,I.max_wallet)*100/I.need));
-  return head('Đầu tư','Cho tiền nhàn rỗi đi làm việc, và học cách giữ tiền.')+`<div class="sheet-body jr-body iv">
-    <section class="jr-card iv-card iv-teaser"><div class="iv-card-top"><span class="iv-emoji" aria-hidden="true">🔒</span><div class="grow"><span class="eyebrow">Sắp mở</span><h3>Khi ví từng có ${xu(I.need)}</h3>
-      <p class="muted small">Ngân hàng phố sẽ mở sổ tiết kiệm cho bạn, và bạn có thể thử Mây Coin, một đồng tiền ảo lên xuống thất thường.</p></div></div>
+  return head('Đầu tư','')+`<div class="sheet-body jr-body iv">
+    <section class="jr-card iv-card iv-teaser"><div class="iv-card-top"><span class="iv-emoji" aria-hidden="true">🔒</span><div class="grow"><span class="eyebrow">Sắp mở</span><h3>Khi ví từng có ${xu(I.need)}</h3></div></div>
       <div class="jr-bar iv-bar" role="progressbar" aria-label="Tiến tới mở mục đầu tư" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div>
       <p class="small iv-progress"><b>${xu(Math.min(I.max_wallet,I.need))}</b> / ${xu(I.need)} · số dư cao nhất từng có</p>
       <figure class="iv-chart preview">${sparkline(I.coin.prices,{R:I.rules})}<figcaption>Mây Coin ${I.coin.prices.length} ngày qua · xem trước</figcaption></figure></section></div>`;
@@ -131,7 +130,7 @@ export function investView(env){
   if(!I)return head('Đầu tư','')+`<div class="sheet-body jr-body"><p class="muted">Ngân hàng phố chưa mở cửa…</p></div>`;
   if(!I.unlocked)return teaser(env,I);
   const total=I.saving.balance+I.coin.value;
-  return head('Đầu tư','Tiền riêng trong ví, cho đi làm việc thêm. Thắng thua đều là bài học.')+`<div class="sheet-body jr-body iv">
+  return head('Đầu tư','')+`<div class="sheet-body jr-body iv">
     <section class="iv-strip" aria-live="polite"><div><small>Ví của bạn</small><b>${xu(I.wallet)}</b></div><div><small>Đang đầu tư</small><b>${xu(total)}</b></div></section>
     <div class="notice amber iv-risk">${icon('alert',17)}<div><b>Tiền ảo có thể mất trắng. Chỉ dùng tiền nhàn rỗi.</b><p>Tiền phòng, cơm nước vẫn trừ vào ví mỗi ngày. Nhớ chừa lại nhé.</p></div></div>
     ${I.scam?.stage==='offer'?scamCard(env,I):''}
@@ -146,7 +145,7 @@ export function investEntry(env){
   const I=stateOf(env);if(!I)return '';
   if(!I.unlocked){
     const pct=Math.min(100,Math.round(Math.max(0,I.max_wallet)*100/I.need));
-    return `<button type="button" class="jr-card iv-entry locked" data-action="jrView" data-view="invest"><span class="iv-emoji" aria-hidden="true">🔒</span><span class="grow"><b>Đầu tư · mở khi ví từng có ${xu(I.need)}</b><small>Sổ tiết kiệm và Mây Coin đang chờ bạn.</small><span class="jr-bar iv-bar" aria-hidden="true"><i style="width:${pct}%"></i></span></span>${icon('lock',16)}</button>`;
+    return `<button type="button" class="jr-card iv-entry locked" data-action="jrView" data-view="invest"><span class="iv-emoji" aria-hidden="true">🔒</span><span class="grow"><b>Đầu tư · mở khi ví từng có ${xu(I.need)}</b><span class="jr-bar iv-bar" aria-hidden="true"><i style="width:${pct}%"></i></span></span>${icon('lock',16)}</button>`;
   }
   const offer=I.scam?.stage==='offer';
   return `<button type="button" class="jr-card iv-entry" data-action="jrView" data-view="invest"><span class="iv-emoji" aria-hidden="true">📈</span><span class="grow"><b>Đầu tư</b><small>Tiết kiệm ${xu(I.saving.balance)} · Mây Coin ${xu(I.coin.value)}</small></span>${offer?'<span class="tag amber">1 lời mời mới</span>':''}${icon('arrow',16)}</button>`;

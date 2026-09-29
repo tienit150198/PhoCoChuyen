@@ -139,7 +139,7 @@ function seating(t,c,R,reach=new Set()){
 function rollStage(t,c,R){
   const odd=R.kids.filter(k=>k.status!=='here'),todo=R.kids.filter(k=>k.status==='here'&&!k.done),left=odd.filter(k=>!k.done);
   const card=k=>`<article class="tt-kid st-${k.status}"><div class="tt-kid-top"><span class="tt-face" aria-hidden="true">${k.emoji}</span><div><b>${esc(k.name)}</b><small>${k.mark_emoji} ${esc(k.clue)}</small></div></div><div class="tt-options">${k.options.map(o=>act(esc(o.label),'lesson_roll',{task:t.id,kid:k.id,choice:o.id},'tt-option')).join('')}</div></article>`;
-  const cases=left.length?section('📋','Sổ điểm danh',`<p class="tt-tip">Đọc kỹ từng trường hợp trước khi ghi.</p><div class="tt-kids">${left.map(card).join('')}</div>`,`${left.length} bạn cần ghi riêng`):'';
+  const cases=left.length?section('📋','Sổ điểm danh',`<div class="tt-kids">${left.map(card).join('')}</div>`,`${left.length} bạn cần ghi riêng`):'';
   const next=left.length&&!todo.length?`Chọn cách ghi cho ${left.length} bạn ở trên`:todo.length?`${todo.length} bạn đang ngồi ở chỗ${left.length?` · còn ${left.length} bạn ghi riêng`:''}`:'Điểm danh xong';
   return {body:seating(t,c,R)+cases,bar:bar(esc(next),todo.length?act(`✓ Có mặt · ${todo.length} bạn`,'lesson_roll',{task:t.id,kid:'all'},'primary'):'')};
 }
@@ -165,7 +165,7 @@ function teachStage(t,c,R){
   const events=R.events.map(ev=>eventCard(ev,'lesson_call',t.id)).join('');
   const need=R.lost.filter(k=>!k.helped&&!k.away);
   const help=k=>`<article class="tt-kid"><div class="tt-kid-top"><span class="tt-face" aria-hidden="true">${k.emoji}</span><div><b>${esc(k.name)}</b><small>${esc(k.clue)}</small></div></div><div class="tt-methods" role="group" aria-label="Cách giúp ${esc(k.name)}">${R.methods.map(m=>act(`${em(m.emoji)}<span>${esc(m.name)}</span>`,'lesson_help',{task:t.id,kid:k.id,method:m.id},'tt-method')).join('')}</div></article>`;
-  const helpBox=need.length?section('🙋','Bạn cần giúp',`<p class="tt-tip">Nhìn dấu hiệu, chọn cách giảng hợp với bạn ấy.</p><div class="tt-kids">${need.map(help).join('')}</div>`,`${need.length} bạn`):'';
+  const helpBox=need.length?section('🙋','Bạn cần giúp',`<div class="tt-kids">${need.map(help).join('')}</div>`,`${need.length} bạn`):'';
   const pending=R.pending.length>0,last=R.phase>=2;
   const next=pending?'Xử lý chuyện trong lớp trước':need.length?`Còn ${need.length} bạn chưa hiểu bài`:'Cả lớp đang theo kịp bài 🌟';
   return {body:(events?section('💬','Chuyện trong lớp',events):'')+seating(t,c,R)+helpBox,bar:bar(esc(next),act(last?'Thu phiếu →':`Sang hoạt động ${R.phase+2} →`,'lesson_next',{task:t.id},'primary',{disabled:pending}))};
@@ -268,7 +268,7 @@ function planTrip(t,T,ui){
   const row=p=>{const n=route.indexOf(p.id),full=route.length>=5&&n<0;return local(`${n>=0?`<i class="tt-badge">${n+1}</i>`:'<i class="tt-badge off" aria-hidden="true">＋</i>'}<span class="tt-place-emoji" aria-hidden="true">${p.emoji}</span><span class="tt-place-main"><b>${esc(p.name)}</b><small>${p.closed?`🚧 ${esc(p.closed)}`:`${p.tags.map(g=>T.tags[g].emoji).join(' ')} · ${p.indoor?'trong nhà':'ngoài trời'}`}</small></span><span class="tt-place-cost"><b>${p.minutes}′</b><small>${p.fee?p.fee+' xu':'miễn phí'}</small></span>`,'tourRoute',{place:p.id},'tt-place'+(n>=0?' picked':''),Boolean(p.closed)||full,n>=0?`Bỏ điểm ${n+1}: ${p.name}`:`Thêm ${p.name}`,n>=0);};
   const top=`<div class="tt-bar-stats"><span class="${S.mins>T.limit?'bad':''}">⏱ ${S.mins}/${T.limit}′</span><span class="${S.fee>T.fund?'bad':''}">🎟 ${S.fee}/${T.fund} xu</span><span>😊 ${S.happy}/${T.members.length}</span></div>`;
   const next=!route.length?'Chạm 3–5 điểm theo thứ tự đi':S.warn[0]||`${route.length} điểm · đủ điều kiện. Chốt nhé!`;
-  const places=section('🗺️','Chọn điểm theo thứ tự đi',`<p class="tt-tip">${esc(T.weather.emoji)} ${esc(T.weather.text)} Thứ tự khác nhau thì đường đi dài ngắn khác nhau.</p><div class="tt-split">${tripMap(T,route)}<div class="tt-places">${T.places.map(row).join('')}</div></div>${S.warn.length>1?`<ul class="tt-warn">${S.warn.map(w=>`<li>⚠️ ${esc(w)}</li>`).join('')}</ul>`:''}`,`${route.length}/5 điểm`);
+  const places=section('🗺️','Chọn điểm theo thứ tự đi',`<p class="tt-tip">${esc(T.weather.emoji)} ${esc(T.weather.text)}</p><div class="tt-split">${tripMap(T,route)}<div class="tt-places">${T.places.map(row).join('')}</div></div>${S.warn.length>1?`<ul class="tt-warn">${S.warn.map(w=>`<li>⚠️ ${esc(w)}</li>`).join('')}</ul>`:''}`,`${route.length}/5 điểm`);
   return {body:roster(T,route)+places,bar:bar(esc(next),local('↶ Chọn lại','tourReset',{},'btn ghost',!route.length)+act('Chốt lộ trình →','tour_plan',{task:t.id,route,v:2},'primary',{disabled:!S.ok}),top)};
 }
 

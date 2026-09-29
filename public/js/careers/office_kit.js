@@ -28,7 +28,7 @@ export function statusStrip(x,t,{boss,op}){
   const mod=d.today?.mod,due=t&&t.status!=='completed'?dueOf(t,x):null,trust=clamp(o.trust);
   const pay=mod?.id==='crunch'?18:12,ask=`Ở lại tới 20:00? Được trả ${pay} xu, mai vào muộn 30 phút vì mệt.`;
   let alert='';
-  if(o.locked)alert=`<p class="ok-alert bad">🔒 20:00 — văn phòng khóa cửa. Khép ngày, mai làm tiếp; việc dở được giữ nguyên.</p>`;
+  if(o.locked)alert=`<p class="ok-alert bad">🔒 20:00 — văn phòng khóa cửa.</p>`;
   else if(o.closed)alert=`<div class="ok-alert warn"><span>🌇 17:30 — hết giờ hành chính.</span>${x.confirmCmd(`🌙 Ở lại tăng ca (+${pay} xu)`,op,{},ask,'small')}</div>`;
   else if(o.can_overtime)alert=`<div class="ok-alert"><span>Sắp hết giờ. Còn việc dở?</span>${x.confirmCmd(`🌙 Đăng ký tăng ca (+${pay} xu)`,op,{},ask,'ghost small')}</div>`;
   const lvl=trust<35?'low':trust>=75?'high':'';
@@ -120,9 +120,17 @@ export function desk(x,t,{cls,tabs,panes,strip,bar,def}){
 
 /** Sticky bottom bar: the next step + the main action. On a phone, from another tab it offers the way back to the document
  * (unless `always`, e.g. "receive the dossier", which works from anywhere). */
+const plain=s=>String(s).replace(/<[^>]*>/g,' ').replace(/&[a-z]+;/g,' ').toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim();
+/** A label that only repeats the single main button ("Nhận khay chứng từ" + "📥 Nhận khay chứng từ") is dropped. */
+const echoes=(next,main)=>{
+  if(!main||(main.match(/<button\b/g)||[]).length!==1)return false;
+  const a=plain(next),b=plain(main);
+  return !!b&&(a===b||a.startsWith(b+' '));
+};
 export function bar(x,t,next,main='',always=false){
   const cap=String(next).replace(/^\s*(\S)/,(m,c)=>m.replace(c,c.toUpperCase()));
-  return `<div class="ok-bar${always?' always':''}${main?'':' bare'}"><p class="ok-next" aria-live="polite">${cap}</p>
+  const label=next&&!echoes(next,main)?`<p class="ok-next" aria-live="polite">${cap}</p>`:'';
+  return `<div class="ok-bar${always?' always':''}${main?'':' bare'}">${label}
     ${main?`<div class="ok-bar-btns ok-main">${main}</div>`:''}
     <div class="ok-bar-btns ok-back"><button type="button" class="btn ghost" data-action="car:tab" data-tab="doc" data-key="${x.esc(tabKey(t))}">📂 Về hồ sơ</button></div></div>`;
 }

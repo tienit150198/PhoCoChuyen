@@ -1128,7 +1128,7 @@ def _care(c: dict, d: dict, start: int) -> list:
     if pests:
         rows.append(dict(ok=False, icon='🐛', label=f'Xử lý sâu {ids(pests)}', note='Sâu mức 2 trở lên sẽ lan sang luống bên cạnh qua đêm.',
                          tone='danger' if any(p['seen'] >= 2 for p in pests) else 'warn'))
-    rows.append(dict(ok=True if not walk else None, icon='🔍', label='Thăm sâu mọi luống' if not walk else f'Thăm sâu {ids(walk)}', note=None if walk else 'đã đi hết một vòng'))
+    rows.append(dict(ok=True if not walk else None, icon='🔍', label='Thăm sâu mọi luống' if not walk else f'Thăm sâu {ids(walk)}', note=None))
     weedy = [p for p in d['plots'] if p['weeds'] >= 2]
     if weedy:
         rows.append(dict(ok=False, icon='🌾', label=f'Nhổ cỏ {ids(weedy)}'))

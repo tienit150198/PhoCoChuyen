@@ -96,7 +96,7 @@ function drawer(t,api){
 
 function stamps(t,api){
   const open=room(api).open;
-  return `<section class="dk-stamps"><h4>Đóng dấu quyết định</h4><div class="dk-stamp-grid">${t.verdicts.map(v=>act(`<span class="dk-stamp-ico">${v.icon}</span><span>${esc(v.label)}</span>`,'desk:decide',{task:t.id,verdict:v.id,label:v.label},'dk-stamp'+(open?'':' disabled'))).join('')}</div><p class="dk-hint">Đánh dấu dòng sai trước khi đóng dấu. Đánh dấu nhầm làm khách sốt ruột.</p></section>`;
+  return `<section class="dk-stamps"><h4>Đóng dấu quyết định</h4><div class="dk-stamp-grid">${t.verdicts.map(v=>act(`<span class="dk-stamp-ico">${v.icon}</span><span>${esc(v.label)}</span>`,'desk:decide',{task:t.id,verdict:v.id,label:v.label},'dk-stamp'+(open?'':' disabled'))).join('')}</div><p class="dk-hint">Đánh dấu nhầm làm khách sốt ruột.</p></section>`;
 }
 
 function progress(t){
@@ -110,7 +110,7 @@ export function deskJob(t,ctx){
   let body='';
   if(t.career==='customer_care')body+=queueStrip(t,api)+replies(t,api);
   if(!t.known){
-    body+=`<div class="dk-start">${t.career==='customer_care'&&t.reply==null?'<p class="dk-hint">Trả lời trước để khách biết có người đang nghe, rồi mở hồ sơ.</p>':''}${cmdBtn('📥 '+(t.career==='customer_care'?'Mở hồ sơ đơn':'Nhận giấy tờ'),'ask',{task:t.id},'primary full dk-cta',!room(api).open)}</div>`;
+    body+=`<div class="dk-start">${cmdBtn('📥 '+(t.career==='customer_care'?'Mở hồ sơ đơn':'Nhận giấy tờ'),'ask',{task:t.id},'primary full dk-cta',!room(api).open)}</div>`;
   }else{
     body+=rulebook(t)+`<p class="dk-hint">Chạm vào dòng có vấn đề, rồi chọn quy định mà nó trái.</p><div class="dk-docs">${(t.docs||[]).map(d=>docCard(t,d,api)).join('')}</div>`+progress(t)+drawer(t,api)+checks(t,api)+stamps(t,api);
   }

@@ -138,6 +138,5 @@ export function storiesCard(env){
         <span class="st-dots" role="img" aria-label="${a.seen}/${a.total} đoạn">${dots}</span>${lead}${past}</div>${go}</li>`;
   };
   const body=rows.length?`<ul class="st-rows">${rows.map(row).join('')}</ul>`:`<p class="muted small st-empty">Làm việc ở một nơi, câu chuyện của nơi đó sẽ bắt đầu.</p>`;
-  return `<section class="jr-card st-home" aria-labelledby="stHomeTitle"><div class="jr-sec-head"><h2 id="stHomeTitle">${icon('book',18)} Truyện nghề</h2><small>${fmt(done)}/${fmt(st.arcs.length)} trọn truyện</small></div>
-    <p class="muted small st-lead">Mỗi nơi làm việc có một câu chuyện riêng, mở dần khi bạn làm ở đó.</p>${body}</section>`;
+  return `<section class="jr-card st-home" aria-labelledby="stHomeTitle"><div class="jr-sec-head"><h2 id="stHomeTitle">${icon('book',18)} Truyện nghề</h2><small>${fmt(done)}/${fmt(st.arcs.length)} trọn truyện</small></div>${body}</section>`;
 }

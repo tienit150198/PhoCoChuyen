@@ -118,7 +118,7 @@ function steps(t,x,tab){
 }
 function kitDesk(t,x){
   const k=t.gift?.kit||{asked:[],answers:[]};
-  return `<section class="mb-desk"><h4>🍼 Hỏi han bố mẹ lần đầu</h4><p class="muted small">Hỏi đúng điều cần biết rồi mới chọn đồ. Bộ đồ gọn thôi: tối đa 4 loại, 6 món.</p>
+  return `<section class="mb-desk"><h4>🍼 Hỏi han bố mẹ lần đầu</h4><p class="muted small">Bộ đồ gọn thôi: tối đa 4 loại, 6 món.</p>
     <div class="mb-qa">${TOPICS.map(([id,q])=>{const a=k.answers.find(v=>v.topic===id);return a?`<div class="mb-answer"><b>${x.esc(q)}</b><p>“${x.esc(a.text)}”</p></div>`:qb(x,x.esc(q),'gift_ask',{task:t.id,topic:id},'cream');}).join('')}</div></section>`;
 }
 function safetyNote(t,x){
@@ -153,14 +153,14 @@ function packDesk(t,x){
     <h4>Nơ</h4><div class="mb-swatches">${ribbons.map(r=>`<button type="button" class="mb-swatch ${r.id===d.ribbon?'on':''}" data-action="car:ribbon" data-value="${r.id}" aria-pressed="${r.id===d.ribbon}"><i style="background:${x.esc(r.color)}"></i>${x.esc(r.name)}</button>`).join('')}</div>
     ${tags.length?`<h4>Thiệp đúng dịp</h4><div class="mb-swatches tags">${tags.map(v=>`<button type="button" class="mb-swatch ${v.id===d.tag?'on':''}" data-action="car:tag" data-value="${v.id}" aria-pressed="${v.id===d.tag}">💌 ${x.esc(v.text)}</button>`).join('')}</div>`:''}
     <label class="field">Lời chúc riêng<input class="input" id="mb-card" maxlength="100" data-car="card" data-preserve value="${x.esc(d.card)}"></label>
-    ${x.button('🎀 Gói món quà này','car:pack',{task:t.id},'primary')}${t.pack?`<p class="mb-note good">Đã gói giấy ${x.esc((papers.find(p=>p.id===t.pack.paper)||{}).name||'')}${t.pack.tag?` · thiệp “${x.esc((tags.find(v=>v.id===t.pack.tag)||{}).text||'')}”`:''}. Đổi lại trước khi giao vẫn miễn phí.</p>`:''}
+    ${x.button('🎀 Gói món quà này','car:pack',{task:t.id},'primary')}${t.pack?`<p class="mb-note good">Đã gói giấy ${x.esc((papers.find(p=>p.id===t.pack.paper)||{}).name||'')}${t.pack.tag?` · thiệp “${x.esc((tags.find(v=>v.id===t.pack.tag)||{}).text||'')}”`:''}.</p>`:''}
     <p class="small muted">Vật liệu gói: 5 xu khi giao.</p></div></section>`;
 }
 function checkout(t,x){
   const sum=total(x,t.basket),b=t.needs?.budget,over=b!=null&&sum>b;
   const rows=Object.entries(t.basket||{}).map(([k,q])=>`<div class="kv-row"><span>${q} × ${x.esc(product(x,k).name)}</span><b>${price(x,k)*q} xu</b></div>`).join('');
   return `<section class="mb-till"><h4>🧾 Kiểm lại trước khi trao</h4><div class="kv">${rows||'<p class="muted">Giỏ còn trống.</p>'}<div class="kv-row total"><span>Tổng tiền hàng</span><b class="${over?'bad':''}">${sum} xu${b!=null?` / ${b} xu`:''}</b></div>${t.gift?.discount?`<div class="kv-row"><span>Bớt cho khách</span><b>−${t.gift.discount} xu</b></div>`:''}<div class="kv-row"><span>Gói quà</span><b>${t.pack?'Đã gói · 5 xu':t.needs?.gift?'Chưa gói':'Không cần'}</b></div></div>
-    ${t.checked?'<p class="mb-note good">✓ Đã soát lại giỏ và gói quà. Đọc lại lời khách dặn lần cuối rồi trao nhé.</p>':''}
+    ${t.checked?'<p class="mb-note good">✓ Đã soát lại giỏ và gói quà.</p>':''}
     <div class="row wrap">${qb(x,'✓ Kiểm đơn','shop_check',{task:t.id},'ghost',!count(t.basket))}<button type="button" class="btn primary" data-action="car:deliver" data-task="${x.esc(t.id)}" data-sum="${sum}" data-pack="${t.pack?1:0}"${t.checked?'':' disabled'}>🛍️ Thanh toán & giao · ${sum} xu</button></div></section>`;
 }
 function returnDesk(t,x){
@@ -171,7 +171,7 @@ function returnDesk(t,x){
   return `<section class="mb-desk mb-return"><div class="mb-return-item">${art(p,72)}<div><h4>${x.esc(p.name)}</h4><p class="small">Khách nói mua ngày <b>${x.esc(r.said_date)}</b> · giá ${p.price} xu</p></div></div>
     <div class="mb-inspect">${seen.has('book')?'':qb(x,'📖 Tra sổ bán hàng','gift_book',{task:t.id},'cream')}${seen.has('tag')?'':qb(x,'🏷️ Xem tem','gift_inspect',{task:t.id,part:'tag'},'cream')}${seen.has('item')?'':qb(x,'🔍 Xem kỹ món hàng','gift_inspect',{task:t.id,part:'item'},'cream')}</div>
     ${r.tag?`<p class="mb-finding">🏷️ ${x.esc(r.tag)}</p>`:''}${r.look?`<p class="mb-finding">🔍 ${x.esc(r.look)}</p>`:''}${book}
-    <h4>Cách xử lý</h4>${ready?'':'<p class="mb-note">Xem tem và món hàng trước khi quyết định cho công bằng với cả hai bên.</p>'}
+    <h4>Cách xử lý</h4>
     <div class="mb-resolve">${RESOLVE.map(([id,l,sub])=>`<button type="button" class="btn ${ready?'cream':'ghost'}" data-action="v4Cmd" data-op="gift_resolve" data-payload="${pay(x,{task:t.id,choice:id})}" data-confirm="${x.esc(`${l.replace(/^\S+\s/,'')}: chốt cách này với khách?`)}"><span>${l}</span><small>${sub}</small></button>`).join('')}</div>
     ${r.verdict?`<p class="mb-note">${x.esc(r.verdict)}</p>`:''}</section>`;
 }
@@ -202,7 +202,7 @@ function carePriceOf(x,f,pk){const c=C(x),pr=c.prices||{};return (pr.diaper||0)+
 function pickupCard(x,f){
   const c=C(x),pk=pickOf(x,f.id),busy=!x.room.open;
   const last=f.visits?`Lần trước (ngày ${f.last}): size <b>${x.esc(f.last_size||'?')}</b>${f.last_kg?` · ${kg(f.last_kg)}`:''}${f.last_prod_name?` · ${x.esc(f.last_prod_name)}`:''}`:'Lần đầu lấy gói ở tiệm.';
-  const news=f.news?`<p class="mb-care-say">“${x.esc(f.news)}”</p>`:f.can_ask?`<div class="row wrap">${qb(x,'⚖️ Hỏi thăm & cân bé','gift_care_ask',{family:f.id},'cream',busy)}<small class="muted">Chưa biết hôm nay bé nặng bao nhiêu.</small></div>`:'';
+  const news=f.news?`<p class="mb-care-say">“${x.esc(f.news)}”</p>`:f.can_ask?`<div class="row wrap">${qb(x,'⚖️ Hỏi thăm & cân bé','gift_care_ask',{family:f.id},'cream',busy)}</div>`:'';
   const sizes=(c.sizes||[]).map(sz=>{const n=(c.diapers||{})[sz.id]??0,on=pk.size===sz.id;return `<button type="button" class="mb-opt ${on?'on':''}" data-action="car:pick" data-fam="${f.id}" data-k="size" data-v="${sz.id}" aria-pressed="${on}"${n<1?' disabled':''}><b>${x.esc(sz.id)}</b><small>${x.esc(sz.range)}</small><em>${n<1?'hết':`còn ${n}`}</em></button>`;}).join('');
   let milk='';
   if(f.milk){
@@ -234,7 +234,6 @@ function registryCard(x){
   const boxed=reg.lines.filter(l=>l.aside).length,missing=reg.lines.filter(l=>l.bought&&!l.aside).length;
   const canGo=c.day>=reg.shower-1&&boxed>0;
   return `<article class="mb-reg"><header><b>🎀 Quà mừng bé ${x.esc(c.fam?.find(f=>f.id===reg.family)?.baby||'')} · ${x.esc(c.fam?.find(f=>f.id===reg.family)?.parent||'')}</b><small>Tiệc ngày ${x.esc(reg.shower_date)} · giao hộp từ ngày ${reg.shower-1}</small></header>
-    <p class="small muted">Bạn bè đặt từng món trong danh sách. Món đã có người mua thì lấy trên kệ để riêng; đọc nhãn tuổi, món nào chưa hợp bé sơ sinh thì gợi ý đổi.</p>
     <ul class="mb-reg-list">${rows}</ul>
     <button type="button" class="btn ${canGo?'primary':'ghost'} full" data-action="car:shower" data-missing="${missing}"${canGo&&!busy?'':' disabled'}>🎁 Giao hộp quà mừng${missing?` · còn ${missing} món chưa để riêng`:''}</button></article>`;
 }
@@ -259,7 +258,7 @@ function bookFold(x){
     return `<li><span class="mb-face" style="--s:34px" aria-hidden="true">${x.esc(f.emoji)}</span><div class="grow"><b>${x.esc(f.parent)} · bé ${x.esc(f.baby)}</b><small>${f.weeks!=null?`${f.weeks} tuần · `:''}${x.esc(f.feeding)}${sz}${w}</small><small>${when}${f.missed?` · lỡ hẹn ${f.missed} lần`:''}</small></div><span class="mb-hearts" title="${x.esc(f.trust_name)}" aria-label="${x.esc(f.trust_name)}">${hearts(f.trust)}</span></li>`;
   }).join('');
   const log=(c.log||[]).length?`<h5>📓 Gần đây</h5><ul class="mb-care-log">${c.log.slice().reverse().map(l=>`<li><small>Ngày ${l.day}</small> ${x.esc(l.text)}</li>`).join('')}</ul>`:'';
-  return fold(`📒 Sổ bé quen · ${(c.fam||[]).length} gia đình`,`<ul class="mb-book-list">${rows}</ul><p class="small muted">${x.esc(c.rule||'')} Từ “${x.esc((c.trust_names||[])[c.tells_weight||2]||'')}”, bố mẹ tự kể cân nặng; từ “${x.esc((c.trust_names||[])[c.tips_from||3]||'')}”, họ gửi chút bồi dưỡng khi gói đúng.</p>${log}`);
+  return fold(`📒 Sổ bé quen · ${(c.fam||[]).length} gia đình`,`<ul class="mb-book-list">${rows}</ul><p class="small muted">${x.esc(c.rule||'')}</p>${log}`);
 }
 function careCount(x){const c=C(x);return (c.due||0)+(c.alerts||0)+(c.reg?.state==='open'&&c.reg.lines.some(l=>l.bought&&!l.aside)?1:0);}
 function careCorner(x,always){
@@ -304,7 +303,7 @@ export default {
       main=`${top}${steps(t,x,tab)}${basket}${panel}`;
     }
     const legacyEvent=x.room.event&&x.room.event.stage!=='resolved'?`<p class="mb-note">📣 Có chuyện ở tiệm đang chờ bạn. ${x.button('Xem ngay','event',{},'small')}</p>`:'';
-    return `<div class="career-job mb">${requestStrip(t,x)}${hud(x)}<p class="mb-hint" aria-live="polite">💡 ${x.esc(nextStep(t,x))}</p>${x.ui.flash?`<p class="mb-flash" role="status">${x.esc(x.ui.flash)}</p>`:''}${eventCard(x)}${legacyEvent}${customer(t,x)}${main}${careCorner(x,false)}
+    return `<div class="career-job mb">${requestStrip(t,x)}${hud(x)}${x.ui.flash?`<p class="mb-flash" role="status">${x.esc(x.ui.flash)}</p>`:''}${eventCard(x)}${legacyEvent}${customer(t,x)}${main}${careCorner(x,false)}
       <div class="mb-tools">${x.button('🧺 Kho & nhập hàng','warehouse',{},'ghost small')}${x.button('⭐ Đánh giá','feedback',{},'ghost small')}</div></div>`;
   },
   idle(x){return `<div class="career-job mb">${hud(x)}${eventCard(x)}${careCorner(x,true)}</div>`;},

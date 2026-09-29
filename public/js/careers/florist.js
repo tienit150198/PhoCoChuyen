@@ -218,7 +218,7 @@ const stageLine=s=>s?[s.bud?`${s.bud} nụ`:'',s.bloom?`${s.bloom} nở`:'',s.wi
 /** The daily water change: one reqList row and its button. */
 function waterRow(x){
   const w=care(x).water||{};
-  const row=w.done?{ok:true,icon:'💧',label:'Đã thay nước tủ mát hôm nay',note:'Đêm nay hoa trong tủ không già thêm (mỗi lô tối đa 2 đêm).'}
+  const row=w.done?{ok:true,icon:'💧',label:'Đã thay nước tủ mát hôm nay'}
     :w.last<=today(x)-2?{ok:false,icon:'🫧',label:'Nước tủ mát đã đục',note:'Tối nay mọi lô hoa sẽ già nhanh thêm 1 ngày nếu chưa thay.',tone:'danger'}
     :{ok:null,icon:'💧',label:'Thay nước & cắt lại gốc hoa trong tủ',note:'Đêm nay hoa không già thêm. Bỏ 2 ngày liền thì hoa già nhanh.',tone:'warn'};
   return reqList([row],x.esc,'Tủ mát hôm nay')+(w.done?'':`<div class="fl-care-btns">${x.cmd('💧 Thay nước tủ mát','fl_water',{},'primary small',!x.room.open)}</div>`);
@@ -252,7 +252,7 @@ function preCard(x,b){
   else if(due)btns=x.confirmCmd('💐 Cắm & giao đơn này','fl_pre',{id:b.id,do:'make'},`Cắm “${b.title}” từ hàng trong tủ? Tiệm dùng cành nở đẹp trước; khách đang chờ sẽ chờ thêm chút.`,'primary small',!!(b.short||[]).length||!x.room.open)
     +((b.short||[]).length?x.button('📦 Mở Kho nhập hoa','inventory',{},'ghost small'):'');
   const say=b.status==='offer'?`<p class="fl-note">“${x.esc(b.call)}”</p>`:'';
-  const tip=due?((b.short||[]).length?`<p class="small fl-warn">Thiếu: ${x.esc(b.short.join(', '))}.</p>`:''):'<p class="small muted">Hoa nhập đúng ngày còn nụ chặt; nhập sớm quá thì tới ngày đã sắp héo. Thay nước tủ mát giúp hoa giữ lâu hơn.</p>';
+  const tip=due?((b.short||[]).length?`<p class="small fl-warn">Thiếu: ${x.esc(b.short.join(', '))}.</p>`:''):'';
   return `<li class="fl-pre${due?' due':''}">${head}${say}${list}${tip}${btns?`<div class="fl-care-btns">${btns}</div>`:''}</li>`;
 }
 function subCard(x){
@@ -270,7 +270,7 @@ function subCard(x){
   const menu=s.menu.map(m=>{const rows=m.rows.filter(r=>r.flower);
     return `<div class="fl-tpl"><p class="fl-tpl-head"><b>${x.esc(m.name)}</b><small>${rows.map(r=>`${r.need} ${lower(r.name)}`).join(' · ')}</small></p>
       ${reqList(rows.map(r=>planRow(x,r,true)),x.esc,m.name)}${x.confirmCmd('🏺 Cắm bình này',`fl_sub`,{do:'make',pick:m.id},`Cắm bình “${m.name}” giao bà Tám? Nhìn lại thẻ của bà trước nhé.`,'small',!!m.short.length||!x.room.open)}</div>`;}).join('');
-  return `<li class="fl-pre due">${head}<p class="small"><b>Hôm nay giao bình cho bà.</b> Chọn một trong ba mẫu; đọc thẻ của bà trước.</p>${card}<div class="fl-tpls">${menu}</div></li>`;
+  return `<li class="fl-pre due">${head}<p class="small"><b>Hôm nay giao bình cho bà.</b></p>${card}<div class="fl-tpls">${menu}</div></li>`;
 }
 /** Everything that carries over from day to day. */
 function careBoard(x){
@@ -310,7 +310,7 @@ function coolerStrip(x){
   const fl=(cc(x).flowers||[]).filter(f=>f.unlock<=lvl(x)||stock(x,f.id));
   if(!fl.length)return '';
   const old=fl.filter(f=>(cooler[f.id]?.next??9)<=0&&stock(x,f.id)).length;
-  return `<section class="fl-shelf" aria-label="Tủ mát"><p class="fl-shelf-head"><b>🧊 Trong tủ mát</b><small>${old?`${old} loại có cành sắp héo — dùng trước hoặc bỏ trong Kho`:'Cành cũ nhất được lấy ra trước'}</small></p>
+  return `<section class="fl-shelf" aria-label="Tủ mát"><p class="fl-shelf-head"><b>🧊 Trong tủ mát</b><small>${old?`${old} loại có cành sắp héo — dùng trước hoặc bỏ trong Kho`:''}</small></p>
     <div class="fl-shelf-row">${fl.map(f=>{const q=stock(x,f.id)+(cooler[f.id]?.spare||0),left=q?cooler[f.id]?.next:null,st=stageLine(cooler[f.id]?.stages);
       return `<span class="fl-shelf-item${q?'':' is-empty'}${left!=null&&left<=0?' old':''}" title="${x.esc(f.name)}: ${q} ${x.esc(item(x,f.id).unit||'cành')} · ${freshLabel(left)}"><span class="count-badge${q?'':' is-empty'}" data-count="${q}">${q}</span>${glyph(x,f.id,'fl-shelf-emoji')}<small>${x.esc(f.name)}</small>${st?`<small class="fl-stage-txt">${x.esc(st)}</small>`:''}</span>`;}).join('')}</div></section>`;
 }
@@ -323,7 +323,7 @@ function pieceTabs(t,x){
   return `<div class="fl-party" role="tablist" aria-label="Các món trong bộ">${t.needs.party.map((p,i)=>{
     const f=format(x,p.format),done=!!t.pieces[i],on=i===t.cur&&!done,off=on||(busy&&!on);
     return `<button type="button" role="tab" class="fl-pieceline${on?' on is-selected':''}${done?' done':''}" data-command="fl_tab" data-payload="${pay(x,{task:t.id,index:i})}" aria-selected="${on}"${off?' disabled':''}>
-      <span class="fl-pieceno" aria-hidden="true">${done?'✓':i+1}</span><span class="fl-piecetext"><small>Món ${i+1} · ${done?'đã xong, bấm để mang lại bàn sửa':on?'đang làm':busy?'chờ món đang làm xong':'bấm để làm món này'}</small><b>${x.esc(p.label)}</b><span>${x.esc(f.emoji)} ${x.esc(f.name)} · ${p.stems[0]}–${p.stems[1]} cành</span></span></button>`;
+      <span class="fl-pieceno" aria-hidden="true">${done?'✓':i+1}</span><span class="fl-piecetext"><small>Món ${i+1} · ${done?'đã xong':on?'đang làm':busy?'chờ món đang làm xong':'chưa làm'}</small><b>${x.esc(p.label)}</b><span>${x.esc(f.emoji)} ${x.esc(f.name)} · ${p.stems[0]}–${p.stems[1]} cành</span></span></button>`;
   }).join('')}</div>`;
 }
 /** What the customer has told so far, and what is still worth asking. */
@@ -370,7 +370,7 @@ function coolerPanel(t,x){
     return `<li><b>${glyph(x,f.id)} ${x.esc(f.name)}</b> — ${x.esc(f.meaning)}${f.good.length<8?`<small>Hợp: ${x.esc(f.good.map(o=>occasion(x,o).name).join(', '))}</small>`:''}${taboo?`<small class="fl-warn">Kiêng: ${x.esc(taboo)}</small>`:''}${f.cats==='toxic'?'<small class="fl-warn">Rất độc với mèo (cả phấn, lá, nước bình)</small>':f.cats==='caution'?'<small>Mèo gặm dễ đau bụng</small>':''}</li>`;}).join('');
   const water=care(x).water?.done?'':`<div class="fl-water-line">${waterRow(x)}</div>`;
   return `${water}<h4 class="section-title">Tủ mát · cành cũ nhất ra trước</h4><div class="tile-grid fl-grid">${tiles}</div>
-    <h4 class="section-title">Trên bàn (${w.stems.length} cành)</h4>${bench?`<ul class="fl-bench">${bench}</ul>`:'<p class="muted small">Chưa lấy cành nào. Cành chưa cắt gốc có thể cắm lại vào xô chờ.</p>'}
+    <h4 class="section-title">Trên bàn (${w.stems.length} cành)</h4>${bench?`<ul class="fl-bench">${bench}</ul>`:'<p class="muted small">Chưa lấy cành nào.</p>'}
     <details class="fl-book"><summary>📖 Sổ tay ý nghĩa hoa</summary><ul>${book}</ul></details>`;
 }
 function prepPanel(t,x){
@@ -380,14 +380,13 @@ function prepPanel(t,x){
   const full=(d.buckets||[]).length>=(cc(x).buckets||2)&&!soaking(t);
   return `<h4 class="section-title">1 · Cắt gốc dưới vòi nước</h4>
     <div class="row wrap">${x.cmd(`✂️ Cắt xéo 45° (${uncut})`,'fl_cut',{task:t.id,angle:'angled'},uncut&&!locked?'primary':'',!uncut||locked)}${x.cmd('Cắt thẳng cho nhanh','fl_cut',{task:t.id,angle:'straight'},'ghost small',!uncut||locked)}</div>
-    <p class="muted small">Gốc xéo không bị bịt đáy xô và có mặt cắt rộng hơn để hút nước.</p>
     <h4 class="section-title">2 · Tuốt lá, gai phần gốc</h4>
     ${x.cmd(`🍃 Tuốt lá dưới mực nước (${bare})`,'fl_strip',{task:t.id},'',!bare||locked)}
     <h4 class="section-title">3 · Ngâm xô nước mát</h4>
     <div class="fl-pails">${soakMeter(x,w.soak,min)}${others.map(()=>`<div class="fl-other small">🪣 Xô bên cạnh đang ngâm hoa của đơn khác</div>`).join('')}</div>
     <div class="row wrap">${x.cmd('🪣 Thả vào xô','fl_soak',{task:t.id},'',!w.stems.length||!!uncut||w.arranged||soaking(t)||full)}${x.cmd('🙌 Nhấc ra','fl_lift',{task:t.id},soaking(t)?'primary':'',!soaking(t))}</div>
     ${full?'<p class="notice small">Cả hai xô đang bận. Nhấc hoa của đơn khác ra trước.</p>':''}
-    <p class="muted small">${f.soak?`Bó/bình cần ngâm ít nhất ${min} giây thật cho cành căng nước.`:'Cắm mút: mút giữ nước, ngâm xô là tùy chọn — nhưng vẫn cắt xéo và tuốt lá.'}</p>`;
+    ${f.soak?'':'<p class="muted small">Cắm mút: mút giữ nước, ngâm xô là tùy chọn — nhưng vẫn cắt xéo và tuốt lá.</p>'}`;
 }
 function designPanel(t,x){
   const sp=spec(t),w=t.work,level=lvl(x),min=t.foam_min||cc(x).foam_min||10;
@@ -409,21 +408,20 @@ function designPanel(t,x){
     ${x.cmd('✂️ Gỡ giấy & ruy băng','fl_unwrap',{task:t.id},'ghost small',!w.paper&&!w.ribbon)}`;
   const banner=w.base==='wreath'?`<h4 class="section-title">${step++} · Băng rôn chữ <span class="fl-swatch-n${stock(x,'banner')?'':' zero'}">${stock(x,'banner')}</span></h4>${w.banner?`<p class="fl-printed">🎗️ “${x.esc(w.banner)}”</p>`:''}
     <div class="fl-write"><label class="field grow">Nội dung in<input id="fl-banner-text" class="input" maxlength="60" autocomplete="off" spellcheck="false" value="${x.esc(x.ui.bannerText||'')}" placeholder="Gõ đúng từng chữ, có dấu"></label>${x.button(w.banner?'🖨️ In lại':'🖨️ In & treo','car:banner',{task:t.id},'primary')}</div>`:'';
-  const cover=rainy(x)&&deliver(t)?`<h4 class="section-title">${step++} · Chống mưa</h4><div class="row wrap">${x.cmd(w.cover?'✓ Đã bọc nylon':'🌂 Bọc nylon chống mưa','fl_cover',{task:t.id},w.cover?'ghost small':'',!!w.cover||!w.arranged||(w.base==='bouquet'&&!w.paper))}</div><p class="muted small">Trời mưa: hoa giao tận nơi không bọc sẽ ướt, giấy gói nhũn.</p>`:'';
+  const cover=rainy(x)&&deliver(t)?`<h4 class="section-title">${step++} · Chống mưa</h4><div class="row wrap">${x.cmd(w.cover?'✓ Đã bọc nylon':'🌂 Bọc nylon chống mưa','fl_cover',{task:t.id},w.cover?'ghost small':'',!!w.cover||!w.arranged||(w.base==='bouquet'&&!w.paper))}</div>`:'';
   return `<h4 class="section-title">1 · Kiểu cắm</h4><div class="tile-grid fl-grid">${bases}</div>${foam}
     <h4 class="section-title">2 · Cắm / bó</h4>${arrange}${papers}${ribbons}${banner}${cover}`;
 }
 function cardPanel(t,x){
   const n=t.needs,sp=spec(t),w=t.work,tone=t.card_tone;
   const toneLine=w.card?`<p class="fl-tone ${tone||''}">${{fit:'✓ Lời thiệp hợp dịp.',plain:'○ Lời hơi chung chung — thêm một câu đúng dịp sẽ ấm hơn.',wrong:'✗ Lời thiệp không hợp dịp này!'}[tone]||''}</p>`:'';
-  const card=`<h4 class="section-title">Thiệp viết tay <span class="fl-swatch-n${stock(x,'card')?'':' zero'}">${stock(x,'card')}</span></h4>${sp.card?'':'<p class="muted small">Món này khách không yêu cầu thiệp — có thể bỏ qua.</p>'}
+  const card=`<h4 class="section-title">Thiệp viết tay <span class="fl-swatch-n${stock(x,'card')?'':' zero'}">${stock(x,'card')}</span></h4>
     <div class="fl-write"><label class="field grow">Lời nhắn<textarea id="fl-card-text" class="input" rows="3" maxlength="160" spellcheck="false" placeholder="Viết đúng dịp: ${x.esc(lower(occasion(x,n.occasion).name))}…">${x.esc(x.ui.cardText??w.card??'')}</textarea></label>
     ${x.button(w.card?'✍️ Viết lại thiệp mới':'✍️ Viết thiệp','car:card',{task:t.id},'primary')}</div>${toneLine}`;
-  let slots='<p class="muted small">Khách nhận hoa tại tiệm.</p>';
+  let slots='';
   if(deliver(t)){
-    slots=`<h4 class="section-title">Khung giờ giao</h4>${n.delivery?'':'<p class="notice amber small">🕒 Chưa hỏi khách giờ giao. Hỏi ở phiếu đơn cho chắc, hoặc chọn theo phỏng đoán.</p>'}
-      <div class="fl-segs" role="group" aria-label="Khung giờ giao">${(cc(x).slots||[]).map(s=>seg(x,'slot','slot',s.id,s.name,x.ui.slot)).join('')}</div>
-      <p class="muted small">Phí giao ${cc(x).delivery_fee||15} xu đã tính vào đơn. Gọi xác nhận địa chỉ trước khi xuất phát.</p>`;
+    slots=`<h4 class="section-title">Khung giờ giao</h4>${n.delivery?'':'<p class="notice amber small">🕒 Chưa hỏi khách giờ giao.</p>'}
+      <div class="fl-segs" role="group" aria-label="Khung giờ giao">${(cc(x).slots||[]).map(s=>seg(x,'slot','slot',s.id,s.name,x.ui.slot)).join('')}</div>`;
   }
   return card+slots;
 }
@@ -499,7 +497,7 @@ export default {
     const onBench=w.stems.length;
     const badge=k=>k==='prep'&&soaking(t)?'<em class="fl-badge">⏱</em>':k==='cooler'&&onBench?`<em class="fl-badge calm">${onBench}</em>`:'';
     const tabBar=`<div class="fl-tabs" role="tablist" aria-label="Khu làm việc">${tabs.map(([k,e,l])=>`<button type="button" role="tab" class="fl-tab ${ui.tab===k?'on':''}" data-action="car:tab" data-tab="${k}" aria-selected="${ui.tab===k}">${e} ${l}${badge(k)}</button>`).join('')}</div>`;
-    const panel=plated(t)?`<p class="notice">🎁 Đủ ${t.pieces.length} món trên bàn chờ. Giao cả bộ, hoặc bấm một món ở phiếu đơn để mang lại bàn sửa.</p>`
+    const panel=plated(t)?''
       :({cooler:coolerPanel,prep:prepPanel,design:designPanel,card:cardPanel}[ui.tab]?.(t,x)||'');
     const rs=rows(t,x),steps=stepRows(t,x),ok=steps.filter(r=>r[0]===true).length;
     const dump=x.confirmCmd('🗑️ Bỏ bó, làm lại','fl_dump',{task:t.id},'Bỏ toàn bộ hoa và vật liệu đang dùng? Giá trị ghi hao hụt.','danger small',plated(t)||(!w.stems.length&&!w.base)||soaking(t));

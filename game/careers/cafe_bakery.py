@@ -1878,7 +1878,7 @@ def _care_rows(c: dict, raw: dict, starter: dict, cold: list, tm: dict) -> list[
         b = BAKES[x['item']]
         if x['bakeable']:
             rows.append(dict(ok=None, icon='❄️', label=f'Nướng khay {b["name"].lower()} ủ lạnh', value=f'đêm {x["nights"]}',
-                             note='Đêm cuối: nướng hôm nay kẻo bột quá chua.' if x['last'] else 'Vào lò ngay, không phải chờ nở.',
+                             note='Đêm cuối: nướng hôm nay kẻo bột quá chua.' if x['last'] else '',
                              tone='warn' if x['last'] else ''))
         else:
             rows.append(dict(ok=True, icon='❄️', label=f'{b["name"]} đang ủ lạnh cho ngày mai'))
@@ -1888,8 +1888,7 @@ def _care_rows(c: dict, raw: dict, starter: dict, cold: list, tm: dict) -> list[
                          tone='warn'))
     if tm['busy']:
         chilled = any(x['day'] == c['day'] for x in cold)
-        rows.append(dict(ok=True if chilled else None, icon='📅', label=f'Mai {tm["label"].lower()}: ủ lạnh sẵn 1 khay bột tối nay',
-                         note='Sáng mai có bánh ra lò ngay cho khách mua lẻ.'))
+        rows.append(dict(ok=True if chilled else None, icon='📅', label=f'Mai {tm["label"].lower()}: ủ lạnh sẵn 1 khay bột tối nay'))
     return rows
 
 

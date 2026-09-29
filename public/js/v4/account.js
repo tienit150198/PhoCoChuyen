@@ -33,7 +33,6 @@ export function accountPane(env){
   const {api,ui}=env,a=api.account;
   if(a)return `<section class="settings-block"><h3>${icon('user',18)} Tài khoản</h3>
       <p class="acct-who">${icon('cloud',18)}<span>Đang đăng nhập: <b>${esc(a.display)}</b> <small class="muted">(${esc(a.username)})</small></span></p>
-      <p class="small muted">Tiến trình tự lưu vào tài khoản. Đăng nhập trên máy khác là chơi tiếp được.</p>
       ${btn(`${icon('exit',16)} Đăng xuất`,'v4AccountLogout',{},'ghost')}</section>
     <form id="accountPasswordForm" class="settings-block acct-form" novalidate><h3>${icon('lock',18)} Đổi mật khẩu</h3>
       <input type="text" name="username" autocomplete="username" value="${esc(a.username)}" hidden>
@@ -55,11 +54,10 @@ export function accountPane(env){
       <p class="small acct-warn">${icon('alert',15)} Nhớ kỹ mật khẩu — hiện chưa có cách lấy lại.</p>
       ${errorLine(ui)}<button class="btn primary full" type="submit">Tạo tài khoản</button></form>`
     :`<form id="accountLoginForm" class="acct-form" novalidate>
-      <p class="small muted">Đăng nhập để chơi tiếp tiến trình đã lưu trong tài khoản.</p>
       ${field('acct-username','Tên đăng nhập','text','username',USER_ATTRS)}
       ${field('acct-password','Mật khẩu','password','current-password','required maxlength="128"')}
       ${errorLine(ui)}<button class="btn primary full" type="submit">Đăng nhập</button></form>`;
-  return `<section class="settings-block"><h3>${icon('cloud',18)} Giữ tiến trình</h3><p class="small muted">Không cần email. Chỉ cần tên đăng nhập và mật khẩu.</p>${tabs}${form}</section>`;
+  return `<section class="settings-block"><h3>${icon('cloud',18)} Giữ tiến trình</h3>${tabs}${form}</section>`;
 }
 
 async function send(env,form,route,body){

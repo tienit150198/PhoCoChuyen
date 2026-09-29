@@ -167,7 +167,7 @@ function shelf(t,x,group,title){
     if(s.stock===0&&!inCup)return tile(x,{name:i.name,emoji:i.emoji,count:0,cls:'restock',cmd:'tea_prepare',payload:{item:i.id,qty:5,confirm:true},sub:`+5 · ${i.cost*5} xu`,label:`${i.name} đã hết. Chuẩn bị thêm 5 phần, ${i.cost*5} xu`});
     const disabled=!ready||inCup||have>=limit||needBase;
     return tile(x,{name:i.name,emoji:i.emoji,count:s.stock,on:inCup,disabled,cmd:'tea_add',payload:{task:t.id,item:i.id},label:`${i.name}, còn ${s.stock} phần${inCup?', đã có trong ly':''}`});
-  }).join('')}</div>${group!=='base'&&needBase&&cup.placed?'<p class="muted small">Rót trà nền trước rồi mới thêm siro, topping.</p>':''}</section>`;
+  }).join('')}</div></section>`;
 }
 function cupStack(t,x){
   const b=B(x),cup=t.cup,cups=b.cups||{M:0,L:0};
@@ -188,7 +188,7 @@ function sealer(t,x){
   const ready=t.known&&cup.placed&&hasGroup(x,cup,'base')&&cup.sugar!=null&&cup.ice!=null&&!cup.sealed;
   if(cup.sealed)return `<div class="mt-sealer done ${cup.seal_q||''}"><b>${cup.dome?'🫧 Đã đậy nắp cầu':SEAL_TEXT[cup.seal_q]||SEAL_TEXT.ok}</b></div>`;
   if(auto)return `<div class="mt-sealer">${jb(x,'⚙️ Dán nắp tự động','tea_seal',{task:t.id},'cream full',!ready)}</div>`;
-  if(b.sealer_off)return `<div class="mt-sealer">${b.dome?jb(x,'🫧 Đậy nắp cầu · 1 xu','tea_seal',{task:t.id},'cream full',!ready):'<p class="muted small">Máy dán nắp đang ngưng. Chọn cách xử lý ở khung tình huống.</p>'}</div>`;
+  if(b.sealer_off)return `<div class="mt-sealer">${b.dome?jb(x,'🫧 Đậy nắp cầu · 1 xu','tea_seal',{task:t.id},'cream full',!ready):'<p class="muted small">Máy dán nắp đang ngưng.</p>'}</div>`;
   const pct=v=>v/S.max*100,start=cup.seal_t||0,held=start?Math.max(0,x.now()-start):0;
   const zones=[['loose',0,S.loose],['ok',S.loose,S.good_lo],['good',S.good_lo,S.good_hi],['ok',S.good_hi,S.burn],['burn',S.burn,S.max]];
   const quick=x.state?.settings?.reduceMotion;
@@ -204,7 +204,7 @@ function finish(t,x){
     ${jb(x,`${label}${t.quoted_price!=null?` · ${t.quoted_price} xu`:''}`,'tea_serve',{task:t.id,confirm:true},'primary jumbo mt-serve',!cup.sealed)}
     <div class="mt-minor">${x.confirmCmd('🗑️ Đổ ly','tea_discard',{task:t.id},'Đổ ly đang làm? Nguyên liệu đã dùng được ghi hao hụt và tính là một lần làm lại.','ghost small',!(cup.placed||(cup.items||[]).length))}
     ${jb(x,'🔎 So phiếu','tea_check',{task:t.id},'ghost small',!t.known||!(cup.items||[]).length||cup.sealed)}</div>
-    <p class="muted small">So phiếu sai sẽ tính một lỗi. Tự soi lời khách trước nhé.</p></div>`;
+    <p class="muted small">So phiếu sai sẽ tính một lỗi.</p></div>`;
 }
 function hint(t,x){
   const lv=B(x).level||1,text=nextStep(t,x,lv<=3);
@@ -248,21 +248,21 @@ function stockTab(x){
   return `<h3 class="section-title">🥤 Chồng ly</h3><div class="mt-rows">${cupRows}</div>${groups.map(([g,title])=>`<h3 class="section-title">${title}</h3><div class="mt-rows">${ings(x).filter(i=>i.group===g).map(i=>{
     const s=station(x,i.id),exp=lot(i.id),soon=exp!=null&&exp<=day;
     if(!s.unlocked)return `<div class="mt-row locked"><span class="mt-emo" aria-hidden="true">${i.emoji}</span><div class="grow"><b>${x.esc(i.name)}</b><small>🔒 Mở ở tay nghề cấp ${s.level}</small></div></div>`;
-    return `<div class="mt-row ${s.stock===0?'empty':''}"><span class="mt-emo" aria-hidden="true">${i.emoji}</span><div class="grow"><b>${x.esc(i.name)}</b><small><span class="mt-count-inline ${s.stock===0?'zero':''}">Còn ${s.stock}</span>${exp!=null?` · <span class="${soon?'warn':''}">dùng hết ngày ${exp}</span>`:''} · ${i.cost} xu/phần</small></div>${jb(x,`+5 · ${i.cost*5} xu`,'tea_prepare',{item:i.id,qty:5,confirm:true},'small')}</div>`;}).join('')}</div>`).join('')}<p class="muted small">Trân châu, foam và kem cheese chỉ giữ được trong ngày. Hàng hết hạn được ghi hao hụt khi khép ca.</p>`;
+    return `<div class="mt-row ${s.stock===0?'empty':''}"><span class="mt-emo" aria-hidden="true">${i.emoji}</span><div class="grow"><b>${x.esc(i.name)}</b><small><span class="mt-count-inline ${s.stock===0?'zero':''}">Còn ${s.stock}</span>${exp!=null?` · <span class="${soon?'warn':''}">dùng hết ngày ${exp}</span>`:''} · ${i.cost} xu/phần</small></div>${jb(x,`+5 · ${i.cost*5} xu`,'tea_prepare',{item:i.id,qty:5,confirm:true},'small')}</div>`;}).join('')}</div>`).join('')}<p class="muted small">Trân châu, foam và kem cheese chỉ giữ được trong ngày.</p>`;
 }
 function upgradeTab(x){
   return `<div class="mt-upgrades">${(B(x).upgrades||[]).map(u=>`<article class="mt-upgrade ${u.owned?'owned':''}"><span class="mt-emo big" aria-hidden="true">${x.esc(u.emoji)}</span><div class="grow"><h4>${x.esc(u.name)}</h4><p>${x.esc(u.text)}</p></div>${u.owned?'<span class="tag green">✓ Đã lắp</span>':!u.ready?`<span class="tag">🔒 Tay nghề cấp ${u.level}</span>`:x.confirmCmd(`Lắp · ${u.price} xu`,'tea_upgrade',{id:u.id},`Lắp ${u.name} với giá ${u.price} xu?`,'primary small',x.room.money<u.price)}</article>`).join('')}</div>`;
 }
 function priceTab(x){
   const b=B(x),base=b.prices?.base||{},prices=x.room.life?.prices||{},closed=!x.room.open;
-  return `${board(x)}<p class="muted">Đổi giá trà nền trong khoảng 75%–125% giá gốc, trước khi mở cửa. Ly đã nhận giữ giá đã báo.</p><div class="price-editor">${ings(x).filter(i=>i.group==='base').map(i=>{
+  return `${board(x)}<p class="muted">Đổi giá trà nền trong khoảng 75%–125% giá gốc, trước khi mở cửa.</p><div class="price-editor">${ings(x).filter(i=>i.group==='base').map(i=>{
     const s=station(x,i.id),g=base[i.id]||30,v=prices[i.id]||g;
-    return `<div><strong>${x.esc(i.emoji)} ${x.esc(i.name)}${s.unlocked?'':' 🔒'}</strong><input class="input" type="number" id="price-${i.id}" min="${Math.round(g*.75)}" max="${Math.round(g*1.25)}" value="${v}" data-preserve aria-label="Giá ${x.esc(i.name)}" ${closed?'':'disabled'}>${x.button('Lưu giá','expPrice',{item:i.id},'small')}</div>`;}).join('')}</div>${closed?'':'<p class="small muted">Quán đang mở cửa: khép ca rồi hãy đổi giá nhé.</p>'}`;
+    return `<div><strong>${x.esc(i.emoji)} ${x.esc(i.name)}${s.unlocked?'':' 🔒'}</strong><input class="input" type="number" id="price-${i.id}" min="${Math.round(g*.75)}" max="${Math.round(g*1.25)}" value="${v}" data-preserve aria-label="Giá ${x.esc(i.name)}" ${closed?'':'disabled'}>${x.button('Lưu giá','expPrice',{item:i.id},'small')}</div>`;}).join('')}</div>`;
 }
 function reviewsTab(x){
   const posts=(x.room.feed||[]).filter(p=>p.stars),dist=[5,4,3,2,1].map(s=>[s,posts.filter(p=>p.stars===s).length]),max=Math.max(1,...dist.map(d=>d[1]));
   return `<div class="mt-rating"><div class="mt-rating-big"><strong>${x.room.rating||'—'}</strong><small>${posts.length} đánh giá</small></div><div class="mt-dist">${dist.map(([s,n])=>`<div><span>${s}★</span><i><b style="width:${n/max*100}%"></b></i><small>${n}</small></div>`).join('')}</div></div>
-    <div class="mt-reviews">${posts.slice(0,6).map(p=>`<article><div class="row spread"><b>${x.esc(p.author||'Khách')}</b><span class="mt-stars" aria-label="${p.stars} sao">${'★'.repeat(p.stars)}${'☆'.repeat(5-p.stars)}</span></div><p>${x.esc(p.text)}</p><small>Ngày ${p.day}</small></article>`).join('')||'<p class="muted">Chưa có đánh giá nào. Pha ly đầu tiên nhé!</p>'}</div>${x.button('Đọc & trả lời đánh giá','feedback',{},'ghost')}`;
+    <div class="mt-reviews">${posts.slice(0,6).map(p=>`<article><div class="row spread"><b>${x.esc(p.author||'Khách')}</b><span class="mt-stars" aria-label="${p.stars} sao">${'★'.repeat(p.stars)}${'☆'.repeat(5-p.stars)}</span></div><p>${x.esc(p.text)}</p><small>Ngày ${p.day}</small></article>`).join('')||'<p class="muted">Chưa có đánh giá nào.</p>'}</div>${x.button('Đọc & trả lời đánh giá','feedback',{},'ghost')}`;
 }
 function recapTab(x){
   const b=B(x),h=(b.history||[]).slice().reverse(),pct=b.next_tier?Math.min(100,(b.total||0)/b.next_tier*100):100;
@@ -284,7 +284,7 @@ function prepare(x,tab){
     <nav class="mt-tabs" role="tablist" aria-label="Chuẩn bị quầy">${TABS.map(([id,e,l])=>`<button type="button" role="tab" class="mt-tab ${tab===id?'on':''}" data-action="car:prep" data-tab="${id}" aria-selected="${tab===id}"><span aria-hidden="true">${e}</span> ${l}</button>`).join('')}</nav>
     <section class="mt-panel" role="tabpanel">${panel}</section>
   </div>
-  <footer class="life-sticky">${x.button(c.open?'Về quầy · pha tiếp':`Mở cửa ngày ${c.day}`,c.open?'workbench':'start',{},'primary jumbo')}<small>Tiến trình được tự động lưu</small></footer>`;
+  <footer class="life-sticky">${x.button(c.open?'Về quầy · pha tiếp':`Mở cửa ngày ${c.day}`,c.open?'workbench':'start',{},'primary jumbo')}</footer>`;
 }
 
 /* ---------------------------------------------------------------- module */
@@ -303,8 +303,8 @@ export default {
   idle(x){
     const b=B(x),waiting=x.room.tasks.filter(open),left=b.left||0;
     const next=waiting.length?x.button(`👋 Mời ${x.esc(waiting[0].customer||'khách')} lên quầy`,'job',{task:waiting[0].id},'primary'):left?jb(x,'🔔 Mời khách tiếp theo','more_work',{},'primary'):x.button('🌙 Khép ca hôm nay','end',{},'primary');
-    const tip=waiting.length?'Còn khách đang chờ ở quầy.':left?'Khách mới sắp tới quầy.':'Hết khách hôm nay rồi. Khép ca để xem tổng kết.';
-    return `<div class="career-job mt">${hud(x)}${eventCard(x)}${alerts(x)}<p class="mt-hint">💡 ${tip}</p><div class="row wrap">${next}${x.button('🧺 Kho & nâng cấp','prepare',{},'ghost')}</div></div>`;
+    const tip=waiting.length||left?'':'<p class="mt-hint">💡 Hết khách hôm nay rồi.</p>';
+    return `<div class="career-job mt">${hud(x)}${eventCard(x)}${alerts(x)}${tip}<div class="row wrap">${next}${x.button('🧺 Kho & nâng cấp','prepare',{},'ghost')}</div></div>`;
   },
   page(view,x){
     if(!['prepare','prices'].includes(view))return '';

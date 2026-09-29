@@ -171,7 +171,6 @@ function introView(env){
   return `<div class="jr-intro"><span class="eyebrow">Việc đầu tiên</span><h1>Bắt đầu từ đâu nhỉ?</h1>
     <div class="jr-lines">${say(ch.intro[2],J.gender)}</div>
     <div class="jr-first-jobs">${ids.map(id=>{const m=meta(api,id);return `<button type="button" class="jr-job" data-action="choose" data-career="${esc(id)}" style="--career:${colour(m.color)}"><span class="jr-job-emoji" aria-hidden="true">${emojiOf(m)}</span><b>${esc(m.place||m.short)}</b><small>${esc(m.tagline||m.short||'')}</small><span class="jr-job-go">Làm thử ${icon('arrow',14)}</span></button>`;}).join('')}</div>
-    <p class="muted small">Các nơi khác sẽ mở dần khi bạn quen khu phố.</p>
     <button type="button" class="jr-link" data-action="jrStep" data-step="who">${icon('back',14)} Sửa tên hoặc nhân vật</button></div>`;
 }
 
@@ -185,7 +184,7 @@ function whoForm(env,title,sub,cta){
 }
 
 function profileView(env){
-  return head('Nhân vật của bạn','Đổi tên hoặc dáng vẻ bất cứ lúc nào. Hàng xóm sẽ gọi bạn theo tên này.',{back:true})+`<div class="sheet-body jr-body jr-profile">${whoForm(env,'','','Lưu lại')}</div>`;
+  return head('Nhân vật của bạn','',{back:true})+`<div class="sheet-body jr-body jr-profile">${whoForm(env,'','','Lưu lại')}</div>`;
 }
 
 /* ------------------------------------------------------------------ titles */
@@ -205,7 +204,7 @@ function titlesView(env){
     const got=rows.filter(t=>have.has(t.id)).length;
     return `<section class="jr-title-cat"><h3>${esc(cat.name)} <small>${got}/${rows.length}</small></h3><div class="jr-title-grid">${tiles}</div></section>`;
   }).join('');
-  return head('Danh hiệu',`Đã có ${J.titles.length}/${C.titles.length}. Chạm một danh hiệu đã có để đeo dưới tên bạn.`,{back:true})+`<div class="sheet-body jr-body">${cats}</div>`;
+  return head('Danh hiệu',`Đã có ${J.titles.length}/${C.titles.length}.`,{back:true})+`<div class="sheet-body jr-body">${cats}</div>`;
 }
 
 /* ------------------------------------------------------------------ wallet */
@@ -224,9 +223,9 @@ function walletView(env){
   const kinds={living:'🏠',upkeep:'💡',draw:'👛',invest:'📈',salary:'💵',reopen:'🔑',incident:'⚖️'};
   const hist=J.history.map(h=>`<li><span aria-hidden="true">${kinds[h.kind]||'•'}</span><span class="grow">${esc(h.label)}<small>Ngày sống ${fmt(h.day)}</small></span><b class="${h.amount<0?'out':'in'}">${h.amount<0?'−':'+'}${fmt(Math.abs(h.amount))} xu</b></li>`).join('')||`<li class="muted">Chưa có khoản nào.</li>`;
   const L=J.living;
-  return head('Ví của bạn','Tiền riêng của bạn, tách khỏi quỹ từng nơi làm việc.',{back:true})+`<div class="sheet-body jr-body">
+  return head('Ví của bạn','',{back:true})+`<div class="sheet-body jr-body">
     <section class="jr-card jr-purse ${J.debt?'bad':''}" aria-live="polite"><small>${J.debt?'Đang nợ tiền phòng':'Số dư'}</small><strong>${J.debt?`${fmt(J.debt)} xu`:`${fmt(J.wallet)} xu`}</strong>
-      <p>Mỗi ngày sống: tiền phòng ${fmt(L.rent)} xu và cơm nước ${fmt(L.meals)} xu.</p><p class="muted small">Nơi đã làm mà hôm đó bạn vắng mặt vẫn tốn phí duy trì từ quỹ của nơi đó. Tạm đóng để ngưng.</p>
+      <p>Mỗi ngày sống: tiền phòng ${fmt(L.rent)} xu và cơm nước ${fmt(L.meals)} xu.</p>
       ${J.debt?`<p class="jr-debt-note">Khi ví còn nợ, câu chuyện tạm dừng. Rút tiền lời về ví để trả nhé.</p>`:''}</section>
     ${investEntry(env)}
     <h3 class="jr-sub">Quỹ các nơi làm việc</h3><div class="jr-funds">${places}</div>
@@ -236,7 +235,7 @@ function walletView(env){
 /* ------------------------------------------------------------------ future (locked) */
 export function journeyFuture(env){
   const {api}=env,J=api.state.journey,ids=api.content.catalogue.map(m=>m.id).filter(id=>api.state.careers[id]&&!J?.unlocked?.includes(id));
-  return head('Cả một khu phố phía trước','Những nơi sẽ mở dần theo hành trình của bạn.',{close:true,eyebrow:'KHU PHỐ'})+`<div class="sheet-body jr-body"><div class="jr-locked-grid">${ids.map(id=>lockedTile(env,id)).join('')||'<p class="muted">Mọi nơi trong phố đã mở với bạn.</p>'}</div></div>`;
+  return head('Cả một khu phố phía trước','',{close:true,eyebrow:'KHU PHỐ'})+`<div class="sheet-body jr-body"><div class="jr-locked-grid">${ids.map(id=>lockedTile(env,id)).join('')||'<p class="muted">Mọi nơi trong phố đã mở với bạn.</p>'}</div></div>`;
 }
 
 /* ------------------------------------------------------------------ scenes */

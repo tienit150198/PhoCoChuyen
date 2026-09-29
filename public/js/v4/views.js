@@ -20,7 +20,7 @@ const tabs=(items,active,action)=>`<nav class="pill-tabs" role="tablist">${items
  * and lots by days left. The server stays authoritative for every rule. */
 export function inventoryView(env){
   const {api,ui}=env,c=api.state.careers[api.state.current],inv=c.inventory,content=api.content;
-  if(!inv)return head('Nghề này không nhập hàng','Công việc dựa vào hồ sơ và thời gian của bạn.')+`<div class="sheet-body"><div class="empty">${icon('box',32)}<p>Không có kho nguyên liệu ở nghề này.</p></div></div>`;
+  if(!inv)return head('Nghề này không nhập hàng')+`<div class="sheet-body"><div class="empty">${icon('box',32)}<p>Không có kho nguyên liệu ở nghề này.</p></div></div>`;
   const items=content.inventory.items[api.state.current]||[],byId=Object.fromEntries(items.map(i=>[i.id,i]));
   const cap=inv.capacity,arriving=inv.arriving||{},unit=i=>i?.unit||'phần',stock=id=>inv.stock[id]||0;
   const room=id=>inv.room?.[id]??Math.max(0,cap-stock(id)-(arriving[id]||0));
@@ -40,7 +40,7 @@ export function inventoryView(env){
   else if(low.length)cta=button(`${icon('plus',15)} Nhập thêm ${name(low[0])}`,'v4Order',{item:low[0].id},'primary');
   else if(tonight)cta=button(`${icon('clock',15)} Xem hàng hết hạn tối nay`,'v4InvTab',{tab:'lots'},'primary');
   const chip=(n,label,kind,tabId)=>n?`<button type="button" class="inv-chip ${kind}" data-action="v4InvTab" data-tab="${tabId}"><b>${n}</b> ${label}</button>`:'';
-  const calm=!ready.length&&!transit.length&&!tonight&&!low.length?`<span class="inv-calm">${icon('check',14)} Kho ổn. Chạm một ô để nhập thêm.</span>`:'';
+  const calm=!ready.length&&!transit.length&&!tonight&&!low.length?`<span class="inv-calm">${icon('check',14)} Kho ổn.</span>`:'';
   const now=clk?`<div class="row spread"><span class="tag blue">🕑 ${esc(clk.label)}</span><small class="muted">Mở cửa ${esc(clk.open_time)}–${esc(clk.close_time)}</small></div>`:'';
   const next=!ready.length&&transit[0]?`<small class="muted">${icon('truck',13)} Thùng gần nhất: ${name(byId[transit[0].item])} · <b>${esc(transit[0].eta_label||'')}</b>${transit[0].left_label?` (${esc(transit[0].left_label)})`:''}</small>`:'';
   const strip=`<section class="inv-status" aria-label="Tình trạng kho">${now}<div class="inv-chips">${chip(ready.length,'thùng đã tới','accent','orders')}${chip(transit.length,'đơn đang giao','info','orders')}${chip(tonight,'hết hạn tối nay','bad','lots')}${chip(low.length,'loại sắp hết','warn','stock')}${calm}</div>${next}${cta?`<div class="inv-cta">${cta}</div>`:''}</section>`;
@@ -75,17 +75,16 @@ export function inventoryView(env){
       const opened=ui.invOpen===o.id||ready.length===1;
       const form=`<div class="inv-slip"><span>Phiếu giao ghi</span><b>${o.qty} ${esc(unit(i))}</b></div><ul class="inv-crate" aria-label="Trong thùng">${goods}</ul>`+
         `<form class="inv-receive" data-v4-receive="${esc(o.id)}"><label for="count-${esc(o.id)}">Bạn đếm được</label><div class="inv-stepper"><button type="button" class="btn ghost" data-action="v4Count" data-target="count-${esc(o.id)}" data-step="-1" aria-label="Bớt một">−</button><input id="count-${esc(o.id)}" class="input" type="number" min="0" max="60" inputmode="numeric" value="${esc(ui.invCount?.[o.id]??'')}" placeholder="0" data-v4-count="${esc(o.id)}" required><button type="button" class="btn ghost" data-action="v4Count" data-target="count-${esc(o.id)}" data-step="1" aria-label="Thêm một">+</button></div><button class="btn primary" type="submit">${icon('check',15)} Nhận vào kệ</button></form>`+
-        `<p class="muted small">Đếm từng món thật trong thùng. Phiếu có thể ghi khác; thiếu thì nhận đúng số có rồi khiếu nại.</p>`;
+        `<p class="muted small">Phiếu có thể ghi khác; thiếu thì nhận đúng số có rồi khiếu nại.</p>`;
       return `<article class="card inv-crate-card${opened?' open':''}" id="crate-${esc(o.id)}"><div class="row spread"><div><strong>${name(i)}</strong><small class="muted block">${esc(s?.emoji||'')} ${esc(s?.name||'')} · đã trả ${fmt(o.cost)} xu${o.arrives_time?` · tới lúc ${esc(o.arrives_time)}`:''}</small></div>${pill('ĐÃ TỚI','green')}</div>${opened?form:button(`${icon('box',15)} Mở thùng & đếm`,'v4InvOpen',{order:o.id},'primary')}</article>`;};
     const waiting=o=>{const i=byId[o.item]||{name:o.item},s=sup(o),late=Boolean(o.late_note),pct=Math.round(Math.max(0,Math.min(1,Number(o.progress)||0))*100);
       // Waiting helps only for goods due later today; the rest arrive while you work or overnight.
       const today=clk&&Number(o.arrives_day)===Number(clk.day),wait=today&&clk.is_open&&clk.minute<clk.close?cmdBtn(`⏳ Chờ thêm ${Number(clk.step)||20} phút`,'inv_wait',{},'ghost small'):'';
-      const hint=wait?'Làm việc khác trong lúc chờ, hàng tới sẽ báo ở đây.':!clk?.is_open?'Hàng tới trước giờ mở cửa sẽ chờ sẵn ở cửa.':today?'Đã tới giờ đóng cửa. Hàng về tối nay chờ sẵn ở cửa, sáng mai mở thùng.':`Tới ngày ${esc(o.arrives_day)}. Cứ làm việc và khép ca như thường, thùng tới sẽ báo ở đây.`;
       return `<article class="card order-row"><div class="row spread"><div class="grow"><strong>${name(i)} · ${o.qty} ${esc(unit(i))}</strong><small class="muted block">${esc(s?.emoji||'')} ${esc(s?.name||'')} · đã trả ${fmt(o.cost)} xu</small></div>${pill(late?'TRỄ HẸN':`⏱ ${esc(o.left_label||'đang giao')}`,late?'amber':'blue')}</div>`+
         `<div><span class="small">Dự kiến nhận: <b>${esc(o.eta_label||'đang trên đường')}</b></span>${o.window?`<small class="muted block">Hẹn giao ${esc(o.window)}</small>`:''}</div>`+
         `<span class="inv-bar" role="progressbar" aria-label="Quãng đường đã đi" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i class="on" style="width:${pct}%"></i></span>`+
         `${late?`<p class="notice amber small">${icon('truck',15)} <span><b>${esc(s?.name||'')}:</b> “${esc(o.late_note)}”</span></p>`:''}`+
-        `<div class="row wrap"><span class="muted small grow">${hint}</span>${wait}</div></article>`;};
+        `${wait?`<div class="row wrap"><span class="grow"></span>${wait}</div>`:''}</article>`;};
     const received=o=>{const i=byId[o.item]||{name:o.item},s=sup(o),short=o.actual<o.qty;
       let act='';
       if(short&&!o.claimed)act+=cmdBtn('Khiếu nại phần thiếu','inv_claim',{order:o.id},'small cream');
@@ -95,7 +94,7 @@ export function inventoryView(env){
     const done=orders.filter(o=>o.status==='received').reverse().slice(0,10);
     body=(ready.length?`<h4 class="section-title">Thùng đã tới · mở và đếm</h4>${ready.map(crate).join('')}`:'')+
       (transit.length?`<h4 class="section-title">Đang giao</h4>${transit.map(waiting).join('')}`:'')+
-      (done.length?`<h4 class="section-title">Đã nhận gần đây</h4>${done.map(received).join('')}`:'')||`<div class="empty">${icon('truck',30)}<p>Chưa có đơn nhập nào. Chạm một ô trong Kệ hàng để nhập.</p></div>`;
+      (done.length?`<h4 class="section-title">Đã nhận gần đây</h4>${done.map(received).join('')}`:'')||`<div class="empty">${icon('truck',30)}<p>Chưa có đơn nhập nào.</p></div>`;
   }else{
     const lots=inv.lots.filter(l=>l.qty>0&&l.expires>=c.day).sort((a,b)=>a.expires-b.expires||a.received-b.received);
     body=lots.length?`<div class="inv-lots">${lots.map(l=>{const i=byId[l.item]||{name:l.item},left=l.expires-c.day+1;
@@ -165,7 +164,7 @@ export function feedbackView(env){
     const tag=!f?'':f.removed?pill('Đã gỡ',''):s==='awaiting'?pill('Đang đọc…','blue'):s==='open'?`<span class="rv-reply">${icon('chat',13)} ${f.thread.length?'Khách hỏi lại':'Trả lời'}</span>`:f.ignored?pill('Đã bỏ qua',''):f.report==='rejected'?pill('Báo cáo bị từ chối','danger'):pill('Đã trả lời','green');
     const flags=f?.clues?.length&&!f.removed?`<span class="rv-flags">${f.clues.map(x=>`<span class="tag amber">${icon('flag',11)} ${esc(x)}</span>`).join('')}</span>`:'';
     return `<button type="button" class="rv-card ${p.id===shown?.id?'active':''}${f?.removed?' removed':''}" data-action="v4FbOpen" data-post="${esc(p.id)}"><span class="persona">${esc(f?.persona_emoji||'🙂')}</span><span class="grow"><span class="rv-top"><b>${esc(p.author)}</b>${p.stars?`<span class="stars" aria-label="${p.stars} sao">${stars(p.stars)}</span>`:''}</span><span class="rv-text">${esc(p.text)}</span>${flags}<small class="muted">Ngày ${p.day}${f?.title?` · ${esc(f.title)}`:''}</small></span><span class="rv-side">${tag}</span></button>`;};
-  const list=all.length?rows.map(card).join('')||`<p class="muted small rv-none">Không có đánh giá nào ở mục này.</p>`:`<div class="empty">${icon('star',30)}<h3>Chưa có đánh giá nào</h3><p class="muted small">Làm xong việc cho khách, họ sẽ để lại lời nhắn ở đây.</p></div>`;
+  const list=all.length?rows.map(card).join('')||`<p class="muted small rv-none">Không có đánh giá nào ở mục này.</p>`:`<div class="empty">${icon('star',30)}<h3>Chưa có đánh giá nào</h3></div>`;
   const body=all.length?`<div class="fb-layout ${selected?'has-detail':''}"><section class="fb-list">${summary}${chips}<div class="stack rv-list">${list}</div>${crit}</section><section class="fb-detail ${selected?'':'auto'}">${shown?threadView(shown,env):''}</section></div>`:list;
   return head('Đánh giá',esc(place),'PHẢN HỒI')+`<div class="sheet-body">${body}</div>`;
 }
@@ -184,7 +183,7 @@ function threadView(p,env){
   const tpl=parent?[['Nêu sự thật',`Dạ, theo sổ lớp hôm đó: ${worst}. Mong phụ huynh xem lại giúp ạ.`],['Xin lỗi','Cảm ơn phụ huynh đã góp ý. Tôi xin lỗi và sẽ điều chỉnh cách làm trong lớp ạ.'],['Mời trao đổi','Mời phụ huynh ghé lớp trao đổi trực tiếp, mình cùng giúp con nhé.'],['Đáp trả gắt','Phụ huynh không hài lòng thì chuyển lớp khác đi.']]
     :[['Nêu sự thật',`Dạ, theo phiếu ghi hôm đó: ${worst}. Bên mình gửi lại để cùng đối chiếu ạ.`],['Xin lỗi','Thành thật xin lỗi bạn vì trải nghiệm chưa tốt. Lần sau bên mình sẽ chú ý hơn và sửa quy trình ngay ạ.'],['Mời quay lại','Cảm ơn bạn đã ghé và góp ý. Mời bạn quay lại, bên mình sẽ phục vụ chu đáo hơn ạ.'],['Đáp trả gắt','Không thích thì đi chỗ khác, bên mình không tiếp loại khách như bạn.']];
   const tone=env.ui.fbTone?.post===p.id?env.ui.fbTone.tone:'free';
-  const tplRow=f.tones?.length?`<div class="rv-tones" role="group" aria-label="Chọn giọng trả lời">${f.tones.map(t=>`<button type="button" class="rv-tone ${esc(t.risk)}${t.id===tone?' selected':''}" data-action="v4FbTpl" data-tone="${esc(t.id)}" data-text="${esc(t.text)}" aria-pressed="${t.id===tone}"${t.risk==='risky'?' title="Có thể được lòng, cũng có thể phản tác dụng"':''}><span aria-hidden="true">${esc(t.emoji)}</span><span class="rv-tone-txt"><b>${esc(t.label)}</b>${t.risk==='risky'?'<small>được ăn cả, ngã về không</small>':t.risk==='bad'?'<small>dễ bị chụp màn hình</small>':''}</span></button>`).join('')}<button type="button" class="rv-tone free${tone==='free'?' selected':''}" data-action="v4FbTpl" data-tone="free" data-text="" aria-pressed="${tone==='free'}"><span aria-hidden="true">✍️</span><b>Tự viết</b></button></div>`
+  const tplRow=f.tones?.length?`<div class="rv-tones" role="group" aria-label="Chọn giọng trả lời">${f.tones.map(t=>`<button type="button" class="rv-tone ${esc(t.risk)}${t.id===tone?' selected':''}" data-action="v4FbTpl" data-tone="${esc(t.id)}" data-text="${esc(t.text)}" aria-pressed="${t.id===tone}"><span aria-hidden="true">${esc(t.emoji)}</span><span class="rv-tone-txt"><b>${esc(t.label)}</b>${t.risk==='risky'?'<small>được ăn cả, ngã về không</small>':t.risk==='bad'?'<small>dễ bị chụp màn hình</small>':''}</span></button>`).join('')}<button type="button" class="rv-tone free${tone==='free'?' selected':''}" data-action="v4FbTpl" data-tone="free" data-text="" aria-pressed="${tone==='free'}"><span aria-hidden="true">✍️</span><b>Tự viết</b></button></div>`
     :`<div class="chip-row rv-tpl" role="group" aria-label="Gợi ý giọng trả lời">${tpl.map(([l,t],i)=>`<button type="button" class="chip${i===3?' rv-tpl-rude':''}" data-action="v4FbTpl" data-text="${esc(t)}">${l}</button>`).join('')}</div>`;
   const clues=f.clues?.length&&!f.report?`<div class="rv-clues" role="note">${icon('flag',14)}<div class="rv-flags">${f.clues.map(x=>`<span class="tag amber">${esc(x)}</span>`).join('')}</div></div>`:'';
   const reportQ=parent?'Báo cáo tin nhắn này với ban đại diện lớp? Chỉ tin nhắn nhầm lớp hoặc giả mới bị gỡ. Nếu là góp ý thật, phụ huynh sẽ biết và bực hơn.':'Báo cáo đánh giá này là giả hoặc nhầm quán? Nền tảng chỉ gỡ đánh giá giả, nhầm chỗ hoặc chưa dùng dịch vụ. Nếu là trải nghiệm thật, khách sẽ biết và hạ thêm sao.';
@@ -216,7 +215,7 @@ export function situationView(env){
   const list=api.content.situations?.[api.state.current]||[];
   if(!x){
     const practice=list.map(s=>`<article class="card sit-practice"><div class="grow"><strong>${esc(s.title)}</strong><small class="muted block">${s.tone==='tense'?'Căng thẳng':'Nhẹ nhàng'}${s.swap?' · có góc nhìn đổi vai':''}</small></div>${cmdBtn('Diễn tập','sit_practice',{script:s.id},'ghost small')}</article>`).join('');
-    return head('Tình huống','','CHUYỆN TRONG CA')+`<div class="sheet-body"><div class="empty">${icon('sun',30)}<h3>Hôm nay chưa có chuyện gì</h3><p class="muted small">Khi có chuyện cần bạn xử lý, nó sẽ hiện ở đây.</p><div class="row center space-top">${button('Về quầy','close',{},'primary')}</div></div>${practice?`<h4 class="section-title">Diễn tập trước</h4><div class="stack">${practice}</div>`:''}</div>`;
+    return head('Tình huống','','CHUYỆN TRONG CA')+`<div class="sheet-body"><div class="empty">${icon('sun',30)}<h3>Hôm nay chưa có chuyện gì</h3><div class="row center space-top">${button('Về quầy','close',{},'primary')}</div></div>${practice?`<h4 class="section-title">Diễn tập trước</h4><div class="stack">${practice}</div>`:''}</div>`;
   }
   const n=api.content.npcs.find(p=>p.id===x.npc);
   const facts=x.facts.map(f=>`<article class="fact ${f.text?'read':''}"><div class="row spread"><strong>${icon(f.text?'check':'search',14)} ${esc(f.title)}</strong><small class="muted">${esc(f.source)}</small></div>${f.text?`<p class="small">${esc(f.text)}</p>`:cmdBtn('Xem dữ kiện','sit_read',{fact:f.id},'ghost small')}</article>`).join('');
@@ -229,7 +228,7 @@ export function situationView(env){
       <h4 class="section-title">Mỗi người nhìn thấy điều gì</h4><div class="perspectives">${x.perspectives.map(v=>`<article class="perspective"><span class="p-emoji">${esc(v.emoji)}</span><div><b>${esc(v.who)}</b><p class="small">${esc(v.text)}</p></div></article>`).join('')}</div>
       ${x.lesson?`<p class="lesson">${icon('sparkle',15)} ${esc(x.lesson)}</p>`:''}<div class="row space-top sit-foot">${cmdBtn('Cất vào sổ','sit_dismiss',{},'primary big')}</div>`;
   }
-  return head(esc(x.title),x.practice?'Diễn tập · không ảnh hưởng tiền, đánh giá hay quan hệ.':'Đọc dữ kiện trước khi quyết định.',x.tone==='tense'?'TÌNH HUỐNG CĂNG':'CHUYỆN TRONG CA')+
+  return head(esc(x.title),x.practice?'Diễn tập · không ảnh hưởng tiền, đánh giá hay quan hệ.':'',x.tone==='tense'?'TÌNH HUỐNG CĂNG':'CHUYỆN TRONG CA')+
    `<div class="sheet-body"><div class="situation"><div class="row sit-open">${n?portrait(n,48):''}<p class="opening grow">“${esc(x.opening)}”</p></div>${x.swap?`<details class="swap"><summary>${icon('people',14)} Thử đặt mình vào vị trí người kia</summary><p class="small">${esc(x.swap)}</p></details>`:''}
    <h4 class="section-title">Dữ kiện</h4><div class="facts">${facts}</div>${actions}</div></div>`;
 }

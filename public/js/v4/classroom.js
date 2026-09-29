@@ -9,7 +9,7 @@ import {titled} from './teach-tour.js';
 
 const pill=(label,kind='')=>`<span class="tag ${kind}">${label}</span>`;
 const cmdBtn=(label,command,payload={},style='')=>`<button type="button" class="btn ${style}" data-command="${command}" data-payload="${esc(JSON.stringify(payload))}">${label}</button>`;
-const head=(title,sub)=>`<header class="sheet-head"><div class="grow"><span class="eyebrow">LỚP HỌC MẦM NẮNG</span><h2>${title}</h2><p>${sub}</p></div><button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
+const head=(title,sub)=>`<header class="sheet-head"><div class="grow"><span class="eyebrow">LỚP HỌC MẦM NẮNG</span><h2>${title}</h2>${sub?`<p>${sub}</p>`:''}</div><button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
 const KIND_TAG={lesson:'green',grading:'blue',meeting:'amber',event:'danger',duty:'blue'};
 const GRADE={great:['Tuyệt vời','green'],ok:['Khá ổn','amber'],rough:['Còn vụng','']};
 const STYLE_ICON={look:'🖼️',hands:'🧩',talk:'💬',short:'⏱️'};
@@ -17,8 +17,8 @@ const STYLE_ICON={look:'🖼️',hands:'🧩',talk:'💬',short:'⏱️'};
 function notebook(kids){
   if(!kids?.length)return '';
   const met=kids.filter(k=>k.trust>0||k.style);
-  const card=k=>`<li class="nb-kid"><span class="tt-face" aria-hidden="true">${k.emoji}</span><div class="grow"><div class="nb-row"><b>${esc(k.name)}</b>${k.style?`<span class="tag green" title="${esc(k.style_label)}">${STYLE_ICON[k.style]} ${esc(k.style_label)}</span>`:'<span class="tag">❓ Chưa rõ cách học</span>'}</div><div class="nb-trust" role="meter" aria-label="Tin tưởng" aria-valuemin="0" aria-valuemax="12" aria-valuenow="${k.trust}"><i style="width:${Math.round(k.trust/12*100)}%"></i></div><small class="muted">${esc(k.trait)}${k.next?` · ${k.trust}/${k.next} 💛 tới chuyện mới`:' · 🌟 Đã trọn chuyện'}</small>${k.story.length?`<ul class="nb-story">${k.story.map(s=>`<li>✨ ${esc(s)}</li>`).join('')}</ul>`:''}</div></li>`;
-  return `<details class="nb"><summary><b>📒 Sổ chủ nhiệm</b><small>Đã thân với ${met.length}/${kids.length} bạn</small></summary><p class="small muted">Giúp đúng cách, xử lý chuyện trong lớp tử tế và phản hồi phiếu riêng từng bạn để các bạn tin mình hơn.</p><ul class="nb-list">${kids.map(card).join('')}</ul></details>`;
+  const card=k=>`<li class="nb-kid"><span class="tt-face" aria-hidden="true">${k.emoji}</span><div class="grow"><div class="nb-row"><b>${esc(k.name)}</b>${k.style?`<span class="tag green">${STYLE_ICON[k.style]} ${esc(k.style_label)}</span>`:'<span class="tag">❓ Chưa rõ cách học</span>'}</div><div class="nb-trust" role="meter" aria-label="Tin tưởng" aria-valuemin="0" aria-valuemax="12" aria-valuenow="${k.trust}"><i style="width:${Math.round(k.trust/12*100)}%"></i></div><small class="muted">${esc(k.trait)}${k.next?` · ${k.trust}/${k.next} 💛 tới chuyện mới`:' · 🌟 Đã trọn chuyện'}</small>${k.story.length?`<ul class="nb-story">${k.story.map(s=>`<li>✨ ${esc(s)}</li>`).join('')}</ul>`:''}</div></li>`;
+  return `<details class="nb"><summary><b>📒 Sổ chủ nhiệm</b><small>Đã thân với ${met.length}/${kids.length} bạn</small></summary><ul class="nb-list">${kids.map(card).join('')}</ul></details>`;
 }
 
 const kind=(k,label,tag='')=>`<span class="cp-kind">${pill(esc(label),KIND_TAG[k])}${tag&&tag!==label?`<small>${esc(tag)}</small>`:''}</span>`;
@@ -44,5 +44,5 @@ export function classroomView(env){
     const log=cl.history.length?`<article class="cp-page"><h3><span>📚 Đã làm gần đây</span></h3><ul class="cp-log">${cl.history.map(h=>`<li><span aria-hidden="true">${esc(h.emoji)}</span><span>${esc(h.title)} <small>· ngày ${h.day}</small></span>${pill(...GRADE[h.grade])}</li>`).join('')}</ul></article>`:'';
     body=`${recap}${open?'':`<div class="notice">${icon('sun',17)}<div>Mở ca (vào lớp) để bắt đầu hoạt động hôm nay.</div></div>`}${today}${notebook(cl.notebook)}${log}`;
   }
-  return head('Kế hoạch lớp','Sổ tay của giáo viên: tiết học, chấm bài, phụ huynh và ngày hội theo lịch năm học.')+`<div class="sheet-body classroom-v4"><div class="cp">${date}${months}${body}</div></div>`;
+  return head('Kế hoạch lớp','')+`<div class="sheet-body classroom-v4"><div class="cp">${date}${months}${body}</div></div>`;
 }

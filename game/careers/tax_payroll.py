@@ -1017,7 +1017,7 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
         n = len(t['flags'].get(row['id'], []))
         left = len(t['rows']) - len(t['reviewed'])
         who = next(x['v'] for x in row['cells'] if x['z'] == 'name').split()[-1]
-        msg = f'✓ Xong dòng {who}' + (f' · {n} ô cần sửa' if n else ' · không thấy sai') + '. ' + (f'Còn {left} dòng.' if left else 'Soát xong cả bảng — bấm “Chuyển lương”.')
+        msg = f'✓ Xong dòng {who}' + (f' · {n} ô cần sửa' if n else ' · không thấy sai') + '.' + (f' Còn {left} dòng.' if left else '')
         return dict(message=' '.join(x for x in (msg, lunch) if x))
     if name == 'tp_hint':
         row = _row(t, p.get('row'))
@@ -1043,8 +1043,7 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
         kit.start_work(t)
         if ok:
             kit.metric(c, 'tp_steps')
-            tail = ' Hồ sơ đủ các bước — có thể nộp/bàn giao.' if procedures.done(t) else ''
-            return dict(message=' '.join(x for x in ('✓ ' + msg + tail, lunch) if x), correct=True)
+            return dict(message=' '.join(x for x in ('✓ ' + msg, lunch) if x), correct=True)
         if gen:
             o['clock'] = min(office.LOCK, o['clock'] + 15)
         return dict(message=' '.join(x for x in ('✗ Chưa khớp. ' + msg, lunch) if x), correct=False)
@@ -1067,7 +1066,7 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
         kit.metric(c, 'tp_filed')
         kit.complete(s, c, t, reward, f'Bạn đã hoàn tất hồ sơ “{t["title"]}”' + (' nhưng trễ hạn nội bộ.' if late else ' đúng hạn.'))
         if late and not gen:
-            return dict(message='Đã nộp nhưng trễ hạn nội bộ: không có thưởng hồ sơ. Lần sau để ý đồng hồ hạn nhé.')
+            return dict(message='Đã nộp nhưng trễ hạn nội bộ: không có thưởng hồ sơ.')
         head = f'Đã nộp/bàn giao hồ sơ · thưởng {reward} xu.' if gen else f'Đã nộp/bàn giao hồ sơ · thưởng {reward} xu (lương ngày trả khi khép ca).'
         return dict(message=' '.join(x for x in (head, note, lunch) if x), celebrate=not late)
     raise kit.eng().GameError('Thao tác bàn thuế & lương không hợp lệ.')

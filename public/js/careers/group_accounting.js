@@ -4,7 +4,7 @@
  *  📋 Quy định (quy định đối chiếu + tỷ giá), 📒 Sổ sách (cơ cấu tập đoàn, sổ bút toán hợp nhất)
  *  and a sticky bar with the next step and the main action.
  *  No inline handlers: every button goes through data-command / data-action="car:*". */
-import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,dueOf,dueText,openTasks,hhmm} from './office_kit.js';
+import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,openTasks,hhmm} from './office_kit.js';
 
 const P='ga_';
 const BOSS='Chị Mai Anh';
@@ -26,7 +26,7 @@ function tableDoc(d,x){
 function docBody(d,x){
   if(d.type==='table')return tableDoc(d,x);
   if(d.type==='kv')return `<dl class="ga-kv">${(d.rows||[]).map(([k,v])=>`<dt>${x.esc(k)}</dt><dd>${x.esc(v)}</dd>`).join('')}</dl>`;
-  if(d.type==='cash')return `<div class="ga-cash"><table class="ga-table"><thead><tr><th>Mệnh giá</th><th>Số tờ</th></tr></thead><tbody>${(d.denoms||[]).map(([k,v])=>`<tr><td>💵 ${x.esc(k)}</td><td class="num">${num(v)}</td></tr>`).join('')}</tbody></table><p class="ga-small">Tự nhân mệnh giá × số tờ để ra tổng tiền thực đếm.</p></div>`;
+  if(d.type==='cash')return `<div class="ga-cash"><table class="ga-table"><thead><tr><th>Mệnh giá</th><th>Số tờ</th></tr></thead><tbody>${(d.denoms||[]).map(([k,v])=>`<tr><td>💵 ${x.esc(k)}</td><td class="num">${num(v)}</td></tr>`).join('')}</tbody></table></div>`;
   if(d.type==='email')return `<div class="ga-mail"><p><b>Từ:</b> ${x.esc(d.sender||'')}</p><p><b>Chủ đề:</b> ${x.esc(d.subject||'')}</p><p>${x.esc(d.text||'')}</p></div>`;
   return `<p class="ga-paper">${x.esc(d.text||'')}</p>`;
 }
@@ -37,13 +37,13 @@ function docsPanel(t,x){
   let sel=views(x)[t.id];
   if(!opened.some(d=>d.id===sel))sel=opened[0]?.id;
   const tabs=t.docs.map(d=>{
-    const label=`<span class="ga-doc-ico" aria-hidden="true">${d.closed?'📁':'📄'}</span><span class="grow">${x.esc(d.title)}<small>${d.closed?(need.has(d.id)?'Cần mở cho bước này':'Chạm để mở'):x.esc(d.source)}</small></span>`;
+    const label=`<span class="ga-doc-ico" aria-hidden="true">${d.closed?'📁':'📄'}</span><span class="grow">${x.esc(d.title)}${d.closed?(need.has(d.id)?'<small>Cần mở cho bước này</small>':''):`<small>${x.esc(d.source)}</small>`}</span>`;
     return d.closed?btn(x,label,'car:open',{task:t.id,doc:d.id},`ga-tab closed ${need.has(d.id)?'need':''}`):btn(x,label,'car:view',{task:t.id,doc:d.id},`ga-tab ${d.id===sel?'active':''}`);
   }).join('');
   const doc=opened.find(d=>d.id===sel);
   return `<section class="ga-docs"><h3 class="ok-h">📄 Tài liệu <small>${opened.length}/${t.docs.length} đã mở</small></h3>
     <div class="ga-tabs" role="toolbar" aria-label="Tài liệu trong hồ sơ">${tabs}</div>
-    ${doc?`<article class="ga-viewer" aria-live="polite"><header><b>${x.esc(doc.title)}</b><small>Nguồn: ${x.esc(doc.source)}</small></header>${docBody(doc,x)}</article>`:'<p class="ok-empty"><span aria-hidden="true">📁</span><span>Mở một tài liệu để xem. Chỉ kết luận từ số liệu có nguồn.</span></p>'}
+    ${doc?`<article class="ga-viewer" aria-live="polite"><header><b>${x.esc(doc.title)}</b><small>Nguồn: ${x.esc(doc.source)}</small></header>${docBody(doc,x)}</article>`:'<p class="ok-empty"><span aria-hidden="true">📁</span><span>Mở một tài liệu để xem.</span></p>'}
   </section>`;
 }
 
@@ -127,9 +127,7 @@ function stepCard(t,x){
 function handover(t,x){
   if(!t.handover_options)return '';
   const sel=x.ui.note?.[t.id]||'specific';
-  return `<article class="ga-work ga-handover"><header class="ga-work-head"><span class="ga-dot" aria-hidden="true">📝</span><div class="grow"><small>Bước cuối</small><h3>Ghi chú bàn giao</h3></div></header>
-    <p class="ga-prompt">Chọn lời nhắn gửi kèm hồ sơ, rồi bấm “Nộp hồ sơ” ở thanh dưới.</p>
-    ${t.handover_options.map(o=>`<label class="ga-check"><input type="radio" name="ga-note-${x.esc(t.id)}" value="${x.esc(o.id)}" ${o.id===sel?'checked':''}><span>${x.esc(o.label)}</span></label>`).join('')}</article>`;
+  return `<article class="ga-work ga-handover"><header class="ga-work-head"><span class="ga-dot" aria-hidden="true">📝</span><div class="grow"><small>Bước cuối</small><h3>Ghi chú bàn giao</h3></div></header>    ${t.handover_options.map(o=>`<label class="ga-check"><input type="radio" name="ga-note-${x.esc(t.id)}" value="${x.esc(o.id)}" ${o.id===sel?'checked':''}><span>${x.esc(o.label)}</span></label>`).join('')}</article>`;
 }
 
 /* ---------------------------------------------------------------- side: group chart & consolidation journal */
@@ -150,7 +148,7 @@ function booksPane(x){
   return `<section class="ga-book"><h3 class="ok-h">🗓️ ${x.esc(d.period?.label||'Kỳ khóa sổ quý')}</h3><ul class="ga-ms">${ms}</ul></section>
     ${groupChart(x)}
     <section class="ga-book"><h3 class="ok-h">✂️ Sổ bút toán hợp nhất <span class="ok-tag ${dr===cr?'good':'bad'}">${dr===cr?'Nợ = Có':'Lệch'}</span></h3>
-      ${ids.length?`<div class="ga-scroll"><table class="ga-table tb"><thead><tr><th>TK</th><th>Nợ</th><th>Có</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td>Tổng</td><td class="num">${num(dr)}</td><td class="num">${num(cr)}</td></tr></tfoot></table></div>`:'<p class="ok-note">Quý này chưa có bút toán loại trừ. Bút toán hợp nhất chỉ nằm ở cấp tập đoàn — không ghi vào sổ công ty con — và làm lại mỗi quý.</p>'}
+      ${ids.length?`<div class="ga-scroll"><table class="ga-table tb"><thead><tr><th>TK</th><th>Nợ</th><th>Có</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td>Tổng</td><td class="num">${num(dr)}</td><td class="num">${num(cr)}</td></tr></tfoot></table></div>`:'<p class="ok-note">Quý này chưa có bút toán loại trừ.</p>'}
     </section>
     ${last?`<section class="ga-book"><h3 class="ok-h">📒 Bút toán gần đây</h3><ul class="ga-journal">${last}</ul></section>`:''}`;
 }
@@ -215,7 +213,7 @@ function boardDoc(t,x){
   for(const s of ['a','b'])if(sel[s]&&(!L[sel[s]]||L[sel[s]].state))sel[s]=null;
   const n=t.names||{},hot=n.fx||x.room.data?.today?.mod?.id==='fx_swing';
   if(waiting(t,x))return `<section class="ga-wait"><p class="ga-wait-big"><span aria-hidden="true">⏳</span> Gói báo cáo hẹn <b>${x.esc(hhmm(t.wait))}</b> mới về</p>
-      <p class="ok-note">Làm hồ sơ khác trước — đồng hồ chỉ chạy khi bạn làm việc. Hoặc gọi giục cho kịp hạn.</p></section>${evidence(t,x)}`;
+      <p class="ok-note">Làm hồ sơ khác trước — đồng hồ chỉ chạy khi bạn làm việc.</p></section>${evidence(t,x)}`;
   const col=(side,title)=>`<section class="ga-col" aria-label="${x.esc(title)}"><h3 class="ga-colh"><span aria-hidden="true">${side==='a'?'📤':'📥'}</span> ${x.esc(title)}</h3><ul class="ga-lines">${(t.lines||[]).filter(l=>l.side===side).map(l=>lineCard(t,l,x,sel)).join('')}</ul></section>`;
   return `${meterBox(t,x)}${hot?fxCard(x,true):''}
     <div class="ga-cols">${col('a','Sổ phải thu · '+(n.a||''))}${col('b','Sổ phải trả · '+(n.b||''))}</div>${evidence(t,x)}`;
@@ -250,11 +248,10 @@ function boardRecap(x){
 const strip=(x,t)=>statusStrip(x,t,{boss:BOSS,op:'ga_overtime'});
 const todayRules=x=>rulesList(x,x.room.data?.today?.rules||[],'Quy định đối chiếu');
 function currentMail(t,x){
-  const timed=typeof t.due==='number',due=dueOf(t,x),k=t.kind_info||{};
+  const timed=typeof t.due==='number',k=t.kind_info||{};
   const chips=[`<span class="ok-tag">${x.esc(k.emoji||'🧾')} ${x.esc(k.name||'Hồ sơ hợp nhất')}</span>`,
-    due?`<span class="ok-tag ${due.overdue?'bad':due.soon?'warn':'info'}">⏰ ${x.esc(dueText(due))}</span>`:'',
     !timed?`<span class="ok-tag ${t.patience<50?'warn':''}">Kiên nhẫn ${Number(t.patience)||0}%</span>`:''].join('');
-  const help=t.known?'':`<p class="ok-note">${t.variant==='match'?'Ghép từng dòng sổ bên bán với sổ bên mua, tìm lý do cho dòng chỉ có một bên, khớp hết thì loại trừ. Mỗi lần ghép sai tốn 20 phút soát lại.':'Nhận hồ sơ để xem đề bài, chứng từ và các bước cần làm.'}</p>`;
+  const help=!t.known&&t.variant==='match'?'<p class="ok-note">Mỗi lần ghép sai tốn 20 phút soát lại.</p>':'';
   return `<p class="ok-quote">“${x.esc(t.opening)}”</p>${t.brief?`<p class="ok-brief">🎯 ${x.esc(t.brief)}</p>`:''}<div class="ok-chips">${chips}</div>${help}`;
 }
 function dossierBar(t,x){
@@ -294,7 +291,7 @@ export default {
     const inbox=inboxPane(x,{tasks:taskMails(x,t,currentMail(t,x)),other:dayMails(x,{boss:BOSS,key:`${t.id}:${t.known?1:0}`})});
     const rules=todayRules(x)+fxCard(x,false);
     if(!t.known)return desk(x,t,{cls:'ga',tabs,strip:strip(x,t),panes:{inbox,rules,books:booksPane(x),
-      doc:`<p class="ok-empty"><span aria-hidden="true">✉️</span><b>${x.esc(t.title)}</b><span>${board?'Hai sổ đối chiếu còn nằm trong hộp thư của công ty con.':'Hồ sơ còn trong phong bì.'} Bấm “${board?'Nhận hai sổ':'Nhận hồ sơ'}” để mở.</span></p>`},
+      doc:`<p class="ok-empty"><span aria-hidden="true">✉️</span><b>${x.esc(t.title)}</b><span>${board?'Hai sổ đối chiếu còn nằm trong hộp thư của công ty con.':'Hồ sơ còn trong phong bì.'}</span></p>`},
       bar:bar(x,t,x.esc(this.next(t,x)),x.cmd(board?'📥 Nhận hai sổ đối chiếu':'📥 Nhận hồ sơ','ask',{task:t.id},'primary'),true)});
     if(board)return desk(x,t,{cls:'ga',tabs,strip:strip(x,t),panes:{inbox,rules,books:booksPane(x),doc:boardDoc(t,x)},bar:boardBar(t,x)});
     return desk(x,t,{cls:'ga',tabs,strip:strip(x,t),panes:{inbox,rules,books:booksPane(x),doc:stepCard(t,x)+docsPanel(t,x)},bar:dossierBar(t,x)});

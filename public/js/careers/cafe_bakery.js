@@ -58,7 +58,7 @@ const bar=(cls,attrs,zones,fill,label)=>`<div class="cb-meter ${cls}" ${attrs}><
 function shotMeter(x,start,flow){
   const e=cc(x).extract||{sour:20,bright:25,balanced:30,strong:35},s=SHOT_SCALE,p=v=>v/s*100;
   const eff=start?Math.max(0,x.now()-start)*flow:0;
-  return bar('shot',`data-shot-start="${start||''}" data-flow="${flow||1}"`,[['sour',0,p(e.sour)],['bright',p(e.sour),p(e.bright)],['balanced',p(e.bright),p(e.balanced)],['strong',p(e.balanced),p(e.strong)],['bitter',p(e.strong),100]],p(eff),start?eff.toFixed(1)+' giây chiết':'Họng pha đang nghỉ · vùng xanh là chuẩn');
+  return bar('shot',`data-shot-start="${start||''}" data-flow="${flow||1}"`,[['sour',0,p(e.sour)],['bright',p(e.sour),p(e.bright)],['balanced',p(e.bright),p(e.balanced)],['strong',p(e.balanced),p(e.strong)],['bitter',p(e.strong),100]],p(eff),start?eff.toFixed(1)+' giây chiết':'Họng pha đang nghỉ');
 }
 function thermo(x,start){
   const st=cc(x).steam||{base:5,rate:4.2,cool:55,silky:68,hot:76},p=v=>v/TEMP_SCALE*100;
@@ -103,7 +103,7 @@ function cakeArt(t,x){
 /** Tray of cups: ☕ done, 🫗 the one in hand, ◌ waiting. */
 function trayCups(t){
   if(!isTray(t))return '';
-  return `<p class="cb-traycups" aria-label="Khay ly">${t.cups.map((c,i)=>`<span class="${c?'on':''}${i===t.cur&&!c?' cur':''}" title="Ly ${i+1}">${c?'☕':i===t.cur?'🫗':'◌'}<small>${i+1}</small></span>`).join('')}</p>`;
+  return `<p class="cb-traycups" aria-label="Khay ly">${t.cups.map((c,i)=>`<span class="${c?'on':''}${i===t.cur&&!c?' cur':''}">${c?'☕':i===t.cur?'🫗':'◌'}<small>${i+1}</small></span>`).join('')}</p>`;
 }
 /** Live one-line status of what is in hand. */
 function status(t,x){
@@ -201,7 +201,7 @@ function shelf(x){
   if(!wants.length)return '';
   const sale=(d.case||[]).filter(l=>l.sale&&l.state==='day_old').reduce((a,l)=>a+l.qty,0),buyers=d.buyers??1;
   return `<section class="cb-shelf" aria-label="Tủ kính bán lẻ"><p class="cb-shelf-head"><b>🧁 Tủ kính</b><small>${buyers?`Mỗi lượt giao có ${buyers} khách ghé mua bánh lẻ`:'Hôm nay vắng khách mua lẻ'}${sale?` · rổ −50%: ${sale}`:''}</small></p>
-    <div class="cb-shelf-row">${wants.map(id=>{const b=bake(x,id),q=freshCount(x,id);return `<span class="cb-shelf-item${q?'':' is-empty'}" title="${x.esc(b.name)}: ${q} cái ra lò hôm nay"><span class="count-badge${q?'':' is-empty'}" data-count="${q}">${q}</span><span class="cb-shelf-emoji" aria-hidden="true">${x.esc(b.emoji)}</span><small>${x.esc(b.name)}</small></span>`;}).join('')}</div></section>`;
+    <div class="cb-shelf-row">${wants.map(id=>{const b=bake(x,id),q=freshCount(x,id);return `<span class="cb-shelf-item${q?'':' is-empty'}"><span class="count-badge${q?'':' is-empty'}" data-count="${q}">${q}</span><span class="cb-shelf-emoji" aria-hidden="true">${x.esc(b.emoji)}</span><small>${x.esc(b.name)}</small></span>`;}).join('')}</div></section>`;
 }
 const extras=x=>banners(x)+boxCard(x);
 
@@ -215,7 +215,7 @@ function drinkLine(n,x){
 function moodCard(t,x){
   const m=t.needs.mood,used=t.guesses||[];
   return `<div class="cb-mood"><p class="cb-bubble">💭 “${x.esc(m.text)}”</p>${m.clue?`<p class="cb-clue">🔎 Khách lắc đầu, nói thêm: “${x.esc(m.clue)}”</p>`:''}
-    <p class="cb-ask"><b>Khách đang thèm món nào?</b><small>Hiểu ý ngay lần đầu, khách vui sẽ boa thêm.</small></p>
+    <p class="cb-ask"><b>Khách đang thèm món nào?</b></p>
     <div class="tile-grid cb-guess" role="group" aria-label="Chọn món hợp ý khách">${m.options.map(id=>{const d=drink(x,id),no=used.includes(id);
       return tile(x,{emoji:d.emoji,name:d.name,sub:no?'khách lắc đầu':'',cmd:'cb_guess',payload:{task:t.id,drink:id},disabled:no,cls:no?'struck':'',label:no?`${d.name}: khách đã lắc đầu`:`Mời khách ${d.name}`});}).join('')}</div></div>`;
 }
@@ -237,7 +237,7 @@ function ticket(t,x){
     else{
       if(n.style==='mood')tags.push(`<span class="tag green">💡 Đã hiểu ý${(t.guesses||[]).length===1?' ngay':''}</span>`);
       const list=reqList(drinkRows(t,x),x.esc,isTray(t)?`Phiếu ly ${t.cur+1}`:'Phiếu order');
-      if(isTray(t)){tags.push(`<span class="tag">☕ Khay ${n.party.length} ly</span>`);body=trayTabs(t,x)+(plated(t)?'':`<p class="cb-order-head small">Ly ${t.cur+1} đang làm:</p>`)+list;}
+      if(isTray(t)){tags.push(`<span class="tag">☕ Khay ${n.party.length} ly</span>`);body=trayTabs(t,x)+list;}
       else body=`<p class="cb-order-head">${drinkLine(n,x)}</p>${list}`;
       if(n.style==='mood'&&n.mood?.text)body=`<p class="cb-bubble small">💭 “${x.esc(n.mood.text)}”</p>`+body;
     }
@@ -264,8 +264,8 @@ const noteList=(notes,x)=>`<ul class="cb-notes">${notes.map(n=>`<li class="${n.t
 
 /* ---------- station panels ---------- */
 function barPanel(t,x){
-  if(hidden(t))return `<p class="notice amber">🤔 Chưa rõ khách muốn món gì. Chọn món hợp với lời khách ở phiếu order trước đã.</p>`;
-  if(plated(t))return `<p class="notice">☕ Đủ ${t.cups.length} ly trên khay. Giao cả khay, hoặc bấm một ly ở phiếu order để lấy xuống sửa.</p>`;
+  if(hidden(t))return `<p class="notice amber">🤔 Chưa rõ khách muốn món gì.</p>`;
+  if(plated(t))return `<p class="notice">☕ Đủ ${t.cups.length} ly trên khay.</p>`;
   const n=spec(t),d=t.drink,ui=x.ui,level=lvl(x),dd=data(x),groups=dd.groups||[],wand=dd.wand||[],r=dd.rules||{};
   const size=d.size||ui.size||'S',want=n.takeaway?'paper':n.iced?'glass':'mug';
   const cups=(cc(x).containers||[]).map(c=>{const q=c.id==='paper'?stock(x,'cup'):null;
@@ -297,7 +297,6 @@ function barPanel(t,x){
       disabled:!d.milk||d.milk.mode!=='steam'||!!d.art||!d.shots.length,label:locked?`Hình ${a.name}, mở ở cấp ${a.unlock}`:`Rót hình ${a.name}`});}).join('');
   const pastryPick=Object.keys(n.pastry||{}).length?`<h4 class="section-title">7 · Bánh gọi kèm</h4>${casePicker(t,x,true)}`:'';
   return `<p class="cb-recipe small">📋 Công thức quầy: <b>xay mịn · 18 g · chiết 25–30 giây</b> · sữa nóng <b>55–68 °C</b></p>
-    ${r.grinder?'<p class="notice amber small">⚙️ Máy xay đang xay không đều hôm nay.</p>':''}
     <h4 class="section-title">1 · Ly</h4>${sizes}<div class="tile-grid cb-grid3">${cups}</div>${extra}
     <h4 class="section-title">2 · Xay & định lượng</h4><div class="tile-grid cb-grid3">${beans}</div>${grinds}
     <div class="row wrap spread">${dose}${x.cmd('⚖️ Xay & nén','cb_dose',{task:t.id,beans:ui.beans||'',grind:ui.grind||'',grams},'',!canDose)}</div>
@@ -309,7 +308,7 @@ function barPanel(t,x){
 }
 function casePicker(t,x,compact){
   const lots=(data(x).case||[]).filter(l=>l.qty>0);
-  if(!lots.length)return `<p class="notice amber">Tủ kính trống. Qua tab 🔥 Lò để nướng mẻ mới.</p>`;
+  if(!lots.length)return `<p class="notice amber">Tủ kính trống.</p>`;
   const canPick=!!(t&&t.known&&t.needs&&t.needs.kind!=='cake'&&!hidden(t)&&!t.bag.bagged);
   const stateTag={fresh:'hôm nay',day_old:'hôm qua',expired:'quá hạn'};
   const want=id=>!!(t?.needs&&((t.needs.items||t.needs.pastry||{})[id]));
@@ -323,7 +322,7 @@ function casePicker(t,x,compact){
 }
 function casePanel(t,x){
   const n=t.needs,bag=t.bag;
-  const tray=bag.items.length?`<div class="cb-tray">${bag.items.map((i,ix)=>`<button type="button" class="cb-chip" data-command="cb_return" data-payload="${pay(x,{task:t.id,index:ix})}" title="Trả về tủ">${x.esc(bake(x,i.item).emoji)} ${x.esc(bake(x,i.item).name)}${x.room.day-i.day>bake(x,i.item).fresh?' · hôm qua':''} ✕</button>`).join('')}</div>`:'<p class="muted small">Khay đang trống. Gắp bánh bằng kẹp từ tủ kính.</p>';
+  const tray=bag.items.length?`<div class="cb-tray">${bag.items.map((i,ix)=>`<button type="button" class="cb-chip" data-command="cb_return" data-payload="${pay(x,{task:t.id,index:ix})}" title="Trả về tủ">${x.esc(bake(x,i.item).emoji)} ${x.esc(bake(x,i.item).name)}${x.room.day-i.day>bake(x,i.item).fresh?' · hôm qua':''} ✕</button>`).join('')}</div>`:'<p class="muted small">Khay bánh còn trống</p>';
   const rules=`<details class="cb-rules"><summary>Quy định tủ kính</summary><ul class="small"><li>Bánh khô (croissant, bánh mì): bán trong ngày; hôm sau lên rổ −50% hoặc tặng kèm nhãn ngày; ngày thứ ba bỏ.</li><li>Cookie giữ được 3 ngày.</li><li>Bông lan trứng muối có sốt: chỉ bán trong ngày, không tặng.</li><li>Khách mua lẻ lấy bánh mới trước, hết bánh mới mới lấy rổ −50%.</li></ul></details>`;
   return `${shelf(x)}<h4 class="section-title">Tủ kính</h4>${casePicker(t,x,false)}${rules}
     ${n.kind!=='cake'&&!hidden(t)?`<h4 class="section-title">Khay của order</h4>${tray}<div class="row wrap">${x.cmd(`🛍️ Cho vào túi (${stock(x,'bag')})`,'cb_bag',{task:t.id},'',!bag.items.length||bag.bagged||(!bag.has_bag&&!stock(x,'bag')))}</div>`:''}`;
@@ -352,8 +351,7 @@ function ovenPanel(t,x){
   const sponge=t&&t.known&&t.needs?.kind==='cake'?`<div class="row wrap">${x.cmd(`🎂 Nướng cốt bánh kem (${x.esc(recipe(sp))})`,'cb_bake',{item:'sponge',task:t.id},'primary',racksFull||!!t.cake.sponge||t.cake.baking||!enough(sp))}</div>`:'';
   const racks=[0,1].map(i=>{const r=oven[i];if(!r)return `<div class="cb-rack-row empty"><b>Tầng ${i+1}</b><small class="muted">trống</small></div>`;const b=bake(x,r.item);
     return `<div class="cb-rack-row"><b>Tầng ${i+1} · ${x.esc(b.emoji)} ${x.esc(b.name)}</b>${rackMeter(x,r)}${x.cmd('🧤 Lấy ra','cb_unload',{rack:r.id},'primary small')}</div>`;}).join('');
-  return `${t?shelf(x):''}<h4 class="section-title">Lò nướng 2 tầng</h4>${d.oven_shift?`<p class="notice amber small">🔥 Lò đang nóng hơn thường: bánh vàng sớm hơn ${d.oven_shift} giây.</p>`:''}<div class="cb-oven">${racks}</div>
-    <p class="muted small">Lấy bánh ra khi thanh vào vùng xanh (vàng đều). Bánh cháy phải bỏ; bánh nhạt màu bán được nhưng khách chê. Số trên góc là bánh mới đang có trong tủ kính.</p>
+  return `${t?shelf(x):''}<h4 class="section-title">Lò nướng 2 tầng</h4><div class="cb-oven">${racks}</div>
     ${sponge}
     <h4 class="section-title">Tủ ủ bột</h4><div class="stack cb-proof">${trays}</div>
     <h4 class="section-title">❄️ Tủ mát ủ lạnh qua đêm</h4><div class="stack cb-proof">${fridge}</div>
@@ -374,15 +372,14 @@ function cakePanel(t,x){
   return `<h4 class="section-title">1 · Cốt bánh</h4>${status}
     <h4 class="section-title">2 · Kem & màu</h4><div class="tile-grid">${creams}</div>${swatches}<div class="row wrap">${frost}</div>
     <h4 class="section-title">3 · Viết chữ</h4>${k.cream?write:'<p class="muted small">Phủ kem xong mới viết chữ được.</p>'}
-    <h4 class="section-title">4 · Đóng hộp</h4>${x.cmd(`📦 Đóng hộp (${stock(x,'cake_box')})`,'cb_box',{task:t.id},'',!k.cream||!k.text||k.boxed||!stock(x,'cake_box'))}
-    <p class="muted small space-top">Mẹo nghề: đọc lại tên với khách, có dấu, trước khi bắt bông viết.</p>`;
+    <h4 class="section-title">4 · Đóng hộp</h4>${x.cmd(`📦 Đóng hộp (${stock(x,'cake_box')})`,'cb_box',{task:t.id},'',!k.cream||!k.text||k.boxed||!stock(x,'cake_box'))}`;
 }
 /* ---------- care from one day to the next ---------- */
 /** Bé Men, the sourdough starter: strength, what it does to the bread, feed once a day. */
 function starterCard(x){
   const s=data(x).starter;if(!s)return '';
   const feed=s.fed_today?'<span class="tag green">✓ Đã ăn hôm nay</span>':x.cmd(`🥄 Cho ăn (+${s.gain}%)`,'cb_feed',{},'primary small',!x.room.open||stock(x,'flour')<1);
-  return `<section class="cb-starter ${x.esc(s.band)}" aria-label="Bé Men, hũ men tự nhiên"><div class="cb-starter-head"><span class="cb-jar" aria-hidden="true">🫙</span><p class="grow"><b>Bé Men · ${x.esc(s.emoji)} ${x.esc(s.label)}</b><small>Men tự nhiên cho bánh mì que</small></p><b class="cb-starter-pct">${s.strength}%</b></div>
+  return `<section class="cb-starter ${x.esc(s.band)}" aria-label="Bé Men, hũ men tự nhiên"><div class="cb-starter-head"><span class="cb-jar" aria-hidden="true">🫙</span><p class="grow"><b>Bé Men · ${x.esc(s.emoji)} ${x.esc(s.label)}</b></p><b class="cb-starter-pct">${s.strength}%</b></div>
     <div class="cb-progress" role="meter" aria-label="Sức men" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${s.strength}"><i style="width:${s.strength}%"></i></div>
     <p class="small cb-starter-note">${x.esc(s.effect)}.${s.fed_today?'':` Chưa ăn: đêm nay −${s.night}%.`}</p><div class="row wrap">${feed}</div></section>`;
 }
@@ -452,7 +449,7 @@ function primary(t,x,rows,big){
   const blocked=!!data(x).day?.open_event,label=big?'🛎️ Giao cho khách':'🛎️ Giao';
   const allOk=rows.every(r=>r.ok===true);
   return allOk&&!blocked?x.cmd(label,'cb_serve',{task:t.id,confirm:true},cls,!canServe(t))
-    :x.confirmCmd(label,'cb_serve',{task:t.id,confirm:true},blocked?'Có chuyện bất ngờ đang chờ bạn quyết. Xử lý xong rồi hãy giao nhé.':'Chưa khớp hết phiếu. Vẫn giao? Khách sẽ đánh giá đúng những gì bạn làm.',cls,!canServe(t));
+    :x.confirmCmd(label,'cb_serve',{task:t.id,confirm:true},blocked?'Có chuyện bất ngờ đang chờ bạn quyết. Xử lý xong rồi hãy giao nhé.':'Chưa khớp hết phiếu. Vẫn giao?',cls,!canServe(t));
 }
 
 export default {
@@ -479,7 +476,7 @@ export default {
     const racks=(d.oven||[]).length,ready=(d.proof||[]).filter(p=>!p.left).length+(d.cold||[]).filter(c=>c.bakeable).length+(d.starter&&!d.starter.fed_today?1:0),inCase=(d.case||[]).filter(l=>l.state==='fresh'&&!l.sale).reduce((a,l)=>a+l.qty,0);
     const badge=k=>k==='oven'&&(racks||ready)?`<em class="cb-badge">${racks+ready}</em>`:k==='case'?`<em class="cb-badge${inCase?' calm':' zero'}">${inCase}</em>`:'';
     const tabBar=`<div class="cb-tabs" role="tablist" aria-label="Khu làm việc">${tabs.map(([k,e,l])=>`<button type="button" role="tab" class="cb-tab ${ui.tab===k?'on':''}" data-action="car:tab" data-tab="${k}" aria-selected="${ui.tab===k}">${e} ${l}${badge(k)}</button>`).join('')}</div>`;
-    const panel={bar:()=>n.kind==='drink'?barPanel(t,x):'<p class="notice">Order này không có đồ uống. Bạn vẫn có thể xem máy pha.</p>',oven:()=>ovenPanel(t,x),case:()=>casePanel(t,x),cake:()=>n.kind==='cake'?cakePanel(t,x):'<p class="notice">Order này không phải bánh kem.</p>'}[ui.tab]?.()||'';
+    const panel={bar:()=>n.kind==='drink'?barPanel(t,x):'<p class="notice">Order này không có đồ uống.</p>',oven:()=>ovenPanel(t,x),case:()=>casePanel(t,x),cake:()=>n.kind==='cake'?cakePanel(t,x):'<p class="notice">Order này không phải bánh kem.</p>'}[ui.tab]?.()||'';
     const preview=n.kind==='drink'?cupArt(t,x)+(Object.keys(n.pastry||{}).length?bagArt(t,x):''):n.kind==='pastry'?bagArt(t,x):cakeArt(t,x);
     const rows=rowsOf(t,x);
     const part=n.kind==='cake'?'cake':'drink';

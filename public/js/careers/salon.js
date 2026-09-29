@@ -88,13 +88,13 @@ function nav(t,x,list,at,tab){
 }
 
 /* ---------- shared bits ---------- */
-function todayChip(x){const d=x.room.data?.today;return d?`<p class="sl-today" title="${x.esc(d.text)}"><span aria-hidden="true">${x.esc(d.emoji)}</span> <b>Hôm nay: ${x.esc(d.title)}</b> <small>${x.esc(d.text)}</small></p>`:'';}
+function todayChip(x){const d=x.room.data?.today;return d?`<p class="sl-today"><span aria-hidden="true">${x.esc(d.emoji)}</span> <b>Hôm nay: ${x.esc(d.title)}</b> <small>${x.esc(d.text)}</small></p>`:'';}
 function deskCard(x){
   const ev=x.room.data?.desk?.ev;if(!ev)return '';
   const who=x.npc(ev.npc);
   const opts=ev.options.map((o,i)=>`<button type="button" class="btn ghost sl-opt" ${cmdAttr(x,'sl_desk',{option:o.id})} ${o.cost>x.room.money?'disabled':''}><b>${x.esc(o.label)}</b>${o.hint?`<small>${x.esc(o.hint)}</small>`:''}</button>`).join('');
   return `<section class="sl-desk ${x.esc(ev.tone||'')}" role="alert" aria-live="assertive"><div class="sl-desk-head"><span class="sl-desk-emoji" aria-hidden="true">${x.esc(ev.emoji)}</span><div><small>CHUYỆN Ở QUẦY</small><h3>${x.esc(ev.title)}</h3></div>${x.portrait(who,40)}</div>
-    <p>${x.esc(ev.text)}</p><div class="sl-opts">${opts}</div><p class="small-note">Thuốc đang ủ vẫn xả được bất cứ lúc nào; việc khác chờ quyết xong chuyện này.</p></section>`;
+    <p>${x.esc(ev.text)}</p><div class="sl-opts">${opts}</div></section>`;
 }
 function lastDesk(x){const l=x.room.data?.desk?.last;if(!l||l.day!==x.room.day)return '';return `<p class="sl-last ${l.good===true?'good':l.good===false?'bad':''}" aria-live="polite"><span aria-hidden="true">${x.esc(l.emoji)}</span> <b>${x.esc(l.title)}:</b> ${x.esc(l.outcome)}</p>`;}
 function calmBar(t){
@@ -108,7 +108,7 @@ function jar(x){
 function foot(x){
   const d=x.room.data||{},busy=deskBusy(x),n=Number(d.clean)||0,max=d.clean_max||4;
   const label=n>=max?'✅ Hũ khử khuẩn đầy':n?'🧴 Ngâm lại bộ':'🧴 Khử khuẩn dụng cụ';
-  return `<div class="sl-foot">${jar(x)}<p class="row wrap">${x.cmd(label,'sl_sanitize',{},n?'ghost small':'primary small',n>=max||busy)}${x.button('📦 Kho thuốc & vật tư','inventory',{},'ghost small')}</p>${n?'':'<small class="muted">Mỗi khách dùng một bộ sạch; đầu ngày thay dung dịch nên hũ trống.</small>'}</div>`;
+  return `<div class="sl-foot">${jar(x)}<p class="row wrap">${x.cmd(label,'sl_sanitize',{},n?'ghost small':'primary small',n>=max||busy)}${x.button('📦 Kho thuốc & vật tư','inventory',{},'ghost small')}</p></div>`;
 }
 
 /* ---------- care loop: client card, bookings ---------- */
@@ -129,9 +129,8 @@ function cardRows(x,cd,withHealth=true){
 function cardFold(t,x){
   const cd=cardOf(x,t);if(!cd||t.regular==null)return '';
   const match=!!cardFormula(x,t),weak=t.weak;
-  const lead=match?'<p class="sl-note good">📇 Hôm nay khách muốn đúng màu trong thẻ — pha y công thức cũ để chân và thân tóc liền màu.</p>':'';
   const hp=t.health!=null?healthBar(x,t.health,'Sức khỏe tóc hôm nay'):'';
-  return `<section class="sl-card">${fold(`📇 Thẻ khách quen · ${x.esc(cd.trust_name)} · ${cd.visits} lần ghé`,`${lead}${hp}${cardRows(x,cd,false)}`,!t.plan&&(match||!!weak))}</section>`;
+  return `<section class="sl-card">${fold(`📇 Thẻ khách quen · ${x.esc(cd.trust_name)} · ${cd.visits} lần ghé`,`${hp}${cardRows(x,cd,false)}`,!t.plan&&(match||!!weak))}</section>`;
 }
 function apptUi(x,a){return x.ui['appt:'+a.id]??={a:null,b:null,pa:1,pb:1,dev:null,len:1};}
 function apptCard(x,a){
@@ -226,7 +225,7 @@ function consult(t,x){
   }).join('');
   const zones=x.cc.zones.map(z=>{
     const f=t.findings?.[z.id];
-    return `<button type="button" class="sl-zone ${z.id} ${f?'seen':''}" ${cmdAttr(x,'sl_inspect',{task:t.id,zone:z.id})} ${f?'disabled':''}><b>${z.emoji} ${x.esc(z.label)}</b>${f?`<small>${x.esc(f)}</small>`:'<small>Chạm để xem kỹ</small>'}</button>`;
+    return `<button type="button" class="sl-zone ${z.id} ${f?'seen':''}" ${cmdAttr(x,'sl_inspect',{task:t.id,zone:z.id})} ${f?'disabled':''}><b>${z.emoji} ${x.esc(z.label)}</b>${f?`<small>${x.esc(f)}</small>`:''}</button>`;
   }).join('');
   const dye=t.needs.services.some(s=>s==='color'||s==='toner'),bleach=t.needs.services.includes('bleach');
   const tests=[];
@@ -239,8 +238,7 @@ function consult(t,x){
   }
   if(bleach)tests.push(t.strand_text?`<p class="sl-note">🧵 ${x.esc(t.strand_text)}</p>`:x.cmd('🧵 Thử một lọn sau gáy','sl_strand',{task:t.id},'small'));
   const cta=t.plan?'':`<div class="sl-cta">${x.button('🤝 Sang chốt phương án →','car:tab',{task:t.id,tab:'plan',at:'consult'},'primary full')}</div>`;
-  return `<p class="muted small">Hỏi trước, xem tận mắt rồi mới hứa. Câu trả lời của khách được ghi vào phiếu.</p>
-    <div class="sl-qa-list">${qa}</div>
+  return `<div class="sl-qa-list">${qa}</div>
     <h5 class="sl-sub">Xem tóc tận tay</h5><div class="sl-zones">${zones}</div>
     ${tests.length?`<h5 class="sl-sub">Thử & soi trước khi làm</h5><div class="stack">${tests.join('')}</div>`:''}${cta}`;
 }
@@ -255,11 +253,11 @@ function planPanel(t,x){
   const quote=u.services.reduce((a,s)=>a+price(x,s),0);
   const seg=[1,2,3].map(v=>`<button type="button" class="sl-seg ${u.sessions===v?'on':''}" ${carAttr(x,'sessions',{task:t.id,v})} aria-pressed="${u.sessions===v}">${v} buổi</button>`).join('');
   let warn=caseOf(t)==='photo'&&!t.photo_seen?'<p class="sl-note">📸 Chưa soi ảnh gốc — hứa theo ảnh filter là dễ vỡ mộng.</p>':'';
-  if(t.weak)warn+=`<p class="sl-note bad">💧 Tóc ${t.health}/100 — yếu. Khuyên phục hồi là thật lòng (khách chịu thêm phí này); tóc dưới ${care(x).bleach_stop||30} thì chưa tẩy được.</p>`;
+  if(t.weak)warn+=`<p class="sl-note bad">💧 Tóc ${t.health}/100 — yếu. Tóc dưới ${care(x).bleach_stop||30} thì chưa tẩy được.</p>`;
   const picked=x.cc.services.map(s=>s.id).filter(s=>u.services.includes(s));
   const same=!!t.plan&&u.sessions===t.plan.sessions&&picked.length===t.plan.services.length&&picked.every(s=>t.plan.services.includes(s));
   const label=!t.plan?'🤝 Chốt với khách':same?'✓ Đã chốt phương án này':'🔁 Chốt lại phương án';
-  return `<p class="muted small">Chỉ hứa điều làm được hôm nay. Bỏ bớt dịch vụ phải có lý do an toàn; ảnh mẫu xa quá thì chia buổi.</p>${warn}
+  return `<p class="muted small">Bỏ bớt dịch vụ phải có lý do an toàn; ảnh mẫu xa quá thì chia buổi.</p>${warn}
     <div class="sl-grid">${tiles}</div>
     <h5 class="sl-sub">Số buổi để tới ảnh mẫu</h5><div class="sl-segs">${seg}</div>
     <div class="sl-cta"><b>Báo giá hôm nay: ${x.money(quote)}</b>${x.cmd(label,'sl_plan',{task:t.id,services:picked,sessions:u.sessions},same?'full':'primary full',!u.services.length||same)}</div>`;
@@ -300,7 +298,7 @@ function mixer(t,x,u){
   }).join('');
   const m=u.a?mixOf(x,u.a,u.b,u.pa,u.b?u.pb:0,warm):null;
   const part=(which,id,p)=>{const d=dyeOf(x,id);return `<div class="sl-part"><span><i class="sl-role" aria-hidden="true">${which.toUpperCase()}</i> ${x.esc(d?.code||'')}</span><button type="button" class="btn small ghost" ${carAttr(x,'part',{task:t.id,which,d:-1})} aria-label="Bớt một phần ${x.esc(d?.code||'')}" ${p<=1?'disabled':''}>−</button><b>${p} phần</b><button type="button" class="btn small ghost" ${carAttr(x,'part',{task:t.id,which,d:1})} aria-label="Thêm một phần ${x.esc(d?.code||'')}" ${p>=3?'disabled':''}>+</button></div>`;};
-  let preview='<p class="sl-preview muted small">Chạm một tuýp để làm nền (A); chạm thêm tuýp thứ hai (B) nếu cần pha. Chạm lại để bỏ.</p>';
+  let preview='';
   if(m){
     const lvOk=tg?levelOk(m,tg.level):null,bdOk=tg?m.band===tg.band:null;
     const chips=[];
@@ -324,7 +322,7 @@ function colorPanel(t,x){
   const results=Object.entries(t.results||{}).map(([k,r])=>`<li class="${r.zone==='ideal'&&r.ok?'ok':r.zone==='damage'||r.zone==='under'?'bad':'warn'}">${svc(x,k).emoji} ${x.esc(svc(x,k).name)}: ${x.esc(ZONE_TEXT[r.zone])} (${r.secs} giây)${r.ok?'':' · công thức lệch'}</li>`).join('');
   const mixRes=t.mix_result?`<p class="sl-note"><span class="sl-dot" style="--sw:${x.esc(t.mix_result.color)}" aria-hidden="true"></span> Màu đã lên: level ${x.esc(t.mix_result.level)} · ${x.esc(bandName(x,t.mix_result.band))}</p>`:'';
   const tail=`${results?`<ul class="sl-results">${results}</ul>`:''}${mixRes}${rules(x)}`;
-  if(t.timer)return `<p class="sl-note">⏱️ Thanh ủ đang chạy ở đầu phiếu — xả khi vào vùng xanh.</p>${tail}`;
+  if(t.timer)return tail;
   if(t.bowl){
     const b=t.bowl;
     return `<div class="sl-bowl"><span class="sl-dish" style="--sw:${x.esc(bowlColour(x,b))}" aria-hidden="true"></span><div class="grow"><b>Bát ${x.esc(svc(x,b.kind).name.toLowerCase())}</b><small>${x.esc(bowlLabel(x,b))} + oxy ${b.dev} vol · ${fmtRatio(b.ratio)}</small></div></div>
@@ -353,7 +351,7 @@ function colorPanel(t,x){
   const out=need.filter(id=>!x.stock(id));
   if(out.length)ready=false;
   const outNote=out.length?`<p class="sl-note bad">📦 Hết ${out.map(id=>x.esc(itemName(x,id))).join(', ')} — mở Kho nhập thêm hoặc chọn loại khác.</p>`:'';
-  return `<p class="muted small">Pha theo bảng pha màu. Thoa xong, thanh ủ chạy theo giây thật — xả khi vào vùng xanh.</p>${tabs}${pick}
+  return `${tabs}${pick}
     <h5 class="sl-sub">Oxy trợ nhuộm</h5><div class="sl-segs">${devs}</div>
     <h5 class="sl-sub">Tỷ lệ thuốc ∶ oxy</h5><div class="sl-segs">${ratios}</div>
     ${blocked?'<p class="sl-note">Tẩy và xả xong rồi mới phủ toner.</p>':''}${outNote}
@@ -362,7 +360,7 @@ function colorPanel(t,x){
 
 function washPanel(t,x){
   const kid=caseOf(t)==='kid'&&t.calm!=null;
-  return `<p class="small">${t.washed?'✅ Tóc đã gội, xả sạch.':'Nhuộm/tẩy làm trên tóc khô; cắt, phục hồi, sấy cần tóc sạch.'}</p>
+  return `${t.washed?'<p class="small">✅ Tóc đã gội, xả sạch.</p>':''}
     ${kid&&!t.washed?'<p class="sl-note">🧒 Bé nào gội xong cũng hay vẩy nước, bớt ngồi yên một chút.</p>':''}
     <div class="sl-cta">${x.cmd('🫧 Gội & xả','sl_wash',{task:t.id},'primary full',t.washed||!!t.timer)}</div>`;
 }
@@ -376,7 +374,7 @@ function cutPanel(t,x){
     const tools=(x.cc.calm_tools||[]).map(k=>`<button type="button" class="sl-chip ${t.soothed.includes(k.id)?'on':''}" ${cmdAttr(x,'sl_calm',{task:t.id,tool:k.id})} ${t.soothed.includes(k.id)?'disabled':''}><b>${k.emoji} ${x.esc(k.label)}</b></button>`).join('');
     calm=`<div class="sl-kid">${calmBar(t)}${t.calm<40?'<p class="sl-note bad">⚠️ Bé đang giãy — cầm kéo lúc này dễ lẹm. Dỗ bé trước đã.</p>':''}<h5 class="sl-sub">Dỗ bé (nghe bố kể thói quen của bé)</h5><div class="sl-calm-tools">${tools}</div></div>`;
   }
-  return `${calm}<p class="muted small">Chia vùng → cắt đường chuẩn → tỉa tầng (nếu mẫu có) → soi đối xứng. Cắt lẹm thì không nối lại được — cắt ít, kiểm nhiều.</p>
+  return `${calm}<p class="muted small">Cắt lẹm thì không nối lại được — cắt ít, kiểm nhiều.</p>
     <div class="sl-len"><span>Độ dài cắt bớt</span><button type="button" class="btn small ghost" ${carAttr(x,'len',{task:t.id,d:-1})} aria-label="Bớt 1 cm">−</button><b>${u.len} cm</b><button type="button" class="btn small ghost" ${carAttr(x,'len',{task:t.id,d:1})} aria-label="Thêm 1 cm">+</button><small class="muted">Đã bớt tổng ${c.removed} cm${c.short?' · ⚠️ lẹm':''}</small></div>
     <ol class="sl-steps">${step('section','1 · Chia vùng',!s.length)}${step('guide',`2 · Cắt đường chuẩn (${u.len} cm)`,s.includes('section')&&!s.includes('layers'),{length:u.len})}${step('layers','3 · Tỉa tầng',s.includes('guide')&&!s.includes('layers'))}${step('check','4 · Soi đối xứng & chốt',s.includes('guide'))}</ol>
     ${done?'<p class="sl-note good">✂️ Đã cắt xong.</p>':''}`;
@@ -400,7 +398,7 @@ function receipt(t,x){
 }
 
 function billPanel(t,x){
-  const u=ui(x,t),ps=t.plan?.services||[],left=rushLeft(t,x);
+  const u=ui(x,t),ps=t.plan?.services||[];
   const shelf=(x.cc.retail||[]).map(r=>{const on=u.products.includes(r.id),q=x.stock(r.id);return `<button type="button" class="sl-chip ${on?'on':''}" ${carAttr(x,'product',{task:t.id,id:r.id})} aria-pressed="${on}" ${q?'':'disabled'}>${r.emoji} ${x.esc(r.name)} · ${x.money(r.price)}<small>${q} trên kệ</small></button>`;}).join('');
   const retailSum=u.products.reduce((a,id)=>a+retail(x,id).price,0);
   const pending=ps.filter(s=>!t.done.includes(s));
@@ -409,7 +407,6 @@ function billPanel(t,x){
     <h5 class="sl-sub">Tư vấn sản phẩm (chỉ khi hợp tóc & ngân sách)</h5><div class="sl-chips">${shelf}</div>
     ${bookBlock(t,x)}
     <p class="row spread"><span>Tạm tính</span><b>${x.money((t.quote||0)+(t.patch_fee||0)+retailSum)}</b></p>
-    ${left!=null?`<p class="small">⏱️ ${left>=0?`Còn ${left} nhịp để kịp giờ khách hẹn.`:'Đã trễ giờ khách hẹn.'}</p>`:''}
     <div class="sl-cta">${x.confirmCmd('💳 Thanh toán & tiễn khách','sl_checkout',{task:t.id,products:u.products,book:u.book.filter(k=>(t.bookable||[]).includes(k)),confirm:true},'Thanh toán cho khách? Khách sẽ soi gương và đánh giá đúng những gì đã làm; sản phẩm không hợp sẽ bị từ chối.','primary full',!ready)}</div>
     ${pending.length&&t.plan?`<small class="muted">Còn: ${pending.map(s=>x.esc(svc(x,s).name.toLowerCase())).join(', ')}</small>`:''}`;
 }

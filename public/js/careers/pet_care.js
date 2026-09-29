@@ -77,13 +77,13 @@ function focus(t,x){
 const st=(t,x,key,alt='ghost')=>focus(t,x)===key?'primary':alt;
 
 /* ---------------------------------------------------------------- the day, the counter */
-function todayChip(x){const m=x.room.data?.mod;return m?`<p class="pc-today" title="${x.esc(m.text)}"><span aria-hidden="true">${x.esc(m.emoji)}</span> <b>Hôm nay: ${x.esc(m.title)}</b> <small>${x.esc(m.text)}</small></p>`:'';}
+function todayChip(x){const m=x.room.data?.mod;return m?`<p class="pc-today"><span aria-hidden="true">${x.esc(m.emoji)}</span> <b>Hôm nay: ${x.esc(m.title)}</b> <small>${x.esc(m.text)}</small></p>`:'';}
 function deskCard(x){
   const ev=x.room.data?.desk?.ev;if(!ev)return '';
   const who=x.npc(ev.npc);
   const opts=ev.options.map(o=>`<button type="button" class="btn ghost pc-opt" ${cmdAttr(x,'pc_desk',{option:o.id})} ${o.cost>x.room.money?'disabled':''}><b>${x.esc(o.label)}</b>${o.hint?`<small>${x.esc(o.hint)}</small>`:''}</button>`).join('');
   return `<section class="pc-desk ${x.esc(ev.tone||'')}" role="alert" aria-live="assertive"><div class="pc-desk-head"><span class="pc-desk-emoji" aria-hidden="true">${x.esc(ev.emoji)}</span><div class="grow"><small>CHUYỆN Ở QUẦY</small><h3>${x.esc(ev.title)}</h3></div>${x.portrait(who,40)}</div>
-    <p>${x.esc(ev.text)}</p><div class="pc-opts">${opts}</div><p class="pc-note">Vòi nước, máy sấy đang chạy vẫn tắt được; việc khác chờ quyết xong chuyện này.</p></section>`;
+    <p>${x.esc(ev.text)}</p><div class="pc-opts">${opts}</div></section>`;
 }
 function lastDesk(x){const l=x.room.data?.desk?.last;if(!l||l.day!==x.room.day)return '';return `<p class="pc-last ${l.good===true?'good':l.good===false?'bad':''}" aria-live="polite"><span aria-hidden="true">${x.esc(l.emoji)}</span> <b>${x.esc(l.title)}:</b> ${x.esc(l.outcome)}</p>`;}
 function foot(x){
@@ -128,7 +128,7 @@ function stayCard(x,pid,st){
 function stayCards(x){
   const st=x.room.data?.stay||{},ids=x.cc.pens.map(p=>p.id).filter(id=>st[id]&&x.room.data.pens?.[id]);
   if(!ids.length)return '';
-  return `<div class="pc-stays"><p class="small muted">Mỗi ngày: đủ bữa theo thẻ chuồng, đi dạo hoặc dọn khay cát, thuốc đúng nhãn. Tối khép ca, tinh thần và sức khỏe của bé đổi theo.</p>${ids.map(id=>stayCard(x,id,st[id])).join('')}</div>`;
+  return `<div class="pc-stays">${ids.map(id=>stayCard(x,id,st[id])).join('')}</div>`;
 }
 
 /* ---------------------------------------------------------------- care loop: regulars, reminders, follow-up calls */
@@ -205,7 +205,7 @@ function intake(t,x){
   const form=`<div class="pc-form">${rows.map(([k,v])=>`<div class="pc-row"><span>${k}</span><b>${v}</b></div>`).join('')}<p class="bubble npc small">“${x.esc(n.note)}”</p></div>`;
   const warn=part=>(f.signs||[]).some(s=>x.cc.signs[s]?.part===part)||(part==='vaccine'&&f.vax&&(f.vax!=='valid'||(f.vax_until!=null&&f.vax_until<pickup(t,x))))
     ||(part==='mood'&&f.mood&&f.mood!=='calm')||(part==='scale'&&f.kg!=null&&job!=='feed'&&f.kg!==n.kg_said);
-  return section('📋 Phiếu nhận bé',form)+section('🔎 Kiểm tra tận tay',`<p class="small muted">Có điều chủ không biết (hoặc không nói). Kiểm trước khi làm.</p><div class="pc-parts">${partTiles(t,x,warn)}</div>`);
+  return section('📋 Phiếu nhận bé',form)+section('🔎 Kiểm tra tận tay',`<div class="pc-parts">${partTiles(t,x,warn)}</div>`);
 }
 
 /* ---------------------------------------------------------------- grooming */
@@ -242,7 +242,7 @@ function boltAlert(t,x){
     const no=c.id==='lure'&&!x.stock('treat');
     return `<button type="button" class="btn ghost pc-opt" ${cmdAttr(x,'pc_catch',{task:t.id,how:c.id})} ${no?'disabled':''}><b>${x.esc(c.emoji)} ${x.esc(c.name)}</b><small>${x.esc(c.note)}${c.id==='lure'?` · còn ${x.stock('treat')} bánh`:''}</small></button>`;
   }).join('');
-  return `<section class="pc-bolt" role="alert" aria-live="assertive"><h4>⚠️ Bé nhảy khỏi bàn, lao về phía cửa!</h4><p class="small">Mọi việc dừng lại cho tới khi bé về bàn an toàn. Chọn cách đưa bé về:</p><div class="pc-opts">${opts}</div></section>`;
+  return `<section class="pc-bolt" role="alert" aria-live="assertive"><h4>⚠️ Bé nhảy khỏi bàn, lao về phía cửa!</h4><div class="pc-opts">${opts}</div></section>`;
 }
 function stepStrip(t,x){
   const n=t.needs,g=t.g,sv=n.services;
@@ -267,7 +267,7 @@ function dryBox(t,x){
   const label=g.dry?'Đang sấy…':`Khô ${Math.min(100,g.dry_pct)}%`;
   return `<h5>💨 Lau & sấy</h5>${timerBar('dry',g.dry,g.dry_pct,100,x.cc.dry_over*100,100/need,label)}
     <div class="row wrap">${g.dry?x.cmd('⏹️ Tắt máy sấy','pc_dry',{task:t.id,mode:'stop'},'primary'):['cool','warm','hot'].map(h=>x.cmd(HEAT[h],'pc_dry',{task:t.id,mode:'start',heat:h},h==='hot'?'ghost small pc-no':'ghost small',!g.shampoo||!g.rinse_s||!!g.rinse||off)).join('')}</div>
-    <p class="small muted">Lông ${n.coat==='long'?'dài':'ngắn'}: khoảng ${Math.round(need*10)/10} giây ở nấc ${heat==='cool'?'mát':'ấm'}${n.humid?' (trời ẩm, lâu gấp rưỡi)':''}. Lau khăn trước khi sấy. Sấy quá lâu làm khô da.</p>`;
+    <p class="small muted">Lông ${n.coat==='long'?'dài':'ngắn'}: khoảng ${Math.round(need*10)/10} giây ở nấc ${heat==='cool'?'mát':'ấm'}${n.humid?' (trời ẩm, lâu gấp rưỡi)':''}.</p>`;
 }
 function groomJob(t,x){
   const n=t.needs,g=t.g,sv=n.services,v=ui(x,t),busy=g.rinse||g.dry,off=g.stopped||g.bolt;
@@ -328,7 +328,7 @@ function groomSide(t,x){
   else rows.push([g.stress<x.cc.stress_stop,'Bé không hoảng',`stress ${g.stress}`]);
   return `<div class="pc-receipt"><h4>🧾 Phiếu thu</h4>${lines.map(([l,p,on])=>`<div class="kv ${on?'':'muted'}"><span>${x.esc(l)}</span><b>${on?x.money(p):'—'}</b></div>`).join('')}<div class="kv total"><span>Thu khi trả bé</span><b>${x.money(total)}</b></div></div>
     ${checklist(x,rows)}${reportBox(t,x)}
-    ${miss.length&&!g.stopped?`<p class="small muted">Còn: ${x.esc(miss.join(', '))} — làm tiếp, hoặc “Dừng dịch vụ” nếu bé không chịu nổi.</p>`:''}${g.nick&&!g.stanched?`<div class="notice amber">🩸 Móng còn rỉ máu — rắc bột cầm máu trước khi trả bé.</div>`:''}
+    ${miss.length&&!g.stopped?`<p class="small muted">Còn: ${x.esc(miss.join(', '))}</p>`:''}${g.nick&&!g.stanched?`<div class="notice amber">🩸 Móng còn rỉ máu — rắc bột cầm máu trước khi trả bé.</div>`:''}
     ${x.confirmCmd('🐾 Trả bé & thu tiền','pc_handover',{task:t.id},'Trả bé cho chủ? Chủ sẽ nghe đúng những ý bạn đã chọn để báo.',st(t,x,'handover','ghost')+' big full',!!(g.rinse||g.dry||g.bolt)||(!g.stopped&&miss.length>0)||!!(g.nick&&!g.stanched))}`;
 }
 
@@ -382,7 +382,7 @@ function boardJob(t,x){
     ${chartBox(t,x,kg,f.kg!=null,vv.meals,vv.grams)}
     <div class="row wrap">${x.cmd(t.plan?'💾 Ghi lại kế hoạch':'💾 Ghi kế hoạch ăn','pc_plan',{task:t.id,food:vv.food,meals:vv.meals,grams:vv.grams,solo:!!vv.solo},t.plan?'ghost':st(t,x,'plan'),vv.food==='own'&&!n.food_own)}
       ${t.plan?`<span class="tag green">Thẻ: ${t.plan.meals} × ${t.plan.grams} g · ${t.plan.food==='own'?'đồ chủ':'hạt tiệm'}${t.plan.solo?' · chơi riêng':''}</span>`:''}</div>`;
-  return intake(t,x)+section('🏠 Chọn chuồng',`<p class="small muted">Mèo ở tầng mèo, xa tiếng chó. Chuồng nhỏ cho chó ≤ 10 kg.</p>${pens}`)+section('🥣 Kế hoạch ăn',plan);
+  return intake(t,x)+section('🏠 Chọn chuồng',pens)+section('🥣 Kế hoạch ăn',plan);
 }
 function boardSide(t,x){
   const n=t.needs,f=t.facts||{},key=n.species==='dog'?'board_dog':'board_cat',signs=f.signs||[],by=pickup(t,x);
@@ -440,7 +440,7 @@ function needsOf(a){
 }
 function adoptJob(t,x){
   const n=t.needs,vv=ui(x,t),done=t.status==='completed'||t.status==='referred';
-  const qs=`<p class="bubble npc small">“${x.esc(n.note)}”</p><p class="small muted">Gia đình nào cũng muốn nhận bé ngay. Hỏi kỹ nếp nhà rồi mới giao.</p><div class="pc-parts">${partTiles(t,x,()=>false)}</div>`;
+  const qs=`<p class="bubble npc small">“${x.esc(n.note)}”</p><div class="pc-parts">${partTiles(t,x,()=>false)}</div>`;
   const pets=(x.cc.adoptees||[]).filter(a=>n.candidates.includes(a.id)).map(a=>{
     const on=vv.pet===a.id;
     return `<button type="button" class="pc-adoptee ${on?'selected':''}" data-action="car:set" data-key="pet" data-val="${x.esc(a.id)}" aria-pressed="${on}" ${done?'disabled':''}>
@@ -457,7 +457,7 @@ function adoptSide(t,x){
   return `<div class="pc-receipt"><h4>🧾 Phí nhận nuôi</h4><div class="kv"><span>Tiêm phòng, triệt sản</span><b>${x.money(price(x,'adopt'))}</b></div></div>
     ${checklist(x,rows)}
     ${x.confirmCmd(vv.pet==='none'?'🤝 Hẹn ngày hội sau':'🏡 Giao bé về nhà mới','pc_match',{task:t.id,pet:vv.pet},vv.pet==='none'?`Chưa giao bé nào cho ${n.family}?`:`Giao bé ${pick||''} cho ${n.family}?`,'primary big full',!vv.pet||!asked)}
-    <p class="small muted">${asked?'':'Hỏi ít nhất một câu trước khi quyết. '}Nhà có người dị ứng lông thì chưa giao bé nào.</p>`;
+    <p class="small muted">Nhà có người dị ứng lông thì chưa giao bé nào.</p>`;
 }
 
 const JOBS={groom:[(t,x)=>intake(t,x)+groomJob(t,x),groomSide],board:[boardJob,boardSide],feed:[feedJob,feedSide],adopt:[adoptJob,adoptSide]};

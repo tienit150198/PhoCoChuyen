@@ -103,7 +103,7 @@ function garagePanel(x){
   const tiles=b.parts.map(p=>{const on=sel.includes(p.id),st=partState(p);
     return `<button type="button" class="tile dl-fix ${on?'selected':''} ${st}" ${carAttr(x,'fix',{part:p.id})} aria-pressed="${on}" ${p.need?'':'disabled'}><span class="tile-emoji" aria-hidden="true">${x.esc(p.emoji)}</span><b>${x.esc(p.name)}</b><small>${p.value}% · ${p.need?`${p.price} xu`:'còn mới'}</small></button>`;}).join('');
   const names=b.parts.filter(p=>sel.includes(p.id)).map(p=>p.name.toLowerCase()).join(', ');
-  return `<section class="dl-sec dl-garage"><h4 class="section-title">🔧 Tiệm sửa xe Chú Bảy <small class="muted">Chọn bộ phận cần làm, mỗi món ${x.cc.fix_minutes||3} phút.</small></h4>
+  return `<section class="dl-sec dl-garage"><h4 class="section-title">🔧 Tiệm sửa xe Chú Bảy</h4>
     ${need.length?`<div class="dl-grid pack">${tiles}</div>
     <div class="row wrap space-top">${x.confirmCmd(sel.length?`🔧 Sửa ${sel.length} món · ${cost} xu`:'Chọn bộ phận để sửa','dl_fix',{parts:sel},`Sửa ${names} hết ${cost} xu (mất ${mins} phút)?`,'primary',!sel.length||cost>(Number(x.room.money)||0))}</div>
     ${cost>(Number(x.room.money)||0)?'<p class="small bad-text">Ví chưa đủ — bỏ bớt, sửa món gấp nhất trước.</p>':''}`:'<p class="muted">Chú Bảy xem qua: “Xe ngon lành, chưa cần làm gì hết con.”</p>'}</section>`;
@@ -132,7 +132,7 @@ function nextLevel(x,b){
 function areaLine(x){
   const a=x.room.data?.areas||{},sm=x.cc.area_smooth||2,lo=x.cc.area_local||5;
   const rows=Object.entries(a).filter(([,n])=>n>=sm).sort((p,q)=>q[1]-p[1]).map(([id,n])=>`${nodeOf(x,id).emoji} ${nodeOf(x,id).name}${n>=lo?' (lối tắt riêng)':''}`);
-  return `<p class="small dl-areas">🗺️ ${rows.length?`Thuộc hẻm: ${x.esc(rows.join(', '))}.`:`Chưa thuộc hẻm nào — làm việc ${sm} lần ở một điểm thì hẻm tắt vào đó chạy êm.`}</p>`;
+  return rows.length?`<p class="small dl-areas">🗺️ Thuộc hẻm: ${x.esc(rows.join(', '))}.</p>`:'';
 }
 function careSection(x){
   return `<section class="dl-care" aria-label="Chăm xe và khách quen">${bikeFold(x)}${bookFold(x)}</section>`;
@@ -158,7 +158,7 @@ function scoreStrip(x){
   const star=sc.rating==null?`⭐ Chấm điểm sau ${Math.max(1,5-(sc.rated||0))} đơn`:`⭐ ${num(sc.rating)}${sc.top?` · ưu tiên +${sc.top_bonus} xu/đơn`:` · ${num(sc.top_at)} được ưu tiên`}`;
   const q=sc.quest;
   const chips=[`<span class="dl-chip ${sc.top?'good':''}">${x.esc(star)}</span>`,
-    `<span class="dl-chip" title="Mỗi ${sc.every} đơn sạch liên tiếp thưởng ${sc.streak_bonus} xu">🔥 Chuỗi sạch ${sc.streak} · +${sc.streak_bonus} xu mỗi ${sc.every} đơn</span>`];
+    `<span class="dl-chip">🔥 Chuỗi sạch ${sc.streak} · +${sc.streak_bonus} xu mỗi ${sc.every} đơn</span>`];
   if(q)chips.push(`<span class="dl-chip ${q.paid?'good':''}">🎯 Mốc ca ${q.done}/${q.goal}${q.paid?' ✓':` · +${q.bonus} xu`}</span>`);
   return `<div class="dl-score" aria-label="Điểm tài xế">${chips.join('')}</div>`;
 }
@@ -171,7 +171,7 @@ function deskCard(x){
       const inner=`<span class="dl-opt-label">${x.esc(o.label)}</span>${o.hint?`<small>${x.esc(o.hint)}</small>`:''}${o.cost?`<em class="dl-cost">−${x.fmt(o.cost)} xu${poor?' · ví chưa đủ':''}</em>`:''}`;
       return o.cost?x.confirmCmd(inner,'dl_decide',{option:o.id},`Lựa chọn này tốn ${x.fmt(o.cost)} xu. Đồng ý?`,'dl-opt',poor):x.cmd(inner,'dl_decide',{option:o.id},'dl-opt');
     }).join('');
-    return `<section class="dl-event ${ev.tone==='tense'?'tense':''}" role="group" aria-labelledby="dl-ev-title"><div class="dl-ev-head"><span class="dl-ev-emoji" aria-hidden="true">${x.esc(ev.emoji)}</span><div><small>Chuyện dọc đường · quyết xong rồi chạy tiếp</small><h3 id="dl-ev-title">${x.esc(ev.title)}</h3></div></div>
+    return `<section class="dl-event ${ev.tone==='tense'?'tense':''}" role="group" aria-labelledby="dl-ev-title"><div class="dl-ev-head"><span class="dl-ev-emoji" aria-hidden="true">${x.esc(ev.emoji)}</span><div><small>Chuyện dọc đường</small><h3 id="dl-ev-title">${x.esc(ev.title)}</h3></div></div>
       <p>${x.esc(ev.text)}</p><div class="dl-opts">${opts}</div></section>`;
   }
   const last=desk.last,key=last?`${last.script}-${last.choice}-${last.day}-${(desk.log||[]).length}`:'';
@@ -325,14 +325,14 @@ function hubPanel(x){
   const rows=(d.cod||[]).map(r=>`<li><span>${x.esc(r.item)}</span><b>${r.cod} xu</b>${r.day<x.room.day?'<small>từ hôm trước</small>':''}</li>`).join('');
   return `<section class="dl-sec"><h4 class="section-title">💵 Nộp tiền COD</h4>
     <ul class="dl-statement">${rows}</ul>
-    <p class="small muted">Cộng các dòng trên rồi đếm đúng số tiền nộp. Túi đang có ${d.bag} xu tiền mặt.</p>
+    <p class="small muted">Túi đang có ${d.bag} xu tiền mặt.</p>
     <p class="dl-change">Đang đếm: <b>${given} xu</b></p>${keypad(x,'snote',given,given)}
     <div class="row wrap">${x.confirmCmd(`Nộp ${given} xu cho kế toán`,'dl_settle',{amount:given},`Nộp ${given} xu COD cho kế toán bưu cục?`,'primary',!given)}</div></section>`;
 }
 function servicePanel(x){
   const d=x.room.data||{},b=d.bike;if(!b||d.at!=='gas')return '';
   const need=b.tyre<100||b.rim;
-  return `<section class="dl-sec"><h4 class="section-title">🛞 Thay ruột ở cây xăng</h4><p class="small">Lốp còn <b>${b.tyre}%</b>${b.rim?' · vành móp vì chạy bánh xẹp':''}. Dưới ${b.flat_at}% là dễ xẹp bánh giữa đường. Nhớt, sên, má phanh thì ghé tiệm Chú Bảy.</p>
+  return `<section class="dl-sec"><h4 class="section-title">🛞 Thay ruột ở cây xăng</h4><p class="small">Lốp còn <b>${b.tyre}%</b>${b.rim?' · vành móp vì chạy bánh xẹp':''}. Dưới ${b.flat_at}% là dễ xẹp bánh giữa đường.</p>
     <div class="row wrap">${x.confirmCmd(`🛞 Thay ruột, bơm lốp · ${b.service} xu`,'dl_service',{},`Thay ruột lốp hết ${b.service} xu (mất 6 phút)?`,b.tyre<b.flat_at?'primary':'ghost',!need)}</div></section>`;
 }
 function fuelPanel(x){
@@ -352,7 +352,7 @@ function stopPanel(x){
                ...s.drop.map(t=>`<article class="dl-order drop">${head(t,x)}${dropCard(t,x)}</article>`)].join('');
   const expired=live(x).filter(t=>t.known&&t.needs.kind==='food'&&t.run.expired&&destOf(t)!==d.at);
   return `<section class="dl-sec focus"><h4 class="section-title">📍 Đang ở ${x.esc(here.emoji)} ${x.esc(here.name)} <small class="muted">${x.esc(here.note||'')}</small></h4>
-    ${cards||'<p class="muted">Không có đơn cần lấy hay giao ở đây. Lên lộ trình để chạy tiếp.</p>'}
+    ${cards||'<p class="muted">Không có đơn cần lấy hay giao ở đây.</p>'}
     ${expired.map(t=>`<p class="notice red">${x.esc(t.needs.item)}: khách đã hủy đơn. ${x.confirmCmd('Báo thất bại','dl_fail',{task:t.id},'Báo giao thất bại cho đơn đã bị hủy?','danger small')}</p>`).join('')}
     <div class="row wrap">${x.cmd('⏳ Chờ 5 phút','dl_wait',{},'ghost small')} ${x.button('📦 Kho vật tư','inventory',{},'ghost small')}</div></section>
     ${d.at==='hub'?hubPanel(x):''}${fuelPanel(x)}${servicePanel(x)}${garagePanel(x)}`;
@@ -403,7 +403,7 @@ export default {
     return n.cod?'Tới nơi, thối tiền đúng và giao':'Tới nơi và giao hàng';
   },
   job(t,x){
-    if(x.room.data?.desk?.ev)return `<div class="career-job dl">${status(x)}${deskCard(x)}<p class="dl-hold small muted" role="note">Các việc khác tạm dừng: quyết xong chuyện này rồi chạy tiếp nhé.</p></div>`;
+    if(x.room.data?.desk?.ev)return `<div class="career-job dl">${status(x)}${deskCard(x)}</div>`;
     return `<div class="career-job dl">${status(x)}${roadBoard(x)}${scoreStrip(x)}${deskCard(x)}<div class="workbench"><section class="wb-main">
       ${stopPanel(x)}
       <section class="dl-sec"><h4 class="section-title">🗺️ Lộ trình</h4>${map(x)}${areaLine(x)}${planner(x)}</section>
@@ -412,7 +412,7 @@ export default {
   },
   // Between orders: still ride to the hub to hand in COD cash or to refuel.
   idle(x){
-    if(x.room.data?.desk?.ev)return `<div class="career-job dl">${status(x)}${deskCard(x)}<p class="dl-hold small muted" role="note">Các việc khác tạm dừng: quyết xong chuyện này rồi chạy tiếp nhé.</p></div>`;
+    if(x.room.data?.desk?.ev)return `<div class="career-job dl">${status(x)}${deskCard(x)}</div>`;
     return `<div class="career-job dl">${status(x)}${roadBoard(x)}${scoreStrip(x)}${deskCard(x)}<div class="workbench"><section class="wb-main">
       ${stopPanel(x)}
       <section class="dl-sec"><h4 class="section-title">🗺️ Lộ trình</h4>${map(x)}${areaLine(x)}${planner(x)}</section>

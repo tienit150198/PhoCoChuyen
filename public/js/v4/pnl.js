@@ -167,14 +167,13 @@ export function pnlCard(x){
   const table=`<table class="pnl-table"><caption class="sr-only">Bảng kết quả kinh doanh ngày ${day}</caption><tbody>
     ${row('',office?'Lương':'Doanh thu',p.revenue,revNote)}
     ${row('−','Giá vốn',p.cogs,'tiền hàng, nguyên liệu nhập hôm nay',{show:showGoods})}
-    ${row('=','Lãi gộp',p.gross,'Lãi gộp = tiền bán − tiền hàng',{cls:'sub '+tone(p.gross),strong:true,show:showGoods})}
+    ${row('=','Lãi gộp',p.gross,'',{cls:'sub '+tone(p.gross),strong:true,show:showGoods})}
     ${row('−','Chi phí vận hành',p.opex,'điện nước, lương, thuê, sửa chữa…',{show:!office||p.opex!==0})}
     ${row('−','Thất thoát',p.losses,'bị quỵt, trộm, lừa, hoàn tiền, bớt giá, phạt',{show:!office||p.losses!==0})}
     ${row(p.other<0?'−':'+','Khác',p.other,'thưởng, hỗ trợ, tiền được đền',{show:!office||p.other!==0})}
-    ${row('=',office?'Còn lại':p.net<0?'Lỗ ròng':'Lãi ròng',p.net,office?'lương − các khoản chi trong ngày':'Lãi ròng = lãi gộp − vận hành − thất thoát + khác',{cls:'total '+tone(p.net),strong:true,show:!office||p.net!==p.revenue})}
+    ${row('=',office?'Còn lại':p.net<0?'Lỗ ròng':'Lãi ròng',p.net,'',{cls:'total '+tone(p.net),strong:true,show:!office||p.net!==p.revenue})}
   </tbody></table>`;
-  const marginNote=office||p.margin===null?'':p.net>0&&p.margin>0?`<p class="pnl-note">${icon('note',14)}<span>Biên lãi ${p.margin}%: cứ 100 xu bán được thì giữ lại ${p.margin} xu, chưa tính thưởng và hỗ trợ.</span></p>`
-    :p.losses>0&&p.net+p.losses>0?`<p class="pnl-note">${icon('note',14)}<span>Không có thất thoát thì hôm nay đã lời ${fmt(p.net+p.losses)} xu.</span></p>`:'';
+  const marginNote=office||p.margin===null||p.net>0&&p.margin>0?'':p.losses>0&&p.net+p.losses>0?`<p class="pnl-note">${icon('note',14)}<span>Không có thất thoát thì hôm nay đã lời ${fmt(p.net+p.losses)} xu.</span></p>`:'';
 
   // Bills: today's costs become invoices paid later; yesterday's invoices are paid today.
   const accrued=ops?(Number(ops.wages)||0)+(Number(ops.utilities)||0)+(Number(ops.rent_accrued)||0):0;
@@ -206,7 +205,7 @@ export function pnlCard(x){
     const change=hist&&hist.length?hist.reduce((a,h)=>a+(Number(h.amount)||0),0):lines.reduce((a,l)=>a+l[2],0);
     const kept=office?0:p.net-p.draw;
     const canDraw=!office&&place&&!place.employed&&place.withdraw_max>0&&(kept>0||J.wallet<0);
-    mine=`<section class="pnl-mine"><div class="pnl-sub"><h5>${icon('coin',15)} Bạn kiếm được</h5><small>${office?'Lương là tiền của bạn: về thẳng ví.':'Tiền lời nằm trong quỹ tiệm. Chỉ tiền rút về ví mới là tiền của bạn.'}</small></div>
+    mine=`<section class="pnl-mine"><div class="pnl-sub"><h5>${icon('coin',15)} Bạn kiếm được</h5></div>
       ${lines.length?`<ul class="pnl-mine-list">${lines.map(([sg,l,a])=>`<li><span>${l}</span><b class="${tone(a)}">${sg}${fmt(Math.abs(a))}</b></li>`).join('')}</ul>`:''}
       <div class="pnl-mine-total"><span>Ví thay đổi${jr?` ngày sống ${fmt(jr.life_day)}`:''}</span><b class="${tone(change)}">${signed(change)} xu</b></div>
       ${jr?`<p class="pnl-note"><span>Ví hiện có <b>${fmt(jr.wallet)} xu</b>${jr.wallet<0?' · đang nợ, rút tiền lời để trả nhé':''}.</span></p>`:''}

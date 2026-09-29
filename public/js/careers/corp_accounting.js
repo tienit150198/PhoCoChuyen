@@ -4,7 +4,7 @@
  *  phiếu kế toán Nợ/Có tự cân), 📋 Quy định (quy định tháng + sổ tra cứu), 📒 Sổ sách (cân đối thử)
  *  and a sticky bar with the next step and the main action.
  *  No inline handlers: every button goes through data-command / data-action="car:*". */
-import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,dueOf,dueText,openTasks} from './office_kit.js';
+import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,openTasks} from './office_kit.js';
 
 const P='ca_';
 const BOSS='Chị Hạnh';
@@ -33,7 +33,6 @@ function invoiceDoc(d,x,flags){
       ${zone('total',`<span>Tổng cộng thanh toán</span><b>${num(d.total)}</b>`,'row strong')}
     </div>
     ${zone('sign',d.signed?`<span class="ca-stamp">✔ Đã ký số</span><small>Ký bởi: ${x.esc(d.signer)}</small>`:`<span class="ca-stamp missing">Chưa có chữ ký số</span><small>Chữ ký người bán: —</small>`,'sign')}
-    ${flags?'<p class="ca-small">Chạm vào ô nghi có lỗi để đánh dấu (chạm lại để bỏ).</p>':''}
   </div>`;
 }
 function tableDoc(d,x){
@@ -46,7 +45,7 @@ function docBody(d,x,flags){
   if(d.type==='invoice')return invoiceDoc(d,x,flags);
   if(d.type==='table')return tableDoc(d,x);
   if(d.type==='kv')return `<dl class="ca-kv">${(d.rows||[]).map(([k,v])=>`<dt>${x.esc(k)}</dt><dd>${x.esc(v)}</dd>`).join('')}</dl>`;
-  if(d.type==='cash')return `<div class="ca-cash"><table class="ca-table"><thead><tr><th>Mệnh giá</th><th>Số tờ</th></tr></thead><tbody>${(d.denoms||[]).map(([k,v])=>`<tr><td>💵 ${x.esc(k)}</td><td class="num">${num(v)}</td></tr>`).join('')}</tbody></table><p class="ca-small">Tự nhân mệnh giá × số tờ để ra tổng tiền thực đếm.</p></div>`;
+  if(d.type==='cash')return `<div class="ca-cash"><table class="ca-table"><thead><tr><th>Mệnh giá</th><th>Số tờ</th></tr></thead><tbody>${(d.denoms||[]).map(([k,v])=>`<tr><td>💵 ${x.esc(k)}</td><td class="num">${num(v)}</td></tr>`).join('')}</tbody></table></div>`;
   if(d.type==='email')return `<div class="ca-mail"><p><b>Từ:</b> ${x.esc(d.sender||'')}</p><p><b>Chủ đề:</b> ${x.esc(d.subject||'')}</p><p>${x.esc(d.text||'')}</p></div>`;
   return `<p class="ca-paper">${x.esc(d.text||'')}</p>`;
 }
@@ -57,7 +56,7 @@ function docsPanel(t,x){
   let sel=views(x)[t.id];
   if(!opened.some(d=>d.id===sel))sel=opened[0]?.id;
   const tabs=t.docs.map(d=>{
-    const label=`<span class="ca-doc-ico" aria-hidden="true">${d.closed?'📁':'📄'}</span><span class="grow">${x.esc(d.title)}<small>${d.closed?(need.has(d.id)?'Cần mở cho bước này':'Chạm để mở'):x.esc(d.source)}</small></span>`;
+    const label=`<span class="ca-doc-ico" aria-hidden="true">${d.closed?'📁':'📄'}</span><span class="grow">${x.esc(d.title)}${d.closed?(need.has(d.id)?'<small>Cần mở cho bước này</small>':''):`<small>${x.esc(d.source)}</small>`}</span>`;
     return d.closed?btn(x,label,'car:open',{task:t.id,doc:d.id},`ca-tab closed ${need.has(d.id)?'need':''}`):btn(x,label,'car:view',{task:t.id,doc:d.id},`ca-tab ${d.id===sel?'active':''}`);
   }).join('');
   const doc=opened.find(d=>d.id===sel);
@@ -67,7 +66,7 @@ function docsPanel(t,x){
   }
   return `<section class="ca-docs"><h3 class="ok-h">📄 Chứng từ <small>${opened.length}/${t.docs.length} đã mở</small></h3>
     <div class="ca-tabs" role="toolbar" aria-label="Chứng từ trong hồ sơ">${tabs}</div>
-    ${doc?`<article class="ca-viewer" aria-live="polite"><header><b>${x.esc(doc.title)}</b><small>Nguồn: ${x.esc(doc.source)}</small></header>${docBody(doc,x,flags)}</article>`:'<p class="ok-empty"><span aria-hidden="true">📁</span><span>Mở một chứng từ để xem. Chứng từ gốc là căn cứ duy nhất để ghi sổ.</span></p>'}
+    ${doc?`<article class="ca-viewer" aria-live="polite"><header><b>${x.esc(doc.title)}</b><small>Nguồn: ${x.esc(doc.source)}</small></header>${docBody(doc,x,flags)}</article>`:'<p class="ok-empty"><span aria-hidden="true">📁</span><span>Mở một chứng từ để xem.</span></p>'}
   </section>`;
 }
 
@@ -152,7 +151,6 @@ function handover(t,x){
   if(!t.handover_options)return '';
   const sel=x.ui.note?.[t.id]||'specific';
   return `<article class="ca-work ca-handover"><header class="ca-work-head"><span class="ca-dot" aria-hidden="true">📝</span><div class="grow"><small>Bước cuối</small><h3>Ghi chú bàn giao</h3></div></header>
-    <p class="ca-prompt">Chọn lời nhắn gửi kèm hồ sơ, rồi bấm “Nộp hồ sơ” ở thanh dưới.</p>
     ${t.handover_options.map(o=>`<label class="ca-check"><input type="radio" name="ca-note-${x.esc(t.id)}" value="${x.esc(o.id)}" ${o.id===sel?'checked':''}><span>${x.esc(o.label)}</span></label>`).join('')}</article>`;
 }
 
@@ -165,7 +163,7 @@ function booksPane(x){
   const ms=(x.cc.milestones||[]).map(m=>`<li class="${(d.milestones||[]).includes(m.id)?'done':''}">${(d.milestones||[]).includes(m.id)?'✓':'○'} ${x.esc(m.name)}</li>`).join('');
   return `<section class="ca-book"><h3 class="ok-h">📅 ${x.esc(d.period?.label||'Kỳ kế toán')} <small>${x.esc(d.period?.date||'')}</small></h3><ul class="ca-ms">${ms}</ul></section>
     <section class="ca-book"><h3 class="ok-h">⚖️ Cân đối thử <span class="ok-tag ${dr===cr?'good':'bad'}">${dr===cr?'Cân':'Lệch'}</span></h3>
-      ${ids.length?`<div class="ca-scroll"><table class="ca-table tb"><thead><tr><th>TK</th><th>Dư Nợ</th><th>Dư Có</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td>Tổng</td><td class="num">${num(dr)}</td><td class="num">${num(cr)}</td></tr></tfoot></table></div>`:'<p class="ok-note">Chưa có bút toán nào trong kỳ. Mỗi bút toán đúng sẽ được ghi vào sổ cái của bạn.</p>'}
+      ${ids.length?`<div class="ca-scroll"><table class="ca-table tb"><thead><tr><th>TK</th><th>Dư Nợ</th><th>Dư Có</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td>Tổng</td><td class="num">${num(dr)}</td><td class="num">${num(cr)}</td></tr></tfoot></table></div>`:'<p class="ok-note">Chưa có bút toán nào trong kỳ.</p>'}
     </section>
     ${last?`<section class="ca-book"><h3 class="ok-h">📒 Nhật ký chung gần đây</h3><ul class="ca-journal">${last}</ul></section>`:''}`;
 }
@@ -219,7 +217,7 @@ function deskDoc(t,x){
 }
 function deskBar(t,x){
   const cs=t.cases||[],c=caseOf(t,x),tray=t.tray||{},i=cs.indexOf(c);
-  if(tray.ready&&t.status!=='completed')return bar(x,t,`Đã đóng dấu đủ ${tray.total} bộ. Chốt khay để báo ${BOSS}.`,x.confirmCmd(`📤 Chốt khay · ${tray.ok}/${tray.total} chuẩn`,'ca_submit',{task:t.id},'Chốt khay và báo kết quả cho chị Hạnh?','primary'));
+  if(tray.ready&&t.status!=='completed')return bar(x,t,`Đã đóng dấu đủ ${tray.total} bộ.`,x.confirmCmd(`📤 Chốt khay · ${tray.ok}/${tray.total} chuẩn`,'ca_submit',{task:t.id},'Chốt khay và báo kết quả cho chị Hạnh?','primary'));
   if(!c)return bar(x,t,'Khay đang trống.');
   if(c.stamp){
     const next=cs.find(v=>!v.stamp),[ic,label]=RES[c.result]||['•',''];
@@ -240,7 +238,7 @@ function binder(t,x){
   let sel=views(x)[t.id];if(!opened.some(d=>d.id===sel))sel=null;
   const doc=opened.find(d=>d.id===sel);
   const lag=x.room.data?.today?.mod?.id==='lag';
-  const tabs=docs.map(d=>d.closed?btn(x,`<span class="ca-doc-ico" aria-hidden="true">📁</span><span class="grow">${x.esc(d.title)}<small>Mở · ${lag?12:6} phút</small></span>`,'car:open',{task:t.id,doc:d.id},'ca-tab closed'):btn(x,`<span class="ca-doc-ico" aria-hidden="true">📖</span><span class="grow">${x.esc(d.title)}<small>${d.id===sel?'Đang xem · chạm để gấp':'Chạm để xem'}</small></span>`,'car:view',{task:t.id,doc:d.id===sel?'':d.id},`ca-tab ${d.id===sel?'active':''}`)).join('');
+  const tabs=docs.map(d=>d.closed?btn(x,`<span class="ca-doc-ico" aria-hidden="true">📁</span><span class="grow">${x.esc(d.title)}<small>Mở · ${lag?12:6} phút</small></span>`,'car:open',{task:t.id,doc:d.id},'ca-tab closed'):btn(x,`<span class="ca-doc-ico" aria-hidden="true">📖</span><span class="grow">${x.esc(d.title)}${d.id===sel?'<small>Đang xem</small>':''}</span>`,'car:view',{task:t.id,doc:d.id===sel?'':d.id},`ca-tab ${d.id===sel?'active':''}`)).join('');
   return `<section class="ca-binder"><h3 class="ok-h">📚 Sổ tra cứu <small>${opened.length}/${docs.length} đã mở</small></h3><div class="ca-tabs">${tabs}</div>
     ${doc?`<article class="ca-viewer"><header><b>${x.esc(doc.title)}</b><small>Nguồn: ${x.esc(doc.source)}</small></header>${refList(doc,x)}</article>`:''}</section>`;
 }
@@ -259,13 +257,12 @@ function trayRecap(x){
 const strip=(x,t)=>statusStrip(x,t,{boss:BOSS,op:'ca_overtime'});
 const todayRules=x=>rulesList(x,x.room.data?.today?.rules||[],'Quy định đang áp dụng');
 function currentMail(t,x){
-  const timed=typeof t.due==='number',due=dueOf(t,x),k=t.kind_info||{};
+  const timed=typeof t.due==='number',k=t.kind_info||{};
   const chips=[
     `<span class="ok-tag">${x.esc(k.emoji||'🧾')} ${x.esc(k.name||'Hồ sơ kế toán')}</span>`,
-    due?`<span class="ok-tag ${due.overdue?'bad':due.soon?'warn':'info'}">⏰ ${x.esc(dueText(due))}</span>`:'',
     !timed?`<span class="ok-tag ${t.patience<50?'warn':''}">Kiên nhẫn ${Number(t.patience)||0}%</span>`:'',
   ].join('');
-  const help=t.known?'':`<p class="ok-note">${t.variant==='desk'?'Soi từng bộ theo quy định hôm nay rồi đóng dấu. Duyệt nhầm là bị trừ tiền.':'Nhận hồ sơ để xem đề bài, chứng từ và các bước cần làm.'}</p>`;
+  const help=!t.known&&t.variant==='desk'?'<p class="ok-note">Duyệt nhầm là bị trừ tiền.</p>':'';
   return `<p class="ok-quote">“${x.esc(t.opening)}”</p>${t.brief?`<p class="ok-brief">🎯 ${x.esc(t.brief)}</p>`:''}<div class="ok-chips">${chips}</div>${help}`;
 }
 function nextText(t){
@@ -307,7 +304,7 @@ export default {
     if(!t.known){
       const label=isDesk?'📥 Nhận khay chứng từ':'📥 Nhận hồ sơ';
       return desk(x,t,{cls:'ca',tabs,strip:strip(x,t),panes:{inbox,
-        doc:`<p class="ok-empty"><span aria-hidden="true">✉️</span><b>${x.esc(t.title)}</b><span>${isDesk?'Khay chứng từ còn nằm trên bàn chị Hạnh.':'Hồ sơ còn trong phong bì.'} Bấm “${isDesk?'Nhận khay':'Nhận hồ sơ'}” để mở.</span></p>`,
+        doc:`<p class="ok-empty"><span aria-hidden="true">✉️</span><b>${x.esc(t.title)}</b><span>${isDesk?'Khay chứng từ còn nằm trên bàn chị Hạnh.':'Hồ sơ còn trong phong bì.'}</span></p>`,
         rules:todayRules(x),books:booksPane(x)},
         bar:bar(x,t,x.esc(nextText(t)),x.cmd(label,'ask',{task:t.id},'primary'),true)});
     }

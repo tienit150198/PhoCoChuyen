@@ -60,7 +60,7 @@ function deskCard(x){
       const inner=`<span class="gr-opt-label">${x.esc(o.label)}</span>${o.hint?`<small>${x.esc(o.hint)}</small>`:''}${o.cost?`<em class="gr-cost">−${x.fmt(o.cost)} xu${poor?' · ví chưa đủ':''}</em>`:''}`;
       return o.cost?x.confirmCmd(inner,'gr_decide',{option:o.id},`Lựa chọn này tốn ${x.fmt(o.cost)} xu. Đồng ý?`,'gr-opt',poor):x.cmd(inner,'gr_decide',{option:o.id},'gr-opt');
     }).join('');
-    return `<section class="gr-event ${ev.tone==='tense'?'tense':''}" role="group" aria-labelledby="gr-ev-title"><div class="gr-ev-head"><span class="gr-ev-emoji" aria-hidden="true">${ev.emoji}</span><div><small>Chuyện bất ngờ · quyết xong rồi làm tiếp</small><h3 id="gr-ev-title">${x.esc(ev.title)}</h3></div></div>
+    return `<section class="gr-event ${ev.tone==='tense'?'tense':''}" role="group" aria-labelledby="gr-ev-title"><div class="gr-ev-head"><span class="gr-ev-emoji" aria-hidden="true">${ev.emoji}</span><div><small>Chuyện bất ngờ</small><h3 id="gr-ev-title">${x.esc(ev.title)}</h3></div></div>
       <p>${x.esc(ev.text)}</p><div class="gr-opts">${opts}</div></section>`;
   }
   const last=desk.last,key=last?`${last.script}-${last.choice}-${last.day}`:'';
@@ -131,7 +131,7 @@ function scalePanel(t,x){
   const tare=x.ui.tare===true,it=item(x,l.item);
   return `<div class="gr-scale card"><div class="row spread"><h4>⚖️ Cân điện tử · ${it.emoji} ${x.esc(it.name)}</h4>${carBtn(x,'✕','scale',{line:-1,task:t.id},'ghost small')}</div>
     <div class="gr-scale-screen"><span>${l.container?'Rổ nhựa của khách đang nằm trên bàn cân':'Túi nilon mỏng của tiệm'}</span><b>${tare?'TARE ▸ 0 g':'—'}</b></div>
-    <div class="row wrap">${carBtn(x,tare?'✓ Đã trừ bì (tare)':'Trừ bì (tare)','tare',{},tare?'primary small':'ghost small')}<small class="muted">Rồi bấm đúng mã PLU của món đang nằm trên cân.</small></div>
+    <div class="row wrap">${carBtn(x,tare?'✓ Đã trừ bì (tare)':'Trừ bì (tare)','tare',{},tare?'primary small':'ghost small')}</div>
     <div class="tile-grid gr-plu">${Object.keys(x.cc.weighed||{}).map(k=>{const p=item(x,k);return tile(x,'gr_weigh',{task:t.id,line:i,plu:k,tare},`<span class="tile-emoji">${p.emoji}</span><b>${x.esc(p.name)}</b><small>PLU · ${x.fmt(price(x,k))} xu/kg</small>`);}).join('')}</div></div>`;
 }
 function shelfTiles(t,x){
@@ -155,7 +155,7 @@ function receipt(t,x){
   for(const id of t.promos){const p=x.cc.promos.find(v=>v.id===id);if(p)rows.push(`<div class="gr-rline promo"><span>🏷️ ${x.esc(p.label)}</span><b>−${x.fmt(discount(p,t.scanned[p.item]||0,unitPrice(t,x,p.item)))}</b></div>`);}
   const total=t.total??cartTotal(t,x);
   return `<div class="gr-receipt" aria-label="Hóa đơn"><div class="gr-receipt-head">TẠP HOÁ CÔ BA<br><small>Hẻm 7 · Phường Mây · ${t.stage==='basket'?'đang tính':'đã chốt'}</small></div>
-    ${rows.join('')||'<p class="muted small">Chưa có món nào. Quét hoặc cân hàng.</p>'}
+    ${rows.join('')||'<p class="muted small">Chưa có món nào.</p>'}
     <div class="gr-rtotal"><span>TỔNG</span><b>${x.money(total)}</b></div></div>`;
 }
 function basketChecklist(t,x){
@@ -197,7 +197,7 @@ function transferPanel(t,x){
   return `<div class="gr-pay card"><div class="gr-phones">
     <div class="gr-phone customer"><small>Điện thoại của khách</small><b class="gr-phone-ok">✔ ${x.esc(sc.status==='success'?'Chuyển tiền thành công':'Đang xử lý')}</b><span class="gr-phone-amt">${x.money(sc.amount||0)}</span><small>Tới: ${x.esc(sc.to||'')}</small><small>ND: ${x.esc(sc.memo||'')}</small></div>
     <div class="gr-phone shop"><small>App ngân hàng của tiệm</small>${!pay.verified?'<span class="muted small">Chưa kiểm</span>':bank?`<b>+${x.money(bank)}</b><small>${bank>=t.total?'Khớp hóa đơn ✓':'Thiếu '+x.money(t.total-bank)}</small>`:'<span class="small">Chưa thấy tiền về…</span>'}</div></div>
-    <p class="muted small">Ảnh màn hình của khách có thể sai hoặc chưa về. Chỉ tin loa báo/app ngân hàng của tiệm.</p>
+    <p class="muted small">Chỉ tin loa báo/app ngân hàng của tiệm.</p>
     <div class="row wrap">${x.cmd(pay.verified?'🔄 Kiểm lại app':'🔔 Kiểm loa/app ngân hàng','gr_verify',{task:t.id},'small ghost')}
     ${pay.verified&&bank>0&&bank<t.total&&!pay.fixed?x.cmd('🙏 Nhờ khách chuyển bù','gr_transfer_fix',{task:t.id},'small'):''}</div></div>`;
 }
@@ -268,7 +268,7 @@ function bulkJob(t,x){
   let body='',cta='';
   if(b.stage==='quote'){
     const last=b.offers.length?b.offers[b.offers.length-1]:-1;
-    body=`<h4 class="section-title">Báo giá sỉ · giá lẻ ${x.money(list)}</h4><p class="small muted">Bớt nhiều thì dễ chốt nhưng mỏng lời. Khách chỉ nghe báo giá tối đa 2 lần${b.offers.length?' — còn 1 lần':''}.</p>
+    body=`<h4 class="section-title">Báo giá sỉ · giá lẻ ${x.money(list)}</h4><p class="small muted">Khách chỉ nghe báo giá tối đa 2 lần${b.offers.length?' — còn 1 lần':''}.</p>
       <div class="gr-choices">${(x.cc.bulk_offers||[0,5,10,15]).filter(v=>v>last).map(v=>x.cmd(`${v?`Bớt ${v}%`:'Giá lẻ'} · ${x.fmt(Math.floor(list*(100-v)/100))} xu`,'gr_bulk_quote',{task:t.id,off:v},'gr-choice')).join('')}</div>`;
   }else if(b.stage==='deliver'){
     const short=n.lines.some(l=>shortOf(l)>0);
@@ -383,7 +383,7 @@ function ledgerRow(x,r){
 }
 function ledgerView(x){
   const d=x.room.data||{},rows=d.ledger_view||[];
-  return `<div class="card gr-ledger"><h4>📒 Sổ ghi nợ hàng xóm</h4><p class="muted small">Lòng tin quyết định hạn mức. Nhắc nợ nhẹ nhàng, riêng tư, mỗi ngày tối đa một lần. Nợ quá ${x.cc.overdue_days} ngày thì chưa ghi thêm.</p>
+  return `<div class="card gr-ledger"><h4>📒 Sổ ghi nợ hàng xóm</h4>
     ${rows.map(r=>ledgerRow(x,r)).join('')}
     ${fold('Luật sổ nợ có tình',`<ul class="small gr-policy">${[...(x.cc.credit_rules||[]),...(x.cc.care_rules||[]).slice(0,3)].map(v=>`<li>${x.esc(v)}</li>`).join('')}</ul>`)}
     <p class="small space-top">Đã thu nợ: ${x.money(d.repaid||0)}${d.stats?.bad_debt?` · mất trắng: ${x.money(d.stats.bad_debt)}`:''} · Doanh thu quầy hôm nay: ${x.money(d.day_sales||0)}</p></div>`;
@@ -413,7 +413,7 @@ function careCard(x){
   const rows=x.room.data?.care||[];
   const todo=rows.filter(r=>r.ok!==true).length,urgent=rows.some(r=>r.ok===false);
   const summary=`📋 Việc chăm hôm nay · ${todo?`<b class="${urgent?'bad':''}">${todo} việc</b>`:'đã gọn'}`;
-  const body=rows.length?careList(x,rows,'Việc chăm hôm nay'):'<p class="small muted">Kệ đúng hạn, sổ nợ yên ổn, không có giỏ quen nào phải soạn. Tiệm gọn gàng!</p>';
+  const body=rows.length?careList(x,rows,'Việc chăm hôm nay'):'<p class="small muted">Tiệm gọn gàng!</p>';
   return `<section class="gr-carebox">${foldBox(x,'care',summary,body,todo>0)}</section>`;
 }
 function forecastBody(x,f){
@@ -452,7 +452,7 @@ function listCard(x,l){
 function listsView(x){
   const d=x.room.data||{},ls=d.lists_view||[],regs=Object.values(d.lists||{});
   const book=regs.map(r=>`<li><b>${x.esc(r.name||'')}</b><span class="gr-hearts" aria-label="Thân tình ${r.bond}/5">${hearts(r.bond)}</span><small>${x.esc(r.bond_name||'')} · lấy giỏ: ${r.next===x.room.day?'hôm nay':r.next===x.room.day+1?'ngày mai':'ngày '+r.next}${r.bond>=(x.cc.bond_calm||4)?' · không so giá Mây Mart':''}</small></li>`).join('');
-  return `<div class="gr-lists"><p class="small muted">Khách quen đặt giỏ hàng tuần: xem trước một ngày để nhập hàng, soạn trong ngày, khách ghé lấy lúc đóng ca.</p>
+  return `<div class="gr-lists">
     ${ls.length?ls.map(l=>listCard(x,l)).join(''):'<div class="card"><p class="small">Hôm nay và ngày mai không có giỏ quen nào.</p></div>'}
     <section class="card gr-bonds"><h4>💛 Khách quen</h4><ul>${book}</ul>${fold('Thân tình để làm gì?',`<p class="small">Giỏ đủ món, tươi: +1. Không soạn hoặc soạn phải hàng hết hạn: −1. Từ “${x.esc((x.cc.bond_names||[])[3]||'')}” khách gửi thêm tiền bồi dưỡng; từ “${x.esc((x.cc.bond_names||[])[x.cc.bond_calm||4]||'')}” khách không mang tờ rơi Mây Mart ra so giá nữa.</p>`)}</section></div>`;
 }
@@ -487,7 +487,7 @@ export default {
   },
   job(t,x){
     const w=x.npc(t.npc),top=`${todayStrip(x)}${deskCard(x)}`;
-    if(x.room.data?.desk?.ev)return `<div class="career-job gr">${top}<p class="small muted" role="note">Khách và kệ hàng chờ một chút: quyết xong chuyện này rồi làm tiếp nhé.</p></div>`;
+    if(x.room.data?.desk?.ev)return `<div class="career-job gr">${top}</div>`;
     if(!t.known){
       const label=t.kind==='shelf'?'📋 Nhận việc':t.kind==='rush'?'⏱️ Mở quầy cho hàng chờ':t.kind==='bulk'?'📦 Nghe đơn sỉ':'🛒 Mời khách đặt hàng lên quầy';
       return `<div class="career-job gr">${top}<article class="card ticket"><div class="row">${x.portrait(w,56)}<div class="grow"><h3>${x.esc(w.display_name)}</h3><p class="small"><b>${x.esc(t.title)}</b></p><p>“${x.esc(t.opening)}”</p></div></div>
@@ -499,7 +499,7 @@ export default {
   },
   idle(x){
     if(x.room.data?.desk?.ev)return `<div class="career-job gr">${todayStrip(x)}${deskCard(x)}</div>`;
-    return `<div class="career-job gr">${todayStrip(x)}${deskCard(x)}<p class="small muted">Giữa hai lượt khách: chăm kệ, soạn giỏ quen, xem sổ nợ và chuẩn bị cho ngày mai.</p>
+    return `<div class="career-job gr">${todayStrip(x)}${deskCard(x)}
       ${careCard(x)}${forecastCard(x)}${tabs(x,true)}${tabBody(x,()=>'',true)}</div>`;
   },
   actions:{

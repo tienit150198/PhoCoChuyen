@@ -2,7 +2,7 @@
  *  📥 Hộp thư (việc chị Hồng giao, khiếu nại lương), 📂 Hồ sơ (bảng lương nháp soát từng người, hoặc
  *  tờ khai làm từng bước với giấy tờ gốc và máy tính bàn), 📋 Quy định (quy định kỳ lương + sổ tay luật),
  *  and a sticky bar with the next step and the main action. */
-import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,dueOf,dueText,openTasks} from './office_kit.js';
+import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,dueOf,openTasks} from './office_kit.js';
 
 const BOSS='Chị Hồng';
 const fmtN=n=>Number(n).toLocaleString('vi-VN');
@@ -92,7 +92,7 @@ function worksheet(t,x){
     const hint=tries>0?`<p class="tp-hint">💡 ${x.esc(cur.hints[Math.min(cur.hints.length,tries)-1])}</p>`:'';
     body=`<article class="tp-work"><header class="tp-work-head"><span class="tp-no" aria-hidden="true">${p.at+1}</span><div class="grow"><small>Bước ${p.at+1}/${p.total}${p.total-p.at-1?` · còn ${p.total-p.at-1} bước sau`:''}${tries>1?` · ${tries} lần kiểm`:''}</small><h3>${x.esc(cur.title)}</h3></div>${cur.tag==='ethic'?'<span class="ok-tag warn">🔒 bảo mật & quy trình</span>':''}</header>
       <p class="tp-prompt">${x.esc(cur.prompt)}</p>${inputView(cur,t,x)}${hint}</article>`;
-  }else if(!t.filed)body=`<article class="tp-work done"><header class="tp-work-head"><span class="tp-no" aria-hidden="true">📤</span><div class="grow"><small>Bước cuối</small><h3>Nộp / bàn giao hồ sơ</h3></div></header><p class="tp-prompt">Mọi ô đã khớp. Bấm “Nộp” ở thanh dưới — sau khi nộp không sửa được nữa.</p></article>`;
+  }else if(!t.filed)body=`<article class="tp-work done"><header class="tp-work-head"><span class="tp-no" aria-hidden="true">📤</span><div class="grow"><small>Bước cuối</small><h3>Nộp / bàn giao hồ sơ</h3></div></header></article>`;
   const pct=p.total?Math.round(p.at/p.total*100):0;
   return `<section class="tp-sheet"><h3 class="ok-h">🧮 Bảng tính hồ sơ <small>${p.at}/${p.total} bước</small></h3>
     <div class="tp-progress" role="progressbar" aria-label="Tiến độ hồ sơ" aria-valuemin="0" aria-valuemax="${p.total}" aria-valuenow="${p.at}"><i style="width:${pct}%"></i></div>
@@ -176,7 +176,7 @@ function gridDoc(t,x){
 }
 function gridBar(t,x){
   const rows=t.rows||[],r=rowOf(t,x),g=t.grid||{};
-  if(!t.filed&&g.reviewed===g.total)return bar(x,t,`Đã soát đủ ${g.total} người. Chuyển lương trước giờ hạn.`,x.confirmCmd(`💸 Chuyển lương ${g.total} người`,'tp_pay',{task:t.id},'Chuyển lương theo bảng đã soát? Ô đánh dấu sẽ được sửa trước khi chuyển; ô sót thì chuyển nguyên như bảng nháp.','primary'));
+  if(!t.filed&&g.reviewed===g.total)return bar(x,t,`Đã soát đủ ${g.total} người.`,x.confirmCmd(`💸 Chuyển lương ${g.total} người`,'tp_pay',{task:t.id},'Chuyển lương theo bảng đã soát? Ô đánh dấu sẽ được sửa trước khi chuyển; ô sót thì chuyển nguyên như bảng nháp.','primary'));
   if(!r||t.filed)return bar(x,t,'Bảng lương đã chuyển.');
   if(r.reviewed){
     const next=rows.find(v=>!v.reviewed);
@@ -203,11 +203,10 @@ const strip=(x,t)=>statusStrip(x,t,{boss:BOSS,op:'tp_overtime'});
 function currentMail(t,x){
   const label=x.cc.labels?.[t.form]||'Hồ sơ',due=dueOf(t,x),left=typeof t.due_turn==='number'?t.due_turn-(x.room.turn||0):null;
   const chips=[`<span class="ok-tag">${x.esc(label)}</span>`,
-    due?`<span class="ok-tag ${due.overdue?'bad':due.soon?'warn':'info'}">⏰ ${x.esc(dueText(due))}</span>`:'',
     !due&&left!==null&&t.known?`<span class="ok-tag ${left<0?'bad':left<8?'warn':''}">${left>=0?`⏳ Hạn nội bộ: còn ${left} lượt`:'⌛ Quá hạn nội bộ'}</span>`:'',
     t.bonus&&t.form!=='grid'?`<span class="ok-tag good">🎁 Thưởng ${x.money(t.bonus)}</span>`:'',
     t.mistakes?`<span class="ok-tag bad">✗ ${t.mistakes} lần chưa khớp</span>`:''].join('');
-  const help=t.known?'':`<p class="ok-note">${t.form==='grid'?'Soát từng ô với hồ sơ gốc. Sót lỗi thì người lao động nhận sai lương — hôm sau sẽ có khiếu nại.':'Nhận hồ sơ để đọc yêu cầu, giấy tờ và các bước cần làm.'}</p>`;
+  const help=!t.known&&t.form==='grid'?'<p class="ok-note">Sót lỗi thì người lao động nhận sai lương — hôm sau sẽ có khiếu nại.</p>':'';
   return `<p class="ok-quote">“${x.esc(t.opening)}”</p>${t.brief?`<p class="ok-brief">🎯 ${x.esc(t.brief)}</p>`:''}<div class="ok-chips">${chips}</div>${help}`;
 }
 function nextText(t){
@@ -234,7 +233,7 @@ export default {
     const inbox=inboxPane(x,{tasks:taskMails(x,t,currentMail(t,x)),other:[...claimMails(x),...dayMails(x,{boss:BOSS,key:`${t.id}:${t.known?1:0}`})]});
     const rules=todayRules(x)+lawBook(x);
     if(!t.known)return desk(x,t,{cls:'tp',tabs,strip:strip(x,t),panes:{inbox,rules,
-      doc:`<p class="ok-empty"><span aria-hidden="true">✉️</span><b>${x.esc(t.title)}</b><span>${grid?'Bảng lương nháp còn nằm trên bàn chị Hồng.':'Hồ sơ còn trong phong bì.'} Bấm “${grid?'Nhận bảng lương':'Nhận hồ sơ'}” để mở.</span></p>`},
+      doc:`<p class="ok-empty"><span aria-hidden="true">✉️</span><b>${x.esc(t.title)}</b><span>${grid?'Bảng lương nháp còn nằm trên bàn chị Hồng.':'Hồ sơ còn trong phong bì.'}</span></p>`},
       bar:bar(x,t,x.esc(nextText(t)),x.cmd(grid?'📥 Nhận bảng lương nháp':'📥 Nhận hồ sơ & đọc yêu cầu','ask',{task:t.id},'primary'),true)});
     if(grid)return desk(x,t,{cls:'tp',tabs,strip:strip(x,t),panes:{inbox,rules,doc:gridDoc(t,x)},bar:gridBar(t,x)});
     return desk(x,t,{cls:'tp',tabs,strip:strip(x,t),panes:{inbox,rules,doc:formDoc(t,x)},bar:formBar(t,x)});

@@ -62,9 +62,9 @@ function resultView(r,box){
 
 function logView(box){
   const rows=box.log.map(h=>{const [cls]=verdict(h.good);return `<article class="inc-log ${cls}"><span class="inc-log-emoji" aria-hidden="true">${esc(h.emoji)}</span><div class="grow"><div class="row spread"><b>${esc(h.title)}</b><small class="muted">Ngày ${h.day}</small></div><small class="muted block">${h.auto?'Chưa kịp quyết · ':''}${esc(h.label)}</small><p class="small">${esc(h.outcome)}</p><div class="inc-stakes">${h.fund?stake({where:'fund',amount:h.fund}):''}${h.wallet?stake({where:'wallet',amount:h.wallet}):''}${trustChip(h.trust)}</div></div></article>`;}).join('');
-  const replay=box.replay.length?`<h4 class="section-title">Nhớ lại chuyện cũ</h4><p class="muted small">Thử một cách khác cho chuyện đã qua. Tiền và tiếng không đổi.</p><div class="row wrap">${box.replay.map(id=>{const h=box.log.find(x=>x.script===id);return h?btn(`${esc(h.emoji)} ${esc(h.title)}`,'incReplay',{script:id},'ghost small'):'';}).join('')}</div>`:'';
+  const replay=box.replay.length?`<h4 class="section-title">Nhớ lại chuyện cũ</h4><div class="row wrap">${box.replay.map(id=>{const h=box.log.find(x=>x.script===id);return h?btn(`${esc(h.emoji)} ${esc(h.title)}`,'incReplay',{script:id},'ghost small'):'';}).join('')}</div>`:'';
   return head('Chuyện đời','SỔ CHUYỆN ĐỜI')+`<div class="sheet-body inc-body">${trustMeter(box)}
-    ${rows?`<h4 class="section-title">Đã xảy ra</h4><div class="stack">${rows}</div>`:`<div class="empty">${icon('shield',30)}<h3>Chưa có chuyện gì</h3><p class="muted small">Làm ăn lâu ngày, chuyện đời sẽ tự tìm tới: kiểm tra, trộm cắp, lừa đảo, và cả những lời đề nghị khó nói.</p></div>`}
+    ${rows?`<h4 class="section-title">Đã xảy ra</h4><div class="stack">${rows}</div>`:`<div class="empty">${icon('shield',30)}<h3>Chưa có chuyện gì</h3></div>`}
     ${replay}<div class="row space-top">${btn('Về quầy','close',{},'primary')}</div></div>`;
 }
 

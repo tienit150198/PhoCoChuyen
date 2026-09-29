@@ -1512,7 +1512,7 @@ def _stamp(s: dict, c: dict, d: dict, o: dict, t: dict, p: dict) -> dict:
     t['results'][case['id']] = result
     d['day_stamps'] = (d['day_stamps'] + [dict(task=t['id'], case=case['id'], ok=result == 'ok', slip=result == 'wrong' and verdict == 'approve')])[-40:]
     left = sum(1 for x in t['cases'] if x['id'] not in t['stamps'])
-    tail = f'Còn {left} bộ.' if left else 'Hết khay — bấm “Chốt khay” để nộp báo cáo.'
+    tail = f'Còn {left} bộ.' if left else ''
     return dict(message=' '.join(x for x in (msg, lunch, tail) if x), correct=result == 'ok', result=result, stamp=verdict)
 
 

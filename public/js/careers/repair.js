@@ -41,7 +41,7 @@ const pct=n=>`${Number(n)||0}%`;
 /* ---------- shared bits ---------- */
 function todayChip(x){const d=x.room.data?.today,k=care(x);if(!d)return '';
   const clock=k.clock&&k.open?`<span class="rp-clock" title="Giờ ở tiệm">🕙 ${x.esc(k.clock)}</span>`:'';
-  return `<p class="rp-today" title="${x.esc(d.text)}">${clock}<span class="rp-today-title"><span aria-hidden="true">${x.esc(d.emoji)}</span> <b>Hôm nay: ${x.esc(d.title)}</b></span> <small>${x.esc(d.text)}</small></p>`;}
+  return `<p class="rp-today">${clock}<span class="rp-today-title"><span aria-hidden="true">${x.esc(d.emoji)}</span> <b>Hôm nay: ${x.esc(d.title)}</b></span> <small>${x.esc(d.text)}</small></p>`;}
 
 /* ---------- care: calls, comebacks, shelf, tools, regulars ---------- */
 function callCard(x,t){
@@ -90,10 +90,10 @@ function shelfCard(x,t){
     ${reqList(shelfRows(x,t),x.esc,'Tiến độ máy '+sh.tag)}<div class="rp-btns">${x.button('🔧 Làm tiếp máy này','job',{task:t.id},'small primary')}</div></article>`;
 }
 function shelfPanel(x,skip){
-  const rows=shelved(x).filter(t=>t.id!==skip),k=care(x);if(!rows.length)return '';
+  const rows=shelved(x).filter(t=>t.id!==skip);if(!rows.length)return '';
   const ready=rows.filter(t=>orderRows(x,t).some(r=>r.ok)||t.bench.final==='pass').length;
   const late=rows.filter(t=>tview(x,t).due<0).length;
-  return `<section class="rp-shelf-panel"><h4 class="section-title">🗄️ Kệ máy chờ <small class="muted">${rows.length} máy${ready?` · ${ready} làm được ngay`:''}${late?` · <b class="rp-late">${late} trễ hẹn</b>`:''}</small></h4><div class="rp-shelfgrid">${rows.map(t=>shelfCard(x,t)).join('')}</div><p class="small muted">Tối đa ${k.shelf_max||2} máy hẹn khách; tới giờ đóng cửa, máy nào còn ở tiệm sẽ ở lại qua đêm.</p></section>`;
+  return `<section class="rp-shelf-panel"><h4 class="section-title">🗄️ Kệ máy chờ <small class="muted">${rows.length} máy${ready?` · ${ready} làm được ngay`:''}${late?` · <b class="rp-late">${late} trễ hẹn</b>`:''}</small></h4><div class="rp-shelfgrid">${rows.map(t=>shelfCard(x,t)).join('')}</div></section>`;
 }
 function shelfFold(x,skip){
   const rows=shelved(x).filter(t=>t.id!==skip);if(!rows.length)return '';
@@ -114,7 +114,7 @@ function promiseFold(t,x){
   const btns=(x.cc.promise_days||[0,1,2,3]).map(d=>{const early=d<(v.eta_days||0);
     return x.confirmCmd(`${early?'⚠️ ':''}${words[d]||d+' ngày'}`,'rp_shelf',{task:t.id,days:d},`Hẹn ${who(x,t.npc)} ${lowerFirst(words[d]||'')} tới lấy máy?${early?' Đồ chưa về kịp ngày đó — dễ trễ hẹn.':''}`,early?'small ghost':'small',full);}).join('');
   const eta=v.eta?`Đồ về ${v.eta} → hẹn sớm nhất: ${lowerFirst(words[v.eta_days]||v.eta_days+' ngày nữa')}.`:'Đồ đã đủ: hẹn hôm nay cũng được.';
-  return fold('🗄️ Hẹn khách, để máy lại tiệm',`<p class="small">${x.esc(eta)} Khách về nhà chờ, không mất kiên nhẫn ở quầy; mỗi sáng khách sẽ gọi hỏi.</p><div class="rp-btns">${btns}</div>${full?`<p class="small muted">Kệ đã đủ ${k.shelf_max||2} máy hẹn — làm xong bớt một máy trước.</p>`:''}`);
+  return fold('🗄️ Hẹn khách, để máy lại tiệm',`<p class="small">${x.esc(eta)}</p><div class="rp-btns">${btns}</div>${full?`<p class="small muted">Kệ đã đủ ${k.shelf_max||2} máy hẹn — làm xong bớt một máy trước.</p>`:''}`);
 }
 function toolRows(x){
   const tl=x.room.data?.tools||{tip:100,meter:100},info=x.cc.tools||{};
@@ -148,7 +148,7 @@ function regularsBook(x){
   const regs=Object.entries(x.room.data?.regulars||{});if(!regs.length)return '';
   const names=x.cc.trust_names||[];
   const rows=regs.sort((a,b)=>b[1].trust-a[1].trust||b[1].visits-a[1].visits).map(([id,r])=>`<li><div class="grow"><b>${x.esc(who(x,id))}</b><small>${x.esc(names[r.trust]||'')} · ${r.visits} lần${r.ontime?` · đúng hẹn ${r.ontime}`:''}${r.late?` · trễ hẹn ${r.late}`:''}</small></div><span class="rp-hearts" aria-label="tin cậy ${r.trust}/5">${'♥'.repeat(r.trust)}${'♡'.repeat(Math.max(0,5-r.trust))}</span></li>`).join('');
-  return fold(`💛 Sổ khách quen (${regs.length})`,`<ul class="rp-regs">${rows}</ul><p class="small muted">Sửa sạch, trả đúng hẹn thì khách tin thêm; khách tin thì chờ bình tĩnh hơn, và từ “${x.esc(names[x.cc.trust_stretch||3]||'')}” chịu báo giá quá ngân sách tới 10%.</p>`);
+  return fold(`💛 Sổ khách quen (${regs.length})`,`<ul class="rp-regs">${rows}</ul>`);
 }
 
 function deskCard(x){
@@ -156,7 +156,7 @@ function deskCard(x){
   const who=x.npc(ev.npc);
   const opts=ev.options.map((o,i)=>`<button type="button" class="btn ${i===0?'primary':'ghost'} rp-opt" ${cmdAttr(x,'rp_desk',{option:o.id})} ${o.cost>x.room.money?'disabled':''}><b>${x.esc(o.label)}</b>${o.hint?`<small>${x.esc(o.hint)}</small>`:''}</button>`).join('');
   return `<section class="rp-desk ${x.esc(ev.tone)}" role="alert" aria-live="assertive"><div class="rp-desk-head"><span class="rp-desk-emoji" aria-hidden="true">${x.esc(ev.emoji)}</span><div><small>CHUYỆN Ở QUẦY</small><h3>${x.esc(ev.title)}</h3></div>${x.portrait(who,40)}</div>
-    <p>${x.esc(ev.text)}</p><div class="rp-opts">${opts}</div><p class="small-note">Quyết xong chuyện này rồi làm tiếp máy trên bàn nhé.</p></section>`;
+    <p>${x.esc(ev.text)}</p><div class="rp-opts">${opts}</div></section>`;
 }
 function lastDesk(x){const l=x.room.data?.desk?.last;if(!l||l.day!==x.room.day)return '';return `<p class="rp-last ${l.good===true?'good':l.good===false?'bad':''}" aria-live="polite"><span aria-hidden="true">${x.esc(l.emoji)}</span> <b>${x.esc(l.title)}:</b> ${x.esc(l.outcome)}</p>`;}
 
@@ -203,8 +203,7 @@ function intakeView(t,x){
     <p class="small muted space-top">Khách đưa kèm những gì?</p>
     <div class="tile-grid rp-grid">${accTiles}</div>
     ${dd?`<button type="button" class="btn rp-consent ${u.consent?'on':''}" ${carAttr(x,'consent',{task:t.id})} aria-pressed="${u.consent}">${u.consent?'☑️':'⬜'} Đã hỏi khách có cho mở khóa / xem dữ liệu không</button>`:''}
-    <div class="rp-cta"><button type="button" class="btn primary" ${carAttr(x,'intake',{task:t.id})} ${dd&&!u.consent?'disabled':''}>📝 Ghi phiếu nhận máy</button></div>
-    ${dd&&!u.consent?'<p class="small muted">Máy có dữ liệu riêng: hỏi khách về mở khóa / xem dữ liệu rồi mới ghi phiếu.</p>':''}`;
+    <div class="rp-cta"><button type="button" class="btn primary" ${carAttr(x,'intake',{task:t.id})} ${dd&&!u.consent?'disabled':''}>📝 Ghi phiếu nhận máy</button></div>`;
 }
 
 /* ---------- shell (safety + open/close) ---------- */
@@ -224,7 +223,7 @@ function testsView(t,x){
   const tiles=tests.map(ts=>{const done=b.tests.some(r=>r.id===ts.id);let why='';
     if(done)why='đã đo';else if(ts.mode==='live'&&b.opened)why='đang mở máy';else if(ts.mode==='open'&&!b.opened)why='cần mở máy';else if(ts.consent&&!b.data_ok)why='🔒 khách không cho';
     return tile(x,{emoji:ts.emoji,label:ts.name,sub:why||MODE[ts.mode]+(ts.consent?' · cần đồng ý':''),cls:done?'selected':why?'locked':'',attr:cmdAttr(x,'rp_test',{task:t.id,test:ts.id}),off:!!why});}).join('');
-  const log=b.tests.length?`<ol class="rp-readings" aria-live="polite">${b.tests.map(r=>{const ts=tests.find(v=>v.id===r.id)||{name:r.id,emoji:'•'};return `<li><span aria-hidden="true">${x.esc(ts.emoji)}</span><div><b>${x.esc(ts.name)}</b><small>${x.esc(r.reading)}</small></div></li>`;}).join('')}</ol>`:'<p class="muted small">Mỗi phép đo tốn một nhịp — chọn phép đo loại được nhiều giả thuyết nhất.</p>';
+  const log=b.tests.length?`<ol class="rp-readings" aria-live="polite">${b.tests.map(r=>{const ts=tests.find(v=>v.id===r.id)||{name:r.id,emoji:'•'};return `<li><span aria-hidden="true">${x.esc(ts.emoji)}</span><div><b>${x.esc(ts.name)}</b><small>${x.esc(r.reading)}</small></div></li>`;}).join('')}</ol>`:'<p class="muted small">Mỗi phép đo tốn một nhịp</p>';
   const hyp=(t.needs.hypotheses||[]).map(f=>{const fd=faultOf(x,dev,f),out=b.ruled_out.includes(f),chosen=b.diagnosis===f,fixed=f in b.fixed;
     return `<li class="rp-hyp ${out?'out':''} ${chosen?'chosen':''}"><div class="grow"><b>${x.esc(fd.name)}</b><small>${fixed?'✓ đã xử lý':chosen?'📌 đang chốt':out?'✗ số đo đã loại':'? còn khả nghi'}</small></div>
       ${chosen||fixed||b.final==='pass'?'':x.cmd('Chốt','rp_diagnose',{task:t.id,fault:f},out?'ghost small':'small')}</li>`;}).join('');
@@ -235,7 +234,7 @@ function testsView(t,x){
 /* ---------- 2 · quote (+ warranty book, water evidence) ---------- */
 function claimPanel(t,x){
   const b=t.bench,dev=t.needs.device;
-  if(!b.book)return `<div class="rp-claim"><p class="small">Khách mang phiếu <b>${x.esc(t.needs.claim.slip)}</b>. Tra sổ trước khi hứa hẹn gì.</p>${x.cmd('📒 Tra sổ bảo hành','rp_book',{task:t.id},'primary')}</div>`;
+  if(!b.book)return `<div class="rp-claim"><p class="small">Khách mang phiếu <b>${x.esc(t.needs.claim.slip)}</b>.</p>${x.cmd('📒 Tra sổ bảo hành','rp_book',{task:t.id},'primary')}</div>`;
   const bk=b.book,marks=bk.marks.map(m=>x.cc.marks[m]?.emoji+' '+x.cc.marks[m]?.label).join(', ')||'không vết gì';
   const state=bk.left>=0?`<span class="tag green">còn ${bk.left} ngày</span>`:`<span class="tag danger">quá hạn ${-bk.left} ngày</span>`;
   const book=`<dl class="kv rp-kv rp-book"><dt>Phiếu</dt><dd>${x.esc(bk.slip)} · sửa cách đây ${bk.ago} ngày</dd><dt>Đã sửa</dt><dd>${x.esc(faultOf(x,dev,bk.fault).name)} (${x.esc(x.cc.grades[bk.grade]?.short||bk.grade)})</dd><dt>Bảo hành</dt><dd>${bk.days} ngày ${state}</dd><dt>Tình trạng lúc đó</dt><dd>${x.esc(marks)}</dd></dl>`;
@@ -324,7 +323,7 @@ function finishView(t,x){
 
 function returnLink(t,x){const b=t.bench,fixedAny=Object.keys(b.fixed||{}).length>0,fee=x.cc.check_fee||10;
   if(b.final==='pass')return '';
-  return `<div class="rp-return">${x.confirmCmd('↩️ Trả máy không sửa','rp_return',{task:t.id},`Trả máy nguyên trạng kèm phụ kiện${b.tests.length?` và thu phí kiểm tra ${fee} xu`:''}? Dùng khi khách không đồng ý giá hoặc sửa không đáng tiền.`,'ghost small',fixedAny||b.opened)}</div>`;}
+  return `<div class="rp-return">${x.confirmCmd('↩️ Trả máy không sửa','rp_return',{task:t.id},`Trả máy nguyên trạng kèm phụ kiện${b.tests.length?` và thu phí kiểm tra ${fee} xu`:''}?`,'ghost small',fixedAny||b.opened)}</div>`;}
 
 /* ---------- buy-in (second-hand phone) ---------- */
 function buyinView(t,x){

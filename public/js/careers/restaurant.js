@@ -71,7 +71,7 @@ function floor(x,active){
 function picture(sp,x){
   const b=brothOf(x,sp.broth);
   const tops=Object.entries(sp.toppings).map(([k,q])=>item(x,k).emoji.repeat(q)).join(' ');
-  return `<p class="rs-picture" aria-label="Phiếu bằng hình">${x.esc(b?.emoji||'')} ${sp.spice?'🌶️'.repeat(sp.spice):'🚫🌶️'} ${x.esc(tops)} ${sp.extra_noodle?'🍜🍜':''} ${sp.takeaway?'🥡':'🥣'} ${sp.allergy?'🚫🦐':''}</p><p class="muted small">Khách chỉ vào hình trên thực đơn. Đọc từng hình nhé.</p>`;
+  return `<p class="rs-picture" aria-label="Phiếu bằng hình">${x.esc(b?.emoji||'')} ${sp.spice?'🌶️'.repeat(sp.spice):'🚫🌶️'} ${x.esc(tops)} ${sp.extra_noodle?'🍜🍜':''} ${sp.takeaway?'🥡':'🥣'} ${sp.allergy?'🚫🦐':''}</p>`;
 }
 /** Only the two orders that hide their spec on purpose get a lead line:
  * a regular's "như mọi khi" (look it up or ask) and a picture order. */
@@ -81,7 +81,7 @@ function lead(t,x){
     const known=(d.notebook||[]).includes(t.npc);
     return `<p class="rs-say">🏠 “Như mọi khi nhé!”</p>
       <div class="row wrap rs-recall">${x.cmd('📒 Tra sổ khách quen','rs_recall',{task:t.id},'primary',!known)}${x.cmd('🙋 Hỏi lại món','rs_reask',{task:t.id},'ghost')}</div>
-      <p class="muted small">${known?'Sổ đã ghi món quen của khách này.':'Sổ chưa ghi món của khách này. Hỏi lại thì khách chờ lâu hơn một chút.'}</p>`;
+      ${known?'':'<p class="muted small">Sổ chưa ghi món của khách này. Hỏi lại thì khách chờ lâu hơn một chút.</p>'}`;
   }
   if(n.style==='picture')return picture(n,x);
   return '';
@@ -100,7 +100,7 @@ function tabs(t,x){
   return `<div class="rs-tabs" role="tablist" aria-label="Các tô của bàn">${t.needs.party.map((p,i)=>{
     const done=!!t.plates[i],on=i===t.cur&&!done;
     const label=`Tô ${i+1}${done?' ✓':''}`;
-    return `<button type="button" role="tab" class="rs-tab${done?' done':''}${on?' on':''}" data-command="rs_tab" data-payload="${pay(x,{task:t.id,index:i})}" aria-selected="${on}"${on||(lock&&!on)?' disabled':''} title="${done?'Đã xong, bấm để lấy xuống sửa':on?'Đang làm':'Chuyển sang tô này'}">${label}</button>`;
+    return `<button type="button" role="tab" class="rs-tab${done?' done':''}${on?' on':''}" data-command="rs_tab" data-payload="${pay(x,{task:t.id,index:i})}" aria-selected="${on}"${on||(lock&&!on)?' disabled':''}${done?' title="Đã xong, bấm để lấy xuống sửa"':''}>${label}</button>`;
   }).join('')}</div>`;
 }
 function ticket(t,x){
@@ -280,7 +280,7 @@ function bowlStatus(t,x){
 }
 function tray(t,x){
   if(!isGroup(t))return '';
-  return `<p class="rs-tray" aria-label="Khay">${t.plates.map((p,i)=>`<span class="${p?'on':''}${i===t.cur&&!p?' cur':''}" title="Tô ${i+1}">${p?'🍜':i===t.cur?'🥢':'◌'}<small>${i+1}</small></span>`).join('')}</p>`;
+  return `<p class="rs-tray" aria-label="Khay">${t.plates.map((p,i)=>`<span class="${p?'on':''}${i===t.cur&&!p?' cur':''}">${p?'🍜':i===t.cur?'🥢':'◌'}<small>${i+1}</small></span>`).join('')}</p>`;
 }
 function chili(t,x){
   const b=t.bowl,n=t.needs,sp=specOf(t),q=stockOf(x,'chili');
@@ -357,7 +357,7 @@ function prepBox(x){
   const btns=x.cc.broths.filter(p=>p.unlock<=level).map(p=>{const on=chosen.includes(p.id),packs=stockOf(x,p.pack);
     if(on)return `<span class="tag green">✓ ${x.esc(p.emoji)} ${x.esc(p.name)} đang hầm</span>`;
     return x.confirmCmd(`🌙 ${x.esc(p.emoji)} ${x.esc(p.name)} · ${packs}/${need} gói`,'rs_prep',{broth:p.id,confirm:true},`Hầm sẵn nồi ${p.name} qua đêm? Dùng ${need} gói nước dùng; sáng mai nồi đầy ${x.cc.pot_max||12} phần, nóng sẵn.`,'ghost small',packs<need||chosen.length>=max||!x.room.open);}).join('');
-  return `<div class="rs-prep"><p class="rs-sub">🌙 Hầm sẵn cho mai · ${chosen.length}/${max} bếp riu riu</p><p class="muted small">Sáng mai nồi đầy, nóng sẵn: không cần đun lại, khỏi nấu giữa giờ.</p><div class="row wrap">${btns}</div></div>`;
+  return `<div class="rs-prep"><p class="rs-sub">🌙 Hầm sẵn cho mai · ${chosen.length}/${max} bếp riu riu</p><div class="row wrap">${btns}</div></div>`;
 }
 function outlookBox(x,o){
   if(!o)return '';
@@ -381,7 +381,7 @@ function bookFold(x){
     ${b.notes.length?`<ul class="rs-habits">${b.notes.map(n=>`<li><span aria-hidden="true">${x.esc(n.emoji)}</span> ${x.esc(n.text)}</li>`).join('')}</ul>`:''}
     ${b.usual?`<small>🍜 Món quen: ${x.esc(b.usual)}</small>`:''}
     ${b.locked?`<small class="muted">🔒 Phục vụ thêm ${b.next_in} lần để biết thêm một thói quen.</small>`:''}</li>`).join('');
-  const body=known.length?`<ul class="rs-book">${rows}</ul>`:'<p class="muted small">Chưa có ai. Phục vụ khách xong, sổ sẽ ghi lại thói quen của họ.</p>';
+  const body=known.length?`<ul class="rs-book">${rows}</ul>`:'<p class="muted small">Chưa có ai.</p>';
   return foldBox(x,'book',`📒 Sổ khách quen · ${known.length}/${book.length} người quen`,body+(rest&&known.length?`<p class="muted small">Còn ${rest} vị khách chưa ghé.</p>`:''));
 }
 /** Day-close card: the hygiene line, pots overnight, prep, tomorrow. */
@@ -403,7 +403,7 @@ function primary(t,x,rows,big){
   const label=big?'🛎️ Giao món':'🛎️ Giao';
   const allOk=rows.every(r=>r.ok===true);
   return allOk&&!blocked?x.cmd(label,'rs_serve',{task:t.id,confirm:true},'primary'+(big?' big':''),!ready)
-    :x.confirmCmd(label,'rs_serve',{task:t.id,confirm:true},blocked?'Có chuyện bất ngờ đang chờ bạn quyết. Xử lý xong rồi hãy giao nhé.':'Tô chưa khớp hết phiếu. Vẫn giao? Khách sẽ đánh giá đúng những gì có trong tô.','primary'+(big?' big':''),!ready);
+    :x.confirmCmd(label,'rs_serve',{task:t.id,confirm:true},blocked?'Có chuyện bất ngờ đang chờ bạn quyết. Xử lý xong rồi hãy giao nhé.':'Tô chưa khớp hết phiếu. Vẫn giao?','primary'+(big?' big':''),!ready);
 }
 
 /** "📖 Thực đơn": what each broth and topping costs, how much is left, which
@@ -420,7 +420,7 @@ function menuPage(x){
   const extra=[{icon:'🍜',name:'Thêm 1 vắt mì',price:`+${xu(10)}`},{icon:'🥡',name:'Hộp mang về',price:`+${xu(3)}`,stock:`còn ${stockOf(x,'box')}`}];
   const rules=[`🍜 Vớt mì khi thanh vào vùng xanh: ${w.raw}–${w.perfect} giây.`,'🌶️ Mỗi lượt bơm ớt là 1 cấp cay. Cấp 0 là không bơm.',
     '🔄 Hết topping khách gọi: hỏi khách đổi món ở ô vàng trên kệ.','🥡 Mang về: lấy hộp, làm xong nhớ đậy nắp.','⚠️ Khách dị ứng hải sản: không tomyum, cá viên, hải sản.'];
-  return `<header class="sheet-head"><div class="grow"><span class="eyebrow">QUÁN MÌ CAY · SỔ TRA CỨU</span><h2>📖 Thực đơn</h2><p>Giá bán, còn bao nhiêu, món nào có hải sản hay thịt.</p></div><button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${x.icon('x',21)}</button></header>
+  return `<header class="sheet-head"><div class="grow"><span class="eyebrow">QUÁN MÌ CAY · SỔ TRA CỨU</span><h2>📖 Thực đơn</h2></div><button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${x.icon('x',21)}</button></header>
   <div class="sheet-body ref-sheet">${refTable([{title:'Nước dùng (giá một tô)',rows:broths},{title:'Topping',rows:tops},{title:'Thêm',rows:extra}],x.esc)}
     <section class="ref-group"><h3>Nhớ nhanh</h3><ul class="ref-rules">${rules.map(r=>`<li>${x.esc(r)}</li>`).join('')}</ul></section></div>`;
 }
