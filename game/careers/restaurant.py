@@ -46,6 +46,16 @@ MEAT = ('beef', 'sausage', 'fishball', 'seafood')
 POT_MAX = 12
 POT_BATCH = 6
 DIRTY_MAX = 3                                     # no dishwasher today: wash after 3 dine-in bowls
+# Care across days (docs/superpowers/specs/2026-09-29-restaurant-care-design.md)
+KEEP_NIGHTS = 2          # broth keeps two nights in the fridge; on the third morning it must be poured out
+PREP_MAX = 2             # pots that can simmer overnight for tomorrow
+PREP_PACKS = 2           # broth packs for one full pot (POT_MAX portions)
+BOND_MAX = 5
+BOND_TIP_AT = 3          # a regular with this bond adds a small thank-you on a clean visit
+BOND_TIP = 2
+NOTE_AT = (1, 3)         # a regular's first habit is learned after the 1st served visit, the second after the 3rd
+HLOG_DAYS = 7            # the hygiene book looks at the last seven shifts
+HYGIENE_A, HYGIENE_B = 85, 60
 
 ITEMS = [
     dict(id='noodle', name='Mì tươi', emoji='🍜', group='base', unit='vắt', cost=3, life=3, start=20),
@@ -126,6 +136,28 @@ USUALS = {
     4: ('kimchi', {'beef': 1, 'egg': 1, 'sausage': 1}, 3, False, True, None),
 }
 USUAL_NAME = {0: 'anh Sơn', 3: 'cô Tư', 6: 'anh Quân', 4: 'Minh'}
+# Little habits of the regulars ("Sổ khách quen"): learned one by one, honoured with rs_touch.
+TOUCHES = {
+    'tea': ('🧊', 'Rót ly nước mát'),
+    'side': ('🌶️', 'Chén ớt tươi để riêng'),
+    'bag': ('🛍️', 'Gói đũa muỗng riêng'),
+    'cut': ('✂️', 'Cắt sợi mì ngắn'),
+    'soup': ('🥣', 'Thêm chén nước dùng'),
+    'chat': ('💬', 'Hỏi thăm vài câu'),
+    'scald': ('♨️', 'Tráng đũa nước sôi'),
+    'wipe': ('🧻', 'Đưa khăn ướt'),
+}
+HABITS = {
+    0: (('tea', 'Chạy bộ xong mới ghé, khát lắm: rót sẵn ly trà đá.'), ('side', 'Thích chén ớt tươi để riêng, tự nêm thêm.')),
+    1: (('bag', 'Ăn ở văn phòng: gói riêng đũa muỗng, khăn giấy.'), ('side', 'Để ớt tươi riêng, chị tự cho vào sau.')),
+    2: (('cut', 'Cắt sợi mì ngắn cho bé dễ gắp.'), ('tea', 'Rót sẵn ly nước mát, bé hay khát.')),
+    3: (('soup', 'Thích húp thêm một chén nước dùng nóng.'), ('chat', 'Hỏi thăm con trai cô đang làm xa.')),
+    4: (('tea', 'Ăn cay xong là xin ngay ly trà đá.'), ('soup', 'Hay xin thêm nước dùng để chan mì.')),
+    5: (('scald', 'Bà muốn đũa muỗng được tráng nước sôi trước mặt.'), ('wipe', 'Đưa bà chiếc khăn ướt sạch.')),
+    6: (('bag', 'Treo túi lên xe: gói riêng đũa muỗng.'), ('wipe', 'Tay dính dầu xe: đưa khăn ướt.')),
+    7: (('wipe', 'Vừa sửa xe xong: đưa khăn ướt lau tay.'), ('chat', 'Hỏi thăm tiệm sửa xe đầu hẻm.')),
+}
+GUEST_IDS = {f'{ID}_npc_{i + 1:02d}': i for i in HABITS}
 REGULAR_STORY = {
     0: ('Anh Sơn: “Người mới hả? Nhớ mặt anh nha, tuần nào anh cũng ghé.”',
         'Anh Sơn kể đang tập chạy bộ: “Ăn cay cho ra mồ hôi!”',
@@ -312,11 +344,12 @@ def make_task(day: int, slot: int, serial: int) -> dict:
         app = '#' + str(kit.rng(ID, 'app', day, slot).randrange(1000, 10000))
     return kit.base_task(ID, day, slot, serial, npc, title, opening, needs=needs, guest=FS.guest(kind), app=app, gen=GEN,
                          bowl=_empty_bowl(), cur=0, plates=[None] * max(1, len(party)), quoted_price=None, subs={}, served=None,
-                         refused=0, recalled=False, reasked=False, vip=None, story=None, over_budget=False)
+                         refused=0, recalled=False, reasked=False, vip=None, story=None, over_budget=False,
+                         regular=None, touches=[], broth_age=0)
 
 
 FIXED = ('needs', 'guest', 'app')
-TASK_EXTRA = dict(recalled=False, reasked=False, vip=None, story=None, over_budget=False)
+TASK_EXTRA = dict(recalled=False, reasked=False, vip=None, story=None, over_budget=False, regular=None, touches=[], broth_age=0)
 
 
 def _specs(n: dict) -> list[dict]:
@@ -344,7 +377,8 @@ def _empty_bowl() -> dict:
 
 def initial() -> dict:
     return dict(pots={'kimchi': 6, 'tomyum': 6, 'blackbean': 6, 'cheese': 0}, bowls_served=0, dumped=0, clean_checked_day=0,
-                notebook=[], regulars={}, grades=[], ev_hist=[])
+                notebook=[], regulars={}, grades=[], ev_hist=[], pot_lots={'kimchi': [[6, 0]], 'tomyum': [[6, 0]], 'blackbean': [[6, 0]], 'cheese': []},
+                pot_warm={b: True for b in BROTH_INDEX}, prep=[], guests={}, hlog=[])
 
 
 # ------------------------------------------------------------------ old saves
@@ -366,9 +400,22 @@ def _upgrade_task(t: dict, c: dict | None) -> None:
 def _migrate(c: dict) -> dict:
     d = FS.migrate(c)
     d.setdefault('notebook', [])
+    # Care across days: old saves treat the broth they hold as cooked today and still hot.
+    warm = d.setdefault('pot_warm', {})
+    lots = d.setdefault('pot_lots', {})
+    if isinstance(warm, dict) and isinstance(lots, dict) and isinstance(d.get('pots'), dict):
+        for b in BROTH_INDEX:
+            warm.setdefault(b, True)
+            if isinstance(lots.setdefault(b, []), list) and isinstance(d['pots'].get(b), int):
+                _sync_lots(d, b)
+    for key, v in (('prep', []), ('guests', {}), ('hlog', [])):
+        d.setdefault(key, v)
     for t in c['tasks']:
         if t['career'] == ID and t.get('gen') != GEN:
             _upgrade_task(t, c)
+        if t['career'] == ID:
+            for k, v in TASK_EXTRA.items():
+                t.setdefault(k, copy.deepcopy(v))
     return d
 
 
@@ -400,6 +447,250 @@ def _npc_index(t: dict) -> int:
     return int(t['npc'].rsplit('_', 1)[1]) - 1
 
 
+# ------------------------------------------------------------------ care: broth overnight
+def _sync_lots(d: dict, broth: str) -> None:
+    """Keep the batches in a pot in step with its portion count (the count is what the kitchen uses)."""
+    raw = d['pot_lots'][broth]
+    if not all(isinstance(x, list) and len(x) == 2 and all(type(v) is int for v in x) for x in raw):
+        return                                         # malformed: leave it for validate_data to reject
+    lots = [list(x) for x in raw if x[0] > 0]
+    have, want = sum(q for q, _ in lots), max(0, d['pots'][broth])
+    while have > want and lots:                       # used from the oldest batch first
+        take = min(lots[0][0], have - want)
+        lots[0][0] -= take
+        have -= take
+        if not lots[0][0]:
+            lots.pop(0)
+    if have < want:                                    # more broth than batches: it was cooked today
+        if lots and lots[-1][1] == 0:
+            lots[-1][0] += want - have
+        else:
+            lots.append([want - have, 0])
+    d['pot_lots'][broth] = lots
+
+
+def _pot_age(d: dict, broth: str) -> int:
+    """Nights spent by the oldest broth in the pot (0 when empty or fresh)."""
+    lots = d.get('pot_lots', {}).get(broth) or []
+    return lots[0][1] if lots and d['pots'].get(broth) else 0
+
+
+def _pot_state(d: dict, broth: str) -> str:
+    """empty · hot (ready to ladle) · cold (kept overnight, reheat first) · stale (too old, pour out)."""
+    if not d['pots'].get(broth):
+        return 'empty'
+    if _pot_age(d, broth) > KEEP_NIGHTS:
+        return 'stale'
+    return 'hot' if d.get('pot_warm', {}).get(broth, True) else 'cold'
+
+
+def _need_pot(d: dict, broth: str) -> None:
+    name = BROTH_INDEX[broth]['name']
+    st = _pot_state(d, broth)
+    kit.need(st != 'stale', f'Nồi {name} còn phần nước dùng quá {KEEP_NIGHTS} đêm. Đổ phần cũ (🗑️) rồi chan tiếp nhé.')
+    kit.need(st != 'cold', f'Nồi {name} để qua đêm còn nguội. Đun sôi lại trước (🔥 Đun lại).')
+
+
+def _use_pot(d: dict, broth: str, n: int) -> int:
+    """Ladle n portions, oldest batch first; returns the oldest age ladled (for the review)."""
+    lots = d['pot_lots'][broth]
+    age = lots[0][1] if lots else 0
+    d['pots'][broth] -= n
+    _sync_lots(d, broth)
+    return age
+
+
+def _cook(d: dict, broth: str, portions: int) -> bool:
+    """Add a fresh batch; returns True when older broth is still in the pot (it is ladled first)."""
+    older = any(age > 0 for _, age in d['pot_lots'][broth])
+    d['pots'][broth] = min(POT_MAX, d['pots'][broth] + portions)
+    _sync_lots(d, broth)
+    d['pot_warm'][broth] = True
+    return older
+
+
+def _lots_text(lots: list) -> str:
+    return ' + '.join(f'{q} phần {"mới" if not age else f"để {age} đêm"}' for q, age in lots)
+
+
+def _pot_rows(c: dict, d: dict, tomorrow: bool = False) -> list[dict]:
+    """Every unlocked pot as the player should see it (tonight's view with tomorrow=True)."""
+    rows = []
+    prep = d.get('prep', []) if tomorrow else []
+    for b in BROTHS:
+        if b['unlock'] > kit.level(c):
+            continue
+        q = d['pots'].get(b['id'], 0)
+        lots = [[n, a + (1 if tomorrow else 0)] for n, a in (d.get('pot_lots', {}).get(b['id']) or [])] if q else []
+        age = lots[0][1] if lots else 0
+        if b['id'] in prep:
+            q, age, st, lots = POT_MAX, 0, 'prep', [[POT_MAX, 0]]
+        elif not q:
+            st = 'empty'
+        elif age > KEEP_NIGHTS:
+            st = 'stale'
+        elif tomorrow:
+            st = 'cold'
+        else:
+            st = _pot_state(d, b['id'])
+        stale = sum(n for n, a in lots if a > KEEP_NIGHTS)
+        rows.append(dict(id=b['id'], name=b['name'], emoji=b['emoji'], portions=q, age=age if q else 0, state=st,
+                         lots=lots, stale=stale, packs=kit.stock(c, b['pack'])))
+    return rows
+
+
+def _reheat(d: dict, broth: str | None = None) -> list[str]:
+    cold = [b for b in BROTH_INDEX if _pot_state(d, b) == 'cold' and (broth is None or b == broth)]
+    for b in cold:
+        d['pot_warm'][b] = True
+    return cold
+
+
+def _apply_prep(s: dict, c: dict, d: dict) -> list[str]:
+    """Dawn: pots simmered overnight open full and fresh."""
+    lines = []
+    for b in d.get('prep') or []:
+        if b not in BROTH_INDEX:
+            continue
+        left = d['pots'][b]
+        d['pots'][b] = POT_MAX
+        d['pot_lots'][b] = [[POT_MAX, 0]]
+        d['pot_warm'][b] = True
+        name = BROTH_INDEX[b]['name']
+        lines.append(f'🍲 Nồi {name} hầm từ tối qua đã sẵn sàng: {POT_MAX} phần nóng hổi.'
+                     + (f' {left} phần cũ dành nấu bữa cơm nhân viên.' if left else ''))
+    d['prep'] = []
+    for line in lines:
+        kit.log(s, c, 'stock', line)
+    return lines
+
+
+# ------------------------------------------------------------------ care: hygiene book
+def _hygiene_today(c: dict, d: dict) -> dict:
+    rules = _plan_rules(c)
+    return dict(day=c['day'], clean=d['clean_checked_day'] == c['day'], dishes=not rules.get('dirty'),
+                pots=not any(_pot_state(d, b) == 'stale' for b in BROTH_INDEX))
+
+
+def _points(row: dict) -> int:
+    return 2 * bool(row['clean']) + bool(row['dishes']) + bool(row['pots'])
+
+
+def hygiene(d: dict) -> int:
+    """Score of the last seven shifts (0–100). Days not written yet count as half marks."""
+    rows = (d.get('hlog') or [])[-HLOG_DAYS:]
+    pts = sum(_points(r) for r in rows) + 2 * (HLOG_DAYS - len(rows))
+    return round(100 * pts / (4 * HLOG_DAYS))
+
+
+def hygiene_grade(score: int) -> str:
+    return 'A' if score >= HYGIENE_A else 'B' if score >= HYGIENE_B else 'C'
+
+
+def _hygiene_public(c: dict, d: dict) -> dict:
+    score = hygiene(d)
+    rows = [dict(r, points=_points(r)) for r in (d.get('hlog') or [])[-HLOG_DAYS:]]
+    today = _hygiene_today(c, d)
+    return dict(score=score, grade=hygiene_grade(score), days=rows, logged=len(d.get('hlog') or []),
+                today=dict(today, points=_points(today)), a=HYGIENE_A, b=HYGIENE_B)
+
+
+# ------------------------------------------------------------------ care: regulars' habits
+def _learned(g: dict | None) -> int:
+    visits = (g or {}).get('visits', 0)
+    return sum(1 for at in NOTE_AT if visits >= at)
+
+
+def _regular_snapshot(d: dict, t: dict) -> dict | None:
+    i = _npc_index(t)
+    if i not in HABITS:
+        return None
+    g = d.get('guests', {}).get(t['npc'])
+    n = _learned(g)
+    if not n:
+        return None
+    return dict(bond=g['bond'], notes=[h[0] for h in HABITS[i][:n]])
+
+
+def _usual_text(i: int) -> str:
+    broth, tops, spice, takeaway, extra, _ = USUALS[i]
+    parts = [f'{BROTH_INDEX[broth]["name"]} cấp {spice}'] + [f'{q} {ITEM_INDEX[k]["name"].lower()}' for k, q in tops.items()]
+    if extra:
+        parts.append('thêm 1 vắt')
+    if takeaway:
+        parts.append('mang về')
+    return ', '.join(parts)
+
+
+def _book(c: dict, d: dict) -> list[dict]:
+    rows = []
+    for npc, i in GUEST_IDS.items():
+        g = d.get('guests', {}).get(npc) or dict(visits=0, bond=0)
+        n = _learned(g)
+        nxt = next((at for at in NOTE_AT if g['visits'] < at), None)
+        rows.append(dict(npc=npc, name=PEOPLE[i][0], role=PEOPLE[i][1], about=PEOPLE[i][2], visits=g['visits'], bond=g['bond'],
+                         notes=[dict(touch=k, emoji=TOUCHES[k][0], label=TOUCHES[k][1], text=text) for k, text in HABITS[i][:n]],
+                         locked=len(HABITS[i]) - n, next_in=(nxt - g['visits']) if nxt else None,
+                         usual=_usual_text(i) if i in USUALS and npc in d.get('notebook', []) else None,
+                         tip=BOND_TIP if g['bond'] >= BOND_TIP_AT else 0))
+    rows.sort(key=lambda r: (-r['bond'], -r['visits'], r['name']))
+    return rows
+
+
+def _guest_after(s: dict, c: dict, d: dict, t: dict) -> list[str]:
+    """After a served order: the regular remembers the visit (and you learn their habits)."""
+    i = _npc_index(t)
+    if i not in HABITS:
+        return []
+    g = d['guests'].setdefault(t['npc'], dict(visits=0, bond=0))
+    before = _learned(g)
+    g['visits'] = min(999, g['visits'] + 1)
+    snap = t.get('regular') or {}
+    forgot = [k for k in snap.get('notes', []) if k not in t.get('touches', [])]
+    name = PEOPLE[i][0]
+    lines = []
+    if t['refused'] or cq.safety(t):
+        if g['bond']:
+            g['bond'] -= 1
+            lines.append(f'💔 {name} hơi buồn vì tô hôm nay (thân thiết {g["bond"]}/{BOND_MAX}).')
+    elif not cq.slips(t) and not forgot:
+        g['bond'] = min(BOND_MAX, g['bond'] + 1)
+        if g['bond'] >= BOND_TIP_AT:
+            kit.money(s, c, BOND_TIP, 'Khách quen gửi thêm tiền trà', t['id'], category='tip')
+            lines.append(f'💛 {name} gửi thêm {BOND_TIP} xu tiền trà.')
+    for k, text in HABITS[i][before:_learned(g)]:
+        lines.append(f'📒 {name} dặn: “{text}” (đã ghi sổ khách quen)')
+    return lines
+
+
+# ------------------------------------------------------------------ care: tomorrow
+def _outlook(c: dict, d: dict, closing: bool = False) -> dict:
+    nxt = c['day'] + 1
+    m = FS.pick_mod(ID, nxt, MODS)
+    advice = []
+    rows = _pot_rows(c, d, tomorrow=True)
+    stale = [r['name'] for r in rows if r['state'] == 'stale']
+    cold = [r['name'] for r in rows if r['state'] == 'cold']
+    if stale:
+        advice.append(f'Nồi {", ".join(stale)} sẽ quá {KEEP_NIGHTS} đêm vào sáng mai: dùng hết tối nay, hoặc hầm sẵn nồi mới.')
+    if cold:
+        advice.append(f'Sáng mai nhớ đun lại nồi {", ".join(cold)} trước khi chan (một lượt cho mọi nồi).')
+    ready = sum(r['portions'] for r in rows if r['state'] in ('cold', 'prep'))
+    if m['id'] == 'cold':
+        advice.append(f'Gió lạnh: mỗi tô tốn 2 phần nồi, mai mới có {ready} phần — nên hầm sẵn 1–2 nồi tối nay.')
+    elif m['id'] in ('lunch_rush', 'festival') and ready < 18:
+        advice.append(f'Mai khách đông: hầm sẵn nồi tối nay để khỏi nấu giữa giờ (mai mới có {ready} phần).')
+    if m['id'] == 'rain' and kit.stock(c, 'box') < 8:
+        advice.append(f'Trời mưa, khách mang về nhiều: kho còn {kit.stock(c, "box")} hộp — nhập thêm hộp.')
+    if m['id'] == 'students' and kit.stock(c, 'cheese_slice') < 6:
+        advice.append(f'Học sinh thích phô mai: kho còn {kit.stock(c, "cheese_slice")} lát.')
+    if m['id'] == 'beef_day':
+        advice.append('Bò Mỹ về hàng: nhà cung cấp tặng 4 phần bò, khách hay gọi thêm bò.')
+    if not closing and c['open'] and d['clean_checked_day'] != c['day']:
+        advice.append('Sổ vệ sinh hôm nay còn trống: bấm “🧽 Kiểm vệ sinh bếp” trước khi khép ca.')
+    return dict(day=nxt, emoji=m['emoji'], label=m['label'], hint=m['hint'], advice=advice[:5])
+
+
 # ------------------------------------------------------------------ prices
 def quote(c: dict, needs: dict) -> int:
     price = 0
@@ -425,6 +716,8 @@ def on_task(s: dict, c: dict, t: dict) -> None:
         _upgrade_task(t, c)
     if t.get('quoted_price') is None and t['needs']['style'] != 'open':
         t['quoted_price'] = quote(c, t['needs'])
+    if t['status'] not in FS.DONE and t.get('regular') is None:
+        t['regular'] = _regular_snapshot(kit.data(c), t)
     if t['guest']['kind'] == 'regular' and t.get('story') is None:
         i = _npc_index(t)
         if i in REGULAR_STORY:
@@ -438,8 +731,18 @@ def on_task(s: dict, c: dict, t: dict) -> None:
 
 
 def on_start(s: dict, c: dict) -> None:
-    _migrate(c)
+    d = _migrate(c)
     pl = _plan(c)
+    lines = _apply_prep(s, c, d)
+    cold = [BROTH_INDEX[b]['name'] for b in BROTH_INDEX if _pot_state(d, b) == 'cold']
+    stale = [BROTH_INDEX[b]['name'] for b in BROTH_INDEX if _pot_state(d, b) == 'stale']
+    if stale:
+        FS.flash(pl, 'bad', f'🗑️ Nồi {", ".join(stale)} có phần để quá {KEEP_NIGHTS} đêm: đổ phần cũ trước khi chan.'
+                 + (f' Nồi {", ".join(cold)} cần đun lại.' if cold else ''))
+    elif cold:
+        FS.flash(pl, 'info', f'🔥 Nồi {", ".join(cold)} để qua đêm: đun sôi lại trước khi chan (một lượt cho mọi nồi).')
+    elif lines:
+        FS.flash(pl, 'good', lines[0])
     for t in c['tasks']:
         if t['career'] == ID and t['status'] not in FS.DONE:
             on_task(s, c, t)
@@ -541,7 +844,7 @@ def _hard_problem(t: dict, bowl: dict, i: int | None = None) -> str | None:
     return None
 
 
-PHYSICAL = ('rs_boil', 'rs_broth', 'rs_topping', 'rs_serve', 'rs_dump', 'rs_batch', 'rs_wash', 'rs_plate')
+PHYSICAL = ('rs_boil', 'rs_broth', 'rs_topping', 'rs_serve', 'rs_dump', 'rs_batch', 'rs_wash', 'rs_plate', 'rs_reheat', 'rs_toss', 'rs_prep')
 APP_DRAIN = 1      # a delivery driver is waiting at the door: app orders lose patience a little faster
 BOWL_ACTIONS = ('rs_container', 'rs_boil', 'rs_broth', 'rs_topping', 'rs_chili', 'rs_lid')
 
@@ -579,11 +882,47 @@ def _handle(s: dict, c: dict, d: dict, pl: dict, name: str, p: dict) -> dict:
         broth = kit.one_of(p.get('broth'), BROTH_INDEX, 'Nồi nước dùng không tồn tại.')
         b = BROTH_INDEX[broth]
         kit.need(b['unlock'] <= kit.level(c), f'Nồi {b["name"]} mở ở cấp {b["unlock"]}.')
+        kit.need(_pot_state(d, broth) != 'stale', f'Nồi {b["name"]} còn phần nước dùng quá {KEEP_NIGHTS} đêm. Đổ phần cũ (🗑️) rồi mới nấu mẻ mới.')
         kit.need(d['pots'][broth] + POT_BATCH <= POT_MAX, 'Nồi còn nhiều, chưa cần nấu thêm.')
         cost = kit.take(c, b['pack'], 1)
-        d['pots'][broth] += POT_BATCH
+        mixed = _cook(d, broth, POT_BATCH)
         kit.metric(c, 'pots_cooked')
-        return dict(message=f'Đã nấu thêm nồi {b["name"]}: +{POT_BATCH} phần nước dùng.', cost=cost)
+        extra = f' Trong nồi: {_lots_text(d["pot_lots"][broth])} — phần cũ được chan trước.' if mixed else ''
+        return dict(message=f'Đã nấu thêm nồi {b["name"]}: +{POT_BATCH} phần nước dùng.{extra}', cost=cost)
+    if name == 'rs_reheat':
+        broth = None if p.get('broth') in (None, '') else kit.one_of(p.get('broth'), BROTH_INDEX, 'Nồi nước dùng không tồn tại.')
+        done = _reheat(d, broth)
+        kit.need(done, 'Không có nồi nào nguội cần đun lại.')
+        kit.metric(c, 'pots_reheated', len(done))
+        names = ', '.join(BROTH_INDEX[x]['name'] for x in done)
+        return dict(message=f'🔥 Đã đun sôi lại nồi {names}. Nước dùng nóng, chan được cả ngày hôm nay.')
+    if name == 'rs_toss':
+        kit.confirm(p, 'Xác nhận đổ bỏ nồi nước dùng; phần còn lại ghi vào hao hụt.')
+        broth = kit.one_of(p.get('broth'), BROTH_INDEX, 'Nồi nước dùng không tồn tại.')
+        b = BROTH_INDEX[broth]
+        kit.need(d['pots'][broth] > 0, 'Nồi đang trống.')
+        old = [x for x in d['pot_lots'][broth] if x[1] > KEEP_NIGHTS]
+        kit.need(old, f'Nồi {b["name"]} chưa có phần nào quá {KEEP_NIGHTS} đêm, vẫn dùng được.')
+        q = sum(n for n, _ in old)
+        value = max(1, round(q * ITEM_INDEX[b['pack']]['cost'] / POT_BATCH))
+        kit.waste(c, b['pack'], 1, value, f'Đổ {q} phần nước dùng {b["name"].lower()} để quá {KEEP_NIGHTS} đêm')
+        d['pots'][broth] -= q
+        _sync_lots(d, broth)
+        kit.metric(c, 'pots_tossed')
+        left = d['pots'][broth]
+        return dict(message=f'🗑️ Đã đổ {q} phần nước dùng {b["name"].lower()} quá hạn.' + (f' Còn {left} phần mới hơn trong nồi.' if left else ' Nồi đã rửa sạch, nấu mẻ mới khi cần nhé.'))
+    if name == 'rs_prep':
+        kit.confirm(p, 'Xác nhận hầm sẵn nồi cho ngày mai.')
+        broth = kit.one_of(p.get('broth'), BROTH_INDEX, 'Nồi nước dùng không tồn tại.')
+        b = BROTH_INDEX[broth]
+        kit.need(b['unlock'] <= kit.level(c), f'Nồi {b["name"]} mở ở cấp {b["unlock"]}.')
+        kit.need(broth not in d['prep'], f'Nồi {b["name"]} đã được hầm sẵn cho mai rồi.')
+        kit.need(len(d['prep']) < PREP_MAX, f'Bếp chỉ có {PREP_MAX} bếp riu riu để hầm qua đêm.')
+        kit.need(kit.stock(c, b['pack']) >= PREP_PACKS, f'Cần {PREP_PACKS} {ITEM_INDEX[b["pack"]]["name"].lower()} để hầm một nồi đầy.')
+        cost = kit.take(c, b['pack'], PREP_PACKS)
+        d['prep'].append(broth)
+        kit.metric(c, 'pots_prepped')
+        return dict(message=f'🌙 Đã bắc nồi {b["name"]} lên bếp riu riu. Sáng mai mở ca là có {POT_MAX} phần nóng hổi.', cost=cost)
     if name == 'rs_clean':
         kit.need(d['clean_checked_day'] != c['day'], 'Hôm nay đã kiểm vệ sinh bếp rồi.')
         d['clean_checked_day'] = c['day']
@@ -687,8 +1026,10 @@ def _handle(s: dict, c: dict, d: dict, pl: dict, name: str, p: dict) -> dict:
         kit.need(bowl['broth'] is None, 'Tô đã có nước dùng.')
         broth = kit.one_of(p.get('broth'), BROTH_INDEX, 'Nồi nước dùng không tồn tại.')
         portions = _portions(pl)
+        if d['pots'][broth]:
+            _need_pot(d, broth)
         kit.need(d['pots'][broth] >= portions, f'Nồi {BROTH_INDEX[broth]["name"]} không đủ nước dùng. Nấu thêm từ gói nước dùng.')
-        d['pots'][broth] -= portions
+        t['broth_age'] = max(t.get('broth_age', 0), min(KEEP_NIGHTS, _use_pot(d, broth, portions)))
         bowl['broth'] = broth
         if (n['style'] != 'open' and sp['broth'] and broth != sp['broth']) or (n['style'] == 'open' and n['open']['broths'] and broth not in n['open']['broths']):
             t['mistakes'] += 1
@@ -745,6 +1086,8 @@ def _handle(s: dict, c: dict, d: dict, pl: dict, name: str, p: dict) -> dict:
         d['dumped'] += 1
         kit.metric(c, 'bowls_dumped')
         msg = 'Đã đổ tô. Làm lại từ đầu nhé.'
+    elif name == 'rs_touch':
+        return _touch(c, d, t, p)
     elif name == 'rs_serve':
         return _serve(s, c, d, pl, t, p)
     else:
@@ -839,6 +1182,7 @@ def _serve(s: dict, c: dict, d: dict, pl: dict, t: dict, p: dict) -> dict:
         kit.metric(c, 'app_orders')
     kit.complete(s, c, t, pay, f'Bạn đã nấu “{t["title"]}” cho khách.')
     lines = FS.after_serve(s, c, ID, pl, t, _walkin_chance(c, pl))
+    lines += _guest_after(s, c, d, t)
     if n['style'] == 'usual' and t['npc'] not in d['notebook']:
         d['notebook'].append(t['npc'])
         lines.append('📒 Đã ghi món quen vào sổ khách quen.')
@@ -865,6 +1209,26 @@ def _serve(s: dict, c: dict, d: dict, pl: dict, t: dict, p: dict) -> dict:
     if not opened:
         FS.flash(pl, 'good' if perfect else 'info', ('⭐ Tô hoàn hảo! ' if perfect else '🍜 Đã giao. ') + ' '.join(lines[:2]))
     return dict(message=head + (' ' + ' '.join(lines) if lines else ' Khách đang ăn và sẽ để lại đánh giá.'), celebrate=True)
+
+
+def _touch(c: dict, d: dict, t: dict, p: dict) -> dict:
+    """A little habit of a regular (no turn): iced tea, a wet towel, scalded chopsticks…"""
+    touch = kit.one_of(p.get('touch'), TOUCHES, 'Việc này không có trong sổ khách quen.')
+    snap = t.get('regular') or {}
+    kit.need(touch in snap.get('notes', []), 'Sổ khách quen chưa ghi thói quen này của khách.')
+    kit.need(touch not in t['touches'], 'Đã làm việc này cho khách rồi.')
+    msg = TOUCHES[touch][0] + ' ' + TOUCHES[touch][1] + '.'
+    if touch == 'soup':
+        plates = [x for x in t['plates'] if x is not None]
+        broth = t['bowl']['broth'] or next((x['broth'] for x in plates if x['broth']), None)
+        kit.need(broth, 'Chan nước dùng vào tô trước, rồi mới múc thêm chén riêng.')
+        _need_pot(d, broth)
+        kit.need(d['pots'][broth] >= 1, f'Nồi {BROTH_INDEX[broth]["name"]} hết nước dùng rồi.')
+        _use_pot(d, broth, 1)
+        msg = f'🥣 Múc thêm chén nước dùng {BROTH_INDEX[broth]["name"].lower()} nóng (1 phần nồi).'
+    t['touches'].append(touch)
+    left = [k for k in snap['notes'] if k not in t['touches']]
+    return dict(message=msg + (' Khách quen mỉm cười: “Vẫn nhớ hả!”' if not left else ''))
 
 
 def _who(t: dict) -> str:
@@ -998,11 +1362,13 @@ def _batch(s: dict, c: dict, d: dict, pl: dict) -> dict:
     b = pl['rules'].get('batch')
     kit.need(isinstance(b, dict) and b['status'] == 'open', 'Không có đơn đặt nào đang làm.')
     portions = _portions(pl)
+    if d['pots'][b['broth']]:
+        _need_pot(d, b['broth'])
     kit.need(d['pots'][b['broth']] >= portions, f'Nồi {BROTH_INDEX[b["broth"]]["name"]} không đủ. Nấu thêm nồi trước nhé.')
     kit.take(c, 'noodle', 1)
     kit.take(c, 'box', 1)
     kit.take(c, 'chili', b['spice'])
-    d['pots'][b['broth']] -= portions
+    _use_pot(d, b['broth'], portions)
     b['done'] += 1
     if b['done'] < b['goal']:
         return dict(message=f'📦 Đã đóng hộp {b["done"]}/{b["goal"]} cho văn phòng.')
@@ -1117,6 +1483,19 @@ def feedback(c: dict, t: dict) -> dict:
         cap = 3
     if t.get('vip') == 'critic' and (t['mistakes'] or acc < 5 or taste < 5):
         cap = min(cap, 3)
+    if t.get('broth_age', 0) >= 2:
+        rows.append(dict(key='broth', label='Nước dùng', score=4, note='nước dùng để 2 đêm, hơi nhạt'))
+    snap = t.get('regular') or {}
+    if snap.get('notes'):
+        forgot = [TOUCHES[k][1].lower() for k in snap['notes'] if k not in t.get('touches', [])]
+        rows.append(dict(key='remember', label='Nhớ ý khách', score=4 if forgot else 5,
+                         note=('quên: ' + ', '.join(forgot)) if forgot else f'nhớ đủ {len(snap["notes"])} thói quen'))
+    d = kit.data(c)
+    if _npc_index(t) == 5 and len(d.get('hlog') or []) >= 3:
+        g = hygiene_grade(hygiene(d))
+        if g != 'B':
+            rows.append(dict(key='hygiene', label='Bếp sạch', score=5 if g == 'A' else 3,
+                             note='sổ vệ sinh ghi đều từng ngày' if g == 'A' else 'sổ vệ sinh bỏ trống nhiều ngày'))
     if rules.get('bad_beef') and any(b['toppings'].get('beef') for b in bowls):
         rows.append(dict(key='fresh', label='Độ tươi', score=2, note='bò có mùi lạ'))
         cap = min(cap, 2)
@@ -1146,11 +1525,16 @@ def _ev_wallet(s, c, pl, choice):
 
 def _ev_inspection(s, c, pl, choice):
     d = kit.data(c)
+    grade = hygiene_grade(hygiene(d))
     if choice == 'show':
         if d['clean_checked_day'] == c['day']:
             pl['rules']['clean_badge'] = True
             kit.metric(c, 'inspections_passed')
+            if grade == 'C':
+                return 'Sổ hôm nay ghi đủ, bếp sạch. Đoàn dán tem “Bếp sạch” nhưng nhắc: mấy ngày trước sổ còn bỏ trống, giữ đều nhé.', True
             return 'Sổ ghi đủ, bếp sạch. Đoàn dán tem “Bếp sạch” lên cửa, khách nhìn vào thấy yên tâm.', True
+        if grade == 'A':
+            return 'Hôm nay chưa kịp ghi sổ đầu ca, nhưng sổ 7 ngày qua ghi đều tăm tắp. Đoàn chỉ nhắc nhở, không phạt.', None
         fine = min(30, c['money'])
         if fine:
             kit.money(s, c, -fine, 'Phạt vệ sinh: sổ ca để trống', f'insp-{c["day"]}', category='fine')
@@ -1381,7 +1765,20 @@ def on_close(s: dict, c: dict) -> dict:
     if isinstance(b, dict) and b['status'] == 'open':
         b['status'] = 'failed'
         _event_outcome(pl, 'catering', False, 'Hết ca mà chưa đóng đủ hộp cho văn phòng.')
-    return FS.close(s, c, ID, pl, MODS)
+    d = kit.data(c)
+    out = FS.close(s, c, ID, pl, MODS)
+    # The hygiene book gets today's line, then the pots cool down for the night.
+    row = _hygiene_today(c, d)
+    d['hlog'] = ([r for r in d['hlog'] if r['day'] != c['day']] + [row])[-HLOG_DAYS:]
+    score = hygiene(d)
+    outlook = _outlook(c, d, closing=True)
+    pots = _pot_rows(c, d, tomorrow=True)
+    for b in BROTH_INDEX:
+        d['pot_lots'][b] = [[q, min(99, age + 1)] for q, age in d['pot_lots'][b]]
+        d['pot_warm'][b] = False
+    out['care'] = dict(hygiene=dict(row=dict(row, points=_points(row)), score=score, grade=hygiene_grade(score)),
+                       pots=pots, prep=list(d['prep']), outlook=outlook, keep=KEEP_NIGHTS)
+    return out
 
 
 def public_task(t: dict) -> dict:
@@ -1410,6 +1807,14 @@ def public_data(c: dict) -> dict:
     d['boil_shift'] = WEAK_FIRE if pl['rules'].get('weak_fire') else 0
     d['price_mult'] = _price_mult(pl)
     d['baskets'] = [dict(task=t['id'], start=t['bowl']['boiling']) for t in _boiling(c)]
+    raw = kit.data(c)
+    view = dict(raw, pot_lots={b: raw.get('pot_lots', {}).get(b) or [] for b in BROTH_INDEX},
+                pot_warm={b: raw.get('pot_warm', {}).get(b, True) for b in BROTH_INDEX},
+                prep=list(raw.get('prep') or []), guests=raw.get('guests') or {}, hlog=raw.get('hlog') or [])
+    d.pop('guests', None)
+    d['care'] = dict(pots=_pot_rows(c, view), hygiene=_hygiene_public(c, view), prep=view['prep'], prep_max=PREP_MAX,
+                     prep_packs=PREP_PACKS, keep=KEEP_NIGHTS, outlook=_outlook(c, view), book=_book(c, view),
+                     bond_max=BOND_MAX, bond_tip=BOND_TIP, bond_tip_at=BOND_TIP_AT)
     return d
 
 
@@ -1443,6 +1848,17 @@ def validate_task(t: dict, original: dict) -> None:
         kit.need(type(t.get(k)) is bool, 'Trạng thái đơn không hợp lệ.')
     kit.need(t.get('vip') in (None, 'critic'), 'Khách đặc biệt không hợp lệ.')
     kit.need(t.get('story') is None or (isinstance(t['story'], str) and len(t['story']) <= 300), 'Câu chuyện khách quen không hợp lệ.')
+    reg = t.get('regular')
+    if reg is not None:
+        kit.need(isinstance(reg, dict) and set(reg) == {'bond', 'notes'}, 'Thẻ khách quen không hợp lệ.')
+        kit.integer(reg['bond'], 0, BOND_MAX)
+        habits = [h[0] for h in HABITS.get(_npc_index(t), ())]
+        kit.need(isinstance(reg['notes'], list) and 1 <= len(reg['notes']) <= len(habits) and reg['notes'] == habits[:len(reg['notes'])],
+                 'Thói quen khách quen không hợp lệ.')
+    touches = t.get('touches', [])
+    kit.need(isinstance(touches, list) and len(touches) == len(set(touches)) and all(k in ((reg or {}).get('notes') or []) for k in touches),
+             'Việc chăm khách quen không hợp lệ.')
+    kit.integer(t.get('broth_age', 0), 0, KEEP_NIGHTS)
 
 
 def validate_data(c: dict) -> None:
@@ -1453,6 +1869,30 @@ def validate_data(c: dict) -> None:
     for k in ('bowls_served', 'dumped', 'clean_checked_day'):
         kit.integer(d.get(k), 0, 10**9)
     kit.need(isinstance(d['notebook'], list) and len(d['notebook']) <= 20 and all(isinstance(x, str) and x.startswith(ID + '_npc_') for x in d['notebook']), 'Sổ khách quen không hợp lệ.')
+    m = d.get('pot_warm')
+    kit.need(isinstance(m, dict) and set(m) == set(BROTH_INDEX) and all(type(v) is bool for v in m.values()), 'Tình trạng nồi nước dùng sai.')
+    m = d.get('pot_lots')
+    kit.need(isinstance(m, dict) and set(m) == set(BROTH_INDEX), 'Mẻ nước dùng trong nồi sai.')
+    for b, lots in m.items():
+        kit.need(isinstance(lots, list) and len(lots) <= 8 and all(isinstance(x, list) and len(x) == 2 for x in lots), 'Mẻ nước dùng trong nồi sai.')
+        for q, age in lots:
+            kit.integer(q, 1, POT_MAX)
+            kit.integer(age, 0, 99)
+        ages = [age for _, age in lots]
+        kit.need(ages == sorted(set(ages), reverse=True) and sum(q for q, _ in lots) == d['pots'][b], 'Mẻ nước dùng trong nồi sai.')
+    kit.need(isinstance(d['prep'], list) and len(d['prep']) <= PREP_MAX and len(set(d['prep'])) == len(d['prep'])
+             and all(b in BROTH_INDEX for b in d['prep']), 'Nồi hầm sẵn không hợp lệ.')
+    g = d['guests']
+    kit.need(isinstance(g, dict) and len(g) <= len(GUEST_IDS) and set(g) <= set(GUEST_IDS), 'Sổ khách quen không hợp lệ.')
+    for v in g.values():
+        kit.need(isinstance(v, dict) and set(v) == {'visits', 'bond'}, 'Sổ khách quen không hợp lệ.')
+        kit.integer(v['visits'], 0, 999)
+        kit.integer(v['bond'], 0, BOND_MAX)
+    kit.need(isinstance(d['hlog'], list) and len(d['hlog']) <= HLOG_DAYS, 'Sổ vệ sinh không hợp lệ.')
+    for r in d['hlog']:
+        kit.need(isinstance(r, dict) and set(r) == {'day', 'clean', 'dishes', 'pots'}
+                 and all(type(r[k]) is bool for k in ('clean', 'dishes', 'pots')), 'Sổ vệ sinh không hợp lệ.')
+        kit.integer(r['day'], 0, max(1, c['day']))
     FS.validate(c, MODS, EVENT_INDEX)
     p = d.get('plan')
     if p is not None:
@@ -1470,10 +1910,14 @@ def validate_data(c: dict) -> None:
 def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
     d = kit.data(c)
     if e['role'] == 'prep':
-        low = next((b for b in BROTHS if b['unlock'] <= kit.level(c) and d['pots'][b['id']] <= 2 and kit.stock(c, b['pack'])), None)
+        warm = _reheat(d)
+        if warm:
+            return 'Đã đun sôi lại nồi ' + ', '.join(BROTH_INDEX[b]['name'] for b in warm) + ' để qua đêm.'
+        low = next((b for b in BROTHS if b['unlock'] <= kit.level(c) and d['pots'][b['id']] <= 2 and kit.stock(c, b['pack'])
+                    and _pot_state(d, b['id']) != 'stale'), None)
         if low:
             kit.take(c, low['pack'], 1)
-            d['pots'][low['id']] += POT_BATCH
+            _cook(d, low['id'], POT_BATCH)
             return f'Đã nấu thêm nồi {low["name"]} từ gói nước dùng trong kho.'
         return 'Đã sơ chế rau, xếp topping theo ngày nhập (vào trước dùng trước).'
     if not t or t['career'] != ID or not t['known']:
@@ -1509,7 +1953,8 @@ def hint(c: dict, t: dict) -> str:
 
 def content() -> dict:
     return dict(broths=BROTHS, toppings=TOPPINGS, boil=BOIL, weak_fire=WEAK_FIRE, pot_max=POT_MAX, pot_batch=POT_BATCH,
-                dirty_max=DIRTY_MAX, meat=list(MEAT), prices=SPEC['prices'],
+                dirty_max=DIRTY_MAX, meat=list(MEAT), prices=SPEC['prices'], keep_nights=KEEP_NIGHTS,
+                touches={k: dict(emoji=e, label=label) for k, (e, label) in TOUCHES.items()},
                 items=[dict(id=i['id'], name=i['name'], emoji=i['emoji'], price=i.get('price', 0), unlock=i.get('unlock', 1),
                             allergen=i.get('allergen')) for i in ITEMS if i['group'] == 'topping'])
 
@@ -1630,7 +2075,7 @@ SPEC = dict(
     tip=3,
     physical=PHYSICAL,
     free_actions=(),
-    no_tick=('rs_lid', 'rs_chili', 'rs_drain', 'rs_recall', 'rs_tab'),
+    no_tick=('rs_lid', 'rs_chili', 'rs_drain', 'rs_recall', 'rs_tab', 'rs_touch'),
     waste_items=('bowl',),
     activity=('🍜', 'Bếp mì gọn gàng', [('Bò Mỹ', 'Tủ mát'), ('Gói tương đen', 'Kệ khô'), ('Trứng', 'Tủ mát'), ('Hộp mang về', 'Kệ khô')],
               ['Đọc phiếu order', 'Luộc mì chín tới', 'Chan nước dùng và topping', 'Bơm ớt, đậy nắp, giao']),

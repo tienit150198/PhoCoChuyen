@@ -86,8 +86,7 @@ class Kitchen:
                 self.stock_up(k, 6)
             pl = R._plan(j.c)
             b = broth or want_broth
-            if j.c['ext']['data']['pots'][b] < R._portions(pl):
-                j.c['ext']['data']['pots'][b] = R.POT_MAX
+            self.ready_pot(b, R._portions(pl))
             if pl['rules'].get('dirty', 0) >= R.DIRTY_MAX:
                 j.act('rs_wash')
             j.act('rs_container', task=tid, kind='box' if n['takeaway'] else 'bowl')
@@ -110,6 +109,19 @@ class Kitchen:
             return j.act('rs_serve', task=tid, confirm=True)
         return tid
 
+    def ready_pot(self, b, portions=1):
+        """A careful cook: pour out an expired pot, reheat a cold one, top up an empty one."""
+        j = self.j
+        if R._pot_state(j.c['ext']['data'], b) == 'stale':
+            j.act('rs_toss', broth=b, confirm=True)
+        d = j.c['ext']['data']
+        if d['pots'][b] < portions:
+            d['pots'][b] = R.POT_MAX
+            d['pot_lots'][b] = [[R.POT_MAX, 0]]
+            d['pot_warm'][b] = True
+        if R._pot_state(d, b) == 'cold':
+            j.act('rs_reheat')
+
     def resolve_open_event(self, pick=0):
         pl = R._plan(self.j.c)
         e = FS.open_event(pl)
@@ -130,7 +142,7 @@ class Kitchen:
             while isinstance(b, dict) and b['status'] == 'open':
                 for k in ('noodle', 'box', 'chili'):
                     self.stock_up(k, 6)
-                j.c['ext']['data']['pots'][b['broth']] = R.POT_MAX
+                self.ready_pot(b['broth'], R.POT_MAX)
                 j.act('rs_batch')
                 b = R._plan(j.c)['rules']['batch']
             todo = [t for t in j.c['tasks'] if t['status'] not in FS.DONE]
@@ -990,6 +1002,377 @@ class RestaurantConsequenceTests(unittest.TestCase):
         self.assertTrue(j.c['incidents']['follow'])
         self.assertIn('mùi chua', r['message'])
         validate_state(json.loads(json.dumps(j.state)))
+
+
+class RestaurantCareTests(unittest.TestCase):
+    """Care across days: broth overnight, tonight's prep, the regulars' habits, the hygiene book."""
+
+    def setUp(self):
+        self.clock = Clock()
+        self.old = kit.clock
+        kit.clock = self.clock
+        self.j = Journey('restaurant')
+        self.k = Kitchen(self, self.j)
+
+    def tearDown(self):
+        kit.clock = self.old
+
+    @property
+    def d(self):
+        return self.j.c['ext']['data']
+
+    def next_day(self):
+        """Close today without serving anyone, then open tomorrow."""
+        j = self.j
+        self.k.resolve_open_event()
+        j.act('end_day')
+        j.act('start_day')
+
+    def care(self):
+        return public_state(self.j.state)['careers']['restaurant']['data']['care']
+
+    def serve_active(self, touches=()):
+        j = self.j
+        tid = self.k.cook(j.task['id'])
+        for k in touches:
+            j.act('rs_touch', task=tid, touch=k)
+        j.act('rs_serve', task=tid, confirm=True)
+        return j.get(tid)
+
+    # ---------------------------------------------------------------- broth overnight
+    def test_pots_cool_overnight_and_reheat_in_one_turn(self):
+        j = self.j
+        self.assertEqual(R._pot_state(self.d, 'kimchi'), 'hot')
+        self.next_day()
+        self.assertEqual({R._pot_state(self.d, b) for b in ('kimchi', 'tomyum', 'blackbean')}, {'cold'})
+        self.assertEqual(R._pot_age(self.d, 'kimchi'), 1)
+        rows = {r['id']: r for r in self.care()['pots']}
+        self.assertEqual((rows['kimchi']['state'], rows['kimchi']['age']), ('cold', 1))
+        j.act('ask')
+        n = j.task['needs']
+        j.act('rs_container', kind='box' if n['takeaway'] else 'bowl')
+        with self.assertRaises(GameError) as e:
+            j.act('rs_broth', broth=n['broth'])
+        self.assertIn('Đun sôi lại', str(e.exception))
+        turn = j.c['turn']
+        r = j.act('rs_reheat')
+        self.assertEqual(j.c['turn'], turn + 1)
+        self.assertIn('Kim chi', r['message'])
+        self.assertEqual({R._pot_state(self.d, b) for b in ('kimchi', 'tomyum', 'blackbean')}, {'hot'})
+        with self.assertRaises(GameError):
+            j.act('rs_reheat')
+        before = self.d['pots'][n['broth']]
+        j.act('rs_broth', broth=n['broth'])
+        self.assertEqual(self.d['pots'][n['broth']], before - R._portions(R._plan(j.c)))
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_broth_expires_after_two_nights_and_is_poured_out(self):
+        j = self.j
+        for _ in range(3):
+            self.next_day()
+        self.assertEqual(R._pot_age(self.d, 'kimchi'), 3)
+        self.assertEqual(R._pot_state(self.d, 'kimchi'), 'stale')
+        self.assertEqual({r['id']: r['state'] for r in self.care()['pots']}['kimchi'], 'stale')
+        # Nothing to reheat (a stale pot is not reheated); topping it up or ladling from it is refused.
+        with self.assertRaises(GameError):
+            j.act('rs_reheat')
+        self.assertEqual(R._pot_state(self.d, 'kimchi'), 'stale')
+        self.k.stock_up('pack_kimchi', 2)
+        with self.assertRaises(GameError):
+            j.act('rs_pot', broth='kimchi')
+        j.act('ask')
+        j.act('rs_container', kind='bowl')
+        with self.assertRaises(GameError) as e:
+            j.act('rs_broth', broth='kimchi')
+        self.assertIn('Đổ phần cũ', str(e.exception))
+        with self.assertRaises(GameError):
+            j.act('rs_toss', broth='kimchi')
+        q = self.d['pots']['kimchi']
+        j.act('rs_toss', broth='kimchi', confirm=True)
+        self.assertEqual((self.d['pots']['kimchi'], self.d['pot_lots']['kimchi']), (0, []))
+        w = j.c['life']['waste'][-1]
+        self.assertEqual((w['item'], w['value']), ('pack_kimchi', round(q * 9 / R.POT_BATCH)))
+        j.act('rs_pot', broth='kimchi')
+        self.assertEqual((self.d['pots']['kimchi'], R._pot_state(self.d, 'kimchi')), (R.POT_BATCH, 'hot'))
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_topping_up_old_broth_keeps_the_older_date(self):
+        j = self.j
+        self.next_day()
+        self.d['pots']['kimchi'] = 2
+        self.k.stock_up('pack_kimchi', 2)
+        r = j.act('rs_pot', broth='kimchi')
+        self.assertIn('phần cũ được chan trước', r['message'])
+        self.assertEqual(self.d['pot_lots']['kimchi'], [[2, 1], [R.POT_BATCH, 0]])
+        self.assertEqual(R._pot_state(self.d, 'kimchi'), 'hot')
+        # The old portions go into the next bowls first.
+        self.assertEqual(R._use_pot(self.d, 'kimchi', 3), 1)
+        self.assertEqual(self.d['pot_lots']['kimchi'], [[R.POT_BATCH - 1, 0]])
+
+    def test_a_pot_used_and_topped_up_every_day_never_spoils(self):
+        j = self.j
+        for _ in range(6):
+            self.next_day()
+            self.assertNotEqual(R._pot_state(self.d, 'kimchi'), 'stale')
+            j.act('rs_reheat')
+            R._use_pot(self.d, 'kimchi', min(self.d['pots']['kimchi'], 6))
+            R._cook(self.d, 'kimchi', R.POT_BATCH)
+            validate_state(json.loads(json.dumps(j.state)))
+        self.assertLessEqual(R._pot_age(self.d, 'kimchi'), 1)
+
+    def test_only_expired_portions_are_poured_out(self):
+        j = self.j
+        self.d['pot_lots']['kimchi'] = [[2, 3], [4, 0]]
+        self.assertEqual(R._pot_state(self.d, 'kimchi'), 'stale')
+        with self.assertRaises(GameError):
+            j.act('rs_toss', broth='tomyum', confirm=True)       # nothing expired there
+        r = j.act('rs_toss', broth='kimchi', confirm=True)
+        self.assertIn('Còn 4 phần', r['message'])
+        self.assertEqual((self.d['pots']['kimchi'], self.d['pot_lots']['kimchi']), (4, [[4, 0]]))
+
+    def test_two_night_broth_is_noted_in_the_review(self):
+        j = self.j
+        self.next_day()
+        self.next_day()
+        tid = self.k.cook(j.task['id'])
+        self.assertEqual(j.get(tid)['broth_age'], 2)
+        j.act('rs_serve', task=tid, confirm=True)
+        post = next(p for p in j.c['feed'] if p['kind'] == 'review' and p.get('source') == tid)
+        row = next(x for x in post['feedback']['criteria'] if x['key'] == 'broth')
+        self.assertEqual(row['score'], 4)
+
+    def test_kitchen_helper_reheats_first(self):
+        self.next_day()
+        msg = R.assist(self.j.state, self.j.c, dict(role='prep'), None)
+        self.assertIn('đun sôi lại', msg)
+        self.assertEqual(R._pot_state(self.d, 'kimchi'), 'hot')
+
+    # ---------------------------------------------------------------- tonight's prep
+    def test_simmer_tonight_opens_full_and_fresh(self):
+        j = self.j
+        self.k.stock_up('pack_tomyum', 4)
+        packs = kit.stock(j.c, 'pack_tomyum')
+        with self.assertRaises(GameError):
+            j.act('rs_prep', broth='tomyum')
+        j.act('rs_prep', broth='tomyum', confirm=True)
+        self.assertEqual(kit.stock(j.c, 'pack_tomyum'), packs - R.PREP_PACKS)
+        with self.assertRaises(GameError):
+            j.act('rs_prep', broth='tomyum', confirm=True)
+        with self.assertRaises(GameError):
+            j.act('rs_prep', broth='cheese', confirm=True)     # locked at level 1
+        self.k.stock_up('pack_kimchi', 4)
+        j.act('rs_prep', broth='kimchi', confirm=True)
+        self.k.stock_up('pack_blackbean', 4)
+        with self.assertRaises(GameError):
+            j.act('rs_prep', broth='blackbean', confirm=True)  # only two slow burners
+        self.assertEqual({r['id']: r['state'] for r in self.care()['pots']}['kimchi'], 'hot')
+        left = self.d['pots']['tomyum']
+        self.k.resolve_open_event()
+        r = j.act('end_day')
+        care = r['summary']['career']['care']
+        self.assertEqual({p['id']: p['state'] for p in care['pots']}['tomyum'], 'prep')
+        j.act('start_day')
+        for b in ('tomyum', 'kimchi'):
+            self.assertEqual((self.d['pots'][b], self.d['pot_lots'][b], R._pot_state(self.d, b)), (R.POT_MAX, [[R.POT_MAX, 0]], 'hot'))
+        self.assertEqual(R._pot_state(self.d, 'blackbean'), 'cold')
+        self.assertEqual(self.d['prep'], [])
+        if left:
+            self.assertTrue(any('bữa cơm nhân viên' in x.get('message', x.get('text', '')) for x in j.c['journal'][-10:]))
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_outlook_warns_about_pots_and_tomorrow(self):
+        j = self.j
+        self.next_day()
+        self.next_day()
+        o = self.care()['outlook']
+        self.assertEqual(o['day'], j.c['day'] + 1)
+        self.assertEqual(o['label'], FS.pick_mod('restaurant', j.c['day'] + 1, R.MODS)['label'])
+        self.assertTrue(any('quá 2 đêm' in a for a in o['advice']))
+        self.assertTrue(any('Sổ vệ sinh' in a for a in o['advice']))
+
+    # ---------------------------------------------------------------- hygiene book
+    def test_hygiene_book_builds_over_days(self):
+        j = self.j
+        self.assertEqual(R.hygiene(self.d), 50)
+        for i in range(5):
+            j.act('rs_clean')
+            for b in R.BROTH_INDEX:
+                if R._pot_state(self.d, b) == 'stale':
+                    j.act('rs_toss', broth=b, confirm=True)
+            self.k.resolve_open_event()
+            r = j.act('end_day')
+            j.act('start_day')
+        self.assertEqual(len(self.d['hlog']), 5)
+        self.assertEqual(R.hygiene(self.d), round(100 * (5 * 4 + 2 * 2) / 28))
+        self.assertEqual(r['summary']['career']['care']['hygiene']['grade'], 'A')
+        # A missed day costs a little; the A kitchen stays A.
+        self.k.resolve_open_event()
+        j.act('end_day')
+        j.act('start_day')
+        self.assertEqual(self.d['hlog'][-1]['clean'], False)
+        self.assertEqual(R.hygiene_grade(R.hygiene(self.d)), 'A')
+        # The surprise inspection reads the book: no fine for a missing line today.
+        pl = R._plan(j.c)
+        pl['events'] = [dict(id='inspection', at=0, status='waiting', choice=None, good=None, note=None)]
+        FS.trigger(j.state, j.c, pl, R.EVENT_INDEX)
+        money = j.c['money']
+        r = j.act('rs_event', choice='show')
+        self.assertIsNone(r['good'])
+        self.assertEqual(j.c['money'], money)
+        pub = self.care()['hygiene']
+        self.assertEqual(len(pub['days']), 6)
+        self.assertEqual(pub['grade'], 'A')
+
+    def test_hygiene_minded_guest_notices_the_book(self):
+        j = self.j
+        t = dict(j.task, npc=kit.npc_id('restaurant', 5),
+                 served=dict(bowl=dict(R._empty_bowl(), noodles=['perfect'], broth='kimchi', toppings={}), price=40))
+        self.d['hlog'] = [dict(day=i, clean=True, dishes=True, pots=True) for i in range(1, 8)]
+        rows = {x['key']: x for x in R.feedback(j.c, t)['criteria']}
+        self.assertEqual(rows['hygiene']['score'], 5)
+        self.d['hlog'] = [dict(day=i, clean=False, dishes=True, pots=False) for i in range(1, 8)]
+        rows = {x['key']: x for x in R.feedback(j.c, t)['criteria']}
+        self.assertEqual(rows['hygiene']['score'], 3)
+        self.d['hlog'] = self.d['hlog'][:2]
+        self.assertNotIn('hygiene', {x['key'] for x in R.feedback(j.c, t)['criteria']})
+
+    # ---------------------------------------------------------------- regulars' habits
+    def test_regular_habits_are_learned_and_honoured(self):
+        j = self.j
+        t = j.task
+        i = R._npc_index(t)
+        self.assertIn(i, R.HABITS)
+        self.assertIsNone(t['regular'])
+        with self.assertRaises(GameError):
+            j.act('rs_touch', task=t['id'], touch=R.HABITS[i][0][0])
+        self.serve_active()
+        g = self.d['guests'][t['npc']]
+        self.assertEqual(g['visits'], 1)
+        book = {b['npc']: b for b in self.care()['book']}
+        self.assertEqual([n['touch'] for n in book[t['npc']]['notes']], [R.HABITS[i][0][0]])
+        self.assertEqual(book[t['npc']]['locked'], 1)
+        # Unlearned habits never leave the server.
+        self.assertNotIn(R.HABITS[i][1][1], json.dumps(public_state(j.state), ensure_ascii=False))
+        # The same guest comes back: the ticket snapshots what the shop knows.
+        other = next(x for x in j.c['tasks'] if x['status'] not in FS.DONE)
+        j.c['active_task'] = other['id']
+        other['regular'] = None
+        self.d['guests'][other['npc']] = dict(visits=1, bond=0) if R._npc_index(other) in R.HABITS else None
+        if self.d['guests'][other['npc']] is None:
+            self.skipTest('next guest has no card')
+        R.on_task(j.state, j.c, other)
+        habit = R.HABITS[R._npc_index(other)][0][0]
+        self.assertEqual(other['regular'], dict(bond=0, notes=[habit]))
+        if habit == 'soup':
+            self.k.cook(other['id'])
+        j.act('ask', task=other['id'])
+        turn = j.c['turn']
+        j.act('rs_touch', task=other['id'], touch=habit)
+        self.assertEqual(j.c['turn'], turn)
+        with self.assertRaises(GameError):
+            j.act('rs_touch', task=other['id'], touch=habit)
+        wrong = next(k for k in R.TOUCHES if k not in R.HABITS[R._npc_index(other)][0])
+        with self.assertRaises(GameError):
+            j.act('rs_touch', task=other['id'], touch=wrong)
+        tid = self.k.cook(other['id'])
+        j.act('rs_serve', task=tid, confirm=True)
+        post = next(p for p in j.c['feed'] if p['kind'] == 'review' and p.get('source') == tid)
+        row = next(x for x in post['feedback']['criteria'] if x['key'] == 'remember')
+        self.assertEqual(row['score'], 5)
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def guest_at(self, npc_index, visits=1, bond=0):
+        """A day-1 order from this regular, who has been here `visits` times."""
+        slot = next(x for x in range(12) if R._npc_index(R.make_task(1, x, 1)) == npc_index)
+        j = Journey('restaurant', slot=slot, day=1)
+        self.j, self.k.j = j, j
+        self.d['guests'][j.task['npc']] = dict(visits=visits, bond=bond)
+        j.task['regular'] = None
+        R.on_task(j.state, j.c, j.task)
+        return j.task
+
+    def test_touch_costs_no_turn_and_soup_uses_the_pot(self):
+        t = self.guest_at(3)                      # Cô Tư likes an extra bowl of broth
+        j = self.j
+        self.assertEqual(t['regular']['notes'], ['soup'])
+        j.act('ask')
+        with self.assertRaises(GameError):
+            j.act('rs_touch', task=t['id'], touch='soup')   # no broth in the bowl yet
+        j.act('rs_container', kind='bowl')
+        broth = t['needs']['broth']
+        j.act('rs_broth', broth=broth)
+        before, turn = self.d['pots'][broth], j.c['turn']
+        j.act('rs_touch', task=t['id'], touch='soup')
+        self.assertEqual(j.c['turn'], turn)
+        self.assertEqual(self.d['pots'][broth], before - 1)
+        self.assertEqual(j.task['touches'], ['soup'])
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_forgotten_habit_and_bond(self):
+        t = self.guest_at(0, visits=3, bond=2)    # Anh Sơn: iced tea, chili on the side
+        j = self.j
+        self.assertEqual(t['regular']['notes'], ['tea', 'side'])
+        money = j.c['money']
+        done = self.serve_active(touches=['tea'])
+        post = next(p for p in j.c['feed'] if p['kind'] == 'review' and p.get('source') == done['id'])
+        row = next(x for x in post['feedback']['criteria'] if x['key'] == 'remember')
+        self.assertEqual(row['score'], 4)
+        self.assertEqual(self.d['guests'][t['npc']], dict(visits=4, bond=2))   # forgot one: no bond, no thank-you
+        self.assertFalse(any(x['reason'] == 'Khách quen gửi thêm tiền trà' for x in j.c['ops']['finance']['ledger']))
+        self.assertGreater(j.c['money'], money)
+
+    def test_bond_thank_you_and_book(self):
+        t = self.guest_at(5, visits=1, bond=2)    # Bà Hoa: scalded chopsticks
+        j = self.j
+        self.assertEqual(t['regular'], dict(bond=2, notes=['scald']))
+        self.serve_active(touches=['scald'])
+        self.assertEqual(self.d['guests'][t['npc']], dict(visits=2, bond=3))
+        self.assertTrue(any(x['reason'] == 'Khách quen gửi thêm tiền trà' and x['amount'] == R.BOND_TIP
+                            for x in j.c['ops']['finance']['ledger']))
+        b = next(x for x in self.care()['book'] if x['npc'] == t['npc'])
+        self.assertEqual((b['bond'], b['tip'], b['next_in']), (3, R.BOND_TIP, 1))
+
+    # ---------------------------------------------------------------- saves
+    def test_old_save_gets_care_keys(self):
+        j = self.j
+        s = copy.deepcopy(j.state)
+        c = s['careers']['restaurant']
+        for k in ('pot_lots', 'pot_warm', 'prep', 'guests', 'hlog'):
+            c['ext']['data'].pop(k)
+        for t in c['tasks']:
+            for k in ('regular', 'touches', 'broth_age'):
+                t.pop(k)
+        view = public_state(s)['careers']['restaurant']['data']['care']
+        self.assertEqual({r['state'] for r in view['pots'] if r['portions']}, {'hot'})
+        validate_state(s)
+        d = c['ext']['data']
+        self.assertEqual((d['prep'], d['guests'], d['hlog']), ([], {}, []))
+        self.assertTrue(all(d['pot_warm'].values()))
+        self.assertTrue(all(t['touches'] == [] for t in c['tasks']))
+
+    def test_tampered_care_data_is_rejected(self):
+        bad = [
+            lambda d, t: d['pot_lots'].update(kimchi=[[3, 0], [3, 1]]),
+            lambda d, t: d['pot_lots'].update(kimchi=[['6', 0]]),
+            lambda d, t: d['pot_lots'].update(pho=[]),
+            lambda d, t: d['pot_warm'].update(kimchi=1),
+            lambda d, t: d.update(prep=['kimchi', 'kimchi']),
+            lambda d, t: d.update(prep=['pho']),
+            lambda d, t: d['guests'].update({'restaurant_npc_09': dict(visits=1, bond=0)}),
+            lambda d, t: d['guests'].update({'restaurant_npc_01': dict(visits=1, bond=9)}),
+            lambda d, t: d.update(hlog=[dict(day=1, clean='yes', dishes=True, pots=True)]),
+            lambda d, t: d.update(hlog=[dict(day=1, clean=True, dishes=True, pots=True)] * 8),
+            lambda d, t: t.update(touches=['tea']),
+            lambda d, t: t.update(regular=dict(bond=0, notes=['wipe', 'tea'])),
+            lambda d, t: t.update(broth_age=5),
+        ]
+        for f in bad:
+            s = copy.deepcopy(self.j.state)
+            c = s['careers']['restaurant']
+            t = next(x for x in c['tasks'] if x['status'] not in FS.DONE)
+            f(c['ext']['data'], t)
+            with self.assertRaises(GameError):
+                validate_state(s)
 
 
 if __name__ == '__main__':

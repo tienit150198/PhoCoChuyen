@@ -18,6 +18,10 @@ const isGroup=t=>!!t.needs?.party?.length;
 const started=b=>!!(b&&(b.container||b.noodles.length||b.boiling));
 const plated=t=>isGroup(t)&&!!t.plates?.[t.cur];
 const pending=t=>isGroup(t)?(t.plates||[]).map((p,i)=>p?-1:i).filter(i=>i>=0&&i!==t.cur):[];
+const care=x=>data(x).care||{};
+const potRow=(x,id)=>(care(x).pots||[]).find(p=>p.id===id);
+const carAttr=(x,action,d={})=>`data-action="car:${action}" ${Object.entries(d).map(([k,v])=>`data-${k}="${x.esc(v)}"`).join(' ')}`;
+const hearts=(n,max)=>'💛'.repeat(n)+'🤍'.repeat(Math.max(0,max-n));
 
 /** The order as seen from one bowl (a table's party, or the order itself). */
 function specOf(t,i){
@@ -105,7 +109,20 @@ function ticket(t,x){
   return `<article class="card rs-order${t.vip==='critic'?' critic':''}"><div class="rs-order-head">${x.portrait(who,44)}<div class="grow">
     <div class="row spread"><h3>${x.esc(who.display_name)}</h3><b class="price">${x.esc(price)}</b></div>
     <p class="rs-guest"><span class="tag">${x.esc(g.emoji||'')} ${x.esc(g.label||'')}</span>${t.app?` <span class="tag">🛵 Đơn app ${x.esc(t.app)}</span>`:''}${isGroup(t)?` <span class="tag">🍜 ${t.needs.party.length} tô</span>`:''}${t.vip==='critic'?' <span class="tag amber">📝 Người viết review</span>':''}</p></div></div>
-    ${patience(t.patience)}${lead(t,x)}${tabs(t,x)}${reqList(checklistRows(t,x),x.esc,'Phiếu order')}${voice(t,x)}</article>`;
+    ${patience(t.patience)}${lead(t,x)}${tabs(t,x)}${reqList(checklistRows(t,x),x.esc,'Phiếu order')}${voice(t,x)}${regularCard(t,x)}</article>`;
+}
+/** The regular's notes card: what the shop has learned about them, one button per habit. */
+function regularCard(t,x){
+  const notes=t.regular?.notes||[];if(!notes.length)return '';
+  const b=(care(x).book||[]).find(e=>e.npc===t.npc);if(!b)return '';
+  const done=t.touches||[],max=care(x).bond_max||5;
+  const rows=b.notes.filter(n=>notes.includes(n.touch)).map(n=>({ok:done.includes(n.touch)?true:null,icon:n.emoji,label:n.text,note:done.includes(n.touch)?'đã làm':n.touch==='soup'?'múc 1 phần từ nồi của tô':''}));
+  const btns=b.notes.filter(n=>notes.includes(n.touch)&&!done.includes(n.touch)).map(n=>x.cmd(`${n.emoji} ${x.esc(n.label)}`,'rs_touch',{task:t.id,touch:n.touch},'ghost small')).join('');
+  const left=notes.length-done.filter(k=>notes.includes(k)).length;
+  const summary=`📒 Khách quen · <span aria-label="Thân thiết ${b.bond} trên ${max}">${hearts(b.bond,max)}</span> · ${left?`${left} thói quen chưa làm`:'nhớ đủ ✓'}`;
+  const body=`${reqList(rows,x.esc,'Thói quen của khách quen')}${btns?`<div class="row wrap rs-touches">${btns}</div>`:''}
+    <p class="muted small">Ghé ${b.visits} lần${b.usual?` · món quen: ${x.esc(b.usual)}`:''}${b.tip?` · khách ruột: +${b.tip} xu tiền trà khi tô chuẩn`:''}.</p>`;
+  return `<div class="rs-regular">${foldBox(x,'reg',summary,body,left>0)}</div>`;
 }
 
 /* ---------------------------------------------------------------- checklist */
@@ -193,14 +210,24 @@ function pots(t,x){
       disabled:!!b.container||locked||(dirtyOn&&!clean),wanted:!hide&&!b.container&&!n.takeaway,label:dirtyOn?`Lấy tô, còn ${clean} tô sạch`:'Lấy tô ăn tại quán'}),
     tileBtn(x,{cmd:'rs_container',payload:{task:t.id,kind:'box'},emoji:'🥡',name:'Hộp',count:stockOf(x,'box'),zero:!stockOf(x,'box'),selected:b.container==='box',
       disabled:!!b.container||locked||!stockOf(x,'box'),wanted:!hide&&!b.container&&n.takeaway,label:`Hộp mang về, còn ${stockOf(x,'box')}`}),
-    ...x.cc.broths.map(p=>{const q=d.pots?.[p.id]??0,lock=p.unlock>level;
-      return tileBtn(x,{cmd:'rs_broth',payload:{task:t.id,broth:p.id},emoji:p.emoji,name:p.name,sub:'nước dùng',count:lock?null:q,zero:q<portions,locked:lock,selected:b.broth===p.id,
-        wanted:!b.broth&&wantBroth.includes(p.id),disabled:q<portions||!!b.broth||!b.container||locked,cls:'pot',
-        label:lock?`Nước dùng ${p.name}, mở ở cấp ${p.unlock}`:`Chan nước dùng ${p.name}, nồi còn ${q} phần`});})];
+    ...x.cc.broths.map(p=>{const q=d.pots?.[p.id]??0,lock=p.unlock>level,st=potRow(x,p.id)?.state||'hot',off=st==='cold'||st==='stale';
+      const sub=st==='cold'?'cần đun lại':st==='stale'?'quá hạn':'nước dùng';
+      return tileBtn(x,{cmd:'rs_broth',payload:{task:t.id,broth:p.id},emoji:p.emoji,name:p.name,sub,count:lock?null:q,zero:q<portions||off,locked:lock,selected:b.broth===p.id,
+        wanted:!b.broth&&wantBroth.includes(p.id)&&!off,disabled:q<portions||off||!!b.broth||!b.container||locked,cls:'pot'+(st==='cold'?' cold':st==='stale'?' stale':''),
+        label:lock?`Nước dùng ${p.name}, mở ở cấp ${p.unlock}`:off?`Nồi ${p.name} ${sub}`:`Chan nước dùng ${p.name}, nồi còn ${q} phần`});})];
   // Cooking a pot is offered when it runs low (a pot holds 12 portions, one batch adds 6).
-  const low=x.cc.broths.filter(p=>p.unlock<=level&&(d.pots?.[p.id]??0)<=Math.min(6,2*portions));
+  const low=x.cc.broths.filter(p=>p.unlock<=level&&(d.pots?.[p.id]??0)<=Math.min(6,2*portions)&&potRow(x,p.id)?.state!=='stale');
   const cook=low.length?`<div class="rs-cook"><small>🔥 Nấu thêm nồi</small>${low.map(p=>{const packs=stockOf(x,p.pack);return x.cmd(`${p.emoji} ${x.esc(p.name)} · ${packs} gói`,'rs_pot',{broth:p.id},'ghost small',!packs);}).join('')}</div>`:'';
-  return `<div class="rs-grid rs-pots" role="group" aria-label="Tô, hộp và nồi nước dùng">${tiles.join('')}</div>${portions>1?'<p class="muted small">🥶 Trời lạnh: mỗi tô chan 2 phần nồi.</p>':''}${cook}`;
+  return `${potAlert(x)}<div class="rs-grid rs-pots" role="group" aria-label="Tô, hộp và nồi nước dùng">${tiles.join('')}</div>${portions>1?'<p class="muted small">🥶 Trời lạnh: mỗi tô chan 2 phần nồi.</p>':''}${cook}`;
+}
+/** Pots kept overnight: one button reheats them all; an expired pot is poured out. */
+function potAlert(x){
+  const rows=care(x).pots||[],cold=rows.filter(p=>p.state==='cold'),stale=rows.filter(p=>p.state==='stale');
+  if(!cold.length&&!stale.length)return '';
+  const heat=cold.length?x.cmd(`🔥 Đun lại ${cold.length} nồi`,'rs_reheat',{},'primary small'):'';
+  const toss=stale.map(p=>x.confirmCmd(`🗑️ Đổ ${p.stale} phần ${x.esc(p.name)} cũ`,'rs_toss',{broth:p.id,confirm:true},`Đổ ${p.stale} phần nước dùng ${p.name} để quá ${care(x).keep||2} đêm? Phần này ghi vào hao hụt; phần mới hơn vẫn giữ lại.`,'danger small')).join('');
+  const what=[cold.length?`${cold.map(p=>p.name).join(', ')} để qua đêm, còn nguội`:'',stale.length?`${stale.map(p=>p.name).join(', ')} có phần để quá ${care(x).keep||2} đêm`:''].filter(Boolean).join(' · ');
+  return `<div class="rs-potalert${stale.length?' bad':''}" role="status"><p>🍲 ${x.esc(what)}.</p><div class="row wrap">${heat}${toss}</div></div>`;
 }
 function boilBar(start,x,id,shift){
   const w=x.cc.boil||{raw:7,perfect:13,soft:19},scale=BASE_SCALE+shift,z=v=>(v+shift)/scale*100;
@@ -296,6 +323,76 @@ function extras(x){
   return bits.join('');
 }
 
+/* ---------------------------------------------------------------- care across days */
+/** A fold that remembers whether the player opened or closed it. */
+function foldBox(x,key,summary,body,auto=false,cls=''){
+  const open=x.ui.open?.[key]??auto;
+  return `<details class="fold rs-fold ${cls}"${open?' open':''}><summary ${carAttr(x,'fold',{key})}>${summary}</summary><div class="fold-body">${body}</div></details>`;
+}
+const POT_STATE={hot:['ok','nóng, chan được'],cold:['warn','nguội · cần đun lại'],stale:['bad','có phần quá hạn · đổ phần cũ'],empty:['','trống'],prep:['ok','hầm sẵn: sáng mai đầy nồi, nóng sẵn']};
+const ageText=(a,keep)=>a?(a>keep?`để ${a} đêm (quá hạn)`:`để ${a} đêm`):'mới nấu';
+/** "để 1 đêm" for one batch; "3 phần để 1 đêm + 6 phần mới nấu" when the pot holds several. */
+const lotsText=(lots,keep)=>(lots||[]).length<2?ageText(lots?.[0]?.[1]||0,keep):lots.map(([q,a])=>`${q} phần ${ageText(a,keep)}`).join(' + ');
+function potList(x,rows,tomorrow=false){
+  const keep=care(x).keep||2;
+  return reqList(rows.map(p=>{const [cls,said]=POT_STATE[p.state]||['',''];
+    const lots=p.portions&&p.state!=='prep'?` · ${tomorrow?'sáng mai: ':''}${lotsText(p.lots,keep)}`:'';
+    return {ok:cls==='ok'?true:cls==='bad'?false:null,icon:p.emoji,label:`${p.name}`,note:said+lots,value:p.state==='empty'?'':`${p.portions} phần`,tone:cls==='bad'?'danger':cls==='warn'?'warn':''};}),x.esc,'Nồi nước dùng');
+}
+const cellOf=p=>p==null?['none','·']:p>=4?['good','✓']:p>=2?['half','½']:['bad','✗'];
+/** Seven shifts of the hygiene book + today's line (live). */
+function hygieneStrip(x){
+  const h=care(x).hygiene;if(!h)return '';
+  const days=h.days||[],pad=Array(Math.max(0,7-days.length)).fill(null);
+  const cells=[...pad.map(()=>({label:'',p:null})),...days.map(r=>({label:`N${r.day}`,p:r.points,r}))].map(c=>{const [cls,mark]=cellOf(c.p);
+    return `<li class="${cls}" title="${c.r?`Ngày ${c.r.day}: ${c.r.clean?'đã kiểm bếp':'chưa kiểm bếp'}${c.r.dishes?'':', còn tô bẩn'}${c.r.pots?'':', nồi quá hạn'}`:'Chưa có dòng'}"><b aria-hidden="true">${mark}</b><small>${x.esc(c.label)}</small></li>`;}).join('');
+  const t=h.today||{},tc=t.clean;
+  const today=`<li class="today ${tc?'good':'none'}"><b aria-hidden="true">${tc?'✓':'?'}</b><small>nay</small></li>`;
+  return `<div class="rs-hyg"><div class="rs-hyg-head"><span class="rs-stamp g-${x.esc(h.grade)}" aria-label="Tem vệ sinh ${x.esc(h.grade)}">${x.esc(h.grade)}</span><div><b>Sổ vệ sinh 7 ngày · ${h.score}/100</b><small>Kiểm bếp đầu ca 2 điểm · không tô bẩn 1 · không nồi quá hạn 1. Tem A từ ${h.a}.</small></div></div>
+    <ol class="rs-hyg-days" aria-label="Sổ vệ sinh các ngày">${cells}${today}</ol>
+    ${tc?'<p class="small rs-ok-line">🧽 Hôm nay đã kiểm vệ sinh bếp.</p>':`<div class="row wrap">${x.cmd('🧽 Kiểm vệ sinh bếp hôm nay','rs_clean',{},'primary small')}</div>`}</div>`;
+}
+function prepBox(x){
+  const c=care(x),level=x.room.level,chosen=c.prep||[],max=c.prep_max||2,need=c.prep_packs||2;
+  const btns=x.cc.broths.filter(p=>p.unlock<=level).map(p=>{const on=chosen.includes(p.id),packs=stockOf(x,p.pack);
+    if(on)return `<span class="tag green">✓ ${x.esc(p.emoji)} ${x.esc(p.name)} đang hầm</span>`;
+    return x.confirmCmd(`🌙 ${x.esc(p.emoji)} ${x.esc(p.name)} · ${packs}/${need} gói`,'rs_prep',{broth:p.id,confirm:true},`Hầm sẵn nồi ${p.name} qua đêm? Dùng ${need} gói nước dùng; sáng mai nồi đầy ${x.cc.pot_max||12} phần, nóng sẵn.`,'ghost small',packs<need||chosen.length>=max||!x.room.open);}).join('');
+  return `<div class="rs-prep"><p class="rs-sub">🌙 Hầm sẵn cho mai · ${chosen.length}/${max} bếp riu riu</p><p class="muted small">Sáng mai nồi đầy, nóng sẵn: không cần đun lại, khỏi nấu giữa giờ.</p><div class="row wrap">${btns}</div></div>`;
+}
+function outlookBox(x,o){
+  if(!o)return '';
+  return `<div class="rs-outlook"><p class="rs-sub">${x.esc(o.emoji)} Mai: ${x.esc(o.label)}</p><p class="muted small">${x.esc(o.hint)}</p>${o.advice?.length?`<ul class="rs-advice">${o.advice.map(a=>`<li>${x.esc(a)}</li>`).join('')}</ul>`:''}</div>`;
+}
+/** "Bếp & ngày mai": hygiene book, pots overnight, simmer for tomorrow, tomorrow's outlook. */
+function careFold(x,auto=false,inJob=false){
+  const c=care(x);if(!c.pots)return '';
+  const cold=c.pots.filter(p=>p.state==='cold').length,stale=c.pots.filter(p=>p.state==='stale').length,h=c.hygiene||{};
+  const flags=[stale?`${stale} nồi quá hạn`:'',cold?`${cold} nồi cần đun`:'',h.today&&!h.today.clean?'chưa ghi sổ':''].filter(Boolean);
+  const summary=`🧽 Bếp & ngày mai · Tem ${x.esc(h.grade||'?')}${flags.length?` · <span class="warn-text">${x.esc(flags.join(', '))}</span>`:''}`;
+  const body=`${hygieneStrip(x)}<p class="rs-sub">🍲 Nồi nước dùng</p>${potList(x,c.pots)}${inJob?'':potAlert(x)}<p class="muted small">Nước dùng giữ được ${c.keep||2} đêm trong tủ; để qua đêm thì đun sôi lại trước khi chan.</p>${prepBox(x)}${outlookBox(x,c.outlook)}`;
+  return `<section class="rs-care" aria-label="Bếp và ngày mai">${foldBox(x,'care',summary,body,auto||!!stale)}</section>`;
+}
+/** "Sổ khách quen": every regular, hearts, habits learned, what is still to learn. */
+function bookFold(x){
+  const c=care(x),book=c.book||[];if(!book.length)return '';
+  const known=book.filter(b=>b.visits),max=c.bond_max||5,rest=book.length-known.length;
+  const rows=known.map(b=>`<li><div class="rs-book-head"><b>${x.esc(b.name)}</b><small>${x.esc(b.role)}</small><span aria-label="Thân thiết ${b.bond} trên ${max}">${hearts(b.bond,max)}</span></div>
+    <small class="muted">Ghé ${b.visits} lần${b.tip?` · khách ruột: +${b.tip} xu tiền trà khi tô chuẩn`:b.bond<(c.bond_tip_at||3)?` · ${(c.bond_tip_at||3)-b.bond} lần chuẩn nữa → khách ruột`:''}</small>
+    ${b.notes.length?`<ul class="rs-habits">${b.notes.map(n=>`<li><span aria-hidden="true">${x.esc(n.emoji)}</span> ${x.esc(n.text)}</li>`).join('')}</ul>`:''}
+    ${b.usual?`<small>🍜 Món quen: ${x.esc(b.usual)}</small>`:''}
+    ${b.locked?`<small class="muted">🔒 Phục vụ thêm ${b.next_in} lần để biết thêm một thói quen.</small>`:''}</li>`).join('');
+  const body=known.length?`<ul class="rs-book">${rows}</ul>`:'<p class="muted small">Chưa có ai. Phục vụ khách xong, sổ sẽ ghi lại thói quen của họ.</p>';
+  return foldBox(x,'book',`📒 Sổ khách quen · ${known.length}/${book.length} người quen`,body+(rest&&known.length?`<p class="muted small">Còn ${rest} vị khách chưa ghé.</p>`:''));
+}
+/** Day-close card: the hygiene line, pots overnight, prep, tomorrow. */
+function careSummary(c,x){
+  if(!c)return '';
+  const h=c.hygiene||{},r=h.row||{};
+  const line=`${r.clean?'✓ kiểm bếp':'✗ chưa kiểm bếp'} · ${r.dishes?'✓ tô sạch':'✗ còn tô bẩn'} · ${r.pots?'✓ không nồi quá hạn':'✗ có nồi quá hạn'}`;
+  return `<article class="card space-top rs-care-sum"><div class="rs-hyg-head"><span class="rs-stamp g-${x.esc(h.grade||'C')}">${x.esc(h.grade||'?')}</span><div><b>Sổ vệ sinh: +${r.points??0}/4 hôm nay · ${h.score??0}/100</b><small>${x.esc(line)}</small></div></div>
+    <p class="rs-sub">🍲 Nồi qua đêm</p>${potList(x,c.pots||[],true)}${outlookBox(x,c.outlook)}</article>`;
+}
+
 /** The one primary action: "Xong tô N" while a table still waits for bowls, else "Giao món". */
 function primary(t,x,rows,big){
   const b=t.bowl,blocked=!!data(x).day?.open_event;
@@ -334,7 +431,7 @@ export default {
   next(t,x){return nextStep(t,x);},
   idle(x){
     const d=data(x);
-    return idlePanel(x,d.day,'rs_event',extras(x),v=>floor(v,null),'rs');
+    return idlePanel(x,d.day,'rs_event',extras(x)+careFold(x,true)+bookFold(x),v=>floor(v,null),'rs');
   },
   job(t,x){
     const d=data(x),day=d.day;
@@ -342,7 +439,7 @@ export default {
     if(!t.known){
       const who=x.npc(t.npc),g=t.guest||{};
       return `<div class="career-job rs food">${head}<article class="card rs-order"><div class="rs-order-head">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3>
-        <p class="rs-guest"><span class="tag">${x.esc(g.emoji||'')} ${x.esc(g.label||'')}</span>${t.app?` <span class="tag">🛵 Đơn app ${x.esc(t.app)}</span>`:''}${(t.bowls_total||1)>1?` <span class="tag">🍜 ${t.bowls_total} tô</span>`:''}${t.vip==='critic'?' <span class="tag amber">📝 Người viết review</span>':''}</p></div></div>
+        <p class="rs-guest"><span class="tag">${x.esc(g.emoji||'')} ${x.esc(g.label||'')}</span>${t.app?` <span class="tag">🛵 Đơn app ${x.esc(t.app)}</span>`:''}${(t.bowls_total||1)>1?` <span class="tag">🍜 ${t.bowls_total} tô</span>`:''}${t.vip==='critic'?' <span class="tag amber">📝 Người viết review</span>':''}${t.regular?' <span class="tag">📒 Có trong sổ</span>':''}</p></div></div>
         ${t.story?`<p class="rs-story">💬 ${x.esc(t.story)}</p>`:''}<p class="rs-say">“${x.esc(t.opening)}”</p>${patience(t.patience)}
         ${x.cmd(t.app?'🧾 Đọc đơn app':'📝 Nhận order','ask',{task:t.id},'primary full')}</article>${extras(x)}</div>`;
     }
@@ -356,6 +453,7 @@ export default {
       <div class="rs-cta"><div class="fk-wide-only">${primary(t,x,rows,true)}</div>${lid}${dump}</div>
       ${toppings(t,x)}
       <p class="row wrap rs-tools">${clean?'<span class="tag green">🧽 Đã kiểm vệ sinh hôm nay</span>':x.cmd('🧽 Kiểm vệ sinh bếp','rs_clean',{},'ghost small')} ${x.button('📖 Thực đơn','prices',{},'ghost small')} ${x.button('📦 Kho & nhập hàng','inventory',{},'ghost small')}</p>
+      ${careFold(x,false,true)}
     </section>`;
     const bar=actionBar(x.esc(nextStep(t,x)),(lid?lid:'')+primary(t,x,rows,false));
     return `<div class="career-job rs food">${head}<div class="rs-work"><div class="rs-side">${ticket(t,x)}${extras(x)}</div>${desk}</div>${bar}</div>`;
@@ -372,6 +470,10 @@ export default {
     });
   },
   page(view,x){return view==='prices'?menuPage(x):'';},
-  summary(data,x){return gradeCard(data,x);},
+  summary(data,x){return gradeCard(data,x)+careSummary(data?.care,x);},
+  actions:{
+    // Remember an opened/closed fold for the next render; read it after the native toggle has happened.
+    async fold(data,el,x){const box=el.closest('details');setTimeout(()=>{(x.ui.open??={})[data.key]=!!box?.open;},0);},
+  },
   dock:[['prices','book','Thực đơn','Giá & món'],['inventory','box','Kho','Nhập & đếm hàng']],
 };
