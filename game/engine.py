@@ -163,7 +163,6 @@ def migrate_state(state:dict,owned:bool=False) -> dict:
         cst.migrate(s)  # truyện nghề: an empty story book for older saves
         emp.migrate(s)  # xin việc: nơi đã làm trước khi cần tuyển dụng thì coi như đã ký hợp đồng
         inv.migrate(s)  # kho: đơn nhập cũ theo nhịp → giờ giao dự kiến
-        _trim_histories(s)  # v0.8.1: shorter journal, cash book and day recaps (once per save)
         for _cid in ("mother_baby","pharmacy"):  # kho cũ của hai nghề gốc: kiện theo nhịp → giờ giao
             _c=s['careers'].get(_cid)
             if isinstance(_c,dict) and isinstance(_c.get('shipments'),list) and type(_c.get('day')) is int and type(_c.get('turn')) is int:_upgrade_shipments(_c,_cid)
@@ -173,21 +172,6 @@ def migrate_state(state:dict,owned:bool=False) -> dict:
     return s
 
 
-def _trim_histories(s:dict) -> None:
-    """Older saves kept up to 1200 journal rows, 1500 cash-book rows and 30 day recaps per
-    career: cut them to what log(), ops.record_money and life.on_close keep now."""
-    for c in s["careers"].values():
-        if not isinstance(c,dict):continue
-        if isinstance(c.get("journal"),list) and len(c["journal"])>JOURNAL_KEPT:c["journal"]=c["journal"][-JOURNAL_KEPT:]
-        f=(c.get("ops") or {}).get("finance") if isinstance(c.get("ops"),dict) else None
-        if (isinstance(f,dict) and isinstance(f.get("ledger"),list) and type(c.get("day")) is int and type(f.get("opening_balance")) is int
-                and all(isinstance(x,dict) and type(x.get("day")) is int and type(x.get("amount")) is int for x in f["ledger"])):
-            ops.trim_ledger(c)
-        x=c.get("life")
-        if isinstance(x,dict) and isinstance(x.get("goals_history"),list) and len(x["goals_history"])>life.GOALS_KEPT:
-            x["goals_history"]=x["goals_history"][-life.GOALS_KEPT:]
-
-
 def needs_migration(state:dict) -> bool:
     return state.get('schema')!=4 or not isinstance(state.get('careers'),dict) or set(state['careers'])!=set(CAREERS) or 'journey' not in state or 'stories' not in state or 'aiAsked' not in (state.get('settings') or {})
 
@@ -195,14 +179,12 @@ def needs_migration(state:dict) -> bool:
 def metric(c: dict,key: str,value: int=1) -> None:
     c["metrics"][key]=c["metrics"].get(key,0)+value
 
-JOURNAL_KEPT=300  # the Sổ tay shows the last 80 rows; inventory reads today's "Mở ca" row
-
 def log(s:dict,c:dict,kind:str,text:str,npc:str|None=None,ref:str|None=None) -> str:
     s["seq"]+=1
     lid=f"log-{s['seq']}"
     c["journal"].append(dict(id=lid,kind=kind,text=text,npc=npc,ref=ref,day=c["day"],turn=c["turn"]))
     # Keep a bounded display history. Every memory embeds its own source snapshot.
-    if len(c["journal"])>JOURNAL_KEPT: c["journal"]=c["journal"][-JOURNAL_KEPT:]
+    if len(c["journal"])>1200: c["journal"]=c["journal"][-1200:]
     return lid
 
 def remember(s:dict,c:dict,npc:str,text:str,ref:str|None=None) -> None:

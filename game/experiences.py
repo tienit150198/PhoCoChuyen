@@ -10,8 +10,6 @@ from . import teach_lesson, tour_trip
 from .careers import PLUGINS
 from .jsoncopy import tree_copy
 
-GOALS_KEPT=10  # day recaps kept in life.goals_history (nothing reads older ones)
-
 NEW_ACTION_PREFIXES=('life_','lesson_','tour_','tea_','gift_')
 DONE=('completed','referred','cancelled')
 
@@ -115,7 +113,7 @@ def on_close(s:dict,c:dict,career:str)->dict:
  x['day_waste']+=waste;x['waste']=x['waste'][-120:]
  _metric(c,'days_closed')
  recap=dict(day=c['day'],served=x['day_metrics'].get('served',0),perfect=x['day_metrics'].get('perfect',0),activities=x['day_metrics'].get('activities',0),tips=x['tips'],staff_tips=x['staff_tips'],waste_value=x['day_waste'],consumed_cost=x['consumed_cost'],streak=x['best_streak'],goals=goals(c),festival=x['festival'],note='Chi phí hàng đã trả khi nhập; hao hụt chỉ ghi giá trị, không trừ két lần nữa.',counter=counter)
- x['recap']=recap;x['goals_history']=(x['goals_history']+[recap])[-GOALS_KEPT:]
+ x['recap']=recap;x['goals_history']=(x['goals_history']+[recap])[-30:]
  x['day_metrics']={};x['goals_claimed']=[];x['day_talked']=[];x['activity_rewards']=[]
  x['tips']=0;x['staff_tips']=0;x['consumed_cost']=0;x['day_waste']=0;x['streak']=0;x['festival_claimed']=False
  return recap
