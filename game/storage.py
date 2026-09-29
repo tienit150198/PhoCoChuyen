@@ -21,7 +21,7 @@ import time
 from pathlib import Path
 try:import fcntl
 except ImportError:fcntl=None  # Windows: one process, the thread lock is enough
-from .engine import GameError,new_state,apply_action,public_state,validate_state,migrate_state,needs_migration,tree_copy
+from .engine import GameError,new_state,apply_action,public_state,validate_state,validate_career,migrate_state,needs_migration,tree_copy,stamped,BUILD
 from .journey import enable_story
 
 SCHEMA=4
@@ -29,6 +29,9 @@ SAVE_FORMATS=("mot-ngay-lam-nghe/save-v1","mot-ngay-lam-nghe/save-v2","mot-ngay-
 BUSY_MS=12000          # a write that must happen waits this long for the lock
 QUICK_MS=250           # best-effort writes (timestamps) give up after this instead of queueing
 OPTIMISTIC_TRIES=4     # then fall back to computing under the write lock
+# A command on a save stamped with this build (engine.BUILD) re-validates only what it
+# changed (see Store._compute and serialize); every FULL_EVERY-th revision validates all.
+FULL_EVERY=max(1,int(os.environ.get("VALIDATE_FULL_EVERY","50") or 50))
 # A save that was created but never played can be stored as this marker instead of a
 # ~90 KB fresh state; it becomes a real state at its first command (parse_state).
 # Reading the marker is always supported; WRITING it needs LAZY_SAVES=1, to be turned
@@ -41,6 +44,35 @@ PRAGMAS=("PRAGMA foreign_keys=ON",f"PRAGMA busy_timeout={BUSY_MS}",
 
 class Conflict(GameError):
     pass
+
+def _digest(text:str)->str:
+    return hashlib.blake2b(text.encode(),digest_size=10).hexdigest()
+
+def serialize(raw:dict,known:dict|None=None,full:bool=False)->str:
+    """The save as stored: exactly json.dumps(raw, ensure_ascii=False), with each
+    career serialized on its own so that its digest can be kept in raw["check"].
+
+    `known`: career digests of the stored save the command started from, when that
+    save is stamped by this build. A career whose digest moved was changed by the
+    command and is validated here (validate_career raises GameError); the others are
+    byte for byte what already passed. `full`: raw passed validate_state in full.
+    With either, the save is stamped (build + digests); otherwise the stamp is dropped."""
+    careers=raw.get("careers")
+    if type(careers) is not dict or any(type(k) is not str for k in careers):
+        raw.pop("check",None)
+        return json.dumps(raw,ensure_ascii=False,allow_nan=False)
+    pieces=[];digests={}
+    for cid,c in careers.items():
+        try:piece=json.dumps(c,ensure_ascii=False,allow_nan=False)
+        except ValueError:
+            validate_career(c,cid);raise  # NaN/Infinity: the same GameError as a full validation
+        d=_digest(piece)
+        if known is not None and known.get(cid)!=d:validate_career(c,cid)
+        pieces.append(json.dumps(cid,ensure_ascii=False)+": "+piece);digests[cid]=d
+    if known is not None or full:raw["check"]=dict(build=BUILD,careers=digests)
+    else:raw.pop("check",None)
+    return "{"+", ".join(json.dumps(k,ensure_ascii=False)+": "+("{"+", ".join(pieces)+"}" if k=="careers" else json.dumps(v,ensure_ascii=False,allow_nan=False))
+                         for k,v in raw.items())+"}"
 
 _ORPHANS:list=[]  # connections inherited across fork(): never used, never closed in the child
 
@@ -282,7 +314,7 @@ class Store:
             if not needs_migration(state):return state,revision,csrf
             # Migrate outside the write lock; store it only if nobody changed the save meanwhile.
             migrated=migrate_state(state,owned=True);validate_state(migrated)
-            text=json.dumps(migrated,ensure_ascii=False)
+            text=serialize(migrated,None,True)
             if self.transaction(lambda db:db.execute("UPDATE sessions SET state=?,revision=? WHERE sid=? AND revision=?",(text,revision+1,sid,revision)).rowcount):
                 return migrated,revision+1,csrf
             with self.connect() as db:
@@ -311,7 +343,7 @@ class Store:
             if expected is not None and row["revision"]!=expected:raise Conflict("Tiến trình đã thay đổi ở tab khác. Đã đồng bộ lại; hãy xem trạng thái trước khi thao tác tiếp.","revision_conflict")
             # 2. The heavy part, lock-free.
             try:
-                raw,result,serialized=self._compute(sid,row["state"],career,action,tree_copy(payload),internal)
+                raw,result,serialized=self._compute(sid,row["state"],career,action,tree_copy(payload),internal,row["revision"])
             except GameError:
                 if self._moved(sid,request_id,row["revision"]):continue  # judged on a save that has moved on: look again
                 raise
@@ -325,12 +357,13 @@ class Store:
         if row["rhash"]!=fingerprint:raise Conflict("Mã thao tác đã dùng cho nội dung khác.","idempotency_conflict")
         return dict(state=public_state(self.parse_state(row["state"],sid)),revision=row["revision"],result=json.loads(row["rresult"]),replayed=True)
 
-    def _compute(self,sid:str,text:str,career,action:str,payload:dict,internal:bool)->tuple[dict,dict,str]:
+    def _compute(self,sid:str,text:str,career,action:str,payload:dict,internal:bool,revision:int)->tuple[dict,dict,str]:
         raw=self.parse_state(text,sid)
         if action=="import_save" and not internal:
             envelope=payload.get("save")
             if not isinstance(envelope,dict) or envelope.get("format") not in SAVE_FORMATS:raise GameError("Không phải tệp lưu của Phố Có Chuyện.","invalid_save")
             candidate=envelope.get("state")
+            if isinstance(candidate,dict):candidate.pop("check",None)  # an import is always migrated and fully validated
             try:
                 candidate=migrate_state(candidate);validate_state(candidate)
                 # An imported backup joins the story at its own progress; it cannot switch the story off.
@@ -339,12 +372,23 @@ class Store:
             except (TypeError,ValueError,KeyError,AttributeError,RecursionError) as exc:
                 raise GameError("Cấu trúc tệp lưu không hợp lệ.","invalid_save") from exc
             # Recoverable UI-only state is not accepted as a full backup.
-            raw=candidate
+            raw=candidate;known,full=None,True
             result=dict(message="Đã khôi phục bản lưu. Tiến trình trước đó được thay thế sau khi kiểm tra thành công.")
         else:
-            raw,result=apply_action(raw,career,action,payload,internal=internal,owned=True)
-        serialized=json.dumps(raw,ensure_ascii=False,allow_nan=False)
-        if len(serialized.encode())>14*1024*1024:raise GameError("Bản lưu quá lớn. Xóa bớt ảnh trong album trước khi nhập.")
+            # A save stamped by this build passed all its checks when stored: the reducer then checks
+            # only what lies outside the careers, and _serialize checks each career the command
+            # changed (its digest moved). Every FULL_EVERY-th revision checks everything.
+            known=raw["check"].get("careers") if stamped(raw) and (revision+1)%FULL_EVERY and not needs_migration(raw) else None
+            if type(known) is not dict:known=None
+            raw,result=apply_action(raw,career,action,payload,internal=internal,owned=True,scoped=known is not None)
+            full=False
+            if known is None:
+                # First command of this build on the save, a fresh save or the periodic check: stamp it
+                # only if it passes every check (the action itself may not have validated anything).
+                try:validate_state(raw);full=True
+                except GameError:pass
+        serialized=serialize(raw,known,full)
+        if len(serialized)>3*1024*1024 and len(serialized.encode())>14*1024*1024:raise GameError("Bản lưu quá lớn. Xóa bớt ảnh trong album trước khi nhập.")
         return raw,result,serialized
 
     def _moved(self,sid:str,request_id:str,revision:int)->bool:
@@ -384,7 +428,7 @@ class Store:
             if row["rhash"] is not None:
                 db.rollback();return self._replay(sid,row,fingerprint)
             if expected is not None and row["revision"]!=expected:raise Conflict("Tiến trình đã thay đổi ở tab khác. Đã đồng bộ lại; hãy xem trạng thái trước khi thao tác tiếp.","revision_conflict")
-            raw,result,serialized=self._compute(sid,row["state"],career,action,payload,internal)
+            raw,result,serialized=self._compute(sid,row["state"],career,action,payload,internal,row["revision"])
             revision=row["revision"]+1
             db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?",(serialized,revision,sid))
             db.execute("INSERT INTO receipts(sid,request_id,request_hash,result) VALUES(?,?,?,?)",(sid,request_id,fingerprint,json.dumps(result,ensure_ascii=False)))

@@ -18,9 +18,15 @@ def now() -> float:
     return float(clock())
 
 
+_ENGINE = None
+
+
 def eng():
-    from .. import engine
-    return engine
+    global _ENGINE
+    if _ENGINE is None:  # imported lazily: the engine imports the careers
+        from .. import engine
+        _ENGINE = engine
+    return _ENGINE
 
 
 def need(condition: Any, message: str, code: str = 'invalid_action') -> None:
