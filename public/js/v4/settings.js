@@ -4,6 +4,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {layoutPref,setLayoutPref} from './shell.js';
 import {pushState,enablePush,disablePush,isIOS,isStandalone} from './push.js';
 import {accountPane,accountAction,accountNudge} from './account.js';
+import {tutorialSettings} from '../tutorial/index.js';
 
 const attrs=obj=>Object.entries(obj).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 const button=(label,action,data={},style='')=>`<button type="button" class="btn ${style}" data-action="${action}"${attrs(data)}>${label}</button>`;
@@ -35,6 +36,7 @@ export function settingsView(env){
       <label class="field">Tên của bạn<input class="input" id="player-name" data-preserve maxlength="24" required value="${esc(api.state.name)}"></label>
       <button class="btn primary full" type="submit">Lưu</button>
     </form>
+    ${tutorialSettings()}
     ${feedbackBlock}
     <section class="settings-block">${toggle('reduceMotion','Giảm chuyển động',s.reduceMotion)}${toggle('largeText','Chữ lớn',s.largeText)}</section>
     ${api.ai?.configured?`<section class="settings-block"><h3>${icon('chat',18)} Trò chuyện bằng AI</h3>

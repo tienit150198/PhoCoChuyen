@@ -1,0 +1,96 @@
+/* Tutorial layer: first-run tour (coach marks), welcome card, the illustrated
+   guide and the announcement card. Tokens only (docs/DESIGN.md); screenshots
+   and illustrations are dimmed with --scene-filter in the dark theme. */
+
+/* ---------------------------------------------------------------- tour */
+.tut-layer{position:fixed;inset:0;z-index:2147483000;pointer-events:none;font-family:var(--font)}
+.tut-layer[hidden]{display:none}
+.tut-dim{position:absolute;inset:0;background:var(--overlay)}
+.tut-spot{position:absolute;border-radius:14px;box-shadow:0 0 0 200vmax var(--overlay);outline:3px solid var(--accent);outline-offset:0}
+.tut-spot::after{content:"";position:absolute;inset:-3px;border-radius:inherit;border:3px solid var(--accent);opacity:0}
+.tut-spot[hidden],.tut-dim[hidden]{display:none}
+.tut-bubble{position:absolute;pointer-events:auto;box-sizing:border-box;padding:14px 14px 12px;border-radius:var(--radius);background:var(--surface);color:var(--ink);border:1px solid var(--line-strong);box-shadow:var(--shadow-lg);max-width:calc(100vw - 24px)}
+.tut-arrow{position:absolute;width:16px;height:16px;background:var(--surface);border:1px solid var(--line-strong);transform:rotate(45deg)}
+.tut-arrow[data-side="top"]{top:-9px;border-right:0;border-bottom:0}
+.tut-arrow[data-side="bottom"]{bottom:-9px;border-left:0;border-top:0}
+.tut-arrow[hidden]{display:none}
+.tut-row{display:flex;gap:10px;align-items:flex-start}
+.tut-emoji{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--accent-soft);font-size:1.45rem;line-height:1}
+.tut-text{margin:0;font-size:1rem;font-weight:600;line-height:1.45;color:var(--ink)}
+.tut-pic{display:block;width:100%;height:auto;margin-top:10px;border-radius:10px;border:1px solid var(--line);filter:var(--scene-filter)}
+.tut-foot{display:flex;align-items:center;gap:8px;margin-top:12px}
+.tut-foot .grow{flex:1}
+.tut-foot .btn{min-height:40px}
+.tut-dots{display:inline-flex;gap:4px}
+.tut-dots i{width:6px;height:6px;border-radius:50%;background:var(--line-strong)}
+.tut-dots i.on{background:var(--accent)}
+@media (prefers-reduced-motion:no-preference){
+  html:not(.reduce-motion) .tut-layer:not(.still) .tut-spot{transition:left .28s var(--ease),top .28s var(--ease),width .28s var(--ease),height .28s var(--ease)}
+  html:not(.reduce-motion) .tut-layer:not(.still) .tut-spot::after{animation:tut-ring 1.6s ease-out infinite}
+  html:not(.reduce-motion) .tut-layer:not(.still) .tut-bubble{animation:tut-pop .22s var(--ease)}
+}
+@keyframes tut-ring{0%{opacity:.7;transform:scale(1)}100%{opacity:0;transform:scale(1.12)}}
+@keyframes tut-pop{from{opacity:0;transform:translateY(6px)}}
+
+/* ------------------------------------------------------------- welcome */
+.tut-welcome{width:min(420px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;padding:0;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface);color:var(--ink);box-shadow:var(--shadow-lg)}
+.tut-welcome::backdrop{background:var(--overlay);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.tut-welcome[open]{animation:mnl-pop-in .2s var(--ease)}
+.tut-welcome:focus,.tut-welcome:focus-visible{outline:none}
+.tut-wel{display:flex;flex-direction:column;gap:10px;padding:18px 18px 16px;text-align:center}
+.tut-art{display:block;width:100%;height:auto;border-radius:16px;filter:var(--scene-filter)}
+.tut-wel .eyebrow{margin-top:4px}
+.tut-wel h2{margin:0;font-size:1.35rem;line-height:1.25}
+.tut-wel-list{list-style:none;margin:2px 0 6px;padding:0;display:grid;gap:6px;text-align:left}
+.tut-wel-list li{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:12px;background:var(--surface-2);font-weight:600;color:var(--ink-2)}
+.tut-wel-list span{font-size:1.25rem}
+
+/* --------------------------------------------------------------- guide */
+.tut-guide .sheet-head{position:sticky;top:0;z-index:2}
+.tut-guide:focus,.tut-guide:focus-visible{outline:none}
+.tut-help{font-size:1.15rem;font-weight:800;color:var(--accent-text);border:1.5px solid var(--line-strong)!important;border-radius:50%}
+.tut-replay{margin:0 0 14px}
+.tut-cards{display:grid;gap:14px}
+@container sheet (min-width:640px){.tut-cards{grid-template-columns:1fr 1fr}}
+.tut-card{min-width:0;padding:14px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-sm)}
+.tut-card header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.tut-card h3{margin:0;font-size:1.05rem;line-height:1.3}
+.tut-card-n,.tut-step-n{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:.9rem}
+.tut-points{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px;color:var(--ink-2);font-weight:600}
+.tut-points li{display:flex;align-items:center;gap:8px}
+.tut-pn{flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:.75rem;font-weight:800;font-style:normal}
+.tut-pn.dot{width:8px;height:8px;margin:0 7px;background:var(--line-strong)}
+.tut-fig{position:relative;margin:0;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--surface-2);aspect-ratio:var(--ratio);filter:var(--scene-filter)}
+.tut-fig img{display:block;width:100%;height:100%;object-fit:cover}
+.tut-mark{position:absolute;left:calc(var(--x) - 60px);top:calc(var(--y) - 60px);width:120px;height:120px;overflow:visible;pointer-events:none}
+.tut-mark-dot{fill:rgba(255,255,255,.2);stroke:var(--accent);stroke-width:3}
+.tut-mark-pulse{fill:none;stroke:var(--accent);stroke-width:2.5;opacity:.55}
+.tut-mark-halo{fill:none;stroke:#fff;stroke-width:6;stroke-linecap:round;opacity:.9}
+.tut-mark-line{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round}
+.tut-mark-head{fill:var(--accent);stroke:#fff;stroke-width:1.5;stroke-linejoin:round}
+.tut-mark-badge{fill:var(--accent);stroke:#fff;stroke-width:2.5}
+.tut-mark-finger{font-size:30px;text-anchor:middle;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+.tut-mark-n{fill:var(--accent-ink);font:800 14px var(--font);text-anchor:middle}
+@media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .tut-mark-pulse{animation:tut-mark 1.8s ease-out infinite;transform-origin:center;transform-box:fill-box}}
+@keyframes tut-mark{0%{opacity:.7;transform:scale(.8)}100%{opacity:0;transform:scale(2)}}
+.tut-chips{margin:0 0 12px}
+.tut-chips .chip{min-height:40px;cursor:pointer}
+.tut-steps{list-style:none;margin:0;padding:0;display:grid;gap:16px}
+@container sheet (min-width:640px){.tut-steps:not(.plain){grid-template-columns:1fr 1fr}}
+.tut-step{min-width:0}
+.tut-step-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.tut-step-head p{margin:3px 0 0;font-weight:600;line-height:1.4}
+.tut-flow{list-style:none;display:flex;justify-content:space-between;gap:2px;margin:0 0 10px;padding:12px 8px;border-radius:12px;background:var(--surface-2)}
+.tut-flow li{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;text-align:center}
+.tut-flow-dot{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--surface);border:1px solid var(--line);font-size:1.2rem}
+.tut-flow small{font-size:.75rem;font-weight:700;color:var(--ink-2);line-height:1.2}
+.tut-flow i{position:absolute;right:-6px;top:10px;font-style:normal;font-weight:800;color:var(--muted)}
+
+/* -------------------------------------------------------- announcement */
+.tut-note{position:fixed;left:50%;z-index:60;box-sizing:border-box;width:min(440px,calc(100vw - 24px));margin-left:calc(min(440px,calc(100vw - 24px)) / -2);display:grid;grid-template-columns:auto 1fr;align-items:center;gap:8px 12px;padding:12px 14px;border-radius:var(--radius);background:var(--surface);color:var(--ink);border:1px solid var(--line-strong);box-shadow:var(--shadow)}
+.tut-note[hidden]{display:none}
+.tut-note-emoji{font-size:1.7rem;line-height:1}
+.tut-note p{margin:0;font-weight:600;line-height:1.4}
+.tut-note-btns{grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px}
+.tut-note-btns .btn{min-height:40px}
+@media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .tut-note{animation:tut-pop .3s var(--ease)}}
