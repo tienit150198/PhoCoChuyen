@@ -51,6 +51,8 @@ Nếu chạy tạm ở cổng khác 80/443 (ví dụ `http://IP:8080` khi chưa 
 | `TRUST_PROXY=1` | Tin `X-Forwarded-For` (lấy giá trị cuối do proxy thêm) và `X-Forwarded-Proto`. Chỉ bật khi đứng sau proxy của bạn. |
 | `COOKIE_SECURE=1` | Luôn gắn cờ `Secure` cho cookie. Không bật cũng được: cờ tự bật khi proxy báo `https`. |
 | `COMMANDS_PER_MINUTE`, `NEW_SESSIONS_PER_MINUTE`, `AI_PER_MINUTE`, `AI_GLOBAL_PER_MINUTE` | Giới hạn chống spam. |
+| `FEEDBACK_PER_10MIN`, `FEEDBACK_PER_DAY` | Số góp ý tối đa mỗi phiên trong 10 phút (mặc định 5) và trong 24 giờ (mặc định 30). Mỗi IP được gấp 4 lần mức 10 phút. |
+| `ADMIN_USERS` | Tên đăng nhập (cách nhau bằng dấu phẩy) được xem **📥 Hộp góp ý** trong mục Góp ý: đọc, đổi trạng thái, trả lời người chơi. Mặc định trống = không ai. Tài khoản phải đăng nhập; tạo bằng nút Đăng ký trong game. |
 | `SESSION_IDLE_DAYS` | Số ngày không hoạt động trước khi bản lưu bị xóa (mặc định 180). |
 | `LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY`, `LLM_CONCURRENCY` | AI cho nhân vật review/phụ huynh. Người chơi phải tự bật “Cho phép AI” trong Cài đặt. |
 | `MNL_DEV` | **Không bao giờ đặt trên máy chủ thật.** `MNL_DEV=1` tắt hành trình (mở mọi nghề, không trừ tiền sinh hoạt) và cho nhận việc không cần phỏng vấn. Chỉ dùng cho script kiểm trình duyệt. |

@@ -53,6 +53,15 @@ class Store:
               created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, seen_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
             CREATE INDEX IF NOT EXISTS logins_sid ON logins(sid);
+            -- Player feedback ("Góp ý", game/player_feedback.py): private notes to the operator.
+            CREATE TABLE IF NOT EXISTS player_feedback (
+              id INTEGER PRIMARY KEY AUTOINCREMENT, sid TEXT NOT NULL, account TEXT,
+              kind TEXT NOT NULL, text TEXT NOT NULL, context TEXT NOT NULL DEFAULT '{}',
+              status TEXT NOT NULL DEFAULT 'new', reply TEXT,
+              created_at REAL NOT NULL, updated_at REAL NOT NULL, replied_at REAL
+            );
+            CREATE INDEX IF NOT EXISTS player_feedback_sid ON player_feedback(sid, id);
+            CREATE INDEX IF NOT EXISTS player_feedback_status ON player_feedback(status, id);
             """)
 
     def connect(self):

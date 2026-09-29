@@ -41,6 +41,7 @@ from game import ai
 from game import social
 from game import push
 from game import accounts
+from game import player_feedback as pfb
 from game.content import public_content,CAREERS
 from game.engine import GameError,public_state
 from game.storage import Store,Conflict
@@ -220,7 +221,8 @@ class Handler(BaseHTTPRequestHandler):
                     except social.SocialError:pass
                 extra={"Set-Cookie":self.cookie(token)} if created else {}
                 self.json(200,dict(state=public_state(state),revision=revision,csrf=csrf,content=public_content(),ai=dict(public_config(),configured=ai.available(),chat=True),
-                                   social=social.bootstrap(self.server.store,token,state),push=push.public_config(),account=accounts.status(self.server.store,token)),extra);return
+                                   social=social.bootstrap(self.server.store,token,state),push=push.public_config(),account=accounts.status(self.server.store,token),
+                                   admin=pfb.is_admin(self.server.store,token)),extra);return
             if route=="/api/state":
                 _,state,revision,_=self.require_session();self.json(200,dict(state=public_state(state),revision=revision));return
             if route=="/api/save/export":
@@ -235,8 +237,19 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/push/pending":
                 token,state,_,_=self.require_session()
                 self.json(200,dict(push.pending(self.server.store,token),lang=state["settings"].get("lang","vi")));return
+            if route=="/api/feedback/mine":
+                token,_,_,_=self.require_session()
+                if not self.server.rate_limit("fb-mine:"+token,60):self.error(429,"Chậm lại một chút nhé.");return
+                self.json(200,dict(items=pfb.list_mine(self.server.store,token),admin=pfb.is_admin(self.server.store,token)));return
+            if route=="/api/admin/feedback":
+                try:token,_,_,_=self.guarded()
+                except PermissionError as e:self.error(403,str(e),"forbidden");return
+                self.require_admin(token)
+                query={k:v[0] for k,v in parse_qs(split.query).items()}
+                self.json(200,pfb.list_admin(self.server.store,query.get("status"),query.get("kind"),query.get("before")));return
             if route.startswith("/api/"):self.error(404,"Không có API này.");return
             self.static(route)
+        except pfb.FeedbackError as e:self.error(e.status,e.message,e.code)
         except social.SocialError as e:self.error(e.status,e.message,e.code)
         except GameError as e:self.error(401 if e.code=="session_missing" else 400,e.message,e.code)
         except (OSError,ValueError):self.error(500,"Không đọc được dữ liệu. Kiểm tra thư mục storage và tải lại.")
@@ -276,9 +289,18 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(200,self.ai_feedback(token,state,revision,data));return
             if route=="/api/ai/review":
                 self.json(200,self.ai_review(token,state,revision,data));return
+            if route=="/api/feedback":
+                ip=self.client_ip();per10=int(os.environ.get("FEEDBACK_PER_10MIN","5"));per_day=int(os.environ.get("FEEDBACK_PER_DAY","30"))
+                if not (self.server.rate_limit("fb:"+token,per10,600) and self.server.rate_limit("fb-day:"+token,per_day,86400) and self.server.rate_limit("fb-ip:"+ip,per10*4,600)):
+                    self.error(429,"Bạn gửi góp ý hơi dồn dập. Nghỉ tay một lát rồi gửi tiếp nhé.","rate_limited");return
+                self.json(200,pfb.submit(self.server.store,token,state,data,self.headers.get("User-Agent",""),__version__));return
+            if route=="/api/admin/feedback":
+                if not self.server.rate_limit("fb-admin:"+token,120):self.error(429,"Chậm lại một chút nhé.");return
+                self.require_admin(token)
+                self.json(200,dict(ok=True,item=pfb.update(self.server.store,data.get("id"),data.get("status"),data.get("reply"))));return
             if route=="/api/account/delete":
                 if data.get("confirm")!="XOA":raise GameError("Gõ XOA để xác nhận xóa dữ liệu.")
-                social.forget(self.server.store,token);push.forget(self.server.store,token);self.server.store.delete(token)
+                pfb.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);self.server.store.delete(token)
                 self.json(200,dict(deleted=True,message="Đã xóa toàn bộ dữ liệu chơi của bạn trên máy chủ."),{"Set-Cookie":self.cookie("",0)});return
             if route.startswith("/api/account/"):
                 self.account_post(route[len("/api/account/"):],token,data);return
@@ -294,6 +316,7 @@ class Handler(BaseHTTPRequestHandler):
                 _,current,rev,_=self.require_session();self.json(409,dict(error=e.message,code=e.code,state=public_state(current),revision=rev))
             except GameError:self.error(409,e.message,e.code)
         except PermissionError as e:self.error(403,str(e),"forbidden");self.close_connection=True
+        except pfb.FeedbackError as e:self.error(e.status,e.message,e.code)
         except social.SocialError as e:self.error(e.status,e.message,e.code)
         except accounts.AccountError as e:self.error(e.status,e.message,e.code)
         except GameError as e:self.error(401 if e.code=="session_missing" else 400,e.message,e.code)
@@ -301,6 +324,11 @@ class Handler(BaseHTTPRequestHandler):
         except Exception as e:
             self.log_error("Internal error: %s",type(e).__name__)
             self.error(500,"Không thực hiện được thao tác. Tiến trình trước đó vẫn được giữ.","internal_error")
+
+    def require_admin(self,token:str):
+        """Feedback inbox: only signed-in accounts listed in ADMIN_USERS (403 for everyone else)."""
+        if not self.server.rate_limit("fb-admin-get:"+token,240):raise pfb.FeedbackError("Chậm lại một chút nhé.","rate_limited",429)
+        if not pfb.is_admin(self.server.store,token):raise pfb.FeedbackError("Chỉ người vận hành mới xem được mục này.","forbidden",403)
 
     # ---- optional accounts ------------------------------------------------
     def account_post(self,name:str,token:str,data:dict):
@@ -639,7 +667,7 @@ def maintenance(store:Store,stop:threading.Event):
     while not stop.wait(30):
         try:
             if time.time()-last_prune>6*3600:
-                store.prune(int(os.environ.get("SESSION_IDLE_DAYS","180")));social.prune(store);last_prune=time.time()
+                store.prune(int(os.environ.get("SESSION_IDLE_DAYS","180")));social.prune(store);pfb.prune(store);last_prune=time.time()
             push.deliver_due(store)
         except Exception as e:  # never kill the server for housekeeping
             sys.stderr.write(f"[maintenance] {type(e).__name__}\n")

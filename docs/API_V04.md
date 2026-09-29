@@ -117,4 +117,17 @@ VAPID uses ES256 (P-256), written in pure Python. The key lives in `VAPID_PRIVAT
 
 ## Account
 
-`POST /api/account/delete` `{confirm: "XOA"}`. Deletes the save, the Phố nghề profile, posts, reviews, gifts, unsold listings and push subscriptions, then clears the cookie. Items already sold stay in the buyer's history but no longer name the seller.
+`POST /api/account/delete` `{confirm: "XOA"}`. Deletes the save, the Phố nghề profile, posts, reviews, gifts, unsold listings, player feedback and push subscriptions, then clears the cookie. Items already sold stay in the buyer's history but no longer name the seller.
+
+## Player feedback ("Góp ý")
+
+Private notes from players to the operator (spec: `docs/superpowers/specs/2026-09-29-player-feedback-design.md`).
+
+| Route | Who | Body / query | Answer |
+|---|---|---|---|
+| `POST /api/feedback` | any session (CSRF) | `{kind: bug\|idea\|praise\|hard, text: 3..1000, context?: {view, layout, screen}}` | `{ok, id, message: "Đã ghi nhận, cảm ơn bạn!"}` |
+| `GET /api/feedback/mine` | any session | – | `{items: [{id, kind, text, status, reply, created_at, updated_at, replied_at}], admin}` (last 20, this save or account) |
+| `GET /api/admin/feedback` | admin (CSRF header too) | `?status=new\|seen\|done&kind=…&before=<id>` | `{items: [...with context, account, player tag], next, counts}` (50 per page, newest first) |
+| `POST /api/admin/feedback` | admin (CSRF) | `{id, status?, reply?}` (`reply: ""` clears; ≤ 300) | `{ok, item}` |
+
+The server fills `context.career/day/life_day/lang/version/ua` itself; only `view`, `layout` and `screen` come from the client. Text and replies have e-mails, links and phone-like numbers replaced by `[đã ẩn]` and rude words by `•••`. Admin = a signed-in account whose username is in `ADMIN_USERS`; everyone else gets 403. `GET /api/bootstrap` carries `admin: true|false`. Rate limits: `FEEDBACK_PER_10MIN` (5) and `FEEDBACK_PER_DAY` (30) per session, 4 × the 10-minute budget per IP.

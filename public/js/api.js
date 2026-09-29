@@ -14,7 +14,7 @@ export class GameAPI extends EventTarget {
     } finally {clearTimeout(timer);}
   }
   async init(){
-    const data=await this.json('/api/bootstrap');this.content=data.content;this.csrf=data.csrf;this.ai=data.ai;this.social=data.social||null;this.push=data.push||{enabled:false};this.account=data.account||null;this.accept(data);return data;
+    const data=await this.json('/api/bootstrap');this.content=data.content;this.csrf=data.csrf;this.ai=data.ai;this.social=data.social||null;this.push=data.push||{enabled:false};this.account=data.account||null;this.admin=data.admin===true;this.accept(data);return data;
   }
   accept(data){this.state=data.state;this.revision=data.revision;this.connected=true;this.dispatchEvent(new CustomEvent('state',{detail:data}));}
   async refresh(){const data=await this.json('/api/state');this.accept(data);return data;}

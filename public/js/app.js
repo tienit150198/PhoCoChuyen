@@ -24,6 +24,7 @@ import {deskJob,deskDone,deskNext,deskAction} from './desk.js';
 import {incidentView,incidentSummary,incidentNote,incidentBadge,incidentAction,incidentBoot} from './v4/incidents.js';
 import {chatMessages,chatFooter,aiTalk,aiNoticeBoot,chatBusy} from './v4/ai-chat.js';
 import {happenBoot,happenSummary} from './v4/happenings.js';
+import {feedbackPageView,feedbackAction,feedbackSubmit,feedbackInput} from './v4/feedback.js';
 
 const $=s=>document.querySelector(s), api=new GameAPI(), sound=new Sound();
 const ended=t=>['completed','referred','cancelled'].includes(t.status);
@@ -105,7 +106,7 @@ function navItems(c){
 const railItem=([a,i,label,badge])=>`<button type="button" class="rail-item ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}>${icon(i,21)}<span>${label}</span>${badge==='dot'?'<i class="dot" aria-hidden="true"></i>':badge?`<em class="badge">${badge}</em>`:''}</button>`;
 function railHTML(c){
   const extra=layout()==='phone'?sceneActions().slice(4):[];
-  return (extra.length?`<p class="rail-title">Trong tiệm</p>${extra.map(([a,i,l])=>railItem([a,i,l])).join('')}<p class="rail-title">Sổ & khu phố</p>`:'')+navItems(c).map(railItem).join('')+`<button type="button" class="rail-item rail-bottom" data-action="help">${icon('question',21)}<span>Cách chơi</span></button>`;
+  return (extra.length?`<p class="rail-title">Trong tiệm</p>${extra.map(([a,i,l])=>railItem([a,i,l])).join('')}<p class="rail-title">Sổ & khu phố</p>`:'')+navItems(c).map(railItem).join('')+`<button type="button" class="rail-item rail-bottom" data-action="help">${icon('question',21)}<span>Cách chơi</span></button>`+railItem(['gopy','chat','Góp ý']);
 }
 function dockHTML(c){
   const phone=layout()==='phone',low=lowOpen(c);let items=sceneActions();
@@ -210,6 +211,7 @@ function renderSheet(preserve=true){
     case'album':dialog.classList.add('medium');html=albumView();break;
     case'settings':dialog.classList.add('medium','v4-sheet','drawer');html=settingsV4(env());break;
     case'social':dialog.classList.add('wide','v4-sheet');html=socialView(env());break;
+    case'gopy':dialog.classList.add('medium','v4-sheet','fb-dialog');html=feedbackPageView(env());break;
     case'summary':dialog.classList.add('narrow','cozy-summary');html=summaryView();break;
     case'help':dialog.classList.add('medium');html=helpView();break;
     case'inventory':dialog.classList.add('medium','v4-sheet');html=inventoryView(env());break;
@@ -741,6 +743,7 @@ async function handleAction(action,data,el){
       if(action.startsWith('car:')){const mod=careerUI(career()),fn=mod?.actions?.[action.slice(4)];if(fn){await fn(data,el,careerContext(env()));break;}}
       if(await settingsAction(action,data,el,env()))break;
       if(await socialAction(action,data,el,env()))break;
+      if(await feedbackAction(action,data,el,env()))break;
       if(procedureAction(action,data,el,env()))break;
       if(action==='classroom'){openSheet('classroom');break;}
       if(await shell.action(action,data,el,env()))break;
@@ -765,6 +768,7 @@ document.addEventListener('submit',async e=>{
   if(await v4Submit(f,env()))return;
   if(await accountSubmit(f,env()))return;
   if(await socialSubmit(f,env()))return;
+  if(await feedbackSubmit(f,env()))return;
   if(await procedureSubmit(f,env()))return;
   if(await shell.submit(f,env()))return;
   if(f.id==='staffTalkForm'){const input=$('#staff-message'),text=input.value.trim();if(!text)return;input.value='';await cmd('ops_staff_talk',{employee:f.dataset.employee,text},{quiet:true});}
@@ -778,6 +782,7 @@ document.addEventListener('input',e=>{
   if(careerInput(e.target,env(),'input'))return;
   if(v4Input(e.target,env()))return;
   if(settingsInput(e.target))return;
+  if(feedbackInput(e.target,env()))return;
   if(e.target.dataset.draft&&activeTask())draft(activeTask())[e.target.dataset.draft]=e.target.value;
   if(e.target.id==='library-search'){ui.libraryQuery=e.target.value;renderSheet();}
 });

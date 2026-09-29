@@ -1,0 +1,73 @@
+/* "Góp ý" sheet (public/js/v4/feedback.js). Tokens only (docs/DESIGN.md). Phone first. */
+.fb-sheet{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.fb-sheet>*,.fb-list>*,.fb-admin-list>*{min-width:0}
+.fb-sheet>.pill-tabs{margin-bottom:0}
+
+/* Form */
+.fb-form{display:grid;gap:12px;padding:14px}
+.fb-kinds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.fb-kinds .chip{justify-content:center;min-height:44px;font-size:.9rem}
+.fb-field{margin:0}
+.fb-field textarea{min-height:120px;margin-top:6px}
+.fb-meta{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;font-size:.833rem;color:var(--ink-2)}
+.fb-context{display:inline-flex;align-items:flex-start;gap:6px;min-width:0;line-height:1.45}
+.fb-context .icon{flex:none;margin-top:2px;color:var(--muted)}
+.fb-context b{font-weight:700;color:var(--ink);overflow-wrap:anywhere}
+.fb-count{flex:none;font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600}
+.fb-count.near{color:var(--warn)}
+.fb-privacy{margin:0;line-height:1.5}
+.fb-privacy a{color:var(--accent-text)}
+
+/* Success */
+.fb-done{display:grid;justify-items:center;gap:8px;padding:22px 16px;text-align:center;background:var(--good-soft);border-color:transparent}
+.fb-done h3{margin:0;color:var(--ink)}
+.fb-done p{margin:0 0 6px;max-width:34ch}
+.fb-done-mark{display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:var(--surface);color:var(--good);box-shadow:var(--shadow-sm)}
+
+/* Player's list */
+.fb-mine .section-title,.fb-inbox .section-title{margin:0 0 8px}
+.fb-list,.fb-admin-list{display:grid;gap:10px}
+.fb-item{display:grid;gap:8px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+.fb-item-top{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px}
+.fb-item-top small{margin-left:auto}
+.fb-item-kind{display:inline-flex;align-items:center;gap:4px;font-weight:700;font-size:.867rem;color:var(--ink)}
+.fb-text{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;color:var(--ink)}
+.fb-reply{display:grid;gap:4px;padding:10px 12px;border-left:3px solid var(--accent);border-radius:0 var(--radius-sm) var(--radius-sm) 0;background:var(--accent-soft)}
+.fb-reply b{display:inline-flex;align-items:center;gap:6px;font-size:.833rem;color:var(--accent-text)}
+.fb-reply p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ink)}
+.fb-empty{margin:0}
+
+/* Admin inbox */
+.fb-inbox-head{align-items:center;margin-bottom:4px}
+.fb-inbox-head p{margin:0}
+.fb-inbox-head b{color:var(--ink)}
+.fb-filters{margin:4px 0;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.fb-filters::-webkit-scrollbar{display:none}
+.fb-filters .chip{flex:none}
+.fb-filters .chip em{font-style:normal;font-weight:800;color:var(--muted);margin-left:2px}
+.fb-filters .chip.selected em{color:inherit}
+.fb-admin-item{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+.fb-admin-item.new{border-color:var(--line-strong);box-shadow:inset 3px 0 0 var(--warn)}
+.fb-admin-item summary{display:grid;grid-template-columns:auto auto minmax(0,1fr);align-items:center;gap:4px 8px;padding:12px 14px;cursor:pointer;list-style:none;min-height:44px}
+.fb-admin-item summary::-webkit-details-marker{display:none}
+.fb-admin-item summary:hover{background:var(--surface-2)}
+.fb-sum-text{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink-2)}
+.fb-sum-who{grid-column:1/-1;overflow-wrap:anywhere}
+.fb-admin-body{display:grid;gap:10px;padding:0 14px 14px;border-top:1px dashed var(--line-strong)}
+.fb-admin-body>.fb-text{padding-top:12px}
+.fb-sub{margin:4px 0 0;font-size:.833rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.fb-ctx{margin:0;padding:4px 12px;border-radius:var(--radius-sm);background:var(--surface-2)}
+.fb-ctx .kv-row{font-size:.833rem;padding:6px 0}
+.fb-ctx .kv-row>span:first-child{flex:none;white-space:nowrap}
+.fb-ctx .kv-row>:last-child{flex:1 1 auto;min-width:0;overflow-wrap:anywhere;font-weight:600}
+.fb-status-row{display:flex;flex-wrap:wrap;gap:8px}
+.fb-reply-form{display:grid;gap:8px}
+.fb-reply-form .field{margin:0}
+.fb-reply-form textarea{margin-top:6px;min-height:80px}
+.fb-more{justify-content:center;margin-top:10px}
+
+@container sheet (min-width:520px){
+  .fb-kinds{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .fb-admin-item summary{grid-template-columns:auto auto minmax(0,1fr) auto}
+  .fb-sum-who{grid-column:auto}
+}

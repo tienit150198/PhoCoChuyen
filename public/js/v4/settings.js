@@ -28,12 +28,14 @@ export function settingsView(env){
   const tabs=[['account','Tài khoản','user'],['play','Cách chơi','leaf'],['look','Giao diện','palette'],['sound','Âm thanh','music'],['lang','Ngôn ngữ','globe'],['notify','Thông báo','bell'],['data','Dữ liệu','shield']];
   const nav=`<nav class="settings-tabs" role="tablist">${tabs.map(([id,label,ic])=>`<button role="tab" aria-selected="${id===tab}" class="${id===tab?'active':''}" data-action="v4SetTab" data-tab="${id}">${icon(ic,17)}<span>${label}</span></button>`).join('')}</nav>`;
   let body='';
+  const feedbackBlock=`<section class="settings-block settings-feedback"><h3>${icon('chat',18)} Góp ý</h3><p class="small muted">Gặp lỗi, có ý tưởng hay thấy chỗ nào khó dùng? Nhà làm game đọc từng góp ý và có thể trả lời bạn.</p>${button('💬 Góp ý cho nhà làm game','gopy',{},'small')}</section>`;
   if(tab==='account')body=accountPane(env);
   if(tab==='play')body=`${accountNudge(env)}<form id="settingsForm" class="settings-block">
       <h3>${icon('user',18)} Hồ sơ</h3>
       <label class="field">Tên của bạn<input class="input" id="player-name" data-preserve maxlength="24" required value="${esc(api.state.name)}"></label>
       <button class="btn primary full" type="submit">Lưu</button>
     </form>
+    ${feedbackBlock}
     <section class="settings-block">${toggle('reduceMotion','Giảm chuyển động',s.reduceMotion)}${toggle('largeText','Chữ lớn',s.largeText)}</section>
     ${api.ai?.configured?`<section class="settings-block"><h3>${icon('chat',18)} Trò chuyện bằng AI</h3>
       ${toggle('aiConsent','Nhân vật trò chuyện bằng AI',s.aiConsent,'Khi bật, tin nhắn bạn gõ trong Trò chuyện, lời trả lời review và vài dữ kiện của lượt chơi được gửi tới nhà cung cấp AI của máy chủ. Đừng gõ thông tin cá nhân thật. Xem <a href="/privacy" target="_blank" rel="noopener">Quyền riêng tư</a>.')}
@@ -62,7 +64,7 @@ export function settingsView(env){
       ${isIOS()&&!isStandalone()?`<section class="settings-block"><h3>${icon('download',18)} Cài như ứng dụng</h3><p class="small muted">Safari → Chia sẻ → Thêm vào MH chính.</p></section>`:''}`;
     if(!st)pushState(api).then(x=>{ui.pushState=x;env.renderSheet();}).catch(()=>{ui.pushState={available:false,reason:'browser'};env.renderSheet();});
   }
-  if(tab==='data')body=`<section class="settings-block"><h3>${icon('download',18)} Bản lưu</h3>
+  if(tab==='data')body=`${feedbackBlock}<section class="settings-block"><h3>${icon('download',18)} Bản lưu</h3>
       <div class="row wrap">${button('Xuất bản lưu','export',{},'small')}${button('Nhập bản lưu','import',{},'small ghost')}</div><input type="file" id="import-file" accept=".json,application/json" hidden>
       <div class="divider"></div>${button('Bắt đầu lại riêng nghề này','resetCareer',{},'danger small')}</section>
     <section class="settings-block"><h3>${icon('shield',18)} Quyền riêng tư</h3>
