@@ -35,7 +35,8 @@
 :where(.career-job.gr) :where(.patience .bar){flex:1}
 
 .career-job.gr .btn{min-height:44px}
-.career-job.gr .gr-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:10px 0}
+.career-job.gr .gr-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:10px 0}
+.career-job.gr .gr-tabs.three{grid-template-columns:repeat(3,minmax(0,1fr))}
 .career-job.gr .gr-tabs .btn{padding-inline:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .career-job.gr .gr-badge.soft{background:var(--gr-surface-2);color:var(--gr-ink);border:1px solid var(--gr-line)}
 .career-job.gr .gr-short{color:var(--gr-bad)!important;font-weight:600}
@@ -91,11 +92,52 @@
 .career-job.gr .gr-phone-ok{color:var(--gr-good)}
 .career-job.gr .gr-phone-amt{font-size:22px;font-weight:700}
 
-/* Ledger */
-.career-job.gr .gr-lrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--gr-line)}
+/* Ledger: one card per neighbour (trust, balance against today's limit, lean days, plans) */
+.career-job.gr .gr-lrow{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-bottom:1px solid var(--gr-line)}
+.career-job.gr .gr-lrow:last-of-type{border-bottom:0}
 .career-job.gr .gr-lrow small{display:block;color:var(--gr-muted)}
-.career-job.gr .gr-lrow.overdue b{color:var(--gr-bad)}
-.career-job.gr .gr-lnum{min-width:100px;text-align:right}
+.career-job.gr .gr-lhead{display:flex;align-items:flex-start;gap:10px}
+.career-job.gr .gr-trust{text-align:right;color:var(--gr-warn);letter-spacing:1px;white-space:nowrap}
+.career-job.gr .gr-trust small{letter-spacing:0}
+.career-job.gr .gr-lnum{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.career-job.gr .gr-lnum b{font-size:18px}
+.career-job.gr .gr-lrow.overdue .gr-lnum b{color:var(--gr-bad)}
+.career-job.gr .gr-ltags{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.gr .gr-ltags .tag{white-space:normal}
+.career-job.gr .gr-hard{margin:0;padding:6px 10px;border-left:3px solid var(--gr-warn);background:var(--gr-surface-2);border-radius:0 var(--gr-rs) var(--gr-rs) 0}
+.career-job.gr .gr-lacts{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.gr .gr-lacts .btn{flex:1 1 30%;min-width:96px;padding-inline:8px}
+.career-job.gr .gr-ledger .fold{margin-top:10px}
+
+/* Care loop: today's checklist, tomorrow's forecast, rotation notices, weekly lists */
+.career-job.gr .gr-carebox,.career-job.gr .gr-forecast{margin:8px 0}
+.career-job.gr .gr-fold{border:1px solid var(--gr-line);background:var(--gr-surface)}
+.career-job.gr .gr-fold>summary{cursor:pointer;min-height:44px;padding:11px 12px;white-space:normal;line-height:1.4}
+.career-job.gr .gr-fold>summary b.bad{color:var(--gr-bad)}
+.career-job.gr .gr-fold>summary b.warn{color:var(--gr-warn)}
+.career-job.gr .gr-care .req-row{grid-template-columns:26px 24px minmax(0,1fr) auto}
+.career-job.gr .gr-care .req-row .btn{min-height:44px;padding-inline:10px;white-space:nowrap}
+.career-job.gr .gr-sub{margin:10px 0 6px;font-weight:700;font-size:14px}
+.career-job.gr .gr-sub small{font-weight:400;color:var(--gr-muted)}
+.career-job.gr .gr-tip{margin-top:8px}
+.career-job.gr .gr-rotations{display:flex;flex-direction:column;gap:6px}
+.career-job.gr .gr-rot{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--gr-rs);border:1px solid var(--gr-warn);background:var(--gr-surface-2)}
+.career-job.gr .gr-rot>span{font-size:20px}
+.career-job.gr .gr-rot p{margin:0;min-width:0}
+.career-job.gr .gr-rot small{display:block;color:var(--gr-muted)}
+.career-job.gr .gr-rot .btn{white-space:nowrap;flex:0 0 auto}
+.career-job.gr .gr-lists{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.career-job.gr .gr-lists>p{margin:0}
+.career-job.gr .gr-list{display:flex;flex-direction:column;gap:8px}
+.career-job.gr .gr-list.today{border-color:var(--gr-warn)}
+.career-job.gr .gr-list h4{margin:0}
+.career-job.gr .gr-list p{margin:2px 0 0}
+.career-job.gr .gr-list .bad{color:var(--gr-bad);font-weight:600}
+.career-job.gr .gr-bonds ul{list-style:none;margin:6px 0 10px;padding:0;display:flex;flex-direction:column;gap:6px}
+.career-job.gr .gr-bonds li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 8px;align-items:baseline}
+.career-job.gr .gr-bonds li small{grid-column:1/-1;color:var(--gr-muted)}
+.career-job.gr .gr-hearts{color:var(--gr-bad);letter-spacing:1px}
+.career-job.gr .gr-bonds h4{margin:0}
 
 /* Shelf rotation */
 .career-job.gr .gr-shelf{display:flex;gap:8px;overflow-x:auto;padding:10px;border-radius:var(--gr-rs);background:var(--gr-surface-2);border-bottom:6px solid var(--gr-line)}
@@ -221,6 +263,10 @@
   :where(.career-job.gr) :where(.workbench){grid-template-columns:1fr}
   :where(.career-job.gr) :where(.wb-side){position:static}
   .career-job.gr .gr-phones{grid-template-columns:1fr}
+}
+@media (max-width:480px){
+  .career-job.gr .gr-tabs,.career-job.gr .gr-tabs.three{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .career-job.gr .gr-tabs.three>:first-child{grid-column:1/-1}
 }
 @media (max-width:400px){
   .career-job.gr .gr-lot{flex-basis:132px}

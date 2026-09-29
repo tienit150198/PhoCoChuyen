@@ -35,6 +35,7 @@ v0.5 (generator 2, older saved tasks keep generator 1):
 """
 from __future__ import annotations
 import copy
+import functools
 from . import kit
 from .. import consequences as cq
 
@@ -46,6 +47,38 @@ AGE_LIMITED = ('beer',)
 SHELF_PAY = 16
 OVERDUE_DAYS = 5
 MARKDOWN = 30   # percent, policy shown to the player
+
+# ---- care loop (see docs/superpowers/specs/2026-09-29-grocery-care-design.md)
+BAD_DAYS = 12                          # a debt this old, with trust ≤ 1 and no plan, is written off
+TRUST_START = {1: 2, 2: 4, 4: 4, 6: 3}
+TRUST_LIMIT = (0, 60, 80, 100, 120, 140)   # percent of the base limit per trust level
+TRUST_NAMES = ('Ngưng ghi sổ', 'Dè dặt', 'Tạm tin', 'Tin', 'Tin cậy', 'Như người nhà')
+PLAN_PARTS = (2, 3)
+PLAN_GAP = 2                           # days between instalments
+HARD_FROM = 4                          # no lean days in the first days of the game
+HARD_BLOCK = 6                         # at most one lean spell per neighbour in each block of days
+FIRST_HARD = {1: (5, 2)}               # Chú Bảy's scooter breaks down in the first week: (first day, days)
+# Lean days: chance per block (percent) and what the alley says about it.
+HARD = {1: (65, ('Xe ôm của chú hư bộ nồi, mấy bữa nay chạy được ít cuốc.', 'Chú vừa đóng tiền học cho thằng Út, trong túi còn mấy đồng.')),
+        2: (40, ('Bé út nhà chị Lan sốt, chị nghỉ làm ở nhà trông con.', 'Xưởng may cắt ca tăng ca, lương về ít hơn mọi tháng.')),
+        4: (35, ('Lương hưu của bà về trễ mấy ngày.', 'Bà vừa đi khám mắt, tốn khoản thuốc men.')),
+        6: (45, ('Quán cơm tấm vắng khách cả tuần vì đào đường trước quán.', 'Chị Diệu vừa sửa lại cái tủ đông của quán.'))}
+ROTATE = ('milk', 'egg', 'bread', 'greens', 'tomato')   # dated goods whose shelf order matters
+# Weekly lists: pickup when day % 7 == wd (from day LIST_FROM), items in stock units.
+LIST_FROM = 3
+LISTS = {4: dict(wd=3, pay='cash', items=(('rice', 2), ('egg', 10), ('greens', 3), ('tomato', 2)),
+                 say='Chiều bà ghé lấy giỏ như mọi tuần nghe cháu. Rau với cà lựa giùm bà tươi tươi.'),
+         6: dict(wd=4, pay='transfer', items=(('rice', 5), ('oil', 1), ('fishsauce', 1), ('egg', 20)),
+                 say='Đồ tuần cho quán nha em, chiều chị cho đứa nhỏ qua lấy, chị chuyển khoản.'),
+         2: dict(wd=6, pay='credit', items=(('milk', 8), ('egg', 10), ('noodle', 5), ('bread', 2)),
+                 say='Giỏ sữa tuần cho tụi nhỏ, em ghi sổ giùm chị như mọi khi nha.'),
+         5: dict(wd=0, pay='transfer', items=(('milk', 4), ('soda', 6), ('snack', 3), ('bread', 2)),
+                 say='Đồ ăn sáng cả tuần, tan làm anh ghé lấy, anh chuyển khoản.')}
+BOND_START = 2
+BOND_NAMES = ('Giận tiệm', 'Mới quen', 'Quen mặt', 'Khách quen', 'Thân thiết', 'Khách ruột')
+BOND_CALM = 4                          # from this bond the regular stops bringing the Mây Mart flyer
+FORECAST_SLOTS = 3                     # a day opens with three customers
+FORECAST_SPARE = 20                    # percent kept in reserve for walk-ins and carried-over work
 
 ITEMS = [
     dict(id='rice', name='Gạo Tám Thơm', emoji='🍚', group='goods', unit='kg', cost=14, life=None, start=25),
@@ -231,6 +264,18 @@ def _extend(d: dict) -> dict:
     stats = d.setdefault('stats', {})
     for k in STAT_KEYS:
         stats.setdefault(k, 0)
+    # care loop: trust and plans on the credit book, shelf order, weekly lists
+    for key, row in d.get('ledger', {}).items():
+        if isinstance(row, dict):
+            row.setdefault('trust', TRUST_START.get(int(key), 3) if str(key).isdigit() else 3)
+            row.setdefault('late', False)
+            row.setdefault('plan', None)
+            row.setdefault('written', 0)
+    d.setdefault('rot', {})
+    lists = d.setdefault('lists', {})
+    if isinstance(lists, dict):
+        for k in LISTS:
+            lists.setdefault(str(k), dict(bond=BOND_START, packed={}, stale=0, day=0, done=0, missed=0))
     return d
 
 
@@ -401,8 +446,12 @@ def on_start(s: dict, c: dict) -> None:
                 quote(c, t)   # prices may have been retuned between shifts
             else:
                 on_task(s, c, t)
+    _sync_rot(c)
     _repayments(s, c)
     kit.log(s, c, 'day', f'{mod["emoji"]} Hôm nay: {mod["name"]} — {mod["text"]}')
+    for key, spec in LISTS.items():
+        if _list_for(key, c['day']):
+            kit.log(s, c, 'list', f'🧺 Chiều nay {PEOPLE[key][0]} ghé lấy giỏ quen hàng tuần — soạn sẵn trước khi đóng ca.', kit.npc_id(ID, key))
     flyer = rival(c['day'])
     if flyer:
         kit.log(s, c, 'rival', 'Tờ rơi Mây Mart hôm nay: ' + ', '.join(f'{ITEM_INDEX[k]["name"]} {v} xu' for k, v in flyer.items()) + '.')
@@ -410,27 +459,95 @@ def on_start(s: dict, c: dict) -> None:
 
 
 def _repayments(s: dict, c: dict) -> None:
-    d = kit.data(c)
-    salary = mod_of(c['day'])['id'] == 'payday'
+    """The morning count of the credit book: plans, paydays, reminders, lean days,
+    overdue debts and (rarely) a debt Cô Ba has to write off."""
+    d = _data(c)
+    day = c['day']
+    salary = mod_of(day)['id'] == 'payday'
     for key, row in d['ledger'].items():
         if row['balance'] <= 0:
+            row['plan'] = None
             continue
-        rule = NEIGHBOURS[int(key)]
-        age = c['day'] - max(1, row['since'])
+        i = int(key)
+        rule = NEIGHBOURS[i]
+        npc = kit.npc_id(ID, i)
+        name = PEOPLE[i][0]
+        plan = row['plan']
+        if plan:
+            if day >= plan['next']:
+                amount = min(plan['each'], row['balance'])
+                plan['left'] -= 1
+                plan['next'] = day + PLAN_GAP
+                _repay(s, c, d, key, row, amount, f'{name} trả góp theo lịch')
+                if not row['balance']:
+                    row['trust'] = min(5, row['trust'] + 1)
+                    kit.log(s, c, 'ledger', f'{name} trả đủ theo lịch giãn nợ — lòng tin lên “{TRUST_NAMES[row["trust"]]}”.', npc)
+                    row['plan'] = None
+                elif plan['left'] <= 0:
+                    row['plan'] = None
+            continue
+        age = day - max(1, row['since'])
         payday = age > 0 and age % rule['cycle'] == 0 or salary and age > 0
-        reminded = row['reminded'] and row['reminded'] == c['day'] - 1
-        if not (payday or reminded):
-            continue
-        amount = row['balance'] if rule['share'] >= 100 else max(1, row['balance'] * rule['share'] // 100)
-        row['balance'] -= amount
-        row['paid'] += amount
-        if row['balance'] == 0:
+        reminded = row['reminded'] and row['reminded'] == day - 1
+        hard = _hard(i, day)
+        if (payday or reminded) and hard:
+            kit.log(s, c, 'ledger', f'{name} ghé xin khất: “{hard}” Còn nợ {row["balance"]} xu.', npc)
+        elif payday or reminded:
+            amount = row['balance'] if rule['share'] >= 100 else max(1, row['balance'] * rule['share'] // 100)
+            _repay(s, c, d, key, row, amount, f'{name} trả nợ sổ')
+            if not row['balance']:
+                continue
+        if age > OVERDUE_DAYS and not row['late']:
+            row['late'] = True
+            row['trust'] = max(0, row['trust'] - 1)
+            kit.log(s, c, 'ledger', f'Khoản nợ {row["balance"]} xu của {name} đã quá {OVERDUE_DAYS} ngày — lòng tin còn “{TRUST_NAMES[row["trust"]]}”. '
+                    'Nhắc khéo hoặc giãn nợ trước khi quá muộn.', npc)
+        if age > BAD_DAYS and row['trust'] <= 1:
+            lost = row['balance']
+            row['written'] = min(10**9, row['written'] + lost)
+            row['balance'] = 0
             row['since'] = 0
-        d['repaid'] += amount
-        npc = kit.npc_id(ID, int(key))
-        name = PEOPLE[int(key)][0]
-        kit.money(s, c, amount, f'{name} trả nợ sổ', f'ledger-{key}-{c["day"]}', 'debt_repaid')
-        kit.log(s, c, 'ledger', f'{name} ghé trả {amount} xu tiền sổ' + (' — đã gạch hết nợ.' if not row['balance'] else f', còn nợ {row["balance"]} xu.'), npc)
+            row['late'] = False
+            row['trust'] = max(1, row['trust'])
+            d['stats']['bad_debt'] += lost
+            kit.metric(c, 'gr_bad_debt', lost)
+            kit.log(s, c, 'loss', f'Cô Ba thở dài gạch sổ: {name} không trả nổi khoản {lost} xu đã nợ {age} ngày. Mất trắng.', npc)
+
+
+def _repay(s: dict, c: dict, d: dict, key: str, row: dict, amount: int, reason: str) -> None:
+    i = int(key)
+    row['balance'] -= amount
+    row['paid'] += amount
+    d['repaid'] += amount
+    if row['balance'] == 0:
+        if not row['late'] and not row['plan']:
+            row['trust'] = min(5, row['trust'] + 1)
+        row['since'] = 0
+        row['late'] = False
+    kit.money(s, c, amount, reason, f'ledger-{key}-{c["day"]}', 'debt_repaid')
+    kit.log(s, c, 'ledger', f'{PEOPLE[i][0]} ghé trả {amount} xu tiền sổ' + (' — đã gạch hết nợ.' if not row['balance'] else f', còn nợ {row["balance"]} xu.'), kit.npc_id(ID, i))
+
+
+def _hard(i: int, day: int) -> str | None:
+    """A neighbour's lean days: decided by the neighbour and the 8-day block alone."""
+    if i not in HARD or day < HARD_FROM:
+        return None
+    chance, reasons = HARD[i]
+    first = FIRST_HARD.get(i)
+    if first and first[0] <= day < first[0] + first[1]:
+        return reasons[0]
+    block = (day - 1) // HARD_BLOCK
+    r = kit.rng(ID, 'hard', i, block)
+    if r.randrange(100) >= chance:
+        return None
+    start = block * HARD_BLOCK + 1 + r.randrange(HARD_BLOCK - 1)
+    length = 2 + r.randrange(2)
+    reason = reasons[r.randrange(len(reasons))]
+    return reason if start <= day < start + length and start >= HARD_FROM else None
+
+
+def _limit(key, row: dict) -> int:
+    return NEIGHBOURS[int(key)]['limit'] * TRUST_LIMIT[max(0, min(5, row.get('trust', 3)))] // 100
 
 
 def known_request(c: dict, t: dict) -> str:
@@ -465,6 +582,7 @@ def known_request(c: dict, t: dict) -> str:
 # ---------------------------------------------------------------- actions
 def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     d = _data(c)
+    _sync_rot(c)
     if name == 'gr_decide':
         return _decide(s, c, p)
     kit.desk_block(d['desk'], 'Có chuyện bất ngờ ở tiệm — quyết xong rồi làm tiếp nhé.')
@@ -486,9 +604,15 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         row = d['ledger'][key]
         kit.need(row['balance'] > 0, 'Người này không còn nợ trong sổ.')
         kit.need(row['reminded'] != c['day'], 'Hôm nay đã nhắc rồi. Nhắc nhiều quá dễ mất lòng hàng xóm.')
+        kit.need(not row['plan'], 'Đang trả góp theo lịch đã hẹn — không cần nhắc, cứ chờ tới kỳ.')
         row['reminded'] = c['day']
         kit.metric(c, 'ledger_reminders')
         who = PEOPLE[int(key)]
+        hard = _hard(int(key), c['day'])
+        if hard:
+            row['trust'] = max(0, row['trust'] - 1)
+            return dict(message=f'Bạn nhắc {who[0]} về khoản {row["balance"]} xu đúng lúc nhà đang kẹt. {who[0]} cúi mặt: “{hard} Cho khất ít bữa…” '
+                                f'Lòng tin còn “{TRUST_NAMES[row["trust"]]}”. Lúc này nên đề nghị giãn nợ.', refused=True)
         reply = {'warm': 'Ờ ờ, chú nhớ mà! Mai chú ghé trả liền nghen.', 'quiet': 'Dạ… mai chị gửi.',
                  'sour': 'Bà nhớ chứ, bà có quỵt của ai bao giờ đâu. Mai bà đưa.', 'bossy': 'Rồi rồi, mai chị chuyển, nhắc chi kỹ vậy.'}.get(who[3], 'Mai mình trả nhé.')
         return dict(message=f'Bạn nhắc khéo {who[0]} về khoản {row["balance"]} xu trong sổ. {who[0]}: “{reply}”')
@@ -515,14 +639,40 @@ def _ledger_key(npc) -> str:
 
 
 def _ledger_ok(c: dict, npc_index: int, amount: int) -> tuple[bool, str]:
-    row = kit.data(c)['ledger'].get(str(npc_index))
+    row = _data(c)['ledger'].get(str(npc_index))
     if row is None:
         return False, 'không có trong sổ ghi nợ'
+    if row['trust'] <= 0:
+        return False, 'sổ đã ngưng ghi thêm vì mất lòng tin'
+    if row['plan'] and row['balance']:
+        return False, 'đang trả góp theo lịch giãn nợ, chưa ghi thêm'
     if row['balance'] and c['day'] - max(1, row['since']) > OVERDUE_DAYS:
         return False, f'đang có nợ cũ quá {OVERDUE_DAYS} ngày'
-    if row['balance'] + amount > row['limit']:
-        return False, f'vượt hạn mức {row["limit"]} xu (đang nợ {row["balance"]})'
+    limit = _limit(npc_index, row)
+    if row['balance'] + amount > limit:
+        return False, f'vượt hạn mức {limit} xu (đang nợ {row["balance"]})'
     return True, 'còn trong hạn mức, không có nợ quá hạn'
+
+
+def _plan(s: dict, c: dict, p: dict) -> dict:
+    """Giãn nợ: split a debt into 2–3 instalments, one every PLAN_GAP days."""
+    d = _data(c)
+    key = _ledger_key(p.get('npc'))
+    row = d['ledger'][key]
+    parts = p.get('parts')
+    kit.need(type(parts) is int and parts in PLAN_PARTS, 'Chia 2 hoặc 3 kỳ trả.')
+    kit.need(row['balance'] >= parts, 'Người này không còn khoản nợ nào để giãn.')
+    kit.need(not row['plan'], 'Đã có lịch giãn nợ đang chạy.')
+    each = -(-row['balance'] // parts)
+    row['plan'] = dict(each=each, left=parts, next=c['day'] + PLAN_GAP)
+    row['since'] = c['day']
+    row['late'] = False
+    d['stats']['plans'] += 1
+    kit.metric(c, 'gr_plans')
+    who = PEOPLE[int(key)]
+    kit.log(s, c, 'ledger', f'Giãn nợ cho {who[0]}: {parts} kỳ × {each} xu, kỳ đầu ngày {c["day"] + PLAN_GAP}.', kit.npc_id(ID, int(key)))
+    return dict(message=f'Bạn ngồi riêng với {who[0]}, chia khoản {row["balance"]} xu thành {parts} kỳ, mỗi kỳ {each} xu, cách {PLAN_GAP} ngày. '
+                        f'{who[0]}: “Vậy thì chị/chú trả được, cảm ơn nhiều nha!” Trong lúc trả góp, sổ chưa ghi thêm.', celebrate=bool(_hard(int(key), c['day'])))
 
 
 def _checkout_action(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
@@ -643,7 +793,9 @@ def _checkout_action(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         pay['tender'] = _tender(t['total'], 'round')
         if ok:
             t['flags']['credit_harsh'] = 1
-            return dict(message=f'Bạn từ chối ghi sổ dù {why}. {_who(t)} hơi chạnh lòng, đưa tiền mặt.')
+            row = _data(c)['ledger'][str(_npc_index(t))]
+            row['trust'] = max(0, row['trust'] - 1)
+            return dict(message=f'Bạn từ chối ghi sổ dù {why}. {_who(t)} hơi chạnh lòng, đưa tiền mặt. Lòng tin còn “{TRUST_NAMES[row["trust"]]}”.')
         t['flags']['credit_ok'] = 1
         return dict(message=f'Bạn giải thích khéo: sổ {why}, tiệm nhỏ nên phải giữ nguyên tắc. {_who(t)} gật đầu, trả tiền mặt.')
     if name == 'gr_pay':
@@ -767,7 +919,7 @@ def _out_of_stock(c: dict, t: dict) -> int:
 
 def _take_upto(c: dict, item: str, qty: int) -> int:
     qty = min(qty, kit.stock(c, item))
-    return kit.take(c, item, qty) if qty > 0 else 0
+    return _take(c, item, qty) if qty > 0 else 0
 
 
 def _reopen_if_gone(c: dict, t: dict) -> dict | None:
@@ -909,7 +1061,7 @@ def _expired_sold(c: dict, units: dict) -> list[str]:
     """Dated goods the customer takes home from a lot whose date is today (FIFO sells those first)."""
     out = []
     for item, q in units.items():
-        if item in DATED and q > 0 and any(l['item'] == item and l['qty'] > 0 and l['expires'] == c['day'] for l in _inv_lots(c)):
+        if item in DATED and q > 0 and _today_in_pick(c, item, q):
             out.append(ITEM_INDEX[item]['name'])
     return out
 
@@ -1008,6 +1160,9 @@ def _shelf_action(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         t['result'] = {k: len(v) for k, v in problems.items()}
         kit.data(c)['shelves'] += 1
         kit.metric(c, 'gr_shelves')
+        rotated = not problems['fifo'] and _unrotated(c, n['item'])
+        if rotated:
+            _rotate(c, n['item'])   # the real shelf of this item is put in order too
         if problems['expired']:
             cq.slip(t, 'shelf_expired', 2, 'Lô hết hạn vẫn nằm trên kệ, khách mà mua phải thì tiệm mang tiếng.', 'hàng hết hạn còn trên kệ')
         if problems['price']:
@@ -1016,6 +1171,7 @@ def _shelf_action(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         kit.complete(s, c, t, react['pay'], f'Bạn đã xếp {t["title"].lower()} giúp Cô Ba.')
         issues = [x for v in problems.values() for x in v]
         return dict(message=f'Cô Ba đi một vòng kiểm kệ · +{react["pay"]} xu. ' + ('Kệ đẹp, đúng hạn, đúng giá!' if not issues else 'Cô nhắc: ' + '; '.join(issues) + '.')
+                    + (f' Kệ {item["name"]} ngoài tiệm cũng đã xoay: lô cũ ra trước.' if rotated else '')
                     + (' ' + react['message'] if react['message'] else ''), celebrate=not issues)
     raise kit.eng().GameError('Thao tác kệ hàng không hợp lệ.')
 
@@ -1045,7 +1201,8 @@ RIVAL_DAY = 3             # Mây Mart hands out its first flyer on this day
 BULK_OFFERS = (0, 5, 10, 15)
 BULK_DEPOSIT = 30         # percent paid when the price is agreed
 CLEAR_PERCENT = 70        # near-date clearance price, percent of the tag
-STAT_KEYS = ('rush', 'bulk', 'haggles', 'matched', 'fines', 'inspections', 'cleared', 'walkouts')
+STAT_KEYS = ('rush', 'bulk', 'haggles', 'matched', 'fines', 'inspections', 'cleared', 'walkouts',
+             'bad_debt', 'plans', 'rotated', 'lists', 'lists_missed')
 
 # Generator 2 speaks to the player without assuming gender (generator 1 keeps its saved text).
 NEUTRAL = {'Chị ơi em mua đồ ăn vặt!': 'Cho em mua đồ ăn vặt với ạ!'}
@@ -1253,6 +1410,9 @@ def _maybe_haggle(c: dict, t: dict, item: str) -> str:
     today = _data(c)['today']
     if theirs is None or today['calm'] and today['day'] == c['day']:
         return ''
+    bond = _data(c)['lists'].get(str(_npc_index(t)))
+    if bond and bond['bond'] >= BOND_CALM:
+        return ''   # a close regular no longer brings the flyer to the till
     ours, who = _price(c, item), _who(t)
     if ours <= theirs:
         t['haggle'] = dict(item=item, ours=ours, theirs=theirs, state='fair')
@@ -1417,7 +1577,7 @@ def _rush_action(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
             # Handed over without asking for ID: the beer leaves with a minor.
             cq.slip(t, 'minor_beer', 3, f'Giờ đông mà cháu bán bia cho {who} mới {q["_age"]} tuổi, không hỏi giấy tờ gì hết.',
                     'bán bia cho người chưa đủ 18 tuổi', safety=True)
-        c['life']['consumed_cost'] += sum(kit.take(c, k, v) for k, v in units.items())
+        c['life']['consumed_cost'] += sum(_take(c, k, v) for k, v in units.items())
         offer['charged'] = charged
         if sum(offer['tender']) < charged:
             offer['tender'] = _tender(charged, 'round')
@@ -1600,7 +1760,7 @@ def _bulk_action(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         for x in n['lines']:
             q = min(x['qty'], _available(c, x['item'], t))
             if q > 0:
-                cost += kit.take(c, x['item'], q)
+                cost += _take(c, x['item'], q)
                 delivered[x['item']] = q
         kit.need(delivered, 'Kệ không còn món nào của đơn này để giao.')
         c['life']['consumed_cost'] += cost
@@ -1687,6 +1847,341 @@ def _inv_lots(c: dict) -> list:
     return x['lots'] if x else []
 
 
+# ---- shelf order (care loop): new stock put in front of older stock is a real state of the shelf
+def _live(c: dict, item: str) -> list:
+    return [l for l in _inv_lots(c) if l['item'] == item and l['qty'] > 0 and l['expires'] >= c['day']]
+
+
+def _split(c: dict, item: str) -> tuple[list, list]:
+    """(old, new): lots put in order at the last rotation, and lots added since."""
+    known = kit.data(c).get('rot', {}).get(item)
+    live = _live(c, item)
+    if known is None:
+        return live, []
+    return [l for l in live if l['id'] in known], [l for l in live if l['id'] not in known]
+
+
+def _unrotated(c: dict, item: str) -> bool:
+    if item not in ROTATE:
+        return False
+    old, new = _split(c, item)
+    return bool(old and new and max(l['expires'] for l in new) > min(l['expires'] for l in old))
+
+
+def _sync_rot(c: dict) -> None:
+    """Seed the shelf order from the lots on the shelf (old saves start rotated), forget sold
+    lots and quietly accept new stock that is not fresher than what is already there."""
+    if not c.get('ext', {}).get('inv'):
+        return
+    rot = _data(c)['rot']
+    for item in ROTATE:
+        live = _live(c, item)
+        if item not in rot or not isinstance(rot[item], list):
+            rot[item] = [l['id'] for l in live][-40:]
+            continue
+        if not _unrotated(c, item):
+            rot[item] = [l['id'] for l in live][-40:]
+        else:
+            ids = {l['id'] for l in live}
+            rot[item] = [x for x in rot[item] if x in ids][-40:]
+
+
+def _pick_lots(c: dict, item: str) -> list:
+    """The order customers take units in: oldest first on a rotated shelf, the new lots
+    first (they sit at the front) on an unrotated one."""
+    fifo = lambda ls: sorted(ls, key=lambda l: (l['expires'], l['received']))
+    if _unrotated(c, item):
+        old, new = _split(c, item)
+        return sorted(new, key=lambda l: (-l['received'], -l['expires'])) + fifo(old)
+    return fifo(_live(c, item))
+
+
+def _today_in_pick(c: dict, item: str, qty: int) -> int:
+    """How many of the next `qty` units picked are dated today."""
+    n = 0
+    for lot in _pick_lots(c, item):
+        if qty <= 0:
+            break
+        used = min(qty, lot['qty'])
+        if lot['expires'] <= c['day']:
+            n += used
+        qty -= used
+    return n
+
+
+def _take(c: dict, item: str, qty: int) -> int:
+    """Sell `qty` units in the shelf's real pick order. Returns their recorded cost."""
+    if item not in ROTATE or not _unrotated(c, item):
+        return kit.take(c, item, qty)
+    kit.need(kit.stock(c, item) >= qty, f'Hết {ITEM_INDEX[item]["name"]}. Mở Kho để nhập thêm nhé.')
+    cost = 0
+    for lot in _pick_lots(c, item):
+        if qty <= 0:
+            break
+        used = min(qty, lot['qty'])
+        lot['qty'] -= used
+        qty -= used
+        cost += used * lot['unit_cost']
+    x = c['ext']['inv']
+    x['lots'] = [l for l in x['lots'] if l['qty'] > 0]
+    return cost
+
+
+def _rotate(c: dict, item: str) -> None:
+    _data(c)['rot'][item] = [l['id'] for l in _live(c, item)][-40:]
+    _data(c)['stats']['rotated'] += 1
+
+
+def _rotate_action(s: dict, c: dict, p: dict) -> dict:
+    item = kit.one_of(p.get('item'), ROTATE, 'Món này không cần xoay kệ theo hạn.')
+    it = ITEM_INDEX[item]
+    kit.need(_unrotated(c, item), f'Kệ {it["name"]} đang đúng thứ tự: hạn gần ở trước.')
+    old, new = _split(c, item)
+    back = min(l['expires'] for l in old)
+    _rotate(c, item)
+    kit.metric(c, 'gr_rotated')
+    return dict(message=f'Xoay kệ {it["name"]}: lô HSD ngày {back} ra mặt kệ, hàng mới (HSD ngày {max(l["expires"] for l in new)}) xếp vào trong. '
+                        'Khách sẽ lấy lô cũ trước.', celebrate=True)
+
+
+def _rotation_view(c: dict) -> list:
+    out = []
+    for item in ROTATE:
+        if _unrotated(c, item):
+            old, new = _split(c, item)
+            out.append(dict(item=item, back=min(l['expires'] for l in old), back_qty=sum(l['qty'] for l in old),
+                            front=max(l['expires'] for l in new), front_qty=sum(l['qty'] for l in new)))
+    return out
+
+
+# ---- weekly regular lists (care loop)
+def _list_for(key: int, day: int) -> dict | None:
+    """The regular's shopping list if `day` is their pickup day (seeded per week, never player state)."""
+    spec = LISTS.get(key)
+    if not spec or day < LIST_FROM or day % 7 != spec['wd']:
+        return None
+    items = {k: q for k, q in spec['items']}
+    r = kit.rng(ID, 'list', key, day // 7)
+    extra = spec['items'][r.randrange(len(spec['items']))][0]
+    items[extra] += r.choice((0, 1, 1, 2)) * max(1, items[extra] // 4)
+    return items
+
+
+def _list_value(c: dict, units: dict) -> int:
+    total = sum(_shelf_unit_price(c, k) * q for k, q in units.items())
+    total -= sum(_discount(p, units.get(p['item'], 0), _price(c, p['item'])) for p in PROMOS if p['item'] not in WEIGHED)
+    return max(0, total)
+
+
+def _pack(s: dict, c: dict, p: dict) -> dict:
+    d = _data(c)
+    npc = p.get('npc')
+    kit.need(isinstance(npc, str) and npc.startswith(ID + '_npc_'), 'Không có khách quen này.')
+    try:
+        key = int(npc.rsplit('_', 1)[1]) - 1
+    except ValueError:
+        key = -1
+    kit.need(key in LISTS, 'Không có khách quen này.')
+    want = _list_for(key, c['day'])
+    kit.need(want, f'Hôm nay {PEOPLE[key][0]} không ghé lấy giỏ. Soạn đúng ngày cho hàng tươi nhé.')
+    row = d['lists'][str(key)]
+    if row['day'] != c['day']:
+        row.update(day=c['day'], packed={}, stale=0)
+    got, cost, stale = [], 0, 0
+    for item, q in want.items():
+        gap = q - row['packed'].get(item, 0)
+        n = min(gap, _available(c, item, None))
+        if n <= 0:
+            continue
+        if item in ROTATE:
+            stale += _today_in_pick(c, item, n)
+        cost += _take(c, item, n)
+        row['packed'][item] = row['packed'].get(item, 0) + n
+        got.append(f'{n} {ITEM_INDEX[item]["unit"]} {ITEM_INDEX[item]["name"]}')
+    kit.need(got, 'Giỏ đã đủ, hoặc kệ không còn món nào trong danh sách. Nhập thêm ở “Kho & giá”.')
+    c['life']['consumed_cost'] += cost
+    row['stale'] += stale
+    missing = {k: q - row['packed'].get(k, 0) for k, q in want.items() if row['packed'].get(k, 0) < q}
+    note = ('Giỏ đủ món, chờ khách ghé lấy lúc chiều.' if not missing else
+            'Còn thiếu ' + ', '.join(f'{q} {ITEM_INDEX[k]["unit"]} {ITEM_INDEX[k]["name"]}' for k, q in missing.items()) + ' — nhập thêm rồi soạn tiếp.')
+    if stale:
+        note += f' ⚠ {stale} món trong giỏ hết hạn hôm nay — khách sẽ phàn nàn.'
+    kit.metric(c, 'gr_packed')
+    return dict(message=f'Soạn giỏ cho {PEOPLE[key][0]}: ' + ', '.join(got) + '. ' + note, celebrate=not missing and not stale)
+
+
+def _pickups(s: dict, c: dict, d: dict) -> list[str]:
+    """Regulars come by at closing for their packed bag."""
+    lines = []
+    for key in LISTS:
+        want = _list_for(key, c['day'])
+        if not want:
+            continue
+        row = d['lists'][str(key)]
+        name = PEOPLE[key][0]
+        npc = kit.npc_id(ID, key)
+        packed = row['packed'] if row['day'] == c['day'] else {}
+        stale = row['stale'] if row['day'] == c['day'] else 0
+        if not packed:
+            row['bond'] = max(0, row['bond'] - 1)
+            row['missed'] += 1
+            d['stats']['lists_missed'] += 1
+            lines.append(f'🧺 {name} ghé lấy giỏ mà tiệm chưa soạn — {name} sang Mây Mart mua (thân tình còn “{BOND_NAMES[row["bond"]]}”).')
+            kit.log(s, c, 'list', lines[-1], npc)
+            continue
+        value = _list_value(c, packed)
+        full = all(packed.get(k, 0) >= q for k, q in want.items())
+        method = LISTS[key]['pay']
+        if method == 'credit':
+            ok, _why = _ledger_ok(c, key, value)
+            method = 'credit' if ok else 'cash'
+        if method == 'credit':
+            lrow = d['ledger'][str(key)]
+            if not lrow['balance']:
+                lrow['since'] = c['day']
+            lrow['balance'] = min(10**6, lrow['balance'] + value)
+            paid = f'ghi sổ {value} xu'
+        else:
+            kit.money(s, c, value, f'{name} lấy giỏ quen hàng tuần', f'list-{key}-{c["day"]}', 'revenue')
+            d['sales'] += value
+            d['day_sales'] += value
+            paid = f'{"chuyển khoản" if method == "transfer" else "trả tiền mặt"} {value} xu'
+        d['customers'] += 1
+        d['stats']['lists'] += 1
+        if stale:
+            row['bond'] = max(0, row['bond'] - 1)
+            how = f'có {stale} món hết hạn hôm nay trong giỏ, {name} không vui'
+        elif full:
+            row['bond'] = min(5, row['bond'] + 1)
+            row['done'] += 1
+            how = 'đủ món, tươi ngon'
+        else:
+            how = 'giỏ còn thiếu ' + ', '.join(f'{q - packed.get(k, 0)} {ITEM_INDEX[k]["unit"]} {ITEM_INDEX[k]["name"].lower()}'
+                                               for k, q in want.items() if packed.get(k, 0) < q)
+        tip = 4 if row['bond'] >= 5 and full and not stale else 2 if row['bond'] >= 3 and full and not stale else 0
+        if tip:
+            kit.money(s, c, tip, f'{name} gửi thêm tiền bồi dưỡng', f'list-tip-{key}-{c["day"]}', 'tip')
+        lines.append(f'🧺 {name} lấy giỏ: {how} · {paid}' + (f' · boa {tip} xu' if tip else '') + f' (thân tình: {BOND_NAMES[row["bond"]]}).')
+        kit.log(s, c, 'list', lines[-1], npc)
+        row.update(packed={}, stale=0)
+    return lines
+
+
+# ---- tomorrow's forecast (care loop)
+@functools.lru_cache(maxsize=64)
+def _demand(day: int) -> tuple:
+    """What the first customers of `day` will ask for (as the day's own generator deals them)
+    plus the regular lists collected that day, in stock units."""
+    want = {}
+    add = lambda k, q: want.__setitem__(k, want.get(k, 0) + q)
+    for slot in range(FORECAST_SLOTS):
+        t = _make_v2(day, slot, 0)
+        n = t['needs']
+        if t['kind'] == 'checkout':
+            for line in n['lines']:
+                add(line['item'], _units(line['item'], line['_grams']) if line.get('weighed') else line['qty'])
+        elif t['kind'] == 'rush':
+            for q in n['queue']:
+                for item, qty in q['items']:
+                    add(item, qty)
+        elif t['kind'] == 'bulk':
+            for line in n['lines']:
+                add(line['item'], line['qty'])
+    for key in LISTS:
+        for k, q in (_list_for(key, day) or {}).items():
+            add(k, q)
+    return tuple(sorted(want.items()))
+
+
+def _about(n: int) -> int:
+    return n if n < 5 else -(-n // 5) * 5
+
+
+def _forecast(c: dict) -> dict:
+    day = c['day'] + 1
+    x = c.get('ext', {}).get('inv') or {}
+    level = kit.level(c) if 'xp' in c else 1
+    needs = []
+    for item, raw in _demand(day):
+        if ITEM_INDEX[item].get('unlock', 1) > level:
+            continue
+        want = -(-raw * (100 + FORECAST_SPARE) // 100)
+        # Units still sellable tomorrow: a lot on its last day tomorrow must come off the shelf that morning.
+        good = sum(l['qty'] for l in _inv_lots(c) if l['item'] == item and l['expires'] > day)
+        coming = sum(o['qty'] for o in x.get('orders', []) if o['item'] == item and o['status'] == 'in_transit')
+        have = good + coming
+        needs.append(dict(item=item, want=_about(want), have=have, short=max(0, want - have)))
+    needs.sort(key=lambda r: (-r['short'], r['item']))
+    m, m2 = mod_of(day), mod_of(day + 1)
+    lists = [dict(npc=kit.npc_id(ID, k), name=PEOPLE[k][0]) for k in LISTS if _list_for(k, day)]
+    pay = []
+    for key, row in _data(c)['ledger'].items():
+        if row['balance'] <= 0:
+            continue
+        i = int(key)
+        if row['plan']:
+            if row['plan']['next'] <= day:
+                pay.append(dict(name=PEOPLE[i][0], amount=min(row['plan']['each'], row['balance']), how='plan'))
+            continue
+        age = day - max(1, row['since'])
+        if age > 0 and (age % NEIGHBOURS[i]['cycle'] == 0 or m['id'] == 'payday') or row['reminded'] == c['day']:
+            pay.append(dict(name=PEOPLE[i][0], amount=row['balance'] if NEIGHBOURS[i]['share'] >= 100 else max(1, row['balance'] * NEIGHBOURS[i]['share'] // 100), how='due'))
+    short = [r for r in needs if r['short'] > 0]
+    tip = (f'Nhập thêm {", ".join(ITEM_INDEX[r["item"]]["name"] for r in short[:3])} trước khi đóng ca.' if short
+           else 'Kho đủ cho mấy lượt khách đầu ngày mai.')
+    return dict(day=day, mod=dict(id=m['id'], emoji=m['emoji'], name=m['name'], text=m['text']),
+                after=dict(id=m2['id'], emoji=m2['emoji'], name=m2['name']), needs=needs[:8], short=len(short),
+                lists=lists, pay=pay, tip=tip)
+
+
+# ---- today's care checklist
+def _care(c: dict) -> list:
+    d = _data(c)
+    rows = []
+    for item in ITEM_INDEX:
+        n = _today_units(c, item)
+        if n:
+            rows.append(dict(ok=False, icon='🗑️', label=f'Rút {n} {ITEM_INDEX[item]["unit"]} {ITEM_INDEX[item]["name"]} hết hạn hôm nay',
+                             note='đoàn kiểm tra phạt nếu còn trên kệ', tone='danger', do=dict(cmd='gr_pull_today', item=item)))
+    for r in _rotation_view(c):
+        it = ITEM_INDEX[r['item']]
+        rows.append(dict(ok=None, icon='🔄', label=f'Xoay kệ {it["name"]}', tone='warn',
+                         note=f'hàng mới HSD {r["front"]} đang nằm trước {r["back_qty"]} {it["unit"]} HSD {r["back"]}', do=dict(cmd='gr_rotate', item=r['item'])))
+    for key in LISTS:
+        want = _list_for(key, c['day'])
+        if not want:
+            continue
+        row = d['lists'][str(key)]
+        packed = row['packed'] if row['day'] == c['day'] else {}
+        full = all(packed.get(k, 0) >= q for k, q in want.items())
+        rows.append(dict(ok=True if full else None, icon='🧺', label=f'Soạn giỏ quen cho {PEOPLE[key][0]}',
+                         note='đủ món, chờ khách ghé' if full else f'{sum(packed.values())}/{sum(want.values())} món · khách ghé lúc đóng ca',
+                         do=None if full else dict(cmd='gr_pack', npc=kit.npc_id(ID, key))))
+    for key, row in sorted(d['ledger'].items()):
+        if row['balance'] <= 0:
+            continue
+        i = int(key)
+        name = PEOPLE[i][0]
+        hard = _hard(i, c['day'])
+        age = c['day'] - max(1, row['since'])
+        if row['plan']:
+            continue
+        if hard:
+            rows.append(dict(ok=None, icon='🙁', label=f'{name} đang kẹt tiền', note=f'đừng nhắc nợ lúc này — giãn nợ {row["balance"]} xu', tone='warn',
+                             do=dict(tab='ledger')))
+        elif age > OVERDUE_DAYS and row['reminded'] != c['day']:
+            rows.append(dict(ok=False, icon='📒', label=f'Nhắc khéo {name}', note=f'nợ {row["balance"]} xu đã {age} ngày' + (' — sắp mất trắng' if age >= BAD_DAYS - 2 and row['trust'] <= 2 else ''),
+                             tone='danger' if age >= BAD_DAYS - 2 else 'warn', do=dict(cmd='gr_remind', npc=kit.npc_id(ID, i))))
+    near = [x['id'] for x in ITEMS if _near_units(c, x['id']) and not _today_units(c, x['id']) and x['id'] not in d['cleared']]
+    if near:
+        rows.append(dict(ok=None, icon='🏷️', label='Xả giá hàng HSD ngày mai', note=', '.join(ITEM_INDEX[k]['name'] for k in near[:3]),
+                         do=dict(tab='stock')))
+    f = _forecast(c)
+    if f['short']:
+        rows.append(dict(ok=None, icon='📅', label=f'Chuẩn bị cho ngày mai ({f["mod"]["name"]})', note=f['tip'], tone='warn', do=dict(tab='stock')))
+    return rows
+
+
 def _near_units(c: dict, item: str) -> int:
     """Units in their last selling day (HSD tomorrow): tomorrow they must come off the shelf."""
     return sum(l['qty'] for l in _inv_lots(c) if l['item'] == item and l['expires'] == c['day'] + 1)
@@ -1754,7 +2249,8 @@ def _pull_today(s: dict, c: dict, p: dict) -> dict:
     return dict(message=f'Đã rút {qty} {it["unit"]} {it["name"]} hết hạn hôm nay khỏi kệ, ghi hao hụt. Kệ sạch hạn!')
 
 
-SHOP_ACTIONS = {'gr_tag': _tag, 'gr_clear': _clear, 'gr_pull_today': _pull_today}
+SHOP_ACTIONS = {'gr_tag': _tag, 'gr_clear': _clear, 'gr_pull_today': _pull_today,
+                'gr_rotate': _rotate_action, 'gr_pack': _pack, 'gr_plan': _plan}
 
 
 # ---------------------------------------------------------------- surprises at the shop
@@ -2064,7 +2560,7 @@ def _funeral(s: dict, c: dict, mode: str) -> str | None:
     got = {k: q for k, q in got.items() if q > 0}
     if want and not got:
         return 'Kệ không còn nước ngọt hay mì để soạn.'
-    cost = sum(kit.take(c, k, q) for k, q in got.items())
+    cost = sum(_take(c, k, q) for k, q in got.items())
     c['life']['consumed_cost'] += cost
     value = sum(_price(c, k) * q for k, q in got.items())
     base = sum(ITEM_INDEX[k]['cost'] * q for k, q in got.items())
@@ -2217,16 +2713,41 @@ def public_task(t: dict) -> dict:
 
 
 def public_data(c: dict) -> dict:
-    d = copy.deepcopy(kit.data(c))
+    d = _extend(copy.deepcopy(kit.data(c)))
+    # A read-only view of the career with the migrated copy, so projecting never writes to the save.
+    view = dict(c, ext=dict(c.get('ext', {}), data=copy.deepcopy(d)))
     rows = []
     for key, row in sorted(d['ledger'].items(), key=lambda kv: int(kv[0])):
         i = int(key)
-        overdue = bool(row['balance']) and c['day'] - max(1, row['since']) > OVERDUE_DAYS
+        age = c['day'] - max(1, row['since']) if row['balance'] else 0
+        overdue = bool(row['balance']) and age > OVERDUE_DAYS
         rows.append(dict(npc=kit.npc_id(ID, i), name=PEOPLE[i][0], role=PEOPLE[i][1], limit=row['limit'], balance=row['balance'],
-                         since=row['since'], overdue=overdue, reminded_today=row['reminded'] == c['day'], paid=row['paid']))
+                         since=row['since'], overdue=overdue, reminded_today=row['reminded'] == c['day'], paid=row['paid'],
+                         trust=row['trust'], trust_name=TRUST_NAMES[row['trust']], limit_now=_limit(key, row), age=age,
+                         hard=_hard(i, c['day']) if row['balance'] else None, plan=row['plan'], written=row['written'],
+                         risk=bool(row['balance']) and not row['plan'] and row['trust'] <= 2 and age >= BAD_DAYS - 4,
+                         can_credit=_ledger_ok(view, i, 0)[0]))
     d['ledger_view'] = rows
     d['prices'] = {k: _price(c, k) for k in PRICES}
-    _extend(d)
+    lists = []
+    for key in LISTS:
+        row = d['lists'][str(key)]
+        for when, day in (('today', c['day']), ('tomorrow', c['day'] + 1)):
+            want = _list_for(key, day)
+            if want:
+                packed = row['packed'] if when == 'today' and row['day'] == c['day'] else {}
+                lists.append(dict(npc=kit.npc_id(ID, key), name=PEOPLE[key][0], when=when, day=day, pay=LISTS[key]['pay'], say=LISTS[key]['say'],
+                                  items=[dict(item=k, qty=q, packed=packed.get(k, 0)) for k, q in want.items()],
+                                  value=_list_value(c, want), stale=row['stale'] if packed else 0))
+        nxt = next(dd for dd in range(max(c['day'], LIST_FROM), max(c['day'], LIST_FROM) + 7) if dd % 7 == LISTS[key]['wd'])
+        row['next'] = nxt
+        row['bond_name'] = BOND_NAMES[row['bond']]
+        row['name'] = PEOPLE[key][0]
+        row['npc'] = kit.npc_id(ID, key)
+    d['lists_view'] = lists
+    d['rotation'] = _rotation_view(view)
+    d['forecast'] = _forecast(view)
+    d['care'] = _care(view)
     mod = MOD_INDEX.get(d['today'].get('mod'), MODS[0]) if d['today'].get('day') == c['day'] else mod_of(c['day'])
     d['today_view'] = dict(day=c['day'], mod=dict(id=mod['id'], emoji=mod['emoji'], name=mod['name'], text=mod['text']),
                            calm=bool(d['today'].get('calm')) and d['today'].get('day') == c['day'],
@@ -2320,14 +2841,42 @@ def validate_task(t: dict, original: dict) -> None:
 def validate_data(c: dict) -> None:
     d = _data(c)
     _mark_legacy(c)
+    _sync_rot(c)
     kit.need(isinstance(d.get('ledger'), dict) and set(d['ledger']) == {str(k) for k in NEIGHBOURS}, 'Sổ ghi nợ sai.')
     for key, row in d['ledger'].items():
-        kit.need(isinstance(row, dict) and set(row) == {'limit', 'balance', 'since', 'reminded', 'paid'}, 'Dòng sổ nợ sai.')
+        kit.need(isinstance(row, dict) and set(row) == {'limit', 'balance', 'since', 'reminded', 'paid', 'trust', 'late', 'plan', 'written'}, 'Dòng sổ nợ sai.')
         kit.need(row['limit'] == NEIGHBOURS[int(key)]['limit'], 'Hạn mức sổ nợ bị sửa.')
         kit.integer(row['balance'], 0, 10**6)
         kit.integer(row['since'], 0, 10**7)
         kit.integer(row['reminded'], 0, 10**7)
         kit.integer(row['paid'], 0, 10**9)
+        kit.integer(row['trust'], 0, 5)
+        kit.integer(row['written'], 0, 10**9)
+        kit.need(type(row['late']) is bool, 'Dòng sổ nợ sai.')
+        plan = row['plan']
+        if plan is not None:
+            kit.need(isinstance(plan, dict) and set(plan) == {'each', 'left', 'next'}, 'Lịch giãn nợ sai.')
+            kit.integer(plan['each'], 1, 10**6)
+            kit.integer(plan['left'], 1, max(PLAN_PARTS))
+            kit.integer(plan['next'], 0, 10**7)
+    rot = d['rot']
+    kit.need(isinstance(rot, dict) and set(rot) <= set(ROTATE), 'Thứ tự kệ sai.')
+    for ids in rot.values():
+        kit.need(isinstance(ids, list) and len(ids) <= 40, 'Thứ tự kệ sai.')
+        for x in ids:
+            kit.text(x, 80)
+    lists = d['lists']
+    kit.need(isinstance(lists, dict) and set(lists) == {str(k) for k in LISTS}, 'Giỏ quen sai.')
+    for key, row in lists.items():
+        kit.need(isinstance(row, dict) and set(row) == {'bond', 'packed', 'stale', 'day', 'done', 'missed'}, 'Giỏ quen sai.')
+        kit.integer(row['bond'], 0, 5)
+        kit.integer(row['day'], 0, 10**7)
+        kit.integer(row['stale'], 0, 200)
+        kit.integer(row['done'], 0, 10**6)
+        kit.integer(row['missed'], 0, 10**6)
+        allowed = {k for k, _ in LISTS[int(key)]['items']}
+        kit.need(isinstance(row['packed'], dict) and set(row['packed']) <= allowed, 'Giỏ quen sai món.')
+        _ints(row['packed'].values(), 1, 60)
     for k in ('sales', 'customers', 'shelves', 'day_sales', 'repaid'):
         kit.integer(d.get(k), 0, 10**9)
     kit.desk_validate(d['desk'], EVENTS)
@@ -2372,8 +2921,11 @@ def on_close(s: dict, c: dict) -> dict:
                 notes.append(f'Đóng cửa: {left} khách còn trong hàng chờ đành về.')
         elif t['kind'] == 'bulk' and t['bulk']['stage'] == 'deliver':
             notes.append(_bulk_cancel(s, c, t))
+    lines = _pickups(s, c, d)
     owed = sum(r['balance'] for r in d['ledger'].values())
-    summary = dict(sales=d['day_sales'], ledger_total=owed,
+    f = _forecast(c)
+    lines.append(f'📅 Ngày mai: {f["mod"]["emoji"]} {f["mod"]["name"]}' + (f' · {len(f["lists"])} giỏ quen' if f['lists'] else '') + f'. {f["tip"]}')
+    summary = dict(sales=d['day_sales'], ledger_total=owed, lines=lines,
                    note=f'Doanh thu quầy hôm nay {d["day_sales"]} xu · sổ nợ còn {owed} xu.' + (' ' + ' '.join(notes) if notes else ''))
     d['day_sales'] = 0
     d['cleared'] = []
@@ -2393,6 +2945,11 @@ def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
             return f'Đã ghé nhà {PEOPLE[int(key)][0]} nhắc khéo khoản {row["balance"]} xu trong sổ.'
         return 'Đã cộng sổ nợ, gạch những khoản đã trả.'
     idle = {'gr_till': 'Đã lau quầy, xếp lại túi nilon và tiền lẻ.', 'gr_shelf': 'Đã xoay mặt hàng ra ngoài, lau kệ nước ngọt.'}
+    if e['role'] == 'gr_shelf' and not (t and t['career'] == ID and t['known'] and t['kind'] == 'shelf'):
+        item = next((i for i in ROTATE if _unrotated(c, i)), None)
+        if item:
+            _rotate(c, item)
+            return f'Đã xoay kệ {ITEM_INDEX[item]["name"]}: lô hạn gần ra trước, hàng mới vào trong.'
     if not t or t['career'] != ID or not t['known'] or (e['role'] == 'gr_shelf' and t['kind'] != 'shelf'):
         return idle.get(e['role'])
     if e['role'] == 'gr_shelf' and t['kind'] == 'shelf':
@@ -2434,6 +2991,14 @@ def content() -> dict:
                 'Tem giá phải khớp bảng giá hiện hành.'],
         credit_rules=[f'Tổng nợ không vượt hạn mức từng người.', f'Có khoản nợ quá {OVERDUE_DAYS} ngày: không ghi thêm.',
                       'Nhắc nợ nhẹ nhàng, riêng tư, mỗi ngày tối đa một lần.'],
+        trust_names=TRUST_NAMES, trust_limit=TRUST_LIMIT, plan_parts=PLAN_PARTS, plan_gap=PLAN_GAP, bad_days=BAD_DAYS,
+        bond_names=BOND_NAMES, bond_calm=BOND_CALM, rotate=ROTATE,
+        care_rules=['Lòng tin quyết định hạn mức: trả đúng hẹn thì tăng, để nợ quá hạn hay nhắc lúc nhà người ta kẹt thì giảm.',
+                    f'Hàng xóm đang kẹt tiền: đừng nhắc, hãy giãn nợ {PLAN_PARTS[0]}–{PLAN_PARTS[-1]} kỳ (mỗi kỳ cách {PLAN_GAP} ngày).',
+                    f'Nợ quá {BAD_DAYS} ngày mà lòng tin cạn: Cô Ba đành gạch sổ, mất trắng.',
+                    'Hàng mới nhập xếp lên trước hàng cũ thì khách lấy hàng mới, lô cũ hết hạn nằm lại: nhớ xoay kệ.',
+                    'Giỏ quen: xem trước một ngày để nhập đủ hàng, soạn trong ngày, khách ghé lấy lúc đóng ca.',
+                    f'Khách quen từ mức “{BOND_NAMES[BOND_CALM]}” không so giá với Mây Mart nữa.'],
         mods=[dict(id=m['id'], emoji=m['emoji'], name=m['name'], text=m['text']) for m in MODS],
         bulk_offers=BULK_OFFERS, clear_percent=CLEAR_PERCENT, rival_day=RIVAL_DAY,
         stock_rules=['Sáng mở tiệm: rút hàng hết hạn hôm nay khỏi kệ (đoàn kiểm tra sẽ phạt nếu còn).',
@@ -2617,9 +3182,9 @@ SPEC = dict(
     inventory=dict(items=ITEMS, capacity=60),
     prices=PRICES,
     tip=2,
-    physical=('gr_scan', 'gr_weigh', 'gr_pay', 'gr_place', 'gr_pull', 'gr_rush_total', 'gr_bulk_deliver', 'gr_clear'),
+    physical=('gr_scan', 'gr_weigh', 'gr_pay', 'gr_place', 'gr_pull', 'gr_rush_total', 'gr_bulk_deliver', 'gr_clear', 'gr_rotate', 'gr_pack'),
     free_actions=(),
-    no_tick=('gr_change', 'gr_change_undo', 'gr_remind', 'gr_haggle', 'gr_rush_change', 'gr_decide'),
+    no_tick=('gr_change', 'gr_change_undo', 'gr_remind', 'gr_haggle', 'gr_rush_change', 'gr_decide', 'gr_plan'),
     waste_items=(),
     activity=('🛒', 'Kệ tạp hóa gọn gàng', [('Sữa hộp', 'Tủ mát'), ('Mì gói', 'Kệ khô'), ('Trứng gà', 'Tủ mát'), ('Nước mắm', 'Kệ khô')],
               ['Đọc hạn từng lô', 'Rút hàng hết hạn', 'Xếp lô cũ ra trước', 'Đối chiếu tem giá']),

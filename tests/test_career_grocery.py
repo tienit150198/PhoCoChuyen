@@ -1395,5 +1395,310 @@ class GroceryConsequenceTests(unittest.TestCase):
         roundtrip(j)
 
 
+
+# ---------------------------------------------------------------- care loop (sub-project 3)
+def day_journey(day):
+    """A started shop moved to `day` (morning count done), as if the player got there."""
+    j = Journey('grocery')
+    j.c['day'] = day
+    G.on_start(j.state, j.c)
+    j.c['ext']['data']['desk'] = kit.desk_initial()     # no surprise in the way of these tests
+    return j
+
+
+def row(j, i):
+    return j.c['ext']['data']['ledger'][str(i)]
+
+
+def fresh_lot(j, item, qty, life):
+    return inventory.add_lot(j.c, item, qty, G.ITEM_INDEX[item]['cost'], life, 'partner')
+
+
+class GroceryCreditCareTests(unittest.TestCase):
+    def test_trust_sets_the_limit_and_zero_closes_the_book(self):
+        j = Journey('grocery')
+        self.assertEqual(row(j, 1)['trust'], 2)
+        self.assertEqual(G._limit('1', row(j, 1)), 120)
+        self.assertEqual(G._limit('2', row(j, 2)), 300)
+        row(j, 4)['trust'] = 0
+        ok, why = G._ledger_ok(j.c, 4, 1)
+        self.assertFalse(ok)
+        self.assertIn('lòng tin', why)
+        view = public_state(j.state)['careers']['grocery']['data']['ledger_view']
+        sau = next(r for r in view if r['npc'] == 'grocery_npc_05')
+        self.assertEqual((sau['trust'], sau['limit_now'], sau['can_credit']), (0, 0, False))
+
+    def test_lean_day_skips_payday_and_a_reminder_hurts(self):
+        self.assertTrue(G._hard(1, 5))
+        self.assertIsNone(G._hard(1, 3))
+        self.assertEqual(G._hard(1, 5), G._hard(1, 5))
+        j = day_journey(5)                                      # Chú Bảy's payday falls on his lean day
+        self.assertEqual(row(j, 1)['balance'], 90)
+        self.assertTrue(any('xin khất' in e['text'] for e in j.c['journal'][-12:]))
+        r = j.act('gr_remind', npc='grocery_npc_02')
+        self.assertIn('giãn nợ', r['message'])
+        self.assertEqual(row(j, 1)['trust'], 1)
+        roundtrip(j)
+
+    def test_plan_pays_in_instalments_even_on_lean_days(self):
+        j = day_journey(5)
+        money = j.c['money']
+        mark = ledger_mark(j)
+        with self.assertRaises(GameError):
+            j.act('gr_plan', npc='grocery_npc_02', parts=4)
+        with self.assertRaises(GameError):
+            j.act('gr_plan', npc='grocery_npc_05', parts=2)       # Bà Sáu owes nothing
+        j.act('gr_plan', npc='grocery_npc_02', parts=3)
+        r = row(j, 1)
+        self.assertEqual(r['plan'], dict(each=30, left=3, next=7))
+        self.assertEqual(r['since'], 5)
+        self.assertEqual(j.c['money'], money)                   # talking costs nothing
+        with self.assertRaises(GameError):
+            j.act('gr_plan', npc='grocery_npc_02', parts=2)       # one plan at a time
+        with self.assertRaises(GameError):
+            j.act('gr_remind', npc='grocery_npc_02')              # nothing to remind while it runs
+        self.assertFalse(G._ledger_ok(j.c, 1, 1)[0])            # no new credit meanwhile
+        trust = r['trust']
+        for day, left in ((7, 60), (9, 30), (11, 0)):           # day 11 is a lean day: the plan still pays
+            j.c['day'] = day
+            G.on_start(j.state, j.c)
+            self.assertEqual(row(j, 1)['balance'], left, day)
+        self.assertTrue(G._hard(1, 11))
+        self.assertIsNone(row(j, 1)['plan'])
+        self.assertEqual(row(j, 1)['trust'], trust + 1)
+        self.assertEqual(sum(e['amount'] for e in j.c['ops']['finance']['ledger'][mark:] if str(e['ref']).startswith('ledger-1-')), 90)
+        roundtrip(j)
+
+    def test_overdue_costs_trust_once_and_old_debt_is_written_off(self):
+        j = Journey('grocery')
+        c = j.c
+        for day in range(2, 16):
+            c['day'] = day
+            G.on_start(j.state, c)
+            if day == 7:
+                self.assertTrue(row(j, 1)['late'])
+                self.assertEqual(row(j, 1)['trust'], 1)
+        r = row(j, 1)
+        self.assertEqual(r['balance'], 0)
+        self.assertGreater(r['written'], 0)
+        self.assertEqual(c['ext']['data']['stats']['bad_debt'], r['written'])
+        self.assertEqual(r['paid'] + r['written'], 90)
+        self.assertGreaterEqual(r['trust'], 1)
+        # Chị Lan paid on her payday: trust went up, nothing was lost
+        self.assertEqual(row(j, 2)['written'], 0)
+        self.assertEqual(row(j, 2)['trust'], 5)
+        roundtrip(j)
+
+    def test_refusing_good_credit_costs_trust(self):
+        j = journey('Bà Sáu ghi sổ bó rau')
+        trust = row(j, 4)['trust']
+        j.act('ask')
+        scan_all(j)
+        j.act('gr_total')
+        j.act('gr_decline_credit')
+        self.assertEqual(row(j, 4)['trust'], trust - 1)
+
+
+class GroceryRotationTests(unittest.TestCase):
+    def _shelf(self):
+        j = Journey('grocery')
+        c = j.c
+        c['ext']['inv']['lots'] = [l for l in c['ext']['inv']['lots'] if l['item'] != 'milk']
+        G._sync_rot(c)
+        old = fresh_lot(j, 'milk', 4, 2)       # HSD tomorrow
+        G._sync_rot(c)
+        self.assertFalse(G._unrotated(c, 'milk'))
+        new = fresh_lot(j, 'milk', 10, 3)      # a fresher box arrives and goes in front
+        G._sync_rot(c)
+        return j, old, new
+
+    def test_new_stock_in_front_is_sold_first_until_rotated(self):
+        j, old, new = self._shelf()
+        self.assertTrue(G._unrotated(j.c, 'milk'))
+        view = public_state(j.state)['careers']['grocery']['data']
+        self.assertEqual(view['rotation'][0]['item'], 'milk')
+        self.assertTrue(any(r.get('do', {}).get('cmd') == 'gr_rotate' for r in view['care']))
+        G._take(j.c, 'milk', 3)
+        lots = {l['id']: l['qty'] for l in j.c['ext']['inv']['lots'] if l['item'] == 'milk'}
+        self.assertEqual((lots[old['id']], lots[new['id']]), (4, 7))
+        with self.assertRaises(GameError):
+            j.act('gr_rotate', item='soap')
+        r = j.act('gr_rotate', item='milk')
+        self.assertTrue(r['celebrate'])
+        self.assertFalse(G._unrotated(j.c, 'milk'))
+        with self.assertRaises(GameError):
+            j.act('gr_rotate', item='milk')
+        G._take(j.c, 'milk', 3)
+        lots = {l['id']: l['qty'] for l in j.c['ext']['inv']['lots'] if l['item'] == 'milk'}
+        self.assertEqual((lots[old['id']], lots[new['id']]), (1, 7))
+        roundtrip(j)
+
+    def test_unrotated_old_lot_expires_behind_the_new_one(self):
+        j, old, new = self._shelf()
+        G._take(j.c, 'milk', 4)
+        j.act('end_day', carry_event=True)                      # tomorrow the old lot is on its last day
+        j.act('start_day')
+        waste = [w for w in j.c['life']['waste'] if w['item'] == 'milk']
+        self.assertFalse(waste)
+        self.assertTrue(G._today_units(j.c, 'milk'))
+        self.assertTrue(G._unrotated(j.c, 'milk'))
+        roundtrip(j)
+
+    def test_stock_that_is_not_fresher_is_accepted_quietly(self):
+        j, old, new = self._shelf()
+        j.act('gr_rotate', item='milk')
+        fresh_lot(j, 'milk', 2, 2)                              # a near-date deal lot: not fresher than the front
+        G._sync_rot(j.c)
+        self.assertFalse(G._unrotated(j.c, 'milk'))
+
+    def test_shelf_helper_and_shelf_task_rotate_the_real_shelf(self):
+        j, old, new = self._shelf()
+        msg = G.assist(j.state, j.c, dict(role='gr_shelf'), None)
+        self.assertIn('xoay kệ', msg.lower())
+        self.assertFalse(G._unrotated(j.c, 'milk'))
+
+    def test_expired_slip_follows_the_real_pick_order(self):
+        j = Journey('grocery')
+        c = j.c
+        c['ext']['inv']['lots'] = [l for l in c['ext']['inv']['lots'] if l['item'] != 'milk']
+        G._sync_rot(c)
+        fresh_lot(j, 'milk', 2, 1)                              # dated today
+        G._sync_rot(c)
+        fresh_lot(j, 'milk', 6, 3)
+        G._sync_rot(c)
+        self.assertEqual(G._expired_sold(c, {'milk': 2}), [])  # the front (new) box is picked
+        self.assertTrue(G._expired_sold(c, {'milk': 7}))       # reaching the back finds today's lot
+        G._rotate(c, 'milk')
+        self.assertTrue(G._expired_sold(c, {'milk': 1}))
+
+
+class GroceryListTests(unittest.TestCase):
+    def _day(self, day):
+        j = day_journey(day)
+        for it in ('rice', 'egg', 'greens', 'tomato', 'milk', 'noodle', 'bread', 'oil', 'fishsauce', 'soda', 'snack'):
+            j.c['ext']['inv']['lots'] = [l for l in j.c['ext']['inv']['lots'] if l['item'] != it]
+            fresh_lot(j, it, 25, G.ITEM_INDEX[it].get('life') or 999)
+        G._sync_rot(j.c)
+        return j
+
+    def test_lists_are_fixed_by_the_day(self):
+        self.assertIsNone(G._list_for(4, 2))
+        self.assertEqual(G._list_for(4, 3), G._list_for(4, 3))
+        self.assertTrue(all(G._list_for(k, d) is None for k in G.LISTS for d in (1, 2)))
+        days = {k: [d for d in range(3, 17) if G._list_for(k, d)] for k in G.LISTS}
+        self.assertEqual(days, {4: [3, 10], 6: [4, 11], 2: [6, 13], 5: [7, 14]})
+
+    def test_pack_and_pickup_pays_and_builds_the_bond(self):
+        j = self._day(3)
+        view = public_state(j.state)['careers']['grocery']['data']
+        self.assertTrue(any(x['name'] == 'Bà Sáu' and x['when'] == 'today' for x in view['lists_view']))
+        self.assertTrue(any(x['name'] == 'Chị Diệu' and x['when'] == 'tomorrow' for x in view['lists_view']))
+        with self.assertRaises(GameError):
+            j.act('gr_pack', npc='grocery_npc_07')                # Chị Diệu comes tomorrow
+        want = G._list_for(4, 3)
+        eggs = kit.stock(j.c, 'egg')
+        j.act('gr_pack', npc='grocery_npc_05')
+        self.assertEqual(kit.stock(j.c, 'egg'), eggs - want['egg'])
+        with self.assertRaises(GameError):
+            j.act('gr_pack', npc='grocery_npc_05')                # already full
+        value = G._list_value(j.c, want)
+        money = j.c['money']
+        summary = j.act('end_day', carry_event=True)['summary']
+        self.assertTrue(any('Bà Sáu lấy giỏ' in x for x in summary['career']['lines']))
+        self.assertTrue(any('Ngày mai' in x for x in summary['career']['lines']))
+        got = [e for e in j.c['ops']['finance']['ledger'] if e['ref'] == 'list-4-3']
+        self.assertEqual(sum(e['amount'] for e in got), value)
+        lst = j.c['ext']['data']['lists']['4']
+        self.assertEqual((lst['bond'], lst['packed'], lst['done']), (3, {}, 1))
+        self.assertGreater(j.c['money'], money)
+        roundtrip(j)
+
+    def test_unpacked_list_goes_to_may_mart_and_stale_pack_upsets(self):
+        j = self._day(3)
+        j.act('end_day', carry_event=True)
+        self.assertEqual(j.c['ext']['data']['lists']['4']['bond'], 1)
+        self.assertEqual(j.c['ext']['data']['stats']['lists_missed'], 1)
+        j = self._day(3)
+        fresh_lot(j, 'egg', 30, 1)                               # a box dated today, packed first
+        j.c['ext']['data']['rot']['egg'] = [l['id'] for l in G._live(j.c, 'egg')]
+        r = j.act('gr_pack', npc='grocery_npc_05')
+        self.assertIn('hết hạn hôm nay', r['message'])
+        j.act('end_day', carry_event=True)
+        self.assertEqual(j.c['ext']['data']['lists']['4']['bond'], 1)
+
+    def test_partial_pack_can_be_topped_up(self):
+        j = self._day(3)
+        set_stock(j, 'egg', 3)
+        j.act('gr_pack', npc='grocery_npc_05')
+        self.assertEqual(j.c['ext']['data']['lists']['4']['packed']['egg'], 3)
+        top_up(j, 'egg', 20)
+        j.act('gr_pack', npc='grocery_npc_05')
+        self.assertEqual(j.c['ext']['data']['lists']['4']['packed']['egg'], G._list_for(4, 3)['egg'])
+
+    def test_chi_lan_list_goes_on_the_book(self):
+        j = self._day(6)
+        before = row(j, 2)['balance']
+        j.act('gr_pack', npc='grocery_npc_03')
+        value = G._list_value(j.c, G._list_for(2, 6))
+        j.act('end_day', carry_event=True)
+        self.assertEqual(row(j, 2)['balance'], before + value)
+
+    def test_close_regular_stops_haggling(self):
+        day, slot = find(lambda t: t['kind'] == 'checkout' and t['needs'].get('_haggle') and G._npc_index(t) in G.LISTS)
+        j = Journey('grocery', slot=slot, day=day)
+        restock(j)
+        j.c['ext']['data']['lists'][str(G._npc_index(j.task))]['bond'] = G.BOND_CALM
+        j.act('ask')
+        item = j.task['needs']['_haggle']
+        r = j.act('gr_scan', item=item, qty=1)
+        self.assertIsNone(j.task['haggle'])
+        self.assertNotIn('Mây Mart', r['message'])
+
+
+class GroceryForecastTests(unittest.TestCase):
+    def test_forecast_names_tomorrow_and_its_shortfalls(self):
+        j = Journey('grocery')
+        for it in G.ITEMS:
+            set_stock(j, it['id'], 0)
+        f = public_state(j.state)['careers']['grocery']['data']['forecast']
+        self.assertEqual(f['day'], 2)
+        self.assertEqual(f['mod']['id'], G.mod_of(2)['id'])
+        self.assertTrue(f['short'] > 0 and all(r['short'] == r['want'] or r['want'] >= r['short'] for r in f['needs']))
+        self.assertIn('Nhập thêm', f['tip'])
+        # the forecast never changes what tomorrow deals
+        self.assertEqual(G.make_task(2, 0, 5), G.make_task(2, 0, 5))
+        want = dict(G._demand(2))
+        self.assertTrue(want)
+
+    def test_old_save_migrates_the_care_fields(self):
+        j = Journey('grocery')
+        d = j.c['ext']['data']
+        for r in d['ledger'].values():
+            for k in ('trust', 'late', 'plan', 'written'):
+                r.pop(k)
+        d.pop('rot')
+        d.pop('lists')
+        for k in ('bad_debt', 'plans', 'rotated', 'lists', 'lists_missed'):
+            d['stats'].pop(k)
+        validate_state(j.state)
+        self.assertEqual(d['ledger']['1']['trust'], 2)
+        self.assertIn('milk', d['rot'])
+        self.assertEqual(set(d['lists']), {'2', '4', '5', '6'})
+        roundtrip(j)
+
+    def test_tampered_care_fields_are_rejected(self):
+        for bad in (lambda d: d['ledger']['1'].update(trust=9),
+                    lambda d: d['ledger']['1'].update(plan=dict(each=0, left=2, next=3)),
+                    lambda d: d['ledger']['1'].update(plan=dict(each=10, left=7, next=3)),
+                    lambda d: d['lists']['4'].update(packed={'beer': 3}),
+                    lambda d: d['lists']['4'].update(bond=6),
+                    lambda d: d['rot'].update(soap=[])):
+            j = Journey('grocery')
+            s = copy.deepcopy(j.state)
+            bad(s['careers']['grocery']['ext']['data'])
+            with self.assertRaises(GameError):
+                validate_state(json.loads(json.dumps(s)))
+
+
 if __name__ == '__main__':
     unittest.main()
