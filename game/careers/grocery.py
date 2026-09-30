@@ -39,6 +39,7 @@ import functools
 from . import kit
 from .. import consequences as cq
 from .. import archive as ar
+from .. import patience as pt
 
 ID = 'grocery'
 DENOMS = (1, 2, 5, 10, 20, 50, 100, 200, 500)
@@ -1562,7 +1563,7 @@ def _make_rush(day: int, slot: int, serial: int, rng, mod: str, second: bool = F
 
 def _deadline(t: dict, i: int) -> int:
     n = t['needs']
-    return t['rush']['start'] + n['pace'] * (i + 1) + n['slack']
+    return t['rush']['start'] + pt.longer(n['pace'] * (i + 1) + n['slack'])  # PATIENCE_FACTOR: each place in the queue waits a bit longer
 
 
 def _rush_units(c: dict, t: dict, i: int) -> dict:

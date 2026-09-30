@@ -16,6 +16,8 @@ Text may be a dict(male=…, female=…, none=…) read from the journey gender.
 """
 from __future__ import annotations
 
+from .compensation import comp as _den
+
 ALL = ('mother_baby', 'pharmacy', 'accounting', 'customer_care', 'teacher', 'tour_guide', 'milk_tea', 'restaurant',
        'cafe_bakery', 'florist', 'grocery', 'repair', 'farm', 'delivery', 'homestay', 'pet_care', 'salon',
        'corp_accounting', 'tax_payroll', 'group_accounting', 'tra_da', 'clothing', 'pet_shop')
@@ -45,12 +47,17 @@ CATS = {
 # security_reward, compensation, refund, under_table, legal, incident… (the ledger accepts any short name).
 
 
+def _scaled(amount: int, cat: str) -> int:
+    # Tiền đền you pay out goes through the compensation factor (game/compensation.py).
+    return -_den(-amount) if cat == 'compensation' and amount < 0 else amount
+
+
 def F(amount: int, cat: str) -> tuple:
-    return ('fund', amount, cat)
+    return ('fund', _scaled(amount, cat), cat)
 
 
 def W(amount: int, cat: str) -> tuple:
-    return ('wallet', amount, cat)
+    return ('wallet', _scaled(amount, cat), cat)
 
 
 def R(outcome: str, *pay, good=None, trust: int = 0, **kw) -> dict:
@@ -554,7 +561,7 @@ INCIDENTS = [
          review=(5, 'Mất đồ nhưng quán giúp hết lòng, cùng đi trình báo. Cảm ơn nhiều!')),
        O('compensate', 'Đền một phần cho chị để giữ uy tín',
          'Chị khách cảm động. Nhưng số tiền ấy lẽ ra dùng để lắp thêm camera cho cả quán.', F(-60, 'compensation'),
-         good=None, trust=2, voluntary=True, hint='Quỹ −60 xu'),
+         good=None, trust=2, voluntary=True, hint=f'Quỹ −{_den(60)} xu'),
        O('sign', 'Chỉ vào tấm biển “tự bảo quản” rồi thôi',
          'Chị khách ra về trong nước mắt.', good=False, trust=-3,
          review=(1, 'Mất đồ trong quán mà quán phủi tay, chỉ vào tấm biển. Không bao giờ quay lại.'))],
@@ -750,8 +757,9 @@ INCIDENTS = [
        O('refund', 'Xin lỗi, đổi món mới, không lấy tiền bữa đó',
          'Khách vẫn đăng clip, nhưng có người bình luận là đã thấy anh ta làm y vậy ở quán khác.', F(-8, 'refund'), good=None,
          review=(1, 'Ăn trúng gián, quán chỉ đổi tô mới. Cẩn thận nhé mọi người!')),
+       # Giving in to extortion, not đền for harm done: the full 100 xu the text names (no compensation factor).
        O('pay', 'Trả 100 xu cho yên',
-         'Khách cầm tiền đi. Hai hôm sau một người khác tới diễn lại y hệt.', F(-100, 'compensation'), good=False, trust=-2,
+         'Khách cầm tiền đi. Hai hôm sau một người khác tới diễn lại y hệt.', ('fund', -100, 'compensation'), good=False, trust=-2,
          voluntary=True, hint='Quỹ −100 xu')],
       careers=('restaurant', 'cafe_bakery', 'milk_tea'), min_day=5, tone='tense', default='refund'),
     I('influencer', 'nguoi', '🤳', 'Khách dọa đánh giá 1 sao',
@@ -919,7 +927,7 @@ INCIDENTS = [
          'Bác sĩ nói dị ứng nhẹ, vài hôm sẽ khỏi. Khách thấy tiệm có trách nhiệm, không đăng bài nữa.', F(-25, 'compensation'),
          good=True, trust=3),
        O('pay_all', 'Đền đủ cho êm', 'Khách nhận tiền, nhưng bạn bè khách nghe chuyện lại tới hỏi “đền bao nhiêu”.',
-         F(-90, 'compensation'), good=False, voluntary=True, hint='Quỹ −90 xu'),
+         F(-90, 'compensation'), good=False, voluntary=True, hint=f'Quỹ −{_den(90)} xu'),
        O('deny', 'Chỉ vào chữ ký, không chịu trách nhiệm gì', 'Khách đăng ảnh da đầu đỏ rực kèm tên tiệm.', good=False, trust=-3,
          review=(1, 'Dị ứng đỏ cả da đầu mà tiệm chỉ vào tờ giấy. Vô tâm.'))],
       careers=('salon',), min_day=4, default='deny'),
@@ -1048,7 +1056,7 @@ INCIDENTS = [
       [O('meet', 'Hẹn gặp cùng ban giám hiệu, cho xem sổ y tế và camera',
          'Bố bé xem camera rồi dịu lại. Nhà trường gửi quà thăm hỏi, không ai phải bồi thường gì.', good=True, trust=3),
        O('pay', 'Tự bỏ tiền túi cho yên', 'Bố bé nhận tiền, tuần sau lại đòi thêm vì “con còn sợ đi học”.', W(-40, 'compensation'),
-         good=False, trust=-2, voluntary=True, hint='Ví −40 xu'),
+         good=False, trust=-2, voluntary=True, hint=f'Ví −{_den(40)} xu'),
        O('argue', 'Cãi tay đôi trên nhóm lớp', 'Nhóm lớp chia phe. Hiệu trưởng yêu cầu bạn gỡ tin nhắn và để nhà trường xử lý.',
          good=False, trust=-4)],
       careers=('teacher',), min_day=6, default='argue'),

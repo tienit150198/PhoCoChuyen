@@ -9,6 +9,9 @@
 
 /* What you have: the 💰 chip on the header (money.css) shows Ví · Tài khoản · Quỹ chung. */
 
+/* Bước tiếp theo (the guide's line, guide.css) */
+.hs-next{margin:0}
+
 /* Where you live */
 .hs-place-top,.hs-home-top{display:flex;gap:12px;align-items:center;min-width:0}
 .hs-place-top .grow,.hs-home-top .grow{min-width:0;flex:1}
@@ -36,7 +39,10 @@
 .hs-facts dd{margin:2px 0 0;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .hs-facts .up{color:var(--good)}
 .hs-sched{margin-top:10px}
-.hs-sched summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:700}
+.hs-sched summary{min-height:44px;display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;list-style:none}
+.hs-sched summary::-webkit-details-marker{display:none}
+.hs-sched summary::after{content:"";width:8px;height:8px;margin-left:auto;border:solid currentColor;border-width:0 2px 2px 0;transform:translateY(-2px) rotate(45deg);transition:transform .15s}
+.hs-sched[open] summary::after{transform:translateY(2px) rotate(-135deg)}
 .hs-sched .bk-sched{max-height:320px;overflow:auto;display:block}
 .hs-buy .bk-toggle{align-items:center}
 

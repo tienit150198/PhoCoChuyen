@@ -18,6 +18,7 @@ texts and what a choice does (`apply(s, c, plan, choice) -> (text, good)`).
 from __future__ import annotations
 from . import kit
 from .. import archive as ar
+from .. import patience as pt
 
 DONE = ('completed', 'cancelled', 'referred')
 PERSONAS = dict(
@@ -207,6 +208,8 @@ def patience_tick(c: dict, cid: str, active_id: str | None, extra: int = 0) -> N
             continue
         kind = (t.get('guest') or {}).get('kind')
         loss = extra + (2 if kind == 'rush' else 0) - (1 if kind in ('chatty', 'elder') else 0)
+        if loss > 0:
+            loss = pt.drain(c, t, loss)  # waiting (PATIENCE_FACTOR)
         if loss:
             t['patience'] = max(25, min(100, t.get('patience', 100) - loss))
 

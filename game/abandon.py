@@ -37,6 +37,7 @@ from __future__ import annotations
 import hashlib
 
 from . import archive as ar
+from . import compensation as cf
 
 VERSION = 1
 TRUST_START = 70          # "Điểm tin cậy của chủ" of a new employer
@@ -48,7 +49,8 @@ STARTED_STATUS = ('in_progress', 'proposed', 'executing', 'awaiting_confirmation
 OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting')
 
 # Fine: per started job a quarter of its value (5..30 xu), 3 xu per waiting customer
-# (at most 15), at least 5 xu; times the offence number today (1, 2, 3 at most); at most 120 xu.
+# (at most 15), at least 5 xu; times the offence number today (1, 2, 3 at most); at most 120 xu. Then the
+# tiền đền factor (game/compensation.py): what is charged and shown is comp(fine), e.g. 4..96 xu at 0.8.
 FINE_MIN, FINE_JOB_MIN, FINE_JOB_MAX, FINE_WAIT, FINE_WAIT_MAX, FINE_MAX = 5, 5, 30, 3, 15, 120
 # Trust: 2 + 4 per started job + 1 per two waiting customers (at most 10), times the offence number; at most 25.
 TRUST_BASE, TRUST_JOB, TRUST_ONE_MAX, TRUST_MAX = 2, 4, 10, 25
@@ -233,7 +235,7 @@ def assess(s: dict, cid: str) -> dict | None:
     today = row['today'] if isinstance(row, dict) and row.get('day') == c['day'] else 0
     n = min(3, today + 1)
     job_fine = sum(max(FINE_JOB_MIN, min(FINE_JOB_MAX, _value(t) // 4)) for t in jobs)
-    fine = min(FINE_MAX, max(FINE_MIN, job_fine + min(FINE_WAIT_MAX, FINE_WAIT * len(waiting))) * n)
+    fine = cf.comp(min(FINE_MAX, max(FINE_MIN, job_fine + min(FINE_WAIT_MAX, FINE_WAIT * len(waiting))) * n))
     trust = min(TRUST_MAX, min(TRUST_ONE_MAX, TRUST_BASE + TRUST_JOB * len(jobs) + len(waiting) // 2) * n)
     kind = _kind(cid, c)
     story = bool((s.get('journey') or {}).get('story'))

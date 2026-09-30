@@ -10,6 +10,7 @@ from . import teach_lesson, tour_trip
 from .careers import PLUGINS
 from .jsoncopy import tree_copy
 from . import archive as ar
+from . import patience as pt
 
 GOALS_KEPT=3  # day recaps kept in the save (nothing reads them; x['recap'] is the last one; the rest is archived)
 
@@ -346,7 +347,7 @@ def update_patience(c:dict,action:str,payload:dict,before:dict):
  for task in c['tasks']:
   if task['status'] in DONE:continue
   loss=0
-  if action in physical and task['id']!=active and not task.get('deferred'):loss=1
+  if action in physical and task['id']!=active and not task.get('deferred'):loss=pt.drain(c,task,1)  # waiting (PATIENCE_FACTOR)
   loss+=max(0,task['mistakes']-before.get(task['id'],task['mistakes']))*4
   if loss:task['patience']=max(25,task.get('patience',100)-loss)
 

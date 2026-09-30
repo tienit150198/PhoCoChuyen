@@ -118,7 +118,7 @@ CAREERS = {'milk_tea': {'emoji': '🧋',
                            {'bad': 'Để khách chờ quá lâu',
                             'result': 'Kiên nhẫn còn 25% mà chưa có ly: khách bỏ về (cả nhóm đi theo), để review 2★.'},
                            {'bad': 'Đơn app trễ giờ tài xế',
-                            'result': 'Trễ bị ghi lỗi “giao trễ”. Trễ thêm 10 nhịp chưa dán nắp: đơn bị hủy, review '
+                            'result': 'Trễ bị ghi lỗi “giao trễ”. Trễ thêm 12 nhịp chưa dán nắp: đơn bị hủy, review '
                                       '2★.'},
                            {'bad': 'Quầy còn vệt trà khi đoàn kiểm tra tới',
                             'result': 'Mở sổ ngay thì bị phạt 40 xu; xin lau trước thì khách chờ lâu hơn. Dúi phong '
@@ -359,7 +359,7 @@ CAREERS = {'milk_tea': {'emoji': '🧋',
               'jobs': [{'emoji': '🍛',
                         'name': 'Đơn đồ ăn',
                         'how': 'Tới quán, chờ món xong, [[So túi với bill]] rồi [[Nhận món lên thùng]]. Có giờ hẹn; '
-                               'trễ quá 25 phút là khách hủy.'},
+                               'trễ quá 30 phút là khách hủy.'},
                        {'emoji': '📦',
                         'name': 'Kiện hàng thường',
                         'how': 'Ở bưu cục bấm [[Cân & kiểm hàng]], gói đúng vật tư rồi [[Nhận hàng lên xe]]. Lệch cân '
@@ -413,14 +413,14 @@ CAREERS = {'milk_tea': {'emoji': '🧋',
                         '💝 Khách quen được làm đúng lời dặn gửi 2 xu tiền cà phê (khách ruột 4 xu). Giao đẹp đôi khi '
                         'còn được tip hoặc quà nhỏ.'],
               'mistakes': [{'bad': 'Hàng dễ vỡ không bọc xốp',
-                            'result': 'Vỡ trên đường, khách từ chối. Phải [[Báo giao thất bại]], bạn đền nửa giá trị '
-                                      'hàng, tối đa 2★.'},
+                            'result': 'Vỡ trên đường, khách từ chối. Phải [[Báo giao thất bại]], bạn đền một phần giá '
+                                      'trị hàng (bảo hiểm trả phần còn lại), tối đa 2★.'},
                            {'bad': 'Trời mưa không trùm túi chống nước',
                             'result': 'Thùng ướt, khách phàn nàn. Giấy tờ gốc ướt nhòe là hỏng, không giao được nữa.'},
                            {'bad': 'Chạy hẻm xóc khi chở nước lèo, hoặc không so bill',
                             'result': 'Đổ nước lèo hay thiếu món: khách càu nhàu, đòi bớt 25% hoặc hoàn 50% phí ship.'},
                            {'bad': 'Trễ giờ hẹn',
-                            'result': 'Mất 4 xu phí ship (hoặc khách tự cắt tiền). Đồ ăn trễ quá 25 phút: khách hủy, '
+                            'result': 'Mất 4 xu phí ship (hoặc khách tự cắt tiền). Đồ ăn trễ quá 30 phút: khách hủy, '
                                       'mất đơn, 1★.'},
                            {'bad': 'Thối thiếu tiền',
                             'result': 'Khách kỹ đếm ngay, đòi thêm: lỗi nhỏ (4★). Không ai đếm thì về nhà mới thấy: '
@@ -1473,7 +1473,7 @@ CAREERS = {'milk_tea': {'emoji': '🧋',
                        {'bad': 'Lẫn loại B vào hợp đồng loại A',
                         'result': 'Phần loại B chỉ tính 70% giá, khách phàn nàn, sao giảm.'},
                        {'bad': 'Phun thuốc hóa học khi ong đang ở cạnh vườn',
-                        'result': 'Ong chết cả đàn, đền 15 xu, bị chấm 1★.'},
+                        'result': 'Ong chết cả đàn, đền 12 xu, bị chấm 1★.'},
                        {'bad': 'Quên cho gà ăn, bỏ bê chuồng',
                         'result': 'Gà kém vui, mai chỉ nửa đàn đẻ. Trứng để qua đêm thành loại B.'}],
           'prep': ['📦 Bấm [[Kho vật tư]] để đặt hạt giống, phân, thuốc, cám gà và bao bì.',
@@ -1596,7 +1596,7 @@ CAREERS = {'milk_tea': {'emoji': '🧋',
                            {'bad': 'Tính dư hóa đơn',
                             'result': 'Khách kỹ tính chỉ ra ngay. Không thì tối khách nhắn đòi lại tiền, review tụt.'},
                            {'bad': 'Giao đồ thất lạc cho người mạo danh',
-                            'result': 'Lỗi nặng, review tối đa 2★. Chủ thật gọi tới: nhận lỗi thì đền 25 xu, đổ lỗi '
+                            'result': 'Lỗi nặng, review tối đa 2★. Chủ thật gọi tới: nhận lỗi thì đền 20 xu, đổ lỗi '
                                       'thì bị 1★. Từ chối chủ thật cũng bị chê.'},
                            {'bad': 'Tin ảnh chụp chuyển khoản, không mở app ngân hàng',
                             'result': 'Ảnh có thể là giả: mất luôn tiền cọc.'},
@@ -3659,9 +3659,9 @@ GROUPS = [{'id': 'start',
               'points': ['⚠️ Đang làm dở (đã bắt tay vào việc, có khách chờ hoặc đơn hẹn tới giờ) mà sang nơi khác là '
                          'bỏ dở việc.',
                          '❓ Game hỏi lại trước: [[Ở lại làm nốt]] hoặc [[Vẫn đi]].',
-                         '💸 Vẫn đi thì bị phạt: mỗi việc dở một phần tư giá trị (5–30 xu), mỗi khách chờ 3 xu, ít nhất '
-                         '5 xu.',
-                         '🔁 Bỏ lần thứ 2, thứ 3 trong ngày thì phạt nhân đôi, nhân ba, tối đa 120 xu.',
+                         '💸 Vẫn đi thì bị phạt: mỗi việc dở khoảng một phần năm giá trị (4–24 xu), mỗi khách chờ '
+                         'khoảng 2 xu, ít nhất 4 xu.',
+                         '🔁 Bỏ lần thứ 2, thứ 3 trong ngày thì phạt nhân đôi, nhân ba, tối đa 96 xu.',
                          '🏪 Tiệm của bạn: phạt trừ quỹ tiệm (thiếu thì trừ ví), mất uy tín với khu phố. Làm thuê: trừ '
                          'ví, mất điểm tin cậy của chủ hoặc của sếp.',
                          '😠 Việc dở bị hủy, khách để review bực, khách chờ bỏ về. Lần thứ hai trong ngày, chủ nhắc '

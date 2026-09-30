@@ -29,20 +29,18 @@ from pathlib import Path
 
 ENTRIES = (
     dict(version="0.9.5", date="2026-09-30", items=(
-        dict(emoji="⚡", text="Máy chủ cập nhật không làm mất thao tác: lỡ lúc khởi động lại, game tự gửi lại, chỉ hiện \"Đang cập nhật máy chủ…\" vài giây."),
-        dict(emoji="🏠", text="Giờ bạn có thể mua nhà: trả trước 30%, vay ngân hàng trả góp mỗi tháng, không còn tiền phòng.", go=dict(action="house")),
-        dict(emoji="🐷", text="Gửi tiết kiệm có kỳ hạn tới 3 năm, lãi tính theo năm (1 năm = 60 ngày sống), tới hạn tự gửi tiếp nếu muốn.", go=dict(action="bank")),
-        dict(emoji="💞", text="Vợ chồng có thể góp quỹ chung mua nhà, rồi cùng về ở chung.", go=dict(action="house")),
-        dict(emoji="👗", text="Tủ đồ đã mở: đổi kiểu tóc, áo quần, giày, phụ kiện cho nhân vật. Làm ở Tiệm Áo Chỉ Mây được giảm 20%.", go=dict(action="jrWardrobe")),
-        dict(emoji="🗣️", text="Người trong phố giờ có chính kiến hơn: khen có gai, chê có lý, mà vẫn thương bạn."),
-        dict(emoji="💰", text="Lúc nhập hàng, mua sắm hay gửi rút tiền, góc trên luôn hiện Ví và Quỹ tiệm. Thiếu tiền thì ghi rõ còn thiếu bao nhiêu."),
-        dict(emoji="📉", text="Hàng giao thiếu? Nút \"Khiếu nại phần thiếu\" hiện ngay trong Kho, bấm là được hoàn tiền."),
-        dict(emoji="🔧", text="Tiệm sửa đồ: phiếu nhận máy ghi sẵn khách đưa kèm những gì, khỏi phải đoán."),
-        dict(emoji="🐾", text="Pet care và shop quần áo: lời dặn của khách hiện ngay cạnh chỗ chọn, không còn bị giấu."),
-        dict(emoji="💬", text="Thông báo gọn gàng: nhiều tin cùng lúc giờ xếp thành từng dòng có biểu tượng, dễ đọc hơn."),
-        dict(emoji="⭐", text="Trang Đánh giá gọn hơn: lời khách, lời bạn đáp và khách đổi mấy sao nằm trong từng ô màu riêng, liếc là thấy."),
-        dict(emoji="🧾", text="Tổng kết ngày, Chuyện phố và Sổ tiệm bớt rối: ít ô màu hơn, mỗi màn chỉ một nút chính."),
-        dict(emoji="🚀", text="Máy chủ nhẹ hơn khi đông người chơi."),
+        dict(emoji="🏠", text="Mua nhà: trả trước 30%, còn lại vay trả góp. Có nhà là hết tiền phòng.", go=dict(action="house")),
+        dict(emoji="💞", text="Vợ chồng góp quỹ chung mua nhà, rồi về ở chung."),
+        dict(emoji="🐷", text="Tiết kiệm có kỳ hạn tới 3 năm, lãi theo năm, tới hạn tự gửi tiếp.", go=dict(action="bank")),
+        dict(emoji="👗", text="Tủ đồ: đổi tóc, áo quần, giày, phụ kiện. Làm ở Tiệm Áo Chỉ Mây được giảm 20%.", go=dict(action="jrWardrobe")),
+        dict(emoji="😊", text="Khách kiên nhẫn hơn một chút."),
+        dict(emoji="🪙", text="Tiền đền nhẹ hơn."),
+        dict(emoji="💰", text="Nhập hàng, mua sắm, gửi rút tiền: Ví và Quỹ tiệm luôn hiện ở góc trên, thiếu bao nhiêu ghi rõ."),
+        dict(emoji="📉", text="Hàng giao thiếu: bấm “Khiếu nại phần thiếu” ngay trong Kho để được hoàn tiền."),
+        dict(emoji="🔧", text="Sửa đồ, pet care, shop quần áo: lời dặn và đồ khách đưa kèm hiện ngay chỗ chọn."),
+        dict(emoji="🗣️", text="Người trong phố có chính kiến hơn: khen có gai, chê có lý."),
+        dict(emoji="🧾", text="Màn hình yên hơn: thông báo từng dòng, Đánh giá, Tổng kết ngày và Sổ tiệm gọn gàng."),
+        dict(emoji="⚡", text="Máy chủ cập nhật không làm mất thao tác, nhẹ hơn khi đông người chơi."),
     )),
 )
 

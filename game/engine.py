@@ -43,6 +43,7 @@ from . import closeness as qn
 from . import abandon as ab
 from . import dayclock as dc
 from . import wardrobe as wd
+from . import patience as pt
 
 ORIGINAL=("mother_baby","pharmacy","accounting","customer_care")
 UI_THEMES=("kem","tra_xanh","dem","bien","keo")
@@ -462,6 +463,7 @@ def chat_reply(s:dict,c:dict,career:str,npc:str,text:str) -> tuple[str,list[dict
 
 
 LEARNING_TASKS=2  # onboarding: while a career's first jobs are done, waiting costs no patience
+# How long customers put up with waiting afterwards: PATIENCE_FACTOR in game/patience.py.
 
 # Set by apply_action(scoped=True): validate_state leaves the careers to the storage layer.
 _SCOPED=contextvars.ContextVar("scoped_validation",default=False)
@@ -2064,7 +2066,7 @@ CS_TONES=("vui","binh","lo","buc")
 CS_TONE_LABEL={"vui":"vui vẻ","binh":"bình tĩnh","lo":"lo lắng","buc":"bực bội"}
 CS_START_TONE={"missing":"lo","delivered":"buc","delay":"lo","wrong":"lo","refund":"binh","guide":"binh"}
 CS_WAIT_LABEL={"dau_moi":"đầu mối xác nhận","kho":"kho gửi hàng","vc":"đơn vị vận chuyển đối soát","ketoan":"kế toán duyệt hoàn","chi_mai":"chị Mai phản hồi"}
-CS_SLA_FIRST=120  # minutes to the first contact on a new case (from day 3)
+CS_SLA_FIRST=pt.longer(120)  # minutes to the first contact on a new case (from day 3), PATIENCE_FACTOR applied
 CS_UPDATE_BY=12*60  # a waiting case gets its daily update call before noon
 CS_PICKS={"update":"Báo tình trạng thật của đơn","sorry":"Xin lỗi và hẹn giờ cập nhật","ask":"Hỏi khách thêm thông tin","bye":"Cảm ơn và chào khách"}
 CS_CALL_MAX=8

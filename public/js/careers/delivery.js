@@ -358,7 +358,7 @@ function dropCard(t,x){
       ${n.safe_drop&&!n.cod?x.confirmCmd('📸 Gửi chòi bảo vệ','dl_safedrop',{task:t.id},'Gửi hàng ở chòi bảo vệ và chụp ảnh làm bằng chứng? Khách đã cho phép trong ghi chú.',''):''}
       ${!n.safe_drop&&!n.cod&&!n.paper?x.confirmCmd('📦 Gửi người nhận hộ','dl_safedrop',{task:t.id},'Khách chưa cho phép gửi người khác. Vẫn gửi nhận hộ và chụp ảnh?','ghost small'):''}</div>`;
   }
-  if(r.knocks||blocked)body+=`<div class="row wrap">${x.confirmCmd('📝 Báo giao thất bại','dl_fail',{task:t.id},r.broken_seen?'Lập biên bản hàng hỏng? Bạn đền một nửa giá trị hàng.':'Báo giao thất bại cho đơn này?','danger small')}</div>`;
+  if(r.knocks||blocked)body+=`<div class="row wrap">${x.confirmCmd('📝 Báo giao thất bại','dl_fail',{task:t.id},r.broken_seen?'Lập biên bản hàng hỏng? Bạn đền một phần giá trị hàng, bảo hiểm trả phần còn lại.':'Báo giao thất bại cho đơn này?','danger small')}</div>`;
   return body;
 }
 function hubPanel(x,open=true){
