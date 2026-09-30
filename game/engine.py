@@ -42,6 +42,7 @@ from . import whats_new as wn
 from . import closeness as qn
 from . import abandon as ab
 from . import dayclock as dc
+from . import wardrobe as wd
 
 ORIGINAL=("mother_baby","pharmacy","accounting","customer_care")
 UI_THEMES=("kem","tra_xanh","dem","bien","keo")
@@ -177,6 +178,7 @@ def migrate_state(state:dict,owned:bool=False) -> dict:
         incs.migrate(s)  # chuyện đời: an empty incident book per workplace
         haps.migrate(s)  # chuyện bất ngờ trong ca: live happenings in the scene
         cst.migrate(s)  # truyện nghề: an empty story book for older saves
+        wd.migrate(s)  # tủ đồ: the look older saves were drawn with (game/wardrobe.py)
         emp.migrate(s)  # xin việc: nơi đã làm trước khi cần tuyển dụng thì coi như đã ký hợp đồng
         inv.migrate(s)  # kho: đơn nhập cũ theo nhịp → giờ giao dự kiến
         _trim_histories(s)  # v0.8.1: journal, cash book and day recaps beyond the new caps move to the archive

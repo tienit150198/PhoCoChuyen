@@ -15,6 +15,7 @@ import {R,E,L,T,P,fit,heart,bloom,plantAt,mascot} from './scenes/kit.js';
 import {sceneFor,wordsFor} from './scenes/index.js';
 import {language} from './v4/i18n.js';
 import {daylight} from './v4/dayclock.js';
+import {figure,paintLegs,paintHairBack,paintTop,paintHairFront,paintAcc} from './v4/look.js';  // Tủ đồ: the player's look
 const themes={
  teacher:{primary:'#8ca97c',dark:'#556e46',light:'#f0f2dc',mint:'#e5d8ac',wall:'#fcf5df',awning:'#b5c897',title:'Lớp học Mầm Nắng',sub:'CÙNG THỬ · CÙNG HIỂU · CÙNG TIẾN BỘ',shelves:['Góc học liệu','Hộp đồ lớp mình']},
  tour_guide:{primary:'#78b3b6',dark:'#467c7f',light:'#eaf4e5',mint:'#e2caae',wall:'#eef5e8',awning:'#b3d2c4',title:'Mây Lang Thang',sub:'ĐI CÙNG NHAU · MANG VỀ MỘT CÂU CHUYỆN',shelves:['Bưu thiếp khu phố','Bản đồ & hành trang']},
@@ -295,27 +296,31 @@ export class BobaWorld extends World {
  playerLook(){const g=this.state?.journey?.gender;return g==='male'||g==='female'?g:'neutral';}
  character(x,y,id,player=false,moving=false){const c=this.ctx,p=this.project(x,y),pal=this.palette();
    const employee=this.c?.ops?.staff?.find(e=>e.id===id),officer=id==='officer';const n=employee?.avatar??(Number(String(id).slice(-2))||0);const old=!player&&!employee&&n===2;
-   const look=player?this.playerLook():null,long=player?look==='female':n%2===1;const hair=old?'#ada59f':player?(look==='male'?'#4f3a30':'#74503f'):n%2?'#755440':'#544641';
-   const outfit=officer?'#719c95':employee?.color|| (player?pal.primary:['#aacabb','#c8b7da','#dfb6a2','#94b7c8'][n%4]);const blink=!this.reduced&&Math.sin(this.time*1.1+n)>.992;const bob=this.reduced?0:Math.sin(this.time*(moving?7:1.8)+n)*(moving?2:1);
+   const look=player?this.playerLook():null,F=player?figure(this.state):null,long=player?F.long:n%2===1;const hair=old?'#ada59f':player?F.hair:n%2?'#755440':'#544641';
+   const outfit=officer?'#719c95':employee?.color|| (player?F.topC||(F.L.uniform?pal.primary:F.classic):['#aacabb','#c8b7da','#dfb6a2','#94b7c8'][n%4]);const blink=!this.reduced&&Math.sin(this.time*1.1+n)>.992;const bob=this.reduced?0:Math.sin(this.time*(moving?7:1.8)+n)*(moving?2:1);
    c.save();c.translate(p.x,p.y+bob);c.scale(1.08,1.08);E(c,0,0,26,8,'#81644823');
-   const step=moving&&!this.reduced?Math.sin(this.time*8)*3:0;R(c,-19,-20,15,20,look==='male'?'#6f6a78':'#f0d3b8',5);R(c,4,-20,15,20,look==='male'?'#6f6a78':'#f0d3b8',5);R(c,-21,-7+step,19,10,'#785c51',5);R(c,3,-7-step,19,10,'#785c51',5);
-   if(long)R(c,-28,-92,56,64,hair,22);
-   R(c,-23,-52,46,36,outfit,15);E(c,-25,-36,8,14,'#f5d5ba');E(c,25,-36,8,14,'#f5d5ba');
-   if(player&&look==='male')this.workOutfit(pal);
+   const step=moving&&!this.reduced?Math.sin(this.time*8)*3:0;const sk=F?.skin;
+   if(F){paintLegs(c,F,step);paintHairBack(c,F);}
+   else{R(c,-19,-20,15,20,'#f0d3b8',5);R(c,4,-20,15,20,'#f0d3b8',5);R(c,-21,-7+step,19,10,'#785c51',5);R(c,3,-7-step,19,10,'#785c51',5);if(long)R(c,-28,-92,56,64,hair,22);}
+   R(c,-23,-52,46,36,outfit,15);E(c,-25,-36,8,14,sk?.hand||'#f5d5ba');E(c,25,-36,8,14,sk?.hand||'#f5d5ba');
+   // Tủ đồ: "Mặc đồ làm việc khi vào ca" off shows the chosen top as it is.
+   if(F&&!F.L.uniform)paintTop(c,F);
+   else if(player&&look==='male')this.workOutfit(pal);
    else if(player||employee){P(c,[[-14,-47],[14,-47],[19,-16],[-19,-16]],'#fff7e8');L(c,-15,-49,-10,-59,'#fff7e8',4);L(c,15,-49,10,-59,'#fff7e8',4);R(c,-10,-31,20,10,pal.light,4);heart(c,0,-26,.22,pal.primary);}
    // Generous face, warm cheeks, layered hair and eye highlights.
-   E(c,0,-84,33,35,hair);E(c,-29,-71,5,8,'#f3ceb1');E(c,29,-71,5,8,'#f3ceb1');E(c,0,-77,29,28,'#f8dcc2');
+   E(c,0,-84,33,35,hair);E(c,-29,-71,5,8,sk?.ear||'#f3ceb1');E(c,29,-71,5,8,sk?.ear||'#f3ceb1');E(c,0,-77,29,28,sk?.face||'#f8dcc2');
    c.beginPath();
-   if(look==='male'){c.moveTo(-31,-80);c.bezierCurveTo(-35,-118,24,-124,32,-84);c.quadraticCurveTo(26,-95,12,-99);c.quadraticCurveTo(-4,-92,-18,-97);c.quadraticCurveTo(-26,-92,-31,-80);}
+   if(F?.short){c.moveTo(-31,-80);c.bezierCurveTo(-35,-118,24,-124,32,-84);c.quadraticCurveTo(26,-95,12,-99);c.quadraticCurveTo(-4,-92,-18,-97);c.quadraticCurveTo(-26,-92,-31,-80);}
    else{c.moveTo(-30,-88);c.bezierCurveTo(-33,-119,19,-120,31,-90);c.quadraticCurveTo(19,-93,7,-105);c.quadraticCurveTo(5,-88,-12,-84);c.quadraticCurveTo(-17,-91,-16,-101);c.quadraticCurveTo(-21,-89,-30,-88);}
    c.fillStyle=hair;c.fill();
    E(c,-20,-67,7,4,look==='male'?'#efb3a466':'#efa7a0');E(c,20,-67,7,4,look==='male'?'#efb3a466':'#efa7a0');
    if(blink){L(c,-16,-78,-7,-78,'#654739',2);L(c,7,-78,16,-78,'#654739',2);}else{for(const ex of [-11,11]){E(c,ex,-78,5,7,'#705140');E(c,ex-1.3,-80.4,1.8,2.3,'#fffdf3');E(c,ex+1,-75,1,1,'#d7b895');}}
    if(look==='male'){L(c,-16,-89,-6,-90,hair,2.4);L(c,6,-90,16,-89,hair,2.4);}
    c.beginPath();c.arc(0,-66,4,0,Math.PI);c.strokeStyle='#b17c69';c.lineWidth=1.6;c.stroke();
-   if(look==='female'){E(c,-18,-113,17,15,hair);L(c,-25,-112,-12,-120,'#9f7660',2);bloom(c,20,-99,8,'#ffe5b0');}
+   if(F)paintHairFront(c,F);
    if(old){for(const ex of [-11,11]){c.beginPath();c.arc(ex,-78,9,0,Math.PI*2);c.strokeStyle='#89736a';c.lineWidth=1.6;c.stroke();}L(c,-2,-78,2,-78,'#89736a',1);}
    if(officer){R(c,-34,-109,68,14,'#69938c',8);R(c,-25,-119,50,18,'#82aca0',7);T(c,'★',0,-110,10,'#f7dd93');R(c,9,-39,10,9,'#f0d995',2);}
+   if(F)paintAcc(c,F);
    if(this.career==='customer_care'&&player){c.beginPath();c.arc(0,-84,32,Math.PI,0);c.strokeStyle=pal.dark;c.lineWidth=5;c.stroke();R(c,27,-82,9,17,pal.primary,4);L(c,32,-69,17,-64,pal.dark,2);}
    c.restore();
  }

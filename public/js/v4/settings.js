@@ -37,6 +37,7 @@ export function settingsView(env){
       <h3>${icon('user',18)} Hồ sơ</h3>
       <label class="field">Tên của bạn<input class="input" id="player-name" data-preserve maxlength="24" required value="${esc(api.state.name)}"></label>
       <button class="btn primary full" type="submit">Lưu</button>
+      <button type="button" class="btn ghost full" data-action="jrWardrobe"><span aria-hidden="true">👗</span> Thay đồ cho nhân vật</button>
     </form>
     ${tutorialSettings()}
     <section class="settings-block"><h3><span aria-hidden="true">✨</span> Có gì mới</h3><button type="button" class="btn small" data-action="whatsNew">Xem các cập nhật mới</button></section>

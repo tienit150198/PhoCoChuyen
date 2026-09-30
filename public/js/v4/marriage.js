@@ -7,6 +7,7 @@
  * "Bạn bè" / "Hôn nhân", by Cài đặt → Tài khoản, the journey profile chip and the ticker. Names are
  * display names only, always escaped; nothing here ever shows a username, an account id or an IP. */
 import {icon,escapeHTML as esc} from '../icons.js';
+import {myPortrait} from './look.js';
 
 const S={dlg:null,env:null,view:null,catalog:null,tab:'home',plan:null,planKey:'',quote:null,qTimer:0,qSeq:0,flash:null,busy:false,
   form:{code:'',ring:'',message:'',announce:true},found:null,confirm:'',answer:{},loading:false,err:'',
@@ -451,7 +452,7 @@ function couple(){
   const ring=c.ring?`<div class="mr-home-ring">${ringSVG(c.ring.colors,84,`Nhẫn của hai bạn: ${c.ring.name}, ${colorName(c.ring.metal,c.ring.stone)}`)}<small>${esc(colorName(c.ring.metal,c.ring.stone))}</small></div>`:'';
   const h=v.home||{},hp=h.happy;
   const top=married
-    ?`<section class="mr-card mr-home"><div class="mr-sticker" aria-hidden="true">${S.catalog.sticker.emoji}</div><div class="grow"><span class="tag">${esc(S.catalog.sticker.name)}</span><h3>Bạn & ${esc(c.partner.name)}</h3><p>Cưới ngày ${esc(w?.result?.date?viDate(w.result.date):'')}${w?.result?` · ${esc(w.result.venue)}`:''} · bên nhau ${c.days_together} ngày</p></div>${ring}</section>
+    ?`<section class="mr-card mr-home"><div class="mr-sticker mr-me" aria-hidden="true">${myPortrait(S.env?.api?.state,64,'')}<i>${S.catalog.sticker.emoji}</i></div><div class="grow"><span class="tag">${esc(S.catalog.sticker.name)}</span><h3>Bạn & ${esc(c.partner.name)}</h3><p>Cưới ngày ${esc(w?.result?.date?viDate(w.result.date):'')}${w?.result?` · ${esc(w.result.venue)}`:''} · bên nhau ${c.days_together} ngày</p></div>${ring}</section>
       ${hp?`<section class="mr-card mr-glance"><button type="button" class="mr-stat" data-mr="tab" data-tab="love"><small>Điểm hạnh phúc</small><b>💗 ${hp.points}/${hp.max}</b><small>${hp.streak?`${hp.streak} ngày liền`:'Gửi một lời chào hôm nay nhé'}</small></button>
         <button type="button" class="mr-stat" data-mr="tab" data-tab="fund"><small>Quỹ chung</small><b>🏦 ${xu(h.fund?.balance||0)}</b><small>${(h.requests||[]).filter(r=>!r.mine).length?'Có lời nhờ đang chờ':'Gửi, rút, giúp nhau'}</small></button></section>`:''}`
     :`<section class="mr-card mr-home"><div class="mr-sticker" aria-hidden="true">💞</div><div class="grow"><h3>Bạn & ${esc(c.partner.name)}</h3><p>Đã đính hôn ${c.days_together?`${c.days_together} ngày`:'hôm nay'}</p></div>${ring}</section>`;

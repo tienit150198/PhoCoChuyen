@@ -278,3 +278,7 @@ html.reduce-motion .jr-scene[open],body.reduce-motion .jr-scene[open]{animation:
 }
 html[data-layout="phone"][data-orientation="landscape"] .jr-gender{grid-template-columns:auto auto;align-items:center;justify-content:center;padding:8px 10px}
 html[data-layout="phone"][data-orientation="landscape"] .jr-gender>svg,html[data-layout="phone"][data-orientation="landscape"] .jr-gender>:first-child{width:56px;height:56px}
+/* 👗 Tủ đồ entries (the sheet itself: wardrobe.css, loaded with v4/wardrobe.js) */
+.jr-wd-chip{margin-top:4px;background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line)}
+.jr-wd-entry{display:flex;align-items:center;gap:12px;width:100%;margin-top:16px;text-align:left}
+.jr-wd-entry .grow{display:grid;gap:2px}.jr-wd-entry small{color:var(--muted)}

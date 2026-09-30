@@ -26,6 +26,7 @@ from .content import CAREERS, CAREER_META
 from . import archive as ar
 from . import certificates as ct
 from . import bank as bk   # 🏦 Ngân hàng Phố (game/bank.py)
+from . import wardrobe as wd   # 👗 Tủ đồ (game/wardrobe.py)
 
 VERSION = 1
 START_WALLET = 60
@@ -598,7 +599,8 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
             s['name'] = e.clean_text(p['name'], 24)
         if 'gender' in p:
             need(p['gender'] in ('male', 'female'), 'Chọn Nam hoặc Nữ nhé.')
-            j['gender'] = p['gender']
+            old, j['gender'] = j['gender'], p['gender']
+            wd.on_gender(s, old)
         result['message'] = f'Chào {s["name"]}! Khu phố đã nhớ tên bạn.'
     elif name == 'jr_equip':
         tid = p.get('title')
@@ -662,6 +664,8 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(ct.action(s, name, p))
     elif name.startswith('jr_bk_'):
         result.update(bk.action(s, name, p))
+    elif name.startswith('jr_wd_'):
+        result.update(wd.action(s, name, p))
     else:
         raise e.GameError('Thao tác hành trình không hợp lệ.', 'unknown_action')
     after(s, None, name, p, result)
@@ -761,7 +765,8 @@ def content() -> dict:
         titles=[dict(id=t['id'], cat=t['cat'], secret=True) if t['secret'] else
                 {k: t[k] for k in ('id', 'cat', 'emoji', 'name', 'desc')} for t in TITLES],
         skills=_emp().STRENGTHS, levels=LEVEL_NAMES, reserve=RESERVE, reopen_fee=REOPEN_FEE, start_wallet=START_WALLET,
-        unlock_chapter={cid: n for n, ids in CH_UNLOCKS.items() for cid in ids if cid in CAREERS}, certs=ct.content())
+        unlock_chapter={cid: n for n, ids in CH_UNLOCKS.items() for cid in ids if cid in CAREERS}, certs=ct.content(),
+        wardrobe=wd.content())
 
 
 def validate(s: dict) -> None:
@@ -818,3 +823,4 @@ def validate(s: dict) -> None:
         integer(v, 0, 10**9)
     ct.validate(s)
     bk.validate(s)
+    wd.validate(s)
