@@ -95,6 +95,7 @@ location @asset_miss {                              # mã chưa có trong kho: t
 | `RECEIPT_DAYS`, `RECEIPTS_PER_SAVE` | Biên nhận chống gửi trùng được giữ bao lâu (mặc định 2 ngày) và tối đa bao nhiêu cho mỗi bản lưu (mặc định 200). |
 | `LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY`, `LLM_CONCURRENCY` | AI cho nhân vật review/phụ huynh. Người chơi phải tự bật “Cho phép AI” trong Cài đặt. |
 | `STATIC_RECHECK_SECONDS` | Bao lâu (giây) máy chủ tin danh sách tệp tĩnh (`public/`) trước khi `stat()` lại ~230 tệp. Mặc định 2 giây khi `WORKERS=1` (máy dev: sửa tệp thấy ngay) và 300 giây khi `WORKERS>1`. Trên máy chủ thật nên đặt `3600`: mỗi lần deploy là thư mục mới và khởi động lại, tệp không đổi giữa chừng. |
+| `SLOW_COMMAND_MS`, `SLOW_LOG_PER_MINUTE` | Ghi `[slow-cmd]` khi một thao tác mất quá số mili giây này (mặc định 1500); `[slow-lock]`/`[slow-write]` khi chờ khóa hoặc ghi quá nửa mức đó. Mỗi tiến trình ghi tối đa `SLOW_LOG_PER_MINUTE` dòng như vậy mỗi phút (mặc định 20, `0` = không giới hạn); dòng kế tiếp ghi số dòng đã bỏ. |
 | `STATIC_CAS_DIR` | Kho tệp tĩnh theo mã băm mà proxy phục vụ cho URL `?v=` (mặc định `public/_v`). Xem mục “Tài nguyên tĩnh có phiên bản”. |
 | `API_GZIP_LEVEL` | Mức gzip của phản hồi `/api/` (mặc định 4: tốn ~2/3 CPU so với mức 5, dữ liệu gửi đi nhiều hơn ~5%). Tệp tĩnh luôn được nén sẵn ở mức 6. |
 | `GC_THRESHOLD` | Ngưỡng bộ gom rác của Python (mặc định `50000,20,20`: ít lượt gom hơn khi đọc/ghi bản lưu lớn; `700,10,10` là mặc định của Python). Đối tượng lúc khởi động được `gc.freeze()` giữ ngoài các lượt gom. |
