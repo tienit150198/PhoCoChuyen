@@ -135,12 +135,26 @@ def _imported_archive(rows)->list:
     return out
 
 def _digest(text:str)->str:
-    return hashlib.blake2b(text.encode(),digest_size=10).hexdigest()
+    return _digest_bytes(text.encode())
+
+_GIL_CHUNK=2047  # hashlib releases the GIL for inputs of 2048 bytes and more
+
+def _digest_bytes(data:bytes)->str:
+    """blake2b of the UTF-8 text, fed in pieces too small for hashlib to release the GIL:
+    each release costs the command a wait for the GIL (up to the 5 ms switch interval) on a
+    busy worker, ~20 times per command, for ~50 microseconds of hashing each."""
+    h=hashlib.blake2b(digest_size=10)
+    if len(data)<=_GIL_CHUNK:h.update(data)
+    else:
+        view=memoryview(data)
+        for i in range(0,len(data),_GIL_CHUNK):h.update(view[i:i+_GIL_CHUNK])
+    return h.hexdigest()
 
 SEPARATORS=(",",":")  # compact: ~10% fewer bytes to store, read and parse than ", " / ": "
+_ENCODER=json.JSONEncoder(ensure_ascii=False,allow_nan=False,separators=SEPARATORS)  # what json.dumps(...) builds per call
 
 def _dumps(v)->str:
-    return json.dumps(v,ensure_ascii=False,allow_nan=False,separators=SEPARATORS)
+    return _ENCODER.encode(v)  # == json.dumps(v,ensure_ascii=False,allow_nan=False,separators=SEPARATORS)
 
 def serialize(raw:dict,known:dict|None=None,full:bool=False)->str:
     """The save as stored: exactly json.dumps(raw, ensure_ascii=False, separators=
@@ -156,17 +170,26 @@ def serialize(raw:dict,known:dict|None=None,full:bool=False)->str:
     if type(careers) is not dict or any(type(k) is not str for k in careers):
         raw.pop("check",None)
         return _dumps(raw)
+    # Assembled as UTF-8 and decoded once: joining the pieces as str copies each one several
+    # times (Vietnamese text makes them 2 bytes per character in memory).
     pieces=[];digests={}
     for cid,c in careers.items():
-        try:piece=_dumps(c)
+        try:data=_dumps(c).encode()
         except ValueError:
             validate_career(c,cid);raise  # NaN/Infinity: the same GameError as a full validation
-        d=_digest(piece)
+        d=_digest_bytes(data)
         if known is not None and known.get(cid)!=d:validate_career(c,cid)
-        pieces.append(_dumps(cid)+":"+piece);digests[cid]=d
+        pieces.append(b"," if pieces else b"{");pieces.append(_dumps(cid).encode()+b":");pieces.append(data);digests[cid]=d
+    pieces.append(b"}" if pieces else b"{}")
     if known is not None or full:raw["check"]=dict(build=BUILD,careers=digests)
     else:raw.pop("check",None)
-    return "{"+",".join(_dumps(k)+":"+("{"+",".join(pieces)+"}" if k=="careers" else _dumps(v)) for k,v in raw.items())+"}"
+    out=[]
+    for k,v in raw.items():
+        out.append(b"," if out else b"{");out.append(_dumps(k).encode()+b":")
+        if k=="careers":out+=pieces
+        else:out.append(_dumps(v).encode())
+    out.append(b"}" if out else b"{}")
+    return b"".join(out).decode()
 
 _ORPHANS:list=[]  # connections inherited across fork(): never used, never closed in the child
 

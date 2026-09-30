@@ -59,6 +59,23 @@ class ScopedValidationTests(unittest.TestCase):
         self.assertEqual(self.stored(), compact)
         self.assertEqual(serialize(s, None, True), compact)
 
+    def test_serialize_edge_cases_and_chunked_digest(self):
+        import hashlib
+        from game import storage
+        text = 'Phở bò tái 🍜 "ngon" \\ ' * 400  # > 2047 bytes, multi-byte characters across chunk ends
+        for n in (0, 1, 2046, 2047, 2048, 4095, 4096, len(text.encode())):
+            data = text.encode()[:n]
+            self.assertEqual(storage._digest_bytes(data), hashlib.blake2b(data, digest_size=10).hexdigest(), n)
+        for raw in ({}, {'careers': {}}, {'a': 1, 'careers': {}, 'z': [None, 1.5, 'é']},
+                    {'careers': {'x': {'t': text}, 'y': {}}, 'k': {'n': -0.0}}):
+            want = json.dumps(raw, ensure_ascii=False, separators=(',', ':'))
+            self.assertEqual(serialize(dict(raw)), want)
+            stamped = dict(raw)
+            got = serialize(stamped, None, True)
+            if 'careers' in raw:
+                self.assertEqual(stamped['check']['careers'], {c: storage._digest(json.dumps(v, ensure_ascii=False, separators=(',', ':'))) for c, v in raw['careers'].items()})
+            self.assertEqual(got, json.dumps(stamped, ensure_ascii=False, separators=(',', ':')))
+
     def test_stamped_save_skips_migration(self):
         self.cmd('start_day')
         s = json.loads(self.stored())
