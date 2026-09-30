@@ -44,6 +44,11 @@ units      canonical=old     + bridge=new      old drains          canonical res
 * **Drain**: the script waits until the old port has had no established connection for 2 s
   (`ss state established sport = :port`), for at most `DRAIN_MAX=75` s (`proxy_read_timeout` is 60 s).
   Anything still running after that is cut, and its client re-sends it.
+* **Old nginx workers**: a graceful reload leaves the previous nginx workers running until their clients
+  are done, and an HTTP/2 client can keep one alive for a while, still pointed at the old port. Before the
+  canonical unit restarts, and before the bridge stops, the script waits until no "worker process is
+  shutting down" is left (`OLD_NGINX_MAX`, 90 s). Without it, one long-lived client got 502s for ~40 s
+  after the bridge stopped (0.9.6 release, 30/09).
 * **Why flip back instead of an A/B pair of units**: an `@8765`/`@8766` template pair would save one switch,
   but every ops script, the self-heal watchdog and `journalctl -u` would then need to know which unit is
   live. It would also have to survive reboots with the right one enabled. Flipping back costs about 3 more
