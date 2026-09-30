@@ -1,3 +1,7 @@
+# v0.9.10 — Đã chuyển sang máy chủ mới
+
+- "Có gì mới" báo nâng cấp hạ tầng đã xong (30/09 21:00: máy chủ mới 9 vCPU, 15 GB RAM; gián đoạn 11 giây, dữ liệu giữ nguyên). Không đổi logic game.
+
 # v0.9.9 — Thông báo bảo trì ngắn
 
 - "Có gì mới" báo bảo trì 21:00–21:10 ngày 30/09 để chuyển sang máy chủ mới; dữ liệu giữ nguyên. Không đổi logic game.
