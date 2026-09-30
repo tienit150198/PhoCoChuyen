@@ -8,7 +8,7 @@ import {stepRows,nextHint,stepCta,finalGo,pending,stepLine} from '../v4/guide.js
 import {restockButton} from '../v4/restock.js';
 import {cashPanel,changeStep,changePayload,tray,tillActions} from './till.js';
 import * as SF from './stage_fold.js';
-import {reqPin,nextLine,pinTop,asmActions,finalStep} from './asm_kit.js';
+import {reqPin,pinTop,asmActions,finalStep} from './asm_kit.js';
 const ID='clothing';
 const FREE=['hat','belt','socks'];
 const data=x=>x.room.data||{};
@@ -427,7 +427,8 @@ function hintFor(g,x){
   const steps=f&&!pending(g.steps)?.go?g.steps.filter(s=>s.ok===true||s.go):g.steps;
   return nextHint(x,steps,{final:f});
 }
-const bottomBar=(g,x)=>g.final?`<div class="ao-bar">${nextLine(x,pending(g.steps),g.final.ready!==false?'đủ rồi, bấm nút dưới':'')}${stepCta(x,g.steps,g.final)}</div>`:'';
+// One next step: the bottom button names it (a second "Bước tiếp" line here read the order line, not the action).
+const bottomBar=(g,x)=>g.final?`<div class="ao-bar">${stepCta(x,g.steps,g.final)}</div>`:'';
 
 /* ------------------------------------------------------------ between customers */
 function swapCards(x){
