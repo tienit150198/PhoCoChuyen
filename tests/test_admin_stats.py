@@ -1,6 +1,6 @@
 """Admin statistics ("Thống kê"): metrics on a seeded DB, privacy of the payload,
 the cache, the AI counters and the admin-only HTTP route (game/admin_stats.py)."""
-import copy, datetime, http.client, json, os, tempfile, threading, time, unittest
+import copy, datetime, http.client, json, os, sqlite3, tempfile, threading, time, unittest
 from pathlib import Path
 from unittest.mock import patch
 
@@ -12,6 +12,23 @@ from server import GameServer
 
 REG = dict(password='matkhau-rat-dai', confirm='matkhau-rat-dai', display='Người Thử')
 SECRET_NAME = 'Tên Riêng Bí Mật'
+
+
+# Time budgets: these tests check the numbers, not the machine's speed (a busy disk can take
+# seconds to extend a file); the budget test passes its own small `ms`.
+_BUDGETS = dict(REQUEST_MS=60000, STATEMENT_MS=60000, CHUNK_MS=60000, COUNT_MS=60000)
+_saved = {}
+
+
+def setUpModule():
+    for k, v in _BUDGETS.items():
+        _saved[k] = getattr(st, k)
+        setattr(st, k, v)
+
+
+def tearDownModule():
+    for k, v in _saved.items():
+        setattr(st, k, v)
 
 
 def vn_today():
@@ -28,7 +45,9 @@ class Seeded(unittest.TestCase):
         self.tokens = []
 
     def tearDown(self):
+        st.stop_jobs()
         st.clear_cache()
+        self.store.close_pool()  # Windows: no open handle on the file being removed
         self.tmp.cleanup()
 
     def save(self, edit=None, played=True):
@@ -229,15 +248,266 @@ class MetricsTests(Seeded):
             self.assertNotIn(key, text)
 
 
+def varied(rng):
+    """A save shaped by a seeded rng: every field the dashboard reads, in many shapes."""
+    def edit(s):
+        s['settings'].update(lang=rng.choice(['vi', 'en', 'vi']), uiTheme=rng.choice(['kem', 'dem', 'bien', 'keo']),
+                             aiConsent=rng.random() < .5, music=rng.random() < .5, musicTrack=rng.choice(['calm', 'off']))
+        j = s['journey']
+        j.update(chapter=rng.randint(1, 5), life_day=rng.randint(1, 60), wallet=rng.randint(-300, 5000))
+        j['in_debt'] = j['wallet'] < 0
+        if rng.random() < .5:
+            j.setdefault('invest', {}).update(coin=dict(units=rng.randint(0, 4), basis=10, realised=0, fees=0, trades=rng.randint(0, 3)),
+                                              stats=dict(declined=0, joined=rng.randint(0, 2), lost=rng.choice([0, 80]), next_scam=0))
+        if rng.random() < .5:
+            j['life'] = dict(spirit=rng.randint(0, 100), stats=dict(outings=rng.randint(0, 5), scams=1, rumours=2, warm=3, hard=0, given=1))
+        if rng.random() < .5:
+            j['board'] = dict(posts=[{}] * rng.randint(0, 5), stats=dict(player_posts=rng.randint(0, 3), player_replies=1, reacts=2))
+        for cid in rng.sample(sorted(s['careers']), rng.randint(1, 4)):
+            s['careers'][cid].update(started=True, day=rng.randint(1, 20), xp=rng.randint(0, 600))
+    return edit
+
+
+class SplitTests(Seeded):
+    """The operator page's summary + sections carry the same numbers as the one-statement
+    computation they replace (sample() + play_stats(), players(), feedback()), and no request
+    reads a save."""
+
+    def seed(self, n=24):
+        import random
+        rng = random.Random(5)
+        for i in range(n):
+            self.save(varied(rng))
+        self.save(played=False)
+        accounts.register(self.store, self.tokens[0], dict(REG, username='someone_y'))
+        s = self.store.read(self.tokens[1])[0]
+        for k in ('bug', 'idea', 'praise'):
+            pfb.submit(self.store, self.tokens[1], s, dict(kind=k, text=f'Góp ý {k}'))
+
+    def legacy(self, days):
+        """The computation before the split: one statement over the saves."""
+        today = vn_today()
+        with self.store.connect() as db:
+            rows, engine = st.sample(db)
+            return dict(players=st.players(db, days, today), feedback=st.feedback(db, days, time.time()),
+                        sample=dict(size=len(rows), limit=st.SAMPLE, engine=engine), **st.play_stats(rows))
+
+    def test_summary_and_sections_equal_the_old_computation(self):
+        self.seed()
+        st.refresh_now(self.store)          # what the background job does
+        with patch.object(st, 'wake', lambda store, fresh=False: None):
+            for days in st.RANGES:
+                st.clear_cache()
+                old = self.legacy(days)
+                top = st.get_summary(self.store, days)
+                sv = st.get_section(self.store, 'saves')
+                sysd = st.get_section(self.store, 'system')
+                self.assertEqual(top['players'], old['players'])
+                self.assertEqual(top['feedback'], old['feedback'])
+                for k in ('play', 'economy', 'life', 'board'):
+                    self.assertEqual(sv[k], old[k], k)
+                self.assertEqual({k: sv['sample'][k] for k in ('size', 'limit', 'engine')}, old['sample'])
+                tables = {t['name']: t['rows'] for t in sysd['server']['tables']}
+                self.assertEqual(tables['sessions'], 25)
+                self.assertEqual(tables['accounts'], 1)
+                self.assertFalse(any(t['approx'] for t in sysd['server']['tables']))
+                full = st.get(self.store, days)          # the in-game tab: same parts
+                for k in ('players', 'feedback', 'play', 'economy', 'life', 'board', 'sample'):
+                    self.assertEqual(full[k], old[k], k)
+                self.assertFalse(full['pending'])
+        self.assertEqual(sv['sample']['size'], 24)
+
+    def test_pure_python_twin_agrees_on_varied_saves(self):
+        self.seed()
+        with self.store.connect() as db:
+            states = [json.loads(r[0]) for r in db.execute('SELECT state FROM sessions WHERE revision > 0 ORDER BY updated_at DESC')]
+        job = st._Job(self.store, None, pause=0)
+        job.pass_saves()
+        rows = [v[1] for v in job.rows.values()]
+        self.assertEqual(st.play_stats(rows), st.play_stats([st.compact(s) for s in states]))
+
+    def test_request_paths_never_read_a_save(self):
+        self.seed(3)
+        def boom(*a, **k):
+            raise AssertionError('a request must not read saves')
+        with patch.object(st, 'sample', boom), patch.object(st, 'compact', boom), patch.object(st._Job, 'pass_saves', boom), \
+                patch.object(st, 'wake', lambda store, fresh=False: None):
+            top = st.get_summary(self.store, 7)
+            self.assertTrue(st.get_section(self.store, 'saves')['pending'])     # before the job's first pass
+            self.assertTrue(st.get_section(self.store, 'system')['pending'])
+            full = st.get(self.store, 30)
+        self.assertEqual(top['players']['played'], 3)
+        self.assertNotIn('play', top)
+        self.assertTrue(full['pending'])
+        self.assertEqual(full['play']['sample'], 0)
+        self.assertEqual(top['names']['grocery'], st.career_names()['grocery'])
+        if not getattr(self.store, 'pg', None):  # SQLite: not one statement of the summary names the save column
+            seen = []
+            real = sqlite3.connect
+            def traced(*a, **k):
+                con = real(*a, **k)
+                con.set_trace_callback(seen.append)
+                return con
+            st.clear_cache()
+            with patch.object(st.sqlite3, 'connect', traced), patch.object(st, 'wake', lambda store, fresh=False: None):
+                st.get_summary(self.store, 90)
+            self.assertTrue(seen)
+            self.assertFalse([s for s in seen if 'state' in s.replace('statement', '')])
+
+    def test_reads_are_read_only_and_budgeted(self):
+        self.seed(1)
+        heavy = ("SELECT count(*) FROM generate_series(1, 200000000)" if getattr(self.store, 'pg', None) else
+                 "WITH RECURSIVE c(x) AS (SELECT 1 UNION ALL SELECT x + 1 FROM c LIMIT 200000000) SELECT count(*) FROM c")
+        t = time.monotonic()
+        with self.assertRaises(st.Busy):
+            with st._read(self.store, 100) as db:
+                (db.pg(heavy) if getattr(db, 'dialect', '') == 'pg' else db.execute(heavy)).fetchone()
+        self.assertLess(time.monotonic() - t, 3)
+        with self.assertRaises(Exception):
+            with st._read(self.store, 1000) as db:
+                db.execute('DELETE FROM stat_active')
+        with self.store.connect() as db:
+            self.assertGreater(db.execute('SELECT COUNT(*) FROM stat_active').fetchone()[0], 0)
+
+    def test_job_rereads_only_changed_saves_and_remembers_across_restarts(self):
+        self.seed(6)
+        job = st._Job(self.store, None, pause=0)
+        job.pass_saves()
+        self.assertEqual((job.out['saves']['sample']['size'], job.out['saves']['sample']['reread']), (6, 6))
+        job.pass_saves()
+        self.assertEqual(job.out['saves']['sample']['reread'], 0)          # nothing moved
+        s = self.store.read(self.tokens[2])[0]
+        s['journey']['wallet'] = 123456
+        with self.store.connect() as db:
+            db.execute('UPDATE sessions SET state=?, revision=revision+1, updated_at=CURRENT_TIMESTAMP WHERE sid=?',
+                       (json.dumps(s, ensure_ascii=False), self.sid(self.tokens[2])))
+        job.pass_saves()
+        self.assertEqual(job.out['saves']['sample']['reread'], 1)
+        self.assertIn(123456, [v[1]['wallet'] for v in job.rows.values()])
+        with self.store.connect() as db:
+            self.assertEqual({k: job.out['saves'][k] for k in ('play', 'economy')}, {k: st.play_stats(st.sample(db)[0])[k] for k in ('play', 'economy')})
+        self.store.delete(self.tokens[3])
+        job.pass_saves()
+        self.assertEqual((job.out['saves']['sample']['size'], len(job.rows)), (5, 5))
+        # A new process (server restart) starts from the rows file: nothing to read again.
+        again = st._Job(self.store, None, pause=0)
+        again.pass_saves()
+        self.assertEqual(again.out['saves']['sample']['reread'], 0)
+        self.assertEqual(again.out['saves']['play'], job.out['saves']['play'])
+
+    def test_a_save_over_the_chunk_budget_is_skipped_not_waited_for(self):
+        self.seed(4)
+        real = st._Job._chunk
+        def slow(job, part):
+            if self.sid(self.tokens[1]) in part:
+                raise st.Busy('over budget')
+            return real(job, part)
+        with patch.object(st._Job, '_chunk', slow):
+            job = st._Job(self.store, None, pause=0)
+            job.pass_saves()
+        self.assertEqual((job.out['saves']['sample']['size'], job.out['saves']['sample']['skipped']), (3, 1))
+
+    def test_one_job_per_database_and_it_serves_the_sections(self):
+        self.seed(3)
+        lock = st._paths(self.store)['lock']
+        fd = st._try_lock(lock)
+        self.assertIsNotNone(fd)
+        self.assertIsNone(st._try_lock(lock))        # a second worker cannot run it too
+        st.wake(self.store)                          # this "worker" sees the lock taken: no job here
+        self.assertNotIn(self.store.path, st._jobs)
+        st._unlock(fd)
+        st.wake(self.store)
+        self.assertIn(self.store.path, st._jobs)
+        for _ in range(250):
+            sv = st.get_section(self.store, 'saves')
+            if not sv.get('pending'):
+                break
+            time.sleep(0.02)
+        self.assertEqual(sv['play']['sample'], 3)
+        for _ in range(250):
+            sysd = st.get_section(self.store, 'system')
+            if not sysd.get('pending'):
+                break
+            time.sleep(0.02)
+        self.assertIn('sessions', {t['name'] for t in sysd['server']['tables']})
+        st.stop_jobs()
+        self.assertNotIn(self.store.path, st._jobs)
+        fd = st._try_lock(lock)                      # released when the job stopped
+        self.assertIsNotNone(fd)
+        st._unlock(fd)
+
+    def test_a_slow_disk_gets_the_jobs_copy_of_the_first_screen(self):
+        self.seed(3)
+        real = st.summary
+        live = []
+        def slow(store, days, ms=None):
+            if ms is None:  # a request's live read: out of time
+                live.append(days)
+                raise st.Busy('over budget')
+            return real(store, days, ms)
+        with patch.object(st, 'summary', slow), patch.object(st, 'wake', lambda store, fresh=False: None):
+            first = st.get_summary(self.store, 7)
+            self.assertEqual((first.get('pending'), first.get('range')), (True, 7))   # nothing computed yet
+            self.assertEqual(st.get_summary(self.store, 30).get('pending'), True)
+            self.assertEqual(live, [7])            # the second range did not ask the slow disk again
+            job = st._Job(self.store, None, pause=0)
+            job.pass_summary()
+            job.write()
+            st.clear_cache()
+            top = st.get_summary(self.store, 30)
+            self.assertTrue(top['stale'])
+            self.assertEqual(top['players'], real(self.store, 30)['players'])
+            full = st.get(self.store, 90)
+            self.assertEqual(full['players']['played'], 3)
+        self.assertEqual({'7', '30', '90'}, set(job.out['summary']))
+
+    def test_concurrent_summaries_share_one_computation(self):
+        self.seed(2)
+        calls, gate = [], threading.Event()
+        real = st.summary
+        def slow(store, days):
+            calls.append(days)
+            gate.wait(3)
+            return real(store, days)
+        out = []
+        with patch.object(st, 'summary', slow), patch.object(st, 'wake', lambda store, fresh=False: None):
+            threads = [threading.Thread(target=lambda: out.append(st.get_summary(self.store, 7))) for _ in range(4)]
+            for t in threads:
+                t.start()
+            time.sleep(0.2)
+            gate.set()
+            for t in threads:
+                t.join(10)
+        self.assertEqual(calls, [7])
+        self.assertEqual(len(out), 4)
+
+    def test_summary_and_sections_carry_no_personal_data(self):
+        self.seed(4)
+        accounts.register(self.store, self.tokens[2], dict(REG, username='private_user2', display='Hiển Thị Riêng'))
+        st.refresh_now(self.store)
+        with patch.object(st, 'wake', lambda store, fresh=False: None):
+            text = json.dumps([st.get_summary(self.store, 30), st.get_section(self.store, 'saves'), st.get_section(self.store, 'system'),
+                               st.get(self.store, 7)], ensure_ascii=False)
+        with self.store.connect() as db:
+            secrets_ = [r[0] for r in db.execute('SELECT sid FROM sessions')] + [r[0] for r in db.execute('SELECT csrf FROM sessions')]
+            secrets_ += [r[0] for r in db.execute('SELECT pw FROM accounts')]
+        for value in secrets_ + self.tokens + ['private_user2', 'someone_y', 'Hiển Thị Riêng']:
+            self.assertNotIn(value, text)
+        for key in ('"sid"', '"token"', '"csrf"', '"pw"', '"password"', '"email"', '"username"', '"account"'):
+            self.assertNotIn(key, text)
+        if os.name != 'nt':  # the job's files next to the database are private
+            self.assertEqual(os.stat(st._paths(self.store)['rows']).st_mode & 0o077, 0)
+
+
 class CacheTests(Seeded):
-    def test_cached_for_a_minute_then_refreshed_in_background(self):
+    def test_cached_then_refreshed_in_background(self):
         self.save(fresh_player)
         calls = []
-        real = st.compute
+        real = st._full
         def counting(store, days):
             calls.append(days)
             return real(store, days)
-        with patch.object(st, 'compute', counting):
+        with patch.object(st, '_full', counting), patch.object(st, 'wake', lambda store, fresh=False: None):
             first = st.get(self.store, '7')
             self.assertFalse(first['cached'])
             second = st.get(self.store, 7)
@@ -271,6 +541,8 @@ class CacheTests(Seeded):
             with self.assertRaises(ValueError):
                 st.parse_range(bad)
         self.assertEqual(st.parse_range(None), 7)
+        with self.assertRaises(ValueError):
+            st.get_section(self.store, 'players')
 
 
 class AICounterTests(unittest.TestCase):
@@ -315,7 +587,7 @@ class StatsHTTPTests(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.server.shutdown(); cls.server.server_close(); cls.thread.join(); cls.temp.cleanup(); cls.env.stop()
+        cls.server.shutdown(); cls.server.server_close(); cls.thread.join(); st.stop_jobs(); cls.server.store.close_pool(); cls.temp.cleanup(); cls.env.stop()
         st.clear_cache()
 
     def setUp(self):
@@ -331,7 +603,7 @@ class StatsHTTPTests(unittest.TestCase):
         if isinstance(path, tuple):
             path, body = path
             method = 'POST'; h['Content-Type'] = 'application/json'; body = json.dumps(body)
-        con = http.client.HTTPConnection('127.0.0.1', self.port, timeout=15)
+        con = http.client.HTTPConnection('127.0.0.1', self.port, timeout=60)  # a loaded CI machine: the first bootstrap builds the catalogue
         con.request(method, path, body=body, headers=h)
         res = con.getresponse(); data = json.loads(res.read() or b'{}'); hdrs = dict(res.getheaders()); con.close()
         if 'Set-Cookie' in hdrs: dev['cookie'] = hdrs['Set-Cookie'].split(';')[0]
@@ -373,6 +645,49 @@ class StatsHTTPTests(unittest.TestCase):
         # Leaving ADMIN_USERS closes it at once, even with a warm cache.
         with patch.dict(os.environ, {'ADMIN_USERS': ''}):
             self.assertEqual(self.req(admin, '/api/admin/stats?range=30')[0], 403)
+
+    def test_summary_and_sections_admin_only(self):
+        anon, player = self.device(), self.signed('regular_jane')
+        paths = ('/api/admin/stats/summary?range=7', '/api/admin/stats/section?name=saves', '/api/admin/stats/section?name=system')
+        for path in paths:
+            for dev in (anon, player):
+                status, data = self.req(dev, path)
+                self.assertEqual(status, 403, path)
+                self.assertFalse({'players', 'play', 'server'} & set(data))
+            self.assertEqual(self.req({}, path)[0], 401)
+        env = patch.dict(os.environ, {'ADMIN_USERS': 'op_admin3'})
+        env.start()
+        self.addCleanup(env.stop)
+        admin = self.signed('op_admin3')
+        for path in paths:
+            self.assertEqual(self.req(admin, path, csrf=False)[0], 403)   # cookie alone is not enough
+        status, top = self.req(admin, '/api/admin/stats/summary?range=30')
+        self.assertEqual(status, 200, top)
+        self.assertEqual((top['range'], len(top['players']['dau'])), (30, 30))
+        for key in ('feedback', 'ai', 'server', 'names'):
+            self.assertIn(key, top)
+        self.assertFalse({'play', 'economy', 'life', 'board'} & set(top))
+        def ready(path):  # the background job answers {pending} until its first pass is done
+            for _ in range(25):                     # under the 30/min rate limit
+                status, data = self.req(admin, path)
+                self.assertEqual(status, 200, data)
+                if not data.get('pending'):
+                    return data
+                self.assertIn('retry_ms', data)
+                time.sleep(0.3)
+            self.fail('section still pending')
+        sv = ready('/api/admin/stats/section?name=saves')
+        for key in ('play', 'economy', 'life', 'board', 'sample', 'generated_at'):
+            self.assertIn(key, sv)
+        sysd = ready('/api/admin/stats/section?name=system')
+        self.assertIn('sessions', {t['name'] for t in sysd['server']['tables']})
+        self.assertEqual(self.req(admin, '/api/admin/stats/summary?range=365')[0], 400)
+        self.assertEqual(self.req(admin, '/api/admin/stats/section?name=secrets')[0], 400)
+        self.assertEqual(self.req(admin, '/api/admin/stats/section')[0], 400)
+        self.assertNotIn('op_admin3', json.dumps([top, sv, sysd]))
+        with patch.dict(os.environ, {'ADMIN_USERS': ''}):
+            for path in paths:
+                self.assertEqual(self.req(admin, path)[0], 403)
 
     def test_rate_limited(self):
         admin = self.signed('op_admin2')

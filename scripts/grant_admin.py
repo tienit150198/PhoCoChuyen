@@ -13,7 +13,9 @@ shell history): it is read from $GRANT_PASSWORD or asked for.
   python3 scripts/grant_admin.py --db storage/game.sqlite3 --username admin
 
 Run it on the machine that hosts the game's database. Players who are signed
-in to that account see the new save after a reload.
+in to that account see the new save after a reload. With DATABASE_URL set (the
+game runs on PostgreSQL, see docs/POSTGRES.md) --db is ignored and the account is
+made in that database.
 """
 from __future__ import annotations
 
@@ -27,7 +29,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from game import accounts, employment, journey  # noqa: E402
+from game import accounts, db as dbm, employment, journey  # noqa: E402
 from game.engine import migrate_state, money, validate_state  # noqa: E402
 from game.storage import Store  # noqa: E402
 
@@ -90,7 +92,7 @@ def main() -> None:
     ap.add_argument('--display', default='Admin')
     ap.add_argument('--reset-password', action='store_true', help='set a new password on an existing account')
     a = ap.parse_args()
-    if not Path(a.db).exists():
+    if not dbm.database_url() and not Path(a.db).exists():
         sys.exit(f'Không thấy cơ sở dữ liệu: {a.db}')
     store = Store(a.db, story=True)
     with store.connect() as db:
@@ -102,7 +104,7 @@ def main() -> None:
     db = store.connect()
     try:
         db.execute('BEGIN IMMEDIATE')
-        row = db.execute('SELECT state,revision FROM sessions WHERE sid=?', (sid,)).fetchone()
+        row = db.execute('SELECT state,revision FROM sessions WHERE sid=?' + dbm.for_update(db), (sid,)).fetchone()
         state = max_out(migrate_state(store.parse_state(row['state'], sid)))
         validate_state(state)
         db.execute('UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?',

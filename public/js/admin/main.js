@@ -1,11 +1,16 @@
 /** Operator site (/admin): sign in with a game account listed in ADMIN_USERS, then
  * "Tổng quan" (stats), "Góp ý" (feedback inbox) and "Hệ thống" (server). Every
- * number comes from the existing admin endpoints, which re-check the account on
- * each call; this page only decides what to draw. Nothing secret is rendered or
- * stored: the CSRF token stays in memory, the session in its HttpOnly cookie. */
+ * number comes from the admin endpoints, which re-check the account on each call;
+ * this page only decides what to draw. Nothing secret is rendered or stored: the
+ * CSRF token stays in memory, the session in its HttpOnly cookie.
+ *
+ * Loading: one GET /api/admin/stats/summary draws the first screen (skeletons until
+ * then). The save-derived cards load when they scroll into view and "Hệ thống" when it
+ * opens (GET /api/admin/stats/section, drawn by ./sections.js, imported on demand).
+ * Changing the range aborts the request still running for the old one. */
 import {AdminAPI} from './api.js';
 import {Inbox} from './inbox.js';
-import {overviewView,systemView} from './stats.js';
+import {overviewView,skeleton,skelCard} from './stats.js';
 import {esc,icon,clock,num,toast} from './ui.js';
 
 const api=new AdminAPI();
@@ -13,6 +18,8 @@ const root=document.getElementById('root');
 const VIEWS={'tong-quan':['Tổng quan','chart'],'gop-y':['Góp ý','inbox'],'he-thong':['Hệ thống','server']};
 const RANGES=[7,30,90];
 const REFRESH_MS=60000;
+const RANGE_DEBOUNCE_MS=180;
+const MORE={daily:14,careers:8,tables:12};  // rows shown before "Xem thêm"; each click adds as many again
 
 const store={
   get(k,d){try{const v=localStorage.getItem('pcc-admin-'+k);return v==null?d:JSON.parse(v);}catch{return d;}},
@@ -20,7 +27,10 @@ const store={
 };
 
 const ui={screen:'loading',view:'tong-quan',navOpen:false,login:{error:'',busy:false,replace:false,user:''},unread:null};
-const stats={range:RANGES.includes(store.get('range',7))?store.get('range',7):7,byRange:{},busy:false,error:null,auto:store.get('auto',true)!==false};
+const stats={range:RANGES.includes(store.get('range',7))?store.get('range',7):7,byRange:{},busy:false,error:null,auto:store.get('auto',true)!==false,ctl:null,timer:0,retry:0,pending:false,
+  sections:{saves:{data:null,at:0,busy:false,error:null},system:{data:null,at:0,busy:false,error:null}},more:{...MORE}};
+let sectionsMod=null;  // ./sections.js once imported
+const loadSectionsMod=()=>sectionsMod?Promise.resolve(sectionsMod):import('./sections.js').then(m=>(sectionsMod=m));
 const inbox=new Inbox(api,{
   rerender:()=>{if(ui.screen==='app'&&ui.view==='gop-y')renderView();},
   counts:c=>{ui.unread=c?.new??ui.unread;renderBadge();},
@@ -55,7 +65,7 @@ let reauthing=null;
 function reauth(){
   reauthing??=api.bootstrap().then(()=>{
     if(!api.admin)toast(api.account?'Tài khoản này không còn quyền vận hành.':'Phiên đăng nhập đã hết. Đăng nhập lại nhé.','bad');
-    stats.byRange={};inbox.reset();decide();
+    resetStats();inbox.reset();decide();
   }).catch(e=>toast(e.message,'bad')).finally(()=>{reauthing=null;});
   return reauthing;
 }
@@ -82,24 +92,79 @@ async function login(form){
 async function logout(){
   try{await api.logout();toast('Đã đăng xuất.');}
   catch(e){toast(e.message,'bad');}
-  stats.byRange={};stats.error=null;inbox.reset();ui.unread=null;ui.navOpen=false;
+  resetStats();inbox.reset();ui.unread=null;ui.navOpen=false;
   decide();
 }
 
 /* ---- stats data ----------------------------------------------------------------------- */
-function ensureStats(){const e=stats.byRange[stats.range];if(!e||Date.now()-e.at>REFRESH_MS)loadStats();}
+function resetStats(){
+  stats.ctl?.abort();stats.ctl=null;clearTimeout(stats.timer);clearTimeout(stats.retry);stats.byRange={};stats.busy=false;stats.error=null;stats.pending=false;stats.retry=0;
+  for(const s of Object.values(stats.sections)){s.ctl?.abort();clearTimeout(s.retry);Object.assign(s,{data:null,at:0,busy:false,error:null,ctl:null,retry:0,pending:false});}
+}
+const tooFast=e=>e.status===429?'Làm mới hơi dồn dập. Chờ một chút nhé.':e.message;
+function ensureStats(){
+  const e=stats.byRange[stats.range];if(!e||Date.now()-e.at>REFRESH_MS)loadStats();
+  if(ui.view==='he-thong'){ensureSection('system');ensureSection('saves');}
+}
+/** The first screen for the current range. A request still running for another range is aborted. */
 function loadStats(fresh=false){
-  if(stats.busy)return;
-  stats.busy=true;stats.error=null;renderTools();
   const range=stats.range;
-  api.stats(range,fresh)
-    .then(d=>{stats.byRange[range]={data:d,at:Date.now()};ui.unread=d.feedback?.unread??ui.unread;renderBadge();})
-    .catch(e=>{if(e.status===403||e.status===401){reauth();return;}stats.error=e.status===429?'Làm mới hơi dồn dập. Chờ một chút nhé.':e.message;})
-    .finally(()=>{stats.busy=false;if(ui.screen==='app'&&ui.view!=='gop-y')renderView();else renderTools();});
+  if(stats.ctl&&stats.busyRange===range&&!fresh)return;
+  stats.ctl?.abort();clearTimeout(stats.timer);clearTimeout(stats.retry);stats.retry=0;
+  const ctl=stats.ctl=new AbortController();
+  stats.busy=true;stats.busyRange=range;stats.error=null;renderTools();
+  api.summary(range,{fresh,signal:ctl.signal})
+    .then(d=>{
+      // A cold/busy server answers {pending} while it computes in the background: keep the placeholders, ask again.
+      if(d.pending){stats.pending=true;stats.retry=setTimeout(()=>{stats.retry=0;if(stats.range===range)loadStats();},Math.max(1500,d.retry_ms||3000));return;}
+      stats.pending=false;stats.byRange[range]={data:d,at:Date.now()};api.setNames(d.names);ui.unread=d.feedback?.unread??ui.unread;renderBadge();})
+    .catch(e=>{if(e.aborted)return;if(e.status===403||e.status===401){reauth();return;}stats.error=tooFast(e);})
+    .finally(()=>{
+      if(stats.ctl!==ctl)return;  // superseded: the newer request draws
+      stats.ctl=null;stats.busy=false;
+      if(ui.screen==='app'&&ui.view!=='gop-y')renderView();else renderTools();
+    });
+}
+function ensureSection(name){
+  const s=stats.sections[name];
+  if(s&&!s.busy&&!s.error&&!s.retry&&(!s.data||Date.now()-s.at>REFRESH_MS))loadSection(name);
+}
+/** A heavy part (saves | system); its renderer module is fetched alongside. */
+function loadSection(name,fresh=false){
+  const s=stats.sections[name];if(!s||s.busy)return;
+  const ctl=s.ctl=new AbortController();
+  s.busy=true;s.error=null;
+  Promise.all([api.section(name,{fresh,signal:ctl.signal}),loadSectionsMod()])
+    .then(([d])=>{
+      // First pass after a server restart still running: keep the placeholders, ask again.
+      if(d.pending){s.pending=d.progress||true;s.retry=setTimeout(()=>{s.retry=0;loadSection(name);},Math.max(1000,d.retry_ms||3000));return;}
+      s.data=d;s.at=Date.now();s.pending=false;
+    })
+    .catch(e=>{if(e.aborted)return;if(e.status===403||e.status===401){reauth();return;}s.error=e.status?tooFast(e):e.message||'Không tải được phần này.';})
+    .finally(()=>{if(s.ctl!==ctl)return;s.busy=false;s.ctl=null;if(ui.screen==='app'&&ui.view!=='gop-y')renderView();});
 }
 setInterval(()=>{
-  if(ui.screen==='app'&&stats.auto&&ui.view!=='gop-y'&&!document.hidden)loadStats();
+  if(ui.screen!=='app'||!stats.auto||ui.view==='gop-y'||document.hidden)return;
+  loadStats();
+  for(const [name,s] of Object.entries(stats.sections))if(s.data&&(name==='saves'||ui.view==='he-thong'))loadSection(name);
 },REFRESH_MS);
+/** Range buttons: the choice shows at once; the request goes out once the clicking settles. */
+function pickRange(n){
+  if(!RANGES.includes(n)||n===stats.range)return;
+  stats.range=n;store.set('range',n);stats.error=null;
+  stats.ctl?.abort();stats.ctl=null;stats.busy=false;clearTimeout(stats.timer);
+  const e=stats.byRange[n];
+  if(!e||Date.now()-e.at>REFRESH_MS){stats.busy=true;stats.busyRange=n;stats.timer=setTimeout(loadStats,RANGE_DEBOUNCE_MS);}
+  renderView();
+}
+/* The save-derived cards load when one of their placeholders comes near the viewport. */
+const lazyObserver='IntersectionObserver' in window?new IntersectionObserver(entries=>{
+  for(const en of entries)if(en.isIntersecting){lazyObserver.unobserve(en.target);ensureSection(en.target.dataset.lazy);}
+},{rootMargin:'200px 0px'}):null;
+function watchLazy(view){
+  lazyObserver?.disconnect();  // the previous placeholders were replaced
+  view.querySelectorAll('[data-lazy]').forEach(el=>{if(lazyObserver)lazyObserver.observe(el);else ensureSection(el.dataset.lazy);});
+}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&ui.screen==='app'&&stats.auto&&ui.view!=='gop-y')ensureStats();});
 
 /* ---- routing -------------------------------------------------------------------------------- */
@@ -202,12 +267,12 @@ function renderTools(){
     meta.innerHTML=c?`${num(total)} góp ý · <b>${num(c.new||0)}</b> chưa đọc · ${num(c.seen||0)} đã xem · ${num(c.done||0)} xong`:'Hộp thư góp ý của người chơi';
     return;
   }
-  const e=stats.byRange[stats.range],d=e?.data;
+  const e=stats.byRange[stats.range],d=e?.data,busy=stats.busy||(ui.view==='he-thong'&&stats.sections.system.busy);
   const seg=ui.view==='tong-quan'?`<div class="seg" role="radiogroup" aria-label="Khoảng thời gian">${RANGES.map(n=>`<button type="button" role="radio" aria-checked="${stats.range===n}" class="${stats.range===n?'on':''}" data-act="range" data-range="${n}">${n} ngày</button>`).join('')}</div>`:'';
   tools.innerHTML=`${seg}
     <label class="switch" title="Tự làm mới mỗi 60 giây"><input type="checkbox" data-act="auto"${stats.auto?' checked':''}><span class="knob" aria-hidden="true"></span><span>Tự làm mới</span></label>
-    <button type="button" class="btn ghost sm" data-act="refresh"${stats.busy?' disabled':''}>${icon('refresh',15)}<span>${stats.busy?'Đang tải…':'Làm mới'}</span></button>`;
-  meta.innerHTML=d?`Cập nhật ${clock(d.generated_at)}${d.cached&&d.age>5?` (bản đệm ${num(d.age)} giây)`:''} · ${d.range} ngày · giờ Việt Nam${stats.auto?' · tự làm mới mỗi phút':''}`:stats.busy?'Đang tính số liệu…':'';
+    <button type="button" class="btn ghost sm" data-act="refresh"${busy?' disabled':''}>${icon('refresh',15)}<span>${busy?'Đang tải…':'Làm mới'}</span></button>`;
+  meta.innerHTML=d?`Cập nhật ${clock(d.generated_at)}${d.stale?' (máy chủ bận: bản tính ở chế độ nền)':d.cached&&d.age>5?` (bản đệm ${num(d.age)} giây)`:''} · ${d.range} ngày · giờ Việt Nam${stats.auto?' · tự làm mới mỗi phút':''}`:stats.busy?'Đang tính số liệu…':'';
 }
 function renderView(){
   const view=document.getElementById('view');if(!view)return;
@@ -218,13 +283,34 @@ function renderView(){
     const e=stats.byRange[stats.range],d=e?.data;
     let body;
     if(stats.error&&!d)body=`<div class="notice bad">${icon('alert',16)}<div>${esc(stats.error)}<br><button type="button" class="btn ghost sm" data-act="refresh">Thử lại</button></div></div>`;
-    else if(!d)body=`<div class="loading" role="status">${icon('sparkle',24)}<p>Đang tính số liệu…</p></div>`;
-    else body=(stats.error?`<div class="notice warn">${icon('alert',16)}<div>${esc(stats.error)} Đang hiện số liệu cũ.</div></div>`:'')+(ui.view==='he-thong'?systemView(d,api):overviewView(d,api));
+    else if(!d)body=(stats.pending?`<p class="note">Máy chủ đang bận nên số liệu được tính ở chế độ nền, chờ chút nhé…</p>`:'')+(ui.view==='he-thong'?systemSkeleton():skeleton());
+    else body=(stats.error?`<div class="notice warn">${icon('alert',16)}<div>${esc(stats.error)} Đang hiện số liệu cũ.</div></div>`:'')+(ui.view==='he-thong'?systemBody(d):overviewView(d,savesParts(),stats.more));
     view.innerHTML=`<div class="stats${stats.busy&&d?' is-busy':''}" aria-busy="${stats.busy}">${body}</div>`;
     view.querySelectorAll('details > summary').forEach(s=>{if(open.has(s.textContent))s.parentElement.open=true;});
+    watchLazy(view);
   }
   if(focusAct){const [act,id,val]=focusAct.split('|');const el=[...view.querySelectorAll(`[data-act="${act}"]`)].find(x=>(x.dataset.id||'')===id&&((x.dataset.status||x.dataset.value||'')===val));el?.focus({preventScroll:true});}
   renderTools();
+}
+
+/** The four save-derived cards: drawn by ./sections.js once loaded, else placeholders. */
+function savesParts(){
+  const s=stats.sections.saves;
+  if(s.data&&sectionsMod)return sectionsMod.savesCards(s.data,id=>api.career(id),stats.more);
+  const err=s.error&&!s.busy?s.error:'';
+  const p=s.pending,read=p&&p.total?` (đã đọc ${num(p.done)}/${num(p.total)})`:'';
+  const ph=title=>skelCard(title,{lazy:'saves',error:err,note:p?`Máy chủ đang đọc các lượt chơi lần đầu${read}, chờ chút nhé…`:''});
+  return {careers:ph('Nghề được chơi nhiều'),economy:ph('Kinh tế'),play:ph('Cách chơi'),life:ph('Đời sống & Nhóm cư dân'),foot:''};
+}
+function systemSkeleton(){
+  return `<div class="kpis k4 skel" aria-hidden="true">${'<div class="kpi skel-kpi"><span class="kpi-label">&nbsp;</span><b class="kpi-num">&nbsp;</b><small class="kpi-sub">&nbsp;</small></div>'.repeat(4)}</div>`+
+    `<div class="cols"><div class="col">${skelCard('Bảng dữ liệu',{lines:8})}</div><div class="col">${skelCard('Môi trường')}${skelCard('Số liệu thống kê')}</div></div>`;
+}
+function systemBody(d){
+  const sys=stats.sections.system;
+  if(sys.data&&sectionsMod)return sectionsMod.systemView(d,sys.data,stats.sections.saves.data,api,stats.more);
+  if(sys.error&&!sys.busy)return `<div class="notice bad">${icon('alert',16)}<div>${esc(sys.error)}<br><button type="button" class="btn ghost sm" data-act="retrySection" data-name="system">Thử lại</button></div></div>`;
+  return systemSkeleton();
 }
 
 /* ---- events -------------------------------------------------------------------------------- */
@@ -240,8 +326,14 @@ root.addEventListener('click',async ev=>{
     case'logout':el.disabled=true;await logout();return;
     case'retry':boot();return;
     case'cancelReplace':ui.login.replace=false;ui.login.error='';render();return;
-    case'range':{const n=Number(el.dataset.range);if(!RANGES.includes(n)||n===stats.range)return;stats.range=n;store.set('range',n);stats.error=null;ensureStats();renderView();return;}
-    case'refresh':stats.error=null;loadStats(true);return;
+    case'range':pickRange(Number(el.dataset.range));return;
+    case'refresh':{
+      stats.error=null;loadStats(true);
+      for(const [name,s] of Object.entries(stats.sections))if(s.data&&(name==='saves'||ui.view==='he-thong')){s.error=null;loadSection(name,true);}
+      return;
+    }
+    case'retrySection':{const s=stats.sections[el.dataset.name];if(!s)return;s.error=null;loadSection(el.dataset.name);renderView();return;}
+    case'more':{const k=el.dataset.key;if(!(k in MORE))return;stats.more[k]+=MORE[k];renderView();return;}
     case'fbReload':inbox.reset();renderView();return;
   }
   await inbox.action(act,el.dataset);

@@ -21,6 +21,7 @@ from game import social
 from game.engine import GameError, new_state
 from game.storage import FRESH, Conflict, Store
 from tests.helpers import Journey
+from tests.pg_support import on_pg, sqlite_only
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -42,11 +43,25 @@ class Base(unittest.TestCase):
         return self.store.command(token or self.token, rid, rev, career, action, payload or {}, internal=internal)
 
     def raw(self, sql, args=()):
+        """Read outside the Store's own connections (SQLite: a plain connection)."""
+        if on_pg():
+            with self.store.connect() as db:
+                return [tuple(r) for r in db.execute(sql, args).fetchall()]
         db = sqlite3.connect(self.path)
         try:
             return db.execute(sql, args).fetchall()
         finally:
             db.close()
+
+    def pg_blocker(self, *tables):
+        """PostgreSQL: another session that holds write locks on `tables` (reads still work),
+        as SQLite's BEGIN IMMEDIATE blocks every other writer."""
+        import psycopg
+        from game import db as dbm
+        c = psycopg.connect(dbm.database_url())
+        c.execute('SELECT set_config(%s, %s, false)', ('search_path', self.store.pg.schema))
+        c.execute(f'LOCK TABLE {", ".join(tables)} IN EXCLUSIVE MODE')
+        return c
 
 
 class OptimisticCommandTests(Base):
@@ -73,12 +88,22 @@ class OptimisticCommandTests(Base):
         """Internal commands have no revision guard: under contention they are recomputed
         on the newer save (or computed under the lock), never lost."""
         def go(i):
-            return self.cmd(f'srv-{i:04d}-x', None, 'advance', internal=True)['revision']
+            # On a starved machine a command can time out waiting for the save (a clean
+            # rollback, a 500 for the client): the client then retries with the SAME request
+            # id, which must apply it exactly once.
+            for attempt in range(3):
+                try:
+                    return self.cmd(f'srv-{i:04d}-x', None, 'advance', internal=True)['revision']
+                except dbm.Error:
+                    if attempt == 2:
+                        raise
         with concurrent.futures.ThreadPoolExecutor(8) as pool:
             revs = sorted(pool.map(go, range(20)))
-        self.assertEqual(revs, list(range(2, 22)))
+        self.assertEqual(revs, list(range(2, 22)))   # 20 distinct steps: none lost, none applied twice
         self.assertEqual(self.store.read(self.token)[1], 21)
-        self.assertEqual(self.raw("SELECT COUNT(*) FROM receipts WHERE request_id LIKE 'srv-%'")[0][0], 20)
+        per_id = self.raw("SELECT request_id, COUNT(*) FROM receipts WHERE request_id LIKE 'srv-%' GROUP BY request_id")
+        self.assertEqual(sorted(r[0] for r in per_id), [f'srv-{i:04d}-x' for i in range(20)])
+        self.assertEqual({r[1] for r in per_id}, {1})   # exactly one receipt per applied command
 
     def test_idempotent_retry_concurrent(self):
         """The same request id sent 12 times at once (client retries) is applied once."""
@@ -197,6 +222,10 @@ class OptimisticCommandTests(Base):
         wrote = []
 
         def slow(*a, **k):
+            if on_pg():
+                self.assertEqual(self.store.transaction(lambda db: db.execute("UPDATE logins SET seen_at=seen_at WHERE 1=0").rowcount, 200), 0)
+                wrote.append(True)
+                return real(*a, **k)
             db = sqlite3.connect(self.path, timeout=0.2)
             try:
                 db.execute('BEGIN IMMEDIATE')
@@ -213,6 +242,8 @@ class OptimisticCommandTests(Base):
 
 class BestEffortTests(Base):
     def lock_db(self):
+        if on_pg():
+            return self.pg_blocker('profiles', 'logins', 'sessions')
         db = sqlite3.connect(self.path, timeout=1, isolation_level=None)
         db.execute('BEGIN IMMEDIATE')
         return db
@@ -276,6 +307,7 @@ class BestEffortTests(Base):
         self.assertEqual(self.raw("SELECT seen_at>datetime('now','-10 minutes') FROM logins")[0][0], 1)
 
     @unittest.skipUnless(hasattr(os, 'fork'), 'flock is POSIX')
+    @sqlite_only
     def test_writer_turn_is_shared_between_processes(self):
         other = Store(self.path)  # another worker: its own lock-file descriptor
         self.addCleanup(other.close_pool)
@@ -395,7 +427,7 @@ class PruneTests(Base):
                            [(sid, f'old-{i}', 'h', '{}', '-3 days') for i in range(30)] + [(sid, f'new-{i:04d}', 'h', '{}', '-1 hours') for i in range(250)])
         n = self.store.prune_receipts(2, 200)
         self.assertEqual(n, 30 + 50)
-        left = [r[0] for r in self.raw('SELECT request_id FROM receipts ORDER BY rowid')]
+        left = [r[0] for r in self.raw('SELECT request_id FROM receipts ORDER BY ' + ('created_at, request_id' if on_pg() else 'rowid'))]
         self.assertEqual(len(left), 200)
         self.assertEqual(left[0], 'new-0050')
 
@@ -484,7 +516,8 @@ class WorkersTests(unittest.TestCase):
                 p.send_signal(signal.SIGTERM)
                 p.wait(10)
             self.assertEqual(p.returncode, 0)
-            self.assertTrue(os.path.exists(os.path.join(tmp, 'g-limits.sqlite3')))  # next to --db, not beside the code
+            # SQLite: next to --db, not beside the code. PostgreSQL: the table hits, no file at all.
+            self.assertEqual(os.path.exists(os.path.join(tmp, 'g-limits.sqlite3')), not on_pg())
             self.assertFalse(os.path.exists(ROOT / 'storage' / 'g-limits.sqlite3'))
             time.sleep(0.3)
             for pid in children:

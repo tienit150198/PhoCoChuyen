@@ -1,3 +1,11 @@
+# v0.9.2 — Máy chủ PostgreSQL, khắc phục giật lag
+
+- Lưu trữ chuyển sang PostgreSQL (bật bằng DATABASE_URL; không có thì chạy SQLite như cũ). Mỗi người chơi chỉ khóa save của mình, không còn hàng đợi ghi chung.
+- Công cụ chuyển dữ liệu (scripts/pg_migrate.py, deploy/pg/*): chép trước khi game chạy, đồng bộ, đối chiếu sha256 từng save, chuyển trong vài giây, quay về được.
+- Trang admin: tóm tắt nhanh, các mục tải riêng, có cache; không làm chậm người chơi.
+- Chịu tải: giới hạn theo IP chỉnh được (NEW_SESSIONS_PER_MINUTE, REGISTER_*, LOGIN_*, BOOTSTRAP_PER_MINUTE), MAX_THREADS mỗi worker; AI rớt kết nối thì dùng câu soạn sẵn.
+- Popup "Có gì mới" giữa màn hình: thông báo đã khắc phục sự cố sáng 30/9.
+
 # v0.9.1 — Sửa đặt phòng homestay trên điện thoại
 
 - Chọn phòng đã có khách hoặc không đủ chỗ không còn làm khung "Bước tiếp theo" phình to che hết lịch; ghi chú xuống dòng gọn.

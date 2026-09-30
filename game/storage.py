@@ -1,4 +1,5 @@
-"""SQLite persistence with atomic commands, revision guards and idempotency.
+"""Persistence (SQLite, or PostgreSQL with DATABASE_URL: see game/db.py) with atomic
+commands, revision guards and idempotency.
 
 Concurrency (see Store.command): the CPU-heavy part of a command (parse the save,
 apply the reducer, validate, serialize) runs WITHOUT the database write lock. The
@@ -7,8 +8,18 @@ if the save's revision is still the one the command was computed from, else the
 command is computed again from the newer save (optimistic concurrency). Receipts,
 the revision guard and "internal" commands behave exactly as with one big lock.
 
-Connections are pooled per Store (opening one costs ~1 ms: schema parsing and
-PRAGMAs), and never carried across os.fork() (see _Pool).
+SQLite: one writer at a time. Writers queue on the "writer turn" (a thread lock plus
+an flock() file shared by the worker processes, see Store.writing). Connections are
+NOT pooled by default (DB_POOL=0): a pooled connection could keep a read snapshot
+open (a SELECT whose rows were not all fetched leaves its statement running, and
+sqlite3's in_transaction does not see it), which pins the WAL and lets it grow without
+bound. Opening a connection costs ~1 ms. DB_POOL=n re-enables a pool of n, never
+carried across os.fork() (see _Pool).
+
+PostgreSQL: no global writer turn. A command's compare-and-set locks only its own
+save (SELECT ... FOR UPDATE on the sessions row, then the revision check, in one
+transaction), so different players never wait for each other and one player's
+commands are serialized. Connections come from game.db.PgPool.
 """
 from __future__ import annotations
 import hashlib
@@ -26,6 +37,8 @@ from .engine import GameError,new_state,apply_action,public_state,validate_state
 from .journey import enable_story
 from . import archive as ar
 from .content import CAREERS
+from . import db as dbm
+from . import pg_schema
 
 SCHEMA=4
 SAVE_FORMATS=("mot-ngay-lam-nghe/save-v1","mot-ngay-lam-nghe/save-v2","mot-ngay-lam-nghe/save-v3","mot-ngay-lam-nghe/save-v4")
@@ -170,6 +183,7 @@ class _Pool:
 class ClosingConnection(sqlite3.Connection):
     """sqlite's context manager commits but does not close; close after both.
     close() hands a pooled connection back to its Store instead of closing it."""
+    dialect="sqlite"
     _pool=None
     _pid=None
     def __exit__(self, exc_type, exc_value, traceback):
@@ -191,7 +205,8 @@ class Store:
         # Real servers run the story (careers unlock along one journey). Tests and
         # dev sweeps keep every workplace open (see server.py / MNL_DEV).
         self.story=story
-        self._pool=_Pool(max(0,int(os.environ.get("DB_POOL","12") or 12)))
+        # SQLite connections are not pooled unless DB_POOL>0: see the module doc (WAL growth).
+        self._pool=_Pool(max(0,int(os.environ.get("DB_POOL","0") or 0)))
         # Writers of this process queue here (woken as soon as the lock is free) instead
         # of all polling SQLite's busy handler, which sleeps up to 100 ms between tries
         # and lets newcomers overtake: under load that starved some writes for seconds.
@@ -199,6 +214,13 @@ class Store:
         # to the database, opened per process (a descriptor inherited across fork would
         # be shared, and flock would not tell the workers apart).
         self._wlock=threading.RLock();self._depth=0;self._lockfd=None;self._lockpid=None
+        self.pg=dbm.pool_for(self.path)  # PostgreSQL (DATABASE_URL), else None: SQLite
+        self.backend="pg" if self.pg else "sqlite"
+        if self.pg:
+            db=self.pg.connect()
+            try:pg_schema.ensure(db)
+            finally:db.close()
+            return
         Path(self.path).parent.mkdir(parents=True,exist_ok=True)
         with self.connect() as db:
             db.execute("PRAGMA journal_mode=WAL")
@@ -244,6 +266,7 @@ class Store:
             """)
 
     def connect(self):
+        if self.pg:return self.pg.connect()
         db=self._pool.take()
         if db is None:
             db=sqlite3.connect(self.path,timeout=BUSY_MS/1000,factory=ClosingConnection,check_same_thread=False)
@@ -254,11 +277,14 @@ class Store:
 
     def close_pool(self)->None:
         """Close idle connections (the server calls this before forking workers)."""
+        if self.pg:self.pg.clear()
         self._pool.clear()
 
     def writing(self,wait_ms:int=BUSY_MS)->bool:
         """Take the writer turn (threads of this process, then processes sharing the
-        database); False after `wait_ms`. Release with done_writing()."""
+        database); False after `wait_ms`. Release with done_writing().
+        PostgreSQL has no writer turn (row locks serialize one save): always True."""
+        if self.pg:return True
         deadline=time.monotonic()+wait_ms/1000
         if not self._wlock.acquire(timeout=wait_ms/1000):return False
         if self._depth==0 and fcntl is not None:
@@ -276,6 +302,7 @@ class Store:
         return True
 
     def done_writing(self)->None:
+        if self.pg:return
         self._depth-=1
         if self._depth==0 and fcntl is not None and self._lockfd is not None and self._lockpid==os.getpid():
             try:fcntl.flock(self._lockfd,fcntl.LOCK_UN)
@@ -286,6 +313,7 @@ class Store:
         """Run fn(db) inside BEGIN IMMEDIATE and commit. With `best_effort_ms`, wait at
         most that long for the write lock and return None instead of failing: for
         timestamps and other writes no request should ever fail (or queue) for."""
+        if self.pg:return self._transaction_pg(fn,best_effort_ms)
         if not self.writing(BUSY_MS if best_effort_ms is None else best_effort_ms):
             if best_effort_ms is None:raise sqlite3.OperationalError("database is locked")
             return None
@@ -313,14 +341,33 @@ class Store:
                 except sqlite3.Error:pass
             db.close()
 
+    def _transaction_pg(self,fn,best_effort_ms:int|None):
+        """PostgreSQL: BEGIN, fn(db), COMMIT. Best effort: lock_timeout=best_effort_ms, and
+        None instead of an error (a busy row, a timeout)."""
+        db=self.connect()
+        try:
+            db.begin()
+            if best_effort_ms is not None:db.set_local("lock_timeout",f"{max(1,int(best_effort_ms))}ms")
+            out=fn(db)
+            db.commit()
+            return out
+        except dbm.OperationalError:
+            db.rollback()
+            if best_effort_ms is None:raise
+            return None
+        except BaseException:
+            db.rollback();raise
+        finally:
+            db.close()
+
     @staticmethod
     def digest(token:str)->str:
         return hashlib.sha256(token.encode()).hexdigest()
 
     @staticmethod
     def _resolve(db,h:str)->tuple[str,str|None]:
-        row=db.execute("SELECT (SELECT sid FROM logins WHERE token=?1) AS lsid,(SELECT csrf FROM logins WHERE token=?1) AS lcsrf,"
-                       "EXISTS(SELECT 1 FROM accounts WHERE sid=?1) AS owned",(h,)).fetchone()
+        row=db.execute("SELECT (SELECT sid FROM logins WHERE token=?) AS lsid,(SELECT csrf FROM logins WHERE token=?) AS lcsrf,"
+                       "EXISTS(SELECT 1 FROM accounts WHERE sid=?) AS owned",(h,h,h)).fetchone()
         if row["lsid"]:return row["lsid"],row["lcsrf"]
         if row["owned"]:return "revoked:"+h,None
         return h,None
@@ -404,7 +451,7 @@ class Store:
         """Apply one action atomically. `internal` commands come from the server
         itself (AI reviewer answers); they skip the revision guard because the
         reducer checks their own preconditions."""
-        if not isinstance(request_id,str) or not 8<=len(request_id)<=100:raise GameError("Mã thao tác không hợp lệ.")
+        if not isinstance(request_id,str) or not 8<=len(request_id)<=100 or "\x00" in request_id:raise GameError("Mã thao tác không hợp lệ.")
         if not (internal and expected is None) and type(expected) is not int:raise GameError("Thiếu phiên bản tiến trình.")
         if not isinstance(action,str) or not isinstance(payload,dict):raise GameError("Thao tác không hợp lệ.")
         fingerprint=hashlib.sha256(json.dumps([career,action,payload],sort_keys=True,ensure_ascii=False).encode()).hexdigest()
@@ -502,7 +549,15 @@ class Store:
         if (tx-tw)*1000>=SLOW_MS/2:sys.stderr.write(f"[slow-lock] waited {(tx-tw)*1000:.0f}ms for the writer turn pid={os.getpid()}\n")
         db=self.connect()
         try:
-            db.execute("BEGIN IMMEDIATE")
+            db.execute("BEGIN IMMEDIATE");self._patient(db)
+            if self.pg:
+                # Lock this save's row only (other players never wait), then check the revision.
+                row=db.execute("SELECT revision FROM sessions WHERE sid=? FOR UPDATE",(sid,)).fetchone()
+                tl=time.perf_counter()
+                if (tl-tw)*1000>=SLOW_MS/2:sys.stderr.write(f"[slow-lock] waited {(tl-tw)*1000:.0f}ms for this save's row lock (connection {(tx-tw)*1000:.0f}ms) pid={os.getpid()}\n")
+                tx=tl
+                if not row or row[0]!=revision:
+                    db.rollback();return False
             if db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=? AND revision=?",
                           (serialized,revision+1,sid,revision)).rowcount!=1:
                 db.rollback();return False
@@ -512,12 +567,25 @@ class Store:
             te=(time.perf_counter()-tx)*1000
             if te>=SLOW_MS/2:sys.stderr.write(f"[slow-write] {te:.0f}ms to write {len(serialized)//1024}KB + {len(cut)} archive rows pid={os.getpid()}\n")
             return True
-        except sqlite3.IntegrityError:  # the same request id landed first: the caller replays it
+        except dbm.IntegrityError:  # the same request id landed first: the caller replays it
             db.rollback();return False
         except BaseException:
             db.rollback();raise
         finally:
             db.close();self.done_writing()
+
+    def _patient(self,db)->None:
+        """PostgreSQL: a command's save must be written, so its row lock waits as long as a
+        SQLite writer waits for its turn (BUSY_MS), not the shorter default lock_timeout
+        (PG_LOCK_TIMEOUT_MS). A burst of commands on ONE save queues on that row; with a
+        starved CPU the queue can exceed 5 s, and the command would fail (cleanly: rolled
+        back, a 500, the client retries with the same request id) where SQLite waited."""
+        if not self.pg:return
+        cfg=self.pg.settings
+        lock=max(BUSY_MS,int(cfg.get("lock_timeout") or 0))
+        stmt=int(cfg.get("statement_timeout") or 0)
+        stmt=stmt if stmt==0 or stmt>=lock+5000 else lock+5000  # the lock wait counts toward it
+        db.raw.execute("SELECT set_config('lock_timeout',%s,true),set_config('statement_timeout',%s,true)",(f"{lock}ms",f"{stmt}ms"))
 
     def _command_locked(self,sid:str,request_id:str,expected,career,action:str,payload:dict,internal:bool,fingerprint:str)->dict:
         """The save keeps changing under us (a burst of writes to this one save):
@@ -525,9 +593,9 @@ class Store:
         if not self.writing():raise sqlite3.OperationalError("database is locked")
         db=self.connect()
         try:
-            db.execute("BEGIN IMMEDIATE")
+            db.execute("BEGIN IMMEDIATE");self._patient(db)
             row=db.execute("SELECT s.revision AS revision,s.state AS state,r.request_hash AS rhash,r.result AS rresult FROM sessions s "
-                           "LEFT JOIN receipts r ON r.sid=s.sid AND r.request_id=? WHERE s.sid=?",(request_id,sid)).fetchone()
+                           "LEFT JOIN receipts r ON r.sid=s.sid AND r.request_id=? WHERE s.sid=?"+dbm.for_update(db,"s"),(request_id,sid)).fetchone()
             if not row:raise GameError("Phiên chơi không tồn tại.","session_missing")
             if row["rhash"] is not None:
                 db.rollback();return self._replay(sid,row,fingerprint)
@@ -550,6 +618,8 @@ class Store:
         plus the account and every device signed in to it."""
         sid=self.key(token)
         with self.connect() as db:
+            if self.pg:  # lock the save first: a command in flight finishes, its archive/receipt rows go too
+                db.begin();db.execute("SELECT 1 FROM sessions WHERE sid=? FOR UPDATE",(sid,))
             db.execute("DELETE FROM archive WHERE sid=?",(sid,))
             db.execute("DELETE FROM receipts WHERE sid=?",(sid,))
             db.execute("DELETE FROM logins WHERE sid=?",(sid,))
@@ -557,15 +627,18 @@ class Store:
             n=db.execute("DELETE FROM sessions WHERE sid=?",(sid,)).rowcount
         return bool(n)
 
-    def _batches(self,select_sql:str,args:tuple,delete_sql:str,batch:int=500,pause:float=.02)->int:
-        """Delete rows (by rowid) in small transactions so the write lock is held briefly."""
+    def _batches(self,table:str,where:str,args:tuple,batch:int=500,pause:float=.02)->int:
+        """Delete the rows of `table` matching `where` in small transactions so the write
+        lock is held briefly (SQLite: by rowid; PostgreSQL: by ctid, in one statement)."""
         total=0
         while True:
             def step(db):
-                ids=[r[0] for r in db.execute(select_sql+f" LIMIT {int(batch)}",args)]
+                if self.pg:
+                    return db.execute(f"DELETE FROM {table} WHERE ctid = ANY(ARRAY(SELECT ctid FROM {table} WHERE {where} LIMIT {int(batch)}))",args).rowcount
+                ids=[r[0] for r in db.execute(f"SELECT rowid FROM {table} WHERE {where} LIMIT {int(batch)}",args)]
                 for i in range(0,len(ids),200):
                     part=ids[i:i+200]
-                    db.execute(delete_sql%",".join("?"*len(part)),part)
+                    db.execute(f"DELETE FROM {table} WHERE rowid IN (%s)"%",".join("?"*len(part)),part)
                 return len(ids)
             n=self.transaction(step)
             total+=n
@@ -576,7 +649,7 @@ class Store:
         """Drop idempotency receipts after a few days and anonymous saves idle for
         months. Account saves are kept; only their idle device logins expire."""
         age=(f"-{int(idle_days)} days",)
-        r=self._batches("SELECT rowid FROM receipts WHERE created_at<datetime('now',?)",(f"-{int(receipt_days)} days",),"DELETE FROM receipts WHERE rowid IN (%s)")
+        r=self._batches("receipts","created_at<datetime('now',?)",(f"-{int(receipt_days)} days",))
         with self.connect() as db:
             idle="updated_at<datetime('now',?) AND sid NOT IN (SELECT sid FROM accounts)"
             stale=[row["sid"] for row in db.execute(f"SELECT sid FROM sessions WHERE {idle}",age)]
@@ -585,7 +658,7 @@ class Store:
             part=stale[i:i+50]
             def drop(db):
                 marks=",".join("?"*len(part))
-                gone=[r[0] for r in db.execute(f"SELECT sid FROM sessions WHERE sid IN ({marks}) AND {idle}",(*part,*age))]
+                gone=[r[0] for r in db.execute(f"SELECT sid FROM sessions WHERE sid IN ({marks}) AND {idle}"+dbm.for_update(db),(*part,*age))]
                 if not gone:return 0
                 marks2=",".join("?"*len(gone))
                 db.execute(f"DELETE FROM archive WHERE sid IN ({marks2})",gone)
@@ -599,11 +672,15 @@ class Store:
     def prune_receipts(self,days:float=2,keep:int=200)->int:
         """Idempotency receipts only need to outlive a client's retries: keep the
         last `keep` per save and nothing older than `days`."""
-        n=self._batches("SELECT rowid FROM receipts WHERE created_at<datetime('now',?)",(f"-{int(days*24*60)} minutes",),"DELETE FROM receipts WHERE rowid IN (%s)")
+        n=self._batches("receipts","created_at<datetime('now',?)",(f"-{int(days*24*60)} minutes",))
         with self.connect() as db:
             heavy=[r[0] for r in db.execute("SELECT sid FROM receipts GROUP BY sid HAVING COUNT(*)>?",(int(keep),))]
+        # SQLite keeps the last `keep` inserted (rowid); PostgreSQL has no insertion order, so the
+        # newest by created_at (1 s resolution, ties by request id): the same except within a second.
+        newest=("SELECT request_id FROM receipts WHERE sid=? ORDER BY created_at DESC,request_id DESC LIMIT ?" if self.pg else
+                "SELECT rowid FROM receipts WHERE sid=? ORDER BY rowid DESC LIMIT ?")
         for sid in heavy:
-            n+=self.transaction(lambda db:db.execute("DELETE FROM receipts WHERE sid=? AND rowid NOT IN (SELECT rowid FROM receipts WHERE sid=? ORDER BY rowid DESC LIMIT ?)",
+            n+=self.transaction(lambda db:db.execute(f"DELETE FROM receipts WHERE sid=? AND {'request_id' if self.pg else 'rowid'} NOT IN ({newest})",
                                                       (sid,sid,int(keep))).rowcount)
         return n
 
@@ -613,13 +690,16 @@ class Store:
         `days`. Deleted with their receipts, a small batch per transaction."""
         from .accounts import has_progress
         with self.connect() as db:
-            named="OR sid IN (SELECT sid FROM profiles WHERE name IS NOT NULL)" if db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='profiles'").fetchone() else ""
+            has_profiles=True if self.pg else db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='profiles'").fetchone()
+            named="OR sid IN (SELECT sid FROM profiles WHERE name IS NOT NULL)" if has_profiles else ""
         cond=(f"revision<=1 AND updated_at<datetime('now',?) AND NOT (sid IN (SELECT sid FROM accounts) OR sid IN (SELECT sid FROM logins) {named})")
         age=f"-{int(days*24*60)} minutes"
-        deleted,last=0,0
+        # Walk the table in key order: SQLite by rowid, PostgreSQL (no rowid) by sid.
+        order="sid" if self.pg else "rowid"
+        deleted,last=0,"" if self.pg else 0
         while True:
             with self.connect() as db:
-                rows=db.execute(f"SELECT rowid,sid,state FROM sessions WHERE rowid>? AND {cond} ORDER BY rowid LIMIT ?",(last,age,int(batch))).fetchall()
+                rows=db.execute(f"SELECT {order} AS rowid,sid,state FROM sessions WHERE {order}>? AND {cond} ORDER BY {order} LIMIT ?",(last,age,int(batch))).fetchall()
             if not rows:return deleted
             last=rows[-1]["rowid"]
             doomed=[]
@@ -632,7 +712,7 @@ class Store:
                 def drop(db):
                     n=0
                     for sid in doomed:  # re-checked under the lock: it may have been played meanwhile
-                        if not db.execute(f"SELECT 1 FROM sessions WHERE sid=? AND {cond}",(sid,age)).fetchone():continue
+                        if not db.execute(f"SELECT 1 FROM sessions WHERE sid=? AND {cond}"+dbm.for_update(db),(sid,age)).fetchone():continue
                         db.execute("DELETE FROM archive WHERE sid=?",(sid,))
                         db.execute("DELETE FROM receipts WHERE sid=?",(sid,))
                         n+=db.execute("DELETE FROM sessions WHERE sid=?",(sid,)).rowcount
@@ -673,7 +753,9 @@ class Store:
     def checkpoint(self,truncate_ms:int=0)->None:
         """PASSIVE WAL checkpoint: never waits for readers or writers. With `truncate_ms`,
         a TRUNCATE checkpoint that waits at most that long: under steady traffic some reader
-        is always inside the WAL, so a PASSIVE one never lets it restart and the file grows."""
+        is always inside the WAL, so a PASSIVE one never lets it restart and the file grows.
+        PostgreSQL checkpoints by itself: nothing to do."""
+        if self.pg:return
         if not truncate_ms:
             with self.connect() as db:
                 db.execute("PRAGMA wal_checkpoint(PASSIVE)").fetchall()

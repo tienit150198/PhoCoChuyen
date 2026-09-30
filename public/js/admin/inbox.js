@@ -15,14 +15,22 @@ export class Inbox{
 
   load(more=false){
     if(this.busy)return;
+    clearTimeout(this.timer);
     this.busy=true;this.error=null;
-    const before=more?this.data?.next:null;
-    this.api.inbox(this.filter,before)
+    const before=more?this.data?.next:null,ctl=this.ctl=new AbortController();
+    this.api.inbox(this.filter,before,ctl.signal)
       .then(d=>{this.data=more&&this.data?{...d,items:[...this.data.items,...d.items]}:d;this.hooks.counts(d.counts);})
-      .catch(e=>{if(e.status===403||e.status===401){this.hooks.forbidden(e);return;}this.error=e.message;})
-      .finally(()=>{this.busy=false;this.hooks.rerender();});
+      .catch(e=>{if(e.aborted)return;if(e.status===403||e.status===401){this.hooks.forbidden(e);return;}this.error=e.message;})
+      .finally(()=>{if(this.ctl!==ctl)return;this.ctl=null;this.busy=false;this.hooks.rerender();});
   }
-  reset(){this.data=null;this.sel=null;this.error=null;}
+  /** Drop what is shown (and any request still running for it); view() loads again. */
+  reset(){this.ctl?.abort();this.ctl=null;this.busy=false;clearTimeout(this.timer);this.data=null;this.sel=null;this.error=null;}
+  /** Filter chips: the choice shows at once, the list loads once the clicking settles. */
+  refilter(){
+    this.reset();this.busy=true;
+    this.timer=setTimeout(()=>{this.busy=false;this.load();},200);
+    this.hooks.rerender();
+  }
   get items(){return this.data?.items||[];}
   item(id){return this.items.find(x=>x.id===id);}
 
@@ -102,10 +110,10 @@ export class Inbox{
   }
   async action(act,data){
     switch(act){
-      case'fbFilter':if(this.filter[data.field]===data.value)return true;this.filter[data.field]=data.value;this.reset();this.hooks.rerender();return true;
+      case'fbFilter':if(this.filter[data.field]===data.value)return true;this.filter[data.field]=data.value;this.refilter();return true;
       case'fbReload':this.reset();this.hooks.rerender();return true;
       case'fbMore':this.load(true);this.hooks.rerender();return true;
-      case'fbOpen':this.sel=Number(data.id);this.hooks.rerender();document.querySelector('.pane-detail')?.scrollTo?.(0,0);if(matchMedia('(max-width: 899px)').matches)scrollTo(0,0);return true;
+      case'fbOpen':this.sel=Number(data.id);if(this.item(this.sel)?.context?.career)this.api.loadNames().then(ok=>{if(ok)this.hooks.rerender();});this.hooks.rerender();document.querySelector('.pane-detail')?.scrollTo?.(0,0);if(matchMedia('(max-width: 899px)').matches)scrollTo(0,0);return true;
       case'fbClose':{const id=this.sel;this.sel=null;this.hooks.rerender();document.querySelector(`.fb-row[data-id="${id}"]`)?.focus();return true;}
       case'fbStatus':await this.save({id:Number(data.id),status:data.status},'Đã đổi trạng thái.');return true;
       case'fbClearReply':{const it=await this.save({id:Number(data.id),reply:''},'Đã xóa lời đáp.');if(it)delete this.drafts[it.id];return true;}

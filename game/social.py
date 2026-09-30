@@ -15,11 +15,11 @@ import datetime
 import hashlib
 import json
 import re
-import sqlite3
 import time
 import unicodedata
 
 from .careers import PLUGINS
+from . import db as dbm
 
 
 class SocialError(Exception):
@@ -98,6 +98,8 @@ CREATE INDEX IF NOT EXISTS gifts_to ON gifts(to_pid, claimed);
 
 
 def ensure(store) -> None:
+    if getattr(store, 'pg', None):
+        return  # PostgreSQL: created with every other table (game/pg_schema.py)
     with store.connect() as db:
         db.executescript(SCHEMA)
 
@@ -228,7 +230,7 @@ def touch(store, sid: str, state: dict | None, must: bool = False) -> dict:
     def write(db):
         cur = _profile(db, pid)
         if not cur:
-            db.execute('INSERT INTO profiles(pid,sid,created,updated,seen,week_key) VALUES(?,?,?,?,?,?)', (pid, sid, t, 0, t, week()))
+            db.execute('INSERT OR IGNORE INTO profiles(pid,sid,created,updated,seen,week_key) VALUES(?,?,?,?,?,?)', (pid, sid, t, 0, t, week()))
             cur = _profile(db, pid)
         if snap:
             wk = week()
@@ -255,7 +257,7 @@ def _touch(db, sid: str, state: dict | None) -> dict:
     p = _profile(db, pid)
     t = now()
     if not p:
-        db.execute('INSERT INTO profiles(pid,sid,created,updated,seen,week_key) VALUES(?,?,?,?,?,?)', (pid, sid, t, 0, t, week()))
+        db.execute('INSERT OR IGNORE INTO profiles(pid,sid,created,updated,seen,week_key) VALUES(?,?,?,?,?,?)', (pid, sid, t, 0, t, week()))
         p = _profile(db, pid)
     if state is not None and t - p['updated'] > 120:
         shop, served = snapshot(state)
@@ -400,7 +402,7 @@ def settle(store, token: str, state: dict) -> list[str]:
 # ---------------------------------------------------------------- read API
 def community(db) -> dict:
     wk = week()
-    progress = _count(db, 'SELECT COALESCE(SUM(MAX(served-week_base,0)),0) FROM profiles WHERE week_key=?', (wk,))
+    progress = _count(db, 'SELECT COALESCE(SUM(CASE WHEN served>week_base THEN served-week_base ELSE 0 END),0) FROM profiles WHERE week_key=?', (wk,))
     players = _count(db, 'SELECT COUNT(*) FROM profiles WHERE week_key=? AND served>week_base', (wk,))
     return dict(week=wk, goal=WEEK_GOAL, progress=int(progress), players=players,
                 done=progress >= WEEK_GOAL, label='Cả phố cùng phục vụ khách trong tuần')
@@ -431,7 +433,7 @@ def get(store, token: str, state: dict, route: str, q: dict) -> dict:
             career = q.get('career') or ''
             query = _fold(q.get('q', ''))[:30]
             rows = _rows(db, '''SELECT * FROM profiles WHERE visible=1 AND hidden=0 AND name IS NOT NULL AND seen>?
-                                AND pid NOT IN (SELECT target FROM blocks WHERE pid=?) ORDER BY seen DESC LIMIT 200''',
+                                AND pid NOT IN (SELECT target FROM blocks WHERE pid=?) ORDER BY seen DESC, pid LIMIT 200''',
                          (now() - 60 * 86400, mine))
             if q.get('filter') == 'following':
                 follow = {r['target'] for r in _rows(db, 'SELECT target FROM follows WHERE pid=?', (mine,))}
@@ -469,7 +471,7 @@ def get(store, token: str, state: dict, route: str, q: dict) -> dict:
             sql = '''SELECT b.*, p.name AS author, p.avatar AS avatar FROM board b JOIN profiles p ON p.pid=b.pid
                      WHERE b.hidden=0 AND b.pid NOT IN (SELECT target FROM blocks WHERE pid=?)'''
             if career != 'all':
-                sql += ' AND b.career IN (?, "all")'
+                sql += " AND b.career IN (?, 'all')"
                 args.append(career)
             if q.get('kind') in BOARD_KINDS:
                 sql += ' AND b.kind=?'
@@ -496,7 +498,7 @@ def get(store, token: str, state: dict, route: str, q: dict) -> dict:
                         gifts=[dict(id=g['id'], author=g['author'], avatar=g['avatar'], sticker=g['sticker'], coins=g['coins'], note=g['note'], at=int(g['at'])) for g in gifts])
         if route == 'community':
             top = _rows(db, '''SELECT * FROM profiles WHERE visible=1 AND hidden=0 AND name IS NOT NULL AND week_key=? AND served>week_base
-                               ORDER BY served-week_base DESC LIMIT 10''', (week(),))
+                               ORDER BY served-week_base DESC, seen DESC, pid LIMIT 10''', (week(),))
             return dict(community=community(db), top=[dict(_public_profile(p, mine), week=p['served'] - p['week_base']) for p in top])
     fail('Không có mục này.', 'not_found', 404)
 
@@ -514,7 +516,7 @@ def _listing(db, m: dict, me: str) -> dict:
 
 
 def _board(db, b: dict, me: str) -> dict:
-    reacts = _rows(db, 'SELECT emoji, COUNT(*) AS n, SUM(pid=?) AS mine FROM reactions WHERE post=? GROUP BY emoji', (me, b['id']))
+    reacts = _rows(db, 'SELECT emoji, COUNT(*) AS n, SUM(CASE WHEN pid=? THEN 1 ELSE 0 END) AS mine FROM reactions WHERE post=? GROUP BY emoji', (me, b['id']))
     comments = _rows(db, '''SELECT c.*, p.name AS author, p.avatar AS avatar FROM comments c JOIN profiles p ON p.pid=c.pid
                             WHERE c.post=? AND c.hidden=0 ORDER BY c.id LIMIT 30''', (b['id'],))
     return dict(id=b['id'], author=b['author'], avatar=b['avatar'], pid=b['pid'], career=b['career'], kind=b['kind'], text=b['text'],
@@ -557,7 +559,7 @@ def post(store, token: str, state: dict, route: str, d: dict) -> dict:
             career = (json.loads(t['shop']).get('current') or 'restaurant')
             try:
                 db.execute('INSERT INTO previews(from_pid,to_pid,career,day,stars,text,at) VALUES(?,?,?,?,?,?,?)', (mine, t['pid'], career, today(), stars, text, now()))
-            except sqlite3.IntegrityError:
+            except dbm.IntegrityError:
                 fail('Hôm nay bạn đã đánh giá quán này rồi.', 'already_reviewed')
             notify(store, db, t['pid'], 'review', f'{me["name"]} chấm quán bạn {stars}★: “{text[:80]}”', mine)
         return dict(message='Đã gửi đánh giá. Cảm ơn bạn đã ghé!')
@@ -668,7 +670,7 @@ def post(store, token: str, state: dict, route: str, d: dict) -> dict:
             b = db.execute('SELECT id FROM board WHERE id=? AND hidden=0', (ival(d.get('post'), 1, 10 ** 12, 'Bài'),)).fetchone()
             need(b, 'Không thấy bài này.', 'not_found', 404)
             if db.execute('DELETE FROM reactions WHERE post=? AND pid=? AND emoji=?', (b['id'], mine, emoji)).rowcount == 0:
-                db.execute('INSERT INTO reactions(post,pid,emoji) VALUES(?,?,?)', (b['id'], mine, emoji))
+                db.execute('INSERT OR IGNORE INTO reactions(post,pid,emoji) VALUES(?,?,?)', (b['id'], mine, emoji))
         return dict(message='')
     if route == 'delete_post':
         with store.connect() as db:
@@ -696,10 +698,13 @@ def post(store, token: str, state: dict, route: str, d: dict) -> dict:
         need(reason in REPORT_REASONS, 'Lý do không hợp lệ.')
         target = str(d.get('id', ''))[:32]
         table, key = dict(profile=('profiles', 'pid'), review=('previews', 'id'), board=('board', 'id'), comment=('comments', 'id'), listing=('market', 'id'))[kind]
+        # Numeric ids are compared as numbers (SQLite converted '12' itself; PostgreSQL would reject 'abc').
+        need(key == 'pid' or (target.isascii() and target.isdigit()), 'Không thấy nội dung này.', 'not_found', 404)
+        ref = target if key == 'pid' else int(target)
         with store.connect() as db:
-            need(db.execute(f'SELECT 1 FROM {table} WHERE {key}=?', (target,)).fetchone(), 'Không thấy nội dung này.', 'not_found', 404)
+            need(db.execute(f'SELECT 1 FROM {table} WHERE {key}=?', (ref,)).fetchone(), 'Không thấy nội dung này.', 'not_found', 404)
             if db.execute('INSERT OR IGNORE INTO reports(reporter,kind,target,reason,at) VALUES(?,?,?,?,?)', (mine, kind, target, reason, now())).rowcount:
-                db.execute(f'UPDATE {table} SET reports=reports+1, hidden=CASE WHEN reports+1>=? THEN 1 ELSE hidden END WHERE {key}=?', (HIDE_AFTER, target))
+                db.execute(f'UPDATE {table} SET reports=reports+1, hidden=CASE WHEN reports+1>=? THEN 1 ELSE hidden END WHERE {key}=?', (HIDE_AFTER, ref))
         return dict(message='Cảm ơn bạn đã báo cáo. Nội dung bị nhiều người báo cáo sẽ tự ẩn và được xem xét.')
     if route == 'inbox_read':
         with store.connect() as db:

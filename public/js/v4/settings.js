@@ -38,6 +38,7 @@ export function settingsView(env){
       <button class="btn primary full" type="submit">Lưu</button>
     </form>
     ${tutorialSettings()}
+    <section class="settings-block"><h3><span aria-hidden="true">✨</span> Có gì mới</h3><button type="button" class="btn small" data-action="whatsNew">Xem các cập nhật mới</button></section>
     ${feedbackBlock}
     <section class="settings-block">${toggle('reduceMotion','Giảm chuyển động',s.reduceMotion)}${toggle('largeText','Chữ lớn',s.largeText)}</section>
     ${api.ai?.configured?`<section class="settings-block"><h3>${icon('chat',18)} Trò chuyện bằng AI</h3>

@@ -7,6 +7,7 @@ or a valid answer, the scripted persona decision is used instead.
 The API key is read from the server environment and never leaves this module.
 """
 from __future__ import annotations
+import http.client
 import json
 import os
 import re
@@ -60,7 +61,9 @@ def chat(messages: list[dict], max_tokens: int = 400, temperature: float = 0.7, 
         if not isinstance(text, str) or not text.strip():
             return None, 'out_of_tokens' if choice.get('finish_reason') == 'length' else 'invalid_response'
         return text.strip(), None
-    except (urllib.error.URLError, TimeoutError, ValueError, KeyError, IndexError, TypeError, OSError):
+    # HTTPException: a provider that drops the connection mid-answer (IncompleteRead,
+    # BadStatusLine) must fall back to the scripted line like any other failure, not 500.
+    except (urllib.error.URLError, http.client.HTTPException, TimeoutError, ValueError, KeyError, IndexError, TypeError, OSError):
         return None, 'unavailable'
     finally:
         _gate.release()

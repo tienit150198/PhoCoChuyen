@@ -38,6 +38,7 @@ from . import incidents as incs
 from . import happenings as haps
 from . import archive as ar
 from . import bank_speaker
+from . import whats_new as wn
 
 ORIGINAL=("mother_baby","pharmacy","accounting","customer_care")
 UI_THEMES=("kem","tra_xanh","dem","bien","keo")
@@ -71,7 +72,7 @@ def normalize(s: str) -> str:
 
 def new_state() -> dict:
     return dict(schema=4,name="Mây",current=None,seq=0,
-        settings=default_settings(),
+        settings=dict(default_settings(),whatsNewSeen=wn.LATEST),  # a new player gets the tutorial, not "Có gì mới"
         careers={cid:initial_career(cid) for cid in CAREERS},journey=jr.initial(),stories=cst.initial())
 
 def notes_seen(v) -> str:
@@ -84,7 +85,7 @@ def notes_seen(v) -> str:
 def default_settings() -> dict:
     return dict(mode="everyday",sound=True,music=False,reduceMotion=False,largeText=False,aiConsent=True,aiAsked=True,aiNoticeSeen=False,securityEvents=True,
         lang="vi",uiTheme="kem",musicTrack="auto",musicVolume=45,sfxVolume=70,notify=False,publicProfile=False,
-        tutorialDone=False,notesSeen="",
+        tutorialDone=False,notesSeen="",whatsNewSeen="",  # whatsNewSeen: last "Có gì mới" release read (game/whats_new.py); older saves start at ""
         npcVoices=True,detailSfx=True,bankVoice=True)  # Cài đặt → Âm thanh: giọng nhân vật, âm thanh chi tiết, loa báo tiền
 
 from .jsoncopy import tree_copy,_SCALARS  # noqa: F401 (re-exported)
@@ -464,6 +465,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
             elif k=="tutorialDone":  # first-run tour seen (follows the account across devices)
                 need(type(v) is bool,"Thiết lập không hợp lệ.");s["settings"][k]=v
             elif k=="notesSeen":s["settings"][k]=notes_seen(v)  # announcements already shown ("guide-v1,…")
+            elif k=="whatsNewSeen":  # "Có gì mới" read up to this release; never goes back down
+                need(wn.valid_seen(v),"Thiết lập không hợp lệ.");s["settings"][k]=wn.newer(s["settings"].get(k,""),v)
             elif k in s["settings"]:
                 need(type(v) is bool,"Thiết lập không hợp lệ.");s["settings"][k]=v
             else:raise GameError("Thiết lập không được hỗ trợ.")
@@ -1139,6 +1142,7 @@ then runs validate_career on every career the command changed (see Store._comput
     for k in ("npcVoices","detailSfx","bankVoice"):need(type(settings.get(k,True)) is bool,"Thiết lập bản lưu không hợp lệ.")
     need(set(settings)<=set(default_settings()),"Thiết lập lạ trong bản lưu.")
     need(type(settings.get("tutorialDone",False)) is bool,"Thiết lập bản lưu không hợp lệ.");notes_seen(settings.get("notesSeen",""))
+    need(wn.valid_seen(settings.get("whatsNewSeen","")),"Thiết lập bản lưu không hợp lệ.")
     if _SCOPED.get():
         for k,value in s.items():
             if k!="careers":_finite(value)
