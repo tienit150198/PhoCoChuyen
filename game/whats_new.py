@@ -28,6 +28,11 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="0.9.11", date="2026-09-30", items=(
+        dict(emoji="💔", text="Chuyện thất tình không còn nhắc tới người yêu mà bạn chưa từng có."),
+        dict(emoji="💍", text="Đã đính hôn hay kết hôn thì không gặp chuyện thất tình nữa."),
+        dict(emoji="✅", text="Đã kiểm tra lại sau khi chuyển máy chủ: dữ liệu của mọi người vẫn đủ và đúng."),
+    )),
     dict(version="0.9.10", date="2026-09-30", items=(
         dict(emoji="✅", text="Nâng cấp hạ tầng đã xong! Game đã chạy trên máy chủ mới, mạnh và nhanh hơn."),
         dict(emoji="🎮", text="Tiền, nhà, đồ và tiến độ của bạn vẫn giữ nguyên. Chúc mọi người chơi vui, enjoy nhé!"),
