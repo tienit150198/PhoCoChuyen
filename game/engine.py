@@ -1184,6 +1184,18 @@ def _finite(obj) -> None:
         for value in obj:
             if type(value) not in _LEAVES:_finite(value)
 
+# Display-only fields added to generated tasks in a later release. A task made before that release
+# lacks them, and must still match its regenerated original (0.9.6 added "ask" to clothing lines).
+LATE_TASK_KEYS=frozenset({"ask"})
+
+def _without_late_keys(original,stored):
+    """`original` minus the LATE_TASK_KEYS that `stored` does not have, at every level."""
+    if isinstance(original,dict) and isinstance(stored,dict):
+        return {k:_without_late_keys(v,stored.get(k)) for k,v in original.items() if not (k in LATE_TASK_KEYS and k not in stored)}
+    if isinstance(original,list) and isinstance(stored,list) and len(original)==len(stored):
+        return [_without_late_keys(a,b) for a,b in zip(original,stored)]
+    return original
+
 def validate_state(s:dict) -> None:
     """Structural and economic invariants, also run on imported save envelopes.
 
@@ -1269,7 +1281,7 @@ def validate_career(c:dict,cid:str,finite:bool=True) -> None:
         for key in ("npc","title","opening","kind","needs","variant","solution","value","evidence"):
             # Milk tea: the counter relabels guests and re-rolls orders; boba.validate_task checks them.
             if cid=="milk_tea" and key in ("title","opening","needs"):continue
-            if key in original:need(t.get(key)==original[key],"Dữ kiện gốc của nhiệm vụ không hợp lệ: "+key)
+            if key in original:need(t.get(key)==original[key] or t.get(key)==_without_late_keys(original[key],t.get(key)),"Dữ kiện gốc của nhiệm vụ không hợp lệ: "+key)
         taskids.append(t["id"]);cq.validate_task(t)
         for key in ("known","deferred"):need(type(t.get(key)) is bool,"Trạng thái công việc thiếu.")
         for key in ("inspected","notes","chat"):need(isinstance(t.get(key),list),"Dữ kiện công việc thiếu.")

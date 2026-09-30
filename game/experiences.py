@@ -17,6 +17,10 @@ GOALS_KEPT=3  # day recaps kept in the save (nothing reads them; x['recap'] is t
 NEW_ACTION_PREFIXES=('life_','lesson_','tour_','tea_','gift_')
 DONE=('completed','referred','cancelled')
 
+def _late(original,stored):
+  from .engine import _without_late_keys  # a display-only field added after the task was made
+  return _without_late_keys(original,stored)
+
 def core():
  from . import engine
  return engine
@@ -497,11 +501,11 @@ def validate_task(t:dict,original:dict):
  need(set(original)<=set(t),'Công việc mới thiếu dữ liệu.')
  mod=PLUGINS.get(cid)
  if mod:
-  for k in mod.FIXED:need(t.get(k)==original.get(k),'Dữ kiện gốc công việc bị thay đổi: '+k)
+  for k in mod.FIXED:need(t.get(k)==original.get(k) or t.get(k)==_late(original.get(k),t.get(k)),'Dữ kiện gốc công việc bị thay đổi: '+k)
   if 'patience' in t:e.integer(t['patience'],25,100)
   mod.validate_task(t,original);return
  fixed={'teacher':['lesson','students'],'tour_guide':['required','budget','limit','visitors','weather']}[cid]
- for k in fixed:need(t[k]==original[k],'Dữ kiện gốc công việc bị thay đổi: '+k)
+ for k in fixed:need(t[k]==original[k] or t[k]==_late(original[k],t[k]),'Dữ kiện gốc công việc bị thay đổi: '+k)
  if cid=='teacher':
   need(t['stage'] in ('plan','attendance','teach','grade','ready'),'Bước tiết học sai.')
   need(t['plan'] in ([],['demo','practice','reflect']),'Giáo án sai.')
