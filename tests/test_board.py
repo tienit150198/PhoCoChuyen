@@ -404,6 +404,33 @@ class AIGuard(unittest.TestCase):
         en = bd.ai_messages(s, job, 'en')[0]['content']
         self.assertIn('English', en)
 
+    def test_prompt_has_attitude_for_mapped_tempers(self):
+        from game import spice
+        s = story_state()
+        for who, p in C.CAST.items():
+            job = dict(kind='npc', post='p-x', cmt=None, who=who, canonical='👍', said='',
+                       thread=dict(author='Bà Tám', text='Chiều nay cúp điện nha cả nhà.', rumour=False, comments=[]))
+            system = bd._system(s, job, 'vi')
+            arch = spice.BOARD_TEMPER_TO_ARCH.get(p['temper'])
+            if arch:
+                self.assertIn('THÁI ĐỘ', system, who)
+                self.assertIn('KHÔNG xéo CON NGƯỜI', system, who)
+                if p['age'] < 16:
+                    self.assertIn('Học sinh tan học', system, who)
+            else:
+                self.assertIn(p['temper'], ('cold', 'shy'))
+                self.assertNotIn('THÁI ĐỘ', system, who)
+        self.assertIn(bd._arch_of('ba_tam')[0], spice.ARCHETYPES)
+        self.assertEqual(bd._arch_of('be_na')[1]['slang'], 0)  # a seven-year-old keeps it mild
+        from unittest.mock import patch
+        with patch.dict('os.environ', {'AI_SPICE': '0'}):
+            self.assertNotIn('THÁI ĐỘ', bd._system(s, dict(job, who='ba_tam'), 'vi'))
+
+    def test_guard_rejects_looks_and_rude_pronouns(self):
+        self.assertEqual(bd.guard('Nhìn nhà quê ghê con.', set(), 'ba_tam')[1], 'unsafe')
+        self.assertEqual(bd.guard('Tao nói rồi mà.', set(), 'chu_tu')[1], 'rude_pronoun')
+        self.assertIsNone(bd.guard('Sáng giờ bị bom hàng hai đơn, mệt chết đi được.', set(), 'tung_tun')[1])
+
 
 if __name__ == '__main__':
     unittest.main()

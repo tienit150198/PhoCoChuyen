@@ -393,7 +393,7 @@ def director(s:dict,c:dict,career:str) -> None:
 
 def chat_reply(s:dict,c:dict,career:str,npc:str,text:str) -> tuple[str,list[dict]]:
     """Rule-based baseline. Text alone never completes an economic action."""
-    from . import voices  # voice-flavoured small talk for greetings and idle chat
+    from . import voices, spice  # voice-flavoured small talk; archetype attitude for hints (Vietnamese saves)
     msg=normalize(text)
     t=next((t for t in c["tasks"] if t["npc"]==npc and t["status"] not in ("completed","referred","cancelled")),None)
     suggestions=[]
@@ -406,7 +406,7 @@ def chat_reply(s:dict,c:dict,career:str,npc:str,text:str) -> tuple[str,list[dict
         reply=reveal_needs(s,c,t)
         suggestions=[dict(label="Mở công việc",action="open_task",task=t["id"])]
     elif any(w in msg for w in ["tang","mien phi","giam gia","hoan tien","gui bu","da xong","thanh toan","giao roi"]):
-        reply="Mình nghe đề nghị của bạn. Bạn mở công việc hoặc tình huống liên quan, kiểm điều kiện rồi xác nhận thao tác nhé. Nói trong chat chưa làm tiền hay hàng thay đổi."
+        reply=spice.scripted(s,career,npc,"offer") or "Mình nghe đề nghị của bạn. Bạn mở công việc hoặc tình huống liên quan, kiểm điều kiện rồi xác nhận thao tác nhé. Nói trong chat chưa làm tiền hay hàng thay đổi."
         if t:suggestions=[dict(label="Kiểm công việc trước",action="open_task",task=t["id"])]
     elif any(w in msg for w in ["nho","lan truoc","hom qua","quen"]):
         memories=[m for m in c["memories"] if m["npc"]==npc]
@@ -414,13 +414,13 @@ def chat_reply(s:dict,c:dict,career:str,npc:str,text:str) -> tuple[str,list[dict
     elif any(w in msg for w in ["ghe","trang tri","cay","den","dep"]):
         decorated=[UPGRADE_INDEX[u]["name"] for u in c["upgrades"] if UPGRADE_INDEX[u]["kind"]=="decor"]
         reply="Mình thấy góc mới có "+", ".join(decorated[:3])+". Nhìn ấm áp hơn đó!" if decorated else "Góc hiện tại còn đơn giản, nhưng dễ gần. Bạn có thể chọn một món trang trí trong lúc tiệm nghỉ."
-    elif any(w in msg for w in ["xin loi","cam on"]):reply="Cảm ơn bạn đã nói rõ. Mình cùng làm nốt việc đang có nhé, không cần vội."
+    elif any(w in msg for w in ["xin loi","cam on"]):reply=spice.scripted(s,career,npc,"kind") or "Cảm ơn bạn đã nói rõ. Mình cùng làm nốt việc đang có nhé, không cần vội."
     elif any(w in msg for w in ["chao","hello","hi "]):
         reply=f'Chào {s["name"]}! '+(t["opening"] if t else "Hôm nay mình ghé phố chào bạn một chút.")
         # Each character greets in their own voice (game/voices.py); English keeps the line above.
         if s["settings"].get("lang")!="en":reply=(voices.scripted(s,career,npc,"greet",f'Chào {s["name"]}!')+" "+(t["opening"] if t else voices.scripted(s,career,npc,"idle",""))).strip()
     elif t:
-        reply="Mình đang trao đổi về: "+t["title"]+". Bạn có thể hỏi ‘Bạn cần gì?’ hoặc mở công việc để cùng xem dữ kiện nhé."
+        reply=spice.scripted(s,career,npc,"task",t["title"]) or "Mình đang trao đổi về: "+t["title"]+". Bạn có thể hỏi ‘Bạn cần gì?’ hoặc mở công việc để cùng xem dữ kiện nhé."
         suggestions=[dict(label="Hỏi nhu cầu",action="ask",task=t["id"]),dict(label="Mở công việc",action="open_task",task=t["id"])]
     else:reply=voices.scripted(s,career,npc,"idle","Hôm nay phố khá yên. Mình thích ngồi ở một góc và nhìn mọi người làm việc. Bạn cứ làm theo nhịp của mình nhé.")
     return reply,suggestions
