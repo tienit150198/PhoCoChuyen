@@ -74,6 +74,12 @@ PAGES={"/privacy":"privacy.html","/terms":"terms.html","/admin":"admin.html","/"
 env_flag=lambda k,d="0":os.environ.get(k,d).strip().lower() in ("1","true","yes","on")
 CAS_HASH=re.compile(r"[0-9a-f]{12}")
 STATIC_RECHECK=RECHECK  # seconds a resolved static route is trusted before its file is stat()ed again (STATIC_RECHECK_SECONDS, see game/webassets.py)
+# Dynamic JSON is gzipped on every response: level 1 costs about a third of level 5's CPU for
+# ~15% more bytes (a 300 KB save's view: 72 KB -> 17.6 KB instead of 15.0 KB). API_GZIP_LEVEL=1..9.
+def _gzip_level()->int:
+    try:return min(9,max(1,int(os.environ.get("API_GZIP_LEVEL","1"))))
+    except ValueError:return 1
+API_GZIP_LEVEL=_gzip_level()
 # Budgets that must not multiply with WORKERS: AI spend, sign-in attempts, new saves, feedback.
 SHARED_LIMITS=("ai","acct-","newsession:","fb:","fb-day:","fb-ip:")
 
@@ -248,7 +254,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def respond(self,status:int,data:bytes,ctype:str,extra:dict|None=None,compress:bool=False,cache:str|None=None,csp:str=CSP):
         if compress and len(data)>1400 and "gzip" in self.headers.get("Accept-Encoding",""):
-            data=gzip.compress(data,5);extra=dict(extra or {},**{"Content-Encoding":"gzip"})
+            data=gzip.compress(data,API_GZIP_LEVEL);extra=dict(extra or {},**{"Content-Encoding":"gzip"})
         self.send_response(status)
         self.send_header("Content-Type",ctype)
         self.send_header("Content-Length",str(len(data)))
