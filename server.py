@@ -28,6 +28,8 @@ from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 from urllib.parse import unquote,urlsplit,parse_qs
 import webbrowser
+try:import fcntl
+except ImportError:fcntl=None  # Windows: one server process, nothing to lock
 
 ROOT=Path(__file__).resolve().parent
 PUBLIC=ROOT/"public"
@@ -532,13 +534,37 @@ class Handler(BaseHTTPRequestHandler):
         except (OSError,ValueError):self.error(500,"Không đọc được dữ liệu. Kiểm tra thư mục storage và tải lại.")
 
     def do_POST(self):
+        self.body_read=False
+        try:self._post()
+        finally:self.discard_body()
+
+    def discard_body(self):
+        """A POST answered before its body was read (401/403/503 from the session check...): read and drop
+        the body so the next request on a keep-alive connection starts at a request line (PG_E2E F13), or
+        close the connection when the body cannot be read safely."""
+        if self.body_read or self.close_connection:return
+        try:length=int(self.headers.get("Content-Length","0"))
+        except ValueError:self.close_connection=True;return
+        if not 0<length<=MAX_BODY:
+            if length:self.close_connection=True
+            return
+        try:
+            while length>0:
+                chunk=self.rfile.read(min(length,65536))
+                if not chunk:break
+                length-=len(chunk)
+        except OSError:pass
+        if length>0:self.close_connection=True
+
+    def _post(self):
         try:
             route=urlsplit(self.path).path
             token,state,revision,csrf=self.guarded(light=route=="/api/command")
             length=int(self.headers.get("Content-Length","0"))
             if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
             if not self.headers.get("Content-Type","").startswith("application/json"):self.error(415,"Cần gửi JSON.");self.close_connection=True;return
-            data=json.loads(self.rfile.read(length),parse_constant=lambda x:(_ for _ in ()).throw(ValueError("nonfinite")))
+            body=self.rfile.read(length);self.body_read=True
+            data=json.loads(body,parse_constant=lambda x:(_ for _ in ()).throw(ValueError("nonfinite")))
             if not isinstance(data,dict):raise GameError("Dữ liệu cần là đối tượng JSON.")
             max_commands=int(os.environ.get("COMMANDS_PER_MINUTE","360"))
             if route=="/api/command":
@@ -611,6 +637,9 @@ class Handler(BaseHTTPRequestHandler):
         except accounts.AccountError as e:self.error(e.status,e.message,e.code)
         except GameError as e:self.error(401 if e.code=="session_missing" else 400,e.message,e.code)
         except (ValueError,TypeError,KeyError,IndexError,RecursionError,AttributeError,*dbm.DataError):self.error(400,"Dữ liệu không đúng cấu trúc hoặc bản lưu không hợp lệ.","invalid_data")
+        except dbm.OperationalError as e:  # busy/unreachable database: nothing was committed (or its receipt replays it)
+            self.log_error("Database error: %s",type(e).__name__)
+            self.error(503,"Máy chủ đang bận, thử lại sau giây lát.","db_unavailable")
         except Exception as e:
             self.log_error("Internal error: %s",type(e).__name__)
             self.error(500,"Không thực hiện được thao tác. Tiến trình trước đó vẫn được giữ.","internal_error")
@@ -968,6 +997,31 @@ def maintenance(store:Store,stop:threading.Event,limits:SharedLimits|None=None):
     receipts, abandoned guest saves and stale saves, due pushes.
     PRUNE_GUEST_DAYS (default 3, 0 = off): never-played guest saves idle that long.
     RECEIPT_DAYS (default 2) / RECEIPTS_PER_SAVE (default 200): idempotency receipts kept."""
+    # One server at a time: during a rolling deploy (deploy/rolling_release.sh) two servers share the
+    # database for a while, and pruning, pushes and the backfill must not run twice at once.
+    lock=maintenance_lock(store.path)
+    if lock is None:sys.stderr.write("[maintenance] another server on this database runs housekeeping: waiting for it to stop\n")
+    while lock is None:
+        if stop.wait(10):return
+        lock=maintenance_lock(store.path)
+    try:_housekeeping(store,stop,limits)
+    finally:
+        if type(lock) is int:os.close(lock)  # releases the lock file (tests stop and start servers in one process)
+
+
+def maintenance_lock(db_path:str):
+    """The housekeeping lock: an flock() of <db>-maintenance.lock next to the game database (the same
+    file for every server started with the same GAME_DB, SQLite or PostgreSQL). Its descriptor when
+    taken, None when another process holds it, True where there is nothing to lock with."""
+    if fcntl is None:return True
+    db=Path(os.path.abspath(db_path))
+    try:fd=os.open(str(db.with_name(db.stem+"-maintenance.lock")),os.O_RDWR|os.O_CREAT,0o644)
+    except OSError:return True  # no writable data directory: run as before
+    try:fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB);return fd
+    except OSError:os.close(fd);return None
+
+
+def _housekeeping(store:Store,stop:threading.Event,limits:SharedLimits|None):
     last_prune=last_hourly=0.0;last_checkpoint=time.time()
     # Bảng xếp hạng: fill it from saves stored before it existed (small batches, off the request path).
     threading.Thread(target=leaderboard.run_backfill,args=(store,stop),daemon=True,name="leaderboard-backfill").start()
