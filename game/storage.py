@@ -58,7 +58,9 @@ FRESH=""
 PRAGMAS=("PRAGMA foreign_keys=ON",f"PRAGMA busy_timeout={BUSY_MS}",
          "PRAGMA synchronous=NORMAL",       # safe with WAL: no fsync per commit, only at checkpoints
          "PRAGMA temp_store=MEMORY","PRAGMA cache_size=-4000",
-         "PRAGMA mmap_size=268435456","PRAGMA journal_size_limit=67108864",
+         # No mmap_size: with several worker processes, memory-mapped reads lost writes, raised
+         # "disk I/O error" and once corrupted the file (PG_E2E F10). Plain reads are safe.
+         "PRAGMA journal_size_limit=67108864",
          # No checkpoint inside a player's commit (SQLite's default runs one every ~4 MB of WAL,
          # holding that writer); the server's checkpointer thread does it every few seconds.
          f"PRAGMA wal_autocheckpoint={int(os.environ.get('WAL_AUTOCHECKPOINT','0') or 0)}")
@@ -277,7 +279,10 @@ class Store:
         if db is None:
             db=sqlite3.connect(self.path,timeout=BUSY_MS/1000,factory=ClosingConnection,check_same_thread=False)
             db.row_factory=sqlite3.Row
-            for pragma in PRAGMAS:db.execute(pragma)
+            try:
+                for pragma in PRAGMAS:db.execute(pragma)
+            except BaseException:
+                db.close();raise  # not handed out: never pooled, never left open
             db._pool,db._pid=self._pool,os.getpid()
         return db
 
@@ -558,8 +563,9 @@ class Store:
         if not self.writing():raise sqlite3.OperationalError("database is locked")
         tx=time.perf_counter()
         if (tx-tw)*1000>=SLOW_MS/2:sys.stderr.write(f"[slow-lock] waited {(tx-tw)*1000:.0f}ms for the writer turn pid={os.getpid()}\n")
-        db=self.connect()
+        db=None
         try:
+            db=self.connect()  # inside the try: a failed connect must still give the writer turn back (F11)
             db.execute("BEGIN IMMEDIATE");self._patient(db)
             if self.pg:
                 # Lock this save's row only (other players never wait), then check the revision.
@@ -582,9 +588,12 @@ class Store:
         except dbm.IntegrityError:  # the same request id landed first: the caller replays it
             db.rollback();return False
         except BaseException:
-            db.rollback();raise
+            if db is not None:db.rollback()
+            raise
         finally:
-            db.close();self.done_writing()
+            try:
+                if db is not None:db.close()
+            finally:self.done_writing()
 
     def _patient(self,db)->None:
         """PostgreSQL: a command's save must be written, so its row lock waits as long as a
@@ -603,8 +612,9 @@ class Store:
         """The save keeps changing under us (a burst of writes to this one save):
         compute under the write lock, like before optimistic commands."""
         if not self.writing():raise sqlite3.OperationalError("database is locked")
-        db=self.connect()
+        db=None
         try:
+            db=self.connect()  # inside the try: a failed connect must still give the writer turn back (F11)
             db.execute("BEGIN IMMEDIATE");self._patient(db)
             row=db.execute("SELECT s.revision AS revision,s.state AS state,r.request_hash AS rhash,r.result AS rresult FROM sessions s "
                            "LEFT JOIN receipts r ON r.sid=s.sid AND r.request_id=? WHERE s.sid=?"+dbm.for_update(db,"s"),(request_id,sid)).fetchone()
@@ -622,10 +632,12 @@ class Store:
             lb.remember(sid,revision,board[0])
             return dict(state=public_state(raw,migrated=True),revision=revision,result=result,replayed=False)
         except Exception:
-            db.rollback()
+            if db is not None:db.rollback()
             raise
         finally:
-            db.close();self.done_writing()
+            try:
+                if db is not None:db.close()
+            finally:self.done_writing()
 
     def delete(self,token:str)->bool:
         """Erase a player's save and receipts (privacy request / "Xóa dữ liệu"),
