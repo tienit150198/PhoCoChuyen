@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **0.9.14** (`main` = `955dbb3`), 23 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **0.9.15** (`main` = `bf496c2`), 28 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -48,6 +48,15 @@ branch holds what, and what to do next, in order. Details live in the linked doc
   `renderSheet(false)` is for switching screens only). Its "Có gì mới" note, like 0.9.11's, was removed at the
   owner's request (no server-wide notice for fixes); both are described in the CHANGELOG.
 
+### 0.9.13 → 0.9.15 (01/10, night)
+- **0.9.13:** homes (villas, 4 apartment types, +20% prices), "Tiền của bạn" money sheet, faster cold load (minified
+  release), payroll names the empty box and shows whole numbers as 12400. Notes: new features only (homes, money).
+- **0.9.14:** admin "Thời gian chơi" (stat_play, exact from 01/10 00:31).
+- **0.9.15:** five careers: bán trái cây `fruit`, thu gom rác `garbage`, thông ống cống `drain` (chapter 3), phi công
+  `pilot`, tiếp viên `flight_attendant` (chapter 4, own airline UI); each save grows ~15 KB. System gifts:
+  `scripts/grant_gift.py` grants coins with a private popup ("Quà từ Phố Có Chuyện"), paid once through the game's
+  own command path; first use: 100 xu to the one player hit by the 01/10 00:33 502s (`sorry-20261001-910d8b7f`).
+
 ## 2. Rules the owner set (do not break)
 
 1. **Never delete or alter player data.** Old history goes to the archive (paged "Xem cũ hơn"); money and
@@ -61,6 +70,9 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 4. **Memory:** any in-process cache must be bounded (bytes + rows). The new server has 15 GB; PostgreSQL takes
    3 GB of shared buffers and the game is capped at 8 GB (`MemoryMax`).
 5. **No credentials in the repo or in commits.** Server access comes from the owner.
+6. **Every career, now and future, needs MANY awkward, annoying, strange demands** (01/10): from customers,
+   bosses, neighbours, family, everything around the job; the more exasperating from outsiders the better, while
+   the UI stays easy to read. This is a standing requirement for all career work.
 
 ## 3. Branches (local and on GitHub)
 
@@ -85,8 +97,12 @@ branch holds what, and what to do next, in order. Details live in the linked doc
    - Package with `scripts/package.py` from a clean `git archive`, then `mnl-rolling-release <zip>` **on the
      new server**. While the old server still forwards (§7), mirror the release to it (§7).
    - Afterwards, watch 5xx/400 rates and the slow-cmd log for 10 minutes.
-2. **New careers** (`careers-street`, `careers-air`): review, merge one after the other, full checklist, then a
-   release of their own (0.9.14) with a "Có gì mới" entry.
+2. **Onboarding** (branch `onboarding`, in progress 01/10): first fun in 6–8 presses, no popups in the first session,
+   fun first customer, hints at the moment of need. The 30/09 cohort: 53% picked a workplace, 39% served a customer.
+3. **Next versions, in the owner's order:** (a) chat phase 1 (design `docs/superpowers/specs/2026-09-30-live-chat-street-design.md`
+   on branch `live`; the owner said not yet on 01/10), then (b) seven careers: nhân viên gác chắn và bảo trì đường sắt,
+   cán bộ lưu trữ và thư viện, điều dưỡng, thợ dầu khí, trực tổng đài cứu hộ, người gác hải đăng, cứu hộ hồ bơi,
+   together with (c) many more awkward, annoying demands in every existing career (rule 6).
 3. **Retire the old server's role (after 3–7 days, ~03–07/10):** see §7.
 4. **Deploy less often.** Each deploy makes the changed files cold for everyone. Batch changes; hotfixes excepted.
 5. **English pack.** Older screens still have ~15k untranslated strings (English players see Vietnamese).
