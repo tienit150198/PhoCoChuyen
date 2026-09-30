@@ -28,6 +28,11 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="0.9.7", date="2026-09-30", items=(
+        dict(emoji="🛠️", text="Đã sửa lỗi “Dữ kiện gốc của nhiệm vụ không hợp lệ”: rút tiền, mở ngày mới và làm việc lại bình thường."),
+        dict(emoji="👕", text="Đơn shop quần áo làm dở từ trước vẫn giữ nguyên, bạn làm tiếp được."),
+        dict(emoji="🙏", text="Xin lỗi vì sự bất tiện. Cảm ơn mọi người đã báo lỗi!"),
+    )),
     dict(version="0.9.6", date="2026-09-30", items=(
         dict(emoji="🧋", text="Trà sữa: phiếu order ghim trên đầu, làm xong phần nào tích phần đó, chỉ một nút bước tiếp."),
         dict(emoji="👕", text="Shop quần áo, sửa đồ, thú cưng: thẻ “Khách cần” ghim sẵn, món khách cần xếp lên trước."),
