@@ -29,6 +29,7 @@ from . import certificates as ct
 from . import bank as bk   # 🏦 Ngân hàng Phố (game/bank.py)
 from . import wardrobe as wd   # 👗 Tủ đồ (game/wardrobe.py)
 from . import housing as hs   # 🏠 Nhà của bạn (game/housing.py)
+from . import system_gift as sg   # 🎁 Quà từ Phố Có Chuyện (game/system_gift.py)
 
 VERSION = 1
 START_WALLET = 60
@@ -841,6 +842,7 @@ def validate(s: dict) -> None:
     need(isinstance(j['stats'], dict) and set(j['stats']) <= set(STATS), 'Thống kê hành trình không hợp lệ.')
     for v in j['stats'].values():
         integer(v, 0, 10**9)
+    sg.validate(j)
     ct.validate(s)
     bk.validate(s)
     wd.validate(s)

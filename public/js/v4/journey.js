@@ -245,7 +245,9 @@ function walletView(env){
       <div class="jr-fund-actions">${draw}${invest}<div class="row wrap">${pause}</div></div></details>`;
   }).join('')||`<p class="muted">Chưa có nơi làm việc nào. Bắt đầu ở một tiệm trong hẻm nhé.</p>`;
   const kinds={living:'🏠',upkeep:'💡',draw:'👛',invest:'📈',salary:'💵',reopen:'🔑',incident:'⚖️',life:'🌿',study:'📚',backdoor:'🚪',bank:'🏦',home:'🔑'};
-  const row=h=>`<li><span aria-hidden="true">${kinds[h.kind]||'•'}</span><span class="grow">${esc(h.label)}<small>Ngày sống ${fmt(h.day)}</small></span><b class="${h.amount<0?'out':'in'}">${h.amount<0?'−':'+'}${fmt(Math.abs(h.amount))} xu</b></li>`;
+  // A label that brings its own emoji ("🎁 Quà từ Phố Có Chuyện") shows it in place of the kind's.
+  const lead=h=>/^(\p{Extended_Pictographic}\uFE0F?) /u.exec(h.label||'');
+  const row=h=>{const m=lead(h);return `<li><span aria-hidden="true">${m?m[1]:kinds[h.kind]||'•'}</span><span class="grow">${esc(m?h.label.slice(m[0].length):h.label)}<small>Ngày sống ${fmt(h.day)}</small></span><b class="${h.amount<0?'out':'in'}">${h.amount<0?'−':'+'}${fmt(Math.abs(h.amount))} xu</b></li>`;};
   const hist=[...J.history,...olderRows('','wallet')].map(row).join('')||`<li class="muted">Chưa có khoản nào.</li>`;
   const L=J.living;
   return head('Ví của bạn','',{back:true})+`<div class="sheet-body jr-body">
