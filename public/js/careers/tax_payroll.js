@@ -387,13 +387,17 @@ export default {
       const t=x.room.tasks.find(q=>q.id===d.task);if(!t?.steps)return;
       const st=t.steps.find(s=>s.id===d.step),u=state(x,t);if(!st)return;
       const val=id=>document.getElementById(id)?.value??'';
-      let answer=null;
+      let answer=null,bad=null;   // bad: the first empty or malformed box, named in the toast and focused
       if(st.kind==='choice')answer=u.sel[st.id]||null;
       else if(st.kind==='multi')answer=(u.multi[st.id]||[]).length?[...u.multi[st.id]]:null;
       else if(st.kind==='order')answer=(u.order[st.id]||[]).length===st.items.length?[...u.order[st.id]]:null;
-      else if(st.kind==='number')answer=parseIntVN(val(fid(t,st.id)));
+      else if(st.kind==='number'){answer=parseIntVN(val(fid(t,st.id)));if(answer===null)bad={id:fid(t,st.id),label:'Đáp số',empty:!val(fid(t,st.id)).trim()};}
       else if(st.kind==='match'){answer={};for(const l of st.left){const v=val(fid(t,st.id,l.id));if(!v){answer=null;break;}answer[l.id]=v;}}
-      else if(st.kind==='fields'){answer={};for(const f of st.fields){const raw=val(fid(t,st.id,f.id));const v=f.options?raw:parseIntVN(raw);if(v===null||v===''){answer=null;break;}answer[f.id]=v;}}
+      else if(st.kind==='fields'){answer={};for(const f of st.fields){const raw=val(fid(t,st.id,f.id));const v=f.options?raw:parseIntVN(raw);if(v===null||v===''){answer=null;bad={id:fid(t,st.id,f.id),label:f.label,empty:!String(raw).trim(),select:!!f.options};break;}answer[f.id]=v;}}
+      if(answer===null&&bad){   // say which box, and take the player there (it is often off screen on a phone)
+        x.toast(bad.select?`Chọn “${bad.label}” trước nhé.`:bad.empty?`Còn trống ô “${bad.label}”. Không có thì ghi 0 nhé.`:`Ô “${bad.label}” cần số nguyên, vd 12.400.`,true);
+        const box=document.getElementById(bad.id);if(box){box.classList.add('tp-bad');box.addEventListener('input',()=>box.classList.remove('tp-bad'),{once:true});box.scrollIntoView({block:'center'});box.focus({preventScroll:true});}
+        return;}
       if(answer===null){x.toast(st.kind==='choice'?'Chạm chọn một đáp án trước nhé.':st.kind==='multi'?'Chạm chọn ít nhất một ô trước nhé.':st.kind==='order'?'Chạm đủ các việc theo thứ tự trước nhé.':st.kind==='match'?'Chọn đủ từng dòng trước nhé.':'Điền đủ và đúng dạng số nguyên (vd 12.400) trước khi kiểm tra nhé.',true);return;}
       await x.send('tp_submit',{task:t.id,step:st.id,answer});
     },
