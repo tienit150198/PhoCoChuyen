@@ -8,6 +8,7 @@ Everything is fictional; school rules here are simplified game rules.
 """
 from __future__ import annotations
 import copy
+from .jsoncopy import tree_copy
 import random
 import re
 
@@ -534,13 +535,13 @@ def public(c: dict) -> dict:
     if d.get('active'):
         a = INDEX[d['active']['id']]
         steps, state = P.public(_task(a, d['active']))
-        active = dict(id=a['id'], kind=a['kind'], emoji=a['emoji'], tag=a['tag'], title=a['title'], intro=a['intro'], facts=copy.deepcopy(a['facts']),
+        active = dict(id=a['id'], kind=a['kind'], emoji=a['emoji'], tag=a['tag'], title=a['title'], intro=a['intro'], facts=tree_copy(a['facts']),
                       steps=steps, state=state, mistakes=d['active']['mistakes'], done=state['at'] >= len(steps))
     last = d['history'][-1] if d.get('history') else None
     recap = None
     if last and last['day'] == day:
         a = INDEX[last['id']]
-        recap = dict(id=a['id'], title=a['title'], grade=last['grade'], perspectives=copy.deepcopy(a['perspectives']), lesson=a['lesson'])
+        recap = dict(id=a['id'], title=a['title'], grade=last['grade'], perspectives=tree_copy(a['perspectives']), lesson=a['lesson'])
     from .teach_lesson import notebook
     return dict(month=MONTHS[month_index(day)], month_index=month_index(day), offers=offered, active=active, notebook=notebook(d), care=care_view(c),
                 history=[dict(h, title=INDEX[h['id']]['title'], emoji=INDEX[h['id']]['emoji']) for h in d.get('history', [])[-10:]][::-1],
@@ -1124,7 +1125,7 @@ def care_view(c: dict) -> dict:
     """What the planner shows. Works on a synced copy: reading never changes the save."""
     from .teach_lesson import KID
     d = c['ext']['data'].get('class') or {}
-    cr = copy.deepcopy(d['care']) if d.get('care') else _new_care(c, d)
+    cr = tree_copy(d['care']) if d.get('care') else _new_care(c, d)
     _sync(cr, c['day'])
     day = c['day']
     view_c = dict(c, ext=dict(c['ext'], data=dict(c['ext']['data'], **{'class': dict(d, care=cr)})))

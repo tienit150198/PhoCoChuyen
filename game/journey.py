@@ -19,6 +19,7 @@ workplace open and no living costs, so plugin tests can play any career.
 from __future__ import annotations
 
 import copy
+from .jsoncopy import tree_copy
 import hashlib
 import random
 
@@ -746,7 +747,7 @@ def public(s: dict) -> dict:
         secret=secret, maturity=maturity(ctx['xp']),
         skills=[dict(id=sid, points=ctx['points'].get(sid, 0), level=ctx['sk'].get(sid, 0)) for sid in _skill_ids()],
         goals=_goals_view(ctx, j['chapter']), progress_paused=j['story'] and j['wallet'] < 0 and j['chapter'] <= LAST,
-        clean_days=j['clean_days'], history=list(reversed(j['history'][-30:])), news=copy.deepcopy(j['news']),
+        clean_days=j['clean_days'], history=list(reversed(j['history'][-30:])), news=tree_copy(j['news']),
         suggested=suggested(s, ctx), tasks=ctx['tasks'], worked=ctx['places'],
         stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')},
         bank=bk.public(s), home=hs.public(s), **ct.public(s))

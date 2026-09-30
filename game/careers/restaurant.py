@@ -27,6 +27,7 @@ mistake (1 star, no pay, a complaint and an inspection).
 """
 from __future__ import annotations
 import copy
+from ..jsoncopy import tree_copy
 from . import kit
 from . import food_service as FS
 from .. import consequences as cq
@@ -1784,7 +1785,7 @@ def on_close(s: dict, c: dict) -> dict:
 
 
 def public_task(t: dict) -> dict:
-    v = copy.deepcopy(t)
+    v = tree_copy(t)
     if v.get('gen') != GEN:
         _upgrade_task(v, None)
     v['bowls_total'] = _bowls_total(v)
@@ -1797,14 +1798,14 @@ def public_task(t: dict) -> dict:
 
 
 def public_data(c: dict) -> dict:
-    d = copy.deepcopy(kit.data(c))
+    d = tree_copy(kit.data(c))
     pl = _peek_plan(c)
     d.pop('plan', None)
     d.pop('ev_hist', None)
     for k, v in (('notebook', []), ('regulars', {}), ('grades', [])):
         d.setdefault(k, v)
     d['day'] = FS.public_plan(c, pl, MODS, EVENT_INDEX)
-    d['rules'] = {k: copy.deepcopy(v) for k, v in pl['rules'].items() if not k.startswith('_')}
+    d['rules'] = {k: tree_copy(v) for k, v in pl['rules'].items() if not k.startswith('_')}
     d['portions'] = _portions(pl)
     d['boil_shift'] = WEAK_FIRE if pl['rules'].get('weak_fire') else 0
     d['price_mult'] = _price_mult(pl)

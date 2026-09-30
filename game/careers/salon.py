@@ -27,6 +27,7 @@ rinsing, because a processing timer never waits.
 """
 from __future__ import annotations
 import copy
+from ..jsoncopy import tree_copy
 from . import kit
 from .. import consequences as cq
 from .. import archive as ar
@@ -1917,7 +1918,7 @@ def known_request(c: dict, t: dict) -> str:
 
 
 def public_task(t: dict) -> dict:
-    v = {k: copy.deepcopy(val) for k, val in t.items() if not k.startswith('_')}
+    v = {k: tree_copy(val) for k, val in t.items() if not k.startswith('_')}
     # Hair health is felt with the hands (lengths, ends) or read on a regular's card.
     v['health'] = _hp(t) if t['known'] and t.get('gen') and _health_known(t) else None
     v['health_word'] = _health_word(v['health']) if v['health'] is not None else None
@@ -1953,10 +1954,10 @@ def public_task(t: dict) -> dict:
 
 
 def public_data(c: dict) -> dict:
-    d = copy.deepcopy(kit.data(c))
+    d = tree_copy(kit.data(c))
     desk = d.pop('desk', None) or kit.desk_initial()
     for k, v in DATA_V2.items():
-        d.setdefault(k, copy.deepcopy(v))
+        d.setdefault(k, tree_copy(v))
     d['sanitized_today'] = d['sanitize_day'] == c['day']
     mod = _today(c)
     d['today'] = dict(id=mod['id'], title=mod['title'], emoji=mod['emoji'], text=mod['text'])

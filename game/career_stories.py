@@ -20,6 +20,7 @@ State lives in the root `s['stories']` (setdefault in `migrate`, checked by
 from __future__ import annotations
 
 import copy
+from .jsoncopy import tree_copy
 
 from .content import CAREERS, CAREER_META, NPC_INDEX
 
@@ -1154,7 +1155,7 @@ def _due_view(s: dict, item: dict) -> dict:
     return dict(id=item['id'], career=cid, beat=beat['id'], step=i + 1, total=len(arc['beats']), title=beat['title'],
                 emoji=beat['emoji'], arc=arc['title'], arc_emoji=arc['emoji'], place=_place(cid),
                 lines=_lines(s, cid, beat['lines'], picks), choice=choice, last=last,
-                keepsake=copy.deepcopy(arc['keepsake']) if last else None)
+                keepsake=tree_copy(arc['keepsake']) if last else None)
 
 
 def public(s: dict) -> dict:
@@ -1177,7 +1178,7 @@ def public(s: dict) -> dict:
         nxt = None if done else arc['beats'][n]
         arcs.append(dict(career=cid, title=arc['title'], emoji=arc['emoji'], seen=n, total=len(arc['beats']), done=done,
                          hint=nxt['hint'] if nxt else None, pending=queued.get(cid),
-                         keepsake=copy.deepcopy(arc['keepsake']) if done else None, beats=beats))
+                         keepsake=tree_copy(arc['keepsake']) if done else None, beats=beats))
     return dict(due=[_due_view(s, q) for q in st.get('queue', [])], arcs=arcs)
 
 

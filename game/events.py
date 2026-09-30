@@ -6,6 +6,7 @@ These are authored vignettes, not 96 bespoke action minigames.
 """
 from __future__ import annotations
 import copy
+from .jsoncopy import tree_copy
 from .content import EVENT_SEEDS
 
 # label A, label B. Both are viable; evidence and costs differ, not a morality meter.
@@ -174,7 +175,7 @@ def instantiate(event_id: str, serial: int, day: int, practice: bool=False) -> d
 def event_view(event: dict|None) -> dict|None:
     if not event: return None
     s=SCRIPTS[event["script"]]
-    v=copy.deepcopy(event)
+    v=tree_copy(event)
     v.update(opening=s["opening"],category=s["category"],station=s["station"],options=s["options"])
     v["evidence"]=[dict(e, text=e["text"] if e["id"] in event["read"] else None) for e in s["evidence"]]
     if event["stage"]!="resolved":

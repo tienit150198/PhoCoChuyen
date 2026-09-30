@@ -35,6 +35,7 @@ engine's money(). Everything random is rolled from the day, slot or task id.
 from __future__ import annotations
 
 import copy
+from ..jsoncopy import tree_copy
 import hashlib
 
 from . import kit
@@ -1669,7 +1670,7 @@ def known_request(c: dict, t: dict) -> str:
 
 
 def public_task(t: dict) -> dict:
-    v = copy.deepcopy(t)
+    v = tree_copy(t)
     for k in list(v):
         if k.startswith('_'):
             del v[k]
@@ -1697,10 +1698,10 @@ def _sweep_public(d: dict) -> dict | None:
 
 def public_data(c: dict) -> dict:
     raw = c['ext']['data']
-    d = copy.deepcopy(raw)
+    d = tree_copy(raw)
     base = initial()
     for k, v in base.items():
-        d.setdefault(k, copy.deepcopy(v))
+        d.setdefault(k, tree_copy(v))
     left, _, lost = _melt_view(c, d)
     mod = mod_of(c['day'])
     th = d['thermos']

@@ -14,6 +14,7 @@ Step kinds and answer formats:
 """
 from __future__ import annotations
 import copy
+from .jsoncopy import tree_copy
 
 KINDS = ('choice', 'multi', 'number', 'order', 'match', 'fields', 'entry')
 
@@ -137,7 +138,7 @@ def public(t: dict) -> tuple[list, dict]:
     ps = t['proc_state']
     rows = []
     for i, st in enumerate(t['proc']):
-        v = {k: copy.deepcopy(val) for k, val in st.items() if not k.startswith('_')}
+        v = {k: tree_copy(val) for k, val in st.items() if not k.startswith('_')}
         solved = st['id'] in ps['solved']
         if not solved:
             v.pop('explain', None)
@@ -146,7 +147,7 @@ def public(t: dict) -> tuple[list, dict]:
                 v['hints'] = v['hints'][:ps['attempts'].get(st['id'], 0)] if i == ps['at'] else []
         v['state'] = 'solved' if solved else 'current' if i == ps['at'] else 'locked'
         if solved:
-            v['answer'] = copy.deepcopy(ps['answers'].get(st['id']))
+            v['answer'] = tree_copy(ps['answers'].get(st['id']))
         rows.append(v)
     return rows, dict(at=ps['at'], solved=list(ps['solved']), attempts=dict(ps['attempts']), total=len(t['proc']))
 

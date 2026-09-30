@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import bisect
 import copy
+from .jsoncopy import tree_copy
 import functools
 import itertools
 import math
@@ -716,7 +717,7 @@ def _event_view(trip: dict, ev: dict) -> dict:
 
 
 def public(t: dict) -> dict:
-    trip = copy.deepcopy(t['trip']) if 'trip' in t else fresh(t['day'], slot_of(t), t['weather'])
+    trip = tree_copy(t['trip']) if 'trip' in t else fresh(t['day'], slot_of(t), t['weather'])
     stage = trip['stage']
     w = WEATHER[trip['weather']]
     closed = {x['place']: x['reason'] for x in trip['closed']}
@@ -731,7 +732,7 @@ def public(t: dict) -> dict:
                 clock=trip['clock'], fund_left=trip['fund_left'], wallet=trip['wallet'], commission=trip['commission'], stamps=trip['stamps'],
                 base=trip['base'], reward=trip['reward'] or None, tips=trip['tips'] or None, tags={k: dict(emoji=v[0], label=v[1]) for k, v in TAGS.items()},
                 angles=ANGLES, legs={f'{a}>{b}': leg(a, b) for a in ['gate'] + PLACE_IDS for b in PLACE_IDS if a != b},
-                group=copy.deepcopy(trip.get('group')), care=_care_view(care), away=gone, present=len(present(trip)))
+                group=tree_copy(trip.get('group')), care=_care_view(care), away=gone, present=len(present(trip)))
     if stage == 'gather':
         view['events'] = [_event_view(trip, ev) for ev in events_at(trip, None)]
     elif stage == 'stop':
@@ -1338,7 +1339,7 @@ def _care_view(care: dict | None) -> dict | None:
 
 def public_care(c: dict) -> dict:
     """What the guide knows: the group's condition, partners, notebook, kit, reviews and tomorrow."""
-    x = copy.deepcopy((c.get('life') or {}).get('tour') or fresh_care())
+    x = tree_copy((c.get('life') or {}).get('tour') or fresh_care())
     d = c['day']
     G, g = x['group'], group_of(d)
     group = None

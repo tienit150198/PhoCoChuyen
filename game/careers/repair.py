@@ -27,6 +27,7 @@ Tasks saved before v0.5 keep the old generator (kit.LEGACY_TURN band).
 """
 from __future__ import annotations
 import copy
+from ..jsoncopy import tree_copy
 from . import kit
 from .. import consequences as cq
 
@@ -1934,7 +1935,7 @@ def _strip(v):
 
 
 def public_task(t: dict) -> dict:
-    v = _strip(copy.deepcopy(t))
+    v = _strip(tree_copy(t))
     if not t['known']:
         v['needs'] = None
         return v
@@ -2231,10 +2232,10 @@ def _close_care(s: dict, c: dict, d: dict) -> list[str]:
 
 
 def public_data(c: dict) -> dict:
-    d = copy.deepcopy(kit.data(c))
+    d = tree_copy(kit.data(c))
     desk = d.pop('desk', None) or kit.desk_initial()
     for k, v in DATA_V2.items():
-        d.setdefault(k, copy.deepcopy(v))
+        d.setdefault(k, tree_copy(v))
     mod = _today(c)
     d['today'] = dict(id=mod['id'], title=mod['title'], emoji=mod['emoji'], text=mod['text'])
     d['desk'] = kit.desk_public(desk, DESK, ID)
@@ -2244,7 +2245,7 @@ def public_data(c: dict) -> dict:
     d['tier'] = kit.tier(c['day'])
     d['book'] = d['book'][-10:]
     for k, v in DATA_V3.items():
-        d.setdefault(k, copy.deepcopy(v))
+        d.setdefault(k, tree_copy(v))
     # A comeback that has not happened yet stays a secret.
     d['comebacks'] = [x for x in d['comebacks'] if x.get('state') == 'here']
     for x in d['comebacks']:
