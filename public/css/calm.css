@@ -136,3 +136,18 @@
 @media (hover:hover){.bill-list .bill-card .btn.primary:hover:not(:disabled){background:var(--accent-soft)}}
 .ledger-row>.ledger-sign.in~strong{color:var(--good)}
 .ledger-row>.ledger-sign.out~strong{color:var(--bad)}
+
+/* ===================================================== Milk tea: prep sheet */
+/* Menu as a price list: two columns of "name ..... price" on dashed leaders. */
+#sheet .mt-board .chalk-columns{grid-template-columns:1fr 1fr;gap:0 18px}
+#sheet .mt-board .chalk-columns>div{border-bottom:1px dashed var(--line-strong)}
+@container sheet (max-width:340px){#sheet .mt-board .chalk-columns{grid-template-columns:minmax(0,1fr)}}
+/* Morning warnings: one quiet list, each row with an amber accent. */
+#sheet .mt-warns{display:grid;gap:6px}
+#sheet .mt-warns .mt-warn{justify-content:flex-start;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:var(--ck-box-radius);color:var(--ink);box-shadow:none}
+
+/* ======================================================== Grocery: tabs */
+/* Counts sit as corner badges on the tab instead of squeezing the label. */
+#sheet .career-job.gr .gr-tabs{margin-top:14px}
+#sheet .career-job.gr .gr-tabs .btn{position:relative;overflow:visible}
+#sheet .career-job.gr .gr-tabs .gr-badge{position:absolute;top:-8px;right:-4px;box-shadow:0 0 0 2px var(--surface)}
