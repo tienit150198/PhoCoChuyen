@@ -51,3 +51,26 @@ class StorageTests(unittest.TestCase):
     def test_concurrent_duplicate_replayed_not_repeated(self):
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:results=list(pool.map(lambda _:self.call(),range(4)))
         self.assertEqual(sum(not r['replayed'] for r in results),1);self.assertEqual(self.store.read(self.token)[1],1)
+
+class SlowLogTests(unittest.TestCase):
+    def test_slow_lines_are_capped_per_minute_and_count_the_dropped_ones(self):
+        import io
+        from unittest.mock import patch
+        from game import storage
+        err=io.StringIO()
+        with patch.object(storage,'SLOW_LOG_PER_MINUTE',3),patch.object(storage,'_slow_budget',[storage.time.monotonic(),0,0]),patch.object(storage.sys,'stderr',err):
+            for i in range(10):storage._slow_log(f'[slow-cmd] {i}')
+            self.assertEqual(err.getvalue().splitlines(),['[slow-cmd] 0','[slow-cmd] 1','[slow-cmd] 2'])
+            storage._slow_budget[0]-=61  # a minute later
+            storage._slow_log('[slow-write] x')
+            self.assertEqual(err.getvalue().splitlines()[-1],'[slow-write] x (+7 slow lines dropped)')
+    def test_fast_commands_are_not_logged(self):
+        import io
+        from unittest.mock import patch
+        from game import storage
+        err=io.StringIO()
+        with patch.object(storage.sys,'stderr',err):
+            storage._slow('gr_scan','grocery',100*1024,0,0.1,0.2,0.3,(storage.SLOW_MS-1)/1000)
+            storage._slow('gr_scan','grocery',100*1024,0,0.1,0.2,0.3,(storage.SLOW_MS+1)/1000)
+        self.assertEqual(len(err.getvalue().splitlines()),1)
+        self.assertTrue(err.getvalue().startswith('[slow-cmd] '))
