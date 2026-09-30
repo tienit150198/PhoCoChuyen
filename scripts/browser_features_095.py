@@ -59,6 +59,16 @@ PROBE = r"""()=>{
   return out.slice(0,6);
 }"""
 
+# English: text nodes on the open screen that still carry Vietnamese letters (names of people and places excepted).
+VI_LEFT = r"""()=>{const open=[...document.querySelectorAll('dialog[open]')],top=open[open.length-1]||document.querySelector('#app');
+  const VI=/[ăâđêôơưạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ]/i,out=[];
+  const walk=document.createTreeWalker(top,NodeFilter.SHOW_TEXT);let n;
+  while((n=walk.nextNode())){const t=n.textContent.trim();if(!t||!VI.test(t))continue;const el=n.parentElement;
+    if(!el||!el.getClientRects().length||el.closest('svg,script,style'))continue;
+    const words=t.split(/\s+/).filter(x=>VI.test(x));if(words.length<3)continue;   // a name (Bà Tám, Hẻm 12) is fine
+    out.push(t.slice(0,120));}
+  return [...new Set(out)].slice(0,4);}"""
+
 STATE = "fetch('/api/state').then(r=>r.json()).then(d=>d.state)"
 
 
@@ -164,6 +174,11 @@ class Walk:
             self.problem(f'overflow at {name}: {info}')
         for p in await self.page.evaluate(PROBE):
             self.problem(f'{name}: {p}')
+        # English: only the screens this release added (older screens have gaps of their own in the pack).
+        if getattr(self, 'lang', 'vi') == 'en' and self.where in ('whatsnew', 'wardrobe', 'house') and not name.startswith('journey'):
+            vi = await self.page.evaluate(VI_LEFT)
+            if vi:
+                self.problem(f'{name}: Vietnamese left in English: {vi}')
 
     async def click(self, selector: str, what: str, timeout: int = 8000) -> bool:
         try:
@@ -237,7 +252,7 @@ async def s_whatsnew(w: Walk) -> None:
     w.need(items >= 6, f'only {items} notes')
     older = await p.locator('#wnDialog [data-wn="older"]').count()
     w.need(older == 0, 'older notes still listed')
-    tries = p.locator('#wnDialog .wn-item:has-text("mua nhà") .wn-try')
+    tries = p.locator('#wnDialog .wn-body > .wn-list > .wn-item').first.locator('.wn-try')   # the first note: Mua nhà
     if w.need(await tries.count(), 'no "Thử ngay" on the house note'):
         await p.wait_for_timeout(500)
         await tries.first.click()
@@ -455,7 +470,7 @@ async def s_money(w: Walk) -> None:
     chip = p.locator('#sheet[open] .mn-chip')
     if w.need(await chip.count(), 'no money chip in the stock room'):
         text = await chip.inner_text()
-        w.need('Ví' in text and ('Quỹ' in text or 'Két' in text or 'tiệm' in text.lower()), f'chip reads {text!r}')
+        w.need(('Ví' in text or 'Wallet' in text) and len(text.split('·')) >= 2, f'chip reads {text!r}')
     await w.check('stock-chip')
     # An order: the confirm repeats the balances.
     first = p.locator('#sheet[open] [data-action="v4Order"][data-item]').first
@@ -552,6 +567,7 @@ async def main() -> int:
     ap.add_argument('--width', type=int, default=390)
     ap.add_argument('--height', type=int, default=844)
     ap.add_argument('--engine', default='chromium', choices=('chromium', 'webkit'))
+    ap.add_argument('--lang', default='vi', choices=('vi', 'en'), help='play in English: also fails on Vietnamese left on the new screens')
     a = ap.parse_args()
     only = [x for x in a.only.split(',') if x] or list(STEPS)
     a.shots.mkdir(parents=True, exist_ok=True)
@@ -569,6 +585,11 @@ async def main() -> int:
             await page.wait_for_selector('#app:not([hidden])', timeout=30000)
             token = next(c['value'] for c in await ctx.cookies() if c['name'] == 'mnl_session')
             seed(db, token)
+            if a.lang == 'en':
+                await page.evaluate("""async()=>{const b=await fetch('/api/bootstrap').then(r=>r.json());
+                  await fetch('/api/command',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':b.csrf},
+                  body:JSON.stringify({request_id:crypto.randomUUID(),expected_revision:b.revision,career:b.state.current,action:'settings',payload:{lang:'en'}})});}""")
+            w.lang = a.lang
             await page.reload()
             await page.wait_for_selector('#app:not([hidden])', timeout=30000)
             await w.wait(1200)
