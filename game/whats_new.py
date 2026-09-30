@@ -28,6 +28,10 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="0.9.9", date="2026-09-30", items=(
+        dict(emoji="🔧", text="Bảo trì ngắn từ 21:00 đến 21:10 tối nay (30/09) để chuyển sang máy chủ mới."),
+        dict(emoji="⏳", text="Trong lúc đó game có thể tạm dừng hoặc cần tải lại trang. Tiền, nhà, đồ và tiến độ giữ nguyên."),
+    )),
     dict(version="0.9.8", date="2026-09-30", items=(
         dict(emoji="🔧", text="Từ 20:00 - 0:00 hôm nay hệ thống sẽ thực hiện nâng cấp hạ tầng."),
         dict(emoji="🎮", text="Người chơi vẫn có thể chơi bình thường nhưng sẽ ảnh hưởng một chút về trải nghiệm, xin vui lòng thông cảm."),

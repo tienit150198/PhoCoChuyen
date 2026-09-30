@@ -1,3 +1,7 @@
+# v0.9.9 — Thông báo bảo trì ngắn
+
+- "Có gì mới" báo bảo trì 21:00–21:10 ngày 30/09 để chuyển sang máy chủ mới; dữ liệu giữ nguyên. Không đổi logic game.
+
 # v0.9.8 — Thông báo nâng cấp máy chủ
 
 - "Có gì mới" báo trước: từ 20:00 đến 0:00 ngày 30/09 hệ thống nâng cấp hạ tầng; vẫn chơi bình thường, trải nghiệm có thể bị ảnh hưởng một chút. Không đổi logic game.
