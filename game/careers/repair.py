@@ -956,6 +956,15 @@ def _need_bench(t: dict) -> dict:
     return t['bench']
 
 
+SIZE_BASE = 3      # a usual job: one fault, one mark and one accessory at the intake (kit.size_factor)
+
+
+def _units(t: dict) -> int:
+    """How big a job is: what the intake slip lists (marks, accessories) and the faults to fix."""
+    n = t['needs']
+    return len(n.get('marks') or []) + len(n.get('accessories') or []) + 1 + (1 if t.get('_extra') else 0)
+
+
 def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     d = _data(c)
     _sync_clock(c, d)
@@ -970,6 +979,12 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     else:
         result = _handle(s, c, d, name, p)
     _after_action(c, d, result)
+    active = p.get('task') or c.get('active_task')
+    if name in SPEC['physical']:
+        # The queue waits one beat, slower while the player keeps at one device, longer for a bigger job.
+        kit.wait_tick(c, ID, active, lambda t: 1, lambda t: kit.size_factor(_units(t), SIZE_BASE))
+    if name not in ('rp_tool', 'rp_back'):
+        kit.worked(c, active)
     fired = desk['fired']
     kit.desk_tick(s, c, ID, desk, DESK, _today(c)['id'])
     if desk['fired'] > fired and desk['ev']:
@@ -2058,6 +2073,7 @@ def validate_task(t: dict, original: dict) -> None:
 def validate_data(c: dict) -> None:
     d = _data(c, stock=False)
     kit.mark_legacy(c, ID)
+    kit.wait_validate(c)
     for t in c.get('tasks', []):
         if isinstance(t, dict) and t.get('career') == ID and isinstance(t.get('bench'), dict):
             for k, v in BENCH_V2.items():
@@ -2651,6 +2667,7 @@ SPEC = dict(
     prices={k: v['labor'] for k, v in DEVICES.items()},
     tip=2,
     physical=('rp_test', 'rp_open', 'rp_fix', 'rp_final', 'rp_parttest'),
+    wait=True,  # the queue drains in handle (kit.wait_tick), not the engine's flat -1
     free_actions=(),
     no_tick=('rp_warranty', 'rp_desk', 'rp_answer'),
     waste_items=('job',),

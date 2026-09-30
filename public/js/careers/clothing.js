@@ -8,6 +8,7 @@ import {stepRows,nextHint,stepCta,finalGo,pending,stepLine} from '../v4/guide.js
 import {restockButton} from '../v4/restock.js';
 import {cashPanel,changeStep,changePayload,tray,tillActions} from './till.js';
 import * as SF from './stage_fold.js';
+import {reqPin,pinTop,asmActions,finalStep} from './asm_kit.js';
 const ID='clothing';
 const FREE=['hat','belt','socks'];
 const data=x=>x.room.data||{};
@@ -64,16 +65,33 @@ function ticket(t,x){
 
 /* ------------------------------------------------------------ the rack (pick / pack / dress) */
 const pickOf=(x,t)=>{const p=x.ui.pick;return p&&p.task===t.id?p:{task:t.id,item:null,colour:null};};
+/** What the order still needs from the rack: item → the colour asked ('' when any colour goes). */
+function needOf(t,x){
+  const out=new Map(),add=(i,c)=>{if(!out.has(i))out.set(i,c||'');};
+  if(!t.known)return out;
+  if(t.kind==='fit'&&t.stage==='pick'){const m=lineMatches(t);t.needs.lines.forEach((l,k)=>{if(m[k]<0)add(l.item,l.colour);});}
+  else if(t.kind==='online'&&!t.parcel.sealed){const m=packMatch(t);t.needs.lines.forEach((l,k)=>{if(m[k]<0)add(l.item,l.colour);});}
+  else if(t.kind==='room'&&t.stage==='pick'){const b=t.needs.buy;if(!t.picks.some(p=>p.item===b.item&&p.colour===b.colour))add(b.item,b.colour);}
+  else if(t.kind==='outfit'&&t.stage==='pick'){
+    const o=x.cc.occasions?.[t.needs.occasion]||{},have=new Set(t.picks.map(p=>p.item));
+    if(!isSet(t,x))for(const m of o.mains||[])if(m.some(i=>have.has(i))||!have.size)for(const i of m)if(!have.has(i))add(i);
+    for(const i of o.need||[])if(!have.has(i))add(i);
+  }
+  return out;
+}
 function rack(t,x,mode='pick',want=''){
-  const p=pickOf(x,t),cmd=mode==='pack'?'ao_pack':'ao_pick';
-  const chips=catalogue(x).map(it=>{const left=sizes(x,it.id).reduce((s,z)=>s+free(x,it.id,z),0);
-    return `<button type="button" class="ao-chip g-${x.esc(x.cc.groups?.[it.id]||'')}${p.item===it.id?' on':''}" data-action="car:item" data-task="${x.esc(t.id)}" data-item="${x.esc(it.id)}" aria-pressed="${p.item===it.id}"><span aria-hidden="true">${x.esc(it.emoji)}</span><b>${x.esc(it.name)}</b><small>${mode==='dress'?'':`còn ${left} · `}${x.fmt(price(x,it.id))} xu</small></button>`;}).join('');
+  const p=pickOf(x,t),cmd=mode==='pack'?'ao_pack':'ao_pick',need=mode==='dress'?new Map():needOf(t,x);
+  // What the customer asked for leads the rack ("Khách cần"), and a tap on it picks the colour they said.
+  const list=[...catalogue(x)].sort((a,b)=>need.has(b.id)-need.has(a.id));
+  const chips=list.map(it=>{const left=sizes(x,it.id).reduce((s,z)=>s+free(x,it.id,z),0),w=need.has(it.id);
+    return `<button type="button" class="ao-chip g-${x.esc(x.cc.groups?.[it.id]||'')}${p.item===it.id?' on':''}${w?' want':''}" data-action="car:item" data-task="${x.esc(t.id)}" data-item="${x.esc(it.id)}"${w&&need.get(it.id)?` data-colour="${x.esc(need.get(it.id))}"`:''} aria-pressed="${p.item===it.id}">${w?'<i class="asm-need">Khách cần</i>':''}<span aria-hidden="true">${x.esc(it.emoji)}</span><b>${x.esc(it.name)}</b><small>${mode==='dress'?'':`còn ${left} · `}${x.fmt(price(x,it.id))} xu</small></button>`;}).join('');
   let body=`<p class="small muted ao-lab">${mode==='dress'?'Chạm một món để chọn màu.':'Chạm một món để chọn màu và size.'}</p>`;
   if(p.item){
-    const it=item(x,p.item);
-    const sw=colours(x,p.item).map(c=>mode==='dress'
+    const it=item(x,p.item),said=need.get(p.item)||'';
+    const cols=[...colours(x,p.item)].sort((a,b)=>(b===said)-(a===said));
+    const sw=cols.map(c=>mode==='dress'
       ?`<button type="button" class="ao-swatch" data-command="ao_dress" data-payload="${x.esc(JSON.stringify({task:t.id,item:p.item,colour:c}))}">${dot(x,c)}<span>${x.esc(c)}</span></button>`
-      :`<button type="button" class="ao-swatch${p.colour===c?' on':''}" data-action="car:colour" data-task="${x.esc(t.id)}" data-colour="${x.esc(c)}" aria-pressed="${p.colour===c}">${dot(x,c)}<span>${x.esc(c)}</span></button>`).join('');
+      :`<button type="button" class="ao-swatch${p.colour===c?' on':''}${c===said?' want':''}" data-action="car:colour" data-task="${x.esc(t.id)}" data-colour="${x.esc(c)}" aria-pressed="${p.colour===c}">${dot(x,c)}<span>${x.esc(c)}${c===said?' <small>· khách dặn</small>':''}</span></button>`).join('');
     const sz=mode==='dress'?'':sizes(x,p.item).map(s=>{const n=free(x,p.item,s),off=!p.colour||n<=0;
       return `<button type="button" class="ao-size${n<=0?' out':''}" data-command="${cmd}" data-payload="${x.esc(JSON.stringify({task:t.id,item:p.item,size:s,colour:p.colour}))}"${off?' disabled':''} aria-label="${x.esc(`${it.name} size ${s}, còn ${n}`)}"><b>${x.esc(sizeLabel(s))}</b><small>${n<=0?'hết':`còn ${n}`}</small></button>`;}).join('');
     const empty=sizes(x,p.item).some(s=>onRack(x,p.item,s)<=0);
@@ -154,6 +172,8 @@ function fitSteps(t,x){
   if(t.stage==='pay')return paySteps(t,x);
   const m=lineMatches(t),rows=t.needs.lines.map((l,k)=>{const i=m[k],it=item(x,l.item),tried=i>=0?t.tried[i]:null;
     if(i>=0&&(tried==='small'||tried==='big'))return {ok:false,label:`${it.emoji} ${it.name} ${tried==='small'?'chật':'rộng'}: đổi size`,go:{cmd:'ao_unpick',payload:{task:t.id,index:i},label:`↩︎ Treo lại size ${t.picks[i].size}`}};
+    // The customer named their size ("Mình mặc size M"): another size on the counter is flagged at once.
+    if(i>=0&&l.told&&tried!=='ok'&&t.picks[i].size!==l.told)return {ok:false,label:`${it.emoji} ${it.name}: khách nói size ${l.told}`,go:{cmd:'ao_unpick',payload:{task:t.id,index:i},label:`↩︎ Treo lại size ${t.picks[i].size}`}};
     return {ok:i>=0?true:null,label:`${it.emoji} ${it.name} · màu ${l.colour}`,note:i>=0?`đã lấy size ${t.picks[i].size}`:l.say.split('. ').slice(1).join('. '),
       go:i>=0?null:onRackPick(x,t,l)?{sel:'.ao-sizes',label:'👉 Chọn size trên giá treo'}:{act:'car:item',data:{task:t.id,item:l.item,colour:l.colour},label:`👉 Lấy ${x.esc(it.name.toLowerCase())} màu ${x.esc(l.colour)}`}};});
   const extra=t.picks.length-m.filter(i=>i>=0).length;
@@ -168,12 +188,17 @@ function fitJob(t,x){
 }
 
 /* ------------------------------------------------------------ outfit */
+function isSet(t,x){
+  const items=t.picks.map(p=>p.item),grp=x.cc.groups||{};
+  return items.some(i=>grp[i]==='one')||(items.some(i=>grp[i]==='top')&&items.some(i=>grp[i]==='bottom'));
+}
+const outfitWrong=(t,x)=>{const n=t.needs;return t.picks.find(p=>p.item==='jeans'?p.size!==n.waist:!FREE.includes(p.item)&&p.item!=='kids'&&sizes(x,p.item).includes(n.top)&&p.size!==n.top);};
 function outfitSteps(t,x){
   if(t.stage==='pay')return paySteps(t,x);
   const n=t.needs,items=t.picks.map(p=>p.item),grp=x.cc.groups||{};
-  const set=items.some(i=>grp[i]==='one')||(items.some(i=>grp[i]==='top')&&items.some(i=>grp[i]==='bottom'));
+  const set=isSet(t,x);
   const total=sum(t.picks.map(p=>price(x,p.item)));
-  const wrongSize=t.picks.find(p=>p.item==='jeans'?p.size!==n.waist:!FREE.includes(p.item)&&p.item!=='kids'&&sizes(x,p.item).includes(n.top)&&p.size!==n.top);
+  const wrongSize=outfitWrong(t,x);
   // One action at a time: first a top or a one-piece for the occasion, then trousers to go with the top.
   const top=items.some(i=>grp[i]==='top'),one=items.some(i=>grp[i]==='one');
   const pick=set?{ok:true,label:'Một bộ hoàn chỉnh: váy/áo dài, hoặc áo + quần'}
@@ -341,6 +366,47 @@ function displayJob(t,x){
 const displayFinal=(t,x,steps)=>({label:'✨ Trưng bày',go:finalGo(steps,'ao_display_done',{task:t.id},{question:'Khách đi ngang sẽ ngắm bộ này mấy ngày tới.',confirm:true}),ready:t.disp.pieces.length>0,why:'mặc đồ lên ma-nơ-canh'});
 const saleFinal=(t,x,steps)=>({label:'🏷️ Treo tem sale',go:finalGo(steps,'ao_sale_done',{task:t.id},{question:'Tem sẽ được dùng ở quầy cả ngày hôm nay.',confirm:true}),ready:Object.keys(t.sale.tags).length===t.needs.lines.length,why:'in đủ tem'});
 
+/* ------------------------------------------------------------ the order, pinned */
+/** What the customer asked for, pinned under the header while picking (asm_kit): one chip per thing
+ * the order needs, from the order's own fields (item, colour, the size clue they gave, the occasion's
+ * rules, the budget), with a live ✓ / ✗. A chip still to find opens that item on the rack in the
+ * colour asked. Return, sale, alteration and mannequin jobs keep their own panels. */
+function pin(t,x,next){
+  if(!t.known||t.stage==='done')return '';
+  const id=t.id,chips=[],it=i=>item(x,i),live=t.stage==='pick'||t.kind==='online'&&!t.parcel.sealed;
+  const find=(i,c)=>live?`data-action="car:item" data-task="${x.esc(id)}" data-item="${x.esc(i)}"${c?` data-colour="${x.esc(c)}"`:''}`:'';
+  const clue=l=>l.ask||l.say.split('. ').slice(1).join('. ').replace(/\.$/,'');
+  if(t.kind==='fit'){
+    const m=lineMatches(t);
+    t.needs.lines.forEach((l,k)=>{const i=m[k],tried=i>=0?t.tried[i]:null,off=i>=0&&l.told&&tried!=='ok'&&t.picks[i].size!==l.told,bad=tried==='small'||tried==='big'||off;
+      chips.push({ok:i<0?null:!bad,icon:it(l.item).emoji,title:l.say,act:i<0?find(l.item,l.colour):'',
+        text:`${it(l.item).name} · ${l.colour} · ${i<0?clue(l):`size ${t.picks[i].size}${off?` · khách nói ${l.told}`:bad?(tried==='small'?' chật':' rộng'):tried==='ok'?' vừa':''}`}`});});
+    const extra=t.picks.length-m.filter(i=>i>=0).length;
+    if(extra>0)chips.push({ok:false,icon:'➖',text:`${extra} món khách không hỏi`});
+  }else if(t.kind==='outfit'){
+    const n=t.needs,o=x.cc.occasions?.[n.occasion]||{},have=new Set(t.picks.map(p=>p.item)),any=t.picks.length>0;
+    const total=sum(t.picks.map(p=>price(x,p.item))),wrong=outfitWrong(t,x);
+    chips.push({info:true,ok:null,icon:o.emoji||'👗',text:o.name||''});
+    chips.push({ok:isSet(t,x)||null,icon:'👗',text:'Một bộ: váy/áo dài, hoặc áo + quần'});
+    chips.push({ok:!any?null:!wrong,icon:'📏',text:`Áo ${n.top} · quần ${n.waist}${wrong?` · ${it(wrong.item).name} đang ${wrong.size}`:''}`});
+    for(const i of o.need||[])chips.push({ok:have.has(i)||null,icon:it(i).emoji,text:it(i).name,act:have.has(i)?'':find(i)});
+    if((o.bad||[]).length)chips.push({info:true,ok:null,icon:'🚫',text:`Tránh màu ${o.bad.join(', ')}`});
+    chips.push({ok:!any?null:total<=n.budget,icon:'💰',text:`Tối đa ${x.fmt(n.budget)} xu · đang ${x.fmt(total)}`});
+  }else if(t.kind==='online'){
+    const m=packMatch(t),n=t.needs;
+    n.lines.forEach((l,k)=>chips.push({ok:m[k]>=0||null,icon:it(l.item).emoji,text:`${it(l.item).name} · size ${l.size} · ${l.colour}`,act:m[k]>=0?'':find(l.item,l.colour)}));
+    const extra=t.parcel.items.length-m.filter(i=>i>=0).length;
+    if(extra>0)chips.push({ok:false,icon:'➖',text:`${extra} món không đúng đơn`});
+    chips.push({info:true,ok:null,icon:n.pay==='cod'?'💵':'✅',text:n.pay==='cod'?'Thu hộ khi giao':'Đã chuyển khoản'});
+  }else if(t.kind==='room'&&t.stage!=='room'){
+    const b=t.needs.buy,has=t.picks.some(p=>p.item===b.item&&p.size===b.size&&p.colour===b.colour);
+    chips.push({ok:has||null,icon:it(b.item).emoji,text:`${it(b.item).name} · size ${b.size} · ${b.colour}`,act:has?'':find(b.item,b.colour)});
+  }else return '';
+  if(t.stage==='pay'&&!chips.some(c=>c.ok===false))return '';   // at the till the bill says it all
+  const who=x.npc(t.npc);
+  return reqPin(x,{sub:x.esc(who.display_name),chips,key:id,next});
+}
+
 /* ------------------------------------------------------------ the guide */
 const STEPS={fit:fitSteps,outfit:outfitSteps,alter:alterSteps,room:roomSteps,return:returnSteps,sale:saleSteps,online:onlineSteps,display:displaySteps};
 const ASK={fit:'Nghe khách tả size',outfit:'Hỏi khách đi dịp gì',alter:'Xem đồ cần sửa',room:'Ra trông phòng thử',return:'Nghe khách đổi trả',sale:'Nghe chị Vy dặn',online:'Mở tin nhắn đặt hàng',display:'Nghe chị Vy dặn'};
@@ -361,6 +427,7 @@ function hintFor(g,x){
   const steps=f&&!pending(g.steps)?.go?g.steps.filter(s=>s.ok===true||s.go):g.steps;
   return nextHint(x,steps,{final:f});
 }
+// One next step: the bottom button names it (a second "Bước tiếp" line here read the order line, not the action).
 const bottomBar=(g,x)=>g.final?`<div class="ao-bar">${stepCta(x,g.steps,g.final)}</div>`:'';
 
 /* ------------------------------------------------------------ between customers */
@@ -423,7 +490,7 @@ export default {
     // The checklist sits under the work (the bottom bar and the header already show the next step).
     const k=g.steps.filter(s=>s&&s.ok!==true).length;
     const list=g.steps.length?`<details class="card ao-steps"><summary>📝 Việc cần làm <small>· ${k?`còn ${k}`:'xong hết'}/${g.steps.length}</small></summary>${stepRows(x,g.steps)}</details>`:'';
-    return `<div class="career-job ao">${hintFor(g,x)}${intro}${ticket(t,x)}${body(t,x)}${list}${bottomBar(g,x)}</div>`;
+    return `<div class="career-job ao">${hintFor(g,x)}${intro}${ticket(t,x)}${pin(t,x,pending(g.steps)||finalStep(g.final))}${body(t,x)}${list}${bottomBar(g,x)}</div>`;
   },
   idle(x){
     const tab=x.ui.tab||'rack';
@@ -436,8 +503,10 @@ export default {
   actions:{
     ...tillActions,
     ...SF.foldActions,
+    ...asmActions,
+    // A tap on what the order asks for comes with its colour: straight on to the sizes.
     async item(d,el,x){x.ui.pick={task:d.task,item:d.item,colour:d.colour||null};x.render();
-      requestAnimationFrame(()=>document.querySelector('.career-job.ao .ao-swatches')?.scrollIntoView({block:'center',behavior:'smooth'}));},
+      requestAnimationFrame(()=>document.querySelector(`.career-job.ao ${d.colour?'.ao-sizes':'.ao-swatches'}`)?.scrollIntoView({block:'center',behavior:'smooth'}));},
     async colour(d,el,x){const p=x.ui.pick;if(p&&p.task===d.task){p.colour=d.colour;x.render();}},
     async cm(d,el,x){const t=(x.room.tasks||[]).find(v=>v.id===d.task);if(!t)return;const m=(x.ui.cm??={});m[d.task]=Math.max(1,Math.min(10,Number(m[d.task]??t.alt?.cm??3)+Number(d.d)));x.render();},
     async ns(d,el,x){(x.ui.ns??={})[d.task]=d.size;x.render();},
@@ -451,6 +520,7 @@ export default {
   },
   tick(root,x){
     keepBarAboveFooter(root);
+    pinTop(root);
     root.querySelectorAll('[data-ao-sew]').forEach(el=>{
       const start=Number(el.dataset.start);if(!start)return;
       const sec=Number(el.dataset.sec)||4,lo=Number(el.dataset.lo),hi=Number(el.dataset.hi),p=Math.max(0,(x.now()-start)/sec);

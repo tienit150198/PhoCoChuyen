@@ -628,7 +628,9 @@ class RestaurantTests(unittest.TestCase):
         j.act('ask', task=other['id'])
         j.act('rs_container', task=other['id'], kind='box' if j.get(other['id'])['needs']['takeaway'] else 'bowl')
         j.act('rs_boil', task=other['id'])
-        self.assertLess(j.get(app_id)['patience'], before - 1)
+        # The cook keeps working one order, so the queue waits at half speed (kit.wait_tick);
+        # the driver at the door still costs the app order its APP_DRAIN on top.
+        self.assertLessEqual(j.get(app_id)['patience'], before - R.APP_DRAIN)
 
     # ------------------------------------------------------ surprises
     def test_event_opens_after_served_orders_and_blocks_serving(self):
@@ -827,7 +829,8 @@ class RestaurantTests(unittest.TestCase):
         for t, kind in zip(c['tasks'][1:3], ('rush', 'chatty')):
             t['guest'] = FS.guest(kind)
         FS.patience_tick(c, 'restaurant', c['tasks'][0]['id'])
-        self.assertEqual(c['tasks'][1]['patience'], 98)
+        # One beat of waiting (the tick replaces the engine's -1): a guest in a hurry loses 2 more, a chatty one 1 less.
+        self.assertEqual(c['tasks'][1]['patience'], 97)
         self.assertEqual(c['tasks'][2]['patience'], 100)
 
     def test_streak_bonus_and_grade_on_close(self):

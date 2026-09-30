@@ -538,6 +538,21 @@ def _walkin_chance(c: dict, pl: dict) -> float:
     return base
 
 
+SIZE_BASE = 2      # one drink with one pastry (kit.size_factor: a bigger order waits longer)
+SHOP_ACTIONS = ('cb_event', 'cb_box_send', 'cb_clean', 'cb_shape', 'cb_bake', 'cb_unload', 'cb_markdown', 'cb_donate',
+                'cb_discard', 'cb_feed', 'cb_chill')   # work for the shop, not for the guest on the bench
+
+
+def _units(t: dict) -> int:
+    """How big an order is: drinks (every cup of a tray), pastries, and a cake counts as four."""
+    n = t['needs']
+    if n['kind'] == 'cake':
+        return 4
+    if n['kind'] == 'pastry':
+        return sum(n['items'].values())
+    return max(1, len(n.get('party') or [])) + sum(n.get('pastry', {}).values())
+
+
 def _patience_extra(c: dict, pl: dict) -> int:
     m = MOD_INDEX[pl['mod']]
     return m.get('patience', 0) + (1 if c['day'] >= 6 and m['id'] != 'quiet' else 0)
@@ -775,8 +790,11 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     d = _migrate(c)
     pl = _plan(c)
     out = _handle(s, c, d, pl, name, p)
+    active = p.get('task') or c.get('active_task')
     if name in SPEC['physical']:
-        FS.patience_tick(c, ID, p.get('task') or c.get('active_task'), _patience_extra(c, pl))
+        FS.patience_tick(c, ID, active, _patience_extra(c, pl), lambda t: kit.size_factor(_units(t), SIZE_BASE))
+    if name not in SHOP_ACTIONS:
+        kit.worked(c, active)
     return out
 
 
@@ -2712,6 +2730,7 @@ SPEC = dict(
             'croissant': 22, 'banhmi': 12, 'cookie': 12, 'bonglan': 20, 'cake': 160},
     tip=3,
     physical=('cb_pull', 'cb_milk', 'cb_pick', 'cb_serve', 'cb_dump', 'cb_bake', 'cb_frost', 'cb_done', 'cb_box_send'),
+    wait=True,  # the queue drains in handle (food_service.patience_tick → kit.wait_tick), not the engine's flat -1
     free_actions=(),
     no_tick=('cb_stop', 'cb_milk_stop', 'cb_unload', 'cb_lid', 'cb_ice', 'cb_return', 'cb_tab', 'cb_greet'),
     waste_items=('drink', 'sponge', *CASE_ITEMS),

@@ -5,6 +5,7 @@
 import {reqList,fold} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,highlight,stepLine} from '../v4/guide.js';
 import {restockFor,restockButton} from '../v4/restock.js';
+import {reqPin,nextLine,pinTop,asmActions,finalStep} from './asm_kit.js';
 const STEPS=['Nhận máy','Đo kiểm','Báo giá','Sửa','Bàn giao'];
 const MODE={live:'cấp điện',open:'mở máy',any:'đo ngoài'};
 
@@ -190,6 +191,24 @@ function ticket(t,x){
   </div></article>`;
 }
 
+/** What the customer asked for, pinned under the header (asm_kit) with the step tabs: what they handed
+ * over (✓ once ticked on the slip), the budget, genuine parts only, a rush pick-up, the data question. */
+function pin(t,x,at,tab,next){
+  const n=t.needs,b=t.bench,u=local(x,t),dev=devOf(x,t),left=rushLeft(t,x),chips=[],id=t.id;
+  const acc=a=>`${x.cc.accessories[a]?.emoji||'•'} ${x.cc.accessories[a]?.label||a}`;
+  const given=n.accessories||[],slip=b.intake?b.intake.accessories:u.acc;
+  for(const a of given)chips.push({ok:slip.includes(a)?true:b.intake?false:null,icon:'🎒',text:`Khách đưa: ${acc(a)}`,
+    act:b.intake?'':carAttr(x,'acc',{task:id,id:a})});
+  for(const a of slip.filter(a=>!given.includes(a)))chips.push({ok:false,icon:'🎒',text:`Không đưa: ${acc(a)}`,act:b.intake?'':carAttr(x,'acc',{task:id,id:a})});
+  if(!given.length)chips.push({ok:slip.length?false:true,icon:'🎒',text:'Không đưa kèm gì'});
+  if(caseOf(t)!=='buyin')chips.push({ok:null,info:true,icon:'💰',text:`Tối đa ${x.money(n.budget)}`});
+  if(n.genuine_only)chips.push({ok:null,info:true,icon:'🏷️',text:'Chỉ hàng chính hãng'});
+  if(left!=null)chips.push({ok:left>=0?null:false,info:left>=0,icon:'⏱️',text:left>=0?`Lấy gấp: còn ${left} nhịp`:'Đã trễ hẹn gấp'});
+  if(dataDevice(x,t)&&!b.intake)chips.push({ok:u.consent||null,icon:'🔐',text:'Hỏi quyền xem dữ liệu',act:carAttr(x,'consent',{task:id})});
+  const who=x.npc(t.npc);
+  return reqPin(x,{title:'Phiếu khách',sub:`${x.esc(who.display_name)} · ${x.esc(dev.emoji)} ${x.esc(dev.name)}`,chips,tabs:steps(t,x,at,tab),key:t.id,next});
+}
+
 function steps(t,x,at,tab){return `<nav class="rp-steps" aria-label="Quy trình sửa">${STEPS.map((s,i)=>`<button type="button" class="${i<at?'done':''} ${i===at?'now':''} ${i===tab?'open':''}" ${carAttr(x,'tab',{task:t.id,tab:i})} aria-current="${i===tab?'step':'false'}" aria-label="${i+1} · ${x.esc(s)}" ${i>at&&i!==0?'disabled':''}><span>${i<at?'✓':i+1}</span><em>${x.esc(s)}</em></button>`).join('')}</nav>`;}
 
 function device(t,x){
@@ -212,16 +231,20 @@ function intakeView(t,x){
     return `<dl class="kv rp-kv"><dt>Tình trạng</dt><dd>${x.esc(mk)}</dd><dt>Phụ kiện</dt><dd>${x.esc(ac)}</dd>${dd?`<dt>Dữ liệu</dt><dd>${b.data_ok?'<span class="tag green">🔓 Khách cho mở khóa kiểm tra</span>':'<span class="tag danger">🔒 Không cho xem dữ liệu</span>'}</dd>`:''}</dl>`;
   }
   const markTiles=dev.marks.map(m=>{const v=x.cc.marks[m]||{emoji:'•',label:m},on=u.marks.includes(m);return tile(x,{emoji:v.emoji,label:v.label,sub:on?'đã ghi':'',cls:on?'selected':'',attr:carAttr(x,'mark',{task:t.id,id:m})+` aria-pressed="${on}"`});}).join('');
-  // What the customer hands over is said at the counter, so it is written here too (player feedback #29:
-  // "làm sao biết khách gửi phụ kiện nào?"). The marks stay a look-at-the-device check (the mat, right).
-  const given=(n.accessories||[]).map(a=>`${x.cc.accessories[a]?.emoji||'•'} ${x.cc.accessories[a]?.label||a}`).join(', ');
-  const accTiles=dev.accessories.map(a=>{const v=x.cc.accessories[a]||{emoji:'•',label:a},on=u.acc.includes(a);return tile(x,{emoji:v.emoji,label:v.label,sub:on?'đã nhận':'',cls:on?'selected':'',attr:carAttr(x,'acc',{task:t.id,id:a})+` aria-pressed="${on}"`});}).join('');
-  return `<p class="small muted">Nhìn máy trên thảm, chạm đúng những vết thật sự thấy.</p>
-    <div class="tile-grid rp-grid rp-marks">${markTiles}</div>
-    <p class="small space-top rp-given">🎒 <b>Khách đưa kèm:</b> ${given?x.esc(given):'không đưa kèm gì, để trống phần này'}</p>
+  // What the customer hands over is said at the counter, so it leads the slip (player feedback #29:
+  // "làm sao biết khách gửi phụ kiện nào?"): a callout, then those tiles first with a "Khách đưa" tag.
+  // The marks stay a look-at-the-device check (the mat, right).
+  const given=n.accessories||[],order=[...dev.accessories].sort((a,b)=>given.includes(b)-given.includes(a));
+  const accTiles=order.map(a=>{const v=x.cc.accessories[a]||{emoji:'•',label:a},on=u.acc.includes(a),g=given.includes(a);
+    return `<div class="rp-acc${g?' given':''}">${g?'<span class="asm-need">Khách đưa</span>':''}${tile(x,{emoji:v.emoji,label:v.label,sub:on?(g?'✓ đã nhận':'✗ khách không đưa'):g?'chạm để ghi nhận':'khách không đưa',cls:on?'selected':'',attr:carAttr(x,'acc',{task:t.id,id:a})+` aria-pressed="${on}"`})}</div>`;}).join('');
+  const callout=given.length?`<div class="rp-given" role="note"><b>🎒 Khách đưa kèm ${given.length} món:</b> ${given.map(a=>`<span class="rp-given-item${u.acc.includes(a)?' ok':''}">${u.acc.includes(a)?'✓':'○'} ${x.esc(x.cc.accessories[a]?.emoji||'•')} ${x.esc(x.cc.accessories[a]?.label||a)}</span>`).join(' ')}</div>`
+    :'<div class="rp-given none" role="note"><b>🎒 Khách không đưa kèm gì</b> · để trống phần phụ kiện.</div>';
+  return `${callout}
     <div class="tile-grid rp-grid rp-accs">${accTiles}</div>
+    <h5 class="rp-sub">🔍 Vết trên máy</h5><p class="small muted">Nhìn máy trên thảm, chạm đúng những vết thật sự thấy.</p>
+    <div class="tile-grid rp-grid rp-marks">${markTiles}</div>
     ${dd?`<button type="button" class="btn rp-consent ${u.consent?'on':''}" ${carAttr(x,'consent',{task:t.id})} aria-pressed="${u.consent}">${u.consent?'☑️':'⬜'} Đã hỏi khách có cho mở khóa / xem dữ liệu không</button>`:''}
-    <div class="rp-cta"><button type="button" class="btn primary" ${carAttr(x,'intake',{task:t.id})} ${dd&&!u.consent?'disabled':''}>📝 Ghi phiếu nhận máy</button></div>`;
+    <div class="rp-cta"><button type="button" class="btn" ${carAttr(x,'intake',{task:t.id})} ${dd&&!u.consent?'disabled':''}>📝 Ghi phiếu nhận máy</button></div>`;
 }
 
 /* ---------- shell (safety + open/close) ---------- */
@@ -416,7 +439,9 @@ function intakeSteps(t,x){
     for(const a of u.acc.filter(a=>!(n.accessories||[]).includes(a)))s.push({ok:false,label:`Bỏ chọn “${lbl(x.cc.accessories,a)}”: khách không đưa`,go:{act:'car:acc',data:{task:id,id:a}}});
   }else{
     s.push({ok:u.lookM||u.marks.length?true:null,label:'Chạm đúng các vết thấy trên máy',go:{act:'car:look',data:{task:id,what:'marks'},label:'👀 Xem máy, ghi các vết'}});
-    s.push({ok:u.lookA||u.acc.length?true:null,label:'Chạm những món khách đưa kèm',go:{act:'car:look',data:{task:id,what:'accs'},label:'🎒 Ghi phụ kiện khách đưa'}});
+    const given=n.accessories||[];
+    if(given.length)s.push({ok:sameSet(u.acc,given)?true:null,label:'Ghi đúng những món khách đưa kèm',
+      go:{act:'car:accall',data:{task:id},label:`🎒 Nhận đủ ${given.length} món khách đưa`}});
   }
   if(dataDevice(x,t))s.push({ok:u.consent||null,label:'Hỏi khách có cho mở khóa / xem dữ liệu',go:{act:'car:consent',data:{task:id},label:'🙋 Hỏi quyền xem dữ liệu'}});
   s.push({ok:null,label:'Ghi phiếu nhận máy',go:{act:'car:intake',data:{task:id},label:'📝 Ghi phiếu nhận máy'}});
@@ -556,7 +581,8 @@ function lastResult(t,x){
 function bar(g,x,t){
   const n=pending(g.steps),last=t?lastResult(t,x):'',head=last?`<p class="rp-bar-last" aria-live="polite">${x.esc(last)}</p>`:'';
   if(!g.final&&(!n||!n.go))return n?`<div class="rp-bar">${head}<p class="rp-bar-why">${x.esc(n.label)}</p></div>`:'';
-  return `<div class="rp-bar">${head}${stepCta(x,g.steps,g.final||{label:'',go:null,ready:false})}</div>`;
+  const line=t&&t.known?nextLine(x,n,g.final?.ready!==false?'đủ bước rồi, bấm nút dưới':''):'';
+  return `<div class="rp-bar">${head}${line}${stepCta(x,g.steps,g.final||{label:'',go:null,ready:false})}</div>`;
 }
 let shownStage='';
 
@@ -610,11 +636,12 @@ export default {
     const out=(sel.includes('rp-promise')?promise:'')+(sel.includes('rp-return')?ret:'');
     const tucked=[sel.includes('rp-promise')?'':promise,sel.includes('rp-return')?'':ret,`<p class="rp-foot">${x.button('📦 Kho & nhập linh kiện','inventory',{},'ghost small')}</p>`,shelf].filter(Boolean).join('');
     const more=`<details class="rp-more"><summary>⋯ ${[promise&&!sel.includes('rp-promise')?'Hẹn khách':'',ret&&!sel.includes('rp-return')?'Trả máy':'','Kho linh kiện',shelf?'Kệ máy chờ':''].filter(Boolean).join(' · ')}</summary><div class="rp-more-body">${tucked}</div></details>`;
-    return `<div class="career-job rp ${at?'rp-later':'rp-intake'}" data-rp-key="${x.esc(t.id)}:${at}:${tab}">${hint}${top}${lastDesk(x)}${banner}${ticket(t,x)}${steps(t,x,at,tab)}<div class="workbench"><div class="wb-main">${panel}${out}${more}</div>
+    return `<div class="career-job rp ${at?'rp-later':'rp-intake'}" data-rp-key="${x.esc(t.id)}:${at}:${tab}">${hint}${top}${lastDesk(x)}${banner}${ticket(t,x)}${pin(t,x,at,tab,pending(g.steps)||finalStep(g.final))}<div class="workbench"><div class="wb-main">${panel}${out}${more}</div>
       <aside class="wb-side">${device(t,x)}</aside></div>${cta}</div>`;
   },
   // The sticky bottom button rides above the sheet's own sticky footer.
   tick(root){
+    pinTop(root);
     const foot=root.closest('dialog')?.querySelector('.sheet-foot');
     const h=foot&&getComputedStyle(foot).position==='sticky'?foot.offsetHeight:0;
     if(root.dataset.rpFoot!==String(h)){root.dataset.rpFoot=String(h);root.style.setProperty('--rp-foot',h+'px');}
@@ -627,7 +654,10 @@ export default {
         wb.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}}
   },
   actions:{
+    ...asmActions,
     async mark(data,el,x){const u=x.ui.rp?.[data.task];if(!u)return;u.marks=u.marks.includes(data.id)?u.marks.filter(v=>v!==data.id):[...u.marks,data.id];x.render();},
+    /** Tick exactly what the customer handed over (it is written on the slip). */
+    async accall(data,el,x){const u=x.ui.rp?.[data.task],t=x.room.tasks.find(v=>v.id===data.task);if(!u||!t)return;u.acc=[...(t.needs.accessories||[])];u.lookA=true;x.render();},
     async acc(data,el,x){const u=x.ui.rp?.[data.task];if(!u)return;u.acc=u.acc.includes(data.id)?u.acc.filter(v=>v!==data.id):[...u.acc,data.id];x.render();},
     async consent(data,el,x){const u=x.ui.rp?.[data.task];if(!u)return;u.consent=!u.consent;x.render();},
     async tab(data,el,x){x.ui.rp??={};const u=x.ui.rp[data.task]??={marks:[],acc:[],consent:false,grades:{},tab:null};u.tab=Number(data.tab);x.render();},

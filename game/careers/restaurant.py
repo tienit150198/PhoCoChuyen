@@ -861,6 +861,15 @@ def _walkin_chance(c: dict, pl: dict) -> float:
     return base
 
 
+SIZE_BASE = 4      # boil + broth + 2 toppings: one usual bowl (kit.size_factor: a bigger table waits longer)
+MAX_SCOOP = 4      # topping portions one tap can add (the +/− steps on a topping tile)
+
+
+def _units(t: dict) -> int:
+    """How big an order is: per bowl, boiling and broth plus every topping portion."""
+    return sum(2 + sum(b['toppings'].values()) for b in _specs(t['needs']))
+
+
 def _patience_extra(c: dict, pl: dict) -> int:
     m = MOD_INDEX[pl['mod']]
     return m.get('patience', 0) + (1 if c['day'] >= 9 and m['id'] != 'quiet' else 0)
@@ -870,13 +879,15 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     d = _migrate(c)
     pl = _plan(c)
     out = _handle(s, c, d, pl, name, p)
+    active = p.get('task') or c.get('active_task')
     if name in PHYSICAL:
-        active = p.get('task') or c.get('active_task')
-        FS.patience_tick(c, ID, active, _patience_extra(c, pl))
+        FS.patience_tick(c, ID, active, _patience_extra(c, pl), lambda t: kit.size_factor(_units(t), SIZE_BASE))
         if c['open'] and c['life'].get('mode') != 'calm':
             for t in FS.open_tasks(c, ID):
                 if t.get('app') and t['id'] != active and not t.get('deferred'):
                     t['patience'] = max(25, t.get('patience', 100) - pt.drain(c, t, APP_DRAIN))
+    if name.startswith('rs_') and name not in ('rs_pot', 'rs_event', 'rs_batch', 'rs_wash'):
+        kit.worked(c, active)
     return out
 
 
@@ -1041,19 +1052,22 @@ def _handle(s: dict, c: dict, d: dict, pl: dict, name: str, p: dict) -> dict:
     elif name == 'rs_topping':
         kit.need(bowl['container'], 'Lấy tô hoặc hộp trước.')
         item = kit.one_of(p.get('item'), TOPPINGS, 'Topping không tồn tại.')
+        qty = 1 if p.get('n') is None else kit.integer(p.get('n'), 1, MAX_SCOOP)
         kit.need(ITEM_INDEX[item].get('unlock', 1) <= kit.level(c), f'Mở khóa {ITEM_INDEX[item]["name"]} ở cấp {ITEM_INDEX[item].get("unlock", 1)}.')
         kit.need(sum(bowl['toppings'].values()) < 8, 'Tô đầy topping rồi.')
-        bowl['cost'] += kit.take(c, item, 1)
-        bowl['toppings'][item] = bowl['toppings'].get(item, 0) + 1
-        if n['style'] == 'open':
-            o = n['open']
-            if item in o['avoid'] or (o['veg'] and item in MEAT) or (n['allergy'] and ITEM_INDEX[item].get('allergen') == n['allergy']):
-                t['mistakes'] += 1
-        else:
-            wanted = (0 if item in t['subs'] else sp['toppings'].get(item, 0)) + sum(sp['toppings'].get(k, 0) for k, v in t['subs'].items() if v == item)
-            if bowl['toppings'][item] > wanted and rules.get('pamper') != t['id']:
-                t['mistakes'] += 1
-        msg = 'Thêm ' + ITEM_INDEX[item]['name'] + '.'
+        kit.need(sum(bowl['toppings'].values()) + qty <= 8, f'Tô chỉ còn chỗ cho {8 - sum(bowl["toppings"].values())} phần topping.')
+        for _ in range(qty):
+            bowl['cost'] += kit.take(c, item, 1)
+            bowl['toppings'][item] = bowl['toppings'].get(item, 0) + 1
+            if n['style'] == 'open':
+                o = n['open']
+                if item in o['avoid'] or (o['veg'] and item in MEAT) or (n['allergy'] and ITEM_INDEX[item].get('allergen') == n['allergy']):
+                    t['mistakes'] += 1
+            else:
+                wanted = (0 if item in t['subs'] else sp['toppings'].get(item, 0)) + sum(sp['toppings'].get(k, 0) for k, v in t['subs'].items() if v == item)
+                if bowl['toppings'][item] > wanted and rules.get('pamper') != t['id']:
+                    t['mistakes'] += 1
+        msg = 'Thêm ' + (f'{qty} phần ' if qty > 1 else '') + ITEM_INDEX[item]['name'] + '.'
     elif name == 'rs_chili':
         kit.need(bowl['container'], 'Lấy tô hoặc hộp trước.')
         kit.need(bowl['chili'] < 10, 'Đủ cay rồi!')
@@ -2079,6 +2093,7 @@ SPEC = dict(
     prices={'kimchi': 35, 'tomyum': 40, 'blackbean': 35, 'cheese': 45},
     tip=3,
     physical=PHYSICAL,
+    wait=True,  # the queue drains in handle (food_service.patience_tick → kit.wait_tick), not the engine's flat -1
     free_actions=(),
     no_tick=('rs_lid', 'rs_chili', 'rs_drain', 'rs_recall', 'rs_tab', 'rs_touch'),
     waste_items=('bowl',),

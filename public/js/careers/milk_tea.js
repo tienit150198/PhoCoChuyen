@@ -6,7 +6,7 @@
  * keeps the order recap and the serve button in reach. */
 import {Sound} from '../audio.js';
 import {keepBarAboveFooter} from './food_kit.js';
-import {stepRows,nextHint,stepCta,finalGo,pending as nextOf,firstTime,stepLine} from '../v4/guide.js';
+import {nextHint,stepCta,finalGo,pending as nextOf,firstTime,stepLine,todoAttrs} from '../v4/guide.js';
 
 const ICE=[['none','Không đá'],['little','Ít đá'],['normal','Đá vừa'],['extra','Nhiều đá']];
 const ICE_TEXT={none:'không đá',little:'ít đá',normal:'đá vừa',extra:'nhiều đá'};
@@ -24,7 +24,7 @@ const station=(x,id)=>(B(x).stations||[]).find(s=>s.id===id)||{id,unlocked:true,
 const pick=(x,id)=>`data-action="job" data-task="${x.esc(id)}"`;
 const cmdAttr=(x,op,payload)=>`data-action="car:go" data-op="${op}" data-payload="${pay(x,payload)}"`;
 const jb=(x,label,op,payload={},style='',disabled=false)=>`<button type="button" class="btn ${style}" ${cmdAttr(x,op,payload)}${disabled?' disabled':''}>${label}</button>`;
-const LOUD=new Set(['tea_serve','tea_seal','tea_event','tea_event_ok','tea_discard','tea_check','tea_prepare','tea_cups','tea_wipe','tea_order','tea_clean','tea_toss','tea_swap','tea_greet','more_work','life_mode','life_goal']);
+const LOUD=new Set(['tea_menu','tea_serve','tea_seal','tea_event','tea_event_ok','tea_discard','tea_check','tea_prepare','tea_cups','tea_wipe','tea_order','tea_clean','tea_toss','tea_swap','tea_greet','more_work','life_mode','life_goal']);
 const sfx=new Sound();
 const hasGroup=(x,cup,g)=>(cup.items||[]).some(k=>ing(x,k).group===g);
 const seal=x=>B(x).seal||{loose:.8,good_lo:1.4,good_hi:2.6,burn:4.2,max:5};
@@ -147,13 +147,6 @@ function queueRow(t,x){
   if(!chips.length||(chips.length<2&&!t?.app))return '';
   return `<section class="mt-queue" aria-label="Hàng chờ"><h4>Hàng chờ</h4><div class="mt-queue-list">${chips.join('')}</div></section>`;
 }
-function tabs(t,x){
-  if(!t.group)return '';
-  const sibs=x.room.tasks.filter(v=>v.group?.id===t.group.id).sort((a,b)=>a.group.i-b.group.i);
-  return `<div class="mt-cuptabs" role="tablist" aria-label="Các ly trong đơn">${sibs.map(v=>{
-    const done=v.status==='completed',gone=DONE.includes(v.status);
-    return `<button type="button" role="tab" class="mt-cuptab ${v.id===t.id?'on':''} ${done?'done':''}" ${gone?'disabled':pick(x,v.id)} aria-selected="${v.id===t.id}">${done?'✓ ':''}Ly ${v.group.i}${v.cup?.sealed&&!done?' · đã dán':''}</button>`;}).join('')}</div>`;
-}
 const usualText=(x,u)=>`${ing(x,u.base).name} size ${u.size}${u.flavor?`, vị ${low(ing(x,u.flavor).name)}`:''}, ${u.toppings.length?u.toppings.map(k=>low(ing(x,k).name)).join(', '):'không topping'}, ${u.sugar}% đường, ${ICE_TEXT[u.ice]}`;
 /** The regulars' card: usual cup (for "như mọi khi"), what the shop has learned, and a greeting. */
 function notebookFor(t,x){
@@ -168,7 +161,9 @@ function notebookFor(t,x){
     ${notes.length?`<ul class="mt-notes">${notes.map(n=>`<li><span aria-hidden="true">${x.esc(n.emoji)}</span> ${x.esc(n.text)}</li>`).join('')}</ul>`:''}
     ${row.next_note?`<small>Ghé đủ ${row.next_note} lần để biết thêm.</small>`:''}${greet?`<div class="mt-greet">${greet}</div>`:''}</details>`;
 }
-function customer(t,x){
+function customer(t,x,steps){
+  // Order heard: the pinned ticket carries the order, the patience bar and the price.
+  if(t.known&&(t.ticket||[]).length)return orderTicket(t,x,steps)+notebookFor(t,x);
   const calm=x.room.life?.mode==='calm',p=calm?100:(t.patience??100),b=B(x);
   const tags=[t.usual?'🔁 Như mọi khi':'',t.vip?'🎥 Đang quay video':'',t.office?'💼 Văn phòng':'',t.discount?`🏷️ Bớt ${t.discount} xu`:''].filter(Boolean);
   let meter;
@@ -197,9 +192,15 @@ function shelf(t,x,group,title){
   const ready=t.known&&cup.placed&&!cup.sealed;
   const limit={base:1,flavor:1,topping:3}[group],have=items.filter(k=>ing(x,k).group===group).length;
   const needBase=group!=='base'&&!hasGroup(x,cup,'base');
-  const all=ings(x).filter(i=>i.group===group),shut=all.filter(i=>!station(x,i.id).unlocked),list=all.filter(i=>!shut.includes(i));
+  const all=ings(x).filter(i=>i.group===group),shut=all.filter(i=>!station(x,i.id).unlocked);
+  // Off the menu (Bảng giá → Món đang bán): hidden unless this order still needs it or it is in the cup;
+  // a chip shows them again, muted.
+  const want=new Set((t.ticket||[]).map(r=>r.want)),off=all.filter(i=>!shut.includes(i)&&station(x,i.id).on===false&&!want.has(i.id)&&!items.includes(i.id));
+  const showOff=!!x.ui.mtShowOff,list=all.filter(i=>!shut.includes(i)&&(showOff||!off.includes(i)));
+  const offChip=off.length?`<button type="button" class="mt-lockchip mt-offchip" data-action="car:showoff" aria-pressed="${showOff}">🚫 ${off.length} món ngừng bán · ${showOff?'ẩn':'hiện'}</button>`:'';
   return `<section class="mt-shelf ${group}"><h4>${title}${group==='topping'?` <small>${have}/${limit}</small>`:''}</h4><div class="mt-grid">${list.map(i=>{
     const s=station(x,i.id),inCup=items.includes(i.id);
+    if(off.includes(i))return tile(x,{k:i.id,name:i.name,emoji:i.emoji,count:s.stock,cls:'off',disabled:true,sub:'Ngừng bán',label:`${i.name}: ngừng bán`});
     if(s.stock===0&&!inCup){
       if(s.made){const v=verb(i.id);return tile(x,{k:i.id,name:i.name,emoji:i.emoji,count:0,cls:'restock',cmd:'tea_prepare',payload:{item:i.id,qty:5,confirm:true},sub:`${v} +5 · ${i.cost*5} xu`,label:`${i.name} đã hết. ${v} 5 phần, ${i.cost*5} xu${s.fresh?', mất 20 phút':''}`});}
       const o=soonest(x,i.id);
@@ -209,7 +210,7 @@ function shelf(t,x,group,title){
     }
     const disabled=!ready||inCup||have>=limit||needBase;
     return tile(x,{k:i.id,name:i.name,emoji:i.emoji,count:s.stock,on:inCup,disabled,cls:s.tired?'tired':'',sub:s.tired?(s.tired>=s.stock?(i.group==='base'?'hơi chát':'hơi cứng'):`${s.tired} phần cũ`):'',cmd:'tea_add',payload:{task:t.id,item:i.id},label:`${i.name}, còn ${s.stock} phần${s.tired?`, ${s.tired} phần để lâu`:''}${inCup?', đã có trong ly':''}`});
-  }).join('')}</div>${lockChip(x,shut)}</section>`;
+  }).join('')}</div>${offChip||shut.length?`<div class="mt-chips">${offChip}${lockChip(x,shut)}</div>`:''}</section>`;
 }
 /** "🔒 3 món mở ở cấp 2–4": the locked tiles of a shelf in one line (names and levels in the tooltip). */
 function lockChip(x,list){
@@ -219,14 +220,14 @@ function lockChip(x,list){
   return `<p class="mt-lockchip" title="${x.esc(names)}" aria-label="${x.esc(`Chưa mở: ${names}`)}">🔒 ${list.length} món mở ở cấp ${lo===hi?lo:`${lo}–${hi}`}</p>`;
 }
 /** The station the next step is at ('cups', 'base', 'flavor', 'topping', 'dials'); '' = none (all open). */
-const STATION_OF={cup:'cups',base:'base',flavor:'flavor',topping:'topping',ice:'dials',sugar:'dials'};
+const STATION_OF={size:'cups',base:'base',flavor:'flavor',topping:'topping',ice:'dials',sugar:'dials'};
 /** Only the station of the next step is open; the others are one line ("✓ 🫖 Trà nền · Matcha") that a
  * tap opens. With no step to follow (a usual order read from the notebook) every station stays open. */
 function stations(t,x,steps){
   const cup=t.cup||{},items=cup.items||[],n=nextOf(steps),cur=n?STATION_OF[n.k]||'':'';
   const names=g=>items.filter(k=>ing(x,k).group===g).map(k=>ing(x,k).name).join(', ');
   const done=keys=>{const r=steps.filter(s=>keys.includes(s.k));return r.length&&r.every(s=>s.ok===true);};
-  const parts=[['cups',()=>cupStack(t,x),`🥤 Chồng ly${cup.placed?` · Ly ${cup.size}`:''}`,['cup']],
+  const parts=[['cups',()=>cupStack(t,x),`🥤 Chồng ly${cup.placed?` · Ly ${cup.size}`:''}`,['size']],
     ['base',()=>shelf(t,x,'base','🫖 Trà nền'),`🫖 Trà nền${names('base')?` · ${names('base')}`:''}`,['base']],
     ['flavor',()=>shelf(t,x,'flavor','🍑 Siro'),`🍑 Siro${names('flavor')?` · ${names('flavor')}`:''}`,['flavor']],
     ['topping',()=>shelf(t,x,'topping','🧋 Topping'),`🧋 Topping ${items.filter(k=>ing(x,k).group==='topping').length}/3${names('topping')?` · ${names('topping')}`:''}`,['topping']],
@@ -268,23 +269,13 @@ function sealer(t,x){
   return `<div class="mt-sealer ${start?'running':''}">
     <div class="mt-gauge" data-seal-start="${start||''}" data-s="${[S.loose,S.good_lo,S.good_hi,S.burn,S.max].join(',')}" aria-hidden="true">${zones.map(([k,a,z])=>`<i class="z ${k}" style="left:${pct(a)}%;width:${pct(z-a)}%"></i>`).join('')}<b class="mt-needle" style="left:${Math.min(100,pct(held))}%"></b></div>
     <small class="mt-gauge-label" aria-live="polite">${start?'Đang ép nhiệt…':ready?`Nắp đẹp +1 xu: ép rồi nhả tay khi kim vào vùng xanh (${S.good_lo}–${S.good_hi} giây)`:'Pha xong trà, đá, đường rồi mới dán nắp'}</small>
-    <div class="mt-seal-btns">${start?jb(x,'✋ Nhả tay!','tea_seal',{task:t.id},'primary big'):jb(x,'🔥 Ép nắp','tea_seal_start',{task:t.id},'cream',!ready)}
+    <div class="mt-seal-btns">${start?jb(x,'✋ Nhả tay!','tea_seal',{task:t.id},'cream big'):jb(x,'🔥 Ép nắp','tea_seal_start',{task:t.id},'cream',!ready)}
     ${start?'':jb(x,'Dán thường','tea_seal',{task:t.id},'ghost small',!ready)}</div>${start?'':wear(x)}</div>`;
 }
 /** Glue on the sealing plate: the green zone narrows until someone cleans it. */
 function wear(x){
   const w=B(x).sealer;if(!w||w.state==='clean')return '';
   return `<p class="mt-wear ${x.esc(w.state)}"><span>${w.state==='dirty'?'⚠ Khuôn dán bẩn: vùng xanh chỉ còn một vạch.':'Khuôn dán bám keo: vùng xanh hẹp lại.'}</span>${jb(x,'🧽 Lau máy','tea_clean',{},'ghost small')}</p>`;
-}
-/** One line for the sticky bar: size · toppings · sugar · ice, each ticked once the cup matches. */
-function recap(t,x){
-  const b=B(x),want=t.needs||(t.usual?(b.notebook||[]).find(r=>r.npc===t.npc)?.usual:null),cup=t.cup||{},items=cup.items||[];
-  if(!t.known)return 'Nghe khách gọi món trước';
-  if(!want)return status(x,cup);
-  const tick=ok=>ok?'✓ ':'';
-  const tops=want.toppings.length?want.toppings.map(k=>low(ing(x,k).name)).join(', '):'không topping';
-  return [`${tick(cup.placed&&cup.size===want.size)}Ly ${want.size}`,`${tick(cup.placed&&want.toppings.every(k=>items.includes(k)))}${tops}`,
-    `${tick(cup.sugar===want.sugar)}${want.sugar}% đường`,`${tick(cup.ice===want.ice)}${ICE_TEXT[want.ice]}`].map(v=>v.replace(/ /g,'\u00a0')).join(' · ');
 }
 function finish(t,x){
   const cup=t.cup;
@@ -319,12 +310,14 @@ function nextStep(t,x,detail=true){
 // A step's tap goes through actions.go like every counter tap (quiet, feedback next to the cup).
 const run=(op,payload,label)=>({act:'car:go',data:{op,payload:JSON.stringify(payload)},label});
 const kSel=k=>`.mt-stations [data-k="${k}"]`;
-const CRIT=new Set(['cup','base','flavor','topping']);
-/** The order as steps: cup, tea, syrup, toppings, ice, sugar, lid. On a first task the bottom
- * button does each step and the right tile glows; later it names the step and points at the tile. */
+const CRIT=new Set(['size','base','flavor','topping','extra']);
+/** The order as steps, read from the server's ticket (game/boba.py ticket(): the same fields the
+ * referee grades): cup size, tea, syrup, toppings, anything not ordered, ice, sugar, lid. On a first
+ * task the bottom button does each step and the right tile glows; later it names the step and points
+ * at the tile. Each step keeps its ticket row (`row`) for the pinned order ticket. */
 function brewSteps(t,x){
-  const b=B(x),cup=t.cup||{},items=cup.items||[],n=t.needs,id=t.id,first=firstTime(x),sealed=!!cup.sealed;
-  if(!n)return [];
+  const b=B(x),cup=t.cup||{},items=cup.items||[],rows=t.ticket||[],id=t.id,first=firstTime(x),sealed=!!cup.sealed;
+  if(!rows.length)return [];
   const redo={cmd:'tea_discard',payload:{task:id,confirm:true},confirm:'Ly này sai rồi. Đổ ly và pha lại từ đầu?',label:'🗑️ Đổ ly, pha lại'};
   // The right tile: tap it for the player on a first task, otherwise point at it.
   const tap=(k,op,payload,label)=>first?run(op,payload,label):{sel:kSel(k),label};
@@ -332,39 +325,41 @@ function brewSteps(t,x){
   const refill=k=>{const s=station(x,k),i=ing(x,k);
     if(s.made)return run('tea_prepare',{item:k,qty:5,confirm:true},`${verb(k)} thêm ${x.esc(low(i.name))} · ${i.cost*5} xu`);
     return {sel:'.mt-out',label:`🙏 Hết ${x.esc(low(i.name))}: mời khách đổi`};};
-  const rows=[],name=k=>low(ing(x,k).name);
-  const cupOk=cup.placed?cup.size===n.size:null;
-  let go=null;
-  if(!sealed&&cupOk!==true){
-    if(cup.placed&&items.length)go=redo;
-    else if(!(b.cups||{})[n.size])go={sel:'.mt-out',label:`🙏 Hết ly ${n.size}: mời khách đổi cỡ`};
-    else go=tap('cup_'+n.size,'tea_cup',{task:id,size:n.size},`${n.size==='L'?'🥤':'🧋'} Lấy ly ${n.size}`);
-  }
-  rows.push({k:'cup',at:kSel('cup_'+n.size),ok:cupOk,label:`Lấy ly ${n.size}`,go,pulse:first&&go?.act?kSel('cup_'+n.size):go?.sel?'.mt-out .btn':''});
-  const base=items.find(k=>ing(x,k).group==='base'),bOk=base?base===n.base:null;
-  go=null;
-  if(!sealed&&base&&!bOk)go=redo;
-  else if(!sealed&&!base&&cup.placed)go=station(x,n.base).stock?tap(n.base,'tea_add',{task:id,item:n.base},`🫖 Rót ${x.esc(name(n.base))}`):refill(n.base);
-  rows.push({k:'base',at:kSel(n.base),ok:bOk,label:`Rót ${name(n.base)}`,go,pulse:first&&go?.act&&go.data.op==='tea_add'?kSel(n.base):go?.sel?'.mt-out .btn':''});
-  const add=(k,group,label,icon)=>{
-    const has=items.includes(k);let g=null;
-    if(!sealed&&!has&&base)g=station(x,k).stock?tap(k,'tea_add',{task:id,item:k},`${icon} ${x.esc(label)}`):refill(k);
-    rows.push({k:group,at:kSel(k),ok:has||null,label,go:g,pulse:first&&g?.act&&g.data.op==='tea_add'?kSel(k):g?.sel?'.mt-out .btn':''});
-  };
-  if(n.flavor)add(n.flavor,'flavor',`Thêm siro ${name(n.flavor)}`,'🍑');
-  for(const k of n.toppings)add(k,'topping',`Múc ${name(k)}`,'🧋');
-  // Something the guest did not ask for: only a new cup takes it out.
-  for(const k of items)if(k!==base&&k!==n.flavor&&!n.toppings.includes(k))rows.push({k:'topping',ok:false,label:`Bỏ ${name(k)} (khách không gọi)`,go:redo});
-  const dial=(kind,want,have,label,icon)=>{
-    const ok=have==null?null:have===want;
-    const g=!sealed&&cup.placed&&!ok?tap(`${kind}-${want}`,'tea_'+kind,{task:id,level:want},`${icon} ${x.esc(label)}`):null;
-    rows.push({k:kind,at:kSel(`${kind}-${want}`),ok,label,go:g,pulse:first&&g?kSel(`${kind}-${want}`):''});
-  };
-  dial('ice',n.ice,cup.ice,`Đá: ${ICE_TEXT[n.ice]}`,'🧊');
-  dial('sugar',n.sugar,cup.sugar,`Đường ${n.sugar}%`,'🍯');
+  const name=k=>low(ing(x,k).name),hasBase=hasGroup(x,cup,'base');
+  const tops=items.filter(k=>ing(x,k).group==='topping').length;
+  // Only a new cup fixes a wrong size with tea in it, a wrong tea or syrup, or something not ordered:
+  // then that comes first, before more ingredients go into a cup that will be poured out anyway.
+  const broken=rows.some(r=>r.ok===false&&(['base','flavor','extra'].includes(r.k)||(r.k==='size'&&items.length)));
+  const pulseOf=(g,k)=>first&&g?.act?kSel(k):g?.sel?'.mt-out .btn':'';
+  const steps=rows.filter(r=>r.k!=='seal').map(r=>{
+    let label='',at='',go=null,pk='';
+    if(r.k==='size'){
+      label=`Lấy ly ${r.want}`;at=kSel('cup_'+r.want);pk='cup_'+r.want;
+      if(r.ok!==true){
+        if(items.length&&(r.ok===false||sealed))go=redo;
+        else if(sealed){/* nothing to do on a sealed cup */}
+        else if(!(b.cups||{})[r.want])go={sel:'.mt-out',label:`🙏 Hết ly ${r.want}: mời khách đổi cỡ`};
+        else go=tap('cup_'+r.want,'tea_cup',{task:id,size:r.want},`${r.want==='L'?'🥤':'🧋'} Lấy ly ${r.want}`);
+      }
+    }else if(['base','flavor','topping'].includes(r.k)){
+      const icon={base:'🫖',flavor:'🍑',topping:'🧋'}[r.k];
+      label={base:`Rót ${name(r.want)}`,flavor:`Thêm siro ${name(r.want)}`,topping:`Múc ${name(r.want)}`}[r.k];at=kSel(r.want);pk=r.want;
+      if(r.ok===false||(sealed&&r.ok!==true))go=redo;
+      else if(r.ok==null&&!broken&&cup.placed&&(r.k==='base'||hasBase)&&(r.k!=='topping'||tops<3))
+        go=station(x,r.want).stock?tap(r.want,'tea_add',{task:id,item:r.want},`${icon} ${x.esc(label)}`):refill(r.want);
+    }else if(r.k==='extra'){
+      label=`Bỏ ${name(r.got)} (khách không gọi)`;go=redo;
+    }else{
+      const want=r.want;
+      label=r.k==='ice'?`Đá: ${ICE_TEXT[want]}`:`Đường ${want}%`;at=kSel(`${r.k}-${want}`);pk=`${r.k}-${want}`;
+      if(!sealed&&cup.placed&&r.ok!==true)go=tap(`${r.k}-${want}`,'tea_'+r.k,{task:id,level:want},`${r.k==='ice'?'🧊':'🍯'} ${x.esc(label)}`);
+    }
+    const pulse=go===redo?'':r.k==='ice'||r.k==='sugar'?(first&&go?kSel(pk):''):pulseOf(go,pk);
+    return {k:r.k,row:r,at,ok:r.ok,label,go,pulse};
+  });
   // The lid: the bottom button always does a plain press (safe); the press-and-release game for a
   // perfect lid (+1 xu) stays on the sealer, and once it runs the bottom button lets go.
-  const ready=rows.every(r=>r.ok===true),auto=(b.upgrades||[]).some(u=>u.id==='sealer'&&u.owned);
+  const ready=steps.every(r=>r.ok===true),auto=(b.upgrades||[]).some(u=>u.id==='sealer'&&u.owned);
   let lid=null,note='';
   if(!sealed&&ready){
     if(auto)lid=run('tea_seal',{task:id},'⚙️ Dán nắp');
@@ -372,9 +367,57 @@ function brewSteps(t,x){
     else if(cup.seal_t)lid=run('tea_seal',{task:id},'✋ Nhả tay!');
     else lid=run('tea_seal',{task:id},'✅ Dán nắp');
   }
-  rows.push({k:'seal',at:'.mt-sealer',ok:sealed||null,label:'Dán nắp',note,go:lid});
+  steps.push({k:'seal',at:'.mt-sealer',ok:sealed||null,label:'Dán nắp',note,go:lid});
   // After the lid only a wrong cup, tea, syrup or topping still matters (the guest hands it back).
-  return sealed?rows.filter(r=>r.ok!==false||CRIT.has(r.k)):rows;
+  return sealed?steps.filter(r=>r.ok!==false||CRIT.has(r.k)):steps;
+}
+/** The pinned order ticket: "Ly 1: trà sữa size L, trân châu, 50% đường, ít đá", each part ticked
+ * (✓), marked wrong (✗ needs a new cup, ! fix it on the dial) or still to do, in the order the guest
+ * said it. Group orders get Ly 1…Ly n tabs; one patience bar and the price. Sticks to the top of the
+ * counter while the stations scroll under it. */
+/** A wrong part the player fixes where it is (a dial, or the size of an empty cup): amber "!", not "✗". */
+const fixable=(t,r)=>r.ok===false&&(r.k==='ice'||r.k==='sugar'||(r.k==='size'&&!(t.cup?.items||[]).length));
+const SAY=['base','size','flavor','topping','extra','sugar','ice'];
+function orderTicket(t,x,steps){
+  const b=B(x),calm=x.room.life?.mode==='calm',p=calm?100:(t.patience??100);
+  const name=k=>low(ing(x,k).name);
+  const text=r=>r.k==='base'?ing(x,r.want).name:r.k==='size'?`size ${r.want}`:r.k==='flavor'?`vị ${name(r.want)}`:r.k==='topping'?name(r.want)
+    :r.k==='extra'?`${name(r.got)} (không gọi)`:r.k==='sugar'?`${r.want}% đường`:ICE_TEXT[r.want];
+  const said=steps.filter(s=>s.row&&SAY.includes(s.k)).sort((a,c)=>SAY.indexOf(a.k)-SAY.indexOf(c.k));
+  const chip=s=>{
+    const r=s.row,fix=fixable(t,r);
+    const cls=r.ok===true?'ok':r.ok===false?(fix?'warn':'bad'):'todo',mark=r.ok===true?'✓':r.ok===false?(fix?'!':'✗'):'';
+    const why=r.ok===false?(fix?' (đang sai, chỉnh lại)':' (sai, cần đổ ly làm lại)'):r.ok===true?' (đã đúng)':' (chưa làm)';
+    return `<li class="mt-req ${cls}"${todoAttrs(s)} aria-label="${x.esc(text(r)+why)}">${mark?`<b aria-hidden="true">${mark}</b>`:''}${x.esc(text(r))}</li>`;};
+  const noTop=!said.some(s=>s.k==='topping'||s.k==='extra')?`<li class="mt-req none">không topping</li>`:'';
+  const chips=said.map(chip),at=said.findIndex(s=>s.k==='sugar');
+  chips.splice(at<0?chips.length:at,0,noTop);
+  const g=t.group,sibs=g?x.room.tasks.filter(v=>v.group?.id===g.id).sort((a,c)=>a.group.i-c.group.i):[];
+  const tabs=g?`<div class="mt-ticket-tabs" role="tablist" aria-label="Các ly trong đơn">${sibs.map(v=>{
+    const done=v.status==='completed',gone=DONE.includes(v.status),on=v.id===t.id;
+    return `<button type="button" role="tab" class="mt-cuptab ${on?'on':''} ${done?'done':''}" ${gone?'disabled':pick(x,v.id)} aria-selected="${on}">${done?'✓ ':''}Ly ${v.group.i}${v.cup?.sealed&&!done?' 🔒':''}</button>`;}).join('')}</div>`
+    :`<b class="mt-ticket-who">${x.esc(t.app?`Đơn app ${t.app.code}`:t.customer)}</b>`;
+  let meter;
+  if(t.app){const left=t.app.deadline-(b.turn||0),pct=Math.max(0,Math.min(100,left/t.app.span*100));meter=`<div class="mt-patience app"><span>TÀI XẾ</span><div class="mt-bar"><i style="width:${pct}%"></i></div><small>${left>=0?`${left} nhịp`:'trễ'}</small></div>`;}
+  else meter=`<div class="mt-patience ${p<40?'low':p<70?'mid':''}"><span>KIÊN NHẪN</span><div class="mt-bar" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}" aria-label="Kiên nhẫn"><i style="width:${p}%"></i></div><small>${calm?'thong thả':p+'%'}</small></div>`;
+  const tags=[t.usual?'🔁 Như mọi khi':'',t.vip?'🎥 Quay video':'',t.office?'💼 Văn phòng':'',t.discount?`🏷️ Bớt ${t.discount} xu`:''].filter(Boolean);
+  return `<section class="mt-ticket${t.app?' is-app':''}" aria-label="Phiếu gọi món">
+    <div class="mt-ticket-top">${t.app?'<span class="mt-face" style="--s:34px" aria-hidden="true">🛵</span>':face(t,x,34)}${tabs}${tags.length?`<span class="mt-ticket-tags">${tags.map(v=>`<em>${x.esc(v)}</em>`).join('')}</span>`:''}<b class="mt-price">${t.quoted_price!=null?`${t.quoted_price} xu`:''}</b></div>
+    <div class="mt-ticket-order"><b>Ly ${g?g.i:1}:</b><ul class="mt-reqs" aria-label="Món khách gọi">${chips.join('')}</ul></div>
+    ${meter}</section>`;
+}
+/** The bottom line: the steps the cup still needs, in making order ("Còn 3 bước: … → … → Dán nắp").
+ * At most TODO_SHOWN of them (plus the one the button does and any wrong one), then "+N": two short
+ * lines on a phone even for a big order; the pinned ticket above shows every part. */
+const TODO_SHOWN=3;
+function todoLine(t,x,steps){
+  if(!t.known)return 'Nghe khách gọi món trước';
+  if(!steps.length)return x.esc(status(x,t.cup||{}));
+  const left=steps.filter(s=>s.ok!==true);
+  if(!left.length)return t.app?'✓ Ly đã xong · giao cho tài xế':'✓ Ly đã xong · trao cho khách';
+  const now=nextOf(steps),shown=left.filter((s,k)=>k<TODO_SHOWN||s===now||s.ok===false),more=left.length-shown.length;
+  return `<b>Còn ${left.length} bước:</b> ${shown.map(s=>{const fix=s.row&&fixable(t,s.row),bad=s.ok===false;
+    return `<span class="${bad?(fix?'warn':'bad'):''}${s===now?' now':''}">${bad?(fix?'! ':'✗ '):''}${x.esc(s.label)}</span>`;}).join(' → ')}${more?` → +${more}`:''}`;
 }
 /** Python's round() (ties to even), so the app fee shown is the fee the server takes. */
 const pyRound=v=>{const f=Math.floor(v),d=v-f;return d>0.5||(d===0.5&&f%2)?f+1:f;};
@@ -446,7 +489,7 @@ const TABS=[['stock','🧺','Kho'],['upgrade','🛠️','Nâng cấp'],['price',
 function board(x){
   const b=B(x),pr=b.prices||{},prices=x.room.life?.prices||{};
   const bases=ings(x).filter(i=>i.group==='base');
-  return `<div class="chalkboard mt-board"><h2>🧋 Menu hôm nay</h2><div class="chalk-columns">${bases.map(i=>{const s=station(x,i.id);return `<div class="${s.unlocked?'':'locked'}"><span>${x.esc(i.name)}</span><b>${s.unlocked?`${prices[i.id]||pr.base?.[i.id]||30} xu`:`🔒 cấp ${s.level}`}</b></div>`;}).join('')}</div>
+  return `<div class="chalkboard mt-board"><h2>🧋 Menu hôm nay</h2><div class="chalk-columns">${bases.map(i=>{const s=station(x,i.id),off=s.on===false;return `<div class="${s.unlocked?'':'locked'}${off?' off':''}"><span>${x.esc(i.name)}</span><b>${!s.unlocked?`🔒 cấp ${s.level}`:off?'ngừng bán':`${prices[i.id]||pr.base?.[i.id]||30} xu`}</b></div>`;}).join('')}</div>
     <p class="center">Siro +${pr.flavor??6} xu · Topping +${pr.topping??5} xu · Size L +${pr.size_l??7} xu</p></div>`;
 }
 function stockTab(x){
@@ -459,15 +502,16 @@ function stockTab(x){
     const s=station(x,i.id);if(!s.unlocked)return locked(i);
     const bt=batch(i.id),first=bt?.lots?.[0],exp=lot(i.id);
     const fresh=s.fresh?(first?`${first.made?`${verb(i.id)} ${first.made} · `:''}<span class="${first.band==='fresh'?'':'warn'}">${x.esc(first.word)}${first.band==='fresh'&&first.good_until?` tới ${first.good_until}`:first.ok_until?` · bỏ lúc ${first.ok_until}`:''}</span>${bt.lots.length>1?` · ${bt.lots.length} mẻ`:''}`:'chưa có mẻ nào'):(exp!=null?`dùng hết ngày ${exp}`:'');
-    return `<div class="mt-row ${s.stock===0?'empty':''}"><span class="mt-emo" aria-hidden="true">${i.emoji}</span><div class="grow"><b>${x.esc(i.name)}</b><small><span class="mt-count-inline ${s.stock===0?'zero':''}">Còn ${s.stock}</span>${fresh?` · ${fresh}`:''}</small></div><div class="mt-row-btns">${s.tired?jb(x,'Đổ mẻ cũ','tea_toss',{item:i.id},'small ghost'):''}${jb(x,`${verb(i.id)} +5 · ${i.cost*5} xu`,'tea_prepare',{item:i.id,qty:5,confirm:true},'small')}</div></div>`;
+    if(s.on===false&&!s.stock)return `<div class="mt-row off"><span class="mt-emo" aria-hidden="true">${i.emoji}</span><div class="grow"><b>${x.esc(i.name)}</b><small>🚫 Ngừng bán · không cần ${verb(i.id).toLowerCase()}</small></div></div>`;
+    return `<div class="mt-row ${s.stock===0?'empty':''}${s.on===false?' off':''}"><span class="mt-emo" aria-hidden="true">${i.emoji}</span><div class="grow"><b>${x.esc(i.name)}${s.on===false?' <small>· ngừng bán</small>':''}</b><small><span class="mt-count-inline ${s.stock===0?'zero':''}">Còn ${s.stock}</span>${fresh?` · ${fresh}`:''}</small></div><div class="mt-row-btns">${s.tired?jb(x,'Đổ mẻ cũ','tea_toss',{item:i.id},'small ghost'):''}${jb(x,`${verb(i.id)} +5 · ${i.cost*5} xu`,'tea_prepare',{item:i.id,qty:5,confirm:true},'small')}</div></div>`;
   }).join('');
   // Bought from suppliers: cups, syrups, jellies…
-  const buyRow=(id,emoji,name,have,sub)=>{
+  const buyRow=(id,emoji,name,have,sub,off=false)=>{
     const o=pending(x,id),on=pick===id;
-    return `<div class="mt-buy ${on?'on':''}"><div class="mt-row ${have===0?'empty':''}"><span class="mt-emo" aria-hidden="true">${emoji}</span><div class="grow"><b>${x.esc(name)}</b><small><span class="mt-count-inline ${have===0?'zero':''}">Còn ${have}</span>${sub?` · ${sub}`:''}${o.length?` · 📦 ${x.esc(o[0].eta_label)}`:''}</small></div><button type="button" class="btn small ${on?'primary':''}" data-action="car:pick" data-item="${x.esc(id)}" aria-expanded="${on}">${on?'Đóng':'Đặt hàng'}</button></div>${on?supplierPicker(x,id):''}</div>`;
+    return `<div class="mt-buy ${on?'on':''}"><div class="mt-row ${have===0&&!off?'empty':''}${off?' off':''}"><span class="mt-emo" aria-hidden="true">${emoji}</span><div class="grow"><b>${x.esc(name)}</b><small><span class="mt-count-inline ${have===0?'zero':''}">Còn ${have}</span>${sub?` · ${sub}`:''}${o.length?` · 📦 ${x.esc(o[0].eta_label)}`:''}</small></div><button type="button" class="btn small ${on?'primary':''}" data-action="car:pick" data-item="${x.esc(id)}" aria-expanded="${on}">${on?'Đóng':'Đặt hàng'}</button></div>${on?supplierPicker(x,id):''}</div>`;
   };
   const cupRows=['M','L'].map(size=>buyRow('cup_'+size,'🥤',`Ly ${size}`,cups[size]||0,`${b.cup_pack?.qty||20} ly/thùng`)).join('');
-  const bought=ings(x).filter(i=>!station(x,i.id).made).map(i=>{const s=station(x,i.id);if(!s.unlocked)return locked(i);const exp=lot(i.id);return buyRow(i.id,i.emoji,i.name,s.stock,`${i.cost} xu/phần${exp!=null?` · dùng hết ngày ${exp}`:''}`);}).join('');
+  const bought=ings(x).filter(i=>!station(x,i.id).made).map(i=>{const s=station(x,i.id);if(!s.unlocked)return locked(i);const exp=lot(i.id);return buyRow(i.id,i.emoji,i.name,s.stock,`${s.on===false?'🚫 ngừng bán · ':''}${i.cost} xu/phần${exp!=null?` · dùng hết ngày ${exp}`:''}`,s.on===false);}).join('');
   const night=(b.night||[]).length?`<div class="mt-night">${b.night.map(l=>`<p>${x.esc(l)}</p>`).join('')}</div>`:'';
   const wait=x.room.open&&(b.orders||[]).length?jb(x,'⏳ Chờ thêm 20 phút','tea_wait',{},'ghost small'):'';
   return `<p class="mt-now">🕑 ${now.is_open?`Bây giờ <b>${x.esc(now.time||b.clock||'')}</b>${overtime(b)?' · tăng ca, nhà cung cấp đã nghỉ':''}`:`Đã đóng cửa · mở lại ${x.esc(now.open||'08:00')}`}</p>${night}
@@ -480,9 +524,24 @@ function stockTab(x){
 function upgradeTab(x){
   return `<div class="mt-upgrades">${(B(x).upgrades||[]).map(u=>`<article class="mt-upgrade ${u.owned?'owned':''}"><span class="mt-emo big" aria-hidden="true">${x.esc(u.emoji)}</span><div class="grow"><h4>${x.esc(u.name)}</h4><p>${x.esc(u.text)}</p></div>${u.owned?'<span class="tag green">✓ Đã lắp</span>':!u.ready?`<span class="tag">🔒 Tay nghề cấp ${u.level}</span>`:x.confirmCmd(`Lắp · ${u.price} xu`,'tea_upgrade',{id:u.id},`Lắp ${u.name} với giá ${u.price} xu?`,'primary small',x.room.money<u.price)}</article>`).join('')}</div>`;
 }
+/** "Món đang bán": one switch per tea, syrup and topping, on the same two-column leader rows as the menu.
+ * Off: new customers never order it and the counter needs none of it in stock. The last tea stays on. */
+function menuPanel(x){
+  const teas=ings(x).filter(i=>i.group==='base'&&station(x,i.id).unlocked&&station(x,i.id).on!==false).length;
+  const off=ings(x).filter(i=>station(x,i.id).on===false).length;
+  const row=i=>{
+    const s=station(x,i.id),on=s.on!==false,last=on&&i.group==='base'&&teas<=1;
+    const ctl=!s.unlocked?`<b class="mt-menu-lock">🔒 cấp ${s.level}</b>`
+      :`<button type="button" role="switch" class="mt-switch" data-item="${x.esc(i.id)}" aria-checked="${on}" aria-label="${x.esc(`Bán ${i.name}`)}" ${last?'disabled title="Quán cần bán ít nhất một loại trà nền"':cmdAttr(x,'tea_menu',{item:i.id,on:!on})}><i aria-hidden="true"></i><small>${on?'Đang bán':'Ngừng'}</small></button>`;
+    return `<div class="${on?'':'off'}${s.unlocked?'':' locked'}"><span><span aria-hidden="true">${x.esc(i.emoji)}</span> ${x.esc(i.name)}</span>${ctl}</div>`;};
+  const group=(g,title)=>`<h4>${title}</h4><div class="chalk-columns mt-menu-cols">${ings(x).filter(i=>i.group===g).map(row).join('')}</div>`;
+  return `<section class="mt-menu" aria-labelledby="mtMenuH"><h3 class="section-title" id="mtMenuH">🧾 Món đang bán${off?` <small>· ${off} món ngừng bán</small>`:''}</h3>
+    <p class="muted small">Tắt món không muốn bán: khách mới sẽ không gọi, quầy cũng không cần nhập. Ly khách đã gọi vẫn pha như cũ. Luôn giữ ít nhất một loại trà nền.</p>
+    ${group('base','🫖 Trà nền')}${group('flavor','🍑 Siro')}${group('topping','🧋 Topping')}</section>`;
+}
 function priceTab(x){
   const b=B(x),base=b.prices?.base||{},prices=x.room.life?.prices||{},closed=!x.room.open;
-  return `${board(x)}<p class="muted">Đổi giá trà nền trong khoảng 75%–125% giá gốc, trước khi mở cửa.</p><div class="price-editor">${ings(x).filter(i=>i.group==='base').map(i=>{
+  return `${board(x)}${menuPanel(x)}<p class="muted">Đổi giá trà nền trong khoảng 75%–125% giá gốc, trước khi mở cửa.</p><div class="price-editor">${ings(x).filter(i=>i.group==='base').map(i=>{
     const s=station(x,i.id),g=base[i.id]||30,v=prices[i.id]||g;
     return `<div><strong>${x.esc(i.emoji)} ${x.esc(i.name)}${s.unlocked?'':' 🔒'}</strong><input class="input" type="number" id="price-${i.id}" min="${Math.round(g*.75)}" max="${Math.round(g*1.25)}" value="${v}" data-preserve aria-label="Giá ${x.esc(i.name)}" ${closed?'':'disabled'}>${x.button('Lưu giá','expPrice',{item:i.id},'small')}</div>`;}).join('')}</div>`;
 }
@@ -529,6 +588,16 @@ function focusStep(root){
   if(r.top>=head&&r.bottom<=bottom)return;
   el.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
 }
+/** The order ticket sticks just under the sheet header when both scroll in the same box (phones);
+ * where the header sits outside the scrolling body it sticks at the top edge. */
+function pinTicket(root){
+  if(!root.querySelector('.mt-ticket'))return;
+  const head=root.closest('dialog')?.querySelector('.sheet-head');
+  let sc=root.parentElement;
+  while(sc&&!/(auto|scroll)/.test(getComputedStyle(sc).overflowY))sc=sc.parentElement;
+  const v=`${head&&sc&&sc.contains(head)&&getComputedStyle(head).position==='sticky'?head.offsetHeight:0}px`;
+  if(root.style.getPropertyValue('--mt-stick')!==v)root.style.setProperty('--mt-stick',v);
+}
 export default {
   id:'milk_tea',
   css:true,
@@ -539,16 +608,18 @@ export default {
   },
   clock(c){return c.data?.boba?.clock||'';},
   job(t,x){
-    const g=teaGuide(t,x),ticket=t.known&&g.final?stepRows(x,g.steps,'Phiếu gọi món'):'';
-    const layout=`<div class="mt-bench"><div class="mt-side"><section class="mt-preview">${cupArt(x,t.cup)}<div class="mt-said">${ticket?`<small class="mt-ticket-head">🧾 Phiếu gọi món</small>`:`<p class="mt-status">${x.esc(status(x,t.cup))}</p>`}${x.ui.flash?`<p class="mt-flash" role="status">${x.esc(x.ui.flash)}</p>`:''}</div>${ticket}</section>${finish(t,x)}</div>
+    const g=teaGuide(t,x),brew=t.known?brewSteps(t,x):[];
+    // Stations in the order a cup is made (cup, tea, syrup, toppings, ice & sugar), then the sealer.
+    // The cup picture sits beside them on wide screens; on phones the mini cup in the bottom bar shows it.
+    const layout=`<div class="mt-bench"><div class="mt-side"><section class="mt-preview${x.ui.flash?'':' quiet'}">${cupArt(x,t.cup)}<div class="mt-said">${x.ui.flash?`<p class="mt-flash" role="status">${x.esc(x.ui.flash)}</p>`:''}</div></section>${finish(t,x)}</div>
       <div class="mt-stations">${stations(t,x,g.final?g.steps:[])}</div></div>`;
     // The order recap and the next step (then the hand-over) stay pinned above the sheet footer.
     // The mini cup keeps the result in view next to whichever station the step scrolled to.
     const cta=stepCta(x,g.steps,g.final||{label:'',go:null,ready:false},{style:'primary big grow'});
-    const bar=`<div class="fk-bar mt-bar">${t.known?`<span class="mt-bar-cup" aria-hidden="true">${cupArt(x,t.cup,true)}</span>`:''}<p class="fk-next" aria-live="polite">${x.esc(recap(t,x))}</p><div class="fk-bar-btns">${cta}</div></div>`;
+    const bar=`<div class="fk-bar mt-bar">${t.known?`<span class="mt-bar-cup" aria-hidden="true">${cupArt(x,t.cup,true)}</span>`:''}<p class="fk-next" aria-live="polite">${todoLine(t,x,brew)}</p><div class="fk-bar-btns">${cta}</div></div>`;
     // After each step the screen scrolls to the control of the next one (tick), once per step.
     const n=nextOf(g.steps),at=!n||B(x).event?'':n.go?.sel||(n.go?.cmd==='tea_discard'?'.mt-minor':'')||n.at||'';
-    return `<div class="career-job mt" data-mt-at="${x.esc(at)}" data-mt-key="${x.esc(`${t.id}|${n?.label||''}|${n?.ok}`)}">${hintFor(t,x)}${hud(x)}${eventCard(x)}${alerts(x)}${(B(x).care||[]).some(r=>r.tone!=='ok')?careFold(x):''}${appRow(t,x)}${queueRow(t,x)}${customer(t,x)}${tabs(t,x)}${outOfStock(t,x)}${t.known?layout:''}${bar}</div>`;
+    return `<div class="career-job mt" data-mt-at="${x.esc(at)}" data-mt-key="${x.esc(`${t.id}|${n?.label||''}|${n?.ok}`)}">${hintFor(t,x)}${hud(x)}${eventCard(x)}${alerts(x)}${(B(x).care||[]).some(r=>r.tone!=='ok')?careFold(x):''}${appRow(t,x)}${queueRow(t,x)}${customer(t,x,brew)}${outOfStock(t,x)}${t.known?layout:''}${bar}</div>`;
   },
   idle(x){
     const b=B(x),waiting=x.room.tasks.filter(open),left=b.left||0,orders=b.orders||[];
@@ -572,6 +643,7 @@ export default {
     async prep(data,el,x){x.ui.prep=data.tab;x.render();},
     async pick(data,el,x){x.ui.mtItem=x.ui.mtItem===data.item?null:data.item;x.render();},
     async shelf(data,el,x){(x.ui.mtShelf??={})[data.key]=true;x.render();},
+    async showoff(data,el,x){x.ui.mtShowOff=!x.ui.mtShowOff;x.render();},
     async qty(data,el,x){x.ui.mtQty=Number(data.qty)||null;x.render();},
     async fold(data,el,x){const d=el.closest('details');if(data.key)x.ui[data.key]=d?!d.open:!x.ui[data.key];},
     async go(data,el,x){
@@ -589,6 +661,7 @@ export default {
   },
   tick(root,x){
     keepBarAboveFooter(root);
+    pinTicket(root);
     focusStep(root);
     // First task: the pinned bottom button glows too, since the glowing tile may be out of view on a phone.
     if(root.closest('dialog')?.querySelector('.gd-next[data-first]'))root.querySelector('.fk-bar .gd-cta:not([disabled])')?.classList.add('gd-pulse');

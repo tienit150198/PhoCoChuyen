@@ -255,3 +255,18 @@ body.reduce-motion .career-job.rp .rp-big,html.reduce-motion .career-job.rp .rp-
   .career-job.rp.rp-later .rp-mat{height:72px}
   .career-job.rp.rp-later .rp-big{font-size:40px}
 }
+
+/* 0.9.5 (feedback #29): what the customer handed over leads the intake slip */
+.career-job.rp .rp-given{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:0 0 10px;padding:10px 12px;border-radius:var(--rp-r);border:2px solid var(--accent,var(--rp-accent));background:var(--accent-soft,var(--rp-s1));font-size:.95em;line-height:1.35}
+.career-job.rp .rp-given>b{flex:1 0 100%}
+.career-job.rp .rp-given.none{border-style:dashed;background:var(--rp-s1)}
+.career-job.rp .rp-given.none>b{flex:none}
+.career-job.rp .rp-given-item{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;background:var(--surface,#fff);border:1px solid var(--line-strong,var(--rp-line));font-weight:700}
+.career-job.rp .rp-given-item.ok{border-color:var(--good,var(--rp-good));background:var(--good-soft,#e5f3ea);color:var(--good,var(--rp-good))}
+.career-job.rp .rp-acc{position:relative;display:grid;min-width:0}
+.career-job.rp .rp-acc>.tile{width:100%}
+.career-job.rp .rp-acc.given>.tile:not(.selected){border:2px dashed var(--accent,var(--rp-accent))}
+.career-job.rp .rp-acc:not(.given)>.tile:not(.selected){opacity:.75}
+.career-job.rp .asm-pin .rp-steps{margin-top:2px}
+.career-job.rp .asm-pin~.workbench .wb-side{top:calc(var(--asm-top,0px) + var(--asm-pin,0px) + 10px)}
+.career-job.rp .rp-acc>.asm-need{left:auto;right:6px}

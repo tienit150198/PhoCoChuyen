@@ -46,6 +46,8 @@ SOAK_MIN = 8        # seconds in the bucket before stems count as hydrated
 FOAM_MIN = 10       # seconds for floral foam to sink by itself
 MAX_BUCKETS = 2
 MAX_STEMS = 30
+MAX_PICK = 10       # stems one tap can take (the +/− steps on a flower tile)
+SIZE_BASE = 7       # stems of a usual order: a bigger brief makes its guest wait longer (kit.size_factor)
 DELIVERY_FEE = 15
 
 OCCASIONS = {
@@ -439,6 +441,11 @@ def _patience_extra(c: dict, pl: dict) -> int:
     return MOD_INDEX[pl['mod']].get('patience', 0) + (1 if c['day'] >= 6 else 0)
 
 
+def _units(t: dict) -> int:
+    """How big an order is: the stems it needs at least, over every piece of a set."""
+    return sum(sp['stems'][0] for sp in _specs(t['needs']))
+
+
 def _drain_patience(c: dict, n: int) -> None:
     for t in FS.open_tasks(c, ID):
         t['patience'] = max(25, t.get('patience', 100) - n)
@@ -604,8 +611,11 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     d = _migrate(c)
     pl = _plan(c)
     out = _handle(s, c, d, pl, name, p)
+    active = p.get('task') or c.get('active_task')
     if name in SPEC['physical']:
-        FS.patience_tick(c, ID, p.get('task') or c.get('active_task'), _patience_extra(c, pl))
+        FS.patience_tick(c, ID, active, _patience_extra(c, pl), lambda t: kit.size_factor(_units(t), SIZE_BASE))
+    if name not in ('fl_event', 'fl_water', 'fl_pre', 'fl_sub', 'fl_pin'):
+        kit.worked(c, active)
     return out
 
 
@@ -701,38 +711,54 @@ def _act(s: dict, c: dict, d: dict, pl: dict, t: dict, name: str, p: dict) -> di
     occ = n['occasion']
     if name == 'fl_pick':
         item = _one_of(p.get('item'), FLOWERS, 'Loại hoa này tiệm không có.')
+        qty = 1 if p.get('n') is None else kit.integer(p.get('n'), 1, MAX_PICK)
         f = FLOWERS[item]
         kit.need(f['unlock'] <= kit.level(c) or _wanted(t, item), f'{f["name"]} mở ở cấp {f["unlock"]}.')
         kit.need(not w['arranged'], 'Bó đã hoàn thành dáng. Bấm “Tháo ra” ở “Cắm & gói” nếu muốn thêm cành.')
         kit.need(not w['soak'], 'Hoa đang ngâm trong xô: vào “Sơ chế”, bấm “Nhấc ra” trước đã.')
-        kit.need(len(w['stems']) < MAX_STEMS, f'Tối đa {MAX_STEMS} cành một đơn.')
-        spare = _spare(d, item)
-        if spare:
-            x = spare[0]
-            d['spare'].remove(x)
-            exp, cost = x['e'], x['k']
-        else:
-            exp = _next_expiry(c, item)
-            kit.need(exp is not None, f'Hết {f["name"]}. Mở Kho để nhập thêm nhé.')
-            cost = kit.take(c, item, 1)
-        w['stems'].append(dict(i=item, e=exp, k=cost, c=0, s=False, h=False))
-        w['cost'] += cost
+        kit.need(len(w['stems']) + qty <= MAX_STEMS, f'Tối đa {MAX_STEMS} cành một đơn.')
+        have = len(_spare(d, item)) + kit.stock(c, item)
+        kit.need(have, f'Hết {f["name"]}. Mở Kho để nhập thêm nhé.')
+        kit.need(have >= qty, f'Tủ chỉ còn {have} cành {f["name"].lower()}.')
+        left = None
+        for _ in range(qty):
+            spare = _spare(d, item)
+            if spare:
+                x = spare[0]
+                d['spare'].remove(x)
+                exp, cost = x['e'], x['k']
+            else:
+                exp = _next_expiry(c, item)
+                kit.need(exp is not None, f'Hết {f["name"]}. Mở Kho để nhập thêm nhé.')
+                cost = kit.take(c, item, 1)
+            w['stems'].append(dict(i=item, e=exp, k=cost, c=0, s=False, h=False))
+            w['cost'] += cost
+            left = exp - c['day'] if left is None else min(left, exp - c['day'])
         kit.start_work(t)
-        left = exp - c['day']
         tag = ' · ⚠️ sắp héo' if left <= 0 else ' · còn 1 ngày' if left == 1 else ''
-        return dict(message=f'Lấy 1 cành {f["name"].lower()}{tag}.')
+        return dict(message=f'Lấy {qty} cành {f["name"].lower()}{tag}.')
     if name == 'fl_remove':
         item = _one_of(p.get('item'), FLOWERS, 'Loại hoa này không có trên bàn.')
+        qty = 1 if p.get('n') is None else kit.integer(p.get('n'), 1, MAX_PICK)
         kit.need(not w['arranged'] and not w['soak'], 'Nhấc hoa khỏi xô (Sơ chế) hoặc tháo bó (Cắm & gói) trước.')
-        idx = max((i for i, st in enumerate(w['stems']) if st['i'] == item), default=None)
-        kit.need(idx is not None, 'Không có cành này trên bàn.')
-        st = w['stems'].pop(idx)
-        w['cost'] = max(0, w['cost'] - st['k'])
-        if st['c'] == 0 and len(d['spare']) < 60:
-            d['spare'].append(dict(item=item, e=st['e'], k=st['k']))
-            return dict(message=f'Đã cắm lại cành {FLOWERS[item]["name"].lower()} vào xô chờ.')
-        kit.waste(c, item, 1, st['k'], 'Cành đã cắt bị loại khỏi bó')
-        return dict(message=f'Cành {FLOWERS[item]["name"].lower()} đã cắt gốc nên không dùng lại được, ghi hao hụt.')
+        on = sum(1 for st in w['stems'] if st['i'] == item)
+        kit.need(on, 'Không có cành này trên bàn.')
+        kit.need(on >= qty, f'Trên bàn chỉ có {on} cành {FLOWERS[item]["name"].lower()}.')
+        back = cut = 0
+        for _ in range(qty):
+            idx = max(i for i, st in enumerate(w['stems']) if st['i'] == item)
+            st = w['stems'].pop(idx)
+            w['cost'] = max(0, w['cost'] - st['k'])
+            if st['c'] == 0 and len(d['spare']) < 60:
+                d['spare'].append(dict(item=item, e=st['e'], k=st['k']))
+                back += 1
+            else:
+                kit.waste(c, item, 1, st['k'], 'Cành đã cắt bị loại khỏi bó')
+                cut += 1
+        name_ = FLOWERS[item]['name'].lower()
+        if not cut:
+            return dict(message=f'Đã cắm lại {back} cành {name_} vào xô chờ.')
+        return dict(message=f'{cut} cành {name_} đã cắt gốc nên không dùng lại được, ghi hao hụt.' + (f' {back} cành cắm lại vào xô chờ.' if back else ''))
     if name == 'fl_cut':
         angle = _one_of(p.get('angle'), ('angled', 'straight'), 'Chọn cắt xéo hoặc cắt thẳng.')
         kit.need(not w['arranged'] and not w['soak'], 'Không cắt gốc lúc này được.')
@@ -2310,6 +2336,7 @@ SPEC = dict(
     prices={**{k: ITEM_INDEX[k]['price'] for k in FLOWERS}, 'bouquet': 25, 'vase': 40, 'basket': 45, 'wreath': 70},
     tip=3,
     physical=('fl_pick', 'fl_arrange', 'fl_wrap', 'fl_deliver', 'fl_dump', 'fl_base', 'fl_done', 'fl_pin'),
+    wait=True,  # the queue drains in handle (food_service.patience_tick → kit.wait_tick), not the engine's flat -1
     free_actions=(),
     no_tick=('fl_lift', 'fl_remove', 'fl_push', 'fl_tab', 'fl_cover'),
     waste_items=('bouquet',),

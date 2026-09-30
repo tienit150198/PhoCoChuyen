@@ -9,7 +9,7 @@ from game.careers import food_service as FS
 def _room(career='mother_baby', kind=None):
     t = dict(id=f'{career}-3-1', career=career, status='new', mistakes=0, patience=100, guest=dict(kind=kind) if kind else None)
     active = dict(id=f'{career}-3-0', career=career, status='new', mistakes=0, patience=100)
-    return dict(open=True, turn=0, life=dict(mode='normal'), active_task=active['id'], tasks=[active, t]), t
+    return dict(open=True, turn=0, life=dict(mode='normal'), active_task=active['id'], tasks=[active, t], ext=dict(data={})), t
 
 
 def _turns_until_empty(factor, tick):
@@ -45,10 +45,11 @@ class PatienceFactorTests(unittest.TestCase):
         self.assertTrue(85 <= new <= 95, new)       # about +20%
 
     def test_food_counter_waiting_drain_lasts_longer(self):
-        tick = lambda c: FS.patience_tick(c, 'mother_baby', c['active_task'])  # a guest in a hurry: 2 per action
+        # A guest in a hurry: 3 per action (the flat 1 plus 2; the food counters run their own queue, kit.wait_tick).
+        tick = lambda c: FS.patience_tick(c, 'mother_baby', c['active_task'])
         old, new = _turns_until_empty(1.0, tick), _turns_until_empty(1.2, tick)
-        self.assertEqual(old, 38)
-        self.assertTrue(42 <= new <= 50, new)
+        self.assertEqual(old, 25)
+        self.assertTrue(28 <= new <= 32, new)
 
     def test_the_same_turn_always_gives_the_same_answer(self):
         c, t = _room()

@@ -10,6 +10,7 @@ import random
 import time
 from typing import Any
 from .. import archive as ar
+from .. import patience as pt
 
 # Wall clock for real-time kitchen/oven timers. Tests replace `clock`.
 clock = time.time
@@ -161,6 +162,97 @@ def base_task(career: str, day: int, slot: int, serial: int, npc_index: int, tit
 def start_work(t: dict) -> None:
     if t['status'] in ('new', 'understood'):
         t['status'] = 'in_progress'
+
+
+# ------------------------------------------------------------ waiting guests (0.9.5)
+# Careers where one order has many parts (stems, bowls, accessories) wear the queue down
+# tap by tap. Two fairness rules, shared so every such career counts them the same way:
+# * while the player keeps working one order (an action on it within BUSY_TURNS turns of
+#   the last one), the others wait at BUSY_RATE speed: they see the shop busy for a guest;
+# * a guest whose own order is bigger waits more patiently: the loss is divided by
+#   size_factor (SIZE_STEP per unit over the career's usual size, at most SIZE_CAP).
+# Losses are fractional; what is left over carries per task in the career data ('wait').
+# PATIENCE_FACTOR (game/patience.py) thins each beat's loss once, before these rules, exactly as
+# it thins the engine's flat -1 it replaces: the rules shape the drain, the factor stretches it.
+BUSY_TURNS = 2
+BUSY_RATE = 0.5
+SIZE_STEP = 0.05
+SIZE_CAP = 1.5
+_DONE = ('completed', 'cancelled', 'referred')
+
+
+def size_factor(units: int | float, base: int | float) -> float:
+    """1.0 for an order of the usual size or less, up to SIZE_CAP for a big one."""
+    return min(SIZE_CAP, 1.0 + SIZE_STEP * max(0.0, float(units) - float(base)))
+
+
+def _wait(c: dict) -> dict:
+    d = data(c)
+    w = d.get('wait')
+    if not isinstance(w, dict):
+        w = d['wait'] = dict(task=None, turn=-1, carry={})
+    return w
+
+
+def busy(c: dict, task_id: str | None) -> bool:
+    """The player has been working this order just now (read before `worked` records this action)."""
+    w = data(c).get('wait')
+    return bool(task_id) and isinstance(w, dict) and w.get('task') == task_id and 0 <= c['turn'] - w.get('turn', -99) <= BUSY_TURNS
+
+
+def worked(c: dict, task_id: str | None) -> None:
+    """Remember the order the player just acted on (any action on an order, physical or not)."""
+    if task_id:
+        w = _wait(c)
+        w['task'], w['turn'] = task_id, c['turn']
+
+
+def wait_loss(c: dict, t: dict, loss: int | float, busy_now: bool = False, factor: float = 1.0) -> int:
+    """Take `loss` patience from a waiting task, slowed while the shop is busy and by the
+    order's size factor. A gain (negative loss) is applied at once. Returns the points taken."""
+    if loss <= 0:
+        if loss:
+            t['patience'] = max(25, min(100, t.get('patience', 100) - int(loss)))
+        return 0
+    w = _wait(c)
+    # Rounded to 3 places before the whole points are taken, so what carries is always below 1
+    # (0.999762 would round up to 1.0 and fail wait_validate).
+    carry = round(float(w['carry'].get(t['id'], 0.0)) + loss * (BUSY_RATE if busy_now else 1.0) / max(1.0, factor), 3)
+    n = int(carry)
+    w['carry'][t['id']] = round(carry - n, 3)
+    if n:
+        t['patience'] = max(25, min(100, t.get('patience', 100) - n))
+    return n
+
+
+def wait_tick(c: dict, career: str, active_id: str | None, loss_for, factor_for=None) -> None:
+    """After a physical action: every other open order of `career` loses `loss_for(t)`
+    (PATIENCE_FACTOR, then the wait_loss rules). Replaces the engine's flat -1 for careers with SPEC['wait']."""
+    if not c.get('open') or c['life'].get('mode') == 'calm':
+        return
+    open_ = [t for t in c['tasks'] if t.get('career') == career and t['status'] not in _DONE]
+    w = _wait(c)
+    ids = {t['id'] for t in open_}
+    w['carry'] = {k: v for k, v in w['carry'].items() if k in ids}
+    now = busy(c, active_id)
+    for t in open_:
+        if t['id'] == active_id or t.get('deferred'):
+            continue
+        loss = loss_for(t)
+        if loss > 0:
+            loss = pt.drain(c, t, loss)  # waiting (PATIENCE_FACTOR)
+        wait_loss(c, t, loss, now, factor_for(t) if factor_for else 1.0)
+
+
+def wait_validate(c: dict) -> None:
+    w = data(c).get('wait')
+    if w is None:
+        return
+    need(isinstance(w, dict) and (w.get('task') is None or isinstance(w['task'], str)), 'Nhịp chờ của khách không hợp lệ.')
+    integer(w.get('turn'), -1, 10**9)
+    need(isinstance(w.get('carry'), dict) and len(w['carry']) <= 80, 'Nhịp chờ của khách không hợp lệ.')
+    for k, v in w['carry'].items():
+        need(isinstance(k, str) and isinstance(v, (int, float)) and not isinstance(v, bool) and 0 <= v < 1, 'Nhịp chờ của khách không hợp lệ.')
 
 
 def people_count(career: str) -> int:
