@@ -205,10 +205,13 @@ export function feedbackView(env){
   const chips=`<div class="chip-row rv-chips"><button type="button" class="chip ${filter==='all'&&!starF?'selected':''}" data-action="v4FbFilter" data-tab="all">Tất cả · ${count}</button><button type="button" class="chip ${filter==='open'?'selected':''}" data-action="v4FbFilter" data-tab="open">Chưa trả lời · ${open}</button>${flagged||filter==='flag'?`<button type="button" class="chip ${filter==='flag'?'selected':''}" data-action="v4FbFilter" data-tab="flag">${icon('flag',12)} Đáng ngờ · ${flagged}</button>`:''}${starF?`<button type="button" class="chip selected" data-action="v4FbStars" data-stars="${starF}" aria-label="Bỏ lọc ${starF} sao">${starF}★ ${icon('x',12)}</button>`:''}</div>`;
   const st=c.feedback_stats||{criteria:[]};
   const crit=st.criteria?.length?`<details class="rv-criteria"><summary>Điểm theo tiêu chí</summary>${st.criteria.map(x=>`<div class="crit"><small>${esc(x.label)}</small><div class="bar ${x.avg<=3?'low':''}"><i style="width:${x.avg*20}%"></i></div><b>${x.avg}</b></div>`).join('')}${st.improved?`<p class="muted small">${st.improved} lần khách sửa sao lên sau khi bạn trả lời.</p>`:''}</details>`:'';
+  const parent=api.state.current==='teacher';
   const card=p=>{const f=p.feedback,s=f?.status;
     const tag=!f?'':f.removed?pill('Đã gỡ',''):s==='awaiting'?pill('Đang đọc…','blue'):s==='open'?`<span class="rv-reply">${icon('chat',13)} ${f.thread.length?'Khách hỏi lại':'Trả lời'}</span>`:f.ignored?pill('Đã bỏ qua',''):f.report==='rejected'?pill('Báo cáo bị từ chối','danger'):pill('Đã trả lời','green');
     const flags=f?.clues?.length&&!f.removed?`<span class="rv-flags">${f.clues.map(x=>`<span class="tag amber">${icon('flag',11)} ${esc(x)}</span>`).join('')}</span>`:'';
-    return `<button type="button" class="rv-card ${p.id===shown?.id?'active':''}${f?.removed?' removed':''}" data-action="v4FbOpen" data-post="${esc(p.id)}"><span class="persona">${esc(f?.persona_emoji||'🙂')}</span><span class="grow"><span class="rv-top"><b>${esc(p.author)}</b>${p.stars?`<span class="stars" aria-label="${p.stars} sao">${stars(p.stars)}</span>`:''}</span><span class="rv-text">${esc(p.text)}</span>${flags}<small class="muted">Ngày ${p.day}${f?.title?` · ${esc(f.title)}`:''}</small></span><span class="rv-side">${tag}</span></button>`;};
+    // The latest exchange (your reply, then what the reviewer did) right under the quote.
+    const peek=f&&!f.removed?rvBoxes(p,parent,true).filter(x=>x.role!=='guest').slice(-2).map(x=>x.html).join(''):'';
+    return `<button type="button" class="rv-card ${p.id===shown?.id?'active':''}${f?.removed?' removed':''}" data-action="v4FbOpen" data-post="${esc(p.id)}"><span class="persona ck-avatar" aria-hidden="true">${esc(f?.persona_emoji||'🙂')}</span><span class="grow"><span class="ck-meta"><b>${esc(p.author)}</b><small>Ngày ${p.day}</small></span>${p.stars?`<span class="stars ck-stars" aria-label="${p.stars} sao">${stars(p.stars)}</span>`:''}<span class="rv-text${p.stars&&p.stars<=2?' low':''}"><b class="rv-who">${parent?'Phụ huynh':'Khách'}</b> “${esc(p.text)}”</span>${flags}${peek?`<span class="rv-peek">${peek}</span>`:''}${f?.title||tag?`<span class="rv-foot">${f?.title?`<small>${esc(f.title)}</small>`:''}${tag}</span>`:''}</span></button>`;};
   const list=all.length?rows.map(card).join('')||`<p class="muted small rv-none">Không có đánh giá nào ở mục này.</p>`:`<div class="empty">${icon('star',30)}<h3>Chưa có đánh giá nào</h3></div>`;
   const body=all.length?`<div class="fb-layout ${selected?'has-detail':''}"><section class="fb-list">${summary}${chips}<div class="stack rv-list">${list}</div>${crit}</section><section class="fb-detail ${selected?'':'auto'}">${shown?threadView(shown,env):''}</section></div>`:list;
   return head('Đánh giá',esc(place),'PHẢN HỒI')+`<div class="sheet-body">${body}</div>`;
@@ -216,12 +219,14 @@ export function feedbackView(env){
 function threadView(p,env){
   const f=p.feedback,api=env.api,aiOn=api.state.settings.aiConsent&&api.ai?.configured;
   const back=`<button type="button" class="btn ghost small rv-back" data-action="v4FbBack">${icon('back',14)} Tất cả đánh giá</button>`;
-  const top=`<div class="row rv-head"><span class="persona big">${esc(f?.persona_emoji||'🙂')}</span><div class="grow"><h3>${esc(p.author)}</h3>${p.stars?`<span class="stars" aria-label="${p.stars} sao">${stars(p.stars)}</span>`:''}${f&&p.stars&&p.stars!==f.stars_original?` <small class="muted">ban đầu ${f.stars_original}★</small>`:''}<small class="muted block">Ngày ${p.day}${f?.title?` · ${esc(f.title)}`:''}</small></div>${f?.persona_name?pill(esc(f.persona_name)):''}</div>`;
-  if(!f)return `<article class="card review-card">${back}${top}<p class="review-text">“${esc(p.text)}”</p></article>`;
+  const parent=api.state.current==='teacher';
+  const sub=[f?.persona_name,f?.title].filter(Boolean).map(esc).join(' · ');
+  const top=`<div class="row rv-head"><span class="persona big ck-avatar" aria-hidden="true">${esc(f?.persona_emoji||'🙂')}</span><div class="grow"><div class="ck-meta"><h3>${esc(p.author)}</h3><small>Ngày ${p.day}</small></div><div>${p.stars?`<span class="stars ck-stars" aria-label="${p.stars} sao">${stars(p.stars)}</span>`:''}${f&&p.stars&&p.stars!==f.stars_original?` <small class="muted">ban đầu ${f.stars_original}★</small>`:''}</div>${sub?`<small class="rv-sub">${sub}</small>`:''}</div></div>`;
+  const quote=`<p class="ck-box review-text"><b class="ck-label rv-who">👤 ${parent?'Phụ huynh':'Khách'}</b> “${esc(p.text)}”</p>`;
+  if(!f)return `<article class="card review-card">${back}${top}${quote}</article>`;
   const offered=f.thread.some(x=>x.role==='owner'&&x.offer&&x.offer!=='none');
   const crit=f.criteria.map(x=>`<div class="crit"><small>${esc(x.label)}</small><div class="bar ${x.score<=3?'low':''}"><i style="width:${x.score*20}%"></i></div><b>${x.score}</b>${x.note?`<small class="muted">${esc(x.note)}</small>`:''}</div>`).join('');
-  const parent=api.state.current==='teacher';
-  const thread=f.thread.map(x=>x.role==='guest'?guestBubble(x,parent):`<div class="bubble ${x.role==='owner'?'mine':'rv-said '+(x.decision||'')}"><small class="muted">${x.role==='owner'?'Bạn':esc(p.author)}${x.role==='owner'&&x.tone&&TONE_NAME[x.tone]?' · '+TONE_NAME[x.tone]:''}${x.offer&&x.offer!=='none'?' · '+offerLabel(x.offer,parent):''}${x.decision?' · '+decisionLabel(x.decision,x.stars):''}</small><p>${esc(x.text)}</p></div>`).join('');
+  const thread=rvBoxes(p,parent).map(x=>x.html).join('');
   const canReply=f.status==='open'&&f.rounds<3;
   // Ready-made tones: the words decide what the reviewer does next.
   const worst=f.unfair?f.unfair.truth:(f.criteria.reduce((a,b)=>b.score<a.score?b:a,f.criteria[0])||{}).note||'';
@@ -239,8 +244,8 @@ function threadView(p,env){
   const form=canReply?`<form class="reply-box" data-v4-fb="${esc(p.id)}"><label class="field" for="fb-text">Trả lời ${esc(p.author)}</label>${tplRow}<input type="hidden" name="tone" value="${esc(tone)}"><textarea id="fb-text" class="input" rows="3" maxlength="600" data-preserve placeholder="${parent?'Cảm ơn, xin lỗi nếu cần, và nói rõ lớp sẽ làm gì…':'Cảm ơn, xin lỗi nếu cần, và nói rõ tiệm sẽ làm gì…'}" required></textarea>
     <div class="field">Bù đắp</div><div class="segmented rv-offer" role="radiogroup" aria-label="Bù đắp">${offers.map(([id,l])=>`<label><input type="radio" name="offer" value="${id}"${choice===id?' checked':''}><span>${l}</span></label>`).join('')}</div>
     <div class="row spread space-top"><small class="muted">Lượt ${f.rounds+1}/3</small><button class="btn primary" type="submit">${icon('send',14)} Gửi trả lời</button></div></form>`:
-    f.status==='awaiting'?`<p class="notice blue">${icon('clock',16)} ${esc(p.author)} đang đọc trả lời của bạn…</p>`:f.removed||f.report?'':`<p class="muted small">${f.ignored?'Bạn đã bỏ qua đánh giá này.':'Cuộc trao đổi đã khép.'}</p>`;
-  return `<article class="card review-card${f.removed?' removed':''}">${back}${top}<p class="review-text">“${esc(p.text)}”</p>${verdict}${clues}${f.unfair?`<details class="fact-check"><summary>${icon('search',14)} Đối chiếu sự thật</summary><p class="small">Khách nói: <b>${esc(f.unfair.claim)}</b>. Sổ ghi: ${esc(f.unfair.truth)}. Bạn có thể nhắc lại dữ kiện một cách lịch sự.</p></details>`:''}
+    f.status==='awaiting'?`<p class="notice blue">${icon('clock',16)} ${esc(p.author)} đang đọc trả lời của bạn…</p>`:f.removed||f.report?'':`<p class="rv-closed">${f.ignored?'Bạn đã bỏ qua đánh giá này.':'Cuộc trao đổi đã khép.'}</p>`;
+  return `<article class="card review-card${f.removed?' removed':''}">${back}${top}${quote}${verdict}${clues}${f.unfair?`<details class="fact-check"><summary>${icon('search',14)} Đối chiếu sự thật</summary><p class="small">Khách nói: <b>${esc(f.unfair.claim)}</b>. Sổ ghi: ${esc(f.unfair.truth)}. Bạn có thể nhắc lại dữ kiện một cách lịch sự.</p></details>`:''}
     <details class="criteria"><summary>${parent?'Phụ huynh chấm theo tiêu chí':'Khách chấm theo tiêu chí'}</summary>${crit}</details>${thread?`<div class="thread">${thread}</div>`:''}${form}${side}
     ${f.status==='open'&&f.thread.length?`<div class="row space-top">${cmdBtn('Khép trao đổi','fb_close',{post:p.id},'ghost small')}</div>`:''}</article>`;
 }
@@ -251,8 +256,31 @@ function offerLabel(id,parent,full=false){
   return (rows[id]||['',''])[full?1:0];}
 function guestBubble(x,parent){
   const side={fan:parent?'bênh lớp':'bênh quán',troll:'hóng chuyện',other:parent?'phụ huynh khác':'khách khác'}[x.side]||'';
-  return `<div class="bubble rv-guest ${esc(x.side||'')}"><small class="muted"><span aria-hidden="true">${esc(x.emoji||'💬')}</span> ${esc(x.name||'')}${side?` · ${side}`:''}</small><p>${esc(x.text)}</p></div>`;}
+  const tint={fan:'ck-good',other:'ck-owner'}[x.side]||'ck-quiet';
+  return `<div class="ck-box rv-guest ${tint}"><div class="ck-head"><b class="ck-label"><span aria-hidden="true">${esc(x.emoji||'💬')}</span> ${esc(x.name||'')}</b>${side?`<small class="ck-sub">${side}</small>`:''}</div><p>${esc(x.text)}</p></div>`;}
 function decisionLabel(d,s){return {revise_up:`nâng lên ${s}★`,revise_down:`hạ xuống ${s}★`,argue:'muốn nói thêm',keep:'giữ nguyên'}[d]||d;}
+const OFFER_COST={drink:6,gift:10,refund:20},OFFER_CHIP={drink:['Quà nhỏ','Kèm 1 buổi'],gift:['Voucher','Tặng sách'],refund:['Hoàn tiền','Hoàn tiền']};
+/** A review thread as boxes, one per voice: your reply (amber, with what you
+ * gave as a red chip), the reviewer's answer (blue) with what it did to the
+ * stars (+2★, −1★), and bystanders (quiet). Counted from the original stars. */
+function rvBoxes(p,parent,inline=false){
+  const f=p.feedback;if(!f)return [];let now=f.stars_original||p.stars||0;
+  // The chip (+1★, −6 xu…) sits on the label line so a clamped preview never hides it.
+  const box=(cls,head,body,chip='')=>inline?`<span class="ck-box ${cls}"><span class="ck-head">${head}${chip}</span><span class="ck-p">${body}</span></span>`:`<div class="ck-box ${cls}"><div class="ck-head">${head}${chip}</div><p>${body}</p></div>`;
+  return f.thread.map(x=>{
+    if(x.role==='guest')return {role:'guest',html:guestBubble(x,parent)};
+    if(x.role==='owner'){
+      const tone=x.tone&&TONE_NAME[x.tone]?`<small class="ck-sub">${TONE_NAME[x.tone]}</small>`:'';
+      const cost=x.offer&&x.offer!=='none'&&OFFER_COST[x.offer]?`<span class="ck-delta down" title="${esc(offerLabel(x.offer,parent))}">${OFFER_CHIP[x.offer][parent?1:0]} · −${OFFER_COST[x.offer]} xu</span>`:'';
+      return {role:'owner',html:box('ck-owner',`<b class="ck-label">👑 Bạn</b>${tone}`,esc(x.text),cost)};
+    }
+    let chip='';
+    if((x.decision==='revise_up'||x.decision==='revise_down')&&x.stars){const d=x.stars-now;now=x.stars;chip=d?`<span class="ck-delta ${d>0?'up':'down'}" title="${esc(decisionLabel(x.decision,x.stars))}">${d>0?'+':'−'}${Math.abs(d)}★</span>`:`<span class="ck-delta flat">${decisionLabel(x.decision,x.stars)}</span>`;}
+    else if(x.decision==='argue')chip=`<span class="ck-delta warn">${decisionLabel('argue')}</span>`;
+    else if(x.decision==='keep')chip=`<span class="ck-delta flat">${decisionLabel('keep')}</span>`;
+    return {role:'customer',html:box('ck-reply',`<b class="ck-label">💬 ${esc(p.author)}</b>`,esc(x.text),chip)};
+  });
+}
 
 /* ----------------------------------------------------------- Situation */
 export function situationView(env){

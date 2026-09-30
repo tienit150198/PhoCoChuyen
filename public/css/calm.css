@@ -1,0 +1,89 @@
+/* Calm UI kit (0.9.5): one quiet visual language for quotes, replies, meta rows,
+   star rows and +/- chips, so busy screens read top to bottom at a glance.
+   Built only on the theme tokens from app.css, so every theme (dark "dem"
+   included) follows. Loaded after the other stylesheets: the screen tweaks at
+   the bottom win over older rules without !important. */
+
+/* ---------------------------------------------------------------- tokens */
+:root{--ck-radius:12px;--ck-box-radius:10px;--ck-pad-y:10px;--ck-pad-x:14px;--ck-gap:8px}
+
+/* ------------------------------------------------------ thread/quote box */
+/* A tinted box with a coloured left accent, a bold coloured label and a
+   regular body. One idea per box; the colour says who is talking. */
+.ck-box{--ck-line:var(--line-strong);--ck-bg:var(--surface-2);--ck-ink:var(--ink-2);display:block;margin:0;padding:var(--ck-pad-y) var(--ck-pad-x);border-radius:var(--ck-box-radius);border-left:4px solid var(--ck-line);background:var(--ck-bg);color:var(--ink);font-size:.9rem;line-height:1.6;overflow-wrap:anywhere}
+.ck-box>p,.ck-box>.ck-p{display:block;margin:2px 0 0}
+.ck-box>p:first-child{margin-top:0}
+.ck-label{font-weight:800;color:var(--ck-ink,var(--ink))}
+.ck-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;margin-bottom:2px}
+.ck-head .ck-label{font-size:.867rem}
+.ck-sub{font-size:.767rem;font-weight:600;color:var(--muted)}
+.ck-mute{font-size:.8rem;font-style:italic;color:var(--muted)}
+.ck-owner{--ck-line:var(--warn);--ck-bg:var(--warn-soft);--ck-ink:var(--warn)}
+.ck-reply{--ck-line:var(--info);--ck-bg:var(--info-soft);--ck-ink:var(--info)}
+.ck-staff{--ck-line:var(--accent);--ck-bg:var(--accent-soft);--ck-ink:var(--accent-text)}
+.ck-good{--ck-line:var(--good);--ck-bg:var(--good-soft);--ck-ink:var(--good)}
+.ck-bad{--ck-line:var(--bad);--ck-bg:var(--bad-soft);--ck-ink:var(--bad)}
+.ck-quiet{--ck-line:var(--line-strong);--ck-bg:transparent;--ck-ink:var(--ink-2)}
+.ck-stack{display:grid;gap:var(--ck-gap)}
+
+/* ------------------------------------------------------------- meta row */
+/* Name bold on the left, the date small and muted on the right. */
+.ck-meta{display:flex;align-items:baseline;justify-content:space-between;gap:8px;min-width:0}
+.ck-meta>b,.ck-meta>strong{min-width:0;font-weight:800;overflow-wrap:anywhere}
+.ck-meta>small{flex:none;font-size:.8rem;font-weight:500;color:var(--muted);white-space:nowrap}
+
+/* ------------------------------------------------------ stars and chips */
+.ck-stars{color:var(--star);font-size:.95rem;letter-spacing:1px;line-height:1.2}
+.ck-chips{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.ck-delta{display:inline-flex;align-items:center;gap:3px;padding:1px 9px;border-radius:var(--radius-pill,999px);background:var(--surface-3);color:var(--ink-2);font-size:.767rem;font-weight:800;font-style:normal;line-height:1.55;white-space:nowrap;vertical-align:1px;font-variant-numeric:tabular-nums}
+.ck-delta.up{background:var(--good-soft);color:var(--good);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--good) 28%,transparent)}
+.ck-delta.down{background:var(--bad-soft);color:var(--bad);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--bad) 28%,transparent)}
+.ck-delta.warn{background:var(--warn-soft);color:var(--warn);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--warn) 28%,transparent)}
+.ck-delta.flat{background:var(--surface);color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
+.ck-head>.ck-delta{margin-left:auto;align-self:center}
+
+/* ------------------------------------------------ avatar ring, dividers */
+.ck-avatar{box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px var(--line-strong)}
+.ck-rows>*+*{border-top:1px solid var(--line)}
+
+/* ================================================================ Reviews */
+/* The list: a divided list of rows, not a stack of boxes. */
+.rv-list{gap:0}
+.rv-list>.rv-card{gap:12px;padding:14px 4px;border:0;border-radius:0;background:transparent;box-shadow:none}
+.rv-list>.rv-card+.rv-card{border-top:1px solid var(--line)}
+@media (hover:hover){.rv-list>.rv-card:hover{background:var(--surface-2)}}
+.rv-list>.rv-card:focus-visible{outline:3px solid var(--focus);outline-offset:-3px;border-radius:var(--ck-box-radius)}
+.rv-card>.grow{gap:5px}
+.rv-card .persona{width:42px;height:42px;margin:2px}
+.rv-card .ck-meta b{font-size:.95rem}
+.rv-card .ck-stars{font-size:.867rem}
+.rv-card .rv-text{color:var(--ink);font-size:.9rem;line-height:1.6}
+.rv-who{font-weight:800;color:var(--ink-2)}
+.rv-who::after{content:":"}
+.rv-card .rv-text.low{color:var(--bad)}
+.rv-peek{display:grid;gap:6px;margin-top:4px}
+.rv-peek .ck-box{padding:7px 12px;font-size:.833rem;line-height:1.5}
+.rv-peek .ck-box>.ck-p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.rv-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px;margin-top:2px}
+.rv-foot>small{min-width:0;font-size:.8rem;color:var(--muted)}
+.rv-foot>:last-child{margin-left:auto}
+@container sheet (min-width:820px){.rv-list>.rv-card.active{border-radius:var(--ck-box-radius);background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}.rv-list>.rv-card.active+.rv-card{border-top-color:transparent}}
+@container sheet (max-width:420px){.rv-list>.rv-card{flex-wrap:nowrap}.rv-list>.rv-card>.grow{flex:1 1 0}.rv-card .rv-text{-webkit-line-clamp:3}}
+
+/* The thread: quote first, then one tinted box per voice. */
+.review-card .rv-head{gap:14px;align-items:center}
+.review-card .rv-head .persona.big{width:52px;height:52px;font-size:1.7rem}
+.review-card .rv-head .ck-meta h3{font-size:1.067rem}
+.review-card .rv-head .grow{display:grid;gap:3px;min-width:0}
+.review-card .rv-sub{font-size:.8rem;color:var(--muted);line-height:1.45}
+.review-card .review-text{margin:14px 0 0;font-style:normal;font-size:.95rem;line-height:1.65}
+.review-card .thread{gap:10px;margin:14px 0}
+.review-card .thread .ck-box{max-width:none}
+.review-card .rv-guest{margin-left:18px;font-size:.867rem}
+.review-card .rv-closed{margin:12px 0 0;text-align:center;font-size:.8rem;color:var(--muted)}
+.review-card details.criteria{margin-top:12px}
+/* "Trả lời" on each row is a soft status pill, not a
+   row of filled buttons; the criteria fold is a quiet line. */
+.rv-list .rv-reply{background:var(--accent-soft);color:var(--accent-text);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 30%,transparent)}
+.review-card details.criteria{padding:10px 0 0;border:0;border-top:1px solid var(--line);border-radius:0;background:transparent}
+.review-card details.criteria>summary{padding:10px 0;color:var(--ink-2)}
