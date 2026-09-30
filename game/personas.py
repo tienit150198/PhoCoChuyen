@@ -98,7 +98,11 @@ def _address(state: dict, career: str, npc: dict, age: str, temper: str) -> dict
     if career == 'teacher' and age == 'child':
         return dict(self='con', player=teacher_word)
     if career == 'teacher' and 'Phụ huynh' in role:
-        return dict(self='tôi' if temper in ('parent_strict',) else 'chị', player=teacher_word)
+        # Strict parents keep a formal "tôi"; the rest go by their gender (name prefix, spice.gender_of):
+        # mothers "chị", fathers "anh", unknown a neutral "tôi".
+        g = spice.gender_of(npc.get('display_name', ''))
+        own = 'chị' if g == 'f' else 'anh' if g == 'm' else 'tôi'
+        return dict(self='tôi' if temper in ('parent_strict',) else own, player=teacher_word)
     if age == 'child':
         return dict(self='em', player=elder_word)
     if age == 'elder':

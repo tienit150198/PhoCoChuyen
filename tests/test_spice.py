@@ -391,6 +391,68 @@ class Pronouns(unittest.TestCase):
         self.assertIn('giữ xưng "cô"', block)
 
 
+class Parents(unittest.TestCase):
+    """Parents speak as their own gender: mothers "chị", fathers "anh", unknown a neutral "tôi"."""
+    OPP = dict(f=r'anh|chú|ông|bố|cậu', m=r'chị|cô|bà|mẹ|dì|thím')
+
+    def test_every_parent_npc_self_word_fits_gender(self):
+        parents = [n for n in NPCS if 'phụ huynh' in n.get('role', '').lower()]
+        self.assertTrue(parents)
+        for n in parents:
+            c = n['career_id']
+            age = personas._age(n, c)
+            temper = personas._temper(c, n['id'], n, age)
+            me = personas._address({}, c, n, age, temper)['self']
+            g = S.gender_of(n['display_name'])
+            self.assertIn(S.gender_of('', me), (None, g), (n['id'], n['display_name'], me))
+            if c == 'teacher' and temper != 'parent_strict':
+                self.assertEqual(me, dict(f='chị', m='anh').get(g, 'tôi'), n['id'])
+        for name, want in (('Anh Tuấn', 'anh'), ('Bố bé Bin', 'anh'), ('Mẹ bé Su', 'chị'), ('Cô Lan', 'chị'), ('Minh', 'tôi')):
+            npc = dict(id='x', display_name=name, role='Phụ huynh', career_id='teacher')
+            self.assertEqual(personas._address({}, 'teacher', npc, 'adult', 'parent_kind')['self'], want, name)
+            self.assertEqual(personas._address({}, 'teacher', npc, 'adult', 'parent_strict')['self'], 'tôi', name)
+
+    def test_teacher_parent_card_and_prompt(self):
+        j = Journey('teacher')
+        for n in NPCS:
+            if n['career_id'] == 'teacher' and 'Phụ huynh' in n.get('role', ''):
+                p = personas.persona(j.state, 'teacher', n['id'])
+                g = S.gender_of(p['name'])
+                self.assertIn(S.gender_of('', p['address']['self']), (None, g), p['name'])
+                arch = (p.get('spice') or {}).get('arch')
+                if arch:
+                    self.assertTrue(S.fits(arch, g, p.get('age') or 'adult'), (p['name'], arch))
+                card = ai._voice_card(p, 'parent_message')
+                system = ai._persona_system(card, 'parent_message', 'vi', situation='smalltalk', seed=1)
+                if S.enabled() and arch:
+                    self.assertIn(f'giữ xưng "{p["address"]["self"]}"', system)
+
+    def test_classroom_parents_and_their_own_lines(self):
+        from game import classroom as CR
+        for kid, par in CR.PARENTS.items():
+            g = S.gender_of(par['name'])
+            self.assertIsNotNone(g, par['name'])
+            self.assertIn(S.gender_of('', par['self']), (None, g), (kid, par))
+            rows = list((CR.ANSWER_KID.get(kid) or {}).values()) + list((CR.OPEN_KID.get(kid) or {}).values())
+            for text in rows:
+                self.assertIsNone(re.search(r'(?<!\w)(' + self.OPP[g] + r')(?!\w)', text.replace('{Title}', '').replace('{title}', ''), re.I),
+                                  (kid, text))
+            for text in CR.ANSWER.values():  # shared lines speak through {self}
+                self.assertIsNone(re.search(r'(?<!\w)(chị|anh)(?!\w)', text, re.I), text)
+
+    def test_parent_reviews_do_not_hard_code_a_gender(self):
+        from game import feedback as F
+        for persona in F.PARENT_PERSONAS + F.MOOD_PARENT:
+            rows = F.VOICE.get(persona) or {}
+            for key, val in rows.items():
+                for text in (x for v in (val.values() if isinstance(val, dict) else [val]) for x in v):
+                    self.assertIsNone(re.search(r'(?<!\w)(chị|anh|mẹ|bố)(?!\w)', text, re.I), (persona, key, text))
+
+    def test_voice_labels_are_gender_neutral(self):
+        for vid, v in V.VOICES.items():
+            self.assertIsNone(re.search(r'^(Mẹ|Bố|Chú|Cô|Bà|Ông|Chị)(?!\w)', v['label']), (vid, v['label']))
+
+
 class Reply(unittest.TestCase):
     def call(self, reply, text='Hôm nay sao rồi?'):
         j = Journey('restaurant')
