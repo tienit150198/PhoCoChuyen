@@ -259,3 +259,14 @@
 .career-job.ao .ao-occasion.compact .ao-big{font-size:28px}
 .career-job.ao .ao-rack[data-want="top"] .ao-chip:is(.g-top,.g-one),.career-job.ao .ao-rack[data-want="bottom"] .ao-chip.g-bottom{border-color:var(--ao-violet);box-shadow:inset 0 0 0 2px var(--ao-violet)}
 .career-job.ao .ao-occasion.compact .ao-budget{margin-top:4px}
+
+/* 0.9.5 assembly kit (asm_kit.js, calm.css): what the order asks for leads the rack with a
+   "Khách cần" tag, the colour the customer said leads the swatches, "Bước tiếp" above the button. */
+.career-job.ao .ao-chip{position:relative}
+.career-job.ao .ao-chip>.asm-need{top:-9px;right:6px;left:auto;font-style:normal}
+.career-job.ao .ao-chips:has(.asm-need){padding-top:6px}
+.career-job.ao .ao-chip.want{border-color:var(--ao-violet)}
+.career-job.ao .ao-swatch.want{border-color:var(--ao-violet)}
+.career-job.ao .ao-swatch small{color:var(--ao-muted);font-weight:600}
+.career-job.ao .ao-bar{flex-wrap:wrap}
+.career-job.ao .ao-bar>.asm-next{flex:1 1 100%}

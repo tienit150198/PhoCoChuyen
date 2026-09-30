@@ -92,6 +92,9 @@ RUNS_SMALL = {'shirt': 1}   # our office shirts are cut slim: one size up from o
 LETTERS = ('S', 'M', 'L', 'XL')
 CAPACITY = 30
 MAX_PICKS = 5
+TRY_COST = 6                # patience a fitting costs the customer (changing, waiting behind the curtain)…
+TRY_COST_BUSY = 4           # …less while you are right there working their order (0.9.5, kit.busy)
+SIZE_BASE = 1               # pieces in a usual order: bigger orders wait more patiently (kit.size_factor)
 
 # ---------------------------------------------------------------- rules of the house
 RETURN_DAYS = 7
@@ -215,15 +218,18 @@ def _lines_say(lines: list) -> str:
     return ' '.join(x['say'] for x in lines)
 
 
-def _clue(rng, item: str, size: str, easy: bool) -> tuple[str, str]:
-    """(clue kind, what the customer says about the size) that leads to `size` for `item`."""
+def _clue(rng, item: str, size: str, easy: bool) -> tuple[str, str, str]:
+    """(clue kind, what the customer says about the size, the same clue as a short note for the
+    order card) that leads to `size` for `item`. The note never names a size the player must work out
+    (a 'label' clue is the size itself: the customer said it)."""
     if item == 'jeans':
-        return 'waist', f'Eo mình {JEANS_WAIST[size]} phân.'
+        return 'waist', f'Eo mình {JEANS_WAIST[size]} phân.', f'eo {JEANS_WAIST[size]} cm'
     if item == 'kids':
         lo, hi = KIDS_AGE[size]
-        return 'age', f'Cho bé {rng.choice((lo, hi))} tuổi.'
+        age = rng.choice((lo, hi))
+        return 'age', f'Cho bé {age} tuổi.', f'bé {age} tuổi'
     if item in ('hat', 'belt', 'socks'):
-        return 'free', 'Loại free size.'
+        return 'free', 'Loại free size.', 'free size'
     if easy:
         kind = 'label'
     elif item in RUNS_SMALL and LETTERS.index(size) >= RUNS_SMALL[item]:
@@ -232,11 +238,12 @@ def _clue(rng, item: str, size: str, easy: bool) -> tuple[str, str]:
         kind = rng.choice(('label', 'body', 'body'))
     if kind == 'body':
         row = next(r for r in TOP_CHART if r[0] == size)
-        return 'body', f'Mình cao {rng.randint(row[1], row[2])} phân, nặng {rng.randint(row[3], row[4])} ký.'
+        h, w = rng.randint(row[1], row[2]), rng.randint(row[3], row[4])
+        return 'body', f'Mình cao {h} phân, nặng {w} ký.', f'cao {h} cm · {w} ký'
     if kind == 'brand':
         other = LETTERS[LETTERS.index(size) - RUNS_SMALL[item]]
-        return 'brand', f'Bên shop khác mình mặc size {other}.'
-    return 'label', f'Mình mặc size {size}.'
+        return 'brand', f'Bên shop khác mình mặc size {other}.', f'shop khác mặc {other}'
+    return 'label', f'Mình mặc size {size}.', f'mặc size {size}'
 
 
 def _pick_size(rng, item: str, npc: int) -> str:
@@ -255,8 +262,11 @@ def _pick_size(rng, item: str, npc: int) -> str:
 def _line(rng, item: str, npc: int, easy: bool, size: str | None = None) -> dict:
     size = size or _pick_size(rng, item, npc)
     colour = rng.choice(COLOURS[item])
-    clue, said = _clue(rng, item, size, easy)
-    return dict(item=item, colour=colour, clue=clue, say=f'{ITEM[item]["name"]} màu {colour}. {said}', _size=size)
+    clue, said, ask = _clue(rng, item, size, easy)
+    # told: the size the customer named themselves ("Mình mặc size M"), so the order card can flag a
+    # different size on the counter; None when the size is to be worked out from the clue.
+    return dict(item=item, colour=colour, clue=clue, ask=ask, told=size if clue == 'label' else None,
+                say=f'{ITEM[item]["name"]} màu {colour}. {said}', _size=size)
 
 
 FIT_SCRIPTS = [
@@ -709,7 +719,35 @@ def known_request(c: dict, t: dict) -> str:
 
 
 # ---------------------------------------------------------------- actions
+def _units(t: dict) -> int:
+    """Pieces the order needs: the lines of a fit or a parcel, a set (+ its must-have accessory)
+    for an outfit, the guests of the fitting room. Feeds kit.size_factor."""
+    n = t.get('needs') or {}
+    k = t.get('kind')
+    if k in ('fit', 'online'):
+        return len(n.get('lines') or ())
+    if k == 'outfit':
+        return 2 + len(OCCASIONS.get(n.get('occasion'), {}).get('need', ()))
+    if k == 'room':
+        return len(n.get('queue') or ())
+    return 1
+
+
+NOT_WORK = ('ao_intro', 'ao_swap')
+
+
 def handle(s: dict, c: dict, name: str, p: dict) -> dict:
+    active = p.get('task') or c.get('active_task')
+    out = _handle(s, c, name, p)
+    # 0.9.5 waiting fairness (kit.wait_tick): the queue waits calmer while you work one customer.
+    if name in SPEC['physical']:
+        kit.wait_tick(c, ID, active, lambda t: 1, lambda t: kit.size_factor(_units(t), SIZE_BASE))
+    if name not in NOT_WORK:
+        kit.worked(c, active)
+    return out
+
+
+def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
     d = _data(c)
     _sync(c)
     if name == 'ao_intro':
@@ -782,7 +820,7 @@ def _counter(s, c, t, name, p):
         right = _want_size(t, x)
         verdict = 'ok' if right is None or x['size'] == right else ('small' if _smaller(x['item'], x['size'], right) else 'big')
         t['tried'][i] = verdict
-        t['patience'] = max(25, t.get('patience', 100) - 6)
+        t['patience'] = max(25, t.get('patience', 100) - (TRY_COST_BUSY if kit.busy(c, t['id']) else TRY_COST))
         kit.metric(c, 'ao_tries')
         who = _who(t)
         if verdict == 'ok':
@@ -1891,6 +1929,7 @@ def validate_data(c: dict) -> None:
     d = _data(c)
     _sync(c)
     till.validate_book(c)
+    kit.wait_validate(c)
     g = d['grid']
     kit.need(isinstance(g, dict) and set(g) == set(ITEM), 'Giá treo sai.')
     for item, row in g.items():
@@ -1958,7 +1997,8 @@ def content() -> dict:
     return dict(
         sizes=SIZES, colours=COLOURS, swatch=SWATCH, groups=GROUP, base_prices=PRICES, denoms=till.DENOMS,
         top_chart=[list(r) for r in TOP_CHART], jeans_waist=JEANS_WAIST, kids_age={k: list(v) for k, v in KIDS_AGE.items()},
-        runs_small=RUNS_SMALL, occasions={k: dict(name=v['name'], emoji=v['emoji'], tips=v['tips']) for k, v in OCCASIONS.items()},
+        runs_small=RUNS_SMALL, occasions={k: dict(name=v['name'], emoji=v['emoji'], tips=v['tips'], need=list(v['need']), bad=list(v['bad']),
+                                               mains=[list(m) for m in v['mains']]) for k, v in OCCASIONS.items()},
         policy=POLICY, return_days=RETURN_DAYS, haggle=dict(small=HAGGLE_SMALL, big=HAGGLE_BIG), alter_fees=ALTER_FEES,
         tailor_share=TAILOR_SHARE, tailor_turns=TAILOR_TURNS, kinds=KIND_NAMES, looks=[dict(x) for x in LOOKS],
         intro=INTRO, ship_fee=SHIP_FEE, mods=[dict(id=m['id'], emoji=m['emoji'], name=m['name'], text=m['text']) for m in MODS])
@@ -2096,4 +2136,5 @@ SPEC = dict(
                    'Phòng thử sạch, có thẻ số đàng hoàng.'],
     situations=SITUATIONS,
     guide='Nghe khách → chọn đúng size, màu, hợp dịp → mời thử khi chưa chắc → chốt bill → thối đúng tiền.',
+    wait=True,
 )

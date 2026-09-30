@@ -204,3 +204,15 @@ html[data-layout="desktop"] .career-job.rs .rs-side{position:sticky;top:0;z-inde
 .career-job.rs .rs-seat.rs-free{min-height:0;align-self:stretch;padding:6px 4px}
 .career-job.rs .rs-seat.rs-free>b{font-size:.72rem}
 .career-job.rs .rs-lock{margin:6px 0 0;display:inline-block;font-size:.82rem;padding:4px 10px;border-radius:99px;border:1px dashed var(--line);color:var(--muted);background:var(--surface-2)}
+
+/* 0.9.5 (assembly feedback): the order pinned over the kitchen on phones (the desktop keeps its sticky
+   side ticket), "Khách cần" toppings first with one tap for the missing portions */
+html[data-layout="desktop"] .career-job.rs .rs-work>.asm-pin{display:none}
+html:not([data-layout="desktop"]) .career-job.rs .rs-side .rs-tabs{display:none}
+.career-job.rs .rs-work>.asm-pin{margin:0}
+.career-job.rs .rs-tcard{position:relative;display:grid;gap:4px;align-content:start;min-width:0}
+.career-job.rs .rs-tcard>.rs-tile{width:100%}
+.career-job.rs .rs-tcard>.asm-need{top:-6px;left:50%;transform:translateX(-50%);font-size:.65rem}
+.career-job.rs .rs-tcard .rs-tile.wanted::before{display:none}
+.career-job.rs .rs-fill-n{min-height:36px;padding:2px 4px;font-size:.767rem;font-weight:800}
+.career-job.rs .rs-bar-now>.asm-next{font-size:.8rem}

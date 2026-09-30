@@ -351,3 +351,20 @@ html.reduce-motion .career-job.fl .fl-fill{transition:none}
 .career-job.fl .fl-ticket.compact{min-width:0;max-width:100%}
 .career-job.fl .fl-ticket.compact .fl-ticket-head>.grow,.career-job.fl .fl-ticket.compact .fl-tags{min-width:0;max-width:100%}
 .career-job.fl .fl-ticket.compact{grid-template-columns:minmax(0,1fr)}
+
+/* 0.9.5 (feedback #11): flower cards (tile + "Khách cần" tag + − n +), prep under the cooler */
+.career-job.fl .fl-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px;margin-top:4px}
+@container sheet (max-width:420px){.career-job.fl .fl-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.career-job.fl .fl-fcard{position:relative;display:grid;gap:6px;align-content:start;min-width:0;border-radius:var(--radius,16px)}
+.career-job.fl .fl-fcard>.tile{width:100%}
+.career-job.fl .fl-fcard.on{padding-bottom:6px;background:var(--good-soft,#e7f3e4)}
+.career-job.fl .fl-fcard.on>.tile::after{content:'✓';position:absolute;right:-6px;bottom:-6px;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--fl-good);color:var(--surface,#fff);font-size:.8rem;font-weight:800;box-shadow:0 0 0 2px var(--surface,#fff)}
+.career-job.fl .fl-fcard.off>.tile{opacity:.72}
+.career-job.fl .fl-fcard .tile.wanted::before{display:none}
+.career-job.fl .fl-fcard .asm-stepper{padding:0 6px}
+.career-job.fl .fl-fcard .fl-fill-n{margin:0 6px;min-height:40px;font-weight:800}
+.career-job.fl .fl-prep-in{display:grid;gap:4px;margin-top:14px;padding:10px 12px;border-radius:var(--fl-r);border:1px dashed var(--fl-line);background:var(--fl-surface)}
+.career-job.fl .fl-prep-in>.section-title{margin:0}
+.career-job.fl .fl-prep-in .section-title{font-size:.85rem}
+.career-job.fl .fl-bar-now>.asm-next{flex:1 1 0;width:0}
+.career-job.fl .asm-pin~.workbench .wb-side{top:calc(var(--asm-top,0px) + var(--asm-pin,0px) + 10px)}
