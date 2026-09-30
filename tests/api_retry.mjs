@@ -62,10 +62,18 @@ assert.equal(transient({status:400}),false);assert.equal(transient({status:409})
   let [a,seen]=api();
   await assert.rejects(a.command('x',{}),e=>e.status===400&&e.message==='Không hợp lệ');
   assert.equal(seen.offline,0);assert.deepEqual(seen.updating,[]);
-  const calls=install([json(409,{error:'Tiến trình đã thay đổi',code:'revision_conflict',...state(12)}),json(200,state(99))]);
+  // 409 revision_conflict: the state is adopted and the tap sent once more against it (new request_id)
+  let calls=install([json(409,{error:'Tiến trình đã thay đổi',code:'revision_conflict',...state(12)}),b=>json(200,{...state(13),result:{message:'ok '+b.expected_revision}})]);
+  [a,seen]=api();
+  const again=await a.command('x',{});
+  assert.equal(calls.length,2,'sent once more');assert.equal(calls[1].body.expected_revision,12,'against the adopted revision');
+  assert.notEqual(calls[0].body.request_id,calls[1].body.request_id,'a new request id');
+  assert.equal(again.message,'ok 12');assert.equal(a.revision,13);
+  // a second conflict in a row is reported (no loop)
+  calls=install([json(409,{error:'Tiến trình đã thay đổi',code:'revision_conflict',...state(12)}),json(409,{error:'Tiến trình đã thay đổi',code:'revision_conflict',...state(14)}),json(200,state(99))]);
   [a,seen]=api();
   await assert.rejects(a.command('x',{}),e=>e.status===409);
-  assert.equal(calls.length,1,'409 not retried');assert.equal(a.revision,12,'the server state was adopted');
+  assert.equal(calls.length,2,'retried once only');assert.equal(a.revision,14,'the server state was adopted');
   const c2=install([json(429,{error:'Nhiều thao tác quá nhanh',code:'rate_limited'}),json(200,state(99))]);
   [a]=api();await assert.rejects(a.command('x',{}),e=>e.status===429);assert.equal(c2.length,1);
   const c3=install([json(500,{error:'Không thực hiện được thao tác.',code:'internal_error'})]);

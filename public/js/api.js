@@ -110,14 +110,25 @@ export class GameAPI extends EventTarget {
   async refresh(){const data=await this.json('/api/state');this.accept(data);return data;}
   command(action,payload={},career=this.state?.current){
     const execute=async()=>{
-      const request_id=globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`;
-      const body=JSON.stringify({request_id,expected_revision:this.revision,career,action,payload});
+      const send=()=>{
+        const request_id=globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        const body=JSON.stringify({request_id,expected_revision:this.revision,career,action,payload});
+        // The same body (request_id, expected_revision) on every try: see RETRY_DELAYS.
+        return this.json('/api/command',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':this.csrf},body,retry:true});
+      };
       this.dispatchEvent(new CustomEvent('busy',{detail:true}));
       try{
         let data;
-        // The same body (request_id, expected_revision) on every try: see RETRY_DELAYS.
-        try{data=await this.json('/api/command',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':this.csrf},body,retry:true});}
-        catch(error){if(error.status===409&&error.data?.state)this.accept(error.data);throw error;}
+        // 409 revision_conflict: the save moved under this tap (a spouse's gift or fund move landing through the
+        // marriage inbox, a ticker, another tab). Adopt the server's state and send the tap once more against it
+        // (a new request_id; the server checks everything again); a second conflict is reported.
+        for(let tries=0;;tries++){
+          try{data=await send();break;}
+          catch(error){
+            if(error.status===409&&error.data?.state){this.accept(error.data);if(tries===0&&error.data.code==='revision_conflict')continue;}
+            throw error;
+          }
+        }
         this.accept(data);
         // v4/sounds.js: detail sounds and the bank speaker (result.bank) follow each confirmed command.
         this.dispatchEvent(new CustomEvent('result',{detail:{action,career,result:data.result}}));

@@ -209,8 +209,8 @@
 .mr-friend{display:grid;gap:8px}
 .mr-actions.tight{margin-top:0;gap:6px}
 .mr-li-wrap{flex-wrap:wrap;padding:6px 0}
-.mr-li-wrap>span:first-child{display:grid;min-width:0;flex:1 1 200px}
-.mr-li-wrap small{color:var(--muted)}
+.mr-li-wrap>span:first-child{display:block;min-width:0;flex:1 1 200px}   /* one flowing line (grid broke "Tên / xin trợ giúp / 40 xu / :") */
+.mr-li-wrap small{display:block;color:var(--muted)}
 .mr-code.sm{font-size:1rem}
 .mr-code-row #mr-fq{text-transform:none;letter-spacing:0;font-weight:600}
 

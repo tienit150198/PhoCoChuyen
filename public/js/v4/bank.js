@@ -264,7 +264,7 @@ function scoreGauge(sc,R){
   const p=Math.round((sc.value-R.score_min)*100/(R.score_max-R.score_min));
   return `<div class="bk-score ${esc(sc.tone)}"><div class="bk-score-num"><strong>${sc.value}</strong><span>${esc(sc.band)}</span></div>
     <div class="bk-gauge" role="meter" aria-valuemin="${R.score_min}" aria-valuemax="${R.score_max}" aria-valuenow="${sc.value}" aria-label="Điểm tín dụng ${sc.value}"><i style="left:${p}%"></i></div>
-    <div class="bk-row bk-scale"><span>${R.score_min}</span><span>580</span><span>670</span><span>740</span><span>${R.score_max}</span></div></div>`;
+    <div class="bk-scale">${[R.score_min,580,670,740,R.score_max].map(n=>`<span style="left:${Math.round((n-R.score_min)*100/(R.score_max-R.score_min))}%">${n}</span>`).join('')}</div></div>`;
 }
 
 function home(b){
@@ -298,7 +298,7 @@ function jointSection(){
   const f=jt.fund,st=S.env.api.state;
   const members=(f.members||[]).map(m=>m.name);
   const names=members.length?members:[st?.name,jt.partner].filter(Boolean);
-  const hist=(f.history||[]).slice(0,6).map(r=>`<li><span>${esc(r.who||'')} · ${esc(r.label)}${r.held?' (đang xử lý)':''}</span><b class="${r.amount>=0?'up':'down'}">${signed(r.amount)}</b><small>${fmt(r.balance)}</small></li>`).join('');
+  const hist=(f.history||[]).slice(0,6).map(r=>`<li><span>${esc(r.who||'')} · ${esc(r.label)}${r.held?' (đang xử lý)':''}</span><b class="${r.kind==='deposit'?'up':'down'}">${signed(r.kind==='deposit'?Math.abs(r.amount):-Math.abs(r.amount))}</b><small>${fmt(r.balance)}</small></li>`).join('');
   const reqs=(jt.requests||[]).map(r=>`<li>💸 ${r.mine?'Bạn xin':'Người ấy xin'} ${xu(r.amount)}${r.note?`: “${esc(r.note)}”`:''}${r.loan?' (mượn)':''}</li>`).join('');
   const debts=(jt.debts||[]).filter(d=>d.status==='open').map(d=>`<li>🧾 ${d.lender?`${esc(d.who)} còn nợ bạn`:`Bạn còn nợ ${esc(d.who)}`} ${xu(d.left)}${d.claim&&d.claim.status==='pending'?` · đòi: “${esc(d.claim.text)}”`:''}</li>`).join('');
   return `<section class="bk-card bk-joint"><h3>Tài khoản chung vợ chồng</h3>
@@ -339,7 +339,7 @@ function save(b){
       <label class="bk-toggle"><input type="checkbox" id="bk-renew"><span>Tới hạn tự tái tục (gốc và lãi gửi tiếp kỳ mới)</span></label></div>
       <div class="bk-actions">${btn('Gửi tiết kiệm','save',{},'primary')}</div>${table}
       <p class="bk-hint">1 tháng = ${R.month_days} ngày sống, 1 năm = ${R.year_days} ngày sống. Rút trước hạn chỉ được lãi không kỳ hạn.</p></section>
-    <section class="bk-card bk-house-link"><h3>🏠 Tiết kiệm mua nhà</h3><div class="bk-actions">${btn('Nhà của bạn','house',{},'ghost')}</div></section>
+    <section class="bk-card bk-house-link"><h3>🏠 Tiết kiệm mua nhà</h3><p class="bk-hint">Còn thiếu bao nhiêu để trả trước 30%?</p><div class="bk-actions">${btn('Nhà của bạn','house',{},'ghost')}</div></section>
     <section class="bk-card"><h3>Không kỳ hạn · ${xu(sv.demand)}</h3><p class="bk-hint">Lãi ${pct(R.demand_rate)}/năm, cộng mỗi ngày (~${(sv.daily_milli/1000).toLocaleString('vi-VN',{maximumFractionDigits:3})} xu/ngày).</p>
       ${sv.demand?`<div class="bk-move"><label class="bk-field"><span>Rút về tài khoản</span><input id="bk-demand-out" type="number" inputmode="numeric" min="1" max="${sv.demand}" placeholder="Tối đa ${sv.demand}"></label></div><div class="bk-actions">${btn('Rút','unsaveDemand',{},'ghost')}</div>`:''}</section>
     <section class="bk-card"><h3>Sổ có kỳ hạn</h3>${terms?`<ul class="bk-list">${terms}</ul>`:'<p class="bk-hint">Chưa có sổ nào.</p>'}</section>`;

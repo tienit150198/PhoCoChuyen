@@ -591,10 +591,18 @@ def _pick(rng: random.Random, pool: list, weights: list) -> dict | None:
     return pool[-1]
 
 
-def _hard_pool(L: dict, day: int, career: str | None, facts: set | None = None) -> list:
+def _taken(s: dict) -> bool:
+    """Engaged or married (game/marriage.py): no heartbreak cards (bị chia tay, mai mối…) for them."""
+    m = s.get('marriage')
+    return isinstance(m, dict) and isinstance(m.get('spouse'), dict)
+
+
+def _hard_pool(L: dict, day: int, career: str | None, facts: set | None = None, taken: bool = False) -> list:
     rows = []
     for x in HARD:
         if x['careers'] and career not in x['careers']:
+            continue
+        if taken and x['cat'] == 'that_tinh':
             continue
         if day <= CALM_UNTIL and not x['mild']:
             continue
@@ -639,7 +647,7 @@ def _roll(s: dict, L: dict, day: int, career: str | None, facts: set) -> dict | 
         L['recent'][x['id']] = day
         return _new_card(L, day, 'impulse', x['id'], 'buon', 'impulse', career)
     if facts and not early and day - L['rumour'] >= RUMOUR_GAP and rolls[2] < RUMOUR_P:
-        pool = _hard_pool(L, day, career, facts)
+        pool = _hard_pool(L, day, career, facts, _taken(s))
         x = _pick(r, pool, [1.0] * len(pool))
         if x:
             return _fire_hard(s, L, x, day, career, gossip=r.choice(sorted(GOSSIPS)))
@@ -647,7 +655,7 @@ def _roll(s: dict, L: dict, day: int, career: str | None, facts: set) -> dict | 
     if sp < LOW_SPIRIT:
         p *= .5
     if rolls[3] < p:
-        pool = _hard_pool(L, day, career)
+        pool = _hard_pool(L, day, career, taken=_taken(s))
         x = _pick(r, pool, [_weight(k) for k in pool])
         if x:
             return _fire_hard(s, L, x, day, career)

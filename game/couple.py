@@ -134,7 +134,7 @@ def _fund_move(db, cid: int, sid: str, kind: str, amount: int, label: str, ref: 
             left = WITHDRAW_CAP - _used(db, cid, sid)
             _need(amount <= left, f'Mỗi người rút tối đa {WITHDRAW_CAP} xu từ quỹ chung trong 24 giờ. Bạn còn {max(0, left)} xu.', 'fund_cap', 409)
         _need(db.execute('UPDATE joint_funds SET balance=balance-?,updated=? WHERE couple=? AND balance>=?', (amount, t, cid, amount)).rowcount == 1,
-              f'Quỹ chung chỉ còn {_balance(db, cid)} xu.', 'fund_low', 409)
+              f'Quỹ chung chỉ còn {mr._xu(_balance(db, cid))} xu.', 'fund_low', 409)
     bal = _balance(db, cid)
     db.execute('INSERT INTO joint_ledger(couple,sid,kind,amount,balance,label,ref,status,at) VALUES(?,?,?,?,?,?,?,?,?)',
                (cid, sid, kind, amount, bal, label[:120], ref[:64], status, t))
@@ -195,10 +195,10 @@ def deposit(store, sid, display, d):
     def ops(db):
         _need(mr._bond(db, sid) and mr._bond(db, sid)['id'] == c['id'], 'Hai bạn không còn là vợ chồng.', 'not_married', 409)
         bal = _fund_move(db, c['id'], sid, 'deposit', amount, 'Gửi vào quỹ chung', eid)
-        mr._notice(db, mr._other(c, sid), f'🏦 {display} vừa gửi {amount} xu vào quỹ chung. Quỹ giờ có {bal} xu.')
+        mr._notice(db, mr._other(c, sid), f'🏦 {display} vừa gửi {mr._xu(amount)} xu vào quỹ chung. Quỹ giờ có {mr._xu(bal)} xu.')
         return bal
     bal = _pay(store, sid, eff, ops, amount, f'Ví của bạn chưa đủ {amount} xu.')
-    return dict(message=f'Đã gửi {amount} xu vào quỹ chung. Quỹ giờ có {bal} xu.', changed=True)
+    return dict(message=f'Đã gửi {mr._xu(amount)} xu vào quỹ chung. Quỹ giờ có {mr._xu(bal)} xu.', changed=True)
 
 
 @_once
@@ -212,10 +212,10 @@ def withdraw(store, sid, display, d):
     def ops(db):
         _need(mr._bond(db, sid) and mr._bond(db, sid)['id'] == c['id'], 'Hai bạn không còn là vợ chồng.', 'not_married', 409)
         bal = _fund_move(db, c['id'], sid, 'withdraw', amount, 'Rút từ quỹ chung', eid)
-        mr._notice(db, mr._other(c, sid), f'🏦 {display} vừa rút {amount} xu từ quỹ chung. Quỹ còn {bal} xu.')
+        mr._notice(db, mr._other(c, sid), f'🏦 {display} vừa rút {mr._xu(amount)} xu từ quỹ chung. Quỹ còn {mr._xu(bal)} xu.')
         return bal
     bal = _pay(store, sid, eff, ops)
-    return dict(message=f'Đã rút {amount} xu về ví. Quỹ chung còn {bal} xu.', changed=True)
+    return dict(message=f'Đã rút {mr._xu(amount)} xu về ví. Quỹ chung còn {mr._xu(bal)} xu.', changed=True)
 
 
 # ---------------------------------------------------------------- 💸 gửi tiền, xin trợ giúp, sổ nợ

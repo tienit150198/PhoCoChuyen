@@ -177,6 +177,11 @@ KIND_W = {
 FIRST_DAY = ('fit', 'outfit', 'fit', 'alter', 'online', 'fit', 'room', 'outfit', 'fit', 'alter', 'fit', 'outfit')
 
 
+def _sz(size) -> str:
+    """'size M', or 'Free size' for one-size items (never 'size F')."""
+    return 'Free size' if size == 'F' else f'size {size}'
+
+
 def mod_of(day: int) -> dict:
     return kit.daily(ID, day, MODS)
 
@@ -235,7 +240,7 @@ def _clue(rng, item: str, size: str, easy: bool) -> tuple[str, str]:
     if kind == 'brand':
         other = LETTERS[LETTERS.index(size) - RUNS_SMALL[item]]
         return 'brand', f'Bên shop khác mình mặc size {other}.'
-    return 'label', f'Mình mặc size {size}.'
+    return 'label', f'Mình mặc {_sz(size)}.'
 
 
 def _pick_size(rng, item: str, npc: int) -> str:
@@ -429,7 +434,7 @@ def _make_room(day, slot, serial, rng):
     size = _pick_size(rng, item, buyer)
     colour = rng.choice(COLOURS[item])
     buy = dict(item=item, colour=colour, size=size,
-               say=f'{ITEM[item]["name"]} size {size} màu {colour} này vừa nè, tính tiền giùm chị.')
+               say=f'{ITEM[item]["name"]} {_sz(size)} màu {colour} này vừa nè, tính tiền giùm chị.')
     needs = dict(queue=queue, buy=buy, note='Ba khách xếp hàng vào phòng thử. Đưa thẻ số theo số món khách cầm vào, đếm lại lúc ra.')
     title = 'Phòng thử giờ tan tầm'
     opening = 'Phòng thử có ba người chờ, em trông giùm chị nha! Thẻ số treo ở móc cạnh rèm đó.'
@@ -452,7 +457,7 @@ def _make_return(day, slot, serial, rng):
     days_ago = {'late': rng.randint(10, 16)}.get(case, rng.randint(1, 4))
     price = PRICES[item] * (70 if case == 'sale' else 100) // 100
     needs = dict(item=item, size=size, colour=colour, price=price, days_ago=days_ago, want=want, new_size=new_size,
-                 note=f'{ITEM[item]["name"]} size {size}, màu {colour}, mua {days_ago} ngày trước, giá {price} xu.',
+                 note=f'{ITEM[item]["name"]} {_sz(size)}, màu {colour}, mua {days_ago} ngày trước, giá {price} xu.',
                  _case=case, _tag=case not in ('worn',), _receipt=case != 'no_receipt', _sale=case == 'sale',
                  _worn=case == 'worn', _defect=case == 'defect')
     return kit.base_task(ID, day, slot, serial, npc, title, opening, kind='return', needs=needs,
@@ -606,7 +611,7 @@ def _free(c: dict, item: str, size: str, t: dict | None = None) -> int:
 def _sell(c: dict, item: str, size: str) -> int:
     d = _data(c)
     row = d['grid'][item]
-    kit.need(row.get(size, 0) > 0, f'Kệ vừa hết {ITEM[item]["name"].lower()} size {size}.')
+    kit.need(row.get(size, 0) > 0, f'Kệ vừa hết {ITEM[item]["name"].lower()} {_sz(size)}.')
     cost = kit.take(c, item, 1)
     row[size] -= 1
     c['life']['consumed_cost'] += cost
@@ -703,7 +708,7 @@ def known_request(c: dict, t: dict) -> str:
     if k == 'sale':
         return n['note']
     if k == 'online':
-        return 'Đơn: ' + ', '.join(f'{ITEM[x["item"]]["name"]} size {x["size"]} màu {x["colour"]}' for x in n['lines']) + '. ' + n['note']
+        return 'Đơn: ' + ', '.join(f'{ITEM[x["item"]]["name"]} {_sz(x["size"])} màu {x["colour"]}' for x in n['lines']) + '. ' + n['note']
     return n['note']
 
 
@@ -763,15 +768,15 @@ def _counter(s, c, t, name, p):
         colour = _colour_arg(item, p.get('colour'))
         kit.need(len(t['picks']) < MAX_PICKS, 'Quầy đầy rồi, bớt món ra trước nhé.')
         free = _free(c, item, size, t) - sum(1 for x in t['picks'] if x['item'] == item and x['size'] == size)
-        kit.need(free > 0, f'Giá treo hết {ITEM[item]["name"].lower()} size {size}. Nhập thêm hoặc chọn size khác.')
+        kit.need(free > 0, f'Giá treo hết {ITEM[item]["name"].lower()} {_sz(size)}. Nhập thêm hoặc chọn size khác.')
         t['picks'].append(dict(item=item, size=size, colour=colour))
         t['tried'].append(None)
-        return dict(message=f'Lấy ra quầy: {ITEM[item]["emoji"]} {ITEM[item]["name"]} size {size}, màu {colour} · {_price(c, item)} xu.')
+        return dict(message=f'Lấy ra quầy: {ITEM[item]["emoji"]} {ITEM[item]["name"]} {_sz(size)}, màu {colour} · {_price(c, item)} xu.')
     if name == 'ao_unpick':
         i = kit.integer(p.get('index'), 0, len(t['picks']) - 1) if t['picks'] else kit.need(False, 'Quầy đang trống.')
         x = t['picks'].pop(i)
         t['tried'].pop(i)
-        return dict(message=f'Đã treo lại {ITEM[x["item"]]["name"].lower()} size {x["size"]}.')
+        return dict(message=f'Đã treo lại {ITEM[x["item"]]["name"].lower()} {_sz(x["size"])}.')
     if name == 'ao_try':
         kit.need(t['picks'], 'Lấy đồ ra trước rồi mới mời khách thử.')
         i = kit.integer(p.get('index'), 0, len(t['picks']) - 1)
@@ -945,7 +950,7 @@ def _pay(s, c, t, p):
             t['bill'] = None
             t['cash'] = None
             t['haggle'] = None
-            return dict(message=f'Giá treo vừa hết {ITEM[item]["name"].lower()} size {size}. Bill được mở lại, chọn lại giùm khách nhé.', refused=True)
+            return dict(message=f'Giá treo vừa hết {ITEM[item]["name"].lower()} {_sz(size)}. Bill được mở lại, chọn lại giùm khách nhé.', refused=True)
     who = _who(t)
     chk = till.check(s, c, t, t['cash'], p.get('change'), who)
     if chk['stop']:
@@ -1402,11 +1407,11 @@ def _online(s, c, t, name, p):
         colour = _colour_arg(item, p.get('colour'))
         kit.need(len(pc['items']) < MAX_PICKS, 'Gói đầy rồi.')
         kit.need(_free(c, item, size, t) - sum(1 for x in pc['items'] if x['item'] == item and x['size'] == size) > 0,
-                 f'Giá treo hết {ITEM[item]["name"].lower()} size {size}.')
+                 f'Giá treo hết {ITEM[item]["name"].lower()} {_sz(size)}.')
         kit.start_work(t)
         pc['items'].append(dict(item=item, size=size, colour=colour))
         pc['label'] = None
-        return dict(message=f'Gấp {ITEM[item]["name"].lower()} size {size} màu {colour} bỏ vào túi zip.')
+        return dict(message=f'Gấp {ITEM[item]["name"].lower()} {_sz(size)} màu {colour} bỏ vào túi zip.')
     if name == 'ao_unpack':
         kit.need(not pc['sealed'] and pc['items'], 'Không có gì để lấy ra.')
         i = kit.integer(p.get('index'), 0, len(pc['items']) - 1)
@@ -1457,13 +1462,13 @@ def _ship(s, c, t):
     d = _data(c)
     who = _who(t)
     for x in pc['items']:
-        kit.need(d['grid'][x['item']].get(x['size'], 0) > 0, f'Giá treo vừa hết {ITEM[x["item"]]["name"].lower()} size {x["size"]}.')
+        kit.need(d['grid'][x['item']].get(x['size'], 0) > 0, f'Giá treo vừa hết {ITEM[x["item"]]["name"].lower()} {_sz(x["size"])}.')
     missing, wrong, extra = _parcel_diff(t)
     loss = 0
     if wrong:
         x, w = wrong[0]
         t['mistakes'] += 1
-        cq.slip(t, 'wrong_parcel', 2, f'Đặt {ITEM[w["item"]]["name"].lower()} size {w["size"]} màu {w["colour"]} mà nhận size {x["size"]} màu {x["colour"]}, phải gửi trả lại.',
+        cq.slip(t, 'wrong_parcel', 2, f'Đặt {ITEM[w["item"]]["name"].lower()} size {w["size"]} màu {w["colour"]} mà nhận {_sz(x["size"])} màu {x["colour"]}, phải gửi trả lại.',
                 'gửi sai size/màu')
         loss += SHIP_FEE * 2
     if missing:
@@ -1641,7 +1646,7 @@ def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
                 if _free(c, x['item'], x['size'], t) - sum(1 for y in t['parcel']['items'] if y['item'] == x['item'] and y['size'] == x['size']) > 0:
                     t['parcel']['items'].append(dict(item=x['item'], size=x['size'], colour=x['colour']))
                     t['parcel']['label'] = None
-                    return f'Đã gấp giúp {ITEM[x["item"]]["name"].lower()} size {x["size"]} bỏ vào gói. Bạn vẫn in phiếu và kiểm lại.'
+                    return f'Đã gấp giúp {ITEM[x["item"]]["name"].lower()} {_sz(x["size"])} bỏ vào gói. Bạn vẫn in phiếu và kiểm lại.'
         return 'Đã xếp túi zip, cuộn băng keo và phiếu giao cho gọn.'
     if t and t.get('career') == ID and t['kind'] == 'room' and t['known'] and t['stage'] == 'room':
         r = t['room']

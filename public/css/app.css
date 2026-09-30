@@ -425,7 +425,7 @@ html[data-layout="phone"] .task-hud .note-card>.btn+.btn{display:none}
 html[data-layout="phone"] .task-hud .note-card .eyebrow{display:block;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 html[data-layout="phone"] .task-hud .note-card h3{font-size:.967rem;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 html[data-layout="phone"] .task-hud .note-card>.row{margin:0}
-html[data-layout="phone"] .task-hud .note-card>p,html[data-layout="phone"] .task-hud .note-card .npc-mini,html[data-layout="phone"] .task-hud .note-card .hud-extra{display:none}
+html[data-layout="phone"] .task-hud .note-card>p:not(.dc-closing-line),html[data-layout="phone"] .task-hud .note-card .npc-mini,html[data-layout="phone"] .task-hud .note-card .hud-extra{display:none}
 html[data-layout="phone"] .task-hud .task-step{margin:6px 0 0;padding:5px 8px;font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
 html[data-layout="phone"] .task-hud .task-step svg{display:none}
 html[data-layout="phone"][data-orientation="landscape"] .task-hud{left:auto;width:min(330px,48%);top:calc(var(--topbar-h) + var(--safe-t) + 8px);flex-direction:column;align-items:stretch;overflow-x:hidden;overflow-y:auto;max-height:none;scroll-snap-type:none}

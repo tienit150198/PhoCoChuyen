@@ -390,5 +390,21 @@ class Engine(unittest.TestCase):
             self.assertEqual(set(r), lf.LOG_KEYS)
 
 
+
+
+class Taken(unittest.TestCase):
+    def test_no_heartbreak_cards_once_engaged_or_married(self):
+        L = dict(recent={})
+        free = {x['cat'] for x in lf._hard_pool(L, 40, None)}
+        taken = {x['cat'] for x in lf._hard_pool(L, 40, None, taken=True)}
+        self.assertIn('that_tinh', free)
+        self.assertNotIn('that_tinh', taken)
+        self.assertEqual(free - {'that_tinh'}, taken)
+        s = dict(marriage=dict(spouse=dict(status='engaged')))
+        self.assertTrue(lf._taken(s))
+        self.assertFalse(lf._taken(dict(marriage=dict(spouse=None))))
+        self.assertFalse(lf._taken({}))
+
+
 if __name__ == '__main__':
     unittest.main()
