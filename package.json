@@ -1,6 +1,6 @@
 {
   "name": "mot-ngay-lam-nghe",
-  "version": "0.5.0",
+  "version": "0.9.4",
   "private": true,
   "type": "module",
   "description": "Dependency-free Vietnamese career simulation web game (vi/en): 20 careers, multiplayer street, AI personas, web push",

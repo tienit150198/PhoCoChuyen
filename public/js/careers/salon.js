@@ -91,7 +91,10 @@ function nav(t,x,list,at,tab){
 }
 
 /* ---------- shared bits ---------- */
-function todayChip(x){const d=x.room.data?.today;return d?`<p class="sl-today"><span aria-hidden="true">${x.esc(d.emoji)}</span> <b>Hôm nay: ${x.esc(d.title)}</b> <small>${x.esc(d.text)}</small></p>`:'';}
+function todayChip(x,fold=false){const d=x.room.data?.today;if(!d)return '';
+  // On a job the day's theme is one line; tap to read the detail.
+  return fold?`<details class="sl-today sl-today-fold"><summary><span aria-hidden="true">${x.esc(d.emoji)}</span> <b>Hôm nay: ${x.esc(d.title)}</b></summary><small>${x.esc(d.text)}</small></details>`
+    :`<p class="sl-today"><span aria-hidden="true">${x.esc(d.emoji)}</span> <b>Hôm nay: ${x.esc(d.title)}</b> <small>${x.esc(d.text)}</small></p>`;}
 function deskCard(x){
   const ev=x.room.data?.desk?.ev;if(!ev)return '';
   const who=x.npc(ev.npc);
@@ -108,10 +111,13 @@ function jar(x){
   const d=x.room.data||{},n=Number(d.clean)||0,max=d.clean_max||care(x).clean_sets||4;
   return `<span class="sl-jar ${n?'':'nil'}" role="meter" aria-label="Bộ lược kéo đã khử khuẩn" aria-valuemin="0" aria-valuemax="${max}" aria-valuenow="${n}">${Array.from({length:max},(_,i)=>`<i class="${i<n?'on':''}"></i>`).join('')}<b>🧼 ${n}/${max} bộ sạch</b></span>`;
 }
-function foot(x){
+function foot(x,folded=false){
   const d=x.room.data||{},busy=deskBusy(x),n=Number(d.clean)||0,max=d.clean_max||4;
   const label=n>=max?'✅ Hũ khử khuẩn đầy':n?'🧴 Ngâm lại bộ':'🧴 Khử khuẩn dụng cụ';
-  return `<div class="sl-foot">${jar(x)}<p class="row wrap">${x.cmd(label,'sl_sanitize',{},n?'ghost small':'primary small',n>=max||busy)}${x.button('📦 Kho thuốc & vật tư','inventory',{},'ghost small')}</p></div>`;
+  const body=`<div class="sl-foot">${jar(x)}<p class="row wrap">${x.cmd(label,'sl_sanitize',{},n?'ghost small':'primary small',n>=max||busy)}${x.button('📦 Kho thuốc & vật tư','inventory',{},'ghost small')}</p></div>`;
+  // During a job: one line that still shows how many clean sets are left (open while the jar is empty).
+  if(!folded)return body;
+  return `<details class="sl-foot-fold"><summary>🧼 Dụng cụ sạch ${n}/${max} bộ <small>· khử khuẩn, kho</small></summary>${body}</details>`;
 }
 
 /* ---------- care loop: client card, bookings ---------- */
@@ -164,7 +170,7 @@ function apptCard(x,a){
   const inChair=(x.room.tasks||[]).some(v=>v.npc===a.npc&&v.day===x.room.day&&!['completed','referred','cancelled'].includes(v.status));
   const covers={roots:'nhuộm màu',trim:'cắt',care:'phục hồi'}[a.kind];
   if(inChair)body=`<p class="sl-note good">💺 ${x.esc(a.who)} cũng đang chờ ghế hôm nay — nếu lượt đó có ${covers}, lịch hẹn này được gộp luôn.</p>`+body;
-  return `<article class="sl-appt"><div class="row">${x.portrait(who,40)}<div class="grow"><b>${x.esc(a.emoji)} ${x.esc(a.label)} · ${x.esc(a.who)}</b><small class="muted">Hẹn ngày ${a.due}${late>0?` · đã chờ ${late} ngày, hạn chót ngày ${a.until}`:` · chờ được tới ngày ${a.until}`}</small></div></div>
+  return `<article class="sl-appt"><div class="row">${x.portrait(who,40)}<div class="grow"><b>${x.esc(a.emoji)} ${x.esc(a.label)} · ${x.esc(a.who)}${a.price!=null?` · ${x.esc(x.money(a.price))} (dưới 3★ trả nửa)`:''}</b><small class="muted">Hẹn ngày ${a.due}${late>0?` · đã chờ ${late} ngày, hạn chót ngày ${a.until}`:` · chờ được tới ngày ${a.until}`}</small></div></div>
     ${body}<div class="sl-cta">${x.cmd(`${a.emoji} Làm ${a.label.toLowerCase()} cho khách`,'sl_appt',payload,'primary full',!ready||busy)}</div></article>`;
 }
 function apptBook(x,open){
@@ -208,11 +214,12 @@ function ticket(t,x){
   if(t.mistakes)tags.push(x.pill(`⚠️ ${t.mistakes} lỗi`,'danger'));
   const photoLine=ph.level?`<small>${x.esc(ph.tone)} · level ${ph.level}${ph.filtered&&!t.real?' · ảnh có filter?':''}</small>`:'';
   const real=t.real?`<p class="sl-real">📸 Ảnh gốc: level ${t.real.level} · ${x.esc(bandName(x,t.real.tone))}</p>`:'';
-  return `<article class="sl-ticket"><div class="row">${x.portrait(who,48)}<div class="grow">
+  // Compact ticket: who + patience, the services, and the customer's reference photo as one thumbnail row.
+  return `<article class="sl-ticket compact"><div class="row">${x.portrait(who,40)}<div class="grow">
       <div class="row spread wrap"><h3>${x.esc(who.display_name)}</h3><div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${Number(t.patience)||0}%"></i></div><small>${Number(t.patience)||0}%</small></div></div>
-      <p class="sl-want">${n.services.map(s=>`${svc(x,s).emoji} ${x.esc(svc(x,s).name)}`).join(' · ')}</p>
-      ${t.plan?'':`<p class="small">${x.esc(n.want)}</p>`}</div></div>
-    <div class="sl-photo">${sw}<div class="grow"><small class="muted">Ảnh mẫu khách đưa</small><b>${x.esc(ph.style)}</b>${photoLine}</div></div>${real}
+      <p class="sl-want">${n.services.map(s=>`${svc(x,s).emoji} ${x.esc(svc(x,s).name)}`).join(' · ')}</p></div></div>
+    ${t.plan?'':`<p class="small sl-wantline">${x.esc(n.want)}</p>`}
+    <div class="sl-photo slim">${sw}<div class="grow"><b>📸 ${x.esc(ph.style)}</b>${photoLine}</div></div>${real}
     <details class="sl-more"><summary>💬 Lời dặn của khách</summary>${t.plan?`<p class="small">${x.esc(n.want)}</p>`:''}<p class="muted small">“${x.esc(n.note)}”</p></details>
     ${t.calm!=null&&!t.done.includes('cut')?calmBar(t):''}
     <div class="row wrap sl-tags">${tags.join('')}</div>
@@ -399,11 +406,24 @@ function finishPanel(t,x){
   return parts.join('')||'<p class="muted small">Không có phần hoàn thiện.</p>';
 }
 
-function receipt(t,x){
+function receipt(t,x,folded=false){
   const ps=t.plan?.services||[];
   const rows=ps.map(s=>`<li class="${t.done.includes(s)?'ok':''}"><span>${t.done.includes(s)?'✓':'○'} ${svc(x,s).emoji} ${x.esc(svc(x,s).name)}</span><b>${x.money(price(x,s))}</b></li>`).join('');
   const fee=t.patch_fee?`<li class="ok"><span>✓ 🩹 Thử dị ứng</span><b>${x.money(t.patch_fee)}</b></li>`:'';
+  if(folded){
+    const done=ps.filter(s=>t.done.includes(s)).length,sum=ps.reduce((a,s)=>a+price(x,s),0)+(t.patch_fee||0);
+    return `<details class="sl-bill sl-bill-fold"><summary><b>🧾 Phiếu dịch vụ</b><small>${ps.length?`${done}/${ps.length} xong · ${x.money(sum)}`:'chưa chốt phương án'}</small></summary><ul>${rows||'<li class="muted">Chưa chốt phương án</li>'}${fee}</ul></details>`;
+  }
   return `<div class="sl-bill"><h4>🧾 Phiếu dịch vụ</h4><ul>${rows||'<li class="muted">Chưa chốt phương án</li>'}${fee}</ul></div>`;
+}
+
+/** The money the checkout will count: the services as quoted, the products only if the client takes them,
+ * the rush thank-you only when on time (same rules as sl_checkout). */
+function billLines(t,x,retailSum){
+  const svcSum=(t.quote||0)+(t.patch_fee||0),left=rushLeft(t,x),bonus=left!=null&&left>=0?(t.needs?.rush?.bonus||0):0;
+  const row=(k,v,cls='')=>`<p class="row spread ${cls}"><span>${k}</span><b>${x.money(v)}</b></p>`;
+  return row('Dịch vụ',svcSum)+(retailSum?row('Sản phẩm mời (khách có thể không lấy)',retailSum):'')+(bonus?row('Tiền gấp nếu kịp giờ',bonus):'')
+    +(retailSum||bonus?row('Tạm tính tối đa',svcSum+retailSum+bonus):'')+'<small class="muted">Làm sai, khách có thể bớt tiền dịch vụ.</small>';
 }
 
 function billPanel(t,x){
@@ -415,7 +435,7 @@ function billPanel(t,x){
   return `${receipt(t,x)}
     <h5 class="sl-sub" title="Chỉ mời khi hợp tóc và vừa ngân sách">🛍️ Sản phẩm hợp tóc (tùy chọn)</h5><div class="sl-chips">${shelf}</div>
     ${bookBlock(t,x)}
-    <p class="row spread"><span>Tạm tính</span><b>${x.money((t.quote||0)+(t.patch_fee||0)+retailSum)}</b></p>
+    ${billLines(t,x,retailSum)}
     <div class="sl-cta">${x.confirmCmd('💳 Thanh toán & tiễn khách','sl_checkout',{task:t.id,products:u.products,book:u.book.filter(k=>(t.bookable||[]).includes(k)),confirm:true},'Thanh toán cho khách? Khách sẽ soi gương và đánh giá đúng những gì đã làm; sản phẩm không hợp sẽ bị từ chối.','full',!ready)}</div>
     ${pending.length&&t.plan?`<small class="muted">Còn: ${pending.map(s=>x.esc(svc(x,s).name.toLowerCase())).join(', ')}</small>`:''}`;
 }
@@ -627,7 +647,8 @@ function guideBits(t,x){
   const final=g.bill?billFinal(t,x,g.steps):null;
   const hint=nextHint(x,g.steps,{final:final?.ready?{label:'Thanh toán & tiễn khách',go:final.go}:null});
   const cta=g.timer?timerCta(t,x):stepCta(x,g.steps,final||{label:'💳 Thanh toán & tiễn khách',go:null,ready:false});
-  return {g,hint,bar:`<div class="sl-bar"${first?' data-first="1"':''}>${cta}</div>`,rows:g.steps.length?stepRows(x,g.steps,'Việc cần làm'):''};
+  const k=g.steps.filter(s=>s&&s.ok!==true).length;
+  return {g,hint,bar:`<div class="sl-bar"${first?' data-first="1"':''}>${cta}</div>`,rows:g.steps.length?`<details class="sl-todo-fold"><summary>📝 Việc cần làm <small>· ${k?`còn ${k}`:'xong hết'}/${g.steps.length}</small></summary>${stepRows(x,g.steps,'Việc cần làm')}</details>`:''};
 }
 
 export default {
@@ -663,7 +684,7 @@ export default {
     const desk=deskCard(x),who=x.npc(t.npc),gb=guideBits(t,x);
     if(!t.known){
       const back=t.regular!=null?`<p class="sl-note good">📇 Khách quen quay lại — thẻ khách đã có công thức, sức khỏe tóc và lần cắt trước.</p>`:'';
-      return `<div class="career-job sl">${gb.hint}${desk}${todayChip(x)}<article class="sl-ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3><p>“${x.esc(t.opening)}”</p></div></div>${back}</article>${foot(x)}${apptBook(x,false)}${gb.bar}</div>`;
+      return `<div class="career-job sl">${gb.hint}${desk}${todayChip(x,true)}<article class="sl-ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3><p>“${x.esc(t.opening)}”</p></div></div>${back}</article>${foot(x,true)}${apptBook(x,false)}${gb.bar}</div>`;
     }
     if(desk)return `<div class="career-job sl">${gb.hint}${t.timer?timerCard(t,x):''}${desk}${ticket(t,x)}${gb.bar}</div>`;
     const u=ui(x,t),{list,at,tab}=viewTab(t,u);
@@ -674,8 +695,8 @@ export default {
     const nx=pending(gb.g.steps)?.go?.cmd,focus=tab!=='consult'?'':nx==='sl_inspect'?'.sl-look':nx==='sl_consult'?'.sl-qa-list':/^sl_(patch|photo|strand)$/.test(nx||'')?'.sl-tests':'';
     const panel=`<section class="sl-sec sl-panel ${tab===at?'focus':''}" data-sl-key="${x.esc(key)}" data-sl-reveal="${moved?1:0}" data-sl-focus="${focus}" aria-live="polite"><h4 class="section-title">${STAGES[tab][0]} ${x.esc(TITLES[tab])}${back}</h4>${PANELS[tab](t,x)}</section>`;
     return `<div class="career-job sl">${gb.hint}${t.timer?timerCard(t,x):''}${lastDesk(x)}${ticket(t,x)}${nav(t,x,list,at,tab)}
-      <div class="sl-bench"><div class="sl-main">${panel}${foot(x)}${apptBook(x,false)}</div>
-      <aside class="sl-side">${gb.rows}${mirror(t,x)}${tab==='bill'?'':receipt(t,x)}</aside></div>${gb.bar}</div>`;
+      <div class="sl-bench"><div class="sl-main">${panel}${foot(x,true)}${apptBook(x,false)}</div>
+      <aside class="sl-side">${gb.rows}${mirror(t,x)}${tab==='bill'?'':receipt(t,x,true)}</aside></div>${gb.bar}</div>`;
   },
   actions:{
     tab(d,el,x){const u=x.ui[d.task];if(!u)return;u.tab=d.tab;u.tabAt=d.at;x.render();},

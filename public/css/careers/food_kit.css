@@ -100,3 +100,20 @@ html[data-layout="phone"] .career-job.food{--fk-foot:68px}
 .fk-grade .fk-tomorrow small{color:var(--ink-2,var(--muted))}
 
 .career-job.food .fk-name{max-width:58px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:.75rem;font-weight:700;line-height:1.2}
+
+/* Today as a chip row (dayStrip, UX 2026-09-30): the day is one pill, then the counters; the day's hint is one tap
+   away on the pill (idle panel). Was a 43-60px banner on every order. */
+.career-job.food .fk-day.chip{flex-wrap:wrap;justify-content:flex-start;gap:6px;padding:0;background:none;border:0;border-radius:0}
+.career-job.food .fk-day.chip>.fk-mod{flex:0 1 auto;display:block;min-width:0;max-width:100%}
+.career-job.food .fk-day.chip>p.fk-mod,.career-job.food .fk-day.chip>.fk-mod>summary{display:flex;align-items:center;gap:6px;min-width:0;min-height:36px;padding:4px 12px;border-radius:var(--radius-pill,99px);background:var(--accent-soft,#fdf0e6);border:1px solid var(--line,#e6dccb)}
+.career-job.food .fk-day.chip>.fk-mod>summary{min-height:44px;cursor:pointer;list-style:none}
+.career-job.food .fk-day.chip>.fk-mod>summary::-webkit-details-marker{display:none}
+.career-job.food .fk-day.chip>.fk-mod>summary::after{content:"▸";flex:none;color:var(--accent-text,#9a3f1f)}
+.career-job.food .fk-day.chip>.fk-mod[open]>summary::after{content:"▾"}
+.career-job.food .fk-day.chip>.fk-mod>summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.career-job.food .fk-day.chip .fk-mod span[aria-hidden]{font-size:1.1rem;line-height:1;flex:none}
+.career-job.food .fk-day.chip .fk-mod b{font-size:.867rem;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.career-job.food .fk-day.chip .fk-day-hint{display:block;margin:6px 6px 0;font-size:.833rem;line-height:1.4;color:var(--ink-2,var(--muted))}
+.career-job.food .fk-day.chip>.fk-stats{align-self:center}
+/* The latest result keeps to one line once it is not new (a tap shows it whole again). */
+.career-job.food .fk-flash:not(.new):not(:focus):not(:empty){display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}

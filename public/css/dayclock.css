@@ -1,0 +1,49 @@
+/* Giờ trong ngày (public/js/v4/dayclock.js): the clock chip in the top bar's day button, the status
+   sheet's clock card, the closing line on the task card and the day summary's closing row.
+   Theme colours only (every theme, dark included). Amber at 60 minutes left, orange at 30, red at closing. */
+.topbar .hud-day{gap:8px}
+.dc-chip{position:relative;display:inline-flex;align-items:baseline;gap:4px;padding:2px 8px 5px;border-radius:10px;background:var(--surface-2);color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.2;white-space:nowrap;transition:background .4s,color .4s}
+.dc-chip .dc-ico{font-size:.95rem;line-height:1;align-self:center}
+.dc-chip b{font-size:1rem;font-weight:800}
+.dc-chip small{font-size:.75rem;font-weight:700;color:var(--muted)}
+.dc-bar{position:absolute;left:8px;right:8px;bottom:2px;height:3px;border-radius:2px;background:var(--line);overflow:hidden}
+.dc-bar>i{display:block;height:100%;border-radius:inherit;background:var(--second);transition:width .6s var(--ease,ease)}
+.dc-chip.dc-soon{background:var(--warn-soft)}.dc-chip.dc-soon .dc-bar>i{background:var(--star)}
+.dc-chip.dc-late{background:var(--warn-soft);color:var(--warn)}.dc-chip.dc-late small{color:var(--warn)}.dc-chip.dc-late .dc-bar>i{background:var(--warn)}
+.dc-chip.dc-closing{background:var(--bad-soft);color:var(--bad)}.dc-chip.dc-closing small{color:var(--bad)}.dc-chip.dc-closing .dc-bar>i{background:var(--bad)}
+.dc-chip.dc-closing b{animation:dc-blink 1.4s ease-in-out 3}
+@keyframes dc-blink{50%{opacity:.45}}
+html[data-layout="phone"] .dc-chip{padding:1px 6px 5px}
+html[data-layout="phone"] .dc-chip b{font-size:.93rem}
+html[data-layout="phone"] .dc-chip small{display:none}
+@media (max-width:360px){html[data-layout="phone"] .dc-chip .dc-ico{display:none}}
+/* "+20 phút" under the clock after an action (same float as the coin pop). */
+.coin-pop.dc-pop{color:var(--second);font-size:.8rem}
+
+/* Status sheet card */
+.dc-card{display:flex;flex-direction:column;gap:10px;margin-bottom:12px;padding:14px 16px;border-radius:16px;background:var(--surface);border:1.5px solid var(--line)}
+.dc-card.dc-soon{border-color:var(--star)}.dc-card.dc-late{border-color:var(--warn)}.dc-card.dc-closing{border-color:var(--bad);background:var(--bad-soft)}
+.dc-head{display:flex;align-items:center;gap:12px}
+.dc-big-ico{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--surface-2);font-size:1.5rem;line-height:1}
+.dc-big{display:block;font-size:1.6rem;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--ink)}
+.dc-part{font-size:.85rem;font-weight:700;color:var(--muted)}
+.dc-state{flex:none;max-width:48%;font-style:normal;font-size:.85rem;font-weight:700;text-align:right;color:var(--ink-2);line-height:1.35}
+.dc-card.dc-late .dc-state{color:var(--warn)}.dc-card.dc-closing .dc-state{color:var(--bad)}
+.dc-track{height:8px;border-radius:4px;background:var(--surface-3);overflow:hidden}
+.dc-track>i{display:block;height:100%;border-radius:inherit;background:var(--second);transition:width .6s}
+.dc-card.dc-soon .dc-track>i{background:var(--star)}.dc-card.dc-late .dc-track>i{background:var(--warn)}.dc-card.dc-closing .dc-track>i{background:var(--bad)}
+.dc-ends{display:flex;justify-content:space-between;margin-top:4px;font-size:.8rem;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.dc-note{margin:0;font-size:.85rem;color:var(--ink-2)}
+.dc-rules summary{cursor:pointer;font-size:.85rem;font-weight:700;color:var(--accent-text);min-height:32px;display:flex;align-items:center}
+.dc-rules ul{margin:4px 0 0;padding-left:18px;font-size:.85rem;color:var(--ink-2);line-height:1.5}
+
+/* Task card: closing line */
+.dc-closing-line{flex-basis:100%;margin:0 0 6px;padding:6px 10px;border-radius:10px;background:var(--bad-soft);color:var(--bad);font-size:.85rem;line-height:1.4}
+.calm-card:has(.dc-closing-line){flex-wrap:wrap}
+
+/* Day summary */
+.dc-sum{margin-top:12px;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--surface-2)}
+.dc-sum p{margin:2px 0 0;font-size:.85rem;color:var(--ink-2)}
+
+@media (prefers-reduced-motion:reduce){.dc-chip.dc-closing b{animation:none}.dc-bar>i,.dc-track>i{transition:none}}
+.reduce-motion .dc-chip.dc-closing b{animation:none}

@@ -93,7 +93,7 @@ function drawer(t,api){
     return `<button type="button" class="dk-note v${n.v} ${state}" data-action="desk:note" data-task="${esc(t.id)}" data-note="${esc(n.id)}" aria-label="Tờ ${n.v} xu${n.thread?'':' không có sợi bạc'}"${counted?' disabled':''}><b>${n.v}</b>${n.thread?'<i>🧵</i>':'<i class="nothread">?</i>'}</button>`;}).join('');
   return `<section class="dk-drawer"><div class="dk-row-head"><h4>🧮 Đếm két</h4>${counted?'<span class="dk-sla calm">Đã đếm khớp ✓</span>':`<span class="dk-sum">Đang đếm: <b>${sum}</b> xu</span>`}</div>
     ${counted?'':'<p class="dk-hint">Chạm một lần: đếm vào. Chạm lần nữa: để riêng. Chạm lần ba: bỏ ra.</p>'}<div class="dk-notes">${notes}</div>
-    ${counted?'':`<div class="dk-count-row">${cmdBtn(`Chốt số đếm: ${sum} xu`,'desk_count',{task:t.id,total:sum},'primary',!room(api).open)}${act('Đếm lại','desk:reset',{task:t.id},'ghost')}</div>`}</section>`;
+    ${counted?'':(t.miscounts||0)>=6?'<p class="small muted">Đếm lệch nhiều lần rồi. Bạn vẫn có thể đóng dấu theo những gì đã thấy.</p>':`<div class="dk-count-row">${cmdBtn(`Chốt số đếm: ${sum} xu`,'desk_count',{task:t.id,total:sum},'primary',!room(api).open)}${act('Đếm lại','desk:reset',{task:t.id},'ghost')}</div>`}</section>`;
 }
 
 function stamps(t,api){
@@ -118,7 +118,7 @@ function deskSteps(t,api){
     rows.push({ok:done||null,label:`${k.icon} ${k.label}`,note:wait!=null?`⏳ ${Math.max(0,wait-c.turn)} nhịp`:'',
       go:done?null:wait!=null?{cmd:'advance',label:'⏳ Chờ kết quả một nhịp'}:{cmd:'desk_check',payload:{task:t.id,check:k.id},label:`${esc(k.icon)} ${esc(k.label)}`}});
   }
-  if(t.drawer&&!t.verified.includes('count'))rows.push({ok:null,label:'Đếm két: chạm từng tờ rồi chốt số',go:{sel:'.dk-drawer .dk-note'}});
+  if(t.drawer&&!t.verified.includes('count')&&(t.miscounts||0)<6)rows.push({ok:null,label:'Đếm két: chạm từng tờ rồi chốt số',go:{sel:'.dk-drawer .dk-note'}});
   const marks=t.marks||[];
   if(!marks.length)rows.push({ok:null,label:'Soát từng dòng: chạm dòng sai, chọn quy định nó trái',go:{sel:'.dk-docs .dk-field:not(.locked)'}});
   rows.push({ok:null,label:'Đóng dấu quyết định',go:{sel:'.dk-stamps .dk-stamp'}});

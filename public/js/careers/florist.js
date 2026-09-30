@@ -13,6 +13,7 @@ import {dayStrip,flash,eventCard,queue,keepBarAboveFooter,idlePanel,gradeCard,pa
 import {reqList,fold} from '../ui-kit.js';
 import {nextHint,stepCta,finalGo,pending,firstTime,todoAttrs,todoArrow,highlight,stepLine} from '../v4/guide.js';
 import {restockFor,restockButton} from '../v4/restock.js';
+import {lockChip} from './stage_fold.js';
 
 const METER_SCALE=20;   // seconds shown on the soak / foam bars
 const VALUE_SCALE=1.2;  // value bar runs to 120% of the budget
@@ -247,7 +248,7 @@ function preCard(x,b){
   const list=due?table:fold(`📦 Hàng cần · ${okN}/${rows.length} loại đủ cho ngày đó`,table);
   let btns='';
   if(b.status==='offer')btns=`${x.confirmCmd(`✓ Nhận, lấy cọc ${b.deposit} xu`,'fl_pre',{id:b.id,do:'accept'},`Nhận “${b.title}” giao ${dayWord(b.left,b.due)}? Nhận cọc ${b.deposit} xu; không kịp làm thì hoàn cọc và khách chê.`,'primary small')}${x.cmd('Từ chối khéo','fl_pre',{id:b.id,do:'decline'},'ghost small')}`;
-  else if(due)btns=x.confirmCmd('💐 Cắm & giao đơn này','fl_pre',{id:b.id,do:'make'},`Cắm “${b.title}” từ hàng trong tủ? Tiệm dùng cành nở đẹp trước; khách đang chờ sẽ chờ thêm chút.`,'primary small',!!(b.short||[]).length||!x.room.open)
+  else if(due)btns=x.confirmCmd('💐 Cắm & giao đơn này','fl_pre',{id:b.id,do:'make'},`Cắm “${b.title}” từ hàng trong tủ? Khách trả nốt ${b.price-b.deposit} xu (${b.price} − cọc ${b.deposit}); hoa còn nụ hay sắp héo thì tiệm bớt 10 xu mỗi thứ. Tiệm dùng cành nở đẹp trước; khách đang chờ sẽ chờ thêm chút.`,'primary small',!!(b.short||[]).length||!x.room.open)
     +((b.short||[]).length?restockButton(x.room,(b.rows||[]).filter(r=>r.item&&r.have<r.need).map(r=>({id:r.item,target:r.need})),{urgent:false},'ghost small'):'');
   const say=b.status==='offer'?`<p class="fl-note">“${x.esc(b.call)}”</p>`:'';
   const tip=due?((b.short||[]).length?`<p class="small fl-warn">Thiếu: ${x.esc(b.short.join(', '))}.</p>`:''):'';
@@ -308,11 +309,20 @@ function coolerStrip(x){
   const fl=(cc(x).flowers||[]).filter(f=>f.unlock<=lvl(x)||stock(x,f.id));
   if(!fl.length)return '';
   const old=fl.filter(f=>(cooler[f.id]?.next??9)<=0&&stock(x,f.id)).length;
-  return `<section class="fl-shelf" aria-label="Tủ mát"><p class="fl-shelf-head"><b>🧊 Trong tủ mát</b><small>${old?`${old} loại có cành sắp héo — dùng trước hoặc bỏ trong Kho`:''}</small></p>
+  const have=fl.filter(f=>stock(x,f.id)+(cooler[f.id]?.spare||0)).length;
+  return `<details class="fl-shelf fl-shelf-fold" aria-label="Tủ mát"><summary class="fl-shelf-head"><b>🧊 Trong tủ mát · ${have}/${fl.length} loại có hàng</b><small>${old?`${old} loại có cành sắp héo — dùng trước hoặc bỏ trong Kho`:''}</small></summary>
     <div class="fl-shelf-row">${fl.map(f=>{const q=stock(x,f.id)+(cooler[f.id]?.spare||0),left=q?cooler[f.id]?.next:null,st=stageLine(cooler[f.id]?.stages);
-      return `<span class="fl-shelf-item${q?'':' is-empty'}${left!=null&&left<=0?' old':''}" title="${x.esc(f.name)}: ${q} ${x.esc(item(x,f.id).unit||'cành')} · ${freshLabel(left)}"><span class="count-badge${q?'':' is-empty'}" data-count="${q}">${q}</span>${glyph(x,f.id,'fl-shelf-emoji')}<small>${x.esc(f.name)}</small>${st?`<small class="fl-stage-txt">${x.esc(st)}</small>`:''}</span>`;}).join('')}</div></section>`;
+      return `<span class="fl-shelf-item${q?'':' is-empty'}${left!=null&&left<=0?' old':''}" title="${x.esc(f.name)}: ${q} ${x.esc(item(x,f.id).unit||'cành')} · ${freshLabel(left)}"><span class="count-badge${q?'':' is-empty'}" data-count="${q}">${q}</span>${glyph(x,f.id,'fl-shelf-emoji')}<small>${x.esc(f.name)}</small>${st?`<small class="fl-stage-txt">${x.esc(st)}</small>`:''}</span>`;}).join('')}</div></details>`;
 }
 const extras=x=>banners(x)+pinsCard(x);
+/** On a job, the day (mod, served, streak) and the guest queue fold into one line; a tap opens them. */
+function dayLine(x,day,t){
+  const strip=dayStrip(x,day,true),q=queue(x,t);
+  if(!strip&&!q)return '';
+  const others=openTasks(x).filter(v=>v.id!==t.id),low=others.filter(v=>(v.patience??100)<50).length,m=day?.mod;
+  const bits=[m?`${m.emoji} ${m.label}`:'',`✅ ${Number(day?.served)||0}`,others.length?`👥 ${others.length} khách chờ`:'',low?`⚠️ ${low} sốt ruột`:''].filter(Boolean).join(' · ');
+  return `<details class="fl-dayfold${low?' low':''}"><summary>${x.esc(bits)}</summary>${strip}${q}</details>`;
+}
 
 /* ---------- the order ---------- */
 /** Sets: one row per piece. Tap a waiting piece to switch, a finished one to take it back. */
@@ -325,9 +335,14 @@ function pieceTabs(t,x){
   }).join('')}</div>`;
 }
 /** What the customer has told so far, and what is still worth asking. */
-function consult(t,x){
+/** What the customer told when asked (goes inside the "Khách dặn" fold on the ticket). */
+function heardList(t,x){
   const clues=Object.entries(t.needs.clues||{});
-  const heard=clues.length?fold(`💬 Khách kể thêm · ${clues.length}`,`<ul class="fl-heard">${clues.map(([k,v])=>`<li><span aria-hidden="true">${x.esc(topic(x,k).emoji)}</span>“${x.esc(v)}”</li>`).join('')}</ul>`):'';
+  return clues.length?`<p class="fl-brief-cap">💬 Khách kể thêm · ${clues.length}</p><ul class="fl-heard">${clues.map(([k,v])=>`<li><span aria-hidden="true">${x.esc(topic(x,k).emoji)}</span>“${x.esc(v)}”</li>`).join('')}</ul>`:'';
+}
+/** The questions still worth asking (stay open on the ticket). */
+function consult(t,x){
+  const heard='';
   const left=unasked(t);
   if(!left.length)return heard;
   const rush=t.guest?.kind==='rush',cost=rush?(cc(x).ask_cost_rush||7):(cc(x).ask_cost||5);
@@ -342,8 +357,11 @@ function ticket(t,x,K={}){
   // The price is said once, here; the list below is what has to be right.
   const price=t.quoted_price!=null?`<b class="price" aria-label="Giá đơn">${x.money(t.quoted_price)}</b>`:'';
   const cap=isSet(t)&&!plated(t)?`Món ${t.cur+1}: ${spec(t).label}`:'Khách dặn';
-  const list=`<p class="fl-brief-cap">${x.esc(cap)}</p>${reqRows(x,briefRows(t,x,K),cap)}`;
-  return `<article class="card ticket fl-ticket"><div class="fl-ticket-head">${x.portrait(who,44)}<div class="grow"><div class="row spread"><h3>${x.esc(who.display_name)}</h3>${price}</div>
+  // The list is folded to one line with its tally: the chips on the cooler tab, the steps and the bar repeat it.
+  const rows=briefRows(t,x,K),okN=rows.filter(r=>r.ok===true).length,bad=rows.filter(r=>r.ok===false).length;
+  const nClues=Object.keys(t.needs.clues||{}).length;
+  const list=`<details class="fl-brief"><summary><b>📝 ${x.esc(cap)}</b><small>${okN}/${rows.length} đã đúng${bad?` · <span class="fl-bad-n">✗ ${bad} chưa đúng</span>`:''}${nClues?` · 💬 ${nClues} lời kể`:''}</small></summary>${reqRows(x,rows,cap)}${heardList(t,x)}</details>`;
+  return `<article class="card ticket fl-ticket compact"><div class="fl-ticket-head">${x.portrait(who,40)}<div class="grow"><div class="row spread"><h3>${x.esc(who.display_name)}</h3>${price}</div>
     <p class="fl-tags">${tags.join(' ')}</p></div></div>
     <p class="fl-note">“${x.esc(n.note)}”</p>${consult(t,x)}${isSet(t)?pieceTabs(t,x):''}${list}${regularCard(t,x)}${patience(t.patience)}</article>`;
 }
@@ -367,9 +385,11 @@ function needStrip(t,x){
 function coolerPanel(t,x){
   const sp=spec(t),w=t.work,d=data(x),level=lvl(x),c=counts(w.stems),qty=Number(x.ui.flQty)||1;
   const busy=w.arranged||soaking(t)||w.stems.length>=(cc(x).max_stems||30);
-  const tiles=(cc(x).flowers||[]).map(f=>{
+  // Flowers above the shop's level collapse into one "🔒 N món mở ở cấp X–Y" chip after the grid.
+  const lockedFl=(cc(x).flowers||[]).filter(f=>f.unlock>level&&sp.focal?.item!==f.id);
+  const tiles=(cc(x).flowers||[]).filter(f=>!lockedFl.includes(f)).map(f=>{
     const info=d.cooler?.[f.id]||{},have=stock(x,f.id)+(info.spare||0),wanted=sp.focal?.item===f.id;
-    const locked=f.unlock>level&&!wanted,left=have?info.next:null,on=c[f.id]||0;
+    const locked=false,left=have?info.next:null,on=c[f.id]||0;
     // Only for a home with cats, and in words.
     const flag=t.needs.cats!==true?'':f.cats==='toxic'?'🐈 độc với mèo':f.cats==='caution'?'🐈 mèo nên tránh':'';
     const sub=locked?`cấp ${f.unlock}`:[on?`×${on} trên bàn`:'',freshLabel(left)].filter(Boolean).join(' · ');
@@ -382,11 +402,10 @@ function coolerPanel(t,x){
     return `<li>${glyph(x,id)}<b>${x.esc(f.name)}</b> ×${q}${old?` <small class="fl-warn">${old} sắp héo</small>`:''}${x.cmd('−','fl_remove',{task:t.id,item:id},'ghost small fl-minus',w.arranged||soaking(t))}</li>`;}).join('');
   const book=(cc(x).flowers||[]).map(f=>{const taboo=f.taboo.length>=6?'chỉ dùng cho viếng':f.taboo.map(o=>occasion(x,o).name).join(', ');
     return `<li><b>${glyph(x,f.id)} ${x.esc(f.name)}</b> — ${x.esc(f.meaning)}${f.good.length<8?`<small>Hợp: ${x.esc(f.good.map(o=>occasion(x,o).name).join(', '))}</small>`:''}${taboo?`<small class="fl-warn">Kiêng: ${x.esc(taboo)}</small>`:''}${f.cats==='toxic'?'<small class="fl-warn">Rất độc với mèo (cả phấn, lá, nước bình)</small>':f.cats==='caution'?'<small>Mèo gặm dễ đau bụng</small>':''}</li>`;}).join('');
-  const water=care(x).water?.done?'':`<div class="fl-water-line">${waterRow(x)}</div>`;
   const qtys=`<div class="fl-qty" role="group" aria-label="Mỗi lần chạm lấy">${[1,2,3].map(k=>`<button type="button" class="fl-seg${qty===k?' on is-selected':''}" data-action="car:qty" data-n="${k}" aria-pressed="${qty===k}">×${k}</button>`).join('')}</div>`;
-  return `<div class="fl-pickbar">${needStrip(t,x)}${qtys}</div><div class="tile-grid fl-grid">${tiles}</div>
+  return `<div class="fl-pickbar">${needStrip(t,x)}${qtys}</div><div class="tile-grid fl-grid">${tiles}</div>${lockChip(lockedFl.map(f=>f.unlock),'fl-lock')}
     <h4 class="section-title">Trên bàn (${w.stems.length} cành)</h4>${bench?`<ul class="fl-bench">${bench}</ul>`:'<p class="muted small">Chưa lấy cành nào.</p>'}
-    <details class="fl-book"><summary>📖 Sổ tay ý nghĩa hoa</summary><ul>${book}</ul></details>${water}`;
+    <details class="fl-book"><summary>📖 Sổ tay ý nghĩa hoa</summary><ul>${book}</ul></details>`;
 }
 function prepPanel(t,x){
   const w=t.work,f=format(x,spec(t).format),d=data(x),min=soakMin(t,x);
@@ -405,8 +424,9 @@ function prepPanel(t,x){
 }
 function designPanel(t,x){
   const sp=spec(t),w=t.work,level=lvl(x),min=t.foam_min||cc(x).foam_min||10;
-  const bases=(cc(x).formats||[]).map(f=>{
-    const locked=f.unlock>level&&sp.format!==f.id,uses=Object.entries(f.uses||{}),short=uses.filter(([k,q])=>stock(x,k)<q);
+  const lockedFm=(cc(x).formats||[]).filter(f=>f.unlock>level&&sp.format!==f.id);
+  const bases=(cc(x).formats||[]).filter(f=>!lockedFm.includes(f)).map(f=>{
+    const locked=false,uses=Object.entries(f.uses||{}),short=uses.filter(([k,q])=>stock(x,k)<q);
     const main=uses[0]?stock(x,uses[0][0]):null;
     const sub=locked?`cấp ${f.unlock}`:uses.length?uses.map(([k,q])=>`${item(x,k).name} ${stock(x,k)}`).join(' · '):'dây buộc, giấy gói';
     return tile(x,{emoji:f.emoji,name:f.name,sub,count:main,empty:short.length>0,cmd:'fl_base',payload:{task:t.id,kind:f.id},selected:w.base===f.id,locked,disabled:!!w.base||short.length>0,
@@ -425,7 +445,7 @@ function designPanel(t,x){
     <div class="fl-write"><label class="field grow">Nội dung in<input id="fl-banner-text" class="input" maxlength="60" autocomplete="off" spellcheck="false" value="${x.esc(x.ui.bannerText||'')}" placeholder="Gõ đúng từng chữ, có dấu"></label>${x.button(w.banner?'🖨️ In lại':'🖨️ In & treo','car:banner',{task:t.id},'primary')}</div>
     ${sp.banner&&letters(w.banner||'')!==letters(sp.banner)?`<p class="fl-suggest">${x.button('📋 In đúng chữ khách dặn','car:bannertpl',{task:t.id,text:sp.banner},'ghost small',!w.arranged)}</p>`:''}`:'';
   const cover=rainy(x)&&deliver(t)?`<h4 class="section-title">${step++} · Chống mưa</h4><div class="row wrap">${x.cmd(w.cover?'✓ Đã bọc nylon':'🌂 Bọc nylon chống mưa','fl_cover',{task:t.id},w.cover?'ghost small':'',!!w.cover||!w.arranged||(w.base==='bouquet'&&!w.paper))}</div>`:'';
-  return `<h4 class="section-title">1 · Kiểu cắm</h4><div class="tile-grid fl-grid">${bases}</div>${foam}
+  return `<h4 class="section-title">1 · Kiểu cắm</h4><div class="tile-grid fl-grid">${bases}</div>${lockChip(lockedFm.map(f=>f.unlock),'fl-lock')}${foam}
     <h4 class="section-title">2 · Cắm / bó</h4>${arrange}${papers}${ribbons}${banner}${cover}`;
 }
 function cardPanel(t,x){
@@ -688,7 +708,7 @@ export default {
   },
   job(t,x){
     const d=data(x),day=d.day,ui=x.ui;
-    const top=g=>`${hintFor(g,x)}${dayStrip(x,day,true)}${flash(x,day)}${eventCard(x,day,'fl_event')}${queue(x,t)}`;
+    const top=g=>`${hintFor(g,x)}${dayLine(x,day,t)}${flash(x,day)}${eventCard(x,day,'fl_event')}`;
     if(!t.known){
       const who=x.npc(t.npc),gs=t.guest||{};
       return `<div class="career-job fl food">${top(taskGuide(t,x))}<article class="card ticket fl-ticket"><div class="fl-ticket-head">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3>

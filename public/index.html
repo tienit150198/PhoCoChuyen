@@ -40,6 +40,12 @@
     .update-pill .update-go{padding:9px 14px;border-radius:99px 0 0 99px;text-align:left}
     .update-pill .update-x{padding:9px 13px 9px 10px;border-radius:0 99px 99px 0;opacity:.92}
     html[data-theme="dem"] .update-pill button{background:#f3ede5;color:#15141b}
+    /* lazy.js skeleton: a sheet whose code is still loading (never a dead tap) */
+    .mnl-skel{display:grid;gap:12px;padding:18px 4px}
+    .mnl-skel i{display:block;height:18px;border-radius:9px;background:linear-gradient(90deg,rgba(128,100,80,.12) 25%,rgba(128,100,80,.22) 50%,rgba(128,100,80,.12) 75%) 0 0/300% 100%;animation:mnl-skel 1.1s linear infinite}
+    .mnl-skel i:nth-child(1){width:60%;height:22px}.mnl-skel i:nth-child(3){width:80%}
+    @keyframes mnl-skel{to{background-position:-150% 0}}
+    @media (prefers-reduced-motion:reduce){.mnl-skel i{animation:none}}
   </style>
   <link rel="preload" as="style" href="/css/app.css">
   <link rel="preload" as="style" href="/css/desks.css">
@@ -49,7 +55,6 @@
   <link rel="preload" as="style" href="/css/board.css">
   <link rel="preload" as="style" href="/css/life.css">
   <link rel="preload" as="style" href="/css/lifesheets.css">
-  <link rel="preload" as="style" href="/css/pnl.css">
   <link rel="preload" as="style" href="/css/ai-chat.css">
   <link rel="preload" as="style" href="/css/guide.css">
   <link rel="preload" href="/fonts/be-vietnam-pro-vietnamese-400-normal.woff2" as="font" type="font/woff2" crossorigin>

@@ -72,7 +72,6 @@ def on_start(s:dict,c:dict,career:str):
 def after_task(s:dict,c:dict,t:dict):
  x=c['life'];ref=t['id']
  if ref in x['served_sources']:return
- mod=PLUGINS.get(t['career'])
  x['served_sources'].append(ref);x['served_sources']=ar.last(x['served_sources'], 240, 'life.served', c)
  x['day_metrics']['served']=x['day_metrics'].get('served',0)+1
  if t['mistakes']==0:
@@ -81,18 +80,14 @@ def after_task(s:dict,c:dict,t:dict):
  # Reward on the third accurate service only once per game day; no menu farming.
  if x['streak']==3 and not x['day_metrics'].get('combo_reward'):
   core().money(s,c,8,'Ba việc liền mạch',f"combo-{c['day']}",category='skill_reward');x['day_metrics']['combo_reward']=1
- tip=(mod.SPEC.get('tip',0) if mod else 2 if t['career'] in ('mother_baby','milk_tea','tour_guide') else 0) if t['mistakes']==0 and not t.get('combo') and (t.get('reaction') or {}).get('kind') not in ('refuse','walkout') else 0
- if tip:
-  active=[e for e in c['ops']['staff'] if e['status']=='hired' and e['on_shift'] and e['jobs']>0]
-  if active:
-   x['staff_tips']+=tip
-   core().log(s,c,'staff_tip',f"Khách tặng đội {tip} xu trực tiếp; không đi qua két tiệm.",ref=ref)
-  else:
-   core().money(s,c,tip,'Tip tự nguyện của khách',ref,category='tip');x['tips']+=tip
  _sticker(c,'first-service','Một việc được làm đến nơi','🌱')
  if t['career']=='mother_baby':
   from . import giftshop
   giftshop.after_task(s,c,t)
+ # Tip hên xui (game/tips.py): rolled once per task, after the review got its real author.
+ # It replaces the old fixed 1–3 xu on every perfect job; staff on shift still take it as a team.
+ from . import tips
+ tips.after_task(s,c,t)
 
 def on_close(s:dict,c:dict,career:str)->dict:
  x=c['life'];waste=0;counter=None
@@ -115,9 +110,10 @@ def on_close(s:dict,c:dict,career:str)->dict:
  if career=='tour_guide':tour_trip.on_close(s,c)
  x['day_waste']+=waste;x['waste']=ar.last(x['waste'], 120, 'life.waste', c)
  _metric(c,'days_closed')
- recap=dict(day=c['day'],served=x['day_metrics'].get('served',0),perfect=x['day_metrics'].get('perfect',0),activities=x['day_metrics'].get('activities',0),tips=x['tips'],staff_tips=x['staff_tips'],waste_value=x['day_waste'],consumed_cost=x['consumed_cost'],streak=x['best_streak'],goals=goals(c),festival=x['festival'],note='Chi phí hàng đã trả khi nhập; hao hụt chỉ ghi giá trị, không trừ két lần nữa.',counter=counter)
+ from . import tips
+ recap=dict(day=c['day'],served=x['day_metrics'].get('served',0),perfect=x['day_metrics'].get('perfect',0),activities=x['day_metrics'].get('activities',0),tips=x['tips'],staff_tips=x['staff_tips'],waste_value=x['day_waste'],consumed_cost=x['consumed_cost'],streak=x['best_streak'],goals=goals(c),festival=x['festival'],note='Chi phí hàng đã trả khi nhập; hao hụt chỉ ghi giá trị, không trừ két lần nữa.',counter=counter,tip_day=tips.day_summary(x))
  x['recap']=recap;x['goals_history']=ar.last(x['goals_history']+[recap], GOALS_KEPT, 'life.goals_history', c)
- x['day_metrics']={};x['goals_claimed']=[];x['day_talked']=[];x['activity_rewards']=[]
+ x['day_metrics']={};x['goals_claimed']=[];x['day_talked']=[];x['activity_rewards']=[];x['tip_day']=[]
  x['tips']=0;x['staff_tips']=0;x['consumed_cost']=0;x['day_waste']=0;x['streak']=0;x['festival_claimed']=False
  return recap
 
@@ -414,6 +410,8 @@ def validate(c:dict,career:str):
   from . import giftshop
   giftshop.validate(c)
  if career=='tour_guide':tour_trip.validate_care(c)
+ from . import tips
+ tips.validate(c)  # tip hên xui: life.tip_day and t['tip_roll'] (both optional in older saves)
  need(all(k in {'serve','play','talk'} for k in x['goals_claimed']),'Mục tiêu không hợp lệ.')
  need(all(k in [b['id'] for b in data.ACHIEVEMENTS] for k in x['badges']) and len(x['badges'])==len(set(x['badges'])),'Huy hiệu không hợp lệ.')
  for key,ch in x['chapters'].items():

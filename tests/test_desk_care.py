@@ -44,9 +44,9 @@ class StockClockTests(unittest.TestCase):
         j = Journey('pharmacy')
         r = j.act('order_stock', item='P-02-A', qty=2)
         self.assertNotIn('nhịp', r['message'])
-        self.assertIn('13:', r['message'])  # the midday run
+        self.assertIn('10:', r['message'])  # the 10:00 run (four runs a day, cut-off 09:00)
         ship = j.c['shipments'][-1]
-        self.assertEqual((ship['supplier'], ship['lo'] % 1440, ship['hi'] % 1440), ('partner', 13 * 60, 14 * 60))
+        self.assertEqual((ship['supplier'], ship['lo'] % 1440, ship['hi'] % 1440), ('partner', 10 * 60, 10 * 60 + 30))
         view = next(x for x in pub(j)['shipments'] if x['id'] == ship['id'])
         self.assertFalse(view['ready_now'])
         self.assertNotIn('at', view)  # the real arrival stays hidden until it is due
@@ -54,14 +54,18 @@ class StockClockTests(unittest.TestCase):
         self.assertTrue(view['eta_label'] and view['left_label'])
         unchanged(self, j, 'receive_stock', shipment=ship['id'], count=2)
 
-    def test_cheaper_depot_arrives_next_morning_and_costs_less(self):
+    def test_cheaper_depot_arrives_this_afternoon_and_costs_less(self):
         j = Journey('pharmacy')
         before = j.c['money']
         j.act('order_stock', item='P-01-A', qty=4, supplier='depot')
         self.assertEqual(before - j.c['money'], 28)  # 8 × 4 × 0.85, rounded up
         ship = j.c['shipments'][-1]
-        self.assertEqual(ship['lo'] // 1440, j.c['day'] + 1)
-        next_day(j)
+        # Ordered before 13:00: the depot's afternoon run, 15:00–16:00 today.
+        self.assertEqual(divmod(ship['lo'], 1440), (j.c['day'], 15 * 60))
+        for _ in range(40):
+            if next(x for x in pub(j)['shipments'] if x['id'] == ship['id'])['ready_now']:
+                break
+            j.act('advance')
         self.assertTrue(next(x for x in pub(j)['shipments'] if x['id'] == ship['id'])['ready_now'])
         j.act('receive_stock', shipment=ship['id'], count=ship['actual'])
         self.assertTrue(any(b['lot'] == 'P-01-A' and b['got'] == j.c['day'] for b in care(j)['batches']))

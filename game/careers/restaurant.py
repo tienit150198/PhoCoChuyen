@@ -980,7 +980,7 @@ def _handle(s: dict, c: dict, d: dict, pl: dict, name: str, p: dict) -> dict:
         kit.need(not t['recalled'], 'Đã mở sổ món quen của khách này rồi.')
         kit.need(t['npc'] in d['notebook'], 'Sổ khách quen chưa ghi món của người này. Hỏi lại khách nhé.')
         t['recalled'] = True
-        return dict(message='📒 Sổ khách quen: ' + known_request(c, t))
+        return dict(message='📒 Đã tra sổ khách quen: món của khách hiện trên phiếu order.')  # the ticket lists it; no second copy in a toast
     if name == 'rs_reask':
         kit.need(n['style'] == 'usual', 'Đây không phải món quen.')
         kit.need(not t['recalled'], 'Bạn đã biết món quen của khách rồi.')
@@ -991,7 +991,7 @@ def _handle(s: dict, c: dict, d: dict, pl: dict, name: str, p: dict) -> dict:
         if t['npc'] not in d['notebook']:
             d['notebook'].append(t['npc'])
         who = USUAL_NAME.get(_npc_index(t), 'Khách')
-        return dict(message=f'{who[:1].upper() + who[1:]} hơi chững lại: “Quên rồi hả?” — {known_request(c, t)} (Đã ghi vào sổ khách quen.)')
+        return dict(message=f'{who[:1].upper() + who[1:]} hơi chững lại: “Quên rồi hả?” Món đã hiện trên phiếu order và được ghi vào sổ khách quen.')
     if name == 'rs_container':
         kind = kit.one_of(p.get('kind'), ('bowl', 'box'), 'Chọn tô hoặc hộp.')
         kit.need(bowl['container'] is None, 'Đã có tô/hộp. Đổ tô nếu muốn làm lại.')
@@ -1077,7 +1077,7 @@ def _handle(s: dict, c: dict, d: dict, pl: dict, name: str, p: dict) -> dict:
         kit.need(kit.stock(c, item) < want[item] or (item == 'beef' and rules.get('bad_beef')), 'Kho vẫn còn món này, không cần đổi.')
         kit.need(sub != item and not (n['allergy'] and ITEM_INDEX[sub].get('allergen') == n['allergy']), 'Món thay không phù hợp với khách.')
         t['subs'][item] = sub
-        msg = f'Khách đồng ý đổi {ITEM_INDEX[item]["name"]} sang {ITEM_INDEX[sub]["name"]}.'
+        msg = f'Khách đồng ý đổi {ITEM_INDEX[item]["name"]} sang {ITEM_INDEX[sub]["name"]}, giá tô giữ nguyên.'
     elif name == 'rs_dump':
         kit.confirm(p, 'Xác nhận đổ tô; nguyên liệu đã dùng ghi vào hao hụt.')
         kit.need(bowl['container'] or bowl['noodles'] or bowl['boiling'], 'Tô đang trống.')

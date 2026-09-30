@@ -95,3 +95,55 @@
 .tut-note-btns .btn{min-height:40px}
 @media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .tut-note{animation:tut-pop .3s var(--ease)}}
 .tut-pages{margin-top:-4px;padding-top:10px;border-top:1px dashed var(--line-strong)}
+
+/* ------------------------------------------------------ guide hub (📖) */
+.gh-hub{font-size:1rem;line-height:1.5}
+.gh-hub .tut-tabs button{min-height:44px}
+.gh-search{display:flex;align-items:center;gap:8px;margin:0 0 12px;padding:0 12px;min-height:46px;border-radius:var(--radius-pill);background:var(--surface-2);border:1px solid var(--line-strong)}
+/* The app styles every input (high specificity through :not()); the pill is the field here. */
+.gh-search input[type=search]{flex:1;min-width:0;min-height:44px!important;padding:0 4px!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;color:var(--ink);font:inherit;font-size:1rem!important;outline:none}
+.gh-search:focus-within{border-color:var(--focus);box-shadow:0 0 0 2px var(--focus)}
+.gh-toc,.gh-pick{display:flex;gap:8px;margin:0 0 12px;padding:2px 2px 8px;overflow-x:auto;scrollbar-width:thin;overscroll-behavior-x:contain}
+.gh-toc .chip,.gh-pick .chip{flex:none;min-height:44px;cursor:pointer;font-size:.9rem}
+@container sheet (min-width:640px){.gh-toc,.gh-pick{flex-wrap:wrap;overflow:visible}}
+.gh-pick .chip small{font-weight:600;color:var(--muted)}
+.gh-pick .chip.selected{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.gh-pick .chip.selected small{color:inherit;opacity:.85}
+.gh-group{margin:4px 0 18px;scroll-margin-top:84px}
+.gh-group-title{margin:0 0 8px;font-size:1.1rem}
+.gh-topic,.gh-sec{margin:0 0 8px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-sm);scroll-margin-top:84px}
+.gh-topic>summary,.gh-sec>summary{display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 14px;list-style:none;font-size:1rem;font-weight:700;color:var(--ink);cursor:pointer}
+.gh-topic>summary::-webkit-details-marker,.gh-sec>summary::-webkit-details-marker{display:none}
+.gh-topic>summary::after,.gh-sec>summary::after{content:"▾";flex:none;color:var(--muted);transition:transform var(--dur)}
+.gh-topic[open]>summary::after,.gh-sec[open]>summary::after{transform:rotate(180deg)}
+.gh-topic[open]>summary,.gh-sec[open]>summary{margin-bottom:0;border-bottom:1px dashed var(--line-strong)}
+.gh-topic.stub>summary{color:var(--ink-2)}
+.gh-ico{flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:var(--accent-soft);font-size:1.15rem;line-height:1}
+.gh-soon{flex:none;padding:2px 8px;border-radius:var(--radius-pill);background:var(--warn-soft);color:var(--warn);font-size:.75rem;font-style:normal;font-weight:800}
+.gh-count{flex:none;min-width:24px;padding:1px 7px;border-radius:var(--radius-pill);background:var(--surface-2);color:var(--muted);font-size:.8rem;text-align:center}
+.gh-topic-body{display:grid;gap:10px;padding:12px 14px 14px}
+.gh-topic-body .tut-fig{max-width:420px}
+.gh-points,.gh-jobs,.gh-mistakes,.gh-steps{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.gh-sec>ul,.gh-sec>ol,.gh-sec>.chip-row,.gh-sec>.tut-steps{margin:0;padding:12px 14px 14px}
+.gh-points li{position:relative;padding-left:2px;color:var(--ink-2)}
+.gh-jobs li{display:flex;gap:10px;align-items:flex-start}
+.gh-jobs b{display:block;color:var(--ink)}
+.gh-jobs p,.gh-mistakes p{margin:2px 0 0;color:var(--ink-2)}
+.gh-steps li{display:flex;gap:10px;align-items:flex-start}
+.gh-steps p{margin:2px 0 0;color:var(--ink)}
+.gh-mistakes li{padding:8px 10px;border-radius:12px;background:var(--bad-soft)}
+.gh-mistakes b{display:block;color:var(--ink)}
+.gh-btn{display:inline-block;padding:0 7px;margin:0 1px;border-radius:7px;background:var(--accent-soft);border:1px solid var(--line-strong);color:var(--accent-text);font-weight:800;white-space:normal}
+.gh-go{justify-self:start;min-height:44px}
+.gh-career{display:flex;align-items:center;gap:12px;margin:0 0 6px}
+.gh-career h3{margin:0;font-size:1.2rem;line-height:1.25}
+.gh-career small{color:var(--muted)}
+.gh-career-ico{flex:none;display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:var(--accent-soft);font-size:1.6rem}
+.gh-now{flex:none;padding:3px 10px;border-radius:var(--radius-pill);background:var(--good-soft);color:var(--good);font-size:.8rem;font-style:normal;font-weight:800}
+.gh-intro{margin:0 0 12px;color:var(--ink-2)}
+.gh-stub{margin:0 0 12px}
+.gh-shots .tut-steps{gap:14px}
+.gh-hit{margin:0 0 8px}
+.gh-hit-head{display:flex;align-items:center;gap:8px;width:100%;min-height:48px;padding:6px 14px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line);color:var(--ink);font:inherit;font-weight:700;text-align:left;cursor:pointer}
+.gh-none,.gh-count-line{margin:4px 2px 10px}
+html.large-text .gh-hub{font-size:1.1rem}

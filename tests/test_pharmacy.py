@@ -193,7 +193,7 @@ class RestockTests(unittest.TestCase):
         j = Journey('pharmacy')
         lot = next(k for k, v in LOT_INDEX.items() if v['status'] == 'available')
         before = j.c['stock'].get(lot, 0)
-        j.act('order_stock', item=lot, qty=1)  # the distributor's midday run (order before 11:00)
+        j.act('order_stock', item=lot, qty=1)  # the distributor's 10:00 run (order before 09:00)
         sid = j.c['shipments'][-1]['id']
 
         def shown():
@@ -207,7 +207,8 @@ class RestockTests(unittest.TestCase):
             j.act('advance')
             waited += 1
             self.assertLess(waited, 40)
-        self.assertGreaterEqual(waited, 12)  # 13:00 at the earliest, four hours and more after opening
+        self.assertGreaterEqual(waited, 5)  # 10:00 at the earliest, two hours after opening
+        self.assertLessEqual(waited, 10)  # 11:30 at the latest, even with a late van
         j.act('receive_stock', shipment=sid, count=1)
         self.assertEqual(j.c['stock'][lot], before + 1)
         validate_state(j.state)

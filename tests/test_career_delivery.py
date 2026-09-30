@@ -1,10 +1,12 @@
 import copy
 import json
 import unittest
+from unittest import mock
 
 import game.careers.kit as kit
 from game.engine import GameError, public_state, validate_state
 from game.careers import delivery as D
+from game.careers import till
 from tests.helpers import Journey
 
 
@@ -82,7 +84,7 @@ class DeliveryTests(unittest.TestCase):
         j.act('dl_ride')
         earned = j.c['earnings']
         j.act('dl_deliver', task=F1)
-        self.assertEqual(j.c['earnings'] - earned, 8 + 2 * 10 + D.SPEC['tip'])
+        self.assertEqual(j.c['earnings'] - earned, 8 + 2 * 10)
         j.act('dl_ride')
         j.act('dl_deliver', task=P1)
         j.act('dl_ride')
@@ -169,7 +171,7 @@ class DeliveryTests(unittest.TestCase):
         ride(j, 'alley')
         before = j.c['earnings']
         j.act('dl_deliver', task=p3, change=5)
-        self.assertEqual(j.c['earnings'] - before, 10 + 2 * 2 + 3 + D.SPEC['tip'])
+        self.assertEqual(j.c['earnings'] - before, 10 + 2 * 2 + 3)
         self.assertEqual(crit(review(j, p3))['accuracy'], 5)
         # Not reporting is a mistake.
         j, p3 = journey('P3')
@@ -306,7 +308,8 @@ class DeliveryTests(unittest.TestCase):
         wait_until(j, 40)
         with self.assertRaises(GameError):
             j.act('dl_deliver', task=p2)                 # COD needs a change count
-        r = j.act('dl_deliver', task=p2, change=73)      # 10 too many
+        with mock.patch.object(till, 'honest', return_value=False):
+            r = j.act('dl_deliver', task=p2, change=73)      # 10 too many, and the customer keeps it
         self.assertIn('thối dư 10', r['message'])
         d = data(j)
         self.assertEqual((d['owed'], d['bag']), (137, 127))
@@ -317,17 +320,28 @@ class DeliveryTests(unittest.TestCase):
         money = j.c['money']
         j.act('dl_settle', amount=137, confirm=True)
         self.assertEqual(j.c['money'], money - 10)
-        # Short change: the customer notices and the courier hands over the rest.
+        # Short change: a careful customer counts it at the door; the courier adds the rest himself.
         j, f4 = journey('F4')
         ride(j, 'com')
         wait_until(j, 10)
         j.act('dl_check', task=f4)
         j.act('dl_load', task=f4)
         ride(j, 'alley')
-        r = j.act('dl_deliver', task=f4, change=0)
+        with mock.patch.object(till, 'careful', return_value=True):
+            r = j.act('dl_deliver', task=f4, change=0)
         self.assertIn('Thối thiếu 2', r['message'])
-        self.assertEqual(j.get(f4)['run']['change'], 2)
-        self.assertEqual(data(j)['bag'], 18)
+        self.assertTrue(r.get('refused'))
+        t = j.get(f4)
+        self.assertEqual((t['status'], t['run']['change'], t['run']['asked'], data(j)['bag']), ('in_progress', None, 1, 0))
+        clock = data(j)['clock']
+        j.act('dl_deliver', task=f4, change=1)           # still short: asked again, not taken home
+        self.assertEqual((j.get(f4)['status'], data(j)['clock']), ('in_progress', clock))
+        j.act('dl_deliver', task=f4, change=2)
+        t = j.get(f4)
+        self.assertEqual((t['status'], t['run']['change'] + t['run']['tip'], data(j)['bag']), ('completed', 2, 18))
+        self.assertIn('change_short', [x['code'] for x in t['slips']])
+        self.assertEqual(crit(review(j, f4))['cash'], 4)
+        self.assertNotIn(t['reaction']['kind'], ('discount', 'refund', 'walkout'))   # complained once, no money off
 
     def test_cod_cap_forces_handing_in_cash(self):
         j, p2, p10 = journey('P2', 'P10')
@@ -378,7 +392,7 @@ class DeliveryTests(unittest.TestCase):
         self.assertEqual(t['run']['late'], 15)
         # The flat late deduction, or the customer's own cut when they complain (never both).
         cut = t['reaction']['cut']
-        self.assertEqual(j.c['earnings'] - earned, (8 + 20 - cut if cut else 8 + 20 - D.LATE_FEE) + D.SPEC['tip'])
+        self.assertEqual(j.c['earnings'] - earned, (8 + 20 - cut if cut else 8 + 20 - D.LATE_FEE))
         self.assertEqual(t['slips'][0]['code'], 'late')
         self.assertEqual(crit(review(j, f1))['time'], 3)
 
@@ -767,7 +781,8 @@ class DeliveryRoadTests(unittest.TestCase):
         wait_until(j, j.get(tid)['run']['t0'] + j.get(tid)['_away'])
         j.act('dl_deliver', task=tid, change=n['cash'] - n['cod'])
         j.act('dl_decide', option='discount')
-        j.act('dl_deliver', task=tid, change=n['cash'] - n['cod'])
+        # The customer pays COD − discount: the right change is 10 more, and the bag is short once.
+        j.act('dl_deliver', task=tid, change=n['cash'] - n['cod'] + D.DISCOUNT)
         d = data(j)
         self.assertEqual(j.get(tid)['status'], 'completed')
         self.assertEqual(d['owed'] - d['bag'], D.DISCOUNT)
@@ -981,25 +996,27 @@ class DeliveryConsequenceTests(unittest.TestCase):
         j.act('dl_ride', way=way)
         earned = j.c['earnings']
         r = j.act('dl_deliver', task=tid, **({} if change is None else dict(change=change)))
-        return j, tid, j.c['earnings'] - earned - D.SPEC['tip'], r
+        return j, tid, j.c['earnings'] - earned, r
 
     def test_right_delivery_full_fee_no_slips(self):
         j, tid, got, _ = self._food('F4', change=2)
         t = j.get(tid)
         self.assertEqual(t.get('slips') or [], [])
         self.assertEqual(t['reaction']['kind'], 'accept')
-        self.assertEqual(got, t['run']['fee'])
-        self.assertEqual(got, D._fee(j.c, t))
+        self.assertEqual(got - t.get('tip_given', 0), t['run']['fee'])   # maybe "khỏi thối": the 2 xu change as a tip
+        self.assertEqual(got - t.get('tip_given', 0), D._fee(j.c, t))
         self.assertGreaterEqual(review(j, tid)['stars'], 4)
 
     def test_short_change_and_spilled_soup_are_named_in_the_review(self):
-        j, tid, _, _ = self._food('F4', change=0)
+        with mock.patch.object(till, 'careful', return_value=False):
+            j, tid, _, _ = self._food('F4', change=0)       # nobody counted: found at home
         t = j.get(tid)
-        self.assertEqual([s['code'] for s in t['slips']], ['short_change'])
+        self.assertEqual([s['code'] for s in t['slips']], ['change_home'])
         post = review(j, tid)
-        self.assertLessEqual(post['stars'], 3)
+        self.assertLessEqual(post['stars'], 2)
         self.assertIn('thối thiếu', post['text'])
-        self.assertIn(t['reaction']['kind'], ('accept', 'grumble', 'discount', 'refund'))
+        self.assertEqual(t['reaction']['kind'], 'accept')   # they did not notice at the door
+        self.assertEqual(crit(post)['cash'], 2)
         j, tid, _, _ = self._food('F4', change=2, way='short')
         t = j.get(tid)
         self.assertEqual([s['code'] for s in t['slips']], ['spilled'])
@@ -1230,7 +1247,8 @@ class DeliveryCareTests(unittest.TestCase):
                 with self.assertRaises(GameError):
                     j.act('dl_care', task=tid, kind='carry')  # once is enough
             money = j.c['money']
-            r = hand_over(j, tid)
+            with mock.patch.object(till, 'waves_off', return_value=False):   # the coffee money is her one tip
+                r = hand_over(j, tid)
             return j, tid, r, j.c['money'] - money
         j, tid, r, got = visit(True)
         reg = data(j)['regulars'][UT]
@@ -1239,6 +1257,8 @@ class DeliveryCareTests(unittest.TestCase):
         self.assertEqual(crit(review(j, tid))['wishes'], 5)
         self.assertIn('tiền cà phê', r['message'])
         self.assertEqual(data(j)['stats']['regular_tips'], 2)
+        self.assertEqual(j.get(tid)['tip_given'], 2)
+        self.assertEqual(sum(x['amount'] for x in j.c['ops']['finance']['ledger'] if x.get('ref') == tid and x.get('category') == 'tip'), 2)
         self.assertEqual(reg['notes'], ['ut-carry', 'ut-call'])  # the third visit tells the second note
         j2, tid2, r2, got2 = visit(False)
         self.assertEqual(data(j2)['regulars'][UT]['bond'], 2)

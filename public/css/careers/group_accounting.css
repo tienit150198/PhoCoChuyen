@@ -176,3 +176,12 @@
 .ga-sum .ga-sum-trust{margin:0 0 6px}
 .ga-sum .ga-sum-note{margin:0 0 8px;padding:8px 10px;border-radius:10px;background:var(--good-soft)}
 .ga-sum .ga-sum-note.bad{background:var(--bad-soft)}
+/* phone: paper tabs one line each; the source shows in the open paper's header, only "Cần mở cho bước này" stays on a tab */
+@container sheet (max-width:559px){
+  .career-job.ga .ga-tab{min-height:44px;flex-basis:140px}
+  .career-job.ga .ga-tab:not(.need) small{display:none}
+}
+/* phone: the reasons / hint / clear buttons two per row, so the picked lines stay in view above the bar */
+@container sheet (max-width:559px){
+  .career-job.ga .ok-bar .ok-bar-btns>.btn:not(.gd-cta){flex:1 1 calc(50% - 4px);min-width:0;min-height:44px}
+}

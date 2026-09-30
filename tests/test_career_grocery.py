@@ -608,27 +608,57 @@ def set_stock(j, item, qty):
     top_up(j, item, qty)
 
 
-def serve_rush(j, wrong_first=False):
+def ring_up(j, tid):
+    """Scan what the customer at the counter takes home (the lines on their basket card)."""
+    o = j.get(tid)['rush']['offer']
+    for item, u in o['units'].items():
+        more = u - o['scanned'].get(item, 0)
+        if more > 0:
+            j.act('gr_rush_scan', task=tid, item=item, qty=more)
+
+
+def serve_rush(j, wrong_first=False, give=None, lock=None, id_check=True, check=None):
+    """Serve the whole queue at the till: ID, scan, “Tính tiền”, count the change, hand it over.
+    give(t, i, due) -> the change to put in the tray (default: exactly `due`);
+    lock(j, tid, t, i) -> True when it rang the bill up itself (to ring up a wrong bill);
+    id_check: ask every beer buyer for ID (True), nobody (False) or those id_check(queue_row) picks;
+    check(j) runs after every beat (e.g. a save round trip)."""
     tid = j.task['id']
-    while j.get(tid)['status'] != 'completed':
-        t = j.get(tid)
-        r = t['rush']
-        q = t['needs']['queue'][r['i']]
-        if any(i in G.AGE_LIMITED for i, _ in q['items']) and str(r['i']) not in r['ages']:
-            j.act('gr_rush_id', task=tid)
-            continue
-        o = j.get(tid)['rush']['offer']
-        correct = sum(G._price(j.c, k) * v for k, v in o['units'].items())
-        pick = correct
-        if wrong_first and r['i'] == 0:
-            pick = next(x for x in o['totals'] if x > correct)
-        j.act('gr_rush_total', task=tid, total=pick)
+    for _ in range(80):
         t = j.get(tid)
         if t['status'] == 'completed':
             break
-        o = t['rush']['offer']
-        if o and o['charged'] is not None and o['changes']:
-            j.act('gr_rush_change', task=tid, change=sum(o['tender']) - o['charged'])
+        r = t['rush']
+        i, q, o = r['i'], t['needs']['queue'][r['i']], r['offer']
+        if (id_check(q) if callable(id_check) else id_check) and any(k in G.AGE_LIMITED for k, _ in q['items']) and str(i) not in r['ages'] and o['charged'] is None:
+            j.act('gr_rush_id', task=tid)
+        elif o['charged'] is None:
+            if not o['units'] and not o['scanned']:
+                j.act('gr_rush_total', task=tid)           # empty shelf: “Xin lỗi, mời khách sau”
+            elif not (lock and lock(j, tid, t, i)):
+                if wrong_first and i == 0 and not o['miss']:
+                    other = next(k for k in G.PRICES if k not in o['units'] and k not in G.WEIGHED and k not in G.AGE_LIMITED)
+                    j.act('gr_rush_scan', task=tid, item=other, qty=1)
+                    ring_up(j, tid)
+                    r = j.act('gr_rush_total', task=tid)
+                    assert r.get('refused'), r
+                    j.act('gr_rush_void', task=tid, item=other)
+                for k, v in list(o['scanned'].items()):
+                    if v > o['units'].get(k, 0):             # rung up too many: take the line off, ring it again
+                        j.act('gr_rush_void', task=tid, item=k)
+                ring_up(j, tid)
+                j.act('gr_rush_total', task=tid)
+        else:
+            due = sum(o['tender']) - o['charged']
+            if not o['change'] and not o['counted']:
+                for d in G._greedy(give(t, i, due) if give else due):
+                    j.act('gr_rush_change', task=tid, denom=d)
+            elif o['counted']:
+                for d in G._greedy(due - sum(o['change'])):  # the customer counted it: top it up
+                    j.act('gr_rush_change', task=tid, denom=d)
+            j.act('gr_rush_pay', task=tid)
+        if check:
+            check(j)
     return j.get(tid)
 
 
@@ -850,29 +880,90 @@ class GroceryStockTests(unittest.TestCase):
         roundtrip(j)
 
 
+def rush_journeys(pred=lambda t: True, days=range(2, 41)):
+    """Every rush of those days (fresh Journey, shelves stocked), in order."""
+    for day in days:
+        for slot in range(8):
+            if (day, slot) not in _MADE:
+                _MADE[day, slot] = G.make_task(day, slot, 1)
+            t = _MADE[day, slot]
+            if t['kind'] == 'rush' and pred(t):
+                j = Journey('grocery', slot=slot, day=day)
+                restock(j)
+                yield j
+
+
+def feedback_rows(j, tid):
+    return {c['key']: c for c in G.feedback(j.c, j.get(tid))['criteria']}
+
+
 class GroceryRushTests(unittest.TestCase):
+    """Rush hour is the normal counter, faster: scan, the till totals, count the change, hand it over."""
+
     def _rush(self, pred=lambda t: True):
-        day, slot = find(lambda t: t['kind'] == 'rush' and pred(t))
-        j = Journey('grocery', slot=slot, day=day)
-        restock(j)
-        return j
+        return next(rush_journeys(pred))
+
+    def _review(self, j, ref):
+        return next((p for p in j.c['feed'] if p.get('source') == ref and p.get('kind') == 'review'), None)
+
+    def _one(self, hit, want, **kw):
+        """Serve rushes until `hit(t, i, due)` picks a customer; returns (j, t, i) for that rush."""
+        for j in rush_journeys():
+            j.act('ask')
+            picked = []
+
+            def give(t, i, due):
+                if not picked and hit(t, i, due):
+                    picked.append(i)
+                    return want(due)
+                return due
+            t = serve_rush(j, give=give, check=roundtrip, **kw)
+            if picked:
+                return j, t, picked[0]
+        self.fail('no rush customer matched')
 
     def test_clean_rush_pays_every_customer(self):
         j = self._rush()
         tid = j.task['id']
         with self.assertRaises(GameError):
-            j.act('gr_rush_total', total=1)                     # queue not opened yet
+            j.act('gr_rush_total')                               # queue not opened yet
         j.act('ask')
         self.assertIsNotNone(j.task['rush']['start'])
         money = j.c['money']
-        t = serve_rush(j)
+        t = serve_rush(j, check=roundtrip)
         self.assertEqual(t['status'], 'completed')
         self.assertEqual(t['mistakes'], 0)
         self.assertEqual(t['rush']['left'], 0)
         self.assertGreater(t['rush']['cash'], 0)
         self.assertGreaterEqual(j.c['money'] - money, t['rush']['cash'])
+        self.assertTrue(all(x['stars'] == 5 for x in t['rush']['log'] if x['status'] == 'served'))
         post = next(p for p in j.c['feed'] if p.get('source') == tid)
         self.assertGreaterEqual(post['stars'], 4)
+        rows = G.feedback(j.c, t)['criteria']
+        names = [G.PEOPLE[q['npc']][0] for q in t['needs']['queue']]
+        self.assertEqual([r['label'] for r in rows if r['key'].startswith('c')], [f'Tính tiền cho {n}' for n in names])
+        roundtrip(j)
+
+    def test_the_till_adds_what_was_scanned(self):
+        j = self._rush()
+        j.act('ask')
+        tid = j.task['id']
+        o = j.task['rush']['offer']
+        item = next(iter(o['units']))
+        r = j.act('gr_rush_scan', task=tid, item=item, qty=1)
+        self.assertIn(f'Máy tính tiền: {G._price(j.c, item)} xu', r['message'])
+        self.assertEqual(j.get(tid)['rush']['offer']['scanned'], {item: 1})
+        j.act('gr_rush_void', task=tid, item=item)
+        self.assertEqual(j.get(tid)['rush']['offer']['scanned'], {})
+        with self.assertRaises(GameError):
+            j.act('gr_rush_total', task=tid)                     # nothing rung up yet
+        with self.assertRaises(GameError):
+            j.act('gr_rush_change', task=tid, denom=5)           # no money on the counter yet
+        with self.assertRaises(GameError):
+            j.act('gr_rush_scan', task=tid, item='rice', qty=1)  # nothing weighed in the rush
+        turn = j.c['turn']
+        j.act('gr_rush_scan', task=tid, item=item, qty=1)
+        self.assertEqual(j.c['turn'], turn, 'scanning is quick: no beat')
         roundtrip(j)
 
     def test_empty_shelf_customer_is_sent_away_without_a_total(self):
@@ -885,9 +976,10 @@ class GroceryRushTests(unittest.TestCase):
         r = j.get(tid)['rush']
         self.assertFalse(r['offer']['units'])
         i = r['i']
-        j.act('gr_rush_total', task=tid)          # the page sends no total ("Xin lỗi, mời khách sau")
+        j.act('gr_rush_total', task=tid)          # “🙏 Xin lỗi, mời khách sau”
         self.assertEqual(j.get(tid)['rush']['log'][-1]['status'], 'empty')
         self.assertNotEqual(j.get(tid)['rush']['i'], i)
+        roundtrip(j)
 
     def test_a_crate_counted_onto_the_shelf_brings_the_rush_customer_back(self):
         # "Kệ hết món khách cần": the counter offers the stock room; once the crate is counted the
@@ -911,58 +1003,268 @@ class GroceryRushTests(unittest.TestCase):
         offer = j.get(tid)['rush']['offer']
         self.assertEqual(offer['units'].get(item), min(qty, o['actual']))
         self.assertIsNone(offer['charged'])
-        self.assertIn(sum(G._price(j.c, k) * v for k, v in offer['units'].items()), offer['totals'])
+        ring_up(j, tid)
+        j.act('gr_rush_total', task=tid)
+        offer = j.get(tid)['rush']['offer']
+        self.assertEqual(offer['charged'], G._price(j.c, item) * min(qty, o['actual']))
         roundtrip(j)
 
-    def test_wrong_total_is_caught_and_counted(self):
+    def test_a_shelf_change_after_scanning_keeps_the_till_and_asks_to_look_again(self):
         j = self._rush()
         j.act('ask')
-        t = serve_rush(j, wrong_first=True)
+        tid = j.task['id']
+        ring_up(j, tid)
+        item, u = next(iter(j.get(tid)['rush']['offer']['units'].items()))
+        set_stock(j, item, u - 1 + G._held(j.c, item, None) - j.get(tid)['rush']['offer']['scanned'][item])
+        r = j.act('gr_rush_total', task=tid)
+        self.assertTrue(r.get('refused'))
+        self.assertIn('Kệ vừa thay đổi', r['message'])
+        o = j.get(tid)['rush']['offer']
+        self.assertEqual(o['units'].get(item, 0), u - 1)
+        self.assertEqual(o['scanned'][item], u, 'what was rung up stays on the till')
+        roundtrip(j)
+
+    def test_scanning_something_the_customer_is_not_buying_is_pointed_out(self):
+        j = self._rush()
+        j.act('ask')
+        t = serve_rush(j, wrong_first=True, check=roundtrip)
         self.assertEqual(t['rush']['flags']['over'], 1)
         self.assertEqual(t['mistakes'], 1)
+        first = t['rush']['log'][0]
+        self.assertEqual(first['stars'], 4)
+        self.assertIn('bấm dư', first['note'])
+        self.assertEqual([s['code'] for s in t['slips']], ['bill0'])
         with self.assertRaises(GameError):
-            j.act('gr_rush_total', task=t['id'], total=10)      # finished task
+            j.act('gr_rush_total', task=t['id'])                 # finished task
+
+    def test_one_extra_unit_only_a_careful_customer_reads_on_the_screen(self):
+        for careful in (True, False):
+            with self.subTest(careful=careful):
+                seen = []
+
+                def lock(j, tid, t, i):
+                    q = t['needs']['queue'][i]
+                    o = t['rush']['offer']
+                    if seen or G._careful(t, i, q['npc']) != careful or not o['units'] or any(k in G.AGE_LIMITED for k, _ in q['items']):
+                        return False
+                    seen.append(i)
+                    ring_up(j, tid)
+                    item = next(iter(o['units']))
+                    j.act('gr_rush_scan', task=tid, item=item, qty=1)   # one too many
+                    r = j.act('gr_rush_total', task=tid)
+                    seen.append((item, r))
+                    return True
+                for j in rush_journeys():
+                    j.act('ask')
+                    t = serve_rush(j, lock=lock, check=roundtrip)
+                    if seen:
+                        break
+                i, (item, r) = seen
+                x = t['rush']['log'][i]
+                if careful:
+                    self.assertTrue(r.get('refused'))
+                    self.assertEqual(x['stars'], 4)
+                    self.assertIn(f'bill{i}', [s['code'] for s in t['slips']])
+                else:
+                    self.assertFalse(r.get('refused'))
+                    over = G._price(j.c, item)
+                    self.assertEqual(x['stars'], 2 if over < 10 else 1)
+                    self.assertIn(f'tính dư {over} xu', x['note'])
+                    self.assertIn(f'home{i}', [s['code'] for s in t['slips']])
+                    later = self._review(j, f'{t["id"]}-{i}')
+                    self.assertIsNotNone(later)
+                    self.assertIn('tính dư', later['text'])
+                self.assertEqual(t['rush']['flags']['over'], 1)
+
+    def test_an_undercharge_is_pointed_out_by_honest_people_and_goes_home_with_the_rest(self):
+        for honest in (True, False):
+            with self.subTest(honest=honest):
+                seen = []
+
+                def lock(j, tid, t, i):
+                    q = t['needs']['queue'][i]
+                    o = t['rush']['offer']
+                    if seen or bool(G.HONEST[q['npc']]) != honest or sum(o['units'].values()) < 2 or any(k in G.AGE_LIMITED for k, _ in q['items']):
+                        return False
+                    ring_up(j, tid)
+                    item = next(iter(o['units']))
+                    j.act('gr_rush_void', task=tid, item=item)
+                    if o['units'][item] > 1:
+                        j.act('gr_rush_scan', task=tid, item=item, qty=o['units'][item] - 1)
+                    seen.extend([i, item, j.act('gr_rush_total', task=tid)])
+                    return True
+                for j in rush_journeys():
+                    j.act('ask')
+                    t = serve_rush(j, lock=lock, check=roundtrip)
+                    if seen:
+                        break
+                i, item, r = seen
+                self.assertEqual(t['rush']['flags']['under'], 1)
+                if honest:
+                    self.assertTrue(r.get('refused'))
+                    self.assertIn('chưa tính', r['message'])
+                    self.assertEqual(t['rush']['log'][i]['stars'], 4)
+                else:
+                    self.assertFalse(r.get('refused'))
+                    self.assertIn('quét sót', t['rush']['log'][i]['note'])
+                    self.assertEqual(t['rush']['log'][i]['stars'], 5, 'the customer is happy: the shop lost it')
+
+    def test_right_change_sometimes_leaves_the_small_change_as_a_tip(self):
+        found = False
+        for j in rush_journeys():
+            j.act('ask')
+            tid = j.task['id']
+            before = ledger_mark(j)
+            t = serve_rush(j, check=roundtrip)
+            tips = [x for x in t['rush']['log'] if x['tip']]
+            if not tips:
+                continue
+            found = True
+            rows = [e for e in j.c['ops']['finance']['ledger'][before:] if e['ref'] == tid and e['category'] == 'tip']
+            self.assertEqual(sum(e['amount'] for e in rows), sum(x['tip'] for x in tips))
+            self.assertEqual(len(rows), len(tips), 'each tip is paid once')
+            self.assertEqual(t['tip_given'], sum(x['tip'] for x in tips))
+            self.assertEqual(t['result']['tips'], t['tip_given'])
+            for x in tips:
+                npc = t['needs']['queue'][x['i']]['npc']
+                self.assertGreater(G.KEEP[npc], 0)
+                self.assertLessEqual(x['tip'], G.KEEP_MAX)
+                self.assertIn('khỏi thối', x['note'])
+            self.assertEqual(paid(j, before, tid), t['rush']['cash'] - t['reaction']['cut'])
+            break
+        self.assertTrue(found)
+
+    def test_short_change_a_careful_customer_counts_at_the_counter(self):
+        j, t, i = self._one(lambda t, i, due: due > 1 and G._careful(t, i, t['needs']['queue'][i]['npc']), lambda due: due - 1)
+        x = t['rush']['log'][i]
+        self.assertEqual(x['stars'], 3)
+        self.assertIn('thối thiếu 1 xu', x['note'])
+        self.assertEqual(t['rush']['flags']['short'], 1)
+        slip = next(s for s in t['slips'] if s['code'] == f'short{i}')
+        self.assertEqual(slip['sev'], 1)
+        rows = feedback_rows(j, t['id'])
+        self.assertEqual(rows[f'c{i}']['score'], 3)
+        post = next(p for p in j.c['feed'] if p.get('source') == t['id'])
+        self.assertLessEqual(post['stars'], 4)
+        self.assertIsNone(self._review(j, f'{t["id"]}-{i}'), 'said at the counter, no second review')
+
+    def test_short_change_nobody_counts_is_found_at_home(self):
+        j, t, i = self._one(lambda t, i, due: due >= 3 and not G._careful(t, i, t['needs']['queue'][i]['npc']), lambda due: due - 3)
+        x = t['rush']['log'][i]
+        self.assertEqual(x['stars'], 2)
+        self.assertIn('thối thiếu 3 xu', x['note'])
+        self.assertEqual(x['_later'], '', 'the review is posted once')
+        later = self._review(j, f'{t["id"]}-{i}')
+        self.assertEqual(later['stars'], 2)
+        self.assertIn('thối thiếu 3 xu', later['text'])
+        self.assertEqual(later['npc'], kit.npc_id(G.ID, t['needs']['queue'][i]['npc']))
+        slip = next(s for s in t['slips'] if s['code'] == f'home{i}')
+        self.assertEqual(slip['sev'], 2)
+        post = next(p for p in j.c['feed'] if p.get('source') == t['id'])
+        self.assertLessEqual(post['stars'], 3)
+        o_paid = x['paid']
+        self.assertEqual(t['rush']['cash'], sum(v['paid'] for v in t['rush']['log']))
+        self.assertGreater(o_paid, 0)
+        view = next(v for v in public_state(j.state)['careers']['grocery']['tasks'] if v['id'] == t['id'])
+        self.assertNotIn('_later', view['rush']['log'][i])
+
+    def test_a_big_short_change_found_at_home_is_reported(self):
+        j, t, i = self._one(lambda t, i, due: due >= 20 and not G._careful(t, i, t['needs']['queue'][i]['npc']), lambda due: due - 20)
+        self.assertEqual(t['rush']['log'][i]['stars'], 1)
+        self.assertEqual(next(s for s in t['slips'] if s['code'] == f'home{i}')['sev'], 3)
+        self.assertTrue(any(p.get('report') for p in j.c['feed'] if p.get('source') == t['id']))
+
+    def test_excess_change_honest_customers_hand_it_back(self):
+        j, t, i = self._one(lambda t, i, due: G.HONEST[t['needs']['queue'][i]['npc']], lambda due: due + 5)
+        x = t['rush']['log'][i]
+        self.assertEqual(x['stars'], 4)
+        self.assertIn('thối dư 5 xu', x['note'])
+        self.assertEqual(t['rush']['loss'], 0)
+        self.assertEqual(next(s for s in t['slips'] if s['code'] == f'excess{i}')['sev'], 1)
+
+    def test_excess_change_others_walk_off_with_it(self):
+        j, t, i = self._one(lambda t, i, due: not G.HONEST[t['needs']['queue'][i]['npc']] and due >= 0, lambda due: due + 5)
+        x = t['rush']['log'][i]
+        self.assertEqual(t['rush']['loss'], 5)
+        self.assertIn('cầm đi luôn', x['note'])
+        self.assertEqual(t['rush']['cash'], sum(v['paid'] for v in t['rush']['log']))
+        self.assertEqual(t['rush']['flags']['excess'], 1)
 
     def test_minor_beer_needs_id_and_is_left_on_the_shelf(self):
         j = self._rush(lambda t: any(q['npc'] == 3 and any(i == 'beer' for i, _ in q['items']) for q in t['needs']['queue']))
         j.act('ask')
         tid = j.task['id']
         beer = kit.stock(j.c, 'beer')
-        sold_beer = 0
-        while j.get(tid)['status'] != 'completed':
-            t = j.get(tid)
-            r = t['rush']
-            q = t['needs']['queue'][r['i']]
-            has_beer = any(i == 'beer' for i, _ in q['items'])
-            if has_beer and str(r['i']) not in r['ages']:
-                j.act('gr_rush_id', task=tid)
-                if q['npc'] != 3:
-                    sold_beer += dict(q['items'])['beer']
-                continue
-            o = r['offer']
-            if q['npc'] == 3 and has_beer:
-                self.assertNotIn('beer', o['units'])
-            correct = sum(G._price(j.c, k) * v for k, v in o['units'].items())
-            j.act('gr_rush_total', task=tid, total=correct)
-            t = j.get(tid)
-            if t['status'] != 'completed' and t['rush']['offer'] and t['rush']['offer']['changes']:
-                o = t['rush']['offer']
-                j.act('gr_rush_change', task=tid, change=sum(o['tender']) - o['charged'])
-        t = j.get(tid)
+        q = j.task['needs']['queue']
+        sold = sum(dict(v['items']).get('beer', 0) for v in q if v['npc'] != 3)
+        t = serve_rush(j, check=roundtrip)
         self.assertEqual(t['rush']['flags']['minor'], 1)
-        self.assertEqual(kit.stock(j.c, 'beer'), beer - sold_beer)
+        self.assertEqual(t['mistakes'], 0)
+        self.assertEqual(kit.stock(j.c, 'beer'), beer - sold)
+        self.assertEqual(feedback_rows(j, tid)['rules']['score'], 5)
+
+    def test_beer_rung_up_before_the_id_check_is_taken_off_the_till(self):
+        j = self._rush(lambda t: t['needs']['queue'][0]['npc'] == 3 and any(i == 'beer' for i, _ in t['needs']['queue'][0]['items']))
+        j.act('ask')
+        tid = j.task['id']
+        ring_up(j, tid)
+        self.assertIn('beer', j.get(tid)['rush']['offer']['scanned'])
+        r = j.act('gr_rush_id', task=tid)
+        self.assertIn('Xóa', r['message'])
+        o = j.get(tid)['rush']['offer']
+        self.assertNotIn('beer', o['units'])
+        with self.assertRaises(GameError):
+            j.act('gr_rush_scan', task=tid, item='beer', qty=1)
+        r = j.act('gr_rush_total', task=tid)
+        self.assertTrue(r.get('refused'), 'the customer is not charged for the beer they cannot take')
+        j.act('gr_rush_void', task=tid, item='beer')
+        j.act('gr_rush_total', task=tid)
+        o = j.get(tid)['rush']['offer']
+        self.assertEqual(o['charged'], sum(G._price(j.c, k) * v for k, v in o['units'].items()))
+        roundtrip(j)
 
     def test_customers_walk_out_when_left_waiting(self):
         j = self._rush()
         j.act('ask')
         n = len(j.task['needs']['queue'])
         j.c['turn'] += 50                                      # the queue waited while you did other things
-        o = j.task['rush']['offer']
-        r = j.act('gr_rush_total', total=o['totals'][0])
+        r = j.act('gr_rush_total')
         t = next(x for x in j.c['tasks'] if x['kind'] == 'rush')
         self.assertEqual(t['status'], 'completed')
         self.assertEqual(t['rush']['left'], n)
         self.assertIn('bỏ về', r['message'])
+        roundtrip(j)
+
+    def test_a_tap_meant_for_someone_who_just_left_is_not_applied_to_the_next(self):
+        j = self._rush(lambda t: len(t['needs']['queue']) >= 3)
+        j.act('ask')
+        tid = j.task['id']
+        t = j.get(tid)
+        j.c['turn'] = G._deadline(t, 0) + 1                      # the first customer gave up
+        item = next(iter(t['rush']['offer']['units']))
+        r = j.act('gr_rush_scan', task=tid, item=item, qty=1)
+        self.assertTrue(r.get('refused'))
+        self.assertIn('Mời', r['message'])
+        t = j.get(tid)
+        self.assertEqual(t['rush']['i'], 1)
+        self.assertEqual(t['rush']['offer']['scanned'], {})
+        self.assertEqual(t['rush']['log'][0]['status'], 'left')
+        roundtrip(j)
+
+    def test_money_on_the_counter_keeps_the_customer_until_the_change(self):
+        j = self._rush()
+        j.act('ask')
+        tid = j.task['id']
+        ring_up(j, tid)
+        j.act('gr_rush_total', task=tid)
+        j.c['turn'] += 30
+        o = j.get(tid)['rush']['offer']
+        for d in G._greedy(sum(o['tender']) - o['charged']):
+            j.act('gr_rush_change', task=tid, denom=d)
+        j.act('gr_rush_pay', task=tid)
+        t = j.get(tid)
+        self.assertEqual(t['rush']['log'][0]['status'], 'served')
+        roundtrip(j)
 
     def test_closing_sends_the_queue_home(self):
         j = self._rush()
@@ -971,6 +1273,144 @@ class GroceryRushTests(unittest.TestCase):
         t = next(x for x in j.c['tasks'] if x['kind'] == 'rush')
         self.assertEqual(t['status'], 'completed')
         self.assertIn('hàng chờ', summary['career']['note'])
+
+    def test_closing_with_money_on_the_counter_finishes_that_customer(self):
+        j = self._rush()
+        j.act('ask')
+        tid = j.task['id']
+        ring_up(j, tid)
+        j.act('gr_rush_total', task=tid)
+        charged = j.get(tid)['rush']['offer']['charged']
+        j.act('end_day', carry_event=True)
+        t = j.get(tid)
+        self.assertEqual(t['rush']['log'][0]['status'], 'served')
+        self.assertEqual(t['rush']['log'][0]['paid'], charged)
+        self.assertEqual(t['rush']['log'][0]['stars'], 3)
+        self.assertEqual(t['rush']['served'], 1)
+
+    def test_what_the_basket_card_shows_adds_up_to_what_the_till_charges(self):
+        # Sweep: shelves cut at random, beer for minors, retags in the middle. What the page draws
+        # (the lines it lets you scan, times data.prices) is what the till charges, every customer.
+        import random
+        seen = 0
+        for day in range(2, 41, 5):     # (a full 2–40 sweep takes minutes: run it by hand after changing the rush)
+            for slot in range(8):
+                if (day, slot) not in _MADE:
+                    _MADE[day, slot] = G.make_task(day, slot, 1)
+                if _MADE[day, slot]['kind'] != 'rush':
+                    continue
+                for seed in range(2):
+                    rnd = random.Random(f'{day}-{slot}-{seed}')
+                    j = Journey('grocery', slot=slot, day=day)
+                    restock(j)
+                    for it in G.ITEMS:
+                        if rnd.random() < 0.3:
+                            kit.take(j.c, it['id'], max(0, kit.stock(j.c, it['id']) - rnd.randrange(0, 4)))
+                    j.act('ask')
+                    tid = j.task['id']
+                    for _ in range(60):
+                        t = j.get(tid)
+                        if t['status'] == 'completed':
+                            break
+                        r = t['rush']
+                        q = t['needs']['queue'][r['i']]
+                        if any(k == 'beer' for k, _ in q['items']) and str(r['i']) not in r['ages'] and rnd.random() < 0.8:
+                            j.act('gr_rush_id', task=tid)
+                            continue
+                        if rnd.random() < 0.1:
+                            it = rnd.choice([k for k in G.PRICES if k not in G.WEIGHED])
+                            v = rnd.randrange(G._floor_price(it), G._cap_price(it) + 1)
+                            if v != G._price(j.c, it):
+                                j.act('gr_tag', item=it, price=v)   # a new price tag between two customers
+                                j.c['turn'] -= 1
+                        view = G.public_task(j.get(tid))                     # what the page gets
+                        prices = G.public_data(j.c)['prices']
+                        o = view['rush']['offer']
+                        if not o['units']:
+                            j.act('gr_rush_total', task=tid)
+                            continue
+                        for k, u in o['units'].items():
+                            self.assertLessEqual(u, dict((a, b) for a, b in q['items']).get(k, 0))
+                            if k == 'beer' and r['ages'].get(str(r['i']), 99) < 18:
+                                self.fail('beer offered to a minor after the ID check')
+                            self.assertFalse(j.act('gr_rush_scan', task=tid, item=k, qty=u).get('refused'))
+                        shown = sum(prices[k] * u for k, u in o['units'].items())
+                        res = j.act('gr_rush_total', task=tid)
+                        if res.get('refused'):
+                            continue
+                        seen += 1
+                        o = j.get(tid)['rush']['offer']
+                        self.assertEqual(o['charged'], shown, (day, slot, seed, q['items']))
+                        self.assertIn(f'Máy tính tiền: {shown} xu', res['message'])
+                        self.assertEqual(o['extra'], 0)
+                        self.assertEqual(o['miss'], [])
+                        for d in G._greedy(sum(o['tender']) - o['charged']):
+                            j.act('gr_rush_change', task=tid, denom=d)
+                        j.act('gr_rush_pay', task=tid)
+                    t = j.get(tid)
+                    self.assertEqual(t['status'], 'completed')
+                    self.assertEqual(t['rush']['flags']['over'] + t['rush']['flags']['under'] + t['rush']['flags']['short'], 0)
+                    roundtrip(j)
+        self.assertGreater(seen, 40)
+        # (one full public_state per rush, to be sure the view the page gets is this one)
+        self.assertTrue(public_state(j.state)['careers']['grocery']['data']['prices'])
+
+    def test_old_save_with_a_rush_in_progress_moves_to_the_till(self):
+        # v0.9 rush: pick one of three totals, then one of three change amounts.
+        for charged in (False, True):
+            with self.subTest(charged=charged):
+                j = self._rush()
+                j.act('ask')
+                tid = j.task['id']
+                serve_rush_one = j.get(tid)['needs']['queue'][0]
+                ring_up(j, tid)
+                j.act('gr_rush_total', task=tid)
+                o = j.get(tid)['rush']['offer']
+                for d in G._greedy(sum(o['tender']) - o['charged']):
+                    j.act('gr_rush_change', task=tid, denom=d)
+                j.act('gr_rush_pay', task=tid)
+                t = j.get(tid)
+                r = t['rush']
+                r['log'] = [dict(i=x['i'], status=x['status'], paid=x['paid']) for x in r['log']]
+                units = G._rush_units(j.c, t, r['i'])
+                total = sum(G._price(j.c, k) * v for k, v in units.items())
+                old = dict(i=r['i'], units=units, tender=G._tender(total, t['needs']['queue'][r['i']]['style']) if total else [],
+                           charged=None, changes=None, totals=[total, total + 5, max(0, total - 2)])
+                if charged:
+                    for k, v in units.items():
+                        kit.take(j.c, k, v)
+                    old['charged'] = total
+                    due = sum(old['tender']) - total
+                    old['changes'] = [due, due + 10, due + 5]
+                r['offer'] = old
+                t.pop('tip_given', None)
+                validate_state(j.state)                                  # migrates in place
+                o = j.get(tid)['rush']['offer']
+                self.assertEqual(set(o), set(G.OFFER_KEYS))
+                self.assertEqual(o['charged'], total if charged else None)
+                self.assertEqual(j.get(tid)['rush']['log'][0]['stars'], 5)
+                public_state(j.state)
+                t = serve_rush(j, check=roundtrip)
+                self.assertEqual(t['status'], 'completed')
+                self.assertEqual(t['rush']['left'], 0)
+                roundtrip(j)
+                self.assertTrue(serve_rush_one)
+
+    def test_tampered_rush_fields_are_rejected(self):
+        j = self._rush()
+        j.act('ask')
+        tid = j.task['id']
+        ring_up(j, tid)
+        j.act('gr_rush_total', task=tid)
+        for key, value in (('change', [3]), ('miss', ['nope']), ('counted', -1), ('scanned', {'rice': 1})):
+            bad = copy.deepcopy(j.state)
+            next(t for t in bad['careers']['grocery']['tasks'] if t['id'] == tid)['rush']['offer'][key] = value
+            with self.assertRaises(GameError, msg=key):
+                validate_state(bad)
+        bad = copy.deepcopy(j.state)
+        next(t for t in bad['careers']['grocery']['tasks'] if t['id'] == tid)['tip_given'] = -5
+        with self.assertRaises(GameError):
+            validate_state(bad)
 
 
 class GroceryBulkTests(unittest.TestCase):
@@ -1390,26 +1830,79 @@ class GroceryConsequenceTests(unittest.TestCase):
         self.assertEqual(j.c['money'], money)
         roundtrip(j)
 
+    def _cash_counters(self, pred):
+        """Plain cash checkouts (no flyer, no fake note) whose customer matches pred(t, npc)."""
+        for day in range(1, 41):
+            for slot in range(8):
+                if (day, slot) not in _MADE:
+                    _MADE[day, slot] = G.make_task(day, slot, 1)
+                t = _MADE[day, slot]
+                if (t['kind'] == 'checkout' and t['needs']['pay'] == 'cash' and '_haggle' not in t['needs']
+                        and not t['needs'].get('_fake') and pred(t, G._npc_index(t))):
+                    j = Journey('grocery', slot=slot, day=day)
+                    restock(j)
+                    j.act('ask')
+                    scan_all(j)
+                    if not j.act('gr_total').get('refused'):
+                        yield j
+
+    def test_short_change_nobody_counts_is_found_at_home(self):
+        # Before: every short change was refused at the counter, as if everyone counted it.
+        for j in self._cash_counters(lambda t, npc: not G._careful(t, 'bill', npc)):
+            t = j.task
+            due = sum(t['pay']['tender']) - t['total']
+            if due < 3:
+                continue
+            tid = t['id']
+            give_change(j, due - 3)
+            before = ledger_mark(j)
+            r = j.act('gr_pay', confirm=True)
+            t = j.get(tid)
+            self.assertFalse(r.get('refused'))
+            self.assertEqual(t['status'], 'completed')
+            self.assertEqual(t['result']['short'], 3)
+            self.assertIn('không đếm lại', r['message'])
+            slip = next(s for s in t['slips'] if s['code'] == 'short_home')
+            self.assertEqual(slip['sev'], 2)
+            self.assertEqual(paid(j, before, tid), t['total'] - t['reaction']['cut'] + 3, 'the 3 xu stayed in the drawer')
+            rows = {c['key']: c for c in G.feedback(j.c, t)['criteria']}
+            self.assertEqual(rows['change']['score'], 1)
+            self.assertLessEqual(self._review(j, tid)['stars'], 3)
+            self.assertIn('thối thiếu', self._review(j, tid)['text'].lower())
+            roundtrip(j)
+            return
+        self.fail('no careless cash customer found')
+
+    def test_right_change_sometimes_leaves_the_small_change_as_a_tip(self):
+        for j in self._cash_counters(lambda t, npc: G.KEEP[npc] > 0):
+            t = j.task
+            due = sum(t['pay']['tender']) - t['total']
+            if not G._keep(t, 'bill', G._npc_index(t), due):
+                continue
+            tid = t['id']
+            before = ledger_mark(j)
+            give_change(j, due)
+            r = j.act('gr_pay', confirm=True)
+            t = j.get(tid)
+            tip = t['result']['tip']
+            self.assertEqual(t['tip_given'], tip)
+            self.assertLessEqual(tip, G.KEEP_MAX)
+            rows = [e for e in j.c['ops']['finance']['ledger'][before:] if e['ref'] == tid and e['category'] == 'tip']
+            self.assertEqual([e['amount'] for e in rows if e['reason'].startswith('Khách để lại tiền lẻ')], [tip], 'paid once')
+            self.assertIn('uống nước', r['message'])
+            self.assertEqual(paid(j, before, tid), t['total'])
+            roundtrip(j)
+            return
+        self.fail('no keep-the-change customer found')
+
     def test_rush_beer_to_a_minor_without_id(self):
         day, slot = find(lambda t: t['kind'] == 'rush' and any(q['npc'] == 3 and any(i == 'beer' for i, _ in q['items']) for q in t['needs']['queue']))
         j = Journey('grocery', slot=slot, day=day)
         restock(j)
         tid = j.task['id']
         j.act('ask')
-        while j.get(tid)['status'] != 'completed':
-            t = j.get(tid)
-            r = t['rush']
-            q = t['needs']['queue'][r['i']]
-            if any(i == 'beer' for i, _ in q['items']) and str(r['i']) not in r['ages'] and q['npc'] != 3:
-                j.act('gr_rush_id', task=tid)
-                continue
-            o = r['offer']
-            j.act('gr_rush_total', task=tid, total=sum(G._price(j.c, k) * v for k, v in o['units'].items()))
-            t = j.get(tid)
-            if t['status'] != 'completed' and t['rush']['offer'] and t['rush']['offer']['changes']:
-                o = t['rush']['offer']
-                j.act('gr_rush_change', task=tid, change=sum(o['tender']) - o['charged'])
-        t = j.get(tid)
+        # Everyone's ID is checked except the 15-year-old's: the beer is rung up and leaves with a minor.
+        t = serve_rush(j, id_check=lambda q: q['npc'] != 3, check=roundtrip)
         self.assertEqual(t['slips'][0]['code'], 'minor_beer')
         self.assertEqual(t['reaction']['kind'], 'refuse')
         self.assertLess(t['reaction']['cut'], t['rush']['cash'])    # one customer's worth, not the whole queue

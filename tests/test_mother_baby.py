@@ -455,9 +455,8 @@ class Surprises(unittest.TestCase):
 class Restock(unittest.TestCase):
     def test_parcel_cannot_be_received_before_it_shows_as_arrived(self):
         j = Journey()
-        j.act('order_stock', item='socks', qty=2, supplier='express')  # 30–60 minutes on the shop clock
+        j.act('order_stock', item='socks', qty=2, supplier='express')  # 15–30 minutes on the shop clock
         ship = j.c['shipments'][-1]
-        j.act('advance')
         self.assertFalse(next(x for x in public_state(j.state)['careers']['mother_baby']['shipments'] if x['id'] == ship['id'])['ready_now'])
         unchanged(self, j, 'receive_stock', shipment=ship['id'], count=2)
         for _ in range(3):

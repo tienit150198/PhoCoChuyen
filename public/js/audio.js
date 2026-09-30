@@ -1,7 +1,42 @@
 /** Tiny original synthesised sounds. No audio files or third-party recordings. */
-// One AudioContext for every Sound (app.js, the career desks, v4/sounds.js): phones cap how many can run.
-let shared=null,noise=null;
+// One AudioContext for the page: every Sound (app.js, the career desks, v4/sounds.js) and the background music
+// (v4/music.js). Phones cap how many can run, and iOS lets a context start only inside a tap.
+let shared=null,noise=null,primed=false;
 const AC=()=>window.AudioContext||window.webkitAudioContext;
+const wants=new Set(),hooks=new Set();  // wants: 'sfx' (action sounds on), 'music' (background music on)
+/** The page's AudioContext, created on first use (suspended until a tap starts it); null without Web Audio. */
+export function audioContext(){try{shared??=new (AC())();}catch{/* no Web Audio */}return shared;}
+const doc=globalThis.document,hidden=()=>Boolean(doc?.hidden);
+/** Run the context when someone wants sound. resume() works only inside a tap/key handler on iOS Safari until
+ * the context has once been started by one (then anywhere); 'interrupted' (iOS: call, other app) needs it too. */
+function wake(){const c=shared;if(c&&wants.size&&!hidden()&&c.state!=='running'&&c.state!=='closed')c.resume().catch(()=>{/* next tap */});}
+/** Who needs the context running. Music on: the iPhone plays it like media (through the silent switch);
+ * action sounds alone keep the default session and follow the switch. */
+export function wantAudio(who,on){
+  const had=wants.has(who);if(on)wants.add(who);else wants.delete(who);
+  if(had===Boolean(on))return;
+  try{const s=navigator.audioSession,type=wants.has('music')?'playback':'auto';if(s&&s.type!==type)s.type=type;}catch{/* no Audio Session API */}
+  if(on)wake();
+}
+/** fn() on every tap/key (inside the gesture): v4/music.js starts a song there. */
+export function onGesture(fn){hooks.add(fn);}
+/** Inside a tap/key: start the context. The first tap starts it even when nothing is wanted yet (then pauses
+ * it again): iOS lifts its tap-only rule for good once a tap started a context, so a sound switched on later
+ * (after a server round trip, outside any tap) plays at once. */
+function start(){
+  if(hidden()||(primed&&!wants.size))return;
+  const c=audioContext();if(!c||c.state==='closed')return;
+  if(c.state==='running'){primed=true;return;}
+  c.resume().then(()=>{primed=true;if(!wants.size&&c.state==='running')c.suspend().catch(()=>{});}).catch(()=>{/* the next tap */});
+}
+// Every tap, not only the first one and not only on [data-action] buttons (the Nhạc nền switch is a checkbox).
+// pointerdown/touchstart are not a user activation; pointerup/touchend/click/keydown are.
+function gesture(){start();for(const fn of hooks){try{fn();}catch{/* silent */}}}
+if(doc?.addEventListener){
+  for(const type of ['pointerup','touchend','click','keydown'])addEventListener(type,gesture,{capture:true,passive:true});
+  // Hidden tab: stop the audio thread (the music resumes in place when the tab is back).
+  doc.addEventListener('visibilitychange',()=>{if(hidden()){if(shared?.state==='running')shared.suspend().catch(()=>{});}else wake();});
+}
 // Vietnamese tone marks (NFD) → pitch glide of a babble syllable: sắc up, huyền down, hỏi dip, ngã up-hop, nặng short low.
 const TONES={'\u0301':[1,1.18],'\u0300':[1,.84],'\u0309':[.94,1.04],'\u0303':[1.02,1.2],'\u0323':[.86,.8]};
 const VOWEL={a:1500,e:1900,i:2500,o:950,u:750,y:2400};  // brightness of the syllable's filter by its vowel
@@ -11,8 +46,8 @@ export class Sound {
   set ctx(value){shared=value;}
   /** Create the (suspended) context ahead of time, in idle time: creating it is slow on phones (~100 ms
    * on a throttled CPU) and used to land on the player's very first tap. unlock() then only resumes it. */
-  prepare(){try{shared??=new (AC())();}catch{/* no Web Audio */}}
-  unlock(){try{shared??=new (AC())();if(shared.state==='suspended')shared.resume();}catch{/* Silent play remains fully usable. */}}
+  prepare(){audioContext();}
+  unlock(){try{start();}catch{/* Silent play remains fully usable. */}}
   ready(){return !!(shared&&this.enabled&&shared.state!=='closed');}
   tone(freq,time=.08,volume=.045,delay=0,type='sine',out=null){
     if(!this.ready())return;const t=shared.currentTime+delay,o=shared.createOscillator(),g=shared.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(volume*this.volume,t+.015);g.gain.exponentialRampToValueAtTime(.0001,t+time);o.connect(g);g.connect(out||shared.destination);o.start(t);o.stop(t+time+.03);
@@ -21,7 +56,7 @@ export class Sound {
   success(){[523.25,659.25,783.99,1046.5].forEach((f,i)=>this.tone(f,.36,.038,i*.11));}
   error(){this.tone(245,.14,.03);}
   // Background music lives in v4/music.js; this class only plays short UI sounds.
-  configure(settings){this.enabled=settings.sound!==false;this.volume=Math.max(0,Math.min(1.5,(settings.sfxVolume??70)/70));this.detail=settings.detailSfx!==false;this.voices=settings.npcVoices!==false;}
+  configure(settings){this.enabled=settings.sound!==false;wantAudio('sfx',this.enabled);this.volume=Math.max(0,Math.min(1.5,(settings.sfxVolume??70)/70));this.detail=settings.detailSfx!==false;this.voices=settings.npcVoices!==false;}
   stopMusic(){}
   /* ---- detail sounds (Cài đặt → Âm thanh chi tiết) ---- */
   bell(freq,delay=0,time=.5,volume=.03){this.tone(freq,time,volume,delay);this.tone(freq*2.76,time*.45,volume*.35,delay);}

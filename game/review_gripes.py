@@ -22,7 +22,7 @@ GROUP = {'milk_tea': 'shop', 'cafe_bakery': 'shop', 'restaurant': 'shop', 'groce
          'pharmacy': 'shop', 'florist': 'shop', 'salon': 'shop', 'pet_care': 'shop', 'repair': 'shop',
          'accounting': 'office', 'corp_accounting': 'office', 'tax_payroll': 'office', 'group_accounting': 'office',
          'customer_care': 'support', 'tour_guide': 'tour', 'homestay': 'stay', 'teacher': 'teacher',
-         'delivery': 'delivery', 'farm': 'farm'}
+         'delivery': 'delivery', 'farm': 'farm', 'clothing': 'shop', 'tra_da': 'shop'}
 CUST = ('shop', 'office', 'support', 'tour', 'stay', 'delivery', 'farm')
 LABEL = 'Chuyện ngoài lề'
 CLUE = 'Trừ sao vì chuyện ngoài lề'

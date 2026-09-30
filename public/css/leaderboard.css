@@ -1,0 +1,87 @@
+/* ==========================================================================
+   Bảng xếp hạng (public/js/v4/leaderboard.js): Top trải nghiệm (overall +
+   per workplace) and Top chứng chỉ. Theme tokens only (docs/DESIGN.md).
+   Phone first (390px): big names, 44px tap targets, the workplace picker is
+   one swipeable row; wider sheets wrap the picker and keep one column.
+   Loaded on first use by leaderboard.js (not on the game's first paint).
+   ========================================================================== */
+
+.sheet.lb-sheet{width:min(720px,calc(100vw - 48px))}
+.lb{display:grid;gap:14px;align-content:start}
+.lb>*{min-width:0;margin:0}
+
+/* Board kind: Trải nghiệm | Chứng chỉ */
+.lb-kinds{flex-wrap:nowrap}
+.lb-kinds>button{min-height:44px;font-size:.967rem;gap:6px}
+
+/* Workplace picker */
+.lb-picker{display:flex;flex-wrap:wrap;gap:8px}
+.lb-chip{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:6px 14px;border-radius:var(--radius-pill);
+  background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);font:inherit;font-size:.9rem;font-weight:700;line-height:1.2;
+  white-space:nowrap;cursor:pointer;transition:background var(--dur),border-color var(--dur),color var(--dur)}
+.lb-chip span{font-size:1.15rem;line-height:1}
+.lb-chip:hover{border-color:var(--line-strong)}
+.lb-chip.active{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-text)}
+.lb-chip:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.lb-more{background:transparent;border-style:dashed;color:var(--muted)}
+.lb-more span{font-size:1rem;font-weight:800}
+html[data-layout="phone"] .lb-picker{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;
+  margin:0 calc(-1 * max(14px,var(--safe-r))) 0 calc(-1 * max(14px,var(--safe-l)));padding:2px max(14px,var(--safe-r)) 6px max(14px,var(--safe-l));scrollbar-width:none}
+html[data-layout="phone"] .lb-picker::-webkit-scrollbar{display:none}
+html[data-layout="phone"] .lb-chip{flex:none;scroll-snap-align:start}
+html[data-layout="phone"] .lb-picker.open{flex-wrap:wrap;overflow:visible;margin:0;padding:0}
+
+.lb-rule{font-size:.833rem;line-height:1.5;color:var(--muted)}
+
+/* "Bạn": your place on this board, even outside the top 50 or while hidden */
+.lb-me{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;padding:14px;border-radius:var(--radius);
+  background:var(--info-soft);border:1.5px solid var(--info)}
+.lb-me.hidden-me{background:var(--surface-2);border-style:dashed;border-color:var(--line-strong)}
+.lb-me.empty-me{grid-template-columns:auto minmax(0,1fr);background:var(--surface-2);border:1.5px dashed var(--line-strong)}
+.lb-me-rank{display:grid;justify-items:center;min-width:52px;padding:6px 4px;border-radius:14px;background:var(--surface);color:var(--ink);line-height:1.1}
+.lb-me-rank small{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.lb-me-rank b{font-size:1.45rem;font-weight:800;font-variant-numeric:tabular-nums}
+.empty-me .lb-me-rank{font-size:1.4rem;font-weight:800;color:var(--muted);align-content:center;min-height:52px}
+.lb-me-text{display:grid;gap:3px;min-width:0}
+.lb-me-text>b,.lb-me-text .lb-name-line>b{font-size:1.05rem}
+.lb-me-text p{margin:0;font-size:.9rem;line-height:1.45;color:var(--ink-2)}
+.lb-me-text small{font-size:.833rem;color:var(--muted);line-height:1.4}
+.lb-me-place{font-weight:700;color:var(--ink)!important}
+.lb-me-note{font-size:.833rem!important;color:var(--muted)!important}
+.lb-me-btn{justify-self:start;min-height:44px;margin-top:4px}
+
+/* The top 50 */
+.lb-list{list-style:none;margin:0;padding:0;display:grid;gap:0;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+.lb-row{display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:10px;min-height:60px;padding:8px 14px 8px 8px;border-top:1px solid var(--line)}
+.lb-row:first-child{border-top:0}
+.lb-row.top{background:var(--surface)}
+.lb-row.top1{background:var(--warn-soft)}
+.lb-row.me{background:var(--info-soft);box-shadow:inset 4px 0 0 var(--info)}
+.lb-rank{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--surface-2);color:var(--ink-2);
+  font-size:1.05rem;font-variant-numeric:tabular-nums}
+.lb-rank b{font-weight:800}
+.lb-row.top .lb-rank{background:transparent}
+.lb-medal{font-size:1.7rem;line-height:1}
+.lb-who{display:grid;gap:2px;min-width:0}
+.lb-name-line{display:flex;align-items:center;gap:6px;min-width:0}
+.lb-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:1.05rem;font-weight:800;color:var(--ink)}
+.lb-name-line .tag{flex:none;padding:1px 7px;font-size:.7rem}
+.lb-guest{background:var(--surface-2);color:var(--muted)}
+.lb-who small{font-size:.833rem;line-height:1.35;color:var(--muted);overflow-wrap:anywhere}
+.lb-score{display:grid;justify-items:end;line-height:1.1;text-align:right}
+.lb-score b{font-size:1.15rem;font-weight:800;font-variant-numeric:tabular-nums;color:var(--ink)}
+.lb-score small{font-size:.733rem;font-weight:700;color:var(--muted)}
+
+.lb-loading{display:grid;justify-items:center;gap:6px;padding:28px 8px;color:var(--muted)}
+.lb-empty h3{margin:8px 0 4px}
+.lb-privacy{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;font-size:.8rem;line-height:1.45;color:var(--muted)}
+.lb-privacy>svg{flex:none}
+.lb-privacy>span{flex:1 1 220px;min-width:0}
+.lb-privacy .btn{min-height:44px}
+
+html[data-layout="phone"] .lb-row{padding:8px 12px 8px 6px;gap:8px}
+html[data-layout="phone"] .lb-me{padding:12px;gap:10px}
+@media (max-width:360px){
+  .lb-row{grid-template-columns:40px minmax(0,1fr) auto}
+  .lb-rank{width:40px;height:40px}
+}

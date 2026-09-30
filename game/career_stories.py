@@ -392,6 +392,82 @@ ARCS = {
                 ('co_ngoc', 'Cô nói: ở tiệm có đứa nhỏ hỏi kỹ lắm rồi mới dám cắt.'),
                 ('ba_luu', 'Treo tấm này lên tường đi, cho khách coi.')]),
         ]),
+    'clothing': dict(
+        title='Tiệm may của mẹ', emoji='🧵',
+        keepsake=dict(emoji='🪡', name='Cây kéo cắt vải của Bà Tư', desc='Bà Tư trao cây kéo cũ khi tiệm mới treo bảng hiệu “Tiệm Áo Chỉ Mây”.'),
+        cast={'vy': _p('Chị Vy', '👩', 'Chủ tiệm', 'clothing_npc_01'),
+              'batu': _p('Bà Tư', '👵', 'Thợ may, mẹ chị Vy', 'clothing_npc_08'),
+              'tuan': _p('Tuấn', '🧑‍🎓', 'Sinh viên năm cuối', 'clothing_npc_03')},
+        beats=[
+            _b('Chìa khóa tiệm cũ', '🗝️', 'Chị Vy đứng trước tấm bảng “May đo” đã bạc màu.', [
+                ('vy', 'Hồi nhỏ chị ngủ trưa dưới cái bàn cắt vải này đó {anh}.'),
+                ('batu', 'Mẹ may ở đây ba chục năm. Giờ con Vy muốn bán đồ may sẵn.'),
+                ('vy', 'Con giữ cái máy may của mẹ ở gian bên. Tiệm mới mà vẫn là tiệm mình.'),
+                ('me', 'Để em phụ chị. Có gì cần sửa đồ mình còn có Bà Tư.')]),
+            _b('Bài học thước dây', '📏', 'Bà Tư ngoắc bạn vào gian bên.', [
+                ('batu', 'Lại đây bà chỉ. Đo vai, đo ngực, đo eo, đo hai lần.'),
+                ('batu', 'Khách nói size gì cũng nghe, nhưng tin cái thước dây.'),
+                ('me', 'Dạ, đo hai lần, cắt một lần.')],
+                _c('Bà Tư đưa thước dây',
+                   _o('a', 'Xin bà dạy thêm cách lên lai quần', [('batu', 'Được. Gấp mép hai lần, may mũi nhỏ, ủi cho phẳng.')], rel='batu'),
+                   _o('b', 'Nhờ bà đo thử cho mình một lần', [('batu', 'Vai con lệch chút xíu. Người ta ai cũng có chỗ lệch, áo phải chiều người.')], rel='batu'))),
+            _b('Chiếc sơ mi đầu tiên', '👔', 'Tuấn ghé tiệm, ôm tập hồ sơ xin việc.', [
+                ('tuan', 'Chị ơi, em sắp phỏng vấn mà chỉ có áo thun thôi.'),
+                ('vy', 'Tuấn đưa cái ví coi, mình chọn cái vừa túi tiền trước.'),
+                ('me', 'Sơ mi trắng, vừa vai là đủ tự tin rồi.')],
+                _c('Tuấn còn thiếu cà vạt',
+                   _o('a', 'Mượn cà vạt cũ của Bà Tư', [('batu', 'Cà vạt ông nhà bà để dành, đeo đi cho may mắn nghe con.')], rel='tuan'),
+                   _o('b', 'Thắt lưng tiệm tặng kèm', [('vy', 'Coi như quà tiệm mừng Tuấn đi làm. Nhớ quay lại khoe nha!')], rel='tuan'))),
+            _b('Bảng hiệu mới', '🪧', 'Có tiếng khoan tường trước cửa tiệm.', [
+                ('vy', 'Bảng “Tiệm Áo Chỉ Mây” lên rồi nè! Chỉ là sợi chỉ, Mây là tên mẹ hồi con gái.'),
+                ('batu', 'Con Vy này… đặt tên mà không hỏi mẹ.'),
+                ('batu', 'Đẹp. Mà vẫn là tiệm của mình.'),
+                ('tuan', 'Chị ơi em đậu rồi! Em qua khoe nè!')]),
+            _b('Cây kéo của Bà Tư', '🪡', 'Bà Tư gói một thứ trong khăn vải.', [
+                ('batu', 'Cây kéo này theo bà từ hồi mới học may.'),
+                ('batu', 'Bà già rồi, tay run. Con giữ đi, nhớ đo hai lần.'),
+                ('vy', 'Mẹ chưa từng cho ai đụng vô cây kéo đó đâu {anh}.'),
+                ('me', 'Con cảm ơn bà. Con sẽ giữ tiệm cho đàng hoàng.')]),
+        ]),
+    'pet_shop': dict(
+        title='Tiệm thú nhỏ đổi nếp', emoji='🐠',
+        keepsake=dict(emoji='🪧', name='Tấm biển “Hỏi kỹ rồi mới bán”', desc='Chú Út tự tay viết, treo ngay trên quầy tính tiền.'),
+        cast={'nha': _p('Nhã', '🩺', 'Cháu gái chú Út, sinh viên thú y', 'pet_shop_npc_01'),
+              'chu_ut': _p('Chú Út', '👴', 'Chủ tiệm cũ', 'pet_shop_npc_02'),
+              'bin': _p('Bé Bin', '🧒', 'Cậu bé lớp 4 mê hamster', 'pet_shop_npc_05'),
+              'khanh': _p('Anh Khánh', '🧡', 'Nhóm cứu hộ Chân Nhỏ', 'pet_shop_npc_07')},
+        beats=[
+            _b('Tiệm cũ của chú Út', '🐟', 'Nhã đứng lau từng tấm kính bể cá đục mờ.', [
+                ('nha', 'Tiệm này chú Út mở ba mươi năm rồi đó {anh}. Hồi nhỏ em ngồi đây coi cá cả buổi.'),
+                ('chu_ut', 'Khách hỏi gì thì bán nấy. Hỏi han chi cho mất khách.'),
+                ('nha', 'Em thì muốn khác: bán cho đúng bé, giao cho đúng người.'),
+                ('me', 'Vậy mình làm từng chút một. Bắt đầu từ mấy cái bể này.')]),
+            _b('Cái rổ giảm giá', '🥫', 'Chú Út đang xếp thêm mấy lon pate vào cái rổ trước quầy.', [
+                ('chu_ut', 'Lon nào cận ngày thì thả vô đây, bán rẻ, khách mê lắm.'),
+                ('nha', 'Chú ơi, có lon quá hạn cả tuần rồi, lon còn phồng nữa.'),
+                ('chu_ut', 'Thì… bán rẻ mà.')],
+                _c('Làm gì với cái rổ?',
+                   _o('a', 'Dán nhãn ngày lên từng lon, bỏ riêng lon quá hạn', [('chu_ut', 'Ờ… có nhãn nhìn cũng đàng hoàng hơn.')], rel='chu_ut'),
+                   _o('b', 'Kể chú nghe chuyện con mèo ăn pate quá hạn phải đi cấp cứu', [('chu_ut', 'Trời đất. Thôi, cái rổ đó để chú dẹp.')], rel='chu_ut'))),
+            _b('Con heo đất của Bin', '🐹', 'Một cậu bé ôm con heo đất đứng trước chuồng hamster.', [
+                ('bin', 'Con để dành cả năm đó! Con muốn mua một bé hamster.'),
+                ('nha', 'Mẹ Bin biết chưa nè?'),
+                ('bin', 'Dạ… chưa. Con định làm mẹ bất ngờ.')],
+                _c('Nói gì với Bin?',
+                   _o('a', 'Hẹn Bin về hỏi mẹ, mai hai mẹ con cùng ghé', [('bin', 'Mai con dẫn mẹ tới! Anh chị giữ bé hamster má phính giùm con nha!')], rel='bin'),
+                   _o('b', 'Cho Bin cầm thử hamster, dặn cách chăm để về kể mẹ', [('bin', 'Nó mềm quá trời! Con về kể mẹ liền.')], rel='bin'))),
+            _b('Góc nhận nuôi', '🏡', 'Anh Khánh chở tới một lồng mèo con và một tấm bảng gỗ.', [
+                ('khanh', 'Nhóm Chân Nhỏ xin một góc nhỏ trong tiệm. Mèo con, cún con về nhà mới qua đây.'),
+                ('chu_ut', 'Cho không thì tiệm lời gì?'),
+                ('nha', 'Người nhận nuôi sẽ mua hạt, mua cát, mua vòng cổ ở tiệm mình. Mà quan trọng là các bé có nhà.'),
+                ('chu_ut', 'Thôi được. Kê cái góc cạnh cửa sổ, chỗ đó mát.')]),
+            _b('Ngày hội nhận nuôi', '🎉', 'Băng rôn treo trước cửa, cả xóm kéo tới.', [
+                ('khanh', 'Bốn bé có nhà mới trong một buổi sáng! Chưa bao giờ nhóm làm được vậy.'),
+                ('bin', 'Bánh Bao nhà con cũng tới dự nè!'),
+                ('chu_ut', 'Chú viết tấm biển này treo trên quầy: “Hỏi kỹ rồi mới bán.”'),
+                ('nha', 'Chú Út mà cũng chịu đổi nếp. {Anh} thấy chưa?'),
+                ('me', 'Tiệm vẫn là tiệm của chú, chỉ là các bé được thương đúng cách hơn.')]),
+        ]),
     'repair': dict(
         title='Chiếc radio của Ông Bảy', emoji='📻',
         keepsake=dict(emoji='💡', name='Bóng đèn radio cũ', desc='Chiếc đèn điện tử cháy, Ông Bảy tặng lại làm kỷ niệm.'),
@@ -809,6 +885,45 @@ ARCS = {
                 ('ong_dai', 'Tập đoàn cần người như vậy. Từ quý sau, cháu làm trưởng nhóm hợp nhất.'),
                 ('linh', 'Em xin vào nhóm của {anh} đầu tiên!')],
                 days=9, served=22, gap=2, level=4),
+        ]),
+    'tra_da': dict(
+        title='Chiếc ghế xanh gốc bàng', emoji='🪑',
+        keepsake=dict(emoji='📒', name='Cuốn sổ bìa xanh của bà Lựu', desc='Hai mươi năm tên khách quen, gạch nợ bằng bút bi. Giờ đến lượt bạn ghi.'),
+        cast={'ba_luu': _p('Bà Lựu', '👵', 'Chủ quán trà đá', 'tra_da_npc_01'),
+              'tuong': _p('Chú Tường', '🛵', 'Xe ôm đầu ngõ', 'tra_da_npc_02'),
+              'linh': _p('Linh', '🎒', 'Học sinh lớp 11', 'tra_da_npc_05'),
+              'hoa': _p('Cô Hoa', '🍙', 'Bán xôi đầu ngõ', 'tra_da_npc_06')},
+        beats=[
+            _b('Chiếc ghế xanh', '🪑', 'Có một ông khách cứ nhất định ngồi đúng một chiếc ghế.', [
+                ('tuong', 'Cái ghế xanh sát gốc bàng là của chú đấy nhé. Hai chục năm nay rồi.'),
+                ('ba_luu', 'Ông ấy ngồi đấy từ hồi còn chạy xe Cub, giờ xe cũng già như người.'),
+                ('tuong', 'Cốc trà đá, không đường. Ghi sổ, cuối tuần chú trả.'),
+                ('me', 'Dạ, cháu nhớ rồi. Ghế xanh, trà đá, ghi sổ.')]),
+            _b('Cuốc xe ế', '🛵', 'Chú Tường ngồi lâu hơn mọi hôm, điện thoại úp trên đùi.', [
+                ('tuong', 'Bây giờ người ta bấm điện thoại gọi xe hết. Cả sáng chú chưa được cuốc nào.'),
+                ('hoa', 'Ông Tường cứ ngồi đây than, sao không cài cái ứng dụng như tụi thanh niên?'),
+                ('tuong', 'Chữ trên đấy bé tí, chú đọc không ra.')],
+                _c('Chiều nay giúp chú Tường thế nào?',
+                   _o('a', 'Viết số điện thoại chú lên tấm bảng phấn', [('tuong', 'Ơ, ba người gọi rồi đấy! Cái bảng phấn còn nhanh hơn cái điện thoại.')], rel='tuong'),
+                   _o('b', 'Ngồi chỉ chú từng bước bật ứng dụng', [('tuong', 'Phóng chữ to lên là chú đọc được. Cuốc đầu tiên trên máy đây rồi!')], rel='tuong'))),
+            _b('Bàn học gốc bàng', '📖', 'Linh trải sách vở ra chiếc bàn gỗ thấp.', [
+                ('linh', 'Ở nhà đang sửa, ồn quá. Em ngồi đây học nhờ một buổi được không ạ?'),
+                ('ba_luu', 'Ngồi đi cháu. Quán này nuôi được mấy lứa học trò rồi đấy.'),
+                ('linh', 'Tuần sau em thi học kỳ môn Toán, mà hình không gian khó quá.')],
+                _c('Linh ngồi học đến tối',
+                   _o('a', 'Giữ riêng một ghế và pha cốc trà chanh cho Linh', [('linh', 'Ngồi đây mát hơn ở nhà nhiều. Em làm xong ba đề rồi!')], rel='linh'),
+                   _o('b', 'Nhờ chú Tường giảng hộ, hồi trẻ chú dạy Toán', [('tuong', 'Hồi xưa chú dạy cấp ba đấy, cháu tưởng chú chỉ biết chạy xe à?'), ('linh', 'Chú giảng dễ hiểu hơn cả cô giáo ạ!')], rel='tuong'))),
+            _b('Gạch sổ', '✍️', 'Chú Tường tới sớm, tay cầm một xấp tiền lẻ.', [
+                ('tuong', 'Tháng này chạy được, chú trả hết sổ. Gạch đi, gạch hết đi cháu.'),
+                ('ba_luu', 'Hai chục năm bà chưa thấy ông ấy trả một lần hết sạch thế này.'),
+                ('hoa', 'Ông Tường có cháu nội đấy, hôm nay ông khao cả phố xôi.'),
+                ('me', 'Cháu gạch rồi đây chú. Mai lại ghi dòng mới nhé.')]),
+            _b('Cuốn sổ bìa xanh', '📒', 'Bà Lựu gói một thứ trong túi ni lông, buộc chun cẩn thận.', [
+                ('ba_luu', 'Cuốn sổ này bà ghi từ hồi quán mới có hai cái ghế.'),
+                ('ba_luu', 'Ai nợ bao nhiêu không quan trọng bằng ai hay ngồi ghế nào. Cháu giữ lấy.'),
+                ('linh', 'Em thi được chín điểm Toán! Em mang cả bảng điểm ra khoe quán đây!'),
+                ('tuong', 'Quán vẫn là quán của bà Lựu. Chỉ là giờ có người pha trà trẻ hơn.'),
+                ('me', 'Cháu sẽ giữ chiếc ghế xanh cho chú, và giữ quán cho cả phố.')]),
         ]),
 }
 

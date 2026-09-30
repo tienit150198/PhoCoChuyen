@@ -38,7 +38,7 @@ const CAT={
   legal:['opex','Phí luật sư, tư vấn'],office:['opex','Giấy tờ, văn phòng'],
   // Thất thoát: money that left without buying anything.
   theft_loss:['losses','Bị trộm, mất tiền'],scam_loss:['losses','Bị lừa'],bad_debt:['losses','Khách quỵt'],unpaid:['losses','Khách quỵt'],
-  discount:['losses','Bớt giá cho khách'],fine:['losses','Tiền phạt'],
+  discount:['losses','Bớt giá cho khách'],fine:['losses','Tiền phạt'],abandon_fine:['losses','Bỏ dở việc'],
   under_table:['losses','Tiền lót tay, không biên lai'],damage:['losses','Hư hỏng tài sản'],medical:['losses','Tiền thuốc'],
   // Khác: rewards, support and money that came back.
   grant:['other','Hỗ trợ khởi đầu'],recovery:['other','Lấy lại tài sản'],insurance_recovery:['other','Hỗ trợ tài sản'],
@@ -207,7 +207,7 @@ export function pnlCard(x){
     const canDraw=!office&&place&&!place.employed&&place.withdraw_max>0&&(kept>0||J.wallet<0);
     mine=`<section class="pnl-mine"><div class="pnl-sub"><h5>${icon('coin',15)} Bạn kiếm được</h5></div>
       ${lines.length?`<ul class="pnl-mine-list">${lines.map(([sg,l,a])=>`<li><span>${l}</span><b class="${tone(a)}">${sg}${fmt(Math.abs(a))}</b></li>`).join('')}</ul>`:''}
-      <div class="pnl-mine-total"><span>Ví thay đổi${jr?` ngày sống ${fmt(jr.life_day)}`:''}</span><b class="${tone(change)}">${signed(change)} xu</b></div>
+      <div class="pnl-mine-total"><span>Ví thay đổi${jr?` Ngày ${fmt(jr.life_day)}`:''}</span><b class="${tone(change)}">${signed(change)} xu</b></div>
       ${jr?`<p class="pnl-note"><span>Ví hiện có <b>${fmt(jr.wallet)} xu</b>${jr.wallet<0?' · đang nợ, rút tiền lời để trả nhé':''}.</span></p>`:''}
       ${kept>0?`<p class="pnl-note">${icon('home',14)}<span>Còn ${fmt(kept)} xu lời hôm nay đang ở quỹ tiệm${canDraw?`, rút được tối đa ${fmt(place.withdraw_max)} xu`:''}.</span></p>`:''}
       ${canDraw?`<button type="button" class="btn ghost small" data-action="jrView" data-view="wallet">${icon('coin',14)} Mở ví để rút tiền lời</button>`:''}</section>`;

@@ -78,6 +78,9 @@ WORK = {
     'corp_accounting': ('Phòng kế toán Mây Tre Xanh', '🧮'),
     'tax_payroll': ('Nhóm tính lương Minh Bạch', '🧾'),
     'group_accounting': ('Team hợp nhất Sông Hồng', '🏢'),
+    'clothing': ('Chị Vy với Mai ở tiệm áo', '🧵'),
+    'tra_da': ('Chú Tường với ông Khang ở quán trà', '🍵'),
+    'pet_shop': ('Nhã với nhóm cứu hộ Chân Nhỏ', '🐾'),
 }
 
 
@@ -220,7 +223,7 @@ HARD = [
         'Rồi bỏ đi, không trả.',
         'Còn ngoái lại chửi thêm.'], [
         C('let', 'Cho qua, coi như xui', 'Tiếc tiền, nhưng giữ được bình yên.', spirit=1, default=True),
-        C('post', 'Kể lên nhóm chủ quán khu phố', 'Mọi người nhắn cảm thông, dặn nhau để ý.', spirit=4)], careers=RETAIL + ('homestay',), hit=-14, loss=15),
+        C('post', 'Kể lên nhóm chủ quán khu phố', 'Mọi người nhắn cảm thông, dặn nhau để ý.', spirit=4)], careers=RETAIL + ('homestay', 'tra_da'), hit=-14, loss=15),
     H('kh_parcel', 'khach', '📦', 'Khách bom hàng, chửi shipper', [
         'Giao tới nơi, khách bảo “không đặt”.',
         'Rồi mắng: “Giao chậm như rùa”.',

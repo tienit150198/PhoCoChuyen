@@ -215,6 +215,9 @@ def spawn_walkin(s: dict, c: dict, cid: str, chance: float, tag: str) -> dict | 
     """A guest walks in on a busy day (same limits as `more_work`)."""
     if not c['open'] or len(open_tasks(c, cid)) >= 4:
         return None
+    from ..dayclock import past_close
+    if past_close(c, cid):  # closing time: nobody new walks in (dayclock)
+        return None
     slots = [int(t['id'].split('-')[-1]) for t in c['tasks'] if t['day'] == c['day']]
     slot = max(slots, default=-1) + 1
     if slot >= 12 or kit.rng(cid, 'walkin', tag, c['day'], slot).random() >= chance:

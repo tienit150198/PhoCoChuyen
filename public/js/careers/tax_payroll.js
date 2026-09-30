@@ -101,11 +101,12 @@ function worksheet(t,x){
     ${last&&cur&&last.explain?`<p class="tp-lastok">✓ <b>${x.esc(last.title)}</b> — ${x.esc(last.explain)}</p>`:''}${body}${done}</section>`;
 }
 
-function calculator(x){
-  const hist=x.ui.calc||[];
-  return `<section class="tp-calc" aria-label="Máy tính bàn"><h3 class="ok-h">🧮 Máy tính bàn</h3>
+/** The desk calculator, folded to one line unless the step asks for numbers or it has results on its tape. */
+function calculator(x,cur){
+  const hist=x.ui.calc||[],open=x.ui.okFold?.calc??(hist.length>0||['number','fields'].includes(cur?.kind));
+  return `<details class="ok-fold tp-calc"${open?' open':''}><summary data-action="car:fold" data-fold="calc">🧮 Máy tính bàn${hist.length?` <small>${hist.length} phép tính</small>`:''}</summary><div class="ok-fold-body">
     <div class="tp-calc-row"><input class="input" id="tp-calc" data-preserve type="text" inputmode="decimal" autocomplete="off" placeholder="vd: 12.400 × 8%" aria-label="Phép tính">${x.button('=','car:calc',{},'primary')}</div>
-    <ul class="tp-tape">${hist.map(h=>`<li><span>${x.esc(h.expr)}</span><b>${x.esc(h.out)}</b></li>`).join('')||'<li class="tp-tape-help">Dấu chấm là phân cách hàng nghìn; % hiểu là chia 100. Kết quả làm tròn xuống ghi kèm.</li>'}</ul></section>`;
+    <ul class="tp-tape">${hist.map(h=>`<li><span>${x.esc(h.expr)}</span><b>${x.esc(h.out)}</b></li>`).join('')||'<li class="tp-tape-help">Dấu chấm là phân cách hàng nghìn; % hiểu là chia 100. Kết quả làm tròn xuống ghi kèm.</li>'}</ul></div></details>`;
 }
 
 /** Law notes (lương, bảo hiểm, thuế, hạn nộp) as one fold per group. */
@@ -128,10 +129,20 @@ const RES={ok:['✓','Chuẩn'],bad:['✗','Có lỗi']};
 const gsel=x=>(x.ui.gsel??={});
 function rowOf(t,x){const rows=t.rows||[],id=gsel(x)[t.id];return rows.find(r=>r.id===id)||rows.find(r=>!r.reviewed)||rows[0];}
 const nameOf=r=>(r.cells||[]).find(c=>c.z==='name')?.v||r.id;
-function refList(p,x){
-  if(p.kind!=='table')return `<dl class="tp-kv">${p.rows.map(([k,v])=>`<dt>${x.esc(k)}</dt><dd>${x.esc(v)}</dd>`).join('')}</dl>`;
+/** Rows of a source paper about one person (all rows when `who` is empty). Tables match the name column;
+ * the message list keeps that person's own messages plus the general notes. */
+function refRows(p,who){
+  if(!who)return p.rows;
+  if(p.kind==='table')return p.rows.filter(r=>r[0]===who);
+  const last=who.split(' ').pop();
+  return p.rows.filter(([k])=>!/^Tin nhắn · /.test(k)||k==='Tin nhắn · '+last);
+}
+function refList(p,x,who=''){
+  const rows=refRows(p,who);
+  if(!rows.length)return `<p class="tp-ref-none">Không có dòng nào của <b>${x.esc(who)}</b> trong “${x.esc(p.title)}”.</p>${p.note?`<p class="tp-paper-note">✎ ${x.esc(p.note)}</p>`:''}`;
+  if(p.kind!=='table')return `<dl class="tp-kv">${rows.map(([k,v])=>`<dt>${x.esc(k)}</dt><dd>${x.esc(v)}</dd>`).join('')}</dl>`;
   const flag=v=>/Nghỉ việc|chưa duyệt/.test(v)?'bad':'';
-  return `<ul class="tp-ref">${p.rows.map(r=>`<li><b>${x.esc(r[0])}</b>${r.slice(1).map((v,i)=>`<span class="${flag(String(v))}"><small>${x.esc(p.head[i+1]||'')}</small> ${x.esc(v)}</span>`).join('')}</li>`).join('')}</ul>${p.note?`<p class="tp-paper-note">✎ ${x.esc(p.note)}</p>`:''}`;
+  return `<ul class="tp-ref">${rows.map(r=>`<li><b>${x.esc(r[0])}</b>${r.slice(1).map((v,i)=>`<span class="${flag(String(v))}"><small>${x.esc(p.head[i+1]||'')}</small> ${x.esc(v)}</span>`).join('')}</li>`).join('')}</ul>${p.note?`<p class="tp-paper-note">✎ ${x.esc(p.note)}</p>`:''}`;
 }
 function rowCard(t,r,x){
   const live=!r.reviewed&&!t.filed,flags=new Set(r.flags||[]),truth=new Set(r.truth?.z||[]),max=x.cc.max_flags||3;
@@ -147,7 +158,9 @@ function rowCard(t,r,x){
   }else if(r.reviewed){
     foot=`<p class="tp-done">✓ Đã soát${flags.size?` · ${flags.size} ô cần sửa`:' · không thấy sai'}</p>`;
   }else{
-    foot=`${r.tip?`<p class="tp-hint">💡 ${x.esc(r.tip)}</p>`:''}<div class="tp-row-tools"><small>${flags.size?`🚩 ${flags.size}/${max} ô nghi sai`:'Chạm vào ô sai để đánh dấu'}</small>${r.hinted?'':x.cmd('💡 Gợi ý','tp_hint',{task:t.id,row:r.id},'ghost small')}</div>`;
+    // First payroll: why each glowing cell is wrong, next to the cells (the header hint stays one short line).
+    const co=coachOf(x,t)?.rows?.[r.id],why=co?.z?co.z.filter(z=>!flags.has(z)).map(z=>`<p class="tp-hint">💡 Ô “${x.esc(cellName(r,z))}” sai: ${x.esc(co.why?.[co.z.indexOf(z)]||'đối chiếu hồ sơ gốc')}</p>`).join(''):'';
+    foot=`${why}${r.tip?`<p class="tp-hint">💡 ${x.esc(r.tip)}</p>`:''}<div class="tp-row-tools"><small>${flags.size?`🚩 ${flags.size}/${max} ô nghi sai`:'Chạm vào ô sai để đánh dấu'}</small>${r.hinted?'':x.cmd('💡 Gợi ý','tp_hint',{task:t.id,row:r.id},'ghost small')}</div>`;
   }
   return `<section class="tp-person"${r.reviewed||t.filed?'':` data-step-card="${x.esc(t.id)}:${x.esc(r.id)}"`}><header><span class="tp-avatar" aria-hidden="true">${x.esc(nameOf(r).split(' ').pop().slice(0,1))}</span><b>${x.esc(nameOf(r))}</b><small>Dòng ${x.esc(r.id.slice(1))}</small></header>
     <div class="tp-cells-grid">${(r.cells||[]).map(cell).join('')}</div>${foot}</section>`;
@@ -171,10 +184,12 @@ function gridDoc(t,x){
     return x.button(`<span>${x.esc(nameOf(v).split(' ').pop())}</span>${st?`<i>${st}</i>`:''}${(v.flags||[]).length&&!v.result?'<i>🚩</i>':''}`,'car:gpick',{task:t.id,row:v.id},`tp-qchip ${v.id===r?.id?'active':''} ${v.result?(v.result.ok?'ok':'bad'):v.reviewed?'done':''}`);
   }).join('');
   const {idx,html}=paperTabs(t,x,'Hồ sơ gốc');
+  const u=state(x,t),who=r&&!t.filed?nameOf(r):'',only=who&&!u.allRef?who:'',p=t.papers[idx];
+  const toggle=who?x.button(only?`Xem cả ${p.rows.length} dòng`:`Chỉ xem ${x.esc(who.split(' ').pop())}`,'car:refall',{task:t.id},'ghost small tp-refall'):'';
   const count=t.filed?`<small class="tp-grid-sum">💸 Đã chuyển · ${g.ok}/${g.total} dòng chuẩn</small>`:`<small>${g.reviewed||0}/${g.total||rows.length} đã soát</small>`;
   return `<nav class="tp-queue" aria-label="Bảng lương nháp"><span class="tp-qlabel">👥 Bảng lương</span>${chips}${count}</nav>
     ${r?rowCard(t,r,x):''}
-    <section class="tp-tray"><h3 class="ok-h">🗃️ Hồ sơ gốc để đối chiếu</h3>${html}<article class="tp-paper"><h4>${x.esc(t.papers[idx].title)}</h4>${refList(t.papers[idx],x)}</article></section>`;
+    <section class="tp-tray"><h3 class="ok-h">🗃️ Hồ sơ gốc để đối chiếu${only?` <small>· dòng của ${x.esc(only)}</small>`:''}</h3>${html}<article class="tp-paper"><h4>${x.esc(p.title)}</h4>${refList(p,x,only)}${toggle?`<p class="tp-refbar">${toggle}</p>`:''}</article></section>`;
 }
 function gridBar(t,x,gd){
   const r=rowOf(t,x),g=t.grid||{};
@@ -197,8 +212,9 @@ function gridSteps(t,x){
   }
   const flags=r.flags||[],co=coachOf(x,t)?.rows?.[r.id],want=co?.z,out=[];
   if(want){
-    for(const z of flags.filter(v=>!want.includes(v)))out.push({ok:false,label:`${who}: ô “${cellName(r,z)}” đúng — bỏ dấu`,go:goto(x,t,cellSel(r,z),`↩️ Bỏ dấu ô “${x.esc(cellName(r,z))}”`),pulse:cellSel(r,z)});
-    want.forEach((z,i)=>{if(!flags.includes(z))out.push({ok:null,label:`Ô “${cellName(r,z)}” sai: ${co.why?.[i]||'đối chiếu hồ sơ gốc'}`,go:goto(x,t,cellSel(r,z),`🚩 Đánh dấu ô “${x.esc(cellName(r,z))}”`),pulse:cellSel(r,z)});});
+    const flag=(z,label)=>({cmd:'tp_flag',payload:{task:t.id,row:r.id,cell:z},label});
+    for(const z of flags.filter(v=>!want.includes(v))){const go=flag(z,`↩️ Bỏ dấu ô “${x.esc(cellName(r,z))}”`);out.push({ok:false,label:`${who}: ô “${cellName(r,z)}” đúng — bỏ dấu`,go,hintGo:go,pulse:cellSel(r,z)});}
+    want.forEach(z=>{if(!flags.includes(z)){const go=flag(z,`🚩 ${x.esc(who.split(' ').pop())}: đánh dấu ô “${x.esc(cellName(r,z))}”`);out.push({ok:null,label:`${who}: ô “${cellName(r,z)}” sai`,go,hintGo:go,pulse:cellSel(r,z)});}});
   }
   const n=flags.length;
   out.push({ok:null,label:want?`${who}: xong dòng`:`${who}: so từng ô rồi xong dòng`,go:{cmd:'tp_row',payload:{task:t.id,row:r.id},label:n?`✓ Xong dòng · ${n} ô cần sửa`:'✓ Xong dòng · không thấy sai'},
@@ -209,7 +225,7 @@ function gridSteps(t,x){
 /* ---------------------------------------------------------------- a form (tờ khai) done step by step */
 function formDoc(t,x){
   const {idx,html}=paperTabs(t,x,'Giấy tờ');
-  return `${worksheet(t,x)}<section class="tp-tray"><h3 class="ok-h">🗃️ Giấy tờ khách gửi <small>${t.papers.length} tờ</small></h3>${html}${paperView(t.papers[idx],x)}</section>${calculator(x)}`;
+  return `${worksheet(t,x)}<section class="tp-tray"><h3 class="ok-h">🗃️ Giấy tờ khách gửi <small>${t.papers.length} tờ</small></h3>${html}${paperView(t.papers[idx],x)}</section>${calculator(x,(t.steps||[])[(t.progress||{}).at||0])}`;
 }
 function formBar(t,x,gd){
   const p=t.progress||{},cur=(t.steps||[])[p.at];
@@ -223,18 +239,19 @@ function formSteps(t,x){
   if(!cur||cur.state!=='current')return [];
   const u=state(x,t),co=coachOf(x,t),key=co&&co.step===cur.id?co.key:undefined;
   const label=`Bước ${p.at+1}/${p.total}: ${cur.title}`,check={act:'car:check',data:{task:t.id,step:cur.id,kind:cur.kind},label:'✔ Kiểm tra'};
-  const lit=(sel,note)=>[{ok:null,label,note,go:goto(x,t,sel),pulse:sel}];
+  const lit=(sel,go)=>[{ok:null,label,go,pulse:sel}];
   if(key===undefined)return [{ok:null,label,go:check,hintGo:goto(x,t,'.tp-work')}];
   const opt=v=>`.tp-choice[data-step="${cur.id}"][data-v="${v}"]`;
-  if(cur.kind==='choice'&&u.sel[cur.id]!==key)return lit(opt(key));
+  const d={task:t.id,step:cur.id},name=(list,v)=>x.esc(lab(list,v));
+  if(cur.kind==='choice'&&u.sel[cur.id]!==key)return lit(opt(key),{act:'car:pick',data:{...d,v:key},label:`👉 ${name(cur.options,key)}`});
   if(cur.kind==='multi'){
     const on=u.multi[cur.id]||[],v=on.find(q=>!key.includes(q))??key.find(q=>!on.includes(q));
-    if(v!==undefined)return lit(opt(v));
+    if(v!==undefined)return lit(opt(v),{act:'car:toggle',data:{...d,v},label:`${on.includes(v)?'↩️ Bỏ chọn':'☑️ Chọn'} “${name(cur.options,v)}”`});
   }
   if(cur.kind==='order'){
     const picked=u.order[cur.id]||[],bad=picked.findIndex((v,i)=>v!==key[i]);
-    if(bad>=0)return lit(`.tp-order button[data-action="car:unpick"][data-i="${bad}"]`);
-    if(picked.length<key.length)return lit(`.tp-choice[data-action="car:opick"][data-v="${key[picked.length]}"]`);
+    if(bad>=0)return lit(`.tp-order button[data-action="car:unpick"][data-i="${bad}"]`,{act:'car:unpick',data:{...d,i:bad},label:`↩️ Bỏ “${name(cur.items,picked[bad])}”`});
+    if(picked.length<key.length)return lit(`.tp-choice[data-action="car:opick"][data-v="${key[picked.length]}"]`,{act:'car:opick',data:{...d,v:key[picked.length]},label:`＋ ${name(cur.items,key[picked.length])}`});
   }
   if(['number','fields','match'].includes(cur.kind)&&!u.coached?.[cur.id])
     return [{ok:null,label,go:{act:'car:coach',data:{task:t.id,step:cur.id},label:'✍️ Điền theo giấy tờ'}}];
@@ -356,6 +373,7 @@ export default {
       if(!r){el.classList.toggle('flagged',on);el.setAttribute('aria-pressed',String(on));}
     },
     paper(d,el,x){const u=x.ui[d.task];if(u){u.paper=Number(d.i)||0;x.render();}},
+    refall(d,el,x){const u=x.ui[d.task];if(u){u.allRef=!u.allRef;x.render();}},
     pick(d,el,x){const u=x.ui[d.task];if(u){u.sel[d.step]=d.v;x.render();}},
     toggle(d,el,x){const u=x.ui[d.task];if(!u)return;const a=u.multi[d.step]||[];u.multi[d.step]=a.includes(d.v)?a.filter(v=>v!==d.v):[...a,d.v];x.render();},
     opick(d,el,x){const u=x.ui[d.task];if(!u)return;const a=u.order[d.step]||[];if(!a.includes(d.v))u.order[d.step]=[...a,d.v];x.render();},

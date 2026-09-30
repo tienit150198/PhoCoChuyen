@@ -19,14 +19,14 @@ from __future__ import annotations
 
 ALL = ('mother_baby', 'pharmacy', 'accounting', 'customer_care', 'teacher', 'tour_guide', 'milk_tea', 'restaurant',
        'cafe_bakery', 'florist', 'grocery', 'repair', 'farm', 'delivery', 'homestay', 'pet_care', 'salon',
-       'corp_accounting', 'tax_payroll', 'group_accounting')
+       'corp_accounting', 'tax_payroll', 'group_accounting', 'clothing', 'pet_shop')
 EMPLOYEE = ('teacher', 'corp_accounting', 'tax_payroll', 'group_accounting')
 OFFICE = ('accounting', 'customer_care', 'corp_accounting', 'tax_payroll', 'group_accounting')
-FOOD = ('milk_tea', 'cafe_bakery', 'restaurant')
+FOOD = ('milk_tea', 'cafe_bakery', 'restaurant', 'tra_da')
 SHOPS = ('mother_baby', 'pharmacy', 'milk_tea', 'grocery', 'florist', 'cafe_bakery', 'restaurant', 'pet_care', 'salon',
-         'repair', 'homestay')
+         'repair', 'homestay', 'clothing', 'pet_shop')
 STOCKED = ('mother_baby', 'pharmacy', 'milk_tea', 'grocery', 'florist', 'cafe_bakery', 'restaurant', 'pet_care', 'salon',
-           'repair', 'farm', 'delivery', 'homestay')
+           'repair', 'farm', 'delivery', 'homestay', 'clothing', 'pet_shop')
 TILL = SHOPS + ('delivery', 'tour_guide')
 
 KINDS = {
@@ -157,7 +157,7 @@ HAPPENINGS = [
       ('salon', 'cafe_bakery', 'milk_tea', 'pet_care'), 'pick', 'pickpocket', 'till', 'Trộm lấy hũ tiền boa', dict(cash=(15, 45)), THEFT_SOLO),
     H('pet_food', 'trom', '🦴', 'Vác bao hạt ra cửa',
       'Một người vào hỏi mua vòng cổ, lúc bạn cúi xuống tủ kính thì họ vác luôn bao hạt thú cưng đặt sát cửa.',
-      ('pet_care',), 'snatch', 'thief', 'shelf', 'Trộm vác bao hạt ra cửa', dict(stock=(2, 3), cash=(10, 25))),
+      ('pet_care', 'pet_shop'), 'snatch', 'thief', 'shelf', 'Trộm vác bao hạt ra cửa', dict(stock=(2, 3), cash=(10, 25))),
     H('bike_stolen', 'trom', '🛵', 'Xe giao hàng bị dắt mất',
       'Bạn chạy vào quầy lấy đơn, xe để ngay cửa, chìa còn cắm. Quay ra thì thấy một người đã nổ máy, đang rồ ga.',
       ('delivery',), 'ride', 'biker', 'door', 'Mất xe giao hàng, thuê xe khác chạy tạm', dict(damage=(80, 160)), THEFT_SOLO, weight=3, min_day=4,
@@ -206,7 +206,7 @@ HAPPENINGS = [
     # ================================================================ damage: people
     H('drunk_glass', 'pha', '🍺', 'Khách say làm vỡ ly, đổ bàn',
       'Bàn nhậu cuối quán cụng ly càng lúc càng to. Một người đứng dậy lảo đảo, kéo đổ cả bàn. Ly vỡ tung tóe, khách bàn bên giật mình.',
-      ('restaurant', 'cafe_bakery', 'milk_tea', 'homestay'), 'smash', 'drunk', 'table', 'Ly chén vỡ, bàn gãy chân', dict(damage=(30, 80), stock=(1, 2)), weight=3,
+      ('restaurant', 'cafe_bakery', 'milk_tea', 'homestay', 'tra_da'), 'smash', 'drunk', 'table', 'Ly chén vỡ, bàn gãy chân', dict(damage=(30, 80), stock=(1, 2)), weight=3,
       gossip='Tối qua quán bên có bàn nhậu say quá làm vỡ hết ly. Mấy anh uống vừa thôi nha.'),
     H('rowdy_teens', 'pha', '🛹', 'Nhóm thanh niên quậy phá trước tiệm',
       'Mấy cậu thanh niên ngồi trên xe trước cửa, cười đùa ầm ĩ. Một cậu đá đổ chậu cây, cậu khác lấy chìa khóa vạch một đường dài lên biển hiệu.',
@@ -225,6 +225,12 @@ HAPPENINGS = [
     H('salon_mirror', 'pha', '🪞', 'Khách nóng tính đập vỡ gương',
       'Khách không vừa ý kiểu tóc, cãi một hồi rồi đập tay xuống bàn. Tấm gương trước mặt nứt toác.',
       ('salon',), 'smash', 'drunk', 'till', 'Gương soi bị vỡ', dict(damage=(50, 110))),
+    H('tank_knock', 'pha', '🐠', 'Bể cá mẫu bị gõ nứt',
+      'Hai cậu nhóc gõ lên kính bể cá mẫu cho cá giật mình. Một cậu cầm chùm chìa khóa gõ mạnh, kính nứt một đường, nước rỉ ra sàn.',
+      ('pet_shop',), 'knock', 'kids', 'shelf', 'Bể cá mẫu nứt, phải thay kính', dict(damage=(25, 60)), KIDS, weight=2),
+    H('fish_bag_drop', 'den', '🛍️', 'Làm rơi túi cá của khách',
+      'Bạn buộc túi cá cho khách, tay trơn, túi rơi xuống nền gạch vỡ toang. Mấy con cá giãy đành đạch, khách tái mặt.',
+      ('pet_shop',), 'drop', 'self', 'till', 'Đền cá và bể mới cho khách', dict(comp=(15, 40)), weight=2),
     H('cage_bite', 'pha', '🐕', 'Chó khách cắn hỏng lồng',
       'Chó của khách gửi lại buổi trưa sủa suốt, rồi cắn gãy cửa lồng, cào rách luôn đệm nằm.',
       ('pet_care',), 'knock', 'dog', 'shelf', 'Lồng và đệm bị hỏng', dict(damage=(30, 70)), ['ask', 'forgive'], weight=2),
@@ -238,7 +244,7 @@ HAPPENINGS = [
       morning=True),
     H('kids_shelf', 'pha', '🧸', 'Mấy đứa nhỏ nghịch làm đổ kệ',
       'Hai đứa nhỏ chạy đuổi nhau giữa các kệ trong lúc mẹ đang chọn đồ. Một đứa níu vào kệ, cả tầng hàng đổ ào xuống sàn.',
-      ('mother_baby', 'grocery', 'pharmacy', 'florist', 'pet_care'), 'knock', 'kids', 'shelf', 'Hàng đổ vỡ', dict(stock=(2, 4)), KIDS, weight=3),
+      ('mother_baby', 'grocery', 'pharmacy', 'florist', 'pet_care', 'pet_shop'), 'knock', 'kids', 'shelf', 'Hàng đổ vỡ', dict(stock=(2, 4)), KIDS, weight=3),
     H('ball_window', 'pha', '⚽', 'Bóng đá bay vỡ kính',
       '“Choang!” Quả bóng từ bãi đất trống bên kia đường bay thẳng vào cửa kính. Mấy cậu nhóc đứng xa xa, đứa nào cũng chối.',
       SHOPS + ('teacher', 'farm', 'accounting', 'customer_care'), 'ball', 'kid_ball', 'window', 'Kính cửa sổ vỡ', dict(damage=(40, 110)), KIDS, weight=3,
@@ -249,10 +255,10 @@ HAPPENINGS = [
     # ================================================================ damage: animals
     H('stray_dog', 'pha', '🐕', 'Chó hoang chạy vào tiệm',
       'Một con chó hoang lông xù phóng vào tiệm, đuổi theo mùi đồ ăn. Nó sục vào góc hàng, hất đổ mấy món xuống sàn.',
-      ('restaurant', 'cafe_bakery', 'grocery', 'florist', 'milk_tea', 'farm'), 'knock', 'dog', 'shelf', 'Hàng bị cắn xé, đổ vỡ', dict(stock=(1, 3)), ANIMAL, weight=2),
+      ('restaurant', 'cafe_bakery', 'grocery', 'florist', 'milk_tea', 'farm', 'tra_da'), 'knock', 'dog', 'shelf', 'Hàng bị cắn xé, đổ vỡ', dict(stock=(1, 3)), ANIMAL, weight=2),
     H('neighbour_cat', 'pha', '🐈', 'Mèo hàng xóm nhảy lên quầy',
       'Con mèo mướp nhà bên nhảy phốc lên quầy, đuôi quét qua một hàng đồ. Mấy món lăn xuống sàn vỡ loảng xoảng.',
-      ('mother_baby', 'florist', 'cafe_bakery', 'milk_tea', 'pharmacy', 'salon'), 'knock', 'cat', 'till', 'Đồ trên quầy bị vỡ', dict(stock=(1, 2), damage=(5, 20)), ANIMAL),
+      ('mother_baby', 'florist', 'cafe_bakery', 'milk_tea', 'pharmacy', 'salon', 'tra_da'), 'knock', 'cat', 'till', 'Đồ trên quầy bị vỡ', dict(stock=(1, 2), damage=(5, 20)), ANIMAL),
     H('chicken_run', 'pha', '🐔', 'Gà nhà bên sổng chuồng',
       'Đàn gà nhà bên sổng chuồng, kéo nhau sang bới tung luống mới gieo.',
       ('farm',), 'knock', 'dog', 'shelf', 'Luống mới gieo bị bới tung', dict(stock=(2, 4)), ANIMAL, weight=2),
@@ -287,6 +293,17 @@ HAPPENINGS = [
     H('pet_escape', 'den', '🐾', 'Để sổng thú cưng của khách',
       'Bạn mở cửa lồng thay nước, chú chó nhỏ lách qua chân chạy vọt ra đường. Tìm lại được, nhưng chân em bị trầy phải đi khám.',
       ('pet_care',), 'knock', 'dog', 'door', 'Trả tiền khám cho thú cưng của khách', dict(comp=(30, 70)), weight=2),
+    # ---------------------------------------------------------------- the clothes shop
+    H('fitting_layers', 'trom', '👚', 'Mặc chồng hai lớp trong phòng thử',
+      'Một cô gái ôm ba chiếc áo vào phòng thử, lúc ra chỉ trả lại hai. Áo khoác ngoài của cô phồng lên hơn lúc bước vào.',
+      ('clothing',), 'pick', 'pickpocket', 'shelf', 'Mất áo trong phòng thử', dict(stock=(1, 2)), THEFT_SOLO, weight=3,
+      gossip='Mấy tiệm quần áo nhớ đưa thẻ số ở phòng thử nha, có người mặc chồng áo bên trong rồi đi ra tỉnh bơ.'),
+    H('steam_burn', 'den', '♨️', 'Bàn ủi hơi làm ố áo dài của khách',
+      'Khách nhờ hấp lại chiếc áo dài mang theo để chiều đi đám. Bạn để bàn ủi lâu một chỗ, tà áo lụa ngả vàng một vệt.',
+      ('clothing',), 'spill', 'self', 'till', 'Đền áo dài cho khách', dict(comp=(40, 100)), weight=2),
+    H('mannequin_kids', 'pha', '🧍', 'Tụi nhỏ đu ma-nơ-canh',
+      'Hai đứa nhỏ chờ mẹ thử đồ, chơi trò đu tay ma-nơ-canh. Ma-nơ-canh ngã sấp, gãy một tay, bộ váy trưng dính đầy dấu tay kẹo.',
+      ('clothing',), 'knock', 'kids', 'shelf', 'Ma-nơ-canh gãy tay, váy trưng lấm bẩn', dict(stock=(1, 1), damage=(15, 40)), KIDS, weight=2),
     H('guest_vase', 'pha', '🏺', 'Khách trong đoàn làm vỡ bình ở nhà hàng',
       'Đoàn ăn trưa ở nhà hàng quen. Một vị khách đứng dậy chụp ảnh, vai quệt đổ chiếc bình sứ trang trí. Chủ nhà hàng quay sang hướng dẫn viên.',
       ('tour_guide',), 'drop', 'guest', 'table', 'Đền bình sứ cho nhà hàng', dict(comp=(30, 80)), ['ask', 'forgive'], weight=2,

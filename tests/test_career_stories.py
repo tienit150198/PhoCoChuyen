@@ -32,7 +32,7 @@ def ledger_ok(c):
 class ContentTest(unittest.TestCase):
     def test_every_career_has_an_arc(self):
         self.assertEqual(set(cst.ARCS), set(CAREERS))
-        self.assertEqual(len(cst.ARCS), 20)
+        self.assertEqual(len(cst.ARCS), len(CAREERS))
 
     def test_beats_are_well_formed(self):
         ids = set()
@@ -260,7 +260,7 @@ class ChoiceTest(unittest.TestCase):
         self.assertIn('Thầy ơi', d['lines'][0]['text'])
         self.assertEqual(len(d['choice']['options']), 2)
         self.assertFalse(d['last'])
-        self.assertEqual(len(v['arcs']), 20)
+        self.assertEqual(len(v['arcs']), len(CAREERS))
         t = next(x for x in v['arcs'] if x['career'] == 'teacher')
         self.assertEqual((t['seen'], t['pending'], t['done']), (1, 's1', False))
         self.assertEqual(t['beats'][0]['title'], cst.ARCS['teacher']['beats'][0]['title'])

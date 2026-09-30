@@ -244,13 +244,15 @@ function boardSteps(t,x){
   const sel=msel(x,t),L=Object.fromEntries((t.lines||[]).map(l=>[l.id,l])),a=L[sel.a]&&!L[sel.a].state?L[sel.a]:null,b=L[sel.b]&&!L[sel.b].state?L[sel.b]:null;
   const left=(m.total||0)-(m.resolved||0),co=coachOf(x,t)?.lines;
   const line=id=>`.ga-line[data-line="${id}"]`,step=(label,sel,go)=>({ok:null,label,go:go||goto(x,t,sel),pulse:sel});
+  // First board: the glowing line is also what the bottom button (or the hint) picks.
+  const pick=(l,label)=>step(label,line(l.id),{act:'car:msel',data:{task:t.id,line:l.id,side:l.side},label:`👆 Chọn ${x.esc(l.ref)}`});
   if(!co)return [{ok:null,label:`Còn ${left} dòng: ghép hai dòng cùng chứng từ, dòng lẻ chọn lý do`,go:goto(x,t,'.ga-cols','👆 Chạm một dòng để bắt đầu')}];
   const open=(t.lines||[]).filter(l=>!l.state&&co[l.id]);
   const one=a||b,cur=one||open.find(l=>l.side==='a')||open[0];
   if(!cur)return [];
   const k=co[cur.id]||{};
   if(k.tag){
-    if(!one||one.id!==cur.id)return [step(`${cur.ref}: dòng lẻ — chạm để chọn lý do`,line(cur.id))];
+    if(!one||one.id!==cur.id)return [pick(cur,`${cur.ref}: dòng lẻ — chọn dòng rồi chọn lý do`)];
     if(a&&b)return [{ok:null,label:'Bỏ chọn dòng thừa',go:{act:'car:mclear',data:{task:t.id},label:'✕ Bỏ chọn'}}];
     const tg=(t.tags||[]).find(g=>g.id===k.tag);
     return [step(`${cur.ref}: lý do “${tg?.label||k.tag}”`,`.ga-tag-${k.tag}`,{cmd:'ga_tag',payload:{task:t.id,line:cur.id,tag:k.tag},label:`${tg?.emoji||''} ${x.esc(tg?.label||k.tag)}`})];
@@ -260,8 +262,8 @@ function boardSteps(t,x){
   const [pa,pb]=cur.side==='a'?[cur,mate]:[mate,cur];
   const wrong=(a&&a.id!==pa.id)||(b&&b.id!==pb.id);
   if(wrong)return [{ok:null,label:'Chọn nhầm dòng — bỏ chọn rồi làm lại',go:{act:'car:mclear',data:{task:t.id},label:'✕ Bỏ chọn'}}];
-  if(!a)return [step(`Chạm ${pa.ref} (sổ bên bán)`,line(pa.id))];
-  if(!b)return [step(`Chạm ${pb.ref} (sổ bên mua) — cùng chứng từ`,line(pb.id))];
+  if(!a)return [pick(pa,`Chọn ${pa.ref} (sổ bên bán)`)];
+  if(!b)return [pick(pb,`Chọn ${pb.ref} (sổ bên mua) — cùng chứng từ`)];
   if(pa.amount===pb.amount)return [step(`Ghép ${pa.ref} ↔ ${pb.ref}`,'.ga-dopair',{cmd:'ga_pair',payload:{task:t.id,a:pa.id,b:pb.id},label:'🔗 Ghép cặp này'})];
   const c=(t.causes||[]).find(v=>v.id===k.cause);
   return [step(`Lệch ${num(Math.abs(pa.amount-pb.amount))} xu: ${c?.label||''}`,`.ga-cause-${k.cause}`,{cmd:'ga_pair',payload:{task:t.id,a:pa.id,b:pb.id,cause:k.cause},label:`${c?.emoji||''} ${x.esc(c?.label||'')}`})];
@@ -284,7 +286,9 @@ function packPlan(x){
   const rows=p.items.map(i=>{const [label,tone]=PACK_TAG[i.state]||[i.state,''];
     const note=i.state==='fixing'?`${i.contact} gửi lại bản sửa ${i.back}`:i.promised?`${i.contact} hứa gửi sớm`:i.state==='wait'?`${i.contact} · hạn ${p.due}`:i.contact;
     const act=!x.room.open?'':i.can_review?x.cmd(`🔎 Soát gói · ${p.review} phút`,'ga_review',{sub:i.sub},'primary small'):i.can_nudge?x.cmd(`📞 Gọi giục · ${p.nudge} phút`,'ga_nudge',{sub:i.sub},'ghost small'):'';
-    return {emoji:i.emoji,title:i.short,note,tag:{label,tone},act,tone:i.state==='late'?'bad':i.state==='in'?'warn':''};});
+    // A pack that came in only needs you (the card opens by itself) once the filing day has come.
+    const now=p.due_rel==='Hôm nay'||p.due_rel==='Đã qua';
+    return {emoji:i.emoji,title:i.short,note,tag:{label,tone},act,tone:i.state==='late'?'bad':i.state==='in'&&now?'warn':''};});
   const qs=(p.queries||[]).map(q=>({emoji:'❓',title:q.text,note:`Chị Thảo · trả lời trước hết ${q.date} (${q.rel})${q.minutes>10?' · gói chưa soát nên lâu hơn':''}`,
     tag:{label:q.rel,tone:q.rel==='Hôm nay'?'due':''},act:x.room.open?x.cmd(`✉️ Trả lời · ${q.minutes} phút`,'ga_answer',{query:q.id},'primary small'):'',tone:q.rel==='Hôm nay'?'warn':''}));
   return planCard(x,{title:`📦 ${p.title}`,sub:`${p.done}/${p.total} đã soát`,rows,

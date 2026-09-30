@@ -1,0 +1,89 @@
+/* ==========================================================================
+   🎓 Thi chứng chỉ (certificates.js) and the job-sheet extras after a failed
+   interview (views.js: the three next-step buttons, the certificate chip and
+   banner). Theme tokens only (docs/DESIGN.md); phone first (390 px), 44 px
+   targets. Reuses .jr-card / .jr-sub / .jr-title from journey.css.
+   ========================================================================== */
+
+/* Journey home entry */
+.ct-entry{display:flex;align-items:center;gap:12px;width:100%;min-height:64px;text-align:left;cursor:pointer;color:var(--ink);font:inherit}
+.ct-entry:hover{border-color:var(--accent)}
+.ct-entry .grow{display:grid;gap:2px;min-width:0}
+.ct-entry b{font-size:1rem}
+.ct-entry small{color:var(--muted);font-size:.867rem;line-height:1.4}
+.ct-entry>svg{flex:none;color:var(--muted)}
+.ct-entry-icon{flex:none;display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:var(--second-soft);font-size:1.5rem}
+.ct-count{flex:none;min-width:34px;padding:2px 8px;border-radius:var(--radius-pill);background:var(--surface-2);border:1px solid var(--line);font-weight:800;font-size:.867rem;text-align:center}
+.ct-entry:focus-visible,.ct-badge:focus-visible,.ct-big:focus-visible,.ct-opt:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+/* Profile badges */
+.ct-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.ct-badge{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:6px 12px;border-radius:var(--radius-pill);background:var(--good-soft);border:1px solid transparent;color:var(--ink);font:inherit;font-size:.867rem;cursor:pointer}
+.ct-badge span{font-size:1.15rem;line-height:1}
+.ct-badge b{font-weight:800}
+.ct-badge i{font-style:normal;font-weight:800;color:var(--good);padding-left:6px;border-left:1px solid var(--line-strong)}
+
+/* The centre */
+.ct-body{display:grid;gap:14px}
+.ct-body>.jr-sub{margin:6px 0 -4px}
+.ct-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr))}
+.ct-group,.ct-study{display:grid;gap:10px;align-content:start}
+.ct-group>*,.ct-study>*{margin:0}
+.ct-group.focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft),var(--shadow-sm)}
+.ct-group.earned{background:linear-gradient(180deg,var(--good-soft),var(--surface) 70%)}
+.ct-top{display:flex;align-items:center;gap:12px}
+.ct-top h3{margin:0;font-size:1.067rem}
+.ct-top .grow{min-width:0}
+.ct-top .eyebrow{margin:0 0 2px}
+.ct-emoji{flex:none;display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line);font-size:1.6rem;line-height:1}
+.ct-status{display:flex;flex-wrap:wrap;gap:6px}
+.ct-actions{display:grid;gap:8px;grid-template-columns:1fr}
+.ct-big{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:56px;width:100%;padding:10px 14px;text-align:left;font-size:1rem}
+.ct-big small{font-weight:600;font-size:.8rem;opacity:.85}
+.ct-good{color:var(--good);font-weight:700}
+.ct-bad{color:var(--bad);font-weight:700}
+
+.ct-box{border-top:1px solid var(--line);padding-top:8px}
+.ct-box summary{min-height:44px;display:flex;align-items:center}
+.ct-h{font-size:1rem;margin:4px 0 6px}
+.ct-notes{margin:6px 0 0;padding-left:20px;display:grid;gap:6px;font-size:.95rem;line-height:1.5}
+.ct-practice{margin:8px 0;padding:0;list-style:none;display:grid;gap:14px}
+.ct-pq>p{margin:0 0 6px;font-weight:600}
+
+/* Exam */
+.ct-exam{display:grid;gap:10px}
+.ct-exam>*{margin:0}
+.ct-q{font-size:1.067rem;font-weight:700;line-height:1.45}
+.ct-opts{display:grid;gap:8px}
+.ct-opt{min-height:48px;font-size:1rem;font-weight:600;line-height:1.4}
+.ct-opt.ok{border-color:var(--good);background:var(--good-soft)}
+.ct-opt.bad{border-color:var(--bad);background:var(--bad-soft)}
+.ct-opt:disabled{opacity:1;cursor:default}
+.ct-key{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line-strong);font-weight:800;font-size:.867rem}
+
+/* Last graded paper */
+.ct-result{display:grid;gap:8px}
+.ct-result>*{margin:0}
+.ct-result.good{border-left:5px solid var(--good)}
+.ct-result.bad{border-left:5px solid var(--bad)}
+.ct-score{display:flex;align-items:baseline;gap:8px}
+.ct-score b{font-size:2rem;line-height:1;font-weight:800}
+.ct-score span{color:var(--muted);font-weight:600}
+
+/* Job sheet: after a failed interview (views.js) */
+.ct-next{display:grid;gap:10px;margin-top:4px}
+.ct-next .btn{width:100%;min-height:56px;justify-content:flex-start;text-align:left;font-size:1.033rem;padding:10px 16px}
+.ct-next .btn>span{display:grid;gap:2px}
+.ct-next .btn small{font-weight:600;font-size:.8rem;opacity:.85}
+.ct-next .btn[disabled]{opacity:.62}
+.ct-next-note{margin:0;font-size:.867rem;color:var(--muted)}
+.ct-chip{background:var(--good-soft);color:var(--good);font-weight:800;border-color:transparent}
+.ct-banner{display:flex;align-items:center;gap:10px}
+.ct-banner>span:first-child{font-size:1.4rem;line-height:1}
+.ct-banner .grow{min-width:0}
+.ct-banner .btn{flex:none;min-height:44px}
+@media (max-width:480px){.ct-banner{flex-wrap:wrap}.ct-banner .btn{width:100%}}
+/* 💡 free exam hint: one wrong option greyed out + the lesson line to recall */
+.ct-hint-btn{margin-top:8px}
+.ct-opt.ct-off{opacity:.45;text-decoration:line-through}
+.ct-hint{display:flex;gap:8px;align-items:flex-start;margin:10px 0 0;padding:10px 12px;border-radius:12px;background:var(--accent-soft);font-size:.9rem;line-height:1.45}

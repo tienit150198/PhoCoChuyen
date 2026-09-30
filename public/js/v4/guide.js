@@ -84,7 +84,7 @@ export function nextHint(x,steps,{done='',final=null,cta=true,pulse='',glow=fals
   if(!n)return `<div class="gd-next done" role="status"${first}${pulse?` data-pulse="${esc(pulse)}"`:''}><small>Bước tiếp theo</small><b>${esc(done)}</b></div>`;
   const sel=pulse||pulseSel(n,cta);
   const tap=goAttrs(n.go);
-  return `<div class="gd-next" role="status"${first}${sel?` data-pulse="${esc(sel)}"`:''}><small>Bước tiếp theo</small><button type="button" class="gd-hint"${tap}><b>${n.go?.label||esc(n.label)}</b>${n.note?`<span class="gd-note">${esc(n.note)}</span>`:''}<i aria-hidden="true">→</i></button></div>`;
+  return `<div class="gd-next" role="status"${first}${sel?` data-pulse="${esc(sel)}"`:''}><small>Bước tiếp theo</small><button type="button" class="gd-hint"${tap}><b>${n.go?.label||esc(n.label)}</b>${n.note?`<span class="gd-note">${esc(n.note)}</span>`:''}${/[→›]\s*$/.test(plainText(n.go?.label||n.label))?'':'<i aria-hidden="true">→</i>'}</button></div>`;
 }
 
 /** Markup or escaped text as plain text (tags dropped, the usual entities decoded). */
@@ -125,22 +125,46 @@ export function highlight(el){
   if(!el)return false;
   const box=el.closest('details:not([open])');if(box)box.open=true;
   el.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
-  el.classList.remove('gd-flash');void el.offsetWidth;el.classList.add('gd-flash');
-  clearTimeout(el._gd);el._gd=setTimeout(()=>el.classList.remove('gd-flash'),2400);
+  // The glow restarts two frames later instead of through a forced reflow (void el.offsetWidth).
+  el.classList.remove('gd-flash');clearTimeout(el._gd);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{if(!el.isConnected)return;el.classList.add('gd-flash');clearTimeout(el._gd);el._gd=setTimeout(()=>el.classList.remove('gd-flash'),2400);}));
   return true;
+}
+
+/** Two controls that perform the same step (payload compared as data, so key order does not matter). */
+function sameGo(a,b){
+  const d=a.dataset,e=b.dataset;
+  if((d.command||'')!==(e.command||'')||(d.action||'')!==(e.action||'')||(d.op||'')!==(e.op||''))return false;
+  const norm=v=>{try{const o=JSON.parse(v||'{}');return JSON.stringify(Object.keys(o).sort().map(k=>[k,o[k]]));}catch{return v||'';}};
+  return norm(d.payload)===norm(e.payload);
 }
 
 /** Called after every sheet render: pin the hint in the header and pulse the next control
  * on a first task. Never blocks: the pulse is decoration only. */
 export function applyGuide(dialog){
   if(!dialog)return;
-  const hint=dialog.querySelector('.sheet-body .gd-next');
+  // A hint inside a shut fold (e.g. the between-orders panel folded under a finished task) stays there.
+  const hint=[...dialog.querySelectorAll('.sheet-body .gd-next')].find(h=>!h.closest('details:not([open])'));
   const head=dialog.querySelector('.sheet-head .grow');
-  if(hint&&head){head.querySelector(':scope>p')?.remove();head.append(hint);}
+  if(hint&&head){
+    head.querySelector(':scope>p')?.remove();head.append(hint);
+    // The bottom button (or a desk's "Việc bây giờ" card) already shows and does this step: the header keeps
+    // the line for screen readers only (role=status), so the header stays one line. A hint whose note has words
+    // (e.g. an allergy) not written anywhere in the body stays in sight; a bare count ("1/3", "P3: 67/100") does not.
+    const body=dialog.querySelector('.sheet-body'),note=hint.querySelector('.gd-note')?.textContent.trim();
+    const open=e=>!e.closest('details:not([open])'),b=hint.querySelector('.gd-hint');
+    // A control in the body that does exactly what the hint does (same command/action and payload).
+    const twin=b&&body&&(b.dataset.command||(b.dataset.action&&b.dataset.action!=='v4Go'))?[...body.querySelectorAll('button:not([disabled]),[role="button"]')].find(c=>open(c)&&sameGo(c,b)):null;
+    const dup=!!body&&(!note||!/\p{L}{2}/u.test(note)||body.textContent.includes(note))&&(!!twin||[...body.querySelectorAll('.gd-cta:not([disabled])')].some(open)||[...body.querySelectorAll('.dw-now')].some(open));
+    hint.classList.toggle('gd-dup',dup);hint._twin=dup?twin:null;
+    if(b){if(dup)b.tabIndex=-1;else b.removeAttribute('tabindex');}
+  }
   const cur=hint||dialog.querySelector('.gd-next');
   if(cur?.dataset.first&&cur.dataset.pulse){
+    const sel=cur.classList.contains('gd-dup')?cur.dataset.pulse.replace('.gd-next .gd-hint','.gd-cta'):cur.dataset.pulse;
     // The sheet may not be shown yet on its first render: pick by markup, not by layout.
-    const el=[...dialog.querySelectorAll(cur.dataset.pulse)].find(e=>!e.disabled&&!e.closest('[hidden],details:not([open])>:not(summary)'));
+    const el=cur._twin&&cur.dataset.pulse.includes('.gd-next .gd-hint')&&!dialog.querySelector('.sheet-body .gd-cta:not([disabled])')?cur._twin
+      :[...dialog.querySelectorAll(sel)].find(e=>!e.disabled&&!e.closest('[hidden],details:not([open])>:not(summary)'));
     el?.classList.add('gd-pulse');
   }
 }
@@ -149,7 +173,14 @@ export function applyGuide(dialog){
 export function guideAction(action,data,el){
   if(action!=='v4Go')return false;
   const root=el.closest('dialog')||document;
-  const target=[...root.querySelectorAll(data.sel||'')].find(e=>e.offsetParent!==null)||root.querySelector(data.sel||'');
+  // checkVisibility needs styles only (offsetParent forced a full layout on every tap); old browsers: offsetParent.
+  const shown=e=>typeof e.checkVisibility==='function'?e.checkVisibility():e.offsetParent!==null;
+  const all=[...root.querySelectorAll(data.sel||'')],seen=all.filter(shown);
+  let target=seen[0]||all[0]||null;
+  // Several matches (a set of options): glow the group that holds them, not the first one, which would read
+  // as "pick this" (the step never suggests an answer). A group as wide as the whole sheet: the first one.
+  if(seen.length>1){let box=seen[0].parentElement;while(box&&!seen.every(e=>box.contains(e)))box=box.parentElement;
+    if(box&&!box.matches('.sheet-body,#sheetContent,dialog,body,.career-job'))target=box;}
   if(!highlight(target)&&el.closest('.gd-next'))highlight(root.querySelector('.gd-cta'));
   return true;
 }

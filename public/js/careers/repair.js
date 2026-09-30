@@ -182,15 +182,15 @@ function ticket(t,x){
   if(n.genuine_only)tags.push('<span class="tag">🏷️ chỉ hàng chính hãng</span>');
   if(cinfo)tags.push(`<span class="tag rp-case">${x.esc(cinfo.emoji)} ${x.esc(cinfo.label)}</span>`);
   if(left!=null)tags.push(`<span class="tag ${left>=0?(left<=4?'danger':'green'):'danger'} rp-rush">⏱️ ${left>=0?`còn ${left} nhịp · +${x.esc(x.money(n.rush.bonus))}`:'đã trễ hẹn gấp'}</span>`);
-  return `<article class="card rp-ticket"><div class="row">${x.portrait(who,44)}<div class="grow">
-    <div class="row spread wrap"><h3>${x.esc(who.display_name)}</h3><div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${Number(t.patience)||0}%"></i></div><small>${Number(t.patience)||0}%</small></div></div>
+  // Compact: face, name and patience on one line; the complaint and the tags under it; notes fold.
+  return `<article class="card rp-ticket rp-tk"><div class="rp-tk-head">${x.portrait(who,32)}<h3>${x.esc(who.display_name)}</h3><div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${Number(t.patience)||0}%"></i></div><small>${Number(t.patience)||0}%</small></div></div><div>
     <p class="rp-symptom">“${x.esc(n.symptom)}”</p><div class="row wrap rp-tags">${tags.join('')}</div>
     <details class="rp-note"><summary>Lời dặn của khách</summary><p class="small">${x.esc(n.note)}</p>${n.request?`<p class="small"><b>Khách nhờ thêm:</b> “${x.esc(n.request)}”</p>`:''}${n.claim?`<p class="small"><b>Phiếu:</b> ${x.esc(n.claim.said)}</p>`:''}</details>
     ${regularCard(t,x)}
-  </div></div></article>`;
+  </div></article>`;
 }
 
-function steps(t,x,at,tab){return `<nav class="rp-steps" aria-label="Quy trình sửa">${STEPS.map((s,i)=>`<button type="button" class="${i<at?'done':''} ${i===at?'now':''} ${i===tab?'open':''}" ${carAttr(x,'tab',{task:t.id,tab:i})} aria-current="${i===tab?'step':'false'}" ${i>at&&i!==0?'disabled':''}><span>${i<at?'✓':i+1}</span>${x.esc(s)}</button>`).join('')}</nav>`;}
+function steps(t,x,at,tab){return `<nav class="rp-steps" aria-label="Quy trình sửa">${STEPS.map((s,i)=>`<button type="button" class="${i<at?'done':''} ${i===at?'now':''} ${i===tab?'open':''}" ${carAttr(x,'tab',{task:t.id,tab:i})} aria-current="${i===tab?'step':'false'}" aria-label="${i+1} · ${x.esc(s)}" ${i>at&&i!==0?'disabled':''}><span>${i<at?'✓':i+1}</span><em>${x.esc(s)}</em></button>`).join('')}</nav>`;}
 
 function device(t,x){
   const b=t.bench,dev=devOf(x,t),n=t.needs;
@@ -222,15 +222,19 @@ function intakeView(t,x){
 }
 
 /* ---------- shell (safety + open/close) ---------- */
-function shellBar(t,x,primary){
+function shellBar(t,x,primary,folded=false){
   const b=t.bench,dev=devOf(x,t),done=b.safe||[],allSafe=done.length>=dev.safety.length;
   const next=dev.safety.find(s=>!done.includes(s));
   const chips=dev.safety.map(s=>{const v=x.cc.safety[s]||{emoji:'•',label:s},ok=done.includes(s);
     return `<button type="button" class="btn small ${ok?'rp-ok':primary&&s===next&&!b.opened?'primary':'ghost'}" ${cmdAttr(x,'rp_safety',{task:t.id,step:s})} ${ok||b.opened?'disabled':''}>${ok?'✅':x.esc(v.emoji)} ${x.esc(v.label)}</button>`;}).join('');
   const open=b.opened?x.cmd(`🔩 ${x.esc(dev.close)}`,'rp_close',{task:t.id},'ghost small'):allSafe?x.cmd(`🔧 ${x.esc(dev.open)}`,'rp_open',{task:t.id},primary?'primary small':'small',b.final==='pass')
     :x.confirmCmd(`🔧 ${x.esc(dev.open)}`,'rp_open',{task:t.id},'Chưa làm đủ bước an toàn! Mở máy lúc này có thể bị giật, bỏng hoặc chập. Vẫn mở?','danger small',b.final==='pass');
-  return `<div class="rp-shell"><span class="rp-shell-label">Vỏ máy</span><div class="row wrap">${b.opened?'':chips}${open}</div></div>`;
+  const body=`<div class="row wrap">${b.opened?'':chips}${open}</div>`;
+  if(folded)return `<details class="rp-shell rp-shell-fold"><summary><span class="rp-shell-label">Vỏ máy</span> ${b.opened?'🔓 đang mở':'🔒 đang đóng'} · ${allSafe?'🔌✖ đã an toàn':'⚡ còn điện'}</summary>${body}</details>`;
+  return `<div class="rp-shell"><span class="rp-shell-label">Vỏ máy</span>${body}</div>`;
 }
+/* The case controls are the step (make safe, open, close) or the case is open: show them; otherwise one line. */
+const shellNow=(t,x)=>{const n=pending(guideFor(t,x).steps)?.go;return !!t.bench.opened||['rp_safety','rp_open','rp_close'].includes(n?.cmd);};
 
 /* ---------- 1 · tests ---------- */
 function testsView(t,x){
@@ -238,12 +242,13 @@ function testsView(t,x){
   const tiles=tests.map(ts=>{const done=b.tests.some(r=>r.id===ts.id);let why='';
     if(done)why='đã đo';else if(ts.mode==='live'&&b.opened)why='đang mở máy';else if(ts.mode==='open'&&!b.opened)why='cần mở máy';else if(ts.consent&&!b.data_ok)why='🔒 khách không cho';
     return tile(x,{emoji:ts.emoji,label:ts.name,sub:why||MODE[ts.mode]+(ts.consent?' · cần đồng ý':''),cls:done?'selected':why?'locked':'',attr:cmdAttr(x,'rp_test',{task:t.id,test:ts.id}),off:!!why});}).join('');
-  const log=b.tests.length?`<ol class="rp-readings" aria-live="polite">${b.tests.map(r=>{const ts=tests.find(v=>v.id===r.id)||{name:r.id,emoji:'•'};return `<li><span aria-hidden="true">${x.esc(ts.emoji)}</span><div><b>${x.esc(ts.name)}</b><small>${x.esc(r.reading)}</small></div></li>`;}).join('')}</ol>`:'<p class="muted small">Mỗi phép đo tốn một nhịp</p>';
+  // Every reading stays one tap away; the newest also rides in the bottom bar.
+  const log=b.tests.length?`<details class="rp-readbox"><summary>📋 Số đo đã ghi (${b.tests.length})</summary><ol class="rp-readings">${b.tests.map(r=>{const ts=tests.find(v=>v.id===r.id)||{name:r.id,emoji:'•'};return `<li><span aria-hidden="true">${x.esc(ts.emoji)}</span><div><b>${x.esc(ts.name)}</b><small>${x.esc(r.reading)}</small></div></li>`;}).join('')}</ol></details>`:'<p class="muted small">Mỗi phép đo tốn một nhịp</p>';
   const hyp=(t.needs.hypotheses||[]).map(f=>{const fd=faultOf(x,dev,f),out=b.ruled_out.includes(f),chosen=b.diagnosis===f,fixed=f in b.fixed;
     return `<li class="rp-hyp ${out?'out':''} ${chosen?'chosen':''}"><div class="grow"><b>${x.esc(fd.name)}</b><small>${fixed?'✓ đã xử lý':chosen?'📌 đang chốt':out?'✗ số đo đã loại':'? còn khả nghi'}</small></div>
       ${chosen||fixed||b.final==='pass'?'':x.cmd('Chốt','rp_diagnose',{task:t.id,fault:f},out?'ghost small':'small')}</li>`;}).join('');
   const found=(b.found||[]).map(f=>`<li class="rp-hyp found"><div class="grow"><b>🔎 ${x.esc(faultOf(x,dev,f).name)}</b><small>${f in b.fixed?'✓ đã xử lý':'phát hiện khi mở máy — cần báo giá thêm'}</small></div></li>`).join('');
-  return `${toolWarn(x,'meter')}${shellBar(t,x,false)}<div class="tile-grid rp-grid rp-tests space-top">${tiles}</div>${log}<h5 class="rp-sub">Bảng giả thuyết</h5><ul class="rp-hyps">${hyp}${found}</ul>`;
+  return `${toolWarn(x,'meter')}${shellBar(t,x,false,!shellNow(t,x))}<div class="tile-grid rp-grid rp-tests space-top">${tiles}</div>${log}<h5 class="rp-sub">Bảng giả thuyết</h5><ul class="rp-hyps">${hyp}${found}</ul>`;
 }
 
 /* ---------- 2 · quote (+ warranty book, water evidence) ---------- */
@@ -319,11 +324,22 @@ function fixView(t,x){
 }
 
 /* ---------- 4 · finish ---------- */
+/** What the counter will charge (same lines as rp_handover): each repair at its approved quote (list price if
+ * done without one), the data fee, then the rush thank-you on top when on time. */
+function handoverBill(t,x){
+  const b=t.bench,dev=t.needs.device,un=b.unauthorized||[];
+  const rows=Object.entries(b.fixed||{}).map(([f,g])=>{const fd=faultOf(x,dev,f),ap=b.approved?.[f],ok=ap&&!un.includes(f);
+    return [`${fd.name}${ok?'':' (chưa được duyệt giá)'}`,ok?ap.price:line(x,t,fd,g).price];});
+  if(caseOf(t)==='privacy'&&b.data_req==='copy')rows.push(['Sao chép dữ liệu',x.cc.data_fee||15]);
+  const sum=rows.reduce((a,r)=>a+r[1],0),left=rushLeft(t,x),bonus=t.needs?.rush&&left!=null&&left>=0?t.needs.rush.bonus:0;
+  const row=(k,v,cls='')=>`<p class="row spread small ${cls}"><span>${x.esc(k)}</span><b>${x.esc(x.money(v))}</b></p>`;
+  return `<div class="rp-bill"><h5>🧾 Thu khi bàn giao</h5>${rows.map(r=>row(r[0],r[1])).join('')}${rows.length>1?row('Cộng',sum):''}${bonus?row('Tiền gấp nếu kịp giờ (khách tự gửi thêm)',bonus,'muted'):''}</div>`;
+}
 function finishView(t,x){
   const b=t.bench,fixedAny=Object.keys(b.fixed||{}).length>0,cs=caseOf(t);
   if(b.final!=='pass'){
     const why=b.opened?'Lắp máy lại trước khi chạy thử.':!fixedAny?'Chưa sửa gì — chạy thử lúc này vẫn y như cũ.':'';
-    return `${b.final==='fail'?'<p class="notice amber small">Lần chạy thử trước chưa đạt — xem lại bảng giả thuyết.</p>':''}<div class="rp-cta">${x.cmd('▶️ Chạy thử lần cuối','rp_final',{task:t.id},'primary',b.opened||!fixedAny)}</div>${why?`<p class="small muted">${x.esc(why)}</p>`:''}${fixedAny&&!b.opened?`<div class="rp-return">${x.confirmCmd('📦 Giao máy luôn, không chạy thử','rp_handover',{task:t.id},'Giao máy khi chưa chạy thử và không có phiếu bảo hành? Nếu máy vẫn hỏng, khách sẽ không vui đâu.','ghost small')}</div>`:''}`;
+    return `${b.final==='fail'?'<p class="notice amber small">Lần chạy thử trước chưa đạt — xem lại bảng giả thuyết.</p>':''}<div class="rp-cta">${x.cmd('▶️ Chạy thử lần cuối','rp_final',{task:t.id},'primary',b.opened||!fixedAny)}</div>${why?`<p class="small muted">${x.esc(why)}</p>`:''}${fixedAny&&!b.opened?`${handoverBill(t,x)}<div class="rp-return">${x.confirmCmd('📦 Giao máy luôn, không chạy thử','rp_handover',{task:t.id},'Giao máy khi chưa chạy thử và không có phiếu bảo hành? Nếu máy vẫn hỏng, khách sẽ không vui đâu.','ghost small')}</div>`:''}`;
   }
   const days=(x.cc.warranty||[0,7,30,90]).map(d=>x.cmd(d?`${d} ngày`:'Không BH','rp_warranty',{task:t.id,days:d},`${b.warranty===d?'primary small':'ghost small'} rp-w-${d}`,b.warranty!=null)).join('');
   let privacy='';
@@ -332,7 +348,7 @@ function finishView(t,x){
   const ready=b.warranty!=null&&!b.opened&&!(cs==='privacy'&&b.data_req==null);
   return `<p class="notice green small">✅ Chạy thử đạt.</p>
     <p class="small muted">Bảo hành theo linh kiện: chính hãng 90 · tương thích/thay mới 30 · tháo máy, vệ sinh 7 · máy vô nước không bảo hành.</p>
-    <div class="row wrap rp-days">${days}</div>${privacy}
+    <div class="row wrap rp-days">${days}</div>${privacy}${handoverBill(t,x)}
     <div class="rp-cta">${x.confirmCmd('✅ Bàn giao & thu tiền','rp_handover',{task:t.id},'Trả máy, phụ kiện và phiếu bảo hành; thu tiền đúng báo giá khách đã duyệt?','primary big',!ready)}</div>`;
 }
 
@@ -582,11 +598,16 @@ export default {
     const tab=u.tab!=null&&u.tab<=at?u.tab:at;
     const views=[intakeView,testsView,quoteView,fixView,finishView];
     const titles=['Phiếu nhận máy','Đo kiểm & giả thuyết','Báo giá cho khách','Mở máy & thay sửa','Chạy thử, bảo hành, bàn giao'];
-    const rows=tab===at&&g.steps.length>1?stepRows(x,g.steps,'Việc ở bước này'):'';
+    const rows=tab===at&&g.steps.length>1?`<details class="rp-rowsbox"><summary>📋 Việc ở bước này (${g.steps.filter(s=>s.ok===true).length}/${g.steps.length})</summary>${stepRows(x,g.steps,'Việc ở bước này')}</details>`:'';
     const panel=`<section class="rp-panel ${tab===at?'focus':''}" aria-live="polite"><h4 class="section-title">${tab+1} · ${x.esc(titles[tab])}${tab!==at?` <button type="button" class="btn ghost small" ${carAttr(x,'tab',{task:t.id,tab:at})}>Về bước đang làm</button>`:''}</h4>${views[tab](t,x)}${rows}</section>`;
     const banner=t.bench.shelf?shelfBanner(t,x):'';
-    return `<div class="career-job rp ${at?'rp-later':'rp-intake'}" data-rp-key="${x.esc(t.id)}:${at}:${tab}">${hint}${top}${lastDesk(x)}${banner}${ticket(t,x)}${steps(t,x,at,tab)}<div class="workbench"><div class="wb-main">${panel}${promiseFold(t,x)}${t.bench.intake?returnLink(t,x):''}
-      <p class="rp-foot">${x.button('📦 Kho & nhập linh kiện','inventory',{},'ghost small')}</p>${shelfFold(x,t.id)}</div>
+    // Rarely used: promise a pick-up day, hand back unrepaired, the parts store, the shelf. One ⋯ line,
+    // unless the next step is one of them.
+    const sel=pending(g.steps)?.go?.sel||'',promise=promiseFold(t,x),ret=t.bench.intake?returnLink(t,x):'',shelf=shelfFold(x,t.id);
+    const out=(sel.includes('rp-promise')?promise:'')+(sel.includes('rp-return')?ret:'');
+    const tucked=[sel.includes('rp-promise')?'':promise,sel.includes('rp-return')?'':ret,`<p class="rp-foot">${x.button('📦 Kho & nhập linh kiện','inventory',{},'ghost small')}</p>`,shelf].filter(Boolean).join('');
+    const more=`<details class="rp-more"><summary>⋯ ${[promise&&!sel.includes('rp-promise')?'Hẹn khách':'',ret&&!sel.includes('rp-return')?'Trả máy':'','Kho linh kiện',shelf?'Kệ máy chờ':''].filter(Boolean).join(' · ')}</summary><div class="rp-more-body">${tucked}</div></details>`;
+    return `<div class="career-job rp ${at?'rp-later':'rp-intake'}" data-rp-key="${x.esc(t.id)}:${at}:${tab}">${hint}${top}${lastDesk(x)}${banner}${ticket(t,x)}${steps(t,x,at,tab)}<div class="workbench"><div class="wb-main">${panel}${out}${more}</div>
       <aside class="wb-side">${device(t,x)}</aside></div>${cta}</div>`;
   },
   // The sticky bottom button rides above the sheet's own sticky footer.

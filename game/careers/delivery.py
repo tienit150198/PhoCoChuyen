@@ -49,6 +49,7 @@ Care (sub-project 3, docs/superpowers/specs/2026-09-29-delivery-care-design.md):
 from __future__ import annotations
 import copy
 from . import kit
+from . import till
 from .. import consequences as cq
 from .. import archive as ar
 
@@ -287,13 +288,16 @@ def _window(o: dict, day: int) -> int:
 
 RUN_V2 = dict(dog=None, dest=None, spilled=False, discount=0, bomb=None, moved=None)
 RUN_V3 = dict(care=[], kept=[], missed=[])      # care at the door; regulars' notes kept / forgotten
+# Cash at the door (game/careers/till.py): times a careful customer asked for the rest of the change,
+# excess change given back, change the customer waved off as a tip.
+RUN_V4 = dict(asked=0, returned=False, tip=0)
 
 
 def _empty_run() -> dict:
     return dict(day=0, t0=0, checked=False, w=None, seam=None, missing=None, packed=[], loaded=False, reported=False,
                 called=False, unit=None, back=None, knocks=0, wet=False, burst=False, melted=False, _broken=False,
                 broken_seen=False, change=None, short=0, over=0, outcome=None, fee=None, late=0, expired=False, comp=0,
-                **copy.deepcopy(RUN_V2), **copy.deepcopy(RUN_V3))
+                **copy.deepcopy(RUN_V2), **copy.deepcopy(RUN_V3), **RUN_V4)
 
 
 def mod_of(day: int) -> dict:
@@ -562,10 +566,11 @@ def _care_after(s: dict, c: dict, t: dict, clean: bool) -> str:
     elif good and reg['bond'] < BOND_MAX:
         reg['bond'] += 1
         out += f' 💛 {who} quý bạn hơn (thân thiết {reg["bond"]}/{BOND_MAX}).'
-    if good:
+    if good and not t.get('tip_given'):      # a regular who already left the change does not tip twice
         for at, amount, label in BOND_TIP:
             if reg['bond'] >= at:
-                kit.money(s, c, amount, f'{who} ({label}) gửi tiền cà phê', t['id'], 'revenue')
+                kit.money(s, c, amount, f'{who} ({label}) gửi tiền cà phê', t['id'], 'tip')
+                t['tip_given'] = t.get('tip_given', 0) + amount     # one tip per job: the random tip skips it
                 d['stats']['regular_tips'] += amount
                 out += f' ☕ {who} ({label}) gửi {amount} xu tiền cà phê.'
                 break
@@ -790,8 +795,6 @@ def _slips(t: dict) -> None:
         cq.slip(t, 'late', 1 if r['late'] <= 15 else 2,
                 f'Hẹn giờ mà trễ {r["late"]} phút, đồ ăn nguội hết.' if food else f'Dặn giao trước giờ hẹn mà trễ {r["late"]} phút.',
                 f'trễ {r["late"]} phút')
-    if r['short']:
-        cq.slip(t, 'short_change', 2, f'Shipper thối thiếu {r["short"]} xu, tôi phải đếm lại mới thấy.', 'thối thiếu tiền')
 
 
 def _finish(s: dict, c: dict, t: dict, how: str) -> dict:
@@ -812,6 +815,15 @@ def _finish(s: dict, c: dict, t: dict, how: str) -> dict:
     # A customer who complains takes their cut instead of the flat late deduction, never both.
     fee = react['pay'] if react['cut'] else fee
     r['fee'] = fee
+    cash = ''
+    if n['cod'] and r['asked']:
+        till.asked_slip(t)
+    if n['cod'] and r['short'] and r['outcome'] == 'delivered':
+        cash = till.found_at_home(s, c, t, r['short'])
+    elif n['cod'] and r['change'] == n['cash'] - n['cod'] + r['discount'] and not r['over']:
+        r['tip'], cash = till.keep_change(s, c, t, r['change'], react, _who(t))
+        if r['tip']:
+            r['change'] = 0          # the change stays in the courier's pocket as the tip
     d['delivered'] += 1
     d['day_delivered'] += 1
     d['day_fees'] += fee
@@ -828,6 +840,8 @@ def _finish(s: dict, c: dict, t: dict, how: str) -> dict:
         msg += ' Khách phàn nàn: ' + '; '.join(notes) + '.'
     if react['message']:
         msg += ' ' + react['message']
+    if cash:
+        msg += ' ' + cash
     clean = not notes and not r['late'] and not cq.slips(t)
     msg += _score(s, c, t, clean=clean)
     msg += _care_after(s, c, t, clean)
@@ -1064,7 +1078,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         kit.confirm(p, f'Nộp {amount} xu COD cho kế toán bưu cục?')
         short = max(0, d['owed'] - d['bag'])
         if short:
-            kit.money(s, c, -short, 'Bù thiếu tiền COD (thối dư cho khách)')
+            kit.money(s, c, -short, 'Bù thiếu tiền COD')
             d['shortage'] += short
         d['settled'] += 1
         d['bag'] = d['owed'] = 0
@@ -1072,7 +1086,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         kit.metric(c, 'cod_settled')
         _clock(d, 2)
         return dict(message=f'💵 Đã nộp {amount} xu, kế toán ký bảng kê.' +
-                    (f' Túi thiếu {short} xu vì thối dư — bạn tự bù từ ví.' if short else ' Khớp từng đồng!'))
+                    (f' Túi COD thiếu {short} xu so với bảng kê — bạn tự bù từ ví.' if short else ' Khớp từng đồng!'))
     t = _order(c, p)
     n, r = t['needs'], t['run']
     kit.need(r['outcome'] is None, 'Đơn này đã xong.')
@@ -1291,8 +1305,11 @@ def _deliver(s: dict, c: dict, d: dict, t: dict, name: str, p: dict) -> dict:
         return _finish(s, c, t, 'safedrop')
     if n['cod']:
         kit.need(d['owed'] + n['cod'] <= COD_CAP, f'Túi COD sẽ vượt hạn mức {COD_CAP} xu — app khóa thu tiền. Về bưu cục nộp tiền trước.')
+        change = kit.integer(p.get('change'), 0, 1000)
+    at_door = r.get('asked', 0) > 0       # already at the door, counting the change again
     astray = bool(t['_unit']) and not r['unit']   # no room number: knock along the corridors and ask the neighbours
-    _clock(d, STAIRS.get(n['dest'], 0) + (8 if astray else 0))
+    if not at_door:
+        _clock(d, STAIRS.get(n['dest'], 0) + (8 if astray else 0))
     back = r['t0'] + t['_away']
     if t['_away'] and d['clock'] < back:
         r['knocks'] += 1
@@ -1303,24 +1320,31 @@ def _deliver(s: dict, c: dict, d: dict, t: dict, name: str, p: dict) -> dict:
         t['mistakes'] += 1
         what = 'giấy tờ ướt nhòe mực' if n['paper'] else 'hàng bên trong đã vỡ'
         return dict(message=f'💔 Đồng kiểm với khách: {what}. Khách từ chối nhận. Báo giao thất bại và làm biên bản.')
-    if astray:
+    if astray and not at_door:
         t['mistakes'] += 1
         cq.slip(t, 'no_room', 2, 'Không gọi hỏi số phòng, shipper gõ cửa lung tung cả dãy, hỏi hàng xóm mới tìm ra tôi.', 'không hỏi số phòng, gõ nhầm cửa')
     if n['cod']:
-        change = kit.integer(p.get('change'), 0, 1000)
-        right = n['cash'] - n['cod']
+        right = n['cash'] - (n['cod'] - r['discount'])   # a promised discount comes off what they pay
         extra = ''
         if change < right:
-            r['short'] = right - change
-            t['mistakes'] += 1
-            extra = f' Khách đếm lại: “Thối thiếu {right - change} xu nè!” — bạn đưa thêm cho đủ.'
-            change = right
+            short = right - change
+            if at_door or till.careful(c, t, short, right):
+                # They count it on the spot: nothing is handed over until the courier gives the rest.
+                r['asked'] = min(9, r.get('asked', 0) + 1)
+                return dict(message='💵 ' + till.ask_rest(t, short, _who(t)), refused=True)
+            r['short'] = short            # nobody counted: found at home (after the reaction, in _finish)
         elif change > right:
             r['over'] = change - right
-            t['mistakes'] += 1
-            extra = f' Bạn thối dư {change - right} xu — cuối ca túi COD sẽ thiếu đúng chừng đó.'
+            back, extra = till.excess(c, t, change - right, _who(t))
+            extra = ' ' + extra
+            if back:
+                r['returned'] = True
+                change = right
+            else:
+                extra += ' Cuối ca túi COD sẽ thiếu đúng chừng đó.'
         r['change'] = change
-        d['bag'] += max(0, n['cash'] - change - r['discount'])
+        # Short-changed cash nobody noticed is not the post office's COD money: the bag only holds what is due.
+        d['bag'] += max(0, min(n['cash'] - change, n['cod'] - r['discount']))
         d['owed'] += n['cod']
         d['cod'].append(dict(task=t['id'], item=n['item'], cod=n['cod'], day=c['day']))
         out = _finish(s, c, t, 'delivered')
@@ -1388,8 +1412,9 @@ def feedback(c: dict, t: dict) -> dict:
     rows.append(dict(key='condition', label='Tình trạng hàng', score=max(2, 5 - len(issues)),
                      note='nguyên vẹn, khô ráo, đủ món' if not issues else '; '.join(issues)))
     if n['cod']:
-        rows.append(dict(key='cash', label='Tiền thu hộ', score=3 if r['short'] else 4 if r['over'] else 5,
-                         note='thối tiền chính xác' if not (r['short'] or r['over']) else 'thối thiếu, khách phải nhắc' if r['short'] else 'thối nhầm tiền'))
+        rows.append(dict(key='cash', label='Tiền thu hộ', score=2 if r['short'] else 4 if r.get('asked') or r['over'] else 5,
+                         note='thối thiếu, về nhà mới thấy' if r['short'] else 'thối thiếu, khách phải nhắc' if r.get('asked')
+                         else 'thối dư, khách trả lại' if r.get('returned') else 'thối nhầm tiền' if r['over'] else 'thối tiền chính xác'))
     if needed_call or r['outcome'] == 'safedrop':
         ok = r['called'] or r['outcome'] == 'safedrop'
         rows.append(dict(key='contact', label='Liên lạc', score=5 if ok and not r['knocks'] else 4 if ok else 3,
@@ -1492,8 +1517,12 @@ def validate_task(t: dict, original: dict) -> None:
     kit.integer(r['t0'], 0, 2000)
     kit.integer(r['knocks'], 0, 50)
     kit.integer(r['late'], 0, 2000)
-    for k in ('short', 'over', 'comp'):
+    for k in ('short', 'over', 'comp', 'tip'):
         kit.integer(r[k], 0, 1000)
+    kit.integer(r['asked'], 0, 9)
+    kit.need(type(r['returned']) is bool and (not r['returned'] or r['over']), 'Tiền thối dư sai.')
+    kit.need(not r['tip'] or (n['cod'] and r['tip'] == n['cash'] - n['cod'] + r['discount'] and t.get('tip_given', 0) >= r['tip']), 'Tiền khách cho sai.')
+    till.validate_tip(t)
     kit.need(r['w'] in (None, t['_w']) and (r['w'] is None or r['checked']), 'Số cân không khớp hàng.')
     kit.need(r['seam'] in (None, t['_seam']), 'Tình trạng thùng sai.')
     kit.need(r['missing'] in (None, '', t['_missing']) and (r['missing'] != '' or not t['_missing']), 'Phiếu kiểm món sai.')
@@ -1504,7 +1533,7 @@ def validate_task(t: dict, original: dict) -> None:
     kit.need(n['kind'] == 'parcel' or not r['packed'], 'Vật tư đóng gói sai.')
     kit.need(r['outcome'] in (None, 'delivered', 'safedrop', 'failed', 'refused'), 'Kết quả giao sai.')
     kit.need((r['outcome'] is None) == (t['status'] not in DONE), 'Kết quả giao sai.')
-    kit.need(r['change'] is None or (n['cod'] and kit.integer(r['change'], 0, 1000) >= n['cash'] - n['cod']), 'Tiền thối sai.')
+    kit.need(r['change'] is None or (n['cod'] and kit.integer(r['change'], 0, 1000) + r['short'] + r['tip'] >= n['cash'] - n['cod']), 'Tiền thối sai.')
     kit.need(r['fee'] is None or 0 <= kit.integer(r['fee'], 0, 200), 'Phí ship sai.')
     kit.need(t.get('gen') == original.get('gen'), 'Phiên bản đơn giao sai.')
     kit.need(r['dog'] in (None, 'ok', 'bite') and (r['dog'] is None or t.get('_dog')), 'Chuyện chó ở cổng sai.')
@@ -1529,7 +1558,7 @@ def validate_data(c: dict) -> None:
     kit.mark_legacy(c, ID, 'gen')
     for t in c.get('tasks', []):
         if isinstance(t, dict) and t.get('career') == ID and isinstance(t.get('run'), dict):
-            for k, v in {**RUN_V2, **RUN_V3}.items():
+            for k, v in {**RUN_V2, **RUN_V3, **RUN_V4}.items():
                 t['run'].setdefault(k, copy.deepcopy(v))
     kit.desk_validate(d['desk'], EVENTS)
     parts = d['parts']

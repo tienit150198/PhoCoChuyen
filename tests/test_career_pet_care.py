@@ -89,7 +89,7 @@ class PetCareTests(unittest.TestCase):
         self.assertEqual(t['status'], 'completed')
         self.assertEqual(t['mistakes'], 0)
         price = P.SPEC['prices']
-        self.assertEqual(j.c['money'] - money, price['groom_s'] + price['nails'] + price['ears'] + P.SPEC['tip'])   # perfect job: tip
+        self.assertEqual(j.c['money'] - money, price['groom_s'] + price['nails'] + price['ears'])
         self.assertEqual(self.stock(j, 'sh_normal'), shampoo - 1)
         self.assertEqual(self.stock(j, 'towel'), towels - 1)
         self.assertEqual(self.stock(j, 'cotton'), cotton - 2)
@@ -353,7 +353,7 @@ class PetCareTests(unittest.TestCase):
         t = j.get(tid)
         self.assertEqual(t['status'], 'completed')
         self.assertEqual(t['mistakes'], 0)
-        self.assertEqual(j.c['money'] - money, 2 * P.SPEC['prices']['board_dog'] + P.SPEC['tip'])
+        self.assertEqual(j.c['money'] - money, 2 * P.SPEC['prices']['board_dog'])
         pen = self.pens(j)['d3']
         self.assertEqual((pen['pet'], pen['until'], pen['grams']), ('Lu', j.c['day'] + 2, 203))
         post = self.review(j, tid)
@@ -477,7 +477,7 @@ class PetCareTests(unittest.TestCase):
         t = self.hand(j)
         self.assertEqual(t['status'], 'completed')
         self.assertEqual(t['mistakes'], 0)
-        self.assertEqual(j.c['money'] - money, P.SPEC['prices']['care'] + P.SPEC['tip'])
+        self.assertEqual(j.c['money'] - money, P.SPEC['prices']['care'])
         self.assertIsNone(self.pens(j)['d3']['task'])
         self.assertEqual(self.review(j, tid)['stars'], 5)
 
@@ -1282,7 +1282,7 @@ class PetCareConsequenceTests(unittest.TestCase):
         price = P.SPEC['prices']
         self.assertEqual(t.get('slips') or [], [])
         self.assertEqual(t['reaction']['kind'], 'accept')
-        self.assertEqual(paid, price['groom_s'] + price['nails'] + price['ears'] + P.SPEC['tip'])
+        self.assertEqual(paid, price['groom_s'] + price['nails'] + price['ears'])
         self.assertGreaterEqual(self.review(j, t['id'])['stars'], 4)
         self.assertTrue(r.get('celebrate'))
 

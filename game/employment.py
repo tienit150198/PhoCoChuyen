@@ -17,6 +17,17 @@ mark, retake the next day, the certificate is kept), a situational `test`
 (customer care) and a hands-on `trial` with the owner (salon, pet care,
 repair, delivery). Postings without `stages` keep the old CV → letter →
 interview flow and scoring. Content lives in employment_content.py.
+
+v0.9 (story mode): after a failed interview there are two more ways in.
+* 🎓 A certificate (game/certificates.py) for the career's group: below the pass
+  score the application still gets a seeded, stored roll at certificates.boosted(0)
+  (+50 percentage points). A safety-fatal step or a failed reference check is
+  never covered, and a licence exam is never replaced.
+* 🚪 Đi cửa sau (`job_backdoor`): pay a small fee from the wallet (one day of the
+  posting's starting wage) and a helper "lo giúp": hired at the starting wage, on
+  the usual probation. Once per workplace; a colleague's remark on day one.
+The re-apply cooldown counts life days in the story (a place you were never hired
+at has no days of its own, so a failed interview used to lock it for good).
 """
 from __future__ import annotations
 
@@ -124,7 +135,8 @@ STEP_STAGES = {'interview': 'questions', 'test': 'test', 'trial': 'trial'}   # s
 STAGE_NAMES = dict(exam='Thi chứng chỉ', cv='CV', letter='Thư ứng tuyển', interview='Phỏng vấn',
                    test='Bài thử tình huống', trial='Làm thử tại tiệm')
 FATAL_CAP = 45
-LATER_FIELDS = {'certs'}   # job fields added after v0.4: older saves may lack them
+PASS_SCORE = 60            # an application from this score gets an offer
+LATER_FIELDS = {'certs', 'backdoor'}   # job fields added after v0.4: older saves may lack them
 
 
 def stages(post: dict) -> list[str]:
@@ -190,7 +202,7 @@ def required(career: str) -> bool:
 def initial() -> dict:
     return dict(status='none', employer=None, title=None, salary=0, offer=None, probation=False, probation_left=0, hired_day=0,
                 application=None, cooldown_day=0, history=[], days_worked=0, reviews_during_probation=[], extended=False,
-                certs=[])
+                certs=[], backdoor=None)
 
 
 def hired_record(career: str, posting_id: str | None = None, day: int = 1) -> dict:
@@ -347,7 +359,7 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
     need(required(career), 'Nghề này tự mở tiệm, không cần xin việc.')
     if name == 'job_apply':
         need(job['status'] in ('none', 'rejected'), 'Bạn đang có hồ sơ hoặc đã có việc.')
-        need(c['day'] >= job['cooldown_day'], 'Nơi tuyển dụng hẹn nộp lại vào ngày sau.')
+        need(today(s, c) >= job['cooldown_day'], f'Nơi tuyển dụng hẹn phỏng vấn lại {_dy().when_day(s, job["cooldown_day"], c)}.', 'retry_later')
         post = _posting(career, p.get('posting'))
         need(post, 'Tin tuyển dụng không tồn tại.')
         job['status'] = 'applying'
@@ -386,10 +398,12 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         need(not c['open'], 'Kết thúc ca rồi mới xin nghỉ nhé.')
         need(p.get('confirm') is True, 'Xác nhận nghỉ việc.')
         job['history'] = ar.last(job['history'] + [dict(day=c['day'], event='quit', posting=job['employer'])], 40, 'job.history', c)
-        keep = job['history']
+        keep, door = job['history'], job.get('backdoor')
         c['job'] = initial()
-        c['job']['history'] = keep
+        c['job'].update(history=keep, backdoor=door)
         return dict(message='Đã bàn giao và nghỉ việc. Bạn có thể ứng tuyển nơi khác.')
+    if name == 'job_backdoor':
+        return _backdoor(s, c, career, p)
     app = job.get('application')
     need(job['status'] in ('applying', 'offer') and app, 'Chưa có hồ sơ ứng tuyển nào đang mở.')
     post = _posting(career, app['posting'])
@@ -525,10 +539,11 @@ def _grade_exam(s: dict, c: dict, career: str, post: dict, app: dict) -> dict:
         out['exam'] = dict(score=right, passed=True)
         return out
     job['status'] = 'rejected'
-    job['cooldown_day'] = c['day'] + 1
+    job['cooldown_day'] = today(s, c) + 1
     app['stage'] = 'closed'
-    app['feedback'] = [head, 'Chưa đạt. Xem lại lời giải từng câu; có thể thi lại từ ngày sau với bộ câu hỏi khác.']
-    return dict(message=head + ' Chưa đạt, thi lại từ ngày sau nhé.', exam=dict(score=right, passed=False))
+    again = _dy().when_day(s, job['cooldown_day'], c)
+    app['feedback'] = [head, f'Chưa đạt. Xem lại lời giải từng câu; thi lại được {again} với bộ câu hỏi khác.']
+    return dict(message=head + f' Chưa đạt, thi lại được {again}.', exam=dict(score=right, passed=False))
 
 
 def _evaluate(s: dict, c: dict, career: str, post: dict, app: dict, last_note: str) -> dict:
@@ -567,28 +582,163 @@ def _evaluate(s: dict, c: dict, career: str, post: dict, app: dict, last_note: s
         score = min(score, FATAL_CAP)
         app['score'] = score
     trial = 'trial' in stages(post)
-    if score >= 60:
+    chance = None
+    if score < PASS_SCORE:
+        # 🎓 A matching certificate: one seeded, stored roll (never for an unsafe step or a CV that failed the check).
+        chance = _cert_roll(s, c, career, post, bool(fatal), bool(post.get('reference') and not honest))
+        if chance:
+            app['chance'] = chance
+            lines.append(_chance_line(chance))
+    lucky = bool(chance and chance['hired'])
+    if score >= PASS_SCORE or lucky:
         low, high = post['salary']
-        salary = low + round((high - low) * min(1, (score - 60) / 35))
+        salary = low + round((high - low) * max(0, min(1, (score - PASS_SCORE) / 35)))
         job['status'] = 'offer'
         job['offer'] = dict(salary=salary, negotiated=False, score=score, day=c['day'])
         e.metric(c, 'job_offers')
-        if trial:
+        cert = _cert_name(chance) if lucky else ''
+        if trial and lucky:
+            msg = (f'Kết quả làm thử: {score}/100, chưa đủ {PASS_SCORE}. {_cap(_boss(career, post))} vẫn nhận bạn nhờ {cert}: '
+                   f'lương cứng {salary} xu/ngày (thử việc {post["probation_days"]} ngày).')
+        elif lucky:
+            msg = (f'Kết quả: {score}/100, chưa đủ {PASS_SCORE}, nhưng nhờ {cert} (tỷ lệ nhận {chance["pct"]}%), {post["org"]} '
+                   f'vẫn gửi thư mời với lương {salary} xu/ngày (thử việc {post["probation_days"]} ngày).')
+        elif trial:
             msg = (f'Kết quả làm thử: {score}/100. {_cap(_boss(career, post))} nhận bạn làm {post["title"].lower()}: '
                    f'lương cứng {salary} xu/ngày (thử việc {post["probation_days"]} ngày).')
         else:
             msg = f'Kết quả: {score}/100. {post["org"]} gửi thư mời với lương {salary} xu/ngày (thử việc {post["probation_days"]} ngày).'
     else:
         job['status'] = 'rejected'
-        job['cooldown_day'] = c['day'] + 1
+        job['cooldown_day'] = today(s, c) + 1
         job['history'] = ar.last(job['history'] + [dict(day=c['day'], event='rejected', posting=post['id'], score=score)], 40, 'job.history', c)
         app['stage'] = 'closed'
         if trial:
-            msg = f'Kết quả làm thử: {score}/100. {_cap(_boss(career, post))} cảm ơn bạn, hẹn tập thêm rồi thử lại từ ngày sau.'
+            msg = (f'Kết quả làm thử: {score}/100. {_cap(_boss(career, post))} cảm ơn bạn, hẹn tập thêm rồi thử lại '
+                   f'{_dy().when_day(s, job["cooldown_day"], c)}.')
         else:
-            msg = f'Kết quả: {score}/100. {post["org"]} cảm ơn bạn và hẹn dịp khác. Bạn có thể ứng tuyển lại từ ngày sau.'
+            msg = (f'Kết quả: {score}/100. {post["org"]} cảm ơn bạn và hẹn dịp khác. Bạn có thể ứng tuyển lại '
+                   f'{_dy().when_day(s, job["cooldown_day"], c)}.')
     app['feedback'] = lines + [last_note]
-    return dict(message=msg, score=score, celebrate=score >= 60)
+    out = dict(message=msg, score=score, celebrate=score >= PASS_SCORE or lucky)
+    if chance:
+        out['chance'] = dict(chance)
+    return out
+
+
+# ---- two more ways in after a failed interview (v0.9, story mode) -------------------
+def today(s: dict, c: dict) -> int:
+    """The day the re-apply cooldown counts: life days in the story (a workplace you were
+    never hired at has no working days of its own), the career's day elsewhere."""
+    j = s.get('journey') or {}
+    life = j.get('life_day')
+    return life if j.get('story') and type(life) is int else c['day']
+
+
+def hire_chance(score: int, certified: bool) -> int:
+    """Chance (0–100) that an application with this score is hired: sure from PASS_SCORE,
+    otherwise nothing, or certificates.boosted(0) with a matching certificate."""
+    from . import certificates as ct
+    if score >= PASS_SCORE:
+        return 100
+    return ct.boosted(0) if certified else 0
+
+
+def _cert_roll(s: dict, c: dict, career: str, post: dict, fatal: bool, dishonest: bool) -> dict | None:
+    from . import certificates as ct
+    gid = ct.held_for(s, career)
+    if not gid:
+        return None
+    blocked = 'fatal' if fatal else 'reference' if dishonest else None
+    pct = 0 if blocked else hire_chance(0, True)
+    seed = (s.get('journey') or {}).get('seed', 0)
+    roll = _rng('cert-roll', seed, career, post['id'], today(s, c), len(c['job']['history'])).randrange(100)
+    return dict(cert=gid, pct=pct, roll=roll, hired=roll < pct, blocked=blocked)
+
+
+def _cert_name(chance: dict) -> str:
+    from . import certificates as ct
+    g = ct.INDEX[chance['cert']]
+    return f'{g["emoji"]} {g["name"]}'
+
+
+def _chance_line(chance: dict) -> str:
+    name = _cert_name(chance)
+    if chance['blocked'] == 'fatal':
+        return f'{name} không bù được một bước làm mất an toàn.'
+    if chance['blocked'] == 'reference':
+        return f'{name} không bù được dòng CV chưa đúng sự thật.'
+    if chance['hired']:
+        return f'Có {name}: tỷ lệ nhận {chance["pct"]}%, và lần này bạn được nhận.'
+    return f'Có {name}: tỷ lệ nhận {chance["pct"]}%, lần này chưa may.'
+
+
+BACKDOOR_HELPERS = [
+    'Cháu trai bà Tám quen {boss} ở {org}, bảo sẽ “lo giúp” một chút.',
+    'Anh họ của cô Ba từng làm chung với {boss} ở {org}, bảo cứ để anh “lo giúp”.',
+    'Em họ của anh Khoa quen người trong {org}, hứa “lo giúp” cho gọn.',
+    'Chị dâu cô Lụa là chỗ quen với {boss} ở {org}, nhận “lo giúp” một suất.',
+]
+BACKDOOR_REMARKS = [
+    'Đồng nghiệp nói nhỏ với nhau: “Nghe đâu vào bằng cửa sau đó…” Làm cho tốt rồi người ta sẽ quên thôi.',
+    'Lúc thay đồ, một đồng nghiệp buông một câu: “Có người quen sướng thật ha.” Bạn cười trừ rồi xắn tay áo làm.',
+    'Người làm ca trước đưa bạn cái tạp dề, nửa đùa nửa thật: “Người nhà của ai đó hả? Thôi làm đi rồi biết.”',
+]
+
+
+def backdoor_fee(post: dict) -> int:
+    """Một số tiền ít: one day of the posting's starting wage, rounded up to 5 xu (at least 10)."""
+    return max(10, -(-post['salary'][0] // 5) * 5)
+
+
+def backdoor_helper(post: dict) -> str:
+    """Who "lo giúp" for this posting: fixed per posting, so the confirm and the result agree."""
+    i = sum(post['id'].encode()) % len(BACKDOOR_HELPERS)
+    return BACKDOOR_HELPERS[i].format(boss=post.get('boss') or 'giám đốc', org=post['org'])
+
+
+def _backdoor(s: dict, c: dict, career: str, p: dict) -> dict:
+    from . import engine as e
+    need = e.need
+    j = s.get('journey') or {}
+    job = c['job']
+    need(j.get('story'), 'Đi cửa sau chỉ có trong hành trình.')
+    app = job.get('application')
+    need(job['status'] == 'rejected' and isinstance(app, dict), 'Cửa sau chỉ mở sau một lần trượt phỏng vấn.')
+    post = _posting(career, app.get('posting'))
+    need(post, 'Tin tuyển dụng không còn.')
+    need(not _needs_exam(job, career, post), 'Chứng chỉ hành nghề phải thi thật: không có cửa sau cho bài thi này.')
+    need(not job.get('backdoor'), 'Người quen chỉ “lo giúp” được một lần ở mỗi nơi.')
+    fee = backdoor_fee(post)
+    from . import bank as bk   # 🏦 p['pay']: 'auto' | 'cash' | 'card' | 'joint' (game/bank.py)
+    need(j['wallet'] >= fee or bk.can_pay(s, fee, p.get('pay', 'auto')), f'Ví chưa đủ {fee} xu để đi cửa sau.')
+    need(p.get('confirm') is True, 'Xác nhận đi cửa sau.')
+    bk.pay(s, fee, f'Đi cửa sau · {post["org"]}', method=p.get('pay', 'auto'), kind='backdoor', career=career)
+    low = post['salary'][0]
+    job.update(status='hired', employer=post['id'], title=post['title'], salary=low, probation=True,
+               probation_left=post['probation_days'], hired_day=c['day'], application=None, offer=None, extended=False,
+               reviews_during_probation=[])
+    job['backdoor'] = dict(posting=post['id'], day=c['day'], life_day=j['life_day'], fee=fee, said=False)
+    job['history'] = ar.last(job['history'] + [dict(day=c['day'], event='backdoor', posting=post['id'])], 40, 'job.history', c)
+    e.metric(c, 'backdoor_hires')
+    e.log(s, c, 'job', f'Vào {post["org"]} bằng cửa sau: {fee} xu cho người quen “lo giúp”. '
+                       f'Lương khởi điểm {low} xu/ngày, thử việc {post["probation_days"]} ngày như mọi người.')
+    return dict(message=f'{backdoor_helper(post)} Bạn được nhận làm {post["title"].lower()} ở {post["org"]}, '
+                        f'thử việc {post["probation_days"]} ngày.', backdoor=True)
+
+
+def backdoor_remark(s: dict, c: dict, career: str) -> str | None:
+    """Day one after a back-door hire: one colleague's remark (seeded), logged once. No other effect."""
+    from . import engine as e
+    job = c.get('job') or {}
+    door = job.get('backdoor')
+    if not isinstance(door, dict) or door.get('said') or job.get('status') != 'hired' or job.get('employer') != door.get('posting'):
+        return None
+    rng = _rng('backdoor-remark', (s.get('journey') or {}).get('seed', 0), career, door['posting'], door['life_day'])
+    line = rng.choice(BACKDOOR_REMARKS)
+    door['said'] = True
+    e.log(s, c, 'job', line)
+    return line
 
 
 def on_close(s: dict, c: dict, career: str) -> dict | None:
@@ -628,9 +778,46 @@ def on_close(s: dict, c: dict, career: str) -> dict | None:
     return note
 
 
-def public(c: dict, career: str) -> dict:
+def _dy():
+    from . import days
+    return days
+
+
+def retry_view(s: dict, c: dict) -> dict | None:
+    """After a failed interview: the day the place takes an application again, in player days."""
+    job = c.get('job') or {}
+    if job.get('status') != 'rejected' or not job.get('cooldown_day'):
+        return None
+    info = _dy().day_info(s, job['cooldown_day'], c)
+    info['button'] = 'Phỏng vấn lại' if info['open'] else f'Còn {info["left"]} ngày'
+    info['line'] = ('Hôm nay bạn có thể phỏng vấn lại.' if info['open']
+                    else f'Phỏng vấn lại được {info["text"]}.')
+    return info
+
+
+def retry_notices(s: dict) -> list[str]:
+    """Once per failed interview, on the day the place reopens: 'Hôm nay (Ngày 5) bạn có thể phỏng vấn lại ở …'."""
+    lines = []
+    for cid, c in (s.get('careers') or {}).items():
+        job = c.get('job') or {}
+        due = job.get('cooldown_day') or 0
+        if job.get('status') != 'rejected' or not due or job.get('retry_told', 0) >= due or today(s, c) < due:
+            continue
+        job['retry_told'] = due
+        app = job.get('application') or {}
+        post = _posting(cid, app.get('posting')) if app.get('posting') else None
+        post = post or (postings(cid) or [None])[0]
+        where = post['org'] if post else cid
+        lines.append(f'📅 Hôm nay (Ngày {today(s, c)}) bạn có thể phỏng vấn lại ở {where}.')
+    return lines
+
+
+def public(c: dict, career: str, s: dict | None = None) -> dict:
     job = dict(c['job'])
+    job.pop('retry_told', None)
     job['required'] = required(career)
+    if s is not None:
+        job['retry'] = retry_view(s, c)
     job['certs'] = list(job.get('certs') or [])
     ex = exam(career)
     app = job.get('application')
@@ -652,11 +839,12 @@ def _public_exam(ex: dict) -> dict:
 def content(career_ids) -> dict:
     ids = [cid for cid in career_ids if postings(cid)]
     return dict(strengths=STRENGTHS, claims=[dict(id=x['id'], text=x['text']) for x in CLAIMS], letter=LETTER_SLOTS,
-                postings={cid: [dict(p, stages=stages(p), interviewer=public_interviewer(cid, p)) for p in postings(cid)] for cid in ids},
+                postings={cid: [dict(p, stages=stages(p), interviewer=public_interviewer(cid, p),
+                                     backdoor=dict(fee=backdoor_fee(p), helper=backdoor_helper(p))) for p in postings(cid)] for cid in ids},
                 questions={cid: {q: question(cid, q) for p in postings(cid) for q in all_steps(p)} for cid in ids},
                 exams={cid: _public_exam(exam(cid)) for cid in ids if exam(cid)},
                 stage_names=STAGE_NAMES, reply_rules={k: dict(points=v[0], label=v[1]) for k, v in REPLY_RULES.items()},
-                reply_max=REPLY_MAX)
+                reply_max=REPLY_MAX, pass_score=PASS_SCORE)
 
 
 def _validate_app(job: dict, career: str, app: dict) -> None:
@@ -677,6 +865,15 @@ def _validate_app(job: dict, career: str, app: dict) -> None:
         need(oid in [o['id'] for o in question(career, qid)['options']], 'Câu trả lời sai.')
     need(isinstance(app.get('notes', []), list) and len(app.get('notes', [])) <= 60, 'Ghi chú phỏng vấn sai.')
     _validate_talk(career, post, app)
+    chance = app.get('chance')
+    if chance is not None:
+        from . import certificates as ct
+        need(isinstance(chance, dict) and set(chance) == {'cert', 'pct', 'roll', 'hired', 'blocked'}, 'Tỷ lệ nhận sai.')
+        need(ct.group_of(career) == chance['cert'], 'Chứng chỉ không thuộc nghề này.')
+        integer(chance['pct'], 0, 100)
+        integer(chance['roll'], 0, 99)
+        need(chance['blocked'] in (None, 'fatal', 'reference') and (chance['blocked'] is None or chance['pct'] == 0), 'Tỷ lệ nhận sai.')
+        need(chance['pct'] <= ct.boosted(0) and chance['hired'] is (chance['roll'] < chance['pct']), 'Tỷ lệ nhận sai.')
     sheet = app.get('exam')
     if app['stage'] == 'exam':
         need(isinstance(sheet, dict), 'Thiếu bài thi.')
@@ -705,6 +902,8 @@ def validate(c: dict, career: str) -> None:
     need(job['status'] in ('none', 'applying', 'offer', 'hired', 'rejected'), 'Trạng thái việc làm sai.')
     for k in ('salary', 'probation_left', 'hired_day', 'cooldown_day', 'days_worked'):
         integer(job.get(k), 0, 10**7)
+    if 'retry_told' in job:  # the day of the last "phỏng vấn lại được rồi" notice (optional, newer saves)
+        integer(job['retry_told'], 0, 10**7)
     need(job['salary'] <= 200, 'Lương vượt trần.')
     need(type(job['probation']) is bool and type(job['extended']) is bool, 'Cờ thử việc sai.')
     need(isinstance(job['history'], list) and len(job['history']) <= 40, 'Lịch sử việc làm sai.')
@@ -720,6 +919,14 @@ def validate(c: dict, career: str) -> None:
         need(ex and isinstance(cert, dict) and cert.get('id') == ex['id'], 'Chứng chỉ không thuộc nghề này.')
         integer(cert.get('day'), 1, 10**7)
         integer(cert.get('score'), 0, ex['draw'])
+    door = job.get('backdoor')
+    if door is not None:
+        need(isinstance(door, dict) and set(door) == {'posting', 'day', 'life_day', 'fee', 'said'} and _posting(career, door['posting']),
+             'Hồ sơ cửa sau sai.')
+        integer(door['day'], 1, 10**7)
+        integer(door['life_day'], 1, 10**7)
+        integer(door['fee'], 1, 10**4)
+        need(type(door['said']) is bool, 'Hồ sơ cửa sau sai.')
     app = job['application']
     if job['status'] in ('applying', 'offer'):
         need(app is not None, 'Thiếu hồ sơ ứng tuyển.')

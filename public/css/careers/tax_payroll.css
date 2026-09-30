@@ -19,7 +19,7 @@
   background-image:repeating-linear-gradient(transparent 0 29px,color-mix(in srgb,var(--line) 45%,transparent) 29px 30px)}
 .career-job.tp .tp-paper h4{font-size:1.067rem;padding-bottom:6px;border-bottom:2px solid var(--ink)}
 .career-job.tp .tp-paper-note{font-size:.933rem;color:var(--ink-2);font-style:italic;line-height:1.45}
-.career-job.tp .tp-kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;margin:0;font-size:.967rem;line-height:1.4}
+.career-job.tp .tp-kv{display:grid;grid-template-columns:minmax(min(9em,45%),1fr) minmax(0,max-content);gap:6px 12px;margin:0;font-size:.967rem;line-height:1.4}
 .career-job.tp .tp-kv dt{color:var(--ink-2)}
 .career-job.tp .tp-kv dd{margin:0;text-align:right;font-weight:600;overflow-wrap:anywhere}
 .career-job.tp .tp-kv dd:not(.num){white-space:normal}
@@ -148,3 +148,17 @@
 .tp-sum .tp-sum-audit{margin:0 0 8px;padding:8px 10px;border-radius:10px;background:var(--good-soft)}
 .tp-sum .tp-sum-audit.bad{background:var(--bad-soft)}
 @media (prefers-reduced-motion:reduce){.career-job.tp .tp-progress i{transition:none}}
+/* source papers filtered to the person on the row */
+.career-job.tp .tp-ref-none{margin:0;padding:10px 12px;border-radius:8px;background:var(--warn-soft);font-size:.967rem;line-height:1.45}
+.career-job.tp .tp-refbar{margin:8px 0 0;display:flex;justify-content:flex-end}
+.career-job.tp .tp-refall{min-height:44px}
+/* phone: the row's cells two per line (label above value), the source papers as one row of chips */
+@container sheet (max-width:559px){
+  .career-job.tp .tp-cells-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .career-job.tp .tp-cell{grid-template-columns:minmax(0,1fr);gap:0;align-content:center}
+  .career-job.tp .tp-cell.name{grid-column:1/-1}
+  .career-job.tp .tp-tray .tp-tabs{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;padding-bottom:2px}
+  .career-job.tp .tp-tray .tp-tab{flex:0 0 auto;min-height:44px;white-space:nowrap}
+}
+/* the calculator folds to one line (office_kit .ok-fold) until a step asks for numbers */
+.career-job.tp details.tp-calc{display:block;padding:0}

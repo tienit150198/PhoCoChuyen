@@ -8,6 +8,21 @@
 .gd-hint b{flex:1 1 auto;min-width:0;font-weight:700;font-size:.933rem;overflow-wrap:anywhere}
 .gd-hint .gd-note{flex:none;font-size:.8rem;color:var(--ink-2);font-variant-numeric:tabular-nums}
 .gd-hint>i{flex:none;font-style:normal;font-weight:800;color:var(--accent-text)}
+/* A long note (e.g. why the picked room cannot be held) wraps under the label: as flex:none it squeezed the
+   label to one letter per line and the sticky header grew taller than a phone screen, covering the work. */
+.gd-hint{flex-wrap:wrap}
+.gd-hint b{flex:1 1 10em}
+.gd-hint .gd-note{flex:0 1 auto;min-width:0}
+/* The note always takes its own line under the label (it squeezed the label to a one-word column in the
+   restaurant header, 243px tall on a phone): label + arrow on the first line, the note below. */
+.gd-hint>i{order:2}
+.gd-hint .gd-note{order:3;flex:1 0 100%;overflow-wrap:anywhere}
+/* The bottom button already shows this step (guide.js applyGuide marks the duplicate): the header keeps it
+   for screen readers only (role=status), so the work sheet's header stays one line. */
+.gd-next.gd-dup{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+/* Phone: the hint is its own tinted button; the "Bước tiếp theo" caption over it is for screen readers only. */
+html[data-layout="phone"] .sheet-head .gd-next>small{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+html[data-layout="phone"] .sheet-head .gd-next{margin-top:4px}
 .gd-hint:hover{border-color:var(--accent)}
 .gd-hint:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .gd-next.done>b{display:block;padding:7px 12px;border-radius:12px;background:var(--good-soft);font-size:.933rem}
@@ -15,6 +30,8 @@
 /* Checklist rows that are not done yet: tap to do it (or to jump to the control). */
 /* Career sheets style their own rows; the room for the arrow must win over them. */
 .checklist li.gd-todo,.req-row.gd-todo{position:relative;padding-right:28px!important;cursor:pointer;border-radius:8px;transition:background var(--dur)}
+/* A row you can tap is a thumb tall (44px); its text stays centred where the browser can (align-content). */
+.checklist li.gd-todo,.req-row.gd-todo{min-height:44px;box-sizing:border-box;align-content:center}
 .checklist li.gd-todo:hover,.req-row.gd-todo:hover{background:var(--accent-soft)}
 .checklist li.gd-todo:focus-visible,.req-row.gd-todo:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
 .gd-go{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-style:normal;font-weight:800;color:var(--accent-text);pointer-events:none}
@@ -22,19 +39,25 @@
 /* Bottom button: the next step, and a small way to finish early when that is allowed. */
 .gd-ctas{display:flex;flex-direction:column;align-items:stretch;gap:4px;flex:1 1 auto;min-width:0}
 .gd-ctas>.btn{width:100%}
-.gd-alt{align-self:center;min-height:32px;padding:2px 10px;font-size:.8rem;font-weight:600;color:var(--muted);text-decoration:underline;text-underline-offset:2px}
+/* "hoặc …": a 44px target that takes only ~28px of the bar (it reaches into the gap and the bar's padding). */
+.gd-alt{align-self:center;min-height:44px;margin:-4px 0 -12px;padding:2px 12px;font-size:.8rem;font-weight:600;color:var(--muted);text-decoration:underline;text-underline-offset:2px}
 .gd-alt:hover{color:var(--ink)}
 .gd-why{display:block;text-align:center;font-size:.8rem;font-weight:600;color:var(--warn,var(--muted))}
 .btn.gd-cta{white-space:normal;line-height:1.25}
 
 /* Highlight: a short glow after "go to", a soft pulse on a first task. */
 .gd-flash{animation:gd-flash 1.2s var(--ease) 2;position:relative;z-index:1}
-.gd-pulse{animation:gd-pulse 1.8s ease-in-out infinite;position:relative;z-index:1}
+/* The pulse is a fixed ring on ::before whose opacity breathes: opacity runs on the compositor, so an endless
+ * pulse costs no repaint (the old animated box-shadow repainted the button every frame, 60-75% CPU idle on a
+ * throttled phone). .gd-ring: the same ring for other elements (cafe_bakery.css). */
+.gd-pulse,.gd-ring{position:relative;z-index:1}
+.gd-pulse::before,.gd-ring::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:0 0 0 4px var(--accent),0 0 0 10px var(--accent-soft);opacity:0;will-change:opacity;animation:gd-ring 1.8s ease-in-out infinite}
 @keyframes gd-flash{0%,100%{box-shadow:0 0 0 0 transparent}40%{box-shadow:0 0 0 4px var(--accent),0 0 0 9px var(--accent-soft)}}
-@keyframes gd-pulse{0%,100%{box-shadow:0 0 0 0 var(--accent-soft)}50%{box-shadow:0 0 0 4px var(--accent),0 0 0 10px var(--accent-soft)}}
+@keyframes gd-ring{0%,100%{opacity:0}50%{opacity:1}}
 @media (prefers-reduced-motion:reduce){
   .gd-flash{animation:none;outline:3px solid var(--accent);outline-offset:2px}
-  .gd-pulse{animation:none;outline:3px solid var(--accent);outline-offset:2px}
+  .gd-pulse{outline:3px solid var(--accent);outline-offset:2px}
+  .gd-pulse::before,.gd-ring::before{animation:none;opacity:0}
 }
 
 /* Rules tucked away under one fold. */
@@ -42,9 +65,7 @@
 .gd-rules>summary{cursor:pointer}
 .gd-rules ul{margin:6px 0 0;padding-left:18px}
 
-/* On a phone work sheet the header holds the next step and the bottom holds the button:
-   messages float in between so they never cover either. */
-html[data-layout="phone"] dialog.cozy-job .toasts{top:auto;bottom:calc(200px + var(--safe-b))}
+/* (Toasts over a sheet: app.css puts them just under the sheet's header, on every layout.) */
 
 /* Instant tap feedback (app.js adds .is-pressed on click, before the server answers). */
 .is-pressed:not(:disabled){filter:brightness(.92);transform:scale(.97);transition:none}
@@ -82,3 +103,18 @@ html[data-layout="phone"] dialog.cozy-job .sheet-body :is(.icon-btn,.btn.icon-bt
 .inv-empty .btn{margin-top:8px}
 .rs-inline{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px}
 .rs-inline>span{flex:1 1 160px;min-width:0}
+
+/* "❔ Hướng dẫn" hub (public/js/tutorial/guide.js): the top-level parts, the "Hay được hỏi" questions and the
+   list of every career. The rest of the hub is styled in tutorial.css. Theme tokens only. */
+.gh-part{margin:6px 0 22px;scroll-margin-top:84px}
+.gh-part-title{display:flex;align-items:center;gap:8px;margin:0 0 10px;padding-bottom:6px;border-bottom:2px solid var(--line-strong);font-size:1.2rem}
+.gh-part-lead{margin:0 0 8px;color:var(--ink-2)}
+.gh-group-sub{margin:14px 0 8px;font-size:1rem;color:var(--ink-2)}
+.gh-part .gh-group{margin:0 0 6px}
+.gh-faq{display:grid;gap:6px;margin:0 0 16px;padding:12px;border-radius:var(--radius);background:var(--accent-soft);border:1px solid var(--line-strong)}
+.gh-faq-title{margin:0 0 2px;font-size:1rem}
+.gh-faq-q{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;padding:6px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--ink);font:inherit;font-weight:700;text-align:left;cursor:pointer}
+.gh-faq-q:hover{border-color:var(--accent)}
+.gh-faq-q:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.gh-faq-q>.grow{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+.gh-pick.gh-all{flex-wrap:wrap;overflow:visible}

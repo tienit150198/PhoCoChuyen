@@ -9,12 +9,30 @@ html[data-layout="phone"] .career-job.ok{--ok-foot:68px}
 
 /* ---------------------------------------------------------------- status strip */
 .career-job.ok .ok-top{display:grid;gap:8px;min-width:0}
-.career-job.ok .ok-strip{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 12px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--career,var(--accent));box-shadow:var(--shadow-sm)}
-.career-job.ok .ok-clock{display:grid;line-height:1.2}
-.career-job.ok .ok-clock b{font-size:1.2rem;font-weight:800;font-variant-numeric:tabular-nums}
-.career-job.ok .ok-clock small{font-size:.933rem;color:var(--muted)}
-.career-job.ok .ok-trust{display:grid;gap:4px;margin-left:auto;min-width:140px;max-width:100%}
-.career-job.ok .ok-trust small{font-size:.933rem;color:var(--ink-2);line-height:1.3}
+.career-job.ok .ok-strip{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:6px 10px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--career,var(--accent));box-shadow:var(--shadow-sm)}
+.career-job.ok .ok-clock{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 6px;line-height:1.25}
+.career-job.ok .ok-clock b{font-size:1.133rem;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.career-job.ok .ok-clock small{font-size:.933rem;color:var(--muted);white-space:nowrap}
+.career-job.ok .ok-trust{display:grid;gap:3px;flex:1 1 110px;min-width:104px;max-width:220px}
+.career-job.ok .ok-trust small{font-size:.933rem;color:var(--ink-2);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@container sheet (max-width:459px){.career-job.ok .ok-boss{display:none}}
+/* the five-day calendar, folded into a chip at the end of the row */
+.career-job.ok .ok-calfold{min-width:0}
+.career-job.ok .ok-calfold[open]{flex:1 1 100%}
+.career-job.ok .ok-calfold>summary{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border-radius:var(--radius-pill);background:var(--surface-2);border:1px solid var(--line);font-size:.933rem;font-weight:700;color:var(--ink-2);white-space:nowrap;cursor:pointer;list-style:none}
+.career-job.ok .ok-calfold>summary::-webkit-details-marker{display:none}
+.career-job.ok .ok-calfold>summary::after{content:"▾";color:var(--muted)}
+.career-job.ok .ok-calfold[open]>summary::after{content:"▴"}
+.career-job.ok .ok-calfold>.ok-cal{margin-top:6px}
+/* narrow sheets: energy + due + calendar chip share one row */
+@container sheet (max-width:459px){
+  .career-job.ok .ok-strip{column-gap:6px}
+  .career-job.ok .ok-calfold>summary{padding:0 10px}
+  .career-job.ok .ok-calfold:not([open])>summary::after{content:none}
+}
+.career-job.ok .ok-cal-n{font-style:normal;padding:0 6px;border-radius:var(--radius-pill)}
+.career-job.ok .ok-cal-n.warn{background:var(--warn-soft);color:var(--warn)}
+.career-job.ok .ok-cal-n.bad{background:var(--bad-soft);color:var(--bad)}
 .career-job.ok .ok-meter{display:block;height:8px;border-radius:var(--radius-pill);background:var(--surface-3);overflow:hidden}
 .career-job.ok .ok-meter i{display:block;height:100%;background:var(--info);transition:width .4s}
 .career-job.ok .ok-meter.high i{background:var(--good)}
@@ -49,7 +67,7 @@ html[data-layout="phone"] .career-job.ok{--ok-foot:68px}
 .career-job.ok[data-ok-tab="doc"]>.ok-pane-doc,
 .career-job.ok[data-ok-tab="rules"]>.ok-pane-rules,
 .career-job.ok[data-ok-tab="books"]>.ok-pane-books,
-.career-job.ok.ok-idle>.ok-pane{display:grid}
+.career-job.ok.ok-idle .ok-pane{display:grid}
 .career-job.ok .ok-h{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:0;font-size:1.067rem;line-height:1.3}
 .career-job.ok .ok-h small{font-size:.933rem;font-weight:400;color:var(--muted)}
 .career-job.ok .ok-h2{margin:4px 0 0;font-size:.967rem;color:var(--ink-2)}
@@ -94,16 +112,37 @@ html[data-layout="phone"] .career-job.ok{--ok-foot:68px}
 .career-job.ok .ok-chips{display:flex;flex-wrap:wrap;gap:6px}
 .career-job.ok .ok-more{margin:0}
 .career-job.ok .ok-more .btn{width:100%}
+/* one-line messages (every mail but the dossier on the desk) */
+.career-job.ok .ok-mail.line{padding:0}
+.career-job.ok button.ok-mail.line{min-height:48px;padding:6px 12px}
+.career-job.ok button.ok-mail.line,.career-job.ok .ok-mail.line>summary,.career-job.ok .ok-line-row{display:grid;grid-template-columns:32px minmax(0,1fr);grid-auto-flow:column;grid-auto-columns:auto;gap:8px;align-items:center}
+.career-job.ok .ok-mail.line>summary,.career-job.ok .ok-line-row{min-height:48px;padding:6px 12px}
+.career-job.ok .ok-mail.line>summary{list-style:none;cursor:pointer}
+.career-job.ok .ok-mail.line>summary::-webkit-details-marker{display:none}
+.career-job.ok .ok-mail.line>summary::after{content:"▾";color:var(--muted)}
+.career-job.ok .ok-mail.line[open]>summary::after{content:"▴"}
+.career-job.ok .ok-av.sm,.career-job.ok .ok-av.sm>svg,.career-job.ok .ok-av.sm .ok-emoji{width:32px;height:32px}
+.career-job.ok .ok-av.sm .ok-emoji{font-size:1.05rem}
+.career-job.ok .ok-line-subj{min-width:0;font-size:.967rem;line-height:1.3;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.career-job.ok .ok-line-row .ok-line-subj{display:block;overflow:visible}
+.career-job.ok .ok-line-subj small{font-size:.933rem;font-weight:400;color:var(--muted)}
+.career-job.ok .ok-line-meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.career-job.ok .ok-line-meta time{font-size:.933rem;font-weight:700;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.career-job.ok .ok-line-text{margin:0;padding:0 12px 10px 52px;font-size:.933rem;line-height:1.45;color:var(--ink-2)}
 @container sheet (min-width:460px){.career-job.ok .ok-mail-body{margin-left:50px}}
 
 /* ---------------------------------------------------------------- rules */
 .career-job.ok .ok-rules{display:grid;gap:8px;min-width:0}
-.career-job.ok .ok-rule-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
-.career-job.ok .ok-rule{display:grid;grid-template-columns:28px minmax(0,1fr);gap:8px;padding:10px 12px;border-radius:var(--radius-sm);background:var(--surface-2);border:1px solid var(--line)}
+.career-job.ok .ok-rule-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.ok .ok-rule{min-width:0;border-radius:var(--radius-sm);background:var(--surface-2);border:1px solid var(--line)}
 .career-job.ok .ok-rule.new{background:var(--warn-soft);border-color:var(--warn)}
+.career-job.ok .ok-rule>summary{display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;gap:8px;min-height:44px;padding:6px 12px;cursor:pointer;list-style:none}
+.career-job.ok .ok-rule>summary::-webkit-details-marker{display:none}
+.career-job.ok .ok-rule>summary::after{content:"▾";color:var(--muted)}
+.career-job.ok .ok-rule[open]>summary::after{content:"▴"}
 .career-job.ok .ok-rule-ico{font-size:1.2rem;line-height:1.3}
-.career-job.ok .ok-rule-txt{display:grid;gap:2px;min-width:0;font-size:.967rem;line-height:1.45}
-.career-job.ok .ok-rule-txt b{font-size:1rem}
+.career-job.ok .ok-rule-title{min-width:0;font-size:1rem;line-height:1.35;overflow-wrap:anywhere}
+.career-job.ok .ok-rule-txt{margin:0;padding:0 12px 10px 48px;font-size:.967rem;line-height:1.45}
 .career-job.ok .ok-newtag{margin-left:4px;font-style:normal;font-size:.933rem;font-weight:800;color:var(--warn)}
 
 /* ---------------------------------------------------------------- folds */
@@ -147,8 +186,9 @@ html[data-layout="phone"] .career-job.ok{--ok-foot:68px}
 .career-job.ok .ok-clock .ok-energy b{font-size:inherit;font-weight:800}
 .career-job.ok .ok-energy.warn{background:var(--warn-soft);color:var(--warn)}
 .career-job.ok .ok-energy.bad{background:var(--bad-soft);color:var(--bad)}
-.career-job.ok .ok-cal{list-style:none;margin:0;padding:2px 2px 6px;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(112px,1fr);gap:6px;overflow-x:auto;scroll-snap-type:x proximity;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
-.career-job.ok .ok-cal-day{display:grid;align-content:start;gap:4px;min-width:0;padding:6px 8px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--line);scroll-snap-align:start}
+.career-job.ok .ok-cal{list-style:none;margin:0;padding:2px 2px 6px;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(112px,1fr);gap:6px;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+/* no scroll-snap here: snapping this strip hung, then crashed, Chromium on phones when the job opened (2026-09-30) */
+.career-job.ok .ok-cal-day{display:grid;align-content:start;gap:4px;min-width:0;padding:6px 8px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--line)}
 .career-job.ok .ok-cal-day.today{border-color:var(--accent);box-shadow:inset 0 3px 0 var(--accent)}
 .career-job.ok .ok-cal-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 6px;min-width:0;line-height:1.25}
 .career-job.ok .ok-cal-head b{font-size:.933rem}
@@ -164,7 +204,7 @@ html[data-layout="phone"] .career-job.ok{--ok-foot:68px}
 .career-job.ok .ok-cal-free{font-size:.933rem;line-height:1.3;color:var(--muted)}
 
 /* ---------------------------------------------------------------- care: plan cards (close plan, filings, packs) */
-.career-job.ok .ok-people{display:grid;gap:8px;min-width:0}
+.career-job.ok .ok-people>summary{flex-wrap:wrap}
 .career-job.ok .ok-h2 small,.career-job.ok .ok-fold>summary small{font-size:.933rem;font-weight:400;color:var(--muted)}
 .career-job.ok .ok-plan>summary small{margin-left:auto;text-align:right;white-space:nowrap}
 .career-job.ok .ok-trackfold>summary{flex-wrap:wrap}
@@ -216,17 +256,31 @@ html[data-layout="phone"] .career-job.ok{--ok-foot:68px}
 .career-job.ok .ok-story li.next{color:var(--muted);font-style:italic}
 
 /* ---------------------------------------------------------------- phone, working on the document
-   The five-day calendar waits in the inbox and the status strip shrinks, so the step, the paper and the
-   bottom bar fit one screen. */
-html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-cal{display:none}
+   The status row shrinks further, so the step, the paper and the bottom bar fit one screen. */
 html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-strip{padding:6px 10px;gap:4px 10px}
 html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-clock{grid-auto-flow:column;align-items:center;gap:8px}
 html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-clock>small{display:none}
-html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-clock .ok-energy{margin-top:0}
 html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-trust{min-width:120px}
 html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle)>.ok-pane{padding:10px}
 /* The bottom button (the next step) spans the bar; the back-to-document button is the main one on other tabs. */
 .career-job.ok .ok-bar-btns>.gd-ctas{flex:1 1 100%}
 .career-job.ok .ok-bar .btn.big{min-height:52px;font-size:1.05rem}
 html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-trust,
-html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-clock .ok-energy:not(.warn):not(.bad){display:none}
+html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-strip>.ok-energy:not(.warn):not(.bad){display:none}
+
+/* ---------------------------------------------------------------- between dossiers: inbox | rules side by side on wide sheets;
+   the done screen keeps only the recap open and folds the desk into one line. */
+@container sheet (min-width:720px){
+  .career-job.ok.ok-idle:not(.ok-done){grid-template-columns:minmax(0,1fr) minmax(260px,360px);align-items:start;column-gap:14px}
+  .career-job.ok.ok-idle:not(.ok-done)>:not(.ok-pane),.career-job.ok.ok-idle:not(.ok-done)>.ok-pane-inbox:last-child{grid-column:1/-1}
+}
+.career-job.ok .ok-deskfold>.ok-fold-body{gap:10px;padding:0 8px 8px}
+.career-job.ok .ok-deskfold .ok-pane{padding:10px}
+/* phone, on the document: the calendar chip waits on the other tabs (as the calendar strip did), so the
+   status row is one line: clock · deadline */
+html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-calfold:not([open]){display:none}
+/* wide sheets, working on a dossier: the side pane (inbox, rules, books) scrolls on its own, so the sheet is as
+   long as the document, not as the inbox */
+@container sheet (min-width:720px){
+  .career-job.ok:not(.ok-idle)>.ok-pane:not(.ok-pane-doc){max-height:min(64vh,620px);overflow-y:auto;overscroll-behavior:contain}
+}

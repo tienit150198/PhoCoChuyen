@@ -38,6 +38,10 @@ from . import incidents as incs
 from . import happenings as haps
 from . import archive as ar
 from . import bank_speaker
+from . import whats_new as wn
+from . import closeness as qn
+from . import abandon as ab
+from . import dayclock as dc
 
 ORIGINAL=("mother_baby","pharmacy","accounting","customer_care")
 UI_THEMES=("kem","tra_xanh","dem","bien","keo")
@@ -71,7 +75,7 @@ def normalize(s: str) -> str:
 
 def new_state() -> dict:
     return dict(schema=4,name="Mây",current=None,seq=0,
-        settings=default_settings(),
+        settings=dict(default_settings(),whatsNewSeen=""),  # "Có gì mới" is server-wide: new players see it too
         careers={cid:initial_career(cid) for cid in CAREERS},journey=jr.initial(),stories=cst.initial())
 
 def notes_seen(v) -> str:
@@ -84,7 +88,7 @@ def notes_seen(v) -> str:
 def default_settings() -> dict:
     return dict(mode="everyday",sound=True,music=False,reduceMotion=False,largeText=False,aiConsent=True,aiAsked=True,aiNoticeSeen=False,securityEvents=True,
         lang="vi",uiTheme="kem",musicTrack="auto",musicVolume=45,sfxVolume=70,notify=False,publicProfile=False,
-        tutorialDone=False,notesSeen="",
+        tutorialDone=False,notesSeen="",whatsNewSeen="",  # whatsNewSeen: last "Có gì mới" release read (game/whats_new.py); older saves start at ""
         npcVoices=True,detailSfx=True,bankVoice=True)  # Cài đặt → Âm thanh: giọng nhân vật, âm thanh chi tiết, loa báo tiền
 
 from .jsoncopy import tree_copy,_SCALARS  # noqa: F401 (re-exported)
@@ -167,6 +171,7 @@ def migrate_state(state:dict,owned:bool=False) -> dict:
         iv.migrate(s)  # đầu tư: savings, Mây Coin, scam offers under journey.invest
         bd.migrate(s)  # nhóm cư dân phố: the neighbourhood group board under journey.board
         doi.migrate(s)  # chuyện đời thường & tình làng nghĩa xóm: journey.life
+        qn.migrate(s)  # điểm thân quen: journey.closeness (after life: reads its bonds)
         life.upgrade_save(s)
         dk.migrate(s)  # paperwork desks: desk memory + refreshed wording of older tasks
         incs.migrate(s)  # chuyện đời: an empty incident book per workplace
@@ -449,10 +454,12 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     care_notes=[]
     if action=="select_career":
         need(career in CAREERS,"Nghề này đang ở danh mục mở rộng, chưa chơi được.")
-        jr.gate(s,career,action,internal);jr.on_select(s,career)
+        jr.gate(s,career,action,internal)
+        left=ab.check(s,career,p,internal)  # bỏ dở việc: work in progress at the place you leave (confirm + penalty)
+        jr.on_select(s,career)
         s["current"]=career
         hired=emp.first_day_hire(s,s["careers"][career],career)  # story day one: no CV/trial for a first-chapter job
-        return s,dict(message=hired or "Chào mừng tới "+CAREER_META[career]["place"]+".",hired=bool(hired))
+        return s,dict(message=hired or "Chào mừng tới "+CAREER_META[career]["place"]+".",hired=bool(hired),**({"abandon":left} if left else {}))
     if action=="settings":
         for k,v in p.items():
             if k=="name":s["name"]=clean_text(v,24)
@@ -464,6 +471,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
             elif k=="tutorialDone":  # first-run tour seen (follows the account across devices)
                 need(type(v) is bool,"Thiết lập không hợp lệ.");s["settings"][k]=v
             elif k=="notesSeen":s["settings"][k]=notes_seen(v)  # announcements already shown ("guide-v1,…")
+            elif k=="whatsNewSeen":  # "Có gì mới" read up to this release; never goes back down
+                need(wn.valid_seen(v),"Thiết lập không hợp lệ.");s["settings"][k]=wn.newer(s["settings"].get(k,""),v)
             elif k in s["settings"]:
                 need(type(v) is bool,"Thiết lập không hợp lệ.");s["settings"][k]=v
             else:raise GameError("Thiết lập không được hỗ trợ.")
@@ -478,11 +487,14 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     if action.startswith("iv_"):return iv.action(s,action,p)
     if action.startswith("bd_"):return bd.action(s,career,action,p,internal)
     if action.startswith("lf_"):return doi.action(s,action,p)
+    if action.startswith("qn_"):return qn.action(s,career,action,p)  # điểm thân quen: chat, gifts, thanks, invites
     if action.startswith("st_"):return cst.action(s,career,action,p)
     need(career in CAREERS,"Chọn một nghề trước nhé.")
     jr.gate(s,career,action,internal)
+    if career!=s.get("current"):ab.check(s,career,{},internal)  # leaving work in progress only through select_career
     c=s["careers"][career]
     s["current"]=career
+    clock_before=dc.minute_now(c,career) if action!="start_day" else None  # giờ trong ngày: closing warnings below
     prior_mistakes={t["id"]:t["mistakes"] for t in c["tasks"]}
     # Story players learning a place (its first LEARNING_TASKS jobs): customers wait kindly, patience never drops.
     learning=s.get("journey",{}).get("story") and c["metrics"].get("served",0)<LEARNING_TASKS
@@ -567,6 +579,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
             events=c["day_events"],carried=sum(t["status"] not in ("completed","referred","cancelled") for t in c["tasks"]),
             headline="Hôm nay bạn đã giúp những việc nhỏ trở nên rõ ràng hơn.")
         summary["operations"]=ops_summary
+        summary["clock"]=dc.close_summary(c,career,s)  # what time the day ended; tomorrow's opening
         summary["expired_value"]=inv.on_close(s,c,career)
         summary["experiences"]=life.on_close(s,c,career)
         summary["job"]=emp.on_close(s,c,career)
@@ -578,6 +591,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         summary["reviews"]=fbk.day_summary(c,oldday)
         summary["incidents"]=inc_summary
         summary["happen"]=hap_summary
+        left=ab.on_close(s,c,career,oldday)
+        if left:summary["abandon"]=left
         c["shift_summary"]=summary;c["open"]=False;c["day"]+=1;c["day_completed"]=0;c["day_events"]=0
         c["day_start_money"]=c["money"];c["earnings"]=0;c["costs"]=0
         if c["event"] and c["event"]["stage"]=="resolved":c["event"]=None
@@ -585,6 +600,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         result.update(message="Một ngày nữa đã có câu chuyện để nhớ.",summary=summary)
     elif action=="more_work":
         need(c["open"],"Mở ca trước nhé.")
+        need(not dc.past_close(c,career),"Đến giờ đóng cửa rồi: không đón thêm khách. Làm nốt việc dở rồi khép ca nhé.","closing_time")
         active=[t for t in c["tasks"] if t["status"] not in ("completed","referred","cancelled")]
         need(len(active)<4,"Đang có đủ việc. Hoàn thành hoặc hẹn lại trước nhé.")
         slots=[int(t["id"].split("-")[-1]) for t in c["tasks"] if t["day"]==c["day"]]
@@ -992,9 +1008,14 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     haps.after(s,c,career,action,result)
     jr.after(s,career,action,p,result)
     iv.on_life_day(s,result)  # prices, interest and offers move once per life day
+    if clock_before is not None and s["careers"][career].get("open"):
+        warn=dc.warning(clock_before,dc.minute_now(s["careers"][career],career),s["careers"][career],career)
+        if warn:result["clock"]=warn
+    result.setdefault("effects",[]).extend(emp.retry_notices(s))  # "Hôm nay (Ngày 5) bạn có thể phỏng vấn lại ở …", once
     bd.after(s,career,action,result)  # nhóm cư dân phố: one beat of neighbourhood posts
     doi.after(s,career,action,result)  # tinh thần, hard days, neighbours (after invest: sees its scam losses)
     cst.after(s,career,action,result)
+    qn.after(s,career,action,p,result)  # điểm thân quen: chats, reviews, gifts to you, invites
     if prior_patience is not None:
         for t in s["careers"][career]["tasks"]:
             was=prior_patience.get(t["id"])
@@ -1047,6 +1068,8 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     v["board"]=bd.summary(s)
     v["life"]=doi.public(s)
     v["stories"]=cst.public(s)
+    v["closeness"]=qn.public(s,focus)
+    v["abandon"]=ab.public(s)
     for cid,c in v["careers"].items():
         if c.get("summary"):continue
         raw=s["careers"][cid];mod=PLUGINS.get(cid)
@@ -1055,7 +1078,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
         c["incidents"]=incs.public(raw,cid,s)
         c["happen"]=haps.public(raw,cid,s)
         c["inventory"]=inv.public(raw,cid)
-        c["job"]=emp.public(raw,cid)
+        c["job"]=emp.public(raw,cid,s)
         c["data"]=mod.public_data(raw) if mod and hasattr(mod,'public_data') else tree_copy(raw["ext"]["data"])
         if cid in CARE_CAREERS:
             cp=care_public(raw,cid)
@@ -1069,6 +1092,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
         c["feedback_stats"]=fbk.stats(raw)
         c.pop("ext",None)
         c["life"]=life.public_life(s["careers"][cid])
+        c["day_clock"]=dc.view(raw,cid)  # giờ trong ngày: HUD clock, closing warnings, the scene's light
         c["tasks"]=[task_view(t) for t in s["careers"][cid]["tasks"]]
         if cid in CARE_CAREERS:
             care_lines=care_notices(raw,cid)
@@ -1132,6 +1156,8 @@ then runs validate_career on every career the command changed (see Store._comput
     bd.validate(s)
     doi.validate(s)
     cst.validate(s)
+    qn.validate(s)
+    ab.validate(s)
     settings=s.get("settings",{});need(settings.get("mode") in ("relaxed","everyday","challenge"),"Chế độ bản lưu không hợp lệ.")
     for k in ("sound","music","reduceMotion","largeText","aiConsent","aiAsked","aiNoticeSeen","securityEvents","notify","publicProfile"):need(type(settings.get(k)) is bool,"Thiếu thiết lập bản lưu.")
     for k,choices in SETTING_CHOICES.items():need(settings.get(k) in choices,"Thiết lập bản lưu không hợp lệ.")
@@ -1139,6 +1165,7 @@ then runs validate_career on every career the command changed (see Store._comput
     for k in ("npcVoices","detailSfx","bankVoice"):need(type(settings.get(k,True)) is bool,"Thiết lập bản lưu không hợp lệ.")
     need(set(settings)<=set(default_settings()),"Thiết lập lạ trong bản lưu.")
     need(type(settings.get("tutorialDone",False)) is bool,"Thiết lập bản lưu không hợp lệ.");notes_seen(settings.get("notesSeen",""))
+    need(wn.valid_seen(settings.get("whatsNewSeen","")),"Thiết lập bản lưu không hợp lệ.")
     if _SCOPED.get():
         for k,value in s.items():
             if k!="careers":_finite(value)
@@ -1160,6 +1187,7 @@ def validate_career(c:dict,cid:str,finite:bool=True) -> None:
     integer(ext.get("seq"),0,10**9);need(isinstance(ext.get("data"),dict),"Dữ liệu nghề không hợp lệ.")
     sit.validate(c,cid);inv.validate(c,cid);emp.validate(c,cid);incs.validate(c,cid);haps.validate(c,cid)
     cq.validate(c)  # complaints book (optional in older saves)
+    fbk._ra.validate_recent(c)  # recent review aspects (optional in older saves)
     if cid in PLUGINS and hasattr(PLUGINS[cid],"validate_data"):PLUGINS[cid].validate_data(c)
     if cid in dk.CAREERS:dk.validate_data(c)
     care_validate(c,cid)  # nhiều ngày: sổ khách quen, sổ lô, tủ hồ sơ, bảng theo dõi, kiện theo giờ
@@ -1335,7 +1363,7 @@ def _clock(c:dict,career:str,turn:int|None=None)->dict:
     """inventory.clock, anchored on the day's first dealt task when the 'Mở ca' row is missing."""
     clk=inv.clock(c,career,turn)
     if clk["is_open"] and inv._turn0(c) is None:
-        op,cl=inv.hours(career)
+        op,cl=inv.day_hours(c,career)
         t=c["turn"] if turn is None else turn
         dealt=[x["created_turn"] for x in c.get("tasks",[]) if isinstance(x,dict) and x.get("day")==c["day"] and type(x.get("created_turn")) is int]
         t0=min(dealt) if dealt else t
@@ -1384,17 +1412,17 @@ def _care_log(care:dict,day:int,text:str)->None:
 STOCK_SUPPLIERS={
     "mother_baby":[
         dict(inv.MARKET,name="Chợ sỉ đồ sơ sinh",emoji="🧺",short=0,
-             note="Rẻ nhất (×0,85). Đặt trước 17:00, hàng tới sáng mai trước giờ mở cửa."),
-        dict(inv.PARTNER,short=0,note="Giá niêm yết. Hai chuyến mỗi ngày: đặt trước 11:00 tới trưa, trước 15:00 tới chiều."),
-        dict(inv.EXPRESS,short=0,note="Đắt nhất (×1,35) nhưng tới trong 30–60 phút."),
+             note="Rẻ nhất (×0,85). Đặt trước 13:00, hàng tới chiều nay; đặt sau, hàng tới sáng mai trước giờ mở cửa."),
+        dict(inv.PARTNER,short=0,note="Giá niêm yết. Bốn chuyến mỗi ngày: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau đó khoảng một tiếng."),
+        dict(inv.EXPRESS,short=0,note="Đắt nhất (×1,35) nhưng tới trong 15–30 phút."),
     ],
     "pharmacy":[
         dict(inv.PARTNER,name="Nhà phân phối Thiện Tâm",emoji="🚚",short=0,
-             voice=dict(inv.V_PARTNER,late="Xe Thiện Tâm kẹt ở cầu Mây, bên em báo trễ khoảng một tiếng ạ."),
-             note="Xe phân phối chạy hai chuyến mỗi ngày: đặt trước 11:00 tới 13:00–14:00, trước 15:00 tới 16:30–17:30. Giá niêm yết."),
-        dict(inv.MARKET,id="depot",name="Kho tổng Bình An",emoji="🏬",cutoff=16*60,factor=0.85,short=0,late=6,
-             voice=dict(inv.V_FAR,late="Xe đêm của kho tổng về trễ, hàng tới muộn hơn hẹn."),
-             note="Rẻ hơn (×0,85). Đặt trước 16:00, xe đêm giao trước giờ mở cửa sáng mai."),
+             voice=dict(inv.V_PARTNER,late="Xe Thiện Tâm kẹt ở cầu Mây, bên em báo trễ chừng nửa tiếng tới một tiếng ạ."),
+             note="Xe phân phối chạy bốn chuyến mỗi ngày: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau đó khoảng một tiếng. Giá niêm yết."),
+        dict(inv.MARKET,id="depot",name="Kho tổng Bình An",emoji="🏬",factor=0.85,short=0,late=6,
+             voice=dict(inv.V_FAR,late="Xe của kho tổng về trễ, hàng tới muộn hơn hẹn."),
+             note="Rẻ hơn (×0,85). Đặt trước 13:00, xe kho giao chiều nay; đặt sau, xe đêm giao trước giờ mở cửa sáng mai."),
     ],
 }
 STOCK_DEFAULT="partner"
@@ -1443,7 +1471,7 @@ def _stock_view(c:dict,career:str)->tuple[list,dict]:
         else:v["ready_now"]=shipment_here(c,career,x)
         rows.append(v)
     placing=_clock(c,career,c["turn"]+1)["abs"]
-    sups=[dict({k:v for k,v in sp.items() if k not in ("runs","mins","at","days","cutoff","voice")},window=inv._window_label(sp,career),quote=inv.quote(sp,career,placing))
+    sups=[dict({k:v for k,v in sp.items() if k not in ("runs","mins","at","days","cutoff","day_run","delay","voice")},window=inv._window_label(sp,career),quote=inv.quote(sp,career,placing))
           for sp in stock_suppliers(career)]
     return rows,dict(clock=_clock_view(c,career),suppliers=sups,default=STOCK_DEFAULT)
 

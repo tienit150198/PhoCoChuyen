@@ -354,6 +354,36 @@ function regularNotes(t,x){
 const noteList=(notes,x)=>`<ul class="cb-notes">${notes.map(n=>`<li class="${n.tone==='danger'?'danger':''}"><span aria-hidden="true">${x.esc(n.icon)}</span><span>${x.esc(n.text)}</span></li>`).join('')}</ul>`;
 
 /* ---------- station panels ---------- */
+/** Locked things in one line, "🔒 2 món mở ở cấp 2–3" (names and levels in the tooltip). */
+function lockChip(x,list){
+  if(!list.length)return '';
+  const lv=list.map(i=>Number(i.unlock)||1),lo=Math.min(...lv),hi=Math.max(...lv);
+  const names=list.map(i=>`${i.name} (cấp ${Number(i.unlock)||1})`).join(', ');
+  return `<p class="cb-lock" title="${x.esc(names)}" aria-label="${x.esc(`Chưa mở: ${names}`)}">🔒 ${list.length} món mở ở cấp ${lo===hi?lo:`${lo}–${hi}`}</p>`;
+}
+/** The bar station the cup in hand is at (1 cup … 7 pastry; 0 = nothing left), read from the cup
+ * in the same order as the ticket rows. Only this station is open; the others are one line. */
+function stationNow(t,x){
+  const n=spec(t),d=t.drink,dk=drink(x,n.drink);
+  if(!d.container)return 1;
+  if(d.pulling||d.dose)return 3;
+  if(d.steaming)return 4;
+  if(n.iced&&!d.ice)return 1;
+  if(d.shots.length<n.shots)return 2;
+  if(dk.water&&!d.water)return 1;
+  if(n.milk&&!d.milk)return 4;
+  if(n.art&&!d.art)return 5;
+  if(Object.entries(n.pastry||{}).some(([k,q])=>t.bag.items.filter(i=>i.item===k).length<q))return 7;
+  if(d.container==='paper'&&!d.lid)return 6;
+  return 0;
+}
+/** One bar station: open when it is the current one (until the player folds it), else one line
+ * "✓ 2 · Xay … · 18 g" that a tap opens. Not a <details>: the sheet host restores every <details> by
+ * position after a re-render, which would keep the old station open. The body is drawn only when open. */
+function station(x,t,cur,no,title,note,done,body){
+  const key=`${t.id}-${t.cur||0}-${cur}-${no}`,open=x.ui.cbSt?.[key]??no===cur;
+  return `<section class="cb-st${no===cur?' now':''}${done?' done':''}${open?' open':''}"><button type="button" class="cb-st-sum" data-action="car:st" data-key="${x.esc(key)}" data-open="${open?1:0}" aria-expanded="${open}">${done?'✓ ':''}${no} · ${x.esc(title)}${note?` <small>· ${x.esc(note)}</small>`:''}</button>${open?`<div class="cb-st-body">${body}</div>`:''}</section>`;
+}
 function barPanel(t,x){
   if(hidden(t))return `<p class="notice amber">🤔 Chưa rõ khách muốn món gì.</p>`;
   if(plated(t))return `<p class="notice">☕ Đủ ${t.cups.length} ly trên khay.</p>`;
@@ -364,7 +394,8 @@ function barPanel(t,x){
       label:`${c.name}${q!=null?`, còn ${q}`:''}`});}).join('');
   const sizes=`<div class="cb-segs" role="group" aria-label="Cỡ ly">${seg(x,'size','size','S','Ly nhỏ',size)}${seg(x,'size','size','L','Ly lớn',size)}</div>`;
   const extra=`<div class="row wrap">${x.cmd('🧊 Múc đá','cb_ice',{task:t.id},'ghost small',!d.container||d.ice||d.container==='mug')}${x.cmd('💧 Thêm nước','cb_water',{task:t.id},'ghost small',!d.container||d.water)}</div>`;
-  const beans=(cc(x).beans||[]).map(b=>{const locked=b.unlock>level&&n.beans!==b.id,q=stock(x,'beans_'+b.id);
+  const beanShut=(cc(x).beans||[]).filter(b=>b.unlock>level&&n.beans!==b.id);
+  const beans=(cc(x).beans||[]).filter(b=>!beanShut.includes(b)).map(b=>{const locked=b.unlock>level&&n.beans!==b.id,q=stock(x,'beans_'+b.id);
     return tile(x,{emoji:b.emoji,name:b.name,sub:locked?`cấp ${b.unlock}`:b.note,count:q,empty:!q,action:'beans',data:{beans:b.id},selected:ui.beans===b.id,locked,wanted:!d.shots.length&&n.beans===b.id,
       label:locked?`Hạt ${b.name}, mở ở cấp ${b.unlock}`:`Hạt ${b.name}, còn ${q} liều`});}).join('');
   const grinds=`<div class="cb-segs" role="group" aria-label="Độ xay">${Object.entries(cc(x).grind_label||{}).map(([k,l])=>seg(x,'grind','grind',k,l,ui.grind)).join('')}</div>`;
@@ -376,26 +407,34 @@ function barPanel(t,x){
   const myFlow=groups.find(g=>g.task===t.id)?.flow||1;
   const others=groups.filter(g=>g.task!==t.id).map(g=>`<div class="cb-other"><small class="muted">Họng pha kia · ly khác</small>${shotMeter(x,g.start,g.flow)}${x.cmd('⏹️ Dừng ly đó','cb_stop',{task:g.task},'ghost small')}</div>`).join('');
   const shots=d.shots.length?`<div class="row wrap cb-shots">${d.shots.map((s,i)=>`<span class="tag ${s.x==='balanced'?'green':['sour','bitter'].includes(s.x)?'danger':'amber'}">Shot ${i+1}: ${s.sec}s · ${x.esc((cc(x).shot_label||{})[s.x]||s.x)}</span>`).join('')}</div>`:'';
-  const milks=(cc(x).milks||[]).map(m=>{const locked=m.unlock>level&&n.milk!==m.id,q=stock(x,m.id),sour=r.sour_milk&&m.id==='milk';
+  const milkShut=(cc(x).milks||[]).filter(m=>m.unlock>level&&n.milk!==m.id);
+  const milks=(cc(x).milks||[]).filter(m=>!milkShut.includes(m)).map(m=>{const locked=m.unlock>level&&n.milk!==m.id,q=stock(x,m.id),sour=r.sour_milk&&m.id==='milk';
     return tile(x,{emoji:m.emoji,name:m.name,sub:locked?`cấp ${m.unlock}`:sour?'⚠️ có mùi':m.lactose?'có lactose':'không lactose',count:q,empty:!q,action:'milk',data:{milk:m.id},selected:ui.milk===m.id,locked,wanted:!d.milk&&n.milk===m.id,
       label:locked?`${m.name}, mở ở cấp ${m.unlock}`:`${m.name}, còn ${q} ca`});}).join('');
   const foam=`<div class="cb-segs" role="group" aria-label="Độ bọt">${seg(x,'foam','foam','thin','Bọt mỏng (latte)',ui.foam)}${seg(x,'foam','foam','thick','Bọt dày (cappu)',ui.foam)}</div>`;
   const mk=ui.milk?milk(x,ui.milk):null,busyWand=wand.some(w=>w.task!==t.id);
   const milkBtns=d.steaming?x.cmd('⏹️ Tắt vòi hơi','cb_milk_stop',{task:t.id},'primary')
     :`${x.cmd(auto?'♨️ Đánh nóng (máy tự tắt)':'♨️ Đánh nóng','cb_milk',{task:t.id,milk:ui.milk||'',mode:'steam',foam:ui.foam||'',...(auto?{auto:true}:{})},'',!d.container||!!d.milk||!mk||!mk.steam||!ui.foam||busyWand||!stock(x,ui.milk))}${x.cmd('🧊 Rót lạnh','cb_milk',{task:t.id,milk:ui.milk||'',mode:'cold'},'ghost',!d.container||!!d.milk||!mk||!stock(x,ui.milk))}`;
-  const arts=(cc(x).arts||[]).map(a=>{const locked=a.unlock>level&&n.art!==a.id;
+  const artShut=(cc(x).arts||[]).filter(a=>a.unlock>level&&n.art!==a.id);
+  const arts=(cc(x).arts||[]).filter(a=>!artShut.includes(a)).map(a=>{const locked=a.unlock>level&&n.art!==a.id;
     return tile(x,{emoji:a.emoji,name:a.name,sub:locked?`cấp ${a.unlock}`:'rót tạo hình',cmd:'cb_art',payload:{task:t.id,pattern:a.id},locked,selected:d.art===a.id,wanted:!d.art&&n.art===a.id,
       disabled:!d.milk||d.milk.mode!=='steam'||!!d.art||!d.shots.length,label:locked?`Hình ${a.name}, mở ở cấp ${a.unlock}`:`Rót hình ${a.name}`});}).join('');
-  const pastryPick=Object.keys(n.pastry||{}).length?`<h4 class="section-title">7 · Bánh gọi kèm</h4>${casePicker(t,x,true)}`:'';
-  return `<p class="cb-recipe small">📋 <b>☕ xay mịn 18 g · 25–30 giây</b> · <b>🥛 55–68 °C</b></p>
-    <h4 class="section-title">1 · Ly</h4>${sizes}<div class="tile-grid cb-grid3">${cups}</div>${extra}
-    <h4 class="section-title">2 · Xay & định lượng</h4><div class="tile-grid cb-grid3">${beans}</div>${grinds}
-    <div class="row wrap spread">${dose}${x.cmd('⚖️ Xay & nén','cb_dose',{task:t.id,beans:ui.beans||'',grind:ui.grind||'',grams},'',!canDose)}</div>
-    <h4 class="section-title">3 · Chiết shot</h4>${shotMeter(x,d.pulling,myFlow)}<div class="row wrap">${pullBtn}<small class="muted">${groups.length}/${cc(x).groups||2} họng pha bận${d.dose?' · tay cầm đã có bột':''}</small></div>${others}${shots}
-    <h4 class="section-title">4 · Sữa</h4><div class="tile-grid cb-grid3">${milks}</div>${foam}${thermo(x,d.steaming)}<div class="row wrap">${milkBtns}</div>${busyWand&&!d.steaming?'<p class="muted small">Vòi hơi đang đánh sữa cho ly khác.</p>':''}
-    <h4 class="section-title">5 · Latte art</h4><div class="tile-grid cb-grid3">${arts}</div>
-    <h4 class="section-title">6 · Nắp</h4>${x.cmd('🥤 Đậy nắp + dán tem','cb_lid',{task:t.id},'ghost',d.container!=='paper'||d.lid)}
-    ${pastryPick}`;
+  const pastry=Object.keys(n.pastry||{}).length,cur=stationNow(t,x),dk=drink(x,n.drink),S=(...a)=>station(x,t,cur,...a);
+  const cname=(cc(x).containers||[]).find(c=>c.id===d.container)?.name||'';
+  const shotLine=d.shots.map((s,i)=>`Shot ${i+1}: ${s.sec}s`).join(' · ');
+  const picked=t.bag.items.length,wantPastry=Object.values(n.pastry||{}).reduce((a,b)=>a+b,0);
+  // Every station stays reachable (a wrong tap is still possible and still costs); only the current one is open.
+  return `<div class="cb-stations">${S(1,'Ly',d.container?`${cname} ${d.size==='L'?'lớn':'nhỏ'}${d.ice?' · có đá':''}${d.water?' · có nước':''}`:'',
+      !!d.container&&(!n.iced||d.ice)&&(!dk.water||d.water),`${sizes}<div class="tile-grid cb-grid3">${cups}</div>${extra}`)}
+    ${S(2,'Xay & định lượng',d.dose?'tay cầm đã có bột':`☕ xay mịn ${cc(x).dose?.target||18} g`,d.shots.length>=n.shots||!!d.dose,
+      `<div class="tile-grid cb-grid3">${beans}</div>${lockChip(x,beanShut)}${grinds}<div class="row wrap spread">${dose}${x.cmd('⚖️ Xay & nén','cb_dose',{task:t.id,beans:ui.beans||'',grind:ui.grind||'',grams},'',!canDose)}</div>`)}
+    ${S(3,'Chiết shot',shotLine||'25–30 giây',d.shots.length>=n.shots&&!d.pulling&&!d.dose,
+      `${shotMeter(x,d.pulling,myFlow)}<div class="row wrap">${pullBtn}<small class="muted">${groups.length}/${cc(x).groups||2} họng pha bận${d.dose?' · tay cầm đã có bột':''}</small></div>${others}${shots}`)}
+    ${S(4,'Sữa',d.milk?`${milk(x,d.milk.kind).name}${d.milk.temp?` ${Math.round(d.milk.temp)} °C`:''}`:d.steaming?'đang đánh':'🥛 55–68 °C',!!n.milk&&!!d.milk&&!d.steaming,
+      `<div class="tile-grid cb-grid3">${milks}</div>${lockChip(x,milkShut)}${foam}${thermo(x,d.steaming)}<div class="row wrap">${milkBtns}</div>${busyWand&&!d.steaming?'<p class="muted small">Vòi hơi đang đánh sữa cho ly khác.</p>':''}`)}
+    ${S(5,'Latte art',d.art?(d.art==='blob'?'hình bị loang':art(x,d.art)?.name||''):'',!!n.art&&!!d.art,`<div class="tile-grid cb-grid3">${arts}</div>${lockChip(x,artShut)}`)}
+    ${S(6,'Nắp',d.lid?'đã đậy':'',!!d.lid,x.cmd('🥤 Đậy nắp + dán tem','cb_lid',{task:t.id},'ghost',d.container!=='paper'||d.lid))}
+    ${pastry?S(7,'Bánh gọi kèm',`${picked}/${wantPastry}`,picked>=wantPastry,casePicker(t,x,true)):''}</div>`;
 }
 function casePicker(t,x,compact){
   const lots=(data(x).case||[]).filter(l=>l.qty>0);
@@ -428,9 +467,10 @@ function ovenPanel(t,x){
     return tile(x,{emoji:b.emoji,name:o.name,sub:locked?`cấp ${b.unlock}`:recipe(b)+(o.extra?' · '+o.extra:''),count:locked?null:q,empty:!q,cmd:o.cmd,payload:o.payload,locked,wanted:wanted(b.id)&&!q,disabled:o.disabled||!enough(b),
       label:locked?`${b.name}, mở ở cấp ${b.unlock}`:`${o.name}: tủ kính còn ${q} cái mới`});};
   const st=d.starter||{};
-  const shape=(cc(x).bakes||[]).filter(b=>b.proof).map(b=>bakeTile(b,{name:'Nhào '+lower(b.name),cmd:'cb_shape',payload:{item:b.id},disabled:proof.length>=2,
+  const shut=b=>b.unlock>level&&!wanted(b.id),bakeShut=(cc(x).bakes||[]).filter(b=>!b.cake&&shut(b));
+  const shape=(cc(x).bakes||[]).filter(b=>b.proof&&!shut(b)).map(b=>bakeTile(b,{name:'Nhào '+lower(b.name),cmd:'cb_shape',payload:{item:b.id},disabled:proof.length>=2,
     extra:b.starter&&st.beats?`ủ ${st.beats} nhịp · men ${lower(st.label)}`:''})).join('');
-  const direct=(cc(x).bakes||[]).filter(b=>!b.proof&&!b.cake).map(b=>bakeTile(b,{name:b.name,cmd:'cb_bake',payload:{item:b.id},disabled:racksFull})).join('');
+  const direct=(cc(x).bakes||[]).filter(b=>!b.proof&&!b.cake&&!shut(b)).map(b=>bakeTile(b,{name:b.name,cmd:'cb_bake',payload:{item:b.id},disabled:racksFull})).join('');
   const cold=d.cold||[],fridgeFull=cold.length>=2;
   const trays=proof.length?proof.map(p=>{const b=bake(x,p.item);return `<div class="cb-slot ${p.left?'':'ready'}"><span class="tile-emoji" aria-hidden="true">${x.esc(b.emoji)}</span><div class="grow"><b>${p.qty} ${x.esc(lower(b.name))}</b><small class="muted">${p.left?`đang nở · còn ${p.left} nhịp`:p.over?'⚠️ ủ quá lâu, bánh sẽ xẹp':'✓ bột đã nở, sẵn sàng nướng'}${p.dense?' · men đói: sẽ đặc ruột':''}</small></div>
     <div class="cb-slot-btns">${x.cmd('🔥 Vào lò','cb_bake',{item:p.item,tray:p.id},p.left||racksFull?'small':'primary small',!!p.left||racksFull)}${x.cmd('❄️ Cất tủ mát','cb_chill',{tray:p.id},'ghost small',fridgeFull)}</div></div>`;}).join(''):'<p class="muted small">Tủ ủ trống (2 ngăn).</p>';
@@ -448,7 +488,7 @@ function ovenPanel(t,x){
     <h4 class="section-title">❄️ Tủ mát ủ lạnh qua đêm</h4><div class="stack cb-proof">${fridge}</div>
     ${starterCard(x)}
     <h4 class="section-title">Nhào & tạo hình (cần ủ)</h4><div class="tile-grid">${shape}</div>
-    <h4 class="section-title">Trộn & nướng ngay</h4><div class="tile-grid">${direct}</div>`;
+    <h4 class="section-title">Trộn & nướng ngay</h4><div class="tile-grid">${direct}</div>${lockChip(x,bakeShut)}`;
 }
 function cakePanel(t,x){
   const k=t.cake,ui=x.ui,cool=data(x).cooling?.[t.id];
@@ -482,7 +522,9 @@ function careCard(x,open){
   const chip=tm?`<p class="cb-tomorrow small"><span aria-hidden="true">${x.esc(tm.emoji)}</span> Ngày mai: <b>${x.esc(tm.label)}</b>${tm.busy?' · đông khách mua lẻ':''}</p>`:'';
   const s=d.starter||{};
   const feed=s.fed_today===false?`<div class="row wrap">${x.cmd(`🫙 Cho Bé Men ăn (+${s.gain}%)`,'cb_feed',{},'primary small',!x.room.open||stock(x,'flour')<1)}</div>`:'';
-  return `<section class="cb-care">${fold(`🫙 Việc chăm tiệm · ${left?`${left} việc chờ`:'xong hết ✓'}`,`${news}${rlist(rows,x,'Việc chăm tiệm hôm nay')}${feed}${chip}`,open)}</section>`;
+  // A tap-to-open line (not a <details>, whose open state the host carries over between screens).
+  const key=`care-${open?'idle':'job'}-${x.room.day}`,on=x.ui.cbSt?.[key]??open;
+  return `<section class="cb-care cb-st${on?' open':''}"><button type="button" class="cb-st-sum" data-action="car:st" data-key="${key}" data-open="${on?1:0}" aria-expanded="${on}">🫙 Việc chăm tiệm · ${left?`${left} việc chờ`:'xong hết ✓'}</button>${on?`<div class="cb-st-body">${news}${rlist(rows,x,'Việc chăm tiệm hôm nay')}${feed}${chip}</div>`:''}</section>`;
 }
 /** The regulars' notes card: only what the shop has learned. */
 function bookFold(x){
@@ -567,12 +609,13 @@ export default {
   },
   job(t,x){
     const d=data(x),day=d.day,g=taskGuide(t,x),hint=hintFor(x,g);
-    const head=`${dayStrip(x,day,true)}${flash(x,day)}${eventCard(x,day,'cb_event')}${queue(x,t)}`;
+    // The last result is shown in full once; after that it is two lines (tap it to read it all).
+    const head=`${dayStrip(x,day,true)}${flash(x,day).replace('<p class="fk-flash','<p tabindex="0" class="fk-flash')}${eventCard(x,day,'cb_event')}${queue(x,t)}`;
     if(!t.known){
       const who=x.npc(t.npc),gu=t.guest||{};
       return `<div class="career-job cb food">${hint}${head}<article class="card ticket cb-ticket"><div class="cb-ticket-head">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3>
         <p class="cb-tags"><span class="tag">${x.esc(gu.emoji||'🙂')} ${x.esc(gu.label||'Khách')}</span></p></div></div>
-        <p class="cb-say">“${x.esc(t.opening)}”</p>${regularNotes(t,x)}${patience(t.patience)}${x.cmd('📝 Nhận order','ask',{task:t.id},'primary full cb-ask')}</article>${extras(x)}${careCard(x,false)}</div>`;
+        <p class="cb-say">“${x.esc(t.opening)}”</p>${regularNotes(t,x)}${patience(t.patience)}${x.cmd('📝 Nhận order','ask',{task:t.id},`${day?.open_event?'ghost':'primary'} full cb-ask`)}</article>${extras(x)}${careCard(x,false)}</div>`;
     }
     const n=t.needs,ui=x.ui;
     if(ui.tabFor!==t.id){ui.tabFor=t.id;ui.tab=n.kind==='drink'?'bar':n.kind==='pastry'?'case':'cake';ui.cakeText='';}
@@ -590,7 +633,7 @@ export default {
     const cta=ctaFor(x,g);
     const side=`<div class="cb-side"><div class="cb-look">${preview}<div class="cb-look-txt"><p class="cb-status" aria-live="polite">${x.esc(status(t,x))}</p>${trayCups(t)}</div></div>
       <div class="fk-wide-only">${cta.replace(/ gd-cta/g,'')}${dump}</div></div>`;
-    const tools=`<p class="row wrap cb-tools">${dump?`<span class="cb-narrow-only">${dump}</span>`:''}${d.clean_day===x.room.day?'<span class="tag green">🧽 Đã vệ sinh máy hôm nay</span>':x.cmd('🧽 Vệ sinh máy pha','cb_clean',{},'ghost small')} ${x.button('📦 Kho & nhập hàng','inventory',{},'ghost small')}</p>`;
+    const tools=`<p class="row wrap cb-tools">${dump?`<span class="cb-narrow-only">${dump}</span>`:''}${d.clean_day===x.room.day?'<span class="tag green">🧽 Đã vệ sinh máy hôm nay</span>':x.cmd('🧽 Vệ sinh máy pha','cb_clean',{},'ghost small')}</p>`;
     return `<div class="career-job cb food">${hint}${head}${extras(x)}${careCard(x,false)}${ticket(t,x)}${tabBar}<div class="workbench"><section class="wb-main" role="tabpanel">${panel}${tools}</section><aside class="wb-side">${side}</aside></div><div class="fk-bar cb-dock"><p class="cb-dock-status" aria-hidden="true">${x.esc(status(t,x))}</p>${cta}</div></div>`;
   },
   actions:{
@@ -603,6 +646,7 @@ export default {
     async foam(data,el,x){x.ui.foam=data.foam;x.render();},
     async cream(data,el,x){x.ui.cream=data.cream;x.render();},
     async color(data,el,x){x.ui.color=data.color;x.render();},
+    async st(data,el,x){(x.ui.cbSt??={})[data.key]=data.open!=='1';x.render();},
     async prep(data,el,x){const d=el.closest('details');x.ui.cbPrep=d?!d.open:!x.ui.cbPrep;},
     async write(data,el,x){
       // Also sent from the header hint / bottom button: find the box anywhere in the sheet.

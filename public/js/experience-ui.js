@@ -1,14 +1,22 @@
 /** Original warm counter UI. No reference website code/assets are reused. */
 import {icon,portrait,itemArt,escapeHTML as esc} from './icons.js';
-import {lessonV2,tripV2,v2Stage} from './v4/teach-tour.js';
+import {skeleton} from './lazy.js';
 import {lowItems,restockBar} from './v4/restock.js';
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const b=(label,action,payload={},cls='')=>`<button type="button" class="btn ${cls}" data-action="${action}" ${Object.entries(payload).map(([k,v])=>`data-${k}="${esc(v)}"`).join(' ')}>${label}</button>`;
 const doB=(label,op,payload={},cls='',confirm='')=>b(label,'expDo',{op,payload:JSON.stringify(payload),confirm},cls);
 const note=(s,cls='')=>`<div class="life-note ${cls}">${s}</div>`;
 const em=(s,cls='')=>`<span class="em ${cls}" aria-hidden="true">${s}</span>`;
+/* Tiết học / Chuyến đi (v4/teach-tour.js, ~60 KB + teach.css) load only for a teacher or a tour guide:
+ * app.js imports it with those careers' assets; until it is in, the workbench shows a skeleton. */
+let TT=null,ttLoad=null;
+export function teachTour(){
+ ttLoad??=import('./v4/teach-tour.js').then(m=>{TT=m;document.dispatchEvent(new CustomEvent('mnl:lazy'));return m;},e=>{ttLoad=null;throw e;});
+ return ttLoad;
+}
+const tt=()=>{if(!TT)teachTour().catch(e=>console.warn('teach-tour:',e));return TT;};
 export function nextStep(t){
- const v2=v2Stage(t);if(v2)return v2;
+ const v2=(t?.room||t?.trip)?tt()?.v2Stage(t):null;if(v2)return v2;
  const maps={teacher:{plan:'Soạn nhịp tiết học',attendance:'Điểm danh theo ghế',teach:'Giúp từng bạn hiểu bài',grade:'Phản hồi phiếu cuối tiết',ready:'Khép tiết & lưu tiến bộ'},tour_guide:{plan:'Chọn lộ trình hợp đoàn',gather:'Kiểm người & khởi hành',stop:'Kể chuyện · chụp ảnh · kiểm đoàn',ready:'Gửi bưu thiếp & khép chuyến'},milk_tea:{order:'Chọn trà, topping và chỉnh vị'}};
  return maps[t?.career]?.[t.stage]||'Một công việc nhỏ đang chờ';
 }
@@ -26,8 +34,11 @@ export function guestRibbon(t,c,content){
  if(t.career==='milk_tea'&&t.needs){const lookup=id=>content.experiences.ingredients.find(i=>i.id===id)?.name||id,n=t.needs;words=`Cho mình ${lookup(n.base)} size ${n.size}${n.flavor?', vị '+lookup(n.flavor):''}, ${n.toppings.map(lookup).join(', ')}, ${n.sugar}% đường và ${{none:'không đá',little:'ít đá',normal:'đá bình thường'}[n.ice]} nhé!`;}
  return `<section class="guest-ribbon"><div class="guest-portrait">${portrait(person||{display_name:'Bạn'},94)}<small>${esc(person?.display_name||'Bạn')}</small></div><div class="order-bubble"><p>${esc(words)}</p><div class="patience"><span>${t.career==='teacher'?'NHỊP LỚP':t.career==='tour_guide'?'NHỊP ĐOÀN':'KIÊN NHẪN'}</span><div><i style="width:${patience}%"></i></div><small>${patience}%</small></div>${!t.known?doB('💬 Hỏi rõ yêu cầu','ask',{task:t.id},'small primary'):''}${b('Trò chuyện','chat',{npc:t.npc,task:t.id},'small ghost')}</div></section>`;
 }
+/** The day the player sees (life day in the story; game/days.py): set by experienceView. */
+let STATE=null;
+const dayNo=c=>STATE?.journey?.story&&Number.isInteger(STATE.journey.life_day)?STATE.journey.life_day:c.day;
 function shell(view,c,meta,body,foot=''){
- return `<div class="lx-top"><header class="sheet-head lx-head"><button type="button" class="btn ghost small icon-btn lx-back" data-action="home" aria-label="Quay lại hành trình">${icon('back',18)}</button><div class="grow"><span class="eyebrow">Ngày ${c.day} · ${esc(meta.short||'')}</span><h2>${esc(c.life.shop_name||meta.place)}</h2></div><button type="button" class="btn ghost small icon-btn" data-action="close" aria-label="Đóng">${icon('x',20)}</button></header>${lifeNav(view)}</div><div class="life-content lx lx-${view}">${body}</div>${foot}`;
+ return `<div class="lx-top"><header class="sheet-head lx-head"><button type="button" class="btn ghost small icon-btn lx-back" data-action="home" aria-label="Quay lại hành trình">${icon('back',18)}</button><div class="grow"><span class="eyebrow">Ngày ${dayNo(c)} · ${esc(meta.short||'')}</span><h2>${esc(c.life.shop_name||meta.place)}</h2></div><button type="button" class="btn ghost small icon-btn" data-action="close" aria-label="Đóng">${icon('x',20)}</button></header>${lifeNav(view)}</div><div class="life-content lx lx-${view}">${body}</div>${foot}`;
 }
 /** Story mode: a place that is not open yet shows a lock card instead of its sheets. */
 function lockedView(cid,c,content,meta,state){
@@ -59,7 +70,7 @@ function prepView(cid,c,content,meta){
  const grid=`<div class="lx-grid">${today}${goalCard(c)}</div>${stock}`;
  // Stocked shops: one line before opening when shelves are empty or low, with the way to restock.
  const short=cid!=='milk_tea'&&c.inventory?restockBar(c,lowItems(c,content,cid),{urgent:false}):'';
- return shell('prepare',c,meta,(short?`<section class="lx-card lx-restock">${short}</section>`:'')+level+grid,`<footer class="life-sticky">${b(c.open?'Về quầy · tiếp tục chơi':'Mở cửa ngày '+c.day,c.open?'close':'start',{},'primary jumbo')}</footer>`);
+ return shell('prepare',c,meta,(short?`<section class="lx-card lx-restock">${short}</section>`:'')+level+grid,`<footer class="life-sticky">${b(c.open?'Về quầy · tiếp tục chơi':'Mở cửa ngày '+dayNo(c),c.open?'close':'start',{},'primary jumbo')}</footer>`);
 }
 function priceRow(i,value,lo,hi,open,art=''){
  return `<li class="lx-price">${art||tile(i.emoji||'🏷️')}<label class="grow" for="price-${i.id}">${esc(i.name)}</label><span class="lx-price-in"><input class="input" type="number" inputmode="numeric" id="price-${i.id}" min="${lo}" max="${hi}" value="${value}" data-preserve aria-label="Giá ${esc(i.name)}" ${open?'disabled':''}><small>xu</small></span>${b('Lưu giá','expPrice',{item:i.id},'small')}</li>`;
@@ -116,7 +127,7 @@ function townView(cid,c,content,meta,ui){
  return shell('town',c,meta,`<div class="town-map lx-map"><div class="map-river"></div><div class="map-road"></div><span class="map-cloud cloud-one">☁️</span><span class="map-cloud cloud-two">☁️</span>${content.experiences.town.map(p=>`<button class="town-pin ${c.life.visits.includes(p.id)?'visited':''} ${ui.townPlace===p.id?'selected':''}" style="left:${p.x}%;top:${p.y}%" data-action="expVisit" data-place="${p.id}">${em(p.emoji)}<strong>${p.name}</strong><small>${c.life.visits.includes(p.id)?'✓ Đã ghé':'Chạm để ghé'}</small></button>`).join('')}</div>${visitCard}${fest}`);
 }
 export function experienceView(view,cid,c,content,meta,ui,state){
- const J=state?.journey;
+ STATE=state||STATE;const J=state?.journey;
  if(J?.story&&!(J.unlocked||[]).includes(cid))return lockedView(cid,c,content,meta,state);
  if(view==='prepare')return prepView(cid,c,content,meta);
  if(view==='prices')return priceView(cid,c,content,meta);
@@ -176,8 +187,8 @@ function teaJob(t,c,content){
  return `<div class="tea-counter"><div class="tea-working"><div class="cup-stage">${cupArt(cup,ingredients)}<div class="cup-label">${cup.items.length?cup.items.map(k=>ingredients.find(i=>i.id===k).name).join(' · '):'Ly mới đang chờ một chút trà'}</div><span class="tag">${cup.size} · ${cup.sugar}% đường · ${{none:'không đá',little:'ít đá',normal:'đá thường'}[cup.ice]}</span>${cup.checked?'<span class="tag green">✓ Đúng yêu cầu</span>':''}</div><div class="tea-controls"><h3>Chỉnh theo vị khách thích</h3><div class="tea-option"><label>Cỡ ly<select class="input" id="tea-size" ${cup.sealed?'disabled':''}>${['M','L'].map(v=>`<option ${v===cup.size?'selected':''}>${v}</option>`).join('')}</select></label><label>Đường<select class="input" id="tea-sugar" ${cup.sealed?'disabled':''}>${[0,30,50,100].map(v=>`<option value="${v}" ${v===cup.sugar?'selected':''}>${v}%</option>`).join('')}</select></label><label>Đá<select class="input" id="tea-ice" ${cup.sealed?'disabled':''}>${[['none','Không đá'],['little','Ít đá'],['normal','Bình thường']].map(([v,l])=>`<option value="${v}" ${v===cup.ice?'selected':''}>${l}</option>`).join('')}</select></label></div>${b('Lưu cỡ · đường · đá','teaConfig',{task:t.id},'cream full')}<div class="tea-step-actions">${doB('✓ Kiểm ly','tea_check',{task:t.id},'primary')}${doB('Đóng nắp','tea_seal',{task:t.id},'cream')}${doB('Làm lại ly','tea_discard',{task:t.id,confirm:true},'ghost','Bỏ ly đang làm. Nguyên liệu đã dùng không hoàn kho.')}</div>${doB('Trao khách · '+fmt(t.quoted_price||0)+' xu','tea_serve',{task:t.id,confirm:true},'primary jumbo','Giao ly đã kiểm và đóng nắp; thu đúng giá đã chốt.')}</div></div>${['base','flavor','topping'].map((group,i)=>`<section class="ingredient-shelf"><h3>${['🫖 Trà nền','🍑 Hương vị','🟤 Topping'][i]}</h3><div class="ingredient-row">${ingredients.filter(v=>v.group===group).map(v=>`<button class="ingredient ${cup.items.includes(v.id)?'chosen':''}" data-action="expDo" data-op="tea_add" data-payload="${esc(JSON.stringify({task:t.id,item:v.id}))}" ${!t.known||cup.sealed||cup.items.includes(v.id)||c.life.stock[v.id]===0?'disabled':''}>${ingredientArt(v)}<strong>${v.name}</strong><small>${cup.items.includes(v.id)?'✓ Trong ly':'Còn '+c.life.stock[v.id]}</small></button>`).join('')}</div></section>`).join('')}<div class="row wrap space-top">${b('🧺 Chuẩn bị thêm nguyên liệu','prepare',{},'ghost')}${b('🏷️ Xem menu','prices',{},'ghost')}</div></div>`;
 }
 export function extendedJob(t,c,content,ui,state){
- if(t.career==='teacher'&&t.room)return lessonV2(t,c,content,ui,state);
- if(t.career==='tour_guide'&&t.trip)return tripV2(t,c,content,ui);
+ if(t.career==='teacher'&&t.room)return tt()?TT.lessonV2(t,c,content,ui,state):skeleton();
+ if(t.career==='tour_guide'&&t.trip)return tt()?TT.tripV2(t,c,content,ui):skeleton();
  const body=t.career==='teacher'?teacherJob(t,c,content,ui):t.career==='tour_guide'?guideJob(t,c,content,ui):teaJob(t,c,content);
  return guestRibbon(t,c,content)+body;
 }

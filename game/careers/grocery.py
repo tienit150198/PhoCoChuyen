@@ -122,6 +122,16 @@ PEOPLE = [
 # Who points out an undercharge or gives back extra change (true to character).
 HONEST = {0: True, 1: True, 2: False, 3: False, 4: True, 5: True, 6: False}
 AGE = {0: 58, 1: 54, 2: 34, 3: 15, 4: 71, 5: 29, 6: 45}
+# How likely (percent) each neighbour counts the change and reads the till screen right at the
+# counter. Rolled once per customer and bill (seeded), never re-rolled.
+COUNTS = {0: 100, 1: 40, 2: 100, 3: 30, 4: 100, 5: 100, 6: 25}
+# How likely a customer who got the right change quickly says “khỏi thối, giữ uống nước” and leaves
+# the small change (at most KEEP_MAX xu) on the counter. Luck, seeded like COUNTS.
+KEEP = {0: 0, 1: 55, 2: 5, 3: 15, 4: 5, 5: 30, 6: 45}
+KEEP_MAX = 10
+KEEP_SAY = {1: 'Mấy đồng lẻ khỏi thối, cháu giữ uống nước nghen!', 2: 'Thôi mấy đồng lẻ em giữ uống nước nha.',
+            3: 'Dạ khỏi thối ạ, giữ uống nước nha!', 4: 'Mấy đồng lẻ bà cho cháu uống nước.',
+            5: 'Khỏi thối, em giữ uống nước nha.', 6: 'Khỏi thối khỏi thối, em giữ uống nước, chị đi đây!'}
 # Neighbours allowed to buy on credit: limit, payday cycle (days), share repaid (percent).
 NEIGHBOURS = {1: dict(limit=150, cycle=4, share=50), 2: dict(limit=250, cycle=5, share=100),
               4: dict(limit=100, cycle=3, share=100), 6: dict(limit=300, cycle=6, share=100)}
@@ -314,6 +324,13 @@ def _held(c: dict, item: str, t: dict | None) -> int:
     """Units already rung up on other open bills (not yet handed over)."""
     held = 0
     for o in c['tasks']:
+        if (o.get('career') == ID and o.get('kind') == 'rush' and (t is None or o['id'] != t['id'])
+                and o['status'] not in ('completed', 'referred', 'cancelled')):
+            # Rung up on the rush till but not yet paid for (stock leaves the shelf when the till totals).
+            off = (o.get('rush') or {}).get('offer')   # read only (an old-format offer has no 'scanned')
+            if isinstance(off, dict) and off.get('charged') is None:
+                held += (off.get('scanned') or {}).get(item, 0)
+            continue
         if (o.get('career') != ID or o.get('kind') != 'checkout' or (t is not None and o['id'] == t['id'])
                 or o['status'] in ('completed', 'referred', 'cancelled') or o.get('stage') not in ('basket', 'pay')):
             continue
@@ -569,8 +586,8 @@ def known_request(c: dict, t: dict) -> str:
         if r['start'] is None:   # the queue forms the moment the doors are opened to it
             r['start'] = c['turn']
             _rush_offer(c, t)
-        return (f'Hàng chờ {len(n["queue"])} khách tan ca. Mỗi người mua vài món, trả tiền mặt: chọn đúng tổng tiền, '
-                f'thối đúng, ai mua bia thì kiểm tuổi. Để khách chờ quá lâu là khách bỏ về.')
+        return (f'Hàng chờ {len(n["queue"])} khách tan ca. Mỗi người mua vài món, trả tiền mặt: quét từng món, bấm “Tính tiền”, '
+                f'đếm tiền thối vào khay rồi giao hàng. Ai mua bia thì kiểm tuổi. Để khách chờ quá lâu là khách bỏ về.')
     if t['kind'] == 'bulk':
         parts = [f'{x["qty"]} {ITEM_INDEX[x["item"]]["unit"]} {ITEM_INDEX[x["item"]]["name"]}' for x in n['lines']]
         return (f'Đơn sỉ: {", ".join(parts)}. Báo giá (có thể bớt 5–15%), nhận cọc {n["deposit"]}%, '
@@ -972,11 +989,14 @@ def _finish(s: dict, c: dict, t: dict) -> dict:
     who = _who(t)
     loss = 0
     notes = []
-    if method == 'cash' and sum(pay['change']) < sum(pay['tender']) - total:
-        due = sum(pay['tender']) - total
+    npc = _npc_index(t)
+    due = sum(pay['tender']) - total if method == 'cash' else 0
+    given = sum(pay['change']) if method == 'cash' else 0
+    if method == 'cash' and given < due and (flags['short_change'] or _careful(t, 'bill', npc)):
+        # A careful customer counts the change right here (and, once they have, keeps counting).
         t['mistakes'] += 1
         flags['short_change'] += 1
-        return dict(message=f'{who} đếm lại: “Thối thiếu {due - sum(pay["change"])} xu rồi cháu.” Thêm tiền vào khay thối rồi giao lại.', refused=True)
+        return dict(message=f'{who} đếm lại: “Thối thiếu {due - given} xu rồi cháu.” Thêm tiền vào khay thối rồi giao lại.', refused=True)
     # The hand-over: what the customer notices now decides how they take it.
     units, weighed = _expected(c, t)
     _checkout_slips(c, t, units)
@@ -989,14 +1009,30 @@ def _finish(s: dict, c: dict, t: dict) -> dict:
         kit.data(c)['customers'] += 1
         kit.complete(s, c, t, 0, f'{who} để lại giỏ hàng, không mua nữa: “{t["title"]}”.')
         return dict(message=f'{who} để lại giỏ hàng trên quầy, không mua nữa. {react["message"]}'.strip())
+    short = tip = 0
     if method == 'cash':
-        due = sum(pay['tender']) - total
-        given = sum(pay['change'])
+        if given < due:
+            # Nobody counted at the counter: the customer finds it at home and says so.
+            short = due - given
+            t['mistakes'] += 1
+            cq.slip(t, 'short_home', 2 if short < 10 else 3, f'Về nhà đếm lại mới thấy tiệm thối thiếu {short} xu.',
+                    f'thối thiếu {short} xu, khách về nhà mới thấy')
+            notes.append(f'{who} nhét tiền thối vào túi rồi đi luôn, không đếm lại — thối thiếu {short} xu.')
+            notes.extend(cq._escalate(s, c, t))
+        elif given == due and due > 0 and not t['mistakes'] and not cq.slips(t) and react['kind'] == 'accept' and t.get('patience', 100) >= 70:
+            tip = _keep(t, 'bill', npc, due)
+            if tip:
+                # "Khỏi thối": the small change stays on the counter — the customer's own tip, paid once here.
+                kit.money(s, c, tip, f'Khách để lại tiền lẻ: {who}', t['id'], 'tip')
+                t['tip_given'] = t.get('tip_given', 0) + tip
+                notes.append(f'{who} xua tay: “{KEEP_SAY.get(npc, "Khỏi thối, giữ uống nước nha.")}” · +{tip} xu tiền lẻ.')
         if given > due:
             extra = given - due
             t['mistakes'] += 1
             flags['excess'] = extra
-            if HONEST.get(_npc_index(t)):
+            if HONEST.get(npc):
+                # Handed back on the spot: a small slip for the review, no money off on top.
+                cq.slip(t, 'excess', 1, f'Thối dư {extra} xu, tôi phải đưa trả lại.', f'thối dư {extra} xu')
                 notes.append(f'{who} trả lại {extra} xu thối dư: “Cháu thối dư nè, coi chừng lỗ!”')
             else:
                 loss += extra
@@ -1050,7 +1086,7 @@ def _finish(s: dict, c: dict, t: dict) -> dict:
         cost += _take_upto(c, item, _units(item, g))
     if shrink:
         notes.append(f'{shrink} món khách mang về mà chưa được tính tiền.')
-    net = total - cut - loss if method != 'credit' else 0
+    net = total - cut - loss + short if method != 'credit' else 0   # short change stays in the drawer
     d = kit.data(c)
     d['sales'] += total - cut
     d['day_sales'] += total - cut
@@ -1060,6 +1096,10 @@ def _finish(s: dict, c: dict, t: dict) -> dict:
         kit.metric(c, 'gr_credit_sales')
     c['life']['consumed_cost'] += cost
     t['result'] = dict(method=method, total=total, net=net, loss=loss, cost=cost)
+    if short:
+        t['result']['short'] = short
+    if tip:
+        t['result']['tip'] = tip
     t['stage'] = 'done'
     reward = max(0, net)
     kit.complete(s, c, t, reward, f'Bạn đã tính tiền cho {who}: “{t["title"]}”.')
@@ -1458,9 +1498,52 @@ def _haggle(s: dict, c: dict, t: dict, p: dict) -> dict:
 
 
 # ---------------------------------------------------------------- rush hour queue
+# The queue is the normal counter, only faster: ring each basket line up on the till (the till adds
+# it up), the customer hands over cash, count the change out of the drawer into the tray and hand
+# it over. A mistake lands on the customer it happened to, the way that person takes it: careful
+# people count the change and read the till screen at the counter (COUNTS), honest ones hand back
+# extra change (HONEST), the others find out at home and say so in their own review.
+OFFER_KEYS = ('i', 'units', 'scanned', 'charged', 'tender', 'change', 'miss', 'counted', 'extra')
+LOG_KEYS = ('i', 'status', 'paid', 'tip', 'stars', 'note', '_later')
+# What went wrong with the customer at the counter: an overcharge or an undercharge they pointed
+# out, short change they counted, goods they took home without paying (nobody said a word).
+MISS = ('over', 'under', 'short', 'quiet')
+
+
 def _empty_rush() -> dict:
     return dict(i=0, start=None, served=0, left=0, cash=0, loss=0, ages={}, offer=None, log=[],
                 flags=dict(over=0, under=0, short=0, excess=0, minor=0))
+
+
+def _new_offer(i: int, units: dict, scanned: dict | None = None, miss: list | None = None) -> dict:
+    return dict(i=i, units=dict(units), scanned=dict(scanned or {}), charged=None, tender=[], change=[],
+                miss=list(miss or []), counted=0, extra=0)
+
+
+def _row(i: int, status: str, paid: int = 0, tip: int = 0, stars=None, note: str = '', later: str = '') -> dict:
+    """One customer of the queue: served / left / empty, what stayed in the till, the small change
+    they left as a tip, their own rating line, and the review they write once home (hidden)."""
+    return dict(i=i, status=status, paid=paid, tip=tip, stars=stars, note=note[:200], _later=later[:300])
+
+
+def _rush_ready(t: dict) -> dict | None:
+    """Old saves (v0.9: pick one of three totals, then one of three change amounts) move to the
+    till-and-tray format in place, once. A customer whose total was already picked keeps it: the
+    goods left the shelf then and the money is on the counter; the change is now counted from the tray."""
+    r = t.get('rush')
+    if not isinstance(r, dict):
+        return r
+    for x in r.get('log') or []:
+        if isinstance(x, dict) and 'tip' not in x:
+            x.update(tip=0, stars=5 if x.get('status') == 'served' else None, note='', _later='')
+    o = r.get('offer')
+    if isinstance(o, dict) and 'totals' in o:
+        charged = o.get('charged')
+        new = _new_offer(o.get('i', r.get('i', 0)), o.get('units') or {}, o.get('units') if charged is not None else None)
+        if charged is not None:
+            new.update(charged=charged, tender=list(o.get('tender') or []))
+        r['offer'] = new
+    return r
 
 
 def _make_rush(day: int, slot: int, serial: int, rng, mod: str, second: bool = False) -> dict:
@@ -1483,6 +1566,7 @@ def _deadline(t: dict, i: int) -> int:
 
 
 def _rush_units(c: dict, t: dict, i: int) -> dict:
+    """What customer i can take home now: their basket, limited by the shelf and by the ID check."""
     q = t['needs']['queue'][i]
     seen = t['rush']['ages'].get(str(i))
     units = {}
@@ -1495,29 +1579,40 @@ def _rush_units(c: dict, t: dict, i: int) -> dict:
     return units
 
 
-def _choices(seed: tuple, right: int, near: list[int]) -> list[int]:
-    out = [right]
-    for v in near:
-        if v >= 0 and v not in out:
-            out.append(v)
-        if len(out) == 3:
-            break
-    kit.rng(*seed).shuffle(out)
-    return out
+def _till(c: dict, scanned: dict) -> int:
+    """What the till adds up: every line rung up at the price on the shelf tag. (No promotions:
+    a rush basket never reaches a promotion's quantity.)"""
+    return sum(_price(c, k) * q for k, q in scanned.items())
+
+
+def _careful(t: dict, key, npc: int) -> bool:
+    """Does this customer count the change and read the till screen at the counter? Seeded by the
+    task (and the place in the queue), so the same person always does the same: never re-rolled."""
+    return kit.rng(ID, t['id'], 'count', key).randrange(100) < COUNTS.get(npc, 50)
+
+
+def _keep(t: dict, key, npc: int, due: int) -> int:
+    """The small change a customer leaves on the counter (“khỏi thối”), or 0. Seeded like _careful."""
+    small = due if due <= KEEP_MAX else due % 10
+    if small <= 0 or kit.rng(ID, t['id'], 'keep', key).randrange(100) >= KEEP.get(npc, 0):
+        return 0
+    return small
 
 
 def _rush_offer(c: dict, t: dict) -> None:
+    """The basket of the customer at the counter, as the shelf and the ID check allow right now.
+    Recomputed when the shelf changes; what is already rung up stays on the till, and once the
+    money is on the counter nothing moves."""
+    _rush_ready(t)
     r, queue = t['rush'], t['needs']['queue']
     if r['start'] is None or r['i'] >= len(queue):
         r['offer'] = None
         return
-    if r['offer'] and r['offer']['i'] == r['i'] and r['offer']['charged'] is not None:
+    o = r['offer']
+    same = isinstance(o, dict) and o.get('i') == r['i']
+    if same and o['charged'] is not None:
         return   # money already on the counter: keep the numbers
-    units = _rush_units(c, t, r['i'])
-    total = sum(_price(c, k) * v for k, v in units.items())
-    ps = sorted(_price(c, k) for k in units) or [5]
-    r['offer'] = dict(i=r['i'], units=units, tender=_tender(total, queue[r['i']]['style']) if total else [], charged=None, changes=None,
-                      totals=_choices((ID, t['id'], 'total', r['i'], total), total, [total + ps[-1], total - ps[0], total + 10, total - 5, total + 2]))
+    r['offer'] = _new_offer(r['i'], _rush_units(c, t, r['i']), o['scanned'] if same else None, o['miss'] if same else None)
 
 
 def _rush_expire(c: dict, t: dict) -> int:
@@ -1526,7 +1621,7 @@ def _rush_expire(c: dict, t: dict) -> int:
     while (r['start'] is not None and r['i'] < len(queue) and c['turn'] > _deadline(t, r['i'])
            and not (r['offer'] and r['offer']['i'] == r['i'] and r['offer']['charged'] is not None)):
         r['left'] += 1
-        r['log'].append(dict(i=r['i'], status='left', paid=0))
+        r['log'].append(_row(r['i'], 'left'))
         r['i'] += 1
         r['offer'] = None
         gone += 1
@@ -1535,7 +1630,13 @@ def _rush_expire(c: dict, t: dict) -> int:
     return gone
 
 
+def _miss(o: dict, code: str) -> None:
+    if code not in o['miss']:
+        o['miss'].append(code)
+
+
 def _rush_action(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
+    _rush_ready(t)
     r, queue = t['rush'], t['needs']['queue']
     if r['start'] is None:
         r['start'] = c['turn']
@@ -1544,101 +1645,218 @@ def _rush_action(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
     note = f'{gone} khách chờ lâu quá đã bỏ về. ' if gone else ''
     if r['i'] >= len(queue):
         return dict(message=note + _rush_finish(s, c, t), refused=bool(gone))
+    if gone:
+        # The tap was meant for someone who has just walked out: the next customer steps up first.
+        return dict(message=note + f'Mời {PEOPLE[queue[r["i"]]["npc"]][0]}!', refused=True)
     if r['offer'] is None or r['offer']['i'] != r['i']:
         _rush_offer(c, t)
-    offer, q = r['offer'], queue[r['i']]
+    i, o, q = r['i'], r['offer'], queue[r['i']]
     who = PEOPLE[q['npc']][0]
-    beer = any(i in AGE_LIMITED for i, _ in q['items'])
     if name == 'gr_rush_id':
-        kit.need(beer, f'{who} không mua bia, không cần xem giấy tờ.')
-        kit.need(str(r['i']) not in r['ages'], 'Đã kiểm tuổi khách này rồi.')
-        kit.need(offer['charged'] is None, 'Đã tính tiền khách này rồi.')
+        kit.need(any(k in AGE_LIMITED for k, _ in q['items']), f'{who} không mua bia, không cần xem giấy tờ.')
+        kit.need(str(i) not in r['ages'], 'Đã kiểm tuổi khách này rồi.')
+        kit.need(o['charged'] is None, 'Đã tính tiền khách này rồi.')
         age = q['_age']
-        r['ages'][str(r['i'])] = age
+        r['ages'][str(i)] = age
         kit.metric(c, 'id_checks')
         if age < 18:
             r['flags']['minor'] += 1
-            r['offer'] = None
             _rush_offer(c, t)
-            return dict(message=note + f'{who} mới {age} tuổi: không bán bia. Bạn nói nhỏ nhẹ, chỉ tính phần còn lại.')
-        return dict(message=note + f'{who} {age} tuổi, đủ tuổi mua bia.')
+            rung = r['offer']['scanned'].get('beer')
+            return dict(message=f'{who} mới {age} tuổi: không bán bia. Bạn nói nhỏ nhẹ, chỉ bán phần còn lại.'
+                        + (f' Xóa {rung} lon bia khỏi máy tính tiền nhé.' if rung else ''))
+        return dict(message=f'{who} {age} tuổi, đủ tuổi mua bia.')
+    if name == 'gr_rush_scan':
+        kit.need(o['charged'] is None, 'Đã tính tiền khách này rồi: thối tiền rồi giao hàng.')
+        item = kit.one_of(p.get('item'), ITEM_INDEX, 'Mặt hàng không có trong tiệm.')
+        kit.need(item not in WEIGHED, 'Giờ cao điểm chỉ bán hàng đóng gói, không cân ký.')
+        qty = kit.integer(p.get('qty', 1), 1, 30)
+        seen = r['ages'].get(str(i))
+        kit.need(not (item in AGE_LIMITED and seen is not None and seen < 18), f'{who} chưa đủ 18 tuổi: không bán bia. Để lon bia lại kệ.')
+        it = ITEM_INDEX[item]
+        have = _available(c, item, t)
+        kit.need(o['scanned'].get(item, 0) + qty <= have, f'Kệ chỉ còn {have} {it["unit"]} {it["name"]}.')
+        kit.need(sum(o['scanned'].values()) + qty <= 60, 'Hóa đơn dài quá rồi.')
+        o['scanned'][item] = o['scanned'].get(item, 0) + qty
+        return dict(message=f'Bíp! {it["name"]} ×{qty} · {_price(c, item) * qty} xu. Máy tính tiền: {_till(c, o["scanned"])} xu.')
+    if name == 'gr_rush_void':
+        kit.need(o['charged'] is None, 'Đã tính tiền khách này rồi: thối tiền rồi giao hàng.')
+        item = kit.one_of(p.get('item'), o['scanned'], 'Món này chưa có trên máy tính tiền.')
+        o['scanned'].pop(item)
+        return dict(message=f'Đã xóa {ITEM_INDEX[item]["name"]} khỏi máy tính tiền.')
     if name == 'gr_rush_total':
-        kit.need(offer['charged'] is None, 'Đang chờ thối tiền cho khách này.')
-        units = _rush_units(c, t, r['i'])
-        if not units and not offer['units']:  # nothing left on the shelf: apologise, no total to pick
-            r['log'].append(dict(i=r['i'], status='empty', paid=0))
-            return _rush_next(s, c, t, None, note + f'Kệ hết món {who} cần, khách đành về tay không.')
-        if units != offer['units']:
-            r['offer'] = None
-            _rush_offer(c, t)
-            return dict(message=note + 'Kệ vừa thay đổi — nhìn lại giỏ của khách rồi tính lại nhé.', refused=True)
-        value = kit.integer(p.get('total'), 0, 100000)
-        kit.need(value in offer['totals'], 'Chọn một con số trên máy tính tiền.')
-        correct = sum(_price(c, k) * v for k, v in units.items())
-        if value == correct:
-            charged, say = correct, f'Chuẩn: {correct} xu.'
-        elif value > correct:
-            t['mistakes'] += 1
-            r['flags']['over'] += 1
-            charged, say = correct, f'{who}: “Ủa tính dư {value - correct} xu rồi!” — sửa lại {correct} xu.'
-        elif HONEST.get(q['npc']):
-            t['mistakes'] += 1
-            r['flags']['under'] += 1
-            charged, say = correct, f'{who}: “Tính thiếu rồi, {correct} xu mới đúng nè.”'
-        else:
-            t['mistakes'] += 1
-            r['flags']['under'] += 1
-            r['loss'] += correct - value
-            charged, say = value, f'{who} trả {value} xu rồi quay đi — tiệm hụt {correct - value} xu.'
-        if any(i in AGE_LIMITED for i in units) and str(r['i']) not in r['ages'] and q['_age'] is not None and q['_age'] < 18:
-            # Handed over without asking for ID: the beer leaves with a minor.
-            cq.slip(t, 'minor_beer', 3, f'Giờ đông mà cháu bán bia cho {who} mới {q["_age"]} tuổi, không hỏi giấy tờ gì hết.',
-                    'bán bia cho người chưa đủ 18 tuổi', safety=True)
-        c['life']['consumed_cost'] += sum(_take(c, k, v) for k, v in units.items())
-        offer['charged'] = charged
-        if sum(offer['tender']) < charged:
-            offer['tender'] = _tender(charged, 'round')
-        due = sum(offer['tender']) - charged
-        if due <= 0:
-            return _rush_next(s, c, t, charged, note + say + ' Khách đưa vừa đủ tiền.')
-        offer['changes'] = _choices((ID, t['id'], 'change', r['i'], due), due, [due + 10, due - 10, due + 5, due - 5, due + 1])
-        return dict(message=note + say + f' Khách đưa {" + ".join(str(v) for v in offer["tender"])} xu — thối lại bao nhiêu?')
+        return _rush_lock(s, c, t, who)
     if name == 'gr_rush_change':
-        kit.need(offer['charged'] is not None and offer['changes'], 'Tính tiền khách này trước đã.')
-        value = kit.integer(p.get('change'), 0, 100000)
-        kit.need(value in offer['changes'], 'Chọn số tiền thối có trên khay.')
-        due = sum(offer['tender']) - offer['charged']
-        paid = offer['charged']
-        if value == due:
-            say = f'Thối {due} xu, {who} gật đầu cảm ơn.'
-        elif value < due:
-            t['mistakes'] += 1
-            r['flags']['short'] += 1
-            say = f'{who} đếm lại: “Thối thiếu {due - value} xu nè!” — bạn đưa thêm cho đủ.'
-        else:
-            t['mistakes'] += 1
-            r['flags']['excess'] += 1
-            if HONEST.get(q['npc']):
-                say = f'{who} trả lại {value - due} xu: “Thối dư rồi nè!”'
-            else:
-                paid -= value - due
-                r['loss'] += value - due
-                say = f'{who} cầm tiền đi luôn — thối dư {value - due} xu.'
-        return _rush_next(s, c, t, paid, note + say)
+        kit.need(o['charged'] is not None, 'Bấm “Tính tiền” trước: khách đưa tiền rồi mới thối.')
+        denom = p.get('denom')
+        kit.need(type(denom) is int and denom in DENOMS, 'Mệnh giá không có trong két.')
+        kit.need(len(o['change']) < 40, 'Khay thối tiền đầy rồi.')
+        o['change'].append(denom)
+        return dict(message=f'Đặt {denom} xu vào khay thối · đang thối {sum(o["change"])} xu.')
+    if name == 'gr_rush_undo':
+        kit.need(o['change'], 'Khay thối tiền đang trống.')
+        o['change'] = [] if p.get('all') is True else o['change'][:-1]
+        return dict(message='Đã cất lại tiền vào két.')
+    if name == 'gr_rush_pay':
+        return _rush_pay(s, c, t, who)
     raise kit.eng().GameError('Thao tác quầy giờ cao điểm không hợp lệ.')
 
 
-def _rush_next(s: dict, c: dict, t: dict, paid, message: str) -> dict:
+def _rush_lock(s: dict, c: dict, t: dict, who: str) -> dict:
+    """“Tính tiền”: the till totals what was rung up and the customer reads the screen. A mistake
+    is pointed out only by someone who notices (see COUNTS / HONEST); otherwise it goes home with them."""
     r, queue = t['rush'], t['needs']['queue']
-    if paid is not None:
-        paid = max(0, paid)
-        r['cash'] += paid
-        r['served'] += 1
-        r['log'].append(dict(i=r['i'], status='served', paid=paid))
-        d = _data(c)
-        d['sales'] += paid
-        d['day_sales'] += paid
-        d['customers'] += 1
+    i, o, q = r['i'], r['offer'], queue[r['i']]
+    kit.need(o['charged'] is None, 'Đã tính tiền khách này rồi: thối tiền rồi giao hàng.')
+    units = _rush_units(c, t, i)
+    if not units and not o['units'] and not o['scanned']:
+        # Nothing of theirs left on the shelf: apologise, there is nothing to ring up.
+        r['log'].append(_row(i, 'empty'))
+        return _rush_next(s, c, t, f'Kệ hết món {who} cần, khách đành về tay không.')
+    if units != o['units']:
+        _rush_offer(c, t)
+        return dict(message='Kệ vừa thay đổi — nhìn lại giỏ của khách rồi tính tiền nhé.', refused=True)
+    scanned = o['scanned']
+    kit.need(scanned, 'Máy tính tiền đang trống. Quét hàng trong giỏ trước đã.')
+    name = lambda k: ITEM_INDEX[k]['name'].lower()
+    unit = lambda k: ITEM_INDEX[k]['unit']
+    extra = [k for k in scanned if not units.get(k)]
+    more = {k: v - units[k] for k, v in scanned.items() if units.get(k) and v > units[k]}
+    less = {k: u - scanned.get(k, 0) for k, u in units.items() if scanned.get(k, 0) < u}
+    if extra or more and _careful(t, i, q['npc']):
+        t['mistakes'] += 1
+        r['flags']['over'] += 1
+        _miss(o, 'over')
+        parts = [f'sao tính cả {name(k)}' for k in extra] + [f'{units[k]} {unit(k)} {name(k)} mà tính {scanned[k]}' for k in more]
+        return dict(message=f'{who} chỉ vào màn hình máy tính tiền: “Ủa, {"; ".join(parts)}?” Xóa phần dư rồi tính tiền lại nhé.', refused=True)
+    if less and HONEST.get(q['npc']):
+        t['mistakes'] += 1
+        r['flags']['under'] += 1
+        _miss(o, 'under')
+        parts = [f'{v} {unit(k)} {name(k)}' for k, v in less.items()]
+        return dict(message=f'{who} nhắc: “Còn {", ".join(parts)} chưa tính kìa.” Quét đủ rồi tính tiền lại nhé.', refused=True)
+    if 'beer' in units and str(i) not in r['ages'] and q['_age'] is not None and q['_age'] < 18:
+        # Rung up without asking for ID: the beer leaves with a minor.
+        cq.slip(t, 'minor_beer', 3, f'Giờ đông mà cháu bán bia cho {who} mới {q["_age"]} tuổi, không hỏi giấy tờ gì hết.',
+                'bán bia cho người chưa đủ 18 tuổi', safety=True)
+    # Into the customer's bag goes what they take home, rung up or not.
+    c['life']['consumed_cost'] += sum(_take(c, k, v) for k, v in units.items())
+    if more:                   # nobody read the screen: they pay the extra and find it at home
+        o['extra'] = sum(_price(c, k) * v for k, v in more.items())
+        t['mistakes'] += 1
+        r['flags']['over'] += 1
+    if less:                   # an undercharge nobody mentioned: the goods leave unpaid
+        t['mistakes'] += 1
+        r['flags']['under'] += 1
+        _miss(o, 'quiet')
+        for k, v in less.items():
+            kit.waste(c, k, min(60, v), v * ITEM_INDEX[k]['cost'], 'Quét sót — khách mang về chưa tính tiền')
+    total = _till(c, scanned)
+    o['charged'] = total
+    o['tender'] = _tender(total, q['style'])
+    due = sum(o['tender']) - total
+    head = f'Máy tính tiền: {total} xu. {who} đưa {" + ".join(str(v) for v in o["tender"])} xu'
+    return dict(message=head + (' — vừa đủ, không cần thối.' if due <= 0 else f' — cần thối {due} xu. Đếm tiền thối từ két vào khay.'))
+
+
+def _rush_pay(s: dict, c: dict, t: dict, who: str) -> dict:
+    """“Thối tiền & giao hàng”: the change in the tray goes to the customer. Nothing is fixed behind
+    the player's back: short change is counted at the counter only by a careful customer (who then
+    waits for the rest and grumbles); anyone else finds it at home."""
+    r, queue = t['rush'], t['needs']['queue']
+    i, o, q = r['i'], r['offer'], queue[r['i']]
+    kit.need(o['charged'] is not None, 'Bấm “Tính tiền” trước: khách đưa tiền rồi mới thối.')
+    npc = q['npc']
+    due = sum(o['tender']) - o['charged']
+    given = sum(o['change'])
+    if given < due and _careful(t, i, npc):
+        short = due - given
+        if not o['counted']:
+            t['mistakes'] += 1
+            r['flags']['short'] += 1
+            _miss(o, 'short')
+        o['counted'] = max(o['counted'], short)
+        return dict(message=f'{who} đếm lại ngay tại quầy: “Thối thiếu {short} xu rồi.” Đặt thêm {short} xu vào khay rồi đưa lại.', refused=True)
+    stars, notes, later = 5, [], ''
+
+    def hit(n: int, text: str) -> None:
+        nonlocal stars
+        stars = min(stars, n)
+        notes.append(text)
+
+    paid, tip = sum(o['tender']) - given, 0
+    if 'over' in o['miss']:
+        hit(4, 'bấm dư tiền, khách phải soi ra')
+        cq.slip(t, f'bill{i}', 1, f'Bấm dư tiền, {who} phải tự soi màn hình mới sửa.', 'bấm dư tiền, khách phải tự soi')
+    if 'under' in o['miss']:
+        hit(4, 'tính thiếu, khách phải nhắc')
+        cq.slip(t, f'under{i}', 1, f'Tính thiếu, {who} phải nhắc mới tính đủ.', 'tính thiếu, khách phải nhắc')
+    if o['extra']:
+        x = o['extra']
+        hit(2 if x < 10 else 1, f'về nhà coi lại mới thấy bị tính dư {x} xu')
+        later = f'Về nhà coi lại mới thấy tiệm tính dư {x} xu. Mua có mấy món mà cũng bấm sai.'
+    if 'quiet' in o['miss']:
+        notes.append('quét sót món, khách mang về chưa tính tiền')
+    if 'beer' in o['units'] and str(i) not in r['ages'] and q['_age'] is not None and q['_age'] < 18:
+        hit(1, f'bán bia cho {who} mới {q["_age"]} tuổi')
+    if given < due:
+        short = due - given
+        t['mistakes'] += 1
+        r['flags']['short'] += 1
+        hit(2 if short < 10 else 1, f'về nhà đếm lại mới thấy thối thiếu {short} xu')
+        later = f'Tối về đếm lại tiền mới thấy tiệm thối thiếu {short} xu. Giờ đông cũng phải đếm cho kỹ chứ.'
+        say = f'{who} nhét tiền thối vào túi rồi đi luôn, không đếm lại.'
+    elif given > due:
+        extra = given - due
+        t['mistakes'] += 1
+        r['flags']['excess'] += 1
+        if HONEST.get(npc):
+            paid = o['charged']
+            hit(4, f'thối dư {extra} xu, khách trả lại')
+            cq.slip(t, f'excess{i}', 1, f'Thối dư {extra} xu, {who} phải đưa trả lại.', f'thối dư {extra} xu')
+            say = f'{who} đếm lại rồi trả {extra} xu: “Thối dư rồi nè, coi chừng lỗ!”'
+        else:
+            r['loss'] += extra
+            notes.append(f'thối dư {extra} xu, khách cầm đi luôn')
+            say = f'{who} cầm tiền thối đi luôn — thối dư {extra} xu, tối kiểm két sẽ thiếu.'
+    elif o['counted']:
+        hit(3, f'thối thiếu {o["counted"]} xu, khách đếm lại mới đủ')
+        cq.slip(t, f'short{i}', 1, f'Thối thiếu {o["counted"]} xu, {who} phải đếm lại tại quầy mới đủ.',
+                f'thối thiếu {o["counted"]} xu, khách đếm lại mới đủ')
+        say = f'{who} nhận đủ tiền thối nhưng vẫn cằn nhằn: “Đông cỡ nào cũng phải đếm cho kỹ chứ.”'
+    else:
+        say = f'Thối {due} xu, {who} gật đầu cảm ơn.' if due > 0 else f'{who} đưa vừa đủ tiền, xách giỏ đi.'
+        if due > 0 and not o['miss'] and not o['extra'] and stars == 5 and _deadline(t, i) - c['turn'] >= 1:
+            tip = _keep(t, i, npc, due)
+        if tip:
+            # "Khỏi thối": the small change stays on the counter — the customer's own tip, paid once here.
+            kit.money(s, c, tip, f'Khách để lại tiền lẻ: {who}', t['id'], 'tip')
+            t['tip_given'] = t.get('tip_given', 0) + tip
+            notes.append(f'khỏi thối, để lại {tip} xu uống nước')
+            say = f'Thối {due} xu. {who} xua tay: “{KEEP_SAY.get(npc, "Khỏi thối, giữ uống nước nha.")}” · +{tip} xu tiền lẻ.'
+    if paid < 0:
+        # More change than the customer paid: the rest comes out of the shop's own money.
+        take = min(-paid, c['money'])
+        if take:
+            kit.money(s, c, -take, f'Thối dư tại quầy giờ cao điểm: {who}', t['id'], 'loss')
+        paid = 0
+    r['log'].append(_row(i, 'served', paid, tip, stars, '; '.join(notes) or 'tính nhanh, thối đúng', later))
+    _rush_serve(c, t, paid)
+    return _rush_next(s, c, t, say)
+
+
+def _rush_serve(c: dict, t: dict, paid: int) -> None:
+    r = t['rush']
+    r['cash'] += paid
+    r['served'] += 1
+    d = _data(c)
+    d['sales'] += paid
+    d['day_sales'] += paid
+    d['customers'] += 1
+
+
+def _rush_next(s: dict, c: dict, t: dict, message: str) -> dict:
+    r, queue = t['rush'], t['needs']['queue']
     r['i'] += 1
     r['offer'] = None
     if r['i'] >= len(queue):
@@ -1648,48 +1866,84 @@ def _rush_next(s: dict, c: dict, t: dict, paid, message: str) -> dict:
 
 
 def _rush_finish(s: dict, c: dict, t: dict, closing: bool = False) -> str:
+    _rush_ready(t)
     r, queue = t['rush'], t['needs']['queue']
+    notes = []
     if closing:
+        o = r['offer']
+        if r['i'] < len(queue) and o and o['i'] == r['i'] and o['charged'] is not None:
+            # Money on the counter when the shutters come down: Cô Ba counts the change out herself.
+            who = PEOPLE[queue[r['i']]['npc']][0]
+            r['log'].append(_row(r['i'], 'served', o['charged'], 0, 3, 'chờ tiền thối tới lúc đóng cửa'))
+            _rush_serve(c, t, o['charged'])
+            r['i'] += 1
+            notes.append(f'Cô Ba thối nốt tiền cho {who}.')
         while r['i'] < len(queue):
             r['left'] += 1
-            r['log'].append(dict(i=r['i'], status='left', paid=0))
+            r['log'].append(_row(r['i'], 'left'))
             r['i'] += 1
     r['offer'] = None
     d = _data(c)
     d['stats']['rush'] += 1
     d['stats']['walkouts'] += r['left']
-    t['result'] = dict(served=r['served'], left=r['left'], cash=r['cash'], loss=r['loss'])
+    tips = sum(x['tip'] for x in r['log'])
+    t['result'] = dict(served=r['served'], left=r['left'], cash=r['cash'], loss=r['loss'], tips=tips)
     kit.metric(c, 'gr_rush')
-    f = r['flags']
-    if f['short']:
-        cq.slip(t, 'short_change', 2, 'Giờ đông mà thối thiếu tiền, khách phải đếm lại mới thấy.', 'thối thiếu tiền')
-    if f['over']:
-        cq.slip(t, 'overcharge', 1 if f['over'] == 1 else 2, 'Bấm dư tổng tiền, khách phải tự soi ra mới sửa.', 'bấm dư tổng tiền')
-    # Cô Ba settles the mistakes against one customer's worth of the queue, not the whole till.
-    react = cq.react(s, c, t, r['cash'] // max(1, r['served']), who=PEOPLE[0][0])
-    cash = r['cash'] - react['cut']
+    served = [x for x in r['log'] if x['status'] == 'served']
+    # The customer who was wronged the most is the one who comes back about it: the reaction is
+    # settled on their bill (money moves once, in consequences.react).
+    # Only what someone noticed at the counter is settled now (money moves once, in consequences.react).
+    counter = [x for x in served if not x['_later']]
+    worst = min(counter, key=lambda x: (x['stars'] or 5, -x['paid']), default=None)
+    react = cq.react(s, c, t, worst['paid'] if worst else 0, who=PEOPLE[queue[worst['i']]['npc']][0] if worst else PEOPLE[0][0])
+    cash = max(0, r['cash'] - react['cut'])
+    home = [x for x in served if x['_later']]
+    for x in home:
+        # Found at home, after the queue has gone: it still counts against the shift's rating.
+        cq.slip(t, f'home{x["i"]}', 3 if (x['stars'] or 1) <= 1 else 2, x['_later'], x['note'])
+    if home:
+        notes.extend(cq._escalate(s, c, t))   # a big enough gap gets reported on the app (once per task)
     kit.complete(s, c, t, cash, f'Bạn đã đứng quầy giờ cao điểm: {r["served"]} khách được tính tiền.')
-    return f'Hết hàng chờ: {r["served"]} khách xong, {r["left"]} khách bỏ về · +{cash} xu.' + (' ' + react['message'] if react['message'] else '')
+    for x in home:
+        # ... and they say it in their own review.
+        npc = queue[x['i']]['npc']
+        kit.review(s, c, kit.npc_id(ID, npc), x['stars'] or 1, x['_later'], f'{t["id"]}-{x["i"]}')
+        notes.insert(0, f'{PEOPLE[npc][0]} về nhà rồi để lại đánh giá {x["stars"] or 1}★.')
+        x['_later'] = ''
+    out = f'Hết hàng chờ: {r["served"]} khách xong, {r["left"]} khách bỏ về · +{cash} xu.'
+    if tips:
+        out += f' Khách để lại {tips} xu tiền lẻ.'
+    if react['message']:
+        out += ' ' + react['message']
+    return ' '.join([out] + notes)
 
 
 def _rush_feedback(t: dict) -> dict:
-    r = t['rush']
+    """The queue's rating: the till work as a whole, the wait, and one line per customer served
+    (their own stars and what they say)."""
+    _rush_ready(t)
+    r, queue = t['rush'], t['needs']['queue']
     f = r['flags']
+    served = [x for x in r['log'] if x['status'] == 'served']
     empty = sum(1 for x in r['log'] if x['status'] == 'empty')
-    rows = [dict(key='accuracy', label='Tính nhanh đúng', score=max(1, 5 - 2 * f['over'] - f['under']),
-                 note='cộng nhẩm chính xác' if not (f['over'] or f['under']) else 'có lúc bấm sai tổng tiền'),
-            dict(key='change', label='Thối tiền', score=max(1, 5 - 2 * f['short'] - f['excess']),
-                 note='thối đúng từng đồng' if not (f['short'] or f['excess']) else 'thối lộn xộn'),
+    wrong = (['có lúc bấm sai tiền hàng'] if f['over'] or f['under'] else []) + ([f'thối thiếu {f["short"]} lần'] if f['short'] else []) \
+        + ([f'thối dư {f["excess"]} lần'] if f['excess'] else [])
+    rows = [dict(key='accuracy', label='Tính tiền & thối tiền', score=max(1, 5 - 2 * f['over'] - f['under'] - 2 * f['short'] - f['excess']),
+                 note='; '.join(wrong) or 'tính đúng, thối đúng từng khách'),
             dict(key='queue', label='Hàng chờ', score=5 if not r['left'] else 3 if r['left'] == 1 else 1,
                  note='không ai phải bỏ về' if not r['left'] else f'{r["left"]} khách chờ lâu bỏ về')]
+    for x in served:
+        rows.append(dict(key=f'c{x["i"]}', label=f'Tính tiền cho {PEOPLE[queue[x["i"]]["npc"]][0]}', score=x['stars'] or 5,
+                         note=x['note'] or 'đã tính tiền'))
     if empty:
         rows.append(dict(key='stock', label='Đủ hàng', score=2, note=f'{empty} khách không mua được gì vì kệ trống'))
     if f['minor']:
         rows.append(dict(key='rules', label='Đúng quy định', score=5, note='không bán bia cho người dưới 18 tuổi'))
-    return dict(criteria=rows)
+    return dict(criteria=rows[:8])
 
 
 def _validate_rush(t: dict, original: dict) -> None:
+    _rush_ready(t)
     r = t.get('rush')
     queue = original['needs']['queue']
     kit.need(isinstance(r, dict) and set(r) == set(_empty_rush()), 'Hàng chờ thiếu dữ liệu.')
@@ -1704,23 +1958,28 @@ def _validate_rush(t: dict, original: dict) -> None:
              'Tuổi khách sai.')
     kit.need(isinstance(r['log'], list) and len(r['log']) <= len(queue), 'Nhật ký hàng chờ sai.')
     for x in r['log']:
-        kit.need(isinstance(x, dict) and set(x) == {'i', 'status', 'paid'} and x['status'] in ('served', 'left', 'empty'), 'Nhật ký hàng chờ sai.')
+        kit.need(isinstance(x, dict) and set(x) == set(LOG_KEYS) and x['status'] in ('served', 'left', 'empty'), 'Nhật ký hàng chờ sai.')
         kit.integer(x['i'], 0, len(queue) - 1)
         kit.integer(x['paid'], 0, 10**6)
+        kit.integer(x['tip'], 0, 10**4)
+        kit.need(x['stars'] is None or kit.integer(x['stars'], 1, 5) > 0, 'Đánh giá của khách sai.')
+        kit.text(x['note'], 200, 0)
+        kit.text(x['_later'], 300, 0)
     kit.need(isinstance(r['flags'], dict) and set(r['flags']) == set(_empty_rush()['flags']), 'Ghi nhận hàng chờ sai.')
     _ints(r['flags'].values(), 0, 100)
     o = r['offer']
     if o is not None:
-        kit.need(isinstance(o, dict) and set(o) == {'i', 'units', 'tender', 'charged', 'changes', 'totals'} and o['i'] == r['i'] < len(queue), 'Giỏ giờ cao điểm sai.')
-        kit.need(isinstance(o['units'], dict) and all(k in ITEM_INDEX for k in o['units']), 'Giỏ giờ cao điểm sai.')
-        _ints(o['units'].values(), 1, 60)
+        kit.need(isinstance(o, dict) and set(o) == set(OFFER_KEYS) and o['i'] == r['i'] < len(queue), 'Giỏ giờ cao điểm sai.')
+        for k in ('units', 'scanned'):
+            kit.need(isinstance(o[k], dict) and all(x in ITEM_INDEX and x not in WEIGHED for x in o[k]), 'Giỏ giờ cao điểm sai.')
+            _ints(o[k].values(), 1, 60)
         kit.need(isinstance(o['tender'], list) and len(o['tender']) <= 20 and all(type(x) is int and x in DENOMS for x in o['tender']), 'Tiền khách đưa sai.')
-        kit.need(isinstance(o['totals'], list) and 1 <= len(o['totals']) <= 3, 'Máy tính tiền sai.')
-        _ints(o['totals'], 0, 10**6)
+        kit.need(isinstance(o['change'], list) and len(o['change']) <= 40 and all(type(x) is int and x in DENOMS for x in o['change']), 'Khay thối tiền sai.')
         kit.need(o['charged'] is None or kit.integer(o['charged'], 0, 10**6) >= 0, 'Tiền đã tính sai.')
-        kit.need(o['changes'] is None or isinstance(o['changes'], list) and 1 <= len(o['changes']) <= 3, 'Khay thối sai.')
-        if o['changes']:
-            _ints(o['changes'], 0, 10**6)
+        kit.need(o['charged'] is not None or not (o['tender'] or o['change']), 'Chưa tính tiền mà đã có tiền trên quầy.')
+        kit.need(isinstance(o['miss'], list) and len(set(o['miss'])) == len(o['miss']) and set(o['miss']) <= set(MISS), 'Ghi nhận khách sai.')
+        kit.integer(o['counted'], 0, 10**6)
+        kit.integer(o['extra'], 0, 10**6)
 
 
 # ---------------------------------------------------------------- bulk orders
@@ -2677,8 +2936,10 @@ def feedback(c: dict, t: dict) -> dict:
                  note='hóa đơn khớp giỏ hàng' if not (f['overcharge'] or f['undercharge']) else 'hóa đơn phải sửa lại'),
             dict(key='speed', label='Thời gian chờ', score=speed, note=f'kiên nhẫn còn {patience}%')]
     if method == 'cash':
-        rows.append(dict(key='change', label='Thối tiền', score=2 if f['short_change'] else 4 if f['excess'] else 5,
-                         note='thối thiếu, phải đếm lại' if f['short_change'] else 'thối lộn xộn' if f['excess'] else 'thối đúng, đếm rõ ràng'))
+        home = (t['result'] or {}).get('short', 0)
+        rows.append(dict(key='change', label='Thối tiền', score=1 if home else 2 if f['short_change'] else 4 if f['excess'] else 5,
+                         note=f'thối thiếu {home} xu, khách về nhà mới thấy' if home else 'thối thiếu, phải đếm lại' if f['short_change']
+                         else 'thối lộn xộn' if f['excess'] else 'thối đúng, đếm rõ ràng'))
     elif method == 'transfer':
         rows.append(dict(key='check', label='Kiểm chuyển khoản', score=5 if not f['unverified'] else 3,
                          note='kiểm loa/app ngân hàng trước khi giao' if not f['unverified'] else 'chỉ nhìn màn hình của khách'))
@@ -2708,7 +2969,10 @@ def _strip(v):
 
 
 def public_task(t: dict) -> dict:
-    v = _strip(copy.deepcopy(t))
+    v = copy.deepcopy(t)
+    if v.get('kind') == 'rush':
+        _rush_ready(v)   # an old save's queue is shown in the till-and-tray format (the save itself moves on the next action)
+    v = _strip(v)
     if not t['known']:
         v['needs'] = None
         return v
@@ -2789,6 +3053,8 @@ def validate_task(t: dict, original: dict) -> None:
     kit.need(t.get('kind') in ('checkout', 'shelf', 'rush', 'bulk'), 'Loại việc tạp hóa sai.')
     kit.need(t.get('gen') == original.get('gen'), 'Phiên bản việc tạp hóa sai.')
     kit.need(t.get('result') is None or isinstance(t['result'], dict), 'Kết quả việc sai.')
+    if 'tip_given' in t:
+        kit.integer(t['tip_given'], 0, 10**5)
     if isinstance(t.get('result'), dict):
         for k, v in t['result'].items():
             kit.need(isinstance(k, str) and len(k) <= 20, 'Kết quả việc sai.')
@@ -2992,7 +3258,7 @@ def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
 
 def hint(c: dict, t: dict) -> str:
     if t.get('kind') == 'rush':
-        return 'Khách đầu hàng: cộng nhẩm giá trên kệ → chọn tổng → thối đúng. Có bia thì kiểm tuổi trước. Đừng bỏ hàng chờ đi làm việc khác quá lâu.'
+        return 'Khách đầu hàng: có bia thì kiểm tuổi trước → quét từng món trong giỏ → Tính tiền → đếm tiền thối vào khay → Thối & giao. Đừng bỏ hàng chờ đi làm việc khác quá lâu.'
     if t.get('kind') == 'bulk':
         return 'Báo giá vừa phải (bớt nhiều thì dễ chốt nhưng mỏng lời) → nhận cọc → xem Kho & giá, nhập thêm nếu thiếu (hỏa tốc có ngay) → soạn hàng & giao trước khi đóng ca.'
     if t.get('kind') == 'shelf':
@@ -3201,9 +3467,9 @@ SPEC = dict(
     inventory=dict(items=ITEMS, capacity=60),
     prices=PRICES,
     tip=2,
-    physical=('gr_scan', 'gr_weigh', 'gr_pay', 'gr_place', 'gr_pull', 'gr_rush_total', 'gr_bulk_deliver', 'gr_clear', 'gr_rotate', 'gr_pack'),
+    physical=('gr_scan', 'gr_weigh', 'gr_pay', 'gr_place', 'gr_pull', 'gr_rush_total', 'gr_rush_pay', 'gr_bulk_deliver', 'gr_clear', 'gr_rotate', 'gr_pack'),
     free_actions=(),
-    no_tick=('gr_change', 'gr_change_undo', 'gr_remind', 'gr_haggle', 'gr_rush_change', 'gr_decide', 'gr_plan'),
+    no_tick=('gr_change', 'gr_change_undo', 'gr_remind', 'gr_haggle', 'gr_rush_change', 'gr_rush_scan', 'gr_rush_void', 'gr_rush_undo', 'gr_decide', 'gr_plan'),
     waste_items=(),
     activity=('🛒', 'Kệ tạp hóa gọn gàng', [('Sữa hộp', 'Tủ mát'), ('Mì gói', 'Kệ khô'), ('Trứng gà', 'Tủ mát'), ('Nước mắm', 'Kệ khô')],
               ['Đọc hạn từng lô', 'Rút hàng hết hạn', 'Xếp lô cũ ra trước', 'Đối chiếu tem giá']),

@@ -27,6 +27,7 @@ import copy
 import itertools
 import math
 from . import kit
+from . import till
 from .. import consequences as cq
 from .. import archive as ar
 
@@ -1664,6 +1665,25 @@ def _bill_total(bill: dict) -> int:
     return sum(BILL_INDEX[k]['price'] * q for k, q in bill.items())
 
 
+CASH_SHARE = 55   # % of guests who settle the checkout bill in cash (the rest transfer)
+
+
+def _pays_cash(t: dict) -> bool:
+    """How this guest pays the checkout bill: a pure roll of the task id, so it never changes."""
+    return kit.rng(ID, 'checkout-pay', t['id']).random() * 100 < CASH_SHARE
+
+
+def _cash_rec(t: dict, total: int) -> dict:
+    """The guest's notes for this bill total (rolled from the task id). A bill edited after they
+    asked for the rest of the change gets new notes, and they keep counting carefully."""
+    rec = t.get('cash')
+    if not rec or rec['price'] != total:
+        asked = rec['asked'] if rec else 0
+        rec = t['cash'] = till.new(total, t['id'])
+        rec['asked'] = asked
+    return rec
+
+
 def _checkout(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
     x = t['_x']
     if name == 'hs_inspect':
@@ -1693,9 +1713,13 @@ def _checkout(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
     # hs_settle
     kit.confirm(p, 'Xác nhận in hóa đơn và thu tiền.')
     kit.need(t['checked'], 'Kiểm phòng trước khi tính tiền.')
+    who = _guest(t)
     truth = _truth_bill(t)
+    total = _bill_total(t['bill'])
     over = [k for k, q in t['bill'].items() if q > truth[k]]
-    if over:
+    gap = sum((t['bill'][k] - truth[k]) * BILL_INDEX[k]['price'] for k in over)
+    # The guest reads the bill: a careful one (or one who already caught a mistake) points out the extra line.
+    if over and (t['disputes'] or till.careful(c, t, gap, _bill_total(truth))):
         t['disputes'] += 1
         t['mistakes'] += 1
         k = over[0]
@@ -1710,12 +1734,18 @@ def _checkout(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
                    'laundry': f'Mình gửi {t["needs"]["laundry"]} túi giặt thôi.', 'late': 'Mình trả phòng trước 12 giờ mà?',
                    'damage': 'Phòng có gì hư đâu?'}[k]
         kit.log(s, c, 'refused', f'Khách không đồng ý hóa đơn: {say}', t['npc'], t['id'])
-        # Caught at the counter before paying: no money moves, but the guest remembers being overcharged.
-        if t['disputes'] == 1:
-            cq.slip(t, 'overcharge', 1, f'Hóa đơn tính dư dòng “{BILL_INDEX[k]["name"]}”, mình phải chỉ ra mới sửa.', 'hóa đơn tính dư')
-        else:
-            cq.slip(t, 'overcharge_again', 1, 'Sửa rồi mà hóa đơn vẫn tính dư, phải cãi thêm lần nữa.', 'hóa đơn tính dư nhiều lần')
+        # Caught at the counter before paying: no money moves. The review names it later (after the
+        # reaction, so pointing it out once does not also take money off the corrected bill).
         return dict(message=f'Khách chỉ vào dòng “{BILL_INDEX[k]["name"]}”: “{say}” Sửa hóa đơn cho đúng.', refused=True)
+    rec = None
+    if total and _pays_cash(t):
+        rec = _cash_rec(t, total)
+        change = p.get('change')
+        chk = till.check(s, c, t, rec, [] if change is None else change, who)
+        if chk['stop']:
+            return dict(message='💵 ' + chk['message'], refused=True)
+    if over:
+        t['mistakes'] += 1       # nobody read the bill: they pay it and find the extra line at home
     under = [k for k in ('water', 'noodles', 'snack', 'laundry', 'late') if t['bill'][k] < truth[k]]
     t['mistakes'] += len(under)
     if x['lost'] and not t['returned']:
@@ -1724,9 +1754,17 @@ def _checkout(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         d['seq'] += 1
         d['lost'] = ar.last(d['lost'] + [dict(id=f'lf-{d["seq"]}', item=x['lost'], room=t['room'] or 'thong', day=c['day'], status='kept')], 40, 'homestay.lost', c)
         cq.slip(t, 'forgot_item', 1, f'Về tới nhà mới nhớ để quên {x["lost"].lower()}, lúc trả phòng không ai nhắc.', 'không trả đồ khách để quên')
-    total = _bill_total(t['bill'])
     # Forgetting a line is the house's loss, not the guest's complaint: only real slips reach react().
-    said = cq.react(s, c, t, total, who=_guest(t))
+    said = cq.react(s, c, t, total, who=who)
+    gone = said['kind'] in ('refuse', 'walkout')
+    if t['disputes']:
+        cq.slip(t, 'overcharge', 1, 'Hóa đơn tính dư, mình phải chỉ ra mới được sửa.', 'hóa đơn tính dư')
+        if t['disputes'] > 1:
+            cq.slip(t, 'overcharge_again', 1, 'Sửa rồi mà hóa đơn vẫn tính dư, phải cãi thêm lần nữa.', 'hóa đơn tính dư nhiều lần')
+    if over and not gone:
+        t['overpaid'] = gap
+        cq.slip(t, 'overcharge_home', 2, f'Về xem lại hóa đơn mới thấy bị tính dư {gap} xu, phải nhắn homestay đòi lại.', f'tính dư {gap} xu')
+    cash = till.settle(s, c, t, rec, said, who) if rec else dict(loss=0, tip=0, message='')
     d = kit.data(c)
     if t['room'] and d['rooms'][t['room']]['task'] == t['id']:
         stay = _depart(s, c, t['room'], t)
@@ -1735,11 +1773,21 @@ def _checkout(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         r = d['rooms'][t['room']]
         r.update(status='dirty', guest=None, task=None, until=0, mini=min(6, x['noodles'] + x['snack']), hk=None)
     kit.metric(c, 'checkouts')
-    kit.complete(s, c, t, said['pay'], f'Bạn đã làm thủ tục trả phòng cho {_guest(t)}.')
+    kit.complete(s, c, t, max(0, said['pay'] - cash['loss']), f'Bạn đã làm thủ tục trả phòng cho {who}.')
+    extra = ''
+    if t.get('overpaid'):
+        back = min(gap, c['money'])
+        if back:
+            kit.money(s, c, -back, f'Trả lại tiền tính dư cho {who}'[:120], t['id'], 'refund')
+        extra = f' Tối {who} nhắn: hóa đơn tính dư {gap} xu. Homestay chuyển trả lại.'
+    if cash['message']:
+        extra += ' ' + cash['message']
+    how = '' if not total or gone else ' Khách trả tiền mặt.' if rec else ' Khách chuyển khoản.'
     note = f' (quên tính {len(under)} dòng — homestay chịu thiệt)' if under else ''
     if said['message']:
-        return dict(message=f'Hóa đơn {total} xu{note}. {said["message"]} Phòng chuyển sang “cần dọn”.', celebrate=False)
-    return dict(message=f'Hóa đơn {total} xu, khách thanh toán và cảm ơn{note}. Phòng chuyển sang “cần dọn”.', celebrate=not under)
+        return dict(message=f'Hóa đơn {total} xu{note}.{how} {said["message"]}{extra} Phòng chuyển sang “cần dọn”.', celebrate=False)
+    return dict(message=f'Hóa đơn {total} xu, khách thanh toán và cảm ơn{note}.{how}{extra} Phòng chuyển sang “cần dọn”.',
+                celebrate=not under and not over and not t['mistakes'])
 
 
 # ---------------------------------------------------------------- breakfast
@@ -2032,9 +2080,15 @@ def feedback(c: dict, t: dict) -> dict:
         truth = _truth_bill(t)
         under = [k for k in ('water', 'noodles', 'snack', 'laundry', 'late') if t['bill'][k] < truth[k]]
         # Lines the house forgot to charge are its own loss; the guest does not mark that down.
-        score = 2 if t['disputes'] else 5
+        score = 2 if t['disputes'] or t.get('overpaid') else 5
         rows.append(dict(key='bill', label='Hóa đơn chính xác', score=score,
-                         note='tính dư phải sửa lại' if t['disputes'] else 'hóa đơn còn rẻ hơn mình nghĩ' if under else 'từng dòng rõ ràng, đúng'))
+                         note='tính dư, về nhà mới thấy' if t.get('overpaid') else 'tính dư phải sửa lại' if t['disputes']
+                         else 'hóa đơn còn rẻ hơn mình nghĩ' if under else 'từng dòng rõ ràng, đúng'))
+        cash = t.get('cash')
+        if cash and cash['outcome'] in ('exact', 'keep', 'missed', 'returned', 'kept'):
+            rows.append(dict(key='cash', label='Tiền thối', score=2 if cash['outcome'] == 'missed' else 4 if cash['asked'] or cash['over'] else 5,
+                             note='thối thiếu, về nhà mới thấy' if cash['outcome'] == 'missed' else 'thối thiếu, khách phải nhắc' if cash['asked']
+                             else 'thối dư' if cash['over'] else 'thối tiền chính xác'))
         lost = t['_x']['lost']
         if lost:
             rows.append(dict(key='care', label='Đồ bỏ quên', score=5 if t['returned'] else 2,
@@ -2110,6 +2164,16 @@ def public_task(t: dict) -> dict:
         if t['checked']:
             v['check'] = {k: val for k, val in x.items() if k != 'case'}
             v['truth_hint'] = dict(free_water=(t['needs'].get('package') or {}).get('water_free') or FREE_WATER)
+            total = _bill_total(t['bill'])
+            v['pay'] = 'cash' if _pays_cash(t) else 'transfer'
+            rec = t.get('cash')
+            if t['status'] in ('completed', 'cancelled', 'referred'):
+                v['cash'] = till.public(rec)
+            elif v['pay'] == 'cash' and total:
+                # The notes the guest hands over for the bill as it stands now (the same roll the server uses).
+                v['cash'] = till.public(rec if rec and rec['price'] == total else dict(till.new(total, t['id']), asked=rec['asked'] if rec else 0))
+            else:
+                v['cash'] = None
     elif t['job'] == 'recommend':
         v['answers'] = {q: x['probes'][q] for q in t['inspected'] if q in x['probes']}
     elif t['job'] == 'breakfast':
@@ -2201,6 +2265,9 @@ def validate_task(t: dict, original: dict) -> None:
         for q in t['bill'].values():
             kit.integer(q, 0, 9)
         kit.integer(t['disputes'], 0, 1000)
+        kit.integer(t.get('overpaid', 0), 0, 10 ** 5)
+        till.validate(t.get('cash'), t)
+        kit.need(t.get('cash') is None or t['cash']['tender'] == till.tender(t['cash']['price'], t['id']), 'Tiền khách đưa sai.')
         stay = t.get('stay')
         if stay is not None:
             kit.need(isinstance(stay, dict) and set(stay) == {'mood', 'nights', 'stars', 'low'} and stay['stars'] in (2, 3, 4, 5)

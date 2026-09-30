@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import http.client
 import threading
 import urllib.request
 import urllib.error
@@ -59,6 +60,6 @@ def rephrase(state:dict,career:str,npc:str)->dict:
         if set(re.findall(r"\d+",text))-set(re.findall(r"\d+",canonical)):
             return dict(fallback,reason="new_numeric_claim")
         return dict(mode="ai",text=text,canonical=canonical,reason=None)
-    except (urllib.error.URLError,TimeoutError,ValueError,KeyError,IndexError,TypeError,OSError):
+    except (urllib.error.URLError,http.client.HTTPException,TimeoutError,ValueError,KeyError,IndexError,TypeError,OSError):
         return dict(fallback,reason="unavailable")
     finally:_gate.release()

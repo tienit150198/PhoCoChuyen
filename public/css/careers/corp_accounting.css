@@ -217,3 +217,8 @@
 .ca-sum .ca-sum-audit{margin:0 0 8px;padding:8px 10px;border-radius:10px;background:var(--good-soft)}
 .ca-sum .ca-sum-audit.bad{background:var(--bad-soft)}
 @media (prefers-reduced-motion:reduce){.career-job.ca .ca-prog i{transition:none}}
+/* phone: paper tabs one line each; the source shows in the open paper's header, only "Cần mở cho bước này" stays on a tab */
+@container sheet (max-width:559px){
+  .career-job.ca .ca-tab{min-height:44px;flex-basis:140px}
+  .career-job.ca .ca-tab:not(.need) small{display:none}
+}

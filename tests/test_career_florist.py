@@ -137,7 +137,7 @@ class FloristTests(unittest.TestCase):
         t = j.get(tid)
         self.assertEqual(t['status'], 'completed')
         self.assertEqual(t['mistakes'], 0)
-        self.assertEqual(j.c['money'], money + price + FL.SPEC['tip'])
+        self.assertEqual(j.c['money'], money + price)
         self.assertEqual(self.review(tid)['stars'], 5)
         self.assertEqual(set(self.crit(tid)), {'meaning', 'look', 'fresh', 'card', 'value', 'speed'})
         validate_state(json.loads(json.dumps(j.state)))
@@ -510,7 +510,7 @@ class FloristTests(unittest.TestCase):
         tid = self.build(RECIPES[GRAD])
         money = j.c['money']
         j.act('fl_deliver', task=tid, confirm=True, price=99999, budget=99999)
-        self.assertEqual(j.c['money'] - money, 120 + FL.SPEC['tip'])
+        self.assertEqual(j.c['money'] - money, 120)
 
     def test_save_round_trip_mid_work(self):
         j = self.journey(OPENING, days=[1])
@@ -1257,6 +1257,9 @@ class FloristConsequenceTests(unittest.TestCase):
         t = j.get(tid)
         self.assertEqual(t['status'], 'completed')
         self.assertEqual([x['code'] for x in t['slips']], ['returned'])
+        # Fixed after the recipient sent it back: a grumble about the wait at most, never money off as well.
+        self.assertIn(t['reaction']['kind'], ('accept', 'grumble'))
+        self.assertEqual(t['reaction']['cut'], 0)
         post = self.review(tid)
         self.assertLessEqual(post['stars'], 4)
         self.assertIn('hồng đỏ', post['text'])

@@ -7,6 +7,7 @@ or a valid answer, the scripted persona decision is used instead.
 The API key is read from the server environment and never leaves this module.
 """
 from __future__ import annotations
+import http.client
 import json
 import os
 import re
@@ -60,7 +61,9 @@ def chat(messages: list[dict], max_tokens: int = 400, temperature: float = 0.7, 
         if not isinstance(text, str) or not text.strip():
             return None, 'out_of_tokens' if choice.get('finish_reason') == 'length' else 'invalid_response'
         return text.strip(), None
-    except (urllib.error.URLError, TimeoutError, ValueError, KeyError, IndexError, TypeError, OSError):
+    # HTTPException: a provider that drops the connection mid-answer (IncompleteRead,
+    # BadStatusLine) must fall back to the scripted line like any other failure, not 500.
+    except (urllib.error.URLError, http.client.HTTPException, TimeoutError, ValueError, KeyError, IndexError, TypeError, OSError):
         return None, 'unavailable'
     finally:
         _gate.release()
@@ -100,13 +103,23 @@ STYLE_GUIDE = {
     'parent_strict': 'phụ huynh nghiêm khắc, đòi hỏi cao, muốn giáo viên có kế hoạch rõ ràng',
     'parent_kind': 'phụ huynh hiền, biết ơn, hợp tác',
     'knowitall': 'bố đời chính hiệu, kẻ cả, hay nói "anh làm nghề mười năm rồi em ạ", dạy đời, khó nhận mình sai',
-    'rude': 'xấc xược, cộc lốc, mỉa mai dịch vụ bằng câu rất ngắn; khó nghe nhưng không chửi tục, không xúc phạm cá nhân',
+    'rude': 'xấc xược, cộc lốc, mỉa mai dịch vụ và thái độ nhân viên bằng câu rất ngắn ("khó ưa", "mặt lạnh tanh"); khó nghe nhưng không chửi tục, không chê ngoại hình',
     'entitled': 'khách "thượng đế", đòi ưu tiên và quà, chỉ nguôi khi được bù đắp thật',
     'drama': 'hay dọa "bóc phốt" lên group, đòi đền bù, nói mình giữ ảnh làm bằng chứng',
     'troll': 'đánh giá ẩu, chấm theo cảm hứng, lý do lan man, lười sửa',
     'parent_knowitall': 'phụ huynh bố đời, tự nhận rành giáo dục, dạy giáo viên cách dạy',
     'parent_rude': 'phụ huynh hỗn trong nhóm Zalo lớp, nói trống không, gắt gỏng, không chửi tục',
 }
+
+
+# What reviewers may and may not say (review rewrite and reply decisions share it).
+SAFETY_RULE = ('Được chê thái độ, tác phong, cách ăn mặc kiểu đời thường ("khó ưa", "mặt lạnh tanh", "ăn mặc như đi chợ", '
+               '"đi dép lê lên văn phòng"). CẤM: chửi tục, lời miệt thị; nhận xét cơ thể, ngoại hình, tuổi tác, vùng miền, tôn giáo, '
+               'giới tính hay đặc điểm nhạy cảm khác; nội dung tình dục; nhắc tên người thật hay thương hiệu thật. ')
+ASPECT_RULE = ('Dữ liệu có "aspects": những góc cụ thể người viết để ý (vị đậm nhạt, ly, ống hút, bàn ghế, nhà vệ sinh, giọng nói, '
+               'nụ cười, cách ăn mặc, cách giảng...). BẮT BUỘC nhắc các góc đó (câu quá ngắn thì ít nhất góc đầu tiên), giữ đúng khen/chê, '
+               'kể bằng chi tiết cụ thể có hình ảnh (mùi, vị, âm thanh, cử chỉ) như người thật; góc "cảm nhận riêng" thì nói như ý kiến '
+               'của mình, không khẳng định là lỗi chắc chắn; không thêm góc mới ngoài dữ liệu. ')
 
 
 def _review_voice_of(post: dict, persona: str, day=None) -> tuple[dict, str, str]:
@@ -132,7 +145,7 @@ def _system(ctx: dict, persona: str, voice: dict | None = None) -> str:
         'Bạn đóng vai một nhân vật hư cấu trong trò chơi mô phỏng nghề nghiệp "Phố Có Chuyện". '
         f'Vai: {ctx["role"]}. Tên: {ctx["persona"]["reviewer"]}. Tính cách: {STYLE_GUIDE.get(persona, ctx["persona"]["style"])}. '
         + (_voice_hint(voice) if voice else '') +
-        'Được phép xéo xắt, khen đểu, mỉa mai nhẹ như bình luận thật trên mạng, nhưng không tục, không xúc phạm cá nhân. '
+        'Được phép xéo xắt, khen đểu, mỉa mai nhẹ như bình luận thật trên mạng. ' + SAFETY_RULE +
         'Bạn vừa đọc phản hồi của chủ cửa hàng/giáo viên cho review của mình. Hãy tự quyết định như người thật: '
         'nâng sao nếu phản hồi chân thành, có sự thật cụ thể hoặc cách sửa; giữ nguyên nếu chưa thuyết phục; '
         'đối chất lại (argue) nếu thấy bị đổ lỗi hoặc phản hồi né tránh; hạ sao nếu bị xúc phạm. '
@@ -166,7 +179,7 @@ def feedback_decision(c: dict, post: dict, lang: str = 'vi') -> dict | None:
     decision = data.get('decision')
     stars = data.get('stars')
     reply = _clean(data.get('text'), 420)
-    if decision not in DECISIONS or type(stars) is not int or not reply:
+    if decision not in DECISIONS or type(stars) is not int or not reply or unsafe_review(reply):
         return None
     low, high = ctx['allowed_stars']
     return dict(decision=decision, stars=max(low, min(high, stars)), text=reply, mode='ai')
@@ -199,6 +212,9 @@ def review_voice(c: dict, post: dict, lang: str = 'vi') -> str | None:
         from .review_gripes import GRIPES
         g = GRIPES.get(gripe.get('id')) or {}
         facts['gripe'] = dict(reason=g.get('claim', ''), positive=bool(gripe.get('positive')), star_dropped=bool(gripe.get('dropped')))
+    aspects = fbk._ra.ai_facts(fb)
+    if aspects:
+        facts['aspects'] = aspects
     gripe_rule = ('Dữ liệu có "gripe": đó là lý do NGOÀI LỀ (chẳng liên quan dịch vụ) khiến bạn '
                   + ('khen quá lố và cho 5 sao' if (gripe or {}).get('positive') else 'phàn nàn' + (' và trừ sao' if (gripe or {}).get('dropped') else ''))
                   + '. BẮT BUỘC giữ đúng lý do đó, nói kiểu xéo xắt hoặc khen đểu theo giọng của bạn. ') if gripe else ''
@@ -207,7 +223,8 @@ def review_voice(c: dict, post: dict, lang: str = 'vi') -> str | None:
         f'Người viết: {post.get("author") or "khách"}, tính cách khi chấm sao: {STYLE_GUIDE.get(fb["persona"], per["style"])}.',
         voices.prompt_block(voice, verb, mood, 'en' if lang == 'en' else 'vi', limit=dict(sentences=n_sent, chars=n_chars)),
         'Giữ nguyên số sao, ý khen/chê và mọi sự thật trong dữ liệu; không thêm sự kiện, số liệu, tên riêng mới. ' + gripe_rule +
-        'Được phép khen đểu, mỉa mai nhẹ, chấm sao kiểu hờn dỗi, lạc đề một chút; không tục tĩu, không xúc phạm cá nhân. '
+        (ASPECT_RULE if aspects else 'Ưu tiên chi tiết cụ thể trong dữ liệu hơn lời khen chê chung chung. ') +
+        'Được phép khen đểu, mỉa mai nhẹ, chấm sao kiểu hờn dỗi, lạc đề một chút. ' + SAFETY_RULE +
         f'Tối đa {n_sent} câu, dưới {n_chars} ký tự. '
         f'Viết bằng {"English" if lang == "en" else "tiếng Việt"}. Chỉ trả về nội dung review, không kèm giải thích.'])),
         dict(role='user', content=json.dumps(facts, ensure_ascii=False))]
@@ -218,9 +235,14 @@ def review_voice(c: dict, post: dict, lang: str = 'vi') -> str | None:
         return None
     allowed = set(re.findall(r'\d+', json.dumps(facts, ensure_ascii=False)))
     line, _ = clean_reply(text, allowed, post.get('author') or '', sentences=n_sent, chars=n_chars)
-    if not line or len(line) < 8:
+    if not line or len(line) < 8 or unsafe_review(line):
         return None
     return line
+
+
+def unsafe_review(text: str) -> bool:
+    """A reviewer line that crosses the line: looks, body, age, region, religion, sex, real brands, abuse."""
+    return fbk._ra.unsafe(text) or abusive(text)
 
 
 # ---- free chat with persona characters --------------------------------------

@@ -14,6 +14,7 @@ import {t as tr} from './v4/i18n.js';
 import {R,E,L,T,P,fit,heart,bloom,plantAt,mascot} from './scenes/kit.js';
 import {sceneFor,wordsFor} from './scenes/index.js';
 import {language} from './v4/i18n.js';
+import {daylight} from './v4/dayclock.js';
 const themes={
  teacher:{primary:'#8ca97c',dark:'#556e46',light:'#f0f2dc',mint:'#e5d8ac',wall:'#fcf5df',awning:'#b5c897',title:'Lớp học Mầm Nắng',sub:'CÙNG THỬ · CÙNG HIỂU · CÙNG TIẾN BỘ',shelves:['Góc học liệu','Hộp đồ lớp mình']},
  tour_guide:{primary:'#78b3b6',dark:'#467c7f',light:'#eaf4e5',mint:'#e2caae',wall:'#eef5e8',awning:'#b3d2c4',title:'Mây Lang Thang',sub:'ĐI CÙNG NHAU · MANG VỀ MỘT CÂU CHUYỆN',shelves:['Bưu thiếp khu phố','Bản đồ & hành trang']},
@@ -426,7 +427,9 @@ export class BobaWorld extends World {
  draw(){const c=this.ctx;if(!this.width)this.resize();
    if(this.layers===false)this.paintBackdrop();else this.backdrop();
    c.setTransform(this.dpr,0,0,this.dpr,0,0);c.translate(this.offset.x,this.offset.y);c.scale(this.scale,this.scale);
-   this.decorCached=true;try{this.drawFurnitureAndActors();}finally{this.decorCached=false;}this.labels();
+   this.decorCached=true;try{this.drawFurnitureAndActors();}finally{this.decorCached=false;}
+   daylight(this);  // giờ trong ngày: tint + evening lights over the room and people, under name tags (v4/dayclock.js)
+   this.labels();
    this.fx?.draw(this); // live happenings (v4/scene-events.js)
    for(const p of this.particles){c.globalAlpha=Math.max(0,p.life/p.max);R(c,p.x,p.y,p.size,p.size,p.color,2);}c.globalAlpha=1;this.drawSpeech();
    if(this.navDebug)this.drawNavDebug();

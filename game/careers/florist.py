@@ -1005,9 +1005,11 @@ def _deliver(s: dict, c: dict, d: dict, pl: dict, t: dict, p: dict) -> dict:
         t['refused'] += 1
         t['mistakes'] += 1
         pl['refused'] += 1
-        # The customer remembers the flowers coming back (one small slip after the redo).
+        # The customer remembers the flowers coming back (one small slip after the redo). The piece is
+        # remade like a sent-back order: once fixed, the wait is only a grumble, never money off too.
         line = _refusal_line(_spec(t, i), work, c['day'])
         cq.downgrade(t, 'returned', f'Món {i + 1}: {line}' if many else line, 'người nhận trả hoa một lần')
+        t['remade'] = True
         kit.log(s, c, 'refused', 'Người nhận không nhận hoa: ' + why, t['npc'], t['id'])
         FS.flash(pl, 'bad', '↩️ Không nhận: ' + why)
         return dict(message='Không nhận: ' + why, refused=True)
@@ -1892,7 +1894,8 @@ def _pre(s: dict, c: dict, d: dict, p: dict) -> dict:
     kit.metric(c, 'preorders_done')
     _drain_patience(c, 6)
     told = _visit(d, sp['npc'])
-    msg = f'Đã cắm và giao “{sp["title"]}” · +{pay} xu (đã cọc {sp["deposit"]}). {who}: {stars}★.'
+    msg = (f'Đã cắm và giao “{sp["title"]}” · +{pay} xu ({sp["price"]} − cọc {sp["deposit"]}'
+           + (f' − bớt {off}' if off else '') + f'). {who}: {stars}★.')
     if notes:
         msg += ' ' + ' và '.join(notes).capitalize() + ' — lần sau nhập hoa trước 1–2 ngày.'
     if told:

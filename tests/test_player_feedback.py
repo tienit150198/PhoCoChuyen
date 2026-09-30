@@ -4,6 +4,7 @@ import http.client, json, os, tempfile, threading, unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from tests.pg_support import columns
 from game import accounts, player_feedback as pfb, social
 from game.storage import Store
 from server import GameServer
@@ -30,7 +31,7 @@ class FeedbackModuleTests(unittest.TestCase):
 
     def test_table_exists_in_a_fresh_store(self):
         with self.store.connect() as db:
-            cols = {r['name'] for r in db.execute('PRAGMA table_info(player_feedback)')}
+            cols = columns(db, 'player_feedback')
         self.assertTrue({'id', 'sid', 'account', 'kind', 'text', 'context', 'status', 'reply', 'created_at', 'updated_at'} <= cols)
 
     def test_submit_and_mine(self):

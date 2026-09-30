@@ -2,10 +2,12 @@ import copy
 import json
 import re
 import unittest
+from unittest import mock
 
 import game.careers.kit as kit
 from game.engine import GameError, public_state, validate_state
 from game.careers import homestay as H
+from game.careers import till
 from tests.helpers import Journey
 from game import consequences as cq
 
@@ -210,7 +212,8 @@ class HomestayTests(unittest.TestCase):
         x = j.task['_x']
         for _ in range(x['water']):             # charges the two free bottles too
             j.act('hs_line', line='water', delta=1)
-        r = j.act('hs_settle', confirm=True)
+        with mock.patch.object(till, 'careful', return_value=True):    # a guest who reads every line
+            r = j.act('hs_settle', confirm=True)
         self.assertTrue(r.get('refused'))
         self.assertEqual(j.task['disputes'], 1)
         for _ in range(H.FREE_WATER):
@@ -1049,7 +1052,8 @@ class HomestayV2Tests(unittest.TestCase):
             self.assertEqual(truth[k], 0)
         self.assertEqual(self.view(j)['truth_hint']['free_water'], H.FREE_WATER)
         j.act('hs_line', line='laundry', delta=1)
-        r = j.act('hs_settle', confirm=True)
+        with mock.patch.object(till, 'careful', return_value=True):
+            r = j.act('hs_settle', confirm=True)
         self.assertTrue(r.get('refused'))
         self.assertIn(j.task['needs']['package']['name'], r['message'])
         j.act('hs_line', line='laundry', delta=-1)
@@ -1569,7 +1573,8 @@ class HomestayConsequenceTests(unittest.TestCase):
         truth = H._truth_bill(j.task)
         for _ in range(truth['water'] + 1):
             j.act('hs_line', task=tid, line='water', delta=1)
-        self.assertTrue(j.act('hs_settle', task=tid, confirm=True).get('refused'))
+        with mock.patch.object(till, 'careful', return_value=True):
+            self.assertTrue(j.act('hs_settle', task=tid, confirm=True).get('refused'))
         j.act('hs_line', task=tid, line='water', delta=-1)
         for k, q in truth.items():
             for _ in range(q - j.task['bill'][k]):

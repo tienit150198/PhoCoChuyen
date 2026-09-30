@@ -114,7 +114,6 @@ class CafeBakeryTests(unittest.TestCase):
         self.assertEqual(t['mistakes'], 0)
         rows = self.ledger()[n0:]
         self.assertEqual(sum(e['amount'] for e in rows if e['ref'] == tid and e['category'] == 'revenue'), price)
-        self.assertIn(CB.SPEC['tip'], [e['amount'] for e in rows if e['ref'] == tid and e['category'] == 'tip'])
         self.assertEqual(j.c['money'] - money, sum(e['amount'] for e in rows))
         post = self.review(tid)
         self.assertEqual(post['stars'], 5)

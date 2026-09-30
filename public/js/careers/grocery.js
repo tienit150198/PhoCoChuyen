@@ -51,7 +51,8 @@ function jobNeeds(t,x){
     t.needs.lines.forEach((l,i)=>{if(l.weighed&&!t.weighed[String(i)])add(l.item,1);});
   }else if(t.kind==='rush'){
     const r=t.rush,q=t.needs.queue[r.i],aged=r.ages?.[String(r.i)];
-    if(q&&r.offer&&r.offer.charged==null)for(const [id,n] of q.items)if(!(id==='beer'&&aged!=null&&aged<18))add(id,n);
+    // What is already rung up on the rush till is held for this customer (data.held counts it).
+    if(q&&r.offer&&r.offer.charged==null)for(const [id,n] of q.items)if(!(id==='beer'&&aged!=null&&aged<18))add(id,n-((r.offer.scanned||{})[id]||0));
   }else if(t.kind==='bulk'&&t.bulk.stage==='deliver')for(const l of t.needs.lines)add(l.item,l.qty);
   return need;
 }
@@ -161,19 +162,35 @@ function scalePanel(t,x){
     <div class="row wrap">${carBtn(x,tare?'✓ Đã trừ bì (tare)':'Trừ bì (tare)','tare',{},tare?'primary small':'ghost small')}</div>
     <div class="tile-grid gr-plu">${Object.keys(x.cc.weighed||{}).map(k=>{const p=item(x,k);return tile(x,'gr_weigh',{task:t.id,line:i,plu:k,tare},`<span class="tile-emoji">${p.emoji}</span><b>${x.esc(p.name)}</b><small>PLU · ${x.fmt(price(x,k))} xu/kg</small>`);}).join('')}</div></div>`;
 }
+/** One line that a tap opens ("🛒 2 · Kệ hàng ▾"); remembered per key. Not a <details>: the sheet host
+ * restores every <details> by position after a re-render. The body is drawn only while open. */
+function pane(x,key,summary,body,auto=false,cls=''){
+  const open=(x.ui.pane??={})[key]??auto;
+  return `<div class="gr-pane ${cls}${open?' open':''}"><button type="button" class="gr-pane-sum" data-action="car:pane" data-key="${x.esc(key)}" data-open="${open?1:0}" aria-expanded="${open}">${summary}</button>${open?`<div class="gr-pane-body">${body}</div>`:''}</div>`;
+}
+/** "🔒 2 món mở ở cấp 2–3": locked goods in one line (names and levels in the tooltip). */
+function lockChip(x,list){
+  if(!list.length)return '';
+  const lv=list.map(i=>Number(i.unlock)||1),lo=Math.min(...lv),hi=Math.max(...lv);
+  const names=list.map(i=>`${i.name} (cấp ${Number(i.unlock)||1})`).join(', ');
+  return `<p class="gr-lock" title="${x.esc(names)}" aria-label="${x.esc(`Chưa mở: ${names}`)}">🔒 ${list.length} món mở ở cấp ${lo===hi?lo:`${lo}–${hi}`}</p>`;
+}
 function shelfTiles(t,x){
   const inv=x.room.inventory||{stock:{},locked:[]},held=x.room.data?.held||{};
-  return `<div class="tile-grid gr-shelf-tiles">${catalogue(x).filter(i=>!(i.id in (x.cc.weighed||{}))).map(i=>{
+  const goods=catalogue(x).filter(i=>!(i.id in (x.cc.weighed||{}))),shut=goods.filter(i=>(inv.locked||[]).includes(i.id));
+  return `<div class="tile-grid gr-shelf-tiles">${goods.filter(i=>!shut.includes(i)).map(i=>{
     const mine=t.scanned[i.id]||0,q=Math.max(0,(inv.stock?.[i.id]||0)-(held[i.id]||0)+mine),locked=(inv.locked||[]).includes(i.id);
     return tile(x,'gr_scan',{task:t.id,item:i.id,qty:1},`<span class="tile-emoji">${i.emoji}</span><b>${x.esc(i.name)}</b><small>${locked?'🔒 cấp '+(i.unlock||1):`còn ${q-mine} ${x.esc(i.unit)}`}${i.age?' · 🔞':''}</small>${mine?`<em class="tile-count">×${mine}</em>`:''}`,
       `${locked?'locked':''} ${q-mine<=0?'empty':''}`,locked||q-mine<=0||t.stage!=='basket'||dropped(t,i.id));
-  }).join('')}</div>`;
+  }).join('')}</div>${lockChip(x,shut)}`;
 }
 function promoBoard(t,x){
-  return `<div class="gr-promos">${x.cc.promos.map(p=>{
-    const on=t.promos.includes(p.id),it=item(x,p.item),ok=discount(p,t.scanned[p.item]||0,unitPrice(t,x,p.item))>0;
-    return `<div class="gr-promo ${on?'on':''}"><span>${it.emoji}</span><small class="grow">${x.esc(p.label)}</small>${on?'<span class="tag green">Đã áp</span>':x.cmd('Áp','gr_promo',{task:t.id,promo:p.id},'small ghost',t.stage!=='basket'||!ok)}</div>`;
-  }).join('')}</div>`;
+  const usable=p=>t.promos.includes(p.id)||discount(p,t.scanned[p.item]||0,unitPrice(t,x,p.item))>0;
+  const row=p=>{const on=t.promos.includes(p.id),it=item(x,p.item),ok=discount(p,t.scanned[p.item]||0,unitPrice(t,x,p.item))>0;
+    return `<div class="gr-promo ${on?'on':''}"><span>${it.emoji}</span><small class="grow">${x.esc(p.label)}</small>${on?'<span class="tag green">Đã áp</span>':x.cmd('Áp','gr_promo',{task:t.id,promo:p.id},'small ghost',t.stage!=='basket'||!ok)}</div>`;};
+  const mine=x.cc.promos.filter(usable),rest=x.cc.promos.filter(p=>!usable(p));
+  return `<div class="gr-promos">${mine.map(row).join('')||'<p class="muted small">Giỏ này chưa khớp khuyến mãi nào.</p>'}
+    ${rest.length?pane(x,`promo-${t.id}`,`🏷️ ${rest.length} khuyến mãi khác`,rest.map(row).join(''),false,'gr-promo-more'):''}</div>`;
 }
 function receipt(t,x){
   const rows=[];
@@ -225,7 +242,7 @@ function checkoutSteps(t,x){
     const due=sum(pay.tender)-t.total,given=sum(pay.change),d=greedyDenom(x,due-given);
     rows.push({ok:pay.checked||null,label:'Soi & sờ tiền khách đưa',go:{cmd:'gr_check_note',payload:{task:id},label:'🔦 Soi & sờ tiền'}});
     if(pay.note_check==='fake')rows.push({ok:null,label:'Tiền giả: nhờ khách đổi tờ khác',go:{cmd:'gr_reject_note',payload:{task:id},label:'🙏 Nhờ khách đổi tờ khác'}});
-    if(due>0||given)rows.push({ok:given===due,label:due>0?`Thối đúng ${x.fmt(due)} xu`:'Không cần thối tiền',note:`đang đặt ${x.fmt(given)} xu`,
+    if(due>0||given)rows.push({ok:given===due?true:given>due?false:null,label:due>0?`Thối đúng ${x.fmt(due)} xu`:'Không cần thối tiền',note:`đang đặt ${x.fmt(given)} xu`,
       go:given>due?{cmd:'gr_change_undo',payload:{task:id},label:'↩︎ Bớt tờ vừa đặt'}:given<due&&d?{cmd:'gr_change',payload:{task:id,denom:d},label:`➕ Đặt ${x.fmt(d)} xu vào khay thối`}:null});
   }else if(m==='transfer'){
     const bank=pay.bank||0,fix=pay.verified&&bank>0&&bank<t.total&&!pay.fixed;
@@ -256,7 +273,7 @@ function transferPanel(t,x){
   const bank=pay.bank;
   return `<div class="gr-pay card"><div class="gr-phones">
     <div class="gr-phone customer"><small>Điện thoại của khách</small><b class="gr-phone-ok">✔ ${x.esc(sc.status==='success'?'Chuyển tiền thành công':'Đang xử lý')}</b><span class="gr-phone-amt">${x.money(sc.amount||0)}</span><small>Tới: ${x.esc(sc.to||'')}</small><small>ND: ${x.esc(sc.memo||'')}</small></div>
-    <div class="gr-phone shop"><small>App ngân hàng của tiệm</small>${!pay.verified?'<span class="muted small">Chưa kiểm</span>':bank?`<b>+${x.money(bank)}</b><small>${bank>=t.total?'Khớp hóa đơn ✓':'Thiếu '+x.money(t.total-bank)}</small>`:'<span class="small">Chưa thấy tiền về…</span>'}</div></div>
+    <div class="gr-phone shop${pay.verified?'':' unchecked'}"><small>App ngân hàng của tiệm</small>${!pay.verified?'<span class="muted small">Chưa kiểm</span>':bank?`<b>+${x.money(bank)}</b><small>${bank>=t.total?'Khớp hóa đơn ✓':'Thiếu '+x.money(t.total-bank)}</small>`:'<span class="small">Chưa thấy tiền về…</span>'}</div></div>
     <p class="muted small">Chỉ tin loa báo/app ngân hàng của tiệm.</p>
     <div class="row wrap">${x.cmd(pay.verified?'🔄 Kiểm lại app':'🔔 Kiểm loa/app ngân hàng','gr_verify',{task:t.id},'small ghost')}
     ${pay.verified&&bank>0&&bank<t.total&&!pay.fixed?x.cmd('🙏 Nhờ khách chuyển bù','gr_transfer_fix',{task:t.id},'small'):''}</div></div>`;
@@ -291,7 +308,7 @@ function checkoutJob(t,x){
   const m=methodOf(t);
   const main=basket?`${haggleCard(t,x)}<h4 class="section-title">1 · Giỏ hàng trên quầy</h4>${counterBasket(t,x)}${scalePanel(t,x)}
       ${hasBeer(t)?`<div class="notice amber row spread"><span>🔞 Giỏ có bia: hỏi giấy tờ trước khi bán.</span>${x.cmd('🪪 Kiểm tuổi','gr_id',{task:t.id},'small',t.age!=null)}</div>`:''}
-      <h4 class="section-title">2 · Kệ hàng (quét thêm từng món)</h4>${shelfTiles(t,x)}
+      ${pane(x,`shelf-${t.id}`,'🛒 2 · Kệ hàng (quét thêm từng món)',shelfTiles(t,x),false,'gr-shelf-pane')}
       <h4 class="section-title">3 · Bảng khuyến mãi tuần này</h4>${promoBoard(t,x)}`
     :`<h4 class="section-title">Thanh toán · ${x.esc(METHOD[m][1])}</h4>${m==='cash'?cashPanel(t,x):m==='transfer'?transferPanel(t,x):creditPanel(t,x)}`;
   const steps=checkoutSteps(t,x);
@@ -302,6 +319,59 @@ function checkoutJob(t,x){
 }
 
 /* ------------------------------------------------------------ rush hour */
+/* The rush is the normal counter, only faster: scan each line of the basket, the till adds it up,
+ * the customer hands over cash, count the change into the tray and hand it over. */
+const rushTill=(x,o)=>sum(Object.entries(o.scanned||{}).map(([k,q])=>price(x,k)*q));
+const rushDue=o=>o.charged==null?0:sum(o.tender||[])-o.charged;
+const stars=n=>n?'★'.repeat(n)+'☆'.repeat(5-n):'';
+function rushLines(t,x){
+  const r=t.rush,o=r.offer,q=t.needs.queue[r.i],aged=r.ages?.[String(r.i)],open=o.charged==null;
+  return q.items.map(([id,want])=>{
+    const it=item(x,id),u=o.units[id]||0,s=(o.scanned||{})[id]||0,minorBeer=id==='beer'&&aged!=null&&aged<18;
+    const scan=open&&u>s?x.cmd(`📷 Quét ×${u-s}`,'gr_rush_scan',{task:t.id,item:id,qty:u-s},'small primary'):'';
+    const drop=open&&s&&(s>u||minorBeer)?x.cmd('✕ Xóa','gr_rush_void',{task:t.id,item:id},'small ghost'):'';
+    let info,cls='';
+    if(minorBeer){info='không bán cho khách dưới 18 tuổi';cls='blocked';}
+    else if(!u){info='kệ hết';cls='blocked';}
+    else info=`${u} ${x.esc(it.unit)} · ${x.fmt(price(x,id))} xu/${x.esc(it.unit)}${u<want?` · khách cần ${want}, kệ chỉ còn ${u}`:''}`;
+    const tail=scan||drop||(u&&s===u?'<span class="tag green">✓ Đã quét</span>':'')
+      ||(!u&&!minorBeer&&open?restockButton(x.room,[{id,target:(x.room.inventory?.stock?.[id]||0)+want}],{task:t.id}):'');
+    return `<div class="gr-line ${cls} ${u&&s===u?'done':''}"><span class="gr-emoji">${it.emoji}</span><div class="grow"><b>${x.esc(it.name)}</b><small>${info}</small></div>${tail}</div>`;
+  }).join('');
+}
+function rushReceipt(t,x){
+  const o=t.rush.offer,open=o.charged==null;
+  const rows=Object.entries(o.scanned||{}).map(([k,q])=>{const it=item(x,k),p=price(x,k);
+    return `<div class="gr-rline"><span>${it.emoji} ${x.esc(it.name)} ${q} × ${x.fmt(p)}</span><b>${x.fmt(p*q)}</b>${open?`<button type="button" class="icon-btn gr-void" aria-label="Xóa ${x.esc(it.name)}" data-command="gr_rush_void" data-payload="${x.esc(JSON.stringify({task:t.id,item:k}))}">✕</button>`:''}</div>`;}).join('');
+  const total=open?rushTill(x,o):o.charged;
+  return `<div class="gr-receipt" aria-label="Máy tính tiền"><div class="gr-receipt-head">MÁY TÍNH TIỀN<br><small>${open?'đang quét':'đã tính tiền'}</small></div>
+    ${rows||'<p class="muted small">Chưa quét món nào.</p>'}<div class="gr-rtotal"><span>TỔNG</span><b>${x.money(total)}</b></div></div>`;
+}
+function rushTray(t,x){
+  const o=t.rush.offer,due=rushDue(o),given=sum(o.change||[]),tender=sum(o.tender||[]);
+  return `<div class="gr-pay card gr-rush-pay"><h4>💵 Khách đưa</h4><div class="gr-tender">${o.tender.map(v=>money(x,v)).join('')}<b>= ${x.money(tender)}</b></div>
+    ${o.counted&&given<due?`<div class="notice amber" role="status">Khách đếm lại: thối thiếu ${x.fmt(due-given)} xu. Đặt thêm vào khay rồi đưa lại.</div>`:''}
+    <div class="gr-due"><span>Cần thối</span><b>${x.money(Math.max(0,due))}</b><span>Đang đặt</span><b class="${given===due?'ok':given>due?'over':''}">${x.money(given)}</b></div>
+    <div class="bar gr-due-bar"><i style="width:${due>0?Math.min(100,given/due*100):100}%"></i></div>
+    <div class="gr-tray">${(o.change||[]).map(v=>money(x,v)).join('')||'<small class="muted">Khay trống</small>'}</div>
+    <div class="gr-denoms">${x.cc.denoms.map(v=>`<button type="button" class="gr-denom ${v>=10?'note':'coin'}" data-command="gr_rush_change" data-payload="${x.esc(JSON.stringify({task:t.id,denom:v}))}" aria-label="Thêm ${v} xu">${x.fmt(v)}</button>`).join('')}</div>
+    <div class="row wrap">${x.cmd('↩︎ Bớt tờ cuối','gr_rush_undo',{task:t.id},'small ghost',!(o.change||[]).length)}${x.cmd('Cất hết','gr_rush_undo',{task:t.id,all:true},'small ghost',!(o.change||[]).length)}</div></div>`;
+}
+/** The customers already served, each with how they took it (their own stars). */
+function rushLog(t,x,n=3){
+  const queue=t.needs.queue,rows=(t.rush.log||[]).slice(-n).reverse();
+  if(!rows.length)return '';
+  return `<ul class="gr-rush-log" aria-label="Khách vừa xong">${rows.map(v=>{const w=who(x,queue[v.i].npc);
+    if(v.status!=='served')return `<li class="gone"><span>${v.status==='left'?'🚶':'∅'}</span><b>${x.esc(w.display_name)}</b><small>${v.status==='left'?'chờ lâu, bỏ về':'kệ trống, về tay không'}</small></li>`;
+    return `<li><span class="gr-stars" aria-label="${v.stars||5} sao">${stars(v.stars||5)}</span><b>${x.esc(w.display_name)}</b><small>${x.esc(v.note||'')}${v.tip?` · +${x.fmt(v.tip)} xu tiền lẻ`:''}</small></li>`;}).join('')}</ul>`;
+}
+function rushFinal(t,x,steps){
+  const o=t.rush.offer;
+  if(o.charged==null){const empty=!Object.keys(o.scanned||{}).length;
+    return {label:'🧾 TÍNH TIỀN',go:finalGo(steps,'gr_rush_total',{task:t.id},{question:'Khách sẽ nhìn màn hình máy tính tiền.'}),ready:!empty,why:empty?'quét hàng trước':''};}
+  const due=rushDue(o);
+  return {label:due>0?'✅ THỐI TIỀN & GIAO HÀNG':'✅ GIAO HÀNG',go:finalGo(steps,'gr_rush_pay',{task:t.id},{question:due>0?'Khách có thể đếm lại tiền thối.':''}),ready:true};
+}
 function rushJob(t,x){
   const r=t.rush,queue=t.needs.queue,o=r.offer,turn=x.room.turn,dl=t.deadlines||[];
   const done=Object.fromEntries((r.log||[]).map(v=>[v.i,v.status]));
@@ -310,22 +380,24 @@ function rushJob(t,x){
     const badge=st==='served'?'✓':st==='left'?'🚶':st==='empty'?'∅':i===r.i?'▶':left!=null?`${Math.max(0,left)}`:'…';
     return `<li class="gr-qp ${cls}" title="${x.esc(w.display_name)}">${x.portrait(w,34)}<b aria-label="${st==='served'?'đã xong':st?'đã về':left!=null?`còn ${Math.max(0,left)} nhịp`:''}">${badge}</b></li>`;}).join('');
   const head=`<div class="gr-queue"><small>Hàng chờ · số trên đầu là nhịp còn chờ được</small><ol>${row}</ol></div>`;
-  if(r.i>=queue.length||!o)return `${head}<div class="card"><p>Hàng chờ đã vãn.</p></div>`;
+  if(r.i>=queue.length||!o)return `${head}<div class="card"><p>Hàng chờ đã vãn.</p>${rushLog(t,x,queue.length)}</div>`;
   const q=queue[r.i],w=who(x,q.npc),beer=q.items.some(([id])=>id==='beer'),aged=r.ages?.[String(r.i)];
-  const lines=q.items.map(([id,qty])=>{const it=item(x,id),u=o.units[id]||0,cut=u<qty;
-    return `<div class="gr-line ${cut?'blocked':''}"><span class="gr-emoji">${it.emoji}</span><div class="grow"><b>${x.esc(it.name)}</b><small>${qty} ${x.esc(it.unit)} × ${x.fmt(price(x,id))} xu${cut?(id==='beer'&&aged!=null&&aged<18?' · không bán (dưới 18)':` · kệ chỉ còn ${u}`):''}</small></div></div>`;}).join('');
   const left=dl[r.i]!=null?dl[r.i]-turn:null;
-  let act;
-  if(!Object.keys(o.units||{}).length&&o.charged==null){
+  const card=`<div class="row">${x.portrait(w,48)}<div class="grow"><div class="row spread"><h3>${x.esc(w.display_name)}</h3>${left!=null&&o.charged==null?`<span class="tag ${left<=1?'danger':'amber'}">⏳ còn ${Math.max(0,left)} nhịp</span>`:''}</div><p class="small">“${x.esc(q.note)}”</p></div></div>`;
+  if(!Object.keys(o.units||{}).length&&!Object.keys(o.scanned||{}).length&&o.charged==null){
     // Empty shelf: the way on is the stock room (a crate may already be at the door); apologising stays one tap away.
     const go=restockGo(x.room,shortNow(t,x),{task:t.id});
-    act=`<div class="gr-rush-empty"><button type="button" class="btn primary full rs-btn"${goAttrs(go)}>${go.label}</button>${x.cmd('🙏 Xin lỗi, mời khách sau','gr_rush_total',{task:t.id,total:o.totals[0]},'ghost full')}</div>`;
+    return `${head}<article class="card gr-rush-now">${card}<div class="gr-basket">${rushLines(t,x)}</div><div class="gr-rush-empty"><button type="button" class="btn primary full rs-btn"${goAttrs(go)}>${go.label}</button>${x.cmd('🙏 Xin lỗi, mời khách sau','gr_rush_total',{task:t.id},'ghost full')}</div></article>${rushLog(t,x)}`;
   }
-  else if(o.charged==null)act=`${beer&&aged==null?`<div class="notice amber row spread"><span>🔞 Có bia: hỏi giấy tờ trước khi bán.</span>${x.cmd('🪪 Kiểm tuổi','gr_rush_id',{task:t.id},'small primary')}</div>`:''}<h4 class="section-title">Máy tính tiền · chọn tổng tiền</h4><div class="gr-choices">${o.totals.map(v=>x.cmd(`${x.fmt(v)} xu`,'gr_rush_total',{task:t.id,total:v},'gr-choice')).join('')}</div>`;
-  else act=`<h4 class="section-title">Khách đưa ${o.tender.map(v=>money(x,v)).join(' ')} · thu ${x.money(o.charged)}</h4><p class="small">Thối lại bao nhiêu?</p><div class="gr-choices">${(o.changes||[]).map(v=>x.cmd(`${x.fmt(v)} xu`,'gr_rush_change',{task:t.id,change:v},'gr-choice')).join('')}</div>`;
-  return `${head}<article class="card gr-rush-now"><div class="row">${x.portrait(w,48)}<div class="grow"><div class="row spread"><h3>${x.esc(w.display_name)}</h3>${left!=null?`<span class="tag ${left<=1?'danger':'amber'}">⏳ còn ${Math.max(0,left)} nhịp</span>`:''}</div><p class="small">“${x.esc(q.note)}”</p></div></div>
-    <div class="gr-basket">${lines}</div>${act}</article>
-    <p class="muted small">Đã thu ${x.money(r.cash)} · ${r.served} khách xong${r.left?` · ${r.left} khách bỏ về`:''}. Không cần khuyến mãi ở giờ cao điểm.</p>`;
+  const steps=rushSteps(t,x);
+  const idNote=beer&&aged==null&&o.charged==null?`<div class="notice amber row spread"><span>🔞 Có bia: hỏi giấy tờ trước khi bán.</span>${x.cmd('🪪 Kiểm tuổi','gr_rush_id',{task:t.id},'small primary')}</div>`:'';
+  const body=o.charged==null?`${idNote}<h4 class="section-title">Giỏ của khách · quét từng món</h4><div class="gr-basket">${rushLines(t,x)}</div>`
+    :`<h4 class="section-title">Thối tiền cho ${x.esc(w.display_name)}</h4>${rushTray(t,x)}`;
+  const cta=stepCta(x,steps,rushFinal(t,x,steps));
+  const total=o.charged??rushTill(x,o);
+  return `${head}<div class="workbench"><section class="wb-main"><article class="card gr-rush-now">${card}${body}</article>
+    <p class="muted small">Đã thu ${x.money(r.cash)} · ${r.served} khách xong${r.left?` · ${r.left} khách bỏ về`:''}.</p>${rushLog(t,x)}</section>
+    <aside class="wb-side">${rushReceipt(t,x)}${steps.length?stepRows(x,steps,'Khách đang ở quầy'):''}</aside></div>${billbar(x,total,cta,o.charged==null?'Máy tính tiền':'Tổng bill')}`;
 }
 
 /* ------------------------------------------------------------ bulk orders */
@@ -335,7 +407,7 @@ function bulkJob(t,x){
   const shortOf=l=>Math.max(0,l.qty-Math.max(0,(inv.stock?.[l.item]||0)-(held[l.item]||0)));
   const rows=n.lines.map(l=>{const it=item(x,l.item),s=shortOf(l);
     return `<div class="gr-line ${s?'':'done'}"><span class="gr-emoji">${it.emoji}</span><div class="grow"><b>${x.esc(it.name)} × ${l.qty}</b><small>${x.fmt(price(x,l.item))} xu/${x.esc(priceUnit(x,l.item))} · kho còn ${inv.stock?.[l.item]||0}${s?` · <b class="bad">thiếu ${s}</b>`:' ✓'}</small></div>
-      ${b.stage==='deliver'&&s?x.confirmCmd(`⚡ Nhập ${Math.min(30,s)}`,'inv_order',{item:l.item,qty:Math.min(30,s),supplier:'express'},`Nhập hỏa tốc ${Math.min(30,s)} ${it.unit} ${it.name} · khoảng ${x.fmt(Math.ceil(it.cost*Math.min(30,s)*1.35))} xu? Hỏa tốc 30–60 phút, nhớ mở thùng đếm ở Kho & giá.`,'small ghost'):''}</div>`;}).join('');
+      ${b.stage==='deliver'&&s?x.confirmCmd(`⚡ Nhập ${Math.min(30,s)}`,'inv_order',{item:l.item,qty:Math.min(30,s),supplier:'express'},`Nhập hỏa tốc ${Math.min(30,s)} ${it.unit} ${it.name} · khoảng ${x.fmt(Math.ceil(it.cost*Math.min(30,s)*1.35))} xu? Hỏa tốc 15–30 phút, nhớ mở thùng đếm ở Kho & giá.`,'small ghost'):''}</div>`;}).join('');
   let body='',cta='';
   if(b.stage==='quote'){
     const last=b.offers.length?b.offers[b.offers.length-1]:-1;
@@ -409,13 +481,30 @@ function shelfJob(t,x){
 function rushSteps(t,x){
   const r=t.rush,o=r.offer,q=t.needs.queue[r.i];
   if(!q||!o)return [];
-  if(!Object.keys(o.units||{}).length&&o.charged==null)return [
-    {ok:null,label:'Kệ hết món khách cần: nhập hàng lên kệ',go:restockGo(x.room,shortNow(t,x),{task:t.id})},
-    {ok:null,label:'Hoặc xin lỗi, mời khách sau',go:{cmd:'gr_rush_total',payload:{task:t.id,total:o.totals[0]},label:'🙏 Xin lỗi, mời khách sau'}}];
+  const id=t.id,aged=r.ages?.[String(r.i)],scanned=o.scanned||{};
+  if(o.charged==null&&!Object.keys(o.units||{}).length&&!Object.keys(scanned).length)return [
+    {ok:null,label:'Kệ hết món khách cần: nhập hàng lên kệ',go:restockGo(x.room,shortNow(t,x),{task:id})},
+    {ok:null,label:'Hoặc xin lỗi, mời khách sau',go:{cmd:'gr_rush_total',payload:{task:id},label:'🙏 Xin lỗi, mời khách sau'}}];
   const rows=[];
-  if(q.items.some(([id])=>id==='beer')&&r.ages?.[String(r.i)]==null&&o.charged==null)rows.push({ok:null,label:'Kiểm tuổi khách mua bia',go:{cmd:'gr_rush_id',payload:{task:t.id},label:'🪪 Kiểm tuổi'}});
-  rows.push({ok:o.charged!=null||null,label:'Bấm đúng tổng tiền giỏ này',go:o.charged==null?{sel:'.gr-rush-now .gr-choices'}:null});
-  if(o.charged!=null)rows.push({ok:null,label:`Chọn đúng tiền thối (khách đưa ${x.fmt(sum(o.tender))} xu)`,go:{sel:'.gr-rush-now .gr-choices'}});
+  if(o.charged==null){
+    if(q.items.some(([k])=>k==='beer'))rows.push({ok:aged==null?null:true,label:'Kiểm tuổi khách mua bia',note:aged==null?'':`${aged} tuổi`,go:aged==null?{cmd:'gr_rush_id',payload:{task:id},label:'🪪 Kiểm tuổi'}:null});
+    const later=[];
+    for(const [k,want] of q.items){
+      const it=item(x,k),u=o.units[k]||0,s=scanned[k]||0,drop={cmd:'gr_rush_void',payload:{task:id,item:k},label:`✕ Xóa ${x.esc(it.name)} khỏi máy tính tiền`};
+      if(k==='beer'&&aged!=null&&aged<18){rows.push({ok:!s,label:`${it.name}: không bán cho khách dưới 18`,go:s?drop:null});continue;}
+      if(!u){later.push({ok:null,label:`${want} ${it.unit} ${it.name}`,note:'kệ hết',go:restockGo(x.room,[{id:k,target:(x.room.inventory?.stock?.[k]||0)+want}],{task:id})});continue;}
+      rows.push({ok:s===u?true:s>u?false:null,label:`${u} ${it.unit} ${it.name}`,note:s>u?`quét dư ${s-u}`:s?`${s}/${u}`:'',
+        go:s>u?{...drop,label:`✕ Xóa ${x.esc(it.name)} (quét dư) để quét lại`}:s<u?{cmd:'gr_rush_scan',payload:{task:id,item:k,qty:u-s},label:`📷 Quét ${u-s} ${x.esc(it.unit)} ${x.esc(it.name)}`}:null});
+    }
+    for(const k of Object.keys(scanned))if(!q.items.some(([v])=>v===k))rows.push({ok:false,label:`${item(x,k).name} (khách không mua)`,go:{cmd:'gr_rush_void',payload:{task:id,item:k},label:`✕ Xóa ${x.esc(item(x,k).name)} khỏi máy tính tiền`}});
+    // A line with an empty shelf: once part of the basket is rung up, the till takes what is there
+    // (the stock room stays one tap away on the line itself).
+    rows.push(...(Object.keys(scanned).length?later.map(v=>({...v,go:null})):later));
+    return rows;
+  }
+  const due=rushDue(o),given=sum(o.change||[]),d=greedyDenom(x,due-given);
+  rows.push({ok:given===due?true:given>due?false:null,label:due>0?`Thối đúng ${x.fmt(due)} xu`:'Không cần thối tiền',note:`đang đặt ${x.fmt(given)} xu`,
+    go:given>due?{cmd:'gr_rush_undo',payload:{task:id},label:'↩︎ Bớt tờ vừa đặt'}:given<due&&d?{cmd:'gr_rush_change',payload:{task:id,denom:d},label:`➕ Đặt ${x.fmt(d)} xu vào khay thối`}:null});
   return rows;
 }
 function bulkSteps(t,x){
@@ -438,7 +527,7 @@ function taskGuide(t,x){
   if(x.room.data?.desk?.ev)return {steps:[{ok:null,label:'Chọn cách xử lý chuyện bất ngờ',go:{sel:'.gr-opts'}}]};
   if(!t.known)return {steps:[{ok:null,label:ASK[t.kind]||ASK.checkout,go:{cmd:'ask',payload:{task:t.id}}}],pulse:'.gr-ask'};
   if(t.kind==='shelf'){const steps=shelfSteps(t,x);return {steps,final:shelfFinal(t,x,steps)};}
-  if(t.kind==='rush')return {steps:rushSteps(t,x),done:'Hàng chờ đã vãn'};
+  if(t.kind==='rush'){const steps=rushSteps(t,x),o=t.rush.offer;return {steps,final:o&&(o.charged!=null||Object.keys(o.scanned||{}).length)?rushFinal(t,x,steps):null,done:'Hàng chờ đã vãn'};}
   if(t.kind==='bulk'){const steps=bulkSteps(t,x);return {steps,final:t.bulk.stage==='deliver'?bulkFinal(t,x,steps):null};}
   const steps=checkoutSteps(t,x);
   if(t.stage==='basket')return {steps,final:basketFinal(t,x,steps)};
@@ -471,7 +560,9 @@ function stockView(x){
   const cap=inv.capacity||60,sups=x.content.inventory?.suppliers||[],sup=sups.find(s=>s.id===(x.ui.sup||'partner'))||{factor:1,lead:1,name:''};
   const qty=Number(x.ui.qty)||10,cleared=d.cleared||[];
   const rot=new Set((d.rotation||[]).map(r=>r.item)),short=Object.fromEntries((d.forecast?.needs||[]).filter(r=>r.short).map(r=>[r.item,r]));
-  const rows=catalogue(x).map(it=>{
+  const shut=catalogue(x).filter(it=>(inv.locked||[]).includes(it.id));
+  const needs=it=>{const q=inv.stock?.[it.id]??0;return q<=3||inv.expiring?.[it.id]||d.near?.[it.id]||rot.has(it.id)||short[it.id]||(inv.orders||[]).some(o=>o.item===it.id&&o.status==='in_transit');};
+  const row=it=>{
     const locked=(inv.locked||[]).includes(it.id),q=inv.stock?.[it.id]??0,exp=inv.expiring?.[it.id]||0,near=d.near?.[it.id]||0,held=d.held?.[it.id]||0;
     const p=price(x,it.id),[lo,hi]=d.price_range?.[it.id]||[p,p],step=Math.max(1,Math.round((x.cc.base_prices?.[it.id]||p)*0.05));
     const transit=(inv.orders||[]).filter(o=>o.item===it.id&&o.status==='in_transit').reduce((s,o)=>s+o.qty,0);
@@ -487,7 +578,10 @@ function stockView(x){
       <div class="gr-sact">${exp?x.confirmCmd('🗑️ Rút hàng hết hạn','gr_pull_today',{item:it.id},`Rút ${exp} ${stockUnit(x,it.id)} ${it.name} hết hạn hôm nay khỏi kệ? Ghi vào hao hụt.`,'small danger'):''}
         ${near&&!exp&&!cleared.includes(it.id)?x.cmd(`🏷️ Xả ${near>12?12:near} món −${100-(x.cc.clear_percent||70)}%`,'gr_clear',{item:it.id},'small ghost'):''}
         ${n>0?x.confirmCmd(`📦 Nhập ${n} · ${x.fmt(cost)} xu`,'inv_order',{item:it.id,qty:n,supplier:sup.id||'partner'},`Nhập ${n} ${stockUnit(x,it.id)} ${it.name} từ ${sup.name} · ${x.fmt(cost)} xu? ${`Dự kiến nhận: ${sup.quote?.eta_label||sup.window||'sớm'}.`}, mở thùng đếm rồi mới lên kệ.`,'small ghost'):'<small class="muted">Kho đầy</small>'}</div></div>`;
-  }).join('');
+  };
+  const open=catalogue(x).filter(it=>!shut.includes(it)),hot=open.filter(needs),calm=open.filter(it=>!needs(it));
+  const rows=`${hot.map(row).join('')||'<p class="muted small">Không món nào sắp hết hay sắp hết hạn.</p>'}
+    ${calm.length?pane(x,'stock-calm',`📦 ${calm.length} món còn đủ hàng · xem giá & nhập thêm`,calm.map(row).join(''),!hot.length,'gr-stock-more'):''}${lockChip(x,shut)}`;
   return `<div class="card gr-stock"><div class="row spread"><h4>🏷️ Kho & giá</h4><small class="muted">Sức chứa ${cap} mỗi loại</small></div>
     ${rotationNotes(x)}${incoming(x)}
     <div class="gr-orderbar"><small>Nhập từ</small>${supplierPick(x)}<div class="gr-qty" role="radiogroup" aria-label="Số lượng mỗi lần nhập">${[5,10,20,30].map(v=>`<button type="button" role="radio" aria-checked="${v===qty}" class="btn small ${v===qty?'primary':'ghost'}" data-action="car:qty" data-qty="${v}">${v}</button>`).join('')}</div></div>
@@ -604,7 +698,7 @@ export default {
       if(!sh.placed||sh.cart.length)return 'Đọc hạn, rút/dán tem rồi xếp kệ';
       return 'Kiểm tem giá rồi báo xong';
     }
-    if(t.kind==='rush')return 'Tính nhanh, thối đúng cho từng khách';
+    if(t.kind==='rush')return 'Quét giỏ, tính tiền, thối đúng cho từng khách';
     if(t.kind==='bulk')return t.bulk.stage==='quote'?'Báo giá sỉ cho khách':'Đủ hàng thì soạn & giao';
     if(t.stage==='basket'){
       if(t.haggle?.state==='ask')return 'Trả lời khách chuyện giá';
@@ -633,6 +727,7 @@ export default {
       ${careCard(x)}${forecastCard(x)}${tabs(x,true)}${tabBody(x,()=>'',true)}</div>`;
   },
   actions:{
+    async pane(data,el,x){(x.ui.pane??={})[data.key]=data.open!=='1';x.render();},
     async tab(data,el,x){x.ui.tab=['ledger','stock','lists'].includes(data.tab)?data.tab:'counter';x.render();},
     // Remember a fold's state across re-renders (the click lands before the browser toggles it).
     async fold(data,el,x){(x.ui.open??={})[data.key]=!el.closest('details')?.open;},

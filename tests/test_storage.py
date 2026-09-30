@@ -26,7 +26,7 @@ class StorageTests(unittest.TestCase):
         with self.assertRaises(GameError):self.call(action='buy_upgrade',payload={'item':'unknown'})
         self.assertEqual(self.store.read(self.token)[1],0)
     def test_export_import_roundtrip(self):
-        j=Journey();j.solve();r=self.call(action='import_save',payload={'save':{'format':'mot-ngay-lam-nghe/save-v1','state':j.state}});self.assertEqual(r['state']['careers']['mother_baby']['money'],402)
+        j=Journey();j.solve();r=self.call(action='import_save',payload={'save':{'format':'mot-ngay-lam-nghe/save-v1','state':j.state}});self.assertEqual(r['state']['careers']['mother_baby']['money'],400)
     def test_invalid_save_no_partial_replacement(self):
         self.call();old=self.store.read(self.token);bad=new_state();bad['careers']['mother_baby']['stock']['bunny']=-3
         with self.assertRaises(GameError):self.call('import-0001',1,action='import_save',payload={'save':{'format':'mot-ngay-lam-nghe/save-v1','state':bad}})

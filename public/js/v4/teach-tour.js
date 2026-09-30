@@ -70,6 +70,18 @@ const em=s=>`<span aria-hidden="true">${s}</span>`;
 const signed=n=>n>0?'+'+n:String(n);
 const ENDED=['completed','cancelled','referred'];
 
+// The sheet is re-rendered after every action: folds remember whether the player opened them.
+const ttFolds=new Map();
+// A button, not <details>: the host restores <details> by position after a re-render, which would hand one fold's
+// state to another when folds come and go. A tap flips the fold in place; the map keeps it for the next render.
+if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e.target?.closest?.('[data-tt-fold]');if(!b)return;
+  const on=b.getAttribute('aria-expanded')!=='true',box=b.parentElement;ttFolds.set(b.dataset.ttFold,on);
+  b.setAttribute('aria-expanded',String(on));box.classList.toggle('is-open',on);const body=box.querySelector(':scope>.fold-body');if(body)body.hidden=!on;},true);
+function ttFold(key,summary,body,open=false,cls='fold tt-fold'){
+  const on=ttFolds.has(key)?ttFolds.get(key):open;
+  return `<div class="${cls}${on?' is-open':''}" data-tour-fold="${esc(key)}"><button type="button" class="tt-fold-sum" data-tt-fold="${esc(key)}" aria-expanded="${on}">${summary}</button><div class="fold-body"${on?'':' hidden'}>${body}</div></div>`;
+}
+const wide=()=>typeof matchMedia==='function'&&matchMedia('(min-width:761px)').matches;
 function meter(label,value){
   const v=Math.max(0,Math.min(100,value??100)),tone=v>=80?'good':v>=55?'warn':'bad';
   return `<div class="tt-meter ${tone}" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${v}" aria-label="${esc(label)}"><span>${esc(label)}</span><i><b style="width:${v}%"></b></i><strong>${v}%</strong></div>`;
@@ -86,8 +98,10 @@ function section(icon,title,body,aside='',cls=''){
 }
 function eventCard(ev,op,task){
   if(ev.chosen){
+    // Handled: one line (what happened + the mark); the outcome and the effects unfold from it.
     const mood=ev.mood??ev.focus??0;
-    return `<article class="tt-event done ${ev.mistake?'oops':''}"><header>${em(ev.emoji)}<b>${esc(ev.title)}</b></header><p class="tt-outcome">${esc(ev.outcome)}</p><div class="tt-chips">${mood?`<span class="tag ${mood>0?'green':'amber'}">${mood>0?'😊':'😕'} ${signed(mood)}</span>`:''}${(ev.trust||[]).map(x=>`<span class="tag ${x.delta>0?'green':'amber'}">${x.delta>0?'💛':'💔'} ${esc(x.name)} ${signed(x.delta)}</span>`).join('')}${ev.minutes?`<span class="tag">⏱ +${ev.minutes}′</span>`:''}${ev.mistake?'<span class="tag danger">Chưa ổn</span>':''}</div></article>`;
+    const chips=`<div class="tt-chips">${mood?`<span class="tag ${mood>0?'green':'amber'}">${mood>0?'😊':'😕'} ${signed(mood)}</span>`:''}${(ev.trust||[]).map(x=>`<span class="tag ${x.delta>0?'green':'amber'}">${x.delta>0?'💛':'💔'} ${esc(x.name)} ${signed(x.delta)}</span>`).join('')}${ev.minutes?`<span class="tag">⏱ +${ev.minutes}′</span>`:''}${ev.mistake?'<span class="tag danger">Chưa ổn</span>':''}</div>`;
+    return `<div class="tt-event done ${ev.mistake?'oops':''}">${ttFold('ev-'+task+'-'+ev.id,`${em(ev.emoji)} <b>${esc(ev.title)}</b>${ev.mistake?' <b class="bad-text">chưa ổn</b>':' <b class="good-text">✓</b>'}`,`<p class="tt-outcome">${esc(ev.outcome)}</p>${chips}`)}</div>`;
   }
   return `<article class="tt-event" aria-live="polite" data-ev="${esc(ev.id)}"><header>${em(ev.emoji)}<div><small>Cần bạn quyết</small><b>${esc(ev.title)}</b></div></header><p>${esc(ev.text)}</p><div class="tt-options">${ev.options.map(o=>act(`<span>${esc(o.label)}</span>${o.cost?`<small>−${o.cost} xu quỹ đoàn</small>`:''}`,op,{task,event:ev.id,option:o.id},'tt-option',{attr:` data-opt="${esc(o.id)}"`})).join('')}</div></article>`;
 }
@@ -153,9 +167,10 @@ function board(t,R,index){
   const at=LESSON_STEPS.findIndex(x=>x[0]===R.stage);
   const card=id=>R.hand.find(h=>h.id===id);
   const plan=R.plan?.length?`<ol class="tt-flow" aria-label="Giáo án">${R.plan.map((id,i)=>{const x=card(id);if(!x)return '';const st=R.stage==='teach'?(i<R.phase?'done':i===R.phase?'now':''):'done';return `<li class="${st}"${st==='now'?' aria-current="step"':''}>${em(x.emoji)}<span>${esc(x.name)}</span><small>${st==='now'?'▶ Đang dạy · ':''}${x.minutes}′</small></li>`;}).join('')}</ol>`:'';
+  const teach=R.stage==='teach';
+  const top=`<span class="tt-board-top"><span>Tiết ${index} · ${esc(t.lesson.topic)}</span>${R.tier>1?`<span class="tt-tier" aria-label="Độ khó ${R.tier}">${'★'.repeat(R.tier)}</span>`:''}<small>${plan&&!teach?'Đề bài · giáo án':'Đề bài'}</small></span>`;
   return `<section class="tt-board" aria-label="Bảng lớp">
-    <div class="tt-board-top"><span>Tiết ${index} · ${esc(t.lesson.topic)}</span>${R.tier>1?`<span class="tt-tier" aria-label="Độ khó ${R.tier}">${'★'.repeat(R.tier)}</span>`:''}</div>
-    <p class="tt-prompt">${esc(t.lesson.prompt)}</p>${plan}
+    ${ttFold('board-'+t.id,top,`<p class="tt-prompt">${esc(t.lesson.prompt)}</p>${teach?'':plan}`,false,'tt-board-more')}${teach?plan:''}
     <div class="tt-board-foot"><span>${esc(R.cond.emoji)} ${esc(R.cond.text)}</span><span class="tt-chalk" role="img" aria-label="Bước ${at+1}/5: ${esc(LESSON_STEPS[at]?.[1]||'')}">${LESSON_STEPS.map((_,i)=>`<i class="${i<at?'done':i===at?'now':''}"></i>`).join('')}<b>${at+1}/5 · ${esc(LESSON_STEPS[at]?.[1]||'')}</b></span></div>
   </section>`;
 }
@@ -184,7 +199,11 @@ function seating(t,c,R,reach=new Set()){
     return `<li class="tt-seat ${tone?'tone-'+tone:''}${hand?' cl-asking':''}">${hand}<span class="tt-face" aria-hidden="true">${k.emoji}</span><b>${esc(k.name)}</b><small>${esc(cue)}</small>${hint}</li>`;
   }).join('');
   const aside=R.stage==='roll'?`${R.kids.filter(k=>k.done).length}/${R.kids.length} đã ghi`:`${here}/${R.kids.length} có mặt`;
-  return section('🪑','Sơ đồ lớp',`<div class="tt-room${R.stage==='plan'?' wide':''}"><p class="tt-front" aria-hidden="true">Bục giảng</p><ul class="tt-seats" aria-label="Chỗ ngồi của các bạn">${seats}</ul></div>`,aside,'tt-class');
+  const room=`<div class="tt-room${R.stage==='plan'?' wide':''}"><p class="tt-front" aria-hidden="true">Bục giảng</p><ul class="tt-seats" aria-label="Chỗ ngồi của các bạn">${seats}</ul></div>`;
+  // Roll call and planning read every desk; later the class is a strip of faces that opens into the chart.
+  if(R.stage==='roll'||R.stage==='plan')return section('🪑','Sơ đồ lớp',room,aside,'tt-class');
+  const faces=R.kids.map(k=>{const [tone]=seatCue(k,R,c,reach);return `<i class="${tone?'tone-'+tone:''}" title="${esc(k.name)}">${k.emoji}${A&&A.kid===k.id?'🙋':''}</i>`;}).join('');
+  return `<section class="tt-sec tt-class tt-class-fold">${ttFold('seats-'+t.id,`${em('🪑')} <span>Sơ đồ lớp</span><span class="tt-faces" aria-hidden="true">${faces}</span><small>${aside}</small>`,room)}</section>`;
 }
 
 function rollStage(t,c,R,first){
@@ -225,8 +244,8 @@ function planStage(t,c,R,ui,first){
   const over=mins>R.limit,short=seq.length===3&&mins<R.min,core=cards.some(x=>x.role==='core'),ready=seq.length===3&&!over&&!short&&core;
   const why=over?'Quá giờ tiết học: bớt một hoạt động dài':short?`Mới ${mins} phút, cần ít nhất ${R.min}`:seq.length===3&&!core?'Thiếu hoạt động chính':seq.length<3?`Chọn thêm ${3-seq.length} hoạt động`:'Giáo án đã đủ. Chốt nhé!';
   const styles=['look','hands','talk','short'].map(s=>`<span class="tt-style ${reach.has(s)?'on':''}">${STYLE_ICON[s]} ${esc(STYLE_SHORT[s])}</span>`).join('');
+  const tray=`<ol class="tt-tray tt-tray-bar" aria-label="Giáo án tiết này">${[0,1,2].map(slot).join('')}</ol>`;
   const planner=section('📝','Giáo án tiết này',`<p class="tt-tip">${esc(R.cond.emoji)} ${esc(R.cond.tip)}</p>
-    <ol class="tt-tray">${[0,1,2].map(slot).join('')}</ol>
     <div class="tt-reach" aria-label="Cách học đã có trong giáo án">${styles}</div>
     <details class="fold gd-rules"><summary>📜 Quy tắc</summary><ul><li>⏱ ${R.min}–${R.limit} phút</li><li>⭐ Mở đầu hợp không khí lớp</li><li>⭐ Có đủ cách học của các bạn có mặt</li><li>⭐ Kết thúc bằng thẻ Kiểm tra</li></ul></details>`,`⏱ ${mins}/${R.limit}′`,'tt-planner');
   const pick=section('🗂️','Thẻ hoạt động',`<div class="tt-hand">${hand}</div>`,'Chạm theo thứ tự');
@@ -239,7 +258,7 @@ function planStage(t,c,R,ui,first){
     steps.push({ok:seq.length===3||null,label:'Chọn 3 thẻ hoạt động theo thứ tự',go:{sel:'.tt-hand',label:`🗂️ Chọn thẻ ${Math.min(3,seq.length+1)}/3`}});
     if(seq.length===3&&!ready)steps.push({ok:false,label:why,go:{...reset,label:`↶ Soạn lại · ${esc(why)}`}});
   }
-  return {body:planner+pick+seating(t,c,R,reach),status:next,extra:seq.length?local('↶','lessonReset',{},'btn ghost',false,'Chọn lại'):'',steps,
+  return {body:pick+planner+seating(t,c,R,reach),status:next,top:tray,extra:seq.length?local('↶','lessonReset',{},'btn ghost',false,'Chọn lại'):'',steps,
     final:{label:'Chốt giáo án →',hint:'Chốt giáo án',go:{act:'lessonPlan'},ready}};
 }
 
@@ -280,14 +299,15 @@ function checkStage(t,c,R,first){
   const key=`<div class="tt-key"><b>Đáp án đúng</b><p>${esc(t.lesson.fact)}</p></div>`;
   const steps=todo.map(x=>{const box=`.tt-ticket[data-kid="${x.kid}"]`;
     return {ok:null,label:`Chấm phiếu của ${x.name}`,go:{sel:box,label:`🎫 Chấm phiếu của ${esc(x.name)}`},...glow(first,`${box} [data-mark="${rightMark(t,R,x)}"]`)};});
-  return {body:section('🎫','Chấm phiếu cuối tiết',`${key}<div class="tt-tickets">${todo.map(card).join('')}</div>`,`${done}/${R.tickets.length} đã chấm`)+seating(t,c,R),
+  const rest=todo.slice(1),queue=rest.length?`<p class="tt-queue">Phiếu tiếp theo: ${rest.map(x=>`${x.emoji} ${esc(x.name)}`).join(' · ')}</p>`:'';
+  return {body:section('🎫','Chấm phiếu cuối tiết',`${key}<div class="tt-tickets">${todo.slice(0,1).map(card).join('')}</div>${queue}`,`${done}/${R.tickets.length} đã chấm`)+seating(t,c,R),
     status:`🎫 ${done}/${R.tickets.length}`,steps,final:{label:'Khép tiết',ready:false}};
 }
 
 function readyStage(t,c,R){
   const stars='⭐'.repeat(R.stars)+'☆'.repeat(3-R.stars);
   const res=`<section class="tt-result" aria-live="polite">${em('🌱')}<h3>Tiết học trọn vẹn</h3><div class="tt-stats"><div><b>${stars}</b><small>Giáo án</small></div><div><b>${R.understood}/${R.of}</b><small>Bạn hiểu bài</small></div><div><b>${t.patience??100}%</b><small>Nhịp lớp</small></div></div>${logList(R.log)}</section>`;
-  const inbox=c.classroom?.care,mail=inbox?.waiting?`<button type="button" class="btn ghost cl-inbox-link" data-action="classroom">💌 ${inbox.waiting} phụ huynh đang chờ trả lời · Mở sổ lớp</button>`:'';
+  const inbox=c.classroom?.care,mail=inbox?.waiting?`<button type="button" class="btn ghost cl-inbox-link" data-action="classroom" data-cl-tab="par">💌 ${inbox.waiting} phụ huynh đang chờ trả lời · Mở sổ lớp</button>`:'';
   return {body:res+askPanel(t,R)+mail+seating(t,c,R),status:`Gửi lời nhắn phụ huynh · <b>+${R.estimate} xu</b>`,steps:[],
     final:{label:'Khép tiết',hint:'Khép tiết, nhận thù lao',go:finalGo([],'lesson_complete',{task:t.id},{confirm:true})}};
 }
@@ -299,7 +319,7 @@ export function lessonV2(t,c,content,ui,state){
   const view=R.stage==='roll'?rollStage(t,c,R,first):R.stage==='plan'?planStage(t,c,R,ui,first):R.stage==='teach'?teachStage(t,c,R,first):R.stage==='check'?checkStage(t,c,R,first):readyStage(t,c,R);
   const g=guided({room:c},t,R.stage,view);
   const focus=c.life?.mode==='calm'?100:(t.patience??100);
-  return `<div class="tt tt-lesson"${g.attrs}>${g.hint}${timetable(t,c)}${board(t,R,index)}${hud('Nhịp lớp',focus,t,person)}<div class="tt-body">${view.body}</div>${bar(view.status,(view.extra||'')+g.cta)}</div>`;
+  return `<div class="tt tt-lesson"${g.attrs}>${g.hint}<div class="tt-toprow">${timetable(t,c)}${hud('Nhịp lớp',focus,t,person)}</div>${board(t,R,index)}<div class="tt-body">${view.body}</div>${bar(view.status,(view.extra||'')+g.cta,view.top||'')}</div>`;
 }
 
 /* ------------------------------------------------------------ teacher: AI in class
@@ -314,6 +334,9 @@ try{
   if(!orig.__classAi){const wrap=function(data){classApi=this;return orig.call(this,data);};wrap.__classAi=true;GameAPI.prototype.accept=wrap;}
 }catch{/* no api module (tests) */}
 export const bindClassApi=api=>{if(api)classApi=api;};
+/** "Kế hoạch lớp" shows one page at a time: data-cl-tab on a button picks it (also on a link that opens the dock). */
+export const classTab={now:'today'};
+if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e.target?.closest?.('[data-cl-tab]');if(!b)return;classTab.now=b.dataset.clTab;if(!b.dataset.action)setTimeout(rerender,0);},true);  // after the click: re-rendering now would detach the target and read as a tap outside the sheet
 const clPending={},clVoiced=new Set(),clError={};
 export const classAiOn=()=>!!(classApi?.ai?.configured&&classApi?.state?.settings?.aiConsent);
 const rerender=()=>classApi?.dispatchEvent(new CustomEvent('state',{detail:{}}));
@@ -397,13 +420,7 @@ const ANGLE_ICON={history:'📜',fun:'🎈',photo:'📸'};
 const ANGLE_LABEL={history:'chuyện xưa',fun:'trò vui',photo:'góc ảnh'};
 const CALL_DONE={rest:'nghỉ ở homestay',clinic:'đã đi khám',push:'cố đi cùng đoàn'};
 
-// The sheet is re-rendered after every action: tour folds remember whether the player opened them.
-const tourFolds=new Map();
-if(typeof document!=='undefined')document.addEventListener('toggle',e=>{const d=e.target;if(d?.dataset?.tourFold)tourFolds.set(d.dataset.tourFold,d.open);},true);
-function tourFold(key,summary,body,open=false){
-  const on=tourFolds.has(key)?tourFolds.get(key):open;
-  return `<details class="fold tt-fold" data-tour-fold="${key}"${on?' open':''}><summary>${summary}</summary><div class="fold-body">${body}</div></details>`;
-}
+const tourFold=(key,summary,body,open=false)=>ttFold(key,summary,body,open);
 /** The career's record of this leg's group (c.life.tour.group), when the trip is a leg of it. */
 function legGroup(T,c){const G=c.life?.tour?.group;return G&&T.group&&G.start===T.group.start?G:null;}
 const hardRoute=(T,route,mins)=>route.includes('hill')||mins>100||(T.weather.id==='heat'&&route.filter(id=>!T.places.find(p=>p.id===id)?.indoor).length>1);
@@ -468,7 +485,15 @@ function roster(T,route,G=null){
     return `<li class="${tone?'tone-'+tone:''}" title="${esc(cue)}"><span class="tt-face" aria-hidden="true">${m.emoji}</span><b>${esc(m.name)}</b><small${short===cue?'':` aria-label="${esc(cue)}"`}>${esc(short)}</small></li>`;
   };
   const title=T.group?`Đoàn ${T.group.days} ngày · ngày ${T.group.leg+1}/${T.group.days}`:'Đoàn hôm nay';
-  return section('👥',title,`<ul class="tt-group${full?'':' compact'}">${T.members.map(li).join('')}</ul>`,aside);
+  if(!full)return section('👥',title,`<ul class="tt-group compact">${T.members.map(li).join('')}</ul>`,aside);
+  // Planning: one pill per person with their wish (✓ once the route has it); the full cards unfold.
+  const pill=m=>{const [tone,cue]=memberCue(m,T,route),w=T.tags[m.wish];const short=tone==='warn'||tone==='dim'?cue:`${w?.emoji||''}${tone==='good'?' ✓':''}`;
+    return `<li class="${tone?'tone-'+tone:''}" title="${esc(cue)}"><span class="tt-face" aria-hidden="true">${m.emoji}</span><b>${esc(m.name)}</b><small aria-label="${esc(cue)}">${esc(short)}</small></li>`;};
+  return section('👥',title,`<ul class="tt-group compact">${T.members.map(pill).join('')}</ul>${ttFold('roster-'+T.stage,'Chi tiết từng người',`<ul class="tt-group">${T.members.map(li).join('')}</ul>`)}`,aside);
+}
+/** The map, folded on a phone (the numbered list says the same); open beside the list on a wide screen. */
+function mapFold(T,route,at=-1,small=false){
+  return ttFold('map-'+T.stage,`${em('🗺️')} <span>Bản đồ lộ trình</span>`,tripMap(T,route,at,small),wide());
 }
 
 function itinerary(T){
@@ -563,7 +588,7 @@ function planTrip(t,T,ui,c,first){
   const sick=sickPending(T,G);
   const next=sick?'Quyết định cho người ốm trước đã':!route.length?'Chạm 3–5 điểm theo thứ tự đi':S.warn[0]||`${route.length} điểm · đủ điều kiện. Chốt nhé!`;
   const card=sickCard(t,T,G);
-  const places=section('🗺️','Chọn điểm theo thứ tự đi',`<p class="tt-tip">${esc(T.weather.emoji)} ${esc(T.weather.text)}</p><div class="tt-split">${tripMap(T,route)}<div class="tt-places">${T.places.map(row).join('')}</div></div>${S.warn.length>1?`<ul class="tt-warn">${S.warn.map(w=>`<li>⚠️ ${esc(w)}</li>`).join('')}</ul>`:''}`,`${route.length}/5 điểm`);
+  const places=section('🗺️','Chọn điểm theo thứ tự đi',`<p class="tt-tip">${esc(T.weather.emoji)} ${esc(T.weather.text)}</p><div class="tt-split"><div class="tt-places">${T.places.map(row).join('')}</div>${mapFold(T,route)}</div>${S.warn.length>1?`<ul class="tt-warn">${S.warn.map(w=>`<li>⚠️ ${esc(w)}</li>`).join('')}</ul>`:''}`,`${route.length}/5 điểm`);
   const steps=[],reset={act:'tourReset',label:'↶ Chọn lại lộ trình'};
   if(sick)steps.push({ok:null,label:'Quyết cho người ốm trước',go:{sel:'.tt-sick',label:'🤒 Quyết cho người ốm'},...glow(first,'.tt-sick [data-opt="rest"]')});
   const best=first?bestRoute(T,G):null;
@@ -574,7 +599,7 @@ function planTrip(t,T,ui,c,first){
     steps.push({ok:route.length>=3||null,label:'Chạm 3–5 điểm theo thứ tự đi',go:{sel:'.tt-places',label:`🗺️ Chọn điểm ${route.length+1} (3–5 điểm)`}});
     if(route.length>=3&&!S.ok)steps.push({ok:false,label:S.warn[0]||'Lộ trình chưa hợp',go:{sel:'.tt-places',label:`⚠️ ${esc(S.warn[0]||'Sửa lộ trình')}`}});
   }
-  return {first:card?section('🤒','Người ốm sáng nay',card):'',body:roster(T,route,G)+places,status:esc(next),top,steps,
+  return {first:card?section('🤒','Người ốm sáng nay',card):'',body:places+roster(T,route,G),status:esc(next),top,steps,
     extra:route.length?local('↶','tourReset',{},'btn ghost',false,'Chọn lại'):'',
     final:{label:'Chốt lộ trình →',hint:'Chốt lộ trình',go:{cmd:'tour_plan',payload:{task:t.id,route,v:2}},ready:S.ok&&!sick}};
 }
@@ -594,7 +619,7 @@ function careSteps(T,c,lunch){
 function gatherTrip(t,T,c,first){
   const G=legGroup(T,c),late=(T.events||[]).find(e=>!e.chosen);
   const events=(T.events||[]).map(ev=>eventCard(ev,'tour_call',t.id)).join('');
-  const route=section('🧭','Lộ trình đã chốt',`<div class="tt-split">${tripMap(T,T.route)}${itinerary(T)}</div>`,`${T.route.length} điểm`);
+  const route=section('🧭','Lộ trình đã chốt',`<div class="tt-split">${itinerary(T)}${mapFold(T,T.route)}</div>`,`${T.route.length} điểm`);
   const n=T.present??T.members.length,sick=T.care?.sick&&T.care.call?section('🤒','Người ốm sáng nay',sickCard(t,T,G)):'';
   return {body:(events?section('📍',`Điểm hẹn · ${esc(T.gate.name)}`,events):'')+sick+roster(T,T.route,G)+route,
     status:esc(late?'Đoàn chưa đủ người: xử lý trước khi đi':`Đủ ${n}/${n} người ở ${T.gate.name}`),steps:[...eventSteps(T,first),...careSteps(T,c,true)],
@@ -610,13 +635,13 @@ function stopTrip(t,T,c,first){
   const mic=X?.kit?`<span class="${X.kit.mic<X.kit.mic_use?'bad-text':X.kit.mic<X.kit.mic_use*3?'tt-low':''}">🔋 ${X.kit.mic}%</span>`:'';
   const nextStop=last?null:T.places.find(p=>p.id===T.route[T.at+1]);
   const here=`<div class="tt-here"><span aria-hidden="true">${H.emoji}</span><div><small>Điểm ${T.at+1}/${T.route.length} · đang ở đây</small><h3>${esc(H.name)}</h3><p>${H.tags.map(g=>`${T.tags[g].emoji} ${esc(T.tags[g].label)}`).join(' · ')}</p></div></div>`;
-  const events=(T.events||[]).map(ev=>eventCard(ev,'tour_call',t.id)).join('');
+  const open=(T.events||[]).filter(e=>!e.chosen).map(ev=>eventCard(ev,'tour_call',t.id)).join(''),past=(T.events||[]).filter(e=>e.chosen).map(ev=>eventCard(ev,'tour_call',t.id)).join('');
   const next=nextStop?`➜ ${nextStop.emoji} ${nextStop.name}`:`➜ ${T.gate.emoji} ${T.gate.name}`;
   // The angle most of the group enjoys, plus the one that suits the place (as the server scores it).
   const ppl=T.members.filter(m=>!m.away),score=a=>{const f=ppl.filter(m=>m.angle===a).length;return 3*f-(ppl.length-f)+(H.tags.some(g=>BEST_ANGLE[g]===a)?2:0);};
   const angle=T.angles.map(a=>a.id).reduce((b,a)=>score(a)>score(b)?a:b);
   const steps=[...eventSteps(T,first),...careSteps(T,c,false),{ok:H.told?true:null,label:'Kể chuyện cho đoàn nghe',go:{sel:'.tt-angles',label:'🎙️ Chọn cách kể chuyện'},...glow(first,`.tt-angle[data-angle="${angle}"]`)}];
-  return {body:tripMap(T,T.route,T.at,true)+here+(events?section('⚠️','Chuyện trên đường',events):'')+section('🎙️','Kể gì cho đoàn nghe?',tell+book,H.told?'✓ Đã kể':mic)+roster(T,T.route,legGroup(T,c)),
+  return {body:here+(open?section('⚠️','Chuyện trên đường',open):'')+section('🎙️','Kể gì cho đoàn nghe?',tell+book,H.told?'✓ Đã kể':mic)+(past?`<div class="tt-past">${past}</div>`:'')+roster(T,T.route,legGroup(T,c))+mapFold(T,T.route,T.at,true),
     status:esc(next),steps,final:{label:last?'Đếm đoàn & về bến →':'Đếm đoàn & đi tiếp →',hint:last?'Đếm đoàn, về bến':'Đếm đoàn, đi tiếp',go:{cmd:'tour_next',payload:{task:t.id}},ready:!pending&&!!H.told}};
 }
 
@@ -634,8 +659,8 @@ export function tripV2(t,c,content,ui){
   const mood=c.life?.mode==='calm'?100:(t.patience??100);
   const at=TRIP_STEPS.findIndex(x=>x[0]===T.stage);
   const chips=`${T.group?`<span class="tag blue">👥 Đoàn ${T.group.days} ngày · ${T.group.leg+1}/${T.group.days}</span>`:''}<span class="tag">${esc(T.weather.emoji)} ${esc(T.weather.name)}</span><span class="tag">🎟 Quỹ ${T.stage==='plan'?T.fund:T.fund_left} xu</span>${T.wallet?`<span class="tag amber">👛 Bù ${T.wallet} xu</span>`:''}<span class="tag">⏱ ${T.stage==='plan'?'≤ '+T.limit:T.clock+'/'+T.limit}′</span>${T.tier>1?`<span class="tt-tier" aria-label="Độ khó ${T.tier}">${'★'.repeat(T.tier)}</span>`:''}`;
-  const steps=`<ol class="tt-trail" aria-label="Các chặng">${TRIP_STEPS.map(([,l],i)=>`<li class="${i<at?'done':i===at?'now':''}"${i===at?' aria-current="step"':''}><i aria-hidden="true">${i<at?'✓':i+1}</i><span>${esc(l)}</span></li>`).join('')}</ol>`;
-  return `<div class="tt tt-trip"${g.attrs}>${g.hint}<div class="tt-trip-top">${chips}</div>${steps}${hud('Nhịp đoàn',mood,t,person)}<div class="tt-body">${view.first||''}${carePanel(t,T,c)}${view.body}${bookPanel(T,c)}</div>${bar(view.status,(view.extra||'')+g.cta,view.top||'')}</div>`;
+  const steps=`<span class="tt-chalk tt-trail-mini" role="img" aria-label="Chặng ${at+1}/4: ${esc(TRIP_STEPS[at]?.[1]||'')}">${TRIP_STEPS.map((_,i)=>`<i class="${i<at?'done':i===at?'now':''}"></i>`).join('')}<b>${at+1}/4 · ${esc(TRIP_STEPS[at]?.[1]||'')}</b></span>`;
+  return `<div class="tt tt-trip"${g.attrs}>${g.hint}<div class="tt-trip-top">${chips}${steps}${hud('Nhịp đoàn',mood,t,person)}</div><div class="tt-body">${view.first||''}${carePanel(t,T,c)}${view.body}${bookPanel(T,c)}</div>${bar(view.status,(view.extra||'')+g.cta,view.top||'')}</div>`;
 }
 
 export const v2Stage=t=>t?.room?({roll:'Điểm danh đầu giờ',plan:'Soạn ba hoạt động',teach:'Dạy và giúp từng bạn',check:'Phản hồi phiếu cuối tiết',ready:'Khép tiết'}[t.room.stage]):t?.trip?({plan:'Chọn lộ trình hợp đoàn',gather:'Tập trung ở điểm hẹn',stop:'Kể chuyện và giữ đoàn',ready:'Khép chuyến'}[t.trip.stage]):null;

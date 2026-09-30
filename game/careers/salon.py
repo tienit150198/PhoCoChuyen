@@ -1572,7 +1572,8 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         tail = (' ' + ' '.join(notes)) if notes else ''
         tail += _visit(c, t, sold, book)
         if reward:
-            head = f'Thanh toán {reward} xu' + (f' (gồm {retail} xu sản phẩm)' if retail else '') + f'. {who} sẽ để lại đánh giá.'
+            parts = [f'dịch vụ {r["pay"]}'] + ([f'sản phẩm {retail}'] if retail else []) + ([f'tiền gấp {bonus}'] if bonus else [])
+            head = f'Thanh toán {reward} xu' + (f' ({" + ".join(parts)})' if len(parts) > 1 else '') + f'. {who} sẽ để lại đánh giá.'
         else:
             head = f'{who} không thanh toán đồng nào và sẽ để lại đánh giá.'
         msg = head + rush_note + tail + (' ' + r['message'] if r['message'] else '')
@@ -1754,7 +1755,7 @@ def _appt(s: dict, c: dict, p: dict) -> dict:
             stars = max(1, stars - 1)
             text += ' Lược kéo dùng lại chưa khử khuẩn, thấy ngại.'
             notes.append('⚠️ dùng bộ lược kéo chưa khử khuẩn')
-    price = info['price'] if info['price'] is not None else kit.price(c, 'treatment', PRICES['treatment'])
+    price = _appt_price(c, a['kind'])
     pay = price if stars >= 3 else price // 2
     kit.money(s, c, pay, f'Lịch hẹn: {info["label"].lower()} — {who}', a['id'], 'revenue')
     kit.review(s, c, a['npc'], stars, text, f'appt-{a["id"]}')
@@ -1765,12 +1766,18 @@ def _appt(s: dict, c: dict, p: dict) -> dict:
     d['appts_done'] += 1
     kit.metric(c, 'salon_appts')
     tail = f' ({"; ".join(notes)})' if notes else ''
-    return dict(message=f'{info["emoji"]} {who} tới đúng hẹn — {done}. +{pay} xu · {stars}★.{tail}', celebrate=stars == 5)
+    half = f' (chưa vừa ý, chỉ trả nửa giá {price} xu)' if pay < price else ''
+    return dict(message=f'{info["emoji"]} {who} tới đúng hẹn — {done}. +{pay} xu{half} · {stars}★.{tail}', celebrate=stars == 5)
+
+
+def _appt_price(c: dict, kind: str) -> int:
+    info = APPTS[kind]
+    return info['price'] if info['price'] is not None else kit.price(c, 'treatment', PRICES['treatment'])
 
 
 def _appt_view(c: dict, a: dict) -> dict:
     info = APPTS[a['kind']]
-    return dict(a, who=_npc_name(a['npc']), label=info['label'], emoji=info['emoji'], until=a['due'] + APPT_KEEP,
+    return dict(a, who=_npc_name(a['npc']), label=info['label'], emoji=info['emoji'], until=a['due'] + APPT_KEEP, price=_appt_price(c, a['kind']),
                 ready=a['state'] == 'open' and a['due'] <= c['day'] <= a['due'] + APPT_KEEP)
 
 

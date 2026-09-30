@@ -183,6 +183,8 @@ DEFAULT_PREFS = dict(social=True, daily=False, hour=19, tz=420)
 
 def ensure(store) -> None:
     _key_dir['path'] = Path(store.path).resolve().parent
+    if getattr(store, 'pg', None):
+        return  # PostgreSQL: created with every other table (game/pg_schema.py)
     with store.connect() as db:
         db.executescript(SCHEMA)
 

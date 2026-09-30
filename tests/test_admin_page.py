@@ -29,7 +29,7 @@ class AdminPageTests(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.server.shutdown(); cls.server.server_close(); cls.thread.join(); cls.temp.cleanup(); cls.env.stop()
+        cls.server.shutdown(); cls.server.server_close(); cls.thread.join(); cls.server.store.close_pool(); cls.temp.cleanup(); cls.env.stop()
         st.clear_cache()
 
     def setUp(self):

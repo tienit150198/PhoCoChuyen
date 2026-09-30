@@ -173,7 +173,7 @@ class SupplierOrders(unittest.TestCase):
         self.assertEqual(j.c['money'], cash - cost)
         self.assertEqual(boba.stock(j.c)['lychee'], before)
         o = st(j)['orders'][0]
-        self.assertTrue(o['lo'] - o['placed'] >= 30 and o['hi'] - o['placed'] <= 60)
+        self.assertTrue(o['lo'] - o['placed'] >= 15 and o['hi'] - o['placed'] <= 30)
         self.assertIn('hôm nay', r['eta']['eta_label'])
         self.assertIn('phút', r['eta']['left_label'])
         self.assertNotIn('nhịp', json.dumps(r, ensure_ascii=False))
@@ -186,8 +186,22 @@ class SupplierOrders(unittest.TestCase):
         self.assertEqual(st(j)['orders'], [])
         validate_state(j.state)
 
-    def test_market_before_cutoff_is_waiting_at_the_door_tomorrow(self):
+    def test_market_before_13_comes_this_afternoon(self):
         j = Journey('milk_tea')
+        day = j.c['day']
+        j.act('tea_order', item='peach', qty=10, supplier='market', confirm=True)
+        o = st(j)['orders'][0]
+        self.assertEqual(divmod(o['lo'], boba.DAY_MIN), (day, 15 * 60))
+        self.assertIn('hôm nay', pub(j)['orders'][0]['eta_label'])
+        have = boba.held(j.c)['peach']
+        wait_until(j, o['at'])
+        j.act('tea_wait')
+        self.assertEqual(j.c['day'], day)
+        self.assertEqual(boba.held(j.c)['peach'], have + 10)
+
+    def test_market_after_13_is_waiting_at_the_door_tomorrow(self):
+        j = Journey('milk_tea')
+        wait_until(j, j.c['day'] * boba.DAY_MIN + 13 * 60)
         j.act('tea_order', item='peach', qty=10, supplier='market', confirm=True)
         o = st(j)['orders'][0]
         self.assertEqual(o['lo'] // boba.DAY_MIN, j.c['day'] + 1)
@@ -198,20 +212,22 @@ class SupplierOrders(unittest.TestCase):
         j.act('start_day')
         self.assertEqual(boba.held(j.c)['peach'], have + 10 if o['late'] is None else have)
 
-    def test_market_after_cutoff_is_the_day_after_tomorrow(self):
+    def test_market_after_closing_is_at_the_door_tomorrow_too(self):
         j = Journey('milk_tea')
-        j.act('end_day', carry_event=True)  # evening, after 17:00
+        j.act('end_day', carry_event=True)  # evening: the night run still takes it
         j.act('tea_order', item='peach', qty=5, supplier='market', confirm=True)
         o = st(j)['orders'][0]
-        self.assertEqual(o['lo'] // boba.DAY_MIN, j.c['day'] + 1)  # c['day'] is already tomorrow
+        self.assertEqual(o['lo'] // boba.DAY_MIN, j.c['day'])  # c['day'] is already tomorrow
+        self.assertLess(o['hi'] % boba.DAY_MIN, boba.OPEN_MIN)
 
     def test_supplier_windows_and_rules(self):
         j = Journey('milk_tea')
         view = {s['id']: s for s in pub(j)['suppliers']}
-        self.assertEqual(view['express']['window'], '30–60 phút')
-        self.assertIn('Sáng mai', view['market']['window'])
-        self.assertEqual(view['factory']['window'], '2–3 ngày')
-        self.assertIn('nay', view['partner']['quote']['label'])  # "Trưa nay ~13:30"
+        self.assertEqual(view['express']['window'], '15–30 phút')
+        self.assertEqual(view['market']['window'], 'Chiều nay nếu đặt trước 13:00, sau đó sáng mai')
+        self.assertEqual(view['partner']['window'], 'Bốn chuyến/ngày · 10:00, 13:00, 16:00 & 19:00')
+        self.assertEqual(view['factory']['window'], '1–2 ngày')
+        self.assertIn('nay', view['partner']['quote']['label'])  # "Sáng nay ~10:15"
         text = json.dumps(pub(j)['suppliers'], ensure_ascii=False)
         self.assertNotIn('nhịp', text)
         unchanged(self, j, 'tea_order', item='lychee', qty=5, supplier='express')  # confirm
@@ -222,7 +238,7 @@ class SupplierOrders(unittest.TestCase):
         unchanged(self, j, 'tea_order', item='lychee', qty=5, supplier='nobody', confirm=True)
         j.act('tea_order', item='cup_L', qty=2, supplier='factory', confirm=True)
         o = st(j)['orders'][-1]
-        self.assertIn(o['lo'] // boba.DAY_MIN - j.c['day'], (2, 3))
+        self.assertIn(o['lo'] // boba.DAY_MIN - j.c['day'], (1, 2))
 
     def test_shelf_limit_counts_goods_on_the_way(self):
         j = Journey('milk_tea')

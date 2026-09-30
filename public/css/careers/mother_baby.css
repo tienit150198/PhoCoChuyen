@@ -223,3 +223,11 @@ html.reduce-motion .mb-event{animation:none}
 .mb-card-btns .btn{min-height:44px}
 /* After a desk change the view lands on the desk, clear of the sticky header and request strip. */
 .mb-steps{scroll-margin-top:calc(var(--job-head,84px) + 64px)}
+
+/* ---------- compact (UX 2026-09): once the order is known the customer is one slim row */
+.mb-customer.slim{align-items:center}
+.mb-customer.slim .mb-who{width:52px}
+.mb-customer.slim .mb-bubble{padding:6px 10px;gap:4px}
+.mb-customer.slim .mb-bubble p{font-weight:600;font-size:.9rem;line-height:1.35}
+.mb-customer.slim .mb-bubble:before{top:14px}
+.mb-customer.slim .mb-patience .mb-chat{margin-left:auto;min-width:44px;min-height:40px;padding:0 8px}

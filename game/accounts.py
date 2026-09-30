@@ -15,6 +15,7 @@ import hmac
 import re
 import secrets
 
+from . import db as dbm
 from . import social
 
 USERNAME = re.compile(r'[a-z0-9_.]{3,24}')
@@ -150,11 +151,14 @@ def register(store, token: str, d: dict) -> dict:
     db = store.connect()
     try:
         db.execute('BEGIN IMMEDIATE')
-        row = db.execute('SELECT csrf FROM sessions WHERE sid=?', (sid,)).fetchone()
+        row = db.execute('SELECT csrf FROM sessions WHERE sid=?' + dbm.for_update(db), (sid,)).fetchone()
         need(row, 'Phiên chơi không còn tồn tại. Tải lại trang nhé.', 'session_missing', 401)
         need(not _account_for(db, sid), 'Bạn đang đăng nhập rồi.', 'already_signed_in')
         need(not db.execute('SELECT 1 FROM accounts WHERE username=?', (username,)).fetchone(), 'Tên đăng nhập này đã có người dùng.', 'username_taken', 409)
-        db.execute('INSERT INTO accounts(username,display,pw,sid) VALUES(?,?,?,?)', (username, display, pw, sid))
+        try:
+            db.execute('INSERT INTO accounts(username,display,pw,sid) VALUES(?,?,?,?)', (username, display, pw, sid))
+        except dbm.IntegrityError:  # PostgreSQL: the same name was taken by a concurrent registration
+            raise AccountError('Tên đăng nhập này đã có người dùng.', 'username_taken', 409) from None
         # Rotate this device onto a login token; keep its CSRF so open tabs keep working.
         new_token, csrf = _new_login(db, sid, row['csrf'])
         db.commit()

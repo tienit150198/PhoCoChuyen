@@ -324,3 +324,30 @@ html.reduce-motion .career-job.fl .fl-fill{transition:none}
 .career-job.fl .fl-suggest{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:6px 0 0}
 .career-job.fl .fl-suggest small{flex:1 1 200px;min-width:0;font-style:italic;color:var(--ink-2,var(--muted));line-height:1.4}
 .career-job.fl .fl-suggest .btn{min-height:40px}
+/* UX phase 2: compact ticket; the brief, the day line and the cooler shelf fold to one line */
+.career-job.fl .fl-ticket.compact{gap:6px;padding:10px 12px}
+.career-job.fl .fl-ticket.compact .fl-note{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.career-job.fl details.fl-brief,.career-job.fl details.fl-dayfold{border:1px solid var(--fl-line,var(--line));border-radius:var(--fl-rs,10px);background:var(--fl-surface,var(--surface))}
+.career-job.fl details.fl-brief>summary,.career-job.fl details.fl-dayfold>summary,.career-job details.fl-shelf-fold>summary{min-height:44px;display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;padding:6px 10px;cursor:pointer;list-style:none}
+.career-job.fl details.fl-brief>summary::-webkit-details-marker,.career-job.fl details.fl-dayfold>summary::-webkit-details-marker,.career-job details.fl-shelf-fold>summary::-webkit-details-marker{display:none}
+.career-job.fl details.fl-brief>summary::after,.career-job.fl details.fl-dayfold>summary::after,.career-job details.fl-shelf-fold>summary::after{content:'▸';margin-left:auto;color:var(--fl-muted,var(--muted))}
+.career-job.fl details[open].fl-brief>summary::after,.career-job.fl details[open].fl-dayfold>summary::after,.career-job details[open].fl-shelf-fold>summary::after{content:'▾'}
+.career-job.fl details.fl-brief>summary small{color:var(--ink-2,var(--fl-muted))}
+.career-job.fl details.fl-brief .fl-bad-n{color:var(--fl-bad);font-weight:700}
+.career-job.fl details.fl-brief>.req-list{padding:0 10px 8px}
+.career-job.fl details.fl-brief li.gd-todo{min-height:44px}
+.career-job.fl details.fl-dayfold>summary{font-size:.9rem;font-weight:700}
+.career-job.fl details.fl-dayfold.low>summary{color:var(--fl-bad)}
+.career-job.fl details.fl-dayfold[open]{display:grid;gap:6px;padding-bottom:6px}
+.career-job.fl details.fl-dayfold>.fk-day,.career-job.fl details.fl-dayfold>.fk-queue{margin:0 8px}
+.career-job details.fl-shelf-fold{display:block;padding:0}
+.career-job details.fl-shelf-fold>.fl-shelf-row{padding:0 10px 10px}
+.career-job.fl .fl-ticket.compact .fl-tags{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none}
+.career-job.fl .fl-ticket.compact .fl-tags .tag{flex:none;white-space:nowrap}
+.career-job.fl details.fl-brief>.fl-brief-cap,.career-job.fl details.fl-brief>.fl-heard{margin-left:10px;margin-right:10px}
+.career-job.fl details.fl-brief>.fl-heard{margin-bottom:8px}
+.career-job .sf-lock{margin:6px 0 0}
+.career-job .sf-lock .tag{font-size:.82rem}
+.career-job.fl .fl-ticket.compact{min-width:0;max-width:100%}
+.career-job.fl .fl-ticket.compact .fl-ticket-head>.grow,.career-job.fl .fl-ticket.compact .fl-tags{min-width:0;max-width:100%}
+.career-job.fl .fl-ticket.compact{grid-template-columns:minmax(0,1fr)}

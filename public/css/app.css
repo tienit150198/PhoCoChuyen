@@ -2417,3 +2417,129 @@ html:not(.reduce-motion) .calm-card.pulse{animation:calm-pulse .6s var(--ease)}
 .bank-chip{position:fixed;left:50%;top:calc(var(--safe-t) + 72px);transform:translateX(-50%);z-index:210;padding:8px 14px;border-radius:999px;background:var(--inverse);color:var(--on-inverse);font-weight:700;font-size:.95rem;box-shadow:var(--shadow);pointer-events:none;animation:mnl-toast-in .22s var(--ease);max-width:calc(100vw - 32px);white-space:nowrap;transition:opacity .3s}
 .bank-chip.leaving{opacity:0}
 html.reduce-motion .bank-chip{animation:none}
+
+/* ---------- Compact work sheets (UX 2026-09-30) -------------------------------------------------------------
+   Header: one line, "EYEBROW · Title", both cut with "…" (the full title is in title=); the next-step hint shows
+   under it only when no bottom button repeats it (guide.js .gd-dup). ⋯ holds "Để lát nữa / Xem các việc khác"
+   (they used to take a whole footer row). Toasts sit just under the header. */
+.sheet.cozy-job .sheet-head>.grow{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px;row-gap:2px}
+.sheet.cozy-job .sheet-head>.grow>.eyebrow{flex:0 1 auto;max-width:100%;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* The title can carry the order itself ("Tô tương đen, không hải sản"): up to two lines, never cut on one. */
+.sheet.cozy-job .sheet-head>.grow>h2{flex:1 1 9em;min-width:0;margin:0;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow-wrap:break-word}
+.sheet.cozy-job .sheet-head>.grow>p{flex:1 0 100%;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sheet.cozy-job .sheet-head>.grow>.gd-next{flex:1 0 100%}
+html[data-layout="phone"] .sheet.cozy-job .sheet-head{padding-top:18px;padding-bottom:8px;align-items:center}
+.head-more{position:relative;flex:none}
+.head-more>summary{list-style:none;cursor:pointer;font-size:1.4rem;font-weight:800;line-height:1;color:var(--ink-2)}
+.head-more>summary::-webkit-details-marker{display:none}
+.head-more[open]>summary{background:var(--accent-soft)}
+.head-more>summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.head-menu{position:absolute;right:0;top:calc(100% + 6px);z-index:8;display:grid;gap:6px;min-width:210px;padding:8px;border-radius:14px;background:var(--surface);border:1px solid var(--line-strong);box-shadow:var(--shadow)}
+.head-menu>.btn{justify-content:flex-start;width:100%;min-height:44px;white-space:nowrap}
+/* A work sheet has no footer any more: the desks' action bar sits on the sheet's bottom edge. */
+#sheetContent:not(:has(>.sheet-foot)) .career-job.dw{--dw-foot:var(--safe-b,0px)}
+
+/* Toasts over a sheet: just under its header (never over the title, ❔ and ✕, nor over the action bar at the
+   bottom). --sheet-head-b is the header's bottom edge (app.js watchHead); the confirm dialog keeps the top. */
+dialog.sheet .toasts{top:calc(var(--sheet-head-b,20px) + 8px);bottom:auto}
+html[data-layout="phone"] dialog.sheet .toasts{top:calc(var(--sheet-head-b,16px) + 6px)}
+#confirmDialog .toasts{top:calc(max(10px,var(--safe-t)) + 10px)}
+/* "Đã có phiên bản mới" (update.js, top layer) moves under the open sheet's header too, and toasts under it. */
+html:has(#sheet[open]) .update-pill{top:calc(var(--sheet-head-b,64px) + 6px)}
+html:has(.update-pill.is-open) dialog.sheet .toasts,html:has(.update-pill:popover-open) dialog.sheet .toasts{top:calc(var(--sheet-head-b,20px) + 52px)}
+
+/* Task done: the thank-you and the way on; the career's between-orders panel is one line under it. */
+.done-body .celebration{margin:0 0 6px}
+.done-body .celebration svg{width:36px;height:36px}
+.done-ways{align-items:center}
+.done-body>h2{margin:0}
+.idle-fold{text-align:left;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+.idle-fold>summary{display:flex;align-items:center;gap:8px;min-height:48px;padding:6px 14px;cursor:pointer;list-style:none;font-weight:700;color:var(--ink-2)}
+.idle-fold>summary::-webkit-details-marker{display:none}
+.idle-fold>summary::after{content:"▸";margin-left:auto;color:var(--accent-text)}
+.idle-fold[open]>summary::after{content:"▾"}
+.idle-fold>summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.idle-fold[open]>summary{border-bottom:1px solid var(--line)}
+.idle-fold>.career-idle{margin:0;padding:8px}
+
+/* Day summary: the profit/loss card folded to one line, "✓ Lãi/lỗ hôm nay  +N xu ▸". */
+.sum-pnl{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+.sum-pnl>summary{display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 14px;cursor:pointer;list-style:none;font-weight:700}
+.sum-pnl>summary::-webkit-details-marker{display:none}
+.sum-pnl>summary>b{margin-left:auto;font-variant-numeric:tabular-nums}
+.sum-pnl>summary>b.good{color:var(--good)}
+.sum-pnl>summary>b.bad{color:var(--bad)}
+.sum-pnl>summary::after{content:"▸";color:var(--accent-text)}
+.sum-pnl[open]>summary::after{content:"▾"}
+.sum-pnl>summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.sum-pnl>.card.pnl{margin:0;border:0;border-top:1px solid var(--line);border-radius:0 0 var(--radius) var(--radius)}
+
+/* AI notice (v4/ai-chat.js): compact, and never over a work sheet (job, prepare, day summary), where it hid the
+   action bar. It stays on the scene (a small card under the top bar), over the other sheets and inline in the
+   chat, until "Đã hiểu" (or "Tắt AI") dismisses it for good. */
+/* Inside a sheet the floating AI card shows only on the home sheet (the chat sheet has it inline); it floats over
+   the scene again when the sheet closes, until the player taps Đã hiểu / Tắt AI. */
+#sheet:not(.home) .ai-notice:not(.inline),#confirmDialog .ai-notice:not(.inline){display:none}
+.ai-notice:not(.inline){padding:8px 10px 8px 12px;gap:2px 8px;grid-template-columns:auto 1fr auto;align-items:center}
+.ai-notice:not(.inline) p{font-size:.833rem;line-height:1.35}
+.ai-notice:not(.inline) .ai-notice-actions{grid-column:auto;margin:0;gap:6px}
+.ai-notice:not(.inline) .ai-notice-actions .btn{min-height:44px;padding-inline:10px}
+@media (max-width:520px){.ai-notice:not(.inline){grid-template-columns:auto 1fr}.ai-notice:not(.inline) .ai-notice-actions{grid-column:1/-1;justify-content:flex-end}}
+
+/* Stock room on a phone (views.js inventoryView): smaller bins, same content (count, name, unit, fill, flags);
+   locked goods are one "🔒 N món mở ở cấp X–Y" chip under the shelf. */
+html[data-layout="phone"] .inv-bin{min-height:0;gap:2px;padding:8px 10px}
+html[data-layout="phone"] .inv-bin-emoji{font-size:1.35rem}
+html[data-layout="phone"] .inv-bin-count b{font-size:1.3rem}
+/* One bin on a phone: emoji beside the name, the count on the unit line, the fill bar under both. */
+html[data-layout="phone"] .inv-bin{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"e n n" "e u c" "b b b" "f f f";column-gap:8px;row-gap:1px;align-items:center}
+html[data-layout="phone"] .inv-bin-top{display:contents}
+html[data-layout="phone"] .inv-bin-emoji{grid-area:e;align-self:start}
+html[data-layout="phone"] .inv-bin-name{grid-area:n}
+html[data-layout="phone"] .inv-bin-unit{grid-area:u;min-width:0}
+html[data-layout="phone"] .inv-bin-count{grid-area:c;justify-self:end}
+html[data-layout="phone"] .inv-bin-count b{font-size:1.15rem}
+html[data-layout="phone"] .inv-bin .inv-bar{grid-area:b;margin-top:4px}
+html[data-layout="phone"] .inv-bin .inv-flags{grid-area:f}
+.sf-lock.inv-lock{margin:10px 0 0}
+
+/* Stock room of the counter desks (app.js stockDesk): the supplier list folds to one line, "Nhập từ 🚚 Hạt Nắng ·
+   Sáng mai ~10:15 ▸" (the picked one; the others one tap away), and the goods rows keep the order controls on
+   the same line on a phone. */
+.wh-sups-fold>summary{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;min-height:48px;padding:6px 12px;border-radius:var(--radius-sm);border:1px solid var(--line-strong);background:var(--surface);cursor:pointer;list-style:none}
+.wh-sups-fold>summary::-webkit-details-marker{display:none}
+.wh-sups-fold>summary::after{content:"▸";margin-left:auto;color:var(--accent-text)}
+.wh-sups-fold[open]>summary::after{content:"▾"}
+.wh-sups-fold>summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wh-sups-k{font-weight:800;color:var(--ink-2)}
+.wh-sups-fold>summary>small{color:var(--muted)}
+.wh-sups-fold[open]>.wh-sup-list{margin-top:8px}
+html[data-layout="phone"] .wh .inventory-row{gap:8px;padding:8px 0}
+html[data-layout="phone"] .wh .inventory-row>.item-art{width:36px;height:36px;flex:none}
+html[data-layout="phone"] .wh .inventory-row>div{flex:1 1 96px}
+html[data-layout="phone"] .wh .inv-row-act{flex:0 1 auto;justify-content:flex-end}
+html[data-layout="phone"] .wh .inventory-row .inv-row-act input{width:50px}
+html[data-layout="phone"] .wh .inv-row-act .btn{padding-inline:10px}
+
+/* Decor sheet on a phone (app.js decorView): each upgrade is a compact card, icon beside the name and price,
+   the line of text under the name, the action under both (was ~230px a card). */
+html[data-layout="phone"] .upgrade-grid{gap:8px}
+html[data-layout="phone"] .upgrade-card{display:grid;grid-template-columns:40px minmax(0,1fr) auto;align-items:center;column-gap:10px;row-gap:2px;padding:10px 12px}
+html[data-layout="phone"] .upgrade-card>.row.spread{display:contents}
+html[data-layout="phone"] .upgrade-card .upgrade-icon{grid-column:1;grid-row:1/span 2;align-self:start;width:40px;height:40px;margin:0;border-radius:12px}
+html[data-layout="phone"] .upgrade-card>.row.spread>.tag{grid-column:3;grid-row:1}
+html[data-layout="phone"] .upgrade-card>h3{grid-column:2;grid-row:1;margin:0;min-width:0}
+html[data-layout="phone"] .upgrade-card>p{grid-column:2/-1;grid-row:2;margin:0;line-height:1.4}
+html[data-layout="phone"] .upgrade-card>:is(.btn,select,.tag){grid-column:1/-1;margin-top:6px}
+html[data-layout="phone"] .upgrade-card>.tag{justify-self:start}
+
+/* A tap held while another command is on the wire (app.js holdMark): it waits its turn, and says so. */
+.is-held{cursor:progress}
+:is(.btn,.icon-btn,.dock-btn,.rail-item,.tile).is-held::after{content:"";position:absolute;top:50%;right:8px;width:14px;height:14px;margin-top:-7px;box-sizing:border-box;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;opacity:0;pointer-events:none;animation:mnl-spin .7s linear infinite,mnl-spin-in .01s linear .4s forwards}
+:is(.icon-btn,.dock-btn).is-held::after{right:auto;left:50%;margin-left:-7px}
+html.reduce-motion .is-held::after,body.reduce-motion .is-held::after{animation:mnl-spin-in .01s linear .4s forwards}
+
+/* Support desk options on a phone: two per row (6 options were 6 full-width rows). */
+html[data-layout="phone"] .dw-cs .dw-choices{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+html[data-layout="phone"] .dw-cs .dw-choice{flex-direction:column;align-items:flex-start;gap:4px;min-height:44px;padding:8px 10px;overflow-wrap:anywhere}
+html[data-layout="phone"] .dw-cs .dw-choice>svg{width:18px;height:18px}

@@ -1421,14 +1421,15 @@ def _handle(s: dict, c: dict, d: dict, name: str, p: dict) -> dict:
             else:   # done without an accepted quote: billed at the list price, the customer decides at the counter
                 pay += _line(c, device, _fault_def(device, f), grade)['price']
         extra_notes = []
+        math = f'sửa {pay}'
+        bonus = 0
         left = _rush_left(c, t)
-        if left is not None:
-            if left >= 0:
-                pay += n['rush']['bonus']
-                d['rush_on_time'] += 1
-                extra_notes.append(f'Kịp giờ! Khách gửi thêm {n["rush"]["bonus"]} xu tiền gấp.')
+        if left is not None and left >= 0:
+            d['rush_on_time'] += 1
+            bonus = n['rush']['bonus']
         if case == 'privacy' and b['data_req'] == 'copy':
             pay += DATA_FEE
+            math += f' + dữ liệu {DATA_FEE}'
         if case == 'warranty':
             d['claims'] += 1
             if b['claim'] == 'charge' and _covered(t):
@@ -1437,7 +1438,16 @@ def _handle(s: dict, c: dict, d: dict, name: str, p: dict) -> dict:
                 extra_notes.append('Lần này tiệm chịu thiệt, bảo hành cả phần ngoài phiếu cho vui lòng khách.')
         _handover_slips(c, t, b, tested, pay)
         r = cq.react(s, c, t, pay)
-        pay = r['pay']
+        if r['pay'] < pay:
+            math += f' − khách bớt {pay - r["pay"]}'
+        # The rush money is a thank-you on top of the bill: an unhappy customer keeps it, and it is never cut.
+        if bonus and r['kind'] in ('accept', 'grumble'):
+            extra_notes.append(f'Kịp giờ! Khách gửi thêm {bonus} xu tiền gấp.')
+            math += f' + tiền gấp {bonus}'
+        else:
+            bonus = 0
+        pay = r['pay'] + bonus
+        bill = f' ({math})' if math.count(' ') > 1 else ''   # the line math, when there is more than the repair
         b['paid'] = pay
         d['repaired'] += 1
         d['day_repaired'] += 1
@@ -1462,10 +1472,10 @@ def _handle(s: dict, c: dict, d: dict, name: str, p: dict) -> dict:
         tail += (' ' + r['message']) if r['message'] else ''
         tail += shelf_note + trust_note
         if not tested:
-            return dict(message=f'Đã giao máy khi chưa chạy thử · +{pay} xu.{tail}')
+            return dict(message=f'Đã giao máy khi chưa chạy thử · +{pay} xu{bill}.{tail}')
         if cq.slips(t):
-            return dict(message=f'Đã bàn giao máy, phụ kiện và phiếu bảo hành · +{pay} xu.{tail}')
-        return dict(message=f'Đã bàn giao máy, phụ kiện và phiếu bảo hành · +{pay} xu.{tail}', celebrate=True)
+            return dict(message=f'Đã bàn giao máy, phụ kiện và phiếu bảo hành · +{pay} xu{bill}.{tail}')
+        return dict(message=f'Đã bàn giao máy, phụ kiện và phiếu bảo hành · +{pay} xu{bill}.{tail}', celebrate=True)
     if name == 'rp_return':
         kit.confirm(p, 'Xác nhận trả máy không sửa.')
         kit.need(not b['fixed'], 'Máy đã thay/sửa một phần — chạy thử rồi bàn giao nhé.')
@@ -1686,12 +1696,13 @@ def _back_covered(row: dict) -> bool:
     return row['days'] > 0 and row['due'] - row['handed'] <= row['days']
 
 
-def _back_fee(row: dict) -> tuple[int, int]:
-    """(part cost the shop pays for a free redo, what a charged redo bills)."""
+def _back_fee(c: dict, row: dict) -> tuple[int, int]:
+    """(part cost the shop pays for a free redo, what a charged redo bills: the part plus half the
+    labor on today's price board, the same labor the quote uses)."""
     fd = _fault_def(row['device'], row['fault'])
     item = fd['parts'].get(row['grade'])
     cost = ITEM_INDEX[item]['cost'] if item else 1
-    price = (ITEM_INDEX[item]['price'] if item else 0) + _round(DEVICES[row['device']]['labor'] * fd['mult'] / 2)
+    price = (ITEM_INDEX[item]['price'] if item else 0) + _round(kit.price(c, row['device'], DEVICES[row['device']]['labor']) * fd['mult'] / 2)
     return cost, price
 
 
@@ -1701,7 +1712,7 @@ def _comeback(s: dict, c: dict, d: dict, p: dict) -> dict:
     choice = kit.one_of(p.get('choice'), ('redo', 'charge'), 'Chọn sửa lại miễn phí hoặc tính tiền.')
     kit.confirm(p, 'Xác nhận cách xử lý máy quay lại.')
     covered = _back_covered(row)
-    cost, price = _back_fee(row)
+    cost, price = _back_fee(c, row)
     who = PEOPLE[int(row['npc'].rsplit('_', 1)[1]) - 1][0]
     rec = d['regulars'].get(row['npc'])
     trust = 0
@@ -2237,7 +2248,7 @@ def public_data(c: dict) -> dict:
     # A comeback that has not happened yet stays a secret.
     d['comebacks'] = [x for x in d['comebacks'] if x.get('state') == 'here']
     for x in d['comebacks']:
-        cost, price = _back_fee(x)
+        cost, price = _back_fee(c, x)
         x.update(covered=_back_covered(x), cost=cost, price=price, cause_text=CAUSES[x['cause']],
                  left=_fault_def(x['device'], x['fault'])['left'], who=PEOPLE[int(x['npc'].rsplit('_', 1)[1]) - 1][0])
     d['care'] = _care_view(c)

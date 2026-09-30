@@ -211,7 +211,7 @@ def public_content() -> dict:
     catalogue=copy.deepcopy(CATALOG)
     for c in catalogue:
         c.update(CAREER_META.get(c["id"], {}))
-    return dict(version="0.5.0",experiences=extra.public_content(),inventory=inventory.content(),employment=employment.content(CAREERS),
+    return dict(version="0.9.4",experiences=extra.public_content(),inventory=inventory.content(),employment=employment.content(CAREERS),
                 situations={cid:situations.catalogue(cid) for cid in CAREERS},
                 careers={cid:(PLUGINS[cid].content() if hasattr(PLUGINS[cid],'content') else {}) for cid in PLUGINS},operations=operations.content(),catalogue=catalogue,npcs=NPCS,products=PRODUCTS,ph_products=PH_PRODUCTS,lots=list(LOT_INDEX.values()),
                 papers=PAPERS,ribbons=RIBBONS,upgrades=UPGRADES,quests=QUESTS,

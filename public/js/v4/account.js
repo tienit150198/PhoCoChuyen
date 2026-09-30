@@ -33,7 +33,7 @@ export function accountPane(env){
   const {api,ui}=env,a=api.account;
   if(a)return `<section class="settings-block"><h3>${icon('user',18)} Tài khoản</h3>
       <p class="acct-who">${icon('cloud',18)}<span>Đang đăng nhập: <b>${esc(a.display)}</b> <small class="muted">(${esc(a.username)})</small></span></p>
-      ${btn(`${icon('exit',16)} Đăng xuất`,'v4AccountLogout',{},'ghost')}</section>
+      <div class="row wrap">${btn('💍 Hôn nhân · mã người chơi','marriage',{},'cream')}${btn(`${icon('exit',16)} Đăng xuất`,'v4AccountLogout',{},'ghost')}</div></section>
     <form id="accountPasswordForm" class="settings-block acct-form" novalidate><h3>${icon('lock',18)} Đổi mật khẩu</h3>
       <input type="text" name="username" autocomplete="username" value="${esc(a.username)}" hidden>
       ${field('acct-current','Mật khẩu hiện tại','password','current-password','required maxlength="128"')}

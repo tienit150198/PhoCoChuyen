@@ -1,0 +1,196 @@
+/* Trà đá gốc bàng — scoped workbench styles (.career-job.td).
+   Its own look: tea-leaf green, the red and blue of plastic stools, a chalkboard
+   for the price sign. Chrome uses theme tokens (with fallbacks) so dark mode follows the app. */
+.career-job.td{
+  --td-surface:var(--surface,#fffaf0);--td-surface-2:var(--surface-2,#eef3e4);--td-ink:var(--ink,#2e3a2c);--td-muted:var(--muted,#6f7a66);
+  --td-line:var(--line,#dfe4cf);--td-tea:#4f8a5b;--td-tea-2:#6fa36b;--td-red:#d9534f;--td-blue:#3f7fbf;--td-chalk:#3d4a44;
+  --td-good:var(--good,#4f8a4b);--td-warn:var(--warn,#c98a2b);--td-bad:var(--bad,#c0533f);
+  --td-r:var(--radius,16px);--td-rs:var(--radius-sm,10px);--td-shadow:var(--shadow,0 6px 18px rgb(0 0 0 / 8%));
+  color:var(--td-ink)}
+
+/* Zero-specificity fallbacks for shared utility classes (shared styles win). */
+:where(.career-job.td) :where(.card){background:var(--td-surface);border:1px solid var(--td-line);border-radius:var(--td-r);padding:14px;box-shadow:var(--td-shadow)}
+:where(.career-job.td) :where(.workbench){display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,300px);gap:14px;align-items:start;margin-top:12px}
+:where(.career-job.td) :where(.wb-side){position:sticky;top:0}
+:where(.career-job.td) :where(.tile-grid){display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+:where(.career-job.td) :where(.bar){height:8px;border-radius:99px;background:var(--td-surface-2);overflow:hidden}
+:where(.career-job.td) :where(.bar i){display:block;height:100%;background:var(--td-good);border-radius:inherit}
+:where(.career-job.td) :where(.bar.low i){background:var(--td-bad)}
+.career-job.td .card+.card,.career-job.td .card+section,.career-job.td section+.card{margin-top:10px}
+.career-job.td h4{margin:0 0 8px}
+.career-job.td .td-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}
+.career-job.td .td-row .btn{min-height:44px}
+.career-job.td .td-bad{color:var(--td-bad)}
+
+/* ---------- tiles */
+.career-job.td .td-tile{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:76px;min-width:44px;padding:8px 6px;
+  border:1px solid var(--td-line);border-radius:var(--td-rs);background:var(--td-surface);color:var(--td-ink);font:inherit;text-align:center;cursor:pointer}
+.career-job.td .td-tile b{font-size:14px;line-height:1.2}
+.career-job.td .td-tile small{color:var(--td-muted);font-size:12px;line-height:1.25}
+.career-job.td .td-tile .tile-emoji{font-size:26px;line-height:1}
+.career-job.td .td-tile.selected{border-color:var(--td-tea);box-shadow:inset 0 0 0 2px var(--td-tea)}
+.career-job.td .td-tile.want{border-color:var(--td-tea-2);background:color-mix(in srgb,var(--td-tea) 8%,var(--td-surface))}
+.career-job.td .td-tile.danger{border-style:dashed;border-color:var(--td-bad)}
+.career-job.td .td-tile:disabled{opacity:.5;cursor:not-allowed}
+.career-job.td .td-spots{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.career-job.td .td-stools{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px}
+.career-job.td .td-num{min-height:52px}
+.career-job.td .td-num.over{border-color:var(--td-warn)}
+
+/* ---------- day bar, customer ticket */
+.career-job.td .td-day{display:flex;align-items:center;gap:10px;margin:0 0 10px;padding:8px 12px;border-radius:var(--td-rs);background:var(--td-surface-2);border:1px solid var(--td-line)}
+.career-job.td .td-day .td-sky{font-size:26px}
+.career-job.td .td-day b{display:block}
+.career-job.td .td-day small{color:var(--td-muted)}
+.career-job.td .td-help{min-width:44px;min-height:44px}
+.career-job.td .td-ticket h3{margin:0}
+.career-job.td .td-ticket p{margin:4px 0}
+.career-job.td .td-chips{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.td .td-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;background:var(--td-surface-2);border:1px solid var(--td-line);font-size:14px}
+.career-job.td .td-chip small{color:var(--td-muted)}
+.career-job.td .td-chip.ok{border-color:var(--td-good);color:var(--td-good);font-weight:700}
+.career-job.td .td-chip.no{border-color:var(--td-bad);text-decoration:line-through;text-decoration-color:var(--td-bad)}
+.career-job.td .patience{display:flex;align-items:center;gap:8px;margin-top:6px}
+.career-job.td .patience .bar{flex:1}
+
+/* ---------- stations */
+.career-job.td .td-stations{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:12px}
+.career-job.td .td-st{display:flex;flex-direction:column;gap:4px;padding:12px;margin:0}
+.career-job.td .td-st small{color:var(--td-muted)}
+.career-job.td .td-meter{display:block;height:10px;border-radius:99px;background:var(--td-surface-2);overflow:hidden;border:1px solid var(--td-line)}
+.career-job.td .td-meter i{display:block;height:100%;background:linear-gradient(90deg,var(--td-tea),var(--td-tea-2));border-radius:inherit}
+.career-job.td .td-meter.warn i{background:var(--td-warn)}
+.career-job.td .td-meter.bad i{background:var(--td-bad)}
+.career-job.td .td-leaf{flex:1;min-width:64px;flex-direction:column;line-height:1.1}
+.career-job.td .td-leaf small{display:block;font-size:11px;color:inherit}
+
+/* ---------- tray */
+.career-job.td .td-tray{display:flex;flex-wrap:wrap;gap:6px;min-height:48px;padding:8px;border:1px dashed var(--td-line);border-radius:var(--td-rs)}
+.career-job.td .td-glass{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:4px 10px;border:1px solid var(--td-line);border-radius:var(--td-rs);background:var(--td-surface);color:var(--td-ink);font:inherit;cursor:pointer}
+.career-job.td .td-glass span{font-size:20px}
+.career-job.td .td-glass small{font-size:12px}
+.career-job.td .td-glass i{font-style:normal;color:var(--td-muted)}
+.career-job.td .td-glass.warn{border-color:var(--td-warn)}
+
+/* ---------- the book */
+.career-job.td .td-book{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-variant-numeric:tabular-nums}
+.career-job.td .td-book li{display:flex;gap:10px;align-items:baseline;padding:6px 8px;border-bottom:1px dashed var(--td-line)}
+.career-job.td .td-book li span:first-child{color:var(--td-muted);white-space:nowrap}
+.career-job.td .td-book li.hot{background:color-mix(in srgb,var(--td-warn) 16%,transparent);border-radius:6px}
+.career-job.td .td-amt{display:flex;flex-direction:column;gap:4px;flex:1;min-width:140px}
+.career-job.td .td-amt input{min-height:44px;padding:6px 10px;border:1px solid var(--td-line);border-radius:var(--td-rs);font:inherit;font-size:18px;background:var(--td-surface);color:var(--td-ink)}
+.career-job.td .td-dispute{margin-top:10px}
+.career-job.td .td-fold summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:700}
+.career-job.td .td-grow{list-style:none;margin:8px 0;padding:0;display:grid;gap:8px}
+.career-job.td .td-grow li{display:flex;align-items:center;gap:10px}
+.career-job.td .td-grow li>span{font-size:24px}
+.career-job.td .td-grow small{display:block;color:var(--td-muted)}
+.career-job.td .td-grow .btn{min-height:44px}
+.career-job.td .td-step{min-width:44px}
+.career-job.td .td-plan{min-width:96px;text-align:center}
+
+/* ---------- intro, story, surprises, the sweep */
+.career-job.td .td-intro{border:2px solid var(--td-tea)}
+.career-job.td .td-intro h3{margin:0 0 6px}
+.career-job.td .td-intro-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:10px 0}
+.career-job.td .td-icons{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.td .td-icons li{display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.35}
+.career-job.td .td-icons li span{font-size:18px;width:24px;flex:none;text-align:center}
+.career-job.td .td-arc{border-left:6px solid var(--td-tea);margin-bottom:10px}
+.career-job.td .td-arc small{color:var(--td-muted)}
+.career-job.td .td-arc h3{margin:2px 0 6px}
+.career-job.td .td-arc p{margin:4px 0}
+.career-job.td .td-event{margin-bottom:10px;padding:14px;border-radius:var(--td-r);border:2px solid var(--td-warn);background:var(--td-surface);box-shadow:var(--td-shadow)}
+.career-job.td .td-event.tense{border-color:var(--td-bad)}
+.career-job.td .td-ev-head{display:flex;gap:10px;align-items:center}
+.career-job.td .td-ev-head>span{font-size:30px}
+.career-job.td .td-ev-head h3{margin:0}
+.career-job.td .td-ev-head small{color:var(--td-muted)}
+.career-job.td .td-opts{display:flex;flex-direction:column;gap:8px}
+.career-job.td .td-opt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;height:auto;min-height:48px;padding:10px 12px;text-align:left;white-space:normal}
+.career-job.td .td-opt small{color:var(--td-muted);font-weight:400}
+.career-job.td .td-opt em{color:var(--td-bad);font-style:normal;font-size:13px}
+.career-job.td .td-opt-label{font-weight:700}
+.career-job.td .td-last{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:8px 10px;border-radius:var(--td-rs);border:1px solid var(--td-line);background:var(--td-surface)}
+.career-job.td .td-last.good{border-color:var(--td-good)}
+.career-job.td .td-last.bad{border-color:var(--td-bad)}
+.career-job.td .td-last p{flex:1;margin:0;font-size:14px}
+.career-job.td .td-last>span{font-size:22px}
+.career-job.td .td-x{min-width:44px;min-height:44px}
+.career-job.td .td-sweep{margin-bottom:10px;padding:14px;border-radius:var(--td-r);background:var(--td-chalk);color:#fdf7e8;border:3px solid var(--td-red);box-shadow:var(--td-shadow)}
+.career-job.td .td-sweep-head{display:flex;align-items:center;gap:10px}
+.career-job.td .td-sweep-head>span{font-size:32px;animation:td-blink 1s steps(2) infinite}
+.career-job.td .td-sweep-head h3{margin:0;color:#fdf7e8}
+.career-job.td .td-sweep-head small{color:#f3d98a}
+.career-job.td .td-sweep p{color:#e9eee6;font-size:14px}
+.career-job.td .td-clock{margin-left:auto;min-width:64px;padding:6px 10px;border-radius:12px;background:#fdf7e8;color:var(--td-chalk);font-size:24px;text-align:center;font-variant-numeric:tabular-nums}
+.career-job.td .td-clock.late{background:var(--td-red);color:#fff}
+.career-job.td .td-sweep-btns{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.career-job.td .td-sweep-btns .btn{min-height:56px}
+@keyframes td-blink{50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.career-job.td .td-sweep-head>span{animation:none}}
+
+/* ---------- cash at the stall (public/js/careers/till.js) */
+.career-job.td .till{display:grid;gap:8px}
+.career-job.td .till h4{margin:0}
+.career-job.td .till-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.career-job.td .till-notes,.career-job.td .till-tray{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:36px}
+.career-job.td .till-money{display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-variant-numeric:tabular-nums}
+.career-job.td .till-money.note{min-width:48px;height:28px;padding:0 6px;border-radius:4px;background:var(--td-surface-2);border:1px solid var(--td-good);color:var(--td-good)}
+.career-job.td .till-money.coin{width:28px;height:28px;border-radius:50%;background:var(--td-surface-2);border:2px solid var(--td-warn);color:var(--td-warn);font-size:12px}
+.career-job.td .till-due{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:4px 10px;align-items:baseline}
+.career-job.td .till-due b.ok{color:var(--td-good)}
+.career-job.td .till-due b.over{color:var(--td-bad)}
+.career-job.td .till-denoms{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px}
+.career-job.td .till-denom{min-height:44px;border-radius:var(--td-rs);font:inherit;font-weight:700;cursor:pointer;background:var(--td-surface);color:var(--td-ink)}
+.career-job.td .till-denom.note{border:2px solid var(--td-good)}
+.career-job.td .till-denom.coin{border:2px solid var(--td-warn);border-radius:999px}
+.career-job.td .till-denom:disabled{opacity:.5;cursor:default}
+.career-job.td .till .btn{min-height:44px}
+
+/* ---------- next-step bar */
+.career-job.td .td-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;flex-direction:column;gap:6px;margin-top:12px;padding:8px 12px 10px;border-radius:var(--td-rs);
+  background:var(--td-surface);border:1px solid var(--td-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
+.career-job.td .td-bar .btn{width:100%;min-height:48px}
+
+@media (max-width:720px){
+  :where(.career-job.td) :where(.workbench){grid-template-columns:1fr}
+  :where(.career-job.td) :where(.wb-side){position:static}
+}
+@media (max-width:420px){
+  .career-job.td .td-stations{grid-template-columns:1fr;gap:8px}
+  .career-job.td .td-st{padding:10px}
+  .career-job.td .td-st .btn{flex:1 1 40%}
+  .career-job.td .td-leaf{flex:1 1 25%!important;min-width:0}
+  .career-job.td .tile-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .career-job.td .td-spots{grid-template-columns:1fr}
+  .career-job.td .till-due{grid-template-columns:auto 1fr}
+  .career-job.td .td-day small{font-size:12px}
+}
+
+/* UX compaction: tap-to-open lines (day, done setup parts, the stations not in use). */
+.career-job.td .td-pane{margin:0}
+.career-job.td .td-pane-sum{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:8px 12px;border:1px solid var(--td-line);border-radius:var(--td-rs);background:var(--td-surface-2);color:inherit;font:inherit;text-align:left;cursor:pointer;flex-wrap:wrap}
+.career-job.td .td-pane-sum::after{content:'▾';margin-left:auto;color:var(--td-muted)}
+.career-job.td .td-pane.open>.td-pane-sum::after{content:'▴'}
+.career-job.td .td-pane-body{padding:8px 2px 0}
+.career-job.td .td-day{padding:4px 6px}
+.career-job.td .td-day .td-pane-sum{border:0;background:transparent;padding:4px 6px}
+.career-job.td .td-day .td-sky{font-size:20px}
+.career-job.td .td-day b{display:inline}
+.career-job.td .td-day-line{display:flex;align-items:center;gap:8px}
+.career-job.td .td-setup .td-pane.td-done{margin-bottom:8px}
+.career-job.td .td-setup .td-pane.td-done>.td-pane-sum{color:var(--td-muted)}
+.career-job.td .td-setup .td-pane.warn>.td-pane-sum{border-color:#c0392b}
+.career-job.td .td-st-more{margin-top:10px}
+.career-job.td .td-st-more .td-stations{margin-top:0}
+.career-job.td .td-stations:empty{display:none}
+.career-job.td .td-day .td-pane-sum{flex-wrap:nowrap}
+.career-job.td .td-day .td-pane-sum>b,.career-job.td .td-day-line>b{flex:1 1 auto;min-width:0}
+.career-job.td .td-day .td-pane-body{padding:0 6px 6px}
+/* Phones: drinks and snacks three across (one row less each). */
+@media (max-width:480px){
+  .career-job.td .td-drinks,.career-job.td .td-snacks{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .career-job.td .td-drinks .td-tile,.career-job.td .td-snacks .td-tile{padding:6px 4px;min-height:64px}
+  .career-job.td .td-drinks .td-tile b,.career-job.td .td-snacks .td-tile b{font-size:.8rem;overflow-wrap:anywhere}
+}

@@ -1,0 +1,11 @@
+[Unit]
+Description=Phố Có Chuyện: nightly PostgreSQL backup (pg_dump -Fc, keep 7)
+After=postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/mnl-pg-backup
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7

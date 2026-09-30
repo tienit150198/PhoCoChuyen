@@ -24,7 +24,7 @@ ROOTS = {
     'wrong_transfer': ('lua', None, 9),
     'ceo_fraud': ('lua', ('corp_accounting', 'tax_payroll', 'group_accounting'), 6),
     'power_cut': ('lua', ('mother_baby', 'pharmacy', 'milk_tea', 'grocery', 'florist', 'cafe_bakery', 'restaurant', 'pet_care',
-                          'salon', 'repair', 'homestay', 'farm', 'accounting'), 7),
+                          'salon', 'repair', 'homestay', 'farm', 'accounting', 'clothing', 'pet_shop'), 7),
 }
 CHAINS = ('tab_due', 'tab_gone', 'invoice_paid', 'invoice_gone', 'prize_more', 'loan_claim', 'scam_ring_bust')
 LOSS_CATS = ('scam_loss', 'bad_debt')

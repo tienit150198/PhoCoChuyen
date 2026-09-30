@@ -10,7 +10,7 @@
 .career-job.dl *{box-sizing:border-box}
 
 /* Status strip: clock, fuel, load, COD */
-.career-job.dl .dl-status{display:grid;grid-template-columns:minmax(150px,1.2fr) repeat(auto-fit,minmax(110px,1fr));gap:10px;align-items:stretch;
+.career-job.dl .dl-status{display:grid;grid-template-columns:minmax(150px,1fr) minmax(0,4fr);gap:10px;align-items:stretch;
   background:var(--dl-s1);border:1px solid var(--dl-line);border-radius:var(--dl-r);padding:10px 12px;box-shadow:var(--shadow)}
 .career-job.dl .dl-clock{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:8px;align-items:center}
 .career-job.dl .dl-clock span{grid-row:span 2;font-size:1.6em}
@@ -24,6 +24,12 @@
 .career-job.dl .dl-meter.warn .bar i{background:var(--dl-warn)}
 .career-job.dl .dl-meter.bad .bar i{background:var(--dl-bad)}
 .career-job.dl .dl-meter.bad b{color:var(--dl-bad)}
+
+/* The four meters sit in one row (two per row only on very narrow screens). */
+.career-job.dl .dl-meters{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:10px;min-width:0}
+.career-job.dl .dl-meters .dl-meter-top{flex-direction:column;gap:0;line-height:1.25}
+.career-job.dl .dl-meters .bar{height:6px}
+@media (max-width:330px){.career-job.dl .dl-meters{grid-auto-flow:row;grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 /* Layout */
 .career-job.dl .workbench{display:grid;grid-template-columns:minmax(0,1fr) minmax(230px,310px);gap:14px;align-items:start}
@@ -131,12 +137,15 @@
 
 @media (max-width:760px){
   .career-job.dl .workbench{grid-template-columns:minmax(0,1fr)}
-  .career-job.dl .wb-side{position:static;order:-1}
-  .career-job.dl .dl-status{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .career-job.dl .dl-clock{grid-column:1/-1}
+  /* Phone: the step's own controls come first; the checklist and the folded app board follow them. */
+  .career-job.dl .wb-side{position:static;padding:0;background:none;border:0}
+  .career-job.dl .dl-status{grid-template-columns:minmax(0,1fr)}
+  .career-job.dl .dl-clock{grid-template-columns:auto auto minmax(0,1fr);align-items:baseline}
+  .career-job.dl .dl-clock span{grid-row:auto;font-size:1.1em}
+  .career-job.dl .dl-clock b{font-size:1.2em}
 }
 @media (max-width:420px){
-  .career-job.dl .dl-status{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:8px 10px}
+  .career-job.dl .dl-status{gap:6px;padding:8px 10px}
   .career-job.dl .dl-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .career-job.dl .dl-keypad{grid-template-columns:repeat(4,minmax(0,1fr))}
   .career-job.dl .dl-map svg{max-height:240px}
@@ -223,3 +232,28 @@
 .career-job.dl .dl-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:2;display:flex;align-items:center;gap:10px;padding:10px 12px;
   border-radius:var(--dl-r);background:var(--dl-s1);border:1px solid var(--dl-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
 .career-job.dl .dl-bar>.btn{flex:1}
+
+/* Folded one-liners (UX compaction): the route, the app board while an order is in hand, the COD
+   hand-in when it is not the step, and the day. Only the current step's controls stay open. */
+.career-job.dl .dl-sec.dl-route-sec,.career-job.dl .dl-board.folded,.career-job.dl .dl-hub.folded{padding:0;border:0;background:none;box-shadow:none}
+.career-job.dl .dl-pane{border:1px solid var(--dl-line);border-radius:var(--dl-rs);background:var(--dl-s1);min-width:0}
+.career-job.dl .dl-pane-sum{display:block;width:100%;min-height:44px;padding:11px 12px;border:0;background:none;color:inherit;font:inherit;font-weight:600;font-size:.9rem;text-align:left;cursor:pointer;overflow-wrap:anywhere}
+.career-job.dl .dl-pane-sum::after{content:" ▾";color:var(--dl-muted)}
+.career-job.dl .dl-pane.open>.dl-pane-sum{border-bottom:1px dashed var(--dl-line)}
+.career-job.dl .dl-pane.open>.dl-pane-sum::after{content:" ▴"}
+.career-job.dl .dl-pane-sum:focus-visible{outline:3px solid var(--dl-info);outline-offset:2px}
+.career-job.dl .dl-pane-body{display:grid;gap:8px;padding:10px 12px 12px;min-width:0}
+.career-job.dl .dl-today{display:grid;gap:8px}
+.career-job.dl .dl-lock{margin:8px 0 0;display:inline-block;font-size:.85em;padding:4px 10px;border-radius:99px;border:1px dashed var(--dl-line);color:var(--dl-muted);background:var(--dl-s1)}
+.career-job.dl .dl-fold>summary{white-space:normal;text-overflow:clip}
+.career-job.dl .dl-way{min-width:0;max-width:100%}
+.career-job.dl .dl-way>span,.career-job.dl .dl-way>small{white-space:normal;overflow-wrap:anywhere;max-width:100%}
+.career-job.dl .dl-done{display:inline-block;margin:4px 0;font-weight:700;color:var(--dl-good)}
+/* Planner on a phone: three stops per row, the draft buttons on one line. */
+@media (max-width:420px){
+  .career-job.dl .dl-grid.stops{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .career-job.dl .dl-grid.stops .tile{padding:6px 7px;min-height:44px}
+  .career-job.dl .dl-grid.stops .tile-emoji{font-size:1.1em}
+  .career-job.dl .dl-grid.stops .tile b{font-size:.8em}
+  .career-job.dl .dl-grid.stops .tile small{font-size:.7em}
+}

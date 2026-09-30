@@ -1,3 +1,36 @@
+# v0.9.4 — Kết hôn, ngân hàng, 3 nghề mới
+
+- Hết giật lag: chạy trên PostgreSQL (từ 0.9.3); 0.9.4 thêm các bảng mới lúc khởi động, không khóa bảng lớn.
+- Chương 3 thêm Shop quần áo, Shop thú cưng và quán trà đá vỉa hè.
+- Kết hôn (cần tài khoản): nhẫn, cầu hôn bằng mã người chơi, tiệc cưới, tiền mừng, tin trên phố; quỹ chung và thẻ chung vợ chồng; ly hôn.
+- Ngân hàng Phố: tiết kiệm, thẻ, khoản vay, điểm tín dụng.
+- Bạn bè (tìm theo tên tài khoản) và điểm thân quen với người quen trong phố.
+- Chứng chỉ nghề (thi 6 câu, đúng 4 là đạt, có gợi ý 💡) và "Đi cửa sau" khi trượt phỏng vấn.
+- Bảng xếp hạng: Top trải nghiệm (cả phố, từng nghề) và Top chứng chỉ; ẩn/hiện tên trong Cài đặt.
+- Đồng hồ trong ngày, sáng/tối, giờ mở cửa và đóng cửa; bỏ dở việc giữa chừng có phạt.
+- Khách bo tip, khách đưa thiếu tiền (đếm lại, nhắc, cho nợ, báo công an), đánh giá nhiều góc hơn.
+- Sách hướng dẫn đầy đủ (87 mục), màn hình gọn hơn trên điện thoại, thông báo hiện lâu hơn, tải nhanh hơn (lazy-load, file nén sẵn).
+- Popup "Có gì mới" liệt kê các điểm trên.
+
+# v0.9.3 — Thông báo "Có gì mới" cho toàn máy chủ
+
+- Máy chủ chạy PostgreSQL: mỗi thao tác dưới 0,1 giây, người chơi không phải chờ nhau.
+- Bảng "Có gì mới" hiện giữa màn hình cho mọi người chơi (cả người mới), không chờ lúc rảnh.
+
+# v0.9.2 — Máy chủ PostgreSQL, khắc phục giật lag
+
+- Lưu trữ chuyển sang PostgreSQL (bật bằng DATABASE_URL; không có thì chạy SQLite như cũ). Mỗi người chơi chỉ khóa save của mình, không còn hàng đợi ghi chung.
+- Công cụ chuyển dữ liệu (scripts/pg_migrate.py, deploy/pg/*): chép trước khi game chạy, đồng bộ, đối chiếu sha256 từng save, chuyển trong vài giây, quay về được.
+- Trang admin: tóm tắt nhanh, các mục tải riêng, có cache; không làm chậm người chơi.
+- Chịu tải: giới hạn theo IP chỉnh được (NEW_SESSIONS_PER_MINUTE, REGISTER_*, LOGIN_*, BOOTSTRAP_PER_MINUTE), MAX_THREADS mỗi worker; AI rớt kết nối thì dùng câu soạn sẵn.
+- Popup "Có gì mới" giữa màn hình: thông báo đã khắc phục sự cố sáng 30/9.
+
+# v0.9.1 — Sửa đặt phòng homestay trên điện thoại
+
+- Chọn phòng đã có khách hoặc không đủ chỗ không còn làm khung "Bước tiếp theo" phình to che hết lịch; ghi chú xuống dòng gọn.
+- Bấm cả hàng phòng để chọn (không chỉ ô tên), có dấu ✓ và thông báo "Đã chọn … · 1/2 chỗ"; màn 360px thấy đủ 7 đêm, cột tên phòng đứng yên.
+- Thông báo nhỏ không còn đè lên lịch; màn ngang có chỗ để thao tác.
+
 # Chưa phát hành — Dễ nhìn hơn
 
 ## Giao diện

@@ -5,6 +5,8 @@ import {icon,portrait,escapeHTML as esc} from '../icons.js';
 import {asset} from '../assets.js';
 import {nextHint,stepCta,pending,goAttrs} from './guide.js';
 import {CAREERS as GUIDE} from '../tutorial/guide-data.js';
+import {certInfo,certCss} from './certificates.js';
+import {lockChip} from '../careers/stage_fold.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const attrs=obj=>Object.entries(obj).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
@@ -109,12 +111,14 @@ export function inventoryView(env){
         `${flags?`<span class="inv-flags">${flags}</span>`:''}</button>`;};
     const shown=focus.length?items.filter(i=>focus.includes(i.id)):items;
     // Sections by group; runs of one-item groups share a section so the grid stays full.
+    // Locked goods (a later level) fold into one chip under the shelf: "🔒 N món mở ở cấp X–Y" (UX 2026-09-30).
+    const lockedHere=focus.length?[]:shown.filter(i=>inv.locked.includes(i.id)),unlocked=shown.filter(i=>!lockedHere.includes(i));
     const sections=[];
-    for(const g of new Set(shown.map(i=>i.group))){const list=shown.filter(i=>i.group===g),last=sections.at(-1);
+    for(const g of new Set(unlocked.map(i=>i.group))){const list=unlocked.filter(i=>i.group===g),last=sections.at(-1);
       if(list.length===1&&last?.single)last.names.push(groupName(g)),last.list.push(...list);else sections.push({names:[groupName(g)],list,single:list.length===1});}
     const order=list=>[...list.filter(i=>!inv.locked.includes(i.id)),...list.filter(i=>inv.locked.includes(i.id))];
     body=focus.length?`<div class="inv-focus"><span class="grow">Đang xem: ${focus.map(id=>name(byId[id])).join(', ')}</span>${button(`Xem tất cả ${icon('x',13)}`,'v4InvFocus',{},'ghost small')}</div><div class="inv-bins">${order(shown).map(bin).join('')}</div>`
-      :sections.map(x=>`${sections.length>1?`<h4 class="section-title">${esc(x.names.join(' · '))}</h4>`:''}<div class="inv-bins">${order(x.list).map(bin).join('')}</div>`).join('');
+      :sections.map(x=>`${sections.length>1?`<h4 class="section-title">${esc(x.names.join(' · '))}</h4>`:''}<div class="inv-bins">${order(x.list).map(bin).join('')}</div>`).join('')+lockChip(lockedHere.map(i=>i.unlock),'inv-lock');
     if(pick)body=orderCard(env,pick,{cap,stock:stock(pick.id),on:arriving[pick.id]||0,space:room(pick.id),unit:unit(pick),name:name(pick)})+body;
   }else if(tab==='orders'){
     const waiting=o=>{const i=byId[o.item]||{name:o.item},s=sup(o),late=Boolean(o.late_note),pct=Math.round(Math.max(0,Math.min(1,Number(o.progress)||0))*100);
@@ -368,25 +372,50 @@ function examReview(job){
   return `<ol class="jb-review">${rows.map(r=>`<li class="${r.ok?'ok':'bad'}"><b>${r.ok?'✓':'✗'} ${esc(r.text)}</b>${r.ok?'':`<small>Bạn chọn: ${esc(r.options[r.picked]||'—')}</small><small>Đúng: ${esc(r.options[r.answer]||'')} — ${esc(r.why)}</small>`}</li>`).join('')}</ol>`;
 }
 function scoreBar(score){return `<div class="jb-score"><div class="row spread"><span class="eyebrow">Điểm hồ sơ</span><b>${score}/100</b></div><div class="progress jb-bar"><i style="width:${Math.max(0,Math.min(100,score))}%"></i><span class="jb-mark" title="Cần 60 để được nhận"></span></div><small class="muted">Từ 60 điểm được mời nhận việc.</small></div>`;}
-function resultCard(p,job,day,ex){
+/** Story mode, after a failed interview: 📚 study for the certificate, 🚪 the back door, or try again later. */
+function nextWays(env,p,job,examFail,when){
+  const {api}=env,id=api.state.current,J=api.state.journey,ci=certInfo(api,id);
+  certCss();
+  const rows=[];let note='';
+  if(ci){
+    const g=ci.g;
+    rows.push(ci.held?`<button type="button" class="btn cream" data-action="jrCerts" data-cert="${esc(g.id)}" data-career="${esc(id)}"><span>🎓 Xem chứng chỉ của bạn<small>${esc(g.name)} · ${ci.rec.best} điểm · lần sau vẫn có ${ci.bonus}% cơ hội</small></span></button>`
+      :`<button type="button" class="btn primary" data-action="jrCerts" data-cert="${esc(g.id)}" data-career="${esc(id)}"><span>📚 Đi học lấy chứng chỉ<small>${esc(g.name)} · lớp ${g.fee} xu hoặc tự học miễn phí · thêm ${ci.bonus}% cơ hội được nhận</small></span></button>`);
+  }
+  const b=p?.backdoor;
+  if(examFail)note=`<p class="ct-next-note">🚪 Chứng chỉ hành nghề phải thi thật: không có cửa sau cho bài thi này.</p>`;
+  else if(b){
+    const used=!!job.backdoor,poor=J.wallet<b.fee;
+    const why=used?'Người quen chỉ “lo giúp” được một lần ở mỗi nơi':poor?`Ví chưa đủ ${b.fee} xu (đang có ${Math.max(0,J.wallet)} xu)`:'Nhờ người quen “lo giúp”, vào làm ngay';
+    rows.push(`<button type="button" class="btn cream" data-action="v4Backdoor"${used||poor?' disabled':''}><span>🚪 Đi cửa sau (${b.fee} xu)<small>${esc(why)}</small></span></button>`);
+  }
+  rows.push(`<button type="button" class="btn ghost" data-action="jrHome"><span>Thử lại sau / Tìm việc khác<small>Ứng tuyển lại ${esc(when)}, hoặc làm ở nơi khác trong hành trình</small></span></button>`);
+  return `<div class="ct-next" role="group" aria-label="Làm gì tiếp theo">${rows.join('')}</div>${note}`;
+}
+function resultCard(p,job,day,ex,env){
   const app=job.application||{},sh=app.exam;
   const examFail=sh&&sh.passed===false;
-  const when=job.cooldown_day>day?`từ ngày ${job.cooldown_day}`:'ngay hôm nay';
+  const story=!!env?.api.state.journey?.story;
+  // The server words the retry day on the one day counter ("từ Ngày 5 (còn 1 ngày · …)" / "bây giờ").
+  const when=job.retry?.text||(job.cooldown_day>day?`từ Ngày ${job.cooldown_day} (còn ${job.cooldown_day-day} ngày)`:'bây giờ');
   const next=examFail?`Thi lại ${when} — mỗi lần thi là một bộ câu khác.`:`Ứng tuyển lại ${when}. ${jobStages(p).includes('trial')?'Tập thêm rồi xin làm thử lại nhé.':'Chọn tin phù hợp hơn hoặc sửa CV cho thật.'}`;
   return `<section class="card jb-result bad"><span class="eyebrow">${examFail?'KẾT QUẢ BÀI THI':'KẾT QUẢ ỨNG TUYỂN'}</span><h3>${examFail?`Chưa đạt: ${sh.score}/${sh.qs.length} câu`:'Chưa được nhận lần này'}</h3>
     <p class="small muted">${esc(p?.title||'')} · ${esc(p?.org||'')}</p>
     ${examFail?'':app.score!=null?scoreBar(app.score):''}${examFail?'':jbLast(p,app)}
     ${examFail?'':(app.feedback||[]).map(x=>`<p class="small">• ${esc(x)}</p>`).join('')}
     <p class="notice amber small">${icon('leaf',15)}<span><b>Bước tiếp theo:</b> ${esc(next)}</span></p>
-    ${examFail?`<p class="small">Cần đúng ${ex?.pass_mark??4}/${sh.qs.length} câu. Lời giải các câu sai:</p>${examReview(job)}`:''}</section>`;
+    ${examFail?`<p class="small">Cần đúng ${ex?.pass_mark??4}/${sh.qs.length} câu. Lời giải các câu sai:</p>${examReview(job)}`:''}${story?nextWays(env,p,job,examFail,when):''}</section>`;
 }
 export function jobView(env){
   const {api,ui}=env,id=api.state.current,c=api.state.careers[id],job=c.job,E=api.content.employment;
   const posts=E.postings[id]||[];const qs=E.questions[id]||{};const ex=E.exams?.[id]||null;const cert=certOf(job,ex);
   const place=api.content.catalogue.find(x=>x.id===id)?.short||'';
+  // Story mode: the certificate for this job (📚/🎓) and the re-apply day on the life clock.
+  const J=api.state.journey,story=!!J?.story,ci=certInfo(api,id),today=story?J.life_day:c.day;
+  if(ci)certCss();
   if(job.status==='hired'){
     const p=posts.find(x=>x.id===job.employer);
-    return head('Hồ sơ công việc',esc(p?.org||''),'VIỆC LÀM · '+esc(place))+`<div class="sheet-body"><article class="card"><h3>${esc(job.title)}</h3><p>${esc(p?.culture||'')}</p><div class="kv"><div class="kv-row"><span>Lương</span><b>${job.salary} xu/ngày${job.probation?' · thử việc 85%':''}</b></div>${p?.wage_note?`<div class="kv-row"><span>Tiền tiệm</span><b>${esc(p.wage_note)}</b></div>`:''}${cert?`<div class="kv-row"><span>Chứng chỉ</span><b>✓ ${esc(ex.name)}</b></div>`:''}<div class="kv-row"><span>Ngày đã làm</span><b>${job.days_worked}</b></div>${job.probation?`<div class="kv-row"><span>Thử việc còn</span><b>${job.probation_left} ngày có làm việc</b></div>`:''}</div><p class="muted small">Lương trả khi khép ca nếu hôm đó bạn hoàn thành ít nhất một việc. Hết thử việc, đánh giá trung bình từ 3.5★ sẽ được ký chính thức.</p>${confirmCmd('Xin nghỉ việc','job_quit',{},'Nghỉ việc ở đây? Bạn cần ứng tuyển lại trước ca tiếp theo.','ghost small',c.open)}</article></div>`;
+    return head('Hồ sơ công việc',esc(p?.org||''),'VIỆC LÀM · '+esc(place))+`<div class="sheet-body"><article class="card"><h3>${esc(job.title)}</h3><p>${esc(p?.culture||'')}</p><div class="kv"><div class="kv-row"><span>Lương</span><b>${job.salary} xu/ngày${job.probation?' · thử việc 85%':''}</b></div>${p?.wage_note?`<div class="kv-row"><span>Tiền tiệm</span><b>${esc(p.wage_note)}</b></div>`:''}${cert?`<div class="kv-row"><span>Chứng chỉ</span><b>✓ ${esc(ex.name)}</b></div>`:''}${ci?.held?`<div class="kv-row"><span>Chứng chỉ nghề</span><b>${ci.g.emoji} ${esc(ci.g.name)}</b></div>`:''}${job.backdoor&&job.backdoor.posting===job.employer?`<div class="kv-row"><span>Vào làm</span><b>🚪 Qua cửa sau (${job.backdoor.fee} xu)</b></div>`:''}<div class="kv-row"><span>Ngày đã làm</span><b>${job.days_worked}</b></div>${job.probation?`<div class="kv-row"><span>Thử việc còn</span><b>${job.probation_left} ngày có làm việc</b></div>`:''}</div><p class="muted small">Lương trả khi khép ca nếu hôm đó bạn hoàn thành ít nhất một việc. Hết thử việc, đánh giá trung bình từ 3.5★ sẽ được ký chính thức.</p>${confirmCmd('Xin nghỉ việc','job_quit',{},'Nghỉ việc ở đây? Bạn cần ứng tuyển lại trước ca tiếp theo.','ghost small',c.open)}</article></div>`;
   }
   const app=job.application;
   if(job.status==='offer'){
@@ -417,14 +446,18 @@ export function jobView(env){
     }else if(stepKey[app.stage]){
       step=stepCard(E,qs,p,app,app.stage,api);
     }
-    return head(esc(p.title),esc(p.org),'ỨNG TUYỂN')+`<div class="sheet-body">${guide}${jobStepper(E,p,app.stage,!!cert&&!app.exam)}${passed}${step}<div class="row space-top">${cmdBtn('Rút hồ sơ','job_withdraw',{},'ghost small')}</div></div>`;
+    const certNote=ci?.held&&app.stage!=='exam'?`<p class="notice success small ct-banner"><span aria-hidden="true">${ci.g.emoji}</span><span class="grow">Bạn có <b>${esc(ci.g.name)}</b>: nếu điểm chưa đủ 60, vẫn có ${ci.bonus}% cơ hội được nhận.</span></p>`:'';
+    return head(esc(p.title),esc(p.org),'ỨNG TUYỂN')+`<div class="sheet-body">${guide}${jobStepper(E,p,app.stage,!!cert&&!app.exam)}${passed}${certNote}${step}<div class="row space-top">${cmdBtn('Rút hồ sơ','job_withdraw',{},'ghost small')}</div></div>`;
   }
   const lastPost=job.application&&posts.find(x=>x.id===job.application.posting);
-  const rejected=job.status==='rejected'&&lastPost?resultCard(lastPost,job,c.day,ex):'';
+  const rejected=job.status==='rejected'&&lastPost?resultCard(lastPost,job,today,ex,env):'';
+  const wait=job.status==='rejected'&&job.cooldown_day>today;
+  const certBanner=!ci?'':ci.held?`<p class="notice success small ct-banner"><span aria-hidden="true">${ci.g.emoji}</span><span class="grow"><b>${esc(ci.g.name)}</b> (${ci.rec.best} điểm): nếu điểm chưa đủ 60, bạn vẫn có ${ci.bonus}% cơ hội được nhận ở đây.</span></p>`
+    :rejected?'':`<div class="notice blue small ct-banner"><span aria-hidden="true">🎓</span><span class="grow">Có <b>${esc(ci.g.name)}</b> thì khi điểm chưa đủ 60 vẫn còn ${ci.bonus}% cơ hội được nhận ở đây.</span>${button('Học và thi','jrCerts',{cert:ci.g.id,career:id},'ghost small')}</div>`;
   const certLine=ex?(cert?`<p class="notice success small">${icon('check',15)}<span><b>${esc(ex.name)}</b> đã có (ngày ${cert.day}, đúng ${cert.score}/${ex.draw}). Ứng tuyển sẽ bỏ qua bài thi.</span></p>`:`<p class="notice blue small">${icon('leaf',15)}<span>Nghề này cần <b>${esc(ex.name)}</b>: bài thi ${ex.draw} câu, đạt từ ${ex.pass_mark} câu. Thi ngay khi ứng tuyển.</span></p>`):'';
   const sub=posts.some(p=>jobStages(p).includes('trial'))?'Chủ tiệm cần gặp bạn trước. Gửi vài dòng giới thiệu, làm thử một buổi rồi nhận việc.':'Nghề này cần được tuyển dụng. Chọn nơi phù hợp, viết CV trung thực và đi phỏng vấn.';
-  return head('Xin việc: '+esc(place),sub,'TUYỂN DỤNG')+`<div class="sheet-body">${rejected}${certLine}<div class="stack">${posts.map(p=>`<article class="card posting"><div class="row spread"><div><span class="eyebrow">${esc(p.kind==='private'?(id==='teacher'?'TƯ THỤC':'TƯ NHÂN'):JOB_KIND[p.kind]||'')}</span><h3>${esc(p.title)}</h3><small class="muted">${esc(p.org)}</small></div><b>${p.salary[0]}–${p.salary[1]} xu/ngày</b></div>${p.wage_note?`<p class="small muted">${esc(p.wage_note)}</p>`:''}<p class="small">${esc(p.culture)}</p>${jobPipe(E,p)}<div class="chip-row">${p.perks.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>
-    <div class="row wrap space-top">${cmdBtn(jobStages(p).includes('trial')?'Xin làm thử':'Ứng tuyển','job_apply',{posting:p.id},'primary')}</div></article>`).join('')}</div></div>`;
+  return head('Xin việc: '+esc(place),sub,'TUYỂN DỤNG')+`<div class="sheet-body">${rejected}${certLine}${certBanner}<div class="stack">${posts.map(p=>`<article class="card posting"><div class="row spread"><div><span class="eyebrow">${esc(p.kind==='private'?(id==='teacher'?'TƯ THỤC':'TƯ NHÂN'):JOB_KIND[p.kind]||'')}</span><h3>${esc(p.title)}</h3><small class="muted">${esc(p.org)}</small></div><b>${p.salary[0]}–${p.salary[1]} xu/ngày</b></div>${p.wage_note?`<p class="small muted">${esc(p.wage_note)}</p>`:''}<p class="small">${esc(p.culture)}</p>${jobPipe(E,p)}<div class="chip-row">${ci?.held?`<span class="chip ct-chip">🎓 +${ci.bonus}% cơ hội</span>`:''}${p.perks.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>
+    <div class="row wrap space-top">${wait?`<p class="small muted">📅 ${jobStages(p).includes('trial')?'Xin làm thử':'Ứng tuyển'} lại ${esc(job.retry?.text||`từ Ngày ${job.cooldown_day}`)}.</p>`:''}${cmdBtn(wait?`${jobStages(p).includes('trial')?'Xin làm thử':'Ứng tuyển'} lại · Còn ${job.retry?.left??(job.cooldown_day-today)} ngày`:jobStages(p).includes('trial')?'Xin làm thử':'Ứng tuyển','job_apply',{posting:p.id},'primary',wait)}</div></article>`).join('')}</div></div>`;
 }
 
 /** One interview move. AI on: POST /api/ai/interview (runs the command, then the
@@ -461,6 +494,13 @@ export async function v4Action(action,data,el,env){
   const {api,ui,cmd,confirmAction,renderSheet,openSheet}=env;
   switch(action){
     case'v4Cmd':{const payload=JSON.parse(data.payload||'{}');if(data.confirm&&!await confirmAction('Xác nhận',data.confirm,'Đồng ý'))return true;if(data.confirm)payload.confirm=true;await cmd(data.op,payload);return true;}
+    case'v4Backdoor':{
+      // 🚪 Honest about what it is: a fee to a helper, a normal probation, maybe some whispers on day one.
+      const id=api.state.current,job=api.state.careers[id]?.job,J=api.state.journey;
+      const p=(api.content.employment.postings[id]||[]).find(x=>x.id===job?.application?.posting),b=p?.backdoor;if(!b)return true;
+      const msg=`${b.helper} Phí ${b.fee} xu trừ vào ví (ví còn ${J.wallet} xu). Bạn vào làm ${p.title.toLowerCase()} với lương khởi điểm ${p.salary[0]} xu/ngày, thử việc ${p.probation_days} ngày như mọi người. Ngày đầu có thể nghe vài lời xì xào.`;
+      if(await confirmAction('🚪 Đi cửa sau?',msg,`Trả ${b.fee} xu`))await cmd('job_backdoor',{confirm:true});
+      return true;}
     case'inventory':openSheet('inventory',{invFocus:null,invNeed:null,invReturn:null,orderRush:false});return true;
     case'v4Restock':{
       // From a "📦 Nhập hàng" button (restock.js): straight to the crate, the orders on the way, or the order form.

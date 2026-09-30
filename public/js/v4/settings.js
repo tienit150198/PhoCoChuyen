@@ -6,6 +6,7 @@ import {pushState,enablePush,disablePush,isIOS,isStandalone} from './push.js';
 import {accountPane,accountAction,accountNudge} from './account.js';
 import {tutorialSettings} from '../tutorial/index.js';
 import {soundToggles} from './sounds.js';
+import {lbPrivacyRow} from './leaderboard.js';
 
 const attrs=obj=>Object.entries(obj).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 const button=(label,action,data={},style='')=>`<button type="button" class="btn ${style}" data-action="${action}"${attrs(data)}>${label}</button>`;
@@ -38,6 +39,7 @@ export function settingsView(env){
       <button class="btn primary full" type="submit">Lưu</button>
     </form>
     ${tutorialSettings()}
+    <section class="settings-block"><h3><span aria-hidden="true">✨</span> Có gì mới</h3><button type="button" class="btn small" data-action="whatsNew">Xem các cập nhật mới</button></section>
     ${feedbackBlock}
     <section class="settings-block">${toggle('reduceMotion','Giảm chuyển động',s.reduceMotion)}${toggle('largeText','Chữ lớn',s.largeText)}</section>
     ${api.ai?.configured?`<section class="settings-block"><h3>${icon('chat',18)} Trò chuyện bằng AI</h3>
@@ -72,7 +74,7 @@ export function settingsView(env){
       <div class="row wrap">${button('Xuất bản lưu','export',{},'small')}${button('Nhập bản lưu','import',{},'small ghost')}</div><input type="file" id="import-file" accept=".json,application/json" hidden>
       <div class="divider"></div>${button('Bắt đầu lại riêng nghề này','resetCareer',{},'danger small')}</section>
     <section class="settings-block"><h3>${icon('shield',18)} Quyền riêng tư</h3>
-      ${toggle('publicProfile','Hiện quán của tôi ở Phố nghề',s.publicProfile)}
+      ${toggle('publicProfile','Hiện quán của tôi ở Phố nghề',s.publicProfile)}${lbPrivacyRow(env)}
       <p class="small"><a href="/privacy" target="_blank" rel="noopener">Chính sách quyền riêng tư</a> · <a href="/terms" target="_blank" rel="noopener">Điều khoản sử dụng</a> · <a href="mailto:trachanhtv.works@gmail.com">trachanhtv.works@gmail.com</a></p>
       <div class="danger-zone"><b>Xóa dữ liệu của tôi</b><p class="small muted">Xóa vĩnh viễn bản lưu, tài khoản, hồ sơ, bài viết, quà, hàng ở chợ và đăng ký thông báo trên máy chủ. Không thể hoàn tác.</p>${button('Xóa toàn bộ dữ liệu','v4DeleteData',{},'danger small')}</div></section>`;
   return head('Cài đặt','','THIẾT LẬP')+`<div class="sheet-body settings-v4">${nav}<div class="settings-pane">${body}</div></div>`;

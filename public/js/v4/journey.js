@@ -9,6 +9,8 @@ import {accountChip} from './account.js';
 import {storiesBoot,storiesCard,storiesAction,maybeStory} from './stories.js';
 import {investView,investEntry,investAction} from './invest.js';
 import {boardEntry} from './board.js';
+import {abandonTrust} from './abandon.js';
+import {certsView,certsEntry,certBadges,certTitles,certAction} from './certificates.js';
 import {lifeView,lifeEntry,lifeCard,lifeAction,lifeBoot} from './life.js';
 
 export const EMOJI={restaurant:'🍜',cafe_bakery:'🥐',grocery:'🛒',repair:'🔧',homestay:'🏡',corp_accounting:'🧮',tax_payroll:'🧾',group_accounting:'🏢',
@@ -63,9 +65,12 @@ export function journeyHome(env){
   if(ui.jrView==='invest')return investView(env);
   if(ui.jrView==='life')return lifeView(env);
   if(ui.jrView==='profile')return profileView(env);
+  if(ui.jrView==='certs')return certsView(env);
   return homeMain(env);
 }
 
+// Hôn nhân (v4/marriage.js): the spouse and the "Đã về chung một nhà" sticker under the name.
+const spouseChip=api=>{const sp=api.state.marriage?.spouse;return sp?`<button type="button" class="jr-title-chip" data-action="marriage"><span aria-hidden="true">${sp.status==='married'?'🏡':'💞'}</span> ${sp.status==='married'?'Đã về chung một nhà':'Đã đính hôn'} · ${esc(sp.name)}</button>`:'';};
 function meCard(env){
   const {api}=env,J=api.state.journey,C=api.content.journey,mat=J.maturity;
   const span=mat.next?Math.max(1,mat.next-mat.floor):1,pct=mat.next?Math.min(100,Math.round((mat.xp-mat.floor)*100/span)):100;
@@ -74,10 +79,11 @@ function meCard(env){
   const wallet=J.story?`<button type="button" class="jr-stat ${J.debt?'bad':''}" data-action="jrView" data-view="wallet"><small>Ví của bạn</small><b>${J.debt?`Nợ ${fmt(J.debt)} xu`:`${fmt(J.wallet)} xu`}</b></button>`:'';
   return `<section class="jr-card jr-me" aria-label="Nhân vật của bạn">
     <div class="jr-me-top"><button type="button" class="jr-avatar" data-action="jrView" data-view="profile" aria-label="Sửa tên và nhân vật">${avatar(J.gender,68)}</button>
-      <div class="jr-me-text"><h2>${esc(api.state.name)}</h2>
+      <div class="jr-me-text"><h2>${esc(api.state.name)}</h2>${spouseChip(api)}
         ${J.story?`<button type="button" class="jr-title-chip ${eq?'':'empty'}" data-action="jrView" data-view="titles">${eq?`<span aria-hidden="true">${eq.emoji}</span> ${esc(eq.name)}`:'Chọn danh hiệu để đeo'}</button>`:''}
         <div class="jr-level"><div class="jr-level-row"><b>Trưởng thành cấp ${mat.level}</b><small>${esc(mat.name)}</small></div><div class="jr-bar" role="progressbar" aria-label="Kinh nghiệm trưởng thành" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div></div></div></div>
     ${J.story?`<div class="jr-stats">${wallet}<div class="jr-stat"><small>Ngày sống</small><b>${fmt(J.life_day)}</b></div><button type="button" class="jr-stat" data-action="jrView" data-view="titles"><small>Danh hiệu</small><b>${J.titles.length}</b></button></div>`:''}
+    ${certBadges(env)}
     <details class="jr-skills-box"><summary>Kỹ năng</summary><ul class="jr-skills">${skills}</ul></details>
   </section>`;
 }
@@ -113,7 +119,7 @@ function placeCard(env,cid){
   else if(job.required&&job.status!=='hired')tags.push(tag(icon('briefcase',12)+' Cần xin việc','amber'));
   if(!c.started&&J.story&&(api.content.journey.unlock_chapter||{})[cid]===J.chapter)tags.push(tag('Mới mở','green'));
   let money='';
-  if(p&&J.story)money=p.employed?`<p class="jr-fund">Làm thuê · lương về ví</p>`:`<p class="jr-fund">Quỹ ${fmt(p.fund)} xu · ${p.paused?'không tốn phí duy trì':`duy trì ${fmt(p.upkeep)} xu/ngày`}</p>`;
+  if(p&&J.story)money=p.employed?`<p class="jr-fund">Làm thuê · lương về ví${abandonTrust(api,cid)}</p>`:`<p class="jr-fund">Quỹ ${fmt(p.fund)} xu · ${p.paused?'không tốn phí duy trì':`duy trì ${fmt(p.upkeep)} xu/ngày`}</p>`;
   const action=p?.paused?btn('Mở lại','jrReopen',{career:cid},'cream small'):
     btn(`${c.started?'Tiếp tục':job.required&&job.status!=='hired'?'Xin việc':'Bắt đầu'} ${icon('arrow',13)}`,'choose',{career:cid},c.started?'primary small':'cream small');
   return `<article class="jr-place ${p?.paused?'paused':''} ${cid===api.state.current?'current':''}" style="--career:${colour(m.color)}"><span class="jr-place-emoji" aria-hidden="true">${emojiOf(m)}</span>
@@ -155,7 +161,7 @@ function placesSection(env){
 function homeMain(env){
   const {api}=env,J=api.state.journey;
   const top=`<header class="jr-top"><div class="grow"><span class="eyebrow">${J.story?`Khu phố nhỏ · Ngày sống ${fmt(J.life_day)}`:'Khu phố nhỏ · mọi nơi đều mở'}</span><h1>Hành trình của bạn</h1></div>${accountChip(env)}${api.state.current?btn(icon('x',20),'close',{},'ghost small jr-close','aria-label="Đóng"'):''}</header>`;
-  return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col">${meCard(env)}${lifeCard(env)}${boardEntry(env)}${J.story?chapterCard(env):''}${storiesCard(env)}</div><div class="jr-col wide">${placesSection(env)}</div></div></div>`;
+  return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col">${meCard(env)}${lifeCard(env)}${boardEntry(env)}${J.study?certsEntry(env):''}${J.story?chapterCard(env):''}${J.study?'':certsEntry(env)}${storiesCard(env)}</div><div class="jr-col wide">${placesSection(env)}</div></div></div>`;
 }
 
 /* ------------------------------------------------------------------ intro */
@@ -208,7 +214,7 @@ function titlesView(env){
     const got=rows.filter(t=>have.has(t.id)).length;
     return `<section class="jr-title-cat"><h3>${esc(cat.name)} <small>${got}/${rows.length}</small></h3><div class="jr-title-grid">${tiles}</div></section>`;
   }).join('');
-  return head('Danh hiệu',`Đã có ${J.titles.length}/${C.titles.length}.`,{back:true})+`<div class="sheet-body jr-body">${cats}</div>`;
+  return head('Danh hiệu',`Đã có ${J.titles.length}/${C.titles.length}.`,{back:true})+`<div class="sheet-body jr-body">${cats}${certTitles(env)}</div>`;
 }
 
 /* ------------------------------------------------------------------ wallet */
@@ -224,14 +230,15 @@ function walletView(env){
     return `<details class="jr-fundrow ${p.paused?'paused':''}"><summary><span class="jr-place-emoji" aria-hidden="true">${emojiOf(m)}</span><span class="grow"><b>${esc(m.place||m.short)}</b><small>${p.employed?'Làm thuê · lương về ví':p.paused?'Tạm đóng · không tốn phí duy trì':`Duy trì ${fmt(p.upkeep)} xu/ngày khi vắng chủ`}</small></span><b class="jr-amt">${fmt(p.fund)} xu</b></summary>
       <div class="jr-fund-actions">${draw}${invest}<div class="row wrap">${pause}</div></div></details>`;
   }).join('')||`<p class="muted">Chưa có nơi làm việc nào. Bắt đầu ở một tiệm trong hẻm nhé.</p>`;
-  const kinds={living:'🏠',upkeep:'💡',draw:'👛',invest:'📈',salary:'💵',reopen:'🔑',incident:'⚖️',life:'🌿'};
+  const kinds={living:'🏠',upkeep:'💡',draw:'👛',invest:'📈',salary:'💵',reopen:'🔑',incident:'⚖️',life:'🌿',study:'📚',backdoor:'🚪',bank:'🏦'};
   const row=h=>`<li><span aria-hidden="true">${kinds[h.kind]||'•'}</span><span class="grow">${esc(h.label)}<small>Ngày sống ${fmt(h.day)}</small></span><b class="${h.amount<0?'out':'in'}">${h.amount<0?'−':'+'}${fmt(Math.abs(h.amount))} xu</b></li>`;
   const hist=[...J.history,...olderRows('','wallet')].map(row).join('')||`<li class="muted">Chưa có khoản nào.</li>`;
   const L=J.living;
   return head('Ví của bạn','',{back:true})+`<div class="sheet-body jr-body">
     <section class="jr-card jr-purse ${J.debt?'bad':''}" aria-live="polite"><small>${J.debt?'Đang nợ tiền phòng':'Số dư'}</small><strong>${J.debt?`${fmt(J.debt)} xu`:`${fmt(J.wallet)} xu`}</strong>
       <p>Mỗi ngày sống: tiền phòng ${fmt(L.rent)} xu và cơm nước ${fmt(L.meals)} xu.</p>
-      ${J.debt?`<p class="jr-debt-note">Khi ví còn nợ, câu chuyện tạm dừng. Rút tiền lời về ví để trả nhé.</p>`:''}</section>
+      ${J.debt?`<p class="jr-debt-note">Khi ví còn nợ, câu chuyện tạm dừng. Rút tiền lời về ví để trả nhé.</p>`:''}
+      <button type="button" class="btn ghost small" data-action="tutGuide" data-topic="money_withdraw">❔ Rút tiền thế nào?</button></section>
     ${investEntry(env)}${lifeEntry(env)}
     <h3 class="jr-sub">Quỹ các nơi làm việc</h3><div class="jr-funds">${places}</div>
     <h3 class="jr-sub">Sổ ví gần đây</h3><ul class="jr-history">${hist}</ul>${olderButton('','wallet',J.history.length,J.history.length>=30)}</div>`;
@@ -341,6 +348,7 @@ export async function journeyAction(action,data,el,env){
   if(!action?.startsWith('jr'))return false;
   E=E||env;
   if(action.startsWith('jrArc'))return storiesAction(action,data,el,env);
+  if(action.startsWith('jrCert'))return certAction(action,data,el,env);
   const {ui,cmd,renderSheet,confirmAction,api}=env;
   switch(action){
     case'jrView':ui.jrView=data.view||'home';renderSheet(false);document.getElementById('sheet')?.scrollTo?.(0,0);return true;

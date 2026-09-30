@@ -1,0 +1,11 @@
+/* Khách đưa thiếu tiền: the block inside the till's cash card (public/js/careers/shortpay.js).
+   Loaded by shortpay.js itself; uses the app theme tokens so every career and theme fits. */
+.till .sp-count{display:flex;justify-content:flex-end}
+.till .sp-count .btn{min-height:40px}
+.till .sp-card{display:grid;gap:8px;padding:10px 12px;border-radius:var(--radius-sm,8px);background:var(--warn-soft);border:1px solid var(--line-strong);color:var(--ink)}
+.till .sp-card.done{background:var(--surface-2);border-color:var(--line)}
+.till .sp-card h5{margin:0;font-size:15px;line-height:1.3;color:var(--warn)}
+.till .sp-line{margin:0;font-size:14px;line-height:1.45;color:var(--ink-2)}
+.till .sp-opts{display:flex;flex-direction:column;gap:6px}
+.till .sp-opt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;height:auto;min-height:48px;padding:8px 12px;text-align:left;white-space:normal;background:var(--surface);color:var(--ink);border:1px solid var(--line-strong)}
+.till .sp-opt small{font-weight:400;font-size:12.5px;color:var(--muted)}

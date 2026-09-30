@@ -6,10 +6,10 @@ order can be rated, and the supplier answers in its own voice. Lots expire by
 game day at closing time: the value is recorded as waste, never charged twice.
 
 Deliveries run on the shop's clock, not on beats: every supplier promises a
-window in time of day (30–60 minutes, this afternoon's run, tomorrow before
-opening, two or three days for special goods). `clock()` turns the career's
-turn counter into that time of day. See
-docs/superpowers/specs/2026-09-29-supplier-lead-times.md.
+window in time of day (15–30 minutes, the next of four van runs, the market's
+afternoon run or tomorrow before opening, one or two days for special goods).
+`clock()` turns the career's turn counter into that time of day. See
+docs/superpowers/specs/2026-09-29-supplier-lead-times.md (§8: waits halved).
 """
 from __future__ import annotations
 import copy
@@ -33,12 +33,26 @@ HOURS = {
     'homestay': (7 * 60, 22 * 60),
     'pet_care': (8 * 60, 19 * 60),
     'salon': (8 * 60 + 30, 20 * 60),
+    'tra_da': (6 * 60 + 30, 19 * 60 + 30),  # the tea stall opens with the morning traffic
 }
 EARLY = 30  # goods due after closing wait at the door this many minutes before the next opening
+# How much later than its window a late delivery comes (minutes), by supplier kind; a
+# supplier may set its own `delay`. A supplier without one (a table from before the
+# halved waits, e.g. milk tea's own) keeps the old delays: see _schedule.
+DELAY = {'rush': (10, 15), 'runs': (30, 60), 'next': (30, 60), 'days': (240, 360)}
+RUN_WORD = {1: 'Một', 2: 'Hai', 3: 'Ba', 4: 'Bốn', 5: 'Năm', 6: 'Sáu'}
 
 
 def hours(career: str) -> tuple[int, int]:
     return HOURS.get(career, DEFAULT_HOURS)
+
+
+def day_hours(c: dict, career: str) -> tuple[int, int]:
+    """Today's hours: the career's own, closing later on an extended evening (dayclock.LATE_DAYS)."""
+    op, cl = hours(career)
+    from . import dayclock
+    late = dayclock.late_close(c, career)
+    return op, max(cl, late or cl)
 
 
 def hm(minute: int) -> str:
@@ -67,7 +81,7 @@ def clock(c: dict, career: str, turn: int | None = None) -> dict:
     since start_day (or the career's own `clock_minutes(c)` hook), capped at
     closing. Closed: the evening of the day that just closed, at closing time,
     so goods due before the next opening are at the door when the day starts."""
-    op, cl = hours(career)
+    op, cl = day_hours(c, career)
     day = c['day']
     if c.get('open'):
         minute = None
@@ -96,7 +110,7 @@ def _part(minute: int) -> str:
 
 def when(t: int, now: int, approx: bool = False, quote: bool = False) -> str:
     """'16:45 hôm nay' / 'Chiều nay ~16:45' (quote) / 'Sáng mai 07:15' /
-    'Sáng ngày kia 07:15' / 'Ngày 7 · 10:30'."""
+    'Sáng ngày kia 07:15' / 'Còn 3 ngày · 10:30' (past: 'Ngày 7 · 10:30')."""
     d, m = divmod(t, DAY_MIN)
     diff = d - now // DAY_MIN
     time = ('~' if approx else '') + hm(m)
@@ -108,7 +122,8 @@ def when(t: int, now: int, approx: bool = False, quote: bool = False) -> str:
         return f'{_part(m).capitalize()} mai {time}'
     if diff == 2:
         return f'{_part(m).capitalize()} ngày kia {time}'
-    return f'Ngày {d} · {time}'
+    # Further out: counted from today, not as a shop-day number (the HUD counts life days in the story).
+    return f'Còn {diff} ngày · {time}'
 
 
 def _duration(minutes: int) -> str:
@@ -140,40 +155,47 @@ V_MARKET = dict(good='Cảm ơn quán nha, mai chị để hàng đẹp cho!',
 V_PARTNER = dict(good='Hạt Nắng ghi nhận đánh giá, cảm ơn quý khách.',
                  bad='Bên em đã chuyển phản hồi cho bộ phận kho để kiểm lại quy trình.',
                  claim='Đã lập phiếu hoàn cho phần thiếu theo biên bản giao nhận.',
-                 late='Xe giao của Hạt Nắng kẹt ở cầu Mây, bên em báo trễ khoảng một tiếng ạ.')
+                 late='Xe giao của Hạt Nắng kẹt ở cầu Mây, bên em báo trễ chừng nửa tiếng tới một tiếng ạ.')
 V_EXPRESS = dict(good='Mây Xanh luôn sẵn sàng khi quán cần gấp!',
                  bad='Xin lỗi quý khách, tài xế sẽ được nhắc lại quy trình.',
                  claim='Đã hoàn tiền phần thiếu ngay.',
-                 late='Tài xế phải vòng tránh đoạn đường ngập, tới trễ vài chục phút ạ.')
+                 late='Tài xế phải vòng tránh đoạn đường ngập, tới trễ chừng mười lăm phút ạ.')
 V_FAR = dict(good='Kho ghi nhận, cảm ơn quý khách đã tin hàng đi xa.',
              bad='Hàng đi đường dài, bên em sẽ đóng thùng kỹ hơn.',
              claim='Kho đã lập phiếu bù cho phần thiếu.',
-             late='Xe tuyến về trễ một ngày vì kẹt ở trạm, kho xin lỗi quý khách.')
+             late='Xe tuyến kẹt ở trạm nên về trễ mấy tiếng, kho xin lỗi quý khách.')
 V_MAKER = dict(good='Cảm ơn tiệm, mẻ sau vẫn làm kỹ như vậy!',
                bad='Xưởng xin nhận góp ý, mẻ sau kiểm lại từng túi.',
                claim='Xưởng gửi bù phần thiếu vào đơn sau, trả tiền trước nha.',
-               late='Mẻ hôm nay ra lò muộn, xưởng giao trễ một chút ạ.')
+               late='Mẻ hôm nay ra lò muộn, xưởng giao trễ hơn hẹn ạ.')
 V_GARDEN = dict(good='Nhà vườn cảm ơn nha, hoa mới cắt sáng nay đó!',
                 bad='Đường đèo xóc quá, lần sau vườn lót thêm giấy báo.',
                 claim='Cành gãy thì vườn bù tiền liền, đừng lo.',
-                late='Xe đêm từ Đà Lạt xuống bị sương mù đèo Mây, tới trễ vài tiếng.')
+                late='Xe từ Đà Lạt xuống bị sương mù đèo Mây, tới trễ chừng một tiếng.')
 V_COOP = dict(good='Hợp tác xã cảm ơn bà con, vụ sau lại ủng hộ nha!',
               bad='Kho hợp tác xã sẽ cân lại kỹ hơn.',
               claim='Thiếu bao nào hợp tác xã trả lại tiền bao đó.',
               late='Xe công nông của hợp tác xã hỏng giữa đường, tới trễ một chút.')
 
-MARKET = dict(id='market', name='Chợ đầu mối Mây', emoji='🧺', kind='next', cutoff=17 * 60, at=(-75, -35),
+# `next`: `day_run` (cut-off, from, to) is the same-day run for morning orders; any
+# later order rides the night run to the next morning (`cutoff` None = until closing).
+MARKET = dict(id='market', name='Chợ đầu mối Mây', emoji='🧺', kind='next', cutoff=None, at=(-75, -35),
+              day_run=(13 * 60, 15 * 60, 16 * 60), delay=DELAY['next'],
               factor=0.85, short=22, late=10,
-              note='Rẻ nhất. Đặt trước 17:00, hàng tới sáng mai trước giờ mở cửa. Thỉnh thoảng giao thiếu, cần đếm kỹ.',
+              note='Rẻ nhất. Đặt trước 13:00, hàng tới chiều nay; đặt sau, hàng tới sáng mai trước giờ mở cửa. '
+                   'Thỉnh thoảng giao thiếu, cần đếm kỹ.',
               voice=V_MARKET)
+# Four van runs a day, (cut-off, from, to): the goods come about an hour after each cut-off.
 PARTNER = dict(id='partner', name='Nhà phân phối Hạt Nắng', emoji='🚚', kind='runs',
-               runs=((11 * 60, 13 * 60, 14 * 60), (15 * 60, 16 * 60 + 30, 17 * 60 + 30)),
-               factor=1.0, short=6, late=8,
-               note='Giá niêm yết, có phiếu giao rõ ràng. Xe chạy hai chuyến: đặt trước 11:00 tới trưa, trước 15:00 tới chiều.',
+               runs=((9 * 60, 10 * 60, 10 * 60 + 30), (12 * 60, 13 * 60, 13 * 60 + 30),
+                     (15 * 60, 16 * 60, 16 * 60 + 30), (18 * 60, 19 * 60, 19 * 60 + 30)),
+               delay=DELAY['runs'], factor=1.0, short=6, late=8,
+               note='Giá niêm yết, có phiếu giao rõ ràng. Xe chạy bốn chuyến: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, '
+                    'hàng tới sau đó khoảng một tiếng.',
                voice=V_PARTNER)
-EXPRESS = dict(id='express', name='Giao hỏa tốc Mây Xanh', emoji='⚡', kind='rush', mins=(30, 60),
+EXPRESS = dict(id='express', name='Giao hỏa tốc Mây Xanh', emoji='⚡', kind='rush', mins=(15, 30), delay=DELAY['rush'],
                factor=1.35, short=0, late=12,
-               note='Đắt nhất nhưng tới trong 30–60 phút. Dùng khi cháy hàng giữa ca.', voice=V_EXPRESS)
+               note='Đắt nhất nhưng tới trong 15–30 phút. Dùng khi cháy hàng giữa ca.', voice=V_EXPRESS)
 DEFAULT_SUPPLIERS = [MARKET, PARTNER, EXPRESS]
 SUPPLIER_INDEX = {x['id']: x for x in DEFAULT_SUPPLIERS}
 
@@ -189,105 +211,119 @@ SUPPLIERS = {
         _s(MARKET, items=['noodle', 'chili', 'beef', 'sausage', 'kimchi_side', 'egg', 'mushroom', 'fishball', 'tofu',
                           'seafood', 'fried_egg']),
         PARTNER, EXPRESS,
-        dict(id='import', name='Kho hàng nhập Kim Mây', emoji='✈️', kind='days', days=(2, 3), at=(60, 180),
+        dict(id='import', name='Kho hàng nhập Kim Mây', emoji='✈️', kind='days', days=(1, 2), at=(30, 90),
              factor=0.72, short=4, late=15, voice=V_FAR,
              items=['pack_kimchi', 'pack_tomyum', 'pack_blackbean', 'pack_cheese', 'kimchi_side', 'cheese_slice',
                     'ricecake', 'fishball', 'sausage', 'beef'],
-             note='Gói nước dùng, phô mai, bánh gạo, bò Mỹ nhập thẳng: rẻ hơn hẳn nhưng 2–3 ngày mới tới. Đặt sớm cho cả tuần.'),
+             note='Gói nước dùng, phô mai, bánh gạo, bò Mỹ nhập thẳng: rẻ hơn hẳn nhưng 1–2 ngày mới tới. Đặt sớm cho cả tuần.'),
     ],
     'cafe_bakery': [
         _s(MARKET, items=['milk', 'oat', 'condensed', 'cream', 'flour', 'butter', 'egg', 'sugar', 'almond']),
         PARTNER, EXPRESS,
-        dict(id='roaster', name='Xưởng rang Đồi Mây', emoji='☕', kind='next', cutoff=18 * 60, at=(180, 240),
+        dict(id='roaster', name='Xưởng rang Đồi Mây', emoji='☕', kind='next', cutoff=None, at=(90, 120),
+             day_run=(11 * 60, 14 * 60, 15 * 60),
              factor=0.8, short=3, late=8, voice=V_MAKER, items=['beans_house', 'beans_robusta', 'beans_decaf'],
-             note='Rang theo đơn mỗi sáng. Đặt trước 18:00, hạt mới rang tới trưa mai. Rẻ và thơm hơn.'),
+             note='Rang theo đơn hai mẻ mỗi ngày. Đặt trước 11:00, hạt mới rang tới chiều nay; đặt sau, sáng mai có. '
+                  'Rẻ và thơm hơn.'),
     ],
     'florist': [
-        _s(MARKET, name='Chợ hoa đêm Sương Mai', emoji='💐', cutoff=22 * 60, factor=0.85, short=25,
+        _s(MARKET, name='Chợ hoa đêm Sương Mai', emoji='💐', day_run=(15 * 60, 16 * 60, 17 * 60), factor=0.85, short=25,
            items=['rose_red', 'rose_pink', 'rose_white', 'rose_yellow', 'lily', 'mum_white', 'sunflower', 'carnation',
                   'orchid', 'babys_breath', 'eucalyptus'],
-           note='Chợ hoa họp đêm: đặt trước 22:00, hoa tới sáng mai trước giờ mở cửa. Rẻ, nhưng hay gãy hoặc thiếu vài cành.',
+           note='Chợ hoa họp đêm, ban ngày còn sạp sỉ: đặt trước 15:00, hoa tới chiều nay; đặt sau, hoa tới sáng mai '
+                'trước giờ mở cửa. Rẻ, nhưng hay gãy hoặc thiếu vài cành.',
            voice=dict(V_MARKET, good='Cảm ơn tiệm nha, đêm mai chị lựa bó đẹp nhất!',
                       late='Chợ hoa đêm nay đông quá, xe chị ra muộn một chút.')),
-        dict(id='dalat', name='Nhà vườn Đà Lạt', emoji='🌄', kind='next', cutoff=15 * 60, at=(60, 150),
+        dict(id='dalat', name='Nhà vườn Đà Lạt', emoji='🌄', kind='next', cutoff=None, at=(30, 75),
+             day_run=(9 * 60, 15 * 60, 16 * 60 + 30),
              factor=0.7, short=10, late=15, fresh=1, voice=V_GARDEN,
              items=['rose_red', 'rose_pink', 'rose_white', 'rose_yellow', 'lily', 'mum_white', 'carnation',
                     'babys_breath', 'eucalyptus'],
-             note='Hoa cắt tại vườn, đi xe đêm: đặt trước 15:00, sáng mai tới. Rẻ nhất và tươi thêm 1 ngày, nhưng xe đèo hay trễ.'),
+             note='Hoa cắt tại vườn: đặt trước 09:00, vườn gửi xe khách, chiều nay tới; đặt sau, hoa đi xe đêm, sáng mai tới. '
+                  'Rẻ nhất và tươi thêm 1 ngày, nhưng xe đèo hay trễ.'),
         PARTNER, _s(EXPRESS, factor=1.4),
     ],
     'grocery': [
         _s(MARKET, items=['egg', 'milk', 'bread', 'greens', 'tomato']),
         PARTNER, EXPRESS,
-        dict(id='wholesale', name='Tổng kho sỉ Mây Xanh', emoji='🏭', kind='days', days=(1, 2), at=(120, 240),
+        dict(id='wholesale', name='Tổng kho sỉ Mây Xanh', emoji='🏭', kind='days', days=(1, 1), at=(60, 120),
              factor=0.8, short=5, late=10, voice=V_FAR,
              items=['rice', 'noodle', 'fishsauce', 'oil', 'soap', 'snack', 'soda', 'beer'],
-             note='Hàng khô, nước, bia theo thùng: giá sỉ, 1–2 ngày mới giao. Hợp để trữ hàng không hạn.'),
+             note='Hàng khô, nước, bia theo thùng: giá sỉ, sáng mai giao. Hợp để trữ hàng không hạn.'),
     ],
     'repair': [
-        _s(MARKET, name='Chợ linh kiện Mây', emoji='🔌', cutoff=16 * 60, factor=0.8, short=15,
+        _s(MARKET, name='Chợ linh kiện Mây', emoji='🔌', factor=0.8, short=15,
            items=['screen_c', 'battery_c', 'port', 'cap_c', 'fuse', 'terminal', 'tube', 'rimtape', 'chain', 'brake',
                   'hp_battery', 'driver', 'solder', 'paste', 'oil', 'shrink', 'screen_u', 'battery_u', 'motor_u', 'ipa'],
-           note='Linh kiện tương thích và đồ tháo máy giá mềm. Đặt trước 16:00, sáng mai có. Đôi khi thiếu, đếm kỹ.',
+           note='Linh kiện tương thích và đồ tháo máy giá mềm. Đặt trước 13:00, chiều nay có; đặt sau, sáng mai có. '
+                'Đôi khi thiếu, đếm kỹ.',
            voice=dict(V_MARKET, good='Cảm ơn anh chị thợ, mai sạp để hàng tốt!',
                       late='Sạp đóng hàng muộn, xe ôm chở trễ chút nha.')),
         PARTNER, EXPRESS,
-        dict(id='genuine', name='Kho linh kiện chính hãng', emoji='✈️', kind='days', days=(2, 3), at=(60, 240),
+        dict(id='genuine', name='Kho linh kiện chính hãng', emoji='✈️', kind='days', days=(1, 2), at=(30, 120),
              factor=0.85, short=0, late=15, voice=V_FAR,
              items=['screen_g', 'battery_g', 'cap_g', 'fan_motor', 'heater', 'ssd'],
-             note='Hàng hãng có tem bảo hành, gửi từ kho miền: 2–3 ngày. Rẻ hơn đại lý nhưng phải hẹn khách trước.'),
+             note='Hàng hãng có tem bảo hành, gửi từ kho miền: 1–2 ngày. Rẻ hơn đại lý nhưng phải hẹn khách trước.'),
     ],
     'farm': [
-        dict(id='coop', name='HTX Nông nghiệp Mây', emoji='🌾', kind='next', cutoff=16 * 60, at=(60, 120),
+        dict(id='coop', name='HTX Nông nghiệp Mây', emoji='🌾', kind='next', cutoff=None, at=(30, 60),
+             day_run=(11 * 60, 13 * 60, 14 * 60),
              factor=0.8, short=10, late=8, voice=V_COOP,
              items=['seed_muong', 'seed_lettuce', 'seed_tomato', 'seed_cucumber', 'seed_herbs', 'compost', 'npk',
                     'bio_spray', 'chem_spray', 'feed', 'bag', 'carton', 'egg_tray'],
-             note='Giá xã viên. Đặt trước 16:00, xe hợp tác xã chở tới sáng mai. Thỉnh thoảng thiếu một bao.'),
+             note='Giá xã viên. Đặt trước 11:00, xe hợp tác xã chở tới chiều nay; đặt sau, sáng mai có. '
+                  'Thỉnh thoảng thiếu một bao.'),
         _s(PARTNER, name='Đại lý vật tư Hạt Nắng'),
-        _s(EXPRESS, name='Xe ba gác hỏa tốc', note='Chở gấp trong 30–60 phút, đắt. Dùng khi gà sắp hết cám.'),
-        dict(id='nursery', name='Trại giống Đồng Xanh', emoji='🌱', kind='days', days=(2, 3), at=(90, 240),
+        _s(EXPRESS, name='Xe ba gác hỏa tốc', note='Chở gấp trong 15–30 phút, đắt. Dùng khi gà sắp hết cám.'),
+        dict(id='nursery', name='Trại giống Đồng Xanh', emoji='🌱', kind='days', days=(1, 2), at=(45, 120),
              factor=0.7, short=0, late=12, voice=V_MAKER, items=['seed_tomato', 'seed_cucumber', 'seed_herbs'],
-             note='Cây giống ươm theo đơn: rẻ nhất nhưng 2–3 ngày mới có.'),
+             note='Cây giống ươm theo đơn: rẻ nhất nhưng 1–2 ngày mới có.'),
     ],
     'delivery': [
-        _s(MARKET, name='Chợ bao bì Mây', emoji='📦', cutoff=23 * 60 + 30, at=(-240, -120), factor=0.8, short=12,
-           note='Giá sỉ bao bì. Đặt trong ca, chiều mai có trước giờ vào ca. Đôi khi thiếu, đếm kỹ.'),
-        _s(PARTNER, name='Kho vật tư Hạt Nắng', kind='rush', mins=(120, 240), runs=None,
-           note='Giá niêm yết, xe tải nhỏ giao trong 2–4 giờ. Quá giờ tan ca thì để sáng mai.'),
+        _s(MARKET, name='Chợ bao bì Mây', emoji='📦', at=(-240, -120), day_run=(20 * 60, 21 * 60, 22 * 60),
+           factor=0.8, short=12,
+           note='Giá sỉ bao bì. Đặt trước 20:00, tối nay có; đặt sau, chiều mai có trước giờ vào ca. Đôi khi thiếu, đếm kỹ.'),
+        _s(PARTNER, name='Kho vật tư Hạt Nắng', kind='rush', mins=(60, 120), runs=None, delay=DELAY['rush'],
+           note='Giá niêm yết, xe tải nhỏ giao trong 1–2 giờ. Quá giờ tan ca thì hàng chờ sẵn trước ca mai.',
+           voice=dict(V_PARTNER, late='Xe tải của kho kẹt ở cầu Mây, bên em báo trễ chừng mười lăm phút ạ.')),
         EXPRESS,
     ],
     'homestay': [
         _s(MARKET, name='Chợ sáng Mây', items=['bread', 'egg', 'milk', 'water', 'coffee', 'noodles', 'snack'],
-           note='Đồ ăn sáng và minibar giá chợ. Đặt trước 17:00, sáng mai có trước giờ khách dậy. Hay thiếu vài món.'),
+           note='Đồ ăn sáng và minibar giá chợ. Đặt trước 13:00, chiều nay có; đặt sau, sáng mai có trước giờ khách dậy. '
+                'Hay thiếu vài món.'),
         PARTNER, EXPRESS,
-        dict(id='textile', name='Xưởng dệt Hòa Mây', emoji='🧵', kind='days', days=(2, 3), at=(120, 300),
+        dict(id='textile', name='Xưởng dệt Hòa Mây', emoji='🧵', kind='days', days=(1, 2), at=(60, 150),
              factor=0.7, short=3, late=10, voice=V_MAKER, items=['linen', 'towel', 'soap_kit'],
-             note='Ga gối, khăn, bộ đồ tắm từ xưởng: rẻ nhất, 2–3 ngày mới giao. Đặt trước mùa đông khách.'),
+             note='Ga gối, khăn, bộ đồ tắm từ xưởng: rẻ nhất, 1–2 ngày mới giao. Đặt trước mùa đông khách.'),
     ],
     'pet_care': [
         _s(MARKET, id='wholesale', name='Kho sỉ thú cưng Mây', emoji='🐾', factor=0.82, short=12,
            items=['sh_normal', 'sh_puppy', 'towel', 'cotton', 'poop_bag', 'dog_food', 'cat_food', 'treat'],
-           note='Giá sỉ cho tiệm. Đặt trước 17:00, sáng mai có trước giờ mở cửa. Thỉnh thoảng thiếu, đếm kỹ.'),
+           note='Giá sỉ cho tiệm. Đặt trước 13:00, chiều nay có; đặt sau, sáng mai có trước giờ mở cửa. '
+                'Thỉnh thoảng thiếu, đếm kỹ.'),
         PARTNER, EXPRESS,
-        dict(id='import', name='Hàng nhập Nhật Mây', emoji='✈️', kind='days', days=(2, 3), at=(60, 240),
+        dict(id='import', name='Hàng nhập Nhật Mây', emoji='✈️', kind='days', days=(1, 2), at=(30, 120),
              factor=0.8, short=0, late=15, voice=V_FAR, items=['sh_sensitive', 'conditioner', 'styptic'],
-             note='Sữa tắm da nhạy cảm, dầu xả, bột cầm máu hàng nhập: rẻ hơn đại lý, 2–3 ngày mới tới.'),
+             note='Sữa tắm da nhạy cảm, dầu xả, bột cầm máu hàng nhập: rẻ hơn đại lý, 1–2 ngày mới tới.'),
     ],
     'salon': [
         _s(MARKET, name='Chợ sỉ vật tư tóc', emoji='🧴', factor=0.85, short=15,
            items=['shampoo', 'conditioner', 'towel', 'foil', 'gloves', 'rt_colorsafe', 'rt_mask', 'rt_heat', 'rt_purple'],
-           note='Dầu gội, khăn, găng, giấy bạc giá sỉ. Đặt trước 17:00, sáng mai có. Hay thiếu vài món.'),
+           note='Dầu gội, khăn, găng, giấy bạc giá sỉ. Đặt trước 13:00, chiều nay có; đặt sau, sáng mai có. '
+                'Hay thiếu vài món.'),
         PARTNER, EXPRESS,
-        dict(id='brand', name='Kho hãng màu nhuộm', emoji='✈️', kind='days', days=(2, 3), at=(60, 240),
+        dict(id='brand', name='Kho hãng màu nhuộm', emoji='✈️', kind='days', days=(1, 2), at=(30, 120),
              factor=0.75, short=0, late=12, voice=V_FAR,
              items=['dye_3_0', 'dye_4_6', 'dye_5_0', 'dye_6_1', 'dye_7_3', 'dye_8_1', 'dev_10', 'dev_20', 'dev_30',
                     'dev_40', 'bleach', 'toner_silver', 'toner_beige', 'keratin'],
-             note='Thuốc nhuộm, oxy, toner, keratin chính hãng từ kho hãng: rẻ nhất, 2–3 ngày. Đặt trước khi hết tuýp.'),
+             note='Thuốc nhuộm, oxy, toner, keratin chính hãng từ kho hãng: rẻ nhất, 1–2 ngày. Đặt trước khi hết tuýp.'),
     ],
 }
 ALL_SUPPLIERS = {}
 for _list in [DEFAULT_SUPPLIERS, *SUPPLIERS.values()]:
     for _x in _list:
+        _x.setdefault('delay', DELAY[_x['kind']])  # every supplier here runs on the halved waits
         ALL_SUPPLIERS.setdefault(_x['id'], _x)
 
 
@@ -310,16 +346,24 @@ def sells(sup: dict, item_id: str) -> bool:
 
 
 def _window_label(sup: dict, career: str) -> str:
-    op = hours(career)[0]
+    op, cl = hours(career)
     k = sup['kind']
     if k == 'rush':
         a, b = sup['mins']
         return f'{a}–{b} phút' if b < 90 else f'{a // 60}–{b // 60} giờ'
     if k == 'runs':
-        return 'Hai chuyến/ngày · ' + ' & '.join(hm(r[1]) for r in sup['runs'])
+        times = [hm(r[1]) for r in sup['runs']]
+        listed = ', '.join(times[:-1]) + ' & ' + times[-1] if len(times) > 1 else times[0]
+        return f'{RUN_WORD.get(len(times), len(times))} chuyến/ngày · {listed}'
     if k == 'next':
-        return f'{_part(op + sup["at"][0]).capitalize()} mai · đặt trước {hm(sup["cutoff"])}'
-    return f'{sup["days"][0]}–{sup["days"][1]} ngày'
+        morning = f'{_part(op + sup["at"][0])} mai'
+        cut, run = sup.get('cutoff'), sup.get('day_run')
+        if run and run[0] > op:
+            later = f', sau đó {morning}' if cut is None or cut >= cl else f', trước {hm(cut)} thì {morning}'
+            return f'{_part(run[1]).capitalize()} nay nếu đặt trước {hm(run[0])}{later}'
+        return morning.capitalize() + (f' · đặt trước {hm(cut)}' if cut is not None else '')
+    a, b = sup['days']
+    return f'{a} ngày' if a == b else f'{a}–{b} ngày'
 
 
 def _lead_turns(sup: dict) -> int:
@@ -327,11 +371,11 @@ def _lead_turns(sup: dict) -> int:
     k = sup['kind']
     if k == 'rush':
         return math.ceil(sup['mins'][1] / STEP)
-    return {'runs': 6, 'next': 18}.get(k, 36 * sup.get('days', (1, 1))[0])
+    return {'runs': 3, 'next': 9}.get(k, 36 * sup.get('days', (1, 1))[0])
 
 
 def _static(sup: dict, career: str | None = None) -> dict:
-    v = {k: v for k, v in sup.items() if k not in ('runs', 'mins', 'at', 'days', 'cutoff')}
+    v = {k: v for k, v in sup.items() if k not in ('runs', 'mins', 'at', 'days', 'cutoff', 'day_run', 'delay')}
     v.update(kind=sup['kind'], window=_window_label(sup, career or ''), lead=_lead_turns(sup),
              items=list(sup['items']) if sup.get('items') is not None else None, fresh=sup.get('fresh', 0))
     return v
@@ -350,8 +394,13 @@ def _promise(sup: dict, career: str, now: int) -> tuple[int, int]:
         run = run or sup['runs'][0]
         lo, hi = d * DAY_MIN + run[1], d * DAY_MIN + run[2]
     elif k == 'next':
-        d = day + (1 if minute < sup['cutoff'] else 2)
-        lo, hi = d * DAY_MIN + op + sup['at'][0], d * DAY_MIN + op + sup['at'][1]
+        run, cut = sup.get('day_run'), sup.get('cutoff')
+        if run and minute < run[0]:
+            # Ordered before the same-day run leaves: here this afternoon.
+            lo, hi = day * DAY_MIN + run[1], day * DAY_MIN + run[2]
+        else:
+            d = day + (1 if cut is None or minute < cut else 2)
+            lo, hi = d * DAY_MIN + op + sup['at'][0], d * DAY_MIN + op + sup['at'][1]
     else:
         lo = (day + sup['days'][0]) * DAY_MIN + op + sup['at'][0]
         hi = (day + sup['days'][1]) * DAY_MIN + op + sup['at'][1]
@@ -370,9 +419,11 @@ def quote(sup: dict, career: str, now: int) -> dict:
     lo, hi = _promise(sup, career, now)
     k = sup['kind']
     if k == 'days':
-        d0, d1 = (now // DAY_MIN) + sup['days'][0], (now // DAY_MIN) + sup['days'][1]
-        label = f'{sup["days"][0]}–{sup["days"][1]} ngày · ngày {d0}–{d1}'
-        return dict(label=label, eta_label=f'Ngày {d0}–{d1}', lo=lo, hi=hi, day=d0, time=hm(hours(career)[0] + sup['at'][0]))
+        a, b = sup['days']
+        d0, d1 = (now // DAY_MIN) + a, (now // DAY_MIN) + b
+        days = f'ngày {d0}' if a == b else f'ngày {d0}–{d1}'
+        label = f'{_window_label(sup, career)} · {days}'
+        return dict(label=label, eta_label=days.capitalize(), lo=lo, hi=hi, day=d0, time=hm(hours(career)[0] + sup['at'][0]))
     mid = _r5((lo + hi) / 2)
     if k == 'rush' and mid // DAY_MIN == now // DAY_MIN:
         a, b = sup['mins']
@@ -394,8 +445,12 @@ def _schedule(sup: dict, career: str, now: int, seed: str) -> dict:
     at = min(hi, max(lo, _r5(rnd.randint(lo, hi))))
     late = None
     if rnd.randrange(100) < sup.get('late', 0):
+        # Same chance of a delay as before the waits were halved; the delay itself is halved too.
         k = sup['kind']
-        extra = DAY_MIN if k == 'days' else rnd.randint(15, 30) if k == 'rush' else rnd.randint(60, 120)
+        if sup.get('delay'):
+            extra = rnd.randint(*sup['delay'])
+        else:  # a supplier table from before the halved waits keeps its old delays
+            extra = DAY_MIN if k == 'days' else rnd.randint(15, 30) if k == 'rush' else rnd.randint(60, 120)
         at = _after_hours(_r5(hi + extra), career)
         late = sup['voice'].get('late') or 'Xe giao tới trễ hơn hẹn.'
     return dict(placed=now, lo=lo, hi=hi, at=max(at, hi + 5) if late else at, late=late)

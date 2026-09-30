@@ -1392,7 +1392,7 @@ def _stock_step(c: dict, k: str) -> tuple[str, dict]:
         return 'receive_stock', dict(shipment=ship['id'], count=ship['actual'])
     if ship:
         return 'advance', {}
-    # A customer is waiting: the express courier (30–60 minutes on the shop clock).
+    # A customer is waiting: the express courier (15–30 minutes on the shop clock).
     return 'order_stock', dict(item=k, qty=min(6, 24 - c['stock'][k]), supplier='express')
 
 

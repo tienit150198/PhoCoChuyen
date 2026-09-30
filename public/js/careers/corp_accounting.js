@@ -242,7 +242,8 @@ function deskSteps(t,x){
   if(!k)return [{ok:null,label:`Bộ ${i}/${cs.length}: soi giấy, khoanh chỗ sai rồi đóng dấu`,go:goto(x,t,'.ca-case:not(.done) .ca-sheet')}];
   if(k.v!=='approve'&&!k.z.some(z=>circ.includes(z))){
     const z=k.z.find(v=>(c.zones||[]).includes(v))||k.z[0],sel=`.ca-pz[data-case="${c.id}"][data-zone="${z}"]`;
-    out.push({ok:null,label:`Bộ ${i}: ô “${zoneName(c,z)}” có vấn đề — khoanh lại`,go:goto(x,t,sel,`⭕ Khoanh ô “${x.esc(zoneName(c,z))}”`),pulse:sel});
+    // First tray: the glowing zone is also what the bottom button (or the hint) circles.
+    out.push({ok:null,label:`Bộ ${i}: ô “${zoneName(c,z)}” có vấn đề — khoanh lại`,go:{cmd:'ca_circle',payload:{task:t.id,case:c.id,zone:z},label:`⭕ Khoanh ô “${x.esc(zoneName(c,z))}”`},pulse:sel});
   }
   out.push({ok:null,label:`Bộ ${i}: đóng dấu ${VLAB[k.v]}`,go:{act:'car:stamp',data:{task:t.id,case:c.id,verdict:k.v},label:`🖋️ Đóng dấu ${VLAB[k.v]}`},pulse:`.ca-sbtn.${k.v}`});
   return out;

@@ -29,6 +29,7 @@ from pathlib import Path
 VERSIONED_DIRS = ("js", "css", "i18n", "music", "icons")
 VERSIONED_SUFFIXES = {".js", ".css", ".json", ".mp3", ".webp", ".png", ".svg"}
 MAPPED_SUFFIXES = (".js", ".css", ".json", ".mp3")  # in the import map (modules + asset() lookups)
+PRECOMPRESS = (".js", ".css", ".json", ".svg")  # text copies that get .gz/.br siblings in the store (precompress)
 HASH_LEN = 12
 RECHECK = 2.0  # seconds a snapshot is trusted before the files are stat()ed again
 ENTRY = "/js/app.js"
@@ -207,3 +208,36 @@ class WebAssets:
             os.replace(tmp, dest)
             written += 1
         return written
+
+    def precompress(self, target: Path) -> int:
+        """Write <file>.gz (and <file>.br when the `brotli` module is installed) next to each text copy in the
+        content-addressed store, once: nginx serves them with gzip_static / brotli_static (maximum compression,
+        no CPU per request; the English pack is 1.7 MB gzip, 1.2 MB brotli). Slow-ish (~1 s per release), so
+        it runs in a background thread after the server is up; until then nginx compresses on the fly."""
+        try:
+            import brotli  # optional: apt install python3-brotli
+        except ImportError:
+            brotli = None
+        made = 0
+        for url, h in self.snapshot().files.items():
+            if not url.endswith(PRECOMPRESS):
+                continue
+            src = Path(target) / h / url.lstrip("/")
+            try:
+                if not src.is_file() or src.stat().st_size < 1400:
+                    continue
+                data = None
+                for ext, pack in ((".gz", lambda d: gzip.compress(d, 9, mtime=0)),
+                                  (".br", (lambda d: brotli.compress(d, quality=9)) if brotli else None)):
+                    dest = src.with_name(src.name + ext)
+                    if pack is None or dest.exists():
+                        continue
+                    data = src.read_bytes() if data is None else data
+                    tmp = dest.with_name(f".{dest.name}.{os.getpid()}.tmp")
+                    tmp.write_bytes(pack(data))
+                    os.chmod(tmp, 0o644)
+                    os.replace(tmp, dest)
+                    made += 1
+            except OSError:
+                continue
+        return made

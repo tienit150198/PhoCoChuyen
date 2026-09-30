@@ -10,7 +10,7 @@ import {tourDone,savedRun,markTourDone} from './store.js';
 
 function css(){
   if(document.querySelector('link[data-tut-css]'))return;
-  const l=document.createElement('link');l.rel='stylesheet';l.href='/css/tutorial.css';l.dataset.tutCss='1';document.head.append(l);
+  const l=document.createElement('link');l.rel='stylesheet';l.href=globalThis.__mnlBoot?.asset?.('/css/tutorial.css')||'/css/tutorial.css';l.dataset.tutCss='1';document.head.append(l);
 }
 
 export function tutorialBoot(env){
@@ -34,7 +34,7 @@ function boot(env){
 
 export async function tutorialAction(action,data,el,env){
   switch(action){
-    case'help':case'tutGuide':openGuide(env,{career:data?.career||undefined,tab:data?.tab||undefined,page:data?.page||undefined});return true;
+    case'help':case'tutGuide':openGuide(env,{career:data?.career||undefined,tab:data?.tab||undefined,page:data?.page||undefined,sec:data?.sec||undefined,topic:data?.topic||undefined});return true;
     case'tutReplay':
       closeGuide();if(document.getElementById('sheet')?.open)env.closeSheet();
       if(tourRunning())stopTour('restart');

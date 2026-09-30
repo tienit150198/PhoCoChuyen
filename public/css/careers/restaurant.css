@@ -196,3 +196,11 @@ html[data-layout="desktop"] .career-job.rs .rs-side{position:sticky;top:0;z-inde
 .career-job.rs .gd-cta.rs-now{background:var(--good);border-color:var(--good);color:var(--on-good,#fff)}
 .career-job.rs .req-row.gd-todo{padding-right:28px}
 .career-job.rs .rs-order .fold>summary{min-height:44px;padding-top:11px;padding-bottom:11px}
+
+/* the bill as line math (sums, the day's ×1,1, the students' −10%) */
+.career-job.rs .rs-bill{display:block;margin-top:2px;color:var(--muted,#7d8375);font-size:.82em;overflow-wrap:anywhere}
+
+/* UX compaction: free tables as one small cell, locked broths/toppings as one chip. */
+.career-job.rs .rs-seat.rs-free{min-height:0;align-self:stretch;padding:6px 4px}
+.career-job.rs .rs-seat.rs-free>b{font-size:.72rem}
+.career-job.rs .rs-lock{margin:6px 0 0;display:inline-block;font-size:.82rem;padding:4px 10px;border-radius:99px;border:1px dashed var(--line);color:var(--muted);background:var(--surface-2)}

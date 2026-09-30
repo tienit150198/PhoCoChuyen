@@ -2732,7 +2732,7 @@ def content() -> dict:
                 today=[dict(id=x['id'], title=x['title'], emoji=x['emoji'], text=x['text']) for x in TODAY],
                 cases=CASES, bands=MOOD_BANDS, cues=CUES, catch=CATCH, doses=DOSES, adoptees=ADOPTEES, rules=RULES,
                 trust_names=TRUST_NAMES, fav_at=FAV_AT, warns=WARNS, remind_early=REMIND_EARLY, remind_late=REMIND_LATE,
-                vax_cycle=VAX_CYCLE, worm_cycle=WORM_CYCLE)
+                vax_cycle=VAX_CYCLE, worm_cycle=WORM_CYCLE, prices=SPEC['prices'])
 
 
 def _p(who, emoji, text):

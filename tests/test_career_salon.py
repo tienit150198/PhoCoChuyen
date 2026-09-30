@@ -89,7 +89,7 @@ class SalonTests(unittest.TestCase):
         self.assertEqual(t['status'], 'completed')
         self.assertEqual(t['mistakes'], 0)
         self.assertEqual(t['sold'], ['rt_colorsafe'])
-        self.assertEqual(j.c['money'], money + 105 + 25 + S.SPEC['tip'])
+        self.assertEqual(j.c['money'], money + 105 + 25)
         post = self.review(tid)
         self.assertEqual(post['stars'], 5)
         self.assertEqual({x['key'] for x in post['feedback']['criteria']}, {'accuracy', 'quality', 'care', 'attitude', 'speed'})
@@ -278,7 +278,7 @@ class SalonTests(unittest.TestCase):
             self.assertTrue(r.get('celebrate'))
             t = j.get(tid)
             self.assertEqual(t['status'], 'referred')
-            self.assertEqual(j.c['money'], money + S.PRICES['patch'] + S.SPEC['tip'])
+            self.assertEqual(j.c['money'], money + S.PRICES['patch'])
             crit = {x['key']: x['score'] for x in self.review(tid)['feedback']['criteria']}
             self.assertEqual(crit['care'], 5)
             self.roundtrip()
@@ -806,7 +806,7 @@ class SalonV2Tests(unittest.TestCase):
         r = j.act('sl_checkout', products=[], confirm=True)
         self.assertIn('Kịp giờ', r['message'])
         self.assertEqual(j.c['ext']['data']['rush_on_time'], 1)
-        self.assertEqual(j.c['money'], money + j.get(tid)['quote'] + n['rush']['bonus'] + S.SPEC['tip'])
+        self.assertEqual(j.c['money'], money + j.get(tid)['quote'] + n['rush']['bonus'])
         self.assertEqual(crit(j, tid)['speed']['score'], 5)
         self.ok()
 
@@ -1113,7 +1113,7 @@ class SalonConsequenceTests(unittest.TestCase):
         self.assertEqual(cq.slips(t), [])
         self.assertEqual(t['reaction']['kind'], 'accept')
         self.assertGreaterEqual(self.stars(tid), 4)
-        self.assertEqual(self.j.c['money'] - self.money, 105 + 25 + S.SPEC['tip'])
+        self.assertEqual(self.j.c['money'] - self.money, 105 + 25)
 
     def test_wrong_colour_costs_stars_and_money(self):
         tid = self.office(shade='dye_4_6')                 # wine red instead of a cool ash brown

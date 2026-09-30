@@ -11,6 +11,7 @@
  *
  * Nothing runs before the first tap: listeners only. Nodes are made per sound; nothing is fetched. */
 const ENDED=new Set(['completed','referred','cancelled']);
+const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const WINDOW=1500,QUIET=600,SAY_DELAY=420;
 
 /* ---- voices ---- */
@@ -59,6 +60,7 @@ export function soundToggles(s,toggle){
     ${toggle('npcVoices',en?'Character voices':'Giọng nhân vật',s.npcVoices!==false,note('Nhân vật “líu lo” khi nói.','Characters babble when they talk.'))}
     ${toggle('detailSfx',en?'Detail sounds':'Âm thanh chi tiết',s.detailSfx!==false,note('Ting ting tiền về, chuông cửa, lật giấy…','Coins, door bell, paper rustle…'))}
     ${toggle('bankVoice',en?'Payment speaker (reads the amount)':'Loa báo tiền (đọc số tiền)',s.bankVoice!==false,note('Khách chuyển khoản vào tiệm: loa đọc “Đã nhận … xu”.','A customer pays the shop by transfer: the speaker reads “Received … coins”.'))}
+    ${isIOS()?`<p class="small muted">${en?'On iPhone, silent mode (the side switch) mutes action sounds and voices. Switch it off to hear them.':'Trên iPhone, chế độ im lặng (nút gạt bên hông) sẽ tắt âm thanh thao tác và giọng nhân vật. Gạt tắt để nghe.'}</p>`:''}
   </section>`;
 }
 

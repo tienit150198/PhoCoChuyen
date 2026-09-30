@@ -203,7 +203,7 @@ ACTIVITIES = [
                 dict(title='Hoàn cảnh', text='Hai bạn trong lớp chưa có đèn và gia đình không muốn góp thêm.')],
          steps=[S('budget', 'number', 'Tính chi phí', '20 đèn LED + 20 bánh mini + 1 mâm trái cây hết bao nhiêu nghìn?', 340,
                   hints=['20×8 + 20×6 + 60'], explain='160 + 120 + 60 = 340 nghìn, vượt quỹ 40 nghìn.'),
-                S('fix', 'choice', 'Vượt quỹ 40 nghìn', 'Chọn cách cân đối.', 'craft',
+                S('fix', 'choice', 'Cân đối quỹ', 'Chi phí vượt quỹ thì chọn cách cân đối.', 'craft',
                   options=[o('ask', 'Thu thêm mỗi nhà 2 nghìn'), o('craft', 'Chỉ mua 15 đèn; 5 đèn còn lại cả lớp tự làm từ tiết Mỹ thuật'), o('cheap', 'Mua đèn nến rẻ hơn')],
                   hints=['Có tiết Mỹ thuật làm đèn giấy; nến dễ gây cháy.'], explain='Tự làm đèn vừa tiết kiệm vừa ý nghĩa.'),
                 S('safe', 'multi', 'An toàn đêm hội', 'Chọn các việc cần làm.', ['led', 'peanut', 'adults', 'count'],

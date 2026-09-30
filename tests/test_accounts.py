@@ -2,6 +2,7 @@ import http.client, json, os, sqlite3, tempfile, threading, unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from tests.pg_support import on_pg
 from game import accounts, social
 from game.storage import Store, Conflict
 from server import GameServer
@@ -174,9 +175,14 @@ class AccountStoreTests(unittest.TestCase):
         path = Path(self.tmp.name) / 'old.db'
         old = Store(path)
         token, _, _ = old.session()
-        with sqlite3.connect(path) as db:
-            db.execute('DROP TABLE logins')
-            db.execute('DROP TABLE accounts')
+        if on_pg():  # PostgreSQL: the same tables, dropped in this Store's own schema
+            with old.connect() as db:
+                db.execute('DROP TABLE logins')
+                db.execute('DROP TABLE accounts')
+        else:
+            with sqlite3.connect(path) as db:
+                db.execute('DROP TABLE logins')
+                db.execute('DROP TABLE accounts')
         again = Store(path)
         self.assertEqual(again.read(token)[1], 0)
         self.assertIsNone(accounts.status(again, token))

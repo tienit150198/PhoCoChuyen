@@ -86,7 +86,7 @@ class RepairTests(unittest.TestCase):
                 self.assertGreater(paid, 0)
                 self.assertLessEqual(paid, t['needs']['budget'])
                 # (money may also move from shared random events, so compare earnings)
-                self.assertEqual(j.c['earnings'], earned + paid + R.SPEC['tip'])
+                self.assertEqual(j.c['earnings'], earned + paid)
                 post = next(p for p in j.c['feed'] if p['kind'] == 'review')
                 self.assertEqual(post['feedback']['fair'], 5, (key, post['feedback']['criteria']))
                 validate_state(json.loads(json.dumps(j.state)))
@@ -219,7 +219,7 @@ class RepairTests(unittest.TestCase):
         j.act('rp_handover', task=tid, confirm=True)
         b = j.get(tid)['bench']
         self.assertEqual(b['paid'], 20 + 8)
-        self.assertEqual(j.c['earnings'], money + 28 + R.SPEC['tip'])
+        self.assertEqual(j.c['earnings'], money + 28)
 
     def test_quote_rules_budget_genuine_and_locks(self):
         j = journey_for(lambda t: t['_fault'] == 'battery' and t['needs']['genuine_only'])
@@ -258,7 +258,7 @@ class RepairTests(unittest.TestCase):
         j.act('rp_return', task=tid, confirm=True)
         t = j.get(tid)
         self.assertEqual(t['status'], 'completed')
-        self.assertEqual(j.c['earnings'], money + R.CHECK_FEE + R.SPEC['tip'])
+        self.assertEqual(j.c['earnings'], money + R.CHECK_FEE)
         post = next(p for p in j.c['feed'] if p['kind'] == 'review')
         crit = {x['key']: x['score'] for x in post['feedback']['criteria']}
         self.assertEqual(crit['honesty'], 5)
@@ -811,7 +811,7 @@ class RepairTests(unittest.TestCase):
         offer = j.task['needs']['offer']
         money = j.c['money']
         j.act('rp_deal', task=tid, choice='buy', confirm=True)
-        self.assertEqual(j.c['money'], money - offer + R.SPEC['tip'])
+        self.assertEqual(j.c['money'], money - offer)
         for k, v in before.items():
             self.assertEqual(kit.stock(j.c, k), min(40, v + 1))
         crit = {x['key']: x['score'] for x in self.review_of(j, tid)['feedback']['criteria']}
@@ -1510,7 +1510,7 @@ class CareLoopTests(unittest.TestCase):
         while R._data(j.c)['comebacks'][0]['state'] == 'wait':
             new_day(j)
         money = j.c['money']
-        cost, price = R._back_fee(row)
+        cost, price = R._back_fee(j.c, row)
         act(j, 'rp_back', id=row['id'], choice='charge', confirm=True)
         self.assertEqual(j.c['money'], money + price)
         self.assertEqual(R._data(j.c)['regulars'][row['npc']]['trust'], 1)

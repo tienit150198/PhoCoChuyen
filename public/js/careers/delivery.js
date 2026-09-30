@@ -65,10 +65,10 @@ function status(x){
   const meter=(label,val,max,cls)=>`<div class="dl-meter ${cls}"><div class="dl-meter-top"><span>${label}</span><b>${x.esc(val)}</b></div><div class="bar"><i style="width:${Math.max(0,Math.min(100,max))}%"></i></div></div>`;
   return `<div class="dl-status" role="status">
     <div class="dl-clock"><span aria-hidden="true">🕔</span><b>${x.esc(hm(d.clock))}</b><small>${wx[0]} ${wx[1]} · ${x.esc(wx[2])}</small></div>
-    ${meter('⛽ Xăng',`${fuel}%`,fuel,fuel<20?'bad':fuel<35?'warn':'')}
-    ${meter('📦 Tải',`${kg(load)} / ${kg(limit)}`,load/limit*100,load>limit*.8?'warn':'')}
-    ${meter('💵 Túi COD',`${d.owed||0} / ${cap} xu`,(d.owed||0)/cap*100,(d.owed||0)>cap*.7?'warn':'')}
-    ${bikeMeter(x,meter)}
+    <div class="dl-meters">${meter('⛽ Xăng',`${fuel}%`,fuel,fuel<20?'bad':fuel<35?'warn':'')}
+    ${meter('📦 Tải',`${(load/10).toLocaleString('vi-VN')}/${kg(limit)}`,load/limit*100,load>limit*.8?'warn':'')}
+    ${meter('💵 Túi COD',`${d.owed||0}/${cap} xu`,(d.owed||0)/cap*100,(d.owed||0)>cap*.7?'warn':'')}
+    ${bikeMeter(x,meter)}</div>
   </div>`;
 }
 
@@ -83,6 +83,13 @@ function bikeMeter(x,meter){
 function foldBox(x,key,summary,body,auto=false,cls=''){
   const u=ui(x),open=u.open?.[key]??auto;
   return `<details class="fold dl-fold ${cls}"${open?' open':''}><summary ${carAttr(x,'fold',{key})}>${summary}</summary><div class="fold-body">${body}</div></details>`;
+}
+/** A one-line fold whose open state follows the step (`auto`) until the player taps it. Not a <details>:
+ * the sheet host restores every <details> by position after a re-render, which would undo `auto`.
+ * The body is only drawn while open. */
+function pane(x,key,summary,body,auto=false,cls=''){
+  const open=(ui(x).pane??={})[key]??auto;
+  return `<div class="dl-pane ${cls}${open?' open':''}"><button type="button" class="dl-pane-sum" data-action="car:pane" data-key="${x.esc(key)}" data-open="${open?1:0}" aria-expanded="${open}">${summary}</button>${open?`<div class="dl-pane-body">${body}</div>`:''}</div>`;
 }
 const partState=p=>p.value<p.low?'bad':p.value<p.low+15?'warn':'';
 function partList(x,b){
@@ -136,8 +143,13 @@ function areaLine(x){
   const rows=Object.entries(a).filter(([,n])=>n>=sm).sort((p,q)=>q[1]-p[1]).map(([id,n])=>`${nodeOf(x,id).emoji} ${nodeOf(x,id).name}${n>=lo?' (lối tắt riêng)':''}`);
   return rows.length?`<p class="small dl-areas">🗺️ Thuộc hẻm: ${x.esc(rows.join(', '))}.</p>`:'';
 }
-function careSection(x){
-  return `<section class="dl-care" aria-label="Chăm xe và khách quen">${bikeFold(x)}${bookFold(x)}</section>`;
+/** Everything about the day that is not the current step (road, goals, bike, regulars), in one fold.
+ * A bike that needs fixing stays outside it, open, so the warning is never hidden. */
+function careSection(x,key='today'){
+  const d=x.room.data||{},r=d.road,sc=d.score,q=sc?.quest,alert=d.bike?.alert&&d.at!=='garage';
+  const bits=[r?`${x.esc(r.mod.emoji)} ${x.esc(r.mod.name)}`:'',sc?`🔥 ${sc.streak}`:'',q?`🎯 ${q.done}/${q.goal}${q.paid?' ✓':''}`:''].filter(Boolean);
+  const inner=`${roadBoard(x)}${scoreStrip(x)}${alert?'':bikeFold(x)}${bookFold(x)}`;
+  return `<section class="dl-care" aria-label="Chăm xe và khách quen">${alert?bikeFold(x):''}${pane(x,key,`📅 Hôm nay${bits.length?' · '+bits.join(' · '):''}`,`<div class="dl-today">${inner}</div>`,false,'dl-today-fold')}</section>`;
 }
 function wishes(t,x){
   const b=(x.room.data?.book||[]).find(e=>e.npc===t.npc);if(!b||!b.notes.length)return '';
@@ -209,13 +221,13 @@ function map(x){
 }
 
 /* ---------- route planner ---------- */
-function planner(x){
+function planner(x,ride=true){
   const d=x.room.data||{},u=ui(x),all=nodes(x),mpu=Number(d.mpu)||3,rate=Number(d.rate)||2;
   const planned=d.route||[],eta=d.eta||[];
   let body='';
   if(planned.length){
     const next=eta[0]||{node:planned[0],blocks:dist(x,d.at,planned[0]),minutes:dist(x,d.at,planned[0])*mpu,at:(d.clock||0)+dist(x,d.at,planned[0])*mpu,fuel:(d.fuel||0)-dist(x,d.at,planned[0])*rate,notes:[]};
-    body+=`<ol class="dl-eta">${eta.map((r,i)=>`<li class="${r.fuel<0?'bad':''}"><span>${i+1}</span><b>${x.esc(nodeOf(x,r.node).emoji)} ${x.esc(nodeOf(x,r.node).name)}</b><small>${x.esc(hm(r.at))} · ${r.blocks} ô · xăng còn ${r.fuel}%${(r.notes||[]).length?' · '+x.esc(r.notes.join(', ')):''}</small></li>`).join('')}</ol>`+rideChoice(x,next);
+    body+=`<ol class="dl-eta">${eta.map((r,i)=>`<li class="${r.fuel<0?'bad':''}"><span>${i+1}</span><b>${x.esc(nodeOf(x,r.node).emoji)} ${x.esc(nodeOf(x,r.node).name)}</b><small>${x.esc(hm(r.at))} · ${r.blocks} ô · xăng còn ${r.fuel}%${(r.notes||[]).length?' · '+x.esc(r.notes.join(', ')):''}</small></li>`).join('')}</ol>`+(ride?rideChoice(x,next):'');
   }
   const from=u.draft.length?u.draft[u.draft.length-1]:(planned.length?planned[planned.length-1]:d.at);
   let clock=planned.length&&eta.length?eta[eta.length-1].at:(d.clock||0),fuel=planned.length&&eta.length?eta[eta.length-1].fuel:(d.fuel||0),prev=planned.length?planned[planned.length-1]:d.at;
@@ -242,6 +254,26 @@ function planner(x){
     <div class="dl-grid stops">${tiles}</div>`;
 }
 
+/** The leg the scooter rides next (the server's ETA row, or an estimate before it has one). */
+function nextLeg(x){
+  const d=x.room.data||{},planned=d.route||[],mpu=Number(d.mpu)||3,rate=Number(d.rate)||2;
+  if(!planned.length)return null;
+  const b=dist(x,d.at,planned[0]);
+  return (d.eta||[])[0]||{node:planned[0],blocks:b,minutes:b*mpu,at:(d.clock||0)+b*mpu,fuel:(d.fuel||0)-b*rate,notes:[]};
+}
+/** What the current step is about: planning the route, riding the planned leg, or work at this stop. */
+function phaseOf(g){
+  const go=pending(g?.steps)?.go||{};
+  return go.cmd==='dl_plan'||go.act==='car:plan'?'plan':go.cmd==='dl_ride'?'ride':'stop';
+}
+/** The route: the whole planner (map, stops) is open only while planning is the step; riding shows the
+ * two ways to go above it; any other step keeps it as one closed line. */
+function routeSec(x,phase,tag){
+  const d=x.room.data||{},planned=d.route||[],leg=nextLeg(x),ride=phase==='ride'&&leg;
+  const sum=planned.length?`🗺️ Lộ trình · ${planned.length} điểm · tiếp theo ${x.esc(place(x,planned[0]))}`:'🗺️ Lộ trình · bản đồ & điểm dừng';
+  const body=`${map(x)}${areaLine(x)}${planner(x,!ride)}`;
+  return `${ride?`<section class="dl-sec dl-ride">${rideChoice(x,leg)}</section>`:''}<section class="dl-sec dl-route-sec">${pane(x,`route-${tag}-${phase}-${planned.length}`,sum,body,phase==='plan','dl-route-fold')}</section>`;
+}
 function rideChoice(x,next){
   const name=x.esc(nodeOf(x,next.node).name),alt=next.short,soup=live(x).some(t=>t.known&&t.run.loaded&&t.needs.soup&&!t.run.spilled);
   const main=`<button type="button" class="btn primary big dl-way" ${cmdAttr(x,'dl_ride',{way:'main'})}><span>🛣️ Đường chính tới ${name}</span><small>${next.minutes??next.blocks*(x.room.data?.mpu||3)} phút · ${next.blocks} ô${(next.notes||[]).length?' · '+x.esc(next.notes.join(', ')):''}</small></button>`;
@@ -256,13 +288,20 @@ function head(t,x){
   const n=t.needs,who=x.npc(t.npc);
   return `<div class="dl-ohead"><span class="dl-oemoji" aria-hidden="true">${x.esc(n.emoji)}</span><div class="grow"><b>${x.esc(n.item)}</b><small>${x.esc(who.display_name)} · ${x.esc(n.address)}${t.run.unit?` · <strong>${x.esc(t.run.unit)}</strong>`:''}</small><div class="dl-tags">${tags(t,x)}</div></div></div>`;
 }
+/** "🔒 2 món mở ở cấp 2–3": locked things in one line (names and levels in the tooltip). */
+function lockChip(x,list){
+  if(!list.length)return '';
+  const lv=list.map(i=>Number(i.unlock)||1),lo=Math.min(...lv),hi=Math.max(...lv);
+  const names=list.map(i=>`${i.name} (cấp ${Number(i.unlock)||1})`).join(', ');
+  return `<p class="dl-lock" title="${x.esc(names)}" aria-label="${x.esc(`Chưa mở: ${names}`)}">🔒 ${list.length} món mở ở cấp ${lo===hi?lo:`${lo}–${hi}`}</p>`;
+}
 function packTiles(t,x){
-  const r=t.run,inv=x.room.inventory||{stock:{},locked:[]};
-  return `<div class="dl-grid pack">${items(x).map(i=>{
+  const r=t.run,inv=x.room.inventory||{stock:{},locked:[]},shut=items(x).filter(i=>(inv.locked||[]).includes(i.id));
+  return `<div class="dl-grid pack">${items(x).filter(i=>!shut.includes(i)).map(i=>{
     const used=r.packed.includes(i.id),locked=(inv.locked||[]).includes(i.id),q=inv.stock?.[i.id]??0;
     const off=used||locked||!q||(r.loaded&&i.id!=='rainbag');
     return tile(x,{emoji:i.emoji,label:i.name,sub:used?'✓ đã dùng':locked?`🔒 cấp ${i.unlock}`:`còn ${q} ${i.unit||''}`,cls:`${used?'selected':''} ${locked?'locked':''} ${!q&&!used?'empty':''}`,attr:cmdAttr(x,'dl_pack',{task:t.id,item:i.id}),off});
-  }).join('')}</div>`;
+  }).join('')}</div>${lockChip(x,shut)}`;
 }
 function pickupCard(t,x){
   const n=t.needs,r=t.run,d=x.room.data||{},u=ui(x),limit=Number(d.limit)||200;
@@ -277,7 +316,7 @@ function pickupCard(t,x){
     if(r.missing)body+=`<p class="small">Đã bổ sung: ${x.esc(r.missing)}.</p>`;
     return body;
   }
-  body+=`<div class="row wrap">${x.cmd(r.checked?'✓ Đã cân & kiểm':'⚖️ Cân & kiểm hàng','dl_check',{task:t.id},r.checked?'ghost':'primary',r.checked)}</div>`;
+  body+=r.checked?'<p class="dl-done">✓ Đã cân & kiểm</p>':`<div class="row wrap">${x.cmd('⚖️ Cân & kiểm hàng','dl_check',{task:t.id},'primary')}</div>`;
   if(r.checked){
     const diff=r.w!==n.w;
     body+=`<dl class="dl-kv"><dt>Cân thực tế</dt><dd class="${diff?'warn-text':''}">${kg(r.w)} ${diff?`(khai ${kg(n.w)})`:'— khớp'}</dd><dt>Vỏ thùng</dt><dd>${r.seam?'⚠️ hở mép keo':'nguyên vẹn'}</dd></dl>`;
@@ -305,12 +344,13 @@ function dropCard(t,x){
   if(r.broken_seen)body+=`<p class="notice red">Khách đồng kiểm thấy hàng hỏng và từ chối nhận.</p>`;
   if(r.expired)body+=`<p class="notice red">Khách đã hủy đơn vì chờ quá lâu.</p>`;
   const blocked=r.broken_seen||r.expired;
-  body+=`<div class="row wrap">${x.cmd(r.called?'✓ Đã gọi khách':'📞 Gọi khách','dl_call',{task:t.id},r.called?'ghost':'',r.called||blocked)}</div>`;
+  body+=r.called?'<p class="dl-done">✓ Đã gọi khách</p>':`<div class="row wrap">${x.cmd('📞 Gọi khách','dl_call',{task:t.id},'',blocked)}</div>`;
   if(!blocked)body+=wishes(t,x);
   if(n.cod&&!blocked){
     const coins=u.change[t.id]||[],given=sum(coins);
-    body+=`<div class="dl-cash"><p>Khách đưa <b>${n.cash} xu</b> · tiền hàng <b>${n.cod} xu</b></p>
+    body+=`<div class="dl-cash"><p>Khách đưa <b>${n.cash} xu</b> · tiền hàng <b>${n.cod} xu</b>${r.discount?` − bớt ${r.discount} = <b>${n.cod-r.discount} xu</b>`:''}</p>
       <p class="dl-change">Tiền thối đang đếm: <b>${given} xu</b> ${coins.length?`<small>(${coins.join(' + ')})</small>`:''}</p>
+      ${r.asked?'<p class="notice amber small">Khách đếm lại thấy thối thiếu: thối thêm cho đủ rồi đưa lại.</p>':''}
       ${keypad(x,'note',given,given,{task:t.id})}</div>
       <div class="row wrap">${x.cmd(`💵 Thu ${n.cash}, thối ${given} & giao`,'dl_deliver',{task:t.id,change:given},'primary big')}</div>`;
   }else if(!blocked){
@@ -321,15 +361,16 @@ function dropCard(t,x){
   if(r.knocks||blocked)body+=`<div class="row wrap">${x.confirmCmd('📝 Báo giao thất bại','dl_fail',{task:t.id},r.broken_seen?'Lập biên bản hàng hỏng? Bạn đền một nửa giá trị hàng.':'Báo giao thất bại cho đơn này?','danger small')}</div>`;
   return body;
 }
-function hubPanel(x){
+function hubPanel(x,open=true){
   const d=x.room.data||{},u=ui(x),given=sum(u.settle);
   if(!(d.owed>0))return '';
   const rows=(d.cod||[]).map(r=>`<li><span>${x.esc(r.item)}</span><b>${r.cod} xu</b>${r.day<x.room.day?'<small>từ hôm trước</small>':''}</li>`).join('');
-  return `<section class="dl-sec dl-hub"><h4 class="section-title">💵 Nộp tiền COD</h4>
-    <ul class="dl-statement">${rows}</ul>
+  const body=`<ul class="dl-statement">${rows}</ul>
     <p class="small muted">Túi đang có ${d.bag} xu tiền mặt.</p>
     <p class="dl-change">Đang đếm: <b>${given} xu</b></p>${keypad(x,'snote',given,given)}
-    <div class="row wrap">${x.confirmCmd(`Nộp ${given} xu cho kế toán`,'dl_settle',{amount:given},`Nộp ${given} xu COD cho kế toán bưu cục?`,'primary',!given)}</div></section>`;
+    <div class="row wrap">${x.confirmCmd(`Nộp ${given} xu cho kế toán`,'dl_settle',{amount:given},`Nộp ${given} xu COD cho kế toán bưu cục?`,'primary',!given)}</div>`;
+  if(open||given)return `<section class="dl-sec dl-hub"><h4 class="section-title">💵 Nộp tiền COD</h4>${body}</section>`;
+  return `<section class="dl-hub folded">${pane(x,`hub-${x.room.day}`,`💵 Nộp tiền COD · ${d.owed} xu`,body)}</section>`;
 }
 function servicePanel(x){
   const d=x.room.data||{},b=d.bike;if(!b||d.at!=='gas')return '';
@@ -348,7 +389,8 @@ function fuelPanel(x){
     ${gas?'':'<p class="small muted">Đắt gấp đôi, tối đa 20% — chỉ để chạy tới cây xăng.</p>'}
     <div class="row wrap">${opts.map(v=>x.confirmCmd(`+${v}% · ${v/step*unit} xu`,'dl_refuel',{amount:v},`Đổ thêm ${v}% xăng hết ${v/step*unit} xu?`,gas?'':'ghost')).join('')}</div></section>`;
 }
-function stopPanel(x){
+/** `settle`: handing the COD cash in is the current step (the hub panel then opens by itself). */
+function stopPanel(x,settle=true){
   const d=x.room.data||{},here=nodeOf(x,d.at),s=stopsAt(x,d.at);
   const cards=[...s.pick.map(t=>`<article class="dl-order pick">${head(t,x)}${pickupCard(t,x)}</article>`),
                ...s.drop.map(t=>`<article class="dl-order drop">${head(t,x)}${dropCard(t,x)}</article>`)].join('');
@@ -357,19 +399,26 @@ function stopPanel(x){
     ${cards||'<p class="muted">Không có đơn cần lấy hay giao ở đây.</p>'}
     ${expired.map(t=>`<p class="notice red">${x.esc(t.needs.item)}: khách đã hủy đơn. ${x.confirmCmd('Báo thất bại','dl_fail',{task:t.id},'Báo giao thất bại cho đơn đã bị hủy?','danger small')}</p>`).join('')}
     <div class="row wrap">${x.cmd('⏳ Chờ 5 phút','dl_wait',{},'ghost small')} ${x.button('📦 Kho vật tư','inventory',{},'ghost small')}</div></section>
-    ${d.at==='hub'?hubPanel(x):''}${fuelPanel(x)}${servicePanel(x)}${garagePanel(x)}`;
+    ${d.at==='hub'?hubPanel(x,settle||!cards):''}${fuelPanel(x)}${servicePanel(x)}${garagePanel(x)}`;
 }
 
 /* ---------- order board & checklist ---------- */
-function board(x,active){
+function board(x,active,folded=false){
   const rows=live(x);
-  return `<section class="dl-board"><h4 class="section-title">📱 Đơn trên app (${rows.length})</h4>${rows.map(t=>{
+  if(folded){
+    const fresh=rows.filter(t=>!t.known).length;
+    return `<section class="dl-board folded">${pane(x,`board-${active}`,`📱 Đơn trên app (${rows.length})${fresh?` · ${fresh} đơn mới`:''}`,boardCards(x,rows,active))}</section>`;
+  }
+  return `<section class="dl-board"><h4 class="section-title">📱 Đơn trên app (${rows.length})</h4>${boardCards(x,rows,active)}</section>`;
+}
+function boardCards(x,rows,active){
+  return `${rows.map(t=>{
     const st=stage(t),n=t.needs,p=t.preview||{};
     const who=x.npc(t.npc);
     if(st==='new')return `<article class="dl-card new ${t.id===active?'active':''}"><div class="row"><span class="dl-oemoji">${x.esc(p.emoji||'📦')}</span><div class="grow"><b>${x.esc(nodeOf(x,p.pickup).name)} → ${x.esc(nodeOf(x,p.dest).name)}</b><small>${x.esc(who.display_name)}: “${x.esc(t.opening)}”</small></div></div>${x.cmd('✋ Nhận đơn','ask',{task:t.id},'primary full')}</article>`;
     const label={pickup:`Chờ lấy · ${nodeOf(x,n.pickup).name}`,bag:`Trên xe → ${nodeOf(x,destOf(t)).name}`}[st]||'';
     return `<article class="dl-card ${st} ${t.id===active?'active':''}"><div class="row"><span class="dl-oemoji">${x.esc(n.emoji)}</span><div class="grow"><b>${x.esc(n.item)}</b><small>${x.esc(label)}${t.due!=null?` · hẹn ${x.esc(hm(t.due))}`:''}${n.cod?` · COD ${n.cod}`:''}</small></div>${t.id===active?'':x.cmd('Xem','task_select',{task:t.id},'ghost small')}</div></article>`;
-  }).join('')||'<p class="muted small">Chưa có đơn.</p>'}</section>`;
+  }).join('')||'<p class="muted small">Chưa có đơn.</p>'}`;
 }
 /* ---------- next step: one list of steps drives the checklist, the header hint and the bottom button ---------- */
 /** The biggest note that still fits: how a courier counts change. */
@@ -453,13 +502,13 @@ function dropSteps(t,x,S){
   for(const o of notes)if(kinds[o.kind])S.push({ok:r.care.includes(o.kind)?true:null,label:`${kinds[o.kind].label} (khách dặn)`,go:here&&!r.care.includes(o.kind)?{cmd:'dl_care',payload:{task:t.id,kind:o.kind},label:`${KIND_EMOJI[o.kind]} ${x.esc(kinds[o.kind].label)}`}:null});
   let given=0;
   if(n.cod){
-    const right=n.cash-n.cod;given=sum(u.change[t.id]||[]);
+    const pays=n.cod-(r.discount||0),right=n.cash-pays;given=sum(u.change[t.id]||[]);
     let go=null,pulse='';
     if(here&&first&&given>right)go={act:'car:noteClear',data:{task:t.id},label:'↺ Đếm lại tiền thối'};
     else if(here&&first&&given<right){const v=nextNote(x,right-given);go={act:'car:note',data:{task:t.id,v},label:`➕ Thối thêm tờ ${v} xu · ${given}/${right}`};pulse=`.dl-cash [data-action="car:note"][data-v="${v}"]`;}
     else if(here&&!first&&!given)go={sel:'.dl-cash .dl-keypad .dl-note'};
-    S.push({ok:first?(given===right?true:given>right?false:null):(given?true:null),
-      label:first?`Thối lại ${right} xu (khách đưa ${n.cash}, hàng ${n.cod})`:`Đếm tiền thối (khách đưa ${n.cash}, hàng ${n.cod})`,note:given&&!first?`đang đếm ${given} xu`:'',go,pulse});
+    S.push({ok:first||r.asked?(given===right?true:given>right?false:null):(given?true:null),
+      label:first?`Thối lại ${right} xu (khách đưa ${n.cash}, hàng ${pays})`:`Đếm tiền thối (khách đưa ${n.cash}, hàng ${pays})`,note:r.asked&&given<right?'khách đòi thối thêm':given&&!first?`đang đếm ${given} xu`:'',go,pulse});
   }
   const stairs=(x.cc.stairs||{})[dest]||0;
   if(here&&r.back!=null&&(d.clock||0)+stairs<r.back)
@@ -508,23 +557,23 @@ export default {
     if(r.dest)return `Giao tới địa chỉ mới`;
     return n.cod?'Tới nơi, thối tiền đúng và giao':'Tới nơi và giao hàng';
   },
+  // The control for the current step comes first (the door hand-over, the scale, the two ways to
+  // ride, or the planner); everything else is one closed line (route, app board, the day).
   job(t,x){
     const g=guide(t,x),hint=hintFor(t,x,g);
     if(x.room.data?.desk?.ev)return `<div class="career-job dl">${hint}${status(x)}${deskCard(x)}</div>`;
+    const phase=t.known?phaseOf(g):'stop',go=pending(g.steps)?.go||{},route=routeSec(x,phase,t.id);
+    const stop=stopPanel(x,go.cmd==='dl_settle'||/^car:snote/.test(go.act||''));
     return `<div class="career-job dl">${hint}${status(x)}${t.known?'':board(x,t.id)}${deskCard(x)}<div class="workbench"><section class="wb-main">
-      ${stopPanel(x)}
-      <section class="dl-sec dl-route-sec"><h4 class="section-title">🗺️ Lộ trình</h4>${map(x)}${areaLine(x)}${planner(x)}</section>
-      ${roadBoard(x)}${scoreStrip(x)}${careSection(x)}
-    </section><aside class="wb-side">${t.known?`${stepRows(x,g.steps,'Việc của đơn')}${board(x,t.id)}`:''}</aside></div>${bar(t,x,g)}</div>`;
+      ${phase==='stop'?stop+route:route+stop}${careSection(x)}
+    </section>${t.known?`<aside class="wb-side">${stepRows(x,g.steps,'Việc của đơn')}${board(x,t.id,true)}</aside>`:''}</div>${bar(t,x,g)}</div>`;
   },
-  // Between orders: still ride to the hub to hand in COD cash or to refuel.
+  // Between orders: new orders first, then this stop (hand in COD cash, refuel), the route folded.
   idle(x){
     if(x.room.data?.desk?.ev)return `<div class="career-job dl">${status(x)}${deskCard(x)}</div>`;
-    return `<div class="career-job dl">${status(x)}${roadBoard(x)}${scoreStrip(x)}${deskCard(x)}<div class="workbench"><section class="wb-main">
-      ${stopPanel(x)}
-      <section class="dl-sec"><h4 class="section-title">🗺️ Lộ trình</h4>${map(x)}${areaLine(x)}${planner(x)}</section>
-      ${careSection(x)}
-    </section><aside class="wb-side">${board(x,null)}</aside></div></div>`;
+    return `<div class="career-job dl">${status(x)}${deskCard(x)}${board(x,null)}<div class="workbench"><section class="wb-main">
+      ${stopPanel(x)}${routeSec(x,(x.room.data?.route||[]).length?'ride':'stop','idle')}${careSection(x,'today-idle')}
+    </section></div></div>`;
   },
   actions:{
     async stop(data,el,x){const u=ui(x);if(u.draft.length<10&&u.draft[u.draft.length-1]!==data.node)u.draft.push(data.node);x.render();},
@@ -544,6 +593,7 @@ export default {
     async seen(data,el,x){ui(x).seen=data.key;x.render();},
     // <details> toggles natively before this runs; just remember the state for the next render.
     async fold(data,el,x){const u=ui(x);(u.open??={})[data.key]=!!el.closest('details')?.open;},
+    async pane(data,el,x){(ui(x).pane??={})[data.key]=data.open!=='1';x.render();},
     async fix(data,el,x){const u=ui(x),f=u.fix||[];u.fix=f.includes(data.part)?f.filter(p=>p!==data.part):[...f,data.part];x.render();},
   },
   // The sticky next-step bar rides above the sheet's own sticky footer.

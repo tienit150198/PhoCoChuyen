@@ -24,6 +24,8 @@ import random
 
 from .content import CAREERS, CAREER_META
 from . import archive as ar
+from . import certificates as ct
+from . import bank as bk   # 🏦 Ngân hàng Phố (game/bank.py)
 
 VERSION = 1
 START_WALLET = 60
@@ -33,14 +35,14 @@ BREADTH_XP = 80       # maturity bonus for every workplace you really worked at
 LIVING = {1: 10, 2: 12, 3: 14, 4: 16, 5: 18, 6: 20, 7: 20}
 UPKEEP = {'cozy': 4, 'sunny': 7, 'garden': 11}
 MODES = (('calm', .25), ('normal', .55), ('festival', .20))
-HISTORY_KINDS = ('living', 'upkeep', 'draw', 'invest', 'salary', 'reopen', 'incident', 'life')
+HISTORY_KINDS = ('living', 'upkeep', 'draw', 'invest', 'salary', 'reopen', 'incident', 'life', 'study', 'backdoor', 'bank')
 NEWS_KINDS = ('chapter', 'titles')
 
 CH_UNLOCKS = {
     # New players get every storefront at once; the service places follow after the first day.
     1: ('milk_tea', 'grocery', 'delivery', 'cafe_bakery', 'florist', 'mother_baby', 'restaurant'),
     2: ('pet_care', 'salon', 'repair', 'farm', 'homestay'),
-    3: (),
+    3: ('clothing', 'pet_shop', 'tra_da'),
     4: ('customer_care', 'pharmacy', 'tour_guide', 'teacher', 'accounting'),
     5: ('corp_accounting', 'tax_payroll'),
     6: ('group_accounting',),
@@ -296,7 +298,8 @@ def initial(story: bool = False, seed: int = 0) -> dict:
     return dict(version=VERSION, story=bool(story), seed=int(seed), gender=None, intro=False, chapter=1, done=[],
                 unlocked=[cid for cid in CH_UNLOCKS[1] if cid in CAREERS], wallet=START_WALLET, life_day=1,
                 paused={}, titles={}, equipped=None, history=[], news=[], news_seq=0, clean_days=0, in_debt=False,
-                days=[], stats={k: 0 for k in STATS} | dict(max_wallet=START_WALLET))
+                days=[], stats={k: 0 for k in STATS} | dict(max_wallet=START_WALLET),
+                certificates={}, study=None, cert_paper=None)   # 🎓 thi chứng chỉ (game/certificates.py)
 
 
 def _context(s: dict) -> dict:
@@ -568,6 +571,11 @@ def after(s: dict, career: str | None, action: str, p: dict, result: dict) -> No
     j = s['journey']
     if action == 'end_day' and career in s['careers']:
         _end_of_day(s, career, result)
+    bk.on_life_day(s, result)   # 🏦 interest, statements, installments: once per life day (idempotent)
+    if action == 'start_day' and career in s['careers']:
+        line = _emp().backdoor_remark(s, s['careers'][career], career)   # vào bằng cửa sau: one remark, day one
+        if line:
+            result.setdefault('effects', []).append(line)
     if not j['story']:
         return
     for cid in list(j['paused']):
@@ -650,6 +658,10 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
             j['paused'].pop(cid)
             j['stats']['reopened'] += 1
             result['message'] = f'{place} mở cửa lại ({paid}).'
+    elif name.startswith('jr_cert_'):
+        result.update(ct.action(s, name, p))
+    elif name.startswith('jr_bk_'):
+        result.update(bk.action(s, name, p))
     else:
         raise e.GameError('Thao tác hành trình không hợp lệ.', 'unknown_action')
     after(s, None, name, p, result)
@@ -725,7 +737,8 @@ def public(s: dict) -> dict:
         goals=_goals_view(ctx, j['chapter']), progress_paused=j['story'] and j['wallet'] < 0 and j['chapter'] <= LAST,
         clean_days=j['clean_days'], history=list(reversed(j['history'][-30:])), news=copy.deepcopy(j['news']),
         suggested=suggested(s, ctx), tasks=ctx['tasks'], worked=ctx['places'],
-        stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')})
+        stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')},
+        bank=bk.public(s), **ct.public(s))
 
 
 def _skill_ids() -> list[str]:
@@ -748,7 +761,7 @@ def content() -> dict:
         titles=[dict(id=t['id'], cat=t['cat'], secret=True) if t['secret'] else
                 {k: t[k] for k in ('id', 'cat', 'emoji', 'name', 'desc')} for t in TITLES],
         skills=_emp().STRENGTHS, levels=LEVEL_NAMES, reserve=RESERVE, reopen_fee=REOPEN_FEE, start_wallet=START_WALLET,
-        unlock_chapter={cid: n for n, ids in CH_UNLOCKS.items() for cid in ids if cid in CAREERS})
+        unlock_chapter={cid: n for n, ids in CH_UNLOCKS.items() for cid in ids if cid in CAREERS}, certs=ct.content())
 
 
 def validate(s: dict) -> None:
@@ -803,3 +816,5 @@ def validate(s: dict) -> None:
     need(isinstance(j['stats'], dict) and set(j['stats']) <= set(STATS), 'Thống kê hành trình không hợp lệ.')
     for v in j['stats'].values():
         integer(v, 0, 10**9)
+    ct.validate(s)
+    bk.validate(s)

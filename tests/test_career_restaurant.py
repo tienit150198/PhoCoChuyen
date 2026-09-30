@@ -195,7 +195,7 @@ class RestaurantTests(unittest.TestCase):
         j.act('rs_serve', task=tid, confirm=True)
         t = j.get(tid)
         self.assertEqual(t['status'], 'completed')
-        self.assertEqual(j.c['money'], money + price + R.SPEC['tip'] + (4 if t['guest']['kind'] == 'generous' else 0)
+        self.assertEqual(j.c['money'], money + price + (4 if t['guest']['kind'] == 'generous' else 0)
                          + (3 if t['guest']['kind'] == 'rush' else 0))
         post = next(p for p in j.c['feed'] if p['kind'] == 'review')
         self.assertEqual(post['stars'], 5)

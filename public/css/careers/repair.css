@@ -222,3 +222,36 @@ body.reduce-motion .career-job.rp .rp-big,html.reduce-motion .career-job.rp .rp-
   /* after intake the step panel comes first; the device card follows it */
   .career-job.rp.rp-later .wb-side{order:1}
 }
+.career-job.rp .rp-bill{margin:10px 0 0;padding:8px 10px;border:1px dashed var(--line,#ccc);border-radius:10px}
+.career-job.rp .rp-bill h5{margin:0 0 4px}
+.career-job.rp .rp-bill p{margin:2px 0}
+
+/* ---------- UX compaction (phase 2): compact ticket, slim stepper, folded shell / readings / checklist, one ⋯ row */
+.career-job.rp .rp-tk{padding:10px 12px}
+.career-job.rp .rp-tk-head{display:flex;align-items:center;gap:8px;min-width:0}
+.career-job.rp .rp-tk-head h3{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.career-job.rp .rp-tk-head .patience{flex:none;min-width:96px}
+.career-job.rp .rp-tk .rp-symptom{margin:6px 0 4px;line-height:1.4}
+.career-job.rp .rp-tk .rp-note{margin-top:4px}
+.career-job.rp .rp-steps button{flex-direction:row;justify-content:center;gap:4px;min-height:44px;padding:4px 2px}
+.career-job.rp .rp-steps button em{font-style:normal;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.career-job.rp .rp-steps button span{width:22px;height:22px;flex:none}
+.career-job.rp details.rp-shell-fold>summary{min-height:44px;color:var(--rp-ink);font-size:.9em}
+.career-job.rp details.rp-shell-fold[open]>summary{margin-bottom:6px}
+.career-job.rp .rp-readbox,.career-job.rp .rp-rowsbox{margin-top:10px}
+.career-job.rp .rp-readbox>summary,.career-job.rp .rp-rowsbox>summary,.career-job.rp .rp-more>summary{padding:0 10px;border-radius:var(--rp-rs);background:var(--rp-s2);border:1px dashed var(--rp-line);color:var(--rp-ink)}
+.career-job.rp .rp-rowsbox .gd-list{margin:6px 0 0}
+.career-job.rp .rp-more-body{display:grid;gap:8px;margin-top:8px}
+@media (max-width:760px){
+  /* Only the step in hand spells its name; the others are numbered dots (full names stay in aria-label). */
+  .career-job.rp .rp-steps{grid-template-columns:repeat(5,minmax(44px,auto));justify-content:space-between}
+  .career-job.rp .rp-steps button:not(.now):not(.open) em{display:none}
+  .career-job.rp .rp-steps button.now,.career-job.rp .rp-steps button.open{padding:4px 10px}
+  .career-job.rp .rp-steps{grid-template-columns:none;display:flex;gap:4px}
+  .career-job.rp .rp-steps button{flex:0 0 44px}
+  .career-job.rp .rp-steps button.now,.career-job.rp .rp-steps button.open{flex:1 1 auto}
+  /* After intake the device mat is a picture of what the state line already says: keep its tags, drop the mat. */
+  .career-job.rp.rp-later .rp-device{grid-template-columns:1fr}
+  .career-job.rp.rp-later .rp-mat{height:72px}
+  .career-job.rp.rp-later .rp-big{font-size:40px}
+}

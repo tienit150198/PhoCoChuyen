@@ -5,7 +5,7 @@
  * entries, the one being prepared, notes after class and the log. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {procedureView} from './procedure.js';
-import {titled,bindClassApi,clBubbles,clReply,classVoice} from './teach-tour.js';
+import {titled,bindClassApi,clBubbles,clReply,classVoice,classTab} from './teach-tour.js';
 
 const pill=(label,kind='')=>`<span class="tag ${kind}">${label}</span>`;
 const cmdBtn=(label,command,payload={},style='',disabled=false)=>`<button type="button" class="btn ${style}" data-command="${command}" data-payload="${esc(JSON.stringify(payload))}"${disabled?' disabled':''}>${label}</button>`;
@@ -91,8 +91,17 @@ export function classroomView(env){
     const rows=cl.offers.map(o=>`<li class="cp-row kind-${esc(o.kind)}">${kind(o.kind,o.kind_label,o.tag)}<div class="cp-main"><h4>${esc(o.emoji)} ${esc(o.title)}</h4><p>${esc(o.intro)}</p></div><div class="cp-meta"><small>${o.steps} bước · +${o.reward} xu</small>${open?cmdBtn('Bắt đầu '+icon('chevron',13),'cl_start',{activity:o.id},'small primary'):''}</div></li>`).join('');
     const today=`<article class="cp-page"><h3><span>🗒️ Việc hôm nay</span><small>${cl.offers.length} mục</small></h3>${rows?`<ul class="cp-rows">${rows}</ul>`:'<p class="small muted">Hôm nay đã làm hết các mục trong sổ.</p>'}</article>`;
     const log=cl.history.length?`<article class="cp-page"><h3><span>📚 Đã làm gần đây</span></h3><ul class="cp-log">${cl.history.map(h=>`<li><span aria-hidden="true">${esc(h.emoji)}</span><span>${esc(h.title)} <small>· ngày ${h.day}</small></span>${pill(...GRADE[h.grade])}</li>`).join('')}</ul></article>`:'';
-    const care=cl.care?`${watch(cl.care)}${inbox(cl.care,open)}${homework(cl.care,open)}${seatPlan(cl.care,open)}`:'';
-    body=`${recap}${open?'':`<div class="notice">${icon('sun',17)}<div>Mở ca (vào lớp) để bắt đầu hoạt động hôm nay.</div></div>`}${today}${care}${notebook(cl.notebook,cl.care)}${log}`;
+    const note=open?'':`<div class="notice">${icon('sun',17)}<div>Mở ca (vào lớp) để bắt đầu hoạt động hôm nay.</div></div>`;
+    if(!cl.care)body=`${recap}${note}${today}${notebook(cl.notebook,cl.care)}${log}`;
+    else{
+      // One page at a time: today's list (with what to watch, the class notebook and the log), parents, homework, seats.
+      const C=cl.care,hwLeft=C.books.filter(b=>!b.mark).length;
+      const tabs=[['today','🗒️ Hôm nay',cl.offers.length],['par','💌 Phụ huynh',C.waiting],['hw','📚 Bài về nhà',hwLeft],['seat','🪑 Chỗ ngồi',0]];
+      const tab=tabs.some(([id])=>id===classTab.now)?classTab.now:'today';
+      const nav=`<nav class="cl-tabs" role="tablist" aria-label="Sổ lớp">${tabs.map(([id,label,n])=>`<button type="button" role="tab" aria-selected="${tab===id}" class="cl-tab${tab===id?' on':''}" data-cl-tab="${id}">${label}${n?` <em>${n}</em>`:''}</button>`).join('')}</nav>`;
+      const page=tab==='par'?inbox(C,open):tab==='hw'?homework(C,open):tab==='seat'?seatPlan(C,open):`${today}${watch(C)}${notebook(cl.notebook,C)}${log}`;
+      body=`${recap}${note}${nav}${page}`;
+    }
   }
   return head('Kế hoạch lớp','')+`<div class="sheet-body classroom-v4"><div class="cp">${date}${months}${body}</div></div>`;
 }

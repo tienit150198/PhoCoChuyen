@@ -49,9 +49,12 @@ from game import accounts
 from game import player_feedback as pfb
 from game import board_ai
 from game import admin_stats
+from game import leaderboard
+from game import marriage
 from game.content import public_content,CAREERS
 from game.engine import GameError,public_state
 from game.storage import Store,Conflict
+from game import db as dbm
 from game.dialogue import public_config,rephrase
 from game.webassets import WebAssets,IMMUTABLE,content_hash
 
@@ -74,10 +77,14 @@ SHARED_LIMITS=("ai","acct-","newsession:","fb:","fb-day:","fb-ip:")
 
 class SharedLimits:
     """Sliding-window rate limits shared by all worker processes (WORKERS>1), kept in
-    a small side database next to the game database. Only the rare, security-relevant
-    keys above use it; per-request anti-spam limits stay in each process's memory."""
-    def __init__(self,path:str):
+    a small side database next to the game database, or in the table `hits` of the
+    game's PostgreSQL database when it runs on one (`store` given, DATABASE_URL).
+    Only the rare, security-relevant keys above use it; per-request anti-spam limits
+    stay in each process's memory."""
+    def __init__(self,path:str,store=None):
         self.path=path
+        self.store=store if getattr(store,"pg",None) else None
+        if self.store:return  # the table is created with the others (game/pg_schema.py)
         db=self._db()
         try:
             db.execute("PRAGMA journal_mode=WAL")
@@ -91,6 +98,7 @@ class SharedLimits:
         return db
 
     def hit(self,key:str,limit:int,seconds:float)->bool:
+        if self.store:return self._hit_pg(key,limit,seconds)
         now=time.time();db=None
         try:
             db=self._db()
@@ -106,7 +114,30 @@ class SharedLimits:
         finally:
             if db is not None:db.close()
 
+    def _hit_pg(self,key:str,limit:int,seconds:float)->bool:
+        """One transaction per hit; an advisory lock per key serializes the count-then-insert
+        (what BEGIN IMMEDIATE does for the SQLite file) without blocking other keys."""
+        now=time.time()
+        try:
+            db=self.store.connect()
+            try:
+                db.begin()
+                db.pg("SELECT pg_advisory_xact_lock(7613, hashtext(%s))",(key,))
+                db.pg("DELETE FROM hits WHERE k=%s AND at<%s",(key,now-seconds))
+                ok=db.pg("SELECT COUNT(*) FROM hits WHERE k=%s",(key,)).fetchone()[0]<limit
+                if ok:db.pg("INSERT INTO hits(k,at) VALUES(%s,%s)",(key,now))
+                db.commit()
+                return ok
+            except BaseException:
+                db.rollback();raise
+            finally:db.close()
+        except dbm.Error:
+            return key.startswith("newsession:")  # fail closed, as with the SQLite file
+
     def prune(self)->None:
+        if self.store:
+            with self.store.connect() as db:db.pg("DELETE FROM hits WHERE at<%s",(time.time()-86400,))
+            return
         db=self._db()
         try:db.execute("DELETE FROM hits WHERE at<?",(time.time()-86400,))
         finally:db.close()
@@ -118,6 +149,17 @@ class GameServer(ThreadingHTTPServer):
     # without upstream keep-alive); a short accept queue drops SYNs and the client only
     # retries after 1 s. The kernel caps this at net.core.somaxconn.
     request_queue_size=1024
+    # At most MAX_THREADS requests in flight per worker: past it the accept loop waits, so the
+    # kernel queue absorbs a burst instead of one more thread (and its memory) per connection.
+    max_threads=max(4,int(os.environ.get("MAX_THREADS","64") or 64))
+    def process_request(self,request,client_address):
+        if not hasattr(self,"_slots"):self._slots=threading.BoundedSemaphore(self.max_threads)
+        self._slots.acquire()
+        try:super().process_request(request,client_address)
+        except BaseException:self._slots.release();raise
+    def process_request_thread(self,request,client_address):
+        try:super().process_request_thread(request,client_address)
+        finally:self._slots.release()
     def __init__(self,address,store:Store,allowed_hosts:set[str]|None=None):
         super().__init__(address,Handler)
         self.store=store
@@ -137,6 +179,10 @@ class GameServer(ThreadingHTTPServer):
         social.ensure(store)
         push.ensure(store)
         admin_stats.ensure(store)
+
+    def server_close(self)->None:
+        admin_stats.stop_jobs(store=self.store)  # releases the stats job's lock file
+        super().server_close()
 
     def content_json(self)->str:
         """The static game catalogue (~0.4 MB of JSON), serialized once per process."""
@@ -327,7 +373,11 @@ class Handler(BaseHTTPRequestHandler):
         extra={"ETag":etag}
         if suffix in COMPRESSIBLE:
             extra["Vary"]="Accept-Encoding"
-            if len(raw)>1400 and "gzip" in self.headers.get("Accept-Encoding",""):raw=gzip.compress(raw,6);extra["Content-Encoding"]="gzip"
+            if len(raw)>1400 and "gzip" in self.headers.get("Accept-Encoding",""):
+                # The store's .gz copy (WebAssets.precompress) saves compressing it again on every request.
+                try:raw=path.with_name(path.name+".gz").read_bytes()
+                except OSError:raw=gzip.compress(raw,6)
+                extra["Content-Encoding"]="gzip"
         self.respond(200,raw,STATIC_TYPES[suffix],extra,cache=IMMUTABLE)
         return True
 
@@ -372,7 +422,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/content":self.content(split.query);return
             if route=="/api/bootstrap":
                 ip=self.client_ip()
-                if not self.server.rate_limit("bootstrap:"+ip,120):self.error(429,"Chờ một chút rồi tải lại nhé.");return
+                if not self.server.rate_limit("bootstrap:"+ip,int(os.environ.get("BOOTSTRAP_PER_MINUTE","120"))):self.error(429,"Chờ một chút rồi tải lại nhé.");return
                 existing=self.token()
                 if not existing and not self.server.rate_limit("newsession:"+ip,int(os.environ.get("NEW_SESSIONS_PER_MINUTE","20"))):
                     self.error(429,"Quá nhiều phiên mới từ mạng này. Chờ một chút nhé.");return
@@ -382,6 +432,9 @@ class Handler(BaseHTTPRequestHandler):
                     try:
                         if social.settle(self.server.store,token,state):state,revision,_=self.server.store.read(token)
                     except social.SocialError:pass
+                    try:  # Hôn nhân: a wedding whose day has come, gifts that arrived (game/marriage.py)
+                        if marriage.on_load(self.server.store,token,state):state,revision,_=self.server.store.read(token)
+                    except Exception as e:self.log_error("marriage on_load: %s",type(e).__name__)  # never blocks loading the game
                 extra={"Set-Cookie":self.cookie(token)} if created else {}
                 # ?lite=1 (current client): the catalogue comes from GET /api/content?v=<content_version>, cached
                 # by the browser. Without it (a page from before the split, during a deploy) it is still inlined.
@@ -405,6 +458,19 @@ class Handler(BaseHTTPRequestHandler):
                 try:before=int(q["before"]) if q.get("before") else None;skip=int(q.get("skip") or 0);limit=int(q.get("limit") or 50)
                 except ValueError:self.error(400,"Tham số không hợp lệ.","bad_request");return
                 self.json(200,self.server.store.archive_page(token,q.get("career",""),q.get("kind",""),before,skip,limit));return
+            if route=="/api/leaderboard":  # Bảng xếp hạng (game/leaderboard.py): display names only, cached ~5 s
+                token=self.token()
+                if not self.server.rate_limit("lb:"+(token or self.client_ip()),120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                try:board,limit=leaderboard.parse_query({k:v[0] for k,v in parse_qs(split.query).items()})
+                except ValueError as e:self.error(400,str(e),"bad_request");return
+                self.json(200,leaderboard.view(self.server.store,board,limit,token));return
+            if route=="/api/news":  # the ticker (game/marriage.py): public lines, cached ~10 s; + my alerts
+                if not self.server.rate_limit("news:"+self.client_ip(),120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,marriage.news(self.server.store,(parse_qs(split.query).get("since") or ["0"])[0],self.token()));return
+            if route=="/api/marriage":  # Hôn nhân: this player's view (+ the price lists with ?catalog=1)
+                token,state,_,_=self.require_session()
+                if not self.server.rate_limit("marriage-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,marriage.view(self.server.store,token,state,(parse_qs(split.query).get("catalog") or [""])[0]=="1"));return
             if route.startswith("/api/social/"):
                 token,state,_,_=self.require_session()
                 if not self.server.rate_limit("social-get:"+token,240):self.error(429,"Chậm lại một chút nhé.");return
@@ -427,21 +493,42 @@ class Handler(BaseHTTPRequestHandler):
                 self.require_admin(token)
                 query={k:v[0] for k,v in parse_qs(split.query).items()}
                 self.json(200,pfb.list_admin(self.server.store,query.get("status"),query.get("kind"),query.get("before")));return
-            if route=="/api/admin/stats":  # Thống kê (game/admin_stats.py): admin only, cached ~60 s
-                try:token,_,_,_=self.guarded()
+            if route=="/api/admin/stats":  # Thống kê (game/admin_stats.py): admin only, cached ~60 s, never reads a save
+                try:token,_,_,_=self.guarded(light=True)
                 except PermissionError as e:self.error(403,str(e),"forbidden");return
                 self.require_admin(token)
                 if not self.server.rate_limit("admin-stats:"+token,30):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 query={k:v[0] for k,v in parse_qs(split.query).items()}
                 try:days=admin_stats.parse_range(query.get("range"))
                 except ValueError:self.error(400,"Khoảng ngày chỉ nhận 7, 30 hoặc 90.","bad_range");return
-                self.json(200,admin_stats.get(self.server.store,days,fresh=query.get("fresh")=="1"));return
+                try:data=admin_stats.get(self.server.store,days,fresh=query.get("fresh")=="1")
+                except admin_stats.Busy:self.error(503,"Máy chủ đang bận, thử lại sau ít giây nhé.","busy");return
+                self.json(200,data);return
+            if route in ("/api/admin/stats/summary","/api/admin/stats/section"):  # operator page: first screen in one call, heavy parts on demand
+                try:token,_,_,_=self.guarded(light=True)  # same CSRF check, without parsing the operator's own save
+                except PermissionError as e:self.error(403,str(e),"forbidden");return
+                self.require_admin(token)
+                query={k:v[0] for k,v in parse_qs(split.query).items()}
+                part=route.rsplit("/",1)[1];name=query.get("name") if part=="section" else "summary"
+                if part=="section" and name not in admin_stats.SECTIONS:self.error(400,"Không có mục thống kê này.","bad_section");return
+                if not self.server.rate_limit(f"admin-stats-{name}:"+token,30):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                fresh=query.get("fresh")=="1"
+                try:
+                    if part=="section":data=admin_stats.get_section(self.server.store,name,fresh=fresh)
+                    else:data=admin_stats.get_summary(self.server.store,admin_stats.parse_range(query.get("range")),fresh=fresh)
+                except ValueError:self.error(400,"Khoảng ngày chỉ nhận 7, 30 hoặc 90.","bad_range");return
+                except admin_stats.Busy:self.error(503,"Máy chủ đang bận, thử lại sau ít giây nhé.","busy");return  # a time budget ran out: players first
+                self.json(200,data);return
             if route.startswith("/api/"):self.error(404,"Không có API này.");return
             if route in ("/","/index.html"):self.page();return
             self.static(route,split.query)
         except pfb.FeedbackError as e:self.error(e.status,e.message,e.code)
         except social.SocialError as e:self.error(e.status,e.message,e.code)
+        except marriage.MarriageError as e:self.error(e.status,e.message,e.code)
         except GameError as e:self.error(401 if e.code=="session_missing" else 400,e.message,e.code)
+        except dbm.Error as e:  # busy/unreachable database (timeout, restart, pool full): an answer, not a reset
+            self.log_error("Database error: %s",type(e).__name__)
+            self.error(503,"Máy chủ đang bận, thử lại sau giây lát.","db_unavailable")
         except (OSError,ValueError):self.error(500,"Không đọc được dữ liệu. Kiểm tra thư mục storage và tải lại.")
 
     def do_POST(self):
@@ -493,10 +580,19 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(200,dict(ok=True,item=pfb.update(self.server.store,data.get("id"),data.get("status"),data.get("reply"))));return
             if route=="/api/account/delete":
                 if data.get("confirm")!="XOA":raise GameError("Gõ XOA để xác nhận xóa dữ liệu.")
-                pfb.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);self.server.store.delete(token)
+                pfb.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);self.server.store.delete(token)
                 self.json(200,dict(deleted=True,message="Đã xóa toàn bộ dữ liệu chơi của bạn trên máy chủ."),{"Set-Cookie":self.cookie("",0)});return
             if route.startswith("/api/account/"):
                 self.account_post(route[len("/api/account/"):],token,data);return
+            if route=="/api/leaderboard/visibility":  # "Hiện tên tôi trên bảng xếp hạng"
+                if not self.server.rate_limit("lb-vis:"+token,20):self.error(429,"Chờ một chút nhé.","rate_limited");return
+                self.json(200,leaderboard.set_visible(self.server.store,token,state,data.get("visible")));return
+            if route.startswith("/api/marriage/"):  # Hôn nhân: ring, proposal, plan, confirm, divorce… (game/marriage.py)
+                if not self.server.rate_limit("marriage:"+token,60):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.","rate_limited");return
+                out=marriage.act(self.server.store,token,route[len("/api/marriage/"):],data)
+                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
+                if not out.pop("quiet",False):out["view"]=marriage.view(self.server.store,token,state)
+                self.json(200,out);return
             if route.startswith("/api/social/"):
                 if not self.server.rate_limit("social:"+token,60):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
                 self.json(200,social.post(self.server.store,token,state,route[len("/api/social/"):],data));return
@@ -511,9 +607,10 @@ class Handler(BaseHTTPRequestHandler):
         except PermissionError as e:self.error(403,str(e),"forbidden");self.close_connection=True
         except pfb.FeedbackError as e:self.error(e.status,e.message,e.code)
         except social.SocialError as e:self.error(e.status,e.message,e.code)
+        except marriage.MarriageError as e:self.error(e.status,e.message,e.code)
         except accounts.AccountError as e:self.error(e.status,e.message,e.code)
         except GameError as e:self.error(401 if e.code=="session_missing" else 400,e.message,e.code)
-        except (ValueError,TypeError,KeyError,IndexError,RecursionError,AttributeError):self.error(400,"Dữ liệu không đúng cấu trúc hoặc bản lưu không hợp lệ.","invalid_data")
+        except (ValueError,TypeError,KeyError,IndexError,RecursionError,AttributeError,*dbm.DataError):self.error(400,"Dữ liệu không đúng cấu trúc hoặc bản lưu không hợp lệ.","invalid_data")
         except Exception as e:
             self.log_error("Internal error: %s",type(e).__name__)
             self.error(500,"Không thực hiện được thao tác. Tiến trình trước đó vẫn được giữ.","internal_error")
@@ -529,13 +626,13 @@ class Handler(BaseHTTPRequestHandler):
         store,ip,limit=self.server.store,self.client_ip(),self.server.rate_limit
         slow=lambda:accounts.AccountError("Thử quá nhiều lần. Chờ vài phút rồi thử lại nhé.","rate_limited",429)
         if name=="register":
-            if not (limit("acct-reg:"+ip,5,600) and limit("acct-reg-h:"+ip,20,3600)):raise slow()
+            if not (limit("acct-reg:"+ip,int(os.environ.get("REGISTER_PER_10MIN","5")),600) and limit("acct-reg-h:"+ip,int(os.environ.get("REGISTER_PER_HOUR","20")),3600)):raise slow()
             out=accounts.register(store,token,data)
         elif name=="login":
             accounts.check_replace(store,token,data)
             user=data.get("username") if isinstance(data.get("username"),str) else ""
             user=user.strip().lower()[:32]
-            if not (limit("acct-login:"+ip,10,60) and limit("acct-login-h:"+ip,60,3600) and limit("acct-user:"+user,5,60) and limit("acct-user-h:"+user,20,3600)):raise slow()
+            if not (limit("acct-login:"+ip,int(os.environ.get("LOGIN_PER_MINUTE","10")),60) and limit("acct-login-h:"+ip,int(os.environ.get("LOGIN_PER_HOUR","60")),3600) and limit("acct-user:"+user,5,60) and limit("acct-user-h:"+user,20,3600)):raise slow()
             out=accounts.login(store,token,data)
             if out.pop("drop_anonymous"):
                 social.forget(store,token);push.forget(store,token);store.delete(token)
@@ -655,7 +752,7 @@ class Handler(BaseHTTPRequestHandler):
         store=self.server.store;sid=store.key(token);db=store.connect()
         try:
             db.execute("BEGIN IMMEDIATE")
-            row=db.execute("SELECT * FROM sessions WHERE sid=?",(sid,)).fetchone()
+            row=db.execute("SELECT * FROM sessions WHERE sid=?"+dbm.for_update(db),(sid,)).fetchone()
             if not row:db.rollback();return None
             raw=store.parse_state(row["state"],sid)
             tasks=(((raw.get("careers") or {}).get("customer_care") or {}).get("tasks") or [])
@@ -678,7 +775,7 @@ class Handler(BaseHTTPRequestHandler):
         store=self.server.store;sid=store.key(token);db=store.connect()
         try:
             db.execute("BEGIN IMMEDIATE")
-            row=db.execute("SELECT * FROM sessions WHERE sid=?",(sid,)).fetchone()
+            row=db.execute("SELECT * FROM sessions WHERE sid=?"+dbm.for_update(db),(sid,)).fetchone()
             if not row:db.rollback();return None
             raw=store.parse_state(row["state"],sid)
             rows=(((raw.get("careers") or {}).get(career) or {}).get("chats") or {}).get(npc) or []
@@ -732,7 +829,7 @@ class Handler(BaseHTTPRequestHandler):
         store=self.server.store;sid=store.key(token);db=store.connect()
         try:
             db.execute("BEGIN IMMEDIATE")
-            row=db.execute("SELECT * FROM sessions WHERE sid=?",(sid,)).fetchone()
+            row=db.execute("SELECT * FROM sessions WHERE sid=?"+dbm.for_update(db),(sid,)).fetchone()
             if not row:db.rollback();return None
             raw=store.parse_state(row["state"],sid)
             if not emp.apply_voice(raw,career,pend["idx"],pend["field"],pend["canonical"],line):db.rollback();return None
@@ -804,7 +901,7 @@ class Handler(BaseHTTPRequestHandler):
         store=self.server.store;sid=store.key(token);db=store.connect()
         try:
             db.execute("BEGIN IMMEDIATE")
-            row=db.execute("SELECT * FROM sessions WHERE sid=?",(sid,)).fetchone()
+            row=db.execute("SELECT * FROM sessions WHERE sid=?"+dbm.for_update(db),(sid,)).fetchone()
             if not row:db.rollback();return None
             raw=store.parse_state(row["state"],sid)
             if not classroom.rewrite(raw,ref,canonical,line,"ai"):db.rollback();return None
@@ -856,7 +953,9 @@ class Handler(BaseHTTPRequestHandler):
 
 def checkpointer(store:Store,stop:threading.Event,every:float=2.0):
     """Copy the WAL into the database every few seconds, off the request path
-    (request connections run with wal_autocheckpoint=0; see game/storage.py PRAGMAS)."""
+    (request connections run with wal_autocheckpoint=0; see game/storage.py PRAGMAS).
+    PostgreSQL checkpoints by itself: the thread ends at once."""
+    if store.pg:return
     rounds=0
     while not stop.wait(every):
         rounds+=1
@@ -870,6 +969,8 @@ def maintenance(store:Store,stop:threading.Event,limits:SharedLimits|None=None):
     PRUNE_GUEST_DAYS (default 3, 0 = off): never-played guest saves idle that long.
     RECEIPT_DAYS (default 2) / RECEIPTS_PER_SAVE (default 200): idempotency receipts kept."""
     last_prune=last_hourly=0.0;last_checkpoint=time.time()
+    # Bảng xếp hạng: fill it from saves stored before it existed (small batches, off the request path).
+    threading.Thread(target=leaderboard.run_backfill,args=(store,stop),daemon=True,name="leaderboard-backfill").start()
     def step(name,fn):
         try:fn()
         except Exception as e:  # never kill the server for housekeeping
@@ -903,9 +1004,9 @@ def serve_workers(server:GameServer,store:Store,n:int,db_path:str)->int:
     Worker 0 alone runs housekeeping. AI, sign-in, new-save and feedback budgets are
     shared through SharedLimits; the LLM concurrency gate is split between workers.
     A worker that dies is restarted; SIGTERM/SIGINT stop them all."""
-    limits=SharedLimits(limits_path(db_path))
+    limits=SharedLimits(limits_path(db_path),store)
     server.socket.setblocking(False)  # every worker wakes on a new connection; the others get EAGAIN
-    store.close_pool()  # no SQLite connection may cross fork()
+    store.close_pool()  # no database connection may cross fork(): each worker opens its own
     children:dict[int,int]={};stopping=threading.Event()
     def spawn(i:int):
         pid=os.fork()
@@ -929,8 +1030,13 @@ def serve_workers(server:GameServer,store:Store,n:int,db_path:str)->int:
         if i is not None and not stopping.is_set():
             sys.stderr.write(f"[workers] worker {i} stopped (status {status}); restarting\n");time.sleep(1);spawn(i)
     server.server_close()
-    print("\nĐã dừng. Tiến trình đã lưu trong SQLite.")
+    print("\nĐã dừng. Tiến trình đã được lưu.")
     return 0
+
+
+def precompress_later(server:GameServer):
+    """.gz/.br copies of the static store for nginx gzip_static/brotli_static, off the start-up path."""
+    if server.cas_dir:threading.Thread(target=lambda:server.assets.precompress(server.cas_dir),daemon=True,name="precompress").start()
 
 
 def _worker(server:GameServer,store:Store,limits:SharedLimits,i:int,n:int)->int:
@@ -941,6 +1047,7 @@ def _worker(server:GameServer,store:Store,limits:SharedLimits,i:int,n:int)->int:
     if i==0:
         threading.Thread(target=maintenance,args=(store,stop,limits),daemon=True,name="maintenance").start()
         threading.Thread(target=checkpointer,args=(store,stop,float(os.environ.get("CHECKPOINT_SECONDS","2"))),daemon=True,name="checkpointer").start()
+        precompress_later(server)
     try:server.serve_forever(poll_interval=.3)
     except KeyboardInterrupt:pass
     finally:stop.set()
@@ -972,15 +1079,17 @@ def main():
     # WORKERS=n (n>1, POSIX only): n processes share the port; see serve_workers().
     workers=max(1,int(os.environ.get("WORKERS","1") or 1)) if hasattr(os,"fork") else 1
     url=f"http://127.0.0.1:{server.server_port}"
-    print(f"\n  PHỐ CÓ CHUYỆN · v{__version__}\n  Chơi tại: {url}\n  Lưu tại: {args.db}\n  AI phản hồi: {'bật' if ai.available() else 'tắt (lời thoại có sẵn)'} · Web push: {'bật' if push.public_config()['enabled'] else 'tắt'}"
+    where="PostgreSQL (DATABASE_URL)" if store.pg else args.db  # never print the URL: it may hold a password
+    print(f"\n  PHỐ CÓ CHUYỆN · v{__version__}\n  Chơi tại: {url}\n  Lưu tại: {where}\n  AI phản hồi: {'bật' if ai.available() else 'tắt (lời thoại có sẵn)'} · Web push: {'bật' if push.public_config()['enabled'] else 'tắt'}"
           +(f" · {workers} tiến trình" if workers>1 else "")+"\n  Nhấn Ctrl+C để dừng.\n",flush=True)
     if args.open:threading.Timer(.5,lambda:webbrowser.open(url)).start()
     if workers>1:return serve_workers(server,store,workers,args.db)
     stop=threading.Event()
     threading.Thread(target=maintenance,args=(store,stop),daemon=True).start()
     threading.Thread(target=checkpointer,args=(store,stop,float(os.environ.get("CHECKPOINT_SECONDS","2"))),daemon=True).start()
+    precompress_later(server)
     try:server.serve_forever(poll_interval=.3)
-    except KeyboardInterrupt:print("\nĐã dừng. Tiến trình đã lưu trong SQLite.")
+    except KeyboardInterrupt:print("\nĐã dừng. Tiến trình đã được lưu.")
     finally:stop.set();server.server_close()
     return 0
 

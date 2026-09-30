@@ -61,8 +61,12 @@ def server():
     env = dict(os.environ, QUIET='1', PUSH_DISABLED='1', MNL_DEV='1')  # MNL_DEV allows the job_quick shortcut
     env.pop('MNL_CAREERS', None)
     env.pop('LLM_API_KEY', None)
+    # The server's output goes to a log file next to the throwaway database: a pipe that nobody reads fills
+    # up after a few thousand lines and the server then blocks on its next write (the sweep froze mid-run).
+    log_path = os.path.join(tmp, 'server.log')
+    log = open(log_path, 'wb')
     p = subprocess.Popen([sys.executable, 'server.py', '--port', str(port), '--db', os.path.join(tmp, 'g.sqlite3')],
-                         cwd=ROOT, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+                         cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT)
     base = f'http://127.0.0.1:{port}'
     # Up to a minute: a loaded machine can take a while to import every career.
     for _ in range(600):
@@ -70,13 +74,19 @@ def server():
             urllib.request.urlopen(base + '/api/health', timeout=1)
             break
         except Exception:
+            if p.poll() is not None:
+                break
             time.sleep(0.1)
+    if p.poll() is not None:
+        print(f'test server exited with code {p.returncode}; log: {log_path}', file=sys.stderr)
     try:
         yield base
     finally:
         p.terminate()
         with contextlib.suppress(Exception):
             p.wait(5)
+        log.close()
+        print(f'server log: {log_path}', file=sys.stderr)
 
 
 class Sweep:

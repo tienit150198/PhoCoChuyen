@@ -285,19 +285,61 @@ html.reduce-motion .career-job .cb-fill{transition:none}
 .cb-mini .cb-fill{position:absolute;left:0;top:2px;bottom:2px;width:0;border-radius:99px;background:currentColor;transition:width .2s linear}
 .cb-mini .cb-meter-label{flex:none;margin:0;font-size:.75rem;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
 .gd-hint .cb-mini{margin-top:4px}
+/* "Now!" glow: the guide.css ring (opacity on ::before, no repaint per frame), faster. */
 .btn.cb-now,.gd-hint.cb-now,
 .career-job.cb .cb-meter.shot.ready+.row [data-command="cb_stop"],
 .career-job.cb .cb-meter.therm.ready+.row [data-command="cb_milk_stop"],
-.career-job .cb-meter.rack.ready+[data-command="cb_unload"]{animation:gd-pulse 1s ease-in-out infinite;position:relative;z-index:1}
+.career-job .cb-meter.rack.ready+[data-command="cb_unload"]{position:relative;z-index:1}
+.btn.cb-now::before,.gd-hint.cb-now::before,
+.career-job.cb .cb-meter.shot.ready+.row [data-command="cb_stop"]::before,
+.career-job.cb .cb-meter.therm.ready+.row [data-command="cb_milk_stop"]::before,
+.career-job .cb-meter.rack.ready+[data-command="cb_unload"]::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:0 0 0 4px var(--accent),0 0 0 10px var(--accent-soft);opacity:0;will-change:opacity;animation:gd-ring 1s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){
   .cb-mini .cb-fill{transition:none}
   .btn.cb-now,.gd-hint.cb-now,
   .career-job.cb .cb-meter.shot.ready+.row [data-command="cb_stop"],
   .career-job.cb .cb-meter.therm.ready+.row [data-command="cb_milk_stop"],
-  .career-job .cb-meter.rack.ready+[data-command="cb_unload"]{animation:none;outline:3px solid var(--good,#4f8a4b);outline-offset:2px}
+  .career-job .cb-meter.rack.ready+[data-command="cb_unload"]{outline:3px solid var(--good,#4f8a4b);outline-offset:2px}
+  .btn.cb-now::before,.gd-hint.cb-now::before,
+  .career-job.cb .cb-meter.shot.ready+.row [data-command="cb_stop"]::before,
+  .career-job.cb .cb-meter.therm.ready+.row [data-command="cb_milk_stop"]::before,
+  .career-job .cb-meter.rack.ready+[data-command="cb_unload"]::before{animation:none;opacity:0}
 }
 /* Wide sheets hide the bottom bar and show the same button in the side column: glow it too. */
 .career-job.cb:has(.cb-dock .gd-pulse) .fk-wide-only>.btn:first-child,
-.career-job.cb:has(.cb-dock .gd-pulse) .fk-wide-only>.gd-ctas>.btn{animation:gd-pulse 1.8s ease-in-out infinite;position:relative;z-index:1}
+.career-job.cb:has(.cb-dock .gd-pulse) .fk-wide-only>.gd-ctas>.btn{position:relative;z-index:1}
+.career-job.cb:has(.cb-dock .gd-pulse) .fk-wide-only>.btn:first-child::before,
+.career-job.cb:has(.cb-dock .gd-pulse) .fk-wide-only>.gd-ctas>.btn::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:0 0 0 4px var(--accent),0 0 0 10px var(--accent-soft);opacity:0;will-change:opacity;animation:gd-ring 1.8s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.career-job.cb:has(.cb-dock .gd-pulse) .fk-wide-only .btn::before{animation:none}}
 /* Phone tap targets: the "or finish now" link and the regular's notes fold. */
 .career-job.cb .gd-alt,.career-job.cb .cb-regular>.fold>summary{min-height:44px}
+
+/* UX compaction: one open station at the bar, the others one line each; locked tiles as one chip;
+   the last result in two lines once it has been seen (tap or focus shows it whole). */
+.career-job.cb .cb-st{margin:0 0 8px;border:1px solid var(--cb-line);border-radius:var(--cb-rs);background:var(--cb-surface);min-width:0}
+.career-job.cb .cb-st-sum{display:block;width:100%;min-height:44px;padding:11px 12px;border:0;background:none;color:inherit;font:inherit;font-weight:600;font-size:.9rem;text-align:left;cursor:pointer;overflow-wrap:anywhere}
+.career-job.cb .cb-st-sum::after{content:" ▾";color:var(--cb-muted)}
+.career-job.cb .cb-st.open>.cb-st-sum::after{content:" ▴"}
+.career-job.cb .cb-st.open>.cb-st-sum{border-bottom:1px dashed var(--cb-line)}
+.career-job.cb .cb-st-sum small{font-weight:400;color:var(--cb-muted)}
+.career-job.cb .cb-st.done>.cb-st-sum{color:var(--cb-good)}
+.career-job.cb .cb-st.now{border-color:var(--cb-accent);box-shadow:0 0 0 1px var(--cb-accent) inset}
+.career-job.cb .cb-st-body{display:grid;gap:8px;padding:10px 12px 12px;min-width:0}
+.career-job.cb .cb-st-body>*{margin-top:0;margin-bottom:0}
+.career-job.cb .cb-lock{margin:6px 0 0;justify-self:start;display:inline-block;font-size:.85em;padding:4px 10px;border-radius:99px;border:1px dashed var(--cb-line);color:var(--cb-muted,var(--muted));background:var(--cb-surface-2)}
+.career-job.cb .fk-flash:not(.new):not(:focus){display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;cursor:pointer}
+/* Narrow: the cup preview is one short row (cup, pastry bag and the status side by side). */
+@container sheet (max-width:759px){
+  .career-job.cb .wb-side{padding:0;background:none;border:0}
+  .career-job.cb .cb-look{display:flex;align-items:center;gap:10px}
+  .career-job.cb .cb-look .cb-cup{width:56px;height:70px;margin:8px 16px 2px 4px;flex:none}
+  .career-job.cb .cb-look .cb-cup.large{width:62px;height:78px}
+  .career-job.cb .cb-look .cb-preview-empty,.career-job.cb .cb-look .cb-bag{width:72px;flex:none}
+  .career-job.cb .cb-look-txt{flex:1 1 auto}
+}
+
+/* Closed stations sit side by side as chips; the open one takes the full row. */
+.career-job.cb .cb-stations{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px}
+.career-job.cb .cb-stations>.cb-st{margin:0;flex:1 1 auto;max-width:100%}
+.career-job.cb .cb-stations>.cb-st.open{flex-basis:100%}
+.career-job.cb .cb-stations>.cb-st:not(.open)>.cb-st-sum{padding:10px 10px;font-size:.84rem}

@@ -233,6 +233,42 @@
 [data-pc-live]{font-variant-numeric:tabular-nums}
 .career-job.pc .pc-part,.career-job.pc .tile,.career-job.pc button.pc-pen{min-height:44px}
 
+/* ---------- compact bench (UX 2026-09): finished / later parts of the job as one tappable line */
+.career-job.pc .sf-line{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:8px 12px;text-align:left;font:inherit;color:var(--pc-ink);cursor:pointer;
+  background:var(--pc-s1);border:1px dashed var(--pc-line);border-radius:var(--pc-rs)}
+.career-job.pc .sf-line>.sf-mark{flex:0 0 22px;font-weight:800;color:var(--pc-muted);text-align:center}
+.career-job.pc .sf-t{display:grid;flex:1 1 auto;min-width:0;line-height:1.3}
+.career-job.pc .sf-t>b{font-weight:700}
+.career-job.pc .sf-t>small{display:block;color:var(--pc-muted);font-size:.85em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.career-job.pc .sf-line>i{margin-left:auto;font-style:normal;color:var(--pc-muted)}
+.career-job.pc .sf-line.done{border-style:solid;background:var(--pc-s2)}
+.career-job.pc .sf-line.done>.sf-mark{color:var(--pc-good)}
+.career-job.pc .pc-report .sf-line{margin:0}
+.career-job.pc details.pc-receipt>summary,.career-job.pc .pc-todo-fold>summary,.career-job.pc details.pc-today>summary{display:flex;align-items:center;gap:8px;min-height:44px;cursor:pointer;list-style:none}
+.career-job.pc details.pc-receipt>summary::-webkit-details-marker,.career-job.pc .pc-todo-fold>summary::-webkit-details-marker{display:none}
+.career-job.pc details.pc-receipt>summary::after,.career-job.pc .pc-todo-fold>summary::after{content:'▸';margin-left:auto;color:var(--pc-muted)}
+.career-job.pc details[open].pc-receipt>summary::after,.career-job.pc .pc-todo-fold[open]>summary::after{content:'▾'}
+.career-job.pc details.pc-receipt{padding:0 12px}
+.career-job.pc details.pc-receipt[open]{padding-bottom:10px}
+.career-job.pc .pc-sum-total{margin-left:auto}
+.career-job.pc .pc-todo-fold{padding:0 12px;border-radius:var(--pc-rs);background:var(--pc-s1);border:1px solid var(--pc-line)}
+.career-job.pc .pc-todo-fold[open]{padding-bottom:10px}
+.career-job.pc .pc-todo-fold>summary small{display:inline;color:var(--pc-muted)}
+.career-job.pc .checklist li.gd-todo{min-height:44px;align-items:center;cursor:pointer}
+.career-job.pc details.pc-today{padding:0 12px}
+.career-job.pc details.pc-today>summary{min-height:40px}
+.career-job.pc details.pc-today>small{padding:0 0 8px}
+.career-job.pc .pc-more{display:grid;gap:8px}
+.career-job.pc .pc-more .pc-rules{margin:0}
+.career-job.pc .pc-rules summary small{display:inline;color:var(--pc-muted)}
+.career-job.pc .pc-shop .pc-foot{margin:6px 0}
+.career-job.pc .pc-care-fold{padding:0 12px}
+.career-job.pc .pc-table .pc-steps{display:flex;flex-wrap:wrap;gap:4px}
+.career-job.pc .pc-table .pc-steps li{flex-direction:row;gap:4px;padding:2px 8px 2px 2px;border-radius:99px;font-size:.8em;line-height:1.2;white-space:nowrap}
+.career-job.pc .pc-table .pc-steps li span{width:22px;height:22px;font-size:1em}
+.career-job.pc .pc-kennel-box>summary .tag,.career-job.pc .pc-shop>summary{white-space:normal}
+.career-job.pc .pc-shop>summary{min-height:44px;display:flex;flex-wrap:wrap;align-items:center;gap:0 6px;font-weight:600}
+
 /* ---------- phones */
 @media (max-width:720px){
   :where(.career-job.pc) :where(.workbench){grid-template-columns:1fr}
@@ -246,3 +282,18 @@
 }
 @media (prefers-reduced-motion:reduce){.career-job.pc *{transition:none!important;animation:none!important}}
 :is(body,html).reduce-motion .career-job.pc *{transition:none!important;animation:none!important}
+.career-job.pc .pc-more>details{padding:0 12px}
+.career-job.pc .pc-more>details>summary{min-height:44px;padding:8px 0}
+.career-job.pc .pc-more>.pc-care-fold{padding:0;border:0;background:none}
+.career-job.pc .pc-tools,.career-job.pc .pc-table .row.wrap{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.pc .pc-tools>.btn,.career-job.pc .pc-table .row.wrap>.btn{width:auto;flex:0 1 auto}
+.career-job.pc .pc-part{display:grid;grid-template-columns:28px minmax(0,1fr);align-items:center;justify-items:start;column-gap:6px;row-gap:0;min-height:48px;padding:6px 10px;text-align:left}
+.career-job.pc .pc-part .tile-emoji{grid-row:span 2;font-size:1.3em}
+.career-job.pc .pc-part b{line-height:1.25}
+.career-job .sf-lock{margin:6px 0 0}
+.career-job .sf-lock .tag{font-size:.82rem}
+/* phones: the calm tools sit two per row (6 stacked buttons -> 3 rows) */
+@media (max-width:720px){
+  .career-job.pc .pc-tools.row.wrap,.career-job.pc .pc-table .pc-tools.row.wrap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  .career-job.pc .pc-table .pc-tools.row.wrap>.btn,.career-job.pc .pc-tools.row.wrap>.btn,.career-job.pc .pc-tools.row.wrap>.tag{width:100%;white-space:normal;padding:6px 8px;font-size:.86rem;line-height:1.2}
+}

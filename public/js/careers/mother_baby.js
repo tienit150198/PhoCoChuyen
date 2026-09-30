@@ -106,11 +106,13 @@ function customer(t,x){
   if(t.known&&v.age!=null)facts.push(`👶 Bé ${v.age>=12?`${Math.floor(v.age/12)} tuổi`:`${v.age} tháng`}`);
   if(t.known&&t.needs?.budget!=null&&v.kind!=='return')facts.push(`👛 Tối đa ${t.needs.budget} xu`);
   if(v.discount)facts.push(`🏷️ Bớt ${v.discount} xu`);
-  return `<section class="mb-customer"><div class="mb-who">${face(g,x)}<small>${x.esc(g.name)}</small></div>
+  // Once the order is known the strip above pins the request: the customer shrinks to one compact row.
+  const slim=t.known?' slim':'';
+  return `<section class="mb-customer${slim}"><div class="mb-who">${face(g,x,t.known?40:58)}<small>${x.esc(g.name)}</small></div>
     <div class="mb-bubble"><p>“${x.esc(words)}”</p>
       ${facts.length?`<div class="mb-tags">${facts.map(f=>`<span>${x.esc(f)}</span>`).join('')}</div>`:''}
-      <div class="mb-patience ${p<40?'low':p<70?'mid':''}"><span>KIÊN NHẪN</span><div class="mb-bar"><i style="width:${p}%"></i></div><small>${p}%</small></div>
-      <div class="row wrap">${x.button('Trò chuyện','chat',{npc:t.npc,task:t.id},'ghost small')}</div>
+      <div class="mb-patience ${p<40?'low':p<70?'mid':''}"><span>KIÊN NHẪN</span><div class="mb-bar"><i style="width:${p}%"></i></div><small>${p}%</small>${t.known?x.button('💬','chat',{npc:t.npc,task:t.id},'ghost small mb-chat'):''}</div>
+      ${t.known?'':`<div class="row wrap">${x.button('Trò chuyện','chat',{npc:t.npc,task:t.id},'ghost small')}</div>`}
     </div></section>`;
 }
 function steps(t,x,tab){
@@ -133,12 +135,14 @@ function bulkList(t,x,steps=[]){
   return `<section class="mb-desk"><h4>🎉 Danh sách đặt tiệc</h4><ul class="mb-check">${Object.entries(items).map(([k,q])=>{const have=t.basket?.[k]||0,s=steps.find(r=>r.key===k);return `<li class="${have===q?'ok':have>q?'bad':''}${todoAttrs(s)?' gd-todo':''}"${todoAttrs(s)}><span aria-hidden="true">${have===q?'✓':have>q?'✗':'○'}</span>${x.esc(product(x,k).name)} <b>${have}/${q}</b>${todoArrow(s)}</li>`;}).join('')}</ul></section>`;
 }
 function shelf(t,x){
-  const v=t.gift||{},filter=x.ui.filter||'all',uses=G(x).uses||{};
+  const v=t.gift||{},uses=G(x).uses||{};
   const safety=v.kind==='safety'&&!v.swap&&t.known;
-  const named=t.known?wanted(t)||{}:{};
+  const named=t.known?wanted(t)||{}:{},hasNamed=Object.keys(named).length>0;
+  // A named order opens on just those items; judgement orders (kit, occasion, safety) open on the whole shelf.
+  const filter=x.ui.filter&&(x.ui.filter!=='want'||hasNamed)?x.ui.filter:hasNamed?'want':'all';
   // What the customer named sits first on the shelf.
-  const list=(x.content.products||[]).filter(p=>filter==='all'||label(x,p.id)?.use===filter).sort((a,b)=>(b.id in named)-(a.id in named));
-  const chips=`<div class="mb-filters" role="group" aria-label="Lọc kệ">${[['all','Tất cả'],...Object.entries(uses)].map(([id,l])=>`<button type="button" class="mb-filter ${filter===id?'on':''}" data-action="car:filter" data-use="${id}" aria-pressed="${filter===id}">${USE_EMOJI[id]||'🛒'} ${x.esc(l)}</button>`).join('')}</div>`;
+  const list=(x.content.products||[]).filter(p=>filter==='all'||(filter==='want'?p.id in named:label(x,p.id)?.use===filter)).sort((a,b)=>(b.id in named)-(a.id in named));
+  const chips=`<div class="mb-filters" role="group" aria-label="Lọc kệ">${[...(hasNamed?[['want','Khách cần']]:[]),['all','Tất cả'],...Object.entries(uses)].map(([id,l])=>`<button type="button" class="mb-filter ${filter===id?'on':''}" data-action="car:filter" data-use="${id}" aria-pressed="${filter===id}">${id==='want'?'🎯':USE_EMOJI[id]||'🛒'} ${x.esc(l)}</button>`).join('')}</div>`;
   const cards=list.map(p=>{
     const lb=label(x,p.id),stock=x.room.available?.[p.id]??0,inBasket=t.basket?.[p.id]||0,asked=v.kind==='safety'&&t.needs?.product===p.id,want=p.id in named;
     const canPick=t.known&&x.room.open&&stock>0&&v.kind!=='return';
@@ -403,7 +407,7 @@ function orderSteps(t,x){
   rows.push({ok:t.checked||null,label:'Kiểm đơn trước khi trao',go:cnt&&!t.checked?go('shop_check',{task:id},'✓ Kiểm đơn'):null});
   return rows;
 }
-const payFinal=(t,x)=>{const sum=total(x,t.basket);return {label:`🛍️ Thanh toán & giao · ${sum} xu`,go:{act:'car:deliver',data:{task:t.id,sum,pack:t.pack?1:0}},ready:!!t.checked,why:'kiểm đơn trước'};};
+const payFinal=(t,x)=>{const sum=total(x,t.basket),off=t.gift?.discount||0,net=Math.max(0,sum-off);return {label:`🛍️ Thanh toán & giao · ${off?`${sum} − bớt ${off} = ${net}`:sum} xu`,go:{act:'car:deliver',data:{task:t.id,sum,off,pack:t.pack?1:0}},ready:!!t.checked,why:'kiểm đơn trước'};};
 function hintFor(t,x,steps){
   if(t.gift?.kind==='return')return nextHint(x,steps,{});
   const f=payFinal(t,x);
@@ -447,7 +451,7 @@ export default {
   css:true,
   next:(t,x)=>nextStep(t,x),
   job(t,x){
-    if(x.ui.tabFor!==t.id){x.ui.tabFor=t.id;x.ui.tab=stage(t);x.ui.filter='all';x.ui.flash='';}
+    if(x.ui.tabFor!==t.id){x.ui.tabFor=t.id;x.ui.tab=stage(t);x.ui.filter=null;x.ui.flash='';}
     let tab=x.ui.tab;if(tab==='pack'&&!t.needs?.gift)tab='checkout';
     const v=t.gift||{},list=orderSteps(t,x);
     let main='';
@@ -479,7 +483,7 @@ export default {
     },
     async deliver(data,el,x){
       // The customer looks at the gift at the counter: a mistake shows as their reaction.
-      if(!await x.ask('Trao món quà cho khách?',`Thu ${data.sum} xu tiền hàng${data.pack==='1'?', trừ 5 xu vật liệu gói':''} và trao quà cho khách?`,'Thanh toán & giao'))return;
+      if(!await x.ask('Trao món quà cho khách?',`Thu ${Number(data.off)>0?`${data.sum} − bớt ${data.off} = ${Math.max(0,data.sum-data.off)}`:data.sum} xu tiền hàng${data.pack==='1'?', trừ 5 xu vật liệu gói':''} và trao quà cho khách?`,'Thanh toán & giao'))return;
       const r=await run(x,'shop_deliver',{task:data.task});if(!r)return;
       const done=(x.api.state?.careers?.mother_baby?.tasks||[]).find(v=>v.id===data.task),re=done?.reaction;
       if(re&&re.line){

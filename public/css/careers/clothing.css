@@ -1,0 +1,261 @@
+/* Tiệm Áo Chỉ Mây — scoped workbench styles (.career-job.ao).
+   Its own look: indigo-violet thread, mustard tape measure, soft lilac paper.
+   Chrome follows the theme tokens (with fallbacks), so dark mode keeps working. */
+.career-job.ao{
+  --ao-bg:var(--bg,#f7f4fc);--ao-s1:var(--surface,#fffdff);--ao-s2:var(--surface-2,#f1edfa);--ao-ink:var(--ink,#2e2745);
+  --ao-muted:var(--muted,#6f6789);--ao-line:var(--line,#e2dcf0);
+  --ao-violet:#6a58a6;--ao-violet-ink:#fff;--ao-mustard:#d9a521;--ao-rose:#e79ab1;
+  --ao-good:var(--good,#3f8a5a);--ao-warn:var(--warn,#b9811c);--ao-bad:var(--bad,#c0485a);
+  --ao-r:var(--radius,16px);--ao-rs:var(--radius-sm,10px);--ao-shadow:var(--shadow,0 6px 18px rgb(40 30 80 / 9%));
+  color:var(--ao-ink);display:flex;flex-direction:column;gap:10px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .career-job.ao{--ao-violet:#a996ee;--ao-violet-ink:#1c1630;--ao-mustard:#e8bf52}}
+:root[data-theme="dark"] .career-job.ao{--ao-violet:#a996ee;--ao-violet-ink:#1c1630;--ao-mustard:#e8bf52}
+
+/* Zero-specificity fallbacks for shared utility classes (shared styles win). */
+:where(.career-job.ao) :where(.card){background:var(--ao-s1);border:1px solid var(--ao-line);border-radius:var(--ao-r);padding:14px;box-shadow:var(--ao-shadow)}
+:where(.career-job.ao) :where(.bar){height:8px;border-radius:99px;background:var(--ao-s2);overflow:hidden}
+:where(.career-job.ao) :where(.bar i){display:block;height:100%;background:var(--ao-violet);border-radius:inherit}
+:where(.career-job.ao) :where(.bar.low i){background:var(--ao-bad)}
+:where(.career-job.ao) :where(.patience){display:flex;align-items:center;gap:8px;margin-top:6px}
+:where(.career-job.ao) :where(.patience .bar){flex:1}
+.career-job.ao h3,.career-job.ao h4,.career-job.ao h5{margin:0 0 6px}
+.career-job.ao h4{font-size:1rem}
+.career-job.ao .btn{min-height:44px}
+.career-job.ao .btn.primary{background:var(--ao-violet);border-color:var(--ao-violet);color:var(--ao-violet-ink)}
+.career-job.ao .btn.full{width:100%}
+.career-job.ao .muted{color:var(--ao-muted)}
+.career-job.ao .bad{color:var(--ao-bad)}
+.career-job.ao .ao-ok{color:var(--ao-good)}
+.career-job.ao .ao-lab{margin:10px 0 6px;font-weight:700;font-size:.9rem}
+.career-job.ao .ao-lab small{font-weight:400;color:var(--ao-muted)}
+.career-job.ao .ao-empty{margin:4px 0}
+.career-job.ao .ao-2,.career-job.ao .ao-3,.career-job.ao .ao-4{display:grid;gap:6px}
+.career-job.ao .ao-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.career-job.ao .ao-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.career-job.ao .ao-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.career-job.ao .ao-2 .btn,.career-job.ao .ao-3 .btn{padding-inline:6px;white-space:normal;line-height:1.2}
+.career-job.ao .ao-tips{margin:4px 0 0;padding-left:18px}
+.career-job.ao .ao-tips li{margin:2px 0}
+/* The tape-measure stripe that marks this shop's cards. */
+.career-job.ao .ao-ticket,.career-job.ao .ao-intro{position:relative;overflow:hidden}
+.career-job.ao .ao-ticket::before,.career-job.ao .ao-intro::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;
+  background:repeating-linear-gradient(90deg,var(--ao-mustard) 0 10px,var(--ao-mustard) 10px 11px,color-mix(in srgb,var(--ao-mustard) 70%,#000) 11px 12px)}
+
+/* Checklist (guide) */
+.career-job.ao .checklist{list-style:none;margin:0;padding:0}
+.career-job.ao .checklist li{padding:8px 4px;min-height:44px;box-sizing:border-box;align-content:center;border-bottom:1px dashed var(--ao-line)}
+.career-job.ao .checklist li:last-child{border-bottom:0}
+
+/* Intro card */
+.career-job.ao .ao-intro{background:linear-gradient(180deg,var(--ao-s2),var(--ao-s1) 120px);padding-top:18px}
+.career-job.ao .ao-intro-head{display:flex;align-items:center;gap:10px}
+.career-job.ao .ao-intro-head small{color:var(--ao-violet);font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:.72rem}
+.career-job.ao .ao-intro-icon{font-size:34px;width:48px;height:48px;display:grid;place-items:center;border-radius:50%;background:var(--ao-s1);border:2px dashed var(--ao-violet)}
+.career-job.ao .ao-story{margin:8px 0}
+.career-job.ao .ao-intro h4{margin:12px 0 4px;color:var(--ao-violet)}
+.career-job.ao .ao-ilist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:4px 12px}
+.career-job.ao .ao-ilist li{display:flex;gap:8px;align-items:flex-start;font-size:.92rem;line-height:1.35}
+.career-job.ao .ao-ilist li span{width:22px;flex:none;text-align:center}
+.career-job.ao .ao-intro-go{margin-top:12px}
+
+/* Today, ticket */
+.career-job.ao .ao-today{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--ao-rs);background:var(--ao-s2);border:1px solid var(--ao-line)}
+.career-job.ao .ao-today>span{font-size:22px}
+.career-job.ao .ao-today p{margin:0;flex:1;min-width:0}
+.career-job.ao .ao-today small{display:block;color:var(--ao-muted)}
+.career-job.ao .ao-ticket{padding-top:18px}
+.career-job.ao .ao-said{margin:4px 0;font-size:1rem;line-height:1.45}
+.career-job.ao .ao-book{margin:4px 0;padding:4px 8px;border-radius:8px;background:var(--ao-s2)}
+
+/* The rack: item chips, colour swatches, big size buttons with the count left */
+.career-job.ao .ao-chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:6px}
+.career-job.ao .ao-chip{display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-height:60px;padding:6px 8px;border:1px solid var(--ao-line);border-radius:var(--ao-rs);background:var(--ao-s1);color:var(--ao-ink);font:inherit;text-align:left;cursor:pointer}
+.career-job.ao .ao-chip span{font-size:20px;line-height:1}
+.career-job.ao .ao-chip b{font-size:.82rem;line-height:1.2}
+.career-job.ao .ao-chip small{font-size:.72rem;color:var(--ao-muted)}
+.career-job.ao .ao-chip.on{border-color:var(--ao-violet);box-shadow:inset 0 0 0 2px var(--ao-violet);background:var(--ao-s2)}
+.career-job.ao .ao-sel{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:10px;border-top:1px dashed var(--ao-line)}
+.career-job.ao .ao-sel-emoji{font-size:26px}
+.career-job.ao .ao-sel .muted{margin-left:auto}
+.career-job.ao .ao-swatches{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.ao .ao-swatch{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:4px 12px 4px 6px;border:1px solid var(--ao-line);border-radius:999px;background:var(--ao-s1);color:var(--ao-ink);font:inherit;cursor:pointer}
+.career-job.ao .ao-swatch.on{border-color:var(--ao-violet);box-shadow:inset 0 0 0 2px var(--ao-violet);font-weight:700}
+.career-job.ao .ao-dot{display:inline-block;flex:none;width:22px;height:22px;border-radius:50%;border:1px solid rgb(0 0 0 / 25%);box-shadow:inset 0 0 0 2px rgb(255 255 255 / 45%)}
+.career-job.ao .ao-sizes{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px}
+.career-job.ao .ao-size{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:56px;padding:4px;border:2px solid var(--ao-violet);border-radius:var(--ao-rs);background:var(--ao-s1);color:var(--ao-ink);font:inherit;cursor:pointer}
+.career-job.ao .ao-size b{font-size:1.15rem;line-height:1.1}
+.career-job.ao .ao-size small{font-size:.72rem;color:var(--ao-muted)}
+.career-job.ao .ao-size.sm{min-height:48px}
+.career-job.ao .ao-size.on{background:var(--ao-violet);color:var(--ao-violet-ink)}
+.career-job.ao .ao-size.on small{color:inherit}
+.career-job.ao .ao-size.out{border-style:dashed;border-color:var(--ao-line)}
+.career-job.ao .ao-size.out small{color:var(--ao-bad);font-weight:700}
+.career-job.ao .ao-size:disabled{opacity:.55;cursor:not-allowed}
+.career-job.ao .ao-restock{margin-top:8px}
+
+/* Size chart */
+.career-job.ao .ao-chart{width:100%;border-collapse:collapse;font-size:.9rem;font-variant-numeric:tabular-nums}
+.career-job.ao .ao-chart th,.career-job.ao .ao-chart td{padding:6px 8px;border-bottom:1px solid var(--ao-line);text-align:left}
+.career-job.ao .ao-chart tbody th{color:var(--ao-violet)}
+.career-job.ao .ao-kvs{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.ao .ao-kv{padding:4px 8px;border-radius:8px;background:var(--ao-s2);font-size:.85rem}
+.career-job.ao .ao-kv b{color:var(--ao-violet);margin-right:4px}
+.career-job.ao .ao-tipline{padding:6px 8px;border-left:3px solid var(--ao-mustard);background:var(--ao-s2)}
+
+/* Picked pieces, receipt */
+.career-job.ao .ao-picked{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.career-job.ao .ao-picked li{display:flex;align-items:center;flex-wrap:wrap;gap:8px;min-height:44px;padding:6px 8px;border:1px solid var(--ao-line);border-radius:var(--ao-rs);background:var(--ao-s1)}
+.career-job.ao .ao-picked .grow{flex:1 1 140px;min-width:0}
+.career-job.ao .ao-picked small{display:block;color:var(--ao-muted)}
+.career-job.ao .ao-x{min-width:44px}
+.career-job.ao .ao-receipt{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--ao-s1);border-style:dashed}
+.career-job.ao .ao-receipt ul{list-style:none;margin:0;padding:0}
+.career-job.ao .ao-receipt li,.career-job.ao .ao-rline{display:flex;gap:8px;padding:4px 0;margin:0;font-size:.9rem}
+.career-job.ao .ao-receipt li .grow{flex:1;min-width:0}
+.career-job.ao .ao-rline{justify-content:space-between;border-top:1px dashed var(--ao-line)}
+.career-job.ao .ao-rline.total{font-size:1.05rem}
+.career-job.ao .ao-haggle{border-color:var(--ao-mustard)}
+
+/* Occasion, budget */
+.career-job.ao .ao-big{font-size:34px;width:44px;text-align:center}
+.career-job.ao .ao-occasion .row{align-items:flex-start;gap:8px}
+.career-job.ao .ao-budget{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;margin-top:10px}
+.career-job.ao .ao-budget b{font-variant-numeric:tabular-nums}
+
+/* Alterations: the sewing line */
+.career-job.ao .ao-measure{font-size:1.05rem;margin:4px 0 10px}
+.career-job.ao .ao-choice{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+.career-job.ao .ao-opt{box-shadow:none;background:var(--ao-s2)}
+.career-job.ao .ao-opt .btn{margin-top:8px}
+.career-job.ao .ao-step{display:grid;grid-template-columns:48px 1fr 48px;align-items:center;gap:8px;text-align:center;font-size:1.1rem}
+.career-job.ao .ao-sew{margin:10px 0}
+.career-job.ao .ao-seam{position:relative;height:36px;border-radius:8px;background:repeating-linear-gradient(90deg,var(--ao-s2) 0 8px,var(--ao-line) 8px 12px);border:1px solid var(--ao-line)}
+.career-job.ao .ao-zone{position:absolute;top:0;bottom:0;background:color-mix(in srgb,var(--ao-good) 35%,transparent);border-inline:2px solid var(--ao-good)}
+.career-job.ao .ao-needle{position:absolute;top:-6px;bottom:-6px;width:4px;margin-left:-2px;background:var(--ao-violet);border-radius:2px}
+.career-job.ao .ao-sew.ready .ao-needle{background:var(--ao-good)}
+.career-job.ao .ao-sew.over .ao-needle{background:var(--ao-bad)}
+.career-job.ao .ao-sew-label{display:block;margin-top:6px;font-weight:700}
+.career-job.ao .ao-sew.ready .ao-sew-label{color:var(--ao-good)}
+.career-job.ao .ao-sew.over .ao-sew-label{color:var(--ao-bad)}
+
+/* Fitting room queue */
+.career-job.ao .ao-queue{display:flex;flex-direction:column;gap:8px}
+.career-job.ao .ao-guest{display:flex;gap:10px;align-items:flex-start;padding:8px;border:1px solid var(--ao-line);border-radius:var(--ao-rs);background:var(--ao-s1)}
+.career-job.ao .ao-guest.cur{border-color:var(--ao-violet);box-shadow:inset 4px 0 0 var(--ao-violet)}
+.career-job.ao .ao-guest .grow{min-width:0;flex:1}
+.career-job.ao .ao-hangers{display:block;font-size:20px;letter-spacing:2px;margin:4px 0}
+.career-job.ao .ao-tags{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.career-job.ao .ao-tag{padding:0;font-size:1.1rem;font-weight:700}
+.career-job.ao .gd-alt{display:block;margin-top:6px;min-height:44px;background:none;border:0;color:var(--ao-muted);text-decoration:underline;font:inherit;font-size:.85rem;cursor:pointer}
+
+/* Returns */
+.career-job.ao .ao-facts{list-style:none;margin:8px 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.career-job.ao .ao-fact{display:flex;gap:8px;align-items:flex-start;padding:8px;border-radius:var(--ao-rs);background:var(--ao-s2)}
+.career-job.ao .ao-fact p{margin:0}
+.career-job.ao .ao-fact.todo{padding:0;background:none}
+.career-job.ao .ao-decide{display:flex;flex-direction:column;gap:6px}
+
+/* Sale tags */
+.career-job.ao .ao-sale-line{padding:8px 0;border-top:1px dashed var(--ao-line)}
+.career-job.ao .ao-sale-line p{margin:4px 0 6px}
+.career-job.ao .ao-4 .btn{padding-inline:2px;font-variant-numeric:tabular-nums}
+
+/* Online order: chat bubble and the parcel */
+.career-job.ao .ao-chat{padding:10px 12px;border-radius:14px 14px 14px 4px;background:var(--ao-s2)}
+.career-job.ao .ao-chat.zalo{border-left:4px solid #3a7bd5}
+.career-job.ao .ao-chat.fb{border-left:4px solid #5b6fd6}
+.career-job.ao .ao-chat p{margin:4px 0}
+.career-job.ao .ao-chat ul{list-style:none;margin:4px 0;padding:0}
+.career-job.ao .ao-chat li{display:flex;align-items:center;gap:6px;padding:3px 0}
+.career-job.ao .ao-chat .ao-dot{width:16px;height:16px}
+.career-job.ao .ao-label{display:grid;gap:2px;margin-top:8px;padding:8px 10px;border:2px dashed var(--ao-muted);border-radius:8px;background:var(--ao-s1)}
+.career-job.ao .ao-label small{color:var(--ao-muted)}
+.career-job.ao .ao-parcel .row{margin-top:8px;gap:6px}
+
+/* Mannequin */
+.career-job.ao .ao-manq{display:flex;gap:10px;align-items:flex-start}
+.career-job.ao .ao-manq-fig{font-size:44px;line-height:1;padding:6px;border-radius:12px;background:var(--ao-s2)}
+.career-job.ao .ao-manq .ao-picked{flex:1;min-width:0}
+
+/* Between customers */
+.career-job.ao .ao-swap{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px dashed var(--ao-line)}
+.career-job.ao .ao-swap p{margin:4px 0}
+.career-job.ao .ao-look .row{align-items:center}
+.career-job.ao .ao-pips{display:flex;gap:4px}
+.career-job.ao .ao-pips i{width:18px;height:6px;border-radius:3px;background:var(--ao-line)}
+.career-job.ao .ao-pips i.on{background:var(--ao-violet)}
+.career-job.ao .ao-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.career-job.ao .ao-tabs .btn{padding-inline:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.career-job.ao .ao-grid ul{list-style:none;margin:0;padding:0}
+.career-job.ao .ao-grow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 0;border-top:1px dashed var(--ao-line)}
+.career-job.ao .ao-grow:first-child{border-top:0}
+.career-job.ao .ao-gname{display:flex;align-items:center;gap:6px;flex:1 1 150px;min-width:0;font-weight:600}
+.career-job.ao .ao-gname small{margin-left:auto;font-weight:400;color:var(--ao-muted)}
+.career-job.ao .ao-gsizes{display:flex;flex-wrap:wrap;gap:4px}
+.career-job.ao .ao-gs{display:inline-flex;align-items:baseline;gap:3px;min-width:40px;padding:3px 6px;border-radius:6px;background:var(--ao-s2);font-variant-numeric:tabular-nums;font-size:.85rem}
+.career-job.ao .ao-gs b{color:var(--ao-violet);font-size:.75rem}
+.career-job.ao .ao-gs.low{background:color-mix(in srgb,var(--ao-mustard) 25%,var(--ao-s1))}
+.career-job.ao .ao-gs.out{background:color-mix(in srgb,var(--ao-bad) 18%,var(--ao-s1));color:var(--ao-bad);font-weight:700}
+.career-job.ao .ao-bookl{list-style:none;margin:0;padding:0}
+.career-job.ao .ao-bookl li{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px dashed var(--ao-line)}
+.career-job.ao .ao-bookl small{display:block;color:var(--ao-muted)}
+
+/* Cash at the counter (public/js/careers/till.js) */
+.career-job.ao .till{display:grid;gap:8px}
+.career-job.ao .till h4{margin:0}
+.career-job.ao .till-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.career-job.ao .till-notes,.career-job.ao .till-tray{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:36px}
+.career-job.ao .till-tray{padding:6px;border-radius:var(--ao-rs);background:var(--ao-s2)}
+.career-job.ao .till-money{display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-variant-numeric:tabular-nums}
+.career-job.ao .till-money.note{min-width:48px;height:28px;padding:0 6px;border-radius:4px;background:var(--ao-s1);border:1px solid var(--ao-good);color:var(--ao-good)}
+.career-job.ao .till-money.coin{width:28px;height:28px;border-radius:50%;background:var(--ao-s1);border:2px solid var(--ao-warn);color:var(--ao-warn);font-size:12px}
+.career-job.ao .till-due{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:4px 10px;align-items:baseline}
+.career-job.ao .till-due b{font-variant-numeric:tabular-nums}
+.career-job.ao .till-due b.ok{color:var(--ao-good)}
+.career-job.ao .till-due b.over{color:var(--ao-bad)}
+.career-job.ao .till-denoms{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:6px}
+.career-job.ao .till-denom{min-height:44px;border-radius:var(--ao-rs);font:inherit;font-weight:700;cursor:pointer;background:var(--ao-s1);color:var(--ao-ink)}
+.career-job.ao .till-denom.note{border:2px solid var(--ao-good)}
+.career-job.ao .till-denom.coin{border:2px solid var(--ao-warn);border-radius:999px}
+.career-job.ao .till .btn{min-height:44px}
+
+/* The one next-step button rides at the bottom of the sheet. */
+.career-job.ao .ao-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--ao-r);
+  background:var(--ao-s1);border:1px solid var(--ao-line);box-shadow:0 -6px 18px rgb(40 30 80 / 12%)}
+.career-job.ao .ao-bar .btn{flex:1 1 auto;min-height:48px}
+.career-job.ao .ao-bar .gd-ctas{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
+.career-job.ao .ao-bar .gd-alt{margin:0;align-self:center}
+
+@media (max-width:420px){
+  .career-job.ao .card{padding:12px}
+  .career-job.ao .till-due{grid-template-columns:auto 1fr}
+  .career-job.ao .ao-chips{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .career-job.ao .ao-sizes{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .career-job.ao .ao-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .career-job.ao .ao-3{grid-template-columns:1fr}
+}
+
+/* ---------- compact bench (UX 2026-09, stage_fold.js): finished parts as one tappable line */
+.career-job.ao .sf-line{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:8px 12px;text-align:left;font:inherit;color:var(--ao-ink);cursor:pointer;
+  background:var(--ao-s1);border:1px dashed var(--ao-line);border-radius:var(--ao-rs)}
+.career-job.ao .sf-mark{flex:0 0 22px;font-weight:800;color:var(--ao-muted);text-align:center}
+.career-job.ao .sf-t{display:grid;flex:1 1 auto;min-width:0;line-height:1.3}
+.career-job.ao .sf-t>b{font-weight:700}
+.career-job.ao .sf-t>small{display:block;color:var(--ao-muted);font-size:.85em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.career-job.ao .sf-line>i{margin-left:auto;font-style:normal;color:var(--ao-muted)}
+.career-job.ao .sf-line.done{border-style:solid;background:var(--ao-s2)}
+.career-job.ao .sf-line.done .sf-mark{color:var(--ao-good)}
+.career-job.ao .ao-intro-fold,.career-job.ao details.ao-steps{border-radius:var(--ao-rs);background:var(--ao-s1);border:1px solid var(--ao-line);padding:0 12px}
+.career-job.ao .ao-intro-fold[open],.career-job.ao details.ao-steps[open]{padding-bottom:10px}
+.career-job.ao .ao-intro-fold>summary,.career-job.ao details.ao-steps>summary,.career-job.ao .ao-tipfold>summary{display:flex;flex-wrap:wrap;align-items:center;gap:0 6px;min-height:44px;cursor:pointer;list-style:none;font-weight:700}
+.career-job.ao .ao-intro-fold>summary small,.career-job.ao details.ao-steps>summary small{font-weight:500;color:var(--ao-muted)}
+.career-job.ao .ao-intro-fold>summary::-webkit-details-marker,.career-job.ao details.ao-steps>summary::-webkit-details-marker,.career-job.ao .ao-tipfold>summary::-webkit-details-marker{display:none}
+.career-job.ao .ao-intro-fold>summary::after,.career-job.ao details.ao-steps>summary::after,.career-job.ao .ao-tipfold>summary::after{content:'▸';margin-left:auto;color:var(--ao-muted)}
+.career-job.ao .ao-intro-fold[open]>summary::after,.career-job.ao details.ao-steps[open]>summary::after,.career-job.ao .ao-tipfold[open]>summary::after{content:'▾'}
+.career-job.ao details.ao-steps .checklist li.gd-todo{min-height:44px;align-items:center}
+.career-job.ao .ao-tipfold>summary{font-weight:600;font-size:.92em;color:var(--ao-violet)}
+.career-job.ao .ao-occasion.compact{padding:10px 12px}
+.career-job.ao .ao-occasion.compact h4{margin:0 0 4px}
+.career-job.ao .ao-occasion.compact .ao-big{font-size:28px}
+.career-job.ao .ao-rack[data-want="top"] .ao-chip:is(.g-top,.g-one),.career-job.ao .ao-rack[data-want="bottom"] .ao-chip.g-bottom{border-color:var(--ao-violet);box-shadow:inset 0 0 0 2px var(--ao-violet)}
+.career-job.ao .ao-occasion.compact .ao-budget{margin-top:4px}

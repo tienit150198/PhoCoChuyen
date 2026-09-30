@@ -32,12 +32,27 @@ function specOf(t,i){
   return {...n,...p[i??t.cur??0]};
 }
 
+/** Python's round() (ties to even), so the browser shows the same xu the server charges. */
+const pyRound=v=>{const f=Math.floor(v),d=v-f;return d>0.5?f+1:d<0.5?f:(f%2?f+1:f);};
+const brothPrice=(x,id)=>x.room.life?.prices?.[id]??x.cc.prices?.[id]??0;
 function bowlPrice(b,x){
   if(!b.broth)return 0;
-  const d=data(x),prices=x.room.life?.prices||{};
-  let p=(prices[b.broth]??x.cc.prices?.[b.broth]??0)+Object.entries(b.toppings||{}).reduce((s,[k,q])=>s+(item(x,k).price||0)*q,0);
+  const d=data(x);
+  let p=brothPrice(x,b.broth)+Object.entries(b.toppings||{}).reduce((s,[k,q])=>s+(item(x,k).price||0)*q,0);
   p+=10*Math.max(0,b.noodles.length-1)+(b.container==='box'?3:0);
-  return Math.max(1,Math.round(p*(d.price_mult||1)));
+  return Math.max(1,pyRound(p*(d.price_mult||1)));
+}
+/** The bill as a line of sums (the server's quote()): each bowl from the menu, then the day's ×1,1 and the students' −10%. */
+function billLine(t,x){
+  const n=t.needs;if(!n||n.masked||n.style==='open'||!t.quoted_price)return '';
+  const d=data(x),mult=d.price_mult||1,specs=n.party?.length?n.party:[n];
+  const bowls=specs.map(b=>brothPrice(x,b.broth)+Object.entries(b.toppings||{}).reduce((s,[k,q])=>s+(item(x,k).price||0)*q,0)+(b.extra_noodle?10:0)+(n.takeaway?3:0));
+  const raw=bowls.reduce((a,v)=>a+v,0),total=Math.max(1,pyRound(raw*mult));
+  if(total!==t.quoted_price)return '';   // an order quoted on an earlier day keeps its price
+  const parts=[bowls.length>1?bowls.map((v,i)=>`tô ${i+1}: ${v}`).join(' + '):`${bowls[0]} xu theo thực đơn`];
+  if(mult!==1)parts.push(`ngày hội ×1,1 → ${total}`);
+  if(d.rules?.discount)parts.push(`học sinh −10% → ${Math.max(1,pyRound(total*0.9))} xu`);
+  return `<small class="rs-bill">🧾 ${x.esc(parts.join(' · '))}</small>`;
 }
 
 /* ---------------------------------------------------------------- the floor */
@@ -58,8 +73,10 @@ function floor(x,active){
         <span class="rs-n" aria-hidden="true">${n} tô</span><b>${x.esc(who.display_name)}</b></button>`);
     }else if(canAdd&&i===dine.length){
       seats.push(`<button type="button" class="rs-seat empty add" data-command="more_work" data-payload="{}" aria-label="Đón thêm một khách"><span class="rs-plus" aria-hidden="true">＋</span><b>Đón khách</b></button>`);
-    }else seats.push(`<div class="rs-seat empty" aria-hidden="true"><b>Bàn trống</b></div>`);
+    }else seats.push('');
   }
+  const free=seats.filter(v=>v==='').length;
+  if(free)seats.push(`<div class="rs-seat empty rs-free"><b>🪑 ${free} bàn trống</b></div>`);
   const cards=apps.map(t=>{
     const who=x.npc(t.npc),on=!!active&&t.id===active.id,p=Math.max(0,Math.min(100,t.patience??100)),n=t.needs;
     const what=!t.known||!n?'🧾 Đơn mới, bấm để đọc':n.masked?'Món quen':n.style==='open'?`Tô tùy quán · ≤ ${n.open.budget} xu`:`${brothOf(x,n.broth)?.name||''} · cấp ${n.spice}`;
@@ -108,10 +125,12 @@ function tabs(t,x){
 }
 function ticket(t,x){
   const who=x.npc(t.npc),g=t.guest||{},n=t.needs;
-  const price=n.style==='open'?(t.bowl.broth?`${bowlPrice(t.bowl,x)}/${n.open.budget} xu`:`≤ ${n.open.budget} xu`):t.quoted_price?x.money(t.quoted_price):'';
+  const off=!!data(x).rules?.discount,after=v=>off?` → ${Math.max(1,pyRound(v*0.9))} xu`:'';
+  const price=n.style==='open'?(t.bowl.broth?`${bowlPrice(t.bowl,x)}/${n.open.budget} xu${after(Math.min(bowlPrice(t.bowl,x),n.open.budget))}`:`≤ ${n.open.budget} xu`)
+    :t.quoted_price?`${x.money(t.quoted_price)}${after(t.quoted_price)}`:'';
   return `<article class="card rs-order${t.vip==='critic'?' critic':''}"><div class="rs-order-head">${x.portrait(who,44)}<div class="grow">
     <div class="row spread"><h3>${x.esc(who.display_name)}</h3><b class="price">${x.esc(price)}</b></div>
-    <p class="rs-guest"><span class="tag">${x.esc(g.emoji||'')} ${x.esc(g.label||'')}</span>${t.app?` <span class="tag">🛵 Đơn app ${x.esc(t.app)}</span>`:''}${isGroup(t)?` <span class="tag">🍜 ${t.needs.party.length} tô</span>`:''}${t.vip==='critic'?' <span class="tag amber">📝 Người viết review</span>':''}</p></div></div>
+    <p class="rs-guest"><span class="tag">${x.esc(g.emoji||'')} ${x.esc(g.label||'')}</span>${t.app?` <span class="tag">🛵 Đơn app ${x.esc(t.app)}</span>`:''}${isGroup(t)?` <span class="tag">🍜 ${t.needs.party.length} tô</span>`:''}${t.vip==='critic'?' <span class="tag amber">📝 Người viết review</span>':''}${off?' <span class="tag">🎓 Học sinh −10%</span>':''}</p>${billLine(t,x)}</div></div>
     ${patience(t.patience)}${lead(t,x)}${tabs(t,x)}${ticketRows(t,x,checklistRows(t,x))}${voice(t,x)}${regularCard(t,x)}</article>`;
 }
 /** The regular's notes card: what the shop has learned about them, one button per habit. */
@@ -390,7 +409,7 @@ function pots(t,x){
       disabled:!!b.container||locked||(dirtyOn&&!clean),wanted:!hide&&!b.container&&!n.takeaway,label:dirtyOn?`Lấy tô, còn ${clean} tô sạch`:'Lấy tô ăn tại quán'}),
     tileBtn(x,{cmd:'rs_container',payload:{task:t.id,kind:'box'},pick:'box',emoji:'🥡',name:'Hộp',count:stockOf(x,'box'),zero:!stockOf(x,'box'),selected:b.container==='box',
       disabled:!!b.container||locked||!stockOf(x,'box'),wanted:!hide&&!b.container&&n.takeaway,label:`Hộp mang về, còn ${stockOf(x,'box')}`}),
-    ...x.cc.broths.map(p=>{const q=d.pots?.[p.id]??0,lock=p.unlock>level,st=potRow(x,p.id)?.state||'hot',off=st==='cold'||st==='stale';
+    ...x.cc.broths.filter(p=>p.unlock<=level).map(p=>{const q=d.pots?.[p.id]??0,lock=p.unlock>level,st=potRow(x,p.id)?.state||'hot',off=st==='cold'||st==='stale';
       const sub=st==='cold'?'cần đun lại':st==='stale'?'quá hạn':'nước dùng';
       return tileBtn(x,{cmd:'rs_broth',payload:{task:t.id,broth:p.id},pick:p.id,emoji:p.emoji,name:p.name,sub,count:lock?null:q,zero:q<portions||off,locked:lock,selected:b.broth===p.id,
         wanted:!b.broth&&wantBroth.includes(p.id)&&!off,disabled:q<portions||off||!!b.broth||!b.container||locked,cls:'pot'+(st==='cold'?' cold':st==='stale'?' stale':''),
@@ -398,7 +417,7 @@ function pots(t,x){
   // Cooking a pot is offered when it runs low (a pot holds 12 portions, one batch adds 6).
   const low=x.cc.broths.filter(p=>p.unlock<=level&&(d.pots?.[p.id]??0)<=Math.min(6,2*portions)&&potRow(x,p.id)?.state!=='stale');
   const cook=low.length?`<div class="rs-cook"><small>🔥 Nấu thêm nồi</small>${low.map(p=>{const packs=stockOf(x,p.pack);return x.cmd(`${p.emoji} ${x.esc(p.name)} · ${packs} gói`,'rs_pot',{broth:p.id},'ghost small',!packs);}).join('')}</div>`:'';
-  return `${potAlert(x)}<div class="rs-grid rs-pots" role="group" aria-label="Tô, hộp và nồi nước dùng">${tiles.join('')}</div>${portions>1?'<p class="muted small">🥶 1 tô = 2 phần nồi</p>':''}${cook}`;
+  return `${potAlert(x)}<div class="rs-grid rs-pots" role="group" aria-label="Tô, hộp và nồi nước dùng">${tiles.join('')}</div>${lockChip(x,x.cc.broths.filter(p=>p.unlock>level))}${portions>1?'<p class="muted small">🥶 1 tô = 2 phần nồi</p>':''}${cook}`;
 }
 /** Pots kept overnight: one button reheats them all; an expired pot is poured out. */
 function potAlert(x){
@@ -480,13 +499,21 @@ function toppings(t,x){
   const want=hide?{}:n.style==='open'?Object.fromEntries(n.open.must.map(k=>[k,1])):(()=>{const w={...sp.toppings};for(const [k,v] of Object.entries(t.subs||{})){if(w[k]){w[v]=(w[v]||0)+w[k];delete w[k];}}return w;})();
   const avoid=n.style==='open'?new Set([...n.open.avoid,...(n.open.veg?x.cc.meat||[]:[])]):new Set();
   const openOrder=n.style==='open';
-  const tiles=x.cc.toppings.map(k=>{const i=item(x,k),q=stockOf(x,k),lock=(i.unlock||1)>level,have=b.toppings[k]||0;
+  const shut=x.cc.toppings.map(k=>item(x,k)).filter(i=>(i.unlock||1)>level);
+  const tiles=x.cc.toppings.filter(k=>(item(x,k).unlock||1)<=level).map(k=>{const i=item(x,k),q=stockOf(x,k),lock=(i.unlock||1)>level,have=b.toppings[k]||0;
     return tileBtn(x,{cmd:'rs_topping',payload:{task:t.id,item:k},pick:k,emoji:i.emoji,name:i.name,sub:openOrder&&!lock?`${i.price||0} xu`:'',count:lock?null:q,zero:!q,locked:lock,
       selected:have>0,have,wanted:!!want[k]&&have<want[k],avoid:avoid.has(k),disabled:!q||!b.container||plated(t),
       label:lock?`${i.name}, mở ở cấp ${i.unlock||1}`:`Thêm ${i.name}, còn ${q}${have?`, trong tô ${have}`:''}`});}).join('');
   const outOf=openOrder||n.masked?[]:Object.entries(sp.toppings).filter(([k,q])=>(stockOf(x,k)<q||(k==='beef'&&r.bad_beef))&&!(t.subs||{})[k]&&(b.toppings[k]||0)<q);
   const subs=outOf.length?`<div class="notice amber rs-subs">Thiếu ${outOf.map(([k])=>x.esc(item(x,k).name)).join(', ')}? Hỏi khách đổi món: ${outOf.map(([k])=>['mushroom','egg','sausage','kimchi_side','tofu'].filter(s=>s!==k&&stockOf(x,s)>0&&!(n.allergy&&item(x,s).allergen===n.allergy)).slice(0,2).map(s=>x.cmd(`${item(x,s).emoji} ${x.esc(item(x,s).name)}`,'rs_sub',{task:t.id,item:k,substitute:s},'small ghost')).join('')).join('')}</div>`:'';
-  return `${subs}<div class="rs-grid rs-tops" role="group" aria-label="Topping">${tiles}</div>`;
+  return `${subs}<div class="rs-grid rs-tops" role="group" aria-label="Topping">${tiles}</div>${lockChip(x,shut)}`;
+}
+/** "🔒 3 món mở ở cấp 2–4": locked broths or toppings in one line (names and levels in the tooltip). */
+function lockChip(x,list){
+  if(!list.length)return '';
+  const lv=list.map(i=>Number(i.unlock)||1),lo=Math.min(...lv),hi=Math.max(...lv);
+  const names=list.map(i=>`${i.name} (cấp ${Number(i.unlock)||1})`).join(', ');
+  return `<p class="rs-lock" title="${x.esc(names)}" aria-label="${x.esc(`Chưa mở: ${names}`)}">🔒 ${list.length} món mở ở cấp ${lo===hi?lo:`${lo}–${hi}`}</p>`;
 }
 function extras(x){
   const d=data(x),r=d.rules||{},bits=[];
@@ -579,7 +606,7 @@ function careSummary(c,x){
  * ones carry seafood or meat, and the few kitchen rules worth remembering. */
 function menuPage(x){
   const d=data(x),level=x.room.level,mult=d.price_mult||1,prices=x.room.life?.prices||{},meat=x.cc.meat||[],w=x.cc.boil||{raw:7,perfect:13};
-  const xu=v=>`${Math.max(1,Math.round(v*mult))} xu`,lock=u=>u>level?`🔒 cấp ${u}`:null;
+  const xu=v=>`${v} xu`,lock=u=>u>level?`🔒 cấp ${u}`:null;
   const seafood={label:'🦐 Hải sản',tone:'bad'},veg={label:'🌱 Chay được',tone:'good'},savory={label:'🥩 Mặn'};
   const broths=x.cc.broths.map(p=>({icon:p.emoji,name:p.name,price:xu(prices[p.id]??x.cc.prices?.[p.id]??0),locked:p.unlock>level,
     stock:lock(p.unlock)||`nồi còn ${d.pots?.[p.id]??0}`,tags:[p.allergen?seafood:veg]}));
@@ -587,7 +614,8 @@ function menuPage(x){
     return {icon:i.emoji,name:i.name,price:`+${xu(i.price||0)}`,locked:u>level,stock:lock(u)||`còn ${stockOf(x,k)}`,
       tags:[i.allergen?seafood:meat.includes(k)?savory:veg]};});
   const extra=[{icon:'🍜',name:'Thêm 1 vắt mì',price:`+${xu(10)}`},{icon:'🥡',name:'Hộp mang về',price:`+${xu(3)}`,stock:`còn ${stockOf(x,'box')}`}];
-  const rules=[`🍜 Vớt mì khi thanh vào vùng xanh: ${w.raw}–${w.perfect} giây.`,'🌶️ Mỗi lượt bơm ớt là 1 cấp cay. Cấp 0 là không bơm.',
+  const rules=[...(mult!==1?['🎉 Ngày hội: cộng cả tô theo giá trên rồi nhân 1,1 (làm tròn) mới ra giá bán.']:[]),...(d.rules?.discount?['🎓 Hôm nay giảm 10% cho học sinh trên mọi đơn còn lại.']:[]),
+    `🍜 Vớt mì khi thanh vào vùng xanh: ${w.raw}–${w.perfect} giây.`,'🌶️ Mỗi lượt bơm ớt là 1 cấp cay. Cấp 0 là không bơm.',
     '🔄 Hết topping khách gọi: hỏi khách đổi món ở ô vàng trên kệ.','🥡 Mang về: lấy hộp, làm xong nhớ đậy nắp.','⚠️ Khách dị ứng hải sản: không tomyum, cá viên, hải sản.'];
   return `<header class="sheet-head"><div class="grow"><span class="eyebrow">QUÁN MÌ CAY · SỔ TRA CỨU</span><h2>📖 Thực đơn</h2></div><button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${x.icon('x',21)}</button></header>
   <div class="sheet-body ref-sheet">${refTable([{title:'Nước dùng (giá một tô)',rows:broths},{title:'Topping',rows:tops},{title:'Thêm',rows:extra}],x.esc)}
@@ -624,7 +652,7 @@ export default {
       <div class="rs-cookline">${stove(t,x)}<div class="rs-bowlbox">${bowlArt(b,x)}<p class="rs-status" aria-live="polite">${x.esc(bowlStatus(t,x))}</p>${tray(t,x)}</div>${chili(t,x)}</div>
       <div class="rs-cta">${lid}${dump}</div>
       ${toppings(t,x)}
-      <p class="row wrap rs-tools">${clean?'<span class="tag green">🧽 Đã kiểm vệ sinh hôm nay</span>':x.cmd('🧽 Kiểm vệ sinh bếp','rs_clean',{},'ghost small')} ${x.button('📖 Thực đơn','prices',{},'ghost small')} ${x.button('📦 Kho & nhập hàng','inventory',{},'ghost small')}</p>
+      ${clean?'':`<p class="row wrap rs-tools">${x.cmd('🧽 Kiểm vệ sinh bếp','rs_clean',{},'ghost small')}</p>`}
       ${careFold(x,false,true)}
     </section>`;
     const g=taskGuide(t,x),final=g.final||{label:'🛎️ Giao món',go:{sel:'.rs-desk'},ready:false};

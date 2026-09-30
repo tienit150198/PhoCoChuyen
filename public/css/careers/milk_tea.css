@@ -307,3 +307,15 @@ html.reduce-motion .mt-event{animation:none}
 .mt-tomorrow-line small{flex-basis:100%;color:var(--ink-2,var(--ink))}
 .mt-bar-cup text{display:none}
 @media (min-width:900px){.career-job.mt .fk-bar{flex-wrap:nowrap}.career-job.mt .fk-bar-btns{flex:0 1 380px}}
+
+/* UX compaction: finished and later stations are one tappable line; locked tiles are one chip;
+   the status chips stay on one row (swipe for the rest) instead of wrapping to two. */
+.mt-folded{padding:0}
+.mt-fold-sum{display:block;width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius-sm,10px);background:var(--surface);color:inherit;font:inherit;font-weight:700;font-size:.92rem;text-align:left;cursor:pointer;overflow-wrap:anywhere}
+.mt-fold-sum::after{content:" ▾";color:var(--muted);font-weight:400}
+.mt-folded.done .mt-fold-sum{color:var(--good,#4f8a4b)}
+.mt-fold-sum:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.mt-lockchip{margin:6px 0 0;display:inline-block;font-size:.82rem;padding:4px 10px;border-radius:99px;border:1px dashed var(--line);color:var(--muted);background:var(--surface-2)}
+.mt-hud{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.mt-hud::-webkit-scrollbar{display:none}
+.mt-hud>.mt-chip{flex:none;white-space:nowrap}

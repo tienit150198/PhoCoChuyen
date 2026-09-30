@@ -321,7 +321,7 @@ WRONG_SHOP = (('food', 'Phở tái nguội ngắt, nước dùng nhạt như nư
 DOMAIN = {'milk_tea': 'drink', 'cafe_bakery': 'drink', 'restaurant': 'food', 'mother_baby': 'shop', 'grocery': 'shop', 'pharmacy': 'pharmacy',
           'accounting': 'office', 'corp_accounting': 'office', 'tax_payroll': 'office', 'group_accounting': 'office', 'customer_care': 'office',
           'tour_guide': 'stay', 'homestay': 'stay', 'florist': 'flower', 'repair': 'repair', 'farm': 'farm', 'delivery': 'delivery',
-          'pet_care': 'pet', 'salon': 'salon'}
+          'pet_care': 'pet', 'salon': 'salon', 'clothing': 'shop', 'tra_da': 'drink', 'pet_shop': 'pet'}
 # How twist reviewers answer a polite reply.
 TWIST_REPLY = {
     'flip_fix': ['Ơ, mình bấm nhầm sao thật! Sửa lại liền, xin lỗi nha 🙏', 'Trời, tay nhanh hơn não, mình chấm nhầm. Sửa rồi nè.', 'Ủa sao lại 1 sao, mình đâu định vậy. Sửa ngay!'],
@@ -612,21 +612,42 @@ def make_review(s: dict, c: dict, t: dict, status: str) -> dict:
             gripe, stars, text, unfair = g['gripe'], g['stars'], g['text'], g['unfair']
             if g['clue']:
                 clues.append(g['clue'])
+    asp = None
+    asp_unfair = False
+    if text is None and status == 'completed' and not unfair and gripe is None:
+        # Concrete angles: the taste, the straw, the restroom, the teacher's patience, office dress… (review_aspects.py).
+        asp = _ra.plan(s, c, t, persona, group, stars, fair, ev['criteria'])
+        if asp and asp['drop']:
+            # A rare ungrounded complaint that costs a star: answerable with facts like any unfair claim.
+            asp_unfair, stars, unfair = True, max(1, fair - 1), _ra.unfair_for(asp)
     style = None
     if text is None and status == 'completed' and not (unfair or t.get('slips') or persona in HARSH):
         # Mixed signals and odd voices: "ok", emoji only, long rants, 5★ for the owner's smile…
         styled = _fv.style_review(s, c, t, persona, group, fair, ev['criteria'], seed, item)
         if styled:
             style, stars, text = styled
+    aspect_rows = []
     if text is None:
         # The concrete mistake is woven in below, so the order criterion is not repeated here.
         shown = [x for x in ev['criteria'] if not (t.get('slips') and x['key'] in ('accuracy', 'order'))] or ev['criteria']
-        text = compose(persona, stars, shown, seed, unfair)
+        text = compose(persona, stars, shown, seed, None if asp_unfair else unfair)
         if t.get('slips'):
             from . import mistake_lines
             text = mistake_lines.weave(text, t, seed)
-        if not unfair:
+        if not unfair or asp_unfair:
             text = _fv.decorate(s, c, t, persona, group, stars, text, seed, item)
+        if asp and asp['picks']:
+            text, aspect_rows = _ra.weave(text, asp, s, t, persona, group, None, item, seed)
+    elif style in _ra.STYLES_OK and asp and asp['picks']:
+        text, aspect_rows = _ra.weave(text, asp, s, t, persona, group, style, item, seed)
+    if asp_unfair:
+        if aspect_rows:
+            clues.append(_ra.CLUE)
+        else:                                   # nothing was said after all: no star lost for it
+            asp_unfair, stars, unfair = False, fair, None
+    if asp and (aspect_rows or asp['slipped']):
+        _ra.commit(c, aspect_rows)
+        aspect_rows = [dict(r, text=teacher_title(s, r['text'])) if r.get('text') else r for r in aspect_rows + asp['slipped']][:_ra.MAX_ON_REVIEW]
     text = teacher_title(s, text)
     fb = dict(persona=persona, criteria=ev['criteria'], cap=ev['cap'], fair=fair, stars_original=stars, unfair=unfair,
               thread=[], status='open', rounds=0, pending=None, voice='scripted', task=t['id'], title=t.get('title', ''),
@@ -641,8 +662,12 @@ def make_review(s: dict, c: dict, t: dict, status: str) -> dict:
         fb['clues'] = clues
     if out:
         fb['stranger'] = True
+    if aspect_rows:
+        fb['aspects'] = aspect_rows
+    said = any(r.get('said', True) and not r.get('pos') for r in aspect_rows)   # a complaint was voiced
     # Happy asides ("Trà ngon, mai ghé tiếp!") only fit a plain, friendly review.
-    return dict(text=text, stars=stars, feedback=fb, aside=not (twist or unfair or style or gripe or persona in HARSH or t.get('slips')), **out)
+    return dict(text=text, stars=stars, feedback=fb,
+                aside=not (twist or unfair or style or gripe or said or persona in HARSH or t.get('slips')), **out)
 
 
 def _kind(fb: dict):
@@ -722,10 +747,11 @@ def scripted_decision(persona: str, fb: dict, stars: int, reply: str, offer: str
             return dict(decision='argue', stars=stars, text=pick(v['argue']))
         return dict(decision='keep', stars=stars, text=pick(v['keep']))
     if fb.get('unfair'):
-        if fb['unfair'].get('gripe'):
-            # An off-topic gripe: a kind or factual reply lets most people drop it.
+        if fb['unfair'].get('gripe') or fb['unfair'].get('aspect'):
+            # An off-topic gripe or an unrecorded aspect ("nhà vệ sinh bí"): a kind or factual reply lets most people drop it.
+            soft = 'aspect_soft' if fb['unfair'].get('aspect') else 'gripe_soft'
             if sig['facts'] or (sig['apology'] and persona not in HARSH):
-                return dict(decision='revise_up', stars=high, text=pick(TWIST_REPLY['gripe_soft_parent' if parent else 'gripe_soft']))
+                return dict(decision='revise_up', stars=high, text=pick(TWIST_REPLY[soft + '_parent' if parent else soft]))
         elif sig['facts'] or (sig['apology'] and persona in ('warm', 'genz', 'parent_kind', 'quiet')):
             return dict(decision='revise_up', stars=high, text=pick(v['sorry']))
         if sig['blame']:
@@ -997,6 +1023,7 @@ def validate_post(post: dict) -> None:
         need(type(fb.get(k, False)) is bool, 'Cờ đánh giá sai.')
     _fv.validate_extra(fb)
     _rg.validate(fb)
+    _ra.validate(fb)
 
 
 def public_post(post: dict) -> dict:
@@ -1021,6 +1048,7 @@ def public_post(post: dict) -> dict:
     f['can_report'] = bool(post.get('stars')) and not fb.get('report') and fb['status'] != 'awaiting'
     f['can_ignore'] = fb['status'] == 'open' and not fb['thread']
     f.pop('style', None)
+    f.pop('aspects', None)
     if fb['status'] == 'open' and fb['rounds'] < 3 and post.get('stars'):
         f['tones'] = _fv.tone_choices(post)
     if fb.get('report') and tw:
@@ -1050,7 +1078,8 @@ def ai_context(c: dict, post: dict, lang: str = 'vi') -> dict:
     low, high = _bounds(fb, post['stars'])
     return dict(language='English' if lang == 'en' else 'tiếng Việt', persona=dict(name=per['name'], style=per['style'], reviewer=post['author']),
                 role='phụ huynh học sinh phản hồi giáo viên' if per['group'] == 'parent' else 'khách hàng phản hồi cửa hàng/dịch vụ',
-                facts=dict(task=fb.get('title'), criteria=fb['criteria'], unfair_claim=fb.get('unfair'), situation=TWIST_AI.get(_kind(fb)) or _rg.situation(fb)),
+                facts=dict(task=fb.get('title'), criteria=fb['criteria'], unfair_claim=fb.get('unfair'), situation=TWIST_AI.get(_kind(fb)) or _rg.situation(fb) or _ra.situation(fb),
+                           aspects=_ra.ai_facts(fb)),
                 review=dict(stars_now=post['stars'], stars_original=fb['stars_original'], text=post['text']),
                 thread=fb['thread'][-6:], allowed_stars=[low, high], offers=[x.get('offer') for x in fb['thread'] if x['role'] == 'owner'],
                 reply_tone=next((_fv.TONES[x['tone']]['label'] for x in reversed(fb['thread']) if x['role'] == 'owner' and x.get('tone') in _fv.TONES), None),
@@ -1097,3 +1126,6 @@ _fv.install(globals())
 # Off-topic gripes and trivial five-star reasons (review_gripes.py).
 from . import review_gripes as _rg  # noqa: E402
 _rg.install(globals())
+# Many more angles: taste, straw, restroom, attitude, dress, teaching method… (review_aspects.py).
+from . import review_aspects as _ra  # noqa: E402
+_ra.install(globals())

@@ -25,8 +25,50 @@ async function load(){
   const data=await loading;
   dict=data.strings||{};
   outputs=new Set(Object.values(dict));
-  patterns=(data.patterns||[]).map(([source,out])=>{try{return [new RegExp('^'+source+'$','u'),out];}catch{return null;}}).filter(Boolean);
+  patterns=(data.patterns||[]).filter(p=>Array.isArray(p)&&typeof p[0]==='string'&&typeof p[1]==='string').map(([src,out],i)=>({i,src,out,lit:literals(src),re:undefined}));
+  byFirst=new Map();anyFirst=patterns.filter(p=>!p.lit?.[0]);
 }
+
+/* Pattern index. The pack has ~6,700 patterns; trying every one as a regex on each untranslated string cost
+ * ~5 ms per string on a laptop (20+ ms on a phone), plus compiling all of them on the first English screen.
+ * A pack pattern is literal text around (.+?) holes, so a string can only match when it starts with the
+ * first piece, ends with the last and holds the others in order: that check (plain string search) picks the
+ * few candidates, in pack order, and only those run as regexes (compiled on first use). Same results. */
+let byFirst=new Map(),anyFirst=[];
+/** Literal pieces around the (.+?) holes, or null when the source uses other regex syntax (always tried). */
+function literals(src){
+  const segs=[''];
+  for(let i=0;i<src.length;i++){
+    const ch=src[i];
+    if(ch==='('&&src.startsWith('(.+?)',i)){segs.push('');i+=4;continue;}
+    if(ch==='\\'){const n=src[i+1];if(n===undefined||/[\w]/.test(n))return null;segs[segs.length-1]+=n;i++;continue;}
+    if('^$.|?*+()[]{}'.includes(ch))return null;
+    segs[segs.length-1]+=ch;
+  }
+  return segs;
+}
+/** Could `key` match this pattern? (necessary condition: the regex decides) */
+function fits(lit,key){
+  if(!lit)return true;
+  const last=lit.length-1;
+  if(!last)return key===lit[0];
+  if(!key.startsWith(lit[0])||!key.endsWith(lit[last])||key.length<lit.reduce((n,s)=>n+s.length,last))return false;
+  let pos=lit[0].length;
+  for(let j=1;j<last;j++){const at=key.indexOf(lit[j],pos+1);if(at<0)return false;pos=at+lit[j].length;}
+  return key.length-lit[last].length>pos;
+}
+/** Patterns worth trying for `key`, in pack order (first match wins, as before). */
+function candidates(key){
+  const first=key[0];
+  let list=byFirst.get(first);
+  if(!list){
+    const own=patterns.filter(p=>p.lit?.[0]?.[0]===first);
+    list=own.length?[...own,...anyFirst].sort((a,b)=>a.i-b.i):anyFirst;
+    byFirst.set(first,list);
+  }
+  return list;
+}
+function regex(p){if(p.re===undefined){try{p.re=new RegExp('^'+p.src+'$','u');}catch{p.re=null;}}return p.re;}
 
 /** A pattern capture that stays Vietnamese means the pattern matched too
  * broadly ("Đã $1" swallowing a whole sentence): try the next one instead.
@@ -49,9 +91,11 @@ function lookup(key,depth,variants=true){
   if(!/[.!?…:]$/u.test(key)){const d=dict[key+'.'];if(typeof d==='string'&&d.endsWith('.'))return d.slice(0,-1);}
   const v=variants?caseVariant(key):null;
   if(v)for(const k of v.keys)if(dict[k]!==undefined)return v.back(dict[k]);
-  for(const [re,out] of patterns){
-    const m=key.match(re);
+  for(const p of candidates(key)){
+    if(!fits(p.lit,key))continue;
+    const re=regex(p),m=re&&key.match(re);
     if(!m)continue;
+    const out=p.out;
     let ok=true;
     const res=out.replace(/\$(\d)/g,(_,i)=>{
       const src=m[Number(i)]??'',tr=resolve(src,depth+1);

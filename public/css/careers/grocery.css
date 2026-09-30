@@ -215,6 +215,17 @@
 .career-job.gr .gr-rush-now{display:flex;flex-direction:column;gap:10px}
 .career-job.gr .gr-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
 .career-job.gr .gr-choice{min-height:52px;font-size:18px;font-weight:700}
+/* Rush till: one line per basket item, the scan button stays a big thumb target. */
+.career-job.gr .gr-rush-now .gr-line .btn{min-height:44px;flex:0 0 auto}
+.career-job.gr .gr-rush-now .gr-line.blocked{text-decoration:none}
+.career-job.gr .gr-rush-now .gr-line.blocked b{text-decoration:line-through}
+.career-job.gr .gr-rush-now .gr-line .rs-btn{flex:0 0 auto}
+.career-job.gr .gr-rush-pay{margin:0;box-shadow:none}
+.career-job.gr .gr-rush-log{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:4px}
+.career-job.gr .gr-rush-log li{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;padding:6px 10px;border-radius:var(--gr-rs);background:var(--gr-surface-2);font-size:13px}
+.career-job.gr .gr-rush-log li small{flex:1 1 100%;color:var(--gr-muted)}
+.career-job.gr .gr-rush-log li.gone{opacity:.7}
+.career-job.gr .gr-stars{color:var(--gr-warn);letter-spacing:1px}
 
 /* Bulk order */
 .career-job.gr .gr-bulk{display:flex;flex-direction:column;gap:10px}
@@ -273,4 +284,25 @@
   .career-job.gr .gr-sup{padding:6px}
   .career-job.gr .gr-sup b{font-size:13px}
   .career-job.gr .gr-due{grid-template-columns:auto 1fr}
+}
+
+/* UX compaction: one-line folds (the shelf, other promotions, well-stocked goods), locked goods as one
+   chip, the four tabs on one row, the day as one short line, the unchecked bank app as one line. */
+.career-job.gr .gr-pane{margin:10px 0;border:1px solid var(--gr-line);border-radius:var(--gr-rs);background:var(--gr-surface);min-width:0}
+.career-job.gr .gr-pane-sum{display:block;width:100%;min-height:44px;padding:10px 12px;border:0;background:none;color:inherit;font:inherit;font-weight:700;font-size:.92rem;text-align:left;cursor:pointer;overflow-wrap:anywhere}
+.career-job.gr .gr-pane-sum::after{content:" ▾";color:var(--gr-muted);font-weight:400}
+.career-job.gr .gr-pane.open>.gr-pane-sum::after{content:" ▴"}
+.career-job.gr .gr-pane.open>.gr-pane-sum{border-bottom:1px dashed var(--gr-line)}
+.career-job.gr .gr-pane-sum:focus-visible{outline:3px solid var(--gr-info);outline-offset:2px}
+.career-job.gr .gr-pane-body{display:grid;gap:6px;padding:8px 10px 10px;min-width:0}
+.career-job.gr .gr-promos .gr-pane{margin:0}
+.career-job.gr .gr-lock{margin:6px 0 0;display:inline-block;font-size:.82rem;padding:4px 10px;border-radius:99px;border:1px dashed var(--gr-line);color:var(--gr-muted);background:var(--gr-surface-2)}
+.career-job.gr .gr-phone.shop.unchecked{min-height:0}
+@media (max-width:480px){
+  .career-job.gr .gr-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .career-job.gr .gr-tabs.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .career-job.gr .gr-tabs.three>:first-child{grid-column:auto}
+  .career-job.gr .gr-tabs .btn{white-space:normal;font-size:12px;line-height:1.15;padding:4px 3px;min-height:44px}
+  .career-job.gr .gr-today{padding:6px 10px;gap:6px;margin-bottom:6px}
+  .career-job.gr .gr-mood-emoji{font-size:20px}
 }

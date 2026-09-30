@@ -1,0 +1,42 @@
+/* Tip hên xui (public/js/v4/tips.js): the card a tipping customer leaves, and "Tip hôm nay" in the day
+   summary. Theme colours only (every theme, dark included). The card sits opposite the toasts: at the top
+   on tablet/desktop (toasts at the bottom), above the dock on phones (toasts at the top); inside an open
+   sheet at the bottom (tablet/desktop) or just under the sheet toasts (phone, clear of the sheet's buttons). It never takes taps. */
+.tip-pop{position:fixed;left:50%;top:calc(var(--topbar-h) + var(--safe-t) + 14px);bottom:auto;transform:translateX(-50%);z-index:215;
+  display:flex;align-items:center;gap:12px;width:min(440px,calc(100vw - 32px));padding:12px 14px;border-radius:18px;
+  background:var(--surface);color:var(--ink);border:1.5px solid var(--star);box-shadow:var(--shadow-lg);pointer-events:none;
+  animation:tip-pop-in .42s cubic-bezier(.2,.9,.3,1.25) both;transition:opacity .3s,transform .3s}
+html[data-layout="phone"] .tip-pop{top:auto;bottom:calc(var(--dock-h) + var(--safe-b) + 14px)}
+.tip-pop.in-dialog{top:auto;bottom:calc(max(14px,var(--safe-b)) + 14px)}
+/* Phone sheets rise from the bottom with their buttons there: the card sits up top, under a sheet toast. */
+html[data-layout="phone"] .tip-pop.in-dialog{top:calc(max(10px,var(--safe-t)) + 64px);bottom:auto}
+.tip-pop.leaving{opacity:0;transform:translate(-50%,10px)}
+.tip-pop-emoji{flex:none;display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:var(--accent-soft);font-size:1.55rem;line-height:1;animation:tip-pop-bob 1.6s ease-in-out .4s 2}
+.tip-pop-body{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.tip-pop-head{font-weight:800;font-size:.95rem;line-height:1.35;overflow-wrap:anywhere}
+.tip-pop-line{font-size:.9rem;line-height:1.4;color:var(--ink-2);font-style:italic;overflow-wrap:anywhere}
+.tip-pop-where{font-size:.78rem;color:var(--muted);line-height:1.3}
+.tip-pop-amt{flex:none;align-self:center;font-size:1.3rem;font-weight:800;color:var(--good);white-space:nowrap;font-variant-numeric:tabular-nums}
+.tip-pop-amt span{font-size:.8rem;font-weight:700}
+.tip-pop.gift{border-color:var(--second)}
+.tip-pop.gift .tip-pop-emoji{background:var(--second-soft)}
+.tip-pop.team{border-color:var(--good)}
+.tip-pop.team .tip-pop-amt{color:var(--muted)}
+.tip-pop.big{border-width:2px;background:linear-gradient(135deg,var(--surface) 40%,var(--warn-soft))}
+.tip-pop.big .tip-pop-emoji{background:var(--warn-soft);box-shadow:0 0 0 4px var(--warn-soft)}
+.tip-pop.big::after{content:'✨';position:absolute;right:-6px;top:-12px;font-size:1.3rem;animation:tip-pop-spark 1.4s ease-in-out infinite}
+html[data-layout="phone"] .tip-pop{gap:10px;padding:10px 12px;border-radius:16px}
+html[data-layout="phone"] .tip-pop-emoji{width:40px;height:40px;font-size:1.35rem}
+html[data-layout="phone"] .tip-pop-head{font-size:.9rem}
+html[data-layout="phone"] .tip-pop-line{font-size:.86rem}
+@keyframes tip-pop-in{from{opacity:0;transform:translate(-50%,14px) scale(.96)}}
+@keyframes tip-pop-bob{50%{transform:translateY(-3px) rotate(-6deg)}}
+@keyframes tip-pop-spark{50%{opacity:.4;transform:scale(.8) rotate(12deg)}}
+html.reduce-motion .tip-pop,html.reduce-motion .tip-pop-emoji,html.reduce-motion .tip-pop.big::after{animation:none}
+@media (prefers-reduced-motion:reduce){.tip-pop,.tip-pop-emoji,.tip-pop.big::after{animation:none}}
+
+/* Day summary: Tip hôm nay */
+.tip-sum{align-items:flex-start;background:var(--surface-2)}
+.tip-sum-ico{flex:none;font-size:1.25rem;line-height:1.3}
+.tip-sum .grow{min-width:0}
+.tip-sum-best{font-style:italic;color:var(--ink-2);overflow-wrap:anywhere}

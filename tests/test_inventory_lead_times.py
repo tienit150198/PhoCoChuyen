@@ -96,9 +96,11 @@ class Suppliers(unittest.TestCase):
         self.assertLess(promised['partner'], promised['market'])
         self.assertLess(promised['market'], promised['import'])
         now = public_inv(j)['clock']['abs']
-        self.assertLessEqual(promised['express'] - now, 60)
-        self.assertEqual(promised['market'] // inventory.DAY_MIN, 2, 'the market comes tomorrow')
-        self.assertGreaterEqual(promised['import'] // inventory.DAY_MIN, 3, 'imports take 2–3 days')
+        self.assertLessEqual(promised['express'] - now, 30, 'express: 15–30 minutes')
+        self.assertLessEqual(promised['partner'] - now, 3 * 60, 'the next of four van runs')
+        self.assertEqual(promised['market'] // inventory.DAY_MIN, 1, 'ordered before 13:00: the market comes this afternoon')
+        self.assertEqual(promised['market'] % inventory.DAY_MIN, 15 * 60)
+        self.assertIn(promised['import'] // inventory.DAY_MIN, (2, 3), 'imports take 1–2 days')
 
     def test_quote_matches_the_order_placed_next(self):
         j = Journey('florist')
@@ -139,31 +141,44 @@ class Suppliers(unittest.TestCase):
 
 
 class Arrival(unittest.TestCase):
-    def test_market_cut_off_and_morning_drop_at_start_day(self):
+    def test_market_afternoon_run_then_morning_drop_at_start_day(self):
         j = Journey('restaurant')
         empty(j.c, 'beef')
         early, _ = order(j, 'beef', 2, 'market')
-        # Work on until the 17:00 cut-off has passed.
-        while public_inv(j)['clock']['minute'] < 17 * 60:
+        self.assertEqual(divmod(early['lo'], inventory.DAY_MIN), (1, 15 * 60), 'ordered before 13:00: this afternoon')
+        self.assertIn('nay', pub_order(j, early['id'])['eta_label'].lower())
+        # Work on until the 13:00 cut-off of the afternoon run has passed.
+        while public_inv(j)['clock']['minute'] < 13 * 60:
             j.act('advance')
         late, _ = order(j, 'beef', 2, 'market')
-        self.assertEqual(early['lo'] // inventory.DAY_MIN, 2)
-        self.assertEqual(late['lo'] // inventory.DAY_MIN, 3, 'after the cut-off: the day after tomorrow')
-        self.assertIn('ngày kia', pub_order(j, late['id'])['eta_label'])
+        op = inventory.hours('restaurant')[0]
+        self.assertEqual(late['lo'], 2 * inventory.DAY_MIN + op - 75, 'after it: the night run, before opening tomorrow')
+        self.assertIn('mai', pub_order(j, late['id'])['eta_label'])
+        wait_until_ready(j, early['id'])
+        self.assertEqual(j.c['day'], 1, 'the afternoon run comes the same day')
+        j.act('inv_receive', order=early['id'], count=early['actual'])
         j.act('end_day', carry_event=True)
         # Closed for the night: tomorrow's drop is not at the door yet.
-        po = pub_order(j, early['id'])
+        po = pub_order(j, late['id'])
         self.assertFalse(po['ready_now'])
         self.assertIn('mở cửa', po['left_label'])
         with self.assertRaises(GameError):
-            j.act('inv_receive', order=early['id'], count=early['actual'])
+            j.act('inv_receive', order=late['id'], count=late['actual'])
         j.act('start_day')
-        if not early['late']:
-            self.assertTrue(pub_order(j, early['id'])['ready_now'], 'the morning drop is there when the day opens')
-        wait_until_ready(j, early['id'])
-        j.act('inv_receive', order=early['id'], count=early['actual'])
-        self.assertFalse(pub_order(j, late['id'])['ready_now'])
+        if not late['late']:
+            self.assertTrue(pub_order(j, late['id'])['ready_now'], 'the morning drop is there when the day opens')
+        wait_until_ready(j, late['id'])
+        j.act('inv_receive', order=late['id'], count=late['actual'])
         validate_state(j.state)
+
+    def test_an_evening_cut_off_still_means_the_day_after_tomorrow(self):
+        # Suppliers may still close their night run early (the pharmacy depot, older tables).
+        sup = dict(kind='next', cutoff=17 * 60, at=(-75, -35))
+        op = inventory.hours('restaurant')[0]
+        day = 4 * inventory.DAY_MIN
+        self.assertEqual(inventory._promise(sup, 'restaurant', day + 16 * 60)[0], day + inventory.DAY_MIN + op - 75)
+        self.assertEqual(inventory._promise(sup, 'restaurant', day + 17 * 60)[0], day + 2 * inventory.DAY_MIN + op - 75)
+        self.assertEqual(inventory._window_label(sup, 'restaurant'), 'Sáng mai · đặt trước 17:00')
 
     def test_goods_due_this_evening_wait_at_the_door_after_closing(self):
         j = Journey('restaurant')
@@ -306,6 +321,225 @@ class OldSaves(unittest.TestCase):
         self.assertEqual([s['id'] for s in inv['suppliers']], ['market', 'partner', 'express'])
         self.assertTrue(all(isinstance(s['lead'], int) and s['window'] for s in inv['suppliers']))
         self.assertEqual(set(inv['by_career']), set(STOCKED))
+
+    def test_orders_placed_before_the_halving_keep_their_promise(self):
+        """In-flight orders keep the window they were promised: never re-promised,
+        never stranded, delivered once."""
+        j = Journey('restaurant')
+        empty(j.c, 'beef')
+        o, _ = order(j, 'beef', 2, 'import')
+        day, op = j.c['day'], inventory.hours('restaurant')[0]
+        # What the old import table (2–3 days, 11:00–13:00) promised this morning's order.
+        old_at = (day + 3) * inventory.DAY_MIN + op + 120
+        o.update(lo=old_at - 60, hi=old_at + 60, at=old_at, late=None)
+        p, _ = order(j, 'noodle', 2, 'partner')
+        # The old van's afternoon run: 16:30–17:30 today.
+        p.update(lo=day * inventory.DAY_MIN + 990, hi=day * inventory.DAY_MIN + 1050, at=day * inventory.DAY_MIN + 1020, late=None)
+        validate_state(j.state)
+        po = pub_order(j, o['id'])
+        self.assertEqual(po['window'], f'11:00–13:00 · ngày {day + 3}')
+        self.assertEqual(po['left_label'], 'còn 3 ngày')
+        wait_until_ready(j, p['id'])
+        self.assertEqual(public_inv(j)['clock']['abs'] // inventory.DAY_MIN, day)
+        self.assertGreaterEqual(public_inv(j)['clock']['abs'], p['at'])
+        j.act('inv_receive', order=p['id'], count=p['actual'])
+        wait_until_ready(j, o['id'], limit=200)
+        self.assertEqual(j.c['day'], day + 3, 'arrives on the promised day, not earlier or later')
+        self.assertEqual(j.c['ext']['inv']['orders'][0]['at'], old_at, 'the stored window is kept')
+        j.act('inv_receive', order=o['id'], count=o['actual'])
+        with self.assertRaises(GameError):
+            j.act('inv_receive', order=o['id'], count=o['actual'])
+        self.assertEqual(sum(l['qty'] for l in j.c['ext']['inv']['lots'] if l['item'] == 'beef'), o['actual'])
+        validate_state(j.state)
+
+
+# ------------------------------------------------------------ waits halved (2026-09-29)
+# A frozen copy of the supplier timing before the owner asked for half the wait.
+OLD_MARKET = dict(kind='next', cutoff=17 * 60, at=(-75, -35), late=10)
+OLD_PARTNER = dict(kind='runs', runs=((660, 780, 840), (900, 990, 1050)), late=8)
+OLD_EXPRESS = dict(kind='rush', mins=(30, 60), late=12)
+
+
+def _old_days(days, at, late):
+    return dict(kind='days', days=days, at=at, late=late)
+
+
+OLD_TABLE = {
+    'restaurant': {'market': OLD_MARKET, 'partner': OLD_PARTNER, 'express': OLD_EXPRESS,
+                   'import': _old_days((2, 3), (60, 180), 15)},
+    'cafe_bakery': {'market': OLD_MARKET, 'partner': OLD_PARTNER, 'express': OLD_EXPRESS,
+                    'roaster': dict(kind='next', cutoff=18 * 60, at=(180, 240), late=8)},
+    'florist': {'market': dict(OLD_MARKET, cutoff=22 * 60), 'dalat': dict(kind='next', cutoff=15 * 60, at=(60, 150), late=15),
+                'partner': OLD_PARTNER, 'express': OLD_EXPRESS},
+    'grocery': {'market': OLD_MARKET, 'partner': OLD_PARTNER, 'express': OLD_EXPRESS,
+                'wholesale': _old_days((1, 2), (120, 240), 10)},
+    'repair': {'market': dict(OLD_MARKET, cutoff=16 * 60), 'partner': OLD_PARTNER, 'express': OLD_EXPRESS,
+               'genuine': _old_days((2, 3), (60, 240), 15)},
+    'farm': {'coop': dict(kind='next', cutoff=16 * 60, at=(60, 120), late=8), 'partner': OLD_PARTNER, 'express': OLD_EXPRESS,
+             'nursery': _old_days((2, 3), (90, 240), 12)},
+    'delivery': {'market': dict(OLD_MARKET, cutoff=23 * 60 + 30, at=(-240, -120)),
+                 'partner': dict(kind='rush', mins=(120, 240), late=8), 'express': OLD_EXPRESS},
+    'homestay': {'market': OLD_MARKET, 'partner': OLD_PARTNER, 'express': OLD_EXPRESS,
+                 'textile': _old_days((2, 3), (120, 300), 10)},
+    'pet_care': {'wholesale': OLD_MARKET, 'partner': OLD_PARTNER, 'express': OLD_EXPRESS,
+                 'import': _old_days((2, 3), (60, 240), 15)},
+    'salon': {'market': OLD_MARKET, 'partner': OLD_PARTNER, 'express': OLD_EXPRESS,
+              'brand': _old_days((2, 3), (60, 240), 12)},
+}
+
+
+def old_arrival(sup, career, now, seed):
+    """The arrival the old rules picked (frozen copy of the old _promise + _schedule)."""
+    import random
+    day_min, r5 = inventory.DAY_MIN, inventory._r5
+    rnd = random.Random(seed)
+    op, cl = inventory.hours(career)
+    day, minute = divmod(now, day_min)
+    k = sup['kind']
+    if k == 'days':
+        d = day + rnd.randint(*sup['days'])
+        lo, hi = r5(d * day_min + op + sup['at'][0]), r5(d * day_min + op + sup['at'][1])
+    else:
+        if k == 'rush':
+            lo, hi = now + sup['mins'][0], now + sup['mins'][1]
+        elif k == 'runs':
+            run = next((r for r in sup['runs'] if minute < r[0]), None)
+            d = day if run else day + 1
+            run = run or sup['runs'][0]
+            lo, hi = d * day_min + run[1], d * day_min + run[2]
+        else:
+            d = day + (1 if minute < sup['cutoff'] else 2)
+            lo, hi = d * day_min + op + sup['at'][0], d * day_min + op + sup['at'][1]
+        lo, hi = r5(lo), r5(hi)
+        if k == 'rush' and hi > day * day_min + cl:
+            lo = hi = (day + 1) * day_min + op - inventory.EARLY
+        elif hi % day_min > cl and hi // day_min == lo // day_min:
+            lo = hi = inventory._after_hours(hi, career)
+    at = min(hi, max(lo, r5(rnd.randint(lo, hi))))
+    if rnd.randrange(100) < sup['late']:
+        extra = day_min if k == 'days' else rnd.randint(15, 30) if k == 'rush' else rnd.randint(60, 120)
+        return max(inventory._after_hours(r5(hi + extra), career), hi + 5)
+    return at
+
+
+def working_minutes(career, now, at):
+    """Opening-hours minutes between an order and its arrival: the time the player
+    works through while waiting (the night passes with one tap)."""
+    day_min = inventory.DAY_MIN
+    op, cl = inventory.hours(career)
+    d0, d1 = now // day_min, at // day_min
+    clip = lambda m: max(op, min(cl, m))
+    if d0 == d1:
+        return max(0, clip(at % day_min) - clip(now % day_min))
+    return (cl - clip(now % day_min)) + (d1 - d0 - 1) * (cl - op) + (clip(at % day_min) - op)
+
+
+def mean_waits(pick, seeds=20):
+    """Average wait per supplier kind for orders placed every STEP of a working day."""
+    work, clock = {}, {}
+    for cid, old in OLD_TABLE.items():
+        op, cl = inventory.hours(cid)
+        for sid in old:
+            sup = inventory.supplier(cid, sid)
+            w, c = [], []
+            for m in range(op, cl + 1, inventory.STEP):
+                now = 5 * inventory.DAY_MIN + m
+                for k in range(seeds):
+                    at = pick(cid, sid, old[sid], sup, now, f'{cid}:{sid}:{m}:{k}')
+                    w.append(working_minutes(cid, now, at))
+                    c.append(at - now)
+            work.setdefault(sup['kind'], []).append(sum(w) / len(w))
+            clock.setdefault(sup['kind'], []).append(sum(c) / len(c))
+    avg = lambda d: {k: sum(v) / len(v) for k, v in d.items()}
+    return avg(work), avg(clock)
+
+
+class HalfWait(unittest.TestCase):
+    """Owner, 2026-09-29: restocking felt slow; every supplier kind now waits about half as long."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.old = mean_waits(lambda cid, sid, old, sup, now, seed: old_arrival(old, cid, now, seed))
+        cls.new = mean_waits(lambda cid, sid, old, sup, now, seed: inventory._schedule(sup, cid, now, seed)['at'])
+
+    def test_every_kind_waits_about_half_as_long(self):
+        old_work, old_clock = self.old
+        new_work, new_clock = self.new
+        self.assertEqual(set(old_work), {'rush', 'runs', 'next', 'days'})
+        for kind in old_work:
+            with self.subTest(kind=kind):
+                # Working time waited: 50 % ± 10 % of the old wait.
+                self.assertTrue(0.45 <= new_work[kind] / old_work[kind] <= 0.55,
+                                f'{kind}: {old_work[kind]:.0f} → {new_work[kind]:.0f} working minutes')
+                # Clock time (nights included) about halves too.
+                self.assertTrue(0.40 <= new_clock[kind] / old_clock[kind] <= 0.60,
+                                f'{kind}: {old_clock[kind]:.0f} → {new_clock[kind]:.0f} clock minutes')
+
+    def test_the_frozen_table_matches_the_live_suppliers(self):
+        for cid, old in OLD_TABLE.items():
+            live = {s['id']: s for s in inventory.suppliers(cid)}
+            self.assertEqual(set(old), set(live), cid)
+            for sid, sup in old.items():
+                self.assertEqual(sup['kind'], live[sid]['kind'], f'{cid}/{sid}')
+                # Same chance of a late delivery as before; the delay itself is shorter.
+                self.assertEqual(sup['late'], live[sid]['late'], f'{cid}/{sid}')
+
+    def test_late_deliveries_are_shorter_not_rarer(self):
+        old_extra = {'rush': 30, 'runs': 120, 'next': 120, 'days': inventory.DAY_MIN}
+        for cid in STOCKED:
+            for sup in inventory.suppliers(cid):
+                with self.subTest(career=cid, supplier=sup['id']):
+                    a, b = sup['delay']
+                    self.assertLessEqual(b, old_extra[sup['kind']] / 2, 'at most half the old delay')
+                    self.assertTrue(0 < a <= b)
+
+    def test_minimum_waits(self):
+        for cid in STOCKED:
+            for sup in inventory.suppliers(cid):
+                if sup['kind'] == 'rush':
+                    self.assertGreaterEqual(sup['mins'][0], 15)
+                if sup['kind'] == 'days':
+                    self.assertGreaterEqual(sup['days'][0], 1, 'special goods come the next day at the earliest')
+        # An express order is never at the door in the same action: at least one step passes.
+        j = Journey('grocery')
+        o, _ = order(j, 'egg', 2, 'express')
+        with self.assertRaises(GameError):
+            j.act('inv_receive', order=o['id'], count=o['actual'])
+        self.assertLessEqual(wait_until_ready(j, o['id']), 3)
+
+    def test_labels_tell_the_new_numbers(self):
+        self.assertEqual(inventory._window_label(inventory.EXPRESS, 'restaurant'), '15–30 phút')
+        self.assertEqual(inventory._window_label(inventory.PARTNER, 'restaurant'), 'Bốn chuyến/ngày · 10:00, 13:00, 16:00 & 19:00')
+        self.assertEqual(inventory._window_label(inventory.MARKET, 'restaurant'), 'Chiều nay nếu đặt trước 13:00, sau đó sáng mai')
+        self.assertEqual(inventory._window_label(inventory.supplier('restaurant', 'import'), 'restaurant'), '1–2 ngày')
+        self.assertEqual(inventory._window_label(inventory.supplier('grocery', 'wholesale'), 'grocery'), '1 ngày')
+        self.assertEqual(inventory._window_label(inventory.supplier('delivery', 'partner'), 'delivery'), '1–2 giờ')
+        self.assertEqual(inventory._window_label(inventory.supplier('delivery', 'market'), 'delivery'),
+                         'Tối nay nếu đặt trước 20:00, sau đó chiều mai')
+        old = ('30–60', '2–3 ngày', '2–4 giờ', 'Hai chuyến', 'hai chuyến', 'trước 17:00', 'trễ một ngày', 'trễ vài')
+        for cid in STOCKED:
+            for sup in inventory.suppliers(cid):
+                with self.subTest(career=cid, supplier=sup['id']):
+                    texts = [sup['note'], inventory._window_label(sup, cid), *sup['voice'].values()]
+                    self.assertFalse([t for t in texts for o in old if o in t])
+                    k = sup['kind']
+                    if k == 'rush':
+                        self.assertIn(inventory._window_label(sup, cid), sup['note'])
+                    elif k == 'days' and sup['days'][0] != sup['days'][1]:
+                        self.assertIn(f'{sup["days"][0]}–{sup["days"][1]} ngày', sup['note'])
+                    elif k == 'next':
+                        self.assertIn(f'trước {inventory.hm(sup["day_run"][0])}', sup['note'])
+                    elif k == 'runs':
+                        self.assertIn('bốn chuyến', sup['note'])
+                        for r in sup['runs']:
+                            self.assertIn(inventory.hm(r[0]), sup['note'])
+        # The live quote on a supplier card, in the stock room of a phone player.
+        j = Journey('grocery')
+        cards = {s['id']: s for s in public_inv(j)['suppliers']}
+        self.assertIn('phút · tới ~', cards['express']['quote']['label'])
+        self.assertEqual(cards['wholesale']['quote']['label'], f'1 ngày · ngày {j.c["day"] + 1}')
+        self.assertEqual(cards['wholesale']['quote']['eta_label'], f'Ngày {j.c["day"] + 1}')
+        self.assertTrue(cards['market']['quote']['label'].startswith('Chiều nay'))
 
 
 if __name__ == '__main__':

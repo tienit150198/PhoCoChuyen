@@ -13,6 +13,9 @@ export const KIND_OF={
   farm:'farm',
   delivery:'street',tour_guide:'street',
   homestay:'lodging',
+  tra_da:'sidewalk',
+  clothing:'boutique',
+  pet_shop:'petshop',
 };
 export const kindOf=career=>KIND_OF[career]||'shop';
 
@@ -53,6 +56,13 @@ const KIND_WORDS={
     free_more:'Nhận thêm đơn hoặc nghỉ hôm nay.',people_sub:'Những người bạn gặp trên đường.',feed_sub:'Lời nhắn và đánh giá trên đường.',more_btn:'Nhận thêm một đơn',none_waiting:'Chưa có đơn nào đang chờ',next_btn:'Nhận đơn tiếp theo'},
   lodging:{cat_line:'Mrrr… lò sưởi ấm quá, khách có lạnh không?',till:'Ví của homestay',door_closed:'Mở quầy',shelf:'Bảng chìa khóa',evidence:'Lịch phòng',counter:'Quầy trả phòng',warehouse:'Kho buồng phòng',pet:'Chơi với Mướp bên lò sưởi',door_open:'Khép quầy',open_sign:'ĐANG ĐÓN KHÁCH',closed_sign:'HẸN BẠN LẦN SAU',security:'An ninh nhà nghỉ',property:'Nhà & vườn',ledger:'SỔ KHÁCH',store:'KHO',
     idle_line:'Khách sắp tới nhận phòng.',open_hint:'Chuẩn bị một chút rồi mở quầy nhé.',free_eyebrow:'Quầy lễ tân đang rảnh',people_sub:'Những người bạn gặp quanh homestay.',feed_sub:'Lời nhắn và đánh giá quanh homestay.'},
+  boutique:{cat_line:'Mrrr… cuộn len này để Mướp chơi được không?',shelf:'Giá treo áo',evidence:'Sổ hóa đơn',counter:'Quầy tính tiền',warehouse:'Kho đồ gấp',
+    open_sign:'ĐANG MỞ CỬA',closed_sign:'HẸN GẶP LẠI',idle_line:'Khách sắp ghé lựa đồ.',people_sub:'Những người bạn gặp quanh tiệm áo.',feed_sub:'Lời nhắn và đánh giá quanh tiệm áo.'},
+  sidewalk:{cat_line:'Mrrr… cho Mướp nằm dưới gầm ghế nhựa cho mát nhé.',till:'Túi tiền lẻ',door_open:'Dọn hàng về',door_closed:'Dọn hàng ra',open_sign:'ĐANG BÁN',closed_sign:'NGHỈ BÁN',
+    shelf:'Lọ kẹo & gói lạc',evidence:'Ghế đánh cờ',counter:'Bàn trà',warehouse:'Thùng đá',board:'Chuyện phố',finance:'Sổ ghi nợ',property:'Góc vỉa hè',security:'Trật tự khu phố',ledger:'SỔ GHI',store:'THÙNG ĐÁ',
+    idle_line:'Khách quen sắp ghé làm cốc trà.',open_hint:'Dọn hàng ra gốc bàng rồi bán nhé.',free_eyebrow:'Quán đang vãn khách',free_title:'Vãn khách rồi!',
+    free_more:'Mời thêm khách hoặc dọn hàng về.',more_btn:'Mời thêm một khách',none_waiting:'Chưa có khách nào đang chờ',next_btn:'Mời khách tiếp theo',
+    people_sub:'Những người bạn gặp quanh gốc bàng.',feed_sub:'Lời nhắn và đánh giá quanh quán trà.'},
 };
 const CAREER_WORDS={
   milk_tea:{warehouse:'Kho nguyên liệu'},
@@ -62,6 +72,9 @@ const CAREER_WORDS={
     free_more:'Đón thêm đoàn hoặc kết thúc chuyến hôm nay.',more_btn:'Đón thêm một đoàn',none_waiting:'Chưa có đoàn nào đang chờ',next_btn:'Đón đoàn tiếp theo'},
   customer_care:{counter:'Trưởng ca',evidence:'Chứng cứ · phối hợp',idle_line:'Khách sắp gọi tới rồi.'},
   pet_care:{shelf:'Kệ đồ thú cưng',evidence:'Phiếu nhận thú cưng',counter:'Quầy nhận bé',cat_line:'Mrrr… hôm nay có bạn bốn chân nào ghé không?'},repair:{shelf:'Tường dụng cụ',counter:'Quầy nhận máy',evidence:'Phiếu nhận máy',cat_line:'Mrrr… cái quạt kia kêu to quá.'},salon:{shelf:'Kệ thuốc nhuộm'},
+  pet_shop:{shelf:'Kệ hạt & pate',evidence:'Bảng tìm thú lạc',counter:'Quầy tính tiền',warehouse:'Kho hàng',store:'KHO',
+    cat_line:'Mrrr… cá trong bể bơi qua bơi lại, ngó hoài không chán.',open_sign:'ĐANG MỞ CỬA',idle_line:'Khách sắp ghé mua hạt cho bé nhà.',
+    people_sub:'Những người bạn gặp quanh tiệm thú nhỏ.',feed_sub:'Lời nhắn và đánh giá quanh tiệm thú nhỏ.'},
 };
 export const wordsFor=career=>({...BASE,...KIND_WORDS[kindOf(career)],...CAREER_WORDS[career]});
 

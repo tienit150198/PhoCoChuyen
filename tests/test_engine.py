@@ -28,7 +28,7 @@ class EngineTests(unittest.TestCase):
         j.act('shop_pack',paper='cream',ribbon='green',card='Mình đã sửa màu!');j.act('shop_check');j.act('shop_deliver')
         self.assertEqual(j.c['money'],400);self.assertEqual(j.c['feed'][0]['stars'],4)
     def test_zero_balance_delivery_credits_then_wraps(self):
-        j=Journey();j.c['money']=0;j.c['ops']['finance']['opening_balance']=0;result=j.solve();self.assertEqual(result['status'],'completed');self.assertEqual(j.c['money'],82)  # sale + two-xu voluntary tip in v0.3
+        j=Journey();j.c['money']=0;j.c['ops']['finance']['opening_balance']=0;result=j.solve();self.assertEqual(result['status'],'completed');self.assertEqual(j.c['money'],80)  # the sale; the first job at a place never tips (game/tips.py)
     def test_double_delivery_does_not_reward_again(self):
         j=Journey();t=j.solve();before=j.c['money']
         with self.assertRaises(GameError):j.act('shop_deliver',task=t['id'])

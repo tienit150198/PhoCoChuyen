@@ -112,20 +112,26 @@ ADVICE = {
 }
 V_MARKET = dict(late='Xe ba gác của chị kẹt ở đầu chợ, tới trễ chút nha em.')
 SUPPLIERS = [
-    dict(id='market', name='Chợ đầu mối Mây', emoji='🧺', kind='next', cutoff=17 * 60, at=(-75, -35), factor=0.8, late=10,
+    # Waits halved on 2026-09-29, same shapes as game/inventory.py (its spec, section 8).
+    dict(id='market', name='Chợ đầu mối Mây', emoji='🧺', kind='next', cutoff=None, at=(-75, -35),
+         day_run=(13 * 60, 15 * 60, 16 * 60), delay=(30, 60), factor=0.8, late=10,
          items=['lychee', 'peach', 'strawberry', 'passion', 'jelly', 'q3', 'aloe', 'coconut', 'red_bean', 'cup_M', 'cup_L'],
-         note='Rẻ nhất. Đặt trước 17:00, hàng tới sáng mai trước giờ mở cửa.', voice=V_MARKET),
+         note='Rẻ nhất. Đặt trước 13:00, hàng tới chiều nay; đặt sau, hàng tới sáng mai trước giờ mở cửa.', voice=V_MARKET),
     dict(id='partner', name='Nhà phân phối Hạt Nắng', emoji='🚚', kind='runs',
-         runs=((11 * 60, 13 * 60, 14 * 60), (15 * 60, 16 * 60 + 30, 17 * 60 + 30)), factor=1.0, late=8, items=None,
-         note='Giá niêm yết. Hai chuyến: đặt trước 11:00 tới trưa, trước 15:00 tới chiều.',
-         voice=dict(late='Xe giao của Hạt Nắng kẹt ở cầu Mây, bên em báo trễ khoảng một tiếng ạ.')),
-    dict(id='express', name='Giao hỏa tốc Mây Xanh', emoji='⚡', kind='rush', mins=(30, 60), factor=1.35, late=12, items=None,
-         note='Đắt nhất, tới trong 30–60 phút. Dùng khi hết hàng giữa ca.',
-         voice=dict(late='Tài xế phải vòng tránh đoạn đường ngập, tới trễ vài chục phút ạ.')),
-    dict(id='factory', name='Xưởng topping Đài Mây', emoji='✈️', kind='days', days=(2, 3), at=(60, 180), factor=0.65, late=15,
+         runs=((9 * 60, 10 * 60, 10 * 60 + 30), (12 * 60, 13 * 60, 13 * 60 + 30),
+               (15 * 60, 16 * 60, 16 * 60 + 30), (18 * 60, 19 * 60, 19 * 60 + 30)),
+         delay=(30, 60), factor=1.0, late=8, items=None,
+         note='Giá niêm yết. Bốn chuyến: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau đó khoảng một tiếng.',
+         voice=dict(late='Xe giao của Hạt Nắng kẹt ở cầu Mây, bên em báo trễ chừng nửa tiếng tới một tiếng ạ.')),
+    dict(id='express', name='Giao hỏa tốc Mây Xanh', emoji='⚡', kind='rush', mins=(15, 30), delay=(10, 15), factor=1.35,
+         late=12, items=None,
+         note='Đắt nhất, tới trong 15–30 phút. Dùng khi hết hàng giữa ca.',
+         voice=dict(late='Tài xế phải vòng tránh đoạn đường ngập, tới trễ chừng mười lăm phút ạ.')),
+    dict(id='factory', name='Xưởng topping Đài Mây', emoji='✈️', kind='days', days=(1, 2), at=(30, 90), delay=(240, 360),
+         factor=0.65, late=15,
          items=['popping', 'pudding', 'flan', 'coconut', 'q3', 'aloe', 'red_bean', 'jelly', 'cup_M', 'cup_L'],
-         note='Topping đóng hộp và ly in logo giá xưởng: rẻ hẳn nhưng 2–3 ngày mới tới. Đặt sớm cho cả tuần.',
-         voice=dict(late='Xe tuyến về trễ một ngày vì kẹt ở trạm, xưởng xin lỗi quán.')),
+         note='Topping đóng hộp và ly in logo giá xưởng: rẻ hẳn nhưng 1–2 ngày mới tới. Đặt sớm cho cả tuần.',
+         voice=dict(late='Xe tuyến kẹt ở trạm nên về trễ mấy tiếng, xưởng xin lỗi quán.')),
 ]
 SUP_INDEX = {x['id']: x for x in SUPPLIERS}
 
@@ -669,8 +675,7 @@ def supplier_view(c: dict, sup: dict, now: int | None = None) -> dict:
     now = now_abs(c) if now is None else now
     q = inv.quote(sup, CAREER, now)
     k = sup['kind']
-    window = (f"{sup['mins'][0]}–{sup['mins'][1]} phút" if k == 'rush' else 'Hai chuyến · ' + ' & '.join(hm(r[1]) for r in sup['runs']) if k == 'runs'
-              else f"Sáng mai · đặt trước {hm(sup['cutoff'])}" if k == 'next' else f"{sup['days'][0]}–{sup['days'][1]} ngày")
+    window = inv._window_label(sup, CAREER)
     return dict(id=sup['id'], name=sup['name'], emoji=sup['emoji'], kind=k, factor=sup['factor'], note=sup['note'],
                 items=list(sup['items']) if sup.get('items') is not None else None, window=window, late=sup['late'],
                 quote=dict(label=q['label'], eta_label=q['eta_label'], day=q['day'], time=q['time']))
@@ -1144,7 +1149,7 @@ def _prepare(s: dict, c: dict, p: dict) -> dict:
     item = p.get('item')
     need(item in ING, 'Không có nguyên liệu này.')
     need(unlocked(c, item), f"{ING[item]['name']} mở ở cấp {ING[item].get('level', 1)}. Phục vụ thêm vài ly nhé.")
-    need(item in MADE, f"{ING[item]['name']} mua từ nhà cung cấp: mở Kho → Đặt hàng (hỏa tốc 30–60 phút).")
+    need(item in MADE, f"{ING[item]['name']} mua từ nhà cung cấp: mở Kho → Đặt hàng (hỏa tốc 15–30 phút).")
     qty = e.integer(p.get('qty'), 1, 20)
     need(p.get('confirm') is True, 'Xác nhận chi phí trước khi nhập.')
     need(held(c)[item] + qty <= 60, 'Kho chứa tối đa 60 phần mỗi loại.')

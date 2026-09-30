@@ -263,3 +263,32 @@
 body.reduce-motion .career-job.sl .sl-desk,html.reduce-motion .career-job.sl .sl-desk{animation:none}
 body.reduce-motion .career-job.sl .sl-fill,html.reduce-motion .career-job.sl .sl-fill,
 body.reduce-motion .career-job.sl .sl-calm .bar i,html.reduce-motion .career-job.sl .sl-calm .bar i{transition:none}
+/* UX phase 2: compact ticket, one-line folds for the slip, the checklist, tools and the day theme */
+.career-job.sl .sl-ticket.compact{padding:10px 12px;gap:6px}
+.career-job.sl .sl-ticket.compact h3{margin:0;font-size:1rem}
+.career-job.sl .sl-ticket.compact .sl-want{margin:2px 0 0}
+.career-job.sl .sl-ticket.compact .sl-wantline{margin:0}
+.career-job.sl .sl-photo.slim{padding:6px 8px;gap:8px}
+.career-job.sl .sl-photo.slim b{font-size:.92rem;line-height:1.25}
+.career-job.sl .sl-photo.slim small{font-size:.82rem}
+.career-job.sl .sl-ticket.compact .sl-more>summary{min-height:44px;display:flex;align-items:center}
+.career-job.sl details.sl-bill-fold{padding:0;gap:0}
+.career-job.sl details.sl-bill-fold>ul{padding:0 12px 10px}
+.career-job.sl details.sl-bill-fold>summary,.career-job.sl details.sl-todo-fold>summary,.career-job.sl details.sl-foot-fold>summary,.career-job.sl details.sl-today-fold>summary{min-height:44px;display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;padding:6px 12px;cursor:pointer;list-style:none}
+.career-job.sl details.sl-bill-fold>summary::-webkit-details-marker,.career-job.sl details.sl-todo-fold>summary::-webkit-details-marker,.career-job.sl details.sl-foot-fold>summary::-webkit-details-marker,.career-job.sl details.sl-today-fold>summary::-webkit-details-marker{display:none}
+.career-job.sl details.sl-bill-fold>summary::after,.career-job.sl details.sl-todo-fold>summary::after,.career-job.sl details.sl-foot-fold>summary::after,.career-job.sl details.sl-today-fold>summary::after{content:'▸';margin-left:auto;color:var(--sl-muted)}
+.career-job.sl details[open].sl-bill-fold>summary::after,.career-job.sl details[open].sl-todo-fold>summary::after,.career-job.sl details[open].sl-foot-fold>summary::after,.career-job.sl details[open].sl-today-fold>summary::after{content:'▾'}
+.career-job.sl details.sl-bill-fold>summary small,.career-job.sl details.sl-todo-fold>summary small,.career-job.sl details.sl-foot-fold>summary small{color:var(--sl-muted)}
+.career-job.sl details.sl-todo-fold,.career-job.sl details.sl-foot-fold{border-radius:var(--sl-r);background:var(--sl-s1);border:1px solid var(--sl-line)}
+.career-job.sl details.sl-todo-fold>.gd-list,.career-job.sl .sl-side details.sl-todo-fold .gd-list{border:0;background:none;padding:0 12px 10px}
+.career-job.sl details.sl-todo-fold li.gd-todo{min-height:44px}
+.career-job.sl details.sl-foot-fold>.sl-foot{padding:0 12px 10px}
+.career-job.sl details.sl-today-fold{display:block;padding:0}
+.career-job.sl details.sl-today-fold>small{display:block;padding:0 12px 8px}
+.career-job.sl .sl-photo.slim .sl-swatch{width:32px;height:32px}
+.career-job.sl .sl-ticket.compact .sl-tags{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;padding-bottom:2px}
+.career-job.sl .sl-ticket.compact .sl-tags>*{flex:none;white-space:nowrap}
+.career-job.sl .sl-ticket.compact .sl-more>summary{min-height:44px;padding:0}
+.career-job.sl .sl-ticket.compact{min-width:0;max-width:100%}
+.career-job.sl .sl-ticket.compact>*{min-width:0;max-width:100%}
+.career-job.sl .sl-ticket.compact{grid-template-columns:minmax(0,1fr)}

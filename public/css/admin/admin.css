@@ -237,6 +237,18 @@ small{font-size:.857em}
 .mini-top small{margin-left:auto;font-weight:600;color:var(--muted)}
 .mini-text{overflow:hidden;font-size:13px;text-overflow:ellipsis;white-space:nowrap;color:var(--ink-2)}
 .foot{padding:4px 8px;font-size:12px;color:var(--muted);text-align:center}
+/* Skeletons: the shape of what is on its way (summary, lazy cards, "Hệ thống"). */
+.skel-kpi .kpi-label,.skel-kpi .kpi-num,.skel-kpi .kpi-sub,.skel-lines i,.skel-chart{border-radius:6px;background:linear-gradient(90deg,var(--surface-2) 25%,var(--surface-3) 50%,var(--surface-2) 75%);background-size:200% 100%;animation:skel 1.3s ease-in-out infinite}
+.skel-kpi .kpi-label{width:60%;height:12px}
+.skel-kpi .kpi-num{width:45%;height:26px;margin:4px 0 2px}
+.skel-kpi .kpi-sub{width:75%;height:12px}
+.skel-lines{display:grid;gap:10px}
+.skel-lines i{display:block;height:14px}
+.skel-lines i:nth-child(3n+2){width:82%}
+.skel-lines i:nth-child(3n){width:64%}
+.skel-chart{height:150px}
+@keyframes skel{from{background-position:100% 0}to{background-position:-100% 0}}
+@media (prefers-reduced-motion:reduce){.skel-kpi .kpi-label,.skel-kpi .kpi-num,.skel-kpi .kpi-sub,.skel-lines i,.skel-chart{animation:none}}
 
 /* ---- inbox ------------------------------------------------------------------------ */
 .inbox{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}

@@ -202,7 +202,6 @@
   :where(.career-job.fa) :where(.wb-side){position:static}
 }
 @media (max-width:420px){
-  .career-job.fa .fa-plots{grid-template-columns:repeat(2,minmax(0,1fr))}
   .career-job.fa .fa-tabs{gap:4px}
   .career-job.fa .fa-tab span{font-size:13px}
   .career-job.fa .fa-lot{flex-wrap:wrap}
@@ -217,3 +216,61 @@
 .career-job.fa .fa-strip span{padding:2px 8px;border-radius:99px;background:var(--fa-surface-2);color:var(--fa-muted)}
 .career-job.fa .fa-strip span.ok{color:var(--fa-ink);box-shadow:inset 0 0 0 1px var(--fa-line)}
 .career-job.fa .fa-strip span.fa-bed{color:var(--fa-ink);background:none;box-shadow:inset 0 0 0 1px var(--fa-accent)}
+
+/* ---------- UX compaction (phase 2): compact ticket, one-line weather, plots first, label choice in the bar */
+.career-job.fa .fa-ticket{padding:10px 12px;margin-bottom:8px}
+.career-job.fa .fa-t-row{display:flex;gap:10px;align-items:flex-start}
+.career-job.fa .fa-t-row .grow{min-width:0;flex:1}
+.career-job.fa .fa-t-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:16px}
+.career-job.fa .fa-t-head b:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.career-job.fa .fa-ticket .fa-order-items{margin:4px 0 0}
+.career-job.fa .fa-t-more{display:flex;align-items:center;justify-content:flex-start;gap:8px;width:100%;min-height:44px;height:auto;margin-top:6px;padding:4px 30px 4px 6px;position:relative;white-space:normal;text-align:left;font-weight:400}
+.career-job.fa .fa-t-more::after{content:"▾";position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--fa-muted)}
+.career-job.fa .fa-t-more[aria-expanded="true"]::after{content:"▴"}
+.career-job.fa .fa-t-kind{display:flex;flex-wrap:wrap;gap:4px;flex:1;min-width:0}
+.career-job.fa .fa-t-kind .tag{font-size:12px}
+.career-job.fa .fa-t-head .patience{display:flex;align-items:center;gap:4px;width:70px;flex:none;margin-left:auto}
+.career-job.fa .fa-t-head .patience .bar{flex:1;height:6px}
+.career-job.fa .fa-t-head .patience small{font-size:12px;color:var(--fa-muted)}
+.career-job.fa .fa-t-body p{margin:6px 0 0}
+
+.career-job.fa .fa-weather{display:grid;gap:6px;margin:0 0 8px;padding:0;background:none}
+.career-job.fa .fa-whead{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-start;gap:4px 6px;width:100%;min-height:44px;height:auto;padding:4px 30px 4px 8px;position:relative;white-space:normal;text-align:left;font-weight:400;background:var(--fa-surface-2)}
+.career-job.fa .fa-whead::after{content:"▾";position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--fa-muted)}
+.career-job.fa .fa-weather.open .fa-whead::after{content:"▴"}
+.career-job.fa .fa-wchip{font-size:14px;white-space:nowrap}
+.career-job.fa .fa-wchip+.fa-wchip::before{content:"·";margin-right:6px;color:var(--fa-muted)}
+.career-job.fa .fa-wbody{display:grid;gap:8px;padding:10px 12px;background:var(--fa-surface-2)}
+.career-job.fa .fa-wtip{margin:0;font-size:14px}
+
+.career-job.fa .fa-fieldtop{display:flex;gap:6px;align-items:stretch;margin-top:8px}
+.career-job.fa .fa-fieldtop .fa-care{flex:1;min-width:0;margin:0}
+.career-job.fa .fa-fieldtop .fa-valve{flex:none;max-width:44%;white-space:normal;line-height:1.2}
+.career-job.fa .fa-fieldtop .fa-care-head{min-height:48px}
+.career-job.fa .fa-fieldtop .fa-care.open{flex-basis:100%}
+.career-job.fa .fa-fieldtop:has(.fa-care.open){flex-wrap:wrap}
+.career-job.fa .fa-tabs{margin:6px 0 8px}
+.career-job.fa .fa-tab{min-height:46px}
+.career-job.fa .fa-steps{margin-top:8px}
+.career-job.fa .fa-legend{margin-top:8px}
+
+/* The label choice when it is the step: two compact choices over the button. */
+.career-job.fa .fa-bar-labels{grid-template-columns:1fr 1fr;gap:6px}
+.career-job.fa .fa-bar-labels .tile{flex-direction:row;flex-wrap:wrap;justify-content:flex-start;min-height:48px;padding:6px 8px;text-align:left;column-gap:6px;row-gap:0}
+.career-job.fa .fa-bar-labels .tile .tile-emoji{font-size:20px}
+.career-job.fa .fa-bar-labels .tile small{flex-basis:100%;font-size:11px}
+
+@media (max-width:720px){
+  /* Six beds in two rows of three: the whole field fits the first phone screen. */
+  .career-job.fa .fa-plots{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .career-job.fa .fa-plot{min-height:0;gap:3px;padding:14px 4px 6px}
+  .career-job.fa .fa-plot-art{font-size:24px}
+  .career-job.fa .fa-plot b{font-size:14px;line-height:1.2}
+  .career-job.fa .fa-plot small{font-size:11px;line-height:1.25}
+  .career-job.fa .fa-plot .fa-meter{height:6px}
+  .career-job.fa .fa-icons{min-height:0}
+  .career-job.fa .fa-plot-id{top:2px;left:6px}
+}
+@media (max-width:720px) and (orientation:landscape){
+  .career-job.fa .fa-plots{grid-template-columns:repeat(6,minmax(0,1fr))}
+}

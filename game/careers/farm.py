@@ -920,6 +920,9 @@ def _order_action(s: dict, c: dict, d: dict, t: dict, name: str, p: dict) -> dic
         if served['a'] + served['b'] >= sum(n['items'].values()) and not served['b'] and n['kind'] == 'contract':
             kit.metric(c, 'fa_perfect_contracts')
         _slips(c, t)
+        if cq.slips(t) and not t['mistakes']:
+            t['mistakes'] = 1        # a complaint is never a clean job (streak, perfect count)
+        bill = _bill(c, t)
         react = cq.react(s, c, t, served['pay'], who=who)
         crate, t['crate'] = t['crate'], []
         if react['kind'] in ('refuse', 'walkout'):
@@ -935,7 +938,7 @@ def _order_action(s: dict, c: dict, d: dict, t: dict, name: str, p: dict) -> dic
             note.append(f'thiếu {served["missing"]} so với đơn')
         if served['b'] and n['kind'] == 'contract':
             note.append(f'{served["b"]} đơn vị loại B bị tính giá loại B')
-        msg = f'Đã giao hàng · +{react["pay"]} xu.' + (' Khách ghi chú: ' + ', '.join(note) + '.' if note else ' Đủ, đúng loại, nhãn trung thực!' if not cq.slips(t) else '')
+        msg = f'Đã giao hàng · +{react["pay"]} xu' + (f' ({bill} = {served["pay"]} xu).' if bill else '.') + (' Khách ghi chú: ' + ', '.join(note) + '.' if note else ' Đủ, đúng loại, nhãn trung thực!' if not cq.slips(t) else '')
         if react['message']:
             msg += ' ' + react['message']
         return dict(message=msg, celebrate=not note and not cq.slips(t))
@@ -972,6 +975,26 @@ def _return_entry(d: dict, entry: dict) -> None:
     else:
         d['cold'].append(dict(id=entry['lot'], crop=entry['crop'], grade=entry['grade'], qty=entry['qty'], day=entry['day'],
                               expires=entry['expires'], organic=entry['organic'], unsafe=bool(entry.get('unsafe')), plot='crate'))
+
+
+def _bill(c: dict, t: dict) -> str:
+    """The pay as line math, as the buyer counts it: each crop × its price, grade B at 70%,
+    then the organic premium (same rules as _evaluate)."""
+    n, parts = t['needs'], []
+    for crop, want in n['items'].items():
+        a = min(want, sum(e['qty'] for e in t['crate'] if e['crop'] == crop and e['grade'] == 'A'))
+        b = min(want - a, sum(e['qty'] for e in t['crate'] if e['crop'] == crop and e['grade'] == 'B'))
+        name, price = PRODUCE[crop]['name'].lower(), _price(c, crop)
+        if a:
+            parts.append(f'{a} {name} × {price}')
+        if b:
+            parts.append(f'{b} {name} loại B × {price * B_PERCENT // 100}')
+    if not parts:
+        return ''
+    text = ' + '.join(parts)
+    if t['label'] == 'organic' and (n['organic'] or n['kind'] == 'market'):
+        text = f'({text}) × {ORGANIC_PERCENT}% nhãn hữu cơ'
+    return text
 
 
 def _evaluate(c: dict, t: dict) -> dict:

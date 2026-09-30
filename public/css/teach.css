@@ -260,11 +260,13 @@ button.tt-period:hover{border-color:var(--accent)}
 
 /* tour care loop: care list, energy, sick guest, partners, notebook, booking page */
 .tt-fold{border:1px solid var(--line-strong);background:var(--surface)}
-.tt-fold>summary{display:flex;align-items:center;gap:8px;min-height:48px;padding:10px 12px;white-space:normal;font-size:1rem;color:var(--ink);cursor:pointer}
-.tt-fold>summary>span:not([aria-hidden]){flex:1;font-weight:800}
-.tt-fold>summary::after{flex:none}
-.tt-fold>summary small{flex:none;color:var(--muted);font-weight:800}
-.tt-fold[open]>summary{border-bottom:1px solid var(--line)}
+.tt-fold>.tt-fold-sum{display:flex;align-items:center;gap:8px;width:100%;min-height:48px;padding:10px 12px;border:0;border-radius:inherit;background:transparent;font:inherit;font-weight:600;white-space:normal;font-size:1rem;color:var(--ink);text-align:left;cursor:pointer}
+.tt-fold>.tt-fold-sum::after{content:"▾";color:var(--muted)}
+.tt-fold.is-open>.tt-fold-sum::after{content:"▴"}
+.tt-fold>.tt-fold-sum>span:not([aria-hidden]){flex:1;font-weight:800}
+.tt-fold>.tt-fold-sum::after{flex:none}
+.tt-fold>.tt-fold-sum small{flex:none;color:var(--muted);font-weight:800}
+.tt-fold.is-open>.tt-fold-sum{border-bottom:1px solid var(--line);border-bottom-left-radius:0;border-bottom-right-radius:0}
 .tt-fold>.fold-body{display:flex;flex-direction:column;gap:10px;padding:10px 12px 12px}
 .tt-fold h4{margin:4px 0 0;font-size:var(--tt-s);color:var(--ink-2)}
 .tt-count{flex:none;padding:2px 10px;border-radius:var(--radius-pill);background:var(--warn-soft);color:var(--warn);font-size:var(--tt-s)}
@@ -486,3 +488,53 @@ html.reduce-motion .tt-meter b,html.reduce-motion .tt-card{transition:none}
   .tt-split .tt-map{max-height:none}
   .tt-map.small{max-height:240px;aspect-ratio:21/8}
 }
+
+/* ---- phase 2 compaction (phone first): one top row, folded board/seats/map, handled events as one line ---- */
+.tt-toprow{display:flex;gap:8px;align-items:center}
+.tt-toprow .tt-periods-wrap{flex:1 1 0;margin:0}
+.tt-toprow .tt-period{min-width:108px;padding:4px 10px}
+.tt-toprow .tt-hud,.tt-trip-top .tt-hud{flex:none;gap:6px}
+.tt-toprow .tt-meter,.tt-trip-top .tt-meter{flex:none;width:96px;grid-template-columns:1fr auto;gap:0 6px}
+.tt-toprow .tt-meter>span,.tt-trip-top .tt-meter>span{grid-column:1/-1;font-size:.75rem;line-height:1.15;white-space:nowrap}
+.tt-board{padding:4px 12px 8px;gap:4px}
+.tt-board-more>.tt-fold-sum{display:flex;align-items:center;width:100%;min-height:44px;padding:0;border:0;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.tt-board-more>.tt-fold-sum .tt-board-top{flex:1;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tt-board-more>.tt-fold-sum small{margin-left:auto;text-transform:none;letter-spacing:0;color:#f7e6b5;font-weight:700}
+.tt-board-more>.tt-fold-sum small::after{content:" ▾"}
+.tt-board-more.is-open>.tt-fold-sum small::after{content:" ▴"}
+.tt-board-more>.fold-body{display:flex;flex-direction:column;gap:6px;padding:0 0 6px}
+.tt-class-fold .tt-fold>.tt-fold-sum{flex-wrap:wrap}
+.tt-faces{display:flex;flex-wrap:wrap;gap:2px;flex:1 1 120px;font-size:1.05rem}
+.tt-faces i{font-style:normal;display:grid;place-items:center;min-width:26px;height:26px;padding:0 2px;border-radius:50%}
+.tt-faces i.tone-warn{background:var(--warn-soft);box-shadow:0 0 0 1.5px var(--warn)}
+.tt-faces i.tone-good{background:var(--good-soft)}
+.tt-faces i.tone-dim{opacity:.5}
+.tt-queue{margin:0;color:var(--ink-2);font-size:var(--tt-s)}
+.tt-event.done{padding:0;gap:0}
+.tt-event.done .tt-fold{border:0;background:transparent}
+.tt-event.done .tt-fold>.tt-fold-sum{min-height:44px;padding:6px 10px}
+.tt-event.done .tt-fold>.tt-fold-sum b{font-weight:800}
+.tt-past{display:flex;flex-direction:column;gap:6px}
+/* plan: the three slots ride in the sticky bar, one line each column */
+.tt-tray.tt-tray-bar{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+.tt-tray-bar li{min-height:44px;gap:4px;padding:3px 6px}
+.tt-tray-bar li i{width:20px;height:20px;font-size:.75rem}
+.tt-tray-bar li>span{font-size:.8rem;line-height:1.2;overflow:hidden}
+.tt-tray-bar li>span b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tt-tray-bar li>span small,.tt-tray-bar li>span.muted{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tt-tray-bar li strong{font-size:.8rem}
+@container sheet (max-width:480px){.tt-tray-bar li>span small{display:none}}
+/* tour: chips, the leg of the trip and the rhythm share one row */
+.tt-trail-mini{padding:2px 8px;border-radius:var(--radius-pill);background:var(--surface-2)}
+.tt-trail-mini i{border-color:var(--line-strong)}
+.tt-trail-mini i.done{background:var(--good);border-color:var(--good)}
+.tt-trail-mini i.now{background:var(--accent);border-color:var(--accent)}
+.tt-trail-mini b{color:var(--ink);font-size:var(--tt-s)}
+.tt-trip-top .tt-hud{margin-left:auto}
+.tt-body>.tt-fold,.tt-sec>.tt-fold{margin:0}
+/* Kế hoạch lớp: one page at a time */
+.cl-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;position:sticky;top:0;z-index:2;padding:4px 0;background:var(--bg,var(--surface))}
+.cl-tab{min-height:44px;padding:4px 6px;border-radius:12px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);font:inherit;font-size:var(--tt-s);font-weight:700;line-height:1.2;cursor:pointer}
+.cl-tab.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-text)}
+.cl-tab em{display:inline-block;min-width:20px;padding:0 5px;border-radius:99px;background:var(--warn);color:#fff;font-style:normal;font-size:.75rem}
+.tt-fold>.fold-body[hidden]{display:none}

@@ -146,7 +146,7 @@ class ExperiencesTests(unittest.TestCase):
   for cid in NEW_CAREERS:old['careers'].pop(cid)
   for c in old['careers'].values():c.pop('life')
   before=copy.deepcopy(old['careers']['mother_baby']['ops']);m=migrate_state(old);validate_state(m)
-  self.assertEqual(m['schema'],4);self.assertEqual(m['careers']['mother_baby']['money'],402);self.assertEqual(m['careers']['mother_baby']['ops'],before)
+  self.assertEqual(m['schema'],4);self.assertEqual(m['careers']['mother_baby']['money'],400);self.assertEqual(m['careers']['mother_baby']['ops'],before)
  def test_store_schema2_on_read(self):
   with tempfile.TemporaryDirectory() as td:
    store=Store(Path(td)/'test.db');token,csrf,_=store.session();old=new_state();old['schema']=2
