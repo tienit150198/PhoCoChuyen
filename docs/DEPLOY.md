@@ -94,6 +94,7 @@ location @asset_miss {                              # mã chưa có trong kho: t
 | `LAZY_SAVES` | `1` = phiên mới chỉ lưu một dấu nhỏ (~200 byte) cho tới thao tác đầu tiên, thay vì cả bản lưu ~90 KB (khách vào rồi đi không làm phình cơ sở dữ liệu). Mặc định `0`. Chỉ bật khi MỌI tiến trình dùng chung cơ sở dữ liệu đã chạy bản mới: bản cũ không đọc được dấu này. |
 | `RECEIPT_DAYS`, `RECEIPTS_PER_SAVE` | Biên nhận chống gửi trùng được giữ bao lâu (mặc định 2 ngày) và tối đa bao nhiêu cho mỗi bản lưu (mặc định 200). |
 | `LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY`, `LLM_CONCURRENCY` | AI cho nhân vật review/phụ huynh. Người chơi phải tự bật “Cho phép AI” trong Cài đặt. |
+| `STATIC_RECHECK_SECONDS` | Bao lâu (giây) máy chủ tin danh sách tệp tĩnh (`public/`) trước khi `stat()` lại ~230 tệp. Mặc định 2 giây khi `WORKERS=1` (máy dev: sửa tệp thấy ngay) và 300 giây khi `WORKERS>1`. Trên máy chủ thật nên đặt `3600`: mỗi lần deploy là thư mục mới và khởi động lại, tệp không đổi giữa chừng. |
 | `STATIC_CAS_DIR` | Kho tệp tĩnh theo mã băm mà proxy phục vụ cho URL `?v=` (mặc định `public/_v`). Xem mục “Tài nguyên tĩnh có phiên bản”. |
 | `MNL_DEV` | **Không bao giờ đặt trên máy chủ thật.** `MNL_DEV=1` tắt hành trình (mở mọi nghề, không trừ tiền sinh hoạt) và cho nhận việc không cần phỏng vấn. Chỉ dùng cho script kiểm trình duyệt. |
 | `VAPID_SUBJECT`, `VAPID_PRIVATE_KEY`, `PUSH_DISABLED` | Web push. Mặc định khóa được tự tạo ở `storage/vapid.json`; đừng xóa tệp này, nếu mất thì mọi đăng ký thông báo cũ hết hiệu lực. |
