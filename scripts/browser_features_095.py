@@ -237,8 +237,9 @@ async def s_whatsnew(w: Walk) -> None:
     latest = ENTRIES[0]
     w.need(latest['version'] in meta, f"whatsnew shows {meta!r}, not {latest['version']}")
     w.need(items == len(latest['items']), f"{items} notes shown, {len(latest['items'])} expected")
-    older = await p.locator('#wnDialog [data-wn="older"]').count()
-    w.need(older == 0, 'older notes still listed')
+    # Two unseen releases show by themselves; anything older waits behind "Xem các bản trước" (closed).
+    older = await p.locator('#wnDialog #wnOlder:not([hidden])').count()
+    w.need(older == 0, 'older notes open by themselves')
     tries = p.locator('#wnDialog .wn-item:has-text("mua nhà") .wn-try')
     if not any(it.get('go', {}).get('action') == 'house' for it in latest['items']):
         return  # this release's notes have no house button to try
@@ -338,7 +339,8 @@ async def s_house(w: Walk) -> None:
     if not await w.click('.hs-sheet [data-hs="look"][data-kind="can_ho_mini"]', 'the "Xem & mua" button'):
         return
     await p.wait_for_selector('.hs-sheet .hs-buy', timeout=5000)
-    await p.fill('#hs-down', '900')
+    from game import housing as hs
+    await p.fill('#hs-down', str(hs.down_min(hs.HOMES['can_ho_mini']['price'])))
     await p.dispatch_event('#hs-down', 'change')
     await p.select_option('.hs-buy select[name="months"]', '36')
     await w.check('house-buy')
@@ -354,7 +356,9 @@ async def s_house(w: Walk) -> None:
     s = await w.state()
     own = s['journey']['home']['own']
     w.need(own and own['kind'] == 'can_ho_mini' and own['loan'], 'no home or no mortgage after signing')
-    w.need(cash0 + acc0 - 900 - 60 == s['journey']['wallet'] + s['journey']['bank']['balance'], 'the down payment + fee was not 960 xu')
+    price = hs.HOMES['can_ho_mini']['price']
+    pay = hs.down_min(price) + hs.buy_fee(price)
+    w.need(cash0 + acc0 - pay == s['journey']['wallet'] + s['journey']['bank']['balance'], f'the down payment + fee was not {pay} xu')
     await w.check('house-bought')
     # Pay the next installment early.
     nxt = own['loan']['next']

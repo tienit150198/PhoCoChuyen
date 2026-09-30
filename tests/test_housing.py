@@ -142,7 +142,7 @@ class BuyingWithCash(unittest.TestCase):
         attic = jr.living_cost(s['journey'])
         s, r = buy(s, 'tap_the')
         self.assertTrue(r['approved'])
-        self.assertEqual(s['journey']['wallet'], 2000 - 1500 - hs.buy_fee(1500))
+        self.assertEqual(s['journey']['wallet'], 2000 - 1800 - hs.buy_fee(1800))
         cost = jr.living_cost(s['journey'])
         self.assertEqual((cost['rent'], cost['where']), (hs.HOMES['tap_the']['upkeep'], 'own'))
         self.assertLess(cost['total'], attic['total'])
@@ -159,26 +159,27 @@ class BuyingWithCash(unittest.TestCase):
         s, _ = act(s, 'jr_home_rent', kind='tro_moi', confirm=True)
         s, r = buy(s, 'tap_the')
         self.assertIsNone(H(s)['rent'])
-        self.assertEqual(s['journey']['wallet'], 2000 - 1530)
+        self.assertEqual(s['journey']['wallet'], 2000 - 1836)
         self.assertIn('tiền cọc', r['message'])
 
     def test_what_is_missing_is_shown_and_enforced(self):
         s = story(wallet=300)
         row = next(m for m in hs.public(s)['market'] if m['id'] == 'tap_the')
-        self.assertEqual((row['down_min'], row['fee'], row['need'], row['missing']), (450, 30, 480, 180))
+        cat = next(m for m in hs.catalogue()['homes'] if m['id'] == 'tap_the')
+        self.assertEqual((cat['down_min'], cat['fee'], cat['need'], row['missing']), (540, 36, 576, 276))
         with self.assertRaises(GameError) as e:
             buy(s, 'tap_the')
         self.assertEqual(e.exception.code, 'not_enough')
         with self.assertRaises(GameError):
-            buy(story(wallet=5000), 'tap_the', down=400)                     # under 30 %
+            buy(story(wallet=5000), 'tap_the', down=500)                     # under 30 %
 
     def test_account_money_counts_and_goes_first(self):
         s = opened(wallet=2100, deposit=1000)
         s, _ = buy(s, 'tap_the')
-        self.assertEqual((B(s)['balance'], s['journey']['wallet']), (0, 1100 - 530))
+        self.assertEqual((B(s)['balance'], s['journey']['wallet']), (0, 1100 - 836))
 
     def test_comfort_raises_spirit_every_day(self):
-        s, _ = buy(story(wallet=13000), 'nha_san')
+        s, _ = buy(story(wallet=15000), 'nha_san')
         s['journey']['life']['spirit'] = 50
         tick(s, 3)
         self.assertEqual(spirit(s), 50 + 3 * hs.HOMES['nha_san']['comfort'])
@@ -198,12 +199,12 @@ class Mortgage(unittest.TestCase):
         o = hs.offer(s)
         self.assertTrue(o['ok'], o['text'])
         before = (B(s)['balance'], s['journey']['wallet'])
-        s, r = buy(s, 'can_ho_mini', down=900, months=36)
+        s, r = buy(s, 'can_ho_mini', down=1080, months=36)
         ln = H(s)['own']['loan']
-        self.assertEqual((ln['principal'], ln['months'], len(ln['rows'])), (2100, 36, 36))
+        self.assertEqual((ln['principal'], ln['months'], len(ln['rows'])), (2520, 36, 36))
         self.assertEqual([x['due'] for x in ln['rows'][:2]], [ln['start'] + 5, ln['start'] + 10])
-        self.assertEqual(sum(x['principal'] for x in ln['rows']), 2100)
-        self.assertEqual(sum(before) - B(s)['balance'] - s['journey']['wallet'], 900 + hs.buy_fee(3000))
+        self.assertEqual(sum(x['principal'] for x in ln['rows']), 2520)
+        self.assertEqual(sum(before) - B(s)['balance'] - s['journey']['wallet'], 1080 + hs.buy_fee(3600))
         self.assertEqual(B(s)['inq'][-1], s['journey']['life_day'])          # the bank looked at the file
         self.assertIn('36 kỳ', r['message'])
         self.assertEqual(jr.living_cost(s['journey'])['rent'], hs.HOMES['can_ho_mini']['upkeep'])
@@ -262,25 +263,25 @@ class Mortgage(unittest.TestCase):
     def test_declines_move_no_money(self):
         s = opened(wallet=1500, deposit=1000)                                # no income yet
         before = (B(s)['balance'], s['journey']['wallet'])
-        s, r = buy(s, 'can_ho_mini', down=900, months=36)
+        s, r = buy(s, 'can_ho_mini', down=1080, months=36)
         self.assertFalse(r['approved'])
         self.assertIsNone((H(s) if 'home' in s['journey'] else {}).get('own'))
         self.assertEqual((B(s)['balance'], s['journey']['wallet']), before)
         self.assertEqual(len(B(s)['inq']), 1)                                # the inquiry stays on record
         # too big an installment for the income
         s = opened(wallet=1500, deposit=1000, income_days=14, salary=20)
-        s, r = buy(s, 'can_ho_mini', down=900, months=12)
+        s, r = buy(s, 'can_ho_mini', down=1080, months=12)
         self.assertFalse(r['approved'])
         self.assertIn('40%', r['message'])
         # no bank account: a clear sentence, nothing changes
         with self.assertRaises(GameError) as e:
-            buy(story(wallet=2000), 'tap_the', down=450, months=12)
+            buy(story(wallet=2000), 'tap_the', down=540, months=12)
         self.assertEqual(e.exception.code, 'no_account')
 
     def test_stale_quote_is_refused(self):
         s = opened(wallet=1500, deposit=1000, income_days=14, salary=60)
         with self.assertRaises(GameError) as e:
-            act(s, 'jr_home_buy', kind='can_ho_mini', down=900, months=36, total_interest=1, confirm=True)
+            act(s, 'jr_home_buy', kind='can_ho_mini', down=1080, months=36, total_interest=1, confirm=True)
         self.assertEqual(e.exception.code, 'stale_quote')
 
     def test_early_payoff(self):
@@ -297,10 +298,10 @@ class Mortgage(unittest.TestCase):
 class Selling(unittest.TestCase):
     def test_sell_with_a_mortgage_pays_the_bank_first(self):
         s = opened(wallet=1500, deposit=1000, income_days=14, salary=60)
-        s, _ = buy(s, 'can_ho_mini', down=900, months=36)
+        s, _ = buy(s, 'can_ho_mini', down=1080, months=36)
         tick(s, 60, salary=60)                                               # one in-game year
         own = hs.public(s)['own']
-        self.assertEqual(own['value'], 3000 * 103 // 100)                    # +3 %/năm
+        self.assertEqual(own['value'], 3600 * 103 // 100 // 10 * 10)         # +3 %/năm, rounded down to 10 xu
         sell = own['sell']
         bal = B(s)['balance']
         with self.assertRaises(GameError) as e:
@@ -331,7 +332,7 @@ class SaveData(unittest.TestCase):
 
     def test_tampered_homes_are_refused(self):
         s = opened(wallet=1500, deposit=1000, income_days=14, salary=60)
-        s, _ = buy(s, 'can_ho_mini', down=900, months=36)
+        s, _ = buy(s, 'can_ho_mini', down=1080, months=36)
         validate_state(s)
         breaks = [
             lambda h: h['own'].__setitem__('price', 10),
@@ -357,7 +358,7 @@ class SaveData(unittest.TestCase):
 
     def test_ticks_are_idempotent_and_migrate_keeps_it(self):
         s = opened(wallet=1500, deposit=1000, income_days=14, salary=60)
-        s, _ = buy(s, 'can_ho_mini', down=900, months=36)
+        s, _ = buy(s, 'can_ho_mini', down=1080, months=36)
         s['journey']['life_day'] += 12
         bk.on_life_day(s)
         hs.on_life_day(s)
@@ -421,6 +422,189 @@ class SpouseEffects(unittest.TestCase):
         self.assertEqual([e['id'] for e in hs.partner_effects(s, 7, 'a', 'sid-b', mr._effect)], ['homeoff:7:a:h1'])
 
 
+NEW_APARTMENTS = ('can_ho_studio', 'can_ho_1pn', 'can_ho_2pn', 'penthouse')
+VILLAS = ('biet_thu_vuon', 'biet_thu_song')
+
+
+def rich(salary, score=None, wallet=0, deposit=1000):
+    """A bank customer with two weeks of `salary` a day (the mortgage's income check) and `score`."""
+    s = opened(wallet=wallet + deposit, deposit=deposit, income_days=14, salary=salary)
+    if score is not None:
+        B(s)['score'] = score
+    return s
+
+
+class Prices097(unittest.TestCase):
+    """0.9.7: list prices +20 %, more kinds of homes, grouped as Phòng thuê / Căn hộ / Nhà phố / Biệt thự."""
+
+    def test_list_prices_are_twenty_percent_up_and_round(self):
+        for kind, old in hs.OLD_PRICES.items():
+            with self.subTest(kind=kind):
+                self.assertEqual(hs.HOMES[kind]['price'], old[0] * 120 // 100)
+                self.assertEqual(hs.prices(kind), (hs.HOMES[kind]['price'],) + old)
+        self.assertEqual({k: hs.HOMES[k]['price'] for k in hs.OLD_PRICES},
+                         dict(tap_the=1800, can_ho_mini=3600, nha_pho=7800, nha_san=14400))
+        for kind in hs.OWN:
+            with self.subTest(kind=kind):
+                self.assertEqual(hs.HOMES[kind]['price'] % 50, 0)
+                self.assertEqual(hs.down_min(hs.HOMES[kind]['price']) % 10, 0)
+        # the rented room is a daily living cost, not a house price: unchanged
+        self.assertEqual((hs.HOMES['tro_moi']['rent'], hs.HOMES['tro_moi']['deposit']), (14, 60))
+
+    def test_groups_and_the_ladder(self):
+        self.assertEqual(hs.GROUP_IDS, ('rent', 'apartment', 'townhouse', 'villa'))
+        for kind, H in hs.HOMES.items():
+            with self.subTest(kind=kind):
+                self.assertIn(H['group'], hs.GROUP_IDS)
+                self.assertEqual(H['group'] == 'rent', H['kind'] == 'rent')
+                self.assertTrue(H['emoji'] and H['name'] and H['where'] and 20 <= len(H['desc']) <= 140)
+                self.assertLessEqual(len(hs.lname(H['name'])), 24)
+        for kind in NEW_APARTMENTS:
+            self.assertEqual(hs.HOMES[kind]['group'], 'apartment')
+        for kind in VILLAS:
+            self.assertEqual(hs.HOMES[kind]['group'], 'villa')
+            self.assertTrue(hs.HOMES[kind]['perk'])
+        own = sorted(hs.OWN, key=lambda k: hs.HOMES[k]['price'])
+        comfort = [hs.HOMES[k]['comfort'] for k in own]
+        self.assertEqual(comfort, sorted(comfort))                           # dearer is never less comfortable
+        self.assertEqual(own[-2:], list(VILLAS))                             # the villas top the market
+        self.assertGreater(min(hs.HOMES[k]['upkeep'] for k in VILLAS), max(hs.HOMES[k]['upkeep'] for k in hs.OWN if k not in VILLAS))
+        # an apartment costs more to run than the house with the same comfort (phí quản lý)
+        self.assertGreater(hs.HOMES['can_ho_1pn']['upkeep'], hs.HOMES['nha_pho']['upkeep'])
+        self.assertGreater(hs.HOMES['can_ho_2pn']['upkeep'], hs.HOMES['nha_san']['upkeep'])
+        self.assertEqual([hs.need_score(k) for k in ('tap_the', 'penthouse', *VILLAS)], [hs.HOME_SCORE, 670, 700, 740])
+        cat = jr.content()['homes']                                          # static, sent once at bootstrap
+        self.assertEqual([g['id'] for g in cat['groups']], list(hs.GROUP_IDS))
+        self.assertEqual([m['id'] for m in cat['homes']], [m['id'] for m in hs.public(story(wallet=40000))['market']])
+        row = next(m for m in cat['homes'] if m['id'] == 'biet_thu_song')
+        self.assertEqual((row['group'], row['score'], row['perk']), ('villa', 740, hs.HOMES['biet_thu_song']['perk']))
+        live = next(m for m in hs.public(story(wallet=40000))['market'] if m['id'] == 'biet_thu_song')
+        self.assertEqual(live, dict(id='biet_thu_song', missing=0, missing_all=60000 + hs.buy_fee(60000) - 40000))
+
+    def test_names_inside_sentences_keep_proper_nouns(self):
+        self.assertEqual(hs.lname('Biệt thự Sông Hồng'), 'biệt thự Sông Hồng')
+        self.assertEqual(hs.lname('Căn tập thể cũ'), 'căn tập thể cũ')
+
+    def test_new_apartments_are_bought_with_a_mortgage(self):
+        for kind in NEW_APARTMENTS:
+            with self.subTest(kind=kind):
+                price = hs.HOMES[kind]['price']
+                s = rich(salary=400, score=700, wallet=hs.down_min(price) + hs.buy_fee(price))
+                s, r = buy(s, kind, down=hs.down_min(price), months=36)
+                self.assertTrue(r['approved'], r['message'])
+                own = H(s)['own']
+                self.assertEqual((own['kind'], own['price'], own['loan']['principal']), (kind, price, price - hs.down_min(price)))
+                self.assertEqual(jr.living_cost(s['journey'])['rent'], hs.HOMES[kind]['upkeep'])
+                validate_state(s)
+                sp = s['journey']['life']['spirit'] = 40
+                tick(s, 1, salary=400)
+                self.assertGreaterEqual(spirit(s), sp + hs.HOMES[kind]['comfort'])
+
+    def test_penthouse_needs_score_670(self):
+        price = hs.HOMES['penthouse']['price']
+        s = rich(salary=400, score=660, wallet=hs.down_min(price) + hs.buy_fee(price))
+        before = (B(s)['balance'], s['journey']['wallet'])
+        s, r = buy(s, 'penthouse', down=hs.down_min(price))
+        self.assertFalse(r['approved'])
+        self.assertIn('cần từ 670', r['message'])
+        self.assertEqual((B(s)['balance'], s['journey']['wallet']), before)
+        # the same score buys a cheaper home
+        s2 = rich(salary=400, score=660, wallet=5000)
+        s2, r = buy(s2, 'can_ho_2pn', down=hs.down_min(hs.HOMES['can_ho_2pn']['price']))
+        self.assertTrue(r['approved'], r['message'])
+
+
+class VillaLoans(unittest.TestCase):
+    """Villas: the score each one needs, the same 40 % installment limit, and cash is always fine."""
+
+    def villa(self, kind, salary, score, months=36, down=None):
+        price = hs.HOMES[kind]['price']
+        s = rich(salary=salary, score=score, wallet=price + hs.buy_fee(price))
+        before = (B(s)['balance'], s['journey']['wallet'])
+        s, r = buy(s, kind, down=down or hs.down_min(price), months=months)
+        return s, r, before
+
+    def test_score_gate(self):
+        s, r, before = self.villa('biet_thu_vuon', salary=600, score=690)
+        self.assertFalse(r['approved'])
+        self.assertIn('690, cần từ 700', r['message'])
+        self.assertEqual((B(s)['balance'], s['journey']['wallet']), before)  # nothing moved
+        self.assertIsNone(H(s)['own'] if 'home' in s['journey'] else None)
+        s, r, _ = self.villa('biet_thu_song', salary=900, score=720)
+        self.assertFalse(r['approved'])
+        self.assertIn('cần từ 740', r['message'])
+
+    def test_installment_limit(self):
+        s, r, before = self.villa('biet_thu_vuon', salary=200, score=760)   # room 400 xu a month
+        self.assertFalse(r['approved'])
+        self.assertIn('40%', r['message'])
+        self.assertEqual((B(s)['balance'], s['journey']['wallet']), before)
+        s, r, _ = self.villa('biet_thu_vuon', salary=200, score=760, down=30000)   # a bigger down payment fits
+        self.assertTrue(r['approved'], r['message'])
+        self.assertEqual(H(s)['own']['loan']['principal'], 6000)
+
+    def test_approved_villa(self):
+        s, r, _ = self.villa('biet_thu_vuon', salary=500, score=720)
+        self.assertTrue(r['approved'], r['message'])
+        own = H(s)['own']
+        self.assertEqual((own['price'], own['down'], own['loan']['principal'], own['loan']['rate']), (36000, 10800, 25200, 1020))
+        self.assertLessEqual(own['loan']['rows'][0]['amount'], 500 * hs.MONTH_DAYS * hs.DTI_PCT // 100)
+        self.assertIn('Mua biệt thự Vườn Cau giá 36.000 xu', H(s)['log'][-1]['text'])
+        s, r, _ = self.villa('biet_thu_song', salary=800, score=760)
+        self.assertTrue(r['approved'], r['message'])
+        self.assertEqual((H(s)['own']['loan']['principal'], H(s)['own']['loan']['rate']), (42000, 900))
+        view = hs.public(s)
+        self.assertEqual((view['own']['group'], view['place']['group'], view['place']['comfort']), ('villa', 'villa', 7))
+        validate_state(s)
+
+    def test_cash_needs_no_score(self):
+        price = hs.HOMES['biet_thu_song']['price']
+        s, r = buy(story(wallet=price + hs.buy_fee(price)), 'biet_thu_song')
+        self.assertTrue(r['approved'])
+        self.assertEqual(s['journey']['wallet'], 0)
+
+
+class OldSaves097(unittest.TestCase):
+    """Homes bought before 0.9.7 keep the price paid, the loan and its schedule; resale follows the price paid."""
+
+    def old_mini(self):
+        from unittest import mock
+        with mock.patch.dict(hs.HOMES['can_ho_mini'], price=3000):          # the 0.9.5/0.9.6 list price
+            s = opened(wallet=1500, deposit=1000, income_days=14, salary=60)
+            s, r = buy(s, 'can_ho_mini', down=900, months=36)
+        self.assertTrue(r['approved'], r['message'])
+        return s
+
+    def test_old_home_and_loan_load_unchanged(self):
+        s = self.old_mini()
+        own = copy.deepcopy(H(s)['own'])
+        self.assertEqual((own['price'], own['down'], own['fee'], own['loan']['principal']), (3000, 900, hs.buy_fee(3000), 2100))
+        s = migrate_state(s)
+        validate_state(s)
+        self.assertEqual(H(s)['own'], own)                                   # price, loan, schedule: untouched
+        view = hs.public(s)['own']
+        self.assertEqual((view['price'], view['list_price'], view['value']), (3000, 3600, 3000))   # no windfall
+        tick(s, 5, salary=60)                                                # installments go on as scheduled
+        self.assertEqual(H(s)['own']['loan']['rows'][0]['paid'], own['loan']['rows'][0]['amount'])
+        self.assertEqual([r['amount'] for r in H(s)['own']['loan']['rows']], [r['amount'] for r in own['loan']['rows']])
+        tick(s, 55, salary=60)                                               # a year: +3 % on the price paid
+        self.assertEqual(hs.public(s)['own']['value'], 3090)
+        s, r = act(s, 'jr_home_sell', confirm=True, value=3090)
+        self.assertEqual(H(s)['past'][-1]['price'], 3000)
+        validate_state(s)
+
+    def test_only_known_prices_are_valid(self):
+        s = self.old_mini()
+        for price in (3300, 1500, 3000 * 2):
+            bad = copy.deepcopy(s)
+            H(bad)['own'].update(price=price, fee=hs.buy_fee(price))
+            with self.subTest(price=price), self.assertRaises(GameError):
+                validate_state(bad)
+        s = opened(wallet=2000)
+        s, _ = act(s, 'jr_home_rent', kind='tro_moi', confirm=True)         # a rented room: the same deposit as before
+        validate_state(migrate_state(s))
+
+
 from tests.test_couple import CoupleBase   # noqa: E402  (the database side of a couple)
 
 
@@ -432,11 +616,11 @@ class CoupleHome(CoupleBase):
         from game import couple as cp
         from game import marriage as mr
         self.act(self.a, 'fund_deposit', amount=800, rid='deposit-home-1')
-        self.fund(self.a, 1000)
-        out = self.cmd(self.a, 'jr_home_buy', 'home-buy-0001', kind='tap_the', down=1500, joint=800, confirm=True)
+        self.fund(self.a, 1100)
+        out = self.cmd(self.a, 'jr_home_buy', 'home-buy-0001', kind='tap_the', down=1800, joint=800, confirm=True)
         self.assertTrue(out['result']['approved'])
         self.assertIn('quỹ chung', out['result']['message'])
-        self.assertEqual(self.wallet(self.a), 1000 - (1530 - 800))           # 800 > the daily card cap: a home is not capped
+        self.assertEqual(self.wallet(self.a), 1100 - (1836 - 800))           # 800 > the daily card cap: a home is not capped
         self.assertEqual(cp.joint_account(self.state(self.a))['balance'], 0)
         self.assertEqual(self.row("SELECT amount FROM joint_ledger WHERE kind='home'")['amount'], 800)
         # the next loads: the hold is confirmed, the spouse moves in once
@@ -456,6 +640,36 @@ class CoupleHome(CoupleBase):
         mr.on_load(self.store, self.a, self.state(self.a))
         mr.on_load(self.store, self.b, self.state(self.b))
         self.assertIsNone(self.state(self.b)['journey']['home']['shared'])
+
+    def test_a_couple_buys_a_villa_with_the_fund_and_a_mortgage(self):
+        from game import marriage as mr
+        self.act(self.a, 'fund_deposit', amount=800, rid='deposit-villa-1')
+
+        def ready(s):
+            j = s['journey']
+            start = j['life_day']
+            for d in range(start, start + 14):
+                j['life_day'] = d
+                jr._wallet(j, 500, 'salary', f'Lương ngày {d}')
+            j['life_day'] = start + 14
+            j['wallet'] = 11000
+            bk.apply(s, 'jr_bk_open', {})
+            s['journey']['bank']['score'] = 720
+        mr._mutate(self.store, {self.sid(self.a): ready})
+        sa = self.state(self.a)
+        price, day = hs.HOMES['biet_thu_vuon']['price'], sa['journey']['life_day']
+        q = hs.quote(price - hs.down_min(price), hs.offer(sa, 700)['rate'], 36, day)
+        out = self.cmd(self.a, 'jr_home_buy', 'home-villa-0001', kind='biet_thu_vuon', down=hs.down_min(price), joint=800,
+                       months=36, total_interest=q['interest'], confirm=True)
+        self.assertTrue(out['result']['approved'], out['result']['message'])
+        own = self.state(self.a)['journey']['home']['own']
+        self.assertEqual((own['kind'], own['joint'], own['loan']['principal']), ('biet_thu_vuon', 800, 25200))
+        self.assertEqual(self.wallet(self.a), 11000 - (hs.down_min(price) + hs.buy_fee(price) - 800))
+        self.clock.t += 3600
+        for _ in range(2):
+            mr.on_load(self.store, self.a, self.state(self.a))
+            mr.on_load(self.store, self.b, self.state(self.b))
+        self.assertEqual(self.state(self.b)['journey']['home']['shared']['kind'], 'biet_thu_vuon')
 
     def row(self, sql):
         with self.store.connect() as db:

@@ -166,10 +166,12 @@ function houseCard(env){
   const p=H.place||{},c=p.cost||{},L=H.own?.loan;
   const sub=p.where_id==='own'?'Nhà của bạn':p.where_id==='shared'?`Nhà chung với ${esc(p.with||'')}`:p.where_id==='rent'?'Phòng thuê':'Thuê theo ngày';
   const cost=p.where_id==='own'||p.where_id==='shared'?`Điện nước ${fmt(c.rent)} xu/ngày`:`Tiền phòng ${fmt(c.rent)} xu/ngày`;
-  const homes=(H.market||[]).filter(m=>m.kind==='own'),can=homes.filter(m=>!(m.missing>0)).pop(),next=homes.find(m=>m.missing>0);
+  const cat=env.api.content.journey?.homes||{groups:[],homes:[]},live=new Map((H.market||[]).map(r=>[r.id,r]));
+  const homes=cat.homes.filter(c=>c.kind==='own'&&live.has(c.id)).map(c=>({...c,...live.get(c.id)})).sort((x,y)=>x.price-y.price),sc=H.offer?.score,can=homes.filter(m=>!(m.missing>0)&&(sc==null||sc>=(m.score||0)||!(m.missing_all>0))).pop(),next=homes.find(m=>m.missing>0);
+  const tone=(cat.groups.find(g=>g.id===p.group)||{}).color;
   const hint=L?(L.overdue?`⏰ Trả góp nhà đang chậm ${fmt(L.overdue)} xu`:`Đã trả ${L.paid_rows}/${L.rows.length} kỳ vay mua nhà`)
     :H.own?'Nhà không còn nợ 🔑':can?`${can.emoji} Đủ tiền trả trước ${esc(can.name)} rồi đó!`:next?`${next.emoji} ${esc(next.name)}: còn thiếu ${fmt(next.missing)} xu để trả trước`:'';
-  return `<section class="jr-card jr-house" aria-label="Nơi bạn ở"><button type="button" class="jr-house-row" data-action="house"><span class="jr-house-emoji" aria-hidden="true">${p.emoji||'🏚️'}</span>
+  return `<section class="jr-card jr-house" aria-label="Nơi bạn ở"><button type="button" class="jr-house-row" data-action="house"><span class="jr-house-emoji" aria-hidden="true"${tone?` style="--hs-tone:${esc(tone)}"`:''}>${p.emoji||'🏚️'}</span>
     <span class="grow"><small>${sub} · ${cost}</small><b>${esc(p.name||'')}</b><em>${hint}</em></span><span class="btn cream small" aria-hidden="true">🏠 Nhà của bạn</span></button></section>`;
 }
 

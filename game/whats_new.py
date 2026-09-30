@@ -28,6 +28,13 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="0.9.8", date="2026-09-30", items=(
+        dict(emoji="🏰", text="Mua nhà: thêm biệt thự và 4 loại căn hộ (studio, 1 phòng ngủ, 2 phòng ngủ, penthouse).", go=dict(action="house")),
+        dict(emoji="📈", text="Giá nhà tăng 20%. Nhà đã mua giữ nguyên giá đã trả và khoản vay đang trả góp."),
+        dict(emoji="🏦", text="Penthouse và biệt thự cần điểm tín dụng cao hơn mới vay được."),
+        dict(emoji="🗂️", text="Nhà đang rao chia theo Phòng thuê, Căn hộ, Nhà phố, Biệt thự: ghi rõ góp mỗi tháng và còn thiếu bao nhiêu."),
+        dict(emoji="💞", text="Vợ chồng bấm cùng lúc không còn báo “tab khác”; quỹ chung hiện đúng dấu tiền rút."),
+    )),
     dict(version="0.9.7", date="2026-09-30", items=(
         dict(emoji="🛠️", text="Đã sửa lỗi “Dữ kiện gốc của nhiệm vụ không hợp lệ”: rút tiền, mở ngày mới và làm việc lại bình thường."),
         dict(emoji="👕", text="Đơn shop quần áo làm dở từ trước vẫn giữ nguyên, bạn làm tiếp được."),
