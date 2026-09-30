@@ -7,17 +7,20 @@
  * Loading: one GET /api/admin/stats/summary draws the first screen (skeletons until
  * then). The save-derived cards load when they scroll into view and "Hệ thống" when it
  * opens (GET /api/admin/stats/section, drawn by ./sections.js, imported on demand).
- * Changing the range aborts the request still running for the old one. */
+ * Changing the range aborts the request still running for the old one. The "Trực tiếp"
+ * band (…/section?name=live: active players, commands/min, latency, DB size) is polled
+ * every LIVE_MS while "Tổng quan" is shown; it costs the server a few index reads. */
 import {AdminAPI} from './api.js';
 import {Inbox} from './inbox.js';
-import {overviewView,skeleton,skelCard} from './stats.js';
-import {esc,icon,clock,num,toast} from './ui.js';
+import {overviewView,liveView,skeleton,skelCard} from './stats.js';
+import {esc,icon,hm,ago,num,toast} from './ui.js';
 
 const api=new AdminAPI();
 const root=document.getElementById('root');
 const VIEWS={'tong-quan':['Tổng quan','chart'],'gop-y':['Góp ý','inbox'],'he-thong':['Hệ thống','server']};
 const RANGES=[7,30,90];
 const REFRESH_MS=60000;
+const LIVE_MS=15000;
 const RANGE_DEBOUNCE_MS=180;
 const MORE={daily:14,careers:8,tables:12};  // rows shown before "Xem thêm"; each click adds as many again
 
@@ -28,7 +31,8 @@ const store={
 
 const ui={screen:'loading',view:'tong-quan',navOpen:false,login:{error:'',busy:false,replace:false,user:''},unread:null};
 const stats={range:RANGES.includes(store.get('range',7))?store.get('range',7):7,byRange:{},busy:false,error:null,auto:store.get('auto',true)!==false,ctl:null,timer:0,retry:0,pending:false,
-  sections:{saves:{data:null,at:0,busy:false,error:null},system:{data:null,at:0,busy:false,error:null}},more:{...MORE}};
+  sections:{saves:{data:null,at:0,busy:false,error:null},system:{data:null,at:0,busy:false,error:null}},more:{...MORE},
+  live:{data:null,at:0,busy:false,error:null,ctl:null}};
 let sectionsMod=null;  // ./sections.js once imported
 const loadSectionsMod=()=>sectionsMod?Promise.resolve(sectionsMod):import('./sections.js').then(m=>(sectionsMod=m));
 const inbox=new Inbox(api,{
@@ -100,10 +104,12 @@ async function logout(){
 function resetStats(){
   stats.ctl?.abort();stats.ctl=null;clearTimeout(stats.timer);clearTimeout(stats.retry);stats.byRange={};stats.busy=false;stats.error=null;stats.pending=false;stats.retry=0;
   for(const s of Object.values(stats.sections)){s.ctl?.abort();clearTimeout(s.retry);Object.assign(s,{data:null,at:0,busy:false,error:null,ctl:null,retry:0,pending:false});}
+  stats.live.ctl?.abort();Object.assign(stats.live,{data:null,at:0,busy:false,error:null,ctl:null});
 }
 const tooFast=e=>e.status===429?'Làm mới hơi dồn dập. Chờ một chút nhé.':e.message;
 function ensureStats(){
   const e=stats.byRange[stats.range];if(!e||Date.now()-e.at>REFRESH_MS)loadStats();
+  if(ui.view==='tong-quan'&&(!stats.live.data||Date.now()-stats.live.at>LIVE_MS))loadLive();
   if(ui.view==='he-thong'){ensureSection('system');ensureSection('saves');}
 }
 /** The first screen for the current range. A request still running for another range is aborted. */
@@ -125,6 +131,26 @@ function loadStats(fresh=false){
       if(ui.screen==='app'&&ui.view!=='gop-y')renderView();else renderTools();
     });
 }
+/** The live counters. A failure keeps the last numbers on screen (with a short note). */
+function loadLive(){
+  const L=stats.live;if(L.busy)return;
+  const ctl=L.ctl=new AbortController();L.busy=true;
+  api.section('live',{signal:ctl.signal})
+    .then(d=>{if(d.pending){L.error='Máy chủ đang bận, thử lại sau.';return;}L.data=d;L.at=Date.now();L.error=null;})
+    .catch(e=>{if(e.aborted)return;if(e.status===403||e.status===401){reauth();return;}L.error=e.status?tooFast(e):e.message;})
+    .finally(()=>{if(L.ctl!==ctl)return;L.busy=false;L.ctl=null;if(ui.screen==='app'&&ui.view==='tong-quan')renderLive();});
+}
+/** Redraw only the live band (the rest of the page, its open details and focus stay as they are). */
+function renderLive(){
+  const el=document.querySelector('#view .live');
+  if(!el){renderView();return;}
+  const tmp=document.createElement('div');tmp.innerHTML=liveView(stats.live.data,{error:stats.live.error});
+  el.replaceWith(tmp.firstElementChild);
+}
+setInterval(()=>{
+  if(ui.screen!=='app'||!stats.auto||ui.view!=='tong-quan'||document.hidden)return;
+  loadLive();
+},LIVE_MS);
 function ensureSection(name){
   const s=stats.sections[name];
   if(s&&!s.busy&&!s.error&&!s.retry&&(!s.data||Date.now()-s.at>REFRESH_MS))loadSection(name);
@@ -272,7 +298,8 @@ function renderTools(){
   tools.innerHTML=`${seg}
     <label class="switch" title="Tự làm mới mỗi 60 giây"><input type="checkbox" data-act="auto"${stats.auto?' checked':''}><span class="knob" aria-hidden="true"></span><span>Tự làm mới</span></label>
     <button type="button" class="btn ghost sm" data-act="refresh"${busy?' disabled':''}>${icon('refresh',15)}<span>${busy?'Đang tải…':'Làm mới'}</span></button>`;
-  meta.innerHTML=d?`Cập nhật ${clock(d.generated_at)}${d.stale?' (máy chủ bận: bản tính ở chế độ nền)':d.cached&&d.age>5?` (bản đệm ${num(d.age)} giây)`:''} · ${d.range} ngày · giờ Việt Nam${stats.auto?' · tự làm mới mỗi phút':''}`:stats.busy?'Đang tính số liệu…':'';
+  const at=d?.computed_at??d?.generated_at;
+  meta.innerHTML=d?`Cập nhật ${hm(at)}${d.stale?` (bản tính nền, ${ago(at)})`:d.cached&&d.age>5?` (bản đệm ${num(d.age)} giây)`:''} · ${d.range} ngày · giờ Việt Nam${stats.auto?' · tự làm mới mỗi phút':''}`:stats.busy?'Đang tính số liệu…':'';
 }
 function renderView(){
   const view=document.getElementById('view');if(!view)return;
@@ -283,8 +310,8 @@ function renderView(){
     const e=stats.byRange[stats.range],d=e?.data;
     let body;
     if(stats.error&&!d)body=`<div class="notice bad">${icon('alert',16)}<div>${esc(stats.error)}<br><button type="button" class="btn ghost sm" data-act="refresh">Thử lại</button></div></div>`;
-    else if(!d)body=(stats.pending?`<p class="note">Máy chủ đang bận nên số liệu được tính ở chế độ nền, chờ chút nhé…</p>`:'')+(ui.view==='he-thong'?systemSkeleton():skeleton());
-    else body=(stats.error?`<div class="notice warn">${icon('alert',16)}<div>${esc(stats.error)} Đang hiện số liệu cũ.</div></div>`:'')+(ui.view==='he-thong'?systemBody(d):overviewView(d,savesParts(),stats.more));
+    else if(!d)body=(ui.view==='tong-quan'?live():'')+(stats.pending?`<p class="note">Máy chủ đang bận nên số liệu được tính ở chế độ nền, chờ chút nhé…</p>`:'')+(ui.view==='he-thong'?systemSkeleton():skeleton());
+    else body=(stats.error?`<div class="notice warn">${icon('alert',16)}<div>${esc(stats.error)} Đang hiện số liệu cũ.</div></div>`:'')+(ui.view==='he-thong'?systemBody(d):overviewView(d,savesParts(),stats.more,stats.live));
     view.innerHTML=`<div class="stats${stats.busy&&d?' is-busy':''}" aria-busy="${stats.busy}">${body}</div>`;
     view.querySelectorAll('details > summary').forEach(s=>{if(open.has(s.textContent))s.parentElement.open=true;});
     watchLazy(view);
@@ -293,6 +320,7 @@ function renderView(){
   renderTools();
 }
 
+const live=()=>liveView(stats.live.data,{error:stats.live.error});
 /** The four save-derived cards: drawn by ./sections.js once loaded, else placeholders. */
 function savesParts(){
   const s=stats.sections.saves;
@@ -328,7 +356,7 @@ root.addEventListener('click',async ev=>{
     case'cancelReplace':ui.login.replace=false;ui.login.error='';render();return;
     case'range':pickRange(Number(el.dataset.range));return;
     case'refresh':{
-      stats.error=null;loadStats(true);
+      stats.error=null;loadStats(true);if(ui.view==='tong-quan')loadLive();
       for(const [name,s] of Object.entries(stats.sections))if(s.data&&(name==='saves'||ui.view==='he-thong')){s.error=null;loadSection(name,true);}
       return;
     }

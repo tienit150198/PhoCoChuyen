@@ -37,11 +37,33 @@ How players are protected
   stale entry is served at once while one thread refreshes it.
 * AI usage has no stored log, so `install_ai_counters()` wraps ai.chat, ai.clean_reply
   and ai.abusive with in-memory per-day counters ("since restart").
+* Live counters (GET /api/admin/stats/section?name=live, cached LIVE_TTL): sessions active in
+  the last 5 min / 1 h / 24 h, new players today, the database size, the backend, and the
+  commands per minute with their p50/p90 latency. A handful of index range reads, never a
+  save, never the job. Command timings: `install_command_timer()` wraps store.command with
+  an in-memory per-minute histogram per worker process, flushed at most every CMD_FLUSH
+  seconds to `<db>-adminstats-cmd.<pid>.json`; the admin merges the workers' files.
+  `sessions.updated_at` is TEXT 'YYYY-MM-DD HH:MM:SS' (UTC) on both backends: it is compared
+  with a threshold in that same text form (dbm.utc_text), never cast, so the covering index
+  stat_sessions_seen serves the range.
+
+Is the snapshot current? (`snapshot` in the saves/system sections, `computed_at`/`age`/
+`old` on the summary.) The job writes a heartbeat {pid, at, phase} into its own lock file.
+A worker that cannot take the lock and sees no fresh heartbeat knows the lock is HELD
+without a job running: an operator hold (e.g. a transient systemd unit that flock()s
+`<db>-adminstats.lock` at peak hours so the save scan never competes with players) or a
+stuck job. The hold is honoured: nothing here breaks it; the page says the save numbers are
+held and from when. A lock left by a crashed process is no problem: flock() dies with its
+process, the next request takes it over. A pass that fails is logged to stderr with its
+message, recorded in the result (`errors`) and retried after its normal period (no retry
+storm), and it never blocks the other passes.
 
 Days are Vietnam days (UTC+7), matching the players.
 """
 from __future__ import annotations
+import bisect
 import datetime
+import glob
 import hashlib
 import json
 import os
@@ -63,7 +85,7 @@ TTL = 60.0                 # full payload (in-game tab)
 # The saves section is expensive (each save is parsed whole): it is refreshed rarely, from a
 # small sample, and never while the machine is busy serving players (see _Job.may_go).
 SAVES_EVERY = float(os.environ.get('ADMIN_STATS_SAVES_EVERY', '1800') or 1800)  # seconds between two passes over the saves
-BUSY_LOAD = 0.7            # the job waits while the 1-minute load average is over BUSY_LOAD per core
+BUSY_LOAD = float(os.environ.get('ADMIN_STATS_BUSY_LOAD', '0.7') or 0.7)  # the job waits while the 1-minute load average is over this per core
 BUSY_WAIT = 60.0           # ... and gives the pass up after waiting this long (the next one tries again)
 SUMMARY_TTL = 30.0
 SYSTEM_EVERY = 120.0       # table sizes
@@ -87,6 +109,17 @@ COUNT_MS = 250             # an exact COUNT(*) of one table in the job; past it 
 JOB_SUMMARY_MS = 30000     # the job's summary (a cold disk can take seconds per index); each statement is its own read
 CHUNK = 40                 # saves per chunk (halved when a chunk runs out of time)
 PAUSE = 3.0                # the job sleeps PAUSE x the time a chunk took (a quarter of one core at most)
+LIVE_MS = int(os.environ.get('ADMIN_STATS_LIVE_MS', '800') or 800)  # all queries of the live counters
+LIVE_TTL = 10.0            # live counters cached this long (per worker)
+STALE_AFTER = 600.0        # a snapshot older than this (beyond its normal period) is shown as old
+BEAT_EVERY = 10.0          # the job's heartbeat in its lock file ...
+BEAT_STALE = 150.0         # ... and past this without one, a taken lock means "held", not "running"
+SAVES_RETRY = 300.0        # a saves pass that FAILED is tried again after this (not at once)
+CMD_FLUSH = 10.0           # a worker writes its command timings at most this often
+CMD_MINUTES = 15           # minutes of command timings kept
+CMD_WINDOW = 5             # the page shows the last CMD_WINDOW minutes plus the current one
+# Latency histogram (ms, upper bounds); one more bucket past the last edge.
+CMD_EDGES = (2, 5, 10, 15, 20, 30, 40, 50, 75, 100, 150, 200, 300, 400, 500, 750, 1000, 1500, 2000, 3000, 5000, 10000)
 
 SCHEMA = f"""
 CREATE INDEX IF NOT EXISTS stat_sessions_seen ON sessions(updated_at, revision, sid);
@@ -138,6 +171,7 @@ def ensure(store) -> None:
         with store.connect() as db:
             db.executescript(SCHEMA)
     install_ai_counters()
+    install_command_timer(store)
 
 
 def _ensure_pg(store) -> None:
@@ -234,6 +268,129 @@ def ai_usage() -> dict:
     total = {k: sum(r[k] for r in days) for k in AI_KEYS}
     from . import ai
     return dict(since=round(STARTED, 3), configured=bool(ai.available()), total=total, days=days[-AI_DAYS:])
+
+
+# ---------------------------------------------------------------- command timings (in memory, per worker)
+_cmd_lock = threading.Lock()
+_cmd: dict[str, dict] = {}          # file prefix -> {minute: [count, total ms, histogram]}
+_cmd_meta: dict[str, dict] = {}     # file prefix -> {since: first minute, flushed: time}
+
+
+def _cmd_prefix(store) -> str:
+    return str(store.path) + '-adminstats-cmd.'
+
+
+def record_command(ms: float, prefix: str, now: float | None = None) -> None:
+    """One game command took `ms` (called by the store.command wrapper): a counter and a
+    histogram bucket of the current minute; the file is rewritten at most every CMD_FLUSH s."""
+    now = time.time() if now is None else now
+    minute = int(now // 60)
+    flush = None
+    with _cmd_lock:
+        rows = _cmd.setdefault(prefix, {})
+        row = rows.get(minute)
+        if row is None:
+            row = rows[minute] = [0, 0.0, [0] * (len(CMD_EDGES) + 1)]
+            for old in [m for m in rows if m <= minute - CMD_MINUTES]:
+                del rows[old]
+        row[0] += 1
+        row[1] += ms
+        row[2][bisect.bisect_left(CMD_EDGES, ms)] += 1
+        meta = _cmd_meta.setdefault(prefix, dict(since=minute, flushed=0.0))
+        if now - meta['flushed'] >= CMD_FLUSH:
+            meta['flushed'] = now
+            flush = dict(pid=os.getpid(), at=round(now, 3), since=meta['since'],
+                         minutes={str(m): [r[0], round(r[1], 1), list(r[2])] for m, r in rows.items()})
+    if flush is not None:
+        try:
+            _write_json(f'{prefix}{os.getpid()}.json', flush)
+        except OSError:
+            pass  # no writable data directory: this worker's numbers stay in its memory
+
+
+def install_command_timer(store) -> None:
+    """Wrap this store's command() with record_command (idempotent). Every save write of a
+    player goes through it; the cost is a lock, a bisect and, every CMD_FLUSH s, a ~2 KB file."""
+    real = getattr(store, 'command', None)
+    if not callable(real) or getattr(real, '_timed', False):
+        return
+    prefix = _cmd_prefix(store)
+
+    def command(*args, **kwargs):
+        t0 = time.perf_counter()
+        try:
+            return real(*args, **kwargs)
+        finally:
+            record_command((time.perf_counter() - t0) * 1000, prefix)
+    command._timed = True
+    command.__wrapped__ = real
+    command.__doc__ = real.__doc__
+    store.command = command
+
+
+def _hist_pct(hist: list, q: float):
+    """The q-quantile (ms) of a CMD_EDGES histogram, interpolated inside its bucket."""
+    n = sum(hist)
+    if not n:
+        return None
+    rank, seen = q * n, 0
+    for i, c in enumerate(hist):
+        if c and seen + c >= rank:
+            lo = CMD_EDGES[i - 1] if i else 0
+            hi = CMD_EDGES[i] if i < len(CMD_EDGES) else CMD_EDGES[-1] * 2
+            return round(lo + (hi - lo) * max(0.0, rank - seen) / c, 1)
+        seen += c
+    return float(CMD_EDGES[-1] * 2)
+
+
+def command_stats(store, now: float | None = None) -> dict:
+    """Commands of every worker of this database over the last CMD_WINDOW minutes (and the
+    current one so far): per minute, p50/p90/avg latency. This process from memory, the
+    others from their files (files silent for an hour are removed)."""
+    now = time.time() if now is None else now
+    prefix = _cmd_prefix(store)
+    cur = int(now // 60)
+    window = range(cur - CMD_WINDOW, cur + 1)
+    sources = []
+    with _cmd_lock:
+        mine = _cmd.get(prefix) or {}
+        if mine:
+            sources.append(({m: r for m, r in mine.items()}, _cmd_meta[prefix]['since']))
+    for path in glob.glob(glob.escape(prefix) + '*.json'):
+        data = _load_json(path, {}) or {}
+        if data.get('pid') == os.getpid():
+            continue
+        at = float(data.get('at') or 0)
+        if now - at > 3600:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+            continue
+        rows = {}
+        for m, r in (data.get('minutes') or {}).items():
+            try:
+                rows[int(m)] = r
+            except ValueError:
+                continue
+        sources.append((rows, int(data.get('since') or cur)))
+    n, total, hist = 0, 0.0, [0] * (len(CMD_EDGES) + 1)
+    workers = 0
+    for rows, _ in sources:
+        workers += any(rows.get(m) for m in window)
+        for m in window:
+            r = rows.get(m)
+            if not r:
+                continue
+            n += int(r[0])
+            total += float(r[1])
+            for i, c in enumerate(r[2][:len(hist)]):
+                hist[i] += int(c)
+    # The rate over the time the window really covers (a worker started 2 minutes ago: 2 minutes).
+    first = min((since for _, since in sources), default=cur)
+    seconds = max(60.0, now - max(window[0], first) * 60)
+    return dict(per_min=round(n * 60 / seconds, 1), n=n, minutes=round(seconds / 60, 1), workers=workers,
+                p50=_hist_pct(hist, .5), p90=_hist_pct(hist, .9), avg=round(total / n, 1) if n else None)
 
 
 # ---------------------------------------------------------------- helpers
@@ -497,9 +654,12 @@ def players(db, days: int, today: datetime.date) -> dict:
         mark = ':start'
     args = dict(since=since, **{'from': (today - datetime.timedelta(days=max(days, 30) - 1)).isoformat()})
     dau = _series(span, run(act + f'SELECT day, COUNT(*) FROM act WHERE day >= {mark} GROUP BY day', dict(args, start=start)))
-    window = lambda n: run(act + f'SELECT COUNT(DISTINCT sid) FROM act WHERE day >= {mark}',
-                           dict(args, start=(today - datetime.timedelta(days=n - 1)).isoformat())).fetchone()[0]
-    wau, mau = window(7), window(30)
+    # 7 and 30 days in one pass over the union (it is the heaviest read of the summary).
+    w7, m30 = ('%(w7)s', '%(start)s') if pg else (':w7', ':start')
+    wau, mau = (int(x or 0) for x in run(act + f'SELECT COUNT(DISTINCT CASE WHEN day >= {w7} THEN sid END), COUNT(DISTINCT sid) '
+                                                f'FROM act WHERE day >= {m30}',
+                                                dict(args, w7=(today - datetime.timedelta(days=6)).isoformat(),
+                                                     start=(today - datetime.timedelta(days=29)).isoformat())).fetchone())
     new_sessions = _series(span, db.execute('SELECT day, COUNT(*) FROM stat_births WHERE day >= ? GROUP BY day', (start,)))
     new_players = _series(span, db.execute('SELECT b.day, COUNT(*) FROM stat_births b WHERE b.day >= ? AND EXISTS '
                                            '(SELECT 1 FROM stat_active a WHERE a.sid = b.sid) GROUP BY b.day', (start,)))
@@ -585,7 +745,7 @@ def server_light(store) -> dict:
     return dict(version=__version__, uptime=int(time.time() - STARTED), started=round(STARTED, 3),
                 db_bytes=None if pg else _file_bytes(store), python='.'.join(map(str, sys.version_info[:3])),
                 sqlite=None if pg else sqlite3.sqlite_version, database='PostgreSQL' if pg else 'SQLite ' + sqlite3.sqlite_version,
-                story=bool(getattr(store, 'story', False)))
+                backend='PostgreSQL' if pg else 'SQLite', story=bool(getattr(store, 'story', False)))
 
 
 def career_names() -> dict:
@@ -682,6 +842,52 @@ def _db_errors() -> tuple:
     return dbm.Error if dbm is not None else (sqlite3.Error,)
 
 
+def _brief(exc) -> str:
+    """`Type: message` of an error, one line, short, without a connection URL."""
+    msg = ' '.join(str(exc).split())
+    if '://' in msg:
+        msg = ' '.join(w for w in msg.split() if '://' not in w)
+    return f'{type(exc).__name__}: {msg[:200]}' if msg else type(exc).__name__
+
+
+def _log(where: str, exc) -> None:
+    try:
+        sys.stderr.write(f'[admin-stats] {where}: {_brief(exc)}\n')
+    except Exception:  # noqa: BLE001 - a closed stderr must not stop the job
+        pass
+
+
+# ---------------------------------------------------------------- live counters (cheap, on request)
+def live(store) -> dict:
+    """Sessions active in the last 5 min / 1 h / 24 h, new players today, the database size
+    and the backend, plus the command rate and latency. Index range reads only (a few ms on
+    production), read-only, under LIVE_MS; never a save."""
+    t0 = time.perf_counter()
+    now = time.time()
+    today = datetime.datetime.now(VN).date()
+    since = lambda s: time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(now - s))   # the TEXT form of updated_at (UTC)
+    midnight = (datetime.datetime.combine(today, datetime.time()) - datetime.timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')
+    pg = _store_pg(store)
+    with _read(store, LIVE_MS) as db:
+        # Text against text in the same format: the range is read from stat_sessions_seen (a cast would scan).
+        m5, h1, d1 = (int(x or 0) for x in db.execute(
+            'SELECT SUM(CASE WHEN updated_at >= ? THEN 1 ELSE 0 END), SUM(CASE WHEN updated_at >= ? THEN 1 ELSE 0 END), COUNT(*) '
+            'FROM sessions WHERE updated_at >= ?', (since(300), since(3600), since(86400))).fetchone())
+        born = db.execute('SELECT COUNT(*) FROM stat_births WHERE day = ?', (today.isoformat(),)).fetchone()[0]
+        played = db.execute('SELECT COUNT(*) FROM stat_births b WHERE b.day = ? AND EXISTS '
+                            '(SELECT 1 FROM stat_active a WHERE a.sid = b.sid)', (today.isoformat(),)).fetchone()[0]
+        accounts_today = db.execute('SELECT COUNT(*) FROM accounts WHERE created_at >= ?', (midnight,)).fetchone()[0]
+        if pg:
+            size, version = db.pg("SELECT pg_database_size(current_database()), current_setting('server_version')").fetchone()
+            database = 'PostgreSQL ' + str(version).split()[0]
+        else:
+            size, database = _file_bytes(store), 'SQLite ' + sqlite3.sqlite_version
+    out = dict(active=dict(m5=m5, h1=h1, h24=d1), new_today=dict(sessions=int(born), players=int(played), accounts=int(accounts_today)),
+               commands=command_stats(store, now), db_bytes=int(size or 0), database=database,
+               backend='PostgreSQL' if pg else 'SQLite', today=today.isoformat())
+    return _stamp(out, t0)
+
+
 # ---------------------------------------------------------------- the background job
 def _paths(store) -> dict:
     base = str(store.path) + '-adminstats'
@@ -764,6 +970,73 @@ def _unlock(fd) -> None:
         os.close(fd)
 
 
+def _write_beat(fd, data: dict) -> None:
+    """The job's heartbeat, written into the lock file it holds (see the module doc)."""
+    raw = json.dumps(data, separators=(',', ':')).encode()
+    try:
+        os.ftruncate(fd, 0)
+        if hasattr(os, 'pwrite'):
+            os.pwrite(fd, raw, 0)
+        else:  # pragma: no cover - Windows
+            os.lseek(fd, 0, 0)
+            os.write(fd, raw)
+    except OSError:
+        pass
+
+
+def job_state(store) -> dict:
+    """Who computes the snapshot now: {state, pid?, phase?, beat_at?}.
+    running: a job (this process, or another one with a fresh heartbeat);
+    held:    the lock is taken but nobody beats (an operator hold, or a stuck job): the
+             result file stays as it is until the lock is released;
+    idle:    nobody holds the lock (no operator looked lately: the next request starts it)."""
+    with _jobs_lock:
+        job = _jobs.get(store.path)
+        mine = job is not None and job.thread is not None and job.thread.is_alive()
+    if mine:
+        return dict(state='running', pid=os.getpid(), phase=job.phase, beat_at=round(job.beat_at, 3))
+    path = _paths(store)['lock']
+    beat = _load_json(path, {}) or {}
+    beat = beat if isinstance(beat, dict) else {}
+    at = float(beat.get('at') or 0)
+    if time.time() - at <= BEAT_STALE and _alive(beat.get('pid')):
+        return dict(state='running', pid=beat.get('pid'), phase=beat.get('phase'), beat_at=at)
+    if not os.path.exists(path):
+        return dict(state='idle', beat_at=None)
+    fd = _try_lock(path)  # a crashed holder's flock() is gone with it: then the lock is free
+    if fd is not None:
+        _unlock(fd)
+        return dict(state='idle', beat_at=at or None)
+    return dict(state='held', beat_at=at or None)
+
+
+def _alive(pid) -> bool:
+    """Is process `pid` (same machine: the lock file is in the data directory) still there?"""
+    if not isinstance(pid, int) or pid <= 0:
+        return False
+    if pid == os.getpid() or os.name == 'nt':  # Windows: os.kill would END the process
+        return True
+    try:
+        os.kill(pid, 0)
+    except PermissionError:
+        return True
+    except (OSError, ValueError, OverflowError):
+        return False
+    return True
+
+
+def snapshot_info(store, generated_at, period: float = 0.0, deferred=None) -> dict:
+    """{computed_at, age, old, job, held, reason}: how current a snapshot is. `old` once it is
+    STALE_AFTER past its normal refresh period; `held` when the lock is held without a job
+    (reason 'hold') or when the job itself waits for the players to thin out (reason 'busy')."""
+    now = time.time()
+    js = job_state(store)
+    age = round(max(0.0, now - float(generated_at)), 1) if generated_at else None
+    reason = 'hold' if js['state'] == 'held' else ('busy' if deferred else None)
+    return dict(computed_at=generated_at, age=age, old=age is None or age > period + STALE_AFTER,
+                job=js['state'], held=reason is not None, reason=reason)
+
+
 class _Job:
     """Save-derived numbers and table sizes, refreshed in the background (see the module doc).
     `lock_fd` None: a one-off synchronous run (refresh_now) without pauses."""
@@ -775,9 +1048,23 @@ class _Job:
         self.thread = None
         self.saves_at = self.sys_at = self.summary_at = 0.0
         self.purged_at = 0.0
+        self.phase, self.beat_at = 'start', 0.0
         loaded = _load_json(self.p['rows'], {})
         self.rows = loaded if isinstance(loaded, dict) else {}   # sid -> [revision, compact row or None]
         self.out = dict(_result(store))
+        self.out.pop('deferred', None)
+        self.errors = {}   # pass -> {error, at}: the last failure of each pass, until it succeeds again
+
+    def beat(self, phase: str | None = None, force: bool = False) -> None:
+        """Heartbeat into the lock file (background job only), at most every BEAT_EVERY s
+        unless the phase changes."""
+        if phase and phase != self.phase:
+            self.phase, force = phase, True
+        now = time.time()
+        if self.lock_fd is None or (not force and now - self.beat_at < BEAT_EVERY):
+            return
+        self.beat_at = now
+        _write_beat(self.lock_fd, dict(pid=os.getpid(), at=round(now, 3), phase=self.phase))
 
     # ---- one chunk of saves: [(sid, revision, compact row or None)]
     def _chunk(self, part: list) -> list:
@@ -820,6 +1107,7 @@ class _Job:
                 if i:  # keep what was read: the next pass goes on from there
                     _write_json(self.p['rows'], self.rows)
                 return
+            self.beat('saves')
             part = todo[i:i + batch]
             t = time.monotonic()
             try:
@@ -848,6 +1136,7 @@ class _Job:
         out['took_ms'] = round((time.perf_counter() - t0) * 1000, 1)
         self.out['saves'] = out
         self.out.pop('progress', None)
+        self.out.pop('deferred', None)
         self.saves_at = time.time()
         if todo or not os.path.exists(self.p['rows']):
             _write_json(self.p['rows'], self.rows)
@@ -860,10 +1149,14 @@ class _Job:
             want = _load_json(self.p['want'], {}) or {}
             if time.time() - float(want.get('at') or 0) > IDLE:
                 return False
-            if _load() <= BUSY_LOAD:
+            load = _load()
+            if load <= BUSY_LOAD:
                 return True
             if waited >= BUSY_WAIT:
+                # The page says so ("held for the players"); the next loop turn tries again.
+                self.out['deferred'] = dict(reason='busy', at=round(time.time(), 3), load=round(load, 2))
                 return False
+            self.beat('saves-wait')
             time.sleep(5)
             waited += 5
 
@@ -875,8 +1168,7 @@ class _Job:
             if pg:
                 names = [r[0] for r in db.pg("SELECT c.relname FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace "
                                              "WHERE c.relkind = 'r' AND n.nspname = current_schema() AND c.relname <> 'mnl_meta' ORDER BY c.relname")]
-                size = db.pg("SELECT COALESCE(SUM(pg_total_relation_size(c.oid)), 0) FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace "
-                             "WHERE c.relkind = 'r' AND n.nspname = current_schema()").fetchone()[0]
+                size = db.pg('SELECT pg_database_size(current_database())').fetchone()[0]   # as the live counter
                 engine = 'PostgreSQL ' + db.pg('SHOW server_version').fetchone()[0].split()[0]
             else:
                 names = [r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name")]
@@ -906,6 +1198,7 @@ class _Job:
         out of time (a cold disk) serves this copy instead (see get_summary)."""
         out = dict(self.out.get('summary') or {})
         for days in RANGES:
+            self.beat('summary')
             out[str(days)] = summary(self.store, days, JOB_SUMMARY_MS)
             self.out['summary'] = out
             if self.pause:
@@ -925,11 +1218,26 @@ class _Job:
 
     def write(self) -> None:
         self.out['job'] = dict(pid=os.getpid(), at=round(time.time(), 3))
+        self.out['errors'] = dict(self.errors)
         _write_json(self.p['result'], self.out)
+
+    def step(self, name: str, fn) -> bool:
+        """One pass. A failure is logged with its message, kept in the result (`errors`) and
+        does not stop the other passes; the caller retries it after its period."""
+        self.beat(name)
+        try:
+            fn()
+        except Exception as exc:  # noqa: BLE001 - one pass failing must not starve the others
+            _log(f'job {name}', exc)
+            self.errors[name] = dict(error=_brief(exc), at=round(time.time(), 3))
+            return False
+        self.errors.pop(name, None)
+        return True
 
     # ---- the loop (only in the process that holds the lock file)
     def run(self) -> None:
         try:
+            self.beat('start', force=True)
             while True:
                 want = _load_json(self.p['want'], {}) or {}
                 now = time.time()
@@ -938,29 +1246,34 @@ class _Job:
                         _jobs.pop(self.store.path, None)
                         break
                 fresh = float(want.get('fresh') or 0)
-                try:  # cheapest first: the first screen, the table sizes, then the saves
-                    if now - self.summary_at >= SUMMARY_EVERY:
-                        self.pass_summary()
-                        self.write()
-                    if now - self.sys_at >= SYSTEM_EVERY or fresh > self.sys_at:
-                        self.pass_system()
-                        self.write()
-                    if now - self.saves_at >= SAVES_EVERY or fresh > self.saves_at:
-                        self.pass_saves()
-                        self.write()
-                    if now - self.purged_at >= PURGE_EVERY:
-                        self.purge()
-                except (Busy,) + _db_errors() as exc:
-                    sys.stderr.write(f'[admin-stats] job: {type(exc).__name__}\n')
+                # Cheapest first: the first screen, the table sizes, then the saves. A pass that
+                # failed waits its normal period (the saves: SAVES_RETRY) before the next try.
+                if now - self.summary_at >= SUMMARY_EVERY:
+                    if not self.step('summary', self.pass_summary):
+                        self.summary_at = time.time()
+                    self.write()
+                if now - self.sys_at >= SYSTEM_EVERY or fresh > self.sys_at:
+                    if not self.step('system', self.pass_system):
+                        self.sys_at = time.time()
+                    self.write()
+                if now - self.saves_at >= SAVES_EVERY or fresh > self.saves_at:
+                    if not self.step('saves', self.pass_saves):
+                        self.saves_at = time.time() - SAVES_EVERY + SAVES_RETRY
+                    self.write()
+                if now - self.purged_at >= PURGE_EVERY:
+                    if not self.step('purge', self.purge):
+                        self.purged_at = time.time()
+                self.beat('wait')
                 self.event.wait(2)
                 self.event.clear()
         except Exception as exc:  # noqa: BLE001 - never take the worker down
-            sys.stderr.write(f'[admin-stats] job stopped: {type(exc).__name__}\n')
+            _log('job stopped', exc)
             with _jobs_lock:
                 if _jobs.get(self.store.path) is self:
                     _jobs.pop(self.store.path, None)
         finally:
             if self.lock_fd is not None:
+                _write_beat(self.lock_fd, dict(pid=os.getpid(), at=0, phase='stopped'))
                 _unlock(self.lock_fd)
                 self.lock_fd = None
 
@@ -1058,6 +1371,17 @@ def _summary_now(store, days: int) -> dict:
     return dict(got, ai=ai_usage(), stale=True)
 
 
+def _with_age(data: dict, store=None) -> dict:
+    """The summary as served: `computed_at` (when its numbers were read), `age` (seconds),
+    `old` (older than STALE_AFTER: the page warns), and for the job's copy the job's state."""
+    at = data.get('generated_at')
+    age = round(max(0.0, time.time() - float(at)), 1) if at else None
+    out = dict(data, computed_at=at, age=age, old=age is None or age > STALE_AFTER)
+    if data.get('stale') and store is not None:
+        out['job'] = job_state(store)['state']
+    return out
+
+
 def _empty_saves() -> dict:
     return dict(play_stats([]), sample=dict(size=0, limit=SAMPLE, engine='sql', reread=0, skipped=0))
 
@@ -1067,8 +1391,10 @@ def saves_section(store) -> dict:
     r = _result(store)
     sv = r.get('saves')
     if not sv:
-        return dict(pending=True, retry_ms=3000, progress=r.get('progress'))
-    out = dict(sv, cached=True, age=round(max(0.0, time.time() - sv['generated_at']), 1))
+        info = snapshot_info(store, None, SAVES_EVERY, r.get('deferred'))
+        return dict(pending=True, retry_ms=3000, progress=r.get('progress'), snapshot=info, errors=r.get('errors') or {})
+    out = dict(sv, cached=True, age=round(max(0.0, time.time() - sv['generated_at']), 1),
+               snapshot=snapshot_info(store, sv['generated_at'], SAVES_EVERY, r.get('deferred')), errors=r.get('errors') or {})
     if r.get('progress'):
         out['progress'] = r['progress']
     return out
@@ -1081,7 +1407,8 @@ def system_section(store) -> dict:
         return dict(pending=True, retry_ms=3000)
     srv = dict(server_light(store), tables=sysd['tables'], db_bytes=sysd['db_bytes'], database=sysd['database'])
     return dict(server=srv, generated_at=sysd['generated_at'], took_ms=sysd['took_ms'], cached=True,
-                age=round(max(0.0, time.time() - sysd['generated_at']), 1), ai=ai_usage())
+                age=round(max(0.0, time.time() - sysd['generated_at']), 1), ai=ai_usage(),
+                snapshot=snapshot_info(store, sysd['generated_at'], SYSTEM_EVERY), errors=r.get('errors') or {})
 
 
 def _full(store, days: int) -> dict:
@@ -1126,6 +1453,7 @@ def _refresh(key, produce) -> dict:
     except Busy:
         raise
     except _db_errors() as exc:  # the server answers OSError with a plain 500
+        _log('read', exc)
         raise OSError('admin stats unavailable') from exc
     finally:
         with _cache_lock:
@@ -1145,7 +1473,7 @@ def _background(key, produce) -> None:
     try:
         _refresh(key, produce)
     except Exception as exc:  # keep serving the stale copy
-        sys.stderr.write(f'[admin-stats] {type(exc).__name__}\n')
+        _log('refresh', exc)
 
 
 def _serve(key, produce, ttl: float, fresh: bool = False) -> dict:
@@ -1200,18 +1528,29 @@ def get_summary(store, value=None, fresh: bool = False) -> dict:
     days = parse_range(value)
     wake(store)
     try:
-        return dict(_serve(('summary', store.path, days), lambda: _summary_now(store, days), SUMMARY_TTL, fresh), ai=ai_usage())
+        return _with_age(dict(_serve(('summary', store.path, days), lambda: _summary_now(store, days), SUMMARY_TTL, fresh), ai=ai_usage()), store)
     except Busy:  # nothing to show yet: the page keeps its placeholders and asks again
         return dict(pending=True, retry_ms=3000, range=days)
 
 
-SECTIONS = ('saves', 'system')
+SECTIONS = ('saves', 'system', 'live')
+
+
+def get_live(store) -> dict:
+    """The live counters, cached LIVE_TTL per worker; they neither wake nor wait for the job."""
+    try:
+        return dict(_serve(('live', store.path), lambda: live(store), LIVE_TTL))
+    except Busy:  # over LIVE_MS (a very busy database): the page keeps what it shows and asks again
+        return dict(pending=True, retry_ms=5000)
 
 
 def get_section(store, name, fresh: bool = False) -> dict:
-    """GET /api/admin/stats/section?name=saves|system: from the job's result file (instant)."""
+    """GET /api/admin/stats/section?name=saves|system|live: the job's result file (instant),
+    or the live counters."""
     if name not in SECTIONS:
         raise ValueError('section')
+    if name == 'live':
+        return get_live(store)
     wake(store, fresh)
     return saves_section(store) if name == 'saves' else system_section(store)
 

@@ -99,6 +99,9 @@ small{font-size:.857em}
 .notice.bad .ic{color:var(--bad)}
 .notice.warn{background:var(--warn-soft);border-color:color-mix(in srgb,var(--warn) 35%,transparent);color:var(--ink)}
 .notice.warn .ic{color:var(--warn)}
+.notice.info{background:var(--info-soft);border-color:color-mix(in srgb,var(--info) 35%,transparent);color:var(--ink)}
+.notice.info .ic{color:var(--info)}
+.warn-text{color:var(--warn);font-weight:700}
 .loading,.empty{display:grid;justify-items:center;gap:8px;padding:48px 16px;color:var(--muted);text-align:center}
 
 /* ---- sign-in ---------------------------------------------------------------------- */
@@ -163,6 +166,17 @@ small{font-size:.857em}
 .kpi-sub{display:inline-flex;align-items:center;gap:3px;font-size:12px;color:var(--ink-2);overflow-wrap:anywhere}
 .kpi.hot{box-shadow:inset 3px 0 0 var(--warn)}
 .kpi.hot .kpi-num{color:var(--warn)}
+/* "Trực tiếp": the live counters band on top of Tổng quan */
+.live{display:grid;gap:8px;min-width:0;padding:12px;border:1px solid color-mix(in srgb,var(--good) 30%,var(--line));border-radius:var(--r);background:color-mix(in srgb,var(--good-soft) 45%,var(--surface))}
+.live-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:0 2px}
+.live-head h2{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--good)}
+.live-head small{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.live .dot{width:8px;height:8px;border-radius:50%;background:var(--good);box-shadow:0 0 0 0 color-mix(in srgb,var(--good) 55%,transparent);animation:live-dot 2s ease-out infinite}
+@keyframes live-dot{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--good) 55%,transparent)}100%{box-shadow:0 0 0 7px transparent}}
+.live .kpi{background:var(--surface)}
+.live .note{margin:0;padding:0 2px}
+.live.is-busy .kpis{opacity:.7}
+@media (prefers-reduced-motion:reduce){.live .dot{animation:none}}
 .cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
 .col{display:grid;gap:14px;min-width:0}
 .card{display:grid;gap:12px;min-width:0;padding:16px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}

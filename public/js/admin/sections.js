@@ -3,8 +3,8 @@
  *  - the save-derived cards of "Tổng quan" (GET /api/admin/stats/section?name=saves);
  *  - the "Hệ thống" view (…?name=system, plus the summary and the sample facts).
  * Aggregates only: no names, session ids or contact details. */
-import {esc,icon,num,dec,share,stamp,bytes,span,tag} from './ui.js';
-import {kpi,kv,card,table,moreButton} from './stats.js';
+import {esc,icon,num,dec,share,stamp,bytes,span,tag,hm,ago} from './ui.js';
+import {kpi,kv,card,table,moreButton,savesFresh} from './stats.js';
 
 const THEME={kem:'Kem sữa',tra_xanh:'Trà xanh',bien:'Biển chiều',keo:'Kẹo ngọt',dem:'Phố đêm'};
 const LANG={vi:'Tiếng Việt',en:'English'};
@@ -53,7 +53,7 @@ function lifeCard(d){
 
 /** The four save-derived cards of "Tổng quan" plus the sample footnote. */
 export function savesCards(d,name,more){
-  return {careers:careersCard(d,name,more),economy:economyCard(d),play:playCard(d),life:lifeCard(d),
+  return {head:savesFresh(d),careers:careersCard(d,name,more),economy:economyCard(d),play:playCard(d),life:lifeCard(d),
     foot:`<p class="foot">Số về cách chơi, kinh tế, đời sống lấy từ mẫu ${num(d.sample.size)} lượt chơi có thao tác gần nhất (tối đa ${num(d.sample.limit)}), cập nhật ${stamp(d.generated_at)}. Không chứa tên, mã phiên hay thông tin liên lạc.</p>`};
 }
 
@@ -75,11 +75,15 @@ export function systemView(top,sys,sv,api,more){
     ['Chế độ câu chuyện',s.story?tag('bật','good'):tag('tắt')],['AI',top.ai.configured?tag('đã cấu hình','good'):tag('chưa cấu hình','warn')],
     ['Khởi động lúc',stamp(s.started)],
   ],'kv2'));
-  const sample=sv?.sample;
+  const sample=sv?.sample,snap=sv?.snapshot||sys.snapshot,errors={...(sys.errors||{}),...(sv?.errors||{})};
+  const job=snap?(snap.held?tag(snap.reason==='busy'?'tạm giữ: máy chủ bận':'đang tạm giữ','warn'):snap.job==='running'?tag('đang chạy','good'):tag('nghỉ')):'—';
+  const when=t=>t?`${hm(t)} <small>${ago(t)}</small>`:'—';
   const calc=card('Số liệu thống kê',kv([
-    ['Tạo lúc',stamp(top.generated_at)],['Thời gian tính',`${dec(top.took_ms)} ms${sv?` <small>+ mẫu ${dec(sv.took_ms)} ms</small>`:''}`],['Bộ nhớ đệm',top.cached?`dùng bản ${dec(top.age)} giây trước`:'vừa tính mới'],
+    ['Tổng quan tính lúc',when(top.computed_at??top.generated_at)],['Thời gian tính',`${dec(top.took_ms)} ms${sv?` <small>+ mẫu ${dec(sv.took_ms)} ms</small>`:''}`],['Bộ nhớ đệm',top.stale?'bản tính nền':top.cached?`dùng bản ${dec(top.age)} giây trước`:'vừa tính mới'],
+    ['Việc tính nền',job],['Bản lưu tính lúc',when(sv?.snapshot?.computed_at)],['Bảng dữ liệu tính lúc',when(sys.snapshot?.computed_at??sys.generated_at)],
     ['Mẫu lượt chơi',sample?`${num(sample.size)} <small>/ tối đa ${num(sample.limit)}</small>`:'—'],['Cách đọc mẫu',sample?(sample.engine==='sql'?(pg?'PostgreSQL jsonb':'SQLite JSON'):'Python (dự phòng)'):'—'],['Ngày (giờ VN)',esc(top.today)],
-  ],'kv2'),{note:'Phần tóm tắt được lưu đệm 30 giây. Số liệu từ lượt chơi và bảng dữ liệu được máy chủ tính dần ở chế độ nền (1–2 phút một lần) để không làm chậm người chơi.'});
+  ],'kv2')+Object.entries(errors).map(([k,e])=>`<div class="notice bad">${icon('alert',16)}<div>Lần tính “${esc(k)}” lúc ${hm(e.at)} bị lỗi: <code>${esc(e.error)}</code></div></div>`).join(''),
+  {note:'Tóm tắt lưu đệm 30 giây, số trực tiếp 10 giây. Bảng dữ liệu tính nền 2 phút một lần; số liệu từ lượt chơi 30 phút một lần, trên mẫu lượt chơi gần nhất, và tạm giữ khi máy chủ bận để không làm chậm người chơi.'});
   const who=card('Phiên vận hành',kv([
     ['Đăng nhập với',`@${esc(api.account?.username||'')}`],['Tên hiển thị',esc(api.account?.display||'')],
   ],'kv2')+`<p class="note">Quyền vận hành đến từ biến môi trường <code>ADMIN_USERS</code> trên máy chủ và được kiểm tra lại ở mỗi lần gọi.</p>

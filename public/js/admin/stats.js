@@ -2,7 +2,7 @@
  * (game/admin_stats.py). The save-derived cards (careers, play, economy, life) and the
  * "Hệ thống" view come later from GET /api/admin/stats/section and are drawn by
  * ./sections.js, loaded on demand. Aggregates only: no names, session ids or contact details. */
-import {esc,icon,num,dec,pct,share,dm,stamp,last,bytes,span,hours,ago,kindOf,STATUS,tag} from './ui.js';
+import {esc,icon,num,dec,pct,share,dm,stamp,last,bytes,span,hours,ago,hm,clockS,kindOf,STATUS,tag} from './ui.js';
 
 /* ---- parts ------------------------------------------------------------------ */
 export function kpi(label,value,sub,{tone='',action='',ic=''}={}){
@@ -86,10 +86,45 @@ function serverCard(d){
     {extra:`<button type="button" class="btn ghost sm" data-go="he-thong">${icon('server',15)} Chi tiết</button>`});
 }
 
+/* ---- live counters (GET …/section?name=live, every 15 s) ------------------------------ */
+const ms=v=>v==null?'—':`${dec(v)} ms`;
+/** The "Trực tiếp" band: cheap counters read on request (never the saves, never the job). */
+export function liveView(L,{error='',busy=false}={}){
+  if(!L){
+    const k=`<div class="kpi skel-kpi"><span class="kpi-label">&nbsp;</span><b class="kpi-num">&nbsp;</b><small class="kpi-sub">&nbsp;</small></div>`;
+    return `<section class="live" aria-busy="true"><header class="live-head"><h2>${icon('pulse',15)} Trực tiếp</h2><small>${error?esc(error):'Đang đọc…'}</small></header><div class="kpis k4 skel" aria-hidden="true">${k.repeat(4)}</div></section>`;
+  }
+  const a=L.active,n=L.new_today,c=L.commands||{};
+  const cmdSub=c.n?`p50 ${ms(c.p50)} · p90 ${ms(c.p90)}`:'chưa có thao tác';
+  return `<section class="live${busy?' is-busy':''}" aria-label="Số liệu trực tiếp">
+    <header class="live-head"><h2><span class="dot" aria-hidden="true"></span>Trực tiếp</h2><small>cập nhật ${clockS(L.generated_at)}${error?` · <span class="warn-text">${esc(error)}</span>`:''}</small></header>
+    <div class="kpis k4">
+      ${kpi('Đang chơi',num(a.m5),`5 phút · 1 giờ ${num(a.h1)} · 24 giờ ${num(a.h24)}`)}
+      ${kpi('Mới hôm nay',num(n.players),`${num(n.sessions)} lượt mở · ${num(n.accounts)} tài khoản`)}
+      ${kpi('Thao tác / phút',dec(c.per_min),cmdSub)}
+      ${kpi('Cơ sở dữ liệu',bytes(L.db_bytes),esc(L.database||L.backend||''),{action:'he-thong'})}
+    </div>
+    <p class="note">“Đang chơi”: lượt chơi có thao tác trong 5 phút qua. Thao tác/phút và độ trễ p50/p90 tính trên ${dec(c.minutes||0)} phút gần nhất${c.workers>1?` của ${num(c.workers)} tiến trình`:''}.</p>
+  </section>`;
+}
+/** When the first screen is not fresh (the job's copy, a slow disk), say from when. */
+export function summaryFresh(d){
+  if(!d.stale&&!d.old)return '';
+  const when=`Số liệu tổng quan tính lúc ${hm(d.computed_at)} (${ago(d.computed_at)})`;
+  return `<div class="notice ${d.old?'warn':'info'}" role="status">${icon(d.old?'alert':'clock',16)}<div>${when}: máy chủ bận nên dùng bản tính ở chế độ nền.${d.old?' Số có thể đã cũ.':''}</div></div>`;
+}
+/** The save-derived cards' freshness: held for the players, or simply old. */
+export function savesFresh(sv){
+  const s=sv?.snapshot;if(!s||!s.computed_at)return '';
+  if(s.held)return `<div class="notice info" role="status">${icon('pause',16)}<div>Số liệu bản lưu cập nhật lúc <b>${hm(s.computed_at)}</b> (đang tạm giữ để game nhanh).</div></div>`;
+  if(s.old)return `<div class="notice warn" role="status">${icon('alert',16)}<div>Số liệu bản lưu cập nhật lúc <b>${hm(s.computed_at)}</b> (${ago(s.computed_at)}), đang chờ lần tính mới.</div></div>`;
+  return '';
+}
+
 /** `lazy`: {careers, economy, play, life} → HTML of each save-derived card (the real card
  * once ./sections.js drew it, else a placeholder the page loads when it scrolls into view). */
-export function overviewView(d,lazy,more){
-  const p=d.players,f=d.feedback,r=p.retention,s=d.server;
+export function overviewView(d,lazy,more,L={}){
+  const p=d.players,f=d.feedback,r=p.retention,s={...d.server,db_bytes:L.data?.db_bytes??d.server.db_bytes};  // the live size is the current one
   const kpis=`<div class="kpis">
     ${kpi('Hoạt động hôm nay',num(last(p.dau)),`7 ngày ${num(p.wau)} · 30 ngày ${num(p.mau)}`)}
     ${kpi('Người mới hôm nay',num(last(p.new_players)),`${num(last(p.new_sessions))} lượt mở · ${num(last(p.new_accounts))} tài khoản`)}
@@ -98,6 +133,6 @@ export function overviewView(d,lazy,more){
     ${kpi('Góp ý chưa đọc',num(f.unread),`${num(f.open)} đang mở ${icon('chevron',12)}`,{tone:f.unread?'hot':'',action:'gop-y'})}
     ${kpi('Máy chủ',`v${esc(s.version)}`,`chạy ${span(s.uptime)} · ${bytes(s.db_bytes)}`,{action:'he-thong'})}
   </div>`;
-  return kpis+playersCard(d,more)+`<div class="cols"><div class="col">${lazy.careers}${lazy.economy}${aiCard(d)}</div><div class="col">${lazy.play}${lazy.life}${feedbackCard(d)}${serverCard(d)}</div></div>`+
+  return liveView(L.data,{error:L.error})+summaryFresh(d)+kpis+playersCard(d,more)+(lazy.head||'')+`<div class="cols"><div class="col">${lazy.careers}${lazy.economy}${aiCard(d)}</div><div class="col">${lazy.play}${lazy.life}${feedbackCard(d)}${serverCard({...d,server:s})}</div></div>`+
     (lazy.foot||'');
 }

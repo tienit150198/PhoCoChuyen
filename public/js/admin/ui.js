@@ -24,6 +24,8 @@ const PATHS={
   external:'M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5',
   clock:'M12 2a10 10 0 100 20 10 10 0 000-20ZM12 6v6l4 3',
   sparkle:'M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7Z',
+  pause:'M12 2a10 10 0 100 20 10 10 0 000-20ZM10 8.5v7M14 8.5v7',
+  pulse:'M3 12h4l2-6 4 12 2-6h6',
 };
 export const icon=(name,size=18)=>`<svg class="ic" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${PATHS[name]||PATHS.sparkle}"/></svg>`;
 
@@ -34,6 +36,9 @@ export const pct=n=>n==null?'—':`${nf1.format(n)}%`;
 export const share=(n,total)=>total?pct(Math.round(1000*n/total)/10):'';
 export const dm=iso=>`${iso.slice(8,10)}/${iso.slice(5,7)}`;
 export const clock=t=>new Date(t*1000).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+export const clockS=t=>new Date(t*1000).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+/** "14:23", or "14:23 29/09" when not today. */
+export function hm(t){if(t==null)return'—';const d=new Date(t*1000);return d.toDateString()===new Date().toDateString()?clock(t):`${clock(t)} ${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;}
 export const stamp=t=>new Date(t*1000).toLocaleString('vi-VN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit',year:'numeric'});
 export const last=a=>a?.length?a[a.length-1]:0;
 export function bytes(b){if(b==null)return'—';const u=['B','KB','MB','GB'];let i=0;while(b>=1024&&i<u.length-1){b/=1024;i++;}return `${nf1.format(b)} ${u[i]}`;}

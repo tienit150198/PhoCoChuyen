@@ -1,6 +1,6 @@
 """Admin statistics ("Thống kê"): metrics on a seeded DB, privacy of the payload,
 the cache, the AI counters and the admin-only HTTP route (game/admin_stats.py)."""
-import copy, datetime, http.client, json, os, sqlite3, tempfile, threading, time, unittest
+import copy, datetime, http.client, io, json, os, sqlite3, subprocess, sys, tempfile, threading, time, unittest
 from pathlib import Path
 from unittest.mock import patch
 
@@ -20,15 +20,39 @@ _BUDGETS = dict(REQUEST_MS=60000, STATEMENT_MS=60000, CHUNK_MS=60000, COUNT_MS=6
 _saved = {}
 
 
+# The background saves pass waits while the machine is busy (load average): a loaded test
+# machine must not decide the result. The test of that rule patches _load itself.
+_idle = patch.object(st, '_load', return_value=0.0)
+
+
 def setUpModule():
     for k, v in _BUDGETS.items():
         _saved[k] = getattr(st, k)
         setattr(st, k, v)
+    _idle.start()
 
 
 def tearDownModule():
+    _idle.stop()
     for k, v in _saved.items():
         setattr(st, k, v)
+
+
+HOLD = """import fcntl, json, os, sys, time
+fd = os.open(sys.argv[1], os.O_RDWR | os.O_CREAT, 0o600)
+fcntl.flock(fd, fcntl.LOCK_EX)
+if sys.argv[2] == 'beat':  # a job that crashes mid-pass: a fresh heartbeat, then SIGKILL
+    os.ftruncate(fd, 0); os.write(fd, json.dumps(dict(pid=os.getpid(), at=time.time(), phase='saves')).encode())
+print('held', flush=True)
+time.sleep(120)
+"""
+
+
+def hold_lock(path, beat=False):
+    """Another process holding the job's lock (a worker's job, or the operator's hold unit)."""
+    proc = subprocess.Popen([sys.executable, '-c', HOLD, path, 'beat' if beat else 'plain'], stdout=subprocess.PIPE, text=True)
+    assert proc.stdout.readline().strip() == 'held'
+    return proc
 
 
 def vn_today():
@@ -520,6 +544,213 @@ class SplitTests(Seeded):
             self.assertEqual(os.stat(st._paths(self.store)['rows']).st_mode & 0o077, 0)
 
 
+@unittest.skipIf(os.name == 'nt', 'flock() holder in a child process: POSIX')
+class FreshnessTests(Seeded):
+    """Is the snapshot current, and does the job come back after a crash? (module doc)"""
+
+    def wait_saves(self):
+        for _ in range(300):
+            sv = st.get_section(self.store, 'saves')
+            if not sv.get('pending'):
+                return sv
+            time.sleep(0.02)
+        self.fail('saves section still pending')
+
+    def test_a_lock_left_by_a_crashed_job_recovers(self):
+        self.save(fresh_player)
+        lock = st._paths(self.store)['lock']
+        proc = hold_lock(lock, beat=True)              # a worker's job, mid-pass
+        try:
+            st.wake(self.store)
+            self.assertNotIn(self.store.path, st._jobs)  # it runs elsewhere
+            self.assertEqual(st.job_state(self.store)['state'], 'running')
+        finally:
+            proc.kill(); proc.wait(); proc.stdout.close()                    # the worker dies (SIGKILL): no clean unlock
+        self.assertTrue(os.path.exists(lock))           # the file and its fresh heartbeat stay behind
+        self.assertEqual(st.job_state(self.store)['state'], 'idle')   # ... but nobody holds it
+        st.wake(self.store)                             # the next request takes it over
+        self.assertIn(self.store.path, st._jobs)
+        self.assertEqual(self.wait_saves()['play']['sample'], 1)
+        beat = json.loads(Path(lock).read_text())
+        self.assertEqual(beat['pid'], os.getpid())      # the job's heartbeat, in its lock file
+        self.assertEqual(st.job_state(self.store)['state'], 'running')
+        st.stop_jobs()
+        self.assertEqual(st.job_state(self.store)['state'], 'idle')
+
+    def test_an_operator_hold_is_honoured_and_shown(self):
+        self.save(fresh_player)
+        job = st._Job(self.store, None, pause=0)
+        job.pass_saves(); job.pass_system(); job.write()   # the last snapshot before the hold
+        p = st._paths(self.store)
+        res = json.loads(Path(p['result']).read_text())
+        res['saves']['generated_at'] -= 3 * 3600           # computed three hours ago
+        st._write_json(p['result'], res)
+        st.clear_cache()
+        self.save(fresh_player)
+        proc = hold_lock(p['lock'])                        # e.g. systemd-run --unit mnl-adminstats-hold flock ...
+        try:
+            sv = st.get_section(self.store, 'saves', fresh=True)
+            self.assertNotIn(self.store.path, st._jobs)    # the hold wins: no save is read
+            self.assertEqual(sv['play']['sample'], 1)      # the held numbers, as they were
+            snap = sv['snapshot']
+            self.assertEqual((snap['job'], snap['held'], snap['reason'], snap['old']), ('held', True, 'hold', True))
+            self.assertEqual(snap['computed_at'], res['saves']['generated_at'])
+            self.assertAlmostEqual(snap['age'], 3 * 3600, delta=60)
+            self.assertEqual(st.get_section(self.store, 'system')['snapshot']['job'], 'held')
+            live = st.get_section(self.store, 'live')      # the live counters do not depend on the job
+            self.assertEqual(live['active']['h24'], 2)
+        finally:
+            proc.kill(); proc.wait(); proc.stdout.close()
+        st.wake(self.store)                                # hold released: the job runs again
+        self.assertIn(self.store.path, st._jobs)
+        for _ in range(300):
+            sv = st.get_section(self.store, 'saves', fresh=True)
+            if sv['play']['sample'] == 2:
+                break
+            time.sleep(0.02)
+        self.assertEqual(sv['play']['sample'], 2)
+        self.assertEqual((sv['snapshot']['job'], sv['snapshot']['held'], sv['snapshot']['old']), ('running', False, False))
+        self.assertLess(sv['snapshot']['age'], 60)
+
+    def test_snapshot_age_shows_on_the_summary(self):
+        self.save(fresh_player)
+        nojob = patch.object(st, 'wake', lambda store, fresh=False: None)
+        nojob.start()
+        self.addCleanup(nojob.stop)
+        top = st.get_summary(self.store, 7)
+        self.assertEqual(top['computed_at'], top['generated_at'])
+        self.assertLess(top['age'], 5)
+        self.assertFalse(top['old'])
+        job = st._Job(self.store, None, pause=0)
+        job.pass_summary()
+        job.out['summary']['7']['generated_at'] -= 2 * 3600
+        job.write()
+        st.clear_cache()
+        with patch.object(st, 'summary', side_effect=st.Busy('slow disk')):
+            top = st.get_summary(self.store, 7)        # the job's copy, and how old it is
+        self.assertTrue(top['stale'])
+        self.assertTrue(top['old'])
+        self.assertAlmostEqual(top['age'], 2 * 3600, delta=60)
+        self.assertEqual(top['job'], 'idle')
+        self.assertEqual(top['players']['total'], 1)
+
+    def test_a_failing_pass_is_logged_and_does_not_block_the_others(self):
+        self.save(fresh_player)
+        calls = []
+        def broken(store, days, ms=None):
+            calls.append(days)
+            raise sqlite3.OperationalError('no such column: boom')
+        err = io.StringIO()
+        with patch.object(st, 'summary', broken), patch.object(sys, 'stderr', err):
+            st.wake(self.store)
+            sv = self.wait_saves()                      # the saves pass ran after the failed summary
+            for _ in range(300):
+                if (st._result(self.store).get('errors') or {}).get('summary'):
+                    break
+                time.sleep(0.02)
+            time.sleep(2.5)                             # a loop turn later: no retry storm
+            st.stop_jobs()
+        self.assertEqual(sv['play']['sample'], 1)
+        self.assertEqual(calls, [7])                    # tried once, next try after SUMMARY_EVERY
+        self.assertIn('[admin-stats] job summary: OperationalError: no such column: boom', err.getvalue())
+        self.assertIn('boom', st._result(self.store)['errors']['summary']['error'])
+        self.assertIn('summary', st.get_section(self.store, 'saves')['errors'])
+
+
+class LiveTests(Seeded):
+    def test_live_counters_read_the_text_timestamps(self):
+        stamps = (-60, -240, -1800, -7000, -80000, -200000)   # seconds ago
+        for ago in stamps:
+            token = self.save(fresh_player)
+            with self.store.connect() as db:
+                db.execute('UPDATE sessions SET updated_at=? WHERE sid=?',
+                           (time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time.time() + ago)), self.sid(token)))
+        self.save(played=False)                         # opened just now, never played
+        accounts.register(self.store, self.tokens[0], dict(REG, username='live_one'))
+        live = st.live(self.store)
+        self.assertEqual(live['active'], dict(m5=3, h1=4, h24=6))   # the unplayed save was opened just now
+        self.assertEqual(live['new_today'], dict(sessions=7, players=6, accounts=1))
+        self.assertGreater(live['db_bytes'], 0)
+        self.assertEqual(live['backend'], 'PostgreSQL' if self.store.pg else 'SQLite')
+        self.assertTrue(live['database'].startswith(live['backend']))
+        self.assertEqual(live['today'], vn_today().isoformat())
+        again = st.get_live(self.store)
+        self.assertIn('active', again)
+        self.assertTrue(st.get_live(self.store)['cached'])   # LIVE_TTL
+        self.assertNotIn(self.store.path, st._jobs)          # never wakes the job
+
+    def test_live_counters_are_budgeted(self):
+        self.save(fresh_player)
+        with patch.object(st, 'live', side_effect=st.Busy('over LIVE_MS')):
+            self.assertEqual(st.get_live(self.store).get('pending'), True)   # the page keeps its numbers, asks again
+
+
+class CommandTimerTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.store = type('S', (), {})()
+        self.store.path = str(Path(self.tmp.name) / 'g.db')
+        self.prefix = st._cmd_prefix(self.store)
+        self.addCleanup(lambda: (st._cmd.pop(self.prefix, None), st._cmd_meta.pop(self.prefix, None)))
+
+    def test_rate_and_percentiles_of_this_worker(self):
+        start = (int(time.time() // 60) - 3) * 60      # the worker started three minutes ago
+        for i in range(100):                          # 100 commands: 1..100 ms
+            st.record_command(i + 1, self.prefix, now=start + i * 0.5)
+        for i in range(50):
+            st.record_command(8, self.prefix, now=start + 70 + i * 0.1)
+        c = st.command_stats(self.store, start + 180)
+        self.assertEqual((c['n'], c['workers']), (150, 1))
+        self.assertEqual(c['minutes'], 3)             # the rate is over the 3 minutes it has run
+        self.assertEqual(c['per_min'], 50.0)
+        self.assertTrue(20 <= c['p50'] <= 30, c)      # the 75th of 150: 51 at 8 ms, then 9, 10, ... ms
+        self.assertTrue(75 <= c['p90'] <= 100, c)
+        self.assertAlmostEqual(c['avg'], (5050 + 400) / 150, places=0)
+
+    def test_workers_share_through_their_files(self):
+        now = time.time()
+        minute = int(now // 60) - 1
+        hist = [0] * (len(st.CMD_EDGES) + 1)
+        hist[st.CMD_EDGES.index(300)] = 10               # 10 slow commands (200-300 ms)
+        st._write_json(f'{self.prefix}999991.json', dict(pid=999991, at=now - 5, since=minute - 10,
+                                                        minutes={str(minute): [10, 2500.0, hist]}))
+        st._write_json(f'{self.prefix}999992.json', dict(pid=999992, at=now - 7200, since=minute - 200,
+                                                        minutes={str(minute): [99, 1.0, hist]}))   # silent for 2 h
+        st.record_command(10, self.prefix, now=minute * 60 + 1)
+        c = st.command_stats(self.store, now)
+        self.assertEqual((c['n'], c['workers']), (11, 2))
+        self.assertAlmostEqual(c['per_min'], 11 / c['minutes'], places=0)
+        self.assertTrue(200 <= c['p50'] <= 300, c)
+        self.assertFalse(os.path.exists(f'{self.prefix}999992.json'))   # cleaned up
+        self.assertTrue(os.path.exists(f'{self.prefix}{os.getpid()}.json'))  # this worker flushed its own
+
+    def test_timer_wraps_store_command_once_and_counts_errors_too(self):
+        calls = []
+        def command(*a, **k):
+            calls.append(a)
+            if a and a[0] == 'bad':
+                raise ValueError('bad')
+            return 'ok'
+        self.store.command = command
+        st.install_command_timer(self.store)
+        st.install_command_timer(self.store)
+        self.assertIs(self.store.command.__wrapped__, command)
+        self.assertEqual(self.store.command('good'), 'ok')
+        with self.assertRaises(ValueError):
+            self.store.command('bad')
+        with st._cmd_lock:
+            self.assertEqual(sum(r[0] for r in st._cmd[self.prefix].values()), 2)
+
+    def test_histogram_percentile(self):
+        hist = [0] * (len(st.CMD_EDGES) + 1)
+        self.assertIsNone(st._hist_pct(hist, .5))
+        hist[0] = 10                                    # all at <= 2 ms
+        self.assertLessEqual(st._hist_pct(hist, .9), 2)
+        hist[-1] = 90                                   # most over the last edge
+        self.assertGreater(st._hist_pct(hist, .5), st.CMD_EDGES[-1])
+
+
 class CacheTests(Seeded):
     def test_cached_then_refreshed_in_background(self):
         self.save(fresh_player)
@@ -669,7 +900,8 @@ class StatsHTTPTests(unittest.TestCase):
 
     def test_summary_and_sections_admin_only(self):
         anon, player = self.device(), self.signed('regular_jane')
-        paths = ('/api/admin/stats/summary?range=7', '/api/admin/stats/section?name=saves', '/api/admin/stats/section?name=system')
+        paths = ('/api/admin/stats/summary?range=7', '/api/admin/stats/section?name=saves', '/api/admin/stats/section?name=system',
+                 '/api/admin/stats/section?name=live')
         for path in paths:
             for dev in (anon, player):
                 status, data = self.req(dev, path)
@@ -702,10 +934,19 @@ class StatsHTTPTests(unittest.TestCase):
             self.assertIn(key, sv)
         sysd = ready('/api/admin/stats/section?name=system')
         self.assertIn('sessions', {t['name'] for t in sysd['server']['tables']})
+        self.assertEqual((sv['snapshot']['job'], sv['snapshot']['held']), ('running', False))
+        self.assertIn('age', top)
+        # A game command (even a refused one) is timed for the live counters.
+        self.assertIn(self.req(admin, ('/api/command', dict(request_id='x' * 12, expected_revision=0, action='nope', payload={})))[0], (400, 409))
+        live = ready('/api/admin/stats/section?name=live')
+        self.assertGreaterEqual(live['active']['m5'], 1)
+        self.assertIn(live['backend'], ('SQLite', 'PostgreSQL'))
+        with st._cmd_lock:
+            self.assertGreaterEqual(sum(r[0] for r in st._cmd[st._cmd_prefix(self.server.store)].values()), 1)
         self.assertEqual(self.req(admin, '/api/admin/stats/summary?range=365')[0], 400)
         self.assertEqual(self.req(admin, '/api/admin/stats/section?name=secrets')[0], 400)
         self.assertEqual(self.req(admin, '/api/admin/stats/section')[0], 400)
-        self.assertNotIn('op_admin3', json.dumps([top, sv, sysd]))
+        self.assertNotIn('op_admin3', json.dumps([top, sv, sysd, live]))
         with patch.dict(os.environ, {'ADMIN_USERS': ''}):
             for path in paths:
                 self.assertEqual(self.req(admin, path)[0], 403)
