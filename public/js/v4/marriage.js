@@ -231,7 +231,7 @@ async function onClick(mr,data,el){
     case'send':{
       const n=Math.round(Number(S.money.send)),m=S.money,partner=S.view.couple.partner.name;
       if(!(n>0)){S.flash={text:'Nhập số xu muốn gửi nhé.',kind:'bad'};render();return;}
-      if(!(await env.confirmAction(m.loan?`Cho ${partner} mượn ${xu(n)}?`:`Gửi ${partner} ${xu(n)}?`,m.loan?'Khoản này vào sổ nợ của hai bạn. Người ấy trả dần lúc nào cũng được.':'Tiền chuyển từ ví của bạn sang ví của người ấy.',m.loan?'Cho mượn':'Gửi')))return;
+      if(!(await env.confirmAction(m.loan?`Cho ${partner} mượn ${xu(n)}?`:`Gửi ${partner} ${xu(n)}?`,m.loan?'Khoản này vào sổ nợ của hai bạn. Người ấy trả dần lúc nào cũng được.':'Tiền chuyển từ ví của bạn sang ví của người ấy.',m.loan?'Cho mượn':'Gửi',{cost:n,pocket:'wallet'})))return;
       const d=await post('send',{amount:n,note:m.note,loan:m.loan,rid:rid()});if(d)S.money.send='';render();return;
     }
     case'help_ask':{
@@ -279,7 +279,7 @@ async function onClick(mr,data,el){
     case'reject':post('reject',{id:Number(data.id)});return;
     case'confirm':{
       const w=S.view.wedding,share=w.share_mine.deposit;
-      if(!(await env.confirmAction('Chốt kế hoạch và đặt cọc?',`Phần cọc của bạn là ${xu(share)}, của ${S.view.couple.partner.name} là ${xu(w.share_partner.deposit)}. Cọc không hoàn lại nếu hủy.`,`Đặt cọc · ${xu(share)}`)))return;
+      if(!(await env.confirmAction('Chốt kế hoạch và đặt cọc?',`Phần cọc của bạn là ${xu(share)}, của ${S.view.couple.partner.name} là ${xu(w.share_partner.deposit)}. Cọc không hoàn lại nếu hủy.`,`Đặt cọc · ${xu(share)}`,{cost:share,pocket:'wallet'})))return;
       post('confirm',{id:w.id,version:w.version,announce:S.answer.wedding!==false});return;
     }
     case'divorce':{const d=await post('divorce',{confirm:S.confirm});if(d){S.confirm='';S.tab='home';}return;}
@@ -512,7 +512,7 @@ function shop(){
     const pk=pickOf(r.id),price=r.price+colorExtra(r.id,pk.metal,pk.stone),poor=w<price;
     return `<article class="mr-card mr-ring"><div class="mr-ring-prev">${ringSVG(colorsOf(pk.metal,pk.stone),88,`${r.name}, ${colorName(pk.metal,pk.stone)}`)}</div>
       <div class="mr-ring-main"><h3>${esc(r.name)}</h3><p>${esc(r.desc)}</p>${swatches('pick',{tier:r.id},r.id,pk)}</div>
-      <div class="mr-ring-buy"><b>${xu(price)}</b>${price>r.price?`<small>gồm ${xu(price-r.price)} màu</small>`:''}${btn(poor?'Chưa đủ tiền':'Mua','ring_buy',{tier:r.id},poor?'cream':'primary',poor||full?' disabled':'')}</div></article>`;
+      <div class="mr-ring-buy"><b>${xu(price)}</b>${price>r.price?`<small>gồm ${xu(price-r.price)} màu</small>`:''}${btn(poor?`Thiếu ${xu(price-Math.max(0,w))}`:'Mua','ring_buy',{tier:r.id},poor?'cream':'primary',poor||full?' disabled':'')}</div></article>`;
   }).join('');
   const mine=[...(v.couple?.ring?[{...v.couple.ring,wear:true}]:[]),...owned];
   const rc=S.recolor;

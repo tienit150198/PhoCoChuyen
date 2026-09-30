@@ -41,7 +41,8 @@ const attrsOf=data=>Object.entries(data||{}).map(([k,v])=>` data-${k}="${esc(v)}
 /** data-* attributes that make any element perform a step through the global click delegate. */
 export function goAttrs(go){
   if(!go)return '';
-  if(go.cmd&&go.confirm)return ` data-action="v4Cmd" data-op="${esc(go.cmd)}" data-payload="${esc(JSON.stringify(go.payload||{}))}" data-confirm="${esc(go.confirm)}"`;
+  // go.cost / go.pocket ('fund' by default, 'wallet'): the confirm then says how much is missing (v4/money.js).
+  if(go.cmd&&go.confirm)return ` data-action="v4Cmd" data-op="${esc(go.cmd)}" data-payload="${esc(JSON.stringify(go.payload||{}))}" data-confirm="${esc(go.confirm)}"${go.cost?` data-cost="${esc(go.cost)}" data-pocket="${esc(go.pocket||'fund')}"`:''}`;
   if(go.cmd)return ` data-command="${esc(go.cmd)}" data-payload="${esc(JSON.stringify(go.payload||{}))}"`;
   if(go.act)return ` data-action="${esc(go.act)}"${attrsOf(go.data)}`;
   if(go.sel)return ` data-action="v4Go" data-sel="${esc(go.sel)}"`;

@@ -225,7 +225,7 @@ function intake(t,x,now=null){
   if(!now)return section('📋 Phiếu nhận bé',form)+section('🔎 Kiểm tra tận tay',tiles);
   // Once every check is done the form and the findings fold into one line with the facts the later steps need.
   const parts=x.cc.job_parts[job]||[],k=parts.filter(p=>t.inspected.includes(p)).length,warns=parts.filter(p=>t.found?.[p]&&warn(p)).length;
-  const sum=[f.kg!=null?`${f.kg} kg`:job==='feed'?`${n.kg} kg`:'',f.mood?x.esc(MOOD[f.mood]||f.mood):'',job==='groom'&&n.rx?'💊 có đơn thuốc':'',`đã kiểm ${k}/${parts.length}`,warns?`⚠️ ${warns} điều lưu ý`:''].filter(Boolean).join(' · ');
+  const sum=[f.kg!=null?`${f.kg} kg`:job==='feed'?`${n.kg} kg`:'',f.mood?x.esc(MOOD[f.mood]||f.mood):'',job==='groom'&&n.rx?'💊 có đơn thuốc':'',f.skin==='sensitive'?'da nhạy cảm':'',job==='groom'&&n.short_nails?'✂️ chủ muốn móng thật ngắn':'',n.no_treat?'🚫 không bánh thưởng':'',`đã kiểm ${k}/${parts.length}`,warns?`⚠️ ${warns} điều lưu ý`:''].filter(Boolean).join(' · ');
   return part(x,t,now,'check','📋 Phiếu nhận bé & kiểm tra',form+`<h5>🔎 Kiểm tra tận tay</h5>`+tiles,{done:k===parts.length,sum});
 }
 
@@ -311,6 +311,7 @@ function groomJob(t,x,now=new Set()){
       const condItem=itemInfo(x,'conditioner'),condLocked=(x.room.level||1)<(condItem.unlock||1);
       body=`<div class="tile-grid pc-tiles pc-shampoos">${tiles}</div>
         <p class="small muted">${x.esc(x.cc.shampoos.find(s=>s.id===v.shampoo)?.note||'Chọn sữa tắm hợp với bé: tuổi, da, loài, đơn thuốc.')}</p>
+        <p class="small pc-bathfacts">${SPECIES_EMOJI[t.needs.species]||''} ${x.esc(x.cc.stage_names?.[t.needs.stage]||'')}${t.facts?.skin==='sensitive'?' · da nhạy cảm':t.facts?.skin?' · da thường':''}${t.needs.rx?' · 💊 có đơn bác sĩ':''}</p>
         <div class="pc-thermo ${zone}"><span>🌡️</span>${stepBtn(x,'−','temp',-1,30,45)}<b>${temp}°C</b>${stepBtn(x,'+','temp',1,30,45)}
           <small>${zone==='ok'?'✓ Ấm vừa':zone==='cold'?'🥶 Lạnh':zone==='hot'?'🥵 Hơi nóng':'⛔ BỎNG!'} · chuẩn ${tp.low}–${tp.high}°C</small></div>
         <div class="row wrap">${condLocked?`<span class="tag">🔒 Dầu xả mở ở cấp ${condItem.unlock}</span>`:setBtn(x,`✨ Dầu xả (${x.stock('conditioner')})`,'cond',!v.cond,v.cond)}
@@ -324,7 +325,7 @@ function groomJob(t,x,now=new Set()){
   if(sv.includes('nails')){
     html+=part(x,t,g.nick&&!g.stanched?new Set(['nails']):now,'nails','✂️ Cắt móng',g.nails?`<p class="small">✓ ${g.nails==='short'?'Cắt ngắn':'Tỉa đầu móng'}.</p>${g.nick?(g.stanched?'<span class="tag amber">🩹 Đã cầm máu — nhớ báo chủ</span>':x.cmd(`🩹 Rắc bột cầm máu (${x.stock('styptic')})`,'pc_styptic',{task:t.id},'danger')):''}`
       :`<div class="row wrap pc-cuts">${x.cmd('✂️ Tỉa đầu móng','pc_nails',{task:t.id,cut:'tip'},'ghost pc-cut-tip',wet||busy||off)}${x.cmd('✂️ Cắt thật ngắn','pc_nails',{task:t.id,cut:'short'},'ghost pc-cut-short',wet||busy||off)}</div>
-       <p class="small muted">⚫ Móng đen: chỉ tỉa đầu.${wet?' 💧 Sấy khô trước.':''}</p>`,
+       <p class="small muted">${t.facts?.nails==='dark'?'⚫ Móng đen: chỉ tỉa đầu móng.':t.facts?.nails==='clear'?'⚪ Móng trắng, thấy tủy.':'⚫ Móng đen: chỉ tỉa đầu.'}${t.needs.short_nails?' Chủ muốn cắt thật ngắn.':''}${wet?' 💧 Sấy khô trước.':''}</p>`,
       {done:!!g.nails,sum:g.nails?(g.nails==='short'?'cắt ngắn':'tỉa đầu móng')+(g.nick?' · 🩹 rỉ máu':''):wet?'sấy khô trước':''});
   }
   if(sv.includes('ears')){
@@ -464,7 +465,7 @@ function feedJob(t,x,now=new Set()){
   }
   const care=n.species==='dog'?(t.walked?'<span class="tag green">✓ Đã dắt đi dạo</span>':x.cmd(`🦮 Dắt đi dạo (túi ${x.stock('poop_bag')})`,'pc_walk',{task:t.id},st(t,x,'walk'),!x.stock('poop_bag')))
     :(t.litter?'<span class="tag green">✓ Khay cát sạch</span>':x.cmd('🧹 Dọn khay cát','pc_litter',{task:t.id},st(t,x,'litter')));
-  const treat=x.cmd(`🍪 Bánh thưởng (${x.stock('treat')})`,'pc_treat',{task:t.id},'ghost small',!x.stock('treat')||t.treats>=3);
+  const treat=x.cmd(`🍪 Bánh thưởng (${x.stock('treat')})`,'pc_treat',{task:t.id},'ghost small',!x.stock('treat')||t.treats>=3)+(n.no_treat?'<span class="tag danger">Chủ dặn: không bánh thưởng</span>':'');
   const chore=!!(t.walked||t.litter);
   return intake(t,x,now)+part(x,t,now,'feed','🥣 Bát ăn',bowl,{done:!!t.fed,sum:t.fed?`${t.bowl.grams} g ${t.bowl.food==='own'?'đồ chủ gửi':'hạt tiệm'}${t.ate===false?' · bé không ăn':''}`:'',cls:'pc-feedbox'})
     +medCard(t,x,now)+part(x,t,now,'chore','🐾 Vận động & vệ sinh',`<div class="row wrap">${care}${treat}</div>`,{done:chore,sum:chore?(n.species==='dog'?'đã dắt đi dạo':'khay cát sạch'):''});
@@ -492,7 +493,10 @@ function adoptJob(t,x,now=new Set()){
   }).join('');
   const none=`<button type="button" class="pc-adoptee none ${vv.pet==='none'?'selected':''}" data-action="car:set" data-key="pet" data-val="none" aria-pressed="${vv.pet==='none'}" ${done?'disabled':''}><span class="pc-adoptee-emoji" aria-hidden="true">🤝</span><b>Chưa giao bé nào</b><small>Thật lòng giải thích, hẹn ngày hội sau.</small></button>`;
   const parts=x.cc.job_parts.adopt||[],k=parts.filter(p=>t.inspected.includes(p)).length;
-  return part(x,t,now,'check','🏡 Phỏng vấn nhận nuôi',qs,{done:k===parts.length,sum:`đã hỏi ${k}/${parts.length}`})+section('🐾 Các bé đang chờ nhà',`<div class="pc-adoptees">${pets}${none}</div>`);
+  // The family's answers stay in sight next to the pets while choosing (the interview part folds once done).
+  const said=parts.filter(p=>t.found?.[p]).map(p=>{const i=x.cc.parts[p]||{emoji:'🔎',label:p};return `<span class="tag">${x.esc(i.emoji)} ${x.esc(t.found[p])}</span>`;}).join('');
+  const recap=k?`<div class="pc-answers"><p class="small"><b>Nhà gia đình:</b> “${x.esc(n.note)}”</p><div class="row wrap">${said}</div></div>`:'';
+  return part(x,t,now,'check','🏡 Phỏng vấn nhận nuôi',qs,{done:k===parts.length,sum:`đã hỏi ${k}/${parts.length}`})+section('🐾 Các bé đang chờ nhà',`${recap}<div class="pc-adoptees">${pets}${none}</div>`);
 }
 function adoptSide(t,x,gd){
   return receiptFold('🧾 Phí nhận nuôi',`<div class="kv"><span>Tiêm phòng, triệt sản</span><b>${x.money(price(x,'adopt'))}</b></div>`,x.money(price(x,'adopt')))+todoFold(x,gd);

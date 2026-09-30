@@ -693,7 +693,7 @@ CAREERS = {'milk_tea': {'emoji': '🧋',
                       '12:00, 15:00 hoặc 18:00.',
                       '⚡ Giao hỏa tốc Mây Xanh tới trong 15–30 phút nhưng đắt nhất. Dùng khi đang có khách chờ.',
                       '📬 Trả tiền lúc đặt. Thùng tới: [[Mở thùng & xếp lên kệ]], chạm đếm từng món rồi [[Nhận vào '
-                      'kệ]]. Thiếu thì [[Khiếu nại phần thiếu]].',
+                      'kệ]]. Thiếu thì bấm [[Khiếu nại phần thiếu]] hiện ngay trên đầu Kho để được hoàn tiền.',
                       '🧭 Hết giấy, ruy băng, mút hay băng rôn giữa đơn: gợi ý bước tiếp hiện nút nhập hàng; hàng đang '
                       'về thì nút báo còn bao lâu.',
                       '🌹 Hồng và ly mới về còn nụ chặt. Đơn đặt trước nên nhập hoa trước 1–2 ngày.',
@@ -1314,8 +1314,9 @@ CAREERS = {'milk_tea': {'emoji': '🧋',
                       'how': 'Còn bảo hành thì bấm [[Sửa lại miễn phí]], tiệm chịu tiền linh kiện. Còn bảo hành mà '
                              '[[Tính tiền]] là bị 1★.'}],
             'steps': ['📝 Bấm [[Hỏi khách kể bệnh của máy]] để nghe khách tả lỗi.',
-                      '🧾 Chạm đúng vết xước, phụ kiện. Điện thoại, laptop tích [[Hỏi quyền xem dữ liệu]], rồi [[Ghi '
-                      'phiếu nhận máy]].',
+                      '🧾 Nhìn máy trên thảm, chạm đúng các vết xước. Phụ kiện: phiếu ghi sẵn dòng “Khách đưa kèm”, '
+                      'chạm đúng những món đó. Điện thoại, laptop tích [[Hỏi quyền xem dữ liệu]], rồi [[Ghi phiếu '
+                      'nhận máy]].',
                       '🔬 Chọn phép đo phù hợp. Mỗi phép tốn một lượt; đo quá 2 lần khách bắt đầu sốt ruột.',
                       '🧠 Trong bảng giả thuyết, bấm [[Chốt]] bệnh khớp với số đo. Đừng chốt bệnh số đo đã loại.',
                       '💰 Chọn loại linh kiện ([[Chính hãng]], [[Tương thích]], [[Đồ tháo máy]]…) rồi bấm [[Gửi báo '
@@ -3438,7 +3439,9 @@ GROUPS = [{'id': 'start',
                          'muốn dùng cho chỗ kia thì rút hoặc góp trước.',
                          '🔁 Quỹ → ví: [[Rút]]. Ví → quỹ: [[Góp]]. Ví → tài khoản: [[Nộp tiền]]. Tài khoản → ví: [[Rút '
                          'tiền]].',
-                         '🧾 Sổ ví ghi từng khoản vào ra của ví; [[Sổ tiệm]] → [[Thu chi]] ghi quỹ của từng nơi.'],
+                         '🧾 Sổ ví ghi từng khoản vào ra của ví; [[Sổ tiệm]] → [[Thu chi]] ghi quỹ của từng nơi.',
+                         '💰 Lúc nhập hàng, mua sắm, gửi rút tiền: ngay dưới tiêu đề trang luôn có dòng “Ví … · Quỹ '
+                         'tiệm …”. Không đủ tiền thì bảng xác nhận ghi rõ còn thiếu bao nhiêu.'],
               'pic': 'money',
               'go': {'action': 'stView', 'label': 'Mở ví của bạn', 'data': {'view': 'wallet'}}},
              {'id': 'salary',
@@ -3788,7 +3791,8 @@ GROUPS = [{'id': 'start',
              {'id': 'stock_claim',
               'emoji': '📮',
               'title': 'Khiếu nại và chấm điểm',
-              'points': ['📉 Giao thiếu thì nhận đúng số có, rồi vào [[Thùng hàng]] bấm [[Khiếu nại phần thiếu]].',
+              'points': ['📉 Giao thiếu thì nhận đúng số có. Ngay trên đầu Kho hiện thẻ “Giao thiếu”: bấm '
+                         '[[Khiếu nại phần thiếu]] là được hoàn tiền (đơn cũ hơn: xem ở [[Thùng hàng]]).',
                          '💵 Mỗi đơn khiếu nại được một lần, bạn được hoàn tiền phần thiếu.',
                          '⭐ Mỗi đơn đã nhận được chấm sao nhà cung cấp một lần; họ sẽ trả lời bạn.',
                          '📊 Số sao bạn chấm hiện cạnh tên nhà cung cấp lần sau đặt hàng.']},
