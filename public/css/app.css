@@ -2550,3 +2550,28 @@ html.reduce-motion .is-held::after,body.reduce-motion .is-held::after{animation:
 html[data-layout="phone"] .dw-cs .dw-choices{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
 html[data-layout="phone"] .dw-cs .dw-choice{flex-direction:column;align-items:flex-start;gap:4px;min-height:44px;padding:8px 10px;overflow-wrap:anywhere}
 html[data-layout="phone"] .dw-cs .dw-choice>svg{width:18px;height:18px}
+
+/* 💰 Top bar money (0.9.8, v4/wealth.js): two labelled chips, "🏪 Quỹ 358" and "👛 Ví 14" (red in debt); either
+   opens Tiền của bạn. The group keeps the .cozy-till class (tour, coin pop); one line on a 390px phone. */
+.cozy-till.hud-money{flex-direction:row;align-items:center;justify-content:center;gap:6px;padding:0;max-width:none;min-width:0}
+@media (hover:hover){.cozy-till.hud-money:hover{background:none}}
+.hud-chip{display:inline-flex;align-items:baseline;gap:4px;min-width:0;min-height:36px;padding:6px 11px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink);white-space:nowrap;line-height:1.2}
+.hud-chip .hud-ico{align-self:center;font-size:1rem;line-height:1}
+.hud-chip small{font-size:.8rem;font-weight:700;color:var(--muted)}
+.hud-chip b{font-size:1.067rem;font-weight:800;font-variant-numeric:tabular-nums}
+.hud-chip.neg{background:var(--bad-soft);border-color:var(--bad)}
+.hud-chip.neg b,.hud-chip.neg small{color:var(--bad)}
+@media (hover:hover){.hud-chip:hover{border-color:var(--line-strong)}}
+.hud-chip.bump b{display:inline-block;animation:mnl-bump .55s var(--ease)}
+html[data-layout="phone"] .cozy-till.hud-money{flex:0 1 auto!important;gap:4px;padding:0}
+html[data-layout="phone"] .hud-chip{gap:3px;min-height:34px;padding:4px 8px}
+html[data-layout="phone"] .hud-chip small{display:inline;font-size:.733rem;color:var(--muted)}
+html[data-layout="phone"] .hud-chip .hud-ico{font-size:.867rem}
+html[data-layout="phone"] .hud-chip b{font-size:.933rem}
+html[data-layout="phone"] .hud-chip.tight{gap:2px;padding:4px 6px}
+html[data-layout="phone"] .hud-chip.tight b{font-size:.867rem}
+html[data-layout="phone"] .hud-chip.tight small{font-size:.667rem}
+html[data-layout="phone"] .cozy-till.hud-money:has(.tight){gap:3px}
+html[data-layout="phone"] .hud-chip.tight .hud-ico,html[lang="en"][data-layout="phone"] .hud-chip .hud-ico{display:none}   /* "Fund", "Wallet" are longer words */
+html[data-layout="phone"] .topbar .hud-day{flex-shrink:0}
+body.reduce-motion .hud-chip.bump b{animation:none}

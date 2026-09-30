@@ -3,6 +3,7 @@
 export default [
  {"version":"0.9.8","date":"2026-09-30","items":[
   {"emoji":"🏰","text":"Mua nhà: thêm biệt thự và 4 loại căn hộ (studio, 1 phòng ngủ, 2 phòng ngủ, penthouse).","go":{"action":"house"}},
+  {"emoji":"💰","text":"Bấm vào tiền trên cùng để xem hết: ví, quỹ từng nơi làm, ngân hàng, nhà.","go":{"action":"money"}},
   {"emoji":"📈","text":"Giá nhà tăng 20%. Nhà đã mua giữ nguyên giá đã trả và khoản vay đang trả góp."},
   {"emoji":"🏦","text":"Penthouse và biệt thự cần điểm tín dụng cao hơn mới vay được."},
   {"emoji":"🗂️","text":"Nhà đang rao chia theo Phòng thuê, Căn hộ, Nhà phố, Biệt thự: ghi rõ góp mỗi tháng và còn thiếu bao nhiêu."},

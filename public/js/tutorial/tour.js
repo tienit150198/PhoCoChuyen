@@ -81,11 +81,12 @@ const STEPS=[
     find:()=>firstVis('#sheet[open] [data-action="start"]')||vis('#taskHUD [data-action="prepare"]'),
     done:()=>!!room()?.open},
   {id:'money',emoji:'🪙',text:'Quỹ tiệm: tiền của tiệm.',stage:true,
-    find:()=>vis('#topbar .cozy-till')},
+    find:()=>vis('#topbar .hud-fund')||vis('#topbar .cozy-till')},
   // Calm screen (0.8.4): the wallet chip left the stage; the wallet sits in the status sheet behind the day.
   {id:'wallet',emoji:'👛',stage:true,
-    text:()=>vis('#jrHud:not([hidden])')?(run.shown.includes('journey')?'Ví của bạn, trả tiền phòng.':'Ví của bạn. Bấm để mở Hành trình.'):'Bấm ngày: ví của bạn, tinh thần, đánh giá.',
-    when:()=>!!J()?.story,plan:()=>!!J()?.story,find:()=>vis('#jrHud:not([hidden])')||vis('#topbar .hud-day')},
+    // 0.9.8: the wallet is back in the top bar (👛 chip, v4/wealth.js); tapping it lists every pocket.
+    text:()=>vis('#jrHud:not([hidden])')?(run.shown.includes('journey')?'Ví của bạn, trả tiền phòng.':'Ví của bạn. Bấm để mở Hành trình.'):vis('#topbar .hud-wallet')?'Ví của bạn. Bấm để xem hết tiền.':'Bấm ngày: ví của bạn, tinh thần, đánh giá.',
+    when:()=>!!J()?.story,plan:()=>!!J()?.story,find:()=>vis('#jrHud:not([hidden])')||vis('#topbar .hud-wallet')||vis('#topbar .hud-day')},
   {id:'task',emoji:'📋',text:'Bấm Làm tiếp.',stage:true,
     when:()=>!!room()?.open,
     find:()=>vis('#taskHUD .task-card')||vis('#taskHUD .note-card'),

@@ -16,6 +16,8 @@ import {careerSubmit,careerInput,loadCareerModules,careerUI,hasCareerUI,careerCo
 import {applyGuide,guideAction,nextHint,stepCta,plainText} from './v4/guide.js';
 import {inventoryView,feedbackView,situationView,jobView as jobAppView,v4Action,v4Submit,v4Input} from './v4/views.js';
 import {moneyBoot,confirmMoney,dialogBalances} from './v4/money.js';  // 💰 Ví / Quỹ tiệm in sight while spending
+import {hudMoney,hudChipsHTML,wealthHTML,loadJoint,jointBalance,wealthAction} from './v4/wealth.js';  // 💰 Tiền của bạn (top bar chips + sheet)
+import {emojiOf} from './v4/journey.js';
 import {setLanguage,t as i18nT} from './v4/i18n.js';
 import {shell} from './v4/shell.js';
 import {accountSubmit,accountNudge,accountAction} from './v4/account.js';
@@ -240,9 +242,10 @@ const shortMoney=n=>Math.abs(n)>=999950?`${(n/1e6).toLocaleString('vi-VN',{maxim
 /** Something new behind the status sheet: Phố nghề / Nhóm phố messages, a life story waiting. */
 const statusDot=()=>Boolean(api.social?.unread||boardUnread(api)||api.state.life?.pending);
 function hudHTML(c,m){
-  const money=layout()==='phone'?shortMoney(c.money):fmt(c.money);
+  // 💰 Two labelled chips (v4/wealth.js): this workplace's fund and the wallet; either opens "Tiền của bạn".
+  const money=hudChipsHTML(hudMoney(api.state,career()),{phone:layout()==='phone',short:shortMoney});
   return `<button type="button" class="cozy-day hud-day" data-action="status" aria-haspopup="dialog" aria-label="Ngày ${dayNo(c)}. ${esc(clockAria(c.day_clock))}"><strong>Ngày ${dayNo(c)}</strong>${clockChip(c.day_clock)}${icon('chevron',12)}${statusDot()?'<i class="dot" aria-hidden="true"></i>':''}</button>`+
-    `<button type="button" class="cozy-till" data-action="finance" aria-label="${esc(wordsFor(career()).till)}: ${fmt(c.money)} xu"><strong data-testid="money"${money.length>=6?' class="long"':''}>${money}<span> xu</span></strong></button>`;
+    `<div class="cozy-till hud-money" role="group" aria-label="Tiền của bạn">${money}</div>`;
 }
 /** "Cần để ý": things waiting besides the task in hand (event, incident, low reviews, shop alerts…). */
 function hudNotes(c){
@@ -266,7 +269,7 @@ function statusView(){
     tile('queue',icon('clipboard',18),String(left),c.open?'việc đang chờ':'Đang nghỉ'),
     tile('feedback','<span class="st-star">★</span>',c.rating?Number(c.rating).toFixed(1):'—',`${reviews} ${esc(wordsFor(career()).rating)}`),
     w?tile('',esc(w.emoji),esc(w.name),mode?esc(mode.name):'Hôm nay'):'',
-    J?tile('stView','👛',J.debt?`−${shortMoney(J.debt)}`:shortMoney(J.wallet),'Ví của bạn',{view:'wallet'}):'',
+    J?tile('money','👛',J.debt?`−${shortMoney(J.debt)}`:shortMoney(J.wallet),'Ví của bạn'):'',
     L?.enabled?tile('stView',esc(L.mood?.emoji||'🙂'),`${L.spirit|0}/100`,'Tinh thần',{view:'life'},L.pending?'!':0):'',
     tile('nhom','💬','','Nhóm phố',{},boardUnread(api)),
     tile('social',icon('globe',18),'','Phố nghề',{},api.social?.unread||0),
@@ -307,13 +310,14 @@ function stepHint(c){
 }
 /** Coin pop / star bump when the server says money or rating changed. */
 function hudFeedback(c){
-  const prev=ui.hudPrev,dc=c.day_clock,clk=dc?{day:c.day,minute:dc.minute,is_open:dc.is_open}:null;ui.hudPrev={career:career(),money:c.money,rating:c.rating,clk};
+  const prev=ui.hudPrev,dc=c.day_clock,clk=dc?{day:c.day,minute:dc.minute,is_open:dc.is_open}:null,wallet=api.state?.journey?.wallet;ui.hudPrev={career:career(),money:c.money,rating:c.rating,clk,wallet};
   if(!prev||prev.career!==career())return;
   // "+20 phút": how long that action took on the shop clock, floating under the clock.
   const step=clockStep(prev.clk,clk),chip=step&&$('#topbar .dc-chip');
   if(chip)requestAnimationFrame(()=>{if(!chip.isConnected)return;const r=chip.getBoundingClientRect(),pop=document.createElement('span');pop.className='coin-pop dc-pop up';pop.setAttribute('aria-hidden','true');
     pop.textContent=`+${step} phút`;pop.style.left=`${Math.round(r.left+r.width/2)}px`;pop.style.top=`${Math.round(r.bottom-2)}px`;document.body.append(pop);setTimeout(()=>pop.remove(),1500);});
-  const d=c.money-prev.money,till=$('#topbar .cozy-till');
+  const d=c.money-prev.money,till=$('#topbar .hud-fund')||$('#topbar .cozy-till');
+  if(wallet!=null&&prev.wallet!=null&&wallet!==prev.wallet){const w=$('#topbar .hud-wallet');if(w)replay(w,['bump']);}
   // Layout is read and animations restarted in the next frames, not mid-render (no forced synchronous layout).
   if(d&&till){
     requestAnimationFrame(()=>{
@@ -385,6 +389,7 @@ function renderSheet(preserve=true){
     case'summary':dialog.classList.add('narrow','cozy-summary');html=summaryView();break;
     case'help':dialog.classList.add('medium');html=helpView();break;
     case'status':dialog.classList.add('narrow','status-sheet');html=statusView();break;
+    case'money':dialog.classList.add('medium','v4-sheet','wl-sheet');html=wealthView();break;
     case'inventory':dialog.classList.add('medium','v4-sheet');html=inventoryView(env());break;
     case'feedback':dialog.classList.add('v4-sheet','wide');html=feedbackView(env());break;
     case'situation':dialog.classList.add('medium','v4-sheet');html=situationView(env());break;
@@ -422,6 +427,8 @@ function renderSheet(preserve=true){
 }
 
 function homeView(){return homeV4(env());}
+const placeOf=cid=>{const m=api.content?.catalogue.find(x=>x.id===cid)||{id:cid};return {name:m.place||m.short||cid,emoji:emojiOf(m)};};
+function wealthView(){return wealthHTML(api.state,{joint:jointBalance(),current:career(),place:placeOf,head:(t,sub)=>header(t,sub,'TIỀN CỦA BẠN')});}
 function futureView(){if(api.state.journey)return futureV4(env());return header('Cả một khu phố phía trước','Những nghề sẽ mở sau','DANH MỤC 19 NGHỀ')+`<div class="sheet-body"><div class="future-grid">${api.content.catalogue.filter(c=>!api.state.careers[c.id]).map(c=>`<article class="future-card">${pill(icon('lock',11)+' Mở sau')}<h3>${esc(c.title||c.name)}</h3><p>${esc(c.core_loop||c.focus||c.summary||c.unique_mechanic||'Một trải nghiệm nghề mới, có cơ chế và câu chuyện riêng.')}</p></article>`).join('')}</div></div>`+footer('',button('Về các nghề đang mở','home',{},'primary'));}
 function queueView(){const c=room(),tasks=c.tasks.filter(t=>!ended(t)),lead=(tasks.find(t=>t.id===c.active_task)||tasks[0])?.id;return header('Việc đang chờ','','SỔ VIỆC · '+esc(meta().place))+`<div class="sheet-body">${!c.open?notice('Ca đang nghỉ. '+button('Bắt đầu ngày','start',{},'small primary'),'amber','sun'):''}<div class="queue-grid">${tasks.map(t=>`<article class="queue-card ${t.id===c.active_task?'active':''}"><div class="row">${portrait(npc(t.npc),44)}<div class="grow"><h3>${esc(t.title)}</h3>${String(t.title||'').includes(npc(t.npc).display_name)?'':`<small class="muted">${esc(npc(t.npc).display_name)}</small>`}</div>${t.deferred?pill('Đã hẹn','amber'):''}</div><p>${esc(t.opening)}</p><div class="row spread">${pill(taskNext(t),'green')}${button('Làm tiếp '+icon('arrow',13),'job',{task:t.id},t.id===lead?'small primary':'small')}</div></article>`).join('')||empty('Hết việc rồi!','','coffee')}</div></div>`+(c.open?footer(`${c.day_completed} việc đã xong hôm nay`,commandButton(icon('plus',14)+' Nhận thêm việc','more_work',{},tasks.length?'ghost':'primary',tasks.length>=4)+button('Khép ca','end',{},'ghost')):'');}
 function customerAside(t){const n=npc(t.npc),c=room();let needs='';if(t.needs){if(career()==='mother_baby'){const p=product(t.needs.product),paper=api.content.papers.find(p=>p.id===t.needs.paper);needs=`<strong>${t.needs.qty} × ${esc(p.name)}</strong><br>Ngân sách: ${fmt(t.needs.budget)} xu<br>${t.needs.gift?'Gói giấy '+esc(paper.name):'Không cần gói quà'}`;}}
@@ -999,6 +1006,8 @@ async function handleAction(action,data,el){
     case'people':case'phone':case'queue':case'decor':case'settings':case'album':case'summary':case'event':case'status':openSheet(action);break;
     case'stPause':closeSheet();setPaused(!ui.paused);break;
     case'stView':openSheet('home',{jrView:data.view});break;
+    case'money':openSheet('money');loadJoint(env());break;
+    case'wlDraw':await wealthAction(action,data,el,{...env(),placeName:cid=>placeOf(cid).name});break;
     case'journal':if(['teacher','tour_guide','milk_tea'].includes(career()))openSheet('passport');else openSheet('journal',{journalTab:'quests'});break;
     case'library':if(['teacher','tour_guide','milk_tea'].includes(career()))openSheet('workshop');else openSheet('journal',{journalTab:'library'});break;
     case'journalTab':ui.journalTab=data.tab;renderSheet(false);break;

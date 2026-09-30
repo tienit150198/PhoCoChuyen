@@ -14,6 +14,9 @@ shop and a crate that came short), then walks each new feature's happy path on a
   claim      a short crate: "Khiếu nại phần thiếu" right in the stock room, refund into the shop fund
   retry      a command answered 503 twice is sent again under "Đang cập nhật máy chủ…", then lands
   toast      a result that chains several notes shows one row per note
+  wealth     0.9.8 top bar: "🏪 Quỹ" and "👛 Ví" chips on one line match the state; either opens "Tiền của bạn",
+             whose rows and totals match the state; "Rút về ví" moves the max; the status tile and the journey's
+             wallet stat open it too; a wallet in debt shows red "👛 −40"
 
 After every step it checks the open screen: console errors, failed API calls, horizontal overflow, empty
 buttons/headings, "undefined"/"NaN" text, and that the step really changed the game (else: a dead end).
@@ -40,7 +43,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / 'scripts'))
 from browser_v04 import OVERFLOW, free_port  # noqa: E402
 
-STEPS = ('whatsnew', 'wardrobe', 'house', 'bank', 'money', 'claim', 'retry', 'toast')
+STEPS = ('whatsnew', 'wardrobe', 'house', 'bank', 'money', 'claim', 'retry', 'toast', 'wealth')
 
 # Visible text problems on the open screen (top dialog, else the page): empty controls/headings, leaked JS values.
 PROBE = r"""()=>{
@@ -175,7 +178,7 @@ class Walk:
         for p in await self.page.evaluate(PROBE):
             self.problem(f'{name}: {p}')
         # English: only the screens this release added (older screens have gaps of their own in the pack).
-        if getattr(self, 'lang', 'vi') == 'en' and self.where in ('whatsnew', 'wardrobe', 'house') and not name.startswith('journey'):
+        if getattr(self, 'lang', 'vi') == 'en' and self.where in ('whatsnew', 'wardrobe', 'house', 'wealth') and not name.startswith('journey'):
             vi = await self.page.evaluate(VI_LEFT)
             if vi:
                 self.problem(f'{name}: Vietnamese left in English: {vi}')
@@ -233,6 +236,8 @@ class Walk:
             await self.page.wait_for_selector('#sheet[open] .jr-home', timeout=8000)
         except Exception:
             self.problem('dead end: the journey page did not open')
+            with contextlib.suppress(Exception):
+                await self.page.screenshot(path=str(self.out / f'fail-journey-{self.where}.png'))
             return False
         await self.celebrate()
         return True
@@ -519,6 +524,171 @@ async def s_claim(w: Walk) -> None:
     await w.close_all()
 
 
+def set_wallet(db: str, token: str, value: int) -> None:
+    """Put the wallet at `value` straight in the database (the page reloads after)."""
+    from game import marriage as mr
+    from game.storage import Store
+    store = Store(db, story=True)
+
+    def fn(s):
+        s['journey']['wallet'] = value
+    mr._mutate_retry(store, {store.key(token): fn}, tries=20)
+    store.close_pool()
+
+
+def vi_num(n: int) -> str:
+    return f'{n:,}'.replace(',', '.')
+
+
+def short_num(n: int) -> str:
+    """app.js shortMoney for the phone top bar (numbers under 100.000 stay whole)."""
+    a = abs(n)
+    if a >= 999950:
+        return f'{n / 1e6:.2f}'.rstrip('0').rstrip('.').replace('.', ',') + 'tr'
+    if a >= 1e5:
+        return f'{n / 1e3:.1f}'.rstrip('0').rstrip('.').replace('.', ',') + 'k'
+    return vi_num(n)
+
+
+async def tap(w: Walk, selector: str, what: str) -> bool:
+    """w.click, after closing what may pop over the page meanwhile (a life event, a title card): not this step's business."""
+    await w.celebrate()
+    await w.page.evaluate("document.querySelectorAll('dialog[open]:not(#sheet)').forEach(d=>d.close())")
+    return await w.click(selector, what)
+
+
+async def open_wealth(w: Walk, selector: str, what: str) -> bool:
+    if not await tap(w, selector, what):
+        return False
+    try:
+        await w.page.wait_for_selector('#sheet[open] .wl-body', timeout=6000)
+        return True
+    except Exception:
+        w.problem(f'dead end: {what} did not open "Tiền của bạn"')
+        return False
+
+
+async def s_wealth(w: Walk) -> None:
+    p = w.page
+    with contextlib.suppress(Exception):   # run alone (--only wealth), the what's-new card opens first
+        await p.wait_for_selector('#wnDialog[open]', timeout=2500)
+    await w.celebrate()
+    await w.close_all()
+    st = await w.state()
+    cid = st['current']
+    J = st['journey']
+    fund, wallet = st['careers'][cid]['money'], J['wallet']
+    # The two chips, on one line, with the state's numbers.
+    for sel in ('#topbar .hud-fund', '#topbar .hud-wallet'):
+        w.need(await p.locator(sel).is_visible(), f'no {sel} in the top bar')
+    got_f = (await p.inner_text('#topbar .hud-fund b')).strip()
+    got_w = (await p.inner_text('#topbar .hud-wallet b')).strip()
+    w.need(got_f == short_num(fund), f'fund chip reads {got_f!r}, state {fund}')
+    w.need(got_w == (('−' + short_num(-wallet)) if wallet < 0 else short_num(wallet)), f'wallet chip reads {got_w!r}, state {wallet}')
+    geo = await p.evaluate("""()=>{const r=s=>document.querySelector(s).getBoundingClientRect(),f=r('#topbar .hud-fund'),v=r('#topbar .hud-wallet'),t=r('#topbar');
+      return {same:Math.abs(f.top-v.top)<2&&f.height<48&&v.height<48,inside:f.left>=t.left-1&&v.right<=t.right+1,top:t.height};}""")
+    w.need(geo['same'] and geo['inside'], f'the money chips are not on one line inside the top bar: {geo}')
+    await w.check('topbar-chips')
+    # Tap the wallet chip: every pocket, the numbers of the state.
+    if not await open_wealth(w, '#topbar .hud-wallet', 'the wallet chip'):
+        return
+    await w.check('wealth-sheet')
+    st = await w.state()
+    J = st['journey']
+    b = J['bank']
+    places = J['places']
+    own = (J.get('home') or {}).get('own')
+    assets = max(0, J['wallet']) + sum(max(0, x['fund']) for x in places.values()) + (own['value'] if own else 0)
+    debt = max(0, -J['wallet']) + sum(max(0, -x['fund']) for x in places.values()) + ((own.get('loan') or {}).get('left', 0) if own else 0)
+    if b.get('open'):
+        assets += b['balance'] + b['savings']['demand'] + sum(t['amount'] for t in b['savings']['terms'])
+        debt += sum(x['left'] for x in b['loans'] if x['left'] > 0) + ((b.get('card') or {}).get('bal') or 0)
+    married = (J.get('home') or {}).get('married')
+    total = int(await p.get_attribute('#sheet .wl-total [data-wl-total]', 'data-wl-total'))
+    if not married:   # a married player's total also counts the joint fund (fetched separately)
+        w.need(total == assets, f'Tổng tài sản {total}, state says {assets}')
+    shown_debt = await p.locator('#sheet .wl-total [data-wl-debt]').count()
+    w.need(bool(shown_debt) == bool(debt), f'"Tổng nợ" shown={bool(shown_debt)}, state debt {debt}')
+    rows = await p.evaluate("""()=>[...document.querySelectorAll('#sheet .wl-row')].map(r=>({id:r.dataset.wl,amt:r.querySelector('.wl-amt')?.textContent.trim()||''}))""")
+    amt = {}
+    for r in rows:
+        amt.setdefault(r['id'], []).append(r['amt'])
+    w.need(amt.get('wallet', [''])[0].startswith(('−' if J['wallet'] < 0 else '') + vi_num(abs(J['wallet']))), f'wallet row {amt.get("wallet")} vs {J["wallet"]}')
+    if b.get('open'):
+        w.need(amt.get('account', [''])[0].startswith(vi_num(b['balance'])), f'account row {amt.get("account")} vs {b["balance"]}')
+        w.need(len(amt.get('term', [])) == len(b['savings']['terms']), f'{len(amt.get("term", []))} term rows, {len(b["savings"]["terms"])} terms')
+    funds = sorted(x['fund'] for x in places.values())
+    shown = sorted(int(a.split()[0].replace('.', '').replace('−', '-')) for a in amt.get('fund', []))
+    w.need(shown == funds, f'fund rows {shown}, state {funds}')
+    if own:
+        w.need(amt.get('home', [''])[0].startswith(vi_num(own['value'])), f'home row {amt.get("home")} vs {own["value"]}')
+    # "Rút về ví": the most the place can give lands in the wallet.
+    draw = p.locator('#sheet [data-action="wlDraw"]').first
+    if await draw.count():
+        amount, place = int(await draw.get_attribute('data-amount')), await draw.get_attribute('data-career')
+        w.need(amount == places[place]['withdraw_max'], f'"Rút về ví" offers {amount}, withdraw_max {places[place]["withdraw_max"]}')
+        w0 = J['wallet']
+        await w.celebrate()
+        await p.evaluate("document.querySelectorAll('dialog[open]:not(#sheet)').forEach(d=>d.close())")
+        await draw.scroll_into_view_if_needed()
+        await draw.click()
+        await w.wait(400)
+        if await w.confirm('wealth-draw-confirm'):
+            st2 = await w.state()
+            w.need(st2['journey']['wallet'] == w0 + amount, f'wallet {w0} -> {st2["journey"]["wallet"]} after withdrawing {amount}')
+            w.need(await p.locator('#sheet[open] .wl-body').count(), 'the sheet closed after the withdrawal')
+            await w.check('wealth-after-draw')
+            chip = (await p.inner_text('#topbar .hud-wallet b')).strip()
+            w.need(chip == short_num(st2['journey']['wallet']), f'wallet chip {chip!r} after the withdrawal, state {st2["journey"]["wallet"]}')
+    else:
+        w.problem('note: no workplace had money to withdraw in this save (Rút về ví not exercised)')
+    # Sổ ví is one tap further.
+    if await tap(w, '#sheet .wl-link[data-action="stView"][data-view="wallet"]', 'the Sổ ví link'):
+        w.need(await p.locator('#sheet[open] .jr-purse').count(), 'Sổ ví did not open')
+        await w.act('jrView', view='home')
+    # The status sheet's wallet tile and the journey's wallet stat open the same sheet.
+    await w.close_all()
+    if await tap(w, '#topbar [data-action="status"]', 'the day button'):
+        if await open_wealth(w, '#sheet .st-tile[data-action="money"]', 'the status sheet wallet tile'):
+            await w.check('wealth-from-status')
+    if await w.journey():
+        if await open_wealth(w, '#sheet .jr-stat[data-action="money"]', 'the journey wallet stat'):
+            await w.check('wealth-from-journey')
+    # A wallet in debt: red "👛 −40" in the top bar and a "Tổng nợ" line.
+    await w.close_all()
+    set_wallet(w.db, w.token, -40)
+    await p.reload()
+    await p.wait_for_selector('#app:not([hidden])', timeout=30000)
+    await w.wait(1200)
+    await w.celebrate()
+    await w.close_all()
+    chip = p.locator('#topbar .hud-wallet')
+    if w.need(await chip.count(), 'no wallet chip in debt'):
+        w.need('neg' in (await chip.get_attribute('class') or ''), 'the wallet chip in debt is not red')
+        w.need((await p.inner_text('#topbar .hud-wallet')).replace('\n', ' ').split()[-1] == '−40', f'wallet chip in debt reads {await p.inner_text("#topbar .hud-wallet")!r}')
+        color = await p.evaluate("getComputedStyle(document.querySelector('#topbar .hud-wallet b')).color")
+        w.need(color != await p.evaluate("getComputedStyle(document.querySelector('#topbar .hud-fund b')).color"), f'debt colour {color} is the fund colour')
+    await w.check('topbar-debt')
+    if await open_wealth(w, '#topbar .hud-wallet', 'the wallet chip in debt'):
+        w.need(await p.locator('#sheet .wl-total [data-wl-debt]').count(), 'no "Tổng nợ" with the wallet in debt')
+        await w.check('wealth-debt')
+    await w.close_all()
+    # Long numbers still fit on one line (the chips drop their emoji, keep "Quỹ" and "Ví").
+    set_wallet(w.db, w.token, 188887)
+    await p.evaluate("""async()=>{const b=await fetch('/api/bootstrap').then(r=>r.json());   // the fund grows through the books
+      await fetch('/api/command',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':b.csrf},
+      body:JSON.stringify({request_id:crypto.randomUUID(),expected_revision:b.revision,career:b.state.current,action:'jr_invest',payload:{career:b.state.current,amount:99999}})});}""")
+    await p.reload()
+    await p.wait_for_selector('#app:not([hidden])', timeout=30000)
+    await w.wait(1200)
+    await w.celebrate()
+    await w.close_all()
+    geo = await p.evaluate("""()=>{const r=s=>document.querySelector(s).getBoundingClientRect(),f=r('#topbar .hud-fund'),v=r('#topbar .hud-wallet'),t=r('#topbar'),d=r('#topbar .hud-day');
+      return {same:Math.abs(f.top-v.top)<2&&f.height<48,inside:f.left>=d.right-1&&v.right<=t.right+1,words:document.querySelector('#topbar .hud-fund').innerText+' '+document.querySelector('#topbar .hud-wallet').innerText};}""")
+    w.need(geo['same'] and geo['inside'] and any(x in geo['words'] for x in ('Quỹ', 'Fund')) and any(x in geo['words'] for x in ('Ví', 'Wallet')), f'long numbers do not fit the top bar: {geo}')
+    await w.check('topbar-big-numbers')
+
+
 async def s_retry(w: Walk) -> None:
     p = w.page
     hits = {'n': 0}
@@ -595,6 +765,7 @@ async def main() -> int:
             await page.wait_for_selector('#app:not([hidden])', timeout=30000)
             token = next(c['value'] for c in await ctx.cookies() if c['name'] == 'mnl_session')
             seed(db, token)
+            w.db, w.token = db, token
             if a.lang == 'en':
                 await page.evaluate("""async()=>{const b=await fetch('/api/bootstrap').then(r=>r.json());
                   await fetch('/api/command',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':b.csrf},
