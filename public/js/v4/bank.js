@@ -98,14 +98,18 @@ async function loadJoint(force=false){
   if(S.dlg?.open&&!S.busy)render();
 }
 
+/** A command from the bank. `quiet` (the mark-read when the app opens): runs in the background, never sets
+ * S.busy, so buttons and tabs stay usable meanwhile (it used to disable them for up to 1–1,5 s at peak), and a
+ * failure stays silent; it re-renders once at the end if nothing else is in flight. */
 async function send(action,payload={},{quiet=false}={}){
-  const {api}=S.env;S.busy=true;if(!quiet)render();
+  const {api}=S.env;
+  if(!quiet){S.busy=true;render();}
   try{
     const r=await api.command(action,payload);
     if(!quiet){const extra=(r.effects||[]).filter(Boolean);S.flash={text:[r.message,...extra].filter(Boolean).join(' '),kind:r.approved===false?'warn':'good'};}
     return r;
-  }catch(e){S.flash={text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}
-  finally{S.busy=false;render();}
+  }catch(e){if(!quiet)S.flash={text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}
+  finally{if(!quiet){S.busy=false;render();}else if(S.dlg?.open&&!S.busy)render();}
 }
 async function marriagePost(op,body){
   const {api}=S.env;S.busy=true;render();

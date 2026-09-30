@@ -109,8 +109,11 @@ export function badges(marriage,friends){
   for(const [action,n] of [['marriage',marriage],['friends',friends]])
     document.querySelectorAll(`[data-action="${action}"]`).forEach(b=>{if(b.closest('.mr-sheet'))return;b.querySelector('em.badge')?.remove();if(n){const em=document.createElement('em');em.className='badge';em.textContent=String(n);b.append(em);}});
 }
+/** `quiet` (marks like moments_seen / seen, lookups that render their own result): runs without S.busy, so the
+ * buttons are never disabled by a background call; it re-renders once at the end if nothing else is in flight. */
 async function post(op,body={},{quiet=false}={}){
-  const {api}=S.env;S.busy=true;if(!quiet)render();
+  const {api}=S.env;
+  if(!quiet){S.busy=true;render();}
   try{
     const data=await api.json(`/api/marriage/${op}`,{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':api.csrf},body:JSON.stringify(body)});
     if(data.state&&typeof data.revision==='number')api.accept({state:data.state,revision:data.revision});
@@ -118,7 +121,7 @@ async function post(op,body={},{quiet=false}={}){
     if(data.message)S.flash={text:data.message,kind:'good'};
     return data;
   }catch(e){S.flash={text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}
-  finally{S.busy=false;render();}
+  finally{if(!quiet){S.busy=false;render();}else if(S.dlg?.open&&!S.busy)render();}
 }
 
 /* ---- the planner (a mirror of wedding_content + marriage.costs, for the live breakdown) ---- */
