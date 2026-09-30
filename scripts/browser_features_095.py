@@ -233,11 +233,15 @@ async def s_whatsnew(w: Walk) -> None:
     await w.check('whatsnew')
     meta = await p.inner_text('#wnDialog .wn-meta')
     items = await p.locator('#wnDialog .wn-body > .wn-list > .wn-item').count()
-    w.need('0.9.5' in meta, f'whatsnew shows {meta!r}, not 0.9.5')
-    w.need(items >= 6, f'only {items} notes')
+    from game.whats_new import ENTRIES  # the latest release's notes, whatever the version
+    latest = ENTRIES[0]
+    w.need(latest['version'] in meta, f"whatsnew shows {meta!r}, not {latest['version']}")
+    w.need(items == len(latest['items']), f"{items} notes shown, {len(latest['items'])} expected")
     older = await p.locator('#wnDialog [data-wn="older"]').count()
     w.need(older == 0, 'older notes still listed')
     tries = p.locator('#wnDialog .wn-item:has-text("mua nhà") .wn-try')
+    if not any(it.get('go', {}).get('action') == 'house' for it in latest['items']):
+        return  # this release's notes have no house button to try
     if w.need(await tries.count(), 'no "Thử ngay" on the house note'):
         await p.wait_for_timeout(500)
         await tries.first.click()
