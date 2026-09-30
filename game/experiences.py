@@ -346,7 +346,9 @@ def update_patience(c:dict,action:str,payload:dict,before:dict):
  for task in c['tasks']:
   if task['status'] in DONE:continue
   loss=0
-  if action in physical and task['id']!=active and not task.get('deferred'):loss=1
+  # SPEC['wait']: the career runs its own queue drain (kit.wait_tick: slower while busy, bigger orders wait longer).
+  own=getattr(PLUGINS.get(task['career']),'SPEC',{}).get('wait')
+  if action in physical and task['id']!=active and not task.get('deferred') and not own:loss=1
   loss+=max(0,task['mistakes']-before.get(task['id'],task['mistakes']))*4
   if loss:task['patience']=max(25,task.get('patience',100)-loss)
 

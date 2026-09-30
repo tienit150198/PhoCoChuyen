@@ -197,18 +197,15 @@ def public_plan(c: dict, p: dict, mods: list[dict], index: dict) -> dict:
 
 
 # ------------------------------------------------------------------ guests
-def patience_tick(c: dict, cid: str, active_id: str | None, extra: int = 0) -> None:
-    """Personalities change how waiting feels. Runs after a physical action,
-    before the engine's own -1 for everyone who is not being served."""
-    if not c['open'] or c['life'].get('mode') == 'calm':
-        return
-    for t in open_tasks(c, cid):
-        if t['id'] == active_id or t.get('deferred'):
-            continue
+def patience_tick(c: dict, cid: str, active_id: str | None, extra: int = 0, factor_for=None) -> None:
+    """Runs after a physical action: every guest who is not being served waits one beat
+    (the career has SPEC['wait'], so this replaces the engine's flat -1). Personalities
+    change how waiting feels; kit.wait_tick halves it while the player keeps working one
+    order, and `factor_for(t)` (kit.size_factor) lets a bigger order wait longer."""
+    def loss(t: dict) -> int:
         kind = (t.get('guest') or {}).get('kind')
-        loss = extra + (2 if kind == 'rush' else 0) - (1 if kind in ('chatty', 'elder') else 0)
-        if loss:
-            t['patience'] = max(25, min(100, t.get('patience', 100) - loss))
+        return 1 + extra + (2 if kind == 'rush' else 0) - (1 if kind in ('chatty', 'elder') else 0)
+    kit.wait_tick(c, cid, active_id, loss, factor_for)
 
 
 def spawn_walkin(s: dict, c: dict, cid: str, chance: float, tag: str) -> dict | None:
@@ -316,6 +313,7 @@ def close(s: dict, c: dict, cid: str, p: dict, mods: list[dict], extra: float = 
 # ------------------------------------------------------------------ validation
 def validate(c: dict, mods: list[dict], index: dict) -> None:
     d = kit.data(c)
+    kit.wait_validate(c)
     p = d.get('plan')
     if p is not None:
         kit.need(isinstance(p, dict), 'Kế hoạch ngày không hợp lệ.')
