@@ -9,6 +9,11 @@ export default [
   {"emoji":"🗂️","text":"Nhà đang rao chia theo Phòng thuê, Căn hộ, Nhà phố, Biệt thự: ghi rõ góp mỗi tháng và còn thiếu bao nhiêu."},
   {"emoji":"💞","text":"Vợ chồng bấm cùng lúc không còn báo “tab khác”; quỹ chung hiện đúng dấu tiền rút."}
  ]},
+ {"version":"0.9.11","date":"2026-09-30","items":[
+  {"emoji":"💔","text":"Chuyện thất tình không còn nhắc tới người yêu mà bạn chưa từng có."},
+  {"emoji":"💍","text":"Đã đính hôn hay kết hôn thì không gặp chuyện thất tình nữa."},
+  {"emoji":"✅","text":"Đã kiểm tra lại sau khi chuyển máy chủ: dữ liệu của mọi người vẫn đủ và đúng."}
+ ]},
  {"version":"0.9.10","date":"2026-09-30","items":[
   {"emoji":"✅","text":"Nâng cấp hạ tầng đã xong! Game đã chạy trên máy chủ mới, mạnh và nhanh hơn."},
   {"emoji":"🎮","text":"Tiền, nhà, đồ và tiến độ của bạn vẫn giữ nguyên. Chúc mọi người chơi vui, enjoy nhé!"},

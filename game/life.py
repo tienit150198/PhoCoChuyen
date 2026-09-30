@@ -591,10 +591,18 @@ def _pick(rng: random.Random, pool: list, weights: list) -> dict | None:
     return pool[-1]
 
 
+# Heartbreaks that assume the player has a lover ("Ba năm, kết thúc trong một tin nhắn"). The game gives the
+# player no love life of its own, so a single player met a partner they never had, and a player engaged or
+# married to another player read it as that person. Still defined (a save may hold such a card), never drawn.
+PARTNER_STORIES = frozenset({'tt_break', 'tt_far', 'tt_third', 'tt_birthday'})
+# Heartbreaks after which "bị bỏ" (the breakup rumour) is true: being ghosted, and the old partner stories.
+DUMPED = frozenset(HARD_INDEX[k]['title'] for k in ('tt_ghost', 'tt_break', 'tt_far', 'tt_third'))
+
+
 def _taken(s: dict) -> bool:
-    """Engaged or married (game/marriage.py): no heartbreak cards (bị chia tay, mai mối…) for them."""
-    m = s.get('marriage')
-    return isinstance(m, dict) and isinstance(m.get('spouse'), dict)
+    """Engaged or married to another player (game/marriage.py): no heartbreak cards at all."""
+    sp = (s.get('marriage') or {}).get('spouse') if isinstance(s.get('marriage'), dict) else None
+    return isinstance(sp, dict) and sp.get('status') in ('engaged', 'married')
 
 
 def _hard_pool(L: dict, day: int, career: str | None, facts: set | None = None, taken: bool = False) -> list:
@@ -602,7 +610,7 @@ def _hard_pool(L: dict, day: int, career: str | None, facts: set | None = None, 
     for x in HARD:
         if x['careers'] and career not in x['careers']:
             continue
-        if taken and x['cat'] == 'that_tinh':
+        if x['id'] in PARTNER_STORIES or (taken and x['cat'] == 'that_tinh'):
             continue
         if day <= CALM_UNTIL and not x['mild']:
             continue
@@ -707,7 +715,7 @@ def facts(s: dict, career: str | None, summary: dict | None, day: int) -> set:
     o = L.get('outing')
     if o and o.get('who') == 'anh_khoa' and _gender(s) != 'male' and day - o.get('day', -99) <= 3:
         out.add('seen')
-    if any(r['cat'] == 'that_tinh' and day - r['day'] <= 10 for r in L['log']):
+    if not _taken(s) and any(r['cat'] == 'that_tinh' and r['title'] in DUMPED and day - r['day'] <= 10 for r in L['log']):
         out.add('breakup')
     c = (s.get('careers') or {}).get(career or '')
     if isinstance(c, dict):

@@ -616,7 +616,10 @@
   "Bảo trì ngắn từ 21:00 đến 21:10 tối nay (30/09) để chuyển sang máy chủ mới.": "Short maintenance tonight (30/09) from 21:00 to 21:10 to move to a new server.",
   "Trong lúc đó game có thể tạm dừng hoặc cần tải lại trang. Tiền, nhà, đồ và tiến độ giữ nguyên.": "Meanwhile the game may pause or need a page reload. Money, home, items and progress stay as they are.",
   "Từ 20:00 - 0:00 hôm nay hệ thống sẽ thực hiện nâng cấp hạ tầng.": "From 20:00 to 0:00 today we are upgrading the infrastructure.",
-  "Người chơi vẫn có thể chơi bình thường nhưng sẽ ảnh hưởng một chút về trải nghiệm, xin vui lòng thông cảm.": "You can keep playing as usual, though things may feel a little slower. Thanks for your patience."
+  "Người chơi vẫn có thể chơi bình thường nhưng sẽ ảnh hưởng một chút về trải nghiệm, xin vui lòng thông cảm.": "You can keep playing as usual, though things may feel a little slower. Thanks for your patience.",
+  "Chuyện thất tình không còn nhắc tới người yêu mà bạn chưa từng có.": "Heartbreak stories no longer mention a partner you never had.",
+  "Đã đính hôn hay kết hôn thì không gặp chuyện thất tình nữa.": "Once engaged or married, you no longer get heartbreak stories.",
+  "Đã kiểm tra lại sau khi chuyển máy chủ: dữ liệu của mọi người vẫn đủ và đúng.": "Checked again after the server move: everyone's data is complete and correct."
  },
  "patterns": {
   "lượt $1": "turn $1",
