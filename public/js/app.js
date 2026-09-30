@@ -201,7 +201,8 @@ function navItems(c){
   items.push(['friends','user','Bạn bè',api.friendAlerts||0],['marriage','heart','Hôn nhân',api.marriageAlerts||0]);  // Bạn bè + Hôn nhân (v4/marriage.js, own dialog; badges from v4/ticker.js)
   {const bk=api.state?.journey?.bank;items.push(['bank','coin','Ngân hàng',bk?.unread||(bk?.overdue?'dot':0)]);}  // 🏦 Ngân hàng Phố (v4/bank.js, own dialog)
   if(api.state?.journey?.story)items.push(['house','home','Nhà của bạn',api.state.journey.home?.own?.loan?.overdue?'dot':0]);  // 🏠 Nhà của bạn (v4/house.js, own dialog)
-  return items;
+  // A career with its own shell (the air crew: no Sổ tiệm, a flight log instead) reshapes the list; others keep it.
+  return careerUI(career())?.nav?.(items,careerContext(env()))||items;
 }
 const railItem=([a,i,label,badge],extra='')=>`<button type="button" class="rail-item${a==='social'?' top-social':''}${extra} ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}>${icon(i,21)}<span>${label}</span>${badge==='dot'?'<i class="dot" aria-hidden="true"></i>':badge?`<em class="badge">${badge}</em>`:''}</button>`;
 /** Rail entries always in sight on desktop/tablet (plus anything with a badge); the rest sit behind "Thêm". */
@@ -216,7 +217,7 @@ function railHTML(c){
   const phone=layout()==='phone',shown=dockItems(),extra=phone?sceneActions().filter(x=>!shown.includes(x)):[];
   const nav=navItems(c),main=nav.filter(x=>RAIL_MAIN.includes(x[0])||x[3]||ui.view===x[0]),rest=nav.filter(x=>!main.includes(x));
   const more=`<button type="button" class="rail-item rail-more-btn" data-action="v4RailMore" aria-expanded="${document.documentElement.classList.contains('rail-more')}">${icon('menu',21)}<span>Thêm</span></button>`;
-  return (extra.length?`<p class="rail-title">Trong tiệm</p>${extra.map(([a,i,l])=>railItem([a,i,l])).join('')}<p class="rail-title">Sổ & khu phố</p>`:'')+main.map(x=>railItem(x)).join('')+
+  return (extra.length?`<p class="rail-title">${esc(wordsFor(career()).rail_in)}</p>${extra.map(([a,i,l])=>railItem([a,i,l])).join('')}<p class="rail-title">Sổ & khu phố</p>`:'')+main.map(x=>railItem(x)).join('')+
     (rest.length&&!phone?more:'')+rest.map(x=>railItem(x,' rail-extra')).join('')+
     `<button type="button" class="rail-item rail-bottom rail-extra" data-action="help">${icon('question',21)}<span>Hướng dẫn</span></button>`+railItem(['tutReplay','play','Xem lại hướng dẫn'],' rail-extra')+railItem(['gopy','chat','Góp ý'],' rail-extra')+railItem(['settings','settings','Cài đặt']);
 }
@@ -224,7 +225,7 @@ function dockHTML(c){
   const phone=layout()==='phone',low=lowOpen(c),items=dockItems();
   const more=phone&&navItems(c).some(x=>x[3]&&!items.some(y=>y[0]===x[0]));
   return items.map(([a,i,l])=>`<button type="button" class="dock-btn${a==='workbench'?' main':''}" data-action="${a}">${icon(i,22)}<span>${l}</span>${a==='feedback'&&low?`<em class="badge">${low}</em>`:''}</button>`).join('')+
-    (phone?`<button type="button" class="dock-btn dock-more" data-action="v4Menu" aria-label="Thêm: sổ tiệm, sổ tay, khu phố" aria-expanded="${document.documentElement.classList.contains('menu-open')}">${icon('menu',22)}<span>Thêm</span>${more?'<i class="dot" aria-hidden="true"></i>':''}</button>`:'');
+    (phone?`<button type="button" class="dock-btn dock-more" data-action="v4Menu" aria-label="${esc(wordsFor(career()).more_aria)}" aria-expanded="${document.documentElement.classList.contains('menu-open')}">${icon('menu',22)}<span>Thêm</span>${more?'<i class="dot" aria-hidden="true"></i>':''}</button>`:'');
 }
 /** Shop clock when the career keeps one: module `clock(room)` hook, the boba counter or the office desk. */
 function hudClock(c){
@@ -252,7 +253,7 @@ function hudNotes(c){
   const incNote=L.inc.m?.incidentNote(c);if(incNote)notes.unshift(incNote);
   if(cl&&c.open){const ev=cl.active||cl.offers.find(o=>o.kind==='event');if(ev)notes.push(['classroom',{},'book',cl.active?'Đang làm dở':'Lịch lớp · '+cl.month,`${ev.emoji} ${ev.title}`]);}
   if(low)notes.push(['feedback',{filter:'open'},'star','Đánh giá',`${low} đánh giá ≤3★ chờ bạn trả lời`]);
-  if(alert)notes.push(['opsTab',{tab:alert.tab},'store','Sổ tiệm',alert.text]);
+  if(alert)notes.push(['opsTab',{tab:alert.tab},'store',wordsFor(career()).books,alert.text]);
   return notes;
 }
 const noteRows=notes=>notes.map(([a,d,i,k,txt])=>`<button type="button" class="hud-note" data-action="${a}"${attrs(d)}><span class="hud-note-ico">${icon(i,16)}</span><span class="grow"><small>${esc(k)}</small><b>${esc(txt)}</b></span>${icon('chevron',14)}</button>`).join('');
@@ -292,6 +293,8 @@ function taskCards(c){
   else if(c.day_clock?.is_open&&c.day_clock.level==='closing')main=`<article class="note-card calm-card">${closingNote(c.day_clock,false)}${button(icon('exit',16)+' Khép ca · xem tổng kết','end',{},'primary big grow gd-pulse')}${bell}</article>`;
   else if(wrapUp(c))main=`<article class="note-card calm-card">${button('Khép ca hôm nay','end',{},'primary big grow gd-pulse')}<button type="button" class="icon-btn hud-sum" data-command="more_work" data-payload="{}" aria-label="${desk?'Nhận thêm một việc':esc(W.more_btn)}">${icon('plus',18)}</button>${bell}</article>`;
   else main=`<article class="note-card calm-card">${commandButton(desk?'Nhận thêm một việc':esc(W.more_btn),'more_work',{},'primary big grow')}<button type="button" class="icon-btn hud-sum" data-action="end" aria-label="Khép ca hôm nay">${icon('exit',18)}</button>${bell}</article>`;
+  // A career with its own home card (the air crew's boarding pass) draws it; hiring keeps the shared "Xin việc".
+  const own=needsJob()?'':careerUI(career())?.hudCard?.(c,t,careerContext(env()),{bell,first,wrap:wrapUp(c),note:closingNote(c.day_clock,!!t)});if(own)main=own;
   // Desktop has a side column for the list; phone and tablet keep it behind the bell (status sheet).
   const list=notes.length&&layout()==='desktop'?`<article class="note-card hud-notes"><span class="eyebrow">Cần để ý · ${notes.length}</span>${noteRows(notes)}</article>`:'';
   return main+list;
@@ -423,7 +426,7 @@ function renderSheet(preserve=true){
 
 function homeView(){return homeV4(env());}
 function futureView(){if(api.state.journey)return futureV4(env());return header('Cả một khu phố phía trước','Những nghề sẽ mở sau','DANH MỤC 19 NGHỀ')+`<div class="sheet-body"><div class="future-grid">${api.content.catalogue.filter(c=>!api.state.careers[c.id]).map(c=>`<article class="future-card">${pill(icon('lock',11)+' Mở sau')}<h3>${esc(c.title||c.name)}</h3><p>${esc(c.core_loop||c.focus||c.summary||c.unique_mechanic||'Một trải nghiệm nghề mới, có cơ chế và câu chuyện riêng.')}</p></article>`).join('')}</div></div>`+footer('',button('Về các nghề đang mở','home',{},'primary'));}
-function queueView(){const c=room(),tasks=c.tasks.filter(t=>!ended(t)),lead=(tasks.find(t=>t.id===c.active_task)||tasks[0])?.id;return header('Việc đang chờ','','SỔ VIỆC · '+esc(meta().place))+`<div class="sheet-body">${!c.open?notice('Ca đang nghỉ. '+button('Bắt đầu ngày','start',{},'small primary'),'amber','sun'):''}<div class="queue-grid">${tasks.map(t=>`<article class="queue-card ${t.id===c.active_task?'active':''}"><div class="row">${portrait(npc(t.npc),44)}<div class="grow"><h3>${esc(t.title)}</h3>${String(t.title||'').includes(npc(t.npc).display_name)?'':`<small class="muted">${esc(npc(t.npc).display_name)}</small>`}</div>${t.deferred?pill('Đã hẹn','amber'):''}</div><p>${esc(t.opening)}</p><div class="row spread">${pill(taskNext(t),'green')}${button('Làm tiếp '+icon('arrow',13),'job',{task:t.id},t.id===lead?'small primary':'small')}</div></article>`).join('')||empty('Hết việc rồi!','','coffee')}</div></div>`+(c.open?footer(`${c.day_completed} việc đã xong hôm nay`,commandButton(icon('plus',14)+' Nhận thêm việc','more_work',{},tasks.length?'ghost':'primary',tasks.length>=4)+button('Khép ca','end',{},'ghost')):'');}
+function queueView(){const own=careerUI(career())?.board?.(careerContext(env()));if(own)return own;const c=room(),tasks=c.tasks.filter(t=>!ended(t)),lead=(tasks.find(t=>t.id===c.active_task)||tasks[0])?.id;return header('Việc đang chờ','','SỔ VIỆC · '+esc(meta().place))+`<div class="sheet-body">${!c.open?notice('Ca đang nghỉ. '+button('Bắt đầu ngày','start',{},'small primary'),'amber','sun'):''}<div class="queue-grid">${tasks.map(t=>`<article class="queue-card ${t.id===c.active_task?'active':''}"><div class="row">${portrait(npc(t.npc),44)}<div class="grow"><h3>${esc(t.title)}</h3>${String(t.title||'').includes(npc(t.npc).display_name)?'':`<small class="muted">${esc(npc(t.npc).display_name)}</small>`}</div>${t.deferred?pill('Đã hẹn','amber'):''}</div><p>${esc(t.opening)}</p><div class="row spread">${pill(taskNext(t),'green')}${button('Làm tiếp '+icon('arrow',13),'job',{task:t.id},t.id===lead?'small primary':'small')}</div></article>`).join('')||empty('Hết việc rồi!','','coffee')}</div></div>`+(c.open?footer(`${c.day_completed} việc đã xong hôm nay`,commandButton(icon('plus',14)+' Nhận thêm việc','more_work',{},tasks.length?'ghost':'primary',tasks.length>=4)+button('Khép ca','end',{},'ghost')):'');}
 function customerAside(t){const n=npc(t.npc),c=room();let needs='';if(t.needs){if(career()==='mother_baby'){const p=product(t.needs.product),paper=api.content.papers.find(p=>p.id===t.needs.paper);needs=`<strong>${t.needs.qty} × ${esc(p.name)}</strong><br>Ngân sách: ${fmt(t.needs.budget)} xu<br>${t.needs.gift?'Gói giấy '+esc(paper.name):'Không cần gói quà'}`;}}
   return `<aside class="work-aside ${t.known?'known':''} ${!Object.keys(t.basket||{}).length?'empty-tray':''}">${t.known?`<div class="needs"><h4>${icon('clipboard',15)} Điều đã xác nhận</h4><p>${needs||'Đã hiểu mục tiêu.'}</p></div>`:''}${career()==='mother_baby'?basketView(t):''}</aside>`;
 }
@@ -438,7 +441,7 @@ function jobView(){
   if(!t){
     // Between customers there is always one clear way on: the next customer (unless the career's own panel offers it).
     const more=wrapUp(c)?button('Khép ca hôm nay','end',{},'primary gd-pulse'):c.open&&!idle.includes('data-command="more_work"')?commandButton(icon('plus',14)+' '+(deskWork()?'Nhận thêm một việc':esc(wordsFor(career()).next_btn)),'more_work',{},'primary'):'';
-    return header(deskWork()?'Bàn làm việc đang trống':esc(wordsFor(career()).none_waiting),c.open?'':'Ca đang nghỉ.')+`<div class="sheet-body">${idle||empty('Làm điều mình thích một chút','','coffee')}<div class="row wrap space-top">${more}${button('Xem sổ việc','queue',{},more||idle.includes('more_work')?'ghost':'primary')}${button('Chăm chút không gian','decor',{},'ghost')}</div></div>`;
+    return header(deskWork()?'Bàn làm việc đang trống':esc(wordsFor(career()).none_waiting),c.open?'':'Ca đang nghỉ.')+`<div class="sheet-body">${idle||empty('Làm điều mình thích một chút','','coffee')}<div class="row wrap space-top">${more}${button(esc(wordsFor(career()).queue_btn),'queue',{},more||idle.includes('more_work')?'ghost':'primary')}${mod?.noDecor?'':button('Chăm chút không gian','decor',{},'ghost')}</div></div>`;
   }
   if(ended(t)){
     // Task done: the thank-you and one clear way on, named for what is really next (nobody waiting: take one
@@ -858,7 +861,7 @@ function careerCloseSummary(){
 function summaryView(){
   const c=room(),s=c.shift_summary,m=meta(),next=c.open?button('Về quầy','close',{},'primary big'):button(icon('play',15)+' Bắt đầu ngày '+dayNo(c),'start',{},'primary big');
   if(!s)return header('Mình khép ca nhé?','','TỔNG KẾT NGÀY')+`<div class="sheet-body">${empty('Chưa có ngày nào khép lại','','sun')}</div>`+footer('',next);
-  const rv=s.reviews||{},job=s.job||null,ops=s.operations,net=Number(s.net)||0;
+  const rv=s.reviews||{},job=s.job||null,ops=s.operations,net=Number(s.net)||0,own=careerUI(career())?.daySummary?.(s,careerContext(env()))||null;
   const stat=(cls,big,label,sub='')=>`<div class="sum-stat ${cls}"><strong>${big}</strong><small>${label}</small>${sub?`<em${sub.startsWith('<span')?' class="ck-chips"':''}>${sub}</em>`:''}</div>`;
   const stats=`<div class="sum-stats">${stat(net>=0?'good':'bad',`${net>=0?'+':'−'}${fmt(Math.abs(net))}<span> xu</span>`,'Thay đổi trong ca',`<span class="ck-delta up">thu ${fmt(s.income)}</span><span class="ck-delta down">chi ${fmt(s.cost)}</span>`)}${stat('',`${s.completed}`,'Việc đã xong',s.carried?`${s.carried} việc để mai`:'')}${stat('star',rv.count?`★ ${rv.average}`:'—',rv.count?`${rv.count} đánh giá mới`:'Chưa có đánh giá mới')}</div>`;
   const notes=[];
@@ -872,9 +875,10 @@ function summaryView(){
   if(jr&&(jr.living||jr.upkeep||jr.salary))notes.push(notice(`<b>Ngày sống thứ ${jr.life_day}</b>${s.clock?`<p>Bạn xong việc lúc ${esc(s.clock.finish)}.</p>`:''}<p>Tiền phòng và cơm nước: −${fmt(jr.living)} xu.</p>${jr.upkeep?`<p>Duy trì các nơi làm khác: −${fmt(jr.upkeep)} xu.</p>`:''}${jr.salary?`<p>Lương về ví: +${fmt(jr.salary)} xu.</p>`:''}<p>Ví của bạn còn <b>${fmt(jr.wallet)} xu</b>.</p>${jr.wallet<0?'<p>Ví đang nợ: trả hết nợ thì câu chuyện mới đi tiếp.</p>':''}`,jr.wallet<0?'amber':'','home'));
   if(job?.salary)notes.push(notice(`<b>Lương hôm nay +${fmt(job.salary)} xu</b>${job.result==='official'?'<p>Hết thử việc: bạn đã được ký hợp đồng chính thức! 🎉</p>':job.result==='extended'?'<p>Thử việc được gia hạn thêm 2 ngày. Cố lên nhé!</p>':job.probation?'<p>Đang thử việc: nhận 85% lương.</p>':''}`,'success','briefcase'));
   if(rv.open||(rv.count&&rv.weakest&&rv.average<4.5))notes.push(notice(`${rv.count&&rv.weakest&&rv.average<4.5?`Khách góp ý nhiều nhất về <b>${esc(rv.weakest)}</b>.`:''}${rv.open?` Còn ${rv.open} đánh giá chờ bạn trả lời.`:''}<br>${button('Xem đánh giá','feedback',{filter:rv.open?'open':'all'},'small')}`,'amber','star'));
-  if(ops?.unpaid)notes.push(notice(`<b>Sổ tiệm: còn ${fmt(ops.unpaid)} xu cần trả</b><p class="ck-chips"><span class="ck-delta flat">Lương ${fmt(ops.wages)}</span><span class="ck-delta flat">điện nước ${fmt(ops.utilities)}</span><span class="ck-delta flat">thuê ${fmt(ops.rent_accrued)} xu</span>${ops.period?'<span class="ck-delta warn">vừa kết kỳ thuế</span>':''}</p>${button('Mở sổ thu chi','finance',{},'small')}`,'','mail'));
+  if(ops?.unpaid)notes.push(notice(`<b>${esc(wordsFor(career()).books)}: còn ${fmt(ops.unpaid)} xu cần trả</b><p class="ck-chips"><span class="ck-delta flat">Lương ${fmt(ops.wages)}</span><span class="ck-delta flat">điện nước ${fmt(ops.utilities)}</span><span class="ck-delta flat">thuê ${fmt(ops.rent_accrued)} xu</span>${ops.period?'<span class="ck-delta warn">vừa kết kỳ thuế</span>':''}</p>${button('Mở sổ thu chi','finance',{},'small')}`,'','mail'));
   const details=`<details class="sum-more space-top"><summary>Chi tiết cả ngày</summary>${experienceSummary(c)}<div class="kv"><div class="kv-row"><span>Xu thu vào</span><b>+${fmt(s.income)}</b></div><div class="kv-row"><span>Xu đã chi trong ca</span><b>−${fmt(s.cost)}</b></div><div class="kv-row"><span>Chuyện đã xử lý</span><b>${s.events}</b></div></div></details>`;
-  return header(`Ngày ${s.journey?.life_day??s.day} đã khép lại`,esc(c.life.shop_name||m.place),'TỔNG KẾT NGÀY')+`<div class="sheet-body summary-v6"><div class="sum-hero"><span class="sum-sun" aria-hidden="true">${icon('sun',34)}</span><p>${esc(s.headline||'Một ngày nữa đã có chuyện để nhớ.')}</p></div>${stats}${clockSummary(s)}${pnlFold(s)}${notes.length?`<div class="stack space-top">${notes.join('')}</div>`:''}${careerCloseSummary()}${accountNudge(env())}${details}</div>`+footer('',button('Đọc lời nhắn','phone',{},'ghost')+next);
+  // A career with its own day page (the air crew's flight log) replaces the headline and the big numbers; the notes stay shared.
+  return header(own?.title||`Ngày ${s.journey?.life_day??s.day} đã khép lại`,esc(c.life.shop_name||m.place),own?.eyebrow||'TỔNG KẾT NGÀY')+`<div class="sheet-body summary-v6">${own?own.top:`<div class="sum-hero"><span class="sum-sun" aria-hidden="true">${icon('sun',34)}</span><p>${esc(s.headline||'Một ngày nữa đã có chuyện để nhớ.')}</p></div>${stats}${clockSummary(s)}${pnlFold(s)}`}${notes.length?`<div class="stack space-top">${notes.join('')}</div>`:''}${careerCloseSummary()}${accountNudge(env())}${details}</div>`+footer('',button('Đọc lời nhắn','phone',{},'ghost')+next);
 }
 /** The day's profit/loss card (v4/pnl.js) folded to one line, "✓ Lãi/lỗ hôm nay: +N xu": the numbers above already
  * say how the day went; the full statement is one tap away. */
@@ -941,6 +945,7 @@ async function openJob(id,tab){
   if(select){const r=await cmd('task_select',{task:target},{quiet:true});if(!r&&ui.view==='job'&&ui.task===target){ui.task=room().active_task||null;renderSheet(false);}}
 }
 function interact(id){sound.unlock();sound.click();if(ui.paused)return;
+  {const alt=careerUI(career())?.spots?.[id];if(alt){openSheet(alt);return;}}  // a career's own place for a scene spot (air crew: no Sổ tiệm)
   if(id.startsWith('staff:')){ui.staffId=id.slice(6);openSheet('operations',{opsTab:'staff'});return;}
   if(id.startsWith('ops:')){openSheet('operations',{opsTab:id.slice(4)});return;}
   if(id==='officer'){openSheet('operations',{opsTab:'security'});return;}if(id.startsWith('npc:')){openSheet('chat',{npc:id.slice(4),task:null});return;}
@@ -965,7 +970,7 @@ async function handleAction(action,data,el){
     case'staffChat':ui.staffId=data.employee;openSheet('operations',{opsTab:'staff'});setTimeout(()=>$('#staff-message')?.focus(),0);break;
     case'opsDo':{
       const payload=JSON.parse(data.payload||'{}');
-      if(data.confirm){if(!await confirmAction('Xác nhận việc của tiệm',data.confirm,'Đồng ý thực hiện'))break;payload.confirm=true;}
+      if(data.confirm){if(!await confirmAction(wordsFor(career()).confirm_title,data.confirm,'Đồng ý thực hiện'))break;payload.confirm=true;}
       const r=await cmd(data.op,payload);
       if(r){if(data.op==='ops_hire')ui.staffId=payload.candidate;if(data.op==='ops_case_demo')ui.opsTab='security';if(data.op==='ops_incident_demo')ui.opsTab='staff';renderSheet();}
       break;
@@ -1030,7 +1035,7 @@ async function handleAction(action,data,el){
     case'completeAC':if(await confirmAction('Bàn giao bản đối chiếu?','Mọi thẻ phải được xử lý trước khi nhận thù lao.','Kiểm & bàn giao'))await cmd('ac_complete',{task:activeTask().id,explanation:'source_report'});break;
     case'executeCS':if(await confirmAction('Gửi việc tới đầu mối?','Kho, bên vận chuyển hay kế toán có thể mất vài giờ tới vài ngày. Vụ vẫn mở tới khi bạn kiểm kết quả.','Gửi việc'))await cmd('cs_execute',{task:activeTask().id});break;
     case'closeCS':if(await confirmAction('Đóng vụ đã có kết quả?','','Đóng vụ'))await cmd('cs_close',{task:activeTask().id});break;
-    case'end':if(!room().open){openSheet('summary');break;}if(await confirmAction('Khép ca hôm nay?','Lương, điện nước và tiền thuê ghi vào sổ tiệm để bạn trả sau.','Khép ca')){const r=await cmd('end_day',{carry_event:true});if(r){ui.task=null;openSheet('summary');world.say('Hẹn gặp lại vào một ngày dịu dàng.');}}break;
+    case'end':if(!room().open){openSheet('summary');break;}if(await confirmAction(wordsFor(career()).end_title,wordsFor(career()).end_text,'Khép ca')){const r=await cmd('end_day',{carry_event:true});if(r){ui.task=null;openSheet('summary');world.say('Hẹn gặp lại vào một ngày dịu dàng.');}}break;
     case'buyUpgrade':{const u=api.content.upgrades.find(x=>x.id===data.item);if(await confirmAction('Đặt '+u.name.toLowerCase()+'?',`Dùng ${u.price} xu của nghề này. ${u.description}`,'Mua & đặt'))await cmd('buy_upgrade',{item:data.item});break;}
     case'restock':{const quantity=Number(document.getElementById('qty-'+data.item)?.value);if(!Number.isInteger(quantity)||quantity<1||quantity>6){toast('Mỗi lần đặt từ 1 đến 6 món.',true);break;}const p=product(data.item);if(await confirmAction('Đặt một kiện hàng?',`${quantity} × ${p.name}, tổng ${quantity*p.cost} xu. Chỉ cộng kho sau khi kiện tới và bạn kiểm nhận.`, 'Đặt hàng'))await cmd('order_stock',{item:data.item,qty:quantity});break;}
     case'confirmEvent':{const e=room().event,o=e.options.find(o=>o.id===e.chosen);if(await confirmAction('Xác nhận cách xử lý?',`${o.label}. ${e.practice?'Diễn tập không trừ xu.':o.cost?'Chi '+o.cost+' xu từ quỹ nghề.':'Không tốn xu.'}`, 'Bắt đầu thực hiện'))await cmd('event_confirm');break;}

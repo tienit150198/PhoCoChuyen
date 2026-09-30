@@ -5,6 +5,7 @@
  * Everything is decided on the server; the client shows it and sends one command per tap. */
 import {nextHint,stepCta,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
+import * as air from './air_kit.js';
 const data=x=>x.room.data||{};
 const cc=x=>x.cc||{};
 const kg=n=>`${Number(n||0).toLocaleString('vi-VN')} kg`;
@@ -186,6 +187,29 @@ function logbook(x){
     ${log?`<ul class="pl-log">${log}</ul>`:'<p class="small muted">Chưa có chặng nào. Chuyến đầu tiên đang chờ.</p>'}</article>`;
 }
 
+/* ------------------------------------------------------------ the airline shell (air_kit.js) */
+const done=t=>['completed','cancelled','referred'].includes(t.status);
+const pct=(a,b)=>b?`${Math.round(100*a/b)}%`:'—';
+const AIR={id:'pilot',airline:'Hãng bay Cánh Cò',role:'CƠ PHÓ',role_line:'Cơ phó · bay cùng cơ trưởng Vân',back:'✈️ Về buồng lái',
+  more:'Nhận thêm một chặng',done_word:'chặng',crew:[0,1,2,3],
+  row(t){
+    if(t.status==='completed')return {status:t.at?`Hạ cánh ${t.at}`:'Đã hạ cánh',tone:'done'};
+    if(done(t))return {status:'Hủy',tone:'bad'};
+    if(!t.known)return {status:'Chờ bản tin'};
+    const late=(t.delay||0)+(t.air_late||0);
+    if(t.stage==='cruise'||t.stage==='approach')return {status:'Đang bay',tone:'air'};
+    if(t.stage==='landed')return {status:'Đã hạ cánh',tone:'done'};
+    return late?{status:`Trễ ${late}′`,tone:'late'}:{status:t.stage==='start'?'Lên tàu':'Chuẩn bị',tone:'now'};
+  },
+  log(x){
+    const lb=data(x).logbook||{},n=lb.flights||0,h=Math.floor((lb.minutes||0)/60),m=(lb.minutes||0)%60;
+    return {tiles:[[n,'chặng bay'],[`${h}h${String(m).padStart(2,'0')}`,'giờ bay'],[pct(lb.ontime||0,n),'đúng giờ'],[pct(lb.fuel_ok||0,n),'dầu đúng kế hoạch'],
+      [lb.arounds||0,'lần bay lại'],[n-(lb.safe||0),'chặng có lỗi an toàn']],
+      rows:(data(x).log||[]).slice().reverse().map(r=>({day:`N${r.day}`,code:r.code,text:`→ ${r.to}`,status:r.late?`+${r.late}′`:'Đúng giờ',tone:r.ok?'done':'late'}))};
+  },
+  close:d=>[[d.flights||0,'chặng bay'],[`${d.minutes||0}′`,'trên trời'],[pct(d.ontime||0,d.flights||0),'đúng giờ']],
+};
+
 export default {
   id:'pilot',
   css:true,
@@ -217,6 +241,13 @@ export default {
     return `<div class="career-job pl">${hint}${top}${arcCard(x)}${dayLine(x)}${logbook(x)}${bar}</div>`;
   },
   tick(root){keepBarAboveFooter(root);},
+  hudCard(c,t,x,o){return air.hudCard(c,t,x,{...AIR,next:t=>this.next(t,x)},o);},
+  board(x){return air.board(x,AIR);},
+  page(view,x){return air.page(view,x,AIR);},
+  daySummary(s,x){return air.daySummary(s,x,AIR);},
+  nav(items){return air.nav(items,AIR);},
+  spots:air.SPOTS,
+  noDecor:true,  // no "Chăm chút không gian" on the workbench: a crew has no shop to decorate
   actions:{
     async seen(d,el,x){x.ui.seen=d.key;x.render();},
     async intro(d,el,x){x.ui.intro=true;x.render();},

@@ -28,6 +28,10 @@ const BASE={
   idle_line:'Khách sắp ghé rồi.',open_hint:'Chuẩn bị một chút rồi mở cửa nhé.',free_eyebrow:'Quầy đang rảnh',free_title:'Hết khách rồi!',
   free_more:'Đón thêm khách hoặc khép ca hôm nay.',more_btn:'Đón thêm một khách',none_waiting:'Chưa có khách nào đang chờ',next_btn:'Đón khách tiếp theo',
   people_sub:'Những người bạn gặp quanh tiệm.',feed_sub:'Lời nhắn và đánh giá quanh tiệm.',
+  // Confirm dialogs (app.js): the title of a confirmed step, and closing the day.
+  confirm_title:'Xác nhận việc của tiệm',end_title:'Khép ca hôm nay?',end_text:'Lương, điện nước và tiền thuê ghi vào sổ tiệm để bạn trả sau.',
+  // Menus (app.js): the phone menu's group title for the scene's places, the "Thêm" button, the queue button.
+  rail_in:'Trong tiệm',more_aria:'Thêm: sổ tiệm, sổ tay, khu phố',queue_btn:'Xem sổ việc',books:'Sổ tiệm',
 };
 const KIND_WORDS={
   shop:{},
@@ -69,7 +73,8 @@ const KIND_WORDS={
     finance:'Sổ lương',property:'Sân đỗ Cánh Cò',security:'An ninh sân bay',ledger:'SỔ GIỜ BAY',store:'SÂN ĐỖ',
     idle_line:'Chặng bay tiếp theo sắp tới giờ.',open_hint:'Báo danh ở phòng điều phái rồi bay nhé.',free_eyebrow:'Tổ bay nghỉ giữa chặng',free_title:'Hết chặng rồi!',
     free_more:'Nhận thêm một chặng hoặc tan ca hôm nay.',more_btn:'Nhận thêm một chặng',none_waiting:'Chưa có chặng nào đang chờ',next_btn:'Chặng tiếp theo',
-    people_sub:'Những người bạn gặp ở sân bay.',feed_sub:'Lời nhắn và nhận xét quanh sân bay.'},
+    people_sub:'Những người bạn gặp ở sân bay.',feed_sub:'Lời nhắn và nhận xét quanh sân bay.',
+    confirm_title:'Xác nhận trước khi làm',rail_in:'Ở sân bay',more_aria:'Thêm: sổ bay, khu phố',queue_btn:'Bảng giờ bay',books:'Sổ lương',end_title:'Tan ca bay hôm nay?',end_text:'Lương ngày vào quỹ lương. Việc chưa xong được giữ lại cho mai.'},
 };
 const CAREER_WORDS={
   milk_tea:{warehouse:'Kho nguyên liệu'},

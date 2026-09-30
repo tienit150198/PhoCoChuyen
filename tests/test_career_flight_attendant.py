@@ -532,5 +532,48 @@ class Saves(Base):
             self.assertIn(k, view['data'])
 
 
+class Shell(Base):
+    """The crew's own shell: airline words on duty, a departures board line per job, passenger reviews."""
+    def test_reporting_for_duty_and_another_job_have_airline_words(self):
+        j = self.j
+        j.act('fa_intro')
+        for t in list(j.c['tasks']):
+            self.solve(j, t['id'])
+        j.act('end_day')
+        self.assertEqual(j.act('start_day')['message'], FA.SPEC['open_line'])
+        self.settle_desk(j)
+        self.assertEqual(j.act('more_work')['message'], FA.SPEC['more_line'])
+
+    def test_the_board_line_is_public_before_the_job_is_read(self):
+        j = self.j
+        tid = j.c['active_task']
+        view = self.view(j, tid)
+        self.assertEqual(view['leg'], j.get(tid)['needs']['leg'])
+        self.assertRegex(view['leg']['dep'], r'^\d\d:\d\d$')
+
+    def test_reviews_are_passengers_never_a_shop(self):
+        from game import feedback as fbm
+        j = self.j
+        j.act('fa_intro')
+        for t in list(j.c['tasks']):
+            self.solve(j, t['id'])
+        posts = [f for f in j.c['feed'] if f.get('kind') == 'review']
+        self.assertTrue(posts)
+        for p in posts:
+            self.assertTrue(p['feedback']['own'])
+            self.assertEqual(p['feedback']['status'], 'closed')
+            self.assertNotRegex(p['text'].lower(), r'quán|tiệm')
+            self.assertFalse(fbm.public_post(p)['feedback']['can_report'])
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_every_voice_speaks_for_both_ends(self):
+        t = FA.make_task(3, 1, 1)
+        for i in FA.VOICES:
+            for s in (1, 3, 4, 5):
+                text = FA.review_text(None, dict(t, npc=f'flight_attendant_npc_{i + 1:02d}', slips=[]), 'regular', s, [], 3)
+                self.assertTrue(text)
+                self.assertNotIn('quán', text)
+
+
 if __name__ == '__main__':
     unittest.main()

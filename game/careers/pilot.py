@@ -496,11 +496,12 @@ FIXED = ('needs',)
 
 # ================================================================ the career's data
 def _fresh_today(day: int) -> dict:
-    return dict(day=day, flights=0, minutes=0, delays=0, arounds=0, diverts=0, holds=0)
+    return dict(day=day, flights=0, minutes=0, delays=0, arounds=0, diverts=0, holds=0, ontime=0)
 
 
 def initial() -> dict:
-    return dict(v=1, intro=False, logbook=dict(flights=0, minutes=0, landings=0, arounds=0, diverts=0, holds=0, delays=0, safe=0),
+    return dict(v=1, intro=False, logbook=dict(flights=0, minutes=0, landings=0, arounds=0, diverts=0, holds=0, delays=0, safe=0,
+                                               ontime=0, fuel_ok=0),
                 log=[], regulars={}, arc=dict(seen=[], due=None), today=_fresh_today(0), desk=kit.desk_initial())
 
 
@@ -889,10 +890,14 @@ def _park(s, c, d, p):
     lb['holds'] += t['arrive'] == 'hold'
     lb['diverts'] += bool(t['at'])
     lb['safe'] += not cq.safety(t)
+    ontime = not (t['delay'] or t['air_late'])
+    lb['ontime'] += ontime
+    lb['fuel_ok'] += t['fuel'] == t['needs']['fuel']['need']
     for k in lb:
         lb[k] = min(10 ** 7, lb[k])
     d['today']['flights'] += 1
     d['today']['minutes'] += n['minutes']
+    d['today']['ontime'] += ontime
     d['log'] = ar.last(d['log'] + [dict(day=c['day'], code=n['code'], to=_where(t), minutes=n['minutes'], late=t['delay'] + t['air_late'],
                                         arounds=t['arounds'], ok=not cq.slips(t))], LOG_MAX, 'pilot.log', c)
     story = ''
@@ -961,7 +966,7 @@ def on_close(s: dict, c: dict) -> dict:
         lines.append(desk_note)
     lines.append('🏠 Tối về tới đầu hẻm, bà Tám để phần cơm trên bàn.')
     return dict(lines=lines, note='Mai báo danh ở sân bay lúc 05:30.', flights=x['flights'], minutes=x['minutes'], arounds=x['arounds'],
-                diverts=x['diverts'], delays=x['delays'])
+                diverts=x['diverts'], delays=x['delays'], ontime=x['ontime'])
 
 
 # ================================================================ reviews
@@ -982,6 +987,30 @@ def feedback(c: dict, t: dict) -> dict:
         dict(key='pax', label='Thông báo cho khách', score=pax, note='rõ ràng, thật lòng' if pax == 5 else 'thông báo chưa rõ')])
 
 
+# The reviewers' own words (feedback.make_review → review_text): the captain's debrief, the purser, passengers.
+VOICES = {
+    CAPTAIN: {5: ['Chặng {code} gọn gàng từ bản tin tới lúc tắt máy.', 'Bay với em chặng {code}, chị yên tâm.'],
+              4: ['Chặng {code} ổn, còn một chỗ cần chắc tay hơn.', 'Nhìn chung tốt. Chị ghi lại một điều cho chặng sau.'],
+              3: ['Chặng {code} chị phải nhắc nhiều.', 'Ngồi xem lại chặng {code} với chị nhé.'],
+              1: ['Chặng {code} không đạt. Mai mình bay mô phỏng lại phần này.', 'Chị phải ghi chặng {code} vào sổ huấn luyện.']},
+    PURSER: {5: ['Khoang khách chặng {code} yên ổn, tụi chị làm việc nhẹ cả người.'], 4: ['Chặng {code} ổn, khoang khách chỉ hơi xì xào một lúc.'],
+             3: ['Chặng {code} khoang khách lo lắng khá lâu.'], 1: ['Chặng {code} cả khoang hoảng, tụi chị phải trấn an từng người.']},
+    GRANNY: {5: ['Chuyến đi {to} êm ru, bà chẳng sợ gì cả.', 'Lần đầu đi máy bay mà dễ chịu ghê.'], 4: ['Chuyến bay tốt, chỉ có chút bà chưa ưng.'],
+             3: ['Bay thì tới nơi, mà bà cứ thấp thỏm.'], 1: ['Chuyến này bà sợ quá, chắc không dám đi nữa.']},
+    KIET: {5: ['Đi công tác mà được chuyến thế này là đủ.', 'Chuyến {code}: không có gì để phàn nàn. Hiếm đấy.'], 4: ['Chuyến {code}: tạm được.'],
+           3: ['Chuyến {code}: không như mong đợi.'], 1: ['Chuyến {code}: một trải nghiệm tệ.']},
+    NA: {5: ['Chuyến bay đỉnh quá ạ ✈️', 'Con thích tổ bay chuyến {code} nhất luôn!'], 4: ['Hay lắm ạ, chỉ có một chỗ con thấy hơi lạ.'],
+         3: ['Con hơi sợ xíu ạ 😥'], 1: ['Con không thích chuyến này đâu 😢']},
+}
+PAX_LINES = {'pax': ('Thông báo rõ ràng, nghe là yên tâm.', 'Chậm mà không ai nói rõ vì sao.'),
+             'safety': ('Hạ cánh êm, không rung lắc gì.', 'Có lúc tàu chao mạnh, cả khoang hoảng.')}
+
+
+def review_text(c: dict, t: dict, persona: str, stars: int, criteria: list, seed: int) -> str:
+    i = _npc_index(t)
+    return air.review(t, stars, criteria, seed, VOICES.get(i, VOICES[KIET]), None if i in (CAPTAIN, PURSER) else PAX_LINES)
+
+
 # ================================================================ what the client sees
 def known_request(c: dict, t: dict) -> str:
     n = t['needs']
@@ -995,6 +1024,7 @@ def public_task(t: dict) -> dict:
     for k in list(v):
         if k.startswith('_'):
             del v[k]
+    v['leg'] = t['needs']['leg']          # the departures board shows every hop, briefed or not
     if not t['known']:
         v['needs'] = None
         return v
@@ -1144,6 +1174,8 @@ SPEC = dict(
            ('Bình', 'ramp', 'Khỏe, nhanh, hay hát khi kéo xe hành lý.', 88, 80)],
     roles={'ops': 'Điều phái phụ', 'ramp': 'Nhân viên sân đỗ'},
     tip=0,
+    open_line='Báo danh xong. Chị Vân đang chờ ở phòng điều phái.',
+    more_line='Điều phái xếp thêm một chặng bay.',
     physical=PHYSICAL,
     free_actions=FREE,
     no_tick=NO_TICK,

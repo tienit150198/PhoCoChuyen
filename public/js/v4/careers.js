@@ -8,7 +8,7 @@ const modules={};
 const scratch={};
 // Careers whose stylesheet builds on a shared kit. The kit is its own <link> (loaded in parallel, placed
 // before the career's sheet) instead of an @import inside it, which cost a second round trip.
-export const CSS_KIT={cafe_bakery:'food_kit',florist:'food_kit',restaurant:'food_kit',tax_payroll:'office_kit',group_accounting:'office_kit',corp_accounting:'office_kit'};
+export const CSS_KIT={cafe_bakery:'food_kit',florist:'food_kit',restaurant:'food_kit',tax_payroll:'office_kit',group_accounting:'office_kit',corp_accounting:'office_kit',pilot:'air_kit',flight_attendant:'air_kit'};
 
 /** Import career workbenches (+ their stylesheets). `waitCss`: also wait (max 1.5 s) until the stylesheets
  * are in, so the first frame of a workbench is never unstyled (startup loads only the current career). */

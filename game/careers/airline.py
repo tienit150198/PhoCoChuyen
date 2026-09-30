@@ -23,6 +23,7 @@ ROWS = 17                     # 17 rows of A B | C D: 68 seats
 SEATS = 'ABCD'
 EXIT_ROWS = (1, 17)           # rows next to the doors: able adults from 15 only
 HOURS = (5 * 60 + 30, 19 * 60 + 30)   # crew report at 05:30; the last hop is home by evening
+FIRST_DEP, EVERY = 6 * 60 + 10, 95    # the day's first departure and the rhythm of the hops after it
 
 # Destinations from the city. trip = fuel for the hop (kg), alt = the alternate airfield and the fuel to reach it.
 ROUTES = [
@@ -46,11 +47,13 @@ def leg(day: int, slot: int) -> dict:
     r = ROUTES[kit.rng('airline', 'route', day, pair).randrange(len(ROUTES))]
     out = slot % 2 == 0
     code = f'CC {100 + (day * 7 + pair * 2) % 80 * 2 + (0 if out else 1)}'
+    at = (FIRST_DEP + slot * EVERY) % (24 * 60)
+    when = dict(dep=f'{at // 60:02d}:{at % 60:02d}', gate=1 + kit.rng('airline', 'gate', day, slot).randrange(6))
     if out:
         return dict(code=code, route=r['id'], frm=HOME, to=r['to'], emoji=r['emoji'], minutes=r['minutes'], trip=r['trip'],
-                    alt=r['alt'], alt_fuel=r['alt_fuel'], coast=r['coast'], out=True)
+                    alt=r['alt'], alt_fuel=r['alt_fuel'], coast=r['coast'], out=True, **when)
     return dict(code=code, route=r['id'], frm=r['to'], to=HOME, emoji='🏙️', minutes=r['minutes'], trip=r['trip'],
-                alt=HOME_ALT['alt'], alt_fuel=HOME_ALT['alt_fuel'], coast=r['coast'], out=False)
+                alt=HOME_ALT['alt'], alt_fuel=HOME_ALT['alt_fuel'], coast=r['coast'], out=False, **when)
 
 
 def seat_side(s: str) -> str:
@@ -58,3 +61,31 @@ def seat_side(s: str) -> str:
     letter = s[-1]
     return {'A': 'bên trái, sát cửa sổ', 'B': 'bên trái, sát lối đi', 'C': 'bên phải, sát lối đi', 'D': 'bên phải, sát cửa sổ'}.get(letter, '')
 
+
+
+# ---------------------------------------------------------------- reviews (feedback.make_review → careers' review_text)
+def _band(stars: int) -> int:
+    return 5 if stars >= 5 else 4 if stars == 4 else 3 if stars == 3 else 1
+
+
+def review(t: dict, stars: int, criteria: list, seed: int, voice: dict, lines: dict | None) -> str:
+    """A few words after a flight, in the reviewer's own voice: an opener by stars, then one concrete line. `lines`
+    maps criterion keys to what a passenger saw (pos, neg); without it (the crew's debrief) the criterion speaks as
+    itself. A mistake on the job is named as the job recorded it. Pure: the same review always reads the same."""
+    leg = (t.get('needs') or {}).get('leg') or {}
+    band = _band(stars)
+    rows = voice.get(band) or voice[5]
+    head = rows[seed % len(rows)].format(code=leg.get('code', ''), to=leg.get('to', ''))
+    slips = sorted(t.get('slips') or [], key=lambda r: -r['sev'])
+    if slips:
+        body = slips[0]['text']
+    else:
+        known = [x for x in criteria if lines is None or x['key'] in lines]
+        body = ''
+        if known:
+            x = min(known, key=lambda r: r['score']) if band < 5 else known[(seed // 7) % len(known)]
+            if lines is None:
+                body = f'{x["label"]}: {x["note"]}.' if x.get('note') else ''
+            else:
+                body = lines[x['key']][0 if x['score'] >= 5 else 1]
+    return f'{head} {body}'.strip()

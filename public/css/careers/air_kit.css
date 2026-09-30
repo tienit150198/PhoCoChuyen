@@ -1,0 +1,91 @@
+/* Hãng bay Cánh Cò — the air crew's own shell (pilot, flight_attendant; public/js/careers/air_kit.js).
+   Loaded with either career (v4/careers.js CSS_KIT) and scoped to html[data-career] of those two, so every
+   other career keeps the shared shop chrome. Its own look: a navy-and-sky airline palette (teal for the cabin),
+   a boarding pass (a perforated stub) on the main screen, split-flap departures boards, uppercase airline type with tabular digits.
+   Surfaces and text follow the theme tokens, so the dark theme works. */
+html[data-career="pilot"],html[data-career="flight_attendant"]{
+  --air-navy:#1d3b5c;--air-sky:#2f6fa8;--air-board:#101820;--air-board-ink:#f5d67a;--air-board-dim:#8a96a3;--air-ok:#7fd49b;--air-late:#ffb86b;--air-bad:#ff8a80;
+  --air-mono:ui-monospace,"SF Mono","Roboto Mono",Menlo,Consolas,monospace}
+html[data-career="flight_attendant"]{--air-navy:#155e5c;--air-sky:#1f7a78}
+
+/* ---------- the chrome: title card, top bar, dock */
+html[data-career="pilot"] .scene-heading h1,html[data-career="flight_attendant"] .scene-heading h1{text-transform:uppercase;letter-spacing:.06em;font-size:1.05rem}
+html[data-career="pilot"] #topbar .cozy-day,html[data-career="flight_attendant"] #topbar .cozy-day,
+html[data-career="pilot"] #topbar .cozy-till,html[data-career="flight_attendant"] #topbar .cozy-till{font-variant-numeric:tabular-nums}
+html[data-career="pilot"] #dock,html[data-career="flight_attendant"] #dock{--dock-air:var(--air-navy)}
+html[data-career="pilot"] .dock-btn.main,html[data-career="flight_attendant"] .dock-btn.main{background:var(--air-navy);color:#fff;border-color:var(--air-navy)}
+html[data-career="pilot"] .dock-btn.main svg,html[data-career="flight_attendant"] .dock-btn.main svg{color:#fff}
+
+/* ---------- the boarding pass (main screen) */
+html[data-career="pilot"] .task-hud .note-card.air-pass,html[data-career="flight_attendant"] .task-hud .note-card.air-pass{
+  display:flex;flex-direction:column;align-items:stretch;gap:0;padding:0;overflow:hidden;border:0;border-top:0;border-radius:16px;background:var(--surface);box-shadow:var(--shadow)}
+.air-pass-top{position:relative;display:flex;align-items:center;gap:8px;padding:8px 12px;background:linear-gradient(135deg,var(--air-navy),var(--air-sky));color:#f4f8fc;
+  font-family:var(--air-mono);font-size:.8rem;letter-spacing:.04em;white-space:nowrap;min-width:0}
+.air-pass-code{padding:1px 7px;border-radius:6px;background:rgb(255 255 255 / 16%);font-weight:800}
+.air-pass-route{display:flex;align-items:center;gap:6px;min-width:0;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis}
+.air-pass-route b{font-weight:800;overflow:hidden;text-overflow:ellipsis}
+.air-pass-route i{font-style:normal;opacity:.85}
+.air-pass-when{flex:none;opacity:.9}
+.air-off .air-pass-route{font-family:inherit;letter-spacing:0}
+.air-pass-row{position:relative;display:flex;align-items:center;gap:8px;padding:9px 10px 10px;min-width:0;border-top:2px dashed color-mix(in srgb,var(--air-navy) 30%,transparent)}
+.air-pass-row>.btn{flex:none;margin:0;min-height:44px}
+.air-pass-row>.btn.grow{flex:1 1 auto;min-width:0}
+.air-pass .calm-what{flex:1 1 auto}
+html[data-layout="phone"] .task-hud .air-pass .npc-mini{display:block}
+
+/* ---------- crew pages (crew room, departures board, flight log, day summary) */
+.air-head .eyebrow{font-family:var(--air-mono);letter-spacing:.08em;color:var(--air-sky)}
+html[data-theme="dem"] .air-head .eyebrow{color:#9cc7f0}
+.air-sheet{display:flex;flex-direction:column;gap:10px}
+.air-h{margin:6px 0 0;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.air-wx{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:linear-gradient(135deg,color-mix(in srgb,var(--air-sky) 16%,var(--surface)),var(--surface));border:1px solid var(--line)}
+.air-wx>span:first-child{font-size:28px}
+.air-wx b{display:block}
+.air-wx small{color:var(--muted);font-size:.8rem;line-height:1.35;display:block}
+.air-hours{flex:none;font-family:var(--air-mono);font-size:.8rem;padding:3px 8px;border-radius:8px;background:var(--surface-2)}
+.air-board{display:grid;gap:2px;padding:8px;border-radius:14px;background:var(--air-board);color:var(--air-board-ink);font-family:var(--air-mono);font-size:.8rem;box-shadow:inset 0 0 0 1px #000}
+.air-board-empty p{margin:6px 4px;color:var(--air-board-dim);font-family:inherit}
+.ab-row{display:grid;grid-template-columns:5ch 6ch minmax(0,1fr) 3ch 11ch;gap:6px;align-items:center;width:100%;min-height:36px;padding:4px 6px;border:0;border-radius:6px;
+  background:#18232e;color:inherit;font:inherit;text-align:left;cursor:default}
+button.ab-row{cursor:pointer;min-height:44px}
+@media (hover:hover){button.ab-row:hover{background:#223142}}
+.ab-row.now{box-shadow:inset 3px 0 0 var(--air-board-ink)}
+.ab-row.done{opacity:.72}
+.ab-head{min-height:24px;background:transparent;color:var(--air-board-dim);font-size:.66rem}
+.ab-row span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ab-to{letter-spacing:.04em}
+.ab-gate{text-align:center}
+.ab-status{color:var(--air-board-dim);font-size:.74rem}
+.ab-status.now{color:var(--air-board-ink)}
+.ab-status.air{color:#8cc8ff}
+.ab-status.done{color:var(--air-ok)}
+.ab-status.late{color:var(--air-late)}
+.ab-status.bad{color:var(--air-bad)}
+.air-crew{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.air-crew li{display:flex;align-items:center;gap:8px;padding:8px;border-radius:12px;background:var(--surface-2);min-width:0}
+.air-crew b{display:block;font-size:.9rem}
+.air-crew small{display:block;color:var(--muted);font-size:.75rem;line-height:1.25}
+.air-goals{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.air-goals li{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;border:1px solid var(--line)}
+.air-goals li.done{opacity:.7}
+.air-goals b{display:block;font-size:.9rem}
+.air-goals small{color:var(--muted);font-size:.75rem}
+.air-goal-n{font-family:var(--air-mono)}
+.air-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.air-tiles>div{padding:10px 6px;border-radius:12px;background:var(--surface-2);text-align:center;border-top:3px solid var(--air-sky)}
+.air-tiles b{display:block;font-family:var(--air-mono);font-size:1.15rem}
+.air-tiles small{display:block;color:var(--muted);font-size:.72rem;line-height:1.25}
+.air-log{list-style:none;margin:0;padding:0;display:grid;gap:2px;font-size:.86rem}
+.air-log li{display:flex;align-items:baseline;gap:8px;padding:6px 2px;border-bottom:1px dashed var(--line)}
+.air-log .ab-time{color:var(--muted);font-family:var(--air-mono);font-size:.75rem}
+.air-log .ab-status.done{color:var(--good)}
+.air-log .ab-status.late{color:var(--warn)}
+.air-sum{display:flex;flex-direction:column;gap:10px}
+.air-sum .air-tiles{grid-template-columns:repeat(4,minmax(0,1fr))}
+.air-sum .air-tiles b{font-size:1.02rem}
+.air-sum-line{margin:0;padding:10px 12px;border-radius:12px;background:linear-gradient(135deg,var(--air-navy),var(--air-sky));color:#f4f8fc}
+.air-foot .btn{width:100%}
+@media (max-width:420px){
+  .ab-row{gap:5px;padding:4px 5px}
+  .air-board{font-size:.74rem;padding:6px}
+}

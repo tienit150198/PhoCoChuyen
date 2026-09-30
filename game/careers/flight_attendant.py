@@ -1114,7 +1114,8 @@ def on_close(s: dict, c: dict) -> dict:
     if desk_note:
         lines.append(desk_note)
     lines.append('🏠 Tối về tới hẻm, cởi đôi giày bay, bà Tám hỏi hôm nay có gặp ai vui không.')
-    return dict(lines=lines, note='Mai báo danh ở sân bay lúc 05:30.', jobs=x['jobs'], pax=x['pax'], served=x['served'])
+    return dict(lines=lines, note='Mai báo danh ở sân bay lúc 05:30.', jobs=x['jobs'], pax=x['pax'], served=x['served'], fixed=x['fixed'],
+                medical=x['medical'], turb=x['turb'])
 
 
 # ================================================================ reviews
@@ -1158,6 +1159,41 @@ def feedback(c: dict, t: dict) -> dict:
                           dict(key='calm', label='Bình tĩnh', score=speed, note='không để khách chờ lâu')])
 
 
+# The reviewers' own words (feedback.make_review → review_text): the purser, and passengers of the flight.
+VOICES = {
+    THU: {5: ['Việc chuyến {code} em làm đâu ra đấy.', 'Chuyến {code} chị không phải nhắc gì.'], 4: ['Chuyến {code} ổn, còn một chỗ em để ý thêm.'],
+          3: ['Chuyến {code} chị phải chạy lại mấy chỗ.'], 1: ['Chuyến {code} mình phải ngồi rút kinh nghiệm.']},
+    KIET: {5: ['Chuyến {code}: gọn, đúng, không phàn nàn.', 'Tiếp viên chuyến {code} làm việc có lý.'], 4: ['Chuyến {code}: tạm được.'],
+           3: ['Chuyến {code}: không như mong đợi.'], 1: ['Chuyến {code}: dịch vụ trên tàu tệ.']},
+    CHIN: {5: ['Cô tiếp viên dễ thương quá, bà đi {to} vui ghê.', 'Có cô tiếp viên quen, bà yên tâm cả chuyến.'], 4: ['Chuyến bay tốt, chỉ có chút bà chưa ưng.'],
+           3: ['Bà hơi lo suốt chuyến.'], 1: ['Chuyến này bà buồn lắm.']},
+    TU: {5: ['Tiếp viên chu đáo, ông đi {to} thoải mái.', 'Chuyến {code} tử tế, ông ghi nhận.'], 4: ['Được, nhưng còn chỗ phải chấn chỉnh.'],
+         3: ['Chuyến {code} ông chưa hài lòng.'], 1: ['Chuyến {code} ông không chấp nhận được.']},
+    MAI: {5: ['Bay với bé mà được giúp tận tình, cảm ơn tổ bay nhiều.', 'Chuyến {code} bé Bơ ngủ ngon, mẹ cũng nhẹ người.'],
+          4: ['Chuyến bay tốt, chỉ có chút chị chưa yên tâm.'], 3: ['Bay với con nhỏ mà chị hơi vất vả.'], 1: ['Chuyến này chị với bé mệt quá.']},
+    HAI: {5: ['Chuyến {code} êm, tiếp viên chu đáo.', 'Đi tuyến này hoài, chuyến nay dễ chịu nhất.'], 4: ['Được, chỉ có chút chưa ưng.'],
+          3: ['Chuyến {code} chưa được như mọi lần.'], 1: ['Chuyến {code} lần này tệ.']},
+    VY: {5: ['Chuyến bay chill xỉu, tiếp viên cute ✈️✨', 'Bay {to} mà vui như đi picnic 🥰'], 4: ['Ổn áp nha, chỉ có một xíu chưa ưng.'],
+         3: ['Hơi toang xíu 🥲'], 1: ['Chuyến này không vui chút nào 😤']},
+}
+PAX_LINES = {
+    'order': ('Đúng chỗ, đúng món, không phải nhắc.', 'Mang nhầm, phải gọi lại.'),
+    'care': ('Tiếp viên niềm nở từ lúc ở cửa.', 'Tiếp viên hơi lúng túng lúc đón khách.'),
+    'speed': ('Nhanh gọn.', 'Chờ hơi lâu.'),
+    'special': ('Suất ăn đặc biệt được nhớ đúng ghế.', 'Suất ăn đặc biệt suýt bị nhầm.'),
+    'safe': ('Rung lắc mà tiếp viên cất xe kịp, yên tâm.', 'Rung lắc mà xe đẩy vẫn còn giữa lối.'),
+    'calm': ('Tiếp viên nói nhỏ nhẹ, nghe lọt tai.', 'Tiếp viên nói hơi gắt.'),
+    'rule': ('Nói rõ quy định mà không làm khách mất mặt.', 'Quy định thì đúng, nhưng nói chưa rõ vì sao.'),
+    'solve': ('Còn tìm cho khách cách khác, chu đáo.', 'Chưa có cách nào cho khách.'),
+    'report': ('Báo cơ trưởng, tìm bác sĩ ngay.', 'Chậm báo người cần báo.'),
+}
+
+
+def review_text(c: dict, t: dict, persona: str, stars: int, criteria: list, seed: int) -> str:
+    i = _npc_index(t)
+    return air.review(t, stars, criteria, seed, VOICES.get(i, VOICES[KIET]), None if i == THU else PAX_LINES)
+
+
 # ================================================================ what the client sees
 def known_request(c: dict, t: dict) -> str:
     n = t['needs']
@@ -1187,6 +1223,7 @@ def public_task(t: dict) -> dict:
     for k in list(v):
         if k.startswith('_'):
             del v[k]
+    v['leg'] = t['needs']['leg']          # the departures board shows every flight
     if not t['known']:
         v['needs'] = None
         return v
@@ -1355,6 +1392,8 @@ SPEC = dict(
            ('Khoa', 'ground', 'Nói ba thứ tiếng, dẫn khách lạc rất kiên nhẫn.', 72, 94)],
     roles={'galley': 'Tiếp viên phụ bếp', 'ground': 'Nhân viên mặt đất'},
     tip=0,
+    open_line='Báo danh xong. Chị Thu đang chờ ở cửa tàu.',
+    more_line='Chị Thu giao thêm một việc trong khoang.',
     physical=PHYSICAL,
     free_actions=FREE,
     no_tick=NO_TICK,

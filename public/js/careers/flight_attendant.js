@@ -5,6 +5,7 @@
  * Teal and coral cabin look. Everything is decided on the server; one command per tap. */
 import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
+import * as air from './air_kit.js';
 const data=x=>x.room.data||{};
 const cc=x=>x.cc||{};
 const lower=s=>s?s[0].toLowerCase()+s.slice(1):'';
@@ -207,6 +208,23 @@ function dayLine(x){
   return `<div class="tv-day"><span aria-hidden="true">${x.esc(m.emoji||'🌤️')}</span><b class="grow">${x.esc(m.label||'')}</b>${carBtn(x,'❔','intro',{},'ghost small tv-help',' aria-label="Giới thiệu nghề"')}<small>${x.esc(m.hint||'')}</small></div>`;
 }
 
+/* ------------------------------------------------------------ the airline shell (air_kit.js) */
+const JOB={board:'Đón khách',demo:'An toàn',service:'Xe đẩy',calm:'Khách khó chịu',medical:'Sơ cứu'};
+const AIR={id:'flight_attendant',airline:'Hãng bay Cánh Cò',role:'TIẾP VIÊN',role_line:'Tiếp viên · cùng chị Thu lo khoang khách',back:'💺 Về khoang khách',
+  more:'Nhận thêm một việc',done_word:'việc',crew:[0,6],
+  row(t){
+    if(t.status==='completed')return {status:`✓ ${JOB[t.kind]||'Xong'}`,tone:'done'};
+    if(['cancelled','referred'].includes(t.status))return {status:'Hủy',tone:'bad'};
+    return {status:JOB[t.kind]||'Khoang khách',tone:t.status==='in_progress'?'now':''};
+  },
+  log(x){
+    const s=data(x).stats||{};
+    return {tiles:[[s.jobs||0,'việc'],[s.pax||0,'khách đón ở cửa'],[s.served||0,'món đã mời'],[s.fixed||0,'ghế chỉnh trước cất cánh'],[s.medical||0,'lần sơ cứu'],[s.turb_ok||0,'lần cất xe kịp']],
+      rows:(data(x).log||[]).slice().reverse().map(r=>({day:`N${r.day}`,code:JOB[r.kind]||'',text:r.title,status:r.ok?'Chu đáo':'Có lỗi',tone:r.ok?'done':'late'}))};
+  },
+  close:d=>[[d.jobs||0,'việc'],[d.pax||0,'khách đón'],[d.served||0,'món đã mời']],
+};
+
 export default {
   id:'flight_attendant',
   css:true,
@@ -238,6 +256,13 @@ export default {
     if(d.turb?.stage==='coming'||d.desk?.ev||!d.intro||x.ui.intro)return `<div class="career-job tv">${hint}${top}${bar}</div>`;
     return `<div class="career-job tv">${hint}${top}${arcCard(x)}${dayLine(x)}${crewBook(x)}${bar}</div>`;
   },
+  hudCard(c,t,x,o){return air.hudCard(c,t,x,{...AIR,next:t=>this.next(t,x)},o);},
+  board(x){return air.board(x,AIR);},
+  page(view,x){return air.page(view,x,AIR);},
+  daySummary(s,x){return air.daySummary(s,x,AIR);},
+  nav(items){return air.nav(items,AIR);},
+  spots:air.SPOTS,
+  noDecor:true,  // no "Chăm chút không gian" on the workbench: a crew has no shop to decorate
   tick(root,x){
     keepBarAboveFooter(root);
     const clock=root.querySelector('[data-tv-turb]');

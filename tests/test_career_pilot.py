@@ -633,5 +633,62 @@ class Saves(Base):
             self.assertIn(k, view['data'])
 
 
+class Shell(Base):
+    """The crew's own shell: airline words on duty, a departures board line per hop, passenger reviews."""
+    def test_reporting_for_duty_and_another_hop_have_airline_words(self):
+        j = self.j
+        j.act('pl_intro')
+        for t in list(j.c['tasks']):
+            self.fly(j, t['id'])
+        j.act('end_day')
+        self.assertEqual(j.act('start_day')['message'], PL.SPEC['open_line'])
+        self.settle_desk(j)
+        self.assertEqual(j.act('more_work')['message'], PL.SPEC['more_line'])
+
+    def test_every_hop_has_a_departure_time_and_a_gate(self):
+        for day in range(1, 12):
+            for slot in range(5):
+                leg = PL.make_task(day, slot, 1)['needs']['leg']
+                self.assertRegex(leg['dep'], r'^\d\d:\d\d$')
+                self.assertIn(leg['gate'], range(1, 7))
+                self.assertEqual(leg, PL.make_task(day, slot, 9)['needs']['leg'])
+
+    def test_the_board_line_is_public_before_the_briefing(self):
+        j = self.j
+        tid = j.c['active_task']
+        view = next(t for t in public_state(j.state)['careers']['pilot']['tasks'] if t['id'] == tid)
+        self.assertFalse(view['known'])
+        self.assertEqual(view['leg'], j.get(tid)['needs']['leg'])
+        self.assertIsNone(view['needs'])
+
+    def test_reviews_are_passengers_and_the_captain_never_a_shop(self):
+        from game import feedback as fbm
+        j = self.j
+        j.act('pl_intro')
+        for t in list(j.c['tasks']):
+            self.fly(j, t['id'])
+        posts = [f for f in j.c['feed'] if f.get('kind') == 'review']
+        self.assertTrue(posts)
+        for p in posts:
+            fb = p['feedback']
+            self.assertTrue(fb['own'])
+            self.assertEqual(fb['status'], 'closed')
+            self.assertNotRegex(p['text'].lower(), r'quán|tiệm|ly |món')
+            self.assertFalse(fbm.public_post(p)['feedback']['can_report'])
+        self.assertIsNone(fbm._own_voice('milk_tea'))
+        validate_state(json.loads(json.dumps(j.state)))
+
+    def test_a_bad_hop_reads_as_a_bad_hop(self):
+        said = {1: set(), 5: set()}
+        t = PL.make_task(3, 1, 1)
+        for i in PL.VOICES:
+            for s in said:
+                text = PL.review_text(None, dict(t, npc=f'pilot_npc_{i + 1:02d}', slips=[]), 'regular', s, [], 7)
+                self.assertTrue(text)
+                self.assertNotIn('quán', text)
+                said[s].add(text)
+        self.assertTrue(said[1].isdisjoint(said[5]))
+
+
 if __name__ == '__main__':
     unittest.main()
