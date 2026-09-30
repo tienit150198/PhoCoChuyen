@@ -63,6 +63,7 @@
 .career-job.tp .tp-cells.edit td{padding:3px}
 .career-job.tp .tp-cells input,.career-job.tp .tp-cells select,.career-job.tp .tp-match select{width:100%;min-height:48px;font-size:16px}
 .career-job.tp .tp-num{font-variant-numeric:tabular-nums;text-align:right;font-weight:700;font-size:16px}
+.career-job.tp .tp-num.tp-bad,.career-job.tp select.tp-bad{border-color:#c0392b;box-shadow:0 0 0 3px rgba(192,57,43,.22)}
 .career-job.tp .tp-match{display:grid;gap:8px}
 .career-job.tp .tp-cell-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(120px,.8fr);gap:8px;align-items:center;font-size:.967rem}
 .career-job.tp .tp-cell-row input{min-height:48px;width:100%}
