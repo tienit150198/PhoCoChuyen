@@ -188,10 +188,11 @@ function outfitSteps(t,x){
 function outfitJob(t,x){
   const o=x.cc.occasions?.[t.needs.occasion]||{},total=sum(t.picks.map(p=>price(x,p.item))),pct=Math.min(100,total/t.needs.budget*100);
   const items=t.picks.map(p=>p.item),grp=x.cc.groups||{},top=items.some(i=>grp[i]==='top'),set=items.some(i=>grp[i]==='one')||(top&&items.some(i=>grp[i]==='bottom'));
-  // One row: the occasion and the budget bar; the styling tips fold under it.
+  // One row: the occasion and the budget bar; under it what the occasion needs (the shop checks it at the
+  // counter), open while picking, folded after (data-auto: the render decides).
   return `<section class="card ao-occasion compact"><div class="row"><span class="ao-big" aria-hidden="true">${x.esc(o.emoji||'👗')}</span><div class="grow"><h4>${x.esc(o.name||'')}</h4>
     <div class="ao-budget"><small>Ngân sách</small><div class="bar ${total>t.needs.budget?'low':''}"><i style="width:${pct}%"></i></div><b class="${total>t.needs.budget?'bad':''}">${x.fmt(total)}/${x.fmt(t.needs.budget)}</b></div></div></div>
-    ${(o.tips||[]).length?`<details class="ao-tipfold"><summary>💡 Mẹo phối cho dịp này</summary><ul class="small ao-tips">${o.tips.map(v=>`<li>${x.esc(v)}</li>`).join('')}</ul></details>`:''}</section>
+    ${(o.tips||[]).length?`<details class="ao-tipfold" data-auto${t.stage==='pick'?' open':''}><summary>💡 Dịp này cần</summary><ul class="small ao-tips">${o.tips.map(v=>`<li>${x.esc(v)}</li>`).join('')}</ul></details>`:''}</section>
     ${t.stage==='pick'?rack(t,x,'pick',set?'':top?'bottom':'top'):''}${counter(t,x,'🛍️ Bộ đồ đang phối')}${payBlock(t,x)}`;
 }
 

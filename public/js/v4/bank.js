@@ -119,7 +119,7 @@ async function marriagePost(op,body){
 
 const val=id=>{const el=S.dlg?.querySelector('#'+id);return el?el.value:'';};
 const amountOf=id=>{const n=Number(val(id));return Number.isInteger(n)&&n>0?n:0;};
-const ask=(title,msg,label)=>S.env.confirmAction(title,msg,label);
+const ask=(title,msg,label,money)=>S.env.confirmAction(title,msg,label,money);  // money: {cost,pocket} → "còn thiếu" (v4/money.js)
 
 async function onClick(op,data){
   const b=B(),R=b.rules||{};
@@ -129,13 +129,13 @@ async function onClick(op,data){
     case'filter':S.filter=data.f;render();return;
     case'open':if(await ask('Mở tài khoản Ngân hàng Phố?','Miễn phí mở và duy trì. Bạn nhận số tài khoản, sổ giao dịch và điểm tín dụng khởi đầu 650.','Mở tài khoản'))send('jr_bk_open');return;
     case'deposit':{const a=amountOf('bk-amt');if(!a){S.flash={text:'Nhập số xu muốn nộp nhé.',kind:'warn'};render();return;}
-      if(await ask(`Nộp ${xu(a)} vào tài khoản?`,`Tiền mặt trong ví còn ${xu(J().wallet-a)} sau khi nộp.`,`Nộp · ${xu(a)}`))send('jr_bk_deposit',{amount:a});return;}
+      if(await ask(`Nộp ${xu(a)} vào tài khoản?`,`Tiền mặt trong ví còn ${xu(J().wallet-a)} sau khi nộp.`,`Nộp · ${xu(a)}`,{cost:a,pocket:'wallet'}))send('jr_bk_deposit',{amount:a});return;}
     case'withdraw':{const a=amountOf('bk-amt'),atm=val('bk-atm')||'own',fee=atm==='other'?R.atm_fee:0;if(!a){S.flash={text:'Nhập số xu muốn rút nhé.',kind:'warn'};render();return;}
       if(await ask(`Rút ${xu(a)} tiền mặt?`,fee?`Cây ATM khác ngân hàng thu phí ${xu(fee)}. Tài khoản bị trừ ${xu(a+fee)}.`:'Rút tại cây ATM Ngân hàng Phố, không mất phí.',`Rút · ${xu(a)}`))send('jr_bk_withdraw',{amount:a,atm});return;}
     case'save':{const term=Number(val('bk-term')),a=amountOf('bk-save-amt'),src=val('bk-save-src')||'acc';if(!a){S.flash={text:'Nhập số xu muốn gửi nhé.',kind:'warn'};render();return;}
       const bp=term?R.term_bp[String(term)]:R.demand_bp,gain=term?Math.floor(a*bp*term/10000):0;
       const msg=term?`Kỳ hạn ${term} ngày, lãi ${pct(bp)}/ngày. Đáo hạn ${onDay(J().life_day+term)}, lãi dự kiến ${gain?xu(gain):'dưới 1 xu (gửi nhiều hơn để thấy lãi)'}. Rút trước hạn chỉ hưởng lãi không kỳ hạn ${pct(R.demand_bp)}/ngày.`:`Lãi ${pct(bp)}/ngày, cộng vào sổ mỗi ngày. Rút lúc nào cũng được.`;
-      if(await ask(`Gửi ${xu(a)} tiết kiệm ${term?`${term} ngày`:'không kỳ hạn'}?`,msg+(src==='cash'?' Lấy từ tiền mặt.':' Lấy từ tài khoản thanh toán.'),`Gửi · ${xu(a)}`))send('jr_bk_save',{amount:a,term,src});return;}
+      if(await ask(`Gửi ${xu(a)} tiết kiệm ${term?`${term} ngày`:'không kỳ hạn'}?`,msg+(src==='cash'?' Lấy từ tiền mặt.':' Lấy từ tài khoản thanh toán.'),`Gửi · ${xu(a)}`,src==='cash'?{cost:a,pocket:'wallet'}:null))send('jr_bk_save',{amount:a,term,src});return;}
     case'unsaveDemand':{const a=amountOf('bk-demand-out');if(!a){S.flash={text:'Nhập số xu muốn rút nhé.',kind:'warn'};render();return;}
       if(await ask(`Rút ${xu(a)} từ sổ không kỳ hạn?`,'Tiền về tài khoản thanh toán, không mất lãi đã cộng.',`Rút · ${xu(a)}`))send('jr_bk_unsave',{id:'demand',amount:a});return;}
     case'unsaveTerm':{const t=(b.savings?.terms||[]).find(x=>x.id===data.id);if(!t)return;
@@ -147,7 +147,7 @@ async function onClick(op,data){
       else if(data.what==='stmt'){amount=c.stmt?.left||0;payload.what='stmt';}
       else if(data.what==='all'){amount=c.bal;payload.what='all';}
       else{amount=amountOf('bk-card-amt');payload.amount=amount;if(!amount){S.flash={text:'Nhập số xu muốn trả nhé.',kind:'warn'};render();return;}}
-      if(await ask(`Trả ${xu(amount)} cho thẻ •••• ${c.no}?`,`Trừ từ ${src==='acc'?'tài khoản thanh toán':'tiền mặt'}. Dư nợ còn ${xu(Math.max(0,c.bal-amount))}.`,`Trả · ${xu(amount)}`))send('jr_bk_card_pay',payload);return;}
+      if(await ask(`Trả ${xu(amount)} cho thẻ •••• ${c.no}?`,`Trừ từ ${src==='acc'?'tài khoản thanh toán':'tiền mặt'}. Dư nợ còn ${xu(Math.max(0,c.bal-amount))}.`,`Trả · ${xu(amount)}`,src==='cash'?{cost:amount,pocket:'wallet'}:null))send('jr_bk_card_pay',payload);return;}
     case'cardCash':{const c=b.card,a=amountOf('bk-cash-amt');if(!c||!a){S.flash={text:'Nhập số xu muốn ứng nhé.',kind:'warn'};render();return;}
       const fee=Math.max(R.cash_fee_min,Math.ceil(a*R.cash_fee_pct/100));
       if(await ask(`Ứng ${xu(a)} tiền mặt từ thẻ?`,`Phí ứng ${xu(fee)} (${R.cash_fee_pct}%, ít nhất ${xu(R.cash_fee_min)}). Lãi ${pct(R.card_bp)}/ngày tính ngay từ hôm nay, không có miễn lãi. Dư nợ tăng ${xu(a+fee)}.`,`Ứng · ${xu(a)}`))send('jr_bk_card_cash',{amount:a});return;}
@@ -161,11 +161,11 @@ async function onClick(op,data){
       if(await ask(`Ký hợp đồng ${kind.toLowerCase()} ${xu(S.loan.amount)}?`,`Trả ${L.rows.length} kỳ, mỗi ${R.loan_period} ngày, kỳ đầu ${onDay(L.rows[0].due)}. Tổng lãi ${xu(L.interest)}, tổng phải trả ${xu(L.total)}. Tiền giải ngân vào ${where}. Trễ hạn bị phạt ${R.loan_late_pct}% kỳ đó và giảm điểm tín dụng.`,`Ký · lãi ${xu(L.interest)}`))
         send('jr_bk_loan_apply',{kind:S.loan.kind,amount:S.loan.amount,term:S.loan.term,total_interest:L.interest,confirm:true,...(S.loan.kind==='shop'?{career:S.loan.career}:{})});return;}
     case'loanPay':{const ln=(b.loans||[]).find(x=>x.id===data.id);if(!ln)return;const src=val('bk-loan-src-'+ln.id)||'acc';const amount=ln.overdue||ln.next?.amount-ln.next?.paid||0;
-      if(await ask(ln.overdue?`Trả ${xu(amount)} đang quá hạn?`:`Trả trước kỳ ${ln.next.k}?`,`Trừ từ ${src==='acc'?'tài khoản thanh toán':'tiền mặt'}.`,`Trả · ${xu(amount)}`))send('jr_bk_loan_pay',{id:ln.id,src});return;}
+      if(await ask(ln.overdue?`Trả ${xu(amount)} đang quá hạn?`:`Trả trước kỳ ${ln.next.k}?`,`Trừ từ ${src==='acc'?'tài khoản thanh toán':'tiền mặt'}.`,`Trả · ${xu(amount)}`,src==='cash'?{cost:amount,pocket:'wallet'}:null))send('jr_bk_loan_pay',{id:ln.id,src});return;}
     case'loanClose':{const ln=(b.loans||[]).find(x=>x.id===data.id);if(!ln)return;const src=val('bk-loan-src-'+ln.id)||'acc',o=ln.payoff;
       if(await ask('Tất toán khoản vay trước hạn?',`Gốc còn lại ${xu(o.principal)}${o.overdue?`, khoản quá hạn ${xu(o.overdue)}`:''}, lãi những ngày đã dùng ${xu(o.interest)}, phí trả trước hạn ${xu(o.fee)}. Tổng ${xu(o.total)}. Bạn bớt được ${xu(Math.max(0,o.saved))} tiền lãi.`,`Tất toán · ${xu(o.total)}`))send('jr_bk_loan_close',{id:ln.id,src,confirm:true});return;}
     case'jointIn':{const a=amountOf('bk-joint-amt');if(!a){S.flash={text:'Nhập số xu nhé.',kind:'warn'};render();return;}
-      if(await ask(`Gửi ${xu(a)} vào quỹ chung?`,'Tiền mặt trong ví chuyển vào tài khoản chung của hai vợ chồng. Người ấy sẽ thấy giao dịch này.',`Gửi · ${xu(a)}`))marriagePost('fund_deposit',{amount:a,rid:rid()});return;}
+      if(await ask(`Gửi ${xu(a)} vào quỹ chung?`,'Tiền mặt trong ví chuyển vào tài khoản chung của hai vợ chồng. Người ấy sẽ thấy giao dịch này.',`Gửi · ${xu(a)}`,{cost:a,pocket:'wallet'}))marriagePost('fund_deposit',{amount:a,rid:rid()});return;}
     case'jointOut':{const a=amountOf('bk-joint-amt');if(!a){S.flash={text:'Nhập số xu nhé.',kind:'warn'};render();return;}
       if(await ask(`Rút ${xu(a)} bằng thẻ chung?`,`Tiền về ví của bạn. Hôm nay thẻ chung còn chi được ${xu(S.joint?.fund?.daily_left)}. Người ấy nhận thông báo về giao dịch này.`,`Rút · ${xu(a)}`))marriagePost('fund_withdraw',{amount:a,rid:rid()});return;}
     case'marriage':S.dlg.close();(await import('./marriage.js')).openMarriage(S.env,'home');return;

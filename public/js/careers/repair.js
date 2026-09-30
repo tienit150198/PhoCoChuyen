@@ -212,10 +212,13 @@ function intakeView(t,x){
     return `<dl class="kv rp-kv"><dt>Tình trạng</dt><dd>${x.esc(mk)}</dd><dt>Phụ kiện</dt><dd>${x.esc(ac)}</dd>${dd?`<dt>Dữ liệu</dt><dd>${b.data_ok?'<span class="tag green">🔓 Khách cho mở khóa kiểm tra</span>':'<span class="tag danger">🔒 Không cho xem dữ liệu</span>'}</dd>`:''}</dl>`;
   }
   const markTiles=dev.marks.map(m=>{const v=x.cc.marks[m]||{emoji:'•',label:m},on=u.marks.includes(m);return tile(x,{emoji:v.emoji,label:v.label,sub:on?'đã ghi':'',cls:on?'selected':'',attr:carAttr(x,'mark',{task:t.id,id:m})+` aria-pressed="${on}"`});}).join('');
+  // What the customer hands over is said at the counter, so it is written here too (player feedback #29:
+  // "làm sao biết khách gửi phụ kiện nào?"). The marks stay a look-at-the-device check (the mat, right).
+  const given=(n.accessories||[]).map(a=>`${x.cc.accessories[a]?.emoji||'•'} ${x.cc.accessories[a]?.label||a}`).join(', ');
   const accTiles=dev.accessories.map(a=>{const v=x.cc.accessories[a]||{emoji:'•',label:a},on=u.acc.includes(a);return tile(x,{emoji:v.emoji,label:v.label,sub:on?'đã nhận':'',cls:on?'selected':'',attr:carAttr(x,'acc',{task:t.id,id:a})+` aria-pressed="${on}"`});}).join('');
   return `<p class="small muted">Nhìn máy trên thảm, chạm đúng những vết thật sự thấy.</p>
     <div class="tile-grid rp-grid rp-marks">${markTiles}</div>
-    <p class="small muted space-top">Khách đưa kèm những gì?</p>
+    <p class="small space-top rp-given">🎒 <b>Khách đưa kèm:</b> ${given?x.esc(given):'không đưa kèm gì, để trống phần này'}</p>
     <div class="tile-grid rp-grid rp-accs">${accTiles}</div>
     ${dd?`<button type="button" class="btn rp-consent ${u.consent?'on':''}" ${carAttr(x,'consent',{task:t.id})} aria-pressed="${u.consent}">${u.consent?'☑️':'⬜'} Đã hỏi khách có cho mở khóa / xem dữ liệu không</button>`:''}
     <div class="rp-cta"><button type="button" class="btn primary" ${carAttr(x,'intake',{task:t.id})} ${dd&&!u.consent?'disabled':''}>📝 Ghi phiếu nhận máy</button></div>`;

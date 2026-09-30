@@ -643,6 +643,12 @@ def _eta(o: dict, now: int, c: dict, career: str, clk: dict) -> dict:
                 late_note=o['late'] if late_due and o['status'] == 'in_transit' else None)
 
 
+def _refund(order: dict) -> int:
+    """What a claim gives back: the paid share of the missing units (rounded), never more than was paid."""
+    missing = order['qty'] - order['actual']
+    return max(1, (2 * order['cost'] * missing + order['qty']) // (2 * order['qty']))
+
+
 def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
     """inv_order / inv_receive / inv_wait / inv_claim / inv_rate / inv_discard."""
     from . import engine as e
@@ -721,14 +727,17 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         e.log(s, c, 'stock', f'Kiểm nhận {order["actual"]}/{order["qty"]} {it["name"]} từ {sup["name"]}.', ref=order['id'])
         msg = f'Đã nhập kho {order["actual"]} {it.get("unit", "phần")} {it["name"]}.'
         if order['actual'] < order['qty']:
-            msg += f' Thiếu {order["qty"] - order["actual"]} so với đơn — có thể khiếu nại nhà cung cấp.'
+            # Said where the claim is (player feedback: "khiếu nại thiếu hoa ở đâu?"): the stock room shows
+            # the button right under its status strip; `short` lets a client point at it.
+            missing, refund = order['qty'] - order['actual'], _refund(order)
+            msg += (f' Thiếu {missing} {it.get("unit", "phần")} so với đơn: bấm “Khiếu nại phần thiếu” '
+                    f'ngay trong kho để được hoàn {refund} xu.')
+            return dict(message=msg, short=dict(order=order['id'], missing=missing, refund=refund))
         return dict(message=msg)
     if name == 'inv_claim':
         need(order and order['status'] == 'received', 'Chỉ khiếu nại sau khi đã kiểm nhận.')
         need(order['actual'] < order['qty'] and not order['claimed'], 'Đơn này giao đủ hoặc đã được giải quyết.')
-        # Refund the paid share of the missing units (rounded), never more than was paid.
-        missing = order['qty'] - order['actual']
-        refund = max(1, (2 * order['cost'] * missing + order['qty']) // (2 * order['qty']))
+        refund = _refund(order)
         order['claimed'] = True
         sup = _known(career, order['supplier'])
         e.money(s, c, refund, f'Hoàn tiền giao thiếu · {sup["name"]}', order['id'], category='refund')

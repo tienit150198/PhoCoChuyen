@@ -130,7 +130,7 @@ function groupCard(env,k,g,focus){
   else{
     const poor=J.wallet<fee;
     actions=`<div class="ct-actions">
-      <button type="button" class="btn primary ct-big" data-action="jrCertEnrol" data-cert="${esc(g.id)}" data-mode="class"${poor?' disabled':''}><span>📚 ${r?.attempts?'Lớp ôn':'Lớp cấp tốc'} · ${fmt(fee)} xu</span><small>${poor?`Ví chưa đủ ${fmt(fee)} xu`:k.class_days?`Thi từ Ngày ${fmt(J.life_day+k.class_days)}`:'Học xong thi ngay hôm nay'}</small></button>
+      <button type="button" class="btn primary ct-big" data-action="jrCertEnrol" data-cert="${esc(g.id)}" data-mode="class"${poor?' disabled':''}><span>📚 ${r?.attempts?'Lớp ôn':'Lớp cấp tốc'} · ${fmt(fee)} xu</span><small>${poor?`Ví còn ${fmt(Math.max(0,J.wallet))} xu, thiếu ${fmt(fee-Math.max(0,J.wallet))} xu`:k.class_days?`Thi từ Ngày ${fmt(J.life_day+k.class_days)}`:'Học xong thi ngay hôm nay'}</small></button>
       <button type="button" class="btn cream ct-big" data-action="jrCertEnrol" data-cert="${esc(g.id)}" data-mode="self"><span>📖 Tự học · miễn phí</span><small>Thi từ Ngày ${fmt(J.life_day+k.self_days)}${k.self_days===1?' (ngày mai)':` (còn ${k.self_days} ngày)`}</small></button></div>`;
   }
   const status=has?`<span class="tag green">✓ Đã có · ${r.best} điểm</span>`:r?`<span class="tag amber">Đã thi ${r.attempts} lần · cao nhất ${r.best}</span>`:'<span class="tag">Chưa có</span>';
@@ -169,7 +169,7 @@ export async function certAction(action,data,el,env){
       const payload={cert:g.id,mode:data.mode};if(ui.certCareer&&g.careers.includes(ui.certCareer))payload.career=ui.certCareer;
       if(data.mode==='class'){
         const r=J.certificates?.[g.id],fee=r?.attempts?g.retake_fee:g.fee;
-        const ok=await confirmAction(`Đăng ký ${r?.attempts?'lớp ôn':'lớp cấp tốc'}?`,`${g.name}: học phí ${fee} xu trừ vào ví (ví còn ${J.wallet} xu). ${k.class_days?`Bài thi mở từ Ngày ${J.life_day+k.class_days}.`:'Học xong vào thi luôn hôm nay.'}`,`Đóng ${fee} xu`);
+        const ok=await confirmAction(`Đăng ký ${r?.attempts?'lớp ôn':'lớp cấp tốc'}?`,`${g.name}: học phí ${fee} xu trừ vào ví (ví còn ${J.wallet} xu). ${k.class_days?`Bài thi mở từ Ngày ${J.life_day+k.class_days}.`:'Học xong vào thi luôn hôm nay.'}`,`Đóng ${fee} xu`,{cost:fee,pocket:'wallet'});
         if(!ok)return true;
       }
       ui.certPractice={...(ui.certPractice||{}),[g.id]:{}};ui.certHint={};

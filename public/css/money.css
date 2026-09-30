@@ -1,0 +1,19 @@
+/* 💰 Money chip (public/js/v4/money.js): the wallet and the workplace fund, hanging on the bottom edge of
+   the header of a sheet where money is spent. Absolutely placed, so the header keeps its height. */
+.mn-chip{position:absolute;right:18px;bottom:0;transform:translateY(50%);z-index:1;display:inline-flex;align-items:center;gap:6px;max-width:calc(100% - 36px);padding:3px 11px;border-radius:999px;background:var(--surface);border:1px solid var(--line-strong);box-shadow:var(--shadow-sm);font-size:.8rem;font-weight:600;line-height:1.35;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;letter-spacing:0;text-transform:none}
+.mn-chip b,.mn-confirm b{font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+.mn-part{display:inline-flex;align-items:baseline;gap:4px;min-width:0}
+.mn-part.neg b{color:var(--bad)}
+.mn-sep{color:var(--muted)}
+.mn-chip.mn-bump{animation:mn-bump .45s ease-out}
+@keyframes mn-bump{40%{transform:translateY(50%) scale(1.07)}}
+html[data-layout="phone"] .mn-chip{right:12px;max-width:calc(100% - 24px);padding:2px 9px;font-size:.747rem;gap:5px}
+body.reduce-motion .mn-chip.mn-bump{animation:none}
+/* Toasts under a sheet header start below the chip instead of covering it. */
+html:has(dialog[open] .mn-chip) dialog.sheet .toasts{top:calc(var(--sheet-head-b,20px) + 22px)}
+html[data-layout="phone"]:has(dialog[open] .mn-chip) dialog.sheet .toasts{top:calc(var(--sheet-head-b,16px) + 20px)}
+/* The same line inside a confirm dialog, and what is missing when the price is over the balance. */
+.mn-confirm{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;margin:10px 0 0;padding:8px 12px;border-radius:12px;background:var(--surface-2);font-size:.867rem;color:var(--ink-2)}
+.mn-short{margin:8px 0 0;padding:8px 12px;border-radius:12px;background:var(--bad-soft);color:var(--bad);font-size:.867rem;font-weight:600}
+.mn-short b{color:inherit}
+html:has(.update-pill.is-open):has(dialog[open] .mn-chip) dialog.sheet .toasts{top:calc(var(--sheet-head-b,20px) + 52px)}

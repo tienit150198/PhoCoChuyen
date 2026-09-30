@@ -206,12 +206,17 @@ class InventoryFlow(unittest.TestCase):
         wait_until_ready(j, o['id'])
         with self.assertRaises(GameError):
             j.act('inv_receive', order=o['id'], count=o['qty'])
-        j.act('inv_receive', order=o['id'], count=o['actual'])
+        got = j.act('inv_receive', order=o['id'], count=o['actual'])
         self.assertEqual(kit.stock(j.c, 'noodle'), o['actual'])
+        missing = o['qty'] - o['actual']
+        # The receipt says where the claim is and what it gives back (player feedback: "khiếu nại ở đâu?").
+        self.assertIn('Khiếu nại phần thiếu', got['message'])
+        self.assertEqual(got['short'], dict(order=o['id'], missing=missing, refund=got['short']['refund']))
         paid = money - j.c['money']
         j.act('inv_claim', order=o['id'])
         refund = j.c['money'] - (money - paid)
-        missing = o['qty'] - o['actual']
+        self.assertEqual(refund, got['short']['refund'])
+        self.assertIn(f'{refund} xu', got['message'])
         self.assertGreater(refund, 0)
         self.assertLessEqual(refund, round(paid * missing / o['qty']) + 1)
         self.assertLess(refund, paid)
@@ -228,8 +233,10 @@ class InventoryFlow(unittest.TestCase):
         j = self.j
         o = self.order('egg', 3, 'express')
         wait_until_ready(j, o['id'])
-        j.act('inv_receive', order=o['id'], count=o['actual'])
+        got = j.act('inv_receive', order=o['id'], count=o['actual'])
         if o['actual'] == o['qty']:
+            self.assertNotIn('short', got)
+            self.assertNotIn('Khiếu nại', got['message'])
             with self.assertRaises(GameError):
                 j.act('inv_claim', order=o['id'])
 

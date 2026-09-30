@@ -14,6 +14,7 @@ import {dayclockBoot,clockChip,clockAria,clockCard,clockSummary,closingNote,cloc
 import {careerSubmit,careerInput,loadCareerModules,careerUI,hasCareerUI,careerContext,startTicker,tickNow} from './v4/careers.js';
 import {applyGuide,guideAction,nextHint,stepCta,plainText} from './v4/guide.js';
 import {inventoryView,feedbackView,situationView,jobView as jobAppView,v4Action,v4Submit,v4Input} from './v4/views.js';
+import {moneyBoot,confirmMoney,dialogBalances} from './v4/money.js';  // 💰 Ví / Quỹ tiệm in sight while spending
 import {setLanguage,t as i18nT} from './v4/i18n.js';
 import {shell} from './v4/shell.js';
 import {accountSubmit,accountNudge,accountAction} from './v4/account.js';
@@ -60,6 +61,18 @@ const world=new BobaWorld($('#world'),interact);
 soundsBoot({api,world,sound});  // character voices, detail sounds, bank speaker
 api.addEventListener('result',e=>{if(e.detail?.result?.card_swipe)import('./v4/bank.js').then(m=>m.swipeSound(api)).catch(()=>{});});  // 🏦 quẹt thẻ: ting ting
 dayclockBoot();  // giờ trong ngày: HUD clock, closing prompt, the scene's light
+/* 💰 Where the money chip shows and which pockets (v4/money.js): work sheets spend the workplace's fund
+ * (and may touch the wallet), the job board ("Đi cửa sau"), the journey pages, the bank and marriage spend
+ * the wallet. Everything else (reviews, chat, settings…) shows no chip. */
+const MONEY_FUND=new Set(['job','inventory','warehouse','prepare','prices','decor','workshop','town','operations','social','people','incident','event','situation','classroom','feedback']);  // feedback: a reply may offer the customer something back
+function moneyScope(d){
+  if(!d?.open||!api.state)return null;
+  if(d.id==='sheet'){const v=ui.view,cid=api.state.current;
+    if(MONEY_FUND.has(v)&&cid&&api.state.careers[cid])return {fund:cid};
+    return v==='jobapp'||v==='home'?{fund:null}:null;}
+  return d.matches('.bk-sheet,.mr-sheet')?{fund:null}:null;
+}
+moneyBoot({api,scope:moneyScope,till:cid=>wordsFor(cid).till,phone:()=>document.documentElement.dataset.layout==='phone'});
 // Before a workplace is chosen the server picks one that is open (state.focus) and sends its full view.
 const career=()=>api.state?.current||api.state?.focus||'mother_baby';
 const room=()=>api.state?.careers[career()];
@@ -873,8 +886,11 @@ function helpView(){const guides={teacher:['Soạn ba bước: ví dụ → th�
 
 /* Interaction controller. Native dialogs keep keyboard focus inside a workbench. */
 let confirmResolve=null;
-function confirmAction(title,message,label='Xác nhận'){
-  $('#confirmContent').innerHTML=`<span class="eyebrow">MỘT BƯỚC XÁC NHẬN</span><h2>${esc(title)}</h2>${message?`<p class="muted">${esc(message)}</p>`:''}<div class="row">${button('Để mình xem lại','confirmNo',{},'ghost')}${button(esc(label),'confirmYes',{},'primary')}</div>`;
+/** `money` (optional): {cost, pocket:'wallet'|'fund'} of a payment, for the "còn thiếu" line; without it a
+ * confirm that talks money still shows the balances of the sheet under it (v4/money.js confirmMoney). */
+function confirmAction(title,message,label='Xác nhận',money=null){
+  const under=[...document.querySelectorAll('dialog[open]')].filter(d=>d.id!=='confirmDialog').pop();
+  $('#confirmContent').innerHTML=`<span class="eyebrow">MỘT BƯỚC XÁC NHẬN</span><h2>${esc(title)}</h2>${message?`<p class="muted">${esc(message)}</p>`:''}${confirmMoney(dialogBalances(under),[title,message,label],money)}<div class="row">${button('Để mình xem lại','confirmNo',{},'ghost')}${button(esc(label),'confirmYes',{},'primary')}</div>`;
   $('#confirmDialog').showModal();return new Promise(resolve=>{confirmResolve=resolve;});
 }
 function inputPrompt(title,value,maxLength=100){
