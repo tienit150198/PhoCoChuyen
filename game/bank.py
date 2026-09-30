@@ -46,7 +46,7 @@ YEAR_DAYS = 12 * MONTH_DAYS
 # Savings. Không kỳ hạn: basis points of a xu per xu per life day (5 = 0,05 %/ngày = 3 %/năm), credited daily.
 DEMAND_BP = 5
 # Có kỳ hạn: term (life days) -> basis points per year, paid at maturity. Longer terms pay more; the
-# 7-day term matches invest.py's savings (0,1 %/ngày = 6 %/năm), and every rate stays below the loans.
+# Invest's 7-day savings (invest.py, 0,3 %/ngày) stays the higher-return option; every rate stays below the loans.
 TERM_RATE = {7: 600, 15: 700, 30: 750, 60: 800, 120: 850, 180: 880}
 LEGACY_RATE = {7: 1200, 14: 1500, 30: 1800}   # sổ opened before 0.9.5 (0,2/0,25/0,3 %/ngày) keep their rate
 SAVE_MIN = 20

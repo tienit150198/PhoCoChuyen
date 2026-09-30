@@ -159,22 +159,22 @@ class Savings(unittest.TestCase):
         s, _ = act(s, 'iv_save', amount=1000)
         days(s, 6)
         self.assertEqual(inv(s)['saving']['balance'], 1000)
-        self.assertEqual(iv.public(s)['saving']['pending'], 6)   # 0,1 %/ngày (6 %/năm, like the bank's 7-day term)
+        self.assertEqual(iv.public(s)['saving']['pending'], 18)
         notes = days(s, 1)
         sv = inv(s)['saving']
-        self.assertEqual(sv['balance'], 1007)
-        self.assertEqual(sv['earned'], 7)
+        self.assertEqual(sv['balance'], 1021)
+        self.assertEqual(sv['earned'], 21)
         self.assertTrue(any('lãi' in n for n in notes))
         self.assertIn('first_interest', inv(s)['badges'])
 
     def test_early_withdrawal_forfeits_the_term_interest_never_principal(self):
         s = state(wallet=1000)
         s, _ = act(s, 'iv_save', amount=500)
-        days(s, 6)
+        days(s, 3)
         s, r = act(s, 'iv_withdraw', amount=200)
-        self.assertIn('mất 3 xu', r['message'])
+        self.assertIn('mất 4 xu', r['message'])
         self.assertEqual(inv(s)['saving']['balance'], 300)
-        self.assertEqual(inv(s)['saving']['forfeited'], 3)
+        self.assertEqual(inv(s)['saving']['forfeited'], 4)
         self.assertEqual(s['journey']['wallet'], 700)
         with self.assertRaises(GameError):
             act(s, 'iv_withdraw', amount=301)

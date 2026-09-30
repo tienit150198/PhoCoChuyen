@@ -55,7 +55,7 @@ class InGameYear(unittest.TestCase):
         self.assertLess(bk.DEMAND_BP * bk.YEAR_DAYS, rates[0])
         self.assertLess(max(rates), min(r for _, r in hs.RATES))             # saving never beats borrowing
         from game import invest as iv
-        self.assertEqual(iv.RATE_MILLI * 10 * bk.YEAR_DAYS, bk.TERM_RATE[7])  # invest.py savings = the 7-day term
+        self.assertGreater(iv.RATE_MILLI * 10 * bk.YEAR_DAYS, bk.TERM_RATE[7])  # invest.py savings (0,3 %/ngày) pays more than the bank's 7-day term
         self.assertEqual(bk.year_text(750), '7,5%/năm')
 
     def test_twelve_month_term_accrues_by_in_game_time(self):
