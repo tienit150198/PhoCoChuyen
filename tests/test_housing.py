@@ -435,7 +435,7 @@ def rich(salary, score=None, wallet=0, deposit=1000):
 
 
 class Prices097(unittest.TestCase):
-    """0.9.7: list prices +20 %, more kinds of homes, grouped as Phòng thuê / Căn hộ / Nhà phố / Biệt thự."""
+    """0.9.12: list prices +20 %, more kinds of homes, grouped as Phòng thuê / Căn hộ / Nhà phố / Biệt thự."""
 
     def test_list_prices_are_twenty_percent_up_and_round(self):
         for kind, old in hs.OLD_PRICES.items():
@@ -565,7 +565,7 @@ class VillaLoans(unittest.TestCase):
 
 
 class OldSaves097(unittest.TestCase):
-    """Homes bought before 0.9.7 keep the price paid, the loan and its schedule; resale follows the price paid."""
+    """Homes bought before 0.9.12 keep the price paid, the loan and its schedule; resale follows the price paid."""
 
     def old_mini(self):
         from unittest import mock

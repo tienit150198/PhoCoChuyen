@@ -28,13 +28,26 @@ import re
 from pathlib import Path
 
 ENTRIES = (
-    dict(version="0.9.8", date="2026-09-30", items=(
+    dict(version="0.9.12", date="2026-09-30", items=(
         dict(emoji="🏰", text="Mua nhà: thêm biệt thự và 4 loại căn hộ (studio, 1 phòng ngủ, 2 phòng ngủ, penthouse).", go=dict(action="house")),
         dict(emoji="💰", text="Bấm vào tiền trên cùng để xem hết: ví, quỹ từng nơi làm, ngân hàng, nhà.", go=dict(action="money")),
         dict(emoji="📈", text="Giá nhà tăng 20%. Nhà đã mua giữ nguyên giá đã trả và khoản vay đang trả góp."),
         dict(emoji="🏦", text="Penthouse và biệt thự cần điểm tín dụng cao hơn mới vay được."),
         dict(emoji="🗂️", text="Nhà đang rao chia theo Phòng thuê, Căn hộ, Nhà phố, Biệt thự: ghi rõ góp mỗi tháng và còn thiếu bao nhiêu."),
         dict(emoji="💞", text="Vợ chồng bấm cùng lúc không còn báo “tab khác”; quỹ chung hiện đúng dấu tiền rút."),
+    )),
+    dict(version="0.9.10", date="2026-09-30", items=(
+        dict(emoji="✅", text="Nâng cấp hạ tầng đã xong! Game đã chạy trên máy chủ mới, mạnh và nhanh hơn."),
+        dict(emoji="🎮", text="Tiền, nhà, đồ và tiến độ của bạn vẫn giữ nguyên. Chúc mọi người chơi vui, enjoy nhé!"),
+        dict(emoji="🥺", text="Ai mà bảo lag nữa là buồn luôn đó."),
+    )),
+    dict(version="0.9.9", date="2026-09-30", items=(
+        dict(emoji="🔧", text="Bảo trì ngắn từ 21:00 đến 21:10 tối nay (30/09) để chuyển sang máy chủ mới."),
+        dict(emoji="⏳", text="Trong lúc đó game có thể tạm dừng hoặc cần tải lại trang. Tiền, nhà, đồ và tiến độ giữ nguyên."),
+    )),
+    dict(version="0.9.8", date="2026-09-30", items=(
+        dict(emoji="🔧", text="Từ 20:00 - 0:00 hôm nay hệ thống sẽ thực hiện nâng cấp hạ tầng."),
+        dict(emoji="🎮", text="Người chơi vẫn có thể chơi bình thường nhưng sẽ ảnh hưởng một chút về trải nghiệm, xin vui lòng thông cảm."),
     )),
     dict(version="0.9.7", date="2026-09-30", items=(
         dict(emoji="🛠️", text="Đã sửa lỗi “Dữ kiện gốc của nhiệm vụ không hợp lệ”: rút tiền, mở ngày mới và làm việc lại bình thường."),

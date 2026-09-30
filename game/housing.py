@@ -24,7 +24,7 @@ minus a SELL_FEE_PCT % fee, the mortgage paid off first) is always the player's 
 
 Homes (HOMES, grouped as Phòng thuê / Căn hộ / Nhà phố / Biệt thự by GROUPS): the dearer ones (penthouse,
 biệt thự) need a higher credit score for the mortgage (`score`); the installment limit is the same DTI rule.
-0.9.7 raised every list price by 20 %. A home bought earlier keeps the price paid, its loan and schedule
+0.9.12 raised every list price by 20 %. A home bought earlier keeps the price paid, its loan and schedule
 (validate accepts OLD_PRICES); its market value still grows from the price paid, so nobody gets a windfall.
 Rents did not change (the room's rent is part of the daily living cost, not a house price).
 
@@ -68,7 +68,7 @@ GROUPS = (('rent', '🛏️', 'Phòng thuê', '#e0a93b'), ('apartment', '🏢', 
           ('townhouse', '🏠', 'Nhà phố', '#d9734e'), ('villa', '🏰', 'Biệt thự', '#3f9a78'))
 GROUP_IDS = tuple(g[0] for g in GROUPS)
 
-# Homes, cheapest first within each group. `price` is the list price in xu (0.9.7: +20 % on the 0.9.5 prices),
+# Homes, cheapest first within each group. `price` is the list price in xu (0.9.12: +20 % on the 0.9.5 prices),
 # `upkeep` the daily điện nước (apartments add phí quản lý, so they cost more to run than a house of the
 # same comfort), `comfort` the tinh thần added each morning. Optional: `perk` (one line the listing shows),
 # `score` (the credit score the bank needs to lend on this home, HOME_SCORE when absent).
@@ -111,7 +111,7 @@ HOMES = {
 OWN = tuple(k for k, v in HOMES.items() if v['kind'] == 'own')
 RENT = tuple(k for k, v in HOMES.items() if v['kind'] == 'rent')
 
-# List prices before 0.9.7. A home bought then keeps the price paid (own.price, the loan and its schedule),
+# List prices before 0.9.12. A home bought then keeps the price paid (own.price, the loan and its schedule),
 # and its market value keeps growing from that price (value_of), so the +20 % is no windfall for owners.
 OLD_PRICES = {'tap_the': (1500,), 'can_ho_mini': (3000,), 'nha_pho': (6500,), 'nha_san': (12000,)}
 

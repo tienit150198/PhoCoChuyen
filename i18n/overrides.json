@@ -609,7 +609,14 @@
   "Tổng nợ": "Total debt",
   "Thẻ tín dụng": "Credit card",
   "Chi tiết": "Details",
-  "Xem lại hướng dẫn": "Replay the tutorial"
+  "Xem lại hướng dẫn": "Replay the tutorial",
+  "Nâng cấp hạ tầng đã xong! Game đã chạy trên máy chủ mới, mạnh và nhanh hơn.": "The infrastructure upgrade is done! The game now runs on a new, stronger and faster server.",
+  "Tiền, nhà, đồ và tiến độ của bạn vẫn giữ nguyên. Chúc mọi người chơi vui, enjoy nhé!": "Your money, home, items and progress are all unchanged. Have fun, everyone, enjoy!",
+  "Ai mà bảo lag nữa là buồn luôn đó.": "If anyone still says it lags, we'll be sad.",
+  "Bảo trì ngắn từ 21:00 đến 21:10 tối nay (30/09) để chuyển sang máy chủ mới.": "Short maintenance tonight (30/09) from 21:00 to 21:10 to move to a new server.",
+  "Trong lúc đó game có thể tạm dừng hoặc cần tải lại trang. Tiền, nhà, đồ và tiến độ giữ nguyên.": "Meanwhile the game may pause or need a page reload. Money, home, items and progress stay as they are.",
+  "Từ 20:00 - 0:00 hôm nay hệ thống sẽ thực hiện nâng cấp hạ tầng.": "From 20:00 to 0:00 today we are upgrading the infrastructure.",
+  "Người chơi vẫn có thể chơi bình thường nhưng sẽ ảnh hưởng một chút về trải nghiệm, xin vui lòng thông cảm.": "You can keep playing as usual, though things may feel a little slower. Thanks for your patience."
  },
  "patterns": {
   "lượt $1": "turn $1",
