@@ -29,6 +29,7 @@ from __future__ import annotations
 import copy
 from . import kit
 from .. import consequences as cq
+from .. import compensation as cf
 
 ID = 'repair'
 CHECK_FEE = 10           # posted at the counter: fee when a checked device is returned unrepaired
@@ -2453,8 +2454,8 @@ DESK = [
          default='keep'),
     dict(id='leak_found', title='Chủ máy phát hiện dữ liệu bị chép', emoji='🔓', npc=0, min_day=4, tone='tense', need_mark='leak',
          weight=4, text='Một người đàn ông đứng trước quầy, giọng run run: “Tiệm chép tin nhắn máy tôi đưa cho người khác đúng không?”',
-         options=[dict(id='apologize', label='Nhận lỗi, xin lỗi, bồi thường', hint='20 xu', good=None,
-                       effects=dict(money=-20, unmark='leak', review=[2, 'Tiệm chép tin nhắn máy tôi cho người khác. Xin lỗi rồi nhưng tôi không quên.']),
+         options=[dict(id='apologize', label='Nhận lỗi, xin lỗi, bồi thường', hint=f'{cf.comp(20)} xu', good=None,
+                       effects=dict(money=-cf.comp(20), unmark='leak', review=[2, 'Tiệm chép tin nhắn máy tôi cho người khác. Xin lỗi rồi nhưng tôi không quên.']),
                        outcome='Tiệm xin lỗi và bồi thường. Uy tín về chuyện dữ liệu sứt một mảng.'),
                   dict(id='deny', label='Chối: “Tiệm không biết gì”', hint='Chối', good=False,
                        effects=dict(unmark='leak', review=[1, 'Tiệm sửa điện thoại tiếp tay đọc trộm tin nhắn, còn chối. Tránh xa!']),

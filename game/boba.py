@@ -16,6 +16,7 @@ import random
 from . import extra_content as data
 from . import consequences as cq
 from . import archive as ar
+from . import patience as pt
 
 CAREER = 'milk_tea'
 ING = data.INGREDIENT_INDEX
@@ -28,6 +29,7 @@ SUGARS = (0, 30, 50, 70, 100)
 ICES = ('none', 'little', 'normal', 'extra')
 ICE_TEXT = {'none': 'không đá', 'little': 'ít đá', 'normal': 'đá vừa', 'extra': 'nhiều đá'}
 CUP_START = {'M': 30, 'L': 20}
+APP_GRACE = pt.longer(10)  # beats an app driver still waits past the pickup time before cancelling
 CUP_CAP = 120
 CUP_PACK = dict(qty=20, cost=4)
 MAX_TOPPINGS = 3
@@ -984,7 +986,7 @@ def _beat(s: dict, c: dict, active_id: str | None) -> list[str]:
         if t['career'] != CAREER or t['status'] in ('completed', 'referred', 'cancelled') or t.get('deferred'):
             continue
         if t.get('app'):
-            if c['turn'] > t['app']['deadline'] + 10 and not t['cup']['sealed']:
+            if c['turn'] > t['app']['deadline'] + APP_GRACE and not t['cup']['sealed']:
                 notes.append(_app_cancel(s, c, t))
             continue
         if t['id'] != active_id and gid and (t.get('group') or {}).get('id') == gid:
@@ -995,6 +997,7 @@ def _beat(s: dict, c: dict, active_id: str | None) -> list[str]:
             loss = (1 if t['beats'] > par else 0) + (1 if b['mess'] >= 3 else 0)
         else:
             loss = r if not half or c['turn'] % 2 == 0 else 0
+        loss = pt.drain(c, t, loss)  # waiting (PATIENCE_FACTOR)
         if loss:
             t['patience'] = max(25, t.get('patience', 100) - loss)
         waiting = t['id'] != active_id and not t['cup']['placed'] and not t['cup']['items']

@@ -31,6 +31,7 @@ import random
 
 from .happening_content import HAPPENINGS, INDEX, KINDS, REACTIONS, HURT, EMPLOYEE, OFFICE, POLICE, INSURANCE_TEXT
 from . import archive as ar
+from . import compensation as cf
 
 VERSION = 1
 HISTORY = 60
@@ -304,6 +305,8 @@ def _fire(s: dict, c: dict, career: str, sid: str) -> dict:
     for k in ('cash', 'damage', 'comp', 'wallet'):
         if k in loss:
             facts[k] = _amount(r, loss[k], c['day'])
+            if k == 'comp' or (k == 'wallet' and x['kind'] == 'den'):
+                facts[k] = cf.comp(facts[k])   # tiền đền you pay out (game/compensation.py)
     live = dict(id=rid, script=sid, day=c['day'], turn=c['turn'], morning=x['morning'], facts=facts, applied=[],
                 before=[], camera=_camera(c, career), insured=bool(_sec(c).get('insurance')), staff=_staff(c),
                 _roll=r.randrange(100), _hurt=r.randrange(100), _solve=r.randrange(100), _hurt_cost=_amount(r, HURT['cost'], 0))

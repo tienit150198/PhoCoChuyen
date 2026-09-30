@@ -31,6 +31,8 @@ from . import kit
 from . import food_service as FS
 from .. import consequences as cq
 from .. import archive as ar
+from .. import compensation as cf
+from .. import patience as pt
 
 ID = 'restaurant'
 BOIL = dict(raw=7, perfect=13, soft=19)          # seconds: <7 raw, 7–13 perfect, 13–19 soft, >19 mushy
@@ -873,7 +875,7 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
         if c['open'] and c['life'].get('mode') != 'calm':
             for t in FS.open_tasks(c, ID):
                 if t.get('app') and t['id'] != active and not t.get('deferred'):
-                    t['patience'] = max(25, t.get('patience', 100) - APP_DRAIN)
+                    t['patience'] = max(25, t.get('patience', 100) - pt.drain(c, t, APP_DRAIN))
     return out
 
 
@@ -1519,7 +1521,7 @@ def _ev_wallet(s, c, pl, choice):
         return 'Bạn cất ví vào ngăn kéo, ghi giờ nhặt được. Chủ ví quay lại sẽ nhận đủ.', True
     if choice == 'group':
         return 'Nhóm khu phố tìm ra chủ ví rất nhanh, nhưng mẹ bé hơi phiền vì ảnh thẻ học sinh bị chia sẻ khắp nơi.', None
-    fine = min(20, c['money'])
+    fine = min(cf.comp(20), c['money'])
     if fine:
         kit.money(s, c, -fine, 'Đền tiền ví đưa nhầm người', f'wallet-{c["day"]}', category='compensation')
     return f'Lát sau cô bé chủ ví quay lại. Người kia không phải anh của bé… Quán đền {fine} xu.', False

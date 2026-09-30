@@ -18,6 +18,7 @@ import copy
 from . import consequences as cq
 from . import desk_content as dc
 from . import archive as ar
+from . import patience as pt
 
 CAREERS = dc.CAREERS
 ACTIONS = ('desk_flag', 'desk_check', 'desk_count', 'desk_reply', 'desk_decide')
@@ -88,7 +89,7 @@ def make_task(career: str, day: int, slot: int, serial: int, base: dict) -> dict
         order = sorted(range(3), key=lambda i: dc.rng(career, day, slot, 'reply', i).random())
         rows = dc.REPLIES[case['mood']]
         t.update(mood=case['mood'], replies=[dict(id=f'r{k}', text=rows[i][1]) for k, i in enumerate(order)], sla=case['sla'],
-                 due_turn=serial + max(5, dc.SLA[case['sla']] - (tier - 1)) if day > 2 else None)  # first two days: learn first, no timer
+                 due_turn=serial + pt.longer(max(5, dc.SLA[case['sla']] - (tier - 1))) if day > 2 else None)  # first two days: learn first, no timer
     if 'notes' in case:
         t['drawer'] = case['notes']
     t.update(found=[], partial=[], marks=[], false_flags=0, verified=[], pending={}, reply=None, thread=[], count=None, miscounts=0,

@@ -52,13 +52,15 @@ from . import kit
 from . import till
 from .. import consequences as cq
 from .. import archive as ar
+from .. import compensation as cf
+from .. import patience as pt
 
 ID = 'delivery'
 DONE = ('completed', 'referred', 'cancelled')
 START_FUEL = 60
 LOAD_LIMIT = 200          # tenths of a kilogram (20 kg)
 COD_CAP = 250             # cash a courier may carry before handing in
-GRACE = 25                # minutes after the promised time before a food order is cancelled
+GRACE = pt.longer(25)     # minutes after the promised time before a food order is cancelled (PATIENCE_FACTOR)
 MPU = {'sun': 3, 'rain': 5}          # minutes per map block
 FUEL_RATE = {'sun': 2, 'rain': 3}    # % of tank per map block
 FUEL_STEP = 5                        # fuel is sold in 5% steps
@@ -1229,9 +1231,9 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
             fee = 0
         elif r['broken_seen']:
             _at(d, _dest(t), 'Làm biên bản')
-            comp = min(c['money'], n['value'] // 2)
+            comp = min(c['money'], cf.comp(n['value'] // 2))   # half the value, then the tiền đền factor
             if comp:
-                kit.money(s, c, -comp, 'Đền nửa giá trị hàng hỏng (bảo hiểm trả nửa)')
+                kit.money(s, c, -comp, 'Đền một phần giá trị hàng hỏng (bảo hiểm trả phần còn lại)')
             r['comp'] = comp
             r['outcome'] = 'failed'
             msg = f'📝 Lập biên bản hàng hỏng. Bạn đền {comp} xu, bảo hiểm trả phần còn lại.'
@@ -2025,7 +2027,7 @@ EVENTS = [
          text='Một chiếc xe đạp điện lấn làn quẹt vào xe bạn: gương xe bạn gãy, đèn xe người kia bể.',
          options=[dict(id='talk', label='Dừng lại hỏi han, chụp ảnh, mỗi bên tự lo phần mình', hint='+6 phút', effects=dict(clock=6), good=True,
                        outcome='Hai bên bình tĩnh nói chuyện, ai sửa xe nấy, bắt tay ra về.'),
-                  dict(id='pay', label='Đền luôn 12 xu cho êm chuyện', effects=dict(money=-12, clock=3),
+                  dict(id='pay', label=f'Đền luôn {cf.comp(12)} xu cho êm chuyện', effects=dict(money=-cf.comp(12), clock=3),
                        outcome='Người kia cầm tiền đi luôn, dù lỗi chưa chắc ở bạn.'),
                   dict(id='flee', label='Chạy luôn cho kịp đơn', luck=dict(
                       p=0.5, win=dict(good=False, outcome='Không ai đuổi theo, nhưng áo đồng phục in logo rõ to — lòng cứ thấp thỏm.'),

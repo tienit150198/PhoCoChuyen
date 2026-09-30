@@ -385,7 +385,7 @@ class SupportCareTests(unittest.TestCase):
         self.assertEqual(j.get(tid)['mistakes'], 1)
         self.assertTrue(any('tự gọi lên' in n for n in notes))
         k = self.reship()
-        for _ in range(8):  # two hours of shop time from the first look at the case
+        for _ in range(10):  # two hours (x PATIENCE_FACTOR 1.2 = 144 min) of shop time from the first look at the case
             k.act('advance')
         self.assertEqual(k.task['sla'], 'late')
         self.assertEqual(k.task['mistakes'], 1)

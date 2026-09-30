@@ -52,6 +52,7 @@ import copy
 from . import kit
 from .. import consequences as cq
 from .. import archive as ar
+from .. import compensation as cf
 
 ID = 'farm'
 PLOT_IDS = ('P1', 'P2', 'P3', 'P4', 'P5', 'P6')
@@ -100,7 +101,7 @@ WHOLESALE = 60            # % of the usual price the wholesale market pays
 DEPTH = dict(muong=14, lettuce=12, tomato=12, cucumber=12, herbs=14, egg=30)
 SLIP = 4                  # every SLIP units sold today take 10% off the next ones (floor 50%)
 PLEDGE_FINE = 2           # xu per unit promised to the HTX and not supplied
-BEE_FINE = 15
+BEE_FINE = cf.comp(15)   # đền anh Lâm's hives (tiền đền factor, game/compensation.py)
 
 WEATHER = [
     dict(id='sun', name='Nắng nhẹ', emoji='🌤️', evap=3, tip='Đất khô vừa phải, tưới khi độ ẩm dưới 40%.'),

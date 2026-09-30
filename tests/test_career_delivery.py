@@ -7,6 +7,7 @@ import game.careers.kit as kit
 from game.engine import GameError, public_state, validate_state
 from game.careers import delivery as D
 from game.careers import till
+from game.compensation import comp
 from tests.helpers import Journey
 
 
@@ -228,8 +229,8 @@ class DeliveryTests(unittest.TestCase):
         money = j.c['money']
         j.act('dl_fail', task=p1, confirm=True)
         t = j.get(p1)
-        self.assertEqual((t['status'], t['run']['comp']), ('cancelled', 20))
-        self.assertEqual(j.c['money'], money - 20)
+        self.assertEqual((t['status'], t['run']['comp']), ('cancelled', comp(20)))   # half the 40 xu value, then the đền factor
+        self.assertEqual(j.c['money'], money - comp(20))
         self.assertLessEqual(review(j, p1)['stars'], 2)
 
     def test_rain_soaks_unbagged_parcels_and_ruins_paper(self):

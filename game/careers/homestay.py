@@ -30,6 +30,7 @@ from . import kit
 from . import till
 from .. import consequences as cq
 from .. import archive as ar
+from .. import compensation as cf
 
 ID = 'homestay'
 FREE_WATER = 2            # bottles of water per stay that are a gift of the house
@@ -3153,7 +3154,7 @@ SITUATIONS = [
                        review='Cảm ơn đã giữ đồ, nhưng tên mình bị đăng công khai, không vui lắm.',
                        outcome='Tìm được chủ, nhưng lộ tên và thời gian lưu trú của khách lên mạng.',
                        perspectives=[_p('Chị Thu Hà', '😕', 'Mọi người biết mình đi Đà Lạt ngày nào, ở phòng nào.'), _p('Hàng xóm mạng', '👀', 'Hóa ra chị ấy ở phòng Đồi Thông…')]),
-                  dict(id='give', label='Đưa luôn cho người gọi điện tới nhận', quality='bad', stars=1, cost=40,
+                  dict(id='give', label='Đưa luôn cho người gọi điện tới nhận', quality='bad', stars=1, cost=cf.comp(40),
                        review='Homestay giao dây chuyền của tôi cho người lạ! Tôi phải báo công an.',
                        outcome='Đồ giao nhầm người. Homestay phải bồi thường và mất uy tín.',
                        perspectives=[_p('Chị Thu Hà', '😭', 'Chỉ cần hỏi một câu thôi mà.'), _p('Chủ homestay', '😣', 'Bài học đắt giá về xác minh.')])],
@@ -3389,8 +3390,8 @@ DESK = [
          default='shrug'),
     dict(id='lostwrong', title='Chủ thật của món đồ gọi tới', emoji='📞', npc=8, min_day=3, need_mark='lost_wrong', tone='tense',
          text='“Mình là người để quên đồ hôm trước. Sao homestay lại giao cho người khác?” Giọng khách run run.',
-         options=[dict(id='own', label='Nhận lỗi, đền giá trị món đồ, báo công an phường', hint='−25 xu',
-                       effects=dict(money=-25, unmark='lost_wrong', review=[3, 'Giao nhầm đồ của tôi, nhưng họ nhận lỗi và đền đủ.']), good=True,
+         options=[dict(id='own', label='Nhận lỗi, đền giá trị món đồ, báo công an phường', hint=f'−{cf.comp(25)} xu',
+                       effects=dict(money=-cf.comp(25), unmark='lost_wrong', review=[3, 'Giao nhầm đồ của tôi, nhưng họ nhận lỗi và đền đủ.']), good=True,
                        outcome='Khách nguôi dần. Từ hôm nay đồ thất lạc chỉ giao sau khi xác minh qua kênh đặt phòng.'),
                   dict(id='excuse', label='Nói người kia tả đúng món đồ mà',
                        effects=dict(unmark='lost_wrong', review=[1, 'Giao đồ của tôi cho người lạ rồi còn đổ lỗi.']), good=False,
