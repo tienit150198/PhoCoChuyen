@@ -6,6 +6,7 @@ import {wordsFor,kindOf} from './scenes/index.js';
 // to it (careerAssets below), so no career flashes the storefront and startup isn't waiting on all of them.
 import {nextStep,lifeNav,guestRibbon,experienceView,extendedJob,experienceSummary,teachTour} from './experience-ui.js';
 import {icon,portrait,itemArt,escapeHTML as esc} from './icons.js';
+import {fillToast} from './toast-lines.js';
 import {reqList,fold} from './ui-kit.js';
 import {olderRows,olderButton,loadOlder,syncOlder} from './archive.js';
 import {Sound} from './audio.js';
@@ -94,7 +95,7 @@ function toast(message,kind=false){if(!message)return;const box=$('#toasts'),cls
   const same=[...box.children].find(x=>x.dataset.msg===message&&!x.classList.contains('leaving'));
   if(same){same.classList.remove('bump');void same.offsetWidth;same.classList.add('bump');leave(same);return;}
   if(cls==='hint'&&box.querySelector('.toast.error:not(.leaving)'))return;
-  const el=document.createElement('div');el.className=`toast ${cls}`.trim();el.dataset.msg=message;el.textContent=message;
+  const el=document.createElement('div');el.className=`toast ${cls}`.trim();el.dataset.msg=message;fillToast(el,message);
   if(cls==='hint'){const face=document.createElement('span');face.className='hint-face';face.setAttribute('aria-hidden','true');face.textContent='💡';el.prepend(face);}
   box.append(el);leave(el);
   // Calm screen: one toast at a time, the newest wins.
