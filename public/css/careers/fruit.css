@@ -93,3 +93,7 @@
   .career-job.fr .fr-list li{grid-template-columns:28px minmax(0,1fr)}
   .career-job.fr .fr-minis{grid-column:2}
 }
+
+/* ---------- the awkward people (0.9.16) */
+.career-job.fr .fr-credit{border-color:var(--sk-accent)}
+.career-job.fr .fr-haggle .sk-amt{margin-top:10px}

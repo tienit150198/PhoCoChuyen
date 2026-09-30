@@ -2,10 +2,13 @@
  * The start of the shift (gear, the cart), a lane of houses with their bags (what shows from outside,
  * open the odd ones, pull hazards into the red box, wrap broken glass, the right compartment, a kind
  * reminder), the three-compartment cart and the collection point, and residents' complaints.
+ * The awkward people (0.9.16): hidden razors and needles, heaps dumped at the lane's end, residents who
+ * will not sort (refuse the bag: your call), vandals and an overflowing point at night, and the monthly
+ * fee: you name the amount and the tone, each household decides.
  * The server decides everything; one tap sends one command. */
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
-import {data,cc,lower,stockOf,tile,meter,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions} from './street_kit.js';
+import {data,cc,lower,stockOf,tile,meter,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,troubleLast} from './street_kit.js';
 
 const W=(x,k)=>(cc(x).waste||{})[k]||{name:k,emoji:'🗑️',bin:'con_lai',sharp:false};
 const BINS=['huu_co','tai_che','con_lai'];
@@ -16,7 +19,7 @@ const NEAT=['Túi buộc gọn, đúng màu.','Túi cột chặt, khô ráo.','T
 const odd=b=>!NEAT.includes(b.clue);
 const stopsOf=t=>t.needs?.stops||[];
 const allBags=t=>stopsOf(t).flatMap((s,si)=>s.bags.map(b=>({...b,si})));
-const hazardsLeft=b=>(b.items||[]).filter(i=>['pin','bong_den','binh_xit','kim_tiem'].includes(i)&&!(b.pulled||[]).includes(i));
+const hazardsLeft=b=>(b.items||[]).filter(i=>['pin','bong_den','binh_xit','kim_tiem','dao_lam'].includes(i)&&!(b.pulled||[]).includes(i));
 const misSorted=(x,b)=>b.items&&b.items.some(i=>W(x,i).bin!==({xanh:'huu_co',vang:'tai_che',den:'con_lai'})[b.color]);
 
 /* ------------------------------------------------------------ the cart */
@@ -39,13 +42,14 @@ function laneStrip(t,x){
 }
 function bagCard(t,x,b){
   const colour={xanh:'Túi xanh',vang:'Túi vàng',den:'Túi đen'}[b.color];
+  if(b.refused)return `<div class="rc-bag rc-${b.color} loaded"><span class="rc-sack" aria-hidden="true"></span><div class="grow"><b>${colour}</b><small>🏷️ dán phiếu, chưa thu</small></div></div>`;
   if(b.loaded)return `<div class="rc-bag rc-${b.color} loaded"><span class="rc-sack" aria-hidden="true"></span><div class="grow"><b>${colour}</b><small>${binEmoji(x,b.loaded)} đã vào ngăn ${x.esc(lower(binName(x,b.loaded)))}</small></div></div>`;
   const items=b.open?`<ul class="rc-items">${(b.items||[]).map(i=>{const w=W(x,i),haz=w.bin==='nguy_hai',out=(b.pulled||[]).includes(i);
     return `<li class="${haz?'haz':''} ${out?'out':''}"><span aria-hidden="true">${x.esc(w.emoji)}</span>${x.esc(w.name)}${haz&&!out?x.cmd('🔴 Tách ra','rac_pull',{task:t.id,bag:b.id,item:i},'small danger'):out?' <small>✓ hộp đỏ</small>':''}${i==='kinh_vo'?(b.wrapped?' <small>✓ đã bọc</small>':x.cmd('🧷 Bọc','rac_wrap',{task:t.id,bag:b.id},'small')):''}</li>`;}).join('')}</ul>`
     :`<p class="rc-clue">${x.esc(b.clue)}</p>`;
   const bins=BINS.map(k=>x.cmd(`${binEmoji(x,k)} ${x.esc(binName(x,k))}`,'rac_load',{task:t.id,bag:b.id,bin:k},`rc-to rc-${k}`)).join('');
   return `<div class="rc-bag rc-${b.color}" data-bag="${x.esc(b.id)}"><div class="rc-bag-head"><span class="rc-sack" aria-hidden="true"></span><div class="grow"><b>${colour}</b>${b.open?'':`<small>${odd(b)?'⚠️ trông lạ':'trông bình thường'}</small>`}</div>${b.open?'':x.cmd('👀 Mở túi','rac_peek',{task:t.id,bag:b.id},'small rc-peek')}</div>
-    ${items}<div class="rc-tos">${bins}</div></div>`;
+    ${items}<div class="rc-tos">${bins}</div>${b.open&&misSorted(x,b)?x.cmd('🏷️ Chưa phân loại: dán phiếu, không thu','rac_refuse',{task:t.id,bag:b.id},'small ghost rc-refuse'):''}</div>`;
 }
 function stopPanel(t,x){
   const si=t.at||0,s=stopsOf(t)[si];if(!s)return '';
@@ -88,6 +92,7 @@ function roundSteps(t,x){
   if(t.stage==='prep')return [{ok:null,label:'Đẩy xe vào ngõ',go:{cmd:'rac_go',payload:{task:t.id},label:'🛒 Đẩy xe vào ngõ'}}];
   if(t.late&&!t.swept)rows.push({ok:null,label:'Quét rác bị bới tung',go:{cmd:'rac_sweep',payload:{task:t.id},label:'🧹 Quét dọn'}});
   for(const b of s?.bags||[]){
+    if(b.refused){rows.push({ok:true,label:'Túi dán phiếu, chưa thu'});continue;}
     if(b.loaded){rows.push({ok:true,label:`${{xanh:'Túi xanh',vang:'Túi vàng',den:'Túi đen'}[b.color]} → ${lower(binName(x,b.loaded))}`});continue;}
     if(!b.open&&odd(b)){rows.push({ok:null,label:'Túi trông lạ: mở ra xem',note:b.clue,go:{cmd:'rac_peek',payload:{task:t.id,bag:b.id},label:'👀 Mở túi trông lạ'}});continue;}
     const h=hazardsLeft(b)[0];
@@ -104,7 +109,9 @@ function roundSteps(t,x){
 function guide(t,x){
   const d=data(x);
   if(d.desk?.ev)return {steps:[{ok:null,label:'Quyết chuyện giữa đường',go:{sel:'.sk-opts',label:'👉 Chọn cách xử lý'}}],final:null};
+  if(d.trouble?.ev)return {steps:[{ok:null,label:'Có chuyện ở ngõ',go:{sel:'.sk-trouble',label:'👉 Xử lý ngay'},pulse:''}],final:null};
   if(!d.intro)return {steps:[{ok:null,label:'Đọc giới thiệu nghề',go:{cmd:'rac_intro',payload:{},label:'🛒 Vào việc thôi!'}}],final:null};
+  if(t.twist?.state==='on')return {steps:[{ok:null,label:'Có chuyện ở ngõ',go:{sel:'.sk-twist',label:'👉 Xử lý ngay'},pulse:''}],final:null};
   if(t.kind==='setup'){const steps=setupSteps(t,x);return {steps,final:{label:'🦺 VÀO CA',go:finalGo(steps,'rac_open',{task:t.id}),ready:true}};}
   if(!t.known)return {steps:[{ok:null,label:'Nghe dặn',go:{cmd:'ask',payload:{task:t.id},label:t.kind==='complaint'?'👂 Nghe cư dân kể':'👂 Nghe chị Hạnh dặn'}}],final:null,pulse:'.sk-ask'};
   if(t.kind==='complaint'){
@@ -114,6 +121,39 @@ function guide(t,x){
   const steps=roundSteps(t,x),last=(t.at||0)===stopsOf(t).length-1;
   return {steps,final:t.stage==='round'&&last?{label:'✅ XONG NGÕ',go:finalGo(steps,'rac_finish',{task:t.id}),ready:true}:null};
 }
+function twistCard(t,x){
+  const tw=t.twist;if(!tw||tw.state!=='on')return '';
+  const o=(cmd,choice,label,sub)=>({cmd,payload:{task:t.id,choice},label,sub});
+  if(tw.kind==='sharp'){const w=W(x,tw.item);
+    return choiceCard(x,'rc-hurt','🩸',`Bị ${lower(w.name)} đâm`,'Túi trông bình thường mà có đồ sắc giấu bên trong.',[
+      o('rac_hurt','clean','🩹 Tự rửa, sát trùng, băng lại','nhanh, đỡ tốn'),o('rac_hurt','clinic','🏥 Ra trạm y tế','8 xu, khách chờ'),o('rac_hurt','ignore','😬 Kệ, làm tiếp','dễ nhiễm trùng')]);}
+  if(tw.kind==='pile')return choiceCard(x,'rc-pile','🗑️',`Đống rác đổ trộm · khoảng ${tw.bags} bao`,tw.line,[
+    o('rac_pile','trips','🛒🛒 Đi hai chuyến','mỏi, ngõ sau chờ'),o('rac_pile','truck','🛻 Gọi xe ba gác','10 xu'),o('rac_pile','report','📸 Chụp ảnh báo phường','để lại qua đêm'),o('rac_pile','cram','🧱 Nhồi chặt cho hết','dễ bung xe')]);
+  if(tw.kind==='grump')return choiceCard(x,'rc-grump','😤','Chủ nhà ra chặn xe',tw.line,[
+    o('rac_grump','explain','🗣️ Giải thích nhẹ nhàng','hên xui'),o('rac_grump','refuse','🏷️ Dán phiếu, không thu túi chưa phân loại','đúng quy định, dễ bị chửi'),
+    o('rac_grump','take','🤷 Lấy luôn cho xong',''),o('rac_grump','report','📞 Gọi bác Tâm tổ trưởng','mất thời gian')]);
+  return '';
+}
+function troubleCard(x){
+  const tb=data(x).trouble||{},ev=tb.ev;if(!ev)return '';
+  const o=(choice,label,sub)=>({cmd:'rac_trouble',payload:{choice},label,sub});
+  if(ev.kind==='vandal')return choiceCard(x,'sk-trouble','🛵','Quậy phá lúc nửa đêm',tb.text||'',[
+    o('talk','🗣️ Nói chuyện đàng hoàng','hên xui'),o('photo','📸 Chụp ảnh làm bằng chứng',''),o('police','🚓 Gọi công an phường','mất thời gian'),o('ignore','🤐 Lờ đi','')]);
+  return choiceCard(x,'sk-trouble','🚛','Điểm tập kết tràn',tb.text||'',[
+    o('wait','⏳ Đứng đợi xe ép','lâu'),o('tidy','🧹 Xếp gọn, quét, rắc vôi',''),o('call','📞 Gọi chú Sáu','hên xui'),o('leave','🚶 Bỏ về','')]);
+}
+function feeBook(x){
+  const f=data(x).fees;if(!f||!(f.rows||[]).length)return '';
+  const open=f.rows.filter(r=>r.state==='open');
+  const rows=f.rows.map(r=>{const left=r.due-r.paid,today=r.on===x.room.day;
+    const st={paid:'✅ đã đóng',refused:'🚪 không đóng',waived:'🤝 miễn'}[r.state];
+    return `<li class="rc-fee ${r.state}"><div class="row spread"><b>${x.esc(r.house)}</b><span class="tag ${r.state==='open'?'amber':'green'}">${st||`${x.fmt(left)} xu`}</span></div>
+      <small class="muted">${x.esc(r.lane)}</small>${r.last?`<p class="small">${x.esc(r.last)}</p>`:''}
+      ${r.state==='open'&&!today?`${amountBox(x,`fee-${r.id}`,left,{max:left,label:'Thu bao nhiêu',send:'🧾 Thu, nói nhẹ',cmd:'rac_fee',payload:{row:r.id,tone:'soft'},field:'amount'})}
+        <div class="sk-row">${act2(x,'📜 Nhắc quy định',{row:r.id,tone:'strict',key:`fee-${r.id}`,def:left})}${x.confirmCmd('🤝 Miễn tháng này','rac_fee',{row:r.id,waive:true},`Miễn phí cho ${r.house}?`,'small ghost')}</div>`:r.state==='open'?'<p class="small muted">Hôm nay gõ cửa rồi, mai thu tiếp.</p>':''}</li>`;}).join('');
+  return pane(x,'fees',`🧾 Thu phí vệ sinh · còn ${open.length} hộ`,`<ul class="sk-debts">${rows}</ul>`,open.length>0,'rc-fees');
+}
+const act2=(x,label,d)=>`<button type="button" class="btn small" data-action="car:feeStrict"${Object.entries(d).map(([k,v])=>` data-${k}="${x.esc(v)}"`).join('')}>${label}</button>`;
 const hintFor=(g,x)=>nextHint(x,g.steps,{final:g.final&&g.final.ready!==false&&g.final.go?{label:g.final.label.replace(/^[^\p{L}]+/u,''),go:g.final.go}:null,pulse:g.pulse});
 
 export default {
@@ -125,9 +165,10 @@ export default {
   },
   job(t,x){
     const g=guide(t,x),d=data(x),hint=hintFor(g,x);
-    const top=`${introCard(x,'rac_intro','🛒')}${deskCard(x,'rac_desk','Chuyện giữa đường')}`;
-    if(d.desk?.ev||!d.intro||x.ui.intro)return `<div class="career-job sk rc">${hint}${top}${bottom(x,g)}</div>`;
+    const top=`${introCard(x,'rac_intro','🛒')}${deskCard(x,'rac_desk','Chuyện giữa đường')}${troubleCard(x)}${troubleLast(x)}`;
+    if(d.desk?.ev||d.trouble?.ev||!d.intro||x.ui.intro)return `<div class="career-job sk rc">${hint}${top}${bottom(x,g)}</div>`;
     let main='',side='';
+    if(t.twist?.state==='on')return `<div class="career-job sk rc">${hint}${top}${ticket(t,x)}${twistCard(t,x)}${bottom(x,g)}</div>`;
     const clock=d.clock!=null?` · ${hm(d.clock)}`:'';
     if(t.kind==='setup'){main=setupPanel(t,x);side=stepRows(x,g.steps,'Vào ca');}
     else if(!t.known)main='';
@@ -137,12 +178,16 @@ export default {
     return `<div class="career-job sk rc">${hint}${top}${head}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${bottom(x,g)}</div>`;
   },
   idle(x){
-    const d=data(x),top=`${introCard(x,'rac_intro','🛒')}${deskCard(x,'rac_desk','Chuyện giữa đường')}`;
+    const d=data(x),top=`${introCard(x,'rac_intro','🛒')}${deskCard(x,'rac_desk','Chuyện giữa đường')}${troubleCard(x)}${troubleLast(x)}`;
+    if(d.trouble?.ev){const g={steps:[{ok:null,label:'Có chuyện ở ngõ',go:{sel:'.sk-trouble',label:'👉 Xử lý ngay'},pulse:''}],final:null};return `<div class="career-job sk rc">${hintFor(g,x)}${top}${bottom(x,g)}</div>`;}
     if(d.desk?.ev||!d.intro||x.ui.intro){const g=d.desk?.ev?{steps:[{ok:null,label:'Quyết chuyện giữa đường',go:{sel:'.sk-opts',label:'👉 Chọn cách xử lý'}}],final:null}:{steps:[{ok:null,label:'Đọc giới thiệu nghề',go:{cmd:'rac_intro',payload:{},label:'🛒 Vào việc thôi!'}}],final:null};
       return `<div class="career-job sk rc">${hintFor(g,x)}${top}${bottom(x,g)}</div>`;}
-    return `<div class="career-job sk rc">${top}${dayBar(x,d.clock!=null?` · ${hm(d.clock)}`:'')}${cartCard(x)}</div>`;
+    return `<div class="career-job sk rc">${top}${dayBar(x,d.clock!=null?` · ${hm(d.clock)}`:'')}${cartCard(x)}${d.shift?feeBook(x):''}</div>`;
   },
+  input(el,x){return kitInput(el,x);},
   tick(root){keepBarAboveFooter(root);},
-  actions:{...kitActions},
+  actions:{...kitActions,
+    async feeStrict(d,el,x){const b=x.ui.amt??={},v=Number(b[d.key]===undefined||b[d.key]===''?d.def:b[d.key]);
+      await x.send('rac_fee',{row:d.row,tone:'strict',amount:Math.max(1,Math.min(Number(d.def),Math.floor(v)||Number(d.def)))});}},
   dock:[['inventory','box','Kho đồ bảo hộ','Găng tay, khẩu trang, bao']],
 };

@@ -37,6 +37,9 @@ class Base(unittest.TestCase):
         ev = j.c['ext']['data']['desk']['ev']
         if ev:
             j.act('tc_desk', option=kit.desk_script(FR.DESK, ev['script'])['default'])
+        tb = j.c['ext']['data'].get('trouble')
+        if tb and tb['ev']:
+            j.act('tc_trouble', choice='ignore')
 
     def setup_stall(self, j=None, cover=None, test=True, fix=True, sort=True):
         j = j or self.j
@@ -90,7 +93,12 @@ class Base(unittest.TestCase):
         j.act('tc_weigh', task=tid)
         t = j.get(tid)
         if t['stage'] == 'haggle':
-            j.act('tc_deal', task=tid, deal=deal or t['_haggle']['wants'])
+            j.act('tc_deal', task=tid, deal=deal or FR._haggle_of(t)['wants'])
+            t = j.get(tid)
+        if t['stage'] == 'credit':      # a customer who wants it on tab / walks off with the bag
+            r = j.act('tc_credit', task=tid, choice='tab' if t['twist']['kind'] == 'tab' else 'hold')
+            if j.get(tid)['stage'] != 'pay':
+                return r
         return self.pay_exact(tid, j)
 
     def stock_up(self, j=None):

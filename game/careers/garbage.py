@@ -19,7 +19,11 @@ Chị Hạnh leads the ward's collection crew; the player pushes the cart. What 
 * residents' complaints (``complaint`` tasks): a missed bag, rubbish dumped at night on the
   corner, the smell of the cart stand, a food stall that will not sort. Look into it, then answer
   the way that is fair and true;
-* surprises on the round and a book of the crew's small stories.
+* surprises on the round and a book of the crew's small stories;
+* the awkward people (0.9.16): a razor or needle hidden in a bag that looks fine, a heap dumped at the end
+  of the lane, a resident who will not sort and picks a fight (the player may refuse the bag, by the
+  rules), vandals and a collection point overflowing at night, and the monthly fee: households that
+  haggle, make excuses or refuse, and the player names the amount and the tone.
 
 The crew is paid per round by the ward's cooperative (money through the engine's money() and the
 reviewer's reaction in consequences.react); mistakes go through cq.slip.
@@ -32,6 +36,7 @@ import hashlib
 
 from ..jsoncopy import tree_copy
 from . import kit
+from . import street_folk as folk
 from .. import consequences as cq
 from .. import inventory as inv
 
@@ -62,6 +67,7 @@ WASTE = {
     'xop': ('Hộp xốp dính dầu', '🥡', 'con_lai', False), 'kinh_vo': ('Mảnh kính vỡ', '🪟', 'con_lai', True),
     'pin': ('Pin cũ', '🔋', 'nguy_hai', False), 'bong_den': ('Bóng đèn tuýp', '💡', 'nguy_hai', True),
     'binh_xit': ('Vỏ bình xịt côn trùng', '🧯', 'nguy_hai', False), 'kim_tiem': ('Kim tiêm', '💉', 'nguy_hai', True),
+    'dao_lam': ('Lưỡi dao lam', '🔪', 'nguy_hai', True),   # only ever hidden in a bag (a 0.9.16 'sharp' twist)
 }
 MAIN = {'huu_co': ('vo_trai', 'rau_ua', 'com_thua', 'ba_cafe'), 'tai_che': ('chai_nhua', 'lon', 'giay', 'chai_tt'),
         'con_lai': ('nilon', 'ta', 'xop')}
@@ -251,6 +257,101 @@ DESK = [
                   dict(id='hurry', label='Cảm ơn, xin mang theo vì đang vội', hint='', effects={}, good=None,
                        outcome='Bà cụ cười, dặn đi đường cẩn thận.')],
          default='thank'),
+]
+
+# The awkward people on the round (0.9.16): more surprises, each with its own way out.
+DESK += [
+    dict(id='rubble', title='Túi rác nặng trịch xà bần', emoji='🧱', npc=1, min_day=2, tone='tense', at='between', weight=3, mods=None,
+         text='Nhà đang sửa nhét gạch vụn vào túi đen, buộc chặt, đặt cạnh thùng rác. Nhấc lên rách toạc, gạch văng đầy chân.',
+         options=[dict(id='sticker', label='Dán phiếu: xà bần phải thuê xe riêng, để lại', hint='', effects=dict(xp=4), good=True,
+                       outcome='Sáng hôm sau chủ nhà gọi xe ba gác chở đi, còn xin lỗi tổ thu gom.'),
+                  dict(id='take', label='Khuân lên xe cho xong', hint='Nặng, dễ hỏng xe', effects=dict(money=-5, patience=-4), good=False,
+                       outcome='Gạch làm cong thanh chắn ngăn xe, sửa mất 5 xu. Chú Sáu càu nhàu vì xe ép kêu rắc rắc.'),
+                  dict(id='leave', label='Để nguyên, đi tiếp', hint='', effects=dict(review=[2, 'Túi rác nhà tôi để nguyên không ai lấy, tổ thu gom làm ăn kiểu gì?']), good=None,
+                       outcome='Túi xà bần nằm chềnh ềnh trước cửa thêm ba ngày.')],
+         default='leave'),
+    dict(id='dead_rat', title='Con chuột chết trong túi', emoji='🐀', npc=3, min_day=2, tone='gentle', at='between', weight=2, mods=('heat', 'normal', 'rain'),
+         text='Mở túi rác nhà ông Thước ra, một con chuột chết đã trương, ruồi bay ra kín mặt. Ông đứng cửa: “Thì rác chứ sao, lấy đi!”',
+         options=[dict(id='bag', label='Đeo khẩu trang, bọc hai lớp bao, bỏ ngăn còn lại', hint='Tốn một bao', effects=dict(stock={'bao': -1}, xp=3), good=True,
+                       outcome='Gọn gàng, không ai bị gì. Ông Thước lần đầu nói câu “cảm ơn cháu”.'),
+                  dict(id='hold', label='Nín thở xách luôn', hint='', effects=dict(patience=-3), good=None, outcome='Mùi bám tay tới tận sáng.'),
+                  dict(id='back', label='“Ông bọc lại cho kỹ rồi hãy đem ra”', hint='', effects=dict(review=[2, 'Có con chuột chết mà công nhân cũng làm khó.']), good=False,
+                       outcome='Ông Thước sập cửa, sáng mai gọi lên phường.')],
+         default='hold'),
+    dict(id='late_lady', title='Bà cụ gọi lúc mười một giờ đêm', emoji='☎️', npc=0, min_day=3, tone='gentle', at='between', weight=2, mods=None,
+         text='Chị Hạnh chuyển máy: bà cụ nhà số 9 gọi, giọng run run: “Bà quên đổ rác, cháu quay lại lấy giúp bà được không?”',
+         options=[dict(id='go', label='Quay lại lấy, dặn bà giờ đổ rác lần sau', hint='Đi thêm một vòng', effects=dict(patience=-4, xp=5), good=True,
+                       outcome='Bà cụ đứng chờ ở cửa với cái túi nhỏ xíu, dúi cho gói kẹo gừng.'),
+                  dict(id='tomorrow', label='Hẹn bà tối mai', hint='', effects={}, good=None, outcome='Bà “ừ” nhỏ, túi rác nằm trong bếp thêm một ngày.'),
+                  dict(id='rule', label='“Qua giờ rồi bà ơi, quy định là quy định”', hint='', effects=dict(review=[3, 'Người già quên có lần mà cũng không linh động.']), good=False,
+                       outcome='Bà cụ cúp máy. Con trai bà viết một bài dài trên nhóm cư dân.')],
+         default='tomorrow'),
+    dict(id='dog_owner', title='Chủ chó mắng vì xe rác đi qua', emoji='🐕', npc=5, min_day=2, tone='tense', at='between', weight=2, mods=None,
+         text='Xe rác vừa qua, con chó nhà bên sủa ầm. Chủ nhà xồng xộc ra: “Đi đứng kiểu gì làm chó tao sủa cả tối, cút đi chỗ khác mà đẩy!”',
+         options=[dict(id='sorry', label='Xin lỗi, đẩy xe nhẹ tay qua đoạn đó', hint='', effects=dict(xp=3), good=True,
+                       outcome='Anh ta lầm bầm rồi vào nhà. Lần sau bạn đẩy xe sát lề bên kia.'),
+                  dict(id='ignore', label='Làm như không nghe', hint='', effects={}, good=None, outcome='Anh ta chửi với theo tới hết ngõ.'),
+                  dict(id='back', label='“Ngõ chung chứ có phải nhà anh đâu”', hint='', effects=dict(review=[2, 'Công nhân vệ sinh láo, cãi dân tay đôi.']), good=False,
+                       outcome='Hai bên cãi nhau, chó sủa to hơn, cả ngõ thức giấc.')],
+         default='ignore'),
+    dict(id='shop_block', title='Chủ tiệm cấm đậu xe rác', emoji='🏪', npc=2, min_day=2, tone='tense', at='between', weight=2, mods=None,
+         text='Chủ tiệm quần áo đứng chắn cửa: “Không được đậu xe rác trước tiệm tôi! Khách thấy là mất hết mối, đẩy ra chỗ khác!”',
+         options=[dict(id='move', label='Đậu sát góc tường, gom nhanh, rắc vôi khử mùi', hint='', effects=dict(xp=3, patience=-2), good=True,
+                       outcome='Chủ tiệm gật: “Thế thì được.” Còn nhờ gom giúp mấy thùng các-tông.'),
+                  dict(id='far', label='Đậu tít đầu ngõ, xách bộ từng túi', hint='Mất sức', effects=dict(patience=-6), good=None,
+                       outcome='Xách bộ mười mấy túi, mỏi rã tay.'),
+                  dict(id='stay', label='“Rác tiệm chị cũng đổ vào xe này đấy”', hint='', effects=dict(review=[2, 'Xe rác đậu lì trước tiệm, nhắc còn cãi.']), good=False,
+                       outcome='Chủ tiệm gọi điện thẳng cho tổ trưởng.')],
+         default='far'),
+    dict(id='oil', title='Quán nhậu đổ dầu mỡ vào xe', emoji='🛢️', npc=2, min_day=3, tone='tense', at='between', weight=2, mods=None,
+         text='Nhân viên quán nhậu xách can dầu chiên cũ đổ thẳng vào ngăn hữu cơ: “Rác thì rác, chê gì!” Dầu chảy lênh láng đáy xe.',
+         options=[dict(id='stop', label='Chặn lại, hướng dẫn để dầu vào can cho người thu mua riêng', hint='', effects=dict(xp=4), good=True,
+                       outcome='Quán gọi người thu mua dầu cũ. Ngăn xe khỏi bốc mùi cả tuần.'),
+                  dict(id='wash', label='Để yên, về rửa xe sau', hint='Tốn nước rửa', effects=dict(money=-3), good=None, outcome='Rửa mãi mùi dầu ôi vẫn còn.'),
+                  dict(id='yell', label='Quát ầm lên', hint='', effects=dict(review=[2, 'Công nhân rác quát nhân viên quán giữa phố.']), good=False,
+                       outcome='Nhân viên quán cãi lại, khách nhậu quay ra xem.')],
+         default='wash'),
+    dict(id='party', title='Đám cưới xong bỏ rác đầy ngõ', emoji='💒', npc=1, min_day=3, tone='gentle', at='between', weight=2, mods=('party', 'normal'),
+         text='Đám cưới tan, nhà chủ để lại ba mươi bao rác, bàn ghế gãy, hoa héo: “Tiện thì dọn luôn giùm nha, cho mấy chục nghìn uống nước.”',
+         options=[dict(id='contract', label='Báo giá thu gom theo khối lượng, có biên lai', hint='', effects=dict(money=10, xp=3), good=True,
+                       outcome='Nhà chủ đóng phí đúng quy định, tổ gọi thêm người dọn trong một giờ.'),
+                  dict(id='tip', label='Nhận tiền uống nước, dọn không biên lai', hint='', effects=dict(money=6, review=[3, 'Tổ thu gom nhận tiền ngoài, không biên lai.']), good=False,
+                       outcome='Dọn xong mệt nhoài, chị Hạnh biết chuyện thì không vui.'),
+                  dict(id='no', label='Chỉ lấy rác sinh hoạt, đồ cồng kềnh hẹn xe riêng', hint='', effects={}, good=None,
+                       outcome='Nhà chủ cằn nhằn nhưng gọi xe riêng.')],
+         default='no'),
+    dict(id='villa', title='Biệt thự đòi thu riêng', emoji='🏡', npc=1, min_day=3, tone='gentle', at='between', weight=2, mods=None,
+         text='Bà chủ biệt thự đầu ngõ: “Rác nhà tôi thu trước, thu riêng, đừng để lẫn với rác mấy nhà nghèo kia. Đây, cầm lấy 10 xu.”',
+         options=[dict(id='equal', label='Cảm ơn, từ chối tiền: nhà nào cũng thu như nhau', hint='', effects=dict(xp=4), good=True,
+                       outcome='Bà chủ hơi phật ý, nhưng từ đó phân loại rác kỹ nhất ngõ.'),
+                  dict(id='take', label='Nhận tiền, thu riêng nhà bà trước', hint='+10 xu', effects=dict(money=10, review=[3, 'Tổ thu gom ưu tiên nhà giàu, nhà khác chờ dài cổ.']), good=False,
+                       outcome='Các nhà khác xì xào “có tiền là được ưu tiên”.')],
+         default='equal'),
+    dict(id='toy', title='Bé đòi lại đồ chơi trong túi rác', emoji='🧸', npc=6, min_day=2, tone='gentle', at='between', weight=2, mods=None,
+         text='Một bé gái mếu máo chạy theo xe: “Mẹ vứt con gấu bông của con rồi, chú ơi tìm giúp con với!” Túi đã lên xe.',
+         options=[dict(id='find', label='Đeo găng lục ngăn còn lại, tìm con gấu', hint='Mất chút thời gian', effects=dict(patience=-4, xp=5), good=True,
+                       outcome='Con gấu dính chút vỏ cam, bé ôm chầm lấy. Mẹ bé cảm ơn mãi.'),
+                  dict(id='mom', label='Nói bé về hỏi mẹ, mai tính', hint='', effects={}, good=None, outcome='Bé đứng khóc ở đầu ngõ.'),
+                  dict(id='no', label='“Vứt rồi thì thôi con”', hint='', effects={}, good=False, outcome='Bé khóc òa. Bé Na đứng cạnh nhìn bạn trách móc.')],
+         default='mom'),
+    dict(id='hotline', title='Bị gọi đường dây nóng vì ồn', emoji='📢', npc=3, min_day=3, tone='tense', at='between', weight=2, mods=None,
+         text='Phường gọi: có người phản ánh “xe rác ồn, công nhân nói chuyện to lúc mười giờ đêm”. Người phản ánh là ông Thước.',
+         options=[dict(id='quiet', label='Nhận góp ý, tra dầu bánh xe, nói nhỏ lại', hint='', effects=dict(money=-2, xp=3), good=True,
+                       outcome='Bánh xe hết kêu. Ông Thước tối sau không gọi nữa.'),
+                  dict(id='explain', label='Giải thích giờ thu gom theo lịch phường', hint='', effects={}, good=None, outcome='Phường ghi nhận, ông Thước vẫn lầm bầm.'),
+                  dict(id='bang', label='Cố tình đập nắp xe thật to trước nhà ông', hint='', effects=dict(review=[1, 'Công nhân cố tình gây ồn trả đũa người già.']), good=False,
+                       outcome='Lần này phường mời cả tổ lên làm việc.')],
+         default='explain'),
+    dict(id='selfie', title='Bị chụp ảnh chê “nghề rác”', emoji='🤳', npc=6, min_day=2, tone='gentle', at='between', weight=2, mods=None,
+         text='Hai cô cậu chụp ảnh bạn đang bốc rác, cười khúc khích: “Đăng story caption ‘không học thì như này nè’, flex vl.”',
+         options=[dict(id='smile', label='Mỉm cười, làm tiếp cho gọn', hint='', effects=dict(xp=3), good=True,
+                       outcome='Bé Na đi ngang thấy hết, về viết bài “người giữ phố sạch” được cô khen.'),
+                  dict(id='talk', label='Nói nhẹ: “Xóa giùm cái ảnh nha”', hint='', effects={}, luck=dict(p=0.5,
+                       win=dict(effects={}, good=None, outcome='Hai đứa ngượng, xóa ảnh.'),
+                       lose=dict(effects={}, good=None, outcome='“Thích thì đăng đấy!” rồi bỏ chạy.'))),
+                  dict(id='chase', label='Đuổi theo giật điện thoại', hint='', effects=dict(review=[1, 'Công nhân rác đuổi đánh học sinh!']), good=False,
+                       outcome='Clip “công nhân rác nổi điên” lên mạng.')],
+         default='smile'),
 ]
 
 # ---------------------------------------------------------------- situations (sit_ engine)
@@ -486,6 +587,10 @@ def on_task(s: dict, c: dict, t: dict) -> None:
         t['known'] = True
         if t['status'] == 'new':
             t['status'] = 'understood'
+    tw = twist_of(t)
+    if tw:
+        # Lanes made before 0.9.16 have no twist; a new one carries it from the start (and it must match twist_of).
+        t['twist'], t['tw'] = tw, dict(state='wait', choice=None)
 
 
 # ================================================================ the crew's data
@@ -494,13 +599,13 @@ def _empty_cart() -> dict:
 
 
 def _fresh_today(day: int) -> dict:
-    return dict(day=day, bags=0, wrong=0, hazards=0, dumps=0, ve_chai=0, noted=0, late=0, overnight=0)
+    return dict(day=day, bags=0, wrong=0, hazards=0, dumps=0, ve_chai=0, noted=0, late=0, overnight=0, fees=0)
 
 
 def initial() -> dict:
     return dict(v=1, intro=False, gear=[], cart_ok=False, shift=False, cart=_empty_cart(), haz=[], regulars={},
-                today=_fresh_today(0), stats=dict(bags=0, wrong=0, hazards=0, ve_chai=0, noted=0, hurt=0, routes=0, cases=0),
-                desk=kit.desk_initial())
+                today=_fresh_today(0), stats=dict(bags=0, wrong=0, hazards=0, ve_chai=0, noted=0, hurt=0, routes=0, cases=0, fees=0),
+                desk=kit.desk_initial(), fees=dict(week=-1, rows=[]), trouble=folk.trouble_initial())
 
 
 def _data(c: dict) -> dict:
@@ -513,6 +618,8 @@ def _data(c: dict) -> dict:
             d[k].setdefault(kk, v)
     for k, v in kit.desk_initial().items():
         d['desk'].setdefault(k, copy.deepcopy(v))
+    for k, v in folk.trouble_initial().items():
+        d['trouble'].setdefault(k, copy.deepcopy(v))
     return d
 
 
@@ -526,7 +633,8 @@ def clock_min(c: dict) -> int:
 
 # ================================================================ the actions
 FREE = ('rac_intro',)
-NO_TICK = ('rac_intro', 'rac_gear', 'rac_peek', 'rac_pull', 'rac_wrap', 'rac_load', 'rac_note', 'rac_read', 'rac_desk')
+NO_TICK = ('rac_intro', 'rac_gear', 'rac_peek', 'rac_pull', 'rac_wrap', 'rac_load', 'rac_note', 'rac_read', 'rac_desk',
+           'rac_grump', 'rac_trouble', 'rac_refuse')
 PHYSICAL = ('rac_go', 'rac_next', 'rac_sweep', 'rac_dump')
 
 
@@ -538,7 +646,10 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     desk = d['desk']
     if name == 'rac_desk':
         return kit.desk_choose(s, c, ID, desk, DESK, p.get('option'), hook=_desk_hook)
+    if name == 'rac_trouble':
+        return _trouble(s, c, d, p)
     kit.desk_block(desk, 'Có chuyện giữa đường, quyết xong rồi đi tiếp nhé.')
+    kit.need(d['trouble']['ev'] is None or name == 'rac_fee', 'Có chuyện ở ngõ: xử lý trước đã.', 'surprise_open')
     fn = ACTIONS.get(name)
     kit.need(fn, 'Thao tác không có ở tổ thu gom.')
     result = fn(s, c, d, p)
@@ -547,6 +658,9 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     if desk['fired'] > fired and desk['ev']:
         x = kit.desk_script(DESK, desk['ev']['script'])
         result['message'] = f'{result.get("message", "")} 🔔 {x["emoji"]} {x["title"]}: quyết giúp nhé.'.strip()
+        result['surprise'] = True
+    elif _trouble_tick(s, c, d):
+        result['message'] = f'{result.get("message", "")} 🔔 Có chuyện ở ngõ!'.strip()
         result['surprise'] = True
     return result
 
@@ -622,6 +736,7 @@ def _bag(t: dict, bid) -> tuple[int, dict]:
 
 def _on_round(t: dict) -> None:
     kit.need(t['stage'] == 'round', 'Đẩy xe vào ngõ đã nhé.')
+    _need_calm(t)
 
 
 def _go(s, c, d, p):
@@ -637,7 +752,9 @@ def _go(s, c, d, p):
         t['late'] = True
         d['today']['late'] += 1
         return dict(message=f'🛒 Vào {t["needs"]["name"]} lúc {hm(now)}, trễ giờ thu gom. Mấy túi rác bị mèo bới tung ra đường: quét dọn đã.', correct=False)
-    return dict(message=f'🛒 Đẩy xe vào {t["needs"]["name"]} lúc {hm(now)}. Nhà đầu tiên: {t["needs"]["stops"][0]["house"]}.')
+    g = _grump_now(t)
+    head = f'🛒 Đẩy xe vào {t["needs"]["name"]} lúc {hm(now)}. Nhà đầu tiên: {t["needs"]["stops"][0]["house"]}.'
+    return dict(g, message=f'{head} {g["message"]}') if g else dict(message=head)
 
 
 def _sweep(s, c, d, p):
@@ -656,6 +773,10 @@ def _peek(s, c, d, p):
     kit.need(b['id'] not in t['loaded'], 'Túi đã lên xe rồi.')
     t['opened'].append(b['id'])
     names = ', '.join(f'{WASTE[i][1]} {_lower(WASTE[i][0])}' for i in b['items'])
+    st = _tw(t, 'sharp')
+    if st and t['twist']['bag'] == b['id'] and st['state'] == 'wait':
+        w = WASTE[t['twist']['item']]
+        names += f'… và ⚠️ {w[1]} {_lower(w[0])} gói hờ trong giấy báo'
     return dict(message=f'👀 Mở {_lower(COLOR_LABEL[b["color"]])}: {names}.')
 
 
@@ -666,7 +787,11 @@ def _pull(s, c, d, p):
     kit.need(b['id'] in t['opened'], 'Mở túi ra xem đã.')
     kit.need(b['id'] not in t['loaded'], 'Túi đã lên xe rồi.')
     item = kit.one_of(p.get('item'), WASTE, 'Không có thứ này.')
-    kit.need(item in b['items'] and WASTE[item][2] == 'nguy_hai', 'Chỉ tách pin, bóng đèn, bình xịt, kim tiêm ra hộp đỏ.')
+    st = _tw(t, 'sharp')
+    hidden = bool(st) and t['twist']['bag'] == b['id'] and t['twist']['item'] == item and st['state'] == 'wait'
+    kit.need((item in b['items'] or hidden) and WASTE[item][2] == 'nguy_hai', 'Chỉ tách pin, bóng đèn, bình xịt, kim tiêm ra hộp đỏ.')
+    if hidden:
+        st['state'] = 'safe'
     done = t['pulled'].setdefault(b['id'], [])
     kit.need(item not in done, 'Đã tách ra rồi.')
     kit.need(len(d['haz']) < HAZ_MAX, 'Hộp đỏ đầy rồi: ra điểm tập kết giao cho điểm thu gom nguy hại đã.')
@@ -716,6 +841,17 @@ def _load(s, c, d, p):
     if bin_ != right:
         d['today']['wrong'] += 1
         d['stats']['wrong'] += 1
+    st = _tw(t, 'sharp')
+    if st and t['twist']['bag'] == b['id'] and st['state'] == 'wait':
+        gloves = 'gang_tay' in d['gear']
+        if not gloves or folk.roll('rac-prick', t['id']) < 40:
+            st['state'] = 'on'
+            t['hurt'] = True
+            d['stats']['hurt'] += 1
+            w = WASTE[t['twist']['item']]
+            thru = 'xuyên qua găng' if gloves else 'vào tay trần'
+            return dict(message=f'🩸 Túi trông bình thường mà có {_lower(w[0])} giấu bên trong, đâm {thru}! Xử lý vết thương đã.', correct=False, surprise=True)
+        st['state'] = 'done'
     if _glass(b) and b['id'] not in t['wrapped'] and 'gang_tay' not in d['gear']:
         t['hurt'] = True
         d['stats']['hurt'] += 1
@@ -744,7 +880,9 @@ def _next(s, c, d, p):
     kit.need(t['at'] < len(stops) - 1, 'Đây là nhà cuối ngõ rồi. Bấm “Xong ngõ”.')
     kit.need(not t['late'] or t['swept'], 'Quét gom rác vương vãi trước đã.')
     t['at'] += 1
-    return dict(message=f'🛒 Đẩy xe tới {stops[t["at"]]["house"]}.')
+    g = _grump_now(t)
+    head = f'🛒 Đẩy xe tới {stops[t["at"]]["house"]}.'
+    return dict(g, message=f'{head} {g["message"]}') if g else dict(message=head)
 
 
 def _finish_route(s, c, d, p):
@@ -752,8 +890,16 @@ def _finish_route(s, c, d, p):
     _on_round(t)
     n = t['needs']
     kit.need(t['at'] == len(n['stops']) - 1, 'Còn nhà chưa tới trong ngõ.')
+    pst = _tw(t, 'pile')
+    if pst and pst['state'] == 'wait':
+        pst['state'] = 'on'
+        return dict(message=f'🗑️ {PILE_LINES[t["twist"]["n"]]} Khoảng {t["twist"]["bags"]} bao, xe không chở hết một chuyến.', surprise=True)
     bags = [b for st in n['stops'] for b in st['bags']]
-    missed = [b for b in bags if b['id'] not in t['loaded']]
+    refused = set(t.get('refused', []))
+    if any(b['id'] in refused and _sorted_ok(b) for b in bags):
+        t['mistakes'] += 1
+        cq.slip(t, 'refused_ok', 1, 'Nhà tôi phân loại đúng mà cũng bị dán phiếu không thu.', 'từ chối nhầm túi đã phân loại')
+    missed = [b for b in bags if b['id'] not in t['loaded'] and not (b['id'] in refused and not _sorted_ok(b))]
     if missed:
         t['mistakes'] += 1
         cq.slip(t, 'missed', 2, f'Bỏ sót {len(missed)} túi rác trước cửa, để qua đêm bốc mùi.', 'bỏ sót túi rác')
@@ -877,11 +1023,353 @@ def _desk_hook(s: dict, c: dict, key: str, v) -> str | None:
     return None
 
 
+# ================================================================ the awkward people on the round (0.9.16)
+# A lane made from 0.9.16 on may carry a twist (twist_of, from the task id: never regenerated, only checked):
+# 'sharp' a razor or a needle hidden in a bag that looks fine; 'pile' a heap dumped at the end of the lane,
+# more than the cart holds; 'grump' a resident who will not sort and picks a fight. The player answers in
+# their own way; each person decides from hidden traits (street_folk).
+TWISTS = ('sharp', 'pile', 'grump')
+TW_STATES = ('wait', 'on', 'done', 'safe')
+TW_CHOICES = {'sharp': ('clean', 'clinic', 'ignore'), 'pile': ('trips', 'truck', 'report', 'cram'), 'grump': ('explain', 'refuse', 'take', 'report')}
+HIDDEN = ('dao_lam', 'kim_tiem')
+PILE_LINES = ('Cuối ngõ có ai đổ trộm cả đống: bao tải, nệm cũ, túi rác rách toác, tràn ra nửa lòng đường.',
+              'Đống rác sau đám giỗ nhà số 9 cao ngang đầu gối, chó mèo bới tung, ruồi bu kín.',
+              'Quán nhậu đầu ngõ vứt mười mấy bao vỏ lon, xương, đá tan chảy lênh láng.',
+              'Nhà đang sửa chất xà bần lẫn rác sinh hoạt thành một đống, không ai nhận là của mình.')
+GRUMP_LINES = ('“Tao đóng tiền rác rồi, phân loại là việc của mày chứ!”',
+               '“Xanh vàng gì, rác nào chả là rác. Lấy đi, lắm chuyện vl.”',
+               '“Phân loại xong xe ép cũng đổ chung, diễn cho ai xem?”',
+               '“Mày nhìn cái gì? Có lấy không thì bảo, đứng đó giảng đạo à?”')
+
+
+def twist_of(t: dict) -> dict | None:
+    """The twist a lane carries (a pure function of the job: the validator checks a stored twist against it)."""
+    if t.get('kind') != 'route' or t.get('day', 1) < 2:
+        return None
+    r, n = folk.roll('rac-twist', t['id']), folk.roll('rac-twist-n', t['id'])
+    stops = t['needs']['stops']
+    if r < 30:
+        bags = [b['id'] for st in stops for b in st['bags'] if not _hazards(b) and not _glass(b)]
+        return dict(kind='sharp', bag=bags[n % len(bags)], item=HIDDEN[n % 2], n=n % 4) if bags else None
+    if r < 48:
+        return dict(kind='pile', bags=4 + n % 4, n=n % 4)
+    if r < 60:
+        return dict(kind='grump', stop=n % len(stops), n=n % 4)
+    return None
+
+
+def _tr(t: dict, salt: str = '') -> dict:
+    return folk.traits(t['id'] + salt, 'bossy' if (t.get('twist') or {}).get('kind') == 'grump' else None)
+
+
+def _tw(t: dict, kind: str) -> dict | None:
+    tw = t.get('twist')
+    return t.get('tw') if isinstance(tw, dict) and tw.get('kind') == kind else None
+
+
+def _need_calm(t: dict) -> None:
+    st = t.get('tw')
+    kit.need(not isinstance(st, dict) or st['state'] != 'on', 'Đang có chuyện ở ngõ: xử lý trước đã.')
+
+
+def _grump_now(t: dict) -> dict | None:
+    """Arriving at the grumpy resident's door: they come out first."""
+    st = _tw(t, 'grump')
+    if not st or st['state'] != 'wait' or t['at'] != t['twist']['stop']:
+        return None
+    st['state'] = 'on'
+    return dict(message=f'😤 Chủ nhà {_lower(t["needs"]["stops"][t["at"]]["house"])} ra chặn xe: {GRUMP_LINES[t["twist"]["n"]]}', surprise=True)
+
+
+def _hurt(s, c, d, p):
+    """A hidden razor or needle pricked through: clean it yourself, go to the clinic, or carry on."""
+    t = _task(c, p, ('route',))
+    st = _tw(t, 'sharp')
+    kit.need(st and st['state'] == 'on', 'Không ai bị thương.')
+    choice = kit.one_of(p.get('choice'), TW_CHOICES['sharp'], 'Chọn cách xử lý.')
+    item = t['twist']['item']
+    st.update(state='done', choice=choice)
+    if choice == 'clinic':
+        cost = min(8, c['money'])
+        if cost:
+            kit.money(s, c, -cost, 'Trạm y tế: sát trùng, tiêm phòng', t['id'], 'medical')
+        for x in c['tasks']:
+            if x.get('career') == ID and x['status'] not in ('completed', 'referred', 'cancelled') and 'patience' in x:
+                x['patience'] = max(25, x['patience'] - 5)
+        return dict(message=f'🏥 Ra trạm y tế: rửa vết thương, tiêm phòng ({cost} xu). Chị Hạnh gom nốt giúp.')
+    if choice == 'clean':
+        if item == 'kim_tiem':
+            t['mistakes'] += 1
+            cq.slip(t, 'no_clinic', 2, 'Bị kim tiêm đâm mà chỉ băng tạm, không đi xét nghiệm, tiêm phòng.', 'bị kim đâm không đi khám')
+            return dict(message='🩹 Rửa xà phòng, băng tạm. Chị Hạnh cau mày: “Kim tiêm thì phải đi khám, không đùa được đâu!”', correct=False)
+        return dict(message='🩹 Rửa sạch, sát trùng, băng lại. Vết cắt nông, làm tiếp được.')
+    t['mistakes'] += 1
+    cq.slip(t, 'ignored', 3 if item == 'kim_tiem' else 2, 'Bị thương mà mặc kệ, máu rỏ xuống cả xe rác.', 'bị thương không sơ cứu', safety=item == 'kim_tiem')
+    return dict(message='😬 Bạn chùi vào áo, làm tiếp. Tối về tay sưng tấy.', correct=False)
+
+
+def _pile(s, c, d, p):
+    """A heap more than the cart holds: two trips, call the truck, report it, or cram it in."""
+    t = _task(c, p, ('route',))
+    st = _tw(t, 'pile')
+    kit.need(st and st['state'] == 'on', 'Không có đống rác nào.')
+    choice = kit.one_of(p.get('choice'), TW_CHOICES['pile'], 'Chọn cách xử lý.')
+    st.update(state='done', choice=choice)
+    n = t['twist']['bags']
+    if choice == 'trips':
+        for x in c['tasks']:
+            if x.get('career') == ID and x['status'] not in ('completed', 'referred', 'cancelled') and 'patience' in x:
+                x['patience'] = max(25, x['patience'] - 8)
+        c['xp'] += 4
+        return dict(message=f'🛒🛒 Đi hai chuyến, gom sạch {n} bao. Mỏi nhừ tay, ngõ sạch bong. Bấm “Xong ngõ”.')
+    if choice == 'truck':
+        cost = min(10, c['money'])
+        if cost:
+            kit.money(s, c, -cost, 'Gọi xe ba gác chở đống rác đổ trộm', t['id'], 'service')
+        return dict(message=f'🛻 Gọi xe ba gác ({cost} xu) chở {n} bao ra điểm tập kết. Bấm “Xong ngõ”.')
+    if choice == 'report':
+        cq.slip(t, 'pile_left', 1, 'Đống rác cuối ngõ vẫn nằm đó qua đêm, hôi ơi là hôi.', 'để lại đống rác')
+        c['xp'] += 2
+        return dict(message='📸 Chụp ảnh gửi tổ trưởng và phường, dựng biển “Cấm đổ rác”. Đống rác nằm lại chờ xe của phường. Bấm “Xong ngõ”.')
+    if folk.roll('rac-cram', t['id']) < 55:
+        cost = min(8, c['money'])
+        if cost:
+            kit.money(s, c, -cost, 'Sửa bản lề nắp xe đẩy', t['id'], 'equipment')
+        t['mistakes'] += 1
+        cq.slip(t, 'spill', 1, 'Nhồi quá tải, nắp xe bung, rác rơi dọc đường.', 'nhồi quá tải')
+        return dict(message=f'💥 Nhồi cho bằng hết, nắp xe bung bản lề, rác rơi dọc ngõ. Sửa xe mất {cost} xu. Bấm “Xong ngõ”.', correct=False)
+    return dict(message='🧱 Nhồi chặt, may mà xe chịu nổi. Bấm “Xong ngõ”.')
+
+
+def _grump(s, c, d, p):
+    """The resident who will not sort: explain, refuse the bag (with a sticker), take it anyway, or call the ward."""
+    t = _task(c, p, ('route',))
+    st = _tw(t, 'grump')
+    kit.need(st and st['state'] == 'on', 'Không có ai chặn xe.')
+    choice = kit.one_of(p.get('choice'), TW_CHOICES['grump'], 'Chọn cách xử lý.')
+    tr = _tr(t, 'grump')
+    st.update(state='done', choice=choice)
+    si = t['twist']['stop']
+    house = t['needs']['stops'][si]['house']
+    if choice == 'explain':
+        how = folk.word(tr, 'answer')
+        if how == 'blowup':
+            t['mistakes'] += 1
+            cq.slip(t, 'quarrel', 1, 'Công nhân đứng cãi tay đôi với dân giữa ngõ.', 'cãi nhau với dân')
+            return dict(message=f'😤 {house}: “Giảng đạo à? Cút mẹ mày đi!” Hàng xóm ló đầu ra xem.', correct=False)
+        if how == 'calm':
+            if si not in t['noted']:
+                t['noted'].append(si)
+            return dict(message=f'🗣️ Bạn giải thích nhẹ nhàng. {house}: “Ờ… để mai tao phân loại lại.”')
+        return dict(message=f'🗣️ Bạn giải thích. {house} lầm bầm rồi đóng cửa đánh rầm.')
+    if choice == 'refuse':
+        bags = [b['id'] for b in t['needs']['stops'][si]['bags'] if b['id'] not in t['loaded']]
+        t['refused'] = sorted(set(t.get('refused', []) + bags))
+        if tr['honest'] >= 50:
+            return dict(message=f'🏷️ Dán phiếu “Chưa phân loại, chưa thu”. {house} gãi đầu: “Ừ thì lần sau tao phân loại.”')
+        kit.review(s, c, t['npc'], 2, 'Đóng tiền rác đầy đủ mà công nhân không thèm lấy, quá đáng!', t['id'])
+        return dict(message=f'🏷️ Dán phiếu “Chưa phân loại, chưa thu”. {house}: “Không lấy thì tao vứt ra đầu ngõ, xem ai dọn!”', correct=False)
+    if choice == 'report':
+        for x in c['tasks']:
+            if x.get('career') == ID and x['status'] not in ('completed', 'referred', 'cancelled') and 'patience' in x:
+                x['patience'] = max(25, x['patience'] - 4)
+        c['xp'] += 3
+        return dict(message=f'📞 Gọi bác Tâm tổ trưởng. Bác ra nói mấy câu, {house} im re, hứa phân loại.')
+    return dict(message=f'🤷 Lấy luôn cho xong. {house} đắc thắng: “Thấy chưa, lấy được mà!”')
+
+
+def _refuse(s, c, d, p):
+    """The player's own call: leave an unsorted bag with a sticker (the rules allow it). The household decides how to take it."""
+    t = _task(c, p, ('route',))
+    _on_round(t)
+    si, b = _bag(t, p.get('bag'))
+    kit.need(b['id'] in t['opened'], 'Mở túi ra xem đã rồi hẵng từ chối.')
+    kit.need(b['id'] not in t['loaded'] and b['id'] not in t.get('refused', []), 'Túi này xử lý rồi.')
+    t['refused'] = sorted(set(t.get('refused', []) + [b['id']]))
+    house = t['needs']['stops'][si]['house']
+    if _sorted_ok(b):
+        return dict(message=f'🏷️ Dán phiếu không thu túi của {_lower(house)}… mà túi này phân loại đúng mà?', correct=False)
+    tr = folk.traits(t['id'] + b['id'])
+    if tr['honest'] >= 50:
+        return dict(message=f'🏷️ Dán phiếu “Chưa phân loại, chưa thu”. {house} ra xem, gãi đầu: “Mai phân loại lại.”')
+    kit.review(s, c, t['npc'], 2, 'Túi rác để trước cửa mà không lấy, dán cái phiếu như dán giấy phạt!', t['id'])
+    return dict(message=f'🏷️ Dán phiếu “Chưa phân loại, chưa thu”. {house} gào theo: “Không lấy thì tao đổ ra đường!”', correct=False)
+
+
+# ---------------------------------------------------------------- the rubbish fee book
+FEE_STATES = ('open', 'paid', 'refused', 'waived')
+FEE_EXCUSES = ('“Tháng này nhà đi vắng, không đổ rác mà cũng thu?”', '“Nhà có hai người, đóng bằng nhà mười người à?”',
+               '“Tháng trước đóng rồi mà. Biên lai á? Mất rồi.”', '“Để cuối tháng lương về, gì mà gấp.”',
+               '“Rác nhà tôi toàn tự xách ra điểm tập kết!”', '“Thu tiền mà rác vẫn bốc mùi thế kia, đóng làm gì?”')
+FEE_ROWS = 5
+FEE_OUT = {'paid': '{house} đếm đủ {paid} xu, nhận biên lai.', 'haggle': '{house}: “Đắt thế, {counter} xu thôi.”',
+           'excuse': '{house}: {excuse}', 'refuse': '{house} đóng sầm cửa: “Không đóng! Kiện đi!”'}
+
+
+def _fee_book(day: int) -> dict:
+    """This week's households with the monthly fee due (deterministic from the week)."""
+    week = max(0, (day - 1) // 7)
+    rows = []
+    for i in range(FEE_ROWS):
+        lane = LANES[(week + i) % len(LANES)]
+        house = lane['houses'][(week * 3 + i) % len(lane['houses'])]
+        rows.append(dict(id=f'fee-{week}-{i}', house=house, lane=lane['name'], due=5 + folk.roll('rac-fee', week, i) % 4, paid=0, tries=0,
+                         state='open', last=None, on=0, excuse=folk.roll('rac-fee-ex', week, i) % len(FEE_EXCUSES)))
+    return dict(week=week, rows=rows)
+
+
+def _fee(s, c, d, p):
+    """Collect the monthly fee from a household: ask for an amount (a discount is your call), softly or by the rules."""
+    _need_shift(d)
+    row = next((x for x in d['fees']['rows'] if x['id'] == p.get('row')), None)
+    kit.need(row and row['state'] == 'open', 'Hộ này không còn phải thu.')
+    if p.get('waive') is True:
+        row.update(state='waived', last='Miễn cho hộ khó khăn.')
+        c['xp'] += 3
+        return dict(message=f'🤝 Miễn phí tháng này cho {row["house"]}. Chị Hạnh gật đầu.')
+    kit.need(row['on'] != c['day'], f'Hôm nay đã gõ cửa {row["house"]} rồi. Mai hẵng thu tiếp.')
+    tone = kit.one_of(p.get('tone'), ('soft', 'strict'), 'Chọn cách nói.')
+    left = row['due'] - row['paid']
+    asked = kit.integer(p['amount'], 1, left) if p.get('amount') is not None else left
+    r = folk.fee(folk.traits(row['id']), left, asked, tone, row['tries'])
+    row['tries'] += 1
+    row['on'] = c['day']
+    if r['kind'] == 'paid':
+        row['paid'] += r['paid']
+        kit.money(s, c, r['paid'], f'Phí vệ sinh: {row["house"]}'[:120], row['id'], 'fee')
+        d['today']['fees'] += r['paid']
+        d['stats']['fees'] += r['paid']
+        row['state'] = 'paid'   # a household that paid what you asked is done for the month
+    elif r['kind'] == 'refuse':
+        row['state'] = 'refused'
+    line = FEE_OUT[r['kind']].format(house=row['house'], paid=r.get('paid', 0), counter=r.get('counter', 0), excuse=FEE_EXCUSES[row['excuse']])
+    row['last'] = line[:200]
+    head = {'paid': '🧾', 'haggle': '🤝', 'excuse': '🙄', 'refuse': '🚪'}[r['kind']]
+    return dict(message=f'{head} {line}', correct=r['kind'] != 'refuse', celebrate=r['kind'] == 'paid')
+
+
+def _validate_fees(f) -> None:
+    kit.need(isinstance(f, dict) and set(f) == {'week', 'rows'} and isinstance(f['rows'], list) and len(f['rows']) <= FEE_ROWS, 'Sổ thu phí sai.')
+    kit.integer(f['week'], -1, 10 ** 6)
+    for x in f['rows']:
+        kit.need(isinstance(x, dict) and set(x) == {'id', 'house', 'lane', 'due', 'paid', 'tries', 'state', 'last', 'on', 'excuse'}
+                 and x['state'] in FEE_STATES and (x['last'] is None or (isinstance(x['last'], str) and len(x['last']) <= 200)), 'Sổ thu phí sai.')
+        for k in ('id', 'house', 'lane'):
+            kit.text(x[k], 80)
+        kit.integer(x['due'], 1, 100)
+        kit.integer(x['paid'], 0, x['due'])
+        kit.integer(x['tries'], 0, 999)
+        kit.integer(x['on'], 0, 10 ** 7)
+        kit.integer(x['excuse'], 0, len(FEE_EXCUSES) - 1)
+
+
+# ---------------------------------------------------------------- troubles on the night round
+TROUBLE = ('vandal', 'point')
+TROUBLE_CHOICES = {'vandal': ('talk', 'photo', 'police', 'ignore'), 'point': ('wait', 'tidy', 'call', 'leave')}
+VANDALS = (
+    dict(v='kick', text='Nhóm thanh niên đi nhậu về đạp đổ xe rác cho vui, cười hô hố: “Rác rưởi mà cũng bày đặt đẩy xe!”', loss=8),
+    dict(v='throw', text='Mấy đứa ngồi quán nhậu ném vỏ chai vào xe rác, trúng thành xe kêu choang: “Trúng rồi, 10 điểm!”', loss=4),
+    dict(v='mock', text='Một cậu giơ điện thoại quay sát mặt bạn: “Anh em ơi, nghề nhặt rác nè, học dốt thì ra thế này nha!”', loss=0),
+    dict(v='fire', text='Có đứa châm lửa đốt đống rác đầu ngõ, khói đen bốc lên, lửa liếm sát dây điện.', loss=0),
+    dict(v='block', text='Hai chiếc xe máy độ dựng chắn ngang lối vào điểm tập kết, chủ xe ngồi rung đùi: “Đợi tí, tao đang nói chuyện.”', loss=0),
+)
+POINT_TEXT = 'Điểm tập kết đã tràn ra lòng đường, xe ép của chú Sáu kẹt xe chưa tới. Người đi đường bịt mũi, chửi om sòm.'
+
+
+def _trouble_tick(s: dict, c: dict, d: dict) -> bool:
+    tb = d['trouble']
+    if not d['shift'] or d['desk']['ev'] is not None or not folk.trouble_due(tb, ID, c['day'], c['day_completed'], 50):
+        return False
+    k = 'vandal' if folk.roll('rac-trouble', c['day'], tb['fired']) < 70 else 'point'
+    v = folk.roll('rac-vandal', c['day'], tb['seq']) % len(VANDALS)
+    folk.trouble_open(tb, k, c['day'], 0, dict(v=v) if k == 'vandal' else dict(v=0))
+    kit.log(s, c, 'surprise', VANDALS[v]['text'] if k == 'vandal' else POINT_TEXT, kit.npc_id(ID, 0), tb['ev']['id'])
+    return True
+
+
+def _trouble(s, c, d, p):
+    tb = d['trouble']
+    ev = tb['ev']
+    kit.need(ev, 'Không có chuyện gì.')
+    choice = kit.one_of(p.get('choice'), TROUBLE_CHOICES[ev['kind']], 'Chọn cách xử lý.')
+    tr = folk.traits(ev['id'], 'bossy')
+    good = None
+
+    def wait_all(n):
+        for x in c['tasks']:
+            if x.get('career') == ID and x['status'] not in ('completed', 'referred', 'cancelled') and 'patience' in x:
+                x['patience'] = max(25, x['patience'] - n)
+
+    def lose(n, why):
+        n = min(n, c['money'])
+        if n:
+            kit.money(s, c, -n, why, ev['id'], 'damage')
+        return n
+    if ev['kind'] == 'vandal':
+        x = VANDALS[ev['facts']['v']]
+        v = x['v']
+        if v == 'fire':
+            if choice == 'ignore':
+                kit.review(s, c, kit.npc_id(ID, 1), 1, 'Lửa cháy đầu ngõ mà tổ thu gom đi ngang không dập, may mà hàng xóm kịp dội nước.', ev['id'])
+                good, out = False, 'Bạn đi tiếp. Mười phút sau cả ngõ hò nhau xách nước dập lửa.'
+            else:
+                wait_all(4)
+                c['xp'] += 5
+                good, out = True, ('Bạn dội nước dập lửa, gọi 114 báo cho chắc.' if choice == 'police'
+                                   else 'Bạn lấy xẻng xúc đất dập lửa, chụp ảnh gửi tổ dân phố.')
+        elif choice == 'talk':
+            how = folk.word(tr, 'answer')
+            if how == 'calm':
+                good, out = True, 'Bạn nói chuyện đàng hoàng. Tụi nó ngượng, dựng lại xe rác rồi đi.'
+            elif how == 'sulk':
+                n = lose(x['loss'] // 2, 'Sửa xe đẩy bị phá')
+                good, out = None, f'Tụi nó cười khẩy bỏ đi. Mất {n} xu sửa xe.'
+            else:
+                n = lose(x['loss'], 'Sửa xe đẩy bị phá')
+                good, out = False, f'“Mày là cái thá gì mà dạy đời?” Tụi nó đạp thêm phát nữa. Mất {n} xu sửa xe.'
+        elif choice == 'photo':
+            if tr['proud'] > 60:
+                good, out = None, 'Bạn giơ điện thoại chụp. Tụi nó chửi um lên nhưng lảng đi.'
+            else:
+                good, out = True, 'Bạn chụp ảnh biển số, tụi nó vội vàng dựng lại xe rồi chuồn.'
+            c['xp'] += 2
+        elif choice == 'police':
+            wait_all(6)
+            good, out = True, 'Công an phường tới, lập biên bản. Tụi nó phải đền tiền sửa xe.'
+            if x['loss']:
+                kit.money(s, c, x['loss'], 'Đền tiền sửa xe đẩy', ev['id'], 'compensation')
+        else:
+            n = lose(x['loss'], 'Sửa xe đẩy bị phá')
+            good, out = None, f'Bạn lặng lẽ dựng xe, nhặt rác vương vãi, đi tiếp.' + (f' Mất {n} xu sửa xe.' if n else '')
+        title, emoji = 'Quậy phá lúc nửa đêm', '🛵'
+    else:
+        if choice == 'wait':
+            wait_all(8)
+            good, out = None, 'Bạn đứng đợi gần tiếng, xe ép mới tới. Người đi đường chửi cả tổ thu gom.'
+        elif choice == 'tidy':
+            wait_all(4)
+            c['xp'] += 4
+            good, out = True, 'Bạn xếp gọn bao rác sát tường, quét sạch lòng đường, rắc vôi khử mùi.'
+        elif choice == 'call':
+            if folk.roll('rac-point', ev['id']) < 60:
+                good, out = True, 'Chú Sáu đổi lộ trình ghé trước. Điểm tập kết sạch sau nửa tiếng.'
+            else:
+                good, out = None, 'Chú Sáu tắt máy. Đành đợi.'
+                wait_all(6)
+        else:
+            kit.review(s, c, kit.npc_id(ID, 3), 1, 'Điểm tập kết tràn ra đường cả đêm, tổ thu gom bỏ đi luôn.', ev['id'])
+            good, out = False, 'Bạn bỏ về. Sáng ra ông Thước chụp ảnh gửi lên phường.'
+        title, emoji = 'Điểm tập kết tràn', '🚛'
+    folk.trouble_close(tb, out, good, choice, title, emoji)
+    return dict(message=f'{emoji} {out}', correct=good is not False, celebrate=good is True)
+
+
 ACTIONS = {
     'rac_gear': _gear, 'rac_cart': _cart, 'rac_open': _open,
     'rac_go': _go, 'rac_sweep': _sweep, 'rac_peek': _peek, 'rac_pull': _pull, 'rac_wrap': _wrap, 'rac_load': _load,
     'rac_note': _note, 'rac_next': _next, 'rac_finish': _finish_route, 'rac_dump': _dump,
     'rac_read': _read, 'rac_reply': _reply,
+    'rac_refuse': _refuse, 'rac_hurt': _hurt, 'rac_pile': _pile, 'rac_grump': _grump, 'rac_fee': _fee, 'rac_trouble': _trouble,
 }
 
 
@@ -891,6 +1379,8 @@ def on_start(s: dict, c: dict) -> None:
     day = c['day']
     d['gear'], d['cart_ok'], d['shift'] = [], False, False
     d['today'] = _fresh_today(day)
+    if day >= 2 and d['fees']['week'] != (day - 1) // 7:
+        d['fees'] = _fee_book(day)   # a new week, a new round of the monthly fee
     for t in c['tasks']:
         if t.get('career') == ID and t.get('kind') == 'setup' and t['day'] < day and t['status'] not in ('completed', 'referred', 'cancelled'):
             t['status'] = 'cancelled'
@@ -986,6 +1476,18 @@ def public_task(t: dict) -> dict:
                 b['loaded'] = t['loaded'].get(b['id'])
                 b['pulled'] = list(t['pulled'].get(b['id'], []))
                 b['wrapped'] = b['id'] in t['wrapped']
+                b['refused'] = b['id'] in t.get('refused', [])
+                tw = t.get('twist')
+                if b['open'] and isinstance(tw, dict) and tw['kind'] == 'sharp' and tw['bag'] == b['id']:
+                    b['items'] = list(b['items']) + [tw['item']]   # opened: the hidden razor or needle shows
+    tw = t.get('twist')
+    v.pop('twist', None)
+    v.pop('tw', None)
+    if isinstance(tw, dict) and t['tw']['state'] == 'on':
+        # A twist shows once it happens; where it hides stays hidden.
+        line = {'sharp': '', 'pile': PILE_LINES[tw['n']], 'grump': GRUMP_LINES[tw['n']]}[tw['kind']]
+        v['twist'] = dict(kind=tw['kind'], state='on', line=line, item=tw.get('item') if tw['kind'] == 'sharp' else None,
+                          bags=tw.get('bags'), stop=tw.get('stop'))
     if t['kind'] == 'complaint':
         x = CASE[t['needs']['case']]
         v['case'] = dict(facts=[dict(id=f['id'], title=f['title'], text=f['text'] if f['id'] in t['read'] else None) for f in x['facts']],
@@ -1002,13 +1504,17 @@ def public_data(c: dict) -> dict:
     mod = mod_of(c['day'])
     return dict(intro=d['intro'], gear=d['gear'], cart_ok=d['cart_ok'], shift=d['shift'], cart=d['cart'], cap=CART, haz=d['haz'], haz_max=HAZ_MAX,
                 mod=dict(id=mod['id'], emoji=mod['emoji'], label=mod['label'], hint=mod['hint']), clock=clock_min(c) if c['ext'].get('inv') else None,
-                today=d['today'], stats=d['stats'], regulars={k: dict(v) for k, v in d['regulars'].items()}, desk=kit.desk_public(d['desk'], DESK, ID))
+                today=d['today'], stats=d['stats'], regulars={k: dict(v) for k, v in d['regulars'].items()}, desk=kit.desk_public(d['desk'], DESK, ID),
+                fees=dict(week=d['fees']['week'], rows=[dict(x, excuse=None) for x in d['fees']['rows']]),
+                trouble=dict(ev=d['trouble']['ev'], last=d['trouble']['last'],
+                             text=(VANDALS[d['trouble']['ev']['facts']['v']]['text'] if d['trouble']['ev']['kind'] == 'vandal' else POINT_TEXT) if d['trouble']['ev'] else None))
 
 
 def content() -> dict:
     return dict(waste={k: dict(name=v[0], emoji=v[1], bin=v[2], sharp=v[3]) for k, v in WASTE.items()}, bins=list(BINS), bin_label=BIN_LABEL,
                 bin_emoji=BIN_EMOJI, colors=COLOR_LABEL, color_bin=COLOR_BIN, gear=GEAR_LABEL, used=list(USED), cart=CART, haz_max=HAZ_MAX,
-                ve_chai=VE_CHAI, intro=INTRO, people=[dict(name=p[0], role=p[1], note=p[2]) for p in PEOPLE])
+                ve_chai=VE_CHAI, intro=INTRO, people=[dict(name=p[0], role=p[1], note=p[2]) for p in PEOPLE],
+                choices=TW_CHOICES, troubles=TROUBLE_CHOICES)
 
 
 def hint(c: dict, t: dict) -> str:
@@ -1060,6 +1566,14 @@ def validate_task(t: dict, original: dict) -> None:
     kit.need(isinstance(t.get('read'), list) and set(t['read']) <= facts and len(t['read']) == len(set(t['read'])), 'Dữ kiện phản ánh sai.')
     kit.need(t.get('answer') is None or (case and t['answer'] in {o['id'] for o in case['options']}), 'Câu trả lời phản ánh sai.')
     kit.need(t.get('story') is None or (isinstance(t['story'], str) and len(t['story']) <= 300), 'Chuyện cư dân sai.')
+    # 0.9.16 fields: absent on older lanes; when present they must be what twist_of gives and well formed.
+    if 'twist' in t or 'tw' in t:
+        tw, st = t.get('twist'), t.get('tw')
+        kit.need(tw is not None and tw == twist_of(t), 'Chuyện của ngõ không khớp.')
+        kit.need(isinstance(st, dict) and set(st) == {'state', 'choice'} and st['state'] in TW_STATES
+                 and st['choice'] in (None, *TW_CHOICES[tw['kind']]), 'Chuyện của ngõ sai.')
+    if 'refused' in t:
+        kit.need(isinstance(t['refused'], list) and len(t['refused']) == len(set(t['refused'])) and set(t['refused']) <= ids, 'Túi từ chối thu sai.')
 
 
 def validate_data(c: dict) -> None:
@@ -1082,6 +1596,8 @@ def validate_data(c: dict) -> None:
         for v in d[k].values():
             kit.integer(v, 0, 10 ** 9)
     kit.desk_validate(d['desk'], DESK)
+    folk.validate_trouble(d['trouble'], TROUBLE, kit.need)
+    _validate_fees(d['fees'])
 
 
 # ================================================================ the plugin spec

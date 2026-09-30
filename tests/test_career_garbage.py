@@ -33,6 +33,9 @@ class Base(unittest.TestCase):
         ev = j.c['ext']['data']['desk']['ev']
         if ev:
             j.act('rac_desk', option=kit.desk_script(GB.DESK, ev['script'])['default'])
+        tb = j.c['ext']['data'].get('trouble')
+        if tb and tb['ev']:
+            j.act('rac_trouble', choice='photo' if tb['ev']['kind'] == 'vandal' else 'tidy')
 
     def start_shift(self, j=None, gear=None, cart=True):
         j = j or self.j
@@ -56,6 +59,15 @@ class Base(unittest.TestCase):
         self.on_shift(j)
         return j
 
+    def calm(self, j, tid):
+        """Someone on the lane steps in (a 0.9.16 twist): answer the patient way."""
+        t = j.get(tid)
+        st = t.get('tw')
+        if st and st['state'] == 'on':
+            kind = t['twist']['kind']
+            j.act({'sharp': 'rac_hurt', 'pile': 'rac_pile', 'grump': 'rac_grump'}[kind], task=tid,
+                  choice={'sharp': 'clinic', 'pile': 'trips', 'grump': 'take'}[kind])
+
     def round(self, tid, j=None, careful=True, note=True):
         """Work a lane the careful way (or load every bag by its colour without looking)."""
         j = j or self.j
@@ -65,6 +77,8 @@ class Base(unittest.TestCase):
         t = j.get(tid)
         if t['late']:
             j.act('rac_sweep', task=tid)
+            t = j.get(tid)
+        self.calm(j, tid)
         for si, st in enumerate(t['needs']['stops']):
             for b in st['bags']:
                 if careful and (not GB._sorted_ok(b) or GB._hazards(b) or GB._glass(b)):
@@ -79,9 +93,15 @@ class Base(unittest.TestCase):
                 if j.c['ext']['data']['cart'][bin_]['n'] >= GB.CART[bin_]:
                     j.act('rac_dump')
                 j.act('rac_load', task=tid, bag=b['id'], bin=bin_)
+                self.calm(j, tid)
             if si < len(t['needs']['stops']) - 1:
                 j.act('rac_next', task=tid)
-        return j.act('rac_finish', task=tid)
+                self.calm(j, tid)
+        r = j.act('rac_finish', task=tid)
+        if j.get(tid)['status'] != 'completed':
+            self.calm(j, tid)
+            r = j.act('rac_finish', task=tid)
+        return r
 
 
 class Spec(Base):

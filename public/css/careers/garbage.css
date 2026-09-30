@@ -77,3 +77,9 @@
   .career-job.rc .rc-houses{grid-template-columns:repeat(auto-fit,minmax(52px,1fr))}
   .career-job.rc .rc-to{font-size:13px}
 }
+
+/* ---------- the awkward people (0.9.16) */
+.career-job.rc .rc-refuse{width:100%;min-height:44px;margin-top:4px;white-space:normal}
+.career-job.rc .rc-fee.paid,.career-job.rc .rc-fee.waived{opacity:.7}
+.career-job.rc .rc-fee.refused{border-color:var(--rc-red)}
+.career-job.rc .rc-fees{margin-top:10px}

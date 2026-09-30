@@ -19,7 +19,14 @@ his toolkit on the back of the motorbike. What the job is:
   clear, then take the cash (the ward pays manholes by transfer);
 * night emergencies (``emergency``: a surcharge that is fair only when said up front) and warranty
   calls (``recall``: yesterday's stopgap is ours to fix for free; a new clog is not);
-* surprises on the road and small stories of the regulars.
+* surprises on the road and small stories of the regulars;
+* the awkward people around the job (0.9.16): the homeowner who stands over you and grumbles (put up
+  with it, answer back, ask them to step away, or refuse the job), the "while you're here" free extra
+  job, the customer with no cash (wait, trust them, or ask for a deposit), a price the player names
+  (overcharging included: some pay, some argue, word spreads in the street, some come back with a
+  neighbour for the difference), a debt book to chase or write off, and many more surprises.
+  Every one of them decides by itself from hidden traits (street_folk.py): the same move on the
+  same job always goes the same way.
 
 Mistakes go through consequences (cq.slip / cq.react); money only through the engine's money().
 Everything random is rolled from the day, slot or task id.
@@ -32,6 +39,7 @@ import hashlib
 from ..jsoncopy import tree_copy
 from . import kit
 from . import till
+from . import street_folk as folk
 from .. import consequences as cq
 
 ID = 'drain'
@@ -163,7 +171,7 @@ RECALLS = [
 ]
 KINDS = ('setup', 'call', 'manhole', 'emergency', 'recall')
 STAGES = ('prep', 'work', 'pay', 'done')
-LEVELS = ('list', 'high', 'low', 'warranty')
+LEVELS = ('list', 'high', 'low', 'warranty', 'own')   # own: a price the player names (cg_price)
 
 REG_STORY = {
     1: ('Chị Hồng: “Bếp đứng nước là chị đứng tim luôn á.”', 'Chị Hồng lắp thêm hố tách mỡ theo lời dặn.', 'Chị Hồng mời cả tiệm tô bún bò đặc biệt.'),
@@ -235,6 +243,94 @@ DESK = [
                   dict(id='take', label='Nhận tiền, ghi khống', hint='', effects=dict(money=10, review=[1, 'Nghe nói tiệm thông cống ghi hóa đơn khống cho chủ trọ.']),
                        good=False, outcome='Khách trọ phát hiện hóa đơn ghi sai, làm ầm lên.')],
          default='refuse'),
+]
+
+# The awkward people around the job (0.9.16): more surprises, each with its own way out.
+DESK += [
+    dict(id='shoes', title='Chủ nhà bắt bọc giày', emoji='🥿', npc=2, min_day=2, tone='gentle', at='between', weight=3, mods=None,
+         text='Bà Ngọc chặn ở cửa: “Bọc hai lớp ni-lông vào giày, trải báo từ cổng tới nhà tắm. Bẩn một vết là lau cho sạch nha cháu.”',
+         options=[dict(id='cover', label='Bọc giày, trải báo, làm gọn', hint='Mất thêm chút thời gian', effects=dict(patience=-3, xp=3), good=True,
+                       outcome='Bà Ngọc kiểm từng viên gạch, gật gù: “Thợ này được, sạch sẽ.”'),
+                  dict(id='bare', label='Cởi giày đi chân đất vào', hint='Nhanh, nhưng bẩn chân', effects={}, good=None,
+                       outcome='Chân dẫm phải nước cống, bạn rửa mất nửa buổi. Bà Ngọc vẫn lầm bầm.'),
+                  dict(id='argue', label='“Nhà cháu chứ có phải khách sạn đâu bà”', hint='', effects=dict(review=[2, 'Thợ gì mà cãi chủ nhà như hát hay.']), good=False,
+                       outcome='Bà Ngọc đứng khoanh tay canh từng bước, cả buổi không ai nói với ai câu nào.')],
+         default='cover'),
+    dict(id='livestream', title='Khách livestream chê thợ', emoji='📱', npc=6, min_day=2, tone='tense', at='between', weight=2, mods=None,
+         text='Hùng giơ điện thoại quay thẳng mặt bạn: “Cả nhà ơi, thợ thông cống nè, xem thử có chặt chém không nha, hóng đi mọi người!”',
+         options=[dict(id='explain', label='Bình thản giải thích từng bước, báo giá ngay trên sóng', hint='', effects=dict(xp=5), good=True,
+                       outcome='Người xem khen thợ nói rõ ràng. Có hai người nhắn xin số tiệm.'),
+                  dict(id='ask_stop', label='Nhờ tắt máy cho tập trung làm', hint='Hên xui', effects={},
+                       luck=dict(p=0.5, win=dict(effects={}, good=None, outcome='Hùng tắt máy, lầm bầm “làm gì căng”.'),
+                                 lose=dict(effects=dict(review=[3, 'Thợ không cho quay, chắc có gì mờ ám.']), good=False,
+                                           outcome='Hùng càng quay hăng: “Thấy chưa, thợ sợ lộ kìa mọi người!”'))),
+                  dict(id='mad', label='Gạt điện thoại: “Quay cái gì mà quay!”', hint='', effects=dict(review=[1, 'Thợ gạt điện thoại khách, thái độ như giang hồ.']), good=False,
+                       outcome='Clip “thợ thông cống nổi điên” có vài nghìn lượt xem. Chú Hai gọi điện hỏi chuyện.')],
+         default='explain'),
+    dict(id='boss_neighbour', title='Hàng xóm đứng chỉ đạo', emoji='👉', npc=5, min_day=2, tone='gentle', at='between', weight=3, mods=None,
+         text='Ông hàng xóm chống nạnh đứng sau lưng: “Sai rồi, phải chọc chỗ kia cơ! Hồi xưa tôi làm thế này này…” rồi giật luôn dây lò xo.',
+         options=[dict(id='thank', label='Cảm ơn bác, mời bác ngồi uống nước xem cho vui', hint='', effects=dict(xp=3, patience=-2), good=True,
+                       outcome='Ông ngồi xuống, kể chuyện thời trẻ. Bạn làm xong trong yên bình.'),
+                  dict(id='let', label='Cho bác thử chọc', hint='Mất thời gian, lỡ hỏng dây', effects=dict(patience=-6),
+                       luck=dict(p=0.4, win=dict(effects={}, good=None, outcome='Ông chọc một hồi rồi trả lại: “Thôi, cháu làm đi.”'),
+                                 lose=dict(effects=dict(money=-6), good=False, outcome='Ông chọc gãy đầu lò xo, bạn phải thay đầu mới.'))),
+                  dict(id='shoo', label='“Bác để cháu làm, bác đứng đó vướng lắm”', hint='', effects=dict(review=[3, 'Thợ trẻ mà ăn nói cộc lốc với người già.']), good=False,
+                       outcome='Ông bỏ về, đi kể khắp ngõ là thợ bây giờ láo.')],
+         default='thank'),
+    dict(id='dog', title='Chó nhà khách cắn ống quần', emoji='🐕', npc=4, min_day=2, tone='tense', at='between', weight=2, mods=None,
+         text='Con chó nhỏ nhà chị Mai cứ lao vào cắn ống quần, chị cười: “Nó hiền lắm, không sao đâu, kệ nó!”',
+         options=[dict(id='ask_leash', label='Nhờ chị giữ chó lại rồi mới làm', hint='', effects=dict(patience=-2, xp=2), good=True,
+                       outcome='Chị Mai bế chó vào phòng. Bạn làm xong trong mười phút.'),
+                  dict(id='endure', label='Kệ, vừa làm vừa né', hint='Chậm, dễ trượt tay', effects=dict(patience=-6), good=None,
+                       outcome='Ống quần rách một mảng. Chị Mai vẫn cười: “Nó quý cháu đấy.”'),
+                  dict(id='kick', label='Hất chân cho nó chạy', hint='', effects=dict(review=[1, 'Thợ đá chó nhà tôi! Không bao giờ gọi nữa.']), good=False,
+                       outcome='Con chó kêu ăng ẳng. Chị Mai mặt tối sầm, trả tiền mà không nhìn mặt.')],
+         default='ask_leash'),
+    dict(id='faucet', title='Tiện tay sửa luôn vòi nước', emoji='🚰', npc=3, min_day=2, tone='gentle', at='between', weight=2, mods=None,
+         text='Anh Phong kéo tay: “Thợ cống với thợ nước cũng như nhau cả, sửa luôn cái vòi rỉ với cái bình nóng lạnh kêu lạch cạch đi.”',
+         options=[dict(id='refer', label='Nói rõ không phải nghề mình, cho số thợ nước quen', hint='', effects=dict(xp=3), good=True,
+                       outcome='Anh Phong gọi thợ nước. Hôm sau còn cảm ơn vì không làm ẩu.'),
+                  dict(id='try', label='Thử sửa đại', hint='Hên xui', effects={},
+                       luck=dict(p=0.35, win=dict(effects=dict(money=5), good=None, outcome='Siết lại gioăng, vòi hết rỉ. Anh Phong dúi 5 xu.'),
+                                 lose=dict(effects=dict(money=-10, review=[2, 'Nhờ sửa vòi mà làm nước phun khắp nhà, phải đền.']), good=False,
+                                           outcome='Vặn quá tay, vòi gãy, nước phun như suối.'))),
+                  dict(id='no', label='“Việc ai nấy làm anh ơi”', hint='', effects={}, good=None, outcome='Anh Phong nhún vai: “Làm giá dữ.”')],
+         default='refer'),
+    dict(id='blame_tile', title='Khách đổ tại thợ làm nứt gạch', emoji='🧱', npc=2, min_day=3, tone='tense', at='between', weight=2, mods=None,
+         text='Bà Ngọc chỉ viên gạch nứt ở góc nhà tắm: “Lúc nãy chưa có vết này! Thợ làm nứt thì đền đi, 30 xu.”',
+         options=[dict(id='photo', label='Mở ảnh chụp lúc mới tới cho bà xem', hint='May mà có chụp', effects=dict(xp=4), good=True,
+                       outcome='Ảnh chụp lúc tới đã có vết nứt đó. Bà Ngọc ngượng: “À ừ, chắc bà nhớ nhầm.”'),
+                  dict(id='pay', label='Đền cho yên chuyện', hint='Mất 30 xu', effects=dict(money=-30), good=None,
+                       outcome='Bạn đền 30 xu cho một viên gạch nứt từ đời nào.'),
+                  dict(id='fight', label='Cãi tay đôi: “Bà vu khống à?”', hint='', effects=dict(review=[2, 'Thợ làm nứt gạch còn cãi.']), good=False,
+                       outcome='Hàng xóm kéo sang xem. Chẳng ai tin ai.')],
+         default='pay'),
+    dict(id='spam_calls', title='Khách gọi liên tục “tới chưa”', emoji='📞', npc=3, min_day=2, tone='gentle', at='between', weight=3, mods=None,
+         text='Anh Phong gọi cuộc thứ năm trong mười phút: “Tới chưa? Tới đâu rồi? Nhanh lên, khách trọ chửi anh nãy giờ nè!”',
+         options=[dict(id='eta', label='Nhắn giờ tới cụ thể, gửi định vị', hint='', effects=dict(xp=2), good=True,
+                       outcome='Anh Phong thôi gọi. Tới nơi đúng giờ đã hẹn.'),
+                  dict(id='mute', label='Tắt chuông cho đỡ phiền', hint='', effects=dict(patience=-5), good=None,
+                       outcome='Tới nơi thấy anh Phong mặt hằm hằm: “Gọi hai chục cuộc không nghe!”'),
+                  dict(id='snap', label='“Gọi nữa là em quay xe đó nha”', hint='', effects=dict(review=[2, 'Hối thợ có tí mà thợ dọa bỏ, láo toét.']), good=False,
+                       outcome='Anh Phong im, nhưng lúc trả tiền không thèm nói cảm ơn.')],
+         default='eta'),
+    dict(id='no_show', title='Tới nơi khách không có nhà', emoji='🚪', npc=6, min_day=3, tone='gentle', at='between', weight=2, mods=None,
+         text='Gõ cửa mười phút không ai mở. Gọi điện, Hùng ngái ngủ: “Ơ em quên, em đi chơi rồi. Anh đợi xíu, nửa tiếng nữa em về.”',
+         options=[dict(id='fee', label='Báo phí đi lại 5 xu, hẹn lại giờ khác', hint='', effects=dict(money=5, xp=2), good=True,
+                       outcome='Hùng chuyển khoản 5 xu phí đi lại, hẹn chiều mai. Rõ ràng, sòng phẳng.'),
+                  dict(id='wait', label='Ngồi đợi ở cửa', hint='Mất cả buổi', effects=dict(patience=-8), good=None,
+                       outcome='Hùng về muộn gần tiếng, còn hỏi “đợi lâu chưa anh”.'),
+                  dict(id='leave', label='Bỏ về, chặn số luôn', hint='', effects=dict(review=[3, 'Hẹn thợ rồi thợ bỏ về, không thèm đợi.']), good=False,
+                       outcome='Hùng lên nhóm cư dân kể thợ “bùng hẹn”.')],
+         default='wait'),
+    dict(id='smell_blame', title='Hàng xóm chửi vì mùi cống', emoji='🤢', npc=5, min_day=2, tone='tense', at='between', weight=2, mods=None,
+         text='Mở nắp hố ga ra, bà nhà bên thò đầu qua cửa sổ: “Hôi quá trời! Làm gì thì làm lẹ lên, bốc mùi vô tận nhà người ta rồi nè!”',
+         options=[dict(id='cover', label='Xin lỗi, đậy tạm nắp, làm nhanh gọn', hint='', effects=dict(xp=3, patience=-2), good=True,
+                       outcome='Bà nhà bên đóng cửa sổ. Làm xong bạn xịt khử mùi quanh miệng hố.'),
+                  dict(id='ignore', label='Làm lơ', hint='', effects={}, good=None, outcome='Bà ấy chửi đổng thêm mấy câu rồi cũng thôi.'),
+                  dict(id='back', label='“Cống nhà bà cũng thải ra đây đó bà”', hint='', effects=dict(review=[2, 'Thợ cống ăn nói xấc xược với người già.']), good=False,
+                       outcome='Hai bên to tiếng. Ông Lộc phải ra can.')],
+         default='cover'),
 ]
 
 # ---------------------------------------------------------------- situations (sit_ engine)
@@ -449,6 +545,10 @@ def on_task(s: dict, c: dict, t: dict) -> None:
         t['known'] = True
         if t['status'] == 'new':
             t['status'] = 'understood'
+    tw = twist_of(t)
+    if tw:
+        # Jobs made before 0.9.16 have no twist; a new one carries it from the start (and it must match twist_of).
+        t['twist'], t['tw'] = tw, dict(state='wait', choice=None, price=None, counter=None, tries=0)
 
 
 # ================================================================ the shop's data
@@ -458,7 +558,8 @@ def _fresh_today(day: int) -> dict:
 
 def initial() -> dict:
     return dict(v=1, intro=False, bike=[], gear=[], out=False, regulars={}, temp_fixes=[], today=_fresh_today(0),
-                stats=dict(jobs=0, cleared=0, temp=0, overcharged=0, fair=0, safety_ok=0, chem=0), desk=kit.desk_initial())
+                stats=dict(jobs=0, cleared=0, temp=0, overcharged=0, fair=0, safety_ok=0, chem=0, chopped=0, refunds=0, walked=0, freebies=0),
+                desk=kit.desk_initial(), debts=[], comebacks=[], trouble=folk.trouble_initial())
 
 
 def _data(c: dict) -> dict:
@@ -471,12 +572,16 @@ def _data(c: dict) -> dict:
             d[k].setdefault(kk, v)
     for k, v in kit.desk_initial().items():
         d['desk'].setdefault(k, copy.deepcopy(v))
+    for k, v in folk.trouble_initial().items():
+        d['trouble'].setdefault(k, copy.deepcopy(v))
     return d
 
 
 # ================================================================ the actions
 FREE = ('cg_intro',)
-NO_TICK = ('cg_intro', 'cg_pack', 'cg_gear', 'cg_diag', 'cg_quote', 'cg_advise', 'cg_pay', 'cg_short', 'cg_desk', 'cg_safety')
+NO_TICK = ('cg_intro', 'cg_pack', 'cg_gear', 'cg_diag', 'cg_quote', 'cg_advise', 'cg_pay', 'cg_short', 'cg_desk', 'cg_safety',
+           'cg_price', 'cg_watch', 'cg_nocash', 'cg_chase', 'cg_trouble')
+FREE = FREE + ('cg_chase',)
 PHYSICAL = ('cg_check', 'cg_work', 'cg_chem', 'cg_part', 'cg_fetch', 'cg_test', 'cg_clean')
 JOBS = ('call', 'manhole', 'emergency', 'recall')
 
@@ -489,7 +594,10 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     desk = d['desk']
     if name == 'cg_desk':
         return kit.desk_choose(s, c, ID, desk, DESK, p.get('option'))
+    if name in ('cg_chase', 'cg_trouble'):
+        return ACTIONS[name](s, c, d, p)
     kit.desk_block(desk, 'Có chuyện giữa đường, quyết xong rồi làm tiếp nhé.')
+    kit.need(d['trouble']['ev'] is None, 'Khách cũ quay lại đòi tiền: giải quyết trước đã.', 'surprise_open')
     fn = ACTIONS.get(name)
     kit.need(fn, 'Thao tác không có ở tiệm thông cống.')
     result = fn(s, c, d, p)
@@ -498,6 +606,9 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     if desk['fired'] > fired and desk['ev']:
         x = kit.desk_script(DESK, desk['ev']['script'])
         result['message'] = f'{result.get("message", "")} 🔔 {x["emoji"]} {x["title"]}: quyết giúp nhé.'.strip()
+        result['surprise'] = True
+    if _comeback_open(s, c, d):
+        result['message'] = f'{result.get("message", "")} 🔔 Có khách cũ quay lại đòi tiền chênh lệch.'.strip()
         result['surprise'] = True
     return result
 
@@ -679,6 +790,9 @@ def _work(s, c, d, p):
     _need_out(d)
     _need_quote(t)
     kit.need(t['cleared'] in (None, 'fail'), 'Đã thông rồi. Xả nước thử nhé.')
+    stop = _twist_now(t, 'watch')
+    if stop:
+        return stop
     tool = kit.one_of(p.get('tool'), TOOL, 'Đồ nghề không có.')
     kit.need(tool in d['bike'], f'{TOOL[tool]["name"]} để ở tiệm. Về lấy đã.')
     kit.need(tool not in ('camera', 'do_khi'), 'Món này để kiểm tra, không dùng để thông.')
@@ -715,6 +829,9 @@ def _chem(s, c, d, p):
     _need_out(d)
     _need_quote(t)
     kit.need(t['cleared'] in (None, 'fail'), 'Đã thông rồi.')
+    stop = _twist_now(t, 'watch')
+    if stop:
+        return stop
     kit.need(kit.stock(c, 'bot') > 0, 'Hết bột thông cống.')
     kit.take(c, 'bot', 1)
     t['chem'] = True
@@ -741,6 +858,9 @@ def _part(s, c, d, p):
     _need_out(d)
     _need_quote(t)
     kit.need(not t['part'], 'Đã thay rồi.')
+    stop = _twist_now(t, 'watch')
+    if stop:
+        return stop
     kit.need(kit.stock(c, 'xi_phong') > 0, 'Hết ống xi-phông. Mở kho nhập thêm nhé.')
     kit.take(c, 'xi_phong', 1)
     t['part'] = True
@@ -799,7 +919,15 @@ def _bill(s, c, d, p):
     t = _task(c, p, JOBS)
     kit.need(t['cleared'] in ('full', 'temp'), 'Chưa thông được thì chưa thu tiền.')
     kit.need(t['stage'] == 'work', 'Đã tính tiền rồi.')
-    who = _who(t)
+    stop = _twist_now(t, 'extra') or (t['kind'] != 'manhole' and _twist_now(t, 'nocash'))
+    if stop:
+        return stop
+    price = _bill_checks(s, c, d, t)
+    return _collect(s, c, d, t, price)
+
+
+def _bill_checks(s: dict, c: dict, d: dict, t: dict) -> int:
+    """What the customer sees when the bill comes (slips), the day's counts, and the price asked."""
     cause, fair = t['_cause'], list_price(t['needs']['place'], t['_cause'], t['kind'])
     if not t['tested']:
         t['mistakes'] += 1
@@ -815,6 +943,8 @@ def _bill(s, c, d, p):
             t['mistakes'] += 1
             cq.slip(t, 'warranty', 2, 'Lỗi thợ thông tạm hôm trước mà giờ lại thu tiền.', 'không bảo hành lỗi của mình')
         fair = 0 if t['_fault'] == 'shop' else fair
+    if t['level'] == 'own':
+        _own_price_checks(s, c, d, t, fair)
     if t['quote'] > fair and t['level'] == 'list':
         # Quoted for a bigger job than it was (a wrong diagnosis never quoted again): the customer pays for work not done.
         t['mistakes'] += 1
@@ -824,7 +954,7 @@ def _bill(s, c, d, p):
         d['today']['overcharged'] += t['quote'] - fair
         d['stats']['overcharged'] += t['quote'] - fair
         cq.slip(t, 'overcharge', 2, f'Hỏi hàng xóm mới biết việc này giá {fair} xu, bị lấy {t["quote"]}.', 'nói thách')
-    price = t['quote']   # a quote below the real job (a wrong diagnosis not quoted again) is the shop's own loss
+    price = t['quote'] + (_extra_price(t) or 0)   # a quote below the real job is the shop's own loss
     d['today']['jobs'] += 1
     d['stats']['jobs'] += 1
     d['today']['cleared' if t['cleared'] == 'full' else 'temp'] += 1
@@ -833,6 +963,11 @@ def _bill(s, c, d, p):
         d['stats']['safety_ok'] += 1
     if t['cleared'] == 'temp':
         d['temp_fixes'] = (d['temp_fixes'] + [dict(day=c['day'], task=t['id'], cause=cause)])[-10:]
+    return price
+
+
+def _collect(s: dict, c: dict, d: dict, t: dict, price: int) -> dict:
+    who = _who(t)
     if not price:
         react = cq.react(s, c, t, 0, who=who)
         msg = _finish(s, c, d, t, 0, ('Bảo hành, không lấy tiền. ' + react['message']).strip())
@@ -895,12 +1030,322 @@ def _finish(s: dict, c: dict, d: dict, t: dict, reward: int, narrative: str) -> 
     return f'{narrative} 💬 {story}'.strip() if story else narrative
 
 
+# ================================================================ the awkward people around the job (0.9.16)
+# A job made from 0.9.16 on may carry a twist (twist_of, from the task id: never regenerated, only checked):
+# the homeowner who stands over you and grumbles, the free extra job, the customer with no cash.
+# The player answers in their own way; each person decides from hidden traits (street_folk).
+TWISTS = ('watch', 'extra', 'nocash')
+TW_STATES = ('wait', 'on', 'done')
+TW_CHOICES = {'watch': ('bear', 'answer', 'away', 'refuse'), 'extra': ('free', 'charge', 'refuse'), 'nocash': ('wait', 'trust', 'deposit')}
+EXTRA_FAIR = 12
+WATCH_LINES = (
+    '“Ơ sao chọc mãi chưa xong? Thợ gì chậm như rùa, tính giờ công à?”',
+    '“Cẩn thận cái gạch nhà tôi! Nứt một viên là đền nha, gạch nhập đó.”',
+    '“Ông thợ hôm trước đổ gói bột là xong, bày vẽ lắm thế, làm màu à?”',
+    '“Để tôi quay clip làm bằng chứng. Làm ẩu là tôi đăng nhóm cư dân liền.”',
+)
+EXTRA_ASKS = (
+    '“Tiện tay thông luôn cái lavabo trên lầu nha, có tí xíu, tính tiền gì.”',
+    '“Xong thì sửa giùm cái vòi rỉ luôn, thợ nước thợ cống cũng như nhau thôi.”',
+    '“Hút luôn hố ga trước nhà bà bên cạnh nha, bà ấy nhờ, tiền thì tính sau.”',
+    '“Thông luôn bồn cầu tầng ba đi, nhanh nha, chiều nhà có khách.”',
+)
+NOCASH_LINES = (
+    '“Chết, hết tiền mặt rồi, mai chuyển khoản nha. Tin nhau tí đi.”',
+    '“Ví để ở cơ quan rồi, ghi nợ đi, thiếu gì mà sợ.”',
+    '“App ngân hàng đang lỗi, hẹn cuối tuần nha, bùng đâu mà lo.”',
+    '“Đang kẹt, tuần sau vợ về đưa. Ai quỵt đâu mà nhìn dữ vậy.”',
+)
+WATCH_OUT = {
+    ('answer', 'calm'): 'Nghe bạn giải thích đâu ra đấy, {who} gật gù: “Ừ thì làm đi.”',
+    ('answer', 'sulk'): '{who} lầm bầm “thợ bây giờ cãi hay ghê” rồi đứng xa ra một chút.',
+    ('answer', 'blowup'): '{who} gân cổ: “Cãi hả? Làm không xong thì cút mẹ mày đi, tao gọi thợ khác!”',
+    ('away', 'calm'): '{who} ra phòng khách ngồi xem ti vi. Bạn làm nhanh hẳn.',
+    ('away', 'sulk'): '{who} bỏ ra ngoài, đóng cửa hơi mạnh.',
+    ('away', 'blowup'): '{who}: “Nhà tôi mà tôi không được đứng hả? Láo vl!”',
+}
+
+
+def twist_of(t: dict) -> dict | None:
+    """The twist a job carries (a pure function of the job: the validator checks a stored twist against it)."""
+    if t.get('kind') not in ('call', 'emergency', 'recall') or t.get('day', 1) < 2:
+        return None
+    r = folk.roll('cg-twist', t['id'])
+    kind = 'watch' if r < 30 else 'extra' if r < 45 else 'nocash' if r < 58 and t['kind'] != 'recall' else None
+    return dict(kind=kind, n=folk.roll('cg-twist-n', t['id']) % 4) if kind else None
+
+
+def _tr(t: dict) -> dict:
+    i = _npc_index(t)
+    return folk.traits(t['id'], PEOPLE[i][3] if 0 <= i < len(PEOPLE) else None)
+
+
+def _tw(t: dict, kind: str) -> dict | None:
+    """The job's twist state when it is of that kind."""
+    tw = t.get('twist')
+    return t.get('tw') if isinstance(tw, dict) and tw.get('kind') == kind else None
+
+
+def _twist_now(t: dict, kind: str) -> dict | None:
+    """A waiting twist of that kind starts now: the action stops here with the person's words."""
+    st = _tw(t, kind)
+    if not st or st['state'] == 'done':
+        return None
+    st['state'] = 'on'
+    n, who = t['twist']['n'], _who(t)
+    line = {'watch': WATCH_LINES, 'extra': EXTRA_ASKS, 'nocash': NOCASH_LINES}[kind][n]
+    head = {'watch': '🗯️ Chủ nhà đứng sau lưng lèm bèm', 'extra': '🙏 Khách nhờ “tiện tay”', 'nocash': '💸 Khách không có tiền mặt'}[kind]
+    return dict(message=f'{head}: {who} {line}', surprise=True)
+
+
+def _need_calm(t: dict) -> None:
+    for k in TWISTS:
+        st = _tw(t, k)
+        kit.need(not st or st['state'] != 'on', 'Khách đang nói chuyện với bạn: trả lời trước đã.')
+
+
+def _extra_price(t: dict) -> int:
+    st = _tw(t, 'extra')
+    return st['price'] if st and st['state'] == 'done' and st['price'] else 0
+
+
+def _street_trust(c: dict, delta: int) -> None:
+    box = c.get('incidents')
+    if isinstance(box, dict) and isinstance(box.get('trust'), int):
+        box['trust'] = max(0, min(100, box['trust'] + delta))
+
+
+def _price(s, c, d, p):
+    """The player names a price (any number): the customer decides by themselves."""
+    t = _task(c, p, JOBS)
+    kit.need(t['diag'], 'Đoán nguyên nhân trước rồi mới báo giá.')
+    kit.need(t['cleared'] in (None, 'fail'), 'Đã làm xong, không báo giá lại được.')
+    price = kit.integer(p.get('price'), 0, 500)
+    fair = list_price(t['needs']['place'], t['_cause'], t['kind'])
+    if t['kind'] == 'recall' and t['_fault'] == 'shop':
+        fair = max(1, fair // 3)            # a warranty job: people know it should cost next to nothing
+    bid = t.setdefault('bid', dict(tries=0, counter=None, ratio=None, grudge=False))
+    r = folk.judge_price(_tr(t), fair, price, bid['tries'])
+    who = _who(t)
+    if t['quote'] is not None:
+        t['patience'] = max(25, t.get('patience', 100) - 5)
+    if r['kind'] == 'counter':
+        bid.update(tries=bid['tries'] + 1, counter=r['counter'])
+        line = ('“{p} xu á? Ăn cướp à! {c} xu thôi, không thì thôi.”' if r['ratio'] > 150 else '“Bớt đi, {c} xu làm luôn.”').format(p=price, c=r['counter'])
+        return dict(message=f'🧾 {who}: {line}')
+    if r['kind'] == 'walk':
+        t['mistakes'] += 1 if r['ratio'] > 130 else 0
+        if r['ratio'] > 130:
+            cq.slip(t, 'greedy', 2, f'Hét giá {price} xu, chặt chém trắng trợn. Gọi thợ khác cho lành.', 'nói thách')
+            _street_trust(c, -1)
+        react = cq.react(s, c, t, 0, who=who)
+        msg = _finish(s, c, d, t, 0, f'{who} xua tay trước giá {price} xu: “Thôi, cảm ơn, tôi gọi người khác.” {react["message"]}'.strip())
+        return dict(message='🧾 ' + msg, correct=False)
+    bid.update(counter=None, ratio=r['ratio'], grudge=bool(r['grudge']))
+    t.update(quote=price, level='own', quoted_for=t['diag'])
+    tail = {'cheap': f'{who} mừng ra mặt: “Rẻ vậy, làm liền đi em!”', 'accept': f'{who} gật: “Ừ, làm đi.”'}[r['kind']]
+    return dict(message=f'🧾 Báo giá: {price} xu. {tail}')
+
+
+def _own_price_checks(s: dict, c: dict, d: dict, t: dict, fair: int) -> None:
+    """Consequences of a price the player named: fair, a bit steep, or chặt chém."""
+    bid = t.get('bid') or {}
+    ratio = t['quote'] * 100 // max(1, fair) if fair else (999 if t['quote'] else 0)
+    tr = _tr(t)
+    if ratio <= 115:
+        return
+    extra = t['quote'] - fair
+    d['stats']['chopped'] += max(0, extra)
+    d['today']['overcharged'] += max(0, extra)
+    if ratio > 160:
+        t['mistakes'] += 1
+        cq.slip(t, 'chop', 2, f'Việc này người ta lấy {fair} xu, thợ hét {t["quote"]}. Chặt chém vừa thôi.', 'chặt chém')
+        _street_trust(c, -3)
+        kit.review(s, c, kit.npc_id(ID, 5), 2, f'Nghe đồn thợ thông cống lấy {t["quote"]} xu một việc {fair} xu. Cả ngõ cẩn thận nha.', t['id'])
+    elif tr['savvy'] >= 55:
+        t['mistakes'] += 1
+        cq.slip(t, 'overcharge', 1, 'Giá hơi chặt đấy nhé, tôi biết giá thị trường mà.', 'giá cao hơn thường')
+    if bid.get('grudge') or (ratio > 160 and folk.roll('cg-back', t['id']) < 55):
+        # They pay today; a neighbour tells them the real price and they come back for the difference.
+        cb = dict(id=f'cb-{t["id"]}', task=t['id'], npc=_npc_index(t), due=c['day'] + 1 + folk.roll('cg-back-d', t['id']) % 2,
+                  extra=max(1, extra), state='wait')
+        d['comebacks'] = [x for x in d['comebacks'] if x['state'] == 'wait'][-7:] + [cb]
+
+
+def _watch(s, c, d, p):
+    """The homeowner grumbling over your shoulder: put up with it, answer back, ask them away, or refuse."""
+    t = _task(c, p, JOBS)
+    st = _tw(t, 'watch')
+    kit.need(st and st['state'] == 'on', 'Không có ai lèm bèm.')
+    choice = kit.one_of(p.get('choice'), TW_CHOICES['watch'], 'Chọn cách xử lý.')
+    tr, who = _tr(t), _who(t)
+    st.update(state='done', choice=choice)
+    if choice == 'bear':
+        c['xp'] += 2
+        return dict(message=f'😮‍💨 Bạn nhịn, làm tiếp. {who} lèm bèm thêm một lúc rồi cũng chán. Bấm làm tiếp nhé.')
+    if choice == 'refuse':
+        abusive = tr['rude'] >= 65
+        d['stats']['walked'] += 1
+        if not abusive:
+            t['mistakes'] += 1
+            cq.slip(t, 'walked', 2, 'Mới nói có mấy câu mà thợ bỏ ngang, nước vẫn ngập.', 'bỏ dở việc')
+        react = cq.react(s, c, t, 0, who=who)
+        line = ('Bạn xin phép không làm nữa: chửi bới như vậy thì tiền nào cũng không làm. Chú Hai nghe xong gật đầu: “Đúng.”' if abusive
+                else f'Bạn thu đồ nghề đi về. {who} đứng chống nạnh giữa nhà tắm ngập nước.')
+        return dict(message='🎒 ' + _finish(s, c, d, t, 0, f'{line} {react["message"]}'.strip()), correct=abusive)
+    how = folk.word(tr, choice)
+    line = WATCH_OUT[(choice, how)].format(who=who)
+    if how == 'blowup':
+        t['mistakes'] += 1
+        cq.slip(t, 'argue', 2 if choice == 'answer' else 1, 'Thợ đứng cãi tay đôi với chủ nhà giữa nhà tắm.', 'to tiếng với chủ nhà')
+    elif how == 'sulk' and choice == 'away':
+        cq.slip(t, 'offended', 1, 'Nhà mình mà bị mời ra ngoài, khó chịu ghê.', 'mời chủ nhà ra ngoài')
+    if choice == 'away' and how == 'calm':
+        t['patience'] = min(100, t.get('patience', 100) + 5)
+    return dict(message=f'🗯️ {line} Bấm làm tiếp nhé.', correct=how != 'blowup')
+
+
+def _extra(s, c, d, p):
+    """"Tiện tay làm luôn": do it free, name a price, or say no."""
+    t = _task(c, p, JOBS)
+    st = _tw(t, 'extra')
+    kit.need(st and st['state'] == 'on', 'Khách không nhờ gì thêm.')
+    choice = kit.one_of(p.get('choice'), TW_CHOICES['extra'], 'Chọn cách trả lời.')
+    tr, who = _tr(t), _who(t)
+    if choice == 'free':
+        st.update(state='done', choice='free', price=0)
+        d['stats']['freebies'] += 1
+        c['xp'] += 4
+        return dict(message=f'🤲 Làm luôn cho vui lòng khách. {who}: “Đấy, thợ phải thế chứ!” Bấm tính tiền nhé.')
+    if choice == 'refuse':
+        st.update(state='done', choice='refuse', price=0)
+        if folk.word(tr, 'refuse') == 'blowup':
+            t['mistakes'] += 1
+            cq.slip(t, 'petty', 1, 'Nhờ có tí việc cũng không giúp, keo vl.', 'từ chối việc nhỏ')
+            return dict(message=f'🙅 {who}: “Có tí mà cũng không làm, keo vl!” Bấm tính tiền nhé.', correct=False)
+        return dict(message=f'🙅 Nói rõ việc khác tính riêng. {who} nhún vai. Bấm tính tiền nhé.')
+    price = kit.integer(p.get('price'), 1, 200)
+    r = folk.judge_price(tr, EXTRA_FAIR, price, st['tries'])
+    if r['kind'] == 'counter':
+        st.update(tries=st['tries'] + 1, counter=r['counter'])
+        return dict(message=f'🧾 {who}: “{price} xu cho có tí việc? {r["counter"]} xu thôi.”')
+    if r['kind'] == 'walk':
+        st.update(state='done', choice='charge', price=0, counter=None)
+        return dict(message=f'🧾 {who}: “Thôi khỏi, để tôi tự làm.” Bấm tính tiền nhé.')
+    st.update(state='done', choice='charge', price=price, counter=None)
+    return dict(message=f'🧾 {who} gật: thêm {price} xu cho việc phụ. Làm xong bấm tính tiền nhé.')
+
+
+def _nocash(s, c, d, p):
+    """No cash: wait while they go to the ATM, trust them (a debt), or ask for a deposit now."""
+    t = _task(c, p, JOBS)
+    st = _tw(t, 'nocash')
+    kit.need(st and st['state'] == 'on', 'Khách có tiền mặt mà.')
+    choice = kit.one_of(p.get('choice'), TW_CHOICES['nocash'], 'Chọn cách xử lý.')
+    tr, who = _tr(t), _who(t)
+    st.update(state='done', choice=choice)
+    if choice == 'wait':
+        t['patience'] = max(25, t.get('patience', 100) - 10)
+        r = _bill(s, c, d, p)
+        return dict(r, message=f'🏧 Bạn đợi {who} chạy ra cây ATM đầu ngõ. {r["message"]}')
+    kit.need(len(folk.open_debts(d['debts'])) < folk.DEBT_MAX, 'Sổ nợ đầy rồi: đòi bớt nợ cũ đã.')
+    price = _bill_checks(s, c, d, t)
+    cash = price * (tr['budget'] + 20) // 100
+    now = asked = 0
+    if choice == 'deposit':
+        asked = kit.integer(p.get('amount'), 1, max(1, price))
+        now = min(asked, cash)
+    react = cq.react(s, c, t, now, who=who)
+    rest = max(0, price - react['cut'] - now) if react['kind'] not in ('refuse', 'walkout') else 0
+    if rest:
+        d['debts'] = folk.trim_debts(d['debts'] + [folk.debt_line(f'no-{t["id"]}', _npc_index(t), who, t['id'], c['day'], rest, t['title'])])
+    d['today']['earned'] += react['pay']
+    head = f'💵 {who} đưa trước {react["pay"]} xu' if now else f'📒 Ghi nợ cho {who}'
+    msg = _finish(s, c, d, t, react['pay'], (f'{head}, còn nợ {rest} xu. ' + react['message']).strip())
+    if choice == 'deposit' and now < asked:
+        msg = f'{who}: “Có {now} xu thôi à.” ' + msg
+    return dict(message=msg)
+
+
+def _chase(s, c, d, p):
+    return folk.chase_action(s, c, ID, d['debts'], p, lambda i: PEOPLE[i][3] if 0 <= i < len(PEOPLE) else None)
+
+
+# ---------------------------------------------------------------- a customer comes back for the difference
+TROUBLE = ('comeback',)
+COMEBACK_CHOICES = ('refund', 'part', 'explain', 'refuse')
+
+
+def _comeback_open(s: dict, c: dict, d: dict) -> bool:
+    tb = d['trouble']
+    if tb['ev'] is not None or not c.get('open'):
+        return False
+    cb = next((x for x in d['comebacks'] if x['state'] == 'wait' and x['due'] <= c['day']), None)
+    if not cb:
+        return False
+    cb['state'] = 'open'
+    tb['seq'] += 1
+    tb['ev'] = dict(id=f'tr-{tb["seq"]}', kind='comeback', day=c['day'], npc=cb['npc'], step=0, tries=0,
+                    facts=dict(cb=cb['id'], extra=cb['extra'], who=PEOPLE[cb['npc']][0]))
+    kit.log(s, c, 'surprise', f'{PEOPLE[cb["npc"]][0]} quay lại cùng ông Lộc: “Hỏi ra việc đó rẻ hơn {cb["extra"]} xu, trả lại đi!”',
+            kit.npc_id(ID, cb['npc']), tb['ev']['id'])
+    return True
+
+
+def _trouble(s, c, d, p):
+    tb = d['trouble']
+    ev = tb['ev']
+    kit.need(ev and ev['kind'] == 'comeback', 'Không có ai quay lại.')
+    choice = kit.one_of(p.get('choice'), COMEBACK_CHOICES, 'Chọn cách giải quyết.')
+    f = ev['facts']
+    who, extra = f['who'], f['extra']
+    tr = folk.traits(f['cb'], PEOPLE[ev['npc']][3])
+    good = None
+    if choice == 'refund':
+        back = min(extra, c['money'])
+        if back:
+            kit.money(s, c, -back, f'Trả lại tiền chênh cho {who}'[:120], f['cb'], 'refund')
+        d['stats']['refunds'] += back
+        _street_trust(c, 1)
+        good, out = True, f'Bạn trả lại {back} xu, xin lỗi. {who} dịu giọng: “Biết sai mà sửa thì còn gọi lại.”'
+    elif choice == 'part':
+        amount = kit.integer(p.get('amount'), 1, extra)
+        want = extra * (50 + tr['stingy'] // 2) // 100
+        back = min(amount, c['money'])
+        if back:
+            kit.money(s, c, -back, f'Trả bớt tiền chênh cho {who}'[:120], f['cb'], 'refund')
+        d['stats']['refunds'] += back
+        if amount >= want:
+            good, out = None, f'{who} cầm {back} xu: “Thôi được, lần sau nói giá cho thật.”'
+        else:
+            _street_trust(c, -2)
+            kit.review(s, c, kit.npc_id(ID, ev['npc']), 2, f'Chặt chém xong trả lại có {back} xu, coi như bố thí à?', f['cb'])
+            good, out = False, f'{who} ném lại câu “bố thí à?” rồi bỏ đi kể khắp ngõ.'
+    elif choice == 'explain':
+        if tr['savvy'] < 45 and tr['rude'] < 60:
+            good, out = None, f'{who} nghe giải thích một hồi, lẩm bẩm “thôi kệ” rồi về.'
+        else:
+            _street_trust(c, -2)
+            kit.review(s, c, kit.npc_id(ID, ev['npc']), 1, 'Chặt chém rồi còn cãi lý. Cả ngõ né thợ này ra.', f['cb'])
+            good, out = False, f'{who}: “Giải thích cái gì, chặt chém thì nhận đi!” Ông Lộc lắc đầu.'
+    else:
+        _street_trust(c, -4)
+        kit.review(s, c, kit.npc_id(ID, 5), 1, f'Thợ thông cống chặt chém {who} rồi không chịu trả lại. Ai gọi thì cẩn thận.', f['cb'])
+        good, out = False, f'Bạn không trả. Tối đó nhóm cư dân phường Mây có bài đăng dài về “thợ chặt chém”.'
+    for x in d['comebacks']:
+        if x['id'] == f['cb']:
+            x['state'] = 'done'
+    folk.trouble_close(tb, out, good, choice, 'Khách quay lại đòi tiền chênh', '🔁')
+    return dict(message='🔁 ' + out, correct=good is not False, celebrate=good is True)
+
+
 ACTIONS = {
     'cg_pack': _pack, 'cg_gear': _gear, 'cg_setout': _setout, 'cg_fetch': _fetch,
     'cg_check': _check, 'cg_diag': _diag, 'cg_quote': _quote, 'cg_safety': _safety,
     'cg_work': _work, 'cg_chem': _chem, 'cg_part': _part, 'cg_test': _test, 'cg_clean': _clean, 'cg_advise': _advise,
     'cg_giveup': _giveup, 'cg_bill': _bill, 'cg_pay': _pay,
     'cg_short': lambda s, c, d, p: _short(s, c, p),
+    'cg_price': _price, 'cg_watch': _watch, 'cg_extra': _extra, 'cg_nocash': _nocash, 'cg_chase': _chase, 'cg_trouble': _trouble,
 }
 
 
@@ -991,7 +1436,15 @@ def public_task(t: dict) -> dict:
     if t['kind'] != 'setup':
         v['needs']['clues'] = {k: (t['needs']['clues'][k] if k in t['checked'] else None) for k in ('hoi', 'nhin', 'xa')}
         v['camera'] = CAUSES[t['_cause']]['camera'] if 'camera' in t['checked'] else None
-        v['prices'] = {lv: quote_for(lv, t['needs']['place'], t['diag'], t['kind']) for lv in LEVELS} if t['diag'] else None
+        v['prices'] = {lv: quote_for(lv, t['needs']['place'], t['diag'], t['kind']) for lv in LEVELS if lv != 'own'} if t['diag'] else None
+    tw = t.get('twist')
+    v.pop('twist', None)
+    v.pop('tw', None)
+    if isinstance(tw, dict) and t['tw']['state'] != 'wait':
+        # A twist shows once it has started; what the person will do stays hidden.
+        st = t['tw']
+        line = {'watch': WATCH_LINES, 'extra': EXTRA_ASKS, 'nocash': NOCASH_LINES}[tw['kind']][tw['n']]
+        v['twist'] = dict(kind=tw['kind'], state=st['state'], choice=st['choice'], price=st['price'], counter=st['counter'], line=line)
     v['cash'] = till.public(t.get('cash'))
     return v
 
@@ -1003,14 +1456,17 @@ def public_data(c: dict) -> dict:
     for k, v in base.items():
         d.setdefault(k, tree_copy(v))
     mod = mod_of(c['day'])
+    tb = d['trouble']
     return dict(intro=d['intro'], bike=d['bike'], slots=BIKE_SLOTS, gear=d['gear'], out=d['out'],
                 mod=dict(id=mod['id'], emoji=mod['emoji'], label=mod['label'], hint=mod['hint']), today=d['today'], stats=d['stats'],
-                regulars={k: dict(v) for k, v in d['regulars'].items()}, desk=kit.desk_public(d['desk'], DESK, ID))
+                regulars={k: dict(v) for k, v in d['regulars'].items()}, desk=kit.desk_public(d['desk'], DESK, ID),
+                debts=folk.public_debts(d['debts']), trouble=dict(ev=tb['ev'], last=tb['last']))
 
 
 def content() -> dict:
     return dict(tools=TOOLS, places=PLACES, causes={k: dict(name=v['name']) for k, v in CAUSES.items()}, hows=HOW_LABEL, gear=GEAR_LABEL,
                 safety=SAFETY_LABEL, levels=list(LEVELS), slots=BIKE_SLOTS, night=NIGHT, denoms=list(till.DENOMS), intro=INTRO,
+                extra_fair=EXTRA_FAIR, debt_max=folk.DEBT_MAX,
                 people=[dict(name=p[0], role=p[1], note=p[2]) for p in PEOPLE])
 
 
@@ -1055,6 +1511,28 @@ def validate_task(t: dict, original: dict) -> None:
         _vbool(t.get(k))
     till.validate(t.get('cash'), t)
     kit.need(t.get('story') is None or (isinstance(t['story'], str) and len(t['story']) <= 300), 'Chuyện khách quen sai.')
+    _validate_twist(t)
+
+
+def _validate_twist(t: dict) -> None:
+    """0.9.16 fields: absent on older jobs; when present they must be what twist_of gives and well formed."""
+    if 'twist' in t or 'tw' in t:
+        tw, st = t.get('twist'), t.get('tw')
+        kit.need(tw is not None and tw == twist_of(t), 'Chuyện của khách không khớp.')
+        kit.need(isinstance(st, dict) and set(st) == {'state', 'choice', 'price', 'counter', 'tries'} and st['state'] in TW_STATES
+                 and st['choice'] in (None, *TW_CHOICES[tw['kind']]), 'Chuyện của khách sai.')
+        for k in ('price', 'counter'):
+            if st[k] is not None:
+                kit.integer(st[k], 0, 500)
+        kit.integer(st['tries'], 0, 9)
+    if 'bid' in t:
+        b = t['bid']
+        kit.need(isinstance(b, dict) and set(b) == {'tries', 'counter', 'ratio', 'grudge'}, 'Giá tự báo sai.')
+        kit.integer(b['tries'], 0, 9)
+        for k in ('counter', 'ratio'):
+            if b[k] is not None:
+                kit.integer(b[k], 0, 10 ** 5)
+        _vbool(b['grudge'])
 
 
 def validate_data(c: dict) -> None:
@@ -1078,6 +1556,16 @@ def validate_data(c: dict) -> None:
         for v in d[k].values():
             kit.integer(v, 0, 10 ** 9)
     kit.desk_validate(d['desk'], DESK)
+    folk.validate_debts(d['debts'], len(PEOPLE), kit.need)
+    folk.validate_trouble(d['trouble'], TROUBLE, kit.need)
+    kit.need(isinstance(d['comebacks'], list) and len(d['comebacks']) <= 8, 'Sổ khách quay lại sai.')
+    for x in d['comebacks']:
+        kit.need(isinstance(x, dict) and set(x) == {'id', 'task', 'npc', 'due', 'extra', 'state'} and x['state'] in ('wait', 'open', 'done'), 'Sổ khách quay lại sai.')
+        kit.integer(x['npc'], 0, len(PEOPLE) - 1)
+        kit.integer(x['due'], 1, 10 ** 7)
+        kit.integer(x['extra'], 1, 10 ** 5)
+        kit.text(x['id'], 80)
+        kit.text(x['task'], 60)
 
 
 # ================================================================ the plugin spec

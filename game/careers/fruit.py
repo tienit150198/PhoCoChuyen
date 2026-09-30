@@ -17,7 +17,10 @@ Dì Tư goes to the wholesale market before dawn; the player minds the stall. Wh
   give in; each customer takes one of these best (what they say hints which);
 * cash with the shared till (game/careers/till.py), a customer who comes back with yesterday's
   fruit (``return``), the smoothie man who buys the over-ripe fruit (``bulk``), the altar tray on
-  the 1st and 15th of the lunar month (``altar``), and small surprises at the market.
+  the 1st and 15th of the lunar month (``altar``), and small surprises at the market;
+* the awkward people (0.9.16): customers who call your prices a rip-off and bargain (the player names
+  a price and the customer decides), want it on credit, or walk off "to fetch the wallet"; a debt book
+  to chase or write off; shoplifters and people filming the stall "bán đắt"; many more surprises.
 
 Honesty is the heart of it: an unzeroed basket or a drifted scale charges the customer for fruit
 they never got. Careful customers weigh again at the market's check scale; everyone else never
@@ -33,6 +36,7 @@ import hashlib
 from ..jsoncopy import tree_copy
 from . import kit
 from . import till
+from . import street_folk as folk
 from .. import consequences as cq
 
 ID = 'fruit'
@@ -133,7 +137,7 @@ ORDERS = [
      'Anh Lâm chở cái sọt nhựa to sau xe.', 2, None),
 ]
 KINDS = ('setup', 'buy', 'altar', 'bulk', 'return')
-STAGES = ('prep', 'haggle', 'pay', 'done')
+STAGES = ('prep', 'haggle', 'credit', 'pay', 'done')   # credit: a customer wants it on tab / walks off (0.9.16)
 RETURNS = [
     dict(npc=1, item='xoai', fault='buyer', title='Cô Năm trả xoài', opening='Hôm qua con bán xoài gì mà bổ ra sượng ngắt, chua lè!',
          look='Trái còn cứng, vỏ xanh, cuống tươi: xoài còn xanh, để thêm hai hôm là chín ngọt.',
@@ -240,6 +244,108 @@ DESK = [
                   dict(id='no', label='Khéo từ chối vì đang đông khách', hint='', effects={}, good=None,
                        outcome='Bà gật đầu, nhờ sạp khác.')],
          default='no'),
+]
+
+# The awkward people at the stall (0.9.16): more surprises, each with its own way out.
+DESK += [
+    dict(id='squeeze', title='Khách bóp nát cả rổ', emoji='🥭', npc=1, min_day=2, tone='tense', at='between', weight=3, mods=None,
+         text='Một bà khách bóp từng trái xoài chín, trái nào cũng lõm một vết ngón tay, rồi phán: “Mềm hết rồi, không mua.”',
+         options=[dict(id='ask', label='Nhờ khéo: “Cô chọn bằng mắt giúp con, bóp là dập đó”', hint='', effects=dict(xp=3), good=True,
+                       outcome='Bà khách khựng lại, mua hai trái cho đỡ ngại.'),
+                  dict(id='bear', label='Kệ, lựa trái dập ra sau', hint='Mất vài trái', effects=dict(stock={'xoai': -2}), good=None,
+                       outcome='Hai trái xoài thâm vết tay, chỉ còn bán xả.'),
+                  dict(id='snap', label='“Bóp nát rồi thì mua đi chứ!”', hint='', effects=dict(review=[2, 'Chưa mua đã bị quát, sạp gì mà dữ.']), good=False,
+                       outcome='Bà khách bỏ đi, vừa đi vừa chửi đổng cả dãy chợ nghe.')],
+         default='bear'),
+    dict(id='bite_swap', title='Cắn dở rồi đòi đổi', emoji='😬', npc=5, min_day=2, tone='tense', at='between', weight=2, mods=None,
+         text='Tuấn cầm trái xoài đã cắn một miếng quay lại: “Chua lè, đổi trái khác đi, không thì trả tiền.”',
+         options=[dict(id='taste', label='Nếm thử miếng khác trong rổ cùng lô, nói rõ lô này ngọt', hint='', effects=dict(xp=3), good=True,
+                       outcome='Tuấn nếm miếng bạn cắt: “Ờ ngọt thật, chắc tại em cắn chỗ gần vỏ.” Không đòi đổi nữa.'),
+                  dict(id='swap', label='Đổi cho xong chuyện', hint='Mất một trái', effects=dict(stock={'xoai': -1}), good=None,
+                       outcome='Tuấn cầm trái mới đi, còn nháy mắt: “Uy tín!”'),
+                  dict(id='no', label='“Cắn rồi ai đổi, trò gì vậy?”', hint='', effects=dict(review=[2, 'Mua trái chua mà không cho đổi, bán hàng kiểu gì vậy trời.']), good=False,
+                       outcome='Tuấn đăng story “né sạp này ra nha anh em”.')],
+         default='swap'),
+    dict(id='deliver', title='Đòi giao tận nhà miễn phí', emoji='🏢', npc=3, min_day=2, tone='gentle', at='between', weight=2, mods=None,
+         text='Chị Thảo gọi: “Giao giùm chị 2 ký cam lên tầng 7 chung cư, thang máy hỏng, free ship nha, khách quen mà.”',
+         options=[dict(id='fee', label='Nhận giao, xin 3 xu tiền công leo lầu', hint='', effects=dict(money=3, patience=-3), good=True,
+                       outcome='Chị Thảo chuyển 3 xu, còn khen “sòng phẳng, chị thích”.'),
+                  dict(id='free', label='Giao free cho vui lòng', hint='Leo 7 tầng', effects=dict(patience=-6, xp=2), good=None,
+                       outcome='Leo bảy tầng thở không ra hơi. Khách ở sạp chờ dài cổ.'),
+                  dict(id='no', label='Từ chối vì đang trông sạp', hint='', effects={}, good=None, outcome='Chị Thảo “ừ thôi” rồi đặt app.')],
+         default='no'),
+    dict(id='reweigh', title='Đòi cân lại ba lần', emoji='⚖️', npc=4, min_day=2, tone='tense', at='between', weight=3, mods=None,
+         text='Bà Hai đặt túi lên cân sạp, lên cân mình, rồi lên cân sạp bên cạnh: “Sao ba cái cân ra ba số? Cân nhà cháu có vấn đề!”',
+         options=[dict(id='weight', label='Đặt quả cân 1 ký lên cân của sạp cho bà xem', hint='', effects=dict(xp=4), good=True,
+                       outcome='Kim chỉ đúng một ký. Bà Hai gật gù: “Ừ, cân bà lệch rồi.”'),
+                  dict(id='extra', label='Bù thêm trái cho bà khỏi thắc mắc', hint='Mất một trái cam', effects=dict(stock={'cam': -1}), good=None,
+                       outcome='Bà Hai cầm thêm trái cam, vẫn lẩm bẩm “cân gì mà lạ”.'),
+                  dict(id='snap', label='“Bà muốn cân mấy lần nữa?”', hint='', effects=dict(review=[2, 'Hỏi cân lại mà bị gắt, chắc là cân điêu thật.']), good=False,
+                       outcome='Bà Hai kể khắp xóm là sạp “có tật giật mình”.')],
+         default='extra'),
+    dict(id='online_price', title='Khách giơ giá trên mạng', emoji='📲', npc=5, min_day=2, tone='gentle', at='between', weight=3, mods=None,
+         text='Tuấn giơ điện thoại: “Trên sàn có 8 xu/ký, free ship. Sạp bán 14 là chặt chém vl. Bán 8 đi em lấy 3 ký.”',
+         options=[dict(id='explain', label='Cho nếm, chỉ trái tươi, nói rõ giá chợ', hint='', effects=dict(xp=3), good=True,
+                       outcome='Tuấn nếm xong: “Ờ, hàng mạng toàn trái xanh ủ.” Mua một ký giá chợ.'),
+                  dict(id='cut', label='Bán 10 xu/ký cho được mối', hint='Lời mỏng', effects=dict(money=4), good=None,
+                       outcome='Bán được ba ký, gần như hòa vốn. Tuấn khoe cả phòng gym “deal xịn”.'),
+                  dict(id='mock', label='“Thế lên mạng mà mua”', hint='', effects=dict(review=[2, 'Hỏi giá tí mà chủ sạp cà khịa, bye.']), good=False,
+                       outcome='Tuấn đi thẳng, còn quay clip “review sạp thái độ”.')],
+         default='explain'),
+    dict(id='fish_spot', title='Hàng cá chiếm chỗ bày sạp', emoji='🐟', npc=0, min_day=2, tone='tense', at='open', weight=2, mods=None,
+         text='Sáng ra thấy bà bán cá kê thau cá lấn nửa chỗ sạp, nước tanh chảy tràn qua rổ cam: “Chỗ chung mà, ai tới trước thì bày.”',
+         options=[dict(id='board', label='Mời ban quản lý chợ xem sơ đồ chỗ ngồi', hint='', effects=dict(xp=4, patience=-2), good=True,
+                       outcome='Ban quản lý chỉ vạch sơn. Bà bán cá lầm bầm dời thau đi.'),
+                  dict(id='move', label='Kê rổ lên cao, nhường cho yên', hint='Chật chội cả buổi', effects=dict(patience=-4), good=None,
+                       outcome='Sạp chật như nêm, khách phải đứng nghiêng người lựa trái.'),
+                  dict(id='fight', label='Hất thau cá ra', hint='', effects=dict(money=-6, review=[1, 'Hai sạp đánh nhau vì chỗ ngồi, xấu hổ cả chợ.']), good=False,
+                       outcome='Cá nhảy tung tóe, hai bên cãi nhau ầm ĩ, bạn phải đền 6 xu con cá dập.')],
+         default='move'),
+    dict(id='beggar_kid', title='Em bé xin trái', emoji='🧒', npc=7, min_day=2, tone='gentle', at='between', weight=2, mods=None,
+         text='Một em bé lem luốc đứng nhìn rổ chuối mãi, rồi lí nhí: “Cô cho con xin một trái, con đói…”',
+         options=[dict(id='give', label='Cho em nải chuối chín kỹ, dặn đi học', hint='', effects=dict(stock={'chuoi': -1}, xp=4), good=True,
+                       outcome='Em bé ôm nải chuối chạy đi. Dì Tư nghe kể, gật đầu: “Làm vậy là đúng.”'),
+                  dict(id='one', label='Cho một trái cam', hint='', effects=dict(stock={'cam': -1}, xp=2), good=True,
+                       outcome='Em bé cảm ơn rối rít rồi chạy ra đầu chợ.'),
+                  dict(id='shoo', label='Xua đi cho khỏi phiền khách', hint='', effects={}, good=False,
+                       outcome='Em bé cúi đầu đi. Cô Năm đứng bên thở dài.')],
+         default='one'),
+    dict(id='drunk_credit', title='Ông say đòi mua chịu', emoji='🍺', npc=2, min_day=3, tone='tense', at='between', weight=2, mods=None,
+         text='Một ông say khướt bốc nguyên nải chuối: “Ghi nợ, mai trả! Không tin tao à? Tao ở đầu ngõ, ai chả biết!”',
+         options=[dict(id='calm', label='Mềm mỏng lấy lại nải chuối, nhờ bảo vệ đưa ông về', hint='', effects=dict(xp=4, patience=-3), good=True,
+                       outcome='Bảo vệ dìu ông đi. Nải chuối nguyên vẹn về rổ.'),
+                  dict(id='give', label='Cho ông cầm đi cho yên', hint='Mất nải chuối', effects=dict(stock={'chuoi': -1}), good=None,
+                       outcome='Ông đi lảo đảo, được hai bước đánh rơi nải chuối xuống cống.'),
+                  dict(id='shout', label='Quát đuổi', hint='', effects={}, luck=dict(p=0.5,
+                       win=dict(effects={}, good=None, outcome='Ông chửi đổng rồi bỏ đi.'),
+                       lose=dict(effects=dict(stock={'cam': -3}), good=False, outcome='Ông nổi điên đạp đổ rổ cam, lăn khắp lối.')))],
+         default='give'),
+    dict(id='pick30', title='Lựa nửa tiếng mua một trái', emoji='⏳', npc=1, min_day=2, tone='gentle', at='between', weight=3, mods=None,
+         text='Cô Năm lựa từng trái thanh long, lật lên lật xuống nửa tiếng, khách sau xếp hàng dài: “Từ từ, lựa cho kỹ chứ!”',
+         options=[dict(id='help', label='Lựa giúp cô trái đẹp nhất, mời khách sau vào', hint='', effects=dict(xp=3), good=True,
+                       outcome='Cô Năm ưng trái bạn chọn. Hàng khách chạy lại bình thường.'),
+                  dict(id='wait', label='Đứng đợi', hint='Khách sau sốt ruột', effects=dict(patience=-6), good=None,
+                       outcome='Cô Năm mua đúng một trái. Hai khách sau bỏ đi.'),
+                  dict(id='hurry', label='“Cô ơi, nhanh giùm, người ta chờ!”', hint='', effects=dict(review=[3, 'Mua có trái thanh long mà bị hối như chạy giặc.']), good=False,
+                       outcome='Cô Năm phật ý, lần sau sang sạp khác.')],
+         default='wait'),
+    dict(id='bags', title='Đòi thêm năm cái túi', emoji='🛍️', npc=3, min_day=2, tone='gentle', at='between', weight=2, mods=None,
+         text='Chị Thảo mua đúng một ký cam: “Cho chị thêm năm cái túi ni-lông, túi to nha, để đựng đồ ở văn phòng.”',
+         options=[dict(id='one', label='Đưa một túi, mời chị dùng túi vải lần sau', hint='', effects=dict(xp=2), good=True,
+                       outcome='Chị Thảo cười: “Ờ, túi vải cũng xinh.”'),
+                  dict(id='five', label='Đưa luôn năm cái', hint='Tốn túi', effects=dict(money=-1), good=None, outcome='Chị Thảo ôm xấp túi đi, không mua thêm gì.'),
+                  dict(id='no', label='“Túi cũng tiền đó chị”', hint='', effects=dict(review=[3, 'Xin cái túi mà cũng kể lể, keo ghê.']), good=False,
+                       outcome='Chị Thảo bĩu môi.')],
+         default='one'),
+    dict(id='change_big', title='Tờ 500 mua một trái cam', emoji='💴', npc=5, min_day=2, tone='gentle', at='between', weight=2, mods=None,
+         text='Tuấn đưa tờ 500 xu mua đúng một trái cam 3 xu: “Thối đi, em không có tiền lẻ.” Túi tiền lẻ gần cạn.',
+         options=[dict(id='change', label='Chạy đổi tiền ở sạp bên, thối đủ', hint='Mất thời gian', effects=dict(patience=-4, xp=2), good=True,
+                       outcome='Đổi được tiền lẻ, thối đủ 497 xu. Tuấn gật gù.'),
+                  dict(id='later', label='Cho cầm trái cam, mai trả 3 xu', hint='', effects={}, luck=dict(p=0.6,
+                       win=dict(effects=dict(money=3), good=True, outcome='Hôm sau Tuấn ghé trả 3 xu, còn mua thêm nải chuối.'),
+                       lose=dict(effects=dict(stock={'cam': -1}), good=None, outcome='Tuấn quên mất tiêu. Coi như cho trái cam.'))),
+                  dict(id='no', label='“Không có lẻ thì thôi”', hint='', effects={}, good=None, outcome='Tuấn nhún vai đi mất.')],
+         default='later'),
 ]
 
 # ---------------------------------------------------------------- situations (sit_ engine)
@@ -492,6 +598,10 @@ def on_task(s: dict, c: dict, t: dict) -> None:
         t['known'] = True
         if t['status'] == 'new':
             t['status'] = 'understood'
+    tw = twist_of(t)
+    if tw:
+        # Customers made before 0.9.16 have no twist; a new one carries it from the start (and it must match twist_of).
+        t['twist'], t['tw'] = tw, dict(state='wait', choice=None)
 
 
 # ================================================================ the stall's data
@@ -505,8 +615,8 @@ def _fresh_today(day: int) -> dict:
 
 def initial() -> dict:
     return dict(v=1, intro=False, seeded=False, stall=_fresh_stall(0), scale=dict(off=0, day=0), bruise={}, regulars={},
-                today=_fresh_today(0), stats=dict(sold_g=0, customers=0, over_xu=0, xa_sold=0, rotted=0, returns=0, fair=0),
-                desk=kit.desk_initial())
+                today=_fresh_today(0), stats=dict(sold_g=0, customers=0, over_xu=0, xa_sold=0, rotted=0, returns=0, fair=0,
+                                                  stolen=0, dashed=0, caught=0), desk=kit.desk_initial(), debts=[], trouble=folk.trouble_initial())
 
 
 def _data(c: dict) -> dict:
@@ -519,6 +629,8 @@ def _data(c: dict) -> dict:
             d[k].setdefault(kk, v)
     for k, v in kit.desk_initial().items():
         d['desk'].setdefault(k, copy.deepcopy(v))
+    for k, v in folk.trouble_initial().items():
+        d['trouble'].setdefault(k, copy.deepcopy(v))
     return d
 
 
@@ -532,7 +644,8 @@ def drift_of(day: int) -> int:
 FREE = ('tc_intro',)
 # Picking a fruit is a moment; the weighing is the customer's turn at the stall.
 NO_TICK = ('tc_intro', 'tc_short', 'tc_cover', 'tc_scale_test', 'tc_pick', 'tc_tare', 'tc_unpick', 'tc_deal', 'tc_pay', 'tc_look', 'tc_desk',
-           'tc_decline')
+           'tc_decline', 'tc_offer', 'tc_credit', 'tc_chase', 'tc_trouble')
+FREE = FREE + ('tc_chase',)
 PHYSICAL = ('tc_pick', 'tc_sort', 'tc_weigh', 'tc_xa', 'tc_scale_fix')
 
 
@@ -544,7 +657,10 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     desk = d['desk']
     if name == 'tc_desk':
         return kit.desk_choose(s, c, ID, desk, DESK, p.get('option'), hook=_desk_hook)
+    if name in ('tc_chase', 'tc_trouble'):
+        return ACTIONS[name](s, c, d, p)
     kit.desk_block(desk, 'Có chuyện ở sạp, quyết xong rồi bán tiếp nhé.')
+    kit.need(d['trouble']['ev'] is None, 'Có chuyện ở sạp: xử lý trước đã.', 'surprise_open')
     fn = ACTIONS.get(name)
     kit.need(fn, 'Thao tác không có ở sạp trái cây.')
     result = fn(s, c, d, p)
@@ -559,6 +675,9 @@ def _after(s: dict, c: dict, d: dict, result: dict) -> None:
     if desk['fired'] > fired and desk['ev']:
         x = kit.desk_script(DESK, desk['ev']['script'])
         result['message'] = f'{result.get("message", "")} 🔔 {x["emoji"]} {x["title"]}: quyết giúp nhé.'.strip()
+        result['surprise'] = True
+    elif _trouble_tick(s, c, d):
+        result['message'] = f'{result.get("message", "")} 🔔 Có chuyện ở sạp!'.strip()
         result['surprise'] = True
 
 
@@ -779,10 +898,14 @@ def _weigh(s, c, d, p):
             cq.slip(t, 'short_' + ln['i'], 1, f'Tôi mua {kg_text(ln["kg"])} mà cân có {kg_text(share)}.', 'cân chưa đủ')
     t['weighed'] = shown
     t['price'] = bill(c, d, t)
-    h = t.get('_haggle')
+    h = _haggle_of(t)
     if h:
         t['offer'] = max(1, t['price'] * h['pct'] // 100)
         t['stage'] = 'haggle'
+        if _tw(t, 'dear'):
+            t['tw']['state'] = 'done'
+            ask = _dear_line(c, t)
+            return dict(message=f'⚖️ Cân: {kg_text(shown)} · {t["price"]} xu. {who}: {ask} “{t["offer"]} xu thôi!”', surprise=True)
         ask = {'meet': 'Bớt chút đi, tính cho tròn!', 'extra': 'Mua nhiều vậy mà không cho thêm gì à?',
                'hold': 'Đắt thế, bớt đi chứ?'}[h['wants']]
         return dict(message=f'⚖️ Cân: {kg_text(shown)} · {t["price"]} xu. {who}: “{t["offer"]} xu thôi! {ask}”')
@@ -795,6 +918,13 @@ def _share(shown: int, real: int, grams: int) -> int:
 
 
 def _to_pay(c: dict, t: dict, head: str) -> dict:
+    st = _tw(t, 'tab', 'dash')
+    if st and st['state'] == 'wait':
+        # Before the money: this customer wants it on credit / walks off with the bag.
+        st['state'] = 'on'
+        t['stage'] = 'credit'
+        line = (TAB_LINES if t['twist']['kind'] == 'tab' else DASH_LINES)[t['twist']['n']]
+        return dict(message=f'{head} {_who(t)}: {line}', surprise=True)
     t['stage'] = 'pay'
     t['cash'] = till.new(t['price'], t['id'], c=c, t=t)
     return dict(message=f'{head} Khách đưa {sum(t["cash"]["tender"])} xu: thối lại cho đúng.')
@@ -802,9 +932,10 @@ def _to_pay(c: dict, t: dict, head: str) -> dict:
 
 def _deal(s, c, d, p):
     t = _task(c, p, ('buy', 'altar', 'bulk'))
-    kit.need(t['stage'] == 'haggle' and t.get('_haggle'), 'Khách không trả giá.')
+    h = _haggle_of(t)
+    kit.need(t['stage'] == 'haggle' and h, 'Khách không trả giá.')
     deal = kit.one_of(p.get('deal'), DEALS, 'Chọn cách trả giá.')
-    h, who, full = t['_haggle'], _who(t), t['price']
+    who, full = _who(t), t['price']
     t['deal'] = deal
     d['today']['bargains'] += 1
     if deal == 'hold':
@@ -858,10 +989,7 @@ def _pay(s, c, d, p):
     st = till.settle(s, c, t, rec, react, who)
     net = react['pay'] - st['loss']
     grams = sum(x['g'] for x in t['bag'])
-    d['today']['sold_g'] += grams
-    d['stats']['sold_g'] += grams
-    d['today']['customers'] += 1
-    d['stats']['customers'] += 1
+    _sold(d, t)
     over = shown_grams(d, t) - grams
     if over > 0:
         cut = t['price'] - int(round(_value(c, t['bag'])))
@@ -997,11 +1125,286 @@ def _desk_hook(s: dict, c: dict, key: str, v) -> str | None:
     return None
 
 
+# ================================================================ the awkward people at the stall (0.9.16)
+# A customer made from 0.9.16 on may carry a twist (twist_of, from the task id: never regenerated, only checked):
+# 'dear' calls the price a rip-off and bargains; 'tab' wants it on credit; 'dash' walks off with the bag
+# "to fetch the wallet". The player answers in their own way (a price they name, a deposit they ask
+# for, holding the bag, calling the market guard); each person decides from hidden traits (street_folk).
+TWISTS = ('dear', 'tab', 'dash')
+TW_STATES = ('wait', 'on', 'done')
+CREDIT = {'tab': ('tab', 'part', 'refuse'), 'dash': ('hold', 'trust', 'call')}
+DEAR_LINES = (
+    '“Sạp đầu chợ bán {kg} xu/ký thôi, ở đây cắt cổ vậy?”',
+    '“Trên mạng có {kg} xu/ký, giao tận nhà. Bán đắt vl.”',
+    '“Hôm qua mua có {kg} xu/ký, nay lên giá hả? Ăn cướp à?”',
+    '“Siêu thị còn rẻ hơn, {kg} xu/ký. Bớt đi không tôi đi chỗ khác.”',
+)
+TAB_LINES = (
+    '“Quên ví ở nhà rồi, ghi nợ đi, mai trả.”',
+    '“Mua ở đây bao năm rồi, ghi sổ tí có sao đâu.”',
+    '“Cuối tháng lương về trả một thể, ok không?”',
+    '“Ghi nợ đi em, chị quỵt đâu mà lo, hihi.”',
+)
+DASH_LINES = (
+    '“Để chị chạy ra xe lấy ví nha…” rồi xách túi đi thẳng.',
+    '“Ơ quên ví, để anh ra cây ATM…” vừa nói vừa bước nhanh.',
+    '“Tí quay lại trả nha!” Túi trái đã trên tay.',
+    'Khách vừa nghe điện thoại vừa lùi dần ra đường, túi trái vẫn cầm chặt.',
+)
+
+
+def twist_of(t: dict) -> dict | None:
+    """The twist a customer carries (a pure function of the job: the validator checks a stored twist against it)."""
+    if t.get('day', 1) < 2 or t.get('kind') not in ('buy', 'altar'):
+        return None
+    r, n = folk.roll('tc-twist', t['id']), folk.roll('tc-twist-n', t['id'])
+    if t['kind'] == 'altar':
+        kind = 'tab' if r < 25 else None
+    elif t.get('_haggle'):
+        kind = 'tab' if r < 20 else 'dash' if r < 32 else None
+    else:
+        kind = 'dear' if r < 30 else 'tab' if r < 45 else 'dash' if r < 55 else None
+    if not kind:
+        return None
+    tw = dict(kind=kind, n=n % 4)
+    if kind == 'dear':
+        tw.update(pct=75 + n % 14, wants=('meet', 'extra', 'hold')[n % 3])
+    return tw
+
+
+def _tr(t: dict) -> dict:
+    i = _npc_index(t)
+    return folk.traits(t['id'], PEOPLE[i][3] if 0 <= i < len(PEOPLE) else None)
+
+
+def _tw(t: dict, *kinds) -> dict | None:
+    tw = t.get('twist')
+    return t.get('tw') if isinstance(tw, dict) and tw.get('kind') in kinds else None
+
+
+def _haggle_of(t: dict) -> dict | None:
+    """How this customer bargains: the order's own haggle, or a 'dear' twist (the price called a rip-off)."""
+    if t.get('_haggle'):
+        return t['_haggle']
+    tw = t.get('twist')
+    return dict(pct=tw['pct'], wants=tw['wants']) if isinstance(tw, dict) and tw.get('kind') == 'dear' else None
+
+
+def _dear_line(c: dict, t: dict) -> str | None:
+    tw = t.get('twist')
+    if not (isinstance(tw, dict) and tw.get('kind') == 'dear' and t['bag']):
+        return None
+    item = t['bag'][0]['i']
+    return DEAR_LINES[tw['n']].format(kg=max(1, _price_kg(c, item) * tw['pct'] // 100))
+
+
+def _street_trust(c: dict, delta: int) -> None:
+    box = c.get('incidents')
+    if isinstance(box, dict) and isinstance(box.get('trust'), int):
+        box['trust'] = max(0, min(100, box['trust'] + delta))
+
+
+def _offer(s, c, d, p):
+    """The player names the price: the customer decides by themselves (budget, stinginess, mood)."""
+    t = _task(c, p, ('buy', 'altar', 'bulk'))
+    h = _haggle_of(t)
+    kit.need(t['stage'] == 'haggle' and h, 'Khách không trả giá.')
+    price = kit.integer(p.get('price'), 1, 10 ** 4)
+    hg = t.setdefault('hg', dict(tries=0))
+    r = folk.haggle(_tr(t), t['price'], t['offer'], price, hg['tries'])
+    who = _who(t)
+    d['today']['bargains'] += 1
+    if r['kind'] == 'counter':
+        hg['tries'] += 1
+        t['offer'] = r['counter']
+        return dict(message=f'🤝 {who}: “{price} xu vẫn đắt. {r["counter"]} xu, chốt không?”')
+    if r['kind'] == 'walk':
+        for x in list(t['bag']):
+            _put_back(c, x['i'], x['e'], x['c']) if not x['b'] else kit.waste(c, x['i'], 1, x['c'], 'Trái dập lựa ra')
+        t['bag'], t['cost'], t['deal'] = [], 0, 'own'
+        react = cq.react(s, c, t, 0, who=who)
+        msg = _finish(s, c, d, t, 0, f'{who} đặt túi xuống: “Thôi, đi chỗ khác.” {react["message"]}'.strip())
+        return dict(message='🚶 ' + msg, correct=False)
+    t['price'], t['deal'] = price, 'own'
+    line = f'{who} cười tươi: “Vậy mới được chứ!”' if r['kind'] == 'glad' else f'{who} gật: “Ừ, {price} xu.”'
+    if price < t['cost']:
+        line += ' (bán dưới giá vốn)'
+    return _to_pay(c, t, f'🤝 {line}')
+
+
+def _credit(s, c, d, p):
+    """A customer who wants it on credit, or walks off with the bag: the player's move."""
+    t = _task(c, p, ('buy', 'altar', 'bulk'))
+    st = _tw(t, 'tab', 'dash')
+    kit.need(st and st['state'] == 'on' and t['stage'] == 'credit', 'Khách không xin nợ.')
+    kind = t['twist']['kind']
+    choice = kit.one_of(p.get('choice'), CREDIT[kind], 'Chọn cách xử lý.')
+    tr, who, price = _tr(t), _who(t), t['price']
+    cash = price * (tr['budget'] + 20) // 100
+    st.update(state='done', choice=choice)
+
+    def till_now(line):
+        t['stage'] = 'pay'
+        t['cash'] = till.new(price, t['id'], c=c, t=t)
+        return dict(message=f'{line} Khách đưa {sum(t["cash"]["tender"])} xu: thối lại cho đúng.')
+
+    def goes_home(line, back=True, review=None):
+        # No sale: the fruit goes back in its baskets (or is gone with a runner).
+        if back:
+            for x in list(t['bag']):
+                _put_back(c, x['i'], x['e'], x['c']) if not x['b'] else kit.waste(c, x['i'], 1, x['c'], 'Trái dập lựa ra')
+            t['bag'], t['cost'] = [], 0
+        if review:
+            kit.review(s, c, t['npc'], review[0], review[1], t['id'])
+        react = cq.react(s, c, t, 0, who=who)
+        return dict(message=_finish(s, c, d, t, 0, f'{line} {react["message"]}'.strip()), correct=False)
+
+    if kind == 'tab':
+        if choice == 'refuse':
+            if cash >= price:
+                return till_now(f'🙅 Không bán chịu. {who} lục túi: “Ơ còn tiền nè, thôi trả luôn.”')
+            return goes_home(f'🙅 Không bán chịu. {who} đặt túi xuống: “Keo vl, đi chỗ khác.”')
+        kit.need(len(folk.open_debts(d['debts'])) < folk.DEBT_MAX, 'Sổ nợ đầy rồi: đòi bớt nợ cũ đã.')
+        now = min(kit.integer(p.get('amount'), 1, price), cash) if choice == 'part' else 0
+        react = cq.react(s, c, t, now, who=who)
+        rest = max(0, price - react['cut'] - now)
+        if rest:
+            d['debts'] = folk.trim_debts(d['debts'] + [folk.debt_line(f'no-{t["id"]}', _npc_index(t), who, t['id'], c['day'], rest, t['title'])])
+        _sold(d, t)
+        head = f'💵 {who} đưa trước {react["pay"]} xu' if now else f'📒 Ghi nợ cho {who}'
+        return dict(message=_finish(s, c, d, t, react['pay'], (f'{head}, còn nợ {rest} xu. ' + react['message']).strip()))
+    # dash: the bag is already walking away
+    if choice == 'hold':
+        if tr['honest'] >= 40:
+            return till_now(f'✋ Bạn giữ túi lại. {who} quay ra xe lấy ví, lát sau trở lại.')
+        if tr['proud'] > 60:
+            return goes_home(f'✋ Bạn giữ túi lại. {who}: “Nghi người ta ăn quỵt à? Không mua nữa!”',
+                             review=(2, 'Mua có túi trái mà bị giữ lại như kẻ trộm, bực mình.'))
+        return till_now(f'✋ Bạn giữ túi lại. {who} lầm bầm rồi móc tiền ra.')
+    if choice == 'trust':
+        if tr['honest'] >= 55:
+            return till_now(f'🙂 Bạn để khách cầm đi. Mười phút sau {who} quay lại thật.')
+        cost = t['cost']
+        d['stats']['dashed'] += 1
+        _sold(d, t)
+        return goes_home(f'🏃 Bạn để khách cầm đi. {who} đi mất hút, mất trắng túi trái ({cost} xu tiền vốn).', back=False)
+    # call the market guard
+    if tr['honest'] < 55:
+        d['stats']['caught'] += 1
+        return till_now(f'👮 Bảo vệ chợ chặn lại ở cổng. {who} đỏ mặt quay lại trả tiền.')
+    t['mistakes'] += 1
+    cq.slip(t, 'accuse', 1, 'Chạy ra xe lấy ví thôi mà gọi bảo vệ như bắt trộm, xấu hổ ghê.', 'nghi oan khách')
+    return till_now(f'👮 Bảo vệ chợ chặn lại. {who} giơ cái ví: “Lấy ví thật mà, làm gì dữ vậy!”')
+
+
+def _sold(d: dict, t: dict) -> None:
+    grams = sum(x['g'] for x in t['bag'])
+    d['today']['sold_g'] += grams
+    d['stats']['sold_g'] += grams
+    d['today']['customers'] += 1
+    d['stats']['customers'] += 1
+
+
+def _chase(s, c, d, p):
+    return folk.chase_action(s, c, ID, d['debts'], p, lambda i: PEOPLE[i][3] if 0 <= i < len(PEOPLE) else None)
+
+
+# ---------------------------------------------------------------- troubles at the stall: a runtime scene with the player's own move
+TROUBLE = ('thief', 'shame')
+TROUBLE_CHOICES = {'thief': ('remind', 'demand', 'guard', 'ignore'), 'shame': ('scale', 'taste', 'argue', 'ignore')}
+THIEVES = ('Một bà khách lạ', 'Một cậu thanh niên đội mũ lưỡi trai', 'Hai cô bé mặc đồng phục', 'Một ông đeo kính râm')
+
+
+def _trouble_tick(s: dict, c: dict, d: dict) -> bool:
+    tb = d['trouble']
+    if not d['stall']['open'] or d['desk']['ev'] is not None or not folk.trouble_due(tb, ID, c['day'], c['day_completed'], 45):
+        return False
+    k = 'thief' if folk.roll('tc-trouble', c['day'], tb['fired']) < 65 else 'shame'
+    if k == 'thief':
+        have = [x['id'] for x in FRUITS if kit.stock(c, x['id']) >= 2]
+        if not have:
+            return False
+        item = have[folk.roll('tc-thief-item', c['day'], tb['seq']) % len(have)]
+        qty = 1 + folk.roll('tc-thief-qty', c['day'], tb['seq']) % 3
+        cost = kit.take(c, item, qty)
+        f = FRUIT[item]
+        value = max(1, qty * f['g'] * _price_kg(c, item) // 1000)
+        facts = dict(item=item, qty=qty, value=value, cost=cost, who=THIEVES[folk.roll('tc-thief-who', c['day'], tb['seq']) % len(THIEVES)])
+        text = f'{facts["who"]} lựa lựa rồi nhét {qty} {f["unit"]} {_lower(f["name"])} vào túi riêng, lững thững bước đi.'
+    else:
+        facts = dict(who='Một chị khách lạ', item='', qty=0, value=0, cost=0)
+        text = 'Một chị khách giơ điện thoại quay sạp: “Cả nhà xem nè, trái cây gì mà bán đắt vl, chợ mạng rẻ bằng nửa!”'
+    folk.trouble_open(tb, k, c['day'], 0, facts)
+    kit.log(s, c, 'surprise', text, kit.npc_id(ID, 0), tb['ev']['id'])
+    return True
+
+
+def _trouble(s, c, d, p):
+    tb = d['trouble']
+    ev = tb['ev']
+    kit.need(ev, 'Không có chuyện gì ở sạp.')
+    choice = kit.one_of(p.get('choice'), TROUBLE_CHOICES[ev['kind']], 'Chọn cách xử lý.')
+    f, tr = ev['facts'], folk.traits(ev['id'], None)
+    who = f['who']
+    good = None
+    if ev['kind'] == 'thief':
+        value, item, qty = f['value'], f['item'], f['qty']
+        got = 0
+        if choice == 'remind':
+            if tr['proud'] < 60 and tr['honest'] >= 35:
+                got, good, out = value, True, f'Bạn nhắc khéo: “Chị ơi, quên tính tiền kìa.” {who} đỏ mặt trả {value} xu.'
+            else:
+                good, out = None, f'Bạn nhắc khéo. {who}: “Quên cái gì? Nói vậy là vu khống đó nha!” rồi đi thẳng.'
+        elif choice == 'demand':
+            asked = kit.integer(p.get('amount'), 1, value * 3)
+            if asked > value * 3 // 2:
+                _street_trust(c, -1)
+                good, out = False, f'Bạn đòi {asked} xu. Người xung quanh xì xào “bắt đền cắt cổ”, {who} được thể cãi lấy cãi để rồi bỏ đi.'
+            elif tr['honest'] >= 25 or asked <= value:
+                got, good, out = asked, True, f'Bạn giữ lại, đòi {asked} xu. {who} lí nhí xin lỗi, trả đủ.'
+            else:
+                good, out = None, f'{who}: “Làm như ghê lắm!” rồi giằng túi chạy mất.'
+        elif choice == 'guard':
+            for x in c['tasks']:
+                if x.get('career') == ID and x['status'] not in ('completed', 'referred', 'cancelled') and 'patience' in x:
+                    x['patience'] = max(25, x['patience'] - 6)
+            if folk.roll('tc-guard', ev['id']) < 60:
+                got, good, out = value, True, f'Bảo vệ chợ chặn ở cổng. {who} trả {value} xu, bị ghi tên vào sổ.'
+            else:
+                good, out = None, f'Bảo vệ tới thì {who} đã lẫn vào dòng người. Khách chờ ở sạp mặt dài ra.'
+        else:
+            out = f'Bạn làm ngơ. Sạp bên cạnh lắc đầu: “Thế mai nó lại tới.” Mất {qty} {FRUIT[item]["unit"]} {_lower(FRUIT[item]["name"])}.'
+        if got:
+            kit.money(s, c, got, f'{who} trả tiền trái lấy lén'[:120], ev['id'], 'sales')
+        else:
+            kit.waste(c, item, qty, f['cost'], 'Bị chôm')
+            d['stats']['stolen'] += qty
+    else:
+        if choice == 'scale':
+            if tr['honest'] >= 40:
+                good, out = True, 'Bạn mời cân lại bằng cân đối chứng, chỉ bảng giá. Chị khách tắt máy: “Ờ, trái ngon thật, giá vậy cũng được.”'
+            else:
+                good, out = None, 'Bạn mời cân lại. Chị khách vẫn đăng clip, nhưng bên dưới có người bênh sạp.'
+        elif choice == 'taste':
+            c['xp'] += 3
+            kit.take(c, 'cam', 1) if kit.stock(c, 'cam') else None
+            good, out = True, 'Bạn bổ trái cam mời nếm. Chị khách nhai nhai: “Ngọt thật, thôi xóa clip.” Còn mua một ký.'
+        elif choice == 'argue':
+            _street_trust(c, -2)
+            kit.review(s, c, kit.npc_id(ID, 1), 2, 'Hôm qua có người quay clip sạp này, chủ sạp cãi um cả chợ.', ev['id'])
+            good, out = False, 'Hai bên cãi nhau to, clip có thêm đoạn “chủ sạp nổi điên”. Cô Năm lắc đầu.'
+        else:
+            good, out = None, 'Bạn kệ. Clip có vài chục lượt xem rồi chìm.'
+    folk.trouble_close(tb, out, good, choice, 'Kẻ chôm trái' if ev['kind'] == 'thief' else 'Bị quay clip “bán đắt”', '🥷' if ev['kind'] == 'thief' else '📱')
+    return dict(message=('🥷 ' if ev['kind'] == 'thief' else '📱 ') + out, correct=good is not False, celebrate=good is True)
+
+
 ACTIONS = {
     'tc_cover': _cover, 'tc_scale_test': _scale_test, 'tc_scale_fix': _scale_fix, 'tc_sort': _sort, 'tc_open': _open,
     'tc_pick': _pick_fruit, 'tc_unpick': _unpick, 'tc_tare': _tare, 'tc_weigh': _weigh, 'tc_deal': _deal, 'tc_decline': _decline,
     'tc_pay': _pay, 'tc_look': _look, 'tc_return': _settle_return, 'tc_xa': _xa,
     'tc_short': lambda s, c, d, p: _short(s, c, p),
+    'tc_offer': _offer, 'tc_credit': _credit, 'tc_chase': _chase, 'tc_trouble': _trouble,
 }
 
 
@@ -1136,7 +1539,14 @@ def public_task(t: dict) -> dict:
             del v[k]
     if not v['known']:
         v['needs'] = None
-    v['haggles'] = bool(t.get('_haggle')) and t['stage'] in ('haggle', 'pay', 'done')
+    v['haggles'] = bool(_haggle_of(t)) and t['stage'] in ('haggle', 'credit', 'pay', 'done')
+    tw = t.get('twist')
+    v.pop('twist', None)
+    v.pop('tw', None)
+    v.pop('hg', None)
+    if isinstance(tw, dict) and t['tw']['state'] != 'wait' and tw['kind'] in ('tab', 'dash'):
+        v['twist'] = dict(kind=tw['kind'], state=t['tw']['state'], choice=t['tw']['choice'],
+                          line=(TAB_LINES if tw['kind'] == 'tab' else DASH_LINES)[tw['n']])
     if t['kind'] == 'return' and t.get('look'):
         v['seen'] = t['_look']
     v['cash'] = till.public(t.get('cash'))
@@ -1156,13 +1566,14 @@ def public_data(c: dict) -> dict:
                 scale=dict(off=sc.get('off', 0), tested=bool(d['stall'].get('tested'))),   # a drifted needle shows on the empty scale
                 mod=dict(id=mod['id'], emoji=mod['emoji'], label=mod['label'], hint=mod['hint']),
                 today=d['today'], stats=d['stats'], regulars={k: dict(v) for k, v in d['regulars'].items()},
-                desk=kit.desk_public(d['desk'], DESK, ID))
+                desk=kit.desk_public(d['desk'], DESK, ID), debts=folk.public_debts(d['debts']),
+                trouble=dict(ev=d['trouble']['ev'], last=d['trouble']['last']))
 
 
 def content() -> dict:
     return dict(fruits=[dict(id=x['id'], name=x['name'], emoji=x['emoji'], unit=x['unit'], g=x['g'], kg=x['kg'], stages=list(x['stages']))
                         for x in FRUITS], stages=STAGE_LABEL, cheap=list(CHEAP), xa_off=XA_OFF, basket=BASKET, short=SHORT,
-                denoms=list(till.DENOMS), intro=INTRO, deals=list(DEALS),
+                denoms=list(till.DENOMS), intro=INTRO, deals=list(DEALS), debt_max=folk.DEBT_MAX,
                 people=[dict(name=p[0], role=p[1], note=p[2]) for p in PEOPLE])
 
 
@@ -1214,11 +1625,21 @@ def validate_task(t: dict, original: dict) -> None:
         if t.get(k) is not None:
             kit.integer(t[k], 0, 10 ** 6)
     kit.integer(t.get('cost'), 0, 10 ** 6)
-    kit.need(t.get('deal') in (None, *DEALS), 'Cách trả giá sai.')
+    kit.need(t.get('deal') in (None, *DEALS, 'own'), 'Cách trả giá sai.')
     kit.need(t.get('choice') in (None, 'decline', 'swap', 'refund', 'explain', 'argue'), 'Cách giải quyết sai.')
     kit.need(t.get('extra') in (None, 'cam'), 'Quà tặng thêm sai.')
     till.validate(t.get('cash'), t)
     kit.need(t.get('story') is None or (isinstance(t['story'], str) and len(t['story']) <= 300), 'Chuyện khách quen sai.')
+    # 0.9.16 fields: absent on older customers; when present they must be what twist_of gives and well formed.
+    if 'twist' in t or 'tw' in t:
+        tw, st = t.get('twist'), t.get('tw')
+        kit.need(tw is not None and tw == twist_of(t), 'Chuyện của khách không khớp.')
+        kit.need(isinstance(st, dict) and set(st) == {'state', 'choice'} and st['state'] in TW_STATES
+                 and st['choice'] in (None, *CREDIT.get(tw['kind'], ())), 'Chuyện của khách sai.')
+    kit.need(t.get('stage') != 'credit' or (_tw(t, 'tab', 'dash') or {}).get('state') == 'on', 'Khách xin nợ sai.')
+    if 'hg' in t:
+        kit.need(isinstance(t['hg'], dict) and set(t['hg']) == {'tries'}, 'Trả giá sai.')
+        kit.integer(t['hg']['tries'], 0, 9)
 
 
 def validate_data(c: dict) -> None:
@@ -1247,6 +1668,8 @@ def validate_data(c: dict) -> None:
         for v in d[k].values():
             kit.integer(v, 0, 10 ** 9)
     kit.desk_validate(d['desk'], DESK)
+    folk.validate_debts(d['debts'], len(PEOPLE), kit.need)
+    folk.validate_trouble(d['trouble'], TROUBLE, kit.need)
 
 
 # ================================================================ the plugin spec

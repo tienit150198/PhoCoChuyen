@@ -84,3 +84,54 @@ export const kitActions={
   async intro(d,el,x){x.ui.intro=true;x.render();},
   async introClose(d,el,x){x.ui.intro=false;x.render();},
 };
+
+/* ------------------------------------------------------------ the player's own move (0.9.16) */
+const amtOf=(x,key,def)=>{const v=(x.ui.amt??={})[key];return v===undefined||v===''?def:Number(v);};
+/** A number the player sets (− / typed / +) and one button that sends it: a price, a deposit, a fee. */
+export function amountBox(x,key,def,{min=1,max=500,step=1,label='',send='Gửi',cmd,payload={},field='price',unit='xu'}={}){
+  const v=Math.max(min,Math.min(max,amtOf(x,key,def)));
+  const d=(n)=>act(x,n<0?'−':'+','amtStep',{key,delta:n*step,min,max,def},'ghost sk-step',` aria-label="${n<0?'Bớt':'Thêm'} ${step} ${unit}"`);
+  return `<div class="sk-amt">${label?`<span class="sk-amt-label">${x.esc(label)}</span>`:''}<div class="sk-amt-row">${d(-1)}<label class="sk-amt-in"><input type="number" inputmode="numeric" min="${min}" max="${max}" value="${v}" data-sk-amt="${x.esc(key)}" aria-label="${x.esc(label||'Số tiền')}"><small>${x.esc(unit)}</small></label>${d(1)}</div>
+    ${act(x,send,'amtSend',{key,def,cmd,field,extra:JSON.stringify(payload)},'primary sk-amt-go')}</div>`;
+}
+/** Keeps a typed amount (call from the module's input hook). */
+export function kitInput(el,x){
+  const key=el.dataset?.skAmt;if(!key)return false;
+  (x.ui.amt??={})[key]=el.value===''?'':Math.floor(Number(el.value)||0);
+  return true;
+}
+/** A card where someone is in your face: their words, and the ways to answer (and an amount box). */
+export function choiceCard(x,cls,emoji,title,line,opts,extra=''){
+  const btn=o=>x.cmd(`<span class="sk-opt-label">${o.label}</span>${o.sub?`<small>${x.esc(o.sub)}</small>`:''}`,o.cmd,o.payload,`sk-opt ${o.cls||''}`,!!o.dis);
+  return `<section class="sk-event tense sk-twist ${cls}" role="group"><div class="sk-ev-head"><span aria-hidden="true">${emoji}</span><div><small>${x.esc(title)}</small>${line?`<h3>${x.esc(line)}</h3>`:''}</div></div>
+    <div class="sk-opts">${opts.map(btn).join('')}</div>${extra}</section>`;
+}
+/** The debt book: who owes what; chase (nhẹ / thẳng / người nhà, and how much now) or write off. */
+export function debtBook(x,debts,cmd){
+  const open=(debts||[]).filter(d=>d.state==='open');
+  if(!(debts||[]).length)return '';
+  const rows=open.map(d=>{const owe=d.owed-d.paid,today=d.on===x.room.day&&d.tries>0;
+    const tone=(t,l)=>act(x,l,'debtChase',{debt:d.id,tone:t,key:`debt-${d.id}`,def:owe,cmd},'small');
+    return `<li class="sk-debt"><div class="row spread"><b>${x.esc(d.who)}</b><span class="tag amber">${x.fmt(owe)} xu</span></div>
+      <small class="muted">${x.esc(d.what)} · ngày ${d.day}${d.tries?` · đã đòi ${d.tries} lần`:''}</small>${d.last?`<p class="small">${x.esc(d.last)}</p>`:''}
+      ${today?'<p class="small muted">Hôm nay đòi rồi, mai đòi tiếp.</p>':`<div class="sk-amt-row">${act(x,'−','amtStep',{key:`debt-${d.id}`,delta:-1,min:1,max:owe,def:owe},'ghost sk-step')}<label class="sk-amt-in"><input type="number" inputmode="numeric" min="1" max="${owe}" value="${Math.min(owe,amtOf(x,`debt-${d.id}`,owe))}" data-sk-amt="debt-${x.esc(d.id)}" aria-label="Đòi bao nhiêu"><small>xu</small></label>${act(x,'+','amtStep',{key:`debt-${d.id}`,delta:1,min:1,max:owe,def:owe},'ghost sk-step')}</div>
+      <div class="sk-row">${tone('soft','🙂 Nhắc nhẹ')}${tone('straight','🗣️ Nói thẳng')}${tone('family','👪 Nhờ người nhà')}${x.confirmCmd('🤝 Xóa nợ',cmd,{debt:d.id,forgive:true},`Xóa khoản ${owe} xu cho ${d.who}?`,'small ghost')}</div>`}</li>`;}).join('');
+  const done=(debts||[]).filter(d=>d.state!=='open').slice(-3).map(d=>`<li class="muted small">${x.esc(d.who)} · ${d.state==='paid'?'✅ đã trả':d.state==='gone'?'👻 mất':'🤝 đã xóa'}</li>`).join('');
+  const sum=open.reduce((s,d)=>s+d.owed-d.paid,0);
+  return pane(x,'debts',`📒 Sổ nợ · ${open.length} người · ${x.fmt(sum)} xu`,`<ul class="sk-debts">${rows||'<li class="muted small">Không ai nợ.</li>'}${done}</ul>`,open.length>0,'sk-debtbook');
+}
+/** What came of the last trouble today (dismissable). */
+export function troubleLast(x){
+  const l=data(x).trouble?.last;if(!l||l.day!==x.room.day||x.ui.seenTr===l.id)return '';
+  return `<div class="sk-last ${l.good===true?'good':l.good===false?'bad':''}" role="status"><span aria-hidden="true">${x.esc(l.emoji)}</span><p><b>${x.esc(l.title)}</b> · ${x.esc(l.outcome)}</p>${act(x,'✕','seenTr',{key:l.id},'ghost small sk-x',' aria-label="Đã đọc"')}</div>`;
+}
+Object.assign(kitActions,{
+  async seenTr(d,el,x){x.ui.seenTr=d.key;x.render();},
+  async amtStep(d,el,x){const b=x.ui.amt??={},cur=Number(b[d.key]===undefined||b[d.key]===''?d.def:b[d.key])||0;
+    b[d.key]=Math.max(Number(d.min),Math.min(Number(d.max),cur+Number(d.delta)));x.render();},
+  async debtChase(d,el,x){const b=x.ui.amt??={},v=Number(b[d.key]===undefined||b[d.key]===''?d.def:b[d.key]);
+    await x.send(d.cmd,{debt:d.debt,tone:d.tone,amount:Math.max(1,Math.min(Number(d.def),Math.floor(v)||Number(d.def)))});},
+  async amtSend(d,el,x){const b=x.ui.amt??={},v=Number(b[d.key]===undefined||b[d.key]===''?d.def:b[d.key]);
+    if(!(v>0)){x.toast?.('Điền một số đã nhé.');return;}
+    await x.send(d.cmd,{...JSON.parse(d.extra||'{}'),[d.field]:Math.floor(v)});},
+});

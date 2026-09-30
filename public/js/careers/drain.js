@@ -2,11 +2,14 @@
  * The morning packing (the appointment book, five tools on the bike), a callout: find the cause by
  * asking, looking, running water or the camera, quote from the price list before touching anything,
  * the right tool (or a stopgap), the manhole safety drill, test, clean up, advice and the cash.
+ * The awkward people (0.9.16): a price you name yourself (the customer decides), the homeowner grumbling
+ * over your shoulder, the "while you're here" extra job, no cash (deposit or trust), the debt book, and
+ * customers coming back for the difference after a chặt chém.
  * The server decides everything; one tap sends one command. */
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
-import {data,cc,lower,tile,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions} from './street_kit.js';
+import {data,cc,lower,tile,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,debtBook,troubleLast} from './street_kit.js';
 
 const toolOf=(x,k)=>(cc(x).tools||[]).find(t=>t.id===k)||{id:k,name:k,emoji:'🔧',note:''};
 const placeOf=(x,k)=>(cc(x).places||{})[k]||{name:k,emoji:'🕳️',price:0};
@@ -80,7 +83,10 @@ function quotePanel(t,x){
   const q=(lv,label,sub)=>x.cmd(`<span class="sk-opt-label">${label} · ${x.fmt(pr[lv]||0)} xu</span><small>${sub}</small>`,'cg_quote',{task:t.id,level:lv},`sk-opt cg-q-${lv}`);
   const rows=[q('list','🧾 Theo bảng giá',night?'đã gồm phụ phí gọi đêm, nói rõ trước':`${p.name} · ${causeName(x,t.diag)}`),q('high','💰 Nói thách','gấp gần đôi bảng giá'),q('low','🙂 Làm rẻ lấy lòng','tiệm chịu lỗ')];
   if(t.kind==='recall')rows.push(q('warranty','🔁 Bảo hành, không lấy tiền','khi lỗi là của tiệm'));
-  return `<section class="card cg-quote"><h4>🧾 ${t.quote!=null?`Đã báo ${x.fmt(t.quote)} xu`:'Báo giá trước khi làm'}</h4>${t.quote==null||t.cleared==='fail'?`<div class="sk-opts">${rows.join('')}</div>`:''}</section>`;
+  const open=t.quote==null||t.cleared==='fail',ctr=t.bid?.counter;
+  const own=open?pane(x,`own-${t.id}`,'✍️ Tự báo giá',`${ctr?`<p class="cg-counter">🗣️ Khách trả <b>${x.fmt(ctr)} xu</b>${x.cmd(`Chốt ${x.fmt(ctr)} xu`,'cg_price',{task:t.id,price:ctr},'small primary')}</p>`:''}
+    ${amountBox(x,`price-${t.id}`,ctr||pr.list||10,{min:0,max:500,label:'Giá bạn báo',send:'🧾 Báo giá này',cmd:'cg_price',payload:{task:t.id}})}<p class="small muted">Báo cao thì có người trả, có người cãi, có người đi rêu rao khắp ngõ.</p>`,!!ctr,'cg-own'):'';
+  return `<section class="card cg-quote"><h4>🧾 ${t.quote!=null?`Đã báo ${x.fmt(t.quote)} xu`:'Báo giá trước khi làm'}</h4>${open?`<div class="sk-opts">${rows.join('')}</div>${own}`:''}</section>`;
 }
 function safetyPanel(t,x){
   if(t.kind!=='manhole')return '';
@@ -102,6 +108,28 @@ function finishPanel(t,x){
     <div class="cg-row">${b('test','💧 Xả nước thử','cg_test',t.tested)}${b('clean','🧽 Dọn sạch chỗ làm','cg_clean',t.cleaned)}${b('advise','🗣️ Dặn khách','cg_advise',t.advised)}</div></section>`;
 }
 
+/* ------------------------------------------------------------ the awkward people (0.9.16) */
+function twistCard(t,x){
+  const tw=t.twist;if(!tw||tw.state!=='on')return '';
+  const o=(choice,label,sub,cmd,extra={})=>({cmd,payload:{task:t.id,choice,...extra},label,sub});
+  if(tw.kind==='watch')return choiceCard(x,'cg-watch','🗯️','Chủ nhà đứng sau lưng lèm bèm',tw.line,[
+    o('bear','😮‍💨 Nhịn, làm tiếp','lèm bèm kệ lèm bèm','cg_watch'),o('answer','🗣️ Đáp lại cho ra lẽ','có người nghe, có người nổi khùng','cg_watch'),
+    o('away','🙏 Mời ra ngoài chờ','cho mình tập trung','cg_watch'),o('refuse','🎒 Từ chối làm tiếp','không lấy đồng nào','cg_watch')]);
+  if(tw.kind==='extra')return choiceCard(x,'cg-extra','🙏','Khách nhờ “tiện tay”',tw.line,[
+    o('free','🤲 Làm luôn, không lấy tiền','khách vui','cg_extra'),o('refuse','🙅 Việc khác tính riêng','khách có thể dỗi','cg_extra')],
+    `${tw.counter?`<p class="small">🗣️ Khách trả <b>${x.fmt(tw.counter)} xu</b></p>`:''}${amountBox(x,`extra-${t.id}`,tw.counter||cc(x).extra_fair||12,{label:'Hoặc báo giá việc phụ',send:'🧾 Báo giá việc phụ',cmd:'cg_extra',payload:{task:t.id,choice:'charge'}})}`);
+  if(tw.kind==='nocash')return choiceCard(x,'cg-nocash','💸','Khách không có tiền mặt',tw.line,[
+    o('wait','🏧 Đợi khách đi rút tiền','khách sốt ruột','cg_nocash'),o('trust','📒 Tin khách, ghi nợ','có người trả, có người quên luôn','cg_nocash')],
+    amountBox(x,`dep-${t.id}`,Math.max(1,Math.floor((t.quote||10)/2)),{label:'Hoặc xin trả trước',send:'💵 Xin trả trước',cmd:'cg_nocash',payload:{task:t.id,choice:'deposit'},field:'amount'}));
+  return '';
+}
+function troubleCard(x){
+  const ev=data(x).trouble?.ev;if(!ev||ev.kind!=='comeback')return '';
+  const f=ev.facts,o=(choice,label,sub)=>({cmd:'cg_trouble',payload:{choice},label,sub});
+  return choiceCard(x,'sk-trouble','🔁',`${f.who} quay lại cùng ông Lộc`,`“Hỏi ra rẻ hơn ${f.extra} xu, trả lại tiền chênh đi!”`,[
+    o('refund',`💵 Trả lại ${f.extra} xu`,'nhận sai'),o('explain','🗣️ Giải thích','hên xui'),o('refuse','🙅 Không trả','cả ngõ sẽ biết')],
+    amountBox(x,`cb-${ev.id}`,Math.max(1,Math.floor(f.extra/2)),{max:f.extra,label:'Hoặc trả bớt',send:'💵 Trả bớt',cmd:'cg_trouble',payload:{choice:'part'},field:'amount'}));
+}
 /* ------------------------------------------------------------ the guide */
 function jobSteps(t,x){
   const d=data(x),rows=[],bike=d.bike||[];
@@ -128,7 +156,9 @@ function jobSteps(t,x){
 function guide(t,x){
   const d=data(x);
   if(d.desk?.ev)return {steps:[{ok:null,label:'Quyết chuyện giữa đường',go:{sel:'.sk-opts',label:'👉 Chọn cách xử lý'}}],final:null};
+  if(d.trouble?.ev)return {steps:[{ok:null,label:'Khách cũ quay lại',go:{sel:'.sk-trouble',label:'👉 Giải quyết với khách'},pulse:''}],final:null};
   if(!d.intro)return {steps:[{ok:null,label:'Đọc giới thiệu nghề',go:{cmd:'cg_intro',payload:{},label:'🧰 Vào việc thôi!'}}],final:null};
+  if(t.twist?.state==='on')return {steps:[{ok:null,label:'Khách đang nói với bạn',go:{sel:'.sk-twist',label:'👉 Trả lời khách'},pulse:''}],final:null};
   if(t.kind==='setup'){const steps=setupSteps(t,x);return {steps,final:{label:'🛵 LÊN ĐƯỜNG',go:finalGo(steps,'cg_setout',{task:t.id}),ready:(d.bike||[]).length>0,why:'xếp ít nhất một món đồ nghề'}};}
   if(!t.known)return {steps:[{ok:null,label:'Nghe khách kể',go:{cmd:'ask',payload:{task:t.id},label:'👂 Nghe khách kể'}}],final:null,pulse:'.sk-ask'};
   if(t.stage==='pay'){const s=changeStep(x,t.id,t.cash),steps=s?[s]:[];return {steps,final:{label:'💵 ĐƯA TIỀN THỐI',go:finalGo(steps,'cg_pay',{task:t.id,...changePayload(x,t.id,t.cash)}),ready:true}};}
@@ -146,9 +176,10 @@ export default {
   },
   job(t,x){
     const g=guide(t,x),d=data(x),hint=hintFor(g,x);
-    const top=`${introCard(x,'cg_intro','🧰')}${deskCard(x,'cg_desk','Chuyện giữa đường')}`;
-    if(d.desk?.ev||!d.intro||x.ui.intro)return `<div class="career-job sk cg">${hint}${top}${bottom(x,g)}</div>`;
+    const top=`${introCard(x,'cg_intro','🧰')}${deskCard(x,'cg_desk','Chuyện giữa đường')}${troubleCard(x)}${troubleLast(x)}`;
+    if(d.desk?.ev||d.trouble?.ev||!d.intro||x.ui.intro)return `<div class="career-job sk cg">${hint}${top}${bottom(x,g)}</div>`;
     let main='',side='';
+    if(t.twist?.state==='on'){const head=`${ticket(t,x)}`;return `<div class="career-job sk cg">${hint}${top}${head}${twistCard(t,x)}${bottom(x,g)}</div>`;}
     if(t.kind==='setup'){main=setupPanel(t,x);side=stepRows(x,g.steps,'Chuẩn bị');}
     else if(!t.known)main='';
     else if(t.stage==='pay')main=cashPanel(x,t.id,t.cash);
@@ -161,11 +192,13 @@ export default {
     return `<div class="career-job sk cg">${hint}${top}${head}<div class="workbench"><section class="wb-main">${main}${t.kind!=='setup'?bikeCard(x,true):''}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${bottom(x,g)}</div>`;
   },
   idle(x){
-    const d=data(x),top=`${introCard(x,'cg_intro','🧰')}${deskCard(x,'cg_desk','Chuyện giữa đường')}`;
+    const d=data(x),top=`${introCard(x,'cg_intro','🧰')}${deskCard(x,'cg_desk','Chuyện giữa đường')}${troubleCard(x)}${troubleLast(x)}`;
+    if(d.trouble?.ev){const g={steps:[{ok:null,label:'Khách cũ quay lại',go:{sel:'.sk-trouble',label:'👉 Giải quyết với khách'},pulse:''}],final:null};return `<div class="career-job sk cg">${hintFor(g,x)}${top}${bottom(x,g)}</div>`;}
     if(d.desk?.ev||!d.intro||x.ui.intro){const g=d.desk?.ev?{steps:[{ok:null,label:'Quyết chuyện giữa đường',go:{sel:'.sk-opts',label:'👉 Chọn cách xử lý'}}],final:null}:{steps:[{ok:null,label:'Đọc giới thiệu nghề',go:{cmd:'cg_intro',payload:{},label:'🧰 Vào việc thôi!'}}],final:null};
       return `<div class="career-job sk cg">${hintFor(g,x)}${top}${bottom(x,g)}</div>`;}
-    return `<div class="career-job sk cg">${top}${dayBar(x)}${bikeCard(x)}</div>`;
+    return `<div class="career-job sk cg">${top}${dayBar(x)}${bikeCard(x)}${debtBook(x,d.debts,'cg_chase')}</div>`;
   },
+  input(el,x){return kitInput(el,x);},
   tick(root){keepBarAboveFooter(root);},
   actions:{...tillActions,...kitActions},
   dock:[['inventory','box','Kho vật tư','Ống xi-phông, găng tay…']],

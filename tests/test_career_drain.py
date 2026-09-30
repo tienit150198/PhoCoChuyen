@@ -63,6 +63,22 @@ class Base(unittest.TestCase):
         self.out(j, bike)
         return j
 
+    def act_calm(self, j, name, **p):
+        """An action on a job; when a person steps in (a twist), answer the patient way and carry on."""
+        r = j.act(name, **p)
+        t = j.get(p['task'])
+        st = t.get('tw')
+        if st and st['state'] == 'on':
+            kind = t['twist']['kind']
+            if kind == 'nocash':
+                return j.act('cg_nocash', task=p['task'], choice='wait')
+            j.act('cg_watch' if kind == 'watch' else 'cg_extra', task=p['task'], choice='bear' if kind == 'watch' else 'free')
+            r = j.act(name, **p)
+            t = j.get(p['task'])
+            if t.get('tw') and t['tw']['state'] == 'on':      # the bill: after the extra comes nothing else
+                return self.act_calm(j, name, **p)
+        return r
+
     def do_job(self, tid, j=None, level='list', finish=True):
         """The careful way: clues, the right diagnosis, the list price, the right tool, test, clean, advise, bill, pay."""
         j = j or self.j
@@ -78,15 +94,15 @@ class Base(unittest.TestCase):
                 j.act('cg_safety', task=tid, step=step)
         cause = DR.CAUSES[t['_cause']]
         if cause.get('part'):
-            j.act('cg_part', task=tid)
+            self.act_calm(j, 'cg_part', task=tid)
         else:
             tool = next(x for x in cause['fix'] if x in j.c['ext']['data']['bike'])
-            j.act('cg_work', task=tid, tool=tool)
+            self.act_calm(j, 'cg_work', task=tid, tool=tool)
         if not finish:
             return j.get(tid)
         for a in ('cg_test', 'cg_clean', 'cg_advise'):
             j.act(a, task=tid)
-        r = j.act('cg_bill', task=tid)
+        r = self.act_calm(j, 'cg_bill', task=tid)
         t = j.get(tid)
         if t['stage'] == 'pay':
             r = j.act('cg_pay', task=tid, change=till.greedy(till.due(t['cash'])))
@@ -200,7 +216,7 @@ class Callout(Base):
             j.act('cg_diag', task=t['id'], cause='toc')     # look before guessing
         j.act('cg_check', task=t['id'], how='hoi')
         with self.assertRaises(GameError):
-            j.act('cg_work', task=t['id'], tool='lo_xo')    # quote before the hands go in
+            self.act_calm(j, 'cg_work', task=t['id'], tool='lo_xo')    # quote before the hands go in
         with self.assertRaises(GameError):
             j.act('cg_check', task=t['id'], how='hoi')
 
@@ -222,14 +238,14 @@ class Callout(Base):
         j.act('cg_check', task=tid, how='hoi')
         j.act('cg_diag', task=tid, cause='toc')
         j.act('cg_quote', task=tid, level='list')
-        r = j.act('cg_work', task=tid, tool='pit_tong')
+        r = self.act_calm(j, 'cg_work', task=tid, tool='pit_tong')
         self.assertFalse(r['correct'])
         self.assertEqual(j.get(tid)['cleared'], 'fail')
-        r = j.act('cg_work', task=tid, tool='lo_xo')
+        r = self.act_calm(j, 'cg_work', task=tid, tool='lo_xo')
         self.assertEqual(j.get(tid)['cleared'], 'temp')
         j.act('cg_test', task=tid)
         j.act('cg_clean', task=tid)
-        j.act('cg_bill', task=tid)
+        self.act_calm(j, 'cg_bill', task=tid)
         t = j.get(tid)
         codes = {x['code'] for x in t['slips']}
         self.assertIn('recur', codes)
@@ -242,10 +258,10 @@ class Callout(Base):
         j.act('cg_check', task=tid, how='hoi')
         j.act('cg_diag', task=tid, cause='mo')
         j.act('cg_quote', task=tid, level='list')
-        j.act('cg_work', task=tid, tool='lo_xo')
+        self.act_calm(j, 'cg_work', task=tid, tool='lo_xo')
         for a in ('cg_test', 'cg_clean', 'cg_advise'):
             j.act(a, task=tid)
-        j.act('cg_bill', task=tid)
+        self.act_calm(j, 'cg_bill', task=tid)
         t = j.get(tid)
         self.assertIn('misquote', {x['code'] for x in t['slips']})
         self.assertEqual(t['cash']['price'], DR.list_price(t['needs']['place'], 'mo'))
@@ -293,7 +309,7 @@ class Callout(Base):
         j.act('cg_check', task=tid, how='nhin')
         j.act('cg_diag', task=tid, cause='toc')
         j.act('cg_quote', task=tid, level='list')
-        j.act('cg_chem', task=tid)
+        self.act_calm(j, 'cg_chem', task=tid)
         codes = {x['code'] for x in j.get(tid)['slips']}
         self.assertTrue({'chem_burn', 'chem_pipe'} <= codes, codes)
 
@@ -340,7 +356,7 @@ class Kinds(Base):
         j.act('cg_quote', task=tid, level='list')
         with self.assertRaises(GameError):
             j.act('cg_safety', task=tid, step='quat')     # measure first
-        j.act('cg_work', task=tid, tool='gau')
+        self.act_calm(j, 'cg_work', task=tid, tool='gau')
         t = j.get(tid)
         self.assertTrue(any(x['code'] == 'gas' and x['safety'] for x in t['slips']))
 

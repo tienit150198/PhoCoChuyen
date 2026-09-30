@@ -1,11 +1,13 @@
 /** Sạp trái cây Dì Tư — the fruit stall at the mouth of the market (server: game/careers/fruit.py).
  * The morning set-up (cover, scale test, bruised fruit), the ripeness baskets, the spring scale with
  * its basket to zero ("trừ bì"), bargaining, cash through the shared till, a customer bringing fruit
- * back, and the evening sell-off. The server decides everything; one tap sends one command. */
+ * back, and the evening sell-off. The awkward people (0.9.16): a price you name in a haggle (the customer
+ * decides), "bán đắt" complaints, credit and walk-offs, the debt book, shoplifters and people filming the stall.
+ * The server decides everything; one tap sends one command. */
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
-import {data,cc,lower,tile,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions} from './street_kit.js';
+import {data,cc,lower,tile,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,debtBook,troubleLast} from './street_kit.js';
 
 const fruitOf=(x,k)=>(cc(x).fruits||[]).find(f=>f.id===k)||{id:k,name:k,emoji:'🍑',unit:'trái',g:300,kg:10,stages:['tuoi']};
 const stageName=(x,s)=>(cc(x).stages||{})[s]||s;
@@ -74,7 +76,27 @@ function hagglePanel(t,x){
   const deal=(id,label,sub,dis=false)=>x.cmd(`<span class="sk-opt-label">${label}</span><small>${sub}</small>`,'tc_deal',{task:t.id,deal:id},'sk-opt',dis);
   return `<section class="card fr-haggle"><div class="fr-offer"><span aria-hidden="true">🗣️</span><p>“<b>${x.fmt(t.offer)} xu</b> thôi!”<small>Cân ra ${x.fmt(t.price)} xu</small></p></div>
     <div class="sk-opts fr-deals">${deal('hold','🙂 Giữ giá',`${t.price} xu, nói rõ trái tươi, cân đủ`)}${deal('meet','🤝 Bớt một nửa',`${mid} xu`)}
-    ${deal('extra','🍊 Giữ giá, tặng thêm trái cam',hasCam?'mất một trái cam':'hết cam',!hasCam)}${deal('give','✅ Bán theo giá khách',`${t.offer} xu`)}</div></section>`;
+    ${deal('extra','🍊 Giữ giá, tặng thêm trái cam',hasCam?'mất một trái cam':'hết cam',!hasCam)}${deal('give','✅ Bán theo giá khách',`${t.offer} xu`)}</div>
+    ${amountBox(x,`offer-${t.id}-${t.offer}`,mid,{max:Math.max(t.price*2,10),label:'Hoặc tự ra giá',send:'🤝 Chốt giá này',cmd:'tc_offer',payload:{task:t.id}})}</section>`;
+}
+function creditCard(t,x){
+  const tw=t.twist;if(!tw||tw.state!=='on')return '';
+  const o=(choice,label,sub)=>({cmd:'tc_credit',payload:{task:t.id,choice},label,sub});
+  if(tw.kind==='tab')return choiceCard(x,'fr-credit','📒',`Xin ghi nợ · ${x.fmt(t.price)} xu`,tw.line,[
+    o('tab','📒 Ghi nợ hết','có người trả, có người quên luôn'),o('refuse','🙅 Không bán chịu','khách có thể bỏ đi')],
+    amountBox(x,`part-${t.id}`,Math.max(1,Math.floor(t.price/2)),{max:t.price,label:'Hoặc xin trả trước',send:'💵 Xin trả trước',cmd:'tc_credit',payload:{task:t.id,choice:'part'},field:'amount'}));
+  return choiceCard(x,'fr-credit','🏃',`Khách cầm túi đi · ${x.fmt(t.price)} xu`,tw.line,[
+    o('hold','✋ Giữ túi lại, đợi lấy ví','khách ngay thì không sao'),o('trust','🙂 Cho cầm đi, tin khách','hên xui'),o('call','👮 Gọi bảo vệ chợ','bắt oan là mất lòng')]);
+}
+function troubleCard(x){
+  const ev=data(x).trouble?.ev;if(!ev)return '';
+  const f=ev.facts,o=(choice,label,sub)=>({cmd:'tc_trouble',payload:{choice},label,sub});
+  if(ev.kind==='thief'){const fr=fruitOf(x,f.item);
+    return choiceCard(x,'sk-trouble','🥷','Kẻ chôm trái',`${f.who} nhét ${f.qty} ${fr.unit} ${lower(fr.name)} vào túi riêng, lững thững bước đi.`,[
+      o('remind','🙂 Nhắc khéo: “Quên tính tiền kìa”','người biết ngượng sẽ trả'),o('guard','👮 Gọi bảo vệ chợ','khách chờ ở sạp'),o('ignore','🤐 Làm ngơ',`mất ${f.value} xu`)],
+      amountBox(x,`demand-${ev.id}`,f.value,{max:f.value*3,label:'Hoặc giữ lại, đòi tiền',send:'✋ Đòi tiền',cmd:'tc_trouble',payload:{choice:'demand'},field:'amount'}));}
+  return choiceCard(x,'sk-trouble','📱','Bị quay clip “bán đắt”','Một chị khách giơ điện thoại quay sạp: “Trái gì bán đắt vl, chợ mạng rẻ bằng nửa!”',[
+    o('scale','⚖️ Mời cân lại, chỉ bảng giá',''),o('taste','🍊 Bổ trái mời nếm','mất một trái cam'),o('argue','😤 Cãi tay đôi','cả chợ nghe'),o('ignore','🤐 Kệ','')]);
 }
 function returnPanel(t,x){
   const f=fruitOf(x,t.needs?.ret),b=baskets(x)[t.needs?.ret]||{},good=Object.entries(b).some(([s,q])=>q&&!cheap(x,s));
@@ -134,7 +156,9 @@ function buySteps(t,x){
 function guide(t,x){
   const d=data(x);
   if(d.desk?.ev)return {steps:[{ok:null,label:'Quyết chuyện ở sạp',go:{sel:'.sk-opts',label:'👉 Chọn cách xử lý'}}],final:null};
+  if(d.trouble?.ev)return {steps:[{ok:null,label:'Có chuyện ở sạp',go:{sel:'.sk-trouble',label:'👉 Xử lý ngay'},pulse:''}],final:null};
   if(!d.intro)return {steps:[{ok:null,label:'Đọc giới thiệu nghề',go:{cmd:'tc_intro',payload:{},label:'🧺 Vào việc thôi!'}}],final:null};
+  if(t.stage==='credit')return {steps:[{ok:null,label:'Khách chưa trả tiền',go:{sel:'.sk-twist',label:'👉 Xử lý khách'},pulse:''}],final:null};
   if(t.kind==='setup'){const steps=setupSteps(t,x);return {steps,final:{label:'☀️ MỞ HÀNG',go:finalGo(steps,'tc_open',{task:t.id}),ready:!!d.stall?.cover,why:'dựng dù hoặc căng bạt'}};}
   if(!t.known)return {steps:[{ok:null,label:'Hỏi khách',go:{cmd:'ask',payload:{task:t.id},label:'👂 Hỏi khách mua gì'}}],final:null,pulse:'.sk-ask'};
   if(t.kind==='return'){
@@ -168,9 +192,10 @@ export default {
   },
   job(t,x){
     const g=guide(t,x),d=data(x),hint=hintFor(g,x);
-    const top=`${introCard(x,'tc_intro','🧺')}${deskCard(x,'tc_desk','Chuyện ở sạp')}`;
-    if(d.desk?.ev||!d.intro||x.ui.intro)return `<div class="career-job sk fr">${hint}${top}${bottom(x,g)}</div>`;
+    const top=`${introCard(x,'tc_intro','🧺')}${deskCard(x,'tc_desk','Chuyện ở sạp')}${troubleCard(x)}${troubleLast(x)}`;
+    if(d.desk?.ev||d.trouble?.ev||!d.intro||x.ui.intro)return `<div class="career-job sk fr">${hint}${top}${bottom(x,g)}</div>`;
     let main='',side='';
+    if(t.stage==='credit')return `<div class="career-job sk fr">${hint}${top}${ticket(t,x)}${creditCard(t,x)}${bottom(x,g)}</div>`;
     if(t.kind==='setup'){main=setupPanel(t,x);side=stepRows(x,g.steps,'Việc dọn sạp');}
     else if(!t.known)main='';
     else if(t.kind==='return')main=returnPanel(t,x);
@@ -181,11 +206,13 @@ export default {
     return `<div class="career-job sk fr">${hint}${top}${head}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${bottom(x,g)}</div>`;
   },
   idle(x){
-    const d=data(x),top=`${introCard(x,'tc_intro','🧺')}${deskCard(x,'tc_desk','Chuyện ở sạp')}`;
+    const d=data(x),top=`${introCard(x,'tc_intro','🧺')}${deskCard(x,'tc_desk','Chuyện ở sạp')}${troubleCard(x)}${troubleLast(x)}`;
+    if(d.trouble?.ev){const g={steps:[{ok:null,label:'Có chuyện ở sạp',go:{sel:'.sk-trouble',label:'👉 Xử lý ngay'},pulse:''}],final:null};return `<div class="career-job sk fr">${hintFor(g,x)}${top}${bottom(x,g)}</div>`;}
     if(d.desk?.ev||!d.intro||x.ui.intro){const g=d.desk?.ev?{steps:[{ok:null,label:'Quyết chuyện ở sạp',go:{sel:'.sk-opts',label:'👉 Chọn cách xử lý'}}],final:null}:{steps:[{ok:null,label:'Đọc giới thiệu nghề',go:{cmd:'tc_intro',payload:{},label:'🧺 Vào việc thôi!'}}],final:null};
       return `<div class="career-job sk fr">${hintFor(g,x)}${top}${bottom(x,g)}</div>`;}
-    return `<div class="career-job sk fr">${top}${dayBar(x)}${stallView(x)}</div>`;
+    return `<div class="career-job sk fr">${top}${dayBar(x)}${stallView(x)}${debtBook(x,d.debts,'tc_chase')}</div>`;
   },
+  input(el,x){return kitInput(el,x);},
   tick(root){keepBarAboveFooter(root);},
   actions:{...tillActions,...kitActions},
   dock:[['inventory','box','Kho trái cây','Nhập xoài, cam, bưởi…']],

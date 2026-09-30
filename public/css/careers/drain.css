@@ -76,3 +76,9 @@
   .career-job.cg .cg-use{grid-template-columns:repeat(2,minmax(0,1fr))}
   .career-job.cg .cg-causes{grid-template-columns:1fr 1fr}
 }
+
+/* ---------- the awkward people (0.9.16) */
+.career-job.cg .cg-own{margin-top:10px}
+.career-job.cg .cg-counter{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 6px}
+.career-job.cg .cg-counter .btn{min-height:44px}
+.career-job.cg .cg-watch{border-color:#b8921d}

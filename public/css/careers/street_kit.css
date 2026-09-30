@@ -108,3 +108,21 @@
   .career-job.sk .till-due{grid-template-columns:auto 1fr}
   .career-job.sk .card{padding:12px}
 }
+
+/* ---------- the player's own move (0.9.16): an amount stepper, choice cards, the debt book */
+.career-job.sk .sk-amt{display:grid;gap:6px;margin-top:10px;padding:10px;border-radius:var(--sk-rs);background:var(--sk-surface-2);border:1px dashed var(--sk-line)}
+.career-job.sk .sk-amt-label{font-size:13px;font-weight:700;color:var(--sk-muted)}
+.career-job.sk .sk-amt-row{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;gap:6px;align-items:center;margin:6px 0}
+.career-job.sk .sk-step{min-height:48px;min-width:48px;font-size:22px;font-weight:800;padding:0}
+.career-job.sk .sk-amt-in{display:flex;align-items:center;gap:6px;min-height:48px;padding:0 12px;border:2px solid var(--sk-accent);border-radius:var(--sk-rs);background:var(--sk-surface)}
+.career-job.sk .sk-amt-in input{width:100%;min-width:0;border:0;background:transparent;color:var(--sk-ink);font:inherit;font-size:22px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums}
+.career-job.sk .sk-amt-in input:focus{outline:none}
+.career-job.sk .sk-amt-in small{color:var(--sk-muted)}
+.career-job.sk .sk-amt-go{width:100%;min-height:48px}
+.career-job.sk .sk-twist h3{font-size:16px;line-height:1.35;font-weight:700}
+.career-job.sk .sk-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.career-job.sk .sk-row .btn{min-height:44px;flex:1 1 30%}
+.career-job.sk .sk-debts{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.career-job.sk .sk-debt,.career-job.sk .sk-debts>li{padding:10px;border-radius:var(--sk-rs);background:var(--sk-surface);border:1px solid var(--sk-line)}
+.career-job.sk .sk-debts p{margin:4px 0}
+.career-job.sk .sk-debtbook{margin-top:10px}
