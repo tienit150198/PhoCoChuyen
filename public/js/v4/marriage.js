@@ -533,8 +533,8 @@ const opts=(o,cur,none='Không kèm lời nhắn')=>Object.entries(o).map(([k,t]
 const ago=t=>{const s=Math.max(0,Date.now()/1000-(S.env.api.clockOffset||0)-t);return s<3600?`${Math.max(1,Math.round(s/60))} phút trước`:s<86400?`${Math.round(s/3600)} giờ trước`:`${Math.round(s/86400)} ngày trước`;};
 function fundTab(){
   const v=S.view,h=v.home,f=h.fund,m=S.money,partner=esc(v.couple.partner.name),L=h.limits;
-  const KIND={deposit:'Gửi vào',withdraw:'Rút ra',spend:'Thẻ chung',split:'Chia quỹ'};
-  const hist=f.history.length?`<ul class="mr-ledger">${f.history.map(x=>`<li><span><span><b>${esc(x.who)}</b> · ${KIND[x.kind]||''}${x.label&&x.kind==='spend'?`: ${esc(x.label)}`:''}</span><small>${ago(x.at)}${x.held?' · đang xử lý':''}</small></span><b class="${x.kind==='deposit'?'good':''}">${x.kind==='deposit'?'+':'−'}${xu(x.amount)}</b></li>`).join('')}</ul>`:'<p class="mr-hint">Chưa có giao dịch nào.</p>';
+  const KIND={deposit:'Gửi vào',withdraw:'Rút ra',spend:'Thẻ chung',home:'Mua nhà',split:'Chia quỹ'};
+  const hist=f.history.length?`<ul class="mr-ledger">${f.history.map(x=>`<li><span><span><b>${esc(x.who)}</b> · ${KIND[x.kind]||''}${x.label&&(x.kind==='spend'||x.kind==='home')?`: ${esc(x.label)}`:''}</span><small>${ago(x.at)}${x.held?' · đang xử lý':''}</small></span><b class="${x.kind==='deposit'?'good':''}">${x.kind==='deposit'?'+':'−'}${xu(x.amount)}</b></li>`).join('')}</ul>`:'<p class="mr-hint">Chưa có giao dịch nào.</p>';
   const money=(k,label,act,cls,max)=>`<div class="mr-money"><input class="input" type="number" inputmode="numeric" min="1" max="${max}" step="1" data-mr-field="m:${k}" value="${esc(m[k])}" placeholder="Số xu" aria-label="${esc(label)}">${btn(label,act.op,act.data,cls)}</div>`;
   const reqs=h.requests.map(r=>r.mine
     ?`<li class="mr-li-wrap"><span>Bạn ${r.loan?'hỏi mượn':'xin trợ giúp'} <b>${xu(r.amount)}</b>${r.note?`: “${esc(r.note)}”`:''}<small>Chờ ${partner} trả lời</small></span>${btn('Rút lại','help_cancel',{id:r.id},'ghost small')}</li>`

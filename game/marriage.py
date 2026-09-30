@@ -258,6 +258,9 @@ def _apply_effect(s: dict, e: dict) -> bool:
         elif what is None:
             m['spouse'] = None
             m['sticker'] = False
+    elif e['kind'] == 'home':  # 🏠 the spouse's home (game/housing.py): moving in, or a home sold
+        from . import housing
+        housing.apply_effect(s, json.loads(e['data'] or '{}'))
     elif e['kind'] == 'bag':  # a small gift from the spouse, into the closeness gift bag
         item = json.loads(e['data'] or '{}').get('item')
         st = (s.get('journey') or {}).get('closeness')

@@ -132,14 +132,15 @@ async function onClick(op,data){
       if(await ask(`Nộp ${xu(a)} vào tài khoản?`,`Tiền mặt trong ví còn ${xu(J().wallet-a)} sau khi nộp.`,`Nộp · ${xu(a)}`))send('jr_bk_deposit',{amount:a});return;}
     case'withdraw':{const a=amountOf('bk-amt'),atm=val('bk-atm')||'own',fee=atm==='other'?R.atm_fee:0;if(!a){S.flash={text:'Nhập số xu muốn rút nhé.',kind:'warn'};render();return;}
       if(await ask(`Rút ${xu(a)} tiền mặt?`,fee?`Cây ATM khác ngân hàng thu phí ${xu(fee)}. Tài khoản bị trừ ${xu(a+fee)}.`:'Rút tại cây ATM Ngân hàng Phố, không mất phí.',`Rút · ${xu(a)}`))send('jr_bk_withdraw',{amount:a,atm});return;}
-    case'save':{const term=Number(val('bk-term')),a=amountOf('bk-save-amt'),src=val('bk-save-src')||'acc';if(!a){S.flash={text:'Nhập số xu muốn gửi nhé.',kind:'warn'};render();return;}
-      const bp=term?R.term_bp[String(term)]:R.demand_bp,gain=term?Math.floor(a*bp*term/10000):0;
-      const msg=term?`Kỳ hạn ${term} ngày, lãi ${pct(bp)}/ngày. Đáo hạn ${onDay(J().life_day+term)}, lãi dự kiến ${gain?xu(gain):'dưới 1 xu (gửi nhiều hơn để thấy lãi)'}. Rút trước hạn chỉ hưởng lãi không kỳ hạn ${pct(R.demand_bp)}/ngày.`:`Lãi ${pct(bp)}/ngày, cộng vào sổ mỗi ngày. Rút lúc nào cũng được.`;
-      if(await ask(`Gửi ${xu(a)} tiết kiệm ${term?`${term} ngày`:'không kỳ hạn'}?`,msg+(src==='cash'?' Lấy từ tiền mặt.':' Lấy từ tài khoản thanh toán.'),`Gửi · ${xu(a)}`))send('jr_bk_save',{amount:a,term,src});return;}
+    case'save':{const term=Number(val('bk-term')),a=amountOf('bk-save-amt'),src=val('bk-save-src')||'acc',renew=!!S.dlg.querySelector('#bk-renew')?.checked&&term>0;if(!a){S.flash={text:'Nhập số xu muốn gửi nhé.',kind:'warn'};render();return;}
+      const rate=term?R.term_rate[String(term)]:R.demand_rate,gain=term?termGain(a,rate,term,R):0,name=b.term_names[String(term)].toLowerCase();
+      const msg=term?`${b.term_names[String(term)]} (${term} ngày sống), lãi ${pct(rate)}/năm. Đáo hạn ${onDay(J().life_day+term)}, nhận ${xu(a+gain)} (lãi ${gain?xu(gain):'dưới 1 xu'}).${renew?' Tới hạn tự tái tục: gốc và lãi gửi tiếp kỳ mới.':''} Rút trước hạn chỉ hưởng lãi không kỳ hạn ${pct(R.demand_rate)}/năm.`:`Lãi ${pct(rate)}/năm, cộng vào sổ mỗi ngày. Rút lúc nào cũng được.`;
+      if(await ask(`Gửi ${xu(a)} tiết kiệm ${name}?`,msg+(src==='cash'?' Lấy từ tiền mặt.':' Lấy từ tài khoản thanh toán.'),`Gửi · ${xu(a)}`))send('jr_bk_save',{amount:a,term,src,...(renew?{renew:true}:{})});return;}
     case'unsaveDemand':{const a=amountOf('bk-demand-out');if(!a){S.flash={text:'Nhập số xu muốn rút nhé.',kind:'warn'};render();return;}
       if(await ask(`Rút ${xu(a)} từ sổ không kỳ hạn?`,'Tiền về tài khoản thanh toán, không mất lãi đã cộng.',`Rút · ${xu(a)}`))send('jr_bk_unsave',{id:'demand',amount:a});return;}
     case'unsaveTerm':{const t=(b.savings?.terms||[]).find(x=>x.id===data.id);if(!t)return;
-      if(await ask('Tất toán sổ trước hạn?',`Sổ đáo hạn ${onDay(t.due)}. Rút bây giờ chỉ nhận lãi không kỳ hạn ${xu(t.early)} thay vì ${xu(t.interest)}.`,`Tất toán · ${xu(t.amount+t.early)}`))send('jr_bk_unsave',{id:t.id,confirm:true});return;}
+      if(await ask('Tất toán sổ trước hạn?',`Sổ đáo hạn ${onDay(t.due)}. Rút bây giờ chỉ nhận lãi không kỳ hạn ${xu(t.early)} thay vì ${xu(t.interest)} khi giữ đến hạn.`,`Tất toán · ${xu(t.amount+t.early)}`))send('jr_bk_unsave',{id:t.id,confirm:true});return;}
+    case'house':S.dlg.close();(await import('./house.js')).openHouse(S.env);return;
     case'cardApply':{const o=b.card_offer||{};
       if(await ask('Nộp hồ sơ mở thẻ tín dụng?',`Ngân hàng tra cứu hồ sơ tín dụng (điểm giảm nhẹ).${o.ok?` Dự kiến hạn mức ${xu(o.limit)}.`:` Lưu ý: ${o.text}`} Sao kê mỗi ${R.card_cycle} ngày, trả hết trước hạn thì không mất lãi.`,'Nộp hồ sơ'))send('jr_bk_card_apply',{confirm:true});return;}
     case'cardPay':{const c=b.card;if(!c)return;const src=val('bk-card-src')||'acc';let payload={src},amount=0;
@@ -229,9 +230,9 @@ function welcome(b){
   return `<section class="bk-card bk-welcome"><span class="bk-logo big" aria-hidden="true">${LOGO}</span><h3>Chào mừng tới Ngân hàng Phố</h3>
     <p>Tiền mặt trong ví vẫn là của bạn. Mở một tài khoản để có thêm:</p>
     <ul class="bk-bullets"><li><b>Tài khoản thanh toán</b>: nộp, rút ở cây ATM, sổ giao dịch có số dư từng dòng.</li>
-    <li><b>Tiết kiệm</b>: không kỳ hạn ${pct(b.rules.demand_bp)}/ngày, có kỳ hạn tới ${pct(b.rules.term_bp['30'])}/ngày.</li>
+    <li><b>Tiết kiệm</b>: không kỳ hạn ${pct(b.rules.demand_rate)}/năm, có kỳ hạn tới ${pct(Math.max(...Object.values(b.rules.term_rate)))}/năm.</li>
     <li><b>Thẻ tín dụng</b>: quẹt trước trả sau, sao kê mỗi ${b.rules.card_cycle} ngày.</li>
-    <li><b>Khoản vay</b>: vay tiêu dùng hoặc vay mở rộng tiệm, trả góp từng kỳ.</li></ul>
+    <li><b>Khoản vay</b>: vay tiêu dùng, vay mở rộng tiệm, vay mua nhà, trả góp từng kỳ.</li></ul>
     <p class="bk-hint">Tiền mặt hiện có: <b>${xu(b.wallet)}</b></p>${btn('Mở tài khoản miễn phí','open',{},'primary big')}</section>`;
 }
 function alerts(b){
@@ -284,7 +285,8 @@ function home(b){
     `<section class="bk-card"><h3>Tin nhắn & cuộc gọi</h3>${inbox?`<ul class="bk-inbox">${inbox}</ul>`:'<p class="bk-hint">Chưa có tin nhắn nào.</p>'}</section>`+
     `<section class="bk-card"><h3>Cài đặt</h3><label class="bk-toggle"><input type="checkbox" data-bk="sweep"${b.sweep?' checked':''}${S.busy?' disabled':''}><span>Tự động bù ví khi ví âm (tiền phòng, cơm nước) bằng tiền trong tài khoản</span></label></section>`;
 }
-const WHY={open:'Mở tài khoản',inquiry:'Ngân hàng tra cứu hồ sơ',card_full:'Trả hết sao kê đúng hạn',card_min:'Trả tối thiểu đúng hạn',card_late:'Trễ hạn thẻ',
+const termGain=(a,rate,days,R)=>Math.floor(a*rate*days/(10000*R.year_days));   // bank.term_interest
+const WHY={home_ok:'Trả góp nhà đúng hạn',home_late:'Trễ hạn trả góp nhà',home_done:'Trả xong vay mua nhà',open:'Mở tài khoản',inquiry:'Ngân hàng tra cứu hồ sơ',card_full:'Trả hết sao kê đúng hạn',card_min:'Trả tối thiểu đúng hạn',card_late:'Trễ hạn thẻ',
   loan_ok:'Trả góp đúng hạn',loan_late:'Trễ hạn trả góp',loan_done:'Tất toán khoản vay',income:'Thu nhập đều trong tuần',age:'Tài khoản thêm một tuần tuổi',
   util_low:'Dư nợ thẻ thấp',util_mid:'Dư nợ thẻ trên 30%',util_high:'Dư nợ thẻ trên 70%',bad:'Ghi nhận nợ xấu'};
 
@@ -319,19 +321,23 @@ function tx(b){
 
 function save(b){
   const R=b.rules,sv=b.savings;
-  const opts=R.terms.map(t=>`<option value="${t}">${esc(b.term_names[String(t)])} · ${pct(t?R.term_bp[String(t)]:R.demand_bp)}/ngày</option>`).join('');
-  const table=`<table class="bk-rates"><caption>Biểu lãi suất tiết kiệm</caption><thead><tr><th scope="col">Kỳ hạn</th><th scope="col">Lãi/ngày</th><th scope="col">100 xu nhận</th></tr></thead><tbody>
-    ${R.terms.map(t=>{const bp=t?R.term_bp[String(t)]:R.demand_bp;return `<tr><td>${esc(b.term_names[String(t)])}</td><td>${pct(bp)}</td><td>${t?`+${fmt(Math.floor(100*bp*t/10000))} xu sau ${t} ngày`:`≈ ${(100*bp/10000).toLocaleString('vi-VN')} xu/ngày`}</td></tr>`;}).join('')}</tbody></table>`;
-  const terms=sv.terms.map(t=>`<li class="bk-term"><div><b>${esc(t.name)} · ${xu(t.amount)}</b><small>Gửi Ngày ${t.start}, đáo hạn ${onDay(t.due)} · lãi ${pct(t.bp)}/ngày</small>
-    <small>Lãi dự kiến <b>${xu(t.interest)}</b>. Rút trước hạn hôm nay: ${xu(t.early)}.</small></div>${btn('Tất toán sớm','unsaveTerm',{id:t.id},'ghost small')}</li>`).join('');
+  const span=t=>`${t} ngày sống`;
+  const opts=R.terms.map(t=>`<option value="${t}">${esc(b.term_names[String(t)])} · ${pct(t?R.term_rate[String(t)]:R.demand_rate)}/năm</option>`).join('');
+  const table=`<table class="bk-rates"><caption>Biểu lãi suất tiết kiệm (theo năm trong game)</caption><thead><tr><th scope="col">Kỳ hạn</th><th scope="col">Lãi/năm</th><th scope="col">1.000 xu nhận</th></tr></thead><tbody>
+    ${R.terms.map(t=>{const r=t?R.term_rate[String(t)]:R.demand_rate;return `<tr><td>${esc(b.term_names[String(t)])}${t?`<small class="bk-hint"> · ${span(t)}</small>`:''}</td><td>${pct(r)}</td><td>${t?`${fmt(1000+termGain(1000,r,t,R))} xu khi đáo hạn`:`≈ ${(1000*R.demand_bp/10000).toLocaleString('vi-VN')} xu/ngày`}</td></tr>`;}).join('')}</tbody></table>`;
+  const terms=sv.terms.map(t=>{const p=Math.round(Math.min(t.term,t.term-t.days_left)*100/t.term);return `<li class="bk-term"><div><b>${esc(t.name)} · ${xu(t.amount)}</b><small>Gửi Ngày ${t.start}, đáo hạn ${onDay(t.due)} · lãi ${esc(t.rate_text)}${t.renew?' · tự tái tục':''}</small>
+    <div class="bk-bar good" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}" aria-label="Đã gửi ${p}% kỳ hạn"><i style="width:${p}%"></i></div>
+    <small>Lãi đã tích lũy <b>${xu(t.accrued)}</b> · đến hạn nhận <b>${xu(t.value)}</b>. Rút trước hạn hôm nay chỉ được lãi ${xu(t.early)}.</small></div>${btn('Tất toán sớm','unsaveTerm',{id:t.id},'ghost small')}</li>`;}).join('');
   return `<section class="bk-hero soft"><small>Tổng tiết kiệm</small><strong class="bk-balance">${xu(sv.total)}</strong><p class="bk-sub">Tài khoản thanh toán ${xu(b.balance)} · Tiền mặt ${xu(b.wallet)}</p></section>
     <section class="bk-card"><h3>Gửi tiết kiệm</h3><div class="bk-move">
       <label class="bk-field"><span>Số xu</span><input id="bk-save-amt" type="number" inputmode="numeric" min="1" placeholder="Ít nhất ${R.save_min} xu nếu có kỳ hạn"></label>
       <label class="bk-field"><span>Kỳ hạn</span><select id="bk-term">${opts}</select></label>
-      <label class="bk-field"><span>Lấy từ</span><select id="bk-save-src"><option value="acc">Tài khoản thanh toán</option><option value="cash">Tiền mặt trong ví</option></select></label></div>
+      <label class="bk-field"><span>Lấy từ</span><select id="bk-save-src"><option value="acc">Tài khoản thanh toán</option><option value="cash">Tiền mặt trong ví</option></select></label>
+      <label class="bk-toggle"><input type="checkbox" id="bk-renew"><span>Tới hạn tự tái tục (gốc và lãi gửi tiếp kỳ mới)</span></label></div>
       <div class="bk-actions">${btn('Gửi tiết kiệm','save',{},'primary')}</div>${table}
-      <p class="bk-hint">Lãi được tính mỗi sáng khi sang ngày mới. Sổ có kỳ hạn đáo hạn thì gốc và lãi về tài khoản thanh toán. Rút trước hạn chỉ hưởng lãi không kỳ hạn cho số ngày đã gửi.</p></section>
-    <section class="bk-card"><h3>Không kỳ hạn · ${xu(sv.demand)}</h3><p class="bk-hint">Lãi ${pct(R.demand_bp)}/ngày, cộng vào sổ mỗi ngày (khoảng ${(sv.daily_milli/1000).toLocaleString('vi-VN',{maximumFractionDigits:3})} xu/ngày; phần lẻ cộng dồn tới khi đủ 1 xu).</p>
+      <p class="bk-hint">Trong game, 1 tháng là ${R.month_days} ngày sống, 1 năm là ${R.year_days} ngày sống. Lãi tính theo năm, cộng dồn mỗi sáng; sổ có kỳ hạn đáo hạn thì gốc và lãi về tài khoản thanh toán. Rút trước hạn chỉ hưởng lãi không kỳ hạn cho số ngày đã gửi.</p></section>
+    <section class="bk-card bk-house-link"><h3>🏠 Tiết kiệm mua nhà</h3><p class="bk-hint">Xem nhà đang rao, còn thiếu bao nhiêu để trả trước, và vay mua nhà trả góp mỗi tháng.</p><div class="bk-actions">${btn('Nhà của bạn','house',{},'ghost')}</div></section>
+    <section class="bk-card"><h3>Không kỳ hạn · ${xu(sv.demand)}</h3><p class="bk-hint">Lãi ${pct(R.demand_rate)}/năm, cộng vào sổ mỗi ngày (khoảng ${(sv.daily_milli/1000).toLocaleString('vi-VN',{maximumFractionDigits:3})} xu/ngày; phần lẻ cộng dồn tới khi đủ 1 xu).</p>
       ${sv.demand?`<div class="bk-move"><label class="bk-field"><span>Rút về tài khoản</span><input id="bk-demand-out" type="number" inputmode="numeric" min="1" max="${sv.demand}" placeholder="Tối đa ${sv.demand}"></label></div><div class="bk-actions">${btn('Rút','unsaveDemand',{},'ghost')}</div>`:''}</section>
     <section class="bk-card"><h3>Sổ có kỳ hạn</h3>${terms?`<ul class="bk-list">${terms}</ul>`:'<p class="bk-hint">Chưa có sổ nào.</p>'}</section>`;
 }
@@ -406,5 +412,8 @@ function loan(b){
     <div class="bk-loan-preview">${o.ok?previewHTML():''}</div>
     <p class="bk-hint">Hạn mức dựa trên thu nhập ${xu(b.income.avg)}/ngày và điểm ${b.score.value}. Tiền trả góp mỗi kỳ (cộng các khoản đang vay) không quá ${R.dti_pct}% thu nhập một tuần. Nộp hồ sơ làm điểm giảm nhẹ.</p>
     <div class="bk-actions">${btn('Xem lại & ký hợp đồng','loanSign',{},'primary',o.ok?'':' disabled')}</div></section>`;
-  return (active||`<section class="bk-card"><p class="bk-hint">Bạn không có khoản vay nào. 🎈</p></section>`)+form;
+  const H=J().home,HL=H?.own?.loan;
+  const house=HL?`<section class="bk-card ${HL.overdue?'bk-late':''}"><h3>🏠 Vay mua nhà · ${xu(HL.principal)}</h3><p class="bk-hint">Lãi ${esc(HL.rate_text)} · đã trả ${HL.paid_rows}/${HL.rows.length} kỳ · còn phải trả <b>${xu(HL.left)}</b>${HL.next?` · kỳ tới ${onDay(HL.next.due)}`:''}</p>${HL.overdue?`<p class="bk-alert warn">Chậm ${xu(HL.overdue)}.</p>`:''}<div class="bk-actions">${btn('Xem ở Nhà của bạn','house',{},'ghost')}</div></section>`
+    :`<section class="bk-card"><h3>🏠 Vay mua nhà</h3><p class="bk-hint">Trả trước ít nhất 30% giá nhà, phần còn lại vay tới 3 năm, trả góp mỗi tháng trong game.</p><div class="bk-actions">${btn('Nhà của bạn','house',{},'ghost')}</div></section>`;
+  return (active||(HL?'':`<section class="bk-card"><p class="bk-hint">Bạn không có khoản vay nào. 🎈</p></section>`))+house+form;
 }

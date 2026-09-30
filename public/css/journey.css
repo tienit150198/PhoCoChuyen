@@ -278,3 +278,13 @@ html.reduce-motion .jr-scene[open],body.reduce-motion .jr-scene[open]{animation:
 }
 html[data-layout="phone"][data-orientation="landscape"] .jr-gender{grid-template-columns:auto auto;align-items:center;justify-content:center;padding:8px 10px}
 html[data-layout="phone"][data-orientation="landscape"] .jr-gender>svg,html[data-layout="phone"][data-orientation="landscape"] .jr-gender>:first-child{width:56px;height:56px}
+
+/* 🏠 Nhà của bạn (v4/house.js): where you live, one tap to the home screen */
+.jr-house{padding:0}
+.jr-house-row{display:flex;gap:12px;align-items:center;width:100%;min-height:64px;padding:14px 16px;border:0;border-radius:inherit;background:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.jr-house-row .grow{min-width:0;flex:1;display:grid;gap:2px}
+.jr-house-row small{font-size:.85rem;color:var(--muted)}
+.jr-house-row b{font-size:1.05rem}
+.jr-house-row em{font-style:normal;font-size:.9rem;color:var(--ink-2)}
+.jr-house-emoji{flex:none;font-size:2rem;line-height:1}
+html[data-layout="phone"] .jr-house-row .btn{display:none}

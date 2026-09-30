@@ -3513,10 +3513,11 @@ GROUPS = [{'id': 'start',
                          '⬇️ Nộp: gõ số xu, bấm [[Nộp tiền]]. Tiền đi từ ví vào tài khoản.',
                          '⬆️ Rút: gõ số xu, chọn cây ATM, bấm [[Rút tiền]]. Cây ATM Ngân hàng Phố miễn phí, cây ATM '
                          'khác ngân hàng mất 1 xu.',
-                         '🐷 Tab Tiết kiệm: gửi không kỳ hạn (lãi 0,05%/ngày, rút lúc nào cũng được) hoặc kỳ hạn 7, 14, '
-                         '30 ngày (lãi 0,2–0,3%/ngày).',
-                         '📅 Sổ kỳ hạn gửi ít nhất 20 xu, tối đa 5 sổ. Đáo hạn thì gốc và lãi về tài khoản. [[Tất toán '
-                         'sớm]] chỉ được lãi không kỳ hạn.',
+                         '🐷 Tab Tiết kiệm: không kỳ hạn lãi 3%/năm, rút lúc nào cũng được. Có kỳ hạn từ 7 ngày tới 3 năm, '
+                         'lãi 6–8,8%/năm, gửi càng lâu lãi càng cao.',
+                         '🗓️ Trong game, 1 tháng là 5 ngày sống, 1 năm là 60 ngày sống. Kỳ hạn 12 tháng là 60 ngày sống.',
+                         '📅 Sổ kỳ hạn gửi ít nhất 20 xu, tối đa 5 sổ. Đáo hạn thì gốc và lãi về tài khoản, hoặc chọn tự tái '
+                         'tục để gửi tiếp. [[Tất toán sớm]] chỉ được lãi không kỳ hạn.',
                          '\U0001f6df “Tự động bù ví khi ví âm” bật sẵn: ví âm thì sáng hôm sau tài khoản tự trả phần '
                          'đang nợ. Bỏ dấu chọn để tắt.',
                          '💬 Tin nhắn và cuộc gọi của ngân hàng hiện trong tab Tổng quan.'],
@@ -3552,6 +3553,21 @@ GROUPS = [{'id': 'start',
                          'thì điểm tăng.',
                          '📉 Mỗi lần nộp hồ sơ vay hay mở thẻ, điểm giảm một chút. Đừng nộp dồn dập.'],
               'go': {'action': 'bank', 'label': 'Mở Ngân hàng'}},
+             {'id': 'home',
+              'emoji': '🏠',
+              'title': 'Thuê phòng, mua nhà',
+              'points': ['🏠 Mở [[Nhà của bạn]] ở trang Hành trình hoặc trong Ngân hàng. Luôn thấy tiền mặt, tài khoản và '
+                         'còn thiếu bao nhiêu.',
+                         '🛏️ Phòng trọ khép kín: cọc 60 xu (trả lại khi dọn đi), tiền phòng 14 xu/ngày, tinh thần +1 mỗi sáng.',
+                         '🏢 Nhà rao bán từ 1.500 tới 12.000 xu. Trả trước ít nhất 30% giá và 2% phí công chứng, sang tên.',
+                         '📝 Phần còn lại vay Ngân hàng Phố 1–3 năm, trả góp mỗi tháng (5 ngày sống). Lãi 9–11,4%/năm tùy '
+                         'điểm tín dụng.',
+                         '🔑 Có nhà thì hết tiền phòng, chỉ còn điện nước 2–5 xu/ngày, và tinh thần được cộng mỗi sáng.',
+                         '⏰ Thiếu tiền trả góp: 3 ngày ân hạn không phạt. Quá hạn mới phạt 2% và giảm điểm tín dụng. Ngân '
+                         'hàng không bao giờ lấy nhà.',
+                         '💞 Vợ chồng có thể góp tiền trả trước từ quỹ chung. Có nhà rồi, người ấy về ở chung.',
+                         '💰 Giá nhà tăng khoảng 3% mỗi năm. Bán nhà mất 3% phí, tiền bán trả hết nợ vay trước.'],
+              'go': {'action': 'house', 'label': 'Mở Nhà của bạn'}},
              {'id': 'invest',
               'emoji': '📈',
               'title': 'Đầu tư cá nhân',

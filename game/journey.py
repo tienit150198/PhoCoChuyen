@@ -26,6 +26,7 @@ from .content import CAREERS, CAREER_META
 from . import archive as ar
 from . import certificates as ct
 from . import bank as bk   # 🏦 Ngân hàng Phố (game/bank.py)
+from . import housing as hs   # 🏠 Nhà của bạn (game/housing.py)
 
 VERSION = 1
 START_WALLET = 60
@@ -35,7 +36,7 @@ BREADTH_XP = 80       # maturity bonus for every workplace you really worked at
 LIVING = {1: 10, 2: 12, 3: 14, 4: 16, 5: 18, 6: 20, 7: 20}
 UPKEEP = {'cozy': 4, 'sunny': 7, 'garden': 11}
 MODES = (('calm', .25), ('normal', .55), ('festival', .20))
-HISTORY_KINDS = ('living', 'upkeep', 'draw', 'invest', 'salary', 'reopen', 'incident', 'life', 'study', 'backdoor', 'bank')
+HISTORY_KINDS = ('living', 'upkeep', 'draw', 'invest', 'salary', 'reopen', 'incident', 'life', 'study', 'backdoor', 'bank', 'home')
 NEWS_KINDS = ('chapter', 'titles')
 
 CH_UNLOCKS = {
@@ -227,6 +228,8 @@ TITLES = [
     _t('m_investor', 'money', '📈', 'Nhà đầu tư nhỏ', 'Góp vốn tổng cộng 100 xu cho các nơi làm việc.', lambda x: x['stats'].get('invested', 0) >= 100),
     _t('m_salary', 'money', '💵', 'Đồng lương đầu tiên', 'Nhận lương về ví lần đầu.', lambda x: x['stats'].get('salary', 0) > 0),
     _t('m_debt_free', 'money', '🕊️', 'Trả hết nợ', 'Từng nợ tiền nhà và đã trả xong.', lambda x: x['stats'].get('debt_repaid', 0) > 0),
+    _t('m_home', 'money', '🏠', 'An cư', 'Có căn nhà đứng tên mình.', lambda x: x['stats'].get('homes_bought', 0) > 0),
+    _t('m_home_free', 'money', '🔑', 'Nhà hết nợ', 'Trả xong khoản vay mua nhà.', lambda x: x['stats'].get('home_paid', 0) > 0),
     # Fun, hidden until earned.
     _t('x_streak10', 'secret', '✨', 'Mười việc liền mạch', 'Làm 10 việc liền không sai sót ở một nơi.', lambda x: x['best_streak'] >= 10, True),
     _t('x_festival3', 'secret', '🎏', 'Mê ngày hội', 'Làm việc trọn 3 ngày hội khu phố.', lambda x: x['stats'].get('festival_days', 0) >= 3, True),
@@ -239,7 +242,7 @@ TITLES = [
 ]
 TITLE_INDEX = {t['id']: t for t in TITLES}
 STATS = ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary', 'reopened', 'paused', 'max_wallet',
-         'debt_repaid', 'calm_days', 'normal_days', 'festival_days')
+         'debt_repaid', 'calm_days', 'normal_days', 'festival_days', 'homes_bought', 'home_paid')
 
 LOCKED = 'Nơi này chưa mở với bạn. Cứ làm quen khu phố thêm, hàng xóm sẽ giới thiệu sau nhé.'
 
@@ -390,6 +393,8 @@ def upgrade(j: dict) -> None:
         j.setdefault(k, copy.deepcopy(v))
     for k in STATS:
         j['stats'].setdefault(k, 0)
+    bk.upgrade(j)   # 🏦 term deposits quoted per year (0.9.5)
+    hs.upgrade(j)   # 🏠
     if j.get('story'):
         for n in range(1, min(int(j.get('chapter', 1)), LAST) + 1):
             _unlock_chapter(j, n)
@@ -446,9 +451,8 @@ def _transfer(s: dict, c: dict, amount: int, reason: str, category: str) -> None
 
 
 def living_cost(j: dict) -> dict:
-    total = LIVING.get(j['chapter'], LIVING[LAST])
-    rent = total * 6 // 10
-    return dict(total=total, rent=rent, meals=total - rent)
+    """{total, rent, meals, label, where}: Bà Tám's rent, or a rented room's, or điện nước at home (game/housing.py)."""
+    return hs.living(j, LIVING.get(j['chapter'], LIVING[LAST]))
 
 
 # ---------------------------------------------------------------- engine hooks
@@ -494,7 +498,7 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
         notes.append(f'Lương {pay} xu đã về ví của bạn.')
     # Rent and meals for the day that just ended.
     cost = living_cost(j)
-    _wallet(j, -cost['total'], 'living', 'Tiền phòng và cơm nước')
+    _wallet(j, -cost['total'], 'living', cost['label'])
     j['stats']['living_paid'] += cost['total']
     # Every other started workplace keeps its lights on while you are away.
     idle_total = 0
@@ -513,7 +517,7 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
     j['stats']['upkeep_paid'] += idle_total
     j['clean_days'] = j['clean_days'] + 1 if j['wallet'] >= 0 else 0
     j['life_day'] += 1
-    line = f'Ngày sống {day}: tiền phòng và cơm nước {cost["total"]} xu'
+    line = f'Ngày sống {day}: {cost["label"].lower()} {cost["total"]} xu'
     if idle_total:
         line += f', duy trì nơi vắng chủ {idle_total} xu'
     notes.insert(0, line + '.')
@@ -572,6 +576,7 @@ def after(s: dict, career: str | None, action: str, p: dict, result: dict) -> No
     if action == 'end_day' and career in s['careers']:
         _end_of_day(s, career, result)
     bk.on_life_day(s, result)   # 🏦 interest, statements, installments: once per life day (idempotent)
+    hs.on_life_day(s, result)   # 🏠 home installments and comfort (after the bank's morning)
     if action == 'start_day' and career in s['careers']:
         line = _emp().backdoor_remark(s, s['careers'][career], career)   # vào bằng cửa sau: one remark, day one
         if line:
@@ -662,6 +667,8 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(ct.action(s, name, p))
     elif name.startswith('jr_bk_'):
         result.update(bk.action(s, name, p))
+    elif name.startswith('jr_home_'):
+        result.update(hs.action(s, name, p))
     else:
         raise e.GameError('Thao tác hành trình không hợp lệ.', 'unknown_action')
     after(s, None, name, p, result)
@@ -738,7 +745,7 @@ def public(s: dict) -> dict:
         clean_days=j['clean_days'], history=list(reversed(j['history'][-30:])), news=copy.deepcopy(j['news']),
         suggested=suggested(s, ctx), tasks=ctx['tasks'], worked=ctx['places'],
         stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')},
-        bank=bk.public(s), **ct.public(s))
+        bank=bk.public(s), home=hs.public(s), **ct.public(s))
 
 
 def _skill_ids() -> list[str]:
@@ -818,3 +825,4 @@ def validate(s: dict) -> None:
         integer(v, 0, 10**9)
     ct.validate(s)
     bk.validate(s)
+    hs.validate(s)

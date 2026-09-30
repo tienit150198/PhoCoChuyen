@@ -1029,6 +1029,7 @@ async function handleAction(action,data,el){
       if((L.rank.m||action==='rank')&&await (await viaLazy(L.rank,el)).leaderboardAction(action,data,el,env()))break;
       if(action==='marriage'||action==='friends'){await (await import('./v4/marriage.js')).marriageAction(action,data,el,env());break;}  // Hôn nhân, Bạn bè: lazy
       if(action==='bank'){await (await import('./v4/bank.js')).bankAction(action,data,el,env());break;}  // 🏦 Ngân hàng Phố: lazy
+      if(action==='house'){await (await import('./v4/house.js')).houseAction(action,data,el,env());break;}  // 🏠 Nhà của bạn: lazy
       if(L.people.m&&await L.people.m.closenessAction(action,data,el,env()))break;
       if(await journeyAction(action,data,el,env()))break;
       if((L.inc.m||action==='incident'||action==='incLog')&&await (await viaLazy(L.inc,el)).incidentAction(action,data,el,env()))break;
