@@ -9,7 +9,7 @@ details live in `game/db.py` and the schema lives in `game/pg_schema.py`.
 | Variable | Default | Meaning |
 |---|---|---|
 | `DATABASE_URL` | unset | `postgresql://user@127.0.0.1:5432/dbname`. A value that is not a `postgresql://` URL stops the server at start-up (it never falls back to SQLite). When set, the server uses PostgreSQL and ignores `--db`/`GAME_DB` for the data. The password belongs in the env file (mode 600) or in `~/.pgpass`, never in the repository, and never in logs. The server never prints the URL. |
-| `PG_POOL` | 6 | Idle connections kept per worker process. |
+| `PG_POOL` | 6 | Idle connections kept per worker process. A connection beyond this many is closed when it is given back, so under steady load above `PG_POOL` busy connections every such request opens a new one (connect, then one `set_config` round trip). On a busy server set it equal to `PG_POOL_MAX`. |
 | `PG_POOL_MAX` | 12 | Most connections one worker opens at once. With `WORKERS=4` that is 48 at most, under the `max_connections = 60` of `deploy/pg/install_pg16.sh` minus the reserved and tool connections. Keep `WORKERS` x `PG_POOL_MAX` under the server's `max_connections`, minus the connections that tools need. A request waits up to `PG_POOL_WAIT_MS` (10000) for a free connection. |
 | `PG_POOL_CHECK_MS` | 5000 | An idle connection older than this is checked (`SELECT 1`) before use. After a PostgreSQL restart, a dead connection is also replaced when its first statement fails, and that statement is retried once. There is never a retry after a statement has succeeded, so a write is never repeated. |
 | `PG_STATEMENT_TIMEOUT_MS` | 10000 | `statement_timeout` of every connection. Admin statistics raise it for their one heavy query (`ADMIN_STATS_TIMEOUT`, default `120s`). |
