@@ -1,9 +1,10 @@
 /** The parts of the operator page that need more than the first-screen summary, loaded
  * with `import()` only when one of them is shown:
  *  - the save-derived cards of "Tổng quan" (GET /api/admin/stats/section?name=saves);
+ *  - "Thời gian chơi" (…?name=playtime: small day tables kept by a trigger, never the saves);
  *  - the "Hệ thống" view (…?name=system, plus the summary and the sample facts).
  * Aggregates only: no names, session ids or contact details. */
-import {esc,icon,num,dec,share,stamp,bytes,span,tag,hm,ago} from './ui.js';
+import {esc,icon,num,dec,pct,share,stamp,bytes,span,tag,hm,ago,dm} from './ui.js';
 import {kpi,kv,card,table,moreButton,savesFresh} from './stats.js';
 
 const THEME={kem:'Kem sữa',tra_xanh:'Trà xanh',bien:'Biển chiều',keo:'Kẹo ngọt',dem:'Phố đêm'};
@@ -55,6 +56,55 @@ function lifeCard(d){
 export function savesCards(d,name,more){
   return {head:savesFresh(d),careers:careersCard(d,name,more),economy:economyCard(d),play:playCard(d),life:lifeCard(d),
     foot:`<p class="foot">Số về cách chơi, kinh tế, đời sống lấy từ mẫu ${num(d.sample.size)} lượt chơi có thao tác gần nhất (tối đa ${num(d.sample.limit)}), cập nhật ${stamp(d.generated_at)}. Không chứa tên, mã phiên hay thông tin liên lạc.</p>`};
+}
+
+/* ---- Thời gian chơi (…/section?name=playtime) ------------------------------------------- */
+const PERIODS={today:'Hôm nay',yesterday:'Hôm qua',d7:'7 ngày',d30:'30 ngày'};
+const nf1=new Intl.NumberFormat('vi-VN',{minimumFractionDigits:1,maximumFractionDigits:1});
+const m1=v=>v==null?'—':nf1.format(v);   // minutes always with one decimal: 8,0 next to 8,1
+const mins=v=>v==null?'—':`${m1(v)} phút`;
+const big=v=>v==null?'—':`${m1(v)}<small class="unit"> phút</small>`;
+/** Exact (counted by the trigger), estimated (seeded from receipts) or not all days counted yet. */
+function periodTag(p){
+  const part=p.partial?(p.days>1?tag(`${p.tracked}/${p.days} ngày`,'info'):tag('chưa đủ ngày','info')):'';
+  if(p.estimated.length)return tag('ước tính','warn')+(part&&p.days>1?`<br>${part}`:'');
+  return part||tag('chính xác','good');
+}
+/** 24 columns: players active in each hour of the day (average of the last finished days). */
+function hourChart(h){
+  const v=h.avg,max=Math.max(1,...v),peak=v.indexOf(Math.max(...v));
+  const bars=v.map((n,i)=>`<span class="bar${i===peak&&n?' peak':''}" data-tip="${i}h: ${dec(n)} người"><i style="height:${n?Math.max(2,Math.round(1000*n/max)/10):0}%"></i></span>`).join('');
+  const when=h.days?`TB ${num(h.days)} ngày${h.start&&h.end&&h.start!==h.end?` ${dm(h.start)}–${dm(h.end)}`:''}`:'chưa có';
+  return `<figure class="chart hours"><figcaption><b>Người chơi theo giờ</b><span>${when}${Math.max(...v)?` · đông nhất ${peak}h`:''}</span></figcaption>
+    <div class="plot"><span class="plot-max" aria-hidden="true">${dec(max)}</span><div class="bars" role="img" aria-label="Người chơi theo giờ, đông nhất lúc ${peak} giờ: ${dec(v[peak])} người">${bars}</div></div>
+    <div class="xaxis" aria-hidden="true"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>23h</span></div></figure>`;
+}
+export function playtimeCard(d){
+  const P=Object.fromEntries(d.periods.map(p=>[p.key,p])),w=P.d7,t=P.today,order=['today','yesterday','d7','d30'];
+  const kpis=`<div class="kpis k4">
+    ${kpi('Mỗi người/ngày',big(w.avg_min),`trung vị ${mins(w.median_min)} · 7 ngày`)}
+    ${kpi('Mỗi lượt chơi',big(w.session_avg_min),`trung vị ${mins(w.session_median_min)} · ${dec(w.sessions_per_player)} lượt/người`)}
+    ${kpi('Hôm nay',big(t.avg_min),`${num(t.player_days)} người · ${num(t.hours)} giờ chơi`)}
+    ${kpi('Người mới',big(w.new.median_min),`ngày đầu, trung vị · ${pct(w.new.over_pct)} chơi > ${num(d.rule.new_over_min)} phút`)}
+  </div>`;
+  const row=(label,f,cls='')=>`<tr${cls?` class="${cls}"`:''}><td>${label}</td>${order.map(k=>`<td>${f(P[k])}</td>`).join('')}</tr>`;
+  const head=`<tr><th></th>${order.map(k=>`<th>${PERIODS[k]}<br>${periodTag(P[k])}</th>`).join('')}</tr>`;
+  const rows=[
+    row('Người chơi<small>/ngày</small>',p=>num(p.players)),
+    row('Phút/người',p=>m1(p.avg_min)),row('trung vị',p=>m1(p.median_min),'sub-row'),
+    row('Phút/lượt',p=>m1(p.session_avg_min)),row('trung vị',p=>m1(p.session_median_min),'sub-row'),
+    row('Lượt/người',p=>dec(p.sessions_per_player)),row('Giờ chơi',p=>num(p.hours)),
+    `<tr class="grp"><td colspan="5">Người mới · ngày đầu</td></tr>`,
+    row('Số người',p=>num(p.new.n)),row('Phút TB',p=>m1(p.new.avg_min)),row('trung vị',p=>m1(p.new.median_min),'sub-row'),
+    row(`> ${num(d.rule.new_over_min)} phút`,p=>pct(p.new.over_pct)),
+  ];
+  const tbl=`<div class="scroll"><table class="tbl play-tbl"><thead>${head}</thead><tbody>${rows.join('')}</tbody></table></div>`;
+  const bands=hbars(w.bands.map(b=>({label:`${esc(b.label)} phút`,n:b.n})),{total:w.player_days,compact:true});
+  const est=d.estimated.length?` Ước tính (từ biên nhận${d.estimated.some(e=>e.capped)?`, thiếu phần cũ của ${num(d.estimated.reduce((a,e)=>a+e.capped,0))} lượt chơi nhiều`:''}): ${d.estimated.map(e=>dm(e.day)).join(', ')}.`:'';
+  const since=d.since.day&&!d.since.estimated&&d.since.at?` Đo từ ${hm(d.since.at)}${d.since.day!==d.today?'':' hôm nay'}.`:'';
+  return card('Thời gian chơi',kpis+`<div class="play-grid"><div>${tbl}</div><div class="play-side">
+      <div><h3 class="sub">Phút mỗi người/ngày · 7 ngày</h3>${bands}</div>${hourChart(d.hours)}</div></div>`,
+    {cls:'wide play',note:`Một lượt: các thao tác cách nhau ≤ ${num(d.rule.gap_min)} phút, cộng ${num(d.rule.tail_min)} phút sau thao tác cuối.${since}${est}`});
 }
 
 /* ---- Hệ thống ---------------------------------------------------------------------------- */

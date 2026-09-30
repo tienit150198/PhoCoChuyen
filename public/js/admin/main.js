@@ -9,7 +9,8 @@
  * opens (GET /api/admin/stats/section, drawn by ./sections.js, imported on demand).
  * Changing the range aborts the request still running for the old one. The "Trực tiếp"
  * band (…/section?name=live: active players, commands/min, latency, DB size) is polled
- * every LIVE_MS while "Tổng quan" is shown; it costs the server a few index reads. */
+ * every LIVE_MS while "Tổng quan" is shown; it costs the server a few index reads. The
+ * "Thời gian chơi" card (…?name=playtime) loads when it scrolls into view, like the saves cards. */
 import {AdminAPI} from './api.js';
 import {Inbox} from './inbox.js';
 import {overviewView,liveView,skeleton,skelCard} from './stats.js';
@@ -31,7 +32,7 @@ const store={
 
 const ui={screen:'loading',view:'tong-quan',navOpen:false,login:{error:'',busy:false,replace:false,user:''},unread:null};
 const stats={range:RANGES.includes(store.get('range',7))?store.get('range',7):7,byRange:{},busy:false,error:null,auto:store.get('auto',true)!==false,ctl:null,timer:0,retry:0,pending:false,
-  sections:{saves:{data:null,at:0,busy:false,error:null},system:{data:null,at:0,busy:false,error:null}},more:{...MORE},
+  sections:{saves:{data:null,at:0,busy:false,error:null},system:{data:null,at:0,busy:false,error:null},playtime:{data:null,at:0,busy:false,error:null}},more:{...MORE},
   live:{data:null,at:0,busy:false,error:null,ctl:null}};
 let sectionsMod=null;  // ./sections.js once imported
 const loadSectionsMod=()=>sectionsMod?Promise.resolve(sectionsMod):import('./sections.js').then(m=>(sectionsMod=m));
@@ -155,7 +156,7 @@ function ensureSection(name){
   const s=stats.sections[name];
   if(s&&!s.busy&&!s.error&&!s.retry&&(!s.data||Date.now()-s.at>REFRESH_MS))loadSection(name);
 }
-/** A heavy part (saves | system); its renderer module is fetched alongside. */
+/** A part loaded on demand (saves | system | playtime); its renderer module is fetched alongside. */
 function loadSection(name,fresh=false){
   const s=stats.sections[name];if(!s||s.busy)return;
   const ctl=s.ctl=new AbortController();
@@ -169,10 +170,12 @@ function loadSection(name,fresh=false){
     .catch(e=>{if(e.aborted)return;if(e.status===403||e.status===401){reauth();return;}s.error=e.status?tooFast(e):e.message||'Không tải được phần này.';})
     .finally(()=>{if(s.ctl!==ctl)return;s.busy=false;s.ctl=null;if(ui.screen==='app'&&ui.view!=='gop-y')renderView();});
 }
+/** Sections worth refreshing on the current view (the saves cards show on both). */
+const shown=name=>name==='saves'||(name==='playtime'?ui.view==='tong-quan':ui.view==='he-thong');
 setInterval(()=>{
   if(ui.screen!=='app'||!stats.auto||ui.view==='gop-y'||document.hidden)return;
   loadStats();
-  for(const [name,s] of Object.entries(stats.sections))if(s.data&&(name==='saves'||ui.view==='he-thong'))loadSection(name);
+  for(const [name,s] of Object.entries(stats.sections))if(s.data&&shown(name))loadSection(name);
 },REFRESH_MS);
 /** Range buttons: the choice shows at once; the request goes out once the clicking settles. */
 function pickRange(n){
@@ -311,7 +314,7 @@ function renderView(){
     let body;
     if(stats.error&&!d)body=`<div class="notice bad">${icon('alert',16)}<div>${esc(stats.error)}<br><button type="button" class="btn ghost sm" data-act="refresh">Thử lại</button></div></div>`;
     else if(!d)body=(ui.view==='tong-quan'?live():'')+(stats.pending?`<p class="note">Máy chủ đang bận nên số liệu được tính ở chế độ nền, chờ chút nhé…</p>`:'')+(ui.view==='he-thong'?systemSkeleton():skeleton());
-    else body=(stats.error?`<div class="notice warn">${icon('alert',16)}<div>${esc(stats.error)} Đang hiện số liệu cũ.</div></div>`:'')+(ui.view==='he-thong'?systemBody(d):overviewView(d,savesParts(),stats.more,stats.live));
+    else body=(stats.error?`<div class="notice warn">${icon('alert',16)}<div>${esc(stats.error)} Đang hiện số liệu cũ.</div></div>`:'')+(ui.view==='he-thong'?systemBody(d):overviewView(d,{...savesParts(),playtime:playtimePart()},stats.more,stats.live));
     view.innerHTML=`<div class="stats${stats.busy&&d?' is-busy':''}" aria-busy="${stats.busy}">${body}</div>`;
     view.querySelectorAll('details > summary').forEach(s=>{if(open.has(s.textContent))s.parentElement.open=true;});
     watchLazy(view);
@@ -329,6 +332,13 @@ function savesParts(){
   const p=s.pending,read=p&&p.total?` (đã đọc ${num(p.done)}/${num(p.total)})`:'';
   const ph=title=>skelCard(title,{lazy:'saves',error:err,note:p?`Máy chủ đang đọc các lượt chơi lần đầu${read}, chờ chút nhé…`:''});
   return {careers:ph('Nghề được chơi nhiều'),economy:ph('Kinh tế'),play:ph('Cách chơi'),life:ph('Đời sống & Nhóm cư dân'),foot:''};
+}
+/** "Thời gian chơi": drawn by ./sections.js once loaded, else a placeholder loaded on scroll. */
+function playtimePart(){
+  const s=stats.sections.playtime;
+  if(s.data&&sectionsMod)return sectionsMod.playtimeCard(s.data);
+  const err=s.error&&!s.busy?s.error:'';
+  return skelCard('Thời gian chơi',{lazy:'playtime',error:err,note:s.pending?'Máy chủ đang cộng số liệu các ngày trước, chờ chút nhé…':''});
 }
 function systemSkeleton(){
   return `<div class="kpis k4 skel" aria-hidden="true">${'<div class="kpi skel-kpi"><span class="kpi-label">&nbsp;</span><b class="kpi-num">&nbsp;</b><small class="kpi-sub">&nbsp;</small></div>'.repeat(4)}</div>`+
@@ -357,7 +367,7 @@ root.addEventListener('click',async ev=>{
     case'range':pickRange(Number(el.dataset.range));return;
     case'refresh':{
       stats.error=null;loadStats(true);if(ui.view==='tong-quan')loadLive();
-      for(const [name,s] of Object.entries(stats.sections))if(s.data&&(name==='saves'||ui.view==='he-thong')){s.error=null;loadSection(name,true);}
+      for(const [name,s] of Object.entries(stats.sections))if(s.data&&shown(name)){s.error=null;loadSection(name,true);}
       return;
     }
     case'retrySection':{const s=stats.sections[el.dataset.name];if(!s)return;s.error=null;loadSection(el.dataset.name);renderView();return;}

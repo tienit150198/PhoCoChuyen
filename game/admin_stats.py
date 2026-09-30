@@ -46,6 +46,11 @@ How players are protected
   `sessions.updated_at` is TEXT 'YYYY-MM-DD HH:MM:SS' (UTC) on both backends: it is compared
   with a threshold in that same text form (dbm.utc_text), never cast, so the covering index
   stat_sessions_seen serves the range.
+* Play time (GET /api/admin/stats/section?name=playtime, cached PLAY_TTL): minutes per player
+  per day, sessions, their distribution, the hours of the day and new players' first day, from
+  `stat_play` (one row per save per day, kept by a trigger on receipts: one receipt = one game
+  command; see "play time" below) and `stat_births`. Finished days are summed once per worker.
+  backfill_play() seeds the last days from receipts, once, by hand (estimates: stat_play_est).
 
 Is the snapshot current? (`snapshot` in the saves/system sections, `computed_at`/`age`/
 `old` on the summary.) The job writes a heartbeat {pid, at, phase} into its own lock file.
@@ -63,6 +68,7 @@ Days are Vietnam days (UTC+7), matching the players.
 from __future__ import annotations
 import bisect
 import datetime
+from array import array
 import glob
 import hashlib
 import json
@@ -74,6 +80,7 @@ import time
 from pathlib import Path
 
 from . import __version__
+from .pg_schema import PLAY_GAP, PLAY_IDLE_TAIL
 
 try:  # PostgreSQL backend (game/db.py); a tree without it is SQLite only
     from . import db as dbm
@@ -93,6 +100,7 @@ SUMMARY_EVERY = 60.0       # the job's copy of the first screen (served when a l
 IDLE = 600.0               # the job stops this long after the last admin request
 SAMPLE = max(100, int(os.environ.get('ADMIN_STATS_SAMPLE', '400') or 400))
 KEEP_DAYS = 120            # stat_active history kept
+PLAY_KEEP_DAYS = 400       # stat_play history kept
 COHORT_DAYS = 30           # retention looks at players who started in the last 30 days (or the range, if longer)
 TZ = '+7 hours'
 VN = datetime.timezone(datetime.timedelta(hours=7))
@@ -121,6 +129,7 @@ CMD_WINDOW = 5             # the page shows the last CMD_WINDOW minutes plus the
 # Latency histogram (ms, upper bounds); one more bucket past the last edge.
 CMD_EDGES = (2, 5, 10, 15, 20, 30, 40, 50, 75, 100, 150, 200, 300, 400, 500, 750, 1000, 1500, 2000, 3000, 5000, 10000)
 
+_NOW = "((julianday('now') - 2440587.5) * 86400.0)"   # unix time with milliseconds, like PostgreSQL's epoch
 SCHEMA = f"""
 CREATE INDEX IF NOT EXISTS stat_sessions_seen ON sessions(updated_at, revision, sid);
 CREATE TABLE IF NOT EXISTS stat_births (sid TEXT PRIMARY KEY, day TEXT NOT NULL);
@@ -139,6 +148,28 @@ END;
 CREATE TRIGGER IF NOT EXISTS stat_session_gone AFTER DELETE ON sessions BEGIN
   DELETE FROM stat_births WHERE sid = OLD.sid;
   DELETE FROM stat_active WHERE sid = OLD.sid;
+END;
+CREATE TABLE IF NOT EXISTS stat_play (day TEXT NOT NULL, sid TEXT NOT NULL, secs INTEGER NOT NULL, sessions INTEGER NOT NULL,
+  cmds INTEGER NOT NULL, first_at REAL NOT NULL, last_at REAL NOT NULL, hours INTEGER NOT NULL DEFAULT 0,
+  sess_at REAL NOT NULL, lens TEXT NOT NULL DEFAULT '', PRIMARY KEY(day, sid)) WITHOUT ROWID;
+CREATE INDEX IF NOT EXISTS stat_play_sid ON stat_play(sid);
+CREATE TABLE IF NOT EXISTS stat_play_est (day TEXT PRIMARY KEY, saves INTEGER NOT NULL, capped INTEGER NOT NULL, at REAL NOT NULL);
+CREATE TRIGGER IF NOT EXISTS stat_play_cmd AFTER INSERT ON receipts BEGIN
+  INSERT INTO stat_play(day, sid, secs, sessions, cmds, first_at, last_at, hours, sess_at, lens)
+  VALUES (date('now', '{TZ}'), NEW.sid, {PLAY_IDLE_TAIL}, 1, 1, {_NOW}, {_NOW},
+          1 << CAST(strftime('%H', 'now', '{TZ}') AS INTEGER), {_NOW}, '')
+  ON CONFLICT(day, sid) DO UPDATE SET
+    secs = secs + CASE WHEN excluded.last_at - last_at <= {PLAY_GAP} THEN MAX(0, CAST(round(excluded.last_at - last_at) AS INTEGER)) ELSE {PLAY_IDLE_TAIL} END,
+    sessions = sessions + CASE WHEN excluded.last_at - last_at <= {PLAY_GAP} THEN 0 ELSE 1 END,
+    cmds = cmds + 1,
+    last_at = MAX(last_at, excluded.last_at),
+    hours = hours | excluded.hours,
+    sess_at = CASE WHEN excluded.last_at - last_at <= {PLAY_GAP} THEN sess_at ELSE excluded.last_at END,
+    lens = CASE WHEN excluded.last_at - last_at <= {PLAY_GAP} THEN lens
+                ELSE lens || (CAST(round(last_at - sess_at) AS INTEGER) + {PLAY_IDLE_TAIL}) || ',' END;
+END;
+CREATE TRIGGER IF NOT EXISTS stat_play_gone AFTER DELETE ON sessions BEGIN
+  DELETE FROM stat_play WHERE sid = OLD.sid;
 END;
 CREATE TRIGGER IF NOT EXISTS stat_fb_seen AFTER UPDATE OF status ON player_feedback
   WHEN OLD.status = 'new' AND NEW.status != 'new' BEGIN
@@ -888,6 +919,342 @@ def live(store) -> dict:
     return _stamp(out, t0)
 
 
+# ---------------------------------------------------------------- play time ("Thời gian chơi")
+# stat_play holds one row per save per Vietnam day it sent a command, kept by the trigger
+# stat_play_cmd on receipts (see SCHEMA; game/pg_schema.py on PostgreSQL): secs played,
+# sessions, commands, the first/last command, the hours of the day it played (bit mask), the
+# start of its current session and the lengths of its closed sessions ("lens", "90,300,").
+# Days seeded from receipts by backfill_play() are listed in stat_play_est: their numbers are
+# estimates (receipts keep only the newest RECEIPTS_PER_SAVE per save).
+# The section reads only these two tables and stat_births. A finished day never changes, so
+# each worker keeps its summary (a few histograms, ~15 KB) for PLAY_DAY_TTL; only today is
+# read again when the PLAY_TTL cache runs out.
+PLAY_TTL = 60.0
+PLAY_MS = int(os.environ.get('ADMIN_STATS_PLAY_MS', '2500') or 2500)   # all reads of one section request
+PLAY_DAY_TTL = 6 * 3600.0
+PLAY_DAYS_KEPT = 64          # day summaries kept per worker (all databases together)
+PLAY_BANDS = ((0, 5, '< 5'), (5, 15, '5–15'), (15, 30, '15–30'), (30, 60, '30–60'), (60, None, '> 60'))  # minutes a day
+NEW_OVER = 600               # first day: the share of new players who played longer than this (seconds)
+PLAY_BUCKETS = 1200          # histogram of seconds: exact to the second below 10 min, then 10 s, 1 min, 10 min
+
+
+def _bucket(secs) -> int:
+    s = max(0, int(secs))
+    if s < 600:
+        return s
+    if s < 3600:
+        return 600 + (s - 600) // 10
+    if s < 14400:
+        return 900 + (s - 3600) // 60
+    return 1080 + min((s - 14400) // 600, 119)
+
+
+def _bucket_span(b: int) -> tuple[int, int]:
+    if b < 600:
+        return b, 1
+    if b < 900:
+        return 600 + (b - 600) * 10, 10
+    if b < 1080:
+        return 3600 + (b - 900) * 60, 60
+    return 14400 + (b - 1080) * 600, 600
+
+
+def _hist() -> array:
+    return array('I', bytes(4 * PLAY_BUCKETS))
+
+
+def _hist_add(into: array, other: array) -> None:
+    for i, n in enumerate(other):
+        if n:
+            into[i] += n
+
+
+def _quantile(hist: array, q: float):
+    """The q-quantile (seconds) of a PLAY_BUCKETS histogram, interpolated like _pct: exact where a
+    bucket is one second wide, the items of a wider bucket taken as spread evenly inside it."""
+    n = sum(hist)
+    if not n:
+        return None
+    want = (n - 1) * q
+    lo_i, frac = int(want), want - int(want)
+
+    def value(k):
+        seen = 0
+        for b, c in enumerate(hist):
+            if c and seen + c > k:
+                start, width = _bucket_span(b)
+                return start if width == 1 else start + (k - seen + 0.5) * width / c
+            seen += c
+        return None
+    a = value(lo_i)
+    return a if not frac else a + (value(min(lo_i + 1, n - 1)) - a) * frac
+
+
+def _lens(text) -> list[int]:
+    return [int(x) for x in str(text or '').split(',') if x.strip().lstrip('-').isdigit()]
+
+
+def play_day(db, day: str) -> dict:
+    """One day of stat_play (and the first day of that day's new players), summed up."""
+    players = secs = sessions = cmds = 0
+    first = None
+    per_player, per_session, hours = _hist(), _hist(), [0] * 24
+    for r in db.execute('SELECT secs, sessions, cmds, first_at, last_at, hours, sess_at, lens FROM stat_play WHERE day = ?', (day,)):
+        s = int(r[0])
+        players += 1
+        secs += s
+        sessions += int(r[1])
+        cmds += int(r[2])
+        first = r[3] if first is None else min(first, r[3])
+        per_player[_bucket(s)] += 1
+        for length in _lens(r[7]):
+            per_session[_bucket(length)] += 1
+        per_session[_bucket(round(r[4] - r[6]) + PLAY_IDLE_TAIL)] += 1   # the session still open at the day's end
+        h = int(r[5] or 0) & 0xFFFFFF
+        while h:
+            low = h & -h
+            hours[low.bit_length() - 1] += 1
+            h ^= low
+    new, new_secs, new_over, new_hist = 0, 0, 0, _hist()
+    for (s,) in db.execute('SELECT p.secs FROM stat_births b JOIN stat_play p ON p.day = b.day AND p.sid = b.sid WHERE b.day = ?', (day,)):
+        s = int(s)
+        new += 1
+        new_secs += s
+        new_over += s > NEW_OVER
+        new_hist[_bucket(s)] += 1
+    return dict(day=day, players=players, secs=secs, sessions=sessions, cmds=cmds, first_at=first, per_player=per_player,
+                per_session=per_session, hours=hours, new=dict(n=new, secs=new_secs, over=new_over, hist=new_hist))
+
+
+_play_lock = threading.Lock()
+_play_days: dict[tuple, tuple] = {}   # (db path, day) -> (monotonic time, stat_play_est.at of that day, summary)
+
+
+def _play_day_cached(store, db, day: str, mark) -> dict:
+    """A finished day's summary: from this worker's memory, read again after PLAY_DAY_TTL or when
+    the backfill marked the day since (its stat_play_est.at moved)."""
+    key, at = (store.path, day), (mark or {}).get('at')
+    now = time.monotonic()
+    with _play_lock:
+        hit = _play_days.get(key)
+    if hit and hit[1] == at and now - hit[0] < PLAY_DAY_TTL:
+        return hit[2]
+    out = play_day(db, day)
+    with _play_lock:
+        _play_days.pop(key, None)
+        _play_days[key] = (now, at, out)
+        while len(_play_days) > PLAY_DAYS_KEPT:   # the oldest entry first (insertion order)
+            _play_days.pop(next(iter(_play_days)))
+    return out
+
+
+def _mins(secs) -> float | None:
+    return None if secs is None else round(secs / 60, 1)
+
+
+def _play_period(key: str, span: list[str], roll: dict, est: dict, first_day) -> dict:
+    have = [roll[d] for d in span if d in roll]
+    n = sum(r['players'] for r in have)
+    secs = sum(r['secs'] for r in have)
+    sess = sum(r['sessions'] for r in have)
+    pp, ps, nh = _hist(), _hist(), _hist()
+    new = dict(n=0, secs=0, over=0)
+    for r in have:
+        _hist_add(pp, r['per_player'])
+        _hist_add(ps, r['per_session'])
+        _hist_add(nh, r['new']['hist'])
+        for k in new:
+            new[k] += r['new'][k]
+    bands = []
+    for lo, hi, label in PLAY_BANDS:
+        a, b = _bucket(lo * 60), (_bucket(hi * 60) if hi is not None else PLAY_BUCKETS)
+        c = sum(pp[a:b])
+        bands.append(dict(label=label, n=c, pct=round(100 * c / n, 1) if n else None))
+    estimated = [d for d in span if d in est]
+    partial = len(have) < len(span) or (first_day in span and first_day not in est)
+    return dict(key=key, start=span[0], end=span[-1], days=len(span), tracked=len(have), player_days=n,
+                players=round(n / len(have), 1) if have else 0,
+                avg_min=_mins(secs / n) if n else None, median_min=_mins(_quantile(pp, .5)), p90_min=_mins(_quantile(pp, .9)),
+                session_avg_min=_mins(secs / sess) if sess else None, session_median_min=_mins(_quantile(ps, .5)),
+                sessions_per_player=round(sess / n, 2) if n else None, sessions=sess, hours=round(secs / 3600, 1),
+                cmds=sum(r['cmds'] for r in have), bands=bands,
+                new=dict(n=new['n'], avg_min=_mins(new['secs'] / new['n']) if new['n'] else None, median_min=_mins(_quantile(nh, .5)),
+                         over_pct=round(100 * new['over'] / new['n'], 1) if new['n'] else None),
+                exact=not estimated and not partial, estimated=estimated, partial=partial)
+
+
+def playtime(store) -> dict:
+    """"Thời gian chơi": minutes per player per day, sessions, the minutes' distribution, the
+    hours of the day, new players' first day, for today, yesterday, 7 and 30 days. Reads
+    stat_play / stat_play_est / stat_births only (read-only, under PLAY_MS), never a save."""
+    t0 = time.perf_counter()
+    today = datetime.datetime.now(VN).date()
+    span = _days(today, 30)
+    with _read(store, PLAY_MS) as db:
+        est = {r[0]: dict(saves=int(r[1]), capped=int(r[2]), at=r[3])
+               for r in db.execute('SELECT day, saves, capped, at FROM stat_play_est WHERE day >= ?', (span[0],))}
+        first_day = db.execute('SELECT MIN(day) FROM stat_play').fetchone()[0]
+        roll = {}
+        for day in span:
+            if first_day is None or day < first_day:
+                continue
+            roll[day] = play_day(db, day) if day == span[-1] else _play_day_cached(store, db, day, est.get(day))
+    yesterday = span[-2]
+    periods = [_play_period(k, days, roll, est, first_day) for k, days in
+               (('today', span[-1:]), ('yesterday', [yesterday]), ('d7', span[-7:]), ('d30', span))]
+    # Hours of the day: the 7 finished days before today (today alone on the first day of tracking).
+    hour_days = [d for d in span[-8:-1] if d in roll] or [d for d in span[-1:] if d in roll]
+    per_hour = [round(sum(roll[d]['hours'][h] for d in hour_days) / len(hour_days), 1) if hour_days else 0 for h in range(24)]
+    since = roll[first_day]['first_at'] if first_day in roll else None
+    out = dict(today=today.isoformat(), periods=periods,
+               hours=dict(avg=per_hour, days=len(hour_days), start=hour_days[0] if hour_days else None,
+                          end=hour_days[-1] if hour_days else None),
+               since=dict(day=first_day, at=round(since, 3) if since else None, estimated=first_day in est),
+               estimated=[dict(day=d, **{k: v for k, v in m.items() if k != 'at'}) for d, m in sorted(est.items())],
+               rule=dict(gap_min=PLAY_GAP // 60, tail_min=PLAY_IDLE_TAIL // 60, new_over_min=NEW_OVER // 60))
+    return _stamp(out, t0)
+
+
+def get_playtime(store, fresh: bool = False) -> dict:
+    """The play time section, cached PLAY_TTL per worker; it neither wakes nor waits for the job."""
+    try:
+        return dict(_serve(('playtime', store.path), lambda: playtime(store), PLAY_TTL, fresh))
+    except Busy:  # over PLAY_MS (a cold worker reading 30 days): the finished days read so far stay cached
+        return dict(pending=True, retry_ms=2000)
+
+
+# ---------------------------------------------------------------- play time: seeding from receipts
+def _utc_epoch(text: str) -> int:
+    return int(datetime.datetime.strptime(text[:19], '%Y-%m-%d %H:%M:%S').replace(tzinfo=datetime.timezone.utc).timestamp())
+
+
+def _vn_day(t: float) -> str:
+    return datetime.datetime.fromtimestamp(t, VN).date().isoformat()
+
+
+def _play_from(ts: list[int]) -> dict:
+    """A stat_play row (without day and sid) for one save's command times of one day (sorted),
+    by the trigger's rule."""
+    runs = []   # [start, last]
+    hours = 0
+    for t in ts:
+        hours |= 1 << ((t + 7 * 3600) // 3600 % 24)
+        if runs and t - runs[-1][1] <= PLAY_GAP:
+            runs[-1][1] = t
+        else:
+            runs.append([t, t])
+    lens = [b - a + PLAY_IDLE_TAIL for a, b in runs]
+    return dict(secs=sum(lens), sessions=len(runs), cmds=len(ts), first_at=float(ts[0]), last_at=float(ts[-1]),
+                hours=hours, sess_at=float(runs[-1][0]), lens=lens[:-1], last_len=lens[-1])
+
+
+def _play_merge(e: dict, row) -> dict:
+    """Estimated commands `e` (all before the tracked row `row`'s first command) joined to it."""
+    first_at, last_at, secs, sessions, cmds, hours, sess_at, lens = (row['first_at'], row['last_at'], int(row['secs']), int(row['sessions']),
+                                                                     int(row['cmds']), int(row['hours'] or 0), row['sess_at'], _lens(row['lens']))
+    gap = first_at - e['last_at']
+    joined = gap <= PLAY_GAP
+    if not joined:
+        new_lens, new_sess = e['lens'] + [e['last_len']] + lens, sess_at
+    elif lens:   # the tracked first session is closed: it grows by the time from the estimated session's start
+        new_lens, new_sess = e['lens'] + [lens[0] + round(first_at - e['sess_at'])] + lens[1:], sess_at
+    else:        # the tracked first session is the open one: it now starts at the estimated session's start
+        new_lens, new_sess = list(e['lens']), e['sess_at']
+    return dict(secs=secs + e['secs'] + (round(gap) - PLAY_IDLE_TAIL if joined else 0), sessions=sessions + e['sessions'] - joined,
+                cmds=cmds + e['cmds'], first_at=e['first_at'], hours=hours | e['hours'], sess_at=new_sess,
+                lens=''.join(f'{x},' for x in new_lens), last_at=last_at)
+
+
+def backfill_play(store, days: int = 2, cap: int | None = None, batch: int = 100, pause: float = 0.05,
+                  dry_run: bool = False, now: float | None = None, log=None) -> dict:
+    """Seed stat_play for the last `days` Vietnam days (today included) from the receipts the
+    database still holds, for the commands sent before tracking began; run by hand once after the
+    release that adds the trigger (scripts/playtime_backfill.py). Idempotent: for a (day, save)
+    that already has a row, only receipts older than its first command are used, and a row it
+    seeded starts at its oldest receipt, so a second run finds nothing to add.
+    Receipts are kept 2 days and at most `cap` (RECEIPTS_PER_SAVE, 200) per save: a busy save's
+    older commands are gone, so the seeded days are listed in stat_play_est (the page says
+    "ước tính"), with how many seeded saves were at the cap. Reads receipts by save through their
+    primary key, `batch` saves per short transaction; never changes a receipt or a save."""
+    now = time.time() if now is None else now
+    cap = int(cap if cap is not None else os.environ.get('RECEIPTS_PER_SAVE', '200') or 200)
+    today = datetime.datetime.fromtimestamp(now, VN).date()
+    span = _days(today, max(1, int(days)))
+    since = (datetime.datetime.combine(datetime.date.fromisoformat(span[0]), datetime.time()) - datetime.timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')
+    with store.connect() as db:   # every save that wrote on those days (stat_active: its primary key serves the range)
+        sids = [r[0] for r in db.execute('SELECT DISTINCT sid FROM stat_active WHERE day >= ? ORDER BY sid', (span[0],))]
+    out = dict(days=span, saves=len(sids), receipts=0, inserted=0, merged=0, capped=0, covered=0, dry_run=bool(dry_run),
+               per_day={d: dict(saves=0, capped=0) for d in span})
+    for i in range(0, len(sids), max(1, int(batch))):
+        part = sids[i:i + max(1, int(batch))]
+        marks = ','.join('?' * len(part))
+        with store.connect() as db:
+            got = db.execute(f'SELECT sid, created_at FROM receipts WHERE sid IN ({marks}) AND created_at >= ? ORDER BY sid, created_at',
+                             (*part, since)).fetchall()
+            total = {r[0]: int(r[1]) for r in db.execute(f'SELECT sid, COUNT(*) FROM receipts WHERE sid IN ({marks}) GROUP BY sid', part)}
+        out['receipts'] += len(got)
+        by = {}
+        for sid, created in got:
+            t = _utc_epoch(created)
+            day = _vn_day(t)
+            if day in out['per_day']:
+                by.setdefault((day, sid), []).append(t)
+        if not by:
+            continue
+
+        def write(db, by=by, part=part, marks=marks):
+            rows = {(r['day'], r['sid']): r for r in db.execute(
+                f"SELECT day, sid, secs, sessions, cmds, first_at, last_at, hours, sess_at, lens FROM stat_play "
+                f"WHERE day IN ({','.join('?' * len(span))}) AND sid IN ({marks})" + (dbm.for_update(db) if dbm else ''), (*span, *part))}
+            seeded = {d: [0, 0] for d in span}
+            for (day, sid), ts in by.items():
+                row = rows.get((day, sid))
+                if row is not None:   # tracked since its first command: only what came before that second
+                    ts = [t for t in ts if t < int(row['first_at'])]
+                if not ts:
+                    out['covered'] += 1
+                    continue
+                e = _play_from(ts)
+                if row is None:
+                    if not dry_run:
+                        n = db.execute('INSERT OR IGNORE INTO stat_play(day, sid, secs, sessions, cmds, first_at, last_at, hours, sess_at, lens) '
+                                       'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                       (day, sid, e['secs'], e['sessions'], e['cmds'], e['first_at'], e['last_at'], e['hours'], e['sess_at'],
+                                        ''.join(f'{x},' for x in e['lens']))).rowcount
+                        if n != 1:   # the trigger wrote it meanwhile: the next run joins these commands to it
+                            continue
+                    out['inserted'] += 1
+                else:
+                    m = _play_merge(e, row)
+                    if not dry_run:
+                        db.execute('UPDATE stat_play SET secs = ?, sessions = ?, cmds = ?, first_at = ?, hours = ?, sess_at = ?, lens = ? '
+                                   'WHERE day = ? AND sid = ?',
+                                   (m['secs'], m['sessions'], m['cmds'], m['first_at'], m['hours'], m['sess_at'], m['lens'], day, sid))
+                    out['merged'] += 1
+                full = total.get(sid, 0) >= cap
+                seeded[day][0] += 1
+                seeded[day][1] += full
+                out['capped'] += full
+            for day, (n, full) in seeded.items():
+                out['per_day'][day]['saves'] += n
+                out['per_day'][day]['capped'] += full
+                if n and not dry_run:
+                    db.execute('INSERT INTO stat_play_est(day, saves, capped, at) VALUES (?, ?, ?, ?) ON CONFLICT(day) DO UPDATE SET '
+                               'saves = stat_play_est.saves + excluded.saves, capped = stat_play_est.capped + excluded.capped, at = excluded.at',
+                               (day, n, full, round(time.time(), 3)))
+        if dry_run:
+            with store.connect() as db:
+                write(db)
+                db.rollback()
+        else:
+            store.transaction(write)
+        if log:
+            log(f'{min(i + len(part), len(sids))}/{len(sids)} lượt chơi')
+        if pause:
+            time.sleep(pause)
+    return out
+
+
 # ---------------------------------------------------------------- the background job
 def _paths(store) -> dict:
     base = str(store.path) + '-adminstats'
@@ -1206,14 +1573,29 @@ class _Job:
         self.summary_at = time.time()
 
     def purge(self) -> None:
-        """Drop stat_active days older than KEEP_DAYS, one day per short write."""
-        cut = (datetime.datetime.now(VN).date() - datetime.timedelta(days=KEEP_DAYS)).isoformat()
+        """Drop stat_active days older than KEEP_DAYS, one day per short write, and stat_play days
+        older than PLAY_KEEP_DAYS, PURGE_ROWS rows per short write."""
+        today = datetime.datetime.now(VN).date()
+        cut = (today - datetime.timedelta(days=KEEP_DAYS)).isoformat()
         with _read(self.store, 1000) as db:
             days = [r[0] for r in db.execute('SELECT DISTINCT day FROM stat_active WHERE day < ? ORDER BY day LIMIT 30', (cut,))]
         for day in days:
             with self.store.connect() as db:
                 db.execute('DELETE FROM stat_active WHERE day = ?', (day,))
             time.sleep(0.05)
+        cut = (today - datetime.timedelta(days=PLAY_KEEP_DAYS)).isoformat()
+        with _read(self.store, 1000) as db:
+            days = [r[0] for r in db.execute('SELECT DISTINCT day FROM stat_play WHERE day < ? ORDER BY day LIMIT 30', (cut,))]
+        for day in days:
+            while True:
+                with self.store.connect() as db:
+                    n = db.execute('DELETE FROM stat_play WHERE day = ? AND sid IN (SELECT sid FROM stat_play WHERE day = ? ORDER BY sid LIMIT ?)',
+                                   (day, day, PURGE_ROWS)).rowcount
+                time.sleep(0.05)
+                if n < PURGE_ROWS:
+                    break
+        with self.store.connect() as db:
+            db.execute('DELETE FROM stat_play_est WHERE day < ?', (cut,))
         self.purged_at = time.time()
 
     def write(self) -> None:
@@ -1279,6 +1661,7 @@ class _Job:
 
 
 PURGE_EVERY = 6 * 3600
+PURGE_ROWS = 2000          # stat_play rows per delete
 _jobs: dict[str, _Job] = {}
 _jobs_lock = threading.Lock()
 
@@ -1533,7 +1916,7 @@ def get_summary(store, value=None, fresh: bool = False) -> dict:
         return dict(pending=True, retry_ms=3000, range=days)
 
 
-SECTIONS = ('saves', 'system', 'live')
+SECTIONS = ('saves', 'system', 'live', 'playtime')
 
 
 def get_live(store) -> dict:
@@ -1545,12 +1928,14 @@ def get_live(store) -> dict:
 
 
 def get_section(store, name, fresh: bool = False) -> dict:
-    """GET /api/admin/stats/section?name=saves|system|live: the job's result file (instant),
-    or the live counters."""
+    """GET /api/admin/stats/section?name=saves|system|live|playtime: the job's result file
+    (instant), the live counters or the play time (small stat tables, cached)."""
     if name not in SECTIONS:
         raise ValueError('section')
     if name == 'live':
         return get_live(store)
+    if name == 'playtime':
+        return get_playtime(store, fresh)
     wake(store, fresh)
     return saves_section(store) if name == 'saves' else system_section(store)
 
@@ -1558,5 +1943,7 @@ def get_section(store, name, fresh: bool = False) -> dict:
 def clear_cache() -> None:
     with _cache_lock:
         _cache.clear()
+    with _play_lock:
+        _play_days.clear()
     _result_cache.clear()
     _live_off.clear()
