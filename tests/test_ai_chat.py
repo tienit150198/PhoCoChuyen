@@ -221,6 +221,18 @@ class PersonaReplyTests(unittest.TestCase):
         self.assertEqual(out['mode'], 'guard')
         mock.assert_not_called()
 
+    def test_looks_words_and_rude_pronouns_fall_back(self):
+        for reply, why in (('Nhìn nhà quê ghê con.', 'unsafe'), ('Tao nói rồi, nấu lẹ đi.', 'rude_pronoun'),
+                           ('Mình đang trao đổi về món ăn nhé.', 'assistant_tone')):
+            out, _ = self.call(reply)
+            self.assertEqual((out['mode'], out['reason'], out['text']), ('scripted', why, 'Làm cẩn thận giúp tôi nhé.'))
+
+    def test_player_idioms_reach_the_model(self):
+        out, mock = self.call('Ờ, khổ thân con, bà nghe rồi.', text='Nay bị khách bom hàng, mệt chết đi được bà ơi')
+        self.assertEqual(out['mode'], 'ai')
+        mock.assert_called_once()
+        self.assertIn('THÁI ĐỘ', json.loads(mock.call_args.args[0].data)['messages'][0]['content'])
+
     def test_english(self):
         self.j.act('settings', lang='en')
         out, mock = self.call('Fine, dear. Careful with the seafood.')
@@ -335,8 +347,11 @@ class ChatRouteTests(unittest.TestCase):
         self.assertEqual(FakeLLM.requests, [])
 
     def test_budget(self):
+        modes = []
         with patch.dict(os.environ, {'AI_CHAT_PER_MINUTE': '2'}):
-            modes = [self.chat(f'Câu hỏi số {i}')[1] for i in range(3)]
+            for i, word in enumerate(('Ờ', 'Ừ thì', 'Thôi')):  # the same line twice would be rejected as a repeat
+                FakeLLM.reply = f'{word}, bà nghe rồi. Con làm cẩn thận giùm bà nha.'
+                modes.append(self.chat(f'Câu hỏi số {i}')[1])
         self.assertEqual([m['mode'] for m in modes[:2]], ['ai', 'ai'])
         self.assertEqual((modes[2]['mode'], modes[2]['reason']), ('scripted', 'rate_limit'))
         self.assertEqual(len(FakeLLM.requests), 2)

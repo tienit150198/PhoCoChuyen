@@ -973,6 +973,38 @@ VOICE_OF = dict(warm='am_ap', official='lich_su', tsundere='tsundere', knowitall
 VERBOSITY_OF = dict(terse='kiem_loi', normal='vua', talker='noi_nhieu')
 
 
+def _arch_of(who: str) -> tuple[str | None, dict | None]:
+    """(attitude archetype, knobs) of a resident (game/spice.py): temperament -> archetype, kids stay kids."""
+    try:
+        from . import spice
+    except ImportError:
+        return None, None
+    p = C.CAST[who]
+    arch = spice.BOARD_TEMPER_TO_ARCH.get(p['temper'])
+    age = p.get('age') if isinstance(p.get('age'), int) else 30
+    if arch and age < 16:
+        arch = 'hoc_sinh'
+    # Only archetypes that fit the resident's gender and age (Ông Bảy is never "người Hà Nội chanh chua" cô).
+    arch = spice.fit(arch, spice.gender_of(p.get('name', ''), p.get('self', '')), spice.age_band(age))
+    temper = 'quiet' if p['verbosity'] == 'terse' else None
+    return arch, spice.knobs_for(arch, who, purpose='board', temper=temper, age='child' if age < 12 else None)
+
+
+def _attitude_block(s: dict, job: dict, lang: str) -> str:
+    """The "THÁI ĐỘ" block for this resident and this comment ('' for cold/shy residents or AI_SPICE=0)."""
+    arch, knobs = _arch_of(job['who'])
+    if not arch:
+        return ''
+    from . import spice
+    p = C.CAST[job['who']]
+    sit = spice.situation_of(job.get('said') or '') if job.get('said') else 'board'
+    if sit in ('smalltalk', 'task', 'greet'):
+        sit = 'board'
+    seed = spice._h('board', job.get('post'), job.get('cmt'), job['who'])
+    return spice.prompt_block(arch, knobs, sit, verbosity=VERBOSITY_OF[p['verbosity']],
+                              address=dict(self=p['self'], player=_you(s, job['who'])), seed=seed, lang=lang)
+
+
 def _temper_style(temper: str) -> str:
     """Our own description, or the shared voice library's attitude when it has this voice."""
     v = _voices()
@@ -982,7 +1014,7 @@ def _temper_style(temper: str) -> str:
     return C.TEMPERS[temper][1]
 
 
-def _voice_block(s: dict, who: str, lang: str) -> str:
+def _voice_block(s: dict, who: str, lang: str, examples: int | None = None) -> str:
     """The shared voice library's prompt block for this resident ('' when the library is absent)."""
     v = _voices()
     fn = getattr(v, 'prompt_block', None) if v else None
@@ -994,7 +1026,8 @@ def _voice_block(s: dict, who: str, lang: str) -> str:
         day = int((s.get('journey') or {}).get('life_day', 1))
         mood = v.mood_for(who, day) if callable(getattr(v, 'mood_for', None)) else None
         block = fn(VOICE_OF.get(p['temper'], 'am_ap'), VERBOSITY_OF[p['verbosity']], mood, lang,
-                   address=dict(self=p['self'], player=_you(s, who)), limit=dict(sentences=verb['sentences'], chars=verb['chars']))
+                   address=dict(self=p['self'], player=_you(s, who)), limit=dict(sentences=verb['sentences'], chars=verb['chars']),
+                   **(dict(examples=examples) if examples else {}))
     except Exception:  # the board keeps its own prompt if the library changes shape
         return ''
     return block if isinstance(block, str) else ''
@@ -1062,6 +1095,7 @@ def open_job(s: dict) -> dict | None:
 def _system(s: dict, job: dict, lang: str) -> str:
     p = persona(s, job['who'])
     english = lang == 'en'
+    attitude = _attitude_block(s, job, lang)
     task = ('Viết MỘT bình luận trả lời người chơi trong chuỗi bình luận này.' if job['kind'] == 'reply'
             else 'Viết MỘT bình luận tiếp nối cuộc trò chuyện giữa các hàng xóm (người chơi không tham gia).')
     return (
@@ -1077,7 +1111,7 @@ def _system(s: dict, job: dict, lang: str) -> str:
         'Nếu thread là tin đồn về người chơi: không đặt điều thêm, không khẳng định chuyện chưa rõ; người tử tế thì bênh vực, khuyên nhủ. '
         f'Viết bằng {"English (natural and casual; keep the character, drop Vietnamese particles)" if english else "tiếng Việt"}. '
         'Chỉ trả về đúng lời bình luận, không tên, không ngoặc kép, không giải thích.'
-    ) + ('\n' + block if (block := _voice_block(s, job['who'], lang)) else '')
+    ) + ('\n' + block if (block := _voice_block(s, job['who'], lang, 1 if attitude else None)) else '') + ('\n' + attitude if attitude else '')
 
 
 def ai_messages(s: dict, job: dict, lang: str = 'vi') -> list[dict]:

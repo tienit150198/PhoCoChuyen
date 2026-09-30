@@ -8,8 +8,8 @@ Both are data for the prompt in game/ai.py; nothing here talks to a model.
 
 Each card also carries a speaking voice from game/voices.py (stable per NPC, fitted to
 role, age and temperament), a verbosity level (kiệm lời / vừa / nói nhiều), a mood for
-the current life day, and a little "street talk" (what they saw, a rumour for the
-gossips, a comfort cue for the kind ones).
+the current life day, an attitude archetype with its knobs (game/spice.py) and a little
+"street talk" (what they saw, a rumour for the gossips, a comfort cue for the kind ones).
 """
 from __future__ import annotations
 import hashlib
@@ -18,6 +18,7 @@ import re
 from .content import NPC_INDEX, CAREER_META, PRODUCT_INDEX
 from . import feedback as fbk
 from . import voices
+from . import spice
 
 DONE = ('completed', 'referred', 'cancelled')
 PLACEHOLDER_LIKES = {'Những câu chuyện có thật'}
@@ -97,7 +98,11 @@ def _address(state: dict, career: str, npc: dict, age: str, temper: str) -> dict
     if career == 'teacher' and age == 'child':
         return dict(self='con', player=teacher_word)
     if career == 'teacher' and 'Phụ huynh' in role:
-        return dict(self='tôi' if temper in ('parent_strict',) else 'chị', player=teacher_word)
+        # Strict parents keep a formal "tôi"; the rest go by their gender (name prefix, spice.gender_of):
+        # mothers "chị", fathers "anh", unknown a neutral "tôi".
+        g = spice.gender_of(npc.get('display_name', ''))
+        own = 'chị' if g == 'f' else 'anh' if g == 'm' else 'tôi'
+        return dict(self='tôi' if temper in ('parent_strict',) else own, player=teacher_word)
     if age == 'child':
         return dict(self='em', player=elder_word)
     if age == 'elder':
@@ -193,6 +198,10 @@ def persona(state: dict, career: str, npc: str) -> dict:
         voice=voice['id'], voice_label=voice['label'], verbosity=voices.verbosity_for(npc, voice),
         mood=mood, mood_why=voices.mood_reason(npc, day, mood),
     )
+    # Attitude on top of the voice (game/spice.py): archetype + sass/opinion/warmth/slang knobs.
+    flavour = spice.card_spice(npc, voice['id'], n.get('role', ''), age, temper, career, region_name, mood)
+    if flavour:
+        card['spice'] = flavour
     street = voices.street_talk(state, career, npc, voice, day, card['address']) if career in state.get('careers', {}) else None
     if street:
         card['street_talk'] = street

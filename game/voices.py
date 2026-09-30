@@ -234,7 +234,7 @@ VOICES = {v['id']: v for v in (
         'Chắc tại sao xấu chiếu, qua rằm là mọi chuyện êm thôi.'],
        ['Hôm nay ngày hoàng đạo đấy, làm gì cũng thuận nhé.', 'Quầy này nên đặt chậu kim tiền bên trái, phong thủy nó hút lộc.'],
        ['À {ban}, hôm nay mặc màu hợp mệnh đấy.', 'Chào. Nay sao tốt chiếu, vui lên.']),
-    _V('me_bim', 'Mẹ bỉm hay so sánh con', '🍼', 'con là trung tâm vũ trụ, hay so con mình với con người ta',
+    _V('me_bim', 'Phụ huynh bỉm sữa hay so sánh con', '🍼', 'con là trung tâm vũ trụ, hay so con mình với con người ta',
        ['câu nào cũng lái về con', '"con nhà tôi thì…"', 'khoe con giỏi sớm', 'hỏi mẹo nuôi con'],
        ['Con nhà tôi ấy mà…', 'Bé nhà mình đó…', 'Con nhà người ta…'], ['nhé', 'á', 'ý'], 'vừa (👶, 🥰)',
        ['con ăn gì', 'con học gì', 'sữa, bỉm', 'lớp năng khiếu'],
@@ -245,7 +245,7 @@ VOICES = {v['id']: v for v in (
        ['Bé nhà {toi} mới tí tuổi đã biết đọc bảng hiệu rồi, nói thật chứ không khoe đâu.',
         'Con nhà {toi} ấy mà, ăn rau là phải đúng bữa, {toi} canh từng chút.'],
        ['Ôi {ban}, xem ảnh bé nhà {toi} mới chụp này!'], talk='nhieu'),
-    _V('bia_hoi', 'Chú bia hơi triết lý', '🍺', 'chiều nào cũng ngồi quán vỉa hè, nói chuyện đời, triết lý bình dân',
+    _V('bia_hoi', 'Dân bia hơi triết lý', '🍺', 'chiều nào cũng ngồi quán vỉa hè, nói chuyện đời, triết lý bình dân',
        ['"đời mà…", "chú nói cháu nghe"', 'ví von bằng chuyện nhậu, bóng đá', 'kết câu bằng một câu triết lý'],
        ['Đời là thế!', 'Nói cho mà nghe…', 'Uống cho đời nó nhẹ.'], ['nhá', 'đấy', 'cơ'], 'không',
        ['thế sự', 'bóng đá', 'chuyện đời', 'thời trẻ'],
@@ -690,8 +690,12 @@ LENGTH_RULE = {
 
 
 def prompt_block(voice: dict | str, verbosity: str = 'vua', mood: str | None = None, lang: str = 'vi', *,
-                 address: dict | None = None, mood_why: str | None = None, limit: dict | None = None) -> str:
-    """The voice part of a system prompt: attitude, habits, reactions, length, mood and few-shot lines."""
+                 address: dict | None = None, mood_why: str | None = None, limit: dict | None = None,
+                 examples: int | None = None, seed: int = 0) -> str:
+    """The voice part of a system prompt: attitude, habits, reactions, length, mood and few-shot lines.
+
+    `examples` limits the few-shot lines (the first one plus others rotated by `seed`): when an
+    attitude block (game/spice.py) follows, two are enough and the anchor changes every turn."""
     v = VOICES.get(voice) if isinstance(voice, str) else voice
     v = v or VOICES['am_ap']
     lim = limit or limits(verbosity)
@@ -716,7 +720,12 @@ def prompt_block(voice: dict | str, verbosity: str = 'vua', mood: str | None = N
                      + (f'; chuyện riêng: {mood_why}' if mood_why else '') + '). Chỉ ảnh hưởng nhẹ tới giọng, đừng kể lể về nó trừ khi hợp.')
     lines.append(f'ĐỘ DÀI: {LENGTH_RULE.get(verbosity, LENGTH_RULE["vua"])} Tối đa {lim["sentences"]} câu, dưới {lim["chars"]} ký tự.')
     lines.append('Ví dụ giọng (chỉ để bắt nhịp và thái độ; KHÔNG chép lại, không lặp nguyên câu):')
-    lines += ['- ' + _fill(x, address, True) for x in v['examples']]
+    shown = list(v['examples'])
+    if examples and len(shown) > examples:
+        rest = shown[1:]
+        start = seed % len(rest)
+        shown = [shown[0]] + (rest[start:] + rest[:start])[:examples - 1]
+    lines += ['- ' + _fill(x, address, True) for x in shown]
     if lang == 'en':
         lines.append('The examples are Vietnamese: keep the same attitude, rhythm and length in natural English '
                      '(casual English slang instead of teencode, no Vietnamese particles).')
@@ -812,11 +821,15 @@ def scripted(state: dict, career: str, npc: str, kind: str, fallback: str) -> st
         return fallback
     v = VOICES.get(p.get('voice')) or VOICES['am_ap']
     addr = p.get('address')
+    arch = (p.get('spice') or {}).get('arch')  # attitude archetype (game/spice.py): half the lines come from it
     c = (state.get('careers') or {}).get(career) or {}
     seed = _h('scripted', npc, kind, len((c.get('chats') or {}).get(npc) or []), c.get('turn', 0))
     if kind == 'greet':
         if personas.open_task(state, career, npc):
             addr = dict(self='mình', player='bạn')  # the scripted opening that follows says mình/bạn
+        if arch and _h('spice', seed) % 2 == 0:
+            from . import spice
+            return spice.line(arch, 'greet', seed // 2, addr) or small_talk(v, seed, addr, 'greet')
         return small_talk(v, seed, addr, 'greet')
     street = p.get('street_talk') or {}
     if street.get('comfort') and seed % 2 == 0:
@@ -827,4 +840,7 @@ def scripted(state: dict, career: str, npc: str, kind: str, fallback: str) -> st
         tag = 'watcher' if 'watcher' in v['tags'] else 'gossip' if 'gossip' in v['tags'] else 'any'
         opener = RUMOUR_OPEN[tag][seed // 3 % len(RUMOUR_OPEN[tag])]
         return _fill(opener + ' ' + street['rumour'] + '… mà ' + ('chắc đồn thôi ha.' if seed % 2 else 'thiệt hông đó?'), addr, True)
+    if arch and _h('spice', seed) % 2 == 0:
+        from . import spice
+        return spice.line(arch, 'smalltalk', seed // 2, addr) or small_talk(v, seed, addr, 'idle')
     return small_talk(v, seed, addr, 'idle')
