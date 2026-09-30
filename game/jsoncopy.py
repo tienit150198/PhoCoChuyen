@@ -19,3 +19,16 @@ def tree_copy(x):
     if t in _SCALARS:
         return x
     return copy.deepcopy(x)
+
+
+def strip_copy(x):
+    """tree_copy(x) without the dict keys that start with '_' (server-only fields), at
+    every depth: what the careers' `_strip(copy.deepcopy(x))` gives, in one pass."""
+    t = type(x)
+    if t is dict:
+        return {k: (v if type(v) in _SCALARS else strip_copy(v)) for k, v in x.items() if not (type(k) is str and k[:1] == '_')}
+    if t is list:
+        return [v if type(v) in _SCALARS else strip_copy(v) for v in x]
+    if t in _SCALARS:
+        return x
+    return copy.deepcopy(x)

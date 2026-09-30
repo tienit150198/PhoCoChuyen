@@ -24,6 +24,7 @@ clean. Stays end in the morning and leave rooms dirty.
 """
 from __future__ import annotations
 import copy
+from ..jsoncopy import tree_copy
 import itertools
 import math
 from . import kit
@@ -2151,7 +2152,7 @@ def feedback(c: dict, t: dict) -> dict:
 
 # ---------------------------------------------------------------- projection & validation
 def public_task(t: dict) -> dict:
-    v = copy.deepcopy(t)
+    v = tree_copy(t)
     x = v.pop('_x', {})
     if not t['known']:
         v['needs'] = None
@@ -2192,10 +2193,10 @@ def public_task(t: dict) -> dict:
 
 
 def public_data(c: dict) -> dict:
-    d = copy.deepcopy(_data(c))
+    d = tree_copy(_data(c))
     desk = d.pop('desk', None) or kit.desk_initial()
     for k, v in DATA_V2.items():
-        d.setdefault(k, copy.deepcopy(v))
+        d.setdefault(k, tree_copy(v))
     day = c['day']
     grid = {}
     for rid, r in d['rooms'].items():

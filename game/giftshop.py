@@ -22,6 +22,7 @@ module level so content.py can import this module.
 """
 from __future__ import annotations
 import copy
+from .jsoncopy import tree_copy, strip_copy
 import datetime
 import hashlib
 import random
@@ -416,7 +417,7 @@ def view(c: dict) -> dict:
     raw = ((c.get('ext') or {}).get('data') or {}).get('gift')
     out = fresh()
     if isinstance(raw, dict):
-        out.update(copy.deepcopy(raw))
+        out.update(tree_copy(raw))
     return out
 
 
@@ -1269,7 +1270,7 @@ def public(c: dict) -> dict:
         ev_view = dict(id=ev['id'], kind=ev['kind'], stage=ev['stage'], title=EVENTS[ev['kind']]['title'], emoji=EVENTS[ev['kind']]['emoji'],
                        text=event_text(c, ev), choices=event_choices(c, ev) if ev['stage'] == 'open' else [], result=ev.get('result'),
                        effects=ev.get('effects', []), good=ev.get('good', False), task=ev.get('task'), facts=facts)
-    return _clean(dict(modifier=dict(id=mod['id'], title=mod['title'], emoji=mod['emoji'], text=mod['text']), event=ev_view,
+    return strip_copy(dict(modifier=dict(id=mod['id'], title=mod['title'], emoji=mod['emoji'], text=mod['text']), event=ev_view,
                        labels=LABELS, uses=USES, tags=TAGS, papers=PAPER_NAMES, today=b['today'], stats=b['stats'], history=b['history'][-7:],
                        date=date_text(c['day'])))
 

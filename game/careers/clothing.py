@@ -43,7 +43,7 @@ Everything random is seeded from (day, slot) or the task id and stored once.
 """
 from __future__ import annotations
 
-import copy
+from ..jsoncopy import tree_copy, strip_copy
 
 from . import kit, till
 from .. import archive as ar
@@ -1715,7 +1715,7 @@ def _strip(v):
 
 
 def public_task(t: dict) -> dict:
-    v = _strip(copy.deepcopy(t))
+    v = strip_copy(t)
     if not t['known']:
         v['needs'] = None
         return v
@@ -1733,7 +1733,7 @@ def public_task(t: dict) -> dict:
 
 
 def public_data(c: dict) -> dict:
-    d = _extend(copy.deepcopy(kit.data(c)))
+    d = _extend(tree_copy(kit.data(c)))
     view = dict(c, ext=dict(c.get('ext', {}), data=d))
     _sync(view)
     held = {}

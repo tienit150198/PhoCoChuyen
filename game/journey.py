@@ -19,6 +19,7 @@ workplace open and no living costs, so plugin tests can play any career.
 from __future__ import annotations
 
 import copy
+from .jsoncopy import tree_copy
 import hashlib
 import random
 
@@ -254,9 +255,15 @@ def _core():
     return engine
 
 
+_EMPLOYMENT = None  # game.employment, imported once (import cycle)
+
+
 def _emp():
-    from . import employment
-    return employment
+    global _EMPLOYMENT
+    if _EMPLOYMENT is None:
+        from . import employment
+        _EMPLOYMENT = employment
+    return _EMPLOYMENT
 
 
 def _place(cid: str) -> str:
@@ -309,10 +316,14 @@ def initial(story: bool = False, seed: int = 0) -> dict:
 def _context(s: dict) -> dict:
     """Everything the goals and titles read, derived from the real save."""
     cs, j = s['careers'], s['journey']
-    served = {cid: int(c.get('metrics', {}).get('served', 0)) for cid, c in cs.items()}
+    served, lv, xp = {}, {}, 0
+    for cid, c in cs.items():  # one pass (this runs on every command's view)
+        served[cid] = int(c.get('metrics', {}).get('served', 0))
+        x = int(c.get('xp', 0))
+        lv[cid] = 1 + x // 90
+        xp += x
     places = sum(1 for n in served.values() if n > 0)
-    lv = {cid: 1 + int(c.get('xp', 0)) // 90 for cid, c in cs.items()}
-    xp = sum(int(c.get('xp', 0)) for c in cs.values()) + BREADTH_XP * places
+    xp += BREADTH_XP * places
     points = {}
     for cid, n in served.items():
         for sid, w in SKILL_WEIGHTS.get(cid, {}).items():
@@ -732,8 +743,10 @@ def public(s: dict) -> dict:
     for cid, c in s['careers'].items():
         if not c.get('started'):
             continue
-        places[cid] = dict(fund=c['money'], upkeep=upkeep(s, cid), paused=cid in j['paused'], employed=_employed(cid),
-                           unpaid=_unpaid(c), withdraw_max=withdraw_max(c))
+        # upkeep(), withdraw_max() without asking twice
+        employed, unpaid = _employed(cid), _unpaid(c)
+        places[cid] = dict(fund=c['money'], upkeep=0 if employed else UPKEEP.get(c['ops']['property']['tier'], UPKEEP['cozy']),
+                           paused=cid in j['paused'], employed=employed, unpaid=unpaid, withdraw_max=max(0, c['money'] - unpaid - RESERVE))
     secret = {tid: dict(name=TITLE_INDEX[tid]['name'], emoji=TITLE_INDEX[tid]['emoji'], desc=TITLE_INDEX[tid]['desc'])
               for tid in j['titles'] if TITLE_INDEX[tid]['secret']}
     eq = TITLE_INDEX.get(j['equipped'])
@@ -746,7 +759,7 @@ def public(s: dict) -> dict:
         secret=secret, maturity=maturity(ctx['xp']),
         skills=[dict(id=sid, points=ctx['points'].get(sid, 0), level=ctx['sk'].get(sid, 0)) for sid in _skill_ids()],
         goals=_goals_view(ctx, j['chapter']), progress_paused=j['story'] and j['wallet'] < 0 and j['chapter'] <= LAST,
-        clean_days=j['clean_days'], history=list(reversed(j['history'][-30:])), news=copy.deepcopy(j['news']),
+        clean_days=j['clean_days'], history=list(reversed(j['history'][-30:])), news=tree_copy(j['news']),
         suggested=suggested(s, ctx), tasks=ctx['tasks'], worked=ctx['places'],
         stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')},
         bank=bk.public(s), home=hs.public(s), **ct.public(s))

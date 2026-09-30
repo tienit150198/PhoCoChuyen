@@ -13,7 +13,8 @@ flags are all derived from that record, so a save can be re-validated.
 """
 from __future__ import annotations
 
-import copy
+from .jsoncopy import tree_copy
+from .memo import Memo, size_of
 
 from . import consequences as cq
 from . import desk_content as dc
@@ -109,12 +110,25 @@ def known_request(t: dict) -> str:
 
 
 # ------------------------------------------------------------------ public view
+_BULLETINS = Memo(entries=512, budget=2 << 20)  # (career, day) -> dc.bulletin(): a pure function of both, read by every desk task's view
+
+
+def _bulletin(career: str, day: int) -> dict:
+    plain = type(career) is str and type(day) is int
+    b = _BULLETINS.get((career, day)) if plain else None
+    if b is None:
+        b = dc.bulletin(career, day)
+        if plain:
+            _BULLETINS.put((career, day), b, size_of(b))
+    return b
+
+
 def public_task(t: dict) -> dict:
-    v = copy.deepcopy(t)
-    b = dc.bulletin(t['career'], t['day'])
-    v['rules'] = b['rules']
-    v['bulletin'] = b['notices']
-    v['stamps'] = b.get('stamps')
+    v = tree_copy(t)
+    b = _bulletin(t['career'], t['day'])
+    v['rules'] = tree_copy(b['rules'])
+    v['bulletin'] = tree_copy(b['notices'])
+    v['stamps'] = tree_copy(b.get('stamps'))
     if not t['known']:
         v['docs'] = None
         v['drawer'] = None if 'drawer' in t else None

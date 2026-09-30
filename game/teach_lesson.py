@@ -15,6 +15,7 @@ server replaces them in messages and feed posts it writes itself.
 from __future__ import annotations
 
 import copy
+from .jsoncopy import tree_copy
 import functools
 import itertools
 import json
@@ -1057,7 +1058,7 @@ def _event_view(room: dict, ev: dict) -> dict:
 
 
 def public(t: dict) -> dict:
-    room = copy.deepcopy(t['room']) if 'room' in t else fresh(t['day'], slot_of(t))
+    room = tree_copy(t['room']) if 'room' in t else fresh(t['day'], slot_of(t))
     stage = room['stage']
     cond = COND[room['cond']]
     kids = []

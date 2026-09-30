@@ -14,6 +14,7 @@ documents against transactions; this one computes payroll and tax filings.
 """
 from __future__ import annotations
 import copy
+from ..jsoncopy import tree_copy, strip_copy
 import unicodedata
 from . import kit, office
 from .corp_accounting import (care_can_overtime, care_close, care_ensure, care_handle, care_public, care_rel, care_slow, care_start,
@@ -1148,18 +1149,18 @@ def _strip(v):
 
 
 def public_task(t: dict) -> dict:
-    v = {k: _strip(copy.deepcopy(val)) for k, val in t.items() if not k.startswith('_') and k not in ('proc', 'proc_state', 'rows', 'flags', 'results')}
+    v = {k: strip_copy(val) for k, val in t.items() if not k.startswith('_') and k not in ('proc', 'proc_state', 'rows', 'flags', 'results')}
     if not t['known']:
         v.update(papers=None, brief=None, steps=None, progress=None, rows=None)
         return v
     if t.get('form') == 'grid':
         res, flags, rows = t.get('results') or {}, t.get('flags') or {}, []
         for row in t.get('rows') or []:
-            x = dict(id=row['id'], cells=copy.deepcopy(row['cells']), flags=list(flags.get(row['id'], [])),
+            x = dict(id=row['id'], cells=tree_copy(row['cells']), flags=list(flags.get(row['id'], [])),
                      reviewed=row['id'] in (t.get('reviewed') or []), hinted=row['id'] in (t.get('tips') or []))
             x['tip'] = GRID_HINTS[(row['_truth']['kinds'] or ['clean'])[0]] if x['hinted'] else None
             if t.get('filed') and row['id'] in res:
-                x['result'] = copy.deepcopy(res[row['id']])
+                x['result'] = tree_copy(res[row['id']])
                 x['truth'] = dict(z=list(row['_truth']['z']), why=list(row['_truth']['why']))
             rows.append(x)
         v.update(rows=rows, steps=[], progress=None,
@@ -1234,9 +1235,9 @@ def validate_data(c: dict) -> None:
 
 
 def public_data(c: dict) -> dict:
-    d = copy.deepcopy(kit.data(c))
+    d = tree_copy(kit.data(c))
     for k, v in initial().items():
-        d.setdefault(k, copy.deepcopy(v))
+        d.setdefault(k, tree_copy(v))
     o = office.ensure(d)
     mod = _mod(c['day'])
     r = _rules_raw(c['day'])

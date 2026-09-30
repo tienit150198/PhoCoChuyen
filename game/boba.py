@@ -10,6 +10,7 @@ c['ext']['data']['boba'] so saves from earlier versions keep loading.
 """
 from __future__ import annotations
 import copy
+from .jsoncopy import tree_copy, strip_copy
 import hashlib
 import random
 
@@ -186,7 +187,7 @@ def view(c: dict) -> dict:
     raw = ((c.get('ext') or {}).get('data') or {}).get('boba')
     out = fresh()
     if isinstance(raw, dict):
-        out.update(copy.deepcopy(raw))
+        out.update(tree_copy(raw))
     return out
 
 
@@ -2176,7 +2177,7 @@ def public(c: dict) -> dict:
     notebook = []
     for npc, row in REGULARS.items():
         entry = b['notebook'].get(npc)
-        notebook.append(dict(npc=npc, name=_e().NPC_INDEX[npc]['display_name'], usual=copy.deepcopy(entry['usual']) if entry else None,
+        notebook.append(dict(npc=npc, name=_e().NPC_INDEX[npc]['display_name'], usual=tree_copy(entry['usual']) if entry else None,
                              visits=entry['visits'] if entry else 0, notes=notes_for(b, npc),
                              next_note=next((n for n in (1, 3) if (entry['visits'] if entry else 0) < n), None)))
     left = max(0, b['quota'] - b['arrived']) + len([t for t in active])
@@ -2194,7 +2195,7 @@ def public(c: dict) -> dict:
         pending={k: _pending(b, k) for k in ORDERABLE + list(BASES) if _pending(b, k)},
         express=dict(eta=supplier_view(c, express, now)['quote']['eta_label'], factor=express['factor']),
         sealer=dict(wear=b['sealer_wear'], state=sealer_state(b), sticky=SEALER_STICKY, dirty=SEALER_DIRTY, cleaned=b['cleaned']))
-    return _clean(dict(
+    return strip_copy(dict(
         cups=b['cups'], cup_pack=CUP_PACK, mess=b['mess'], level=lv, total=b['total'], next_tier=next_tier(c), clock=clock(c), beats=beats(c), rate=rate(c),
         modifier=dict(id=mod['id'], title=mod['title'], emoji=mod['emoji'], text=mod['text']),
         quota=b['quota'], arrived=b['arrived'], left=left if c['open'] else None, served=b['served'], perfect=b['perfect'],
@@ -2211,7 +2212,7 @@ def public(c: dict) -> dict:
 
 
 def public_task(t: dict) -> dict:
-    v = _clean(copy.deepcopy(t))
+    v = strip_copy(t)
     v.pop('src', None)
     v.pop('changes', None)
     if not t['known']:

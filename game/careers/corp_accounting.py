@@ -20,6 +20,7 @@ tax codes and amounts are fictional; currency is "xu".
 """
 from __future__ import annotations
 import copy
+from ..jsoncopy import tree_copy, strip_copy
 from . import kit, office
 from .. import consequences as cq
 from .. import procedures
@@ -1699,8 +1700,7 @@ def _strip(v):
 def _public_desk(t: dict, v: dict) -> dict:
     stamps, results = t.get('stamps') or {}, t.get('results') or {}
     rows = []
-    for x in t['cases']:
-        row = _strip(copy.deepcopy(x))
+    for x, row in zip(t['cases'], v['cases']):  # v['cases']: strip_copy of each case, made by public_task
         row['circles'] = list((t.get('circles') or {}).get(x['id'], []))
         row['stamp'] = stamps.get(x['id'])
         row['hinted'] = x['id'] in t['tips']
@@ -1717,15 +1717,17 @@ def _public_desk(t: dict, v: dict) -> dict:
 
 
 def public_task(t: dict) -> dict:
-    v = _strip(copy.deepcopy(t))
+    # strip_copy(t), except what is replaced below (None keeps its place in the key order)
+    skip = ('docs', 'proc', 'proc_state', 'circles', 'results') + (('cases',) if not t['known'] else ())
+    v = {k: (None if k in skip else strip_copy(val)) for k, val in t.items() if not k.startswith('_')}
     v['kind_info'] = dict(KINDS[t['variant']])
     v.pop('circles', None)
     v.pop('results', None)
     if not t['known']:
         v.update(docs=None, proc=None, proc_state=None, brief=None, cases=None)
         return v
-    v['docs'] = [copy.deepcopy(x) if x['id'] in t['inspected'] else dict(id=x['id'], type=x['type'], title=x['title'], source=x['source'], closed=True)
-                 for x in _strip(t['docs'])]
+    v['docs'] = [strip_copy(x) if x['id'] in t['inspected'] else dict(id=x['id'], type=x['type'], title=x['title'], source=x['source'], closed=True)
+                 for x in t['docs']]
     if t.get('variant') == 'desk':
         v.update(proc=[], proc_state=None)
         return _public_desk(t, v)
@@ -1823,9 +1825,9 @@ def validate_data(c: dict) -> None:
 
 
 def public_data(c: dict) -> dict:
-    d = copy.deepcopy(kit.data(c))
+    d = tree_copy(kit.data(c))
     for k, v in initial().items():
-        d.setdefault(k, copy.deepcopy(v))
+        d.setdefault(k, tree_copy(v))
     o = office.ensure(d)
     m, phase, dom = _period(c['day'])
     d['period'] = dict(month=m, phase=phase, date=_d(dom, m), label=['Đầu tháng', 'Giữa tháng', 'Kiểm kê', 'Chuẩn bị khóa sổ', 'Ngày khóa sổ'][phase])
@@ -2217,7 +2219,7 @@ def care_public(cr: dict, cfg: dict, c: dict, o: dict, can_cover=None) -> dict:
                     gain=BREAK_GAIN_R1 if r >= 1 else BREAK_GAIN, rest=ENERGY_REST, ot=ENERGY_OT, line=ENERGY_LOW),
         mates=mates, asked=bool(a), coverable=cover, mentor=cfg['boss'],
         track=dict(rank=r, title=cfg['ranks'][r], ranks=list(cfg['ranks']), reliable=cr['reliable'], streak=cr['streak'],
-                   days=copy.deepcopy(cr['days']), next=nxt, perks=[dict(rank=i + 1, text=x, on=r >= i + 1) for i, x in enumerate(perks)]))
+                   days=tree_copy(cr['days']), next=nxt, perks=[dict(rank=i + 1, text=x, on=r >= i + 1) for i, x in enumerate(perks)]))
 
 
 def care_validate(cr, cfg: dict) -> None:

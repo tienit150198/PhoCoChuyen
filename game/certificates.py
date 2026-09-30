@@ -26,7 +26,7 @@ Save shape (stable; the leaderboard reads `certificates`):
 """
 from __future__ import annotations
 
-import copy
+from .jsoncopy import tree_copy
 import random
 import re
 
@@ -208,18 +208,18 @@ def public(s: dict) -> dict:
     study = j.get('study')
     view = None
     if isinstance(study, dict):
-        view = copy.deepcopy(study)
+        view = tree_copy(study)
         view.update(ready_now=j['life_day'] >= study['ready'], days_left=max(0, study['ready'] - j['life_day']))
     paper = j.get('cert_paper')
     last = None
     if isinstance(paper, dict) and paper.get('cert') in KEY:
         bank = KEY[paper['cert']]
-        last = {k: copy.deepcopy(paper[k]) for k in ('cert', 'right', 'score', 'passed', 'day', 'attempt')}
+        last = {k: tree_copy(paper[k]) for k in ('cert', 'right', 'score', 'passed', 'day', 'attempt')}
         # The key stays on the server until a paper is graded; then it teaches.
         last['review'] = [dict(id=q, text=bank[q]['text'], picked=paper['answers'].get(q), answer=bank[q]['answer'],
                                ok=paper['answers'].get(q) == bank[q]['answer'], why=bank[q]['why'],
                                options={o['id']: o['label'] for o in bank[q]['options']}) for q in paper['qs']]
-    return dict(certificates=copy.deepcopy(j.get('certificates') or {}), study=view, cert_paper=last)
+    return dict(certificates=tree_copy(j.get('certificates') or {}), study=view, cert_paper=last)
 
 
 _WORD = re.compile(r'\w+', re.UNICODE)

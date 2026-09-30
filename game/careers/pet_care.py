@@ -37,7 +37,7 @@ v0.5 (tasks with gen=2; saved tasks keep the first generator):
   surprises at the counter with real consequences (kit desk engine).
 """
 from __future__ import annotations
-import copy
+from ..jsoncopy import tree_copy
 import math
 from . import kit
 from .. import consequences as cq
@@ -2420,7 +2420,7 @@ def feedback(c: dict, t: dict) -> dict:
 
 # ---------------------------------------------------------------- projection & validation
 def public_task(t: dict) -> dict:
-    v = copy.deepcopy(t)
+    v = tree_copy(t)
     x = v.pop('_x', {})
     if not t['known']:
         v['needs'] = None
@@ -2486,7 +2486,7 @@ def _public_care(d: dict, day: int) -> None:
 
 
 def public_data(c: dict) -> dict:
-    d = _migrate(copy.deepcopy(kit.data(c)))
+    d = _migrate(tree_copy(kit.data(c)))
     desk = d.pop('desk', None) or kit.desk_initial()
     _public_care(d, c['day'])
     d['today'] = c['day']

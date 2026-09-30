@@ -1216,11 +1216,13 @@ def _involved(p: dict) -> bool:
 
 def unread(bd: dict) -> int:
     n = 0
+    seen = bd['seen']
     for p in bd['posts']:
-        if p['seq'] > bd['seen'] and p['who'] != 'player':
+        if p['seq'] > seen and p['who'] != 'player':
             n += 1
-        if _involved(p):
-            n += sum(1 for c in p['cmts'] if c['seq'] > bd['seen'] and c['who'] != 'player')
+        cmts = p['cmts']
+        if cmts and (p['who'] == 'player' or any(c['who'] == 'player' for c in cmts)):  # _involved(p)
+            n += sum(1 for c in cmts if c['seq'] > seen and c['who'] != 'player')
     return n
 
 

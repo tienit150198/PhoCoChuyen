@@ -8,7 +8,7 @@ import random
 from . import extra_content as data
 from . import teach_lesson, tour_trip
 from .careers import PLUGINS
-from .jsoncopy import tree_copy
+from .jsoncopy import tree_copy,strip_copy
 from . import archive as ar
 from . import patience as pt
 
@@ -355,7 +355,10 @@ def on_talk(c:dict,npc:str):
  if npc not in c['life']['day_talked']:c['life']['day_talked'].append(npc)
 
 def public_life(c:dict)->dict:
- x=tree_copy(c['life']);x['goals']=goals(c);x['stock']=stock(c);x['weather']=data.WEATHERS[(c['day']-1)%3];x['forecast']={'calm':2,'normal':3,'festival':4}[x['mode']]
+ # Called on public_state's private save: shared except what is written below (the activity's cards).
+ x=dict(c['life'])
+ if x.get('activity'):x['activity']=tree_copy(x['activity'])
+ x['goals']=goals(c);x['stock']=stock(c);x['weather']=data.WEATHERS[(c['day']-1)%3];x['forecast']={'calm':2,'normal':3,'festival':4}[x['mode']]
  if 'tour' in x:x['tour']=tour_trip.public_care(c)  # tour guide: the group, partners, kit, notebook, reviews
  x['badges_view']=[dict(b,current=c['metrics'].get(b['metric'],0),claimed=b['id'] in x['badges']) for b in data.ACHIEVEMENTS]
  a=x['activity']
@@ -372,7 +375,7 @@ def _strip(v):
 
 def public_task(t:dict)->dict:
  mod=PLUGINS.get(t['career'])
- if mod:return mod.public_task(t) if hasattr(mod,'public_task') else _strip(tree_copy(t))
+ if mod:return mod.public_task(t) if hasattr(mod,'public_task') else strip_copy(t)
  v=tree_copy(t)
  if t['career']=='teacher':
   v['lesson'].pop('answer',None)

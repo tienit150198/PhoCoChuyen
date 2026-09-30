@@ -20,6 +20,7 @@ people, countries, currencies and numbers are fictional; money is "xu".
 """
 from __future__ import annotations
 import copy
+from ..jsoncopy import tree_copy, strip_copy
 from . import kit, office
 from .corp_accounting import (care_can_overtime, care_close, care_ensure, care_handle, care_public, care_rel, care_slow, care_start,
                               care_validate, care_validate_task)
@@ -1376,7 +1377,7 @@ def _public_match(t: dict, v: dict) -> dict:
         rows.append(row)
     left = _left(t)
     m = _meter_of(t['lines'], board)
-    v.update(lines=rows, proc=[], proc_state=None, docs=_strip(copy.deepcopy(t['docs'])), tags=tags_for(t['day']),
+    v.update(lines=rows, proc=[], proc_state=None, docs=strip_copy(t['docs']), tags=tags_for(t['day']),
              causes=[dict(id=i, emoji=e, label=label) for i, e, label in CAUSES_PAIR],
              names=dict(a=_short(t['ic']['a']), b=_short(t['ic']['b']), fx=t['ic']['fx']),
              meter=dict(m, total=len(rows), resolved=len(rows) - left, ready=left == 0, agreed=m['ra2'] if left == 0 else None),
@@ -1385,7 +1386,9 @@ def _public_match(t: dict, v: dict) -> dict:
 
 
 def public_task(t: dict) -> dict:
-    v = _strip(copy.deepcopy(t))
+    # strip_copy(t), except what is replaced below (None keeps its place in the key order)
+    skip = ('docs', 'proc', 'proc_state', 'board') + (('lines',) if not t['known'] or t.get('variant') == 'match' else ())
+    v = {k: (None if k in skip else strip_copy(val)) for k, val in t.items() if not k.startswith('_')}
     v['kind_info'] = dict(KINDS[t['variant']])
     v.pop('board', None)
     if not t['known']:
@@ -1393,8 +1396,8 @@ def public_task(t: dict) -> dict:
         return v
     if t.get('variant') == 'match':
         return _public_match(t, v)
-    v['docs'] = [copy.deepcopy(x) if x['id'] in t['inspected'] else dict(id=x['id'], type=x['type'], title=x['title'], source=x['source'], closed=True)
-                 for x in _strip(t['docs'])]
+    v['docs'] = [strip_copy(x) if x['id'] in t['inspected'] else dict(id=x['id'], type=x['type'], title=x['title'], source=x['source'], closed=True)
+                 for x in t['docs']]
     steps, state = procedures.public(t)
     rows = []
     for st in steps:
@@ -1504,9 +1507,9 @@ def validate_data(c: dict) -> None:
 
 
 def public_data(c: dict) -> dict:
-    d = copy.deepcopy(kit.data(c))
+    d = tree_copy(kit.data(c))
     for k, v in initial().items():
-        d.setdefault(k, copy.deepcopy(v))
+        d.setdefault(k, tree_copy(v))
     o = office.ensure(d)
     q, phase, year = _period(c['day'])
     d['period'] = dict(quarter=q, year=year, phase=phase, label=f'Ngày làm việc thứ {phase + 1}/5 của kỳ khóa sổ quý {q}')

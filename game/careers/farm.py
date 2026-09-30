@@ -48,7 +48,8 @@ Care loop (docs/superpowers/specs/2026-09-29-farm-care-design.md):
 All deterministic, no new randomness; older saves are migrated in validate_data.
 """
 from __future__ import annotations
-import copy
+from ..jsoncopy import tree_copy
+from ..memo import Memo, size_of
 from . import kit
 from .. import consequences as cq
 from .. import archive as ar
@@ -302,8 +303,20 @@ def _weather(day: int) -> dict:
     return WEATHER[0]
 
 
+_MARKET = Memo(entries=1024, budget=1 << 20)  # day -> market(day): seeded by the day alone, read for every unit priced on every view
+
+
 def market(day: int) -> dict:
     """Wholesale price index per produce (percent of the usual price) for the day."""
+    got = _MARKET.get(day) if type(day) is int else None
+    if got is None:
+        got = _market(day)
+        if type(day) is int:
+            _MARKET.put(day, got, size_of(got))
+    return dict(got)
+
+
+def _market(day: int) -> dict:
     x = season(day)
     r = kit.rng(ID, 'market', day)
     spread = 20 + 5 * kit.tier(day)
@@ -1047,14 +1060,14 @@ def feedback(c: dict, t: dict) -> dict:
 
 # ---------------------------------------------------------------- projection
 def public_task(t: dict) -> dict:
-    v = copy.deepcopy(t)
+    v = tree_copy(t)
     if not t['known']:
         v['needs'] = None
     return v
 
 
 def public_data(c: dict) -> dict:
-    d = copy.deepcopy(kit.data(c))
+    d = tree_copy(kit.data(c))
     _advance(d, c['turn'], c['day'], c['open'])
     start = d['market']['start'] if d['market']['day'] == c['day'] else c['turn']
     care = _care(c, d, start)

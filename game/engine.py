@@ -1092,14 +1092,23 @@ def career_summary(raw:dict,cid:str) -> dict:
                 inventory=raw.get("ext",{}).get("inv") is not None,life=dict(shop_name=raw.get("life",{}).get("shop_name")))
 
 
+# public_state rebuilds these from the save (None keeps each one's place in the key order).
+_PUBLIC_OWN=frozenset(("journey","invest","board","life","stories","closeness","abandon"))
+_FOCUS_OWN=frozenset(("ops","situation","incidents","happen","inventory","job","feed","ext","life","day_clock","tasks","event","pending"))
+
 def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     """Public projection. Only the current career (or `full`) gets the full view.
     `migrated=True`: `s` is a disposable state that apply_action just returned
-    (already upgraded), so the defensive migrate copy is skipped."""
+    (already upgraded), so the defensive migrate copy is skipped.
+
+    Either way `s` here is a private, throw-away save (the caller's, handed over, or
+    migrate_state's copy): what the view shows unchanged is not copied again, the view
+    holds those very lists and dicts, so nothing below may change them (the view's own
+    parts are built fresh or copied before they are edited)."""
     if not migrated:s=migrate_state(s)
     focus=full or s.get("current") or jr.default_career(s)
-    v={k:tree_copy(x) for k,x in s.items() if k not in ("careers","check")}
-    v["careers"]={cid:(tree_copy(c) if cid==focus else career_summary(c,cid)) for cid,c in s["careers"].items()}
+    v={k:(None if k in _PUBLIC_OWN else x) for k,x in s.items() if k not in ("careers","check")}
+    v["careers"]={cid:({k:(None if k in _FOCUS_OWN else x) for k,x in c.items()} if cid==focus else career_summary(c,cid)) for cid,c in s["careers"].items()}
     v["focus"]=focus
     v["journey"]=jr.public(s)
     v["invest"]=iv.public(s)
@@ -1138,7 +1147,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
                 if t.get("desk") and care_lines and t["status"] not in ("completed","referred","cancelled") and isinstance(tv.get("bulletin"),list):tv["bulletin"]=care_lines+tv["bulletin"]
                 if cid=="customer_care" and _cs_classic(t):cs_task_public(raw,t,tv)
         c["level"]=1+c["xp"]//90;c["xp_in_level"]=c["xp"]%90
-        c["event"]=event_view(c["event"])
+        c["event"]=event_view(raw["event"])
         c["available"]={k:available(s["careers"][cid],k) for k in c["stock"]}
         c["quest_progress"]=[]
         for q in QUESTS:
@@ -1148,7 +1157,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
                     steps=[dict(st,current=c["metrics"].get(st["metric"],0),done=c["metrics"].get(st["metric"],0)>=st["goal"]) for st in q["steps"]]))
         reviews=[f["stars"] for f in c["feed"] if f.get("stars")]
         c["rating"]=round(sum(reviews)/len(reviews),1) if reviews else None
-        for pending in c["pending"]:pending.pop("text",None)
+        c["pending"]=[{k:x for k,x in pending.items() if k!="text"} for pending in raw["pending"]]
         if cid in ("mother_baby","pharmacy"):c["shipments"],c["stock_desk"]=_stock_view(raw,cid)
     return v
 
@@ -1806,7 +1815,7 @@ def _ph_notices(c:dict)->list[str]:
 
 
 def _ph_public(c:dict,care:dict)->dict:
-    v=copy.deepcopy(care);day=c["day"]
+    v=tree_copy(care);day=c["day"]
     for b in v["batches"]:
         b["flag"]=_ph_flag(b,day);b["days_left"]=b["exp"]-day
     v["batches"].sort(key=lambda b:(b["lot"],b["exp"],b["got"]))
@@ -2318,7 +2327,7 @@ def cs_task_public(c:dict,t:dict,v:dict)->None:
 
 
 def _cs_public(c:dict,care:dict)->dict:
-    v=copy.deepcopy(care);now=_now(c,"customer_care")
+    v=tree_copy(care);now=_now(c,"customer_care")
     people=[]
     for npc,row in care["people"].items():
         if npc in NPC_INDEX:people.append(dict(row,npc=npc,name=NPC_INDEX[npc]["display_name"],open=sum(1 for t in c["tasks"] if t.get("npc")==npc and t["status"] not in ("completed","referred","cancelled"))))
@@ -2439,7 +2448,8 @@ def care_public(c:dict,career:str)->dict|None:
     care=_care(c)
     if care is None:return None
     if career=="pharmacy":
-        tmp=copy.deepcopy(c);cp=tmp["ext"]["data"]["care"];_ph_sync(tmp,cp)
+        # _ph_sync writes to the care book only: that is copied, the rest of the career is read as it is.
+        cp=tree_copy(care);tmp=dict(c,ext=dict(c["ext"],data=dict(c["ext"]["data"],care=cp)));_ph_sync(tmp,cp)
         return _ph_public(tmp,cp)
     if career=="accounting":return _ac_public(c,care)
     return _cs_public(c,care)

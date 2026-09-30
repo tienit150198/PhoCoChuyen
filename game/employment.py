@@ -175,9 +175,15 @@ def _cap(text: str) -> str:
     return text[:1].upper() + text[1:]
 
 
+_PLUGINS: dict | None = None  # game.careers.PLUGINS, looked up once (import cycle)
+
+
 def _plugin_employment(career: str) -> dict | None:
-    from .careers import PLUGINS
-    mod = PLUGINS.get(career)
+    global _PLUGINS
+    if _PLUGINS is None:
+        from .careers import PLUGINS
+        _PLUGINS = PLUGINS
+    mod = _PLUGINS.get(career)
     return mod.SPEC.get('employment') if mod else None
 
 
@@ -195,8 +201,16 @@ def question(career: str, qid: str) -> dict | None:
     return QUESTIONS.get(qid)
 
 
+_REQUIRED: dict = {}  # career -> required(): fixed content, asked for every career on every view
+
+
 def required(career: str) -> bool:
-    return bool(postings(career))
+    got = _REQUIRED.get(career) if type(career) is str else None
+    if got is None:
+        got = bool(postings(career))
+        if type(career) is str and len(_REQUIRED) < 1000:
+            _REQUIRED[career] = got
+    return got
 
 
 def initial() -> dict:

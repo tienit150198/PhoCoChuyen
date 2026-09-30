@@ -40,6 +40,7 @@ reach the guest are safety mistakes (1 star, no pay, a complaint, an inspection)
 """
 from __future__ import annotations
 import copy
+from ..jsoncopy import tree_copy
 import unicodedata
 from . import kit
 from . import food_service as FS
@@ -1799,7 +1800,7 @@ def feedback(c: dict, t: dict) -> dict:
 # --- projections & validation ----------------------------------------------------
 
 def public_task(t: dict) -> dict:
-    v = copy.deepcopy(t)
+    v = tree_copy(t)
     if v.get('gen') != GEN:
         _upgrade_task(v, None)
     v['cups_total'] = _cups_total(v)
@@ -1818,7 +1819,7 @@ def public_task(t: dict) -> dict:
 
 
 def public_data(c: dict) -> dict:
-    d = copy.deepcopy(kit.data(c))
+    d = tree_copy(kit.data(c))
     for lot in d['case']:
         lot['age'] = _age(c, lot['day'])
         lot['state'] = lot_state(c, lot['item'], lot['day'])
@@ -1837,7 +1838,7 @@ def public_data(c: dict) -> dict:
     for k, v in (('regulars', {}), ('grades', []), ('counter_sold', 0)):
         d.setdefault(k, v)
     d['day'] = FS.public_plan(c, pl, MODS, EVENT_INDEX)
-    d['rules'] = {k: copy.deepcopy(v) for k, v in pl['rules'].items() if not k.startswith('_')}
+    d['rules'] = {k: tree_copy(v) for k, v in pl['rules'].items() if not k.startswith('_')}
     d['oven_shift'] = HOT_OVEN if pl['rules'].get('hot_oven') else 0
     d['buyers'] = MOD_INDEX[pl['mod']].get('buyers', 1)
     d['wants'] = [k for k in CASE_ITEMS if BAKES[k]['unlock'] <= kit.level(c)]
@@ -1861,7 +1862,7 @@ def _public_care(c: dict, raw: dict) -> dict:
     """Read-only projection of the care loop (works on an old, unmigrated save too)."""
     st = raw.get('starter') or _care_initial()['starter']
     starter = _starter_view(c, st)
-    cold = [dict(copy.deepcopy(x), nights=c['day'] - x['day'], bakeable=x['day'] < c['day'], last=c['day'] + 1 - x['day'] > COLD_NIGHTS)
+    cold = [dict(tree_copy(x), nights=c['day'] - x['day'], bakeable=x['day'] < c['day'], last=c['day'] + 1 - x['day'] > COLD_NIGHTS)
             for x in raw.get('cold') or []]
     book = []
     for npc, rec in _book(raw).items():
@@ -1869,13 +1870,13 @@ def _public_care(c: dict, raw: dict) -> dict:
         if i is None or not rec.get('visits'):
             continue
         nxt = next((at for at in NOTE_AT if at > rec['visits']), None)
-        book.append(dict(npc=npc, name=PEOPLE[i][0], visits=rec['visits'], notes=copy.deepcopy(_notes_of(raw, npc)),
+        book.append(dict(npc=npc, name=PEOPLE[i][0], visits=rec['visits'], notes=tree_copy(_notes_of(raw, npc)),
                          next=nxt - rec['visits'] if nxt else None))
     book.sort(key=lambda r: (-len(r['notes']), -r['visits']))
     tm = _tomorrow(c)
     night = raw.get('night')
     return dict(starter=starter, cold=cold, book=book, tomorrow=tm, care=_care_rows(c, raw, starter, cold, tm),
-                night=copy.deepcopy(night['lines']) if isinstance(night, dict) and night.get('day') == c['day'] else [])
+                night=tree_copy(night['lines']) if isinstance(night, dict) and night.get('day') == c['day'] else [])
 
 
 def _care_rows(c: dict, raw: dict, starter: dict, cold: list, tm: dict) -> list[dict]:

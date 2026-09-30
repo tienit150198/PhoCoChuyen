@@ -48,6 +48,7 @@ Care (sub-project 3, docs/superpowers/specs/2026-09-29-delivery-care-design.md):
 """
 from __future__ import annotations
 import copy
+from ..jsoncopy import tree_copy, strip_copy
 from . import kit
 from . import till
 from .. import consequences as cq
@@ -1446,7 +1447,7 @@ def _strip(v):
 
 
 def public_task(t: dict) -> dict:
-    v = _strip(copy.deepcopy(t))
+    v = strip_copy(t)
     if not t['known']:
         v['needs'] = None
         v['preview'] = dict(pickup=t['needs']['pickup'], dest=t['needs']['dest'], kind=t['needs']['kind'], emoji=t['needs']['emoji'])
@@ -1458,7 +1459,7 @@ def public_task(t: dict) -> dict:
 
 
 def public_data(raw: dict) -> dict:
-    d = _extend(copy.deepcopy(raw['ext']['data']))
+    d = _extend(tree_copy(raw['ext']['data']))
     wx = weather(raw['day'])
     d.update(weather=wx, mpu=MPU[wx], rate=FUEL_RATE[wx], load=_load(raw), limit=LOAD_LIMIT, cap=COD_CAP,
              eta=_eta(raw, raw['ext']['data']), clock_text=hm(d['clock']))

@@ -515,7 +515,9 @@ class Store:
 
     def _replay(self,sid:str,row,fingerprint:str)->dict:
         if row["rhash"]!=fingerprint:raise Conflict("Mã thao tác đã dùng cho nội dung khác.","idempotency_conflict")
-        return dict(state=public_state(self.parse_state(row["state"],sid)),revision=row["revision"],result=fj.loads(row["rresult"]),replayed=True)
+        # A freshly parsed save is private: migrated in place, not copied whole first (public_state(state) would).
+        state=migrate_state(self.parse_state(row["state"],sid),owned=True)
+        return dict(state=public_state(state,migrated=True),revision=row["revision"],result=fj.loads(row["rresult"]),replayed=True)
 
     def _compute(self,sid:str,text:str,career,action:str,payload:dict,internal:bool,revision:int)->tuple[dict,dict,str,list,tuple]:
         """(new save, result, its text, archive rows, board): what the command cut off from the

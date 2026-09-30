@@ -20,6 +20,7 @@ public projection before the decision.
 from __future__ import annotations
 
 import copy
+from .jsoncopy import tree_copy
 import hashlib
 import random
 
@@ -425,7 +426,7 @@ def public(c: dict, career: str, s: dict) -> dict:
         view['active'] = dict(
             id=row['id'], script=x['id'], day=row['day'], practice=row['practice'], cat=x['cat'], cat_emoji=emoji,
             cat_label=label, emoji=x['emoji'], title=x['title'], text=_txt(x['text'], gender), tone=x['tone'],
-            evidence=_evidence(x, c, gender), ticket=copy.deepcopy(x['ticket']),
+            evidence=_evidence(x, c, gender), ticket=tree_copy(x['ticket']),
             options=[dict(id=o['id'], label=_txt(o['label'], gender), hint=o.get('hint', ''), stakes=_stakes(s, o),
                           affordable=row['practice'] or _affordable(s, c, o)) for o in x['options']])
     last = box['last']
@@ -438,7 +439,7 @@ def public(c: dict, career: str, s: dict) -> dict:
         view['last'] = dict(id=last['id'], script=x['id'], emoji=x['emoji'], title=x['title'], cat=x['cat'],
                             cat_label=CATS[x['cat']][1], label=_txt(opt['label'], gender),
                             outcome=_txt(res['outcome'] if res and res.get('outcome') else opt['outcome'], gender), good=last['good'],
-                            practice=last['practice'], auto=last['auto'], day=last['day'], lines=copy.deepcopy(last['lines']),
+                            practice=last['practice'], auto=last['auto'], day=last['day'], lines=tree_copy(last['lines']),
                             trust=last['trust'])
     return view
 

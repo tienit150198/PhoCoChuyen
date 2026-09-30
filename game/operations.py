@@ -593,7 +593,11 @@ def action(s:dict,c:dict,career:str,name:str,p:dict) -> dict:
 
 
 def public_operations(c:dict) -> dict:
-    o=tree_copy(c['ops']);f=o['finance'];sec=o['security'];active=next((x for x in sec['cases'] if x['id']==sec['active']),None)
+    # Called on public_state's private save: what is only read is shared, what is written below is copied.
+    raw=c['ops'];o=dict(raw)
+    f=o['finance']=dict(raw['finance']);sec=o['security']=dict(raw['security']);sec['cases']=tree_copy(sec['cases'])
+    o['property']=dict(raw['property']);o['incident']=tree_copy(raw['incident'])
+    active=next((x for x in sec['cases'] if x['id']==sec['active']),None)
     for case in sec['cases']:
         case.pop('_truth',None);case.pop('_roll',None)
         for ev in case['evidence']:

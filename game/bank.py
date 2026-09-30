@@ -277,8 +277,9 @@ def _inq_recent(b: dict, day: int) -> int:
     return sum(1 for d in b['inq'] if d > day - INQ_WINDOW)
 
 
-def _screen(s: dict, b: dict, need_score: int) -> tuple[str | None, str]:
-    """(reason code, text) when the bank would say no before looking at amounts."""
+def _screen(s: dict, b: dict, need_score: int, inc: dict | None = None) -> tuple[str | None, str]:
+    """(reason code, text) when the bank would say no before looking at amounts.
+    `inc`: income(s) when the caller already has it."""
     day = s['journey']['life_day']
     why = _blocked(b, day)
     if why:
@@ -288,15 +289,15 @@ def _screen(s: dict, b: dict, need_score: int) -> tuple[str | None, str]:
         return 'many', K.DECLINE['many'].format(window=INQ_WINDOW, when=dy.when_day(s, recent[-INQ_MANY] + INQ_WINDOW))
     if b['score'] < need_score:
         return 'score', K.DECLINE['score'].format(score=b['score'], need=need_score)
-    inc = income(s, day)
+    inc = income(s, day) if inc is None else inc
     if inc['days'] < INCOME_DAYS or inc['avg'] < INCOME_MIN:
         return 'income', K.DECLINE['income'].format(days=INCOME_DAYS, window=INCOME_WINDOW)
     return None, ''
 
 
-def card_offer(s: dict, b: dict) -> dict:
-    why, text = _screen(s, b, CARD_MIN_SCORE)
-    inc = income(s)
+def card_offer(s: dict, b: dict, inc: dict | None = None) -> dict:
+    inc = income(s) if inc is None else inc
+    why, text = _screen(s, b, CARD_MIN_SCORE, inc)
     num, den = _factor(b['score'])
     limit = max(LIMIT_MIN, min(LIMIT_MAX, _floor10(inc['avg'] * CARD_CYCLE * num // den)))
     return dict(ok=why is None, why=why, text=text, limit=limit if why is None else 0)
@@ -307,9 +308,9 @@ def _weekly_due(b: dict) -> int:
     return sum(max((r['amount'] for r in ln['rows']), default=0) for ln in b['loans'])
 
 
-def loan_offer(s: dict, b: dict, kind: str) -> dict:
-    why, text = _screen(s, b, CARD_MIN_SCORE)
-    inc = income(s)
+def loan_offer(s: dict, b: dict, kind: str, inc: dict | None = None) -> dict:
+    inc = income(s) if inc is None else inc
+    why, text = _screen(s, b, CARD_MIN_SCORE, inc)
     num, den = _factor(b['score'])
     most = min(LOAN_MAX, _floor10(inc['avg'] * LOAN_DAYS[kind] * num // den))
     places = owned_places(s) if kind == 'shop' else []
@@ -1048,6 +1049,7 @@ def public(s: dict) -> dict:
         terms.append(dict(t, name=K.TERMS[t['term']], interest=gain, value=t['amount'] + gain, days_left=max(0, t['due'] - day),
                           accrued=term_interest(t['amount'], t['rate'], held), rate_text=year_text(t['rate']),
                           early=t['amount'] * DEMAND_BP * held // 10000))
+    inc = income(s)  # once: the card and loan offers read the same window
     loans = []
     for ln in b['loans']:
         nxt = next((r for r in ln['rows'] if r['paid'] < r['amount']), None)
@@ -1056,11 +1058,10 @@ def public(s: dict) -> dict:
                           principal_left=sum(r['principal'] for r in ln['rows'] if r['paid'] < r['amount']),
                           next=nxt, overdue=sum(r['amount'] - r['paid'] for r in ln['rows'] if r['due'] <= day and r['paid'] < r['amount']),
                           payoff=_payoff(ln, day), place=_jr()._place(ln['career']) if ln['career'] else None))
-    inc = income(s)
     return dict(base, no=b['no'], balance=b['balance'], open_day=b['open_day'],
                 savings=dict(demand=b['demand'], total=_savings_total(b), daily_milli=b['demand'] * DEMAND_BP // 10, terms=terms),
-                card=card, card_offer=None if c else card_offer(s, b),
-                loans=loans, loan_offers={k: loan_offer(s, b, k) for k in K.LOANS},
+                card=card, card_offer=None if c else card_offer(s, b, inc),
+                loans=loans, loan_offers={k: loan_offer(s, b, k, inc) for k in K.LOANS},
                 loan_kinds={k: dict(v) for k, v in K.LOANS.items()},
                 places={cid: _jr()._place(cid) for cid in owned_places(s)},
                 score=dict(value=b['score'], band=band, tone=tone, log=list(reversed(b['score_log'])), tips=list(K.SCORE_TIPS),

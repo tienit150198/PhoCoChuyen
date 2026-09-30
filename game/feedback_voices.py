@@ -18,6 +18,8 @@ from __future__ import annotations
 
 import re
 
+from .memo import Memo, size_of
+
 # ------------------------------------------------------------ extra voices
 # Merged into feedback.VOICE. Lists that feedback.py formats with .format(note=)
 # (accept/keep/argue/down/sorry/thanks) only use {note}; `good`/`bad` only use
@@ -820,14 +822,29 @@ def tone_choices(post: dict) -> list[dict]:
     who = 'phụ huynh' if parent else 'bạn'
     item = fb.get('item') or '“' + str(fb.get('title') or 'lần này') + '”'
     happy = (post.get('stars') or 0) >= 4 and worst['score'] >= 4 and not fb.get('unfair')
+    # Every public view of an open review builds these: the same inputs give the same replies.
+    key = (post['id'], fb['rounds'], parent, happy, worst['label'], fact, item)
+    if type(fb['rounds']) is not int or not all(type(x) is str for x in (post['id'], worst['label'], fact, item)):
+        key = None  # only plain inputs (1 == True == 1.0 would share a memo row, not a text)
+    texts = _TONES_MEMO.get(key) if key is not None else None
+    if texts is None:
+        texts = _tone_texts(post['id'], fb['rounds'], parent, happy, who, worst['label'], fact, item, _hash)
+        if key is not None:
+            _TONES_MEMO.put(key, texts, size_of(key) + size_of(texts))
+    return [dict(id=tid, label=spec.get('label_parent', spec['label']) if parent else spec['label'], emoji=spec['emoji'],
+                 risk=spec['risk'], text=text) for tid, text in zip(TONE_ORDER, texts) for spec in (TONES[tid],)]
+
+
+_TONES_MEMO = Memo(entries=4096, budget=8 << 20)  # per worker: the reply texts of at most 4096 open reviews, about 8 MB
+
+
+def _tone_texts(post_id, rounds, parent, happy, who, label, fact, item, _hash) -> tuple:
+    """One reply text per tone (TONE_ORDER)."""
     out = []
     for tid in TONE_ORDER:
-        spec = TONES[tid]
-        rows = (TONES_POS[tid] if happy else spec)['parent' if parent else 'customer']
-        text = fill(_pick(rows, _hash('tpl', post['id'], fb['rounds'], tid)), who=who, label=_lower(worst['label']), fact=fact, item=item)
-        out.append(dict(id=tid, label=spec.get('label_parent', spec['label']) if parent else spec['label'], emoji=spec['emoji'],
-                        risk=spec['risk'], text=_cap(text)))
-    return out
+        rows = (TONES_POS[tid] if happy else TONES[tid])['parent' if parent else 'customer']
+        out.append(_cap(fill(_pick(rows, _hash('tpl', post_id, rounds, tid)), who=who, label=_lower(label), fact=fact, item=item)))
+    return tuple(out)
 
 
 def tone_text_ok(tone) -> bool:

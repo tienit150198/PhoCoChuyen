@@ -34,7 +34,7 @@ v0.5 (generator 2, older saved tasks keep generator 1):
 * Stock on open bills is reserved, so two bills never sell the same unit.
 """
 from __future__ import annotations
-import copy
+from ..jsoncopy import tree_copy
 import functools
 from . import kit
 from .. import consequences as cq
@@ -2970,7 +2970,7 @@ def _strip(v):
 
 
 def public_task(t: dict) -> dict:
-    v = copy.deepcopy(t)
+    v = tree_copy(t)
     if v.get('kind') == 'rush':
         _rush_ready(v)   # an old save's queue is shown in the till-and-tray format (the save itself moves on the next action)
     v = _strip(v)
@@ -2997,9 +2997,9 @@ def public_task(t: dict) -> dict:
 
 
 def public_data(c: dict) -> dict:
-    d = _extend(copy.deepcopy(kit.data(c)))
+    d = _extend(tree_copy(kit.data(c)))
     # A read-only view of the career with the migrated copy, so projecting never writes to the save.
-    view = dict(c, ext=dict(c.get('ext', {}), data=copy.deepcopy(d)))
+    view = dict(c, ext=dict(c.get('ext', {}), data=tree_copy(d)))
     rows = []
     for key, row in sorted(d['ledger'].items(), key=lambda kv: int(kv[0])):
         i = int(key)

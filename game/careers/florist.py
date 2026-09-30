@@ -28,6 +28,7 @@ one and delivered together.
 """
 from __future__ import annotations
 import copy
+from ..jsoncopy import tree_copy
 import re
 import unicodedata
 from . import kit
@@ -1207,7 +1208,7 @@ def feedback(c: dict, t: dict) -> dict:
 # --- projections & validation ----------------------------------------------------
 
 def public_task(t: dict) -> dict:
-    v = copy.deepcopy(t)
+    v = tree_copy(t)
     if v.get('gen') != GEN:
         _upgrade_task(v, None)
     v['soak_min'] = SOAK_MIN
@@ -1239,7 +1240,7 @@ def public_task(t: dict) -> dict:
 
 
 def public_data(c: dict) -> dict:
-    d = copy.deepcopy(kit.data(c))
+    d = tree_copy(kit.data(c))
     cooler = {}
     for item in FLOWERS:
         spare = _spare(kit.data(c), item)
@@ -1264,7 +1265,7 @@ def public_data(c: dict) -> dict:
     for k in ('water', 'kept', 'book', 'pre', 'sub'):
         d.pop(k, None)
     d['care'] = _public_care(c, kit.data(c))
-    d['rules'] = {k: copy.deepcopy(v) for k, v in pl['rules'].items() if not k.startswith('_')}
+    d['rules'] = {k: tree_copy(v) for k, v in pl['rules'].items() if not k.startswith('_')}
     d['soak_min'] = _soak_min(c)
     d['rain'] = pl['mod'] == 'rain'
     return d

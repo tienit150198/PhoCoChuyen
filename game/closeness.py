@@ -118,7 +118,11 @@ def _clamp(v, lo: int = 0, hi: int = 100) -> int:
 
 
 def tier_of(score: int) -> int:
-    return 1 + max(i for i, row in enumerate(TIERS) if score >= row[0])
+    # 1 + the last tier whose floor the score reaches (what max() over them gives)
+    for i in range(len(TIERS) - 1, -1, -1):
+        if score >= TIERS[i][0]:
+            return i + 1
+    raise ValueError('max() iterable argument is empty')
 
 
 def tier_name(t: int) -> str:
@@ -169,6 +173,11 @@ def wedding(s: dict, npc_id: str) -> dict:
 
 def known(s: dict, min_tier: int = 1) -> list[str]:
     """Everyone you know (the cast, customers you have met), closest first."""
+    return _known(s, min_tier)[0]
+
+
+def _known(s: dict, min_tier: int = 1) -> tuple[list[str], dict]:
+    """known() and the score of each id it looked at."""
     ids = list(_cast())
     for cid, c in (s.get('careers') or {}).items():
         for npc, v in (c.get('relationships') or {}).items():
@@ -179,7 +188,7 @@ def known(s: dict, min_tier: int = 1) -> list[str]:
     ids += [p for p in st if p not in seen and p in _npcs()]
     score = {p: closeness(s, p) for p in ids}  # each score once (this runs on every command's view)
     out = [p for p in ids if tier_of(score[p]) >= min_tier]
-    return sorted(out, key=lambda p: (-score[p], p))
+    return sorted(out, key=lambda p: (-score[p], p)), score
 
 
 def name_of(pid: str) -> str:
@@ -721,21 +730,44 @@ def _revealed(s: dict, pid: str, rec: dict | None, tr: int | None = None) -> dic
     return dict(likes=view(likes), dislikes=view(dislikes), hidden=len(t['likes']) + len(t['dislikes']) - len(likes) - len(dislikes))
 
 
-def _person(s: dict, st: dict, pid: str, d: int, log: list | None = None) -> dict:
-    from .content import CAREER_META
-    score = closeness(s, pid)
+_BASES: dict = {}  # pid -> (who they are, is_kid): fixed content, built once per process
+
+
+def _base(pid: str) -> tuple[dict, bool]:
+    got = _BASES.get(pid)
+    if got is None:
+        from .content import CAREER_META
+        if is_cast(pid):
+            x = _cast()[pid]
+            base = dict(id=pid, name=x['name'], emoji=x['emoji'], role=x['role'], cast=True, career=None, place='Hàng xóm')
+        else:
+            n = _npcs()[pid]
+            base = dict(id=pid, name=n['display_name'], emoji='', role=n.get('role', ''), cast=False, career=n['career_id'],
+                        place=CAREER_META.get(n['career_id'], {}).get('place', ''))
+        got = (base, is_kid(pid))
+        if len(_BASES) < 5000:
+            _BASES[pid] = got
+    return got
+
+
+_AT: dict = {}  # career -> the customers who walk in there (content order, cast aliases left out)
+
+
+def _walk_ins(cid: str) -> list[str]:
+    got = _AT.get(cid)
+    if got is None:
+        got = _AT[cid] = [pid for pid, n in _npcs().items() if n['career_id'] == cid and pid not in ALIAS]
+    return got
+
+
+def _person(s: dict, st: dict, pid: str, d: int, log: list | None = None, score: int | None = None) -> dict:
+    score = closeness(s, pid) if score is None else score
     tr = tier_of(score)
     rec = st['people'].get(pid)
     nxt = TIERS[tr][0] if tr < 5 else None
-    if is_cast(pid):
-        x = _cast()[pid]
-        base = dict(id=pid, name=x['name'], emoji=x['emoji'], role=x['role'], cast=True, career=None, place='Hàng xóm')
-    else:
-        n = _npcs()[pid]
-        base = dict(id=pid, name=n['display_name'], emoji='', role=n.get('role', ''), cast=False, career=n['career_id'],
-                    place=CAREER_META.get(n['career_id'], {}).get('place', ''))
+    base, kid = _base(pid)
     return dict(base, score=score, tier=tr, tier_name=tier_name(tr), tier_emoji=TIERS[tr - 1][2], floor=TIERS[tr - 1][0], next=nxt,
-                kid=is_kid(pid), talked=bool(rec) and rec['talk'] in (d, -d), gifted=bool(rec) and rec['gift'] == d,
+                kid=kid, talked=bool(rec) and rec['talk'] in (d, -d), gifted=bool(rec) and rec['gift'] == d,
                 given=(rec or {}).get('given', 0), got=(rec or {}).get('got', 0), **_revealed(s, pid, rec, tr),
                 history=[dict(day=r['day'], d=r['d'], text=r['text'], k=r['k'])
                          for r in (st['log'] if log is None else log) if r['who'] == pid][-HISTORY:][::-1])
@@ -746,13 +778,15 @@ def public(s: dict, career: str | None = None) -> dict:
     st = j.get('closeness') if isinstance(j.get('closeness'), dict) else initial(s)
     d = today(s)
     cid, c = _fund(s, career)
-    ids = known(s)
+    ids, score = _known(s)
     # Everyone who walks into the place you are at now, even before you know them (the old “Bạn quen”).
-    ids += [pid for pid, n in _npcs().items() if cid and n['career_id'] == cid and pid not in ALIAS and pid not in ids]
+    if cid:
+        have = set(ids)
+        ids += [pid for pid in _walk_ins(cid) if pid not in have]
     by_who: dict = {}
     for r in st['log']:
         by_who.setdefault(r['who'], []).append(r)
-    people = [_person(s, st, pid, d, by_who.get(pid, ())) for pid in ids]
+    people = [_person(s, st, pid, d, by_who.get(pid, ()), score.get(pid)) for pid in ids]
     stall = STALL.get(cid or '')
     gifts = [dict(id=k, src='buy', name=x['name'], emoji=x['emoji'], price=x['price'], tags=list(x['tags'])) for k, x in GIFTS.items()]
     if stall:
