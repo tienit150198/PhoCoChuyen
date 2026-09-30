@@ -178,7 +178,7 @@ def fresh() -> dict:
                 served=0, perfect=0, returned=0, walkouts=0, revenue=0, fines=0, bonus=0, total=0,
                 event=None, events_today=0, last_event_beat=-99, today_kinds=[], ev_seq=0, ev_history=[],
                 history=[], notebook={}, story=dict(step=0, day=0, choices=[]), sold_out=[], sealer_off=0, dome=False,
-                promises=[], office=None, span=0, orders=[], order_seq=0, sealer_wear=0, cleaned=0, night=[])
+                promises=[], office=None, span=0, orders=[], order_seq=0, sealer_wear=0, cleaned=0, night=[], menu_off=[])
 
 
 def view(c: dict) -> dict:
@@ -258,6 +258,71 @@ def now_abs(c: dict) -> int:
 def opening_abs(c: dict) -> int:
     """When a pot brewed now counts as made: now while open, else the next opening."""
     return now_abs(c) if c['open'] else c['day'] * DAY_MIN + OPEN_MIN
+
+
+# ---------------------------------------------------------------- menu ("ngừng bán")
+def menu_off(c: dict) -> set:
+    """Teas, syrups and toppings the shop has taken off its menu (older saves: everything is on)."""
+    off = _raw(c).get('menu_off')
+    return set(off) if isinstance(off, list) else set()
+
+
+def on_menu(c: dict, item: str) -> bool:
+    return item not in menu_off(c)
+
+
+def menu_ok(c: dict, off) -> bool:
+    """The shop keeps selling at least one tea it can brew at its skill level."""
+    return any(x not in off and unlocked(c, x) for x in BASES)
+
+
+def _uses(n: dict, off) -> bool:
+    return n['base'] in off or n.get('flavor') in off or any(x in off for x in n['toppings'])
+
+
+def menu_fit(c: dict, n: dict) -> dict:
+    """A fixed order (a regular's usual, a set cup from a surprise) without items that are off the menu:
+    the closest item still sold, or nothing for a syrup or topping."""
+    off = menu_off(c)
+    if not off or not _uses(n, off):
+        return n
+    n = copy.deepcopy(n)
+    sold = lambda x: bool(x) and x in ING and x not in off and unlocked(c, x)
+    if n['base'] in off:
+        alt = FALLBACK.get(n['base'])
+        n['base'] = alt if sold(alt) else next((x for x in BASES if sold(x)), n['base'])
+    if n.get('flavor') in off:
+        alt = FALLBACK.get(n['flavor'])
+        n['flavor'] = alt if sold(alt) else None
+    tops = []
+    for x in n['toppings']:
+        if x in off:
+            x = FALLBACK.get(x)
+            if not sold(x):
+                continue
+        if x not in tops:
+            tops.append(x)
+    n['toppings'] = tops
+    return n
+
+
+def _menu(c: dict, b: dict, p: dict) -> dict:
+    """Bảng giá → "Món đang bán": switch a tea, syrup or topping on or off (no beat, open or closed).
+    Orders already taken keep their items; only new orders follow the menu."""
+    e = _e()
+    need = e.need
+    item = p.get('item')
+    on = p.get('on')
+    need(item in ING, 'Món này không có trong bảng giá.')
+    need(type(on) is bool, 'Chọn bán hay ngừng bán món này.')
+    need(unlocked(c, item), f"{ING[item]['name']} mở ở cấp {ING[item].get('level', 1)}.")
+    off = (set(b['menu_off']) - {item}) | (set() if on else {item})
+    need(menu_ok(c, off), 'Quán cần bán ít nhất một loại trà nền.')
+    b['menu_off'] = [x for x in ING if x in off]
+    name = ING[item]['name']
+    if on:
+        return dict(message=f'{name}: bán lại. Khách mới có thể gọi món này.')
+    return dict(message=f'{name}: ngừng bán. Khách mới sẽ không gọi, quầy không cần nhập món này.')
 
 
 # ---------------------------------------------------------------- orders
@@ -413,6 +478,11 @@ def setup_task(s: dict, c: dict, t: dict, fixed: dict | None = None) -> None:
             t['src'] = dict(fixed=fit_usual(REGULARS[t['npc']]['usual'], lv))
     else:
         t['src'] = dict(tier=lv, mod=mod, avoid=_avoid(c, b))
+    fixed = t['src'].get('fixed')
+    if fixed is not None and _uses(fixed, menu_off(c)):
+        # Something in the usual (or the set cup) is off the menu: the guest orders what is sold today.
+        t['src'] = dict(fixed=menu_fit(c, fixed))
+        t['usual'] = False
     t['needs'] = derive(t)
     t['quoted_price'] = price(c, t['needs'])
 
@@ -421,17 +491,18 @@ def swap_to(c: dict, t: dict, item: str) -> str | None:
     """What the counter can offer instead of a syrup or topping it has run out of."""
     st = stock(c)
     n = t['needs']
+    off = menu_off(c)
     if ING[item]['group'] == 'flavor':
-        return next((x for x in FLAVORS if x != item and unlocked(c, x) and st[x] > 0), None)
+        return next((x for x in FLAVORS if x != item and unlocked(c, x) and st[x] > 0 and x not in off), None)
     pool = [FALLBACK.get(item)] + TOPPINGS
-    return next((x for x in pool if x and x != item and x not in n['toppings'] and unlocked(c, x) and st[x] > 0), None)
+    return next((x for x in pool if x and x != item and x not in n['toppings'] and unlocked(c, x) and st[x] > 0 and x not in off), None)
 
 
 def _avoid(c: dict, b: dict) -> list[str]:
-    """The menu board marks what is out: walk-ins do not order a syrup or topping the shop does not have.
-    (Pearls, tea and foam are made at the counter, so they are never off the menu.)"""
+    """The menu board marks what is out: walk-ins do not order a syrup or topping the shop does not have,
+    nor anything the shop has stopped selling (Bảng giá → Món đang bán)."""
     st = stock(c)
-    return sorted(set(b['sold_out']) | {x for x in BOUGHT if st[x] == 0})
+    return sorted(set(b['sold_out']) | {x for x in BOUGHT if st[x] == 0} | set(b.get('menu_off') or []))
 
 
 def customer_name(t: dict) -> str:
@@ -687,10 +758,11 @@ def warnings(c: dict) -> list[dict]:
     st = stock(c)
     b = view(c)
     out = []
-    tops = [x for x in ('pearls', 'white_pearl') if unlocked(c, x)]
+    off = menu_off(c)
+    tops = [x for x in ('pearls', 'white_pearl') if unlocked(c, x) and x not in off]
     if any(st[x] == 0 for x in tops):
         out.append(dict(id='pearls', text='Chưa nấu trân châu', where='stock'))
-    empty = [ING[x]['name'] for x in BASES if unlocked(c, x) and st[x] == 0]
+    empty = [ING[x]['name'] for x in BASES if unlocked(c, x) and st[x] == 0 and x not in off]
     if empty:
         out.append(dict(id='base', text='Chưa ủ trà: ' + ', '.join(empty), where='stock'))
     low = [k for k, v in b['cups'].items() if v < 5]
@@ -749,7 +821,9 @@ def care(c: dict) -> list[dict]:
     now = now_abs(c)
     st = stock(c)
     rows = []
-    cooked = [x for x in ('pearls', 'white_pearl') if unlocked(c, x)]
+    off = menu_off(c)
+    # Off the menu: nothing to cook or brew (a batch still on the counter is still watched).
+    cooked = [x for x in ('pearls', 'white_pearl') if unlocked(c, x) and (x not in off or st[x])]
     for item in cooked:
         lots = sorted(_lots(c, item, now), key=_fifo)
         name = ING[item]['name']
@@ -765,7 +839,7 @@ def care(c: dict) -> list[dict]:
     tired = [x for x in BASES if unlocked(c, x) and any(band(c, l, now) == 'tired' for l in _lots(c, x, now))]
     if tired:
         rows.append(dict(id='tea', icon='🫖', tone='warn', text='Trà ủ lâu, hơi chát: ' + ', '.join(ING[x]['name'] for x in tired) + '. Ủ bình mới nhé.'))
-    empty = [ING[x]['name'] for x in BASES if unlocked(c, x) and st[x] == 0]
+    empty = [ING[x]['name'] for x in BASES if unlocked(c, x) and st[x] == 0 and x not in off]
     if empty:
         rows.append(dict(id='tea-empty', icon='🫖', tone='warn', text='Chưa ủ: ' + ', '.join(empty) + '.'))
     wear = b['sealer_wear']
@@ -964,6 +1038,21 @@ def on_close(s: dict, c: dict) -> dict:
 
 
 # ---------------------------------------------------------------- patience
+# Hands-on steps on a cup already on the counter: while the player builds a cup, patience runs at half speed.
+BUILD_ACTIONS = {'add', 'ice', 'sugar', 'config', 'seal_start', 'seal'}
+
+
+def par(n: dict) -> int:
+    """Beats the guest at the counter waits without losing patience: a longer cup gets more
+    (two beats per topping and for a syrup, on top of cup, tea, ice, sugar, lid and hand-over)."""
+    return 8 + 2 * len(n['toppings']) + (2 if n.get('flavor') else 0)
+
+
+def _share(turn: int, num: int, den: int) -> int:
+    """num/den patience points a beat, as whole points spread evenly over the beats."""
+    return (turn * num) // den - ((turn - 1) * num) // den
+
+
 def rate(c: dict) -> int:
     if c['life'].get('mode') == 'calm':
         return 0
@@ -973,13 +1062,15 @@ def rate(c: dict) -> int:
     return 1 + (1 if mod == 'students' else 0) + (1 if level(c) >= 5 else 0)
 
 
-def _beat(s: dict, c: dict, active_id: str | None) -> list[str]:
+def _beat(s: dict, c: dict, active_id: str | None, building: bool = False) -> list[str]:
+    """One beat of waiting. `building`: the beat was a hands-on step on a cup already on the counter,
+    so the queue and the guest being served lose patience at half speed (the bell halves the queue again)."""
     b = state(c)
     r = rate(c)
     notes = []
     if not r:
         return notes
-    half = 'bell' in b['upgrades']
+    den = (2 if 'bell' in b['upgrades'] else 1) * (2 if building else 1)
     active = next((t for t in c['tasks'] if t['id'] == active_id), None)
     gid = ((active or {}).get('group') or {}).get('id')
     for t in c['tasks']:
@@ -993,10 +1084,11 @@ def _beat(s: dict, c: dict, active_id: str | None) -> list[str]:
             continue
         if t['id'] == active_id:
             t['beats'] = t.get('beats', 0) + 1
-            par = 8 + len(t['needs']['toppings']) + (1 if t['needs'].get('flavor') else 0)
-            loss = (1 if t['beats'] > par else 0) + (1 if b['mess'] >= 3 else 0)
+            over = t['beats'] - par(t['needs'])
+            loss = (1 if over > 0 and (not building or over % 2 == 0) else 0) + (1 if b['mess'] >= 3 else 0)
         else:
-            loss = r if not half or c['turn'] % 2 == 0 else 0
+            loss = _share(c['turn'], r, den)
+        # The fairness above (par, hands-on half speed, bell) shapes the drain; PATIENCE_FACTOR then thins it, once.
         loss = pt.drain(c, t, loss)  # waiting (PATIENCE_FACTOR)
         if loss:
             t['patience'] = max(25, t.get('patience', 100) - loss)
@@ -1080,8 +1172,9 @@ def handle(s: dict, c: dict, action: str, p: dict) -> dict:
     after = []
     if r.pop('_tick', False):
         c['turn'] += 1
-        after = _beat(s, c, r.pop('_active', None) or c.get('active_task'))
+        after = _beat(s, c, r.pop('_active', None) or c.get('active_task'), r.pop('_build', False))
         after += _deliver(s, c, b) + _spoil(s, c)
+    r.pop('_build', None)
     r.pop('_active', None)
     if r.pop('_arrivals', False):
         arrived = _top_up(s, c, b)
@@ -1108,6 +1201,8 @@ def _dispatch(s: dict, c: dict, b: dict, name: str, p: dict) -> dict:
         return _toss(s, c, p)
     if name == 'upgrade':
         return _upgrade(s, c, p)
+    if name == 'menu':
+        return _menu(c, b, p)
     if name == 'event_ok':
         ev = b.get('event')
         need(ev and ev['stage'] == 'done', 'Không có kết quả nào đang chờ xác nhận.')
@@ -1137,7 +1232,9 @@ def _dispatch(s: dict, c: dict, b: dict, name: str, p: dict) -> dict:
     else:
         t = _task(c, p)
         active = t['id']
+        building = name in BUILD_ACTIONS and t['known'] and t['cup']['placed'] and not t['cup']['sealed']
         r = _station(s, c, b, t, name, p)
+        r['_build'] = building
     r['_tick'] = not r.pop('_free', False)
     r['_active'] = active
     r['_events'] = True
@@ -1450,6 +1547,29 @@ def _diff(cup: dict, n: dict) -> list[str]:
 CRITICAL = ('base', 'size', 'flavor', 'toppings')
 
 
+def ticket(n: dict, cup: dict) -> list[dict]:
+    """The order as the referee reads it, one row per requirement in the order a cup is made:
+    size, tea, syrup, each topping, anything not ordered, ice, sugar, lid. `ok` is True when the cup
+    matches, False when it is wrong, None when not done yet. Every mismatch _diff() reports shows up
+    as a row that is not ok, and a cup whose rows are all ok passes _diff() and can be served."""
+    items = cup.get('items') or []
+    placed = bool(cup.get('placed', bool(items)))
+    group = lambda g: [k for k in items if ING[k]['group'] == g]
+    base, flavor, tops = (group('base') or [None])[0], (group('flavor') or [None])[0], group('topping')
+    rows = [dict(k='size', want=n['size'], ok=(cup['size'] == n['size']) if placed else None),
+            dict(k='base', want=n['base'], ok=None if base is None else base == n['base'])]
+    if n.get('flavor'):
+        rows.append(dict(k='flavor', want=n['flavor'], ok=None if flavor is None else flavor == n['flavor'], got=flavor))
+    for x in n['toppings']:
+        rows.append(dict(k='topping', want=x, ok=True if x in tops else None))
+    for x in ([flavor] if flavor and not n.get('flavor') else []) + [x for x in tops if x not in n['toppings']]:
+        rows.append(dict(k='extra', want=None, got=x, ok=False))
+    rows.append(dict(k='ice', want=n['ice'], ok=None if cup.get('ice') is None else cup['ice'] == n['ice']))
+    rows.append(dict(k='sugar', want=n['sugar'], ok=None if cup.get('sugar') is None else cup['sugar'] == n['sugar']))
+    rows.append(dict(k='seal', want=None, ok=True if cup.get('sealed') else None))
+    return rows
+
+
 def _complaint(t: dict, cup: dict, issue: str) -> str:
     n = t['needs']
     kind = speech_kind(t)
@@ -1644,7 +1764,7 @@ def _check_inspection(s, c, b):
 
 
 def _check_pearls(s, c, b):
-    if not unlocked(c, 'pearls') or 'pearls' in b['sold_out'] or clock_minutes(c) < 11 * 60:
+    if not unlocked(c, 'pearls') or 'pearls' in b['sold_out'] or not on_menu(c, 'pearls') or clock_minutes(c) < 11 * 60:
         return None
     if stock(c)['pearls'] > 2:
         return None
@@ -1688,7 +1808,7 @@ def _check_change(s, c, b):
         options.append(dict(set='ice', to=ice))
     sugar = next((x for x in (30, 50, 70) if x != n['sugar']), None)
     options.append(dict(set='sugar', to=sugar))
-    extra = [x for x in TOPPINGS if unlocked(c, x) and x not in n['toppings'] and stock(c)[x] > 0]
+    extra = [x for x in TOPPINGS if unlocked(c, x) and x not in n['toppings'] and stock(c)[x] > 0 and on_menu(c, x)]
     if extra and len(n['toppings']) < MAX_TOPPINGS:
         options.append(dict(add=r.choice(extra)))
     return dict(task=t['id'], change=r.choice(options))
@@ -1715,7 +1835,7 @@ def _check_short(s, c, b):
     if c['day'] < 2:
         return None
     st = stock(c)
-    bases = [x for x in BASES if unlocked(c, x) and st[x] <= 6]
+    bases = [x for x in BASES if unlocked(c, x) and st[x] <= 6 and on_menu(c, x)]
     if not bases:
         return None
     r = rng(CAREER, 'short', c['day'], c['turn'])
@@ -1969,7 +2089,8 @@ def _resolve(s: dict, c: dict, b: dict, ev: dict, choice: str) -> None:
             result = 'Nồi trân châu mới sôi lăn tăn. Thêm 8 phần, nhưng khách phải chờ lâu hơn một chút.'
             eff += ['-16 xu', '+8 trân châu']
         elif choice == 'swap':
-            swap_to = next((x for x in ('q3', 'jelly', 'coconut', 'pudding') if unlocked(c, x) and stock(c)[x] > 0), 'jelly')
+            pool = [x for x in ('q3', 'jelly', 'coconut', 'pudding') if unlocked(c, x) and on_menu(c, x)]
+            swap_to = next((x for x in pool if stock(c)[x] > 0), pool[0] if pool else 'jelly')
             for t in tasks:
                 _change(c, t, dict(swap='pearls', to=swap_to))
             result = f"Bạn xin lỗi và mời {len(tasks)} khách đổi sang {ING[swap_to]['name'].lower()}. Ai cũng gật đầu."
@@ -2136,8 +2257,8 @@ def _resolve(s: dict, c: dict, b: dict, ev: dict, choice: str) -> None:
                 good = True
     elif k == 'vip':
         if choice == 'accept':
-            best = [x for x in BASES if unlocked(c, x)][-1]
-            tops = [x for x in TOPPINGS if unlocked(c, x)][-2:]
+            best = ([x for x in BASES if unlocked(c, x) and on_menu(c, x)] or [x for x in BASES if unlocked(c, x)])[-1]
+            tops = [x for x in TOPPINGS if unlocked(c, x) and on_menu(c, x)][-2:]
             fixed = dict(base=best, flavor=None, toppings=tops, size='L', sugar=50, ice='little')
             t = spawn(s, c, fixed=fixed, walkin=dict(id='han', name='Hân', kind='young', emoji='📱'), count_quota=False)
             if t:
@@ -2201,7 +2322,9 @@ def public(c: dict) -> dict:
         returned=b['returned'], walkouts=b['walkouts'], revenue=b['revenue'], fines=b['fines'], streak=c['life'].get('streak', 0),
         best_streak=c['life'].get('best_streak', 0),
         stations=[dict(id=x['id'], group=x['group'], level=x.get('level', 1), unlocked=x.get('level', 1) <= lv, stock=st[x['id']],
-                       tired=tired.get(x['id'], 0), made=x['id'] in MADE, fresh=x['id'] in FRESH) for x in data.INGREDIENTS],
+                       tired=tired.get(x['id'], 0), made=x['id'] in MADE, fresh=x['id'] in FRESH, on=x['id'] not in b['menu_off'])
+                  for x in data.INGREDIENTS],
+        menu_off=list(b['menu_off']),
         upgrades=[dict(u, owned=u['id'] in b['upgrades'], ready=lv >= u['level']) for u in UPGRADES],
         event=ev_view, notebook=notebook, warnings=warnings(c), history=b['history'][-7:], sold_out=b['sold_out'],
         sealer_off=b['sealer_off'] > c['turn'] and 'sealer' not in b['upgrades'], dome=b['dome'],
@@ -2219,6 +2342,9 @@ def public_task(t: dict) -> dict:
         v['order_text'] = None
     else:
         v['order_text'] = order_text(t)
+        # The pinned order ticket (a usual order too: the regulars' card on the same screen shows it).
+        v['ticket'] = ticket(t['needs'], t['cup'])
+        v['par'] = par(t['needs'])
         if t.get('usual'):
             v['needs'] = None
     v['customer'] = customer_name(t)
@@ -2326,6 +2452,9 @@ def validate(c: dict) -> None:
     need(type(b['dome']) is bool, 'Cờ nắp cầu sai.')
     need(isinstance(b['today_kinds'], list) and all(k in EVENTS for k in b['today_kinds']), 'Chuyện trong ngày sai.')
     need(isinstance(b['sold_out'], list) and all(k in ING for k in b['sold_out']), 'Món tạm hết sai.')
+    off = b['menu_off']
+    need(isinstance(off, list) and len(off) <= len(ING) and len(set(off)) == len(off) and all(k in ING for k in off), 'Món ngừng bán sai.')
+    need(menu_ok(c, set(off)), 'Quán cần bán ít nhất một loại trà nền.')
     need(isinstance(b['ev_history'], list) and len(b['ev_history']) <= 30 and all(isinstance(h, dict) and h.get('kind') in EVENTS for h in b['ev_history']), 'Lịch sử chuyện ở quầy sai.')
     need(isinstance(b['history'], list) and len(b['history']) <= 14, 'Tổng kết ngày sai.')
     need(isinstance(b['notebook'], dict) and all(k in REGULARS and isinstance(v, dict) and _valid_needs(v.get('usual')) for k, v in b['notebook'].items()), 'Sổ khách quen sai.')
