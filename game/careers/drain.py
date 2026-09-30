@@ -578,10 +578,9 @@ def _data(c: dict) -> dict:
 
 
 # ================================================================ the actions
-FREE = ('cg_intro',)
+FREE = ('cg_intro', 'cg_chase')
 NO_TICK = ('cg_intro', 'cg_pack', 'cg_gear', 'cg_diag', 'cg_quote', 'cg_advise', 'cg_pay', 'cg_short', 'cg_desk', 'cg_safety',
            'cg_price', 'cg_watch', 'cg_nocash', 'cg_chase', 'cg_trouble')
-FREE = FREE + ('cg_chase',)
 PHYSICAL = ('cg_check', 'cg_work', 'cg_chem', 'cg_part', 'cg_fetch', 'cg_test', 'cg_clean')
 JOBS = ('call', 'manhole', 'emergency', 'recall')
 
@@ -600,6 +599,10 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     kit.need(d['trouble']['ev'] is None, 'Khách cũ quay lại đòi tiền: giải quyết trước đã.', 'surprise_open')
     fn = ACTIONS.get(name)
     kit.need(fn, 'Thao tác không có ở tiệm thông cống.')
+    if name not in ('cg_watch', 'cg_extra', 'cg_nocash'):
+        t = next((x for x in c['tasks'] if x['id'] == p.get('task') and x.get('career') == ID), None)
+        if t:
+            _need_calm(t)      # someone is talking to you: answer them first
     result = fn(s, c, d, p)
     fired = desk['fired']
     kit.desk_tick(s, c, ID, desk, DESK, mod_of(c['day'])['id'])
@@ -1370,6 +1373,9 @@ def on_start(s: dict, c: dict) -> None:
     elif c['active_task'] and not any(t['id'] == c['active_task'] and t['status'] not in ('completed', 'referred', 'cancelled') for t in c['tasks']):
         kit.eng().next_active(c)
     kit.desk_start(s, c, ID, d['desk'], DESK, mod_of(day)['id'], c['life'].get('mode') == 'festival')
+    # Honest debtors turn up with the money by themselves; the rest wait to be chased (the debt book).
+    for note in folk.auto_repay(s, c, ID, d['debts'], lambda i: PEOPLE[i][3] if 0 <= i < len(PEOPLE) else None):
+        kit.log(s, c, 'surprise', note)
 
 
 def on_close(s: dict, c: dict) -> dict:
@@ -1430,6 +1436,10 @@ def public_task(t: dict) -> dict:
     for k in list(v):
         if k.startswith('_'):
             del v[k]
+    for k in ('twist', 'tw', 'bid'):
+        v.pop(k, None)
+    if isinstance(t.get('bid'), dict):
+        v['bid'] = dict(tries=t['bid']['tries'], counter=t['bid']['counter'])   # never whether they feel cheated
     if not v['known']:
         v['needs'] = None
         return v
@@ -1438,8 +1448,6 @@ def public_task(t: dict) -> dict:
         v['camera'] = CAUSES[t['_cause']]['camera'] if 'camera' in t['checked'] else None
         v['prices'] = {lv: quote_for(lv, t['needs']['place'], t['diag'], t['kind']) for lv in LEVELS if lv != 'own'} if t['diag'] else None
     tw = t.get('twist')
-    v.pop('twist', None)
-    v.pop('tw', None)
     if isinstance(tw, dict) and t['tw']['state'] != 'wait':
         # A twist shows once it has started; what the person will do stays hidden.
         st = t['tw']

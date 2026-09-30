@@ -826,6 +826,7 @@ def _load(s, c, d, p):
     _on_round(t)
     _, b = _bag(t, p.get('bag'))
     kit.need(b['id'] not in t['loaded'], 'Túi đã lên xe rồi.')
+    kit.need(b['id'] not in t.get('refused', []), 'Túi này đã dán phiếu không thu.')
     kit.need(not t['late'] or t['swept'], 'Quét gom rác vương vãi trước đã.')
     bin_ = kit.one_of(p.get('bin'), BINS, 'Chọn ngăn xe.')
     cell = d['cart'][bin_]
@@ -1214,7 +1215,7 @@ def _fee_book(day: int) -> dict:
         lane = LANES[(week + i) % len(LANES)]
         house = lane['houses'][(week * 3 + i) % len(lane['houses'])]
         rows.append(dict(id=f'fee-{week}-{i}', house=house, lane=lane['name'], due=5 + folk.roll('rac-fee', week, i) % 4, paid=0, tries=0,
-                         state='open', last=None, on=0, excuse=folk.roll('rac-fee-ex', week, i) % len(FEE_EXCUSES)))
+                         state='open', last=None, on=0, excuse=folk.roll('rac-fee-ex', week, i) % len(FEE_EXCUSES), counter=0))
     return dict(week=week, rows=rows)
 
 
@@ -1227,13 +1228,18 @@ def _fee(s, c, d, p):
         row.update(state='waived', last='Miễn cho hộ khó khăn.')
         c['xp'] += 3
         return dict(message=f'🤝 Miễn phí tháng này cho {row["house"]}. Chị Hạnh gật đầu.')
-    kit.need(row['on'] != c['day'], f'Hôm nay đã gõ cửa {row["house"]} rồi. Mai hẵng thu tiếp.')
     tone = kit.one_of(p.get('tone'), ('soft', 'strict'), 'Chọn cách nói.')
     left = row['due'] - row['paid']
     asked = kit.integer(p['amount'], 1, left) if p.get('amount') is not None else left
-    r = folk.fee(folk.traits(row['id']), left, asked, tone, row['tries'])
+    if row['on'] == c['day']:
+        # Once a day at each door; only a household's own counter-offer can still be taken on the spot.
+        kit.need(row['counter'] and asked <= row['counter'], f'Hôm nay đã gõ cửa {row["house"]} rồi. Mai hẵng thu tiếp.')
+        r = dict(kind='paid', paid=asked)
+    else:
+        r = folk.fee(folk.traits(row['id']), left, asked, tone, row['tries'])
     row['tries'] += 1
     row['on'] = c['day']
+    row['counter'] = r.get('counter', 0) if r['kind'] == 'haggle' else 0
     if r['kind'] == 'paid':
         row['paid'] += r['paid']
         kit.money(s, c, r['paid'], f'Phí vệ sinh: {row["house"]}'[:120], row['id'], 'fee')
@@ -1252,7 +1258,7 @@ def _validate_fees(f) -> None:
     kit.need(isinstance(f, dict) and set(f) == {'week', 'rows'} and isinstance(f['rows'], list) and len(f['rows']) <= FEE_ROWS, 'Sổ thu phí sai.')
     kit.integer(f['week'], -1, 10 ** 6)
     for x in f['rows']:
-        kit.need(isinstance(x, dict) and set(x) == {'id', 'house', 'lane', 'due', 'paid', 'tries', 'state', 'last', 'on', 'excuse'}
+        kit.need(isinstance(x, dict) and set(x) == {'id', 'house', 'lane', 'due', 'paid', 'tries', 'state', 'last', 'on', 'excuse', 'counter'}
                  and x['state'] in FEE_STATES and (x['last'] is None or (isinstance(x['last'], str) and len(x['last']) <= 200)), 'Sổ thu phí sai.')
         for k in ('id', 'house', 'lane'):
             kit.text(x[k], 80)
@@ -1261,6 +1267,7 @@ def _validate_fees(f) -> None:
         kit.integer(x['tries'], 0, 999)
         kit.integer(x['on'], 0, 10 ** 7)
         kit.integer(x['excuse'], 0, len(FEE_EXCUSES) - 1)
+        kit.integer(x['counter'], 0, x['due'])
 
 
 # ---------------------------------------------------------------- troubles on the night round
@@ -1462,6 +1469,8 @@ def public_task(t: dict) -> dict:
     for k in list(v):
         if k.startswith('_'):
             del v[k]
+    v.pop('twist', None)     # where a razor hides and who will come out stay hidden
+    v.pop('tw', None)
     if not v['known']:
         v['needs'] = None
         return v

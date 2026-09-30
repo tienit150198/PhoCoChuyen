@@ -641,11 +641,10 @@ def drift_of(day: int) -> int:
 
 
 # ================================================================ the actions
-FREE = ('tc_intro',)
+FREE = ('tc_intro', 'tc_chase')
 # Picking a fruit is a moment; the weighing is the customer's turn at the stall.
 NO_TICK = ('tc_intro', 'tc_short', 'tc_cover', 'tc_scale_test', 'tc_pick', 'tc_tare', 'tc_unpick', 'tc_deal', 'tc_pay', 'tc_look', 'tc_desk',
            'tc_decline', 'tc_offer', 'tc_credit', 'tc_chase', 'tc_trouble')
-FREE = FREE + ('tc_chase',)
 PHYSICAL = ('tc_pick', 'tc_sort', 'tc_weigh', 'tc_xa', 'tc_scale_fix')
 
 
@@ -1454,6 +1453,9 @@ def on_start(s: dict, c: dict) -> None:
     elif c['active_task'] and not any(t['id'] == c['active_task'] and t['status'] not in ('completed', 'referred', 'cancelled') for t in c['tasks']):
         kit.eng().next_active(c)
     kit.desk_start(s, c, ID, d['desk'], DESK, mod_of(day)['id'], c['life'].get('mode') == 'festival')
+    # Honest debtors turn up with the money by themselves; the rest wait to be chased (the debt book).
+    for note in folk.auto_repay(s, c, ID, d['debts'], lambda i: PEOPLE[i][3] if 0 <= i < len(PEOPLE) else None):
+        kit.log(s, c, 'surprise', note)
 
 
 def on_close(s: dict, c: dict) -> dict:

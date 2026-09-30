@@ -150,7 +150,7 @@ function feeBook(x){
     return `<li class="rc-fee ${r.state}"><div class="row spread"><b>${x.esc(r.house)}</b><span class="tag ${r.state==='open'?'amber':'green'}">${st||`${x.fmt(left)} xu`}</span></div>
       <small class="muted">${x.esc(r.lane)}</small>${r.last?`<p class="small">${x.esc(r.last)}</p>`:''}
       ${r.state==='open'&&!today?`${amountBox(x,`fee-${r.id}`,left,{max:left,label:'Thu bao nhiêu',send:'🧾 Thu, nói nhẹ',cmd:'rac_fee',payload:{row:r.id,tone:'soft'},field:'amount'})}
-        <div class="sk-row">${act2(x,'📜 Nhắc quy định',{row:r.id,tone:'strict',key:`fee-${r.id}`,def:left})}${x.confirmCmd('🤝 Miễn tháng này','rac_fee',{row:r.id,waive:true},`Miễn phí cho ${r.house}?`,'small ghost')}</div>`:r.state==='open'?'<p class="small muted">Hôm nay gõ cửa rồi, mai thu tiếp.</p>':''}</li>`;}).join('');
+        <div class="sk-row">${act2(x,'📜 Nhắc quy định',{row:r.id,tone:'strict',key:`fee-${r.id}`,def:left})}${x.confirmCmd('🤝 Miễn tháng này','rac_fee',{row:r.id,waive:true},`Miễn phí cho ${r.house}?`,'small ghost')}</div>`:r.state==='open'&&r.counter?`<div class="sk-row">${x.cmd(`🤝 Chốt ${x.fmt(r.counter)} xu`,'rac_fee',{row:r.id,tone:'soft',amount:r.counter},'small')}</div>`:r.state==='open'?'<p class="small muted">Hôm nay gõ cửa rồi, mai thu tiếp.</p>':''}</li>`;}).join('');
   return pane(x,'fees',`🧾 Thu phí vệ sinh · còn ${open.length} hộ`,`<ul class="sk-debts">${rows}</ul>`,open.length>0,'rc-fees');
 }
 const act2=(x,label,d)=>`<button type="button" class="btn small" data-action="car:feeStrict"${Object.entries(d).map(([k,v])=>` data-${k}="${x.esc(v)}"`).join('')}>${label}</button>`;
