@@ -395,6 +395,27 @@ class SplitTests(Seeded):
         self.assertEqual(again.out['saves']['sample']['reread'], 0)
         self.assertEqual(again.out['saves']['play'], job.out['saves']['play'])
 
+    def test_background_pass_yields_to_players_and_stops_when_the_page_is_closed(self):
+        self.seed(3)
+        p = st._paths(self.store)
+        job = st._Job(self.store, lock_fd=-1, pause=0)   # a background job (lock_fd set)
+        st._write_json(p['want'], dict(at=time.time(), fresh=0))
+        waits = []
+        with patch.object(st, '_load', return_value=5.0), patch.object(st.time, 'sleep', waits.append):
+            job.pass_saves()                               # machine busy: waits BUSY_WAIT, then gives up
+        self.assertEqual(sum(waits), st.BUSY_WAIT)
+        self.assertNotIn('saves', job.out)
+        self.assertEqual(job.rows, {})
+        st._write_json(p['want'], dict(at=time.time() - st.IDLE - 1, fresh=0))
+        with patch.object(st, '_load', return_value=0.0):
+            job.pass_saves()                               # nobody on the page any more: nothing is read
+        self.assertNotIn('saves', job.out)
+        st._write_json(p['want'], dict(at=time.time(), fresh=0))
+        with patch.object(st, '_load', return_value=0.0), patch.object(st.time, 'sleep', lambda s: None):
+            job.pass_saves()                               # idle machine, operator watching: the pass runs
+        self.assertEqual(job.out['saves']['sample']['size'], 3)
+        job.lock_fd = None
+
     def test_a_save_over_the_chunk_budget_is_skipped_not_waited_for(self):
         self.seed(4)
         real = st._Job._chunk

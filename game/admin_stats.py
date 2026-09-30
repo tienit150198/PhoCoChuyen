@@ -26,7 +26,9 @@ How players are protected
   The job keeps each save's compact row with the revision it was read at (in
   `<db>-adminstats-rows.json`), lists (sid, revision) from the covering index, and reads
   only the saves whose revision moved, a few dozen per statement, each chunk under a time
-  budget, pausing as long as it worked between chunks (about half of one core at most).
+  budget, pausing three times as long as it worked between chunks (a quarter of one core at
+  most). It reads the saves every SAVES_EVERY (30 min) from the SAMPLE (400) most recent ones,
+  and waits, then gives the pass up, while the machine is busy with players (load average).
   It runs only while an operator has looked at the page in the last IDLE seconds, and
   writes its result to `<db>-adminstats.json` (atomic replace). Before its first pass is
   done the saves section answers {pending: true, progress}.
@@ -57,12 +59,17 @@ except ImportError:  # pragma: no cover
     dbm = None
 
 RANGES = (7, 30, 90)
-TTL = 60.0                 # full payload (in-game tab), and how often the job refreshes the saves section
+TTL = 60.0                 # full payload (in-game tab)
+# The saves section is expensive (each save is parsed whole): it is refreshed rarely, from a
+# small sample, and never while the machine is busy serving players (see _Job.may_go).
+SAVES_EVERY = float(os.environ.get('ADMIN_STATS_SAVES_EVERY', '1800') or 1800)  # seconds between two passes over the saves
+BUSY_LOAD = 0.7            # the job waits while the 1-minute load average is over BUSY_LOAD per core
+BUSY_WAIT = 60.0           # ... and gives the pass up after waiting this long (the next one tries again)
 SUMMARY_TTL = 30.0
 SYSTEM_EVERY = 120.0       # table sizes
 SUMMARY_EVERY = 60.0       # the job's copy of the first screen (served when a live read runs out of time)
 IDLE = 600.0               # the job stops this long after the last admin request
-SAMPLE = max(100, int(os.environ.get('ADMIN_STATS_SAMPLE', '5000') or 5000))
+SAMPLE = max(100, int(os.environ.get('ADMIN_STATS_SAMPLE', '400') or 400))
 KEEP_DAYS = 120            # stat_active history kept
 COHORT_DAYS = 30           # retention looks at players who started in the last 30 days (or the range, if longer)
 TZ = '+7 hours'
@@ -79,7 +86,7 @@ CHUNK_MS = 800             # one chunk of saves in the job
 COUNT_MS = 250             # an exact COUNT(*) of one table in the job; past it the size is estimated
 JOB_SUMMARY_MS = 30000     # the job's summary (a cold disk can take seconds per index); each statement is its own read
 CHUNK = 40                 # saves per chunk (halved when a chunk runs out of time)
-PAUSE = 1.0                # the job sleeps PAUSE x the time a chunk took
+PAUSE = 3.0                # the job sleeps PAUSE x the time a chunk took (a quarter of one core at most)
 
 SCHEMA = f"""
 CREATE INDEX IF NOT EXISTS stat_sessions_seen ON sessions(updated_at, revision, sid);
@@ -722,6 +729,14 @@ def _result(store) -> dict:
     return data
 
 
+def _load() -> float:
+    """The 1-minute load average per core (0 where the OS has none)."""
+    try:
+        return os.getloadavg()[0] / (os.cpu_count() or 1)
+    except (AttributeError, OSError):
+        return 0.0
+
+
 def _try_lock(path: str):
     fd = os.open(path, os.O_RDWR | os.O_CREAT, 0o600)
     try:
@@ -800,6 +815,11 @@ class _Job:
         todo = [sid for sid, r in head if (self.rows.get(sid) or [None])[0] != r]
         i, batch, skipped, shown = 0, CHUNK, 0, time.monotonic()
         while i < len(todo):
+            if self.lock_fd is not None and not self.may_go():
+                self.out.pop('progress', None)
+                if i:  # keep what was read: the next pass goes on from there
+                    _write_json(self.p['rows'], self.rows)
+                return
             part = todo[i:i + batch]
             t = time.monotonic()
             try:
@@ -831,6 +851,21 @@ class _Job:
         self.saves_at = time.time()
         if todo or not os.path.exists(self.p['rows']):
             _write_json(self.p['rows'], self.rows)
+
+    def may_go(self) -> bool:
+        """Background pass only, before each chunk: False once the operator left the page, or
+        after the machine stayed busy for BUSY_WAIT seconds. Players come first."""
+        waited = 0.0
+        while True:
+            want = _load_json(self.p['want'], {}) or {}
+            if time.time() - float(want.get('at') or 0) > IDLE:
+                return False
+            if _load() <= BUSY_LOAD:
+                return True
+            if waited >= BUSY_WAIT:
+                return False
+            time.sleep(5)
+            waited += 5
 
     def pass_system(self) -> None:
         t0 = time.perf_counter()
@@ -910,7 +945,7 @@ class _Job:
                     if now - self.sys_at >= SYSTEM_EVERY or fresh > self.sys_at:
                         self.pass_system()
                         self.write()
-                    if now - self.saves_at >= TTL or fresh > self.saves_at:
+                    if now - self.saves_at >= SAVES_EVERY or fresh > self.saves_at:
                         self.pass_saves()
                         self.write()
                     if now - self.purged_at >= PURGE_EVERY:
