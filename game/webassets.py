@@ -31,7 +31,28 @@ VERSIONED_SUFFIXES = {".js", ".css", ".json", ".mp3", ".webp", ".png", ".svg"}
 MAPPED_SUFFIXES = (".js", ".css", ".json", ".mp3")  # in the import map (modules + asset() lookups)
 PRECOMPRESS = (".js", ".css", ".json", ".svg")  # text copies that get .gz/.br siblings in the store (precompress)
 HASH_LEN = 12
-RECHECK = 2.0  # seconds a snapshot is trusted before the files are stat()ed again
+
+
+def recheck_seconds() -> float:
+    """Seconds a snapshot of public/ (and a resolved static route, server.STATIC_RECHECK) is
+    trusted before the files are stat()ed again: STATIC_RECHECK_SECONDS, else 2 s for one
+    process (a developer's edit shows at once) and 300 s with WORKERS>1 (a server, whose
+    release directory never changes: a deploy is a new directory and a restart). A re-check
+    walks and stat()s every versioned file (~230), under the GIL, on every worker."""
+    raw = (os.environ.get("STATIC_RECHECK_SECONDS") or "").strip()
+    try:
+        if raw:
+            return max(0.0, float(raw))
+    except ValueError:
+        pass
+    try:
+        workers = int(os.environ.get("WORKERS", "1") or 1)
+    except ValueError:
+        workers = 1
+    return 300.0 if workers > 1 else 2.0
+
+
+RECHECK = recheck_seconds()  # seconds a snapshot is trusted before the files are stat()ed again
 ENTRY = "/js/app.js"
 IMMUTABLE = "public, max-age=31536000, immutable"
 _IMPORT = re.compile(r"""^[ \t]*import\s*(?:[^;'"()]*?\bfrom\s*)?['"]([^'"]+)['"]""", re.M)
@@ -112,7 +133,11 @@ class WebAssets:
         snap = self._snap
         if snap is not None and now - self._checked < RECHECK:
             return snap
-        with self._lock:
+        # One thread re-checks; the others keep answering with the current snapshot meanwhile
+        # instead of queueing behind the stat() walk (every API response asks for the version).
+        if not self._lock.acquire(blocking=snap is None):
+            return snap
+        try:
             if self._snap is not None and time.monotonic() - self._checked < RECHECK:
                 return self._snap
             sig = self._signature()
@@ -121,6 +146,8 @@ class WebAssets:
                 self._sig = sig
             self._checked = time.monotonic()
             return self._snap
+        finally:
+            self._lock.release()
 
     def hash_of(self, url: str) -> str | None:
         return self.snapshot().files.get(url)
