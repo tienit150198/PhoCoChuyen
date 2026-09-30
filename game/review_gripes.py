@@ -22,7 +22,7 @@ GROUP = {'milk_tea': 'shop', 'cafe_bakery': 'shop', 'restaurant': 'shop', 'groce
          'pharmacy': 'shop', 'florist': 'shop', 'salon': 'shop', 'pet_care': 'shop', 'repair': 'shop',
          'accounting': 'office', 'corp_accounting': 'office', 'tax_payroll': 'office', 'group_accounting': 'office',
          'customer_care': 'support', 'tour_guide': 'tour', 'homestay': 'stay', 'teacher': 'teacher',
-         'delivery': 'delivery', 'farm': 'farm', 'clothing': 'shop', 'tra_da': 'shop'}
+         'delivery': 'delivery', 'farm': 'farm', 'clothing': 'shop', 'tra_da': 'shop', 'pilot': 'air', 'flight_attendant': 'air'}
 CUST = ('shop', 'office', 'support', 'tour', 'stay', 'delivery', 'farm')
 LABEL = 'Chuyện ngoài lề'
 CLUE = 'Trừ sao vì chuyện ngoài lề'
@@ -119,6 +119,13 @@ GRIPES = dict((
     _G('handwriting', ('teacher',), 'chữ cô/thầy đẹp', '', ['chữ cô/thầy viết trên bảng đẹp như in'], None, True),
     _G('ship_smile', ('delivery',), 'shipper cười duyên', '', ['shipper cười duyên quá trời'], None, True),
     _G('egg_shape', ('farm',), 'trứng tròn đẹp', '', ['quả trứng nào cũng tròn đẹp như tranh'], None, True),
+    # ---- ✈️ passengers of Hãng bay Cánh Cò
+    _G('knees', ('air',), 'ghế chật chân', 'Chật.', ['ghế chật, đầu gối tôi chạm lưng ghế trước suốt chuyến']),
+    _G('wing_view', ('air',), 'ngồi đúng chỗ cánh che', 'Cánh che.', ['tôi ngồi cửa sổ mà đúng ngay cánh, chẳng thấy biển đâu']),
+    _G('ears', ('air',), 'ù tai khi hạ cánh', 'Ù tai.', ['lúc hạ cánh tai tôi ù đặc, dù chẳng phải lỗi ai']),
+    _G('bus_gate', ('air',), 'xe buýt ra tàu chạy vòng', 'Xe buýt.', ['xe buýt từ cổng ra tàu chạy vòng vèo mãi mới tới']),
+    _G('sea_view', ('air',), 'thấy biển từ trên cao', '', ['nhìn qua cửa sổ thấy biển xanh ngắt, đẹp như tranh'], None, True),
+    _G('sunrise', ('air',), 'bay lúc bình minh', '', ['bay đúng lúc bình minh, mặt trời đỏ au ngay cánh tàu'], None, True),
 ))
 
 PRAISE = {
@@ -130,6 +137,7 @@ PRAISE = {
     'teacher': ['con học có tiến bộ', 'buổi học nhìn chung ổn', 'con về kể học vui'],
     'delivery': ['hàng tới nguyên vẹn', 'giao đúng chỗ', 'đơn đủ món'],
     'farm': ['rau tươi, trứng ngon', 'hàng tươi rói', 'đóng gói cẩn thận'],
+    'air': ['chuyến bay an toàn', 'tổ bay chu đáo', 'hạ cánh êm'],
 }
 DROP = dict(yes=['Trừ một sao, không bàn.', 'Một sao trừ đi là vì chuyện đó.', 'Trừ một sao cho nhớ.'],
             no=['Sao thì vẫn để nguyên, tôi rộng lượng mà.', 'Không trừ sao đâu, nói cho biết thôi.', 'Vẫn đủ sao, nhưng nhớ đấy.'])

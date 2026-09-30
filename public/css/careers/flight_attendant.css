@@ -1,0 +1,149 @@
+/* Tiếp viên Cánh Cò — scoped workbench styles (.career-job.tv).
+   Its own look: teal uniform and coral scarf, a boarding pass at the door, the seat map
+   (A B | aisle | C D) for the aisle check and the cart, a coral alert for the belt sign.
+   Chrome uses theme tokens (with fallbacks) so dark mode follows the app. */
+.career-job.tv{
+  --tv-surface:var(--surface,#fbfefd);--tv-surface-2:var(--surface-2,#e6f3f1);--tv-ink:var(--ink,#1f3533);--tv-muted:var(--muted,#5f7471);
+  --tv-line:var(--line,#d3e4e1);--tv-teal:#1f7a78;--tv-teal-2:#2f9b97;--tv-coral:#e8735a;--tv-sand:#f7efe2;
+  --tv-good:var(--good,#3f8a55);--tv-warn:var(--warn,#c98a2b);--tv-bad:var(--bad,#c0533f);
+  --tv-r:var(--radius,16px);--tv-rs:var(--radius-sm,10px);--tv-shadow:var(--shadow,0 6px 18px rgb(0 0 0 / 8%));
+  color:var(--tv-ink)}
+
+:where(.career-job.tv) :where(.card){background:var(--tv-surface);border:1px solid var(--tv-line);border-radius:var(--tv-r);padding:14px;box-shadow:var(--tv-shadow)}
+:where(.career-job.tv) :where(.workbench){display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,280px);gap:14px;align-items:start;margin-top:10px}
+:where(.career-job.tv) :where(.wb-side){position:sticky;top:0}
+.career-job.tv .card+.card,.career-job.tv .card+section,.career-job.tv section+.card,.career-job.tv .tv-ssr+.card{margin-top:10px}
+.career-job.tv h3{margin:0}
+.career-job.tv h4{margin:0 0 8px}
+
+/* ---------- the strip on top */
+.career-job.tv .tv-strip{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--tv-rs);background:var(--tv-teal);color:#f2fbfa;box-shadow:var(--tv-shadow);
+  border-bottom:4px solid var(--tv-coral)}
+.career-job.tv .tv-strip b{letter-spacing:.05em;padding:1px 8px;border-radius:6px;background:rgb(255 255 255 / 16%);font-variant-numeric:tabular-nums;white-space:nowrap}
+.career-job.tv .tv-strip .grow{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.career-job.tv .tv-kind{font-size:13px;white-space:nowrap}
+
+/* ---------- tiles */
+.career-job.tv .tv-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+.career-job.tv .tv-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:64px;padding:8px 6px;border:1px solid var(--tv-line);
+  border-radius:var(--tv-rs);background:var(--tv-surface);color:var(--tv-ink);font:inherit;text-align:center;cursor:pointer}
+.career-job.tv .tv-tile b{font-size:14px;line-height:1.2}
+.career-job.tv .tv-tile small{font-size:12px;color:var(--tv-good)}
+.career-job.tv .tv-tile-emoji{font-size:24px;line-height:1}
+.career-job.tv .tv-tile:disabled{opacity:.5;cursor:default}
+.career-job.tv .tv-tile.used{opacity:.7;border-color:var(--tv-good)}
+.career-job.tv .tv-tile.warn{border-style:dashed}
+.career-job.tv .tv-dots{display:flex;gap:6px}
+.career-job.tv .tv-dots span{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--tv-surface-2);color:var(--tv-muted);font-size:12px;font-weight:700}
+.career-job.tv .tv-dots span.done{background:var(--tv-teal);color:#fff}
+.career-job.tv .tv-dots span.now{box-shadow:inset 0 0 0 2px var(--tv-coral);color:var(--tv-ink)}
+.career-job.tv .tv-say{margin:6px 0;padding:8px 12px;border-radius:12px 12px 12px 4px;background:var(--tv-surface-2);font-size:15px;line-height:1.4}
+
+/* ---------- the door: passenger and boarding pass */
+.career-job.tv .tv-pax{margin-top:10px;gap:10px;align-items:flex-start}
+.career-job.tv .tv-face{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;background:var(--tv-surface-2);font-size:28px;flex:none}
+.career-job.tv .tv-pass{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:8px;padding:10px 12px;border-radius:var(--tv-rs);
+  background:var(--tv-sand);color:#3b3326;border:1px dashed #c9b28f}
+.career-job.tv .tv-pass b{font-size:24px;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.career-job.tv .tv-exit{padding:2px 8px;border-radius:99px;background:var(--tv-coral);color:#fff;font-size:13px;font-weight:700}
+.career-job.tv .tv-bag{font-size:14px}
+
+/* ---------- the demonstration and the seat map */
+.career-job.tv .tv-mic{margin:10px 0 4px;font-size:15px;line-height:1.4}
+.career-job.tv .tv-map{display:grid;gap:6px;margin:6px 0}
+.career-job.tv .tv-map-row{display:grid;grid-template-columns:28px repeat(2,minmax(44px,1fr)) 18px repeat(2,minmax(44px,1fr));gap:6px;align-items:center}
+.career-job.tv .tv-row-no{font-weight:700;color:var(--tv-muted);text-align:center;font-variant-numeric:tabular-nums}
+.career-job.tv .tv-aisle{height:100%;border-left:2px dotted var(--tv-line);margin-left:8px}
+.career-job.tv .tv-seat{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:52px;padding:4px;border-radius:12px 12px 8px 8px;
+  border:2px solid var(--tv-line);background:var(--tv-surface);color:var(--tv-ink);font:inherit;cursor:pointer}
+.career-job.tv .tv-seat small{position:absolute;top:2px;left:6px;font-size:10px;color:var(--tv-muted)}
+.career-job.tv .tv-seat span{font-size:22px;line-height:1}
+.career-job.tv .tv-seat.bad{border-color:var(--tv-coral);background:color-mix(in srgb,var(--tv-coral) 10%,var(--tv-surface))}
+.career-job.tv .tv-seat.ok,.career-job.tv .tv-seat.done{opacity:.8}
+.career-job.tv .tv-seat.done{border-color:var(--tv-good)}
+.career-job.tv .tv-seat.todo{border-color:var(--tv-teal-2)}
+.career-job.tv .tv-seat.sel{box-shadow:0 0 0 3px var(--tv-coral);opacity:1}
+.career-job.tv .tv-seat.empty{border-style:dashed;background:transparent;cursor:default;min-height:52px}
+.career-job.tv .tv-seat:disabled{cursor:default}
+.career-job.tv .tv-legend{display:flex;flex-wrap:wrap;gap:4px 12px;color:var(--tv-muted)}
+
+/* ---------- the cart */
+.career-job.tv .tv-ssr{padding:10px 12px;border-radius:var(--tv-rs);background:var(--tv-sand);color:#3b3326;border-left:6px solid var(--tv-coral)}
+.career-job.tv .tv-ssr h4{margin:0 0 4px;color:#3b3326}
+.career-job.tv .tv-ssr ul{margin:0;padding-left:0;list-style:none;display:grid;gap:2px;font-size:14px}
+.career-job.tv .tv-order{margin-top:8px}
+.career-job.tv .tv-order p{margin:4px 0}
+.career-job.tv .tv-cart{grid-template-columns:repeat(4,minmax(0,1fr))}
+.career-job.tv .tv-cart .tv-tile{min-height:60px;padding:6px 4px}
+.career-job.tv .tv-cart .tv-tile b{font-size:12px}
+.career-job.tv .tv-skip{min-height:44px;margin-top:4px}
+
+/* ---------- a difficult passenger, first aid */
+.career-job.tv .tv-said{list-style:none;margin:8px 0;padding:0;display:grid;gap:4px;font-size:14px;color:var(--tv-muted)}
+.career-job.tv .tv-qs{list-style:none;margin:8px 0;padding:0;display:grid;gap:6px}
+.career-job.tv .tv-qs li{display:flex;gap:8px;align-items:flex-start;font-size:14px}
+.career-job.tv .tv-qs li.done{padding:6px 10px;border-radius:var(--tv-rs);background:var(--tv-surface-2)}
+.career-job.tv .tv-q{min-height:44px}
+.career-job.tv .tv-kit{grid-template-columns:repeat(2,minmax(0,1fr))}
+
+/* ---------- decisions and alerts */
+.career-job.tv .tv-event{margin:10px 0;padding:14px;border-radius:var(--tv-r);border:2px solid var(--tv-teal-2);background:var(--tv-surface);box-shadow:var(--tv-shadow)}
+.career-job.tv .tv-event.tense{border-color:var(--tv-coral)}
+.career-job.tv .tv-ev-head{display:flex;gap:10px;align-items:center}
+.career-job.tv .tv-ev-head>span{font-size:30px}
+.career-job.tv .tv-ev-head small{color:var(--tv-muted)}
+.career-job.tv .tv-opts{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.career-job.tv .tv-opt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;height:auto;min-height:48px;padding:10px 12px;text-align:left;white-space:normal}
+.career-job.tv .tv-opt small{color:var(--tv-muted);font-weight:400}
+.career-job.tv .tv-opt-label{font-weight:700}
+.career-job.tv .tv-last{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:8px 10px;border-radius:var(--tv-rs);border:1px solid var(--tv-line);background:var(--tv-surface)}
+.career-job.tv .tv-last.good{border-color:var(--tv-good)}
+.career-job.tv .tv-last.bad{border-color:var(--tv-bad)}
+.career-job.tv .tv-last p{flex:1;margin:0;font-size:14px}
+.career-job.tv .tv-last>span{font-size:22px}
+.career-job.tv .tv-x,.career-job.tv .tv-help{min-width:44px;min-height:44px}
+.career-job.tv .tv-turb{margin-bottom:10px;padding:14px;border-radius:var(--tv-r);background:#3a2a27;color:#fff4ef;border:3px solid var(--tv-coral);box-shadow:var(--tv-shadow)}
+.career-job.tv .tv-turb-head{display:flex;align-items:center;gap:10px}
+.career-job.tv .tv-turb-head>span{font-size:32px;animation:tv-shake .5s ease-in-out infinite}
+.career-job.tv .tv-turb-head h3{margin:0;color:#fff4ef}
+.career-job.tv .tv-turb-head small{color:#ffc9b8}
+.career-job.tv .tv-clock{margin-left:auto;min-width:64px;padding:6px 10px;border-radius:12px;background:#fff4ef;color:#3a2a27;font-size:24px;text-align:center;font-variant-numeric:tabular-nums}
+.career-job.tv .tv-clock.late{background:var(--tv-coral);color:#fff}
+.career-job.tv .tv-turb-btns{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
+.career-job.tv .tv-turb-btns .btn{min-height:52px}
+
+/* ---------- intro, story, crew book */
+.career-job.tv .tv-intro{border:2px solid var(--tv-teal)}
+.career-job.tv .tv-intro h3{margin:0 0 6px}
+.career-job.tv .tv-intro-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:10px 0}
+.career-job.tv .tv-icons{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.tv .tv-icons li{display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.35}
+.career-job.tv .tv-icons li span{font-size:18px;width:24px;flex:none;text-align:center}
+.career-job.tv .tv-arc{border-left:6px solid var(--tv-coral);margin-bottom:10px}
+.career-job.tv .tv-arc small{color:var(--tv-muted)}
+.career-job.tv .tv-arc p{margin:4px 0}
+.career-job.tv .tv-day{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 10px;padding:6px 10px;border-radius:var(--tv-rs);background:var(--tv-surface-2);border:1px solid var(--tv-line)}
+.career-job.tv .tv-day>span{font-size:22px}
+.career-job.tv .tv-day small{flex-basis:100%;color:var(--tv-muted)}
+.career-job.tv .tv-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;text-align:center}
+.career-job.tv .tv-stats b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+.career-job.tv .tv-stats small{color:var(--tv-muted);font-size:12px}
+.career-job.tv .tv-log{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:2px;font-size:14px}
+.career-job.tv .tv-log li{display:flex;gap:8px;align-items:baseline;padding:5px 2px;border-bottom:1px dashed var(--tv-line)}
+
+/* ---------- next-step bar */
+.career-job.tv .tv-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;flex-direction:column;gap:6px;margin-top:12px;padding:8px 12px 10px;border-radius:var(--tv-rs);
+  background:var(--tv-surface);border:1px solid var(--tv-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
+.career-job.tv .tv-bar .btn{width:100%;min-height:48px}
+
+@keyframes tv-shake{25%{transform:translateX(-2px) rotate(-3deg)}75%{transform:translateX(2px) rotate(3deg)}}
+@media (prefers-reduced-motion:reduce){.career-job.tv .tv-turb-head>span{animation:none}}
+@media (max-width:720px){
+  :where(.career-job.tv) :where(.workbench){grid-template-columns:1fr}
+  :where(.career-job.tv) :where(.wb-side){position:static}
+}
+@media (max-width:420px){
+  .career-job.tv .tv-map-row{grid-template-columns:22px repeat(2,minmax(40px,1fr)) 12px repeat(2,minmax(40px,1fr));gap:5px}
+  .career-job.tv .tv-cart .tv-tile-emoji{font-size:20px}
+  .career-job.tv .tv-stats b{font-size:17px}
+}

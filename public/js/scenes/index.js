@@ -16,6 +16,7 @@ export const KIND_OF={
   tra_da:'sidewalk',
   clothing:'boutique',
   pet_shop:'petshop',
+  pilot:'airfield',flight_attendant:'airfield',
 };
 export const kindOf=career=>KIND_OF[career]||'shop';
 
@@ -63,6 +64,12 @@ const KIND_WORDS={
     idle_line:'Khách quen sắp ghé làm cốc trà.',open_hint:'Dọn hàng ra gốc bàng rồi bán nhé.',free_eyebrow:'Quán đang vãn khách',free_title:'Vãn khách rồi!',
     free_more:'Mời thêm khách hoặc dọn hàng về.',more_btn:'Mời thêm một khách',none_waiting:'Chưa có khách nào đang chờ',next_btn:'Mời khách tiếp theo',
     people_sub:'Những người bạn gặp quanh gốc bàng.',feed_sub:'Lời nhắn và đánh giá quanh quán trà.'},
+  airfield:{cat_line:'Mrrr… Mướp nằm trên nóc xe hành lý, ngắm máy bay cất cánh.',till:'Quỹ lương',door_open:'Tan ca bay',door_closed:'Vào ca bay',
+    open_sign:'ĐANG BAY',closed_sign:'HẸN CHUYẾN SAU',shelf:'Bảng thời tiết',evidence:'Bản tin & phiếu dầu',counter:'Quầy điều phái',warehouse:'Xe dầu',
+    finance:'Sổ lương',property:'Sân đỗ Cánh Cò',security:'An ninh sân bay',ledger:'SỔ GIỜ BAY',store:'SÂN ĐỖ',
+    idle_line:'Chặng bay tiếp theo sắp tới giờ.',open_hint:'Báo danh ở phòng điều phái rồi bay nhé.',free_eyebrow:'Tổ bay nghỉ giữa chặng',free_title:'Hết chặng rồi!',
+    free_more:'Nhận thêm một chặng hoặc tan ca hôm nay.',more_btn:'Nhận thêm một chặng',none_waiting:'Chưa có chặng nào đang chờ',next_btn:'Chặng tiếp theo',
+    people_sub:'Những người bạn gặp ở sân bay.',feed_sub:'Lời nhắn và nhận xét quanh sân bay.'},
 };
 const CAREER_WORDS={
   milk_tea:{warehouse:'Kho nguyên liệu'},
@@ -75,6 +82,10 @@ const CAREER_WORDS={
   pet_shop:{shelf:'Kệ hạt & pate',evidence:'Bảng tìm thú lạc',counter:'Quầy tính tiền',warehouse:'Kho hàng',store:'KHO',
     cat_line:'Mrrr… cá trong bể bơi qua bơi lại, ngó hoài không chán.',open_sign:'ĐANG MỞ CỬA',idle_line:'Khách sắp ghé mua hạt cho bé nhà.',
     people_sub:'Những người bạn gặp quanh tiệm thú nhỏ.',feed_sub:'Lời nhắn và đánh giá quanh tiệm thú nhỏ.'},
+  flight_attendant:{shelf:'Xe đẩy suất ăn',evidence:'Phiếu suất ăn đặc biệt',counter:'Cửa ra tàu',warehouse:'Bếp tàu',ledger:'SỔ TIẾP VIÊN',store:'BẾP TÀU',
+    open_sign:'ĐANG ĐÓN KHÁCH',idle_line:'Khách chuyến sau đang xếp hàng ở cổng.',open_hint:'Thắt khăn quàng, ra cửa tàu đón khách nhé.',
+    free_eyebrow:'Khoang khách đang yên',free_title:'Xong việc rồi!',free_more:'Nhận thêm một việc hoặc tan ca hôm nay.',more_btn:'Nhận thêm một việc',
+    none_waiting:'Chưa có việc nào đang chờ',next_btn:'Việc tiếp theo',people_sub:'Những người bạn gặp trên khoang khách.',feed_sub:'Lời nhắn và nhận xét của hành khách.'},
 };
 export const wordsFor=career=>({...BASE,...KIND_WORDS[kindOf(career)],...CAREER_WORDS[career]});
 

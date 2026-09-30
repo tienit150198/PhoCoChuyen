@@ -14,6 +14,7 @@ ORDER = (
     'restaurant', 'cafe_bakery', 'florist', 'grocery', 'repair', 'farm', 'delivery',
     'homestay', 'pet_care', 'salon', 'corp_accounting', 'tax_payroll', 'group_accounting',
     'clothing', 'pet_shop', 'tra_da',
+    'pilot', 'flight_attendant',
 )
 # Development filter: MNL_CAREERS=restaurant,florist loads only those plugins.
 _ONLY = {x.strip() for x in os.environ.get('MNL_CAREERS', '').split(',') if x.strip()}
