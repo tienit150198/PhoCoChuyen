@@ -400,6 +400,18 @@ async def s_bank(w: Walk) -> None:
     await w.celebrate()
     w.need(await p.locator('.bk-sheet:not(.hs-sheet)[open] .mn-chip').count(), 'no money chip on the bank')
     await w.check('bank')
+    # The credit score marker sits between the scale marks around its value.
+    gauge = p.locator('.bk-sheet:not(.hs-sheet) .bk-gauge')
+    if w.need(await gauge.count(), 'no credit score gauge'):
+        await gauge.scroll_into_view_if_needed()
+        bad = await p.evaluate("""()=>{const g=document.querySelector('.bk-sheet:not(.hs-sheet) .bk-gauge'),v=Number(g.getAttribute('aria-valuenow'));
+          const x=g.querySelector('i').getBoundingClientRect(),mx=x.left+x.width/2;
+          const marks=[...g.parentElement.querySelectorAll('.bk-scale>span')].map(s=>{const r=s.getBoundingClientRect();return [Number(s.textContent),r.left+r.width/2];});
+          const lo=marks.filter(m=>m[0]<=v).pop(),hi=marks.find(m=>m[0]>v);
+          return lo&&hi&&!(mx>=lo[1]-8&&mx<=hi[1]+8)?`score ${v} drawn at ${Math.round(mx)} outside ${lo[0]}@${Math.round(lo[1])}..${hi[0]}@${Math.round(hi[1])}`:'';}""")
+        if bad:
+            w.problem(bad)
+        await w.check('bank-score')
     await w.click('.bk-sheet:not(.hs-sheet) [data-bk="tab"][data-tab="save"]', 'the savings tab', timeout=4000)
     try:
         await p.wait_for_selector('#bk-term', timeout=6000)
