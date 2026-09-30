@@ -142,13 +142,14 @@ class Savings(unittest.TestCase):
     def test_term_deposit_matures_with_interest(self):
         s = opened(wallet=1000, deposit=1000)
         s, r = act(s, 'jr_bk_save', amount=1000, term=7)
-        self.assertIn('14 xu', r['message'])   # 1000 × 0,2 % × 7 = 14
+        self.assertIn('7 xu', r['message'])   # 1000 × 6 %/năm × 7/60 = 7
+        self.assertIn('6%/năm', r['message'])
         t = B(s)['terms'][0]
         self.assertEqual(t['due'], s['journey']['life_day'] + 7)
         days(s, 6)
         self.assertEqual(B(s)['balance'], 0)
         notes = days(s, 1)
-        self.assertEqual((B(s)['balance'], B(s)['terms']), (1014, []))
+        self.assertEqual((B(s)['balance'], B(s)['terms']), (1007, []))
         self.assertTrue(any('đáo hạn' in n for n in notes))
 
     def test_early_withdrawal_falls_back_to_demand_rate(self):
@@ -167,9 +168,11 @@ class Savings(unittest.TestCase):
         with self.assertRaises(GameError):
             act(s, 'jr_bk_save', amount=bk.SAVE_MIN - 1, term=7)
         for _ in range(bk.TERMS_MAX):
-            s, _ = act(s, 'jr_bk_save', amount=20, term=14)
+            s, _ = act(s, 'jr_bk_save', amount=20, term=15)
         with self.assertRaises(GameError):
-            act(s, 'jr_bk_save', amount=20, term=14)
+            act(s, 'jr_bk_save', amount=20, term=15)
+        with self.assertRaises(GameError):   # 14 ngày only lives on in sổ opened before 0.9.5
+            act(opened(wallet=100, deposit=100), 'jr_bk_save', amount=20, term=14)
 
 
 class Card(unittest.TestCase):

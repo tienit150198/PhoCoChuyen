@@ -8,6 +8,8 @@
  *
  * Which pockets a sheet shows is decided in ONE place, the `scope(dialog)` callback app.js passes to
  * moneyBoot: null (no chip), {fund:null} (the wallet only) or {fund:careerId} (wallet + that place's fund).
+ * The bank and 🏠 Nhà của bạn add {account:true} (the bank account, once opened) and, for a married player
+ * whose couple has a joint fund, {joint:N} (Quỹ chung): a house is paid from all of them.
  * The pure helpers below (no DOM) are unit-tested by tests/money_chip.mjs. */
 import {asset} from '../assets.js';
 
@@ -29,15 +31,20 @@ export function fundLabel(till){
   return 'Quỹ tiệm';
 }
 
-/** The balances a scope shows, from the game state: {wallet, fund, fundName}; null when nothing to show. */
+/** The balances a scope shows, from the game state: {wallet, fund, fundName} (+ account, joint when the
+ * scope asks for them); null when nothing to show. */
 export function balances(state,scope,till=''){
   if(!state||!scope)return null;
   const j=state.journey,c=scope.fund?state.careers?.[scope.fund]:null;
   // Free play (no story) has no personal wallet: every place keeps its own fund.
-  const wallet=j&&j.story!==false&&Number.isFinite(Number(j.wallet))?Number(j.wallet):null;
+  const story=j&&j.story!==false;
+  const wallet=story&&Number.isFinite(Number(j.wallet))?Number(j.wallet):null;
   const fund=c&&Number.isFinite(Number(c.money))?Number(c.money):null;
-  if(wallet==null&&fund==null)return null;
-  return {wallet,fund,fundName:fundLabel(till)};
+  const out={wallet,fund,fundName:fundLabel(till)};
+  if(scope.account)out.account=story&&j.bank?.open&&Number.isFinite(Number(j.bank.balance))?Number(j.bank.balance):null;
+  if(scope.joint!=null)out.joint=story&&Number.isFinite(Number(scope.joint))?Number(scope.joint):null;
+  if(wallet==null&&fund==null&&out.account==null&&out.joint==null)return null;
+  return out;
 }
 
 /** The chip's inner markup (also the confirm dialog line). */
@@ -46,6 +53,8 @@ export function chipHTML(b,{phone=false}={}){
   const part=(ico,label,v,cls)=>`<span class="mn-part ${cls}${v<0?' neg':''}"><span aria-hidden="true">${ico}</span> ${esc(label)} <b>${esc(v<0?'−'+shortXu(-v,phone):shortXu(v,phone))}</b></span>`;
   const bits=[];
   if(b.wallet!=null)bits.push(part('👛','Ví',b.wallet,'mn-wallet'));
+  if(b.account!=null)bits.push(part('🏦',phone?'TK':'Tài khoản',b.account,'mn-account'));
+  if(b.joint!=null)bits.push(part('💞','Quỹ chung',b.joint,'mn-joint'));
   if(b.fund!=null)bits.push(part('🏪',b.fundName||'Quỹ tiệm',b.fund,'mn-fund'));
   return bits.join('<span class="mn-sep" aria-hidden="true">·</span>');
 }
@@ -54,6 +63,8 @@ export function chipText(b){
   if(!b)return '';
   const bits=[];
   if(b.wallet!=null)bits.push(`Ví ${b.wallet<0?'âm '+fmt(-b.wallet):fmt(b.wallet)} xu`);
+  if(b.account!=null)bits.push(`Tài khoản ${fmt(b.account)} xu`);
+  if(b.joint!=null)bits.push(`Quỹ chung ${fmt(b.joint)} xu`);
   if(b.fund!=null)bits.push(`${b.fundName||'Quỹ tiệm'} ${fmt(b.fund)} xu`);
   return bits.join(', ');
 }
@@ -70,13 +81,17 @@ const SPEND=/^(?:mua|nhập|đặt|thuê|thanh toán|nộp|đóng|chi|thay|sắm
 const lead=t=>String(t||'').replace(/^[^\p{L}\d]+/u,'').trim();
 export function isSpend(...texts){return texts.some(t=>SPEND.test(lead(t)));}
 
-/** How much is missing to pay `cost` out of `pocket` ('wallet' | 'fund'); 0 when it is enough. */
+/** How much is missing to pay `cost` out of `pocket` ('wallet' | 'fund' | 'account' | 'joint', or a list of
+ * them paid in turn, e.g. ['account','wallet'] for "from the account, the rest in cash"); 0 when enough. */
+const POCKET={wallet:'Ví',account:'Tài khoản',joint:'Quỹ chung'};
 export function shortfall(b,cost,pocket){
   if(!b||!(cost>0))return 0;
-  const have=pocket==='wallet'?b.wallet:b.fund;
-  if(have==null)return 0;
-  return Math.max(0,cost-Math.max(0,have));
+  const list=Array.isArray(pocket)?pocket:[pocket];
+  const vals=list.map(p=>b[p]).filter(v=>v!=null);
+  if(!vals.length)return 0;
+  return Math.max(0,cost-vals.reduce((s,v)=>s+Math.max(0,v),0));
 }
+const pocketName=(b,pocket)=>(Array.isArray(pocket)?pocket:[pocket]).filter(p=>b[p]!=null).map(p=>POCKET[p]||b.fundName||'Quỹ tiệm').join(' + ')||'Ví';
 
 /** The money block of a confirm dialog. `money`: {cost, pocket} from the caller when it knows them;
  * otherwise a confirm that starts with a spending word and names exactly one price is read as paid from
@@ -89,7 +104,7 @@ export function confirmMoney(b,texts,money=null){
   if(cost==null&&isSpend(...texts))cost=priceIn(...texts);
   if(!pocket)pocket=b.fund!=null?'fund':'wallet';
   const miss=shortfall(b,Number(cost)||0,pocket);
-  const where=pocket==='wallet'?'Ví':(b.fundName||'Quỹ tiệm');
+  const where=pocketName(b,pocket);
   return `<p class="mn-confirm" data-testid="money-confirm">${chipHTML(b)}</p>`+
     (miss?`<p class="mn-short" role="status">⚠️ ${esc(where)} còn thiếu <b>${fmt(miss)} xu</b> cho khoản này.</p>`:'');
 }
@@ -108,7 +123,7 @@ export function moneyBoot({api,scope,till=()=>'',phone=()=>false,css=asset('/css
   const later=()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;syncAll();});};
   const watched=new WeakSet();
   const mo=new MutationObserver(later);
-  const watch=d=>{if(watched.has(d))return;watched.add(d);mo.observe(d,{childList:true,subtree:true,attributes:true,attributeFilter:['open']});};
+  const watch=d=>{if(watched.has(d))return;watched.add(d);mo.observe(d,{childList:true,subtree:true,attributes:true,attributeFilter:['open','data-joint']});};
   const scan=()=>{for(const d of document.querySelectorAll('dialog'))watch(d);};
   scan();
   // Dialogs made on first use (bank, marriage…) are appended to <body>.

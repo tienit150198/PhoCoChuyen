@@ -70,7 +70,10 @@ function moneyScope(d){
   if(d.id==='sheet'){const v=ui.view,cid=api.state.current;
     if(MONEY_FUND.has(v)&&cid&&api.state.careers[cid])return {fund:cid};
     return v==='jobapp'||v==='home'?{fund:null}:null;}
-  return d.matches('.bk-sheet,.mr-sheet')?{fund:null}:null;
+  // The bank and 🏠 Nhà của bạn (a .bk-sheet too): wallet + bank account, and the couple's Quỹ chung when the
+  // house sheet has loaded one (data-joint, v4/house.js): a house is paid from all three.
+  if(d.matches('.bk-sheet'))return {fund:null,account:true,...(d.dataset.joint!=null&&d.dataset.joint!==''?{joint:Number(d.dataset.joint)}:{})};
+  return d.matches('.mr-sheet')?{fund:null}:null;
 }
 moneyBoot({api,scope:moneyScope,till:cid=>wordsFor(cid).till,phone:()=>document.documentElement.dataset.layout==='phone'});
 // Before a workplace is chosen the server picks one that is open (state.focus) and sends its full view.
@@ -1046,6 +1049,7 @@ async function handleAction(action,data,el){
       if((L.rank.m||action==='rank')&&await (await viaLazy(L.rank,el)).leaderboardAction(action,data,el,env()))break;
       if(action==='marriage'||action==='friends'){await (await import('./v4/marriage.js')).marriageAction(action,data,el,env());break;}  // Hôn nhân, Bạn bè: lazy
       if(action==='bank'){await (await import('./v4/bank.js')).bankAction(action,data,el,env());break;}  // 🏦 Ngân hàng Phố: lazy
+      if(action==='house'){await (await import('./v4/house.js')).houseAction(action,data,el,env());break;}  // 🏠 Nhà của bạn: lazy
       if(L.people.m&&await L.people.m.closenessAction(action,data,el,env()))break;
       if(await journeyAction(action,data,el,env()))break;
       if((L.inc.m||action==='incident'||action==='incLog')&&await (await viaLazy(L.inc,el)).incidentAction(action,data,el,env()))break;

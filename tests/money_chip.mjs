@@ -65,4 +65,16 @@ assert.match(html,/Ví còn thiếu <b>20 xu<\/b>/,'the caller says what and fro
 html=confirmMoney(both,['Rút 500 xu tiền mặt?','Tiền về ví.','Rút · 500 xu']);
 assert.doesNotMatch(html,/còn thiếu/,'withdrawing is not spending');
 assert.equal(confirmMoney(null,['Mua?','5 xu','Mua']),'');
+// The bank and 🏠 Nhà của bạn: wallet + bank account (+ the couple's Quỹ chung), paid from the account first.
+const bankState={journey:{wallet:40,bank:{open:true,balance:900}},careers:{}};
+const bk=balances(bankState,{fund:null,account:true,joint:300});
+assert.deepEqual(bk,{wallet:40,fund:null,fundName:'Quỹ tiệm',account:900,joint:300});
+assert.equal(chipText(bk),'Ví 40 xu, Tài khoản 900 xu, Quỹ chung 300 xu');
+assert.match(chipHTML(bk),/👛.*Ví.*🏦.*Tài khoản <b>900 xu<\/b>.*💞.*Quỹ chung <b>300 xu<\/b>/);
+assert.match(chipHTML(bk,{phone:true}),/🏦.*TK <b>900 xu<\/b>/,'short label on phones');
+assert.equal(balances({journey:{wallet:40,bank:{open:false}}},{fund:null,account:true}).account,null,'no account before opening one');
+assert.equal(shortfall(bk,1000,['account','wallet']),60);
+assert.equal(shortfall(bk,900,'account'),0);
+html=confirmMoney(bk,['Mua nhà phố?','Trả trước 1.200 xu.','Ký hợp đồng mua nhà'],{cost:1200,pocket:['account','wallet']});
+assert.match(html,/Tài khoản \+ Ví còn thiếu <b>260 xu<\/b>/,'a house: the account then the cash');
 console.log('money chip: ok');

@@ -5,8 +5,9 @@ The journey wallet stays the cash in hand ("Tiền mặt"). The bank adds, under
 
 * a current account (tài khoản thanh toán) with deposits, ATM withdrawals and a
   statement with running balances;
-* savings: a demand pot credited daily and term deposits (7/14/30 life days);
-  closing a term early pays the demand rate for the days held;
+* savings: a demand pot credited daily and term deposits quoted per in-game year
+  (7 days to 3 years; 1 tháng = MONTH_DAYS life days, 1 năm = YEAR_DAYS), paid at
+  maturity or renewed (tái tục); closing a term early pays the demand rate for the days held;
 * a credit card: approval and limit from the credit score and recent income,
   swipes through `pay()`, a statement every 7 life days, a minimum payment due 3
   days later, interest on carried balances, late fees, cash advances;
@@ -38,16 +39,24 @@ BAL_MAX = 10**9
 # Current account.
 ATM_OTHER_FEE = 1           # xu, "cây ATM khác ngân hàng"
 
-# Savings (interest in basis points of a xu per xu per life day: 5 = 0,05 %/ngày).
+# In-game calendar for savings and mortgages (game/housing.py): 1 tháng = 5 ngày sống,
+# 1 năm = 12 tháng = 60 ngày sống. Rates are quoted per year, like a real passbook.
+MONTH_DAYS = 5
+YEAR_DAYS = 12 * MONTH_DAYS
+# Savings. Không kỳ hạn: basis points of a xu per xu per life day (5 = 0,05 %/ngày = 3 %/năm), credited daily.
 DEMAND_BP = 5
-TERM_BP = {7: 20, 14: 25, 30: 30}     # below the loan rates: borrowing to deposit never pays
+# Có kỳ hạn: term (life days) -> basis points per year, paid at maturity. Longer terms pay more; the
+# Invest's 7-day savings (invest.py, 0,3 %/ngày) stays the higher-return option; every rate stays below the loans.
+TERM_RATE = {7: 600, 15: 700, 30: 750, 60: 800, 120: 850, 180: 880}
+LEGACY_RATE = {7: 1200, 14: 1500, 30: 1800}   # sổ opened before 0.9.5 (0,2/0,25/0,3 %/ngày) keep their rate
 SAVE_MIN = 20
 TERMS_MAX = 5
 
 # Credit score.
 SCORE_START, SCORE_MIN, SCORE_MAX = 650, 300, 850
 DELTA = dict(inquiry=-5, card_full=10, card_min=4, card_late=-35, loan_ok=6, loan_late=-40, loan_done=10,
-             income=4, age=2, util_low=2, util_mid=-4, util_high=-10, bad=-60)
+             income=4, age=2, util_low=2, util_mid=-4, util_high=-10, bad=-60,
+             home_ok=5, home_late=-25, home_done=15)   # 🏠 vay mua nhà (game/housing.py)
 AGE_CAP = 30                # most points the account's age can add
 REVIEW = 7                  # weekly review (income, age) every 7 life days after opening
 
@@ -140,6 +149,29 @@ def _band(score: int) -> tuple:
 def _seq(b: dict, prefix: str) -> str:
     b['seq'] += 1
     return f'{prefix}{b["seq"]}'
+
+
+def term_interest(amount: int, rate: int, days: int) -> int:
+    """Interest of `amount` xu at `rate` basis points per in-game year over `days` life days."""
+    return amount * rate * days // (10000 * YEAR_DAYS)
+
+
+def year_text(rate: int) -> str:
+    """600 -> '6%/năm', 750 -> '7,5%/năm'."""
+    return _pct_text(rate) + '/năm'
+
+
+def upgrade(j: dict) -> None:
+    """Older bank blocks join 0.9.5: a term deposit keeps the rate it was opened with, now written per
+    year (bp per day × YEAR_DAYS gives exactly the same interest), and is not renewed."""
+    b = j.get('bank') if isinstance(j, dict) else None
+    if not isinstance(b, dict) or not isinstance(b.get('terms'), list):
+        return
+    for t in b['terms']:
+        if isinstance(t, dict) and 'bp' in t and 'rate' not in t and type(t['bp']) is int:
+            t['rate'] = t.pop('bp') * YEAR_DAYS
+        if isinstance(t, dict):
+            t.setdefault('renew', False)
 
 
 def _savings_total(b: dict) -> int:
@@ -610,10 +642,17 @@ def _tick(s: dict, b: dict, n: int, notes: list) -> None:
             _log(b, n, 'sav', 'Lãi tiết kiệm không kỳ hạn', gain)
     for t in list(b['terms']):
         if n >= t['due']:
-            gain = t['amount'] * t['bp'] * t['term'] // 10000
+            gain = term_interest(t['amount'], t['rate'], t['term'])
+            b['stats']['interest_in'] += gain
+            if t['renew'] and t['term'] in TERM_RATE and t['amount'] + gain <= BAL_MAX:
+                # Tái tục: principal and interest roll into a new sổ of the same term, at today's rate.
+                t.update(amount=t['amount'] + gain, rate=TERM_RATE[t['term']], start=n, due=n + t['term'])
+                _log(b, n, 'sav', f'Tái tục sổ {K.TERMS[t["term"]].lower()}: nhập lãi {_fmt(gain)} xu vào gốc', gain)
+                notes.append(_inbox(b, n, 'sms', K.RENEWED_SMS.format(bank=K.BANK_NAME, term=K.TERMS[t['term']].lower(),
+                                                                      gain=_fmt(gain), total=_fmt(t['amount']), due=t['due'])))
+                continue
             b['terms'].remove(t)
             b['balance'] += t['amount'] + gain
-            b['stats']['interest_in'] += gain
             _log(b, n, 'sav', f'Tất toán sổ {K.TERMS[t["term"]].lower()}', -t['amount'])
             _log(b, n, 'acc', f'Sổ {K.TERMS[t["term"]].lower()} đáo hạn: gốc {_fmt(t["amount"])} + lãi {_fmt(gain)} xu', t['amount'] + gain)
             notes.append(_inbox(b, n, 'sms', K.MATURED_SMS.format(bank=K.BANK_NAME, term=K.TERMS[t['term']].lower(),
@@ -769,21 +808,25 @@ def apply(s: dict, name: str, p: dict) -> dict:
         return dict(message=f'Đã rút {_fmt(amount)} xu tiền mặt' + (f', phí {fee} xu.' if fee else '.'))
     if name == 'jr_bk_save':
         term = p.get('term')
-        need(term in K.TERMS, 'Chọn kỳ hạn gửi nhé.')
+        need(type(term) is int and (term == 0 or term in TERM_RATE), 'Chọn kỳ hạn gửi nhé.')
         amount = _amount(p, low=1 if term == 0 else SAVE_MIN)
         src = _src(p)
+        renew = p.get('renew', False)
+        need(type(renew) is bool, 'Chọn có tái tục hay không nhé.')
         if term:
             need(len(b['terms']) < TERMS_MAX, f'Mỗi người mở tối đa {TERMS_MAX} sổ có kỳ hạn cùng lúc.')
         _take(s, b, src, amount, f'Gửi tiết kiệm {K.TERMS[term].lower()}', day)
         if term == 0:
             b['demand'] += amount
             _log(b, day, 'sav', 'Gửi tiết kiệm không kỳ hạn', amount)
-            return dict(message=f'Đã gửi {_fmt(amount)} xu không kỳ hạn, lãi {_pct_text(DEMAND_BP)}/ngày, cộng mỗi ngày.')
-        t = dict(id=_seq(b, 't'), amount=amount, term=term, bp=TERM_BP[term], start=day, due=day + term)
+            return dict(message=f'Đã gửi {_fmt(amount)} xu không kỳ hạn, lãi {year_text(DEMAND_BP * YEAR_DAYS)}, cộng mỗi ngày.')
+        t = dict(id=_seq(b, 't'), amount=amount, term=term, rate=TERM_RATE[term], start=day, due=day + term, renew=renew)
         b['terms'].append(t)
         _log(b, day, 'sav', f'Mở sổ {K.TERMS[term].lower()}', amount)
-        gain = amount * t['bp'] * term // 10000
-        return dict(message=f'Đã mở sổ {K.TERMS[term].lower()} {_fmt(amount)} xu. Đáo hạn {dy.on_day(s, t["due"])}, lãi dự kiến {_fmt(gain) + " xu" if gain else "dưới 1 xu (gửi nhiều hơn để thấy lãi)"}.')
+        gain = term_interest(amount, t['rate'], term)
+        return dict(message=f'Đã mở sổ {K.TERMS[term].lower()} {_fmt(amount)} xu, lãi {year_text(t["rate"])}. Đáo hạn {dy.on_day(s, t["due"])}, '
+                            f'lãi dự kiến {_fmt(gain) + " xu" if gain else "dưới 1 xu (gửi nhiều hơn để thấy lãi)"}'
+                            + (', tới hạn tự tái tục.' if renew else '.'))
     if name == 'jr_bk_unsave':
         tid = p.get('id')
         if tid == 'demand':
@@ -801,7 +844,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
         need(p.get('confirm') is True, 'Xác nhận tất toán sổ trước hạn.')
         held = max(0, day - t['start'])
         gain = t['amount'] * DEMAND_BP * held // 10000
-        lost = t['amount'] * t['bp'] * t['term'] // 10000 - gain
+        lost = term_interest(t['amount'], t['rate'], t['term']) - gain
         b['terms'].remove(t)
         b['balance'] += t['amount'] + gain
         b['stats']['interest_in'] += gain
@@ -970,7 +1013,8 @@ def action(s: dict, name: str, p: dict) -> dict:
 
 # ---------------------------------------------------------------- views
 def rules() -> dict:
-    return dict(demand_bp=DEMAND_BP, term_bp={str(k): v for k, v in TERM_BP.items()}, terms=[0] + sorted(TERM_BP), save_min=SAVE_MIN,
+    return dict(demand_bp=DEMAND_BP, demand_rate=DEMAND_BP * YEAR_DAYS, term_rate={str(k): v for k, v in TERM_RATE.items()},
+                terms=[0] + sorted(TERM_RATE), month_days=MONTH_DAYS, year_days=YEAR_DAYS, save_min=SAVE_MIN, terms_max=TERMS_MAX,
                 atm_fee=ATM_OTHER_FEE, card_cycle=CARD_CYCLE, card_grace=CARD_GRACE, card_min_pct=CARD_MIN_PCT,
                 card_min_floor=CARD_MIN_FLOOR, card_bp=CARD_BP, card_late_fee=CARD_LATE_FEE, cash_fee_pct=CASH_FEE_PCT,
                 cash_fee_min=CASH_FEE_MIN, cash_share=CASH_SHARE, loan_bp=dict(LOAN_BP), loan_terms=list(LOAN_TERMS),
@@ -997,8 +1041,13 @@ def public(s: dict) -> dict:
                     next_stmt=c['cycle'] + CARD_CYCLE * ((day - c['cycle']) // CARD_CYCLE + 1), autopay=c['autopay'],
                     past_due=c['past_due'], cash=c['cash'], cash_room=max(0, c['limit'] * CASH_SHARE // 100 - c['cash']),
                     locked=card_usable(s, b), open_day=c['open_day'])
-    terms = [dict(t, name=K.TERMS[t['term']], interest=t['amount'] * t['bp'] * t['term'] // 10000, days_left=max(0, t['due'] - day),
-                  early=t['amount'] * DEMAND_BP * max(0, day - t['start']) // 10000) for t in b['terms']]
+    terms = []
+    for t in b['terms']:
+        gain = term_interest(t['amount'], t['rate'], t['term'])
+        held = max(0, min(t['term'], day - t['start']))
+        terms.append(dict(t, name=K.TERMS[t['term']], interest=gain, value=t['amount'] + gain, days_left=max(0, t['due'] - day),
+                          accrued=term_interest(t['amount'], t['rate'], held), rate_text=year_text(t['rate']),
+                          early=t['amount'] * DEMAND_BP * held // 10000))
     loans = []
     for ln in b['loans']:
         nxt = next((r for r in ln['rows'] if r['paid'] < r['amount']), None)
@@ -1056,8 +1105,9 @@ def validate(s: dict) -> None:
         integer(d, 1, 10**6)
     need(isinstance(b['terms'], list) and len(b['terms']) <= TERMS_MAX, bad)
     for t in b['terms']:
-        need(isinstance(t, dict) and set(t) == {'id', 'amount', 'term', 'bp', 'start', 'due'} and t['term'] in TERM_BP
-             and t['bp'] == TERM_BP[t['term']] and t['due'] == t['start'] + t['term'], bad)
+        need(isinstance(t, dict) and set(t) == {'id', 'amount', 'term', 'rate', 'start', 'due', 'renew'}
+             and t['rate'] is not None and t['rate'] in (TERM_RATE.get(t['term']), LEGACY_RATE.get(t['term']))
+             and t['due'] == t['start'] + t['term'] and type(t['renew']) is bool, bad)
         txt(t['id'], 16)
         integer(t['amount'], SAVE_MIN, BAL_MAX)
         integer(t['start'], 1, 10**6)

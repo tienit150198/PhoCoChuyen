@@ -28,6 +28,8 @@ applied once to their save. Each request carries a client rid, so a retried tap 
 twice (the effect id / ledger ref are UNIQUE).
 
 For game/bank.py ("Thẻ chung"): joint_account(s) and joint_spend(s, amount, label, ref).
+🏠 For game/housing.py: joint_spend(..., kind='home') pays a home's down payment from the fund (not
+counted in the daily cap), and on_load brings the spouse into the home through the inbox ('home' effects).
 """
 from __future__ import annotations
 
@@ -558,6 +560,7 @@ def on_load(store, sid: str, state: dict | None, c: dict | None) -> None:
                 st = mr._row(db, 'SELECT happy FROM couple_stats WHERE couple=?', (c['id'],))
             gift = 5 + int((st or {}).get('happy') or 0) // 10
             effects.append(mr._effect(f'anniv:{c["id"]}:{side}:{k}', sid, 'wallet', gift, f'Quà kỷ niệm {k * ANNIV_DAYS} ngày về chung một nhà'))
+    effects += _home_effects(store, state, c, sid, side)   # 🏠 the spouse moves into this save's home
     if not effects:
         return
 
@@ -570,8 +573,24 @@ def on_load(store, sid: str, state: dict | None, c: dict | None) -> None:
                 if e['id'].startswith('anniv:'):
                     mr._notice(db, sid, f'🎂 {e["label"]}! Nhận {e["amount"]} xu quà kỷ niệm.')
                     _moment(db, c, sid, 'anniv', f'🎂 {e["label"]}', e['id'])
+                elif e['id'].startswith('home:'):
+                    mr._notice(db, e['sid'], f'🏠 {e["label"]}.')
         return added
     store.transaction(run, 500)
+
+
+def _home_effects(store, state: dict, c: dict, sid: str, side: str) -> list:
+    """🏠 game/housing.py: 'home' effects for the spouse that are not in the inbox yet (read-only check, so a
+    plain load writes nothing)."""
+    try:
+        from . import housing
+        want = housing.partner_effects(state, c['id'], side, mr._other(c, sid), mr._effect)
+    except Exception:  # noqa: BLE001 - a home never blocks loading the game
+        return []
+    if not want:
+        return []
+    with store.connect() as db:
+        return [e for e in want if not db.execute('SELECT 1 FROM marriage_effects WHERE id=?', (e['id'],)).fetchone()]
 
 
 def _reconcile(store, sid: str, state: dict) -> None:
@@ -636,7 +655,7 @@ def joint_account(s: dict) -> dict | None:
                     history=_history(db, c['id']), daily_left=max(0, WITHDRAW_CAP - _used(db, c['id'], sid)))
 
 
-def joint_spend(s: dict, amount: int, label: str, ref: str) -> dict:
+def joint_spend(s: dict, amount: int, label: str, ref: str, kind: str = 'spend') -> dict:
     """Charge the joint fund for a card payment made while computing save `s`.
 
     Idempotent by `ref` (the same ref never charges twice; retries of the same command are
@@ -645,8 +664,11 @@ def joint_spend(s: dict, amount: int, label: str, ref: str) -> dict:
     that save refunds the hold after HOLD_S seconds. Counts toward the WITHDRAW_CAP daily
     limit. Raises GameError when not allowed. Returns {balance, daily_left}.
     Do not call it while holding the store's write lock (e.g. inside Store._command_locked):
-    it raises GameError('busy') instead of waiting on itself."""
+    it raises GameError('busy') instead of waiting on itself.
+    kind='home' (🏠 game/housing.py): a home's down payment, outside the daily cap."""
     store = mr.STORE
+    if kind not in ('spend', 'home'):
+        raise GameError('Loại giao dịch không hợp lệ.', 'bad_kind')
     if type(amount) is not int or not 1 <= amount <= FUND_MAX:
         raise GameError('Số tiền không hợp lệ.', 'bad_amount')
     if not isinstance(ref, str) or not re.fullmatch(r'[A-Za-z0-9:_\-]{1,40}', ref):
@@ -670,10 +692,10 @@ def joint_spend(s: dict, amount: int, label: str, ref: str) -> dict:
                 raise GameError('Giao dịch này đã hết hạn. Thử lại nhé.', 'expired')
         else:
             try:
-                _fund_move(db, c['id'], sid, 'spend', amount, str(label or 'Thẻ chung')[:120], key, 'held')
+                _fund_move(db, c['id'], sid, kind, amount, str(label or 'Thẻ chung')[:120], key, 'held')
             except mr.MarriageError as e:
                 raise GameError(e.message, e.code) from None
-            mr._notice(db, mr._other(c, sid), f'💳 {mr._display(db, sid)} vừa chi {amount} xu từ quỹ chung: {str(label or "Thẻ chung")[:60]}')
+            mr._notice(db, mr._other(c, sid), f'{"🏠" if kind == "home" else "💳"} {mr._display(db, sid)} vừa chi {amount} xu từ quỹ chung: {str(label or "Thẻ chung")[:60]}')
         return dict(balance=_balance(db, c['id']), daily_left=max(0, WITHDRAW_CAP - _used(db, c['id'], sid)))
     if key in box['applied']:
         with store.connect() as db:

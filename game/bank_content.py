@@ -41,13 +41,22 @@ SCORE_WHY = {
     'util_mid': 'Dư nợ thẻ chiếm hơn 30% hạn mức',
     'util_high': 'Dư nợ thẻ chiếm hơn 70% hạn mức',
     'bad': 'Bị ghi nhận nợ xấu',
+    'home_ok': 'Trả góp nhà đúng hạn',
+    'home_late': 'Trễ hạn trả góp nhà',
+    'home_done': 'Trả xong khoản vay mua nhà',
 }
 
+# Term (life days) -> name. 1 tháng = 5 ngày sống, 1 năm = 60 ngày sống (bank.MONTH_DAYS / YEAR_DAYS).
+# 14 ngày is only for sổ opened before 0.9.5.
 TERMS = {
     0: 'Không kỳ hạn',
     7: 'Kỳ hạn 7 ngày',
     14: 'Kỳ hạn 14 ngày',
-    30: 'Kỳ hạn 30 ngày',
+    15: 'Kỳ hạn 3 tháng',
+    30: 'Kỳ hạn 6 tháng',
+    60: 'Kỳ hạn 12 tháng',
+    120: 'Kỳ hạn 2 năm',
+    180: 'Kỳ hạn 3 năm',
 }
 
 LOANS = {
@@ -91,6 +100,7 @@ BAD_DEBT_SMS = ('{bank}: Hồ sơ của quý khách đã bị ghi nhận nợ x�
 BAD_CLEAR_SMS = '{bank}: Hồ sơ tín dụng của quý khách đã hết ghi nhận nợ xấu. Cảm ơn quý khách đã thanh toán đầy đủ.'
 STATEMENT_SMS = '{bank}: Sao kê thẻ •••• {no} kỳ này {amount} xu, tối thiểu {min} xu, hạn thanh toán Ngày {due}.'
 MATURED_SMS = '{bank}: Sổ tiết kiệm {term} {amount} xu đã đáo hạn, tiền gốc và lãi {total} xu đã về tài khoản thanh toán.'
+RENEWED_SMS = '{bank}: Sổ tiết kiệm {term} đã tái tục: nhập lãi {gain} xu vào gốc, sổ mới {total} xu, đáo hạn Ngày {due}.'
 INSTALLMENT_SMS = '{bank}: Đã trích {amount} xu trả kỳ {k}/{n} khoản {what}. Cảm ơn quý khách.'
 
 DECLINE = {
