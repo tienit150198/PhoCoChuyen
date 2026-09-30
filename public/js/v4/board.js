@@ -37,9 +37,11 @@ function queued(api,fn){const job=api.queue.then(fn,fn);api.queue=job.catch(()=>
 async function fetchBoard(api,{older=false}={}){
   if(B.loading&&!older)return B.loading;
   const before=older&&B.older.length?B.older[B.older.length-1].seq:(older&&B.data?.posts?.length?B.data.posts[B.data.posts.length-1].seq:null);
-  const job=api.json(`/api/board${before!=null?`?before=${before}`:''}`).then(data=>{
+  // apos: where the archive continues once the posts kept in the save run out (game/board_ai.get_view).
+  const apos=older?B.data?.apos:null;
+  const job=api.json(`/api/board${before!=null?`?before=${before}${apos!=null?`&apos=${apos}`:''}`:''}`).then(data=>{
     B.cast=data.cast||B.cast;
-    if(older){B.older=[...B.older,...(data.board?.posts||[])];B.data.older=data.board?.older;}
+    if(older){B.older=[...B.older,...(data.board?.posts||[])];B.data.older=data.board?.older;B.data.apos=data.board?.apos??null;}
     else{mark(data.board);B.data=data.board;B.rev=data.board?.rev??-1;}
     B.error='';return data;
   }).catch(e=>{B.error=e?.message||'Chưa tải được nhóm.';return null;});
@@ -120,12 +122,12 @@ function comment(c,api,i){
 function reacts(p){
   const total=Object.values(p.react).reduce((a,b)=>a+b,0);
   const top=REACTS.filter(([k])=>p.react[k]>0).sort((a,b)=>p.react[b[0]]-p.react[a[0]]).slice(0,3).map(([,e])=>e).join('');
-  const btns=REACTS.map(([k,e,l])=>`<button type="button" class="bd-react${p.mine===k?' on':''}" data-action="bdReact"${attrs({post:p.id,r:k})} aria-pressed="${p.mine===k}" aria-label="${l}${p.react[k]?`: ${p.react[k]}`:''}"><span aria-hidden="true">${e}</span>${p.react[k]?`<small>${p.react[k]}</small>`:''}</button>`).join('');
+  const btns=p.archived?'':REACTS.map(([k,e,l])=>`<button type="button" class="bd-react${p.mine===k?' on':''}" data-action="bdReact"${attrs({post:p.id,r:k})} aria-pressed="${p.mine===k}" aria-label="${l}${p.react[k]?`: ${p.react[k]}`:''}"><span aria-hidden="true">${e}</span>${p.react[k]?`<small>${p.react[k]}</small>`:''}</button>`).join('');
   return `<div class="bd-react-row"><span class="bd-react-sum" aria-hidden="true">${top?`${top} ${total}`:''}</span><span class="bd-react-sum">${p.cmts.length?`${p.cmts.length} bình luận`:''}</span></div><div class="bd-reacts" role="group" aria-label="Bày tỏ cảm xúc">${btns}</div>`;
 }
 
 function rumourBar(p,api,D){
-  const r=p.rumour;if(!r)return '';
+  const r=p.rumour;if(!r||(p.archived&&r.state==='open'))return '';
   const by=who(r.by,api).name;
   if(r.state!=='open'){
     const done={clarify:'Bạn đã giải thích.',joke:'Bạn đã cười trừ cho qua.',confront:'Bạn đã hỏi thẳng.',ignore:'Bạn đã chọn im lặng.'}[r.state]||'';
@@ -148,7 +150,7 @@ function postCard(p,api,D){
     ${rumourBar(p,api,D)}
     ${reacts(p)}
     <ul class="bd-cmts" aria-label="Bình luận">${more?`<li class="bd-more-row">${more}</li>`:''}${list.map((c,i)=>comment(c,api,i)).join('')}${pend}</ul>
-    <form class="bd-reply" data-bd-form="reply"${attrs({post:p.id})}>${avatar('player',api,'sm')}<input name="text" type="text" maxlength="${D.limits?.reply||300}" placeholder="${mine?'Trả lời hàng xóm…':`Trả lời ${esc(w.name)}…`}" aria-label="Viết bình luận" data-preserve id="bd-r-${esc(p.id)}" autocomplete="off"><button type="submit" class="icon-btn bd-send" aria-label="Gửi bình luận">${icon('send',17)}</button></form>
+    ${p.archived?'':`<form class="bd-reply" data-bd-form="reply"${attrs({post:p.id})}>${avatar('player',api,'sm')}<input name="text" type="text" maxlength="${D.limits?.reply||300}" placeholder="${mine?'Trả lời hàng xóm…':`Trả lời ${esc(w.name)}…`}" aria-label="Viết bình luận" data-preserve id="bd-r-${esc(p.id)}" autocomplete="off"><button type="submit" class="icon-btn bd-send" aria-label="Gửi bình luận">${icon('send',17)}</button></form>`}
   </article>`;
 }
 

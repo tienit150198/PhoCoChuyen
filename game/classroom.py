@@ -911,7 +911,7 @@ def _mail(s: dict, c: dict, cr: dict, improved: set, subj: str, room: dict) -> i
         line = dict(who='parent', text=text, mode='scripted', day=day, ask=True, topic=topic)
         if sid:
             line['subject'] = sid
-        cr['threads'][kid] = (cr['threads'][kid] + [line])[-LINES_PER_THREAD:]
+        cr['threads'][kid] = ar.last(cr['threads'][kid] + [line], LINES_PER_THREAD, 'classroom.thread:' + kid, c)
     cr['mailed'] = day
     return len(cands[:2])
 
@@ -1024,7 +1024,7 @@ def _cl_parent(s: dict, c: dict, p: dict) -> dict:
     answer = parent_answer(s, kid, quality)
     th.append(dict(who='teacher', text=said, mode='scripted', day=day))
     th.append(dict(who='parent', text=answer, mode='scripted', day=day, topic=topic, q=quality))
-    cr['threads'][kid] = th[-LINES_PER_THREAD:]
+    cr['threads'][kid] = ar.last(th, LINES_PER_THREAD, 'classroom.thread:' + kid, c)
     par['last'] = day
     if not msg:
         par['sent'] = day

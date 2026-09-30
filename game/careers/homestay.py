@@ -2710,7 +2710,7 @@ def _depart(s: dict, c: dict, rid: str | None, t: dict | None = None) -> dict | 
 def _anniv_page(d: dict, year: int, day: int, rid: str | None, stars) -> None:
     pages = d['anniv']['pages']
     if not any(p['year'] == year for p in pages):
-        d['anniv']['pages'] = (pages + [dict(year=year, day=day, room=rid, stars=stars)])[-12:]
+        d['anniv']['pages'] = ar.last(pages + [dict(year=year, day=day, room=rid, stars=stars)], 12, 'homestay.anniv', None)
 
 
 def _anniv_call(s: dict, c: dict) -> None:
@@ -2729,9 +2729,9 @@ def _anniv_call(s: dict, c: dict) -> None:
         return
     total = kit.price(c, rid, SPEC['prices'][rid]) * ANNIV_NIGHTS
     deposit = math.ceil(total * DEPOSIT_PCT / 100)
-    d['bookings'] = (d['bookings'] + [dict(id=f'anniv-{year}', rooms=[rid], start=start, nights=ANNIV_NIGHTS, guests=2,
+    d['bookings'] = ar.last(d['bookings'] + [dict(id=f'anniv-{year}', rooms=[rid], start=start, nights=ANNIV_NIGHTS, guests=2,
                                           name=f'{ANNIV_NAME} (năm thứ {year})', total=total, deposit=deposit, task=None, npc=ANNIV_NPC,
-                                          anniv=year)])[-60:]
+                                          anniv=year)], 60, 'homestay.bookings', c)
     kit.money(s, c, deposit, f'{ANNIV_NAME} chuyển cọc phòng ngày {start}', f'anniv-{year}', category='room')
     kit.bank(deposit)
     where = 'phòng số 3 như mọi năm' if rid == ANNIV_ROOM else f'phòng {ROOM_INDEX[rid]["name"]} (phòng số 3 đã có khách)'

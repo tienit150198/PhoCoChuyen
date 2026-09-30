@@ -136,9 +136,9 @@ def record_money(c:dict, amount:int, reason:str, ref:str|None=None, category:str
     trim_ledger(c)
 
 
-LEDGER_HIGH=400   # past this many rows the oldest move to the archive (game/archive.py),
-LEDGER_KEEP=300   # down to this many, but never rows of the last LEDGER_DAYS days
-LEDGER_DAYS=14    # (the lãi/lỗ chart reads 7 days), and never more than LEDGER_MAX rows.
+LEDGER_HIGH=200   # past this many rows the oldest move to the archive (game/archive.py),
+LEDGER_KEEP=120   # down to this many, but never rows of the last LEDGER_DAYS days
+LEDGER_DAYS=8     # (the lãi/lỗ chart reads 7 days), and never more than LEDGER_MAX rows.
 LEDGER_MAX=1200
 
 def trim_ledger(c:dict) -> None:
@@ -166,10 +166,17 @@ def bill(c:dict, bid:str, kind:str, label:str, amount:int, due:int, source:str) 
              source=source,extended=False,paid_day=None)
     f['bills'].append(row)
     # Keep unpaid invoices regardless of age. Trim only completed records.
-    if len(f['bills'])>900:
-        paid=ar.last([b for b in f['bills'] if b['status']=='paid'], 300, 'bills', c)
-        f['bills']=paid+[b for b in f['bills'] if b['status']!='paid']
+    if len(f['bills'])>BILLS_HIGH:trim_bills(c)
     return row
+
+
+BILLS_HIGH=120  # past this many bills the oldest paid ones move to the archive,
+BILLS_PAID=40   # down to this many paid ones (the Sổ tiệm lists the last 15); unpaid ones always stay
+
+def trim_bills(c:dict,owner=None) -> None:
+    f=c['ops']['finance']
+    paid=ar.last([b for b in f['bills'] if b['status']=='paid'], BILLS_PAID, 'bills', c if owner is None else owner)
+    f['bills']=paid+[b for b in f['bills'] if b['status']!='paid']
 
 
 def _attendance(c:dict, employee:dict) -> None:
@@ -474,7 +481,7 @@ def action(s:dict,c:dict,career:str,name:str,p:dict) -> dict:
             elif any(x in norm for x in ('luong','thuong','tien')):reply=f"Lương ca thực làm của mình là {e['wage']} xu. Việc trả lương cần xác nhận trong Sổ thu chi, lời chat chưa thay đổi số dư."
             else:reply='Mình đang phụ '+role_name(career,e['role']).lower()+'. Bạn có thể hỏi mình đã làm gì, mức mệt hoặc đổi phân công ở hồ sơ.'
             history=o['staff_chats'].setdefault(e['id'],[]);history.extend([dict(role='user',text=text),dict(role='staff',text=reply)])
-            o['staff_chats'][e['id']]=history[-24:];result.update(message=reply,reply=reply)
+            o['staff_chats'][e['id']]=ar.last(history,24,'staff.chat:'+e['id'],c);result.update(message=reply,reply=reply)
         if name!='staff_talk':eng.log(s,c,'staff',result['message'],ref=e['id'])
     elif name=='pay_bill':
         b=next((b for b in f['bills'] if b['id']==p.get('bill')),None);need(b,'Không tìm thấy khoản cần trả.');need(b['status']=='unpaid','Khoản này đã được thanh toán rồi.')

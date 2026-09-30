@@ -35,8 +35,8 @@ from . import board_content as C
 from . import archive as ar
 
 VERSION = 1
-POSTS_MAX = 120          # kept posts (oldest dropped)
-CMTS_MAX = 16            # kept comments per post (oldest dropped)
+POSTS_MAX = 40           # kept posts (older ones move to the archive; /api/board pages them back)
+CMTS_MAX = 16            # kept comments per post (older ones move to the archive)
 QUEUE_MAX = 90
 TEXT_MAX = 700
 PLAYER_POST_MAX = 500
@@ -128,6 +128,8 @@ def migrate(s: dict) -> dict:
                 for kk, vv in base[k].items():
                     j['board'][k].setdefault(kk, vv)
         _rename(j['board'])
+        if isinstance(j['board'].get('posts'), list) and len(j['board']['posts']) > POSTS_MAX:  # v0.9.5: 120 kept → 40
+            j['board']['posts'] = ar.last(j['board']['posts'], POSTS_MAX, 'board.posts', ar.JOURNEY)
     return s
 
 

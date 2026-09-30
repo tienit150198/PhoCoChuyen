@@ -764,8 +764,9 @@ class Store:
         if not (career=="" or career in CAREERS):raise GameError("Nghề không hợp lệ.")
         if not isinstance(kind,str) or not 1<=len(kind)<=80:raise GameError("Loại sổ không hợp lệ.")
         limit=max(1,min(int(limit),200));skip=max(0,int(skip))
-        state,_,_=self.read(token);sid=self.key(token)
-        live=ar.in_save(state,career,kind) or []
+        # Only the kinds whose newest rows live in the save need the save itself.
+        live=(ar.in_save(self.read(token)[0],career,kind) or []) if kind in ar.IN_SAVE else []
+        sid=self.key(token)
         with self.connect() as db:
             stored=db.execute("SELECT COALESCE(MAX(seq)+1,0) FROM archive WHERE sid=? AND career=? AND kind=?",(sid,career,kind)).fetchone()[0]
             total=stored+len(live)
@@ -778,6 +779,20 @@ class Store:
             rows.append(dict(pos=pos,day=day if type(day) is int else None,row=row))
         rows.reverse()
         return dict(career=career,kind=kind,total=total,rows=rows,before=start if start>0 else None)
+
+    def archive_tail(self,token:str,career:str,kind:str,before:int|None=None,limit:int=30)->dict:
+        """The newest archived rows of a (career, kind) history whose position is below `before`
+        (all when None), newest first, without reading the save: {rows: [{pos, day, row}], before}
+        where `before` continues the paging (None: nothing older). Used by /api/board."""
+        if not (career=="" or career in CAREERS):raise GameError("Nghề không hợp lệ.")
+        limit=max(1,min(int(limit),100));sid=self.key(token)
+        with self.connect() as db:
+            end=db.execute("SELECT COALESCE(MAX(seq)+1,0) FROM archive WHERE sid=? AND career=? AND kind=?",(sid,career,kind)).fetchone()[0]
+            if before is not None:end=min(end,max(0,int(before)))
+            start=max(0,end-limit)
+            rows=[dict(pos=r["seq"],day=r["day"],row=json.loads(r["row"])) for r in
+                  db.execute("SELECT seq,day,row FROM archive WHERE sid=? AND career=? AND kind=? AND seq>=? AND seq<? ORDER BY seq DESC",(sid,career,kind,start,end))]
+        return dict(rows=rows,before=start if start>0 else None)
 
     def checkpoint(self,truncate_ms:int=0)->None:
         """PASSIVE WAL checkpoint: never waits for readers or writers. With `truncate_ms`,

@@ -11,7 +11,7 @@ from .careers import PLUGINS
 from .jsoncopy import tree_copy
 from . import archive as ar
 
-GOALS_KEPT=10  # day recaps kept in the save (nothing reads older ones; the rest is archived)
+GOALS_KEPT=3  # day recaps kept in the save (nothing reads them; x['recap'] is the last one; the rest is archived)
 
 NEW_ACTION_PREFIXES=('life_','lesson_','tour_','tea_','gift_')
 DONE=('completed','referred','cancelled')

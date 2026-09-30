@@ -515,8 +515,8 @@ def resolve(s: dict, c: dict, career: str, rid: str, auto: bool = False) -> dict
     fund = sum(ln['amount'] for ln in lines if ln['where'] == 'fund')
     wallet = sum(ln['amount'] for ln in lines if ln['where'] == 'wallet')
     stock = sum(ln['amount'] for ln in lines if ln['where'] == 'stock')
-    box['history'] = (box['history'] + [dict(id=live['id'], script=x['id'], choice=rid, day=live['day'], won=won, good=good,
-                                             auto=auto, fund=fund, wallet=wallet, stock=stock, case=bool(case), hurt=hurt)])[-HISTORY:]
+    box['history'] = ar.last(box['history'] + [dict(id=live['id'], script=x['id'], choice=rid, day=live['day'], won=won, good=good,
+                                             auto=auto, fund=fund, wallet=wallet, stock=stock, case=bool(case), hurt=hurt)], HISTORY, 'happen.history', c)
     box['last'] = dict(id=live['id'], script=x['id'], choice=rid, day=live['day'], won=won, good=good, auto=auto,
                        lines=lines[-12:], items=[dict(name=w['name'], emoji=w['emoji'], qty=w['qty'], before=w['before'], after=w['after'])
                                                  for w in rows][:6],

@@ -213,14 +213,17 @@ class PlayerPosts(unittest.TestCase):
 
 class Rumours(unittest.TestCase):
     def test_rumours_come_every_few_days_from_real_facts(self):
+        from game import archive as ar
         s = story_state(31)
         s['careers']['grocery']['started'] = True
         seen = []
-        for _ in range(30):
-            s['journey']['life_day'] += 1
-            beats(s, 75)
-            bd.after(s, 'grocery', 'talk', {})
-        rum = [p for p in board(s)['posts'] if p['kind'] == 'rumour']
+        with ar.collect() as box:  # the save keeps the newest posts; older ones are archived
+            for _ in range(30):
+                s['journey']['life_day'] += 1
+                beats(s, 75)
+                bd.after(s, 'grocery', 'talk', {})
+        posts = [r for _, kind, r in box.rows if kind == 'board.posts'] + board(s)['posts']
+        rum = [p for p in posts if p['kind'] == 'rumour']
         self.assertGreaterEqual(len(rum), 4)
         days = sorted(p['day'] for p in rum)
         self.assertTrue(all(b - a >= bd.RUMOUR_GAP for a, b in zip(days, days[1:])))

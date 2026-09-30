@@ -613,7 +613,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
         bk._log(b, day, 'loan', f'Bán nhà, trả hết vay mua nhà: {_fmt(off["total"])} xu', -off['total'])
         _close_loan(s, h, day, '')
     to = _receive(s, got, f'Tiền bán {H["name"].lower()}', day) if got else 'ví'
-    h['past'] = (h['past'] + [dict(id=own['id'], kind=own['kind'], bought=own['day'], sold=day, price=own['price'], got=got)])[-PAST_MAX:]
+    h['past'] = ar.last(h['past'] + [dict(id=own['id'], kind=own['kind'], bought=own['day'], sold=day, price=own['price'], got=got)], PAST_MAX, 'home.past', ar.JOURNEY)
     h['own'] = None
     h['stats']['sold'] += 1
     _log(h, day, f'Bán {H["name"].lower()} được {_fmt(value)} xu, phí {_fmt(fee)} xu' + (f', trả nợ vay {_fmt(off["total"])} xu' if off else '') + '.', got)

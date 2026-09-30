@@ -23,6 +23,7 @@ import copy
 import hashlib
 import random
 
+from . import archive as ar
 from .incident_content import INCIDENTS, INDEX, CATS, EMPLOYEE
 
 VERSION = 1
@@ -327,11 +328,11 @@ def decide(s: dict, c: dict, career: str, option: str, auto: bool = False) -> di
             e.metric(c, 'incidents_good')
             c['xp'] += 8
         e.log(s, c, 'incident', f'{x["title"]}: {outcome}', npc, row['id'])
-        box['history'] = (box['history'] + [dict(id=row['id'], script=x['id'], choice=opt['id'], day=row['day'], good=good,
+        box['history'] = ar.last(box['history'] + [dict(id=row['id'], script=x['id'], choice=opt['id'], day=row['day'], good=good,
                                                  won=won, auto=auto, follow=row.get('follow', False),
                                                  fund=sum(d['amount'] for d in done if d['where'] == 'fund'),
                                                  wallet=sum(d['amount'] for d in done if d['where'] == 'wallet'),
-                                                 trust=trust)])[-HISTORY:]
+                                                 trust=trust)], HISTORY, 'incidents.history', c)
     box['last'] = dict(id=row['id'], script=x['id'], choice=opt['id'], day=row['day'], good=good, won=won, auto=auto,
                        practice=practice, lines=done, trust=trust)
     box['active'] = None
