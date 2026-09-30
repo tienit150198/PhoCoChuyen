@@ -319,3 +319,67 @@ html.reduce-motion .mt-event{animation:none}
 .mt-hud{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .mt-hud::-webkit-scrollbar{display:none}
 .mt-hud>.mt-chip{flex:none;white-space:nowrap}
+
+/* 0.9.5 · Pinned order ticket: the order (one line per cup, Ly tabs), a live checklist and one
+   patience bar stay at the top of the counter while the stations scroll under it. */
+.mt-ticket{position:sticky;top:var(--mt-stick,0px);z-index:5;display:flex;flex-direction:column;gap:6px;padding:8px 10px 10px;border-radius:var(--radius);background:var(--surface);border:1.5px solid var(--accent);box-shadow:0 6px 16px rgb(0 0 0 / 10%)}
+.mt-ticket.is-app{border-style:dashed}
+.mt-ticket-top{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}
+.mt-ticket-top .mt-price{margin-left:auto;white-space:nowrap}
+.mt-ticket-who{font-size:.87rem;min-width:0;overflow-wrap:anywhere}
+.mt-ticket-tabs{display:flex;gap:4px;flex-wrap:wrap;min-width:0}
+.mt-ticket-tabs .mt-cuptab{min-height:44px;padding:4px 12px;border-radius:999px;font-size:.8rem}
+.mt-ticket-tags{display:flex;gap:4px;flex-wrap:wrap}
+.mt-ticket-tags em{font-style:normal;padding:1px 7px;border-radius:99px;background:var(--accent-soft);color:var(--accent-text);font-size:.72rem;font-weight:700}
+.mt-ticket-order{display:flex;flex-wrap:wrap;align-items:center;gap:5px}
+.mt-ticket-order>b{font-size:.9rem;margin-right:2px}
+.mt-reqs{display:contents;list-style:none;margin:0;padding:0}
+.mt-req{display:inline-flex;align-items:center;gap:4px;min-height:30px;padding:2px 10px;border-radius:999px;border:1.5px solid var(--line-strong);background:var(--surface);font-size:.84rem;font-weight:700;line-height:1.25}
+.mt-req>b{font-weight:900}
+.mt-req.ok{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+.mt-req.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.mt-req.warn{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.mt-req.none{border-style:dashed;color:var(--muted);font-weight:600}
+.mt-req.gd-todo{cursor:pointer}
+.mt-ticket .mt-patience{font-size:.7rem}
+.mt-ticket .mt-bar{height:7px}
+/* Bottom bar: every step still to do; the next one stands out, wrong ones in red. */
+.career-job.mt .fk-next b{font-weight:800}
+.career-job.mt .fk-next .now{font-weight:800;color:var(--ink)}
+.career-job.mt .fk-next .bad{color:var(--bad)}
+/* One cup picture: the mini cup in the bar on phones, the big one beside the stations on wide screens. */
+@media (max-width:899px){.mt-preview .mt-cup{display:none}.mt-preview.quiet{display:none}.mt-preview{padding:6px 10px}}
+@media (min-width:900px){.mt-bar-cup{display:none}.mt-side{top:150px}}
+/* Bins: the name on a small plaque, stock as a corner badge. */
+.mt-tile b{display:inline-block;max-width:100%;padding:1px 6px;border-radius:6px;background:var(--surface-2);border:1px solid var(--line);font-size:.72rem}
+.mt-tile.on b{background:var(--surface)}
+.mt-tile.off{opacity:.45;filter:grayscale(.8);border-style:dashed}
+.mt-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.mt-chips .mt-lockchip{margin:0}
+.mt-offchip{font:inherit;font-size:.82rem;min-height:44px;cursor:pointer}
+.mt-offchip[aria-pressed="true"]{border-style:solid}
+.mt-row.off{opacity:.65;border-style:dashed}
+.mt-board .off b{color:var(--muted);font-weight:600}
+
+/* Bảng giá → Món đang bán: a switch per row on the menu's two-column leader rows. */
+.mt-menu{margin:14px 0}
+.mt-menu h4{margin:10px 0 2px;font-size:.9rem}
+.mt-menu .section-title small{font-weight:600;color:var(--muted)}
+.mt-menu .chalk-columns{grid-template-columns:1fr 1fr;gap:0 18px}
+@container sheet (max-width:340px){.mt-menu .chalk-columns{grid-template-columns:minmax(0,1fr)}}
+.mt-menu .chalk-columns>div{align-items:center;padding:2px 0;border-bottom:1px dashed var(--line-strong);min-height:48px}
+.mt-menu .chalk-columns>div>span{min-width:0;overflow-wrap:anywhere}
+.mt-menu .chalk-columns>div.off>span{color:var(--muted);text-decoration:line-through}
+.mt-menu .chalk-columns>div.locked{opacity:.6}
+.mt-menu-lock{font-size:.8rem;color:var(--muted)}
+.mt-switch{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 2px;border:0;background:none;color:var(--ink);font:inherit;cursor:pointer;flex:none}
+.mt-switch i{position:relative;width:40px;height:24px;border-radius:99px;background:var(--line-strong);transition:background .15s}
+.mt-switch i:after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--surface);box-shadow:0 1px 2px rgb(0 0 0 / 25%);transition:transform .15s}
+.mt-switch[aria-checked="true"] i{background:var(--good)}
+.mt-switch[aria-checked="true"] i:after{transform:translateX(16px)}
+.mt-switch small{font-size:.72rem;font-weight:700;color:var(--muted);min-width:52px;text-align:left}
+.mt-switch:disabled{cursor:not-allowed;opacity:.6}
+@container sheet (max-width:559px){.mt-switch small{display:none}}
+@media (prefers-reduced-motion:reduce){.mt-switch i,.mt-switch i:after{transition:none}}
+.career-job.mt .fk-next .warn{color:var(--warn)}
+.career-job.mt .fk-next .now{text-decoration:underline;text-underline-offset:3px}
