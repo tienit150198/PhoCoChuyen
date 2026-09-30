@@ -6,6 +6,7 @@
  * (data-action="nhom"), and boardEntry() on the journey home.
  * Design: docs/superpowers/specs/2026-09-29-board-design.md */
 import {icon,escapeHTML as esc} from '../icons.js';
+import {myPortrait} from './look.js';
 
 const REACTS=[['heart','❤️','Thương'],['haha','😂','Haha'],['wow','😮','Wow'],['sad','😢','Buồn'],['angry','😡','Giận']];
 const R=Object.fromEntries(REACTS.map(([k,e])=>[k,e]));
@@ -97,6 +98,7 @@ function rich(text){
 }
 
 function avatar(id,api,size=''){
+  if(id==='player')return `<span class="bd-av ${size} me look" aria-hidden="true">${myPortrait(api.state,size==='sm'?30:42,'')}</span>`;  // 👗 in the outfit from Tủ đồ
   const w=who(id,api);
   return `<span class="bd-av ${size} ${id==='player'?'me':''}"${w.color?` style="--who:${esc(w.color)}"`:''} aria-hidden="true">${w.emoji}</span>`;
 }

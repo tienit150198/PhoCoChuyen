@@ -5,6 +5,7 @@
  * journey.js (boot, home card, `jrArc*` actions), so app.js stays untouched. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {avatar,emojiOf} from './journey.js';
+import {lookOf} from './look.js';
 
 let E=null;
 let cur=null;              // {id, shown, answered:{reply,note,label}|null, keepsake}
@@ -30,7 +31,7 @@ function dialog(){
 /* ------------------------------------------------------------------ scene */
 function line(l,cls=''){
   const me=l.who==='me',g=E.api.state.journey?.gender;
-  const face=me?`<span class="jr-face st-me-face" aria-hidden="true">${avatar(g,40)}</span>`:`<span class="jr-face" aria-hidden="true">${esc(l.emoji)}</span>`;
+  const face=me?`<span class="jr-face st-me-face" aria-hidden="true">${avatar(g,40,lookOf(E.api.state))}</span>`:`<span class="jr-face" aria-hidden="true">${esc(l.emoji)}</span>`;
   return `<div class="jr-line st-line ${me?'me':''} ${cls}">${face}<div class="jr-bubble"><b>${esc(l.name)}</b><p>${esc(l.text)}</p></div></div>`;
 }
 const pips=(step,total)=>`<ol class="st-pips" aria-label="Đoạn ${step} trên ${total}">${Array.from({length:total},(_,i)=>`<li class="${i+1<step?'past':i+1===step?'now':''}"></li>`).join('')}</ol>`;

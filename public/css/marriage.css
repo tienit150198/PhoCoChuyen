@@ -297,3 +297,4 @@ html[data-layout="phone"] .mr-count{width:68px;height:68px}
 .mr-ticker-x:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
 html[data-layout="phone"] .mr-ticker{top:calc(var(--safe-t) + 4px);width:calc(100vw - 16px)}
 @media (prefers-reduced-motion:reduce){.mr-ticker-text{transform:none!important}}
+.mr-me{position:relative;background:none;box-shadow:none}.mr-me svg{width:64px;height:64px;border-radius:50%;box-shadow:var(--shadow-sm)}.mr-me i{position:absolute;right:-6px;bottom:-6px;font-style:normal;font-size:1.35rem}  /* 👗 Tủ đồ */

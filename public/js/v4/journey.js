@@ -12,6 +12,10 @@ import {boardEntry} from './board.js';
 import {abandonTrust} from './abandon.js';
 import {certsView,certsEntry,certBadges,certTitles,certAction} from './certificates.js';
 import {lifeView,lifeEntry,lifeCard,lifeAction,lifeBoot} from './life.js';
+import {portrait,lookOf} from './look.js';
+import {lazy,skeleton} from '../lazy.js';
+// 👗 Tủ đồ (v4/wardrobe.js): the sheet loads the first time it opens.
+const WD=lazy(()=>import('./wardrobe.js'),{css:['/css/wardrobe.css']});
 
 export const EMOJI={restaurant:'🍜',cafe_bakery:'🥐',grocery:'🛒',repair:'🔧',homestay:'🏡',corp_accounting:'🧮',tax_payroll:'🧾',group_accounting:'🏢',
   mother_baby:'🎁',pharmacy:'💊',accounting:'📒',customer_care:'🎧',teacher:'🍎',tour_guide:'🧭',milk_tea:'🧋',florist:'💐',salon:'💇',
@@ -34,19 +38,9 @@ const meta=(api,cid)=>api.content.catalogue.find(m=>m.id===cid)||{id:cid,short:c
 const placeOf=(api,cid)=>{const m=meta(api,cid);return m.place||m.short||cid;};
 const lineText=(l,gender)=>typeof l.text==='string'?l.text:(l.text[gender]||l.text.none);
 
-/** Warm little portrait of the player, drawn inline (no external art). */
-export function avatar(gender,size=56){
-  const f=gender==='female',m=gender==='male',hair='#5b4436',skin='#f5cfae',shirt=f?'#e39a8a':m?'#78a3b6':'#c3ab83';
-  const label=f?'Nhân vật nữ':m?'Nhân vật nam':'Nhân vật của bạn';
-  const front=m?`<path d="M20 37Q18 13 40 12Q62 13 60 37Q56 25 45 22Q35 30 20 37Z" fill="${hair}"/>`
-    :f?`<path d="M21 38Q21 15 40 15Q59 15 59 38Q52 25 41 22Q31 26 21 38Z" fill="${hair}"/>`
-    :`<path d="M20 36Q20 15 40 14Q60 15 60 36Q52 25 40 24Q28 25 20 36Z" fill="${hair}"/>`;
-  return `<svg class="jr-av" width="${size}" height="${size}" viewBox="0 0 80 80" role="img" aria-label="${label}"><rect width="80" height="80" rx="26" fill="#f4e4cf"/>`+
-    (f?`<circle cx="40" cy="12" r="9" fill="${hair}"/><path d="M18 44C12 10 68 10 62 44L64 68H16Z" fill="${hair}"/>`:'')+
-    `<path d="M12 80c2-23 54-23 56 0" fill="${shirt}"/><rect x="34" y="50" width="12" height="12" rx="5" fill="#e6b692"/><ellipse cx="40" cy="38" rx="19" ry="21" fill="${skin}"/>${front}`+
-    `<ellipse cx="33" cy="40" rx="2.8" ry="3.4" fill="#4b3936"/><ellipse cx="47" cy="40" rx="2.8" ry="3.4" fill="#4b3936"/><circle cx="32.3" cy="38.8" r="1" fill="#fff"/><circle cx="46.3" cy="38.8" r="1" fill="#fff"/>`+
-    `<ellipse cx="28" cy="46" rx="3.6" ry="2.2" fill="#e08f86" opacity=".55"/><ellipse cx="52" cy="46" rx="3.6" ry="2.2" fill="#e08f86" opacity=".55"/><path d="M36 48q4 4 8 0" fill="none" stroke="#a46e5e" stroke-width="1.8" stroke-linecap="round"/></svg>`;
-}
+/** Warm little portrait of the player, drawn inline (no external art). `look`: the outfit from the
+ * wardrobe (v4/look.js lookOf); left out, the gender's everyday look. */
+export function avatar(gender,size=56,look=null){return portrait(look,gender,size);}
 
 function say(l,gender,cls=''){
   return `<div class="jr-line ${cls}"><span class="jr-face" aria-hidden="true">${l.emoji}</span><div class="jr-bubble"><b>${esc(l.name)}</b><p>${esc(lineText(l,gender))}</p></div></div>`;
@@ -66,6 +60,7 @@ export function journeyHome(env){
   if(ui.jrView==='life')return lifeView(env);
   if(ui.jrView==='profile')return profileView(env);
   if(ui.jrView==='certs')return certsView(env);
+  if(ui.jrView==='wardrobe'){const m=WD.use();return m?m.wardrobeView(env):head('Tủ đồ','',{back:true})+skeleton();}
   return homeMain(env);
 }
 
@@ -78,9 +73,10 @@ function meCard(env){
   const skills=(C.skills||[]).map(sk=>{const v=J.skills.find(x=>x.id===sk.id)||{level:0};return `<li class="jr-skill ${v.level?'':'zero'}" title="${esc(sk.name)}"><span aria-hidden="true">${sk.emoji}</span><b>${esc(SKILL_SHORT[sk.id]||sk.name)}</b><i class="jr-pips" aria-label="Mức ${v.level}">${'●'.repeat(v.level)}${'○'.repeat(Math.max(0,6-v.level))}</i></li>`;}).join('');
   const wallet=J.story?`<button type="button" class="jr-stat ${J.debt?'bad':''}" data-action="jrView" data-view="wallet"><small>Ví của bạn</small><b>${J.debt?`Nợ ${fmt(J.debt)} xu`:`${fmt(J.wallet)} xu`}</b></button>`:'';
   return `<section class="jr-card jr-me" aria-label="Nhân vật của bạn">
-    <div class="jr-me-top"><button type="button" class="jr-avatar" data-action="jrView" data-view="profile" aria-label="Sửa tên và nhân vật">${avatar(J.gender,68)}</button>
+    <div class="jr-me-top"><button type="button" class="jr-avatar" data-action="jrView" data-view="profile" aria-label="Sửa tên và nhân vật">${avatar(J.gender,68,lookOf(api.state))}</button>
       <div class="jr-me-text"><h2>${esc(api.state.name)}</h2>${spouseChip(api)}
         ${J.story?`<button type="button" class="jr-title-chip ${eq?'':'empty'}" data-action="jrView" data-view="titles">${eq?`<span aria-hidden="true">${eq.emoji}</span> ${esc(eq.name)}`:'Chọn danh hiệu để đeo'}</button>`:''}
+        <button type="button" class="jr-title-chip jr-wd-chip" data-action="jrWardrobe"><span aria-hidden="true">👗</span> Thay đồ</button>
         <div class="jr-level"><div class="jr-level-row"><b>Trưởng thành cấp ${mat.level}</b><small>${esc(mat.name)}</small></div><div class="jr-bar" role="progressbar" aria-label="Kinh nghiệm trưởng thành" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div></div></div></div>
     ${J.story?`<div class="jr-stats">${wallet}<div class="jr-stat"><small>Ngày sống</small><b>${fmt(J.life_day)}</b></div><button type="button" class="jr-stat" data-action="jrView" data-view="titles"><small>Danh hiệu</small><b>${J.titles.length}</b></button></div>`:''}
     ${certBadges(env)}
@@ -194,7 +190,9 @@ function whoForm(env,title,sub,cta){
 }
 
 function profileView(env){
-  return head('Nhân vật của bạn','',{back:true})+`<div class="sheet-body jr-body jr-profile">${whoForm(env,'','','Lưu lại')}</div>`;
+  const {api}=env,J=api.state.journey;
+  const wd=J.gender?`<button type="button" class="jr-card jr-wd-entry" data-action="jrWardrobe">${avatar(J.gender,52,lookOf(api.state))}<span class="grow"><b>Tủ đồ</b><small>Đổi kiểu tóc, áo quần, giày và phụ kiện.</small></span>${icon('arrow',16)}</button>`:'';
+  return head('Nhân vật của bạn','',{back:true})+`<div class="sheet-body jr-body jr-profile">${whoForm(env,'','','Lưu lại')}${wd}</div>`;
 }
 
 /* ------------------------------------------------------------------ titles */
@@ -349,6 +347,9 @@ export async function journeyAction(action,data,el,env){
   E=E||env;
   if(action.startsWith('jrArc'))return storiesAction(action,data,el,env);
   if(action.startsWith('jrCert'))return certAction(action,data,el,env);
+  if(action==='jrWardrobe'){WD.use();const open=env.ui.view==='home'&&document.getElementById('sheet')?.open;
+    if(open){env.ui.jrView='wardrobe';env.renderSheet(false);document.getElementById('sheet')?.scrollTo?.(0,0);}else env.openSheet('home',{jrView:'wardrobe'});return true;}
+  if(action.startsWith('jrWd'))return (await WD.get()).wardrobeAction(action,data,el,env);
   const {ui,cmd,renderSheet,confirmAction,api}=env;
   switch(action){
     case'jrView':ui.jrView=data.view||'home';renderSheet(false);document.getElementById('sheet')?.scrollTo?.(0,0);return true;

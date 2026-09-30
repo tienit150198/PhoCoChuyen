@@ -157,3 +157,4 @@ html.menu-open .bd-fab{visibility:hidden}
 html[data-layout="phone"] .sheet.bd-sheet .sheet-body.bd{padding-left:10px;padding-right:10px}
 html[data-layout="phone"] .bd-cover{grid-template-columns:1fr;gap:6px}
 html[data-layout="phone"] .bd-post{padding:11px 10px 8px}
+.bd-av.look{overflow:hidden;background:var(--surface)}.bd-av.look svg{width:100%;height:100%;border-radius:50%}  /* 👗 the player in the outfit from Tủ đồ */

@@ -5,6 +5,7 @@
  * Cài đặt → Dữ liệu (lbPrivacyRow). Actions: rank (open), lbKind, lbBoard, lbMore, lbVisible, lbRetry, lbName. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {emojiOf} from './journey.js';
+import {myPortrait} from './look.js';
 
 const FRESH_MS=10000;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -71,7 +72,7 @@ function meCard(env,board,d){
   if(me.rank==null){
     main=board==='certs'?'Bạn chưa có chứng chỉ nào. Thi đỗ chứng chỉ đầu tiên để có tên trên bảng này.'
       :board==='all'?'Hoàn thành việc đầu tiên để có tên trên bảng này.':`Bạn chưa làm ở ${placeOf(api,board)}. Làm việc đầu tiên ở đó để có tên trên bảng này.`;
-    return `<section class="lb-me empty-me" aria-label="Vị trí của bạn"><span class="lb-me-rank" aria-hidden="true">—</span><div class="lb-me-text"><b>Bạn</b><p>${main}</p></div></section>`;
+    return `<section class="lb-me empty-me" aria-label="Vị trí của bạn"><span class="lb-me-rank" aria-hidden="true">—</span><div class="lb-me-text"><span class="lb-name-line"><span class="lb-me-av" aria-hidden="true">${myPortrait(api.state,28,'')}</span><b>Bạn</b></span><p>${main}</p></div></section>`;
   }
   const total=Math.max(d.total||0,me.visible?me.rank:0);
   const place=me.visible?`Hạng ${fmt(me.rank)}${total?` / ${fmt(total)}`:''}${where}`:`Nếu hiện tên, bạn đứng hạng ${fmt(me.rank)}${where}.`;
@@ -79,7 +80,7 @@ function meCard(env,board,d){
     :me.can_show?`<p class="lb-me-note">Tên bạn đang ẩn.</p>${btn(icon('eye',16)+' Hiện tên tôi','lbVisible',{on:'1'},'primary small lb-me-btn')}`
     :`<p class="lb-me-note">Đặt tên cho nhân vật (khác “Mây”) để có tên trên bảng.</p>${btn(icon('user',16)+' Đặt tên nhân vật','lbName',{},'small lb-me-btn')}`;
   return `<section class="lb-me${me.visible?'':' hidden-me'}" aria-label="Vị trí của bạn"><span class="lb-me-rank"><small>Hạng</small><b>${fmt(me.rank)}</b></span>
-    <div class="lb-me-text"><span class="lb-name-line"><b>Bạn</b>${me.account?'':'<span class="tag lb-guest">khách</span>'}</span><p class="lb-me-place">${place}</p><small>${esc(statsLine(board,me))}</small>${hide}</div>${scoreBox(board,me)}</section>`;
+    <div class="lb-me-text"><span class="lb-name-line"><span class="lb-me-av" aria-hidden="true">${myPortrait(api.state,28,'')}</span><b>Bạn</b>${me.account?'':'<span class="tag lb-guest">khách</span>'}</span><p class="lb-me-place">${place}</p><small>${esc(statsLine(board,me))}</small>${hide}</div>${scoreBox(board,me)}</section>`;
 }
 
 function emptyText(api,board){
