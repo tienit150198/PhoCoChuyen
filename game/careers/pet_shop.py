@@ -34,6 +34,7 @@ and in c['ext']['data'] (animals, pens, the story book, the shop's stage).
 from __future__ import annotations
 
 import copy
+from ..jsoncopy import tree_copy
 
 from .. import consequences as cq
 from . import kit, till
@@ -1722,7 +1723,7 @@ def feedback(c: dict, t: dict) -> dict:
 
 # ---------------------------------------------------------------- projection
 def public_task(t: dict) -> dict:
-    v = copy.deepcopy(t)
+    v = tree_copy(t)
     x = v.pop('_x', {})
     job = t['job']
     if not t['known']:
@@ -1757,7 +1758,7 @@ def public_task(t: dict) -> dict:
 
 
 def public_data(c: dict) -> dict:
-    d = copy.deepcopy(_data(c))
+    d = tree_copy(_data(c))
     day = c['day']
     d['stage_name'] = STAGES[d['stage']]['name']
     d['corner'] = [k for k in ADOPTEES if not any(x['pet'] == k and day - x['day'] < 3 for x in d['adopted'])]

@@ -8,6 +8,7 @@ never change money, reviews or relationships.
 """
 from __future__ import annotations
 import copy
+from .jsoncopy import tree_copy
 from . import archive as ar
 
 MAX_COST = 80
@@ -145,7 +146,7 @@ def public(c: dict, career: str) -> dict | None:
                            preview=o.get('preview')) for o in x['options']])
     if row['stage'] == 'resolved':
         opt = next(o for o in x['options'] if o['id'] == row['choice'])
-        v.update(outcome=opt['outcome'], quality=opt.get('quality', 'ok'), perspectives=copy.deepcopy(opt.get('perspectives', [])),
+        v.update(outcome=opt['outcome'], quality=opt.get('quality', 'ok'), perspectives=tree_copy(opt.get('perspectives', [])),
                  lesson=x.get('lesson'))
     return v
 

@@ -14,6 +14,7 @@ flags are all derived from that record, so a save can be re-validated.
 from __future__ import annotations
 
 import copy
+from .jsoncopy import tree_copy
 
 from . import consequences as cq
 from . import desk_content as dc
@@ -109,7 +110,7 @@ def known_request(t: dict) -> str:
 
 # ------------------------------------------------------------------ public view
 def public_task(t: dict) -> dict:
-    v = copy.deepcopy(t)
+    v = tree_copy(t)
     b = dc.bulletin(t['career'], t['day'])
     v['rules'] = b['rules']
     v['bulletin'] = b['notices']

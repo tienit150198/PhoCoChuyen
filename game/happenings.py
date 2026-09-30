@@ -26,6 +26,7 @@ only (real sessions); with the story off nothing ever happens.
 from __future__ import annotations
 
 import copy
+from .jsoncopy import tree_copy
 import hashlib
 import random
 
@@ -616,7 +617,7 @@ def _news_view(n: dict) -> dict:
     x = INDEX[n['script']]
     emoji, title, text = POLICE[n['outcome']]
     return dict(id=n['id'], outcome=n['outcome'], emoji=emoji, title=title, text=text, about=x['title'], about_emoji=x['emoji'],
-                day=n['day'], lines=copy.deepcopy(n['lines']), items=copy.deepcopy(n['items']),
+                day=n['day'], lines=tree_copy(n['lines']), items=tree_copy(n['items']),
                 insurance=n['insurance'], insurance_text=INSURANCE_TEXT if n['insurance'] else '', seen=n['seen'])
 
 
@@ -640,15 +641,15 @@ def public(c: dict, career: str, s: dict) -> dict:
                             title=x['title'], text=x['text'], anim=x['anim'], actor=x['actor'], target=x['target'],
                             morning=live['morning'], label=x['label'], reactions=reactions,
                             before=[dict(name=w['name'], emoji=w['emoji'], before=w['before'], after=w['after']) for w in live['before']][:6],
-                            lines=copy.deepcopy(live['applied']) if live['morning'] else [])
+                            lines=tree_copy(live['applied']) if live['morning'] else [])
     last = box['last']
     if last:
         x = INDEX[last['script']]
         r = _reaction(x, last['choice'])
         view['last'] = dict(id=last['id'], script=x['id'], day=last['day'], emoji=x['emoji'], title=x['title'], kind=x['kind'],
                             label=x['label'], choice=r['label'], outcome=r['win'] if last['won'] or last['won'] is None else r['lose'],
-                            good=last['good'], won=last['won'], auto=last['auto'], lines=copy.deepcopy(last['lines']),
-                            items=copy.deepcopy(last['items']), hurt=last['hurt'], hurt_text=HURT['text'] if last['hurt'] else '',
+                            good=last['good'], won=last['won'], auto=last['auto'], lines=tree_copy(last['lines']),
+                            items=tree_copy(last['items']), hurt=last['hurt'], hurt_text=HURT['text'] if last['hurt'] else '',
                             case=last['case'], trust=last['trust'], insurance=last['insurance'])
     return view
 

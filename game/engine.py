@@ -1054,14 +1054,23 @@ def career_summary(raw:dict,cid:str) -> dict:
                 inventory=raw.get("ext",{}).get("inv") is not None,life=dict(shop_name=raw.get("life",{}).get("shop_name")))
 
 
+_TOP_VIEWS=frozenset(("journey","invest","board","life","stories","closeness","abandon"))  # set by public_state below
+_CAREER_VIEWS=frozenset(("ops","situation","incidents","happen","inventory","job","feed","ext","life","tasks"))  # idem, for the focus career
+
+def _focus_copy(c):
+    """tree_copy(c) without the members public_state replaces with their views (or drops: ext)."""
+    if type(c) is not dict or c.get("summary"):return tree_copy(c)  # public_state then keeps the copy as it is
+    return {k:(None if k in _CAREER_VIEWS else tree_copy(x)) for k,x in c.items()}
+
 def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     """Public projection. Only the current career (or `full`) gets the full view.
     `migrated=True`: `s` is a disposable state that apply_action just returned
     (already upgraded), so the defensive migrate copy is skipped."""
     if not migrated:s=migrate_state(s)
     focus=full or s.get("current") or jr.default_career(s)
-    v={k:tree_copy(x) for k,x in s.items() if k not in ("careers","check")}
-    v["careers"]={cid:(tree_copy(c) if cid==focus else career_summary(c,cid)) for cid,c in s["careers"].items()}
+    # Parts replaced by their own view below are not copied first (placeholders keep the key order).
+    v={k:(None if k in _TOP_VIEWS else tree_copy(x)) for k,x in s.items() if k not in ("careers","check")}
+    v["careers"]={cid:(_focus_copy(c) if cid==focus else career_summary(c,cid)) for cid,c in s["careers"].items()}
     v["focus"]=focus
     v["journey"]=jr.public(s)
     v["invest"]=iv.public(s)
@@ -1767,7 +1776,7 @@ def _ph_notices(c:dict)->list[str]:
 
 
 def _ph_public(c:dict,care:dict)->dict:
-    v=copy.deepcopy(care);day=c["day"]
+    v=tree_copy(care);day=c["day"]
     for b in v["batches"]:
         b["flag"]=_ph_flag(b,day);b["days_left"]=b["exp"]-day
     v["batches"].sort(key=lambda b:(b["lot"],b["exp"],b["got"]))
@@ -2279,7 +2288,7 @@ def cs_task_public(c:dict,t:dict,v:dict)->None:
 
 
 def _cs_public(c:dict,care:dict)->dict:
-    v=copy.deepcopy(care);now=_now(c,"customer_care")
+    v=tree_copy(care);now=_now(c,"customer_care")
     people=[]
     for npc,row in care["people"].items():
         if npc in NPC_INDEX:people.append(dict(row,npc=npc,name=NPC_INDEX[npc]["display_name"],open=sum(1 for t in c["tasks"] if t.get("npc")==npc and t["status"] not in ("completed","referred","cancelled"))))
@@ -2400,7 +2409,7 @@ def care_public(c:dict,career:str)->dict|None:
     care=_care(c)
     if care is None:return None
     if career=="pharmacy":
-        tmp=copy.deepcopy(c);cp=tmp["ext"]["data"]["care"];_ph_sync(tmp,cp)
+        tmp=tree_copy(c);cp=tmp["ext"]["data"]["care"];_ph_sync(tmp,cp)
         return _ph_public(tmp,cp)
     if career=="accounting":return _ac_public(c,care)
     return _cs_public(c,care)

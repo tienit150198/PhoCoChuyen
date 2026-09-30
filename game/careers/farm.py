@@ -49,6 +49,7 @@ All deterministic, no new randomness; older saves are migrated in validate_data.
 """
 from __future__ import annotations
 import copy
+from ..jsoncopy import tree_copy
 from . import kit
 from .. import consequences as cq
 from .. import archive as ar
@@ -1046,14 +1047,14 @@ def feedback(c: dict, t: dict) -> dict:
 
 # ---------------------------------------------------------------- projection
 def public_task(t: dict) -> dict:
-    v = copy.deepcopy(t)
+    v = tree_copy(t)
     if not t['known']:
         v['needs'] = None
     return v
 
 
 def public_data(c: dict) -> dict:
-    d = copy.deepcopy(kit.data(c))
+    d = tree_copy(kit.data(c))
     _advance(d, c['turn'], c['day'], c['open'])
     start = d['market']['start'] if d['market']['day'] == c['day'] else c['turn']
     care = _care(c, d, start)

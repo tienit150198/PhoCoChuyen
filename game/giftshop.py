@@ -22,6 +22,7 @@ module level so content.py can import this module.
 """
 from __future__ import annotations
 import copy
+from .jsoncopy import tree_copy
 import datetime
 import hashlib
 import random
@@ -416,7 +417,7 @@ def view(c: dict) -> dict:
     raw = ((c.get('ext') or {}).get('data') or {}).get('gift')
     out = fresh()
     if isinstance(raw, dict):
-        out.update(copy.deepcopy(raw))
+        out.update(tree_copy(raw))
     return out
 
 
