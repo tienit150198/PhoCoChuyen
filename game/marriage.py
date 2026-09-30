@@ -156,6 +156,11 @@ CREATE TABLE IF NOT EXISTS couple_stats (
 """
 
 
+def _xu(n) -> str:
+    """1240 -> '1.240' (money in player messages)."""
+    return f'{int(n):,}'.replace(',', '.')
+
+
 def now() -> float:
     return time.time()
 
@@ -1046,7 +1051,7 @@ def resolve(store, couple_id: int, wedding_id: int) -> bool:
             _post_news(db, 'wedding', f'wedding:{w["id"]}', W.NEWS_TEXT.format(a=name_a, b=name_b, tables=plan['tables'], venue=res['venue']),
                        c['a'], c['b'])
         for side in ('a', 'b'):
-            _notice(db, c[side], f'🎊 Đám cưới của {name_a} và {name_b} đã diễn ra: {res["guests"]} khách, tiền mừng {res["gifts"]} xu. Mở mục Hôn nhân để xem thiệp kỷ niệm!')
+            _notice(db, c[side], f'🎊 Đám cưới của {name_a} và {name_b} đã diễn ra: {res["guests"]} khách, tiền mừng {_xu(res["gifts"])} xu. Mở mục Hôn nhân để xem thiệp kỷ niệm!')
         return True
     if not store.transaction(decide):
         return False
@@ -1545,7 +1550,7 @@ def _plan(store, sid: str, display: str, d: dict) -> dict:
             db.execute("INSERT INTO weddings(couple,status,planner,plan,quote,split_a,announce_a,announce_b,days,created) VALUES(?,'proposed',?,?,?,?,?,?,?,?)",
                        (c['id'], sid, json.dumps(plan), json.dumps(q, ensure_ascii=False), pct_a, ann['announce_a'], ann['announce_b'], plan['days'], now()))
         partner = _other(c, sid)
-        _notice(db, partner, f'📋 {display} vừa gửi kế hoạch cưới: {plan["tables"]} bàn, tổng {q["total"]} xu. Mở mục Hôn nhân để xem và xác nhận.')
+        _notice(db, partner, f'📋 {display} vừa gửi kế hoạch cưới: {plan["tables"]} bàn, tổng {_xu(q["total"])} xu. Mở mục Hôn nhân để xem và xác nhận.')
         return _display(db, partner)
     name = store.transaction(run)
     return dict(message=f'Đã gửi kế hoạch cho {name}. Khi {name} xác nhận, tiền cọc mới được trừ.', changed=False)

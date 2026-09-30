@@ -110,7 +110,11 @@
 .bk-score.poor .bk-score-num span{color:var(--bad)}
 .bk-gauge{position:relative;height:14px;border-radius:999px;background:linear-gradient(90deg,#c9453a 0%,#e0a13a 51%,#9cbf4a 67%,#3e9a62 80%,#2a7652 100%)}
 .bk-gauge>i{position:absolute;top:-5px;width:6px;height:24px;margin-left:-3px;border-radius:3px;background:var(--ink);box-shadow:0 0 0 2px var(--surface)}
-.bk-scale{font-size:.75rem;font-weight:600;color:var(--muted)}
+.bk-scale{position:relative;height:1.3em;margin:4px 0 0;font-size:.75rem;font-weight:600;color:var(--muted)}
+/* Each mark sits at its true place on the gauge (the gradient stops), not spread evenly. */
+.bk-scale>span{position:absolute;top:0;transform:translateX(-50%);font-variant-numeric:tabular-nums}
+.bk-scale>span:first-child{transform:none}
+.bk-scale>span:last-child{transform:translateX(-100%)}
 .bk-score-log{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:4px}
 .bk-score-log li{display:flex;justify-content:space-between;gap:10px;font-size:.9rem}
 .bk-tips{margin-top:10px}

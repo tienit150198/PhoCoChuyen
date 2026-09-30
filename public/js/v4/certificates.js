@@ -169,7 +169,7 @@ export async function certAction(action,data,el,env){
       const payload={cert:g.id,mode:data.mode};if(ui.certCareer&&g.careers.includes(ui.certCareer))payload.career=ui.certCareer;
       if(data.mode==='class'){
         const r=J.certificates?.[g.id],fee=r?.attempts?g.retake_fee:g.fee;
-        const ok=await confirmAction(`Đăng ký ${r?.attempts?'lớp ôn':'lớp cấp tốc'}?`,`${g.name}: học phí ${fee} xu trừ vào ví (ví còn ${J.wallet} xu). ${k.class_days?`Bài thi mở từ Ngày ${J.life_day+k.class_days}.`:'Học xong vào thi luôn hôm nay.'}`,`Đóng ${fee} xu`,{cost:fee,pocket:'wallet'});
+        const ok=await confirmAction(`Đăng ký ${r?.attempts?'lớp ôn':'lớp cấp tốc'}?`,`${g.name}: học phí ${fmt(fee)} xu trừ vào ví (ví còn ${fmt(J.wallet)} xu). ${k.class_days?`Bài thi mở từ Ngày ${J.life_day+k.class_days}.`:'Học xong vào thi luôn hôm nay.'}`,`Đóng ${fee} xu`,{cost:fee,pocket:'wallet'});
         if(!ok)return true;
       }
       ui.certPractice={...(ui.certPractice||{}),[g.id]:{}};ui.certHint={};
