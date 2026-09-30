@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import copy
 
+from .. import archive as ar
 from .. import consequences as cq
 from . import kit, till
 
@@ -761,7 +762,7 @@ def _open_bill(t: dict) -> None:
 
 
 def _note(t: dict, line: str) -> None:
-    t['result'] = (t['result'] + [line[:300]])[-10:]
+    t['result'] = ar.last(t['result'] + [line[:300]], 10, 'pet_shop.result', None)
 
 
 def _slip(t: dict, code: str, sev: int, text: str, note: str, safety: bool = False) -> None:
@@ -814,7 +815,7 @@ def on_start(s: dict, c: dict) -> None:
 
 
 def _add_note(d: dict, day: int, emoji: str, text: str) -> None:
-    d['notes'] = (d['notes'] + [dict(day=day, emoji=emoji, text=text[:240])])[-NOTES_MAX:]
+    d['notes'] = ar.last(d['notes'] + [dict(day=day, emoji=emoji, text=text[:240])], NOTES_MAX, 'pet_shop.notes', None)
 
 
 def on_close(s: dict, c: dict) -> dict:
@@ -1176,7 +1177,7 @@ def _sell(c: dict, t: dict, back: bool) -> None:
             if not back:
                 d['animals'][k] = max(0, d['animals'][k] - n)
         elif k == 'adopt' and not back:
-            d['adopted'] = (d['adopted'] + [dict(pet=t['needs']['pet'], day=c['day'])])[-20:]
+            d['adopted'] = ar.last(d['adopted'] + [dict(pet=t['needs']['pet'], day=c['day'])], 20, 'pet_shop.adopted', c)
 
 
 def _book(c: dict, t: dict, good: bool) -> None:

@@ -1,6 +1,7 @@
 """HTTP glue for Nhóm Cư Dân Phố (kept out of server.py).
 
-GET  /api/board?before=<seq>  -> {board, cast}                       (read only)
+GET  /api/board?before=<seq>[&apos=<n>] -> {board, cast}             (read only; `apos`: older
+                              posts from the archive, see get_view)
 POST /api/ai/board            -> {state, revision, result, board, mode, reason}
   {op:'post', text}            runs `bd_post`   (authored replies stored first)
   {op:'reply', post, text?, tone?} runs `bd_reply` (tone: clarify|joke|confront|ignore on a rumour)
@@ -24,13 +25,49 @@ from .storage import Conflict
 MAX_VOICED = 3
 
 
-def get_view(state: dict, query: dict | None = None) -> dict:
-    before = (query or {}).get('before')
+def _int(v) -> int | None:
     try:
-        before = int(before) if before not in (None, '') else None
+        return int(v) if v not in (None, '') else None
     except (TypeError, ValueError):
-        before = None
-    return dict(board=board.public(state, before=before), cast=board.cast_public())
+        return None
+
+
+def get_view(state: dict, query: dict | None = None, archive=None) -> dict:
+    """The feed page. The save keeps the newest board.POSTS_MAX posts; older ones are in the
+    archive (kind 'board.posts', game/archive.py). `archive(before, limit)` (Store.archive_tail
+    for this player) pages them: when the save's posts run out, the page says `older` with
+    `apos` = where the archive continues, and ?before=<last seq>&apos=<n> returns archived
+    posts (read only: `archived`). Posts of an earlier journey (reset_all) are not shown."""
+    q = query or {}
+    before, apos = _int(q.get('before')), _int(q.get('apos'))
+    if archive is not None and apos is not None and before is not None:
+        page = archive(apos, board.VIEW_LIMIT)
+        rows = []
+        for r in page['rows']:  # newest first; a seq that does not go down belongs to an earlier journey
+            p = r['row']
+            if not isinstance(p, dict) or type(p.get('seq')) is not int or p['seq'] >= (rows[-1]['seq'] if rows else before):
+                page['before'] = None
+                break
+            rows.append(p)
+        view = board.public(_with_posts(state, rows[::-1]), limit=max(1, len(rows)))
+        view['posts'] = [dict(p, archived=True) for p in view['posts']] if rows else []
+        view.update(older=page['before'] is not None, apos=page['before'])
+        return dict(board=view, cast=board.cast_public())
+    view = board.public(state, before=before)
+    if archive is not None and not view['older']:
+        last = view['posts'][-1]['seq'] if view['posts'] else before
+        newest = archive(None, 1)['rows']
+        seq = newest[0]['row'].get('seq') if newest and isinstance(newest[0]['row'], dict) else None
+        if type(seq) is int and (last is None or seq < last):
+            view.update(older=True, apos=newest[0]['pos'] + 1)
+    return dict(board=view, cast=board.cast_public())
+
+
+def _with_posts(state: dict, posts: list) -> dict:
+    """A shallow stand-in for `state` whose board holds `posts` (for board.public)."""
+    j = state.get('journey') if isinstance(state.get('journey'), dict) else {}
+    bd = board._board_of(state)
+    return dict(state, journey=dict(j, board=dict(bd, posts=posts)))
 
 
 def _allowed(h, token: str, settings: dict) -> str | None:

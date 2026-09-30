@@ -1050,7 +1050,7 @@ def _after_answer(s: dict, c: dict, career: str, post: dict, app: dict, stage: s
         rows.append(dict(kind='react', stage=stage, q=qid, who=who['name'], text=line, mode='scripted', canonical=line))
     else:
         return None
-    del rows[:-TALK_MAX]
+    ar.drop_head(rows, TALK_MAX, 'job.talk', c)
     return len(rows) - 1
 
 

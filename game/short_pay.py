@@ -37,6 +37,8 @@ from __future__ import annotations
 import hashlib
 import os
 
+from . import archive as ar
+
 VERSION = 1
 KINDS = ('honest', 'elder', 'kid', 'cheat')
 STAGES = ('hidden', 'open', 'kid', 'cheat', 'done')
@@ -195,7 +197,7 @@ def _flag(c: dict, npc: str) -> None:
 
 def _log(c: dict, t: dict, sp: dict) -> None:
     b = book(c)
-    b['log'] = (b['log'] + [dict(task=t['id'], day=c['day'], kind=sp['kind'], outcome=sp['outcome'], short=sp['short'])])[-LOG_MAX:]
+    b['log'] = ar.last(b['log'] + [dict(task=t['id'], day=c['day'], kind=sp['kind'], outcome=sp['outcome'], short=sp['short'])], LOG_MAX, 'short_pay.log', c)
 
 
 # ---------------------------------------------------------------- effects

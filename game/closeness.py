@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import random
 
+from . import archive as ar
 from .closeness_content import (ADULT_POOL, CARE, CAST_TASTE, CHAT, CHAT_NPC, ENVELOPE, ENVELOPE_ARRIVE, GIFT_ARRIVE,
                                 GIFT_LINES, GIFTS, INVITE_COST, INVITES, KID_NOT, KID_POOL, RECEIVED, STALL, TAGS,
                                 THANK, TIERS, TIRED, UNTHANKED, WARN_INSPECT)
@@ -265,7 +266,7 @@ def _rec(st: dict, pid: str, day: int) -> dict:
 
 
 def _log(st: dict, day: int, pid: str, delta: int, text: str, kind: str) -> None:
-    st['log'] = (st['log'] + [dict(day=day, who=pid, d=int(delta), text=str(text)[:140], k=kind)])[-LOG_MAX:]
+    st['log'] = ar.last(st['log'] + [dict(day=day, who=pid, d=int(delta), text=str(text)[:140], k=kind)], LOG_MAX, 'closeness.log', ar.JOURNEY)
 
 
 def _set(s: dict, pid: str, value: int) -> None:

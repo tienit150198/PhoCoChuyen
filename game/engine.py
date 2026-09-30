@@ -192,9 +192,11 @@ def migrate_state(state:dict,owned:bool=False) -> dict:
 
 
 def _trim_histories(s:dict) -> None:
-    """Older saves kept up to 1200 journal rows, 1500 cash-book rows and 30 day recaps per
-    career: what lies beyond what log(), ops.record_money and life.on_close keep now moves
-    to the archive (game/archive.py; written with the save by the storage layer)."""
+    """Older saves kept longer lists than log(), ops.record_money, life.on_close, start_day,
+    mark_done and ops.bill keep now (v0.8.1: 1200 journal rows, 1500 cash-book rows, 30 day
+    recaps; v0.9.5: 300 journal rows, 400 cash-book rows, 10 recaps, 40 finished jobs, every
+    finished-job id, up to 900 bills): the overflow moves to the archive once (game/archive.py;
+    written with the save by the storage layer). Board posts: board.migrate."""
     for cid,c in s["careers"].items():
         if not isinstance(c,dict):continue
         if isinstance(c.get("journal"),list) and len(c["journal"])>JOURNAL_KEPT:c["journal"]=ar.last(c["journal"],JOURNAL_KEPT,"journal",cid)
@@ -206,6 +208,12 @@ def _trim_histories(s:dict) -> None:
         x=c.get("life")
         if isinstance(x,dict) and isinstance(x.get("goals_history"),list) and len(x["goals_history"])>life.GOALS_KEPT:
             x["goals_history"]=ar.last(x["goals_history"],life.GOALS_KEPT,"life.goals_history",cid)
+        # v0.9.5: finished jobs beyond yesterday's (at least DONE_KEPT), finished-job ids beyond COMPLETED_IDS_KEPT.
+        if isinstance(c.get("tasks"),list) and type(c.get("day")) is int:trim_done_tasks(c,cid)
+        if isinstance(c.get("completed_ids"),list) and len(c["completed_ids"])>COMPLETED_IDS_KEPT:
+            c["completed_ids"]=ar.last(c["completed_ids"],COMPLETED_IDS_KEPT,"completed_ids",cid)
+        if (isinstance(f,dict) and isinstance(f.get("bills"),list) and len(f["bills"])>ops.BILLS_HIGH
+                and all(isinstance(b,dict) and isinstance(b.get("status"),str) for b in f["bills"])):ops.trim_bills(c,cid)
 
 
 def needs_migration(state:dict) -> bool:
@@ -215,7 +223,7 @@ def needs_migration(state:dict) -> bool:
 def metric(c: dict,key: str,value: int=1) -> None:
     c["metrics"][key]=c["metrics"].get(key,0)+value
 
-JOURNAL_KEPT=300  # rows kept in the save (the Sổ tay shows 80, "Xem cũ hơn" pages the archive)
+JOURNAL_KEPT=100  # rows kept in the save (the Sổ tay shows 80, "Xem cũ hơn" pages the archive)
 FEED_KEPT=100  # posts kept in the save: the rating and review follow-ups read them all
 
 def log(s:dict,c:dict,kind:str,text:str,npc:str|None=None,ref:str|None=None) -> str:
@@ -264,11 +272,36 @@ def available(c:dict,item:str) -> int:
     held=sum(t.get("basket",{}).get(item,0) for t in c["tasks"] if t["status"] not in ("completed","referred","cancelled"))
     return c["stock"].get(item,0)-held
 
+DONE_KEPT=8  # finished jobs always kept in the save (the AI's "past visits" read a customer's last 3)
+DONE_MAX=40  # and never more: older finished jobs move to the archive at the next start_day
+COMPLETED_IDS_KEPT=100  # ids of finished jobs (a guard against paying twice): more than DONE_MAX
+
+def done_kept(c:dict,done:list) -> int:
+    """How many finished jobs stay in the save: all of yesterday's and today's (the scene, the
+    day's lãi/lỗ, the "việc vừa xong" sheet and today's slot numbers read them), at least
+    DONE_KEPT, at most DONE_MAX. `done`: the finished jobs, oldest first."""
+    recent=sum(1 for t in done if isinstance(t,dict) and type(t.get("day")) is int and t["day"]>=c["day"]-1)
+    return max(DONE_KEPT,min(DONE_MAX,recent))
+
+def trim_done_tasks(c:dict,cid:Any=None) -> None:
+    """Finished jobs beyond done_kept go to the archive; the order of the rest is kept."""
+    done=[t for t in c["tasks"] if isinstance(t,dict) and t.get("status") in ("completed","referred","cancelled")]
+    n=done_kept(c,done)
+    if len(done)<=n:return
+    gone=done[:-n];ids={id(t) for t in gone}
+    ar.record(gone,"tasks",c if cid is None else cid)
+    c["tasks"]=[t for t in c["tasks"] if id(t) not in ids]
+
+def mark_done(c:dict,tid:str) -> None:
+    """Remember a finished job's id (paid once); the oldest ids go to the archive."""
+    if tid not in c["completed_ids"]:c["completed_ids"].append(tid)
+    if len(c["completed_ids"])>COMPLETED_IDS_KEPT:c["completed_ids"]=ar.last(c["completed_ids"],COMPLETED_IDS_KEPT,"completed_ids",c)
+
 def task_done(s:dict,c:dict,t:dict,reward:int,narrative:str,status:str="completed") -> None:
     need(t["id"] not in c["completed_ids"],"Công việc đã nhận kết quả.","already_completed")
     t["status"]=status
     t["completed_turn"]=c["turn"]
-    c["completed_ids"].append(t["id"])
+    mark_done(c,t["id"])
     c["day_completed"]+=1
     metric(c,"served"); metric(c,f"served:{t['npc']}")
     c["xp"]+=30
@@ -559,7 +592,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
             c["tasks"].append(make_task(career,c["day"],first+i,c["turn"]))
             if mod and hasattr(mod,'on_task'):mod.on_task(s,c,c["tasks"][-1])
         # Keep unfinished work and the most recent completed tasks.
-        done=ar.last([t for t in c["tasks"] if t["status"] in ("completed","referred","cancelled")],40,"tasks",c)
+        done=[t for t in c["tasks"] if t["status"] in ("completed","referred","cancelled")]
+        done=ar.last(done,done_kept(c,done),"tasks",c)
         active=[t for t in c["tasks"] if t["status"] not in ("completed","referred","cancelled")]
         c["tasks"]=done+active
         for t in active:t["deferred"]=False
@@ -1487,6 +1521,7 @@ def stock_received(s:dict,c:dict,career:str,x:dict,qty:int)->None:
         _ph_sync(c,care)
     received=[y for y in c["shipments"] if y.get("status")=="received"]
     if len(received)>40:
+        ar.record(received[:len(received)-40],"shipments",c)
         drop={id(y) for y in received[:len(received)-40]}
         c["shipments"]=[y for y in c["shipments"] if id(y) not in drop]
 

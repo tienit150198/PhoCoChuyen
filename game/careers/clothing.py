@@ -46,6 +46,7 @@ from __future__ import annotations
 import copy
 
 from . import kit, till
+from .. import archive as ar
 from .. import consequences as cq
 
 ID = 'clothing'
@@ -639,7 +640,7 @@ def _who(t: dict) -> str:
 
 def _note(c: dict, text: str) -> None:
     d = _data(c)
-    d['notes'] = (d['notes'] + [dict(day=c['day'], text=text[:200])])[-12:]
+    d['notes'] = ar.last(d['notes'] + [dict(day=c['day'], text=text[:200])], 12, 'clothing.notes', c)
 
 
 def _look(c: dict) -> int:
@@ -976,8 +977,8 @@ def _finish(s, c, t):
             _sell(c, x['item'], x['size'])
     for x, right in wrong:
         d['seq'] += 1
-        d['swaps'] = (d['swaps'] + [dict(id=f'sw-{d["seq"]}', npc=t['npc'], item=x['item'], colour=x['colour'], wrong=x['size'],
-                                         right=right, price=_line_price(t, x), day=c['day'] + 1, task=t['id'])])[-12:]
+        d['swaps'] = ar.last(d['swaps'] + [dict(id=f'sw-{d["seq"]}', npc=t['npc'], item=x['item'], colour=x['colour'], wrong=x['size'],
+                                         right=right, price=_line_price(t, x), day=c['day'] + 1, task=t['id'])], 12, 'clothing.swaps', c)
     if not wrong and t['kind'] in ('fit', 'outfit') and _npc_index(t) in REGULARS:
         _remember_sizes(c, t)
     share = t['needs']['fee'] * TAILOR_SHARE // 100 if t['kind'] == 'alter' and t['alt']['mode'] == 'send' else 0

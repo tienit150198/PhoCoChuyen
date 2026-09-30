@@ -36,6 +36,8 @@ from __future__ import annotations
 
 import hashlib
 
+from . import archive as ar
+
 VERSION = 1
 TRUST_START = 70          # "Điểm tin cậy của chủ" of a new employer
 TRUST_CLEAN_DAY = 2       # won back by a day closed without walking off
@@ -340,7 +342,7 @@ def _apply(s: dict, cid: str, x: dict) -> dict:
     who, line = _speaker(cid, c, n, ref)
     e.log(s, c, 'abandon', f'{who} nhắn: “{line}”'[:400])
     rec = dict(day=c['day'], fine=paid, trust=before - after, walked=len(waiting), jobs=gone, warn=n >= 2)
-    row['log'] = (row['log'] + [rec])[-LOG_KEPT:]
+    row['log'] = ar.last(row['log'] + [rec], LOG_KEPT, 'abandon.log', cid)
     return dict(career=cid, place=x['place'], task=x['task'], fine=paid, fund=fund, wallet=wallet, pocket=x['pocket'],
                 trust=before - after, trust_after=after, trust_name=x['trust_name'], trust_kind=kind,
                 walked=len(waiting), jobs=gone, offence=n, warn=n >= 2, who=who, line=line,
@@ -358,8 +360,7 @@ def _cancel(s: dict, c: dict, t: dict) -> None:
     t['status'] = 'cancelled'
     t['completed_turn'] = c['turn']
     t['deferred'] = False
-    if t['id'] not in c['completed_ids']:
-        c['completed_ids'].append(t['id'])
+    _eng().mark_done(c, t['id'])
 
 
 def _speaker(cid: str, c: dict, n: int, ref: str) -> tuple[str, str]:

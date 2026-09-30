@@ -28,6 +28,7 @@ Tasks saved before v0.5 keep the old generator (kit.LEGACY_TURN band).
 from __future__ import annotations
 import copy
 from . import kit
+from .. import archive as ar
 from .. import consequences as cq
 
 ID = 'repair'
@@ -1457,8 +1458,8 @@ def _handle(s: dict, c: dict, d: dict, name: str, p: dict) -> dict:
         if t.get('gen') and b['warranty'] is not None:
             main = t['_fault'] if t['_fault'] in b['fixed'] else next(iter(b['fixed']), t['_fault'])
             slip = 'BH-' + t['id'][-7:].replace('-', '')
-            d['book'] = (d['book'] + [dict(slip=slip, day=c['day'], npc=t['npc'], device=device, fault=main,
-                                           grade=b['fixed'].get(main, 'none'), days=b['warranty'], title=t['title'])])[-BOOK_MAX:]
+            d['book'] = ar.last(d['book'] + [dict(slip=slip, day=c['day'], npc=t['npc'], device=device, fault=main,
+                                           grade=b['fixed'].get(main, 'none'), days=b['warranty'], title=t['title'])], BOOK_MAX, 'repair.book', c)
         acc = ', '.join(ACCESSORIES[a][1].lower() for a in b['intake']['accessories'])
         shelf_note = _pickup_note(c, d, t)
         if tested:
@@ -1654,8 +1655,8 @@ def _regular_after(c: dict, d: dict, t: dict, returned: bool) -> str:
     rec['trust'] = max(0, min(TRUST_MAX, before + delta))
     if not returned and b['fixed']:
         main = t['_fault'] if t['_fault'] in b['fixed'] else next(iter(b['fixed']))
-        rec['history'] = (rec['history'] + [dict(day=c['day'], device=t['needs']['device'], fault=main, grade=b['fixed'][main],
-                                                 days=b['warranty'] or 0, title=t['title'])])[-HISTORY_MAX:]
+        rec['history'] = ar.last(rec['history'] + [dict(day=c['day'], device=t['needs']['device'], fault=main, grade=b['fixed'][main],
+                                                 days=b['warranty'] or 0, title=t['title'])], HISTORY_MAX, 'repair.history', c)
     if rec['trust'] > before:
         return f' 💛 {_who(t)}: {TRUST_NAMES[rec["trust"]].lower()}.'
     if rec['trust'] < before:
@@ -2131,9 +2132,9 @@ def on_task(s: dict, c: dict, t: dict) -> None:
     if _case(t) == 'warranty':
         bk = t['_x']['book']
         if not any(r['slip'] == bk['slip'] for r in d['book']):
-            d['book'] = (d['book'] + [dict(slip=bk['slip'], day=t['day'] - bk['ago'], npc=t['npc'], device=t['needs']['device'],
+            d['book'] = ar.last(d['book'] + [dict(slip=bk['slip'], day=t['day'] - bk['ago'], npc=t['npc'], device=t['needs']['device'],
                                            fault=bk['fault'], grade=bk['grade'], days=bk['days'],
-                                           title=f'{DEVICES[t["needs"]["device"]]["name"]} — {_fault_def(t["needs"]["device"], bk["fault"])["name"].lower()}')])[-BOOK_MAX:]
+                                           title=f'{DEVICES[t["needs"]["device"]]["name"]} — {_fault_def(t["needs"]["device"], bk["fault"])["name"].lower()}')], BOOK_MAX, 'repair.book', c)
 
 
 def on_start(s: dict, c: dict) -> None:

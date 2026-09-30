@@ -762,7 +762,7 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         need(p.get('confirm') is True, 'Xác nhận bỏ lô này; giá trị được ghi là hao hụt.')
         value = lot['qty'] * lot['unit_cost']
         c['life']['day_waste'] += value
-        c['life']['waste'] = (c['life']['waste'] + [dict(day=c['day'], item=lot['item'], qty=min(60, lot['qty']), value=value, reason='Bỏ lô không đạt')])[-120:]
+        c['life']['waste'] = ar.last(c['life']['waste'] + [dict(day=c['day'], item=lot['item'], qty=min(60, lot['qty']), value=value, reason='Bỏ lô không đạt')], 120, 'life.waste', c)
         x['lots'] = [l for l in x['lots'] if l['id'] != lot['id']]
         return dict(message='Đã bỏ lô hàng và ghi hao hụt.')
     raise e.GameError('Thao tác kho chưa được hỗ trợ.')
@@ -780,7 +780,7 @@ def on_close(s: dict, c: dict, career: str) -> int:
         if lot['expires'] <= c['day'] and lot['qty']:
             value = lot['qty'] * lot['unit_cost']
             wasted += value
-            c['life']['waste'] = (c['life']['waste'] + [dict(day=c['day'], item=lot['item'], qty=min(60, lot['qty']), value=value, reason='Hết hạn sử dụng')])[-120:]
+            c['life']['waste'] = ar.last(c['life']['waste'] + [dict(day=c['day'], item=lot['item'], qty=min(60, lot['qty']), value=value, reason='Hết hạn sử dụng')], 120, 'life.waste', c)
         else:
             keep.append(lot)
     x['lots'] = ar.last(keep, 300, 'stock.lots', c)

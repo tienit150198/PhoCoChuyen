@@ -482,9 +482,10 @@ class Handler(BaseHTTPRequestHandler):
                 token,state,_,_=self.require_session()
                 self.json(200,dict(push.pending(self.server.store,token),lang=state["settings"].get("lang","vi")));return
             if route=="/api/board":  # Nhóm Cư Dân Phố feed (game/board_ai.py)
-                _,state,_,_=self.require_session()
-                if not self.server.rate_limit("board-get:"+self.token(),240):self.error(429,"Chậm lại một chút nhé.");return
-                self.json(200,board_ai.get_view(state,{k:v[0] for k,v in parse_qs(split.query).items()}));return
+                token,state,_,_=self.require_session()
+                if not self.server.rate_limit("board-get:"+token,240):self.error(429,"Chậm lại một chút nhé.");return
+                older=lambda before,limit:self.server.store.archive_tail(token,"","board.posts",before,limit)  # posts that left the save
+                self.json(200,board_ai.get_view(state,{k:v[0] for k,v in parse_qs(split.query).items()},older));return
             if route=="/api/feedback/mine":
                 token,_,_,_=self.require_session()
                 if not self.server.rate_limit("fb-mine:"+token,60):self.error(429,"Chậm lại một chút nhé.");return

@@ -1999,7 +1999,7 @@ def _care_close(s: dict, c: dict, d: dict) -> list[str]:
             kit.review(s, c, kit.npc_id(ID, sp['npc']), 1, f'Đặt trước cả mấy ngày mà tới ngày {b["due"]} tiệm không giao. May mà còn kịp mua chỗ khác.', b['id'])
             lines.append(f'✗ Không kịp làm “{sp["title"]}”: hoàn {back} xu cọc, {_name(sp["npc"])} rất buồn.')
     closed = [b for b in d['pre'] if b['status'] in ('done', 'failed')]
-    d['pre'] = _open_pre(d) + closed[-4:]
+    d['pre'] = _open_pre(d) + ar.last(closed, 4, 'florist.pre', c)
     sub = d['sub']
     if sub['status'] == 'offer':
         sub.update(status='none', retry=day + 2)

@@ -285,3 +285,169 @@ class ClearedChat(unittest.TestCase):
             with store.connect() as db:
                 left = db.execute("SELECT COUNT(*) FROM archive WHERE kind=?", ('chat:' + npc,)).fetchone()[0]
             self.assertEqual(left, 0)
+
+
+class SaveSizeTests(unittest.TestCase):
+    """v0.9.5 keeps less in the save (finished jobs, their ids, board posts, journal, cash
+    book, bills, day recaps) and routes every list that used to drop rows silently into
+    the archive: what the save keeps plus what the archive holds is the whole history."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.store = Store(Path(self.tmp.name) / 'game.db')
+
+    def patch(self, *patches):
+        for p in patches:
+            p.start()
+            self.addCleanup(p.stop)
+
+    def test_finished_jobs_and_their_ids(self):
+        made, paid = {}, []  # every job that was ever in the save, every id marked paid
+        done = E.mark_done
+
+        def spy_done(c, tid):
+            if tid not in c['completed_ids']:
+                paid.append(tid)
+            done(c, tid)
+        self.patch(mock.patch.object(E, 'DONE_KEPT', 2), mock.patch.object(E, 'DONE_MAX', 3),
+                   mock.patch.object(E, 'COMPLETED_IDS_KEPT', 4),
+                   mock.patch.object(E, 'mark_done', spy_done))
+        j = StoreJourney(self.store, 'milk_tea')
+        act = j.act
+
+        def watched(action, **payload):
+            out = act(action, **payload)
+            made.update((t['id'], None) for t in j.c['tasks'])
+            return out
+        j.act = watched
+        j.act('start_day')
+        for _ in range(4):
+            for _ in range(4):
+                todo = [t for t in j.c['tasks'] if t['status'] not in ('completed', 'referred', 'cancelled')]
+                if not todo:
+                    break
+                j.solve(todo[0]['id'])
+            j.act('end_day')
+            j.act('start_day')
+        c = j.c
+        done_ids = [t['id'] for t in c['tasks'] if t['status'] in ('completed', 'referred', 'cancelled')]
+        self.assertLessEqual(len(done_ids), 3)
+        archived = [r['row']['id'] for r in self.store.archive_export(j.token) if r['kind'] == 'tasks']
+        self.assertGreater(len(archived), 5)
+        everyone = archived + [t['id'] for t in c['tasks']]
+        self.assertEqual(sorted(everyone), sorted(made))  # every job ever in the save, once
+        self.assertEqual(len(set(everyone)), len(everyone))
+        ids = [r['row'] for r in self.store.archive_export(j.token) if r['kind'] == 'completed_ids']
+        self.assertEqual(len(c['completed_ids']), 4)
+        self.assertEqual(ids + c['completed_ids'], paid)  # in order
+        E.validate_state(j.state)
+        # a backup carries them: imported elsewhere, the same history comes back
+        dump = self.store.archive_export(j.token)
+        other = StoreJourney(self.store, 'milk_tea')
+        other.act('import_save', save=json.loads(json.dumps(dict(format='mot-ngay-lam-nghe/save-v4', state=j.state, archive=dump))))
+        back = [r for r in self.store.archive_export(other.token) if r['kind'] in ('tasks', 'completed_ids')]
+        self.assertEqual([(r['kind'], r['row']) for r in back], [(r['kind'], r['row']) for r in dump if r['kind'] in ('tasks', 'completed_ids')])
+        self.assertEqual([t['id'] for t in other.state['careers']['milk_tea']['tasks']], [t['id'] for t in c['tasks']])
+
+    def test_board_posts_move_to_the_archive_and_page_back(self):
+        from game import board as bd
+        from game import board_ai
+        from game import journey as jr
+        made = []
+        new_post = bd._new_post
+
+        def spy(*a, **k):
+            p = new_post(*a, **k)
+            made.append(p['id'])
+            return p
+        self.patch(mock.patch.object(bd, '_new_post', spy))
+        # an older save: 120 posts kept by the previous build
+        with mock.patch.object(bd, 'POSTS_MAX', 120):
+            s = E.new_state()
+            jr.enable_story(s, 99)
+            s['journey'].update(gender='female', intro=True)
+            s, _ = E.apply_action(s, 'milk_tea', 'select_career', {})
+            s, _ = E.apply_action(s, 'milk_tea', 'talk', dict(npc='milk_tea_npc_01', text='chào'))
+            for _ in range(30):
+                s['journey']['life_day'] += 1
+                for _ in range(35):
+                    bd.after(s, 'milk_tea', 'talk', {})
+            self.assertEqual(len(s['journey']['board']['posts']), 120)
+            E.validate_state(s)
+        lost = made[:-120]  # cut by that build before the archive existed: not this test's business
+        token, _, _ = self.store.session()
+        self.store.read(token)
+        with self.store.connect() as db:
+            db.execute('UPDATE sessions SET state=? WHERE sid=?', (json.dumps(s), self.store.key(token)))
+        self.store.command(token, 'req-board-0001', 0, None, 'settings', dict(sound=False))
+        saved, _, _ = self.store.read(token)
+        self.assertEqual(len(saved['journey']['board']['posts']), bd.POSTS_MAX)
+        # page the feed like the client: the save's posts, then the archive, read only
+        older = lambda before, limit: self.store.archive_tail(token, '', 'board.posts', before, limit)
+        view = board_ai.get_view(saved, {}, older)['board']
+        seen, pages = list(view['posts']), 0
+        while view['older']:
+            q = dict(before=seen[-1]['seq'])
+            if view.get('apos') is not None:
+                q['apos'] = view['apos']
+            view = board_ai.get_view(saved, q, older)['board']
+            seen += view['posts']
+            pages += 1
+        self.assertGreaterEqual(pages, 3)
+        self.assertEqual([p['id'] for p in reversed(seen)], [x for x in made if x not in lost])
+        self.assertTrue(all(p.get('archived') for p in seen[bd.POSTS_MAX:]))
+        self.assertFalse(any(p.get('archived') for p in seen[:bd.POSTS_MAX]))
+
+    def test_silent_caps_now_archive(self):
+        from game import archive as ar
+        from game import closeness as qn
+        from game import journey as jr
+        s = E.new_state()
+        jr.enable_story(s, 5)
+        self.patch(mock.patch.object(qn, 'LOG_MAX', 5))
+        with ar.collect() as box:
+            for i in range(12):
+                qn.change(s, 'ba_tam', 1, f'dòng {i}', 'work')
+        rows = [r for _, kind, r in box.rows if kind == 'closeness.log'] + s['journey']['closeness']['log']
+        self.assertEqual([r['text'] for r in rows], [f'dòng {i}' for i in range(12)])
+
+    def test_older_save_moves_its_overflow_once_and_money_still_adds_up(self):
+        token, _, _ = self.store.session()
+        s, _, _ = self.store.read(token)
+        c = s['careers']['grocery']
+        c.update(day=60, started=True)
+        f = c['ops']['finance']
+        f['ledger'] = [dict(id=f'entry-{i}', day=1 + i // 8, turn=0, amount=1, category='revenue', reason=f'r{i}', ref=None) for i in range(400)]
+        c['money'] = f['opening_balance'] + 400
+        f['bills'] = [dict(id=f'utility-{i}', kind='utility', label=f'Điện nước · ngày {i}', amount=5, due=i + 1, created_day=i,
+                           status='paid', source=f'day-{i}', extended=False, paid_day=i + 1) for i in range(1, 300)]
+        c['completed_ids'] = [f'grocery-{d:04d}-00' for d in range(1, 251)]
+        c['journal'] = [dict(id=f'log-{i}', kind='fact', text=f'row {i}', npc=None, ref=None, day=1, turn=0) for i in range(300)]
+        E.validate_state(s)
+        opening, money = f['opening_balance'], c['money']
+        with self.store.connect() as db:
+            db.execute('UPDATE sessions SET state=? WHERE sid=?', (json.dumps(s), self.store.key(token)))
+        self.store.command(token, 'req-older-0002', 0, None, 'settings', dict(sound=False))
+        saved, _, _ = self.store.read(token)
+        c = saved['careers']['grocery']
+        f = c['ops']['finance']
+        dump = self.store.archive_export(token)
+        rows = lambda kind: [r['row'] for r in dump if r['career'] == 'grocery' and r['kind'] == kind]
+        self.assertEqual(len(c['journal']), E.JOURNAL_KEPT)
+        self.assertEqual([r['text'] for r in rows('journal') + c['journal']], [f'row {i}' for i in range(300)])
+        self.assertLessEqual(len(f['ledger']), O.LEDGER_KEEP)
+        self.assertEqual([r['id'] for r in rows('ledger') + f['ledger']], [f'entry-{i}' for i in range(400)])
+        self.assertEqual(f['opening_balance'] + sum(r['amount'] for r in f['ledger']), c['money'])
+        self.assertEqual(opening + sum(r['amount'] for r in rows('ledger') + f['ledger']), money)
+        self.assertEqual(c['money'], money)
+        self.assertEqual(len([b for b in f['bills'] if b['status'] == 'paid']), O.BILLS_PAID)
+        self.assertEqual([b['id'] for b in rows('bills') + f['bills']], [f'utility-{i}' for i in range(1, 300)])
+        self.assertEqual(rows('completed_ids') + c['completed_ids'], [f'grocery-{d:04d}-00' for d in range(1, 251)])
+        self.assertEqual(len(c['completed_ids']), E.COMPLETED_IDS_KEPT)
+        # moved once: another command archives nothing more of these kinds
+        n = len(dump)
+        self.store.command(token, 'req-older-0003', 1, None, 'settings', dict(sound=True))
+        self.assertEqual(len([r for r in self.store.archive_export(token) if r['kind'] in ('journal', 'ledger', 'bills', 'completed_ids')]),
+                         len([r for r in dump if r['kind'] in ('journal', 'ledger', 'bills', 'completed_ids')]))
+        self.assertGreaterEqual(len(self.store.archive_export(token)), n)
