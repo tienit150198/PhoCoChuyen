@@ -179,11 +179,11 @@ export async function certAction(action,data,el,env){
       if(await confirmAction('Bỏ khóa học?','Học phí đã đóng không được hoàn. Muốn thi thì đăng ký lại từ đầu.','Bỏ khóa'))await cmd('jr_cert_drop',{confirm:true});
       return true;
     case'jrCertHint':
-      ui.certHint={...(ui.certHint||{}),[data.q]:true};renderSheet(false);return true;
+      ui.certHint={...(ui.certHint||{}),[data.q]:true};renderSheet();return true;   // in place: keep the scroll and the open sections
     case'jrCertPractice':{
       const all={...(ui.certPractice||{})};
       if(data.reset)all[data.cert]={};else all[data.cert]={...(all[data.cert]||{}),[data.q]:data.option};
-      ui.certPractice=all;renderSheet(false);return true;}
+      ui.certPractice=all;renderSheet();return true;}   // the next question is just below: stay where the player is
   }
   return false;
 }

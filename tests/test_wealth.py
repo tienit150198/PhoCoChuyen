@@ -47,7 +47,7 @@ class WealthTest(unittest.TestCase):
         self.assertIn('.hud-chip', (ROOT / 'public/css/app.css').read_text(encoding='utf-8'))
 
     def test_whats_new_line(self):
-        items = wn.ENTRIES[0]['items']   # the release that brings the money sheet (0.9.12)
+        items = wn.ENTRIES[0]['items']   # the release that brings the money sheet (0.9.13)
         line = next(it for it in items if it['emoji'] == '💰')
         self.assertEqual(line['text'], 'Bấm vào tiền trên cùng để xem hết: ví, quỹ từng nơi làm, ngân hàng, nhà.')
         self.assertEqual(line.get('go'), {'action': 'money'})
