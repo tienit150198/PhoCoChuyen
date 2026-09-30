@@ -16,6 +16,7 @@ import {careerSubmit,careerInput,loadCareerModules,careerUI,hasCareerUI,setCaree
 import {applyGuide,guideAction,nextHint,stepCta,plainText} from './v4/guide.js';
 import {inventoryView,feedbackView,situationView,jobView as jobAppView,v4Action,v4Submit,v4Input} from './v4/views.js';
 import {moneyBoot,confirmMoney,dialogBalances} from './v4/money.js';  // 💰 Ví / Quỹ tiệm in sight while spending
+import {quickOpen} from './v4/onboard.js';  // a brand-new player's first minutes
 import {hudMoney,hudChipsHTML,wealthHTML,loadJoint,jointBalance,wealthAction} from './v4/wealth.js';  // 💰 Tiền của bạn (top bar chips + sheet)
 import {emojiOf} from './v4/journey.js';
 import {setLanguage,t as i18nT} from './v4/i18n.js';
@@ -92,7 +93,7 @@ const activeTask=()=>room()?.tasks.find(t=>t.id===(ui.task||room().active_task))
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const LEGACY=['mother_baby','pharmacy','accounting','customer_care','teacher','tour_guide','milk_tea'];
 const plugin=()=>!LEGACY.includes(career());
-const env=()=>({api,ui,cmd,confirmAction,toast,renderSheet,openSheet,closeSheet,world});
+const env=()=>({api,ui,cmd,confirmAction,toast,renderSheet,openSheet,closeSheet,world,act:(action,data={})=>handleAction(action,data,null)});
 /** The one day counter the player sees: the life day in the story, the workplace's own day elsewhere (game/days.py). */
 const dayNo=c=>api.state?.journey?.story&&Number.isInteger(api.state.journey.life_day)?api.state.journey.life_day:c?.day;
 const needsJob=()=>room()?.job?.required&&room().job.status!=='hired';
@@ -941,8 +942,16 @@ async function selectCareer(id){
   ui.task=null;ui.docs.clear();ui.transactions.clear();ui.ai={};ui.phFilter='';ui.jobTab='shelf';
   await careerAssets(id);  // its workbench, stylesheet and scene first: the new place never renders half-styled
   const r=await cmd('select_career',pass, {career:id,quiet:true});if(!r)return;if(r.hired)toast(r.message,'good');
-  closeSheet();world.say(meta().greeting);setPaused(false);if(needsJob())openSheet('jobapp');else if(!room().open)openSheet('prepare');
+  closeSheet();world.say(meta().greeting);setPaused(false);if(needsJob())openSheet('jobapp');else if(quickOpen(api.state,id))await openFirstDay();else if(!room().open)openSheet('prepare');
   abandonAfter(r);
+}
+/** A brand-new player's first workplace (v4/onboard.js quickOpen): day 1 opens at once, straight into the first
+ * customer. The "Chuẩn bị" sheet stays one tap away (rail/dock) and comes back from day 2. */
+async function openFirstDay(){
+  const r=await cmd('start_day',{},{quiet:true});if(!r){openSheet('prepare');return;}
+  ui.task=null;world.say(meta().greeting);
+  const t=room().tasks.find(x=>x.id===room().active_task&&!ended(x))||room().tasks.find(x=>!ended(x));
+  if(t)openJob(t.id);else closeSheet();
 }
 async function openJob(id,tab){
   const target=id||room().active_task||room().tasks.find(t=>!ended(t))?.id;

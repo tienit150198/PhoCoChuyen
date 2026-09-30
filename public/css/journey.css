@@ -136,6 +136,21 @@ button.jr-stat:hover{border-color:var(--line-strong)}
 .jr-job small{color:var(--muted);font-size:.8rem;line-height:1.35}
 .jr-job-go{display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:6px 14px;border-radius:var(--radius-pill);background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:.867rem}
 .jr-intro .jr-lines{text-align:left}
+/* A brand-new player's one screen (journey.js introView): look, name, first workplace, go. */
+.onb-intro .jr-street{margin-bottom:12px}
+.onb-intro h1{margin-bottom:4px}
+.onb-intro .jr-lead{margin-bottom:10px}
+.onb-intro .jr-who{gap:14px}
+.onb-intro .jr-gender{padding:10px 8px 8px;gap:4px}
+.onb-jobs{margin:0;padding:0;border:0;min-width:0;text-align:left}
+.onb-jobs legend{padding:0;margin:0 0 6px;font-weight:700;font-size:.9rem}
+.onb-job-row{display:flex;flex-wrap:wrap;gap:8px}
+.onb-job{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:6px 12px;border-radius:var(--radius-pill);background:var(--surface);border:1.5px solid var(--line-strong);color:var(--ink-2);font:inherit;font-weight:700;font-size:.9rem;cursor:pointer}
+.onb-job span{font-size:1.15rem;line-height:1}
+.onb-job small{font-size:.75rem;font-weight:700;color:var(--good);padding-left:2px}
+.onb-job.rec{order:-1}
+.onb-job.active{border-color:var(--accent);background:var(--accent-soft);color:var(--ink);box-shadow:0 0 0 1px var(--accent)}
+.onb-job:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
 
 /* ---------- Titles --------------------------------------------------------- */
 .jr-body{container:sheet/inline-size}
@@ -238,6 +253,8 @@ html[data-layout="phone"] .jr-grid{grid-template-columns:minmax(0,1fr)}
 html[data-layout="phone"] .jr-card{padding:14px}
 html[data-layout="phone"] .jr-intro{padding:24px 16px calc(26px + var(--safe-b))}
 html[data-layout="phone"] .jr-intro h1{font-size:1.45rem}
+html[data-layout="phone"] .onb-intro{padding-top:16px}
+html[data-layout="phone"] .onb-intro .jr-street{margin-bottom:8px}
 html[data-layout="phone"] .jr-street{gap:6px;font-size:1.7rem}
 html[data-layout="phone"] .jr-street span{width:44px;height:44px;border-radius:13px}
 html[data-layout="phone"] .jr-first-jobs{grid-template-columns:minmax(0,1fr)}

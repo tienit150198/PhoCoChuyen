@@ -14,6 +14,7 @@ import {certsView,certsEntry,certBadges,certTitles,certAction} from './certifica
 import {lifeView,lifeEntry,lifeCard,lifeAction,lifeBoot} from './life.js';
 import {portrait,lookOf} from './look.js';
 import {lazy,skeleton} from '../lazy.js';
+import {FIRST_JOB,quiet,firstDay} from './onboard.js';
 // 👗 Tủ đồ (v4/wardrobe.js): the sheet loads the first time it opens.
 const WD=lazy(()=>import('./wardrobe.js'),{css:['/css/wardrobe.css']});
 
@@ -177,23 +178,24 @@ function houseCard(env){
 }
 
 /* ------------------------------------------------------------------ intro */
+/** A brand-new player's one screen: who you are and where you start, then straight into the first customer
+ * (app.js quickOpen). The recommended first workplace is picked already; one tap picks another. */
+const jobLabel=m=>{const s=String(m.short||m.place||'').replace(/^(Tiệm|Quán)\s+/,'');return s.charAt(0).toUpperCase()+s.slice(1);};
 function introView(env){
   const {api,ui}=env,J=api.state.journey,C=api.content.journey,ch=C.chapters[0];
-  const step=J.gender&&ui.jrStep!=='who'?'job':ui.jrStep||'arrive';
-  if(step==='arrive'){
-    return `<div class="jr-intro"><div class="jr-street" aria-hidden="true"><span>🏠</span><span>🏪</span><span>🌳</span><span>🧋</span><span>🏮</span><span>🛵</span></div>
-      <span class="eyebrow">Ngày đầu tiên</span><h1>Một khu phố nhỏ, một căn gác thuê</h1>
-      <p class="jr-lead">Bạn vừa chuyển tới đây với một chiếc ba lô. Chưa quen ai, chưa có nghề gì trong tay, chỉ có thật nhiều tò mò.</p>
-      <div class="jr-lines">${ch.intro.slice(0,2).map(l=>say(l,J.gender)).join('')}</div>
-      <button type="button" class="btn primary big full" data-action="jrStep" data-step="who">Chào khu phố ${icon('arrow',16)}</button>
-      ${api.account?'':`<button type="button" class="jr-link acct-intro-link" data-action="v4AccountOpen" data-mode="login">${icon('user',14)} Đã có tài khoản? Đăng nhập</button>`}</div>`;
-  }
-  if(step==='who')return `<div class="jr-intro">${whoForm(env,'Bạn là ai?','Hàng xóm sẽ gọi bạn thế nào?','Đây là mình')}</div>`;
   const ids=ch.unlocks.filter(id=>api.state.careers[id]);
-  return `<div class="jr-intro"><span class="eyebrow">Việc đầu tiên</span><h1>Bắt đầu từ đâu nhỉ?</h1>
-    <div class="jr-lines">${say(ch.intro[2],J.gender)}</div>
-    <div class="jr-first-jobs">${ids.map(id=>{const m=meta(api,id);return `<button type="button" class="jr-job" data-action="choose" data-career="${esc(id)}" style="--career:${colour(m.color)}"><span class="jr-job-emoji" aria-hidden="true">${emojiOf(m)}</span><b>${esc(m.place||m.short)}</b><small>${esc(m.tagline||m.short||'')}</small><span class="jr-job-go">Làm thử ${icon('arrow',14)}</span></button>`;}).join('')}</div>
-    <button type="button" class="jr-link" data-action="jrStep" data-step="who">${icon('back',14)} Sửa tên hoặc nhân vật</button></div>`;
+  const rec=ids.includes(FIRST_JOB)?FIRST_JOB:ids[0],job=ids.includes(ui.jrJob)?ui.jrJob:rec;
+  const pick=ui.jrGender||J.gender||'';
+  const card=(g,label)=>`<button type="button" class="jr-gender ${pick===g?'active':''}" data-action="jrGender" data-gender="${g}" aria-pressed="${pick===g}">${avatar(g,64)}<b>${label}</b></button>`;
+  const chip=id=>{const m=meta(api,id),on=id===job;
+    return `<button type="button" class="onb-job ${on?'active':''} ${id===rec?'rec':''}" data-action="jrJob" data-career="${esc(id)}" aria-pressed="${on}" style="--career:${colour(m.color)}"><span aria-hidden="true">${emojiOf(m)}</span>${esc(jobLabel(m))}${id===rec?'<small>hợp người mới</small>':''}</button>`;};
+  return `<div class="jr-intro onb-intro"><div class="jr-street" aria-hidden="true"><span>🏠</span><span>🏪</span><span>🌳</span><span>🧋</span><span>🏮</span><span>🛵</span></div>
+    <h1>Chào bạn mới! 👋</h1><p class="jr-lead">Một khu phố nhỏ, nhiều nghề để thử.</p>
+    <form class="jr-who" data-jr-form="start"><div class="jr-genders" role="group" aria-label="Giới tính">${card('male','Nam')}${card('female','Nữ')}</div>
+    <label class="jr-name"><span>Tên của bạn</span><input id="jr-name" name="name" maxlength="24" autocomplete="nickname" required value="${esc(api.state.name)}" data-preserve></label>
+    <fieldset class="onb-jobs"><legend>Làm ở đâu trước?</legend><div class="onb-job-row">${ids.map(chip).join('')}</div></fieldset>
+    <button type="submit" class="btn primary big full" ${pick?'':'disabled'}>Vào làm thôi ${icon('arrow',16)}</button></form>
+    ${api.account?'':`<button type="button" class="jr-link acct-intro-link" data-action="v4AccountOpen" data-mode="login">${icon('user',14)} Đã có tài khoản? Đăng nhập</button>`}</div>`;
 }
 
 function whoForm(env,title,sub,cta){
@@ -373,6 +375,7 @@ export async function journeyAction(action,data,el,env){
   switch(action){
     case'jrView':ui.jrView=data.view||'home';renderSheet(false);document.getElementById('sheet')?.scrollTo?.(0,0);return true;
     case'jrStep':ui.jrStep=data.step;renderSheet(false);return true;
+    case'jrJob':ui.jrJob=data.career;renderSheet();return true;
     case'jrGender':{ui.jrGender=data.gender;const scene=document.getElementById('jrScene');
       if(scene?.open){const name=scene.querySelector('[name="name"]')?.value;openScene(whoScene(),sceneQueue||[]);const input=scene.querySelector('[name="name"]');if(input&&name!=null)input.value=name;}
       else renderSheet();return true;}
@@ -396,6 +399,18 @@ export async function journeyAction(action,data,el,env){
 export async function journeySubmit(f,env){
   const kind=f.dataset.jrForm;if(!kind)return false;
   const {ui,cmd,renderSheet,api}=env;
+  if(kind==='start'){   // the intro's one screen: name + look, then the first workplace (no step in between)
+    const name=f.querySelector('[name="name"]')?.value.trim()||'',gender=ui.jrGender||api.state.journey.gender;
+    if(!gender){env.toast?.('Chọn Nam hoặc Nữ trước nhé.',true);return true;}
+    const btn=f.querySelector('[type="submit"]');if(btn)btn.disabled=true;
+    const r=await cmd('jr_profile',{name,gender});
+    if(!r){if(btn)btn.disabled=false;return true;}
+    ui.jrGender=null;
+    const ids=api.content.journey.chapters[0].unlocks.filter(id=>api.state.careers[id]);
+    const job=ids.includes(ui.jrJob)?ui.jrJob:ids.includes(FIRST_JOB)?FIRST_JOB:ids[0];ui.jrJob=null;
+    if(job)await env.act('choose',{career:job});
+    return true;
+  }
   if(kind==='profile'){
     const name=f.querySelector('[name="name"]')?.value.trim()||'',gender=ui.jrGender||api.state.journey.gender;
     if(!gender){env.toast?.('Chọn Nam hoặc Nữ trước nhé.',true);return true;}
