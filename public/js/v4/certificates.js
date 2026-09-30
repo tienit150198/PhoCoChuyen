@@ -6,6 +6,7 @@
  * the practice quiz is a separate bank checked here in the browser. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {asset} from '../assets.js';
+import {skeleton} from '../lazy.js';
 
 const attrs=obj=>Object.entries(obj).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 const btn=(label,action,data={},style='',extra='')=>`<button type="button" class="btn ${style}" data-action="${action}"${attrs(data)}${extra}>${label}</button>`;
@@ -145,6 +146,8 @@ export function certsView(env){
   const {api,ui}=env,J=api.state.journey,k=K(api);
   certCss();
   const title='🎓 Thi chứng chỉ';
+  // The question banks come with the catalogue's `more` part (api.js more()): a skeleton until then.
+  if(J?.story&&!k){api.more?.().catch(()=>{});return head(title,'')+`<div class="sheet-body jr-body">${skeleton()}</div>`;}
   if(!J?.story||!k)return head(title,'')+`<div class="sheet-body jr-body"><p class="muted">Thi chứng chỉ có trong hành trình.</p></div>`;
   const st=J.study,sg=st&&k.groups.find(x=>x.id===st.cert);
   const focus=ui.certFocus&&k.groups.some(g=>g.id===ui.certFocus)?ui.certFocus:null;

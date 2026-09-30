@@ -1,7 +1,7 @@
 // Unit test of public/js/update.js ("Đã có phiên bản mới" pill) with a tiny fake DOM.
 // Run by tests/test_webassets.py (node tests/update_pill.mjs); exits non-zero on failure.
 import assert from 'node:assert/strict';
-import {shouldOffer,compareRelease,UpdateNotice,TEXT} from '../public/js/update.js';
+import {shouldOffer,compareRelease,UpdateNotice,TEXT,releaseUrls,prewarmRelease} from '../public/js/update.js';
 
 assert.equal(compareRelease('0.9.0+a','0.8.10+b'),1);
 assert.equal(compareRelease('0.8.0+a','0.8.0+b'),0);
@@ -73,5 +73,21 @@ const store=()=>{const m=new Map();return {getItem:k=>m.get(k)??null,setItem:(k,
   assert.equal(n.seen('0.8.3+ddd',true),true);assert.equal(reloads,3,'incompatible + idle: reloads');
   const broken=new UpdateNotice('0.8.0+aaa',{doc:fakeDoc(),storage:store(),session:{getItem(){throw new Error('blocked');},setItem(){throw new Error('blocked');}},reload:()=>reloads++,idle:()=>true});
   broken.returning=true;assert.equal(broken.seen('0.9.0+x'),true);assert.equal(reloads,3,'no session storage: no auto reload (no loop guard), pill');
+}
+{ // the pill prewarms the new release once per version (never its own, never "incompatible")
+  const warmed=[];const n=new UpdateNotice('0.8.0+aaa',{doc:fakeDoc(),storage:store(),reload:()=>{},prewarm:v=>warmed.push(v)});
+  n.seen('0.8.0+bbb');n.seen('0.8.0+bbb');n.seen('0.8.0+aaa',true);await Promise.resolve();await Promise.resolve();
+  assert.deepEqual(warmed,['0.8.0+bbb']);
+  const urls=releaseUrls('<link rel="modulepreload" href="/js/v4/a.js?v=0123456789ab"><link rel="preload" as="style" href="/css/app.css?v=abcdefabcdef"><script type="module" src="/js/app.js?v=111111111111"></script><img src="/icons/x.webp?v=222222222222"><link href="/js/raw.js">');
+  assert.deepEqual([...urls],['/js/v4/a.js?v=0123456789ab','/css/app.css?v=abcdefabcdef','/js/app.js?v=111111111111']);
+}
+{ // prewarmRelease: the new page's first-frame files, this browser's workplace through its import map, minus this page's own
+  const page=`<script type="importmap">{"imports":{"/js/careers/farm.js":"/js/careers/farm.js?v=bbbbbbbbbbbb","/js/scenes/farm.js":"/js/scenes/farm.js?v=cccccccccccc"}}</script><meta name="mnl-content" content="/api/content?v=dddddddddddd"><link rel="modulepreload" href="/js/api.js?v=aaaaaaaaaaaa"><link rel="modulepreload" href="/js/same.js?v=eeeeeeeeeeee">`;
+  globalThis.fetch=async url=>{assert.equal(url,'/');return new Response(page,{status:200});};
+  const head={children:[],append(el){this.children.push(el);}};
+  const doc={head,createElement:()=>({}),querySelector:s=>s.startsWith('script')?{textContent:'{"imports":{"/js/same.js":"/js/same.js?v=eeeeeeeeeeee"}}'}:s.startsWith('meta')?{content:'/api/content?v=0000000000'}:null};
+  const storage=store();storage.setItem('mnl.warm',JSON.stringify(['/js/careers/farm.js']));storage.setItem('mnl.scene','/js/scenes/farm.js');
+  assert.equal(await prewarmRelease(doc,storage),4);
+  assert.deepEqual(head.children.map(l=>[l.rel,l.href]),[['prefetch','/js/api.js?v=aaaaaaaaaaaa'],['prefetch','/js/careers/farm.js?v=bbbbbbbbbbbb'],['prefetch','/js/scenes/farm.js?v=cccccccccccc'],['prefetch','/api/content?v=dddddddddddd&part=core']]);
 }
 console.log('update pill: ok');

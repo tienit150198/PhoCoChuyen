@@ -12,7 +12,7 @@ import {olderRows,olderButton,loadOlder,syncOlder} from './archive.js';
 import {Sound} from './audio.js';
 import {soundsBoot} from './v4/sounds.js';
 import {dayclockBoot,clockChip,clockAria,clockCard,clockSummary,closingNote,clockStep} from './v4/dayclock.js';  // giờ trong ngày
-import {careerSubmit,careerInput,loadCareerModules,careerUI,hasCareerUI,careerContext,startTicker,tickNow} from './v4/careers.js';
+import {careerSubmit,careerInput,loadCareerModules,careerUI,hasCareerUI,setCareerData,careerContext,startTicker,tickNow} from './v4/careers.js';
 import {applyGuide,guideAction,nextHint,stepCta,plainText} from './v4/guide.js';
 import {inventoryView,feedbackView,situationView,jobView as jobAppView,v4Action,v4Submit,v4Input} from './v4/views.js';
 import {moneyBoot,confirmMoney,dialogBalances} from './v4/money.js';  // 💰 Ví / Quỹ tiệm in sight while spending
@@ -48,6 +48,9 @@ const L={
 const TUT_OPEN=new Set(['help','tutGuide','tutReplay']);  // tutorial actions whose buttons other modules render
 /** A sheet whose code is not in yet: its header (with the close button) and a skeleton. */
 const lazyView=(h,fn)=>h.use()?fn(h.m):header('')+`<div class="sheet-body">${skeleton()}</div>`;
+/** A sheet that reads the catalogue's `more` part (api.more(): job postings, the shop book, situations, story texts):
+ * a skeleton until it is in (it loads right after the first frame; the 'mnl:lazy' event re-renders). */
+const moreView=fn=>{if(api.hasMore())return fn();api.more().catch(e=>console.warn('content:',e));return header('')+`<div class="sheet-body">${skeleton()}</div>`;};
 /** The module behind an action that opens it; the tapped control shows as pending while the code loads. */
 async function viaLazy(h,el){if(h.m)return h.m;el?.classList?.add('is-pending');try{return await h.get();}finally{el?.classList?.remove('is-pending');}}
 
@@ -367,7 +370,7 @@ function renderSheet(preserve=true){
     case'home':dialog.classList.add('home');html=homeView();break;
     case'future':html=futureView();break;
     case'job':dialog.classList.add('cozy-job');html=jobView();break;
-    case'prepare':case'prices':case'workshop':case'passport':case'town':dialog.classList.add('cozy-sheet',ui.view==='prepare'?'prep-sheet':'life-sheet');html=careerUI(career())?.page?.(ui.view,careerContext(env()))||experienceView(ui.view,career(),room(),api.content,meta(),ui,api.state);break;
+    case'prepare':case'prices':case'workshop':case'passport':case'town':dialog.classList.add('cozy-sheet',ui.view==='prepare'?'prep-sheet':'life-sheet');html=careerUI(career())?.page?.(ui.view,careerContext(env()))||(ui.view==='passport'?moreView:f=>f())(()=>experienceView(ui.view,career(),room(),api.content,meta(),ui,api.state));break;
     case'queue':dialog.classList.add('medium');html=queueView();break;
     case'chat':dialog.classList.add('medium');html=chatView();break;
     case'phone':dialog.classList.add('medium');html=phoneView();break;
@@ -387,11 +390,11 @@ function renderSheet(preserve=true){
     case'status':dialog.classList.add('narrow','status-sheet');html=statusView();break;
     case'inventory':dialog.classList.add('medium','v4-sheet');html=inventoryView(env());break;
     case'feedback':dialog.classList.add('v4-sheet','wide');html=feedbackView(env());break;
-    case'situation':dialog.classList.add('medium','v4-sheet');html=situationView(env());break;
+    case'situation':dialog.classList.add('medium','v4-sheet');html=moreView(()=>situationView(env()));break;
     case'incident':dialog.classList.add('medium','v4-sheet','inc-sheet');html=lazyView(L.inc,m=>m.incidentView(env()));break;
-    case'jobapp':dialog.classList.add('medium','v4-sheet');html=jobAppView(env());break;
+    case'jobapp':dialog.classList.add('medium','v4-sheet');html=moreView(()=>jobAppView(env()));break;
     case'classroom':dialog.classList.add('wide','v4-sheet');html=lazyView(L.classroom,m=>m.classroomView(env()));break;
-    case'operations':dialog.classList.add('operations');html=lazyView(L.ops,m=>m.operationsView(career(),room(),api.content.operations,ui,api.state));break;
+    case'operations':dialog.classList.add('operations');html=moreView(()=>lazyView(L.ops,m=>m.operationsView(career(),room(),api.content.operations,ui,api.state)));break;
     default:html=header('Một khoảng thảnh thơi')+`<div class="sheet-body">${empty('Cửa sổ chưa mở','Quay lại cảnh để tiếp tục nhé.')}</div>`;
   }}
   if(dialog.className!==cls.className)dialog.className=cls.className;
@@ -1178,10 +1181,13 @@ api.addEventListener('net',e=>{
 /* Career workbenches and scene kinds load on demand (startup: the current one; selectCareer: the next one).
  * Anything else that switches careers is covered by ensureCareerUI (re-renders once the module is in). */
 const CAREER_MODULES=[];
-const careerAssets=(id,waitCss=true)=>Promise.all([CAREER_MODULES.includes(id)&&!hasCareerUI(id)?loadCareerModules([id],waitCss):null,import(`./scenes/${kindOf(id)}.js`).catch(()=>{}),id==='teacher'||id==='tour_guide'?teachTour().catch(()=>{}):null]);
+// Its part of the catalogue (api.careerContent: a plugin workplace's data) comes with its workbench.
+const careerAssets=(id,waitCss=true)=>Promise.all([CAREER_MODULES.includes(id)&&!hasCareerUI(id)?loadCareerModules([id],waitCss):null,api.careerContent(id),import(`./scenes/${kindOf(id)}.js`).catch(()=>{}),id==='teacher'||id==='tour_guide'?teachTour().catch(()=>{}):null]);
+setCareerData(id=>api.hasCareerContent(id));  // careerUI(id) waits for the workplace's data part too
 function ensureCareerUI(){
-  const id=api.state?.current;if(!id||hasCareerUI(id)||!CAREER_MODULES.includes(id)||ensureCareerUI.busy===id)return;
-  ensureCareerUI.busy=id;loadCareerModules([id],true).then(()=>{ensureCareerUI.busy=null;if(api.state?.current===id){renderMain();if(ui.view)renderSheet();}});
+  const id=api.state?.current;
+  if(!id||(hasCareerUI(id)&&api.hasCareerContent(id))||!CAREER_MODULES.includes(id)||ensureCareerUI.busy===id)return;
+  ensureCareerUI.busy=id;Promise.all([hasCareerUI(id)?null:loadCareerModules([id],true),api.careerContent(id)]).then(()=>{ensureCareerUI.busy=null;if(api.state?.current===id){renderMain();if(ui.view)renderSheet();}});
 }
 api.addEventListener('offline',()=>renderMain());
 // While the always-on features load one by one after start-up (lazyBoot), only a module the screen is waiting
@@ -1199,6 +1205,8 @@ try{
   // Its stylesheet only styles the workbench: wait for it only when a sheet opens right away (day closed).
   await Promise.all([careerAssets(career(),Boolean(api.state.current&&(!room()?.open||needsJob()))),setLanguage(api.state.settings.lang)]);
   shell.boot(env());journeyBoot(env());boardBoot(env());startTicker(()=>env());$('#loading').hidden=true;$('#app').hidden=false;world.resize();renderMain();
+  // The rest of the catalogue (api.more), now that the first frame is out: it never competed with it on the wire.
+  api.more().catch(e=>console.warn('content:',e));
   // Always-on features (badges, notices, polls, tips) load once the game is on screen, not before it.
   // Góp ý and admin stats (and their stylesheets) load when that page first opens (L.fb).
   // One per idle slot, so a tap never waits behind all of them compiling at once. A player who has not been

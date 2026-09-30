@@ -542,6 +542,7 @@ export async function v4Action(action,data,el,env){
     case'v4Backdoor':{
       // 🚪 Honest about what it is: a fee to a helper, a normal probation, maybe some whispers on day one.
       const id=api.state.current,job=api.state.careers[id]?.job,J=api.state.journey;
+      await api.more?.();  // job postings: the catalogue's `more` part (api.js)
       const p=(api.content.employment.postings[id]||[]).find(x=>x.id===job?.application?.posting),b=p?.backdoor;if(!b)return true;
       const msg=`${b.helper} Phí ${b.fee} xu trừ vào ví (ví còn ${J.wallet} xu). Bạn vào làm ${p.title.toLowerCase()} với lương khởi điểm ${p.salary[0]} xu/ngày, thử việc ${p.probation_days} ngày như mọi người. Ngày đầu có thể nghe vài lời xì xào.`;
       if(await confirmAction('🚪 Đi cửa sau?',msg,`Trả ${b.fee} xu`,{cost:b.fee,pocket:'wallet'}))await cmd('job_backdoor',{confirm:true});

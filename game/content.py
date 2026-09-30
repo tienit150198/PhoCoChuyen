@@ -217,3 +217,35 @@ def public_content() -> dict:
                 papers=PAPERS,ribbons=RIBBONS,upgrades=UPGRADES,quests=QUESTS,
                 event_catalogue=[dict(id=e["id"],career=e["career_id"],title=e["title"],category=e["category"],min_day=e["min_game_day"]) for e in EVENT_SEEDS],
                 journey=journey.content())
+
+
+# Parts of the catalogue the first frame never needs (GET /api/content?v=<hash>&part=more): job postings and exams,
+# the shop book, situation scripts, certificate question banks, career story texts. Each is read by one or two views,
+# which show a skeleton until the part is in (public/js/api.js loads it right after the first frame).
+CONTENT_LATER=(("employment",),("operations",),("situations",),("journey","certs"),("experiences","stories"))
+
+
+def content_parts(full: dict) -> dict[str, dict]:
+    """The catalogue in parts, each cached for a year under the same content hash (server.py Handler.content):
+    `core` gates the first frame: everything but CONTENT_LATER, and `careers` with only its ids (value None);
+    `more`: CONTENT_LATER (same nesting); `career:<id>`: one workplace's own entry of `careers`, which comes with its
+    workbench. core + more + every career part == the whole catalogue (GET /api/content, older pages)."""
+    core = dict(full)
+    more: dict = {}
+    for path in CONTENT_LATER:
+        src, dst, parent = full, more, core
+        for key in path[:-1]:
+            if not isinstance(src.get(key), dict):
+                break
+            src, dst = src[key], dst.setdefault(key, {})
+            parent[key] = dict(parent[key])
+            parent = parent[key]
+        else:
+            if path[-1] in src:
+                dst[path[-1]] = src[path[-1]]
+                parent.pop(path[-1], None)
+    core["careers"] = {cid: None for cid in full.get("careers", {})}
+    core["part"] = "core"
+    parts = {"core": core, "more": more}
+    parts.update({f"career:{cid}": value for cid, value in full.get("careers", {}).items()})
+    return parts
