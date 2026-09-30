@@ -31,6 +31,10 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="0.9.13", date="2026-10-01", items=(
+        dict(emoji="🏰", text="Mua nhà: thêm biệt thự và 4 loại căn hộ (studio, 1 phòng ngủ, 2 phòng ngủ, penthouse).", go=dict(action="house")),
+        dict(emoji="💰", text="Bấm vào tiền trên cùng để xem hết: ví, quỹ từng nơi làm, ngân hàng, nhà.", go=dict(action="money")),
+    )),
     dict(version="0.9.10", date="2026-09-30", items=(
         dict(emoji="✅", text="Nâng cấp hạ tầng đã xong! Game đã chạy trên máy chủ mới, mạnh và nhanh hơn."),
         dict(emoji="🎮", text="Tiền, nhà, đồ và tiến độ của bạn vẫn giữ nguyên. Chúc mọi người chơi vui, enjoy nhé!"),
