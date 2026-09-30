@@ -194,6 +194,24 @@ function moneyStrip(v){
   return h.debt?`<p class="bk-alert warn">👛 Ví đang nợ ${xu(h.debt)}.</p>`:'';
 }
 
+/* "Bước tiếp theo" (the guide's line, v4/guide.js look): the one thing to do now on the way to a home of your own. */
+function nextStep(v){
+  const h=v.have||{},L=v.own?.loan,homes=(v.market||[]).filter(m=>m.kind==='own');
+  let go=null;
+  if(L?.overdue)go=L.overdue<=(h.ready||0)?{op:'pay',label:`⏰ Trả ${xu(L.overdue)} trả góp đang quá hạn`}:{op:'bank',data:{tab:'home'},label:'🏦 Nộp tiền vào tài khoản để trả góp',note:`thiếu ${xu(L.overdue-(h.ready||0))}`};
+  else if(!v.own&&!v.shared){
+    // The dearest home whose down payment is there and whose 3-year installment the bank would take (as startBuy fills the form).
+    const o=v.offer||{},R=v.rules||{},ok=m=>{const down=Math.min(m.price,Math.max(m.down_min,Math.floor(Math.max(0,(h.ready||0)-m.fee)/10)*10)),loan=m.price-down;
+      return !loan||(o.ok&&loan>=(R.loan_min||0)&&schedule(loan,o.rate,36,0,R.month_days||5)[0].amount<=o.room);};
+    const cash=homes.filter(m=>!m.missing),can=cash.filter(ok).pop()||cash[0],next=homes.find(m=>m.missing);
+    if(can)go={op:'look',data:{kind:can.id},label:`🔑 Xem & mua ${can.name.toLowerCase()}`};
+    else if(!h.bank)go={op:'bank',data:{tab:'home'},label:'🏦 Mở tài khoản Ngân hàng Phố'};
+    else if(next)go={op:'bank',data:{tab:'save'},label:'🐷 Gửi tiết kiệm mua nhà',note:`còn thiếu ${xu(next.missing)} cho ${next.name.toLowerCase()}`};
+  }
+  if(!go)return '';
+  return `<div class="gd-next hs-next" role="status"><small>Bước tiếp theo</small><button type="button" class="gd-hint" data-hs="${go.op}"${attrs(go.data||{})}${S.busy?' disabled':''}><b>${esc(go.label)}</b>${go.note?`<span class="gd-note">${esc(go.note)}</span>`:''}<i aria-hidden="true">→</i></button></div>`;
+}
+
 function placeCard(v){
   const p=v.place||{},c=p.cost||{};
   const costLine=`${p.where_id==='own'||p.where_id==='shared'?'Điện nước':'Tiền phòng'} ${xu(c.rent)} · cơm ${xu(c.meals)} mỗi ngày`;
@@ -264,7 +282,7 @@ function savingsCard(v){
 function homeView(v){
   const market=(v.market||[]).map(m=>marketCard(v,m)).join('');
   const log=(v.log||[]).slice(0,8).map(r=>`<li><span>Ngày ${r.day} · ${esc(r.text)}</span>${r.amt?`<b class="${r.amt>0?'up':'down'}">${r.amt>0?'+':'−'}${fmt(Math.abs(r.amt))}</b>`:''}</li>`).join('');
-  return moneyStrip(v)+placeCard(v)+ownCard(v)+loanCard(v)+
+  return moneyStrip(v)+nextStep(v)+placeCard(v)+ownCard(v)+loanCard(v)+
     `<section class="bk-card"><h3>Nhà đang rao</h3><p class="bk-hint">Trả trước ${v.rules.down_pct}%, còn lại vay ngân hàng.</p><ul class="hs-market">${market}</ul></section>`+
     savingsCard(v)+(log?`<section class="bk-card"><h3>Sổ nhà cửa</h3><ul class="bk-score-log">${log}</ul></section>`:'');
 }

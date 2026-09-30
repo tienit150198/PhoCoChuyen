@@ -338,9 +338,9 @@ function save(b){
       <label class="bk-field"><span>Lấy từ</span><select id="bk-save-src"><option value="acc">Tài khoản thanh toán</option><option value="cash">Tiền mặt trong ví</option></select></label>
       <label class="bk-toggle"><input type="checkbox" id="bk-renew"><span>Tới hạn tự tái tục (gốc và lãi gửi tiếp kỳ mới)</span></label></div>
       <div class="bk-actions">${btn('Gửi tiết kiệm','save',{},'primary')}</div>${table}
-      <p class="bk-hint">Trong game, 1 tháng là ${R.month_days} ngày sống, 1 năm là ${R.year_days} ngày sống. Lãi tính theo năm, cộng dồn mỗi sáng; sổ có kỳ hạn đáo hạn thì gốc và lãi về tài khoản thanh toán. Rút trước hạn chỉ hưởng lãi không kỳ hạn cho số ngày đã gửi.</p></section>
-    <section class="bk-card bk-house-link"><h3>🏠 Tiết kiệm mua nhà</h3><p class="bk-hint">Xem nhà đang rao, còn thiếu bao nhiêu để trả trước, và vay mua nhà trả góp mỗi tháng.</p><div class="bk-actions">${btn('Nhà của bạn','house',{},'ghost')}</div></section>
-    <section class="bk-card"><h3>Không kỳ hạn · ${xu(sv.demand)}</h3><p class="bk-hint">Lãi ${pct(R.demand_rate)}/năm, cộng vào sổ mỗi ngày (khoảng ${(sv.daily_milli/1000).toLocaleString('vi-VN',{maximumFractionDigits:3})} xu/ngày; phần lẻ cộng dồn tới khi đủ 1 xu).</p>
+      <p class="bk-hint">1 tháng = ${R.month_days} ngày sống, 1 năm = ${R.year_days} ngày sống. Rút trước hạn chỉ được lãi không kỳ hạn.</p></section>
+    <section class="bk-card bk-house-link"><h3>🏠 Tiết kiệm mua nhà</h3><div class="bk-actions">${btn('Nhà của bạn','house',{},'ghost')}</div></section>
+    <section class="bk-card"><h3>Không kỳ hạn · ${xu(sv.demand)}</h3><p class="bk-hint">Lãi ${pct(R.demand_rate)}/năm, cộng mỗi ngày (~${(sv.daily_milli/1000).toLocaleString('vi-VN',{maximumFractionDigits:3})} xu/ngày).</p>
       ${sv.demand?`<div class="bk-move"><label class="bk-field"><span>Rút về tài khoản</span><input id="bk-demand-out" type="number" inputmode="numeric" min="1" max="${sv.demand}" placeholder="Tối đa ${sv.demand}"></label></div><div class="bk-actions">${btn('Rút','unsaveDemand',{},'ghost')}</div>`:''}</section>
     <section class="bk-card"><h3>Sổ có kỳ hạn</h3>${terms?`<ul class="bk-list">${terms}</ul>`:'<p class="bk-hint">Chưa có sổ nào.</p>'}</section>`;
 }

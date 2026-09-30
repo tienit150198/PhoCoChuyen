@@ -9,6 +9,9 @@
 
 /* What you have: the 💰 chip on the header (money.css) shows Ví · Tài khoản · Quỹ chung. */
 
+/* Bước tiếp theo (the guide's line, guide.css) */
+.hs-next{margin:0}
+
 /* Where you live */
 .hs-place-top,.hs-home-top{display:flex;gap:12px;align-items:center;min-width:0}
 .hs-place-top .grow,.hs-home-top .grow{min-width:0;flex:1}

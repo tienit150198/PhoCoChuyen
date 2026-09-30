@@ -307,6 +307,15 @@ async def s_house(w: Walk) -> None:
     await p.wait_for_selector('.hs-sheet[open] .hs-market', timeout=10000)
     await w.check('house')
     w.need(await p.locator('.hs-sheet[open] .mn-chip').count(), 'no money chip on Nhà của bạn')
+    # The next step ("Bước tiếp theo") names a home the bank would finance and opens its form.
+    nxt = p.locator('.hs-sheet .hs-next .gd-hint')
+    if w.need(await nxt.count(), 'no "Bước tiếp theo" on Nhà của bạn'):
+        await nxt.first.click()
+        await w.wait(500)
+        if w.need(await p.locator('.hs-sheet .hs-buy').count(), 'the next step did not open a home to buy'):
+            w.need(not await p.locator('.hs-sheet .hs-preview .bk-alert.warn').count(), 'the suggested home cannot be bought as filled in')
+            await w.check('house-next-step')
+            await w.click('.hs-sheet [data-hs="back"]', 'the back arrow')
     s0 = await w.state()
     cash0, acc0 = s0['journey']['wallet'], s0['journey']['bank']['balance']
     # Rent the room, then give it back: the deposit comes back.
