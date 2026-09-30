@@ -198,7 +198,7 @@ class HttpResilience(unittest.TestCase):
                  b'Content-Length: ' + str(len(body)).encode() + b'\r\n\r\n' + body)
         statuses, data = self.raw_pair(first)  # no cookie: 401 before the body is read
         self.assertEqual(statuses, [401, 200], data[:600])
-        self.assertIn(b'"status": "ok"', data)
+        self.assertIn(b'"status":"ok"', data)  # compact JSON (game/fastjson.py)
         # a database outage in the session check (503) as well
         cookie, csrf, _ = self.boot()
         first = (b'POST /api/social/profile HTTP/1.1\r\nHost: ' + host + b'\r\nCookie: ' + cookie.encode() + b'\r\nX-Game-CSRF: ' + csrf.encode()

@@ -95,6 +95,8 @@ location @asset_miss {                              # mã chưa có trong kho: t
 | `RECEIPT_DAYS`, `RECEIPTS_PER_SAVE` | Biên nhận chống gửi trùng được giữ bao lâu (mặc định 2 ngày) và tối đa bao nhiêu cho mỗi bản lưu (mặc định 200). |
 | `LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY`, `LLM_CONCURRENCY` | AI cho nhân vật review/phụ huynh. Người chơi phải tự bật “Cho phép AI” trong Cài đặt. |
 | `STATIC_CAS_DIR` | Kho tệp tĩnh theo mã băm mà proxy phục vụ cho URL `?v=` (mặc định `public/_v`). Xem mục “Tài nguyên tĩnh có phiên bản”. |
+| `API_GZIP_LEVEL` | Mức gzip của phản hồi `/api/` (mặc định 4: tốn ~2/3 CPU so với mức 5, dữ liệu gửi đi nhiều hơn ~5%). Tệp tĩnh luôn được nén sẵn ở mức 6. |
+| `GC_THRESHOLD` | Ngưỡng bộ gom rác của Python (mặc định `50000,20,20`: ít lượt gom hơn khi đọc/ghi bản lưu lớn; `700,10,10` là mặc định của Python). Đối tượng lúc khởi động được `gc.freeze()` giữ ngoài các lượt gom. |
 | `MNL_DEV` | **Không bao giờ đặt trên máy chủ thật.** `MNL_DEV=1` tắt hành trình (mở mọi nghề, không trừ tiền sinh hoạt) và cho nhận việc không cần phỏng vấn. Chỉ dùng cho script kiểm trình duyệt. |
 | `VAPID_SUBJECT`, `VAPID_PRIVATE_KEY`, `PUSH_DISABLED` | Web push. Mặc định khóa được tự tạo ở `storage/vapid.json`; đừng xóa tệp này, nếu mất thì mọi đăng ký thông báo cũ hết hiệu lực. |
 
@@ -105,6 +107,7 @@ location @asset_miss {                              # mã chưa có trong kho: t
 - Phố nghề lọc link, e-mail, số điện thoại và từ thô tục. Nội dung bị 3 người báo cáo sẽ tự ẩn. Để gỡ hay khôi phục thủ công, sửa cột `hidden` trong SQLite (bảng `board`, `comments`, `previews`, `market`, `profiles`).
 - Người chơi tự xóa dữ liệu được trong Cài đặt → Dữ liệu. Nếu ai đó gửi yêu cầu qua email `trachanhtv.works@gmail.com`, hãy tìm hồ sơ theo tên hiển thị trong bảng `profiles`, rồi xóa bằng `sid` tương ứng.
 - Nhật ký (log) không ghi cookie hay nội dung người chơi gõ. Bật `QUIET=1` để tắt hẳn access log.
+- JSON nhanh (tùy chọn): có gói `orjson` trong `PYTHONPATH` thì bản lưu được đọc nhanh ~2 lần, ghi nhanh ~4 lần (văn bản lưu giống hệt từng byte, xem `game/fastjson.py`). Không có thì game dùng `json` chuẩn như trước. Cài: `scripts/vendor_orjson.sh /opt/mot-ngay-lam-nghe/shared/pyvendor` (hoặc `download` trên máy có mạng rồi `install <wheel> <thư mục>` trên máy chủ), rồi khởi động lại dịch vụ.
 - Một tiến trình Python chỉ dùng được một CPU. Máy nhiều CPU: đặt `WORKERS` bằng số CPU. Nên để proxy (Nginx/Caddy) phục vụ thẳng thư mục `public/` để Python chỉ lo `/api/`.
 - Tệp SQLite không tự nhỏ lại khi dữ liệu được dọn (chỗ trống được dùng lại). Muốn thu nhỏ: lúc vắng người, dừng game rồi chạy `sqlite3 storage/game.sqlite3 'VACUUM'` (cần trống đĩa gấp đôi kích thước tệp).
 

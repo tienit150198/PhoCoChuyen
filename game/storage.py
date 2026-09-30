@@ -40,6 +40,7 @@ from . import leaderboard as lb
 from . import marriage as mr
 from .content import CAREERS
 from . import db as dbm
+from . import fastjson as fj
 from . import pg_schema
 
 SCHEMA=4
@@ -142,12 +143,29 @@ def serialize(raw:dict,known:dict|None=None,full:bool=False)->str:
     if type(careers) is not dict or any(type(k) is not str for k in careers):
         raw.pop("check",None)
         return _dumps(raw)
+    # orjson (game/fastjson.py, same bytes) writes the careers when a NaN/Infinity cannot slip
+    # through as null: `full` (validate_state checked every number) or `known` (a career whose
+    # text moved is validated below, finite numbers included; one whose text did not move is
+    # the stored text). Otherwise json writes them and refuses NaN/Infinity (ValueError).
+    # The stored text stays exactly json's: a career whose text is the stored one is json's
+    # text already; any other goes through fj.canonical (a few float formats differ).
+    fast=fj.FAST and (full or known is not None)
     pieces=[];digests={}
     for cid,c in careers.items():
-        try:piece=_dumps(c)
-        except ValueError:
-            validate_career(c,cid);raise  # NaN/Infinity: the same GameError as a full validation
-        d=_digest(piece)
+        if fast:
+            out=fj.dumps_raw(c)
+            d=hashlib.blake2b(out,digest_size=10).hexdigest()  # = _digest(the career's text)
+            if known is None or known.get(cid)!=d:
+                try:exact=fj.canonical(out,c)
+                except ValueError:
+                    validate_career(c,cid);raise  # NaN/Infinity
+                if exact is not out:out,d=exact,hashlib.blake2b(exact,digest_size=10).hexdigest()
+            piece=out.decode()
+        else:
+            try:piece=_dumps(c)
+            except ValueError:
+                validate_career(c,cid);raise  # NaN/Infinity: the same GameError as a full validation
+            d=_digest(piece)
         if known is not None and known.get(cid)!=d:validate_career(c,cid)
         pieces.append(_dumps(cid)+":"+piece);digests[cid]=d
     if known is not None or full:raw["check"]=dict(build=BUILD,careers=digests)
@@ -401,7 +419,7 @@ class Store:
             state=new_state()
             if self.story:enable_story(state,int(hashlib.sha256(("seed:"+sid).encode()).hexdigest()[:8],16)%2**31)
             return state
-        return json.loads(text)
+        return fj.loads(text)
 
     def session(self,token:str|None=None)->tuple[str,str,bool]:
         if token and isinstance(token,str) and len(token)==64:
@@ -418,7 +436,7 @@ class Store:
         # LAZY_SAVES=1: the save itself is created at the first command (FRESH), so a visit
         # that never plays costs ~200 bytes, not ~90 KB.
         lazy=os.environ.get("LAZY_SAVES","0").strip().lower() in ("1","true","yes","on")
-        text=FRESH if lazy else json.dumps(self.parse_state(FRESH,sid),ensure_ascii=False)
+        text=FRESH if lazy else fj.dumps(self.parse_state(FRESH,sid))
         with self.connect() as db:
             db.execute("INSERT INTO sessions(sid,csrf,state) VALUES(?,?,?)",(sid,csrf,text))
         return token,csrf,True
@@ -484,7 +502,7 @@ class Store:
             except GameError:
                 if self._moved(sid,request_id,row["revision"]):continue  # judged on a save that has moved on: look again
                 raise
-            receipt=json.dumps(result,ensure_ascii=False)
+            receipt=fj.dumps(result)
             # 3. Short compare-and-set under the write lock.
             t2=time.perf_counter()
             if self._store(sid,row["revision"],serialized,request_id,fingerprint,receipt,cut,board):
@@ -497,7 +515,7 @@ class Store:
 
     def _replay(self,sid:str,row,fingerprint:str)->dict:
         if row["rhash"]!=fingerprint:raise Conflict("Mã thao tác đã dùng cho nội dung khác.","idempotency_conflict")
-        return dict(state=public_state(self.parse_state(row["state"],sid)),revision=row["revision"],result=json.loads(row["rresult"]),replayed=True)
+        return dict(state=public_state(self.parse_state(row["state"],sid)),revision=row["revision"],result=fj.loads(row["rresult"]),replayed=True)
 
     def _compute(self,sid:str,text:str,career,action:str,payload:dict,internal:bool,revision:int)->tuple[dict,dict,str,list,tuple]:
         """(new save, result, its text, archive rows, board): what the command cut off from the
@@ -627,7 +645,7 @@ class Store:
             db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?",(serialized,revision,sid))
             _write_archive(db,sid,cut)
             if board[1]:lb.write(db,sid,board[0])
-            db.execute("INSERT INTO receipts(sid,request_id,request_hash,result) VALUES(?,?,?,?)",(sid,request_id,fingerprint,json.dumps(result,ensure_ascii=False)))
+            db.execute("INSERT INTO receipts(sid,request_id,request_hash,result) VALUES(?,?,?,?)",(sid,request_id,fingerprint,fj.dumps(result)))
             db.commit()
             lb.remember(sid,revision,board[0])
             return dict(state=public_state(raw,migrated=True),revision=revision,result=result,replayed=False)
@@ -733,7 +751,7 @@ class Store:
             doomed=[]
             for r in rows:
                 try:
-                    if r["state"]==FRESH or not has_progress(json.loads(r["state"])):doomed.append(r["sid"])
+                    if r["state"]==FRESH or not has_progress(fj.loads(r["state"])):doomed.append(r["sid"])
                 except (ValueError,TypeError,AttributeError):
                     continue  # unreadable: leave it for a human
             if doomed:
@@ -753,7 +771,7 @@ class Store:
         """Every archived row of this save, for the backup download (see /api/save/export)."""
         sid=self.key(token)
         with self.connect() as db:
-            return [dict(career=r["career"],kind=r["kind"],seq=r["seq"],day=r["day"],row=json.loads(r["row"]))
+            return [dict(career=r["career"],kind=r["kind"],seq=r["seq"],day=r["day"],row=fj.loads(r["row"]))
                     for r in db.execute("SELECT career,kind,seq,day,row FROM archive WHERE sid=? ORDER BY career,kind,seq",(sid,))]
 
     def archive_page(self,token:str,career:str,kind:str,before:int|None=None,skip:int=0,limit:int=50)->dict:
@@ -772,7 +790,7 @@ class Store:
             total=stored+len(live)
             end=min(total,max(0,before)) if before is not None else max(0,total-skip)
             start=max(0,end-limit)
-            rows=[dict(pos=r["seq"],day=r["day"],row=json.loads(r["row"])) for r in
+            rows=[dict(pos=r["seq"],day=r["day"],row=fj.loads(r["row"])) for r in
                   db.execute("SELECT seq,day,row FROM archive WHERE sid=? AND career=? AND kind=? AND seq>=? AND seq<? ORDER BY seq",(sid,career,kind,start,min(end,stored)))]
         for pos in range(max(start,stored),end):
             row=live[pos-stored];day=row.get("day") if isinstance(row,dict) else None

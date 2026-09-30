@@ -71,7 +71,7 @@ For a few seconds both releases serve the same PostgreSQL database:
   the worst case is one web push sent twice.
 * **PostgreSQL connections**: canonical unit 4 workers × `PG_POOL_MAX` 12 = 48, bridge 4 × 6 = 24. The
   theoretical sum of 72 is above `max_connections = 60`. In practice the server being drained holds
-  only idle connections (≤ 6 per worker), and real load uses 19–24 connections in total (see PG_E2E).
+  only idle connections (≤ 6 per worker once unused for `PG_POOL_IDLE_MS`, 10 s), and real load uses 19–24 connections in total (see PG_E2E).
   A request that finds its pool full waits up to `PG_POOL_WAIT_MS` (10 s) rather than failing. For a
   hard guarantee, run with `BRIDGE_PG_POOL_MAX=3`.
 * **Memory**: for a few seconds 2 × 4 workers run. Each is ~70–200 MB at normal load, far from the 3 GB

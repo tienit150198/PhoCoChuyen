@@ -9,6 +9,7 @@ Runtime state is never served as files; secrets stay in the server environment.
 from __future__ import annotations
 import argparse
 from collections import defaultdict,deque
+import gc
 import gzip
 import hashlib
 import json
@@ -57,10 +58,15 @@ from game.content import public_content,CAREERS
 from game.engine import GameError,public_state
 from game.storage import Store,Conflict
 from game import db as dbm
+from game import fastjson as fj
 from game.dialogue import public_config,rephrase
 from game.webassets import WebAssets,IMMUTABLE,content_hash
 
 MAX_BODY=16*1024*1024
+# gzip level of API responses (/api/command answers ~150 KB of JSON): 4 costs ~2/3 of the CPU of 5
+# for ~5% more bytes; the CPU is what runs out first under load. Static files are compressed once (6).
+try:API_GZIP_LEVEL=max(1,min(9,int(os.environ.get("API_GZIP_LEVEL") or 4)))
+except ValueError:API_GZIP_LEVEL=4
 COOKIE="mnl_session"
 CSP=("default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; "
      "connect-src 'self'; font-src 'self'; media-src 'self' blob:; worker-src 'self'; manifest-src 'self'; "
@@ -248,7 +254,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def respond(self,status:int,data:bytes,ctype:str,extra:dict|None=None,compress:bool=False,cache:str|None=None,csp:str=CSP):
         if compress and len(data)>1400 and "gzip" in self.headers.get("Accept-Encoding",""):
-            data=gzip.compress(data,5);extra=dict(extra or {},**{"Content-Encoding":"gzip"})
+            data=gzip.compress(data,API_GZIP_LEVEL);extra=dict(extra or {},**{"Content-Encoding":"gzip"})
         self.send_response(status)
         self.send_header("Content-Type",ctype)
         self.send_header("Content-Length",str(len(data)))
@@ -269,11 +275,12 @@ class Handler(BaseHTTPRequestHandler):
             except (BrokenPipeError,ConnectionResetError):pass
 
     def json(self,status:int,data:dict,extra:dict|None=None,raw:dict|None=None):
-        """`raw`: extra top-level members whose values are already JSON text."""
+        """`raw`: extra top-level members whose values are already JSON (bytes or text).
+        The body is compact UTF-8 JSON (game/fastjson.py: orjson when installed)."""
         if isinstance(data,dict):data=dict(data,server_time=round(time.time(),3))
-        body=json.dumps(data,ensure_ascii=False,allow_nan=False)
-        if raw:body=body[:-1]+"".join(f",{json.dumps(k)}:{v}" for k,v in raw.items())+"}"
-        self.respond(status,body.encode(),"application/json; charset=utf-8",extra,compress=True)
+        body=fj.dumps_body(data)
+        if raw:body=body[:-1]+b"".join(b","+json.dumps(k).encode()+b":"+(v if isinstance(v,bytes) else v.encode()) for k,v in raw.items())+b"}"
+        self.respond(status,body,"application/json; charset=utf-8",extra,compress=True)
 
     def error(self,status:int,message:str,code:str="error"):
         self.json(status,dict(error=message,code=code))
@@ -445,7 +452,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(200,dict(state=public_state(state),revision=revision,csrf=csrf,ai=dict(public_config(),configured=ai.available(),chat=True),
                                    social=social.bootstrap(self.server.store,token,state),push=push.public_config(),account=accounts.status(self.server.store,token),
                                    admin=pfb.is_admin(self.server.store,token),content_version=version,content_url=f"/api/content?v={version}",
-                                   game_version=self.server.game_version()),extra,raw=None if lite else dict(content=self.server.content_json()));return
+                                   game_version=self.server.game_version()),extra,raw=None if lite else dict(content=self.server.content_blob()[0]));return
             if route=="/api/state":
                 _,state,revision,_=self.require_session();self.json(200,dict(state=public_state(state),revision=revision));return
             if route=="/api/save/export":
@@ -1046,6 +1053,17 @@ def _housekeeping(store:Store,stop:threading.Event,limits:SharedLimits|None):
         step("push",lambda:push.deliver_due(store))
 
 
+def tune_gc()->None:
+    """Garbage collector for a server that parses ~0.4 MB saves (~100k objects each, no cycles:
+    reference counting frees them). Python's default gen-0 threshold (700) runs ~5 young and some
+    old collections per command, each walking the save again; GC_THRESHOLD (default 50000,20,20;
+    700,10,10 is Python's own) makes them rare. gc.freeze() then keeps the start-up objects out of
+    every later collection, and out of the worker processes' copy-on-write pages."""
+    try:gc.set_threshold(*[int(x) for x in os.environ.get("GC_THRESHOLD","50000,20,20").split(",")][:3])
+    except (TypeError,ValueError):pass
+    gc.collect();gc.freeze()
+
+
 def limits_path(db_path:str)->str:
     """The shared rate-limit database lives next to the game database (GAME_DB/--db),
     i.e. in the writable data directory, never beside the code."""
@@ -1131,6 +1149,7 @@ def main():
     except OSError as e:print(f"  Không ghi được bản tĩnh theo mã băm vào {cas} ({type(e).__name__}); các URL ?v= sẽ về no-cache.",flush=True)
     else:
         if written:print(f"  Bản tĩnh theo mã băm: {written} tệp mới trong {cas}",flush=True)
+    tune_gc()
     # WORKERS=n (n>1, POSIX only): n processes share the port; see serve_workers().
     workers=max(1,int(os.environ.get("WORKERS","1") or 1)) if hasattr(os,"fork") else 1
     url=f"http://127.0.0.1:{server.server_port}"

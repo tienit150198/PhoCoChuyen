@@ -21,8 +21,13 @@ on its own and leaves nothing open: rows are fetched completely by execute(), th
 never a server-side cursor. A connection goes back to the pool only when libpq reports
 it idle (no transaction, nothing in progress); otherwise it is rolled back or closed.
 
-Pool (per Store, per process): PG_POOL idle connections are kept (default 6), at most
-PG_POOL_MAX are open at once (default 12; a thread waits up to PG_POOL_WAIT_MS for one).
+Pool (per Store, per process): at most PG_POOL_MAX connections are open at once (default 12;
+a thread waits up to PG_POOL_WAIT_MS for one). A connection handed back is kept for the next
+request: PG_POOL of them (default 6) indefinitely, the others until they have been idle for
+PG_POOL_IDLE_MS (default 10000), when a reaper thread closes them. (Closing everything above
+PG_POOL at once, as before 0.9.5, made every burst above 6 requests open and close backends:
+a fork plus authentication on the database server each time.) Every PG_POOL_LOG_S (60) a
+process that opened connections or waited for one logs `[pg-pool]` counts to stderr.
 Connections are opened lazily in the process that uses them: never shared across fork()
 (server.py closes the pool before forking workers). Per connection:
 statement_timeout=PG_STATEMENT_TIMEOUT_MS (10 s), lock_timeout=PG_LOCK_TIMEOUT_MS (5 s),
@@ -45,8 +50,10 @@ import os
 import re
 import secrets
 import sqlite3
+import sys
 import threading
 import time
+import weakref
 
 try:
     import psycopg
@@ -426,6 +433,9 @@ class PgPool:
         self.schema = schema
         self.keep = max(0, _env_int('PG_POOL', 6))
         self.cap = max(1, _env_int('PG_POOL_MAX', 12), self.keep)
+        # connections above `keep` are closed after this long unused (by the reaper, see _reap_loop)
+        self.idle_max = max(0, _env_int('PG_POOL_IDLE_MS', 10000)) / 1000
+        self.log_every = max(0, _env_int('PG_POOL_LOG_S', 60))
         self.wait = max(0.1, _env_int('PG_POOL_WAIT_MS', 10000) / 1000)
         # an idle connection older than this is pinged before use (a PostgreSQL restart kills them all)
         self.check = max(0, _env_int('PG_POOL_CHECK_MS', 5000)) / 1000
@@ -437,17 +447,24 @@ class PgPool:
             self.settings['synchronous_commit'] = sync
         if schema:
             self.settings['search_path'] = schema
-        self.idle: list = []
+        self.idle: list = []   # (connection, monotonic time it came back), oldest first
         self.open = 0
         self.cond = threading.Condition()
         self.pid = os.getpid()
+        self.counts = dict(opened=0, closed=0, checkouts=0, waits=0, timeouts=0)  # since start
+        self._logged = dict(self.counts)
+        self._log_at = time.monotonic() + self.log_every
+        self._reaped = False  # this process's reaper knows the pool
 
     def _fork_check(self) -> None:
         if self.pid != os.getpid():  # forked: the parent's connections are not ours
             _ORPHANS.extend(raw for raw, _ in self.idle)
             self.idle, self.open, self.pid = [], 0, os.getpid()
+            self.counts = dict.fromkeys(self.counts, 0)
+            self._logged, self._reaped = dict(self.counts), False
 
     def _open(self):
+        self.counts['opened'] += 1  # (an int += under the GIL; a lost update would only blur a log line)
         raw = psycopg.connect(self.url, autocommit=True, row_factory=_row_factory,
                               application_name=os.environ.get('PG_APPLICATION_NAME', 'mot-ngay-lam-nghe'))
         try:
@@ -466,18 +483,28 @@ class PgPool:
             raw = None
             with self.cond:
                 self._fork_check()
+                if not self._reaped:
+                    self._reaped = True
+                    _reap(self)
+                self.counts['checkouts'] += 1
+                waited = False
                 while True:
                     while self.idle:
                         raw, since = self.idle.pop()
                         if raw.closed or getattr(raw, 'broken', False):
                             self.open -= 1
+                            self.counts['closed'] += 1
                             raw = None
                             continue
                         break
                     if raw is not None or self.open < self.cap:
                         break
                     left = deadline - time.monotonic()
+                    if not waited:
+                        waited = True
+                        self.counts['waits'] += 1
                     if left <= 0:
+                        self.counts['timeouts'] += 1
                         raise PoolTimeout(f'no database connection free after {self.wait:.0f} s (PG_POOL_MAX={self.cap})')
                     self.cond.wait(left)
                 if raw is None:
@@ -515,11 +542,12 @@ class PgPool:
             _ORPHANS.append(raw)
             return
         with self.cond:
-            if keep and len(self.idle) < self.keep:
+            if keep and len(self.idle) < self.cap:  # kept for the next request (see reap)
                 self.idle.append((raw, time.monotonic()))
                 self.cond.notify()
                 return
             self.open -= 1
+            self.counts['closed'] += 1
             self.cond.notify()
         try:
             raw.close()
@@ -530,7 +558,43 @@ class PgPool:
         """A checked-out connection is gone (closed by the caller): free its slot."""
         with self.cond:
             self.open -= 1
+            self.counts['closed'] += 1
             self.cond.notify()
+
+    def reap(self, now: float | None = None) -> int:
+        """Close the idle connections above `keep` that nobody used for idle_max seconds (the
+        least recently used first); log the counters when due. The number closed."""
+        now = time.monotonic() if now is None else now
+        gone = []
+        with self.cond:
+            if self.pid != os.getpid():
+                return 0
+            while len(self.idle) > self.keep and now - self.idle[0][1] >= self.idle_max:
+                gone.append(self.idle.pop(0)[0])
+            self.open -= len(gone)
+            self.counts['closed'] += len(gone)
+            line = self._log_line(now)
+        for raw in gone:
+            try:
+                raw.close()
+            except Exception:  # noqa: BLE001
+                pass
+        if line:
+            sys.stderr.write(line)
+        return len(gone)
+
+    def _log_line(self, now: float) -> str:
+        """`[pg-pool]` counts of the last PG_POOL_LOG_S seconds, when a connection was opened or a
+        request waited for one (connection churn and pool exhaustion); '' otherwise."""
+        if not self.log_every or now < self._log_at:
+            return ''
+        d = {k: v - self._logged.get(k, 0) for k, v in self.counts.items()}
+        self._logged, self._log_at = dict(self.counts), now + self.log_every
+        if not (d['opened'] or d['waits']):
+            return ''
+        return (f"[pg-pool] pid={os.getpid()} last {self.log_every}s: opened {d['opened']}, closed {d['closed']}, "
+                f"checkouts {d['checkouts']}, waited {d['waits']}, timed out {d['timeouts']}; "
+                f"open {self.open}/{self.cap}, idle {len(self.idle)}, keep {self.keep}\n")
 
     def clear(self) -> None:
         """Close idle connections (before fork(), and in tests)."""
@@ -540,6 +604,7 @@ class PgPool:
                 return
             idle, self.idle = self.idle, []
             self.open -= len(idle)
+            self.counts['closed'] += len(idle)
             self.cond.notify_all()
         for raw, _ in idle:
             try:
@@ -549,7 +614,41 @@ class PgPool:
 
     def stats(self) -> dict:
         with self.cond:
-            return dict(open=self.open, idle=len(self.idle), cap=self.cap, keep=self.keep)
+            return dict(open=self.open, idle=len(self.idle), cap=self.cap, keep=self.keep, **self.counts)
+
+
+# ---------------------------------------------------------------- the reaper (one thread per process)
+_REAP_POOLS: weakref.WeakSet = weakref.WeakSet()
+_REAP_LOCK = threading.Lock()
+_REAP_PID = [0]
+
+
+def _reap(pool: PgPool) -> None:
+    """Have this process's reaper thread look after `pool` (started on first use, after fork)."""
+    with _REAP_LOCK:
+        if _REAP_PID[0] != os.getpid():  # none yet in this process (threads do not survive fork)
+            _REAP_POOLS.clear()
+            _REAP_PID[0] = os.getpid()
+            threading.Thread(target=_reap_loop, daemon=True, name='pg-pool-reaper').start()
+        _REAP_POOLS.add(pool)
+
+
+def _reap_loop() -> None:
+    pid = os.getpid()
+    while _REAP_PID[0] == pid:
+        with _REAP_LOCK:
+            pools = list(_REAP_POOLS)
+        every = min([max(0.5, min(p.idle_max / 2, 5.0)) for p in pools] or [5.0])
+        del pools
+        time.sleep(every)
+        with _REAP_LOCK:
+            pools = list(_REAP_POOLS)
+        for p in pools:
+            try:
+                p.reap()
+            except Exception:  # noqa: BLE001 - the reaper never dies
+                pass
+        del pools
 
 
 # ---------------------------------------------------------------- pools per database path
