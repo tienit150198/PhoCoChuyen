@@ -1185,8 +1185,8 @@ def _finite(obj) -> None:
             if type(value) not in _LEAVES:_finite(value)
 
 # Display-only fields added to generated tasks in a later release. A task made before that release
-# lacks them, and must still match its regenerated original (0.9.6 added "ask" to clothing lines).
-LATE_TASK_KEYS=frozenset({"ask"})
+# lacks them, and must still match its regenerated original (0.9.6 added "ask" and "told" to clothing lines).
+LATE_TASK_KEYS=frozenset({"ask","told"})
 
 def _without_late_keys(original,stored):
     """`original` minus the LATE_TASK_KEYS that `stored` does not have, at every level."""
