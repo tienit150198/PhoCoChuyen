@@ -17,6 +17,7 @@ export const KIND_OF={
   clothing:'boutique',
   pet_shop:'petshop',
   fruit:'lane',garbage:'lane',drain:'lane',
+  pilot:'airfield',flight_attendant:'airfield',
 };
 export const kindOf=career=>KIND_OF[career]||'shop';
 
@@ -28,6 +29,10 @@ const BASE={
   idle_line:'Khách sắp ghé rồi.',open_hint:'Chuẩn bị một chút rồi mở cửa nhé.',free_eyebrow:'Quầy đang rảnh',free_title:'Hết khách rồi!',
   free_more:'Đón thêm khách hoặc khép ca hôm nay.',more_btn:'Đón thêm một khách',none_waiting:'Chưa có khách nào đang chờ',next_btn:'Đón khách tiếp theo',
   people_sub:'Những người bạn gặp quanh tiệm.',feed_sub:'Lời nhắn và đánh giá quanh tiệm.',
+  // Confirm dialogs (app.js): the title of a confirmed step, and closing the day.
+  confirm_title:'Xác nhận việc của tiệm',end_title:'Khép ca hôm nay?',end_text:'Lương, điện nước và tiền thuê ghi vào sổ tiệm để bạn trả sau.',
+  // Menus (app.js): the phone menu's group title for the scene's places, the "Thêm" button, the queue button.
+  rail_in:'Trong tiệm',more_aria:'Thêm: sổ tiệm, sổ tay, khu phố',queue_btn:'Xem sổ việc',books:'Sổ tiệm',
 };
 const KIND_WORDS={
   shop:{},
@@ -66,6 +71,13 @@ const KIND_WORDS={
     people_sub:'Những người bạn gặp quanh gốc bàng.',feed_sub:'Lời nhắn và đánh giá quanh quán trà.'},
   lane:{cat_line:'Mrrr… ngoài phố nhiều chuyện hay ghê.',board:'Chuyện phố',security:'Trật tự khu phố',property:'Góc phố',
     open_sign:'ĐANG LÀM',closed_sign:'NGHỈ TAY',idle_line:'Việc mới sắp tới.',free_eyebrow:'Đang rảnh tay',free_title:'Hết việc rồi!'},
+  airfield:{cat_line:'Mrrr… Mướp nằm trên nóc xe hành lý, ngắm máy bay cất cánh.',till:'Quỹ lương',door_open:'Tan ca bay',door_closed:'Vào ca bay',
+    open_sign:'ĐANG BAY',closed_sign:'HẸN CHUYẾN SAU',shelf:'Bảng thời tiết',evidence:'Bản tin & phiếu dầu',counter:'Quầy điều phái',warehouse:'Xe dầu',
+    finance:'Sổ lương',property:'Sân đỗ Cánh Cò',security:'An ninh sân bay',ledger:'SỔ GIỜ BAY',store:'SÂN ĐỖ',
+    idle_line:'Chặng bay tiếp theo sắp tới giờ.',open_hint:'Báo danh ở phòng điều phái rồi bay nhé.',free_eyebrow:'Tổ bay nghỉ giữa chặng',free_title:'Hết chặng rồi!',
+    free_more:'Nhận thêm một chặng hoặc tan ca hôm nay.',more_btn:'Nhận thêm một chặng',none_waiting:'Chưa có chặng nào đang chờ',next_btn:'Chặng tiếp theo',
+    people_sub:'Những người bạn gặp ở sân bay.',feed_sub:'Lời nhắn và nhận xét quanh sân bay.',
+    confirm_title:'Xác nhận trước khi làm',rail_in:'Ở sân bay',more_aria:'Thêm: sổ bay, khu phố',queue_btn:'Bảng giờ bay',books:'Sổ lương',end_title:'Tan ca bay hôm nay?',end_text:'Lương ngày vào quỹ lương. Việc chưa xong được giữ lại cho mai.'},
 };
 const CAREER_WORDS={
   milk_tea:{warehouse:'Kho nguyên liệu'},
@@ -93,6 +105,10 @@ const CAREER_WORDS={
     idle_line:'Điện thoại sắp reo.',open_hint:'Đọc sổ hẹn, xếp đồ nghề rồi đi nhé.',free_eyebrow:'Chưa có ai gọi',free_title:'Hết việc rồi!',
     free_more:'Nhận thêm việc hoặc nghỉ tay hôm nay.',more_btn:'Nhận thêm một việc',none_waiting:'Chưa có việc nào đang chờ',next_btn:'Sang việc tiếp theo',
     people_sub:'Những người bạn gặp khi đi thông cống.',feed_sub:'Lời nhắn và đánh giá của khách.'},
+  flight_attendant:{shelf:'Xe đẩy suất ăn',evidence:'Phiếu suất ăn đặc biệt',counter:'Cửa ra tàu',warehouse:'Bếp tàu',ledger:'SỔ TIẾP VIÊN',store:'BẾP TÀU',
+    open_sign:'ĐANG ĐÓN KHÁCH',idle_line:'Khách chuyến sau đang xếp hàng ở cổng.',open_hint:'Thắt khăn quàng, ra cửa tàu đón khách nhé.',
+    free_eyebrow:'Khoang khách đang yên',free_title:'Xong việc rồi!',free_more:'Nhận thêm một việc hoặc tan ca hôm nay.',more_btn:'Nhận thêm một việc',
+    none_waiting:'Chưa có việc nào đang chờ',next_btn:'Việc tiếp theo',people_sub:'Những người bạn gặp trên khoang khách.',feed_sub:'Lời nhắn và nhận xét của hành khách.'},
 };
 export const wordsFor=career=>({...BASE,...KIND_WORDS[kindOf(career)],...CAREER_WORDS[career]});
 

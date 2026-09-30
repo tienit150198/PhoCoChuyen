@@ -46,7 +46,7 @@ CH_UNLOCKS = {
     1: ('milk_tea', 'grocery', 'delivery', 'cafe_bakery', 'florist', 'mother_baby', 'restaurant'),
     2: ('pet_care', 'salon', 'repair', 'farm', 'homestay'),
     3: ('clothing', 'pet_shop', 'tra_da', 'fruit', 'garbage', 'drain'),
-    4: ('customer_care', 'pharmacy', 'tour_guide', 'teacher', 'accounting'),
+    4: ('customer_care', 'pharmacy', 'tour_guide', 'teacher', 'accounting', 'pilot', 'flight_attendant'),
     5: ('corp_accounting', 'tax_payroll'),
     6: ('group_accounting',),
 }
@@ -106,7 +106,8 @@ CHAPTERS = [
          tagline='Có những việc người ta chỉ giao cho người mình tin.',
          intro=[_line('co_lua', 'Mấy chỗ này cần người cẩn thận, nói năng rõ ràng. Cô tin cháu làm được.'),
                 _line('anh_khoa', 'Lớp học Mầm Nắng đang tuyển người. Phải nộp hồ sơ, phỏng vấn đàng hoàng đó.'),
-                _line('anh_khoa', 'Mà hồ sơ giờ ghi được một dòng rất thật: có kinh nghiệm ở một nghề khác trong phố.')],
+                _line('anh_khoa', 'Mà hồ sơ giờ ghi được một dòng rất thật: có kinh nghiệm ở một nghề khác trong phố.'),
+                _line('chu_tu', 'Thằng Mẫn nhà bên làm thợ máy ở sân bay. Nó bảo Hãng bay Cánh Cò đang tuyển cơ phó với tiếp viên đó.')],
          outro=[_line('co_lua', 'Giờ đi đâu trong phố cũng có người gửi lời chào cháu.'),
                 _line('anh_khoa', 'Công ty mình với bên dịch vụ thuế đang tuyển. Kinh nghiệm ở phố ghi vào CV được hết, thử không?')],
          goals=[dict(id='places', goal=5, text='Làm việc ở 5 nơi khác nhau'),

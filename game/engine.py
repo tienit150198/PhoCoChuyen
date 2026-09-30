@@ -605,7 +605,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         dk.on_start(s,c,career)
         log(s,c,"day","Mở ca ngày "+str(c["day"])+".")
         care_notes+=care_start(s,c,career)
-        result["message"]="Đã mở cửa. Khách đang tới, mình bắt đầu từ một người nhé."
+        # A career may word its own opening (SPEC['open_line']: the air crew report for duty, no shop door).
+        result["message"]=(mod.SPEC.get("open_line") if mod else None) or "Đã mở cửa. Khách đang tới, mình bắt đầu từ một người nhé."
     elif action=="end_day":
         need(c["open"],"Ca chưa mở.")
         need(not c["event"] or c["event"]["stage"]=="resolved" or p.get("carry_event"),"Bạn còn một chuyện đang xử lý. Có thể tiếp tục hoặc chọn mang sang ngày sau.")
@@ -648,7 +649,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         if career=="milk_tea":life.setup_task(s,c,t)
         if mod and hasattr(mod,'on_task'):mod.on_task(s,c,t)
         if career=="customer_care":_cs_task_hook(c,t)
-        result["message"]="Có thêm một vị khách ghé tới."
+        result["message"]=(mod.SPEC.get("more_line") if mod else None) or "Có thêm một vị khách ghé tới."
     elif action=="task_select":
         t=current_task(c,p.get("task"));c["active_task"]=t["id"];t["deferred"]=False
         result["message"]="Đang xem: "+t["title"]
