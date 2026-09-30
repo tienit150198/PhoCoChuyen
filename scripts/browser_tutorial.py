@@ -247,8 +247,9 @@ async def main_run(base, shots: Path | None):
             for cid in CAREERS:
                 await r.click(f'#tutGuide [data-tut-career="{cid}"]')
                 await r.shot(f'guide-{cid}')
-                broken = await page.evaluate("[...document.querySelectorAll('#tutGuide img')].filter(i=>i.complete&&!i.naturalWidth).map(i=>i.src)")
-                for _ in range(10):
+                # The pictures load lazily (only near the viewport): load them all now, then look for missing files.
+                await page.evaluate("document.querySelectorAll('#tutGuide img[loading=\"lazy\"]').forEach(i=>{i.loading='eager';})")
+                for _ in range(25):
                     if await page.evaluate("[...document.querySelectorAll('#tutGuide img')].every(i=>i.complete)"):
                         break
                     await r.wait(200)
@@ -343,7 +344,14 @@ async def main_run(base, shots: Path | None):
               await cmd('jr_profile',{name:'Lan',gender:'female'},'milk_tea');await cmd('select_career',{},'grocery');await cmd('start_day',{},'grocery');}""")
             await page.goto(base)
             await page.wait_for_selector('#app:not([hidden])')
-            await r.wait(2600)
+            # "Có gì mới" (v4/whatsnew.js) comes first for an existing player; the note waits until no dialog is open.
+            for _ in range(30):
+                if await page.query_selector('#wnDialog[open]'):
+                    await r.wait(500)
+                    await page.evaluate("document.querySelector('#wnDialog [data-wn=\"close\"]')?.click()")
+                if await page.query_selector('.tut-note:not([hidden])'):
+                    break
+                await r.wait(300)
             if await page.query_selector('#tutWelcome[open]'):
                 r.problem('existing player got the brand-new welcome')
             if not await page.query_selector('.tut-note:not([hidden])'):
@@ -356,7 +364,10 @@ async def main_run(base, shots: Path | None):
             await r.shot('announce-guide')
             await page.reload()
             await page.wait_for_selector('#app:not([hidden])')
-            await r.wait(2600)
+            await r.wait(1200)
+            if await page.query_selector('#wnDialog[open]'):
+                r.problem('"Có gì mới" came back after it was closed')
+            await r.wait(1400)
             if await page.query_selector('.tut-note'):
                 r.problem('announcement came back after it was used')
             f = await r.flags()

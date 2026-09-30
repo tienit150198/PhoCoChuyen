@@ -428,6 +428,7 @@ class SplitTests(Seeded):
             job.pass_saves()
         self.assertEqual((job.out['saves']['sample']['size'], job.out['saves']['sample']['skipped']), (3, 1))
 
+    @patch.object(st, '_load', lambda: 0.0)   # a busy dev machine must not hold the background pass back
     def test_one_job_per_database_and_it_serves_the_sections(self):
         self.seed(3)
         lock = st._paths(self.store)['lock']
@@ -667,6 +668,7 @@ class StatsHTTPTests(unittest.TestCase):
         with patch.dict(os.environ, {'ADMIN_USERS': ''}):
             self.assertEqual(self.req(admin, '/api/admin/stats?range=30')[0], 403)
 
+    @patch.object(st, '_load', lambda: 0.0)   # a busy dev machine must not hold the background pass back
     def test_summary_and_sections_admin_only(self):
         anon, player = self.device(), self.signed('regular_jane')
         paths = ('/api/admin/stats/summary?range=7', '/api/admin/stats/section?name=saves', '/api/admin/stats/section?name=system')
