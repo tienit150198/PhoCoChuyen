@@ -39,8 +39,11 @@ class ScopedValidationTests(unittest.TestCase):
             return db.execute('SELECT state FROM sessions WHERE sid=?', (self.sid,)).fetchone()[0]
 
     def put(self, state):
+        # A hand edit that keeps the revision: every real writer bumps it, which is what tells the
+        # parsed-save cache (game/savecache.py) that its copy is stale. Here the cache is dropped.
         with self.store.connect() as db:
             db.execute('UPDATE sessions SET state=? WHERE sid=?', (json.dumps(state, ensure_ascii=False), self.sid))
+        self.store.saves.clear()
 
     def test_first_command_stamps_the_save_and_the_view_hides_the_stamp(self):
         self.assertFalse(stamped(json.loads(self.stored())))

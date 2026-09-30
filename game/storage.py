@@ -41,6 +41,7 @@ from . import marriage as mr
 from .content import CAREERS
 from . import db as dbm
 from . import pg_schema
+from .savecache import SaveCache,same as _same_json
 
 SCHEMA=4
 SAVE_FORMATS=("mot-ngay-lam-nghe/save-v1","mot-ngay-lam-nghe/save-v2","mot-ngay-lam-nghe/save-v3","mot-ngay-lam-nghe/save-v4")
@@ -100,12 +101,12 @@ def _slow_log(line:str)->None:
     b[1]+=1;dropped=b[2];b[2]=0
     sys.stderr.write(line+(f" (+{dropped} slow lines dropped)" if dropped else "")+"\n")
 
-def _slow(action,career,size,t0,t1,t2,t3,t4)->None:
+def _slow(action,career,size,t0,t1,t2,t3,t4,cache:str="")->None:
     """Log the phases of a slow command (read, compute, store, public view), for tuning."""
     total=(t4-t0)*1000
     if total<SLOW_MS:return
     ms=lambda a,b:round((b-a)*1000)
-    _slow_log(f"[slow-cmd] {total:.0f}ms {action} {career} save={size//1024}KB read={ms(t0,t1)} compute={ms(t1,t2)} store={ms(t2,t3)} view={ms(t3,t4)} pid={os.getpid()}")
+    _slow_log(f"[slow-cmd] {total:.0f}ms {action} {career} save={size//1024}KB read={ms(t0,t1)} compute={ms(t1,t2)} store={ms(t2,t3)} view={ms(t3,t4)}{cache} pid={os.getpid()}")
 
 def _write_archive(db,sid:str,rows:list)->None:
     """Append rows to each (career, kind) history of this save, inside the caller's transaction."""
@@ -192,6 +193,10 @@ def serialize(raw:dict,known:dict|None=None,full:bool=False)->str:
     return b"".join(out).decode()
 
 _ORPHANS:list=[]  # connections inherited across fork(): never used, never closed in the child
+# Actions that leave one object at two places of the acting career (found by running the whole test
+# suite with every returned save checked, see tests/test_save_cache.py): the cached copy of the
+# save gets a fresh copy of that career (game/savecache.py).
+_DEALIAS=frozenset(("end_day",))
 
 class _Pool:
     """Idle connections of one Store. A connection is used by one thread at a time."""
@@ -256,6 +261,9 @@ class Store:
         # be shared, and flock would not tell the workers apart).
         self._wlock=threading.RLock();self._depth=0;self._lockfd=None;self._lockpid=None
         self.pg=dbm.pool_for(self.path)  # PostgreSQL (DATABASE_URL), else None: SQLite
+        # Parsed saves between commands of this process (game/savecache.py): SAVE_CACHE_MB=0 turns it
+        # off. SQLite has no row version to catch an edit that keeps the revision: off there by default.
+        self.saves=SaveCache(None if self.pg or (os.environ.get("SAVE_CACHE_MB") or "").strip() else 0);self._held=threading.local()
         self.backend="pg" if self.pg else "sqlite"
         if self.pg:
             db=self.pg.connect()
@@ -495,42 +503,104 @@ class Store:
             state,revision=self.parse_state(row["state"],sid),row["revision"]
         return state,revision,csrf
 
-    def command(self,token:str,request_id:str,expected:int|None,career:str|None,action:str,payload:dict,internal:bool=False)->dict:
+    def command(self,token:str,request_id:str,expected:int|None,career:str|None,action:str,payload:dict,internal:bool=False,hold:bool=False)->dict:
         """Apply one action atomically. `internal` commands come from the server
         itself (AI reviewer answers); they skip the revision guard because the
-        reducer checks their own preconditions."""
+        reducer checks their own preconditions. `hold`: the caller encodes the
+        returned view, then calls release() (see _keep)."""
         if not isinstance(request_id,str) or not 8<=len(request_id)<=100 or "\x00" in request_id:raise GameError("Mã thao tác không hợp lệ.")
         if not (internal and expected is None) and type(expected) is not int:raise GameError("Thiếu phiên bản tiến trình.")
         if not isinstance(action,str) or not isinstance(payload,dict):raise GameError("Thao tác không hợp lệ.")
         fingerprint=hashlib.sha256(json.dumps([career,action,payload],sort_keys=True,ensure_ascii=False).encode()).hexdigest()
         h=self.digest(token)
+        self._held.save=None  # a hold that was never released: its view may still be in use, drop it
         t0=time.perf_counter()
         for _ in range(OPTIMISTIC_TRIES):
             # 1. A consistent snapshot of the save and of this request's receipt, without any lock.
+            #    With this save's dict in the cache (game/savecache.py) at the stored revision, the
+            #    text is neither fetched nor parsed.
             with self.connect() as db:
                 sid,_=self._resolve(db,h)
-                row=db.execute("SELECT s.revision AS revision,s.state AS state,r.request_hash AS rhash,r.result AS rresult FROM sessions s "
-                               "LEFT JOIN receipts r ON r.sid=s.sid AND r.request_id=? WHERE s.sid=?",(request_id,sid)).fetchone()
+                held=self.saves.take(sid)
+                full=lambda:db.execute("SELECT s.revision AS revision,s.state AS state,r.request_hash AS rhash,r.result AS rresult FROM sessions s "
+                                       "LEFT JOIN receipts r ON r.sid=s.sid AND r.request_id=? WHERE s.sid=?",(request_id,sid)).fetchone()
+                if held is None:
+                    row=full()
+                elif self.pg:  # the row version too: an edit that kept the revision is a miss
+                    row=db.execute("SELECT s.revision AS revision,CASE WHEN s.revision=? AND s.xmin::text=? AND r.request_hash IS NULL THEN NULL ELSE s.state END AS state,"
+                                   "r.request_hash AS rhash,r.result AS rresult FROM sessions s "
+                                   "LEFT JOIN receipts r ON r.sid=s.sid AND r.request_id=? WHERE s.sid=?",(held[0],held[3] or "",request_id,sid)).fetchone()
+                else:
+                    row=db.execute("SELECT s.revision AS revision,CASE WHEN s.revision=? AND r.request_hash IS NULL THEN NULL ELSE s.state END AS state,"
+                                   "r.request_hash AS rhash,r.result AS rresult FROM sessions s "
+                                   "LEFT JOIN receipts r ON r.sid=s.sid AND r.request_id=? WHERE s.sid=?",(held[0],request_id,sid)).fetchone()
+                if held is not None and row is not None and row["state"] is None and self.saves.should_check() and not self._check_held(db,sid,held):
+                    held=None;row=full()  # the cached dict was wrong (the cache is now off): the stored text decides
+            text=row["state"] if row else None
+            if held is not None and (not row or text is not None):held=None;self.saves.stale+=1  # another revision (or no save): parse it
+            if held is None:self.saves.misses+=1
+            else:self.saves.hits+=1
             if not row:raise GameError("Phiên chơi không tồn tại.","session_missing")
             if row["rhash"] is not None:return self._replay(sid,row,fingerprint)
-            if expected is not None and row["revision"]!=expected:raise Conflict("Tiến trình đã thay đổi ở tab khác. Đã đồng bộ lại; hãy xem trạng thái trước khi thao tác tiếp.","revision_conflict")
-            # 2. The heavy part, lock-free.
+            if expected is not None and row["revision"]!=expected:
+                if held is not None:self.saves.put(sid,*held)  # untouched: still the stored save
+                raise Conflict("Tiến trình đã thay đổi ở tab khác. Đã đồng bộ lại; hãy xem trạng thái trước khi thao tác tiếp.","revision_conflict")
+            # 2. The heavy part, lock-free. A dict taken from the cache is this thread's alone; it
+            #    goes back to the cache only after a successful write (never after an error).
             t1=time.perf_counter()
             try:
-                raw,result,serialized,cut,board=self._compute(sid,row["state"],career,action,tree_copy(payload),internal,row["revision"])
+                raw,result,serialized,cut,board=self._compute(sid,text,career,action,tree_copy(payload),internal,row["revision"],held[1] if held else None)
             except GameError:
                 if self._moved(sid,request_id,row["revision"]):continue  # judged on a save that has moved on: look again
                 raise
             receipt=json.dumps(result,ensure_ascii=False)
             # 3. Short compare-and-set under the write lock.
             t2=time.perf_counter()
-            if self._store(sid,row["revision"],serialized,request_id,fingerprint,receipt,cut,board):
+            stored=self._store(sid,row["revision"],serialized,request_id,fingerprint,receipt,cut,board)
+            if stored:
                 t3=time.perf_counter()
                 lb.remember(sid,row["revision"]+1,board[0])
-                view=public_state(raw,migrated=True)
-                _slow(action,career,len(row["state"] or ""),t0,t1,t2,t3,time.perf_counter())
-                return dict(state=view,revision=row["revision"]+1,result=result,replayed=False)
-        return self._command_locked(sid,request_id,expected,career,action,payload,internal,fingerprint)
+                out=dict(state=public_state(raw,migrated=True),revision=row["revision"]+1,result=result,replayed=False)
+                _slow(action,career,len(text) if text is not None else held[2],t0,t1,t2,t3,time.perf_counter()," cache=hit" if held else "")
+                del result  # (only `out` may reference the view and the result: see _keep)
+                return self._keep(sid,row["revision"]+1,raw,len(serialized),stored,out,hold,career,action)
+        return self._command_locked(sid,request_id,expected,career,action,payload,internal,fingerprint,hold)
+
+    def _check_held(self,db,sid:str,held)->bool:
+        """SAVE_CACHE_VERIFY: is the cached dict the text stored at its revision?"""
+        self.saves.checked+=1
+        got=db.execute("SELECT state FROM sessions WHERE sid=? AND revision=?",(sid,held[0])).fetchone()
+        if got is None:return True  # moved on meanwhile: the compare-and-set will notice
+        if _same_json(self.parse_state(got["state"],sid),held[1]):return True
+        self.saves.mismatch(sid,f"revision {held[0]}")
+        return False
+
+    def _keep(self,sid:str,revision:int,raw:dict,length:int,tag,out:dict,hold:bool,career=None,action:str="")->dict:
+        """Give the committed save's dict to the cache. The view shares a few lists with it,
+        so it must not be read once another command may change them: `hold` (the HTTP route)
+        keeps the dict aside until release(), after the response is encoded; otherwise the
+        view and result are detached (copied, ~0.3 ms for a 300 KB save) and the dict is
+        cached at once."""
+        if not self.saves.on:return out
+        tag=tag if type(tag) is str else None  # PostgreSQL: the row version the write created
+        if action in _DEALIAS and career in CAREERS and type(raw.get("careers")) is dict and type(raw["careers"].get(career)) is dict:
+            # Closing a day files the same records in several places of the career (the recap in
+            # the day's summary and in the goals history...): one object each would stay shared in
+            # the cached dict, where json.loads gives separate copies. A fresh copy of the career.
+            raw["careers"][career]=tree_copy(raw["careers"][career])
+        if hold:
+            self._held.save=(sid,revision,raw,length,tag)
+            return out
+        out["state"]=tree_copy(out["state"]);out["result"]=tree_copy(out["result"])  # the originals are gone now
+        self.saves.put(sid,revision,raw,length,tag)
+        return out
+
+    def release(self)->None:
+        """The response of this thread's last command(hold=True) is encoded: cache its save."""
+        held=getattr(self._held,"save",None)
+        if held is not None:
+            self._held.save=None
+            self.saves.put(*held)
 
     def _replay(self,sid:str,row,fingerprint:str)->dict:
         if row["rhash"]!=fingerprint:raise Conflict("Mã thao tác đã dùng cho nội dung khác.","idempotency_conflict")
@@ -538,11 +608,12 @@ class Store:
         state=migrate_state(self.parse_state(row["state"],sid),owned=True)
         return dict(state=public_state(state,migrated=True),revision=row["revision"],result=json.loads(row["rresult"]),replayed=True)
 
-    def _compute(self,sid:str,text:str,career,action:str,payload:dict,internal:bool,revision:int)->tuple[dict,dict,str,list,tuple]:
+    def _compute(self,sid:str,text:str|None,career,action:str,payload:dict,internal:bool,revision:int,held:dict|None=None)->tuple[dict,dict,str,list,tuple]:
         """(new save, result, its text, archive rows, board): what the command cut off from the
         save's lists, to be written in the same transaction as the save (see game/archive.py), and
-        board = (the save's leaderboard rows, whether a number on a board moved) (game/leaderboard.py)."""
-        raw=self.parse_state(text,sid)
+        board = (the save's leaderboard rows, whether a number on a board moved) (game/leaderboard.py).
+        `held`: the save already parsed (from the cache), else it is parsed from `text`."""
+        raw=held if held is not None else self.parse_state(text,sid)
         before=dict(raw["careers"]) if isinstance(raw.get("careers"),dict) else {}
         ranked=lb.recall(sid,revision)
         if ranked is None:ranked=lb.summary(raw)  # read before the reducer changes raw in place
@@ -596,8 +667,9 @@ class Store:
             if not row:return False
             return row["revision"]!=revision or bool(db.execute("SELECT 1 FROM receipts WHERE sid=? AND request_id=?",(sid,request_id)).fetchone())
 
-    def _store(self,sid:str,revision:int,serialized:str,request_id:str,fingerprint:str,receipt:str,cut:list=(),board:tuple|None=None)->bool:
-        """Compare-and-set: write the new save, its archive rows, its leaderboard rows and its receipt only if the save is still at `revision`."""
+    def _store(self,sid:str,revision:int,serialized:str,request_id:str,fingerprint:str,receipt:str,cut:list=(),board:tuple|None=None):
+        """Compare-and-set: write the new save, its archive rows, its leaderboard rows and its receipt only if the save is still at `revision`.
+        False when the save moved on; else True (SQLite) or the new row version (PostgreSQL xmin, a non-empty str)."""
         tw=time.perf_counter()
         if not self.writing():raise sqlite3.OperationalError("database is locked")
         tx=time.perf_counter()
@@ -614,16 +686,23 @@ class Store:
                 tx=tl
                 if not row or row[0]!=revision:
                     db.rollback();return False
-            if db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=? AND revision=?",
-                          (serialized,revision+1,sid,revision)).rowcount!=1:
+            if self.pg:
+                done=db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=? AND revision=? RETURNING xmin::text",
+                                (serialized,revision+1,sid,revision)).fetchone()
+                if done is None:
+                    db.rollback();return False
+                tag=done[0] or True
+            elif db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=? AND revision=?",
+                            (serialized,revision+1,sid,revision)).rowcount!=1:
                 db.rollback();return False
+            else:tag=True
             _write_archive(db,sid,cut)
             if board and board[1]:lb.write(db,sid,board[0])  # only when a number on a board moved
             db.execute("INSERT INTO receipts(sid,request_id,request_hash,result) VALUES(?,?,?,?)",(sid,request_id,fingerprint,receipt))
             db.commit()
             te=(time.perf_counter()-tx)*1000
             if te>=SLOW_MS/2:_slow_log(f"[slow-write] {te:.0f}ms to write {len(serialized)//1024}KB + {len(cut)} archive rows pid={os.getpid()}")
-            return True
+            return tag
         except dbm.IntegrityError:  # the same request id landed first: the caller replays it
             db.rollback();return False
         except BaseException:
@@ -647,7 +726,7 @@ class Store:
         stmt=stmt if stmt==0 or stmt>=lock+5000 else lock+5000  # the lock wait counts toward it
         db.raw.execute("SELECT set_config('lock_timeout',%s,true),set_config('statement_timeout',%s,true)",(f"{lock}ms",f"{stmt}ms"))
 
-    def _command_locked(self,sid:str,request_id:str,expected,career,action:str,payload:dict,internal:bool,fingerprint:str)->dict:
+    def _command_locked(self,sid:str,request_id:str,expected,career,action:str,payload:dict,internal:bool,fingerprint:str,hold:bool=False)->dict:
         """The save keeps changing under us (a burst of writes to this one save):
         compute under the write lock, like before optimistic commands."""
         if not self.writing():raise sqlite3.OperationalError("database is locked")
@@ -663,13 +742,15 @@ class Store:
             if expected is not None and row["revision"]!=expected:raise Conflict("Tiến trình đã thay đổi ở tab khác. Đã đồng bộ lại; hãy xem trạng thái trước khi thao tác tiếp.","revision_conflict")
             raw,result,serialized,cut,board=self._compute(sid,row["state"],career,action,payload,internal,row["revision"])
             revision=row["revision"]+1
-            db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?",(serialized,revision,sid))
+            if self.pg:tag=db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=? RETURNING xmin::text",(serialized,revision,sid)).fetchone()[0]
+            else:db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?",(serialized,revision,sid));tag=None
             _write_archive(db,sid,cut)
             if board[1]:lb.write(db,sid,board[0])
             db.execute("INSERT INTO receipts(sid,request_id,request_hash,result) VALUES(?,?,?,?)",(sid,request_id,fingerprint,json.dumps(result,ensure_ascii=False)))
             db.commit()
             lb.remember(sid,revision,board[0])
-            return dict(state=public_state(raw,migrated=True),revision=revision,result=result,replayed=False)
+            out=dict(state=public_state(raw,migrated=True),revision=revision,result=result,replayed=False)
+            del result
         except Exception:
             if db is not None:db.rollback()
             raise
@@ -677,11 +758,13 @@ class Store:
             try:
                 if db is not None:db.close()
             finally:self.done_writing()
+        return self._keep(sid,revision,raw,len(serialized),tag,out,hold,career,action)
 
     def delete(self,token:str)->bool:
         """Erase a player's save and receipts (privacy request / "Xóa dữ liệu"),
         plus the account and every device signed in to it."""
         sid=self.key(token)
+        self.saves.drop(sid)
         with self.connect() as db:
             if self.pg:  # lock the save first: a command in flight finishes, its archive/receipt rows go too
                 db.begin();db.execute("SELECT 1 FROM sessions WHERE sid=? FOR UPDATE",(sid,))

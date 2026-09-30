@@ -426,7 +426,7 @@ class Handler(BaseHTTPRequestHandler):
         split=urlsplit(self.path);route=split.path
         try:
             if route=="/api/health":
-                self.json(200,dict(status="ok",version=__version__,game_version=self.server.game_version(),careers=len(CAREERS)));return
+                self.json(200,dict(status="ok",version=__version__,game_version=self.server.game_version(),careers=len(CAREERS),save_cache=self.server.store.saves.stats()));return
             if route=="/api/content":self.content(split.query);return
             if route=="/api/bootstrap":
                 ip=self.client_ip()
@@ -542,7 +542,9 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         self.body_read=False
         try:self._post()
-        finally:self.discard_body()
+        finally:
+            self.server.store.release()  # the response is encoded: the command's save may go to the cache
+            self.discard_body()
 
     def discard_body(self):
         """A POST answered before its body was read (401/403/503 from the session check...): read and drop
@@ -576,8 +578,8 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/command":
                 if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
                 if length>256*1024 and data.get("action")!="import_save":self.error(413,"Thao tác quá lớn.");return
-                result=self.server.store.command(token,data.get("request_id"),data.get("expected_revision"),data.get("career"),data.get("action"),data.get("payload",{}))
-                self.json(200,result);return
+                result=self.server.store.command(token,data.get("request_id"),data.get("expected_revision"),data.get("career"),data.get("action"),data.get("payload",{}),hold=True)
+                self.json(200,result);return  # do_POST then releases the save to the cache (Store.release)
             if length>64*1024:self.error(413,"Nội dung quá lớn.");return
             if route=="/api/ai/rephrase":
                 if not self.ai_budget(token):self.json(200,dict(mode="scripted",reason="rate_limit"));return

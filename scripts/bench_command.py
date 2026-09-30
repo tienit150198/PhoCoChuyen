@@ -206,6 +206,21 @@ class Bench:
     def close(self):
         self.srv.server_close()
 
+    def seed(self, text: str, revision: int):
+        """--cache hit: the parsed save in this process's cache, as a previous command leaves it."""
+        saves = getattr(self.store, "saves", None)
+        if saves is None:
+            raise SystemExit("--cache hit: this code has no save cache")
+        if not saves.on:
+            from game.savecache import SaveCache
+            self.store.saves = saves = SaveCache(mb=300, verify=0)
+        tag = None
+        if self.store.pg:
+            with self.store.connect() as db:
+                tag = db.execute("SELECT xmin::text FROM sessions WHERE sid=?", (self.sid,)).fetchone()[0]
+        saves.drop(self.sid)
+        saves.put(self.sid, revision, json.loads(text), len(text), tag)
+
     def put(self, text: str, revision: int):
         with self.store.connect() as db:
             db.execute("UPDATE sessions SET state=?,revision=? WHERE sid=?", (text, revision, self.sid))
@@ -253,6 +268,9 @@ def check(response: bytes, action: str) -> None:
 CLOCK: list = []
 
 
+CACHE = ["miss"]  # --cache: "hit" seeds the parsed-save cache before each command
+
+
 def measure(bench: Bench, text: str, career: str, action: str, payload: dict, iters: int, profile: cProfile.Profile | None = None):
     revision = 1  # the command stores revision 2: a scoped (not periodic full) validation
     bench.put(text, revision)
@@ -261,6 +279,8 @@ def measure(bench: Bench, text: str, career: str, action: str, payload: dict, it
     clock = CLOCK[0]
     for _ in range(iters):
         bench.put(text, revision)
+        if CACHE[0] == "hit":
+            bench.seed(text, revision)
         req = bench.request(career, action, payload, revision)
         if profile:
             profile.enable()
@@ -324,7 +344,10 @@ def main() -> int:
     ap.add_argument("--recheck", type=float, default=1e9,
                     help="seconds between static-asset re-checks (default: never, so the numbers do not depend on "
                          "how long each command waits; the cost of one re-check is printed separately)")
+    ap.add_argument("--cache", choices=("miss", "hit"), default="miss",
+                    help="parsed-save cache (game/savecache.py): 'hit' = every command finds its save already parsed")
     args = ap.parse_args()
+    CACHE[0] = args.cache
     webassets.RECHECK = args.recheck
     if args.cpu >= 0:
         pin(args.cpu)
@@ -367,6 +390,8 @@ def main() -> int:
                         out = io.StringIO()
                         pstats.Stats(prof, stream=out).sort_stats("cumulative").print_stats(args.top)
                         print(out.getvalue())
+            if getattr(bench.store, "saves", None) is not None and bench.store.saves.on:
+                print("save cache:", bench.store.saves.stats())
         finally:
             bench.close()
     by_size: dict = {}
