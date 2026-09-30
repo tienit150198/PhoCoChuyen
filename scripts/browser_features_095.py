@@ -231,14 +231,18 @@ async def s_whatsnew(w: Walk) -> None:
         w.problem('dead end: the what\'s-new card did not open by itself')
         return
     await w.check('whatsnew')
-    from game import whats_new as wn
     meta = await p.inner_text('#wnDialog .wn-meta')
     items = await p.locator('#wnDialog .wn-body > .wn-list > .wn-item').count()
-    w.need(wn.LATEST in meta, f'whatsnew shows {meta!r}, not {wn.LATEST}')
-    w.need(items == len(wn.ENTRIES[0]['items']), f'{items} notes, not the {len(wn.ENTRIES[0]["items"])} of {wn.LATEST}')
+    from game.whats_new import ENTRIES  # the latest release's notes, whatever the version
+    latest = ENTRIES[0]
+    w.need(latest['version'] in meta, f"whatsnew shows {meta!r}, not {latest['version']}")
+    w.need(items == len(latest['items']), f"{items} notes shown, {len(latest['items'])} expected")
+    # Two unseen releases show by themselves; anything older waits behind "Xem các bản trước" (closed).
     older = await p.locator('#wnDialog #wnOlder:not([hidden])').count()
     w.need(older == 0, 'older notes open by themselves')
     tries = p.locator('#wnDialog .wn-item:has-text("mua nhà") .wn-try')
+    if not any(it.get('go', {}).get('action') == 'house' for it in latest['items']):
+        return  # this release's notes have no house button to try
     if w.need(await tries.count(), 'no "Thử ngay" on the house note'):
         await p.wait_for_timeout(500)
         await tries.first.click()

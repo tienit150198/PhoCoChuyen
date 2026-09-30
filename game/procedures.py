@@ -28,6 +28,19 @@ def initial_state() -> dict:
     return dict(at=0, solved=[], attempts={}, answers={})
 
 
+# Other orders that are just as right in real life, keyed by the step's key. The steps stored in a
+# save never change (validate() compares them with the original), so alternatives live here.
+ALT_ORDERS = {
+    # Trung thu: many schools feast first and parade after, others parade first.
+    ('gather', 'parade', 'feast', 'show', 'clean'): (('gather', 'feast', 'parade', 'show', 'clean'),),
+}
+
+
+def orders(key) -> list:
+    """Every accepted order for an order step: its key plus the listed alternatives."""
+    return [list(key)] + [list(x) for x in ALT_ORDERS.get(tuple(key), ())]
+
+
 def _norm_entry(lines) -> list | None:
     if not isinstance(lines, list) or not 1 <= len(lines) <= 8:
         return None
@@ -49,7 +62,7 @@ def check(st: dict, answer) -> bool:
     if kind == 'number':
         return type(answer) is int and answer == k
     if kind == 'order':
-        return isinstance(answer, list) and answer == k
+        return isinstance(answer, list) and answer in orders(k)
     if kind == 'match':
         return isinstance(answer, dict) and answer == k
     if kind == 'fields':
@@ -127,7 +140,12 @@ def submit(t: dict, step_id, answer) -> tuple[bool, str]:
         return True, st.get('explain', 'Chính xác.')
     t['mistakes'] += 1
     hints = st.get('hints') or [st.get('hint', 'Đọc lại chứng từ liên quan rồi thử lại.')]
-    return False, hints[min(len(hints), ps['attempts'][st['id']]) - 1]
+    hint = hints[min(len(hints), ps['attempts'][st['id']]) - 1]
+    if st['kind'] == 'order':  # say where it goes wrong, not only the general rule
+        good, first = max(((sum(a == b for a, b in zip(answer, key)), next((i for i, (a, b) in enumerate(zip(answer, key)) if a != b), 0))
+                           for key in orders(st['_key'])), key=lambda x: x[0])
+        return False, f'Đúng {good}/{len(answer)} vị trí, xem lại từ ô số {first + 1}. {hint}'
+    return False, hint
 
 
 def done(t: dict) -> bool:

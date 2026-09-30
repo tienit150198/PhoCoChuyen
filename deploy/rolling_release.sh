@@ -92,6 +92,17 @@ drain(){  # port: until nginx has no request in flight to it (2 quiet seconds), 
   done
   log "  :$port still had $(conns "$port") connection(s) after ${DRAIN_MAX}s: stopping anyway (clients re-send)"
 }
+old_nginx_gone(){  # an old nginx worker (from before a reload) can keep an HTTP/2 client and its upstream
+  # port alive long after the reload: wait until every "shutting down" worker has exited before the
+  # port it still points at goes away, at most OLD_NGINX_MAX s.
+  local i
+  for i in $(seq 1 "${OLD_NGINX_MAX:-90}"); do
+    pgrep -f 'nginx: worker process is shutting down' >/dev/null || { [ "$i" -gt 1 ] && log "  old nginx workers gone after ${i}s"; return 0; }
+    if [ $((i % 10)) -eq 0 ]; then log "  waiting for old nginx workers to finish (${i}s)"; fi
+    sleep 1
+  done
+  log "  old nginx workers still there after ${OLD_NGINX_MAX:-90}s: going on"
+}
 stop_bridge(){ systemctl stop "$BRIDGE" 2>/dev/null || true; rm -f "$UNIT_FILE"; systemctl daemon-reload; }
 release_version(){ sed -n 's/^__version__ *= *"\(.*\)".*/\1/p' "$1/game/__init__.py" | head -1; }
 # Enabled nginx files (nginx -T) other than our site that use a port: dk_bike must never be touched.
@@ -104,7 +115,7 @@ if [ "$MODE" = recover ]; then
   log "== recover"
   if points_at "$BRIDGE_PORT"; then
     wait_health "$PORT" || die "$SERVICE does not answer on :$PORT; players stay on the bridge. Fix it first (journalctl -u $SERVICE), then run --recover again"
-    switch_upstream "$BRIDGE_PORT" "$PORT"; drain "$BRIDGE_PORT"
+    switch_upstream "$BRIDGE_PORT" "$PORT"; drain "$BRIDGE_PORT"; old_nginx_gone
   fi
   stop_bridge
   points_at "$PORT" || die "$SITE_REAL does not point at 127.0.0.1:$PORT"
@@ -192,6 +203,7 @@ drain "$PORT"
 
 # ---- 3. the canonical unit restarts on the new release, with no traffic on it -----------------------------
 log "== 3/4 restart $SERVICE on the new release (players are on the bridge)"
+old_nginx_gone
 systemctl restart "$SERVICE"
 wait_health "$PORT" "$VER" || { journalctl -u "$SERVICE" --since "-3min" --no-pager | tail -20; die "$SERVICE did not come back on $VER"; }
 
@@ -199,6 +211,7 @@ wait_health "$PORT" "$VER" || { journalctl -u "$SERVICE" --since "-3min" --no-pa
 log "== 4/4 nginx -> :$PORT; drain and stop the bridge"
 switch_upstream "$BRIDGE_PORT" "$PORT"
 drain "$BRIDGE_PORT"
+old_nginx_gone
 stop_bridge
 STAGE=done
 
