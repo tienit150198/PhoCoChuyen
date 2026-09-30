@@ -497,6 +497,13 @@ html[data-layout="tablet"] .sheet.drawer{width:min(620px,92vw);max-height:100dvh
 .toasts{position:fixed;left:50%;bottom:var(--toast-b);transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;align-items:center;gap:8px;width:min(520px,calc(100vw - 24px));pointer-events:none}
 .toast{max-width:100%;padding:12px 16px;border-radius:14px;background:var(--inverse);color:var(--on-inverse);font-size:.933rem;font-weight:600;line-height:1.5;box-shadow:var(--shadow);animation:mnl-toast-in .22s var(--ease);overflow-wrap:anywhere}
 .toast.error{background:var(--bad);color:var(--on-bad)}
+/* Several notes in one result: one row each, emoji in a column (public/js/toast-lines.js). */
+.toast.multi{padding:10px 14px}
+.toast-lines{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.toast-lines li{display:grid;grid-template-columns:1.45em 1fr;gap:6px;align-items:start;font-size:.866rem;font-weight:500;line-height:1.4}
+.toast-lines li:first-child{font-size:.933rem;font-weight:700}
+.toast-lines li+li{padding-top:5px;border-top:1px solid color-mix(in srgb,currentColor 16%,transparent)}
+.toast-lines .tl-ic{text-align:center;line-height:1.4}
 .toast.leaving{opacity:0;transform:translateY(6px);transition:opacity .3s,transform .3s}
 @keyframes mnl-toast-in{from{opacity:0;transform:translateY(8px)}}
 dialog .toasts{top:calc(max(10px,var(--safe-t)) + 10px);bottom:auto}

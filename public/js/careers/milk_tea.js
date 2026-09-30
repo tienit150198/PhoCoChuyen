@@ -180,7 +180,7 @@ function customer(t,x){
     <div class="mt-bubble">${t.app?`<span class="mt-ticket-head">PHIẾU APP ${x.esc(t.app.code)}</span>`:''}<p>“${x.esc(words)}”</p>
       ${tags.length?`<div class="mt-tags">${tags.map(v=>`<span>${x.esc(v)}</span>`).join('')}</div>`:''}
       ${meter}
-      ${!t.known?jb(x,'👂 Nghe gọi món','ask',{task:t.id},'primary mt-ask'):''}
+      ${!t.known?jb(x,'👂 Nghe gọi món','ask',{task:t.id},'ghost mt-ask'):''}
       ${notebookFor(t,x)}
       <b class="mt-price">${t.quoted_price!=null?`${t.quoted_price} xu`:''}</b>
     </div></section>`;

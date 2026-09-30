@@ -82,7 +82,12 @@
   "Kho ổn.": "Stock is fine.",
   "Chưa có giao dịch.": "No transactions yet.",
   "Chưa có ai.": "No one yet.",
-  "Tiệm gọn gàng!": "The shop is all tidy!"
+  "Tiệm gọn gàng!": "The shop is all tidy!",
+  "Voucher": "Voucher",
+  "vừa kết kỳ thuế": "tax period just closed",
+  "Doanh thu nghề kỳ này": "Trade revenue this period",
+  "Thuế dự kiến": "Estimated tax",
+  "Tiền thuê đã tích lũy": "Accrued rent"
  },
  "patterns": {
   "lượt $1": "turn $1",

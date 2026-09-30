@@ -1,0 +1,153 @@
+/* Calm UI kit (0.9.5): one quiet visual language for quotes, replies, meta rows,
+   star rows and +/- chips, so busy screens read top to bottom at a glance.
+   Built only on the theme tokens from app.css, so every theme (dark "dem"
+   included) follows. Loaded after the other stylesheets: the screen tweaks at
+   the bottom win over older rules without !important. */
+
+/* ---------------------------------------------------------------- tokens */
+:root{--ck-radius:12px;--ck-box-radius:10px;--ck-pad-y:10px;--ck-pad-x:14px;--ck-gap:8px}
+
+/* ------------------------------------------------------ thread/quote box */
+/* A tinted box with a coloured left accent, a bold coloured label and a
+   regular body. One idea per box; the colour says who is talking. */
+.ck-box{--ck-line:var(--line-strong);--ck-bg:var(--surface-2);--ck-ink:var(--ink-2);display:block;margin:0;padding:var(--ck-pad-y) var(--ck-pad-x);border-radius:var(--ck-box-radius);border-left:4px solid var(--ck-line);background:var(--ck-bg);color:var(--ink);font-size:.9rem;line-height:1.6;overflow-wrap:anywhere}
+.ck-box>p,.ck-box>.ck-p{display:block;margin:2px 0 0}
+.ck-box>p:first-child{margin-top:0}
+.ck-label{font-weight:800;color:var(--ck-ink,var(--ink))}
+.ck-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;margin-bottom:2px}
+.ck-head .ck-label{font-size:.867rem}
+.ck-sub{font-size:.767rem;font-weight:600;color:var(--muted)}
+.ck-mute{font-size:.8rem;font-style:italic;color:var(--muted)}
+.ck-owner{--ck-line:var(--warn);--ck-bg:var(--warn-soft);--ck-ink:var(--warn)}
+.ck-reply{--ck-line:var(--info);--ck-bg:var(--info-soft);--ck-ink:var(--info)}
+.ck-staff{--ck-line:var(--accent);--ck-bg:var(--accent-soft);--ck-ink:var(--accent-text)}
+.ck-good{--ck-line:var(--good);--ck-bg:var(--good-soft);--ck-ink:var(--good)}
+.ck-bad{--ck-line:var(--bad);--ck-bg:var(--bad-soft);--ck-ink:var(--bad)}
+.ck-quiet{--ck-line:var(--line-strong);--ck-bg:transparent;--ck-ink:var(--ink-2)}
+.ck-stack{display:grid;gap:var(--ck-gap)}
+
+/* ------------------------------------------------------------- meta row */
+/* Name bold on the left, the date small and muted on the right. */
+.ck-meta{display:flex;align-items:baseline;justify-content:space-between;gap:8px;min-width:0}
+.ck-meta>b,.ck-meta>strong{min-width:0;font-weight:800;overflow-wrap:anywhere}
+.ck-meta>small{flex:none;font-size:.8rem;font-weight:500;color:var(--muted);white-space:nowrap}
+
+/* ------------------------------------------------------ stars and chips */
+.ck-stars{color:var(--star);font-size:.95rem;letter-spacing:1px;line-height:1.2}
+.ck-chips{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.ck-delta{display:inline-flex;align-items:center;gap:3px;padding:1px 9px;border-radius:var(--radius-pill,999px);background:var(--surface-3);color:var(--ink-2);font-size:.767rem;font-weight:800;font-style:normal;line-height:1.55;white-space:nowrap;vertical-align:1px;font-variant-numeric:tabular-nums}
+.ck-delta.up{background:var(--good-soft);color:var(--good);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--good) 28%,transparent)}
+.ck-delta.down{background:var(--bad-soft);color:var(--bad);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--bad) 28%,transparent)}
+.ck-delta.warn{background:var(--warn-soft);color:var(--warn);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--warn) 28%,transparent)}
+.ck-delta.flat{background:var(--surface);color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
+.ck-head>.ck-delta{margin-left:auto;align-self:center}
+
+/* ------------------------------------------------ avatar ring, dividers */
+.ck-avatar{box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px var(--line-strong)}
+.ck-rows>*+*{border-top:1px solid var(--line)}
+
+/* ================================================================ Reviews */
+/* The list: a divided list of rows, not a stack of boxes. */
+.rv-list{gap:0}
+.rv-list>.rv-card{gap:12px;padding:14px 4px;border:0;border-radius:0;background:transparent;box-shadow:none}
+.rv-list>.rv-card+.rv-card{border-top:1px solid var(--line)}
+@media (hover:hover){.rv-list>.rv-card:hover{background:var(--surface-2)}}
+.rv-list>.rv-card:focus-visible{outline:3px solid var(--focus);outline-offset:-3px;border-radius:var(--ck-box-radius)}
+.rv-card>.grow{gap:5px}
+.rv-card .persona{width:42px;height:42px;margin:2px}
+.rv-card .ck-meta b{font-size:.95rem}
+.rv-card .ck-stars{font-size:.867rem}
+.rv-card .rv-text{color:var(--ink);font-size:.9rem;line-height:1.6}
+.rv-who{font-weight:800;color:var(--ink-2)}
+.rv-who::after{content:":"}
+.rv-card .rv-text.low{color:var(--bad)}
+.rv-peek{display:grid;gap:6px;margin-top:4px}
+.rv-peek .ck-box{padding:7px 12px;font-size:.833rem;line-height:1.5}
+.rv-peek .ck-box>.ck-p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.rv-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px;margin-top:2px}
+.rv-foot>small{min-width:0;font-size:.8rem;color:var(--muted)}
+.rv-foot>:last-child{margin-left:auto}
+@container sheet (min-width:820px){.rv-list>.rv-card.active{border-radius:var(--ck-box-radius);background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}.rv-list>.rv-card.active+.rv-card{border-top-color:transparent}}
+@container sheet (max-width:420px){.rv-list>.rv-card{flex-wrap:nowrap}.rv-list>.rv-card>.grow{flex:1 1 0}.rv-card .rv-text{-webkit-line-clamp:3}}
+
+/* The thread: quote first, then one tinted box per voice. */
+.review-card .rv-head{gap:14px;align-items:center}
+.review-card .rv-head .persona.big{width:52px;height:52px;font-size:1.7rem}
+.review-card .rv-head .ck-meta h3{font-size:1.067rem}
+.review-card .rv-head .grow{display:grid;gap:3px;min-width:0}
+.review-card .rv-sub{font-size:.8rem;color:var(--muted);line-height:1.45}
+.review-card .review-text{margin:14px 0 0;font-style:normal;font-size:.95rem;line-height:1.65}
+.review-card .thread{gap:10px;margin:14px 0}
+.review-card .thread .ck-box{max-width:none}
+.review-card .rv-guest{margin-left:18px;font-size:.867rem}
+.review-card .rv-closed{margin:12px 0 0;text-align:center;font-size:.8rem;color:var(--muted)}
+.review-card details.criteria{margin-top:12px}
+/* "Trả lời" on each row is a soft status pill, not a
+   row of filled buttons; the criteria fold is a quiet line. */
+.rv-list .rv-reply{background:var(--accent-soft);color:var(--accent-text);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 30%,transparent)}
+.review-card details.criteria{padding:10px 0 0;border:0;border-top:1px solid var(--line);border-radius:0;background:transparent}
+.review-card details.criteria>summary{padding:10px 0;color:var(--ink-2)}
+
+/* ============================================================ Day summary */
+/* Notes read as one quiet list: same surface, a coloured left accent says
+   what kind of note it is (money, reviews, bills…) instead of a patchwork of
+   filled pastel boxes. */
+.summary-v6 .notice,.summary-v6 .tip-sum,.summary-v6 .dc-sum,.summary-v6 .acct-nudge{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--line-strong);border-radius:var(--ck-box-radius);padding:12px 14px;font-size:.933rem;line-height:1.55}
+.summary-v6 .notice.amber{border-left-color:var(--warn)}
+.summary-v6 .notice.blue,.summary-v6 .acct-nudge{border-left-color:var(--info)}
+.summary-v6 .notice.danger{border-left-color:var(--bad)}
+.summary-v6 .notice.success,.summary-v6 .notice.green{border-left-color:var(--good)}
+.summary-v6 .tip-sum{border-left-color:var(--accent)}
+.summary-v6 .dc-sum{border-left-color:var(--info)}
+.summary-v6 .notice p,.summary-v6 .dc-sum p{color:var(--ink-2)}
+.summary-v6 .notice .btn{min-height:44px}
+.summary-v6 .acct-nudge-ic{width:34px;height:34px;background:var(--info-soft)}
+.summary-v6 .sum-stat em.ck-chips{justify-content:center;gap:4px;margin-top:6px}
+.summary-v6 .sum-stat em .ck-delta{font-size:.733rem;padding:0 7px}
+.summary-v6 .notice .ck-chips{margin:6px 0 2px}
+/* Milk tea close: tomorrow's tip as a quote box. */
+.summary-v6 .mt-tomorrow-line{border-left:4px solid var(--accent);border-radius:var(--ck-box-radius)}
+
+/* ================================================== Street feed (Chuyện phố) */
+/* Name and date on one line; like / reply / discuss on one quiet bar; replies
+   as boxes with a left accent (yours amber). */
+.post{padding:16px}
+.post .ck-meta .author{font-size:.95rem}
+.post .post-text{margin:10px 0}
+.post-actions{gap:2px 4px;padding-top:6px}
+.post .ck-stars{margin:2px 0 0;font-size:.9rem}
+@container sheet (max-width:480px){.post-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:2px}.post-actions .btn{justify-content:center;padding:4px 6px;font-size:.8rem;line-height:1.2;text-align:center;white-space:normal}.post-actions .reply-more>summary{justify-content:center;width:100%;min-height:44px}.post-actions .reply-more[open]{grid-column:1/-1}.post-actions>small.muted{align-self:center;justify-self:end}}
+.post-actions .reply-more{margin:0}
+.post-actions .reply-more[open]{flex-basis:100%;order:9}
+.post-actions .reply-more[open]>summary{color:var(--accent-text)}
+.post-actions>small.muted{order:8;margin-left:auto;padding-right:4px}
+.post .comment{--ck-line:var(--line-strong);--ck-bg:var(--surface-2);--ck-ink:var(--ink-2);margin:8px 0 0;padding:8px 12px;border-radius:var(--ck-box-radius);border-left:4px solid var(--ck-line);background:var(--ck-bg);font-size:.867rem;line-height:1.55}
+.post .comment.owner-reply{--ck-line:var(--warn);--ck-bg:var(--warn-soft);--ck-ink:var(--warn)}
+.post .comment strong{color:var(--ck-ink);font-weight:800}
+.post .comment p{margin:0}
+
+/* =========================================================== Shop book */
+.tax-envelope{padding:14px 16px;border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:var(--ck-box-radius);background:var(--surface)}
+.tax-envelope .kv{margin:8px 0 6px}
+.tax-envelope h3{font-size:1.067rem}
+/* Bills: "Thanh toán" on every row is a secondary action (outlined), so the
+   sheet keeps a single filled button; cash-flow amounts read green/red. */
+.bill-list .bill-card .btn.primary{background:var(--surface);color:var(--accent-text);border:1.5px solid var(--accent);box-shadow:none}
+@media (hover:hover){.bill-list .bill-card .btn.primary:hover:not(:disabled){background:var(--accent-soft)}}
+.ledger-row>.ledger-sign.in~strong{color:var(--good)}
+.ledger-row>.ledger-sign.out~strong{color:var(--bad)}
+
+/* ===================================================== Milk tea: prep sheet */
+/* Menu as a price list: two columns of "name ..... price" on dashed leaders. */
+#sheet .mt-board .chalk-columns{grid-template-columns:1fr 1fr;gap:0 18px}
+#sheet .mt-board .chalk-columns>div{border-bottom:1px dashed var(--line-strong)}
+@container sheet (max-width:340px){#sheet .mt-board .chalk-columns{grid-template-columns:minmax(0,1fr)}}
+/* Morning warnings: one quiet list, each row with an amber accent. */
+#sheet .mt-warns{display:grid;gap:6px}
+#sheet .mt-warns .mt-warn{justify-content:flex-start;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:var(--ck-box-radius);color:var(--ink);box-shadow:none}
+
+/* ======================================================== Grocery: tabs */
+/* Counts sit as corner badges on the tab instead of squeezing the label. */
+#sheet .career-job.gr .gr-tabs{margin-top:14px}
+#sheet .career-job.gr .gr-tabs .btn{position:relative;overflow:visible}
+#sheet .career-job.gr .gr-tabs .gr-badge{position:absolute;top:-8px;right:-4px;box-shadow:0 0 0 2px var(--surface)}
