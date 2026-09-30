@@ -7,10 +7,11 @@
  * - Same modal rules as "Có gì mới" (whatsnew.js): focus stays inside, a backdrop tap does nothing,
  *   a tap in the first moment after it pops up is ignored, reduced motion is respected. Esc counts as
  *   the button (the coins are in the wallet either way).
- * - It waits for the game to be on screen, naming the character, the tutorial and an open
- *   "Có gì mới" card.
+ * - It waits for the game to be on screen, naming the character, a new player's first 3 customers,
+ *   the tutorial and an open "Có gì mới" card.
  * app.js imports this module only when the bootstrap carried a gift. */
 import {escapeHTML as esc} from '../icons.js';
+import {quiet} from './onboard.js';
 
 let E=null,queue=[],dlg=null,timer=0,calm=0,openedAt=0,back=null,cssReady=null;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -19,6 +20,7 @@ const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 export function blocker(env=E,doc=document){
   const s=env?.api?.state;if(!s)return 'loading';
   if(s.journey?.story&&!s.journey.intro)return 'intro';
+  if(quiet(s))return 'first-customers';                   // a brand-new player's first 3 customers (v4/onboard.js)
   if(doc.hidden)return 'hidden';
   if(doc.getElementById('tutLayer')?.isConnected)return 'tour';
   for(const d of doc.querySelectorAll('dialog[open]')){

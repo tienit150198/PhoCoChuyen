@@ -21,8 +21,9 @@ Then run `python -m game.whats_new` to rewrite public/js/v4/whatsnew-data.js
 (the copy the browser loads lazily, so the first load does not grow).
 
 Players who already saw a version keep it in settings.whatsNewSeen (the save,
-so it follows the account). It is a server-wide notice: a brand-new save starts at ""
-too, so new players see the latest notes once they have named their character.
+so it follows the account). The notes are for returning players: a brand-new save starts
+at "", and naming the character in the story intro marks the current notes as read
+(journey._welcome_settings), so a new player never gets them.
 """
 from __future__ import annotations
 

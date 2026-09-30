@@ -42,10 +42,11 @@ const TIPS=[
     when:()=>!!room()?.open,
     find:()=>first('#sheet[open] .btn[data-action="end"]')||first('#taskHUD .btn[data-action="end"]'),
     done:()=>view()==='summary'||!room()?.open},
-  {id:'journey',emoji:'🧭',text:'Hành trình: việc cần làm và nơi làm khác.',ttl:9000,
-    when:()=>calmStage()&&!room()?.open&&(S()?.journey?.life_day|0)>=2,
-    find:()=>first('#rail [data-action="home"]')||first('#dock [data-action="home"]')||first('[data-action="home"]'),
-    done:()=>view()==='home'},
+  {id:'journey',emoji:'🧭',ttl:9000,   // day 2: the rest of the street (on a phone it sits behind "Thêm")
+    text:()=>first('#rail [data-action="home"]')?'Hành trình: việc cần làm và nơi làm khác.':'Thêm → Hành trình: việc cần làm, nơi làm khác.',
+    when:()=>calmStage()&&(S()?.journey?.life_day|0)>=2,
+    find:()=>first('#rail [data-action="home"]')||first('#dock [data-action="v4Menu"]'),
+    done:()=>view()==='home'||document.documentElement.classList.contains('menu-open')},
 ];
 
 /* ------------------------------------------------------------------ bubble */
@@ -91,7 +92,7 @@ function tick(){
   const el=tip.find();
   if(!el){if(bubbleUp())bubble.hidden=true;return;}
   if(!bubbleUp()||bubble.dataset.tip!==tip.id||bubble._el!==el||bubble.parentElement!==(topDialog()||document.body)){
-    showBubble({id:tip.id,emoji:tip.emoji,text:tip.text,el,onClose:()=>stopTips('off')});
+    showBubble({id:tip.id,emoji:tip.emoji,text:typeof tip.text==='function'?tip.text():tip.text,el,onClose:()=>stopTips('off')});
   }else placeBubble();
   run.shown||=performance.now();
 }

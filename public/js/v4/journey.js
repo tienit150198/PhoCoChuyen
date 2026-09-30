@@ -321,6 +321,12 @@ function titleScene(ids){
     <div class="row wrap jr-scene-actions">${btn('Đeo danh hiệu này','jrEquip',{title:first.id,keep:'1'},'cream')}${btn('Tuyệt!','jrSceneClose',{},'primary')}</div></div>`;
 }
 
+function titleToast(ids){
+  const C=E.api.content.journey,J=E.api.state.journey;
+  const rows=ids.map(id=>{const t=C.titles.find(x=>x.id===id);return t?.secret?{id,...J.secret[id]}:t;}).filter(Boolean);
+  if(rows.length)E.toast?.(`${rows[0].emoji} Danh hiệu mới: ${rows[0].name}${rows.length>1?` (+${rows.length-1})`:''}`,'good');
+}
+
 function whoScene(){
   return `<div class="jr-scene-card">${whoForm(E,'Trước khi đi tiếp…','Khu phố muốn biết thêm một chút về bạn.','Lưu và tiếp tục')}</div>`;
 }
@@ -331,16 +337,21 @@ function storyScene(n){
 }
 
 let asked=false;
+const toasted=new Set();   // title news already said as a toast (first day), while jr_seen is on its way
 function maybeScene(){
   if(!E?.api.state?.journey||!E.api.content?.journey)return;
   const J=E.api.state.journey,d=document.getElementById('jrScene');
   if(d?.open||document.getElementById('stScene')?.open||J.story&&!J.intro)return;
   if(!J.story){maybeStory();return;}
   if(document.getElementById('confirmDialog')?.open){setTimeout(maybeScene,400);return;}
+  const S=E.api.state;
   const ch=J.news.find(n=>n.kind==='chapter');
-  if(ch){openScene(chapterScene(Number(ch.ref)),[ch.id]);return;}
+  if(ch){if(!quiet(S))openScene(chapterScene(Number(ch.ref)),[ch.id]);return;}   // after the first 3 customers
   const ts=J.news.filter(n=>n.kind==='titles');
-  if(ts.length){const ids=[...new Set(ts.flatMap(n=>n.items))];const html=titleScene(ids);if(html){openScene(html,ts.map(n=>n.id));return;}
+  if(ts.length){const ids=[...new Set(ts.flatMap(n=>n.items))];
+    // The first day: a small toast, no card over the work (the titles stay in Hành trình → Danh hiệu).
+    if(firstDay(S)){const fresh=ts.filter(n=>!toasted.has(n.id));if(fresh.length){fresh.forEach(n=>toasted.add(n.id));titleToast(ids);E.cmd('jr_seen',{ids:fresh.map(n=>n.id)},{quiet:true});}return;}
+    const html=titleScene(ids);if(html){openScene(html,ts.map(n=>n.id));return;}
     E.cmd('jr_seen',{ids:ts.map(n=>n.id)},{quiet:true});return;}
   if(!J.gender&&!asked){asked=true;openScene(whoScene());return;}
   maybeStory();   // truyện nghề: a workplace beat, after the journey's own scenes

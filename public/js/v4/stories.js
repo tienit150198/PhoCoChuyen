@@ -6,6 +6,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {avatar,emojiOf} from './journey.js';
 import {lookOf} from './look.js';
+import {firstDay} from './onboard.js';
 
 let E=null;
 let cur=null;              // {id, shown, answered:{reply,note,label}|null, keepsake}
@@ -86,6 +87,7 @@ export function maybeStory(){
   const st=stories();if(!st||!E)return;
   const J=E.api.state.journey;
   if(J?.story&&!J.intro)return;                     // the first-run intro comes first
+  if(firstDay(E.api.state))return;                  // a brand-new player's first day stays on the work: stories from day 2
   if(document.getElementById('stScene')?.open||document.getElementById('jrScene')?.open)return;
   if(J?.news?.length)return;                        // a chapter or title scene is about to open
   if(document.getElementById('confirmDialog')?.open){setTimeout(maybeStory,400);return;}

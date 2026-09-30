@@ -7,6 +7,7 @@
  * (state.life = life.public()). Buttons use data-action="lf…" (lifeAction).
  * Design: docs/superpowers/specs/2026-09-29-life-design.md */
 import {icon,escapeHTML as esc} from '../icons.js';
+import {quiet} from './onboard.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
@@ -115,6 +116,7 @@ function calm(){
   const api=E?.api,S=api?.state;if(!S)return false;
   if(['jrScene','stScene','confirmDialog','lfScene'].some(id=>document.getElementById(id)?.open))return false;
   if(S.journey?.story&&!S.journey.intro)return false;
+  if(quiet(S))return false;   // a brand-new player's first 3 customers: nothing pops up
   if(document.getElementById('sheet')?.open&&E.ui?.view!=='home')return false;
   const c=S.current&&S.careers?.[S.current];
   if(c&&!c.summary&&c.open){

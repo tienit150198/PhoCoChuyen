@@ -30,6 +30,7 @@ from . import bank as bk   # 🏦 Ngân hàng Phố (game/bank.py)
 from . import wardrobe as wd   # 👗 Tủ đồ (game/wardrobe.py)
 from . import housing as hs   # 🏠 Nhà của bạn (game/housing.py)
 from . import system_gift as sg   # 🎁 Quà từ Phố Có Chuyện (game/system_gift.py)
+from . import whats_new as wn   # "Có gì mới": read already for a brand-new save (_welcome_settings)
 
 VERSION = 1
 START_WALLET = 60
@@ -605,6 +606,13 @@ def after(s: dict, career: str | None, action: str, p: dict, result: dict) -> No
     _evaluate(s, result)
 
 
+def _welcome_settings(s: dict) -> None:
+    """A brand-new save has just been named (still in the intro): the "Có gì mới" release notes are for
+    returning players, so the current ones count as read, silently."""
+    st = s['settings']
+    st['whatsNewSeen'] = wn.newer(st.get('whatsNewSeen', ''), wn.LATEST)
+
+
 def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]:
     """`jr_*` commands. `career` is ignored, like `settings`."""
     e = _core()
@@ -619,6 +627,8 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
             need(p['gender'] in ('male', 'female'), 'Chọn Nam hoặc Nữ nhé.')
             old, j['gender'] = j['gender'], p['gender']
             wd.on_gender(s, old)
+        if j['story'] and not j['intro'] and j['gender']:
+            _welcome_settings(s)
         result['message'] = f'Chào {s["name"]}! Khu phố đã nhớ tên bạn.'
     elif name == 'jr_equip':
         tid = p.get('title')
