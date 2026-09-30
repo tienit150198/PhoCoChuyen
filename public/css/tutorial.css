@@ -35,7 +35,8 @@
 /* ----------------------------------------------- in-context tips (tips.js) */
 /* No dim and no "Tiếp": a ring on the control and one line beside it. Only the bubble takes taps. */
 .tut-layer.tips .tut-spot{box-shadow:none;outline:2.5px solid var(--accent);outline-offset:0;border-radius:14px}
-.tut-layer.tips .tut-bubble{padding:10px 8px 10px 12px}
+.tut-layer.tips .tut-bubble{padding:10px 8px 10px 12px;pointer-events:none}   /* taps go through to the game… */
+.tut-layer.tips .tip-x{pointer-events:auto}                                         /* …except "×" */
 .tut-layer.tips .tut-emoji{width:32px;height:32px;border-radius:10px;font-size:1.15rem}
 .tut-layer.tips .tut-text{flex:1;align-self:center;font-size:.95rem;line-height:1.35}
 .tip-x{flex:none;display:grid;place-items:center;width:40px;height:40px;margin:-6px -2px -6px 0;border:0;border-radius:50%;background:transparent;color:var(--muted);font-size:1.4rem;line-height:1;cursor:pointer}

@@ -16,7 +16,7 @@ import {careerSubmit,careerInput,loadCareerModules,careerUI,hasCareerUI,setCaree
 import {applyGuide,guideAction,nextHint,stepCta,plainText} from './v4/guide.js';
 import {inventoryView,feedbackView,situationView,jobView as jobAppView,v4Action,v4Submit,v4Input} from './v4/views.js';
 import {moneyBoot,confirmMoney,dialogBalances} from './v4/money.js';  // 💰 Ví / Quỹ tiệm in sight while spending
-import {quickOpen} from './v4/onboard.js';  // a brand-new player's first minutes
+import {quickOpen,firstDay} from './v4/onboard.js';  // a brand-new player's first minutes
 import {hudMoney,hudChipsHTML,wealthHTML,loadJoint,jointBalance,wealthAction} from './v4/wealth.js';  // 💰 Tiền của bạn (top bar chips + sheet)
 import {emojiOf} from './v4/journey.js';
 import {setLanguage,t as i18nT} from './v4/i18n.js';
@@ -883,7 +883,7 @@ function summaryView(){
   if(s.life)notes.push(lifeSummary(s.life));
   if(s.experiences?.tip_day?.count&&L.tips.use())notes.push(L.tips.m.tipSummary(s.experiences.tip_day));
   const jr=s.journey;
-  if(jr&&(jr.living||jr.upkeep||jr.salary))notes.push(notice(`<b>Ngày sống thứ ${jr.life_day}</b>${s.clock?`<p>Bạn xong việc lúc ${esc(s.clock.finish)}.</p>`:''}<p>Tiền phòng và cơm nước: −${fmt(jr.living)} xu.</p>${jr.upkeep?`<p>Duy trì các nơi làm khác: −${fmt(jr.upkeep)} xu.</p>`:''}${jr.salary?`<p>Lương về ví: +${fmt(jr.salary)} xu.</p>`:''}<p>Ví của bạn còn <b>${fmt(jr.wallet)} xu</b>.</p>${jr.wallet<0?'<p>Ví đang nợ: trả hết nợ thì câu chuyện mới đi tiếp.</p>':''}`,jr.wallet<0?'amber':'','home'));
+  if(jr&&(jr.living||jr.upkeep||jr.salary))notes.push(notice(`<b>Ngày sống thứ ${jr.life_day}</b>${s.clock?`<p>Bạn xong việc lúc ${esc(s.clock.finish)}.</p>`:''}<p>Tiền phòng và cơm nước: −${fmt(jr.living)} xu.</p>${jr.upkeep?`<p>Duy trì các nơi làm khác: −${fmt(jr.upkeep)} xu.</p>`:''}${jr.salary?`<p>Lương về ví: +${fmt(jr.salary)} xu.</p>`:''}${jr.gift?`<p>🎁 Quà chào hàng xóm mới: +${fmt(jr.gift)} xu.</p>`:''}<p>Ví của bạn còn <b>${fmt(jr.wallet)} xu</b>.</p>${jr.wallet<0?'<p>Ví đang nợ: trả hết nợ thì câu chuyện mới đi tiếp.</p>':''}`,jr.wallet<0?'amber':'','home'));
   if(job?.salary)notes.push(notice(`<b>Lương hôm nay +${fmt(job.salary)} xu</b>${job.result==='official'?'<p>Hết thử việc: bạn đã được ký hợp đồng chính thức! 🎉</p>':job.result==='extended'?'<p>Thử việc được gia hạn thêm 2 ngày. Cố lên nhé!</p>':job.probation?'<p>Đang thử việc: nhận 85% lương.</p>':''}`,'success','briefcase'));
   if(rv.open||(rv.count&&rv.weakest&&rv.average<4.5))notes.push(notice(`${rv.count&&rv.weakest&&rv.average<4.5?`Khách góp ý nhiều nhất về <b>${esc(rv.weakest)}</b>.`:''}${rv.open?` Còn ${rv.open} đánh giá chờ bạn trả lời.`:''}<br>${button('Xem đánh giá','feedback',{filter:rv.open?'open':'all'},'small')}`,'amber','star'));
   if(ops?.unpaid)notes.push(notice(`<b>${esc(wordsFor(career()).books)}: còn ${fmt(ops.unpaid)} xu cần trả</b><p class="ck-chips"><span class="ck-delta flat">Lương ${fmt(ops.wages)}</span><span class="ck-delta flat">điện nước ${fmt(ops.utilities)}</span><span class="ck-delta flat">thuê ${fmt(ops.rent_accrued)} xu</span>${ops.period?'<span class="ck-delta warn">vừa kết kỳ thuế</span>':''}</p>${button('Mở sổ thu chi','finance',{},'small')}`,'','mail'));
@@ -1258,5 +1258,6 @@ try{
   else if(!api.state.current)openSheet('home');else{if(!room().open)openSheet(room().shift_summary?'summary':'prepare');}
   import('./v4/whatsnew.js').then(m=>m.whatsNewBoot(env())).catch(e=>console.warn('whatsnew:',e));  // "Có gì mới": lazy, off the first load
   if(api.gifts?.length)import('./v4/gift.js').then(m=>m.giftBoot(env())).catch(e=>console.warn('gift:',e));  // 🎁 Quà từ Phố Có Chuyện: only for a save with a gift
+  if(firstDay(api.state))import('./v4/onboard-fx.js').then(m=>m.onboardBoot(env())).catch(e=>console.warn('onboard:',e));  // a new player's first day only
   import('./v4/ticker.js').then(m=>m.tickerBoot(()=>env())).catch(e=>console.warn('ticker:',e));  // Bảng tin cả phố (tin cưới): lazy
 }catch(error){$('#loading').innerHTML=`<div class="loading-leaf">${icon('leaf',45)}</div><h1>Khu phố đang đợi mở cửa</h1><p>Chưa kết nối được. Kiểm tra mạng rồi thử lại nhé.</p><button class="btn primary big" id="reload-btn">Thử kết nối lại</button>`;console.warn(error);$('#reload-btn').onclick=()=>location.reload();}

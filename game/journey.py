@@ -36,6 +36,8 @@ VERSION = 1
 START_WALLET = 60
 RESERVE = 80          # a fund keeps this much after a withdrawal
 REOPEN_FEE = 15
+WELCOME_GIFT = 20     # a brand-new neighbour's gift, into the wallet when the first life day ends
+WELCOME_LABEL = 'Quà chào hàng xóm mới 🎁'
 BREADTH_XP = 80       # maturity bonus for every workplace you really worked at
 LIVING = {1: 10, 2: 12, 3: 14, 4: 16, 5: 18, 6: 20, 7: 20}
 UPKEEP = {'cozy': 4, 'sunny': 7, 'garden': 11}
@@ -530,6 +532,9 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
             _wallet(j, -(fee - from_fund), 'upkeep', f'Bù chi phí duy trì · {_place(cid)}', cid)
         idle_total += fee
     j['stats']['upkeep_paid'] += idle_total
+    if day == 1:   # the end of a new player's first day: Bà Tám's welcome, through the wallet like any income
+        _wallet(j, WELCOME_GIFT, 'life', WELCOME_LABEL)
+        notes.append(f'🎁 Bà Tám gửi quà chào hàng xóm mới: +{WELCOME_GIFT} xu vào ví.')
     j['clean_days'] = j['clean_days'] + 1 if j['wallet'] >= 0 else 0
     j['life_day'] += 1
     line = f'Ngày sống {day}: {cost["label"].lower()} {cost["total"]} xu'
@@ -540,7 +545,8 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
         notes.append(f'Ví đang nợ {-j["wallet"]} xu. Rút tiền lời từ một nơi làm việc để trả nhé.')
     summary = result.get('summary')
     if isinstance(summary, dict):
-        summary['journey'] = dict(life_day=day, living=cost['total'], upkeep=idle_total, salary=pay, wallet=j['wallet'])
+        summary['journey'] = dict(life_day=day, living=cost['total'], upkeep=idle_total, salary=pay, wallet=j['wallet'],
+                                  **({'gift': WELCOME_GIFT} if day == 1 else {}))
     result.setdefault('effects', []).extend(notes)
 
 

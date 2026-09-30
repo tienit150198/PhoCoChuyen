@@ -251,6 +251,14 @@ BIG_LINES = (
 )
 
 # The line a happy customer adds to the review.
+# A brand-new player's very first customer (tips.welcome): a warm "wow", a small tip and one of these.
+WELCOME_LINES = (
+    'Người mới hả? Làm khéo ghê, chúc {ac} ngày đầu thật vui nha!',
+    'Ngày đầu mà làm ngon vậy! Chút tip mừng {ac} nè.',
+    'Lần đầu ghé mà thấy thương quán rồi. Cố lên nha {ac}!',
+)
+WELCOME_SHARE = .15     # of the bill, rounded to what people hand over, within the career's lo..hi
+
 REVIEW_CASH = ('Có để lại chút tip cảm ơn 💝', 'Tip nhẹ cho người làm có tâm 💝', 'Xứng đáng được tip, sẽ quay lại 💝')
 REVIEW_BIG = ('Tip hơi nhiều nhưng xứng đáng lắm 🌟',)
 REVIEW_GIFT = 'Có gửi {gift} để cảm ơn 🎁'

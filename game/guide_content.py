@@ -145,7 +145,7 @@ CAREERS = {'milk_tea': {'emoji': '🧋',
                        '⚙️ Máy dán nắp bám keo sau 12 ly, bẩn sau 20 ly: bấm [[Lau máy]] (20 phút).',
                        '🛠️ Tab [[Nâng cấp]]: chuông gọi món (cấp 2, 60 xu), nồi ủ trân châu (cấp 2, 90 xu), tủ mát '
                        'topping (cấp 3, 120 xu), máy dán nắp tự động (cấp 4, 140 xu).',
-                       '⭐ Tay nghề lên cấp theo số ly đã pha: cấp 2 ở 4 ly, cấp 3 ở 10, cấp 4 ở 18, cấp 5 ở 28. Mỗi '
+                       '⭐ Tay nghề lên cấp theo số ly đã pha: cấp 2 ở 3 ly, cấp 3 ở 10, cấp 4 ở 18, cấp 5 ở 28. Mỗi '
                        'cấp mở thêm trà, siro, topping.',
                        '📱 Từ cấp 2 có đơn app. Từ cấp 3 và cấp 5, mỗi ngày có thể thêm một chuyện bất ngờ.'],
               'surprises': ['📋 Quản lý thị trường kiểm tra: quầy sạch được +10 XP; còn vệt trà bị phạt. Trước đó nhớ '

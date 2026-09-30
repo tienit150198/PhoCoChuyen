@@ -46,7 +46,7 @@ const TIPS=[
     text:()=>first('#rail [data-action="home"]')?'Hành trình: việc cần làm và nơi làm khác.':'Thêm → Hành trình: việc cần làm, nơi làm khác.',
     when:()=>calmStage()&&(S()?.journey?.life_day|0)>=2,
     find:()=>first('#rail [data-action="home"]')||first('#dock [data-action="v4Menu"]'),
-    done:()=>view()==='home'||document.documentElement.classList.contains('menu-open')},
+    done:()=>!calmStage()},   // opened Hành trình, the menu or anything else: it has done its job
 ];
 
 /* ------------------------------------------------------------------ bubble */
@@ -89,9 +89,10 @@ function tick(){
   if(!tip){finish();return;}
   if(run.shown&&(tip.done()||(tip.ttl&&performance.now()-run.shown>tip.ttl))){next();return;}
   if(!tip.when()){if(bubbleUp()&&bubble.dataset.tip===tip.id)hideBubble();return;}
-  const el=tip.find();
-  if(!el){if(bubbleUp())bubble.hidden=true;return;}
-  if(!bubbleUp()||bubble.dataset.tip!==tip.id||bubble._el!==el||bubble.parentElement!==(topDialog()||document.body)){
+  const el=tip.find(),top=topDialog();
+  // Not there, or under a newer dialog (a confirm, a scene): wait out of sight.
+  if(!el||top&&!top.contains(el)){if(bubbleUp())bubble.hidden=true;return;}
+  if(!bubbleUp()||bubble.dataset.tip!==tip.id||bubble._el!==el||bubble.parentElement!==(top||document.body)){
     showBubble({id:tip.id,emoji:tip.emoji,text:typeof tip.text==='function'?tip.text():tip.text,el,onClose:()=>stopTips('off')});
   }else placeBubble();
   run.shown||=performance.now();
@@ -129,3 +130,4 @@ function watch(){
   const again=()=>{if(bubbleUp())placeBubble();};
   addEventListener('resize',again);addEventListener('layoutchange',again);addEventListener('scroll',again,true);
 }
+

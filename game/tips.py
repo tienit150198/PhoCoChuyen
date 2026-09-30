@@ -21,7 +21,10 @@ a reload or a second call never pays twice. Where the money goes:
 
 Skipped: anything not 'completed', a task whose cash flow already paid a keep-the-change tip
 (t['tip_given'] > 0) or a career tip before the hand-off, a safety slip, and the very first
-job at a workplace (the guided tour / first dossier runs there).
+job at a workplace (the guided tour / first dossier runs there) — except the very first
+customer of a brand-new story player (welcome): a small tip (or a thank-you gift where nobody
+pays at the counter) and a warm line, always, when the job was fine (3★ or better). Decided like
+any tip (seeded by the task id, paid through the same paths), so a replay pays nothing twice.
 
 State: t['tip_roll'] on the task, c['life']['tip_day'] (today's tips, shown by
 public/js/v4/tips.js and folded into the day recap at close; optional in older saves).
@@ -244,6 +247,8 @@ def decide(s: dict, c: dict, t: dict) -> dict:
         return dict(out, why='reaction')
     if cq.safety(t):
         return dict(out, why='safety')
+    if welcome(s, t):
+        return _welcome(s, c, t, out)
     if c['metrics'].get('served', 0) <= 1:
         return dict(out, why='first')   # the guided first job at a place stays calm
     post = _review(c, t)
@@ -287,6 +292,32 @@ def decide(s: dict, c: dict, t: dict) -> dict:
     pool = tc.GIFT_LINES.get(v, tc.GIFT_LINES['plain'])
     line = _fill(pool[rng.randrange(len(pool))], s, spoken)
     return dict(out, kind='gift', line=line, who=spoken['who'], voice=v, emoji=emoji, gift=gift)
+
+
+def welcome(s: dict, t: dict) -> bool:
+    """The very first customer a brand-new story player has served (first life day, one job done in all)."""
+    j = s.get('journey')
+    if not (isinstance(j, dict) and j.get('story') and j.get('life_day') == 1):
+        return False
+    return sum(int(((c.get('metrics') or {}).get('served')) or 0) for c in s['careers'].values()) == 1
+
+
+def _welcome(s: dict, c: dict, t: dict, out: dict) -> dict:
+    post = _review(c, t)
+    if not tc.STARS.get(fair_stars(c, t, post), 0):
+        return dict(out, why='first')   # a poor first job: no welcome tip, the usual calm first job
+    career = t['career']
+    n = norm(career)
+    spoken = voice(s, c, t, _hash('tip-voice', t['id']))
+    seed = _hash('tip-welcome', t['id'])
+    line = _fill(tc.WELCOME_LINES[seed % len(tc.WELCOME_LINES)], s, spoken)
+    paid = bill(c, t)
+    base = dict(out, p=100, big=False, line=line, who=spoken['who'], voice=spoken['voice'])
+    if paid > 0:
+        return dict(base, kind='cash', amount=min(n['hi'], max(n['lo'], nice(paid * tc.WELCOME_SHARE))), emoji='💝', gift='')
+    gifts = tc.GIFTS.get(career, tc.DEFAULT_GIFTS)
+    emoji, gift = gifts[seed // 7 % len(gifts)]
+    return dict(base, kind='gift', emoji=emoji, gift=gift)
 
 
 # ---------------------------------------------------------------- paying
