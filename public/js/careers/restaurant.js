@@ -7,6 +7,7 @@ import {reqList,fold,refTable} from '../ui-kit.js';
 import {dayStrip,flash,eventCard,keepBarAboveFooter,idlePanel,gradeCard,patience,openTasks} from './food_kit.js';
 import {nextHint,stepCta,finalGo,pending as nextOpen,firstTime,todoAttrs,todoArrow,stepLine} from '../v4/guide.js';
 import {restockFor} from '../v4/restock.js';
+import {reqPin,nextLine,pinTop} from './asm_kit.js';
 
 const BASE_SCALE=25; // seconds shown on the boiling bar
 const NOODLE={raw:'sống',perfect:'chín tới',soft:'hơi mềm',mushy:'nát'};
@@ -145,6 +146,15 @@ function regularCard(t,x){
   const body=`${reqList(rows,x.esc,'Thói quen của khách quen')}${btns?`<div class="row wrap rs-touches">${btns}</div>`:''}
     <p class="muted small">Ghé ${b.visits} lần${b.usual?` · món quen: ${x.esc(b.usual)}`:''}${b.tip?` · khách ruột: +${b.tip} xu tiền trà khi tô chuẩn`:''}.</p>`;
   return `<div class="rs-regular">${foldBox(x,'reg',summary,body,left>0)}</div>`;
+}
+
+/** The order pinned under the header while cooking (asm_kit): one chip per line of the order, live ✓ / ✗,
+ * and the bowl tabs of a table. The full ticket (and what the guest said) stays in the side column. */
+function pin(t,x){
+  if(plated(t)||t.needs.masked)return '';
+  const chips=checklistRows(t,x).map(r=>({ok:r.ok,icon:r.icon,text:`${r.label}${r.value?` · ${r.value}`:''}`}));
+  const who=x.npc(t.npc);
+  return reqPin(x,{title:'Order',sub:`${x.esc(who.display_name)}${isGroup(t)?` · tô ${t.cur+1}/${t.needs.party.length}`:''}`,chips,tabs:tabs(t,x)});
 }
 
 /* ---------------------------------------------------------------- checklist */
@@ -449,9 +459,8 @@ function stove(t,x){
     }
     if(offered)return `<div class="rs-basket"><small class="muted">Rổ trống</small></div>`;
     offered=true;
-    const sp=specOf(t),need=t.needs&&!t.needs.masked&&t.needs.style!=='open'?(sp.extra_noodle?2:1):2;
     const can=b.container&&!b.boiling&&b.noodles.length<2&&baskets.length<2&&!plated(t);
-    return `<div class="rs-basket">${boilBar(null,x,'',shift)}${x.cmd(`🍜 Thả mì (${stockOf(x,'noodle')})`,'rs_boil',{task:t.id},can&&b.noodles.length<need?'primary small':'small',!can||!stockOf(x,'noodle'))}</div>`;
+    return `<div class="rs-basket">${boilBar(null,x,'',shift)}${x.cmd(`🍜 Thả mì (${stockOf(x,'noodle')})`,'rs_boil',{task:t.id},'small',!can||!stockOf(x,'noodle'))}</div>`;
   }).join('')}</div>`;
 }
 function bowlArt(b,x){
@@ -500,10 +509,15 @@ function toppings(t,x){
   const avoid=n.style==='open'?new Set([...n.open.avoid,...(n.open.veg?x.cc.meat||[]:[])]):new Set();
   const openOrder=n.style==='open';
   const shut=x.cc.toppings.map(k=>item(x,k)).filter(i=>(i.unlock||1)>level);
-  const tiles=x.cc.toppings.filter(k=>(item(x,k).unlock||1)<=level).map(k=>{const i=item(x,k),q=stockOf(x,k),lock=(i.unlock||1)>level,have=b.toppings[k]||0;
-    return tileBtn(x,{cmd:'rs_topping',payload:{task:t.id,item:k},pick:k,emoji:i.emoji,name:i.name,sub:openOrder&&!lock?`${i.price||0} xu`:'',count:lock?null:q,zero:!q,locked:lock,
-      selected:have>0,have,wanted:!!want[k]&&have<want[k],avoid:avoid.has(k),disabled:!q||!b.container||plated(t),
-      label:lock?`${i.name}, mở ở cấp ${i.unlock||1}`:`Thêm ${i.name}, còn ${q}${have?`, trong tô ${have}`:''}`});}).join('');
+  // What the order asks for leads the grid ("Khách cần"), with one tap for the portions still missing.
+  const open=x.cc.toppings.filter(k=>(item(x,k).unlock||1)<=level),rank=k=>want[k]?0:avoid.has(k)?2:1;
+  const tiles=[...open].sort((a,c)=>rank(a)-rank(c)).map(k=>{const i=item(x,k),q=stockOf(x,k),lock=(i.unlock||1)>level,have=b.toppings[k]||0;
+    const miss=want[k]?Math.max(0,want[k]-have):0,off=!q||!b.container||plated(t);
+    const tileHtml=tileBtn(x,{cmd:'rs_topping',payload:{task:t.id,item:k,n:1},pick:k,emoji:i.emoji,name:i.name,sub:openOrder&&!lock?`${i.price||0} xu`:'',count:lock?null:q,zero:!q,locked:lock,
+      selected:have>0,have,wanted:miss>0,avoid:avoid.has(k),disabled:off,
+      label:lock?`${i.name}, mở ở cấp ${i.unlock||1}`:`Thêm ${i.name}, còn ${q}${have?`, trong tô ${have}`:''}`});
+    const fill=miss>1&&q>=miss&&!off?`<button type="button" class="btn small rs-fill-n" data-command="rs_topping" data-payload="${pay(x,{task:t.id,item:k,n:miss})}">＋ ${miss} phần</button>`:'';
+    return `<div class="rs-tcard${want[k]?' want':''}">${want[k]&&miss?'<span class="asm-need">Khách cần</span>':''}${tileHtml}${fill}</div>`;}).join('');
   const outOf=openOrder||n.masked?[]:Object.entries(sp.toppings).filter(([k,q])=>(stockOf(x,k)<q||(k==='beef'&&r.bad_beef))&&!(t.subs||{})[k]&&(b.toppings[k]||0)<q);
   const subs=outOf.length?`<div class="notice amber rs-subs">Thiếu ${outOf.map(([k])=>x.esc(item(x,k).name)).join(', ')}? Hỏi khách đổi món: ${outOf.map(([k])=>['mushroom','egg','sausage','kimchi_side','tofu'].filter(s=>s!==k&&stockOf(x,s)>0&&!(n.allergy&&item(x,s).allergen===n.allergy)).slice(0,2).map(s=>x.cmd(`${item(x,s).emoji} ${x.esc(item(x,s).name)}`,'rs_sub',{task:t.id,item:k,substitute:s},'small ghost')).join('')).join('')}</div>`:'';
   return `${subs}<div class="rs-grid rs-tops" role="group" aria-label="Topping">${tiles}</div>${lockChip(x,shut)}`;
@@ -657,12 +671,13 @@ export default {
     </section>`;
     const g=taskGuide(t,x),final=g.final||{label:'🛎️ Giao món',go:{sel:'.rs-desk'},ready:false};
     // The bowl in hand rides with the button, so each tap's result shows right above it (no scrolling).
-    const now=`<div class="rs-bar-now"><p><span aria-hidden="true">${b.container==='box'?'🥡':'🥣'}</span> ${x.esc(bowlStatus(t,x))}</p>${b.boiling?boilBar(b.boiling,x,t.id,d.boil_shift||0):''}</div>`;
+    const now=`<div class="rs-bar-now">${nextLine(x,nextOpen(g.steps),'tô đã đủ, bấm nút dưới để giao')}<p><span aria-hidden="true">${b.container==='box'?'🥡':'🥣'}</span> ${x.esc(bowlStatus(t,x))}</p>${b.boiling?boilBar(b.boiling,x,t.id,d.boil_shift||0):''}</div>`;
     const bar=`<div class="fk-bar rs-bar">${now}${stepCta(x,g.steps,final)}</div>`;
-    return `<div class="career-job rs food">${head}<div class="rs-work"><div class="rs-side">${ticket(t,x)}${extras(x)}</div>${desk}</div>${bar}</div>`;
+    return `<div class="career-job rs food">${head}<div class="rs-work"><div class="rs-side">${ticket(t,x)}${extras(x)}</div>${pin(t,x)}${desk}</div>${bar}</div>`;
   },
   tick(root,x){
     keepBarAboveFooter(root);
+    pinTop(root);
     const w=x.cc.boil||{raw:7,perfect:13,soft:19};
     root.querySelectorAll('[data-boil-start]').forEach(el=>{
       const start=Number(el.dataset.boilStart);if(!start)return;

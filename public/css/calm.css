@@ -151,3 +151,54 @@
 #sheet .career-job.gr .gr-tabs{margin-top:14px}
 #sheet .career-job.gr .gr-tabs .btn{position:relative;overflow:visible}
 #sheet .career-job.gr .gr-tabs .gr-badge{position:absolute;top:-8px;right:-4px;box-shadow:0 0 0 2px var(--surface)}
+
+/* =============================================== Assembly: many parts per order */
+/* asm_kit.js (florist, repair): the request pinned under the sheet header with a live ✓ per
+   requirement, the "Bước tiếp" line in the bottom bar, − n + steppers and "Khách cần" badges. */
+.asm-pin{position:sticky;top:var(--asm-top,0px);z-index:5;display:grid;gap:6px;margin:8px 0 10px;padding:8px 10px;border-radius:var(--ck-radius);background:var(--surface);border:1.5px solid var(--accent);box-shadow:0 6px 14px -8px rgb(0 0 0 / 22%);min-width:0}
+.asm-pin-head{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;margin:0;min-width:0;font-size:.9rem;line-height:1.3}
+.asm-pin-head>b{flex:none;color:var(--accent-text)}
+.asm-pin-sub{flex:1 1 8em;min-width:0;color:var(--ink-2);font-size:.833rem;font-weight:600;overflow-wrap:anywhere}
+.asm-pin-n{flex:none;margin-left:auto;padding:1px 8px;border-radius:999px;background:var(--surface-3);color:var(--ink-2);font-size:.767rem;font-weight:800;font-variant-numeric:tabular-nums}
+.asm-pin-n.ok{background:var(--good-soft);color:var(--good)}
+.asm-pin-n.bad{background:var(--bad-soft);color:var(--bad)}
+.asm-chips{display:flex;flex-wrap:wrap;gap:5px;margin:0;padding:0;list-style:none;min-width:0}
+.asm-chips>li{display:flex;min-width:0;max-width:100%}
+.asm-chip{display:inline-flex;align-items:center;gap:4px;min-width:0;max-width:100%;min-height:30px;padding:3px 10px;border-radius:999px;border:1px solid var(--line-strong);background:var(--surface-2);color:var(--ink);font-size:.833rem;font-weight:700;line-height:1.25;text-align:left;white-space:normal;overflow-wrap:anywhere}
+.asm-chip>i{flex:none;font-style:normal;font-weight:800}
+.asm-chip>span{min-width:0}
+.asm-chip.ok{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.asm-chip.bad{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+button.asm-chip{cursor:pointer;min-height:36px}
+button.asm-chip:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+.asm-next{display:flex;gap:4px;margin:0;min-width:0;font-size:.833rem;line-height:1.35;color:var(--ink-2)}
+.asm-next>b{flex:none;color:var(--accent-text)}
+.asm-next>span{flex:1 1 0;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.asm-need{position:absolute;top:6px;left:6px;z-index:1;padding:1px 7px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-size:.7rem;font-weight:800;line-height:1.5;white-space:nowrap;pointer-events:none}
+.asm-need.soft{background:var(--good-soft);color:var(--good);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--good) 35%,transparent)}
+.asm-stepper{display:flex;align-items:center;justify-content:space-between;gap:4px;min-width:0}
+.asm-stepper>b{min-width:2ch;text-align:center;font-size:1rem;font-variant-numeric:tabular-nums}
+.asm-step{display:grid;place-items:center;width:40px;height:40px;border-radius:999px;border:1.5px solid var(--line-strong);background:var(--surface);color:var(--ink);font-size:1.25rem;font-weight:800;line-height:1;cursor:pointer}
+.asm-step:hover:not(:disabled){border-color:var(--accent);color:var(--accent-text)}
+.asm-step:disabled{opacity:.4;cursor:default}
+.asm-step:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+/* Tabs under the pin: a ✓ or a count in a corner badge, like the cooler / "Cắm & gói" tabs. */
+.asm-tabs{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px;margin:0}
+.asm-tab{position:relative;display:flex;align-items:center;justify-content:center;gap:4px;min-width:0;min-height:40px;padding:4px 8px;border-radius:12px;border:1.5px solid var(--line-strong);background:var(--surface);color:var(--ink-2);font-size:.833rem;font-weight:800;line-height:1.2;text-align:center;cursor:pointer}
+.asm-tab>span{min-width:0;overflow-wrap:anywhere}
+.asm-tab.on{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+.asm-tab>em{position:absolute;top:-7px;right:-4px;display:grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:var(--surface-3);color:var(--ink);font-size:.7rem;font-style:normal;font-weight:800;box-shadow:0 0 0 2px var(--surface)}
+.asm-tab>em.ok{background:var(--good);color:var(--surface)}
+.asm-tab>em.due{background:var(--accent-soft);color:var(--accent-text)}
+.asm-tab:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+/* Requirement rows without an icon keep the label in the wide column (it once fell into the 28px icon
+   column and read one letter per line: player feedback #11). */
+.req-row>.req-mark+.req-label{grid-column:3}
+@container sheet (max-width:480px){
+  .asm-pin{gap:5px;padding:7px 8px}
+  .asm-chips{gap:4px}
+  .asm-chip{min-height:26px;padding:2px 8px;font-size:.8rem}
+  button.asm-chip{min-height:36px}
+  .asm-tab{min-height:38px;padding:3px 6px;font-size:.8rem}
+}
+.asm-pin p,.asm-pin-head{max-width:none}
