@@ -18,7 +18,7 @@ def main():
         if 'failure' in path.name and path.name.startswith('browser'):continue
         if path.name.endswith(('-wal','-shm')):continue
         paths.append(path)
-    manifest={'project':'Một ngày làm nghề','version':'0.9.4','created_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'public web game: one character journey across 20 careers, multiplayer street, AI personas, web push, vi/en','files':[{'path':str(p.relative_to(ROOT)),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in paths]}
+    manifest={'project':'Một ngày làm nghề','version':'0.9.4.1','created_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'public web game: one character journey across 20 careers, multiplayer street, AI personas, web push, vi/en','files':[{'path':str(p.relative_to(ROOT)),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in paths]}
     mp=ROOT/'MANIFEST.json';mp.write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf-8')
     args.output.parent.mkdir(parents=True,exist_ok=True)
     with zipfile.ZipFile(args.output,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as out:

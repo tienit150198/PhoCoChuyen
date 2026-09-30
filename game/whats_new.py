@@ -4,7 +4,7 @@
 =====================================================================
 EVERY RELEASE MUST ADD AN ENTRY AT THE TOP OF ENTRIES (newest first).
 =====================================================================
-- version: the release number ("0.9.2"), higher than the entry below it and at
+- version: the release number ("0.9.2", or "0.9.4.1" for a hotfix), higher than the entry below it and at
   least game.__version__ (tests/test_whats_new.py fails otherwise);
 - date: "YYYY-MM-DD", the day it goes live;
 - items: 1 to MAX_ITEMS short bullets in plain player Vietnamese (no developer notes,
@@ -28,6 +28,9 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="0.9.4.1", date="2026-09-30", items=(
+        dict(emoji="🎁", text="Quà mừng mở server: mỗi bạn nhận 150 xu làm vốn, bấm nhận trong game trước hết ngày 07/10."),
+    )),
     dict(version="0.9.4", date="2026-09-30", items=(
         dict(emoji="🛠️", text="Đã khắc phục sự cố giật, lag: game chạy mượt hơn nhiều."),
         dict(emoji="🏪", text="Chương 3 có thêm 3 nghề: Shop quần áo, Shop thú cưng (cá cảnh, thú nhỏ, góc nhận nuôi) và quán trà đá vỉa hè."),
@@ -51,16 +54,17 @@ ENTRIES = (
 
 MAX_ITEMS = 18
 MAX_TEXT = 130
-VERSION = re.compile(r"\d{1,3}(?:\.\d{1,3}){1,2}")
+VERSION = re.compile(r"\d{1,3}(?:\.\d{1,3}){1,3}")   # "0.9", "0.9.4", hotfix "0.9.4.1"
 DATE = re.compile(r"20\d\d-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])")
 ACTION = re.compile(r"[A-Za-z][A-Za-z0-9:_-]{0,31}")
 DATA_JS = Path(__file__).resolve().parents[1] / "public" / "js" / "v4" / "whatsnew-data.js"
 
 
 def parse(version: str) -> tuple[int, ...]:
-    """"0.9.1" -> (0, 9, 1); "0.9" -> (0, 9, 0) so the two compare equal."""
+    """"0.9.1" -> (0, 9, 1, 0); "0.9" -> (0, 9, 0, 0) so the two compare equal; a hotfix
+    "0.9.4.1" -> (0, 9, 4, 1), after 0.9.4 and before 0.9.5."""
     parts = tuple(int(x) for x in version.split("."))
-    return parts + (0,) * (3 - len(parts))
+    return parts + (0,) * (4 - len(parts))
 
 
 def valid_seen(value) -> bool:

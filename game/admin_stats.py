@@ -35,6 +35,10 @@ How players are protected
   stale entry is served at once while one thread refreshes it.
 * AI usage has no stored log, so `install_ai_counters()` wraps ai.chat, ai.clean_reply
   and ai.abusive with in-memory per-day counters ("since restart").
+* 🎁 Gift claims (game/journey.py GIFTS) are counted the same way: server.py calls
+  count_gift() after a jr_gift_claim that went through (not a replay). No save is read;
+  the count is per worker process and starts again at 0 on a restart. It rides along in
+  the AI payload as ai.gifts.
 
 Days are Vietnam days (UTC+7), matching the players.
 """
@@ -221,12 +225,35 @@ def install_ai_counters() -> None:
             setattr(ai, name, wrap(fn))
 
 
+_gifts: dict[str, dict[str, int]] = {}   # Vietnam day -> {gift id: claims}
+
+
+def count_gift(gid: str) -> None:
+    """One gift claim went through (in memory, since restart)."""
+    day = _today()
+    with _ai_lock:
+        row = _gifts.setdefault(day, {})
+        row[str(gid)[:24]] = row.get(str(gid)[:24], 0) + 1
+        for old in sorted(_gifts)[:-AI_DAYS]:
+            _gifts.pop(old, None)
+
+
+def gift_usage() -> dict:
+    with _ai_lock:
+        days = [dict(day=d, claims=dict(row)) for d, row in sorted(_gifts.items())]
+    total: dict[str, int] = {}
+    for r in days:
+        for gid, n in r['claims'].items():
+            total[gid] = total.get(gid, 0) + n
+    return dict(total=total, days=days)
+
+
 def ai_usage() -> dict:
     with _ai_lock:
         days = [dict(day=d, **row) for d, row in sorted(_ai.items())]
     total = {k: sum(r[k] for r in days) for k in AI_KEYS}
     from . import ai
-    return dict(since=round(STARTED, 3), configured=bool(ai.available()), total=total, days=days[-AI_DAYS:])
+    return dict(since=round(STARTED, 3), configured=bool(ai.available()), total=total, days=days[-AI_DAYS:], gifts=gift_usage())
 
 
 # ---------------------------------------------------------------- helpers

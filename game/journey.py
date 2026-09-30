@@ -19,8 +19,10 @@ workplace open and no living costs, so plugin tests can play any career.
 from __future__ import annotations
 
 import copy
+import datetime
 import hashlib
 import random
+import time
 
 from .content import CAREERS, CAREER_META
 from . import archive as ar
@@ -35,8 +37,37 @@ BREADTH_XP = 80       # maturity bonus for every workplace you really worked at
 LIVING = {1: 10, 2: 12, 3: 14, 4: 16, 5: 18, 6: 20, 7: 20}
 UPKEEP = {'cozy': 4, 'sunny': 7, 'garden': 11}
 MODES = (('calm', .25), ('normal', .55), ('festival', .20))
-HISTORY_KINDS = ('living', 'upkeep', 'draw', 'invest', 'salary', 'reopen', 'incident', 'life', 'study', 'backdoor', 'bank')
+HISTORY_KINDS = ('living', 'upkeep', 'draw', 'invest', 'salary', 'reopen', 'incident', 'life', 'study', 'backdoor', 'bank', 'gift')
 NEWS_KINDS = ('chapter', 'titles')
+
+# 🎁 Quà mừng: a one-off gift every save may claim once, until a deadline on the server clock.
+# s['journey']['gifts'] lists the ids already claimed. The key is optional (it is not in
+# initial()): an older save without it has claimed nothing and stays valid as it is.
+# NEVER remove an id from GIFTS: saves that claimed it keep the id and must stay valid.
+VN = datetime.timezone(datetime.timedelta(hours=7))
+GIFTS = {
+    'open2026': dict(amount=150, label='Quà mừng mở server', until_text='07/10',
+                     until=datetime.datetime(2026, 10, 7, 23, 59, 59, tzinfo=VN)),   # hết ngày 07/10/2026, giờ Việt Nam
+}
+
+
+def _clock() -> float:
+    """The server clock (tests move it)."""
+    return time.time()
+
+
+def _gift_open(g: dict, now: float) -> bool:
+    return now < g['until'].timestamp() + 1   # the whole last second of the day still counts
+
+
+def gift_offer(j: dict, now: float | None = None) -> dict | None:
+    """The gift this save can still claim (not claimed yet, before its deadline), or None."""
+    now = _clock() if now is None else now
+    claimed = j.get('gifts') or ()
+    for gid, g in GIFTS.items():
+        if gid not in claimed and _gift_open(g, now):
+            return dict(id=gid, amount=g['amount'], label=g['label'], until=g['until'].isoformat(), until_text=g['until_text'])
+    return None
 
 CH_UNLOCKS = {
     # New players get every storefront at once; the service places follow after the first day.
@@ -658,6 +689,16 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
             j['paused'].pop(cid)
             j['stats']['reopened'] += 1
             result['message'] = f'{place} mở cửa lại ({paid}).'
+    elif name == 'jr_gift_claim':
+        gid = p.get('id')
+        need(set(p) == {'id'} and isinstance(gid, str) and gid in GIFTS, 'Không có món quà này.', 'gift_unknown')
+        g = GIFTS[gid]
+        claimed = j.get('gifts') or []
+        need(gid not in claimed, 'Bạn đã nhận quà này rồi nhé. Chúc bạn làm ăn phát đạt!', 'gift_claimed')
+        need(_gift_open(g, _clock()), f'Quà đã hết hạn nhận (hết ngày {g["until_text"]}). Hẹn bạn dịp quà sau nhé!', 'gift_expired')
+        j['gifts'] = [*claimed, gid]
+        _wallet(j, g['amount'], 'gift', g['label'])
+        result.update(message=f'🎁 Đã nhận {g["amount"]} xu quà mừng mở server!', celebrate=True, gift=gid)
     elif name.startswith('jr_cert_'):
         result.update(ct.action(s, name, p))
     elif name.startswith('jr_bk_'):
@@ -738,7 +779,7 @@ def public(s: dict) -> dict:
         clean_days=j['clean_days'], history=list(reversed(j['history'][-30:])), news=copy.deepcopy(j['news']),
         suggested=suggested(s, ctx), tasks=ctx['tasks'], worked=ctx['places'],
         stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')},
-        bank=bk.public(s), **ct.public(s))
+        bank=bk.public(s), gift=gift_offer(j), **ct.public(s))
 
 
 def _skill_ids() -> list[str]:
@@ -816,5 +857,9 @@ def validate(s: dict) -> None:
     need(isinstance(j['stats'], dict) and set(j['stats']) <= set(STATS), 'Thống kê hành trình không hợp lệ.')
     for v in j['stats'].values():
         integer(v, 0, 10**9)
+    if 'gifts' in j:   # optional: older saves have no key (nothing claimed)
+        g = j['gifts']
+        need(isinstance(g, list) and len(g) <= len(GIFTS) and all(isinstance(x, str) and x in GIFTS for x in g)
+             and len(set(g)) == len(g), 'Danh sách quà đã nhận không hợp lệ.')
     ct.validate(s)
     bk.validate(s)

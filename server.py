@@ -545,6 +545,7 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
                 if length>256*1024 and data.get("action")!="import_save":self.error(413,"Thao tác quá lớn.");return
                 result=self.server.store.command(token,data.get("request_id"),data.get("expected_revision"),data.get("career"),data.get("action"),data.get("payload",{}))
+                if data.get("action")=="jr_gift_claim" and not result.get("replayed"):admin_stats.count_gift(result.get("result",{}).get("gift",""))  # 🎁 admin count, in memory
                 self.json(200,result);return
             if length>64*1024:self.error(413,"Nội dung quá lớn.");return
             if route=="/api/ai/rephrase":

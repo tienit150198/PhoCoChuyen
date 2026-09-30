@@ -79,6 +79,14 @@ function aiCard(d){
     (rows.length?table(['Ngày','Gọi','Được','Lỗi','Lọc','Chặn'],rows):''),
     {note:`Đếm trong bộ nhớ từ ${stamp(a.since)}; khởi động lại máy chủ thì về 0.`});
 }
+/** 🎁 Quà mừng claims (game/journey.py GIFTS), counted in memory like AI usage; only once someone claimed. */
+function giftCard(d){
+  const g=d.ai?.gifts,ids=Object.keys(g?.total||{});if(!ids.length)return '';
+  const today=g.days.at(-1)?.day===d.today?g.days.at(-1).claims:{};
+  return card('Quà mừng <small>từ lúc khởi động</small>',
+    kv(ids.map(id=>[`🎁 ${esc(id)}`,`${num(g.total[id])} lượt nhận <small>hôm nay ${num(today[id]||0)}</small>`]),'kv3'),
+    {note:'Đếm trong bộ nhớ của tiến trình này; khởi động lại máy chủ thì về 0.'});
+}
 function serverCard(d){
   const s=d.server;
   return card('Máy chủ',
@@ -98,6 +106,6 @@ export function overviewView(d,lazy,more){
     ${kpi('Góp ý chưa đọc',num(f.unread),`${num(f.open)} đang mở ${icon('chevron',12)}`,{tone:f.unread?'hot':'',action:'gop-y'})}
     ${kpi('Máy chủ',`v${esc(s.version)}`,`chạy ${span(s.uptime)} · ${bytes(s.db_bytes)}`,{action:'he-thong'})}
   </div>`;
-  return kpis+playersCard(d,more)+`<div class="cols"><div class="col">${lazy.careers}${lazy.economy}${aiCard(d)}</div><div class="col">${lazy.play}${lazy.life}${feedbackCard(d)}${serverCard(d)}</div></div>`+
+  return kpis+playersCard(d,more)+`<div class="cols"><div class="col">${lazy.careers}${lazy.economy}${aiCard(d)}${giftCard(d)}</div><div class="col">${lazy.play}${lazy.life}${feedbackCard(d)}${serverCard(d)}</div></div>`+
     (lazy.foot||'');
 }

@@ -54,3 +54,12 @@
 @keyframes wn-in{from{opacity:0;transform:translateY(8px) scale(.97)}}
 @media (prefers-reduced-motion:reduce){.wn-dialog[open]{animation:none}}
 .reduce-motion .wn-dialog[open]{animation:none}
+
+/* 🎁 Quà mừng card (public/js/v4/gift.js): the same centred card, a short text and two buttons. */
+.gift-dialog{width:min(420px,calc(100vw - 32px - var(--safe-l) - var(--safe-r)))}
+.gift-body{flex:1 1 auto;min-height:0;overflow-y:auto;padding:16px 18px 6px;text-align:center}
+.gift-text{margin:0;font-size:1.05rem;line-height:1.55;color:var(--ink);overflow-wrap:anywhere}
+.gift-coin{display:inline-flex;align-items:center;gap:8px;margin:14px auto 6px;padding:10px 20px;border-radius:999px;background:var(--accent-soft);color:var(--accent-text);font-size:1.5rem;line-height:1.2}
+.gift-coin b{font-weight:800}
+.gift-foot{display:flex;flex-direction:column;gap:8px}
+.gift-foot .btn.ghost{min-height:var(--tap)}

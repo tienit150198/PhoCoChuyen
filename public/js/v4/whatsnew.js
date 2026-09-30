@@ -18,13 +18,13 @@ import {language} from './i18n.js';
 import {icon,escapeHTML as esc} from '../icons.js';
 
 const KEY='mnl.wn.seen';
-const VERSION=/^\d{1,3}(\.\d{1,3}){1,2}$/;
-const parse=v=>{const p=String(v).split('.').map(Number);while(p.length<3)p.push(0);return p;};
+const VERSION=/^\d{1,3}(\.\d{1,3}){1,3}$/;   // "0.9", "0.9.4", a hotfix "0.9.4.1" (game/whats_new.py)
+const parse=v=>{const p=String(v).split('.').map(Number);while(p.length<4)p.push(0);return p;};
 /** <0, 0, >0 like a sort; "" is older than any release. */
 export function compare(a,b){
   if(!a||!b)return (a?1:0)-(b?1:0);
   const x=parse(a),y=parse(b);
-  for(let i=0;i<3;i++)if(x[i]!==y[i])return x[i]-y[i];
+  for(let i=0;i<4;i++)if(x[i]!==y[i])return x[i]-y[i];
   return 0;
 }
 export const LATEST=NOTES[0]?.version||'';
@@ -40,6 +40,9 @@ export function seenVersion(state){
 }
 /** A release the player has not read yet exists. */
 export const due=state=>!!LATEST&&compare(LATEST,seenVersion(state))>0;
+/** The card is on screen, or it is still going to open by itself (a card queued after it, like
+ * the 🎁 gift in ./gift.js, waits for this to turn false). */
+export const pending=state=>Boolean(dlg?.open)||(!done&&due(state));
 
 let E=null,timer=0,calmTicks=0,dlg=null,auto=false,openedAt=0,back=null,older=false,done=false,sent='',cssReady=null;
 const reduced=()=>document.documentElement.classList.contains('reduce-motion')||document.body.classList.contains('reduce-motion')||matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -176,7 +179,7 @@ function check(){
   stopWatch();openWhatsNew(E,{byItself:true});
 }
 function stopWatch(){clearInterval(timer);timer=0;}
-function loadCss(){
+export function loadCss(){
   if(cssReady)return cssReady;
   const href=globalThis.__mnlBoot?.asset?.('/css/whatsnew.css')||'/css/whatsnew.css';
   const have=document.querySelector('link[data-wn-css]');

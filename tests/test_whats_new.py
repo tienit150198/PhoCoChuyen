@@ -39,6 +39,17 @@ class EntriesData(unittest.TestCase):
         self.assertGreaterEqual(wn.parse(wn.LATEST), wn.parse(__version__),
                                 f'add a "Có gì mới" entry for {__version__} at the top of game/whats_new.py')
 
+    def test_hotfix_versions_have_four_parts(self):
+        # A hotfix "0.9.4.1" comes after 0.9.4 and before 0.9.5; "0.9" still equals "0.9.0".
+        self.assertTrue(wn.parse('0.9.4') < wn.parse('0.9.4.1') < wn.parse('0.9.5'))
+        self.assertEqual(wn.parse('0.9'), wn.parse('0.9.0.0'))
+        self.assertTrue(wn.valid_seen('0.9.4.1'))
+        self.assertEqual(wn.newer('0.9.4.1', '0.9.4'), '0.9.4.1')
+        self.assertEqual(wn.newer('0.9.4.1', '0.9.5'), '0.9.5')
+        wn.validate((entry('0.9.4.1', '2026-09-30'), entry('0.9.4', '2026-09-30')))
+        with self.assertRaises(ValueError):
+            wn.validate((entry('0.9.4', '2026-09-30'), entry('0.9.4.1', '2026-09-30')))
+
     def test_browser_copy_is_in_sync(self):
         js = (ROOT / 'public' / 'js' / 'v4' / 'whatsnew-data.js').read_text(encoding='utf-8')
         self.assertEqual(js, wn.render_js(), 'run: python -m game.whats_new')
@@ -92,7 +103,7 @@ class SeenVersionInTheSave(unittest.TestCase):
         validate_state(copy.deepcopy(s))
 
     def test_junk_is_rejected(self):
-        for bad in ('abc', '1', '1.2.3.4', '0.9.1 ', ' 0.9.1', '0.9.1<script>', '0..1', '1234.0.0', 'x' * 40, 7, 0.9, None, True, ['0.9.1'], {}):
+        for bad in ('abc', '1', '1.2.3.4.5', '0.9.4.', '0.9.1 ', ' 0.9.1', '0.9.1<script>', '0..1', '1234.0.0', 'x' * 40, 7, 0.9, None, True, ['0.9.1'], {}):
             with self.subTest(bad=bad), self.assertRaises(GameError):
                 apply_action(new_state(), None, 'settings', {'whatsNewSeen': bad})
         s = new_state()

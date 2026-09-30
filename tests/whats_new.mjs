@@ -8,6 +8,8 @@ assert.equal(LATEST,NOTES[0].version);
 assert.ok(compare('0.9.1','0.9.0')>0);
 assert.ok(compare('0.10.0','0.9.9')>0,'numeric, not text order');
 assert.equal(compare('0.9','0.9.0'),0);
+assert.ok(compare('0.9.4.1','0.9.4')>0,'a hotfix is newer than its release');
+assert.ok(compare('0.9.5','0.9.4.1')>0,'and older than the next one');
 assert.ok(compare('0.5.0','')>0,'"" is older than every release');
 assert.equal(compare('',''),0);
 
