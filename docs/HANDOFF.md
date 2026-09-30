@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **0.9.15** (`main` = `bf496c2`), 28 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **0.9.16** (`main` = `f0080cc`), 28 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -97,8 +97,11 @@ branch holds what, and what to do next, in order. Details live in the linked doc
    - Package with `scripts/package.py` from a clean `git archive`, then `mnl-rolling-release <zip>` **on the
      new server**. While the old server still forwards (§7), mirror the release to it (§7).
    - Afterwards, watch 5xx/400 rates and the slow-cmd log for 10 minutes.
-2. **Onboarding** (branch `onboarding`, in progress 01/10): first fun in 6–8 presses, no popups in the first session,
-   fun first customer, hints at the moment of need. The 30/09 cohort: 53% picked a workplace, 39% served a customer.
+2. **Onboarding shipped in 0.9.16 (01/10 02:12, quiet):** one intro screen, day 1 opens on the first customer, first
+   delivery after 10 presses (was 23), no modal before the 3rd customer, tip + level 2 at customer 3 + day-1 gift,
+   one-time hints. Measure it: the 30/09 cohort had 53% picking a workplace and 39% serving a customer; compare the
+   01/10+ cohorts (admin "Thời gian chơi", new players' first day). In progress: `street2` / `air2` (many annoying
+   demands and player-initiated actions for the five 0.9.15 careers), then a quiet 0.9.17.
 3. **Next versions, in the owner's order:** (a) chat phase 1 (design `docs/superpowers/specs/2026-09-30-live-chat-street-design.md`
    on branch `live`; the owner said not yet on 01/10), then (b) seven careers: nhân viên gác chắn và bảo trì đường sắt,
    cán bộ lưu trữ và thư viện, điều dưỡng, thợ dầu khí, trực tổng đài cứu hộ, người gác hải đăng, cứu hộ hồ bơi,
