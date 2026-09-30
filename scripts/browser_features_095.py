@@ -549,7 +549,8 @@ async def main() -> int:
             browser = await getattr(pw, a.engine).launch()
             phone = a.width < 700
             ctx = await browser.new_context(viewport=dict(width=a.width, height=a.height), is_mobile=phone and a.engine == 'chromium',
-                                            has_touch=phone, device_scale_factor=2 if phone else 1)
+                                            has_touch=phone, device_scale_factor=2 if phone else 1,
+                                            service_workers='block')   # page.route must see every /api call (webkit)
             page = await ctx.new_page()
             w = Walk(page, a.shots, f'{a.width}x{a.height}')
             await page.goto(base)
