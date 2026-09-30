@@ -34,10 +34,10 @@ class EntriesData(unittest.TestCase):
             for it in e['items']:
                 self.assertTrue(it['emoji'] and it['text'], it)
 
-    def test_every_release_has_an_entry(self):
-        # Bumping game.__version__ without a new entry at the top of game/whats_new.py fails here.
-        self.assertGreaterEqual(wn.parse(wn.LATEST), wn.parse(__version__),
-                                f'add a "Có gì mới" entry for {__version__} at the top of game/whats_new.py')
+    def test_notes_never_ahead_of_the_game(self):
+        # Quiet releases are fine (the owner decides what is announced); notes for a version not shipped are not.
+        self.assertLessEqual(wn.parse(wn.LATEST), wn.parse(__version__),
+                             f'the "Có gì mới" entry {wn.LATEST} is newer than game.__version__ {__version__}')
 
     def test_browser_copy_is_in_sync(self):
         js = (ROOT / 'public' / 'js' / 'v4' / 'whatsnew-data.js').read_text(encoding='utf-8')

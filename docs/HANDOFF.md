@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **0.9.12** (`main` = `60d9420`), 23 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **0.9.12** (`main` = `b491cbf`), 23 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -45,7 +45,8 @@ branch holds what, and what to do next, in order. Details live in the linked doc
   (`DUMPED`). Tests: `tests/test_life_heartbreak.py`. Checked on 3,000 real saves before shipping (0 failures).
 - **0.9.12 (hotfix):** certificate self-study: answering a practice question or opening a hint no longer
   scrolls the sheet to the top and closes the open sections (`certificates.js`: `renderSheet()` keeps them;
-  `renderSheet(false)` is for switching screens only).
+  `renderSheet(false)` is for switching screens only). Its "Có gì mới" note, like 0.9.11's, was removed at the
+  owner's request (no server-wide notice for fixes); both are described in the CHANGELOG.
 
 ## 2. Rules the owner set (do not break)
 
@@ -53,8 +54,10 @@ branch holds what, and what to do next, in order. Details live in the linked doc
    balances must stay exact. Guest-save pruning is **off** in production (`PRUNE_GUEST_DAYS=0`); a player's own
    "clear chat" really erases it.
 2. **Less text**, focus on the task, the one next action and the experience; phone first (390 px).
-3. **Deploy with no gap** (`deploy/rolling_release.sh`, `docs/DEPLOY_ROLLING.md`); announce fixes in "Có gì mới"
-   (`game/whats_new.py`: every release needs an entry).
+3. **Deploy with no gap** (`deploy/rolling_release.sh`, `docs/DEPLOY_ROLLING.md`).
+   **"Có gì mới" only when the owner says so** (30/09): an entry pops up for every player, so fixes and small
+   releases ship quietly (bump the version, write the CHANGELOG, no `game/whats_new.py` entry). Propose the
+   player-facing lines to the owner instead.
 4. **Memory:** any in-process cache must be bounded (bytes + rows). The new server has 15 GB; PostgreSQL takes
    3 GB of shared buffers and the game is capped at 8 GB (`MemoryMax`).
 5. **No credentials in the repo or in commits.** Server access comes from the owner.
@@ -114,8 +117,8 @@ venv/bin/python scripts/browser_text_check.py --engines chromium,webkit --career
 venv/bin/python scripts/browser_v04.py --careers milk_tea,grocery,restaurant,clothing,homestay,teacher --report out.json
 venv/bin/python scripts/browser_deploy.py           # versioned assets never mix
 ```
-Then: bump `game/__init__.py`, add the `game/whats_new.py` entry, run `python -m game.whats_new`, and add a
-CHANGELOG entry.
+Then: bump `game/__init__.py` and add a CHANGELOG entry. Only if the owner asked for a notice: add the
+`game/whats_new.py` entry and run `python -m game.whats_new`.
 
 ## 6. Production map (no secrets) — new server 103.195.238.178
 
