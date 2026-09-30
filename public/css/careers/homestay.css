@@ -396,3 +396,9 @@ html[data-layout="phone"] .career-job.hs .hs-bar{padding:6px 8px;gap:6px}
   .career-job.hs .hs-place .hs-blurb{-webkit-line-clamp:1}
 }
 @media (max-width:340px){.career-job.hs .hs-places{grid-template-columns:1fr}}
+
+/* 0.9.1 hotfix, restored after the 0.9.4 toast redesign (app.css puts sheet toasts under the header, which on a
+   phone is where the booking calendar sits while you pick rooms): while the calendar rows are tappable, the
+   "Đã chọn … · 1/2 chỗ" toasts go to the bottom edge again (over the next-step bar, which stays tappable:
+   .toasts is pointer-events:none), never over the calendar. */
+html[data-layout="phone"] dialog.cozy-job:has(.hs-cal .hs-pick) .toasts{top:auto;bottom:calc(8px + var(--safe-b))}
