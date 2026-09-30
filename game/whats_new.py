@@ -2,10 +2,13 @@
 (public/js/v4/whatsnew.js), and again from Cài đặt → Cách chơi → "Có gì mới".
 
 =====================================================================
-EVERY RELEASE MUST ADD AN ENTRY AT THE TOP OF ENTRIES (newest first).
+ADD AN ENTRY ONLY WHEN THE OWNER ASKS TO ANNOUNCE SOMETHING.
 =====================================================================
-- version: the release number ("0.9.2"), higher than the entry below it and at
-  least game.__version__ (tests/test_whats_new.py fails otherwise);
+A new entry pops up for every player on the server, so bug-fix and small releases ship quietly: bump
+game.__version__, write the CHANGELOG, and leave this file alone (game.__version__ may be newer than the
+latest entry; tests/test_whats_new.py only checks that the notes are never ahead of the game).
+When the owner asks for a notice, add it at the top of ENTRIES (newest first):
+- version: the release number ("0.9.2"), higher than the entry below it and at most game.__version__;
 - date: "YYYY-MM-DD", the day it goes live;
 - items: 1 to MAX_ITEMS short bullets in plain player Vietnamese (no developer notes,
   no file names), each a dict(emoji=..., text=...). Whole Vietnamese literals:
@@ -28,14 +31,6 @@ import re
 from pathlib import Path
 
 ENTRIES = (
-    dict(version="0.9.12", date="2026-09-30", items=(
-        dict(emoji="📖", text="Học chứng chỉ: làm thử từng câu, trang đứng yên chỗ bạn đang làm, không nhảy lên đầu nữa."),
-    )),
-    dict(version="0.9.11", date="2026-09-30", items=(
-        dict(emoji="💔", text="Chuyện thất tình không còn nhắc tới người yêu mà bạn chưa từng có."),
-        dict(emoji="💍", text="Đã đính hôn hay kết hôn thì không gặp chuyện thất tình nữa."),
-        dict(emoji="✅", text="Đã kiểm tra lại sau khi chuyển máy chủ: dữ liệu của mọi người vẫn đủ và đúng."),
-    )),
     dict(version="0.9.10", date="2026-09-30", items=(
         dict(emoji="✅", text="Nâng cấp hạ tầng đã xong! Game đã chạy trên máy chủ mới, mạnh và nhanh hơn."),
         dict(emoji="🎮", text="Tiền, nhà, đồ và tiến độ của bạn vẫn giữ nguyên. Chúc mọi người chơi vui, enjoy nhé!"),
