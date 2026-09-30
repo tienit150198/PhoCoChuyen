@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **0.9.11** (`main` = `c469d91`), 23 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **0.9.12** (`main` = `60d9420`), 23 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -21,7 +21,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 - **Peak hours:** 17:30–20:00 (Vietnam time). Avoid heavy work on the server then; hotfixes may still go out
   (the rolling release has no gap).
 
-### What 0.9.5 → 0.9.11 added (30/09)
+### What 0.9.5 → 0.9.12 added (30/09)
 - **0.9.5:** buying homes with a bank mortgage, term savings, wardrobe, money chip, claim for short deliveries,
   calmer UI, admin "Trực tiếp" live counters. Performance work:
   - smaller saves: the overflow of long lists moves to the `archive` table and is **never deleted**;
@@ -43,6 +43,9 @@ branch holds what, and what to do next, in order. Details live in the linked doc
   assume a partner. `game/life.py` `PARTNER_STORIES` are never drawn (still defined for saves holding one),
   engaged/married players (`_taken`) get no heartbreak card, and the "bị bỏ" rumour only follows being ghosted
   (`DUMPED`). Tests: `tests/test_life_heartbreak.py`. Checked on 3,000 real saves before shipping (0 failures).
+- **0.9.12 (hotfix):** certificate self-study: answering a practice question or opening a hint no longer
+  scrolls the sheet to the top and closes the open sections (`certificates.js`: `renderSheet()` keeps them;
+  `renderSheet(false)` is for switching screens only).
 
 ## 2. Rules the owner set (do not break)
 
@@ -60,9 +63,9 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 | Branch | State | What it is |
 |---|---|---|
-| `main` | **live 0.9.11** | Notice releases 0.9.8–0.9.10 and the 0.9.11 heartbreak hotfix on top of `rel096`. |
-| `rel098` | **in progress → ships as 0.9.12** | Housing (+20% prices, 4 apartment types, 2 villas, grouped listing) + rel095 QA fixes (spouse "tab khác" retry, joint-fund signs, "Free size", credit gauge, English pack ~450 strings) + **pre-deploy task-compatibility gate** (`scripts/check_task_compat.py`) + a **"Tiền của bạn"** money sheet (labelled 🏪 Quỹ / 👛 Ví chips). Must merge `main` (keep the 0.9.8–0.9.11 whats_new entries below its own) and be renumbered **0.9.12**. Not deployed. |
-| `coldload` | **in progress** | Faster cold page load on weak mobile networks: bundle the critical modules, lazy fonts, split `/api/content`, service-worker precache. Target: visible < 3 s on slow 4G. Ships with 0.9.12. |
+| `main` | **live 0.9.12** | Notice releases 0.9.8–0.9.10, the 0.9.11 heartbreak hotfix and the 0.9.12 certificate-scroll fix on top of `rel096`. |
+| `rel098` | **in progress → ships as 0.9.13** | Housing (+20% prices, 4 apartment types, 2 villas, grouped listing) + rel095 QA fixes (spouse "tab khác" retry, joint-fund signs, "Free size", credit gauge, English pack ~450 strings) + **pre-deploy task-compatibility gate** (`scripts/check_task_compat.py`) + a **"Tiền của bạn"** money sheet (labelled 🏪 Quỹ / 👛 Ví chips). Must merge `main` (keep the 0.9.8–0.9.12 whats_new entries below its own) and be renumbered **0.9.13**. Not deployed. |
+| `coldload` | **ready** (`7cb07fb`, pushed) | Faster cold page load on weak mobile networks: minified release, catalogue in parts, first workplace preloaded. Slow 4G first screen 5.7 s → 3.9 s (new player), 563 → 394 KB; target < 3 s needs ~100–150 KB less first-screen code (lazy modules). `package.py` now needs node/npx (or `--no-minify`); the first minified release makes every URL cold once. Ships with 0.9.13. |
 | `careers-street` | **in progress** | New careers: bán trái cây (fruit seller), dọn rác (garbage collector), thông ống cống (drain cleaner). Worktree `../PhoCoChuyen-careers-street`. |
 | `careers-air` | **in progress** | New careers: phi công (pilot), tiếp viên hàng không (flight attendant). Worktree `../PhoCoChuyen-careers-air`. Registry files will conflict with `careers-street` at merge; merge one, then the other. |
 | `housing2`, `rel095`, `rel096`, `integ`, `perf-*`, `save-size`, `admin-pg`, `ux-work` | merged | Kept for history. |
@@ -72,15 +75,15 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 4. What to do next, in order
 
-1. **Ship 0.9.12 = `rel098` + `coldload` together, off-peak (one deploy = one cold reload for everyone).**
-   - Merge `main` into `rel098`, then `coldload`; renumber to 0.9.12.
+1. **Ship 0.9.13 = `rel098` + `coldload` together, off-peak (one deploy = one cold reload for everyone).**
+   - Merge `main` into `rel098`, then `coldload`; renumber to 0.9.13.
    - Run the full checklist (§5), including `scripts/check_task_compat.py <live tree> <new tree>`, and
      validate ~3,000 real saves with the new code on the server, read-only (as done for 0.9.11).
    - Package with `scripts/package.py` from a clean `git archive`, then `mnl-rolling-release <zip>` **on the
      new server**. While the old server still forwards (§7), mirror the release to it (§7).
    - Afterwards, watch 5xx/400 rates and the slow-cmd log for 10 minutes.
 2. **New careers** (`careers-street`, `careers-air`): review, merge one after the other, full checklist, then a
-   release of their own (0.9.13) with a "Có gì mới" entry.
+   release of their own (0.9.14) with a "Có gì mới" entry.
 3. **Retire the old server's role (after 3–7 days, ~03–07/10):** see §7.
 4. **Deploy less often.** Each deploy makes the changed files cold for everyone. Batch changes; hotfixes excepted.
 5. **English pack.** Older screens still have ~15k untranslated strings (English players see Vietnamese).
@@ -161,7 +164,7 @@ CHANGELOG entry.
   Its clock is ~62 s slow and not NTP-synced. dk_bike shares that host: never touch it.
 - **While it forwards, mirror each release to it** (its nginx serves static files from its own disk):
   `rsync` the new `/opt/mot-ngay-lam-nghe/releases/<rel>` and `shared/_v/` to it, then switch its `current`
-  symlink (the commands are in the 0.9.10/0.9.11 deploys: the new server holds an SSH key limited to its IP,
+  symlink (the commands are in the 0.9.10–0.9.12 deploys: the new server holds an SSH key limited to its IP,
   `/root/.ssh/mnl_old`).
 - **Retire (after 3–7 days):** when the old api log shows ~no forwarded requests, keep one final
   `pg_dump -Fc` of its frozen database, stop PostgreSQL's game database there (not dk_bike's), restore its nginx
