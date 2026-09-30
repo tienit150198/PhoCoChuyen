@@ -7,7 +7,10 @@ import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,ke
 import {pending,stepLine} from '../v4/guide.js';
 
 const BOSS='Chị Hồng';
-const fmtN=n=>Number(n).toLocaleString('vi-VN');
+const fmtN=n=>String(Math.trunc(Number(n)));   // whole numbers as the player types them: 12400, never 12.400 (owner, 01/10)
+/** A payroll page with thousands dots dropped from its text (12.400 xu → 12400 xu), never inside attributes.
+ *  The task's own texts keep their form on the server: they are part of the facts the server validates. */
+const plain=html=>String(html).replace(/>([^<]+)</g,(m,t)=>'>'+t.replace(/(\d)\.(?=\d{3}(?!\d))/g,'$1')+'<');
 const lab=(list,id)=>list?.find(o=>o.id===id)?.label??id;
 const state=(x,t)=>x.ui[t.id]??={paper:0,sel:{},multi:{},order:{}};
 const fid=(t,...p)=>['tp',t.id,...p].join('-').replace(/[^a-zA-Z0-9_-]/g,'_');
@@ -105,7 +108,7 @@ function worksheet(t,x){
 function calculator(x,cur){
   const hist=x.ui.calc||[],open=x.ui.okFold?.calc??(hist.length>0||['number','fields'].includes(cur?.kind));
   return `<details class="ok-fold tp-calc"${open?' open':''}><summary data-action="car:fold" data-fold="calc">🧮 Máy tính bàn${hist.length?` <small>${hist.length} phép tính</small>`:''}</summary><div class="ok-fold-body">
-    <div class="tp-calc-row"><input class="input" id="tp-calc" data-preserve type="text" inputmode="decimal" autocomplete="off" placeholder="vd: 12.400 × 8%" aria-label="Phép tính">${x.button('=','car:calc',{},'primary')}</div>
+    <div class="tp-calc-row"><input class="input" id="tp-calc" data-preserve type="text" inputmode="decimal" autocomplete="off" placeholder="vd: 12400 × 8%" aria-label="Phép tính">${x.button('=','car:calc',{},'primary')}</div>
     <ul class="tp-tape">${hist.map(h=>`<li><span>${x.esc(h.expr)}</span><b>${x.esc(h.out)}</b></li>`).join('')||'<li class="tp-tape-help">Dấu chấm là phân cách hàng nghìn; % hiểu là chia 100. Kết quả làm tròn xuống ghi kèm.</li>'}</ul></div></details>`;
 }
 
@@ -321,15 +324,15 @@ export default {
     const inbox=inboxPane(x,{tasks:taskMails(x,t,currentMail(t,x)),other:[...claimMails(x),...dayMails(x,{boss:BOSS,key:`${t.id}:${t.known?1:0}`})],...care(x,t)});
     const rules=todayRules(x)+lawBook(x);
     const gd=guideFor(t,x),g=guideOf(x,t,gd.steps,gd.final);
-    if(!t.known)return desk(x,t,{cls:'tp',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules,
+    if(!t.known)return plain(desk(x,t,{cls:'tp',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules,
       doc:`<p class="ok-empty"><span aria-hidden="true">✉️</span><b>${x.esc(t.title)}</b><span>${grid?'Bảng lương nháp còn nằm trên bàn chị Hồng.':'Hồ sơ còn trong phong bì.'}</span></p>`},
-      bar:bar(x,t,'',g.cta,true)});
-    if(grid)return desk(x,t,{cls:'tp',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules,doc:gridDoc(t,x)},bar:gridBar(t,x,g)});
-    return desk(x,t,{cls:'tp',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules,doc:formDoc(t,x)},bar:formBar(t,x,g)});
+      bar:bar(x,t,'',g.cta,true)}));
+    if(grid)return plain(desk(x,t,{cls:'tp',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules,doc:gridDoc(t,x)},bar:gridBar(t,x,g)}));
+    return plain(desk(x,t,{cls:'tp',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules,doc:formDoc(t,x)},bar:formBar(t,x,g)}));
   },
   idle(x){
     const d=x.room.data||{};if(!d.office)return '';
-    return idleDesk(x,{cls:'tp',strip:strip(x,null),recap:gridRecap(x),tasks:taskMails(x,null),other:[...claimMails(x),...dayMails(x,{boss:BOSS})],rules:todayRules(x),...care(x,null)});
+    return plain(idleDesk(x,{cls:'tp',strip:strip(x,null),recap:gridRecap(x),tasks:taskMails(x,null),other:[...claimMails(x),...dayMails(x,{boss:BOSS})],rules:todayRules(x),...care(x,null)}));
   },
   summary(data,x){
     if(!data||typeof data!=='object')return '';
@@ -380,7 +383,7 @@ export default {
     unpick(d,el,x){const u=x.ui[d.task];if(!u)return;const a=[...(u.order[d.step]||[])];a.splice(Number(d.i),1);u.order[d.step]=a;x.render();},
     calc(d,el,x){
       const input=document.getElementById('tp-calc');const expr=(input?.value||'').trim();if(!expr)return;
-      let out;try{const v=calc(expr);out=Number.isInteger(v)?fmtN(v):`${v.toLocaleString('vi-VN',{maximumFractionDigits:4})} (↓ ${fmtN(Math.floor(v))})`;}catch{out='Phép tính chưa hợp lệ';}
+      let out;try{const v=calc(expr);out=Number.isInteger(v)?fmtN(v):`${v.toLocaleString('vi-VN',{maximumFractionDigits:4,useGrouping:false})} (↓ ${fmtN(Math.floor(v))})`;}catch{out='Phép tính chưa hợp lệ';}
       x.ui.calc=[{expr,out},...(x.ui.calc||[])].slice(0,5);x.render();
     },
     async check(d,el,x){
@@ -395,10 +398,10 @@ export default {
       else if(st.kind==='match'){answer={};for(const l of st.left){const v=val(fid(t,st.id,l.id));if(!v){answer=null;break;}answer[l.id]=v;}}
       else if(st.kind==='fields'){answer={};for(const f of st.fields){const raw=val(fid(t,st.id,f.id));const v=f.options?raw:parseIntVN(raw);if(v===null||v===''){answer=null;bad={id:fid(t,st.id,f.id),label:f.label,empty:!String(raw).trim(),select:!!f.options};break;}answer[f.id]=v;}}
       if(answer===null&&bad){   // say which box, and take the player there (it is often off screen on a phone)
-        x.toast(bad.select?`Chọn “${bad.label}” trước nhé.`:bad.empty?`Còn trống ô “${bad.label}”. Không có thì ghi 0 nhé.`:`Ô “${bad.label}” cần số nguyên, vd 12.400.`,true);
+        x.toast(bad.select?`Chọn “${bad.label}” trước nhé.`:bad.empty?`Còn trống ô “${bad.label}”. Không có thì ghi 0 nhé.`:`Ô “${bad.label}” chỉ ghi số, vd 14250.`,true);
         const box=document.getElementById(bad.id);if(box){box.classList.add('tp-bad');box.addEventListener('input',()=>box.classList.remove('tp-bad'),{once:true});box.scrollIntoView({block:'center'});box.focus({preventScroll:true});}
         return;}
-      if(answer===null){x.toast(st.kind==='choice'?'Chạm chọn một đáp án trước nhé.':st.kind==='multi'?'Chạm chọn ít nhất một ô trước nhé.':st.kind==='order'?'Chạm đủ các việc theo thứ tự trước nhé.':st.kind==='match'?'Chọn đủ từng dòng trước nhé.':'Điền đủ và đúng dạng số nguyên (vd 12.400) trước khi kiểm tra nhé.',true);return;}
+      if(answer===null){x.toast(st.kind==='choice'?'Chạm chọn một đáp án trước nhé.':st.kind==='multi'?'Chạm chọn ít nhất một ô trước nhé.':st.kind==='order'?'Chạm đủ các việc theo thứ tự trước nhé.':st.kind==='match'?'Chọn đủ từng dòng trước nhé.':'Điền đủ các ô số trước khi kiểm tra nhé.',true);return;}
       await x.send('tp_submit',{task:t.id,step:st.id,answer});
     },
   },
