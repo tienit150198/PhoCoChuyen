@@ -34,7 +34,8 @@ Delta-sync hints (TABLES[i]["sync"]):
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 3   # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play
+SCHEMA_VERSION = 4   # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
+                     # 4: system_gifts
 
 # The text forms SQLite produces, computed by PostgreSQL (UTC, independent of TimeZone).
 NOW_TEXT = "to_char(statement_timestamp() AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI:SS')"       # CURRENT_TIMESTAMP
@@ -235,6 +236,12 @@ CREATE TABLE IF NOT EXISTS couple_stats (
   couple bigint PRIMARY KEY, happy bigint NOT NULL DEFAULT 0, streak bigint NOT NULL DEFAULT 0, best bigint NOT NULL DEFAULT 0,
   last_day bigint NOT NULL DEFAULT 0, today bigint NOT NULL DEFAULT 0
 );
+
+-- 🎁 Quà từ Phố Có Chuyện (game/system_gift.py): a gift from the operator to one save, pending -> applied -> seen
+CREATE TABLE IF NOT EXISTS system_gifts (
+  id {T} PRIMARY KEY, sid {T} NOT NULL, coins bigint NOT NULL, title {T} NOT NULL, text {T} NOT NULL,
+  status {T} NOT NULL, created double precision NOT NULL, applied_at double precision, seen_at double precision
+);
 """
 
 INDEX_DDL = """
@@ -270,6 +277,7 @@ CREATE INDEX IF NOT EXISTS joint_ledger_held ON joint_ledger (sid, status);
 CREATE INDEX IF NOT EXISTS couple_requests_couple ON couple_requests (couple, status);
 CREATE INDEX IF NOT EXISTS couple_debts_people ON couple_debts (lender, borrower);
 CREATE INDEX IF NOT EXISTS couple_moments_couple ON couple_moments (couple, id);
+CREATE INDEX IF NOT EXISTS system_gifts_sid ON system_gifts (sid, status);
 """
 
 # No foreign keys (receipts.sid, archive.sid -> sessions.sid in SQLite): the migration's live
@@ -568,6 +576,10 @@ TABLES = [
     dict(name='couple_stats', source='main', sqlite_table='couple_stats',
          columns=_cols('couple bigint', 'happy bigint', 'streak bigint', 'best bigint', 'last_day bigint', 'today bigint'),
          key=('couple',), unique=[], identity=None, sync=dict(mode='full')),
+    dict(name='system_gifts', source='main', sqlite_table='system_gifts',
+         columns=_cols('id text', 'sid text', 'coins bigint', 'title text', 'text text', 'status text',
+                       'created double precision', 'applied_at double precision', 'seen_at double precision'),
+         key=('id',), unique=[], identity=None, sync=dict(mode='full', note='status flips pending -> applied -> seen')),
     dict(name='mnl_meta', source=None, sqlite_table=None,
          columns=_cols('key text', 'value text'),
          key=('key',), unique=[], identity=None, sync=None),

@@ -54,6 +54,7 @@ from game import board_ai
 from game import admin_stats
 from game import leaderboard
 from game import marriage
+from game import system_gift
 from game.content import public_content,content_parts,CAREERS
 from game.engine import GameError,public_state
 from game.storage import Store,Conflict
@@ -455,6 +456,7 @@ class Handler(BaseHTTPRequestHandler):
                     self.error(429,"Quá nhiều phiên mới từ mạng này. Chờ một chút nhé.");return
                 token,csrf,created=self.server.store.session(existing)
                 state,revision,_=self.server.store.read(token)
+                gifts=[]
                 if not created:
                     try:
                         if social.settle(self.server.store,token,state):state,revision,_=self.server.store.read(token)
@@ -462,6 +464,10 @@ class Handler(BaseHTTPRequestHandler):
                     try:  # Hôn nhân: a wedding whose day has come, gifts that arrived (game/marriage.py)
                         if marriage.on_load(self.server.store,token,state):state,revision,_=self.server.store.read(token)
                     except Exception as e:self.log_error("marriage on_load: %s",type(e).__name__)  # never blocks loading the game
+                    try:  # 🎁 Quà từ Phố Có Chuyện: pay this save's pending gifts, list the cards not seen yet (game/system_gift.py)
+                        paid,gifts=system_gift.on_load(self.server.store,token,state)
+                        if paid:state,revision,_=self.server.store.read(token)
+                    except Exception as e:self.log_error("gift on_load: %s",type(e).__name__)  # never blocks loading the game
                 extra={"Set-Cookie":self.cookie(token)} if created else {}
                 view=public_state(state)
                 # The workplace the first frame opens (app.js career()): boot.js starts its part of the catalogue
@@ -479,7 +485,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(200,dict(state=view,revision=revision,csrf=csrf,ai=dict(public_config(),configured=ai.available(),chat=True),
                                    social=social.bootstrap(self.server.store,token,state),push=push.public_config(),account=accounts.status(self.server.store,token),
                                    admin=pfb.is_admin(self.server.store,token),content_version=version,content_url=f"/api/content?v={version}",
-                                   game_version=self.server.game_version()),extra,raw=None if lite else dict(content=self.server.content_blob()[0]));return
+                                   game_version=self.server.game_version(),gifts=gifts),extra,raw=None if lite else dict(content=self.server.content_blob()[0]));return
             if route=="/api/state":
                 _,state,revision,_=self.require_session();self.json(200,dict(state=public_state(state),revision=revision));return
             if route=="/api/save/export":
@@ -594,7 +600,7 @@ class Handler(BaseHTTPRequestHandler):
     def _post(self):
         try:
             route=urlsplit(self.path).path
-            token,state,revision,csrf=self.guarded(light=route=="/api/command")
+            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen"))
             length=int(self.headers.get("Content-Length","0"))
             if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
             if not self.headers.get("Content-Type","").startswith("application/json"):self.error(415,"Cần gửi JSON.");self.close_connection=True;return
@@ -641,13 +647,16 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(200,dict(ok=True,item=pfb.update(self.server.store,data.get("id"),data.get("status"),data.get("reply"))));return
             if route=="/api/account/delete":
                 if data.get("confirm")!="XOA":raise GameError("Gõ XOA để xác nhận xóa dữ liệu.")
-                pfb.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);self.server.store.delete(token)
+                pfb.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);system_gift.forget(self.server.store,token);self.server.store.delete(token)
                 self.json(200,dict(deleted=True,message="Đã xóa toàn bộ dữ liệu chơi của bạn trên máy chủ."),{"Set-Cookie":self.cookie("",0)});return
             if route.startswith("/api/account/"):
                 self.account_post(route[len("/api/account/"):],token,data);return
             if route=="/api/leaderboard/visibility":  # "Hiện tên tôi trên bảng xếp hạng"
                 if not self.server.rate_limit("lb-vis:"+token,20):self.error(429,"Chờ một chút nhé.","rate_limited");return
                 self.json(200,leaderboard.set_visible(self.server.store,token,state,data.get("visible")));return
+            if route=="/api/gift/seen":  # 🎁 the player pressed "Nhận quà" on a gift card: it never shows again (game/system_gift.py)
+                if not self.server.rate_limit("gift:"+token,30):self.error(429,"Chờ một chút nhé.","rate_limited");return
+                self.json(200,dict(ok=True,seen=system_gift.seen(self.server.store,token,data.get("id"))));return
             if route.startswith("/api/marriage/"):  # Hôn nhân: ring, proposal, plan, confirm, divorce… (game/marriage.py)
                 if not self.server.rate_limit("marriage:"+token,60):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.","rate_limited");return
                 out=marriage.act(self.server.store,token,route[len("/api/marriage/"):],data)

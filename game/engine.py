@@ -44,6 +44,7 @@ from . import abandon as ab
 from . import dayclock as dc
 from . import wardrobe as wd
 from . import patience as pt
+from . import system_gift as sg
 
 ORIGINAL=("mother_baby","pharmacy","accounting","customer_care")
 UI_THEMES=("kem","tra_xanh","dem","bien","keo")
@@ -526,6 +527,9 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     if action.startswith("lf_"):return doi.action(s,action,p)
     if action.startswith("qn_"):return qn.action(s,career,action,p)  # điểm thân quen: chat, gifts, thanks, invites
     if action.startswith("st_"):return cst.action(s,career,action,p)
+    if action==sg.ACTION:  # 🎁 Quà từ Phố Có Chuyện (game/system_gift.py): the server pays a gift into the wallet
+        need(internal,"Thao tác chỉ dành cho máy chủ.","forbidden")
+        return sg.apply(s,p)
     need(career in CAREERS,"Chọn một nghề trước nhé.")
     jr.gate(s,career,action,internal)
     if career!=s.get("current"):ab.check(s,career,{},internal)  # leaving work in progress only through select_career
