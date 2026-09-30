@@ -76,7 +76,14 @@ location @asset_miss {                              # mã chưa có trong kho: t
     add_header Cache-Control "no-cache" always;
 }
 ```
-(giữ nguyên `etag`, `gzip` và các header bảo mật như các location tĩnh hiện có). Thiếu kho hay thiếu cấu hình này thì game vẫn chạy đúng, chỉ là tài nguyên về lại `no-cache`. Khi server chạy bản mới hơn trang đang mở, người chơi thấy nút nhỏ “Đã có phiên bản mới, bạn tải lại để cập nhật nha” (header `X-Game-Version` trên mọi phản hồi `/api/`); game không tự tải lại. Kiểm tra: `python scripts/browser_deploy.py`.
+(giữ nguyên `etag`, `gzip` và các header bảo mật như các location tĩnh hiện có; `gzip_static on;` trong `location ^~ /_v/` cho nginx gửi luôn bản `.gz` mức 9 mà server đã nén sẵn cạnh mỗi tệp trong kho). Thiếu kho hay thiếu cấu hình này thì game vẫn chạy đúng, chỉ là tài nguyên về lại `no-cache`. Khi server chạy bản mới hơn trang đang mở, người chơi thấy nút nhỏ “Đã có phiên bản mới, bạn tải lại để cập nhật nha” (header `X-Game-Version` trên mọi phản hồi `/api/`); game không tự tải lại. Kiểm tra: `python scripts/browser_deploy.py`.
+
+### Tải lần đầu trên mạng yếu (gói phát hành, danh mục chia phần)
+
+- **Gói phát hành rút gọn JS/CSS.** `python3 scripts/package.py` chạy `scripts/build_static.py`: mọi tệp `.js` trong `public/` được esbuild rút gọn (từng tệp riêng, không gộp: một lần deploy đổi một module thì chỉ URL của module đó đổi), `.css` bỏ khoảng trắng/chú thích. Mã trong git giữ nguyên để đọc và để test. Máy đóng gói cần `node`/`npx` (esbuild được ghim phiên bản: cùng mã nguồn ra đúng cùng byte, nên tệp không đổi giữ URL và cache của người chơi); máy chủ không cần node. `--no-minify` đóng gói nguyên mã nguồn. Lần phát hành đầu tiên theo cách này đổi URL của mọi tệp một lần.
+- **Danh mục chia phần.** `GET /api/content?v=<mã>` vẫn trả cả danh mục (trang cũ dùng). Trang mới chỉ chờ `&part=core` (~40 KB gzip thay vì ~120 KB); `&part=more` (tin tuyển dụng, sổ tiệm, tình huống, đề thi chứng chỉ, chuyện của nghề) tải ngay sau khung hình đầu; `&career=<id>` là dữ liệu riêng của một nghề plugin, tải cùng bàn làm việc của nghề đó. Mọi phần đều giữ một năm theo cùng mã nội dung (`game/content.py` `content_parts`). Mã nội dung chỉ đổi khi dữ liệu game đổi (7 lần phát hành gần nhất: 2 lần).
+- **Nơi làm việc của khung hình đầu.** `/api/bootstrap` gửi header `X-Game-Warm` (cảnh, bàn làm việc, stylesheet của nghề đang mở) và `X-Game-Place`; `boot.js` tải trước chúng ngay khi header về, thay vì một chuỗi import sau khi `app.js` chạy.
+- **Brotli:** nginx 1.24 bản Ubuntu không có module brotli, nên không phục vụ được `.br` cho tệp tĩnh một cách an toàn (gắn tay `Content-Encoding: br` qua `add_header` dễ bị nén chồng); vẫn dùng gzip mức 9 nén sẵn.
 
 ## Biến môi trường quan trọng
 

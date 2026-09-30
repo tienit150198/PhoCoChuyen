@@ -13,6 +13,7 @@ import {World} from './world.js';
 import {t as tr} from './v4/i18n.js';
 import {R,E,L,T,P,fit,heart,bloom,plantAt,mascot} from './scenes/kit.js';
 import {sceneFor,wordsFor} from './scenes/index.js';
+import shop from './scenes/shop.js';
 import {language} from './v4/i18n.js';
 import {daylight} from './v4/dayclock.js';
 import {figure,paintLegs,paintHairBack,paintTop,paintHairFront,paintAcc} from './v4/look.js';  // Tủ đồ: the player's look
@@ -56,8 +57,10 @@ const OUTFIT={pharmacy:'coat',pet_care:'coat',salon:'coat',accounting:'shirt',co
 
 export class BobaWorld extends World {
  isPortrait(){return !this.previewRendering&&this.width<=620;}
- /** The scene kind for this career (public/js/scenes); redraws once a lazily loaded kind arrives. */
- scene(){return sceneFor(this.career,()=>{if(this.c&&this.width)this.setupObjects();});}
+ /** The scene kind for this career (public/js/scenes); redraws once a lazily loaded kind arrives. Before the
+  * first state (a frame drawn while the page boots) the storefront stands in: loading the placeholder career's
+  * kind then would cost a request nobody sees, on the slowest part of a cold start. */
+ scene(){return this.state?sceneFor(this.career,()=>{if(this.c&&this.width)this.setupObjects();}):shop;}
  words(){return wordsFor(this.career);}
  plan(){const s=this.scene();return this.isPortrait()?s.plan.port:s.plan.land;}
  preview(career){this.previewRendering=true;try{return super.preview(career);}finally{this.previewRendering=false;}}

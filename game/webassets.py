@@ -7,7 +7,10 @@ The page (public/index.html) is rendered at serve time:
 - the static module graph of /js/app.js is announced with <link rel=modulepreload>
   (one flat round of requests instead of a 4-level import waterfall);
 - public/js/boot.js is inlined (it starts /api/bootstrap and /api/content at once);
-  the import map and boot script are allowed by CSP hashes, never by 'unsafe-inline'.
+  the import map and boot script are allowed by CSP hashes, never by 'unsafe-inline';
+- warm(career): the workbench, scene and stylesheets a career opens with (not in app.js's graph).
+  /api/bootstrap names them in X-Game-Warm, so boot.js preloads them the moment the response
+  headers arrive, instead of a 4-step import chain after app.js has run (a cold start).
 
 A ?v= URL may be cached for a year (immutable) because its bytes can never change:
 the proxy serves it from a content-addressed copy (write_cas: <cas>/<hash>/<path>), and
@@ -55,8 +58,11 @@ def recheck_seconds() -> float:
 RECHECK = recheck_seconds()  # seconds a snapshot is trusted before the files are stat()ed again
 ENTRY = "/js/app.js"
 IMMUTABLE = "public, max-age=31536000, immutable"
-_IMPORT = re.compile(r"""^[ \t]*import\s*(?:[^;'"()]*?\bfrom\s*)?['"]([^'"]+)['"]""", re.M)
-_EXPORT = re.compile(r"""^[ \t]*export\s[^;'"()]*?\bfrom\s*['"]([^'"]+)['"]""", re.M)
+# A statement starts a line, or follows `;`/`}` (minified release files: scripts/build_static.py).
+_IMPORT = re.compile(r"""(?:^|[;}])[ \t]*import\s*(?:[^;'"()]*?\bfrom\s*)?['"]([^'"]+)['"]""", re.M)
+_EXPORT = re.compile(r"""(?:^|[;}])[ \t]*export\s*[*{][^;'"()]*?\bfrom\s*['"]([^'"]+)['"]""", re.M)
+# `export const KIND_OF={career:'kind',...}` (public/js/scenes/index.js) and CSS_KIT (public/js/v4/careers.js).
+_PAIRS = re.compile(r"""(\w+)\s*:\s*['"](\w+)['"]""")
 _ATTR_URL = re.compile(r"""((?:href|src)="|url\()(/(?:js|css|i18n|music|icons)/[^"?#)]+)("|\))""")
 _INLINE_BOOT = re.compile(r"""<script[^>]*\bdata-inline\b[^>]*></script>""")
 
@@ -74,10 +80,18 @@ def module_imports(source: str) -> list[str]:
     return [m.group(1) for rx in (_IMPORT, _EXPORT) for m in rx.finditer(source)]
 
 
+def js_table(source: str, name: str) -> dict[str, str]:
+    """The flat `{key:'value',...}` object literal assigned to `name` in a module (empty when not found)."""
+    m = re.search(r"\b" + re.escape(name) + r"\s*=\s*\{([^{}]*)\}", source)
+    return dict(_PAIRS.findall(m.group(1))) if m else {}
+
+
 class Snapshot:
     """One consistent view of public/: file hashes, the rendered page and its CSP."""
-    def __init__(self, files: dict[str, str], build: str, version: str, importmap: str, preload: list[str], html: bytes, csp: str):
+    def __init__(self, files: dict[str, str], build: str, version: str, importmap: str, preload: list[str], html: bytes, csp: str,
+                 warm: dict[str, str] | None = None):
         self.files, self.build, self.version, self.importmap, self.preload, self.csp = files, build, version, importmap, preload, csp
+        self.warm = warm or {}  # career -> "path,path,..." (X-Game-Warm), see WebAssets.career_warm
         self.html = html
         self.html_gz = gzip.compress(html, 6)
         self.html_etag = '"' + hashlib.sha256(html).hexdigest()[:20] + '"'
@@ -190,7 +204,29 @@ class WebAssets:
         html = _INLINE_BOOT.sub(lambda _m: "\n  ".join(head), template, count=1)
         html = _ATTR_URL.sub(lambda m: m.group(1) + (f"{m.group(2)}?v={files[m.group(2)]}" if m.group(2) in files else m.group(2)) + m.group(3), html)
         csp = self.base_csp.replace("script-src 'self'", f"script-src 'self' {csp_hash(importmap)} {csp_hash(boot_src)}", 1)
-        return Snapshot(files, build, version, importmap, preload, html.encode("utf-8"), csp)
+        return Snapshot(files, build, version, importmap, preload, html.encode("utf-8"), csp, self.career_warm(files, preload))
+
+    def career_warm(self, files: dict[str, str], preload: list[str]) -> dict[str, str]:
+        """career -> the files its first frame waits for beyond app.js's graph, comma-separated URL paths:
+        its scene kind (+ imports), its workbench (+ imports), then its stylesheets (kit first). Mirrors
+        careerAssets() in app.js, KIND_OF in scenes/index.js and CSS_KIT/loadCareerModules in v4/careers.js."""
+        def read(url):
+            try:
+                return (self.public / url.lstrip("/")).read_text(encoding="utf-8")
+            except OSError:
+                return ""
+        kinds = js_table(read("/js/scenes/index.js"), "KIND_OF")
+        kits = js_table(read("/js/v4/careers.js"), "CSS_KIT")
+        have = {u.split("?", 1)[0] for u in preload}
+        out = {}
+        for cid, kind in kinds.items():  # every career has a scene kind; most have a workbench module too
+            order = []
+            for entry in (f"/js/scenes/{kind}.js", f"/js/careers/{cid}.js"):
+                if entry in files:
+                    order += [u for u in self.module_graph(entry) if u in files and u not in have and u not in order]
+            order += [u for u in (f"/css/careers/{kits[cid]}.css" if cid in kits else "", f"/css/careers/{cid}.css") if u in files]
+            out[cid] = ",".join(order)
+        return out
 
     def module_graph(self, entry: str) -> list[str]:
         """The static import graph of `entry` (URL paths, breadth first, entry first)."""

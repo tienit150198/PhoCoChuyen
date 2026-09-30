@@ -29,7 +29,11 @@ export async function loadCareerModules(ids,waitCss=false){
     catch(error){console.warn('Chưa có giao diện nghề',id,error);}
   }));
 }
-export const careerUI=id=>modules[id];
+// A workbench reads its part of the catalogue (ctx.cc) deeply, so it only counts as ready once that part is in
+// too (api.js careerContent, set by app.js): until then the caller shows its "still loading" fallback.
+let dataIn=()=>true;
+export const setCareerData=fn=>{dataIn=fn;};
+export const careerUI=id=>dataIn(id)?modules[id]:undefined;
 export const hasCareerUI=id=>Boolean(modules[id]);
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
