@@ -85,13 +85,27 @@ def _archive_rows(box,careers_before:dict,raw:dict,default:str)->list:
         out.append((career or "",kind,day if type(day) is int else None,_dumps(row)))
     return out
 
-SLOW_MS=float(os.environ.get("SLOW_COMMAND_MS","250"))
+SLOW_MS=float(os.environ.get("SLOW_COMMAND_MS","1500"))  # [slow-cmd] above this; [slow-lock]/[slow-write] above half
+SLOW_LOG_PER_MINUTE=int(os.environ.get("SLOW_LOG_PER_MINUTE","20") or 0)  # per process; 0 = no cap
+_slow_budget=[0.0,0,0]  # [minute started, lines written in it, lines dropped since the last one written]
+
+def _slow_log(line:str)->None:
+    """Write a [slow-*] line, at most SLOW_LOG_PER_MINUTE per process and minute: an overloaded
+    server makes every command slow, and thousands of lines a minute only add to the load.
+    The next line written counts the ones dropped."""
+    b=_slow_budget;now=time.monotonic()
+    if now-b[0]>=60:b[0]=now;b[1]=0
+    if SLOW_LOG_PER_MINUTE>0 and b[1]>=SLOW_LOG_PER_MINUTE:
+        b[2]+=1;return
+    b[1]+=1;dropped=b[2];b[2]=0
+    sys.stderr.write(line+(f" (+{dropped} slow lines dropped)" if dropped else "")+"\n")
+
 def _slow(action,career,size,t0,t1,t2,t3,t4)->None:
     """Log the phases of a slow command (read, compute, store, public view), for tuning."""
     total=(t4-t0)*1000
     if total<SLOW_MS:return
     ms=lambda a,b:round((b-a)*1000)
-    sys.stderr.write(f"[slow-cmd] {total:.0f}ms {action} {career} save={size//1024}KB read={ms(t0,t1)} compute={ms(t1,t2)} store={ms(t2,t3)} view={ms(t3,t4)} pid={os.getpid()}\n")
+    _slow_log(f"[slow-cmd] {total:.0f}ms {action} {career} save={size//1024}KB read={ms(t0,t1)} compute={ms(t1,t2)} store={ms(t2,t3)} view={ms(t3,t4)} pid={os.getpid()}")
 
 def _write_archive(db,sid:str,rows:list)->None:
     """Append rows to each (career, kind) history of this save, inside the caller's transaction."""
@@ -562,7 +576,7 @@ class Store:
         tw=time.perf_counter()
         if not self.writing():raise sqlite3.OperationalError("database is locked")
         tx=time.perf_counter()
-        if (tx-tw)*1000>=SLOW_MS/2:sys.stderr.write(f"[slow-lock] waited {(tx-tw)*1000:.0f}ms for the writer turn pid={os.getpid()}\n")
+        if (tx-tw)*1000>=SLOW_MS/2:_slow_log(f"[slow-lock] waited {(tx-tw)*1000:.0f}ms for the writer turn pid={os.getpid()}")
         db=None
         try:
             db=self.connect()  # inside the try: a failed connect must still give the writer turn back (F11)
@@ -571,7 +585,7 @@ class Store:
                 # Lock this save's row only (other players never wait), then check the revision.
                 row=db.execute("SELECT revision FROM sessions WHERE sid=? FOR UPDATE",(sid,)).fetchone()
                 tl=time.perf_counter()
-                if (tl-tw)*1000>=SLOW_MS/2:sys.stderr.write(f"[slow-lock] waited {(tl-tw)*1000:.0f}ms for this save's row lock (connection {(tx-tw)*1000:.0f}ms) pid={os.getpid()}\n")
+                if (tl-tw)*1000>=SLOW_MS/2:_slow_log(f"[slow-lock] waited {(tl-tw)*1000:.0f}ms for this save's row lock (connection {(tx-tw)*1000:.0f}ms) pid={os.getpid()}")
                 tx=tl
                 if not row or row[0]!=revision:
                     db.rollback();return False
@@ -583,7 +597,7 @@ class Store:
             db.execute("INSERT INTO receipts(sid,request_id,request_hash,result) VALUES(?,?,?,?)",(sid,request_id,fingerprint,receipt))
             db.commit()
             te=(time.perf_counter()-tx)*1000
-            if te>=SLOW_MS/2:sys.stderr.write(f"[slow-write] {te:.0f}ms to write {len(serialized)//1024}KB + {len(cut)} archive rows pid={os.getpid()}\n")
+            if te>=SLOW_MS/2:_slow_log(f"[slow-write] {te:.0f}ms to write {len(serialized)//1024}KB + {len(cut)} archive rows pid={os.getpid()}")
             return True
         except dbm.IntegrityError:  # the same request id landed first: the caller replays it
             db.rollback();return False
