@@ -53,6 +53,7 @@ DELIVERY_HOURS = inv.HOURS['delivery']
 # Shifts with their own evening: a note under the hours in the status sheet.
 NOTES = {
     'delivery': 'Ca tối: đơn đồ ăn dồn vào giờ cơm tối.',
+    'garbage': 'Ca tối: mỗi ngõ có giờ đổ rác, tới muộn là rác bị bới tung.',
     'homestay': 'Quầy lễ tân trực tới 22:00; khách tới muộn gọi chuông, sáng mai bàn giao.',
     'milk_tea': 'Ngày đông khách có thể bán quá giờ, muộn nhất 23:00.',
     'corp_accounting': 'Tăng ca được tới 20:00 nếu xin phép trưởng phòng.',

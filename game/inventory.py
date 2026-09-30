@@ -34,6 +34,9 @@ HOURS = {
     'pet_care': (8 * 60, 19 * 60),
     'salon': (8 * 60 + 30, 20 * 60),
     'tra_da': (6 * 60 + 30, 19 * 60 + 30),  # the tea stall opens with the morning traffic
+    'fruit': (6 * 60, 18 * 60),         # the market's morning crowd
+    'garbage': (17 * 60, 23 * 60),      # the evening rubbish round
+    'drain': (7 * 60 + 30, 19 * 60 + 30),
 }
 EARLY = 30  # goods due after closing wait at the door this many minutes before the next opening
 # How much later than its window a late delivery comes (minutes), by supplier kind; a
