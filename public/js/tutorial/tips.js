@@ -131,3 +131,51 @@ function watch(){
   addEventListener('resize',again);addEventListener('layoutchange',again);addEventListener('scroll',again,true);
 }
 
+/* ------------------------------------------------------------------ hints */
+/* Help at the moment of need: the first time a new player meets one of the questions players really ask
+ * (feedback), one small bubble on the right control. Each shows once (settings.notesSeen, like the
+ * announcements), "×" puts it away. Saves named with the onboarding only (v4/onboard.js markedNew), after
+ * the first 3 customers, never while a tip is up. */
+const HINTS=[
+  {id:'h-job',emoji:'🔁',text:'Đổi nghề: khép ca ở nơi đang làm, rồi chọn nơi khác ở đây.',ttl:9000,
+    when:()=>view()==='home'&&!!S()?.journey?.intro&&Object.values(S()?.careers||{}).some(c=>c?.started),
+    find:()=>first('#sheet[open] .jr-places .jr-sec-head')},
+  {id:'h-money',emoji:'👛',text:'Tiền của bạn: bấm 🏪 Quỹ hoặc 👛 Ví để xem hết.',ttl:8000,
+    when:()=>calmStage()&&(room()?.metrics?.served|0)>0,
+    find:()=>first('#topbar .hud-fund')||first('#topbar .hud-wallet'),
+    done:()=>view()==='money'},
+  {id:'h-clock',emoji:'🕗',text:'Giờ trong game ở đây. Tới giờ đóng cửa thì khép ca.',ttl:8000,
+    when:()=>!!room()?.open&&['soon60','soon30','closing'].includes(room()?.day_clock?.level),
+    find:()=>first('#sheet[open] .dc-chip')||first('#sheet[open] [data-testid="clock"]')||first('#sheet[open] .mt-hud .mt-chip')||(calmStage()&&(first('#topbar .dc-chip')||first('#topbar .hud-day')))},
+  {id:'h-door',emoji:'🚪',text:'Xong việc? Bấm đây (hoặc đi ra cửa) để khép ca.',ttl:9000,
+    when:()=>calmStage()&&!!room()?.open,
+    find:()=>first('#taskHUD .icon-btn[data-action="end"]'),
+    done:()=>view()==='summary'},
+];
+let H=null;
+export function hintsBoot(env,{markedNew,quiet,notesSeen,markSeen}){
+  if(H)return;E=E||env;watch();
+  H={now:null,since:0};
+  const tick=()=>{
+    const s=env.api.state;if(!s||!markedNew(s))return;
+    if(run){if(H.now)H.now=null;return;}                  // the tips go first
+    if(H.now){
+      const h=HINTS.find(x=>x.id===H.now);
+      const gone=!bubbleUp()||bubble.dataset.tip!==h.id;
+      if(gone||h.done?.()||performance.now()-H.since>h.ttl){if(!gone)hideBubble();H.now=null;return;}
+      const top=topDialog(),el=bubble._el;
+      if(!vis(el)||top&&!top.contains(el))bubble.hidden=true;else placeBubble();
+      return;
+    }
+    if(quiet(s)||document.getElementById('tutLayer')?.isConnected)return;
+    const seen=notesSeen(env.api);
+    for(const h of HINTS){
+      if(seen.has(h.id)||!h.when())continue;
+      const el=h.find(),top=topDialog();if(!el||top&&!top.contains(el))continue;
+      showBubble({id:h.id,emoji:h.emoji,text:h.text,el,cls:'hint'});
+      H.now=h.id;H.since=performance.now();markSeen(env,h.id);   // shown = seen: it never comes back
+      return;
+    }
+  };
+  setInterval(tick,600);
+}

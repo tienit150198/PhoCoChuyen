@@ -5,9 +5,10 @@
  * `help` / `tutGuide` / `tutReplay` actions here (tutorialAction). */
 import {startTour,stopTour,tourRunning} from './tour.js';
 import {openGuide,closeGuide,helpButton} from './guide.js';
-import {startTips,stopTips,tipsSaved} from './tips.js';
+import {startTips,stopTips,tipsSaved,hintsBoot} from './tips.js';
 import {announceBoot,quietAll} from './announce.js';
-import {tourDone,savedRun} from './store.js';
+import {tourDone,savedRun,notesSeen,markNoteSeen} from './store.js';
+import {markedNew,quiet} from '../v4/onboard.js';
 
 function css(){
   if(document.querySelector('link[data-tut-css]'))return;
@@ -29,6 +30,7 @@ function boot(env){
     setTimeout(()=>startTour(env,{at:savedRun()}),600);   // a reload in the middle of the tour
   }
   announceBoot(env,{guide:e=>openGuide(e)});
+  hintsBoot(env,{markedNew,quiet,notesSeen,markSeen:markNoteSeen});   // first-time hints (new saves only)
 }
 
 export async function tutorialAction(action,data,el,env){

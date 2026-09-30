@@ -36,6 +36,7 @@ VERSION = 1
 START_WALLET = 60
 RESERVE = 80          # a fund keeps this much after a withdrawal
 REOPEN_FEE = 15
+ONBOARD_MARK = 'onb1'   # settings.notesSeen: named with the new-player onboarding (its contextual hints, v4/onboard.js)
 WELCOME_GIFT = 20     # a brand-new neighbour's gift, into the wallet when the first life day ends
 WELCOME_LABEL = 'Quà chào hàng xóm mới 🎁'
 BREADTH_XP = 80       # maturity bonus for every workplace you really worked at
@@ -614,9 +615,13 @@ def after(s: dict, career: str | None, action: str, p: dict, result: dict) -> No
 
 def _welcome_settings(s: dict) -> None:
     """A brand-new save has just been named (still in the intro): the "Có gì mới" release notes are for
-    returning players, so the current ones count as read, silently."""
+    returning players, so the current ones count as read, silently; and the save is marked for the
+    contextual first-time hints (the marker rides with the other seen-flags in settings.notesSeen)."""
     st = s['settings']
     st['whatsNewSeen'] = wn.newer(st.get('whatsNewSeen', ''), wn.LATEST)
+    seen = [x for x in str(st.get('notesSeen', '')).split(',') if x]
+    if ONBOARD_MARK not in seen and len(seen) < 12:
+        st['notesSeen'] = ','.join(seen + [ONBOARD_MARK])
 
 
 def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]:

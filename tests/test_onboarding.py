@@ -136,6 +136,27 @@ class NotesAtNaming(unittest.TestCase):
     def test_a_new_player_has_read_the_notes(self):
         self.assertEqual(story_save()['settings']['whatsNewSeen'], wn.LATEST)
 
+    def test_a_new_save_is_marked_for_the_first_time_hints(self):
+        s = story_save()
+        self.assertEqual(s['settings']['notesSeen'].split(','), [jr.ONBOARD_MARK])
+        # Idempotent, and it keeps what was there (an announcement already seen).
+        s = new_state()
+        jr.enable_story(s, 2)
+        s, _ = apply_action(s, None, 'settings', {'notesSeen': 'guide-v1'})
+        for g in ('female', 'male'):
+            s, _ = apply_action(s, None, 'jr_profile', {'name': 'Lan', 'gender': g})
+        self.assertEqual(s['settings']['notesSeen'], 'guide-v1,' + jr.ONBOARD_MARK)
+        validate_state(copy.deepcopy(s))
+
+    def test_older_saves_are_never_marked(self):
+        s = new_state()   # sandbox
+        s, _ = apply_action(s, None, 'jr_profile', {'name': 'Lan', 'gender': 'female'})
+        self.assertEqual(s['settings']['notesSeen'], '')
+        s = story_save()
+        s['settings']['notesSeen'] = 'guide-v1'
+        s, _ = apply_action(s, None, 'jr_profile', {'name': 'Lan Anh', 'gender': 'female'})   # past the intro
+        self.assertEqual(s['settings']['notesSeen'], 'guide-v1')
+
 
 if __name__ == '__main__':
     unittest.main()
