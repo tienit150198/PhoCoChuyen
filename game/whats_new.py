@@ -47,18 +47,6 @@ ENTRIES = (
         dict(emoji="💬", text="Thông báo hiện lâu hơn, đủ thời gian đọc."),
         dict(emoji="⚡", text="Vào game nhanh hơn, hàng nhập về nhanh hơn."),
     )),
-    dict(version="0.9.3", date="2026-09-30", items=(
-        dict(emoji="🚀", text="Máy chủ mới đã chạy! Mỗi lần bấm giờ chưa tới 0,1 giây, nhanh gấp 5 lần sáng nay."),
-        dict(emoji="🛠️", text="Đã khắc phục hẳn sự cố giật, lag, bấm không ăn sáng nay. Xin lỗi các bạn vì sự bất tiện!"),
-        dict(emoji="👥", text="Đông người chơi cùng lúc cũng không phải chờ nhau nữa: máy chủ xử lý song song."),
-        dict(emoji="💾", text="Tiến trình của bạn được giữ nguyên, không mất gì."),
-    )),
-    dict(version="0.9.2", date="2026-09-30", items=(
-        dict(emoji="🛠️", text="Hết giật, lag! Sáng nay có lúc bấm không ăn, thao tác bị treo. Mình đã khắc phục xong, xin lỗi các bạn vì sự bất tiện!"),
-        dict(emoji="🚀", text="Nâng cấp máy chủ: lưu tiến trình nhanh và ổn định hơn, nhiều người chơi cùng lúc không còn bị nghẽn."),
-        dict(emoji="⚡", text="Trang quản lý và thống kê nhẹ hơn, không làm chậm game."),
-        dict(emoji="💾", text="Tiến trình của bạn được giữ nguyên, không mất gì."),
-    )),
 )
 
 MAX_ITEMS = 18

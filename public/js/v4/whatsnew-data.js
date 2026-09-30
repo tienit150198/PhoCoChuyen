@@ -19,17 +19,5 @@ export default [
   {"emoji":"📱","text":"Màn hình gọn hơn trên điện thoại, ít phải cuộn."},
   {"emoji":"💬","text":"Thông báo hiện lâu hơn, đủ thời gian đọc."},
   {"emoji":"⚡","text":"Vào game nhanh hơn, hàng nhập về nhanh hơn."}
- ]},
- {"version":"0.9.3","date":"2026-09-30","items":[
-  {"emoji":"🚀","text":"Máy chủ mới đã chạy! Mỗi lần bấm giờ chưa tới 0,1 giây, nhanh gấp 5 lần sáng nay."},
-  {"emoji":"🛠️","text":"Đã khắc phục hẳn sự cố giật, lag, bấm không ăn sáng nay. Xin lỗi các bạn vì sự bất tiện!"},
-  {"emoji":"👥","text":"Đông người chơi cùng lúc cũng không phải chờ nhau nữa: máy chủ xử lý song song."},
-  {"emoji":"💾","text":"Tiến trình của bạn được giữ nguyên, không mất gì."}
- ]},
- {"version":"0.9.2","date":"2026-09-30","items":[
-  {"emoji":"🛠️","text":"Hết giật, lag! Sáng nay có lúc bấm không ăn, thao tác bị treo. Mình đã khắc phục xong, xin lỗi các bạn vì sự bất tiện!"},
-  {"emoji":"🚀","text":"Nâng cấp máy chủ: lưu tiến trình nhanh và ổn định hơn, nhiều người chơi cùng lúc không còn bị nghẽn."},
-  {"emoji":"⚡","text":"Trang quản lý và thống kê nhẹ hơn, không làm chậm game."},
-  {"emoji":"💾","text":"Tiến trình của bạn được giữ nguyên, không mất gì."}
  ]}
 ];
