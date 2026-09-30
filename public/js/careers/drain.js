@@ -48,9 +48,13 @@ function packPlan(t,x){
   return want.slice(0,data(x).slots||5);
 }
 function setupSteps(t,x){
-  const d=data(x),bike=d.bike||[],rows=[],next=packPlan(t,x).find(k=>!bike.includes(k));
+  const d=data(x),bike=d.bike||[],rows=[],plan=packPlan(t,x),next=plan.find(k=>!bike.includes(k));
   const full=bike.length>=(d.slots||5),tl=next&&toolOf(x,next);
-  rows.push({ok:!next||full?true:null,label:'Xếp đồ nghề theo sổ hẹn',note:`${bike.length}/${d.slots||5}`,go:next&&!full?{cmd:'cg_pack',payload:{tool:next},label:`${x.esc(tl.emoji)} Xếp ${x.esc(lower(tl.name))} lên xe`}:null});
+  // Yesterday's tools are still on the bike: take off one today's book does not need, to make room.
+  const spare=full&&next?bike.find(k=>!plan.includes(k)):null,sp=spare&&toolOf(x,spare);
+  rows.push({ok:!next||(full&&!spare)?true:null,label:'Xếp đồ nghề theo sổ hẹn',note:`${bike.length}/${d.slots||5}`,
+    go:next&&!full?{cmd:'cg_pack',payload:{tool:next},label:`${x.esc(tl.emoji)} Xếp ${x.esc(lower(tl.name))} lên xe`}
+      :spare?{cmd:'cg_pack',payload:{tool:spare},label:`${x.esc(sp.emoji)} Cất ${x.esc(lower(sp.name))} lại tiệm`}:null});
   rows.push({ok:(d.gear||[]).includes('gang_tay')?true:null,label:'Đeo găng tay',go:{cmd:'cg_gear',payload:{item:'gang_tay'},label:'🧤 Đeo găng tay'}});
   return rows;
 }
@@ -83,7 +87,7 @@ function quotePanel(t,x){
   const q=(lv,label,sub)=>x.cmd(`<span class="sk-opt-label">${label} · ${x.fmt(pr[lv]||0)} xu</span><small>${sub}</small>`,'cg_quote',{task:t.id,level:lv},`sk-opt cg-q-${lv}`);
   const rows=[q('list','🧾 Theo bảng giá',night?'đã gồm phụ phí gọi đêm, nói rõ trước':`${p.name} · ${causeName(x,t.diag)}`),q('high','💰 Nói thách','gấp gần đôi bảng giá'),q('low','🙂 Làm rẻ lấy lòng','tiệm chịu lỗ')];
   if(t.kind==='recall')rows.push(q('warranty','🔁 Bảo hành, không lấy tiền','khi lỗi là của tiệm'));
-  const open=t.quote==null||t.cleared==='fail',ctr=t.bid?.counter;
+  const open=t.quote==null||t.cleared==='fail'||(t.quoted_for&&t.quoted_for!==t.diag),ctr=t.bid?.counter;
   const own=open?pane(x,`own-${t.id}`,'✍️ Tự báo giá',`${ctr?`<p class="cg-counter">🗣️ Khách trả <b>${x.fmt(ctr)} xu</b>${x.cmd(`Chốt ${x.fmt(ctr)} xu`,'cg_price',{task:t.id,price:ctr},'small primary')}</p>`:''}
     ${amountBox(x,`price-${t.id}`,ctr||pr.list||10,{min:0,max:500,label:'Giá bạn báo',send:'🧾 Báo giá này',cmd:'cg_price',payload:{task:t.id}})}<p class="small muted">Báo cao thì có người trả, có người cãi, có người đi rêu rao khắp ngõ.</p>`,!!ctr,'cg-own'):'';
   return `<section class="card cg-quote"><h4>🧾 ${t.quote!=null?`Đã báo ${x.fmt(t.quote)} xu`:'Báo giá trước khi làm'}</h4>${open?`<div class="sk-opts">${rows.join('')}</div>${own}`:''}</section>`;
@@ -144,7 +148,9 @@ function jobSteps(t,x){
   }
   if(t.quote==null)return [{ok:null,label:'Báo giá trước khi làm',go:{sel:'.cg-quote .sk-opts',label:'🧾 Báo giá cho khách'},pulse:''}];
   if(t.quoted_for&&t.quoted_for!==t.diag)rows.push({ok:null,label:'Bệnh khác lúc báo giá: báo lại',go:{sel:'.cg-quote .sk-opts',label:'🧾 Báo lại giá'},pulse:''});
-  if(t.kind==='manhole')for(const k of ['rao','khi','quat','canh'])if(!(t.safety||[]).includes(k))rows.push({ok:null,label:(cc(x).safety||{})[k]||k,go:{cmd:'cg_safety',payload:{task:t.id,step:k},label:`⚠️ ${x.esc((cc(x).safety||{})[k]||k)}`}});
+  const noMeter=t.kind==='manhole'&&!bike.includes('do_khi')&&!['khi','quat'].every(k=>(t.safety||[]).includes(k));
+  if(noMeter){const m=toolOf(x,'do_khi');rows.push({ok:null,label:`Thiếu ${lower(m.name)}`,go:{cmd:'cg_fetch',payload:{tool:'do_khi',drop:bike.find(k=>!['gau','do_khi'].includes(k))||bike[0]},label:`🛵 Về tiệm lấy ${x.esc(lower(m.name))}`}});}
+  if(t.kind==='manhole')for(const k of ['rao','khi','quat','canh'])if(!(t.safety||[]).includes(k)&&!(noMeter&&(k==='khi'||k==='quat')))rows.push({ok:null,label:(cc(x).safety||{})[k]||k,go:{cmd:'cg_safety',payload:{task:t.id,step:k},label:`⚠️ ${x.esc((cc(x).safety||{})[k]||k)}`}});
   if(!(d.gear||[]).includes('gang_tay'))rows.push({ok:null,label:'Đeo găng tay',go:{cmd:'cg_gear',payload:{item:'gang_tay'},label:'🧤 Đeo găng tay'}});
   if(t.kind==='manhole')for(const k of ['ung','khau_trang'])if(!(d.gear||[]).includes(k))rows.push({ok:null,label:(cc(x).gear||{})[k]||k,go:{cmd:'cg_gear',payload:{item:k},label:`${GEAR_EMOJI[k]} ${x.esc((cc(x).gear||{})[k]||k)}`}});
   if(!t.cleared||t.cleared==='fail'){rows.push({ok:null,label:'Thông bằng đồ nghề hợp bệnh',go:{sel:'.cg-use',label:'🧰 Chọn đồ nghề để thông'},pulse:''});return rows;}

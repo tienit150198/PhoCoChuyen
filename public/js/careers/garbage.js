@@ -144,13 +144,15 @@ function troubleCard(x){
 }
 function feeBook(x){
   const f=data(x).fees;if(!f||!(f.rows||[]).length)return '';
-  const open=f.rows.filter(r=>r.state==='open');
-  const rows=f.rows.map(r=>{const left=r.due-r.paid,today=r.on===x.room.day;
-    const st={paid:'✅ đã đóng',refused:'🚪 không đóng',waived:'🤝 miễn'}[r.state];
-    return `<li class="rc-fee ${r.state}"><div class="row spread"><b>${x.esc(r.house)}</b><span class="tag ${r.state==='open'?'amber':'green'}">${st||`${x.fmt(left)} xu`}</span></div>
-      <small class="muted">${x.esc(r.lane)}</small>${r.last?`<p class="small">${x.esc(r.last)}</p>`:''}
-      ${r.state==='open'&&!today?`${amountBox(x,`fee-${r.id}`,left,{max:left,label:'Thu bao nhiêu',send:'🧾 Thu, nói nhẹ',cmd:'rac_fee',payload:{row:r.id,tone:'soft'},field:'amount'})}
-        <div class="sk-row">${act2(x,'📜 Nhắc quy định',{row:r.id,tone:'strict',key:`fee-${r.id}`,def:left})}${x.confirmCmd('🤝 Miễn tháng này','rac_fee',{row:r.id,waive:true},`Miễn phí cho ${r.house}?`,'small ghost')}</div>`:r.state==='open'&&r.counter?`<div class="sk-row">${x.cmd(`🤝 Chốt ${x.fmt(r.counter)} xu`,'rac_fee',{row:r.id,tone:'soft',amount:r.counter},'small')}</div>`:r.state==='open'?'<p class="small muted">Hôm nay gõ cửa rồi, mai thu tiếp.</p>':''}</li>`;}).join('');
+  const open=f.rows.filter(r=>r.state==='open'),pick=x.ui.feeRow;
+  const rows=f.rows.map(r=>{const left=r.due-r.paid,today=r.on===x.room.day,st={paid:'✅ đã đóng',refused:'🚪 không đóng',waived:'🤝 miễn'}[r.state];
+    const head=`<div class="row spread"><b>${x.esc(r.house)}</b><span class="tag ${r.state==='open'?'amber':'green'}">${st||`${x.fmt(left)} xu`}</span></div>`;
+    if(r.state!=='open')return `<li class="rc-fee ${r.state}">${head}${r.last?`<small class="muted">${x.esc(r.last)}</small>`:''}</li>`;
+    const said=r.last?`<p class="small">${x.esc(r.last)}</p>`:'';
+    if(today)return `<li class="rc-fee">${head}${said}${r.counter?`<div class="sk-row">${x.cmd(`🤝 Chốt ${x.fmt(r.counter)} xu`,'rac_fee',{row:r.id,tone:'soft',amount:r.counter},'small')}</div>`:'<small class="muted">Hôm nay gõ cửa rồi, mai thu tiếp.</small>'}</li>`;
+    if(pick!==r.id)return `<li class="rc-fee">${head}<div class="row spread"><small class="muted">${x.esc(r.lane)}</small><button type="button" class="btn small" data-action="car:feeRow" data-row="${x.esc(r.id)}">🧾 Gõ cửa thu</button></div>${said}</li>`;
+    return `<li class="rc-fee on">${head}<small class="muted">${x.esc(r.lane)}</small>${said}${amountBox(x,`fee-${r.id}`,left,{max:left,label:'Thu bao nhiêu',send:'🧾 Thu, nói nhẹ',cmd:'rac_fee',payload:{row:r.id,tone:'soft'},field:'amount'})}
+      <div class="sk-row">${act2(x,'📜 Nhắc quy định',{row:r.id,tone:'strict',key:`fee-${r.id}`,def:left})}${x.confirmCmd('🤝 Miễn tháng này','rac_fee',{row:r.id,waive:true},`Miễn phí cho ${r.house}?`,'small ghost')}</div></li>`;}).join('');
   return pane(x,'fees',`🧾 Thu phí vệ sinh · còn ${open.length} hộ`,`<ul class="sk-debts">${rows}</ul>`,open.length>0,'rc-fees');
 }
 const act2=(x,label,d)=>`<button type="button" class="btn small" data-action="car:feeStrict"${Object.entries(d).map(([k,v])=>` data-${k}="${x.esc(v)}"`).join('')}>${label}</button>`;
@@ -187,6 +189,7 @@ export default {
   input(el,x){return kitInput(el,x);},
   tick(root){keepBarAboveFooter(root);},
   actions:{...kitActions,
+    async feeRow(d,el,x){x.ui.feeRow=x.ui.feeRow===d.row?null:d.row;x.render();},
     async feeStrict(d,el,x){const b=x.ui.amt??={},v=Number(b[d.key]===undefined||b[d.key]===''?d.def:b[d.key]);
       await x.send('rac_fee',{row:d.row,tone:'strict',amount:Math.max(1,Math.min(Number(d.def),Math.floor(v)||Number(d.def)))});}},
   dock:[['inventory','box','Kho đồ bảo hộ','Găng tay, khẩu trang, bao']],

@@ -1330,10 +1330,11 @@ def _trouble(s, c, d, p):
                 good, out = True, 'Bạn nói chuyện đàng hoàng. Tụi nó ngượng, dựng lại xe rác rồi đi.'
             elif how == 'sulk':
                 n = lose(x['loss'] // 2, 'Sửa xe đẩy bị phá')
-                good, out = None, f'Tụi nó cười khẩy bỏ đi. Mất {n} xu sửa xe.'
+                good, out = None, 'Tụi nó cười khẩy bỏ đi.' + (f' Mất {n} xu sửa xe.' if n else '')
             else:
                 n = lose(x['loss'], 'Sửa xe đẩy bị phá')
-                good, out = False, f'“Mày là cái thá gì mà dạy đời?” Tụi nó đạp thêm phát nữa. Mất {n} xu sửa xe.'
+                good, out = False, (f'“Mày là cái thá gì mà dạy đời?” Tụi nó đạp thêm phát nữa. Mất {n} xu sửa xe.' if n
+                                    else '“Mày là cái thá gì mà dạy đời? Rác rưởi mà cũng bày đặt!” Tụi nó cười hô hố, quay clip đăng lên mạng.')
         elif choice == 'photo':
             if tr['proud'] > 60:
                 good, out = None, 'Bạn giơ điện thoại chụp. Tụi nó chửi um lên nhưng lảng đi.'
@@ -1347,7 +1348,7 @@ def _trouble(s, c, d, p):
                 kit.money(s, c, x['loss'], 'Đền tiền sửa xe đẩy', ev['id'], 'compensation')
         else:
             n = lose(x['loss'], 'Sửa xe đẩy bị phá')
-            good, out = None, f'Bạn lặng lẽ dựng xe, nhặt rác vương vãi, đi tiếp.' + (f' Mất {n} xu sửa xe.' if n else '')
+            good, out = None, 'Bạn lặng lẽ làm tiếp, mặc kệ tụi nó.' + (f' Mất {n} xu sửa xe.' if n else '')
         title, emoji = 'Quậy phá lúc nửa đêm', '🛵'
     else:
         if choice == 'wait':

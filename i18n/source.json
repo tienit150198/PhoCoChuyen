@@ -45633,7 +45633,12 @@
   "👻 mất": "public/js/careers/street_kit.js",
   "🤝 đã xóa": "public/js/careers/street_kit.js",
   "Không ai nợ.": "public/js/careers/street_kit.js",
-  "Điền một số đã nhé.": "public/js/careers/street_kit.js"
+  "Điền một số đã nhé.": "public/js/careers/street_kit.js",
+  "Tụi nó cười khẩy bỏ đi.": "game/careers/garbage.py:1333",
+  "“Mày là cái thá gì mà dạy đời? Rác rưởi mà cũng bày đặt!” Tụi nó cười hô hố, quay clip đăng lên mạng.": "game/careers/garbage.py:1337",
+  "Bạn lặng lẽ làm tiếp, mặc kệ tụi nó.": "game/careers/garbage.py:1351",
+  "🧾 Gõ cửa thu": "public/js/careers/garbage.js",
+  "📒 Đòi nợ": "public/js/careers/street_kit.js"
  },
  "patterns": {
   "Đi đâu mà bỏ $1 vậy em? Khách chờ rồi bỏ về hết.": "game/abandon.py:63",
@@ -52857,6 +52862,10 @@
   "🧾 Thu phí vệ sinh · còn $1 hộ": "public/js/careers/garbage.js",
   "đã đòi $1 lần": "public/js/careers/street_kit.js",
   "Xóa khoản $1 xu cho $2?": "public/js/careers/street_kit.js",
-  "📒 Sổ nợ · $1 người · $2 xu": "public/js/careers/street_kit.js"
+  "📒 Sổ nợ · $1 người · $2 xu": "public/js/careers/street_kit.js",
+  "Tụi nó cười khẩy bỏ đi.$1": "game/careers/garbage.py:1333",
+  "Bạn lặng lẽ làm tiếp, mặc kệ tụi nó.$1": "game/careers/garbage.py:1351",
+  "Cất $1 lại tiệm": "public/js/careers/drain.js",
+  "🛵 Về tiệm lấy $1": "public/js/careers/drain.js"
  }
 }

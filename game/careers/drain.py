@@ -715,6 +715,8 @@ def _diag(s, c, d, p):
     cause = kit.one_of(p.get('cause'), CAUSES, 'Nguyên nhân không có trong sổ.')
     kit.need(t['cleared'] is None or t['cleared'] == 'fail', 'Đã thông xong rồi.')
     t['diag'] = cause
+    if t['cleared'] == 'fail':
+        t['cleared'] = None     # a new idea after a failed try: on to the tools again (the tries stay counted)
     return dict(message=f'📝 Ghi sổ: nghi {_lower(CAUSES[cause]["name"])}.')
 
 

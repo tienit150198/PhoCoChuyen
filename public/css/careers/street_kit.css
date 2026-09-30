@@ -115,8 +115,10 @@
 .career-job.sk .sk-amt-row{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;gap:6px;align-items:center;margin:6px 0}
 .career-job.sk .sk-step{min-height:48px;min-width:48px;font-size:22px;font-weight:800;padding:0}
 .career-job.sk .sk-amt-in{display:flex;align-items:center;gap:6px;min-height:48px;padding:0 12px;border:2px solid var(--sk-accent);border-radius:var(--sk-rs);background:var(--sk-surface)}
-.career-job.sk .sk-amt-in input{width:100%;min-width:0;border:0;background:transparent;color:var(--sk-ink);font:inherit;font-size:22px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums}
-.career-job.sk .sk-amt-in input:focus{outline:none}
+/* beats the app's (and the phone layout's) field look: the whole pill is the field */
+.career-job.sk .sk-amt-row .sk-amt-in.sk-amt-in input[type=number]{width:100%;min-width:0;min-height:0;padding:0;border:0;border-radius:0;box-shadow:none;background:transparent;color:var(--sk-ink);font:inherit;font-size:22px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums}
+.career-job.sk .sk-amt-row .sk-amt-in.sk-amt-in input[type=number]:focus-visible{outline:none;box-shadow:none}
+.career-job.sk .sk-amt-in:focus-within{box-shadow:0 0 0 3px var(--focus,rgba(0,0,0,.15))}
 .career-job.sk .sk-amt-in small{color:var(--sk-muted)}
 .career-job.sk .sk-amt-go{width:100%;min-height:48px}
 .career-job.sk .sk-twist h3{font-size:16px;line-height:1.35;font-weight:700}
@@ -126,3 +128,8 @@
 .career-job.sk .sk-debt,.career-job.sk .sk-debts>li{padding:10px;border-radius:var(--sk-rs);background:var(--sk-surface);border:1px solid var(--sk-line)}
 .career-job.sk .sk-debts p{margin:4px 0}
 .career-job.sk .sk-debtbook{margin-top:10px}
+.career-job.sk .sk-row .btn{padding-inline:8px;font-size:14px;line-height:1.25}
+.career-job.sk .sk-debts .row.spread{gap:8px;align-items:center}
+.career-job.sk .sk-debts .row .btn.small{min-height:44px;flex:none}
+.career-job.sk .sk-go-end{display:flex;justify-content:flex-end;margin-top:4px}
+.career-job.sk .sk-debt .sk-row .btn.small{font-size:13px;padding-inline:6px;white-space:nowrap}

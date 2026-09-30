@@ -114,7 +114,7 @@ export function debtBook(x,debts,cmd){
     const tone=(t,l)=>act(x,l,'debtChase',{debt:d.id,tone:t,key:`debt-${d.id}`,def:owe,cmd},'small');
     return `<li class="sk-debt"><div class="row spread"><b>${x.esc(d.who)}</b><span class="tag amber">${x.fmt(owe)} xu</span></div>
       <small class="muted">${x.esc(d.what)} · ngày ${d.day}${d.tries?` · đã đòi ${d.tries} lần`:''}</small>${d.last?`<p class="small">${x.esc(d.last)}</p>`:''}
-      ${today?'<p class="small muted">Hôm nay đòi rồi, mai đòi tiếp.</p>':`<div class="sk-amt-row">${act(x,'−','amtStep',{key:`debt-${d.id}`,delta:-1,min:1,max:owe,def:owe},'ghost sk-step')}<label class="sk-amt-in"><input type="number" inputmode="numeric" min="1" max="${owe}" value="${Math.min(owe,amtOf(x,`debt-${d.id}`,owe))}" data-sk-amt="debt-${x.esc(d.id)}" aria-label="Đòi bao nhiêu"><small>xu</small></label>${act(x,'+','amtStep',{key:`debt-${d.id}`,delta:1,min:1,max:owe,def:owe},'ghost sk-step')}</div>
+      ${today?'<p class="small muted">Hôm nay đòi rồi, mai đòi tiếp.</p>':x.ui.debtRow!==d.id?`<div class="sk-go-end"><button type="button" class="btn small" data-action="car:debtRow" data-row="${x.esc(d.id)}">📒 Đòi nợ</button></div>`:`<div class="sk-amt-row">${act(x,'−','amtStep',{key:`debt-${d.id}`,delta:-1,min:1,max:owe,def:owe},'ghost sk-step')}<label class="sk-amt-in"><input type="number" inputmode="numeric" min="1" max="${owe}" value="${Math.min(owe,amtOf(x,`debt-${d.id}`,owe))}" data-sk-amt="debt-${x.esc(d.id)}" aria-label="Đòi bao nhiêu"><small>xu</small></label>${act(x,'+','amtStep',{key:`debt-${d.id}`,delta:1,min:1,max:owe,def:owe},'ghost sk-step')}</div>
       <div class="sk-row">${tone('soft','🙂 Nhắc nhẹ')}${tone('straight','🗣️ Nói thẳng')}${tone('family','👪 Nhờ người nhà')}${x.confirmCmd('🤝 Xóa nợ',cmd,{debt:d.id,forgive:true},`Xóa khoản ${owe} xu cho ${d.who}?`,'small ghost')}</div>`}</li>`;}).join('');
   const done=(debts||[]).filter(d=>d.state!=='open').slice(-3).map(d=>`<li class="muted small">${x.esc(d.who)} · ${d.state==='paid'?'✅ đã trả':d.state==='gone'?'👻 mất':'🤝 đã xóa'}</li>`).join('');
   const sum=open.reduce((s,d)=>s+d.owed-d.paid,0);
@@ -127,6 +127,7 @@ export function troubleLast(x){
 }
 Object.assign(kitActions,{
   async seenTr(d,el,x){x.ui.seenTr=d.key;x.render();},
+  async debtRow(d,el,x){x.ui.debtRow=x.ui.debtRow===d.row?null:d.row;x.render();},
   async amtStep(d,el,x){const b=x.ui.amt??={},cur=Number(b[d.key]===undefined||b[d.key]===''?d.def:b[d.key])||0;
     b[d.key]=Math.max(Number(d.min),Math.min(Number(d.max),cur+Number(d.delta)));x.render();},
   async debtChase(d,el,x){const b=x.ui.amt??={},v=Number(b[d.key]===undefined||b[d.key]===''?d.def:b[d.key]);
