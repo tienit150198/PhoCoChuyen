@@ -10,8 +10,6 @@
 .wd-mirror .wd-fig{display:block;margin-bottom:6px}
 .wd-side{display:grid;gap:8px;min-width:0}
 .wd-side h3{margin:0;font-size:1.2rem;overflow-wrap:anywhere}
-.wd-purse{display:flex;align-items:center;gap:6px;margin:0;font-size:.95rem}
-.wd-purse b{font-variant-numeric:tabular-nums}
 .wd-note{margin:0;font-size:.833rem;line-height:1.45;color:var(--muted)}
 .wd-note.good{color:var(--good);font-weight:700}
 .wd-actions{display:grid;gap:8px;margin-top:4px}

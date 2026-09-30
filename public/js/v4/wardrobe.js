@@ -61,7 +61,6 @@ export function wardrobeView(env){
   if(!c)return top+`<div class="sheet-body jr-body"><p class="muted">Tủ đồ đang được sắp xếp, lát nữa quay lại nhé.</p></div>`;
   if(!SLOTS.includes(st.tab))st.tab='top';
   const saved=lookOf(api.state),look={...saved,...st.draft};
-  const purse=J.story?`<p class="wd-purse">${icon('coin',16)} Ví của bạn <b>${J.wallet<0?`nợ ${fmt(-J.wallet)}`:fmt(J.wallet)} xu</b></p>`:'';
   const shop=staff(api)?`<p class="wd-note good">🏷️ Bạn là người của ${esc(c.shop_name)}: mọi món giảm ${c.staff_off}%.</p>`
     :`<p class="wd-note">🏷️ Làm ở ${esc(c.shop_name)} sẽ được giá nhân viên, giảm ${c.staff_off}%.</p>`;
   const tabs=c.slots.map(s=>`<button type="button" role="tab" class="wd-tab${st.tab===s.id?' active':''}" aria-selected="${st.tab===s.id}" data-action="jrWdTab" data-tab="${s.id}"><span aria-hidden="true">${TAB_EMOJI[s.id]||'•'}</span>${esc(s.name)}${look[s.id]!==saved[s.id]?'<i class="wd-dot" aria-label="đang thử"></i>':''}</button>`).join('');
@@ -69,7 +68,7 @@ export function wardrobeView(env){
   return top+`<div class="sheet-body jr-body wd">
     <section class="jr-card wd-stage">
       <div class="wd-mirror">${figureSVG(look,g,{w:150,h:212,label:'Nhân vật của bạn trong bộ đồ đang thử'})}</div>
-      <div class="wd-side"><h3>${esc(api.state.name)}</h3>${purse}${shop}<div class="wd-actions" aria-live="polite">${actions(api,look,saved)}</div></div>
+      <div class="wd-side"><h3>${esc(api.state.name)}</h3>${shop}<div class="wd-actions" aria-live="polite">${actions(api,look,saved)}</div></div>
     </section>
     <nav class="wd-tabs" role="tablist" aria-label="Loại đồ">${tabs}</nav>
     <div class="wd-grid">${grid}</div>
