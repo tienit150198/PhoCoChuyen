@@ -28,24 +28,21 @@ import re
 from pathlib import Path
 
 ENTRIES = (
-    dict(version="0.9.4", date="2026-09-30", items=(
-        dict(emoji="🛠️", text="Đã khắc phục sự cố giật, lag: game chạy mượt hơn nhiều."),
-        dict(emoji="🏪", text="Chương 3 có thêm 3 nghề: Shop quần áo, Shop thú cưng (cá cảnh, thú nhỏ, góc nhận nuôi) và quán trà đá vỉa hè."),
-        dict(emoji="💍", text="Kết hôn (cần tài khoản): mua nhẫn, cầu hôn bằng mã người chơi, đặt tiệc cưới, nhận tiền mừng. Cả phố cùng hay tin.", go=dict(action="marriage")),
-        dict(emoji="💞", text="Vợ chồng có quỹ chung và thẻ chung: cùng góp tiền, cùng chi tiêu, ai gửi hay rút đều báo cho nhau."),
-        dict(emoji="🏦", text="Ngân hàng Phố: gửi tiết kiệm, mở thẻ, vay tiền. Trả đúng hạn thì điểm tín dụng tăng.", go=dict(action="bank")),
-        dict(emoji="👋", text="Kết bạn với người chơi khác. Người quen trong phố thân dần khi bạn hỏi han, tặng quà.", go=dict(action="friends")),
-        dict(emoji="🎓", text="Trượt phỏng vấn? Thi chứng chỉ nhẹ nhàng (đúng 4/6 là đạt, có 💡 gợi ý) để dễ được nhận hơn, hoặc “Đi cửa sau”."),
-        dict(emoji="🏆", text="Bảng xếp hạng: Top trải nghiệm (cả phố và từng nghề) và Top chứng chỉ.", go=dict(action="rank")),
-        dict(emoji="🕰️", text="Đồng hồ trong ngày: trời sáng tối theo giờ, mỗi tiệm có giờ mở cửa và giờ đóng cửa riêng."),
-        dict(emoji="💝", text="Làm tốt thì thỉnh thoảng được khách bo thêm, hên xui."),
-        dict(emoji="💵", text="Khách có thể đưa thiếu tiền: đếm lại, nhắc khéo, cho nợ hay báo công an. Mỗi cách một kết cục khác nhau."),
-        dict(emoji="⭐", text="Đánh giá đa dạng hơn: khách khen chê vị đồ uống, ống hút, nhà vệ sinh, thái độ nhân viên, cả cách ăn mặc."),
-        dict(emoji="📘", text="Sách hướng dẫn đầy đủ: mua nhẫn, cầu hôn, đám cưới, thẻ chung, ngân hàng, chứng chỉ, từng nghề…", go=dict(action="help")),
-        dict(emoji="🛒", text="Giờ cao điểm ở tạp hoá bán như quầy thường. Thối tiền sai ở đâu cũng bị khách phàn nàn."),
-        dict(emoji="📱", text="Màn hình gọn hơn trên điện thoại, ít phải cuộn."),
-        dict(emoji="💬", text="Thông báo hiện lâu hơn, đủ thời gian đọc."),
-        dict(emoji="⚡", text="Vào game nhanh hơn, hàng nhập về nhanh hơn."),
+    dict(version="0.9.5", date="2026-09-30", items=(
+        dict(emoji="⚡", text="Máy chủ cập nhật không làm mất thao tác: lỡ lúc khởi động lại, game tự gửi lại, chỉ hiện \"Đang cập nhật máy chủ…\" vài giây."),
+        dict(emoji="🏠", text="Giờ bạn có thể mua nhà: trả trước 30%, vay ngân hàng trả góp mỗi tháng, không còn tiền phòng.", go=dict(action="house")),
+        dict(emoji="🐷", text="Gửi tiết kiệm có kỳ hạn tới 3 năm, lãi tính theo năm (1 năm = 60 ngày sống), tới hạn tự gửi tiếp nếu muốn.", go=dict(action="bank")),
+        dict(emoji="💞", text="Vợ chồng có thể góp quỹ chung mua nhà, rồi cùng về ở chung.", go=dict(action="house")),
+        dict(emoji="👗", text="Tủ đồ đã mở: đổi kiểu tóc, áo quần, giày, phụ kiện cho nhân vật. Làm ở Tiệm Áo Chỉ Mây được giảm 20%.", go=dict(action="jrWardrobe")),
+        dict(emoji="🗣️", text="Người trong phố giờ có chính kiến hơn: khen có gai, chê có lý, mà vẫn thương bạn."),
+        dict(emoji="💰", text="Lúc nhập hàng, mua sắm hay gửi rút tiền, góc trên luôn hiện Ví và Quỹ tiệm. Thiếu tiền thì ghi rõ còn thiếu bao nhiêu."),
+        dict(emoji="📉", text="Hàng giao thiếu? Nút \"Khiếu nại phần thiếu\" hiện ngay trong Kho, bấm là được hoàn tiền."),
+        dict(emoji="🔧", text="Tiệm sửa đồ: phiếu nhận máy ghi sẵn khách đưa kèm những gì, khỏi phải đoán."),
+        dict(emoji="🐾", text="Pet care và shop quần áo: lời dặn của khách hiện ngay cạnh chỗ chọn, không còn bị giấu."),
+        dict(emoji="💬", text="Thông báo gọn gàng: nhiều tin cùng lúc giờ xếp thành từng dòng có biểu tượng, dễ đọc hơn."),
+        dict(emoji="⭐", text="Trang Đánh giá gọn hơn: lời khách, lời bạn đáp và khách đổi mấy sao nằm trong từng ô màu riêng, liếc là thấy."),
+        dict(emoji="🧾", text="Tổng kết ngày, Chuyện phố và Sổ tiệm bớt rối: ít ô màu hơn, mỗi màn chỉ một nút chính."),
+        dict(emoji="🚀", text="Máy chủ nhẹ hơn khi đông người chơi."),
     )),
 )
 

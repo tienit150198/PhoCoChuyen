@@ -200,6 +200,7 @@ function navItems(c){
   items.push(['jrWardrobe','shirt','Tủ đồ']);  // 👗 Tủ đồ (v4/wardrobe.js, opened by journey.js)
   items.push(['friends','user','Bạn bè',api.friendAlerts||0],['marriage','heart','Hôn nhân',api.marriageAlerts||0]);  // Bạn bè + Hôn nhân (v4/marriage.js, own dialog; badges from v4/ticker.js)
   {const bk=api.state?.journey?.bank;items.push(['bank','coin','Ngân hàng',bk?.unread||(bk?.overdue?'dot':0)]);}  // 🏦 Ngân hàng Phố (v4/bank.js, own dialog)
+  if(api.state?.journey?.story)items.push(['house','home','Nhà của bạn',api.state.journey.home?.own?.loan?.overdue?'dot':0]);  // 🏠 Nhà của bạn (v4/house.js, own dialog)
   return items;
 }
 const railItem=([a,i,label,badge],extra='')=>`<button type="button" class="rail-item${a==='social'?' top-social':''}${extra} ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}>${icon(i,21)}<span>${label}</span>${badge==='dot'?'<i class="dot" aria-hidden="true"></i>':badge?`<em class="badge">${badge}</em>`:''}</button>`;
