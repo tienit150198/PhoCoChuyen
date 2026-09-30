@@ -249,7 +249,7 @@ ARCHETYPES = {
                        'Mưa rào mùa này đến nhanh đi nhanh, như tụi trẻ bây giờ, chạy suốt ngày.'],
             task=['{Toi} không vội đâu, {ban} cứ hỏi cho kỹ rồi làm, người có tuổi chờ quen rồi.',
                   'Làm cho {toi} vừa phải thôi nhé, đừng ngọt quá, bác sĩ dặn rồi.'],
-            praise=['Món này ngọt thanh như hồi bà nhà {toi} còn nấu. {Ban} làm có cái tâm, {toi} ăn là biết.'],
+            praise=['Món này ngọt thanh như hồi mẹ {toi} còn nấu. {Ban} làm có cái tâm, {toi} ăn là biết.'],
             complain=['Nhạc to quá {ban} à, {toi} nghe không rõ {ban} nói gì. Món thì {toi} khen, chỉ vặn nhỏ chút cho người có tuổi.'],
             bargain=['{Toi} không mặc cả đâu, tiền nào của nấy. Chỉ xin bớt cho {toi} ít đường thôi, bác sĩ dặn.'],
             mistake=['Không sao, không sao. {Toi} cũng từng đưa nhầm thư cả tháng trời mới biết. Sửa là được.'],
@@ -359,6 +359,30 @@ ROLE_RULES = (
     (('bán xôi', 'bán chè', 'tạp hóa', 'sạp chợ', 'thương lái'), 'ba_hang_cho'),
     (('phụ huynh',), 'me_bim_ky'),
 )
+# Gender-coded archetypes (their ids and flavour read as one gender): only NPCs known to be that
+# gender get them. The rest are neutral: their lines carry no self pronoun of their own ({toi} is the
+# NPC's own xưng hô), so they fit anyone of a matching age.
+ARCH_GENDER = dict(ba_tam='f', me_bim_ky='f', co_ha_noi='f', ba_hang_cho='f', chu_triet_ly='m')
+FEMALE = frozenset(('chị', 'cô', 'bà', 'dì', 'mẹ', 'thím', 'mợ', 'má'))
+MALE = frozenset(('anh', 'chú', 'ông', 'bố', 'cậu', 'dượng'))
+# The kinship words an archetype line must never hard-code (the NPC's self word comes from {toi}).
+KIN = r'cô|chú|bà|ông|anh|chị'
+# Third-person phrases that are fine in a line ("mấy bà bán rau").
+KIN_OK = re.compile(r'(?<!\w)(mấy (bà|ông|anh|chị|cô|chú)|bà con|ông bà|anh chị em|chị em|anh em)(?!\w)', re.I)
+# Nearest compatible stand-ins when a mapped archetype does not fit the person (board tempers).
+SUBSTITUTE = dict(
+    co_ha_noi=('chu_triet_ly', 'sep_cam_ram', 'ong_cu_am', 'vp_deadline'),
+    ba_tam=('chu_triet_ly', 'ban_than', 'ong_cu_am', 'vp_deadline'),
+    ba_hang_cho=('chu_triet_ly', 'sep_cam_ram', 'ong_cu_am', 'vp_deadline'),
+    me_bim_ky=('sep_cam_ram', 'vp_deadline', 'ong_cu_am'),
+    chu_triet_ly=('co_ha_noi', 'sep_cam_ram', 'ong_cu_am', 'vp_deadline'),
+    ban_than=('chu_triet_ly', 'ba_hang_cho', 'ong_cu_am', 'genz_khach'),
+    genz_khach=('ban_than', 'vp_deadline', 'ba_tam', 'chu_triet_ly', 'ong_cu_am'),
+    vp_deadline=('sep_cam_ram', 'ong_cu_am', 'genz_khach'),
+    sep_cam_ram=('vp_deadline', 'co_ha_noi', 'chu_triet_ly', 'ong_cu_am'),
+    ong_cu_am=('chu_triet_ly', 'ba_tam', 'ba_hang_cho', 'sep_cam_ram', 'vp_deadline'),
+    shipper_lay=('vp_deadline', 'ban_than'),
+)
 # When neither role nor voice fits the age: a pool by age (spread keeps a workplace varied).
 AGE_POOL = {
     'child': ('hoc_sinh',), 'teen': ('hoc_sinh',),
@@ -456,8 +480,48 @@ def _region_fits(arch: str, region: str | None) -> bool:
     return any(r in region for r in ARCHETYPES[arch]['regions'])
 
 
-def _candidates(npc_id: str, voice_id: str, role: str, age: str, temper: str | None, region: str | None) -> list:
-    """Ordered archetype candidates for one NPC ([] = no spice)."""
+def gender_of(name: str = '', self_word: str = '') -> str | None:
+    """'f' / 'm' from the kinship word leading the name ("Cô Diệp") or the NPC's self word; None = unknown."""
+    for w in ((str(name or '').strip().split() or [''])[0].lower(), str(self_word or '').strip().lower()):
+        if w in FEMALE:
+            return 'f'
+        if w in MALE:
+            return 'm'
+    return None
+
+
+def fits(arch: str | None, gender: str | None, age: str) -> bool:
+    """Archetype compatible with this person: age band in its ages, and a gender-coded one only for
+    people known to be that gender (unknown gender gets neutral archetypes only)."""
+    a = ARCHETYPES.get(arch or '')
+    if not a or age not in a['ages']:
+        return False
+    need = ARCH_GENDER.get(arch)
+    return need is None or need == gender
+
+
+def fit(arch: str | None, gender: str | None, age: str) -> str | None:
+    """`arch` when it fits the person, else its nearest compatible stand-in (None = none fits)."""
+    if not arch:
+        return None
+    if fits(arch, gender, age):
+        return arch
+    return next((x for x in SUBSTITUTE.get(arch, ()) if fits(x, gender, age)), None)
+
+
+def age_band(years: int) -> str:
+    return ('child' if years < 12 else 'teen' if years < 16 else 'young' if years < 25 else 'adult' if years < 45
+            else 'middle' if years < 60 else 'elder')
+
+
+def kin_clash(raw: str) -> bool:
+    """A raw archetype line that hard-codes a kinship pronoun (it would fight the NPC's own xưng hô)."""
+    return bool(re.search(r'(?<!\w)(' + KIN + r')(?!\w)', KIN_OK.sub(' ', raw), re.I))
+
+
+def _candidates(npc_id: str, voice_id: str, role: str, age: str, temper: str | None, region: str | None,
+                gender: str | None = None) -> list:
+    """Ordered archetype candidates for one NPC ([] = no spice), all compatible with its age and gender."""
     if voice_id in ('pv_am', 'pv_nghiem', 'pv_lanh') or temper == 'interviewer':
         return []
     if age == 'child' or temper == 'child':
@@ -465,21 +529,23 @@ def _candidates(npc_id: str, voice_id: str, role: str, age: str, temper: str | N
     low = (role or '').lower()
     out = []
     for words, arch in ROLE_RULES:
-        if any(w in low for w in words) and age in ARCHETYPES[arch]['ages']:
+        if any(w in low for w in words) and fits(arch, gender, age):
             out.append(arch)
             break
-    voice_pool = [a for a in VOICE_TO_ARCH.get(voice_id, ()) if age in ARCHETYPES[a]['ages']]
+    voice_pool = [a for a in VOICE_TO_ARCH.get(voice_id, ()) if fits(a, gender, age)]
     if voice_pool:
         start = _h('arch', npc_id) % len(voice_pool)
         out += voice_pool[start:] + voice_pool[:start]
     if not out and voice_id in CALM:
         return []
-    age_pool = [a for a in AGE_POOL.get(age, AGE_POOL['adult']) if age in ARCHETYPES[a]['ages']]
-    start = _h('arch-age', npc_id) % len(age_pool)
+    age_pool = [a for a in AGE_POOL.get(age, AGE_POOL['adult']) if fits(a, gender, age)]
+    if not age_pool and not out:
+        return []
+    start = _h('arch-age', npc_id) % max(1, len(age_pool))
     out += age_pool[start:] + age_pool[:start]
     out = list(dict.fromkeys(out))
-    fits = [a for a in out if _region_fits(a, region)]
-    return fits or out
+    local = [a for a in out if _region_fits(a, region)]
+    return local or out
 
 
 _ARCH_CAST: dict = {}
@@ -498,7 +564,8 @@ def _workplace(career: str) -> dict:
         age = personas._age(n, career)
         temper = personas._temper(career, n['id'], n, age)
         v = voices.for_npc(n['id'], n.get('role', ''), age, temper, career)
-        cands = _candidates(n['id'], v['id'], n.get('role', ''), age, temper, _card_region(n['id'], v))
+        g = gender_of(n.get('display_name', ''), personas._address({}, career, n, age, temper).get('self'))
+        cands = _candidates(n['id'], v['id'], n.get('role', ''), age, temper, _card_region(n['id'], v), g)
         pick = None
         if cands:
             fresh = [a for a in cands if not used.get(a)]
@@ -521,13 +588,14 @@ def _card_region(npc_id: str, voice: dict) -> str:
 
 
 def archetype_for(npc_id: str, voice_id: str, role: str = '', age: str = 'adult', temper: str | None = None,
-                  career: str | None = None, region: str | None = None) -> str | None:
-    """The NPC's stable archetype (None = no spice: interviewers and calm, polite voices)."""
+                  career: str | None = None, region: str | None = None, gender: str | None = None) -> str | None:
+    """The NPC's stable archetype (None = no spice: interviewers and calm, polite voices). Town NPCs
+    take their gender from the name / self word (see _workplace); `gender` is for anyone else."""
     if career:
         row = _workplace(career).get(npc_id)
         if row and row[0] == voice_id:
             return row[1]
-    cands = _candidates(str(npc_id), voice_id, role, age, temper, region)
+    cands = _candidates(str(npc_id), voice_id, role, age, temper, region, gender)
     if not cands:
         return None
     return cands[0]
@@ -646,7 +714,7 @@ def _rows(arch: str, buckets) -> list:
 
 def examples(arch: str, situation: str, seed: int = 0, address: dict | None = None, n: int = 2) -> list[str]:
     """`n` lines for this situation, rotated by `seed` so the anchor changes every turn."""
-    rows = _rows(arch, SITUATION_BUCKETS.get(situation, ('smalltalk', 'two')))
+    rows = [x for x in _rows(arch, SITUATION_BUCKETS.get(situation, ('smalltalk', 'two'))) if not kin_clash(x)]
     if not rows:
         return []
     start = seed % len(rows)
@@ -692,7 +760,9 @@ def prompt_block(arch: str | None, knobs: dict | None, situation: str = 'smallta
     ]
     ex = examples(arch, situation, seed, address, n=1)
     if ex:
-        lines.append(f'Nhịp mẫu ({SITUATIONS.get(situation, SITUATIONS["smalltalk"])}; không chép): {ex[0]}')
+        me = (address or {}).get('self')
+        keep = f'; giữ xưng "{me}"' if me else '; giữ xưng hô của mình'
+        lines.append(f'Nhịp mẫu ({SITUATIONS.get(situation, SITUATIONS["smalltalk"])}; không chép{keep}): {ex[0]}')
     if lang == 'en':
         lines.append('Write natural English with this attitude; no Vietnamese slang.')
     return '\n'.join(lines)
@@ -721,8 +791,10 @@ def for_card(card: dict, purpose: str = 'chat') -> tuple[str | None, dict | None
     if not sp:
         from . import voices
         v = voices.for_card(card)
+        addr = card.get('address') if isinstance(card.get('address'), dict) else {}
         arch = archetype_for(str(card.get('id') or card.get('name') or ''), v['id'], card.get('role', ''),
-                             card.get('age') or 'adult', card.get('temperament'), card.get('career'), card.get('region'))
+                             card.get('age') or 'adult', card.get('temperament'), card.get('career'), card.get('region'),
+                             gender_of(card.get('name', ''), addr.get('self', '')))
     if arch not in ARCHETYPES:
         return None, None
     return arch, knobs_for(arch, str(card.get('id') or ''), purpose=purpose, mood=card.get('mood'),
@@ -742,7 +814,7 @@ def card_spice(npc_id: str, voice_id: str, role: str, age: str, temper: str | No
 # ------------------------------------------------------------------ scripted flavour (AI off)
 def line(arch: str | None, bucket: str, seed: int, address: dict | None = None) -> str | None:
     """One scripted archetype line (None when there is none)."""
-    rows = ((ARCHETYPES.get(arch or '') or {}).get('lines') or {}).get(bucket) or []
+    rows = [x for x in ((ARCHETYPES.get(arch or '') or {}).get('lines') or {}).get(bucket) or [] if not kin_clash(x)]
     if not rows:
         return None
     return _fill(rows[seed % len(rows)], address)

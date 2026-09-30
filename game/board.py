@@ -984,6 +984,8 @@ def _arch_of(who: str) -> tuple[str | None, dict | None]:
     age = p.get('age') if isinstance(p.get('age'), int) else 30
     if arch and age < 16:
         arch = 'hoc_sinh'
+    # Only archetypes that fit the resident's gender and age (Ông Bảy is never "người Hà Nội chanh chua" cô).
+    arch = spice.fit(arch, spice.gender_of(p.get('name', ''), p.get('self', '')), spice.age_band(age))
     temper = 'quiet' if p['verbosity'] == 'terse' else None
     return arch, spice.knobs_for(arch, who, purpose='board', temper=temper, age='child' if age < 12 else None)
 

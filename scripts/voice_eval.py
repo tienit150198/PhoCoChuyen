@@ -65,10 +65,12 @@ def call(messages: list[dict], max_tokens: int, temperature: float) -> tuple[str
             data = json.loads(r.read(400000))
     except Exception as e:  # noqa: BLE001 - an eval run just records the failure
         return None, dict(error=type(e).__name__)
-    text = data['choices'][0]['message'].get('content')
+    choice = data['choices'][0]
+    text = choice['message'].get('content')
     if isinstance(text, list):
         text = ''.join(x.get('text', '') for x in text if isinstance(x, dict))
-    return (text or '').strip() or None, data.get('usage') or {}
+    usage = dict(data.get('usage') or {}, finish=choice.get('finish_reason'))
+    return (text or '').strip() or None, usage
 
 
 def pick_cast():
@@ -140,7 +142,7 @@ def main() -> None:
             n += 1
             allowed = ai._numbers(dict(persona=p, task=task, canonical=canonical))
             line, why = ai.clean_reply(text, allowed, p['name'], sentences=lim['sentences'], chars=lim['chars'],
-                                       emoji=(spice.for_card(p, purpose)[1] or {}).get('emoji')) if text else (None, usage.get('error', 'empty'))
+                                       emoji=(spice.for_card(p, purpose)[1] or {}).get('emoji')) if text else                 (None, usage.get('error') or ('out_of_tokens' if usage.get('finish') == 'length' else 'empty'))  # as ai.chat
             angles = [k for k, rx in ANGLE_WORDS.items() if re.search(rx, (text or '').lower())]
             rows.append(dict(case=i, spice='off' if off else 'on', arch=arch, purpose=purpose, npc=p['name'], verbosity=lim['verbosity'],
                              situation=situation, said=said, reply=text or '', guard=why or 'ok', angles=len(angles),

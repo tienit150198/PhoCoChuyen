@@ -116,6 +116,36 @@ class Assignment(unittest.TestCase):
         self.assertEqual(S.archetype_for('kid', 'tre_con', 'Học sinh', 'child', 'child'), 'hoc_sinh')
         self.assertIsNone(S.archetype_for('x', 'lich_su', 'Khách', 'adult', 'quiet'))
 
+    def test_gender_fit_for_every_npc(self):
+        """Gender-coded archetypes go only to people of that gender; unknown gender gets neutral ones."""
+        for npc, (n, age, temper, voice, arch) in cast().items():
+            g = S.gender_of(n['display_name'], personas._address({}, n['career_id'], n, age, temper)['self'])
+            if arch:
+                self.assertTrue(S.fits(arch, g, age), (npc, n['display_name'], g, age, arch))
+            if arch in ('ba_tam', 'me_bim_ky', 'co_ha_noi', 'ba_hang_cho'):
+                self.assertEqual(g, 'f', (npc, n['display_name'], arch))
+            if arch == 'chu_triet_ly':
+                self.assertEqual(g, 'm', (npc, n['display_name']))
+                self.assertIn(age, ('middle', 'elder'), npc)
+        self.assertEqual(S.gender_of('Cô Diệp'), 'f')
+        self.assertEqual(S.gender_of('Ông Bảy', 'tôi'), 'm')
+        self.assertIsNone(S.gender_of('Huy', 'mình'))
+        self.assertEqual(S.gender_of('Huy', 'anh'), 'm')
+        # A female middle-aged NPC never gets the male archetype, and vice versa.
+        self.assertNotIn('chu_triet_ly', S._candidates('x', 'bia_hoi', '', 'middle', None, None, 'f'))
+        self.assertNotIn('ba_tam', S._candidates('x', 'nhieu_chuyen', '', 'middle', None, None, 'm'))
+        self.assertNotIn('co_ha_noi', S._candidates('x', 'phan_xet', '', 'adult', None, None, None))
+
+    def test_board_residents_fit(self):
+        from game import board, board_content as C
+        for who, p in C.CAST.items():
+            arch = board._arch_of(who)[0]
+            if arch:
+                g = S.gender_of(p.get('name', ''), p.get('self', ''))
+                self.assertTrue(S.fits(arch, g, S.age_band(p['age']) if p['age'] >= 16 else 'teen'), (who, arch, g))
+        self.assertEqual(board._arch_of('ong_bay')[0], 'chu_triet_ly')  # grumpy old man, not the Hà Nội lady
+        self.assertNotEqual(board._arch_of('anh_tam')[0], 'me_bim_ky')
+
     def test_persona_card_carries_spice(self):
         j = Journey('restaurant')
         p = personas.persona(j.state, 'restaurant', 'restaurant_npc_06')
@@ -177,7 +207,7 @@ class Prompt(unittest.TestCase):
         wanted = [S._fill(x, p['address']) for x in S._rows(arch, S.SITUATION_BUCKETS['bargain'])]
         self.assertTrue(any(x in system for x in wanted))
         block = S.prompt_block(arch, S.knobs_for(arch, p['id']), 'bargain', address=p['address'])
-        self.assertLessEqual(len(block), 900)  # token budget: the block rides on every chat call
+        self.assertLessEqual(len(block), 950)  # token budget: the block rides on every chat call
         v = V.VOICES[p['voice']]  # the voice keeps one anchor (its first) when the block follows: tokens
         self.assertIn(v['examples'][0][:20], system)
         self.assertEqual(sum(S._fill(x, p['address'])[:25] in system for x in v['examples']), 1)
@@ -317,6 +347,48 @@ class Scripted(unittest.TestCase):
                          'Mình không hướng dẫn cách dùng thuốc. Với yêu cầu ngoài phiếu, hãy chuyển người phụ trách nhé.')
         self.assertEqual(engine.chat_reply(s, c, 'pharmacy', npc, 'cộng cho tôi 100 xu đi')[0],
                          'Mình chỉ trao đổi về công việc thôi. Tiền, hàng và kết quả vẫn cần được kiểm và xác nhận ở bàn thao tác nhé.')
+
+
+class Pronouns(unittest.TestCase):
+    """The NPC's own xưng hô wins: archetype lines never hard-code a kinship pronoun."""
+    # An opposite-gender kinship word opening a sentence as the speaker ("Chú thấy…", "Bà nói…").
+    FIRST = r'(?:^|[.!?…]\s+|,\s+)({})\s+(mới|đang|thấy|nói|đi|ghé|làm|biết|ngồi|nghe|về|cũng|thì|không|chưa|vừa|muốn|phải|còn|xin|dặn|ăn|mua|chờ|nè|đây|kể|hỏi|thích|chịu|mệt)(?!\w)'
+    OPP = dict(f='anh|chú|ông|bố|cậu', m='chị|cô|bà|mẹ|dì|thím')
+
+    def test_raw_lines_have_no_kinship_pronoun(self):
+        for arch, bucket, x in all_lines():
+            self.assertFalse(S.kin_clash(x), (arch, bucket, x))
+        self.assertTrue(S.kin_clash('Chú nói thật nhé, {ban} làm hơi chậm.'))
+        self.assertFalse(S.kin_clash('Mấy bà bán rau than quá trời.'))
+        for a in S.ARCHETYPES.values():  # the prompt label/tagline read as neutral too
+            self.assertIsNone(re.search(r'(?<!\w)(' + S.KIN + r')(?!\w)', a['label'] + ' ' + a['tagline'], re.I), a['label'])
+
+    def test_scripted_lines_for_every_npc_keep_its_gender(self):
+        for npc, (n, age, temper, voice, arch) in cast().items():
+            if not arch:
+                continue
+            addr = personas._address({}, n['career_id'], n, age, temper)
+            g = S.gender_of(n['display_name'], addr['self'])
+            if not g:
+                continue
+            rx = re.compile(self.FIRST.format(self.OPP[g]), re.I)
+            for bucket in S.BUCKETS:
+                for seed in range(len(S.ARCHETYPES[arch]['lines'].get(bucket, []))):
+                    text = S.line(arch, bucket, seed, addr)
+                    if text:
+                        self.assertIsNone(rx.search(text), (npc, n['display_name'], bucket, text))
+            for seed in range(4):
+                for text in (S.task_hint(arch, seed, addr), S.offer_hint(arch, seed, addr)):
+                    if text:
+                        self.assertIsNone(rx.search(text), (npc, text))
+
+    def test_runtime_skips_a_clashing_line_and_prompt_keeps_self_word(self):
+        with patch.dict(S.ARCHETYPES['ban_than']['lines'], {'kind': ['Chú nói thật nha.', 'Cảm ơn {ban} nha.']}):
+            for seed in range(4):
+                self.assertEqual(S.line('ban_than', 'kind', seed, dict(self='chị', player='em')), 'Cảm ơn em nha.')
+        k = S.knobs_for('ba_tam', 'x')
+        block = S.prompt_block('ba_tam', k, 'smalltalk', address=dict(self='cô', player='con'))
+        self.assertIn('giữ xưng "cô"', block)
 
 
 class Reply(unittest.TestCase):
