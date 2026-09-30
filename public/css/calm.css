@@ -87,3 +87,52 @@
 .rv-list .rv-reply{background:var(--accent-soft);color:var(--accent-text);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 30%,transparent)}
 .review-card details.criteria{padding:10px 0 0;border:0;border-top:1px solid var(--line);border-radius:0;background:transparent}
 .review-card details.criteria>summary{padding:10px 0;color:var(--ink-2)}
+
+/* ============================================================ Day summary */
+/* Notes read as one quiet list: same surface, a coloured left accent says
+   what kind of note it is (money, reviews, bills…) instead of a patchwork of
+   filled pastel boxes. */
+.summary-v6 .notice,.summary-v6 .tip-sum,.summary-v6 .dc-sum,.summary-v6 .acct-nudge{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--line-strong);border-radius:var(--ck-box-radius);padding:12px 14px;font-size:.933rem;line-height:1.55}
+.summary-v6 .notice.amber{border-left-color:var(--warn)}
+.summary-v6 .notice.blue,.summary-v6 .acct-nudge{border-left-color:var(--info)}
+.summary-v6 .notice.danger{border-left-color:var(--bad)}
+.summary-v6 .notice.success,.summary-v6 .notice.green{border-left-color:var(--good)}
+.summary-v6 .tip-sum{border-left-color:var(--accent)}
+.summary-v6 .dc-sum{border-left-color:var(--info)}
+.summary-v6 .notice p,.summary-v6 .dc-sum p{color:var(--ink-2)}
+.summary-v6 .notice .btn{min-height:44px}
+.summary-v6 .acct-nudge-ic{width:34px;height:34px;background:var(--info-soft)}
+.summary-v6 .sum-stat em.ck-chips{justify-content:center;gap:4px;margin-top:6px}
+.summary-v6 .sum-stat em .ck-delta{font-size:.733rem;padding:0 7px}
+.summary-v6 .notice .ck-chips{margin:6px 0 2px}
+/* Milk tea close: tomorrow's tip as a quote box. */
+.summary-v6 .mt-tomorrow-line{border-left:4px solid var(--accent);border-radius:var(--ck-box-radius)}
+
+/* ================================================== Street feed (Chuyện phố) */
+/* Name and date on one line; like / reply / discuss on one quiet bar; replies
+   as boxes with a left accent (yours amber). */
+.post{padding:16px}
+.post .ck-meta .author{font-size:.95rem}
+.post .post-text{margin:10px 0}
+.post-actions{gap:2px 4px;padding-top:6px}
+.post .ck-stars{margin:2px 0 0;font-size:.9rem}
+@container sheet (max-width:480px){.post-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:2px}.post-actions .btn{justify-content:center;padding:4px 6px;font-size:.8rem;line-height:1.2;text-align:center;white-space:normal}.post-actions .reply-more>summary{justify-content:center;width:100%;min-height:44px}.post-actions .reply-more[open]{grid-column:1/-1}.post-actions>small.muted{align-self:center;justify-self:end}}
+.post-actions .reply-more{margin:0}
+.post-actions .reply-more[open]{flex-basis:100%;order:9}
+.post-actions .reply-more[open]>summary{color:var(--accent-text)}
+.post-actions>small.muted{order:8;margin-left:auto;padding-right:4px}
+.post .comment{--ck-line:var(--line-strong);--ck-bg:var(--surface-2);--ck-ink:var(--ink-2);margin:8px 0 0;padding:8px 12px;border-radius:var(--ck-box-radius);border-left:4px solid var(--ck-line);background:var(--ck-bg);font-size:.867rem;line-height:1.55}
+.post .comment.owner-reply{--ck-line:var(--warn);--ck-bg:var(--warn-soft);--ck-ink:var(--warn)}
+.post .comment strong{color:var(--ck-ink);font-weight:800}
+.post .comment p{margin:0}
+
+/* =========================================================== Shop book */
+.tax-envelope{padding:14px 16px;border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:var(--ck-box-radius);background:var(--surface)}
+.tax-envelope .kv{margin:8px 0 6px}
+.tax-envelope h3{font-size:1.067rem}
+/* Bills: "Thanh toán" on every row is a secondary action (outlined), so the
+   sheet keeps a single filled button; cash-flow amounts read green/red. */
+.bill-list .bill-card .btn.primary{background:var(--surface);color:var(--accent-text);border:1.5px solid var(--accent);box-shadow:none}
+@media (hover:hover){.bill-list .bill-card .btn.primary:hover:not(:disabled){background:var(--accent-soft)}}
+.ledger-row>.ledger-sign.in~strong{color:var(--good)}
+.ledger-row>.ledger-sign.out~strong{color:var(--bad)}
