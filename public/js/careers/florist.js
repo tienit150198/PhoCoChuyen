@@ -14,7 +14,7 @@ import {reqList,fold} from '../ui-kit.js';
 import {nextHint,stepCta,finalGo,pending,firstTime,todoAttrs,todoArrow,highlight,stepLine} from '../v4/guide.js';
 import {restockFor,restockButton} from '../v4/restock.js';
 import {lockChip} from './stage_fold.js';
-import {reqPin,nextLine,stepper,pinTop} from './asm_kit.js';
+import {reqPin,nextLine,stepper,pinTop,asmActions,finalStep} from './asm_kit.js';
 
 const METER_SCALE=20;   // seconds shown on the soak / foam bars
 const VALUE_SCALE=1.2;  // value bar runs to 120% of the budget
@@ -372,12 +372,12 @@ function ticket(t,x,K={}){
 /** The brief pinned over the work (asm_kit): one chip per requirement with a live ✓ / ✗, the flower
  * value against the budget, and the station tabs under it, so what the customer asked for stays in
  * sight while picking (feedback #11: the brief was folded away, "không bít làm gì đầu tiên"). */
-function pin(t,x,K,tabs){
+function pin(t,x,K,tabs,next){
   const chips=briefRows(t,x,K).map(r=>({ok:r.ok,icon:r.icon,text:r.short||r.label,title:r.label+(r.note?` · ${r.note}`:'')}));
   if(!plated(t)){const v=Math.round(benchValue(t,x)/(spec(t).budget||1)*100);chips.push({ok:v>=70?true:null,icon:'💰',text:`Hoa ${v}% giá đơn`,title:'Giá trị hoa so với ngân sách (nên từ 70%)'});}
   const who=x.npc(t.npc),o=occasion(x,t.needs.occasion);
   const sub=`${x.esc(who.display_name)} · ${x.esc(o.emoji)} ${x.esc(o.name)}${isSet(t)&&!plated(t)?` · món ${t.cur+1}/${t.pieces.length}`:''}`;
-  return reqPin(x,{sub,chips,tabs});
+  return reqPin(x,{sub,chips,tabs,key:t.id,next});
 }
 /** What the customer said about the flowers, for sorting the cooler (never the meaning book's taboos). */
 function fitOf(t,x,f){
@@ -758,9 +758,10 @@ export default {
     const now=`<div class="fl-bar-now">${heads?`<span class="fl-bar-stems" aria-hidden="true">${heads}</span>`:''}${nextLine(x,n,g.final?.ready!==false?'đủ bước rồi, bấm nút dưới để trao cho khách':'')}<b class="fl-bar-n">${done}/${S.length}</b></div>`;
     const bar=`<div class="fk-bar fl-bar">${now}${ui.flBusy?stepCta(x,[BUSY],g.final):stepCta(x,S,g.final)}</div>`;
     // Shop care (water, pre-orders) waits below the order: the order on the bench comes first.
-    return `<div class="career-job fl food">${top(g)}${extras(x)}${ticket(t,x,g.K)}${pin(t,x,g.K,tabBar)}<div class="workbench"><section class="wb-main" role="tabpanel">${panel}${tools}</section><aside class="wb-side">${side}</aside></div>${careFold(x)}${bar}</div>`;
+    return `<div class="career-job fl food">${top(g)}${extras(x)}${ticket(t,x,g.K)}${pin(t,x,g.K,tabBar,n||finalStep(g.final))}<div class="workbench"><section class="wb-main" role="tabpanel">${panel}${tools}</section><aside class="wb-side">${side}</aside></div>${careFold(x)}${bar}</div>`;
   },
   actions:{
+    ...asmActions,
     async tab(data,el,x){x.ui.tab=data.tab;x.render();},
     async slot(data,el,x){x.ui.slot=data.slot;x.render();},
     async check(data,el,x){x.ui.flCheck=!x.ui.flCheck;},

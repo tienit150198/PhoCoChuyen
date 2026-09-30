@@ -5,7 +5,7 @@
 import {reqList,fold} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,highlight,stepLine} from '../v4/guide.js';
 import {restockFor,restockButton} from '../v4/restock.js';
-import {reqPin,nextLine,pinTop} from './asm_kit.js';
+import {reqPin,nextLine,pinTop,asmActions,finalStep} from './asm_kit.js';
 const STEPS=['Nhận máy','Đo kiểm','Báo giá','Sửa','Bàn giao'];
 const MODE={live:'cấp điện',open:'mở máy',any:'đo ngoài'};
 
@@ -193,7 +193,7 @@ function ticket(t,x){
 
 /** What the customer asked for, pinned under the header (asm_kit) with the step tabs: what they handed
  * over (✓ once ticked on the slip), the budget, genuine parts only, a rush pick-up, the data question. */
-function pin(t,x,at,tab){
+function pin(t,x,at,tab,next){
   const n=t.needs,b=t.bench,u=local(x,t),dev=devOf(x,t),left=rushLeft(t,x),chips=[],id=t.id;
   const acc=a=>`${x.cc.accessories[a]?.emoji||'•'} ${x.cc.accessories[a]?.label||a}`;
   const given=n.accessories||[],slip=b.intake?b.intake.accessories:u.acc;
@@ -206,7 +206,7 @@ function pin(t,x,at,tab){
   if(left!=null)chips.push({ok:left>=0?null:false,info:left>=0,icon:'⏱️',text:left>=0?`Lấy gấp: còn ${left} nhịp`:'Đã trễ hẹn gấp'});
   if(dataDevice(x,t)&&!b.intake)chips.push({ok:u.consent||null,icon:'🔐',text:'Hỏi quyền xem dữ liệu',act:carAttr(x,'consent',{task:id})});
   const who=x.npc(t.npc);
-  return reqPin(x,{title:'Phiếu khách',sub:`${x.esc(who.display_name)} · ${x.esc(dev.emoji)} ${x.esc(dev.name)}`,chips,tabs:steps(t,x,at,tab)});
+  return reqPin(x,{title:'Phiếu khách',sub:`${x.esc(who.display_name)} · ${x.esc(dev.emoji)} ${x.esc(dev.name)}`,chips,tabs:steps(t,x,at,tab),key:t.id,next});
 }
 
 function steps(t,x,at,tab){return `<nav class="rp-steps" aria-label="Quy trình sửa">${STEPS.map((s,i)=>`<button type="button" class="${i<at?'done':''} ${i===at?'now':''} ${i===tab?'open':''}" ${carAttr(x,'tab',{task:t.id,tab:i})} aria-current="${i===tab?'step':'false'}" aria-label="${i+1} · ${x.esc(s)}" ${i>at&&i!==0?'disabled':''}><span>${i<at?'✓':i+1}</span><em>${x.esc(s)}</em></button>`).join('')}</nav>`;}
@@ -636,7 +636,7 @@ export default {
     const out=(sel.includes('rp-promise')?promise:'')+(sel.includes('rp-return')?ret:'');
     const tucked=[sel.includes('rp-promise')?'':promise,sel.includes('rp-return')?'':ret,`<p class="rp-foot">${x.button('📦 Kho & nhập linh kiện','inventory',{},'ghost small')}</p>`,shelf].filter(Boolean).join('');
     const more=`<details class="rp-more"><summary>⋯ ${[promise&&!sel.includes('rp-promise')?'Hẹn khách':'',ret&&!sel.includes('rp-return')?'Trả máy':'','Kho linh kiện',shelf?'Kệ máy chờ':''].filter(Boolean).join(' · ')}</summary><div class="rp-more-body">${tucked}</div></details>`;
-    return `<div class="career-job rp ${at?'rp-later':'rp-intake'}" data-rp-key="${x.esc(t.id)}:${at}:${tab}">${hint}${top}${lastDesk(x)}${banner}${ticket(t,x)}${pin(t,x,at,tab)}<div class="workbench"><div class="wb-main">${panel}${out}${more}</div>
+    return `<div class="career-job rp ${at?'rp-later':'rp-intake'}" data-rp-key="${x.esc(t.id)}:${at}:${tab}">${hint}${top}${lastDesk(x)}${banner}${ticket(t,x)}${pin(t,x,at,tab,pending(g.steps)||finalStep(g.final))}<div class="workbench"><div class="wb-main">${panel}${out}${more}</div>
       <aside class="wb-side">${device(t,x)}</aside></div>${cta}</div>`;
   },
   // The sticky bottom button rides above the sheet's own sticky footer.
@@ -654,6 +654,7 @@ export default {
         wb.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}}
   },
   actions:{
+    ...asmActions,
     async mark(data,el,x){const u=x.ui.rp?.[data.task];if(!u)return;u.marks=u.marks.includes(data.id)?u.marks.filter(v=>v!==data.id):[...u.marks,data.id];x.render();},
     /** Tick exactly what the customer handed over (it is written on the slip). */
     async accall(data,el,x){const u=x.ui.rp?.[data.task],t=x.room.tasks.find(v=>v.id===data.task);if(!u||!t)return;u.acc=[...(t.needs.accessories||[])];u.lookA=true;x.render();},

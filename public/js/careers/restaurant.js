@@ -7,7 +7,7 @@ import {reqList,fold,refTable} from '../ui-kit.js';
 import {dayStrip,flash,eventCard,keepBarAboveFooter,idlePanel,gradeCard,patience,openTasks} from './food_kit.js';
 import {nextHint,stepCta,finalGo,pending as nextOpen,firstTime,todoAttrs,todoArrow,stepLine} from '../v4/guide.js';
 import {restockFor} from '../v4/restock.js';
-import {reqPin,nextLine,pinTop} from './asm_kit.js';
+import {reqPin,nextLine,pinTop,asmActions,finalStep} from './asm_kit.js';
 
 const BASE_SCALE=25; // seconds shown on the boiling bar
 const NOODLE={raw:'sống',perfect:'chín tới',soft:'hơi mềm',mushy:'nát'};
@@ -150,11 +150,11 @@ function regularCard(t,x){
 
 /** The order pinned under the header while cooking (asm_kit): one chip per line of the order, live ✓ / ✗,
  * and the bowl tabs of a table. The full ticket (and what the guest said) stays in the side column. */
-function pin(t,x){
+function pin(t,x,next){
   if(plated(t)||t.needs.masked)return '';
   const chips=checklistRows(t,x).map(r=>({ok:r.ok,icon:r.icon,text:`${r.label}${r.value?` · ${r.value}`:''}`}));
   const who=x.npc(t.npc);
-  return reqPin(x,{title:'Order',sub:`${x.esc(who.display_name)}${isGroup(t)?` · tô ${t.cur+1}/${t.needs.party.length}`:''}`,chips,tabs:tabs(t,x)});
+  return reqPin(x,{title:'Order',sub:`${x.esc(who.display_name)}${isGroup(t)?` · tô ${t.cur+1}/${t.needs.party.length}`:''}`,chips,tabs:tabs(t,x),key:t.id,next});
 }
 
 /* ---------------------------------------------------------------- checklist */
@@ -673,7 +673,7 @@ export default {
     // The bowl in hand rides with the button, so each tap's result shows right above it (no scrolling).
     const now=`<div class="rs-bar-now">${nextLine(x,nextOpen(g.steps),'tô đã đủ, bấm nút dưới để giao')}<p><span aria-hidden="true">${b.container==='box'?'🥡':'🥣'}</span> ${x.esc(bowlStatus(t,x))}</p>${b.boiling?boilBar(b.boiling,x,t.id,d.boil_shift||0):''}</div>`;
     const bar=`<div class="fk-bar rs-bar">${now}${stepCta(x,g.steps,final)}</div>`;
-    return `<div class="career-job rs food">${head}<div class="rs-work"><div class="rs-side">${ticket(t,x)}${extras(x)}</div>${pin(t,x)}${desk}</div>${bar}</div>`;
+    return `<div class="career-job rs food">${head}<div class="rs-work"><div class="rs-side">${ticket(t,x)}${extras(x)}</div>${pin(t,x,nextOpen(g.steps)||finalStep(final))}${desk}</div>${bar}</div>`;
   },
   tick(root,x){
     keepBarAboveFooter(root);
@@ -707,6 +707,7 @@ export default {
   page(view,x){return view==='prices'?menuPage(x):'';},
   summary(data,x){return gradeCard(data,x)+careSummary(data?.care,x);},
   actions:{
+    ...asmActions,
     /** A one-tap step: dropped while the last one is still on its way, or when the bowl changed since it was drawn. */
     async step(data,el,x){
       const ui=x.ui;if(ui.stepBusy)return;
