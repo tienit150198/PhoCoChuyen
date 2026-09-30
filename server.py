@@ -60,7 +60,7 @@ from game.storage import Store,Conflict
 from game import db as dbm
 from game import fastjson as fj
 from game.dialogue import public_config,rephrase
-from game.webassets import WebAssets,IMMUTABLE,content_hash
+from game.webassets import WebAssets,IMMUTABLE,content_hash,RECHECK
 
 MAX_BODY=16*1024*1024
 # gzip level of API responses (/api/command answers ~150 KB of JSON): 4 costs ~2/3 of the CPU of 5
@@ -79,7 +79,7 @@ COMPRESSIBLE=(".html",".js",".css",".json",".svg",".webmanifest",".txt",".xml")
 PAGES={"/privacy":"privacy.html","/terms":"terms.html","/admin":"admin.html","/":"index.html"}
 env_flag=lambda k,d="0":os.environ.get(k,d).strip().lower() in ("1","true","yes","on")
 CAS_HASH=re.compile(r"[0-9a-f]{12}")
-STATIC_RECHECK=2.0  # seconds a resolved static route is trusted before its file is stat()ed again
+STATIC_RECHECK=RECHECK  # seconds a resolved static route is trusted before its file is stat()ed again (STATIC_RECHECK_SECONDS, see game/webassets.py)
 # Budgets that must not multiply with WORKERS: AI spend, sign-in attempts, new saves, feedback.
 SHARED_LIMITS=("ai","acct-","newsession:","fb:","fb-day:","fb-ip:")
 

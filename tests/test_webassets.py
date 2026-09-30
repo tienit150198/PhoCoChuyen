@@ -139,6 +139,21 @@ class DeployTests(unittest.TestCase):
         self.assertEqual(self.resolve(v1.url('/js/lib.js')),b"export const a='v1';\n")
         # Unchanged files keep their URL (still cached after the deploy); changed ones get a new one.
         self.assertEqual(v1.url('/css/app.css'),v2.url('/css/app.css'));self.assertNotEqual(v1.url('/js/lib.js'),v2.url('/js/lib.js'))
+    def test_recheck_window_from_env(self):
+        cases=[({},2.0),({'WORKERS':'4'},300.0),({'WORKERS':'4','STATIC_RECHECK_SECONDS':'3600'},3600.0),
+               ({'STATIC_RECHECK_SECONDS':'0'},0.0),({'STATIC_RECHECK_SECONDS':'x','WORKERS':'1'},2.0),({'WORKERS':'bad'},2.0)]
+        for env,want in cases:
+            with patch.dict(os.environ,env,clear=False):
+                for k in ('WORKERS','STATIC_RECHECK_SECONDS'):
+                    if k not in env:os.environ.pop(k,None)
+                self.assertEqual(webassets.recheck_seconds(),want,env)
+    def test_snapshot_never_waits_for_a_recheck_in_progress(self):
+        assets=WebAssets(self.public,"script-src 'self'",lambda:'c1','1.0.0')
+        v1=self.snapshot(assets);assets._checked=-1e9
+        with assets._lock:  # another thread is walking public/: the current snapshot answers at once
+            self.assertIs(assets.snapshot(),v1)
+        (self.public/'js/lib.js').write_text("export const a='v2, longer';\n")
+        self.assertNotEqual(assets.snapshot().version,v1.version)
     def test_module_imports_parser(self):
         src="import {a,\n b} from './x.js';\nimport './side.js';\nexport {c} from \"../y.js\";\nexport const s='./not.js';\nconst m=import('./lazy.js');\n"
         self.assertEqual(sorted(module_imports(src)),['../y.js','./side.js','./x.js'])
