@@ -5,9 +5,9 @@
  * - What the player has read is settings.whatsNewSeen in the save, so it
  *   follows the account across devices. localStorage only stands in while the
  *   save has no such key (an older server).
- * - A brand-new save already starts at the latest release (engine.new_state),
- *   and the card never opens over the intro, the first day, the tour, a live
- *   decision or a work screen: it waits for a calm moment.
+ * - A server-wide notice: new saves start at "" too (engine.new_state), and the
+ *   card opens over any screen; it only waits for naming the character and the
+ *   tutorial tour.
  * - Modal dialog: focus stays inside, Esc closes, a backdrop tap does nothing
  *   (no accidental dismissal), a tap in the first moment after it pops up is
  *   ignored, reduced motion is respected.
@@ -19,8 +19,6 @@ import {icon,escapeHTML as esc} from '../icons.js';
 
 const KEY='mnl.wn.seen';
 const VERSION=/^\d{1,3}(\.\d{1,3}){1,2}$/;
-/** Views of the main sheet the card may open over (nothing is being worked on there). */
-const CALM=new Set(['home','prepare','summary','status']);
 const parse=v=>{const p=String(v).split('.').map(Number);while(p.length<3)p.push(0);return p;};
 /** <0, 0, >0 like a sort; "" is older than any release. */
 export function compare(a,b){
@@ -46,21 +44,17 @@ export const due=state=>!!LATEST&&compare(LATEST,seenVersion(state))>0;
 let E=null,timer=0,calmTicks=0,dlg=null,auto=false,openedAt=0,back=null,older=false,done=false,sent='',cssReady=null;
 const reduced=()=>document.documentElement.classList.contains('reduce-motion')||document.body.classList.contains('reduce-motion')||matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/** Why the card has to wait right now ('' = it may open). */
+/** Why the card has to wait right now ('' = it may open). A server-wide notice: it opens over
+ * any screen (work, a decision, the first day) and waits only for loading, a hidden tab,
+ * naming the character and the tutorial (the tour or its welcome card). */
 export function blocker(env=E,doc=document){
   const s=env?.api?.state;if(!s)return 'loading';
   const J=s.journey;
   if(J?.story&&!J.intro)return 'intro';                   // naming the character, first steps in the street
-  if(J?.story&&(Number(J.life_day)||1)<=1)return 'first-day';   // the first-day script; the notes wait for day two
   if(doc.hidden)return 'hidden';
   if(doc.getElementById('tutLayer')?.isConnected)return 'tour';
-  // A live happening asks for a choice right now (the small AI notice is no reason to wait: it stays put).
-  if([...doc.querySelectorAll('.hap-choices')].some(el=>el.offsetParent!==null))return 'decision';
-  if(doc.documentElement.classList.contains('menu-open')||env.ui?.paused)return 'busy';
   for(const d of doc.querySelectorAll('dialog[open]')){
-    if(d===dlg)continue;
-    if(d.id==='sheet'&&CALM.has(env.ui?.view))continue;   // a passive sheet (journey, prepare, day summary)
-    return d.id==='sheet'?'work':'dialog';
+    if(d!==dlg&&String(d.id||'').startsWith('tut'))return 'tour';   // the tutorial's welcome card
   }
   return '';
 }

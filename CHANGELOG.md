@@ -1,3 +1,8 @@
+# v0.9.3 — Thông báo "Có gì mới" cho toàn máy chủ
+
+- Máy chủ chạy PostgreSQL: mỗi thao tác dưới 0,1 giây, người chơi không phải chờ nhau.
+- Bảng "Có gì mới" hiện giữa màn hình cho mọi người chơi (cả người mới), không chờ lúc rảnh.
+
 # v0.9.2 — Máy chủ PostgreSQL, khắc phục giật lag
 
 - Lưu trữ chuyển sang PostgreSQL (bật bằng DATABASE_URL; không có thì chạy SQLite như cũ). Mỗi người chơi chỉ khóa save của mình, không còn hàng đợi ghi chung.

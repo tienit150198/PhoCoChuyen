@@ -29,22 +29,18 @@ function doc({hidden=false,tour=false,decision=false,menu=false,dialogs=[]}={}){
 }
 const env=(state,view=null,paused=false)=>({api:{state},ui:{view,paused}});
 const back=st('');
-assert.equal(blocker(env(back),doc()),'','a returning player on the calm screen');
-assert.equal(blocker(env(back,'prepare'),doc({dialogs:[{id:'sheet'}]})),'','over the prepare sheet');
-assert.equal(blocker(env(back,'summary'),doc({dialogs:[{id:'sheet'}]})),'','over the day summary');
-assert.equal(blocker(env(back,'job'),doc({dialogs:[{id:'sheet'}]})),'work','never over a work screen');
-assert.equal(blocker(env(back),doc({dialogs:[{id:'confirmDialog'}]})),'dialog','never over a question');
-assert.equal(blocker(env(back),doc({dialogs:[{id:'tutWelcome'}]})),'dialog','never over the welcome card');
+assert.equal(blocker(env(back),doc()),'','a returning player');
+assert.equal(blocker(env(back,'job'),doc({dialogs:[{id:'sheet'}]})),'','over a work screen too (server-wide notice)');
+assert.equal(blocker(env(back),doc({dialogs:[{id:'confirmDialog'}]})),'','over a question too');
+assert.equal(blocker(env(back),doc({decision:true})),'','over a live decision too');
+assert.equal(blocker(env(back),doc({menu:true})),'');
+assert.equal(blocker(env(back),doc({dialogs:[{id:'tutWelcome'}]})),'tour','never over the tutorial welcome card');
 assert.equal(blocker(env(back),doc({tour:true})),'tour','never over the tour');
-assert.equal(blocker(env(back),doc({decision:true})),'decision','never over a live decision');
-assert.equal(blocker(env(back),doc({menu:true})),'busy');
-assert.equal(blocker(env(back,null,true),doc()),'busy','paused');
 assert.equal(blocker(env(back),doc({hidden:true})),'hidden');
 assert.equal(blocker(env(null),doc()),'loading');
-// A new player: the intro and the whole first day belong to the tutorial.
+// A new player: only naming the character comes first.
 assert.equal(blocker(env(st('',{story:true,intro:false,life_day:1})),doc()),'intro');
-assert.equal(blocker(env(st('',{story:true,intro:true,life_day:1})),doc()),'first-day');
-assert.equal(blocker(env(st('',{story:true,intro:true,life_day:2})),doc()),'','day two: the notes may show');
+assert.equal(blocker(env(st('',{story:true,intro:true,life_day:1})),doc()),'','the first day: the notes show');
 assert.equal(blocker(env(st('',{story:false,intro:false,life_day:1})),doc()),'','a save without the story has no intro');
 
 console.log('whats_new.mjs: ok');

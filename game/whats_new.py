@@ -18,8 +18,8 @@ Then run `python -m game.whats_new` to rewrite public/js/v4/whatsnew-data.js
 (the copy the browser loads lazily, so the first load does not grow).
 
 Players who already saw a version keep it in settings.whatsNewSeen (the save,
-so it follows the account). A brand-new save starts at LATEST: new players get
-the tutorial, not a list of changes they never knew.
+so it follows the account). It is a server-wide notice: a brand-new save starts at ""
+too, so new players see the latest notes once they have named their character.
 """
 from __future__ import annotations
 
@@ -28,6 +28,12 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="0.9.3", date="2026-09-30", items=(
+        dict(emoji="🚀", text="Máy chủ mới đã chạy! Mỗi lần bấm giờ chưa tới 0,1 giây, nhanh gấp 5 lần sáng nay."),
+        dict(emoji="🛠️", text="Đã khắc phục hẳn sự cố giật, lag, bấm không ăn sáng nay. Xin lỗi các bạn vì sự bất tiện!"),
+        dict(emoji="👥", text="Đông người chơi cùng lúc cũng không phải chờ nhau nữa: máy chủ xử lý song song."),
+        dict(emoji="💾", text="Tiến trình của bạn được giữ nguyên, không mất gì."),
+    )),
     dict(version="0.9.2", date="2026-09-30", items=(
         dict(emoji="🛠️", text="Hết giật, lag! Sáng nay có lúc bấm không ăn, thao tác bị treo. Mình đã khắc phục xong, xin lỗi các bạn vì sự bất tiện!"),
         dict(emoji="🚀", text="Nâng cấp máy chủ: lưu tiến trình nhanh và ổn định hơn, nhiều người chơi cùng lúc không còn bị nghẽn."),

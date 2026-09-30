@@ -74,11 +74,11 @@ class EntriesData(unittest.TestCase):
 
 
 class SeenVersionInTheSave(unittest.TestCase):
-    def test_new_players_start_at_the_latest(self):
-        # A brand-new save gets the tutorial, not the notes (also after "Bắt đầu lại").
-        self.assertEqual(new_state()['settings']['whatsNewSeen'], wn.LATEST)
+    def test_new_players_see_the_notes_too(self):
+        # A server-wide notice: a brand-new save has read nothing yet (also after "Bắt đầu lại").
+        self.assertEqual(new_state()['settings']['whatsNewSeen'], '')
         s, _ = apply_action(new_state(), None, 'reset_all', {'confirm': 'BAT DAU LAI'})
-        self.assertEqual(s['settings']['whatsNewSeen'], wn.LATEST)
+        self.assertEqual(s['settings']['whatsNewSeen'], '')
 
     def test_seen_version_is_stored_and_never_goes_back(self):
         s = new_state()
@@ -122,7 +122,7 @@ class SeenVersionInTheSave(unittest.TestCase):
             try:
                 token, _, _ = store.session()
                 s, rev, _ = store.read(token)
-                self.assertEqual(s['settings']['whatsNewSeen'], wn.LATEST)  # a new session is a new player
+                self.assertEqual(s['settings']['whatsNewSeen'], '')  # a new session is a new player: the notes are due
                 # An old backup (read the notes of 0.5.0 only) comes back through import.
                 old = copy.deepcopy(s)
                 old['settings']['whatsNewSeen'] = '0.5.0'

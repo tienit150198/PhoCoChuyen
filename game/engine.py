@@ -72,7 +72,7 @@ def normalize(s: str) -> str:
 
 def new_state() -> dict:
     return dict(schema=4,name="Mây",current=None,seq=0,
-        settings=dict(default_settings(),whatsNewSeen=wn.LATEST),  # a new player gets the tutorial, not "Có gì mới"
+        settings=dict(default_settings(),whatsNewSeen=""),  # "Có gì mới" is server-wide: new players see it too
         careers={cid:initial_career(cid) for cid in CAREERS},journey=jr.initial(),stories=cst.initial())
 
 def notes_seen(v) -> str:
