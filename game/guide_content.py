@@ -3562,10 +3562,11 @@ GROUPS = [{'id': 'start',
               'points': ['🏠 Mở [[Nhà của bạn]] ở trang Hành trình hoặc trong Ngân hàng. Luôn thấy tiền mặt, tài khoản và '
                          'còn thiếu bao nhiêu.',
                          '🛏️ Phòng trọ khép kín: cọc 60 xu (trả lại khi dọn đi), tiền phòng 14 xu/ngày, tinh thần +1 mỗi sáng.',
-                         '🏢 Nhà rao bán từ 1.500 tới 12.000 xu. Trả trước ít nhất 30% giá và 2% phí công chứng, sang tên.',
+                         '🏢 Căn hộ, nhà phố, biệt thự rao bán từ 1.800 tới 60.000 xu. Trả trước ít nhất 30% giá và 2% phí công chứng, sang tên.',
                          '📝 Phần còn lại vay Ngân hàng Phố 1–3 năm, trả góp mỗi tháng (5 ngày sống). Lãi 9–11,4%/năm tùy '
                          'điểm tín dụng.',
-                         '🔑 Có nhà thì hết tiền phòng, chỉ còn điện nước 2–5 xu/ngày, và tinh thần được cộng mỗi sáng.',
+                         '🔑 Có nhà thì hết tiền phòng, chỉ còn điện nước 2–16 xu/ngày, và tinh thần được cộng mỗi sáng.',
+                         '🏰 Penthouse cần điểm tín dụng từ 670 mới vay được, biệt thự từ 700 hoặc 740.',
                          '⏰ Thiếu tiền trả góp: 3 ngày ân hạn không phạt. Quá hạn mới phạt 2% và giảm điểm tín dụng. Ngân '
                          'hàng không bao giờ lấy nhà.',
                          '💞 Vợ chồng có thể góp tiền trả trước từ quỹ chung. Có nhà rồi, người ấy về ở chung.',

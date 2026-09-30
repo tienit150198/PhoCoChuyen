@@ -5,6 +5,10 @@
 
 .hs-logo{display:inline-grid;place-items:center;flex:none;width:44px;height:44px;border-radius:12px;background:#8a4b2a;font-size:1.5rem}
 .hs-emoji{flex:none;display:inline-grid;place-items:center;width:48px;height:48px;border-radius:14px;background:var(--surface-2,rgba(0,0,0,.04));font-size:1.7rem;line-height:1}
+/* Each kind of home has a tone (housing.GROUPS): the emoji tile and the card's edge. */
+@supports (color:color-mix(in srgb,red 50%,blue)){
+  [style*="--hs-tone"] .hs-emoji,.hs-group-ico{background:color-mix(in srgb,var(--hs-tone) 20%,var(--surface))}
+}
 .hs-emoji.big{width:60px;height:60px;font-size:2.2rem}
 
 /* What you have: the 💰 chip on the header (money.css) shows Ví · Tài khoản · Quỹ chung. */
@@ -21,16 +25,30 @@
 .hs-tag{display:inline-block;margin:10px 0 0;padding:4px 10px;border-radius:999px;background:var(--good-soft);color:var(--good);font-weight:700;font-size:.9rem}
 .hs-cost{margin:8px 0 0;font-weight:600}
 
-/* Market */
-.hs-market{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:1fr;gap:10px}
-.hs-home{padding:14px;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);min-width:0}
+/* Market: Phòng thuê / Căn hộ / Nhà phố / Biệt thự */
+.hs-group{margin-top:14px}
+.hs-group h4{display:flex;align-items:center;gap:8px;margin:0;font-size:1rem}
+.hs-group h4 small{margin-left:auto;min-width:24px;padding:1px 8px;border-radius:999px;background:var(--surface-2,rgba(0,0,0,.04));color:var(--muted);font-size:.8rem;text-align:center}
+.hs-group-ico{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:10px;background:var(--surface-2,rgba(0,0,0,.04));font-size:1.15rem}
+.hs-market{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:1fr;gap:10px}
+.hs-home{padding:12px 14px;border-radius:var(--radius);border:1px solid var(--line);border-left:4px solid var(--hs-tone,var(--line));background:var(--surface);min-width:0}
+.hs-home.mine{border-color:var(--good);border-left-color:var(--hs-tone,var(--good))}
 .hs-home>p{margin:8px 0 0;font-size:.95rem}
 .hs-home-top b{display:block;font-size:1.05rem}
+.hs-home .hs-home-top small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hs-price{flex:none;font-size:1.1rem;font-variant-numeric:tabular-nums;text-align:right}
 .hs-price small{font-size:.8rem;font-weight:600;color:var(--muted)}
-.hs-points{margin:8px 0 0;padding-left:18px;display:grid;gap:3px;font-size:.9rem;color:var(--ink-2)}
-.hs-need{margin-top:10px}
-.hs-need .bk-row{display:flex;justify-content:space-between;gap:8px;font-size:.9rem}
+.hs-terms{display:flex;flex-wrap:wrap;gap:4px 14px;font-variant-numeric:tabular-nums}
+.hs-terms b{font-weight:800}
+.hs-chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0;font-size:.85rem}
+.hs-chips span{padding:2px 8px;border-radius:999px;background:var(--surface-2,rgba(0,0,0,.04));color:var(--ink-2);white-space:nowrap}
+.hs-go{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+.hs-go .btn{flex:none;min-height:44px}
+.hs-miss,.hs-ok{font-weight:800;font-size:.95rem;font-variant-numeric:tabular-nums;min-width:0}
+.hs-miss{color:var(--bad)}
+.hs-miss.soft{color:var(--warn,var(--muted));font-weight:700}
+.hs-miss small{display:block;font-weight:600;color:var(--muted)}
+.hs-ok{color:var(--good)}
 
 /* Facts, schedules */
 .hs-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 0}

@@ -291,4 +291,5 @@ html[data-layout="phone"][data-orientation="landscape"] .jr-gender>svg,html[data
 .jr-house-row b{font-size:1.05rem}
 .jr-house-row em{font-style:normal;font-size:.9rem;color:var(--ink-2)}
 .jr-house-emoji{flex:none;font-size:2rem;line-height:1}
+@supports (color:color-mix(in srgb,red 50%,blue)){.jr-house-emoji[style*="--hs-tone"]{display:inline-grid;place-items:center;width:52px;height:52px;border-radius:14px;background:color-mix(in srgb,var(--hs-tone) 20%,var(--surface));font-size:1.8rem}}
 html[data-layout="phone"] .jr-house-row .btn{display:none}

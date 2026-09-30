@@ -786,7 +786,7 @@ def content() -> dict:
                 {k: t[k] for k in ('id', 'cat', 'emoji', 'name', 'desc')} for t in TITLES],
         skills=_emp().STRENGTHS, levels=LEVEL_NAMES, reserve=RESERVE, reopen_fee=REOPEN_FEE, start_wallet=START_WALLET,
         unlock_chapter={cid: n for n, ids in CH_UNLOCKS.items() for cid in ids if cid in CAREERS}, certs=ct.content(),
-        wardrobe=wd.content())
+        wardrobe=wd.content(), homes=hs.catalogue())
 
 
 def validate(s: dict) -> None:
