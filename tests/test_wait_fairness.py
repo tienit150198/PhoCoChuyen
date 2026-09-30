@@ -5,6 +5,7 @@ import unittest
 
 import game.careers.kit as kit
 from game import inventory
+from game.careers import clothing as AO
 from game.careers import florist as FL
 from game.careers import food_service as FS
 from game.careers import repair as RP
@@ -182,7 +183,64 @@ class CareerTests(unittest.TestCase):
             kit.wait_tick(c, 'repair', tid, lambda t: 1, lambda t: kit.size_factor(RP._units(t), RP.SIZE_BASE))
             kit.worked(c, tid)
         self.assertEqual(j.get(other)['patience'], before - int(4 * kit.BUSY_RATE / kit.size_factor(RP._units(j.get(other)), RP.SIZE_BASE) + 1e-9))
-        self.assertTrue(RP.SPEC.get('wait') and FL.SPEC.get('wait') and RS.SPEC.get('wait'))
+        self.assertTrue(RP.SPEC.get('wait') and FL.SPEC.get('wait') and RS.SPEC.get('wait') and AO.SPEC.get('wait'))
+
+    # ---- clothing: the fitting room and the queue
+    def clothing_fit(self):
+        j = self.journey('clothing')  # day 1 opens on a one-shirt fit, two more customers queue
+        j.act('ask', task=j.task['id'])
+        self.assertEqual((j.task['kind'], len(j.task['needs']['lines'])), ('fit', 1))
+        self.assertIn(j.task['needs']['lines'][0]['item'], ('tee', 'shirt'))
+        for t in j.c['tasks']:
+            t['patience'] = 100
+        return j
+
+    def test_clothing_fitting_costs_less_while_working_the_customer(self):
+        j = self.clothing_fit()
+        tid, ln = j.task['id'], j.task['needs']['lines'][0]
+        sizes = AO.SIZES[ln['item']]
+        j.act('ao_pick', task=tid, item=ln['item'], size=ln['_size'], colour=ln['colour'])
+        j.act('ao_pick', task=tid, item=ln['item'], size=sizes[(sizes.index(ln['_size']) + 1) % len(sizes)], colour=ln['colour'])
+        j.act('ao_try', task=tid, index=0)  # right after picking: you are there with them
+        self.assertEqual(j.get(tid)['patience'], 100 - AO.TRY_COST_BUSY)
+        j.c['ext']['data']['wait']['turn'] -= 10  # stepped away to other work, then back to the curtain
+        j.act('ao_try', task=tid, index=1)
+        self.assertEqual(j.get(tid)['patience'], 100 - AO.TRY_COST_BUSY - AO.TRY_COST)
+        self.assertLess(AO.TRY_COST_BUSY, AO.TRY_COST)
+        validate_state(j.state)
+
+    def test_clothing_queue_waits_calmer_while_picking(self):
+        j = self.clothing_fit()
+        tid, ln = j.task['id'], j.task['needs']['lines'][0]
+        other = next(t['id'] for t in j.c['tasks'] if t['id'] != tid and t['career'] == 'clothing' and not t.get('deferred'))
+        factor = kit.size_factor(AO._units(j.get(other)), AO.SIZE_BASE)
+        for _ in range(4):
+            j.act('ao_pick', task=tid, item=ln['item'], size=ln['_size'], colour=ln['colour'])
+        # Before 0.9.5: 4 picks = 4 points. Now the first at full speed, the next three at half.
+        self.assertEqual(j.get(other)['patience'], 100 - int((1 + 3 * kit.BUSY_RATE) / factor + 1e-9))
+        validate_state(j.state)
+
+    def test_clothing_order_lines_carry_a_short_size_clue(self):
+        seen = set()
+        for day in range(1, 30):
+            for slot in range(12):
+                t = AO.make_task(day, slot, 1)
+                for ln in (t['needs'].get('lines') or []) if t['kind'] == 'fit' else []:
+                    seen.add(ln['clue'])
+                    self.assertTrue(ln['ask'] and len(ln['ask']) <= 40)
+                    # Only a size the customer named themselves is on the card to check against.
+                    self.assertEqual(ln['told'], ln['_size'] if ln['clue'] == 'label' else None)
+                    if ln['clue'] == 'body':  # the numbers the customer said, never the size to work out
+                        self.assertNotIn('size', ln['ask'])
+                        for v in ln['ask'].replace('·', ' ').split():
+                            if v.isdigit():
+                                self.assertIn(v, ln['say'])
+                    if ln['clue'] == 'brand':
+                        self.assertNotIn(ln['_size'], ln['ask'].split()[-1])
+        self.assertTrue({'label', 'body', 'waist'} <= seen)
+        self.assertEqual(AO._units(dict(kind='outfit', needs=dict(occasion='beach'))), 3)
+        occ = AO.content()['occasions']['beach']
+        self.assertEqual(occ['need'], ['hat'])
 
 
 if __name__ == '__main__':
