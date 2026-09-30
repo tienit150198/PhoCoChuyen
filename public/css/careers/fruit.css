@@ -1,0 +1,95 @@
+/* Sạp trái cây Dì Tư — scoped styles (.career-job.fr), over the street kit (street_kit.css).
+   Its own look: mango and orange, woven bamboo baskets, a round spring-scale dial with a red needle,
+   ripeness colours from green to over-ripe brown. */
+.career-job.fr{--sk-accent:#e0892b;--sk-accent-2:#f2b134;--fr-leaf:#6aa84f;--fr-ripe:#f2b134;--fr-over:#b86b2e;--fr-wilt:#a39a8a;
+  --fr-bamboo:#d9b97a;--fr-bamboo-2:#c49a55;--fr-dial:#fffdf6;--fr-needle:#d8342a}
+
+/* ---------- the scale */
+.career-job.fr .fr-scale{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center}
+.career-job.fr .fr-dial{position:relative;width:112px;height:112px;border-radius:50%;flex:none;
+  background:radial-gradient(circle at 50% 50%,var(--fr-dial) 0 58%,#f1e5c8 59% 62%,var(--fr-dial) 63%);border:6px solid #3f7fbf;box-shadow:inset 0 2px 6px rgb(0 0 0 / 15%),0 3px 0 #2d5f91}
+.career-job.fr .fr-ticks{position:absolute;inset:6px;border-radius:50%;
+  background:repeating-conic-gradient(from -135deg,#7d6b52 0 2deg,transparent 2deg 27deg);
+  -webkit-mask:radial-gradient(circle,transparent 0 80%,#000 81%);mask:radial-gradient(circle,transparent 0 80%,#000 81%)}
+.career-job.fr .fr-needle{position:absolute;left:50%;top:50%;width:3px;height:44px;margin-left:-1.5px;margin-top:-44px;background:var(--fr-needle);border-radius:3px;
+  transform-origin:50% 100%;transition:transform .45s cubic-bezier(.3,1.6,.5,1)}
+.career-job.fr .fr-needle::after{content:'';position:absolute;left:50%;bottom:-6px;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:#3f3a33}
+.career-job.fr .fr-read{position:absolute;left:0;right:0;bottom:14px;display:flex;justify-content:center;align-items:baseline;gap:2px;font-variant-numeric:tabular-nums}
+.career-job.fr .fr-read b{font-size:18px}
+.career-job.fr .fr-read small{font-size:11px;color:var(--sk-muted)}
+.career-job.fr .fr-dial em{position:absolute;left:0;right:0;top:24px;text-align:center;font-style:normal;font-size:10px;color:var(--sk-muted)}
+@media (prefers-reduced-motion:reduce){.career-job.fr .fr-needle{transition:none}}
+.career-job.fr .fr-scale-side{display:grid;gap:8px;min-width:0}
+.career-job.fr .fr-basket{display:flex;flex-wrap:wrap;gap:6px;min-height:52px;padding:6px;border-radius:14px;
+  background:repeating-linear-gradient(45deg,var(--fr-bamboo) 0 6px,var(--fr-bamboo-2) 6px 8px);border:2px solid var(--fr-bamboo-2)}
+.career-job.fr .fr-basket .muted{background:var(--sk-surface);border-radius:8px;padding:2px 8px;align-self:center}
+.career-job.fr .fr-pick{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:2px 4px;border:0;border-radius:12px;
+  background:var(--sk-surface);color:var(--sk-ink);font:inherit;cursor:pointer;box-shadow:0 1px 0 rgb(0 0 0 / 15%)}
+.career-job.fr .fr-pick span{font-size:22px;line-height:1}
+.career-job.fr .fr-pick small{font-size:10px;color:var(--sk-muted)}
+.career-job.fr .fr-pick.cheap{background:#f6e1c8}
+.career-job.fr .fr-pick.bad{outline:2px solid var(--sk-bad)}
+.career-job.fr .fr-scale-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.career-job.fr .fr-tare{min-height:44px;background:#3f7fbf;color:#fff;border-color:#2d5f91}
+.career-job.fr .fr-est{font-size:18px;margin-left:auto;font-variant-numeric:tabular-nums}
+
+/* ---------- ripeness baskets */
+.career-job.fr .fr-row{display:grid;gap:6px;padding:8px 0;border-bottom:1px dashed var(--sk-line)}
+.career-job.fr .fr-row:last-child{border-bottom:0}
+.career-job.fr .fr-fruit{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.career-job.fr .fr-fruit>span{font-size:22px;align-self:center}
+.career-job.fr .fr-fruit small{color:var(--sk-muted)}
+.career-job.fr .fr-fruit em{color:var(--sk-bad);font-style:normal}
+.career-job.fr .fr-stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:6px}
+.career-job.fr .fr-st{display:flex;justify-content:space-between;align-items:center;gap:6px;min-height:48px;padding:6px 10px;border-radius:12px;border:2px solid transparent;
+  font:inherit;cursor:pointer;color:#2f2a24;background:#eee}
+.career-job.fr .fr-st b{font-size:18px;font-variant-numeric:tabular-nums}
+.career-job.fr .fr-st span{font-size:13px;text-align:left;line-height:1.15}
+.career-job.fr .st-xanh{background:#dcefd2}
+.career-job.fr .st-chin{background:#fde7b0}
+.career-job.fr .st-ky{background:#efcfb0}
+.career-job.fr .st-tuoi{background:#e3f1d8}
+.career-job.fr .st-heo{background:#e6e1d7}
+.career-job.fr .fr-st.want{border-color:var(--sk-accent);box-shadow:0 2px 0 var(--sk-accent)}
+.career-job.fr .fr-st:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.career-job.fr .fr-rest{margin-top:8px}
+.career-job.fr .fr-chips{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.fr .fr-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;background:var(--sk-surface-2);border:1px solid var(--sk-line);font-size:14px}
+.career-job.fr .fr-chip i{font-style:normal;color:var(--fr-over)}
+.career-job.fr .fr-chip small{color:var(--sk-muted)}
+.career-job.fr .fr-chip.ok{border-color:var(--sk-good);color:var(--sk-good);font-weight:700}
+
+/* ---------- set-up, bargaining, a fruit brought back */
+.career-job.fr .fr-cover{grid-template-columns:repeat(2,minmax(0,1fr))}
+.career-job.fr .fr-test{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.career-job.fr .fr-test .btn{min-height:48px}
+.career-job.fr .fr-warn{color:var(--sk-bad);margin:6px 0 0}
+.career-job.fr .fr-bruise{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.fr .fr-bruise li{display:flex;align-items:center;gap:8px}
+.career-job.fr .fr-bruise li>span:first-child{font-size:22px}
+.career-job.fr .fr-bruise small{color:var(--sk-bad)}
+.career-job.fr .fr-bruise .btn{min-height:44px}
+.career-job.fr .fr-haggle{border:2px solid var(--sk-accent)}
+.career-job.fr .fr-offer{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+.career-job.fr .fr-offer>span{font-size:30px}
+.career-job.fr .fr-offer p{margin:0;font-size:18px}
+.career-job.fr .fr-offer small{display:block;font-size:13px;color:var(--sk-muted)}
+.career-job.fr .fr-look{min-height:48px;width:100%;margin-bottom:10px}
+.career-job.fr .fr-seen{padding:8px 10px;border-radius:var(--sk-rs);background:var(--sk-surface-2);margin:0 0 10px}
+
+/* ---------- the stall between customers */
+.career-job.fr .fr-list{list-style:none;margin:0 0 10px;padding:0;display:grid;gap:6px}
+.career-job.fr .fr-list li{display:grid;grid-template-columns:28px minmax(84px,auto) minmax(0,1fr);gap:6px;align-items:center}
+.career-job.fr .fr-list li>span:first-child{font-size:22px}
+.career-job.fr .fr-minis{display:flex;flex-wrap:wrap;gap:4px}
+.career-job.fr .fr-mini{padding:1px 8px;border-radius:99px;font-size:12px;color:#2f2a24}
+.career-job.fr .fr-stall .btn{min-height:48px}
+
+@media (max-width:420px){
+  .career-job.fr .fr-scale{grid-template-columns:1fr;justify-items:center}
+  .career-job.fr .fr-scale-side{width:100%}
+  .career-job.fr .fr-stages{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .career-job.fr .fr-st{flex-direction:column;align-items:flex-start;gap:0;padding:6px 8px}
+  .career-job.fr .fr-list li{grid-template-columns:28px minmax(0,1fr)}
+  .career-job.fr .fr-minis{grid-column:2}
+}

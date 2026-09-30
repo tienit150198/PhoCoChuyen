@@ -16,6 +16,7 @@ export const KIND_OF={
   tra_da:'sidewalk',
   clothing:'boutique',
   pet_shop:'petshop',
+  fruit:'lane',garbage:'lane',drain:'lane',
 };
 export const kindOf=career=>KIND_OF[career]||'shop';
 
@@ -63,6 +64,8 @@ const KIND_WORDS={
     idle_line:'Khách quen sắp ghé làm cốc trà.',open_hint:'Dọn hàng ra gốc bàng rồi bán nhé.',free_eyebrow:'Quán đang vãn khách',free_title:'Vãn khách rồi!',
     free_more:'Mời thêm khách hoặc dọn hàng về.',more_btn:'Mời thêm một khách',none_waiting:'Chưa có khách nào đang chờ',next_btn:'Mời khách tiếp theo',
     people_sub:'Những người bạn gặp quanh gốc bàng.',feed_sub:'Lời nhắn và đánh giá quanh quán trà.'},
+  lane:{cat_line:'Mrrr… ngoài phố nhiều chuyện hay ghê.',board:'Chuyện phố',security:'Trật tự khu phố',property:'Góc phố',
+    open_sign:'ĐANG LÀM',closed_sign:'NGHỈ TAY',idle_line:'Việc mới sắp tới.',free_eyebrow:'Đang rảnh tay',free_title:'Hết việc rồi!'},
 };
 const CAREER_WORDS={
   milk_tea:{warehouse:'Kho nguyên liệu'},
@@ -75,6 +78,21 @@ const CAREER_WORDS={
   pet_shop:{shelf:'Kệ hạt & pate',evidence:'Bảng tìm thú lạc',counter:'Quầy tính tiền',warehouse:'Kho hàng',store:'KHO',
     cat_line:'Mrrr… cá trong bể bơi qua bơi lại, ngó hoài không chán.',open_sign:'ĐANG MỞ CỬA',idle_line:'Khách sắp ghé mua hạt cho bé nhà.',
     people_sub:'Những người bạn gặp quanh tiệm thú nhỏ.',feed_sub:'Lời nhắn và đánh giá quanh tiệm thú nhỏ.'},
+  fruit:{shelf:'Rổ trái cây',evidence:'Rổ trái dập',counter:'Sạp & cân',warehouse:'Thùng hàng',finance:'Túi tiền lẻ',ledger:'TIỀN LẺ',store:'THÙNG HÀNG',
+    till:'Túi tiền lẻ',door_open:'Dọn sạp về',door_closed:'Dọn sạp ra',open_sign:'ĐANG BÁN',closed_sign:'NGHỈ BÁN',
+    idle_line:'Khách chợ sắp ghé mua trái.',open_hint:'Dựng dù, thử cân rồi bán nhé.',free_eyebrow:'Sạp đang vắng',free_title:'Vãn khách rồi!',
+    free_more:'Mời thêm khách hoặc dọn sạp về.',more_btn:'Mời thêm một khách',none_waiting:'Chưa có khách nào đang chờ',next_btn:'Mời khách tiếp theo',
+    people_sub:'Những người bạn gặp quanh sạp trái cây.',feed_sub:'Lời nhắn và đánh giá quanh sạp trái cây.'},
+  garbage:{shelf:'Túi rác trước cửa',evidence:'Bảng phân loại',counter:'Xe đẩy ba ngăn',warehouse:'Thùng tập kết',finance:'Hộp nguy hại',ledger:'SỔ TUYẾN',store:'KHO',
+    till:'Quỹ tổ',door_open:'Tan ca',door_closed:'Vào ca',open_sign:'ĐANG THU GOM',closed_sign:'ĐÃ TAN CA',
+    idle_line:'Ngõ sau đang chờ xe rác.',open_hint:'Đồ bảo hộ, kiểm xe rồi vào ngõ nhé.',free_eyebrow:'Xe đang nghỉ',free_title:'Hết ngõ rồi!',
+    free_more:'Nhận thêm một ngõ hoặc tan ca.',more_btn:'Nhận thêm một ngõ',none_waiting:'Chưa có ngõ nào đang chờ',next_btn:'Sang ngõ tiếp theo',
+    people_sub:'Những người bạn gặp trên tuyến thu gom.',feed_sub:'Lời nhắn và phản ánh của cư dân.'},
+  drain:{shelf:'Cuộn dây lò xo',evidence:'Hố ga',counter:'Xe máy & đồ nghề',warehouse:'Hộp đồ nghề',finance:'Bảng giá',ledger:'SỔ HẸN',store:'VẬT TƯ',
+    till:'Quỹ tiệm',door_open:'Nghỉ tay',door_closed:'Nhận việc',open_sign:'ĐANG NHẬN VIỆC',closed_sign:'NGHỈ TAY',
+    idle_line:'Điện thoại sắp reo.',open_hint:'Đọc sổ hẹn, xếp đồ nghề rồi đi nhé.',free_eyebrow:'Chưa có ai gọi',free_title:'Hết việc rồi!',
+    free_more:'Nhận thêm việc hoặc nghỉ tay hôm nay.',more_btn:'Nhận thêm một việc',none_waiting:'Chưa có việc nào đang chờ',next_btn:'Sang việc tiếp theo',
+    people_sub:'Những người bạn gặp khi đi thông cống.',feed_sub:'Lời nhắn và đánh giá của khách.'},
 };
 export const wordsFor=career=>({...BASE,...KIND_WORDS[kindOf(career)],...CAREER_WORDS[career]});
 

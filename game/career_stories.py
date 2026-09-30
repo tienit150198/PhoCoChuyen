@@ -926,6 +926,125 @@ ARCS = {
                 ('tuong', 'Quán vẫn là quán của bà Lựu. Chỉ là giờ có người pha trà trẻ hơn.'),
                 ('me', 'Cháu sẽ giữ chiếc ghế xanh cho chú, và giữ quán cho cả phố.')]),
         ]),
+    # ------------------------------------------------------------ the street trades
+    'fruit': dict(
+        title='Quả cân đồng của dì Tư', emoji='⚖️',
+        keepsake=dict(emoji='⚖️', name='Quả cân đồng một ký', desc='Mòn bóng vì mười lăm năm sáng nào cũng đặt lên cân. Giờ đến lượt bạn thử cân.'),
+        cast={'di_tu': _p('Dì Tư', '👩‍🌾', 'Chủ sạp trái cây', 'fruit_npc_01'),
+              'co_nam': _p('Cô Năm', '🧺', 'Nội trợ đi chợ sớm', 'fruit_npc_02'),
+              'ba_hai': _p('Bà Hai', '⚖️', 'Cụ bà xóm chợ', 'fruit_npc_05'),
+              'be_mo': _p('Bé Mơ', '🎒', 'Học sinh lớp 6', 'fruit_npc_08')},
+        beats=[
+            _b('Sạp đầu chợ', '🧺', 'Bốn giờ sáng, dì Tư đã chất đầy mấy rổ trái lên sạp.', [
+                ('di_tu', 'Dì đi chợ đầu mối về là mệt rã. Con trông sạp giúp dì nghe.'),
+                ('co_nam', 'Sạp dì Tư bán hai chục năm, chưa ai chê cân thiếu đâu con.'),
+                ('di_tu', 'Trái nào xanh để dành, trái nào chín bán liền. Nhìn cuống là biết.'),
+                ('me', 'Dạ, con nhớ rồi: xanh để dành, chín bán liền.')]),
+            _b('Cái cân của bà Hai', '⚖️', 'Bà Hai đặt cái cân đồng hồ nhỏ xíu lên sạp, nheo mắt nhìn.', [
+                ('ba_hai', 'Hồi trước bà mua ở chợ khác, cứ một ký là thiếu cả lạng.'),
+                ('ba_hai', 'Từ đó đi đâu bà cũng mang cân theo. Cháu đừng giận nhé.'),
+                ('di_tu', 'Bà cân lại thoải mái, sạp này không sợ.')],
+                _c('Bà Hai cân lại túi cam',
+                   _o('a', 'Mời bà cân trước mặt cả dãy chợ', [('ba_hai', 'Đủ một ký, còn dư chút. Được, từ nay bà mua ở đây.')], rel='ba_hai'),
+                   _o('b', 'Chỉ bà cách thử cân bằng quả cân một ký', [('ba_hai', 'À, thử vậy là biết cân nào lệch liền. Bà học được rồi!')], rel='ba_hai'))),
+            _b('Mùa xoài', '🥭', 'Xoài cát về đầy chợ, vàng ươm cả dãy sạp.', [
+                ('co_nam', 'Xoài chín cây thì cuống thơm, vỏ vàng không đều. Xoài ủ thuốc vàng đều như sơn.'),
+                ('di_tu', 'Mình chỉ lấy xoài xanh về tự để chín. Chậm một hôm mà ăn ngọt thật.'),
+                ('co_nam', 'Cô mua ở đây vì ăn yên tâm.')],
+                _c('Có người chào bán thuốc ủ chín',
+                   _o('a', 'Từ chối, kể cho cô Năm nghe', [('co_nam', 'Đúng rồi con. Giữ tiếng còn hơn giữ tiền.')], rel='co_nam'),
+                   _o('b', 'Hỏi rõ nguồn gốc rồi mới từ chối', [('di_tu', 'Hỏi cho biết cũng được. Không giấy tờ là mình không đụng.')], rel='di_tu'))),
+            _b('Giỏ trái cho mẹ', '🍊', 'Bé Mơ đứng trước sạp, tay cầm tờ giấy mẹ ghi.', [
+                ('be_mo', 'Mẹ con nằm viện mấy hôm rồi. Con muốn mua trái cây ngon nhất cho mẹ.'),
+                ('be_mo', 'Con có mười xu thôi ạ.'),
+                ('me', 'Để cô lựa cho con mấy trái cam ngọt, trái chuối vừa chín.')],
+                _c('Giỏ trái cho mẹ bé Mơ',
+                   _o('a', 'Lựa trái ngon, tính đúng giá, bớt cho bé chút', [('be_mo', 'Mẹ con khen cam ngọt lắm ạ!')], rel='be_mo'),
+                   _o('b', 'Tặng thêm trái bưởi nhỏ “cho mẹ mau khỏe”', [('be_mo', 'Con cảm ơn cô! Mẹ con bảo khỏe rồi sẽ ra cảm ơn.')], rel='be_mo', coins=0))),
+            _b('Quả cân đồng', '⚖️', 'Dì Tư lau quả cân đồng bằng khăn ướt, đặt vào tay bạn.', [
+                ('di_tu', 'Quả cân này dì dùng mười lăm năm, sáng nào cũng thử cân bằng nó.'),
+                ('di_tu', 'Cân đúng thì bán được lâu. Giờ con giữ.'),
+                ('ba_hai', 'Bà bỏ cân ở nhà rồi đấy. Tin sạp này.'),
+                ('be_mo', 'Mẹ con ra viện rồi ạ! Mẹ gửi cô hộp bánh.'),
+                ('me', 'Con sẽ thử cân mỗi sáng, như dì.')]),
+        ]),
+    'garbage': dict(
+        title='Chiếc xe đẩy ba ngăn', emoji='🛒',
+        keepsake=dict(emoji='🦺', name='Chiếc áo phản quang cũ của chị Hạnh', desc='Sờn vai, bạc màu, mười hai năm đi qua từng ngõ. Chị bảo mặc nó thì xe nào cũng thấy.'),
+        cast={'hanh': _p('Chị Hạnh', '🧹', 'Tổ trưởng tổ thu gom', 'garbage_npc_01'),
+              'bac_tam': _p('Bác Tâm', '📒', 'Tổ trưởng dân phố ngõ 12', 'garbage_npc_02'),
+              'co_tam': _p('Cô Tám', '♻️', 'Thu mua ve chai', 'garbage_npc_05'),
+              'be_na': _p('Bé Na', '🎒', 'Học sinh lớp 8', 'garbage_npc_07')},
+        beats=[
+            _b('Tiếng xe đầu ngõ', '🛒', 'Sáu giờ chiều, tiếng lọc xọc của xe đẩy vang lên đầu ngõ 12.', [
+                ('hanh', 'Nghe tiếng xe là cả ngõ mang rác ra. Mình mà trễ là mèo bới tung.'),
+                ('bac_tam', 'Tổ thu gom mới có người à? Nhớ giờ ngõ này nhé cháu.'),
+                ('hanh', 'Túi nào lạ thì mở xem. Pin với kim tiêm là không đùa được đâu.'),
+                ('me', 'Dạ, em nhớ rồi.')]),
+            _b('Túi vàng của cô Tám', '♻️', 'Cô Tám dựng xe ba gác ở điểm tập kết, cân từng bao lon.', [
+                ('co_tam', 'Túi vàng sạch là cô mua. Lẫn cơm canh vào là bán không ai lấy.'),
+                ('hanh', 'Tiền ve chai tổ để dành, cuối năm cả tổ đi Vũng Tàu.'),
+                ('co_tam', 'Mà giờ nhiều nhà vẫn đổ chung lắm.')],
+                _c('Làm sao cho túi vàng sạch hơn?',
+                   _o('a', 'Nhắc từng nhà, nói nhẹ nhàng', [('co_tam', 'Tuần này túi vàng sạch hẳn. Cô trả thêm cho tổ nè.')], rel='co_tam'),
+                   _o('b', 'Rủ bé Na vẽ tờ hướng dẫn dán đầu ngõ', [('be_na', 'Em vẽ ba cái thùng có mặt cười nha!')], rel='be_na'))),
+            _b('Tờ hướng dẫn của bé Na', '🖍️', 'Bé Na chạy theo xe, tay cầm xấp giấy vẽ.', [
+                ('be_na', '{Anh} ơi, em vẽ tờ hướng dẫn phân loại rác nè. Dán ở đâu được ạ?'),
+                ('bac_tam', 'Dán ở bảng tin đầu ngõ, bác cho phép.'),
+                ('hanh', 'Tụi nhỏ mà nhắc thì người lớn nghe hơn mình nhắc.')],
+                _c('Dán tờ hướng dẫn của bé Na',
+                   _o('a', 'Dán cạnh bảng giờ thu gom', [('bac_tam', 'Đẹp đấy. Để bác nhắc thêm trong buổi họp tổ.')], rel='bac_tam'),
+                   _o('b', 'Dán lên chính chiếc xe đẩy', [('be_na', 'Xe đi tới đâu tờ hướng dẫn đi tới đó luôn!')], rel='be_na'))),
+            _b('Đêm mưa', '🌧️', 'Mưa như trút, nước ngập ngang mắt cá, túi rác trôi lềnh bềnh.', [
+                ('hanh', 'Vớt rác chặn miệng cống trước đã, không thì ngập cả ngõ.'),
+                ('bac_tam', 'Bác cầm đèn pin soi cho hai chị em.'),
+                ('me', 'Nước rút rồi chị ơi!'),
+                ('hanh', 'Ướt hết rồi, về uống bát gừng cho ấm.')]),
+            _b('Chiếc áo phản quang', '🦺', 'Chị Hạnh cởi chiếc áo phản quang cũ, gấp lại cẩn thận.', [
+                ('hanh', 'Tháng sau chị chuyển lên làm tổ trưởng khu. Tuyến này chị giao em.'),
+                ('hanh', 'Áo này mười hai năm rồi. Mặc nó thì xe nào cũng thấy mình.'),
+                ('bac_tam', 'Ngõ 12 sạch nhất phường, cả tổ được khen trước phường.'),
+                ('be_na', 'Em được giải báo tường nhờ bài viết về xe rác đó!'),
+                ('me', 'Em sẽ giữ ngõ sạch như chị đã giữ.')]),
+        ]),
+    'drain': dict(
+        title='Cuộn dây lò xo của chú Hai', emoji='🌀',
+        keepsake=dict(emoji='🌀', name='Cuộn dây lò xo mòn tay cầm', desc='Hai mươi năm đi qua không biết bao nhiêu đường ống. Tay cầm bóng lên vì mồ hôi.'),
+        cast={'chu_hai': _p('Chú Hai', '🧰', 'Thợ thông cống lâu năm', 'drain_npc_01'),
+              'chi_hong': _p('Chị Hồng', '🍲', 'Chủ quán bún bò', 'drain_npc_02'),
+              'ba_ngoc': _p('Bà Ngọc', '🏚️', 'Nhà phố cổ ống gang', 'drain_npc_03'),
+              'ong_loc': _p('Ông Lộc', '📒', 'Tổ trưởng dân phố', 'drain_npc_06')},
+        beats=[
+            _b('Nghe tiếng nước', '💧', 'Chú Hai đặt tai sát miệng ống, ra hiệu cho bạn im lặng.', [
+                ('chu_hai', 'Nghe không? Ọc ọc là thiếu hơi. Ì ạch là tắc xa. Rít rít là tắc gần.'),
+                ('chu_hai', 'Chưa biết bệnh thì đừng cầm đồ nghề.'),
+                ('me', 'Dạ, hỏi, nhìn, xả nước thử rồi mới làm.')]),
+            _b('Bồn rửa quán bún', '🍲', 'Bốn giờ sáng, chị Hồng gọi điện, giọng run run.', [
+                ('chi_hong', 'Nồi nước lèo sắp xong mà bồn rửa ngập mỡ. Cứu chị với!'),
+                ('chu_hai', 'Mỡ đông thì phải phun, thông tạm bằng lò xo vài hôm lại tắc.'),
+                ('chi_hong', 'Mà chị sắp bán rồi…')],
+                _c('Bồn rửa quán chị Hồng',
+                   _o('a', 'Nói rõ, xin thêm hai mươi phút phun tận gốc', [('chi_hong', 'Trễ chút mà cả tháng khỏi lo. Cảm ơn em!')], rel='chi_hong'),
+                   _o('b', 'Thông tạm cho kịp bán, hẹn chiều quay lại phun', [('chi_hong', 'Chiều em nhớ quay lại nha, chị để phần tô bún.')], rel='chi_hong'))),
+            _b('Ống gang nhà bà Ngọc', '🏚️', 'Bà Ngọc đứng chờ ở cửa, tay cầm gói bột thông cống.', [
+                ('ba_ngoc', 'Đổ cái này cho nhanh, thợ trước cũng đổ.'),
+                ('chu_hai', 'Ống gang cũ gỉ rồi, đổ xút vào là thủng như chơi.'),
+                ('ba_ngoc', 'Thế thì làm sao bây giờ?')],
+                _c('Ống nhà bà Ngọc',
+                   _o('a', 'Soi camera cho bà xem tận mắt', [('ba_ngoc', 'Trời, rễ cây chui cả vào ống. Bà tin cháu rồi.')], rel='ba_ngoc'),
+                   _o('b', 'Giải thích kỹ, dùng máy lò xo cắt rễ', [('ba_ngoc', 'Nước rút rồi! Gói bột này bà cất đi.')], rel='ba_ngoc'))),
+            _b('Hố ga đầu ngõ', '⚫', 'Trời sắp mưa, ông Lộc giục tổ thợ xuống hố ga.', [
+                ('ong_loc', 'Xuống múc luôn đi cháu, đo đạc gì cho mất thời gian!'),
+                ('chu_hai', 'Không đo khí thì không ai xuống. Mười phút thôi ông ạ.'),
+                ('ong_loc', 'Ừ… năm ngoái phường bên có chuyện, tôi quên mất.'),
+                ('me', 'Khí an toàn rồi chú. Cháu xuống, chú canh trên này.')]),
+            _b('Cuộn dây lò xo', '🌀', 'Chú Hai tháo cuộn dây lò xo cũ khỏi xe, buộc lên xe của bạn.', [
+                ('chu_hai', 'Hai mươi năm chú đi với cuộn dây này. Giờ chú về trông cháu nội.'),
+                ('chu_hai', 'Nhớ: đúng bệnh, đúng đồ nghề, đúng giá.'),
+                ('chi_hong', 'Từ nay bếp quán chị có chuyện là gọi em đó.'),
+                ('ong_loc', 'Phường giao hố ga cả khu cho tổ thợ của cháu.'),
+                ('me', 'Cháu sẽ giữ bảng giá của chú, không đổi theo mặt khách.')]),
+        ]),
 }
 
 

@@ -45,7 +45,7 @@ CH_UNLOCKS = {
     # New players get every storefront at once; the service places follow after the first day.
     1: ('milk_tea', 'grocery', 'delivery', 'cafe_bakery', 'florist', 'mother_baby', 'restaurant'),
     2: ('pet_care', 'salon', 'repair', 'farm', 'homestay'),
-    3: ('clothing', 'pet_shop', 'tra_da'),
+    3: ('clothing', 'pet_shop', 'tra_da', 'fruit', 'garbage', 'drain'),
     4: ('customer_care', 'pharmacy', 'tour_guide', 'teacher', 'accounting'),
     5: ('corp_accounting', 'tax_payroll'),
     6: ('group_accounting',),

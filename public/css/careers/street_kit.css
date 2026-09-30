@@ -1,0 +1,110 @@
+/* Street trades kit (fruit stall, rubbish round, drain cleaning): layout shared by .career-job.sk.
+   Each career sets its own tokens (--sk-accent, --sk-accent-2, --sk-surface-2, --sk-line) and draws its
+   own stations in public/css/careers/<id>.css. Chrome uses theme tokens (with fallbacks) so dark mode follows the app. */
+.career-job.sk{
+  --sk-surface:var(--surface,#fffaf2);--sk-surface-2:var(--surface-2,#f4efe4);--sk-ink:var(--ink,#2f2a24);--sk-muted:var(--muted,#766c60);
+  --sk-line:var(--line,#e5dccb);--sk-accent:#8a6d3b;--sk-accent-2:#b89660;
+  --sk-good:var(--good,#4f8a4b);--sk-warn:var(--warn,#c98a2b);--sk-bad:var(--bad,#c0533f);
+  --sk-r:var(--radius,16px);--sk-rs:var(--radius-sm,10px);--sk-shadow:var(--shadow,0 6px 18px rgb(0 0 0 / 8%));
+  color:var(--sk-ink)}
+:where(.career-job.sk) :where(.card){background:var(--sk-surface);border:1px solid var(--sk-line);border-radius:var(--sk-r);padding:14px;box-shadow:var(--sk-shadow)}
+:where(.career-job.sk) :where(.workbench){display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,300px);gap:14px;align-items:start;margin-top:12px}
+:where(.career-job.sk) :where(.wb-side){position:sticky;top:0}
+:where(.career-job.sk) :where(.tile-grid){display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+:where(.career-job.sk) :where(.bar){height:8px;border-radius:99px;background:var(--sk-surface-2);overflow:hidden}
+:where(.career-job.sk) :where(.bar i){display:block;height:100%;background:var(--sk-good);border-radius:inherit}
+:where(.career-job.sk) :where(.bar.low i){background:var(--sk-bad)}
+.career-job.sk .card+.card,.career-job.sk .card+section,.career-job.sk section+.card{margin-top:10px}
+.career-job.sk h4{margin:0 0 8px}
+.career-job.sk .section-title{margin-top:14px}
+.career-job.sk .muted{color:var(--sk-muted)}
+
+/* ---------- tiles */
+.career-job.sk .sk-tile{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:72px;min-width:44px;padding:8px 6px;
+  border:1px solid var(--sk-line);border-radius:var(--sk-rs);background:var(--sk-surface);color:var(--sk-ink);font:inherit;text-align:center;cursor:pointer}
+.career-job.sk .sk-tile b{font-size:14px;line-height:1.2}
+.career-job.sk .sk-tile small{color:var(--sk-muted);font-size:12px;line-height:1.25}
+.career-job.sk .sk-tile .tile-emoji{font-size:26px;line-height:1}
+.career-job.sk .sk-tile.selected{border-color:var(--sk-accent);box-shadow:inset 0 0 0 2px var(--sk-accent)}
+.career-job.sk .sk-tile.want:not(.selected){border-style:dashed;border-color:var(--sk-accent-2)}
+.career-job.sk .sk-tile:disabled{opacity:.5;cursor:not-allowed}
+.career-job.sk .sk-meter{display:block;height:10px;border-radius:99px;background:var(--sk-surface-2);overflow:hidden;border:1px solid var(--sk-line)}
+.career-job.sk .sk-meter i{display:block;height:100%;background:var(--sk-accent);border-radius:inherit}
+.career-job.sk .sk-meter.warn i{background:var(--sk-warn)}
+.career-job.sk .sk-meter.bad i{background:var(--sk-bad)}
+
+/* ---------- day bar, customer card */
+.career-job.sk .sk-day{display:flex;align-items:center;gap:8px;margin:10px 0 0;padding:4px 6px;border-radius:var(--sk-rs);background:var(--sk-surface-2);border:1px solid var(--sk-line)}
+.career-job.sk .sk-day .sk-sky{font-size:20px}
+.career-job.sk .sk-day b{display:inline;flex:1 1 auto;min-width:0}
+.career-job.sk .sk-day small{color:var(--sk-muted)}
+.career-job.sk .sk-day .sk-pane-sum{border:0;background:transparent;padding:4px 6px;flex-wrap:nowrap}
+.career-job.sk .sk-day .sk-pane-body{padding:0 6px 6px}
+.career-job.sk .sk-day-line{display:flex;align-items:center;gap:8px}
+.career-job.sk .sk-help,.career-job.sk .sk-x{min-width:44px;min-height:44px}
+.career-job.sk .sk-ticket h3{margin:0}
+.career-job.sk .sk-ticket p{margin:4px 0}
+.career-job.sk .patience{display:flex;align-items:center;gap:8px;margin-top:6px}
+.career-job.sk .patience .bar{flex:1}
+
+/* ---------- tap-to-open lines */
+.career-job.sk .sk-pane{margin:0}
+.career-job.sk .sk-pane-sum{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:8px 12px;border:1px solid var(--sk-line);border-radius:var(--sk-rs);background:var(--sk-surface-2);color:inherit;font:inherit;text-align:left;cursor:pointer}
+.career-job.sk .sk-pane-sum::after{content:'▾';margin-left:auto;color:var(--sk-muted)}
+.career-job.sk .sk-pane.open>.sk-pane-sum::after{content:'▴'}
+.career-job.sk .sk-pane-body{padding:8px 2px 0}
+
+/* ---------- intro, surprises, choices */
+.career-job.sk .sk-intro{border:2px solid var(--sk-accent)}
+.career-job.sk .sk-intro h3{margin:0 0 6px}
+.career-job.sk .sk-intro-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:10px 0}
+.career-job.sk .sk-icons{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.sk .sk-icons li{display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.35}
+.career-job.sk .sk-icons li span{font-size:18px;width:24px;flex:none;text-align:center}
+.career-job.sk .sk-event{margin-bottom:10px;padding:14px;border-radius:var(--sk-r);border:2px solid var(--sk-warn);background:var(--sk-surface);box-shadow:var(--sk-shadow)}
+.career-job.sk .sk-event.tense{border-color:var(--sk-bad)}
+.career-job.sk .sk-ev-head{display:flex;gap:10px;align-items:center}
+.career-job.sk .sk-ev-head>span{font-size:30px}
+.career-job.sk .sk-ev-head h3{margin:0}
+.career-job.sk .sk-ev-head small{color:var(--sk-muted)}
+.career-job.sk .sk-opts{display:flex;flex-direction:column;gap:8px}
+.career-job.sk .sk-opt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;height:auto;min-height:48px;padding:10px 12px;text-align:left;white-space:normal}
+.career-job.sk .sk-opt small{color:var(--sk-muted);font-weight:400}
+.career-job.sk .sk-opt em{color:var(--sk-bad);font-style:normal;font-size:13px}
+.career-job.sk .sk-opt-label{font-weight:700}
+.career-job.sk .sk-last{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:8px 10px;border-radius:var(--sk-rs);border:1px solid var(--sk-line);background:var(--sk-surface)}
+.career-job.sk .sk-last.good{border-color:var(--sk-good)}
+.career-job.sk .sk-last.bad{border-color:var(--sk-bad)}
+.career-job.sk .sk-last p{flex:1;margin:0;font-size:14px}
+.career-job.sk .sk-last>span{font-size:22px}
+
+/* ---------- cash (public/js/careers/till.js) */
+.career-job.sk .till{display:grid;gap:8px}
+.career-job.sk .till h4{margin:0}
+.career-job.sk .till-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.career-job.sk .till-notes,.career-job.sk .till-tray{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:36px}
+.career-job.sk .till-money{display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-variant-numeric:tabular-nums}
+.career-job.sk .till-money.note{min-width:48px;height:28px;padding:0 6px;border-radius:4px;background:var(--sk-surface-2);border:1px solid var(--sk-good);color:var(--sk-good)}
+.career-job.sk .till-money.coin{width:28px;height:28px;border-radius:50%;background:var(--sk-surface-2);border:2px solid var(--sk-warn);color:var(--sk-warn);font-size:12px}
+.career-job.sk .till-due{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:4px 10px;align-items:baseline}
+.career-job.sk .till-due b.ok{color:var(--sk-good)}
+.career-job.sk .till-due b.over{color:var(--sk-bad)}
+.career-job.sk .till-denoms{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px}
+.career-job.sk .till-denom{min-height:44px;border-radius:var(--sk-rs);font:inherit;font-weight:700;cursor:pointer;background:var(--sk-surface);color:var(--sk-ink)}
+.career-job.sk .till-denom.note{border:2px solid var(--sk-good)}
+.career-job.sk .till-denom.coin{border:2px solid var(--sk-warn);border-radius:999px}
+.career-job.sk .till .btn{min-height:44px}
+
+/* ---------- next-step bar */
+.career-job.sk .sk-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;flex-direction:column;gap:6px;margin-top:12px;padding:8px 12px 10px;border-radius:var(--sk-rs);
+  background:var(--sk-surface);border:1px solid var(--sk-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
+.career-job.sk .sk-bar .btn{width:100%;min-height:48px}
+
+@media (max-width:720px){
+  :where(.career-job.sk) :where(.workbench){grid-template-columns:1fr}
+  :where(.career-job.sk) :where(.wb-side){position:static}
+}
+@media (max-width:420px){
+  .career-job.sk .till-due{grid-template-columns:auto 1fr}
+  .career-job.sk .card{padding:12px}
+}
