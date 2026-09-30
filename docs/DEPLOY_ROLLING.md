@@ -197,3 +197,11 @@ command every 350 ms while the service was restarted (`systemctl restart`) and t
 * **0.9.5 client**: 57 of 57 clicks were applied exactly once (the server's revision delta equals the
   number of distinct request ids answered 200). 7 attempts got 502 and were re-sent. There was no
   error toast, and the "Đang cập nhật máy chủ…" note showed for about 5 s.
+
+
+## nginx: close old workers' connections
+
+A reload leaves old nginx workers alive for their open HTTP/2 connections. If such a worker still points at the
+bridge when the release stops it, that player gets instant 502s until the connection closes (01/10: 52 errors
+for one player). `worker_shutdown_timeout 20s;` in the main `nginx.conf` makes old workers close those
+connections after 20 s, well inside the release's 90 s wait for old workers.

@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **0.9.12** (`main` = `b491cbf`), 23 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **0.9.14** (`main` = `955dbb3`), 23 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -56,8 +56,8 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 2. **Less text**, focus on the task, the one next action and the experience; phone first (390 px).
 3. **Deploy with no gap** (`deploy/rolling_release.sh`, `docs/DEPLOY_ROLLING.md`).
    **"Có gì mới" only when the owner says so** (30/09): an entry pops up for every player, so fixes and small
-   releases ship quietly (bump the version, write the CHANGELOG, no `game/whats_new.py` entry). Propose the
-   player-facing lines to the owner instead.
+   releases ship quietly (bump the version, write the CHANGELOG, no `game/whats_new.py` entry). A big release
+   with new features gets a note (01/10), and the note lists **new features only**: no fixes, no price changes.
 4. **Memory:** any in-process cache must be bounded (bytes + rows). The new server has 15 GB; PostgreSQL takes
    3 GB of shared buffers and the game is capped at 8 GB (`MemoryMax`).
 5. **No credentials in the repo or in commits.** Server access comes from the owner.
@@ -131,7 +131,13 @@ Then: bump `game/__init__.py` and add a CHANGELOG entry. Only if the owner asked
   (drop-ins: `50-postgres.conf` with `PG_POOL=6 PG_POOL_MAX=12`, `workers.conf`, `assets.conf`, `keepdata.conf`,
   `zz-pyvendor.conf`). A transient `mot-ngay-lam-nghe-bridge` exists only during a rolling release (:8766).
   `mnl-selfheal.service`, `mnl-pg-backup.timer` (03:40), `certbot.timer`.
-- **Deploy:** `mnl-rolling-release <zip>` (same script as before, `deploy/rolling_release.sh`).
+- **Deploy:** `mnl-rolling-release <zip>` (same script as before, `deploy/rolling_release.sh`). `package.py` now
+  minifies (needs node/npx). `/etc/nginx/nginx.conf` has `worker_shutdown_timeout 20s` (01/10): without it an old
+  nginx worker kept one player's HTTP/2 connection pinned to the stopped bridge for minutes after a release
+  (52 × 502 for that player on 01/10 00:34).
+- **Play time:** `stat_play` (one row per player per Vietnam day, trigger on `receipts`, ~12 µs per command) feeds
+  the admin "Thời gian chơi" card. Exact from 01/10 00:31; 29–30/09 were backfilled from receipts as estimates
+  (`scripts/playtime_backfill.py`, idempotent).
 - **nginx site** `/etc/nginx/sites-enabled/phocochuyen` (same as the old server): HTTP/2, static
   `/js /css /i18n /icons /music /fonts` served directly, `?v=` assets from `/opt/mot-ngay-lam-nghe/shared/_v`
   (immutable), a timing log for `/api/` in `/var/log/nginx/phocochuyen_api.log`. `/etc/nginx/conf.d/mnl-realip.conf`
