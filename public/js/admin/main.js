@@ -16,12 +16,14 @@
  * tables also download as one CSV (…&format=csv). */
 import {AdminAPI} from './api.js';
 import {Inbox} from './inbox.js';
+import {ChatAdmin} from './chat.js';  // 💬 Chat: reports, hide, mute (live chat)
 import {overviewView,liveView,skeleton,skelCard} from './stats.js';
 import {esc,icon,hm,ago,num,toast} from './ui.js';
 
 const api=new AdminAPI();
 const root=document.getElementById('root');
-const VIEWS={'tong-quan':['Tổng quan','chart'],'giu-chan':['Giữ chân','loop'],'gop-y':['Góp ý','inbox'],'he-thong':['Hệ thống','server']};
+const VIEWS={'tong-quan':['Tổng quan','chart'],'giu-chan':['Giữ chân','loop'],'gop-y':['Góp ý','inbox'],'chat':['Chat','chat'],'he-thong':['Hệ thống','server']};
+const STATS_VIEWS=new Set(['tong-quan','giu-chan','he-thong']);  // views drawn from the stats endpoints
 const RANGES=[7,30,90];
 const REFRESH_MS=60000;
 const LIVE_MS=15000;
@@ -41,6 +43,7 @@ const stats={range:RANGES.includes(store.get('range',7))?store.get('range',7):7,
   live:{data:null,at:0,busy:false,error:null,ctl:null}};
 let sectionsMod=null;  // ./sections.js once imported
 const loadSectionsMod=()=>sectionsMod?Promise.resolve(sectionsMod):import('./sections.js').then(m=>(sectionsMod=m));
+const chatAdmin=new ChatAdmin(api,{rerender:()=>{if(ui.screen==='app'&&ui.view==='chat')renderView();},forbidden:()=>reauth()});
 let retMod=null;  // ./retention.js once imported ("Giữ chân")
 const loadRetMod=()=>retMod?Promise.resolve(retMod):import('./retention.js').then(m=>(retMod=m));
 const inbox=new Inbox(api,{
@@ -77,7 +80,7 @@ let reauthing=null;
 function reauth(){
   reauthing??=api.bootstrap().then(()=>{
     if(!api.admin)toast(api.account?'Tài khoản này không còn quyền vận hành.':'Phiên đăng nhập đã hết. Đăng nhập lại nhé.','bad');
-    resetStats();inbox.reset();decide();
+    resetStats();inbox.reset();chatAdmin.reset();decide();
   }).catch(e=>toast(e.message,'bad')).finally(()=>{reauthing=null;});
   return reauthing;
 }
@@ -104,7 +107,7 @@ async function login(form){
 async function logout(){
   try{await api.logout();toast('Đã đăng xuất.');}
   catch(e){toast(e.message,'bad');}
-  resetStats();inbox.reset();ui.unread=null;ui.navOpen=false;
+  resetStats();inbox.reset();chatAdmin.reset();ui.unread=null;ui.navOpen=false;
   decide();
 }
 
@@ -137,7 +140,7 @@ function loadStats(fresh=false){
     .finally(()=>{
       if(stats.ctl!==ctl)return;  // superseded: the newer request draws
       stats.ctl=null;stats.busy=false;
-      if(ui.screen==='app'&&ui.view!=='gop-y')renderView();else renderTools();
+      if(ui.screen==='app'&&STATS_VIEWS.has(ui.view))renderView();else renderTools();
     });
 }
 /** The live counters. A failure keeps the last numbers on screen (with a short note). */
@@ -177,12 +180,12 @@ function loadSection(name,fresh=false){
       s.data=d;s.at=Date.now();s.pending=false;if(d.names)api.setNames(d.names);
     })
     .catch(e=>{if(e.aborted)return;if(e.status===403||e.status===401){reauth();return;}s.error=e.status?tooFast(e):e.message||'Không tải được phần này.';})
-    .finally(()=>{if(s.ctl!==ctl)return;s.busy=false;s.ctl=null;if(ui.screen==='app'&&ui.view!=='gop-y')renderView();});
+    .finally(()=>{if(s.ctl!==ctl)return;s.busy=false;s.ctl=null;if(ui.screen==='app'&&STATS_VIEWS.has(ui.view))renderView();});
 }
 /** Sections worth refreshing on the current view (the saves cards show on both). */
 const shown=name=>name==='retention'?ui.view==='giu-chan':name==='saves'||(name==='playtime'?ui.view==='tong-quan':ui.view==='he-thong');
 setInterval(()=>{
-  if(ui.screen!=='app'||!stats.auto||ui.view==='gop-y'||document.hidden)return;
+  if(ui.screen!=='app'||!stats.auto||!STATS_VIEWS.has(ui.view)||document.hidden)return;
   loadStats();
   for(const [name,s] of Object.entries(stats.sections))if(s.data&&shown(name))loadSection(name);
 },REFRESH_MS);
@@ -203,14 +206,14 @@ function watchLazy(view){
   lazyObserver?.disconnect();  // the previous placeholders were replaced
   view.querySelectorAll('[data-lazy]').forEach(el=>{if(lazyObserver)lazyObserver.observe(el);else ensureSection(el.dataset.lazy);});
 }
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&ui.screen==='app'&&stats.auto&&ui.view!=='gop-y')ensureStats();});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&ui.screen==='app'&&stats.auto&&STATS_VIEWS.has(ui.view))ensureStats();});
 
 /* ---- routing -------------------------------------------------------------------------------- */
 function route(focus=true){
   const h=location.hash.slice(1);
   ui.view=VIEWS[h]?h:'tong-quan';ui.navOpen=false;
   if(ui.screen!=='app')return;
-  if(ui.view!=='gop-y')ensureStats();
+  if(STATS_VIEWS.has(ui.view))ensureStats();
   render();
   if(focus){scrollTo(0,0);document.getElementById('view-title')?.focus({preventScroll:true});}
 }
@@ -299,6 +302,11 @@ function renderBadge(){
 }
 function renderTools(){
   const tools=root.querySelector('[data-tools]'),meta=root.querySelector('[data-meta]');if(!tools)return;
+  if(ui.view==='chat'){
+    tools.innerHTML=`<button type="button" class="btn ghost sm" data-act="chatReload"${chatAdmin.busy?' disabled':''}>${icon('refresh',15)}<span>Tải lại</span></button>`;
+    meta.innerHTML=chatAdmin.meta();
+    return;
+  }
   if(ui.view==='gop-y'){
     tools.innerHTML=`<button type="button" class="btn ghost sm" data-act="fbReload"${inbox.busy?' disabled':''}>${icon('refresh',15)}<span>Tải lại</span></button>`;
     const c=inbox.data?.counts,total=c?Object.values(c).reduce((a,b)=>a+b,0):null;
@@ -326,6 +334,7 @@ function renderView(){
   const open=new Set([...view.querySelectorAll('details[open] > summary')].map(s=>s.textContent));
   const focusAct=document.activeElement?.closest?.('#view')?document.activeElement.dataset.act+'|'+(document.activeElement.dataset.id||'')+'|'+(document.activeElement.dataset.status||document.activeElement.dataset.value||''):null;
   if(ui.view==='gop-y')view.innerHTML=inbox.view();
+  else if(ui.view==='chat')view.innerHTML=chatAdmin.view();
   else if(ui.view==='giu-chan')view.innerHTML=`<div class="stats ret${stats.sections.retention.busy&&stats.sections.retention.data?' is-busy':''}">${retentionBody()}</div>`;
   else{
     const e=stats.byRange[stats.range],d=e?.data;
@@ -414,6 +423,7 @@ root.addEventListener('click',async ev=>{
     case'more':{const k=el.dataset.key;if(!(k in MORE))return;stats.more[k]+=MORE[k];renderView();return;}
     case'fbReload':inbox.reset();renderView();return;
   }
+  if(await chatAdmin.action(act,el.dataset))return;
   await inbox.action(act,el.dataset);
 });
 root.addEventListener('change',ev=>{
