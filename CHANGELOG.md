@@ -1,3 +1,8 @@
+# v1.0.4 — Bớt chỗ bấm là lỗi
+
+- Từ log 01/10: hết giờ/đủ khách thì nút thành "Làm nốt việc dở" hoặc "Khép ca" (sửa lệch 20 phút ở giờ đóng cửa); tạp hóa chưa mở ca thì nút mờ + "Mở ca"; quầy hết hàng ghi "hết hàng · nhập thêm"; thiếu nguyên liệu ghi ngay trên nút (thú cưng, tiệm bánh, homestay); "🚚 n/8 đơn đang về" và nút nhận thùng; đếm thùng chỉ ra dòng lệch; thiếu xu thì nút mờ "thiếu N xu"; trà sữa đổi món đúng ly, giá thử có khoảng cho phép; Trạm Lắng Nghe ghi tên từng bước và căn cứ; sự cố nhân viên đang mở thì dẫn tới đó.
+- Sửa lỗi báo giá sỉ ở tạp hóa (góp ý #49): mức giảm cao nhất bị từ chối thì khách rời đi thay vì kẹt đơn mãi. Không có "Có gì mới".
+
 # v1.0.3 — Góc hẹn hò
 
 - Hẹn hò trong game (live/ DatingFeature, v4 dating): ghế đá ở mọi nơi đi dạo và mục "Góc hẹn hò" đầu nhóm Quan hệ; chọn gặp bạn nam/nữ/ai cũng được, ghép người online chưa chặn nhau và chưa hẹn trong 24 giờ; buổi hẹn 5 phút: 3 thẻ làm quen (94 câu), "chọn món cho nhau", 1 phút chat, thả ❤️ hoặc 👋 riêng tư; cùng ❤️ thành "Đang tìm hiểu 💕" và kết bạn, +5 tinh thần (tối đa 15/ngày); không ai biết ai từ chối. Chỉ tài khoản mới hẹn hò được. Bảng mới (schema 7): live_dates, date_bonds. Bật bằng LIVE_DATING=1.
