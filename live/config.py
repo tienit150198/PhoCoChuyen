@@ -4,6 +4,7 @@
 |---|---|---|
 | `LIVE_HOST`, `LIVE_PORT` | 127.0.0.1, 8770 | where it listens (nginx proxies `/live` here) |
 | `LIVE_CHAT`, `LIVE_STREET`, `LIVE_DATING` | 0 | the switches of the three phases, sent to clients in `welcome.flags` |
+| `LIVE_WEDDING` | 0 | live wedding parties, the reminder and the weekly guest race (live/wedding.py) |
 | `LIVE_ORIGINS` | the local game | allowed `Origin` values, comma-separated (`https://phocochuyen.io.vn,...`) |
 | `LIVE_TRUST_PROXY` | 0 | 1 behind nginx: the client IP is `X-Real-IP` (set by nginx), else the socket peer |
 | `LIVE_MAX_CONN` | 5000 | open sockets at most; more are refused (503) |
@@ -40,6 +41,7 @@ class Config:
     chat: bool = False
     street: bool = False
     dating: bool = False
+    wedding: bool = False
     origins: frozenset = frozenset({'http://localhost:8765', 'http://127.0.0.1:8765'})
     trust_proxy: bool = False
     max_conn: int = 5000
@@ -64,10 +66,10 @@ class Config:
     flags_extra: dict = field(default_factory=dict)
 
     def flags(self) -> dict:
-        return dict(chat=self.chat, street=self.street, dating=self.dating, **self.flags_extra)
+        return dict(chat=self.chat, street=self.street, dating=self.dating, wedding=self.wedding, **self.flags_extra)
 
     def any_on(self) -> bool:
-        return self.chat or self.street or self.dating
+        return self.chat or self.street or self.dating or self.wedding
 
 
 def from_env(argv=None) -> Config:
@@ -80,7 +82,7 @@ def from_env(argv=None) -> Config:
     if url and not url.startswith(('postgresql://', 'postgres://')):
         raise SystemExit('[live] DATABASE_URL is set but is not a postgresql:// URL')
     origins = [o.strip().rstrip('/') for o in (os.environ.get('LIVE_ORIGINS') or '').split(',') if o.strip()]
-    cfg = Config(host=args.host, port=args.port, chat=_flag('LIVE_CHAT'), street=_flag('LIVE_STREET'), dating=_flag('LIVE_DATING'),
+    cfg = Config(host=args.host, port=args.port, chat=_flag('LIVE_CHAT'), street=_flag('LIVE_STREET'), dating=_flag('LIVE_DATING'), wedding=_flag('LIVE_WEDDING'),
                  trust_proxy=_flag('LIVE_TRUST_PROXY'), max_conn=_int('LIVE_MAX_CONN', 5000), per_player=_int('LIVE_PER_PLAYER', 5),
                  per_ip=_int('LIVE_PER_IP', 40), pool_max=max(1, _int('LIVE_PG_POOL', 8)), db_url=url, new_secs=float(_int('LIVE_NEW_SECS', 600)),
                  handshakes_per_ip=_int('LIVE_HANDSHAKES_PER_IP', 60),

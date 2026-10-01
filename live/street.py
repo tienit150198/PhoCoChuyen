@@ -263,11 +263,26 @@ class Table:
 
 class StreetFeature(Feature):
     name, flag = 'street', 'street'
+    PREFIXES = (PREFIX, 'wed:')        # rooms this machinery runs: strolls, and live/wedding.py's parties
 
     def __init__(self, app):
         super().__init__(app)
         self.invites: dict = {}        # id -> dict(frm, to, room, until)
         self.flushes = 0               # diff frames sent (stats)
+        self.leave_hooks: list = []    # fn(player): live/wedding.py forgets an overflow guest on walk_out
+
+    def enabled(self) -> bool:
+        """Moves, bubbles, emotes and tables also run the wedding parties (LIVE_WEDDING); walk_in needs LIVE_STREET."""
+        return bool(self.cfg.street or getattr(self.cfg, 'wedding', False))
+
+    def rooms(self) -> list:
+        return [r for p in self.PREFIXES for r in self.hub.rooms_with_prefix(p)]
+
+    def title_of(self, player, title) -> str | None:
+        """The name tag's title: this week's race title (live/wedding.py) first, else the one the client sent."""
+        wed = self.app.by_name.get('wedding')
+        won = wed.race_title(player.pid) if wed is not None and wed.enabled() else None
+        return won or (TITLES.get(title) if isinstance(title, str) else None)
 
     async def start(self):
         if self.app.chat:
@@ -291,8 +306,9 @@ class StreetFeature(Feature):
         return (room.data['place'], room) if room is not None else None
 
     # ---- rooms ----------------------------------------------------------------------------------------
-    def _new_room(self, rid: str, place: str):
-        room = self.hub.room(rid, cap=CAP if not GEO[place].private else 2, on_empty=self._empty)
+    def _new_room(self, rid: str, place: str, cap: int | None = None, on_empty=None):
+        """A room of this machinery. cap: None = the place's (20, or 2 for the café); 0 = no cap (a wedding counts its own)."""
+        room = self.hub.room(rid, cap=(CAP if not GEO[place].private else 2) if cap is None else cap, on_empty=on_empty or self._empty)
         now = time.time()
         room.data.update(place=place, people={}, tables=[Table(i, t) for i, t in enumerate(GEO[place].tables)], ev=[], mvi={},
                          h=None, last=0.0, hap=None, env=None, hidden_seen=set(),
@@ -434,6 +450,8 @@ class StreetFeature(Feature):
     # ---- handlers -----------------------------------------------------------------------------------------
     @on('walk_places', rate=(10, 10))
     async def walk_places(self, conn, f):
+        if not self.cfg.street:
+            raise LiveError('off', 'Tính năng này đang tắt.')
         out = []
         for place in PUBLIC:
             n = sum(len(r.data['people']) for r in self.hub.rooms_with_prefix(f'{PREFIX}{place}:'))
@@ -444,24 +462,28 @@ class StreetFeature(Feature):
 
     @on('walk_in', rate=(8, 60))
     async def walk_in(self, conn, f):
+        if not self.cfg.street:
+            raise LiveError('off', 'Tính năng này đang tắt.')
         place = f.get('place')
         if place not in PUBLIC:
             raise LiveError('bad', 'Không có chỗ này.')
         look, g = clean_look(f.get('look'), f.get('g'))
-        title = f.get('title') if isinstance(f.get('title'), str) and f.get('title') in TITLES else None
         p = conn.player
+        title = self.title_of(p, f.get('title'))
         await self._ensure_loaded(p)
         self._leave_player(p, 'other', keep=conn)
         room = self._pick(place, p)
         now = time.time()
         sx, sy = GEO[place].spots['spawn']
         at = GEO[place].clamp(sx + random.uniform(-150, 150), sy + random.uniform(-45, 45))
-        self._enter(room, conn, Walker(p, look, g, TITLES.get(title), at, now))
+        self._enter(room, conn, Walker(p, look, g, title, at, now))
         return self._snapshot(room, p, now)
 
     @on('walk_out', rate=(10, 60))
     async def walk_out(self, conn, f):
         self._leave_player(conn.player, 'out', keep=conn)
+        for fn in self.leave_hooks:
+            fn(conn.player)
         return dict(t='walk_left', why='out')
 
     @on('move', rate=(4, 1.0))
@@ -595,14 +617,14 @@ class StreetFeature(Feature):
             except DbError as e:
                 log('card code:', type(e).__name__)
         return dict(t='card', pid=w.pid, name=w.name, ti=w.title, lk=w.look, g=w.g, friend=friend, account=o.account,
-                    code=code, cafe=not GEO[room.data['place']].private)
+                    code=code, cafe=room.id.startswith(PREFIX) and not GEO[room.data['place']].private)
 
     @on('invite', rate=(4, 60))
     async def invite(self, conn, f):
         room, me = self._me(conn)
         p = conn.player
-        if GEO[room.data['place']].private:
-            raise LiveError('bad', 'Hai bạn đang ở quán rồi.')
+        if GEO[room.data['place']].private or not room.id.startswith(PREFIX):
+            raise LiveError('bad', 'Ở đây chưa rủ đi cà phê được.')
         w = self._other(room, p, f.get('pid'))
         for k in [k for k, v in self.invites.items() if v['frm'] == p.pid]:
             self.invites.pop(k, None)
@@ -705,7 +727,7 @@ class StreetFeature(Feature):
 
     # ---- every second ------------------------------------------------------------------------------------
     async def tick(self, now: float):
-        for room in self.hub.rooms_with_prefix(PREFIX):
+        for room in self.rooms():
             d = room.data
             for tb in d['tables']:
                 if tb.topic and now >= tb.until and tb.seated():
