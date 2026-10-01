@@ -43,6 +43,14 @@
     if(B.contentBase&&/^\w+$/.test(place)){const url=`${B.contentBase}&career=${place}`;B.place={url,sent:Date.now(),response:fetch(url,{credentials:'same-origin'})};B.place.response.catch(()=>{});}
     warmUp((r.headers.get('X-Game-Warm')||'').split(',').slice(0,12));
   },()=>{});
+  // Giữ chân (public/js/telemetry.js, loaded after the first frame): errors before it are kept here, and a page left
+  // while still loading says so in one beacon (the session cookie, if any, tells the server whose it was).
+  const T=B.tele={errs:[]},keep=x=>{if(!T.on&&T.errs.length<20)T.errs.push(x);};
+  addEventListener('error',e=>{const t=e.target;keep(t&&t!==window&&(t.src||t.href)?{k:'asset',m:String(t.src||t.href)}:{k:'js',m:String(e.message||'')});},true);
+  addEventListener('unhandledrejection',e=>keep({k:'promise',m:String(e.reason?.message||e.reason||'')}));
+  const gone=()=>{if(T.on||T.left)return;T.left=1;
+    try{navigator.sendBeacon('/api/beacon',JSON.stringify({leave:{v:'loading',s:Math.round(performance.now()/1000)},errors:T.errs.slice(0,10).map(x=>({k:x.k,m:x.m.split(/[?#]/)[0].slice(0,200),s:'loading',n:1}))}));}catch{/* old browser */}};
+  d.addEventListener('visibilitychange',()=>{if(d.visibilityState==='hidden')gone();});addEventListener('pagehide',gone);
   if(store('mnl.lang')==='en'){
     try{B.i18n=fetch(asset('/i18n/en.json'),{credentials:'same-origin'}).then(r=>r.ok?r.json():null).catch(()=>null);}catch{/* i18n.js fetches */}
   }

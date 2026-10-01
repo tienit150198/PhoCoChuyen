@@ -48,6 +48,7 @@ import time
 
 from . import archive as ar
 from . import db as dbm
+from . import retention as rt
 from . import wedding_content as W
 from .engine import GameError, migrate_state, validate_state, public_state
 
@@ -1046,6 +1047,8 @@ def resolve(store, couple_id: int, wedding_id: int) -> bool:
                       (json.dumps(res, ensure_ascii=False), now(), w['id'])).rowcount != 1:
             return False
         db.execute("UPDATE couples SET status='married',married_at=? WHERE id=? AND status='engaged'", (now(), c['id']))
+        for side in ('a', 'b'):   # Giữ chân (game/retention.py): first marriage of each save
+            rt.mark(db, c[side], 'married')
         _insert_effects(db, effects)
         if w['announce_a'] and w['announce_b']:
             _post_news(db, 'wedding', f'wedding:{w["id"]}', W.NEWS_TEXT.format(a=name_a, b=name_b, tables=plan['tables'], venue=res['venue']),
@@ -1448,6 +1451,8 @@ def _respond(store, sid: str, display: str, d: dict) -> dict:
             db.execute('INSERT INTO marriage_bonds(sid,couple) VALUES(?,?)', (sid, cid))
         except dbm.IntegrityError:
             raise MarriageError('Một trong hai bạn vừa nhận lời người khác rồi.', 'taken', 409) from None
+        for who in (other, sid):   # Giữ chân (game/retention.py): first engagement of each save
+            rt.mark(db, who, 'engaged')
         db.execute("UPDATE marriage_rings SET status='given' WHERE id=?", (p['ring'],))
         # Every other proposal from or to either of us ends here; their rings go back to the box.
         for q in _rows(db, "SELECT id,ring FROM proposals WHERE status='pending' AND (from_sid IN (?,?) OR to_sid IN (?,?))", (sid, other, sid, other)):

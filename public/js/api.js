@@ -60,7 +60,14 @@ export class GameAPI extends EventTarget {
     try{
       if(early||!(retry??!write))return await this.fetchJSON(url,init,timeout,early);
       return await this.retrying(()=>this.fetchJSON(url,init,timeout));
-    }finally{if(write)this.writing--;this.net(-1);}
+    }catch(error){this.failed(url,error);throw error;}
+    finally{if(write)this.writing--;this.net(-1);}
+  }
+  /** A call that failed for good (after its retries): an 'apifail' event with the status and the path only
+   * (public/js/telemetry.js counts it; no query string, no body). */
+  failed(url,error){
+    let route=String(url||'');try{route=new URL(route,globalThis.location?.href||'http://x/').pathname;}catch{route=route.split('?')[0];}
+    this.dispatchEvent(new CustomEvent('apifail',{detail:{route,status:error?.status||0}}));
   }
   async retrying(send){
     const t0=Date.now();let held=false;
@@ -175,6 +182,7 @@ export class GameAPI extends EventTarget {
         return data.result;
       }catch(error){
         if(transient(error)){this.connected=false;this.dispatchEvent(new Event('offline'));error.message='Mất kết nối máy chủ. Tiến trình đã xác nhận vẫn được lưu. Khởi động lại server rồi thử lại nhé.';}
+        else this.dispatchEvent(new CustomEvent('rejected',{detail:{action,career,status:error.status,code:error.data?.code||'',message:error.message}}));  // its toast text (telemetry.js)
         throw error;
       }finally{this.dispatchEvent(new CustomEvent('busy',{detail:false}));}
     };

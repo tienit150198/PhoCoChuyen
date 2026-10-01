@@ -51,6 +51,11 @@ How players are protected
   `stat_play` (one row per save per day, kept by a trigger on receipts: one receipt = one game
   command; see "play time" below) and `stat_births`. Finished days are summed once per worker.
   backfill_play() seeds the last days from receipts, once, by hand (estimates: stat_play_est).
+  Per-player rows are kept PLAY_KEEP_DAYS (60); upkeep() first sums each older day into
+  stat_play_daily (kept), then deletes it.
+* Giữ chân (GET /api/admin/stats/section?name=retention[&format=csv]): game/admin_retention.py,
+  from the tables of game/retention.py. upkeep() (this job and the server's housekeeping) also
+  runs retention.maintain(): rollups and pruning of those tables.
 
 Is the snapshot current? (`snapshot` in the saves/system sections, `computed_at`/`age`/
 `old` on the summary.) The job writes a heartbeat {pid, at, phase} into its own lock file.
@@ -100,7 +105,7 @@ SUMMARY_EVERY = 60.0       # the job's copy of the first screen (served when a l
 IDLE = 600.0               # the job stops this long after the last admin request
 SAMPLE = max(100, int(os.environ.get('ADMIN_STATS_SAMPLE', '400') or 400))
 KEEP_DAYS = 120            # stat_active history kept
-PLAY_KEEP_DAYS = 400       # stat_play history kept
+PLAY_KEEP_DAYS = max(31, int(os.environ.get('ADMIN_STATS_PLAY_DAYS', '60') or 60))  # stat_play rows kept (older days: stat_play_daily only)
 COHORT_DAYS = 30           # retention looks at players who started in the last 30 days (or the range, if longer)
 TZ = '+7 hours'
 VN = datetime.timezone(datetime.timedelta(hours=7))
@@ -154,6 +159,8 @@ CREATE TABLE IF NOT EXISTS stat_play (day TEXT NOT NULL, sid TEXT NOT NULL, secs
   sess_at REAL NOT NULL, lens TEXT NOT NULL DEFAULT '', PRIMARY KEY(day, sid)) WITHOUT ROWID;
 CREATE INDEX IF NOT EXISTS stat_play_sid ON stat_play(sid);
 CREATE TABLE IF NOT EXISTS stat_play_est (day TEXT PRIMARY KEY, saves INTEGER NOT NULL, capped INTEGER NOT NULL, at REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS stat_play_daily (day TEXT PRIMARY KEY, players INTEGER NOT NULL, secs INTEGER NOT NULL, sessions INTEGER NOT NULL,
+  cmds INTEGER NOT NULL, data TEXT NOT NULL, at REAL NOT NULL);
 CREATE TRIGGER IF NOT EXISTS stat_play_cmd AFTER INSERT ON receipts BEGIN
   INSERT INTO stat_play(day, sid, secs, sessions, cmds, first_at, last_at, hours, sess_at, lens)
   VALUES (date('now', '{TZ}'), NEW.sid, {PLAY_IDLE_TAIL}, 1, 1, {_NOW}, {_NOW},
@@ -1573,29 +1580,7 @@ class _Job:
         self.summary_at = time.time()
 
     def purge(self) -> None:
-        """Drop stat_active days older than KEEP_DAYS, one day per short write, and stat_play days
-        older than PLAY_KEEP_DAYS, PURGE_ROWS rows per short write."""
-        today = datetime.datetime.now(VN).date()
-        cut = (today - datetime.timedelta(days=KEEP_DAYS)).isoformat()
-        with _read(self.store, 1000) as db:
-            days = [r[0] for r in db.execute('SELECT DISTINCT day FROM stat_active WHERE day < ? ORDER BY day LIMIT 30', (cut,))]
-        for day in days:
-            with self.store.connect() as db:
-                db.execute('DELETE FROM stat_active WHERE day = ?', (day,))
-            time.sleep(0.05)
-        cut = (today - datetime.timedelta(days=PLAY_KEEP_DAYS)).isoformat()
-        with _read(self.store, 1000) as db:
-            days = [r[0] for r in db.execute('SELECT DISTINCT day FROM stat_play WHERE day < ? ORDER BY day LIMIT 30', (cut,))]
-        for day in days:
-            while True:
-                with self.store.connect() as db:
-                    n = db.execute('DELETE FROM stat_play WHERE day = ? AND sid IN (SELECT sid FROM stat_play WHERE day = ? ORDER BY sid LIMIT ?)',
-                                   (day, day, PURGE_ROWS)).rowcount
-                time.sleep(0.05)
-                if n < PURGE_ROWS:
-                    break
-        with self.store.connect() as db:
-            db.execute('DELETE FROM stat_play_est WHERE day < ?', (cut,))
+        upkeep(self.store)
         self.purged_at = time.time()
 
     def write(self) -> None:
@@ -1662,6 +1647,65 @@ class _Job:
 
 PURGE_EVERY = 6 * 3600
 PURGE_ROWS = 2000          # stat_play rows per delete
+
+
+def _sparse(hist) -> dict:
+    return {str(i): int(n) for i, n in enumerate(hist) if n}
+
+
+def play_rollup(store, day: str) -> bool:
+    """One day of stat_play summed into stat_play_daily (players, seconds, sessions, commands and the
+    histograms of play_day, sparse), once; True when the day has its row (written now or before)."""
+    with _read(store, 10000, 10000) as db:
+        if db.execute('SELECT 1 FROM stat_play_daily WHERE day = ?', (day,)).fetchone():
+            return True
+        d = play_day(db, day)
+    data = json.dumps(dict(per_player=_sparse(d['per_player']), per_session=_sparse(d['per_session']), hours=d['hours'],
+                           first_at=d['first_at'], new=dict(d['new'], hist=_sparse(d['new']['hist'])), buckets=PLAY_BUCKETS),
+                      separators=(',', ':'))
+    with store.connect() as db:
+        db.execute('INSERT OR IGNORE INTO stat_play_daily(day, players, secs, sessions, cmds, data, at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                   (day, d['players'], d['secs'], d['sessions'], d['cmds'], data, time.time()))
+    return True
+
+
+def upkeep(store, now: float | None = None, force: bool = False) -> dict:
+    """Bounded stat tables, in short writes: stat_active days older than KEEP_DAYS (one day per
+    write); stat_play days older than PLAY_KEEP_DAYS, each first summed into stat_play_daily (kept),
+    PURGE_ROWS rows per write; then the Giữ chân tables (game/retention.py maintain: rollups and
+    pruning). Never at the peak hours (unless `force`). Run by the admin job and by the server's
+    housekeeping."""
+    from . import retention
+    out = dict(active=0, play=0)
+    if not force and retention._peak(time.time() if now is None else now):
+        out['skipped'] = 'peak'
+        return out
+    today = datetime.datetime.now(VN).date()
+    cut = (today - datetime.timedelta(days=KEEP_DAYS)).isoformat()
+    with _read(store, 1000) as db:
+        days = [r[0] for r in db.execute('SELECT DISTINCT day FROM stat_active WHERE day < ? ORDER BY day LIMIT 30', (cut,))]
+    for day in days:
+        with store.connect() as db:
+            out['active'] += db.execute('DELETE FROM stat_active WHERE day = ?', (day,)).rowcount
+        time.sleep(0.05)
+    cut = (today - datetime.timedelta(days=PLAY_KEEP_DAYS)).isoformat()
+    with _read(store, 1000) as db:
+        days = [r[0] for r in db.execute('SELECT DISTINCT day FROM stat_play WHERE day < ? ORDER BY day LIMIT 30', (cut,))]
+    for day in days:
+        if not play_rollup(store, day):
+            continue
+        while True:
+            with store.connect() as db:
+                n = db.execute('DELETE FROM stat_play WHERE day = ? AND sid IN (SELECT sid FROM stat_play WHERE day = ? ORDER BY sid LIMIT ?)',
+                               (day, day, PURGE_ROWS)).rowcount
+            out['play'] += n
+            time.sleep(0.05)
+            if n < PURGE_ROWS:
+                break
+    with store.connect() as db:
+        db.execute('DELETE FROM stat_play_est WHERE day < ?', (cut,))
+    out['retention'] = retention.maintain(store, now, force=force)
+    return out
 _jobs: dict[str, _Job] = {}
 _jobs_lock = threading.Lock()
 
@@ -1916,7 +1960,7 @@ def get_summary(store, value=None, fresh: bool = False) -> dict:
         return dict(pending=True, retry_ms=3000, range=days)
 
 
-SECTIONS = ('saves', 'system', 'live', 'playtime')
+SECTIONS = ('saves', 'system', 'live', 'playtime', 'retention')
 
 
 def get_live(store) -> dict:
@@ -1928,19 +1972,24 @@ def get_live(store) -> dict:
 
 
 def get_section(store, name, fresh: bool = False) -> dict:
-    """GET /api/admin/stats/section?name=saves|system|live|playtime: the job's result file
-    (instant), the live counters or the play time (small stat tables, cached)."""
+    """GET /api/admin/stats/section?name=saves|system|live|playtime|retention: the job's result file
+    (instant), the live counters, the play time or "Giữ chân" (small stat tables, cached)."""
     if name not in SECTIONS:
         raise ValueError('section')
     if name == 'live':
         return get_live(store)
     if name == 'playtime':
         return get_playtime(store, fresh)
+    if name == 'retention':
+        from . import admin_retention
+        return admin_retention.get(store, fresh)
     wake(store, fresh)
     return saves_section(store) if name == 'saves' else system_section(store)
 
 
 def clear_cache() -> None:
+    from . import admin_retention
+    admin_retention.clear_cache()
     with _cache_lock:
         _cache.clear()
     with _play_lock:
