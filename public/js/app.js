@@ -27,6 +27,7 @@ import {homeView as homeV4,futureView as futureV4,journeyBoot,journeyAction,jour
 import {procedureSubmit,procedureAction} from './v4/procedure.js';
 import {abandonGate,abandonAfter,abandonSummary} from './v4/abandon.js';
 import {lifeSummary} from './v4/life.js';
+import {lunchStrip,eveningBody,needsAction} from './v4/needs.js';  // 🍚 No bụng · 😴 Tỉnh táo: lunch, the evening
 import {boardView,boardAction,boardSubmit,boardBoot,boardUnread} from './v4/board.js';
 import {lazy,skeleton,idle as whenIdle,prefetch} from './lazy.js';
 /* Features that load on first use (lazy.js), not with the page: a sheet's code comes when it first opens
@@ -157,7 +158,7 @@ function toast(message,kind=false){if(!message)return;const box=$('#toasts'),cls
   while(box.children.length>1)box.firstElementChild.remove();}
 function download(data,name,type='application/json'){const blob=new Blob([data],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
 async function cmd(action,payload={},options={}){
-  try{const r=await api.command(action,payload,options.career||career());if(!options.quiet)toast(r.message,r.correct===false?'error':r.celebrate?'good':false);if(r.celebrate){sound.success();world.celebrate();}else sound.click();for(const note of new Set(r.effects||[]))toast(note);if(r.clock)setTimeout(()=>toast(r.clock.text),1400);return r;}
+  try{const r=await api.command(action,payload,options.career||career());if(!options.quiet)toast(r.message,r.correct===false?'error':r.celebrate?'good':false);if(r.celebrate){sound.success();world.celebrate();}else sound.click();for(const note of new Set(r.effects||[]))toast(note);if(r.clock)setTimeout(()=>toast(r.clock.text),1400);if(r.needs_say)setTimeout(()=>world.say(r.needs_say),700);return r;}
   catch(error){if(error.quiet)return null;toast(error.status?error.message:'Mất kết nối. Việc đã xác nhận vẫn được giữ, thử lại sau một chút nhé.',true);sound.error();return null;}  // quiet: a tap the save moved under twice (api.js), the screen already shows why
 }
 function closeSheet(){if($('#sheet').open)$('#sheet').close();ui.view=null;ui.ai={};world.paused=ui.paused;}
@@ -353,6 +354,8 @@ function statusView(){
     w?tile('',esc(w.emoji),esc(w.name),mode?esc(mode.name):'Hôm nay'):'',
     J?tile('money','👛',J.debt?`−${shortMoney(J.debt)}`:shortMoney(J.wallet),'Ví của bạn'):'',
     L?.enabled?tile('stView',esc(L.mood?.emoji||'🙂'),`${L.spirit|0}/100`,'Tinh thần',{view:'life'},L.pending?'!':0):'',
+    api.state.needs?.enabled?tile('stView','🍚',`${api.state.needs.full.value|0}/100`,'No bụng',{view:'life'}):'',
+    api.state.needs?.enabled?tile('stView','😴',`${api.state.needs.wake.value|0}/100`,'Tỉnh táo',{view:'life'}):'',
     tile('nhom','💬','','Nhóm phố',{},boardUnread(api)),
     tile('social',icon('globe',18),'','Phố nghề',{},api.social?.unread||0),
     tile('settings',icon('settings',18),'','Cài đặt'),
@@ -368,7 +371,7 @@ function taskCards(c){
   const first=c.metrics?.served>0?'':' gd-pulse';
   let main;
   if(needsJob())main=`<article class="note-card calm-card">${button('Xin việc '+icon('chevron',13),'jobapp',{},'primary big grow gd-pulse')}${bell}</article>`;
-  else if(!c.open)main=`<article class="note-card calm-card">${button(icon('sun',16)+' Chuẩn bị ngày mới'+(c.day_clock?` · mở ${esc(c.day_clock.open_time)}`:''),'prepare',{},'primary big grow'+first)}${c.shift_summary?`<button type="button" class="icon-btn hud-sum" data-action="summary" aria-label="Xem ngày vừa qua">${icon('clipboard',18)}</button>`:''}${bell}</article>`;
+  else if(!c.open)main=`<article class="note-card calm-card">${button(icon('sun',16)+' Chuẩn bị ngày mới'+(c.day_clock?` · mở ${esc(c.day_clock.open_time)}`:''),'prepare',{},'primary big grow'+first)}${eveningDue()?'<button type="button" class="icon-btn hud-sum nd-moon-btn" data-action="evening" aria-label="Buổi tối: ăn gì, ngủ mấy giờ"><span aria-hidden="true">🌙</span></button>':''}${c.shift_summary?`<button type="button" class="icon-btn hud-sum" data-action="summary" aria-label="Xem ngày vừa qua">${icon('clipboard',18)}</button>`:''}${bell}</article>`;
   // The one line is the work screen's "Bước tiếp theo" (career modules' next() = guide.stepLine of the next
   // step, plain text); "Làm tiếp" opens the work screen, whose bottom button (stepCta) does that step.
   else if(t)main=`<article class="note-card calm-card task-card">${closingNote(c.day_clock,true,moreGate(c))}<button type="button" class="calm-what" data-action="job" data-task="${esc(t.id)}" title="${esc(t.title)}"><span class="npc-mini">${portrait(npc(t.npc),34)}</span><b>${esc(plainText(taskNext(t)))}</b></button>${bell}${button('Làm tiếp '+icon('arrow',14),'job',{task:t.id},'primary'+first)}</article>`;
@@ -380,6 +383,9 @@ function taskCards(c){
   else main=`<article class="note-card calm-card">${commandButton(desk?'Nhận thêm một việc':esc(W.more_btn),'more_work',{},'primary big grow')}<button type="button" class="icon-btn hud-sum" data-action="end" aria-label="Khép ca hôm nay">${icon('exit',18)}</button>${bell}</article>`;
   // A career with its own home card (the air crew's boarding pass) draws it; hiring keeps the shared "Xin việc".
   const own=needsJob()?'':careerUI(career())?.hudCard?.(c,t,careerContext(env()),{bell,first,wrap:wrapUp(c),note:closingNote(c.day_clock,!!t,moreGate(c))});if(own)main=own;
+  // 🍱 Lunch (v4/needs.js): a strip at the top of the card, from 11:30 on the shop clock; one tap, never a modal.
+  const lunch=c.open&&!needsJob()?lunchStrip(api.state.needs,api.state.journey?.wallet|0):'';
+  if(lunch)main=main.replace(/^<article class="/,'<article class="nd-has-lunch ').replace(/^(<article[^>]*>)/,'$1'+lunch);
   // Desktop has a side column for the list; phone and tablet keep it behind the bell (status sheet).
   const list=notes.length&&layout()==='desktop'?`<article class="note-card hud-notes"><span class="eyebrow">Cần để ý · ${notes.length}</span>${noteRows(notes)}</article>`:'';
   return main+list;
@@ -472,6 +478,7 @@ function renderSheet(preserve=true){
     case'nhom':dialog.classList.add('medium','v4-sheet','bd-sheet');html=boardView(env());break;
     case'rank':dialog.classList.add('medium','v4-sheet','lb-sheet');html=lazyView(L.rank,m=>m.leaderboardView(env()));break;
     case'summary':dialog.classList.add('narrow','cozy-summary');html=summaryView();break;
+    case'evening':dialog.classList.add('narrow','nd-sheet');html=eveningView();break;  // 🌙 Buổi tối (v4/needs.js)
     case'help':dialog.classList.add('medium');html=helpView();break;
     case'status':dialog.classList.add('narrow','status-sheet');html=statusView();break;
     case'money':dialog.classList.add('medium','v4-sheet','wl-sheet');html=wealthView();break;
@@ -954,7 +961,8 @@ function careerCloseSummary(){
 }
 /** End of day: headline, three big numbers, what needs you, then the details. One primary CTA in the foot. */
 function summaryView(){
-  const c=room(),s=c.shift_summary,m=meta(),next=c.open?button('Về quầy','close',{},'primary big'):button(icon('play',15)+' Bắt đầu ngày '+dayNo(c),'start',{},'primary big');
+  const c=room(),s=c.shift_summary,m=meta(),eve=!c.open&&eveningDue();
+  const next=c.open?button('Về quầy','close',{},'primary big'):eve?button('🌙 Ăn tối, đi ngủ','evening',{},'primary big'):button(icon('play',15)+' Bắt đầu ngày '+dayNo(c),'start',{},'primary big');
   if(!s)return header('Mình khép ca nhé?','','TỔNG KẾT NGÀY')+`<div class="sheet-body">${empty('Chưa có ngày nào khép lại','','sun')}</div>`+footer('',next);
   const rv=s.reviews||{},job=s.job||null,ops=s.operations,net=Number(s.net)||0,own=careerUI(career())?.daySummary?.(s,careerContext(env()))||null;
   const stat=(cls,big,label,sub='')=>`<div class="sum-stat ${cls}"><strong>${big}</strong><small>${label}</small>${sub?`<em${sub.startsWith('<span')?' class="ck-chips"':''}>${sub}</em>`:''}</div>`;
@@ -974,6 +982,14 @@ function summaryView(){
   const details=`<details class="sum-more space-top"><summary>Chi tiết cả ngày</summary>${experienceSummary(c)}<div class="kv"><div class="kv-row"><span>Xu thu vào</span><b>+${fmt(s.income)}</b></div><div class="kv-row"><span>Xu đã chi trong ca</span><b>−${fmt(s.cost)}</b></div><div class="kv-row"><span>Chuyện đã xử lý</span><b>${s.events}</b></div></div></details>`;
   // A career with its own day page (the air crew's flight log) replaces the headline and the big numbers; the notes stay shared.
   return header(own?.title||`Ngày ${s.journey?.life_day??s.day} đã khép lại`,esc(c.life.shop_name||m.place),own?.eyebrow||'TỔNG KẾT NGÀY')+`<div class="sheet-body summary-v6">${own?own.top:`<div class="sum-hero"><span class="sum-sun" aria-hidden="true">${icon('sun',34)}</span><p>${esc(s.headline||'Một ngày nữa đã có chuyện để nhớ.')}</p></div>${stats}${clockSummary(s)}${pnlFold(s)}`}${notes.length?`<div class="stack space-top">${notes.join('')}</div>`:''}${careerCloseSummary()}${accountNudge(env())}${details}</div>`+footer('',button('Đọc lời nhắn','phone',{},'ghost')+next);
+}
+/** 🌙 The evening between closing the day and the next morning (game/needs.py): what to eat, when to sleep. */
+const eveningDue=()=>Boolean(api.state?.needs?.evening&&!api.state.needs.evening.chosen);
+function eveningView(){
+  const N=api.state.needs,E=N?.evening,c=room();
+  const start=c&&!c.open?button(icon('sun',15)+' Bắt đầu ngày '+dayNo(c),'start',{},'primary big'):button('Về quầy','close',{},'primary big');
+  if(!E)return header('Buổi tối','','BUỔI TỐI')+`<div class="sheet-body">${empty('Chưa tới buổi tối','Khép ca xong rồi chọn bữa tối và giờ đi ngủ nhé.','sun')}</div>`+footer('',start);
+  return header(E.chosen?'Một ngày đã xong':'Tối nay thế nào?',E.finish?`Khép ca lúc ${esc(E.finish)} · Ngày sống ${E.life_day-1}`:'','BUỔI TỐI')+eveningBody(N,ui.eve,{start,wallet:api.state.journey?.wallet|0});
 }
 /** The day's profit/loss card (v4/pnl.js) folded to one line, "✓ Lãi/lỗ hôm nay: +N xu": the numbers above already
  * say how the day went; the full statement is one tap away. */
@@ -1111,6 +1127,7 @@ async function handleAction(action,data,el){
     case'resume':setPaused(false);break;
     case'sound':await cmd('settings',{sound:!api.state.settings.sound},{quiet:true});break;
     case'people':case'phone':case'queue':case'decor':case'settings':case'album':case'summary':case'event':case'status':openSheet(action);break;
+    case'evening':ui.eve=null;openSheet('evening');break;  // 🌙 v4/needs.js
     case'stPause':closeSheet();setPaused(!ui.paused);break;
     case'stView':openSheet('home',{jrView:data.view});break;
     case'money':openSheet('money');loadJoint(env());break;
@@ -1173,6 +1190,7 @@ async function handleAction(action,data,el){
       if(action==='house'){await (await import('./v4/house.js')).houseAction(action,data,el,env());break;}  // 🏠 Nhà của bạn: lazy
       if(action==='fair'){await (await import('./v4/fair.js')).fairAction(action,data,el,env());break;}  // 🏮 Hội chợ dân gian: lazy
       if(L.people.m&&await L.people.m.closenessAction(action,data,el,env()))break;
+      if(await needsAction(action,data,el,env()))break;  // 🍚😴 nd…
       if(await journeyAction(action,data,el,env()))break;
       if((L.inc.m||action==='incident'||action==='incLog')&&await (await viaLazy(L.inc,el)).incidentAction(action,data,el,env()))break;
       if(guideAction(action,data,el))break;
