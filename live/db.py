@@ -97,7 +97,7 @@ class PgDB(_Ops):
         try:
             while self.idle:
                 conn = self.idle.pop()
-                if not conn.closed and not conn.broken:
+                if not conn.closed and not getattr(conn, 'broken', False):
                     return conn
                 self.open -= 1
             conn = await self._connect()
@@ -109,7 +109,7 @@ class PgDB(_Ops):
 
     def _give(self, conn) -> None:
         """Back to the pool only when libpq says it is idle (no transaction, nothing running); else closed."""
-        if not conn.closed and not conn.broken and conn.info.transaction_status == psycopg.pq.TransactionStatus.IDLE:
+        if not conn.closed and not getattr(conn, 'broken', False) and conn.info.transaction_status == psycopg.pq.TransactionStatus.IDLE:
             self.idle.append(conn)
         else:
             self.open -= 1
