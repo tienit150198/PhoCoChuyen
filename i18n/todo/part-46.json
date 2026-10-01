@@ -1,0 +1,1802 @@
+[
+ {
+  "vi": "🚰 Đổ bỏ",
+  "en": ""
+ },
+ {
+  "vi": "Đổ bỏ chè đang có trong bình?",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Thùng đá",
+  "en": ""
+ },
+ {
+  "vi": "🔨 Đập 1 cây đá",
+  "en": ""
+ },
+ {
+  "vi": "🥛 Cốc & chậu",
+  "en": ""
+ },
+ {
+  "vi": "đục ngầu",
+  "en": ""
+ },
+ {
+  "vi": "hơi đục",
+  "en": ""
+ },
+ {
+  "vi": "còn trong",
+  "en": ""
+ },
+ {
+  "vi": "🧽 Rửa cốc",
+  "en": ""
+ },
+ {
+  "vi": "🪣 Thay nước",
+  "en": ""
+ },
+ {
+  "vi": "🪑 Ghế · ô",
+  "en": ""
+ },
+ {
+  "vi": "Đang dẹp",
+  "en": ""
+ },
+ {
+  "vi": "đang dựng",
+  "en": ""
+ },
+ {
+  "vi": "🪑 Bày lại quán",
+  "en": ""
+ },
+ {
+  "vi": "Quầy trà",
+  "en": ""
+ },
+ {
+  "vi": "🌳 Chọn chỗ bày quán",
+  "en": ""
+ },
+ {
+  "vi": "🪑 Bày ghế",
+  "en": ""
+ },
+ {
+  "vi": "⛱️ Gấp ô",
+  "en": ""
+ },
+ {
+  "vi": "⛱️ Dựng ô",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Thùng đá đã đặt",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Đặt thùng đá chỗ râm",
+  "en": ""
+ },
+ {
+  "vi": "bà Lựu dặn chỗ khác",
+  "en": ""
+ },
+ {
+  "vi": "Bày ghế nhựa",
+  "en": ""
+ },
+ {
+  "vi": "Dựng ô che nắng",
+  "en": ""
+ },
+ {
+  "vi": "Đặt thùng đá chỗ râm",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Đặt thùng đá",
+  "en": ""
+ },
+ {
+  "vi": "Pha một bình chè đậm vừa",
+  "en": ""
+ },
+ {
+  "vi": "chè nhạt: pha lại",
+  "en": ""
+ },
+ {
+  "vi": "🍵 Pha bình chè (2 nắm)",
+  "en": ""
+ },
+ {
+  "vi": "Đập một cây đá vào thùng",
+  "en": ""
+ },
+ {
+  "vi": "🔨 Đập một cây đá",
+  "en": ""
+ },
+ {
+  "vi": "đá cây",
+  "en": ""
+ },
+ {
+  "vi": "👂 Hỏi khách gọi gì",
+  "en": ""
+ },
+ {
+  "vi": "trẻ con hỏi mua",
+  "en": ""
+ },
+ {
+  "vi": "💵 Tiền mặt",
+  "en": ""
+ },
+ {
+  "vi": "người ngồi",
+  "en": ""
+ },
+ {
+  "vi": "1 người",
+  "en": ""
+ },
+ {
+  "vi": "sấu",
+  "en": ""
+ },
+ {
+  "vi": "🥤 Rót trà",
+  "en": ""
+ },
+ {
+  "vi": "🌻 Đồ ăn vặt",
+  "en": ""
+ },
+ {
+  "vi": "🙅 Đã từ chối bán thuốc",
+  "en": ""
+ },
+ {
+  "vi": "🙅 Không bán thuốc lá cho trẻ con",
+  "en": ""
+ },
+ {
+  "vi": "Hóa đơn:",
+  "en": ""
+ },
+ {
+  "vi": ". Ghi đúng số vào sổ, bà Lựu dò sổ mỗi tối.",
+  "en": ""
+ },
+ {
+  "vi": "Số tiền ghi sổ (xu)",
+  "en": ""
+ },
+ {
+  "vi": "✍️ Ghi vào sổ",
+  "en": ""
+ },
+ {
+  "vi": "Dọn hàng xong mới bán",
+  "en": ""
+ },
+ {
+  "vi": "Bày lại quán",
+  "en": ""
+ },
+ {
+  "vi": "🪑 Bày lại ghế, dựng ô",
+  "en": ""
+ },
+ {
+  "vi": "🍵 Chè nhạt/ôi: pha bình mới",
+  "en": ""
+ },
+ {
+  "vi": "🍵 Hết chè: pha bình mới",
+  "en": ""
+ },
+ {
+  "vi": "🪣 Nước chậu đục: thay nước",
+  "en": ""
+ },
+ {
+  "vi": "🧽 Hết cốc sạch: rửa cốc",
+  "en": ""
+ },
+ {
+  "vi": "🔨 Hết đá: đập thêm một cây",
+  "en": ""
+ },
+ {
+  "vi": "Trẻ con không được mua thuốc lá",
+  "en": ""
+ },
+ {
+  "vi": "↩︎ Cất lại thuốc lá",
+  "en": ""
+ },
+ {
+  "vi": "Nói khéo: không bán thuốc cho trẻ con",
+  "en": ""
+ },
+ {
+  "vi": "🙅 Từ chối bán thuốc lá",
+  "en": ""
+ },
+ {
+  "vi": "📒 Sổ của chú Tường",
+  "en": ""
+ },
+ {
+  "vi": "Chú hỏi hết bao nhiêu. Mở sổ, đọc từng dòng cho chú nghe.",
+  "en": ""
+ },
+ {
+  "vi": "xu. Tự tính lại theo giá quán rồi chọn:",
+  "en": ""
+ },
+ {
+  "vi": "📒 Cho chú xem dòng sổ",
+  "en": ""
+ },
+ {
+  "vi": "✏️ Ghi nhầm: sửa lại cho đúng",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Thôi, bỏ dòng này cho chú",
+  "en": ""
+ },
+ {
+  "vi": "😤 Cãi: sổ ghi thế thì trả thế",
+  "en": ""
+ },
+ {
+  "vi": "Sổ trắng.",
+  "en": ""
+ },
+ {
+  "vi": "Dẹp ghế, gấp ô trước khi xe tới",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Dẹp quán ngay!",
+  "en": ""
+ },
+ {
+  "vi": "Quyết chuyện ở quán",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chọn cách xử lý chuyện ở quán",
+  "en": ""
+ },
+ {
+  "vi": "chọn chỗ, bày ghế, đặt thùng đá",
+  "en": ""
+ },
+ {
+  "vi": "Đọc sổ cho chú Tường",
+  "en": ""
+ },
+ {
+  "vi": "📒 Mở sổ, đọc cho chú",
+  "en": ""
+ },
+ {
+  "vi": "Xem lại dòng chú hỏi",
+  "en": ""
+ },
+ {
+  "vi": "📒 Xem lại dòng chú hỏi",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Xong sổ",
+  "en": ""
+ },
+ {
+  "vi": "✍️ Điền số tiền vào sổ",
+  "en": ""
+ },
+ {
+  "vi": "✍️ GHI VÀO SỔ",
+  "en": ""
+ },
+ {
+  "vi": "🥤 ĐƯA TRÀ · GHI SỔ",
+  "en": ""
+ },
+ {
+  "vi": "🥤 ĐƯA TRÀ · TÍNH TIỀN",
+  "en": ""
+ },
+ {
+  "vi": "rót trà cho khách trước",
+  "en": ""
+ },
+ {
+  "vi": "Sổ trắng, chưa ai nợ.",
+  "en": ""
+ },
+ {
+  "vi": "✓ Có rồi",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Dặn anh Tuấn xe đá (4 xu/cây, giao mỗi sáng)",
+  "en": ""
+ },
+ {
+  "vi": "cây/sáng",
+  "en": ""
+ },
+ {
+  "vi": "· có biển",
+  "en": ""
+ },
+ {
+  "vi": "Dẹp quán trước khi xe tới",
+  "en": ""
+ },
+ {
+  "vi": "Thay nước chậu rửa",
+  "en": ""
+ },
+ {
+  "vi": "🪣 Thay nước chậu",
+  "en": ""
+ },
+ {
+  "vi": "Rửa cốc bẩn",
+  "en": ""
+ },
+ {
+  "vi": "Đập thêm đá",
+  "en": ""
+ },
+ {
+  "vi": "Pha bình chè mới",
+  "en": ""
+ },
+ {
+  "vi": "🍵 Pha bình chè mới",
+  "en": ""
+ },
+ {
+  "vi": "Dọn hàng, pha chè, đập đá",
+  "en": ""
+ },
+ {
+  "vi": "Đọc sổ, thu tiền",
+  "en": ""
+ },
+ {
+  "vi": "Rót trà, đưa cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Việc dọn hàng",
+  "en": ""
+ },
+ {
+  "vi": "💵 Chú Tường trả tiền",
+  "en": ""
+ },
+ {
+  "vi": "Điền số tiền ghi sổ trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chè, chanh, hướng dương, thuốc lẻ",
+  "en": ""
+ },
+ {
+  "vi": "Chọn câu trả lời đầu tiên cho khách",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Chờ kết quả một nhịp",
+  "en": ""
+ },
+ {
+  "vi": "Đếm két: chạm từng tờ rồi chốt số",
+  "en": ""
+ },
+ {
+  "vi": "Soát từng dòng: chạm dòng sai, chọn quy định nó trái",
+  "en": ""
+ },
+ {
+  "vi": "Mở cửa rồi làm xong việc trong ca",
+  "en": ""
+ },
+ {
+  "vi": "Chơi ở tab Trò nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Bấm 💬 ở một công việc, hoặc Người quen → Trò chuyện, với 2 người khác nhau (chat Cả phố không tính)",
+  "en": ""
+ },
+ {
+  "vi": "Đóng ca là tính lại từ đầu, nhớ bấm Nhận quà trước khi đóng ca.",
+  "en": ""
+ },
+ {
+  "vi": "Giá tính ngay trong từng việc.",
+  "en": ""
+ },
+ {
+  "vi": "🏆 Kỷ lục riêng",
+  "en": ""
+ },
+ {
+  "vi": "Huy hiệu",
+  "en": ""
+ },
+ {
+  "vi": "🎟️ Chưa có thiệp.",
+  "en": ""
+ },
+ {
+  "vi": "Ngày hội của khu phố",
+  "en": ""
+ },
+ {
+  "vi": "trò nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Mời về tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Doanh thu nghề kỳ này",
+  "en": ""
+ },
+ {
+  "vi": "Thuế dự kiến",
+  "en": ""
+ },
+ {
+  "vi": "Tiền thuê đã tích lũy",
+  "en": ""
+ },
+ {
+  "vi": "Xử lý sự cố đang mở",
+  "en": ""
+ },
+ {
+  "vi": "Xử lý hồ sơ đang mở",
+  "en": ""
+ },
+ {
+  "vi": "SÂN BAY",
+  "en": ""
+ },
+ {
+  "vi": "CÒ TRẮNG",
+  "en": ""
+ },
+ {
+  "vi": "DẦU",
+  "en": ""
+ },
+ {
+  "vi": "CỬA 3",
+  "en": ""
+ },
+ {
+  "vi": "ĐÚNG GIỜ",
+  "en": ""
+ },
+ {
+  "vi": "GIÔNG",
+  "en": ""
+ },
+ {
+  "vi": "SƯƠNG",
+  "en": ""
+ },
+ {
+  "vi": "GIÓ",
+  "en": ""
+ },
+ {
+  "vi": "ĐẸP",
+  "en": ""
+ },
+ {
+  "vi": "BỈM · SỮA",
+  "en": ""
+ },
+ {
+  "vi": "TIỆM MAY BÀ TƯ",
+  "en": ""
+ },
+ {
+  "vi": "MAY ĐO · SỬA ĐỒ",
+  "en": ""
+ },
+ {
+  "vi": "THỬ",
+  "en": ""
+ },
+ {
+  "vi": "Bàn may",
+  "en": ""
+ },
+ {
+  "vi": "MỜI SỐ",
+  "en": ""
+ },
+ {
+  "vi": "QUẦY 1",
+  "en": ""
+ },
+ {
+  "vi": "SỐNG KHỎE",
+  "en": ""
+ },
+ {
+  "vi": "GIỜ MỞ CỬA",
+  "en": ""
+ },
+ {
+  "vi": "ĐO HUYẾT ÁP",
+  "en": ""
+ },
+ {
+  "vi": "Hũ topping",
+  "en": ""
+ },
+ {
+  "vi": "Màn hình đơn",
+  "en": ""
+ },
+ {
+  "vi": "Quầy nhận ly",
+  "en": ""
+ },
+ {
+  "vi": "Mrrr… cho Mướp một viên trân châu được không?",
+  "en": ""
+ },
+ {
+  "vi": "Tủ bánh",
+  "en": ""
+ },
+ {
+  "vi": "Kho bột",
+  "en": ""
+ },
+ {
+  "vi": "KHO BỘT",
+  "en": ""
+ },
+ {
+  "vi": "Mrrr… thơm mùi bánh mới ra lò quá!",
+  "en": ""
+ },
+ {
+  "vi": "Kệ gia vị & topping",
+  "en": ""
+ },
+ {
+  "vi": "Dây phiếu gọi món",
+  "en": ""
+ },
+ {
+  "vi": "Quầy ra món",
+  "en": ""
+ },
+ {
+  "vi": "Kho lạnh",
+  "en": ""
+ },
+ {
+  "vi": "Mrrr… nồi nước dùng thơm quá đi.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ hàng tạp hóa",
+  "en": ""
+ },
+ {
+  "vi": "Cân & tính tiền",
+  "en": ""
+ },
+ {
+  "vi": "Mrrr… cô Ba ơi cho con xin miếng khô mực.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ xô hoa",
+  "en": ""
+ },
+ {
+  "vi": "Sổ đặt hoa",
+  "en": ""
+ },
+ {
+  "vi": "Tủ mát hoa",
+  "en": ""
+ },
+ {
+  "vi": "Mrrr… hoa hồng thơm nhưng gai quá.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ thú bông",
+  "en": ""
+ },
+ {
+  "vi": "Bỉm & sữa theo cỡ",
+  "en": ""
+ },
+ {
+  "vi": "Mrrr… thú bông này mềm ghê.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ hộp theo mã",
+  "en": ""
+ },
+ {
+  "vi": "Quầy tư vấn",
+  "en": ""
+ },
+ {
+  "vi": "Mrrr… nằm trên tủ lạnh mát ghê.",
+  "en": ""
+ },
+ {
+  "vi": "Mrrr… cuộn len này để Mướp chơi được không?",
+  "en": ""
+ },
+ {
+  "vi": "Giá treo áo",
+  "en": ""
+ },
+ {
+  "vi": "Sổ hóa đơn",
+  "en": ""
+ },
+ {
+  "vi": "Kho đồ gấp",
+  "en": ""
+ },
+ {
+  "vi": "ĐANG MỞ CỬA",
+  "en": ""
+ },
+ {
+  "vi": "Khách sắp ghé lựa đồ.",
+  "en": ""
+ },
+ {
+  "vi": "Những người bạn gặp quanh tiệm áo.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn và đánh giá quanh tiệm áo.",
+  "en": ""
+ },
+ {
+  "vi": "Mrrr… cho Mướp nằm dưới gầm ghế nhựa cho mát nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Túi tiền lẻ",
+  "en": ""
+ },
+ {
+  "vi": "Dọn hàng về",
+  "en": ""
+ },
+ {
+  "vi": "Dọn hàng ra",
+  "en": ""
+ },
+ {
+  "vi": "ĐANG BÁN",
+  "en": ""
+ },
+ {
+  "vi": "NGHỈ BÁN",
+  "en": ""
+ },
+ {
+  "vi": "Lọ kẹo & gói lạc",
+  "en": ""
+ },
+ {
+  "vi": "Ghế đánh cờ",
+  "en": ""
+ },
+ {
+  "vi": "Góc vỉa hè",
+  "en": ""
+ },
+ {
+  "vi": "Trật tự khu phố",
+  "en": ""
+ },
+ {
+  "vi": "SỔ GHI",
+  "en": ""
+ },
+ {
+  "vi": "THÙNG ĐÁ",
+  "en": ""
+ },
+ {
+  "vi": "Khách quen sắp ghé làm cốc trà.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn hàng ra gốc bàng rồi bán nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Quán đang vãn khách",
+  "en": ""
+ },
+ {
+  "vi": "Vãn khách rồi!",
+  "en": ""
+ },
+ {
+  "vi": "Mời thêm khách hoặc dọn hàng về.",
+  "en": ""
+ },
+ {
+  "vi": "Mời thêm một khách",
+  "en": ""
+ },
+ {
+  "vi": "Những người bạn gặp quanh gốc bàng.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn và đánh giá quanh quán trà.",
+  "en": ""
+ },
+ {
+  "vi": "Mrrr… ngoài phố nhiều chuyện hay ghê.",
+  "en": ""
+ },
+ {
+  "vi": "Góc phố",
+  "en": ""
+ },
+ {
+  "vi": "Việc mới sắp tới.",
+  "en": ""
+ },
+ {
+  "vi": "Đang rảnh tay",
+  "en": ""
+ },
+ {
+  "vi": "Mrrr… Mướp nằm trên nóc xe hành lý, ngắm máy bay cất cánh.",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ lương",
+  "en": ""
+ },
+ {
+  "vi": "Vào ca bay",
+  "en": ""
+ },
+ {
+  "vi": "ĐANG BAY",
+  "en": ""
+ },
+ {
+  "vi": "Bảng thời tiết",
+  "en": ""
+ },
+ {
+  "vi": "Bản tin & phiếu dầu",
+  "en": ""
+ },
+ {
+  "vi": "Quầy điều phái",
+  "en": ""
+ },
+ {
+  "vi": "Xe dầu",
+  "en": ""
+ },
+ {
+  "vi": "Sân đỗ Cánh Cò",
+  "en": ""
+ },
+ {
+  "vi": "An ninh sân bay",
+  "en": ""
+ },
+ {
+  "vi": "SỔ GIỜ BAY",
+  "en": ""
+ },
+ {
+  "vi": "SÂN ĐỖ",
+  "en": ""
+ },
+ {
+  "vi": "Chặng bay tiếp theo sắp tới giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Báo danh ở phòng điều phái rồi bay nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Tổ bay nghỉ giữa chặng",
+  "en": ""
+ },
+ {
+  "vi": "Hết chặng rồi!",
+  "en": ""
+ },
+ {
+  "vi": "Nhận thêm một chặng hoặc tan ca hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có chặng nào đang chờ",
+  "en": ""
+ },
+ {
+  "vi": "Chặng tiếp theo",
+  "en": ""
+ },
+ {
+  "vi": "Những người bạn gặp ở sân bay.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn và nhận xét quanh sân bay.",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận trước khi làm",
+  "en": ""
+ },
+ {
+  "vi": "Ở sân bay",
+  "en": ""
+ },
+ {
+  "vi": "Thêm: sổ bay, khu phố",
+  "en": ""
+ },
+ {
+  "vi": "Tan ca bay hôm nay?",
+  "en": ""
+ },
+ {
+  "vi": "Lương ngày vào quỹ lương. Việc chưa xong được giữ lại cho mai.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ hạt & pate",
+  "en": ""
+ },
+ {
+  "vi": "Mrrr… cá trong bể bơi qua bơi lại, ngó hoài không chán.",
+  "en": ""
+ },
+ {
+  "vi": "Khách sắp ghé mua hạt cho bé nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Những người bạn gặp quanh tiệm thú nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn và đánh giá quanh tiệm thú nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Rổ trái cây",
+  "en": ""
+ },
+ {
+  "vi": "Rổ trái dập",
+  "en": ""
+ },
+ {
+  "vi": "Sạp & cân",
+  "en": ""
+ },
+ {
+  "vi": "TIỀN LẺ",
+  "en": ""
+ },
+ {
+  "vi": "THÙNG HÀNG",
+  "en": ""
+ },
+ {
+  "vi": "Dọn sạp về",
+  "en": ""
+ },
+ {
+  "vi": "Dọn sạp ra",
+  "en": ""
+ },
+ {
+  "vi": "Khách chợ sắp ghé mua trái.",
+  "en": ""
+ },
+ {
+  "vi": "Dựng dù, thử cân rồi bán nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Sạp đang vắng",
+  "en": ""
+ },
+ {
+  "vi": "Mời thêm khách hoặc dọn sạp về.",
+  "en": ""
+ },
+ {
+  "vi": "Những người bạn gặp quanh sạp trái cây.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn và đánh giá quanh sạp trái cây.",
+  "en": ""
+ },
+ {
+  "vi": "Túi rác trước cửa",
+  "en": ""
+ },
+ {
+  "vi": "Bảng phân loại",
+  "en": ""
+ },
+ {
+  "vi": "Thùng tập kết",
+  "en": ""
+ },
+ {
+  "vi": "SỔ TUYẾN",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ tổ",
+  "en": ""
+ },
+ {
+  "vi": "ĐANG THU GOM",
+  "en": ""
+ },
+ {
+  "vi": "ĐÃ TAN CA",
+  "en": ""
+ },
+ {
+  "vi": "Ngõ sau đang chờ xe rác.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ bảo hộ, kiểm xe rồi vào ngõ nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Xe đang nghỉ",
+  "en": ""
+ },
+ {
+  "vi": "Hết ngõ rồi!",
+  "en": ""
+ },
+ {
+  "vi": "Nhận thêm một ngõ hoặc tan ca.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận thêm một ngõ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có ngõ nào đang chờ",
+  "en": ""
+ },
+ {
+  "vi": "Sang ngõ tiếp theo",
+  "en": ""
+ },
+ {
+  "vi": "Những người bạn gặp trên tuyến thu gom.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn và phản ánh của cư dân.",
+  "en": ""
+ },
+ {
+  "vi": "Xe máy & đồ nghề",
+  "en": ""
+ },
+ {
+  "vi": "SỔ HẸN",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ tiệm",
+  "en": ""
+ },
+ {
+  "vi": "ĐANG NHẬN VIỆC",
+  "en": ""
+ },
+ {
+  "vi": "Điện thoại sắp reo.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc sổ hẹn, xếp đồ nghề rồi đi nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có ai gọi",
+  "en": ""
+ },
+ {
+  "vi": "Nhận thêm việc hoặc nghỉ tay hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Những người bạn gặp khi đi thông cống.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn và đánh giá của khách.",
+  "en": ""
+ },
+ {
+  "vi": "Xe đẩy suất ăn",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu suất ăn đặc biệt",
+  "en": ""
+ },
+ {
+  "vi": "Cửa ra tàu",
+  "en": ""
+ },
+ {
+  "vi": "Bếp tàu",
+  "en": ""
+ },
+ {
+  "vi": "SỔ TIẾP VIÊN",
+  "en": ""
+ },
+ {
+  "vi": "BẾP TÀU",
+  "en": ""
+ },
+ {
+  "vi": "Khách chuyến sau đang xếp hàng ở cổng.",
+  "en": ""
+ },
+ {
+  "vi": "Thắt khăn quàng, ra cửa tàu đón khách nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Khoang khách đang yên",
+  "en": ""
+ },
+ {
+  "vi": "Nhận thêm một việc hoặc tan ca hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Việc tiếp theo",
+  "en": ""
+ },
+ {
+  "vi": "Những người bạn gặp trên khoang khách.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn và nhận xét của hành khách.",
+  "en": ""
+ },
+ {
+  "vi": "CHỢ MÂY",
+  "en": ""
+ },
+ {
+  "vi": "NGUY HẠI",
+  "en": ""
+ },
+ {
+  "vi": "XOÀI CÁT 14 XU/KÝ",
+  "en": ""
+ },
+ {
+  "vi": "cân đủ, trừ bì",
+  "en": ""
+ },
+ {
+  "vi": "mai mời ghé",
+  "en": ""
+ },
+ {
+  "vi": "PHÂN LOẠI",
+  "en": ""
+ },
+ {
+  "vi": "ĐỔ RÁC 18:00–19:30",
+  "en": ""
+ },
+ {
+  "vi": "đúng giờ, đúng túi",
+  "en": ""
+ },
+ {
+  "vi": "ĐỒ NGHỀ",
+  "en": ""
+ },
+ {
+  "vi": "BẢNG GIÁ",
+  "en": ""
+ },
+ {
+  "vi": "THÔNG CỐNG",
+  "en": ""
+ },
+ {
+  "vi": "báo giá trước khi làm",
+  "en": ""
+ },
+ {
+  "vi": "gọi là tới",
+  "en": ""
+ },
+ {
+  "vi": "MÂY TRE",
+  "en": ""
+ },
+ {
+  "vi": "CÁNH",
+  "en": ""
+ },
+ {
+  "vi": "DIỀU",
+  "en": ""
+ },
+ {
+  "vi": "ĐANG PHỤC VỤ",
+  "en": ""
+ },
+ {
+  "vi": "TIỆM CÁ CẢNH CHÚ ÚT",
+  "en": ""
+ },
+ {
+  "vi": "CÁ · CHIM · THỨC ĂN",
+  "en": ""
+ },
+ {
+  "vi": "CÁ BETTA",
+  "en": ""
+ },
+ {
+  "vi": "TÌM THÚ LẠC",
+  "en": ""
+ },
+ {
+  "vi": "HẠT · PATE · CÁT",
+  "en": ""
+ },
+ {
+  "vi": "HSD RÕ",
+  "en": ""
+ },
+ {
+  "vi": "GIẢM GIÁ",
+  "en": ""
+ },
+ {
+  "vi": "Dãy bể",
+  "en": ""
+ },
+ {
+  "vi": "CÁCH LY",
+  "en": ""
+ },
+ {
+  "vi": "CÁT",
+  "en": ""
+ },
+ {
+  "vi": "NHẬN NUÔI",
+  "en": ""
+ },
+ {
+  "vi": "MAY ĐO",
+  "en": ""
+ },
+ {
+  "vi": "ĐÁ",
+  "en": ""
+ },
+ {
+  "vi": "TRÀ ĐÁ 3 XU",
+  "en": ""
+ },
+ {
+  "vi": "có sổ ghi",
+  "en": ""
+ },
+ {
+  "vi": "Trà đá bà Lựu",
+  "en": ""
+ },
+ {
+  "vi": "CHỢ ĐÊM",
+  "en": ""
+ },
+ {
+  "vi": "Cà phê muối",
+  "en": ""
+ },
+ {
+  "vi": "Trà đào",
+  "en": ""
+ },
+ {
+  "vi": "Vị trái cây",
+  "en": ""
+ },
+ {
+  "vi": "Bọt mây",
+  "en": ""
+ },
+ {
+  "vi": "Lần đầu làm ở đây?",
+  "en": ""
+ },
+ {
+  "vi": "Xem hướng dẫn",
+  "en": ""
+ },
+ {
+  "vi": "Một ngày làm việc",
+  "en": ""
+ },
+ {
+  "vi": "Khu phố & Hành trình",
+  "en": ""
+ },
+ {
+  "vi": "Bấm để mở Hành trình",
+  "en": ""
+ },
+ {
+  "vi": "Một đời, nhiều nghề",
+  "en": ""
+ },
+ {
+  "vi": "Làm tiếp việc trước mắt",
+  "en": ""
+ },
+ {
+  "vi": "Ví và quỹ tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Ví: tiền của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ tiệm: tiền của tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Tiền phòng trừ từ ví",
+  "en": ""
+ },
+ {
+  "vi": "👂 Nghe khách gọi món",
+  "en": ""
+ },
+ {
+  "vi": "🥤 Lấy ly, rót trà",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Topping, đá, đường",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Ép nắp, giao ly",
+  "en": ""
+ },
+ {
+  "vi": "Tạp hoá",
+  "en": ""
+ },
+ {
+  "vi": "🛒 Mời khách lên quầy",
+  "en": ""
+ },
+ {
+  "vi": "📷 Quét đủ từng món",
+  "en": ""
+ },
+ {
+  "vi": "🏷️ Áp khuyến mãi, chốt bill",
+  "en": ""
+ },
+ {
+  "vi": "💵 Đủ tiền mới giao",
+  "en": ""
+ },
+ {
+  "vi": "Nhập hàng & xếp kệ",
+  "en": ""
+ },
+ {
+  "vi": "📦 Kệ hết? Bấm Nhập hàng",
+  "en": ""
+ },
+ {
+  "vi": "🚚 Chọn nhà cung cấp, bấm Đặt",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Chờ hàng về: xem còn mấy phút",
+  "en": ""
+ },
+ {
+  "vi": "👆 Mở thùng, chạm đếm, nhận lên kệ",
+  "en": ""
+ },
+ {
+  "vi": "✋ Nhận đơn trên app",
+  "en": ""
+ },
+ {
+  "vi": "⚖️ Cân và kiểm hàng",
+  "en": ""
+ },
+ {
+  "vi": "🗺️ Chọn điểm, chốt lộ trình",
+  "en": ""
+ },
+ {
+  "vi": "💵 Thối đúng, giao tận tay",
+  "en": ""
+ },
+ {
+  "vi": "Bánh & cà phê",
+  "en": ""
+ },
+ {
+  "vi": "⚖️ Chọn hạt, xay, nén",
+  "en": ""
+ },
+ {
+  "vi": "⏹️ Vạch xanh: dừng chiết",
+  "en": ""
+ },
+ {
+  "vi": "🛎️ Đủ ✓ thì Giao",
+  "en": ""
+ },
+ {
+  "vi": "📝 Nghe khách dặn",
+  "en": ""
+ },
+ {
+  "vi": "🌻 Chọn đúng hoa",
+  "en": ""
+ },
+ {
+  "vi": "✂️ Cắt gốc, tuốt lá",
+  "en": ""
+ },
+ {
+  "vi": "💐 Gói, viết thiệp, trao",
+  "en": ""
+ },
+ {
+  "vi": "Sắp có",
+  "en": ""
+ },
+ {
+  "vi": "▶ Xem lại hướng dẫn (1 phút)",
+  "en": ""
+ },
+ {
+  "vi": "Mục lục",
+  "en": ""
+ },
+ {
+  "vi": "Hay được hỏi",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một nghề để xem cách làm từng việc, lỗi hay gặp, nhập hàng và mẹo được 5★.",
+  "en": ""
+ },
+ {
+  "vi": "Công việc chính",
+  "en": ""
+ },
+ {
+  "vi": "Các bước làm một việc",
+  "en": ""
+ },
+ {
+  "vi": "Mẹo được 5★",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi hay gặp & hậu quả",
+  "en": ""
+ },
+ {
+  "vi": "Nhập hàng / chuẩn bị",
+  "en": ""
+ },
+ {
+  "vi": "Tình huống bất ngờ",
+  "en": ""
+ },
+ {
+  "vi": "Bán hàng",
+  "en": ""
+ },
+ {
+  "vi": "Xem ảnh từng bước",
+  "en": ""
+ },
+ {
+  "vi": "· đang làm",
+  "en": ""
+ },
+ {
+  "vi": "🙋 Chọn việc đang chờ",
+  "en": ""
+ },
+ {
+  "vi": "👆 Bấm nút nổi bật",
+  "en": ""
+ },
+ {
+  "vi": "✅ Kiểm rồi bàn giao",
+  "en": ""
+ },
+ {
+  "vi": "🌙 Hết việc: Khép ca",
+  "en": ""
+ },
+ {
+  "vi": "🚧 Hướng dẫn chi tiết nghề này đang được viết. Tạm thời làm theo nhịp chung:",
+  "en": ""
+ },
+ {
+  "vi": "Hướng dẫn chơi",
+  "en": ""
+ },
+ {
+  "vi": "Hướng dẫn nghề",
+  "en": ""
+ },
+ {
+  "vi": "Tìm: rút tiền, thối tiền, nhập hàng…",
+  "en": ""
+ },
+ {
+  "vi": "Tìm trong hướng dẫn",
+  "en": ""
+ },
+ {
+  "vi": "📖 HƯỚNG DẪN",
+  "en": ""
+ },
+ {
+  "vi": "Bấm nút sáng để làm từng bước cho khách.",
+  "en": ""
+ },
+ {
+  "vi": "Hết khách rồi: khép ca, xem tổng kết.",
+  "en": ""
+ },
+ {
+  "vi": "Hành trình: việc cần làm và nơi làm khác.",
+  "en": ""
+ },
+ {
+  "vi": "Thêm → Hành trình: việc cần làm, nơi làm khác.",
+  "en": ""
+ },
+ {
+  "vi": "Tắt gợi ý",
+  "en": ""
+ },
+ {
+  "vi": "Đã tắt gợi ý. Hướng dẫn ở Cài đặt 📘",
+  "en": ""
+ },
+ {
+  "vi": "Đổi nghề: khép ca ở nơi đang làm, rồi chọn nơi khác ở đây.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền của bạn: bấm 🏪 Quỹ hoặc 👛 Ví để xem hết.",
+  "en": ""
+ },
+ {
+  "vi": "Giờ trong game ở đây. Tới giờ đóng cửa thì khép ca.",
+  "en": ""
+ },
+ {
+  "vi": "Xong việc? Bấm đây (hoặc đi ra cửa) để khép ca.",
+  "en": ""
+ },
+ {
+  "vi": "Khu phố của bạn: một đời, nhiều nghề.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm để chào khu phố.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nhân vật, đặt tên.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm mở Hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm Thêm, rồi Hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một tiệm để làm.",
+  "en": ""
+ },
+ {
+  "vi": "Xin việc trước, làm theo từng bước.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm Mở cửa.",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ tiệm: tiền của tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Ví của bạn, trả tiền phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Ví của bạn. Bấm để mở Hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Ví của bạn. Bấm để xem hết tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm ngày: ví của bạn, tinh thần, đánh giá.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm Làm tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm nút nổi bật.",
+  "en": ""
+ },
+ {
+  "vi": "Hết khách: Khép ca, xem tổng kết.",
+  "en": ""
+ },
+ {
+  "vi": "Xong bảng này rồi đi tiếp nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Xong! Xem lại trong Cài đặt 📘",
+  "en": ""
+ },
+ {
+  "vi": "Xem lại trong Cài đặt 📘",
+  "en": ""
+ },
+ {
+  "vi": "Đã có phiên bản mới, bạn tải lại để cập nhật nha",
+  "en": ""
+ },
+ {
+  "vi": "trừ vào ví của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Phạt",
+  "en": ""
+ },
+ {
+  "vi": "đang chờ sẽ bỏ về",
+  "en": ""
+ },
+ {
+  "vi": "Việc đã hẹn vẫn giữ, nhưng khách sẽ phật lòng",
+  "en": ""
+ },
+ {
+  "vi": "và chủ sẽ nhắc “lần sau cho nghỉ”",
+  "en": ""
+ },
+ {
+  "vi": ", khách quen bắt đầu kháo nhau",
+  "en": ""
+ },
+ {
+  "vi": "Vẫn đi",
+  "en": ""
+ },
+ {
+  "vi": "Ở lại làm nốt",
+  "en": ""
+ },
+ {
+  "vi": "Lần sau còn bỏ ngang là bị cho nghỉ.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ quầy nữa là mất khách quen.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền phạt:",
+  "en": ""
+ },
+ {
+  "vi": "khách đã bỏ về",
+  "en": ""
+ },
+ {
+  "vi": "Chủ đã nhắc: lần sau còn bỏ ngang là cho nghỉ.",
+  "en": ""
+ },
+ {
+  "vi": "Hàng xóm đã nhắc: bỏ quầy hoài là mất khách quen.",
+  "en": ""
+ },
+ {
+  "vi": "💍 Hôn nhân · mã người chơi",
+  "en": ""
+ },
+ {
+  "vi": "Ngày đời trung bình",
+  "en": ""
+ },
+ {
+  "vi": "Số dòng mỗi bảng",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ tài khoản vận hành xem được thống kê. Đăng nhập đúng tài khoản rồi mở lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Góp ý đang mở",
+  "en": ""
+ },
+ {
+  "vi": "Chưa làm được. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã xong.",
+  "en": ""
+ },
+ {
+  "vi": "Mở tài khoản Ngân hàng Phố?",
+  "en": ""
+ },
+ {
+  "vi": "Miễn phí mở và duy trì. Bạn nhận số tài khoản, sổ giao dịch và điểm tín dụng khởi đầu 650.",
+  "en": ""
+ },
+ {
+  "vi": "Mở tài khoản",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số xu muốn nộp nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số xu muốn rút nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Rút tại cây ATM Ngân hàng Phố, không mất phí.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số xu muốn gửi nhé.",
+  "en": ""
+ },
+ {
+  "vi": "dưới 1 xu",
+  "en": ""
+ },
+ {
+  "vi": "Tới hạn tự tái tục: gốc và lãi gửi tiếp kỳ mới.",
+  "en": ""
+ },
+ {
+  "vi": "Lấy từ tiền mặt.",
+  "en": ""
+ },
+ {
+  "vi": "Lấy từ tài khoản thanh toán.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền về tài khoản thanh toán, không mất lãi đã cộng.",
+  "en": ""
+ },
+ {
+  "vi": "Tất toán sổ trước hạn?",
+  "en": ""
+ },
+ {
+  "vi": "Tất toán",
+  "en": ""
+ },
+ {
+  "vi": "Nộp hồ sơ mở thẻ tín dụng?",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số xu muốn trả nhé.",
+  "en": ""
+ },
+ {
+  "vi": "tài khoản thanh toán",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số xu muốn ứng nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Ứng",
+  "en": ""
+ }
+]

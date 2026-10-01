@@ -5,7 +5,8 @@
 - 🔎 Quản trị › Chat › "Tin nhắn" (thay tab "Cả phố"): mọi kênh, 200 tin một trang, "Tải cũ hơn" theo id; lọc Cả phố / Nhắn riêng / Nhóm, theo người (bấm tên) và theo cuộc trò chuyện; ô tìm chữ, tên hoặc mã người chơi (`GET /api/admin/chat/messages`, chỉ ADMIN_USERS, mỗi lần chỉ xét tối đa 20.000 id theo khóa chính).
 - Chữ gốc: từ bản này tin bị bộ lọc che (•••) lưu thêm chữ người chơi gõ ở cột chỉ quản trị đọc `chat_messages.raw` (NULL khi không bị che); màn quản trị hiện "Gốc: …". Không bao giờ gửi cho người chơi. Tin cũ chỉ còn bản đã che. Thu hồi tin hoặc xóa dữ liệu thì xóa luôn chữ gốc.
 - SCHEMA_VERSION 11: `chat_reacts`, `chat_reacts_pid`, `ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS raw` (không mặc định, không ghi lại bảng). Dịch vụ live chờ bảng `chat_reacts`: khởi động game server trước.
-- "Có gì mới": thả cảm xúc trong chat.
+- 🌞 Thẻ "Nhiệm vụ hôm nay" (góp ý #69): mỗi nhiệm vụ chưa xong có dòng nói cách tính (mở cửa rồi làm xong việc; tab Trò nhỏ; bấm 💬 ở công việc hoặc Người quen → Trò chuyện với 2 người khác nhau, chat Cả phố không tính) và lời nhắc đóng ca là tính lại, nhận quà trước khi đóng ca.
+- "Có gì mới": thả cảm xúc trong chat; cách tính nhiệm vụ hôm nay.
 
 # v1.2.1 — 📌 Ghim tin nhắn và tin quản trị ở Cả phố (cập nhật âm thầm)
 

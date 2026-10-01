@@ -1,0 +1,1802 @@
+[
+ {
+  "vi": "mấy bé trong chuồng sạch sẽ, lông mượt",
+  "en": ""
+ },
+ {
+  "vi": "khay nước trong veo, thay liên tục",
+  "en": ""
+ },
+ {
+  "vi": "Chuồng bẩn.",
+  "en": ""
+ },
+ {
+  "vi": "Chuồng sạch.",
+  "en": ""
+ },
+ {
+  "vi": "đổi trả làm khó",
+  "en": ""
+ },
+ {
+  "vi": "hỏi chuyện đổi trả thì trả lời vòng vo",
+  "en": ""
+ },
+ {
+  "vi": "đổi size mà phải giải thích mấy lần",
+  "en": ""
+ },
+ {
+  "vi": "đổi hàng phải chờ gọi quản lý mãi",
+  "en": ""
+ },
+ {
+  "vi": "đổi trả nhanh gọn, không làm khó khách",
+  "en": ""
+ },
+ {
+  "vi": "nói rõ chính sách đổi trả, ai nghe cũng hiểu",
+  "en": ""
+ },
+ {
+  "vi": "đổi hàng mà vẫn vui vẻ như lúc bán",
+  "en": ""
+ },
+ {
+  "vi": "Đổi khó.",
+  "en": ""
+ },
+ {
+  "vi": "Đổi dễ.",
+  "en": ""
+ },
+ {
+  "vi": "thiếu tem giá",
+  "en": ""
+ },
+ {
+  "vi": "nhiều món không có tem giá, phải hỏi từng món",
+  "en": ""
+ },
+ {
+  "vi": "giá trên kệ một kiểu, tính tiền một kiểu",
+  "en": ""
+ },
+ {
+  "vi": "tem giá dán đè lên hạn dùng, đọc không ra",
+  "en": ""
+ },
+ {
+  "vi": "món nào cũng dán giá rõ ràng",
+  "en": ""
+ },
+ {
+  "vi": "giá niêm yết rõ, tính đúng như trên kệ",
+  "en": ""
+ },
+ {
+  "vi": "tem giá to, người lớn tuổi đọc cũng dễ",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu tem giá.",
+  "en": ""
+ },
+ {
+  "vi": "Giá rõ ràng.",
+  "en": ""
+ },
+ {
+  "vi": "giá hơi cao",
+  "en": ""
+ },
+ {
+  "vi": "giá nhỉnh hơn ngoài chợ một chút",
+  "en": ""
+ },
+ {
+  "vi": "đồ đẹp mà giá hơi chát",
+  "en": ""
+ },
+ {
+  "vi": "mua nhiều mà không được bớt đồng nào",
+  "en": ""
+ },
+ {
+  "vi": "giá hợp lý, có khi rẻ hơn ngoài chợ",
+  "en": ""
+ },
+ {
+  "vi": "giá mềm, mua nhiều còn được bớt",
+  "en": ""
+ },
+ {
+  "vi": "đáng tiền, chất lượng tương xứng",
+  "en": ""
+ },
+ {
+  "vi": "Giá mềm.",
+  "en": ""
+ },
+ {
+  "vi": "hàng không tươi",
+  "en": ""
+ },
+ {
+  "vi": "hoa hơi héo mép cánh",
+  "en": ""
+ },
+ {
+  "vi": "lá hoa có vài chấm vàng",
+  "en": ""
+ },
+ {
+  "vi": "rau ở kệ hơi héo",
+  "en": ""
+ },
+ {
+  "vi": "trái cây có mấy quả dập",
+  "en": ""
+ },
+ {
+  "vi": "rau hơi héo lá ngoài",
+  "en": ""
+ },
+ {
+  "vi": "trứng có quả dính phân gà, nhìn hơi ngại",
+  "en": ""
+ },
+ {
+  "vi": "hoa tươi rói, cắm được cả tuần",
+  "en": ""
+ },
+ {
+  "vi": "nụ hoa chắc, nở đều",
+  "en": ""
+ },
+ {
+  "vi": "rau quả tươi, còn giọt nước",
+  "en": ""
+ },
+ {
+  "vi": "trái cây chín vừa, không dập",
+  "en": ""
+ },
+ {
+  "vi": "rau xanh mướt, trứng còn ấm",
+  "en": ""
+ },
+ {
+  "vi": "rau vừa hái, còn nguyên sương",
+  "en": ""
+ },
+ {
+  "vi": "Héo.",
+  "en": ""
+ },
+ {
+  "vi": "Tươi rói.",
+  "en": ""
+ },
+ {
+  "vi": "Dặn dò khi bán",
+  "en": ""
+ },
+ {
+  "vi": "đưa thuốc không dặn",
+  "en": ""
+ },
+ {
+  "vi": "đưa thuốc mà không dặn uống trước hay sau ăn",
+  "en": ""
+ },
+ {
+  "vi": "hỏi tác dụng phụ thì trả lời qua loa",
+  "en": ""
+ },
+ {
+  "vi": "hỏi sữa nào hợp với bé thì trả lời chung chung",
+  "en": ""
+ },
+ {
+  "vi": "hỏi cách cho bé ăn thì chỉ nói \"tùy anh chị\"",
+  "en": ""
+ },
+ {
+  "vi": "dặn kỹ cách uống, còn ghi lên vỏ hộp",
+  "en": ""
+ },
+ {
+  "vi": "hỏi kỹ tiền sử dị ứng rồi mới đưa thuốc",
+  "en": ""
+ },
+ {
+  "vi": "tư vấn kỹ từng loại sữa, không ép mua loại đắt",
+  "en": ""
+ },
+ {
+  "vi": "dặn kỹ cách cho ăn, cách tắm cho bé",
+  "en": ""
+ },
+ {
+  "vi": "Không dặn.",
+  "en": ""
+ },
+ {
+  "vi": "Dặn kỹ.",
+  "en": ""
+ },
+ {
+  "vi": "thiệp viết vội",
+  "en": ""
+ },
+ {
+  "vi": "thiệp viết chữ hơi vội, nhìn không kỹ",
+  "en": ""
+ },
+ {
+  "vi": "thiệp in sẵn, không có lời riêng",
+  "en": ""
+ },
+ {
+  "vi": "thiệp viết tay nắn nót",
+  "en": ""
+ },
+ {
+  "vi": "lời chúc trên thiệp viết khéo, người nhận cảm động",
+  "en": ""
+ },
+ {
+  "vi": "Thiệp vội.",
+  "en": ""
+ },
+ {
+  "vi": "Thiệp đẹp.",
+  "en": ""
+ },
+ {
+  "vi": "Lối đi",
+  "en": ""
+ },
+ {
+  "vi": "lối đi chật",
+  "en": ""
+ },
+ {
+  "vi": "lối đi hẹp, đẩy xe nôi vào không lọt",
+  "en": ""
+ },
+ {
+  "vi": "thùng hàng chắn lối đi, phải lách người",
+  "en": ""
+ },
+ {
+  "vi": "lối đi rộng, đẩy xe nôi thoải mái",
+  "en": ""
+ },
+ {
+  "vi": "có góc cho bé ngồi chơi, mẹ yên tâm chọn đồ",
+  "en": ""
+ },
+ {
+  "vi": "Lối chật.",
+  "en": ""
+ },
+ {
+  "vi": "Rộng rãi.",
+  "en": ""
+ },
+ {
+  "vi": "Nụ cười, thái độ",
+  "en": ""
+ },
+ {
+  "vi": "nhân viên thái độ lạnh",
+  "en": ""
+ },
+ {
+  "vi": "thái độ phục vụ mười điểm, thang điểm một trăm 🙂",
+  "en": ""
+ },
+ {
+  "vi": "Mặt lạnh.",
+  "en": ""
+ },
+ {
+  "vi": "Dễ thương.",
+  "en": ""
+ },
+ {
+  "vi": "Giọng nói",
+  "en": ""
+ },
+ {
+  "vi": "nói nhỏ khó nghe",
+  "en": ""
+ },
+ {
+  "vi": "Nói nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Nói rõ.",
+  "en": ""
+ },
+ {
+  "vi": "Tác phong, đồng phục",
+  "en": ""
+ },
+ {
+  "vi": "nhân viên ăn mặc luộm thuộm",
+  "en": ""
+ },
+ {
+  "vi": "áo choàng cho khách hơi cũ, dính tóc khách trước",
+  "en": ""
+ },
+ {
+  "vi": "áo choàng sạch thơm, thay mới cho từng khách",
+  "en": ""
+ },
+ {
+  "vi": "Luộm thuộm.",
+  "en": ""
+ },
+ {
+  "vi": "Gọn gàng.",
+  "en": ""
+ },
+ {
+  "vi": "Dùng điện thoại",
+  "en": ""
+ },
+ {
+  "vi": "nhân viên mải điện thoại",
+  "en": ""
+ },
+ {
+  "vi": "Mải điện thoại.",
+  "en": ""
+ },
+ {
+  "vi": "Tập trung.",
+  "en": ""
+ },
+ {
+  "vi": "chờ lâu",
+  "en": ""
+ },
+ {
+  "vi": "chờ hơi lâu, lướt hết bảng tin mới xong",
+  "en": ""
+ },
+ {
+  "vi": "chờ mòn mỏi, không ai báo phải đợi bao lâu",
+  "en": ""
+ },
+ {
+  "vi": "gọi món xong chờ mòn mỏi",
+  "en": ""
+ },
+ {
+  "vi": "bàn sau tới sau mà có đồ trước",
+  "en": ""
+ },
+ {
+  "vi": "hẹn một tiếng mà làm gần hai tiếng",
+  "en": ""
+ },
+ {
+  "vi": "chờ lâu mà không ai báo tiến độ",
+  "en": ""
+ },
+ {
+  "vi": "làm nhanh gọn, không phải chờ",
+  "en": ""
+ },
+ {
+  "vi": "nhanh tay mà vẫn kỹ",
+  "en": ""
+ },
+ {
+  "vi": "ra món nhanh, chưa kịp lướt điện thoại đã có",
+  "en": ""
+ },
+ {
+  "vi": "làm đúng giờ hẹn, còn xong sớm hơn",
+  "en": ""
+ },
+ {
+  "vi": "Chậm.",
+  "en": ""
+ },
+ {
+  "vi": "mới ghé vài lần mà đã được nhớ tên",
+  "en": ""
+ },
+ {
+  "vi": "chưa kịp gọi đã được hỏi \"như mọi khi hả\"",
+  "en": ""
+ },
+ {
+  "vi": "khách quen nên được hỏi han kỹ, thấy ấm lòng",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ khách.",
+  "en": ""
+ },
+ {
+  "vi": "Khăn gội",
+  "en": ""
+ },
+ {
+  "vi": "khăn gội ẩm",
+  "en": ""
+ },
+ {
+  "vi": "khăn gội hơi ẩm, ngửi có mùi",
+  "en": ""
+ },
+ {
+  "vi": "khăn quấn tóc cũ sờn, xù lông",
+  "en": ""
+ },
+ {
+  "vi": "khăn đắp mặt nguội ngắt",
+  "en": ""
+ },
+ {
+  "vi": "khăn gội thơm, khô, như mới giặt",
+  "en": ""
+ },
+ {
+  "vi": "có khăn nóng đắp mặt lúc gội, thư giãn ghê",
+  "en": ""
+ },
+ {
+  "vi": "khăn mềm, thay mới cho từng khách",
+  "en": ""
+ },
+ {
+  "vi": "Khăn ẩm.",
+  "en": ""
+ },
+ {
+  "vi": "Khăn thơm.",
+  "en": ""
+ },
+ {
+  "vi": "Tóc rơi dưới sàn",
+  "en": ""
+ },
+ {
+  "vi": "tóc rơi đầy sàn",
+  "en": ""
+ },
+ {
+  "vi": "tóc khách trước còn vương đầy dưới ghế",
+  "en": ""
+ },
+ {
+  "vi": "cắt xong không ai quét, tóc dính đầy dép",
+  "en": ""
+ },
+ {
+  "vi": "tóc vụn dính trên ghế chờ",
+  "en": ""
+ },
+ {
+  "vi": "cắt xong quét tóc liền, sàn sạch",
+  "en": ""
+ },
+ {
+  "vi": "tiệm sạch, không thấy sợi tóc nào dưới sàn",
+  "en": ""
+ },
+ {
+  "vi": "phủi tóc vụn trên cổ kỹ lắm",
+  "en": ""
+ },
+ {
+  "vi": "Tóc đầy sàn.",
+  "en": ""
+ },
+ {
+  "vi": "Gội đầu",
+  "en": ""
+ },
+ {
+  "vi": "nước gội lúc nóng lúc lạnh",
+  "en": ""
+ },
+ {
+  "vi": "gội vội, xả chưa sạch dầu",
+  "en": ""
+ },
+ {
+  "vi": "nước gội ấm vừa, được massage đầu kỹ",
+  "en": ""
+ },
+ {
+  "vi": "gội kỹ, xả sạch, tóc thơm cả ngày",
+  "en": ""
+ },
+ {
+  "vi": "gội đầu nhẹ tay, suýt ngủ quên",
+  "en": ""
+ },
+ {
+  "vi": "Nước lạnh.",
+  "en": ""
+ },
+ {
+  "vi": "Gội kỹ.",
+  "en": ""
+ },
+ {
+  "vi": "Tư vấn thật",
+  "en": ""
+ },
+ {
+  "vi": "tư vấn dịch vụ đắt tiền",
+  "en": ""
+ },
+ {
+  "vi": "hỏi cắt thường mà được mời hấp dầu ba lần",
+  "en": ""
+ },
+ {
+  "vi": "được khuyên đừng nhuộm vì tóc đang yếu, thật lòng ghê",
+  "en": ""
+ },
+ {
+  "vi": "Chèo kéo.",
+  "en": ""
+ },
+ {
+  "vi": "Tư vấn thật.",
+  "en": ""
+ },
+ {
+  "vi": "Giải thích thật",
+  "en": ""
+ },
+ {
+  "vi": "giải thích mập mờ",
+  "en": ""
+ },
+ {
+  "vi": "hỏi hư chỗ nào thì nói chung chung, nghe không hiểu",
+  "en": ""
+ },
+ {
+  "vi": "báo giá xong mới nói thêm tiền linh kiện",
+  "en": ""
+ },
+ {
+  "vi": "giải thích toàn từ chuyên môn, nghe như đánh đố",
+  "en": ""
+ },
+ {
+  "vi": "giải thích từng chỗ hư, đưa linh kiện cũ cho xem",
+  "en": ""
+ },
+ {
+  "vi": "nói thật cái nào đáng sửa, cái nào không cần",
+  "en": ""
+ },
+ {
+  "vi": "báo giá trước, làm xong đúng giá, không phát sinh",
+  "en": ""
+ },
+ {
+  "vi": "Mập mờ.",
+  "en": ""
+ },
+ {
+  "vi": "Thật thà.",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm gọn gàng",
+  "en": ""
+ },
+ {
+  "vi": "tiệm bừa bộn",
+  "en": ""
+ },
+ {
+  "vi": "đồ nghề bày la liệt, dầu nhớt dây ra sàn",
+  "en": ""
+ },
+ {
+  "vi": "ghế chờ dính dầu, ngồi xuống là bẩn quần",
+  "en": ""
+ },
+ {
+  "vi": "đồ nghề treo gọn, bàn sửa sạch",
+  "en": ""
+ },
+ {
+  "vi": "tiệm nhỏ mà ngăn nắp, ốc vít chia hộp rõ ràng",
+  "en": ""
+ },
+ {
+  "vi": "Bừa bộn.",
+  "en": ""
+ },
+ {
+  "vi": "không có phiếu bảo hành",
+  "en": ""
+ },
+ {
+  "vi": "không đưa phiếu bảo hành, phải tự nhớ ngày sửa",
+  "en": ""
+ },
+ {
+  "vi": "có phiếu bảo hành ghi rõ ngày, rõ linh kiện",
+  "en": ""
+ },
+ {
+  "vi": "dặn kỹ cách dùng để máy bền",
+  "en": ""
+ },
+ {
+  "vi": "Không phiếu.",
+  "en": ""
+ },
+ {
+  "vi": "Có bảo hành.",
+  "en": ""
+ },
+ {
+  "vi": "Nhẹ tay với bé",
+  "en": ""
+ },
+ {
+  "vi": "bé về còn sợ",
+  "en": ""
+ },
+ {
+  "vi": "bé nhà tôi về cứ run run, chắc bị giữ chặt quá",
+  "en": ""
+ },
+ {
+  "vi": "bé về trốn dưới gầm giường cả buổi",
+  "en": ""
+ },
+ {
+  "vi": "nhẹ tay với bé, bé về còn vẫy đuôi",
+  "en": ""
+ },
+ {
+  "vi": "bé nhà tôi vốn sợ người lạ mà ở đây ngoan lắm",
+  "en": ""
+ },
+ {
+  "vi": "bé được vuốt ve nói chuyện suốt, không sợ chút nào",
+  "en": ""
+ },
+ {
+  "vi": "Bé sợ.",
+  "en": ""
+ },
+ {
+  "vi": "Nhẹ tay.",
+  "en": ""
+ },
+ {
+  "vi": "Cập nhật hình bé",
+  "en": ""
+ },
+ {
+  "vi": "không báo tin về bé",
+  "en": ""
+ },
+ {
+  "vi": "gửi bé cả buổi mà không nhận được tin gì",
+  "en": ""
+ },
+ {
+  "vi": "hỏi bé ăn chưa mà mãi mới trả lời",
+  "en": ""
+ },
+ {
+  "vi": "được gửi hình bé trong lúc tắm, yên tâm ghê",
+  "en": ""
+ },
+ {
+  "vi": "nhắn báo bé ăn ngoan, ngủ ngoan, dễ thương quá",
+  "en": ""
+ },
+ {
+  "vi": "Im lặng.",
+  "en": ""
+ },
+ {
+  "vi": "Báo tin kỹ.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng tắm",
+  "en": ""
+ },
+ {
+  "vi": "phòng tắm chưa sạch",
+  "en": ""
+ },
+ {
+  "vi": "phòng tắm có vệt ố quanh vòi sen",
+  "en": ""
+ },
+ {
+  "vi": "thoát nước phòng tắm chậm, tắm xong ngập mắt cá",
+  "en": ""
+ },
+ {
+  "vi": "bồn rửa còn sợi tóc của khách trước",
+  "en": ""
+ },
+ {
+  "vi": "phòng tắm sạch bóng, khăn tắm thơm",
+  "en": ""
+ },
+ {
+  "vi": "phòng tắm rộng, sạch, có đủ dầu gội",
+  "en": ""
+ },
+ {
+  "vi": "phòng tắm khô ráo, có cả dép riêng",
+  "en": ""
+ },
+ {
+  "vi": "Phòng tắm bẩn.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng tắm sạch.",
+  "en": ""
+ },
+ {
+  "vi": "Ga gối",
+  "en": ""
+ },
+ {
+  "vi": "ga gối chưa thơm",
+  "en": ""
+ },
+ {
+  "vi": "ga giường còn nếp nhăn, gối hơi xẹp",
+  "en": ""
+ },
+ {
+  "vi": "chăn có mùi ẩm",
+  "en": ""
+ },
+ {
+  "vi": "gối có vệt ố mờ, nhìn hơi ngại",
+  "en": ""
+ },
+ {
+  "vi": "ga gối trắng tinh, thơm mùi nắng",
+  "en": ""
+ },
+ {
+  "vi": "chăn dày ấm, ngủ một mạch tới sáng",
+  "en": ""
+ },
+ {
+  "vi": "nệm êm, gối vừa đầu",
+  "en": ""
+ },
+ {
+  "vi": "Chăn ẩm.",
+  "en": ""
+ },
+ {
+  "vi": "Chăn thơm.",
+  "en": ""
+ },
+ {
+  "vi": "Tiếng ồn",
+  "en": ""
+ },
+ {
+  "vi": "phòng ồn",
+  "en": ""
+ },
+ {
+  "vi": "phòng cách âm kém, nghe rõ tiếng phòng bên",
+  "en": ""
+ },
+ {
+  "vi": "sáng sớm tiếng xe máy ngoài ngõ vọng vào",
+  "en": ""
+ },
+ {
+  "vi": "khách phòng bên hát karaoke tới khuya",
+  "en": ""
+ },
+ {
+  "vi": "phòng yên tĩnh, ngủ ngon lành",
+  "en": ""
+ },
+ {
+  "vi": "đêm chỉ nghe tiếng dế, ngủ sâu lắm",
+  "en": ""
+ },
+ {
+  "vi": "Ồn.",
+  "en": ""
+ },
+ {
+  "vi": "Yên tĩnh.",
+  "en": ""
+ },
+ {
+  "vi": "nước nóng chờ lâu",
+  "en": ""
+ },
+ {
+  "vi": "nước nóng chờ mãi mới lên",
+  "en": ""
+ },
+ {
+  "vi": "tắm được nửa chừng thì hết nước nóng",
+  "en": ""
+ },
+ {
+  "vi": "nước nóng có liền, tắm đêm lạnh sướng",
+  "en": ""
+ },
+ {
+  "vi": "bình nóng lạnh mạnh, cả nhà tắm không phải chờ",
+  "en": ""
+ },
+ {
+  "vi": "Nước nóng ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Đón khách, nhận phòng",
+  "en": ""
+ },
+ {
+  "vi": "nhận phòng lâu",
+  "en": ""
+ },
+ {
+  "vi": "tới nơi phải đứng chờ ở cổng một lúc mới có người ra",
+  "en": ""
+ },
+ {
+  "vi": "thủ tục nhận phòng hơi rườm rà",
+  "en": ""
+ },
+ {
+  "vi": "nhận phòng mà không ai chỉ chỗ bật nước nóng",
+  "en": ""
+ },
+ {
+  "vi": "nhận phòng nhanh, được dặn kỹ chỗ ăn chỗ chơi",
+  "en": ""
+ },
+ {
+  "vi": "được đón bằng ly nước chanh mát, dễ thương ghê",
+  "en": ""
+ },
+ {
+  "vi": "Chờ lâu.",
+  "en": ""
+ },
+ {
+  "vi": "Đón nồng hậu.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện và câu đùa",
+  "en": ""
+ },
+ {
+  "vi": "kể chuyện khô",
+  "en": ""
+ },
+ {
+  "vi": "hướng dẫn viên kể chuyện hơi khô, cả đoàn ngáp",
+  "en": ""
+ },
+ {
+  "vi": "một câu đùa kể lại ba lần",
+  "en": ""
+ },
+ {
+  "vi": "thuyết minh như đọc sách, không có chuyện nào vui",
+  "en": ""
+ },
+ {
+  "vi": "hướng dẫn viên đùa duyên, cả đoàn cười suốt",
+  "en": ""
+ },
+ {
+  "vi": "kể chuyện sử mà nghe như xem phim",
+  "en": ""
+ },
+ {
+  "vi": "biết nhiều chuyện hay, hỏi gì cũng trả lời được",
+  "en": ""
+ },
+ {
+  "vi": "Khô.",
+  "en": ""
+ },
+ {
+  "vi": "Duyên.",
+  "en": ""
+ },
+ {
+  "vi": "trễ giờ hẹn",
+  "en": ""
+ },
+ {
+  "vi": "hẹn bảy giờ mà gần tám giờ mới xuất phát",
+  "en": ""
+ },
+ {
+  "vi": "về trễ giờ hẹn, lỡ cả bữa tối",
+  "en": ""
+ },
+ {
+  "vi": "giao trễ hơn giờ hẹn gần nửa tiếng",
+  "en": ""
+ },
+ {
+  "vi": "báo giao buổi sáng mà chiều mới tới",
+  "en": ""
+ },
+ {
+  "vi": "đi đúng giờ, không ai phải chờ",
+  "en": ""
+ },
+ {
+  "vi": "lịch trình chuẩn, về đúng giờ hẹn",
+  "en": ""
+ },
+ {
+  "vi": "giao đúng khung giờ, không phải chờ",
+  "en": ""
+ },
+ {
+  "vi": "giao sớm hơn hẹn mà vẫn gọi hỏi trước",
+  "en": ""
+ },
+ {
+  "vi": "Trễ.",
+  "en": ""
+ },
+ {
+  "vi": "Đúng giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Điểm danh đoàn",
+  "en": ""
+ },
+ {
+  "vi": "để lạc khách",
+  "en": ""
+ },
+ {
+  "vi": "có lúc để lạc cả nhóm nhỏ phía sau",
+  "en": ""
+ },
+ {
+  "vi": "lên xe mà không ai đếm lại người",
+  "en": ""
+ },
+ {
+  "vi": "mỗi điểm dừng đều đếm đủ người",
+  "en": ""
+ },
+ {
+  "vi": "luôn đi cuối đoàn để không ai bị bỏ lại",
+  "en": ""
+ },
+ {
+  "vi": "Lạc đoàn.",
+  "en": ""
+ },
+ {
+  "vi": "Đủ người.",
+  "en": ""
+ },
+ {
+  "vi": "Xe đưa đón",
+  "en": ""
+ },
+ {
+  "vi": "xe cũ, máy lạnh yếu",
+  "en": ""
+ },
+ {
+  "vi": "xe hơi cũ, ghế ngồi lún",
+  "en": ""
+ },
+ {
+  "vi": "máy lạnh trên xe lúc chạy lúc không",
+  "en": ""
+ },
+ {
+  "vi": "xe có mùi xăng, người say xe khổ lắm",
+  "en": ""
+ },
+ {
+  "vi": "xe sạch, có sẵn nước suối lạnh",
+  "en": ""
+ },
+ {
+  "vi": "ghế xe êm, ngả ra ngủ một giấc ngon lành",
+  "en": ""
+ },
+ {
+  "vi": "tài xế chạy êm, cả đoàn không ai say xe",
+  "en": ""
+ },
+ {
+  "vi": "Xe cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Xe êm.",
+  "en": ""
+ },
+ {
+  "vi": "lịch trình dày đặc",
+  "en": ""
+ },
+ {
+  "vi": "lịch trình dày đặc, đi như chạy",
+  "en": ""
+ },
+ {
+  "vi": "mỗi điểm dừng có mười lăm phút, chưa kịp xem đã phải lên xe",
+  "en": ""
+ },
+ {
+  "vi": "lịch trình thong thả, có thời gian chụp ảnh",
+  "en": ""
+ },
+ {
+  "vi": "điểm nào cũng được ở lâu vừa đủ, không vội",
+  "en": ""
+ },
+ {
+  "vi": "Vội.",
+  "en": ""
+ },
+ {
+  "vi": "Thong thả.",
+  "en": ""
+ },
+ {
+  "vi": "Quan tâm khách",
+  "en": ""
+ },
+ {
+  "vi": "không hỏi han khách",
+  "en": ""
+ },
+ {
+  "vi": "đoàn có người say xe mà không ai hỏi han",
+  "en": ""
+ },
+ {
+  "vi": "người lớn tuổi đi chậm mà không ai đi cùng",
+  "en": ""
+ },
+ {
+  "vi": "nhắc cả đoàn uống nước, che nắng",
+  "en": ""
+ },
+ {
+  "vi": "để ý từng người, ai mệt là cho nghỉ liền",
+  "en": ""
+ },
+ {
+  "vi": "dìu cả bà cụ lên dốc, dễ thương ghê",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ mặc.",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ chụp ảnh",
+  "en": ""
+ },
+ {
+  "vi": "dừng chụp ảnh ít",
+  "en": ""
+ },
+ {
+  "vi": "dừng chụp ảnh ít quá, chưa kịp giơ máy đã đi",
+  "en": ""
+ },
+ {
+  "vi": "toàn dừng chỗ ngược sáng, ảnh ai cũng đen thui",
+  "en": ""
+ },
+ {
+  "vi": "dẫn tới chỗ chụp ảnh đẹp, còn chụp giúp cả đoàn",
+  "en": ""
+ },
+ {
+  "vi": "biết góc chụp đẹp, ảnh ai cũng ưng",
+  "en": ""
+ },
+ {
+  "vi": "Ít ảnh.",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh đẹp.",
+  "en": ""
+ },
+ {
+  "vi": "Giọng, micro",
+  "en": ""
+ },
+ {
+  "vi": "micro rè",
+  "en": ""
+ },
+ {
+  "vi": "micro rè rè, ngồi cuối xe nghe không rõ",
+  "en": ""
+ },
+ {
+  "vi": "nói nhỏ quá, đoàn phía sau phải hỏi lại",
+  "en": ""
+ },
+ {
+  "vi": "giọng to rõ, ngồi cuối xe vẫn nghe",
+  "en": ""
+ },
+ {
+  "vi": "giọng thuyết minh truyền cảm, nghe mãi không chán",
+  "en": ""
+ },
+ {
+  "vi": "Rè.",
+  "en": ""
+ },
+ {
+  "vi": "Rõ.",
+  "en": ""
+ },
+ {
+  "vi": "Lễ phép khi giao",
+  "en": ""
+ },
+ {
+  "vi": "shipper cộc lốc",
+  "en": ""
+ },
+ {
+  "vi": "shipper đưa hàng không nói câu nào",
+  "en": ""
+ },
+ {
+  "vi": "gọi xuống lấy hàng mà giọng như ra lệnh",
+  "en": ""
+ },
+ {
+  "vi": "shipper ném gói hàng qua cổng",
+  "en": ""
+ },
+ {
+  "vi": "shipper chào hỏi lễ phép, đưa hàng bằng hai tay",
+  "en": ""
+ },
+ {
+  "vi": "shipper dễ thương, còn dặn cẩn thận hàng dễ vỡ",
+  "en": ""
+ },
+ {
+  "vi": "shipper cảm ơn rối rít, ai nhận cũng vui",
+  "en": ""
+ },
+ {
+  "vi": "Cộc lốc.",
+  "en": ""
+ },
+ {
+  "vi": "Lễ phép.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi điện báo",
+  "en": ""
+ },
+ {
+  "vi": "tới nơi không gọi, đứng ngoài cổng bấm còi",
+  "en": ""
+ },
+ {
+  "vi": "gọi liên tục lúc tôi đang họp",
+  "en": ""
+ },
+ {
+  "vi": "nhắn tin cụt lủn \"xuống lấy hàng\"",
+  "en": ""
+ },
+ {
+  "vi": "gọi trước mười phút, báo sắp tới",
+  "en": ""
+ },
+ {
+  "vi": "nhắn tin báo trước, không làm phiền",
+  "en": ""
+ },
+ {
+  "vi": "không nghe máy thì nhắn tin, chờ thêm chút",
+  "en": ""
+ },
+ {
+  "vi": "Không gọi.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi trước.",
+  "en": ""
+ },
+ {
+  "vi": "Mũ, áo shipper",
+  "en": ""
+ },
+ {
+  "vi": "shipper luộm thuộm",
+  "en": ""
+ },
+ {
+  "vi": "áo đồng phục nhăn nhúm, lấm tấm bùn",
+  "en": ""
+ },
+ {
+  "vi": "shipper đội mũ bảo hiểm mà không cài quai",
+  "en": ""
+ },
+ {
+  "vi": "shipper mặc áo gọn gàng, đội mũ đàng hoàng",
+  "en": ""
+ },
+ {
+  "vi": "áo mưa trùm kín thùng hàng, chu đáo",
+  "en": ""
+ },
+ {
+  "vi": "hàng móp",
+  "en": ""
+ },
+ {
+  "vi": "hộp giao tới hơi móp một góc",
+  "en": ""
+ },
+ {
+  "vi": "túi hàng ướt lem nhem vì mưa",
+  "en": ""
+ },
+ {
+  "vi": "đồ uống sóng sánh, tràn ra túi",
+  "en": ""
+ },
+ {
+  "vi": "hàng bọc kỹ, tới tay còn nguyên",
+  "en": ""
+ },
+ {
+  "vi": "trời mưa mà hàng được bọc ni lông khô ráo",
+  "en": ""
+ },
+ {
+  "vi": "đồ uống giao tới còn lạnh, không đổ giọt nào",
+  "en": ""
+ },
+ {
+  "vi": "Móp.",
+  "en": ""
+ },
+ {
+  "vi": "Nguyên vẹn.",
+  "en": ""
+ },
+ {
+  "vi": "Nhãn hàng",
+  "en": ""
+ },
+ {
+  "vi": "nhãn ghi không rõ",
+  "en": ""
+ },
+ {
+  "vi": "nhãn không ghi ngày hái, không biết để được bao lâu",
+  "en": ""
+ },
+ {
+  "vi": "ghi rau sạch mà không nói rõ trồng thế nào",
+  "en": ""
+ },
+ {
+  "vi": "nhãn ghi rõ ngày hái, nơi trồng",
+  "en": ""
+ },
+ {
+  "vi": "có hướng dẫn bảo quản dán kèm, chu đáo",
+  "en": ""
+ },
+ {
+  "vi": "Nhãn sơ sài.",
+  "en": ""
+ },
+ {
+  "vi": "Nhãn rõ.",
+  "en": ""
+ },
+ {
+  "vi": "Sạp hàng",
+  "en": ""
+ },
+ {
+  "vi": "sạp lấm bùn",
+  "en": ""
+ },
+ {
+  "vi": "giỏ rau để dưới đất, nhìn hơi ngại",
+  "en": ""
+ },
+ {
+  "vi": "rau để sát lối đi, khách qua lại quệt vào",
+  "en": ""
+ },
+ {
+  "vi": "trời mưa, sạp bán lấm bùn, giỏ để dưới đất",
+  "en": ""
+ },
+ {
+  "vi": "mưa hắt vào sạp, rau lấm tấm bùn",
+  "en": ""
+ },
+ {
+  "vi": "sạp gọn, rau bày trong rổ tre sạch sẽ",
+  "en": ""
+ },
+ {
+  "vi": "có tấm bạt che nắng, rau tươi cả buổi",
+  "en": ""
+ },
+ {
+  "vi": "Lấm bùn.",
+  "en": ""
+ },
+ {
+  "vi": "Sạp gọn.",
+  "en": ""
+ },
+ {
+  "vi": "Cân đủ",
+  "en": ""
+ },
+ {
+  "vi": "cân thiếu, về nhà cân lại hụt một lạng",
+  "en": ""
+ },
+ {
+  "vi": "bó rau nhìn to mà gỡ ra toàn cọng",
+  "en": ""
+ },
+ {
+  "vi": "cân đủ, còn cho thêm nắm hành",
+  "en": ""
+ },
+ {
+  "vi": "cân trước mặt khách, rõ ràng sòng phẳng",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu cân.",
+  "en": ""
+ },
+ {
+  "vi": "Đủ cân.",
+  "en": ""
+ },
+ {
+  "vi": "Đóng gói rau trứng",
+  "en": ""
+ },
+ {
+  "vi": "đóng gói sơ sài",
+  "en": ""
+ },
+ {
+  "vi": "trứng để chung túi với rau, nhìn hơi lo",
+  "en": ""
+ },
+ {
+  "vi": "rau bọc túi ni lông kín mít, về tới nhà hơi úng",
+  "en": ""
+ },
+ {
+  "vi": "rau buộc gọn bằng lạt, trứng lót rơm cẩn thận",
+  "en": ""
+ },
+ {
+  "vi": "gói bằng lá chuối, nhìn mộc mạc dễ thương",
+  "en": ""
+ },
+ {
+  "vi": "Gói sơ sài.",
+  "en": ""
+ },
+ {
+  "vi": "Giá dịch vụ",
+  "en": ""
+ },
+ {
+  "vi": "giá dịch vụ hơi cao",
+  "en": ""
+ },
+ {
+  "vi": "giá hơi cao so với mặt bằng",
+  "en": ""
+ },
+ {
+  "vi": "làm xong mới báo thêm phụ phí",
+  "en": ""
+ },
+ {
+  "vi": "giá rõ ràng, báo trước rồi mới làm",
+  "en": ""
+ },
+ {
+  "vi": "giá phải chăng, làm kỹ, đáng tiền",
+  "en": ""
+ },
+ {
+  "vi": "Cách giảng",
+  "en": ""
+ },
+ {
+  "vi": "giảng nhanh, khó hiểu",
+  "en": ""
+ },
+ {
+  "vi": "con về kể cô/thầy giảng nhanh quá, con chép không kịp",
+  "en": ""
+ },
+ {
+  "vi": "con bảo cô/thầy giảng lý thuyết nhiều, ít ví dụ",
+  "en": ""
+ },
+ {
+  "vi": "con về làm bài không được vì trên lớp chưa hiểu",
+  "en": ""
+ },
+ {
+  "vi": "con kể cả tiết chỉ nghe giảng, không được hỏi câu nào",
+  "en": ""
+ },
+ {
+  "vi": "cô/thầy giảng nhanh quá, em chép không kịp",
+  "en": ""
+ },
+ {
+  "vi": "lý thuyết nhiều quá, em nghe mà buồn ngủ",
+  "en": ""
+ },
+ {
+  "vi": "em chưa hiểu bài mà cô/thầy đã chuyển phần mới",
+  "en": ""
+ },
+ {
+  "vi": "tiết dạy hơi dồn, học sinh theo không kịp",
+  "en": ""
+ },
+ {
+  "vi": "phần lý thuyết dài, ví dụ còn ít",
+  "en": ""
+ },
+ {
+  "vi": "con về giảng lại cho cả nhà nghe, chắc trên lớp dễ hiểu lắm",
+  "en": ""
+ },
+ {
+  "vi": "cô/thầy giảng chậm rãi, có ví dụ gần gũi nên con hiểu bài",
+  "en": ""
+ },
+ {
+  "vi": "con bảo cô/thầy chia bài thành từng bước nhỏ, dễ theo",
+  "en": ""
+ },
+ {
+  "vi": "con kể cô/thầy lấy ví dụ bằng chuyện đi chợ, con nhớ bài lâu",
+  "en": ""
+ },
+ {
+  "vi": "cô/thầy giảng dễ hiểu ghê, có ví dụ bằng bánh kẹo luôn",
+  "en": ""
+ },
+ {
+  "vi": "em hiểu bài ngay trên lớp, về nhà làm bài vèo cái xong",
+  "en": ""
+ },
+ {
+  "vi": "cô/thầy vẽ sơ đồ lên bảng, nhìn là hiểu",
+  "en": ""
+ },
+ {
+  "vi": "tiết dạy mạch lạc, có ví dụ gần gũi",
+  "en": ""
+ },
+ {
+  "vi": "cách chia bài thành từng bước nhỏ rất đáng học hỏi",
+  "en": ""
+ },
+ {
+  "vi": "Giảng nhanh.",
+  "en": ""
+ },
+ {
+  "vi": "Dễ hiểu.",
+  "en": ""
+ },
+ {
+  "vi": "Hoạt động trên lớp",
+  "en": ""
+ },
+ {
+  "vi": "lớp ít hoạt động",
+  "en": ""
+ },
+ {
+  "vi": "con bảo cả tiết chỉ ngồi chép bài, không có hoạt động gì",
+  "en": ""
+ },
+ {
+  "vi": "con kể lớp không được làm nhóm, ngồi im cả buổi",
+  "en": ""
+ },
+ {
+  "vi": "cả tiết ngồi chép, chán ghê",
+  "en": ""
+ },
+ {
+  "vi": "không có hoạt động nào, em ngồi đếm quạt quay",
+  "en": ""
+ },
+ {
+  "vi": "tiết học còn ít hoạt động cho học sinh",
+  "en": ""
+ },
+ {
+  "vi": "con kể lớp được chơi trò đố vui, về còn đòi chơi tiếp",
+  "en": ""
+ },
+ {
+  "vi": "có hoạt động nhóm nên con hào hứng đi học",
+  "en": ""
+ },
+ {
+  "vi": "con về kể được làm thí nghiệm nhỏ, mắt sáng rỡ",
+  "en": ""
+ },
+ {
+  "vi": "trò đố vui cuối tiết vui xỉu",
+  "en": ""
+ },
+ {
+  "vi": "được làm nhóm với bạn, học mà như chơi",
+  "en": ""
+ },
+ {
+  "vi": "cô/thầy cho cả lớp đóng kịch, vui ghê",
+  "en": ""
+ },
+ {
+  "vi": "hoạt động nhóm tổ chức gọn, học sinh hào hứng",
+  "en": ""
+ },
+ {
+  "vi": "Bài tập về nhà",
+  "en": ""
+ },
+ {
+  "vi": "bài về nhà nhiều",
+  "en": ""
+ },
+ {
+  "vi": "bài tập về nhà hơi nhiều, con làm tới khuya",
+  "en": ""
+ },
+ {
+  "vi": "bài về nhà khó quá, bố mẹ cũng phải tra cứu",
+  "en": ""
+ },
+ {
+  "vi": "bài về nhà nhiều quá trời, em làm tới mười giờ",
+  "en": ""
+ },
+ {
+  "vi": "bài về nhà có câu khó, em ngồi khóc luôn",
+  "en": ""
+ },
+ {
+  "vi": "bài về nhà vừa sức, con tự làm được",
+  "en": ""
+ },
+ {
+  "vi": "bài tập ít mà trúng trọng tâm",
+  "en": ""
+ },
+ {
+  "vi": "bài về nhà có hướng dẫn, bố mẹ kèm cũng dễ",
+  "en": ""
+ },
+ {
+  "vi": "bài về nhà vừa đủ, em còn thời gian chơi",
+  "en": ""
+ },
+ {
+  "vi": "bài về nhà dễ hiểu, em làm một mình được",
+  "en": ""
+ },
+ {
+  "vi": "Bài nhiều.",
+  "en": ""
+ },
+ {
+  "vi": "Bài vừa sức.",
+  "en": ""
+ },
+ {
+  "vi": "giáo viên hơi gắt",
+  "en": ""
+ },
+ {
+  "vi": "con hỏi lại lần hai thì cô/thầy hơi gắt",
+  "en": ""
+ },
+ {
+  "vi": "con kể cô/thầy hay thở dài khi bạn trả lời sai",
+  "en": ""
+ },
+ {
+  "vi": "em hỏi lại mà cô/thầy nói \"nãy giảng rồi\"",
+  "en": ""
+ },
+ {
+  "vi": "bạn trả lời sai là cô/thầy nhăn mặt, em sợ không dám hỏi",
+  "en": ""
+ },
+ {
+  "vi": "đôi lúc hơi nóng khi học sinh hỏi lại",
+  "en": ""
+ },
+ {
+  "vi": "con hỏi mấy lần cô/thầy vẫn kiên nhẫn giảng lại",
+  "en": ""
+ },
+ {
+  "vi": "cô/thầy không bao giờ quát, con thích lắm",
+  "en": ""
+ },
+ {
+  "vi": "con làm sai mà cô/thầy vẫn động viên",
+  "en": ""
+ },
+ {
+  "vi": "em hỏi hoài mà cô/thầy vẫn cười giảng lại",
+  "en": ""
+ },
+ {
+  "vi": "cô/thầy không quát ai bao giờ",
+  "en": ""
+ },
+ {
+  "vi": "em làm sai mà cô/thầy bảo \"không sao, thử lại nha\"",
+  "en": ""
+ },
+ {
+  "vi": "kiên nhẫn với từng em, không nóng nảy",
+  "en": ""
+ },
+ {
+  "vi": "cô/thầy kiên nhẫn lắm, kiên nhẫn được đúng một lần giảng 🙂",
+  "en": ""
+ },
+ {
+  "vi": "Hơi gắt.",
+  "en": ""
+ },
+ {
+  "vi": "Kiên nhẫn.",
+  "en": ""
+ },
+ {
+  "vi": "Công bằng",
+  "en": ""
+ },
+ {
+  "vi": "thiên vị",
+  "en": ""
+ },
+ {
+  "vi": "con bảo cô/thầy hay gọi mấy bạn giỏi lên bảng, con giơ tay mãi không được gọi",
+  "en": ""
+ },
+ {
+  "vi": "hình như cô/thầy hơi thiên vị mấy bạn ngồi bàn đầu",
+  "en": ""
+ },
+ {
+  "vi": "cô/thầy toàn gọi mấy bạn bàn đầu",
+  "en": ""
+ },
+ {
+  "vi": "bạn lớp trưởng làm sai mà không bị nhắc",
+  "en": ""
+ },
+ {
+  "vi": "cô/thầy gọi đều cả lớp, bạn nào cũng được lên bảng",
+  "en": ""
+ },
+ {
+  "vi": "khen chê công bằng, con thấy phục",
+  "en": ""
+ },
+ {
+  "vi": "bạn nào cô/thầy cũng gọi, công bằng lắm",
+  "en": ""
+ },
+ {
+  "vi": "cô/thầy khen cả bạn học chưa giỏi, bạn ấy vui lắm",
+  "en": ""
+ },
+ {
+  "vi": "đối xử công bằng, không thiên vị em nào",
+  "en": ""
+ },
+ {
+  "vi": "Thiên vị.",
+  "en": ""
+ },
+ {
+  "vi": "Công bằng.",
+  "en": ""
+ },
+ {
+  "vi": "Với bạn nhút nhát",
+  "en": ""
+ },
+ {
+  "vi": "con nhút nhát không được để ý",
+  "en": ""
+ },
+ {
+  "vi": "con hơi nhút nhát, ngồi cuối lớp cả buổi không ai hỏi han",
+  "en": ""
+ },
+ {
+  "vi": "con ít nói nên hình như cô/thầy chưa để ý tới con",
+  "en": ""
+ },
+ {
+  "vi": "em ngồi cuối lớp, cô/thầy ít khi xuống chỗ em",
+  "en": ""
+ },
+ {
+  "vi": "con nhà tôi nhút nhát mà được cô/thầy động viên, giờ dám giơ tay",
+  "en": ""
+ }
+]

@@ -35,6 +35,7 @@ ENTRIES = (
     dict(version="1.2.2", date="2026-10-02", items=(
         dict(emoji="😍", text="Thả cảm xúc trong chat: nhấn giữ một tin nhắn rồi chọn ❤️ 😂 😮 😢 👍 🔥. Bấm lại để bỏ, chọn cái khác để đổi.", go=dict(action="liveChat")),
         dict(emoji="💬", text="Dưới mỗi tin hiện số cảm xúc của mọi người; bấm vào một cảm xúc là thả theo ngay."),
+        dict(emoji="🌞", text="Thẻ Nhiệm vụ hôm nay ghi rõ cách tính từng việc; nhớ bấm Nhận quà trước khi đóng ca."),
     )),
     dict(version="1.2.0", date="2026-10-01", items=(
         dict(emoji="🏠", text="Vào nhà của mình: xem từng phòng, sửa nhà và trang trí với 27 món đồ. Nhà càng ấm cúng, sáng dậy càng vui.", go=dict(action="house")),

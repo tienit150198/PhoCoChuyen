@@ -3,7 +3,8 @@
 export default [
  {"version":"1.2.2","date":"2026-10-02","items":[
   {"emoji":"😍","text":"Thả cảm xúc trong chat: nhấn giữ một tin nhắn rồi chọn ❤️ 😂 😮 😢 👍 🔥. Bấm lại để bỏ, chọn cái khác để đổi.","go":{"action":"liveChat"}},
-  {"emoji":"💬","text":"Dưới mỗi tin hiện số cảm xúc của mọi người; bấm vào một cảm xúc là thả theo ngay."}
+  {"emoji":"💬","text":"Dưới mỗi tin hiện số cảm xúc của mọi người; bấm vào một cảm xúc là thả theo ngay."},
+  {"emoji":"🌞","text":"Thẻ Nhiệm vụ hôm nay ghi rõ cách tính từng việc; nhớ bấm Nhận quà trước khi đóng ca."}
  ]},
  {"version":"1.2.0","date":"2026-10-01","items":[
   {"emoji":"🏠","text":"Vào nhà của mình: xem từng phòng, sửa nhà và trang trí với 27 món đồ. Nhà càng ấm cúng, sáng dậy càng vui.","go":{"action":"house"}},

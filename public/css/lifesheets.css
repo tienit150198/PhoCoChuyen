@@ -78,6 +78,8 @@ html[data-layout="phone"] .lx-tab .em{font-size:1.2rem}
 .lx-goals li.claimed .lx-check{background:var(--good);border-color:var(--good);color:var(--surface)}
 .lx-goals li.claimed b{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line-strong)}
 .lx-goal-end{flex:none}
+.lx-goals small.lx-goal-hint{margin-top:3px;font-size:.76rem;line-height:1.35}
+.lx-goal-note{margin:10px 0 0;font-size:.76rem;line-height:1.4;color:var(--muted)}
 .lx-goal-end>b{font-size:1rem;color:var(--accent-text);font-variant-numeric:tabular-nums;white-space:nowrap}
 
 /* Shortcut rows */

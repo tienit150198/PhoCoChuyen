@@ -45,12 +45,14 @@ function lockedView(cid,c,content,meta,state){
  const J=state.journey,n=(content.journey?.unlock_chapter||{})[cid],hint=n===J.chapter+1?'Sắp mở':'Còn ở phía trước';
  return `<div class="lx-top"><header class="sheet-head lx-head"><div class="grow"><span class="eyebrow">${esc(meta.short||'')}</span><h2>${esc(meta.place||'')}</h2></div><button type="button" class="btn ghost small icon-btn" data-action="close" aria-label="Đóng">${icon('x',20)}</button></header></div><div class="life-content lx"><section class="lx-card lx-locked">${tile('🔒','big')}<b>Chưa mở</b><small>${hint}${n?` · Chương ${n}`:''}</small>${b(icon('back',16)+' Hành trình','home',{},'primary')}</section></div>`;
 }
+// How each daily goal counts (feedback #69, 02/10): shown under the reward until it is claimed.
+const GOAL_HINTS={serve:'Mở cửa rồi làm xong việc trong ca',play:'Chơi ở tab Trò nhỏ',talk:'Bấm 💬 ở một công việc, hoặc Người quen → Trò chuyện, với 2 người khác nhau (chat Cả phố không tính)'};
 function goalList(c){
  if(!c.life.goals.length)return '';
  return `<ul class="lx-goals">${c.life.goals.map(g=>{const ready=g.current>=g.goal;
-  return `<li class="${g.claimed?'claimed':ready?'ready':''}"><span class="lx-check" aria-hidden="true">${g.claimed||ready?icon('check',14):''}</span><div class="grow"><b>${esc(g.title)}</b><small>Thưởng ${g.reward} xu · +10 XP</small></div><div class="lx-goal-end">${g.claimed?'<span class="done-mark">✓ Đã nhận</span>':ready?doB('Nhận quà','life_goal',{goal:g.id},'small primary'):`<b>${Math.min(g.current,g.goal)}/${g.goal}</b>`}</div></li>`;}).join('')}</ul>`;
+  return `<li class="${g.claimed?'claimed':ready?'ready':''}"><span class="lx-check" aria-hidden="true">${g.claimed||ready?icon('check',14):''}</span><div class="grow"><b>${esc(g.title)}</b><small>Thưởng ${g.reward} xu · +10 XP</small>${!g.claimed&&!ready&&GOAL_HINTS[g.id]?`<small class="lx-goal-hint">${GOAL_HINTS[g.id]}</small>`:''}</div><div class="lx-goal-end">${g.claimed?'<span class="done-mark">✓ Đã nhận</span>':ready?doB('Nhận quà','life_goal',{goal:g.id},'small primary'):`<b>${Math.min(g.current,g.goal)}/${g.goal}</b>`}</div></li>`;}).join('')}</ul>`;
 }
-function goalCard(c){return c.life.goals.length?`<section class="lx-card">${h3('🌞 Nhiệm vụ hôm nay')}${goalList(c)}</section>`:'';}
+function goalCard(c){return c.life.goals.length?`<section class="lx-card">${h3('🌞 Nhiệm vụ hôm nay')}${goalList(c)}<p class="lx-goal-note">Đóng ca là tính lại từ đầu, nhớ bấm Nhận quà trước khi đóng ca.</p></section>`:'';}
 /** The few working steps of a career without a price list. */
 function craftSteps(cid){
  return cid==='teacher'?['🌱 Lớp học Mầm Nắng',['🖼️ Ví dụ','🧩 Luyện tập','💡 Cùng hiểu']]:cid==='pharmacy'?['🧰 Cẩn thận từng chút',['📋 Nhận phiếu','🔎 Đọc mã lô','🧰 Kiểm khay','🤝 Bàn giao']]:cid==='accounting'?['📒 Mỗi số có một nguồn',['📂 Mở nguồn','🧩 Ghép phiếu','🔎 Tìm sai lệch','📒 Giải thích']]:cid==='customer_care'?['🎧 Nghe thật, làm tới nơi',['💬 Lắng nghe','🔎 Kiểm chứng','🤝 Phối hợp','✅ Theo dõi']]:['',[]];

@@ -1,5 +1,10 @@
 {
  "strings": {
+  "Thẻ Nhiệm vụ hôm nay ghi rõ cách tính từng việc; nhớ bấm Nhận quà trước khi đóng ca.": "The Today's goals card now says how each goal counts; claim your rewards before you close the shift.",
+  "Mở cửa rồi làm xong việc trong ca": "Open up, then finish jobs during the shift",
+  "Chơi ở tab Trò nhỏ": "Play one in the Mini games tab",
+  "Bấm 💬 ở một công việc, hoặc Người quen → Trò chuyện, với 2 người khác nhau (chat Cả phố không tính)": "Tap 💬 on a job, or People → Chat, with 2 different people (Town chat does not count)",
+  "Đóng ca là tính lại từ đầu, nhớ bấm Nhận quà trước khi đóng ca.": "Closing the shift resets the count, so claim your rewards before you close.",
   "Thả cảm xúc trong chat: nhấn giữ một tin nhắn rồi chọn ❤️ 😂 😮 😢 👍 🔥. Bấm lại để bỏ, chọn cái khác để đổi.": "Reactions in chat: press and hold a message, then pick ❤️ 😂 😮 😢 👍 🔥. Tap it again to remove, pick another to change.",
   "Dưới mỗi tin hiện số cảm xúc của mọi người; bấm vào một cảm xúc là thả theo ngay.": "Each message shows everyone's reactions with counts; tap one to react the same way.",
   "Mã người chơi không hợp lệ.": "Invalid player ID.",
