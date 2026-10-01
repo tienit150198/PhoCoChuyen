@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **1.1.2** (`main` = `b2a71b4`), 28 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **1.1.4** (`main` = `9f9e33c`), 28 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -127,6 +127,14 @@ branch holds what, and what to do next, in order. Details live in the linked doc
    1.1.1 hotfix: wedding plan errors shown at the send button, too-soon times blocked, a server-wide "sắp cưới"
    news line with the date and time. Anti-flood limits on nginx + fail2ban + SYN cookies (deploy/ddos/, 01/10).
    1.1.2 (01/10 14:20, quiet): weekly leaderboard titles, a Danh hiệu board, up to 3 titles/certificates worn.
+   1.1.3 (01/10 16:24, notice): the wedding party reworked (10 min, everyone recorded on entry, 20 xu a minute,
+   15 xu a guest for the couple, any couple books its party for free, the show in wedfeast.js), 🧧 red envelopes
+   and the "Lời chúc" board (feedback #56). 1.1.4 (01/10 17:56, notice): a guest counts after 2 minutes
+   (`GUEST_MIN_MINUTES`); the bà Sáu bulk order fix with stuck saves answered on load (#57, `heal_save` in
+   `migrate_state`). Both packaged on Windows (scripts/build_static.py batches esbuild; a comment-only stylesheet
+   keeps its bytes). **Never deploy while a wedding party is open or within ~20 min of one** (mnl-live restarts).
+   Waiting for version 2: branches `house-reno` (view/repair/decorate), `office-jobs` (3 office positions) and a
+   homemaker career (in progress), plus the #59 dorm idea (owner to decide).
    Tested first on a staging copy of PG (`phoco_stage`, port 8799, dropped after): the leaderboard VERSION 2
    rebuild took ~3.5 min there and ~4 min live. A staging server MUST run with `PUSH_DISABLED=1` (its
    housekeeping would otherwise deliver the copied push queue to real phones). Was next: 1.1.0 weddings
