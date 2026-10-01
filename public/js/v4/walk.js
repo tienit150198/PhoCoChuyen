@@ -27,6 +27,10 @@
  * The party's show (the MC, neighbours, kids, lion dance, lights, music) is ./wedfeast.js, on the party clock.
  * At a wedding, what people said stays on the "Lời chúc" board (bubbles fade fast, the keyboard hides them), and a
  * guest can give the couple a red envelope (🧧: POST /api/marriage/envelope, then `wed_env` tells the room).
+ * 1.3.0: the couple's name tags are a gold and rose pill; a table opens its mâm cỗ (`wed_eat`: a dish, a beer, a soft
+ * drink; the server pays the tinh thần and the room sees who ate or drank); whoever stands on the stage dances on the
+ * beat (💃 spins); the couple throws the bouquet when the MC calls for it (`wed_toss`), the room sees it fly to whoever
+ * caught it.
  */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {live,openChat} from './live.js';
@@ -36,14 +40,20 @@ import {paintPlace,paintLion,paintVendor,paintEnvelope,EDGE,WORLD} from '../scen
 import * as feast from './wedfeast.js';
 
 const W=WORLD.w,H=WORLD.h,AV=.5,LOG_MAX=40,BUBBLE_MS=6000,EMO_MS=2600,MOVE_GAP=260,PLACE_KEY='mnl.walk.place',WSOUND_KEY='mnl.wed.sound';
-const EMOTES=[['wave','👋'],['heart','❤️'],['laugh','😂'],['wow','😮'],['pray','🙏']];
+const EMOTES=[['wave','👋'],['heart','❤️'],['laugh','😂'],['wow','😮'],['pray','🙏'],['dance','💃']];   // 💃: weddings only
+const WED_ONLY=new Set(['dance']),TOSS_MS=1700;
+const RM=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
+const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contains('reduce-motion')||document.body.classList.contains('reduce-motion');
+/** On the stage (the dance floor: wedfeast.js STAGE), with a little margin. */
+const onStage=(x,y)=>x>=feast.STAGE[0]-4&&x<=feast.STAGE[2]+4&&y>=feast.STAGE[1]-4&&y<=feast.STAGE[3]+2;
 const EMO=Object.fromEntries(EMOTES);
 const REASONS=[['spam','Spam'],['rude','Thô tục'],['scam','Lừa đảo'],['private','Lộ thông tin'],['other','Khác']];
-const MINE=new Set(['walk_places','walk_in','walk_out','move','say','emote','sit','stand','topic','card','invite','invite_reply','grab','report','block','wed_in','wed_photo']);
+const MINE=new Set(['walk_places','walk_in','walk_out','move','say','emote','sit','stand','topic','card','invite','invite_reply','grab','report','block','wed_in','wed_photo','wed_eat','wed_toss']);
 const S={env:null,dlg:null,cv:null,ctx:null,stage:null,room:null,geo:null,speed:170,people:new Map(),tables:[],hap:null,envl:null,
   offs:[],off:0,places:[],k:1,ox:0,oy:0,dpr:1,cw:0,ch:0,bg:null,bgKey:'',raf:0,lastDraw:0,card:null,invite:null,sent:null,
   toastTimer:0,moveAt:0,moveTimer:0,pending:null,lastPublic:null,bound:false,hideTimer:0,paused:false,floaters:[],emotes:false,
-  picker:false,down:null,topicKey:'',want:null,wedding:null,wed:null,photo:null,ended:null,burst:0,clock:'',wsound:true,log:[],logOpen:false,logKey:'',envp:null};
+  picker:false,down:null,topicKey:'',want:null,wedding:null,wed:null,photo:null,ended:null,burst:0,clock:'',wsound:true,log:[],logOpen:false,logKey:'',envp:null,
+  tray:null,toss:null,floatKey:'',eatAt:0};
 try{S.wsound=localStorage.getItem(WSOUND_KEY)!=='0';}catch{/* storage blocked */}
 const spots=new Map(),hooks={enter:new Set(),leave:new Set()};
 const night=()=>document.documentElement.dataset.theme==='dem';
@@ -51,7 +61,7 @@ const nowS=()=>Date.now()/1000+S.off;
 const me=()=>S.room&&S.people.get(S.room.me);
 const partyS=()=>S.wed?nowS()-S.wed.at:-1e9;
 /** The wedding music plays while this player is at a party that is on (and has not muted it). */
-function syncMusic(){feast.music(Boolean(S.dlg?.open&&S.wed&&S.room&&!S.ended&&S.wsound&&feast.lively(partyS())),partyS);}
+function syncMusic(){feast.music(Boolean(S.dlg?.open&&S.wed&&S.room&&!S.ended&&S.wsound&&feast.lively(partyS())),partyS,S.wed?S.wed.end-S.wed.at:600);}
 const emit=(k,d)=>{for(const fn of hooks[k])try{fn(d);}catch(e){console.warn('walk:',k,e);}};
 const css=()=>stylesheet('/css/walk.css');
 
@@ -99,8 +109,9 @@ function dialog(){
     <div class="wk-stage"><canvas class="wk-canvas" role="img" tabindex="0"></canvas>
       <div class="wk-topic" hidden></div><div class="wk-banner" hidden></div><div class="wk-card" hidden></div><div class="wk-invite" hidden></div><div class="wk-end" hidden></div>
       <div class="wk-wishes" hidden></div><div class="wk-envp" role="dialog" aria-label="Phong bì mừng cưới" hidden></div>
+      <div class="wk-tray" role="dialog" aria-label="Mâm cỗ" hidden></div><div class="wk-float" hidden></div>
       <div class="wk-toast" role="status" aria-live="polite" hidden></div></div>
-    <div class="wk-emotes" hidden>${EMOTES.map(([k,e])=>`<button type="button" data-wk="emote" data-e="${k}" aria-label="${k}">${e}</button>`).join('')}</div>
+    <div class="wk-emotes" hidden>${EMOTES.map(([k,e])=>`<button type="button" data-wk="emote" data-e="${k}" aria-label="${k}"${WED_ONLY.has(k)?' data-wedonly hidden':''}>${e}</button>`).join('')}</div>
     <form class="wk-say"><button type="button" class="wk-emo-btn" data-wk="emotes" aria-label="Biểu cảm" aria-expanded="false">😊</button>
       <input type="text" maxlength="120" enterkeyhint="send" autocomplete="off" aria-label="Nói" placeholder="Nói gì đó…">
       <button type="submit" class="wk-send" aria-label="Nói">${icon('send',20)}</button></form></div>`;
@@ -144,7 +155,7 @@ function onClose(){
   cancelAnimationFrame(S.raf);S.raf=0;
   if(was)emit('leave',{place:was.place,room:was.room});
 }
-function leaveLocal(){S.log=[];S.logOpen=false;S.envp=null;paintLog();S.room=null;S.geo=null;S.people.clear();S.tables=[];S.hap=null;S.envl=null;S.card=null;S.invite=null;S.floaters=[];S.photo=null;syncMusic();paintOverlays();}
+function leaveLocal(){S.log=[];S.logOpen=false;S.envp=null;S.tray=null;S.toss=null;paintLog();S.room=null;S.geo=null;S.people.clear();S.tables=[];S.hap=null;S.envl=null;S.card=null;S.invite=null;S.floaters=[];S.photo=null;syncMusic();paintOverlays();}
 
 function enter(place){
   const st=S.env?.api?.state||{},me={look:lookOf(st),g:st.journey?.gender??null,title:st.journey?.equipped??null,titles:Array.isArray(st.journey?.worn)?st.journey.worn.map(w=>w.id):undefined};
@@ -197,6 +208,19 @@ function bind(){
   live.on('deleted',f=>{if(!S.room||f.ch!==S.room.room)return;for(const p of S.people.values()){if(p.bub?.id===f.id)p.bub=null;if(p.said?.id===f.id)p.said=null;}
     const n=S.log.length;S.log=S.log.filter(l=>l.id!==f.id);if(S.log.length!==n)paintLog();});
   live.on('emoted',f=>{const p=S.people.get(f.pid);if(p)p.emo={e:EMO[f.e]||'👋',t0:performance.now()};});
+  live.on('wed_eat',f=>{const p=S.people.get(f.pid);if(!p||!S.wed)return;const t0=performance.now();   // 🍽️ someone ate or drank at a table
+    if(f.k==='beer'){p.emo={e:'🍻',t0,cheers:true};S.floaters.push({pid:f.pid,text:'Dzô! 🍻',t0,col:'#c77700'});}
+    else p.emo={e:f.k==='soda'?'🥤':`🥢${feast.DISH_ICONS[f.d]||'🍽️'}`,t0};});
+  live.on('wed_ate',f=>{if(!S.wed||f.id!==S.wed.id)return;
+    const m=me(),t0=performance.now();
+    if(f.k!=='soda'&&f.left!=null){S.wed.eat={...(S.wed.eat||{}),[f.k]:f.left};paintTray();}
+    const text=f.n>0?`+${f.n} tinh thần`:f.n<0?`${f.n} tinh thần`:f.k==='dish'?'No căng bụng rồi 😋':f.k==='beer'?'Say rồi, nước ngọt thôi 🥤':'Mát lạnh! 🥤';
+    if(m)S.floaters.push({pid:m.pid,text:text.replace('-','−'),t0:t0+(f.k==='beer'?700:0),col:f.n>0?'#1f8a4c':f.n<0?'#b8322c':'#6a5a8a'});
+    if(f.n)payNow();});
+  live.on('wed_toss_open',f=>{if(S.wed?.id!==f.id)return;S.wed.toss={...(S.wed.toss||{}),open:true,until:f.until};
+    toast(S.wed.pids?.includes(S.room?.me)?'💐 Tới màn tung hoa rồi! Bấm “Tung hoa” nhé':'💐 Sắp tung hoa cưới! Lại gần sân khấu nào');paintFloat(true);});
+  live.on('wed_toss',f=>{if(S.wed?.id!==f.id)return;   // 💐 the bouquet flies from the couple to whoever caught it
+    S.wed.toss={...(S.wed.toss||{}),open:false,done:{pid:f.pid,name:f.name}};S.toss={...f,t0:performance.now(),told:false};paintFloat(true);});
   live.on('happen',f=>{if(!S.room)return;sample(f.at);S.hap={...f,end:f.at+f.dur};if(f.k==='env')S.envl={id:f.id,x:f.x,y:f.y,until:f.until};});
   live.on('happen_end',f=>{
     if(S.envl?.id===f.id)S.envl=null;if(S.hap?.id===f.id)S.hap=null;
@@ -283,10 +307,16 @@ function act(a,d){
   switch(a){
     case'close':S.dlg.close();return;
     case'photo':live.send({t:'wed_photo'});return;
-    case'env':S.envp=S.envp?null:{amount:(S.wed?.envs||[20])[1]??20,wish:0,busy:false};paintEnvp();return;
+    case'env':S.envp=S.envp?null:{amount:(S.wed?.envs||[20])[1]??20,wish:0,busy:false};if(S.envp)S.tray=null;paintTray();paintEnvp();return;
     case'envAmt':if(S.envp){S.envp.amount=Number(d.n);paintEnvp();}return;
     case'envWish':if(S.envp){S.envp.wish=Number(d.n);paintEnvp();}return;
     case'envSend':sendEnvelope();return;
+    case'tray':S.tray=null;paintTray();paintFloat(true);return;
+    case'eat':{if(!S.tray||performance.now()-S.eatAt<350)return;S.eatAt=performance.now();
+      const k=d.k,msg={t:'wed_eat',k};if(k==='dish')msg.d=Number(d.d);live.send(msg);
+      const b=S.dlg.querySelector(`.wk-tray [data-k="${k}"]${k==='dish'?`[data-d="${Number(d.d)}"]`:''}`);if(b){b.classList.remove('ate');void b.offsetWidth;b.classList.add('ate');}return;}
+    case'toss':live.send({t:'wed_toss'});return;
+    case'dance':live.send({t:'emote',e:'dance'});return;
     case'log':S.logOpen=!S.logOpen;paintLog();return;
     case'wsound':S.wsound=!S.wsound;try{localStorage.setItem(WSOUND_KEY,S.wsound?'1':'0');}catch{/* storage blocked */}syncMusic();head();return;
     case'account':S.dlg.close();S.env?.act?.('v4AccountOpen',{mode:'register'});return;   // v4/account.js
@@ -340,12 +370,16 @@ function tap(cx,cy){
   if(!S.room||!S.geo)return;
   const r=S.cv.getBoundingClientRect(),x=(cx-r.left-S.ox)/S.k,y=(cy-r.top-S.oy)/S.k,t=nowS();
   if(S.card||S.picker){S.card=null;S.picker=false;head();paintOverlays();}
+  if(S.tray){S.tray=null;paintTray();paintFloat(true);}
   if(S.envl&&Math.hypot(x-S.envl.x,y-S.envl.y)<42){live.send({t:'grab',id:S.envl.id});return;}
   for(const s of spots.values()){const at=spotAt(s);if(at&&Math.hypot(x-at[0],y-at[1])<(s.r||40)){try{if(s.tap?.({x:at[0],y:at[1],place:S.room.place,room:S.room.room})!==false)return;}catch(e){console.warn('walk spot:',e);}}}
   let hit=null,hd=Infinity;
   for(const p of S.people.values()){if(p.pid===S.room.me)continue;const [px,py]=posAt(p.p,p.at,t);if(Math.abs(x-px)<28&&y>py-72&&y<py+8){const d=Math.hypot(x-px,y-(py-30));if(d<hd){hd=d;hit=p;}}}
   if(hit){S.card={pid:hit.pid,name:hit.name,ti:hit.ti,lk:hit.lk,g:hit.g,said:hit.said,loading:true};live.send({t:'card',pid:hit.pid});paintOverlays();return;}
   const ti=(S.geo.tables||[]).findIndex(tb=>Math.hypot(x-tb.x,y-tb.y)<44);
+  if(ti>=0&&S.wed&&!S.ended&&!S.wed.overflow){   // 💍 a wedding table: its mâm cỗ (and a seat when one is free)
+    const tb=S.tables[ti];if(tb?.seats?.includes(null)&&!(me()?.s&&me().s[0]===ti))live.send({t:'sit',table:ti});else if(!(me()?.s&&me().s[0]===ti))go(x,y+40);
+    S.tray={i:ti};S.envp=null;S.card=null;paintEnvp();paintTray();paintFloat(true);return;}
   if(ti>=0){live.send({t:'sit',table:ti});return;}
   go(x,y);
 }
@@ -374,10 +408,12 @@ function head(light=false){
       <button type="button" class="icon-btn" data-wk="close" aria-label="Đóng">${icon('x',20)}</button>`;
     S.dlg.querySelector('.wk-places').hidden=true;S.picker=false;
     S.dlg.querySelector('.wk-say').hidden=Boolean(w?.overflow||S.ended);
+    for(const b of S.dlg.querySelectorAll('[data-wedonly]'))b.hidden=false;
     if(S.cv)S.cv.setAttribute('aria-label',w?`Đám cưới ${w.a} và ${w.b}: ${n} khách`:'Đám cưới');
     return;
   }
   S.dlg.querySelector('.wk-say').hidden=false;
+  for(const b of S.dlg.querySelectorAll('[data-wedonly]'))b.hidden=true;
   h.innerHTML=(r?.private
     ?`<button type="button" class="wk-where" data-wk="back">${icon('back',16)}<b>${esc(label)}</b></button>`
     :`<button type="button" class="wk-where" data-wk="places" aria-expanded="${S.picker}"><b>${esc(label)}</b>${r?`<small class="wk-n" aria-label="${n} người ở đây">${n}</small>`:''}${icon('chevron',14,'wk-chev')}</button>`)+
@@ -423,6 +459,30 @@ async function sendEnvelope(){
   catch(x){e.busy=false;e.rid=null;toast(x?.message||'Chưa gửi được, thử lại nhé.');}
   paintEnvp();
 }
+/** 🍽️ The mâm cỗ of the table tapped: the dishes to gắp, a beer to cụng ly, a soft drink. */
+function paintTray(){
+  const el=S.dlg?.querySelector('.wk-tray');if(!el)return;const t=S.tray,w=S.wed;
+  if(!t||!w||S.ended||w.overflow||!S.room){el.hidden=true;el.dataset.key='';return;}
+  const eat=w.eat||{dish:3,beer:2},key=`${t.i}|${eat.dish}|${eat.beer}`;
+  if(el.dataset.key===key&&!el.hidden)return;el.dataset.key=key;
+  el.innerHTML=`<div class="wk-who"><span class="wk-tray-ico" aria-hidden="true">🍽️</span><p class="grow"><b>Mâm cỗ bàn ${t.i+1}</b>
+      <small>Gắp món thêm tinh thần${eat.dish>0?` (còn ${eat.dish} lần)`:': no rồi'} · Bia say nhẹ, trừ tinh thần</small></p>
+      <button type="button" class="icon-btn" data-wk="tray" aria-label="Đóng">${icon('x',18)}</button></div>
+    <div class="wk-mam">${(w.dishes||[]).map((n,i)=>`<button type="button" class="wk-dish" data-wk="eat" data-k="dish" data-d="${i}" aria-label="Gắp ${esc(n)}"><span class="wk-dish-e" aria-hidden="true">${feast.DISH_ICONS[i]||'🍽️'}</span><small>${esc(n)}</small></button>`).join('')}</div>
+    <div class="wk-acts wk-drinks"><span class="wk-bowl" aria-hidden="true">🍚🥢</span>
+      <button type="button" class="wk-pill wk-drink" data-wk="eat" data-k="beer">🍺 Cụng ly bia</button><button type="button" class="wk-pill wk-drink" data-wk="eat" data-k="soda">🥤 Nước ngọt</button></div>`;
+  el.hidden=false;
+}
+/** The floating buttons over the scene: 💐 Tung hoa (the couple, when the MC calls), 💃 Nhảy (on the stage). */
+function paintFloat(force){
+  const el=S.dlg?.querySelector('.wk-float');if(!el)return;
+  const w=S.wed,m=me(),busy=S.tray||S.envp||S.card||S.ended||!S.room;
+  const toss=Boolean(!busy&&w?.toss?.open&&w.pids?.includes(S.room?.me));
+  const dance=Boolean(!busy&&!toss&&w&&m&&!m.s&&typeof m.x==='number'&&onStage(m.x,m.y)&&!m.moving);
+  const key=`${toss}|${dance}`;if(key===S.floatKey&&!force)return;S.floatKey=key;
+  el.innerHTML=toss?'<button type="button" class="wk-pill primary wk-toss" data-wk="toss">💐 Tung hoa</button>':dance?'<button type="button" class="wk-pill wk-dance" data-wk="dance">💃 Nhảy</button>':'';
+  el.hidden=!(toss||dance);
+}
 function net(){if(!S.dlg)return;S.dlg.querySelector('.wk-net').hidden=live.state==='open';}
 function mySeat(){const m=me();return m?.s?S.tables[m.s[0]]:null;}
 function paintOverlays(){
@@ -432,7 +492,7 @@ function paintOverlays(){
     ?`Bạn đang xem từ ngoài cổng. <button type="button" class="wk-pill primary" data-wk="account">Tạo tài khoản</button> để vào dự và nhận lộc mỗi phút.`
     :'Đông quá! Bạn đứng ngoài cổng xem, vẫn được tính là khách 🎉';
   const en=S.dlg.querySelector('.wk-end');en.hidden=!S.ended;
-  paintLog();paintEnvp();
+  paintLog();paintEnvp();paintTray();paintFloat(true);
   if(S.ended)en.innerHTML=`<p class="wk-end-t">💍 Tiệc đã tàn</p>${S.ended.n!=null?`<p>${S.ended.n} khách đến chung vui 💛</p>`:''}<button type="button" class="wk-pill primary" data-wk="close">Đóng</button>`;
   const tp=S.dlg.querySelector('.wk-topic'),tb=mySeat();
   if(tb&&tb.topic){
@@ -513,14 +573,22 @@ function draw(ts,t){
   const sec=ts/1000,dark=night();
   for(const s of spots.values()){const at=spotAt(s);if(at&&s.draw)try{s.draw(c,{x:at[0],y:at[1],t:sec,night:dark,place:S.room.place});}catch(e){console.warn('walk spot:',e);}}
   if(S.envl){const left=(S.envl.until-t)/45;if(left<=0)S.envl=null;else paintEnvelope(c,S.envl.x,S.envl.y,sec,left);}
-  const fx=S.wed&&!S.ended?{w:S.wed,s:t-S.wed.at,sec,dark,sprite:npcSprite,av:AV}:null;
+  const ps=S.wed?t-S.wed.at:0,calm=still();
+  const fx=S.wed&&!S.ended?{w:S.wed,s:ps,sec,dark,sprite:npcSprite,av:AV,bt:feast.beat(ps),still:calm,L:S.wed.end-S.wed.at}:null;
   if(fx)feast.ground(c,fx);
-  const myPid=S.room.me,list=[];
+  const myPid=S.room.me,list=[],now=performance.now();
   for(const p of S.people.values()){const [x,y,moving]=posAt(p.p,p.at,t);p.x=x;p.y=y;p.moving=moving;list.push(p);}
   list.sort((a,b)=>a.y-b.y);
   for(const p of list){
     if(p.pid===myPid){c.fillStyle=dark?'rgba(255,170,130,.38)':'rgba(196,75,48,.25)';c.beginPath();c.ellipse(p.x,p.y+2,22,8,0,0,Math.PI*2);c.fill();}
-    const bob=p.moving?-Math.abs(Math.sin(sec*11+p.x*.05))*3:0,sp=sprite(p);
+    const sp=sprite(p);
+    if(fx&&!p.moving&&!p.s&&onStage(p.x,p.y)){   // 💃 on the dance floor: bob and sway on the beat, a spin on 💃
+      const ph=fx.bt.ph,side=fx.bt.n%2?1:-1,spin=p.emo?.e==='💃'&&!calm?(now-p.emo.t0)/1000:9;
+      c.save();c.translate(p.x,p.y);
+      if(!calm)c.rotate(side*Math.sin(ph*Math.PI)*.11);
+      if(spin<1.3)c.scale(Math.cos(spin/1.3*Math.PI*4),1);
+      c.drawImage(sp,-55*AV,-150*AV-Math.abs(Math.sin(ph*Math.PI))*(calm?1.5:6),110*AV,160*AV);c.restore();continue;}
+    const bob=p.moving?-Math.abs(Math.sin(sec*11+p.x*.05))*3:0;
     c.drawImage(sp,p.x-55*AV,p.y-150*AV+bob,110*AV,160*AV);
   }
   const h=S.hap;
@@ -528,25 +596,33 @@ function draw(ts,t){
     if(f>1)S.hap=null;else if(f>=0){const x=h.rtl?W+90-(W+180)*f:-90+(W+180)*f;
       if(h.k==='lion')paintLion(c,x,h.y,sec,h.rtl);else paintVendor(c,x,h.y,h.who,sec);}}
   if(fx)feast.over(c,fx);
+  if(S.toss)paintToss(c,now);
   c.setTransform(dpr,0,0,dpr,0,0);
-  const now=performance.now(),k=S.k,sx=x=>S.ox+x*k,sy=y=>S.oy+y*k;
+  const k=S.k,sx=x=>S.ox+x*k,sy=y=>S.oy+y*k,pids=S.wed?.pids;
   if(fx)feast.talk(c,{...fx,sx,sy,tag,bubble});
+  const tagX=coupleTags(c,list,pids,sx,sy);   // the couple side by side: their two pills never cover each other
   for(const p of list){
-    const top=sy(p.y-132*AV)-4;
-    tag(c,sx(p.x),top,p.name,p.ti,p.pid===myPid,dark);
-    let above=top-(p.ti?30:20);
+    const top=sy(p.y-132*AV)-4,wed=pids?.includes(p.pid)?(p.g==='female'?'f':p.g==='male'?'m':'x'):null;
+    tag(c,tagX.get(p.pid)??sx(p.x),top,p.name,p.ti,p.pid===myPid,dark,wed);
+    let above=top-(wed?(p.ti?36:24):p.ti?30:20);
     if(p.bub){const age=now-p.bub.t0;if(age>BUBBLE_MS)p.bub=null;else above=bubble(c,sx(p.x),above,p.bub.text,age>BUBBLE_MS-500?(BUBBLE_MS-age)/500:1,dark)-4;}
-    if(p.emo){const age=now-p.emo.t0;if(age>EMO_MS)p.emo=null;else{c.globalAlpha=Math.min(1,(EMO_MS-age)/600);c.font='26px serif';c.textAlign='center';c.textBaseline='bottom';c.fillText(p.emo.e,sx(p.x),above-age/90);c.globalAlpha=1;}}
+    if(p.emo){const age=now-p.emo.t0;if(age>EMO_MS)p.emo=null;else if(p.emo.cheers)cheers(c,sx(p.x),above,age);else{c.globalAlpha=Math.min(1,(EMO_MS-age)/600);c.font='26px serif';c.textAlign='center';c.textBaseline='bottom';c.fillText(p.emo.e,sx(p.x),above-age/90);c.globalAlpha=1;}}
   }
+  if(S.wed)paintFloat(false);
   if(h&&h.k==='vendor'){const f=(t-h.at)/(h.end-h.at);if(f>=0&&f<=1){const x=h.rtl?W+90-(W+180)*f:-90+(W+180)*f;bubble(c,sx(x),sy(h.y-44),h.text,1,dark);}}
   if(h&&h.k==='lion'){const f=(t-h.at)/(h.end-h.at);if(f>=0&&f<=1){const x=h.rtl?W+90-(W+180)*f:-90+(W+180)*f;bubble(c,sx(x),sy(h.y-36),'Tùng tùng cắc! 🦁',1,dark);}}
-  S.floaters=S.floaters.filter(fl=>{const age=now-fl.t0,p=S.people.get(fl.pid);if(age>2200||!p)return false;
+  S.floaters=S.floaters.filter(fl=>{const age=now-fl.t0,p=S.people.get(fl.pid);if(age>2200||!p)return false;if(age<0)return true;
     c.globalAlpha=Math.min(1,(2200-age)/500);c.font='800 15px "Trebuchet MS",sans-serif';c.textAlign='center';c.textBaseline='bottom';
-    c.fillStyle='#b8322c';c.fillText(fl.text,sx(p.x),sy(p.y-132*AV)-34-age/40);c.globalAlpha=1;return true;});
+    const fy=sy(p.y-132*AV)-34-age/40;if(fl.col){c.lineWidth=3;c.strokeStyle=dark?'#1d1c26':'#fffdf8';c.strokeText(fl.text,sx(p.x),fy);}
+    c.fillStyle=fl.col||'#b8322c';c.fillText(fl.text,sx(p.x),fy);c.globalAlpha=1;return true;});
   if(S.wed){
     const ck=wedClock();if(ck!==S.clock){S.clock=ck;const el=S.dlg.querySelector('.wk-clock');if(el)el.textContent=ck;syncMusic();}
     if(S.burst){const age=now-S.burst;if(age>3500)S.burst=0;else for(let i=0;i<22;i++){const x=S.ox+(120+(i*137)%360)*k,y=S.oy+(300-(age/12)*(1+i%3*.25))*k;
       c.globalAlpha=Math.max(0,1-age/3500);c.font='20px serif';c.textAlign='center';c.fillText(['💖','🎉','🌸','💕'][i%4],x+Math.sin(age/300+i)*10,y+(i%5)*24);c.globalAlpha=1;}}
+    if(S.toss&&!S.toss.told&&now-S.toss.t0>TOSS_MS){const f=S.toss;f.told=true;   // landed: who caught it
+      if(f.pid===myPid){toast(`💐 Bạn bắt được hoa cưới!${f.xu?` +${f.xu} xu`:''}`);if(f.xu)payNow();}
+      else toast(f.pid?`💐 ${f.name} bắt được hoa cưới!`:'💐 Hoa rơi xuống sàn mất rồi 😆');
+      if(f.pid)S.floaters.push({pid:f.pid,text:'💐 Bắt được hoa!',t0:now,col:'#c2185b'});}
     const ph=S.photo;
     if(ph){const left=ph.at-t;
       if(left>0){c.fillStyle='rgba(0,0,0,.25)';c.fillRect(0,0,S.cw,S.ch);c.fillStyle='#fff';c.font='800 64px "Trebuchet MS",sans-serif';c.textAlign='center';c.textBaseline='middle';
@@ -557,14 +633,64 @@ function draw(ts,t){
   const tb=mySeat(),bar=S.dlg.querySelector('.wk-time');
   if(tb&&bar&&tb.until){bar.style.transform=`scaleX(${Math.max(0,Math.min(1,(tb.until-t)/120))})`;}
 }
-function tag(c,x,y,name,title,mine,dark){
+/** The couple's pills are wide: when the two would overlap (they stand together on the stage), push them apart, kept
+ * on the screen. Returns pid -> screen x for the couple's tags. */
+function coupleTags(c,list,pids,sx,sy){
+  const out=new Map();if(!pids)return out;
+  const two=list.filter(p=>pids.includes(p.pid));if(two.length!==2)return out;
+  const [a,b]=two[0].x<=two[1].x?two:[two[1],two[0]];
+  if(Math.abs(sy(a.y)-sy(b.y))>36)return out;
+  const wa=wedTagW(c,a),wb=wedTagW(c,b),xa=sx(a.x),xb=sx(b.x),gap=(wa+wb)/2+4-(xb-xa);
+  if(gap<=0)return out;
+  let la=xa-gap/2,lb=xb+gap/2;const lo=wa/2+4,hi=S.cw-wb/2-4;
+  if(la<lo){lb+=lo-la;la=lo;}if(lb>hi){la-=lb-hi;lb=hi;}
+  out.set(a.pid,la);out.set(b.pid,lb);return out;
+}
+function wedTagW(c,p){
+  c.font='800 14px "Trebuchet MS",sans-serif';const nw=c.measureText(`👰 ${p.name}`).width;
+  let tw=0;if(p.ti){c.font='700 10.5px "Trebuchet MS",sans-serif';tw=c.measureText(p.ti).width;}
+  return Math.max(nw,tw)+20;
+}
+/** A name tag above someone. wed: the bride ('f'), the groom ('m') or either ('x') at their wedding: a bigger gold and
+ * rose pill with 👰/🤵, the same on light and dark (dark text on a light pill). */
+function tag(c,x,y,name,title,mine,dark,wed){
   c.textAlign='center';c.textBaseline='bottom';
+  if(wed){
+    const label=`${wed==='f'?'👰':wed==='m'?'🤵':'💍'} ${name}`;
+    c.font='800 14px "Trebuchet MS",sans-serif';const nw=c.measureText(label).width;
+    let tw=0;if(title){c.font='700 10.5px "Trebuchet MS",sans-serif';tw=c.measureText(title).width;}
+    const w=Math.max(nw,tw)+20,h=title?34:22,g=c.createLinearGradient(x-w/2,0,x+w/2,0);
+    g.addColorStop(0,'#ffe08a');g.addColorStop(.5,'#ffd1dc');g.addColorStop(1,'#f7a8c4');
+    c.shadowColor='rgba(120,30,60,.35)';c.shadowBlur=6;c.shadowOffsetY=1.5;
+    c.fillStyle=g;c.beginPath();c.roundRect(x-w/2,y-h,w,h,h/2);c.fill();c.shadowColor='transparent';c.shadowBlur=0;c.shadowOffsetY=0;
+    c.strokeStyle=mine?'#c2185b':'#ffffff';c.lineWidth=mine?2:1.6;c.stroke();
+    c.font='800 14px "Trebuchet MS",sans-serif';c.fillStyle='#7a1037';c.fillText(label,x,y-(title?15:4));
+    if(title){c.font='700 10.5px "Trebuchet MS",sans-serif';c.fillStyle='#9a4a12';c.fillText(title,x,y-3);}
+    return;
+  }
   c.font='700 11.5px "Trebuchet MS",sans-serif';const nw=c.measureText(name).width;
   let tw=0;if(title){c.font='600 9.5px "Trebuchet MS",sans-serif';tw=c.measureText(title).width;}
   const w=Math.max(nw,tw)+12,hgt=title?28:17;
   c.fillStyle=dark?'rgba(24,24,34,.78)':'rgba(255,253,248,.86)';c.beginPath();c.roundRect(x-w/2,y-hgt,w,hgt,8);c.fill();
   c.font='700 11.5px "Trebuchet MS",sans-serif';c.fillStyle=mine?(dark?'#ff9b7d':'#b8432c'):(dark?'#f1ede6':'#4a3b35');c.fillText(name,x,y-(title?13:2.5));
   if(title){c.font='600 9.5px "Trebuchet MS",sans-serif';c.fillStyle=dark?'#bdb6ad':'#8a7a70';c.fillText(title,x,y-2);}
+}
+/** 🍻 Cụng ly: two glasses swing in and clink over someone's head, "Dzô!". */
+function cheers(c,x,bottom,age){
+  const k=Math.min(1,age/450),clink=Math.sin(k*Math.PI/2)*.55,a=Math.min(1,(EMO_MS-age)/600);
+  c.globalAlpha=a;c.font='24px serif';c.textAlign='center';c.textBaseline='bottom';
+  for(const s of [-1,1]){c.save();c.translate(x+s*(16-12*k),bottom-6);c.rotate(-s*clink);if(s>0)c.scale(-1,1);c.fillText('🍺',0,0);c.restore();}
+  if(age>420&&age<1400){c.font='800 13px "Trebuchet MS",sans-serif';c.fillStyle='#c77700';c.fillText('Dzô!',x,bottom-34);}
+  c.globalAlpha=1;
+}
+/** 💐 The bouquet in the air (world units): from the couple to whoever caught it, then held up over their head. */
+function paintToss(c,now){
+  const f=S.toss,age=now-f.t0,p=f.pid&&S.people.get(f.pid);
+  if(age>6000){S.toss=null;return;}
+  const tx=p?p.x+8:f.to?.[0]??300,ty=p?p.y-74:f.to?.[1]??380,[fx0,fy0]=f.frm||[300,250];
+  if(age<TOSS_MS){const k=age/TOSS_MS,x=fx0+(tx-fx0)*k,y=fy0-60+(ty-fy0+60)*k-Math.sin(k*Math.PI)*170;feast.bouquet(c,x,y,k*Math.PI*5);return;}
+  feast.burst(c,tx,ty,(age-TOSS_MS)/1000,f.id||1);
+  if(p)feast.bouquet(c,tx,ty+Math.sin(age/160)*2,.15);
 }
 /** A speech bubble whose tail points at (x, bottom); returns its top. Player text as is (not translated). */
 function bubble(c,x,bottom,text,alpha,dark){

@@ -337,5 +337,107 @@ class WeeklyRace(WedCase):
         self.assertEqual(room['people'][0]['ti'], '🥇 Khách quý của phố 🏮')
 
 
+
+@unittest.skipUnless(HAVE_WS, 'needs websockets')
+class Feast(WedCase):
+    """1.3.0: the mâm cỗ (+1 tinh thần a dish, 3 a party; −1 a beer, 2 a party; a soft drink is just fun), the bouquet."""
+
+    def fx(self, like):
+        return self.rows('SELECT id, kind, amount FROM live_effects WHERE id LIKE ? ORDER BY id', like)
+
+    async def test_dishes_and_beer_capped_with_fixed_ids(self):
+        (ta, tb), (sa, sb), wid, at = self.party()
+        bride = await self.join(ta, wid)
+        gt, gs = self.account('Bảo')
+        g = await self.join(gt, wid)
+        got = [await g.call('wed_eat', 'wed_ate', k='dish', d=i) for i in range(4)]
+        self.assertEqual([(r['n'], r['left']) for r in got], [(1, 2), (1, 1), (1, 0), (0, 0)])
+        seen = await bride.expect('wed_eat')
+        self.assertEqual((seen['pid'], seen['k'], seen['d']), (g.welcome['me']['pid'], 'dish', 0), 'the room sees who ate what')
+        beers = [await g.call('wed_eat', 'wed_ate', k='beer') for _ in range(3)]
+        self.assertEqual([(r['n'], r['left']) for r in beers], [(-1, 1), (-1, 0), (0, 0)])
+        soda = await g.call('wed_eat', 'wed_ate', k='soda')
+        self.assertEqual((soda['n'], soda['left']), (0, None))
+        k = gs[:24]
+        self.assertEqual(self.fx('weat:%'), [dict(id=f'weat:{wid}:{k}:{i}', kind='spirit', amount=1) for i in (1, 2, 3)])
+        self.assertEqual(self.fx('wbeer:%'), [dict(id=f'wbeer:{wid}:{k}:{i}', kind='spirit', amount=-1) for i in (1, 2)])
+        self.assertEqual((await g.call('wed_eat', 'error', k='dish'))['code'], 'slow', '8 taps in 10 seconds')
+
+    async def test_a_restart_never_pays_twice_and_the_rules(self):
+        (ta, tb), (sa, sb), wid, at = self.party()
+        gt, gs = self.account('Hà Vy')
+        with self.store.connect() as db:   # paid before a restart of the service
+            db.execute("INSERT INTO live_effects(id, sid, kind, amount, data, status, at) VALUES(?, ?, 'spirit', 1, '{}', 'applied', ?)",
+                       (f'weat:{wid}:{gs[:24]}:1', gs, time.time()))
+        g = await self.join(gt, wid)
+        self.assertEqual(g.room['wed']['eat'], dict(dish=WL.EAT_MAX, beer=WL.BEER_MAX))
+        r = await g.call('wed_eat', 'wed_ate', k='dish', d=2)
+        self.assertEqual((r['n'], r['left']), (1, 1), 'slot 1 was taken: slot 2')
+        self.wed.parties[wid].pop('eats')                       # a new process: read back by primary key
+        r = await g.call('wed_eat', 'wed_ate', k='dish', d=3)
+        self.assertEqual((r['n'], r['left']), (1, 0))
+        r = await g.call('wed_eat', 'wed_ate', k='dish', d=3)
+        self.assertEqual(r['n'], 0)
+        self.assertEqual(len(self.fx('weat:%')), 3)
+        self.assertEqual((await g.call('wed_eat', 'error', k='dish', d=99))['code'], 'bad')
+        self.assertEqual((await g.call('wed_eat', 'error', k='cake'))['code'], 'bad')
+        stranger = await self.connect(self.account('Người Ngoài')[0])   # not in the party
+        self.assertEqual((await stranger.call('wed_eat', 'error', k='dish', d=0))['code'], 'not_in')
+        await self.wed.tick(at + WL.PARTY_SECS + 1)             # the party is over
+        await asyncio.sleep(0.3)
+        self.assertEqual((await g.call('wed_eat', 'error', k='beer'))['code'], 'over')
+        self.assertEqual(self.fx('wbeer:%'), [])
+
+    async def test_bouquet_once_to_a_guest_present(self):
+        (ta, tb), (sa, sb), wid, at = self.party()
+        bride = await self.join(ta, wid)
+        groom = await self.join(tb, wid, g='male')
+        guests = [await self.join(self.account(n)[0], wid) for n in ('Một', 'Hai', 'Ba')]
+        pids = {c.welcome['me']['pid'] for c in guests}
+        self.assertEqual((await guests[0].call('wed_toss', 'error'))['code'], 'bad', 'only the couple throws it')
+        self.assertEqual((await bride.call('wed_toss', 'error'))['code'], 'early')
+        await self.wed.tick(at + WL.TOSS_AT)
+        op = await guests[1].expect('wed_toss_open')
+        self.assertAlmostEqual(op['until'], at + WL.TOSS_AT + WL.TOSS_WAIT, delta=1)
+        late = await self.join(self.account('Bốn')[0], wid)
+        self.assertTrue(late.room['wed']['toss']['open'], 'a late guest sees the button state')
+        pids.add(late.welcome['me']['pid'])
+        await bride.send(t='wed_toss')
+        t = await groom.expect('wed_toss')
+        self.assertEqual(t['by'], bride.welcome['me']['pid'])
+        self.assertIn(t['pid'], pids, 'a guest present catches it, never the couple')
+        self.assertEqual(t['xu'], WL.TOSS_XU)
+        rows = self.rows("SELECT sid, kind, amount FROM live_effects WHERE id=?", f'wtoss:{wid}')
+        self.assertEqual([(r['kind'], r['amount']) for r in rows], [('coins', WL.TOSS_XU)])
+        self.assertEqual(self.pid(rows[0]['sid']), t['pid'])
+        self.assertEqual((await groom.call('wed_toss', 'error'))['code'], 'done')
+        await bride.expect('wed_toss_open')
+        self.wed.parties[wid].pop('toss_state')                # a restart: caught already, never opened again
+        await self.wed.tick(at + WL.TOSS_AT + 5)
+        await asyncio.sleep(0.3)
+        await bride.nothing('wed_toss_open')
+        self.assertEqual(self.wed.parties[wid]['toss_state'], 'done')
+
+    async def test_bouquet_thrown_for_the_couple(self):
+        (ta, tb), (sa, sb), wid, at = self.party()
+        bride = await self.join(ta, wid)
+        g = await self.join(self.account('Bảo')[0], wid)
+        await self.wed.tick(at + WL.TOSS_AT + 1)
+        await g.expect('wed_toss_open')
+        await self.wed.tick(at + WL.TOSS_AT + WL.TOSS_WAIT + 2)
+        t = await g.expect('wed_toss')
+        self.assertEqual((t['by'], t['pid'], t['xu']), (bride.welcome['me']['pid'], g.welcome['me']['pid'], WL.TOSS_XU))
+        await self.wed.tick(at + WL.TOSS_AT + WL.TOSS_WAIT + 5)
+        await g.nothing('wed_toss')
+        self.assertEqual(len(self.rows("SELECT id FROM live_effects WHERE id LIKE 'wtoss:%'")), 1)
+
+    async def test_dance_emote(self):
+        (ta, tb), (sa, sb), wid, at = self.party()
+        bride = await self.join(ta, wid)
+        g = await self.join(self.account('Bảo')[0], wid)
+        await g.send(t='emote', e='dance')
+        self.assertEqual((await bride.expect('emoted'))['e'], 'dance')
+
+
 if __name__ == '__main__':
     unittest.main()

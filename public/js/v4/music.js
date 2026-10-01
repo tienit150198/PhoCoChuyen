@@ -10,7 +10,7 @@
  *   network), then the whole song takes over at the same sample and loops.
  * - Changing career crossfades; hiding the tab pauses the context so the song resumes in place;
  *   switching music off stops the song and frees its buffer (tens of MB). */
-import {audioContext,wantAudio,onGesture} from '../audio.js';
+import {audioContext,wantAudio,onGesture,onDuck,ducked} from '../audio.js';
 
 const FILES={cider:'apple-cider',springs:'hot-springs-town',lullaby:'happy-lullaby',morning:'good-morning',urban:'urban-shop',puzzle:'cozy-puzzle'};
 const BY_CAREER={
@@ -52,7 +52,9 @@ async function download(name,onHead){
 export class Music{
   constructor(){this.ctx=null;this.on=false;this.volume=.45;this.hidden=false;this.armed=false;this.want='cider';this.cur=null;this.pending=null;this.buffers=new Map();
     // Every tap (inside the gesture): arm, and start the song if it is on.
-    onGesture(()=>this.unlock());}
+    onGesture(()=>this.unlock());
+    // The wedding party plays its own music: this one fades out meanwhile and comes back after.
+    onDuck(()=>{if(this.master)this.master.gain.setTargetAtTime(this.level(),this.ctx.currentTime,.4);});}
   // Armed by the first tap/key: a song is 0.3-1.6 MB, never fetched while the game is still loading.
   unlock(){this.armed=true;this.refresh();}
   setHidden(h){this.hidden=h;this.refresh();}
@@ -62,7 +64,7 @@ export class Music{
     if(this.master)this.master.gain.setTargetAtTime(this.level(),this.ctx.currentTime,.3);
     this.refresh();
   }
-  level(){return this.volume*.7;}
+  level(){return ducked()?0:this.volume*.7;}
   init(){
     if(this.ctx)return;
     this.ctx=audioContext();if(!this.ctx)return;

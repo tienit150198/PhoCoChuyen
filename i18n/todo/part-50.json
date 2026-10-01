@@ -1,5 +1,85 @@
 [
  {
+  "vi": "$1 qua phụ một tay từ sáng tới giờ, mồ hôi nhễ nhại luôn. Cảm ơn nha 🙏",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "em vẽ $1 đang làm việc nè 🖍️ tranh đẹp khum mọi người, dưới tranh em ghi “Người giỏi nhất hẻm” 😎",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hóng nè cả nhà: nghe đâu có khách cũ nhắn cảm ơn $1 dài cả trang, nói nhờ hôm đó mà nhà người ta vui cả tuần 🥹 Người hẻm mình giỏi ghê! Tin này chị cho lan thoải mái nha 😂",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "có bịch me hông $1, em xin một trái 🤤",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hoàng hôn trên sân thượng dãy trọ nay đỏ rực luôn cả nhà ơi 🌇 Trang chụp cho $1 một tấm, đẹp xỉu, không có ý khoe đâu nha 📸",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📷 [Ảnh hóa đơn nhập hàng] Hàng về $1 có hóa đơn đàng hoàng hết nha mọi người.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: bán lại. Khách mới có thể gọi món này.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: ngừng bán. Khách mới sẽ không gọi, quầy không cần nhập món này.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 mua từ nhà cung cấp: mở Kho → Đặt hàng (hỏa tốc 15–30 phút).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hồi nhỏ chị ngủ trưa dưới cái bàn cắt vải này đó $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mẹ chưa từng cho ai đụng vô cây kéo đó đâu $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tiệm này chú Út mở ba mươi năm rồi đó $1. Hồi nhỏ em ngồi đây coi cá cả buổi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 cười gượng rồi thôi. Chuyện dừng ở đó, sạch sẽ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn báo phòng an toàn. Họ ghi nhận và nhắc khéo $1; hồ sơ bạn thêm dòng “xử lý đúng mực”.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 lẩm bẩm rồi ngồi im. Chị Thu nháy mắt: “Lần sau cứ báo luôn, đó là quyền của em.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn báo tổ trưởng, điền biên bản. Hãng lập biên bản $1 và đưa vào danh sách theo dõi; cả tổ đứng về phía bạn.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 giở giọng tới tận lúc hạ cánh. Không ai ghi lại gì, nên lần sau hắn vẫn dám. Không phải lỗi của bạn: báo là quyền của bạn.",
   "en": "",
   "pattern": true
@@ -2166,86 +2246,6 @@
  },
  {
   "vi": "$1 túi hữu cơ lên xe ủ phân",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 túi còn lại lên xe ép",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 túi tái chế cho cô Tám",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 món nguy hại giao điểm thu gom riêng",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cô Tám mua ve chai: $1 túi tái chế sạch",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cô Tám trả $1 xu tiền ve chai.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cô Tám lắc đầu với $1 túi tái chế lẫn đồ ăn: “Bẩn vậy không bán được.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚛 Đổ xe ở điểm tập kết: $1.$2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tìm hiểu thêm đã: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tìm hiểu thêm đã: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😤 Chủ nhà $1 ra chặn xe: $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏥 Ra trạm y tế: rửa vết thương, tiêm phòng ($1 xu). Chị Hạnh gom nốt giúp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛒🛒 Đi hai chuyến, gom sạch $1 bao. Mỏi nhừ tay, ngõ sạch bong. Bấm “Xong ngõ”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛻 Gọi xe ba gác ($1 xu) chở $2 bao ra điểm tập kết. Bấm “Xong ngõ”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💥 Nhồi cho bằng hết, nắp xe bung bản lề, rác rơi dọc ngõ. Sửa xe mất $1 xu. Bấm “Xong ngõ”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😤 $1: “Giảng đạo à? Cút mẹ mày đi!” Hàng xóm ló đầu ra xem.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗣️ Bạn giải thích nhẹ nhàng. $1: “Ờ… để mai tao phân loại lại.”",
   "en": "",
   "pattern": true
  }

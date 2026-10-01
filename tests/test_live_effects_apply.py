@@ -191,6 +191,32 @@ class DateRewards(Base):
         self.assertEqual(self.spirit(tok), 100)
         validate_state(migrate_state(self.state(tok)))
 
+    def test_a_beer_takes_a_little_spirit_once(self):
+        """1.3.0: a beer at a wedding party is a negative spirit row (live/wedding.py wed_eat): paid once, clamped at 0;
+        more than SPIRIT_DOWN, or a negative row of another kind, is refused and stays pending."""
+        tok = self.guest()
+        before = self.spirit(tok)
+        self.grant(tok, eid='wbeer:7:aaaaaaaaaaaaaaaaaaaaaaaa:1', kind='spirit', amount=-1, src='wed_beer')
+        self.assertTrue(self.load(tok))
+        self.assertEqual(self.spirit(tok), max(0, before - 1))
+        self.assertFalse(self.load(tok))
+        self.assertEqual(self.spirit(tok), max(0, before - 1))
+        self.grant(tok, eid='wbeer:7:bad:1', kind='spirit', amount=lfx.SPIRIT_DOWN - 1, src='wed_beer')
+        self.grant(tok, eid='wbeer:7:bad:2', kind='coins', amount=-5, src='wed_beer')
+        self.load(tok)
+        self.assertEqual((self.status('wbeer:7:bad:1'), self.status('wbeer:7:bad:2')), ('pending', 'pending'))
+        self.assertEqual(self.spirit(tok), max(0, before - 1))
+        validate_state(migrate_state(self.state(tok)))
+
+    def test_live_grant_refuses_negative_but_a_little_spirit(self):
+        from live.effects import grant
+
+        async def run():
+            for kind, amount in (('coins', -1), ('spirit', 0), ('spirit', lfx.SPIRIT_DOWN - 1)):
+                with self.assertRaises(ValueError):
+                    await grant(None, 'sid', kind, amount, key='k:1')
+        asyncio.run(run())
+
     def test_forget(self):
         tok = self.guest()
         self.grant(tok, eid='date:1:forget', kind='spirit', src='date')

@@ -6,7 +6,8 @@ internal command per row with the fixed request id `live-<id>`, so it is paid on
     ok = await grant(db, sid, 'coins', 5, key=f'envelope:{room}:{n}:{pid}', cap=30)
 
 `key` makes it idempotent (a retry inserts nothing); `cap` is the most of that kind per player per Vietnam
-day (amounts summed), None for no cap."""
+day (amounts summed), None for no cap. A 'spirit' row may also take a little away (SPIRIT_DOWN..-1: a beer at a
+wedding party, live/wedding.py); every other kind only gives."""
 from __future__ import annotations
 
 import json
@@ -17,6 +18,7 @@ from datetime import datetime, timedelta, timezone
 
 KINDS = ('coins', 'spirit', 'closeness', 'title')
 AMOUNT_MAX = 2000                # game/live_effects.py AMOUNT_MAX (the 1000-day anniversary is 1,500 xu)
+SPIRIT_DOWN = -10               # game/live_effects.py SPIRIT_DOWN: the most a 'spirit' row may take away
 
 
 def _day_start(t: float) -> float:
@@ -25,7 +27,8 @@ def _day_start(t: float) -> float:
 
 
 async def grant(db, sid: str, kind: str, amount: int, key: str, data: dict | None = None, cap: int | None = None) -> bool:
-    if kind not in KINDS or type(amount) is not int or not 0 < amount <= AMOUNT_MAX or not key or len(key) > 120:
+    low = SPIRIT_DOWN if kind == 'spirit' else 1
+    if kind not in KINDS or type(amount) is not int or not low <= amount <= AMOUNT_MAX or amount == 0 or not key or len(key) > 120:
         raise ValueError('bad effect')
     t = time.time()
     payload = json.dumps(data or {}, ensure_ascii=False, separators=(',', ':'))

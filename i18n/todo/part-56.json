@@ -1675,7 +1675,32 @@
   "pattern": true
  },
  {
+  "vi": "Mâm cỗ bàn $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gắp món thêm tinh thần$1 · Bia say nhẹ, trừ tinh thần",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "(còn $1 lần)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gắp $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đổi chủ đề$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💐 $1 bắt được hoa cưới!",
   "en": "",
   "pattern": true
  },

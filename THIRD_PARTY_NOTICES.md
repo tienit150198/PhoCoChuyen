@@ -27,3 +27,12 @@ Six background-music tracks in `public/music/`, all released under **CC0 1.0** (
 - *Urban Shop* and *Cozy Puzzle Title* by mintodog
 
 `public/music/CREDITS.md` has the source links and what each track is used for. The files were re-encoded to MP3 and loudness-levelled; the music itself is unchanged.
+
+Four wedding-party tracks in `public/music/wedding-*.mp3`, all **CC0 1.0** (public domain dedication):
+
+- *Funky House* by Of Far Different Nature (OpenGameArt.org)
+- *Funky Disco Beats to Boogie/Woogie to* by Fupi (OpenGameArt.org)
+- Richard Wagner, *Bridal Chorus (Treulich gefuehrt)*, the Musopen recording on Wikimedia Commons (the composition is public domain, the recording CC0)
+- *Chinese Hong Kong folk drums and gongs beating 02* by Jor92 (Freesound.org)
+
+They were cut to loop lengths, crossfaded at the loop point and re-encoded to mono MP3; `public/music/CREDITS.md` has the source links.

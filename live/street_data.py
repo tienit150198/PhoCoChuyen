@@ -192,4 +192,4 @@ CERTS = {
     'cert:office_admin': '🗂️ Chứng chỉ Hành chính văn phòng',
 }
 
-EMOTES = {'wave': '👋', 'heart': '❤️', 'laugh': '😂', 'wow': '😮', 'pray': '🙏'}
+EMOTES = {'wave': '👋', 'heart': '❤️', 'laugh': '😂', 'wow': '😮', 'pray': '🙏', 'dance': '💃'}   # 💃: a wedding's stage (live/wedding.py)

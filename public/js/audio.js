@@ -20,6 +20,12 @@ export function wantAudio(who,on){
 }
 /** fn() on every tap/key (inside the gesture): v4/music.js starts a song there. */
 export function onGesture(fn){hooks.add(fn);}
+/** Who wants the background music to step aside (the wedding party plays its own: v4/wedfeast.js). */
+const ducks=new Set(),duckHooks=new Set();
+export function duck(who,on){const was=ducks.size>0;if(on)ducks.add(who);else ducks.delete(who);if(was!==ducks.size>0)for(const fn of duckHooks){try{fn(ducks.size>0);}catch{/* music only */}}}
+export const ducked=()=>ducks.size>0;
+/** fn(ducked) when the background music should step aside or come back (v4/music.js). */
+export function onDuck(fn){duckHooks.add(fn);}
 /** Inside a tap/key: start the context. The first tap starts it even when nothing is wanted yet (then pauses
  * it again): iOS lifts its tap-only rule for good once a tap started a context, so a sound switched on later
  * (after a server round trip, outside any tap) plays at once. */
