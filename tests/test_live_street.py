@@ -24,6 +24,8 @@ class Data(unittest.TestCase):
         for g in ('male', 'female', None):
             want = {k: v for k, v in wardrobe.DEFAULTS[g].items() if k in sd.LOOK_SLOTS}
             self.assertEqual(want, sd.LOOK_DEFAULTS[g])
+        self.assertEqual(sd.TINTABLE, wardrobe.TINTABLE)                       # màu phụ kiện (1.3)
+        self.assertEqual(sd.COLOR_IDS, tuple(x['id'] for x in wardrobe.COLORS))
         for tid, text in sd.TITLES.items():   # every title shown exists in the game with the same words
             t = journey.TITLE_INDEX[tid]
             self.assertEqual(text, f"{t['emoji']} {t['name']}")
@@ -70,6 +72,22 @@ class Data(unittest.TestCase):
         for bad in ('x', dict(wings='big'), dict(hair=5), dict(hair='x' * 30), {f'k{i}': 'a' for i in range(20)}):
             with self.assertRaises(LiveError):
                 clean_look(bad, 'male')
+
+    def test_accessory_colour_in_the_look(self):
+        from live.protocol import LiveError
+        full = dict(LOOK, uniform=False, tint={'kinh_tron': 'hong'})
+        look, _ = clean_look(full, 'female')
+        self.assertEqual(look['tint'], {'kinh_tron': 'hong'})
+        # Only the worn accessory's colour is kept; an unknown colour or accessory: no colour (Màu gốc).
+        look, _ = clean_look(dict(LOOK, tint={'kinh_tron': 'hong', 'mu_len': 'do'}), 'female')
+        self.assertEqual(look['tint'], {'kinh_tron': 'hong'})
+        for tint in ({'mu_len': 'do'}, {'kinh_tron': 'cau_vong'}, {}):
+            self.assertNotIn('tint', clean_look(dict(LOOK, tint=tint), 'female')[0])
+        self.assertNotIn('tint', clean_look(dict(LOOK, acc='pk_khong', tint={'pk_khong': 'do'}), 'male')[0])
+        self.assertNotIn('tint', clean_look(dict(LOOK, acc='kinh_moi_2030', tint={'kinh_moi_2030': 'do'}), 'male')[0])
+        for tint in ('hong', ['kinh_tron'], {'kinh_tron': 5}, {'kinh_tron': 'x' * 30}, {f'a{i}': 'do' for i in range(5)}):
+            with self.assertRaises(LiveError, msg=tint):
+                clean_look(dict(LOOK, tint=tint), 'female')
 
 
 class StreetCase(LiveCase):
@@ -119,6 +137,7 @@ class Instances(StreetCase):
         self.assertIsNone([p for p in b.room['people'] if p['name'] == 'Minh Tú'][0]['ti'])   # unknown title: none
         came = await self.ev(a, 'in', name='Minh Tú')
         self.assertEqual(came['pid'], b.welcome['me']['pid'])
+        self.assertNotIn('tint', came['lk'])                  # no colour chosen: the frame stays as before 1.3
         await b.call('walk_out', 'walk_left')
         self.assertEqual((await self.ev(a, 'out'))['pid'], b.welcome['me']['pid'])
         await b.call('walk_in', 'walk_room', place='chodem', look=LOOK)
@@ -128,6 +147,17 @@ class Instances(StreetCase):
         await b.close()
         await asyncio.sleep(0.1)
         self.assertEqual([r for r in self.app.hub.rooms if r.startswith('walk:')], [], 'empty rooms are dropped')
+
+    async def test_frames_carry_the_accessory_colour(self):
+        a = await self.walker('Hồng Nhung', look=dict(LOOK, tint={'kinh_tron': 'vang'}))
+        self.assertEqual(a.room['people'][0]['lk']['tint'], {'kinh_tron': 'vang'})
+        b = await self.walker('Quốc Bảo', g='male', look=dict(LOOK, acc='mu_len', tint={'mu_len': 'navy', 'kinh_tron': 'do'}))
+        seen = {p['name']: p['lk'] for p in b.room['people']}
+        self.assertEqual(seen['Hồng Nhung']['tint'], {'kinh_tron': 'vang'})
+        came = await self.ev(a, 'in', name='Quốc Bảo')
+        self.assertEqual(came['lk']['tint'], {'mu_len': 'navy'})      # only the worn accessory's colour travels
+        card = await a.call('card', 'card', pid=came['pid'])
+        self.assertEqual(card['lk']['tint'], {'mu_len': 'navy'})
 
     async def test_capacity_and_the_fullest_instance(self):
         clients = [await self.walker(f'Người {i}') for i in range(CAP)]

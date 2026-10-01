@@ -150,6 +150,9 @@ LOOK_IDS = {
     'shoes': ('giay_nau', 'dep_lao', 'giay_trang', 'giay_do', 'bot_den'),
     'acc': ('pk_khong', 'kinh_tron', 'kinh_ram', 'non_la', 'mu_len', 'no_toc', 'tui_cheo'),
 }
+# Màu phụ kiện (1.3): look['tint'] = {accessory id: colour id} (game/wardrobe.py TINTABLE and COLORS).
+TINTABLE = ('kinh_tron', 'kinh_ram', 'non_la', 'mu_len', 'no_toc', 'tui_cheo')
+COLOR_IDS = ('den', 'nau', 'vang', 'bac', 'hong', 'do', 'dao', 'mint', 'navy', 'lavender', 'trang')
 LOOK_DEFAULTS = {
     'male': dict(hair='toc_ngan', shade='mau_nau', skin='da_sang', top='ao_quen', bottom='quan_xam', shoes='giay_nau', acc='pk_khong'),
     'female': dict(hair='toc_bui', shade='mau_nau', skin='da_sang', top='ao_quen', bottom='quan_kem', shoes='giay_nau', acc='pk_khong'),

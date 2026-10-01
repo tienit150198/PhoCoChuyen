@@ -17,8 +17,20 @@ at Tiệm Áo Chỉ Mây (career ``clothing``) gives the staff price (−20 %) a
 Some items are unlocked instead of bought: a maturity level, a title, or being married.
 
 Art lives in public/js/v4/look.js under the same ids (tests/test_wardrobe.py checks the lists match).
-Commands: ``jr_wd_wear`` {look: {slot: id, …, uniform?}} and ``jr_wd_buy`` {item, wear?, pay?}, routed
-by journey.action (so journey.after + validate_state run as for every jr_* command).
+Commands: ``jr_wd_wear`` {look: {slot: id, …, uniform?, tint?}}, ``jr_wd_buy`` {item, wear?, pay?} and
+``jr_wd_color`` {item, color, buy?, wear?, pay?}, routed by journey.action (so journey.after + validate_state
+run as for every jr_* command).
+
+Màu phụ kiện (1.3, góp ý #70 "đổi tóc mà phụ kiện không hợp"): every accessory but "Không đeo gì" can be
+recoloured from a small palette. Its own colour ("Màu gốc") is free; each other colour is unlocked once per
+accessory + colour with the wallet (20 xu, ánh kim 30 xu, staff price as for the clothes), then switching
+among the unlocked colours is free. Save: a second root key ``s['wardrobe_colors']`` = {v, wear, owned}
+* wear  = {accessory id: colour id}: the colour each accessory is worn in (absent: Màu gốc).
+* owned = ["kinh_tron:hong", …]: the unlocked accessory + colour pairs.
+A separate key on purpose: ``s['wardrobe']`` keeps its exact shape, so an older build neither refuses nor
+"repairs" the save (it simply draws Màu gốc) and the paid colours are still there after a rollback.
+The look handed to the art (``look_of``, the client's lookOf, the live frames) carries the worn
+accessory's colour as ``look['tint'] = {accessory id: colour id}`` (only when it is not Màu gốc).
 """
 from __future__ import annotations
 
@@ -96,6 +108,47 @@ ITEMS = [
 INDEX = {x['id']: x for x in ITEMS}
 BUYABLE = frozenset(x['id'] for x in ITEMS if x['price'] > 0)
 LOOK_KEYS = frozenset(SLOTS) | {'uniform'}
+WEAR_KEYS = LOOK_KEYS | {'tint'}  # jr_wd_wear may also switch colours (kept in s['wardrobe_colors'], not in the look)
+
+# ---------------------------------------------------------------- màu phụ kiện
+COLOR_KEY = 'wardrobe_colors'
+COLOR_VERSION = 1
+COLOR_BLOCK_KEYS = frozenset({'v', 'wear', 'owned'})
+GOC = 'goc'                            # "Màu gốc": the accessory's own colour, free (never stored)
+COLOR_PRICE = 20
+COLOR_LABEL = 'Mở khóa màu phụ kiện'   # wallet row: "Mở khóa màu phụ kiện · Mũ len · Hồng pastel" (kind 'life')
+
+
+def _c(cid, name, price=COLOR_PRICE):
+    return dict(id=cid, name=name, price=price)
+
+
+# The art (hex) lives in public/js/v4/look.js ACC_COLORS under the same ids; live/street_data.py copies the ids.
+COLORS = [
+    _c('den', 'Đen tuyền'),
+    _c('nau', 'Nâu gỗ'),
+    _c('vang', 'Vàng gold', 30),
+    _c('bac', 'Bạc ánh kim', 30),
+    _c('hong', 'Hồng pastel'),
+    _c('do', 'Đỏ son'),
+    _c('dao', 'Cam đào'),
+    _c('mint', 'Xanh bạc hà'),
+    _c('navy', 'Xanh navy'),
+    _c('lavender', 'Tím lavender'),
+    _c('trang', 'Trắng kem'),
+]
+COLOR_INDEX = {x['id']: x for x in COLORS}
+TINTABLE = tuple(x['id'] for x in ITEMS if x['slot'] == 'acc' and x['id'] != 'pk_khong')
+# The colours that sit well with each hair shade ("Hợp với tóc nâu mật ong"), best first.
+MATCH = {
+    'mau_nau': ('vang', 'dao', 'mint', 'trang'),
+    'mau_den': ('do', 'bac', 'trang', 'hong'),
+    'mau_mat_ong': ('navy', 'trang', 'nau', 'mint'),
+    'mau_hong': ('trang', 'lavender', 'bac', 'mint'),
+    'mau_xanh_khoi': ('bac', 'trang', 'navy', 'hong'),
+    'mau_bach_kim': ('lavender', 'hong', 'navy', 'den'),
+}
+PAIRS = frozenset(f'{i}:{c}' for i in TINTABLE for c in COLOR_INDEX)
 BLOCK_KEYS = frozenset({'v', 'look', 'owned'})
 
 _BASE = dict(shade='mau_nau', skin='da_sang', top='ao_quen', shoes='giay_nau', acc='pk_khong', uniform=True)
@@ -126,9 +179,33 @@ def _gender(s: dict):
 
 
 def look_of(s: dict) -> dict:
-    """The look to draw: the saved one, or the gender's default."""
+    """The look to draw: the saved one, or the gender's default, with the worn accessory's colour (``tint``)."""
     w = s.get(KEY)
-    return dict(w['look']) if isinstance(w, dict) and isinstance(w.get('look'), dict) else default_look(_gender(s))
+    look = dict(w['look']) if isinstance(w, dict) and isinstance(w.get('look'), dict) else default_look(_gender(s))
+    col = color_of(s, look.get('acc'))
+    if col != GOC:
+        look['tint'] = {look['acc']: col}
+    return look
+
+
+def _wear(s: dict) -> dict:
+    c = s.get(COLOR_KEY)
+    return c['wear'] if isinstance(c, dict) and isinstance(c.get('wear'), dict) else {}
+
+
+def _owned_colors(s: dict) -> list:
+    c = s.get(COLOR_KEY)
+    return c['owned'] if isinstance(c, dict) and isinstance(c.get('owned'), list) else []
+
+
+def color_of(s: dict, iid) -> str:
+    """The colour this accessory is worn in (GOC: its own)."""
+    col = _wear(s).get(iid) if isinstance(iid, str) else None
+    return col if col in COLOR_INDEX and iid in TINTABLE else GOC
+
+
+def color_owned(s: dict, iid: str, cid: str) -> bool:
+    return cid == GOC or f'{iid}:{cid}' in _owned_colors(s)
 
 
 # ---------------------------------------------------------------- save
@@ -149,11 +226,29 @@ def _repair(w, gender) -> dict:
     return out
 
 
+def _repair_colors(c) -> dict:
+    """A colour block written by a newer build or hand-edited: keep the pairs and colours this build knows."""
+    out = dict(v=COLOR_VERSION, wear={}, owned=[])
+    if not isinstance(c, dict):
+        return out
+    owned = c.get('owned') if isinstance(c.get('owned'), list) else []
+    out['owned'] = [x for i, x in enumerate(owned) if isinstance(x, str) and x in PAIRS and x not in owned[:i]]
+    wear = c.get('wear') if isinstance(c.get('wear'), dict) else {}
+    out['wear'] = {k: v for k, v in wear.items() if k in TINTABLE and isinstance(v, str) and f'{k}:{v}' in out['owned']}
+    return out
+
+
 def migrate(s: dict) -> None:
-    """Saves from before 0.9.5 get the look they were drawn with; a broken block is repaired."""
+    """Saves from before 0.9.5 get the look they were drawn with; a broken block is repaired.
+    The colour block (1.3) is checked the same way: a block a newer build wrote keeps what this build knows."""
+    if COLOR_KEY in s:
+        try:
+            validate_colors(s)
+        except _core().GameError:
+            s[COLOR_KEY] = _repair_colors(s[COLOR_KEY])
     if KEY in s:
         try:
-            validate(s)
+            _validate_look(s)
         except _core().GameError:
             s[KEY] = _repair(s[KEY], _gender(s))
         return
@@ -163,7 +258,13 @@ def migrate(s: dict) -> None:
 
 
 def validate(s: dict) -> None:
-    """``s['wardrobe']`` (absent in older saves). Raises GameError like validate_state."""
+    """``s['wardrobe']`` and ``s['wardrobe_colors']`` (both absent in older saves). Raises GameError like
+    validate_state."""
+    validate_colors(s)
+    _validate_look(s)
+
+
+def _validate_look(s: dict) -> None:
     e = _core()
     w = s.get(KEY)
     if w is None:
@@ -178,6 +279,44 @@ def validate(s: dict) -> None:
     owned = w['owned']
     e.need(isinstance(owned, list) and len(owned) <= len(BUYABLE) and len(set(owned)) == len(owned)
            and all(isinstance(x, str) and x in BUYABLE for x in owned), bad, 'invalid_save')
+
+
+def validate_colors(s: dict) -> None:
+    """``s['wardrobe_colors']`` (absent until the first colour is unlocked). Raises GameError like validate_state."""
+    e = _core()
+    c = s.get(COLOR_KEY)
+    if c is None:
+        return
+    bad = 'Màu phụ kiện trong bản lưu không hợp lệ.'
+    e.need(isinstance(c, dict) and set(c) == COLOR_BLOCK_KEYS and c['v'] == COLOR_VERSION, bad, 'invalid_save')
+    owned = c['owned']
+    e.need(isinstance(owned, list) and len(owned) <= len(PAIRS) and len(set(owned)) == len(owned)
+           and all(isinstance(x, str) and x in PAIRS for x in owned), bad, 'invalid_save')
+    wear = c['wear']
+    e.need(isinstance(wear, dict) and all(k in TINTABLE and isinstance(v, str) and f'{k}:{v}' in owned
+                                          for k, v in wear.items()), bad, 'invalid_save')
+
+
+def _cbox(s: dict) -> dict:
+    if not isinstance(s.get(COLOR_KEY), dict):
+        s[COLOR_KEY] = dict(v=COLOR_VERSION, wear={}, owned=[])
+    return s[COLOR_KEY]
+
+
+def color_price(s: dict, cid: str) -> int:
+    p = COLOR_INDEX[cid]['price']
+    return p - p * STAFF_OFF // 100 if staff(s) else p
+
+
+def _set_color(s: dict, iid: str, cid: str) -> None:
+    if cid != GOC:
+        _cbox(s)['wear'][iid] = cid
+    elif isinstance(s.get(COLOR_KEY), dict):
+        s[COLOR_KEY]['wear'].pop(iid, None)
+
+
+def _color_name(cid: str) -> str:
+    return 'Màu gốc' if cid == GOC else COLOR_INDEX[cid]['name']
 
 
 def _box(s: dict) -> dict:
@@ -252,8 +391,14 @@ def action(s: dict, name: str, p: dict) -> dict:
     need = e.need
     if name == 'jr_wd_wear':
         need(set(p) <= {'look'} and isinstance(p.get('look'), dict) and p['look'], 'Bộ đồ không hợp lệ.')
-        want = p['look']
-        need(set(want) <= LOOK_KEYS, 'Bộ đồ không hợp lệ.')
+        want = dict(p['look'])
+        need(set(want) <= WEAR_KEYS, 'Bộ đồ không hợp lệ.')
+        tint = want.pop('tint', None)
+        if tint is not None:   # colours already unlocked: switching is free
+            need(isinstance(tint, dict) and 0 < len(tint) <= len(TINTABLE), 'Màu phụ kiện không hợp lệ.')
+            for iid, cid in tint.items():
+                need(iid in TINTABLE and isinstance(cid, str) and (cid == GOC or cid in COLOR_INDEX), 'Màu phụ kiện không hợp lệ.')
+                need(color_owned(s, iid, cid), f'Màu {_color_name(cid)} cho {INDEX[iid]["name"]} chưa mở khóa.')
         w = _box(s)
         look = dict(w['look'])
         for slot, iid in want.items():
@@ -266,10 +411,44 @@ def action(s: dict, name: str, p: dict) -> dict:
                 why = locked(s, iid)
                 need(why is None, why or '')
             look[slot] = iid
-        if look == w['look']:
+        recolour = {k: v for k, v in (tint or {}).items() if color_of(s, k) != v}
+        if look == w['look'] and not recolour:
             return dict(message='Bạn đang mặc đúng bộ này rồi.')
         w['look'] = look
+        for iid, cid in recolour.items():
+            _set_color(s, iid, cid)
         return dict(message='Đã thay đồ xong. Trông bạn tươi tắn hẳn!')
+    if name == 'jr_wd_color':
+        need(set(p) <= {'item', 'color', 'buy', 'wear', 'pay'}, 'Thông tin màu không hợp lệ.')
+        iid, cid = p.get('item'), p.get('color')
+        need(isinstance(iid, str) and iid in TINTABLE, 'Món này không đổi màu được.')
+        need(isinstance(cid, str) and (cid == GOC or cid in COLOR_INDEX), 'Màu này không có trong bảng màu.')
+        buy, on = p.get('buy', False), p.get('wear', True)
+        need(buy in (True, False) and on in (True, False), 'Thông tin màu không hợp lệ.')
+        it, cname = INDEX[iid], _color_name(cid)
+        w = _box(s)
+        if w['look']['acc'] != iid:        # its colour is chosen for wearing it: the accessory must be yours
+            why = locked(s, iid)
+            need(why is None, why or '')
+        msg = ''
+        if not color_owned(s, iid, cid):
+            cost = color_price(s, cid)
+            need(buy, f'Màu {cname} cho {it["name"]} chưa mở khóa ({cost} xu).')
+            from . import bank as bk
+            paid = bk.pay(s, cost, f'{COLOR_LABEL} · {it["name"]} · {cname}', method=p.get('pay', 'auto'), kind=KIND,
+                          career=SHOP if staff(s) else None, short=f'Ví chưa đủ {cost} xu để mở khóa màu {cname}.')
+            _cbox(s)['owned'].append(f'{iid}:{cid}')
+            how = f'Đã trả {cost} xu' if paid['method'] == 'cash' else paid['text'].rstrip('.')
+            off = f' (giá nhân viên {SHOP_NAME})' if cost < COLOR_INDEX[cid]['price'] else ''
+            msg = f'{how}{off} mở khóa màu {cname} cho {it["name"]}.'
+        elif color_of(s, iid) == cid and (not on or w['look']['acc'] == iid):
+            return dict(message=f'{it["name"]} đang mang màu {cname} rồi.')
+        _set_color(s, iid, cid)
+        if on:
+            w['look']['acc'] = iid
+        if not msg:
+            msg = f'{it["name"]} trở lại màu gốc.' if cid == GOC else f'{it["name"]} giờ mang màu {cname}.'
+        return dict(message=msg + (' Đeo luôn rồi nè!' if on else ''))
     if name == 'jr_wd_buy':
         need(set(p) <= {'item', 'wear', 'pay'}, 'Thông tin mua hàng không hợp lệ.')
         iid = p.get('item')
@@ -297,4 +476,5 @@ def action(s: dict, name: str, p: dict) -> dict:
 def content() -> dict:
     """Static list for the client (bootstrap content, cached): names, prices and unlocks by id."""
     return dict(slots=[dict(id=k, name=SLOT_NAMES[k]) for k in SLOTS], items=[dict(x) for x in ITEMS],
-                defaults={k or 'none': v for k, v in DEFAULTS.items()}, staff_off=STAFF_OFF, shop=SHOP, shop_name=SHOP_NAME)
+                defaults={k or 'none': v for k, v in DEFAULTS.items()}, staff_off=STAFF_OFF, shop=SHOP, shop_name=SHOP_NAME,
+                colors=[dict(x) for x in COLORS], tintable=list(TINTABLE), match={k: list(v) for k, v in MATCH.items()})

@@ -3,6 +3,8 @@
  *   lookOf(state)            the look to draw (the saved one, or the gender's default = the pre-0.9.5 look)
  *   portrait(look,gender,…)  the round bust used on the journey card, stories, the board, the ranking…
  *   figure(state), paint*()  the walking character in a workplace (BobaWorld.character, canvas)
+ *   look.tint                the worn accessory's colour (1.3, state.wardrobe_colors): every painter above reads
+ *                            it through accPaint, so portraits, the street, the wedding and its photos all match
  * Small and always loaded; the wardrobe sheet itself (v4/wardrobe.js) loads on first use. */
 import {R,E,L,P,heart,bloom} from '../scenes/kit.js';
 
@@ -22,17 +24,35 @@ export const ART={
     ao_cuoi:{c:'#c8453c',d:'aodai',x:'#f2c86a',long:1},vest_cuoi:{c:'#3e4a5c',d:'suit',x:'#c8453c',bow:1}},
   bottom:{quan_kem:{c:'#f0d3b8'},quan_xam:{c:'#6f6a78'},quan_jean:{c:'#5b7ea6'},quan_short:{c:'#c9a978',short:1},vay_xoe:{c:'#e39ab0',skirt:'flare'},vay_dai:{c:'#9fb7d8',skirt:'long'}},
   shoes:{giay_nau:{c:'#785c51'},dep_lao:{c:'#5b8fc0',flat:1},giay_trang:{c:'#f4f1ea',line:'#cfc8bb'},giay_do:{c:'#c9514a'},bot_den:{c:'#3d3533',tall:1}},
-  acc:{pk_khong:{},kinh_tron:{},kinh_ram:{},non_la:{},mu_len:{},no_toc:{},tui_cheo:{}},
+  // Each accessory's own colours ("Màu gốc"): c main, d the darker part (frame, band, knot, strap), l the light part.
+  acc:{pk_khong:{},kinh_tron:{c:'#6b4f3f',d:'#6b4f3f'},kinh_ram:{c:'#3a3230',d:'#3a3230'},non_la:{c:'#ecd394',d:'#c9a95e',line:'#d6b86f',brim:'#d9bb72'},
+    mu_len:{c:'#d8736a',d:'#b95a52',l:'#f3e6d6'},no_toc:{c:'#e0708a',d:'#c85873'},tui_cheo:{c:'#b07a4f',d:'#8a5a3c',l:'#d9a878'}},
 };
+/* Màu phụ kiện (1.3, góp ý #70): look.tint = {accessory id: colour id}; ids, names and prices in game/wardrobe.py COLORS. */
+// A null-prototype map: an id from someone else's look ("__proto__") finds nothing.
+export const ACC_COLORS=Object.freeze(Object.assign(Object.create(null),{
+  den:{c:'#3a3436',d:'#221e1f',l:'#6b6365'},nau:{c:'#8a5a3c',d:'#5f3c27',l:'#c08f68'},vang:{c:'#e0b43f',d:'#b0821f',l:'#f6df8f'},
+  bac:{c:'#c7ccd4',d:'#8b94a1',l:'#eef1f5'},hong:{c:'#f4b0c4',d:'#d77d9a',l:'#fde2ea'},do:{c:'#d2453d',d:'#9e2c27',l:'#f19089'},
+  dao:{c:'#f6a882',d:'#d67b55',l:'#fdd5c1'},mint:{c:'#8fd5c0',d:'#4e9f87',l:'#d3f2e8'},navy:{c:'#3a4e7c',d:'#24345a',l:'#7d8fba'},
+  lavender:{c:'#bba6e2',d:'#8a72c0',l:'#e5dcf7'},trang:{c:'#f8f4ec',d:'#c8bead',l:'#ffffff'},
+}));
+/** The colours an accessory is drawn in: its chosen colour (look.tint), else its own. */
+export function accPaint(L,a=L?.acc){
+  const base=ART.acc[a]||{},t=ACC_COLORS[L?.tint?.[a]];
+  return t&&base.c?{...base,...t,line:t.d,brim:t.d}:base;
+}
 const CLASSIC={female:'#e39a8a',male:'#78a3b6'};   // "Áo quen thuộc" on the portrait (in a workplace: the place's colour)
 
 export function defaultLook(gender){return {...DEFAULTS[gender==='male'||gender==='female'?gender:'none']};}
-/** The look to draw for this state: saved slots that this build knows, the gender's default elsewhere. */
+/** The look to draw for this state: saved slots that this build knows, the gender's default elsewhere, and the
+ * worn accessory's colour from state.wardrobe_colors (tint, only when it is not the accessory's own). */
 export function lookOf(state){
   const d=defaultLook(state?.journey?.gender),w=state?.wardrobe?.look;
   if(!w||typeof w!=='object')return d;
   for(const k of SLOTS)if(typeof w[k]==='string'&&ART[k][w[k]])d[k]=w[k];
   if(typeof w.uniform==='boolean')d.uniform=w.uniform;
+  const col=state?.wardrobe_colors?.wear?.[d.acc];
+  if(typeof col==='string'&&ACC_COLORS[col]&&ART.acc[d.acc]?.c)d.tint={[d.acc]:col};
   return d;
 }
 const art=(L,slot)=>ART[slot][L[slot]]||ART[slot][DEFAULTS.none[slot]];
@@ -75,28 +95,28 @@ function topDetail(t){
   }
   return '';
 }
-function accBust(a){
+function accBust(a,k){
   switch(a){
-    case'kinh_tron':return `<g fill="none" stroke="#6b4f3f" stroke-width="1.6"><circle cx="33" cy="40" r="5.8"/><circle cx="47" cy="40" r="5.8"/><path d="M38.8 40h2.4M27.2 39l-5-2M52.8 39l5-2"/></g>`;
-    case'kinh_ram':return `<g fill="#3a3230"><rect x="26" y="35.5" width="12.5" height="9" rx="4"/><rect x="41.5" y="35.5" width="12.5" height="9" rx="4"/></g><path d="M38.5 39h3" stroke="#3a3230" stroke-width="1.6"/><path d="M29 38.5h4" stroke="#fff" stroke-opacity=".5" stroke-width="1.2" stroke-linecap="round"/>`;
-    case'non_la':return `<path d="M5 27L40 1L75 27Q40 33 5 27Z" fill="#ecd394" stroke="#c9a95e" stroke-width="1.2"/><path d="M23 14H57M14 21H66" stroke="#d6b86f" stroke-width="1.1"/>`;
-    case'mu_len':return `<path d="M18 31Q18 6 40 6Q62 6 62 31Z" fill="#d8736a"/><rect x="16.5" y="25" width="47" height="8.5" rx="4.2" fill="#b95a52"/><circle cx="40" cy="5" r="5" fill="#f3e6d6"/>`;
-    case'no_toc':return `<path d="M55 19l-8-5v10zM55 19l8-5v10z" fill="#e0708a"/><circle cx="55" cy="19" r="2.4" fill="#c85873"/>`;
-    case'tui_cheo':return `<path d="M22 63L58 79" stroke="#8a5a3c" stroke-width="3" stroke-linecap="round"/><rect x="55" y="70" width="17" height="12" rx="3" fill="#b07a4f"/><rect x="58" y="72" width="11" height="3" rx="1.5" fill="#d9a878"/>`;
+    case'kinh_tron':return `<g fill="none" stroke="${k.d}" stroke-width="1.6"><circle cx="33" cy="40" r="5.8"/><circle cx="47" cy="40" r="5.8"/><path d="M38.8 40h2.4M27.2 39l-5-2M52.8 39l5-2"/></g>`;
+    case'kinh_ram':return `<g fill="${k.d}"><rect x="26" y="35.5" width="12.5" height="9" rx="4"/><rect x="41.5" y="35.5" width="12.5" height="9" rx="4"/></g><path d="M38.5 39h3" stroke="${k.d}" stroke-width="1.6"/><path d="M29 38.5h4" stroke="#fff" stroke-opacity=".5" stroke-width="1.2" stroke-linecap="round"/>`;
+    case'non_la':return `<path d="M5 27L40 1L75 27Q40 33 5 27Z" fill="${k.c}" stroke="${k.d}" stroke-width="1.2"/><path d="M23 14H57M14 21H66" stroke="${k.line}" stroke-width="1.1"/>`;
+    case'mu_len':return `<path d="M18 31Q18 6 40 6Q62 6 62 31Z" fill="${k.c}"/><rect x="16.5" y="25" width="47" height="8.5" rx="4.2" fill="${k.d}"/><circle cx="40" cy="5" r="5" fill="${k.l}"/>`;
+    case'no_toc':return `<path d="M55 19l-8-5v10zM55 19l8-5v10z" fill="${k.c}"/><circle cx="55" cy="19" r="2.4" fill="${k.d}"/>`;
+    case'tui_cheo':return `<path d="M22 63L58 79" stroke="${k.d}" stroke-width="3" stroke-linecap="round"/><rect x="55" y="70" width="17" height="12" rx="3" fill="${k.c}"/><rect x="58" y="72" width="11" height="3" rx="1.5" fill="${k.l}"/>`;
   }
   return '';
 }
 /** Warm little portrait (80×80 viewBox), drawn inline. `look` null: the gender's default look. */
 export function portrait(look,gender,size=56,label){
-  const Lk=look||defaultLook(gender),hair=hairColour(Lk),sk=art(Lk,'skin'),top=art(Lk,'top');
+  const Lk=look||defaultLook(gender),hair=hairColour(Lk),sk=art(Lk,'skin'),top=art(Lk,'top'),ak=accPaint(Lk);
   const f=gender==='female',m=gender==='male';
   label??=f?'Nhân vật nữ':m?'Nhân vật nam':'Nhân vật của bạn';
   const eyes=Lk.acc==='kinh_ram'?'':`<ellipse cx="33" cy="40" rx="2.8" ry="3.4" fill="#4b3936"/><ellipse cx="47" cy="40" rx="2.8" ry="3.4" fill="#4b3936"/><circle cx="32.3" cy="38.8" r="1" fill="#fff"/><circle cx="46.3" cy="38.8" r="1" fill="#fff"/>`;
   return `<svg class="jr-av" width="${size}" height="${size}" viewBox="0 0 80 80" role="img" aria-label="${label}"><rect width="80" height="80" rx="26" fill="#f4e4cf"/>`+
-    hairBack(Lk.hair,hair)+`<path d="M12 80c2-23 54-23 56 0" fill="${topColour(Lk,gender)}"/>`+topDetail(top)+(Lk.acc==='tui_cheo'?accBust('tui_cheo'):'')+
+    hairBack(Lk.hair,hair)+`<path d="M12 80c2-23 54-23 56 0" fill="${topColour(Lk,gender)}"/>`+topDetail(top)+(Lk.acc==='tui_cheo'?accBust('tui_cheo',ak):'')+
     `<rect x="34" y="50" width="12" height="12" rx="5" fill="${sk.neck}"/><ellipse cx="40" cy="38" rx="19" ry="21" fill="${sk.c}"/>${hairFront(Lk.hair,hair)}`+eyes+
     `<ellipse cx="28" cy="46" rx="3.6" ry="2.2" fill="#e08f86" opacity=".55"/><ellipse cx="52" cy="46" rx="3.6" ry="2.2" fill="#e08f86" opacity=".55"/><path d="M36 48q4 4 8 0" fill="none" stroke="#a46e5e" stroke-width="1.8" stroke-linecap="round"/>`+
-    (Lk.acc==='tui_cheo'?'':accBust(Lk.acc))+`</svg>`;
+    (Lk.acc==='tui_cheo'?'':accBust(Lk.acc,ak))+`</svg>`;
 }
 /** The player's own portrait from the state (board, ranking, marriage, stories…). */
 export const myPortrait=(state,size=40,label='Bạn')=>portrait(lookOf(state),state?.journey?.gender,size,label);
@@ -172,13 +192,14 @@ export function paintHairFront(c,F,K=CANVAS){
 }
 /** The one accessory (last, over the face and hair). */
 export function paintAcc(c,F,K=CANVAS){
+  const k=accPaint(F.L);
   switch(F.L.acc){
-    case'kinh_tron':K.ring(c,-11,-78,8.5,'#6b4f3f',1.8);K.ring(c,11,-78,8.5,'#6b4f3f',1.8);K.L(c,-2.5,-78,2.5,-78,'#6b4f3f',1.6);break;
-    case'kinh_ram':K.R(c,-21,-85,19,13,'#3a3230',6);K.R(c,2,-85,19,13,'#3a3230',6);K.L(c,-2,-80,2,-80,'#3a3230',2);K.L(c,-17,-81,-11,-81,'#ffffff70',1.5);break;
-    case'non_la':K.P(c,[[-46,-103],[0,-140],[46,-103]],'#ecd394');K.E(c,0,-103,46,5,'#d9bb72');K.L(c,-24,-122,24,-122,'#d6b86f',1.3);break;
-    case'mu_len':K.R(c,-31,-128,62,34,'#d8736a',16);K.R(c,-33,-104,66,11,'#b95a52',5);K.E(c,0,-129,7,7,'#f3e6d6');break;
-    case'no_toc':K.P(c,[[22,-108],[11,-115],[11,-101]],'#e0708a');K.P(c,[[22,-108],[33,-115],[33,-101]],'#e0708a');K.E(c,22,-108,3,3,'#c85873');break;
-    case'tui_cheo':K.L(c,-18,-50,15,-25,'#8a5a3c',3);K.R(c,9,-31,17,13,'#b07a4f',4);K.R(c,12,-29,11,3,'#d9a878',1.5);break;
+    case'kinh_tron':K.ring(c,-11,-78,8.5,k.d,1.8);K.ring(c,11,-78,8.5,k.d,1.8);K.L(c,-2.5,-78,2.5,-78,k.d,1.6);break;
+    case'kinh_ram':K.R(c,-21,-85,19,13,k.d,6);K.R(c,2,-85,19,13,k.d,6);K.L(c,-2,-80,2,-80,k.d,2);K.L(c,-17,-81,-11,-81,'#ffffff70',1.5);break;
+    case'non_la':K.P(c,[[-46,-103],[0,-140],[46,-103]],k.c);K.E(c,0,-103,46,5,k.brim);K.L(c,-24,-122,24,-122,k.line,1.3);break;
+    case'mu_len':K.R(c,-31,-128,62,34,k.c,16);K.R(c,-33,-104,66,11,k.d,5);K.E(c,0,-129,7,7,k.l);break;
+    case'no_toc':K.P(c,[[22,-108],[11,-115],[11,-101]],k.c);K.P(c,[[22,-108],[33,-115],[33,-101]],k.c);K.E(c,22,-108,3,3,k.d);break;
+    case'tui_cheo':K.L(c,-18,-50,15,-25,k.d,3);K.R(c,9,-31,17,13,k.c,4);K.R(c,12,-29,11,3,k.l,1.5);break;
   }
 }
 /** The whole player as BobaWorld draws it, with the work layer off (the wardrobe mirror). */

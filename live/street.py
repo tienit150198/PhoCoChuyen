@@ -59,7 +59,8 @@ import time
 from . import effects
 from .db import Error as DbError, log
 from .protocol import Feature, LiveError, on
-from .street_data import CERTS, EMOTES, LOOK_DEFAULTS, LOOK_IDS, LOOK_SLOTS, PLACES, PUBLIC, TITLES, TOPICS, VENDORS, H, W
+from .street_data import (CERTS, COLOR_IDS, EMOTES, LOOK_DEFAULTS, LOOK_IDS, LOOK_SLOTS, PLACES, PUBLIC, TINTABLE, TITLES,
+                          TOPICS, VENDORS, H, W)
 
 PREFIX = 'walk:'
 WEAR_MAX = 3              # game/journey.py WEAR_MAX: titles and certificates worn at once
@@ -206,8 +207,9 @@ def pos_at(path: list, t0: float, now: float) -> tuple:
 
 
 def clean_look(look, g) -> tuple[dict, str | None]:
-    """The public look a client sends: a dict of wardrobe slots → item ids. Wrong shape: refused; an id this
-    build does not know: the gender's default for that slot."""
+    """The public look a client sends: a dict of wardrobe slots → item ids, and maybe `tint` {accessory id:
+    colour id} (màu phụ kiện, 1.3). Wrong shape: refused; an id this build does not know: the gender's default
+    for that slot, no colour. Only the worn accessory's colour is kept (one small entry in the frames)."""
     if g not in ('male', 'female', None):
         g = None
     out = dict(LOOK_DEFAULTS[g])
@@ -215,13 +217,23 @@ def clean_look(look, g) -> tuple[dict, str | None]:
         return out, g
     if not isinstance(look, dict) or len(look) > len(LOOK_SLOTS) + 2:
         raise LiveError('bad', 'Dáng nhân vật không hợp lệ.')
+    tint = None
     for k, v in look.items():
         if k == 'uniform':
+            continue
+        if k == 'tint':
+            if not isinstance(v, dict) or len(v) > 4 or not all(
+                    isinstance(a, str) and isinstance(b, str) and len(a) <= 24 and len(b) <= 24 for a, b in v.items()):
+                raise LiveError('bad', 'Dáng nhân vật không hợp lệ.')
+            tint = v
             continue
         if k not in LOOK_SLOTS or not isinstance(v, str) or len(v) > 24:
             raise LiveError('bad', 'Dáng nhân vật không hợp lệ.')
         if v in LOOK_IDS[k]:
             out[k] = v
+    acc = out['acc']
+    if tint and acc in TINTABLE and tint.get(acc) in COLOR_IDS:
+        out['tint'] = {acc: tint[acc]}
     return out, g
 
 
