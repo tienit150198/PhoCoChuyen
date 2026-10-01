@@ -187,8 +187,8 @@ class CertificateCourse(unittest.TestCase):
         s = story()
         s, r = certified(s)
         rec = s['journey']['certificates'][GID]
-        self.assertEqual(set(rec), {'score', 'best', 'earned_day', 'attempts'})
-        self.assertEqual(rec, dict(score=100, best=100, earned_day=s['journey']['life_day'], attempts=1))
+        self.assertEqual(set(rec), {'score', 'best', 'earned_day', 'attempts', 'earned_on'})
+        self.assertEqual(rec, dict(score=100, best=100, earned_day=s['journey']['life_day'], attempts=1, earned_on=ct.today_vn()))
         self.assertTrue(r['cert']['earned_now'] and r['celebrate'])
         self.assertIsNone(s['journey']['study'])
         self.assertTrue(s['journey']['cert_paper']['passed'])
@@ -468,6 +468,10 @@ class Validation(unittest.TestCase):
         self.bad(lambda s: rec(s).update(earned_day=10**5))
         self.bad(lambda s: rec(s).update(best=ct.PASS_POINTS - 1, score=0))
         self.bad(lambda s: rec(s).update(extra=1))
+        self.bad(lambda s: rec(s).update(earned_on='02/10/2026'))       # 🎓 the diploma date: ISO only
+        self.bad(lambda s: rec(s).update(earned_on='2026-02-30'))
+        self.bad(lambda s: rec(s).update(earned_on=20261002))
+        self.bad(lambda s: rec(s).update(earned_day=None, best=0, score=0))   # a date without a pass
         self.bad(lambda s: s['journey'].update(certificates=[]))
 
     def test_rejects_junk_study_and_papers(self):
@@ -501,6 +505,55 @@ class Validation(unittest.TestCase):
             self.s = s
             self.bad(lambda s: s['careers'][CID]['job']['backdoor'].update(posting='nope'))
             self.bad(lambda s: s['careers'][CID]['job']['backdoor'].update(said='yes'))
+
+
+class Diploma(unittest.TestCase):
+    """🎓 Giấy chứng nhận (1.3): the real date of the first pass and a stable number, nothing else stored."""
+    def setUp(self):
+        here(CID)
+
+    def test_first_pass_stamps_the_vietnam_date_once(self):
+        with patch.object(ct.time, 'time', return_value=1790020800):     # 2026-09-21 20:00 UTC = 22/09 03:00 in Vietnam
+            s, _ = certified(story(wallet=500))
+        rec = s['journey']['certificates'][GID]
+        self.assertEqual(rec['earned_on'], '2026-09-22')
+        # a later, better try keeps the first date (and the earned day)
+        validate_state(s)
+
+    def test_serial_is_derived_and_stable(self):
+        s, _ = certified(story(seed=777))
+        pub = public_state(s)['journey']
+        day = s['journey']['certificates'][GID]['earned_day']
+        self.assertEqual(pub['cert_serials'], {GID: ct.serial(777, GID, day)})
+        self.assertRegex(pub['cert_serials'][GID], r'^PCC-WS-[A-HJKMNP-Z2-9]{6}$')
+        self.assertEqual(public_state(copy.deepcopy(s))['journey']['cert_serials'], pub['cert_serials'])
+        self.assertNotEqual(ct.serial(777, GID, day), ct.serial(778, GID, day))
+        self.assertEqual(ct.serial(1, 'accounting', 3)[:8], 'PCC-ACC-')
+
+    def test_only_earned_certificates_have_a_number(self):
+        s = story(wallet=500)
+        s, _ = act(s, None, 'jr_cert_enrol', cert=GID, mode='class')
+        s, _ = sit(s, GID, 1)                                              # failed: a row, no diploma
+        self.assertIn(GID, s['journey']['certificates'])
+        self.assertNotIn('earned_on', s['journey']['certificates'][GID])
+        self.assertEqual(public_state(s)['journey']['cert_serials'], {})
+
+    def test_a_pass_from_before_the_diploma_still_gets_one(self):
+        s, _ = certified(story(wallet=500))
+        del s['journey']['certificates'][GID]['earned_on']                 # a 1.2 save
+        s = migrate_state(s)
+        validate_state(s)
+        self.assertIn(GID, public_state(s)['journey']['cert_serials'])
+
+    def test_album_takes_a_jpeg_photo(self):
+        import base64
+        s = story()
+        jpeg = 'data:image/jpeg;base64,' + base64.b64encode(b'\xff\xd8\xff\xe0' + b'0' * 64).decode()
+        s, r = act(s, 'milk_tea', 'photo', image=jpeg, title='🎓 Chứng chỉ An toàn lao động')
+        self.assertEqual(s['careers']['milk_tea']['album'][0]['image'], jpeg)
+        validate_state(s)
+        with self.assertRaises(GameError):
+            act(s, 'milk_tea', 'photo', image='data:image/jpeg;base64,' + base64.b64encode(b'GIF89a' + b'0' * 64).decode())
 
 
 class OldSaves(unittest.TestCase):

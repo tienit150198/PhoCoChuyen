@@ -17,18 +17,23 @@ Flow, on the journey clock (life days):
 * `jr_cert_drop` {confirm}: leave the course (no refund).
 
 Save shape (stable; the leaderboard reads `certificates`):
-  journey.certificates = {group_id: {score, best, earned_day, attempts}}
+  journey.certificates = {group_id: {score, best, earned_day, attempts[, earned_on]}}
       score/best: points 0–100 of the last / best exam (right answers × 100 ÷ DRAW,
       rounded half up); earned_day: life day of the first pass, or None;
-      attempts: exams sat (≥ 1: a row exists only after a sitting).
+      attempts: exams sat (≥ 1: a row exists only after a sitting);
+      earned_on (optional, 1.3): the real date of the first pass, 'YYYY-MM-DD' in Vietnam
+      time, printed on the diploma. Passes from before 1.3 have none (life day only).
   journey.study = None | {cert, mode, start, ready, fee, career, paper:{qs, answers, attempt}}
   journey.cert_paper = None | {cert, qs, answers, right, score, passed, day, attempt}  (last graded paper)
 """
 from __future__ import annotations
 
 from .jsoncopy import tree_copy
+import datetime
+import hashlib
 import random
 import re
+import time
 
 from . import certificate_content as CC
 from . import days as days_
@@ -50,6 +55,10 @@ DRAW = 6                # exam questions per paper
 PASS_MARK = 4           # right answers needed
 MODES = ('class', 'self')
 REC_KEYS = {'score', 'best', 'earned_day', 'attempts'}
+REC_OPTIONAL = {'earned_on'}
+VN = datetime.timezone(datetime.timedelta(hours=7))
+_DATE = re.compile(r'\d{4}-\d{2}-\d{2}')
+SERIAL_ABC = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'   # no 0/O, 1/I/L: read aloud or typed without doubt
 STUDY_KEYS = {'cert', 'mode', 'start', 'ready', 'fee', 'career', 'paper'}
 PAPER_KEYS = {'cert', 'qs', 'answers', 'right', 'score', 'passed', 'day', 'attempt'}
 
@@ -85,6 +94,25 @@ def held_for(s: dict, career: str) -> str | None:
     """The certificate id that raises the hire chance for `career`, if the player holds it."""
     gid = group_of(career)
     return gid if gid and earned(s.get('journey'), gid) else None
+
+
+def today_vn() -> str:
+    """Today's date in Vietnam, 'YYYY-MM-DD' (the real date printed on a new diploma)."""
+    return datetime.datetime.fromtimestamp(time.time(), VN).date().isoformat()
+
+
+def serial(seed: int, gid: str, earned_day: int) -> str:
+    """The diploma's number, e.g. 'PCC-ACC-7KQ2MX': derived from the save (journey seed, certificate,
+    life day of the pass), so it never changes and needs no stored field. Group code: initials of a
+    multi-word id ('work_safety' → WS), else its first three letters ('accounting' → ACC)."""
+    parts = [x for x in str(gid).split('_') if x]
+    code = (''.join(x[0] for x in parts) if len(parts) > 1 else str(gid)[:3]).upper()
+    n = int.from_bytes(hashlib.sha256(f'diploma|{int(seed)}|{gid}|{int(earned_day)}'.encode()).digest()[:8], 'big')
+    tail = ''
+    for _ in range(6):
+        n, r = divmod(n, len(SERIAL_ABC))
+        tail += SERIAL_ABC[r]
+    return f'PCC-{code}-{tail}'
 
 
 def tuition(gid: str) -> int:
@@ -186,6 +214,7 @@ def _grade(s: dict, j: dict, study: dict) -> dict:
     rec['best'] = max(rec['best'], score)
     if passed and rec['earned_day'] is None:
         rec['earned_day'] = j['life_day']
+        rec['earned_on'] = today_vn()
     j['cert_paper'] = dict(cert=gid, qs=list(paper['qs']), answers=dict(paper['answers']), right=right, score=score, passed=passed,
                            day=j['life_day'], attempt=paper['attempt'])
     j['study'] = None
@@ -219,7 +248,10 @@ def public(s: dict) -> dict:
         last['review'] = [dict(id=q, text=bank[q]['text'], picked=paper['answers'].get(q), answer=bank[q]['answer'],
                                ok=paper['answers'].get(q) == bank[q]['answer'], why=bank[q]['why'],
                                options={o['id']: o['label'] for o in bank[q]['options']}) for q in paper['qs']]
-    return dict(certificates=tree_copy(j.get('certificates') or {}), study=view, cert_paper=last)
+    # 🎓 The diploma's number for each earned certificate (serial(): derived, not stored).
+    serials = {gid: serial(j.get('seed', 0), gid, rec['earned_day']) for gid, rec in (j.get('certificates') or {}).items()
+               if isinstance(rec, dict) and type(rec.get('earned_day')) is int}
+    return dict(certificates=tree_copy(j.get('certificates') or {}), study=view, cert_paper=last, cert_serials=serials)
 
 
 _WORD = re.compile(r'\w+', re.UNICODE)
@@ -264,13 +296,20 @@ def validate(s: dict) -> None:
     certs = j.get('certificates')
     need(isinstance(certs, dict) and set(certs) <= set(INDEX), 'Chứng chỉ không hợp lệ.')
     for gid, rec in certs.items():
-        need(isinstance(rec, dict) and set(rec) == REC_KEYS, 'Chứng chỉ không hợp lệ.')
+        need(isinstance(rec, dict) and REC_KEYS <= set(rec) <= REC_KEYS | REC_OPTIONAL, 'Chứng chỉ không hợp lệ.')
         integer(rec['score'], 0, 100)
         integer(rec['best'], rec['score'], 100)
         integer(rec['attempts'], 1, 10**6)
         if rec['earned_day'] is not None:
             integer(rec['earned_day'], 1, life_day)
             need(rec['best'] >= PASS_POINTS, 'Chứng chỉ chưa đủ điểm đạt.')
+        if 'earned_on' in rec:
+            on = rec['earned_on']
+            need(rec['earned_day'] is not None and isinstance(on, str) and _DATE.fullmatch(on), 'Ngày cấp chứng chỉ không hợp lệ.')
+            try:
+                datetime.date.fromisoformat(on)
+            except ValueError:
+                need(False, 'Ngày cấp chứng chỉ không hợp lệ.')
     study = j.get('study')
     if study is not None:
         need(isinstance(study, dict) and set(study) == STUDY_KEYS and study.get('cert') in INDEX and study.get('mode') in MODES,
