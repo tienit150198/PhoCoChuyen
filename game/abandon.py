@@ -46,7 +46,7 @@ LOG_KEPT = 12
 HELD_KEPT = 20            # long commitments already charged for (a guest's room, an order with a deposit)
 DONE = ('completed', 'referred', 'cancelled')
 STARTED_STATUS = ('in_progress', 'proposed', 'executing', 'awaiting_confirmation', 'handed_over')
-OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting')
+OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
 
 # Fine: per started job a quarter of its value (5..30 xu), 3 xu per waiting customer
 # (at most 15), at least 5 xu; times the offence number today (1, 2, 3 at most); at most 120 xu. Then the
@@ -57,7 +57,7 @@ TRUST_BASE, TRUST_JOB, TRUST_ONE_MAX, TRUST_MAX = 2, 4, 10, 25
 VALUE_DEFAULT = 30
 
 WHERE = dict(corp_accounting='bàn', tax_payroll='bàn', group_accounting='bàn', teacher='lớp', tour_guide='đoàn',
-             delivery='đơn', accounting='bàn', customer_care='bàn')
+             delivery='đơn', accounting='bàn', customer_care='bàn', hr_admin='bàn', secretary='bàn', it_helpdesk='bàn')
 
 BOSS_LINES = {
     1: ['Đi đâu mà bỏ {where} vậy em? Khách chờ rồi bỏ về hết.',

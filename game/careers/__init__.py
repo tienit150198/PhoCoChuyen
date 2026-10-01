@@ -17,6 +17,7 @@ ORDER = (
     'fruit', 'garbage', 'drain',   # street trades: fruit stall, rubbish round, drain cleaning
     'homemaker',                   # nội trợ: a home helper in a three-generation family
     'pilot', 'flight_attendant',
+    'hr_admin', 'secretary', 'it_helpdesk',   # Công ty CP Cánh Diều: HR, the director's secretary, IT helpdesk
 )
 # Development filter: MNL_CAREERS=restaurant,florist loads only those plugins.
 _ONLY = {x.strip() for x in os.environ.get('MNL_CAREERS', '').split(',') if x.strip()}

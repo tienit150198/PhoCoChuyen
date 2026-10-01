@@ -42,12 +42,15 @@ NORMS = {
     'corp_accounting': dict(rate=.05, cash=0, lo=0, hi=0, bill=70),
     'tax_payroll': dict(rate=.05, cash=0, lo=0, hi=0, bill=70),
     'group_accounting': dict(rate=.05, cash=0, lo=0, hi=0, bill=70),
+    'hr_admin': dict(rate=.05, cash=0, lo=0, hi=0, bill=60),
+    'secretary': dict(rate=.05, cash=0, lo=0, hi=0, bill=60),
+    'it_helpdesk': dict(rate=.06, cash=0, lo=0, hi=0, bill=60),
     # ✈️ Hãng bay Cánh Cò: nobody tips the crew; a thank-you now and then
     'pilot': dict(rate=.06, cash=0, lo=0, hi=0, bill=12),
     'flight_attendant': dict(rate=.07, cash=0, lo=0, hi=0, bill=8),
 }
 DEFAULT_NORM = dict(rate=.15, cash=.70, lo=2, hi=10, bill=40)
-OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting')
+OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
 
 # Round a tip to what people actually hand over.
 NICE = (1, 2, 3, 5, 10, 15, 20, 25, 30, 40, 50, 60, 80, 100)
@@ -190,6 +193,9 @@ CAREER_LINES = {
     'corp_accounting': ('Hồ sơ gọn gàng, sếp khen.', 'Số liệu khớp từng dòng.'),
     'tax_payroll': ('Bảng lương khớp từng đồng.', 'Nhờ vậy mà kịp hạn nộp.'),
     'group_accounting': ('Sổ hợp nhất khớp từng dòng.', 'Báo cáo gọn, họp nhẹ cả người.'),
+    'hr_admin': ('Hồ sơ của em được giải quyết nhanh ghê.', 'Bảng công rõ ràng, lương về đủ.'),
+    'secretary': ('Lịch gọn gàng, không ai phải chờ.', 'Lời nhắn ghi đủ, gọi lại đúng giờ.'),
+    'it_helpdesk': ('Máy chạy lại rồi, cứu một bàn thua trông thấy.', 'Giảng dễ hiểu, lần sau tự làm được.'),
     'pilot': ('Hạ cánh êm ru, cả khoang vỗ tay.', 'Thông báo rõ ràng, nghe là yên tâm.'),
     'flight_attendant': ('Tiếp viên chu đáo quá, cảm ơn nhiều.', 'Chuyến bay dễ chịu ghê.'),
 }
@@ -224,6 +230,9 @@ GIFTS = {
     'corp_accounting': (('🍰', 'hộp bánh mời cả phòng'), ('☕', 'ly cà phê đặt trên bàn'), ('💌', 'tin nhắn khen gửi sếp')),
     'tax_payroll': (('🍰', 'hộp bánh mời cả phòng'), ('☕', 'ly cà phê đặt trên bàn'), ('🍊', 'túi cam để trên bàn')),
     'group_accounting': (('🍰', 'hộp bánh mời cả phòng'), ('☕', 'ly cà phê đặt trên bàn'), ('💌', 'tin nhắn khen gửi sếp')),
+    'hr_admin': (('🍰', 'hộp bánh mời cả phòng'), ('🧋', 'ly trà sữa đặt trên bàn'), ('💌', 'tấm thiệp cảm ơn của bạn mới vào')),
+    'secretary': (('☕', 'ly cà phê đặt trên bàn'), ('🍊', 'túi cam khách biếu'), ('💌', 'tin nhắn khen gửi sếp')),
+    'it_helpdesk': (('☕', 'ly cà phê sữa đá'), ('🍪', 'hộp bánh quy'), ('💌', 'mẩu giấy “cảm ơn anh IT” dán trên màn hình')),
     'pilot': (('✏️', 'bức vẽ chiếc máy bay của một em nhỏ'), ('🥭', 'mấy trái xoài cát'), ('💌', 'tấm thiệp gửi tổ bay')),
     'flight_attendant': (('💌', 'mẩu giấy cảm ơn kẹp trong túi ghế'), ('🍬', 'gói kẹo dừa Bến Tre'), ('🥭', 'trái xoài chín')),
 }

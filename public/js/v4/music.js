@@ -20,6 +20,7 @@ const BY_CAREER={
   teacher:'morning',salon:'morning',customer_care:'morning',
   delivery:'urban',repair:'urban',
   accounting:'puzzle',corp_accounting:'puzzle',tax_payroll:'puzzle',group_accounting:'puzzle',
+  hr_admin:'puzzle',secretary:'puzzle',it_helpdesk:'puzzle',
 };
 const MOOD={calm:'lullaby',bright:'urban'};
 const FADE=1.5;

@@ -24,6 +24,8 @@ CRIT = {
     'customer_care': ('resolution', 'attitude', 'speed'), 'accounting': ('accuracy', 'clarity', 'speed'),
     'corp_accounting': ('accuracy', 'grounds', 'speed', 'independence'), 'tax_payroll': ('accuracy', 'quality', 'speed'),
     'group_accounting': ('accuracy', 'handover', 'speed'),
+    'hr_admin': ('accuracy', 'quality', 'care', 'speed'), 'secretary': ('accuracy', 'quality', 'care', 'speed'),
+    'it_helpdesk': ('accuracy', 'quality', 'care', 'speed'),
 }
 NPC = {}
 for n in NPCS:

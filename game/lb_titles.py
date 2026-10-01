@@ -50,7 +50,8 @@ CAREER_NOUN = dict(
     farm='nông trại', homestay='homestay', clothing='shop quần áo', pet_shop='shop thú cưng', tra_da='trà đá',
     fruit='trái cây', garbage='thu gom rác', drain='thông cống', homemaker='nội trợ', customer_care='chăm sóc khách', pharmacy='nhà thuốc',
     tour_guide='dẫn tour', teacher='bục giảng', accounting='sổ sách', pilot='buồng lái', flight_attendant='khoang khách',
-    corp_accounting='kế toán doanh nghiệp', tax_payroll='thuế & lương', group_accounting='kế toán tập đoàn')
+    corp_accounting='kế toán doanh nghiệp', tax_payroll='thuế & lương', group_accounting='kế toán tập đoàn',
+    hr_admin='nhân sự', secretary='thư ký', it_helpdesk='IT văn phòng')
 HOLDERS_SECONDS = 60.0          # how long a process trusts its copy of the current holders
 
 SCHEMA = """

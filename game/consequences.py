@@ -44,7 +44,7 @@ INSPECTION = dict(
     delivery='slip_safety_inspect', mother_baby='slip_safety_inspect', florist='slip_safety_inspect',
     tour_guide='slip_safety_inspect', teacher='slip_safety_inspect',
 )
-OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting')
+OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
 
 
 def _hash(*parts) -> int:

@@ -59,10 +59,10 @@ CH_UNLOCKS = {
     2: ('pet_care', 'salon', 'repair', 'farm', 'homestay', 'homemaker'),
     3: ('clothing', 'pet_shop', 'tra_da', 'fruit', 'garbage', 'drain'),
     4: ('customer_care', 'pharmacy', 'tour_guide', 'teacher', 'accounting', 'pilot', 'flight_attendant'),
-    5: ('corp_accounting', 'tax_payroll'),
+    5: ('corp_accounting', 'tax_payroll', 'hr_admin', 'secretary', 'it_helpdesk'),
     6: ('group_accounting',),
 }
-OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting')
+OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
 
 CAST = {
     'ba_tam': dict(name='Bà Tám', emoji='👵', role='Chủ nhà trọ'),
@@ -129,7 +129,8 @@ CHAPTERS = [
          tagline='Một chiếc bàn làm việc, một tấm thẻ nhân viên và đồng lương đầu tiên.',
          intro=[_line('anh_khoa', 'Văn phòng khác tiệm nhiều lắm: tin tuyển dụng, CV, thư ứng tuyển rồi phỏng vấn.'),
                 _line('anh_khoa', 'Nhớ chọn dòng “Có kinh nghiệm ở một nghề khác trong phố” nha. Người ta kiểm tra đó, nhưng mình làm thật mà.'),
-                _line('ba_tam', 'Đi làm văn phòng thì lương về ví. Nhận lương rồi nhớ để dành tiền phòng nghe cháu.')],
+                _line('ba_tam', 'Đi làm văn phòng thì lương về ví. Nhận lương rồi nhớ để dành tiền phòng nghe cháu.'),
+                _line('co_lua', 'Công ty balo Cánh Diều cuối phố cũng đang tuyển người làm nhân sự, thư ký giám đốc với bạn trực máy tính. Không giỏi số vẫn làm được, miễn cẩn thận.')],
          outro=[_line('anh_khoa', 'Chào đồng nghiệp mới! Lương về rồi, tối nay đi ăn chè không?'),
                 _line('co_lua', 'Bên Sông Hồng Group kia cầu đang tìm người giỏi sổ sách. Cô nghe người ta nhắc tên cháu đó.')],
          goals=[dict(id='office_hired', goal=1, text='Được nhận vào làm ở một văn phòng'),
@@ -177,6 +178,9 @@ SKILL_WEIGHTS = {
     'corp_accounting': dict(numbers=2, careful=1, tech=1),
     'tax_payroll': dict(numbers=2, tech=1, careful=1),
     'group_accounting': dict(numbers=2, teamwork=1, tech=1, learning=1),
+    'hr_admin': dict(communication=2, careful=1, teamwork=1),
+    'secretary': dict(communication=2, careful=1, calm=1),
+    'it_helpdesk': dict(tech=2, calm=1, careful=1),
 }
 SKILL_STEPS = (0, 6, 18, 40, 75, 120, 180)
 
@@ -226,6 +230,9 @@ TITLES = [
     _t('c_corp_accounting', 'career', '🧮', 'Kế toán vững tay', 'Đạt cấp 3 ở công ty Mây Tre Xanh.', lambda x: x['lv'].get('corp_accounting', 1) >= 3),
     _t('c_tax_payroll', 'career', '🧾', 'Người tính lương chuẩn', 'Đạt cấp 3 ở dịch vụ thuế và tiền lương.', lambda x: x['lv'].get('tax_payroll', 1) >= 3),
     _t('c_group_accounting', 'career', '🏢', 'Kế toán hợp nhất', 'Đạt cấp 3 ở Sông Hồng Group.', lambda x: x['lv'].get('group_accounting', 1) >= 3),
+    _t('c_hr_admin', 'career', '🗂️', 'Người giữ hồ sơ nhân sự', 'Đạt cấp 3 ở phòng nhân sự Cánh Diều.', lambda x: x['lv'].get('hr_admin', 1) >= 3),
+    _t('c_secretary', 'career', '📅', 'Thư ký chu đáo', 'Đạt cấp 3 ở bàn thư ký giám đốc Cánh Diều.', lambda x: x['lv'].get('secretary', 1) >= 3),
+    _t('c_it_helpdesk', 'career', '🖥️', 'Cứu tinh máy tính', 'Đạt cấp 3 ở bàn IT Cánh Diều.', lambda x: x['lv'].get('it_helpdesk', 1) >= 3),
     # Skills at level 3.
     _t('k_careful', 'skill', '🔍', 'Mắt tinh', 'Kỹ năng cẩn thận, tỉ mỉ đạt mức 3.', lambda x: x['sk'].get('careful', 0) >= 3),
     _t('k_communication', 'skill', '💬', 'Nói dễ hiểu', 'Kỹ năng giao tiếp đạt mức 3.', lambda x: x['sk'].get('communication', 0) >= 3),

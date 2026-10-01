@@ -30,6 +30,7 @@ FAMILY = {
     'delivery': 'service', 'farm': 'service',
     'teacher': 'school',
     'customer_care': 'office', 'accounting': 'office', 'corp_accounting': 'office', 'tax_payroll': 'office', 'group_accounting': 'office',
+    'hr_admin': 'office', 'secretary': 'office', 'it_helpdesk': 'office',
 }
 FAMILY_NAME = {'food': 'Ăn uống', 'shop': 'Cửa hàng', 'service': 'Dịch vụ', 'school': 'Lớp học', 'office': 'Văn phòng'}
 

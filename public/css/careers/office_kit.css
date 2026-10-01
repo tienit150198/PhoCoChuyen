@@ -1,4 +1,4 @@
-/* Shared office desktop for corp_accounting / tax_payroll / group_accounting
+/* Shared office desktop for corp_accounting / tax_payroll / group_accounting and the Cánh Diều desks
    (public/js/careers/office_kit.js). Scoped to .career-job.ok; theme tokens only.
    Phone first: one folder tab at a time. Wide sheets: inbox/rules left, document right. */
 .career-job.ok{--ok-foot:0px;display:grid;gap:10px;min-width:0;max-width:100%;color:var(--ink);font-size:1rem}
@@ -284,3 +284,155 @@ html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-ca
 @container sheet (min-width:720px){
   .career-job.ok:not(.ok-idle)>.ok-pane:not(.ok-pane-doc){max-height:min(64vh,620px);overflow-y:auto;overscroll-behavior:contain}
 }
+
+/* ---------------------------------------------------------------- hands-on desks of Cánh Diều (office_work.js: hr_admin, secretary,
+   it_helpdesk). Scoped to .career-job.ok.ow; theme tokens only; text at least 14px; every tap target 44px or more. */
+.career-job.ok.ow h3,.career-job.ok.ow h4,.career-job.ok.ow p{margin:0}
+.career-job.ok.ow .grow{flex:1;min-width:0}
+.career-job.ok.ow .btn.small{min-height:44px;font-size:.933rem}
+.career-job.ok.ow .ow-sort,.career-job.ok.ow .ow-mark,.career-job.ok.ow .ow-slots,.career-job.ok.ow .ow-fields,.career-job.ok.ow .ow-seq,
+.career-job.ok.ow .ow-case,.career-job.ok.ow .ow-papers,.career-job.ok.ow .ow-help,.career-job.ok.ow .ow-result{display:grid;gap:10px;min-width:0}
+.career-job.ok.ow .ow-lines{margin:0;padding-left:1.2em;display:grid;gap:4px;font-size:.967rem;line-height:1.45}
+.career-job.ok.ow .ow-scroll{overflow-x:auto;max-width:100%;border-radius:var(--radius-sm);border:1px solid var(--line);background:var(--surface)}
+.career-job.ok.ow .ow-scroll:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.career-job.ok.ow .ow-twist{padding:10px 12px;border-radius:var(--radius-sm);background:var(--warn-soft);border-left:4px solid var(--warn);font-size:.967rem;line-height:1.45}
+.career-job.ok.ow .ok-tag.warn{white-space:nowrap}
+
+/* sort: the card on the desk and its trays */
+.career-job.ok.ow .ow-chips{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.ok.ow .ow-chip{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:48px;min-height:44px;padding:0 10px;border-radius:var(--radius-pill);border:1px solid var(--line-strong);background:var(--surface);color:var(--ink-2);font:inherit;font-weight:800;cursor:pointer}
+.career-job.ok.ow .ow-chip.done{background:var(--surface-3)}
+.career-job.ok.ow .ow-chip.on{border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent);color:var(--ink)}
+.career-job.ok.ow .ow-chip.tw{border-color:var(--warn);background:var(--warn-soft)}
+.career-job.ok.ow .ow-chip i{font-style:normal}
+.career-job.ok.ow .ow-card{display:grid;gap:10px;min-width:0;padding:14px 12px;border-radius:var(--radius);background:var(--surface);border:2px solid var(--accent);box-shadow:var(--shadow)}
+.career-job.ok.ow .ow-card.tw{border-color:var(--warn)}
+.career-job.ok.ow .ow-card>header{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+.career-job.ok.ow .ow-card>header b{font-size:1.1rem;line-height:1.3;overflow-wrap:anywhere}
+.career-job.ok.ow .ow-card>header small{font-size:.933rem;color:var(--muted)}
+.career-job.ok.ow .ow-note{padding:8px 12px;border-radius:var(--radius-sm);background:var(--surface-2);font-size:.933rem;font-style:italic;line-height:1.45}
+.career-job.ok.ow .ow-bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px}
+.career-job.ok.ow .ow-bin{min-height:48px;justify-content:flex-start;text-align:left;white-space:normal;background:var(--surface-2);border:1px solid var(--line-strong);color:var(--ink)}
+.career-job.ok.ow .ow-bin.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:800}
+.career-job.ok.ow .ow-counts{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.ok.ow .ow-bincount{display:inline-flex;gap:4px;align-items:center;padding:2px 10px;border-radius:var(--radius-pill);background:var(--surface);border:1px solid var(--line);font-size:.933rem;color:var(--ink-2)}
+
+/* mark: a draft or a sheet with tappable spots */
+.career-job.ok.ow .ow-doc{display:grid;gap:8px;min-width:0;padding:16px 14px;border-radius:4px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);font-size:1rem;line-height:1.7}
+.career-job.ok.ow .ow-doc.ow-doc-table{padding:10px}
+.career-job.ok.ow .ow-doc-h{font-size:1.067rem;text-align:center;padding-bottom:6px;border-bottom:2px solid var(--ink)}
+.career-job.ok.ow .ow-seg{display:inline;min-height:0;margin:0 1px;padding:2px 4px;border:0;border-radius:6px;background:transparent;color:var(--ink);font:inherit;line-height:inherit;text-decoration:underline dotted var(--accent);text-decoration-thickness:2px;text-underline-offset:4px;cursor:pointer;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.career-job.ok.ow .ow-seg:hover{background:var(--accent-soft)}
+.career-job.ok.ow .ow-seg.on{background:var(--accent-soft);box-shadow:0 0 0 2px var(--accent)}
+.career-job.ok.ow .ow-seg.fixed{background:var(--good-soft);text-decoration-color:var(--good);font-weight:700}
+.career-job.ok.ow .ow-seg.fixed s{font-weight:400;color:var(--muted)}
+.career-job.ok.ow .ow-seg.tw{box-shadow:0 0 0 2px var(--warn)}
+.career-job.ok.ow .ow-sheet{border-collapse:collapse;width:100%;font-size:.933rem}
+.career-job.ok.ow .ow-sheet th,.career-job.ok.ow .ow-sheet td{padding:4px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+.career-job.ok.ow .ow-sheet thead th{background:var(--surface-2);color:var(--ink-2);white-space:nowrap;padding:8px 6px}
+.career-job.ok.ow .ow-sheet tbody th{font-weight:700;min-width:7em;padding:6px}
+.career-job.ok.ow .ow-sheet tr:last-child>*{border-bottom:0}
+.career-job.ok.ow .ow-sheet .ow-seg{display:block;width:100%;min-width:5.5em;min-height:44px;padding:4px 6px;border:1px solid var(--line);background:var(--surface-2);text-decoration:none;text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap}
+.career-job.ok.ow .ow-sheet .ow-seg.fixed{white-space:normal;font-size:.933rem;line-height:1.3;border-color:var(--good)}
+.career-job.ok.ow .ow-sheet .ow-seg.fixed s{display:block}
+.career-job.ok.ow .ow-picker{display:grid;gap:8px;padding:12px;border-radius:var(--radius-sm);background:var(--surface-2);border:2px solid var(--accent);font-size:.967rem;line-height:1.45}
+.career-job.ok.ow .ow-choices{display:grid;gap:6px}
+.career-job.ok.ow .ow-choice{min-height:48px;display:flex;align-items:center;gap:10px;text-align:left;padding:8px 12px;border-radius:var(--radius-sm);border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);font:inherit;font-size:.967rem;line-height:1.4;cursor:pointer}
+.career-job.ok.ow .ow-choice:hover{border-color:var(--accent)}
+.career-job.ok.ow .ow-choice.on{background:var(--accent-soft);border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);font-weight:700}
+.career-job.ok.ow .ow-choice.tw{border-color:var(--warn)}
+.career-job.ok.ow .ow-choice small{color:var(--muted);font-weight:400}
+.career-job.ok.ow .ow-box{display:inline-grid;place-items:center;flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--field-line);background:var(--surface);font-size:.933rem}
+.career-job.ok.ow .ow-choice.on .ow-box{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+.career-job.ok.ow .ow-picker>.btn{justify-self:start}
+
+/* slots: the meetings to place and the rooms × hours board */
+.career-job.ok.ow .ow-rules{margin:0;padding:8px 12px 8px 1.6em;display:grid;gap:4px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--line);font-size:.933rem;line-height:1.45}
+.career-job.ok.ow .ow-rules li.new{color:var(--warn);font-weight:700}
+.career-job.ok.ow .ow-items{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:6px}
+.career-job.ok.ow .ow-item{display:grid;gap:2px;min-height:48px;padding:8px 12px;border-radius:var(--radius-sm);border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.career-job.ok.ow .ow-item b{font-size:.967rem;line-height:1.35}
+.career-job.ok.ow .ow-item small{font-size:.933rem;color:var(--ink-2);line-height:1.35}
+.career-job.ok.ow .ow-item em{font-style:normal;font-size:.933rem;font-weight:700;color:var(--good)}
+.career-job.ok.ow .ow-item em.todo{color:var(--muted);font-weight:400}
+.career-job.ok.ow .ow-item.on{border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent);background:var(--accent-soft)}
+.career-job.ok.ow .ow-pickhint{padding:8px 12px;border-radius:var(--radius-sm);background:var(--info-soft);font-size:.933rem;line-height:1.45}
+.career-job.ok.ow .ow-grid{border-collapse:separate;border-spacing:4px;width:100%;min-width:340px;font-size:.933rem}
+.career-job.ok.ow .ow-grid th{padding:4px;text-align:left;vertical-align:bottom;line-height:1.3}
+.career-job.ok.ow .ow-grid thead th{min-width:88px}
+.career-job.ok.ow .ow-grid th small{display:block;font-weight:400;color:var(--muted)}
+.career-job.ok.ow .ow-grid tbody th{vertical-align:middle;white-space:nowrap;font-variant-numeric:tabular-nums}
+.career-job.ok.ow .ow-grid .ow-busy{color:var(--bad);white-space:normal;max-width:7em}
+.career-job.ok.ow .ow-grid td{padding:0;vertical-align:stretch}
+.career-job.ok.ow .ow-cell{display:grid;place-items:center;width:100%;min-height:52px;height:100%;padding:4px 6px;border-radius:var(--radius-sm);border:1px dashed var(--field-line);background:var(--surface);color:var(--muted);font:inherit;font-size:.933rem;line-height:1.25;text-align:center;cursor:pointer;overflow-wrap:anywhere}
+.career-job.ok.ow .ow-cell:hover{border-color:var(--accent);color:var(--accent-text)}
+.career-job.ok.ow .ow-cell.full{border:1px solid var(--accent);background:var(--accent-soft);color:var(--ink);font-weight:700}
+.career-job.ok.ow .ow-cell.full.on{box-shadow:inset 0 0 0 2px var(--accent)}
+.career-job.ok.ow .ow-cell.taken,.career-job.ok.ow .ow-taken{background:repeating-linear-gradient(135deg,var(--surface-2) 0 6px,var(--surface-3) 6px 12px);color:var(--ink-2)}
+.career-job.ok.ow .ow-taken{display:grid;place-items:center;min-height:52px;padding:4px;border-radius:var(--radius-sm);text-align:center;line-height:1.25}
+.career-job.ok.ow .ow-cell.taken .ow-taken{min-height:0;background:none}
+.career-job.ok.ow .ow-free{display:grid;place-items:center;min-height:52px;color:var(--muted)}
+.career-job.ok.ow .ow-unplace{margin:0}
+
+/* fields: what was said, then the form */
+.career-job.ok.ow .ow-script{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.ok.ow .ow-say{display:grid;gap:2px;padding:8px 12px;border-radius:var(--radius-sm) var(--radius-sm) var(--radius-sm) 2px;background:var(--surface);border:1px solid var(--line);font-size:.967rem;line-height:1.5}
+.career-job.ok.ow .ow-say b{font-size:.933rem;color:var(--ink-2)}
+.career-job.ok.ow .ow-say.new{background:var(--warn-soft);border-color:var(--warn)}
+.career-job.ok.ow .ow-form{display:grid;gap:10px;padding:12px;border-radius:var(--radius);background:var(--surface);border:2px solid var(--accent)}
+.career-job.ok.ow .ow-field{display:grid;gap:4px;font-size:.967rem;font-weight:700}
+.career-job.ok.ow .ow-field.tw>span{color:var(--warn)}
+
+/* seq: the steps you will do */
+.career-job.ok.ow .ow-order{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.ok.ow .ow-order>li{display:flex;align-items:center;gap:6px;min-height:48px;padding:4px 6px 4px 10px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--line-strong);font-size:.967rem;line-height:1.4}
+.career-job.ok.ow .ow-order>li.tw{border-color:var(--warn)}
+.career-job.ok.ow .ow-order>li.ow-empty{padding:12px;border-style:dashed;color:var(--ink-2)}
+.career-job.ok.ow .ow-no{display:inline-grid;place-items:center;flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:.933rem}
+.career-job.ok.ow .ow-mv{min-width:44px;padding:0 8px}
+
+/* case: look into it, then answer */
+.career-job.ok.ow .ow-facts,.career-job.ok.ow .ow-answers{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.ok.ow .ow-fact.read{display:grid;gap:4px;padding:10px 12px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--info);font-size:.967rem;line-height:1.45}
+.career-job.ok.ow .ow-fact.read small{color:var(--muted)}
+.career-job.ok.ow .ow-ask{width:100%;justify-content:flex-start;text-align:left;white-space:normal;background:var(--surface);border:1px dashed var(--field-line);color:var(--ink)}
+.career-job.ok.ow .ow-ask small{color:var(--muted);font-weight:400}
+.career-job.ok.ow .ow-answers>li{display:grid;gap:4px}
+.career-job.ok.ow .ow-answer{width:100%;min-height:52px;justify-content:flex-start;text-align:left;white-space:normal;line-height:1.4;background:var(--surface);border:1px solid var(--line-strong);color:var(--ink)}
+.career-job.ok.ow .ow-answer:not([disabled]):hover{border-color:var(--accent)}
+.career-job.ok.ow .ow-need{font-size:.933rem;color:var(--muted)}
+
+/* papers, hints, the result after handing in */
+.career-job.ok.ow .ow-paper>summary{font-size:.967rem}
+.career-job.ok.ow .ow-help-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.career-job.ok.ow .ow-help-row small{flex:1 1 180px;font-size:.933rem;color:var(--muted);line-height:1.4}
+.career-job.ok.ow .ow-tips{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.ok.ow .ow-tips li{padding:8px 12px;border-radius:var(--radius-sm);background:var(--warn-soft);border-left:4px solid var(--warn);font-size:.933rem;line-height:1.45}
+.career-job.ok.ow .ow-result{padding:12px;border-radius:var(--radius);background:var(--surface);border:2px solid var(--bad)}
+.career-job.ok.ow .ow-result.ok{border-color:var(--good)}
+.career-job.ok.ow .ow-clean{color:var(--good);font-weight:700}
+.career-job.ok.ow .ow-res{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:.933rem;line-height:1.45}
+.career-job.ok.ow .ow-res li{display:grid;grid-template-columns:20px minmax(0,1fr);gap:6px}
+.career-job.ok.ow .ow-res li.ok b{color:var(--good)}
+.career-job.ok.ow .ow-res li.bad b{color:var(--bad)}
+
+/* a surprise at the desk */
+.career-job.ok.ow .ow-event{display:grid;gap:10px;padding:14px 12px;border-radius:var(--radius);background:var(--info-soft);border:2px solid var(--info);font-size:.967rem;line-height:1.5}
+.career-job.ok.ow .ow-event.tense{background:var(--warn-soft);border-color:var(--warn)}
+.career-job.ok.ow .ow-ev-head{display:flex;gap:10px;align-items:center}
+.career-job.ok.ow .ow-ev-head>span{font-size:2rem;line-height:1}
+.career-job.ok.ow .ow-ev-head small{font-size:.933rem;color:var(--ink-2)}
+.career-job.ok.ow .ow-ev-head h3{font-size:1.067rem}
+.career-job.ok.ow .ow-opts{display:grid;gap:6px}
+.career-job.ok.ow .ow-opt{display:grid;justify-items:start;gap:2px;width:100%;min-height:52px;text-align:left;white-space:normal;background:var(--surface);border:1px solid var(--line-strong);color:var(--ink)}
+.career-job.ok.ow .ow-opt small{font-size:.933rem;color:var(--ink-2);font-weight:400}
+.career-job.ok.ow .ow-opt em{font-style:normal;font-size:.933rem;color:var(--bad);font-weight:700}
+.career-job.ok.ow .ow-last{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 12px;border-radius:var(--radius-sm);background:var(--surface-2);font-size:.933rem;line-height:1.45}
+.career-job.ok.ow .ow-last.good{background:var(--good-soft)}
+.career-job.ok.ow .ow-last.bad{background:var(--bad-soft)}
+.career-job.ok.ow .ow-x{min-width:44px}
+.ow-sum .ow-sum-audit,.ow-sum .ow-sum-trust,.ow-sum .ow-sum-desk{margin:0 0 8px;line-height:1.45}
+.ow-sum .ow-sum-audit.ok{color:var(--good)}
+.ow-sum .ow-sum-audit.bad{color:var(--bad)}
+.career-job.ok.ow .ow-sheet tbody th,.career-job.ok.ow .ow-sheet thead th:first-child{position:sticky;left:0;z-index:1;background:var(--surface)}
+.career-job.ok.ow .ow-sheet thead th:first-child{background:var(--surface-2)}

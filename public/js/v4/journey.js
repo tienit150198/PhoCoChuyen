@@ -18,7 +18,7 @@ import {FIRST_JOB,quiet,firstDay} from './onboard.js';
 // 👗 Tủ đồ (v4/wardrobe.js): the sheet loads the first time it opens.
 const WD=lazy(()=>import('./wardrobe.js'),{css:['/css/wardrobe.css']});
 
-export const EMOJI={restaurant:'🍜',cafe_bakery:'🥐',grocery:'🛒',repair:'🔧',homestay:'🏡',corp_accounting:'🧮',tax_payroll:'🧾',group_accounting:'🏢',
+export const EMOJI={restaurant:'🍜',cafe_bakery:'🥐',grocery:'🛒',repair:'🔧',homestay:'🏡',corp_accounting:'🧮',tax_payroll:'🧾',group_accounting:'🏢',hr_admin:'🗂️',secretary:'📅',it_helpdesk:'🖥️',
   mother_baby:'🎁',pharmacy:'💊',accounting:'📒',customer_care:'🎧',teacher:'🍎',tour_guide:'🧭',milk_tea:'🧋',florist:'💐',salon:'💇',
   pet_care:'🐾',farm:'🌾',delivery:'🛵',clothing:'👕',pet_shop:'🐠',tra_da:'🧊'};
 const CATS={food:'Ăn uống',shop:'Buôn bán',service:'Dịch vụ',office:'Văn phòng',outdoor:'Ngoài trời'};
