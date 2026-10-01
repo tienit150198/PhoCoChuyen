@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **1.2.0** (`main` = `aa901ed`), 32 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **1.2.3** (02/10 00:38; see "1.2.1 → 1.2.3" below), 32 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -20,6 +20,17 @@ branch holds what, and what to do next, in order. Details live in the linked doc
   number for capacity, real commands are heavier.
 - **Peak hours:** 17:30–20:00 (Vietnam time). Avoid heavy work on the server then; hotfixes may still go out
   (the rolling release has no gap).
+
+### What 1.2.1 → 1.2.3 added (01–02/10)
+- **1.2.1** (01/10 23:50, quiet, no "Có gì mới"): admins (`ADMIN_USERS`, now also in `/etc/mot-ngay-lam-nghe/live.env`)
+  post on Cả phố unfiltered with a "📢 Quản trị" badge and clickable links; tap a message → "📌 Ghim tin này".
+  Schema 10: `chat_messages.adm`, `chat_pins`. The TikTok group message (chat_messages 5496) is pinned;
+  `scripts/chat_pin.py --show/--msg/--unpin` (source pg.env for DATABASE_URL, PYTHONPATH=shared/pyvendor).
+- **1.2.2** (02/10 00:32): long-press reactions ❤️ 😂 😮 😢 👍 🔥 in all chats; admin › Chat › "Tin nhắn" with
+  search, filters, 200/page and the original text of masked messages (`chat_messages.raw`, from this release on).
+  Schema 11: `chat_reacts`, `chat_messages.raw`. Daily-goals card explains how each goal counts (feedback #69, replied).
+- **1.2.3** (02/10 00:38): hotfix, marriage.js `planner()` crashed (`reading 'venue'`) for engaged couples whose
+  plan was sent/confirmed.
 
 ### What 0.9.5 → 0.9.12 added (30/09)
 - **0.9.5:** buying homes with a bank mortgage, term savings, wardrobe, money chip, claim for short deliveries,
