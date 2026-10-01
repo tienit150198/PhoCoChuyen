@@ -47,6 +47,7 @@ from . import patience as pt
 from . import system_gift as sg
 from . import live_effects as lfx
 from . import fair as fh  # 🏮 Hội chợ dân gian
+from . import needs as nd  # 🍚 No bụng, 😴 Tỉnh táo
 
 ORIGINAL=("mother_baby","pharmacy","accounting","customer_care")
 UI_THEMES=("kem","tra_xanh","dem","bien","keo")
@@ -1081,6 +1082,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         if warn:result["clock"]=warn
     result.setdefault("effects",[]).extend(emp.retry_notices(s))  # "Hôm nay (Ngày 5) bạn có thể phỏng vấn lại ở …", once
     bd.after(s,career,action,result)  # nhóm cư dân phố: one beat of neighbourhood posts
+    nd.after(s,career,action,result)  # 🍚 no bụng, 😴 tỉnh táo: the shop clock, lunch, the evening, the morning (game/needs.py); before life's day turn so its summary counts the change
     doi.after(s,career,action,result)  # tinh thần, hard days, neighbours (after invest: sees its scam losses)
     cst.after(s,career,action,result)
     qn.after(s,career,action,p,result)  # điểm thân quen: chats, reviews, gifts to you, invites
@@ -1144,6 +1146,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     v["invest"]=iv.public(s)
     v["board"]=bd.summary(s)
     v["life"]=doi.public(s)
+    v["needs"]=nd.public(s,focus)  # 🍚😴 (game/needs.py)
     v["stories"]=cst.public(s)
     v["closeness"]=qn.public(s,focus)
     v["abandon"]=ab.public(s)
