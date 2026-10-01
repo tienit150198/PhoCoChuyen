@@ -1,3 +1,8 @@
+# v1.1.0 — Đám cưới trực tiếp
+
+- Đặt bàn cưới có ngày giờ thật (lưu mãi, hiện trên thẻ), Lịch cưới trong Khu phố, tiệc cưới trực tiếp 30 phút (live/wedding.py): khách có tài khoản +15 xu mỗi 5 phút (tối đa 60 xu/đám, 2 đám/ngày), cô dâu chú rể +30 xu/khách ở lại ≥5 phút, mốc 10 và 20 khách, ảnh chụp chung vào Kỷ niệm; người chưa có tài khoản xem từ ngoài cổng. Kỷ niệm 100 ngày/1 năm/500/1000 ngày cưới có quà, danh hiệu, lì xì NPC. Thi đua "Khách mời của tuần" (scripts/wedding_week.py). Schema 8. Bật bằng LIVE_WEDDING=1.
+- "Có gì mới": đám cưới trực tiếp, kỷ niệm, khách mời của tuần.
+
 # v1.0.6 — Hotfix đơn sỉ tạp hóa
 
 - Báo giá sỉ tính theo bảng giá gốc, không theo giá kệ: tiệm tăng giá kệ (vd gạo 20 thay vì 18, trứng 4 thay vì 3) thì trước đây kể cả bớt 15% vẫn cao hơn mức khách chịu, đơn sỉ không bao giờ chốt được (góp ý #49/#52 của ShinMi). Màn báo giá ghi "giá gốc". Không có "Có gì mới".

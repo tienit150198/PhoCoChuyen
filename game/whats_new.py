@@ -32,6 +32,11 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.1.0", date="2026-10-01", items=(
+        dict(emoji="💍", text="Đám cưới trực tiếp: chọn ngày giờ thật, cả phố vào dự, khách nhận +15 xu mỗi 5 phút.", go=dict(action="liveWed")),
+        dict(emoji="🎂", text="Kỷ niệm 100 ngày, 1 năm, 500 ngày, 1000 ngày cưới: có quà và danh hiệu riêng."),
+        dict(emoji="🏆", text="Khách mời của tuần: ai dự nhiều đám cưới nhất nhận danh hiệu và xu."),
+    )),
     dict(version="1.0.3", date="2026-10-01", items=(
         dict(emoji="💕", text="Góc hẹn hò: ngồi ghế đá chờ ghép đôi, hẹn 5 phút, cùng thả tim là thành “Đang tìm hiểu”.", go=dict(action="liveDate")),
     )),
