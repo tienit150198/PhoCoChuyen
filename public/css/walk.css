@@ -1,0 +1,72 @@
+/* 🚶 Đi dạo (public/js/v4/walk.js): the stroll dialog, a canvas scene with a few overlays.
+   Theme tokens only (light and dark come from the theme); phone first. */
+.sheet.walk-sheet{width:min(520px,calc(100vw - 48px));height:min(920px,calc(100dvh - 48px));overflow:hidden;padding:0}
+html[data-layout="phone"] .sheet.walk-sheet{width:100%;max-width:100%;height:calc(100dvh - max(10px,var(--safe-t)));max-height:none}
+.wk-root{display:flex;flex-direction:column;height:100%;min-height:0}
+.wk-head{display:flex;align-items:center;gap:8px;padding:8px 8px 8px 10px;min-height:58px;border-bottom:1px solid var(--line)}
+html[data-layout="phone"] .wk-head{padding-top:12px}
+.wk-head .grow{flex:1 1 auto}
+.wk-where{display:inline-flex;align-items:center;gap:8px;min-height:42px;max-width:100%;padding:0 12px;border-radius:var(--radius-pill);background:var(--surface-2);color:var(--ink);font-size:1rem}
+.wk-where b{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wk-n{display:inline-flex;align-items:center;gap:4px;font-size:.8rem;font-weight:700;color:var(--good)}
+.wk-n::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--good)}
+.wk-chev{transform:rotate(90deg);color:var(--muted);transition:transform var(--dur) var(--ease)}
+.wk-where[aria-expanded="true"] .wk-chev{transform:rotate(-90deg)}
+.wk-places{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:8px 10px;border-bottom:1px solid var(--line);background:var(--surface)}
+.wk-chip{display:flex;align-items:center;gap:8px;min-height:46px;padding:0 12px;border-radius:14px;background:var(--surface-2);color:var(--ink);text-align:left}
+.wk-chip span{font-size:1.2rem;line-height:1}
+.wk-chip b{flex:1 1 auto;min-width:0;font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wk-chip small{font-weight:700;color:var(--good);font-size:.8rem}
+.wk-chip.on{background:var(--surface);box-shadow:inset 0 0 0 2px var(--accent)}
+.wk-net{display:flex;align-items:center;justify-content:center;gap:6px;padding:5px;font-size:.78rem;background:var(--warn-soft);color:var(--ink-2)}
+
+.wk-stage{position:relative;flex:1 1 auto;min-height:0;overflow:hidden;touch-action:manipulation;background:var(--surface-2)}
+.wk-canvas{position:absolute;inset:0;display:block;width:100%;height:100%;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+.wk-canvas:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+
+/* the topic card of my table */
+.wk-topic{position:absolute;top:8px;left:8px;right:8px;z-index:1;padding:10px 12px 12px;border-radius:16px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-sm);overflow:hidden}
+.wk-topic-q{margin:0 0 9px;font-weight:700;font-size:.98rem;line-height:1.38;color:var(--ink)}
+.wk-topic-q::before{content:"🗣️ "}
+.wk-topic-acts,.wk-acts{display:flex;gap:6px;flex-wrap:wrap}
+.wk-acts+.wk-acts{margin-top:8px}
+.wk-time{position:absolute;left:0;bottom:0;width:100%;height:3px;background:var(--accent);opacity:.55;transform-origin:left}
+
+.wk-pill{display:inline-flex;align-items:center;gap:5px;min-height:38px;padding:0 13px;border-radius:var(--radius-pill);border:1px solid var(--line);background:var(--surface);
+  color:var(--ink-2);font-weight:600;font-size:.86rem;white-space:nowrap}
+.wk-pill em{font-style:normal;color:var(--accent-text)}
+.wk-pill.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink,#fff)}
+.wk-pill.warn{border-color:var(--bad);color:var(--bad)}
+.wk-pill:disabled{opacity:.55}
+.wk-more{min-width:42px;justify-content:center;font-size:1.05rem;letter-spacing:1px}
+
+/* a player's card, an invitation */
+.wk-card,.wk-invite{position:absolute;left:8px;right:8px;bottom:8px;z-index:2;padding:10px 10px 12px 12px;border-radius:18px;background:var(--surface);
+  border:1px solid var(--line);box-shadow:var(--shadow-md,var(--shadow-sm));overflow:hidden}
+.wk-invite{z-index:3}
+.wk-who{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.wk-who .grow{flex:1 1 auto;min-width:0;margin:0}
+.wk-who b{font-size:1rem}
+.wk-who div.grow b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wk-who small{display:block;color:var(--muted);font-size:.8rem}
+.wk-who small.wk-friend{color:var(--good);font-weight:700}
+.wk-who .jr-av{flex:none;border-radius:50%}
+.wk-said{margin:0 0 8px;padding:8px 10px;border-radius:12px;background:var(--surface-2);font-size:.88rem;color:var(--ink-2);overflow-wrap:anywhere}
+.wk-bar{position:absolute;left:0;bottom:0;width:100%;height:3px;background:var(--accent);transform-origin:left;animation:wk-shrink linear forwards}
+@keyframes wk-shrink{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+
+.wk-toast{position:absolute;left:50%;bottom:14px;z-index:4;transform:translateX(-50%);width:max-content;max-width:calc(100% - 24px);padding:8px 14px;border-radius:var(--radius-pill);
+  background:var(--ink);color:var(--surface);font-size:.86rem;font-weight:600;text-align:center;pointer-events:none;box-shadow:var(--shadow-sm)}
+.wk-card:not([hidden])~.wk-toast,.wk-invite:not([hidden])~.wk-toast{bottom:auto;top:12px}
+
+/* emotes and the say bar */
+.wk-emotes{display:flex;justify-content:space-around;padding:6px 10px;border-top:1px solid var(--line);background:var(--surface)}
+.wk-emotes button{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;font-size:1.6rem;line-height:1;transition:transform var(--dur) var(--ease)}
+.wk-emotes button:active{transform:scale(.88)}
+.wk-say{display:flex;align-items:center;gap:8px;padding:8px 10px calc(8px + var(--safe-b));border-top:1px solid var(--line);background:var(--surface)}
+.wk-say input{flex:1 1 auto;min-width:0;min-height:42px;padding:0 14px;border-radius:21px;border:1px solid var(--field-line);background:var(--surface-2);color:var(--ink);font-size:1rem}
+.wk-say input:focus{outline:none;border-color:var(--accent);background:var(--surface)}
+.wk-emo-btn{flex:none;display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:var(--surface-2);font-size:1.3rem;line-height:1}
+.wk-emo-btn[aria-expanded="true"]{box-shadow:inset 0 0 0 2px var(--accent)}
+.wk-send{flex:none;display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:var(--accent);color:var(--accent-ink,#fff)}
+@media (prefers-reduced-motion:reduce){.wk-bar{animation:none}.wk-chev,.wk-emotes button{transition:none}}
