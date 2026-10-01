@@ -1,3 +1,8 @@
+# v1.0.0 — Chat
+
+- Dịch vụ live riêng (live/, asyncio + websockets, mnl-live.service, nginx /live): chat bạn bè, nhóm (≤20), kênh Cả phố (online, 10 giây/tin, người mới 10 phút chỉ đọc), chấm online (tắt được), lọc số điện thoại/link/tục nặng (tiếng lóng GenZ được), báo cáo (3 báo cáo tự ẩn), chặn, tab Chat trong admin (ẩn tin, cấm chat 1 giờ/24 giờ/7 ngày). Bảng mới (schema 6): chat_channels, chat_members, chat_messages, chat_mutes, chat_prefs, live_effects. Bật bằng LIVE_URL=/live ở game và LIVE_CHAT=1 ở live.env. Không có hướng dẫn cho chat.
+- "Có gì mới": chat, Cả phố, chấm online.
+
 # v0.9.19 — Menu gọn, pha màu dễ
 
 - Menu "Thêm" từ 25 xuống 11–12 mục: Công việc (Hành trình, Chuẩn bị, Sổ tiệm, Đánh giá) và Đời sống (Khu phố, Quan hệ, Tiền & nhà, Chuyện của bạn, Của mình), chấm đỏ cộng dồn lên nhóm. Bỏ "Hướng dẫn" khỏi menu: lần đầu vào một nghề hiện một lần "Bỏ qua / Xem hướng dẫn", màn làm việc nghề nào cũng có nút "?", Cài đặt giữ một đường dẫn hướng dẫn.
