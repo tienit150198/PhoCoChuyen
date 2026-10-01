@@ -1,5 +1,30 @@
 [
  {
+  "vi": "Nghỉ lễ $1: $2 ngày, từ $3 đến hết $4.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Soát thư trả lời khiếu nại $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2 · đơn $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 lúc $2 phòng kinh doanh đã đặt trước.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 lúc $2 có lớp đào tạo an toàn lao động.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Xếp lịch làm việc của sếp ($1 việc)",
   "en": "",
   "pattern": true

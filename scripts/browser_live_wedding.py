@@ -345,6 +345,22 @@ async def run(shots: Path) -> list:
             await g2.page.click('.walk-sheet .wk-float [data-wk=dance]')
             await until(g1, "return s.people.some(q=>q.emote==='💃');", 'the room sees 💃')
             await shot(g2, '18-stage-dance', wait=300)
+            # ---- 🎧 the groom picks the music; the room hears it from that moment (the MC says so)
+            check(await bride.page.query_selector('.walk-sheet .wk-dj-btn') is None, 'the groom is here: only he has 🎧')
+            await groom.page.click('.walk-sheet [data-wk=dj]')
+            await groom.page.wait_for_selector('.walk-sheet .wk-dj:not([hidden]) .wk-dj-song', timeout=10000)
+            await shot(groom, '23-dj-picker', wait=200)
+            await groom.page.click('.walk-sheet .wk-dj [data-wk=djPick][data-k=edm]')
+            for _ in range(50):
+                if await g1.page.evaluate("async () => (await import('/js/v4/wedfeast.js')).picked()") == 'edm':
+                    break
+                await asyncio.sleep(0.2)
+            got = await g1.page.evaluate("async () => (await import('/js/v4/wedfeast.js')).picked()")
+            check(got == 'edm', f'every guest switches to the groom\'s song ({got})')
+            await shot(g2, '24-music-changed', wait=600)
+            await g2.page.evaluate("document.documentElement.dataset.theme='dem'")
+            await shot(g2, '24b-music-changed-dark', wait=400)
+            await g2.page.evaluate("document.documentElement.dataset.theme='kem'")
             lion = start + 58 - time.time()
             if lion > 0:
                 await asyncio.sleep(lion)
@@ -370,7 +386,7 @@ async def run(shots: Path) -> list:
                 for p in (catcher, other):
                     if p.name not in told:
                         t = await p.page.evaluate("(() => {const e = document.querySelector('.walk-sheet .wk-toast'); return e && !e.hidden ? e.textContent : ''})()")
-                        if 'hoa cưới' in t:
+                        if 'bắt được hoa cưới' in t or 'rơi xuống sàn' in t:
                             told[p.name] = t
                             if p is catcher:
                                 await shot(catcher, '21-bouquet-caught', wait=0)

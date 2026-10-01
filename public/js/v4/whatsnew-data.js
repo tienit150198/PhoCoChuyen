@@ -4,7 +4,8 @@ export default [
  {"version":"1.3.0","date":"2026-10-02","items":[
   {"emoji":"🦁","text":"Đoàn lân mới về tiệc cưới: đầu lân to rực rỡ, chớp mắt, há miệng, lắc đầu, chồm lên đớp lì xì theo tiếng trống.","go":{"action":"liveWed"}},
   {"emoji":"🪩","text":"Sân khấu có quả cầu disco, đèn màu quét theo nhạc và bốn cái loa góc sân rung theo từng nhịp."},
-  {"emoji":"🎶","text":"Nhạc cưới mới, sôi động hơn: nhạc rước dâu, nhạc nhảy và trống lân. Cả tiệc nghe cùng một bài, cùng một nhịp."},
+  {"emoji":"🎧","text":"Nhạc cưới mới sôi động hơn, và chú rể được chọn nhạc cho cả tiệc: EDM, remix, house Latin, funk, disco, nhạc chậm cho cặp đôi."},
+  {"emoji":"🎶","text":"Cả tiệc nghe cùng một bài, cùng một nhịp đèn. Chú rể vắng thì cô dâu chọn nhạc nha."},
   {"emoji":"🍲","text":"Chạm vào bàn cỗ để gắp món: mỗi món thêm tinh thần (tối đa 3 lần). Cụng ly bia “Dzô!” thì say nhẹ, nước ngọt thì thoải mái."},
   {"emoji":"💃","text":"Bước lên sân khấu là nhảy theo nhạc, bấm 💃 Nhảy để xoay một vòng cho cả tiệc cùng xem."},
   {"emoji":"💐","text":"Gần cuối tiệc, cô dâu chú rể tung hoa cưới: ai bắt được nhận 20 xu. Đứng gần sân khấu dễ bắt hơn đó!"},

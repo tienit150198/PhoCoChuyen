@@ -148,6 +148,16 @@ live service only sends frames for real actions (eating, drinking, the bouquet, 
   (wedfeast.js `music`) decodes at most two tracks, prefetches the next section 12 s ahead, crossfades, and re-syncs
   when it drifts more than 0.35 s. The game's own music ducks while the party plays (audio.js `duck`); the existing
   unlock (`wantAudio`) and the mute button are unchanged.
+- **The groom picks the music** (owner 02/10: "nhạc remix gì đó, nhiều nhạc không bản quyền rồi cho chú rể chọn nhạc"):
+  the header's 🎧 opens "Chọn nhạc cho tiệc": the programme ('auto'), house, disco and six more CC0 tracks (`edm` 170,
+  `remix` 140, `electro` 128, `latin` 120, `funk` 87, `love` 95 BPM; public/music/CREDITS.md). Who: the groom (the
+  spouse whose character is a man); when he is not in the room, the bride; a couple of one gender, either spouse.
+  `wed_music {k}` (live/wedding.py, 6 a 20 s per connection; one change every `MUSIC_GAP` = 20 s a party; only
+  `WL.MUSIC` keys; party open and not ending) → the room `wed_music {k, at, by, name, who}`; the room info carries
+  the current pick for late guests. Every guest plays it from `at`: position = (now − at) mod the track's length, so
+  everyone is on the same bar and the lights follow its BPM; the march (0–38 s) and the lion drums keep priority, then
+  the pick resumes. The MC announces the change. Kept in memory only: a restart of the live service returns to the
+  programme.
 - **The feast** (live/wedding.py `wed_eat`, 8 a 10 s): tapping a table opens its tray (mâm cỗ: 8 dishes, 🍺 beer,
   🥤 soft drink) and sits down if a seat is free. A dish gives +1 tinh thần, at most 3 a party (`EAT_SPIRIT`,
   `EAT_MAX`); a beer −1, at most 2 (`BEER_SPIRIT`, `BEER_MAX`), and the room sees two glasses clink "Dzô! 🍻"; a soft

@@ -1,5 +1,30 @@
 [
  {
+  "vi": "📢 Cả hẻm gửi $1 một món quà nhỏ sau chuyện bị lừa: $2. Tiền mất thì làm lại, người còn là còn tất cả ạ 🤝",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cuối tuần đi cà phê sống ảo với Trang nha $1, Trang chụp cho tấm hình đẹp nhất năm. Ai không biết quý $2 là người ta thiệt 💅",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "tối nay em rủ $1 chơi game nha, thua em cho thắng luôn 🎮",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cảm ơn $1 góp $2 xu nha, nhiều quá trời 🙏",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cảm ơn $1 góp $2 xu, ít mà quý lắm 🙏",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 qua phụ một tay từ sáng tới giờ, mồ hôi nhễ nhại luôn. Cảm ơn nha 🙏",
   "en": "",
   "pattern": true
@@ -2221,31 +2246,6 @@
  },
  {
   "vi": "Để $1 lẫn trong túi lên xe ép, dễ cháy nổ, rò độc.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Xe rác tới muộn, qua $1 mới thấy.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Gom $1/$2 túi ở $3.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhắc $1 nhà phân loại lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✅ Xong ngõ! $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 túi hữu cơ lên xe ủ phân",
   "en": "",
   "pattern": true
  }

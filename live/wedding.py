@@ -38,6 +38,10 @@ party clock, the same for everyone without a frame). Server frames only for what
 * 💐 the bouquet: at TOSS_AT the room hears `wed_toss_open {until}`; either spouse sends `wed_toss {}`, or after
   TOSS_WAIT it is thrown for them. One guest present catches it (picked at random, the ones near the stage more
   likely) and gets TOSS_XU (key `wtoss:<wedding>`: once a party, also after a restart).
+* 🎧 the music: the groom picks a track of WL.MUSIC (`wed_music {k}`; the bride when the groom is not in the room, or
+  either spouse when the couple's characters are not one man and one woman), at most once every MUSIC_GAP seconds a
+  party. The room hears `wed_music {k, at, by, who}` and every guest plays that track from `at` (position = now − at,
+  modulo its length; the march and the lion drums still come first). Kept in memory: a restart goes back to 'auto'.
 
 Frames (client → server; replies in brackets)
   wed_list {}                         [wed_list {parties: [{id, a, b, at, end, open, n, mine}], now}]
@@ -46,6 +50,7 @@ Frames (client → server; replies in brackets)
                                        POST /api/wedding/photo at `at`]
   wed_eat {k, d}                      [wed_ate {k, d, n, left}; the room: wed_eat {pid, k, d}]
   wed_toss {}                         [the room: wed_toss {by, frm, pid, name, to, xu, at}]
+  wed_music {k}                       [the room: wed_music {id, k, at, by, name, who: 'groom'|'bride'|'couple'}]
   (walk_out, move, say, emote, sit, stand, topic, card: live/street.py)
 Server pushes: wed_start {id}, wed_end {id, n}, wed_xu {n, k, max, why?}, wed_paid {xu}, wed_toss_open {id, until},
 walk_left {why: 'wed_end'}.
@@ -209,7 +214,8 @@ class WeddingFeature(Feature):
                     overflow=overflow, photos=p['photos'] or 0, photos_max=WL.PHOTOS_MAX, visible=WL.VISIBLE,
                     minutes=WL.PARTY_MINUTES, xu=WL.MINUTE_XU, host_xu=WL.HOST_XU, mins=self._mins(p, pid),
                     envs=list(WL.ENVELOPES), env_max=WL.ENVELOPE_MAX, wishes=list(WL.WISHES),
-                    dishes=list(WL.DISHES), eat=self._left(p, pid), toss=self._toss_view(p))
+                    dishes=list(WL.DISHES), eat=self._left(p, pid), toss=self._toss_view(p), music=p.get('music'),
+                    musics=list(WL.MUSIC))
 
     @on('wed_list', rate=(10, 10))
     async def wed_list(self, conn, f):
@@ -466,6 +472,42 @@ class WeddingFeature(Feature):
         p['toss'] = dict(pid=out['pid'], name=out['name'])
         if self.hub.rooms.get(room.id) is room:
             room.send(out)
+
+    # ---- 🎧 the groom picks the music ---------------------------------------------------------------------------
+    @staticmethod
+    def _dj(p: dict, room) -> tuple:
+        """Who may pick the music now: (pids, who). The groom (the spouse whose character is a man, the other not);
+        the bride when he is not in the room; either spouse when the couple are not one man and one woman."""
+        people = room.data['people']
+        here = [people[pid] for pid in (p['pa'], p['pb']) if pid in people]
+        men = [w for w in here if w.g == 'male']
+        if len(men) == 1:
+            return {men[0].pid}, 'groom'
+        if len(here) == 1 and here[0].g == 'female':
+            return {here[0].pid}, 'bride'
+        return {w.pid for w in here}, 'couple'
+
+    @on('wed_music', rate=(6, 20))
+    async def wed_music(self, conn, f):
+        room, w = self.street._me(conn)
+        p = self.parties.get(room.data.get('wid'))
+        k = f.get('k')
+        if p is None or w.pid not in (p['pa'], p['pb']):
+            raise LiveError('bad', 'Chỉ chú rể (hoặc cô dâu) mới chọn nhạc được nha 🎧')
+        if k not in WL.MUSIC:
+            raise LiveError('bad', 'Bài này không có trong danh sách.')
+        pids, who = self._dj(p, room)
+        if w.pid not in pids:
+            raise LiveError('bad', 'Chú rể đang giữ quyền chọn nhạc nha 🎧')
+        now = time.time()
+        if not self._open(p, now) or p['ending']:
+            raise LiveError('over', 'Tiệc tàn rồi.')
+        last = p.get('music')
+        if last and now - last['at'] < WL.MUSIC_GAP:
+            raise LiveError('slow', 'Vừa đổi nhạc xong, nghe thử chút đã nha!', wait=round(WL.MUSIC_GAP - (now - last['at']), 1))
+        p['music'] = dict(k=k, at=round(now, 3), by=w.pid, name=w.name, who=who)
+        room.send(dict(t='wed_music', id=p['id'], **p['music']))
+        return None
 
     # ---- 🧧 a guest's red envelope (paid by the game server, POST /api/marriage/envelope) ----------------------
     @on('wed_env', rate=(10, 60))

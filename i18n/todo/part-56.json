@@ -1800,6 +1800,11 @@
   "pattern": true
  },
  {
+  "vi": "đổi nhạc rồi: $1! Quẩy lên nào! 🎧",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Bản $1",
   "en": "",
   "pattern": true

@@ -30,7 +30,7 @@
  * 1.3.0: the couple's name tags are a gold and rose pill; a table opens its mâm cỗ (`wed_eat`: a dish, a beer, a soft
  * drink; the server pays the tinh thần and the room sees who ate or drank); whoever stands on the stage dances on the
  * beat (💃 spins); the couple throws the bouquet when the MC calls for it (`wed_toss`), the room sees it fly to whoever
- * caught it.
+ * caught it. 🎧 The groom (the bride when he is away) picks the song for the room (`wed_music`, the header's 🎧).
  */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {live,openChat} from './live.js';
@@ -48,12 +48,12 @@ const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contain
 const onStage=(x,y)=>x>=feast.STAGE[0]-4&&x<=feast.STAGE[2]+4&&y>=feast.STAGE[1]-4&&y<=feast.STAGE[3]+2;
 const EMO=Object.fromEntries(EMOTES);
 const REASONS=[['spam','Spam'],['rude','Thô tục'],['scam','Lừa đảo'],['private','Lộ thông tin'],['other','Khác']];
-const MINE=new Set(['walk_places','walk_in','walk_out','move','say','emote','sit','stand','topic','card','invite','invite_reply','grab','report','block','wed_in','wed_photo','wed_eat','wed_toss']);
+const MINE=new Set(['walk_places','walk_in','walk_out','move','say','emote','sit','stand','topic','card','invite','invite_reply','grab','report','block','wed_in','wed_photo','wed_eat','wed_toss','wed_music']);
 const S={env:null,dlg:null,cv:null,ctx:null,stage:null,room:null,geo:null,speed:170,people:new Map(),tables:[],hap:null,envl:null,
   offs:[],off:0,places:[],k:1,ox:0,oy:0,dpr:1,cw:0,ch:0,bg:null,bgKey:'',raf:0,lastDraw:0,card:null,invite:null,sent:null,
   toastTimer:0,moveAt:0,moveTimer:0,pending:null,lastPublic:null,bound:false,hideTimer:0,paused:false,floaters:[],emotes:false,
   picker:false,down:null,topicKey:'',want:null,wedding:null,wed:null,photo:null,ended:null,burst:0,clock:'',wsound:true,log:[],logOpen:false,logKey:'',envp:null,
-  tray:null,toss:null,floatKey:'',eatAt:0};
+  tray:null,toss:null,floatKey:'',eatAt:0,dj:false};
 try{S.wsound=localStorage.getItem(WSOUND_KEY)!=='0';}catch{/* storage blocked */}
 const spots=new Map(),hooks={enter:new Set(),leave:new Set()};
 const night=()=>document.documentElement.dataset.theme==='dem';
@@ -109,7 +109,7 @@ function dialog(){
     <div class="wk-stage"><canvas class="wk-canvas" role="img" tabindex="0"></canvas>
       <div class="wk-topic" hidden></div><div class="wk-banner" hidden></div><div class="wk-card" hidden></div><div class="wk-invite" hidden></div><div class="wk-end" hidden></div>
       <div class="wk-wishes" hidden></div><div class="wk-envp" role="dialog" aria-label="Phong bì mừng cưới" hidden></div>
-      <div class="wk-tray" role="dialog" aria-label="Mâm cỗ" hidden></div><div class="wk-float" hidden></div>
+      <div class="wk-tray" role="dialog" aria-label="Mâm cỗ" hidden></div><div class="wk-dj" role="dialog" aria-label="Chọn nhạc" hidden></div><div class="wk-float" hidden></div>
       <div class="wk-toast" role="status" aria-live="polite" hidden></div></div>
     <div class="wk-emotes" hidden>${EMOTES.map(([k,e])=>`<button type="button" data-wk="emote" data-e="${k}" aria-label="${k}"${WED_ONLY.has(k)?' data-wedonly hidden':''}>${e}</button>`).join('')}</div>
     <form class="wk-say"><button type="button" class="wk-emo-btn" data-wk="emotes" aria-label="Biểu cảm" aria-expanded="false">😊</button>
@@ -155,7 +155,7 @@ function onClose(){
   cancelAnimationFrame(S.raf);S.raf=0;
   if(was)emit('leave',{place:was.place,room:was.room});
 }
-function leaveLocal(){S.log=[];S.logOpen=false;S.envp=null;S.tray=null;S.toss=null;paintLog();S.room=null;S.geo=null;S.people.clear();S.tables=[];S.hap=null;S.envl=null;S.card=null;S.invite=null;S.floaters=[];S.photo=null;syncMusic();paintOverlays();}
+function leaveLocal(){S.log=[];S.logOpen=false;S.envp=null;S.tray=null;S.toss=null;S.dj=false;paintLog();S.room=null;S.geo=null;S.people.clear();S.tables=[];S.hap=null;S.envl=null;S.card=null;S.invite=null;S.floaters=[];S.photo=null;syncMusic();paintOverlays();}
 
 function enter(place){
   const st=S.env?.api?.state||{},me={look:lookOf(st),g:st.journey?.gender??null,title:st.journey?.equipped??null,titles:Array.isArray(st.journey?.worn)?st.journey.worn.map(w=>w.id):undefined};
@@ -181,7 +181,7 @@ function bind(){
     S.room=f;S.geo=f.geo;S.speed=f.speed||170;S.want=null;S.card=null;S.invite=null;S.sent=null;S.floaters=[];
     S.people=new Map(f.people.map(p=>[p.pid,person(p)]));
     S.tables=f.tables;S.hap=f.hap;S.envl=f.env;S.bgKey='';
-    S.wed=f.wed||null;S.wedding=f.wed?f.wed.id:null;S.photo=null;if(f.wed)S.ended=null;
+    S.wed=f.wed||null;S.wedding=f.wed?f.wed.id:null;S.photo=null;if(f.wed)S.ended=null;S.dj=false;feast.setPick(S.wed?.music,S.wed?.at);
     if(!f.private){S.lastPublic=f.place;try{localStorage.setItem(PLACE_KEY,f.place);}catch{/* storage blocked */}}
     S.places=S.places.map(p=>p.id===f.place?{...p,n:f.people.length}:p);
     head();paintOverlays();size();loop();syncMusic();
@@ -221,6 +221,10 @@ function bind(){
     toast(S.wed.pids?.includes(S.room?.me)?'💐 Tới màn tung hoa rồi! Bấm “Tung hoa” nhé':'💐 Sắp tung hoa cưới! Lại gần sân khấu nào');paintFloat(true);});
   live.on('wed_toss',f=>{if(S.wed?.id!==f.id)return;   // 💐 the bouquet flies from the couple to whoever caught it
     S.wed.toss={...(S.wed.toss||{}),open:false,done:{pid:f.pid,name:f.name}};S.toss={...f,t0:performance.now(),told:false};paintFloat(true);});
+  live.on('wed_music',f=>{if(S.wed?.id!==f.id)return;   // 🎧 the groom (the bride) changed the song: everyone from f.at
+    S.wed.music=f;feast.setPick(f,S.wed.at);
+    if(f.by===S.room?.me){S.dj=false;toast(`🎧 Đã đổi nhạc: ${feast.playlist([f.k])[0]?.[2]||''}`);}
+    paintDj();paintFloat(true);syncMusic();});
   live.on('happen',f=>{if(!S.room)return;sample(f.at);S.hap={...f,end:f.at+f.dur};if(f.k==='env')S.envl={id:f.id,x:f.x,y:f.y,until:f.until};});
   live.on('happen_end',f=>{
     if(S.envl?.id===f.id)S.envl=null;if(S.hap?.id===f.id)S.hap=null;
@@ -307,7 +311,7 @@ function act(a,d){
   switch(a){
     case'close':S.dlg.close();return;
     case'photo':live.send({t:'wed_photo'});return;
-    case'env':S.envp=S.envp?null:{amount:(S.wed?.envs||[20])[1]??20,wish:0,busy:false};if(S.envp)S.tray=null;paintTray();paintEnvp();return;
+    case'env':S.envp=S.envp?null:{amount:(S.wed?.envs||[20])[1]??20,wish:0,busy:false};if(S.envp){S.tray=null;S.dj=false;}paintTray();paintDj();paintEnvp();return;
     case'envAmt':if(S.envp){S.envp.amount=Number(d.n);paintEnvp();}return;
     case'envWish':if(S.envp){S.envp.wish=Number(d.n);paintEnvp();}return;
     case'envSend':sendEnvelope();return;
@@ -316,6 +320,8 @@ function act(a,d){
       const k=d.k,msg={t:'wed_eat',k};if(k==='dish')msg.d=Number(d.d);live.send(msg);
       const b=S.dlg.querySelector(`.wk-tray [data-k="${k}"]${k==='dish'?`[data-d="${Number(d.d)}"]`:''}`);if(b){b.classList.remove('ate');void b.offsetWidth;b.classList.add('ate');}return;}
     case'toss':live.send({t:'wed_toss'});return;
+    case'dj':S.dj=!S.dj&&canPick();if(S.dj){S.tray=null;S.envp=null;paintTray();paintEnvp();}paintDj();paintFloat(true);return;
+    case'djPick':if(canPick())live.send({t:'wed_music',k:d.k});return;
     case'dance':live.send({t:'emote',e:'dance'});return;
     case'log':S.logOpen=!S.logOpen;paintLog();return;
     case'wsound':S.wsound=!S.wsound;try{localStorage.setItem(WSOUND_KEY,S.wsound?'1':'0');}catch{/* storage blocked */}syncMusic();head();return;
@@ -370,7 +376,7 @@ function tap(cx,cy){
   if(!S.room||!S.geo)return;
   const r=S.cv.getBoundingClientRect(),x=(cx-r.left-S.ox)/S.k,y=(cy-r.top-S.oy)/S.k,t=nowS();
   if(S.card||S.picker){S.card=null;S.picker=false;head();paintOverlays();}
-  if(S.tray){S.tray=null;paintTray();paintFloat(true);}
+  if(S.tray||S.dj){S.tray=null;S.dj=false;paintTray();paintDj();paintFloat(true);}
   if(S.envl&&Math.hypot(x-S.envl.x,y-S.envl.y)<42){live.send({t:'grab',id:S.envl.id});return;}
   for(const s of spots.values()){const at=spotAt(s);if(at&&Math.hypot(x-at[0],y-at[1])<(s.r||40)){try{if(s.tap?.({x:at[0],y:at[1],place:S.room.place,room:S.room.room})!==false)return;}catch(e){console.warn('walk spot:',e);}}}
   let hit=null,hd=Infinity;
@@ -379,7 +385,7 @@ function tap(cx,cy){
   const ti=(S.geo.tables||[]).findIndex(tb=>Math.hypot(x-tb.x,y-tb.y)<44);
   if(ti>=0&&S.wed&&!S.ended&&!S.wed.overflow){   // 💍 a wedding table: its mâm cỗ (and a seat when one is free)
     const tb=S.tables[ti];if(tb?.seats?.includes(null)&&!(me()?.s&&me().s[0]===ti))live.send({t:'sit',table:ti});else if(!(me()?.s&&me().s[0]===ti))go(x,y+40);
-    S.tray={i:ti};S.envp=null;S.card=null;paintEnvp();paintTray();paintFloat(true);return;}
+    S.tray={i:ti};S.envp=null;S.card=null;S.dj=false;paintEnvp();paintTray();paintDj();paintFloat(true);return;}
   if(ti>=0){live.send({t:'sit',table:ti});return;}
   go(x,y);
 }
@@ -403,6 +409,7 @@ function head(light=false){
     h.innerHTML=`<div class="wk-where wk-wed"><b data-no-translate>${esc(w?`💍 ${w.a} & ${w.b}`:'💍 Đám cưới')}</b>${r?`<small class="wk-n" aria-label="${n} khách">${n}</small>`:''}</div>
       <span class="wk-clock" aria-live="off">${wedClock()}</span>${w&&!S.ended&&w.overflow!=='account'?`<span class="wk-lucky" title="Lộc cưới">💰 ${w.xu||20} xu/phút</span>`:''}<span class="grow"></span>
       ${canGive()?`<button type="button" class="icon-btn wk-env-btn" data-wk="env" aria-label="Mừng phong bì cô dâu chú rể" aria-expanded="${Boolean(S.envp)}">🧧</button>`:''}
+      ${canPick()?`<button type="button" class="icon-btn wk-dj-btn" data-wk="dj" aria-label="Chọn nhạc" aria-expanded="${Boolean(S.dj)}">🎧</button>`:''}
       ${r&&!S.ended?`<button type="button" class="icon-btn" data-wk="wsound" aria-label="${S.wsound?'Tắt nhạc cưới':'Bật nhạc cưới'}" aria-pressed="${S.wsound}">${S.wsound?'🔊':'🔇'}</button>`:''}
       ${photo?`<button type="button" class="icon-btn wk-photo-btn" data-wk="photo" aria-label="Chụp ảnh chung">📸</button>`:''}
       <button type="button" class="icon-btn" data-wk="close" aria-label="Đóng">${icon('x',20)}</button>`;
@@ -421,6 +428,13 @@ function head(light=false){
   const pl=S.dlg.querySelector('.wk-places');pl.hidden=!S.picker;
   if(S.picker)pl.innerHTML=S.places.map(p=>`<button type="button" class="wk-chip${p.id===r?.place?' on':''}" data-wk="go" data-place="${esc(p.id)}"><span>${p.icon}</span><b>${esc(p.name)}</b><small>${p.n}</small></button>`).join('');
   if(S.cv)S.cv.setAttribute('aria-label',r?`${r.name}: ${n} người đang dạo`:'Đi dạo');
+}
+/** 🎧 Who picks the music (live/wedding.py _dj): the groom; the bride when he is not here; either when the couple's
+ * characters are not one man and one woman. */
+function canPick(){
+  const w=S.wed,r=S.room;if(!w||!r||S.ended||!w.musics||!w.pids?.includes(r.me))return false;
+  const here=w.pids.map(pid=>S.people.get(pid)).filter(Boolean),men=here.filter(p=>p.g==='male');
+  return men.length===1?men[0].pid===r.me:true;
 }
 /** 🧧 A guest with an account at a party that is on (the couple get the envelopes, they do not give them). */
 function canGive(){const w=S.wed,r=S.room;return Boolean(w&&r&&!S.ended&&w.envs&&w.overflow!=='account'&&live.me?.account&&!w.pids?.includes(r.me));}
@@ -473,10 +487,23 @@ function paintTray(){
       <button type="button" class="wk-pill wk-drink" data-wk="eat" data-k="beer">🍺 Cụng ly bia</button><button type="button" class="wk-pill wk-drink" data-wk="eat" data-k="soda">🥤 Nước ngọt</button></div>`;
   el.hidden=false;
 }
+/** 🎧 The groom's playlist: the room hears the song he taps, from that moment (the MC says so). */
+function paintDj(){
+  const el=S.dlg?.querySelector('.wk-dj');if(!el)return;
+  const b=S.dlg.querySelector('.wk-dj-btn');if(b)b.setAttribute('aria-expanded',String(Boolean(S.dj)));
+  if(!S.dj||!canPick()){S.dj=false;el.hidden=true;el.dataset.key='';return;}
+  const cur=feast.picked(),key=`${cur}`;
+  if(el.dataset.key===key&&!el.hidden)return;el.dataset.key=key;
+  el.innerHTML=`<div class="wk-who"><span class="wk-tray-ico" aria-hidden="true">🎧</span><p class="grow"><b>Chọn nhạc cho tiệc</b>
+      <small>Cả tiệc nghe cùng bài, cùng nhịp đèn · lúc rước dâu và múa lân vẫn giữ nhạc riêng</small></p>
+      <button type="button" class="icon-btn" data-wk="dj" aria-label="Đóng">${icon('x',18)}</button></div>
+    <div class="wk-dj-list">${feast.playlist(S.wed?.musics).map(([k,ic,name])=>`<button type="button" class="wk-dj-song${k===cur?' on':''}" data-wk="djPick" data-k="${k}" aria-pressed="${k===cur}"><span aria-hidden="true">${ic}</span><b>${esc(name)}${k===cur?'<small>✓ Đang chọn</small>':''}</b></button>`).join('')}</div>`;
+  el.hidden=false;
+}
 /** The floating buttons over the scene: 💐 Tung hoa (the couple, when the MC calls), 💃 Nhảy (on the stage). */
 function paintFloat(force){
   const el=S.dlg?.querySelector('.wk-float');if(!el)return;
-  const w=S.wed,m=me(),busy=S.tray||S.envp||S.card||S.ended||!S.room;
+  const w=S.wed,m=me(),busy=S.tray||S.dj||S.envp||S.card||S.ended||!S.room;
   const toss=Boolean(!busy&&w?.toss?.open&&w.pids?.includes(S.room?.me));
   const dance=Boolean(!busy&&!toss&&w&&m&&!m.s&&typeof m.x==='number'&&onStage(m.x,m.y)&&!m.moving);
   const key=`${toss}|${dance}`;if(key===S.floatKey&&!force)return;S.floatKey=key;
@@ -492,7 +519,7 @@ function paintOverlays(){
     ?`Bạn đang xem từ ngoài cổng. <button type="button" class="wk-pill primary" data-wk="account">Tạo tài khoản</button> để vào dự và nhận lộc mỗi phút.`
     :'Đông quá! Bạn đứng ngoài cổng xem, vẫn được tính là khách 🎉';
   const en=S.dlg.querySelector('.wk-end');en.hidden=!S.ended;
-  paintLog();paintEnvp();paintTray();paintFloat(true);
+  paintLog();paintEnvp();paintTray();paintDj();paintFloat(true);
   if(S.ended)en.innerHTML=`<p class="wk-end-t">💍 Tiệc đã tàn</p>${S.ended.n!=null?`<p>${S.ended.n} khách đến chung vui 💛</p>`:''}<button type="button" class="wk-pill primary" data-wk="close">Đóng</button>`;
   const tp=S.dlg.querySelector('.wk-topic'),tb=mySeat();
   if(tb&&tb.topic){

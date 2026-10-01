@@ -61,6 +61,10 @@ BEER_SPIRIT, BEER_MAX = -1, 2   # uống bia: −1 tinh thần, at most 2 times 
 TOSS_AT = 525                   # 💐 the MC calls the bouquet toss (party seconds); the couple gets the "Tung hoa" button
 TOSS_WAIT = 60                  # ... and if neither presses it, the bouquet is thrown for them
 TOSS_XU = 20                    # the guest who catches it (once a party)
+# 🎧 the groom picks the music (owner 02/10: "cho chú rể chọn nhạc"; the bride when the groom is not in the room).
+# Keys of public/js/v4/wedfeast.js TRACKS (the files public/music/wedding-<key>.mp3); 'auto' is the party's programme.
+MUSIC = ('auto', 'house', 'disco', 'edm', 'remix', 'electro', 'latin', 'funk', 'love')
+MUSIC_GAP = 20                  # seconds between two changes of one party's music
 
 TITLE_NAMES = dict(w_crowd='🎉 Đám cưới đông vui', w_100='💞 Trăm ngày bên nhau', w_1y='🎂 Tròn một năm', w_500='💍 Năm trăm ngày thương',
                    w_1000='👑 Nghìn ngày son sắt', w_vip='🥇 Khách quý của phố', w_pro='🎊 Ăn cưới chuyên nghiệp')
