@@ -5,7 +5,9 @@
  *   tutorial / first-day step, seconds since load and the last 3 buttons pressed (their action names);
  * - client errors: script errors, unhandled promise rejections, files that failed to load, failed API calls
  *   (status and path) and the text of a rejected command's toast; each kind+text once per page load (repeats
- *   are counted), at most MAX_PAGE per page load and MAX_SESSION per tab;
+ *   are counted), at most MAX_PAGE per page load and MAX_SESSION per tab. A script error or rejection carries
+ *   where it was thrown (stack(): file:line:col of the top 3 frames, no query strings). Errors that are not the
+ *   game's are never sent (foreign(): a script of another origin or none, an in-app browser's injected bridge);
  * - once per page load: load timings (first byte, DOMContentLoaded, first game frame), the network type, coarse
  *   device memory / cores, cold or warm cache; and where a new player came from (referrer site, utm_*).
  * Only identifiers and numbers; no text typed by the player, no query strings, no ids. Nothing is stored. */
@@ -49,13 +51,39 @@ export function where(){
   return out;
 }
 
-/** One client error (kind: js | promise | asset | api | toast): once per page load, repeats counted. */
-export function error(kind,message,screen){
-  const m=text(message).trim();if(!m)return;
+/* Where an error was thrown: the top frames of its stack (V8 "at f (url:1:2)", Safari/Firefox "f@url:1:2") as
+ * `<path under this origin>:<line>:<col>` (js/app.js:1:59652: the minified release is one line, the column finds
+ * it), `~` for a frame of another origin (an extension, a script an in-app browser injected), joined by ` < `. */
+const FRAME=/([a-z][a-z0-9+.-]*:\/\/[^\s/]+)(\/[^\s?#)]*)[^\s)]*?:(\d+):(\d+)/i;
+export function stack(raw,origin=globalThis.location?.origin){
+  const out=[];
+  for(const line of String(raw||'').split('\n')){
+    const f=FRAME.exec(line);if(!f)continue;
+    out.push(f[1]===origin?`${f[2].slice(1).slice(-80)||'-'}:${f[3]}:${f[4]}`:'~');if(out.length>=3)break;
+  }
+  return out.join(' < ');
+}
+// Injected by in-app browsers or extensions, never the game's (Zalo's zaloJSV2 bridge, Facebook's autofill, Chrome's
+// read mode…). game/retention.py FOREIGN_NAMES drops the same names at the server.
+const INJECTED=/zalojsv|zalojavascriptinterface|__gcrweb|getreadmode|_autofillcallbackhandler|java object is gone|instantsearchsdkjsbridge|webkit\.messagehandlers/i;
+/** Not the game's error: a known injected name; a script error from a file of another origin or from no file at all
+ * (code an app evaluated into the page); a stack whose frames are all from elsewhere; a file of another site. */
+export function foreign(kind,message,st='',file){
+  if(INJECTED.test(String(message||'')))return true;
+  if(kind==='js'&&file!==undefined&&!st.split(' < ').some(f=>f&&f!=='~'))return true;
+  if((kind==='js'||kind==='promise')&&st&&st.split(' < ').every(f=>f==='~'))return true;
+  if(kind==='asset'&&!String(message||'').startsWith('/'))return true;
+  return false;
+}
+
+/** One client error (kind: js | promise | asset | api | toast): once per page load, repeats counted. `st`: where it
+ * was thrown (stack()). */
+export function error(kind,message,screen,st=''){
+  const m=text(message).trim();if(!m||foreign(kind,m,st))return;
   const key=kind+'|'+m,have=seen.get(key);
   if(have){have.n++;have.dirty=true;return;}
   if(seen.size>=MAX_PAGE)return;
-  const item={k:kind,m,s:id(screen)||where().v||'-',n:1,dirty:true};seen.set(key,item);queue.push(item);
+  const item={k:kind,m,s:id(screen)||where().v||'-',n:1,dirty:true};if(st)item.st=st;seen.set(key,item);queue.push(item);
   clearTimeout(timer);timer=setTimeout(()=>flush(),ERR_DELAY);
 }
 function takeErrors(){
@@ -63,7 +91,7 @@ function takeErrors(){
   const out=[];
   for(const item of seen.values()){
     if(!item.dirty||out.length>=Math.min(10,room))continue;
-    out.push({k:item.k,m:item.m,s:item.s,n:item.n});item.dirty=false;item.n=0;
+    out.push({k:item.k,m:item.m,s:item.s,n:item.n,...(item.st?{st:item.st}:{})});item.dirty=false;item.n=0;
   }
   queue=[];if(out.length)store.set('mnl.tele.n',String(used+out.length));
   return out;
@@ -107,13 +135,18 @@ function acquisition(){
 export function telemetryBoot(e){
   if(env)return;env=e;
   const B=globalThis.__mnlBoot||(globalThis.__mnlBoot={}),T=B.tele||(B.tele={errs:[]});T.on=true;
-  for(const x of (T.errs||[]).splice(0))error(x.k,x.k==='asset'?path(x.m):x.m,'loading');
+  // boot.js kept these (with the screen: 'loading' while the splash shows, 'start' between the first frame and now).
+  for(const x of (T.errs||[]).splice(0))error(x.k,x.k==='asset'?path(x.m):x.m,x.s||'loading',x.st?stack(x.st):'');
   addEventListener('error',ev=>{
     const t=ev.target;
     if(t&&t!==window&&(t.src||t.href))error('asset',path(t.src||t.href));
-    else if(ev.message)error('js',`${ev.message}${ev.filename?` @${path(ev.filename).split('/').pop()}:${ev.lineno||0}`:''}`);
+    else if(ev.message){
+      const st=stack(ev.error?.stack)||(ev.filename?stack(`${ev.filename}:${ev.lineno||0}:${ev.colno||0}`):'');
+      if(foreign('js',ev.message,st,ev.filename||''))return;
+      error('js',`${ev.message}${ev.filename?` @${path(ev.filename).split('/').pop()}:${ev.lineno||0}`:''}`,undefined,st);
+    }
   },true);
-  addEventListener('unhandledrejection',ev=>{const r=ev.reason;error('promise',r?.message||r);});
+  addEventListener('unhandledrejection',ev=>{const r=ev.reason;error('promise',r?.message||r,undefined,stack(r?.stack));});
   document.addEventListener('click',ev=>{
     const el=ev.target?.closest?.('[data-command],[data-action],[data-act],[data-op]');if(!el)return;
     const a=id(el.dataset.command||el.dataset.action||el.dataset.act||el.dataset.op);

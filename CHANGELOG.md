@@ -1,3 +1,9 @@
+# v1.0.5 — Lỗi lúc tải game, bấm hai lần
+
+- Người chơi quay lại mà mã hoặc phần dữ liệu bàn làm việc của nghề tải hỏng trên mạng yếu (game vẫn mở): mở việc của khách ném "Cannot read properties of undefined (reading 'filter')" (163 lần ngày 01/10, app.js jobView rơi xuống màn chăm sóc khách hàng, supportJob). Nay hiện khung chờ và tự tải lại sau 2, 4, 8… 30 giây; mã nghề tải lại bằng URL khác (trình duyệt nhớ lần import hỏng).
+- Bấm hai lần, tab khác (revision_conflict): bản đọc trạng thái cũ không ghi đè trạng thái mới hơn; bước giống hệt vừa xong ở tab này không gửi lại; xung đột lần hai không hiện lỗi, chỉ đồng bộ màn hình.
+- Lỗi phía người chơi: kèm chỗ ném lỗi (file:dòng:cột của 3 khung đầu, không query), giữ tên thuộc tính trong "reading '…'"; bỏ lỗi không phải của game (zaloJSV2 của Zalo, tiện ích trình duyệt, file site khác) ở trình duyệt, máy chủ và bảng admin; "Đang tải" chỉ khi màn chờ còn hiện, sau khung hình đầu là "Vừa vào game".
+- Không có "Có gì mới".
 # v1.0.4 — Bớt chỗ bấm là lỗi
 
 - Từ log 01/10: hết giờ/đủ khách thì nút thành "Làm nốt việc dở" hoặc "Khép ca" (sửa lệch 20 phút ở giờ đóng cửa); tạp hóa chưa mở ca thì nút mờ + "Mở ca"; quầy hết hàng ghi "hết hàng · nhập thêm"; thiếu nguyên liệu ghi ngay trên nút (thú cưng, tiệm bánh, homestay); "🚚 n/8 đơn đang về" và nút nhận thùng; đếm thùng chỉ ra dòng lệch; thiếu xu thì nút mờ "thiếu N xu"; trà sữa đổi món đúng ly, giá thử có khoảng cho phép; Trạm Lắng Nghe ghi tên từng bước và căn cứ; sự cố nhân viên đang mở thì dẫn tới đó.

@@ -338,6 +338,43 @@ class BeaconUnitTests(Base):
         with patch.object(rt, 'ERRORS_PER_BEACON', 2):
             self.assertEqual(rt.beacon(self.store, sid, dict(errors=[dict(k='js', m=f'e{i}') for i in range(9)]))['errors'], 2)
 
+    def test_errors_stack_and_foreign(self):
+        # 01/10: 163 "Cannot read properties of undefined (reading …)" with no hint of where; 64 Zalo-injected errors
+        tok, sid = self.player()
+        stack = 'js/app.js:1:59652 < js/app.js:1:37283 < js/app.js:1:28135'
+        reading = "Cannot read properties of undefined (reading 'filter')"
+        rt.beacon(self.store, sid, dict(errors=[dict(k='promise', m=reading, s='start')]), own_host='phocochuyen.io.vn')   # an older page: no stack
+        got = rt.beacon(self.store, sid, dict(errors=[
+            dict(k='promise', m=reading, s='start', st=stack),
+            dict(k='js', m='Uncaught ReferenceError: zaloJSV2 is not defined', s='loading'),
+            dict(k='promise', m="Cannot read properties of undefined (reading 'sendMessage')", s='job', st='~ < ~'),
+            dict(k='asset', m='connect.facebook.net/en_US/fbevents.js', s='job'),
+            dict(k='asset', m='https://phocochuyen.io.vn/js/careers/fruit.js', s='loading'),
+            dict(k='js', m='Uncaught TypeError: boom', s='job', st='js/app.js:1:5 < <script>alert(1)</script>:1:1'),
+        ]), own_host='phocochuyen.io.vn')
+        self.assertEqual(got['errors'], 3)
+        rows = {r[1]: r for r in self.q('SELECT kind, message_key, screen, count, sample FROM stat_client_errors')}
+        self.assertEqual(set(rows), {'Cannot read properties of undefined (reading ‹filter›)', 'https://phocochuyen.io.vn/js/careers/fruit.js',
+                                     'Uncaught TypeError: boom'})
+        row = rows['Cannot read properties of undefined (reading ‹filter›)']
+        self.assertEqual(row[3], 2)
+        self.assertTrue(row[4].endswith(' @ ' + stack), row[4])                 # the first sample had none: the stack replaces it
+        rt.beacon(self.store, sid, dict(errors=[dict(k='promise', m=reading, s='start', st='js/other.js:1:1')]))
+        self.assertTrue(self.q('SELECT sample FROM stat_client_errors WHERE kind = ?', ('promise',))[0][0].endswith(stack), 'kept once it has one')
+        self.assertNotIn(' @ ', rows['Uncaught TypeError: boom'][4], 'a malformed stack is dropped, the error kept')
+        self.assertEqual(rt.stack_text('a.js:1:2 < b.js:3:4 < c.js:5:6 < d.js:7:8'), 'a.js:1:2 < b.js:3:4 < c.js:5:6')
+        self.assertIsNone(rt.stack_text(['x']))
+        # rows stored before the filter existed are left out of the admin's list and total
+        day = rt.vn_day(time.time())
+        self.sql('INSERT INTO stat_client_errors(day, kind, message_key, screen, count, last_at) VALUES (?, ?, ?, ?, ?, ?)',
+                 (day, 'js', 'Uncaught ReferenceError: zaloJSV# is not defined', 'loading', 64, time.time()))
+        with self.store.connect() as db:
+            d = ar.client_errors(db, datetime.date.fromisoformat(day))
+        self.assertNotIn('zaloJSV', json.dumps(d))
+        self.assertEqual(d['today_total'], 5)                                # 3 + 1 + 1, the 64 not counted
+        top = next(e for e in d['today'] if e['kind'] == 'promise')
+        self.assertEqual(top['stack'], stack)
+
     def test_load_and_acquisition(self):
         tok, sid = self.player()
         got = rt.beacon(self.store, sid, dict(load=dict(ttfb=180, dcl=900, frame=2350, net='3g', mem=2, cpu=8, cache='cold'),

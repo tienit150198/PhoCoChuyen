@@ -25,9 +25,11 @@ What is recorded (tables on both backends: SCHEMA here for SQLite, game/pg_schem
   - leave {v view, p popup/sheet, c career, d life day, t tutorial/onboarding step, s seconds
     since load, a last 3 UI actions} -> stat_leaves(id, sid, at, day, payload) (short sid, VN day; kept
     LEAVES_KEEP_DAYS) and stat_leave_last (the newest per save: "where did they leave").
-  - errors [{k kind, m message, s screen, n}] -> stat_client_errors(day, kind, message_key,
+  - errors [{k kind, m message, s screen, n, st stack}] -> stat_client_errors(day, kind, message_key,
     screen, count, last_at, sample), aggregated; URLs lose their query, digits and quoted text
-    are masked, no free text from players. Kept ERRORS_KEEP_DAYS.
+    are masked (but the property a TypeError names), no free text from players; the sample ends
+    with ` @ ` and the stack (file:line:col of the top 3 frames, stack_text). Errors that are not
+    the game's (foreign_error: injected scripts, extensions) are dropped. Kept ERRORS_KEEP_DAYS.
   - load {ttfb, dcl, frame (ms), net, mem, cpu, cache} -> stat_loads(day, metric, net, who,
     cache, tier, bucket, n): histograms (who: new = the save was born today). Kept LOADS_KEEP_DAYS.
   - acq {ref (referrer host), src, med, cmp (utm_*)} -> stat_acquisition(sid, at, day, source,
@@ -385,6 +387,56 @@ def clean_text(text, limit: int = 80) -> str:
     return _SPACE.sub(' ', s).strip()[:limit]
 
 
+# Client errors that are not the game's: scripts an in-app browser or an extension puts into the page (Zalo's
+# zaloJSV2 bridge, Facebook's autofill, Chrome's read mode, ...). Never stored, and left out of the admin's lists.
+FOREIGN_NAMES = ('zalojsv', 'zalojavascriptinterface', '__gcrweb', 'getreadmode', '_autofillcallbackhandler',
+                 'java object is gone', 'instantsearchsdkjsbridge', 'webkit.messagehandlers')
+# A client error's stack (public/js/telemetry.js stack()): the top frames as `<path under our origin>:<line>:<col>`,
+# `~` for a frame of another origin (an extension, an injected script), joined by ` < `.
+_FRAME = re.compile(r'~|[A-Za-z0-9_./-]{1,80}:\d{1,7}:\d{1,7}')
+_READING = re.compile(r"\((reading|evaluating) '([A-Za-z_$][\w$.]{0,60})'\)")
+_ASSET_HOST = re.compile(r'(?:[a-z][a-z0-9+.-]*://)?([^/\s]+)(/\S*)?', re.I)
+OWN_PATHS = ('/js/', '/css/', '/i18n/', '/music/', '/fonts/', '/icons/', '/sw.js', '/api/')
+
+
+def stack_text(st) -> str | None:
+    """The beacon's stack, checked frame by frame (anything else is dropped): at most 3 frames, 160 characters."""
+    if type(st) is not str or not st.strip():
+        return None
+    frames = [f.strip() for f in st.split(' < ')[:3]]
+    if not all(_FRAME.fullmatch(f) for f in frames):
+        return None
+    return ' < '.join(frames)[:160]
+
+
+def foreign_error(kind: str, message: str, st: str | None = None, own_host: str = '') -> bool:
+    """True for an error that is not the game's (see FOREIGN_NAMES): a known injected name, a stack with no frame
+    of ours, or a file of another site that failed to load."""
+    low = message.lower()
+    if any(n in low for n in FOREIGN_NAMES):
+        return True
+    if kind in ('js', 'promise'):
+        return bool(st) and all(f == '~' for f in st.split(' < '))
+    if kind == 'asset':
+        m = message.strip()
+        if m.startswith('/'):
+            return False
+        hit = _ASSET_HOST.match(m)
+        host, path = (hit.group(1).lower(), hit.group(2) or '/') if hit else ('', '')
+        if own_host:
+            return host.split(':')[0] != own_host.lower()
+        return not path.startswith(OWN_PATHS)
+    return False
+
+
+def error_key(kind: str, m: str) -> str:
+    """The aggregation key of a client error: masked like any text (clean_text), except the property a TypeError
+    names ("Cannot read properties of undefined (reading 'filter')"): code, never the player's text."""
+    if kind in ('js', 'promise'):
+        m = _READING.sub(lambda x: f'({x.group(1)} ‹{x.group(2)}›)', m)
+    return clean_text(m, 120)
+
+
 def error_text(exc) -> str:
     """Short: the GameError's code when it says something, else its masked message."""
     code = str(getattr(exc, 'code', '') or '')
@@ -683,12 +735,17 @@ def beacon(store, sid: str, data, now: float | None = None, own_host: str = '') 
             if kind not in ('js', 'promise', 'asset', 'api', 'toast'):
                 continue
             m = str(e.get('m') or '')
+            st = stack_text(e.get('st')) if kind in ('js', 'promise') else None
+            if foreign_error(kind, m[:600], st, own_host):
+                continue
             # "<status> <path>" of a failed API call: the status stays a number, the path is masked like any text
             head = m.split(' ', 1)[0] if kind == 'api' else ''
             code = head if len(head) == 3 and head.isdigit() or head == '0' else ''
-            key = ((code + ' ' + clean_text(m[len(head):], 116)).strip() if code else clean_text(m, 120)) or '?'
+            key = ((code + ' ' + clean_text(m[len(head):], 116)).strip() if code else error_key(kind, m)) or '?'
             n = _num(e.get('n'), 1, 1000)
-            errors.append((kind, key, _ident(e.get('s'), '-')[:40], int(n or 1), clean_text(e.get('m'), 200)))
+            # The sample keeps where it was thrown (` @ ` + the stack), digits and all.
+            sample = error_key(kind, m)[:120] + ' @ ' + st if st else clean_text(e.get('m'), 200)
+            errors.append((kind, key, _ident(e.get('s'), '-')[:40], int(n or 1), sample))
     load = data.get('load') if type(data.get('load')) is dict else None
     acq = data.get('acq') if type(data.get('acq')) is dict else None
     if leave is None and not errors and load is None and acq is None:
@@ -705,7 +762,8 @@ def beacon(store, sid: str, data, now: float | None = None, own_host: str = '') 
         for kind, key, screen, n, sample in sorted(errors):
             db.execute('INSERT INTO stat_client_errors(day, kind, message_key, screen, count, last_at, sample) VALUES (?, ?, ?, ?, ?, ?, ?) '
                        'ON CONFLICT(day, kind, message_key, screen) DO UPDATE SET count = stat_client_errors.count + excluded.count, '
-                       'last_at = excluded.last_at', (day, kind, key, screen, n, now, sample))
+                       "last_at = excluded.last_at, sample = CASE WHEN stat_client_errors.sample LIKE '% @ %' THEN stat_client_errors.sample "
+                       'ELSE excluded.sample END', (day, kind, key, screen, n, now, sample))
             got['errors'] += 1
         born = _born(db, sid) if (load is not None or acq is not None) else None
         if load is not None:

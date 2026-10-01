@@ -11,12 +11,16 @@ const scratch={};
 export const CSS_KIT={cafe_bakery:'food_kit',florist:'food_kit',restaurant:'food_kit',tax_payroll:'office_kit',group_accounting:'office_kit',corp_accounting:'office_kit',
   fruit:'street_kit',garbage:'street_kit',drain:'street_kit',pilot:'air_kit',flight_attendant:'air_kit'};
 
+// A failed import() stays failed for the life of the page (the browser keeps it in its module map): the next try of
+// a workbench that did not come (a weak network) asks for the same file under another URL (…&retry=n).
+const failed={};
+const retryUrl=id=>{const url=asset(`/js/careers/${id}.js`);return `${url}${url.includes('?')?'&':'?'}retry=${failed[id]}`;};
 /** Import career workbenches (+ their stylesheets). `waitCss`: also wait (max 1.5 s) until the stylesheets
  * are in, so the first frame of a workbench is never unstyled (startup loads only the current career). */
 export async function loadCareerModules(ids,waitCss=false){
   await Promise.all(ids.map(async id=>{
     try{
-      const mod=modules[id]=(await import(`../careers/${id}.js`)).default;
+      const mod=modules[id]=(await (failed[id]?import(retryUrl(id)):import(`../careers/${id}.js`))).default;
       // Optional scoped stylesheet: public/css/careers/<id>.css (+ its kit, see CSS_KIT)
       const sheets=mod?.css?[CSS_KIT[id],id].filter(Boolean):[];
       // boot.js preloads the last opened workplace on the next visit, before bootstrap and app.js.
@@ -27,7 +31,7 @@ export async function loadCareerModules(ids,waitCss=false){
       });
       if(waitCss)await Promise.all(ready);
     }
-    catch(error){console.warn('Chưa có giao diện nghề',id,error);}
+    catch(error){failed[id]=(failed[id]||0)+1;console.warn('Chưa có giao diện nghề',id,error);}
   }));
 }
 // A workbench reads its part of the catalogue (ctx.cc) deeply, so it only counts as ready once that part is in

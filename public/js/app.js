@@ -158,7 +158,7 @@ function toast(message,kind=false){if(!message)return;const box=$('#toasts'),cls
 function download(data,name,type='application/json'){const blob=new Blob([data],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
 async function cmd(action,payload={},options={}){
   try{const r=await api.command(action,payload,options.career||career());if(!options.quiet)toast(r.message,r.correct===false?'error':r.celebrate?'good':false);if(r.celebrate){sound.success();world.celebrate();}else sound.click();for(const note of new Set(r.effects||[]))toast(note);if(r.clock)setTimeout(()=>toast(r.clock.text),1400);return r;}
-  catch(error){toast(error.status?error.message:'Mất kết nối. Việc đã xác nhận vẫn được giữ, thử lại sau một chút nhé.',true);sound.error();return null;}
+  catch(error){if(error.quiet)return null;toast(error.status?error.message:'Mất kết nối. Việc đã xác nhận vẫn được giữ, thử lại sau một chút nhé.',true);sound.error();return null;}  // quiet: a tap the save moved under twice (api.js), the screen already shows why
 }
 function closeSheet(){if($('#sheet').open)$('#sheet').close();ui.view=null;ui.ai={};world.paused=ui.paused;}
 function openSheet(view,data={}){if(view!=='job'&&view!=='chat'){ui.task=null;}Object.assign(ui,data);ui.view=view;renderSheet(false);if(!$('#sheet').open){const d=$('#sheet');d.showModal();d.scrollTop=0;d.tabIndex=-1;d.focus({preventScroll:true});}}
@@ -544,7 +544,10 @@ function jobView(){
     return header('Một việc đã được làm tới nơi',t.title,'THÀNH QUẢ HÔM NAY')+`<div class="sheet-body center done-body"><div class="celebration">${icon('sparkle',55)}</div><h2>Cảm ơn bạn đã giúp!</h2>${ways}${fold}</div>`;
   }
   ui.task=t.id;let inner;
-  if(careerUI(career()))inner=careerUI(career()).job(t,careerContext(env()));else if(['teacher','tour_guide','milk_tea'].includes(career()))inner=extendedJob(t,c,api.content,ui,api.state);else if(t.desk)inner=L.desk.use()?L.desk.m.deskJob(t,env()):skeleton();else if(career()==='mother_baby')inner=motherBabyJob(t);else if(career()==='pharmacy')inner=pharmacyJob(t);else if(career()==='accounting')inner=accountingJob(t);else inner=supportJob(t);
+  if(careerUI(career()))inner=careerUI(career()).job(t,careerContext(env()));else if(['teacher','tour_guide','milk_tea'].includes(career()))inner=extendedJob(t,c,api.content,ui,api.state);else if(t.desk)inner=L.desk.use()?L.desk.m.deskJob(t,env()):skeleton();else if(career()==='mother_baby')inner=motherBabyJob(t);else if(career()==='pharmacy')inner=pharmacyJob(t);else if(career()==='accounting')inner=accountingJob(t);
+  // A workplace with its own workbench whose code or data part did not come (a weak network): a skeleton while it is
+  // asked for again (ensureCareerUI), never the customer-care view, which read its task as a ticket and threw.
+  else if(CAREER_MODULES.includes(career())){ensureCareerUI();inner=skeleton();}else inner=supportJob(t);
   return header(esc(t.title),taskNext(t),esc(meta().work).toUpperCase()+' · NGÀY '+t.day,headMenu(commandButton('Để lát nữa','defer',{task:t.id},'ghost')+button('Xem các việc khác','queue',{},'ghost')))+`<div class="sheet-body">${!c.open?closedBar():''}${['teacher','tour_guide','milk_tea'].includes(career())||plugin()||t.desk||careerUI(career())?'':guestRibbon(t,c,api.content)}${inner}</div>`;
 }
 /* The done screen's "Việc giữa ca" fold remembers that the player opened it (for this task): its data-auto
@@ -1299,10 +1302,19 @@ const CAREER_MODULES=[];
 // Its part of the catalogue (api.careerContent: a plugin workplace's data) comes with its workbench.
 const careerAssets=(id,waitCss=true)=>Promise.all([CAREER_MODULES.includes(id)&&!hasCareerUI(id)?loadCareerModules([id],waitCss):null,api.careerContent(id),import(`./scenes/${kindOf(id)}.js`).catch(()=>{}),id==='teacher'||id==='tour_guide'?teachTour().catch(()=>{}):null]);
 setCareerData(id=>api.hasCareerContent(id));  // careerUI(id) waits for the workplace's data part too
+/* The current workplace's workbench and data part, when they are not in (a switch, or a start-up whose fetch failed
+ * on a weak network: the game opens anyway). Failed again: asked for once more after 2, 4, 8 … 30 s, not on every
+ * render. Both loaders settle without throwing. */
+const workbench={busy:null,id:null,tries:0,timer:0};
 function ensureCareerUI(){
   const id=api.state?.current;
-  if(!id||(hasCareerUI(id)&&api.hasCareerContent(id))||!CAREER_MODULES.includes(id)||ensureCareerUI.busy===id)return;
-  ensureCareerUI.busy=id;Promise.all([hasCareerUI(id)?null:loadCareerModules([id],true),api.careerContent(id)]).then(()=>{ensureCareerUI.busy=null;if(api.state?.current===id){renderMain();if(ui.view)renderSheet();}});
+  if(!id||(hasCareerUI(id)&&api.hasCareerContent(id))||!CAREER_MODULES.includes(id)||workbench.busy===id||(workbench.timer&&workbench.id===id))return;
+  workbench.busy=id;Promise.all([hasCareerUI(id)?null:loadCareerModules([id],true),api.careerContent(id)]).then(()=>{
+    workbench.busy=null;
+    if(hasCareerUI(id)&&api.hasCareerContent(id)){if(workbench.id===id)workbench.tries=0;}
+    else{if(workbench.id!==id){workbench.id=id;workbench.tries=0;}workbench.timer=setTimeout(()=>{workbench.timer=0;ensureCareerUI();},Math.min(30000,2000*2**workbench.tries++));}
+    if(api.state?.current===id){renderMain();if(ui.view)renderSheet();}
+  });
 }
 api.addEventListener('offline',()=>renderMain());
 // While the always-on features load one by one after start-up (lazyBoot), only a module the screen is waiting
@@ -1320,6 +1332,7 @@ try{
   // Its stylesheet only styles the workbench: wait for it only when a sheet opens right away (day closed).
   await Promise.all([careerAssets(career(),Boolean(api.state.current&&(!room()?.open||needsJob()))),setLanguage(api.state.settings.lang)]);
   shell.boot(env());journeyBoot(env());boardBoot(env());startTicker(()=>env());$('#loading').hidden=true;$('#app').hidden=false;world.resize();renderMain();
+  ensureCareerUI();  // its workbench failed to come above (the game opens anyway): ask again in the background
   try{performance.mark('mnl-first-frame');}catch{/* no User Timing */}   // "time to first game frame" (telemetry.js load beacon)
   import('./telemetry.js').then(m=>m.telemetryBoot({api,ui})).catch(e=>console.warn('telemetry:',e));  // Giữ chân: leave/error/load beacons
   // The rest of the catalogue (api.more), now that the first frame is out: it never competed with it on the wire.
