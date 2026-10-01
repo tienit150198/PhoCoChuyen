@@ -1,7 +1,7 @@
 /** 💕 Góc hẹn hò: the dating bench and the 5-minute café date (the rules, the clock and the matcher are the live
  * service's: live/dating.py; this file only draws). Its own dialog, opened from the menu entry, the heart in the
- * chat, the "💕" pill on the scene while waiting or on a date, and (phase 2) a bench spot in the street scene
- * (attachBench). A match opens the dialog by itself.
+ * chat, the "💕" pill on the scene while waiting or on a date, and the bench of every place in Đi dạo (addBench).
+ * A match opens the dialog by itself.
  * No guide, no tips (owner, 01/10): icons, short labels, one line where a line is needed. Player text is always
  * escaped and marked data-no-translate. */
 import {icon,escapeHTML as esc} from '../icons.js';
@@ -9,7 +9,7 @@ import {live} from './live.js';
 import {stylesheet} from '../lazy.js';
 
 const S={dlg:null,env:null,bound:false,bench:{state:'idle',n:0,waited:0,at:0,pref:'any'},pref:pref0(),date:null,at:0,end:null,
-  msgs:[],want:null,menu:false,report:false,confirm:null,flash:'',flashTimer:0,tick:0,pill:null,spots:new Set(),busy:false};
+  msgs:[],want:null,menu:false,report:false,confirm:null,flash:'',flashTimer:0,tick:0,pill:null,busy:false};
 const PREFS=[['m','👦','Bạn nam'],['f','👧','Bạn nữ'],['any','✨','Ai cũng được']];
 const REASONS=[['rude','Thô tục'],['spam','Spam'],['scam','Lừa đảo'],['private','Lộ thông tin'],['other','Khác']];
 const LINES={nope:'Hôm nay chưa hợp, phố còn đông người mà!',left:'Bạn đã rời buổi hẹn.',gone:'Bạn ấy có việc phải đi trước rồi. Phố còn đông người mà!'};
@@ -132,7 +132,7 @@ const dmId=pid=>{const [a,b]=[live.me?.pid,pid].sort();return `dm:${a}:${b}`;};
 
 /* ---- drawing --------------------------------------------------------------------------------------------- */
 function flash(text){S.flash=text;clearTimeout(S.flashTimer);S.flashTimer=setTimeout(()=>{S.flash='';const f=S.dlg?.querySelector('.dt-flash');if(f)f.hidden=true;},3500);}
-function paint(toBottom=false){pill();spots();if(S.dlg?.open){render(toBottom);clock();}}
+function paint(toBottom=false){pill();if(S.dlg?.open){render(toBottom);clock();}}
 
 function head(){
   const x=`<button type="button" class="icon-btn" data-dt="close" aria-label="Đóng">${icon('x',20)}</button>`;
@@ -277,28 +277,31 @@ function pill(){
   if(on){S.pill.innerHTML=S.date?`💕 <b data-no-translate>${esc(S.date.peer?.name||'')}</b>`:`🪑 Đang chờ`;S.pill.setAttribute('aria-label',S.date?'Quay lại buổi hẹn':'Góc hẹn hò: đang chờ');}
 }
 
-/* ---- phase 2: a bench spot in the street scene ------------------------------------------------------------- */
-/** The street scene (live-stroll) hands its "Góc hẹn hò" bench spot here: host = {el: an HTMLElement drawn over the
- * bench, place: 'boho' | 'chodem' | …}. The spot shows the bench state (💕, ⏳ while I wait, the date's peer) and a tap
- * opens the date corner and sits down at once with the last preference (spot `street:<place>`).
- * Returns {update(), destroy()}; the scene calls destroy() when it leaves the place. */
-export function attachBench(env,host){
+/* ---- Đi dạo: the bench of every place is the dating bench (walk.js hook) ------------------------------------ */
+/** live.js benchSpot(walk) calls this when the stroll opens (dates on): the named spot `bench` of every public place
+ * (walk.addSpot, see walk.js's header) gets a soft glow and a 🪑 / ⏳ / 💕 sign drawn on the ground, and a tap opens
+ * Góc hẹn hò and sits down at once with the last preference (spot `street:<place>`). Registering again replaces it. */
+export function addBench(env,walk){
   S.env=env;bind();stylesheet('/css/dating.css');
-  const el=host?.el;if(!el)return {update(){},destroy(){}};
-  const spot={host,el,click:()=>openDate(env,{sit:S.bench.state!=='wait'&&!S.date,spot:host.place?`street:${String(host.place).toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,30)}`:''})};
-  el.classList.add('dt-spot');el.setAttribute('role','button');el.tabIndex=0;
-  el.addEventListener('click',spot.click);
-  spot.key=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();spot.click();}};el.addEventListener('keydown',spot.key);
-  S.spots.add(spot);spots();
-  return {update:spots,destroy(){S.spots.delete(spot);el.removeEventListener('click',spot.click);el.removeEventListener('keydown',spot.key);el.classList.remove('dt-spot');}};
+  walk.addSpot({id:'dating-bench',place:'*',at:'bench',r:44,draw:drawBench,
+    tap:({place})=>{
+      if(!live.flags.dating||!live.welcomed)return false;   // dates off: just walk there
+      openDate(env,{sit:S.bench.state!=='wait'&&!S.date,spot:`street:${String(place||'').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,30)}`});
+      return true;
+    }});
 }
-function spots(){
-  for(const s of S.spots){
-    const on=Boolean(live.flags.dating)&&live.welcomed;
-    s.el.hidden=!on;
-    s.el.innerHTML=`<span aria-hidden="true">${S.date?'💕':S.bench.state==='wait'?'⏳':'🪑'}</span><small>${S.date?esc(S.date.peer?.name||''):S.bench.state==='wait'?'Đang chờ':'Hẹn hò?'}</small>`;
-    s.el.setAttribute('aria-label',S.date?'Quay lại buổi hẹn':'Góc hẹn hò');
-  }
+function drawBench(c,{x,y,t,night}){
+  if(!live.flags.dating||!live.welcomed)return;
+  const pulse=.5+.5*Math.sin(t*2.4),sign=S.date?'💕':S.bench.state==='wait'?'⏳':'💗';
+  c.save();
+  const g=c.createRadialGradient(x,y,4,x,y,44);g.addColorStop(0,night?'rgba(255,133,160,.34)':'rgba(232,80,120,.24)');g.addColorStop(1,'rgba(232,80,120,0)');
+  c.fillStyle=g;c.beginPath();c.ellipse(x,y+6,44,26,0,0,Math.PI*2);c.fill();
+  c.font='22px system-ui,"Apple Color Emoji","Segoe UI Emoji",sans-serif';c.textAlign='center';c.textBaseline='middle';
+  c.fillText(sign,x,y-34-4*pulse);
+  c.font='700 11px system-ui,sans-serif';c.lineWidth=3;c.strokeStyle=night?'rgba(20,18,28,.85)':'rgba(255,253,249,.92)';c.fillStyle=night?'#ffd3de':'#a2325b';
+  const label=S.date?'Đang hẹn':S.bench.state==='wait'?'Đang chờ':'Hẹn hò?';
+  c.strokeText(label,x,y-16);c.fillText(label,x,y-16);
+  c.restore();
 }
 
 /** For live.js: a welcome that says I am waiting or on a date (a reload in the middle of one) loads this module;

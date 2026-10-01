@@ -629,7 +629,19 @@
   "Đã vào ví của bạn 👛": "Now in your wallet 👛",
   "Quà từ Phố Có Chuyện": "A gift from Phố Có Chuyện",
   "Quà xin lỗi từ Phố Có Chuyện": "An apology gift from Phố Có Chuyện",
-  "Tối qua sau khi cập nhật, game của bạn bị lỗi kết nối vài phút. Phố gửi bạn 100 xu thay lời xin lỗi, cảm ơn bạn đã kiên nhẫn 💛": "Last night, after an update, your game lost its connection for a few minutes. The street sends you 100 coins to say sorry. Thank you for your patience 💛"
+  "Tối qua sau khi cập nhật, game của bạn bị lỗi kết nối vài phút. Phố gửi bạn 100 xu thay lời xin lỗi, cảm ơn bạn đã kiên nhẫn 💛": "Last night, after an update, your game lost its connection for a few minutes. The street sends you 100 coins to say sorry. Thank you for your patience 💛",
+  "Công việc": "Work",
+  "Đời sống": "Life",
+  "Tiền & nhà": "Money & home",
+  "Chuyện của bạn": "Your stories",
+  "Của mình": "Your things",
+  "Lần đầu làm ở đây?": "First time here?",
+  "Xem hướng dẫn": "See the guide",
+  "Hướng dẫn nghề này": "This job's guide",
+  "Đã tắt gợi ý. Hướng dẫn ở Cài đặt 📘": "Tips are off. The guide is in Settings 📘",
+  "Xong! Xem lại trong Cài đặt 📘": "Done! Replay it from Settings 📘",
+  "Xem lại trong Cài đặt 📘": "Replay it from Settings 📘",
+  "Bấm Thêm, rồi Hành trình.": "Tap More, then Journey."
  },
  "patterns": {
   "lượt $1": "turn $1",

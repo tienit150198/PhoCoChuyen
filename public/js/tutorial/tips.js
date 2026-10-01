@@ -1,7 +1,7 @@
 /** In-context tips for a brand-new player: the tutorial happens while playing. One short bubble points at the
  * control that matters right now; it never dims the screen, never asks for "Tiếp", and goes away when the
  * player does the thing (or after a few seconds for a look-here tip). "×" turns the remaining tips off.
- * The full coach-mark tour (tour.js) stays in Cài đặt → Hướng dẫn → "Xem lại hướng dẫn".
+ * The full coach-mark tour (tour.js) stays in Cài đặt → Xem hướng dẫn → "Xem lại hướng dẫn".
  *
  * Progress survives a reload (localStorage mnl.tut.tips); the end marks the tutorial done like the tour
  * (store.js markTourDone: settings.tutorialDone follows the account). Markup only: no game rule here. */
@@ -106,7 +106,7 @@ function finish(){stopTips('done');}
 export function stopTips(reason){
   if(!run)return;
   run=null;clearInterval(timer);timer=0;hideBubble();set(null);markTourDone(E);
-  if(reason==='off')E?.toast?.('Đã tắt gợi ý. Xem lại ở mục Hướng dẫn 📘','hint');
+  if(reason==='off')E?.toast?.('Đã tắt gợi ý. Hướng dẫn ở Cài đặt 📘','hint');
 }
 export const tipsRunning=()=>!!run;
 

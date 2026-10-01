@@ -11,7 +11,7 @@
  * the service: 1012 restart (jittered return), 4001 switched off (10 minutes), 4002 another tab took over.
  *
  * For other features: live.on(type, fn) for any server frame, live.send(frame), live.flags, live.unread().
- * 💕 Dates (./dating.js, lazy): live.bonds (pids "đang tìm hiểu"), dateNav(), openDate(), benchSpot() for phase 2's bench. */
+ * 💕 Dates (./dating.js, lazy): live.bonds (pids "đang tìm hiểu"), dateNav(), openDate(), benchSpot(walk) for the stroll's bench. */
 import {icon} from '../icons.js';
 import {stylesheet} from '../lazy.js';
 
@@ -150,8 +150,9 @@ export function openDate(data={}){
   if(!env)return;
   import('./dating.js').then(m=>m.openDate(env,data)).catch(e=>console.warn('dating:',e));
 }
-/** Phase 2: the street scene's bench spot ({el, place}) → a promise of {update(), destroy()} (see dating.js attachBench). */
-export function benchSpot(host){return import('./dating.js').then(m=>m.attachBench(env,host));}
+/** Đi dạo (app.js, when the stroll opens): the bench of every place becomes the dating bench (dating.js addBench,
+ * through walk.addSpot). Nothing loads while dates are off. */
+export function benchSpot(walk){if(live.flags.dating&&live.welcomed&&walk&&env)return import('./dating.js').then(m=>m.addBench(env,walk)).catch(e=>console.warn('dating:',e));}
 
 export function liveBoot(e){
   env=e;

@@ -14,19 +14,23 @@ What it does
   1. creates N guest saves in that database (sessions, a name, born before today) and pairs some of them as
      friends, with the game's own schema (game/pg_schema.py / game/storage.py);
   2. starts `python3 -m live` on a free port against it (LIVE_CHAT=1), or uses --url for one already running;
-  3. opens N sockets (spread over --procs client processes): all join Cả phố, `--rate` messages per second are
-     posted on Cả phố by enough chatters to respect the 10 s slow mode, `--churn` sockets per second disconnect
-     and come back (presence: their friends get green dots on and off);
+  3. opens N sockets (spread over --procs client processes). The first --strollers of them stroll (Đi dạo,
+     LIVE_STREET=1): groups of 20 walk into the four places (so 500 strollers fill 25 instances), each moves to a
+     random walkable spot every --move-every seconds and says something every --say-every seconds. The others
+     join Cả phố: `--rate` messages per second are posted there by enough chatters to respect the 10 s slow mode,
+     `--churn` idle sockets per second disconnect and come back (presence: their friends get green dots on and off);
   4. after --duration seconds reports: sockets open, messages sent, deliveries, p50/p95/p99 delivery latency
-     (send → every receiver), errors, and the live process's CPU (average and peak, % of one core) and RSS.
-The spec's budget: p95 < 300 ms at 2,000 sockets and 5 messages/s (docs/superpowers/specs/...-design.md).
+     (send → every receiver, Cả phố), the same for moves (a stroller's `move` → the `walk` diff on the screens of
+     the others in its instance), errors, and the live process's CPU (average and peak, % of one core) and RSS.
+The spec's budget: p95 < 300 ms at 2,000 sockets: 500 strolling in 25 rooms, 1,500 in chat, Cả phố at 5 messages/s
+(docs/superpowers/specs/2026-09-30-live-chat-street-design.md).
 
 💕 Dates (--dates N, LIVE_DATING=1): 2N more players sit on the dating bench at once (Nam/Nữ, mostly "ai cũng
 được"), so N café dates run at the same time; each bot plays the whole date like a person (picks after 0.2–2 s,
 orders, one chat line, ❤️ or 👋) and sits down again after the end (the 24 h rule makes it meet someone new). The
-report adds: dates finished and mutual, the most dates at once, the wait on the bench (sit → matched), the answer
+report adds: dates finished and mutual, the most dates at once (from the bots' own start/end times), the wait on the bench (sit → matched), the answer
 round trip (a pick → my updated view) and the chat round trip (date_say → my message back), p50/p95/p99.
-  python scripts/live_load.py --conns 0 --dates 200 --duration 90
+  python scripts/live_load.py --conns 0 --strollers 0 --dates 200 --duration 90
 """
 from __future__ import annotations
 
@@ -59,6 +63,16 @@ def raise_fd_limit(n: int = 65536) -> None:
     want = min(n, hard) if hard != resource.RLIM_INFINITY else n
     if soft < want:
         resource.setrlimit(resource.RLIMIT_NOFILE, (want, hard))
+
+
+def most_at_once(spans) -> int:
+    """The most (start, end) intervals open at the same moment."""
+    ev = sorted([(a, 1) for a, _ in spans] + [(b, -1) for _, b in spans], key=lambda x: (x[0], x[1]))
+    n = best = 0
+    for _, d in ev:
+        n += d
+        best = max(best, n)
+    return best
 
 
 def free_port() -> int:
@@ -99,7 +113,7 @@ def make_players(n: int, db_url: str | None, db_path: str | None, friends_every:
 
 # ---------------------------------------------------------------- 2. the service
 def start_live(port: int, db_url: str | None, db_path: str | None, origin: str, log_path: str, dating: bool = False, speed: float = 1.0):
-    env = dict(os.environ, LIVE_CHAT='1', LIVE_PORT=str(port), LIVE_ORIGINS=origin, LIVE_PER_IP='1000000',
+    env = dict(os.environ, LIVE_CHAT='1', LIVE_STREET='1', LIVE_PORT=str(port), LIVE_ORIGINS=origin, LIVE_PER_IP='1000000',
                LIVE_HANDSHAKES_PER_IP='1000000', LIVE_PER_PLAYER='5', QUIET='1', LIVE_DATING='1' if dating else '0',
                LIVE_DATE_SPEED=str(speed))
     env.pop('DATABASE_URL', None)
@@ -132,20 +146,49 @@ def ps(pid: int) -> tuple[float, float]:
 
 
 # ---------------------------------------------------------------- 3. clients (one process each)
-def client_proc(idx, url, origin, tokens, chat_n, every, churn_per_s, duration, ramp_per_s, q):
+def client_proc(idx, url, origin, items, every, churn_per_s, duration, ramp_per_s, move_every, say_every, q):
     raise_fd_limit()
-    asyncio.run(_clients(idx, url, origin, tokens, chat_n, every, churn_per_s, duration, ramp_per_s, q))
+    asyncio.run(_clients(idx, url, origin, items, every, churn_per_s, duration, ramp_per_s, move_every, say_every, q))
 
 
-async def _clients(idx, url, origin, tokens, chat_n, every, churn_per_s, duration, ramp_per_s, q):
+def pid_of_token(token: str) -> str:
+    sid = hashlib.sha256(token.encode()).hexdigest()
+    return hashlib.sha256(('pid:' + sid).encode()).hexdigest()[:16]
+
+
+async def _clients(idx, url, origin, items, every, churn_per_s, duration, ramp_per_s, move_every, say_every, q):
+    """items: (role, token, place) per socket; role 'walk' (a stroller), 'chat' (posts on Cả phố) or 'idle'."""
     from websockets.asyncio.client import connect
+    from live.street import GEO
     lat: list = []
-    stats = dict(open=0, failed=0, sent=0, recv=0, errors=0, closed=0, presence=0, reconnects=0)
+    mlat: list = []
+    stats = dict(open=0, failed=0, sent=0, recv=0, errors=0, closed=0, presence=0, reconnects=0, moves=0, move_recv=0, said=0, says=0,
+                 walk_frames=0, walk_in=0)
     sent_at: dict = {}
+    moved_at: dict = {}             # (pid, x, y) -> when this process sent that move
     stop = asyncio.Event()
     socks: dict = {}
+    roles = {i: r for i, (r, _, _) in enumerate(items)}
 
-    async def one(i, token, chatter):
+    async def stroll(ws, token, place, reader):
+        pid, g = pid_of_token(token), GEO[place]
+        await ws.send(json.dumps({'t': 'walk_in', 'place': place, 'look': None, 'g': random.choice(['male', 'female'])}))
+        stats['walk_in'] += 1
+        await asyncio.sleep(random.random() * move_every)
+        next_say = time.monotonic() + random.uniform(0.3, 1.0) * say_every
+        while not stop.is_set() and not reader.done():
+            x, y = g.random_point(25)
+            moved_at[(pid, x, y)] = time.monotonic()
+            await ws.send(json.dumps({'t': 'move', 'x': x, 'y': y}))
+            stats['moves'] += 1
+            if time.monotonic() >= next_say:
+                await ws.send(json.dumps({'t': 'say', 'text': f'dạo phố tí {random.randint(1, 10 ** 6)}'}))
+                stats['says'] += 1
+                next_say = time.monotonic() + say_every * random.uniform(.8, 1.2)
+            await asyncio.sleep(move_every * random.uniform(.8, 1.2))
+
+    async def one(i, token, role, place):
+        chatter = role == 'chat'
         while not stop.is_set():
             try:
                 ws = await connect(url, origin=origin, additional_headers={'Cookie': f'mnl_session={token}'},
@@ -158,10 +201,13 @@ async def _clients(idx, url, origin, tokens, chat_n, every, churn_per_s, duratio
             stats['open'] += 1
             try:
                 await ws.send('{"t":"hello","v":1}')
-                await ws.send('{"t":"join","ch":"town"}')
+                if role != 'walk':
+                    await ws.send('{"t":"join","ch":"town"}')
                 reader = asyncio.ensure_future(read(ws))
                 pinger = asyncio.ensure_future(ping(ws))
-                if chatter:
+                if role == 'walk':
+                    await stroll(ws, token, place, reader)
+                elif chatter:
                     await asyncio.sleep(random.random() * every)
                     while not stop.is_set() and not reader.done():
                         seq = f'{idx}-{i}-{stats["sent"]}'
@@ -192,6 +238,17 @@ async def _clients(idx, url, origin, tokens, chat_n, every, churn_per_s, duratio
                     stats['recv'] += 1
                     if at is not None and not f.get('cid'):
                         lat.append(now - at)
+                elif t == 'walk':
+                    stats['walk_frames'] += 1
+                    for e in f['ev']:
+                        if e['k'] == 'mv':
+                            end = e['p'][-1]
+                            at = moved_at.get((e['pid'], end[0], end[1]))
+                            if at is not None:
+                                stats['move_recv'] += 1
+                                mlat.append(now - at)
+                elif t == 'said':
+                    stats['said'] += 1
                 elif t == 'error':
                     stats['errors'] += 1
                 elif t == 'presence':
@@ -208,15 +265,15 @@ async def _clients(idx, url, origin, tokens, chat_n, every, churn_per_s, duratio
         while not stop.is_set():
             await asyncio.sleep(1)
             for _ in range(churn_per_s):
-                victims = [k for k in socks if k >= chat_n]
+                victims = [k for k in socks if roles[k] == 'idle']
                 if victims:
                     ws = socks.get(random.choice(victims))
                     if ws:
                         await ws.close()
 
     tasks = []
-    for i, tok in enumerate(tokens):
-        tasks.append(asyncio.ensure_future(one(i, tok, i < chat_n)))
+    for i, (role, tok, place) in enumerate(items):
+        tasks.append(asyncio.ensure_future(one(i, tok, role, place)))
         if ramp_per_s:
             await asyncio.sleep(1 / ramp_per_s)
     q.put(('ready', idx, stats['open']))
@@ -228,7 +285,7 @@ async def _clients(idx, url, origin, tokens, chat_n, every, churn_per_s, duratio
     if ch:
         ch.cancel()
     await asyncio.wait(tasks, timeout=10)
-    q.put(('done', idx, dict(stats, lat=lat)))
+    q.put(('done', idx, dict(stats, lat=lat, mlat=mlat)))
 
 
 # ---------------------------------------------------------------- 3b. 💕 date bots (one process each)
@@ -241,7 +298,7 @@ async def _daters(idx, url, origin, tokens, duration, ramp_per_s, q):
     from websockets.asyncio.client import connect
     rng = random.Random(idx)
     st = dict(open=0, failed=0, errors=0, dates=0, mutual=0, left=0, sits=0, says=0, codes={})
-    lat = dict(match=[], ack=[], say=[], length=[])
+    lat = dict(match=[], ack=[], say=[], length=[], spans=[])
     stop = asyncio.Event()
     tasks: set = set()
 
@@ -331,6 +388,7 @@ async def _daters(idx, url, origin, tokens, duration, ramp_per_s, q):
                             st['left'] += f.get('how') in ('left', 'gone')
                             if 'start' in cur:
                                 lat['length'].append(now - cur['start'])
+                                lat['spans'].append((time.time() - (now - cur['start']), time.time()))
                             cur.clear()
                             later(rng.uniform(0.5, 2.0), sit())
                     elif t == 'msg' and f.get('cid'):
@@ -384,6 +442,9 @@ def main():
     ap.add_argument('--url', help='a live service already running against the same throwaway database')
     ap.add_argument('--pid', type=int, help='its process id (CPU, RSS) with --url')
     ap.add_argument('--every', type=float, default=10.0, help="a chatter's pause between messages (slow mode: >= 10)")
+    ap.add_argument('--strollers', type=int, default=500, help='sockets strolling (Đi dạo) in groups of 20 per instance')
+    ap.add_argument('--move-every', type=float, default=2.0, help="a stroller's pause between two moves (seconds)")
+    ap.add_argument('--say-every', type=float, default=45.0, help="a stroller's pause between two speech bubbles (seconds)")
     ap.add_argument('--dates', type=int, default=0, help='💕 café dates at the same time (2 more players each; LIVE_DATING=1)')
     ap.add_argument('--date-speed', type=float, default=1.0, help='LIVE_DATE_SPEED of the service it starts (1 = real time)')
     args = ap.parse_args()
@@ -404,12 +465,16 @@ def main():
         port = free_port()
         live = start_live(port, args.db_url, db_path, origin, os.path.join(tmp, 'live.log'), dating=bool(args.dates), speed=args.date_speed)
         url, pid = f'ws://127.0.0.1:{port}/live', live.pid
+    from live.street_data import PUBLIC
+    walkers = min(args.strollers, len(tokens))
     chat_n = max(1, round(args.rate * args.every))
+    items = [('walk', t, PUBLIC[(i // 20) % len(PUBLIC)]) if i < walkers else ('chat' if i - walkers < chat_n else 'idle', t, None)
+             for i, t in enumerate(tokens)]
     q = mp.Queue()
-    parts = [tokens[i::args.procs] for i in range(args.procs)]
-    chat_parts = [len(range(i, chat_n, args.procs)) for i in range(args.procs)]
-    procs = [mp.Process(target=client_proc, args=(i, url, origin, parts[i], chat_parts[i], args.every, max(0, round(args.churn / args.procs)),
-                                                  args.duration, max(1, args.ramp // args.procs), q)) for i in range(args.procs)] if tokens else []
+    parts = [items[i::args.procs] for i in range(args.procs)]
+    procs = [mp.Process(target=client_proc, args=(i, url, origin, parts[i], args.every, max(0, round(args.churn / args.procs)),
+                                                  args.duration, max(1, args.ramp // args.procs), args.move_every, args.say_every, q))
+             for i in range(args.procs)] if tokens else []
     if daters:
         dprocs = max(1, min(args.procs, len(daters) // 50))
         procs += [mp.Process(target=date_proc, args=(100 + i, url, origin, daters[i::dprocs], args.duration, max(1, args.ramp // dprocs), q))
@@ -427,7 +492,7 @@ def main():
     samples, last, health = [], ps(pid) if pid else (0, 0), None
     peak_rss = last[1]
     t_last = time.monotonic()
-    results, done, max_rooms = [], 0, 0
+    results, done = [], 0
     while done < len(procs):
         try:
             kind, idx, data = q.get(timeout=1)
@@ -440,7 +505,6 @@ def main():
             if len(samples) % 5 == 4:   # the service's own counters while the load runs
                 try:
                     h = json.loads(urllib.request.urlopen(url.replace('ws://', 'http://') + '/health', timeout=3).read())
-                    max_rooms = max(max_rooms, int(h.get('rooms', 0)))
                     if not health or h.get('conns', 0) >= health.get('conns', 0):
                         health = h
                 except Exception:  # noqa: BLE001
@@ -458,12 +522,20 @@ def main():
     dres = [r for r in results if r.get('kind') == 'dates']
     results = [r for r in results if r.get('kind') != 'dates']
     lat = sorted(x for r in results for x in r['lat'])
-    tot = {k: sum(r[k] for r in results) for k in ('sent', 'recv', 'errors', 'failed', 'presence', 'reconnects', 'closed')}
+    mlat = sorted(x for r in results for x in r['mlat'])
+    tot = {k: sum(r[k] for r in results) for k in ('sent', 'recv', 'errors', 'failed', 'presence', 'reconnects', 'closed', 'moves', 'move_recv',
+                                                   'said', 'says', 'walk_frames', 'walk_in')}
+
+    def pcts(xs):
+        at = lambda p: round(1000 * xs[min(len(xs) - 1, int(p * len(xs)))], 1)
+        return dict(p50=at(.5), p95=at(.95), p99=at(.99), max=round(1000 * xs[-1], 1), n=len(xs)) if xs else None
     pct = lambda p: round(1000 * lat[min(len(lat) - 1, int(p * len(lat)))], 1) if lat else None
     steady = samples[2:] or samples
     report = dict(conns=args.conns, ramp_s=round(ramp, 1), duration_s=args.duration, chatters=chat_n, target_rate=args.rate,
                   sent=tot['sent'], deliveries=tot['recv'], rate_measured=round(tot['sent'] / max(1, args.duration), 2),
                   latency_ms=dict(p50=pct(.5), p95=pct(.95), p99=pct(.99), max=round(1000 * lat[-1], 1) if lat else None, n=len(lat)),
+                  strollers=walkers, moves_sent=tot['moves'], move_deliveries_measured=tot['move_recv'], walk_frames=tot['walk_frames'],
+                  move_latency_ms=pcts(mlat), bubbles_sent=tot['says'], bubbles_received=tot['said'],
                   errors=tot['errors'], connect_failures=tot['failed'], reconnects=tot['reconnects'], presence_frames=tot['presence'],
                   live_cpu_pct=dict(avg=round(statistics.mean(steady), 1) if steady else None, peak=round(max(steady), 1) if steady else None),
                   live_rss_mb=round(peak_rss, 1), live_cpu_s_total=round((last[0] - cpu0), 1) if pid else None, health=health,
@@ -481,7 +553,7 @@ def main():
         report['dates'] = dict(pairs=args.dates, players=2 * args.dates, speed=args.date_speed,
                                finished=sum(r['dates'] for r in dres) // 2, mutual=sum(r['mutual'] for r in dres) // 2,
                                ended_early=sum(r['left'] for r in dres) // 2, sits=sum(r['sits'] for r in dres),
-                               most_at_once=max(0, max_rooms - 1),   # rooms = Cả phố + one per date in progress
+                               most_at_once=most_at_once(x for r in dres for x in r['lat']['spans']) // 2,   # both players report each date
                                bench_wait_ms=ms('match'), answer_rtt_ms=ms('ack'), chat_rtt_ms=ms('say'),
                                date_length_s=round(statistics.median(lengths), 1) if lengths else None,
                                errors=sum(r['errors'] for r in dres), error_codes=codes, connect_failures=sum(r['failed'] for r in dres))

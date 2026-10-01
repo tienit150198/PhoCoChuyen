@@ -34,11 +34,11 @@ Delta-sync hints (TABLES[i]["sync"]):
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 6   # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
+SCHEMA_VERSION = 7   # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
-                     # 6: live chat (chat_*, live_effects: game/live_chat.py, live/) and dates (live_dates, date_bonds:
-                     # game/live_dating.py, live/dating.py)
+                     # 6: live chat (chat_*, live_effects: game/live_chat.py, live/), 1.0.0;
+                     # 7: dates (live_dates, date_bonds: game/live_dating.py, live/dating.py), 1.0.1
 
 # The text forms SQLite produces, computed by PostgreSQL (UTC, independent of TimeZone).
 NOW_TEXT = "to_char(statement_timestamp() AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI:SS')"       # CURRENT_TIMESTAMP

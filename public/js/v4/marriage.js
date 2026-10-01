@@ -109,6 +109,7 @@ export function badges(marriage,friends){
   const api=S.env?.api||null;if(api){api.marriageAlerts=marriage;api.friendAlerts=friends;}
   for(const [action,n] of [['marriage',marriage],['friends',friends]])
     document.querySelectorAll(`[data-action="${action}"]`).forEach(b=>{if(b.closest('.mr-sheet'))return;b.querySelector('em.badge')?.remove();if(n){const em=document.createElement('em');em.className='badge';em.textContent=String(n);b.append(em);}});
+  document.dispatchEvent(new Event('mnl:badges'));   // the menu hub that holds them (app.js) shows the sum
 }
 /** `quiet` (marks like moments_seen / seen, lookups that render their own result): runs without S.busy, so the
  * buttons are never disabled by a background call; it re-renders once at the end if nothing else is in flight. */

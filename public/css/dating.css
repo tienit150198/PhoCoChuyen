@@ -131,15 +131,12 @@ html[data-layout="phone"] .dt-head{padding-top:14px}
 .dt-mi.warn{color:var(--bad)}
 @media (hover:hover){.dt-mi:hover,.dt-chip:hover,.dt-opt:hover:not([aria-disabled]),.dt-dish:hover{background:var(--surface-2)}}
 
-/* the pill on the scene (waiting / on a date while the dialog is closed) and a street bench spot */
+/* the pill on the scene (waiting / on a date while the dialog is closed) */
 .dt-pill{position:absolute;top:62px;right:10px;z-index:4;display:inline-flex;align-items:center;gap:5px;max-width:46vw;padding:8px 13px;border-radius:var(--radius-pill);
   background:var(--surface);border:1.5px solid var(--dt-rose,var(--accent));box-shadow:var(--shadow-sm);font-size:.85rem;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   --dt-rose:color-mix(in srgb,var(--bad) 62%,var(--accent))}
 html:not([data-layout="phone"]) .dt-pill{top:10px}
 .dt-pill b{overflow:hidden;text-overflow:ellipsis}
-.dt-spot{display:inline-flex;flex-direction:column;align-items:center;gap:1px;padding:4px 8px;border-radius:14px;background:color-mix(in srgb,var(--surface) 88%,transparent);
-  box-shadow:var(--shadow-sm);cursor:pointer;font-size:20px;line-height:1}
-.dt-spot small{font-size:.66rem;font-weight:700;color:var(--ink-2)}
 
 @keyframes dt-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 @keyframes dt-dot{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}

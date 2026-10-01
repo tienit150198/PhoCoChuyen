@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **0.9.18** (`main` = `0b87a8b`), 28 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **0.9.19** (`main` = `dc03335`), 28 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -107,8 +107,9 @@ branch holds what, and what to do next, in order. Details live in the linked doc
    reporting always protected), storms for pilots.
    **0.9.18 (01/10 08:04, quiet):** retention logging + admin "Giữ chân" (game/retention.py; milestones backfilled
    from 30/09 with scripts/milestones_backfill.py: 81,925 rows). `RETENTION_LOG=0` turns it off.
-   In progress: `menu` (the "Thêm" menu 25 → ~10 entries, guides hidden: one-time "Xem hướng dẫn / Bỏ qua" per
-   career + a "?" on every work screen), `salonmix` (salon colour-mixing preview chart), `live` (Chat v1.0 →
+   **0.9.19 (01/10 09:26, quiet):** "Thêm" menu 25 → 11–12 entries in hubs, guides only on demand (one-time
+   "Bỏ qua / Xem hướng dẫn" per career, "?" on every work screen), salon colour-mixing preview + 6×6 chart.
+   In progress: `cart` (merged supplier orders, "gộp đơn"), `live` + `live-stroll` + `live-dating` (Chat v1.0 →
    release 1.0.0 with notes: chat, presence, Cả phố 10 s, strolling, dating bench; no tutorial for chat).
 3. **Next versions, in the owner's order:** (a) chat phase 1 (design `docs/superpowers/specs/2026-09-30-live-chat-street-design.md`
    on branch `live`; the owner said not yet on 01/10), then (b) seven careers: nhân viên gác chắn và bảo trì đường sắt,
@@ -204,7 +205,9 @@ Then: bump `game/__init__.py` and add a CHANGELOG entry. Only if the owner asked
   database is a frozen copy as of 21:00 and writes there would fork the data). nginx forwards everything to the
   new server (`/root/nginx-cutover/phocochuyen.to-new`; the previous site is `phocochuyen.before`).
   Its clock is ~62 s slow and not NTP-synced. dk_bike shares that host: never touch it.
-- **While it forwards, mirror each release to it** (its nginx serves static files from its own disk):
+- **While it forwards, mirror each release to it** with `/usr/local/sbin/mnl-mirror-old` on the new server (01/10:
+  copies the release and `_v`, verifies, only then switches the old `current`; run it right after each
+  `mnl-rolling-release`, never from a directory you are deleting). Background:
   `rsync` the new `/opt/mot-ngay-lam-nghe/releases/<rel>` and `shared/_v/` to it, then switch its `current`
   symlink (the commands are in the 0.9.10–0.9.12 deploys: the new server holds an SSH key limited to its IP,
   `/root/.ssh/mnl_old`).

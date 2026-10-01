@@ -34,11 +34,13 @@ function handle(d){
   if(queue.length&&!playing)next();
   const env=getEnv?.();if(!env)return;
   const me=d.me||null;
+  let moved=false;
   for(const [action,key,n] of [['marriage','marriageAlerts',Number(me?.alerts)||0],['friends','friendAlerts',Number(me?.friends)||0]]){
     if((env.api[key]||0)===n)continue;
-    env.api[key]=n;
+    env.api[key]=n;moved=true;
     document.querySelectorAll(`[data-action="${action}"]`).forEach(b=>{if(b.closest('.mr-sheet'))return;b.querySelector('em.badge')?.remove();if(n){const em=document.createElement('em');em.className='badge';em.textContent=String(n);b.append(em);}});
   }
+  if(moved)document.dispatchEvent(new Event('mnl:badges'));   // the menu hub that holds them (app.js) shows the sum
   if(me?.notice&&me.notice_at>read(NOTE)){
     const first=!read(NOTE);write(NOTE,me.notice_at);
     if(!first||Date.now()/1000-me.notice_at<86400)env.toast(me.notice,'good');

@@ -32,6 +32,12 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.0.0", date="2026-10-01", items=(
+        dict(emoji="💬", text="Chat đã có! Nhắn riêng với bạn bè, hoặc lập nhóm chat tới 20 người.", go=dict(action="liveChat")),
+        dict(emoji="🌏", text="Kênh Cả phố: trò chuyện với mọi người đang online, mỗi người 1 tin mỗi 10 giây."),
+        dict(emoji="🟢", text="Chấm xanh cho biết bạn bè nào đang online. Muốn ẩn thì tắt trong Cài đặt."),
+        dict(emoji="🚶", text="Đi dạo khu phố: Bờ hồ, Chợ đêm, Công viên, Phố đi bộ. Gặp người thật, ngồi bàn tám chuyện, nhặt lì xì.", go=dict(action="liveWalk")),
+    )),
     dict(version="0.9.15", date="2026-10-01", items=(
         dict(emoji="🍉", text="Nghề mới: Bán trái cây ở sạp Dì Tư: lựa trái chín, cân đúng từng lạng, trả giá khéo."),
         dict(emoji="🗑️", text="Nghề mới: Thu gom rác ca tối: phân loại đúng ngăn, tách đồ nguy hại, giữ ngõ sạch."),

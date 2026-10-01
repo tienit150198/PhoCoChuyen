@@ -531,7 +531,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     if action==sg.ACTION:  # 🎁 Quà từ Phố Có Chuyện (game/system_gift.py): the server pays a gift into the wallet
         need(internal,"Thao tác chỉ dành cho máy chủ.","forbidden")
         return sg.apply(s,p)
-    if action==lfx.ACTION:  # 🎈 Quà từ phố (game/live_effects.py): a reward of the live service (a date, a red envelope)
+    if action==lfx.ACTION:  # 🧧 live rewards (game/live_effects.py): the server pays what the live service granted
         need(internal,"Thao tác chỉ dành cho máy chủ.","forbidden")
         return lfx.apply(s,p)
     need(career in CAREERS,"Chọn một nghề trước nhé.")
