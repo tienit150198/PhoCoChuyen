@@ -1,5 +1,6 @@
-"""🏮 Hội chợ dân gian (game/fair.py, game/fair_board.py): payouts, caps, the back corner's raids, the calendar,
-idempotent commands, old saves, the lô tô round, the Bảng vàng points and the one-time titles after the fair."""
+"""🏮 Hội chợ dân gian (game/fair.py, game/fair_board.py, game/fair_oaq.py, game/fair_ring.py): payouts, caps, the
+back corner's raids, the calendar, idempotent commands, old saves, the lô tô round, ô ăn quan (rules, the opponents,
+the prize and its daily cap), ném vòng, the Bảng vàng points and the one-time titles after the fair."""
 import datetime
 import json
 import os
@@ -12,6 +13,8 @@ from unittest import mock
 from game import accounts, social
 from game import fair as fh
 from game import fair_board as fb
+from game import fair_oaq as oaq
+from game import fair_ring as ring
 from game import journey as jr
 from game import leaderboard as lb
 from game import live_effects as lfx
@@ -432,6 +435,287 @@ class Points(FairBase):
         with mock.patch.dict(os.environ, {'MNL_FAIR_START': '2026-12-01'}):
             self.assertEqual(fh.points_of(s['journey']), (0, 0))
             self.assertNotIn(fh.edition(), lb.summary(s))
+
+
+def board(b, q=(1, 1), cap=(0, 0, 0, 0), ply=0):
+    g = dict(b=list(b), q=list(q), cap=list(cap), ply=ply)
+    assert oaq.valid(g), g
+    return g
+
+
+class OAQRules(unittest.TestCase):
+    """game/fair_oaq.py: sowing, captures (chained), quan non, rải quân, the end."""
+
+    def test_sow_pick_up_and_capture(self):
+        g = oaq.new_game()
+        trace = []
+        got = oaq.play(g, 0, 1, 1, trace)
+        # 5 dân from ô 1 to 2..6, ô 7 is full: take its 5 on to 8..11 and 0; ô 1 is empty, ô 2 (6) is captured
+        self.assertEqual(got, 6)
+        self.assertEqual(g['b'], [1, 0, 0, 6, 6, 6, 1, 0, 6, 6, 6, 6])
+        self.assertEqual(g['cap'], [6, 0, 0, 0])
+        self.assertEqual([e[0] for e in trace].count('pick'), 2)
+        self.assertEqual(trace[-1], ['cap', 2, 6, 0])
+        self.assertTrue(oaq.valid(g))
+
+    def test_chained_captures_take_a_quan(self):
+        # ô 1 (1 dân) → 2; 3 empty: take 4 (3); 5 empty: take the right quan ô (its quan gone, 2 dân); 7 is full: stop
+        g = board([0, 1, 0, 0, 3, 0, 2, 5, 5, 5, 5, 5], q=(1, 0), cap=(9, 1, 10, 0))
+        self.assertEqual(oaq.play(g, 0, 1, 1), 5)
+        self.assertEqual(g['cap'][:2], [14, 1])
+        # and a quan ô with its quan and enough dân is taken whole: 5 dân + the quan
+        g = board([0, 0, 0, 1, 0, 0, 5, 5, 5, 5, 5, 5], cap=(9, 0, 10, 0))
+        self.assertEqual(oaq.play(g, 0, 3, 1), 5 + oaq.QUAN)
+        self.assertEqual((g['q'], g['b'][6]), ([1, 0], 0))
+
+    def test_quan_non_cannot_be_taken_and_a_quan_ends_the_turn(self):
+        g = board([0, 0, 0, 1, 0, 0, 2, 5, 5, 5, 5, 5], cap=(12, 0, 10, 0))
+        trace = []
+        self.assertEqual(oaq.play(g, 0, 3, 1, trace), 0)
+        self.assertEqual(trace[-1], ['non', 6])
+        g = board([0, 0, 0, 0, 1, 0, 0, 5, 5, 5, 5, 5], cap=(14, 0, 10, 0))
+        self.assertEqual(oaq.play(g, 0, 4, 1), 0)           # the last dân lands next to the quan ô: the turn ends
+        self.assertEqual(g['b'][5], 1)
+
+    def test_two_empty_in_a_row_end_the_turn(self):
+        g = board([0, 1, 0, 0, 0, 3, 0, 5, 5, 5, 5, 5], cap=(11, 0, 10, 0))
+        self.assertEqual(oaq.play(g, 0, 1, 1), 0)
+
+    def test_rai_quan_and_the_end(self):
+        g = board([3, 0, 0, 0, 0, 0, 2, 5, 5, 5, 5, 5], cap=(8, 0, 12, 0))
+        trace = []
+        self.assertTrue(oaq.begin_turn(g, 0, trace))
+        self.assertEqual((g['b'][1:6], g['cap'][0], trace), ([1] * 5, 3, [['seed', 0]]))
+        g = board([3, 0, 0, 0, 0, 0, 2, 5, 5, 5, 5, 5], cap=(4, 0, 16, 0))
+        self.assertFalse(oaq.begin_turn(g, 0))             # nothing to rải: the game ends, the rows go home
+        self.assertTrue(oaq.valid(g))
+        self.assertEqual(sum(g['b']), 0)
+        g = board([0, 2, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0], q=(0, 0), cap=(20, 1, 25, 1))
+        self.assertFalse(oaq.begin_turn(g, 1))             # hết quan, tàn dân
+        self.assertEqual((oaq.score(g, 0), oaq.score(g, 1)), (22 + oaq.QUAN, 28 + oaq.QUAN))
+
+    def test_random_games_keep_every_dan_and_end(self):
+        rng = random.Random(7)
+        for i in range(150):
+            g, side = oaq.new_game(), 0
+            while oaq.begin_turn(g, side):
+                moves = oaq.legal(g, side)
+                c, d = rng.choice(moves) if side == 0 or i % 3 == 0 else oaq.ai_move(g, 'de' if i % 2 else 'kho', rng, side)
+                oaq.play(g, side, c, d)
+                self.assertTrue(oaq.valid(g))
+                side = 1 - side
+            self.assertEqual(oaq.score(g, 0) + oaq.score(g, 1), 50 + 2 * oaq.QUAN)
+            self.assertLessEqual(g['ply'], oaq.MAX_PLY)
+
+    def test_the_opponents_strength(self):
+        """Simple but not dumb: a greedy player usually beats Bé Bi and rarely Ông Hai; looking two turns ahead
+        gives a fair chance against Ông Hai."""
+        def player(depth):
+            def pick(g, rng):
+                vals = []
+                for c, d in oaq.legal(g, 0):
+                    k = oaq.copy(g)
+                    oaq.play(k, 0, c, d)
+                    vals.append((oaq._search(k, 1, 0, depth - 1), rng.random(), (c, d)))
+                return max(vals)[2]
+            return pick
+
+        def wins(p, level, n=50):
+            rng = random.Random(11)
+            won = 0
+            for _ in range(n):
+                g, side = oaq.new_game(), 0
+                while oaq.begin_turn(g, side):
+                    c, d = p(g, rng) if side == 0 else oaq.ai_move(g, level, rng)
+                    oaq.play(g, side, c, d)
+                    side = 1 - side
+                won += oaq.score(g, 0) > oaq.score(g, 1)
+            return won / n
+        self.assertGreater(wins(player(1), 'de'), .5)
+        self.assertLess(wins(player(1), 'kho'), .25)
+        self.assertTrue(.15 < wins(player(2), 'kho') < .75)
+
+
+def weakest(g, level, rng, side=1):
+    """A stand-in opponent that gives everything away (to reach a won game quickly)."""
+    best = None
+    for c, d in oaq.legal(g, side):
+        k = oaq.copy(g)
+        v = oaq.play(k, side, c, d)
+        if best is None or v < best[0]:
+            best = (v, (c, d))
+    return best[1]
+
+
+def greedy_move(g):
+    best = None
+    for c, d in oaq.legal(g, 0):
+        k = oaq.copy(g)
+        v = oaq.play(k, 0, c, d)
+        if best is None or v > best[0]:
+            best = (v, (c, d))
+    return best[1]
+
+
+class OAQStall(FairBase):
+    def finish(self, s):
+        r = None
+        while s['journey']['fair']['oaq']['stage'] == 'play':
+            c, d = greedy_move(s['journey']['fair']['oaq']['g'])
+            s, r = self.act(s, 'fair_oaq_move', cell=c, dir=d)
+            self.assertTrue(r['fair']['trace'])
+        return s, r
+
+    def test_a_win_pays_the_level_prize_and_points(self):
+        s = story(0)
+        with mock.patch.object(oaq, 'ai_move', weakest):
+            s, r = self.act(s, 'fair_oaq_start', lv='kho')
+            self.assertEqual(r['fair']['points'], fh.PT_DAY)          # the day played: no chance round needed
+            self.assertEqual(r['fair']['view']['b'], oaq.new_game()['b'])
+            s, r = self.finish(s)
+        end = r['fair']['end']
+        self.assertEqual((end['stage'], end['prize'], end['points']), ('won', fh.OAQ_PRIZE['kho'], fh.PT_OAQ))
+        j = s['journey']
+        self.assertEqual(j['wallet'], fh.OAQ_PRIZE['kho'])
+        self.assertIn('f_oaq', j['titles'])
+        self.assertEqual(j['fair']['net'], 0)                         # earning is not betting: the loss cap is untouched
+        self.assertEqual(j['history'][-1]['label'], f'{fh.LABELS["oaq"]} · 1 ván thắng')
+        validate_state(s)
+
+    def test_the_daily_earning_cap(self):
+        s = story(0)
+        with mock.patch.object(oaq, 'ai_move', weakest):
+            prizes = []
+            for _ in range(4):
+                s, _ = self.act(s, 'fair_oaq_start', lv='kho')
+                s, r = self.finish(s)
+                prizes.append(r['fair']['end']['prize'])
+        self.assertEqual(prizes, [30, 30, 30, 0])
+        self.assertTrue(r['fair']['end']['capped'])
+        self.assertEqual(s['journey']['wallet'], fh.EARN_DAY['oaq'])
+        self.assertEqual(public_state(s)['fair']['earn']['oaq'], dict(today=90, cap=90, left=0))
+        self.clock.t = at(2026, 10, 5, 9)                              # a new day
+        with mock.patch.object(oaq, 'ai_move', weakest):
+            s, _ = self.act(s, 'fair_oaq_start', lv='de')
+            s, r = self.finish(s)
+        self.assertEqual(r['fair']['end']['prize'], fh.OAQ_PRIZE['de'])
+
+    def test_a_loss_costs_nothing(self):
+        s = story(50)
+        s, _ = self.act(s, 'fair_oaq_start', lv='de')
+        s, r = self.act(s, 'fair_oaq_quit')
+        self.assertEqual((s['journey']['fair']['oaq']['stage'], s['journey']['wallet']), ('lost', 50))
+        s, _ = self.act(s, 'fair_oaq_start', lv='kho')
+        s, _ = self.act(s, 'fair_oaq_start', lv='de')                  # a new game gives the old one up
+        self.assertEqual(s['journey']['fair']['stats']['oaq'], 3)
+        with self.assertRaises(GameError):
+            self.act(s, 'fair_oaq_move', cell=8, dir=1)                # not your ô
+        with self.assertRaises(GameError):
+            self.act(s, 'fair_oaq_move', cell=1, dir=2)
+        with self.assertRaises(GameError):
+            self.act(s, 'fair_oaq_move', cell=1, dir=True)
+
+    def test_a_game_begun_while_open_can_be_finished(self):
+        s = story(0)
+        self.clock.t = AFTER - 60
+        with mock.patch.object(oaq, 'ai_move', weakest):
+            s, _ = self.act(s, 'fair_oaq_start', lv='de')
+            self.clock.t = AFTER + 10
+            s, r = self.finish(s)
+            self.assertEqual(r['fair']['end']['prize'], fh.OAQ_PRIZE['de'])
+            self.assertEqual(r['fair']['end']['points'], 0)          # the board is closed
+            with self.assertRaises(GameError):
+                self.act(s, 'fair_oaq_start', lv='de')
+
+    def test_bad_game_data_is_refused(self):
+        s = story()
+        s, _ = self.act(s, 'fair_oaq_start', lv='de')
+        validate_state(s)
+        bad = json.loads(json.dumps(s))
+        bad['journey']['fair']['oaq']['g']['b'][1] += 1              # a dân out of nowhere
+        with self.assertRaises(GameError):
+            validate_state(bad)
+        bad = json.loads(json.dumps(s))
+        bad['journey']['fair']['earn']['oaq'] = fh.EARN_DAY['oaq'] + 1
+        with self.assertRaises(GameError):
+            validate_state(bad)
+
+
+def aim(p, skip=()):
+    """Throw times (ms) that ring each bottle once (in order of time), GAP apart."""
+    taps, t, todo = [], 0, [i for i in range(ring.BOTTLES) if i not in skip]
+    while todo and t < 60000:
+        x = ring.x_at(p, t)
+        for i in todo:
+            if abs(x - p['xs'][i]) < 1 and (not taps or t - taps[-1] >= ring.GAP):
+                taps.append(t)
+                todo.remove(i)
+                break
+        t += 1
+    return taps
+
+
+class RingToss(FairBase):
+    def start(self, s):
+        s, r = self.act(s, 'fair_ring_start')
+        return s, r['fair']['round']
+
+    def test_formula_and_judge(self):
+        p = dict(xs=[10, 30, 50, 70, 90], period=2000, phase=0.0)
+        self.assertEqual((ring.x_at(p, 0), ring.x_at(p, 500), ring.x_at(p, 1000), ring.x_at(p, 1500)), (0, 50, 100, 50))
+        self.assertEqual(ring.judge(p, [500, 520, 1500, 100, 1900]), [2, -1, -1, 0, -1])
+
+    def test_all_five_pays_the_bonus_points_and_title(self):
+        s = story(0)
+        s, rd = self.start(s)
+        taps = aim(rd)
+        self.assertEqual(len(taps), 5)
+        self.clock.t += taps[-1] / 1000
+        s, r = self.act(s, 'fair_ring_throw', id=rd['id'], taps=taps)
+        self.assertEqual((r['fair']['n'], r['fair']['prize']), (5, 5 * fh.RING_HIT + fh.RING_ALL))
+        self.assertEqual(r['fair']['points'], fh.PT_RING5)
+        self.assertIn('f_ring', s['journey']['titles'])
+        self.assertIsNone(public_state(s)['fair']['ring'])          # the round is done
+        with self.assertRaises(GameError):                          # and paid once
+            self.act(s, 'fair_ring_throw', id=rd['id'], taps=taps)
+        validate_state(s)
+
+    def test_misses_and_three_hits(self):
+        s = story(0)
+        s, rd = self.start(s)
+        taps = aim(rd, skip=(3, 4))
+        last = taps[-1]
+        taps += [last + 300, last + 600]
+        hits = ring.judge(ring.params(rd['id']), taps)
+        self.clock.t += 60
+        s, r = self.act(s, 'fair_ring_throw', id=rd['id'], taps=taps)
+        n = sum(h >= 0 for h in hits)
+        self.assertGreaterEqual(n, 3)
+        self.assertEqual((r['fair']['n'], r['fair']['prize']), (n, n * fh.RING_HIT + (fh.RING_ALL if n == 5 else 0)))
+
+    def test_throws_must_be_plausible(self):
+        s = story(0)
+        s, rd = self.start(s)
+        taps = aim(rd)
+        for bad in (taps[:4], [taps[0]] * 5, [t + 30000 for t in taps], [-1] + taps[1:], taps[:4] + [taps[3] + 10]):
+            with self.assertRaises(GameError, msg=bad):
+                self.act(s, 'fair_ring_throw', id=rd['id'], taps=bad)
+        with self.assertRaises(GameError):
+            self.act(s, 'fair_ring_throw', id=rd['id'] + 1, taps=taps)
+
+    def test_the_daily_earning_cap(self):
+        s = story(0)
+        paid = []
+        for _ in range(4):
+            s, rd = self.start(s)
+            taps = aim(rd)
+            self.clock.t += 60
+            s, r = self.act(s, 'fair_ring_throw', id=rd['id'], taps=taps)
+            paid.append(r['fair']['prize'])
+            self.dice(Dice(bits=12345 + len(paid)))
+        self.assertEqual(paid, [15, 15, 15, 0])
+        self.assertEqual(s['journey']['wallet'], fh.EARN_DAY['ring'])
+        self.assertEqual(s['journey']['fair']['net'], 0)
 
 
 class StoreBase(FairBase):

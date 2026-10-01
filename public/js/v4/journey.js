@@ -177,7 +177,7 @@ function fairCard(env){
   const m=Math.max(0,Math.floor(((f.open?f.closes:f.opens)-f.now)/60));   // from the server's clock when the state came
   const when=m>=1440?`${Math.floor(m/1440)} ngày ${Math.floor(m%1440/60)} giờ`:m>=60?`${Math.floor(m/60)} giờ ${m%60} phút`:`${Math.max(1,m)} phút`;
   return `<section class="jr-card jr-fair" aria-label="Hội chợ dân gian"><button type="button" class="jr-fair-row" data-action="fair"><span class="jr-fair-lantern" aria-hidden="true">🏮</span>
-    <span class="grow"><b>${f.open?'Hội chợ dân gian đang mở':'Hội chợ dân gian sắp mở'}</b><small>🦀 Bầu cua · 🎱 Lô tô · 🏆 Bảng vàng · ${f.open?`còn ${when}`:`mở sau ${when}`}</small></span><span class="btn primary small" aria-hidden="true">${f.open?'Vào hội':'Xem'}</span></button></section>`;
+    <span class="grow"><b>${f.open?'Hội chợ dân gian đang mở':'Hội chợ dân gian sắp mở'}</b><small>🪨 Ô ăn quan · 💍 Ném vòng kiếm xu · 🦀 Bầu cua · 🎱 Lô tô · ${f.open?`còn ${when}`:`mở sau ${when}`}</small></span><span class="btn primary small" aria-hidden="true">${f.open?'Vào hội':'Xem'}</span></button></section>`;
 }
 
 /* 🏠 Nhà của bạn (v4/house.js, own dialog): where you live, what it costs, the way to your own home. */

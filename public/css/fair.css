@@ -1,6 +1,6 @@
 /* ==========================================================================
-   🏮 Hội chợ dân gian (public/js/v4/fair.js): lanterns and bunting, the bầu cua mat and bowl, the lô tô ticket,
-   the back corner's dark mat and the raid, the Bảng vàng. Theme tokens for surfaces and text; the festive colours
+   🏮 Hội chợ dân gian (public/js/v4/fair.js): lanterns and bunting, the gate, the ô ăn quan board, the ném vòng
+   shelf, the bầu cua mat and bowl, the lô tô ticket, the back corner's dark mat and the raid, the Bảng vàng. Theme tokens for surfaces and text; the festive colours
    are fixed and mixed into the theme's surface (light themes and "Phố đêm"). Phone first (390px), 44px targets.
    ========================================================================== */
 .fh-sheet{--fh-red:#d9472b;--fh-gold:#f2b53a;--fh-green:#2f8f6a;--fh-blue:#2f7fd1;--fh-paper:#fff7dc;--fh-ink:#4a2a12}
@@ -30,12 +30,6 @@ html:not([data-layout="phone"]) .sheet.medium.fh-sheet{width:min(600px,calc(100v
 .fh-strip b{color:var(--ink)}
 .fh-pts{margin-left:auto;min-height:34px;padding:4px 12px;border:1px solid color-mix(in srgb,var(--fh-gold) 60%,var(--line));border-radius:999px;background:color-mix(in srgb,var(--fh-gold) 18%,var(--surface));color:var(--ink);font:inherit;cursor:pointer}
 
-/* ---- tabs ---- */
-.fh-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:4px;margin:0 0 10px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line)}
-.fh-tabs button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:50px;padding:4px 2px;border:0;border-radius:10px;background:none;color:var(--ink-2);font:700 .78rem/1.2 var(--font);cursor:pointer}
-.fh-tabs button span{font-size:1.2rem;line-height:1}
-.fh-tabs button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-sm)}
-.fh-tabs button.live::after{content:"";position:absolute;top:6px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--fh-red)}
 .fh-flash{margin:0 0 8px;font-size:.9rem;font-weight:600;min-height:0}
 .fh-flash:empty{display:none}
 .fh-flash.bad{color:var(--bad)}.fh-flash.warn{color:var(--warn)}.fh-flash.good{color:var(--good)}
@@ -201,6 +195,129 @@ html[data-theme="dem"] .fh-cell{background:color-mix(in srgb,#000 20%,var(--fh-p
 .fh-how{margin-top:12px}
 .fh-how ul{margin:6px 0;padding-left:20px;font-size:.88rem}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---- inside a stall: the way back to the gate ---- */
+.fh-nav{display:flex;align-items:center;gap:10px;margin:0 0 10px}
+.fh-nav b{font-size:1.02rem}
+.fh-back{min-height:40px;padding:6px 12px}
+.fh-luck-left{margin:0 0 10px;font-size:.85rem;color:var(--ink-2)}
+.fh-luck-left small{color:var(--muted)}
+
+/* ---- 🏮 Cổng hội ---- */
+.fh-sec{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 8px}
+.fh-sec h3{margin:0;font-size:1.05rem}
+.fh-tag{padding:3px 10px;border-radius:999px;font-size:.75rem;font-weight:700;background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line)}
+.fh-tag.good{background:var(--good-soft);color:var(--good);border-color:color-mix(in srgb,var(--good) 35%,var(--line))}
+.fh-earn{display:grid;gap:10px;margin:0 0 16px}
+.fh-game{display:flex;align-items:center;gap:12px;width:100%;padding:12px;border-radius:18px;text-align:left;font:inherit;color:var(--ink);cursor:pointer;
+  border:2px solid color-mix(in srgb,var(--good) 40%,var(--line));background:linear-gradient(135deg,color-mix(in srgb,var(--good) 12%,var(--surface)),var(--surface) 70%);box-shadow:var(--shadow-sm)}
+.fh-game:active{transform:scale(.985)}
+.fh-game .grow{min-width:0;flex:1;display:grid;gap:3px}
+.fh-game b{font-size:1.08rem}
+.fh-game small{font-size:.84rem;color:var(--ink-2);line-height:1.35}
+.fh-gico{flex:none;display:grid;place-items:center;width:72px;height:56px;border-radius:14px;background:color-mix(in srgb,var(--fh-gold) 22%,var(--surface));border:1px solid var(--line)}
+.fh-gico svg{width:62px;height:40px}
+.fh-live{font-style:normal;font-weight:700;color:var(--accent-text)}
+.fh-meter{display:block;height:8px;margin-top:4px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
+.fh-meter i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--fh-gold),var(--good))}
+.fh-meter.full i{background:var(--good)}
+.fh-meterlabel{font-size:.78rem!important;color:var(--muted)!important}
+.fh-meterlabel b{font-size:inherit!important;color:var(--ink)}
+.fh-luck{display:grid;gap:6px;margin:0 0 14px}
+.fh-luckgame{position:relative;display:flex;align-items:center;gap:10px;width:100%;min-height:56px;padding:8px 12px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.fh-luckgame .grow{min-width:0;flex:1;display:grid}
+.fh-luckgame small{font-size:.8rem;color:var(--muted)}
+.fh-lico{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--surface-2);font-size:1.4rem}
+.fh-warnchip{flex:none;padding:2px 8px;border-radius:999px;font-size:.72rem;font-weight:700;background:var(--bad-soft);color:var(--bad)}
+.fh-dot{position:absolute;top:8px;right:10px;width:9px;height:9px;border-radius:50%;background:var(--fh-red)}
+.fh-goldlink{display:flex;align-items:center;gap:10px;width:100%;padding:12px 14px;border-radius:16px;border:1px solid color-mix(in srgb,var(--fh-gold) 55%,var(--line));
+  background:linear-gradient(135deg,color-mix(in srgb,var(--fh-gold) 22%,var(--surface)),var(--surface));color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.fh-goldlink>span:first-child{font-size:1.6rem}
+.fh-goldlink .grow{min-width:0;flex:1;display:grid}
+.fh-goldlink small{font-size:.8rem;color:var(--ink-2)}
+
+/* ---- 🪨 ô ăn quan ---- */
+.fh-oaqintro p{color:var(--ink-2)}
+.fh-opps{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 10px}
+.fh-opp{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:16px;border:2px solid var(--line-strong);background:var(--surface);color:var(--ink);font:inherit;cursor:pointer}
+.fh-opp .fh-npc{width:52px;height:52px;font-size:1.9rem}
+.fh-opp b{font-size:1.02rem}
+.fh-opp small{font-size:.8rem;color:var(--ink-2)}
+.fh-opp small b{font-size:.85rem;color:var(--good)}
+.fh-opp-kho{border-color:color-mix(in srgb,var(--fh-red) 45%,var(--line))}
+.fh-oscore{display:flex;justify-content:space-between;gap:10px;margin:0 0 8px}
+.fh-oscore span{flex:1;display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:8px;padding:6px 12px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);font-size:.86rem;font-weight:600;color:var(--ink-2)}
+.fh-oscore span em{font-style:normal;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fh-oscore span b{grid-column:2;grid-row:1/3;font-size:1.5rem;color:var(--ink)}
+.fh-oscore span small{font-size:.74rem;color:var(--muted);font-weight:500}
+.fh-oscore .me{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));background:var(--accent-soft)}
+.fh-oaq{--wood:#c99a5b;display:grid;grid-template-columns:44px 1fr 44px;grid-template-rows:auto auto;gap:4px;padding:8px;border-radius:22px;
+  background:repeating-linear-gradient(100deg,rgba(90,50,15,.08) 0 6px,transparent 6px 15px),linear-gradient(180deg,#d9ad6c,#b98244);border:2px solid #8a5a26;box-shadow:inset 0 2px 0 rgba(255,255,255,.3),var(--shadow-sm)}
+html[data-theme="dem"] .fh-oaq{background:repeating-linear-gradient(100deg,rgba(0,0,0,.12) 0 6px,transparent 6px 15px),linear-gradient(180deg,#8a6236,#6b4622);border-color:#4a2f14}
+.fh-orow{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+@media (min-width:700px){.fh-oaq{max-width:460px;margin-inline:auto}}
+.fh-orow.opp{grid-column:2;grid-row:1}
+.fh-orow.me{grid-column:2;grid-row:2}
+.fh-o{position:relative;display:block;min-width:0;aspect-ratio:1;min-height:44px;padding:0;border-radius:10px;border:0;font:inherit;color:#3b2410;
+  background:radial-gradient(ellipse at 50% 40%,#f3dcb0,#e2bf86 70%);box-shadow:inset 0 3px 6px rgba(80,45,10,.35),inset 0 -1px 0 rgba(255,255,255,.4);overflow:hidden}
+html[data-theme="dem"] .fh-o{background:radial-gradient(ellipse at 50% 40%,#b48a58,#94693b 70%)}
+.fh-o.quan{grid-row:1/3;aspect-ratio:auto;min-height:0}
+.fh-o.quan.left{grid-column:1;border-radius:999px 10px 10px 999px}
+.fh-o.quan.right{grid-column:3;border-radius:10px 999px 999px 10px}
+.fh-pebs{position:absolute;inset:6px 6px 14px;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:2px}
+.fh-peb{display:block;width:7px;height:7px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffffff,#9aa7b3 55%,#5b6773);transform:rotate(var(--r))}
+.fh-quan{display:block;flex:0 0 100%;max-width:22px;height:16px;margin:0 auto 2px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#8c7a6c,#3f2f24 60%,#21160f);box-shadow:0 2px 3px rgba(0,0,0,.35)}
+.fh-n{position:absolute;right:4px;bottom:2px;font:800 .72rem/1 var(--font);font-style:normal;color:#5a3412}
+.fh-n small{margin-left:1px;font-size:.6rem;color:#8a1f12}
+html[data-theme="dem"] .fh-n{color:#fff1d6}
+.fh-o.quan .fh-n{left:0;right:0;bottom:6px;text-align:center}
+.fh-o.quan .fh-pebs{inset:10px 4px 18px}
+.fh-o.pick{cursor:pointer;box-shadow:inset 0 3px 6px rgba(80,45,10,.35),0 0 0 2px color-mix(in srgb,var(--accent) 55%,transparent)}
+.fh-o.sel{box-shadow:inset 0 3px 6px rgba(80,45,10,.35),0 0 0 3px var(--accent),0 0 12px color-mix(in srgb,var(--accent) 60%,transparent)}
+.fh-o.at{box-shadow:inset 0 3px 6px rgba(80,45,10,.35),0 0 0 3px var(--fh-gold)}
+.fh-o.hl{box-shadow:inset 0 3px 6px rgba(80,45,10,.35),0 0 0 3px var(--accent)}
+.fh-o.flash{background:radial-gradient(ellipse at 50% 40%,#fff3c4,#f2b53a 75%)}
+@media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .fh-o.flash{animation:fh-pop .35s ease-out}}
+.fh-oturn{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:30px;margin:8px 0 0;font-size:.9rem;font-weight:600;color:var(--ink-2)}
+.fh-hand{padding:2px 10px;border-radius:999px;background:var(--fh-gold);color:#4a2a00;font-weight:800}
+.fh-dirs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 0}
+.fh-dirs .btn{min-height:48px}
+.fh-oend{margin-top:10px;text-align:center}
+.fh-oend.won{background:linear-gradient(180deg,color-mix(in srgb,var(--fh-gold) 25%,var(--surface)),var(--surface))}
+.fh-oend-go{justify-content:center;gap:8px;margin-top:8px}
+.fh-prize{font-size:1.15rem;font-weight:800;color:var(--good)}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+
+/* ---- 💍 ném vòng cổ chai ---- */
+.fh-ringstage{position:relative;height:180px;margin:0 0 10px;border-radius:18px;overflow:hidden;border:1px solid var(--line);
+  background:linear-gradient(180deg,color-mix(in srgb,#7fb6e0 30%,var(--surface)) 0,color-mix(in srgb,var(--fh-gold) 16%,var(--surface)) 75.5%,#b98244 75.5% 80%,#8a5a26 80% 84%,color-mix(in srgb,#8a5a26 30%,var(--surface)) 84%)}
+html[data-theme="dem"] .fh-ringstage{background:linear-gradient(180deg,#1f2a3c 0,#2b2638 75.5%,#7a5230 75.5% 80%,#5b3a1c 80% 84%,#241d18 84%)}
+.fh-track{position:absolute;left:0;right:0;top:10px;height:30px}
+.fh-track::before{content:"";position:absolute;left:5%;right:5%;top:14px;height:2px;border-radius:2px;background:color-mix(in srgb,var(--ink) 18%,transparent)}
+.fh-aim{position:absolute;top:2px;width:0;height:0}
+.fh-aim i{position:absolute;left:-17px;top:4px;width:34px;height:14px;border-radius:50%;border:4px solid var(--fh-red);box-shadow:0 2px 4px rgba(0,0,0,.25)}
+.fh-ringstage.live .fh-aim::after{content:"";position:absolute;left:-1px;top:22px;width:2px;height:70px;background:repeating-linear-gradient(180deg,color-mix(in srgb,var(--fh-red) 55%,transparent) 0 5px,transparent 5px 10px)}
+.fh-fly-layer{position:absolute;inset:0;pointer-events:none}
+.fh-fly{position:absolute;top:16px;width:34px;height:14px;margin-left:-17px;border-radius:50%;border:4px solid var(--fh-red)}
+.fh-fly.hit{animation:fh-ringhit .42s ease-in forwards}
+.fh-fly.miss{animation:fh-ringmiss .65s ease-in forwards}
+html.reduce-motion .fh-fly{animation-duration:.05s}
+@media (prefers-reduced-motion:reduce){.fh-fly{animation-duration:.05s}}
+@keyframes fh-ringhit{to{transform:translateY(60px) scaleX(.8)}}
+@keyframes fh-ringmiss{60%{transform:translateY(70px) rotate(25deg)}100%{transform:translateY(118px) rotate(70deg);opacity:0}}
+.fh-shelf{position:absolute;left:0;right:0;bottom:44px;height:0}
+.fh-bottle{position:absolute;bottom:0;width:0;height:0}
+.fh-bottle i{position:absolute;left:-14px;bottom:0;width:28px;height:46px;border-radius:9px 9px 6px 6px;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 70%,#fff) 0 22%,var(--c) 40%,color-mix(in srgb,var(--c) 70%,#000) 100%);box-shadow:0 3px 4px rgba(0,0,0,.25)}
+.fh-bottle i::before{content:"";position:absolute;left:9px;top:-30px;width:10px;height:32px;border-radius:4px 4px 0 0;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 70%,#fff),var(--c) 50%,color-mix(in srgb,var(--c) 70%,#000))}
+.fh-bottle i::after{content:"";position:absolute;left:1px;top:-14px;width:26px;height:9px;border-radius:50%;border:4px solid var(--fh-red);opacity:0;box-sizing:border-box}
+.fh-bottle.ringed i::after{opacity:1}
+.fh-ringsleft{display:flex;justify-content:center;gap:8px;margin:0 0 10px}
+.fh-ringsleft i{display:block;width:26px;height:12px;border-radius:50%;border:4px solid var(--fh-red)}
+.fh-ringsleft i.used{border-color:var(--line-strong);opacity:.5}
+.fh-throw{min-height:56px;font-size:1.15rem}
+.fh-ringres{text-align:center}
+.fh-ringres.good{background:linear-gradient(180deg,color-mix(in srgb,var(--fh-gold) 22%,var(--surface)),var(--surface))}
+.fh-ringmeter{display:grid;margin-top:10px}
 
 /* wider screens: the mat and the ticket keep their phone proportions */
 @media (min-width:700px){.fh-body{padding:14px 22px 22px}.fh-plate{transform:scale(1.1)}.fh-face{min-height:100px}}

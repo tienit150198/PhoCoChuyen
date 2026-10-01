@@ -2,7 +2,8 @@
 
 Runs the real app on a throwaway story-mode server with the fair open today (MNL_FAIR_START = today, Vietnam date),
 seeds one save (a named character with 300 xu) and three neighbours with accounts and a few fair points, then in the
-browser: the journey banner, Bầu cua (bets, the bowl, the result), Lô tô (buys a card, marks the called numbers,
+browser: the journey banner, the gate, Ô ăn quan (a game against Bé Bi to the end), Ném vòng (aimed at each
+bottle), Bầu cua (bets, the bowl, the result), Lô tô (buys a card, marks the called numbers,
 "Kinh!" or the neighbour's), Chiếu trong (and a raid card: the raid itself is random, so its result is swapped in
 on the wire for the screenshot only), the Bảng vàng; then the "đã tàn" card on a server whose fair ended yesterday.
 390x844 and 1280x800, light theme and "Phố đêm". Exit 1 on any console error.
@@ -111,7 +112,61 @@ async def walk(base, db, errors):
                 await shot(f'1-banner-{th}')
             await theme('kem')
             await page.click('.jr-fair-row')
-            await page.wait_for_selector('.fh-sheet[open] .fh-mat', timeout=10000)
+            await page.wait_for_selector('.fh-sheet[open] .fh-gate', timeout=10000)
+            for th in ('kem', 'dem'):
+                await theme(th)
+                await shot(f'0-gate-{th}')
+            await theme('kem')
+            # 🪨 Ô ăn quan: pick Bé Bi, play to the end (first ô with dân, to the right)
+            await page.click('.fh-sheet [data-fh="tab"][data-tab="oaq"]')
+            await page.wait_for_selector('.fh-sheet .fh-opps', timeout=5000)
+            await shot('0a-oaq-pick')
+            await page.click('.fh-sheet [data-fh="oaqstart"][data-lv="de"]')
+            await page.wait_for_selector('.fh-sheet .fh-oaq', timeout=10000)
+            await page.click('.fh-sheet .fh-o.pick >> nth=1')
+            await shot('0b-oaq-dir')
+            await page.click('.fh-sheet [data-fh="oaqmove"][data-d="1"]')
+            await page.wait_for_timeout(900)
+            await page.screenshot(path=str(OUT / f'{tag}-0c-oaq-sowing.png'))
+            await page.click('.fh-sheet [data-fh="oaqfast"]')
+            for _ in range(80):
+                state = await page.evaluate("""()=>{
+                  if(document.querySelector('.fh-sheet .fh-oend'))return 'end';
+                  const c=document.querySelector('.fh-sheet .fh-o.pick');if(!c)return 'wait';
+                  c.click();const d=document.querySelector('.fh-sheet [data-fh="oaqmove"][data-d="1"]');d&&d.click();return 'moved';}""")
+                if state == 'end':
+                    break
+                await page.wait_for_timeout(700)
+            await page.wait_for_selector('.fh-sheet .fh-oend', timeout=30000)
+            for th in ('kem', 'dem'):
+                await theme(th)
+                await shot(f'0d-oaq-end-{th}')
+            await theme('kem')
+            # 💍 Ném vòng: aim at each bottle (reads the ring's x from the page)
+            await page.click('.fh-sheet [data-fh="tab"][data-tab="home"]')
+            await page.click('.fh-sheet [data-fh="tab"][data-tab="ring"]')
+            await page.wait_for_selector('.fh-sheet .fh-ringstage', timeout=5000)
+            await shot('0e-ring-idle')
+            await page.click('.fh-sheet [data-fh="ringstart"]')
+            await page.wait_for_selector('.fh-sheet [data-fh="throw"]', timeout=10000)
+            aim = """async(n)=>{let thrown=0;const t0=performance.now();
+              while(thrown<n&&performance.now()-t0<20000){await new Promise(r=>requestAnimationFrame(r));
+                const a=document.querySelector('.fh-sheet .fh-aim'),b=document.querySelector('.fh-sheet [data-fh="throw"]');
+                if(!a||!b||b.disabled||a.dataset.x==null)continue;
+                const x=+a.dataset.x,i=[...document.querySelectorAll('.fh-sheet .fh-bottle:not(.ringed)')].findIndex(e=>Math.abs(+e.dataset.x-x)<1.2);
+                if(i>=0){b.click();thrown++;await new Promise(r=>setTimeout(r,650));}}
+              return thrown;}"""
+            await page.evaluate(aim, 2)
+            await page.screenshot(path=str(OUT / f'{tag}-0f-ring-live.png'))
+            await page.evaluate(aim, 3)
+            await page.wait_for_selector('.fh-sheet .fh-ringres', timeout=10000)
+            for th in ('kem', 'dem'):
+                await theme(th)
+                await shot(f'0g-ring-result-{th}')
+            await theme('kem')
+            await page.click('.fh-sheet [data-fh="tab"][data-tab="home"]')
+            await page.click('.fh-sheet [data-fh="tab"][data-tab="bc"]')
+            await page.wait_for_selector('.fh-sheet .fh-mat', timeout=5000)
             for th in ('kem', 'dem'):
                 await theme(th)
                 await shot(f'2-baucua-{th}')
@@ -131,6 +186,7 @@ async def walk(base, db, errors):
                 await shot(f'5-result-{th}')
             await theme('kem')
             # Lô tô
+            await page.click('.fh-sheet [data-fh="tab"][data-tab="home"]')
             await page.click('.fh-sheet [data-fh="tab"][data-tab="lt"]')
             await page.wait_for_selector('.fh-sheet [data-fh="buy"]', timeout=5000)
             await shot('6-loto-buy')
@@ -157,6 +213,7 @@ async def walk(base, db, errors):
             await page.wait_for_selector('.fh-sheet .fh-buy', timeout=15000)
             await shot('8-loto-end')
             # Chiếu trong (a normal round, then a raid swapped in on the wire)
+            await page.click('.fh-sheet [data-fh="tab"][data-tab="home"]')
             await page.click('.fh-sheet [data-fh="tab"][data-tab="xd"]')
             await page.wait_for_selector('.fh-sheet .fh-sides', timeout=5000)
             for th in ('kem', 'dem'):
@@ -180,8 +237,8 @@ async def walk(base, db, errors):
                 await shot(f'10-raid-{th}')
             await theme('kem')
             await page.click('.fh-sheet [data-fh="raidok"][data-tab="bc"]')
-            # Bảng vàng
-            await page.click('.fh-sheet [data-fh="tab"][data-tab="board"]')
+            # Bảng vàng (the points pill)
+            await page.click('.fh-sheet .fh-pts')
             await page.wait_for_selector('.fh-sheet .fh-board, .fh-sheet .fh-wait', timeout=10000)
             await poll("!!document.querySelector('.fh-sheet .fh-board')", 8)
             for th in ('kem', 'dem'):
