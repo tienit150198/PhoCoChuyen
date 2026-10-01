@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **1.1.1** (`main` = `b547cf0`), 28 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **1.1.2** (`main` = `b2a71b4`), 28 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -83,7 +83,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 | `coldload` | **merged into `rel098` (0.9.13)** (`7cb07fb`) | Faster cold page load on weak mobile networks: minified release, catalogue in parts, first workplace preloaded. Slow 4G first screen 5.7 s → 3.9 s (new player), 563 → 394 KB; target < 3 s needs ~100–150 KB less first-screen code (lazy modules). `package.py` now needs node/npx (or `--no-minify`); the first minified release makes every URL cold once. Ships in 0.9.13 via `rel098`. |
 | `careers-street` | **in progress** | New careers: bán trái cây (fruit seller), dọn rác (garbage collector), thông ống cống (drain cleaner). Worktree `../PhoCoChuyen-careers-street`. |
 | `careers-air` | **in progress** | New careers: phi công (pilot), tiếp viên hàng không (flight attendant). Worktree `../PhoCoChuyen-careers-air`. Registry files will conflict with `careers-street` at merge; merge one, then the other. |
-| `lb-titles` | **merged, ships as 1.1.2** | 🏅 Weekly leaderboard titles (game/lb_titles.py, table `lb_weekly`, SCHEMA_VERSION 9; refreshed once a Vietnam day, the week frozen on Monday 00:00), a 🎖️ Danh hiệu board (leaderboard VERSION 2: the first start rebuilds every row in the background, weekly titles wait for it), and up to 3 titles + certificates worn at once (`journey.worn`; the old `equipped` becomes the first). No "Có gì mới". |
+| `lb-titles` | **live as 1.1.2 (01/10 14:20)** | 🏅 Weekly leaderboard titles (game/lb_titles.py, table `lb_weekly`, SCHEMA_VERSION 9; refreshed once a Vietnam day, the week frozen on Monday 00:00), a 🎖️ Danh hiệu board (leaderboard VERSION 2: the first start rebuilds every row in the background, weekly titles wait for it), and up to 3 titles + certificates worn at once (`journey.worn`; the old `equipped` becomes the first). No "Có gì mới". |
 | `housing2`, `rel095`, `rel096`, `integ`, `perf-*`, `save-size`, `admin-pg`, `ux-work` | merged | Kept for history. |
 | `origin/f094-gift` | **WIP, untested** | A 150 xu gift (open2026). Not in any release. Finish + test before shipping, or drop. |
 | `origin/f095-perf-rel` 21e2435 | **WIP, untested** | A per-worker parsed-save cache. Not used; only take it if bounded and fully tested (it is the obvious lever for the 38 ms of game CPU per request). |
@@ -126,8 +126,10 @@ branch holds what, and what to do next, in order. Details live in the linked doc
    others watch from the gate), anniversaries, "Khách mời của tuần" (scripts/wedding_week.py settles weekly).
    1.1.1 hotfix: wedding plan errors shown at the send button, too-soon times blocked, a server-wide "sắp cưới"
    news line with the date and time. Anti-flood limits on nginx + fail2ban + SYN cookies (deploy/ddos/, 01/10).
-   Next: weekly leaderboard titles (top N per board, updated daily) and wearing several game titles and
-   certificates at once (owner, 01/10). Was next: 1.1.0 weddings
+   1.1.2 (01/10 14:20, quiet): weekly leaderboard titles, a Danh hiệu board, up to 3 titles/certificates worn.
+   Tested first on a staging copy of PG (`phoco_stage`, port 8799, dropped after): the leaderboard VERSION 2
+   rebuild took ~3.5 min there and ~4 min live. A staging server MUST run with `PUSH_DISABLED=1` (its
+   housekeeping would otherwise deliver the copied push queue to real phones). Was next: 1.1.0 weddings
    (`live-wedding`, spec docs/superpowers/specs/2026-10-01-live-wedding-design.md). Earlier plan text:
    (Chat v1.0 →
    release 1.0.0 with notes: chat, presence, Cả phố 10 s, strolling, dating bench; no tutorial for chat).
