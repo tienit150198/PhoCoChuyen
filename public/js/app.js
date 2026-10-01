@@ -210,6 +210,7 @@ function navItems(c){
   items.push(['jrWardrobe','shirt','Tủ đồ']);  // 👗 Tủ đồ (v4/wardrobe.js, opened by journey.js)
   {const chat=L.live.m?.liveNav();if(chat)items.push(chat);}  // 💬 Chat (v4/live.js): only while the live service has it on
   {const lv=L.live.m?.live;if(lv?.flags.street&&lv.welcomed)items.push(['liveWalk','map','Đi dạo']);}  // 🚶 Đi dạo (v4/walk.js): only while the live service has it on
+  {const lv=L.live.m?.live;if(lv?.flags.wedding&&lv.welcomed)items.push(['liveWed','heart','Lịch cưới']);}  // 💍 Lịch cưới (v4/wedding.js): live weddings, while on
   items.push(['friends','user','Bạn bè',api.friendAlerts||0],['marriage','heart','Hôn nhân',api.marriageAlerts||0]);  // Bạn bè + Hôn nhân (v4/marriage.js, own dialog; badges from v4/ticker.js)
   items.push(['money','bag','Tiền của bạn']);  // 💰 the money sheet (v4/wealth.js), also behind the HUD money chips
   {const bk=api.state?.journey?.bank;items.push(['bank','coin','Ngân hàng',bk?.unread||(bk?.overdue?'dot':0)]);}  // 🏦 Ngân hàng Phố (v4/bank.js, own dialog)
@@ -224,7 +225,7 @@ const railItem=([a,i,label,badge],extra='',hide='')=>`<button type="button" clas
 const RAIL_MAIN=['home','prepare','operations','prices','feedback','jobapp'];
 /** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
 const RAIL_GROUPS=[
-  ['pho','building','Khu phố',['liveWalk','nhom','phone','social','town','rank']],
+  ['pho','building','Khu phố',['liveWalk','liveWed','nhom','phone','social','town','rank']],
   ['ban','people','Quan hệ',['liveChat','people','friends','marriage']],
   ['tien','coin','Tiền & nhà',['money','bank','house']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
@@ -429,7 +430,7 @@ function renderSheet(preserve=true){
     case'people':dialog.classList.add('medium','v4-sheet','qn-sheet');html=lazyView(L.people,m=>m.closenessView(env()));break;
     case'decor':html=decorView();break;
     case'warehouse':dialog.classList.add('medium');html=warehouseView();break;
-    case'album':dialog.classList.add('medium');html=albumView();break;
+    case'album':dialog.classList.add('medium');html=albumView();if(api.state.marriage?.spouse)queueMicrotask(()=>import('./v4/wedding.js').then(m=>m.fillAlbum(env())).catch(()=>{}));break;  // 💍 the couple's party photos
     case'settings':dialog.classList.add('medium','v4-sheet','drawer');html=lazyView(L.settings,m=>m.settingsView(env()));break;
     case'social':dialog.classList.add('wide','v4-sheet');html=lazyView(L.social,m=>m.socialView(env()));break;
     case'gopy':dialog.classList.add('medium','v4-sheet','fb-dialog');html=lazyView(L.fb,m=>m.feedbackPageView(env()));break;
@@ -896,7 +897,7 @@ document.addEventListener('submit',async e=>{
   const f=e.target;if(!(f instanceof HTMLFormElement)||!f.dataset.csCall)return;e.preventDefault();
   const input=f.querySelector('textarea'),text=input?.value.trim();if(!text)return;input.value='';await csCallSend(f.dataset.csCall,{text});
 });
-function albumView(){const c=room();return header('Kỷ niệm','Giữ 6 ảnh gần nhất.','ALBUM')+`<div class="sheet-body"><div class="row spread"><span></span>${button(icon('camera',16)+' Chụp góc hiện tại','photo',{},'primary')}</div><div class="album-grid space-top">${c.album.map(p=>`<article class="polaroid"><img src="${esc(p.image)}" alt="${esc(p.title)}" loading="lazy"><p>${esc(p.title)}</p><div class="row spread"><small>Ngày ${p.day} · ${esc(meta().place)}</small>${button(icon('download',13),'downloadPhoto',{id:p.id},'ghost small')}</div></article>`).join('')||empty('Một album chưa có ảnh','','camera')}</div>${c.quests_claimed.length?`<h3 class="space-top">Kỷ vật câu chuyện</h3>${c.quests_claimed.map(id=>`<div class="memory">${icon('award',17)} ${esc(api.content.quests.find(q=>q.id===id).keepsake)}</div>`).join('')}`:''}</div>`;
+function albumView(){const c=room();return header('Kỷ niệm','Giữ 6 ảnh gần nhất.','ALBUM')+`<div class="sheet-body"><div class="row spread"><span></span>${button(icon('camera',16)+' Chụp góc hiện tại','photo',{},'primary')}</div><div class="album-grid space-top">${c.album.map(p=>`<article class="polaroid"><img src="${esc(p.image)}" alt="${esc(p.title)}" loading="lazy"><p>${esc(p.title)}</p><div class="row spread"><small>Ngày ${p.day} · ${esc(meta().place)}</small>${button(icon('download',13),'downloadPhoto',{id:p.id},'ghost small')}</div></article>`).join('')||empty('Một album chưa có ảnh','','camera')}</div>${c.quests_claimed.length?`<h3 class="space-top">Kỷ vật câu chuyện</h3>${c.quests_claimed.map(id=>`<div class="memory">${icon('award',17)} ${esc(api.content.quests.find(q=>q.id===id).keepsake)}</div>`).join('')}`:''}${api.state.marriage?.spouse?'<div data-wed-album></div>':''}</div>`;
 }
 const CLOSE_LABELS={markdown_sold:'Bánh giảm giá đã bán',markdown_income:'Thu từ bánh giảm giá (xu)',discarded:'Món phải bỏ',wilted:'Cành hoa héo',wilted_value:'Giá trị hoa héo (xu)',sales:'Doanh thu quầy (xu)',ledger_total:'Tổng sổ ghi nợ (xu)',repaired:'Máy đã sửa xong',returned:'Máy trả lại khách',hazards:'Lỗi an toàn',expired_units:'Nông sản quá hạn',eggs_tomorrow:'Trứng còn trong ổ',hungry_hens:'Gà chưa được cho ăn',ripe_tomorrow:'Luống chín ngày mai',delivered:'Đơn đã giao',failed:'Giao thất bại',refused:'Đơn đã từ chối nhận',km:'Quãng đường (ô phố)',fees:'Phí giao (xu)',fuel:'Xăng còn (%)',settled_at_close:'COD tự nộp cuối ca (xu)',food_cancelled:'Đơn đồ ăn bị hủy',arrived:'Khách nhận phòng',walked:'Khách phải chuyển chỗ',moved:'Khách đổi phòng',dirty:'Phòng cần dọn',staying:'Bé đang ở lại',free:'Chuồng trống',posted:'Bút toán đã ghi',dossiers:'Hồ sơ hoàn tất',milestones:'Mốc kỳ kế toán',balanced:'Sổ cân đối'};
 /** Career-specific part of the day summary: module.summary(data,x) or a generic list. */
@@ -1121,6 +1122,7 @@ async function handleAction(action,data,el){
       if((L.rank.m||action==='rank')&&await (await viaLazy(L.rank,el)).leaderboardAction(action,data,el,env()))break;
       if(action==='liveChat'){(await viaLazy(L.live,el)).openChat(data);break;}  // 💬 Chat (v4/chat.js)
       if(action==='liveWalk'){await (await import('./v4/walk.js')).openWalk(env(),data);break;}  // 🚶 Đi dạo (v4/walk.js): its own dialog
+      if(action==='liveWed'){await (await import('./v4/wedding.js')).openWeddings(env());break;}  // 💍 Lịch cưới (v4/wedding.js): its own dialog
       if(action==='marriage'||action==='friends'){await (await import('./v4/marriage.js')).marriageAction(action,data,el,env());break;}  // Hôn nhân, Bạn bè: lazy
       if(action==='bank'){await (await import('./v4/bank.js')).bankAction(action,data,el,env());break;}  // 🏦 Ngân hàng Phố: lazy
       if(action==='house'){await (await import('./v4/house.js')).houseAction(action,data,el,env());break;}  // 🏠 Nhà của bạn: lazy

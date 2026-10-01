@@ -113,6 +113,7 @@
 .mr-plan-form{display:grid;gap:14px;min-width:0}
 .mr-options{display:grid;gap:8px}
 .mr-tables{display:flex;align-items:center;gap:10px}
+.mr-when{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:8px}   /* 💍 the wedding's date and time */
 .mr-tables input[type=range]{flex:1;min-width:0;height:44px;accent-color:var(--accent)}
 .mr-step{width:48px;padding:0;font-size:1.4rem}
 .mr-tables-n{margin:6px 0 0;font-size:1.05rem}

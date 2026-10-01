@@ -6,6 +6,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {emojiOf} from './journey.js';
 import {myPortrait} from './look.js';
+import {live} from './live.js';
 
 const FRESH_MS=10000;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -99,8 +100,36 @@ function pickerHTML(api,board,more){
   return `<nav class="lb-picker${more?' open':''}" aria-label="Chọn bảng">${chip('all','🌟','Tất cả')}${mine.map(one).join('')}${more?rest.map(one).join(''):''}${toggle}</nav>`;
 }
 
+/* ---- 💍 "Khách mời của tuần" (GET /api/wedding/race, game/wedding_live.py): weddings attended ≥ 5 minutes this week ---- */
+const wedOn=()=>Boolean(live.flags?.wedding&&live.welcomed);
+function loadWed(env,force=false){
+  const {api,ui}=env,s=store(ui),hit=s.data.__wed;
+  if(s.busy.__wed||(!force&&hit&&!hit.error&&Date.now()-hit.at<FRESH_MS))return;
+  s.busy.__wed=true;
+  api.json('/api/wedding/race').then(d=>{s.data.__wed={...d,at:Date.now()};}).catch(e=>{s.data.__wed={error:e.message||'Chưa tải được bảng.',at:Date.now()};})
+    .finally(()=>{s.busy.__wed=false;if(ui.view==='rank')env.renderSheet();});
+}
+function wedBody(env){
+  const d=store(env.ui).data.__wed;loadWed(env);
+  if(!d)return `<div class="lb-loading" role="status">${icon('sparkle',24)}<p class="muted">Đang tải bảng xếp hạng…</p></div>`;
+  if(d.error)return `<div class="notice danger">${icon('alert',17)}<div>${esc(d.error)}</div></div>`;
+  const left=Math.max(0,Math.ceil((d.ends-Date.now()/1000)/86400));
+  const row=r=>`<li class="lb-row${r.me?' me':''}${r.rank<=3?` top top${r.rank}`:''}"><span class="lb-rank" aria-label="Hạng ${r.rank}">${r.rank<=3?`<span class="lb-medal" aria-hidden="true">${MEDALS[r.rank-1]}</span>`:`<b>${r.rank}</b>`}</span>
+    <span class="lb-who"><span class="lb-name-line"><b class="lb-name" data-no-translate>${esc(r.name)}</b>${r.me?'<span class="tag blue">Bạn</span>':''}</span></span>
+    <span class="lb-score"><b>${fmt(r.n)}</b><small>đám cưới</small></span></li>`;
+  const prizes=`<p class="lb-rule">🥇 ${fmt(d.prizes[0].xu)} xu + ${esc(d.prizes[0].title)} · 🥈🥉 ${fmt(d.prizes[1].xu)} xu + ${esc(d.prizes[1].title)}. Bằng nhau thì ai đạt trước đứng trên. Còn ${left} ngày.</p>`;
+  const mine=d.mine!=null?`<p class="lb-me-note">Tuần này bạn đã dự ${fmt(d.mine)} đám cưới.</p>`:'';
+  const last=d.last?.winners?.length?`<h3 class="space-top">Tuần trước</h3><ol class="lb-list">${d.last.winners.map(w=>`<li class="lb-row${w.me?' me':''}"><span class="lb-rank"><span class="lb-medal" aria-hidden="true">${MEDALS[w.rank-1]}</span></span><span class="lb-who"><span class="lb-name-line"><b class="lb-name" data-no-translate>${esc(w.name)}</b></span><small>${esc(w.title)}</small></span><span class="lb-score"><b>${fmt(w.n)}</b><small>đám cưới</small></span></li>`).join('')}</ol>`:'';
+  return prizes+mine+(d.top.length?`<ol class="lb-list">${d.top.map(row).join('')}</ol>`:`<div class="empty lb-empty">${icon('award',30)}<h3>Tuần này chưa ai dự cưới</h3><p class="muted small">Ở lại một đám cưới 5 phút để có tên.</p></div>`)+last;
+}
+
 export function leaderboardView(env){
   const {api,ui}=env,s=store(ui);ensureCss();
+  if(s.kind==='wed'&&wedOn()){
+    const tab=(id,label,ico)=>`<button type="button" role="tab" aria-selected="${id==='wed'}" class="${id==='wed'?'active':''}" data-action="lbKind" data-kind="${id}"><span aria-hidden="true">${ico}</span> ${label}</button>`;
+    return `<header class="sheet-head"><div class="grow"><span class="eyebrow">KHU PHỐ</span><h2>Khách mời của tuần</h2></div><button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',20)}</button></header>
+      <div class="sheet-body lb"><div class="segmented lb-kinds three" role="tablist" aria-label="Loại bảng">${tab('exp','Trải nghiệm','🏆')}${tab('certs','Chứng chỉ','📜')}${tab('wed','Khách mời','💍')}</div>${wedBody(env)}</div>`;
+  }
   const kind=s.kind==='certs'?'certs':'exp';
   let board=kind==='certs'?'certs':s.board;
   if(board!=='all'&&board!=='certs'&&!api.state.careers?.[board])board=s.board='all';
@@ -117,7 +146,7 @@ export function leaderboardView(env){
   }
   const head=`<header class="sheet-head"><div class="grow"><span class="eyebrow">KHU PHỐ</span><h2>Bảng xếp hạng</h2><p>Ai dày dạn nhất phố? Mọi con số tính từ những gì đã làm trong game.</p></div><button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
   return head+`<div class="sheet-body lb">
-    <div class="segmented lb-kinds" role="tablist" aria-label="Loại bảng">${tab('exp','Trải nghiệm','🏆')}${tab('certs','Chứng chỉ','📜')}</div>
+    <div class="segmented lb-kinds${wedOn()?' three':''}" role="tablist" aria-label="Loại bảng">${tab('exp','Trải nghiệm','🏆')}${tab('certs','Chứng chỉ','📜')}${wedOn()?tab('wed','Khách mời','💍'):''}</div>
     ${kind==='exp'?pickerHTML(api,board,s.more):''}
     <p class="lb-rule">${esc(rule(api,board))}</p>
     ${body}
@@ -160,7 +189,7 @@ export async function leaderboardAction(action,data,el,env){
   const {ui,openSheet,renderSheet}=env,s=store(ui);
   switch(action){
     case'rank':await Promise.race([ensureCss(),new Promise(r=>setTimeout(r,800))]);openSheet('rank');showChip(s.board);return true;
-    case'lbKind':s.kind=data.kind==='certs'?'certs':'exp';renderSheet(false);showChip(s.board);return true;
+    case'lbKind':s.kind=data.kind==='certs'?'certs':data.kind==='wed'?'wed':'exp';renderSheet(false);showChip(s.board);return true;
     case'lbBoard':s.board=data.board||'all';s.kind='exp';renderSheet();showChip(s.board);return true;
     case'lbMore':s.more=!s.more;renderSheet(false);if(!s.more)showChip(s.board);return true;
     case'lbRetry':load(env,data.board||s.board,true);renderSheet();return true;

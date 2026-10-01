@@ -74,7 +74,7 @@ function frame(f){
   switch(f.t){
     case'welcome':
       live.welcomed=true;live.flags=f.flags||{};
-      if(!live.flags.chat&&!live.flags.street&&!live.flags.dating){live.state='off';break;}
+      if(!live.flags.chat&&!live.flags.street&&!live.flags.dating&&!live.flags.wedding){live.state='off';break;}
       live.state='open';attempt=0;
       live.me=f.me||null;live.friends=f.friends||[];live.chans=f.chans||[];live.limits=f.limits||{};
       clearInterval(pinger);pinger=setInterval(()=>{if(Date.now()-lastFrame>DEAD_MS){ws?.close();return;}live.send({t:'ping'});},PING_MS);

@@ -20,6 +20,10 @@
  *   walk.on('enter'|'leave',fn)      → unsubscribe; 'enter' gets {place, room, private}
  *   walk.state()                     → {open, place, room, me, people:[{pid,name,x,y,seat,said,emote}], tables, happening, envelope, view}
  *   walk.moveTo(x,y)  walk.toast(text)  walk.open(env,{place})
+ *
+ * 💍 Wedding parties (live/wedding.py) use the same scene: walk.open(env,{wedding:<id>}) (from the "Lịch cưới" sheet,
+ * ./wedding.js) sends `wed_in`; the header shows the couple and the clock, 📸 takes the group photo (the taker's canvas
+ * is uploaded to POST /api/wedding/photo for the couple's Kỷ niệm), later guests watch from outside the gate.
  */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {live,openChat} from './live.js';
@@ -31,11 +35,11 @@ const W=WORLD.w,H=WORLD.h,AV=.5,BUBBLE_MS=6000,EMO_MS=2600,MOVE_GAP=260,PLACE_KE
 const EMOTES=[['wave','👋'],['heart','❤️'],['laugh','😂'],['wow','😮'],['pray','🙏']];
 const EMO=Object.fromEntries(EMOTES);
 const REASONS=[['spam','Spam'],['rude','Thô tục'],['scam','Lừa đảo'],['private','Lộ thông tin'],['other','Khác']];
-const MINE=new Set(['walk_places','walk_in','walk_out','move','say','emote','sit','stand','topic','card','invite','invite_reply','grab','report','block']);
+const MINE=new Set(['walk_places','walk_in','walk_out','move','say','emote','sit','stand','topic','card','invite','invite_reply','grab','report','block','wed_in','wed_photo']);
 const S={env:null,dlg:null,cv:null,ctx:null,stage:null,room:null,geo:null,speed:170,people:new Map(),tables:[],hap:null,envl:null,
   offs:[],off:0,places:[],k:1,ox:0,oy:0,dpr:1,cw:0,ch:0,bg:null,bgKey:'',raf:0,lastDraw:0,card:null,invite:null,sent:null,
   toastTimer:0,moveAt:0,moveTimer:0,pending:null,lastPublic:null,bound:false,hideTimer:0,paused:false,floaters:[],emotes:false,
-  picker:false,down:null,topicKey:'',want:null};
+  picker:false,down:null,topicKey:'',want:null,wedding:null,wed:null,photo:null,ended:null,burst:0,clock:''};
 const spots=new Map(),hooks={enter:new Set(),leave:new Set()};
 const night=()=>document.documentElement.dataset.theme==='dem';
 const nowS=()=>Date.now()/1000+S.off;
@@ -85,7 +89,7 @@ function dialog(){
   d.innerHTML=`<div class="wk-root"><header class="wk-head"></header><div class="wk-places" hidden></div>
     <div class="wk-net" hidden>${icon('refresh',14)} Đang kết nối lại…</div>
     <div class="wk-stage"><canvas class="wk-canvas" role="img" tabindex="0"></canvas>
-      <div class="wk-topic" hidden></div><div class="wk-card" hidden></div><div class="wk-invite" hidden></div>
+      <div class="wk-topic" hidden></div><div class="wk-banner" hidden></div><div class="wk-card" hidden></div><div class="wk-invite" hidden></div><div class="wk-end" hidden></div>
       <div class="wk-toast" role="status" aria-live="polite" hidden></div></div>
     <div class="wk-emotes" hidden>${EMOTES.map(([k,e])=>`<button type="button" data-wk="emote" data-e="${k}" aria-label="${k}">${e}</button>`).join('')}</div>
     <form class="wk-say"><button type="button" class="wk-emo-btn" data-wk="emotes" aria-label="Biểu cảm" aria-expanded="false">😊</button>
@@ -113,8 +117,12 @@ export async function openWalk(env,data={}){
   S.env=env;bind();await css();
   const d=dialog();
   if(!d.open){d.showModal();}
-  S.paused=false;S.want=data.place||null;
-  head();net();
+  S.paused=false;
+  const wid=Number.isInteger(data.wedding)?data.wedding:null;
+  if(wid===null&&S.room?.room?.startsWith('wed:'))leaveLocal();   // from a wedding back to the street
+  S.wedding=wid;S.ended=null;S.want=wid!==null?'wed':data.place||null;
+  head();net();paintOverlays();
+  if(wid!==null){if(S.room?.room!==`wed:${wid}`)enter();loop();return;}
   live.send({t:'walk_places'});
   if(S.room&&!data.place)return;
   if(data.place)enter(data.place);
@@ -127,23 +135,24 @@ function onClose(){
   cancelAnimationFrame(S.raf);S.raf=0;
   if(was)emit('leave',{place:was.place,room:was.room});
 }
-function leaveLocal(){S.room=null;S.geo=null;S.people.clear();S.tables=[];S.hap=null;S.envl=null;S.card=null;S.invite=null;S.floaters=[];paintOverlays();}
+function leaveLocal(){S.room=null;S.geo=null;S.people.clear();S.tables=[];S.hap=null;S.envl=null;S.card=null;S.invite=null;S.floaters=[];S.photo=null;paintOverlays();}
 
 function enter(place){
-  const st=S.env?.api?.state||{};
+  const st=S.env?.api?.state||{},me={look:lookOf(st),g:st.journey?.gender??null,title:st.journey?.equipped??null};
+  if(S.wedding!==null){S.want='wed';live.send({t:'wed_in',id:S.wedding,...me});return;}
   S.want=place;
-  live.send({t:'walk_in',place,look:lookOf(st),g:st.journey?.gender??null,title:st.journey?.equipped??null});
+  live.send({t:'walk_in',place,...me});
 }
 
 /* ---- live frames ---- */
 function bind(){
   if(S.bound)return;S.bound=true;
   const open=()=>Boolean(S.dlg?.open);
-  live.on('welcome',()=>{net();if(open()&&!S.paused){S.room=null;const p=S.lastPublic||pick();if(p)enter(p);else live.send({t:'walk_places'});}});
+  live.on('welcome',()=>{net();if(open()&&!S.paused){S.room=null;if(S.wedding!==null){if(!S.ended)enter();return;}const p=S.lastPublic||pick();if(p)enter(p);else live.send({t:'walk_places'});}});
   live.on('down',()=>net());
   live.on('walk_places',f=>{
     S.places=f.places||[];head();
-    if(open()&&!S.room&&!S.paused&&!S.want)enter(pick());
+    if(open()&&!S.room&&!S.paused&&!S.want&&S.wedding===null)enter(pick());
   });
   live.on('walk_room',f=>{
     if(!open()){live.send({t:'walk_out'});return;}
@@ -152,6 +161,7 @@ function bind(){
     S.room=f;S.geo=f.geo;S.speed=f.speed||170;S.want=null;S.card=null;S.invite=null;S.sent=null;S.floaters=[];
     S.people=new Map(f.people.map(p=>[p.pid,person(p)]));
     S.tables=f.tables;S.hap=f.hap;S.envl=f.env;S.bgKey='';
+    S.wed=f.wed||null;S.wedding=f.wed?f.wed.id:null;S.photo=null;if(f.wed)S.ended=null;
     if(!f.private){S.lastPublic=f.place;try{localStorage.setItem(PLACE_KEY,f.place);}catch{/* storage blocked */}}
     S.places=S.places.map(p=>p.id===f.place?{...p,n:f.people.length}:p);
     head();paintOverlays();size();loop();
@@ -186,7 +196,15 @@ function bind(){
   live.on('invited',f=>{if(!open())return;S.invite={...f,t0:Date.now()};paintOverlays();});
   live.on('invite_sent',f=>{S.sent=f;toast('☕ Đã rủ, chờ bạn ấy nhé…');});
   live.on('invite_no',()=>{S.sent=null;toast('Bạn ấy bận rồi, lần sau nhé!');});
-  live.on('walk_left',f=>{if(f.why==='other'&&open()){leaveLocal();S.paused=true;head();toast('Bạn đang dạo ở một tab khác.');}});
+  live.on('walk_left',f=>{
+    if(f.why==='other'&&open()){leaveLocal();S.paused=true;head();toast('Bạn đang dạo ở một tab khác.');}
+    if(f.why==='wed_end'&&open()&&S.wed){S.ended=S.ended||{n:null};leaveLocal();head();paintOverlays();}
+  });
+  live.on('wed_start',f=>{if(S.wed?.id!==f.id)return;S.burst=performance.now();toast('🎊 Lễ cưới bắt đầu!');});
+  live.on('wed_end',f=>{if(S.wed?.id!==f.id)return;S.ended={n:f.n};head();paintOverlays();});
+  live.on('wed_xu',f=>{const m=me();if(m)S.floaters.push({pid:m.pid,text:`+${f.n} xu`,t0:performance.now()});payNow();});
+  live.on('wed_paid',()=>payNow());
+  live.on('wed_photo',f=>{if(S.wed?.id!==f.id)return;S.photo={...f,taken:false};S.wed.photos=f.n;head();});
   live.on('reported',()=>{if(open())toast('Đã báo cáo, cảm ơn bạn.');});
   live.on('error',f=>{
     if(!open()||!MINE.has(f.ref))return;
@@ -206,14 +224,44 @@ function pick(){
 async function payNow(){
   const api=S.env?.api;if(!api)return;
   try{const d=await api.json('/api/live/effects',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':api.csrf},body:'{}'});
-    if(d?.paid&&d.state&&typeof d.revision==='number'){api.accept({state:d.state,revision:d.revision});S.env.renderMain?.();}}
+    if(d?.paid&&d.state&&typeof d.revision==='number'){api.accept({state:d.state,revision:d.revision});S.env.renderMain?.();}
+    if(d?.gifts?.length){api.gifts=d.gifts;import('./gift.js').then(m=>m.giftBoot(S.env)).catch(e=>console.warn('walk: gift',e));}}   // the private card (a party's total, the race)
   catch(e){console.warn('walk: pay',e);}
+}
+const VN=new Intl.DateTimeFormat('vi-VN',{timeZone:'Asia/Ho_Chi_Minh',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false});
+export const wedDate=at=>{const p=Object.fromEntries(VN.formatToParts(new Date(at*1000)).map(x=>[x.type,x.value]));return `${p.day}/${p.month}/${p.year} · ${p.hour}:${p.minute}`;};
+const mmss=s=>{s=Math.max(0,Math.round(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return h?`${h}:${String(m).padStart(2,'0')}:${String(x).padStart(2,'0')}`:`${m}:${String(x).padStart(2,'0')}`;};
+function wedClock(){const w=S.wed;if(!w)return '';const t=nowS();return S.ended?'Tiệc đã tàn':t<w.at?`⏳ ${mmss(w.at-t)}`:`🎊 ${mmss(w.end-t)}`;}
+/** The group photo: a 3:2 frame around everyone (as this player sees them: avatars, name tags, bubbles) with the
+ * couple's names on a band, small enough for the 64 KB upload (webp, else jpeg). Kỷ niệm shows it as a polaroid. */
+function frameOf(){
+  const pts=[...S.people.values()].filter(p=>typeof p.x==='number');
+  let x0=Math.min(...pts.map(p=>p.x))-70,x1=Math.max(...pts.map(p=>p.x))+70,y0=Math.min(...pts.map(p=>p.y))-130,y1=Math.max(...pts.map(p=>p.y))+30;
+  if(!pts.length)[x0,x1,y0,y1]=[0,W,150,550];
+  let w=Math.max(360,x1-x0,(y1-y0)*1.5),h=w/1.5;w=Math.min(w,W*1.4);h=w/1.5;
+  const cx=(x0+x1)/2,cy=(y0+y1)/2;return [cx-w/2,cy-h/2,w,h];
+}
+async function capture(n){
+  const w=S.wed,api=S.env?.api;if(!w||!api||!S.cv)return;
+  const [fx,fy,fw,fh]=frameOf(),d=S.dpr,sx=(S.ox+fx*S.k)*d,sy=(S.oy+fy*S.k)*d;let data='';
+  for(const ow of [480,360,300]){
+    const oh=Math.round(ow/1.5),out=document.createElement('canvas');out.width=ow;out.height=oh;
+    const c=out.getContext('2d');c.fillStyle=night()?'#1d1c26':'#efe6d6';c.fillRect(0,0,ow,oh);c.drawImage(S.cv,sx,sy,fw*S.k*d,fh*S.k*d,0,0,ow,oh);
+    c.fillStyle='rgba(255,253,248,.88)';c.fillRect(0,oh-40,ow,40);c.textAlign='center';c.textBaseline='middle';
+    c.fillStyle='#b8432c';c.font=`700 ${Math.round(ow/28)}px "Trebuchet MS",sans-serif`;c.fillText(`💍 ${w.a} & ${w.b} · ${wedDate(w.at)}`,ow/2,oh-20);
+    for(let q=.8;q>=.35;q-=.15){data=out.toDataURL('image/webp',q);if(!data.startsWith('data:image/webp'))data=out.toDataURL('image/jpeg',q);if(data.length*.75<=44*1024)break;}
+    if(data.length*.75<=44*1024)break;
+  }
+  try{await api.json('/api/wedding/photo',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':api.csrf},body:JSON.stringify({wedding:w.id,n,image:data})});
+    toast('📸 Đã lưu vào Kỷ niệm của cô dâu chú rể');}
+  catch(e){toast(e?.message||'Chưa lưu được ảnh.');}
 }
 
 /* ---- actions ---- */
 function act(a,d){
   switch(a){
     case'close':S.dlg.close();return;
+    case'photo':live.send({t:'wed_photo'});return;
     case'places':S.picker=!S.picker;if(S.picker)live.send({t:'walk_places'});head();return;
     case'go':S.picker=false;head();if(d.place!==S.room?.place)enter(d.place);return;
     case'back':if(S.lastPublic)enter(S.lastPublic);return;
@@ -287,6 +335,18 @@ function head(light=false){
   const n=count(),label=r?`${r.icon} ${r.name}`:'🚶 Đi dạo';
   if(light&&h.dataset.n===String(n)&&h.dataset.room===(r?.room||''))return;
   h.dataset.n=String(n);h.dataset.room=r?.room||'';
+  if(S.wedding!==null){   // 💍 the couple, the clock, the photo
+    const w=S.wed,photo=w&&!w.overflow&&!S.ended&&r&&w.photos<w.photos_max;
+    h.innerHTML=`<div class="wk-where wk-wed"><b data-no-translate>${esc(w?`💍 ${w.a} & ${w.b}`:'💍 Đám cưới')}</b>${r?`<small class="wk-n" aria-label="${n} khách">${n}</small>`:''}</div>
+      <span class="wk-clock" aria-live="off">${wedClock()}</span><span class="grow"></span>
+      ${photo?`<button type="button" class="icon-btn wk-photo-btn" data-wk="photo" aria-label="Chụp ảnh chung">📸</button>`:''}
+      <button type="button" class="icon-btn" data-wk="close" aria-label="Đóng">${icon('x',20)}</button>`;
+    S.dlg.querySelector('.wk-places').hidden=true;S.picker=false;
+    S.dlg.querySelector('.wk-say').hidden=Boolean(w?.overflow||S.ended);
+    if(S.cv)S.cv.setAttribute('aria-label',w?`Đám cưới ${w.a} và ${w.b}: ${n} khách`:'Đám cưới');
+    return;
+  }
+  S.dlg.querySelector('.wk-say').hidden=false;
   h.innerHTML=(r?.private
     ?`<button type="button" class="wk-where" data-wk="back">${icon('back',16)}<b>${esc(label)}</b></button>`
     :`<button type="button" class="wk-where" data-wk="places" aria-expanded="${S.picker}"><b>${esc(label)}</b>${r?`<small class="wk-n" aria-label="${n} người ở đây">${n}</small>`:''}${icon('chevron',14,'wk-chev')}</button>`)+
@@ -299,6 +359,10 @@ function net(){if(!S.dlg)return;S.dlg.querySelector('.wk-net').hidden=live.state
 function mySeat(){const m=me();return m?.s?S.tables[m.s[0]]:null;}
 function paintOverlays(){
   if(!S.dlg)return;
+  const bn=S.dlg.querySelector('.wk-banner');bn.hidden=!(S.wed?.overflow&&!S.ended);
+  if(!bn.hidden)bn.textContent='Đông quá! Bạn đứng ngoài cổng xem, vẫn được tính là khách 🎉';
+  const en=S.dlg.querySelector('.wk-end');en.hidden=!S.ended;
+  if(S.ended)en.innerHTML=`<p class="wk-end-t">💍 Tiệc đã tàn</p>${S.ended.n!=null?`<p>${S.ended.n} khách ở lại chung vui 💛</p>`:''}<button type="button" class="wk-pill primary" data-wk="close">Đóng</button>`;
   const tp=S.dlg.querySelector('.wk-topic'),tb=mySeat();
   if(tb&&tb.topic){
     const n=(tb.seats||[]).filter(Boolean).length,key=`${tb.topic}|${tb.votes}|${n}`;
@@ -401,6 +465,17 @@ function draw(ts,t){
   S.floaters=S.floaters.filter(fl=>{const age=now-fl.t0,p=S.people.get(fl.pid);if(age>2200||!p)return false;
     c.globalAlpha=Math.min(1,(2200-age)/500);c.font='800 15px "Trebuchet MS",sans-serif';c.textAlign='center';c.textBaseline='bottom';
     c.fillStyle='#b8322c';c.fillText(fl.text,sx(p.x),sy(p.y-132*AV)-34-age/40);c.globalAlpha=1;return true;});
+  if(S.wed){
+    const ck=wedClock();if(ck!==S.clock){S.clock=ck;const el=S.dlg.querySelector('.wk-clock');if(el)el.textContent=ck;}
+    if(S.burst){const age=now-S.burst;if(age>3500)S.burst=0;else for(let i=0;i<22;i++){const x=S.ox+(120+(i*137)%360)*k,y=S.oy+(300-(age/12)*(1+i%3*.25))*k;
+      c.globalAlpha=Math.max(0,1-age/3500);c.font='20px serif';c.textAlign='center';c.fillText(['💖','🎉','🌸','💕'][i%4],x+Math.sin(age/300+i)*10,y+(i%5)*24);c.globalAlpha=1;}}
+    const ph=S.photo;
+    if(ph){const left=ph.at-t;
+      if(left>0){c.fillStyle='rgba(0,0,0,.25)';c.fillRect(0,0,S.cw,S.ch);c.fillStyle='#fff';c.font='800 64px "Trebuchet MS",sans-serif';c.textAlign='center';c.textBaseline='middle';
+        c.fillText(String(Math.ceil(left)),S.cw/2,S.ch/2);c.font='700 16px "Trebuchet MS",sans-serif';c.fillText('📸 Cười lên nào!',S.cw/2,S.ch/2+52);}
+      else{if(!ph.taken){ph.taken=true;if(ph.pid===myPid)capture(ph.n);}
+        c.fillStyle=`rgba(255,255,255,${Math.max(0,.85+left*2)})`;c.fillRect(0,0,S.cw,S.ch);if(left<-.45)S.photo=null;}}
+  }
   const tb=mySeat(),bar=S.dlg.querySelector('.wk-time');
   if(tb&&bar&&tb.until){bar.style.transform=`scaleX(${Math.max(0,Math.min(1,(tb.until-t)/120))})`;}
 }
