@@ -1,3 +1,8 @@
+# v1.1.4 — Đi ăn cưới tính từ 2 phút
+
+- Khách được tính là "đi ăn cưới" khi có mặt ít nhất 2 phút trong tiệc (`GUEST_MIN_MINUTES`, owner 01/10): 15 xu mỗi khách của cô dâu chú rể, số khách trên thẻ cuối tiệc, bảng Khách mời của tuần. Vẫn ghi `wedding_guests` ngay khi vào (lộc 20 xu/phút, phong bì không đổi). Khách thấy "✅ Đã ghi nhận bạn đi ăn cưới" sau phút thứ 2.
+- "Có gì mới": luật 2 phút; dòng 1.1.3 về ghi nhận sửa cho khớp.
+
 # v1.1.3 — Tiệc cưới 10 phút, ai vào cũng được ghi nhận, phong bì mừng cưới
 
 - Lỗi: tiệc #14 (01/10 14:15) có 14 khách nói chuyện nhưng chỉ 4 người được ghi nhận: khách phải ở đủ 5 phút (đếm trong bộ nhớ) và bản 1.1.2 khởi động lại dịch vụ live lúc 14:20 giữa tiệc, mất hết thời gian đã ngồi; người chơi dưới 1 ngày tuổi không được tính. Nay khách được ghi vào `wedding_guests` ngay khi bước vào (cả người đứng ngoài cổng; chưa có tài khoản thì ok=0), bỏ luật 1 ngày tuổi.

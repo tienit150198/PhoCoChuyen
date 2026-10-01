@@ -194,17 +194,18 @@ class Attendance(WedCase):
 
 @unittest.skipUnless(HAVE_WS, 'needs websockets')
 class Hosts(WedCase):
-    def counted(self, wid, n, ok=1):
+    def counted(self, wid, n, ok=1, steps=WL.GUEST_MIN_MINUTES, first=0):
         with self.store.connect() as db:
-            for i in range(n):
-                db.execute('INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) VALUES(?,?,?,?,1,1,?,?,?)',
-                           (wid, f'guest{i:04d}', f'p{i:015d}', ok, time.time(), 'd', 'w'))
+            for i in range(first, first + n):
+                db.execute('INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) VALUES(?,?,?,?,1,?,?,?,?)',
+                           (wid, f'guest{i:04d}', f'p{i:015d}', ok, steps, time.time(), 'd', 'w'))
 
     async def test_scaling_title_cap_and_once(self):
         for n, want, title in ((9, 135, False), (19, 285, False), (25, 375, True), (370, 5400, True)):
             (ta, tb), (sa, sb), wid, at = self.party(wid=100 + n)
             self.counted(wid, n)
             self.counted(wid + 1000, 3)                     # another party's guests
+            self.counted(wid, 4, steps=1, first=5000)       # stayed under 2 minutes: not counted (owner, 01/10)
             await self.wed.refresh(time.time())
             p = self.wed.parties[wid]
             self.assertEqual(await self.wed.settle_party(p), min(n, WL.HOST_COUNT_MAX))
@@ -265,6 +266,9 @@ class Envelope(WedCase):
         self.assertEqual((await guest.call('wed_env', 'error', rid='rid-none-0001'))['code'], 'bad', 'no such envelope')
         await self.wed.refresh(time.time())
         await self.wed.tick(at + 1)
+        await asyncio.sleep(0.3)
+        with self.store.connect() as db:   # stayed the whole party (the ticks between are skipped here)
+            db.execute('UPDATE wedding_guests SET steps=? WHERE wedding=? AND sid=?', (WL.PARTY_MINUTES, wid, gs))
         await self.wed.tick(at + WL.PARTY_SECS + 1)
         await asyncio.sleep(0.3)
         for s in (sa, sb):
@@ -316,7 +320,7 @@ class WeeklyRace(WedCase):
             for name, times in plan:
                 sid = toks[name][1]
                 for i, dt in enumerate(times):
-                    db.execute('INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) VALUES(?,?,?,1,1,1,?,?,?)',
+                    db.execute('INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) VALUES(?,?,?,1,1,2,?,?,?)',
                                (500 + i, sid, self.pid(sid), prev_start + dt, 'd', week))
         await self.wed._race(t)
         await self.wed._race(t)

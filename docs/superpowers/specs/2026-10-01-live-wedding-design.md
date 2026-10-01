@@ -118,3 +118,6 @@ in memory, and the 1.1.2 deploy restarted the live service at 14:20 in the middl
   private card at the end adds their envelope total.
 - **The wishes board** ("Lời chúc"): what was said at the party and the envelopes stay on a board above the input
   (the last 3 lines; "Xem hết" shows the last 40), since bubbles fade and the phone keyboard hides them.
+- **2 minutes to count** (owner, 01/10, 1.1.4): a guest counts as "đi ăn cưới" (the couple's 15 xu, the guest number
+  on the end card, Khách mời của tuần) after at least `GUEST_MIN_MINUTES` = 2 paid minute marks present
+  (`wedding_guests.steps >= 2`); the row is still written on entry and the minute money is unchanged.

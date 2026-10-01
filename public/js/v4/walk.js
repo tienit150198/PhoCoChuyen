@@ -217,7 +217,9 @@ function bind(){
     if(f.why==='account'){toast('Tạo tài khoản để nhận lộc cưới mỗi phút nhé!');return;}
     if(f.why==='cap'){toast('Hôm nay bạn đã nhận lộc ở 2 đám cưới rồi. Vẫn được tính là khách nha 💛');return;}
     const m=me();if(m)S.floaters.push({pid:m.pid,text:`+${f.n} xu`,t0:performance.now()});
-    if(S.wed)S.wed.mins=f.k;payNow();});
+    if(S.wed){S.wed.mins=f.k;S.wed.got=(S.wed.got||0)+1;   // 2 minutes at the party: "đi ăn cưới" counts (game/wedding_live.py GUEST_MIN_MINUTES)
+      if(S.wed.got===2&&!S.wed.pids?.includes(S.room?.me))toast('✅ Đã ghi nhận bạn đi ăn cưới 💛');}
+    payNow();});
   live.on('wed_paid',()=>payNow());
   live.on('wed_env',f=>{if(S.wed?.id!==f.id)return;   // 🧧 a guest gave the couple a red envelope
     logAdd({env:f.n,name:f.name,text:f.text});

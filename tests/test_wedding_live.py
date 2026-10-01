@@ -374,10 +374,10 @@ class Kinds(WedBase):
 
 
 class Race(WedBase):
-    def guest(self, wid, sid, at, ok=1):
+    def guest(self, wid, sid, at, ok=1, steps=2):
         week = wl.vn_week(at)
-        self.store.transaction(lambda db: db.execute('INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) VALUES(?,?,?,?,1,1,?,?,?)',
-                                                     (wid, sid, 'p' + sid[:15], ok, at, wl.vn_day(at), week)))
+        self.store.transaction(lambda db: db.execute('INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) VALUES(?,?,?,?,1,?,?,?,?)',
+                                                     (wid, sid, 'p' + sid[:15], ok, steps, at, wl.vn_day(at), week)))
 
     def test_most_weddings_first_and_ties_to_whoever_got_there_first(self):
         a, b, c = self.user('an'), self.user('binh'), self.user('chi')
@@ -387,6 +387,7 @@ class Race(WedBase):
         for i, (sid, dt) in enumerate([(sa, 10), (sa, 400), (sb, 20), (sb, 300), (sc, 30)]):
             self.guest(100 + i, sid, t + dt)
         self.guest(200, sc, t + 40, ok=0)          # not a counted guest
+        self.guest(201, sc, t + 50, steps=1)       # stayed 1 minute: not "đi ăn cưới" (2 minutes, owner)
         v = wl.race_view(self.store, sc)
         self.assertEqual([(r['name'], r['n']) for r in v['top']], [('Binh', 2), ('An', 2), ('Chi', 1)])
         self.assertTrue(v['top'][2]['me'])
@@ -407,7 +408,7 @@ class WeekScript(WedBase):
         for i, tok in enumerate((a, b, a)):
             sid = self.sid(tok)
             self.store.transaction(lambda db, sid=sid, i=i: db.execute(
-                'INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) VALUES(?,?,?,1,1,1,?,?,?)',
+                'INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) VALUES(?,?,?,1,1,2,?,?,?)',
                 (10 + i, sid, 'p' + sid[:15], prev + i, 'd', wl.vn_week(prev))))
         env = {k: v for k, v in os.environ.items() if k != 'DATABASE_URL'}
         root = Path(__file__).resolve().parents[1]

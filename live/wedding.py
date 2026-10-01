@@ -466,7 +466,7 @@ class WeddingFeature(Feature):
 
     async def settle_party(self, p: dict) -> int:
         """The end: each spouse gets HOST_XU per counted guest who came (once), then the party is done."""
-        n = min(WL.HOST_COUNT_MAX, int(await self.db.fetchval('SELECT COUNT(*) FROM wedding_guests WHERE wedding=? AND ok=1', (p['id'],)) or 0))
+        n = min(WL.HOST_COUNT_MAX, int(await self.db.fetchval('SELECT COUNT(*) FROM wedding_guests WHERE wedding=? AND ok=1 AND steps>=?', (p['id'], WL.GUEST_MIN_MINUTES)) or 0))
         total = n * WL.HOST_XU + sum(xu for k, xu, _ in WL.HOST_BONUS if n >= k)
         if total:
             for side, other in (('a', 'nb'), ('b', 'na')):
@@ -528,8 +528,8 @@ async def settle_week(db, week: str) -> list:
     """Pay a finished week's top 3 of "Khách mời của tuần" (fixed keys: paid once; ties to whoever reached the count
     first), then record it in wedding_race. Safe to run again: the live service runs it at its first schedule read after
     each Monday 00:00 (Vietnam), scripts/wedding_week.py by hand."""
-    rows = await db.fetch('SELECT sid, pid, COUNT(*) AS n, MAX(counted_at) AS last FROM wedding_guests WHERE week=? AND ok=1 AND steps>=1 '
-                          'GROUP BY sid, pid ORDER BY n DESC, last ASC, sid LIMIT ?', (week, len(WL.RACE)))
+    rows = await db.fetch('SELECT sid, pid, COUNT(*) AS n, MAX(counted_at) AS last FROM wedding_guests WHERE week=? AND ok=1 AND steps>=? '
+                          'GROUP BY sid, pid ORDER BY n DESC, last ASC, sid LIMIT ?', (week, WL.GUEST_MIN_MINUTES, len(WL.RACE)))
     top = []
     for (rank, xu, tid), r in zip(WL.RACE, rows):
         key = f'race:{week}:{rank}'

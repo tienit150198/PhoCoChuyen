@@ -40,6 +40,7 @@ REMIND_BEFORE = 30 * 60         # friends get a reminder 30 minutes before
 VISIBLE = 60                    # avatars shown at once; more guests watch from the "đông quá" view, still counted
 GUEST_WEDDINGS_PER_DAY = 2      # a guest's minute money from at most 2 weddings a day (anti-farming; still counted)
 GUEST_CLOSE = 2                 # closeness with each spouse, once per wedding
+GUEST_MIN_MINUTES = 2           # "đi ăn cưới" counts (the couple's 15 xu, Khách mời của tuần) from 2 minutes at the party (owner, 01/10)
 HOST_XU = 15                    # each spouse, for every counted guest who came (owner: 15 xu a guest, no cap but the room's)
 HOST_COUNT_MAX = 360            # VISIBLE + the watchers (live/wedding.py WATCHERS_MAX)
 HOST_BONUS = ((20, 0, 'w_crowd'),)   # (guests, xu, title): the title "Đám cưới đông vui" at 20 guests
@@ -385,8 +386,8 @@ def envelopes_of(db, couple_sid: str, wid: int, side: str) -> int:
 def race(db, week: str, limit: int = 20) -> list:
     """The week's guests: weddings attended for at least a minute of the party (counted guests only), most first;
     a tie goes to whoever reached that count first."""
-    return [dict(r) for r in db.execute('SELECT sid, pid, COUNT(*) AS n, MAX(counted_at) AS last FROM wedding_guests WHERE week=? AND ok=1 AND steps>=1 '
-                                        'GROUP BY sid, pid ORDER BY n DESC, last ASC, sid LIMIT ?', (week, limit))]
+    return [dict(r) for r in db.execute('SELECT sid, pid, COUNT(*) AS n, MAX(counted_at) AS last FROM wedding_guests WHERE week=? AND ok=1 AND steps>=? '
+                                        'GROUP BY sid, pid ORDER BY n DESC, last ASC, sid LIMIT ?', (week, GUEST_MIN_MINUTES, limit))]
 
 
 def race_view(store, sid: str | None) -> dict:
@@ -397,7 +398,7 @@ def race_view(store, sid: str | None) -> dict:
         rows = race(db, week)
         mine = None
         if sid and not any(r['sid'] == sid for r in rows):
-            r = db.execute('SELECT COUNT(*) AS n FROM wedding_guests WHERE week=? AND ok=1 AND steps>=1 AND sid=?', (week, sid)).fetchone()
+            r = db.execute('SELECT COUNT(*) AS n FROM wedding_guests WHERE week=? AND ok=1 AND steps>=? AND sid=?', (week, GUEST_MIN_MINUTES, sid)).fetchone()
             mine = int(r['n']) if r else 0
         top = [dict(rank=i + 1, name=_public_name(db, r['sid'], sid), n=int(r['n']), me=r['sid'] == sid) for i, r in enumerate(rows)]
         prev = db.execute('SELECT top FROM wedding_race WHERE week=?', (last_week,)).fetchone()
