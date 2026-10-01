@@ -7,7 +7,8 @@ read every 2 s; everything else is as in production. Five phones (390×844):
   * the couple get 400 xu each through the game's own gift path, become friends, get engaged, and plan the wedding
     in the Hôn nhân planner (a real date and time); the partner confirms; both cards say "Cưới lúc …";
   * the party is moved to "now" in the test database; everyone opens Khu phố › Lịch cưới and walks in: the couple
-    stand on the stage ("💍 Cô dâu", "💍 Chú rể"), guests come in through the flower gate, the fifth sees "Đông quá";
+    stand on the stage ("💍 Cô dâu", "💍 Chú rể"), two guests with accounts come in through the flower gate, the
+    third has no account and watches from outside the gate ("Tạo tài khoản để vào dự"), never counted;
   * a guest cheers in a bubble (a phone number masked) and sends ❤️; a guest takes the group photo (3-2-1, flash),
     which lands in the couple's Kỷ niệm; the ceremony starts (hearts); every guest earns +15 xu per step;
   * the party ends: everyone sees the end card, the couple get the private card with their total, guests appear on
@@ -153,6 +154,8 @@ async def run(shots: Path) -> list:
             guests = [await phone_as(browser, base, n, problems, g) for n, g in (('Hà Vy', 'female'), ('Bảo', 'male'), ('Khánh', 'male'))]
             await bride.api('/api/account/register', dict(username='lananh_w', password=PW, confirm=PW, display='Lan Anh'))
             await groom.api('/api/account/register', dict(username='minhtu_w', password=PW, confirm=PW, display='Minh Tú'))
+            for p, user in ((guests[0], 'havy_w'), (guests[1], 'bao_w')):   # Khánh stays a guest without an account
+                await p.api('/api/account/register', dict(username=user, password=PW, confirm=PW, display=p.name))
             await bride.api('/api/marriage/friend_request', dict(username='minhtu_w'))
             rid = (await groom.api('/api/marriage'))['friends']['incoming'][0]['id']
             await groom.api('/api/marriage/friend_respond', dict(id=rid, answer='accept'))
@@ -219,7 +222,8 @@ async def run(shots: Path) -> list:
             s = await until(g1, 'return s.people.length===4;', 'four visible')
             titles = sorted(q['name'] for q in s['people'])
             check(titles == sorted(['Lan Anh', 'Minh Tú', 'Hà Vy', 'Bảo']), f'the couple and two guests visible ({titles})')
-            check(await g3.page.is_visible('.walk-sheet .wk-banner'), 'the third guest watches from the gate ("Đông quá")')
+            banner = await g3.page.inner_text('.walk-sheet .wk-banner')
+            check('Tạo tài khoản' in banner, f'a player without an account watches from the gate ({banner!r})')
             await shot(g3, '05-overflow-watcher')
             # ---- cheers, a heart, the group photo
             await g1.page.fill('.walk-sheet .wk-say input', 'Chúc mừng hạnh phúc! Trăm năm hạnh phúc nha 🎉 0912345678')
@@ -243,10 +247,10 @@ async def run(shots: Path) -> list:
             await shot(g2, '07-ceremony-starts', wait=300)
             rows = []
             end = time.monotonic() + 30
-            while time.monotonic() < end and len(rows) < 3:
+            while time.monotonic() < end and len({r[0] for r in rows}) < 2:
                 rows = sql(db, "SELECT sid FROM live_effects WHERE id LIKE 'wedg:%'")
                 await asyncio.sleep(0.5)
-            check(len({r[0] for r in rows}) == 3, f'three guests earned +15 xu ({len(rows)} rows), the watcher too')
+            check(len({r[0] for r in rows}) == 2, f'the two guests with accounts earned +15 xu ({len(rows)} rows), the watcher without one nothing')
             await shot(g1, '08-guest-xu')
             await g1.page.evaluate("document.documentElement.dataset.theme='dem'")
             await shot(g1, '09-party-dark')
@@ -261,9 +265,9 @@ async def run(shots: Path) -> list:
             check('Đám cưới' in card, f'the private card for the couple ({card!r})')
             await shot(bride, '11-couple-card')
             party = sql(db, 'SELECT status, guests FROM wedding_parties WHERE wedding=?', wid)
-            check(party == [('done', 3)], f'settled once with 3 counted guests ({party})')
+            check(party == [('done', 2)], f'settled once with 2 counted guests ({party})')
             host = sql(db, "SELECT amount FROM live_effects WHERE id LIKE 'wedhost:%' AND kind='coins'")
-            check(host == [(90,), (90,)], f'each spouse 3 × 30 xu ({host})')
+            check(host == [(60,), (60,)], f'each spouse 2 × 30 xu ({host})')
             await cards(bride, 2.0)
             await bride.page.keyboard.press('Escape')
             await bride.page.wait_for_timeout(500)
@@ -279,7 +283,7 @@ async def run(shots: Path) -> list:
             await g1.page.click('[data-action=lbKind][data-kind=wed]')
             await g1.page.wait_for_selector('.lb-list .lb-row', timeout=10000)
             top = await g1.page.inner_text('.lb-list')
-            check('Hà Vy' in top and top.count('đám cưới') == 3, f'Xếp hạng › Khách mời: three guests, others\' names private ({top!r})')
+            check('Hà Vy' in top and 'Bảo' in top and top.count('đám cưới') == 2, f'Xếp hạng › Khách mời: the two counted guests ({top!r})')
             await shot(g1, '13-race-board')
             await browser.close()
         print(Path(live_log).read_text()[-800:], file=sys.stderr)

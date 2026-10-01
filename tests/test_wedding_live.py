@@ -254,6 +254,17 @@ class WeekScript(WedBase):
         self.assertEqual(len(self.rows('SELECT * FROM wedding_race')), 1)
 
 
+class Schema(unittest.TestCase):
+    def test_version_and_tables(self):
+        from game import pg_schema
+        self.assertGreaterEqual(pg_schema.SCHEMA_VERSION, 8)   # 8: the wedding tables (7 went to dates in 1.0.1)
+        names = {t['name'] for t in pg_schema.TABLES}
+        for t in ('wedding_dates', 'wedding_parties', 'wedding_guests', 'wedding_photos', 'wedding_race', 'player_closeness'):
+            self.assertIn(t, names)
+            self.assertIn(f'CREATE TABLE IF NOT EXISTS {t} ', pg_schema.TABLES_DDL)
+            self.assertIn(f'CREATE TABLE IF NOT EXISTS {t} ', wl.SCHEMA)
+
+
 class Photos(WedBase):
     def test_upload_once_by_the_taker(self):
         a, b, wid, at = self.couple()

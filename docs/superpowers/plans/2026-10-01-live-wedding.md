@@ -1,7 +1,7 @@
 # Plan: live weddings, anniversaries and the weekly guest race (01/10/2026)
 
 Design (owner-approved numbers): `docs/superpowers/specs/2026-10-01-live-wedding-design.md`. Branch `live-wedding`
-(from main 1.0.0). Switch `LIVE_WEDDING` (live service). No version bump, no whats_new entry, no tutorial or guide.
+(from main 1.0.0, merged with 1.0.5; ships as 1.1.0). Switch `LIVE_WEDDING` (live service). No version bump, no whats_new entry, no tutorial or guide.
 
 ## What players see
 
@@ -23,6 +23,8 @@ Design (owner-approved numbers): `docs/superpowers/specs/2026-10-01-live-wedding
   (a 3:2 frame around everyone, names under it) goes to the couple's Kỷ niệm (up to 3 per wedding). At the start:
   hearts and "🎊 Lễ cưới bắt đầu!". Every 5 minutes a guest sees "+15 xu" over their head. From the 61st guest:
   "Đông quá! Bạn đứng ngoài cổng xem, vẫn được tính là khách 🎉" (they watch, cannot move or talk, and count).
+  A player without an account watches from the gate too ("Bạn đang xem từ ngoài cổng. [Tạo tài khoản] để vào dự."),
+  and is never counted.
   At the end: "💍 Tiệc đã tàn · 25 khách ở lại chung vui 💛"; the couple get the private card "💍 Đám cưới của hai bạn
   · +1.100 xu". Guests never give lì xì; NPC neighbours still do in the in-game ceremony.
 - **Anniversaries** (real calendar days since the date): on the first load from that day, each spouse gets the private
@@ -43,7 +45,8 @@ Design (owner-approved numbers): `docs/superpowers/specs/2026-10-01-live-wedding
 | Visible | 60 avatars (`VISIBLE`); the couple always; more watch (≤ 300 per party) and count |
 | Guest | +15 xu per 5 min present (`GUEST_XU`, `GUEST_STEP`), ≤ 4 per wedding, rewards from ≤ 2 weddings a day; +2 closeness with each spouse once per wedding |
 | Couple, each | 30 xu per counted guest (≤ 50), +100 at 10, +250 and 🎉 Đám cưới đông vui at 20 (max 1.850) |
-| Counted guest | one account once (tabs), a named save ≥ 1 day old (born before today, else first seen 24 h ago), never the couple |
+| Counted guest | accounts only (decided 1.1.0, with the anti-alt rule): one account once (tabs), named, ≥ 1 day old (born before today, else first seen 24 h ago), never the couple |
+| No account | may watch from outside the gate ("Tạo tài khoản để vào dự"): no avatar slot, no bubbles (1.0.1: only accounts talk), no photo, never counted, no rewards. Booking needs an account, as marriage does |
 | Anniversaries | 100 d 200 xu · 365 d 500 · 500 d 800 · 1000 d 1.500, + title; a divorce stops it; once per couple and milestone |
 | Race | #1 300 xu + 🥇 Khách quý của phố; #2-#3 150 xu + 🎊 Ăn cưới chuyên nghiệp; ties to who reached the count first |
 
@@ -55,7 +58,7 @@ Interpretations (say so if the owner meant otherwise):
 
 ## How it is built
 
-- **Game server** `game/wedding_live.py`: new tables only (SCHEMA_VERSION 7): `wedding_dates` (insert-only: the date
+- **Game server** `game/wedding_live.py`: new tables only (SCHEMA_VERSION 8): `wedding_dates` (insert-only: the date
   for good, 'booked' or 'legacy'), `wedding_parties`, `wedding_guests`, `wedding_photos`, `wedding_race`,
   `player_closeness`. Booking hooks in `game/marriage.py` (`clean_plan` accepts `at`; `_plan` checks the window;
   `_confirm` sets `due_at = at`, no life-day targets, books the party; a divorce cancels it). Anniversaries on
@@ -92,7 +95,7 @@ Interpretations (say so if the owner meant otherwise):
 
 ## Production (the owner runs these)
 
-1. Release as usual. The game server of this release creates the new tables at start-up (SCHEMA_VERSION 7; nothing
+1. Release as usual. The game server of this release creates the new tables at start-up (SCHEMA_VERSION 8; nothing
    existing changes). Bookings made before step 3 already store their date and time; their party simply has no live
    room until the switch is on (the in-game ceremony runs at that time either way).
 2. Rolling release restarts `mnl-live` after the game (`deploy/rolling_release.sh`), so it loads `live/wedding.py`.

@@ -9,9 +9,12 @@ The room is the strolling machinery of live/street.py (place 'wedding': a flower
 name tags, moves, speech bubbles (stored and filtered like chat, channel = the room id), emotes, the tables' topic
 cards. At most VISIBLE (60) avatars: later guests watch from outside the gate ("đông quá") and are still counted.
 
+Accounts only (owner, 1.0.1: only accounts talk; the anti-alt rule): a player without an account may watch the party
+from outside the gate (the watchers' view), never chats (store_message refuses), never takes a photo, never counts.
+
 Attendance (memory, one second per tick; written to `wedding_guests` when a guest reaches 5 minutes):
 * one account counts once (by player, whatever the tabs); the couple are never their own guests;
-* a counted guest is a named save at least a day old (stat_births / first seen, as for Cả phố);
+* a counted guest is an account with a named save at least a day old (stat_births / first seen, as for Cả phố);
 * every 5 minutes present: +15 xu, at most 4 per wedding, and only from 2 weddings a day per player; plus closeness
   with each spouse once per wedding;
 * at the end each spouse gets 30 xu per counted guest (up to 50), +100 at 10 guests, +250 and the title
@@ -173,7 +176,8 @@ class WeddingFeature(Feature):
     def _open(self, p: dict, now: float) -> bool:
         return p['at'] - WL.OPEN_BEFORE <= now < p['at'] + WL.PARTY_SECS
 
-    def _info(self, p: dict, room, overflow: bool) -> dict:
+    def _info(self, p: dict, room, overflow) -> dict:
+        """overflow: False (in the party), 'full' (more than VISIBLE) or 'account' (a player without an account watches)."""
         n = len(room.data['people']) + len(room.data['watch'])
         return dict(id=p['id'], a=p['na'], b=p['nb'], pids=[p['pa'], p['pb']], at=p['at'], end=p['at'] + WL.PARTY_SECS, n=n,
                     overflow=overflow, photos=p['photos'] or 0, photos_max=WL.PHOTOS_MAX, visible=WL.VISIBLE)
@@ -234,7 +238,8 @@ class WeddingFeature(Feature):
         room = self._room(p)
         couple = pl.pid in (p['pa'], p['pb'])
         geo = GEO['wedding']
-        if couple or len(room.data['people']) < WL.VISIBLE:
+        why = None if couple or (pl.account and len(room.data['people']) < WL.VISIBLE) else 'full' if pl.account else 'account'
+        if why is None:
             if couple:
                 x, y = geo.spots['stage']
                 at = geo.clamp(x + (-55 if pl.pid == p['pa'] else 55), y + 20)   # side by side, their name tags apart
@@ -252,7 +257,7 @@ class WeddingFeature(Feature):
             room.data['watch'][pl.pid] = pl
             pl.ext['wed_watch'] = room.id
             conn.ext['wed_watch'] = room.id
-            overflow = True
+            overflow = why
         if p['photos'] is None:
             p['photos'] = int(await self.db.fetchval('SELECT COUNT(*) FROM wedding_photos WHERE wedding=?', (p['id'],)) or 0)
         snap = self.street._snapshot(room, pl, now)
@@ -338,7 +343,7 @@ class WeddingFeature(Feature):
                 if pl is None:
                     continue
                 since = pl.since or self.app.first_seen(pid)
-                a = att[pid] = Att(pl.sid, pid, ok=bool(pl.name) and (pl.old or now - since >= 86400))
+                a = att[pid] = Att(pl.sid, pid, ok=bool(pl.account and pl.name) and (pl.old or now - since >= 86400))
             a.secs += dt
             steps = min(WL.GUEST_STEPS, int(a.secs // WL.GUEST_STEP))
             if steps > a.steps:

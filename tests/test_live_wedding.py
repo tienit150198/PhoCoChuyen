@@ -87,11 +87,15 @@ class Room(WedCase):
         (ta, tb), (sa, sb), wid, at = self.party()
         with patch.object(WL, 'VISIBLE', 2):
             a = await self.join(self.account('Một')[0], wid)
-            b = await self.join(self.guest('Hai')[0], wid)
-            c = await self.join(self.guest('Ba')[0], wid)
+            b = await self.join(self.account('Hai')[0], wid)
+            c = await self.join(self.account('Ba')[0], wid)
             groom = await self.join(tb, wid, g='male')     # the couple always gets in
+            tg, sg = self.guest('Khách Lâu Năm')              # named, long-time, but no account: watches, never counts
+            g = await self.join(tg, wid)
         self.assertFalse(b.room['wed']['overflow'])
-        self.assertTrue(c.room['wed']['overflow'])
+        self.assertEqual(c.room['wed']['overflow'], 'full')
+        self.assertEqual(g.room['wed']['overflow'], 'account')
+        self.assertEqual((await g.call('wed_photo', 'error'))['code'], 'not_in')
         self.assertFalse(groom.room['wed']['overflow'])
         self.assertEqual(groom.room['people'][-1]['ti'] if groom.room['people'][-1]['pid'] == groom.welcome['me']['pid'] else '💍 Chú rể', '💍 Chú rể')
         await a.send(t='say', text='đông vui quá')
@@ -99,8 +103,11 @@ class Room(WedCase):
         self.assertEqual((await c.call('say', 'error', text='cho mình vào với'))['code'], 'not_in')
         await self.ticks(time.time(), WL.GUEST_STEP + 5)
         counted = {r['sid'] for r in self.rows('SELECT sid FROM wedding_guests WHERE wedding=?', wid)}
-        self.assertEqual(len(counted), 3, 'the watcher is counted too; the couple never')
+        ok = {r['sid'] for r in self.rows('SELECT sid FROM wedding_guests WHERE wedding=? AND ok=1', wid)}
+        self.assertEqual(len(ok), 3, 'the full-house watcher is counted too; the couple and a player without an account never')
         self.assertNotIn(sb, counted)
+        self.assertNotIn(sg, ok)
+        self.assertEqual(self.rows("SELECT * FROM live_effects WHERE sid=?", sg), [])
         await c.call('walk_out', 'walk_left')
         self.assertNotIn(c.welcome['me']['pid'], self.app.hub.rooms[f'wed:{wid}'].data['watch'])
 
@@ -109,7 +116,7 @@ class Room(WedCase):
 class Attendance(WedCase):
     async def test_steps_of_five_minutes_at_most_four(self):
         (ta, tb), (sa, sb), wid, at = self.party()
-        tok, sid = self.guest('Hà Vy')
+        tok, sid = self.account('Hà Vy')
         g = await self.join(tok, wid)
         g2 = await self.connect(tok)                        # a second tab of the same account
         await g2.call('wed_in', 'walk_room', id=wid, look=LOOK)
@@ -128,20 +135,21 @@ class Attendance(WedCase):
 
     async def test_two_weddings_a_day_and_the_anti_abuse_rules(self):
         (ta, tb), (sa, sb), wid, at = self.party()
-        tok, sid = self.guest('Hà Vy')
+        tok, sid = self.account('Hà Vy')
         day, week = WL.vn_day(time.time()), WL.vn_week(time.time())
         with self.store.connect() as db:
             for other in (1, 2):
                 db.execute('INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) VALUES(?,?,?,1,1,4,?,?,?)',
                            (other, sid, 'x', time.time(), day, week))
         await self.join(tok, wid)
-        await self.join(self.guest('Bé Mới', old=False)[0], wid)    # a brand-new save: present, never counted
-        await self.join(self.guest(None)[0], wid)                   # no name yet: never counted
+        await self.join(self.account('Bé Mới', old=False)[0], wid)  # a brand-new account: present, never counted
+        await self.join(self.guest('Lâu Năm')[0], wid)              # no account: watches, never counted
+        await self.join(self.guest(None)[0], wid)                   # no name, no account: never counted
         await self.join(ta, wid)                                    # the bride: never her own guest
         await self.ticks(time.time(), WL.GUEST_STEP + 5)
         rows = {r['sid']: r for r in self.rows('SELECT sid, ok, paid FROM wedding_guests WHERE wedding=?', wid)}
         self.assertEqual((rows[sid]['ok'], rows[sid]['paid']), (1, 0), 'counted for the couple and the race, no coins (3rd wedding today)')
-        self.assertEqual(sorted(r['ok'] for r in rows.values()), [0, 0, 1])
+        self.assertEqual(sorted(r['ok'] for r in rows.values()), [0, 0, 0, 1])
         self.assertNotIn(sa, rows)
         self.assertEqual(self.rows("SELECT * FROM live_effects WHERE sid=? AND id LIKE 'wedg:%'", sid), [])
 
@@ -176,7 +184,7 @@ class Hosts(WedCase):
     async def test_the_end_of_the_party(self):
         (ta, tb), (sa, sb), wid, at = self.party()
         bride = await self.join(ta, wid)
-        guest = await self.join(self.guest('Bảo')[0], wid)
+        guest = await self.join(self.account('Bảo')[0], wid)
         await self.wed.refresh(time.time())
         await self.wed.tick(at + 1)
         await guest.expect('wed_start')
@@ -195,7 +203,7 @@ class PhotoAndReminder(WedCase):
     async def test_group_photo(self):
         (ta, tb), (sa, sb), wid, at = self.party()
         bride = await self.join(ta, wid)
-        guest = await self.join(self.guest('Bảo')[0], wid)
+        guest = await self.join(self.account('Bảo')[0], wid)
         await guest.send(t='wed_photo')
         shot = await bride.expect('wed_photo')
         self.assertEqual((shot['n'], shot['pid']), (1, guest.welcome['me']['pid']))
@@ -229,7 +237,7 @@ class WeeklyRace(WedCase):
         prev_start = WL.week_start(t) - 7 * 86400
         week = WL.vn_week(prev_start + 3600)
         plan = (('An', [100, 900]), ('Bình', [200, 300]), ('Chi', [50]), ('Dũng', [60]))
-        toks = {name: self.guest(name) for name, _ in plan}
+        toks = {name: self.account(name) for name, _ in plan}
         with self.store.connect() as db:
             for name, times in plan:
                 sid = toks[name][1]

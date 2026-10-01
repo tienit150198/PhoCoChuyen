@@ -262,6 +262,7 @@ function act(a,d){
   switch(a){
     case'close':S.dlg.close();return;
     case'photo':live.send({t:'wed_photo'});return;
+    case'account':S.dlg.close();S.env?.act?.('v4AccountOpen',{mode:'register'});return;   // v4/account.js
     case'places':S.picker=!S.picker;if(S.picker)live.send({t:'walk_places'});head();return;
     case'go':S.picker=false;head();if(d.place!==S.room?.place)enter(d.place);return;
     case'back':if(S.lastPublic)enter(S.lastPublic);return;
@@ -360,7 +361,9 @@ function mySeat(){const m=me();return m?.s?S.tables[m.s[0]]:null;}
 function paintOverlays(){
   if(!S.dlg)return;
   const bn=S.dlg.querySelector('.wk-banner');bn.hidden=!(S.wed?.overflow&&!S.ended);
-  if(!bn.hidden)bn.textContent='Đông quá! Bạn đứng ngoài cổng xem, vẫn được tính là khách 🎉';
+  if(!bn.hidden)bn.innerHTML=S.wed.overflow==='account'   // guests watch; accounts take part and count (owner, 1.0.1)
+    ?`Bạn đang xem từ ngoài cổng. <button type="button" class="wk-pill primary" data-wk="account">Tạo tài khoản</button> để vào dự.`
+    :'Đông quá! Bạn đứng ngoài cổng xem, vẫn được tính là khách 🎉';
   const en=S.dlg.querySelector('.wk-end');en.hidden=!S.ended;
   if(S.ended)en.innerHTML=`<p class="wk-end-t">💍 Tiệc đã tàn</p>${S.ended.n!=null?`<p>${S.ended.n} khách ở lại chung vui 💛</p>`:''}<button type="button" class="wk-pill primary" data-wk="close">Đóng</button>`;
   const tp=S.dlg.querySelector('.wk-topic'),tb=mySeat();
