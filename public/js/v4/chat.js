@@ -60,7 +60,7 @@ export async function openChat(env,data={}){
   else if(!d.open&&!S.thread)S.tab=live.unread()?'inbox':S.tab;
   S.view=null;S.act=null;S.report=null;S.confirm=null;
   if(!d.open){d.showModal();d.scrollTop=0;}
-  if(Date.now()-S.synced>15000){S.synced=Date.now();live.send({t:'sync'});}
+  if(Date.now()-S.synced>15000||live.me&&!live.me.account){S.synced=Date.now();live.send({t:'sync'});}   // a guest who just registered: chat at once
   enter();render(true);
 }
 
@@ -161,6 +161,7 @@ function onAct(act,d,el){
     case'kick':if(S.confirm!=='kick:'+d.pid){S.confirm='kick:'+d.pid;break;}live.send({t:'group_kick',ch:S.thread,pid:d.pid});S.confirm=null;S.members=null;setTimeout(()=>live.send({t:'members',ch:S.thread}),300);break;
     case'leave':if(S.confirm!=='leave'){S.confirm='leave';break;}live.send({t:'group_leave',ch:S.thread});S.confirm=null;break;
     case'friends':S.dlg.close();S.env?.act?.('friends');return;   // Bạn bè (v4/marriage.js): find friends, requests
+    case'account':S.dlg.close();S.env?.act?.('v4AccountOpen',{mode:'register'});return;   // guests: register to chat (v4/account.js)
     case'retry':live.reconnect();break;
   }
   enter();render(act==='open'||act==='tab'||act==='back');
@@ -280,6 +281,7 @@ function compose(){
   if(!S.thread&&S.tab!=='town')return null;
   if(live.state!=='open')return {ro:'Mất kết nối. Đang thử lại…'};
   if(live.me?.muted&&live.me.muted*1000>Date.now())return {ro:`Bạn đang bị tạm khóa chat đến ${new Date(live.me.muted*1000).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})}.`};
+  if(live.me&&!live.me.account)return {ro:'Tạo tài khoản để chat.',act:'account'};   // guests read only (owner, 01/10)
   if(S.thread){
     if(!live.me?.name)return {ro:'Đặt tên nhân vật để nhắn.'};
     if(S.thread.startsWith('dm:')){const c=live.chan(S.thread),p=c?.peer;if(c&&p&&p.friend===false&&!live.friend(p.pid))return {ro:'Hai bạn không còn là bạn bè.'};}
@@ -303,6 +305,7 @@ function render(bottom=false,keepFromBottom=false){
   const f=d.querySelector('.ch-flash');f.hidden=!S.flash;f.textContent=S.flash;
   const c=compose(),form=d.querySelector('.ch-compose'),ro=d.querySelector('.ch-ro'),ta=form.querySelector('textarea');
   form.hidden=!c||Boolean(c.ro);ro.hidden=!c?.ro;ro.textContent=c?.ro||'';
+  if(c?.act==='account'){const b=document.createElement('button');b.type='button';b.className='btn primary small';b.dataset.chAct='account';b.textContent='Tạo tài khoản';ro.append(' ',b);}
   const town=!S.thread;ta.maxLength=town?(live.limits.town_len||300):(live.limits.text_len||1000);
   ta.placeholder=town?'Nhắn cả phố…':'Nhắn tin…';
   counter();countdown();

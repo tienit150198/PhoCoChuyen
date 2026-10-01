@@ -171,6 +171,10 @@ async def run(shots: Path) -> list:
             s = await until(c, f"const q=s.people.find(q=>q.pid==='{pa}');return q&&q.said;", 'C sees A\'s bubble')
             said = next(q for q in s['people'] if q['pid'] == pa)['said']
             check('chợ đêm' in said and '0912' not in said, f'bubble on C\'s screen, phone masked ({said!r})')
+            await c.page.fill('.walk-sheet .wk-say input', 'mình là khách nè')   # C is a guest: strolls, never talks
+            await c.page.click('.walk-sheet .wk-send')
+            await c.page.wait_for_function("() => /tài khoản/i.test(document.querySelector('.walk-sheet .wk-toast:not([hidden])')?.innerText||'')", timeout=6000)
+            check(True, 'a guest cannot talk on the street (Tạo tài khoản)')
             await b.page.click('.walk-sheet [data-wk=emotes]')
             await shot(b, '03-emote-tray')
             await b.page.click('.walk-sheet [data-wk=emote][data-e=wave]')
