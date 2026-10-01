@@ -20,6 +20,13 @@ What it does
   4. after --duration seconds reports: sockets open, messages sent, deliveries, p50/p95/p99 delivery latency
      (send → every receiver), errors, and the live process's CPU (average and peak, % of one core) and RSS.
 The spec's budget: p95 < 300 ms at 2,000 sockets and 5 messages/s (docs/superpowers/specs/...-design.md).
+
+💕 Dates (--dates N, LIVE_DATING=1): 2N more players sit on the dating bench at once (Nam/Nữ, mostly "ai cũng
+được"), so N café dates run at the same time; each bot plays the whole date like a person (picks after 0.2–2 s,
+orders, one chat line, ❤️ or 👋) and sits down again after the end (the 24 h rule makes it meet someone new). The
+report adds: dates finished and mutual, the most dates at once, the wait on the bench (sit → matched), the answer
+round trip (a pick → my updated view) and the chat round trip (date_say → my message back), p50/p95/p99.
+  python scripts/live_load.py --conns 0 --dates 200 --duration 90
 """
 from __future__ import annotations
 
@@ -91,9 +98,10 @@ def make_players(n: int, db_url: str | None, db_path: str | None, friends_every:
 
 
 # ---------------------------------------------------------------- 2. the service
-def start_live(port: int, db_url: str | None, db_path: str | None, origin: str, log_path: str):
+def start_live(port: int, db_url: str | None, db_path: str | None, origin: str, log_path: str, dating: bool = False, speed: float = 1.0):
     env = dict(os.environ, LIVE_CHAT='1', LIVE_PORT=str(port), LIVE_ORIGINS=origin, LIVE_PER_IP='1000000',
-               LIVE_HANDSHAKES_PER_IP='1000000', LIVE_PER_PLAYER='5', QUIET='1')
+               LIVE_HANDSHAKES_PER_IP='1000000', LIVE_PER_PLAYER='5', QUIET='1', LIVE_DATING='1' if dating else '0',
+               LIVE_DATE_SPEED=str(speed))
     env.pop('DATABASE_URL', None)
     if db_url:
         env['DATABASE_URL'] = db_url
@@ -223,6 +231,145 @@ async def _clients(idx, url, origin, tokens, chat_n, every, churn_per_s, duratio
     q.put(('done', idx, dict(stats, lat=lat)))
 
 
+# ---------------------------------------------------------------- 3b. 💕 date bots (one process each)
+def date_proc(idx, url, origin, tokens, duration, ramp_per_s, q):
+    raise_fd_limit()
+    asyncio.run(_daters(idx, url, origin, tokens, duration, ramp_per_s, q))
+
+
+async def _daters(idx, url, origin, tokens, duration, ramp_per_s, q):
+    from websockets.asyncio.client import connect
+    rng = random.Random(idx)
+    st = dict(open=0, failed=0, errors=0, dates=0, mutual=0, left=0, sits=0, says=0, codes={})
+    lat = dict(match=[], ack=[], say=[], length=[])
+    stop = asyncio.Event()
+    tasks: set = set()
+
+    def later(delay, coro):
+        async def run():
+            await asyncio.sleep(delay)
+            if not stop.is_set():
+                try:
+                    await coro
+                except Exception:  # noqa: BLE001 - the socket went away meanwhile
+                    pass
+        t = asyncio.ensure_future(run())
+        tasks.add(t)
+        t.add_done_callback(tasks.discard)
+
+    async def bot(i, token):
+        g = 'm' if (i + idx) % 2 else 'f'
+        pref = 'any' if rng.random() < 0.7 else ('f' if g == 'm' else 'm')
+        while not stop.is_set():
+            try:
+                ws = await connect(url, origin=origin, additional_headers={'Cookie': f'mnl_session={token}'},
+                                   open_timeout=20, ping_interval=None, max_size=2 ** 20, compression=None)
+            except Exception:  # noqa: BLE001
+                st['failed'] += 1
+                await asyncio.sleep(1 + rng.random())
+                continue
+            st['open'] += 1
+            cur: dict = {}
+            sent: dict = {}
+
+            async def send(frame):
+                await ws.send(json.dumps(frame))
+
+            async def sit():
+                sent['sit'] = time.monotonic()
+                st['sits'] += 1
+                await send({'t': 'queue', 'op': 'sit', 'pref': pref, 'g': g})
+
+            async def pick(d, i):
+                sent[('pick', d, i)] = time.monotonic()
+                await send({'t': 'answer', 'date': d, 'step': 'card', 'i': i, 'pick': rng.randrange(3)})
+
+            async def chat(d):
+                cid = f'{idx}-{i}-{st["says"]}'
+                sent[('say', cid)] = time.monotonic()
+                st['says'] += 1
+                await send({'t': 'date_say', 'date': d, 'text': rng.choice(('chào nha 😆', 'cùng gu ghê', 'haha vl', 'lần sau đi tiếp nhé')) + f' {cid}', 'cid': cid})
+                await asyncio.sleep(rng.uniform(0.5, 1.5))
+                await send({'t': 'answer', 'date': d, 'step': 'chat'})
+
+            try:
+                await send({'t': 'hello', 'v': 1})
+                await sit()
+                pinger = asyncio.ensure_future(ping(ws))
+                async for raw in ws:
+                    now = time.monotonic()
+                    f = json.loads(raw)
+                    t = f.get('t')
+                    if t == 'date':
+                        d, step = f['id'], f['step']
+                        if cur.get('id') != d and step != 'end':
+                            cur.clear()
+                            cur.update(id=d, start=now, acted=set())
+                            if 'sit' in sent:
+                                lat['match'].append(now - sent.pop('sit'))
+                        acted = cur.get('acted', set())
+                        if step == 'card':
+                            k = ('pick', d, f['i'])
+                            if f.get('mine') is not None and k in sent:
+                                lat['ack'].append(now - sent.pop(k))
+                            if not f.get('shown') and f.get('mine') is None and ('card', f['i']) not in acted:
+                                acted.add(('card', f['i']))
+                                later(rng.uniform(0.2, 2.0), pick(d, f['i']))
+                        elif step == 'menu' and not f.get('shown') and f.get('give') is None and 'menu' not in acted:
+                            acted.add('menu')
+                            items = [m['id'] for m in f['menu']]
+                            later(rng.uniform(0.5, 2.5), send({'t': 'answer', 'date': d, 'step': 'menu', 'want': rng.choice(items), 'give': rng.choice(items)}))
+                        elif step == 'chat' and 'chat' not in acted:
+                            acted.add('chat')
+                            later(rng.uniform(0.3, 1.5), chat(d))
+                        elif step == 'vote' and f.get('mine') is None and 'vote' not in acted:
+                            acted.add('vote')
+                            later(rng.uniform(0.3, 1.5), send({'t': 'heart', 'date': d, 'v': 'heart' if rng.random() < 0.6 else 'wave'}))
+                        elif step == 'end':
+                            st['dates'] += 1
+                            st['mutual'] += f.get('how') == 'match'
+                            st['left'] += f.get('how') in ('left', 'gone')
+                            if 'start' in cur:
+                                lat['length'].append(now - cur['start'])
+                            cur.clear()
+                            later(rng.uniform(0.5, 2.0), sit())
+                    elif t == 'msg' and f.get('cid'):
+                        k = ('say', f['cid'])
+                        if k in sent:
+                            lat['say'].append(now - sent.pop(k))
+                    elif t == 'error':
+                        st['errors'] += 1
+                        st['codes'][f.get('code')] = st['codes'].get(f.get('code'), 0) + 1
+                    if stop.is_set():
+                        break
+                pinger.cancel()
+            except Exception:  # noqa: BLE001
+                pass
+            finally:
+                st['open'] -= 1
+                await ws.close()
+
+    async def ping(ws):
+        while True:
+            await asyncio.sleep(25)
+            await ws.send('{"t":"ping"}')
+
+    bots = []
+    for i, tok in enumerate(tokens):
+        bots.append(asyncio.ensure_future(bot(i, tok)))
+        if ramp_per_s:
+            await asyncio.sleep(1 / ramp_per_s)
+    q.put(('ready', idx, st['open']))
+    t0 = time.monotonic()
+    while time.monotonic() - t0 < duration:
+        await asyncio.sleep(1)
+    stop.set()
+    for t in list(tasks):
+        t.cancel()
+    await asyncio.wait(bots, timeout=10)
+    q.put(('done', idx, dict(st, lat=lat, kind='dates')))
+
+
 # ---------------------------------------------------------------- 4. the run
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
@@ -237,6 +384,8 @@ def main():
     ap.add_argument('--url', help='a live service already running against the same throwaway database')
     ap.add_argument('--pid', type=int, help='its process id (CPU, RSS) with --url')
     ap.add_argument('--every', type=float, default=10.0, help="a chatter's pause between messages (slow mode: >= 10)")
+    ap.add_argument('--dates', type=int, default=0, help='💕 café dates at the same time (2 more players each; LIVE_DATING=1)')
+    ap.add_argument('--date-speed', type=float, default=1.0, help='LIVE_DATE_SPEED of the service it starts (1 = real time)')
     args = ap.parse_args()
     raise_fd_limit()
     if args.db_url and 'loadtest' not in args.db_url:
@@ -244,7 +393,8 @@ def main():
     tmp = tempfile.mkdtemp(prefix='mnl-live-load-')
     db_path = None if args.db_url else os.path.join(tmp, 'load.sqlite3')
     t0 = time.time()
-    tokens = make_players(args.conns, args.db_url, db_path, args.friends_every)
+    tokens = make_players(args.conns + 2 * args.dates, args.db_url, db_path, args.friends_every)
+    tokens, daters = tokens[:args.conns], tokens[args.conns:]
     print(f'players: {len(tokens)} in {time.time() - t0:.1f}s', file=sys.stderr)
     origin = 'http://load.test'
     live = None
@@ -252,20 +402,24 @@ def main():
         url, pid = args.url, args.pid
     else:
         port = free_port()
-        live = start_live(port, args.db_url, db_path, origin, os.path.join(tmp, 'live.log'))
+        live = start_live(port, args.db_url, db_path, origin, os.path.join(tmp, 'live.log'), dating=bool(args.dates), speed=args.date_speed)
         url, pid = f'ws://127.0.0.1:{port}/live', live.pid
     chat_n = max(1, round(args.rate * args.every))
     q = mp.Queue()
     parts = [tokens[i::args.procs] for i in range(args.procs)]
     chat_parts = [len(range(i, chat_n, args.procs)) for i in range(args.procs)]
     procs = [mp.Process(target=client_proc, args=(i, url, origin, parts[i], chat_parts[i], args.every, max(0, round(args.churn / args.procs)),
-                                                  args.duration, max(1, args.ramp // args.procs), q)) for i in range(args.procs)]
+                                                  args.duration, max(1, args.ramp // args.procs), q)) for i in range(args.procs)] if tokens else []
+    if daters:
+        dprocs = max(1, min(args.procs, len(daters) // 50))
+        procs += [mp.Process(target=date_proc, args=(100 + i, url, origin, daters[i::dprocs], args.duration, max(1, args.ramp // dprocs), q))
+                  for i in range(dprocs)]
     cpu0, _ = ps(pid) if pid else (0, 0)
     t_ramp = time.monotonic()
     for p in procs:
         p.start()
     ready = 0
-    while ready < args.procs:
+    while ready < len(procs):
         kind, *_ = q.get(timeout=600)
         ready += kind == 'ready'
     ramp = time.monotonic() - t_ramp
@@ -273,8 +427,8 @@ def main():
     samples, last, health = [], ps(pid) if pid else (0, 0), None
     peak_rss = last[1]
     t_last = time.monotonic()
-    results, done = [], 0
-    while done < args.procs:
+    results, done, max_rooms = [], 0, 0
+    while done < len(procs):
         try:
             kind, idx, data = q.get(timeout=1)
             if kind == 'done':
@@ -286,6 +440,7 @@ def main():
             if len(samples) % 5 == 4:   # the service's own counters while the load runs
                 try:
                     h = json.loads(urllib.request.urlopen(url.replace('ws://', 'http://') + '/health', timeout=3).read())
+                    max_rooms = max(max_rooms, int(h.get('rooms', 0)))
                     if not health or h.get('conns', 0) >= health.get('conns', 0):
                         health = h
                 except Exception:  # noqa: BLE001
@@ -300,6 +455,8 @@ def main():
     if live:
         live.send_signal(signal.SIGTERM)
         live.wait(15)
+    dres = [r for r in results if r.get('kind') == 'dates']
+    results = [r for r in results if r.get('kind') != 'dates']
     lat = sorted(x for r in results for x in r['lat'])
     tot = {k: sum(r[k] for r in results) for k in ('sent', 'recv', 'errors', 'failed', 'presence', 'reconnects', 'closed')}
     pct = lambda p: round(1000 * lat[min(len(lat) - 1, int(p * len(lat)))], 1) if lat else None
@@ -311,6 +468,23 @@ def main():
                   live_cpu_pct=dict(avg=round(statistics.mean(steady), 1) if steady else None, peak=round(max(steady), 1) if steady else None),
                   live_rss_mb=round(peak_rss, 1), live_cpu_s_total=round((last[0] - cpu0), 1) if pid else None, health=health,
                   db='postgresql' if args.db_url else 'sqlite')
+    if dres:
+        def ms(key):
+            xs = sorted(x for r in dres for x in r['lat'][key])
+            at = lambda p: round(1000 * xs[min(len(xs) - 1, int(p * len(xs)))], 1) if xs else None   # noqa: E731
+            return dict(p50=at(.5), p95=at(.95), p99=at(.99), n=len(xs))
+        codes: dict = {}
+        for r in dres:
+            for k, v in r['codes'].items():
+                codes[k] = codes.get(k, 0) + v
+        lengths = sorted(x for r in dres for x in r['lat']['length'])
+        report['dates'] = dict(pairs=args.dates, players=2 * args.dates, speed=args.date_speed,
+                               finished=sum(r['dates'] for r in dres) // 2, mutual=sum(r['mutual'] for r in dres) // 2,
+                               ended_early=sum(r['left'] for r in dres) // 2, sits=sum(r['sits'] for r in dres),
+                               most_at_once=max(0, max_rooms - 1),   # rooms = Cả phố + one per date in progress
+                               bench_wait_ms=ms('match'), answer_rtt_ms=ms('ack'), chat_rtt_ms=ms('say'),
+                               date_length_s=round(statistics.median(lengths), 1) if lengths else None,
+                               errors=sum(r['errors'] for r in dres), error_codes=codes, connect_failures=sum(r['failed'] for r in dres))
     print(json.dumps(report, ensure_ascii=False, indent=2))
     shutil.rmtree(tmp, ignore_errors=True)   # the SQLite file and the service's log
 

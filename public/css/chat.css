@@ -73,6 +73,8 @@ html[data-layout="phone"] .ch-head{padding-top:14px}
 .ch-row b{display:block;font-size:.95rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ch-row small{display:block;color:var(--muted);font-size:.8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ch-row small.ch-online{color:var(--good)}
+.ch-row small.ch-bond{color:var(--accent-text)}
+.ch-head .ch-date{color:var(--accent-text)}
 .ch-row>svg{color:var(--muted);flex:none}
 .ch-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none}
 .ch-meta time{font-size:.7rem;color:var(--muted)}
