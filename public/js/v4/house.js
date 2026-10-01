@@ -248,9 +248,12 @@ function placeCard(v){
   const costLine=`${p.where_id==='own'||p.where_id==='shared'?'Điện nước':bed?'Tiền giường':'Tiền phòng'} ${xu(c.rent)} · cơm ${xu(c.meals)} mỗi ngày`;
   const who=p.where_id==='shared'?`<p class="hs-tag">💞 Nhà chung với ${esc(p.with)}</p>`:p.where_id==='own'?'<p class="hs-tag">🔑 Nhà đứng tên bạn</p>':bed?'<p class="hs-tag">👥 Ở ghép · giường dưới cạnh cửa sổ</p>':p.where_id==='rent'?'<p class="hs-tag">🧾 Đang thuê</p>':'';
   let actions='';
-  if(p.where_id==='rent')actions=`${bed?dormRoom(p.dorm):''}<div class="bk-actions">${btn(bed?'Trả giường, nhận lại cọc':'Trả phòng, nhận lại cọc','leave',{},'ghost')}</div>`;
+  const DC=J().deco,deco=DC?`<p class="hs-chips"><span>🪴 Ấm cúng ${DC.cozy.total} · ${esc(DC.cozy.level)}</span>${DC.bag.length?`<span>🎒 ${DC.bag.length} món trong túi</span>`:''}</p>`:'';
+  const setUp=DC?btn(bed?'🪴 Bày trí góc giường':'🪴 Bày trí phòng','inside',{},'primary'):'';   // 🪴 rentals, the attic, a shared home: decor only
+  if(p.where_id==='rent')actions=`${bed?dormRoom(p.dorm):''}${deco}<div class="bk-actions">${setUp}${btn(bed?'Trả giường, nhận lại cọc':'Trả phòng, nhận lại cọc','leave',{},'ghost')}</div>`;
   else if(p.where_id==='own'&&J().reno){const R=J().reno,worn=R.parts.filter(x=>x.worn).length;
     actions=`<p class="hs-chips"><span>🪴 Ấm cúng ${R.cozy}</span><span>🛠️ ${worn?`${worn} chỗ cần sửa`:'Nhà sạch đẹp'}</span></p><div class="bk-actions">${btn('🚪 Vào nhà','inside',{},'primary')}${worn?btn('🛠️ Sửa nhà','inside',{mode:'fix'},'ghost'):''}</div>`;}
+  else if(DC)actions=`${deco}<div class="bk-actions">${setUp}</div>`;
   const comfort=p.comfort?`<p class="bk-hint"><span>😊 Tinh thần +${p.comfort} mỗi sáng</span>${v.own?.loan?.late?' <span>(tạm dừng khi trễ hạn trả góp)</span>':''}</p>`:'';
   return `<section class="bk-card hs-place ${esc(p.where_id||'')}"${toneStyle(p.group)}><div class="hs-place-top"><span class="hs-emoji" aria-hidden="true">${p.emoji||'🏚️'}</span><div class="grow"><small>Nơi bạn đang ở</small><h3>${esc(p.name)}</h3><small>${esc(p.where||'')}</small></div></div>
     ${who}<p class="hs-cost">${costLine}</p>${comfort}${p.perk&&!bed?`<p class="bk-hint">${esc(p.perk)}</p>`:''}${actions}</section>`;
