@@ -108,7 +108,7 @@ async function send(action,payload={},{quiet=false}={}){
     const r=await api.command(action,payload);
     if(!quiet){const extra=(r.effects||[]).filter(Boolean);S.flash={text:[r.message,...extra].filter(Boolean).join(' '),kind:r.approved===false?'warn':'good'};}
     return r;
-  }catch(e){if(!quiet)S.flash={text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}
+  }catch(e){if(!quiet)S.flash=e.quiet?null:{text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}  // e.quiet: api.js, the save moved under the tap twice
   finally{if(!quiet){S.busy=false;render();}else if(S.dlg?.open&&!S.busy)render();}
 }
 async function marriagePost(op,body){

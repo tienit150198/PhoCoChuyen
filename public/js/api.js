@@ -13,6 +13,8 @@ const BUSY_TEXT='Máy chủ đang bận, thử lại sau giây lát.';
 /** Worth sending again: no answer at all (network, timeout, unreadable body) or a restart's 502/503/504. */
 export const transient=error=>!error?.status||TRANSIENT.has(error.status);
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+/** A step this tab sent within this long counts as the same tap when it comes again from an older screen. */
+export const DOUBLE_TAP_MS=5000;
 
 /** The "Đang cập nhật máy chủ…" note: shown once a retry has lasted `after` ms, gone with the last one.
  * Top layer (popover) so an open sheet does not hide it; inline styles, never takes a tap. */
@@ -44,7 +46,7 @@ export function mergeContent(content,part){
 
 /** Ordered mutations + idempotent retry. A lost response never doubles a sale. */
 export class GameAPI extends EventTarget {
-  constructor(){super();this.state=null;this.content=null;this.revision=0;this.csrf='';this.ai={configured:false};this.social=null;this.push={enabled:false};this.clockOffset=0;this.connected=false;this.queue=Promise.resolve();
+  constructor(){super();this.state=null;this.content=null;this.revision=0;this.accepted=0;this.done=[];this.csrf='';this.ai={configured:false};this.social=null;this.push={enabled:false};this.clockOffset=0;this.connected=false;this.queue=Promise.resolve();
     // The release this page booted with (<meta name="mnl-version">, read by boot.js) vs X-Game-Version.
     this.updates=new UpdateNotice(globalThis.__mnlBoot?.version||'',{prewarm:globalThis.document?()=>prewarmRelease():null});
     this.delays=RETRY_DELAYS;this.retryWindow=RETRY_WINDOW;this.holding=new UpdatingNote(()=>this.lang);}
@@ -148,18 +150,27 @@ export class GameAPI extends EventTarget {
     return this._places[id]??=(early?this.json(url,{},30000,early).catch(error=>{if(!transient(error))throw error;return this.json(url,{},30000);})
       :this.json(url,{},30000)).then(part=>{all[id]=part||{};},error=>{delete this._places[id];console.warn('careerContent',id,error);});
   }
-  accept(data){
+  /** Adopt a state from the server. `since` (a read: this.accepted when it was sent): an answer older than a state
+   * adopted meanwhile (a command's, while /api/state was on the wire) is left out, so the screen never shows a done
+   * step undone and the next tap is not sent against that older revision. Returns whether it was adopted. */
+  accept(data,since){
+    if(since!==undefined&&since!==this.accepted&&typeof data?.revision==='number'&&data.revision<this.revision)return false;
+    this.accepted++;
     this.state=data.state;this.revision=data.revision;this.connected=true;this.syncedAt=Date.now();
     // boot.js starts the English pack early for English players.
     const lang=data.state?.settings?.lang;if(lang&&lang!==this.lang){this.lang=lang;try{localStorage.setItem('mnl.lang',lang);}catch{/* storage blocked */}}
     this.dispatchEvent(new CustomEvent('state',{detail:data}));
+    return true;
   }
-  async refresh(){const data=await this.json('/api/state');this.accept(data);return data;}
+  async refresh(){const since=this.accepted,data=await this.json('/api/state');this.accept(data,since);return data;}
   command(action,payload={},career=this.state?.current){
+    const tap=JSON.stringify([career,action,payload]);
     const execute=async()=>{
+      let expected=this.revision;
       const send=()=>{
         const request_id=globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`;
-        const body=JSON.stringify({request_id,expected_revision:this.revision,career,action,payload});
+        expected=this.revision;
+        const body=JSON.stringify({request_id,expected_revision:expected,career,action,payload});
         // The same body (request_id, expected_revision) on every try: see RETRY_DELAYS.
         return this.json('/api/command',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':this.csrf},body,retry:true});
       };
@@ -167,22 +178,33 @@ export class GameAPI extends EventTarget {
       try{
         let data;
         // 409 revision_conflict: the save moved under this tap (a spouse's gift or fund move landing through the
-        // marriage inbox, a ticker, another tab). Adopt the server's state and send the tap once more against it
-        // (a new request_id; the server checks everything again); a second conflict is reported.
+        // marriage inbox, a ticker, another tab). Adopt the server's state (or read it), then:
+        // - this very step already landed from this tab after the screen the tap was made on (a double tap let
+        //   through by an older screen): it is not sent again, and the tap ends quietly (result.duplicate);
+        // - else the tap is sent once more against it (a new request_id; the server checks everything again);
+        // - moved again under that retry: the tap is dropped quietly (error.quiet, no toast), the screen shows the
+        //   server's state and the player taps again if they still want it. Never applied twice: a lost answer is
+        //   replayed by its request_id (RETRY_DELAYS), a conflict was not applied at all.
         for(let tries=0;;tries++){
           try{data=await send();break;}
           catch(error){
-            if(error.status===409&&error.data?.state){this.accept(error.data);if(tries===0&&error.data.code==='revision_conflict')continue;}
+            if(error.status===409&&error.data?.code==='revision_conflict'){
+              if(error.data.state)this.accept(error.data);else await this.refresh().catch(()=>{});
+              if(this.done.some(d=>d.tap===tap&&d.revision>expected&&Date.now()-d.at<DOUBLE_TAP_MS))return {message:'',duplicate:true};
+              if(tries===0)continue;
+              error.quiet=true;error.message='';
+            }else if(error.status===409&&error.data?.state)this.accept(error.data);
             throw error;
           }
         }
         this.accept(data);
+        this.done.push({tap,revision:data.revision,at:Date.now()});if(this.done.length>8)this.done.shift();   // landed (or replayed: landed before)
         // v4/sounds.js: detail sounds and the bank speaker (result.bank) follow each confirmed command.
         this.dispatchEvent(new CustomEvent('result',{detail:{action,career,result:data.result}}));
         return data.result;
       }catch(error){
         if(transient(error)){this.connected=false;this.dispatchEvent(new Event('offline'));error.message='Mất kết nối máy chủ. Tiến trình đã xác nhận vẫn được lưu. Khởi động lại server rồi thử lại nhé.';}
-        else this.dispatchEvent(new CustomEvent('rejected',{detail:{action,career,status:error.status,code:error.data?.code||'',message:error.message}}));  // its toast text (telemetry.js)
+        else if(!error.quiet)this.dispatchEvent(new CustomEvent('rejected',{detail:{action,career,status:error.status,code:error.data?.code||'',message:error.message}}));  // its toast text (telemetry.js)
         throw error;
       }finally{this.dispatchEvent(new CustomEvent('busy',{detail:false}));}
     };
