@@ -311,6 +311,7 @@ class Store:
             db.executescript(mr.SCHEMA)  # Hôn nhân (game/marriage.py): codes, rings, proposals, couples, weddings, effects, news, friends, joint fund
             db.executescript(sg.SCHEMA)  # 🎁 Quà từ Phố Có Chuyện (game/system_gift.py)
             db.executescript(lc.SCHEMA)  # 💬 Chat tables of the live service (game/live_chat.py, live/)
+            lc.migrate(db)  # 📌 chat_messages.adm on older files
             db.executescript(ldt.SCHEMA)  # 💕 Dates of the live service: live_dates, date_bonds (game/live_dating.py, live/dating.py)
             db.executescript(wl.SCHEMA)  # 💍 Live weddings: dates, parties, guests, photos, the weekly race (game/wedding_live.py)
             db.executescript(rt.SCHEMA)  # Giữ chân: milestones, action counts, beacons (game/retention.py)

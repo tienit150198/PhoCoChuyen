@@ -18,7 +18,17 @@ Frames (client → server; replies in brackets)
   report {id, reason}  block {pid}  unblock {pid}
   prefs {online: bool}                      [prefs {online}]
   group_new {title, pids}  group_add {ch, pids}  group_kick {ch, pid}  group_leave {ch}  members {ch}
-Server pushes: msg, deleted, presence {pid, on}, chan {chan}, unchan {ch}, muted {until}, read.
+  pin {id}  unpin {}                        [pinned {ch:'town', pin} to everyone on Cả phố]   admins only
+Server pushes: msg, deleted, presence {pid, on}, chan {chan}, unchan {ch}, muted {until}, read, pinned.
+
+📌 Admins (owner, 01/10): an account whose username is in ADMIN_USERS (cfg.admins, read from `accounts` with the
+player's name and age) posts on Cả phố with no slow mode, no "new player" wait, no mute and no duplicate check, up
+to 500 characters and 6 lines, links and numbers left as written; their frames carry `adm: 1` (column
+chat_messages.adm; a row with pid 'admin', written straight into the database, counts as one too). Nobody can
+report an admin message. An admin pins one Cả phố message for everyone (`chat_pins`, one row): the `joined` frame
+carries `pin` (the message frame or null) and a change goes out as `pinned`. The pin goes away with its message
+(deleted, hidden, a player's data deleted); pruning never removes it. scripts/chat_pin.py pins from the server; the
+service reads the pin row (one primary-key lookup) every 30 s, and at once on a NOTIFY {op: 'pin'}.
 
 Phase 2/3 reuse store_message() for anything players type (bubbles, date chat) and route() so deletes,
 reports and admin hides reach their rooms.
@@ -52,6 +62,8 @@ GROUPS_OWNED = 20
 CHANS_LISTED = 100
 FRIENDS_MAX = 200
 PUSH_EVERY = 600          # seconds between two pushes of one chat to one player
+PIN_POLL = 30             # seconds between two reads of the pin row (a pin written from outside: scripts/chat_pin.py)
+ADMIN_PID = 'admin'       # rows written straight into the database by the operator (an announcement): admin messages
 
 
 def dm_id(a: str, b: str) -> str:
@@ -79,6 +91,8 @@ class Chan:
 
 def msg_frame(r: dict) -> dict:
     f = dict(t='msg', ch=r['channel'], id=int(r['id']), pid=r['pid'], name=r['name'], av=r['av'], text=r['text'], at=round(float(r['at']), 3))
+    if r.get('adm') or r['pid'] == ADMIN_PID:
+        f['adm'] = 1
     if r.get('deleted'):
         f['text'], f['del'] = '', 1
     return f
@@ -94,6 +108,9 @@ class ChatFeature(Feature):
         self.town_more = False         # older Cả phố messages exist in the database
         self.routes: dict = {}         # channel prefix -> (audience(ch) -> rooms, can_read(player, ch) -> bool)
         self.tasks: set = set()
+        self.pin: dict | None = None   # 📌 the pinned Cả phố message (its frame, without `t`), or None
+        self.pin_key = None            # (message id, pinned at) of that pin: what the 30 s poll compares
+        self._pin_at = 0.0             # next poll of the pin row
 
     # ---- extension: other features' channels -------------------------------------------------------------
     def route(self, prefix: str, audience, can_read) -> None:
@@ -115,6 +132,76 @@ class ChatFeature(Feature):
         self.town_more = len(rows) > self.cfg.buffer
         for r in reversed(rows[:self.cfg.buffer]):
             self.town.buffer.append(msg_frame(r))
+        await self.sync_pin(announce=False)
+        self._pin_at = time.time() + PIN_POLL   # just read: the next look in 30 s
+
+    # ---- admins ----------------------------------------------------------------------------------------------
+    def is_admin(self, p) -> bool:
+        """ADMIN_USERS (cfg.admins) holds this player's account username (read from `accounts` when the player is
+        loaded or refreshed; never from the client)."""
+        u = getattr(p, 'username', '')
+        return bool(u) and u in self.cfg.admins
+
+    def need_admin(self, p) -> None:
+        if not self.is_admin(p):
+            raise LiveError('admin', 'Chỉ Ban quản lý ghim được tin.')
+
+    # ---- 📌 the pinned message of Cả phố -------------------------------------------------------------------
+    def pin_for(self, p) -> dict | None:
+        """The pin as this player sees it: nothing when they blocked its author (or were blocked)."""
+        return self.pin if self.pin and self.pin['pid'] not in p.hidden else None
+
+    async def sync_pin(self, announce: bool = True) -> None:
+        """Read the pin row (one primary-key lookup, its message by primary key). A pin whose message is gone
+        (deleted, hidden, pruned, not on Cả phố) is removed. When it changed, tell everyone on Cả phố."""
+        r = await self.db.fetchrow(
+            'SELECT p.msg AS pin_msg, p.at AS pin_at, m.id, m.channel, m.pid, m.name, m.av, m.text, m.at, m.hidden, m.deleted, m.adm '
+            "FROM chat_pins p LEFT JOIN chat_messages m ON m.id=p.msg WHERE p.channel='town'")
+        pin, key = None, None
+        if r:
+            if r['id'] is None or r['channel'] != 'town' or r['hidden'] or r['deleted']:
+                await self.db.execute("DELETE FROM chat_pins WHERE channel='town' AND msg=?", (r['pin_msg'],))
+            else:
+                pin = msg_frame(r)
+                pin.pop('t', None)
+                key = (int(r['pin_msg']), float(r['pin_at']))
+        if key == self.pin_key:
+            return
+        self.pin, self.pin_key = pin, key
+        if announce:
+            self.announce_pin()
+
+    def announce_pin(self, extra=()) -> None:
+        """`pinned` to everyone on Cả phố (and `extra` sockets): null to those who blocked its author."""
+        frame = dict(t='pinned', ch='town', pin=self.pin)
+        conns = list(self.town.conns) + [c for c in extra if c not in self.town.conns and c.ready]
+        hid = [c for c in conns if self.pin and self.pin['pid'] in c.player.hidden]
+        self.hub.send_many([c for c in conns if c not in hid], frame)
+        if hid:
+            self.hub.send_many(hid, dict(frame, pin=None))
+
+    @on('pin', rate=(10, 60))
+    async def pin_msg(self, conn, f):
+        p, mid = conn.player, f.get('id')
+        self.need_admin(p)
+        if type(mid) is not int or mid <= 0:
+            raise LiveError('bad', 'Yêu cầu không hợp lệ.')
+        if not await self.db.fetchval("SELECT id FROM chat_messages WHERE id=? AND channel='town' AND hidden=0 AND deleted=0", (mid,)):
+            raise LiveError('gone', 'Không tìm thấy tin nhắn này.')
+        await self.db.execute("INSERT INTO chat_pins(channel, msg, by_pid, at) VALUES('town', ?, ?, ?) "
+                              'ON CONFLICT(channel) DO UPDATE SET msg=excluded.msg, by_pid=excluded.by_pid, at=excluded.at',
+                              (mid, p.pid, time.time()))
+        await self.sync_pin(announce=False)
+        self.announce_pin(extra=[conn])
+        return None
+
+    @on('unpin', rate=(10, 60))
+    async def unpin_msg(self, conn, f):
+        self.need_admin(conn.player)
+        await self.db.execute("DELETE FROM chat_pins WHERE channel='town'")
+        await self.sync_pin(announce=False)
+        self.announce_pin(extra=[conn])
+        return None
 
     # ---- loading a player -----------------------------------------------------------------------------------
     async def load_friends(self, p) -> None:
@@ -180,6 +267,8 @@ class ChatFeature(Feature):
         """('ok', 0) or (why, seconds to wait): 'muted', 'account' (a guest: only accounts chat, owner 01/10),
         'new' (session < 10 min), 'name' (no name yet)."""
         t = time.time()
+        if self.is_admin(p):    # admins: no mute, no wait, no slow mode (owner, 01/10)
+            return ('ok' if p.name else 'name'), 0.0
         if p.muted_until > t:
             return 'muted', p.muted_until - t
         if not p.account:
@@ -210,11 +299,18 @@ class ChatFeature(Feature):
 
     def welcome(self, conn) -> dict:
         p = conn.player
+        return dict(me=self.me(p), friends=self.friend_list(p), chans=conn.ext.pop('chans', []),
+                    limits=dict(town_every=self.cfg.town_every, town_len=self.cfg.town_len, text_len=self.cfg.text_len, group_max=self.cfg.group_max,
+                                admin_len=self.cfg.admin_len))
+
+    def me(self, p) -> dict:
         why, wait = self.can_town(p)
-        return dict(me=dict(pid=p.pid, name=p.name, av=p.av, account=p.account, online=p.show_online,
-                            town=why, wait=round(wait, 1), muted=round(p.muted_until, 1) if p.muted_until > time.time() else 0),
-                    friends=self.friend_list(p), chans=conn.ext.pop('chans', []),
-                    limits=dict(town_every=self.cfg.town_every, town_len=self.cfg.town_len, text_len=self.cfg.text_len, group_max=self.cfg.group_max))
+        adm = self.is_admin(p)
+        out = dict(pid=p.pid, name=p.name, av=p.av, account=p.account, online=p.show_online, town=why, wait=round(wait, 1),
+                   muted=round(p.muted_until, 1) if p.muted_until > time.time() and not adm else 0)
+        if adm:
+            out['adm'] = 1
+        return out
 
     def on_gone(self, player):
         pass
@@ -295,9 +391,10 @@ class ChatFeature(Feature):
         self.hub.to_pids(c.members, frame, sender if c.kind == 'group' else None, skip)
 
     # ---- storing a message (also for phase 2/3 channels) -----------------------------------------------------
-    async def store_message(self, p, ch: str, text, limit: int, lines: int = 4) -> dict:
+    async def store_message(self, p, ch: str, text, limit: int, lines: int = 4, admin: bool = False) -> dict:
         """Check, filter and insert one message by player p in channel ch; returns its `msg` frame.
-        Raises LiveError: text (empty/too long), name, muted, dup."""
+        Raises LiveError: text (empty/too long), name, muted, dup. admin=True (an admin on Cả phố): no mute,
+        no duplicate check, no masking; the row and the frame are marked adm=1."""
         t = time.time()
         clean = filters.clean(text, limit, lines)
         if clean is None:
@@ -308,9 +405,14 @@ class ChatFeature(Feature):
             raise LiveError('account', 'Tạo tài khoản để chat nhé.')
         if not p.name:
             raise LiveError('name', 'Đặt tên nhân vật trước khi nhắn nhé.')
+        fp = filters.fingerprint(clean)
+        if admin:
+            row = await self.db.fetchrow('INSERT INTO chat_messages(channel, pid, name, av, text, at, adm) VALUES(?, ?, ?, ?, ?, ?, 1) RETURNING id',
+                                         (ch, p.pid, p.name, p.av, clean, t))
+            p.recent.append((ch, fp, t))
+            return dict(t='msg', ch=ch, id=int(row['id']), pid=p.pid, name=p.name, av=p.av, text=clean, at=round(t, 3), adm=1)
         if p.muted_until > t:
             raise LiveError('muted', 'Bạn đang bị tạm khóa chat.', until=round(p.muted_until, 1))
-        fp = filters.fingerprint(clean)
         if any(c == ch and f == fp and t - at < DUP_SECS for c, f, at in p.recent):
             raise LiveError('dup', 'Bạn vừa gửi câu này rồi.')
         masked = filters.mask(clean)
@@ -334,8 +436,7 @@ class ChatFeature(Feature):
         await self.load_hidden(p)
         why, wait = self.can_town(p)
         return dict(t='state', friends=self.friend_list(p), chans=await self.chan_list(p), town=why, wait=round(wait, 1),
-                    online=p.show_online, me=dict(pid=p.pid, name=p.name, av=p.av, account=p.account, online=p.show_online,
-                                                  town=why, wait=round(wait, 1), muted=round(p.muted_until, 1) if p.muted_until > time.time() else 0))
+                    online=p.show_online, me=self.me(p))
 
     @on('join', rate=(20, 10))
     async def join(self, conn, f):
@@ -351,7 +452,8 @@ class ChatFeature(Feature):
         if type(after) is int and after > 0 and (not self.town.buffer or self.town.buffer[0]['id'] <= after + 1):
             msgs, inc = [m for m in self.town.buffer if m['id'] > after and m['pid'] not in p.hidden], True
         why, wait = self.can_town(p)
-        return dict(t='joined', ch='town', msgs=msgs, more=more, inc=inc, why=why, wait=round(wait, 1), n=len(self.town.players()))
+        return dict(t='joined', ch='town', msgs=msgs, more=more, inc=inc, why=why, wait=round(wait, 1), n=len(self.town.players()),
+                    pin=self.pin_for(p))
 
     @on('leave', rate=(20, 10))
     async def leave(self, conn, f):
@@ -369,6 +471,7 @@ class ChatFeature(Feature):
         if c.kind == 'town':
             if not p.name or not p.account:
                 await self.refresh(p)   # a guest who just registered can post at once, no reconnect
+            admin = self.is_admin(p)
             why, wait = self.can_town(p)
             if why == 'account':
                 raise LiveError('account', 'Tạo tài khoản để chat nhé.')
@@ -378,18 +481,21 @@ class ChatFeature(Feature):
                 raise LiveError('name', 'Đặt tên nhân vật trước khi nhắn nhé.')
             if why == 'muted':
                 raise LiveError('muted', 'Bạn đang bị tạm khóa chat.', until=round(p.muted_until, 1))
-            if wait > 0:
-                raise LiveError('slow', f'Cả phố: {self.cfg.town_every:g} giây một tin.', wait=round(wait, 1))
-            p.town_next = t + self.cfg.town_every          # before the await: a second tab cannot slip in
-            try:
-                frame = await self.store_message(p, 'town', f.get('text'), self.cfg.town_len, 3)
-            except BaseException:
-                p.town_next = 0.0
-                raise
+            if admin:   # 📌 admins post freely: no slow mode, longer, links kept (owner, 01/10)
+                frame = await self.store_message(p, 'town', f.get('text'), self.cfg.admin_len, self.cfg.admin_lines, admin=True)
+            else:
+                if wait > 0:
+                    raise LiveError('slow', f'Cả phố: {self.cfg.town_every:g} giây một tin.', wait=round(wait, 1))
+                p.town_next = t + self.cfg.town_every          # before the await: a second tab cannot slip in
+                try:
+                    frame = await self.store_message(p, 'town', f.get('text'), self.cfg.town_len, 3)
+                except BaseException:
+                    p.town_next = 0.0
+                    raise
             self.town.buffer.append(frame)
             n = len({c.player.pid for c in self.town.conns})
             self.town.send(dict(frame, n=n), sender=p, skip=conn)   # n: people on Cả phố now
-            self.hub.send(conn, dict(frame, cid=cid, wait=self.cfg.town_every, n=n))
+            self.hub.send(conn, dict(frame, cid=cid, wait=0 if admin else self.cfg.town_every, n=n))
             return None
         if c.kind == 'dm':
             other = next((x for x in c.members if x != p.pid), None)
@@ -461,17 +567,22 @@ class ChatFeature(Feature):
             if hidden:
                 frame['hidden'] = 1
             self.send_to_chan(c, frame)
+        if ch == 'town' and self.pin and self.pin['id'] == mid:   # 📌 its pin goes with it
+            await self.db.execute("DELETE FROM chat_pins WHERE channel='town' AND msg=?", (mid,))
+            await self.sync_pin()
 
     @on('report', rate=(10, 60))
     async def report(self, conn, f):
         p, mid, reason = conn.player, f.get('id'), f.get('reason', 'other')
         if type(mid) is not int or mid <= 0 or reason not in REASONS:
             raise LiveError('bad', 'Báo cáo không hợp lệ.')
-        row = await self.db.fetchrow('SELECT channel, pid FROM chat_messages WHERE id=?', (mid,))
+        row = await self.db.fetchrow('SELECT channel, pid, adm FROM chat_messages WHERE id=?', (mid,))
         if not row:
             raise LiveError('gone', 'Không tìm thấy tin nhắn.')
         if row['pid'] == p.pid:
             raise LiveError('bad', 'Đây là tin của bạn.')
+        if row['adm'] or row['pid'] == ADMIN_PID:
+            raise LiveError('bad', 'Đây là tin của Ban quản lý.')
         r = self._route(row['channel'])
         if r:
             if not r[1](p, row['channel']):
@@ -695,6 +806,8 @@ class ChatFeature(Feature):
                 c = await self.chan(r['channel']) if kind_of(r['channel']) in ('town', 'dm', 'group') else Chan(r['channel'], kind_of(r['channel']))
                 if c:
                     self.send_to_chan(c, frame)
+        elif op == 'pin':   # scripts/chat_pin.py on PostgreSQL
+            await self.sync_pin()
         elif op == 'mute' and isinstance(e.get('pid'), str):
             p = self.hub.players.get(e['pid'])
             if p:
@@ -708,6 +821,7 @@ class ChatFeature(Feature):
             rows = await self.db.fetch(f"SELECT id, hidden FROM chat_messages WHERE id IN ({','.join('?' * len(ids))}) AND hidden<>0", ids)
             for r in rows:
                 await self.gone('town', int(r['id']), hidden=True)
+        await self.sync_pin()
         pids = list(self.hub.players)
         for i in range(0, len(pids), 500):
             part = pids[i:i + 500]
@@ -725,11 +839,14 @@ class ChatFeature(Feature):
         if now >= self._prune_at:
             self._prune_at = now + PRUNE_EVERY
             await self.prune_town()
+        if now >= self._pin_at:   # 📌 a pin written from outside (scripts/chat_pin.py), a message hidden by an admin
+            self._pin_at = now + PIN_POLL
+            await self.sync_pin()
 
     async def prune_town(self, keep: int = TOWN_KEEP) -> int:
         """Delete Cả phố messages older than the newest `keep` (owner, 01/10: only Cả phố; DMs and groups are never
         touched), with their reports. A message whose report is still open (reported, not reviewed) stays until an
-        admin decides. Small batches, a few per call: a long backlog goes over several prunings."""
+        admin decides; the pinned message stays while it is pinned. Small batches, a few per call: a long backlog goes over several prunings."""
         cut = await self.db.fetchval("SELECT id FROM chat_messages WHERE channel='town' ORDER BY id DESC LIMIT 1 OFFSET ?", (keep,))
         if cut is None:
             return 0
@@ -738,7 +855,7 @@ class ChatFeature(Feature):
             async def run(tx):
                 ids = [r['id'] for r in await tx.fetch(
                     "SELECT id FROM chat_messages WHERE channel='town' AND id<=? AND NOT (reports>0 AND reviewed_at IS NULL) "
-                    'ORDER BY id LIMIT ?', (cut, PRUNE_BATCH))]
+                    'AND id NOT IN (SELECT msg FROM chat_pins) ORDER BY id LIMIT ?', (cut, PRUNE_BATCH))]
                 if ids:
                     marks = ','.join('?' * len(ids))
                     await tx.execute(f"DELETE FROM chat_messages WHERE channel='town' AND id IN ({marks})", ids)
