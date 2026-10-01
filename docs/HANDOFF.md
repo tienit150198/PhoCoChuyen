@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **1.1.4** (`main` = `9f9e33c`), 28 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **1.2.0** (`main` = `aa901ed`), 32 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -134,7 +134,12 @@ branch holds what, and what to do next, in order. Details live in the linked doc
    `migrate_state`). Both packaged on Windows (scripts/build_static.py batches esbuild; a comment-only stylesheet
    keeps its bytes). **Never deploy while a wedding party is open or within ~20 min of one** (mnl-live restarts).
    Waiting for version 2: branches `house-reno` (view/repair/decorate), `office-jobs` (3 office positions) and a
-   homemaker career (in progress), plus the #59 dorm idea (owner to decide).
+   homemaker career, plus the #59 dorm idea (owner to decide).
+   1.2.0 (01/10 23:06, notice): inside the house (game/reno.py: view, repair, decorate), the homemaker career,
+   three office desks at Cánh Diều (hr_admin, secretary, it_helpdesk, chapter 5) and six accounting situations.
+   The office and house texts have no English yet. A TikTok group announcement was inserted into Cả phố as
+   pid 'admin' (chat_messages 5419, 5496; mnl-live restarted to reload the buffer). Next: admin pin + admin
+   posting in Cả phố (in progress), quiet release.
    Tested first on a staging copy of PG (`phoco_stage`, port 8799, dropped after): the leaderboard VERSION 2
    rebuild took ~3.5 min there and ~4 min live. A staging server MUST run with `PUSH_DISABLED=1` (its
    housekeeping would otherwise deliver the copied push queue to real phones). Was next: 1.1.0 weddings
