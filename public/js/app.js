@@ -129,7 +129,10 @@ async function cmd(action,payload={},options={}){
 }
 function closeSheet(){if($('#sheet').open)$('#sheet').close();ui.view=null;ui.ai={};world.paused=ui.paused;}
 function openSheet(view,data={}){if(view!=='job'&&view!=='chat'){ui.task=null;}Object.assign(ui,data);ui.view=view;renderSheet(false);if(!$('#sheet').open){const d=$('#sheet');d.showModal();d.scrollTop=0;d.tabIndex=-1;d.focus({preventScroll:true});}}
-function header(title,subtitle='',eyebrow='MỘT NGÀY LÀM NGHỀ',extra=''){return `<header class="sheet-head"><div class="grow"><span class="eyebrow">${eyebrow}</span><h2 title="${esc(plainText(title))}">${title}</h2>${subtitle?`<p>${subtitle}</p>`:''}</div>${extra}${ui.view==='job'?(L.tut.m?.guideHelp(career())||''):''}<button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;}
+/** "?" of a work screen before the tutorial module has loaded (same markup as tutorial/guide.js helpButton;
+ * a tap loads it: TUT_OPEN). Every career's work screen carries it, in the header, next to "Đóng". */
+const helpQ=cid=>`<button type="button" class="icon-btn tut-help" data-action="tutGuide" data-career="${esc(cid||'')}" data-tab="work" aria-label="Hướng dẫn nghề này">?</button>`;
+function header(title,subtitle='',eyebrow='MỘT NGÀY LÀM NGHỀ',extra=''){return `<header class="sheet-head"><div class="grow"><span class="eyebrow">${eyebrow}</span><h2 title="${esc(plainText(title))}">${title}</h2>${subtitle?`<p>${subtitle}</p>`:''}</div>${extra}${ui.view==='job'?(L.tut.m?.guideHelp(career())||helpQ(career())):''}<button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;}
 function footer(left='',right=''){return `<footer class="sheet-foot"><p>${left}</p><div class="row wrap">${right}</div></footer>`;}
 /** ⋯ in a work sheet's header: the rarely used ways out ("Để lát nữa", "Xem các việc khác") that used to take a
  * whole footer row under the career's action bar. data-auto: every re-render shuts it again. */
@@ -202,30 +205,66 @@ function navItems(c){
   if(c.job?.required)items.push(['jobapp','briefcase','Việc làm',needsJob()?'dot':0]);
   items.push(['operations','store','Sổ tiệm',c.ops?.alerts?.length?'dot':0]);
   if(!EXT.includes(career()))items.push(['journal','book','Sổ tay']);
-  items.push(['people','people','Người quen',L.people.m?.closenessBadge(api)||0],['album','camera','Kỷ niệm'],['workshop','sparkle','Trò nhỏ'],['passport','award','Hộ chiếu'],['town','compass','Khu phố'],['rank','award','Xếp hạng']);  // Bảng xếp hạng (v4/leaderboard.js)
+  items.push(['people','people','Người quen',L.people.m?.closenessBadge(api)||0],['album','camera','Kỷ niệm'],['workshop','sparkle','Trò nhỏ'],['passport','award','Hộ chiếu'],['town','compass','Bản đồ'],['rank','award','Xếp hạng']);  // Bản đồ: the town map (experience-ui "Khu phố"); Bảng xếp hạng (v4/leaderboard.js)
   items.push(['jrWardrobe','shirt','Tủ đồ']);  // 👗 Tủ đồ (v4/wardrobe.js, opened by journey.js)
   items.push(['friends','user','Bạn bè',api.friendAlerts||0],['marriage','heart','Hôn nhân',api.marriageAlerts||0]);  // Bạn bè + Hôn nhân (v4/marriage.js, own dialog; badges from v4/ticker.js)
+  items.push(['money','bag','Tiền của bạn']);  // 💰 the money sheet (v4/wealth.js), also behind the HUD money chips
   {const bk=api.state?.journey?.bank;items.push(['bank','coin','Ngân hàng',bk?.unread||(bk?.overdue?'dot':0)]);}  // 🏦 Ngân hàng Phố (v4/bank.js, own dialog)
   if(api.state?.journey?.story)items.push(['house','home','Nhà của bạn',api.state.journey.home?.own?.loan?.overdue?'dot':0]);  // 🏠 Nhà của bạn (v4/house.js, own dialog)
   // A career with its own shell (the air crew: no Sổ tiệm, a flight log instead) reshapes the list; others keep it.
   return careerUI(career())?.nav?.(items,careerContext(env()))||items;
 }
-const railItem=([a,i,label,badge],extra='')=>`<button type="button" class="rail-item${a==='social'?' top-social':''}${extra} ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}>${icon(i,21)}<span>${label}</span>${badge==='dot'?'<i class="dot" aria-hidden="true"></i>':badge?`<em class="badge">${badge}</em>`:''}</button>`;
-/** Rail entries always in sight on desktop/tablet (plus anything with a badge); the rest sit behind "Thêm". */
-const RAIL_MAIN=['home','prepare','feedback','operations','jobapp'];
+const badgeHTML=b=>b==='dot'?'<i class="dot" aria-hidden="true"></i>':b?`<em class="badge">${b}</em>`:'';
+const railItem=([a,i,label,badge],extra='',hide='')=>`<button type="button" class="rail-item${a==='social'?' top-social':''}${extra} ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}${hide}>${icon(i,21)}<span>${label}</span>${badgeHTML(badge)}</button>`;
+/** The work pages, always in sight (rail on desktop/tablet, top of "Thêm" on the phone), in this order. Any
+ * entry that is in no group below (a career's own page) joins them, so nothing a career adds is lost. */
+const RAIL_MAIN=['home','prepare','operations','prices','feedback','jobapp'];
+/** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
+const RAIL_GROUPS=[
+  ['pho','building','Khu phố',['nhom','phone','social','town','rank']],
+  ['ban','people','Quan hệ',['people','friends','marriage']],
+  ['tien','coin','Tiền & nhà',['money','bank','house']],
+  ['chuyen','note','Chuyện của bạn',['situation','incident']],
+  ['minh','gift','Của mình',['jrWardrobe','album','passport','workshop','journal']],
+];
+const RAIL_GROUPED=new Set(RAIL_GROUPS.flatMap(g=>g[3]));
+/** Numbers add up; a dot alone stays a dot. */
+function groupBadge(items){
+  let n=0,dot=false;for(const x of items){const b=x[3];if(!b)continue;if(Number.isFinite(Number(b)))n+=Number(b);else dot=true;}
+  return n||(dot?'dot':0);
+}
 /** Scene actions on the phone's tab dock: at most 3 (the workbench always), the 4th slot is "Thêm". */
 function dockItems(){
   const all=sceneActions();if(layout()!=='phone')return all;
   const keep=new Set([all.find(x=>x[0]==='workbench'),...all].filter(Boolean).slice(0,3));
   return all.filter(x=>keep.has(x));
 }
+/** Desktop/tablet: the work pages, the hubs (each opens in place under its button) and a footer (Góp ý, Cài đặt;
+ * the guides open from the "?" of each work screen and Cài đặt, not from here).
+ * Phone ("Thêm" sheet): the scene actions the dock has no room for, the same entries in a grid; a hub fills
+ * the sheet with a back button. Every entry is always in the markup (hidden when folded) so deep links
+ * ("Thử ngay" in Có gì mới) and sweeps still find it by data-action. */
 function railHTML(c){
-  const phone=layout()==='phone',shown=dockItems(),extra=phone?sceneActions().filter(x=>!shown.includes(x)):[];
-  const nav=navItems(c),main=nav.filter(x=>RAIL_MAIN.includes(x[0])||x[3]||ui.view===x[0]),rest=nav.filter(x=>!main.includes(x));
-  const more=`<button type="button" class="rail-item rail-more-btn" data-action="v4RailMore" aria-expanded="${document.documentElement.classList.contains('rail-more')}">${icon('menu',21)}<span>Thêm</span></button>`;
-  return (extra.length?`<p class="rail-title">${esc(wordsFor(career()).rail_in)}</p>${extra.map(([a,i,l])=>railItem([a,i,l])).join('')}<p class="rail-title">Sổ & khu phố</p>`:'')+main.map(x=>railItem(x)).join('')+
-    (rest.length&&!phone?more:'')+rest.map(x=>railItem(x,' rail-extra')).join('')+
-    `<button type="button" class="rail-item rail-bottom rail-extra" data-action="help">${icon('question',21)}<span>Hướng dẫn</span></button>`+railItem(['tutReplay','play','Xem lại hướng dẫn'],' rail-extra')+railItem(['gopy','chat','Góp ý'],' rail-extra')+railItem(['settings','settings','Cài đặt']);
+  const phone=layout()==='phone',shown=dockItems(),extra=phone?sceneActions().filter(x=>!shown.some(y=>y[0]===x[0])):[];
+  const nav=navItems(c),order=x=>{const i=RAIL_MAIN.indexOf(x[0]);return i<0?RAIL_MAIN.length:i;};
+  const main=nav.filter(x=>!RAIL_GROUPED.has(x[0])).sort((a,b)=>order(a)-order(b));
+  const groups=RAIL_GROUPS.map(([g,ic,label,ids])=>[g,ic,label,ids.map(id=>nav.find(x=>x[0]===id)).filter(Boolean)]).filter(g=>g[3].length);
+  const open=groups.some(g=>g[0]===ui.railGroup)?ui.railGroup:null,hide=phone&&open?' hidden':'';
+  const title=t=>phone?`<p class="rail-title"${hide}>${esc(t)}</p>`:'';
+  const mini=(a,i,l)=>`<button type="button" class="rail-mini${ui.view===a?' active':''}" data-action="${a}" aria-label="${l}" title="${l}">${icon(i,19)}<span>${l}</span></button>`;
+  return (extra.length?title(wordsFor(career()).rail_in)+extra.map(([a,i,l])=>railItem([a,i,l],'',hide)).join(''):'')+
+    title('Công việc')+main.map(x=>railItem(x,'',hide)).join('')+title('Đời sống')+
+    groups.map(([g,ic,label,items])=>{const on=open===g,cur=items.some(x=>x[0]===ui.view);
+      return `<button type="button" class="rail-item rail-group${cur?' active':''}" data-action="v4Group" data-group="${g}" data-menu-stay aria-expanded="${on}"${hide}>${icon(ic,21)}<span>${label}</span>${badgeHTML(groupBadge(items))}<i class="rail-caret" aria-hidden="true">${icon('chevron',12)}</i></button>`+
+        `<div class="rail-sub" data-group="${g}" role="group" aria-label="${label}"${on?'':' hidden'}><div class="rail-sub-head"><button type="button" class="icon-btn rail-back" data-action="v4Group" data-group="" data-menu-stay aria-label="Quay lại">${icon('back',20)}</button><b>${label}</b></div>${items.map(x=>railItem(x)).join('')}</div>`;}).join('')+
+    `<div class="rail-foot"${hide}>${mini('gopy','chat','Góp ý')}${mini('settings','settings','Cài đặt')}</div>`;
+}
+/** Open or fold a hub (data-group="" folds). Phone: the sheet scrolls back to the top and focus follows. */
+function railGroup(g,focus=true){
+  const was=ui.railGroup;ui.railGroup=g&&was!==g?g:null;const rail=$('#rail');setHTML(rail,railHTML(room()));
+  if(layout()!=='phone'||!focus)return;
+  rail.scrollTop=0;
+  rail.querySelector(ui.railGroup?'.rail-sub:not([hidden]) .rail-back':`.rail-group[data-group="${CSS.escape(was||'')}"]`)?.focus({preventScroll:true});
 }
 function dockHTML(c){
   const phone=layout()==='phone',low=lowOpen(c),items=dockItems();
@@ -1013,6 +1052,9 @@ async function handleAction(action,data,el){
     case'teaConfig':await cmd('tea_config',{task:activeTask().id,size:$('#tea-size').value,sugar:Number($('#tea-sugar').value),ice:$('#tea-ice').value});break;
     case'expVisit':ui.townPlace=data.place;await cmd('life_town',{place:data.place});renderSheet();break;
     case'home':openSheet('home');break;
+    case'v4Group':railGroup(data.group||'');break;
+    // "Thêm" opens on its first page, not inside the hub left open last time.
+    case'v4Menu':if(ui.railGroup&&layout()==='phone')railGroup(null,false);await shell.action(action,data,el,env());break;
     case'future':openSheet('future');break;
     case'choose':await selectCareer(data.career);break;
     case'bossOffer':if(data.career&&api.state.careers[data.career])await selectCareer(data.career);break;
@@ -1165,6 +1207,8 @@ window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').open&&!$
 window.addEventListener('focus',()=>{if(api.state&&!ui.busy&&Date.now()-(api.syncedAt||0)>15000)api.refresh().catch(()=>{});});
 let responsiveTimer;
 window.addEventListener('resize',()=>{clearTimeout(responsiveTimer);responsiveTimer=setTimeout(()=>{if(api.state&&api.content)renderMain();},140);});
+// Badges set outside a render (v4/ticker.js, v4/marriage.js): redraw the rail so its hubs carry them too.
+document.addEventListener('mnl:badges',()=>{if(api.state&&api.content&&!$('#app').hidden){setHTML($('#rail'),railHTML(room()));setHTML($('#dock'),dockHTML(room()));}});
 window.addEventListener('layoutchange',()=>{world.resize();if(api.state&&api.content)renderMain();});
 api.addEventListener('state',()=>{syncOlder(api.revision);ensureCareerUI();renderMain();if(ui.view)renderSheet();shell.update(env());});
 api.addEventListener('busy',e=>{ui.busy=e.detail;document.body.classList.toggle('busy',ui.busy);$('#saveState')?.setAttribute('aria-busy',String(ui.busy));if(!ui.busy&&heldTap)setTimeout(replayHeld,60);else if(!ui.busy)holdMark(null);});

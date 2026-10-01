@@ -143,7 +143,7 @@ function generic(){
 }
 function workTab(){
   const ids=careerIds(),cid=ids.includes(view.career)?view.career:(ids.includes(current())?current():ids[0]);
-  view.career=cid;
+  if(data())view.career=cid;   // while the words load, keep the asked workplace (only a few have pictures to show meanwhile)
   const e=entry(cid);
   if(!e)return pickerRow(cid)+(SHOTS[cid]?shots(cid).replace('<details class="gh-sec gh-shots" data-sec="shots"','<details class="gh-sec gh-shots" data-sec="shots" open'):generic());
   const head=`<header class="gh-career"><span class="gh-career-ico" aria-hidden="true">${e.emoji||'💼'}</span><div class="grow"><h3>${esc(e.name)}</h3>${e.place?`<small>${esc(e.place)}</small>`:''}</div>${cid===current()?'<em class="gh-now">Đang làm</em>':''}</header>${e.intro?L('p',e.intro,'gh-intro'):''}`;

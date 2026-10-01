@@ -62,9 +62,10 @@ function hearts(){
   const el=document.createElement('div');el.className='onb-hearts';el.setAttribute('aria-hidden','true');
   el.innerHTML=[...Array(9)].map((_,i)=>`<i style="--i:${i}">${i%3?'❤️':'💖'}</i>`).join('');
   mount().append(el);
-  // Rising from the tip card's heart when it is up (v4/tips.js), else from the middle of the screen.
+  // Rising from the tip card's heart when it is up (v4/tips.js), else from the middle of the screen; the 9 hearts
+  // spread ±76px, so they start at least 80px from either edge (never cut off at 390px).
   const r=document.querySelector('.tip-pop:not(.leaving) .tip-pop-emoji')?.getBoundingClientRect();
-  if(r&&r.width){el.style.left=Math.round(r.left+r.width/2)+'px';el.style.top=Math.round(r.top+r.height/2)+'px';el.style.bottom='auto';}
+  if(r&&r.width){el.style.left=Math.min(innerWidth-80,Math.max(80,Math.round(r.left+r.width/2)))+'px';el.style.top=Math.round(r.top+r.height/2)+'px';el.style.bottom='auto';}
   setTimeout(()=>el.remove(),2600);
 }
 

@@ -64,9 +64,10 @@ const STEPS=[
     when:()=>inIntro()&&introStep()!=='job',plan:inIntro,
     find:()=>vis('#sheet[open] .jr-intro .jr-who')||firstVis('#sheet[open] .jr-intro .btn.primary'),
     done:()=>!inIntro()||introStep()==='job'},
-  {id:'journey',emoji:'🧭',text:'Bấm mở Hành trình.',
+  // Phone: Hành trình sits in the "Thêm" menu; the ring goes to "Thêm" first, then to Hành trình inside it.
+  {id:'journey',emoji:'🧭',text:()=>vis('#rail [data-action="home"]')||vis('#jrHud:not([hidden])')||vis('.brand')?'Bấm mở Hành trình.':'Bấm Thêm, rồi Hành trình.',
     when:()=>!inIntro()&&sheetView()!=='home',plan:()=>!inIntro(),
-    find:()=>vis('#jrHud:not([hidden])')||vis('#rail [data-action="home"]')||vis('.brand'),
+    find:()=>vis('#jrHud:not([hidden])')||vis('#rail [data-action="home"]')||vis('.brand')||vis('#dock [data-action="v4Menu"]'),
     done:()=>sheetView()==='home'},
   {id:'pick',emoji:'🏪',text:'Chọn một tiệm để làm.',
     when:()=>sheetView()==='home',wait:2500,
@@ -170,7 +171,9 @@ function frame(){
     if(!run.shown.includes(step.id))run.shown.push(step.id);
   }
   const r=el&&!covered?el.getBoundingClientRect():null;
-  const pad=6,rect=r?[Math.round(r.left-pad),Math.round(r.top-pad),Math.round(r.width+2*pad),Math.round(r.height+2*pad)]:null;
+  // The ring stays inside the screen (a control at the edge, like the phone's "Thêm", would push it 2px past it).
+  const pad=6,ring=r&&{x:Math.max(0,Math.round(r.left-pad)),y:Math.max(0,Math.round(r.top-pad))};
+  const rect=r?[ring.x,ring.y,Math.min(innerWidth,Math.round(r.right+pad))-ring.x,Math.min(innerHeight,Math.round(r.bottom+pad))-ring.y]:null;
   const sig=JSON.stringify([rect,innerWidth,innerHeight,bubble.offsetHeight]);
   if(last.sig!==sig){
     last.sig=sig;
@@ -203,7 +206,7 @@ function next(manual){
 const drop=id=>{run.plan=run.plan.filter(x=>x!==id);};
 function finish(){
   const was=!!run;stopTour('done');
-  if(was)E?.toast?.('Xong! Xem lại ở mục Hướng dẫn 📘','hint');
+  if(was)E?.toast?.('Xong! Xem lại trong Cài đặt 📘','hint');
 }
 
 /** Real clicks: note what the player just did (choose a place, act on a work screen). */
@@ -236,7 +239,7 @@ export function stopTour(reason){
   run=null;if(raf)cancelAnimationFrame(raf);raf=0;
   layer?.remove();last={};
   markTourDone(E);
-  if(reason==='skip')E?.toast?.('Xem lại ở mục Hướng dẫn 📘','hint');
+  if(reason==='skip')E?.toast?.('Xem lại trong Cài đặt 📘','hint');
 }
 export const tourRunning=()=>!!run;
 

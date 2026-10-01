@@ -113,11 +113,11 @@ export const shell={
     window.addEventListener('pointerdown',unlock,{once:true});
     window.addEventListener('keydown',unlock,{once:true});
     document.addEventListener('visibilitychange',()=>{if(music)music.setHidden(document.hidden);});
-    // Phone "Thêm" menu (the rail as a bottom sheet): any tap closes it; taps
-    // outside the menu are swallowed so they don't also hit the scene.
+    // Phone "Thêm" menu (the rail as a bottom sheet): any tap closes it, except opening or leaving a hub
+    // inside it (data-menu-stay); taps outside the menu are swallowed so they don't also hit the scene.
     const root=document.documentElement;
     document.addEventListener('click',e=>{
-      if(!root.classList.contains('menu-open'))return;
+      if(!root.classList.contains('menu-open')||e.target.closest?.('#rail [data-menu-stay]'))return;
       root.classList.remove('menu-open');syncMenu();
       if(!e.target.closest('#rail')){e.preventDefault();e.stopPropagation();}
     },true);
@@ -135,8 +135,6 @@ export const shell={
     switch(action){
       case'v4Layout':setLayoutPref(data.value);env.renderSheet();return true;
       case'v4Menu':document.documentElement.classList.toggle('menu-open');syncMenu();return true;
-      // Desktop/tablet rail: the less-used entries fold under "Thêm".
-      case'v4RailMore':{const open=document.documentElement.classList.toggle('rail-more');document.querySelectorAll('[data-action="v4RailMore"]').forEach(b=>b.setAttribute('aria-expanded',String(open)));return true;}
       case'homeCat':env.ui.homeCat=data.cat;env.renderSheet();return true;
       case'v4Setting':{
         let value=data.value;
