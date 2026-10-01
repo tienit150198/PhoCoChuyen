@@ -1,3 +1,7 @@
+# v1.0.2 — Gộp đơn nhập hàng
+
+- Kho: giỏ theo từng nhà cung cấp ("🛒 Thêm vào đơn", một lần "Đặt đơn" = một phí ship, một lần giao, một thùng), phí ship 2–5 xu và miễn ship theo ngưỡng (chủ game duyệt), giá sỉ theo số lượng, xin bớt 5/10/15% (nhà cung cấp tự quyết, mỗi ngày một lần), hết hàng một món, xe giao muộn, đơn tối thiểu; giao thiếu/khiếu nại theo cả đơn hoặc từng dòng. Tạp hóa có "🛒 +N vào đơn" ở Kho & giá. Đơn cũ đang giao giữ nguyên. Không có "Có gì mới".
+
 # v1.0.1 — Chat ra ngoài menu
 
 - Chat đứng đầu menu, bấm một lần là vào (không còn nằm trong nhóm Quan hệ). Không có "Có gì mới".
