@@ -124,3 +124,10 @@
   html:not(.reduce-motion) .lf-dot{animation:lf-blink 1.8s ease-in-out infinite}
 }
 @keyframes lf-blink{50%{opacity:.35}}
+/* 🛏️ Ký túc xá moments: the roommates in the scene */
+.lf-mates{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px 14px}
+.lf-mates li{display:flex;align-items:center;gap:8px;min-width:0}
+.lf-mates .jr-av{flex:none;border-radius:50%}
+.lf-mates span{display:flex;flex-direction:column;min-width:0;line-height:1.2}
+.lf-mates small{font-size:.8rem;color:var(--muted)}
+.lf-cat-ktx .lf-portrait{background:var(--accent-soft,var(--surface-2))}

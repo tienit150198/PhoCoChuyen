@@ -19,6 +19,9 @@ money or not) and help a neighbour in trouble in return.
   are capped by what the wallet holds and paid choices need the money: life never
   pushes the wallet below zero.
 * Deterministic from `journey.seed` and the life day. Story mode only.
+* 🛏️ While the player rents a bed in the Ký túc xá Hẻm 7 (game/housing.py DORM), some days bring a small
+  roommate moment instead (kind and stage 'dorm', cat 'ktx', life_content.DORM): two choices, ±1–3 tinh thần,
+  a few xu at most, its own random stream so nobody else's cards change.
 
 Commands (engine routes the `lf_` prefix): lf_choose {id, choice}, lf_cope {choice},
 lf_close {id}. Design: docs/superpowers/specs/2026-09-29-life-design.md
@@ -28,8 +31,8 @@ from __future__ import annotations
 import copy
 import random
 
-from .life_content import (ASK, CATS, COMFORT, COPE, COPE_INDEX, FACTS, FRIENDS, GIFTS, GOSSIPS, HARD, IMPULSE,
-                           JOYS, SICK, TOKENS, WORK)
+from .life_content import (ASK, CATS, COMFORT, COPE, COPE_INDEX, DORM, FACTS, FRIENDS, GIFTS, GOSSIPS, HARD, IMPULSE,
+                           JOYS, ROOMMATES, SICK, TOKENS, WORK)
 from . import archive as ar
 
 VERSION = 1
@@ -49,6 +52,8 @@ RUMOUR_GAP = 5
 ASK_P = .13
 JOY_P = .16
 INVITE_P = .6
+DORM_P = .6                   # 🛏️ living in the Ký túc xá: a roommate moment on about a quarter to a third of the days
+DORM_RECENT = 6               # no identical roommate moment within this many life days
 IMPULSE_SPIRIT, IMPULSE_P = 35, .35
 SICK_SPIRIT, SICK_P = 15, .5
 LOW_SPIRIT = 30
@@ -59,8 +64,8 @@ HANGOVER = 6
 MOODS = ((80, '😄', 'Phơi phới'), (60, '🙂', 'Ổn áp'), (40, '😐', 'Hơi mệt'), (20, '😔', 'Buồn'), (0, '😢', 'Kiệt sức'))
 WARMTH_NAMES = ((75, 'Thương nhau như ruột thịt'), (60, 'Tối lửa tắt đèn có nhau'), (45, 'Hàng xóm quen'), (0, 'Còn hơi lạ'))
 SAFE = ('no', 'skip', 'none', 'clear', 'rest', 'thanks', 'hand', 'ok')
-KINDS = ('hard', 'scam', 'ask', 'joy', 'impulse', 'sick', 'invite', 'cope')
-STAGES = ('react', 'gop', 'comfort', 'cope', 'ask', 'joy', 'impulse', 'sick', 'done')
+KINDS = ('hard', 'scam', 'ask', 'joy', 'impulse', 'sick', 'invite', 'cope', 'dorm')
+STAGES = ('react', 'gop', 'comfort', 'cope', 'ask', 'joy', 'impulse', 'sick', 'dorm', 'done')
 STATS = ('hard', 'warm', 'outings', 'given', 'received', 'spent', 'scams', 'rumours', 'coped')
 LOG_KEYS = {'id', 'day', 'kind', 'cat', 'title', 'emoji', 'who', 'text', 'spirit', 'money', 'fact', 'gossip'}
 CARD_KEYS = {'id', 'day', 'kind', 'ref', 'cat', 'stage', 'career', 'who', 'loss', 'hit', 'comfort', 'gop', 'fact',
@@ -72,6 +77,7 @@ ASK_INDEX = {x['id']: x for x in ASK}
 JOY_INDEX = {x['id']: x for x in JOYS}
 IMPULSE_INDEX = {x['id']: x for x in IMPULSE}
 SICK_INDEX = {x['id']: x for x in SICK}
+DORM_INDEX = {x['id']: x for x in DORM}
 EXTERNAL = {'incident': ('📵', 'Bị lừa mất tiền'), 'invest': ('🕳️', 'Dự án “lãi khủng” biến mất')}
 
 
@@ -96,6 +102,7 @@ def _people() -> dict:
     out.update({k: dict(v) for k, v in GOSSIPS.items()})
     out['friends'] = dict(FRIENDS)
     out['work'] = dict(name='Đồng nghiệp', emoji='🧑‍🤝‍🧑', role='Chỗ làm')
+    out.update({k: dict(v) for k, v in ROOMMATES.items()})   # 🛏️ the Ký túc xá roommates (no bond)
     return out
 
 
@@ -142,7 +149,12 @@ def _who_view(who: str | None, career: str | None = None) -> dict | None:
         name, emoji = WORK.get(career or '', ('Đồng nghiệp', '🧑‍🤝‍🧑'))
         return dict(id='work', name=name, emoji=emoji, role=_place(career))
     p = _people().get(who)
-    return dict(id=who, name=p['name'], emoji=p['emoji'], role=p.get('role', '')) if p else None
+    if not p:
+        return None
+    v = dict(id=who, name=p['name'], emoji=p['emoji'], role=p.get('role', ''))
+    if p.get('look'):         # a roommate: the browser draws the portrait (public/js/v4/look.js)
+        v.update(look=dict(p['look']), gender=p['gender'])
+    return v
 
 
 def _fill(text, s: dict, card: dict | None = None) -> str:
@@ -269,7 +281,7 @@ def _new_card(L: dict, day: int, kind: str, ref: str, cat: str, stage: str, care
 def _content(card: dict) -> dict:
     k, ref = card['kind'], card['ref']
     return {'hard': HARD_INDEX, 'ask': ASK_INDEX, 'joy': JOY_INDEX, 'impulse': IMPULSE_INDEX,
-            'sick': SICK_INDEX}.get(k, {}).get(ref, {})
+            'sick': SICK_INDEX, 'dorm': DORM_INDEX}.get(k, {}).get(ref, {})
 
 
 def _title(s: dict, card: dict) -> str:
@@ -310,6 +322,9 @@ def _choices(s: dict, card: dict) -> list[dict]:
     if st == 'react':
         return [_opt(c['id'], _fill(c['label'], s, card), c['spirit'], c['money'], text=c['text'], bond=c['bond'],
                      who=c.get('who'), default=c['default']) for c in HARD_INDEX[card['ref']]['choices']]
+    if st == 'dorm':
+        return [_opt(c['id'], _fill(c['label'], s, card), c['spirit'], c['money'], text=c['text'], default=c['default'])
+                for c in DORM_INDEX[card['ref']]['choices']]
     if st == 'comfort':
         k = COMFORT_INDEX[card['comfort']]
         return [_opt('yes', k['label'], round(k['spirit'] * COMFORT_SCALE), -k['cost'] + k['money'], text=k['text'], bond=k['bond'], who=k['who']),
@@ -349,7 +364,7 @@ def _choices(s: dict, card: dict) -> list[dict]:
 
 def _default(card: dict, choices: list[dict]) -> str:
     st = card['stage']
-    if st == 'react':
+    if st in ('react', 'dorm'):
         return next((c['id'] for c in choices if c.get('default')), next((c['id'] for c in choices if c['money'] >= 0), choices[0]['id']))
     return {'comfort': 'yes', 'gop': 'take', 'cope': 'skip', 'ask': 'hand', 'joy': 'ok', 'impulse': 'one',
             'sick': 'rest'}.get(st, choices[0]['id'] if choices else '')
@@ -463,7 +478,7 @@ def _apply(s: dict, L: dict, card: dict, cid: str, auto: bool = False) -> list[s
                  'gop': f'Quà của xóm: {gift["name"]}' if gift else 'Cả xóm góp tiền giúp bạn',
                  'cope': f'Xả stress: {COPE_INDEX[cid]["label"] if cid in COPE_INDEX else ""}',
                  'ask': f'Góp giúp: {title}', 'impulse': f'Buồn quá tiêu tiền: {title}',
-                 'sick': 'Đi khám bệnh'}.get(st, title)
+                 'sick': 'Đi khám bệnh', 'dorm': f'Ký túc xá: {title}'}.get(st, title)
         money = _wallet(s, money, label)
         card['money'] += money
         if money < 0:
@@ -667,6 +682,10 @@ def _roll(s: dict, L: dict, day: int, career: str | None, facts: set) -> dict | 
         x = _pick(r, pool, [_weight(k) for k in pool])
         if x:
             return _fire_hard(s, L, x, day, career)
+    if _in_dorm(s):
+        card = _roll_dorm(s, L, day, career)
+        if card:
+            return card
     if sp < 40 and rolls[4] < INVITE_P:
         kid = _pick_comfort(s, L, ('ru',), day, career, r)
         if kid:
@@ -692,6 +711,28 @@ def _roll(s: dict, L: dict, day: int, career: str | None, facts: set) -> dict | 
             card['spirit'] = _spirit(L, a['spirit'])
             return card
     return None
+
+
+def _in_dorm(s: dict) -> bool:
+    """Living in the Ký túc xá Hẻm 7 (game/housing.py) right now."""
+    from . import housing
+    return housing.where(housing.get(s)) == ('rent', housing.DORM)
+
+
+def _roll_dorm(s: dict, L: dict, day: int, career: str | None) -> dict | None:
+    """A roommate moment (life_content.DORM) on about DORM_P of the days left without a hard day. Its own random
+    stream (seed, 'dorm', day): the other cards of a player who never lives there roll exactly as before."""
+    r = _rng(s, 'dorm', day)
+    if r.random() >= DORM_P:
+        return None
+    pool = [x for x in DORM if day - L['recent'].get(x['id'], -99) >= DORM_RECENT]
+    if not pool:
+        return None
+    x = r.choice(pool)
+    L['recent'][x['id']] = day
+    card = _new_card(L, day, 'dorm', x['id'], 'ktx', 'dorm', career)
+    card['who'] += [x['who'], *x.get('also', ())]
+    return card
 
 
 # ---------------------------------------------------------------- facts for rumours (read from the real save)
@@ -899,7 +940,7 @@ def _card_view(s: dict, L: dict, card: dict) -> dict:
         v['lines'] = [_fill(t, s, card) for t in x['lines']]
     if card['kind'] == 'ask':
         v['speaker'] = _who_view(x['who'])
-    if card['kind'] == 'joy' and x.get('who'):
+    if card['kind'] in ('joy', 'dorm') and x.get('who'):
         v['speaker'] = _who_view(x['who'])
     if card['stage'] == 'comfort' and card['comfort']:
         k = COMFORT_INDEX[card['comfort']]
@@ -997,6 +1038,8 @@ def validate(s: dict) -> None:
         need(card['day'] <= j['life_day'], bad)
         need(card['kind'] != 'hard' or card['ref'] in HARD_INDEX, bad)
         need(card['kind'] != 'ask' or card['ref'] in ASK_INDEX, bad)
+        need(card['stage'] != 'dorm' or card['kind'] == 'dorm', bad)
+        need(card['kind'] != 'dorm' or (card['ref'] in DORM_INDEX and card['stage'] in ('dorm', 'done')), bad)
         need(card['stage'] != 'comfort' or card['comfort'] in COMFORT_INDEX, bad)
         need(card['stage'] != 'gop' or isinstance(card['gop'], dict), bad)
         need(isinstance(card['who'], list) and all(w in people for w in card['who']), bad)

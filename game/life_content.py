@@ -40,6 +40,7 @@ CATS = {
     'om': ('🤒', 'Mệt quá ốm một hôm'),
     'ru': ('🍻', 'Hàng xóm rủ đi chơi'),
     'xa': ('🎈', 'Xả stress'),
+    'ktx': ('🛏️', 'Chuyện phòng ký túc xá'),
 }
 
 TOKENS = {
@@ -712,3 +713,92 @@ SICK = [
 # Invites when you are low (no hard day needed).
 INVITE_CATS = ('ru',)
 FACTS = ('late', 'spend', 'draw', 'seen', 'breakup', 'stock')
+
+# ---------------------------------------------------------------- 🛏️ Ký túc xá Hẻm 7 (game/housing.py DORM)
+# The three roommates of the bunk room (four beds; the player's is the bottom bed by the window). People a card may
+# name (life._people), not neighbours with a bond. `look`: wardrobe item ids for the portrait (public/js/v4/look.js),
+# `bed`: where the room drawing puts them. Ids are stored in saves (life card and log `who`): never rename one.
+ROOMMATES = {
+    'ktx_quan': dict(name='Quân', emoji='🎓', role='Sinh viên năm cuối, đang làm đồ án', gender='male', bed='left_top',
+                     look=dict(hair='toc_ngan', shade='mau_den', skin='da_trung', top='ao_so_mi', bottom='quan_jean',
+                               shoes='giay_trang', acc='kinh_tron')),
+    'ktx_tuan': dict(name='Anh Tuấn', emoji='🛵', role='Shipper chạy ca đêm, ngủ ban ngày', gender='male', bed='left_bottom',
+                     look=dict(hair='toc_xoan', shade='mau_nau', skin='da_ngam', top='ao_hoodie', bottom='quan_xam',
+                               shoes='dep_lao', acc='pk_khong')),
+    'ktx_my': dict(name='My', emoji='📦', role='Cô bé bán hàng online, tối nào cũng livestream', gender='female', bed='right_top',
+                   look=dict(hair='toc_duoi_ngua', shade='mau_hong', skin='da_hong', top='ao_hoa', bottom='vay_xoe',
+                             shoes='giay_do', acc='pk_khong')),
+}
+
+# Small everyday moments in the bunk room: a card on some days while the player lives there (life._roll).
+# Each choice moves tinh thần by at most 3 and the wallet by a few xu; the default (taken when the card is left
+# undecided) never costs xu. `also`: the other roommates in the scene.
+DORM = [
+    dict(id='ktx_sac', who='ktx_quan', emoji='🔌', title='Quân mượn sạc',
+         lines=['Gần nửa đêm, Quân ló đầu khỏi rèm giường trên.',
+                '“Cho mình mượn cục sạc chút, mai nộp đồ án mà laptop sắp tắt…”'],
+         choices=[C('lend', 'Cho mượn', 'Sáng ra cục sạc nằm gọn trên gối bạn, kèm gói bánh quy và mảnh giấy “cảm ơn nha”.',
+                    spirit=2, default=True),
+                  C('later', 'Thôi để mai, máy mình cũng sắp hết pin', 'Quân gật gù rồi đi gõ cửa phòng bên. Bạn hơi áy náy.',
+                    spirit=-1)]),
+    dict(id='ktx_mi', who='ktx_tuan', emoji='🍜', title='Nồi mì chung lúc khuya',
+         lines=['Anh Tuấn chạy ca đêm về sớm, giơ hai gói mì với quả trứng.', '“Ai góp thêm gì thì nấu nồi bự ăn chung nè.”'],
+         choices=[C('chip', 'Góp mớ rau với quả trứng', 'Nồi mì bốc khói, bốn đứa ngồi bệt dưới sàn húp sùm sụp. Ngon hơn nhà hàng.',
+                    spirit=3, money=-3),
+                  C('sleep', 'Thôi để mai, mình buồn ngủ quá', 'Bạn kéo rèm ngủ trước. Mùi mì thơm lừng vẫn len vào giấc mơ.',
+                    spirit=1, default=True)]),
+    dict(id='ktx_on', who='ktx_my', emoji='📣', title='My livestream lúc khuya',
+         lines=['Mười một giờ đêm, My vẫn live: “Chốt đơn nha cả nhà, áo này còn ba cái thôi!”',
+                'Bạn trằn trọc, mai còn đi làm sớm.'],
+         choices=[C('ask', 'Nhắn nhẹ nhờ My nói nhỏ lại', 'My gửi liền cái sticker xin lỗi: “Từ mai em ra hành lang live nha!” Phòng im phăng phắc.',
+                    spirit=1, default=True),
+                  C('plug', 'Đeo nút tai, trùm chăn ngủ', 'Ngủ được, mà chập chờn. Sáng dậy mắt hơi thâm.', spirit=-2)]),
+    dict(id='ktx_que', who='ktx_tuan', emoji='🐟', title='Đồ ăn quê gửi lên',
+         lines=['Mẹ Anh Tuấn gửi xe khách lên một thùng: cá khô, mắm ruốc, bánh tráng.', '“Ăn đi mấy đứa, nhà gửi nhiều lắm.”'],
+         choices=[C('take', 'Nhận một phần, cảm ơn rối rít', 'Tối đó cơm với cá khô mà ngon lạ, đỡ được hộp cơm mua ngoài. Bạn nhớ nhà một chút.',
+                    spirit=2, money=3, default=True),
+                  C('swap', 'Đổi lại gói kẹo mua chiều nay', 'Anh Tuấn cười khà khà. Cả phòng đổi qua đổi lại, rôm rả như hồi ở quê.',
+                    spirit=3, money=-2)]),
+    dict(id='ktx_dien', who='ktx_my', emoji='💡', title='My nhắc đóng tiền điện',
+         lines=['My dán tờ giấy lên cửa tủ lạnh: “Tiền điện máy lạnh tuần này, mỗi người góp chút nha 🥺”'],
+         choices=[C('pay', 'Chuyển khoản liền', 'My thả tim tin nhắn. Phòng mình chẳng ai phải nhắc ai lần hai.', spirit=1, money=-4),
+                  C('later', 'Thôi để mai nhé', 'My gật đầu, nhưng tờ giấy trên tủ lạnh có thêm tên bạn được gạch chân.',
+                    spirit=-1, default=True)]),
+    dict(id='ktx_ao', who='ktx_quan', emoji='👔', title='Quân mượn áo đi phỏng vấn',
+         lines=['Sáng mai Quân phỏng vấn thực tập ở một công ty xây dựng, mà áo sơ mi nào cũng nhàu.',
+                '“Cho mình mượn cái áo tử tế được không? Mình giặt ủi trả liền.”'],
+         choices=[C('lend', 'Cho mượn, ủi giùm luôn', 'Chiều Quân về, khoe đậu vòng một, mua trà sữa đãi cả phòng.', spirit=3, default=True),
+                  C('no', 'Áo mình cũng nhàu hết rồi', 'Quân chạy sang phòng bên mượn. Tối về vẫn cười: “Không sao đâu!”')]),
+    dict(id='ktx_khuya', who='ktx_tuan', emoji='🌙', title='Anh Tuấn về lúc hai giờ sáng',
+         lines=['Hai giờ sáng, Anh Tuấn giao đơn khuya về, lỡ tay làm rớt cái mũ bảo hiểm cái cộp.'],
+         choices=[C('water', 'Ngồi dậy rót cho anh ly nước', 'Anh kể vụ khách đặt mười ly trà sữa rồi tắt máy. Hai người cười khúc khích, sợ cả phòng thức.',
+                    spirit=1),
+                  C('sleep', 'Lầm bầm rồi ngủ tiếp', 'Bạn trùm chăn ngủ lại, giấc ngủ đứt quãng tới sáng.', spirit=-2, default=True)]),
+    dict(id='ktx_doan', who='ktx_quan', emoji='📐', title='Đồ án dí deadline',
+         lines=['Quân thức trắng in bản vẽ, tiệm photo dưới hẻm đòi thêm tiền in màu.',
+                '“Ai cho mình mượn ít xu, bảo vệ xong mình khao bún bò!”'],
+         choices=[C('lend', 'Cho mượn ít xu', 'Bản vẽ in kịp giờ. Quân ôm cuộn giấy chạy đi, ngoái lại giơ ngón cái.', spirit=2, money=-4),
+                  C('no', 'Ví mình cũng mỏng lắm', 'Quân gật đầu: “Không sao, để mình hỏi Anh Tuấn.”', default=True)]),
+    dict(id='ktx_don', who='ktx_my', emoji='🧹', title='Tổng vệ sinh phòng',
+         lines=['Sáng nay My hô cả phòng: “Ai lau sàn, ai đổ rác, ai giặt rèm nè?”'],
+         choices=[C('help', 'Xắn tay áo lau sàn', 'Phòng thơm mùi nước lau sàn. Bốn cái giường tầng gọn như khách sạn.', spirit=2, default=True),
+                  C('later', 'Thôi để mai mình làm bù nha', 'Cả phòng dọn xong trước. Bạn hơi ngại, hứa tuần sau đổ rác cả tuần.', spirit=-1)]),
+    dict(id='ktx_cup_dien', who='ktx_quan', also=('ktx_tuan', 'ktx_my'), emoji='🕯️', title='Cúp điện, kể chuyện ma',
+         lines=['Mưa to, cúp điện cả dãy. Bốn đứa nằm trên giường tầng, soi đèn điện thoại.', 'Quân đề nghị: “Kể chuyện ma đi!”'],
+         choices=[C('tell', 'Kể chuyện ma quê mình', 'My hét lên trốn vào chăn, Anh Tuấn cười sằng sặc. Đêm đó cả phòng thân thêm chút.', spirit=3),
+                  C('sleep', 'Thôi ngủ sớm cho khỏe', 'Bạn nằm nghe tiếng mưa với tiếng cả phòng thì thầm, ngủ lúc nào không hay.',
+                    spirit=1, default=True)]),
+]
+
+# A roommate's line of the day on the home card (housing.public: picked from the journey seed and the life day).
+DORM_LINES = {
+    'ktx_quan': ['Còn mấy hôm nữa bảo vệ đồ án. Ai thấy mình ngủ gục thì đắp chăn giùm nha.',
+                 'Mai mình dậy sớm chạy bộ quanh hồ, ai đi chung không?',
+                 'Wifi chậm quá, chắc phòng bên lại đang coi phim.'],
+    'ktx_tuan': ['Đêm qua chạy được hai chục đơn, mệt mà vui.',
+                 'Ai ăn bánh mì không? Khách hủy đơn, anh mang về nè.',
+                 'Anh ngủ ngày, mấy đứa về nhớ đóng cửa nhẹ nhẹ giùm nha.'],
+    'ktx_my': ['Tối nay em live tám giờ, cả phòng vào thả tim giùm em nha!',
+               'Nồi cơm điện em nấu dư, ai đói thì xới nha.',
+               'Tuần này phòng mình đóng điện đúng hẹn, chủ nhà khen quá trời.'],
+}
