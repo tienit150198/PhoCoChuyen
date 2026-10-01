@@ -620,6 +620,38 @@ class PetCareTests(unittest.TestCase):
         self.assertIn('staying', j.c['shift_summary']['career'])
         validate_state(json.loads(json.dumps(j.state)))
 
+    def test_dryer_towels_match_what_the_screen_asks_for(self):
+        """pet_care.js towelNeed(): 1 towel for a cat or a pet of 10 kg or less by the known weight (the scale once
+        weighed, else the owner's word), 2 otherwise, taken once on the first start. The screen offers "📦 Nhập
+        khăn tắm" instead of the dryer below that count: one fewer is refused untouched, that many is enough."""
+        def set_stock(c, item, n):
+            x = c['ext']['inv']
+            lot = lots[item] if item in lots else lots.setdefault(item, next(l for l in x['lots'] if l['item'] == item))
+            x['lots'] = [l for l in x['lots'] if l['item'] != item] + ([dict(lot, qty=n)] if n else [])
+        lots = {}
+        for name, want in (('Bông', 1), ('Mochi', 1), ('Lu', 2)):
+            with self.subTest(name):
+                lots.clear()
+                j = self.journey('groom', name)
+                j.act('pc_bath', shampoo='sensitive' if name == 'Lu' else 'puppy' if name == 'Mochi' else 'normal', temp=37)
+                j.act('pc_rinse', mode='start')
+                self.clock.t += 9
+                j.act('pc_rinse', mode='stop')
+                pub = next(t for t in public_state(j.state)['careers']['pet_care']['tasks'] if t['id'] == j.task['id'])
+                kg = pub['facts'].get('kg', pub['needs']['kg_said'])
+                self.assertEqual(want, 1 if pub['needs']['species'] == 'cat' or kg <= 10 else 2)
+                set_stock(j.c, 'towel', want - 1)
+                before = copy.deepcopy(j.state)
+                with self.assertRaises(GameError):
+                    j.act('pc_dry', mode='start', heat='cool')
+                self.assertEqual(j.state, before)
+                set_stock(j.c, 'towel', want)
+                j.act('pc_dry', mode='start', heat='cool')
+                self.assertEqual(self.stock(j, 'towel'), 0)
+                self.clock.t += 1
+                j.act('pc_dry', mode='stop')
+                j.act('pc_dry', mode='start', heat='cool')    # towels only once: no stock needed now
+
 
 def pick(pred, days=range(1, 40)):
     for day in days:

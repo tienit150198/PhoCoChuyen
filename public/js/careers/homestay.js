@@ -6,6 +6,7 @@ import {reqList} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,todoAttrs,todoArrow,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tray,tillActions} from './till.js';
+import {restockGo} from '../v4/restock.js';
 const JOB_ICON={checkin:'🔑',checkout:'🧾',breakfast:'🍳',booking:'📅',recommend:'🗺️',claim:'📞'};
 const STATUS={clean:['Sạch','green'],dirty:['Cần dọn','amber'],occupied:['Có khách','blue'],maintenance:['Bảo trì','danger']};
 const CELL={occ:'🛏️',book:'📌',maint:'🔧',free:''};
@@ -23,6 +24,20 @@ const rateInfo=(x,id)=>(x.cc.rates||[]).find(r=>r.id===id)||{id,name:'Giá niêm
 const deskOpen=x=>!!x.room.data?.desk?.ev;
 const airOf=x=>x.room.data?.air||x.cc.air||{damp:15,cold:90};
 const cmdAttr=(x,command,payload)=>`data-command="${x.esc(command)}" data-payload="${x.esc(JSON.stringify(payload))}"`;
+/* Supplies a step takes, by the server's own count (room.inventory.stock = what need()/take() see). */
+/** What the shelf lacks for `need` ({item: qty}): [{id, need, have}], [] when enough. */
+const lacks=(x,need)=>Object.entries(need).filter(([k,q])=>q>0&&x.stock(k)<q).map(([id,q])=>({id,need:q,have:x.stock(id)}));
+/** The step the shelf cannot supply becomes the way to supply it: "📦 Nhập mì ly · thiếu 2" (an arrived crate is
+ * opened first, an order on the way shows when it comes). A guide `go`; lackBtn is the same tap as a button. */
+function lackGo(x,short){
+  const g=restockGo(x.room,short,{task:x.room.active_task||null}),s=short[0],name=x.esc(itemInfo(x,s.id).name.toLowerCase());
+  return {...g,label:g.full||g.coming?g.label:g.ready?`📦 Mở thùng ${name} lên kệ`:`📦 Nhập ${name} · thiếu ${s.need-s.have}`};
+}
+const goAttrs=(x,g)=>`data-action="${x.esc(g.act)}"${Object.entries(g.data||{}).map(([k,v])=>` data-${k}="${x.esc(v)}"`).join('')}`;
+const lackBtn=(x,short,style='small primary')=>{const g=lackGo(x,short);return x.button(g.label,g.act,g.data||{},style+' hs-lack');};
+/** What one housekeeping step takes (homestay.py _clean): its own supplies, the minibar's instant noodles on the
+ * amenity step, and a second bath kit when the amenities go in before the bathroom is scrubbed (one gets wet). */
+const hkNeed=(room,s)=>{const use={...(s.use||{})};if(s.id==='amenity'){if(room.mini)use.noodles=room.mini;if(room.hk&&!(room.hk.done||[]).includes('bath'))use.soap_kit=2;}return use;};
 const carBtn=(x,label,action,data={},cls='',extra='')=>`<button type="button" class="${cls}" data-action="car:${action}"${Object.entries(data).map(([k,v])=>` data-${k}="${x.esc(v)}"`).join('')}${extra}>${label}</button>`;
 /* A section whose open/closed state survives re-renders (x.ui.open[key]); `def` is the state before the player touches it. */
 function panel(x,key,head,body,def=false,cls=''){
@@ -225,7 +240,9 @@ function turnover(x,rid,room){
     const ok=done.includes(s.id),free=s.id==='ready',wait=(s.id!=='strip'&&!room.hk)||(s.id==='ready'&&!middle);
     const use=Object.entries(s.use||{}).map(([k,q])=>`${q} ${itemInfo(x,k).name.toLowerCase()}`);
     if(s.id==='amenity'&&room.mini)use.push(`${room.mini} mì ly bù minibar`);
-    return `<button type="button" class="hs-hkstep ${ok?'done':''}" ${cmdAttr(x,'hs_clean',{room:rid,step:s.id})} ${ok||wait||(busy&&!free)?'disabled':''}><span class="n">${ok?'✓':i+1}</span><span class="e">${s.emoji}</span><span class="grow">${x.esc(s.name)}${use.length?`<small>−${x.esc(use.join(', '))}</small>`:''}</span></button>`;
+    // Short of a supply: the step says what is missing and a tap opens the stock room for it (the server would refuse).
+    const short=ok?[]:lacks(x,hkNeed(room,s)),g=short.length?lackGo(x,short):null;
+    return `<button type="button" class="hs-hkstep ${ok?'done':''}${g?' short':''}" ${g?goAttrs(x,g):cmdAttr(x,'hs_clean',{room:rid,step:s.id})} ${ok||(!g&&wait)||(busy&&!free)?'disabled':''}><span class="n">${ok?'✓':i+1}</span><span class="e">${g?'📦':s.emoji}</span><span class="grow">${x.esc(s.name)}${g?`<small class="hs-lack-line">${g.label}</small>`:use.length?`<small>−${x.esc(use.join(', '))}</small>`:''}</span></button>`;
   }).join('');
   return `<div class="hs-turnover card"><div class="row spread"><h4>🧹 Dọn phòng ${r.emoji} ${x.esc(r.name)}</h4>${x.button('Đóng','car:hk',{room:rid},'ghost small')}</div>
     <p class="small muted">🪟 ${air.damp}–${air.cold} giây${air.damp>(x.cc.air?.damp||15)?' · 🌧️ mưa ẩm':''}</p>
@@ -252,7 +269,8 @@ function stayCard(x,r,room,st){
   const tidyDone=st.tidy!=null;
   rows.push({ok:st.tidy==='tidy'||st.tidy==='door'?true:st.tidy==='intrude'||st.tidy==='basket'?false:null,icon:st.dnd?'🚪':'🧺',label:st.dnd?'Để khăn ở cửa':'Dọn phòng giữa kỳ',
     note:{intrude:'đã vào phòng dù có biển',basket:'chỉ để khăn, phòng chưa dọn'}[st.tidy]||(st.dnd?'2 khăn tắm, không gõ cửa':'2 khăn tắm')});
-  if(!tidyDone)btns.push(x.cmd('🧺 Vào dọn phòng','hs_stay',{room:r.id,do:'tidy'},st.dnd?'ghost small':'small',busy),x.cmd('🚪 Để khăn ở cửa','hs_stay',{room:r.id,do:'door'},st.dnd?'small':'ghost small',busy));
+  const towels=lacks(x,{towel:2});
+  if(!tidyDone)btns.push(x.cmd('🧺 Vào dọn phòng','hs_stay',{room:r.id,do:'tidy'},st.dnd?'ghost small':'small',busy||towels.length>0),x.cmd('🚪 Để khăn ở cửa','hs_stay',{room:r.id,do:'door'},st.dnd?'small':'ghost small',busy||towels.length>0),towels.length?lackBtn(x,towels):'');
   if(st.cold){
     rows.push({ok:st.warmed?true:null,icon:'🔥',label:'Sưởi đêm lạnh',note:st.warmed?(st.warmed==='wood'?'lò củi + chăn dày':'máy sưởi gas + chăn dày'):'1 bó củi hoặc 1 bình gas',tone:st.warmed?'':'danger'});
     if(!st.warmed)btns.push(x.cmd(`🪵 Nhóm lò củi (${d.wood||0})`,'hs_stay',{room:r.id,do:'warm',how:'wood'},'small',busy||!d.wood),x.cmd(`🔥 Máy sưởi gas (${x.stock('heater_gas')})`,'hs_stay',{room:r.id,do:'warm',how:'gas'},'ghost small',busy||!x.stock('heater_gas')));
@@ -269,7 +287,8 @@ function stayCard(x,r,room,st){
         ask=`${bubble(x,'Khách:',st.say||'')}<div class="hs-trip">${opts}</div>`;
       }else{
         const use=Object.entries(a.use||{}).map(([k,q])=>`${q} ${itemInfo(x,k).name.toLowerCase()}`).join(', ');
-        ask=`${bubble(x,'Khách:',st.say||'')}<div class="row wrap">${x.cmd(`${a.emoji} ${x.esc(a.act||a.label)}${use?` (${x.esc(use)})`:''}`,'hs_stay',{room:r.id,do:'ask'},'small',busy)}</div>`;
+        const short=lacks(x,a.use||{});
+        ask=`${bubble(x,'Khách:',st.say||'')}<div class="row wrap">${x.cmd(`${a.emoji} ${x.esc(a.act||a.label)}${use?` (${x.esc(use)})`:''}`,'hs_stay',{room:r.id,do:'ask'},'small',busy||short.length>0)}${short.length?lackBtn(x,short):''}</div>`;
       }
     }
   }
@@ -545,8 +564,8 @@ function hkSteps(x,rid){
   const room=x.room.data?.rooms?.[rid];if(!room||room.status!=='dirty')return [];
   const r=roomInfo(x,rid),done=room.hk?.done||[];
   return x.cc.hk_steps.map(s=>{
-    const use=Object.entries(s.use||{}),short=use.find(([k,q])=>x.stock(k)<q);
-    return {ok:done.includes(s.id)||null,label:`Dọn ${r.name}: ${s.name}`,go:short&&!done.includes(s.id)?inv(x,short[0],itemInfo(x,short[0]).name.toLowerCase()):{cmd:'hs_clean',payload:{room:rid,step:s.id},label:`${s.emoji} ${x.esc(s.name)} · ${x.esc(r.name)}`}};
+    const short=lacks(x,hkNeed(room,s));
+    return {ok:done.includes(s.id)||null,label:`Dọn ${r.name}: ${s.name}`,go:short.length&&!done.includes(s.id)?lackGo(x,short):{cmd:'hs_clean',payload:{room:rid,step:s.id},label:`${s.emoji} ${x.esc(s.name)} · ${x.esc(r.name)}`}};
   });
 }
 function checkinSteps(t,x){
@@ -742,13 +761,13 @@ function idleSteps(x){
   for(const [rid,st] of Object.entries(d.stays||{})){
     if(st.rolled!==d.today)continue;
     const r=roomInfo(x,rid);
-    if(st.tidy==null&&x.stock('towel')>=2)rows.push({ok:null,label:`${r.name}: ${st.dnd?'để khăn ở cửa (biển đừng làm phiền)':'dọn phòng giữa kỳ'}`,go:{cmd:'hs_stay',payload:{room:rid,do:st.dnd?'door':'tidy'},label:st.dnd?`🚪 Để khăn ở cửa ${x.esc(r.name)}`:`🧺 Vào dọn ${x.esc(r.name)}`}});
+    if(st.tidy==null)rows.push({ok:null,label:`${r.name}: ${st.dnd?'để khăn ở cửa (biển đừng làm phiền)':'dọn phòng giữa kỳ'}`,go:lacks(x,{towel:2}).length?lackGo(x,lacks(x,{towel:2})):{cmd:'hs_stay',payload:{room:rid,do:st.dnd?'door':'tidy'},label:st.dnd?`🚪 Để khăn ở cửa ${x.esc(r.name)}`:`🧺 Vào dọn ${x.esc(r.name)}`}});
     if(st.cold&&!st.warmed&&(d.wood||x.stock('heater_gas')))rows.push({ok:null,label:`${r.name}: sưởi đêm lạnh`,go:{cmd:'hs_stay',payload:{room:rid,do:'warm',how:d.wood?'wood':'gas'},label:d.wood?`🪵 Nhóm lò củi ${x.esc(r.name)}`:`🔥 Máy sưởi gas ${x.esc(r.name)}`}});
     if(st.ask&&!st.asked){
       const a=(x.cc.asks||[]).find(v=>v.id===st.ask)||{emoji:'💬',label:st.ask,use:{}};
       // The trip choices sit on the rooms tab: the step opens that tab first, then points at them.
       if(st.ask==='trip'){const label=`🗺️ Gợi ý nơi đi cho khách ${x.esc(r.name)}`;rows.push({ok:null,label:`${r.name}: ${a.label.toLowerCase()}`,go:(x.ui.hsTab||'cal')==='rooms'?{sel:'.hs-trip',label}:{act:'car:tab',data:{tab:'rooms'},label}});}
-      else if(Object.entries(a.use||{}).every(([k,q])=>x.stock(k)>=q))rows.push({ok:null,label:`${r.name}: ${a.label.toLowerCase()}`,go:{cmd:'hs_stay',payload:{room:rid,do:'ask'},label:`${a.emoji} ${x.esc(a.act||a.label)} · ${x.esc(r.name)}`}});
+      else rows.push({ok:null,label:`${r.name}: ${a.label.toLowerCase()}`,go:lacks(x,a.use||{}).length?lackGo(x,lacks(x,a.use||{})):{cmd:'hs_stay',payload:{room:rid,do:'ask'},label:`${a.emoji} ${x.esc(a.act||a.label)} · ${x.esc(r.name)}`}});
     }
   }
   return rows;

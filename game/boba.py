@@ -2332,7 +2332,9 @@ def public(c: dict) -> dict:
         event=ev_view, notebook=notebook, warnings=warnings(c), history=b['history'][-7:], sold_out=b['sold_out'],
         sealer_off=b['sealer_off'] > c['turn'] and 'sealer' not in b['upgrades'], dome=b['dome'],
         office=dict(count=b['office']['count'], done=b['office']['done'], deadline_in=max(0, b['office']['deadline'] - c['turn']), bonus=b['office']['bonus']) if b.get('office') else None,
-        story_step=b['story']['step'], prices=dict(base=BASE_PRICE, flavor=FLAVOR_PRICE, topping=TOPPING_PRICE, size_l=SIZE_L_PRICE),
+        story_step=b['story']['step'], prices=dict(base=BASE_PRICE, flavor=FLAVOR_PRICE, topping=TOPPING_PRICE, size_l=SIZE_L_PRICE,
+                                                    # the trial band life_price accepts (experiences.py: 75%-125%, Python rounding)
+                                                    range={k: [round(v * .75), round(v * 1.25)] for k, v in BASE_PRICE.items()}),
         sugars=list(SUGARS), ices=list(ICES), seal=seal_zones(b), app_fee=APP_FEE_PCT, turn=c['turn'], **care_loop))
 
 

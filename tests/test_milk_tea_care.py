@@ -416,6 +416,75 @@ class Swaps(unittest.TestCase):
         self.assertNotIn('pearls', avoid)  # cooked at the counter, never off the menu
 
 
+class SwapOffers(unittest.TestCase):
+    """milk_tea.js offers tea_swap only for what the pinned ticket lists (the server's needs, a usual order and an
+    earlier swap included) and, for a topping, only when another one is on hand (swap_to); the notebook's usual is
+    the guest's habit, not the order."""
+    def pub(self, j, tid):
+        return next(x for x in public_state(j.state)['careers']['milk_tea']['tasks'] if x['id'] == tid)
+
+    def test_a_usual_order_follows_the_swap(self):
+        j = Journey('milk_tea')
+        t = j.task
+        usual = dict(base='milk', flavor=None, toppings=['popping'], size='M', sugar=50, ice='normal')
+        t.update(changes=[], usual=True, src=dict(fixed=copy.deepcopy(usual)))
+        t['needs'] = boba.derive(t)
+        t['quoted_price'] = boba.price(j.c, t['needs'])
+        st(j)['notebook'][t['npc']] = dict(usual=copy.deepcopy(usual), visits=3, day=j.c['day'])
+        j.act('ask', task=t['id'])
+        for l in j.c['life']['pantry']:
+            if l['item'] == 'popping':
+                l['qty'] = 0
+        tops = lambda: [r['want'] for r in self.pub(j, t['id'])['ticket'] if r['k'] == 'topping']
+        self.assertIsNone(self.pub(j, t['id'])['needs'])     # a usual: the client reads the ticket, not needs
+        self.assertEqual(tops(), ['popping'])
+        j.act('tea_swap', task=t['id'], item='popping')
+        self.assertNotIn('popping', tops())                   # the notebook still says popping; the ticket does not
+        book = next(r for r in boba.public(j.c)['notebook'] if r['npc'] == t['npc'])
+        self.assertIn('popping', book['usual']['toppings'])
+        unchanged(self, j, 'tea_swap', task=t['id'], item='popping')
+
+    def test_topping_swap_offered_only_when_another_is_on_hand(self):
+        j = Journey('milk_tea')
+        t = j.task
+        t.update(changes=[], usual=False, src=dict(fixed=dict(base='milk', flavor=None, toppings=['popping'], size='M', sugar=50, ice='normal')))
+        t['needs'] = boba.derive(t)
+        t['quoted_price'] = boba.price(j.c, t['needs'])
+        j.act('ask', task=t['id'])
+        for l in j.c['life']['pantry']:
+            if l['item'] == 'popping':
+                l['qty'] = 0
+        # The client's rule over the public stations (milk_tea.js swappable()).
+        def offered():
+            want = [r['want'] for r in self.pub(j, t['id'])['ticket'] if r['k'] == 'topping']
+            return any(s['group'] == 'topping' and s['id'] != 'popping' and s['id'] not in want and s['unlocked'] and s['on'] and s['stock'] > 0
+                       for s in boba.public(j.c)['stations'])
+        self.assertTrue(offered())
+        self.assertIsNotNone(boba.swap_to(j.c, t, 'popping'))
+        for s in boba.public(j.c)['stations']:
+            if s['group'] == 'topping' and s['id'] != 'popping' and s['unlocked'] and s['on']:
+                j.act('tea_menu', item=s['id'], on=False)
+        self.assertFalse(offered())
+        self.assertIsNone(boba.swap_to(j.c, t, 'popping'))
+        unchanged(self, j, 'tea_swap', task=t['id'], item='popping')
+
+
+class PriceBand(unittest.TestCase):
+    def test_the_band_shown_is_the_band_accepted(self):
+        """Bảng giá shows and clamps to prices.range (milk_tea.js priceBand); life_price takes both ends, not one past."""
+        j = Journey('milk_tea')
+        j.act('end_day', carry_event=True)
+        band = boba.public(j.c)['prices']['range']
+        self.assertEqual(set(band), set(boba.BASE_PRICE))
+        self.assertEqual(band['thai'], [26, 42])             # 25.5 and 42.5 round to even, as Python does
+        for item, (lo, hi) in band.items():
+            for bad in (lo - 1, hi + 1):
+                unchanged(self, j, 'life_price', item=item, price=bad)
+            for ok in (lo, hi):
+                j.act('life_price', item=item, price=ok)
+                self.assertEqual(j.c['life']['prices'][item], ok)
+
+
 class ForecastAndCare(unittest.TestCase):
     def test_tomorrow_is_tomorrows_real_modifier(self):
         j = Journey('milk_tea')
