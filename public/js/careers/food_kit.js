@@ -45,7 +45,7 @@ export function queue(x,active){
   }).join('');
   // While learning the place (first two jobs), no extra guests: one clear order at a time.
   const learning=(x.room.metrics?.served||0)<2;
-  const more=x.room.open&&!learning&&tasks.length>0&&tasks.length<4?`<button type="button" class="fk-guest fk-more" data-command="more_work" data-payload="{}" aria-label="Đón thêm một khách"><span aria-hidden="true">＋</span><small>Đón khách</small></button>`:'';
+  const more=x.room.open&&!x.room.more_gate&&!learning&&tasks.length>0&&tasks.length<4?`<button type="button" class="fk-guest fk-more" data-command="more_work" data-payload="{}" aria-label="Đón thêm một khách"><span aria-hidden="true">＋</span><small>Đón khách</small></button>`:'';
   if(!chips&&!more)return '';
   return `<nav class="fk-queue" aria-label="Hàng chờ">${chips}${more}</nav>`;
 }
@@ -103,7 +103,7 @@ export function lockTag(level){return `<span class="fk-lock" aria-label="Mở �
 export function idlePanel(x,day,op,extra='',guests=null,cls=''){
   const open=openTasks(x);
   return `<div class="career-job food fk-idle${cls?' '+x.esc(cls):''}">${dayStrip(x,day)}${flash(x,day)}${eventCard(x,day,op)}${guests?guests(x):queue(x,null)}${extra}
-    ${!day?.open_event&&x.room.open&&!open.length?`<p class="fk-empty">Quầy đang trống. ${x.cmd('＋ Đón khách mới','more_work',{},'primary')}</p>`:''}
+    ${!day?.open_event&&x.room.open&&!open.length?`<p class="fk-empty">Quầy đang trống. ${x.room.more_gate?x.button('🚪 Khép ca · xem tổng kết','end',{},'primary'):x.cmd('＋ Đón khách mới','more_work',{},'primary')}</p>`:''}
     ${eventLog(x,day)}</div>`;
 }
 

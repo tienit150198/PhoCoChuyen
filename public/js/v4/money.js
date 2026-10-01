@@ -97,16 +97,25 @@ const pocketName=(b,pocket)=>(Array.isArray(pocket)?pocket:[pocket]).filter(p=>b
  * otherwise a confirm that starts with a spending word and names exactly one price is read as paid from
  * the workplace fund (on a work sheet) or the wallet (elsewhere). Nothing when no money is involved. */
 export function confirmMoney(b,texts,money=null){
-  if(!b)return '';
+  const m=confirmShort(b,texts,money);if(!m)return '';
+  return `<p class="mn-confirm" data-testid="money-confirm">${chipHTML(b)}</p>`+
+    (m.miss?`<p class="mn-short" role="status">⚠️ ${esc(m.where)} còn thiếu <b>${fmt(m.miss)} xu</b> cho khoản này.</p>`:'');
+}
+/** The confirm's money reading: {miss, where, sure} (null when no money is involved). `sure`: the price is
+ * exact (given by the caller, or named once without "khoảng") and comes out of the workplace fund, the only
+ * pocket the server's own check reads (game/engine.py money): then the confirm button is shut instead of
+ * letting the press fail with "Chưa đủ xu". */
+export function confirmShort(b,texts,money=null){
+  if(!b)return null;
   const talks=money||texts.some(t=>/\d\s*xu\b/u.test(String(t||'')));
-  if(!talks)return '';
+  if(!talks)return null;
   let cost=money?.cost??null,pocket=money?.pocket||null;
+  const told=cost!=null;
   if(cost==null&&isSpend(...texts))cost=priceIn(...texts);
   if(!pocket)pocket=b.fund!=null?'fund':'wallet';
   const miss=shortfall(b,Number(cost)||0,pocket);
-  const where=pocketName(b,pocket);
-  return `<p class="mn-confirm" data-testid="money-confirm">${chipHTML(b)}</p>`+
-    (miss?`<p class="mn-short" role="status">⚠️ ${esc(where)} còn thiếu <b>${fmt(miss)} xu</b> cho khoản này.</p>`:'');
+  const sure=Boolean(miss)&&pocket==='fund'&&(told||!texts.some(t=>/khoảng\s*[\d.]+\s*xu/u.test(String(t||''))));
+  return {miss,where:pocketName(b,pocket),sure};
 }
 
 /* ---------------------------------------------------------------- the chip in sheet headers (DOM) */

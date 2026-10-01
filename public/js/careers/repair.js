@@ -120,7 +120,7 @@ function shelfFold(x,skip){
 function shelfBanner(t,x){
   const sh=t.bench.shelf,v=tview(x,t),others=openTasks(x).some(o=>o.id!==t.id&&!o.deferred);
   const parts=orderRows(x,t).map(r=>`${r.icon} ${r.label}: ${r.value}`).join(' · ');
-  const next=others?x.button('➡️ Sang khách đang chờ','nextJob',{},'small ghost'):x.cmd('➕ Đón khách mới','more_work',{},'small ghost',openTasks(x).length>=4);
+  const next=others?x.button('➡️ Sang khách đang chờ','nextJob',{},'small ghost'):x.room.more_gate?'':x.cmd('➕ Đón khách mới','more_work',{},'small ghost');
   return `<div class="rp-banner ${promiseTone(v)}" role="status"><p><b>🏷️ ${x.esc(sh.tag)} · máy đang nằm trên kệ</b> — hẹn ${x.esc(who(x,t.npc))} <b>${x.esc(v.promise||'')}</b>${sh.moved?' (đã báo dời hẹn)':''}${parts?`<br><small>${x.esc(parts)}</small>`:''}</p><div class="rp-btns">${next}</div></div>`;
 }
 function promiseFold(t,x){
@@ -491,7 +491,7 @@ function quoteSteps(t,x){
 function fixSteps(t,x){
   const b=t.bench,dev=t.needs.device,open=t.open_scope||[],s=[],id=t.id,v=tview(x,t);
   const others=openTasks(x).some(o=>o.id!==t.id&&!o.deferred);
-  const away=others?{act:'nextJob',label:'➡️ Sang khách đang chờ'}:{cmd:'more_work',payload:{},label:'➕ Đón khách mới'};
+  const away=others?{act:'nextJob',label:'➡️ Sang khách đang chờ'}:x.room.more_gate?null:{cmd:'more_work',payload:{},label:'➕ Đón khách mới'};
   let wait=null;
   for(const f of open){const ap=b.approved[f];if(!ap)continue;
     const item=faultOf(x,dev,f).parts[ap.grade],o=v.orders?.[f],mine=o&&!o.used&&o.item===item,src=x.cc.source_of?.[ap.grade];

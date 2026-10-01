@@ -2417,8 +2417,8 @@ CAREERS = {'milk_tea': {'emoji': '🧋',
                                     'chỉ theo yêu cầu]].'},
                             {'emoji': '🗂️',
                              'name': 'Vụ theo dõi nhiều ngày',
-                             'how': 'Xác minh, mở đủ chứng cứ, chọn phương án, gửi đầu mối, kiểm kết quả rồi đóng vụ '
-                                    '(+65 xu).'},
+                             'how': 'Sáu bước, đánh số trên vé: xác minh, mở đủ chứng cứ, chọn phương án khớp dòng 📌 '
+                                    'Căn cứ, gửi đầu mối, kiểm kết quả, đóng vụ (+65 xu).'},
                             {'emoji': '📞',
                              'name': 'Gọi khách cập nhật',
                              'how': 'Vụ mở qua đêm: sáng hôm sau gọi khách trước 12:00, chọn [[Báo tình trạng thật '
@@ -2429,8 +2429,8 @@ CAREERS = {'milk_tea': {'emoji': '🧋',
                              '👆 Chạm dòng có vấn đề, chọn quy định nó trái. Dòng khóa 🔒 phải kiểm trước.',
                              '🔍 Bấm bước kiểm như [[Gọi số đã đăng ký]]; phải chờ thì [[Chờ một nhịp]].',
                              '🖋️ Chọn một con dấu, rồi bấm [[Đóng dấu]]. Đóng rồi là không sửa được.',
-                             '🗂️ Vụ nhiều ngày: [[Xác minh mã đơn]], mở từng chứng cứ, chọn phương án như [[Đổi đúng '
-                             'món]].',
+                             '🗂️ Vụ nhiều ngày: [[Xác minh mã đơn]], mở đủ chứng cứ, đọc dòng 📌 Căn cứ rồi chọn phương '
+                             'án khớp nó (“đổi đúng mã” → [[Đổi đúng món]]). Chọn lệch thì trạm chỉ lại dòng đó.',
                              '✅ Bấm [[Gửi việc cho đầu mối]], có kết quả thì [[Kiểm kết quả]], rồi [[Hoàn tất & đóng '
                              'vụ]].'],
                    'stars': ['💬 Câu trả lời đầu phải là câu tốt nhất; câu cụt hay câu đòi khách kể lại làm mất '

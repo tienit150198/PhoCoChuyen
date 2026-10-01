@@ -113,6 +113,9 @@
 .career-job.hs .hs-hkstep .e{font-size:1.3em}
 .career-job.hs .hs-hkstep small{color:var(--hs-muted)}
 .career-job.hs .hs-hkstep.done{opacity:.7;cursor:default}
+/* Short of a supply: the step becomes the way to restock it (homestay.js lackGo). */
+.career-job.hs .hs-hkstep.short{border-color:var(--hs-warn)}
+.career-job.hs .hs-hkstep.short small.hs-lack-line{color:var(--hs-ink);font-weight:700}
 .career-job.hs .hs-hkstep.done .n{background:var(--hs-good);border-color:var(--hs-good);color:var(--hs-accent-ink)}
 .career-job.hs .hs-lost{background:var(--hs-s2);border-radius:var(--hs-rs);padding:8px 12px}
 .career-job.hs .hs-lost summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:700}

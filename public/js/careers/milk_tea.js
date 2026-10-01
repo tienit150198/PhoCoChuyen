@@ -95,15 +95,25 @@ function alerts(x){
 const overtime=b=>b.now?.is_open&&(b.now.time||'')>(b.now.close||'20:00');
 const pending=(x,id)=>(B(x).orders||[]).filter(o=>o.item===id);
 const soonest=(x,id)=>pending(x,id)[0];
-/** The order in hand needs something the counter has run out of: offer a swap or an express order. */
+/** What the guest ordered, as the server holds it now: the pinned ticket (game/boba.py ticket(t['needs'])), so a
+ * usual order and an order already changed by a swap count right. The notebook's usual is only the guest's habit. */
+function ordered(t){
+  const r=t.ticket||[];
+  if(!r.length)return t.needs?{flavor:t.needs.flavor||null,toppings:t.needs.toppings||[],size:t.needs.size}:null;
+  return {flavor:r.find(v=>v.k==='flavor')?.want||null,toppings:r.filter(v=>v.k==='topping').map(v=>v.want),size:r.find(v=>v.k==='size')?.want};
+}
+/** tea_swap can offer something else for `k` (game/boba.py swap_to): a syrup can always be swapped or dropped;
+ * a topping needs another one that is unlocked, on the menu, in stock and not already in the order. */
+const swappable=(x,k,want)=>ing(x,k).group!=='topping'||(B(x).stations||[]).some(s=>s.group==='topping'&&s.id!==k&&!want.toppings.includes(s.id)&&s.unlocked&&s.on!==false&&s.stock>0);
+/** The order in hand needs something the counter has run out of: offer a swap (only when the server can make one) or an express order. */
 function outOfStock(t,x){
   if(!t?.known||t.cup?.sealed)return '';
-  const b=B(x),want=t.needs||(t.usual?(b.notebook||[]).find(r=>r.npc===t.npc)?.usual:null);if(!want)return '';
+  const b=B(x),want=ordered(t);if(!want)return '';
   const items=t.cup?.items||[],rows=[];
   const miss=[...(want.flavor?[want.flavor]:[]),...want.toppings].filter(k=>!items.includes(k)&&!station(x,k).made&&station(x,k).stock===0);
   for(const k of miss){
-    const i=ing(x,k),o=soonest(x,k);
-    rows.push(`<div class="mt-alert warn mt-out"><span>🚫 Hết <b>${x.esc(low(i.name))}</b>${o?` · 📦 ${x.esc(o.eta_label)}`:''}</span><span class="mt-out-btns">${jb(x,'🙏 Mời khách đổi','tea_swap',{task:t.id,item:k},'small cream')}${o?'':jb(x,`⚡ Gọi hỏa tốc · ${expressCost(x,k,5)} xu`,'tea_order',{item:k,qty:5,supplier:'express',confirm:true},'small ghost')}</span></div>`);
+    const i=ing(x,k),o=soonest(x,k),swap=swappable(x,k,want);
+    rows.push(`<div class="mt-alert warn mt-out"><span>🚫 Hết <b>${x.esc(low(i.name))}</b>${o?` · 📦 ${x.esc(o.eta_label)}`:swap?'':' · không còn topping khác để mời đổi'}</span><span class="mt-out-btns">${swap?jb(x,'🙏 Mời khách đổi','tea_swap',{task:t.id,item:k},'small cream'):''}${o?'':jb(x,`⚡ Gọi hỏa tốc · ${expressCost(x,k,5)} xu`,'tea_order',{item:k,qty:5,supplier:'express',confirm:true},'small ghost')}</span></div>`);
   }
   const cups=b.cups||{},size=want.size;
   if(!t.cup?.placed&&cups[size]===0){
@@ -324,6 +334,7 @@ function brewSteps(t,x){
   // A needed ingredient that has run out: make more at the counter, or ask the guest to swap.
   const refill=k=>{const s=station(x,k),i=ing(x,k);
     if(s.made)return run('tea_prepare',{item:k,qty:5,confirm:true},`${verb(k)} thêm ${x.esc(low(i.name))} · ${i.cost*5} xu`);
+    const want=ordered(t);if(want&&!swappable(x,k,want))return {sel:'.mt-out',label:soonest(x,k)?`📦 Hết ${x.esc(low(i.name))}: chờ hàng về`:`⚡ Hết ${x.esc(low(i.name))}: gọi hỏa tốc`};
     return {sel:'.mt-out',label:`🙏 Hết ${x.esc(low(i.name))}: mời khách đổi`};};
   const name=k=>low(ing(x,k).name),hasBase=hasGroup(x,cup,'base');
   const tops=items.filter(k=>ing(x,k).group==='topping').length;
@@ -539,11 +550,14 @@ function menuPanel(x){
     <p class="muted small">Tắt món không muốn bán: khách mới sẽ không gọi, quầy cũng không cần nhập. Ly khách đã gọi vẫn pha như cũ. Luôn giữ ít nhất một loại trà nền.</p>
     ${group('base','🫖 Trà nền')}${group('flavor','🍑 Siro')}${group('topping','🧋 Topping')}</section>`;
 }
+/** The trial price band of a base tea, as life_price checks it (game/boba.py prices.range; 75%–125%, Python rounding). */
+const priceBand=(x,id)=>{const b=B(x).prices||{},g=b.base?.[id]||30;return b.range?.[id]||[pyRound(g*.75),pyRound(g*1.25)];};
+const clampPrice=(x,id,v)=>{const [lo,hi]=priceBand(x,id),n=Math.round(Number(v));return Number.isFinite(n)&&String(v).trim()!==''?Math.min(hi,Math.max(lo,n)):null;};
 function priceTab(x){
   const b=B(x),base=b.prices?.base||{},prices=x.room.life?.prices||{},closed=!x.room.open;
-  return `${board(x)}${menuPanel(x)}<p class="muted">Đổi giá trà nền trong khoảng 75%–125% giá gốc, trước khi mở cửa.</p><div class="price-editor">${ings(x).filter(i=>i.group==='base').map(i=>{
-    const s=station(x,i.id),g=base[i.id]||30,v=prices[i.id]||g;
-    return `<div><strong>${x.esc(i.emoji)} ${x.esc(i.name)}${s.unlocked?'':' 🔒'}</strong><input class="input" type="number" id="price-${i.id}" min="${Math.round(g*.75)}" max="${Math.round(g*1.25)}" value="${v}" data-preserve aria-label="Giá ${x.esc(i.name)}" ${closed?'':'disabled'}>${x.button('Lưu giá','expPrice',{item:i.id},'small')}</div>`;}).join('')}</div>`;
+  return `${board(x)}${menuPanel(x)}<p class="muted">Đổi giá trà nền trước khi mở cửa.</p><div class="price-editor">${ings(x).filter(i=>i.group==='base').map(i=>{
+    const s=station(x,i.id),g=base[i.id]||30,v=prices[i.id]||g,[lo,hi]=priceBand(x,i.id);
+    return `<div><strong>${x.esc(i.emoji)} ${x.esc(i.name)}${s.unlocked?'':' 🔒'}<small class="mt-price-band">${lo}–${hi} xu</small></strong><input class="input" type="number" inputmode="numeric" id="price-${i.id}" data-price="${x.esc(i.id)}" min="${lo}" max="${hi}" step="1" value="${v}" data-preserve aria-label="Giá ${x.esc(i.name)}, từ ${lo} đến ${hi} xu" ${closed?'':'disabled'}>${x.button('Lưu giá','car:price',{item:i.id},'small',!closed)}</div>`;}).join('')}</div>`;
 }
 function reviewsTab(x){
   const posts=(x.room.feed||[]).filter(p=>p.stars),dist=[5,4,3,2,1].map(s=>[s,posts.filter(p=>p.stars===s).length]),max=Math.max(1,...dist.map(d=>d[1]));
@@ -624,8 +638,10 @@ export default {
   idle(x){
     const b=B(x),waiting=x.room.tasks.filter(open),left=b.left||0,orders=b.orders||[];
     const who=waiting[0]?.customer||'khách';
+    // more_gate (engine.more_gate): the server would refuse one more guest (closing time, the day's 12 dealt): close the day instead.
+    const gate=x.room.more_gate,shut=gate&&gate.why!=='full'?{ok:null,label:'Khép ca hôm nay',go:{act:'end',label:gate.why==='cap'?'🌙 Khép ca · đủ khách hôm nay':'🌙 Khép ca · hết giờ đón khách'}}:null;
     const step=waiting.length?{ok:null,label:`Mời ${who} lên quầy`,go:{act:'job',data:{task:waiting[0].id},label:`👋 Mời ${x.esc(who)} lên quầy`}}
-      :left?{ok:null,label:'Mời khách tiếp theo',go:run('more_work',{},'🔔 Mời khách tiếp theo')}
+      :shut?shut:left&&!gate?{ok:null,label:'Mời khách tiếp theo',go:run('more_work',{},'🔔 Mời khách tiếp theo')}
       :{ok:null,label:'Khép ca hôm nay',go:{act:'end',label:'🌙 Khép ca hôm nay'}};
     const next=stepCta(x,[step],{label:'',go:null,ready:false},{style:'primary'});
     const wait=x.room.open&&orders.length&&!waiting.length?jb(x,'⏳ Chờ hàng · 20 phút','tea_wait',{},'ghost'):'';
@@ -639,8 +655,12 @@ export default {
     x.ui.lastPage=view;
     return prepare(x,x.ui.prep);
   },
+  // A typed price snaps into the band as soon as the field is left, so the number on screen is the one saved.
+  input(el,x,type){if(!el.dataset?.price)return false;if(type==='change'){const v=clampPrice(x,el.dataset.price,el.value);if(v!=null)el.value=v;}return true;},
   actions:{
     async prep(data,el,x){x.ui.prep=data.tab;x.render();},
+    // Bảng giá: the price goes out inside the band the server accepts (a typed 50 becomes the top of the band).
+    async price(data,el,x){const i=document.getElementById('price-'+data.item),v=clampPrice(x,data.item,i?.value);if(v==null){x.toast('Nhập giá bằng số nhé.',true);return;}if(i)i.value=v;await x.send('life_price',{item:data.item,price:v});},
     async pick(data,el,x){x.ui.mtItem=x.ui.mtItem===data.item?null:data.item;x.render();},
     async shelf(data,el,x){(x.ui.mtShelf??={})[data.key]=true;x.render();},
     async showoff(data,el,x){x.ui.mtShowOff=!x.ui.mtShowOff;x.render();},

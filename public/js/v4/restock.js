@@ -28,6 +28,24 @@ export function crates(inv,items=[]){
   return {ready:open.filter(o=>o.ready_now),coming:open.filter(o=>!o.ready_now).sort((a,b)=>(a.left_min??1e9)-(b.left_min??1e9))};
 }
 
+/** Deliveries on the way and the most game/inventory.py inv_order allows at once (TRANSIT_CAP; lines of a
+ * merged order share a `group`: one van; and at most TRANSIT_LINES lines in all). {n, cap, full}. */
+export function vans(inv){
+  const on=(inv?.orders||[]).filter(o=>o&&o.status==='in_transit'),n=new Set(on.map(o=>o.group||o.id)).size,cap=Number(inv?.transit_cap)||8;
+  return {n,cap,full:n>=cap||on.length>=(Number(inv?.transit_lines)||1e9)};
+}
+/** "🚚 7/8 đơn đang về" once the order book is nearly full ('' before that). */
+export const vansLine=inv=>{const v=vans(inv);return v.n>=v.cap-2?`🚚 ${v.n}/${v.cap} đơn đang về`:'';};
+/** The order book is full (inv_order would refuse): the one next action instead of ordering. A crate at
+ * the door → open it; otherwise when the next one comes (the order list). null while there is room. */
+export function fullGo(inv,task=null){
+  const v=vans(inv);if(!v.full)return null;
+  const {ready,coming}=crates(inv);
+  if(ready.length)return {act:'v4InvOpen',data:{order:ready[0].id},label:`📦 Mở thùng đã tới (${ready.length}) · đủ ${v.cap} đơn`,ready:ready.length,full:true};
+  const o=coming[0];
+  return {act:'v4Restock',data:{items:'',task:task||'',wait:'1'},label:`🚚 Đủ ${v.cap} đơn đang về${o?.left_label?` · ${esc(o.left_label)}`:''}`,coming:true,full:true};
+}
+
 /** The guide step `go` that brings `items` back: {act:'v4Restock', data, label}. `task`: the work
  * screen to come back to once the goods are on the shelf. `urgent`: a customer is waiting (the order
  * form starts on the express courier). */
@@ -41,7 +59,7 @@ export function restockGo(room,items=[],{task=null,urgent=true}={}){
   const {ready,coming}=crates(inv,ids),data={items:ids.map(id=>want(id)?`${id}:${want(id)}`:id).join(','),task:task||''};
   if(ready.length)return {act:'v4Restock',data:{...data,order:ready[0].id},label:`📦 Mở thùng lên kệ (${ready.length})`,ready:ready.length};
   if(coming.length){const o=coming[0];return {act:'v4Restock',data:{...data,wait:'1'},label:`🚚 Hàng đang về${o.left_label?` · ${esc(o.left_label)}`:''}`,coming:true};}
-  return {act:'v4Restock',data:{...data,urgent:urgent?'1':''},label:'📦 Nhập hàng'};
+  return fullGo(inv,task)||{act:'v4Restock',data:{...data,urgent:urgent?'1':''},label:'📦 Nhập hàng'};
 }
 
 const attrs=data=>Object.entries(data||{}).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
@@ -88,6 +106,18 @@ export function lowItems(room,content,career){
 export function restockFor(x,ids,what,{task}={}){
   const room=x?.room,g=restockGo(room,[].concat(ids||[]).filter(Boolean),{task:task??room?.active_task??null});
   const w=esc(what||''),left=g.coming?crates(room?.inventory,[].concat(ids||[])).coming[0]?.left_label:'';
-  const label=g.ready?`📦 Mở thùng ${w} lên kệ`:g.coming?`🚚 ${w.charAt(0).toUpperCase()+w.slice(1)} đang về${left?` · ${esc(left)}`:''}`:`📦 Hết ${w}: nhập hàng`;
+  const label=g.full?g.label:g.ready?`📦 Mở thùng ${w} lên kệ`:g.coming?`🚚 ${w.charAt(0).toUpperCase()+w.slice(1)} đang về${left?` · ${esc(left)}`:''}`:`📦 Hết ${w}: nhập hàng`;
   return {...g,label};
+}
+
+/** Price of one order line from a supplier card (game/inventory.py line_price + ship_fee): `full` the
+ * listed price, `pct` the wholesale tier reached, `cost` the goods, `ship` the fee when this line ships
+ * alone, `total` what a single order costs. Older servers send no terms: no tier, no fee. */
+export function orderQuote(it,qty,sup){
+  const q=Math.max(1,Number(qty)||1),f=Number(sup?.factor)||1;
+  const pct=Math.max(0,...(sup?.bulk||[]).filter(([n])=>q>=n).map(([,p])=>p));
+  const full=Math.max(1,Math.ceil(it.cost*q*f)),off=pct?Math.max(1,Math.floor((full*pct+50)/100)):0,cost=Math.max(1,full-off);
+  const ship=cost>=(Number(sup?.free_from)||0)?0:(Number(sup?.ship)||0);
+  const tier=[...(sup?.bulk||[])].sort((a,b)=>a[0]-b[0]).find(([n])=>q<n)||null;
+  return {full,pct,cost,ship,total:cost+ship,tier};
 }

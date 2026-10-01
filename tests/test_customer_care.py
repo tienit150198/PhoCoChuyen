@@ -3,7 +3,8 @@ answer, account takeover, the viral post and Phúc's story."""
 import unittest
 
 from game import desk, desk_content as dc
-from game.engine import GameError, validate_state
+from game.content import make_task
+from game.engine import CS_SOL_LABEL, GameError, public_state, validate_state
 from tests.desk_support import Journey, desk_journey, reports, review, roundtrip, secrets, solve_desk
 
 
@@ -251,6 +252,78 @@ class ConsequenceTests(unittest.TestCase):
         self.assertEqual(sorted(x['sev'] for x in t['slips']), [1, 3])
         self.assertLessEqual(review(j, t['id'])['stars'], 2)
         self.assertTrue(reports(j, t['id']))
+
+
+
+class ClassicCaseChoiceTests(unittest.TestCase):
+    """The multi-day case: the 📌 source line that names the fix, and a wrong pick that says why."""
+    FIX = {'missing': {'reship', 'refund'}, 'delivered': {'trace'}, 'delay': {'trace'}, 'wrong': {'exchange'},
+           'refund': {'refund'}, 'guide': {'guide'}}
+
+    def case(self, slot):
+        j = Journey('customer_care', slot=slot)
+        t = make_task('customer_care', 1, slot, 1, True)  # a classic (pre-desk) case in this slot
+        j.c['tasks'] = [t]
+        j.c['active_task'] = t['id']
+        validate_state(j.state)
+        return j
+
+    def view(self, j):
+        return public_state(j.state)['careers']['customer_care']['tasks'][0]
+
+    def read_all(self, j):
+        j.act('cs_identity')
+        for e in j.task['evidence']:
+            self.assertIsNone(self.view(j)['basis'])  # only once every source is read
+            j.act('cs_evidence', evidence=e['id'])
+
+    def test_every_case_flags_its_basis_and_explains_a_wrong_pick(self):
+        for slot in range(6):
+            j = self.case(slot)
+            variant = j.task['variant']
+            self.assertIsNone(self.view(j)['basis'])
+            self.read_all(j)
+            v = self.view(j)
+            self.assertNotIn('solution', v)
+            line = next(e for e in v['evidence'] if e['id'] == v['basis'])
+            self.assertTrue(line['text'])
+            before = j.task['status']
+            for wrong in sorted({'reship', 'trace', 'exchange', 'refund', 'guide'} - self.FIX[variant]):
+                with self.assertRaises(GameError) as err:
+                    j.act('cs_propose', solution=wrong)
+                msg = str(err.exception)
+                self.assertIn(line['title'], msg, variant)
+                self.assertIn(line['text'], msg, variant)
+                self.assertIn(CS_SOL_LABEL[wrong], msg)
+                self.assertEqual(j.task['status'], before)
+                self.assertIsNone(j.task['proposal'])
+            j.act('cs_propose', solution=j.task['solution'])
+            self.assertEqual(j.task['proposal'], j.task['solution'])
+            validate_state(j.state)
+
+    def test_basis_names_the_fix(self):
+        """The flagged line carries the words of the fix it points to."""
+        words = {'missing': 'gửi bù', 'delivered': 'đầu mối giao nhận', 'delay': 'kiểm tra chặng', 'wrong': 'đổi đúng mã',
+                 'refund': 'yêu cầu hoàn', 'guide': 'Đơn của tôi'}
+        for slot in range(6):
+            j = self.case(slot)
+            self.read_all(j)
+            v = self.view(j)
+            line = next(e for e in v['evidence'] if e['id'] == v['basis'])
+            self.assertIn(words[j.task['variant']].lower(), line['text'].lower())
+
+    def test_missing_item_still_takes_a_refund(self):
+        j = self.case(0)
+        self.read_all(j)
+        j.act('cs_propose', solution='refund')
+        self.assertEqual(j.task['proposal'], 'refund')
+
+    def test_odd_choice_keeps_the_plain_message(self):
+        j = self.case(0)
+        self.read_all(j)
+        with self.assertRaises(GameError) as err:
+            j.act('cs_propose', solution='nonsense')
+        self.assertIn('Phương án chưa phù hợp', str(err.exception))
 
 
 if __name__ == '__main__':

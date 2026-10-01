@@ -854,6 +854,28 @@ class GroceryStockTests(unittest.TestCase):
         self.assertEqual(j.c['money'], money)
         roundtrip(j)
 
+    def test_empty_stall_is_named_before_the_scale_refuses(self):
+        # 01/10 logs: gr_weigh "Quầy … đã hết hàng" ×162. The view names the weighed lines with nothing left for
+        # that bill (data.scale_out), exactly the ones the scale refuses, so the client greys them out first.
+        day, slot = find(lambda t: t['kind'] == 'checkout' and '_haggle' not in t['needs']
+                         and any(l.get('weighed') for l in t['needs']['lines']))
+        j = Journey('grocery', slot=slot, day=day)
+        restock(j)
+        j.act('ask')
+        t = j.task
+        i = next(k for k, l in enumerate(t['needs']['lines']) if l.get('weighed'))
+        item = t['needs']['lines'][i]['item']
+        set_stock(j, item, 0)
+        self.assertIn(i, G.public_data(j.c)['scale_out'][t['id']])
+        with self.assertRaises(GameError):
+            j.act('gr_weigh', line=i, plu=item, tare=True)
+        set_stock(j, item, 1)
+        self.assertNotIn(i, G.public_data(j.c)['scale_out'].get(t['id'], []))
+        j.act('gr_weigh', line=i, plu=item, tare=True)
+        # Weighed: this bill holds the unit, the line stays open for a re-weigh.
+        self.assertNotIn(i, G.public_data(j.c)['scale_out'].get(t['id'], []))
+        j.act('gr_weigh', line=i, plu=item, tare=True)
+
     def test_pull_expired_then_clear_near_date(self):
         j = journey('Bà Sáu đi chợ sáng')
         day = j.c['day']
@@ -1478,6 +1500,32 @@ class GroceryBulkTests(unittest.TestCase):
         t = next(x for x in j.c['tasks'] if x['kind'] == 'bulk')
         self.assertEqual(t['bulk']['stage'], 'lost')
         self.assertEqual(t['status'], 'completed')
+
+    def test_refused_lowest_quote_ends_the_order(self):
+        # Feedback #49: with prices raised, 15% (the lowest price on the board) turned down said "Còn một lần
+        # báo giá" with nothing lower left to offer; every later quote was refused and the order hung all day.
+        j = self._bulk()
+        for x in j.task['needs']['lines']:
+            if G._price(j.c, x['item']) != G._cap_price(x['item']):
+                j.act('gr_tag', item=x['item'], price=G._cap_price(x['item']))
+        tid = j.task['id']
+        r = j.act('gr_bulk_quote', off=G.BULK_OFFERS[-1])
+        self.assertTrue(r['refused'])
+        t = j.get(tid)
+        self.assertEqual((t['bulk']['stage'], t['status'], t['bulk']['offers']), ('lost', 'completed', [G.BULK_OFFERS[-1]]))
+        roundtrip(j)
+
+    def test_bulk_stuck_at_the_lowest_quote_ends_on_the_next_tap(self):
+        j = self._bulk()
+        tid = j.task['id']
+        for x in j.task['needs']['lines']:
+            j.act('gr_tag', item=x['item'], price=G._cap_price(x['item']))
+        j.task['bulk']['offers'] = [G.BULK_OFFERS[-1]]          # a save that hung there before the fix
+        money = j.c['money']
+        j.act('gr_bulk_quote', off=G.BULK_OFFERS[-1])
+        t = j.get(tid)
+        self.assertEqual((t['bulk']['stage'], t['bulk']['offers'], j.c['money']), ('lost', [G.BULK_OFFERS[-1]], money))
+        roundtrip(j)
 
     def test_undelivered_order_is_refunded_at_closing(self):
         j = self._bulk()

@@ -1,8 +1,8 @@
 /** "Chat": moderation of the live chat on the operator site. GET /api/admin/chat (reported messages waiting
  * for a decision with their context and reasons, active mutes, the last messages of Cả phố) and
  * POST /api/admin/chat {op: hide|keep, id} | {op: mute, pid, hours: 1|24|168} | {op: unmute, pid}
- * (game/live_chat.py). The live service applies a decision at once (PostgreSQL NOTIFY). Messages are never
- * deleted: "Ẩn" hides one from players, "Giữ" shows it again and closes its reports. */
+ * (game/live_chat.py). The live service applies a decision at once (PostgreSQL NOTIFY). Messages are not
+ * deleted here (Cả phố keeps its newest 2,000, live/chat.py prune_town): "Ẩn" hides one from players, "Giữ" shows it again and closes its reports. */
 import {esc,icon,hm,ago,num,toast,tag} from './ui.js';
 
 const REASON={spam:'Spam',rude:'Thô tục',private:'Lộ thông tin',scam:'Lừa đảo',other:'Khác'};

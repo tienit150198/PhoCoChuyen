@@ -10,18 +10,20 @@
  * back or the network returns, and resumes from the last message id it holds per open chat. Close codes from
  * the service: 1012 restart (jittered return), 4001 switched off (10 minutes), 4002 another tab took over.
  *
- * For other features: live.on(type, fn) for any server frame, live.send(frame), live.flags, live.unread(). */
+ * For other features: live.on(type, fn) for any server frame, live.send(frame), live.flags, live.unread().
+ * 💕 Dates (./dating.js, lazy): live.bonds (pids "đang tìm hiểu"), dateNav(), openDate(), benchSpot(walk) for the stroll's bench. */
 import {icon} from '../icons.js';
 import {stylesheet} from '../lazy.js';
 
 const RETRY=[1,2,4,8,15],SLOW=[60,120,300,600],PING_MS=25000,DEAD_MS=60000;
 const listeners=new Map();
-let env=null,ws=null,attempt=0,timer=0,pinger=0,lastFrame=0,fab=null,shown=false,renderTimer=0,lastTotal=-1,cssAsked=false;
+let env=null,ws=null,attempt=0,timer=0,pinger=0,lastFrame=0,fab=null,shown=false,shownDate=false,renderTimer=0,lastTotal=-1,cssAsked=false;
 
 export const live={
   state:'idle',            // idle | connecting | open | down | off
   welcomed:false,          // a welcome arrived once in this page: the service exists
   flags:{},me:null,friends:[],chans:[],limits:{},
+  bonds:[],                // 💕 pids "đang tìm hiểu" (both ❤️ after a date): shown on their cards
   /** Open chats ask to be resumed after a reconnect: {channel id: last message id} (set by chat.js). */
   resume:()=>({}),
   on(type,fn){if(!listeners.has(type))listeners.set(type,new Set());listeners.get(type).add(fn);return ()=>listeners.get(type)?.delete(fn);},
@@ -76,7 +78,8 @@ function frame(f){
       live.welcomed=true;live.flags=f.flags||{};
       if(!live.flags.chat&&!live.flags.street&&!live.flags.dating&&!live.flags.wedding){live.state='off';break;}
       live.state='open';attempt=0;
-      live.me=f.me||null;live.friends=f.friends||[];live.chans=f.chans||[];live.limits=f.limits||{};
+      live.me=f.me||null;live.friends=f.friends||[];live.chans=f.chans||[];live.limits=f.limits||{};live.bonds=f.bonds||[];
+      if(live.flags.dating&&(f.date||f.bench))import('./dating.js').then(m=>m.datingBoot(env,f)).catch(e=>console.warn('dating:',e));   // back in a date after a reload
       clearInterval(pinger);pinger=setInterval(()=>{if(Date.now()-lastFrame>DEAD_MS){ws?.close();return;}live.send({t:'ping'});},PING_MS);
       deepLink();
       break;
@@ -89,6 +92,7 @@ function frame(f){
     case'muted':if(live.me){live.me.muted=f.until;live.me.town=f.until*1000>Date.now()?'muted':'ok';}break;
     case'chan':{const c=live.chan(f.chan.id);if(c)Object.assign(c,f.chan,{unread:c.unread,last:c.last});else live.chans.unshift(f.chan);break;}
     case'unchan':live.chans=live.chans.filter(c=>c.id!==f.ch);break;
+    case'bond':if(!live.bonds.includes(f.pid))live.bonds.push(f.pid);break;
     case'read':{const c=live.chan(f.ch);if(c){c.unread=0;c.read=Math.max(c.read||0,f.id);}break;}
     case'msg':{
       if(f.ch==='town')break;
@@ -123,12 +127,14 @@ function paint(){
     fab.setAttribute('aria-label',n?`Chat · ${n} tin chưa đọc`:'Chat');
   }
   // The rail / "Thêm" entry and its badge come from app.js (navItems reads liveNav()): re-render when they change.
-  const total=on?live.unread():-1;
-  if(on!==shown||total!==lastTotal){shown=on;lastTotal=total;clearTimeout(renderTimer);renderTimer=setTimeout(()=>env?.renderMain?.(),250);}
+  const total=on?live.unread():-1,dating=Boolean(live.flags.dating)&&live.welcomed;
+  if(on!==shown||total!==lastTotal||dating!==shownDate){shown=on;shownDate=dating;lastTotal=total;clearTimeout(renderTimer);renderTimer=setTimeout(()=>env?.renderMain?.(),250);}
 }
 
 /** For app.js navItems: the menu entry ([action, icon, label, badge]) when chat is on, else null. */
 export function liveNav(){return live.flags.chat&&live.welcomed?['liveChat','chats','Chat',live.unread()]:null;}
+/** 💕 The "Góc hẹn hò" entry when dates are on, else null. */
+export function dateNav(){return live.flags.dating&&live.welcomed?['liveDate','coffee','Góc hẹn hò']:null;}
 
 /* ---- opening the chat from a push (?chat=<id>) ---- */
 let wanted=new URLSearchParams(location.search).get('chat');
@@ -138,6 +144,15 @@ export function openChat(data={}){
   if(!env)return;
   import('./chat.js').then(m=>m.openChat(env,data)).catch(e=>console.warn('chat:',e));
 }
+
+/* ---- 💕 dates (./dating.js, its own dialog) ---- */
+export function openDate(data={}){
+  if(!env)return;
+  import('./dating.js').then(m=>m.openDate(env,data)).catch(e=>console.warn('dating:',e));
+}
+/** Đi dạo (app.js, when the stroll opens): the bench of every place becomes the dating bench (dating.js addBench,
+ * through walk.addSpot). Nothing loads while dates are off. */
+export function benchSpot(walk){if(live.flags.dating&&live.welcomed&&walk&&env)return import('./dating.js').then(m=>m.addBench(env,walk)).catch(e=>console.warn('dating:',e));}
 
 export function liveBoot(e){
   env=e;

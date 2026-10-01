@@ -13,7 +13,7 @@ if HAVE_WS:
 
 class AuthTests(LiveCase):
     async def test_cookie_and_origin(self):
-        token, sid = self.guest('Mây Bếp')
+        token, sid = self.account('Mây Bếp')
         c = await self.connect(token)
         w = c.welcome
         self.assertEqual(w['flags'], dict(chat=True, street=False, dating=False, wedding=False))
@@ -68,9 +68,9 @@ class AuthTests(LiveCase):
 
 class TownTests(LiveCase):
     async def test_post_read_and_slow_mode(self):
-        a = await self.connect(self.guest('Mây Hồng')[0])
-        b = await self.connect(self.guest('Gió')[0])
-        idle = await self.connect(self.guest('Lá')[0])
+        a = await self.connect(self.account('Mây Hồng')[0])
+        b = await self.connect(self.account('Gió')[0])
+        idle = await self.connect(self.account('Lá')[0])
         ja = await a.call('join', 'joined', ch='town')
         self.assertEqual((ja['why'], ja['msgs']), ('ok', []))
         await b.call('join', 'joined', ch='town')
@@ -88,7 +88,7 @@ class TownTests(LiveCase):
         await b.send(t='send', ch='town', text='x' * 301, cid='long')
         self.assertEqual((await b.expect('error', ref='long'))['code'], 'text')
         # a late joiner gets the last messages; history pages back
-        late = await self.connect(self.guest('Muộn')[0])
+        late = await self.connect(self.account('Muộn')[0])
         j = await late.call('join', 'joined', ch='town')
         self.assertEqual([m['text'] for m in j['msgs']], ['chào cả phố'])
         again = await late.call('join', 'joined', ch='town', after=mine['id'])   # back on Cả phố: only what is new
@@ -98,20 +98,20 @@ class TownTests(LiveCase):
         self.assertFalse(h['more'])
 
     async def test_new_session_and_unnamed_read_only(self):
-        new = await self.connect(self.guest('Tí', old=False)[0])
+        new = await self.connect(self.account('Tí', old=False)[0])
         j = await new.call('join', 'joined', ch='town')
         self.assertEqual(j['why'], 'new')
         self.assertGreater(j['wait'], 590)
         await new.send(t='send', ch='town', text='alo', cid='n')
         self.assertEqual((await new.expect('error', ref='n'))['code'], 'new')
-        anon = await self.connect(self.guest(None)[0])
+        anon = await self.connect(self.account('Mây')[0])   # the default character name is no name
         self.assertEqual(anon.welcome['me']['town'], 'name')
         await anon.send(t='send', ch='town', text='alo', cid='a')
         self.assertEqual((await anon.expect('error', ref='a'))['code'], 'name')
 
     async def test_filters_and_duplicates(self):
         self.cfg.town_every = 0
-        a = await self.connect(self.guest('Mây Hồng')[0])
+        a = await self.connect(self.account('Mây Hồng')[0])
         await a.call('join', 'joined', ch='town')
         await a.send(t='send', ch='town', text='gọi 0912 345 678, zalo minh123, vl thật', cid='f')
         m = await a.expect('msg', cid='f')
@@ -122,8 +122,8 @@ class TownTests(LiveCase):
         self.assertEqual((await a.expect('error', ref='d'))['code'], 'dup')
 
     async def test_delete_own_keeps_the_row(self):
-        a = await self.connect(self.guest('Mây Hồng')[0])
-        b = await self.connect(self.guest('Gió')[0])
+        a = await self.connect(self.account('Mây Hồng')[0])
+        b = await self.connect(self.account('Gió')[0])
         for c in (a, b):
             await c.call('join', 'joined', ch='town')
         await a.send(t='send', ch='town', text='lỡ tay', cid='x')
@@ -137,8 +137,49 @@ class TownTests(LiveCase):
         with self.store.connect() as db:
             r = db.execute('SELECT text, deleted FROM chat_messages WHERE id=?', (m['id'],)).fetchone()
         self.assertEqual((r[0], r[1]), ('', 1))
-        j = await (await self.connect(self.guest('Sau')[0])).call('join', 'joined', ch='town')
+        j = await (await self.connect(self.account('Sau')[0])).call('join', 'joined', ch='town')
         self.assertEqual((j['msgs'][0]['text'], j['msgs'][0]['del']), ('', 1))
+
+
+class GuestTests(LiveCase):
+    """Only accounts post (owner, 01/10); guests read Cả phố, and can post at once after registering."""
+
+    async def test_guests_read_but_never_post(self):
+        self.cfg.town_every = 0
+        tg, sg = self.guest('Khách Lạ')
+        ta, sa = self.account('Lan Anh')
+        tb, sb = self.account('Minh Tú')
+        for x in (sa, sb):
+            self.befriend(sg, x)   # (friends need accounts in the game; here only to reach the DM and group checks)
+        self.befriend(sa, sb)
+        g = await self.connect(tg)
+        self.assertEqual(g.welcome['me']['town'], 'account')
+        self.assertFalse(g.welcome['me']['account'])
+        a = await self.connect(ta)
+        for c in (g, a):
+            await c.call('join', 'joined', ch='town')
+        await a.send(t='send', ch='town', text='chào cả phố', cid='a1')
+        await a.expect('msg', cid='a1')
+        self.assertEqual((await g.expect('msg'))['text'], 'chào cả phố')     # reads
+        await g.send(t='send', ch='town', text='alo', cid='t')
+        self.assertEqual((await g.expect('error', ref='t'))['code'], 'account')
+        await g.send(t='send', to=self.pid(sa), text='alo', cid='d')
+        self.assertEqual((await g.expect('error', ref='d'))['code'], 'account')
+        await g.send(t='group_new', title='Nhóm', pids=[self.pid(sa)], cid='gn')
+        self.assertEqual((await g.expect('error', ref='gn'))['code'], 'account')
+        await a.send(t='group_new', title='Có khách', pids=[self.pid(sg)], cid='g')
+        ch = (await a.expect('chan', open=True))['chan']['id']
+        await g.expect('chan')
+        await g.send(t='send', ch=ch, text='alo', cid='gs')
+        self.assertEqual((await g.expect('error', ref='gs'))['code'], 'account')
+        with self.store.connect() as db:
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM chat_messages WHERE pid=?', (self.pid(sg),)).fetchone()[0], 0)
+        # registers (the save becomes an account, same sid): posts at once, on the same socket
+        with self.store.connect() as db:
+            db.execute("INSERT INTO accounts(username, display, pw, sid) VALUES('khachla', 'Khách Lạ', 'x', ?)", (sg,))
+        await g.send(t='send', ch='town', text='giờ nói được rồi', cid='t2')
+        self.assertEqual((await g.expect('msg', cid='t2'))['name'], 'Khách Lạ')
+        self.assertEqual((await g.call('sync', 'state'))['me']['account'], True)
 
 
 class FriendTests(LiveCase):
@@ -318,8 +359,8 @@ class GroupTests(LiveCase):
 class ModerationTests(LiveCase):
     async def test_three_reports_hide_until_review(self):
         self.cfg.town_every = 0
-        author = await self.connect(self.guest('Tác giả')[0])
-        readers = [await self.connect(self.guest(f'R{i}')[0]) for i in range(3)]
+        author = await self.connect(self.account('Tác giả')[0])
+        readers = [await self.connect(self.account(f'R{i}')[0]) for i in range(3)]
         for c in (author, *readers):
             await c.call('join', 'joined', ch='town')
         await author.send(t='send', ch='town', text='spam spam', cid='s')
@@ -338,13 +379,13 @@ class ModerationTests(LiveCase):
             r = db.execute('SELECT hidden, reports, text FROM chat_messages WHERE id=?', (m['id'],)).fetchone()
             self.assertEqual((r[0], r[1], r[2]), (1, 3, 'spam spam'))   # kept for the admin
             self.assertEqual(db.execute("SELECT COUNT(*) FROM reports WHERE kind='chat' AND target=?", (str(m['id']),)).fetchone()[0], 3)
-        j = await (await self.connect(self.guest('Mới')[0])).call('join', 'joined', ch='town')
+        j = await (await self.connect(self.account('Mới')[0])).call('join', 'joined', ch='town')
         self.assertEqual(j['msgs'], [])
         h = await readers[0].call('history', 'history', ch='town')
         self.assertEqual(h['msgs'], [])
 
     async def test_mute_blocks_every_chat(self):
-        token, sid = self.guest('Ồn ào')
+        token, sid = self.account('Ồn ào')
         c = await self.connect(token)
         with self.store.connect() as db:
             db.execute('INSERT INTO chat_mutes(pid, until, by_admin, reason, at) VALUES(?, ?, ?, ?, ?)',
@@ -381,3 +422,72 @@ class RestartTests(LiveCase):
         w = await c.expect('welcome')
         self.assertEqual(w['flags']['chat'], False)
         self.assertEqual((await c.wait_closed())[0], 4001)
+
+
+class RetentionAndPagingTests(LiveCase):
+    """Cả phố keeps its newest 2,000 messages (owner, 01/10), DMs and groups everything; every load is 30."""
+
+    def add(self, ch, n, pid='a' * 16, **cols):
+        with self.store.connect() as db:
+            ids = []
+            for i in range(n):
+                ids.append(db.execute('INSERT INTO chat_messages(channel, pid, name, av, text, at, reports, hidden, reviewed_at) '
+                                      'VALUES(?,?,?,?,?,?,?,?,?) RETURNING id',
+                                      (ch, pid, 'Ai', '🌸', f'{ch} {i}', time.time(), cols.get('reports', 0), cols.get('hidden', 0),
+                                       cols.get('reviewed_at'))).fetchone()[0])
+        return ids
+
+    async def test_town_pruned_beyond_the_cap_dms_kept(self):
+        from live import chat as lc
+        open_report = self.add('town', 1, reports=2)[0]                          # still waiting for an admin: kept
+        reviewed = self.add('town', 1, reports=3, hidden=2, reviewed_at=time.time())[0]   # decided: may go
+        old = self.add('town', 70)
+        dm = self.add('dm:' + 'a' * 16 + ':' + 'b' * 16, 80)
+        group = self.add('g:0123456789', 80)
+        newest = self.add('town', 50)
+        with self.store.connect() as db:
+            db.execute("INSERT INTO reports(reporter, kind, target, reason, at) VALUES(?, 'chat', ?, 'spam', 0)", ('c' * 16, str(reviewed)))
+        lc.PRUNE_BATCH, batch = 7, lc.PRUNE_BATCH   # several batches
+        try:
+            gone = await self.app.chat.prune_town(keep=50)
+        finally:
+            lc.PRUNE_BATCH = batch
+        self.assertEqual(gone, 35)                                  # 5 batches of 7 per pruning
+        gone += await self.app.chat.prune_town(keep=50) + await self.app.chat.prune_town(keep=50)
+        self.assertEqual(gone, 71)
+        with self.store.connect() as db:
+            town = [r[0] for r in db.execute("SELECT id FROM chat_messages WHERE channel='town' ORDER BY id").fetchall()]
+            self.assertEqual(town, [open_report] + newest)
+            self.assertEqual(db.execute("SELECT COUNT(*) FROM chat_messages WHERE channel<>'town'").fetchone()[0], len(dm) + len(group))
+            self.assertEqual(db.execute("SELECT COUNT(*) FROM reports WHERE target=?", (str(reviewed),)).fetchone()[0], 0)
+        self.assertEqual(await self.app.chat.prune_town(keep=50), 0)
+        self.assertEqual(lc.TOWN_KEEP, 2000)
+
+    async def test_every_load_is_30(self):
+        ta, sa = self.account('Lan Anh')
+        tb, sb = self.account('Minh Tú')
+        self.befriend(sa, sb)
+        ch = 'dm:' + ':'.join(sorted((self.pid(sa), self.pid(sb))))
+        self.add('town', 70)
+        dm = self.add(ch, 70, pid=self.pid(sb))
+        with self.store.connect() as db:
+            db.execute("INSERT INTO chat_channels(id, kind, title, created) VALUES(?, 'dm', '', 0)", (ch,))
+            for pid, sid in ((self.pid(sa), sa), (self.pid(sb), sb)):
+                db.execute('INSERT INTO chat_members(channel, pid, sid, joined) VALUES(?, ?, ?, 0)', (ch, pid, sid))
+        await self.app.stop()
+        from live.app import App
+        self.app = App(self.cfg)
+        await self.app.start()
+        self.port = self.app.port()
+        a = await self.connect(ta)
+        j = await a.call('join', 'joined', ch='town')
+        self.assertEqual((len(j['msgs']), j['more']), (30, True))
+        h = await a.call('history', 'history', ch='town', before=j['msgs'][0]['id'])
+        self.assertEqual((len(h['msgs']), h['more']), (30, True))
+        first = await a.call('history', 'history', ch=ch)
+        self.assertEqual([m['id'] for m in first['msgs']], dm[-30:])
+        self.assertTrue(first['more'])
+        older = await a.call('history', 'history', ch=ch, before=dm[-30])
+        self.assertEqual([m['id'] for m in older['msgs']], dm[-60:-30])
+        last = await a.call('history', 'history', ch=ch, before=dm[-60])
+        self.assertEqual(([m['id'] for m in last['msgs']], last['more']), (dm[:10], False))

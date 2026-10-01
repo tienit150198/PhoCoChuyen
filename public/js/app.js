@@ -15,7 +15,7 @@ import {dayclockBoot,clockChip,clockAria,clockCard,clockSummary,closingNote,cloc
 import {careerSubmit,careerInput,loadCareerModules,careerUI,hasCareerUI,setCareerData,careerContext,startTicker,tickNow} from './v4/careers.js';
 import {applyGuide,guideAction,nextHint,stepCta,plainText} from './v4/guide.js';
 import {inventoryView,feedbackView,situationView,jobView as jobAppView,v4Action,v4Submit,v4Input} from './v4/views.js';
-import {moneyBoot,confirmMoney,dialogBalances} from './v4/money.js';  // 💰 Ví / Quỹ tiệm in sight while spending
+import {moneyBoot,confirmMoney,confirmShort,dialogBalances,isSpend,priceIn} from './v4/money.js';  // 💰 Ví / Quỹ tiệm in sight while spending
 import {quickOpen,firstDay} from './v4/onboard.js';  // a brand-new player's first minutes
 import {hudMoney,hudChipsHTML,wealthHTML,loadJoint,jointBalance,wealthAction} from './v4/wealth.js';  // 💰 Tiền của bạn (top bar chips + sheet)
 import {emojiOf} from './v4/journey.js';
@@ -64,6 +64,38 @@ const ended=t=>['completed','referred','cancelled'].includes(t.status);
 const INV_PLAIN={invFocus:null,invNeed:null,invReturn:null,orderRush:false};
 /** First day at a place, its three jobs done: closing the day is the next step (and the chapter goal). */
 const wrapUp=c=>Boolean(c?.open&&c.day===1&&c.day_completed>=3&&!c.tasks.some(x=>!ended(x)));
+/** Why "Đón thêm khách" would be refused now (game/engine.py more_gate; null: a customer comes in): closing time,
+ * today's customers all dealt, or 4 already in hand. The dock and the work sheets then offer the real next step. */
+const moreGate=c=>c?.open&&c.more_gate||null;
+/** The next customer, or when none can come in: the work in hand, else closing the day. */
+function moreWay(c,label,style='primary'){
+  const g=moreGate(c);if(!g)return commandButton(label,'more_work',{},style);
+  const left=c.tasks.filter(x=>!ended(x)).length;
+  if(left)return button(`${g.why==='full'?'Làm tiếp việc đang chờ':'Làm nốt việc dở'} · ${left} `+icon('arrow',14),'nextJob',{},style);
+  return button(icon('exit',16)+' Khép ca · xem tổng kết','end',{},style+' gd-pulse');
+}
+/** Shift closed: every control whose command needs it open (game/engine.py "Mở ca trước khi xử lý công việc nhé")
+ * is drawn disabled, and the work sheet's "Mở ca" bar is the one way on (it opens the shift in place). */
+const SHUT_WORK=/^(shop_|ac_|cs_|ph_|cl_|desk_|more_work$)/;
+function shutWork(html){
+  const c=room();if(!c||c.open||!api.state?.current)return html;
+  const g=meta().shift_gate,needs=op=>SHUT_WORK.test(op)||Boolean(g&&op.startsWith(g.prefix)&&!g.free.includes(op));
+  return html.replace(/<button\b([^>]*?)\sdata-(command|op)="([^"]*)"([^>]*)>/g,(m,a,k,op,b)=>needs(op)&&!/\sdisabled\b/.test(a+b)?`<button${a} data-${k}="${op}"${b} disabled>`:m);
+}
+/** Work sheets pay from the workplace fund (game/engine.py money: "Chưa đủ xu…"). A command button that spends a
+ * named price (its label starts with a spending word, or it carries data-cost) the fund cannot cover is drawn
+ * disabled with "thiếu N xu", like the 0.9.16 bakery's "thiếu 1 bơ lạt". */
+const FUND_VIEWS=new Set(['job','inventory','warehouse','prepare','prices','workshop','decor','operations','queue','situation','event']);
+function shortWork(html){
+  const c=room();if(!c||!FUND_VIEWS.has(ui.view)||!api.state?.current)return html;
+  return html.replace(/<button\b([^>]*\sdata-(?:command|op)="[^"]*"[^>]*)>([\s\S]*?)<\/button>/g,(m,a,label)=>{
+    if(/\sdisabled\b/.test(a)||/\sdata-pocket="(?!fund)/.test(a))return m;
+    const text=label.replace(/<[^>]*>/g,' ').replace(/&[a-z#0-9]+;/gi,' ').replace(/\s+/g,' ').trim(),told=Number((a.match(/\sdata-cost="(\d+)"/)||[])[1]);
+    const cost=told||(isSpend(text)&&!/khoảng/.test(text)?priceIn(text):null);
+    return cost>c.money?`<button${a} disabled>${label}<small class="mn-miss"> · thiếu ${fmt(cost-c.money)} xu</small></button>`:m;
+  });
+}
+const closedBar=()=>notice(`<b>Ca đang nghỉ</b> · mở ca để làm tiếp. ${button(icon('sun',14)+' Mở ca','startHere',{},'primary small')}`,'amber','sun');
 const ui={opsTab:'staff',staffId:null,lessonSequence:[],tourRoute:[],activityCard:null,view:null,tab:'',task:null,npc:null,jobTab:'shelf',journalTab:'quests',libraryQuery:'',docs:new Set(),transactions:new Set(),drafts:{},ai:{},suggestions:{},busy:false,paused:false};
 const world=new BobaWorld($('#world'),interact);
 soundsBoot({api,world,sound});  // character voices, detail sounds, bank speaker
@@ -126,7 +158,7 @@ function toast(message,kind=false){if(!message)return;const box=$('#toasts'),cls
 function download(data,name,type='application/json'){const blob=new Blob([data],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
 async function cmd(action,payload={},options={}){
   try{const r=await api.command(action,payload,options.career||career());if(!options.quiet)toast(r.message,r.correct===false?'error':r.celebrate?'good':false);if(r.celebrate){sound.success();world.celebrate();}else sound.click();for(const note of new Set(r.effects||[]))toast(note);if(r.clock)setTimeout(()=>toast(r.clock.text),1400);return r;}
-  catch(error){toast(error.status?error.message:'Mất kết nối. Việc đã xác nhận vẫn được giữ, thử lại sau một chút nhé.',true);sound.error();return null;}
+  catch(error){if(error.quiet)return null;toast(error.status?error.message:'Mất kết nối. Việc đã xác nhận vẫn được giữ, thử lại sau một chút nhé.',true);sound.error();return null;}  // quiet: a tap the save moved under twice (api.js), the screen already shows why
 }
 function closeSheet(){if($('#sheet').open)$('#sheet').close();ui.view=null;ui.ai={};world.paused=ui.paused;}
 function openSheet(view,data={}){if(view!=='job'&&view!=='chat'){ui.task=null;}Object.assign(ui,data);ui.view=view;renderSheet(false);if(!$('#sheet').open){const d=$('#sheet');d.showModal();d.scrollTop=0;d.tabIndex=-1;d.focus({preventScroll:true});}}
@@ -210,6 +242,7 @@ function navItems(c){
   items.push(['jrWardrobe','shirt','Tủ đồ']);  // 👗 Tủ đồ (v4/wardrobe.js, opened by journey.js)
   {const chat=L.live.m?.liveNav();if(chat)items.push(chat);}  // 💬 Chat (v4/live.js): only while the live service has it on
   {const lv=L.live.m?.live;if(lv?.flags.street&&lv.welcomed)items.push(['liveWalk','map','Đi dạo']);}  // 🚶 Đi dạo (v4/walk.js): only while the live service has it on
+  {const date=L.live.m?.dateNav();if(date)items.push(date);}  // 💕 Góc hẹn hò (v4/dating.js): only while the live service has dates on
   {const lv=L.live.m?.live;if(lv?.flags.wedding&&lv.welcomed)items.push(['liveWed','heart','Lịch cưới']);}  // 💍 Lịch cưới (v4/wedding.js): live weddings, while on
   items.push(['friends','user','Bạn bè',api.friendAlerts||0],['marriage','heart','Hôn nhân',api.marriageAlerts||0]);  // Bạn bè + Hôn nhân (v4/marriage.js, own dialog; badges from v4/ticker.js)
   items.push(['money','bag','Tiền của bạn']);  // 💰 the money sheet (v4/wealth.js), also behind the HUD money chips
@@ -222,11 +255,11 @@ const badgeHTML=b=>b==='dot'?'<i class="dot" aria-hidden="true"></i>':b?`<em cla
 const railItem=([a,i,label,badge],extra='',hide='')=>`<button type="button" class="rail-item${a==='social'?' top-social':''}${extra} ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}${hide}>${icon(i,21)}<span>${label}</span>${badgeHTML(badge)}</button>`;
 /** The work pages, always in sight (rail on desktop/tablet, top of "Thêm" on the phone), in this order. Any
  * entry that is in no group below (a career's own page) joins them, so nothing a career adds is lost. */
-const RAIL_MAIN=['home','prepare','operations','prices','feedback','jobapp'];
+const RAIL_MAIN=['liveChat','home','prepare','operations','prices','feedback','jobapp'];   // 💬 Chat first, one tap (owner, 01/10)
 /** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
 const RAIL_GROUPS=[
   ['pho','building','Khu phố',['liveWalk','liveWed','nhom','phone','social','town','rank']],
-  ['ban','people','Quan hệ',['liveChat','people','friends','marriage']],
+  ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Tiền & nhà',['money','bank','house']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
   ['minh','gift','Của mình',['jrWardrobe','album','passport','workshop','journal']],
@@ -337,14 +370,15 @@ function taskCards(c){
   else if(!c.open)main=`<article class="note-card calm-card">${button(icon('sun',16)+' Chuẩn bị ngày mới'+(c.day_clock?` · mở ${esc(c.day_clock.open_time)}`:''),'prepare',{},'primary big grow'+first)}${c.shift_summary?`<button type="button" class="icon-btn hud-sum" data-action="summary" aria-label="Xem ngày vừa qua">${icon('clipboard',18)}</button>`:''}${bell}</article>`;
   // The one line is the work screen's "Bước tiếp theo" (career modules' next() = guide.stepLine of the next
   // step, plain text); "Làm tiếp" opens the work screen, whose bottom button (stepCta) does that step.
-  else if(t)main=`<article class="note-card calm-card task-card">${closingNote(c.day_clock,true)}<button type="button" class="calm-what" data-action="job" data-task="${esc(t.id)}" title="${esc(t.title)}"><span class="npc-mini">${portrait(npc(t.npc),34)}</span><b>${esc(plainText(taskNext(t)))}</b></button>${bell}${button('Làm tiếp '+icon('arrow',14),'job',{task:t.id},'primary'+first)}</article>`;
+  else if(t)main=`<article class="note-card calm-card task-card">${closingNote(c.day_clock,true,moreGate(c))}<button type="button" class="calm-what" data-action="job" data-task="${esc(t.id)}" title="${esc(t.title)}"><span class="npc-mini">${portrait(npc(t.npc),34)}</span><b>${esc(plainText(taskNext(t)))}</b></button>${bell}${button('Làm tiếp '+icon('arrow',14),'job',{task:t.id},'primary'+first)}</article>`;
   // Day one, its three jobs done: closing the day is the next step (and the chapter goal).
   // Closing time with nobody in hand: close the day (the summary follows).
-  else if(c.day_clock?.is_open&&c.day_clock.level==='closing')main=`<article class="note-card calm-card">${closingNote(c.day_clock,false)}${button(icon('exit',16)+' Khép ca · xem tổng kết','end',{},'primary big grow gd-pulse')}${bell}</article>`;
-  else if(wrapUp(c))main=`<article class="note-card calm-card">${button('Khép ca hôm nay','end',{},'primary big grow gd-pulse')}<button type="button" class="icon-btn hud-sum" data-command="more_work" data-payload="{}" aria-label="${desk?'Nhận thêm một việc':esc(W.more_btn)}">${icon('plus',18)}</button>${bell}</article>`;
+  // So is a day whose customers are all dealt, or whose next customer would arrive at closing time (more_gate).
+  else if(moreGate(c)||c.day_clock?.is_open&&c.day_clock.level==='closing')main=`<article class="note-card calm-card">${closingNote(c.day_clock,false,moreGate(c))}${button(icon('exit',16)+' Khép ca · xem tổng kết','end',{},'primary big grow gd-pulse')}${bell}</article>`;
+  else if(wrapUp(c))main=`<article class="note-card calm-card">${button('Khép ca hôm nay','end',{},'primary big grow gd-pulse')}${moreGate(c)?'':`<button type="button" class="icon-btn hud-sum" data-command="more_work" data-payload="{}" aria-label="${desk?'Nhận thêm một việc':esc(W.more_btn)}">${icon('plus',18)}</button>`}${bell}</article>`;
   else main=`<article class="note-card calm-card">${commandButton(desk?'Nhận thêm một việc':esc(W.more_btn),'more_work',{},'primary big grow')}<button type="button" class="icon-btn hud-sum" data-action="end" aria-label="Khép ca hôm nay">${icon('exit',18)}</button>${bell}</article>`;
   // A career with its own home card (the air crew's boarding pass) draws it; hiring keeps the shared "Xin việc".
-  const own=needsJob()?'':careerUI(career())?.hudCard?.(c,t,careerContext(env()),{bell,first,wrap:wrapUp(c),note:closingNote(c.day_clock,!!t)});if(own)main=own;
+  const own=needsJob()?'':careerUI(career())?.hudCard?.(c,t,careerContext(env()),{bell,first,wrap:wrapUp(c),note:closingNote(c.day_clock,!!t,moreGate(c))});if(own)main=own;
   // Desktop has a side column for the list; phone and tablet keep it behind the bell (status sheet).
   const list=notes.length&&layout()==='desktop'?`<article class="note-card hud-notes"><span class="eyebrow">Cần để ý · ${notes.length}</span>${noteRows(notes)}</article>`:'';
   return main+list;
@@ -449,6 +483,7 @@ function renderSheet(preserve=true){
     case'operations':dialog.classList.add('operations');html=moreView(()=>lazyView(L.ops,m=>m.operationsView(career(),room(),api.content.operations,ui,api.state)));break;
     default:html=header('Một khoảng thảnh thơi')+`<div class="sheet-body">${empty('Cửa sổ chưa mở','Quay lại cảnh để tiếp tục nhé.')}</div>`;
   }}
+  html=shortWork(shutWork(html));
   if(dialog.className!==cls.className)dialog.className=cls.className;
   // A fresh view is written whole; a re-render of the same view is morphed (or skipped when unchanged).
   const box=$('#sheetContent');
@@ -480,7 +515,7 @@ function homeView(){return homeV4(env());}
 const placeOf=cid=>{const m=api.content?.catalogue.find(x=>x.id===cid)||{id:cid};return {name:m.place||m.short||cid,emoji:emojiOf(m)};};
 function wealthView(){return wealthHTML(api.state,{joint:jointBalance(),current:career(),place:placeOf,head:(t,sub)=>header(t,sub,'TIỀN CỦA BẠN')});}
 function futureView(){if(api.state.journey)return futureV4(env());return header('Cả một khu phố phía trước','Những nghề sẽ mở sau','DANH MỤC 19 NGHỀ')+`<div class="sheet-body"><div class="future-grid">${api.content.catalogue.filter(c=>!api.state.careers[c.id]).map(c=>`<article class="future-card">${pill(icon('lock',11)+' Mở sau')}<h3>${esc(c.title||c.name)}</h3><p>${esc(c.core_loop||c.focus||c.summary||c.unique_mechanic||'Một trải nghiệm nghề mới, có cơ chế và câu chuyện riêng.')}</p></article>`).join('')}</div></div>`+footer('',button('Về các nghề đang mở','home',{},'primary'));}
-function queueView(){const own=careerUI(career())?.board?.(careerContext(env()));if(own)return own;const c=room(),tasks=c.tasks.filter(t=>!ended(t)),lead=(tasks.find(t=>t.id===c.active_task)||tasks[0])?.id;return header('Việc đang chờ','','SỔ VIỆC · '+esc(meta().place))+`<div class="sheet-body">${!c.open?notice('Ca đang nghỉ. '+button('Bắt đầu ngày','start',{},'small primary'),'amber','sun'):''}<div class="queue-grid">${tasks.map(t=>`<article class="queue-card ${t.id===c.active_task?'active':''}"><div class="row">${portrait(npc(t.npc),44)}<div class="grow"><h3>${esc(t.title)}</h3>${String(t.title||'').includes(npc(t.npc).display_name)?'':`<small class="muted">${esc(npc(t.npc).display_name)}</small>`}</div>${t.deferred?pill('Đã hẹn','amber'):''}</div><p>${esc(t.opening)}</p><div class="row spread">${pill(taskNext(t),'green')}${button('Làm tiếp '+icon('arrow',13),'job',{task:t.id},t.id===lead?'small primary':'small')}</div></article>`).join('')||empty('Hết việc rồi!','','coffee')}</div></div>`+(c.open?footer(`${c.day_completed} việc đã xong hôm nay`,commandButton(icon('plus',14)+' Nhận thêm việc','more_work',{},tasks.length?'ghost':'primary',tasks.length>=4)+button('Khép ca','end',{},'ghost')):'');}
+function queueView(){const own=careerUI(career())?.board?.(careerContext(env()));if(own)return own;const c=room(),tasks=c.tasks.filter(t=>!ended(t)),lead=(tasks.find(t=>t.id===c.active_task)||tasks[0])?.id;return header('Việc đang chờ','','SỔ VIỆC · '+esc(meta().place))+`<div class="sheet-body">${!c.open?notice('Ca đang nghỉ. '+button('Bắt đầu ngày','start',{},'small primary'),'amber','sun'):''}<div class="queue-grid">${tasks.map(t=>`<article class="queue-card ${t.id===c.active_task?'active':''}"><div class="row">${portrait(npc(t.npc),44)}<div class="grow"><h3>${esc(t.title)}</h3>${String(t.title||'').includes(npc(t.npc).display_name)?'':`<small class="muted">${esc(npc(t.npc).display_name)}</small>`}</div>${t.deferred?pill('Đã hẹn','amber'):''}</div><p>${esc(t.opening)}</p><div class="row spread">${pill(taskNext(t),'green')}${button('Làm tiếp '+icon('arrow',13),'job',{task:t.id},t.id===lead?'small primary':'small')}</div></article>`).join('')||empty('Hết việc rồi!','','coffee')}</div></div>`+(c.open?footer(`${c.day_completed} việc đã xong hôm nay`,(moreGate(c)?'':commandButton(icon('plus',14)+' Nhận thêm việc','more_work',{},tasks.length?'ghost':'primary'))+button('Khép ca','end',{},moreGate(c)&&!tasks.length?'primary':'ghost')):'');}
 function customerAside(t){const n=npc(t.npc),c=room();let needs='';if(t.needs){if(career()==='mother_baby'){const p=product(t.needs.product),paper=api.content.papers.find(p=>p.id===t.needs.paper);needs=`<strong>${t.needs.qty} × ${esc(p.name)}</strong><br>Ngân sách: ${fmt(t.needs.budget)} xu<br>${t.needs.gift?'Gói giấy '+esc(paper.name):'Không cần gói quà'}`;}}
   return `<aside class="work-aside ${t.known?'known':''} ${!Object.keys(t.basket||{}).length?'empty-tray':''}">${t.known?`<div class="needs"><h4>${icon('clipboard',15)} Điều đã xác nhận</h4><p>${needs||'Đã hiểu mục tiêu.'}</p></div>`:''}${career()==='mother_baby'?basketView(t):''}</aside>`;
 }
@@ -494,24 +529,27 @@ function jobView(){
   const idle=mod?.idle&&(!t||ended(t))?`<div class="career-idle space-top">${mod.idle(careerContext(env()))}</div>`:'';
   if(!t){
     // Between customers there is always one clear way on: the next customer (unless the career's own panel offers it).
-    const more=wrapUp(c)?button('Khép ca hôm nay','end',{},'primary gd-pulse'):c.open&&!idle.includes('data-command="more_work"')?commandButton(icon('plus',14)+' '+(deskWork()?'Nhận thêm một việc':esc(wordsFor(career()).next_btn)),'more_work',{},'primary'):'';
-    return header(deskWork()?'Bàn làm việc đang trống':esc(wordsFor(career()).none_waiting),c.open?'':'Ca đang nghỉ.')+`<div class="sheet-body">${idle||empty('Làm điều mình thích một chút','','coffee')}<div class="row wrap space-top">${more}${button(esc(wordsFor(career()).queue_btn),'queue',{},more||idle.includes('more_work')?'ghost':'primary')}${mod?.noDecor?'':button('Chăm chút không gian','decor',{},'ghost')}</div></div>`;
+    const more=wrapUp(c)?button('Khép ca hôm nay','end',{},'primary gd-pulse'):c.open&&(moreGate(c)||!idle.includes('data-command="more_work"'))?moreWay(c,icon('plus',14)+' '+(deskWork()?'Nhận thêm một việc':esc(wordsFor(career()).next_btn))):'';
+    return header(deskWork()?'Bàn làm việc đang trống':esc(wordsFor(career()).none_waiting),c.open?'':'Ca đang nghỉ.')+`<div class="sheet-body">${c.open?'':closedBar()}${idle||empty('Làm điều mình thích một chút','','coffee')}<div class="row wrap space-top">${more}${button(esc(wordsFor(career()).queue_btn),'queue',{},more||idle.includes('more_work')?'ghost':'primary')}${mod?.noDecor?'':button('Chăm chút không gian','decor',{},'ghost')}</div></div>`;
   }
   if(ended(t)){
     // Task done: the thank-you and one clear way on, named for what is really next (nobody waiting: take one
     // more / close the day, never "Công việc tiếp theo"). The career's between-orders panel folds into one line
     // under it (drawn in full it made this screen 2–4 screens deep); it opens by itself when a surprise at the
     // counter needs a decision first (kit.desk_block) or the career marks its panel data-idle-open.
-    const way=c.tasks.some(x=>!ended(x))?button('Công việc tiếp theo','nextJob',{},'primary'):wrapUp(c)?button('Khép ca hôm nay','end',{},'primary gd-pulse'):c.open?commandButton(deskWork()?'Nhận thêm một việc':esc(wordsFor(career()).more_btn),'more_work',{},'primary'):'';
-    const ways=`<div class="row wrap space-top done-ways" style="justify-content:center">${way}${button('Đọc lời nhắn','phone',{},'ghost small')}${c.event?button('Chuyện vừa xảy ra','event',{},'cream small'):''}</div>`;
+    const way=c.tasks.some(x=>!ended(x))?button('Công việc tiếp theo','nextJob',{},'primary'):wrapUp(c)?button('Khép ca hôm nay','end',{},'primary gd-pulse'):c.open?moreWay(c,deskWork()?'Nhận thêm một việc':esc(wordsFor(career()).more_btn)):'';
+    const ways=`${c.open?'':closedBar()}<div class="row wrap space-top done-ways" style="justify-content:center">${way}${button('Đọc lời nhắn','phone',{},'ghost small')}${c.event?button('Chuyện vừa xảy ra','event',{},'cream small'):''}</div>`;
     const open=Boolean(c.data?.desk?.ev)||/data-idle-open|class="fk-event"/.test(idle)||ui.idleOpen===t.id;
     const fold=idle?`<details class="idle-fold space-top" data-auto data-idle-task="${esc(t.id)}"${open?' open':''}><summary>${icon('clipboard',16)}<b>${deskWork()?'Bàn làm việc':'Việc giữa ca'}</b></summary>${idle}</details>`:'';
     if(t.desk)return header('Hồ sơ đã đóng dấu',esc(t.title),'KẾT QUẢ HỒ SƠ')+`<div class="sheet-body">${L.desk.use()?L.desk.m.deskDone(t,env()):skeleton()}${ways}${fold}</div>`;
     return header('Một việc đã được làm tới nơi',t.title,'THÀNH QUẢ HÔM NAY')+`<div class="sheet-body center done-body"><div class="celebration">${icon('sparkle',55)}</div><h2>Cảm ơn bạn đã giúp!</h2>${ways}${fold}</div>`;
   }
   ui.task=t.id;let inner;
-  if(careerUI(career()))inner=careerUI(career()).job(t,careerContext(env()));else if(['teacher','tour_guide','milk_tea'].includes(career()))inner=extendedJob(t,c,api.content,ui,api.state);else if(t.desk)inner=L.desk.use()?L.desk.m.deskJob(t,env()):skeleton();else if(career()==='mother_baby')inner=motherBabyJob(t);else if(career()==='pharmacy')inner=pharmacyJob(t);else if(career()==='accounting')inner=accountingJob(t);else inner=supportJob(t);
-  return header(esc(t.title),taskNext(t),esc(meta().work).toUpperCase()+' · NGÀY '+t.day,headMenu(commandButton('Để lát nữa','defer',{task:t.id},'ghost')+button('Xem các việc khác','queue',{},'ghost')))+`<div class="sheet-body">${!c.open?notice('Ca đang nghỉ. '+button('Bắt đầu ngày','start',{},'primary small'),'amber'):''}${['teacher','tour_guide','milk_tea'].includes(career())||plugin()||t.desk||careerUI(career())?'':guestRibbon(t,c,api.content)}${inner}</div>`;
+  if(careerUI(career()))inner=careerUI(career()).job(t,careerContext(env()));else if(['teacher','tour_guide','milk_tea'].includes(career()))inner=extendedJob(t,c,api.content,ui,api.state);else if(t.desk)inner=L.desk.use()?L.desk.m.deskJob(t,env()):skeleton();else if(career()==='mother_baby')inner=motherBabyJob(t);else if(career()==='pharmacy')inner=pharmacyJob(t);else if(career()==='accounting')inner=accountingJob(t);
+  // A workplace with its own workbench whose code or data part did not come (a weak network): a skeleton while it is
+  // asked for again (ensureCareerUI), never the customer-care view, which read its task as a ticket and threw.
+  else if(CAREER_MODULES.includes(career())){ensureCareerUI();inner=skeleton();}else inner=supportJob(t);
+  return header(esc(t.title),taskNext(t),esc(meta().work).toUpperCase()+' · NGÀY '+t.day,headMenu(commandButton('Để lát nữa','defer',{task:t.id},'ghost')+button('Xem các việc khác','queue',{},'ghost')))+`<div class="sheet-body">${!c.open?closedBar():''}${['teacher','tour_guide','milk_tea'].includes(career())||plugin()||t.desk||careerUI(career())?'':guestRibbon(t,c,api.content)}${inner}</div>`;
 }
 /* The done screen's "Việc giữa ca" fold remembers that the player opened it (for this task): its data-auto
  * markup is redrawn on every render, so the state lives here. */
@@ -680,21 +718,23 @@ function supportJob(t){
   const tracker=`<ol class="dw-steps" aria-label="Tiến trình vụ">${CS_STEPS.map((s,i)=>`<li class="${i<step?'done':i===step?'now':''}"${i===step?' aria-current="step"':''}><span class="dw-dot" aria-hidden="true">${i<step?'✓':i+1}</span><span class="dw-step-label">${s}</span></li>`).join('')}</ol>`;  // (the current step is the lit one in the tracker; the "Bước x/6" line under it repeated it)
   const canPropose=t.identity&&read===t.evidence.length&&['new','understood','proposed'].includes(t.status);
   const choices=`<div class="dw-choices" role="group" aria-label="Phương án">${solutions.map(([id,l,i,h])=>`<button type="button" class="dw-choice${t.proposal===id?' selected':''}" data-command="cs_propose" data-payload="${esc(JSON.stringify({task:t.id,solution:id}))}" aria-pressed="${t.proposal===id}"${canPropose?'':' disabled'}>${icon(i,22)}<span><b>${l}</b><small>${h}</small></span></button>`).join('')}</div>`;
-  const now=(title,text,action)=>`<section class="dw-now" aria-label="Việc bây giờ"><span class="dw-eyebrow">Việc bây giờ</span><h3>${title}</h3>${text?`<p>${text}</p>`:''}${action}</section>`;
+  // The eyebrow names the lit part of the tracker (its labels are hidden on a phone); one line says what to do there.
+  const now=(title,text,action,extra='')=>`<section class="dw-now" aria-label="Việc bây giờ"><span class="dw-eyebrow">Bước ${step+1}/${CS_STEPS.length} · ${CS_STEPS[step]}</span><h3>${title}</h3>${text?`<p>${text}</p>`:''}${extra}${action}</section>`;
+  const key=t.evidence.find(e=>e.id===t.basis&&e.text!=null);  // 📌 the source line that names the fix (server sends it once every source is read)
   let card;
   const waitNow=t.ready_at==null||sameDay(t.ready_at);
   if(t.status==='handed_over')card=now('Chờ chị Mai phản hồi',t.eta?`Chị Mai hẹn phản hồi ${esc(t.eta.toLowerCase())}.`:'',commandButton('⏳ Chờ thêm 20 phút','advance',{},'primary full'));
-  else if(step===0)card=now('Xác minh người yêu cầu','',commandButton('🔐 Xác minh mã đơn','cs_identity',{task:t.id},'primary full',!room().open));
-  else if(step===1){const e=t.evidence.find(e=>e.text==null);card=now(`Mở chứng cứ · ${read}/${t.evidence.length}`,'',commandButton(icon('folder',16)+' Mở: '+esc(e.title),'cs_evidence',{task:t.id,evidence:e.id},'primary full'));}
-  else if(step===2)card=now('Chọn một phương án có căn cứ','',choices);
-  else if(t.status==='proposed')card=now(`Phương án: ${sol?.[1]||''}`,'',button('Gửi việc cho đầu mối '+icon('arrow',15),'executeCS',{},'primary full'));
+  else if(step===0)card=now('Xác minh người yêu cầu','Khớp mã đơn khách đưa thì mới được xem hồ sơ.',commandButton('🔐 Xác minh mã đơn','cs_identity',{task:t.id},'primary full',!room().open));
+  else if(step===1){const e=t.evidence.find(e=>e.text==null);card=now(`Mở chứng cứ · ${read}/${t.evidence.length}`,'Đọc đủ các nguồn: một dòng trong đó chỉ cách xử lý.',commandButton(icon('folder',16)+' Mở: '+esc(e.title),'cs_evidence',{task:t.id,evidence:e.id},'primary full'));}
+  else if(step===2)card=now('Chọn phương án khớp căn cứ','',choices,key?`<blockquote class="dw-basis"><b>📌 ${esc(key.title)}</b>“${esc(key.text)}”</blockquote>`:'');
+  else if(t.status==='proposed')card=now(`Phương án: ${sol?.[1]||''}`,'Mới là đề xuất: gửi việc thì đầu mối mới làm.',button('Gửi việc cho đầu mối '+icon('arrow',15),'executeCS',{},'primary full'));
   else if(t.status==='executing')card=now(`Đang chờ ${esc(t.wait_label||'đầu mối')}: ${sol?.[1]||''}`,`Dự kiến có kết quả: <b>${esc(t.eta||'')}</b>.${waitNow?'':' Vụ mở qua đêm: mỗi sáng gọi cập nhật cho khách trước 12:00.'}`,waitNow?commandButton('⏳ Chờ thêm 20 phút','advance',{},'primary full'):button('Xem các việc khác','queue',{},'primary full'));
-  else if(step===4)card=now('Kết quả đã về','',commandButton(icon('search',16)+' Kiểm kết quả','cs_confirm',{task:t.id},'primary full'));
-  else card=now('Kết quả đã kiểm chứng','',button(icon('check',16)+' Hoàn tất & đóng vụ','closeCS',{},'primary full'));
+  else if(step===4)card=now('Kết quả đã về','Đầu mối báo xong: kiểm với khách trước khi đóng.',commandButton(icon('search',16)+' Kiểm kết quả','cs_confirm',{task:t.id},'primary full'));
+  else card=now('Kết quả đã kiểm chứng','Khách đã xác nhận: đóng vụ, nhận 65 xu.',button(icon('check',16)+' Hoàn tất & đóng vụ','closeCS',{},'primary full'));
   const change=t.status==='proposed'?`<section class="dw-sec dw-change" aria-label="Đổi phương án"><h3>Đổi phương án?</h3>${choices}</section>`:'';
   const handover=t.identity&&t.status==='understood'&&!t.handed_over?`<section class="dw-alt"><p class="dw-hint">Chưa chắc hướng xử lý? Bàn giao cho chị Mai kèm nguồn đã đọc${t.inspected.length<2?' (cần đọc ít nhất 2 nguồn)':''}.</p>${commandButton('Bàn giao cùng chị Mai','cs_handover',{task:t.id},'ghost',t.inspected.length<2)}</section>`:'';
   const evidence=`<section class="dw-sec" aria-label="Chứng cứ"><div class="dw-sec-head"><h3>Chứng cứ</h3><span class="dw-count${read===t.evidence.length?' ok':''}">${read}/${t.evidence.length}</span></div><ul class="dw-evlist">${t.evidence.map(e=>{const open=e.text!=null;
-    return `<li class="dw-ev${open?' done':''}"><span class="dw-mark" role="img" aria-label="${open?'Đã mở':'Chưa mở'}">${open?'✓':''}</span><div><b>${esc(e.title)}</b>${open?`<p>${esc(e.text)}</p>`:t.identity?'':'<small>Xác minh để mở</small>'}</div>${!open&&t.identity?commandButton('Mở','cs_evidence',{task:t.id,evidence:e.id},'ghost'):''}</li>`;}).join('')}</ul></section>`;
+    return `<li class="dw-ev${open?' done':''}${key===e?' key':''}"><span class="dw-mark" role="img" aria-label="${open?'Đã mở':'Chưa mở'}">${open?'✓':''}</span><div><b>${esc(e.title)}${key===e?' <em class="dw-key">📌 Căn cứ</em>':''}</b>${open?`<p>${esc(e.text)}</p>`:t.identity?'':'<small>Xác minh để mở</small>'}</div>${!open&&t.identity?commandButton('Mở','cs_evidence',{task:t.id,evidence:e.id},'ghost'):''}</li>`;}).join('')}</ul></section>`;
   const notes=`${room().upgrades.includes('workbench')?notice('Bàn kiểm hai bước: so yêu cầu của khách với chứng cứ đóng gói/giao nhận, không coi một trạng thái đơn lẻ là kết luận.','blue','search'):''}`;
   const log=t.timeline.length?fold(`Nhật ký vụ · ${t.timeline.length} dòng`,`<ol class="dw-log">${t.timeline.map(line=>`<li>${esc(line)}</li>`).join('')}</ol>`):'';
   const sub=`${channel}${t.value?` · đơn ${fmt(t.value)} xu`:''}${t.days_open?` · ngày thứ ${t.days_open+1}`:''}`;
@@ -733,7 +773,7 @@ function journalView(){const c=room(),tab=ui.journalTab;let inner='';
   else {const q=ui.libraryQuery.toLocaleLowerCase('vi-VN'),items=api.content.event_catalogue.filter(e=>e.career===career()&&(`${e.id} ${e.title}`.toLocaleLowerCase('vi-VN').includes(q)));inner=`<input class="input" id="library-search" data-preserve placeholder="Tìm: review, clip, quên ví, mất hàng…" value="${esc(ui.libraryQuery)}" aria-label="Tìm tình huống"><div class="event-library space-top">${items.map(e=>`<article class="library-item"><small class="muted">Diễn tập</small><h4>${esc(e.title)}</h4>${button('Thử tình huống '+icon('arrow',13),'practice',{event:e.id},'small ghost')}</article>`).join('')||empty('Chưa có tình huống khớp')}</div>`;}
   return header('Sổ tay','','SỔ TAY')+`<div class="sheet-body"><nav class="pill-tabs">${[['quests','Câu chuyện'],['history','Nhật ký'],['memories','Ký ức'],['library','24 tình huống']].map(([id,label])=>`<button data-action="journalTab" data-tab="${id}" class="${tab===id?'active':''}">${label}</button>`).join('')}</nav>${inner}</div>`;
 }
-function decorView(){const c=room(),spots={window:'Bên cửa sổ',corner:'Góc phòng',front:'Gần cửa',center:'Giữa phòng',wall:'Trên tường'};return header('Trang trí & nâng cấp','','GÓC CỦA BẠN',pill(icon('coin',13)+' '+fmt(c.money)+' xu','amber'))+`<div class="sheet-body"><div class="row spread"><div><h3>Chọn sắc cho căn phòng</h3><p class="muted small">Đổi màu tường không tốn xu.</p></div>${icon('plant',25)}</div><div class="theme-options">${[['boba','Trà sữa'],['warm','Ấm áp'],['sage','Xanh dịu'],['lavender','Tím mây']].map(([id,l])=>commandButton(`${(c.theme||'boba')===id?icon('check',13):icon('sun',13)} ${l}`,'theme',{theme:id},'small '+((c.theme||'boba')===id?'primary':'ghost'))).join('')}</div><div class="upgrade-grid">${api.content.upgrades.filter(u=>!u.careers||u.careers.includes(career())).map(u=>{const owned=c.upgrades.includes(u.id);return `<article class="upgrade-card"><div class="row spread"><span class="upgrade-icon">${icon(u.icon,31)}</span>${pill(owned?'ĐÃ CÓ':u.min_level>c.level?'CẤP '+u.min_level:u.price+' XU',owned?'green':'')}</div><h3>${esc(u.name)}</h3><p>${esc(u.description)}</p>${owned?(u.kind==='decor'?`<select aria-label="Vị trí ${esc(u.name)}" data-decor-item="${u.id}">${Object.entries(spots).filter(([s])=>u.id==='poster'?s==='wall':s!=='wall').map(([id,label])=>`<option value="${id}"${c.decor[u.id]?.spot===id?' selected':''}>${label}</option>`).join('')}</select>`:u.id==='assistant'?commandButton('Nhờ hỗ trợ hôm nay','assistant_help',{},'small',c.assistant_day===c.day):pill('Đang dùng trong nghề','green')):u.min_level>c.level?`<button type="button" class="btn ghost full" disabled>🔒 Mở ở cấp ${u.min_level} (đang cấp ${c.level})</button>`:button(icon('plus',14)+' Đặt trong phòng','buyUpgrade',{item:u.id},'primary full')}</article>`;}).join('')}</div></div>`+footer('',button('Xem căn phòng','close',{},'primary'));}
+function decorView(){const c=room(),spots={window:'Bên cửa sổ',corner:'Góc phòng',front:'Gần cửa',center:'Giữa phòng',wall:'Trên tường'};return header('Trang trí & nâng cấp','','GÓC CỦA BẠN',pill(icon('coin',13)+' '+fmt(c.money)+' xu','amber'))+`<div class="sheet-body"><div class="row spread"><div><h3>Chọn sắc cho căn phòng</h3><p class="muted small">Đổi màu tường không tốn xu.</p></div>${icon('plant',25)}</div><div class="theme-options">${[['boba','Trà sữa'],['warm','Ấm áp'],['sage','Xanh dịu'],['lavender','Tím mây']].map(([id,l])=>commandButton(`${(c.theme||'boba')===id?icon('check',13):icon('sun',13)} ${l}`,'theme',{theme:id},'small '+((c.theme||'boba')===id?'primary':'ghost'))).join('')}</div><div class="upgrade-grid">${api.content.upgrades.filter(u=>!u.careers||u.careers.includes(career())).map(u=>{const owned=c.upgrades.includes(u.id);return `<article class="upgrade-card"><div class="row spread"><span class="upgrade-icon">${icon(u.icon,31)}</span>${pill(owned?'ĐÃ CÓ':u.min_level>c.level?'CẤP '+u.min_level:u.price+' XU',owned?'green':'')}</div><h3>${esc(u.name)}</h3><p>${esc(u.description)}</p>${owned?(u.kind==='decor'?`<select aria-label="Vị trí ${esc(u.name)}" data-decor-item="${u.id}">${Object.entries(spots).filter(([s])=>u.id==='poster'?s==='wall':s!=='wall').map(([id,label])=>`<option value="${id}"${c.decor[u.id]?.spot===id?' selected':''}>${label}</option>`).join('')}</select>`:u.id==='assistant'?commandButton('Nhờ hỗ trợ hôm nay','assistant_help',{},'small',c.assistant_day===c.day):pill('Đang dùng trong nghề','green')):u.min_level>c.level?`<button type="button" class="btn ghost full" disabled>🔒 Mở ở cấp ${u.min_level} (đang cấp ${c.level})</button>`:c.money<u.price?`<button type="button" class="btn ghost full" disabled>Thiếu ${fmt(u.price-c.money)} xu</button>`:button(icon('plus',14)+' Đặt trong phòng','buyUpgrade',{item:u.id},'primary full')}</article>`;}).join('')}</div></div>`+footer('',button('Xem căn phòng','close',{},'primary'));}
 /* ---- Many days at the original desks + the stock room (warehouseView): legacy parcels on the
    shop clock (mother_baby, pharmacy), the pharmacy's lot book · fridge log · regulars, the
    bookkeeping client files and the support follow-up board, plus the support call panel.
@@ -952,8 +992,10 @@ let confirmResolve=null;
 /** `money` (optional): {cost, pocket:'wallet'|'fund'} of a payment, for the "còn thiếu" line; without it a
  * confirm that talks money still shows the balances of the sheet under it (v4/money.js confirmMoney). */
 function confirmAction(title,message,label='Xác nhận',money=null){
-  const under=[...document.querySelectorAll('dialog[open]')].filter(d=>d.id!=='confirmDialog').pop();
-  $('#confirmContent').innerHTML=`<span class="eyebrow">MỘT BƯỚC XÁC NHẬN</span><h2>${esc(title)}</h2>${message?`<p class="muted">${esc(message)}</p>`:''}${confirmMoney(dialogBalances(under),[title,message,label],money)}<div class="row">${button('Để mình xem lại','confirmNo',{},'ghost')}${button(esc(label),'confirmYes',{},'primary')}</div>`;
+  const under=[...document.querySelectorAll('dialog[open]')].filter(d=>d.id!=='confirmDialog').pop(),b=dialogBalances(under);
+  // Not enough in the fund for an exact price: the server would refuse ("Chưa đủ xu"), so the button says so instead.
+  const short=confirmShort(b,[title,message,label],money),yes=short?.sure?`<button type="button" class="btn primary" disabled>Thiếu ${fmt(short.miss)} xu</button>`:button(esc(label),'confirmYes',{},'primary');
+  $('#confirmContent').innerHTML=`<span class="eyebrow">MỘT BƯỚC XÁC NHẬN</span><h2>${esc(title)}</h2>${message?`<p class="muted">${esc(message)}</p>`:''}${confirmMoney(b,[title,message,label],money)}<div class="row">${button('Để mình xem lại','confirmNo',{},'ghost')}${yes}</div>`;
   $('#confirmDialog').showModal();return new Promise(resolve=>{confirmResolve=resolve;});
 }
 function inputPrompt(title,value,maxLength=100){
@@ -1063,6 +1105,7 @@ async function handleAction(action,data,el){
     case'choose':await selectCareer(data.career);break;
     case'bossOffer':if(data.career&&api.state.careers[data.career])await selectCareer(data.career);break;
     case'start':await start();break;
+    case'startHere':if(needsJob()){openSheet('jobapp');break;}if(await cmd('start_day'))renderSheet();break;  // the work sheet's "Mở ca": stay on it
     case'pause':setPaused(!ui.paused);break;
     case'resume':setPaused(false);break;
     case'sound':await cmd('settings',{sound:!api.state.settings.sound},{quiet:true});break;
@@ -1121,7 +1164,8 @@ async function handleAction(action,data,el){
       if(await boardAction(action,data,el,env()))break;
       if((L.rank.m||action==='rank')&&await (await viaLazy(L.rank,el)).leaderboardAction(action,data,el,env()))break;
       if(action==='liveChat'){(await viaLazy(L.live,el)).openChat(data);break;}  // 💬 Chat (v4/chat.js)
-      if(action==='liveWalk'){await (await import('./v4/walk.js')).openWalk(env(),data);break;}  // 🚶 Đi dạo (v4/walk.js): its own dialog
+      if(action==='liveWalk'){const w=await import('./v4/walk.js');L.live.m?.benchSpot(w.walk);await w.openWalk(env(),data);break;}  // 🚶 Đi dạo (v4/walk.js): its own dialog; 💕 its benches are the dating bench
+      if(action==='liveDate'){(await viaLazy(L.live,el)).openDate(data);break;}  // 💕 Góc hẹn hò (v4/dating.js)
       if(action==='liveWed'){await (await import('./v4/wedding.js')).openWeddings(env());break;}  // 💍 Lịch cưới (v4/wedding.js): its own dialog
       if(action==='marriage'||action==='friends'){await (await import('./v4/marriage.js')).marriageAction(action,data,el,env());break;}  // Hôn nhân, Bạn bè: lazy
       if(action==='bank'){await (await import('./v4/bank.js')).bankAction(action,data,el,env());break;}  // 🏦 Ngân hàng Phố: lazy
@@ -1166,6 +1210,8 @@ document.addEventListener('click',async e=>{
   // A second tap on the control already on the wire is a double tap, not a new wish.
   if(ui.busy&&!['close','confirmNo','confirmYes'].includes(el.dataset.action)){try{const k=tapKey(el);heldTap=k===flightTap?null:k;}catch{heldTap=null;}holdMark(heldTap?el:null);return;}
   try{flightTap=tapKey(el);}catch{flightTap=null;}
+  // "Đón thêm khách" drawn before the gate closed (a career panel, an older render): no press into a sure refusal.
+  if(el.dataset.command==='more_work'&&moreGate(room())){const g=moreGate(room());toast(g.why==='full'?'Đang có đủ việc: làm tiếp việc đang chờ nhé.':g.why==='cap'?'Hôm nay đủ khách rồi: làm nốt rồi khép ca nhé.':'Sắp đóng cửa: không đón thêm khách. Làm nốt rồi khép ca nhé.','hint');if(room().tasks.some(x=>!ended(x))){ui.task=null;await openJob(null,'shelf');}else{renderMain();renderSheet();}return;}
   if(el.dataset.command){const action=el.dataset.command,payload=JSON.parse(el.dataset.payload||'{}');const result=await cmd(action,payload);if(result){if(action==='defer'){ui.task=null;openSheet('queue');}if(action==='event_dismiss'){openSheet('journal',{journalTab:'library'});}if(action==='more_work'){ui.task=null;await openJob(null,'shelf');}if(action==='ask'){world.say(result.message,activeTask()?.npc);}}}
   else{try{await handleAction(el.dataset.action,el.dataset,el);}catch(error){console.error(error);toast('Thao tác chưa hoàn tất. '+error.message,true);}}
 });
@@ -1258,10 +1304,19 @@ const CAREER_MODULES=[];
 // Its part of the catalogue (api.careerContent: a plugin workplace's data) comes with its workbench.
 const careerAssets=(id,waitCss=true)=>Promise.all([CAREER_MODULES.includes(id)&&!hasCareerUI(id)?loadCareerModules([id],waitCss):null,api.careerContent(id),import(`./scenes/${kindOf(id)}.js`).catch(()=>{}),id==='teacher'||id==='tour_guide'?teachTour().catch(()=>{}):null]);
 setCareerData(id=>api.hasCareerContent(id));  // careerUI(id) waits for the workplace's data part too
+/* The current workplace's workbench and data part, when they are not in (a switch, or a start-up whose fetch failed
+ * on a weak network: the game opens anyway). Failed again: asked for once more after 2, 4, 8 … 30 s, not on every
+ * render. Both loaders settle without throwing. */
+const workbench={busy:null,id:null,tries:0,timer:0};
 function ensureCareerUI(){
   const id=api.state?.current;
-  if(!id||(hasCareerUI(id)&&api.hasCareerContent(id))||!CAREER_MODULES.includes(id)||ensureCareerUI.busy===id)return;
-  ensureCareerUI.busy=id;Promise.all([hasCareerUI(id)?null:loadCareerModules([id],true),api.careerContent(id)]).then(()=>{ensureCareerUI.busy=null;if(api.state?.current===id){renderMain();if(ui.view)renderSheet();}});
+  if(!id||(hasCareerUI(id)&&api.hasCareerContent(id))||!CAREER_MODULES.includes(id)||workbench.busy===id||(workbench.timer&&workbench.id===id))return;
+  workbench.busy=id;Promise.all([hasCareerUI(id)?null:loadCareerModules([id],true),api.careerContent(id)]).then(()=>{
+    workbench.busy=null;
+    if(hasCareerUI(id)&&api.hasCareerContent(id)){if(workbench.id===id)workbench.tries=0;}
+    else{if(workbench.id!==id){workbench.id=id;workbench.tries=0;}workbench.timer=setTimeout(()=>{workbench.timer=0;ensureCareerUI();},Math.min(30000,2000*2**workbench.tries++));}
+    if(api.state?.current===id){renderMain();if(ui.view)renderSheet();}
+  });
 }
 api.addEventListener('offline',()=>renderMain());
 // While the always-on features load one by one after start-up (lazyBoot), only a module the screen is waiting
@@ -1279,6 +1334,7 @@ try{
   // Its stylesheet only styles the workbench: wait for it only when a sheet opens right away (day closed).
   await Promise.all([careerAssets(career(),Boolean(api.state.current&&(!room()?.open||needsJob()))),setLanguage(api.state.settings.lang)]);
   shell.boot(env());journeyBoot(env());boardBoot(env());startTicker(()=>env());$('#loading').hidden=true;$('#app').hidden=false;world.resize();renderMain();
+  ensureCareerUI();  // its workbench failed to come above (the game opens anyway): ask again in the background
   try{performance.mark('mnl-first-frame');}catch{/* no User Timing */}   // "time to first game frame" (telemetry.js load beacon)
   import('./telemetry.js').then(m=>m.telemetryBoot({api,ui})).catch(e=>console.warn('telemetry:',e));  // Giữ chân: leave/error/load beacons
   // The rest of the catalogue (api.more), now that the first frame is out: it never competed with it on the wire.

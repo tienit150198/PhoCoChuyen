@@ -2015,6 +2015,46 @@ html.reduce-motion *,html.reduce-motion *::before,html.reduce-motion *::after{an
 .inv-row-act{display:inline-flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:6px}
 .inventory-row .inv-row-act input{width:72px}
 .inv-lot .tag{justify-self:start}
+/* Đơn gộp (merged orders): the draft chip and badge, the cart card, a merged crate. */
+.inv-badge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:var(--radius-pill);background:var(--accent);color:var(--accent-ink);font-size:.75rem;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.inv-carts{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.inv-cart-chip,.btn.inv-cart-chip{display:inline-flex;align-items:center;gap:6px;min-height:44px;max-width:100%;padding:6px 14px;border-radius:var(--radius-pill);border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent-text);font-weight:700;font-size:.867rem}
+.inv-cart-chip>b:last-child{font-variant-numeric:tabular-nums;white-space:nowrap}
+.inv-cart-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.inv-flag.cart{background:var(--accent-soft);color:var(--accent-text)}
+.inv-order-go{display:flex;flex-wrap:wrap;gap:8px;margin-left:auto}
+.inv-total .inv-order-go .btn{margin-left:0}
+.inv-cart{display:grid;gap:10px;margin-bottom:14px;border-top:4px solid var(--accent)}
+.inv-cart>.row.spread:first-child{flex-wrap:nowrap;align-items:flex-start}
+.inv-cart h3{margin:0;min-width:0;font-size:1.05rem;overflow-wrap:anywhere}
+.inv-cart .inv-order-go{margin:0;justify-content:flex-end}
+.inv-cart .warn-text{color:var(--warn);font-weight:700}
+.inv-cart-lines{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.inv-cl{display:grid;grid-template-columns:minmax(0,1fr) auto 2.6em 36px;align-items:center;gap:6px;padding:6px 6px 6px 10px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--line)}
+.inv-cl.oos{background:var(--surface-2)}
+.inv-cl.oos .inv-cl-name b{text-decoration:line-through;color:var(--muted)}
+.inv-cl-name{display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px;min-width:0;overflow-wrap:anywhere;line-height:1.3}
+.inv-cl-tag{display:inline-flex}
+.inv-cl-tag .tag{font-size:.75rem}
+.inv-cl-qty{display:inline-grid;grid-template-columns:36px 2em 36px;align-items:center;text-align:center}
+.inv-cl-qty .btn{min-width:36px;min-height:36px;padding:0;font-size:1.15rem}
+.inv-cl-qty b,.inv-cl-amt{font-variant-numeric:tabular-nums}
+.inv-cl-amt{text-align:right}
+.inv-cl-x{width:36px;height:36px;min-width:36px;min-height:36px}
+.inv-cart-sum{display:grid;gap:2px;margin:0;font-size:.9rem}
+.inv-cart-sum>div{display:flex;justify-content:space-between;gap:8px}
+.inv-cart-sum dt{color:var(--muted)}
+.inv-cart-sum dd{margin:0;font-variant-numeric:tabular-nums}
+.inv-cart-sum .total{margin-top:4px;padding-top:6px;border-top:1px dashed var(--line-strong);font-weight:800;font-size:1.05rem}
+.inv-cart-sum .total dt{color:var(--ink)}
+.inv-haggle{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.inv-haggle>span{font-weight:700;font-size:.867rem;color:var(--ink-2)}
+.chip.inv-tier{min-height:32px;padding:2px 10px;font-size:.8rem}
+.inv-gnames{margin:0;color:var(--ink-2);font-size:.867rem;overflow-wrap:anywhere}
+.inv-gline{display:grid;gap:8px;padding-top:10px;border-top:1px dashed var(--line)}
+html[data-layout="phone"] .inv-order-go{width:100%;margin-left:0}
+html[data-layout="phone"] .inv-order-go .btn{flex:1 1 0;width:auto}
+html[data-layout="phone"] .inv-cart .inv-order-go .btn.ghost{flex:0 0 auto}
 html:not([data-layout="phone"]) .inv-status{grid-template-columns:minmax(0,1fr) auto;align-items:center}
 html[data-layout="phone"] .inv-row-act{flex:1 1 100%}
 html[data-layout="phone"] .inv-bins{grid-template-columns:repeat(2,minmax(0,1fr))}

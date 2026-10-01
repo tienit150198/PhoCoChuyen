@@ -171,6 +171,43 @@ class PaidOnce(Base):
         self.assertEqual(self.wallet(b), wb)
 
 
+
+class DateRewards(Base):
+    """💕 A date's spirit (live/dating.py grants 'spirit' with src 'date'): paid once, clamped, gone with the save."""
+
+    def spirit(self, tok):
+        return migrate_state(self.state(tok))['journey']['life']['spirit']
+
+    def test_date_spirit_once_and_clamped(self):
+        tok = self.guest()
+        before = self.spirit(tok)
+        self.grant(tok, eid='date:0123456789ab:aaaaaaaaaaaaaaaa', kind='spirit', amount=5, src='date')
+        self.assertTrue(self.load(tok))
+        self.assertEqual(self.spirit(tok), min(100, before + 5))
+        self.assertFalse(self.load(tok))
+        self.assertEqual(self.spirit(tok), min(100, before + 5))
+        self.grant(tok, eid='date:0123456789ac:aaaaaaaaaaaaaaaa', kind='spirit', amount=1000, src='date')
+        self.load(tok)
+        self.assertEqual(self.spirit(tok), 100)
+        validate_state(migrate_state(self.state(tok)))
+
+    def test_forget(self):
+        tok = self.guest()
+        self.grant(tok, eid='date:1:forget', kind='spirit', src='date')
+        lfx.forget(self.store, tok)
+        self.assertIsNone(self.status('date:1:forget'))
+
+    def test_schema_7_has_the_date_tables(self):
+        from game import pg_schema
+        self.assertGreaterEqual(pg_schema.SCHEMA_VERSION, 7)   # 7: live_dates, date_bonds (1.0.1)
+        for name in ('live_dates', 'date_bonds'):
+            self.assertIn(f'CREATE TABLE IF NOT EXISTS {name}', pg_schema.TABLES_DDL)
+            self.assertIn(name, pg_schema.TABLE)
+        with self.store.connect() as db:
+            for name in ('live_dates', 'date_bonds'):
+                db.execute(f'SELECT 1 FROM {name} LIMIT 1').fetchall()
+
+
 class NotStory(Base):
     story = False
 

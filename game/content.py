@@ -211,6 +211,8 @@ def public_content() -> dict:
     catalogue=copy.deepcopy(CATALOG)
     for c in catalogue:
         c.update(CAREER_META.get(c["id"], {}))
+        if c["id"] in PLUGINS:  # its work needs the shift open (engine: "Mở ca trước…"): greyed out while closed
+            sp=PLUGINS[c["id"]].SPEC;c["shift_gate"]=dict(prefix=sp["prefix"],free=list(sp.get("free_actions",())))
     return dict(version="0.9.5",experiences=extra.public_content(),inventory=inventory.content(),employment=employment.content(CAREERS),
                 situations={cid:situations.catalogue(cid) for cid in CAREERS},
                 careers={cid:(PLUGINS[cid].content() if hasattr(PLUGINS[cid],'content') else {}) for cid in PLUGINS},operations=operations.content(),catalogue=catalogue,npcs=NPCS,products=PRODUCTS,ph_products=PH_PRODUCTS,lots=list(LOT_INDEX.values()),

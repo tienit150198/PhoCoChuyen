@@ -70,7 +70,7 @@ class Room(WedCase):
         me = bride.room['people'][0]
         self.assertEqual(me['ti'], '💍 Cô dâu')
         self.assertLess(me['p'][-1][1], 300, 'the couple stands on the stage')
-        guest = await self.join(self.guest('Bảo')[0], wid)
+        guest = await self.join(self.account('Bảo')[0], wid)          # only accounts talk (1.0.1)
         self.assertEqual(len(guest.room['people']), 2)
         self.assertEqual(guest.room['place'], 'wedding')
         await guest.send(t='say', text='Chúc mừng hạnh phúc nha 🎉 zalo 0912345678')
@@ -86,7 +86,7 @@ class Room(WedCase):
     async def test_visible_cap_and_watchers_still_count(self):
         (ta, tb), (sa, sb), wid, at = self.party()
         with patch.object(WL, 'VISIBLE', 2):
-            a = await self.join(self.guest('Một')[0], wid)
+            a = await self.join(self.account('Một')[0], wid)
             b = await self.join(self.guest('Hai')[0], wid)
             c = await self.join(self.guest('Ba')[0], wid)
             groom = await self.join(tb, wid, g='male')     # the couple always gets in

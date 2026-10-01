@@ -37,7 +37,7 @@ export function boardRows(x,cfg,tasks,{tap=true}={}){
 /** "Bảng giờ bay": the whole day on one board, and the one way on (another hop, or the end of the shift). */
 export function board(x,cfg){
   const c=x.room,list=today(x),left=list.filter(t=>!ended(t)).length;
-  const foot=c.open?`<footer class="sheet-foot"><p>${c.day_completed} ${esc(cfg.done_word)} xong</p><div class="row wrap">${x.cmd(`✈️ ${esc(cfg.more)}`,'more_work',{},left?'ghost':'primary',left>=4)}${x.button('Tan ca','end',{},'ghost')}</div></footer>`
+  const foot=c.open?`<footer class="sheet-foot"><p>${c.day_completed} ${esc(cfg.done_word)} xong</p><div class="row wrap">${c.more_gate?'':x.cmd(`✈️ ${esc(cfg.more)}`,'more_work',{},left?'ghost':'primary')}${x.button('Tan ca','end',{},c.more_gate&&!left?'primary':'ghost')}</div></footer>`
     :`<footer class="sheet-foot"><p></p><div class="row wrap">${x.button('Vào phòng tổ bay','prepare',{},'primary')}</div></footer>`;
   return head(x,`BẢNG GIỜ BAY · NGÀY ${dayNo(x)}`,cfg.airline,'Sân bay Thành phố')+`<div class="sheet-body air-sheet">${boardRows(x,cfg,list)}</div>`+foot;
 }
@@ -49,8 +49,8 @@ export function hudCard(c,t,x,cfg,{bell='',first='',wrap=false,note=''}={}){
       <div class="air-pass-row">${x.button(`🪪 Vào phòng tổ bay · báo danh ${esc(c.day_clock?.open_time||'05:30')}`,'prepare',{},'primary big grow'+first)}${c.shift_summary?`<button type="button" class="icon-btn hud-sum" data-action="summary" aria-label="Xem ngày vừa qua">${x.icon('clipboard',18)}</button>`:''}${bell}</div></article>`;
   }
   if(!t){
-    const main=wrap?x.button('Tan ca hôm nay','end',{},'primary big grow gd-pulse'):x.cmd(`✈️ ${esc(cfg.more)}`,'more_work',{},'primary big grow');
-    const side=wrap?`<button type="button" class="icon-btn hud-sum" data-command="more_work" data-payload="{}" aria-label="${esc(cfg.more)}">${x.icon('plus',18)}</button>`:`<button type="button" class="icon-btn hud-sum" data-action="end" aria-label="Tan ca hôm nay">${x.icon('exit',18)}</button>`;
+    const main=wrap||c.more_gate?x.button('Tan ca hôm nay','end',{},'primary big grow gd-pulse'):x.cmd(`✈️ ${esc(cfg.more)}`,'more_work',{},'primary big grow');
+    const side=c.more_gate?'':wrap?`<button type="button" class="icon-btn hud-sum" data-command="more_work" data-payload="{}" aria-label="${esc(cfg.more)}">${x.icon('plus',18)}</button>`:`<button type="button" class="icon-btn hud-sum" data-action="end" aria-label="Tan ca hôm nay">${x.icon('exit',18)}</button>`;
     return `<article class="note-card calm-card air-pass air-off"><div class="air-pass-top"><span class="air-pass-code">${esc(role)}</span><span class="air-pass-route">Hết ${esc(cfg.done_word)} đang chờ</span></div><div class="air-pass-row">${note}${main}${side}${bell}</div></article>`;
   }
   const leg=t.leg||{},who=x.npc(t.npc);

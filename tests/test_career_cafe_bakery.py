@@ -463,6 +463,39 @@ class CafeBakeryTests(unittest.TestCase):
         self.assertEqual(crit['presentation']['score'], 4)
         validate_state(json.loads(json.dumps(j.state)))
 
+    def test_cake_steps_need_the_recipe_the_screen_counts(self):
+        """cafe_bakery.js lacks(): the sponge and the cream take the recipes the client reads (content() bakes/creams),
+        each item at least its count. One fewer of any is refused untouched (the screen offers "📦 Nhập …"
+        instead of the button), exactly the recipe goes through."""
+        def set_stock(c, item, n):
+            first = True
+            for lot in c['ext']['inv']['lots']:
+                if lot['item'] == item and lot['expires'] >= c['day']:
+                    lot['qty'], first = (n if first else 0), False
+            self.assertFalse(first, item)
+        j = self.journey(lambda n: n['kind'] == 'cake')
+        j.act('ask')
+        n = j.task['needs']
+        content = CB.content()
+        sponge = next(b for b in content['bakes'] if b['id'] == 'sponge')['recipe']
+        cream = next(c for c in content['creams'] if c['id'] == n['cream'])['recipe']
+        for recipe, act in ((sponge, lambda: j.act('cb_bake', item='sponge')), (cream, lambda: j.act('cb_frost', cream=n['cream'], color=n['color']))):
+            for short in recipe:
+                for k, q in recipe.items():
+                    set_stock(j.c, k, q - (k == short))
+                before = copy.deepcopy(j.state)
+                with self.assertRaises(GameError):
+                    act()
+                self.assertEqual(j.state, before, short)
+            for k, q in recipe.items():
+                set_stock(j.c, k, q)
+            act()
+            self.assertEqual({k: kit.stock(j.c, k) for k in recipe}, {k: 0 for k in recipe})
+            if recipe is sponge:
+                self.clock.t += 20
+                j.act('cb_unload', rack=j.c['ext']['data']['oven'][0]['id'])
+                j.act('advance')
+
     def test_frosting_a_warm_sponge_melts(self):
         j = self.journey(lambda n: n['kind'] == 'cake')
         j.act('ask')

@@ -34,12 +34,13 @@ Delta-sync hints (TABLES[i]["sync"]):
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 7   # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
+SCHEMA_VERSION = 8   # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
-                     # 6: live chat (chat_*, live_effects: game/live_chat.py, live/)
-                     # 7: live weddings (wedding_dates, wedding_parties, wedding_guests, wedding_photos, wedding_race,
-                     #    player_closeness: game/wedding_live.py, live/wedding.py)
+                     # 6: live chat (chat_*, live_effects: game/live_chat.py, live/), 1.0.0;
+                     # 7: dates (live_dates, date_bonds: game/live_dating.py, live/dating.py), 1.0.1
+                     # 8: live weddings (wedding_dates, wedding_parties, wedding_guests, wedding_photos, wedding_race,
+                     #    player_closeness: game/wedding_live.py, live/wedding.py), 1.1.0
 
 # The text forms SQLite produces, computed by PostgreSQL (UTC, independent of TimeZone).
 NOW_TEXT = "to_char(statement_timestamp() AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI:SS')"       # CURRENT_TIMESTAMP
@@ -307,6 +308,13 @@ CREATE TABLE IF NOT EXISTS live_effects (
   id {T} PRIMARY KEY, sid {T} NOT NULL, kind {T} NOT NULL, amount bigint NOT NULL DEFAULT 0, data {T} NOT NULL DEFAULT '{{}}',
   status {T} NOT NULL DEFAULT 'pending', at double precision NOT NULL, applied_at double precision
 );
+-- 💕 Dates of the live service (live/dating.py; game/live_dating.py): one row per café date (pids a < b), and the
+-- bond "đang tìm hiểu" of two saves (sids a < b) that both tapped ❤️.
+CREATE TABLE IF NOT EXISTS live_dates (
+  id {T} PRIMARY KEY, a {T} NOT NULL, b {T} NOT NULL, a_sid {T} NOT NULL, b_sid {T} NOT NULL, at double precision NOT NULL,
+  ended double precision, how {T} NOT NULL DEFAULT '', same bigint NOT NULL DEFAULT 0, hits bigint NOT NULL DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS date_bonds (a {T} NOT NULL, b {T} NOT NULL, at double precision NOT NULL, PRIMARY KEY (a, b));
 -- 💍 Live weddings (game/wedding_live.py, live/wedding.py): the couple's date for good (insert-only), the parties,
 -- the guests who stayed 5 minutes, the group photos, the settled weekly race, closeness between players.
 CREATE TABLE IF NOT EXISTS wedding_dates (
@@ -374,6 +382,8 @@ CREATE INDEX IF NOT EXISTS chat_messages_pid ON chat_messages (pid, id);
 CREATE INDEX IF NOT EXISTS chat_messages_reported ON chat_messages (id) WHERE reports > 0;
 CREATE INDEX IF NOT EXISTS live_effects_sid ON live_effects (sid, status);
 CREATE INDEX IF NOT EXISTS live_effects_day ON live_effects (sid, kind, at);
+CREATE INDEX IF NOT EXISTS live_dates_at ON live_dates (at);
+CREATE INDEX IF NOT EXISTS date_bonds_b ON date_bonds (b);
 CREATE INDEX IF NOT EXISTS wedding_parties_at ON wedding_parties (status, at);
 CREATE INDEX IF NOT EXISTS wedding_guests_week ON wedding_guests (week, ok);
 CREATE INDEX IF NOT EXISTS wedding_guests_sid ON wedding_guests (sid, day);
@@ -741,6 +751,13 @@ TABLES = [
          columns=_cols('id text', 'sid text', 'kind text', 'amount bigint', 'data text', 'status text',
                        'at double precision', 'applied_at double precision'),
          key=('id',), unique=[], identity=None, sync=dict(mode='full', note='status flips pending -> applied')),
+    dict(name='live_dates', source='main', sqlite_table='live_dates',
+         columns=_cols('id text', 'a text', 'b text', 'a_sid text', 'b_sid text', 'at double precision', 'ended double precision',
+                       'how text', 'same bigint', 'hits bigint'),
+         key=('id',), unique=[], identity=None, sync=dict(mode='full', note='ended/how/same/hits set once at the end')),
+    dict(name='date_bonds', source='main', sqlite_table='date_bonds',
+         columns=_cols('a text', 'b text', 'at double precision'),
+         key=('a', 'b'), unique=[], identity=None, sync=dict(mode='full')),
     dict(name='wedding_dates', source='main', sqlite_table='wedding_dates',
          columns=_cols('couple bigint', 'at double precision', 'source text', 'wedding bigint', 'created double precision'),
          key=('couple',), unique=[], identity=None, sync=dict(mode='full', note='insert-only')),

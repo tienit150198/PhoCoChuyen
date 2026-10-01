@@ -5,7 +5,7 @@ import {esc,icon,num,dec,pct,dm,hm,ago,bytes,tag} from './ui.js';
 import {kpi,card,table} from './stats.js';
 
 export const FUNNEL={today:'Hôm nay',yesterday:'Hôm qua',d7:'7 ngày',d30:'30 ngày'};
-const SCREEN={intro:'Màn mở đầu',work:'Cảnh nơi làm',home:'Trang chủ',loading:'Đang tải',job:'Việc của khách',prepare:'Chuẩn bị ngày',summary:'Tổng kết ngày',
+const SCREEN={intro:'Màn mở đầu',work:'Cảnh nơi làm',home:'Trang chủ',loading:'Đang tải',start:'Vừa vào game',job:'Việc của khách',prepare:'Chuẩn bị ngày',summary:'Tổng kết ngày',
   chat:'Trò chuyện',town:'Khu phố',journey:'Hành trình',bank:'Ngân hàng',money:'Tiền của bạn',settings:'Cài đặt',social:'Phố',
   confirmDialog:'Hộp xác nhận',tutGuide:'Hướng dẫn',wnDialog:'Có gì mới',gfDialog:'Quà',stScene:'Cảnh truyện',lfScene:'Cảnh đời',jrScene:'Cảnh hành trình',tour:'Tour hướng dẫn',note:'Ghi chú hướng dẫn'};
 const KIND={js:'Lỗi JS',promise:'Promise',asset:'Tệp',api:'API',toast:'Từ chối'};
@@ -122,7 +122,7 @@ function loadsCard(d){
     {note:'Từ lúc mở trang tới khung hình đầu của game, đo trên máy người chơi (7 ngày). Người mới: lượt chơi mở trong ngày.'});
 }
 function errorsCard(d,ui){
-  const E=d.errors,rows=(E[ui.err]||[]).map(e=>`<tr><td>${tag(KIND[e.kind]||esc(e.kind),e.kind==='toast'?'info':'warn')}</td><td class="msg-cell">${esc(e.message)}</td><td>${screenLabel(e.screen)}</td><td>${num(e.n)}</td></tr>`);
+  const E=d.errors,rows=(E[ui.err]||[]).map(e=>`<tr><td>${tag(KIND[e.kind]||esc(e.kind),e.kind==='toast'?'info':'warn')}</td><td class="msg-cell">${esc(e.message)}${e.stack?`<small class="err-msg">@ ${esc(e.stack)}</small>`:''}</td><td>${screenLabel(e.screen)}</td><td>${num(e.n)}</td></tr>`);
   return card(`Lỗi phía người chơi <small>${num(E[ui.err+'_total'])}</small>`,rows.length?table(['Loại','Nội dung','Màn hình','Lần'],rows,'err-tbl'):'<p class="note">Chưa ghi nhận lỗi nào.</p>',
     {extra:seg('err',ui.err,{today:'Hôm nay',d7:'7 ngày'})});
 }

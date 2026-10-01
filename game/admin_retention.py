@@ -423,13 +423,20 @@ def loads(db, today: datetime.date) -> dict:
 
 
 # ---------------------------------------------------------------- client errors
+# Rows stored before retention.foreign_error dropped them at the door (Zalo's zaloJSV2 ...): not counted.
+_OURS = ' AND ' + ' AND '.join(['LOWER(message_key) NOT LIKE ?'] * len(rt.FOREIGN_NAMES))
+_OURS_ARGS = tuple(f'%{n}%' for n in rt.FOREIGN_NAMES)
+
+
 def client_errors(db, today: datetime.date) -> dict:
     out = {}
     for key, since in (('today', today.isoformat()), ('d7', _day(today, 6))):
-        out[key] = [dict(kind=r[0], message=r[1], screen=r[2], n=int(r[3]), last_at=r[4], sample=r[5]) for r in db.execute(
-            'SELECT kind, message_key, screen, SUM(count) AS c, MAX(last_at), MAX(sample) FROM stat_client_errors WHERE day >= ? '
-            'GROUP BY kind, message_key, screen ORDER BY c DESC, kind, message_key LIMIT ?', (since, TOP))]
-        out[key + '_total'] = int(db.execute('SELECT COALESCE(SUM(count), 0) FROM stat_client_errors WHERE day >= ?', (since,)).fetchone()[0])
+        out[key] = [dict(kind=r[0], message=r[1], screen=r[2], n=int(r[3]), last_at=r[4], sample=r[5],
+                         stack=(r[5] or '').partition(' @ ')[2] or None) for r in db.execute(
+            'SELECT kind, message_key, screen, SUM(count) AS c, MAX(last_at), MAX(sample) FROM stat_client_errors WHERE day >= ?' + _OURS +
+            ' GROUP BY kind, message_key, screen ORDER BY c DESC, kind, message_key LIMIT ?', (since, *_OURS_ARGS, TOP))]
+        out[key + '_total'] = int(db.execute('SELECT COALESCE(SUM(count), 0) FROM stat_client_errors WHERE day >= ?' + _OURS,
+                                             (since, *_OURS_ARGS)).fetchone()[0])
     return out
 
 
@@ -538,6 +545,6 @@ def to_csv(d: dict) -> str:
     for key in ('by_net', 'by_who', 'by_cache', 'by_tier'):
         table(f'load_{key}_7d', ['key', 'loads', 'p50', 'p75', 'p90'], [[r['key'], r['n'], r['p50'], r['p75'], r['p90']] for r in d['loads'][key]])
     for key in ('today', 'd7'):
-        table(f'client_errors_{key}', ['kind', 'message', 'screen', 'count'], [[e['kind'], e['message'], e['screen'], e['n']] for e in d['errors'][key]])
+        table(f'client_errors_{key}', ['kind', 'message', 'screen', 'count', 'stack'], [[e['kind'], e['message'], e['screen'], e['n'], e['stack'] or ''] for e in d['errors'][key]])
     table('log_sizes', ['table', 'bytes'], [[t['name'], t['bytes']] for t in d['sizes']['tables']])
     return buf.getvalue()

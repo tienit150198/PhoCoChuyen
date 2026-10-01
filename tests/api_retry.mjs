@@ -3,7 +3,7 @@
 // the "Đang cập nhật máy chủ…" note shows during a long retry and leaves with it.
 // Run by tests/test_api_retry.py (node tests/api_retry.mjs); exits non-zero on failure.
 import assert from 'node:assert/strict';
-import {GameAPI,UpdatingNote,transient,UPDATING_TEXT,RETRY_DELAYS,RETRY_WINDOW} from '../public/js/api.js';
+import {GameAPI,UpdatingNote,transient,UPDATING_TEXT,RETRY_DELAYS,RETRY_WINDOW,DOUBLE_TAP_MS} from '../public/js/api.js';
 
 const json=(status,data)=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','X-Game-Version':'0.9.5+abc'}});
 const html=status=>new Response(`<html><body><h1>${status} Bad Gateway</h1><hr>nginx</body></html>`,{status,headers:{'Content-Type':'text/html'}});
@@ -69,15 +69,52 @@ assert.equal(transient({status:400}),false);assert.equal(transient({status:409})
   assert.equal(calls.length,2,'sent once more');assert.equal(calls[1].body.expected_revision,12,'against the adopted revision');
   assert.notEqual(calls[0].body.request_id,calls[1].body.request_id,'a new request id');
   assert.equal(again.message,'ok 12');assert.equal(a.revision,13);
-  // a second conflict in a row is reported (no loop)
+  // a second conflict in a row (another tab keeps moving the save): no loop, no error toast, the server's state is shown
   calls=install([json(409,{error:'Tiến trình đã thay đổi',code:'revision_conflict',...state(12)}),json(409,{error:'Tiến trình đã thay đổi',code:'revision_conflict',...state(14)}),json(200,state(99))]);
-  [a,seen]=api();
-  await assert.rejects(a.command('x',{}),e=>e.status===409);
+  [a,seen]=api();let rejected=0;a.addEventListener('rejected',()=>rejected++);
+  await assert.rejects(a.command('x',{}),e=>e.status===409&&e.quiet===true&&e.message==='');
   assert.equal(calls.length,2,'retried once only');assert.equal(a.revision,14,'the server state was adopted');
+  assert.equal(rejected,0,'not reported as a rejected tap (no toast, no telemetry)');
   const c2=install([json(429,{error:'Nhiều thao tác quá nhanh',code:'rate_limited'}),json(200,state(99))]);
   [a]=api();await assert.rejects(a.command('x',{}),e=>e.status===429);assert.equal(c2.length,1);
   const c3=install([json(500,{error:'Không thực hiện được thao tác.',code:'internal_error'})]);
   [a]=api();await assert.rejects(a.command('x',{}),e=>e.status===500);assert.equal(c3.length,1,'500 is a bug, not a restart');
+}
+{ // a double tap let through by an older screen (milk_tea tea_prepare ×155 revision_conflict, 01/10): the step this tab
+  // already applied is never sent again, and nothing is shown
+  const prep={item:'tea',qty:5,confirm:true};let applied=0;
+  const calls=install([b=>{applied++;return json(200,{...state(8),result:{message:'Nấu +5'}});},
+    b=>json(409,{error:'Tiến trình đã thay đổi ở tab khác.',code:'revision_conflict',...state(8)}),json(200,state(99))]);
+  const [a,seen]=api();let rejected=0;a.addEventListener('rejected',()=>rejected++);
+  assert.equal((await a.command('tea_prepare',prep)).message,'Nấu +5');
+  a.revision=7;   // an older screen (as a late read used to leave behind)
+  const again=await a.command('tea_prepare',prep);
+  assert.equal(again.duplicate,true);assert.equal(again.message,'');
+  assert.equal(calls.length,2,'not sent a third time');assert.equal(applied,1,'applied once');
+  assert.equal(a.revision,8);assert.equal(rejected,0);assert.deepEqual(seen.results,['Nấu +5'],'one result');
+}
+{ // the same conflict for another step, or the same step long ago: sent once more against the server's state
+  let calls=install([json(200,state(8)),json(409,{error:'x',code:'revision_conflict',...state(9)}),b=>json(200,{...state(10),result:{message:'ok '+b.action}})]);
+  let [a]=api();await a.command('tea_prepare',{item:'tea'});a.revision=8;
+  assert.equal((await a.command('tea_prepare',{item:'milk'})).message,'ok tea_prepare','another payload is another step');
+  assert.equal(calls.length,3);assert.equal(calls[2].body.expected_revision,9);
+  calls=install([json(200,state(8)),json(409,{error:'x',code:'revision_conflict',...state(9)}),b=>json(200,{...state(10),result:{message:'again'}})]);
+  [a]=api();await a.command('tea_prepare',{item:'tea'});a.done[0].at-=DOUBLE_TAP_MS+1;a.revision=7;
+  assert.equal((await a.command('tea_prepare',{item:'tea'})).message,'again','a tap seconds later is a new wish');
+  // a conflict whose answer carries no state: the state is read, then the tap goes once more
+  calls=install([json(409,{error:'x',code:'revision_conflict'}),json(200,state(20)),b=>json(200,{...state(21),result:{message:'after read '+b.expected_revision}})]);
+  [a]=api();assert.equal((await a.command('x',{})).message,'after read 20');assert.equal(calls[1].url,'/api/state');
+}
+{ // a read sent before a command landed never puts the older state back (the next tap would conflict)
+  let release;const late=new Promise(r=>{release=r;});
+  install([async()=>{await late;return json(200,state(7));},json(200,state(8))]);
+  const [a]=api();a.revision=7;
+  const read=a.refresh();
+  await new Promise(r=>setTimeout(r,5));
+  await a.command('x',{});assert.equal(a.revision,8);
+  release();await read;
+  assert.equal(a.revision,8,'the late read is left out');
+  install([json(200,state(5))]);await a.refresh();assert.equal(a.revision,5,'a read with nothing adopted meanwhile is taken as it is');
 }
 { // the server never comes back: bounded retries, then the offline path (no endless spinner)
   const calls=install(Array.from({length:200},()=>html(502)));

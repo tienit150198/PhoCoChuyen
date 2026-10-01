@@ -196,7 +196,7 @@ export function dayMails(x,{boss,key}){
 
 /** The inbox pane: dossiers, then other messages, then "take more work". */
 export function inboxPane(x,{tasks=[],other=[],title='Hộp thư đến',plan='',people='',track='',take=true}){
-  const open=openTasks(x),more=take&&x.room.open&&open.length<4?`<p class="ok-more">${x.cmd('＋ Nhận thêm việc','more_work',{},'ghost')}</p>`:'';
+  const open=openTasks(x),more=take&&x.room.open&&!x.room.more_gate&&open.length<4?`<p class="ok-more">${x.cmd('＋ Nhận thêm việc','more_work',{},'ghost')}</p>`:'';
   return `<h3 class="ok-h">📥 ${x.esc(title)} <small>${tasks.length+other.length} thư</small></h3>
     ${tasks.length?`<ul class="ok-mails" aria-label="Việc được giao">${tasks.map(mail).join('')}</ul>`:''}
     ${more}${plan}${people}

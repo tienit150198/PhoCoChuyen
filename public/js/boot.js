@@ -45,11 +45,19 @@
   },()=>{});
   // Giữ chân (public/js/telemetry.js, loaded after the first frame): errors before it are kept here, and a page left
   // while still loading says so in one beacon (the session cookie, if any, tells the server whose it was).
-  const T=B.tele={errs:[]},keep=x=>{if(!T.on&&T.errs.length<20)T.errs.push(x);};
-  addEventListener('error',e=>{const t=e.target;keep(t&&t!==window&&(t.src||t.href)?{k:'asset',m:String(t.src||t.href)}:{k:'js',m:String(e.message||'')});},true);
-  addEventListener('unhandledrejection',e=>keep({k:'promise',m:String(e.reason?.message||e.reason||'')}));
+  // s: the splash still up ('loading') or the first frame out ('start'); st: where it was thrown (raw, telemetry.js
+  // shortens it). A script error with no file is code an app evaluated into the page (Zalo, Facebook): not ours.
+  const T=B.tele={errs:[]},keep=x=>{if(!T.on&&T.errs.length<20){x.s=d.getElementById('loading')?.hidden?'start':'loading';T.errs.push(x);}};
+  addEventListener('error',e=>{const t=e.target;
+    if(t&&t!==window&&(t.src||t.href))keep({k:'asset',m:String(t.src||t.href)});
+    else if(e.filename)keep({k:'js',m:String(e.message||''),st:String(e.error?.stack||`${e.filename}:${e.lineno}:${e.colno}`).slice(0,2000)});},true);
+  addEventListener('unhandledrejection',e=>keep({k:'promise',m:String(e.reason?.message||e.reason||''),st:String(e.reason?.stack||'').slice(0,2000)}));
+  // The top 3 frames as path:line:col of this origin or ~ for another one, like telemetry.js stack().
+  const short=s=>String(s||'').split('\n').map(l=>/([a-z][a-z0-9+.-]*:\/\/[^\s/]+)(\/[^\s?#)]*)[^\s)]*?:(\d+):(\d+)/i.exec(l)).filter(Boolean).slice(0,3)
+    .map(f=>f[1]===location.origin?`${f[2].slice(1).slice(-80)||'-'}:${f[3]}:${f[4]}`:'~').join(' < ');
+  B.stack=short;
   const gone=()=>{if(T.on||T.left)return;T.left=1;
-    try{navigator.sendBeacon('/api/beacon',JSON.stringify({leave:{v:'loading',s:Math.round(performance.now()/1000)},errors:T.errs.slice(0,10).map(x=>({k:x.k,m:x.m.split(/[?#]/)[0].slice(0,200),s:'loading',n:1}))}));}catch{/* old browser */}};
+    try{navigator.sendBeacon('/api/beacon',JSON.stringify({leave:{v:'loading',s:Math.round(performance.now()/1000)},errors:T.errs.splice(0,10).map(x=>{const st=short(x.st);return {k:x.k,m:x.m.split(/[?#]/)[0].slice(0,200),s:x.s,n:1,...(st?{st}:{})};})}));}catch{/* old browser */}};
   d.addEventListener('visibilitychange',()=>{if(d.visibilityState==='hidden')gone();});addEventListener('pagehide',gone);
   if(store('mnl.lang')==='en'){
     try{B.i18n=fetch(asset('/i18n/en.json'),{credentials:'same-origin'}).then(r=>r.ok?r.json():null).catch(()=>null);}catch{/* i18n.js fetches */}

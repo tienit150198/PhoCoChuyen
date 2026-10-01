@@ -1,7 +1,7 @@
 // Unit test of public/js/v4/money.js (the 💰 Ví / Quỹ tiệm chip and the confirm's "còn thiếu" line).
 // Run by tests/test_money_chip.py (node tests/money_chip.mjs); exits non-zero on failure.
 import assert from 'node:assert/strict';
-import {shortXu,fundLabel,balances,chipHTML,chipText,priceIn,isSpend,shortfall,confirmMoney} from '../public/js/v4/money.js';
+import {shortXu,fundLabel,balances,chipHTML,chipText,priceIn,isSpend,shortfall,confirmMoney,confirmShort} from '../public/js/v4/money.js';
 
 // Formatting: full numbers, shortened only on phones and only when big.
 assert.equal(shortXu(1234),'1.234 xu');
@@ -65,6 +65,13 @@ assert.match(html,/Ví còn thiếu <b>20 xu<\/b>/,'the caller says what and fro
 html=confirmMoney(both,['Rút 500 xu tiền mặt?','Tiền về ví.','Rút · 500 xu']);
 assert.doesNotMatch(html,/còn thiếu/,'withdrawing is not spending');
 assert.equal(confirmMoney(null,['Mua?','5 xu','Mua']),'');
+// Shut the confirm only when the price is exact and comes out of the fund (the server's own check).
+assert.equal(confirmShort(both,['Khóa phòng?','Đóng lại lúc 22:00.','Đồng ý']),null);
+assert.deepEqual(confirmShort(both,['Đặt hàng?','Hoa hồng: trả 500 xu ngay.','Đặt hàng']),{miss:186,where:'Quỹ tiệm',sure:true});
+assert.equal(confirmShort(both,['Nhập gấp?','Nhập hỏa tốc 30 · khoảng 500 xu?','Đồng ý']).sure,false,'an estimate never shuts');
+assert.equal(confirmShort(wallet,['Mua nhẫn vàng?','150 xu được trừ từ ví.','Mua · 150 xu']).sure,false,'wallet spends keep their own checks');
+assert.equal(confirmShort(both,['Đặt hàng?','10 nhánh: trả 10 xu ngay.','Đặt hàng']).sure,false,'enough: open');
+assert.equal(confirmShort(both,['Xác nhận?','Một bước.','Đồng ý'],{cost:400,pocket:'fund'}).sure,true,'the caller says the cost');
 // The bank and 🏠 Nhà của bạn: wallet + bank account (+ the couple's Quỹ chung), paid from the account first.
 const bankState={journey:{wallet:40,bank:{open:true,balance:900}},careers:{}};
 const bk=balances(bankState,{fund:null,account:true,joint:300});

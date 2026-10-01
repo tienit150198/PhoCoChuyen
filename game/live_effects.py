@@ -177,3 +177,9 @@ def _beside(store, sid: str, r: dict, data: dict) -> None:
                    'ON CONFLICT(sid, other) DO UPDATE SET points=player_closeness.points+excluded.points, updated=excluded.updated',
                    (sid, other, int(r['amount']), t))
     store.transaction(run)
+
+
+def forget(store, token: str) -> None:
+    """Account deletion ("Xóa dữ liệu"): the rewards addressed to this save go with it."""
+    sid = store.key(token)
+    store.transaction(lambda db: db.execute('DELETE FROM live_effects WHERE sid=?', (sid,)))
