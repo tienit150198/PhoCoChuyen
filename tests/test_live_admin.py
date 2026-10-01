@@ -29,7 +29,7 @@ def add_msg(db, ch, pid, text, name='Ai đó', reports=0, hidden=0):
 
 class SchemaTests(unittest.TestCase):
     def test_new_tables_only(self):
-        self.assertEqual(pg_schema.SCHEMA_VERSION, 5)
+        self.assertGreaterEqual(pg_schema.SCHEMA_VERSION, 6)   # 6: the chat tables (5 was Giữ chân, 0.9.18)
         for t in ('chat_channels', 'chat_members', 'chat_messages', 'chat_mutes', 'chat_prefs', 'live_effects'):
             self.assertIn(f'CREATE TABLE IF NOT EXISTS {t} (', pg_schema.TABLES_DDL)
             self.assertIn(t, pg_schema.TABLE)
