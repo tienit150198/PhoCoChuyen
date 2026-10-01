@@ -2,16 +2,23 @@
 """Tutorial browser check (dev tool, needs `pip install playwright` + chromium).
 
 Starts a production-like server (journey story ON, MNL_DEV off) and, on a
-phone (390×844) and a desktop (1280×800):
+phone (390×844) and a desktop (1280×800), checks how players learn the game
+since 0.9.16 (no welcome card, no tour unless asked for):
 
-1. plays the whole first-run tour as a brand-new player: welcome card →
-   every coach mark, doing the highlighted thing where the tour waits for it,
-   and checks each spotlight rings the element it should;
-2. "Bỏ qua" (skip) and "Tự khám phá" (explore) end it and remember it;
-3. "Xem lại hướng dẫn" from Cài đặt → Xem hướng dẫn (the menu/rail no longer list the guides);
-4. the guide: overview, every storefront's "Cách làm", the "?" on a work screen;
-5. the first time at a workplace: one "Xem hướng dẫn / Bỏ qua" card, once per workplace, never at a
-   brand-new player's first workplace.
+1. a brand-new player: the one-screen intro (look, name, first workplace,
+   milk tea recommended), no welcome card, no tour; day 1 opens straight into
+   the first customer with the first-day tip on the button to press; the tips
+   survive a reload; the first customer done, the tips move on; no guide card
+   at this first workplace;
+2. the "?" of the work screen opens that workplace's guide;
+3. Cài đặt has one quiet "Xem hướng dẫn" link and nothing else; the guide's
+   first page replays the tour (it rings the right things; "Bỏ qua" ends it);
+   every storefront's "Cách làm" with its pictures;
+4. the Thêm menu (phone) / rail (desktop) no longer lists the guides;
+5. a workplace that hires first (delivery) through the intro: hired at once,
+   the first-day tip shows (phone);
+6. the first time at a workplace: one "Xem hướng dẫn / Bỏ qua" card, once per
+   workplace, from the second workplace on.
 
 Fails on console errors, uncaught exceptions or horizontal overflow.
 Screenshots of every step go to --shots.
@@ -34,6 +41,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from browser_v04 import OVERFLOW  # noqa: E402
+from browser_first_day import PICK, STATE as ROOM  # noqa: E402
 
 VIEWPORTS = {'phone': (390, 844, True), 'desktop': (1280, 800, False)}
 CAREERS = ['milk_tea', 'grocery', 'delivery', 'cafe_bakery', 'florist']   # the guide's "Cách làm" pages
@@ -41,7 +49,7 @@ CAREERS = ['milk_tea', 'grocery', 'delivery', 'cafe_bakery', 'florist']   # the 
 EXPECT = {
     'street': ['#sheet .jr-street'],
     'who': ['#sheet .jr-who', '#sheet .jr-intro .btn.primary'],
-    'journey': ['#jrHud', '#rail [data-action="home"]', '.brand'],
+    'journey': ['#jrHud', '#rail [data-action="home"]', '.brand', '#dock [data-action="v4Menu"]'],
     'pick': ['#sheet .jr-first-jobs .jr-job', '#sheet .jr-cta', '#sheet [data-action="choose"]'],
     'open': ['#sheet [data-action="start"]', '#taskHUD [data-action="prepare"]'],
     'money': ['#topbar .hud-fund', '#topbar .cozy-till'],
@@ -136,66 +144,227 @@ async def fresh(browser, name, w, h, touch, shots, base):
     return ctx, page, r
 
 
-async def play_tour(r: Run):
-    """Welcome → start → every step, doing what the bubble asks."""
+# Tour steps done by the player (the ring is on the control to press); the others are read and passed with "Tiếp".
+ACT = {'journey', 'pick', 'open', 'task', 'do'}
+TIP = """()=>{const b=[...document.querySelectorAll('.tut-layer.tips')].find(x=>!x.hidden&&x.isConnected);if(!b)return null;
+  const s=b.querySelector('.tut-spot').getBoundingClientRect();
+  return {id:b.dataset.tip,text:b.querySelector('.tut-text')?.textContent||'',spot:[s.left,s.top,s.width,s.height],host:b.parentElement.id||b.parentElement.tagName};}"""
+TIPS_SAVED = "()=>{try{return localStorage.getItem('mnl.tut.tips')}catch{return 'blocked'}}"
+
+
+async def wait_tip(r: Run, want=None, ms=6000):
+    """The first-day tip bubble on screen (`want`: its id), or None."""
+    for _ in range(ms // 200):
+        t = await r.page.evaluate(TIP)
+        if t and (want is None or t['id'] == want):
+            return t
+        await r.wait(200)
+    return None
+
+
+async def no_old_guidance(r: Run, where: str):
+    """0.9.16 on: no welcome card, no tour that starts by itself, no guide card at a new player's first place."""
     p = r.page
-    if not await p.query_selector('#tutWelcome[open]'):
-        r.problem('no welcome card for a brand-new player')
-        return
-    await r.shot('welcome')
-    await r.click('#tutWelcome [data-tut-w="start"]')
-    await r.wait(700)
-    seen = []
+    if await p.query_selector('#tutWelcome[open]'):
+        r.problem(f'{where}: the old welcome card is back')
+    if await r.tour():
+        r.problem(f'{where}: the tour started by itself')
+    if await p.query_selector('.tut-note:not([hidden])'):
+        r.problem(f'{where}: guide card at a brand-new player\'s first workplace')
+
+
+async def intro(r: Run, cid='milk_tea', name='Mây'):
+    """The one-screen intro: look, name, first workplace (milk tea recommended), "Vào làm thôi"."""
+    p = r.page
+    if not await p.query_selector('#sheet[open] .onb-intro form[data-jr-form="start"]'):
+        r.problem('no one-screen intro for a brand-new player')
+        return False
+    await no_old_guidance(r, 'intro')
+    await r.shot('intro')
+    rec = await p.get_attribute('.onb-job.active', 'data-career')
+    if rec != 'milk_tea':
+        r.problem(f'the recommended first workplace is {rec!r}, not milk_tea')
+    await r.click('#sheet [data-action="jrGender"][data-gender="female"]')
+    await p.fill('#jr-name', name)
+    if cid != rec:
+        await r.click(f'#sheet .onb-job[data-career="{cid}"]')
+    await r.click('#sheet form[data-jr-form="start"] button[type=submit]')
     for _ in range(40):
-        st = await r.tour()
+        st = await p.evaluate(ROOM, cid)
+        if st['open'] and st['current'] == cid:
+            return st
+        await r.wait(250)
+    r.problem(f'day 1 at {cid} did not open by itself after the intro')
+    return False
+
+
+async def new_player(r: Run):
+    """A brand-new player through the first customer: the tips teach it, nothing else does."""
+    p = r.page
+    if not await intro(r):
+        return
+    await r.wait(700)
+    if await p.query_selector('#sheet[open].prep-sheet, #wnDialog[open]'):
+        r.problem('"Chuẩn bị" or "Có gì mới" is in the way of the first customer')
+    if not await p.query_selector('#sheet[open]'):
+        await r.click('#taskHUD .task-card .btn.primary')
+    t = await wait_tip(r, 'work')
+    if not t:
+        r.problem(f'no first-day tip on the work screen (tips saved: {await p.evaluate(TIPS_SAVED)})')
+        return
+    r.log.append(f"tip work: {t['text']!r} host={t['host']}")
+    await r.shot('tip-work')
+    if t['host'] != 'sheet':
+        r.problem(f'the work tip is not over the work screen: {t}')
+    rung = await p.evaluate("""([x,y,w,h])=>{const e=document.elementFromPoint(x+w/2,y+h/2);return !!e?.closest('#sheet[open] button, #sheet[open] [data-command], #sheet[open] [data-action]')}""", t['spot'])
+    if not rung:
+        r.problem(f'the work tip rings no control of the work screen: {t}')
+    await no_old_guidance(r, 'first customer')
+    # A reload in the middle: the tips pick up where they were, still no welcome card or tour.
+    await p.reload()
+    await p.wait_for_selector('#app:not([hidden])')
+    await r.wait(1200)
+    if await p.evaluate(TIPS_SAVED) != 'work':
+        r.problem(f'tips progress lost on reload: {await p.evaluate(TIPS_SAVED)!r}')
+    await no_old_guidance(r, 'reload')
+    if not await p.query_selector('#sheet[open]'):
+        await r.click('#taskHUD .task-card .btn.primary')
+    if not await wait_tip(r, 'work'):
+        r.problem('the work tip did not come back after a reload')
+    # Press what the game highlights (like browser_first_day) until the first customer is served.
+    for _ in range(60):
+        st = await p.evaluate(ROOM, 'milk_tea')
+        if st['served'] >= 1:
+            break
+        pick = await p.evaluate(PICK)
+        if pick['kind'] == 'none':
+            r.problem(f'stuck on the first customer: {pick}')
+            return
+        await p.eval_on_selector(pick.get('sel') or '[data-fd-pick]', 'e=>e.click()')
+        await r.wait(650)
+    else:
+        r.problem('the first customer was not served in 60 presses')
+        return
+    await r.wait(1200)
+    saved = await p.evaluate(TIPS_SAVED)
+    now = await p.evaluate(TIP)
+    r.log.append(f"after the first customer: tips at {saved!r}, bubble {now and now['id']!r}")
+    if saved == 'work' or (now and now['id'] == 'work'):
+        r.problem(f'the work tip did not move on after the first customer: {saved!r}')
+    await r.shot('first-customer-done')
+    await no_old_guidance(r, 'first customer done')
+
+
+async def work_help(r: Run, cid='milk_tea'):
+    """The "?" in the work screen's header opens this workplace's guide; closing it keeps the work screen."""
+    p = r.page
+    if not await p.query_selector('#sheet[open]'):
+        await r.click('#taskHUD [data-action="job"]')
+        await r.wait(600)
+    if not await p.query_selector('#sheet[open] .sheet-head .tut-help'):
+        r.problem('no "?" in the work screen header')
+        return
+    await r.click('#sheet .sheet-head .tut-help')
+    await r.wait(700)
+    await r.shot('work-help')
+    sel = await p.evaluate("document.querySelector('#tutGuide[open] [data-tut-career].selected')?.dataset.tutCareer")
+    if sel != cid:
+        r.problem(f'"?" opened {sel}, not {cid}')
+    await r.click('#tutGuide [data-tut-close]')
+    if not await p.evaluate("document.querySelector('#sheet').open"):
+        r.problem('closing the guide lost the work screen')
+
+
+async def settings_guide(r: Run, vname: str):
+    """Cài đặt: one quiet link to the guide. The guide: its first page replays the tour; every storefront."""
+    p = r.page
+    await p.evaluate("document.querySelectorAll('#sheet[open]').forEach(d=>d.close())")
+    await r.click('#topbar [data-action="status"]')
+    await r.click('#sheet [data-action="settings"]')
+    await r.wait(500)
+    links = await p.evaluate("[...document.querySelectorAll('#sheet[open] .tut-settings [data-action]')].map(e=>e.dataset.action)")
+    r.log.append(f'Cài đặt guide links: {links}')
+    if links != ['tutGuide']:
+        r.problem(f'Cài đặt should keep one quiet "Xem hướng dẫn" link, has {links}')
+    await r.shot('settings')
+    await r.click('#sheet .tut-settings [data-action="tutGuide"]')
+    if not await p.query_selector('#tutGuide[open]'):
+        r.problem('"Xem hướng dẫn" in Cài đặt did not open the guide')
+        return
+    await r.shot('guide-play')
+    await r.click('#tutGuide [data-tut-tab="work"]')
+    for cid in CAREERS:
+        await r.click(f'#tutGuide [data-tut-career="{cid}"]')
+        await r.shot(f'guide-{cid}')
+        # The pictures load lazily (only near the viewport): load them all now, then look for missing files.
+        await p.evaluate("document.querySelectorAll('#tutGuide img[loading=\"lazy\"]').forEach(i=>{i.loading='eager';})")
+        for _ in range(25):
+            if await p.evaluate("[...document.querySelectorAll('#tutGuide img')].every(i=>i.complete)"):
+                break
+            await r.wait(200)
+        broken = await p.evaluate("[...document.querySelectorAll('#tutGuide img')].filter(i=>!i.naturalWidth).map(i=>i.src)")
+        if broken:
+            r.problem(f'broken pictures: {broken}')
+    # The tour, on request only: "Xem lại hướng dẫn" on the guide's first page.
+    await r.click('#tutGuide [data-tut-tab="play"]')
+    await r.click('#tutGuide [data-action="tutReplay"]')
+    await r.wait(900)
+    st = await r.tour()
+    if not st:
+        r.problem('"Xem lại hướng dẫn" did not start the tour')
+        return
+    steps = []
+    for _ in range(24):   # play it like a player: do what a ring asks, "Tiếp" on the look-only cards
         if not st:
             break
-        step = st['step']
-        if not seen or seen[-1] != step:
-            seen.append(step)
-            await r.shot(f'tour-{step}')
-            ok = step == 'close' or not EXPECT.get(step) or await p.evaluate(RINGS, [EXPECT[step], st['spot']])
-            r.log.append(f"{step}: ring={'ok' if ok else 'MISS'} host={st['host']} text={st['text']!r}")
+        if not steps or steps[-1] != st['step']:
+            steps.append(st['step'])
+            # A step whose control is not on this screen is a centred card (no ring): its bubble must be in view.
+            b = st['bubble']
+            ok = (0 <= b[0] and b[0] + b[2] <= p.viewport_size['width'] + 1) if not st['spot'] else \
+                not EXPECT.get(st['step']) or await p.evaluate(RINGS, [EXPECT[st['step']], st['spot']])
             if not ok:
-                r.problem(f'step {step} rings the wrong element: {st}')
-        # Do the highlighted thing (like a player would).
-        if step == 'who':
-            if await p.query_selector('#sheet [data-action="jrStep"][data-step="who"]'):
-                await r.click('#sheet [data-action="jrStep"][data-step="who"]')
-            else:
-                await r.click('#sheet [data-action="jrGender"][data-gender="female"]')
-                await p.fill('#jr-name', 'Mây')
-                await r.click('#sheet form[data-jr-form] button[type=submit]')
-                await r.wait(600)
-        elif step == 'journey':
-            await r.click('#jrHud:not([hidden])') or await r.click('#rail [data-action="home"]')
-        elif step == 'pick':
-            await r.click('#sheet [data-action="choose"][data-career="milk_tea"]')
-            await r.wait(900)
-        elif step == 'open':
-            await r.click('#sheet [data-action="start"]')
-            await r.wait(900)
-        elif step == 'task':
+                r.problem(f'tour step {st["step"]} rings the wrong element: {st}')
+            await r.shot(f'tour-{st["step"]}')
+        if st['step'] == 'task':   # "Bấm Làm tiếp." rings the whole task card: press its button
             await r.click('#taskHUD .task-card .btn.primary')
-            await r.wait(700)
-        elif step == 'do':
-            spot = st['spot']
-            el = await p.evaluate_handle("""([x,y,w,h])=>document.elementFromPoint(x+w/2,y+h/2)?.closest('button')""", spot)
+            await r.wait(600)
+        elif st['step'] in ACT and st['spot']:
+            el = await p.evaluate_handle("""([x,y,w,h])=>document.elementFromPoint(x+w/2,y+h/2)?.closest('button,[data-action],[data-command]')""", st['spot'])
             await el.evaluate('e=>e&&e.click()')
             await r.wait(900)
         else:
             await r.click('#tutLayer [data-tut="next"]')
         await r.wait(300)
-    r.log.append('steps: ' + ' → '.join(seen))
-    await r.wait(600)
-    await r.shot('tour-finished')
+        for _ in range(15):   # a step that waits for its control (a sheet opening) is hidden meanwhile
+            st = await r.tour()
+            if st or not await p.evaluate("!!document.getElementById('tutLayer')?.isConnected"):
+                break
+            await r.wait(300)
+    if len(steps) < 4:
+        r.problem(f'the tour replay stopped early: {steps}')
+    r.log.append('tour replay: ' + ' → '.join(steps))
+    if st:
+        await r.click('#tutLayer [data-tut="skip"]')
+    if await r.tour():
+        r.problem('"Bỏ qua" did not end the tour')
     f = await r.flags()
-    if f['ls'].get('done') != '1' or f['settings'].get('tutorialDone') is not True:
+    if f['settings'].get('tutorialDone') is not True:
         r.problem(f'tour end not remembered: {f}')
-    await r.wait(2500)
-    if await r.page.query_selector('.tut-note:not([hidden])'):
-        r.problem('guide card shown at a brand-new player\'s first workplace')
-    return seen
+
+
+async def menu_has_no_guides(r: Run, vname: str):
+    p = r.page
+    await p.evaluate("document.querySelectorAll('dialog[open]').forEach(d=>d.close())")
+    if vname == 'phone':
+        await r.click('#dock [data-action="v4Menu"]')
+        await r.shot('menu')
+    if await p.query_selector('#rail [data-action="help"], #rail [data-action="tutReplay"], #rail [data-action="tutGuide"]'):
+        r.problem('the menu still lists the guides')
+    if not await p.query_selector('#rail [data-action="settings"]'):
+        r.problem('Cài đặt is missing from the menu')
+    await p.keyboard.press('Escape')
+    await r.wait(300)
 
 
 async def main_run(base, shots: Path | None):
@@ -204,129 +373,35 @@ async def main_run(base, shots: Path | None):
     async with async_playwright() as pw:
         browser = await pw.chromium.launch()
         for vname, (w, h, touch) in VIEWPORTS.items():
-            # 1) the whole tour as a brand-new story player
-            ctx, page, r = await fresh(browser, f'{vname}-tour', w, h, touch, shots, base)
-            await play_tour(r)
-            # Replay from Cài đặt → Cách chơi (calm screen: the day opens the status sheet, Cài đặt is in it).
-            await r.click('#topbar [data-action="status"]')
-            await r.click('#sheet [data-action="settings"]')
-            await r.shot('settings-play')
-            await r.click('#sheet .tut-settings [data-action="tutGuide"]')
-            await r.click('#tutGuide [data-action="tutReplay"]')
-            await r.wait(900)
-            st = await r.tour()
-            r.log.append(f'replay from settings: {st and st["step"]}')
-            if not st:
-                r.problem('replay from settings did not start the tour')
-            await r.shot('replay-settings')
-            await r.click('#tutLayer [data-tut="skip"]')
-            # The Thêm menu (phone) / rail (desktop) no longer lists the guides.
-            if vname == 'phone':
-                await r.click('#dock [data-action="v4Menu"]')
-                await r.shot('menu')
-            if await page.query_selector('#rail [data-action="help"], #rail [data-action="tutReplay"]'):
-                r.problem('the menu still lists the guides')
-            await page.keyboard.press('Escape')
-            await r.wait(300)
-            # The guide: overview, every storefront, the "?" on a work screen.
-            await r.click('#topbar [data-action="status"]')
-            await r.click('#sheet [data-action="settings"]')
-            await r.click('#sheet .tut-settings [data-action="tutGuide"]')
-            await r.shot('guide-play')
-            await page.evaluate("document.querySelector('#tutGuide').scrollTop=900")
-            await r.wait(300)
-            await r.shot('guide-play-2')
-            await r.click('#tutGuide [data-tut-tab="work"]')
-            for cid in CAREERS:
-                await r.click(f'#tutGuide [data-tut-career="{cid}"]')
-                await r.shot(f'guide-{cid}')
-                # The pictures load lazily (only near the viewport): load them all now, then look for missing files.
-                await page.evaluate("document.querySelectorAll('#tutGuide img[loading=\"lazy\"]').forEach(i=>{i.loading='eager';})")
-                for _ in range(25):
-                    if await page.evaluate("[...document.querySelectorAll('#tutGuide img')].every(i=>i.complete)"):
-                        break
-                    await r.wait(200)
-                broken = await page.evaluate("[...document.querySelectorAll('#tutGuide img')].filter(i=>!i.naturalWidth).map(i=>i.src)")
-                if broken:
-                    r.problem(f'broken pictures: {broken}')
-            await r.click('#tutGuide [data-tut-close]')
-            await r.click('#taskHUD .task-card .btn.primary')
-            await r.wait(600)
-            if not await r.click('#sheet .tut-help'):
-                r.problem('no "?" on the work screen')
-            else:
-                await r.shot('work-help')
-                sel = await page.evaluate("document.querySelector('#tutGuide [data-tut-career].selected')?.dataset.tutCareer")
-                if sel != 'milk_tea':
-                    r.problem(f'"?" opened {sel}, not milk_tea')
-                await r.click('#tutGuide [data-tut-close]')
-                if not await page.evaluate("document.querySelector('#sheet').open"):
-                    r.problem('closing the guide lost the work screen')
+            # 1–4) a brand-new story player
+            ctx, page, r = await fresh(browser, f'{vname}-new', w, h, touch, shots, base)
+            await new_player(r)
+            await work_help(r)
+            await settings_guide(r, vname)
+            await menu_has_no_guides(r, vname)
             report['logs'][r.name] = r.log
             report['problems'] += r.problems
             await ctx.close()
 
-            # 2) Bỏ qua in the middle of the tour
-            ctx, page, r = await fresh(browser, f'{vname}-skip', w, h, touch, shots, base)
-            await r.click('#tutWelcome [data-tut-w="start"]')
-            await r.click('#tutLayer [data-tut="next"]')
-            await r.shot('before-skip')
-            await r.click('#tutLayer [data-tut="skip"]')
-            await r.shot('after-skip')
-            if await r.tour():
-                r.problem('Bỏ qua did not end the tour')
-            f = await r.flags()
-            if f['ls'].get('done') != '1' or f['settings'].get('tutorialDone') is not True:
-                r.problem(f'skip not remembered: {f}')
-            await page.reload()
-            await page.wait_for_selector('#app:not([hidden])')
-            await r.wait(1500)
-            if await page.query_selector('#tutWelcome[open]') or await r.tour():
-                r.problem('welcome/tour came back after Bỏ qua')
-            report['problems'] += r.problems
-            await ctx.close()
-
-            # 3) Tự khám phá on the welcome card
-            ctx, page, r = await fresh(browser, f'{vname}-explore', w, h, touch, shots, base)
-            await r.click('#tutWelcome [data-tut-w="explore"]')
-            await r.shot('after-explore')
-            f = await r.flags()
-            if f['ls'].get('done') != '1' or await r.tour():
-                r.problem(f'explore not remembered: {f}')
-            report['problems'] += r.problems
-            await ctx.close()
-
-            # 3b) A workplace that hires first (delivery): the tour points at the job form, never gets stuck.
+            # 5) A workplace that hires first (delivery), picked on the intro: hired at once, the tips teach it.
             if vname == 'phone':
                 ctx, page, r = await fresh(browser, f'{vname}-hire', w, h, touch, shots, base)
-                await r.click('#tutWelcome [data-tut-w="start"]')
-                await r.click('#tutLayer [data-tut="next"]')
-                await r.click('#sheet [data-action="jrStep"][data-step="who"]')
-                await r.click('#sheet [data-action="jrGender"][data-gender="male"]')
-                await page.fill('#jr-name', 'Nam')
-                await r.click('#sheet form[data-jr-form] button[type=submit]')
-                await r.wait(700)
-                await r.click('#sheet [data-action="choose"][data-career="delivery"]')
-                await r.wait(1200)
-                st = await r.tour()
-                # Story day one hires a chapter-1 player at once (no CV + trial): then the tour goes straight on.
-                job = await page.evaluate("fetch('/api/state').then(r=>r.json()).then(s=>(s.state.careers.delivery.job||{}).status||null)")
-                r.log.append(f"hire: {st and st['step']} ring={st and st['spot'] is not None} job={job}")
-                want = ('open',) if job == 'hired' else ('hire',)
-                if not st or st['step'] not in want or not st['spot']:
-                    r.problem(f'hiring workplace (job {job}): expected the {want[0]} step, got {st}')
-                await r.shot('hire')
-                for _ in range(8):   # "Tiếp" through to the end: never stuck
-                    if not await r.tour():
-                        break
-                    await r.click('#tutLayer [data-tut="next"]')
-                if await r.tour():
-                    r.problem('tour stuck on a hiring workplace')
+                st = await intro(r, 'delivery', 'Nam')
+                if st:
+                    r.log.append(f"delivery: job={st['job']}")
+                    if st['job'] != 'hired':
+                        r.problem(f'story day one did not hire at delivery: {st}')
+                    if not await page.query_selector('#sheet[open]'):
+                        await r.click('#taskHUD .task-card .btn.primary')
+                    if not await wait_tip(r, 'work'):
+                        r.problem('no first-day tip at a hiring workplace')
+                    await r.shot('hire')
+                    await no_old_guidance(r, 'delivery')
                 report['logs'][r.name] = r.log
                 report['problems'] += r.problems
                 await ctx.close()
 
-            # 4) The first time at each workplace: one "Xem hướng dẫn / Bỏ qua" card, once per workplace (on every
+            # 6) The first time at each workplace: one "Xem hướng dẫn / Bỏ qua" card, once per workplace (on every
             #    device: settings.notesSeen), never at a brand-new player's first workplace.
             ctx = await browser.new_context(viewport=dict(width=w, height=h), has_touch=touch, is_mobile=touch and w < 700)
             page = await ctx.new_page()
