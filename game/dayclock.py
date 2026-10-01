@@ -43,7 +43,7 @@ WARNINGS = (
 CLOSING_TEXT = {
     'milk_tea': '🔔 Đến giờ đóng cửa. Ngày đông thì bán nốt khách đang đợi, muộn nhất 23:00, rồi khép ca nhé.',
 }
-OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting')
+OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
 REPAIR_HOURS = (8 * 60, 19 * 60)
 BOBA_HOURS = (8 * 60, 20 * 60)
 BOBA_LATE = 23 * 60
@@ -59,6 +59,9 @@ NOTES = {
     'corp_accounting': 'Tăng ca được tới 20:00 nếu xin phép trưởng phòng.',
     'tax_payroll': 'Tăng ca được tới 20:00 nếu xin phép trưởng phòng.',
     'group_accounting': 'Tăng ca được tới 20:00 nếu xin phép trưởng phòng.',
+    'hr_admin': 'Tăng ca được tới 20:00 nếu xin phép trưởng phòng.',
+    'secretary': 'Tăng ca được tới 20:00 nếu xin phép giám đốc.',
+    'it_helpdesk': 'Tăng ca được tới 20:00 nếu xin phép trưởng nhóm.',
 }
 # An extended evening on some days: career → (day-mode id, closing minute, note).
 LATE_DAYS = {

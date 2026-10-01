@@ -7,7 +7,8 @@
  *    desk with a green lamp, ledgers, a floor lamp, a reading nook and a rug.
  *  - corp_accounting "Mây Tre Xanh": a bright open-plan finance room. White
  *    and bamboo green, carpet tiles, a row of desks with stamps and approval
- *    trays, a company logo wall and a glass meeting room.
+ *    trays, a company logo wall and a glass meeting room. The Cánh Diều desks
+ *    (hr_admin, secretary, it_helpdesk) use this room with their kite logo.
  *  - tax_payroll "Minh Bạch": a service counter. Three numbered windows
  *    behind glass, a "now serving" LED board, a deadline calendar, a wall of
  *    filing drawers, a queue-ticket kiosk and terrazzo with a queue line.
@@ -569,7 +570,7 @@ function roomCorp(c,p,w,g,portrait){
     glassRoom(c,p,48,186,158,322,'TRƯỞNG PHÒNG',17,glassSt,meeting);
     officeDoor(c,p,w,484,332,170,176,17,2,176,.07,door);
     binderShelf(c,p,218,334,130,146,w.words().shelf,16,shelf);
-    logoWall(c,358,300,112,82,portrait);
+    logoWall(c,358,300,112,82,portrait,w);
     clock(c,569,308,15,w,{rim:'#9fb3a8'});
     noticeBoard(c,p,382,404,1.25,nb);
     camera(c,p,62,158,(w.c?.ops?.security?.items||[]).includes('camera'));
@@ -578,19 +579,32 @@ function roomCorp(c,p,w,g,portrait){
     glassRoom(c,p,812,198,172,248,'TRƯỞNG PHÒNG',14,glassSt,meeting);
     officeDoor(c,p,w,996,250,88,196,11,1,112,.3,door);
     binderShelf(c,p,234,232,170,198,w.words().shelf,13,shelf);
-    logoWall(c,626,234,112,118,portrait);
+    logoWall(c,626,234,112,118,portrait,w);
     clock(c,682,378,13,w,{rim:'#9fb3a8'});
     trayRack(c,p,752,262,60,112,12,{wood:'#dfe6e2',edge:'#9fb3a8',back:'#f7faf8',plank:'#b9c7bf',chip:'#e5f4ec',ink:'#2f6f53',stamp:true});
     noticeBoard(c,p,140,224,1,nb);
     camera(c,p,150,197,(w.c?.ops?.security?.items||[]).includes('camera'));
   }
 }
-/** "MÂY TRE XANH" logo panel with bamboo leaves. */
-function logoWall(c,x,y,lw,lh,portrait){
+/** "MÂY TRE XANH" logo panel with bamboo leaves; the Cánh Diều desks hang their kite instead. */
+function logoWall(c,x,y,lw,lh,portrait,w){
+  if(KITE.has(w?.career))return kiteLogo(c,x,y,lw,lh,portrait);
   R(c,x,y,lw,lh,'#3f8f6b',10,'#2f6f53',2);R(c,x+5,y+5,lw-10,lh-10,'#48a07a',7);
   const cx=x+lw/2,cy=y+lh*.36;L(c,cx-6,cy+lh*.2,cx-6,cy-lh*.22,'#dff1e6',4);L(c,cx+6,cy+lh*.2,cx+6,cy-lh*.12,'#dff1e6',4);
   for(const [dx,dy,a] of [[-18,-10,-.5],[16,-4,.5],[-14,6,-.3],[20,10,.3]]){c.save();c.translate(cx+dx*(lw/112),cy+dy*(lh/110));c.rotate(a);E(c,0,0,13*(lw/112),5*(lh/110),'#dff1e6');c.restore();}
   const fs=portrait?15:12;T(c,'MÂY TRE',cx,y+lh*.74,fit(c,'MÂY TRE',lw-14,fs,800),'#ffffff',800);T(c,'XANH',cx,y+lh*.74+fs+2,fit(c,'XANH',lw-14,fs,800),'#ffffff',800);
+}
+/** "CÁNH DIỀU" logo panel: a kite with its tail (hr_admin, secretary, it_helpdesk share the open-plan room). */
+const KITE=new Set(['hr_admin','secretary','it_helpdesk']);
+function kiteLogo(c,x,y,lw,lh,portrait){
+  R(c,x,y,lw,lh,'#2f5f8f',10,'#244a70',2);R(c,x+5,y+5,lw-10,lh-10,'#3d7fb8',7);
+  const cx=x+lw/2,cy=y+lh*.34,k=Math.min(lw/112,lh/110);
+  c.beginPath();c.moveTo(cx,cy-19*k);c.lineTo(cx+15*k,cy-2*k);c.lineTo(cx,cy+16*k);c.lineTo(cx-15*k,cy-2*k);c.closePath();
+  c.fillStyle='#f2c94c';c.fill();c.strokeStyle='#ffffff';c.lineWidth=2;c.stroke();
+  L(c,cx,cy-19*k,cx,cy+16*k,'#ffffff',1.5);L(c,cx-15*k,cy-2*k,cx+15*k,cy-2*k,'#ffffff',1.5);
+  c.beginPath();c.moveTo(cx,cy+16*k);c.quadraticCurveTo(cx+11*k,cy+22*k,cx-3*k,cy+27*k);c.strokeStyle='#ffffff';c.lineWidth=2;c.stroke();
+  for(const [dx,dy] of [[5,21],[-2,26]])E(c,cx+dx*k,cy+dy*k,3*k,2*k,'#e05d4f');
+  const fs=portrait?15:12;T(c,'CÁNH',cx,y+lh*.74,fit(c,'CÁNH',lw-14,fs,800),'#ffffff',800);T(c,'DIỀU',cx,y+lh*.74+fs+2,fit(c,'DIỀU',lw-14,fs,800),'#ffffff',800);
 }
 
 function roomTax(c,p,w,g,portrait){

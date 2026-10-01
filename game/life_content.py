@@ -19,8 +19,9 @@ from __future__ import annotations
 from .incident_content import ALL, EMPLOYEE, RETAIL
 
 EMPLOYED = ('pharmacy', 'customer_care', 'teacher', 'tour_guide', 'repair', 'delivery', 'pet_care', 'salon',
-            'corp_accounting', 'tax_payroll', 'group_accounting', 'garbage', 'pilot', 'flight_attendant')
-OFFICE = ('accounting', 'customer_care', 'corp_accounting', 'tax_payroll', 'group_accounting')
+            'corp_accounting', 'tax_payroll', 'group_accounting', 'garbage', 'pilot', 'flight_attendant',
+            'hr_admin', 'secretary', 'it_helpdesk')
+OFFICE = ('accounting', 'customer_care', 'corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
 FACING = RETAIL + ('homestay', 'delivery', 'tour_guide', 'customer_care', 'fruit', 'drain')
 OWNERS = tuple(c for c in ALL if c not in EMPLOYED)
 STOCKED = RETAIL + ('farm',)
@@ -78,6 +79,9 @@ WORK = {
     'corp_accounting': ('Phòng kế toán Mây Tre Xanh', '🧮'),
     'tax_payroll': ('Nhóm tính lương Minh Bạch', '🧾'),
     'group_accounting': ('Team hợp nhất Sông Hồng', '🏢'),
+    'hr_admin': ('Chị Huyền với phòng nhân sự Cánh Diều', '🗂️'),
+    'secretary': ('Chị Khuê với Nhi ở quầy lễ tân', '📅'),
+    'it_helpdesk': ('Anh Long với tổ IT Cánh Diều', '🖥️'),
     'clothing': ('Chị Vy với Mai ở tiệm áo', '🧵'),
     'tra_da': ('Chú Tường với ông Khang ở quán trà', '🍵'),
     'pet_shop': ('Nhã với nhóm cứu hộ Chân Nhỏ', '🐾'),

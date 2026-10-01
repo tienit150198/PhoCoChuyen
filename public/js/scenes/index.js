@@ -9,7 +9,7 @@ export const KIND_OF={
   milk_tea:'teabar',cafe_bakery:'cafe',restaurant:'kitchen',grocery:'minimart',florist:'flowershop',mother_baby:'babyshop',pharmacy:'drugstore',
   salon:'service',pet_care:'service',repair:'service',
   teacher:'classroom',
-  accounting:'office',corp_accounting:'office',tax_payroll:'office',group_accounting:'office',customer_care:'office',
+  accounting:'office',corp_accounting:'office',tax_payroll:'office',group_accounting:'office',customer_care:'office',hr_admin:'office',secretary:'office',it_helpdesk:'office',
   farm:'farm',
   delivery:'street',tour_guide:'street',
   homestay:'lodging',

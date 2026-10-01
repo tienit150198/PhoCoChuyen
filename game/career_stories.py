@@ -1124,6 +1124,123 @@ ARCS = {
                 ('chin', 'Lần sau bà bay, bà vẫn tìm cô tiếp viên này.'),
                 ('me', 'Em sẽ giữ khoang khách như chị giữ: nhỏ nhẹ mà chắc chắn.')]),
         ]),
+    # ------------------------------------------------------------ Công ty CP Cánh Diều (chương 5)
+    'hr_admin': dict(
+        title='Người giữ hồ sơ', emoji='🗂️',
+        keepsake=dict(emoji='🗝️', name='Chìa khóa tủ hồ sơ nhân sự', desc='Tủ sắt màu xám ở phòng nhân sự Cánh Diều. Chị Huyền giao lại cho bạn.'),
+        cast={'huyen': _p('Chị Huyền', '👩‍💼', 'Trưởng phòng Hành chính – Nhân sự', 'hr_admin_npc_01'),
+              'quan': _p('Anh Quân', '👨‍💼', 'Giám đốc Cánh Diều', 'hr_admin_npc_02'),
+              'linh': _p('Linh', '🧑‍💻', 'Nhân viên kinh doanh', 'hr_admin_npc_03'),
+              'lam': _p('Chú Lâm', '🧵', 'Tổ trưởng xưởng may', 'hr_admin_npc_04'),
+              'dung': _p('Anh Dũng', '🪡', 'Thợ may lâu năm', 'hr_admin_npc_06')},
+        beats=[
+            _b('Tủ hồ sơ màu xám', '🗂️', 'Ngày đầu ở phòng nhân sự Cánh Diều.', [
+                ('huyen', 'Bốn mươi người, bốn mươi bộ hồ sơ. Mỗi tờ giấy ở đây là chuyện cơm áo của một nhà đấy em.'),
+                ('huyen', 'Sai một ngày công là người ta thiếu tiền đong gạo.'),
+                ('me', 'Dạ, em soát từng ô, chỗ nào chưa chắc em hỏi chị.')]),
+            _b('Linh quên quẹt thẻ', '🕗', 'Có người đứng chờ trước cửa phòng nhân sự.', [
+                ('linh', 'Tuần này em quên quẹt thẻ ba lần, bảng công ghi em thiếu giờ. Em đi gặp khách thật mà!'),
+                ('linh', 'Bị trừ lương thì tháng này em hết tiền trọ.'),
+                ('me', 'Mình xem lịch gặp khách với tin nhắn của Linh nhé.')],
+                _c('Bạn giúp Linh',
+                   _o('a', 'Đối chiếu lịch gặp khách, làm giấy xác nhận công cho Linh', [('linh', 'Có giấy xác nhận rồi! Từ mai em đặt báo thức quẹt thẻ.')], rel='linh'),
+                   _o('b', 'Chỉ Linh viết đơn giải trình gửi chị Huyền', [('huyen', 'Đơn viết rõ ràng thế này thì chị duyệt ngay.')], rel='huyen'))),
+            _b('Xưởng thiếu người', '🧵', 'Chú Lâm sang phòng nhân sự, tay còn cầm thước dây.', [
+                ('lam', 'Đơn balo cho trường học dồn về, tổ chú thiếu ba thợ. Tuyển gấp giùm chú!'),
+                ('me', 'Dạ, chiều nay cháu đăng tin, mai lọc hồ sơ, ngày kia mời thử tay nghề.'),
+                ('lam', 'Nhanh vậy thì chú mời cả phòng ly chè.')]),
+            _b('Cháu của giám đốc', '⚠️', 'Anh Quân ghé bàn bạn, tay cầm một bộ hồ sơ.', [
+                ('quan', 'Cháu anh nộp vào vị trí kế toán kho. Khỏi phỏng vấn, làm hợp đồng luôn cho anh.'),
+                ('quan', 'Người nhà cả, tin được.'),
+                ('me', 'Dạ, hồ sơ của bạn ấy còn thiếu bằng kế toán. Em xin xếp bạn phỏng vấn như mọi người ạ.')],
+                _c('Bạn làm gì?',
+                   _o('a', 'Xếp lịch phỏng vấn, nói rõ quy trình công bằng cho mọi người', [('quan', 'Ừ… quy trình anh ký mà anh lại phá thì kỳ. Cứ phỏng vấn đi.')], rel='quan'),
+                   _o('b', 'Báo chị Huyền để chị nói chuyện với giám đốc', [('huyen', 'Em làm đúng. Chuyện này để chị nói, em yên tâm.')], rel='huyen')),
+                days=6, served=14, gap=1),
+            _b('Bảng công không sai một ô', '🏅', 'Cuối năm, cả công ty họp ở xưởng.', [
+                ('quan', 'Năm nay không ai khiếu nại lương, không ai bị trừ oan một ngày công.'),
+                ('dung', 'Hồi con tôi nằm viện, phòng nhân sự xếp ca cho tôi. Tôi nhớ mãi.'),
+                ('huyen', 'Từ tháng sau, em giữ chìa khóa tủ hồ sơ nhé. Chị tin em.'),
+                ('me', 'Dạ, em sẽ giữ cẩn thận từng tờ.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
+    'secretary': dict(
+        title='Cuốn sổ lịch bìa đỏ', emoji='📅',
+        keepsake=dict(emoji='📓', name='Cuốn sổ lịch bìa đỏ', desc='Sổ lịch của Anh Quân. Trang nào cũng có nét chữ của bạn.'),
+        cast={'quan': _p('Anh Quân', '👨‍💼', 'Giám đốc Cánh Diều', 'secretary_npc_01'),
+              'khue': _p('Chị Khuê', '🌸', 'Trợ lý cũ, nay ở phòng kinh doanh', 'secretary_npc_02'),
+              'luc': _p('Ông Lực', '🧔', 'Chủ xưởng vải Lực Thành', 'secretary_npc_03'),
+              'nhi': _p('Nhi', '💁', 'Lễ tân', 'secretary_npc_06')},
+        beats=[
+            _b('Chiếc bàn trước cửa phòng giám đốc', '📅', 'Ngày đầu ngồi bàn thư ký.', [
+                ('khue', 'Bàn này chị ngồi năm năm. Sếp quyết nhanh, đổi ý còn nhanh hơn, em nhớ ghi bút chì.'),
+                ('quan', 'Lịch của anh là của em. Anh chỉ cần biết mấy giờ đi đâu.'),
+                ('me', 'Dạ, em ghi hết vào sổ, có gì đổi em báo anh liền.')]),
+            _b('Nhi run tay', '📞', 'Quầy lễ tân có tiếng to tiếng nhỏ.', [
+                ('nhi', 'Có ông khách quát em vì không cho gặp giám đốc. Em run quá, không dám nghe máy nữa.'),
+                ('nhi', 'Chị Khuê chuyển phòng rồi, em không biết hỏi ai.'),
+                ('me', 'Không sao, mình cùng soạn mấy câu trả lời khách khó nhé.')],
+                _c('Bạn giúp Nhi',
+                   _o('a', 'Ngồi cạnh Nhi nghe máy một buổi, viết sẵn mấy câu trả lời', [('nhi', 'Có tờ giấy này em đọc theo được rồi. Hết run luôn!')], rel='nhi'),
+                   _o('b', 'Hẹn chị Khuê ghé dạy Nhi giờ nghỉ trưa', [('khue', 'Chị dạy Nhi mẹo cũ của chị rồi. Hai đứa giỏi lắm.')], rel='khue'))),
+            _b('Ông Lực đòi gặp', '🧔', 'Ông Lực tới mà không hẹn trước.', [
+                ('luc', 'Tôi chờ tiền vải ba tuần rồi! Hôm nay không gặp được giám đốc thì tôi ngồi đây luôn.'),
+                ('me', 'Dạ, cháu mời bác ly trà. Anh Quân họp tới 10 giờ, cháu xếp bác gặp lúc 10 giờ 15 được không ạ?'),
+                ('luc', 'Ờ… có giờ hẹn rõ ràng vậy thì tôi chờ.')]),
+            _b('Tờ báo giá trên bàn sếp', '⚠️', 'Ông Lực hạ giọng hỏi bạn trong phòng chờ.', [
+                ('luc', 'Báo giá của xưởng bên kia nằm trên bàn giám đốc đúng không? Cháu chụp giùm bác một tấm.'),
+                ('luc', 'Bác giảm giá cho Cánh Diều mà. Bác cháu mình với nhau, ai biết đâu.'),
+                ('me', 'Dạ, giấy tờ trên bàn giám đốc cháu không được đưa ai xem ạ.')],
+                _c('Bạn làm gì?',
+                   _o('a', 'Từ chối nhẹ nhàng, mời ông gửi báo giá mới để công ty so công bằng', [('luc', 'Cô cậu này kín miệng thật. Thôi, tôi về làm báo giá cho tử tế.')], rel='luc'),
+                   _o('b', 'Báo Anh Quân chuyện Ông Lực hỏi', [('quan', 'Cảm ơn em. Anh cất báo giá vào tủ, rồi nói chuyện thẳng với ông ấy.')], rel='quan')),
+                days=6, served=14, gap=1),
+            _b('Hội nghị khách hàng', '🎉', 'Hội trường tầng 3, một trăm khách mời.', [
+                ('quan', 'Một trăm khách, không ai lạc chỗ ngồi, không ai phải chờ. Em lo hết đấy à?'),
+                ('nhi', 'Cả quầy lễ tân làm theo bảng phân công của chị đó ạ.'),
+                ('quan', 'Từ tháng sau em làm trợ lý giám đốc. Cuốn sổ lịch này giao em giữ.'),
+                ('me', 'Dạ, em sẽ giữ lịch của anh cẩn thận từng phút.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
+    'it_helpdesk': dict(
+        title='Sao lưu trước, sửa sau', emoji='🖥️',
+        keepsake=dict(emoji='🔑', name='Chìa khóa phòng máy chủ', desc='Phòng máy nhỏ cạnh kho Cánh Diều. Anh Long dán tên bạn lên cửa.'),
+        cast={'long': _p('Anh Long', '🧑‍💻', 'Trưởng nhóm IT', 'it_helpdesk_npc_01'),
+              'quan': _p('Anh Quân', '👨‍💼', 'Giám đốc Cánh Diều', 'it_helpdesk_npc_02'),
+              'hang': _p('Cô Hằng', '📒', 'Kế toán trưởng', 'it_helpdesk_npc_03'),
+              'lam': _p('Chú Lâm', '🧵', 'Tổ trưởng xưởng may', 'it_helpdesk_npc_05'),
+              'nhi': _p('Nhi', '💁', 'Lễ tân', 'it_helpdesk_npc_06')},
+        beats=[
+            _b('Ba mươi cái máy, một cái tua vít', '🖥️', 'Ngày đầu ở bàn IT.', [
+                ('long', 'Ba mươi máy tính, hai máy in, một cục wifi hay dỗi. Đây là cả vương quốc của mình.'),
+                ('long', 'Luật đầu tiên: sao lưu trước, sửa sau.'),
+                ('me', 'Dạ, em ghi to lên giấy dán màn hình luôn.')]),
+            _b('Máy in tem của xưởng', '🖨️', 'Chú Lâm bê nguyên cái máy in sang bàn bạn.', [
+                ('lam', 'Con máy in tem này kẹt giấy từ sáng, xưởng không in được tem balo. Cứu chú!'),
+                ('lam', 'Chú lỡ lấy dao rọc giấy khều ra, giờ nó kêu rè rè.'),
+                ('me', 'Chú để cháu xem. Lần sau chú gọi cháu trước khi khều nha.')],
+                _c('Sửa xong rồi, bạn làm gì thêm?',
+                   _o('a', 'Dán tờ hướng dẫn gỡ giấy kẹt ngay cạnh máy', [('lam', 'Có tờ hướng dẫn này, thằng Dũng tự gỡ được luôn. Giỏi!')], rel='lam'),
+                   _o('b', 'Dạy Chú Lâm gỡ giấy tận tay một lần', [('lam', 'Chú làm được rồi! Lần sau chú tự làm, không khều bằng dao nữa.')], rel='lam'))),
+            _b('Cô Hằng lưu đè file', '📒', 'Cô Hằng ngồi im, mặt tái mét.', [
+                ('hang', 'Cô lỡ lưu đè file sổ quỹ cả quý. Mai kiểm toán tới rồi!'),
+                ('me', 'Cô đừng lo, ổ chung tối nào cũng sao lưu. Mình lấy lại bản tối qua nhé.'),
+                ('hang', 'Trời ơi, cô sợ mất số liệu hơn sợ ma. Cảm ơn con.')]),
+            _b('Phần mềm đọc tin nhắn', '⚠️', 'Anh Quân gọi bạn vào phòng, đóng cửa lại.', [
+                ('quan', 'Em cài cho anh phần mềm đọc tin nhắn của nhân viên. Anh muốn biết ai nói xấu công ty.'),
+                ('quan', 'Máy công ty mà, anh có quyền chứ.'),
+                ('me', 'Dạ, đọc tin nhắn riêng của người ta là xâm phạm đời tư, công ty có thể bị kiện ạ.')],
+                _c('Bạn làm gì?',
+                   _o('a', 'Từ chối, đề xuất hộp thư góp ý ẩn danh cho nhân viên', [('quan', 'Hộp góp ý… ừ, nghe được thật lòng mà không ai bị soi. Làm đi em.')], rel='quan'),
+                   _o('b', 'Nhờ Anh Long cùng giải thích quy định cho giám đốc', [('long', 'Em làm đúng. Có việc kỹ thuật làm được nhưng không được làm.')], rel='long')),
+                days=6, served=14, gap=1),
+            _b('Đêm mưa bão', '⛈️', 'Mưa to, mất điện cả khu.', [
+                ('long', 'Mất điện ba tiếng mà máy chủ vẫn sống, dữ liệu không mất một dòng.'),
+                ('nhi', 'Sáng nay cả công ty mở máy lên là chạy, như chưa có gì xảy ra luôn ạ.'),
+                ('quan', 'Bộ lưu điện em đề xuất hồi tháng trước cứu cả công ty đấy.'),
+                ('long', 'Chìa khóa phòng máy chủ, từ giờ em giữ một chiếc.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
 }
 
 

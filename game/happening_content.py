@@ -19,9 +19,9 @@ from __future__ import annotations
 
 ALL = ('mother_baby', 'pharmacy', 'accounting', 'customer_care', 'teacher', 'tour_guide', 'milk_tea', 'restaurant',
        'cafe_bakery', 'florist', 'grocery', 'repair', 'farm', 'delivery', 'homestay', 'pet_care', 'salon',
-       'corp_accounting', 'tax_payroll', 'group_accounting', 'clothing', 'pet_shop')
-EMPLOYEE = ('teacher', 'corp_accounting', 'tax_payroll', 'group_accounting')
-OFFICE = ('accounting', 'customer_care', 'corp_accounting', 'tax_payroll', 'group_accounting')
+       'corp_accounting', 'tax_payroll', 'group_accounting', 'clothing', 'pet_shop', 'hr_admin', 'secretary', 'it_helpdesk')
+EMPLOYEE = ('teacher', 'corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
+OFFICE = ('accounting', 'customer_care', 'corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
 FOOD = ('milk_tea', 'cafe_bakery', 'restaurant', 'tra_da')
 SHOPS = ('mother_baby', 'pharmacy', 'milk_tea', 'grocery', 'florist', 'cafe_bakery', 'restaurant', 'pet_care', 'salon',
          'repair', 'homestay', 'clothing', 'pet_shop')

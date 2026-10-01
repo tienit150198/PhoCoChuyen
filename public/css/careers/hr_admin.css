@@ -1,0 +1,5 @@
+/* Phòng nhân sự Cánh Diều (hr_admin). The desk is careers/office_kit.css (.ow); this sheet only dresses its papers.
+   Colours come only from theme tokens. */
+.career-job.hc .ow-card{background-image:linear-gradient(var(--surface-2) 0 46px,transparent 46px);background-color:var(--surface)}
+.career-job.hc .ow-card>header{min-height:34px}
+.career-job.hc .ow-sheet tbody th{font-size:.933rem}

@@ -1,0 +1,5 @@
+/* Bàn IT Cánh Diều (it_helpdesk). The desk is careers/office_kit.css (.ow); this sheet only dresses its tickets.
+   Colours come only from theme tokens. */
+.career-job.it .ow-card>header b::before{content:"🎫 "}
+.career-job.it .ow-say{font-size:.933rem;font-variant-numeric:tabular-nums}
+.career-job.it .ow-sheet .ow-seg{font-weight:800}
