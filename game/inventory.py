@@ -48,6 +48,7 @@ HOURS = {
     'fruit': (6 * 60, 18 * 60),         # the market's morning crowd
     'garbage': (17 * 60, 23 * 60),      # the evening rubbish round
     'drain': (7 * 60 + 30, 19 * 60 + 30),
+    'homemaker': (6 * 60 + 30, 18 * 60 + 30),   # the market at dawn, dinner cooked before going home
 }
 EARLY = 30  # goods due after closing wait at the door this many minutes before the next opening
 # How much later than its window a late delivery comes (minutes), by supplier kind; a

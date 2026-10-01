@@ -1045,6 +1045,41 @@ ARCS = {
                 ('ong_loc', 'Phường giao hố ga cả khu cho tổ thợ của cháu.'),
                 ('me', 'Cháu sẽ giữ bảng giá của chú, không đổi theo mặt khách.')]),
         ]),
+    'homemaker': dict(
+        title='Cuốn sổ chợ bìa xanh', emoji='📒',
+        keepsake=dict(emoji='📒', name='Cuốn sổ chợ bìa xanh', desc='Năm năm chị Thảo ghi từng khoản tiền chợ. Trang cuối có thêm nét chữ của bạn.'),
+        cast={'thao': _p('Chị Thảo', '👩', 'Chủ nhà, giữ sổ chợ', 'homemaker_npc_01'),
+              'ba_lanh': _p('Bà Lành', '👵', 'Bà nội, 76 tuổi', 'homemaker_npc_02'),
+              'be_su': _p('Bé Su', '👧', 'Học lớp 2, dị ứng tôm', 'homemaker_npc_04'),
+              'co_nam': _p('Cô Năm', '🥬', 'Bán rau chợ Mây', 'homemaker_npc_05')},
+        beats=[
+            _b('Tờ giấy trên tủ lạnh', '📝', 'Chị Thảo dán tờ “Sổ tay nhà” lên tủ lạnh, gõ ngón tay vào dòng chữ đỏ.', [
+                ('thao', 'Nhà chị ai cũng có một điều phải nhớ. Su dị ứng tôm, bà ăn nhạt, Cốm ăn cháo.'),
+                ('thao', 'Quên gì thì nhìn tủ lạnh, đừng đoán.'),
+                ('me', 'Dạ, em chép vào điện thoại luôn ạ.')]),
+            _b('Rau xanh bóng lưỡng', '🥬', 'Ở chợ Mây, cô Năm kéo bạn lại, chỉ sang mẹt rau bên cạnh.', [
+                ('co_nam', 'Rau muống xanh bóng, to bất thường, không một lỗ sâu: phun thuốc đấy cháu.'),
+                ('co_nam', 'Rau nhà cô có lỗ sâu, nhưng ăn yên tâm.'),
+                ('me', 'Thế mà cháu cứ tưởng rau đẹp là rau ngon.')]),
+            _b('Nồi canh của bà', '🍲', 'Bà Lành nếm thìa canh, đặt mạnh xuống bàn.', [
+                ('ba_lanh', 'Nhạt như nước ốc! Ngày xưa bà nấu canh, cả xóm ngửi thấy.'),
+                ('thao', 'Bác sĩ dặn mẹ ăn nhạt mà…'),
+                ('ba_lanh', 'Bác sĩ có phải ăn đâu!')],
+                _c('Bát canh của bà',
+                   _o('a', 'Múc riêng bát nhạt cho bà, rắc thêm nắm rau thơm cho dậy mùi', [('ba_lanh', 'Ừ… thơm thì cũng đỡ nhạt.')], rel='ba_lanh'),
+                   _o('b', 'Nhờ bà dạy cách nấu canh ngày xưa, nấu cùng bà', [('ba_lanh', 'Ngày xưa bà nấu canh cua mồng tơi, nhớ không quên.')], rel='ba_lanh'))),
+            _b('Cổng trường lúc bốn rưỡi', '🏫', 'Một người lạ nắm tay bé Su ở cổng trường.', [
+                ('be_su', 'Chị ơi, chú này bảo là bạn của bố em.'),
+                ('me', 'Su đứng cạnh chị nhé. Chị gọi mẹ đã.'),
+                ('thao', 'Chị không nhờ ai cả! Em giữ con giúp chị, chị về ngay!'),
+                ('be_su', 'Chị giỏi thế, như công an luôn.')]),
+            _b('Trang cuối cuốn sổ', '📒', 'Chị Thảo đưa bạn cuốn sổ chợ bìa xanh, trang cuối còn trống.', [
+                ('thao', 'Năm năm nay chị tự ghi. Từ tháng sau em ghi giúp chị nhé.'),
+                ('thao', 'Sổ khớp từng xu thì không ai phải nghi ai.'),
+                ('ba_lanh', 'Con bé này thật thà, giao được.'),
+                ('be_su', 'Chị ơi, em vẽ chị vào tranh cả nhà rồi!'),
+                ('me', 'Em sẽ giữ sổ như chị đã giữ.')]),
+        ]),
     # ------------------------------------------------------------ ✈️ Hãng bay Cánh Cò
     'pilot': dict(
         title='Đường bay ra đảo', emoji='🛩️',

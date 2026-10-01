@@ -19,7 +19,7 @@ from __future__ import annotations
 from .incident_content import ALL, EMPLOYEE, RETAIL
 
 EMPLOYED = ('pharmacy', 'customer_care', 'teacher', 'tour_guide', 'repair', 'delivery', 'pet_care', 'salon',
-            'corp_accounting', 'tax_payroll', 'group_accounting', 'garbage', 'pilot', 'flight_attendant')
+            'corp_accounting', 'tax_payroll', 'group_accounting', 'garbage', 'homemaker', 'pilot', 'flight_attendant')
 OFFICE = ('accounting', 'customer_care', 'corp_accounting', 'tax_payroll', 'group_accounting')
 FACING = RETAIL + ('homestay', 'delivery', 'tour_guide', 'customer_care', 'fruit', 'drain')
 OWNERS = tuple(c for c in ALL if c not in EMPLOYED)
@@ -84,6 +84,7 @@ WORK = {
     'fruit': ('Dì Tư với mấy sạp bên cạnh', '🍊'),
     'garbage': ('Chị Hạnh với tổ thu gom', '🛒'),
     'drain': ('Chú Hai với tổ thợ', '🧰'),
+    'homemaker': ('Chị Thảo với bà Lành', '🏠'),
     'pilot': ('Chị Vân với tổ bay Cánh Cò', '🧑‍✈️'),
     'flight_attendant': ('Chị Thu với các bạn tiếp viên', '💁'),
 }

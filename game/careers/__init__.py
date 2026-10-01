@@ -15,6 +15,7 @@ ORDER = (
     'homestay', 'pet_care', 'salon', 'corp_accounting', 'tax_payroll', 'group_accounting',
     'clothing', 'pet_shop', 'tra_da',
     'fruit', 'garbage', 'drain',   # street trades: fruit stall, rubbish round, drain cleaning
+    'homemaker',                   # nội trợ: a home helper in a three-generation family
     'pilot', 'flight_attendant',
 )
 # Development filter: MNL_CAREERS=restaurant,florist loads only those plugins.
