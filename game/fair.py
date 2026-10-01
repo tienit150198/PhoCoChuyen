@@ -599,7 +599,7 @@ def public(s: dict) -> dict:
     j = s.get('journey') or {}
     t = now()
     opens, closes = window()
-    base = dict(open=opens <= t < closes, opens=opens, closes=closes, now=int(t))
+    base = dict(open=opens <= t < closes, opens=opens, closes=closes)   # no clock here: the same save gives the same bytes
     if not j.get('story') or not (opens - SHOW_BEFORE <= t < closes + SHOW_AFTER):
         return dict(base, show=False)
     f = j.get('fair') if isinstance(j.get('fair'), dict) else None
@@ -619,7 +619,7 @@ def public(s: dict) -> dict:
     dpts = f['dpts'] if f and f.get('date') == vn_date(t) and f.get('ed') == edition() else 0
     earn = today['earn']
     o = (f or {}).get('oaq')
-    return dict(base, show=True, board=edition(),
+    return dict(base, show=True, now=int(t), board=edition(),   # the clock (countdowns, cooldowns) only around the fair
                 points=dict(total=pts, today=dpts, cap=POINTS_DAY, days=pdays,
                             rules=dict(day=PT_DAY, bc=PT_BC, xd=PT_XD, loto=PT_LOTO, oaq=PT_OAQ, ring3=PT_RING3, ring5=PT_RING5)),
                 soon=t < opens, over=t >= closes, wallet=j.get('wallet', 0), played=bool(f) and f.get('pday') == vn_date(t),
