@@ -3,7 +3,9 @@
  * player (state.journey.certificates) and cover related hired jobs; holding one gives a
  * failed interview at those places a second chance (content.journey.certs.bonus %).
  * Server: game/certificates.py. The exam key stays on the server until a paper is graded;
- * the practice quiz is a separate bank checked here in the browser. */
+ * the practice quiz is a separate bank checked here in the browser.
+ * 🎓 Giấy chứng nhận (1.3): every earned certificate opens its diploma and souvenir photo (v4/diploma.js,
+ * lazy): right after passing (a reveal), from the centre, the paper card and the profile badges. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {asset} from '../assets.js';
 import {skeleton} from '../lazy.js';
@@ -19,6 +21,8 @@ export function certCss(){
 const K=api=>api.content?.journey?.certs||null;
 const placeOf=(api,cid)=>{const m=api.content.catalogue.find(x=>x.id===cid);return m?(m.place||m.short):cid;};
 const held=rec=>!!(rec&&rec.earned_day!=null);
+let DIP=null;
+const diploma=()=>DIP??=import('./diploma.js').catch(e=>{DIP=null;throw e;});
 
 /** The certificate group for a hired job, and what the player holds of it. */
 export function certInfo(api,cid){
@@ -44,7 +48,7 @@ export function certBadges(env){
   const rows=k.groups.filter(g=>held(J.certificates?.[g.id]));if(!rows.length)return '';
   certCss();
   return `<div class="ct-badges" aria-label="Chứng chỉ đã có">${rows.map(g=>{const r=J.certificates[g.id];
-    return `<button type="button" class="ct-badge" data-action="jrCerts" data-cert="${esc(g.id)}" title="${esc(`${g.name} · điểm cao nhất ${r.best}`)}"><span aria-hidden="true">${g.emoji}</span><b>${esc(g.short)}</b><i>${r.best}</i></button>`;}).join('')}</div>`;
+    return `<button type="button" class="ct-badge" data-action="jrCertDiploma" data-cert="${esc(g.id)}" title="${esc(`${g.name} · xem giấy chứng nhận`)}"><span aria-hidden="true">${g.emoji}</span><b>${esc(g.short)}</b><i>${r.best}</i></button>`;}).join('')}</div>`;
 }
 
 /** The certificates section of the titles page. An earned one is worn like a title (data-action jrWear, 'cert:<id>',
@@ -77,7 +81,7 @@ function examCard(env,k,g,st){
     <p class="small muted">Đúng <b>${k.pass_mark}/${k.draw}</b> là đạt · phân vân cứ bấm 💡, không trừ điểm.</p>
     <p class="ct-q">${esc(q.text)}</p>
     <div class="ct-opts">${q.options.map((o,i)=>{const off=shown&&o.id===h.off;
-      return `<button type="button" class="choice ct-opt${off?' ct-off':''}" data-command="jr_cert_answer" data-payload="${esc(JSON.stringify({question:next,option:o.id}))}"${off?' disabled aria-label="Đáp án đã loại"':''}><span class="ct-key" aria-hidden="true">${'ABCD'[i]}</span><span>${esc(o.label)}</span></button>`;}).join('')}</div>${tip}</section>`;
+      return `<button type="button" class="choice ct-opt${off?' ct-off':''}" data-action="jrCertAnswer" data-q="${esc(next)}" data-option="${esc(o.id)}"${off?' disabled aria-label="Đáp án đã loại"':''}><span class="ct-key" aria-hidden="true">${'ABCD'[i]}</span><span>${esc(o.label)}</span></button>`;}).join('')}</div>${tip}</section>`;
 }
 
 function practice(env,g){
@@ -113,7 +117,8 @@ function paperCard(env,k){
   const bad=P.review.filter(r=>!r.ok);
   const list=`<ol class="jb-review">${P.review.map(r=>`<li class="${r.ok?'ok':'bad'}"><b>${r.ok?'✓':'✗'} ${esc(r.text)}</b>${r.ok?'':`<small>Bạn chọn: ${esc(r.options[r.picked]||'—')}</small><small>Đúng: ${esc(r.options[r.answer]||'')} — ${esc(r.why)}</small>`}</li>`).join('')}</ol>`;
   const J=api.state.journey,fee=g.retake_fee,poor=J.wallet<fee;
-  const again=P.passed?againButtons(api,g):J.study?'':`<button type="button" class="btn primary" data-action="jrCertEnrol" data-cert="${esc(g.id)}" data-mode="class"${poor?' disabled':''}>📚 Ôn & thi lại ngay · ${fmt(fee)} xu</button>${btn(`📖 Tự học, thi từ Ngày ${fmt(J.life_day+k.self_days)}`,'jrCertEnrol',{cert:g.id,mode:'self'},'cream')}`;
+  const view=P.passed&&held(J.certificates?.[g.id])?btn('🎓 Xem giấy chứng nhận','jrCertDiploma',{cert:g.id},'cream'):'';
+  const again=P.passed?view+againButtons(api,g):J.study?'':`<button type="button" class="btn primary" data-action="jrCertEnrol" data-cert="${esc(g.id)}" data-mode="class"${poor?' disabled':''}>📚 Ôn & thi lại ngay · ${fmt(fee)} xu</button>${btn(`📖 Tự học, thi từ Ngày ${fmt(J.life_day+k.self_days)}`,'jrCertEnrol',{cert:g.id,mode:'self'},'cream')}`;
   return `<section class="card ct-result ${P.passed?'good':'bad'}"><span class="eyebrow">Bài thi gần nhất · Ngày ${fmt(P.day)}</span>
     <h3>${g.emoji} ${esc(g.name)}: ${P.passed?'Đạt':'Chưa đạt'}</h3>
     <div class="ct-score"><b>${P.score}</b><span>điểm · đúng ${P.right}/${k.draw} câu</span></div>
@@ -136,6 +141,7 @@ function groupCard(env,k,g,focus){
       <button type="button" class="btn primary ct-big" data-action="jrCertEnrol" data-cert="${esc(g.id)}" data-mode="class"${poor?' disabled':''}><span>📚 ${r?.attempts?'Lớp ôn':'Lớp cấp tốc'} · ${fmt(fee)} xu</span><small>${poor?`Ví còn ${fmt(Math.max(0,J.wallet))} xu, thiếu ${fmt(fee-Math.max(0,J.wallet))} xu`:k.class_days?`Thi từ Ngày ${fmt(J.life_day+k.class_days)}`:'Học xong thi ngay hôm nay'}</small></button>
       <button type="button" class="btn cream ct-big" data-action="jrCertEnrol" data-cert="${esc(g.id)}" data-mode="self"><span>📖 Tự học · miễn phí</span><small>Thi từ Ngày ${fmt(J.life_day+k.self_days)}${k.self_days===1?' (ngày mai)':` (còn ${k.self_days} ngày)`}</small></button></div>`;
   }
+  if(has)actions=btn('🎓 Xem giấy chứng nhận','jrCertDiploma',{cert:g.id},'cream small ct-dip')+actions;
   const status=has?`<span class="tag green">✓ Đã có · ${r.best} điểm</span>`:r?`<span class="tag amber">Đã thi ${r.attempts} lần · cao nhất ${r.best}</span>`:'<span class="tag">Chưa có</span>';
   return `<article class="jr-card ct-group${focus?' focus':''}${has?' earned':''}" id="ct-${esc(g.id)}"><div class="ct-top"><span class="ct-emoji" aria-hidden="true">${g.emoji}</span><div class="grow"><h3>${esc(g.name)}</h3><small class="muted">${esc(g.issuer)}</small></div></div>
     <div class="ct-status">${status}</div>
@@ -180,6 +186,14 @@ export async function certAction(action,data,el,env){
       ui.certPractice={...(ui.certPractice||{}),[g.id]:{}};ui.certHint={};
       if(await cmd('jr_cert_enrol',payload))document.getElementById('sheet')?.scrollTo?.(0,0);
       return true;}
+    case'jrCertAnswer':{
+      const p=J?.study?.paper;if(p&&Object.keys(p.answers).length===p.qs.length-1)diploma().catch(()=>{});   // the last answer: have the diploma ready
+      const r=await cmd('jr_cert_answer',{question:data.q,option:data.option});
+      if(r?.cert?.earned_now)try{await (await diploma()).openDiploma(env,r.cert.id,{reveal:true});}catch{}
+      return true;}
+    case'jrCertDiploma':
+      try{await (await diploma()).diplomaAction(action,data,el,env);}catch{env.toast?.('Chưa mở được giấy chứng nhận, thử lại nhé.',true);}
+      return true;
     case'jrCertDrop':
       if(await confirmAction('Bỏ khóa học?','Học phí đã đóng không được hoàn. Muốn thi thì đăng ký lại từ đầu.','Bỏ khóa'))await cmd('jr_cert_drop',{confirm:true});
       return true;
@@ -190,5 +204,6 @@ export async function certAction(action,data,el,env){
       if(data.reset)all[data.cert]={};else all[data.cert]={...(all[data.cert]||{}),[data.q]:data.option};
       ui.certPractice=all;renderSheet();return true;}   // the next question is just below: stay where the player is
   }
+  if(action.startsWith('jrCertDip'))return (await diploma()).diplomaAction(action,data,el,env);
   return false;
 }
