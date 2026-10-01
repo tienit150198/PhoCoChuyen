@@ -118,6 +118,7 @@ async function onClick(op,data){
     case'back':S.view='home';S.flash=null;render();return;
     case'look':startBuy(data.kind);S.flash=null;render();S.dlg.querySelector('.hs-body')?.scrollTo?.(0,0);return;
     case'bank':S.dlg.close();(await import('./bank.js')).openBank(S.env,data.tab||'save');return;
+    case'inside':S.dlg.close();(await import('./reno.js')).openReno(S.env,data.mode);return;   // 🛠️ Trong nhà: xem, sửa, trang trí
     case'rent':{const m=MK().find(x=>x.id===data.kind);if(!m)return;
       if(await ask(`Thuê ${lname(m.name)}?`,`Cọc ${xu(m.deposit)}, trả lại khi dọn đi. Tiền phòng ${xu(m.rent)}/ngày (gác Bà Tám: ${xu(v.attic_rent)}).`,`Thuê · cọc ${xu(m.deposit)}`,{cost:m.deposit,pocket:FROM_BANK}))send('jr_home_rent',{kind:m.id,confirm:true});return;}
     case'leave':if(await ask('Trả phòng trọ?',`Nhận lại ${xu(v.rent?.deposit)} tiền cọc, về gác Bà Tám.`,'Trả phòng'))send('jr_home_leave',{confirm:true});return;
@@ -227,6 +228,8 @@ function placeCard(v){
   const who=p.where_id==='shared'?`<p class="hs-tag">💞 Nhà chung với ${esc(p.with)}</p>`:p.where_id==='own'?'<p class="hs-tag">🔑 Nhà đứng tên bạn</p>':p.where_id==='rent'?'<p class="hs-tag">🧾 Đang thuê</p>':'';
   let actions='';
   if(p.where_id==='rent')actions=`<div class="bk-actions">${btn('Trả phòng, nhận lại cọc','leave',{},'ghost')}</div>`;
+  else if(p.where_id==='own'&&J().reno){const R=J().reno,worn=R.parts.filter(x=>x.worn).length;
+    actions=`<p class="hs-chips"><span>🪴 Ấm cúng ${R.cozy}</span><span>🛠️ ${worn?`${worn} chỗ cần sửa`:'Nhà sạch đẹp'}</span></p><div class="bk-actions">${btn('🚪 Vào nhà','inside',{},'primary')}${worn?btn('🛠️ Sửa nhà','inside',{mode:'fix'},'ghost'):''}</div>`;}
   const comfort=p.comfort?`<p class="bk-hint"><span>😊 Tinh thần +${p.comfort} mỗi sáng</span>${v.own?.loan?.late?' <span>(tạm dừng khi trễ hạn trả góp)</span>':''}</p>`:'';
   return `<section class="bk-card hs-place ${esc(p.where_id||'')}"${toneStyle(p.group)}><div class="hs-place-top"><span class="hs-emoji" aria-hidden="true">${p.emoji||'🏚️'}</span><div class="grow"><small>Nơi bạn đang ở</small><h3>${esc(p.name)}</h3><small>${esc(p.where||'')}</small></div></div>
     ${who}<p class="hs-cost">${costLine}</p>${comfort}${p.perk?`<p class="bk-hint">${esc(p.perk)}</p>`:''}${actions}</section>`;
