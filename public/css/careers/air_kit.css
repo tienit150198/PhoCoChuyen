@@ -89,3 +89,49 @@ button.ab-row{cursor:pointer;min-height:44px}
   .ab-row{gap:5px;padding:4px 5px}
   .air-board{font-size:.74rem;padding:6px}
 }
+
+/* ---------- chuyện oái oăm: answer in your own way (air_kit.js oddCard / restCard / record) */
+.air-odd{margin:10px 0;padding:12px;border-radius:16px;background:var(--surface);border:2px solid var(--air-sky);box-shadow:var(--shadow);color:var(--ink)}
+.air-odd.kind-harass,.air-odd.kind-charm{border-color:#c0533f}
+.air-odd.kind-bargain{border-color:#c98a2b}
+.air-odd-head{display:flex;align-items:center;gap:10px}
+.air-odd-head small{display:block;color:var(--muted);font-size:.75rem;line-height:1.3}
+.air-odd-head h3{margin:2px 0 0;font-size:1.02rem;line-height:1.3}
+.air-odd-av{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:50%;background:var(--surface-2);font-size:22px}
+.air-round{flex:none;font-family:var(--air-mono);font-size:.75rem;padding:2px 8px;border-radius:999px;background:var(--surface-2)}
+.air-odd-line{margin:10px 0 4px;padding:10px 12px;border-radius:4px 14px 14px 14px;background:var(--surface-2);line-height:1.45}
+.air-odd-me{margin:8px 0 0 auto;max-width:85%;padding:6px 10px;border-radius:14px 4px 14px 14px;background:color-mix(in srgb,var(--air-sky) 16%,var(--surface));font-size:.86rem;text-align:right}
+.air-odd-cue{margin:0 0 4px;font-size:.8rem;color:var(--muted)}
+.air-odd-row{display:grid;grid-template-columns:3.4em minmax(0,1fr);gap:6px;align-items:start;margin-top:8px}
+.air-odd-row>small{padding-top:10px;color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.04em}
+.air-segs{display:flex;flex-wrap:wrap;gap:6px}
+.air-words{display:flex;flex-wrap:wrap;gap:6px}
+.air-seg,.air-word{min-height:40px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.86rem;line-height:1.25;cursor:pointer;text-align:left}
+.air-seg.on,.air-word.on{background:var(--air-navy);border-color:var(--air-navy);color:#fff}
+.air-word.give{border-style:dashed}
+.air-word.give.on{background:#c0533f;border-color:#c0533f}
+@media (hover:hover){.air-seg:hover,.air-word:hover{border-color:var(--air-sky)}}
+.air-stepper{display:flex;align-items:center;gap:8px}
+.air-stepper .air-seg{min-width:44px;text-align:center;font-weight:800}
+.air-stepper{flex-wrap:wrap}
+.air-stepper b{font-family:var(--air-mono);font-size:.9rem}
+.air-limit{color:var(--muted);font-size:.75rem}
+.air-odd-go{margin-top:12px}
+.air-odd-go .btn{width:100%}
+.air-odd-last{display:flex;align-items:center;gap:10px;margin:0 0 10px;padding:8px 10px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.air-odd-last p{margin:0;flex:1;font-size:.88rem;line-height:1.4}
+.air-odd-last.good{border-color:var(--good)}
+.air-odd-last.bad{border-color:var(--bad,#c0533f)}
+.air-ground{margin:10px 0;padding:14px;border-radius:16px;border:2px solid #c0533f;background:color-mix(in srgb,#c0533f 8%,var(--surface));color:var(--ink)}
+.air-ground h3{margin:0 0 4px;font-size:1rem}
+.air-record{display:flex;flex-wrap:wrap;gap:6px}
+.air-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:var(--surface-2);font-size:.82rem;font-weight:700}
+.air-chip.lv-warn,.air-chip.air-tired.bad{background:color-mix(in srgb,#c98a2b 20%,var(--surface))}
+.air-chip.lv-ground,.air-chip.lv-demote{background:color-mix(in srgb,#c0533f 22%,var(--surface))}
+.air-bar{display:inline-flex;gap:2px}
+.air-bar i{display:block;width:6px;height:10px;border-radius:2px;background:var(--line)}
+.air-bar i.on{background:#c98a2b}
+.air-rest{margin-top:8px;padding:8px 10px;border-radius:12px;border:1px solid var(--line);background:var(--surface)}
+.air-rest summary{cursor:pointer;font-weight:700;min-height:32px;display:flex;align-items:center}
+.air-rest .air-rest-send{width:100%;margin-top:10px}
+.air-rest-done{margin:8px 0 0}

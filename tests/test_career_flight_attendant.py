@@ -9,6 +9,7 @@ from unittest import mock
 
 from tests.helpers import Journey
 from game.careers import kit, PLUGINS
+from tests.test_career_pilot import settle_odd, quiet
 from game.content import make_task
 from game.engine import GameError, migrate_state, new_state, public_state, validate_state
 
@@ -32,6 +33,7 @@ class Base(unittest.TestCase):
     def at(self, pick, days=range(1, 80)):
         day, slot = find(pick, days)
         j = Journey('flight_attendant', slot=slot, day=day)
+        quiet(j)                                   # these tests look at one job: no encounters today
         tid = j.c['active_task']
         if not j.get(tid)['known']:
             j.act('ask', task=tid)
@@ -44,6 +46,7 @@ class Base(unittest.TestCase):
         ev = j.c['ext']['data']['desk']['ev']
         if ev:
             j.act('fa_desk', option=kit.desk_script(FA.DESK, ev['script'])['default'])
+        settle_odd(j, 'fa_odd', FA.ODD)
 
     def serve_row(self, j, tid):
         for st in FA._row(j.get(tid))['seats']:
