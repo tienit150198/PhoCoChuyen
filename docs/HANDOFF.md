@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **1.2.3** (02/10 00:38; see "1.2.1 → 1.2.3" below), 32 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **1.3.0** (02/10 03:47; see "1.3.0" below), 33 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -20,6 +20,24 @@ branch holds what, and what to do next, in order. Details live in the linked doc
   number for capacity, real commands are heavier.
 - **Peak hours:** 17:30–20:00 (Vietnam time). Avoid heavy work on the server then; hotfixes may still go out
   (the rolling release has no gap).
+
+### What 1.3.0 added (02/10 03:47, branch rel-1.3, no DDL)
+- **Hội chợ dân gian** (`game/fair*.py`, `public/js/v4/fair.js`): opens 03/10 for 5 days (`MNL_FAIR_START`,
+  `MNL_FAIR_DAYS`; prod uses the defaults). Ô ăn quan and ring toss earn coins (90 + 45 xu/day); bầu cua, lô tô,
+  chiếu trong (4% police raid) are small bets, max net loss 150 xu/day. Board `fair20261003`; 60 s after the fair
+  closes, Top 1 gets 👑 Vua trò chơi and Top 2–10 🎪 Cao thủ hội chợ, once (`leaderboard_meta` `fair:<edition>`).
+  Saves gain `journey.fair` and a `fair` ledger kind: **an older build rejects them, do not roll back past 1.3.0
+  after 03/10** without a script.
+- **Nghề bán kem** (`ice_cream`, chapter 3): apprenticeship with cô Hiền, homemade batches, Chứng chỉ làm kem.
+- **Ký túc xá Hẻm 7** (`rent.kind = 'ky_tuc_xa'`, older builds reject it too).
+- Chat per-conversation mute (`chat_members.muted_until`), group web push, dating-corner wait panel and 📣 invite.
+- Ting ting (CC0 `public/audio/sfx/ting.mp3`) + speechSynthesis amount; nginx now serves `/audio/` like `/music/`
+  (backup `/root/phocochuyen.nginx.bak130`).
+- Wedding party: new lion, speakers, disco lights, feast tray, bouquet toss (20 xu), dance, fireworks, 10 CC0 tracks,
+  groom picks the music.
+- Payroll desk explains every cell (feedback #71); office date boxes auto-insert / and : with a 📅 picker;
+  salon "cắt thêm" after layering (feedback #67).
+- Still on branches, not live: `acc-colors` (feedback #70), `cert-diploma`, `deco`.
 
 ### What 1.2.1 → 1.2.3 added (01–02/10)
 - **1.2.1** (01/10 23:50, quiet, no "Có gì mới"): admins (`ADMIN_USERS`, now also in `/etc/mot-ngay-lam-nghe/live.env`)
