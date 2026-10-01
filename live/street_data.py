@@ -1,5 +1,5 @@
 """🚶 Đi dạo: the places, the topic cards of the tám chuyện tables, the street vendors' calls, and the ids a
-stroller's look and title may use (copies of game/wardrobe.py and game/journey.py TITLES, checked by
+stroller's look and titles may use (copies of game/wardrobe.py, game/journey.py TITLES and the certificates, checked by
 tests/test_live_street.py: the live service never imports the game).
 
 Geometry is in world units: every place is 600 × 900 (portrait, phone first; wider screens letterbox it).
@@ -181,6 +181,13 @@ TITLES = {
     'x_comeback': '🌅 Từ tay trắng',
     'w_crowd': '🎉 Đám cưới đông vui', 'w_100': '💞 Trăm ngày bên nhau', 'w_1y': '🎂 Tròn một năm', 'w_500': '💍 Năm trăm ngày thương',
     'w_1000': '👑 Nghìn ngày son sắt', 'w_vip': '🥇 Khách quý của phố', 'w_pro': '🎊 Ăn cưới chuyên nghiệp',
+}
+
+# Certificates worn like titles (game/journey.py CERT_WEAR + game/certificates.py GROUPS: 'cert:<id>' -> emoji + name).
+CERTS = {
+    'cert:work_safety': '🦺 Chứng chỉ An toàn lao động', 'cert:grooming': '✂️ Chứng chỉ Chăm sóc tóc & thú cưng',
+    'cert:customer_service': '🎧 Chứng chỉ Chăm sóc khách hàng', 'cert:teaching': '🍎 Chứng chỉ Nghiệp vụ sư phạm',
+    'cert:accounting': '🧮 Chứng chỉ Kế toán cơ bản', 'cert:air_safety': '✈️ Chứng chỉ An toàn bay cơ bản',
 }
 
 EMOTES = {'wave': '👋', 'heart': '❤️', 'laugh': '😂', 'wow': '😮', 'pray': '🙏'}

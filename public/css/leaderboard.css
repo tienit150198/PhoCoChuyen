@@ -10,11 +10,14 @@
 .lb{display:grid;gap:14px;align-content:start}
 .lb>*{min-width:0;margin:0}
 
-/* Board kind: Trải nghiệm | Chứng chỉ */
+/* Board kind: Trải nghiệm | Danh hiệu | Chứng chỉ (| Khách mời) */
 .lb-kinds{flex-wrap:nowrap}
 .lb-kinds>button{min-height:44px;font-size:.967rem;gap:6px}
 .lb-kinds.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}   /* + 💍 Khách mời của tuần */
 .lb-kinds.three>button{min-width:0;padding:0 4px;gap:3px;font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-kinds.four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}   /* + 🎖️ Danh hiệu and 💍 Khách mời */
+.lb-kinds.four>button{min-width:0;padding:0 4px;gap:3px;font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html[data-layout="phone"] .lb-kinds.four{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}   /* 2 × 2: whole words on a phone */
 
 /* Workplace picker */
 .lb-picker{display:flex;flex-wrap:wrap;gap:8px}
@@ -88,3 +91,21 @@ html[data-layout="phone"] .lb-me{padding:12px;gap:10px}
   .lb-rank{width:40px;height:40px}
 }
 .lb-me-av{display:inline-flex;margin-right:6px;vertical-align:middle}.lb-me-av svg{width:28px;height:28px;border-radius:50%}  /* 👗 Tủ đồ */
+
+/* 🏅 Danh hiệu tuần (game/lb_titles.py): who holds this board's titles, refreshed daily */
+.lb-week{display:grid;gap:8px;padding:12px 14px;border-radius:var(--radius);background:var(--warn-soft);border:1px solid var(--line)}
+.lb-week-head{display:grid;gap:2px}
+.lb-week-head b{font-size:1rem;color:var(--ink)}
+.lb-week-head small{font-size:.8rem;color:var(--muted);line-height:1.4}
+.lb-week-tiers{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.lb-week-tiers li{display:grid;grid-template-columns:32px minmax(0,1fr);align-items:center;gap:8px;padding:6px 8px;border-radius:12px;background:var(--surface)}
+.lb-week-tiers li.me{box-shadow:inset 3px 0 0 var(--info)}
+.lb-week-emoji{font-size:1.4rem;line-height:1;text-align:center}
+.lb-week-who{display:grid;gap:1px;min-width:0}
+.lb-week-who b{font-size:.92rem;color:var(--ink)}
+.lb-week-who small{font-size:.8rem;line-height:1.4;color:var(--ink-2);overflow-wrap:anywhere}
+.lb-week-who small i{font-style:normal;color:var(--muted)}
+.lb-week-last summary{min-height:36px;display:flex;align-items:center;font-size:.85rem;font-weight:700;color:var(--muted);cursor:pointer}
+.lb-week-last[open] summary{margin-bottom:6px}
+.lb-held{justify-self:start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:1px 8px;border-radius:var(--radius-pill);
+  background:var(--warn-soft);color:var(--ink);font-size:.75rem;font-weight:700;line-height:1.5}

@@ -255,7 +255,8 @@ class WeeklyRace(WedCase):
         self.assertEqual(len(self.rows("SELECT id FROM live_effects WHERE kind='coins'")), 3, 'paid once')
         c = await self.connect(toks['Bình'][0])
         room = await c.call('walk_in', 'walk_room', place='boho', look=LOOK, title='st_local')
-        self.assertEqual(room['people'][0]['ti'], '🥇 Khách quý của phố')
+        # The race title leads; what the player wears follows by its emoji (1.2: several worn at once).
+        self.assertEqual(room['people'][0]['ti'], '🥇 Khách quý của phố 🏮')
 
 
 if __name__ == '__main__':

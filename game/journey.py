@@ -46,6 +46,11 @@ UPKEEP = {'cozy': 4, 'sunny': 7, 'garden': 11}
 MODES = (('calm', .25), ('normal', .55), ('festival', .20))
 HISTORY_KINDS = ('living', 'upkeep', 'draw', 'invest', 'salary', 'reopen', 'incident', 'life', 'study', 'backdoor', 'bank', 'home')
 NEWS_KINDS = ('chapter', 'titles')
+# 🏷️ Đang đeo: game titles and certificates worn at once (owner, 01/10: "danh hiệu trò chơi và chứng chỉ được chọn
+# nhiều 1 lúc"). Three fit one line of chips on a 390 px phone and keep a name tag short (the first one by name, the
+# others by their emoji). The first title worn stays in `equipped` for older clients and the live service.
+WEAR_MAX = 3
+CERT_WEAR = 'cert:'   # a worn certificate: 'cert:<group id>' (game/certificates.py GROUPS)
 
 CH_UNLOCKS = {
     # New players get every storefront at once; the service places follow after the first day.
@@ -323,7 +328,7 @@ def _skill_level(points: int) -> int:
 def initial(story: bool = False, seed: int = 0) -> dict:
     return dict(version=VERSION, story=bool(story), seed=int(seed), gender=None, intro=False, chapter=1, done=[],
                 unlocked=[cid for cid in CH_UNLOCKS[1] if cid in CAREERS], wallet=START_WALLET, life_day=1,
-                paused={}, titles={}, equipped=None, history=[], news=[], news_seq=0, clean_days=0, in_debt=False,
+                paused={}, titles={}, equipped=None, worn=[], history=[], news=[], news_seq=0, clean_days=0, in_debt=False,
                 days=[], stats={k: 0 for k in STATS} | dict(max_wallet=START_WALLET),
                 certificates={}, study=None, cert_paper=None)   # 🎓 thi chứng chỉ (game/certificates.py)
 
@@ -416,6 +421,9 @@ def migrate(s: dict) -> dict:
 
 def upgrade(j: dict) -> None:
     """Future fields join existing journeys here (setdefault only)."""
+    if 'worn' not in j:   # 1.2: several worn at once; the one title worn before comes first
+        eq = j.get('equipped')
+        j['worn'] = [eq] if isinstance(eq, str) and eq in TITLE_INDEX and eq in (j.get('titles') or {}) else []
     for k, v in initial().items():
         j.setdefault(k, copy.deepcopy(v))
     for k in STATS:
@@ -619,7 +627,40 @@ def after(s: dict, career: str | None, action: str, p: dict, result: dict) -> No
             j['paused'].pop(cid)
     if j['equipped'] and j['equipped'] not in j['titles']:
         j['equipped'] = None
+    if any(not _owns(j, x) for x in j['worn']):
+        _wear(j, [x for x in j['worn'] if _owns(j, x)])
     _evaluate(s, result)
+
+
+def _owns(j: dict, item) -> bool:
+    """A worn item the save really has: a title it earned, or a certificate it passed."""
+    if not isinstance(item, str):
+        return False
+    if item.startswith(CERT_WEAR):
+        return ct.earned(j, item[len(CERT_WEAR):])
+    return item in TITLE_INDEX and item in j['titles']
+
+
+def _wear(j: dict, items: list) -> None:
+    """Set what is worn; `equipped` mirrors the first title among them (older clients, the live service)."""
+    j['worn'] = list(items)
+    j['equipped'] = next((x for x in items if not x.startswith(CERT_WEAR)), None)
+
+
+def worn_view(j: dict) -> list:
+    """[{id, kind, emoji, name}] of what is worn, in order (profile, Phố nghề, name tags)."""
+    out = []
+    for x in j.get('worn') or ():
+        if not isinstance(x, str):
+            continue
+        if x.startswith(CERT_WEAR):
+            g = ct.INDEX.get(x[len(CERT_WEAR):])
+            if g:
+                out.append(dict(id=x, kind='cert', emoji=g['emoji'], name=g['name']))
+        elif x in TITLE_INDEX:
+            t = TITLE_INDEX[x]
+            out.append(dict(id=x, kind='title', emoji=t['emoji'], name=t['name']))
+    return out
 
 
 def _welcome_settings(s: dict) -> None:
@@ -651,10 +692,20 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
             _welcome_settings(s)
         result['message'] = f'Chào {s["name"]}! Khu phố đã nhớ tên bạn.'
     elif name == 'jr_equip':
-        tid = p.get('title')
-        need(tid is None or tid in j['titles'], 'Bạn chưa có danh hiệu này.')
-        j['equipped'] = tid
-        result['message'] = f'Đã đeo danh hiệu “{TITLE_INDEX[tid]["name"]}”.' if tid else 'Đã cất danh hiệu.'
+        if 'worn' in p:   # several at once: the whole list, in the order shown
+            items = p.get('worn')
+            need(isinstance(items, list) and all(isinstance(x, str) for x in items), 'Danh sách đang đeo không hợp lệ.')
+            need(len(items) == len(set(items)), 'Mỗi danh hiệu chỉ đeo một lần thôi.')
+            need(len(items) <= WEAR_MAX, f'Đeo tối đa {WEAR_MAX} danh hiệu và chứng chỉ cùng lúc. Bỏ bớt một cái trước nhé.')
+            for x in items:
+                need(_owns(j, x), 'Bạn chưa có chứng chỉ này.' if x.startswith(CERT_WEAR) else 'Bạn chưa có danh hiệu này.')
+            _wear(j, items)
+            result['message'] = f'Đang đeo {len(items)}/{WEAR_MAX}.' if items else 'Đã cất hết danh hiệu.'
+        else:             # one title (clients from before 1.2): it replaces what is worn
+            tid = p.get('title')
+            need(tid is None or tid in j['titles'], 'Bạn chưa có danh hiệu này.')
+            _wear(j, [tid] if tid else [])
+            result['message'] = f'Đã đeo danh hiệu “{TITLE_INDEX[tid]["name"]}”.' if tid else 'Đã cất danh hiệu.'
     elif name == 'jr_seen':
         ids = p.get('ids')
         need(isinstance(ids, list) and 1 <= len(ids) <= 20 and all(isinstance(x, str) for x in ids), 'Danh sách tin không hợp lệ.')
@@ -788,6 +839,7 @@ def public(s: dict) -> dict:
         wallet=j['wallet'], debt=max(0, -j['wallet']), life_day=j['life_day'], living=living_cost(j),
         places=places, titles=sorted(([tid, day] for tid, day in j['titles'].items()), key=lambda x: (-x[1], x[0])),
         equipped=j['equipped'], equipped_title=dict(id=eq['id'], name=eq['name'], emoji=eq['emoji']) if eq else None,
+        worn=worn_view(j), wear_max=WEAR_MAX,
         secret=secret, maturity=maturity(ctx['xp']),
         skills=[dict(id=sid, points=ctx['points'].get(sid, 0), level=ctx['sk'].get(sid, 0)) for sid in _skill_ids()],
         goals=_goals_view(ctx, j['chapter']), progress_paused=j['story'] and j['wallet'] < 0 and j['chapter'] <= LAST,
@@ -851,6 +903,8 @@ def validate(s: dict) -> None:
     for day in j['titles'].values():
         integer(day, 1, 10**6)
     need(j['equipped'] is None or j['equipped'] in j['titles'], 'Danh hiệu đang đeo không hợp lệ.')
+    need(isinstance(j['worn'], list) and len(j['worn']) <= WEAR_MAX and len(set(map(str, j['worn']))) == len(j['worn'])
+         and all(_owns(j, x) for x in j['worn']), 'Danh hiệu đang đeo không hợp lệ.')
     need(isinstance(j['history'], list) and len(j['history']) <= 120, 'Sổ ví không hợp lệ.')
     for row in j['history']:
         need(isinstance(row, dict) and row.get('kind') in HISTORY_KINDS, 'Dòng sổ ví không hợp lệ.')

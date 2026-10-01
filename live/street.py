@@ -36,7 +36,7 @@ Tables and happenings
 
 Frames (client → server; replies in brackets)
   walk_places {}                                   [walk_places {places: [{id, name, icon, n}]}]
-  walk_in {place, look, g, title}                  [walk_room {place, room, me, people, tables, geo, hap, at}]
+  walk_in {place, look, g, title, titles}          [walk_room {place, room, me, people, tables, geo, hap, at}]
   walk_out {}  move {x, y}  say {text}  emote {e}  sit {table}  stand {}  topic {}
   card {pid}                                       [card {...}]
   invite {pid}                                     [invite_sent {id, pid}]; the other gets invited {id, pid, name}
@@ -59,9 +59,11 @@ import time
 from . import effects
 from .db import Error as DbError, log
 from .protocol import Feature, LiveError, on
-from .street_data import EMOTES, LOOK_DEFAULTS, LOOK_IDS, LOOK_SLOTS, PLACES, PUBLIC, TITLES, TOPICS, VENDORS, H, W
+from .street_data import CERTS, EMOTES, LOOK_DEFAULTS, LOOK_IDS, LOOK_SLOTS, PLACES, PUBLIC, TITLES, TOPICS, VENDORS, H, W
 
 PREFIX = 'walk:'
+WEAR_MAX = 3              # game/journey.py WEAR_MAX: titles and certificates worn at once
+LB_EVERY = 600            # seconds between reads of the weekly leaderboard titles (game/lb_titles.py lb_weekly)
 CAP = 20                  # players per instance
 INSTANCES_MAX = 250       # per place (5,000 sockets at most anyway)
 SPEED = 170.0             # world units per second
@@ -270,6 +272,8 @@ class StreetFeature(Feature):
         self.invites: dict = {}        # id -> dict(frm, to, room, until)
         self.flushes = 0               # diff frames sent (stats)
         self.leave_hooks: list = []    # fn(player): live/wedding.py forgets an overflow guest on walk_out
+        self.lb: dict = {}             # sid -> the best weekly leaderboard title held now (game/lb_titles.py)
+        self.lb_at = 0.0
 
     def enabled(self) -> bool:
         """Moves, bubbles, emotes and tables also run the wedding parties (LIVE_WEDDING); walk_in needs LIVE_STREET."""
@@ -278,11 +282,44 @@ class StreetFeature(Feature):
     def rooms(self) -> list:
         return [r for p in self.PREFIXES for r in self.hub.rooms_with_prefix(p)]
 
-    def title_of(self, player, title) -> str | None:
-        """The name tag's title: this week's race title (live/wedding.py) first, else the one the client sent."""
+    def title_of(self, player, title, titles=None) -> str | None:
+        """The name tag's title. An honour first: this week's race title (live/wedding.py), else the best weekly
+        leaderboard title held now (lb_weekly); then what the player wears (`titles`: up to WEAR_MAX title and
+        certificate ids, or the one `title` of an older client). The first shows by name, the others by emoji:
+        "👑 Trùm cuối của phố 🌱🎓"."""
         wed = self.app.by_name.get('wedding')
         won = wed.race_title(player.pid) if wed is not None and wed.enabled() else None
-        return won or (TITLES.get(title) if isinstance(title, str) else None)
+        won = won or self.lb.get(player.sid)
+        ids = titles if isinstance(titles, list) and titles else [title]
+        worn = []
+        for x in ids[:WEAR_MAX]:
+            text = (TITLES.get(x) or CERTS.get(x)) if isinstance(x, str) else None
+            if text and text not in worn:
+                worn.append(text)
+        lead = won or (worn.pop(0) if worn else None)
+        if lead is None:
+            return None
+        icons = ''.join(t.split(' ', 1)[0] for t in worn if t != lead)
+        return f'{lead} {icons}' if icons else lead
+
+    async def lb_fresh(self, now: float | None = None) -> None:
+        """Read the weekly leaderboard titles every LB_EVERY seconds (≤ 58 rows; the game refreshes them daily)."""
+        now = time.time() if now is None else now
+        if now - self.lb_at < LB_EVERY:
+            return
+        self.lb_at = now
+        try:
+            rows = await self.db.fetch('SELECT sid, board, rank, title FROM lb_weekly WHERE final=0')
+        except DbError as e:   # a database from before the table: no weekly titles
+            log('lb titles:', type(e).__name__)
+            return
+        from game.lb_titles import honour
+        best: dict = {}
+        for r in rows:
+            k = honour(r['board'], int(r['rank']))
+            if r['sid'] not in best or k < best[r['sid']][0]:
+                best[r['sid']] = (k, r['title'])
+        self.lb = {sid: v[1] for sid, v in best.items()}
 
     async def start(self):
         if self.app.chat:
@@ -469,7 +506,8 @@ class StreetFeature(Feature):
             raise LiveError('bad', 'Không có chỗ này.')
         look, g = clean_look(f.get('look'), f.get('g'))
         p = conn.player
-        title = self.title_of(p, f.get('title'))
+        await self.lb_fresh()
+        title = self.title_of(p, f.get('title'), f.get('titles'))
         await self._ensure_loaded(p)
         self._leave_player(p, 'other', keep=conn)
         room = self._pick(place, p)

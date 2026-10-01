@@ -47,13 +47,15 @@ export function certBadges(env){
     return `<button type="button" class="ct-badge" data-action="jrCerts" data-cert="${esc(g.id)}" title="${esc(`${g.name} · điểm cao nhất ${r.best}`)}"><span aria-hidden="true">${g.emoji}</span><b>${esc(g.short)}</b><i>${r.best}</i></button>`;}).join('')}</div>`;
 }
 
-/** The certificates section of the titles page. */
-export function certTitles(env){
+/** The certificates section of the titles page. An earned one is worn like a title (data-action jrWear, 'cert:<id>',
+ * v4/journey.js); `worn`: the ids worn now, `full`: nothing more fits. */
+export function certTitles(env,worn=new Set(),full=false){
   const {api}=env,J=api.state.journey,k=K(api);if(!J?.story||!k)return '';
   certCss();
   const got=k.groups.filter(g=>held(J.certificates?.[g.id])).length;
   const tiles=k.groups.map(g=>{const r=J.certificates?.[g.id];
-    if(held(r))return `<button type="button" class="jr-title earned" data-action="jrCerts" data-cert="${esc(g.id)}"><span class="jr-title-emoji" aria-hidden="true">${g.emoji}</span><b>${esc(g.name)}</b><small>${esc(g.issuer)}</small><em>Ngày sống ${fmt(r.earned_day)} · điểm cao nhất ${r.best}</em></button>`;
+    if(held(r)){const id=`cert:${g.id}`,on=worn.has(id);
+      return `<button type="button" class="jr-title earned ${on?'on':''}" data-action="jrWear" data-item="${esc(id)}" aria-pressed="${on}"><span class="jr-title-emoji" aria-hidden="true">${g.emoji}</span><b>${esc(g.name)}</b><small>${esc(g.issuer)} · điểm cao nhất ${r.best}</small><em>${on?'✓ Đang đeo · chạm để cất':full?`Ngày sống ${fmt(r.earned_day)} · đã đeo đủ`:`Ngày sống ${fmt(r.earned_day)} · Đeo`}</em></button>`;}
     return `<button type="button" class="jr-title" data-action="jrCerts" data-cert="${esc(g.id)}"><span class="jr-title-emoji" aria-hidden="true">${g.emoji}</span><b>${esc(g.name)}</b><small>${r?`Đã thi ${r.attempts} lần · cao nhất ${r.best} điểm`:'Chưa thi'}</small><em>Học và thi ở 🎓 Thi chứng chỉ</em></button>`;}).join('');
   return `<section class="jr-title-cat"><h3>Chứng chỉ nghề <small>${got}/${k.groups.length}</small></h3><div class="jr-title-grid">${tiles}</div></section>`;
 }

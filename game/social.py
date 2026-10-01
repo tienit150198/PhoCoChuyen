@@ -159,10 +159,13 @@ def _profile(db, pid: str) -> dict | None:
     return dict(r) if r else None
 
 
-def _public_profile(p: dict, me: str | None = None, db=None) -> dict:
+def _public_profile(p: dict, me: str | None = None, db=None, ranks: dict | None = None) -> dict:
     shop = json.loads(p['shop'] or '{}')
     out = dict(pid=p['pid'], name=p['name'], bio=p['bio'], avatar=p['avatar'], shop=shop, served=p['served'],
                me=p['pid'] == me, seen=int(p['seen']))
+    held = (ranks or {}).get(p.get('sid'))
+    if held:   # 🏅 the best weekly leaderboard title this player holds now (game/lb_titles.py)
+        out['rank'] = dict(emoji=held[0]['emoji'], name=held[0]['name'])
     if db is not None and me:
         out['following'] = bool(db.execute('SELECT 1 FROM follows WHERE pid=? AND target=?', (me, p['pid'])).fetchone())
         out['blocked'] = bool(db.execute('SELECT 1 FROM blocks WHERE pid=? AND target=?', (me, p['pid'])).fetchone())
@@ -201,10 +204,12 @@ def snapshot(state: dict) -> dict:
                             rating=round(sum(stars) / len(stars), 1) if stars else None, reviews=len(stars),
                             served=int(c.get('metrics', {}).get('served', 0))))
     careers.sort(key=lambda x: (-x['served'], x['id']))
-    from .journey import TITLE_INDEX
-    eq = TITLE_INDEX.get((state.get('journey') or {}).get('equipped'))
+    from .journey import TITLE_INDEX, worn_view
+    j = state.get('journey') or {}
+    eq = TITLE_INDEX.get(j.get('equipped'))
     title = dict(emoji=eq['emoji'], name=eq['name']) if eq else None
-    return dict(current=state.get('current'), careers=careers[:14], title=title), served
+    worn = [dict(emoji=w['emoji'], name=w['name']) for w in worn_view(j)] if isinstance(j, dict) else []
+    return dict(current=state.get('current'), careers=careers[:14], title=title, titles=worn), served
 
 
 SEEN_EVERY = 120   # seconds between "last seen" refreshes of a profile
@@ -425,6 +430,8 @@ def get(store, token: str, state: dict, route: str, q: dict) -> dict:
         notes = []
     me = touch(store, sid, state)
     mine = me['pid']
+    from . import lb_titles
+    ranks = lb_titles.holders(store) if route in ('directory', 'shop', 'community') else None
     with store.connect() as db:
         if route == 'me':
             unread = _count(db, 'SELECT COUNT(*) FROM inbox WHERE pid=? AND read=0', (mine,))
@@ -440,7 +447,7 @@ def get(store, token: str, state: dict, route: str, q: dict) -> dict:
                 rows = [r for r in rows if r['pid'] in follow]
             out = []
             for r in rows:
-                pp = _public_profile(r, mine)
+                pp = _public_profile(r, mine, ranks=ranks)
                 if career and not any(x['id'] == career for x in pp['shop'].get('careers', [])):
                     continue
                 if query and query not in _fold(r['name'] or ''):
@@ -461,7 +468,7 @@ def get(store, token: str, state: dict, route: str, q: dict) -> dict:
             visits = _count(db, 'SELECT COUNT(*) FROM visits WHERE to_pid=?', (t['pid'],))
             stars = [r['stars'] for r in reviews]
             reviewed = bool(db.execute('SELECT 1 FROM previews WHERE from_pid=? AND to_pid=? AND day=?', (mine, t['pid'], today())).fetchone())
-            return dict(profile=_public_profile(t, mine, db), visits=visits, rating=round(sum(stars) / len(stars), 1) if stars else None,
+            return dict(profile=_public_profile(t, mine, db, ranks), visits=visits, rating=round(sum(stars) / len(stars), 1) if stars else None,
                         reviews=[_review(r, mine) for r in reviews], listings=[_listing(db, m, mine) for m in listings],
                         can_review=t['pid'] != mine and bool(me['name']) and not reviewed,
                         can_gift=t['pid'] != mine and bool(me['name']))
@@ -499,7 +506,7 @@ def get(store, token: str, state: dict, route: str, q: dict) -> dict:
         if route == 'community':
             top = _rows(db, '''SELECT * FROM profiles WHERE visible=1 AND hidden=0 AND name IS NOT NULL AND week_key=? AND served>week_base
                                ORDER BY served-week_base DESC, seen DESC, pid LIMIT 10''', (week(),))
-            return dict(community=community(db), top=[dict(_public_profile(p, mine), week=p['served'] - p['week_base']) for p in top])
+            return dict(community=community(db), top=[dict(_public_profile(p, mine, ranks=ranks), week=p['served'] - p['week_base']) for p in top])
     fail('Không có mục này.', 'not_found', 404)
 
 

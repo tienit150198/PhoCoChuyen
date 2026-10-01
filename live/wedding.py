@@ -27,7 +27,7 @@ Every reward has a fixed key (paid once); settles and reminders are guarded in t
 
 Frames (client → server; replies in brackets)
   wed_list {}                         [wed_list {parties: [{id, a, b, at, end, open, n, mine}], now}]
-  wed_in {id, look, g, title}         [walk_room {..., wed: {id, a, b, pids, at, end, overflow, photos}}]
+  wed_in {id, look, g, title, titles}         [walk_room {..., wed: {id, a, b, pids, at, end, overflow, photos}}]
   wed_photo {}                        [the room: wed_photo {n, pid, name, at}: the taker's screen is uploaded to
                                        POST /api/wedding/photo at `at`]
   (walk_out, move, say, emote, sit, stand, topic, card: live/street.py)
@@ -247,7 +247,8 @@ class WeddingFeature(Feature):
             else:
                 x, y = geo.spots['spawn']
                 at = geo.clamp(x + random.uniform(-90, 90), y + random.uniform(-30, 30))
-                title = self.street.title_of(pl, f.get('title'))
+                await self.street.lb_fresh()
+                title = self.street.title_of(pl, f.get('title'), f.get('titles'))
             self.street._enter(room, conn, Walker(pl, look, g, title, at, now))
             overflow = False
         else:

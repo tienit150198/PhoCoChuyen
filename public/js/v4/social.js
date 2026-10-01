@@ -11,6 +11,14 @@ const ago=t=>{const s=Math.max(0,Date.now()/1000-t);if(s<60)return'vừa xong';i
 const AVATARS=['🌸','☕','🍜','🎉','💪','🌈','🍀','⭐','🧁','🎁','🧑‍🍳','👩‍🏫','🧑‍💼','🧑‍🌾','🐱','🐶'];
 const TABS=[['street','Phố','map'],['board','Bảng tin','chat'],['market','Chợ','cart'],['inbox','Hộp thư','inbox'],['me','Hồ sơ','user']];
 
+/** 🏷️ What a player wears (shop.titles, up to 3, the first by name, the others by emoji) and 🏅 the weekly
+ * leaderboard title held now (p.rank) first; older snapshots only have shop.title. */
+function titlesLine(p,cls='small clip'){
+  const shop=p.shop||{},worn=Array.isArray(shop.titles)?shop.titles:shop.title?[shop.title]:[],lead=p.rank||worn[0];
+  if(!lead)return '';
+  const rest=(p.rank?worn:worn.slice(1)).map(w=>esc(w.emoji)).join('');
+  return `<p class="${cls}">${p.rank?'<b>':''}${esc(lead.emoji)} ${esc(lead.name)}${p.rank?'</b>':''}${rest?` <span aria-label="${esc(worn.map(w=>w.name).join(', '))}">${rest}</span>`:''}</p>`;
+}
 function careerName(api,id){return api.content.careers?.[id]?.meta?.short||api.content.catalogue?.find(c=>c.id===id)?.short||id;}
 
 /* Data cache with one in-flight load per key; views re-render when data lands. */
@@ -45,7 +53,7 @@ function community(c){
 
 function playerCard(env,p){
   const shop=p.shop||{},cur=shop.careers?.[0];
-  return `<article class="player-card"><span class="avatar big">${esc(p.avatar)}</span><div class="grow"><h4>${esc(p.name)} ${p.me?pill('Bạn','blue'):''}</h4>${shop.title?`<p class="small clip">${esc(shop.title.emoji)} ${esc(shop.title.name)}</p>`:''}<p class="small muted clip">${esc(p.bio||'Chưa có lời giới thiệu')}</p>
+  return `<article class="player-card"><span class="avatar big">${esc(p.avatar)}</span><div class="grow"><h4>${esc(p.name)} ${p.me?pill('Bạn','blue'):''}</h4>${titlesLine(p)}<p class="small muted clip">${esc(p.bio||'Chưa có lời giới thiệu')}</p>
     <div class="row wrap small">${(shop.careers||[]).slice(0,3).map(c=>`<span class="chip">${esc(c.short)} · Lv${c.level}${c.rating?` · ${c.rating}★`:''}</span>`).join('')}</div></div>
     ${button(p.me?'Xem quán':'Ghé quán '+icon('chevron',13),'socShop',{pid:p.pid},'small '+(p.me?'ghost':'primary'))}</article>`;
 }
@@ -69,7 +77,7 @@ function shopView(env,pid){
   const giftForm=d.can_gift?`<details class="card soc-gift"><summary>${icon('gift',16)} Tặng quà</summary><form data-soc-form="gift" data-pid="${esc(pid)}"><div class="sticker-pick">${(api.social?.stickers||['🌸']).map(s=>`<label><input type="radio" name="sticker" value="${s}" ${gift.sticker===s?'checked':''}><span>${s}</span></label>`).join('')}</div><div class="segmented">${[0,10,20].map(c=>`<label><input type="radio" name="coins" value="${c}" ${c===0?'checked':''}><span>${c?c+' xu':'Chỉ sticker'}</span></label>`).join('')}</div><input class="input" name="note" data-preserve maxlength="80" placeholder="Lời nhắn (không bắt buộc)"><button class="btn primary small" type="submit">Gửi quà</button><p class="small muted">Xu lấy từ ví nghề bạn đang chơi. Mỗi ngày tặng mỗi người 1 lần.</p></form></details>`:'';
   const reviews=d.reviews.map(r=>`<article class="p-review"><div class="row"><span class="avatar">${esc(r.avatar||'🙂')}</span><div class="grow"><b>${esc(r.author)}</b> <span class="stars">${stars(r.stars)}</span><small class="muted block">${esc(careerName(api,r.career))} · ${ago(r.at)}</small></div>${r.mine||r.owner?'':button(icon('flag',13),'socReport',{kind:'review',id:r.id},'icon-btn small ghost')}</div><p>${esc(r.text)}</p>${r.reply?`<p class="owner-reply">${icon('chat',13)} <b>Chủ quán:</b> ${esc(r.reply)}</p>`:r.owner?`<form class="row" data-soc-form="reply" data-id="${r.id}"><input class="input grow" name="text" data-preserve maxlength="280" placeholder="Trả lời một lần, thật lòng nhé" required><button class="btn small" type="submit">Trả lời</button></form>`:''}</article>`).join('')||`<p class="muted small">Chưa có hàng xóm nào chấm sao.</p>`;
   const listings=d.listings.length?`<h4 class="section-title">Hàng đang bán</h4><div class="listing-grid">${d.listings.map(m=>listingCard(m)).join('')}</div>`:'';
-  return `${back}<section class="shop-hero card"><span class="avatar huge">${esc(p.avatar)}</span><div class="grow"><h3>${esc(p.name)}</h3>${p.shop?.title?`<p class="small">${esc(p.shop.title.emoji)} ${esc(p.shop.title.name)}</p>`:''}<p class="muted">${esc(p.bio||'')}</p><div class="row wrap small">${pill(`${d.visits} lượt ghé`)} ${d.rating?pill(`${d.rating}★ từ hàng xóm`,'amber'):''} ${pill(`${(p.served||0).toLocaleString('vi-VN')} khách đã phục vụ`,'green')}</div></div>
+  return `${back}<section class="shop-hero card"><span class="avatar huge">${esc(p.avatar)}</span><div class="grow"><h3>${esc(p.name)}</h3>${titlesLine(p,'small')}<p class="muted">${esc(p.bio||'')}</p><div class="row wrap small">${pill(`${d.visits} lượt ghé`)} ${d.rating?pill(`${d.rating}★ từ hàng xóm`,'amber'):''} ${pill(`${(p.served||0).toLocaleString('vi-VN')} khách đã phục vụ`,'green')}</div></div>
     ${me?'':`<div class="row wrap">${button(p.following?'Đang theo dõi':'Theo dõi',p.following?'socUnfollow':'socFollow',{pid},'small '+(p.following?'ghost':''))}${button(icon('flag',13)+' Báo cáo','socReport',{kind:'profile',id:pid},'small ghost')}${button('Chặn','socBlock',{pid},'small ghost danger')}</div>`}</section>
     <div class="shop-careers">${(p.shop?.careers||[]).map(c=>`<div class="kv-card"><b>${esc(c.place)}</b><small>Lv${c.level} · ngày ${c.day} · ${c.rating?c.rating+'★':'chưa có sao'} · ${c.served} khách</small></div>`).join('')||'<p class="muted small">Chưa mở quán nào.</p>'}</div>
     ${giftForm}${reviewForm}${listings}<h4 class="section-title">Hàng xóm chấm sao</h4><div class="stack">${reviews}</div>`;

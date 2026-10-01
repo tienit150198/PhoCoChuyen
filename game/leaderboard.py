@@ -13,6 +13,12 @@ Boards
 * ``certs`` - Top chứng chỉ. Score = certificates earned. Ties: higher total of
   the best exam score of those certificates, then earned sooner (the in-game life
   day of the latest one), then first to reach, then a fixed order.
+* ``titles`` - Top danh hiệu. Score = game titles earned (game/journey.py TITLES,
+  secret ones included). Ties: more secret titles, then earned sooner (the life
+  day of the latest one), then first to reach, then a fixed order.
+
+Weekly titles: the top of `all`, `titles`, `certs` and of every workplace board
+hold a title for the week, recomputed daily (game/lb_titles.py).
 
 Server authoritative: rows are derived from the save stored on the server (see
 ``summary``), written by the storage layer in the same transaction as the save
@@ -33,12 +39,13 @@ import time
 from collections import OrderedDict
 
 from . import db as dbm
+from . import lb_titles as lbt   # 🏅 Danh hiệu tuần (the top of each board, refreshed daily)
 from .content import CAREERS
 
-VERSION = 1                # bump when a formula changes: the next start rebuilds every row
-OVERALL, CERTS = 'all', 'certs'
+VERSION = 2                # bump when a formula changes: the next start rebuilds every row (2: the titles board)
+OVERALL, CERTS, TITLES = 'all', 'certs', 'titles'
 CAREER_IDS = frozenset(CAREERS)
-BOARDS = CAREER_IDS | {OVERALL, CERTS}
+BOARDS = CAREER_IDS | {OVERALL, CERTS, TITLES}
 NAME = '_name'              # summary key of the guest's character name (not a board)
 LIMIT = 50
 CACHE_SECONDS = 5.0
@@ -94,6 +101,26 @@ def _certs(state: dict) -> tuple[int, int, int]:
     return n, best, last
 
 
+def _titles(state: dict) -> tuple[int, int, int]:
+    """(titles earned, secret ones among them, life day of the latest one). Ids this build does not know are
+    not counted (validate_state refuses them anyway)."""
+    from .journey import TITLE_INDEX
+    j = state.get('journey')
+    got = j.get('titles') if type(j) is dict else None
+    if type(got) is not dict:
+        return 0, 0, 0
+    n = secret = last = 0
+    for tid, day in got.items():
+        t = TITLE_INDEX.get(tid)
+        if t is None:
+            continue
+        n += 1
+        secret += bool(t['secret'])
+        if type(day) is int and day > last:
+            last = day
+    return n, secret, last
+
+
 @functools.lru_cache(maxsize=4096)
 def guest_name(name) -> str | None:
     """A guest's character name, if it may be shown: set by the player (not the
@@ -146,6 +173,9 @@ def summary(state) -> dict:
     n, best, last = _certs(state)
     if n:
         out[CERTS] = (n, best, -last, n, last, best, 0, n)
+    n, secret, last = _titles(state)
+    if n:
+        out[TITLES] = (n, secret, -last, n, last, secret, 0, n)
     out[NAME] = guest_name(state.get('name'))
     return out
 
@@ -218,6 +248,7 @@ def forget(db, sids) -> None:
         marks = ','.join('?' * len(part))
         db.execute(f"DELETE FROM leaderboard WHERE sid IN ({marks})", part)
         db.execute(f"DELETE FROM leaderboard_players WHERE sid IN ({marks})", part)
+        lbt.forget(db, marks, part)
     clear_cache()
 
 
@@ -339,7 +370,7 @@ def clear_cache() -> None:
 
 
 def parse_query(q: dict) -> tuple[str, int]:
-    """(board, limit) of GET /api/leaderboard?career=<id|all>|board=certs&limit=50;
+    """(board, limit) of GET /api/leaderboard?career=<id|all>|board=certs|titles&limit=50;
     ValueError with a player-facing message otherwise."""
     board = q.get('board') or q.get('career') or OVERALL
     if board not in BOARDS:
@@ -356,6 +387,8 @@ def _row_out(board: str, r) -> dict:
     out = dict(name=r['gname'] if guest else r['display'], guest=guest, score=r['score'], level=r['level'])
     if board == CERTS:
         out.update(certs=r['mastered'], best=r['served'], day=r['days'])
+    elif board == TITLES:
+        out.update(titles=r['mastered'], secret=r['served'], day=r['days'])
     else:
         out.update(days=r['days'], served=r['served'], stars=r['stars'] / 10 if r['stars'] else None)
         if board == OVERALL:
@@ -404,12 +437,19 @@ def _privacy(db, sid: str) -> dict:
 
 def view(store, board: str, limit: int = LIMIT, token: str | None = None) -> dict:
     """GET /api/leaderboard: the top `limit` of a board plus the viewer's own place
-    ("Bạn"), even outside the top or while their name is hidden."""
+    ("Bạn"), even outside the top or while their name is hidden, and the board's
+    weekly titles (game/lb_titles.py: who holds them, last updated, last week's)."""
+    lbt.ensure(store)
     top, total = _top(store, board, limit)
     sid = _viewer(store, token)
+    holders = lbt.holders(store)
     rows = []
     for i, (row_sid, r) in enumerate(top):
-        rows.append(dict(r, rank=i + 1, me=row_sid == sid))
+        mine = [h for h in holders.get(row_sid, ()) if h['board'] == board]
+        row = dict(r, rank=i + 1, me=row_sid == sid)
+        if mine:
+            row['title'] = dict(emoji=mine[0]['emoji'], name=mine[0]['name'])
+        rows.append(row)
     me = None
     if sid:
         with store.connect() as db:
@@ -426,7 +466,12 @@ def view(store, board: str, limit: int = LIMIT, token: str | None = None) -> dic
             else:
                 me['rank'] = None
         me.pop('show', None)
-    return dict(board=board, total=total, rows=rows, me=me)
+        me['titles'] = [dict(emoji=h['emoji'], name=h['name'], board=h['board'], label=h['label']) for h in holders.get(sid, ())]
+    try:
+        weekly = lbt.board_view(store, board, sid)
+    except Exception:  # noqa: BLE001 - a database from before the weekly titles: the board still shows
+        weekly = None
+    return dict(board=board, total=total, rows=rows, me=me, weekly=weekly)
 
 
 # ---------------------------------------------------------------- privacy setting

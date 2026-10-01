@@ -3748,7 +3748,8 @@ GROUPS = [{'id': 'start',
                          'khách.',
                          '🧠 Kỹ năng lớn dần theo việc: cẩn thận, giao tiếp, kiên nhẫn, con số, làm nhóm, sáng tạo…',
                          '🏅 Danh hiệu mở khi đạt mốc: câu chuyện, hành trình, nghề, kỹ năng. Có danh hiệu ẩn.',
-                         '🎖️ Chọn một danh hiệu để đeo: nó hiện cạnh tên bạn.'],
+                         '🎖️ Đeo cùng lúc tối đa 3 danh hiệu và chứng chỉ: cái đầu hiện tên, các cái sau hiện biểu '
+                         'tượng cạnh tên bạn. Chạm lần nữa để cất.'],
               'go': {'action': 'home', 'label': 'Xem danh hiệu'}},
              {'id': 'minigames',
               'emoji': '🧩',
@@ -4443,8 +4444,10 @@ GROUPS = [{'id': 'start',
              {'id': 'leaderboard_top',
               'emoji': '🏆',
               'title': 'Bảng xếp hạng',
-              'points': ['🏆 [[Trải nghiệm]]: bảng [[Tất cả]] cho cả phố và một bảng cho từng nơi làm. [[Chứng chỉ]]: '
-                         'xếp theo số chứng chỉ đã có.',
+              'points': ['🏆 [[Trải nghiệm]]: bảng [[Tất cả]] cho cả phố và một bảng cho từng nơi làm. [[Danh hiệu]]: '
+                         'xếp theo số danh hiệu đã có. [[Chứng chỉ]]: xếp theo số chứng chỉ đã có.',
+                         '🏅 Danh hiệu tuần: top 1, top 2–3 và top 4–10 của bảng Tất cả, Danh hiệu, Chứng chỉ, và top 1 '
+                         'mỗi nơi làm giữ một danh hiệu riêng, hiện cạnh tên. Cập nhật mỗi ngày, chốt tuần lúc 0:00 thứ Hai.',
                          '🌟 Bảng cả phố: XP mọi nơi làm, cộng 80 cho mỗi nơi đã phục vụ khách. Bằng điểm thì ai thạo '
                          'nhiều nghề hơn, rồi làm nhiều ngày hơn đứng trước.',
                          '🏪 Bảng từng nơi: XP ở nơi đó. Bằng điểm thì ai làm nhiều ngày hơn, rồi được nhiều sao hơn '

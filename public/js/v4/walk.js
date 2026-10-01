@@ -138,7 +138,7 @@ function onClose(){
 function leaveLocal(){S.room=null;S.geo=null;S.people.clear();S.tables=[];S.hap=null;S.envl=null;S.card=null;S.invite=null;S.floaters=[];S.photo=null;paintOverlays();}
 
 function enter(place){
-  const st=S.env?.api?.state||{},me={look:lookOf(st),g:st.journey?.gender??null,title:st.journey?.equipped??null};
+  const st=S.env?.api?.state||{},me={look:lookOf(st),g:st.journey?.gender??null,title:st.journey?.equipped??null,titles:Array.isArray(st.journey?.worn)?st.journey.worn.map(w=>w.id):undefined};
   if(S.wedding!==null){S.want='wed';live.send({t:'wed_in',id:S.wedding,...me});return;}
   S.want=place;
   live.send({t:'walk_in',place,...me});

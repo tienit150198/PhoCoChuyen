@@ -55,6 +55,7 @@ from game import admin_stats
 from game import admin_retention
 from game import retention
 from game import leaderboard
+from game import lb_titles
 from game import marriage
 from game import system_gift
 from game import live_effects, live_dating
@@ -503,6 +504,11 @@ class Handler(BaseHTTPRequestHandler):
                     except Exception as e:self.log_error("gift on_load: %s",type(e).__name__)  # never blocks loading the game
                 extra={"Set-Cookie":self.cookie(token)} if created else {}
                 view=public_state(state)
+                ranks=[]
+                if not created:
+                    try:  # 🏅 the weekly leaderboard titles this save holds now (game/lb_titles.py), for its own name card
+                        lb_titles.ensure(self.server.store);ranks=lb_titles.held(self.server.store,self.server.store.key(token))
+                    except Exception as e:self.log_error("lb_titles: %s",type(e).__name__)  # never blocks loading the game
                 # The workplace the first frame opens (app.js career()): boot.js starts its part of the catalogue
                 # (X-Game-Place) and preloads its scene, workbench and stylesheets (X-Game-Warm, game/webassets.py
                 # career_warm) as soon as these headers are in, while the body is still on its way.
@@ -518,7 +524,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(200,dict(state=view,revision=revision,csrf=csrf,ai=dict(public_config(),configured=ai.available(),chat=True),
                                    social=social.bootstrap(self.server.store,token,state),push=push.public_config(),account=accounts.status(self.server.store,token),
                                    admin=pfb.is_admin(self.server.store,token),content_version=version,content_url=f"/api/content?v={version}",
-                                   game_version=self.server.game_version(),gifts=gifts,**live_hint()),extra,raw=None if lite else dict(content=self.server.content_blob()[0]));return
+                                   game_version=self.server.game_version(),gifts=gifts,lb_titles=[dict(emoji=h["emoji"],name=h["name"],label=h["label"],board=h["board"]) for h in ranks],**live_hint()),extra,raw=None if lite else dict(content=self.server.content_blob()[0]));return
             if route=="/api/state":
                 _,state,revision,_=self.require_session();self.json(200,dict(state=public_state(state),revision=revision));return
             if route=="/api/save/export":
@@ -1185,6 +1191,7 @@ def _housekeeping(store:Store,stop:threading.Event,limits:SharedLimits|None):
             step("prune",lambda:(store.prune(int(os.environ.get("SESSION_IDLE_DAYS","180"))),social.prune(store),pfb.prune(store)))
             step("stats",lambda:admin_stats.upkeep(store))  # stat tables: rollups, then retention limits (never at the peak hours)
         step("push",lambda:push.deliver_due(store))
+        lb_titles.run_refresh(store)  # 🏅 Danh hiệu tuần: once a Vietnam day (and the week's freeze on Monday 00:00)
 
 
 def tune_gc()->None:

@@ -1,4 +1,5 @@
-/** Bảng xếp hạng: "Top trải nghiệm" (overall + one board per workplace) and "Top chứng chỉ".
+/** Bảng xếp hạng: "Top trải nghiệm" (overall + one board per workplace), "Top danh hiệu" and "Top chứng chỉ",
+ * each with its weekly titles (🏅 Danh hiệu tuần, game/lb_titles.py: who holds them, refreshed daily).
  * Every number comes from GET /api/leaderboard (game/leaderboard.py), computed from the saves on
  * the server. Names are display names only, always escaped. The privacy switch
  * "Hiện tên tôi trên bảng xếp hạng" posts to /api/leaderboard/visibility; it lives here and in
@@ -34,7 +35,7 @@ function load(env,board,force=false){
   const {api,ui}=env,s=store(ui),hit=s.data[board];
   if(s.busy[board]||(!force&&hit&&!hit.error&&Date.now()-hit.at<FRESH_MS))return;
   s.busy[board]=true;
-  api.json(`/api/leaderboard?${board==='certs'?'board=certs':`career=${encodeURIComponent(board)}`}&limit=50`)
+  api.json(`/api/leaderboard?${board==='certs'||board==='titles'?`board=${board}`:`career=${encodeURIComponent(board)}`}&limit=50`)
     .then(d=>{s.data[board]={...d,at:Date.now()};if(d.me)ui.lbMe=d.me;})
     .catch(e=>{s.data[board]={error:e.message||'Chưa tải được bảng xếp hạng.',at:Date.now()};})
     .finally(()=>{s.busy[board]=false;if(ui.view==='rank'||ui.view==='settings')env.renderSheet();});
@@ -46,32 +47,55 @@ const placeOf=(api,id)=>{const m=metaOf(api,id);return m.place||m.short||id;};
 const careerIds=api=>api.content.catalogue.map(m=>m.id).filter(id=>api.state.careers?.[id]);
 
 function rule(api,board){
+  if(board==='titles')return 'Xếp theo số danh hiệu trò chơi đã có, rồi danh hiệu bí mật, rồi ai có sớm hơn.';
   if(board==='certs')return 'Xếp theo số chứng chỉ đã có, rồi tổng điểm thi cao nhất, rồi ai có sớm hơn.';
   if(board==='all')return 'Điểm là XP trưởng thành: XP ở mọi nơi làm, cộng 80 cho mỗi nơi đã phục vụ khách. Bằng điểm thì ai thạo nhiều nghề hơn, rồi làm nhiều ngày hơn đứng trước.';
   return `Điểm là XP ở ${placeOf(api,board)}. Bằng điểm thì ai làm nhiều ngày hơn, rồi được nhiều sao hơn đứng trước.`;
 }
 /** The small line under a name: the one or two numbers that break ties. */
 function statsLine(board,r){
+  if(board==='titles')return [r.secret?`${fmt(r.secret)} bí mật`:'',r.day?`mới nhất Ngày ${fmt(r.day)}`:''].filter(Boolean).join(' · ');
   if(board==='certs')return [`${fmt(r.best)} điểm thi`,r.day?`có từ Ngày ${fmt(r.day)}`:''].filter(Boolean).join(' · ');
   if(board==='all')return [`Trưởng thành cấp ${fmt(r.level)}`,`${fmt(r.mastered)} nghề thạo`,`${fmt(r.days)} ngày`].join(' · ');
   return [`Cấp ${fmt(r.level)}`,`${fmt(r.days)} ngày`,stars(r.stars)].filter(Boolean).join(' · ');
 }
 function scoreBox(board,r){
+  if(board==='titles')return `<span class="lb-score"><b>${fmt(r.score)}</b><small>danh hiệu</small></span>`;
   return board==='certs'?`<span class="lb-score"><b>${fmt(r.score)}</b><small>chứng chỉ</small></span>`:`<span class="lb-score"><b>${fmt(r.score)}</b><small>XP</small></span>`;
 }
 function rowHTML(board,r){
   const medal=r.rank<=3?`<span class="lb-medal" aria-hidden="true">${MEDALS[r.rank-1]}</span>`:'';
   return `<li class="lb-row${r.me?' me':''}${r.rank<=3?` top top${r.rank}`:''}"><span class="lb-rank" aria-label="Hạng ${r.rank}">${medal||`<b>${r.rank}</b>`}</span>
-    <span class="lb-who"><span class="lb-name-line"><b class="lb-name" data-no-translate>${esc(r.name)}</b>${r.guest?'<span class="tag lb-guest">khách</span>':''}${r.me?'<span class="tag blue">Bạn</span>':''}</span><small>${esc(statsLine(board,r))}</small></span>
+    <span class="lb-who"><span class="lb-name-line"><b class="lb-name" data-no-translate>${esc(r.name)}</b>${r.guest?'<span class="tag lb-guest">khách</span>':''}${r.me?'<span class="tag blue">Bạn</span>':''}</span>${r.title?`<span class="lb-held">${esc(r.title.emoji)} ${esc(r.title.name)}</span>`:''}<small>${esc(statsLine(board,r))}</small></span>
     ${scoreBox(board,r)}</li>`;
+}
+
+/* ---- 🏅 Danh hiệu tuần (game/lb_titles.py): the holders of this board's titles, refreshed once a day ---- */
+const vnTime=t=>new Date(t*1000).toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh',hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'});
+function holdersText(list){
+  if(!list.length)return '<i>Chưa ai giữ</i>';
+  const shown=list.slice(0,3).map(h=>h.me?'<b>Bạn</b>':`<span data-no-translate>${esc(h.name)}</span>`).join(', ');
+  return list.length>3?`${shown} <i>+${list.length-3} người</i>`:shown;
+}
+function tierRows(tiers){
+  return tiers.map(t=>`<li class="${t.holders.some(h=>h.me)?'me':''}"><span class="lb-week-emoji" aria-hidden="true">${esc(t.emoji)}</span><span class="lb-week-who"><b>${esc(t.name)}</b><small>${esc(t.label)} · ${holdersText(t.holders)}</small></span></li>`).join('');
+}
+function weeklyHTML(w){
+  if(!w)return '';
+  const left=Math.max(0,Math.ceil((w.ends-Date.now()/1000)/86400));
+  const when=w.updated?`Cập nhật hằng ngày · lần cuối ${vnTime(w.updated)}`:'Cập nhật hằng ngày';
+  const last=w.last?`<details class="lb-week-last"><summary>Tuần trước</summary><ul class="lb-week-tiers">${tierRows(w.last.tiers)}</ul></details>`:'';
+  return `<section class="lb-week" aria-label="Danh hiệu tuần này"><div class="lb-week-head"><b>🏅 Danh hiệu tuần này</b><small>${esc(when)} · chốt sau ${left} ngày</small></div>
+    <ul class="lb-week-tiers">${tierRows(w.tiers)}</ul>${last}</section>`;
 }
 
 function meCard(env,board,d){
   const {api}=env,me=d.me;if(!me)return '';
-  const where=board==='certs'?'':board==='all'?'':` ở ${placeOf(api,board)}`;
+  const where=board==='certs'||board==='titles'||board==='all'?'':` ở ${placeOf(api,board)}`;
   let main;
   if(me.rank==null){
-    main=board==='certs'?'Bạn chưa có chứng chỉ nào. Thi đỗ chứng chỉ đầu tiên để có tên trên bảng này.'
+    main=board==='titles'?'Bạn chưa có danh hiệu nào. Hoàn thành việc đầu tiên là có ngay.'
+      :board==='certs'?'Bạn chưa có chứng chỉ nào. Thi đỗ chứng chỉ đầu tiên để có tên trên bảng này.'
       :board==='all'?'Hoàn thành việc đầu tiên để có tên trên bảng này.':`Bạn chưa làm ở ${placeOf(api,board)}. Làm việc đầu tiên ở đó để có tên trên bảng này.`;
     return `<section class="lb-me empty-me" aria-label="Vị trí của bạn"><span class="lb-me-rank" aria-hidden="true">—</span><div class="lb-me-text"><span class="lb-name-line"><span class="lb-me-av" aria-hidden="true">${myPortrait(api.state,28,'')}</span><b>Bạn</b></span><p>${main}</p></div></section>`;
   }
@@ -85,6 +109,7 @@ function meCard(env,board,d){
 }
 
 function emptyText(api,board){
+  if(board==='titles')return ['Chưa ai có danh hiệu','Làm việc ở phố để nhận danh hiệu đầu tiên nhé.'];
   if(board==='certs')return ['Chưa ai có chứng chỉ','Thi đỗ chứng chỉ đầu tiên để mở hàng bảng này nhé.'];
   if(board==='all')return ['Bảng còn trống','Chưa ai hiện tên trên bảng. Làm việc đầu tiên rồi bật “Hiện tên tôi” để mở hàng nhé.'];
   return ['Bảng còn trống',`Chưa ai hiện tên ở ${placeOf(api,board)}. Bạn thử làm người đầu tiên nhé.`];
@@ -128,11 +153,11 @@ export function leaderboardView(env){
   if(s.kind==='wed'&&wedOn()){
     const tab=(id,label,ico)=>`<button type="button" role="tab" aria-selected="${id==='wed'}" class="${id==='wed'?'active':''}" data-action="lbKind" data-kind="${id}"><span aria-hidden="true">${ico}</span> ${label}</button>`;
     return `<header class="sheet-head"><div class="grow"><span class="eyebrow">KHU PHỐ</span><h2>Khách mời của tuần</h2></div><button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',20)}</button></header>
-      <div class="sheet-body lb"><div class="segmented lb-kinds three" role="tablist" aria-label="Loại bảng">${tab('exp','Trải nghiệm','🏆')}${tab('certs','Chứng chỉ','📜')}${tab('wed','Khách mời','💍')}</div>${wedBody(env)}</div>`;
+      <div class="sheet-body lb"><div class="segmented lb-kinds four" role="tablist" aria-label="Loại bảng">${tab('exp','Trải nghiệm','🏆')}${tab('titles','Danh hiệu','🎖️')}${tab('certs','Chứng chỉ','📜')}${tab('wed','Khách mời','💍')}</div>${wedBody(env)}</div>`;
   }
-  const kind=s.kind==='certs'?'certs':'exp';
-  let board=kind==='certs'?'certs':s.board;
-  if(board!=='all'&&board!=='certs'&&!api.state.careers?.[board])board=s.board='all';
+  const kind=s.kind==='certs'||s.kind==='titles'?s.kind:'exp';
+  let board=kind==='exp'?s.board:kind;
+  if(kind==='exp'&&board!=='all'&&!api.state.careers?.[board])board=s.board='all';
   load(env,board);
   const d=s.data[board];
   const tab=(id,label,ico)=>`<button type="button" role="tab" aria-selected="${kind===id}" class="${kind===id?'active':''}" data-action="lbKind" data-kind="${id}"><span aria-hidden="true">${ico}</span> ${label}</button>`;
@@ -141,12 +166,12 @@ export function leaderboardView(env){
   else if(d.error)body=`<div class="notice danger">${icon('alert',17)}<div>${esc(d.error)}</div></div>${btn(icon('refresh',15)+' Thử lại','lbRetry',{board},'small')}`;
   else{
     const [title,text]=emptyText(api,board);
-    body=meCard(env,board,d)+(d.rows.length?`<ol class="lb-list" aria-label="Top ${d.rows.length}">${d.rows.map(r=>rowHTML(board,r)).join('')}</ol>`
+    body=weeklyHTML(d.weekly)+meCard(env,board,d)+(d.rows.length?`<ol class="lb-list" aria-label="Top ${d.rows.length}">${d.rows.map(r=>rowHTML(board,r)).join('')}</ol>`
       :`<div class="empty lb-empty">${icon('award',30)}<h3>${esc(title)}</h3><p class="muted small">${esc(text)}</p></div>`);
   }
   const head=`<header class="sheet-head"><div class="grow"><span class="eyebrow">KHU PHỐ</span><h2>Bảng xếp hạng</h2><p>Ai dày dạn nhất phố? Mọi con số tính từ những gì đã làm trong game.</p></div><button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
   return head+`<div class="sheet-body lb">
-    <div class="segmented lb-kinds${wedOn()?' three':''}" role="tablist" aria-label="Loại bảng">${tab('exp','Trải nghiệm','🏆')}${tab('certs','Chứng chỉ','📜')}${wedOn()?tab('wed','Khách mời','💍'):''}</div>
+    <div class="segmented lb-kinds ${wedOn()?'four':'three'}" role="tablist" aria-label="Loại bảng">${tab('exp','Trải nghiệm','🏆')}${tab('titles','Danh hiệu','🎖️')}${tab('certs','Chứng chỉ','📜')}${wedOn()?tab('wed','Khách mời','💍'):''}</div>
     ${kind==='exp'?pickerHTML(api,board,s.more):''}
     <p class="lb-rule">${esc(rule(api,board))}</p>
     ${body}
@@ -188,8 +213,10 @@ function showChip(board){
 export async function leaderboardAction(action,data,el,env){
   const {ui,openSheet,renderSheet}=env,s=store(ui);
   switch(action){
-    case'rank':await Promise.race([ensureCss(),new Promise(r=>setTimeout(r,800))]);openSheet('rank');showChip(s.board);return true;
-    case'lbKind':s.kind=data.kind==='certs'?'certs':data.kind==='wed'?'wed':'exp';renderSheet(false);showChip(s.board);return true;
+    case'rank':{await Promise.race([ensureCss(),new Promise(r=>setTimeout(r,800))]);
+      const b=data?.board;if(b==='certs'||b==='titles')s.kind=b;else if(b){s.kind='exp';s.board=b;}   // a 🏅 chip opens its own board
+      openSheet('rank');showChip(s.board);return true;}
+    case'lbKind':s.kind=['certs','titles','wed'].includes(data.kind)?data.kind:'exp';renderSheet(false);showChip(s.board);return true;
     case'lbBoard':s.board=data.board||'all';s.kind='exp';renderSheet();showChip(s.board);return true;
     case'lbMore':s.more=!s.more;renderSheet(false);if(!s.more)showChip(s.board);return true;
     case'lbRetry':load(env,data.board||s.board,true);renderSheet();return true;

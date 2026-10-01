@@ -66,18 +66,27 @@ export function journeyHome(env){
 }
 
 // Hôn nhân (v4/marriage.js): the spouse and the "Đã về chung một nhà" sticker under the name.
+/* 🏷️ Đang đeo (game/journey.py WEAR_MAX): game titles and certificates worn at once; a save from an older server
+ * only has `equipped_title`. 🏅 The weekly leaderboard title held now (api.lbTitles, game/lb_titles.py) shows first. */
+export const wornOf=J=>Array.isArray(J?.worn)?J.worn:J?.equipped_title?[{...J.equipped_title,kind:'title'}]:[];
+const wearMax=J=>J?.wear_max||3;
+function wornChips(api,J){
+  const worn=wornOf(J),rank=(api.lbTitles||[])[0];
+  const chip=(w,cls='')=>`<button type="button" class="jr-title-chip ${cls}" data-action="jrView" data-view="titles"><span aria-hidden="true">${esc(w.emoji)}</span> ${esc(w.name)}</button>`;
+  const top=rank?`<button type="button" class="jr-title-chip rank" data-action="rank" data-board="${esc(rank.board)}" title="${esc(rank.label)} tuần này"><span aria-hidden="true">${esc(rank.emoji)}</span> ${esc(rank.name)}</button>`:'';
+  return `<div class="jr-worn">${top}${worn.map(w=>chip(w)).join('')||`<button type="button" class="jr-title-chip empty" data-action="jrView" data-view="titles">Chọn danh hiệu để đeo</button>`}</div>`;
+}
 const spouseChip=api=>{const sp=api.state.marriage?.spouse;return sp?`<button type="button" class="jr-title-chip" data-action="marriage"><span aria-hidden="true">${sp.status==='married'?'🏡':'💞'}</span> ${sp.status==='married'?'Đã về chung một nhà':'Đã đính hôn'} · ${esc(sp.name)}</button>`:'';};
 function meCard(env){
   const {api}=env,J=api.state.journey,C=api.content.journey,mat=J.maturity;
   const span=mat.next?Math.max(1,mat.next-mat.floor):1,pct=mat.next?Math.min(100,Math.round((mat.xp-mat.floor)*100/span)):100;
-  const eq=J.equipped_title;
   const skills=(C.skills||[]).map(sk=>{const v=J.skills.find(x=>x.id===sk.id)||{level:0};return `<li class="jr-skill ${v.level?'':'zero'}" title="${esc(sk.name)}"><span aria-hidden="true">${sk.emoji}</span><b>${esc(SKILL_SHORT[sk.id]||sk.name)}</b><i class="jr-pips" aria-label="Mức ${v.level}">${'●'.repeat(v.level)}${'○'.repeat(Math.max(0,6-v.level))}</i></li>`;}).join('');
   // 💰 The wallet stat opens "Tiền của bạn" (v4/wealth.js): every pocket in one place, Sổ ví one tap further.
   const wallet=J.story?`<button type="button" class="jr-stat ${J.debt?'bad':''}" data-action="money"><small>Ví của bạn</small><b>${J.debt?`Nợ ${fmt(J.debt)} xu`:`${fmt(J.wallet)} xu`}</b></button>`:'';
   return `<section class="jr-card jr-me" aria-label="Nhân vật của bạn">
     <div class="jr-me-top"><button type="button" class="jr-avatar" data-action="jrView" data-view="profile" aria-label="Sửa tên và nhân vật">${avatar(J.gender,68,lookOf(api.state))}</button>
       <div class="jr-me-text"><h2>${esc(api.state.name)}</h2>${spouseChip(api)}
-        ${J.story?`<button type="button" class="jr-title-chip ${eq?'':'empty'}" data-action="jrView" data-view="titles">${eq?`<span aria-hidden="true">${eq.emoji}</span> ${esc(eq.name)}`:'Chọn danh hiệu để đeo'}</button>`:''}
+        ${J.story?wornChips(api,J):''}
         <button type="button" class="jr-title-chip jr-wd-chip" data-action="jrWardrobe"><span aria-hidden="true">👗</span> Thay đồ</button>
         <div class="jr-level"><div class="jr-level-row"><b>Trưởng thành cấp ${mat.level}</b><small>${esc(mat.name)}</small></div><div class="jr-bar" role="progressbar" aria-label="Kinh nghiệm trưởng thành" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div></div></div></div>
     ${J.story?`<div class="jr-stats">${wallet}<div class="jr-stat"><small>Ngày sống</small><b>${fmt(J.life_day)}</b></div><button type="button" class="jr-stat" data-action="jrView" data-view="titles"><small>Danh hiệu</small><b>${J.titles.length}</b></button></div>`:''}
@@ -216,13 +225,14 @@ function profileView(env){
 /* ------------------------------------------------------------------ titles */
 function titlesView(env){
   const {api}=env,J=api.state.journey,C=api.content.journey,have=new Map(J.titles);
+  const worn=wornOf(J),ids=new Set(worn.map(w=>w.id)),max=wearMax(J),full=worn.length>=max;
   const cats=C.cats.map(cat=>{
     const rows=C.titles.filter(t=>t.cat===cat.id);if(!rows.length)return '';
     const tiles=rows.map(t=>{
       const day=have.get(t.id);
       if(day!==undefined){
-        const info=t.secret?J.secret[t.id]:t,on=J.equipped===t.id;
-        return `<button type="button" class="jr-title earned ${on?'on':''}" data-action="jrEquip" data-title="${on?'':esc(t.id)}" aria-pressed="${on}"><span class="jr-title-emoji" aria-hidden="true">${info.emoji}</span><b>${esc(info.name)}</b><small>${esc(info.desc)}</small><em>${on?'Đang đeo':`Ngày sống ${fmt(day)} · Đeo`}</em></button>`;
+        const info=t.secret?J.secret[t.id]:t,on=ids.has(t.id);
+        return `<button type="button" class="jr-title earned ${on?'on':''}" data-action="jrWear" data-item="${esc(t.id)}" aria-pressed="${on}"><span class="jr-title-emoji" aria-hidden="true">${info.emoji}</span><b>${esc(info.name)}</b><small>${esc(info.desc)}</small><em>${on?'✓ Đang đeo · chạm để cất':full?`Ngày sống ${fmt(day)} · đã đeo đủ ${max}`:`Ngày sống ${fmt(day)} · Đeo`}</em></button>`;
       }
       if(t.secret)return `<div class="jr-title secret"><span class="jr-title-emoji" aria-hidden="true">❔</span><b>???</b><small>Bí mật. Cứ sống ở phố rồi sẽ biết.</small></div>`;
       return `<div class="jr-title"><span class="jr-title-emoji" aria-hidden="true">${t.emoji}</span><b>${esc(t.name)}</b><small>${esc(t.desc)}</small></div>`;
@@ -230,7 +240,10 @@ function titlesView(env){
     const got=rows.filter(t=>have.has(t.id)).length;
     return `<section class="jr-title-cat"><h3>${esc(cat.name)} <small>${got}/${rows.length}</small></h3><div class="jr-title-grid">${tiles}</div></section>`;
   }).join('');
-  return head('Danh hiệu',`Đã có ${J.titles.length}/${C.titles.length}.`,{back:true})+`<div class="sheet-body jr-body">${cats}${certTitles(env)}</div>`;
+  // What is worn now, on top: one tap on a chip takes it off. Titles and certificates count together.
+  const bar=`<section class="jr-wearing" aria-label="Đang đeo"><h3>Đang đeo <small>${worn.length}/${max}</small></h3><p class="muted small">Chọn tối đa ${max} danh hiệu và chứng chỉ. Cái đầu tiên hiện tên, các cái sau hiện biểu tượng.</p>
+    <div class="jr-worn">${worn.map(w=>`<button type="button" class="jr-title-chip on" data-action="jrWear" data-item="${esc(w.id)}" aria-label="Cất ${esc(w.name)}"><span aria-hidden="true">${esc(w.emoji)}</span> ${esc(w.name)} <i aria-hidden="true">✕</i></button>`).join('')||'<span class="muted small">Chưa đeo gì. Chạm một danh hiệu hay chứng chỉ bên dưới để đeo.</span>'}</div></section>`;
+  return head('Danh hiệu',`Đã có ${J.titles.length}/${C.titles.length}.`,{back:true})+`<div class="sheet-body jr-body">${bar}${cats}${certTitles(env,ids,full)}</div>`;
 }
 
 /* ------------------------------------------------------------------ wallet */
@@ -390,7 +403,14 @@ export async function journeyAction(action,data,el,env){
     case'jrGender':{ui.jrGender=data.gender;const scene=document.getElementById('jrScene');
       if(scene?.open){const name=scene.querySelector('[name="name"]')?.value;openScene(whoScene(),sceneQueue||[]);const input=scene.querySelector('[name="name"]');if(input&&name!=null)input.value=name;}
       else renderSheet();return true;}
-    case'jrEquip':{const r=await cmd('jr_equip',{title:data.title||null});
+    case'jrWear':{   // toggle one title or certificate in what is worn (the server checks it is yours and the cap)
+      const J=api.state.journey,cur=wornOf(J).map(w=>w.id),id=data.item;if(!id)return true;
+      if(!cur.includes(id)&&cur.length>=wearMax(J)){env.toast?.(`Đeo tối đa ${wearMax(J)} cái. Chạm một cái đang đeo để cất bớt nhé.`,true);return true;}
+      const r=await cmd('jr_equip',{worn:cur.includes(id)?cur.filter(x=>x!==id):[...cur,id]});
+      if(r&&ui.view==='home')renderSheet(false);return true;}
+    case'jrEquip':{   // "Đeo ngay" on a new title: it goes first, the others stay while they fit
+      const J=api.state.journey,id=data.title||null;
+      const r=await cmd('jr_equip',Array.isArray(J.worn)?{worn:id?[id,...J.worn.map(w=>w.id).filter(x=>x!==id)].slice(0,wearMax(J)):[]}:{title:id});
       // Inside a scene the toast sits behind the dialog: say it on the button.
       if(r&&el?.closest('#jrScene')){el.textContent='✓ Đang đeo';el.disabled=true;}
       if(r&&ui.view==='home')renderSheet();return true;}
@@ -440,5 +460,5 @@ export async function journeySubmit(f,env){
 
 /** A small line for the career HUD / profile: "🏠 Hàng xóm mới". */
 export function titleLine(state){
-  const eq=state?.journey?.equipped_title;return eq?`${eq.emoji} ${eq.name}`:'';
+  const w=wornOf(state?.journey)[0];return w?`${w.emoji} ${w.name}`:'';
 }

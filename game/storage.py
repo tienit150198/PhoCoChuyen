@@ -307,6 +307,7 @@ class Store:
             CREATE UNIQUE INDEX IF NOT EXISTS archive_rows ON archive(sid, career, kind, seq);
             """)
             db.executescript(lb.SCHEMA)  # Bảng xếp hạng (game/leaderboard.py): one row per (save, board)
+            db.executescript(lb.lbt.SCHEMA)  # 🏅 Danh hiệu tuần of the boards (game/lb_titles.py)
             db.executescript(mr.SCHEMA)  # Hôn nhân (game/marriage.py): codes, rings, proposals, couples, weddings, effects, news, friends, joint fund
             db.executescript(sg.SCHEMA)  # 🎁 Quà từ Phố Có Chuyện (game/system_gift.py)
             db.executescript(lc.SCHEMA)  # 💬 Chat tables of the live service (game/live_chat.py, live/)

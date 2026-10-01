@@ -34,13 +34,14 @@ Delta-sync hints (TABLES[i]["sync"]):
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 8   # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
+SCHEMA_VERSION = 9   # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
                      # 6: live chat (chat_*, live_effects: game/live_chat.py, live/), 1.0.0;
                      # 7: dates (live_dates, date_bonds: game/live_dating.py, live/dating.py), 1.0.1
                      # 8: live weddings (wedding_dates, wedding_parties, wedding_guests, wedding_photos, wedding_race,
                      #    player_closeness: game/wedding_live.py, live/wedding.py), 1.1.0
+                     # 9: weekly leaderboard titles (lb_weekly: game/lb_titles.py)
 
 # The text forms SQLite produces, computed by PostgreSQL (UTC, independent of TimeZone).
 NOW_TEXT = "to_char(statement_timestamp() AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI:SS')"       # CURRENT_TIMESTAMP
@@ -207,6 +208,12 @@ CREATE TABLE IF NOT EXISTS leaderboard_players (
   sid {T} PRIMARY KEY, name {T}, show bigint, updated double precision NOT NULL DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS leaderboard_meta (k {T} PRIMARY KEY, v {T} NOT NULL);
+-- 🏅 Danh hiệu tuần (game/lb_titles.py): the holders per (week, board, rank); final=0 now, final=1 past weeks (kept)
+CREATE TABLE IF NOT EXISTS lb_weekly (
+  week {T} NOT NULL, board {T} NOT NULL, rank bigint NOT NULL, sid {T} NOT NULL, score bigint NOT NULL,
+  title {T} NOT NULL, final bigint NOT NULL DEFAULT 0, day {T} NOT NULL, at double precision NOT NULL,
+  PRIMARY KEY (week, board, rank)
+);
 
 -- Hôn nhân (game/marriage.py), bạn bè (game/friends.py), vợ chồng (game/couple.py)
 CREATE TABLE IF NOT EXISTS marriage_people (
@@ -361,6 +368,8 @@ CREATE INDEX IF NOT EXISTS hits_k ON hits (k, at);
 CREATE INDEX IF NOT EXISTS stat_fb_created ON player_feedback (created_at);
 CREATE INDEX IF NOT EXISTS stat_accounts_created ON accounts (created_at);
 CREATE INDEX IF NOT EXISTS leaderboard_rank ON leaderboard (board, score DESC, k1 DESC, k2 DESC, since, sid);
+CREATE INDEX IF NOT EXISTS lb_weekly_sid ON lb_weekly (sid, final);
+CREATE INDEX IF NOT EXISTS lb_weekly_board ON lb_weekly (board, final, week);
 CREATE INDEX IF NOT EXISTS marriage_rings_sid ON marriage_rings (sid, status);
 CREATE INDEX IF NOT EXISTS proposals_to ON proposals (to_sid, status);
 CREATE INDEX IF NOT EXISTS proposals_from ON proposals (from_sid, at);
@@ -660,6 +669,10 @@ TABLES = [
          key=('sid',), unique=[], identity=None, sync=dict(mode='updated', column='updated')),
     dict(name='leaderboard_meta', source='main', sqlite_table='leaderboard_meta',
          columns=_cols('k text', 'v text'), key=('k',), unique=[], identity=None, sync=dict(mode='full')),
+    dict(name='lb_weekly', source='main', sqlite_table='lb_weekly',
+         columns=_cols('week text', 'board text', 'rank bigint', 'sid text', 'score bigint', 'title text', 'final bigint',
+                       'day text', 'at double precision'),
+         key=('week', 'board', 'rank'), unique=[], identity=None, sync=dict(mode='full', note='rewritten once a day')),
     # ---- Hôn nhân, bạn bè, vợ chồng (game/marriage.py SCHEMA): small tables, rows change in place.
     dict(name='marriage_people', source='main', sqlite_table='marriage_people',
          columns=_cols('sid text', 'code text', 'accept bigint', 'life_day bigint', 'pool text', 'remarry_after double precision',
