@@ -2389,11 +2389,30 @@ html[data-layout="desktop"] .dock{border-top:0;padding-top:4px}
 html[data-layout="phone"] .dock{box-shadow:none}
 html[data-layout="phone"] .dock-btn.main{color:var(--ink-2)}
 html[data-layout="phone"] .dock-btn.main>svg{background:transparent;color:var(--ink-2)}
-/* Rail: main entries, the rest behind "Thêm" (the phone menu shows everything). */
-html:not([data-layout="phone"]):not(.rail-more) .rail-extra{display:none}
-html:not([data-layout="phone"]):not(.rail-more) .rail>.rail-item:last-child{margin-top:auto}
-html[data-layout="phone"] .rail-more-btn{display:none}
-.rail-more-btn[aria-expanded="true"]{color:var(--ink)}
+/* Rail / "Thêm": work pages, a few hubs (one more tap), a footer of icons. Desktop/tablet: a hub opens in
+ * place under its button. Phone: a hub fills the sheet, with a back button. Folded entries stay in the markup. */
+.rail [hidden]{display:none!important}
+.rail-caret{position:absolute;top:7px;right:7px;display:flex;color:var(--muted);opacity:.7;transition:transform var(--dur) var(--ease)}
+.rail-group[aria-expanded="true"]{color:var(--ink)}
+.rail-group[aria-expanded="true"] .rail-caret{transform:rotate(90deg)}
+.rail-sub{display:flex;flex-direction:column;gap:2px;flex:none;padding:3px;margin:0 0 4px;border-radius:16px;background:var(--surface-2)}
+.rail-sub .rail-item{min-height:52px}
+@media (hover:hover){.rail-sub .rail-item:hover{background:var(--surface)}}
+.rail-sub .rail-item.active{background:var(--accent-soft)}
+.rail-sub-head{display:none}
+.rail-foot{display:grid;grid-template-columns:1fr 1fr;gap:2px;flex:none;margin-top:auto;padding-top:6px}
+.rail-mini{position:relative;display:flex;align-items:center;justify-content:center;gap:6px;min-height:42px;border-radius:12px;color:var(--muted);font-size:.8rem;font-weight:600;transition:background var(--dur),color var(--dur)}
+.rail-mini span{display:none}
+@media (hover:hover){.rail-mini:hover{background:var(--surface-2);color:var(--ink)}}
+.rail-mini.active{background:var(--accent-soft);color:var(--accent-text)}
+html[data-layout="phone"] .rail-group[aria-expanded] .rail-caret{transform:none}
+html[data-layout="phone"] .rail-sub{display:contents}
+html[data-layout="phone"] .rail-sub .rail-item{min-height:72px}
+html[data-layout="phone"] .rail-sub-head{grid-column:1/-1;display:flex;align-items:center;gap:6px;margin:-6px 0 2px -6px}
+html[data-layout="phone"] .rail-sub-head b{font-size:1.067rem;font-weight:800;color:var(--ink)}
+html[data-layout="phone"] .rail-foot{grid-column:1/-1;display:flex;gap:6px;margin-top:4px;padding-top:0}
+html[data-layout="phone"] .rail-mini{flex:1;min-height:44px;background:var(--surface-2)}
+html[data-layout="phone"] .rail-mini span{display:inline}
 /* Toasts and hints: one at a time, plain. */
 .toast.hint{border:1px solid var(--line-strong)}
 /* Status sheet (tap the day). */

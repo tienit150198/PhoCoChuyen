@@ -8,9 +8,10 @@ phone (390×844) and a desktop (1280×800):
    every coach mark, doing the highlighted thing where the tour waits for it,
    and checks each spotlight rings the element it should;
 2. "Bỏ qua" (skip) and "Tự khám phá" (explore) end it and remember it;
-3. "Xem lại hướng dẫn" from Cài đặt → Cách chơi and from the Thêm menu/rail;
+3. "Xem lại hướng dẫn" from Cài đặt → Xem hướng dẫn (the menu/rail no longer list the guides);
 4. the guide: overview, every storefront's "Cách làm", the "?" on a work screen;
-5. the "new guide" announcement for an existing player: shown once, then gone.
+5. the first time at a workplace: one "Xem hướng dẫn / Bỏ qua" card, once per workplace, never at a
+   brand-new player's first workplace.
 
 Fails on console errors, uncaught exceptions or horizontal overflow.
 Screenshots of every step go to --shots.
@@ -191,11 +192,9 @@ async def play_tour(r: Run):
     f = await r.flags()
     if f['ls'].get('done') != '1' or f['settings'].get('tutorialDone') is not True:
         r.problem(f'tour end not remembered: {f}')
-    if 'guide-v1' not in (f['settings'].get('notesSeen') or ''):
-        r.problem(f'brand-new player would still get the announcement: {f}')
     await r.wait(2500)
     if await r.page.query_selector('.tut-note:not([hidden])'):
-        r.problem('announcement shown to a brand-new player after the tour')
+        r.problem('guide card shown at a brand-new player\'s first workplace')
     return seen
 
 
@@ -212,7 +211,8 @@ async def main_run(base, shots: Path | None):
             await r.click('#topbar [data-action="status"]')
             await r.click('#sheet [data-action="settings"]')
             await r.shot('settings-play')
-            await r.click('#sheet .tut-settings [data-action="tutReplay"]')
+            await r.click('#sheet .tut-settings [data-action="tutGuide"]')
+            await r.click('#tutGuide [data-action="tutReplay"]')
             await r.wait(900)
             st = await r.tour()
             r.log.append(f'replay from settings: {st and st["step"]}')
@@ -220,25 +220,18 @@ async def main_run(base, shots: Path | None):
                 r.problem('replay from settings did not start the tour')
             await r.shot('replay-settings')
             await r.click('#tutLayer [data-tut="skip"]')
-            # Replay from the Thêm menu (phone) / rail (desktop).
+            # The Thêm menu (phone) / rail (desktop) no longer lists the guides.
             if vname == 'phone':
                 await r.click('#dock [data-action="v4Menu"]')
                 await r.shot('menu')
-            await r.click('#rail [data-action="tutReplay"]')
-            await r.wait(900)
-            st = await r.tour()
-            r.log.append(f'replay from menu: {st and st["step"]}')
-            if not st:
-                r.problem('replay from the menu did not start the tour')
-            await r.shot('replay-menu')
-            await r.click('#tutLayer [data-tut="next"]')
-            await r.wait(500)
-            await r.shot('replay-menu-2')
-            await r.click('#tutLayer [data-tut="skip"]')
-            if await r.tour():
-                r.problem('Bỏ qua did not end the replay')
+            if await page.query_selector('#rail [data-action="help"], #rail [data-action="tutReplay"]'):
+                r.problem('the menu still lists the guides')
+            await page.keyboard.press('Escape')
+            await r.wait(300)
             # The guide: overview, every storefront, the "?" on a work screen.
-            await r.click('#rail [data-action="help"]')
+            await r.click('#topbar [data-action="status"]')
+            await r.click('#sheet [data-action="settings"]')
+            await r.click('#sheet .tut-settings [data-action="tutGuide"]')
             await r.shot('guide-play')
             await page.evaluate("document.querySelector('#tutGuide').scrollTop=900")
             await r.wait(300)
@@ -333,46 +326,55 @@ async def main_run(base, shots: Path | None):
                 report['problems'] += r.problems
                 await ctx.close()
 
-            # 4) An existing player (made the first day before the guide shipped): one announcement.
+            # 4) The first time at each workplace: one "Xem hướng dẫn / Bỏ qua" card, once per workplace (on every
+            #    device: settings.notesSeen), never at a brand-new player's first workplace.
             ctx = await browser.new_context(viewport=dict(width=w, height=h), has_touch=touch, is_mobile=touch and w < 700)
             page = await ctx.new_page()
-            r = Run(page, f'{vname}-announce', shots)
+            r = Run(page, f'{vname}-guidecard', shots)
             await page.goto(base + '/privacy')
-            await page.evaluate("""async()=>{const b=await fetch('/api/bootstrap').then(r=>r.json());let rev=b.revision;
-              const cmd=async(action,payload,career)=>{const r=await fetch('/api/command',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':b.csrf},
-                body:JSON.stringify({request_id:crypto.randomUUID(),expected_revision:rev,career,action,payload})});const d=await r.json();rev=d.revision??rev;return d;};
-              await cmd('jr_profile',{name:'Lan',gender:'female'},'milk_tea');await cmd('select_career',{},'grocery');await cmd('start_day',{},'grocery');}""")
-            await page.goto(base)
-            await page.wait_for_selector('#app:not([hidden])')
-            # "Có gì mới" (v4/whatsnew.js) comes first for an existing player; the note waits until no dialog is open.
-            for _ in range(30):
-                if await page.query_selector('#wnDialog[open]'):
-                    await r.wait(500)
-                    await page.evaluate("document.querySelector('#wnDialog [data-wn=\"close\"]')?.click()")
-                if await page.query_selector('.tut-note:not([hidden])'):
-                    break
-                await r.wait(300)
-            if await page.query_selector('#tutWelcome[open]'):
-                r.problem('existing player got the brand-new welcome')
-            if not await page.query_selector('.tut-note:not([hidden])'):
-                r.problem('existing player did not get the announcement')
-            await r.shot('announce')
-            await r.click('.tut-note [data-note="go"]')
+            CMDJS = """async([action,payload,career])=>{const b=await fetch('/api/bootstrap').then(r=>r.json());
+              const r=await fetch('/api/command',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':b.csrf},
+                body:JSON.stringify({request_id:crypto.randomUUID(),expected_revision:b.revision,career,action,payload})});return (await r.json()).error||null;}"""
+            for c in (['jr_profile', {'name': 'Lan', 'gender': 'female'}, 'milk_tea'], ['select_career', {}, 'grocery'], ['start_day', {}, 'grocery']):
+                if err := await page.evaluate(CMDJS, c):
+                    r.problem(f'setup {c[0]}: {err}')
+            await page.evaluate("try{localStorage.setItem('mnl.tut.done','1')}catch{}")   # the tour/tips are another check
+
+            async def card(goto=None):
+                if goto:
+                    if err := await page.evaluate(CMDJS, ['select_career', {'confirm': True}, goto]):
+                        r.problem(f'select {goto}: {err}')
+                await page.goto(base)
+                await page.wait_for_selector('#app:not([hidden])')
+                await page.evaluate("document.querySelectorAll('#sheet[open]').forEach(d=>d.close())")
+                for _ in range(12):
+                    if await page.query_selector('.tut-note:not([hidden])'):
+                        return await page.evaluate("document.querySelector('.tut-note').dataset.note")
+                    await r.wait(300)
+                return None
+
+            if (k := await card()) is not None:
+                r.problem(f'card at the first workplace of a new player: {k}')
+            if (k := await card('cafe_bakery')) != 'guide:cafe_bakery':
+                r.problem(f'no card at a second workplace: {k}')
+            await r.shot('guide-card')
+            await r.click('.tut-note [data-note="later"]')   # Bỏ qua
+            if (k := await card()) is not None:
+                r.problem(f'card came back after Bỏ qua: {k}')
+            if (k := await card('florist')) != 'guide:florist':
+                r.problem(f'no card at a third workplace: {k}')
+            await r.click('.tut-note [data-note="go"]')   # Xem hướng dẫn
             await r.wait(600)
-            if not await page.query_selector('#tutGuide[open]'):
-                r.problem('"Xem hướng dẫn" did not open the guide')
-            await r.shot('announce-guide')
-            await page.reload()
-            await page.wait_for_selector('#app:not([hidden])')
-            await r.wait(1200)
-            if await page.query_selector('#wnDialog[open]'):
-                r.problem('"Có gì mới" came back after it was closed')
-            await r.wait(1400)
-            if await page.query_selector('.tut-note'):
-                r.problem('announcement came back after it was used')
+            sel = await page.evaluate("document.querySelector('#tutGuide[open] [data-tut-career].selected')?.dataset.tutCareer")
+            if sel != 'florist':
+                r.problem(f'"Xem hướng dẫn" opened {sel}, not florist')
+            await r.shot('guide-card-go')
+            for back in (None, 'cafe_bakery', 'florist'):
+                if (k := await card(back)) is not None:
+                    r.problem(f'card came back ({back or "reload"}): {k}')
             f = await r.flags()
-            if 'guide-v1' not in (f['settings'].get('notesSeen') or ''):
-                r.problem(f'announcement not synced to settings: {f}')
+            if 'gd-' not in (f['settings'].get('notesSeen') or ''):
+                r.problem(f'guide cards not synced to settings: {f}')
             report['problems'] += r.problems
             await ctx.close()
         await browser.close()

@@ -203,7 +203,7 @@ function next(manual){
 const drop=id=>{run.plan=run.plan.filter(x=>x!==id);};
 function finish(){
   const was=!!run;stopTour('done');
-  if(was)E?.toast?.('Xong! Xem lại ở mục Hướng dẫn 📘','hint');
+  if(was)E?.toast?.('Xong! Xem lại trong Cài đặt 📘','hint');
 }
 
 /** Real clicks: note what the player just did (choose a place, act on a work screen). */
@@ -236,7 +236,7 @@ export function stopTour(reason){
   run=null;if(raf)cancelAnimationFrame(raf);raf=0;
   layer?.remove();last={};
   markTourDone(E);
-  if(reason==='skip')E?.toast?.('Xem lại ở mục Hướng dẫn 📘','hint');
+  if(reason==='skip')E?.toast?.('Xem lại trong Cài đặt 📘','hint');
 }
 export const tourRunning=()=>!!run;
 

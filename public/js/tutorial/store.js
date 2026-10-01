@@ -31,6 +31,35 @@ export function notesSeen(api){
 }
 export function markNoteSeen(env,id){
   const all=notesSeen(env?.api);if(all.has(id)&&ids(env?.api?.state?.settings?.notesSeen).includes(id))return;
-  all.add(id);const list=[...all].slice(-12).join(',');
+  all.add(id);const gd=guidesId(guidesFrom(all));   // the guides-seen id is never the one pushed out
+  const list=[...[...all].filter(x=>!x.startsWith('gd-')).slice(gd?-11:-12),...(gd?[gd]:[])].join(',');
+  set(KEY.notes,list);sync(env,{notesSeen:list});
+}
+
+/* Guides seen, per workplace: one small "Xem hướng dẫn / Bỏ qua" card the first time at a place (announce.js).
+ * notesSeen holds at most 12 short ids ([a-z0-9-], ≤ 24 chars, checked by the server), too few for one id per
+ * workplace, so the places are bits of ONE id, "gd-" + base 32: bit i = GUIDE_BITS[i]. Append only: a new
+ * workplace goes at the end, never in between (tests/test_guide_prompt.py checks every workplace is listed). */
+export const GUIDE_BITS=['mother_baby','pharmacy','accounting','customer_care','teacher','tour_guide','milk_tea','restaurant',
+  'cafe_bakery','florist','grocery','repair','farm','delivery','homestay','pet_care','salon','corp_accounting','tax_payroll',
+  'group_accounting','clothing','pet_shop','tra_da','fruit','garbage','drain','pilot','flight_attendant'];
+const B32='0123456789abcdefghijklmnopqrstuv',GD='gd-';
+/** The workplaces whose guide card was answered, from a set of note ids (every "gd-" id counts: two devices merge). */
+export function guidesFrom(seen){
+  const out=new Set();
+  for(const id of seen)if(id.startsWith(GD))[...id.slice(GD.length)].forEach((ch,i)=>{const v=B32.indexOf(ch);for(let k=0;k<5;k++)if(v>=0&&v>>k&1&&GUIDE_BITS[i*5+k])out.add(GUIDE_BITS[i*5+k]);});
+  return out;
+}
+/** The one id for a set of workplaces ('' when none). */
+export function guidesId(cids){
+  const chars=[];GUIDE_BITS.forEach((cid,b)=>{if(cids.has(cid))chars[b/5|0]=(chars[b/5|0]||0)|1<<b%5;});
+  const s=Array.from({length:chars.length},(_,i)=>B32[chars[i]||0]).join('').replace(/0+$/,'');
+  return s?GD+s:'';
+}
+export const guideSeen=(api,cid)=>guidesFrom(notesSeen(api)).has(cid);
+export function markGuideSeen(env,cid){
+  const all=notesSeen(env?.api),done=guidesFrom(all);if(done.has(cid)&&ids(env?.api?.state?.settings?.notesSeen).some(x=>x.startsWith(GD)))return;
+  done.add(cid);
+  const list=[...[...all].filter(x=>!x.startsWith(GD)).slice(-11),guidesId(done)].join(',');
   set(KEY.notes,list);sync(env,{notesSeen:list});
 }
