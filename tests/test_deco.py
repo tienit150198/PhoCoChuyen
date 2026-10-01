@@ -901,5 +901,91 @@ class FreeSaves(unittest.TestCase):
         self.assertIn('den_ban', bag(s))
 
 
+class Colours(unittest.TestCase):
+    """Bảng màu (game/wardrobe.py): a piece of furniture wears a colour of the player's palette, stored per piece
+    (s['colors']['deco'][uid]) so it stays with the piece in the bag, at the next place, in a rented room or the dorm."""
+
+    def test_a_colour_follows_the_piece_into_the_bag_and_the_next_home(self):
+        s = renter()
+        s, r = place_new(s, 'ban_hoc', 'tro', 0, 0)
+        uid = r['uid']
+        w0 = s['journey']['wallet']
+        with self.assertRaises(GameError):                                   # not unlocked, no buy
+            act(s, 'jr_wd_deco', uid=uid, color='navy')
+        s, r = act(s, 'jr_wd_deco', uid=uid, color='navy', buy=True)
+        self.assertEqual(r['message'], 'Đã trả 40 xu mở khóa màu Xanh navy. Bàn học giờ mang màu Xanh navy.')
+        self.assertEqual(s['journey']['wallet'], w0 - 40)
+        self.assertEqual(public_state(s)['colors']['deco'], {uid: 'navy'})
+        s, r = act(s, 'jr_wd_deco', uid=uid, color='navy', buy=True)         # a second tap: nothing paid
+        self.assertTrue(r.get('duplicate'))
+        self.assertEqual(s['journey']['wallet'], w0 - 40)
+        s, _ = place_new(s, 'den_ban', 'tro', 0, 0)
+        lamp = D(s)['items'][-1]['id']
+        s, _ = act(s, 'jr_wd_deco', uid=lamp, color='navy')                  # unlocked once: free on any piece
+        self.assertEqual(s['journey']['wallet'], w0 - 40 - DC.ITEMS['den_ban']['price'])
+        s, _ = act(s, 'jr_home_leave', confirm=True)                         # moving out: everything in the bag
+        self.assertEqual(D(s)['items'], [])
+        self.assertEqual(s['colors']['deco'], {uid: 'navy', lamp: 'navy'})
+        s, _ = act(s, 'jr_deco_place', uid=uid, room='attic', x=0, y=2)
+        self.assertEqual(s['colors']['deco'][uid], 'navy')
+        s, _ = act(s, 'jr_deco_pick', uid=uid)                               # put away and placed again: same colour
+        s, _ = act(s, 'jr_deco_place', uid=uid, room='attic', x=0, y=2)
+        self.assertEqual(s['colors']['deco'][uid], 'navy')
+        s, r = act(s, 'jr_wd_deco', uid=lamp, color='goc')
+        self.assertEqual((r['message'], s['colors']['deco']), ('Đèn bàn trở lại màu gốc.', {uid: 'navy'}))
+        validate_state(s)
+        # Sold: the colour goes with it (and a load drops any an older build left behind).
+        s, _ = act(s, 'jr_deco_sell', uid=uid, confirm=True)
+        validate_state(s)
+        self.assertEqual(s['colors']['deco'], {})
+        self.assertEqual(migrate_state(s)['colors']['deco'], {})
+        with self.assertRaises(GameError):
+            act(s, 'jr_wd_deco', uid=uid, color='navy')
+
+    def test_the_dorm_bunk_and_bad_payloads(self):
+        s = renter('ky_tuc_xa')
+        s, r = place_new(s, 'rem_giuong', 'bunk', 4, 0)
+        uid = r['uid']
+        s, _ = act(s, 'jr_wd_unlock', color='mint')
+        s, _ = act(s, 'jr_wd_deco', uid=uid, color='mint')
+        self.assertEqual(s['colors']['deco'], {uid: 'mint'})
+        for p in ({'uid': 'zz', 'color': 'mint'}, {'uid': uid, 'color': 'cau_vong'}, {'uid': uid}, {'uid': uid, 'color': 'mint', 'x': 1},
+                  {'uid': uid, 'color': 'mint', 'buy': 'yes'}, {'uid': 5, 'color': 'mint'}, {'uid': uid, 'color': 'hong'}):
+            with self.assertRaises(GameError, msg=p):
+                act(s, 'jr_wd_deco', **p)
+        validate_state(s)
+
+    def test_colours_with_free_placement(self):
+        """1.4: the colour stays in s['colors']['deco'] (not journey.decor) through free moves, stacking and a sale."""
+        s = owner(wallet=9000)
+        s, r = act(s, 'jr_deco_buy', item='ban_tra', confirm=True, put=dict(r='living', x=40, y=20))
+        table = r['uid']
+        s, r = act(s, 'jr_deco_buy', item='binh_hoa', confirm=True, put=dict(r='living', x=10, y=0, on=table))
+        vase = r['uid']
+        s, _ = act(s, 'jr_wd_deco', uid=table, color='navy', buy=True)
+        s, _ = act(s, 'jr_wd_deco', uid=vase, color='navy')
+        s, _ = act(s, 'jr_deco_put', uid=table, r='living', x=0, y=40, f=1)   # moved and flipped, the vase rides along
+        self.assertEqual(s['colors']['deco'], {table: 'navy', vase: 'navy'})
+        self.assertNotIn('colors', str(s['journey']['decor']))
+        s2 = migrate_state(copy.deepcopy(s))                                  # a load prunes nothing that is still yours
+        self.assertEqual(s2['colors']['deco'], {table: 'navy', vase: 'navy'})
+        s, _ = act(s, 'jr_deco_sell', uid=table, confirm=True, n='sell-tint')
+        self.assertEqual(s['colors']['deco'], {vase: 'navy'})                # the table's colour went with it
+        self.assertIn('binh_hoa', bag(s))
+        s = migrate_state(s)
+        validate_state(s)
+        self.assertEqual(public_state(s)['colors']['deco'], {vase: 'navy'})
+
+    def test_every_piece_can_take_a_colour(self):
+        from pathlib import Path
+        js = (Path(__file__).resolve().parents[1] / 'public' / 'js' / 'v4' / 'deco-art.js').read_text(encoding='utf-8')
+        start = js.index('export const TINT={') + len('export const TINT={')
+        block = js[start:js.index('};', start)]
+        import re
+        block = re.sub(r'\{[^{}]*\}|\[[^\[\]]*\]', '0', block)                     # nested family maps and lists
+        ids = set(re.findall(r'([a-z_]+):', block))
+        self.assertEqual(ids, set(DC.ITEMS))
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -1048,10 +1048,10 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         result.update(message="Đã lưu kỷ niệm “"+q["keepsake"]+"” vào Sổ tay.",celebrate=True)
     elif action=="photo":
         image=p.get("image");need(isinstance(image,str) and len(image)<=450000,"Ảnh quá lớn, hãy chụp lại.")
-        need(image.startswith("data:image/webp;base64,") or image.startswith("data:image/png;base64,"),"Chỉ nhận ảnh PNG/WebP chụp từ cảnh.")
+        need(image.startswith(("data:image/webp;base64,","data:image/png;base64,","data:image/jpeg;base64,")),"Chỉ nhận ảnh PNG/WebP/JPEG chụp từ cảnh.")  # JPEG: Safari cannot encode WebP (🎓 v4/diploma.js)
         try:raw=base64.b64decode(image.split(",",1)[1],validate=True)
         except (ValueError,IndexError):raise GameError("Ảnh không hợp lệ.")
-        need(raw.startswith(b"\x89PNG\r\n\x1a\n") or (raw.startswith(b"RIFF") and raw[8:12]==b"WEBP"),"Ảnh không đúng định dạng.")
+        need(raw.startswith(b"\x89PNG\r\n\x1a\n") or (raw.startswith(b"RIFF") and raw[8:12]==b"WEBP") or raw.startswith(b"\xff\xd8\xff"),"Ảnh không đúng định dạng.")
         s["seq"]+=1;c["album"].insert(0,dict(id=f"photo-{s['seq']}",image=image,day=c["day"],title=clean_text(p.get("title","Một góc ngày hôm nay"),60)))
         c["album"]=ar.first(c["album"],6,"album",c)
         result["message"]="Đã lưu ảnh trong album nghề này (giữ sáu ảnh gần nhất)."
@@ -1423,7 +1423,7 @@ def validate_career(c:dict,cid:str,finite:bool=True) -> None:
             need(comment.get("npc") in ("player",*NPC_INDEX),"Người bình luận không hợp lệ.")
     need(len(c["album"])<=6,"Album quá lớn.")
     for photo in c["album"]:
-        need(isinstance(photo.get("image"),str) and len(photo["image"])<=450000 and photo["image"].startswith(("data:image/webp;base64,","data:image/png;base64,")),"Ảnh lưu không hợp lệ.")
+        need(isinstance(photo.get("image"),str) and len(photo["image"])<=450000 and photo["image"].startswith(("data:image/webp;base64,","data:image/png;base64,","data:image/jpeg;base64,")),"Ảnh lưu không hợp lệ.")
     if finite:_finite(c)  # no NaN/Infinity
 
 

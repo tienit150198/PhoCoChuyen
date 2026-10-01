@@ -8,14 +8,16 @@
  * away, sell). Undo keeps the last moves (jr_deco_layout). 🎨 Tường & sàn: wallpaper and floor per room. The cats
  * wander and nap (cosmetic; still with reduced motion). The light follows the hour of the day.
  * Pointer moves only move a transform (no re-render); a drop sends one jr_deco_put.
- * Opened from 🏠 Nhà của bạn (v4/house.js); the back button returns there. Styles: bank.css + house.css + reno.css. */
+ * Opened from 🏠 Nhà của bạn (v4/house.js); the back button returns there. Styles: bank.css + house.css + reno.css.
+ * 🎨 Màu (bảng màu): a selected piece opens the palette picker (v4/palette.js); its colour is state.colors.deco[uid]
+ * (jr_wd_deco), kept by the piece in the bag and in the next home; drawn wherever the piece is (room, photo, a table). */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {Sound} from '../audio.js';
 import * as A from './deco-art.js';
 
 const S={dlg:null,env:null,tab:'deco',room:'',edit:false,held:null,sel:'',drawer:'bag',cat:'',busy:false,flash:null,
   undo:[],undoKey:'',press:null,drag:null,dragEnd:0,resetStrip:false,toTop:false,pop:'',cheer:false,photo:null,listening:false,lastLv:-1,
-  try:null,nudge:null};
+  try:null,nudge:null,tryTint:null};
 const U=A.U;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const xu=n=>`${fmt(n)} xu`;
@@ -31,6 +33,8 @@ let itemMap=null,itemSrc=null;
 const ITEM=k=>{const list=CD().items;if(itemSrc!==list){itemSrc=list;itemMap=new Map(list.map(i=>[i.id,i]));}return itemMap.get(k);};
 const SKIN=id=>(CD().skins||[]).find(s=>s.id===id)||null;
 const PART=id=>CR().parts.find(x=>x.id===id)||{};
+/** A piece's colour: the one being tried in the picker, else its own from the palette (state.colors.deco). */
+const tintOf=uid=>S.tryTint?.uid===uid?S.tryTint.c:S.env?.api?.state?.colors?.deco?.[uid]||null;
 const POCKET=['account','wallet'];
 const condWord=(c,p)=>c>=85?'Như mới':c>=65?'Còn tốt':c>=45?'Hơi cũ':(PART(p).flaw||'Xuống cấp');
 const tone=c=>c>=65?'good':c>=45?'warn':'bad';
@@ -88,7 +92,7 @@ export async function openReno(env,mode){
   if(!S.listening){
     S.listening=true;
     let seen='';
-    env.api.addEventListener('state',()=>{const j=S.env.api.state?.journey;const key=JSON.stringify([j?.deco,j?.reno,j?.wallet]);if(key===seen)return;seen=key;if(S.dlg?.open&&!S.busy&&!S.drag&&!S.press)render();});
+    env.api.addEventListener('state',()=>{const j=S.env.api.state?.journey;const key=JSON.stringify([j?.deco,j?.reno,j?.wallet,S.env.api.state?.colors?.deco]);if(key===seen)return;seen=key;if(S.dlg?.open&&!S.busy&&!S.drag&&!S.press)render();});
   }
   await ensureCss();
   const d=dialog();
@@ -266,7 +270,7 @@ function roomMarkup(rm,opts={}){
   for(const o of depthOrder(rm,list)){
     const it=o.it,a=A.anchor(it,o.q,G,hostFor(rm,o.q,list));
     const g=A.glowAt(it,a[0],a[1],o.q.f);if(g)glows.push(g);
-    const body=(o.q.on?A.contact(it,a[0],a[1]):'')+A.pieceAt(it,a[0],a[1],o.q.f);
+    const body=(o.q.on?A.contact(it,a[0],a[1]):'')+A.pieceAt(it,a[0],a[1],o.q.f,tintOf(o.id));
     if(photo){out.push(body);continue;}
     const [bx,by,bw,bh]=bbox(it,a);
     const sel=S.sel===o.id,pop=S.pop===o.id,ghost=S.held?.src==='room'&&S.held.uid===o.id;
@@ -387,6 +391,10 @@ async function onClick(op,data){
       const z=op==='zup'?Math.min(CD().z_max||99,Math.max(0,...zs)+1):Math.max(0,Math.min(...zs,p.z||0)-1);
       if(z===(p.z||0)){S.flash={text:op==='zup'?'Món này đang ở trên cùng rồi.':'Món này đang ở dưới cùng rồi.',kind:'warn'};render();return;}
       await putPiece(p.id,{...qOf(p),z});return;}
+    case'tint':{const p=placed(data.uid),it=ITEM(p?.k);if(!it)return;
+      (await import('./palette.js')).pickColor(S.env,{title:it.name,current:tintOf(p.id)||'goc',preview:c=>A.thumb(it,88,c),
+        onTry:c=>{S.tryTint={uid:p.id,c};paintPiece(p.id);},apply:async c=>!!await send('jr_wd_deco',{uid:p.id,color:c}),
+        onClose:()=>{S.tryTint=null;render();}});return;}
     case'pick':return pick(data.uid);
     case'sell':{const p=placed(data.uid)||v.bag.find(b=>b.id===data.uid),it=ITEM(p?.k);if(!it)return;
       if(await S.env.confirmAction(`Bán lại ${low(it.name)}?`,`Nhận ${xu(it.sell)} (${CD().sell_pct}% giá mua).`,`Bán · ${xu(it.sell)}`)){
@@ -539,7 +547,7 @@ function onMove(e){
       if(Math.abs(dy)<12||Math.abs(dy)<Math.abs(dx)*1.2)return;   // sideways: the drawer scrolls
       const it=ITEM(p.k);if(!it)return;
       try{p.el.setPointerCapture(e.pointerId);}catch{/* fine */}
-      S.drag={kind:'card',k:p.k,src:p.src,it,grab:grabFor(it),q:null,bad:null};S.held={k:p.k,src:p.src};S.sel='';
+      S.drag={kind:'card',k:p.k,src:p.src,it,grab:grabFor(it),q:null,bad:null,uid:p.src==='bag'?(V()?.bag.find(b=>b.k===p.k)?.id||''):''};S.held={k:p.k,src:p.src};S.sel='';
       if(!it.rooms.includes(roomOf(S.room)?.type)){const r=roomsFor(it)[0];if(r){S.room=r.id;render();}}
       const svg=roomSvg(),rm=roomOf(S.room);if(svg&&rm){svg.querySelector('.dc-zonelayer').innerHTML=zoneMarkup(rm,it,A.geom(rm),inRoom(rm));svg.classList.add('dragging');}
       p.el.classList.add('lifted');
@@ -560,7 +568,7 @@ function dragTo(cx,cy){
     const list=inRoom(rm),q=candidate(rm,D.it,pt.x-D.grab[0],pt.y-D.grab[1],list,0);
     if(!q){g.innerHTML='';D.q=null;return;}
     const a=A.anchor(D.it,q,A.geom(rm),hostFor(rm,q,list));D.q=q;D.bad=checkQ(rm,D.it,q,list);
-    g.innerHTML=`<g class="dc-it drag${D.bad?' bad':''}">${q.on?A.contact(D.it,a[0],a[1]):''}${A.pieceAt(D.it,a[0],a[1],0)}</g>`;
+    g.innerHTML=`<g class="dc-it drag${D.bad?' bad':''}">${q.on?A.contact(D.it,a[0],a[1]):''}${A.pieceAt(D.it,a[0],a[1],0,D.uid?tintOf(D.uid):null)}</g>`;
     return;
   }
   if(!pt)return;
@@ -569,6 +577,13 @@ function dragTo(cx,cy){
   q.z=D.q0.z;if(!q.z)delete q.z;
   D.q=q;D.bad=checkQ(D.rm,D.it,q,D.list);D.out=!inside;
   showMove(D.uid,q,D);
+}
+/** Redraw one placed piece in place (the colour being tried in the palette picker), keeping the room as it is. */
+function paintPiece(uid){
+  const svg=roomSvg(),p=placed(uid),rm=roomOf(p?.r),el=svg?.querySelector(`g[data-uid="${CSS.escape(uid)}"] .dc-piece`);if(!el||!rm)return;
+  const list=inRoom(rm),o=list.find(x=>x.id===uid);if(!o)return;
+  const a=A.anchor(o.it,o.q,A.geom(rm),hostFor(rm,o.q,list));
+  el.innerHTML=(o.q.on?A.contact(o.it,a[0],a[1]):'')+A.pieceAt(o.it,a[0],a[1],o.q.f,tintOf(uid));
 }
 /** Draw `uid` (and what stands on it) at `q` without redrawing the room. */
 function showMove(uid,q,D=null){
@@ -621,7 +636,7 @@ function onCancel(e){
 function floatGhost(it,cx,cy){
   let el=S.dlg?.querySelector('.dc-float');
   if(!it){el?.remove();return;}
-  if(!el){el=document.createElement('div');el.className='dc-float';el.setAttribute('aria-hidden','true');el.innerHTML=A.thumb(it,64);S.dlg.append(el);}
+  if(!el){el=document.createElement('div');el.className='dc-float';el.setAttribute('aria-hidden','true');el.innerHTML=A.thumb(it,64,S.drag?.uid?tintOf(S.drag.uid):null);S.dlg.append(el);}
   const r=S.dlg.getBoundingClientRect(),inside=getComputedStyle(S.dlg).transform!=='none';
   el.style.left=`${cx-(inside?r.left:0)-32}px`;el.style.top=`${cy-(inside?r.top:0)-72}px`;
 }
@@ -724,7 +739,7 @@ function heldBar(v){
 /** The selected piece's buttons (one string each: easy to add one). */
 function toolButtons(v,p,it){
   const tb=(label,op,tip,cls='')=>btn(label,op,{uid:p.id},`ghost small${cls}`,` title="${esc(tip)}" aria-label="${esc(tip)}"`);
-  const layered=it.spot==='wall'||it.spot==='rug'||!!p.on,out=[tb('⇋ Lật','flip','Lật ngược')];
+  const layered=it.spot==='wall'||it.spot==='rug'||!!p.on,out=[tb('⇋ Lật','flip','Lật ngược'),tb('🎨 Màu','tint','Đổi màu')];
   if(layered)out.push(tb('⬆ Lên','zup','Đưa lên trên'),tb('⬇ Xuống','zdown','Đưa xuống dưới'));
   if(v.rooms.filter(r=>it.rooms.includes(r.type)).length>1)out.push(tb('🚪 Đổi phòng','move','Sang phòng khác'));
   out.push(tb('🎒 Cất túi','pick','Thu hồi vào túi'),tb(`💰 Bán · ${xu(it.sell)}`,'sell',`Bán lại · ${xu(it.sell)}`,' danger'));
@@ -732,7 +747,7 @@ function toolButtons(v,p,it){
 }
 function tools(v){
   const p=placed(S.sel),it=ITEM(p?.k);if(!it)return '';
-  return `<div class="dc-tools" role="toolbar" aria-label="${esc(it.name)}"><span class="dc-tools-name">${A.thumb(it,36)}<b>${esc(it.name)}</b></span><span class="dc-tools-go">${toolButtons(v,p,it).join('')}</span></div>`;
+  return `<div class="dc-tools" role="toolbar" aria-label="${esc(it.name)}"><span class="dc-tools-name">${A.thumb(it,36,tintOf(p.id))}<b>${esc(it.name)}</b></span><span class="dc-tools-go">${toolButtons(v,p,it).join('')}</span></div>`;
 }
 function drawer(v){
   const C=CD(),types=new Set(v.rooms.map(r=>r.type)),rm=roomOf(S.room);
@@ -783,7 +798,7 @@ function skinStrip(v,rm){
 function card(it,src,badge,sub,off=false,poor=false){
   const on=S.held&&S.held.k===it.id&&S.held.src===src;
   return `<button type="button" role="listitem" class="dc-buycard${on?' on':''}${off?' off':''}${poor?' poor':''}" data-dc="hold" data-k="${it.id}" data-src="${src}"${S.busy||off?' disabled':''} aria-pressed="${!!on}">
-    <span class="dc-card-pic">${A.thumb(it,58)}</span>${badge}<b>${esc(it.name)}</b><small>${esc(sub)}</small></button>`;
+    <span class="dc-card-pic">${A.thumb(it,58,src==='bag'?tintOf(V()?.bag.find(b=>b.k===it.id)?.id):null)}</span>${badge}<b>${esc(it.name)}</b><small>${esc(sub)}</small></button>`;
 }
 function cozyCard(v){
   const c=v.cozy,lv=levelIdx(c.total),C=CD(),own=v.place.where==='own';

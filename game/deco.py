@@ -1027,6 +1027,9 @@ def apply(s: dict, name: str, p: dict) -> dict:
     L['order'] = [u for u in L['order'] if u != uid]
     _store(d, D, L, pos)
     r['stats']['sold'] += 1
+    pal = s.get('colors')   # its colour from the palette (game/wardrobe.py, s['colors']['deco'][uid]) goes with it
+    if isinstance(pal, dict) and isinstance(pal.get('deco'), dict):
+        pal['deco'].pop(uid, None)
     got = sell_price(kinds[uid])
     if got:
         hs._receive(s, got, f'Bán lại {lname(it["name"])}', day)

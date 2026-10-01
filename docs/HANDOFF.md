@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **1.3.1** (02/10 03:59; see "1.3.0" below), 33 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **1.3.4** (02/10 05:27; see "1.3.0" below), 33 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -39,7 +39,11 @@ branch holds what, and what to do next, in order. Details live in the linked doc
   salon "cắt thêm" after layering (feedback #67).
 - **1.3.1** (02/10 03:59): accessory colours (feedback #70): save key `wardrobe_colors`, live frames carry `look.tint`
   (web and live must roll forward/back together).
-- Still on branches, not live: `cert-diploma`, `deco`.
+- **1.3.2** (02/10 04:21): room decor on a grid (`game/deco.py`, save `journey.deco`; `reno` kept in its 1.2.0 shape).
+- **1.3.3 + 1.3.4** (deployed together 02/10 05:27): one colour palette (save root `colors = {v, have, wear, deco}`,
+  40 xu/colour, 60 metallic; furniture tints by uid outside deco/reno; `wardrobe_colors` kept in its 1.3.1 shape),
+  and real diplomas + souvenir photo for certificates (optional `earned_on`; album accepts JPEG).
+- In progress (not live): `deco-free` (free drag-and-drop decor like Nhà Có Mèo).
 
 ### What 1.2.1 → 1.2.3 added (01–02/10)
 - **1.2.1** (01/10 23:50, quiet, no "Có gì mới"): admins (`ADMIN_USERS`, now also in `/etc/mot-ngay-lam-nghe/live.env`)

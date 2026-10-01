@@ -262,6 +262,33 @@ async def main():
                 print(tag, 'vase:', f, await ons())
                 expect('binh_hoa' in await ons(), 'the vase landed on the table')
                 await shot('06-vase-on-table')
+                # 🎨 Màu (bảng màu, s['colors'].deco): the sofa in navy (unlocked right here), the vase on the table too
+                deco_colors = "fetch('/api/bootstrap?lite=1').then(r=>r.json()).then(b=>(b.state.colors||{}).deco||{})"
+                uids = await page.evaluate("Object.fromEntries([...document.querySelectorAll('.dc-sheet .dc-it[data-uid]')].map(g=>[g.dataset.k,g.dataset.uid]))")
+                for k, fx, fy, buy in (('sofa', .18, .3, True), ('binh_hoa', .5, .35, False)):
+                    await room_top()
+                    l, t, bw, bh = await box(f'.dc-sheet .dc-it[data-k="{k}"] .dc-hit')
+                    await page.mouse.click(l + bw * fx, t + bh * fy)
+                    await page.wait_for_selector('.dc-sheet .dc-tools [data-dc="tint"]', timeout=5000)
+                    await tap('.dc-sheet .dc-tools [data-dc="tint"]', 300)
+                    await page.wait_for_selector('dialog.pl-pick[open] .pl-sws', timeout=5000)
+                    await page.click('dialog.pl-pick [data-pl="try"][data-c="navy"]')
+                    await page.wait_for_timeout(300)
+                    if buy:
+                        await shot('06a-sofa-try-navy')
+                        await page.click('dialog.pl-pick [data-pl="buy"]')
+                        await confirm()
+                    if await page.locator('dialog.pl-pick[open] [data-pl="apply"]').count():
+                        await page.click('dialog.pl-pick [data-pl="apply"]')
+                    await page.wait_for_timeout(1000)
+                    await popups()
+                    got = await page.evaluate(deco_colors)
+                    expect(got.get(uids[k]) == 'navy', f'the {k} is navy: {got}')
+                    await page.evaluate("document.querySelectorAll('dialog.pl-pick[open]').forEach(d=>d.close())")
+                await tap('.dc-sheet [data-dc="done"]', 600)
+                await room_top()
+                await both('06b-navy-sofa-vase')
+                await tap('.dc-sheet [data-dc="edit"]', 400)
                 # a piece's tools: flip, forward
                 l, t, bw, bh = await box('.dc-sheet .dc-it[data-k="tranh"] .dc-hit', scroll=True)
                 await page.mouse.click(l + bw / 2, t + bh / 2)

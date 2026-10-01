@@ -18,7 +18,7 @@
  *   });
  *   walk.removeSpot(id)              walk.spot('bench') → {x,y} of the current place's spot, or null
  *   walk.on('enter'|'leave',fn)      → unsubscribe; 'enter' gets {place, room, private}
- *   walk.state()                     → {open, place, room, me, people:[{pid,name,x,y,seat,said,emote}], tables, happening, envelope, view}
+ *   walk.state()                     → {open, place, room, me, people:[{pid,name,x,y,seat,said,emote,tint}], tables, happening, envelope, view}
  *   walk.moveTo(x,y)  walk.toast(text)  walk.open(env,{place})
  *
  * 💍 Wedding parties (live/wedding.py) use the same scene: walk.open(env,{wedding:<id>}) (from the "Lịch cưới" sheet,
@@ -91,7 +91,7 @@ export const walk={
   spot(name){const s=S.geo?.spots?.[name];return s?{x:s[0],y:s[1]}:null;},
   on(k,fn){hooks[k]?.add(fn);return ()=>hooks[k]?.delete(fn);},
   state(){const t=nowS();return {open:Boolean(S.dlg?.open),place:S.room?.place||null,room:S.room?.room||null,me:S.room?.me||null,
-    people:[...S.people.values()].map(p=>{const [x,y]=posAt(p.p,p.at,t);return {pid:p.pid,name:p.name,x,y,seat:p.s,said:p.bub?.text||null,emote:p.emo?.e||null};}),
+    people:[...S.people.values()].map(p=>{const [x,y]=posAt(p.p,p.at,t);return {pid:p.pid,name:p.name,x,y,seat:p.s,said:p.bub?.text||null,emote:p.emo?.e||null,tint:p.lk?.tint||null};}),
     tables:S.tables.map(tb=>({seats:tb.seats,topic:tb.topic})),happening:S.hap?.k||null,envelope:S.envl?{id:S.envl.id,x:S.envl.x,y:S.envl.y}:null,
     view:{k:S.k,ox:S.ox,oy:S.oy}};},
   moveTo(x,y){go(x,y);},
