@@ -1,3 +1,9 @@
+# v1.2.1 — 📌 Ghim tin nhắn và tin quản trị ở Cả phố (cập nhật âm thầm)
+
+- 📢 Tài khoản quản trị (`ADMIN_USERS`, cùng giá trị với game.env, nay cũng đặt trong live.env) nhắn ở Cả phố không qua bộ lọc, không giới hạn tần suất; tin mang huy hiệu "📢 Quản trị", liên kết bấm được (`chat_messages.adm`, hàng pid `admin` cũng tính là quản trị).
+- 📌 Quản trị bấm vào một tin ở Cả phố để "Ghim tin này" / "Bỏ ghim"; thanh ghim ở đầu Cả phố cho mọi người (bảng `chat_pins`, SCHEMA_VERSION 10). `scripts/chat_pin.py --msg/--unpin/--show` ghim từ máy chủ; dịch vụ live nhận qua PG NOTIFY và đọc lại mỗi 30 giây.
+- Không có mục "Có gì mới" (owner 01/10: không cần thông báo).
+
 # v1.2.0 — Vào nhà, sửa nhà, trang trí; nghề Nội trợ; ba vị trí văn phòng
 
 - 🏠 Trong nhà (game/reno.py, public/js/v4/reno.js): nhà đã mua có nút "Vào nhà": xem từng phòng (SVG, xuống cấp và nâng cấp hiện trong hình), sửa 5 hạng mục (tường, trần mái, sàn, điện nước, bếp; giá theo mức hư và độ rộng nhà), nâng cấp 2 bậc, trang trí 27 món (mua, dời, cất kho, bán lại 50%). Xuống cấp 1 điểm mỗi 4/6/8 ngày sống (không dưới 30%). Ấm cúng ≥10: +1 tinh thần mỗi sáng, ≥24: +2. Khối `journey.reno` chỉ tạo khi người chơi thao tác lần đầu.
