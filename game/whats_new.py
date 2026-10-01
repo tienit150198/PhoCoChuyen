@@ -32,6 +32,10 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.3.3", date="2026-10-02", items=(
+        dict(emoji="🎨", text="Bảng màu của bạn: mở một màu một lần là dùng cho áo, quần, giày dép, phụ kiện và cả đồ trong nhà, ký túc xá.", go=dict(action="jrWardrobe")),
+        dict(emoji="💝", text="Ai đã mở màu cho phụ kiện ở bản trước thì màu đó giờ dùng được cho mọi món, không mất xu nào."),
+    )),
     dict(version="1.3.2", date="2026-10-02", items=(
         dict(emoji="🪴", text="Bày trí phòng: chọn từng món trong túi, chạm hoặc kéo vào chỗ trống. Dời, lật, thu hồi, hoàn tác thoải mái.", go=dict(action="house")),
         dict(emoji="🏠", text="Gác Bà Tám, phòng trọ, góc giường ký túc xá đều bày trí được. Dọn đi đâu, đồ tự gói vào túi theo bạn."),
