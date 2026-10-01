@@ -1,0 +1,10 @@
+# Phố Có Chuyện: addresses that keep hitting the nginx limits are banned for 15 minutes.
+[nginx-limit-req]
+enabled  = true
+port     = http,https
+filter   = nginx-limit-req
+logpath  = /var/log/nginx/error.log
+findtime = 60
+maxretry = 30
+bantime  = 900
+ignoreip = 127.0.0.1/8 ::1 103.179.190.51 103.195.238.178

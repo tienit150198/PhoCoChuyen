@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **1.1.0** (`main` = `a43e636`), 28 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **1.1.1** (`main` = `b547cf0`), 28 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -123,7 +123,10 @@ branch holds what, and what to do next, in order. Details live in the linked doc
    impossible; 39 orders were lost that way across players before the fix; ShinMi got 300 xu more).
    **1.1.0 (01/10 12:50, announced):** live weddings (LIVE_WEDDING=1, schema 8, accounts are counted guests,
    others watch from the gate), anniversaries, "Khách mời của tuần" (scripts/wedding_week.py settles weekly).
-   Was next: 1.1.0 weddings
+   1.1.1 hotfix: wedding plan errors shown at the send button, too-soon times blocked, a server-wide "sắp cưới"
+   news line with the date and time. Anti-flood limits on nginx + fail2ban + SYN cookies (deploy/ddos/, 01/10).
+   Next: weekly leaderboard titles (top N per board, updated daily) and wearing several game titles and
+   certificates at once (owner, 01/10). Was next: 1.1.0 weddings
    (`live-wedding`, spec docs/superpowers/specs/2026-10-01-live-wedding-design.md). Earlier plan text:
    (Chat v1.0 →
    release 1.0.0 with notes: chat, presence, Cả phố 10 s, strolling, dating bench; no tutorial for chat).
