@@ -7,20 +7,22 @@ Sửa nhà: a part's condition (0–100) wears one point every WEAR_DAYS[level] 
 home left alone only looks tired. A repair brings it back to 100 for FIX_BASE xu per 100 points, scaled by the
 home's size (SIZE %). Upgrades (UPGRADES, two levels per part) renew the part, wear slower and add to Ấm cúng.
 
-Trang trí: furniture (ITEMS) is bought straight into a free slot of a room (wall `w0…` or floor `f0…`), then
-moved, put away in the kho or sold back for SELL_PCT %. Furniture follows the player: when the home is sold
-everything goes to the kho; the next home starts with its own condition and no upgrades.
+Trang trí: since 1.3 game/deco.py (Bày trí phòng) places the furniture on a grid in every place you live, rented
+rooms too. The furniture itself (what the player owns) is still the list `items` of this block, so the block now
+also exists for a player without a home (hid None, no parts). 1.2.0 kept a room and a slot per piece (`r`, `x`);
+deco.py reads those as grid positions and clears them, and the 1.2.0 commands jr_reno_buy/move/store/sell still
+work through deco.legacy. When the home is sold the next home starts with its own condition and no upgrades.
 
-Ấm cúng: the cozy points of each distinct kind placed + COZY_LV per upgrade level. From COZY_STEPS it adds
-+1 / +2 tinh thần each morning (on top of the home's own comfort) while the parts average at least COZY_COND %
-and the mortgage is not late. Nothing here ever takes tinh thần or money away by itself.
+Ấm cúng: the decor points (deco.decor_points: each distinct kind placed + the theme sets) + COZY_LV per upgrade
+level. From COZY_STEPS it adds +1 / +2 tinh thần each morning (on top of the home's own comfort) while the parts
+average at least COZY_COND % and the mortgage is not late. Nothing here ever takes tinh thần or money away by itself.
 
 Money: housing._have/_take, like buying the home (the bank account first, then cash; wallet rows of kind
-'home', which every build accepts); furniture sold back goes through housing._receive. Each spend writes one
+'home', which every build accepts); furniture sold back goes through housing._receive (deco.py). Each spend writes one
 line in the home's own log (Sổ nhà cửa).
 
-Save: `s['journey']['reno']`, absent until the first jr_reno_* command (older saves and players without a home
-are never touched; the view of a home nobody has worked on is computed, not stored). journey.validate allows
+Save: `s['journey']['reno']`, absent until the first jr_reno_* command or the first piece of furniture bought
+(deco.py; older saves are never touched; the view of a home nobody has worked on is computed, not stored). journey.validate allows
 extra journey keys, so an older build simply ignores the block. Ids below are stored in saves: never rename.
 Deterministic: nothing here is random.
 """
@@ -28,13 +30,14 @@ from __future__ import annotations
 
 import re
 
+from . import deco_content as DC
 from . import housing as hs
 from .jsoncopy import tree_copy
 
 VERSION = 1
 COMMANDS = ('jr_reno_fix', 'jr_reno_up', 'jr_reno_buy', 'jr_reno_move', 'jr_reno_store', 'jr_reno_sell')
 STATS = ('fixed', 'upgraded', 'bought', 'sold', 'cozy_days', 'spirit')
-ITEMS_MAX = 60                     # furniture owned (placed + kho)
+ITEMS_MAX = 60                     # furniture owned (placed + bag): 1.2.0 builds refuse more
 COND_MIN = 30                      # wear stops here: tired, never ruined
 WEAR_DAYS = (4, 6, 8)              # life days per point of wear, by upgrade level
 WORN_AT = 60                       # below this the drawing shows the flaw and the morning says so once
@@ -83,44 +86,8 @@ HOUSES = {
 # A part's start against the home's: the kitchen and the walls age first.
 START_OFF = dict(wall=-5, roof=0, floor=5, power=-3, kitchen=-8)
 
-_BEDS = ('bed', 'bed2')
-_LIVE = ('living', 'bed', 'bed2')
-
-
-def _it(spot, emoji, name, price, cozy, rooms=INDOOR):
-    return dict(spot=spot, emoji=emoji, name=name, price=price, cozy=cozy, rooms=tuple(rooms))
-
-
-# Furniture: spot 'floor' | 'wall', price in xu, cozy points (each kind counts once), the rooms it fits.
-ITEMS = {
-    'sofa': _it('floor', '🛋️', 'Sofa vải', 180, 3, ('living',)),
-    'ban_tra': _it('floor', '🫖', 'Bàn trà', 70, 1, ('living', 'balcony', 'yard')),
-    'giuong': _it('floor', '🛏️', 'Giường gỗ', 220, 3, _BEDS),
-    'tv': _it('floor', '📺', 'Ti vi', 240, 2, _LIVE),
-    'be_ca': _it('floor', '🐠', 'Bể cá', 150, 3, ('living',)),
-    'ke_sach': _it('floor', '📚', 'Kệ sách', 90, 2, _LIVE),
-    'ban_lam_viec': _it('floor', '💻', 'Bàn làm việc', 120, 1, _LIVE),
-    'dan': _it('floor', '🎸', 'Đàn ghi-ta', 110, 2, _LIVE),
-    'gau_bong': _it('floor', '🧸', 'Gấu bông', 35, 1, _LIVE),
-    'cay_canh': _it('floor', '🪴', 'Chậu cây cảnh', 40, 2, INDOOR + OUTDOOR),
-    'ghe_may': _it('floor', '🪑', 'Ghế mây', 70, 1, INDOOR + OUTDOOR),
-    'tu_lanh': _it('floor', '🧊', 'Tủ lạnh', 260, 2, ('kitchen',)),
-    'ban_an': _it('floor', '🍽️', 'Bàn ăn', 160, 2, ('kitchen', 'living')),
-    'noi_com': _it('floor', '🍚', 'Nồi cơm điện', 45, 1, ('kitchen',)),
-    'may_giat': _it('floor', '🫧', 'Máy giặt', 200, 1, ('kitchen', 'balcony', 'yard')),
-    'hoa_giay': _it('floor', '🌺', 'Chậu hoa giấy', 50, 2, OUTDOOR),
-    'ban_ngoai': _it('floor', '⛱️', 'Bàn ô ngoài trời', 160, 2, OUTDOOR),
-    'tranh': _it('wall', '🖼️', 'Tranh phong cảnh', 70, 2),
-    'den_long': _it('wall', '🏮', 'Đèn lồng', 35, 1),
-    'den_nhay': _it('wall', '✨', 'Dây đèn nháy', 30, 2),
-    'dong_ho': _it('wall', '🕰️', 'Đồng hồ treo tường', 50, 1),
-    'guong': _it('wall', '🪞', 'Gương tròn', 45, 1),
-    'ke_cay': _it('wall', '🌿', 'Kệ treo cây', 55, 2),
-    'anh': _it('wall', '📸', 'Khung ảnh kỷ niệm', 25, 1),
-    'lich': _it('wall', '📅', 'Lịch treo tường', 15, 1),
-    'may_lanh': _it('wall', '❄️', 'Máy lạnh', 320, 2, _LIVE),
-    'ke_bep': _it('wall', '🧂', 'Kệ gia vị', 30, 1, ('kitchen',)),
-}
+# Furniture: the whole catalogue lives in game/deco_content.py (the first 27 ids came with 1.2.0).
+ITEMS = DC.ITEMS
 _ID = re.compile(r'^[a-z0-9_]{1,24}$')
 _SLOT = re.compile(r'^[wf][0-9]$')
 
@@ -129,6 +96,11 @@ _SLOT = re.compile(r'^[wf][0-9]$')
 def _core():
     from . import engine
     return engine
+
+
+def _deco():
+    from . import deco
+    return deco
 
 
 def get(s: dict) -> dict | None:
@@ -245,30 +217,29 @@ def _ensure(s: dict, own: dict) -> dict:
     return r
 
 
-# ---------------------------------------------------------------- rooms, slots, comfort
+# ---------------------------------------------------------------- rooms, comfort
 def rooms(kind: str) -> list[dict]:
+    """The rooms of a home you own, with 1.2.0's slot counts (deco.py draws them as grids)."""
     out = []
     for row in HOUSES[kind]['rooms']:
         rid, w, f = row[:3]
         emoji, name = ROOMS[rid]
-        out.append(dict(id=rid, emoji=emoji, name=row[3] if len(row) > 3 else name, wall=w, floor=f, out=rid in OUTDOOR,
-                        slots=[f'w{i}' for i in range(w)] + [f'f{i}' for i in range(f)]))
+        out.append(dict(id=rid, emoji=emoji, name=row[3] if len(row) > 3 else name, wall=w, floor=f, out=rid in OUTDOOR))
     return out
 
 
-def _slots(kind: str) -> dict:
-    return {r['id']: set(r['slots']) for r in rooms(kind)}
+def levels(r: dict | None) -> int:
+    return sum(x['lv'] for x in r['parts'].values()) if r and r['parts'] else 0
 
 
-def _placed(r: dict, kind: str) -> list[dict]:
-    """Items standing in a slot this home really has (a known kind): what is drawn and counted."""
-    sl = _slots(kind)
-    return [it for it in r['items'] if it['k'] in ITEMS and it['r'] in sl and it['x'] in sl[it['r']]]
+def upgrade_points(s: dict) -> int:
+    """Ấm cúng from the upgrades of the home you own today (COZY_LV a level)."""
+    return COZY_LV * levels(_view_block(s))
 
 
-def cozy(r: dict, kind: str) -> int:
-    kinds = {it['k'] for it in _placed(r, kind)}
-    return sum(ITEMS[k]['cozy'] for k in kinds) + COZY_LV * sum(x['lv'] for x in r['parts'].values())
+def cozy_total(s: dict) -> int:
+    """The home's Ấm cúng: the furniture placed and the sets (deco.py) + the upgrades."""
+    return _deco().decor_points(s) + upgrade_points(s)
 
 
 def cond_avg(r: dict) -> int:
@@ -284,10 +255,18 @@ def _late(s: dict) -> bool:
     return bool(own) and hs._late(own.get('loan'))
 
 
+def perk_off(s: dict) -> str | None:
+    """Why the morning bonus of a home you own is paused: 'late' (a mortgage payment), 'cond' (needs repairs)."""
+    if _late(s):
+        return 'late'
+    r = _view_block(s)
+    return 'cond' if r is not None and cond_avg(r) < COZY_COND else None
+
+
 # ---------------------------------------------------------------- the daily tick
 def on_life_day(s: dict, result: dict | None = None) -> list[str]:
     """Catch the block up to `journey.life_day` (idempotent): wear, the Ấm cúng morning bonus.
-    Only a block that exists (the player has worked on a home) is touched."""
+    Only a block that exists (the player has worked on a home or owns furniture) is touched."""
     j = s.get('journey')
     r = get(s)
     if r is None or not j.get('story'):
@@ -295,15 +274,16 @@ def on_life_day(s: dict, result: dict | None = None) -> list[str]:
     target = int(j['life_day'])
     own = _own(s)
     notes: list[str] = []
-    if _sync(r, own, r['day']) and r['items']:
-        notes.append('📦 Đồ đạc trong nhà cũ đã chuyển vào kho.')
+    placed = any(it['r'] is not None for it in r['items'])   # 1.2.0 slots (since 1.3 deco.py says it)
+    if _sync(r, own, r['day']) and placed:
+        notes.append('📦 Đồ đạc trong nhà cũ đã chuyển vào túi đồ.')
     if not own:
         r['day'] = max(r['day'], target)
     else:
         r['day'] = max(r['day'], target - CATCHUP)
     if r['day'] < target:   # most commands: the same day, nothing to do
         late = _late(s)
-        pts = cozy(r, own['kind'])   # furniture and levels do not change overnight
+        pts = cozy_total(s)   # furniture and levels do not change overnight
     while r['day'] < target:
         r['day'] += 1
         d = r['day']
@@ -332,26 +312,25 @@ def _pay(s: dict, cost: int, label: str, day: int) -> None:
     hs._take(s, cost, label, day)
 
 
-def _find(r: dict, uid) -> dict | None:
-    return next((it for it in r['items'] if it['id'] == uid), None) if isinstance(uid, str) else None
+def ensure_block(s: dict) -> dict:
+    """The block that holds the player's furniture: a home's (as _ensure), or one with no home (hid None)."""
+    own = _own(s)
+    if own:
+        return _ensure(s, own)
+    j = s['journey']
+    r = get(s)
+    if r is None:
+        r = j['reno'] = dict(v=VERSION, hid=None, day=int(j['life_day']), seq=0, parts={}, items=[], spent=0,
+                             stats={k: 0 for k in STATS})
+    return r
 
 
-def _at(r: dict, room: str, slot: str) -> dict | None:
-    return next((it for it in r['items'] if it['r'] == room and it['x'] == slot), None)
-
-
-def _where(s: dict, kind: str, p: dict, k: str) -> tuple[str, str, str]:
-    """Check room + slot for an item of kind `k`: (room, slot, room name)."""
-    need = _core().need
-    room, slot = p.get('room'), p.get('slot')
-    rs = {x['id']: x for x in rooms(kind)}
-    need(room in rs, 'Chọn phòng muốn đặt đồ nhé.')
-    need(isinstance(slot, str) and slot in rs[room]['slots'], 'Chỗ này không đặt đồ được.')
-    it = ITEMS[k]
-    name = rs[room]['name']
-    need((slot[0] == 'w') == (it['spot'] == 'wall'), f'{it["name"]} cần chỗ {"trên tường" if it["spot"] == "wall" else "dưới sàn"}.')
-    need(room in it['rooms'], f'{it["name"]} không hợp đặt ở {name[:1].lower() + name[1:]}.')
-    return room, slot, name
+def new_uid(r: dict) -> str:
+    used = {x['id'] for x in r['items']}
+    r['seq'] += 1
+    while f'd{r["seq"]}' in used:   # an id a newer build may have handed out
+        r['seq'] += 1
+    return f'd{r["seq"]}'
 
 
 def apply(s: dict, name: str, p: dict) -> dict:
@@ -364,99 +343,49 @@ def apply(s: dict, name: str, p: dict) -> dict:
     need(j['story'], 'Sửa và trang trí nhà chỉ có trong chế độ hành trình.', 'story_only')
     own = _own(s)
     h = hs.get(s)
+    sh = h.get('shared') if h else None
+    if name in ('jr_reno_buy', 'jr_reno_move', 'jr_reno_store', 'jr_reno_sell'):   # 1.2.0's slots: Bày trí phòng now
+        if not own and name in ('jr_reno_buy', 'jr_reno_move'):
+            need(not sh, f'Đây là nhà của {sh["name"] if sh else ""}: muốn sửa sang thì bàn với người ấy nhé.', 'not_owner')
+            need(False, 'Mua nhà rồi mới sửa và trang trí được nhé.', 'no_home')
+        return _deco().legacy(s, name, p)
     if not own:
-        sh = h.get('shared') if h else None
         need(not sh, f'Đây là nhà của {sh["name"] if sh else ""}: muốn sửa sang thì bàn với người ấy nhé.', 'not_owner')
-        r = get(s)
-        need(name in ('jr_reno_sell',) and r and _find(r, p.get('uid')), 'Mua nhà rồi mới sửa và trang trí được nhé.', 'no_home')
+        need(False, 'Nhà thuê là của chủ nhà: chỉ bày đồ trang trí thôi, không sửa được nhé.' if h and h.get('rent')
+             else 'Mua nhà rồi mới sửa được nhé.', 'no_home')
     day = j['life_day']
-    kind = own['kind'] if own else None
-    home = hs.lname(hs.HOMES[kind]['name']) if own else ''
-    if name in ('jr_reno_fix', 'jr_reno_up'):
-        part = p.get('part')
-        need(part in PARTS or (name == 'jr_reno_fix' and part == 'all'), 'Chọn hạng mục cần sửa nhé.')
-        need(p.get('confirm') is True, 'Xác nhận sửa nhà.')
-        r = _ensure(s, own)
-        if name == 'jr_reno_fix':
-            todo = [x for x in (PART_IDS if part == 'all' else (part,)) if r['parts'][x]['c'] < 100]
-            need(todo, 'Nhà đang như mới, chưa cần sửa gì.' if part == 'all' else f'{PARTS[part]["name"]} đang như mới rồi.', 'nothing')
-            cost = sum(fix_cost(kind, x, r['parts'][x]['c']) for x in todo)
-            need(p.get('cost') == cost, 'Giá sửa vừa thay đổi. Xem lại rồi sửa nhé.', 'stale_quote')
-            what = 'Sửa cả nhà' if len(todo) > 1 else f'Sửa {PARTS[todo[0]]["name"].lower()}'
-            _pay(s, cost, f'{what} · {home}', day)
-            for x in todo:
-                r['parts'][x]['c'] = 100
-            r['stats']['fixed'] += len(todo)
-            r['spent'] += cost
-            hs._log(h, day, f'{what}: {", ".join(PARTS[x]["name"].lower() for x in todo)}.', -cost)
-            return dict(message=f'{what} xong, {hs._fmt(cost)} xu. Nhà sáng sủa hẳn!', cozy=cozy(r, kind))
-        x = r['parts'][part]
-        lv = p.get('lv')
-        need(x['lv'] < LV_MAX, f'{PARTS[part]["name"]} đã nâng cấp hết mức rồi.', 'nothing')
-        need(type(lv) is int and lv == x['lv'] + 1, f'{PARTS[part]["name"]} vừa được nâng cấp rồi. Xem lại nhé.', 'stale_quote')
-        cost = up_cost(kind, part, lv)
-        need(p.get('cost') == cost, 'Giá nâng cấp vừa thay đổi. Xem lại nhé.', 'stale_quote')
-        what = PARTS[part]['up'][lv - 1][0]
-        _pay(s, cost, f'{what} · {home}', day)
-        x.update(lv=lv, c=100)
-        r['stats']['upgraded'] += 1
-        r['spent'] += cost
-        hs._log(h, day, f'{what}.', -cost)
-        return dict(message=f'{what} xong, {hs._fmt(cost)} xu. Ấm cúng +{COZY_LV}.', cozy=cozy(r, kind))
-    if name == 'jr_reno_buy':
-        k = p.get('item')
-        need(isinstance(k, str) and k in ITEMS, 'Món này không bán.')
-        need(p.get('confirm') is True, 'Xác nhận mua đồ.')
-        it = ITEMS[k]
-        room, slot, rname = _where(s, kind, p, k)
-        r = _ensure(s, own)
-        there = _at(r, room, slot)
-        if there and there['k'] == k:   # a second tap of the same purchase: already there, nothing more to pay
-            return dict(message=f'{it["name"]} đã ở đây rồi.', duplicate=True, uid=there['id'])
-        need(not there, 'Chỗ này đã có đồ. Dời món kia đi trước nhé.', 'taken')
-        need(len(r['items']) < ITEMS_MAX, f'Nhà đã có {ITEMS_MAX} món đồ. Bán bớt đồ trong kho trước nhé.', 'full')
-        _pay(s, it['price'], f'Mua {it["name"].lower()} · {home}', day)
-        used = {x['id'] for x in r['items']}
-        r['seq'] += 1
-        while f'd{r["seq"]}' in used:   # an id a newer build may have handed out
-            r['seq'] += 1
-        uid = f'd{r["seq"]}'
-        r['items'].append(dict(id=uid, k=k, r=room, x=slot))
-        r['stats']['bought'] += 1
-        r['spent'] += it['price']
-        hs._log(h, day, f'Mua {it["name"].lower()} cho {rname[:1].lower() + rname[1:]}.', -it['price'])
-        return dict(message=f'Đã mua {it["name"].lower()}, {hs._fmt(it["price"])} xu. Đặt ở {rname[:1].lower() + rname[1:]} rồi nè!',
-                    uid=uid, cozy=cozy(r, kind))
-    if name == 'jr_reno_sell':   # also from the kho after the home is sold
-        r = _ensure(s, own) if own else get(s)
-        x = _find(r, p.get('uid')) if r else None
-        need(x and x['k'] in ITEMS, 'Không tìm thấy món đồ này.')
-        need(p.get('confirm') is True, 'Xác nhận bán món đồ.')
-        got = sell_price(x['k'])
-        it = ITEMS[x['k']]
-        r['items'].remove(x)
-        r['stats']['sold'] += 1
-        if got:
-            hs._receive(s, got, f'Bán lại {it["name"].lower()}', day)
-            if h:
-                hs._log(h, day, f'Bán lại {it["name"].lower()}.', got)
-        return dict(message=f'Đã bán lại {it["name"].lower()}, nhận {hs._fmt(got)} xu.', cozy=cozy(r, kind) if own else 0)
+    kind = own['kind']
+    home = hs.lname(hs.HOMES[kind]['name'])
+    part = p.get('part')
+    need(part in PARTS or (name == 'jr_reno_fix' and part == 'all'), 'Chọn hạng mục cần sửa nhé.')
+    need(p.get('confirm') is True, 'Xác nhận sửa nhà.')
     r = _ensure(s, own)
-    x = _find(r, p.get('uid'))
-    need(x, 'Không tìm thấy món đồ này.')
-    need(x['k'] in ITEMS, 'Món đồ này chưa dùng được ở phiên bản này.')
-    it = ITEMS[x['k']]
-    if name == 'jr_reno_store':
-        need(x['r'] is not None, f'{it["name"]} đang ở trong kho rồi.', 'nothing')
-        x['r'] = x['x'] = None
-        return dict(message=f'Đã cất {it["name"].lower()} vào kho.', cozy=cozy(r, kind))
-    # jr_reno_move
-    room, slot, rname = _where(s, kind, p, x['k'])
-    if (x['r'], x['x']) == (room, slot):
-        return dict(message=f'{it["name"]} đang ở đây rồi.', duplicate=True)
-    need(not _at(r, room, slot), 'Chỗ này đã có đồ. Dời món kia đi trước nhé.', 'taken')
-    x['r'], x['x'] = room, slot
-    return dict(message=f'Đã đặt {it["name"].lower()} ở {rname[:1].lower() + rname[1:]}.', cozy=cozy(r, kind))
+    if name == 'jr_reno_fix':
+        todo = [x for x in (PART_IDS if part == 'all' else (part,)) if r['parts'][x]['c'] < 100]
+        need(todo, 'Nhà đang như mới, chưa cần sửa gì.' if part == 'all' else f'{PARTS[part]["name"]} đang như mới rồi.', 'nothing')
+        cost = sum(fix_cost(kind, x, r['parts'][x]['c']) for x in todo)
+        need(p.get('cost') == cost, 'Giá sửa vừa thay đổi. Xem lại rồi sửa nhé.', 'stale_quote')
+        what = 'Sửa cả nhà' if len(todo) > 1 else f'Sửa {PARTS[todo[0]]["name"].lower()}'
+        _pay(s, cost, f'{what} · {home}', day)
+        for x in todo:
+            r['parts'][x]['c'] = 100
+        r['stats']['fixed'] += len(todo)
+        r['spent'] += cost
+        hs._log(h, day, f'{what}: {", ".join(PARTS[x]["name"].lower() for x in todo)}.', -cost)
+        return dict(message=f'{what} xong, {hs._fmt(cost)} xu. Nhà sáng sủa hẳn!', cozy=cozy_total(s))
+    x = r['parts'][part]
+    lv = p.get('lv')
+    need(x['lv'] < LV_MAX, f'{PARTS[part]["name"]} đã nâng cấp hết mức rồi.', 'nothing')
+    need(type(lv) is int and lv == x['lv'] + 1, f'{PARTS[part]["name"]} vừa được nâng cấp rồi. Xem lại nhé.', 'stale_quote')
+    cost = up_cost(kind, part, lv)
+    need(p.get('cost') == cost, 'Giá nâng cấp vừa thay đổi. Xem lại nhé.', 'stale_quote')
+    what = PARTS[part]['up'][lv - 1][0]
+    _pay(s, cost, f'{what} · {home}', day)
+    x.update(lv=lv, c=100)
+    r['stats']['upgraded'] += 1
+    r['spent'] += cost
+    hs._log(h, day, f'{what}.', -cost)
+    return dict(message=f'{what} xong, {hs._fmt(cost)} xu. Ấm cúng +{COZY_LV}.', cozy=cozy_total(s))
 
 
 def action(s: dict, name: str, p: dict) -> dict:
@@ -466,16 +395,14 @@ def action(s: dict, name: str, p: dict) -> dict:
 
 # ---------------------------------------------------------------- views
 def catalogue() -> dict:
-    """Static (journey.content()['reno'], sent once at bootstrap): parts, rooms, furniture, the comfort rules."""
+    """Static (journey.content()['reno'], sent once at bootstrap): parts and the comfort rules (furniture: deco.catalogue)."""
     return dict(parts=[dict(id=k, emoji=v['emoji'], name=v['name'], flaw=v['flaw'], up=[n for n, _ in v['up']]) for k, v in PARTS.items()],
-                items=[dict(id=k, spot=v['spot'], emoji=v['emoji'], name=v['name'], price=v['price'], cozy=v['cozy'], rooms=list(v['rooms']),
-                            sell=sell_price(k)) for k, v in ITEMS.items()],
                 steps=[dict(min=low, spirit=n) for low, n in COZY_STEPS], cozy_lv=COZY_LV, cozy_cond=COZY_COND, worn_at=WORN_AT,
                 sell_pct=SELL_PCT, items_max=ITEMS_MAX)
 
 
 def public(s: dict) -> dict | None:
-    """The inside of the home you own today (None: none). Prices depend on the home, so they are here."""
+    """The structure of the home you own today (None: none): parts, repairs, upgrades. Prices depend on the home."""
     j = s.get('journey') or {}
     if not j.get('story'):
         return None
@@ -485,20 +412,17 @@ def public(s: dict) -> dict | None:
     own = _own(s)
     kind = own['kind']
     H = hs.HOMES[kind]
-    placed = {it['id'] for it in _placed(r, kind)}
     parts = []
     for p in PART_IDS:
         x = r['parts'][p]
         lv = x['lv']
         parts.append(dict(id=p, c=x['c'], lv=lv, fix=fix_cost(kind, p, x['c']), worn=x['c'] < WORN_AT,
                           up=dict(lv=lv + 1, name=PARTS[p]['up'][lv][0], cost=up_cost(kind, p, lv + 1)) if lv < LV_MAX else None))
-    pts, avg = cozy(r, kind), cond_avg(r)
+    pts, avg = cozy_total(s), cond_avg(r)
     late = _late(s)
     have = hs._have(s)
     return dict(home=dict(kind=kind, name=H['name'], emoji=H['emoji'], group=H['group']), rooms=rooms(kind), parts=parts,
-                fix_all=sum(x['fix'] for x in parts), items=[dict(id=it['id'], k=it['k'], r=it['r'], x=it['x']) for it in r['items'] if it['id'] in placed],
-                kho=[dict(id=it['id'], k=it['k']) for it in r['items'] if it['id'] not in placed and it['k'] in ITEMS],
-                cozy=pts, cond=avg, perk=perk_of(pts), perk_on=avg >= COZY_COND and not late, late=late,
+                fix_all=sum(x['fix'] for x in parts), cozy=pts, cond=avg, perk=perk_of(pts), perk_on=avg >= COZY_COND and not late, late=late,
                 ready=have['wallet'] + have['balance'], spent=r['spent'], count=len(r['items']))
 
 

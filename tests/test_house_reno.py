@@ -1,6 +1,6 @@
-"""🛠️ Sửa và trang trí nhà (game/reno.py): the view of a home you own, repairs and upgrades paid like the home,
-furniture bought into slots, moved, stored and sold back, gentle wear, the Ấm cúng morning bonus, moving house,
-validation and older saves."""
+"""🛠️ Sửa nhà (game/reno.py): the view of a home you own, repairs and upgrades paid like the home, gentle wear, the
+Ấm cúng morning bonus, moving house, validation and older saves. Furniture is game/deco.py's now (tests/test_deco.py);
+here only 1.2.0's slot commands, still sent by a page loaded before 1.3, which land on the grid."""
 import copy
 import unittest
 
@@ -18,6 +18,14 @@ def R(s):
 
 def view(s):
     return public_state(s)['journey']['reno']
+
+
+def deco(s):
+    return public_state(s)['journey']['deco']
+
+
+def placed(s):
+    return {i['id']: (i['k'], i['r']) for i in deco(s)['items']}
 
 
 def part(v, pid):
@@ -66,15 +74,11 @@ class Catalogue(unittest.TestCase):
                 self.assertTrue(all(rn.COND_MIN <= x['c'] <= 100 for x in start.values()))
         fix = sum(rn.fix_cost('tap_the', p, x['c']) for p, x in rn.blank(dict(id='h1', kind='tap_the', day=1), 1)['parts'].items())
         self.assertLess(fix, 300)                                            # the old tập thể: a few days of salary
-        for k, it in rn.ITEMS.items():
-            self.assertTrue(it['spot'] in ('wall', 'floor') and it['price'] > 0 and 1 <= it['cozy'] <= 3, k)
-            self.assertTrue(set(it['rooms']) <= set(rn.ROOMS), k)
-            self.assertRegex(k, r'^[a-z0-9_]{1,24}$')
-            if it['spot'] == 'wall':
-                self.assertFalse(set(it['rooms']) <= set(rn.OUTDOOR), k)   # outdoor rooms have no wall slots
+        from game import deco_content as DC
+        self.assertIs(rn.ITEMS, DC.ITEMS)                                    # one catalogue (deco_content.py)
         c = jr.content()['reno']
-        self.assertEqual([x['id'] for x in c['items']], list(rn.ITEMS))
-        self.assertEqual(next(x for x in c['items'] if x['id'] == 'sofa')['sell'], 90)
+        self.assertNotIn('items', c)
+        self.assertEqual((c['cozy_lv'], c['cozy_cond'], c['sell_pct']), (rn.COZY_LV, rn.COZY_COND, 50))
 
 
 class NoHome(unittest.TestCase):
@@ -111,7 +115,7 @@ class ViewAndRepairs(unittest.TestCase):
         self.assertTrue(wall['worn'])
         self.assertEqual(wall['fix'], rn.fix_cost('tap_the', 'wall', wall['c']))
         self.assertEqual(v['fix_all'], sum(p['fix'] for p in v['parts']))
-        self.assertEqual((v['cozy'], v['perk'], v['items'], v['kho']), (0, 0, [], []))
+        self.assertEqual((v['cozy'], v['perk'], v['count']), (0, 0, 0))
 
     def test_fix_everything_from_the_wallet(self):
         s = owner(days=12)
@@ -191,31 +195,25 @@ class ViewAndRepairs(unittest.TestCase):
         self.assertEqual(part(view(s), 'wall')['c'], 90)                    # level 1: a point every 6 days
 
 
-class Decorate(unittest.TestCase):
-    def test_buy_into_a_slot_and_double_tap(self):
+class OldPage(unittest.TestCase):
+    """1.2.0's jr_reno_buy / move / store / sell from a page loaded before 1.3: as near the old slot as fits."""
+    def test_buy_into_a_slot(self):
         s = owner()
         cash = s['journey']['wallet']
         s, r = act(s, 'jr_reno_buy', item='sofa', room='living', slot='f0', confirm=True)
         self.assertEqual(s['journey']['wallet'], cash - 180)
         self.assertEqual(s['journey']['history'][-1]['kind'], 'home')
         self.assertEqual(r['uid'], 'd1')
-        s, r = act(s, 'jr_reno_buy', item='sofa', room='living', slot='f0', confirm=True)
-        self.assertTrue(r['duplicate'])
-        self.assertEqual(s['journey']['wallet'], cash - 180)                # paid once
-        self.assertEqual(len(R(s)['items']), 1)
-        v = view(s)
-        self.assertEqual(v['items'], [dict(id='d1', k='sofa', r='living', x='f0')])
-        self.assertEqual(v['cozy'], 3)
+        self.assertEqual(placed(s), {'d1': ('sofa', 'living')})
+        self.assertEqual(view(s)['cozy'], 3)
+        self.assertEqual(R(s)['items'], [dict(id='d1', k='sofa', r=None, x=None)])   # 1.2.0's shape, no slot
+        s, r = act(s, 'jr_reno_buy', item='tranh', room='living', slot='w0', confirm=True)
+        self.assertEqual(next(i for i in deco(s)['items'] if i['id'] == r['uid'])['y'], 0)   # on the wall
 
-    def test_placement_rules(self):
+    def test_refusals(self):
         s = owner()
-        s, _ = act(s, 'jr_reno_buy', item='sofa', room='living', slot='f0', confirm=True)
         cases = [
-            (dict(item='tranh', room='living', slot='f1'), 'trên tường'),        # a picture on the floor
-            (dict(item='sofa', room='living', slot='w0'), 'dưới sàn'),
-            (dict(item='giuong', room='kitchen', slot='f0'), 'không hợp'),      # a bed in the kitchen
-            (dict(item='ke_sach', room='living', slot='f0'), 'đã có đồ'),
-            (dict(item='ke_sach', room='living', slot='f7'), 'không đặt'),      # a slot this room does not have
+            (dict(item='ke_sach', room='living', slot='f7x'), 'không đặt'),
             (dict(item='ke_sach', room='balcony', slot='f0'), 'Chọn phòng'),    # the tập thể has no balcony
             (dict(item='ban_tho', room='living', slot='f1'), 'không bán'),
         ]
@@ -223,6 +221,8 @@ class Decorate(unittest.TestCase):
             with self.subTest(p=p), self.assertRaises(GameError) as e:
                 act(s, 'jr_reno_buy', confirm=True, **p)
             self.assertIn(words, str(e.exception))
+        s, r = act(s, 'jr_reno_buy', item='giuong', room='kitchen', slot='f0', confirm=True)   # no bed in a kitchen:
+        self.assertEqual(deco(s)['bag'], [dict(id=r['uid'], k='giuong')])                    # it waits in the bag
 
     def test_move_store_sell(self):
         s = owner()
@@ -230,13 +230,10 @@ class Decorate(unittest.TestCase):
         s, _ = act(s, 'jr_reno_buy', item='tranh', room='living', slot='w0', confirm=True)
         s, r = act(s, 'jr_reno_move', uid='d1', room='bed', slot='f2')
         self.assertIn('phòng ngủ', r['message'])
-        with self.assertRaises(GameError):
-            act(s, 'jr_reno_move', uid='d2', room='bed', slot='f1')         # a picture is not a floor thing
         s, _ = act(s, 'jr_reno_store', uid='d2')
-        v = view(s)
-        self.assertEqual(([i['id'] for i in v['items']], [i['id'] for i in v['kho']]), (['d1'], ['d2']))
-        self.assertEqual(v['cozy'], 2)                                       # stored things do not count
-        s, _ = act(s, 'jr_reno_move', uid='d2', room='kitchen', slot='w0')  # back out of the kho
+        self.assertEqual((placed(s), deco(s)['bag']), ({'d1': ('cay_canh', 'bed')}, [dict(id='d2', k='tranh')]))
+        self.assertEqual(view(s)['cozy'], 2)                                 # in the bag: no Ấm cúng
+        s, _ = act(s, 'jr_reno_move', uid='d2', room='kitchen', slot='w0')  # back out of the bag
         cash = s['journey']['wallet']
         s, r = act(s, 'jr_reno_sell', uid='d1', confirm=True)
         self.assertEqual(s['journey']['wallet'], cash + 20)                 # half of 40 xu
@@ -315,10 +312,9 @@ class MovingHouse(unittest.TestCase):
         s, _ = act(s, 'jr_reno_buy', item='be_ca', room='living', slot='f0', confirm=True)
         s, _ = act(s, 'jr_home_sell', confirm=True, value=hs.value_of(hs.get(s)['own'], s['journey']['life_day']))
         s, _ = buy(s, 'can_ho_studio')
-        v = view(s)
-        self.assertEqual((v['items'], [x['k'] for x in v['kho']]), ([], ['be_ca']))
+        self.assertEqual((placed(s), deco(s)['bag']), ({}, [dict(id='d1', k='be_ca')]))
         s, _ = act(s, 'jr_reno_move', uid='d1', room='living', slot='f2')
-        self.assertEqual(view(s)['items'][0]['x'], 'f2')
+        self.assertEqual(placed(s), {'d1': ('be_ca', 'living')})
 
 
 class Saves(unittest.TestCase):
@@ -348,8 +344,8 @@ class Saves(unittest.TestCase):
             lambda r: r['parts']['wall'].update(lv=3),
             lambda r: r['parts'].pop('roof'),
             lambda r: r['items'].append(dict(r['items'][0])),                # the same id twice
-            lambda r: r['items'].append(dict(id='d9', k='tv', r='living', x='f0')),   # two things in one slot
-            lambda r: r['items'][0].update(x=None),
+            lambda r: r['items'].extend([dict(id='d8', k='tv', r='living', x='f0'), dict(id='d9', k='tv', r='living', x='f0')]),   # one slot, two things
+            lambda r: r['items'][0].update(r='living'),                      # a room without a slot
             lambda r: r['items'][0].update(k='Sofa!'),
             lambda r: r['stats'].pop('fixed'),
             lambda r: r.update(day=10**5),
@@ -364,12 +360,12 @@ class Saves(unittest.TestCase):
     def test_furniture_from_a_newer_build_survives(self):
         s = owner()
         s, _ = act(s, 'jr_reno_buy', item='sofa', room='living', slot='f0', confirm=True)
-        R(s)['items'].append(dict(id='d2', k='xich_du', r='yard', x='f0'))  # unknown here: kept, not drawn
+        R(s)['items'].append(dict(id='d2', k='ban_bida', r='yard', x='f0'))  # unknown here: kept, not drawn
         validate_state(s)
-        v = view(s)
-        self.assertEqual([i['k'] for i in v['items']], ['sofa'])
+        self.assertEqual([i['k'] for i in deco(s)['items']], ['sofa'])
+        self.assertEqual(deco(s)['bag'], [])
         s, _ = act(s, 'jr_reno_buy', item='tv', room='living', slot='f1', confirm=True)
-        self.assertIn('xich_du', [i['k'] for i in R(s)['items']])
+        self.assertIn('ban_bida', [i['k'] for i in R(s)['items']])
 
     def test_upgrade_fills_missing_stats_only(self):
         s = owner()
