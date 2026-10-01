@@ -34,8 +34,8 @@ Delta-sync hints (TABLES[i]["sync"]):
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 4   # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
-                     # 4: system_gifts
+SCHEMA_VERSION = 5   # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
+                     # 4: system_gifts; 5: live chat (chat_*, live_effects: game/live_chat.py, live/)
 
 # The text forms SQLite produces, computed by PostgreSQL (UTC, independent of TimeZone).
 NOW_TEXT = "to_char(statement_timestamp() AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI:SS')"       # CURRENT_TIMESTAMP
@@ -242,6 +242,33 @@ CREATE TABLE IF NOT EXISTS system_gifts (
   id {T} PRIMARY KEY, sid {T} NOT NULL, coins bigint NOT NULL, title {T} NOT NULL, text {T} NOT NULL,
   status {T} NOT NULL, created double precision NOT NULL, applied_at double precision, seen_at double precision
 );
+
+-- 💬 Chat (the live service, live/; admin side in game/live_chat.py). Messages are kept: a player's own
+-- delete empties the text (deleted=1); reports and the admin hide (hidden 1 = auto-hidden after 3 reports,
+-- 2 = hidden by an admin) never remove a row.
+CREATE TABLE IF NOT EXISTS chat_channels (
+  id {T} PRIMARY KEY, kind {T} NOT NULL, title {T} NOT NULL DEFAULT '', owner_pid {T}, created double precision NOT NULL
+);
+CREATE TABLE IF NOT EXISTS chat_members (
+  channel {T} NOT NULL, pid {T} NOT NULL, sid {T} NOT NULL, role {T} NOT NULL DEFAULT 'member', joined double precision NOT NULL,
+  last_read bigint NOT NULL DEFAULT 0, muted_until double precision NOT NULL DEFAULT 0, pushed_at double precision NOT NULL DEFAULT 0,
+  PRIMARY KEY (channel, pid)
+);
+CREATE TABLE IF NOT EXISTS chat_messages (
+  id {ID} PRIMARY KEY, channel {T} NOT NULL, pid {T} NOT NULL, name {T} NOT NULL DEFAULT '', av {T} NOT NULL DEFAULT '',
+  text {T} NOT NULL, at double precision NOT NULL, hidden bigint NOT NULL DEFAULT 0, deleted bigint NOT NULL DEFAULT 0,
+  reports bigint NOT NULL DEFAULT 0, reviewed_at double precision
+);
+CREATE TABLE IF NOT EXISTS chat_mutes (
+  pid {T} PRIMARY KEY, until double precision NOT NULL, by_admin {T} NOT NULL DEFAULT '', reason {T} NOT NULL DEFAULT '',
+  at double precision NOT NULL
+);
+CREATE TABLE IF NOT EXISTS chat_prefs (pid {T} PRIMARY KEY, online bigint NOT NULL DEFAULT 1, updated double precision NOT NULL);
+-- Rewards the live service grants (phase 3 dates, phase 2 lucky envelopes); the game server applies them on load.
+CREATE TABLE IF NOT EXISTS live_effects (
+  id {T} PRIMARY KEY, sid {T} NOT NULL, kind {T} NOT NULL, amount bigint NOT NULL DEFAULT 0, data {T} NOT NULL DEFAULT '{{}}',
+  status {T} NOT NULL DEFAULT 'pending', at double precision NOT NULL, applied_at double precision
+);
 """
 
 INDEX_DDL = """
@@ -278,6 +305,12 @@ CREATE INDEX IF NOT EXISTS couple_requests_couple ON couple_requests (couple, st
 CREATE INDEX IF NOT EXISTS couple_debts_people ON couple_debts (lender, borrower);
 CREATE INDEX IF NOT EXISTS couple_moments_couple ON couple_moments (couple, id);
 CREATE INDEX IF NOT EXISTS system_gifts_sid ON system_gifts (sid, status);
+CREATE INDEX IF NOT EXISTS chat_members_pid ON chat_members (pid, channel);
+CREATE INDEX IF NOT EXISTS chat_messages_channel ON chat_messages (channel, id);
+CREATE INDEX IF NOT EXISTS chat_messages_pid ON chat_messages (pid, id);
+CREATE INDEX IF NOT EXISTS chat_messages_reported ON chat_messages (id) WHERE reports > 0;
+CREATE INDEX IF NOT EXISTS live_effects_sid ON live_effects (sid, status);
+CREATE INDEX IF NOT EXISTS live_effects_day ON live_effects (sid, kind, at);
 """
 
 # No foreign keys (receipts.sid, archive.sid -> sessions.sid in SQLite): the migration's live
@@ -580,6 +613,27 @@ TABLES = [
          columns=_cols('id text', 'sid text', 'coins bigint', 'title text', 'text text', 'status text',
                        'created double precision', 'applied_at double precision', 'seen_at double precision'),
          key=('id',), unique=[], identity=None, sync=dict(mode='full', note='status flips pending -> applied -> seen')),
+    dict(name='chat_channels', source='main', sqlite_table='chat_channels',
+         columns=_cols('id text', 'kind text', 'title text', 'owner_pid text', 'created double precision'),
+         key=('id',), unique=[], identity=None, sync=dict(mode='full')),
+    dict(name='chat_members', source='main', sqlite_table='chat_members',
+         columns=_cols('channel text', 'pid text', 'sid text', 'role text', 'joined double precision', 'last_read bigint',
+                       'muted_until double precision', 'pushed_at double precision'),
+         key=('channel', 'pid'), unique=[], identity=None, sync=dict(mode='full', note='last_read/pushed_at change in place')),
+    dict(name='chat_messages', source='main', sqlite_table='chat_messages',
+         columns=_cols('id bigint', 'channel text', 'pid text', 'name text', 'av text', 'text text', 'at double precision',
+                       'hidden bigint', 'deleted bigint', 'reports bigint', 'reviewed_at double precision'),
+         key=('id',), unique=[], identity='id', sync=dict(mode='full', note='text/hidden/deleted/reports change in place')),
+    dict(name='chat_mutes', source='main', sqlite_table='chat_mutes',
+         columns=_cols('pid text', 'until double precision', 'by_admin text', 'reason text', 'at double precision'),
+         key=('pid',), unique=[], identity=None, sync=dict(mode='full')),
+    dict(name='chat_prefs', source='main', sqlite_table='chat_prefs',
+         columns=_cols('pid text', 'online bigint', 'updated double precision'),
+         key=('pid',), unique=[], identity=None, sync=dict(mode='full')),
+    dict(name='live_effects', source='main', sqlite_table='live_effects',
+         columns=_cols('id text', 'sid text', 'kind text', 'amount bigint', 'data text', 'status text',
+                       'at double precision', 'applied_at double precision'),
+         key=('id',), unique=[], identity=None, sync=dict(mode='full', note='status flips pending -> applied')),
     dict(name='mnl_meta', source=None, sqlite_table=None,
          columns=_cols('key text', 'value text'),
          key=('key',), unique=[], identity=None, sync=None),

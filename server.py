@@ -55,6 +55,7 @@ from game import admin_stats
 from game import leaderboard
 from game import marriage
 from game import system_gift
+from game import live_chat
 from game.content import public_content,content_parts,CAREERS
 from game.engine import GameError,public_state
 from game.storage import Store,Conflict
@@ -363,7 +364,15 @@ class Handler(BaseHTTPRequestHandler):
             self.send_response(304);self.send_header("ETag",snap.html_etag);self.send_header("Cache-Control","no-cache");self.send_header("Content-Length","0");self.end_headers();return
         extra={"ETag":snap.html_etag,"Vary":"Accept-Encoding"};body=snap.html
         if "gzip" in self.headers.get("Accept-Encoding",""):body=snap.html_gz;extra["Content-Encoding"]="gzip"
-        self.respond(200,body,"text/html; charset=utf-8",extra,cache="no-cache",csp=snap.csp)
+        self.respond(200,body,"text/html; charset=utf-8",extra,cache="no-cache",csp=self.socket_csp(snap.csp))
+
+    def socket_csp(self,csp:str)->str:
+        """connect-src of the page plus its own WebSocket origin (the live service at /live, live/app.py):
+        browsers that do not count ws:/wss: as 'self' (Safari before 16) would block the chat socket."""
+        host=self.headers.get("Host","")
+        if not self.valid_host() or not re.fullmatch(r"[A-Za-z0-9.\-]+(:\d{1,5})?|\[[0-9A-Fa-f:]+\](:\d{1,5})?",host):return csp
+        scheme="wss" if self.secure() else "ws"
+        return csp.replace("connect-src 'self'",f"connect-src 'self' {scheme}://{host}",1)
 
     def content(self,query:str):
         """GET /api/content?v=<hash>: the game catalogue, split out of /api/bootstrap. A matching ?v= is
@@ -536,6 +545,11 @@ class Handler(BaseHTTPRequestHandler):
                 self.require_admin(token)
                 query={k:v[0] for k,v in parse_qs(split.query).items()}
                 self.json(200,pfb.list_admin(self.server.store,query.get("status"),query.get("kind"),query.get("before")));return
+            if route=="/api/admin/chat":  # 💬 Chat (game/live_chat.py): reports queue, mutes, Cả phố; admin only
+                try:token,_,_,_=self.guarded(light=True)
+                except PermissionError as e:self.error(403,str(e),"forbidden");return
+                self.require_admin(token)
+                self.json(200,live_chat.view(self.server.store));return
             if route=="/api/admin/stats":  # Thống kê (game/admin_stats.py): admin only, cached ~60 s, never reads a save
                 try:token,_,_,_=self.guarded(light=True)
                 except PermissionError as e:self.error(403,str(e),"forbidden");return
@@ -645,9 +659,13 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("fb-admin:"+token,120):self.error(429,"Chậm lại một chút nhé.");return
                 self.require_admin(token)
                 self.json(200,dict(ok=True,item=pfb.update(self.server.store,data.get("id"),data.get("status"),data.get("reply"))));return
+            if route=="/api/admin/chat":  # 💬 hide / keep a message, mute / unmute a player; the live service applies it at once
+                if not self.server.rate_limit("chat-admin:"+token,120):self.error(429,"Chậm lại một chút nhé.");return
+                self.require_admin(token)
+                self.json(200,live_chat.act(self.server.store,(accounts.status(self.server.store,token) or {}).get("username") or "admin",data));return
             if route=="/api/account/delete":
                 if data.get("confirm")!="XOA":raise GameError("Gõ XOA để xác nhận xóa dữ liệu.")
-                pfb.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);system_gift.forget(self.server.store,token);self.server.store.delete(token)
+                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);system_gift.forget(self.server.store,token);self.server.store.delete(token)
                 self.json(200,dict(deleted=True,message="Đã xóa toàn bộ dữ liệu chơi của bạn trên máy chủ."),{"Set-Cookie":self.cookie("",0)});return
             if route.startswith("/api/account/"):
                 self.account_post(route[len("/api/account/"):],token,data);return
@@ -678,6 +696,7 @@ class Handler(BaseHTTPRequestHandler):
         except pfb.FeedbackError as e:self.error(e.status,e.message,e.code)
         except social.SocialError as e:self.error(e.status,e.message,e.code)
         except marriage.MarriageError as e:self.error(e.status,e.message,e.code)
+        except live_chat.ChatAdminError as e:self.error(e.status,e.message,e.code)
         except accounts.AccountError as e:self.error(e.status,e.message,e.code)
         except GameError as e:self.error(401 if e.code=="session_missing" else 400,e.message,e.code)
         except (ValueError,TypeError,KeyError,IndexError,RecursionError,AttributeError,*dbm.DataError):self.error(400,"Dữ liệu không đúng cấu trúc hoặc bản lưu không hợp lệ.","invalid_data")
