@@ -133,6 +133,7 @@ const VN_MS=7*3600*1000;
 const vnParts=at=>{const d=new Date(at*1000+VN_MS);return {date:d.toISOString().slice(0,10),time:d.toISOString().slice(11,16)};};
 const atOf=(date,time)=>{const [y,m,d]=date.split('-').map(Number),[h,mi]=(time||'20:00').split(':').map(Number);return (Date.UTC(y,m-1,d,h,mi)-VN_MS)/1000;};
 function defaultAt(){const now=Date.now()/1000,t=vnParts(now+86400);return atOf(t.date,'20:00');}   // tomorrow 20:00
+const soon=p=>Boolean(p?.at)&&p.at<Date.now()/1000+3600;   // the server books a wedding at least 1 hour ahead (game/wedding_live.py)
 const atLabel=at=>{const p=vnParts(at);return `${p.date.slice(8,10)}/${p.date.slice(5,7)}/${p.date.slice(0,4)} · ${p.time}`;};
 const venueOf=id=>S.catalog.venues.find(v=>v.id===id);
 function costs(p){
@@ -652,7 +653,9 @@ function breakdown(){
       <div class="mr-bd-row ${fc.gifts[0]-q.total>=0?'good':fc.gifts[1]-q.total<0?'bad':''}"><span>Lời / lỗ dự kiến</span><b>${signed(fc.gifts[0]-q.total)} … ${signed(fc.gifts[1]-q.total)}</b></div>
       <p class="mr-hint">${esc(fq.mood.emoji)} Không khí: ${esc(fq.mood.label)}. Hàng xóm càng thân càng hay tới và mừng dày.</p>`:'<p class="mr-hint" role="status">Đang ước lượng khách và tiền mừng…</p>'}</div>
     ${short?`<p class="mr-flash warn">Ví của bạn còn ${xu(w)}, chưa đủ phần cọc ${xu(mine)}.</p>`:''}
-    ${btn(`Gửi kế hoạch cho ${partner}`,'plan_send',{},'primary big full')}
+    ${soon(p)?`<p class="mr-flash bad">⏰ Giờ cưới phải cách bây giờ ít nhất 1 tiếng: chọn từ ${esc(vnParts(Date.now()/1000+3660).time)} hôm nay trở đi.</p>`:''}
+    ${S.flash?.kind==='bad'?flash():''}
+    ${soon(p)?`<button type="button" class="btn primary big full" disabled>Gửi kế hoạch cho ${partner}</button>`:btn(`Gửi kế hoạch cho ${partner}`,'plan_send',{},'primary big full')}
     <p class="mr-hint">Chưa trừ tiền. ${partner} xác nhận thì cả hai mới đặt cọc.</p>`;
 }
 function paintBreakdown(){

@@ -200,4 +200,5 @@ SPEECHES = {
 }
 NEWS_TEXT = '💍 {a} & {b} vừa tổ chức đám cưới {tables} bàn tại {venue}!'
 NEWS_ENGAGED = '💞 {a} & {b} vừa đính hôn. Cả phố chờ ăn cưới!'
+NEWS_BOOKED = '💌 {a} & {b} sẽ cưới lúc {at} tại {venue}! Cả phố vào Khu phố › Lịch cưới để dự nha.'
 STICKER = dict(emoji='🏡', name='Đã về chung một nhà')

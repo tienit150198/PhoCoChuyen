@@ -1,3 +1,8 @@
+# v1.1.1 — Hotfix kế hoạch cưới
+
+- Gửi kế hoạch cưới: lỗi từ máy chủ hiện ngay cạnh nút gửi (trước đây chỉ hiện ở đầu hộp thoại, người chơi tưởng không gửi được); chọn giờ cách chưa tới 1 tiếng thì báo trước và khóa nút gửi.
+- Hai bạn cùng chọn báo tin cưới thì cả phố nhận tin "💌 A & B sẽ cưới lúc DD/MM/YYYY · HH:MM tại …" (news kind booked). Không có "Có gì mới".
+
 # v1.1.0 — Đám cưới trực tiếp
 
 - Đặt bàn cưới có ngày giờ thật (lưu mãi, hiện trên thẻ), Lịch cưới trong Khu phố, tiệc cưới trực tiếp 30 phút (live/wedding.py): khách có tài khoản +15 xu mỗi 5 phút (tối đa 60 xu/đám, 2 đám/ngày), cô dâu chú rể +30 xu/khách ở lại ≥5 phút, mốc 10 và 20 khách, ảnh chụp chung vào Kỷ niệm; người chưa có tài khoản xem từ ngoài cổng. Kỷ niệm 100 ngày/1 năm/500/1000 ngày cưới có quà, danh hiệu, lì xì NPC. Thi đua "Khách mời của tuần" (scripts/wedding_week.py). Schema 8. Bật bằng LIVE_WEDDING=1.

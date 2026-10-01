@@ -1644,6 +1644,11 @@ def _confirm(store, sid: str, display: str, d: dict) -> dict:
         if at is not None:
             wl.book(db, c, wid, float(at))
             _notice(db, w['planner'], f'✅ {display} đã xác nhận kế hoạch cưới. Tiền cọc đã đặt. Hẹn cả phố lúc {wl.fmt_at(at)}! 💍')
+            other = 'b' if side == 'a' else 'a'
+            if announce and int(w['announce_' + other] or 0):   # both agreed to tell the phố: the date and time go out server-wide
+                venue = W.VENUE_INDEX.get(json.loads(w['plan']).get('venue'), {}).get('name', 'tiệc cưới')
+                _post_news(db, 'booked', f'booked:{wid}', W.NEWS_BOOKED.format(a=names['a'], b=names['b'], at=wl.fmt_at(at), venue=venue),
+                           c['a'], c['b'])
         else:
             _notice(db, w['planner'], f'✅ {display} đã xác nhận kế hoạch cưới. Tiền cọc đã đặt, còn {days} ngày nữa là tới ngày vui!')
     try:

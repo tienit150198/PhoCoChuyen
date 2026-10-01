@@ -61,6 +61,18 @@ class Booking(WedBase):
         self.assertEqual(self.view(b)['couple']['wed_label'], label, 'the booked time stays the date, not the resolution time')
         self.assertEqual(len(self.rows('SELECT * FROM wedding_dates')), 1)
 
+    def test_the_phố_is_told_the_date_and_time_when_both_agree(self):
+        a, b, wid, at = self.couple()
+        n = self.row("SELECT text FROM news WHERE kind='booked'")
+        self.assertIn(wl.fmt_at(at), n['text'])                  # e.g. "sẽ cưới lúc 04/10/2026 · 20:30 tại …"
+        self.assertIn('Lịch cưới', n['text'])
+
+    def test_no_booked_news_when_one_of_them_keeps_it_quiet(self):
+        a, b = self.user('lananh'), self.user('minhtu')
+        self.engage(a, b)
+        self.plan_and_confirm(a, b, plan=dict(PLAN, at=self.clock.t + 2 * 3600), announce_b=False)
+        self.assertIsNone(self.row("SELECT text FROM news WHERE kind='booked'"))
+
     def test_the_window_and_a_late_confirmation(self):
         a, b = self.user('an'), self.user('binh')
         self.engage(a, b)
