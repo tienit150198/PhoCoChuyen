@@ -19,7 +19,15 @@ herself every night; the player minds the counter. What the job is:
 * the melt clock: from the first scoop the order melts in real seconds (faster on a hot day or
   from a warm freezer). The birthday tray for class 2A goes in a foam box with ice packs;
 * cash with the shared till (game/careers/till.py): Bé Chíp pays with a pile of coins from his
-  piggy bank.
+  piggy bank;
+* house batches (``kem_mk_*``): one batch a day from cô Hiền's recipe card (coconut, avocado, and
+  taro once the "Chứng chỉ làm kem" craft certificate is held, or from day 5 in sandbox). Measure
+  (the card says cans and spoons, the jug says ml and grams), cook to 76–88 °C without boiling,
+  cool in an ice bath, churn for the right minutes, freeze into a tub that sells from tomorrow.
+  Mistakes leave the tub soft, icy or grainy; a burnt pot is thrown away. A good house scoop
+  earns +1 xu and customers notice it;
+* the apprenticeship: for the first three customers cô Hiền stands beside the player and catches
+  each mistake once before the cup leaves the counter (nothing recorded, no desk surprises).
 
 Mistakes go through consequences (cq.slip / cq.react); money only through the engine's money().
 Everything random is rolled from the day, slot or task id.
@@ -93,6 +101,83 @@ ITEMS = [dict(id=x['id'], name=x['name'] + ' (hộp)', emoji=x['emoji'], group='
     dict(id='trai_dua', name='Trái dừa xiêm', emoji='🥥', group='vo', unit='trái', cost=4, life=5, start=6),
 ]
 PRICES = dict(vien=6, vien_bo=7, oc=2, dua_trai=10, que=5, top=2, hop=5)   # hop: xu per 100 g
+
+# ---------------------------------------------------------------- kem nhà làm: a house batch
+# One batch a day, in the morning or a quiet moment: measure from cô Hiền's notebook (the card says it in
+# cans and spoons, the jug and the scale in ml and g), cook the custard to 76–88 °C without boiling it,
+# cool it in an ice bath, churn it for the right time, then pour it into a tub that freezes overnight.
+# A good tub sells a little higher ("kem nhà làm"); a slip gives a soft, icy or grainy tub; a scorched
+# pot is poured away. The ready-made tubs from the stock room stay on sale as before.
+HOME_PLUS = 1             # xu more per scoop from a good house tub
+HOME_MAX = 3              # house tubs waiting in the freezer
+COOK_OK = (76, 88)        # the custard thickens; under it the starch is raw (icy), over it it boils
+BOIL_AT = 89              # boiling: the coconut milk splits (grainy)
+BURNT_AT = 96             # the pot scorches: pour the batch away
+COOL_OK = 10              # churn only once the mix is this cold
+CHURN_MIN = (15, 20, 25, 30, 35, 40, 45)
+FIRE = {'nho': 7, 'lon': 14}
+QUALITY = ('ok', 'soft', 'icy', 'grainy', 'burnt')
+DEFECT_RANK = {'burnt': 4, 'grainy': 3, 'icy': 2, 'soft': 1}
+DEFECT_NOTE = {'soft': 'mềm, mau chảy', 'icy': 'nhiều dăm đá', 'grainy': 'lợn cợn, không mịn', 'burnt': 'khét đáy nồi'}
+STEP_LABEL = {'steam': 'Hấp khoai', 'measure': 'Đong nguyên liệu', 'cook': 'Nấu hỗn hợp', 'cool': 'Làm nguội',
+              'blend': 'Xay nhuyễn', 'churn': 'Chạy máy đánh kem', 'freeze': 'Đổ hộp, cho vào tủ'}
+
+
+def _ing(iid, name, unit, opts, right, card, low, high):
+    return dict(id=iid, name=name, unit=unit, opts=list(opts), right=right, card=card, low=low, high=high)
+
+
+RECIPES = {
+    'dua': dict(name='Kem dừa cô Hiền', emoji='🥥', cost=7, cert=False,
+                steps=('measure', 'cook', 'cool', 'churn', 'freeze'), churn=(25, 30), steam=0, blend=0,
+                note='Công thức cô Hiền chép trong cuốn sổ bìa xanh.',
+                ings=[_ing('cot_dua', 'Nước cốt dừa', 'ml', (200, 400, 600), 400, '2 lon (lon 200 ml)', 'icy', 'soft'),
+                      _ing('sua', 'Sữa tươi', 'ml', (100, 200, 300), 200, '1 ly đầy (200 ml)', 'icy', 'icy'),
+                      _ing('duong', 'Đường', 'g', (60, 100, 160), 100, '5 muỗng canh (muỗng 20 g)', 'icy', 'soft'),
+                      _ing('bot', 'Bột năng', 'g', (5, 10, 30), 10, '2 muỗng cà phê (muỗng 5 g)', 'icy', 'grainy'),
+                      _ing('dua_soi', 'Dừa sợi', 'g', (0, 30, 90), 30, '1 nắm tay (30 g)', None, 'grainy')]),
+    'bo': dict(name='Kem bơ Đà Lạt', emoji='🥑', cost=9, cert=False,
+               steps=('measure', 'blend', 'churn', 'freeze'), churn=(20, 25), steam=0, blend=2,
+               note='Bơ sáp chín mềm, không nấu: xay thật mịn rồi đánh kem.',
+               ings=[_ing('bo_sap', 'Thịt bơ sáp', 'g', (150, 300, 450), 300, '2 trái bơ (trái 150 g thịt)', 'icy', 'grainy'),
+                     _ing('sua_dac', 'Sữa đặc', 'ml', (50, 100, 200), 100, '1 lon nhỏ (100 ml)', 'icy', 'soft'),
+                     _ing('whipping', 'Kem tươi whipping', 'ml', (100, 200, 400), 200, '1 hộp nhỏ (200 ml)', 'icy', 'grainy'),
+                     _ing('duong', 'Đường', 'g', (0, 40, 100), 40, '2 muỗng canh (muỗng 20 g)', None, 'soft')]),
+    'khoai_mon': dict(name='Kem khoai môn', emoji='🟣', cost=8, cert=True,
+                      steps=('steam', 'measure', 'cook', 'cool', 'churn', 'freeze'), churn=(30, 35), steam=3, blend=0,
+                      note='Công thức khó của cô Hiền: khoai hấp chín bở, nghiền mịn rồi mới nấu.',
+                      ings=[_ing('khoai', 'Khoai môn hấp', 'g', (200, 400, 600), 400, '2 củ vừa (củ 200 g)', 'icy', 'grainy'),
+                            _ing('sua', 'Sữa tươi', 'ml', (200, 400, 600), 400, '2 ly đầy (ly 200 ml)', 'grainy', 'icy'),
+                            _ing('duong', 'Đường', 'g', (60, 100, 160), 100, '5 muỗng canh (muỗng 20 g)', 'icy', 'soft'),
+                            _ing('cot_dua', 'Nước cốt dừa', 'ml', (0, 100, 300), 100, 'nửa lon (lon 200 ml)', None, 'soft')]),
+}
+CERT_ID = 'ice_cream_craft'    # certificate_content.GROUPS: holding it opens the khoai môn recipe
+CERT_FREE_DAY = 5              # outside the story (no certificates there) the hard recipe opens on this day
+
+# ---------------------------------------------------------------- học nghề: the first customers with cô Hiền
+APPRENTICE = 3
+LESSONS = [
+    ('Bài 1 · Viên kem trên cân', 'Cô Hiền đứng cạnh: “Múc một viên, nhìn số trên cân. 60 tới 70 gam là đẹp. Thiếu thì múc thêm, dư thì gạt bớt.”'),
+    ('Bài 2 · Nắp tủ và kem chảy', 'Cô Hiền dặn: “Múc xong đậy nắp liền tay. Kem bắt đầu chảy từ viên đầu tiên, làm gọn rồi đưa khách.”'),
+    ('Bài 3 · Lời dặn và tiền thối', 'Cô Hiền nhắc: “Khách dặn gì thì nhớ, nhất là dị ứng. Đưa kem xong đếm tiền khách đưa, thối đủ từng xu.”'),
+]
+CATCH = {
+    'thin': 'Khoan đã con, viên này còn nhẹ. Bấm múc thêm cho đủ 60 gam rồi hẵng đưa.',
+    'missing': 'Khoan, chưa đúng món khách gọi. Coi lại phiếu, ly nào sai thì bỏ ra làm lại.',
+    'extra': 'Có món khách đâu có gọi. Bỏ ly dư ra đã con.',
+    'top': 'Topping chưa đúng lời khách dặn kìa con. Coi lại phiếu rồi rắc cho đúng.',
+    'allergy': 'Dừng! Khách dặn dị ứng đậu phộng. Bỏ topping đó ra, rắc cái khác cho khách.',
+    'lid_open': 'Đậy nắp tủ lại đã con, để mở là kem mềm hết.',
+    'well': 'Nước ngâm muỗng đục rồi. Thay nước, bỏ ly đó múc lại cho sạch.',
+    'refrozen': 'Viên này lạo xạo đá, hộp đó hỏng rồi. Bỏ ly, bỏ hộp đó, múc hộp khác.',
+    'mushy': 'Kem nhão rồi, tủ ấm quá. Đậy nắp chờ tủ lạnh lại rồi múc ly mới nghe.',
+    'short': 'Hộp còn thiếu cân, múc thêm cho đủ số gam khách lấy.',
+    'cheat_tare': 'Chưa trừ bì hộp kìa. Bỏ hộp đó, đặt hộp rỗng lên cân trừ bì rồi múc lại.',
+    'icy': 'Kem hộp này không mịn, đừng bán cho khách. Bỏ ly, lấy vị khác hoặc hộp khác.',
+    'grainy': 'Kem hộp này lợn cợn, đừng bán cho khách. Bỏ ly, lấy vị khác hoặc hộp khác.',
+    'pack_bag': 'Khay kem phải xếp thùng xốp với đá gel, túi ni-lông là chảy hết.',
+    'dry_ice': 'Không được để đá khô cạnh ly kem, tụi nhỏ bỏng tay đó. Xếp thùng xốp với đá gel.',
+}
 
 PEOPLE = [
     ('Cô Hiền', 'Chủ tiệm kem', 'Bán kem ở góc cổng trường ba mươi năm, đêm nào cũng nấu kem dừa.', 'warm'),
@@ -430,13 +515,14 @@ def _fresh_shop(day: int) -> dict:
 
 
 def _fresh_today(day: int) -> dict:
-    return dict(day=day, scoops=0, customers=0, over_g=0, thin=0, melted=0, binned=0, peak=-18)
+    return dict(day=day, scoops=0, customers=0, over_g=0, thin=0, melted=0, binned=0, peak=-18, batches=0, hm=0)
 
 
 def initial() -> dict:
     return dict(v=1, intro=False, shop=_fresh_shop(0), fz=dict(temp=-18, knob=KNOB_OK, lid=False, read=False), well=dict(n=0, fresh=True),
                 tubs={}, refrozen=None, warm_night=False, regulars={}, today=_fresh_today(0),
-                stats=dict(scoops=0, customers=0, over_g=0, thin=0, melted=0, binned=0, fair=0), desk=kit.desk_initial())
+                stats=dict(scoops=0, customers=0, over_g=0, thin=0, melted=0, binned=0, fair=0, batches=0, hm=0), desk=kit.desk_initial(),
+                batch=None, home=[], learn=dict(task=None, codes=[], done=False))
 
 
 def _data(c: dict) -> dict:
@@ -444,7 +530,7 @@ def _data(c: dict) -> dict:
     base = initial()
     for k, v in base.items():
         d.setdefault(k, copy.deepcopy(v))
-    for k in ('stats', 'today', 'shop', 'fz', 'well'):
+    for k in ('stats', 'today', 'shop', 'fz', 'well', 'learn'):
         for kk, v in base[k].items():
             d[k].setdefault(kk, v)
     for k, v in kit.desk_initial().items():
@@ -482,7 +568,8 @@ def _fz_tick(d: dict, name: str, was_open: bool = True) -> None:
 
 
 # Moves that take no time at the freezer (a scrape or a topping is part of the scoop's moment).
-FZ_STILL = ('kem_intro', 'kem_lid', 'kem_thermo', 'kem_desk', 'kem_short', 'kem_knob', 'kem_adjust', 'kem_top', 'kem_tare')
+FZ_STILL = ('kem_intro', 'kem_lid', 'kem_thermo', 'kem_desk', 'kem_short', 'kem_knob', 'kem_adjust', 'kem_top', 'kem_tare',
+            'kem_mk_start', 'kem_mk_add', 'kem_mk_next', 'kem_mk_bin', 'kem_mk_toss')
 
 
 def scoop_grams(d: dict, t: dict, flavour: str, press: str) -> int:
@@ -496,8 +583,10 @@ def scoop_grams(d: dict, t: dict, flavour: str, press: str) -> int:
 # ================================================================ the actions
 FREE = ('kem_intro',)
 NO_TICK = ('kem_intro', 'kem_lid', 'kem_thermo', 'kem_knob', 'kem_check', 'kem_vessel', 'kem_scoop', 'kem_adjust', 'kem_top',
-           'kem_que', 'kem_tare', 'kem_drop', 'kem_pay', 'kem_short', 'kem_desk')
-PHYSICAL = ('kem_scoop', 'kem_que', 'kem_well', 'kem_discard', 'kem_pack')
+           'kem_que', 'kem_tare', 'kem_drop', 'kem_pay', 'kem_short', 'kem_desk',
+           'kem_mk_start', 'kem_mk_add', 'kem_mk_next', 'kem_mk_bin', 'kem_mk_toss')
+PHYSICAL = ('kem_scoop', 'kem_que', 'kem_well', 'kem_discard', 'kem_pack',
+            'kem_mk_steam', 'kem_mk_heat', 'kem_mk_cool', 'kem_mk_blend', 'kem_mk_churn', 'kem_mk_freeze')
 
 
 def handle(s: dict, c: dict, name: str, p: dict) -> dict:
@@ -524,6 +613,8 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
 def _after(s: dict, c: dict, d: dict, result: dict) -> None:
     desk = d['desk']
     fired = desk['fired']
+    if learning(d):
+        return             # no surprises while cô Hiền is still teaching
     kit.desk_tick(s, c, ID, desk, DESK, mod_of(c['day'])['id'])
     if desk['fired'] > fired and desk['ev']:
         x = kit.desk_script(DESK, desk['ev']['script'])
@@ -663,11 +754,21 @@ def _open_tub(c: dict, d: dict, f: str) -> dict:
     tub = d['tubs'].get(f)
     if tub and tub['g'] > 0:
         return tub
-    kit.need(kit.stock(c, f) > 0, f'Hết {_lower(FLAVOUR[f]["name"])} rồi. Nói thật với khách, hoặc nhập thêm ở kho.')
-    cost = kit.take(c, f, 1)
-    tub = dict(g=TUB_G, c=cost, day=c['day'], rf=False)
+    home = next((i for i, h in enumerate(d['home']) if h['f'] == f and h['day'] < c['day']), None)
+    if home is not None:       # a house tub that froze overnight goes first
+        h = d['home'].pop(home)
+        tub = dict(g=TUB_G, c=h['c'], day=c['day'], rf=False, hm=h['q'])
+    else:
+        kit.need(kit.stock(c, f) > 0, f'Hết {_lower(FLAVOUR[f]["name"])} rồi. Nói thật với khách, hoặc nhập thêm ở kho.')
+        cost = kit.take(c, f, 1)
+        tub = dict(g=TUB_G, c=cost, day=c['day'], rf=False, hm=None)
     d['tubs'][f] = tub
     return tub
+
+
+def has_tub(c: dict, d: dict, f: str) -> bool:
+    tub = d['tubs'].get(f)
+    return bool(tub and tub['g'] > 0) or kit.stock(c, f) > 0 or any(h['f'] == f and h['day'] < c['day'] for h in d['home'])
 
 
 def _scoop(s, c, d, p):
@@ -688,8 +789,13 @@ def _scoop(s, c, d, p):
     flags = []
     if tub['rf']:
         flags.append('rf')
-    if d['fz']['temp'] >= MUSHY_AT:
+    hm = tub.get('hm')
+    if d['fz']['temp'] >= MUSHY_AT or hm == 'soft':
         flags.append('mushy')
+    if hm == 'ok':
+        flags.append('hm')
+    elif hm in ('icy', 'grainy'):
+        flags.append(hm)
     w = d['well']
     w['n'] = min(999, w['n'] + 1)
     if not w['fresh'] or w['n'] > WELL_MAX:
@@ -709,7 +815,9 @@ def _scoop(s, c, d, p):
     kit.start_work(t)
     fl = FLAVOUR[f]
     size = 'viên nhỏ, múc thêm chút' if g < GOOD_G[0] else 'viên to quá, gạt bớt' if g > GOOD_G[1] + 4 else 'viên tròn đẹp'
-    warn = ' ⚠️ Kem lạo xạo đá!' if 'rf' in flags else ' ⚠️ Kem nhão chảy!' if 'mushy' in flags else ''
+    warn = (' ⚠️ Kem lạo xạo đá!' if 'rf' in flags else ' ⚠️ Kem nhão chảy!' if 'mushy' in flags else
+            ' ⚠️ Kem có dăm đá li ti.' if 'icy' in flags else ' ⚠️ Kem lợn cợn, không mịn.' if 'grainy' in flags else
+            ' 🏠 Kem nhà làm, mịn thơm.' if 'hm' in flags else '')
     return dict(message=f'{fl["emoji"]} {PRESS_LABEL[press]} một viên {fl["short"]}: cân {g} gam, {size}.{warn}')
 
 
@@ -820,7 +928,7 @@ def cup_price(c: dict, t: dict, cup: dict) -> int:
         return _p(c, 'que')
     if cup['v'] == 'hop':
         return max(1, (hop_shown(t, cup) * _p(c, 'hop') + 50) // 100)
-    v = sum(_p(c, 'vien_bo') if x['f'] == 'bo' else _p(c, 'vien') for x in cup['sc'])
+    v = sum((_p(c, 'vien_bo') if x['f'] == 'bo' else _p(c, 'vien')) + (HOME_PLUS if 'hm' in x['x'] else 0) for x in cup['sc'])
     if VESSELS[cup['v']]['price']:
         v += _p(c, VESSELS[cup['v']]['price'])
     if cup['top']:
@@ -878,6 +986,12 @@ def _checks(c: dict, d: dict, t: dict, pairs: list, left: list, extra: list) -> 
     if 'dirty' in flags:
         t['mistakes'] += 1
         cq.slip(t, 'well', 1, 'Muỗng nhúng thau nước đục ngầu rồi múc kem cho tôi.', 'nước ngâm muỗng bẩn')
+    if 'grainy' in flags:
+        t['mistakes'] += 1
+        cq.slip(t, 'grainy', 2, 'Kem lợn cợn, ăn không mịn chút nào.', 'mẻ kem nhà làm bị lợn cợn')
+    elif 'icy' in flags:
+        t['mistakes'] += 1
+        cq.slip(t, 'icy', 1, 'Kem có dăm đá li ti, nhai sột soạt.', 'mẻ kem nhà làm bị dăm đá')
     allergen = n.get('allergy')
     if allergen and any(cp['top'] == allergen for cp in t['cups']):
         t['mistakes'] += 1
@@ -935,9 +1049,16 @@ def _serve(s, c, d, p):
             cup = next((cp for cp in t['cups'] if cp['v'] == 'hop'), None)
             if cup and sum(x['g'] for x in cup['sc']) * 100 > ln['g'] * 115:
                 return dict(message=f'{_who(t)}: “Nhiều quá, tôi lấy {ln["g"]} gam thôi. Gạt bớt giùm.”', correct=False)
+    caught = _catch(c, d, t)
+    if caught:
+        return caught
     pairs, left, extra = _match(t)
     _checks(c, d, t, pairs, left, extra)
     t['price'] = max(1, sum(cup_price(c, t, t['cups'][ci]) for _, ci in pairs)) if pairs else 1
+    hm = sum(1 for cp in t['cups'] for x in cp['sc'] if 'hm' in x['x'])
+    if hm:
+        d['today']['hm'] += hm
+        d['stats']['hm'] += hm
     if t['melt'] and t['melt']['end'] is None:
         t['melt']['end'] = round(kit.now(), 3)
     t['stage'] = 'pay'
@@ -946,9 +1067,45 @@ def _serve(s, c, d, p):
         rec['tender'] = coins(t['price'], t['id'])
     t['cash'] = rec
     head = f'🍨 Đưa kem cho {_who(t)} · {t["price"]} xu.'
+    if hm and not any(x['code'] in ('grainy', 'icy', 'mushy', 'refrozen') for x in cq.slips(t)):
+        head += f' 🏠 {_who(t)} nếm thử: “Kem nhà làm hả? Thơm ghê!”'
     if n.get('coins') and 'sp' not in rec:
         return dict(message=f'{head} Bé đổ ra quầy {len(rec["tender"])} đồng xu lẻ: đếm cho đúng rồi thối lại.')
     return dict(message=f'{head} Khách đưa {sum(rec["tender"])} xu: thối lại cho đúng.')
+
+
+def learning(d: dict) -> bool:
+    """Học nghề: the first APPRENTICE customers, cô Hiền at your side."""
+    return not d['learn']['done'] and d['stats']['customers'] < APPRENTICE
+
+
+def _catch(c: dict, d: dict, t: dict) -> dict | None:
+    """While learning, cô Hiền looks at the order before it goes out: the first time a mistake shows on an
+    order she stops you and says how to fix it (nothing is recorded). The same mistake again goes through,
+    and a melting order is never held back (time cannot be undone)."""
+    if not learning(d):
+        return None
+    lr = d['learn']
+    if lr['task'] != t['id']:
+        lr['task'], lr['codes'] = t['id'], []
+    tt, dd = copy.deepcopy(t), copy.deepcopy(d)
+    pairs, left, extra = _match(tt)
+    _checks(c, dd, tt, pairs, left, extra)
+    for x in cq.slips(tt):
+        code = 'top' if x['code'].startswith('top_') else x['code']
+        if code in CATCH and code not in lr['codes']:
+            lr['codes'].append(code)
+            return dict(message=f'👩‍🍳 Cô Hiền: “{CATCH[code]}”', correct=False, lesson=code)
+    return None
+
+
+def _graduate(s: dict, d: dict) -> str:
+    if d['learn']['done'] or d['stats']['customers'] < APPRENTICE:
+        return ''
+    d['learn'].update(done=True, task=None, codes=[])
+    story = bool((s.get('journey') or {}).get('story'))
+    tail = ' Muốn học kỹ hơn thì thi Chứng chỉ làm kem nghe.' if story else ''
+    return f' 🎓 Học nghề xong! Cô Hiền: “Giờ con tự đứng quầy được rồi. Cô đi nấu kem đây.{tail}”'
 
 
 def coins(price: int, seed: str) -> list[int]:
@@ -1002,7 +1159,8 @@ def _pay(s, c, d, p):
             kit.money(s, c, -lost, f'Thối dư cho khách: {t["title"]}'[:120], t['id'], 'change_loss')
     given = sum(rec['change'])
     head = f'💵 Thu {t["price"]} xu' + (f', thối {given} xu.' if given else '.')
-    return dict(message=f'{head} {msg}'.strip(), celebrate=not cq.slips(t))
+    grad = _graduate(s, d)
+    return dict(message=f'{head} {msg}{grad}'.strip(), celebrate=not cq.slips(t) or bool(grad))
 
 
 def _short(s, c, p):
@@ -1035,7 +1193,205 @@ def _desk_hook(s: dict, c: dict, key: str, v) -> str | None:
     return None
 
 
+# ---------------------------------------------------------------- kem nhà làm (a house batch)
+def has_cert(s: dict) -> bool:
+    j = s.get('journey') or {}
+    rec = (j.get('certificates') or {}).get(CERT_ID)
+    return isinstance(rec, dict) and rec.get('earned_day') is not None
+
+
+def recipe_open(s: dict, c: dict, f: str) -> bool:
+    if not RECIPES[f]['cert']:
+        return True
+    if (s.get('journey') or {}).get('story'):
+        return has_cert(s)
+    return c['day'] >= CERT_FREE_DAY
+
+
+def _batch(d: dict) -> dict:
+    b = d['batch']
+    kit.need(b, 'Chưa bắt đầu mẻ kem nào. Chọn công thức trong sổ cô Hiền trước.')
+    return b
+
+
+def _step(b: dict) -> str:
+    return RECIPES[b['f']]['steps'][b['step']]
+
+
+def _at(b: dict, step: str) -> None:
+    kit.need('burnt' not in b['q'], 'Nồi khét rồi: mẻ này phải đổ bỏ thôi.')
+    kit.need(_step(b) == step, f'Bây giờ là bước “{STEP_LABEL[_step(b)]}”.')
+
+
+def _mk_start(s, c, d, p):
+    kit.need(d['batch'] is None, 'Đang làm dở một mẻ rồi. Làm xong hoặc đổ bỏ mẻ đó trước.')
+    kit.need(d['today']['batches'] < 1, 'Máy đánh kem chỉ chạy một mẻ mỗi ngày. Mai làm tiếp nhé.')
+    kit.need(len(d['home']) < HOME_MAX, f'Trong tủ đã có {HOME_MAX} hộp kem nhà làm, bán bớt rồi hẵng nấu thêm.')
+    f = kit.one_of(p.get('f'), RECIPES, 'Sổ công thức không có món này.')
+    r = RECIPES[f]
+    kit.need(recipe_open(s, c, f), 'Công thức kem khoai môn cô Hiền chỉ dạy cho người có Chứng chỉ làm kem.'
+             if (s.get('journey') or {}).get('story') else f'Công thức kem khoai môn mở từ ngày {CERT_FREE_DAY}.')
+    kit.money(s, c, -r['cost'], f'Nguyên liệu: {r["name"]}', f'kem-batch-{c["day"]}', 'materials')
+    d['batch'] = dict(f=f, step=0, ing={}, temp=30, n=0, churn=None, q=[], cost=r['cost'], day=c['day'])
+    d['today']['batches'] += 1
+    d['stats']['batches'] += 1
+    return dict(message=f'📒 Mở sổ cô Hiền: {r["name"]}. Mua nguyên liệu hết {r["cost"]} xu. {r["note"]}')
+
+
+def _mk_steam(s, c, d, p):
+    b = _batch(d)
+    _at(b, 'steam')
+    b['n'] = min(20, b['n'] + 1)
+    need = RECIPES[b['f']]['steam']
+    left = need - b['n']
+    return dict(message='♨️ Hấp khoai thêm một lượt: ' + (f'xiên đũa còn cứng, hấp thêm {left} lượt nữa.' if left > 0 else 'xiên đũa thấy bở, khoai chín rồi.'))
+
+
+def _mk_add(s, c, d, p):
+    b = _batch(d)
+    _at(b, 'measure')
+    r = RECIPES[b['f']]
+    ing = next((x for x in r['ings'] if x['id'] == p.get('ing')), None)
+    kit.need(ing, 'Nguyên liệu không có trong công thức.')
+    amt = kit.integer(p.get('amt'), 0, 10000)
+    kit.need(amt in ing['opts'], 'Lượng đó không có trên vạch đong.')
+    b['ing'][ing['id']] = amt
+    return dict(message=f'🥣 Đong {_lower(ing["name"])}: {amt} {ing["unit"]}.')
+
+
+def _mk_heat(s, c, d, p):
+    b = _batch(d)
+    _at(b, 'cook')
+    fire = kit.one_of(p.get('fire', 'nho'), FIRE, 'Lửa nhỏ hay lửa lớn?')
+    b['temp'] = min(120, b['temp'] + FIRE[fire] + _hash('kem-heat', b['day'], b['f'], b['n']) % 3)
+    b['n'] = min(20, b['n'] + 1)
+    t = b['temp']
+    if t >= BURNT_AT:
+        b['q'].append('burnt')
+        return dict(message=f'🔥 {t} °C: sôi trào, khét đáy nồi! Mùi khét bay khắp góc phố. Mẻ này phải đổ bỏ.')
+    if t >= BOIL_AT:
+        return dict(message=f'🔥 {t} °C: sôi sùng sục, nước cốt bắt đầu tách dầu! Tắt bếp ngay.')
+    if t >= COOK_OK[0]:
+        return dict(message=f'🔥 {t} °C: hỗn hợp sánh lại, nhấc muỗng thấy phủ đều. Tắt bếp được rồi.')
+    return dict(message=f'🔥 {t} °C: khuấy đều tay, hỗn hợp còn loãng.')
+
+
+def _mk_cool(s, c, d, p):
+    b = _batch(d)
+    _at(b, 'cool')
+    b['temp'] = max(4, b['temp'] - 22)
+    t = b['temp']
+    return dict(message=f'🧊 Ngâm nồi vào thau nước đá, khuấy: còn {t} °C.' + (' Đủ lạnh để đánh kem.' if t <= COOL_OK else ' Còn ấm, ngâm thêm.'))
+
+
+def _mk_blend(s, c, d, p):
+    b = _batch(d)
+    _at(b, 'blend')
+    b['n'] = min(20, b['n'] + 1)
+    left = RECIPES[b['f']]['blend'] - b['n']
+    return dict(message='🌀 Xay một lượt: ' + ('còn lổn nhổn xơ bơ, xay thêm.' if left > 0 else 'hỗn hợp mịn mượt, xanh ngà.'))
+
+
+def _defects_of(b: dict, step: str) -> list[str]:
+    """What the step just finished leaves in the batch (recorded when moving on)."""
+    r = RECIPES[b['f']]
+    out = []
+    if step == 'measure':
+        for x in r['ings']:
+            amt = b['ing'][x['id']]
+            if amt < x['right'] and x['low']:
+                out.append(x['low'])
+            elif amt > x['right'] and x['high']:
+                out.append(x['high'])
+    elif step == 'steam' and b['n'] < r['steam']:
+        out.append('grainy')
+    elif step == 'blend' and b['n'] < r['blend']:
+        out.append('grainy')
+    elif step == 'cook':
+        if b['temp'] < COOK_OK[0]:
+            out.append('icy')
+        elif b['temp'] >= BOIL_AT:
+            out.append('grainy')
+    return out
+
+
+def _mk_next(s, c, d, p):
+    b = _batch(d)
+    step = _step(b)
+    kit.need('burnt' not in b['q'], 'Nồi khét rồi: mẻ này phải đổ bỏ thôi.')
+    kit.need(step not in ('churn', 'freeze'), 'Bước này bấm nút riêng.')
+    if step == 'measure':
+        missing = [x['name'] for x in RECIPES[b['f']]['ings'] if x['id'] not in b['ing']]
+        kit.need(not missing, f'Còn chưa đong: {", ".join(_lower(x) for x in missing)}.')
+    if step == 'cook':
+        kit.need(b['n'] > 0, 'Chưa bắc nồi lên bếp.')
+    b['q'] = (b['q'] + _defects_of(b, step))[:10]
+    b['step'] += 1
+    b['n'] = 0
+    words = {'steam': '♨️ Nhấc xửng khoai, nghiền mịn.', 'measure': '🥣 Đong xong, đổ hết vào nồi.',
+             'cook': f'🔥 Tắt bếp ở {b["temp"]} °C.', 'cool': f'🧊 Nhấc nồi khỏi thau đá ({b["temp"]} °C).',
+             'blend': '🌀 Đổ hỗn hợp ra âu.'}[step]
+    return dict(message=f'{words} Tiếp theo: {STEP_LABEL[_step(b)].lower()}.')
+
+
+def _mk_churn(s, c, d, p):
+    b = _batch(d)
+    _at(b, 'churn')
+    m = kit.one_of(kit.integer(p.get('min'), 1, 120), CHURN_MIN, 'Hẹn giờ máy không có mức đó.')
+    lo, hi = RECIPES[b['f']]['churn']
+    q = []
+    if b['temp'] > COOL_OK:
+        q.append('soft')
+    if m < lo:
+        q.append('soft')
+    elif m > hi + 5:
+        q.append('grainy')
+    b['churn'] = m
+    b['q'] = (b['q'] + q)[:10]
+    b['step'] += 1
+    look = 'kem còn lỏng như sữa chua uống' if m < lo else 'kem bắt đầu kết hạt béo' if m > hi + 5 else 'kem bông mịn, dẻo quánh'
+    return dict(message=f'⚙️ Máy đánh kem chạy {m} phút: {look}.')
+
+
+def quality(b: dict) -> str:
+    return max(b['q'], key=lambda x: DEFECT_RANK[x]) if b['q'] else 'ok'
+
+
+def _mk_freeze(s, c, d, p):
+    b = _batch(d)
+    _at(b, 'freeze')
+    q = quality(b)
+    d['home'].append(dict(f=b['f'], q=q, day=c['day'], c=b['cost']))
+    d['batch'] = None
+    r = RECIPES[b['f']]
+    if q == 'ok':
+        return dict(message=f'🏠 Đổ {_lower(r["name"])} vào hộp, dán nhãn ngày, cho vào tủ. Đông qua đêm, mai bán được. '
+                            f'Cô Hiền nếm thử: “Mịn rồi đó con!”', celebrate=True)
+    return dict(message=f'🏠 Đổ {_lower(r["name"])} vào hộp, cho vào tủ. Cô Hiền nếm thử: “Mẻ này {DEFECT_NOTE[q]} rồi con. '
+                        f'Bán thì khách chê, đổ bỏ thì tiếc: con tính.”')
+
+
+def _mk_bin(s, c, d, p):
+    b = _batch(d)
+    kit.waste(c, b['f'], 1, b['cost'], 'Mẻ kem nhà làm hỏng')
+    d['batch'] = None
+    return dict(message=f'🗑️ Đổ bỏ mẻ {_lower(RECIPES[b["f"]]["name"])}, rửa nồi. Mai làm lại cẩn thận hơn.')
+
+
+def _mk_toss(s, c, d, p):
+    kit.need(d['home'], 'Không có hộp kem nhà làm nào.')
+    i = kit.integer(p.get('i'), 0, len(d['home']) - 1)
+    h = d['home'].pop(i)
+    kit.waste(c, h['f'], 1, h['c'], 'Hộp kem nhà làm không đạt')
+    d['today']['binned'] += 1
+    d['stats']['binned'] += 1
+    return dict(message=f'🗑️ Bỏ hộp {_lower(RECIPES[h["f"]]["name"])} nhà làm ({DEFECT_NOTE.get(h["q"], "không đạt")}).')
+
+
 ACTIONS = {
+    'kem_mk_start': _mk_start, 'kem_mk_steam': _mk_steam, 'kem_mk_add': _mk_add, 'kem_mk_heat': _mk_heat, 'kem_mk_cool': _mk_cool,
+    'kem_mk_blend': _mk_blend, 'kem_mk_next': _mk_next, 'kem_mk_churn': _mk_churn, 'kem_mk_freeze': _mk_freeze,
+    'kem_mk_bin': _mk_bin, 'kem_mk_toss': _mk_toss,
     'kem_thermo': _thermo, 'kem_knob': _knob, 'kem_check': _check, 'kem_discard': _discard, 'kem_well': _well, 'kem_open': _open,
     'kem_vessel': _vessel, 'kem_scoop': _scoop, 'kem_adjust': _adjust, 'kem_top': _top, 'kem_que': _que, 'kem_tare': _tare,
     'kem_drop': _drop, 'kem_pack': _pack, 'kem_serve': _serve, 'kem_decline': _decline, 'kem_pay': _pay,
@@ -1105,6 +1461,20 @@ def on_close(s: dict, c: dict) -> dict:
             d['tubs'].pop(f)
             if d['refrozen'] == f:
                 d['refrozen'] = None
+    if today['hm']:
+        lines.append(f'🏠 Bán {today["hm"]} viên kem nhà làm, khách khen thơm.')
+    b = d['batch']
+    if b:
+        kit.waste(c, b['f'], 1, b['cost'], 'Mẻ kem làm dở cuối ngày')
+        d['batch'] = None
+        lines.append(f'🥣 Mẻ {_lower(RECIPES[b["f"]]["name"])} làm dở tới tối phải đổ bỏ.')
+    for h in list(d['home']):
+        if c['day'] - h['day'] >= TUB_DAYS:
+            kit.waste(c, h['f'], 1, h['c'], 'Hộp kem nhà làm để quá lâu')
+            d['home'].remove(h)
+    fresh = [h for h in d['home'] if h['day'] == c['day']]
+    if fresh:
+        lines.append(f'🏠 {len(fresh)} hộp kem nhà làm đang đông trong tủ, mai bán được.')
     warm = today['peak'] >= REFREEZE_AT
     d['warm_night'] = warm
     if warm:
@@ -1132,14 +1502,17 @@ def feedback(c: dict, t: dict) -> dict:
         return dict(criteria=[dict(key='honest', label='Nói thật', score=5, note='hết vị thì nói thật'),
                               dict(key='order', label='Có món đúng ý', score=3, note='lần này chưa có')])
     order = 2 if 'missing' in codes else 4 if codes & {'extra'} or any(k.startswith('top_') for k in codes) else 5
-    scoop = 2 if 'cheat_tare' in codes else 3 if codes & {'thin', 'short'} else 5
+    scoop = 2 if codes & {'cheat_tare', 'grainy'} else 3 if codes & {'thin', 'short', 'icy'} else 5
     cold = 1 if codes & {'refrozen'} else 2 if codes & {'melted', 'pack_bag'} else 3 if codes & {'melting', 'mushy'} else 5
     clean = 1 if codes & {'allergy', 'dry_ice'} else 3 if codes & {'well', 'lid_open'} else 5
     return dict(criteria=[dict(key='order', label='Đúng món', score=order, note='đúng vị, đúng topping' if order == 5 else 'món chưa đúng ý'),
-                          dict(key='scoop', label='Viên kem đủ gam', score=scoop, note='viên tròn, đủ gam' if scoop == 5 else 'viên kem thiếu'),
+                          dict(key='scoop', label='Viên kem đủ gam, mịn', score=scoop, note='viên tròn, đủ gam' if scoop == 5 else
+                               'kem không mịn' if codes & {'grainy', 'icy'} else 'viên kem thiếu'),
                           dict(key='cold', label='Kem lạnh, không chảy', score=cold, note='lạnh vừa, mịn' if cold == 5 else 'kem chảy, nhão'),
                           dict(key='clean', label='Sạch sẽ, an toàn', score=clean, note='muỗng sạch, nhớ dị ứng' if clean == 5 else 'chưa sạch, chưa an toàn'),
-                          dict(key='speed', label='Nhanh gọn', score=speed, note=f'chờ còn {p}% kiên nhẫn')])
+                          dict(key='speed', label='Nhanh gọn', score=speed, note=f'chờ còn {p}% kiên nhẫn')]
+                + ([dict(key='home', label='Kem nhà làm', score=5, note='thơm, mịn, khác kem hộp')]
+                   if any('hm' in x['x'] for cp in t.get('cups') or [] for x in cp['sc']) and not codes & {'grainy', 'icy', 'mushy'} else []))
 
 
 # ================================================================ what the client sees
@@ -1181,7 +1554,23 @@ def public_data(c: dict) -> dict:
                 tubs={k: dict(g=v['g']) for k, v in d['tubs'].items()}, refrozen=d['refrozen'] if d['shop'].get('checked') else None,
                 stock=stock, mod=dict(id=mod['id'], emoji=mod['emoji'], label=mod['label'], hint=mod['hint']),
                 today=d['today'], stats=d['stats'], regulars={k: dict(v) for k, v in d['regulars'].items()},
-                desk=kit.desk_public(d['desk'], DESK, ID))
+                desk=kit.desk_public(d['desk'], DESK, ID), batch=_batch_public(d['batch']),
+                home=[dict(h, ready=h['day'] < c['day']) for h in d['home']], made_today=d['today'].get('batches', 0) >= 1,
+                learn=_learn_public(d))
+
+
+def _batch_public(b: dict | None) -> dict | None:
+    if not b:
+        return None
+    steps = RECIPES[b['f']]['steps']
+    return dict(f=b['f'], step=steps[b['step']] if b['step'] < len(steps) else 'freeze', at=b['step'], of=len(steps), ing=dict(b['ing']),
+                temp=b['temp'], n=b['n'], churn=b['churn'], burnt='burnt' in b['q'], cost=b['cost'])
+
+
+def _learn_public(d: dict) -> dict:
+    on = not d['learn']['done'] and d['stats']['customers'] < APPRENTICE
+    n = min(d['stats']['customers'], APPRENTICE - 1)
+    return dict(on=on, n=d['stats']['customers'], of=APPRENTICE, title=LESSONS[n][0] if on else None, text=LESSONS[n][1] if on else None)
 
 
 def content() -> dict:
@@ -1190,7 +1579,14 @@ def content() -> dict:
                 toppings=TOPPINGS, packs=PACKS, press=PRESS, press_label=PRESS_LABEL, good=list(GOOD_G), thin=THIN, fat=FAT,
                 adj=ADJ_G, adj_max=ADJ_MAX, knob_t={str(k): v for k, v in KNOB_T.items()}, knob_ok=KNOB_OK, soft_at=SOFT_AT,
                 mushy_at=MUSHY_AT, well_max=WELL_MAX, box_tare=BOX_TARE, tub_g=TUB_G, prices=PRICES, allergens=ALLERGENS,
-                denoms=list(till.DENOMS), intro=INTRO, people=[dict(name=p[0], role=p[1], note=p[2]) for p in PEOPLE])
+                denoms=list(till.DENOMS), intro=INTRO, people=[dict(name=p[0], role=p[1], note=p[2]) for p in PEOPLE],
+                recipes={k: dict(name=r['name'], emoji=r['emoji'], cost=r['cost'], cert=r['cert'], steps=list(r['steps']), churn=list(r['churn']),
+                                 steam=r['steam'], blend=r['blend'], note=r['note'],
+                                 ings=[{kk: x[kk] for kk in ('id', 'name', 'unit', 'opts', 'card')} for x in r['ings']])
+                         for k, r in RECIPES.items()},
+                fire=FIRE, cook_ok=list(COOK_OK), boil_at=BOIL_AT, cool_ok=COOL_OK, churn_min=list(CHURN_MIN), home_plus=HOME_PLUS,
+                home_max=HOME_MAX, cert_id=CERT_ID, cert_free_day=CERT_FREE_DAY, step_label=STEP_LABEL, defect_note=DEFECT_NOTE,
+                apprentice=APPRENTICE)
 
 
 def hint(c: dict, t: dict) -> str:
@@ -1234,7 +1630,8 @@ def validate_task(t: dict, original: dict) -> None:
             kit.need(isinstance(x, dict) and set(x) == {'f', 'g', 'a', 'x'} and x['f'] in FLAVOUR, 'Viên kem sai.')
             kit.integer(x['g'], 1, 400)
             kit.integer(x['a'], 0, ADJ_MAX)
-            kit.need(isinstance(x['x'], list) and set(x['x']) <= {'rf', 'mushy', 'dirty'} and len(x['x']) <= 3, 'Viên kem sai.')
+            kit.need(isinstance(x['x'], list) and set(x['x']) <= {'rf', 'mushy', 'dirty', 'hm', 'icy', 'grainy'} and len(x['x']) <= 4,
+                     'Viên kem sai.')
     kit.integer(t.get('seq'), 0, 1000)
     _vbool(t.get('tare'))
     kit.need(t.get('pack') in (None, *PACKS), 'Cách xếp khay sai.')
@@ -1275,11 +1672,38 @@ def validate_data(c: dict) -> None:
     _vbool(w['fresh'])
     kit.need(isinstance(d['tubs'], dict) and set(d['tubs']) <= set(FLAVOUR), 'Hộp kem đang múc sai.')
     for tub in d['tubs'].values():
-        kit.need(isinstance(tub, dict) and set(tub) == {'g', 'c', 'day', 'rf'}, 'Hộp kem đang múc sai.')
+        kit.need(isinstance(tub, dict) and set(tub) in ({'g', 'c', 'day', 'rf'}, {'g', 'c', 'day', 'rf', 'hm'}), 'Hộp kem đang múc sai.')
         kit.integer(tub['g'], 0, TUB_G + ADJ_G * ADJ_MAX * SCOOP_MAX)
         kit.integer(tub['c'], 0, 10000)
         kit.integer(tub['day'], 0, 10 ** 7)
         _vbool(tub['rf'])
+        kit.need(tub.get('hm') in (None, 'ok', 'soft', 'icy', 'grainy'), 'Hộp kem đang múc sai.')
+    home = d['home']
+    kit.need(isinstance(home, list) and len(home) <= HOME_MAX, 'Kem nhà làm sai.')
+    for h in home:
+        kit.need(isinstance(h, dict) and set(h) == {'f', 'q', 'day', 'c'} and h['f'] in RECIPES and h['q'] in QUALITY
+                 and h['q'] != 'burnt', 'Kem nhà làm sai.')
+        kit.integer(h['day'], 0, 10 ** 7)
+        kit.integer(h['c'], 0, 10000)
+    b = d['batch']
+    if b is not None:
+        kit.need(isinstance(b, dict) and set(b) == {'f', 'step', 'ing', 'temp', 'n', 'churn', 'q', 'cost', 'day'} and b['f'] in RECIPES,
+                 'Mẻ kem đang làm sai.')
+        r = RECIPES[b['f']]
+        kit.integer(b['step'], 0, len(r['steps']) - 1)
+        kit.need(isinstance(b['ing'], dict) and all(any(x['id'] == k and v in x['opts'] for x in r['ings']) for k, v in b['ing'].items()),
+                 'Mẻ kem đang làm sai.')
+        kit.integer(b['temp'], 0, 120)
+        kit.integer(b['n'], 0, 20)
+        kit.need(b['churn'] is None or b['churn'] in CHURN_MIN, 'Mẻ kem đang làm sai.')
+        kit.need(isinstance(b['q'], list) and len(b['q']) <= 10 and set(b['q']) <= set(DEFECT_RANK), 'Mẻ kem đang làm sai.')
+        kit.integer(b['cost'], 0, 10000)
+        kit.integer(b['day'], 0, 10 ** 7)
+    lr = d['learn']
+    kit.need(isinstance(lr, dict) and set(lr) == {'task', 'codes', 'done'}, 'Học nghề sai.')
+    kit.need(lr['task'] is None or (isinstance(lr['task'], str) and len(lr['task']) <= 80), 'Học nghề sai.')
+    kit.need(isinstance(lr['codes'], list) and len(lr['codes']) <= len(CATCH) and set(lr['codes']) <= set(CATCH), 'Học nghề sai.')
+    _vbool(lr['done'])
     kit.need(d['refrozen'] is None or d['refrozen'] in FLAVOUR, 'Hộp kem hỏng sai.')
     kit.need(isinstance(d['regulars'], dict) and set(d['regulars']) <= {str(i) for i in REG_STORY}, 'Sổ khách quen sai.')
     for v in d['regulars'].values():

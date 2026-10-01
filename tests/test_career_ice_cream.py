@@ -56,6 +56,7 @@ class Base(unittest.TestCase):
         d['fz'].update(temp=-18, knob=4, lid=False, read=True)
         d['well'] = dict(n=0, fresh=True)
         d['refrozen'] = None
+        d['learn']['done'] = True            # past the apprenticeship (tested on its own below)
         for x in KM.ITEMS:
             kit.add_lot(self.j.c, x['id'], 6, x['cost'], 30, 'test')
         return self.j.task
@@ -581,6 +582,286 @@ class OldSaves(Base):
         for cid, raw in before.items():
             self.assertEqual(json.dumps(m['careers'][cid], sort_keys=True, ensure_ascii=False), raw, cid)
         self.assertIn('ice_cream', m['journey']['unlocked'])
+
+
+class HouseBatch(Base):
+    """Kem nhà làm: measure, cook, cool, churn, freeze; the tub sells the next day."""
+
+    def morning(self):
+        self.j = Journey('ice_cream')
+        self.j.act('kem_intro')
+        self.d['learn']['done'] = True
+
+    def measure(self, f, wrong=None):
+        for x in KM.RECIPES[f]['ings']:
+            amt = x['right']
+            if wrong and x['id'] == wrong[0]:
+                amt = wrong[1]
+            self.j.act('kem_mk_add', ing=x['id'], amt=amt)
+        self.j.act('kem_mk_next')
+
+    def cook(self, stop_at=80):
+        goal = stop_at if stop_at > KM.COOK_OK[1] else min(stop_at, KM.COOK_OK[1])
+        while self.d['batch']['temp'] < KM.COOK_OK[0] or (stop_at > KM.COOK_OK[1] and self.d['batch']['temp'] < stop_at):
+            fire = 'lon' if self.d['batch']['temp'] + 16 < goal else 'nho'
+            self.j.act('kem_mk_heat', fire=fire)
+            if 'burnt' in self.d['batch']['q']:
+                return
+        self.j.act('kem_mk_next')
+
+    def cool(self):
+        while self.d['batch']['temp'] > KM.COOL_OK:
+            self.j.act('kem_mk_cool')
+        self.j.act('kem_mk_next')
+
+    def coconut(self, wrong=None, churn=30, stop_at=80, cooled=True):
+        money = self.j.c['money']
+        self.j.act('kem_mk_start', f='dua')
+        self.assertEqual(self.j.c['money'], money - KM.RECIPES['dua']['cost'])
+        self.measure('dua', wrong)
+        self.cook(stop_at)
+        if 'burnt' in self.d['batch']['q']:
+            return
+        if cooled:
+            self.cool()
+        else:
+            self.j.act('kem_mk_next')
+        self.j.act('kem_mk_churn', min=churn)
+        return self.j.act('kem_mk_freeze')
+
+    def test_a_good_coconut_batch_freezes_overnight_and_sells_higher(self):
+        self.morning()
+        r = self.coconut()
+        self.assertTrue(r.get('celebrate'), r)
+        self.assertEqual(self.d['home'], [dict(f='dua', q='ok', day=1, c=KM.RECIPES['dua']['cost'])])
+        self.assertIsNone(self.d['batch'])
+        with self.assertRaises(GameError):
+            self.j.act('kem_mk_start', f='bo')        # one batch a day
+        validate_state(self.j.state)
+        # Tomorrow: the house tub opens first and every scoop is worth a little more.
+        day, slot = find('serve', 'Ông Tám ngồi kể chuyện', days=range(2, 40))
+        home = copy.deepcopy(self.d['home'])
+        t = self.at(day, slot)
+        self.d['home'] = [dict(h, day=day - 1) for h in home]
+        self.j.act('ask', task=t['id'])
+        self.j.act('kem_vessel', task=t['id'], v='ly')
+        msg = self.j.act('kem_scoop', task=t['id'], f='dua', press='vua')['message']
+        self.assertIn('nhà làm', msg)
+        self.assertEqual(self.d['tubs']['dua']['hm'], 'ok')
+        self.assertEqual(self.d['home'], [])
+        g = self.j.get(t['id'])['cups'][0]['sc'][0]['g']
+        while g < 60 or g > 70:
+            self.j.act('kem_adjust', task=t['id'], delta=1 if g < 60 else -1)
+            g = self.j.get(t['id'])['cups'][0]['sc'][0]['g']
+        self.j.act('kem_lid', open=False)
+        r = self.j.act('kem_serve', task=t['id'])
+        self.assertIn('Kem nhà làm', r['message'])
+        self.assertEqual(self.j.get(t['id'])['price'], KM.PRICES['vien'] + KM.HOME_PLUS)
+        self.assertFalse(self.j.get(t['id']).get('slips'))
+        fb = KM.feedback(self.j.c, self.j.get(t['id']))
+        self.assertIn('home', [x['key'] for x in fb['criteria']])
+
+    def test_the_tub_is_not_for_sale_the_same_day(self):
+        self.morning()
+        self.coconut()
+        self.assertFalse(KM.has_tub(self.j.c, self.d, 'dua') and not kit.stock(self.j.c, 'dua')
+                         and not self.d['tubs'].get('dua'))
+        self.assertEqual(public_state(self.j.state)['careers']['ice_cream']['data']['home'][0]['ready'], False)
+
+    def test_mistakes_give_soft_icy_grainy_tubs(self):
+        cases = [(dict(wrong=('duong', 60)), 'icy'), (dict(wrong=('duong', 160)), 'soft'), (dict(churn=15), 'soft'),
+                 (dict(churn=45), 'grainy'), (dict(stop_at=KM.BOIL_AT), 'grainy'), (dict(cooled=False), 'soft'),
+                 (dict(wrong=('bot', 30)), 'grainy')]
+        for kw, q in cases:
+            with self.subTest(**{k: str(v) for k, v in kw.items()}):
+                self.morning()
+                r = self.coconut(**kw)
+                self.assertEqual(self.d['home'][0]['q'], q, r)
+                self.assertIn('Cô Hiền nếm thử', r['message'])
+                self.j.act('kem_mk_toss', i=0)
+                self.assertEqual(self.d['home'], [])
+                self.assertEqual(self.j.c['life']['waste'][-1]['reason'], 'Hộp kem nhà làm không đạt')
+
+    def test_a_scorched_pot_must_be_poured_away(self):
+        self.morning()
+        self.j.act('kem_mk_start', f='dua')
+        self.measure('dua')
+        for _ in range(8):
+            self.j.act('kem_mk_heat', fire='lon')
+            if 'burnt' in self.d['batch']['q']:
+                break
+        self.assertIn('burnt', self.d['batch']['q'])
+        self.assertTrue(public_state(self.j.state)['careers']['ice_cream']['data']['batch']['burnt'])
+        for a in ('kem_mk_next', 'kem_mk_cool', 'kem_mk_heat'):
+            with self.assertRaises(GameError):
+                self.j.act(a)
+        self.j.act('kem_mk_bin')
+        self.assertIsNone(self.d['batch'])
+        self.assertEqual(self.j.c['life']['waste'][-1]['reason'], 'Mẻ kem nhà làm hỏng')
+
+    def test_icy_house_tub_draws_a_complaint(self):
+        day, slot = find('serve', 'Ông Tám ngồi kể chuyện')
+        t = self.at(day, slot)
+        self.d['home'] = [dict(f='dua', q='icy', day=day - 1, c=7)]
+        for _ in range(6):
+            kit.take(self.j.c, 'dua', 1) if kit.stock(self.j.c, 'dua') else None
+        self.j.act('ask', task=t['id'])
+        self.j.act('kem_vessel', task=t['id'], v='ly')
+        self.scoop(t['id'], 'dua')
+        self.j.act('kem_lid', open=False)
+        self.j.act('kem_serve', task=t['id'])
+        self.assertIn('icy', self.codes(t['id']))
+        self.assertEqual(self.j.get(t['id'])['price'], KM.PRICES['vien'])
+
+    def test_avocado_is_blended_not_cooked(self):
+        self.morning()
+        self.j.act('kem_mk_start', f='bo')
+        self.measure('bo')
+        with self.assertRaises(GameError):
+            self.j.act('kem_mk_heat', fire='nho')
+        self.j.act('kem_mk_blend')
+        self.j.act('kem_mk_next')                    # one turn only: lumps of avocado left
+        self.j.act('kem_mk_churn', min=25)
+        self.j.act('kem_mk_freeze')
+        self.assertEqual(self.d['home'][0]['q'], 'grainy')
+
+    def test_taro_needs_the_certificate_in_the_story(self):
+        story = dict(journey=dict(story=True, certificates={}))
+        c = dict(day=9)
+        self.assertFalse(KM.recipe_open(story, c, 'khoai_mon'))
+        self.assertTrue(KM.recipe_open(story, c, 'dua'))
+        story['journey']['certificates'][KM.CERT_ID] = dict(score=83, best=83, earned_day=4, attempts=1)
+        self.assertTrue(KM.recipe_open(story, c, 'khoai_mon'))
+        self.assertFalse(KM.recipe_open(dict(), dict(day=KM.CERT_FREE_DAY - 1), 'khoai_mon'))
+        self.assertTrue(KM.recipe_open(dict(), dict(day=KM.CERT_FREE_DAY), 'khoai_mon'))
+        self.morning()
+        with self.assertRaises(GameError):
+            self.j.act('kem_mk_start', f='khoai_mon')
+
+    def test_taro_is_steamed_first(self):
+        day, slot = find('serve', 'Ông Tám ngồi kể chuyện', days=range(KM.CERT_FREE_DAY, 40))
+        self.at(day, slot)
+        self.j.act('kem_mk_start', f='khoai_mon')
+        for _ in range(KM.RECIPES['khoai_mon']['steam']):
+            self.j.act('kem_mk_steam')
+        self.j.act('kem_mk_next')
+        self.measure('khoai_mon')
+        self.cook()
+        self.cool()
+        self.j.act('kem_mk_churn', min=30)
+        self.j.act('kem_mk_freeze')
+        self.assertEqual(self.d['home'][0], dict(f='khoai_mon', q='ok', day=day, c=KM.RECIPES['khoai_mon']['cost']))
+
+    def test_an_unfinished_batch_is_poured_away_at_close(self):
+        self.morning()
+        setup = self.j.task
+        for a in ('kem_thermo', 'kem_check', 'kem_well'):
+            self.j.act(a)
+        self.j.act('kem_knob', knob=4)
+        if self.d['refrozen']:
+            self.j.act('kem_discard')
+        self.j.act('kem_open', task=setup['id'])
+        self.j.act('kem_mk_start', f='dua')
+        self.settle_desk()
+        r = self.j.act('end_day', carry_event=True)
+        self.assertTrue(any('làm dở' in x for x in r['summary']['career']['lines']))
+        self.assertIsNone(self.d['batch'])
+        self.assertEqual(self.d['today']['batches'], 1)
+        self.j.act('start_day')
+        self.assertEqual(self.d['today']['batches'], 0)
+        validate_state(self.j.state)
+
+    def test_validator_rejects_a_forged_batch(self):
+        self.morning()
+        self.j.act('kem_mk_start', f='dua')
+        validate_state(self.j.state)
+        for mutate in (lambda d: d['batch'].update(f='sau_rieng'), lambda d: d['batch']['ing'].update(duong=999),
+                       lambda d: d['batch'].update(q=['tasty']), lambda d: d.update(home=[dict(f='dua', q='burnt', day=1, c=7)]),
+                       lambda d: d.update(home=[dict(f='dua', q='ok', day=1, c=7)] * 4),
+                       lambda d: d['learn'].update(codes=['nap']), lambda d: d['tubs'].update(dua=dict(g=10, c=1, day=1, rf=False, hm='wow'))):
+            bad = copy.deepcopy(self.j.state)
+            mutate(bad['careers']['ice_cream']['ext']['data'])
+            with self.assertRaises(GameError):
+                validate_state(bad)
+
+
+class Apprenticeship(Base):
+    """Học nghề: the first three customers with cô Hiền at your side."""
+
+    def test_cohien_catches_a_thin_scoop_once_and_teaches(self):
+        day, slot = find('serve', 'Ông Tám ngồi kể chuyện')
+        t = self.at(day, slot)
+        self.d['learn']['done'] = False
+        self.assertTrue(public_state(self.j.state)['careers']['ice_cream']['data']['learn']['on'])
+        self.j.act('ask', task=t['id'])
+        self.j.act('kem_vessel', task=t['id'], v='ly')
+        self.scoop(t['id'], 'dua', press='nhe', fix=False)
+        self.j.act('kem_lid', open=False)
+        sc = self.j.get(t['id'])['cups'][0]['sc'][0]
+        if sc['g'] >= 60:
+            self.skipTest('the light scoop came out full')
+        r = self.j.act('kem_serve', task=t['id'])
+        self.assertFalse(r['correct'])
+        self.assertIn('Cô Hiền', r['message'])
+        self.assertEqual(self.j.get(t['id'])['stage'], 'prep')
+        self.assertFalse(self.j.get(t['id']).get('slips'))
+        # The same mistake again goes through (she taught it once).
+        self.j.act('kem_serve', task=t['id'])
+        self.assertIn('thin', self.codes(t['id']))
+
+    def test_allergy_is_caught_before_it_reaches_the_customer(self):
+        day, slot = find('serve', 'Tú với Mít chia ly kem')
+        t = self.at(day, slot)
+        self.d['learn']['done'] = False
+        self.j.act('ask', task=t['id'])
+        self.j.act('kem_vessel', task=t['id'], v='ly')
+        self.scoop(t['id'], 'socola')
+        self.scoop(t['id'], 'bo')
+        self.j.act('kem_top', task=t['id'], top='dau_phong')
+        self.j.act('kem_lid', open=False)
+        r = self.j.act('kem_serve', task=t['id'])
+        self.assertIn('dị ứng', r['message'])
+        self.j.act('kem_top', task=t['id'], top='banh_que')
+        self.serve_pay(t['id'])
+        self.assertFalse(self.j.get(t['id']).get('slips'))
+
+    def test_three_customers_and_she_lets_you_stand_alone(self):
+        self.j = Journey('ice_cream')
+        self.j.act('kem_intro')
+        setup = self.j.task
+        for a in ('kem_thermo', 'kem_check', 'kem_well'):
+            self.j.act(a)
+        self.j.act('kem_knob', knob=4)
+        self.j.act('kem_open', task=setup['id'])
+        self.assertEqual(self.d['desk']['fired'], 0)
+        last = None
+        for _ in range(KM.APPRENTICE):
+            t = next(t for t in self.j.c['tasks'] if t['kind'] != 'setup' and t['status'] not in ('completed', 'cancelled'))
+            if not t['known']:
+                self.j.act('ask', task=t['id'])
+            self.make(t['id'])
+            last = self.serve_pay(t['id'])
+            if self.d['stats']['customers'] < KM.APPRENTICE and not any(
+                    x['status'] not in ('completed', 'cancelled') and x['kind'] != 'setup' for x in self.j.c['tasks']):
+                self.j.act('more_work')
+        self.assertIn('Học nghề xong', last['message'])
+        self.assertTrue(self.d['learn']['done'])
+        self.assertFalse(public_state(self.j.state)['careers']['ice_cream']['data']['learn']['on'])
+        validate_state(self.j.state)
+
+
+class Certificate(unittest.TestCase):
+    def test_ice_cream_certificate_is_a_craft_certificate(self):
+        from game import certificates as ct
+        g = ct.INDEX[KM.CERT_ID]
+        self.assertEqual(g['careers'], ('ice_cream',))
+        self.assertFalse(g['hire'])
+        self.assertTrue(g['perk'])
+        self.assertNotIn('ice_cream', ct.BY_CAREER)          # no hire bonus: the shop has no interview
+        self.assertGreaterEqual(len(g['bank']), ct.DRAW + 4)
+        view = next(x for x in ct.content()['groups'] if x['id'] == KM.CERT_ID)
+        self.assertEqual(view['perk'], g['perk'])
+        self.assertFalse(view['hire'])
 
 
 if __name__ == '__main__':

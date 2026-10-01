@@ -35,7 +35,8 @@ from . import days as days_
 
 GROUPS = CC.GROUPS
 INDEX = {g['id']: g for g in GROUPS}
-BY_CAREER = {cid: g['id'] for g in GROUPS for cid in g['careers']}
+# Hired jobs only: a craft certificate (hire=False, e.g. Chứng chỉ làm kem) gives its `perk` instead of the hire bonus.
+BY_CAREER = {cid: g['id'] for g in GROUPS if g.get('hire', True) for cid in g['careers']}
 KEY = {g['id']: {q['id']: q for q in g['bank']} for g in GROUPS}
 
 # The owner: "có chứng chỉ thì tỷ lệ đậu tăng 50%". Read as +50 percentage points on the
@@ -192,8 +193,8 @@ def _grade(s: dict, j: dict, study: dict) -> dict:
     head = f'{g["name"]}: đúng {right}/{DRAW} câu ({score} điểm).'
     out = dict(cert=dict(id=gid, right=right, draw=DRAW, score=score, passed=passed, earned_now=passed and first))
     if passed and first:
-        out.update(message=f'{head} Đạt! {g["emoji"]} Chứng chỉ đã được cấp: tỷ lệ được nhận +{CERT_BONUS_PP}% ở {_places(gid)}.',
-                   celebrate=True)
+        gain = g['perk'] if g.get('perk') else f'tỷ lệ được nhận +{CERT_BONUS_PP}% ở {_places(gid)}.'
+        out.update(message=f'{head} Đạt! {g["emoji"]} Chứng chỉ đã được cấp: {gain}', celebrate=True)
     elif passed:
         out.update(message=f'{head} Điểm cao nhất của bạn: {rec["best"]}.', celebrate=score >= rec['best'])
     else:
@@ -251,6 +252,7 @@ def content() -> dict:
         class_days=CLASS_DAYS, self_days=SELF_DAYS, by_career=dict(BY_CAREER),
         groups=[dict({k: g[k] for k in ('id', 'emoji', 'name', 'short', 'issuer', 'intro', 'notes', 'practice')},
                      careers=list(g['careers']), fee=tuition(g['id']), retake_fee=retake_fee(g['id']),
+                     hire=g.get('hire', True), perk=g.get('perk', ''),
                      questions={q['id']: dict(text=q['text'], options=q['options'], hint=hint(g, q)) for q in g['bank']})
                 for g in GROUPS])
 

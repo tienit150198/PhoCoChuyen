@@ -117,7 +117,7 @@ function paperCard(env,k){
   return `<section class="card ct-result ${P.passed?'good':'bad'}"><span class="eyebrow">Bài thi gần nhất · Ngày ${fmt(P.day)}</span>
     <h3>${g.emoji} ${esc(g.name)}: ${P.passed?'Đạt':'Chưa đạt'}</h3>
     <div class="ct-score"><b>${P.score}</b><span>điểm · đúng ${P.right}/${k.draw} câu</span></div>
-    ${P.passed?`<p class="small">Tỷ lệ được nhận +${k.bonus}% (tối đa ${k.cap}%) ở ${g.careers.map(cid=>esc(placeOf(api,cid))).join(', ')} khi điểm phỏng vấn chưa đủ 60.</p>`
+    ${P.passed&&g.perk?`<p class="small">🎁 ${esc(g.perk)}</p>`:P.passed?`<p class="small">Tỷ lệ được nhận +${k.bonus}% (tối đa ${k.cap}%) ở ${g.careers.map(cid=>esc(placeOf(api,cid))).join(', ')} khi điểm phỏng vấn chưa đủ 60.</p>`
       :`<p class="small">Cần đúng ${k.pass_mark}/${k.draw} câu. Xem lời giải bên dưới rồi thi lại: mỗi lần là một đề khác, vẫn có 💡 gợi ý.</p>`}
     ${again?`<div class="ct-actions">${again}</div>`:''}
     <details class="ct-box"${!P.passed&&bad.length?' open':''}><summary>Xem lời giải (${bad.length?`${bad.length} câu sai`:'đúng hết'})</summary>${list}</details></section>`;
@@ -140,7 +140,7 @@ function groupCard(env,k,g,focus){
   return `<article class="jr-card ct-group${focus?' focus':''}${has?' earned':''}" id="ct-${esc(g.id)}"><div class="ct-top"><span class="ct-emoji" aria-hidden="true">${g.emoji}</span><div class="grow"><h3>${esc(g.name)}</h3><small class="muted">${esc(g.issuer)}</small></div></div>
     <div class="ct-status">${status}</div>
     <p class="small">${esc(g.intro)}</p>
-    <p class="small muted">Dùng cho: ${g.careers.filter(cid=>api.state.careers[cid]).map(cid=>esc(placeOf(api,cid))).join(', ')}</p>
+    <p class="small muted">Dùng cho: ${g.careers.filter(cid=>api.state.careers[cid]).map(cid=>esc(placeOf(api,cid))).join(', ')}</p>${g.perk?`<p class="small">🎁 ${esc(g.perk)}</p>`:''}
     ${actions}</article>`;
 }
 
@@ -154,7 +154,7 @@ export function certsView(env){
   const st=J.study,sg=st&&k.groups.find(x=>x.id===st.cert);
   const focus=ui.certFocus&&k.groups.some(g=>g.id===ui.certFocus)?ui.certFocus:null;
   const order=[...k.groups].sort((a,b)=>(b.id===focus)-(a.id===focus));
-  const lead=`Đề ngắn ${k.draw} câu, đúng ${k.pass_mark} là đạt, được mở sách và có 💡 gợi ý. Có chứng chỉ thì khi phỏng vấn chưa đủ điểm vẫn thêm ${k.bonus}% cơ hội được nhận.`;
+  const lead=`Đề ngắn ${k.draw} câu, đúng ${k.pass_mark} là đạt, được mở sách và có 💡 gợi ý. Có chứng chỉ thì khi phỏng vấn chưa đủ điểm vẫn thêm ${k.bonus}% cơ hội được nhận. Chứng chỉ có dấu 🎁 thì mở thêm món mới ở chỗ làm.`;
   return head(title,esc(lead))+`<div class="sheet-body jr-body ct-body">
     ${sg?studyCard(env,k,sg,st):''}${paperCard(env,k)}
     <h3 class="jr-sub">Các chứng chỉ · ví còn ${fmt(J.wallet)} xu</h3>
