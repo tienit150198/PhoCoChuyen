@@ -22,6 +22,9 @@ What it does
   4. after --duration seconds reports: sockets open, messages sent, deliveries, p50/p95/p99 delivery latency
      (send → every receiver, Cả phố), the same for moves (a stroller's `move` → the `walk` diff on the screens of
      the others in its instance), errors, and the live process's CPU (average and peak, % of one core) and RSS.
+     With --weddings N (LIVE_WEDDING=1), the first N × (--guests + 2) sockets are N couples and their guests at N live
+     wedding parties booked for now (60 visible each, the rest watch): they move, cheer and are counted like strollers;
+     the report has their move-delivery latency apart.
 The spec's budget: p95 < 300 ms at 2,000 sockets: 500 strolling in 25 rooms, 1,500 in chat, Cả phố at 5 messages/s
 (docs/superpowers/specs/2026-09-30-live-chat-street-design.md).
 """
@@ -94,9 +97,31 @@ def make_players(n: int, db_url: str | None, db_path: str | None, friends_every:
     return tokens
 
 
+def make_weddings(tokens: list, n: int, per: int, db_url: str | None, db_path: str | None) -> list:
+    """N couples (the first two of each group of per + 2 tokens) with a party booked a minute from now (open). Returns
+    the wedding ids."""
+    if db_url:
+        os.environ['DATABASE_URL'] = db_url
+    from game.storage import Store
+    store = Store(db_path or 'loadtest.sqlite3')
+    t = time.time()
+    ids = []
+
+    def run(db):
+        for k in range(n):
+            a, b = (hashlib.sha256(x.encode()).hexdigest() for x in tokens[k * (per + 2):k * (per + 2) + 2])
+            wid = 900000 + k
+            db.execute("INSERT INTO couples(id, a, b, status, since) VALUES(?, ?, ?, 'engaged', ?)", (wid, a, b, t))
+            db.execute("INSERT INTO wedding_parties(wedding, couple, a, b, at, status, created) VALUES(?, ?, ?, ?, ?, 'booked', ?)", (wid, wid, a, b, t + 60, t))
+            ids.append(wid)
+    store.transaction(run)
+    store.close_pool()
+    return ids
+
+
 # ---------------------------------------------------------------- 2. the service
 def start_live(port: int, db_url: str | None, db_path: str | None, origin: str, log_path: str):
-    env = dict(os.environ, LIVE_CHAT='1', LIVE_STREET='1', LIVE_PORT=str(port), LIVE_ORIGINS=origin, LIVE_PER_IP='1000000',
+    env = dict(os.environ, LIVE_CHAT='1', LIVE_STREET='1', LIVE_WEDDING='1', LIVE_PORT=str(port), LIVE_ORIGINS=origin, LIVE_PER_IP='1000000',
                LIVE_HANDSHAKES_PER_IP='1000000', LIVE_PER_PLAYER='5', QUIET='1')
     env.pop('DATABASE_URL', None)
     if db_url:
@@ -145,24 +170,31 @@ async def _clients(idx, url, origin, items, every, churn_per_s, duration, ramp_p
     lat: list = []
     mlat: list = []
     stats = dict(open=0, failed=0, sent=0, recv=0, errors=0, closed=0, presence=0, reconnects=0, moves=0, move_recv=0, said=0, says=0,
-                 walk_frames=0, walk_in=0)
+                 walk_frames=0, walk_in=0, wed_moves=0, wed_recv=0)
     sent_at: dict = {}
     moved_at: dict = {}             # (pid, x, y) -> when this process sent that move
+    wed_moved: dict = {}            # the same for moves in a wedding party
+    wlat: list = []
+    codes: dict = {}                # error ref:code -> count
     stop = asyncio.Event()
     socks: dict = {}
     roles = {i: r for i, (r, _, _) in enumerate(items)}
 
-    async def stroll(ws, token, place, reader):
-        pid, g = pid_of_token(token), GEO[place]
-        await ws.send(json.dumps({'t': 'walk_in', 'place': place, 'look': None, 'g': random.choice(['male', 'female'])}))
+    async def stroll(ws, token, place, reader, wedding=None):
+        pid, g = pid_of_token(token), GEO['wedding' if wedding else place]
+        sent = wed_moved if wedding else moved_at
+        if wedding:
+            await ws.send(json.dumps({'t': 'wed_in', 'id': wedding, 'look': None, 'g': random.choice(['male', 'female'])}))
+        else:
+            await ws.send(json.dumps({'t': 'walk_in', 'place': place, 'look': None, 'g': random.choice(['male', 'female'])}))
         stats['walk_in'] += 1
         await asyncio.sleep(random.random() * move_every)
         next_say = time.monotonic() + random.uniform(0.3, 1.0) * say_every
         while not stop.is_set() and not reader.done():
             x, y = g.random_point(25)
-            moved_at[(pid, x, y)] = time.monotonic()
+            sent[(pid, x, y)] = time.monotonic()
             await ws.send(json.dumps({'t': 'move', 'x': x, 'y': y}))
-            stats['moves'] += 1
+            stats['wed_moves' if wedding else 'moves'] += 1
             if time.monotonic() >= next_say:
                 await ws.send(json.dumps({'t': 'say', 'text': f'dạo phố tí {random.randint(1, 10 ** 6)}'}))
                 stats['says'] += 1
@@ -183,12 +215,14 @@ async def _clients(idx, url, origin, items, every, churn_per_s, duration, ramp_p
             stats['open'] += 1
             try:
                 await ws.send('{"t":"hello","v":1}')
-                if role != 'walk':
+                if role not in ('walk', 'wed'):
                     await ws.send('{"t":"join","ch":"town"}')
                 reader = asyncio.ensure_future(read(ws))
                 pinger = asyncio.ensure_future(ping(ws))
                 if role == 'walk':
                     await stroll(ws, token, place, reader)
+                elif role == 'wed':
+                    await stroll(ws, token, None, reader, wedding=place)
                 elif chatter:
                     await asyncio.sleep(random.random() * every)
                     while not stop.is_set() and not reader.done():
@@ -229,10 +263,16 @@ async def _clients(idx, url, origin, items, every, churn_per_s, duration, ramp_p
                             if at is not None:
                                 stats['move_recv'] += 1
                                 mlat.append(now - at)
+                            at = wed_moved.get((e['pid'], end[0], end[1]))
+                            if at is not None:
+                                stats['wed_recv'] += 1
+                                wlat.append(now - at)
                 elif t == 'said':
                     stats['said'] += 1
                 elif t == 'error':
                     stats['errors'] += 1
+                    k = f"{f.get('ref')}:{f.get('code')}"
+                    codes[k] = codes.get(k, 0) + 1
                 elif t == 'presence':
                     stats['presence'] += 1
         except Exception:  # noqa: BLE001
@@ -267,7 +307,7 @@ async def _clients(idx, url, origin, items, every, churn_per_s, duration, ramp_p
     if ch:
         ch.cancel()
     await asyncio.wait(tasks, timeout=10)
-    q.put(('done', idx, dict(stats, lat=lat, mlat=mlat)))
+    q.put(('done', idx, dict(stats, lat=lat, mlat=mlat, wlat=wlat, codes=codes)))
 
 
 # ---------------------------------------------------------------- 4. the run
@@ -285,6 +325,8 @@ def main():
     ap.add_argument('--pid', type=int, help='its process id (CPU, RSS) with --url')
     ap.add_argument('--every', type=float, default=10.0, help="a chatter's pause between messages (slow mode: >= 10)")
     ap.add_argument('--strollers', type=int, default=500, help='sockets strolling (Đi dạo) in groups of 20 per instance')
+    ap.add_argument('--weddings', type=int, default=0, help='live wedding parties (LIVE_WEDDING), each with --guests guests and the couple')
+    ap.add_argument('--guests', type=int, default=60, help='guests per wedding party')
     ap.add_argument('--move-every', type=float, default=2.0, help="a stroller's pause between two moves (seconds)")
     ap.add_argument('--say-every', type=float, default=45.0, help="a stroller's pause between two speech bubbles (seconds)")
     args = ap.parse_args()
@@ -305,10 +347,15 @@ def main():
         live = start_live(port, args.db_url, db_path, origin, os.path.join(tmp, 'live.log'))
         url, pid = f'ws://127.0.0.1:{port}/live', live.pid
     from live.street_data import PUBLIC
-    walkers = min(args.strollers, len(tokens))
+    per = args.guests + 2
+    wed_n = min(len(tokens), args.weddings * per)
+    weds = make_weddings(tokens, args.weddings, args.guests, args.db_url, db_path) if args.weddings else []
+    rest = tokens[wed_n:]
+    walkers = min(args.strollers, len(rest))
     chat_n = max(1, round(args.rate * args.every))
-    items = [('walk', t, PUBLIC[(i // 20) % len(PUBLIC)]) if i < walkers else ('chat' if i - walkers < chat_n else 'idle', t, None)
-             for i, t in enumerate(tokens)]
+    items = [('wed', t, weds[i // per]) for i, t in enumerate(tokens[:wed_n])]
+    items += [('walk', t, PUBLIC[(i // 20) % len(PUBLIC)]) if i < walkers else ('chat' if i - walkers < chat_n else 'idle', t, None)
+              for i, t in enumerate(rest)]
     q = mp.Queue()
     parts = [items[i::args.procs] for i in range(args.procs)]
     procs = [mp.Process(target=client_proc, args=(i, url, origin, parts[i], args.every, max(0, round(args.churn / args.procs)),
@@ -356,8 +403,9 @@ def main():
         live.wait(15)
     lat = sorted(x for r in results for x in r['lat'])
     mlat = sorted(x for r in results for x in r['mlat'])
+    wlat = sorted(x for r in results for x in r['wlat'])
     tot = {k: sum(r[k] for r in results) for k in ('sent', 'recv', 'errors', 'failed', 'presence', 'reconnects', 'closed', 'moves', 'move_recv',
-                                                   'said', 'says', 'walk_frames', 'walk_in')}
+                                                   'said', 'says', 'walk_frames', 'walk_in', 'wed_moves', 'wed_recv')}
 
     def pcts(xs):
         at = lambda p: round(1000 * xs[min(len(xs) - 1, int(p * len(xs)))], 1)
@@ -369,7 +417,10 @@ def main():
                   latency_ms=dict(p50=pct(.5), p95=pct(.95), p99=pct(.99), max=round(1000 * lat[-1], 1) if lat else None, n=len(lat)),
                   strollers=walkers, moves_sent=tot['moves'], move_deliveries_measured=tot['move_recv'], walk_frames=tot['walk_frames'],
                   move_latency_ms=pcts(mlat), bubbles_sent=tot['says'], bubbles_received=tot['said'],
-                  errors=tot['errors'], connect_failures=tot['failed'], reconnects=tot['reconnects'], presence_frames=tot['presence'],
+                  weddings=len(weds), wedding_sockets=wed_n, wedding_moves_sent=tot['wed_moves'], wedding_move_deliveries_measured=tot['wed_recv'],
+                  wedding_move_latency_ms=pcts(wlat),
+                  errors=tot['errors'], error_codes={k: sum(r['codes'].get(k, 0) for r in results) for k in {c for r in results for c in r['codes']}},
+                  connect_failures=tot['failed'], reconnects=tot['reconnects'], presence_frames=tot['presence'],
                   live_cpu_pct=dict(avg=round(statistics.mean(steady), 1) if steady else None, peak=round(max(steady), 1) if steady else None),
                   live_rss_mb=round(peak_rss, 1), live_cpu_s_total=round((last[0] - cpu0), 1) if pid else None, health=health,
                   db='postgresql' if args.db_url else 'sqlite')

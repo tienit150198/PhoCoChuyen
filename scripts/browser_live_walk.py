@@ -107,9 +107,11 @@ async def where(p, pid):
 
 
 async def open_walk(p):
+    """Khu phố › Đi dạo (the menu hub; the "Thêm" sheet on a phone)."""
     await p.page.evaluate("document.querySelector('[data-action=v4Menu]')?.click()")
-    await p.page.wait_for_selector('#rail [data-action=liveWalk]', timeout=15000)
-    await p.page.click('#rail [data-action=liveWalk]')
+    await p.page.wait_for_selector('#rail .rail-group[data-group=pho]', timeout=15000)
+    await p.page.click('#rail .rail-group[data-group=pho]')
+    await p.page.click('#rail .rail-sub[data-group=pho] [data-action=liveWalk]')
     await p.page.wait_for_selector('.walk-sheet[open] .wk-canvas', timeout=10000)
 
 
