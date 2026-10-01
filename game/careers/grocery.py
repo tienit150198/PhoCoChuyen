@@ -2007,10 +2007,13 @@ def _bulk_action(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         kit.need(b['stage'] == 'quote', 'Đơn này đã chốt giá rồi.')
         off = kit.integer(p.get('off'), 0, 100)
         kit.need(off in BULK_OFFERS, 'Mức bớt không có trong bảng giá sỉ.')
-        kit.need(not b['offers'] or off > b['offers'][-1], 'Lần báo giá sau phải bớt nhiều hơn lần trước.')
-        price = _bulk_list(c, t) * (100 - off) // 100
-        b['offers'].append(off)
-        if price * 100 <= _bulk_list(c, t, base=True) * n['_max']:
+        # The deepest discount turned down leaves nothing lower to offer: the customer walks (a bill stuck
+        # there before this, offers == [15], ends on the next tap instead of refusing every price).
+        if not b['offers'] or b['offers'][-1] < BULK_OFFERS[-1]:
+            kit.need(not b['offers'] or off > b['offers'][-1], 'Lần báo giá sau phải bớt nhiều hơn lần trước.')
+            b['offers'].append(off)
+        price = _bulk_list(c, t) * (100 - b['offers'][-1]) // 100
+        if b['offers'][-1] == off and price * 100 <= _bulk_list(c, t, base=True) * n['_max']:
             b['stage'] = 'deliver'
             b['price'] = price
             b['deposit'] = -(-price * n['deposit'] // 100)
@@ -2019,7 +2022,7 @@ def _bulk_action(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
             d['sales'] += b['deposit']
             d['day_sales'] += b['deposit']
             return dict(message=f'{who} gật đầu: “Chốt {price} xu nha!” Nhận cọc {b["deposit"]} xu. Soạn đủ hàng rồi giao trước khi đóng ca.', celebrate=True)
-        if len(b['offers']) >= 2:
+        if len(b['offers']) >= 2 or b['offers'][-1] == BULK_OFFERS[-1]:
             b['stage'] = 'lost'
             t['result'] = dict(price=0, lost=1)
             kit.metric(c, 'gr_bulk_lost')
@@ -3039,6 +3042,14 @@ def public_data(c: dict) -> dict:
     d['price_range'] = {k: [_floor_price(k), _cap_price(k)] for k in PRICES}
     d['near'] = {x['id']: _near_units(c, x['id']) for x in ITEMS}
     d['held'] = {x['id']: _held(c, x['id'], None) for x in ITEMS}
+    # Weighed lines whose stall has nothing left for that bill (gr_weigh refuses them): {task id: [line, …]}.
+    d['scale_out'] = {}
+    for t in c['tasks']:
+        if (t.get('career') == ID and t.get('kind') == 'checkout' and t.get('stage') == 'basket'
+                and t['status'] not in ('completed', 'referred', 'cancelled')):
+            out = [i for i, line in enumerate(t['needs']['lines']) if line.get('weighed') and _physical_grams(c, t, line['item'], line['_grams']) <= 0]
+            if out:
+                d['scale_out'][t['id']] = out
     d['desk'] = _desk_view(c, kit.data(c))
     d.pop('fine', None)
     return d

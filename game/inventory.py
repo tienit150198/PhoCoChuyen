@@ -753,6 +753,9 @@ def item_name(item_id: str) -> str:
     return item_id
 
 
+TRANSIT_CAP = 8  # orders on the way at once (inv_order); the stock screens show it before ordering
+
+
 def _in_transit(x: dict, item_id: str) -> int:
     return sum(o['qty'] for o in x['orders'] if o['item'] == item_id and o['status'] == 'in_transit')
 
@@ -873,7 +876,7 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         cap = capacity(career)
         need(count(c, it['id']) + _in_transit(x, it['id']) + qty <= cap,
              f'Kho chứa tối đa {cap} phần mỗi loại (tính cả hàng đang giao).')
-        need(_shipments(x) < 8, 'Đang có nhiều đơn chờ giao. Nhận bớt rồi đặt tiếp nhé.')
+        need(_shipments(x) < TRANSIT_CAP, 'Đang có nhiều đơn chờ giao. Nhận bớt rồi đặt tiếp nhé.')
         need(_transit_lines(x) < TRANSIT_LINES, 'Đang có nhiều hàng chờ giao. Nhận bớt rồi đặt tiếp nhé.')
         price = line_price(it, qty, sup)
         cost, fee = price['cost'], ship_fee(sup, price['cost'])
@@ -1099,7 +1102,7 @@ def _cart_place(s: dict, c: dict, career: str, x: dict, p: dict, level: int) -> 
         need(it.get('unlock', 1) <= level, f'Mở khóa {it["name"]} ở cấp {it.get("unlock", 1)}.')
         need(count(c, it['id']) + _in_transit(x, it['id']) + l['qty'] <= cap,
              f'Kệ {it["name"]} không đủ chỗ cho {l["qty"]} {it.get("unit", "phần")} (tính cả hàng đang giao). Bớt lại nhé.')
-    need(_shipments(x) < 8, 'Đang có nhiều đơn chờ giao. Nhận bớt rồi đặt tiếp nhé.')
+    need(_shipments(x) < TRANSIT_CAP, 'Đang có nhiều đơn chờ giao. Nhận bớt rồi đặt tiếp nhé.')
     need(_transit_lines(x) + len(lines) <= TRANSIT_LINES, 'Đang có nhiều hàng chờ giao. Nhận bớt rồi đặt tiếp nhé.')
     deal = cart.get('deal')
     q = cart_price(career, sup, lines, deal, day)
@@ -1273,6 +1276,7 @@ def public(c: dict, career: str) -> dict | None:
     v['expiring'] = {i['id']: sum(l['qty'] for l in x['lots'] if l['item'] == i['id'] and l['expires'] == c['day']) for i in catalogue(career)}
     v['locked'] = [i['id'] for i in catalogue(career) if i.get('unlock', 1) > level]
     v['capacity'] = capacity(career)
+    v['transit_cap'], v['transit_lines'] = TRANSIT_CAP, TRANSIT_LINES
     # Derived numbers for the stock screen: what is on the way, room left on
     # each shelf and how many game days the oldest lot still has.
     v['arriving'] = {i['id']: _in_transit(x, i['id']) for i in catalogue(career)}

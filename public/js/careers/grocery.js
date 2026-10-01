@@ -6,7 +6,7 @@
 import {keepBarAboveFooter} from './food_kit.js';
 import {reqList,fold} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,finalGo,pending,stepLine,goAttrs} from '../v4/guide.js';
-import {restockGo,restockBar,restockButton,shortOf,orderQuote} from '../v4/restock.js';
+import {restockGo,restockBar,restockButton,shortOf,orderQuote,fullGo,vansLine} from '../v4/restock.js';
 const ID='grocery';
 const catalogue=x=>x.content.inventory?.items?.[ID]||[];
 const item=(x,id)=>catalogue(x).find(i=>i.id===id)||{id,name:id,emoji:'•',unit:''};
@@ -57,6 +57,11 @@ function jobNeeds(t,x){
   return need;
 }
 const shortNow=(t,x)=>t.known?shortOf(x.room,x.content,ID,jobNeeds(t,x),id=>free(x,id)):[];
+/** A weighed line whose stall has nothing left for this bill (server data.scale_out: the scale would refuse it). */
+const scaleOut=(t,x,i)=>(x.room.data?.scale_out?.[t.id]||[]).includes(i);
+const scaleRefill=(t,x,l)=>[{id:l.item,target:(x.room.inventory?.stock?.[l.item]||0)+1}];
+/** What the shop fund lacks for an order of `cost` xu (inv_order takes it all up front). */
+const lack=(x,cost)=>Math.max(0,cost-(Number(x.room.money)||0));
 /** The shelf item this shelf job is about, when it is running low (the crate on the task is not stock yet). */
 function shelfShort(t,x){
   const id=t.needs?.item,inv=x.room.inventory||{},cap=inv.capacity||60,line=Math.max(2,Math.floor(cap*.08));
@@ -132,9 +137,9 @@ function counterBasket(t,x){
   return `<div class="gr-basket">${n.lines.map((l,i)=>{
     const it=item(x,l.item);
     if(l.weighed){
-      const w=t.weighed[String(i)];
-      return `<div class="gr-line weighed ${w?'done':''}"><span class="gr-emoji">${it.emoji}</span><div class="grow"><b>${x.esc(it.name)}</b><small>${l.container?'🧺 để trong rổ nhựa của khách':'🛍️ túi của tiệm'} · cân ký · ${x.fmt(price(x,l.item))} xu/kg</small></div>
-        ${t.stage==='basket'?carBtn(x,w?'⚖️ Cân lại':'⚖️ Đặt lên cân','scale',{line:i,task:t.id},w?'ghost small':'small'):''}</div>`;
+      const w=t.weighed[String(i)],out=t.stage==='basket'&&scaleOut(t,x,i);
+      return `<div class="gr-line weighed ${w?'done':''}"><span class="gr-emoji">${it.emoji}</span><div class="grow"><b>${x.esc(it.name)}</b><small>${l.container?'🧺 để trong rổ nhựa của khách':'🛍️ túi của tiệm'} · cân ký · ${x.fmt(price(x,l.item))} xu/kg</small>${out?'<small class="gr-short">📦 Quầy hết hàng</small>':''}</div>
+        ${out?restockButton(x.room,scaleRefill(t,x,l),{task:t.id},'small ghost'):t.stage==='basket'?carBtn(x,w?'⚖️ Cân lại':'⚖️ Đặt lên cân','scale',{line:i,task:t.id},w?'ghost small':'small'):''}</div>`;
     }
     const have=t.scanned[l.item]||0,blocked=l.item==='beer'&&minor(t),gone=dropped(t,l.item);
     const flyer=rv[l.item]!=null&&!gone?` · <span class="gr-mini-flyer">Mây Mart ${x.fmt(rv[l.item])}</span>`:'';
@@ -156,11 +161,12 @@ function scalePanel(t,x){
   const i=Number(x.ui.scale);
   const l=t.needs.lines[i];
   if(!(x.ui.scaleFor===t.id&&l&&l.weighed))return '';
-  const tare=x.ui.tare===true,it=item(x,l.item);
+  const tare=x.ui.tare===true,it=item(x,l.item),out=scaleOut(t,x,i);
   return `<div class="gr-scale card"><div class="row spread"><h4>⚖️ Cân điện tử · ${it.emoji} ${x.esc(it.name)}</h4>${carBtn(x,'✕','scale',{line:-1,task:t.id},'ghost small')}</div>
     <div class="gr-scale-screen"><span>${l.container?'Rổ nhựa của khách đang nằm trên bàn cân':'Túi nilon mỏng của tiệm'}</span><b>${tare?'TARE ▸ 0 g':'—'}</b></div>
     <div class="row wrap">${carBtn(x,tare?'✓ Đã trừ bì (tare)':'Trừ bì (tare)','tare',{},tare?'primary small':'ghost small')}</div>
-    <div class="tile-grid gr-plu">${Object.keys(x.cc.weighed||{}).map(k=>{const p=item(x,k);return tile(x,'gr_weigh',{task:t.id,line:i,plu:k,tare},`<span class="tile-emoji">${p.emoji}</span><b>${x.esc(p.name)}</b><small>PLU · ${x.fmt(price(x,k))} xu/kg</small>`);}).join('')}</div></div>`;
+    ${out?`<div class="rs-bar" role="status"><p class="rs-line"><b>📦 Quầy ${x.esc(it.name.toLowerCase())} hết hàng</b> · nhập thêm rồi cân</p>${restockButton(x.room,scaleRefill(t,x,l),{task:t.id},'small primary')}</div>`:''}
+    <div class="tile-grid gr-plu">${Object.keys(x.cc.weighed||{}).map(k=>{const p=item(x,k);return tile(x,'gr_weigh',{task:t.id,line:i,plu:k,tare},`<span class="tile-emoji">${p.emoji}</span><b>${x.esc(p.name)}</b><small>PLU · ${x.fmt(price(x,k))} xu/kg</small>`,'',out);}).join('')}</div></div>`;
 }
 /** One line that a tap opens ("🛒 2 · Kệ hàng ▾"); remembered per key. Not a <details>: the sheet host
  * restores every <details> by position after a re-render. The body is drawn only while open. */
@@ -223,6 +229,8 @@ function checkoutSteps(t,x){
     }
     t.needs.lines.forEach((l,i)=>{if(!l.weighed)return;
       const w=t.weighed[String(i)],it=item(x,l.item),right=!!w&&w.plu===l.item&&(!l.container||w.tare);
+      // Stall empty for this bill: the scale would refuse it, so the step is getting it back on the counter.
+      if(!w&&scaleOut(t,x,i)){later.push({ok:null,label:`Cân ${it.name.toLowerCase()}`,note:'quầy hết',go:restockGo(x.room,scaleRefill(t,x,l),{task:id})});return;}
       const open=x.ui.scaleFor===t.id&&Number(x.ui.scale)===i,name=x.esc(it.name.toLowerCase());
       const go=w&&!right?{cmd:'gr_void',payload:{task:id,line:i},label:`✕ Xóa dòng cân ${name} để cân lại`}
         :w?null:!open?{act:'car:scale',data:{line:i,task:id},label:`⚖️ Đặt ${name} lên cân`}
@@ -406,15 +414,16 @@ function rushCost(x,it,n){const sups=x.room.inventory?.suppliers||x.content.inve
 function bulkJob(t,x){
   const b=t.bulk,n=t.needs,inv=x.room.inventory||{stock:{}},held=x.room.data?.held||{};
   const list=sum(n.lines.map(l=>price(x,l.item)*l.qty));
-  const shortOf=l=>Math.max(0,l.qty-Math.max(0,(inv.stock?.[l.item]||0)-(held[l.item]||0)));
-  const rows=n.lines.map(l=>{const it=item(x,l.item),s=shortOf(l);
+  const shortOf=l=>Math.max(0,l.qty-Math.max(0,(inv.stock?.[l.item]||0)-(held[l.item]||0))),full=fullGo(inv,t.id);
+  const rows=n.lines.map(l=>{const it=item(x,l.item),s=shortOf(l),due=lack(x,rushCost(x,it,Math.min(30,s)));
     return `<div class="gr-line ${s?'':'done'}"><span class="gr-emoji">${it.emoji}</span><div class="grow"><b>${x.esc(it.name)} × ${l.qty}</b><small>${x.fmt(price(x,l.item))} xu/${x.esc(priceUnit(x,l.item))} · kho còn ${inv.stock?.[l.item]||0}${s?` · <b class="bad">thiếu ${s}</b>`:' ✓'}</small></div>
-      ${b.stage==='deliver'&&s?x.confirmCmd(`⚡ Nhập ${Math.min(30,s)}`,'inv_order',{item:l.item,qty:Math.min(30,s),supplier:'express'},`Nhập hỏa tốc ${Math.min(30,s)} ${it.unit} ${it.name} · khoảng ${x.fmt(rushCost(x,it,Math.min(30,s)))} xu? Hỏa tốc 15–30 phút, nhớ mở thùng đếm ở Kho & giá.`,'small ghost'):''}</div>`;}).join('');
+      ${b.stage==='deliver'&&s&&full?x.button(full.label,full.act,full.data||{},'small ghost'):b.stage==='deliver'&&s&&due?`<button type="button" class="btn small ghost" disabled>⚡ thiếu ${x.fmt(due)} xu</button>`:b.stage==='deliver'&&s?x.confirmCmd(`⚡ Nhập ${Math.min(30,s)}`,'inv_order',{item:l.item,qty:Math.min(30,s),supplier:'express'},`Nhập hỏa tốc ${Math.min(30,s)} ${it.unit} ${it.name} · khoảng ${x.fmt(rushCost(x,it,Math.min(30,s)))} xu? Hỏa tốc 15–30 phút, nhớ mở thùng đếm ở Kho & giá.`,'small ghost'):''}</div>`;}).join('');
   let body='',cta='';
   if(b.stage==='quote'){
-    const last=b.offers.length?b.offers[b.offers.length-1]:-1;
-    body=`<h4 class="section-title">Báo giá sỉ · giá lẻ ${x.money(list)}</h4><p class="small muted">Khách chỉ nghe báo giá tối đa 2 lần${b.offers.length?' — còn 1 lần':''}.</p>
-      <div class="gr-choices">${(x.cc.bulk_offers||[0,5,10,15]).filter(v=>v>last).map(v=>x.cmd(`${v?`Bớt ${v}%`:'Giá lẻ'} · ${x.fmt(Math.floor(list*(100-v)/100))} xu`,'gr_bulk_quote',{task:t.id,off:v},'gr-choice')).join('')}</div>`;
+    const last=b.offers.length?b.offers[b.offers.length-1]:-1,left=(x.cc.bulk_offers||[0,5,10,15]).filter(v=>v>last);
+    // Turned down at the lowest price (a save from before 01/10 could hang here): the only move left is to let the customer go.
+    body=`<h4 class="section-title">Báo giá sỉ · giá lẻ ${x.money(list)}</h4><p class="small muted">Khách chỉ nghe báo giá tối đa 2 lần${b.offers.length&&left.length?' — còn 1 lần':''}.</p>
+      <div class="gr-choices">${left.map(v=>x.cmd(`${v?`Bớt ${v}%`:'Giá lẻ'} · ${x.fmt(Math.floor(list*(100-v)/100))} xu`,'gr_bulk_quote',{task:t.id,off:v},'gr-choice')).join('')||x.cmd('🙏 Không bớt thêm được · chào khách','gr_bulk_quote',{task:t.id,off:last},'gr-choice')}</div>`;
   }else if(b.stage==='deliver'){
     const short=n.lines.some(l=>shortOf(l)>0);
     body=`<div class="notice ${short?'amber':'green'}">Đã chốt ${x.money(b.price)} · nhận cọc ${x.money(b.deposit)}. ${short?'Kho còn thiếu hàng.':'Kho đủ hàng, soạn và giao được rồi!'} Giao trước khi đóng ca, không thì phải hoàn cọc.</div>
@@ -517,9 +526,9 @@ function bulkSteps(t,x){
     const it=item(x,l.item),s=Math.max(0,l.qty-Math.max(0,(inv.stock?.[l.item]||0)-(held[l.item]||0)));
     if(!s)return {ok:true,label:`Đủ ${l.qty} ${it.unit} ${it.name}`};
     const o=(inv.orders||[]).find(v=>v.item===l.item&&v.status==='in_transit'),n=Math.min(30,s);
-    const go=o?restockGo(x.room,[{id:l.item,target:(inv.stock?.[l.item]||0)+s}],{task:t.id})
-      :{cmd:'inv_order',payload:{item:l.item,qty:n,supplier:'express'},confirm:`Nhập hỏa tốc ${n} ${it.unit} ${it.name} · khoảng ${x.fmt(rushCost(x,it,n))} xu?`,label:`⚡ Nhập gấp ${n} ${x.esc(it.name)}`};
-    return {ok:null,label:`Đủ ${l.qty} ${it.unit} ${it.name}`,note:o&&!o.ready_now?`thiếu ${s} · hàng đang về`:`thiếu ${s}`,go};
+    const due=lack(x,rushCost(x,it,n));
+    const go=o?restockGo(x.room,[{id:l.item,target:(inv.stock?.[l.item]||0)+s}],{task:t.id}):fullGo(inv,t.id)||(due?null:{cmd:'inv_order',payload:{item:l.item,qty:n,supplier:'express'},confirm:`Nhập hỏa tốc ${n} ${it.unit} ${it.name} · khoảng ${x.fmt(rushCost(x,it,n))} xu?`,label:`⚡ Nhập gấp ${n} ${x.esc(it.name)}`});
+    return {ok:null,label:`Đủ ${l.qty} ${it.unit} ${it.name}`,note:o&&!o.ready_now?`thiếu ${s} · hàng đang về`:!o&&due?`thiếu ${s} · quỹ thiếu ${x.fmt(due)} xu`:`thiếu ${s}`,go};
   });
 }
 const bulkFinal=(t,x,steps)=>({label:'🚚 SOẠN HÀNG & GIAO',go:finalGo(steps,'gr_bulk_deliver',{task:t.id},{question:`Soạn hàng và giao, thu nốt ${x.fmt(t.bulk.price-t.bulk.deposit)} xu?`,confirm:true}),ready:!steps.some(s=>s.ok!==true)});
@@ -545,8 +554,10 @@ function hintFor(t,x){
 }
 
 /* ------------------------------------------------------------ stock & price tags */
+/** The three everyday suppliers, with this shop's terms (which goods each one sells, live quotes) when the room has them. */
+const supList=x=>(x.content.inventory?.suppliers||[]).map(s=>({...s,...(x.room.inventory?.suppliers||[]).find(v=>v.id===s.id)}));
 function supplierPick(x){
-  const sups=x.content.inventory?.suppliers||[],cur=x.ui.sup||'partner';
+  const sups=supList(x),cur=x.ui.sup||'partner';
   const short={market:'Chợ đầu mối',partner:'Nhà phân phối',express:'Hỏa tốc'};
   return `<div class="gr-sups" role="radiogroup" aria-label="Nhập từ">${sups.map(s=>`<button type="button" role="radio" aria-checked="${s.id===cur}" class="gr-sup ${s.id===cur?'on':''}" data-action="car:sup" data-sup="${s.id}" title="${x.esc(s.name)}"><b>${x.esc(s.emoji)} ${x.esc(short[s.id]||s.name)}</b><small>${x.esc(s.quote?.label||s.window||(s.lead===0?'có ngay':''))} · ${s.factor<1?'rẻ':s.factor>1?'đắt':'giá gốc'}${s.short>=15?' · hay thiếu':''}</small></button>`).join('')}</div>`;
 }
@@ -564,7 +575,9 @@ function incoming(x){
 }
 function stockView(x){
   const inv=x.room.inventory||{stock:{},expiring:{},locked:[],orders:[]},d=x.room.data||{},rv=rivalOf(x);
-  const cap=inv.capacity||60,sups=x.content.inventory?.suppliers||[],sup=sups.find(s=>s.id===(x.ui.sup||'partner'))||{factor:1,lead:1,name:''};
+  const cap=inv.capacity||60,sups=supList(x),sup=sups.find(s=>s.id===(x.ui.sup||'partner'))||{factor:1,lead:1,name:''};
+  // inv_order refuses past the shipments cap, a supplier that does not sell the item, or a fund that cannot pay: say so on the row.
+  const full=fullGo(inv),vline=vansLine(inv),sold=id=>!Array.isArray(sup.items)||sup.items.includes(id);
   const qty=Number(x.ui.qty)||10,cleared=d.cleared||[];
   const rot=new Set((d.rotation||[]).map(r=>r.item)),short=Object.fromEntries((d.forecast?.needs||[]).filter(r=>r.short).map(r=>[r.item,r]));
   const shut=catalogue(x).filter(it=>(inv.locked||[]).includes(it.id));
@@ -584,15 +597,15 @@ function stockView(x){
         ${theirs!=null?`<small class="${p>theirs?'bad':'ok'}">Mây Mart ${x.fmt(theirs)}</small>`:''}</div>
       <div class="gr-sact">${exp?x.confirmCmd('🗑️ Rút hàng hết hạn','gr_pull_today',{item:it.id},`Rút ${exp} ${stockUnit(x,it.id)} ${it.name} hết hạn hôm nay khỏi kệ? Ghi vào hao hụt.`,'small danger'):''}
         ${near&&!exp&&!cleared.includes(it.id)?x.cmd(`🏷️ Xả ${near>12?12:near} món −${100-(x.cc.clear_percent||70)}%`,'gr_clear',{item:it.id},'small ghost'):''}
-        ${n>0?x.confirmCmd(`📦 Nhập ${n} · ${x.fmt(cost)} xu`,'inv_order',{item:it.id,qty:n,supplier:sup.id||'partner'},`Nhập ${n} ${stockUnit(x,it.id)} ${it.name} từ ${sup.name} · ${x.fmt(cost)} xu? ${`Dự kiến nhận: ${sup.quote?.eta_label||sup.window||'sớm'}.`}, mở thùng đếm rồi mới lên kệ.`,'small ghost'):'<small class="muted">Kho đầy</small>'}
-        ${n>0&&carted+n<=Math.min(30,room)?x.button(`🛒 +${n} vào đơn`,'v4CartPut',{supplier:sup.id||'partner',item:it.id,qty:n},'small ghost'):carted?`<small class="muted">🛒 ${carted} trong đơn</small>`:''}</div></div>`;
+        ${n>0&&full?'':n>0&&!sold(it.id)?`<small class="muted">${x.esc(sup.emoji||'')} không bán món này</small>`:n>0&&lack(x,cost)?`<button type="button" class="btn small ghost" disabled>📦 Nhập ${n} · thiếu ${x.fmt(lack(x,cost))} xu</button>`:n>0?x.confirmCmd(`📦 Nhập ${n} · ${x.fmt(cost)} xu`,'inv_order',{item:it.id,qty:n,supplier:sup.id||'partner'},`Nhập ${n} ${stockUnit(x,it.id)} ${it.name} từ ${sup.name} · ${x.fmt(cost)} xu? ${`Dự kiến nhận: ${sup.quote?.eta_label||sup.window||'sớm'}.`}, mở thùng đếm rồi mới lên kệ.`,'small ghost'):'<small class="muted">Kho đầy</small>'}
+        ${n>0&&sold(it.id)&&carted+n<=Math.min(30,room)?x.button(`🛒 +${n} vào đơn`,'v4CartPut',{supplier:sup.id||'partner',item:it.id,qty:n},'small ghost'):carted?`<small class="muted">🛒 ${carted} trong đơn</small>`:''}</div></div>`;
   };
   const open=catalogue(x).filter(it=>!shut.includes(it)),hot=open.filter(needs),calm=open.filter(it=>!needs(it));
   const rows=`${hot.map(row).join('')||'<p class="muted small">Không món nào sắp hết hay sắp hết hạn.</p>'}
     ${calm.length?pane(x,'stock-calm',`📦 ${calm.length} món còn đủ hàng · xem giá & nhập thêm`,calm.map(row).join(''),!hot.length,'gr-stock-more'):''}${lockChip(x,shut)}`;
   return `<div class="card gr-stock"><div class="row spread"><h4>🏷️ Kho & giá</h4><small class="muted">Sức chứa ${cap} mỗi loại</small></div>
     ${rotationNotes(x)}${incoming(x)}
-    ${cartChips(x)}<div class="gr-orderbar"><small>Nhập từ</small>${supplierPick(x)}<div class="gr-qty" role="radiogroup" aria-label="Số lượng mỗi lần nhập">${[5,10,20,30].map(v=>`<button type="button" role="radio" aria-checked="${v===qty}" class="btn small ${v===qty?'primary':'ghost'}" data-action="car:qty" data-qty="${v}">${v}</button>`).join('')}</div></div>
+    ${cartChips(x)}<div class="gr-orderbar"><small>Nhập từ</small>${supplierPick(x)}${vline?`<div class="rs-bar" role="status"><p class="rs-line"><b>${vline}</b>${full?' · nhận bớt thùng rồi đặt tiếp':''}</p>${full?x.button(full.label,full.act,full.data||{},'small primary rs-btn'):''}</div>`:''}<div class="gr-qty" role="radiogroup" aria-label="Số lượng mỗi lần nhập">${[5,10,20,30].map(v=>`<button type="button" role="radio" aria-checked="${v===qty}" class="btn small ${v===qty?'primary':'ghost'}" data-action="car:qty" data-qty="${v}">${v}</button>`).join('')}</div></div>
     <div class="gr-stock-list">${rows}</div>
     ${rules(x,x.cc.stock_rules,'Quy tắc kho')}</div>`;
 }
