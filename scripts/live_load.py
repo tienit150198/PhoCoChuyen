@@ -32,6 +32,7 @@ import os
 import random
 import resource
 import secrets
+import shutil
 import signal
 import socket
 import statistics
@@ -311,6 +312,7 @@ def main():
                   live_rss_mb=round(peak_rss, 1), live_cpu_s_total=round((last[0] - cpu0), 1) if pid else None, health=health,
                   db='postgresql' if args.db_url else 'sqlite')
     print(json.dumps(report, ensure_ascii=False, indent=2))
+    shutil.rmtree(tmp, ignore_errors=True)   # the SQLite file and the service's log
 
 
 if __name__ == '__main__':
