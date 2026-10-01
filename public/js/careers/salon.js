@@ -1,12 +1,13 @@
 /** Salon Tóc Gió — phone-first stylist chair (plugin career UI).
  * The server decides every result: answers, the bowl formula, timer zones, the mirror, the review and the money.
  * Local state is only what is being picked before sending (services, tubes, parts, length, products) and the open step tab.
- * The two-tube bowl preview mirrors the server maths (average level, tone band) using only what the stylist has found out.
+ * The bowl preview runs the server's own verdict (salon_mix.js) on what the stylist has found out; nothing is mixed until "Trộn bát".
  * Care loop: the client card (formula, hair health, patch test, last cut), follow-up bookings and the jar of clean tool sets. */
 import {reqList,fold} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
 import {restockFor,restockButton} from '../v4/restock.js';
 import {keepBarAboveFooter} from './food_kit.js';
+import {blend,mix,levelOk,levelText,bowlCheck,previewInputs,recipeWant,target} from './salon_mix.js';
 const CHEM=['color','bleach','toner'];
 const ZONE_TEXT={under:'chưa đủ giờ',ideal:'đúng giờ',over:'hơi quá giờ',damage:'quá giờ, tóc gãy'};
 const STAGES={consult:['💬','Tư vấn'],plan:['🤝','Chốt'],color:['🎨','Pha màu'],wash:['🫧','Gội'],cut:['✂️','Cắt'],finish:['💨','Hoàn thiện'],bill:['🧾','Thanh toán']};
@@ -40,28 +41,8 @@ function ui(x,t){
   return u;
 }
 
-/* ---------- mixing maths (same thresholds as the server) ---------- */
-function bandOf(tn,den){if(tn<=-12*den)return 'ash';if(tn<=-3*den)return 'cool';if(tn<3*den)return 'natural';if(tn<18*den)return 'warm';return 'deep';}
-function blend(rows){
-  const tot=rows.reduce((a,r)=>a+r[1],0);let out='#';
-  for(let i=0;i<3;i++){const v=rows.reduce((a,[c,p])=>a+parseInt(c.slice(1+2*i,3+2*i),16)*p,0)/tot;out+=Math.floor(v+0.5).toString(16).padStart(2,'0');}
-  return out;
-}
-function mixOf(x,a,b,pa,pb,warm){
-  const rows=[[dyeOf(x,a),pa]];if(b&&pb)rows.push([dyeOf(x,b),pb]);
-  if(rows.some(r=>!r[0]))return null;
-  const tone=x.cc.tone||{N:0,A:-1,G:1,R:2};
-  const den=rows.reduce((s,r)=>s+r[1],0),lv=rows.reduce((s,[d,p])=>s+d.level*p,0);
-  const tn=rows.reduce((s,[d,p])=>s+(tone[d.fam]||0)*20*p,0)+warm*20*den;
-  const nat=rows.reduce((s,[d,p])=>s+(d.fam==='N'?p:0),0);
-  return {den,lv,tn,nat,band:bandOf(tn,den),color:blend(rows.map(([d,p])=>[d.color,p]))};
-}
-const levelOk=(m,l)=>Math.abs(m.lv-l*m.den)*4<=m.den;
-const levelText=m=>(m.lv/m.den).toFixed(2).replace(/0+$/,'').replace(/\.$/,'').replace('.',',');
-function target(t){
-  if(t.real)return {level:t.real.level,band:t.real.tone};
-  const ph=t.needs?.photo;return ph?.level&&ph.band?{level:ph.level,band:ph.band}:null;
-}
+/* ---------- mixing maths: salon_mix.js, a port of the server's bowl_check (tests/test_salon_mix_parity.py) ---------- */
+const mixOf=(x,a,b,pa,pb,warm)=>mix(x.cc,a,b,pa,pb,warm);
 
 /* ---------- stages ---------- */
 function stages(t){
@@ -300,31 +281,98 @@ function bowlColour(x,b){
   return a.color;
 }
 
+/* ---------- the bowl preview ("bảng pha màu dự tính") ----------
+ * Every pick shows what the bowl will give and what Linh will say, from the same rules the server applies
+ * (bowlCheck) and only what has been found out. Nothing is mixed until "Trộn bát". */
+const TONE_WORD={ash:'tro lạnh',cool:'hơi lạnh',natural:'tự nhiên',warm:'hơi ấm',deep:'ấm đậm'};
+const CHART_WORD={ash:'tro',cool:'lạnh',natural:'tự nhiên',warm:'ấm',deep:'đậm'};
+const CHART_RATIOS=[[1,1],[2,1],[3,1],[3,2]];
+const levelName=(x,lv)=>x.cc.levels?.find(l=>l.level===Math.max(1,Math.min(10,Math.floor(lv+0.5))))?.name||'';
+const num=n=>String(Math.round(n*100)/100).replace('.',',');
+const cap1=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const pLine=(icon,text,tone='')=>`<li class="${tone}"><span aria-hidden="true">${icon}</span><span>${text}</span></li>`;
+function colourVerdict(v,inp){
+  if(inp.photoBlind)return ['📸 Ảnh có filter — soi ảnh gốc rồi hãy so','warn'];
+  if(!inp.want)return ['Khách không cần bát nhuộm','bad'];
+  if(v.hit)return v.nat_ok?['✓ Khớp màu khách cần','good']:['≠ Thiếu nền tự nhiên — thêm tuýp x.0','bad'];
+  const bits=[];
+  if(!v.level_ok){const d=v.dlv/v.mix.den;bits.push(`${d>0?'sáng':'tối'} hơn ${num(Math.abs(d))} tông`);}
+  if(!v.band_ok)bits.push(v.dband>0?'ấm quá — thêm tuýp tro':'lạnh quá — thêm tuýp ánh vàng, đỏ');
+  return ['≠ '+cap1(bits.join(' · ')),'bad'];
+}
+function devLine(x,t,u,v,inp){
+  if(inp.photoBlind||!inp.want)return '';
+  if(inp.want.dev==null)return pLine('🌱','Xem chân tóc để biết cần oxy mấy vol'+((t.grey==null)?' và có tóc bạc không':''));
+  if(!u.dev)return '';
+  const n=v.dev_note,dev=u.dev;
+  if(n==='ok')return pLine('🧴',`Oxy ${dev} vol hợp${v.tones>0?` · nâng ${v.tones} tông`:''}`,'good');
+  if(n==='dev40')return pLine('🧴','Oxy 40 vol không bao giờ thoa sát da đầu','bad');
+  if(n==='weak')return pLine('🧴',v.cap?`Oxy ${dev} chỉ nâng ${v.cap} tông — cần ${v.need} vol`:`Oxy ${dev} không nâng tông — cần ${v.need} vol`,'bad');
+  if(n==='cover')return pLine('🧴',`Phủ tóc bạc cần oxy ${v.need} vol`,'bad');
+  if(n==='strong')return pLine('🧴',`Oxy ${dev} mạnh quá — chỉ cần ${v.need} vol`,'bad');
+  return pLine('🧴',`Cần oxy ${v.need} vol`,'bad');
+}
+function colourPreview(t,x,u){
+  const inp=previewInputs(t),tg=target(t);
+  const v=bowlCheck(x.cc,'color',u.a,{b:u.b||null,pa:u.pa,pb:u.b?u.pb:0},u.dev,u.ratio,inp.want,inp.warm,inp.photoBlind,inp.lift);
+  const m=v.mix;if(!m)return '';
+  const [vt,vc]=colourVerdict(v,inp),lines=[];
+  lines.push(devLine(x,t,u,v,inp));
+  if(v.block)lines.push(pLine('🚫',`Màu nhuộm cũ (level ${inp.lift.dyed}) không nâng được — phải tẩy`,'bad'));
+  if(inp.want&&u.ratio&&u.ratio!==inp.want.ratio)lines.push(pLine('🥣',`Thuốc nhuộm trộn ${fmtRatio(inp.want.ratio)} với oxy`,'bad'));
+  if((t.grey||0)>=50)lines.push(pLine('🤍',`Tóc bạc ${t.grey}%: nền x.0 ${m.nat}/${m.den} phần${v.nat_ok?'':' — cần một nửa'}`,v.nat_ok?'good':'bad'));
+  if(!t.findings?.lengths)lines.push(pLine('〰️','Chưa xem thân tóc — ánh thật có thể lệch'));
+  else if(inp.warm)lines.push(pLine('🟠','Thân tóc ánh cam: bát ấm thêm một bậc (đã tính)'));
+  const side=(sw,label,name,lv,dish)=>`<div class="sl-mp-side">${dish?`<span class="sl-dish big" style="--sw:${x.esc(sw)}" aria-hidden="true"></span>`:`<span class="sl-swatch" style="--sw:${x.esc(sw)}" aria-hidden="true"></span>`}<small>${label}</small><b>${x.esc(name)}</b><small>level ${x.esc(lv)}</small></div>`;
+  const want=tg?side(levelColor(x,tg.level),t.real?'Ảnh gốc':'Khách cần',`${levelName(x,tg.level)} · ${TONE_WORD[tg.band]}`,String(tg.level),false):'';
+  return `<div class="sl-mixprev" aria-live="polite"><div class="sl-mp-pair">${side(m.color,'Bát ra',`${levelName(x,m.lv/m.den)} · ${TONE_WORD[m.band]}`,v.text,true)}${want?`<span class="sl-mp-arrow" aria-hidden="true">→</span>${want}`:''}</div>
+    <p class="sl-mp-verdict ${vc}">${x.esc(vt)}</p>${lines.filter(Boolean).length?`<ul class="sl-mp-lines">${lines.join('')}</ul>`:''}</div>`;
+}
+/** Bleach and toner bowls: the recipe check only (which toner once the bleach shows its tint, developer, ratio). */
+function recipePreview(t,x,u){
+  const kind=u.kind,want=recipeWant(t,kind);
+  if(!want||(!u.dev&&!u.ratio&&!(kind==='toner'&&u.shade)))return '';
+  const v=bowlCheck(x.cc,kind,kind==='bleach'?null:u.shade,null,u.dev,u.ratio,want),lines=[];
+  const tn=kind==='toner'?x.cc.toners.find(d=>d.id===u.shade):null;
+  if(kind==='toner'&&u.shade)lines.push(want.shade==null?pLine('🔎','Tẩy, xả xong mới soi được ánh nền')
+    :want.shade===u.shade?pLine('💜','Khử đúng ánh đang có','good'):pLine('💜','Toner này không khử đúng ánh đang có','bad'));
+  const name=kind==='bleach'?'Bột tẩy':'Toner';
+  if(u.dev)lines.push(v.dev_note==='ok'?pLine('🧴',`Oxy ${u.dev} vol hợp`,'good'):v.dev_note==='dev40'?pLine('🧴','Oxy 40 vol không bao giờ thoa sát da đầu','bad'):pLine('🧴',`${name} dùng oxy ${want.dev} vol`,'bad'));
+  if(u.ratio)lines.push(u.ratio===want.ratio?pLine('🥣',`Tỷ lệ ${fmtRatio(u.ratio)} hợp`,'good'):pLine('🥣',`${name} trộn ${fmtRatio(want.ratio)}`,'bad'));
+  const ok=!v.issue;
+  return `<div class="sl-mixprev" aria-live="polite">${tn?`<div class="sl-mp-pair"><div class="sl-mp-side"><span class="sl-dish big" style="--sw:${x.esc(tn.color)}" aria-hidden="true"></span><small>Bát ra</small><b>${x.esc(tn.tone)}</b></div></div>`:''}
+    <p class="sl-mp-verdict ${ok?'good':'bad'}">${ok?'✓ Đúng bảng pha':'≠ Chưa đúng bảng pha'}</p><ul class="sl-mp-lines">${lines.join('')}</ul></div>`;
+}
+/** Bảng pha màu: tube × tube at one part ratio (row tube gets the first number); a tap fills the bowl. */
+function mixChart(t,x,u){
+  const inp=previewInputs(t),[p,q]=CHART_RATIOS.find(r=>r.join(':')===u.chartR)||CHART_RATIOS[0];
+  const dyes=x.cc.dyes,head=d=>`<span class="sl-ch-head"><span class="sl-cap" style="--sw:${x.esc(d.color)}" aria-hidden="true"></span>${x.esc(d.code)}</span>`;
+  const seg=CHART_RATIOS.map(r=>{const k=r.join(':');return `<button type="button" class="sl-seg ${k===(u.chartR||'1:1')?'on':''}" ${carAttr(x,'chartR',{task:t.id,v:k})} aria-pressed="${k===(u.chartR||'1:1')}">${r.join('∶')}</button>`;}).join('');
+  const rows=dyes.map(a=>`${head(a)}${dyes.map(b=>{
+    const same=a.id===b.id,pa=same?1:p,pb=same?0:q;
+    const v=bowlCheck(x.cc,'color',a.id,{b:same?null:b.id,pa,pb},null,null,inp.want,inp.warm,inp.photoBlind,null);
+    const m=v.mix,hit=!inp.photoBlind&&v.hit&&v.nat_ok,on=u.a===a.id&&(same?!u.b:u.b===b.id&&u.pa===pa&&u.pb===pb);
+    const label=same?`${a.code}`:`${pa} phần ${a.code} + ${pb} phần ${b.code}`;
+    return `<button type="button" class="sl-cell ${hit?'hit':''} ${on?'on':''} ${same?'solo':''} ${x.stock(a.id)&&(same||x.stock(b.id))?'':'out'}" ${carAttr(x,'cell',{task:t.id,a:a.id,b:same?'':b.id,pa,pb})} aria-label="${x.esc(`${label}: level ${v.text} ${TONE_WORD[m.band]}${hit?', khớp':''}`)}"><i style="--sw:${x.esc(m.color)}" aria-hidden="true">${hit?'✓':''}</i><b>${x.esc(v.text)}</b><small>${CHART_WORD[m.band]}</small></button>`;
+  }).join('')}`).join('');
+  return `<div class="sl-chart"><div class="sl-segs sl-ch-ratios" role="group" aria-label="Tỷ lệ hàng ∶ cột">${seg}</div>
+    <p class="sl-ch-line">${p===q?'Mỗi tuýp 1 phần':`Hàng ${p} phần + cột ${q} phần`} · chạm ô để thử</p>
+    <div class="sl-ch-grid" role="group" aria-label="Bảng pha màu"><span></span>${dyes.map(head).join('')}${rows}</div></div>`;
+}
+
 function mixer(t,x,u){
-  const tg=target(t),warm=t.base_warm||0;
   const tubes=x.cc.dyes.map(d=>{
     const q=x.stock(d.id),role=u.a===d.id?'A':u.b===d.id?'B':'';
     return `<button type="button" class="sl-tube ${role?'selected':''}" ${carAttr(x,'tube',{task:t.id,v:d.id})} aria-pressed="${!!role}" aria-label="Tuýp ${x.esc(d.code)} ${x.esc(d.tone)}, còn ${q}${role?`, đang là tuýp ${role}`:''}" ${q||role?'':'disabled'}>${role?`<i class="sl-role" aria-hidden="true">${role}</i>`:''}<span class="sl-cap" style="--sw:${x.esc(d.color)}"></span><b>${x.esc(d.code)}</b><small>${x.esc(d.tone)}</small><em>${q}</em></button>`;
   }).join('');
-  const m=u.a?mixOf(x,u.a,u.b,u.pa,u.b?u.pb:0,warm):null;
   const part=(which,id,p)=>{const d=dyeOf(x,id);return `<div class="sl-part"><span><i class="sl-role" aria-hidden="true">${which.toUpperCase()}</i> ${x.esc(d?.code||'')}</span><button type="button" class="btn small ghost" ${carAttr(x,'part',{task:t.id,which,d:-1})} aria-label="Bớt một phần ${x.esc(d?.code||'')}" ${p<=1?'disabled':''}>−</button><b>${p} phần</b><button type="button" class="btn small ghost" ${carAttr(x,'part',{task:t.id,which,d:1})} aria-label="Thêm một phần ${x.esc(d?.code||'')}" ${p>=3?'disabled':''}>+</button></div>`;};
-  let preview='';
-  if(m){
-    const lvOk=tg?levelOk(m,tg.level):null,bdOk=tg?m.band===tg.band:null;
-    const chips=[];
-    if(tg){chips.push(`<span class="tag ${lvOk?'green':'danger'}">${lvOk?'✓':'≠'} độ sáng</span>`,`<span class="tag ${bdOk?'green':'danger'}">${bdOk?'✓':'≠'} ánh màu</span>`);}
-    if((t.grey||0)>=50){const g=2*m.nat>=m.den;chips.push(`<span class="tag ${g?'green':'danger'}">${g?'✓':'≠'} nền tự nhiên ${m.nat}/${m.den}</span>`);}
-    preview=`<div class="sl-preview" aria-live="polite"><span class="sl-dish big" style="--sw:${x.esc(m.color)}" aria-hidden="true"></span><div class="grow"><b>Bát ra: level ${x.esc(levelText(m))} · ${x.esc(bandName(x,m.band))}</b>${tg?`<small>Cần: level ${tg.level} · ${x.esc(bandName(x,tg.band))}${t.real?' (theo ảnh gốc)':''}</small>`:''}<div class="row wrap">${chips.join('')}</div></div></div>`;
-  }
   const notes=[],cf=cardFormula(x,t);
   const cardLine=cf?`<div class="sl-note good sl-cardmix"><span>📇 Thẻ khách: <b>${x.esc(cf.text)}</b> → ${x.esc(cf.target)}</span>${x.button('📇 Pha theo thẻ','car:mixCard',{task:t.id},'small')}</div>`:'';
   if(caseOf(t)==='photo'&&!t.photo_seen)notes.push('📸 Ảnh mẫu có filter: soi ảnh gốc ở bước tư vấn để biết màu thật.');
-  if(!t.findings?.lengths)notes.push('〰️ Chưa xem thân tóc: nền màu cũ có thể kéo lệch ánh mà ô xem trước chưa biết.');
-  else if(warm)notes.push('🟠 Thân tóc ánh cam đồng: trên tóc này bát ấm thêm một bậc (ô xem trước đã tính).');
-  if(t.grey==null&&!t.findings?.roots)notes.push('🌱 Chưa xem chân tóc: có tóc bạc thì cần đủ nền tự nhiên.');
-  return `${cardLine}<h5 class="sl-sub">Tủ tuýp · chọn 1–2 tuýp</h5><div class="sl-tubes">${tubes}</div>
+  const chartBtn=`<button type="button" class="btn ghost small sl-chart-btn ${u.chart?'on':''}" ${carAttr(x,'chart',{task:t.id})} aria-expanded="${!!u.chart}">🎨 Bảng pha màu</button>`;
+  return `${cardLine}<div class="row spread wrap sl-tubes-head"><h5 class="sl-sub">Tủ tuýp · chọn 1–2 tuýp</h5>${chartBtn}</div>${u.chart?mixChart(t,x,u):''}<div class="sl-tubes">${tubes}</div>
     ${u.a?`<div class="sl-parts">${part('a',u.a,u.pa)}${u.b?part('b',u.b,u.pb):''}</div>`:''}
-    ${preview}${notes.map(v=>`<p class="sl-note">${x.esc(v)}</p>`).join('')}`;
+    ${notes.map(v=>`<p class="sl-note">${x.esc(v)}</p>`).join('')}`;
 }
 
 function colorPanel(t,x){
@@ -358,7 +406,7 @@ function colorPanel(t,x){
   return `${tabs}${pick}
     <h5 class="sl-sub">Oxy trợ nhuộm</h5><div class="sl-segs sl-devs">${devs}</div>
     <h5 class="sl-sub">Tỷ lệ thuốc ∶ oxy</h5><div class="sl-segs sl-ratios">${ratios}</div>
-    ${blocked?'<p class="sl-note">Tẩy và xả xong rồi mới phủ toner.</p>':''}${outNote}
+    ${blocked?'<p class="sl-note">Tẩy và xả xong rồi mới phủ toner.</p>':''}${mixing?(u.a?colourPreview(t,x,u):''):t.gen?recipePreview(t,x,u):''}${outNote}
     <div class="sl-cta">${x.cmd('🥣 Trộn bát','sl_mix',payload,'full sl-mix-go',!ready||blocked)}</div>${tail}`;
 }
 /** What "Trộn bát" sends with the current picks, and whether it can be sent. */
@@ -508,7 +556,7 @@ function smartMix(t,x,kind){
   }
   if(!best)return null;
   const lift=tg.level-(t.look?.level||tg.level),cover=(t.grey||0)>0||/phủ bạc/i.test(nfc(t.needs.want));
-  return {kind,...best,dev:lift>=3?30:lift>=1||cover?20:10,ratio:'1:1'};
+  return {kind,...best,dev:t.recipe?.color?.dev??(lift>=3?30:lift>=1||cover?20:10),ratio:'1:1'};
 }
 function mixText(x,m){
   const code=id=>dyeOf(x,id)?.code||x.cc.toners.find(d=>d.id===id)?.code||'';
@@ -714,6 +762,14 @@ export default {
     },
     part(d,el,x){const u=x.ui[d.task];if(!u)return;const k=d.which==='b'?'pb':'pa';u[k]=Math.max(1,Math.min(3,(u[k]||1)+Number(d.d)));x.render();},
     dev(d,el,x){const u=x.ui[d.task];if(u){u.dev=Number(d.v);x.render();}},
+    chart(d,el,x){const u=x.ui[d.task];if(u){u.chart=!u.chart;x.render();}},
+    chartR(d,el,x){const u=x.ui[d.task];if(u){u.chartR=d.v;x.render();}},
+    cell(d,el,x){
+      const u=x.ui[d.task];if(!u)return;
+      Object.assign(u,{a:d.a,b:d.b||null,pa:Number(d.pa)||1,pb:d.b?Number(d.pb)||1:1,chart:false});x.render();
+      // The chart folds away; the preview with the full verdict comes into view.
+      requestAnimationFrame(()=>document.querySelector('.career-job.sl .sl-mixprev')?.scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}));
+    },
     ratio(d,el,x){const u=x.ui[d.task];if(u){u.ratio=d.v;x.render();}},
     len(d,el,x){const u=x.ui[d.task];if(u){u.len=Math.max(1,Math.min(10,u.len+Number(d.d)));u.lenSet=true;x.render();}},
     async cutCheck(d,el,x){
@@ -752,7 +808,7 @@ export default {
   tick(root,x){
     keepBarAboveFooter(root);
     const p=root.querySelector('.sl-panel[data-sl-key]');
-    if(p&&p.dataset.slKey!==revealed){revealed=p.dataset.slKey;if(p.dataset.slReveal==='1')reveal(root,root.querySelector('.sl-timer-card')||(p.dataset.slFocus&&p.querySelector(p.dataset.slFocus))||p.querySelector('.sl-preview')||p);}
+    if(p&&p.dataset.slKey!==revealed){revealed=p.dataset.slKey;if(p.dataset.slReveal==='1')reveal(root,root.querySelector('.sl-timer-card')||(p.dataset.slFocus&&p.querySelector(p.dataset.slFocus))||p);}
     root.querySelectorAll('[data-sl-start]').forEach(el=>{
       const start=Number(el.dataset.slStart);if(!start)return;
       const s=Math.max(0,x.now()-start),w=el.dataset;
