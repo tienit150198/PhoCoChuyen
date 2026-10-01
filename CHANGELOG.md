@@ -1,4 +1,4 @@
-# Chưa phát hành (nhánh lb-titles) — Danh hiệu tuần của Bảng xếp hạng, đeo nhiều danh hiệu
+# v1.1.2 — Danh hiệu tuần của Bảng xếp hạng, đeo nhiều danh hiệu
 
 - Bảng xếp hạng có thêm bảng 🎖️ Danh hiệu (số danh hiệu trò chơi đã có; bằng nhau thì nhiều danh hiệu bí mật hơn, rồi có sớm hơn). Bảng xếp hạng VERSION 2: lần khởi động đầu dựng lại mọi dòng (backfill nền).
 - 🏅 Danh hiệu tuần (game/lb_titles.py, bảng `lb_weekly`, schema 9): top 1 / top 2–3 / top 4–10 của Trải nghiệm (Tất cả), Danh hiệu, Chứng chỉ và top 1 mỗi nơi làm ("🏆 Trùm …"). Tính lại mỗi ngày (giờ Việt Nam), chốt tuần lúc 0:00 thứ Hai (giữ mãi, không xóa). Hiện trên bảng (ai đang giữ, lần cập nhật cuối, tuần trước), cạnh tên ở Hành trình, Phố nghề và bảng tên khi Đi dạo / dự cưới. Không có xu thưởng.

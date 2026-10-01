@@ -1,2 +1,2 @@
 """Một ngày làm nghề — a local, authoritative single-player simulation."""
-__version__ = "1.1.1"
+__version__ = "1.1.2"
