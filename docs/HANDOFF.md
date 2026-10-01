@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **0.9.16** (`main` = `f0080cc`), 28 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **0.9.17** (`main` = `4648c63`), 28 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -100,8 +100,12 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 2. **Onboarding shipped in 0.9.16 (01/10 02:12, quiet):** one intro screen, day 1 opens on the first customer, first
    delivery after 10 presses (was 23), no modal before the 3rd customer, tip + level 2 at customer 3 + day-1 gift,
    one-time hints. Measure it: the 30/09 cohort had 53% picking a workplace and 39% serving a customer; compare the
-   01/10+ cohorts (admin "Thời gian chơi", new players' first day). In progress: `street2` / `air2` (many annoying
-   demands and player-initiated actions for the five 0.9.15 careers), then a quiet 0.9.17.
+   01/10+ cohorts (admin "Thời gian chơi", new players' first day).
+   **0.9.17 (01/10 07:23, quiet):** `street2` + `air2`: player-led haggling, quotes, debts, fees and replies with
+   NPCs deciding from hidden traits (deterministic from the task seed + the player's input), overcharging, grumbling
+   owners, theft, unpaid tabs, night vandals, seduction/harassment handled PG-13 (giving in never rewarded,
+   reporting always protected), storms for pilots. In progress: branch `retention` (milestones, daily action
+   counts, leave beacons, client errors, acquisition, real-user load times; admin "Giữ chân"; details kept 60 days).
 3. **Next versions, in the owner's order:** (a) chat phase 1 (design `docs/superpowers/specs/2026-09-30-live-chat-street-design.md`
    on branch `live`; the owner said not yet on 01/10), then (b) seven careers: nhân viên gác chắn và bảo trì đường sắt,
    cán bộ lưu trữ và thư viện, điều dưỡng, thợ dầu khí, trực tổng đài cứu hộ, người gác hải đăng, cứu hộ hồ bơi,
