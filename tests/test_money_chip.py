@@ -20,7 +20,9 @@ class MoneyChipTest(unittest.TestCase):
         app = (ROOT / 'public/js/app.js').read_text(encoding='utf-8')
         self.assertIn("from './v4/money.js'", app)
         self.assertIn('moneyBoot(', app)
-        self.assertIn('confirmMoney(dialogBalances(', app)
+        self.assertIn('b=dialogBalances(under)', app)
+        self.assertIn('confirmMoney(b,', app)
+        self.assertIn('confirmShort(b,', app)  # an exact price the fund can't pay shuts the confirm button
         # Every sheet where the fund is spent is in the scope list.
         for view in ('job', 'inventory', 'prepare', 'operations', 'social', 'decor', 'people', 'incident'):
             self.assertIn(f"'{view}'", app.split('const MONEY_FUND=')[1].split('\n')[0], view)

@@ -47,10 +47,14 @@ export function clockSummary(s){
   const k=s?.clock;if(!k)return '';
   return `<article class="dc-sum"><span class="dc-big-ico" aria-hidden="true">${esc(k.part?.icon||'🌙')}</span><div class="grow"><b>${esc(k.text)}</b><p>${esc(k.next_text)}</p></div></article>`;
 }
-/** Past closing on the calm screen: the one clear next step. `busy` = a customer is still in hand. */
-export function closingNote(dc,busy){
-  if(!dc?.is_open||dc.level!=='closing')return '';
-  return `<p class="dc-closing-line" role="status">🔔 <b>Đến giờ đóng cửa</b> · ${busy?'làm nốt khách đang làm rồi khép ca nhé.':'không đón thêm khách nữa.'}</p>`;
+/** Past closing on the calm screen: the one clear next step. `busy` = a customer is still in hand. `gate` = the
+ * room's more_gate (game/engine.py more_gate): no new customer either because the next one would arrive at closing
+ * time (the press ticks the clock) or because today's customers are all dealt. */
+export function closingNote(dc,busy,gate=null){
+  const cap=gate?.why==='cap',shut=dc?.is_open&&(dc.level==='closing'||gate?.why==='closing');
+  if(!cap&&!shut)return '';
+  const head=cap?`✅ <b>Đủ ${esc(gate.cap)} khách hôm nay</b>`:dc.level==='closing'?'🔔 <b>Đến giờ đóng cửa</b>':'🔔 <b>Sắp đóng cửa</b>';
+  return `<p class="dc-closing-line" role="status">${head} · ${busy?'làm nốt khách đang làm rồi khép ca nhé.':'không đón thêm khách nữa.'}</p>`;
 }
 
 /* ------------------------------------------------------------------ scene light */

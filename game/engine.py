@@ -252,6 +252,24 @@ def money(s:dict,c:dict,amount:int,reason:str,ref:str|None=None,category:str|Non
     c["costs"]+=max(-amount,0)
     log(s,c,"money",f'{"+" if amount>=0 else ""}{amount} xu · {reason}',ref=ref)
 
+MORE_ACTIVE=4  # at most this many customers in hand (unfinished, deferred included)
+MORE_DAY=12  # at most this many customers dealt per day
+
+def _next_slot(c:dict) -> int:
+    return max((int(t["id"].split("-")[-1]) for t in c["tasks"] if t["day"]==c["day"]),default=-1)+1
+
+def more_gate(c:dict,career:str,ahead:int=0) -> dict|None:
+    """Why `more_work` refuses a new customer now (None: it would take one). The action and the public view
+    (`ahead=1`: the clock as the press will see it, after its own tick) share this one rule, so the client never
+    offers "Đón thêm khách" when the press is certain to fail: it offers the next real step instead."""
+    if not c["open"]:return dict(why="closed",error="Mở ca trước nhé.")
+    if dc.past_close(dict(c,turn=c["turn"]+ahead) if ahead else c,career):
+        return dict(why="closing",code="closing_time",error="Đến giờ đóng cửa rồi: không đón thêm khách. Làm nốt việc dở rồi khép ca nhé.")
+    active=sum(t["status"] not in ("completed","referred","cancelled") for t in c["tasks"])
+    if active>=MORE_ACTIVE:return dict(why="full",active=active,error="Đang có đủ việc. Hoàn thành hoặc hẹn lại trước nhé.")
+    if _next_slot(c)>=MORE_DAY:return dict(why="cap",cap=MORE_DAY,error=f"Hôm nay đã nhận đủ {MORE_DAY} việc. Khép ca rồi bắt đầu ngày mới nhé.")
+    return None
+
 def current_task(c:dict,tid:Any=None,allow_done:bool=False) -> dict:
     tid=tid or c["active_task"]
     t=next((t for t in c["tasks"] if t["id"]==tid),None)
@@ -646,13 +664,9 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         log(s,c,"day",f"Khép ngày {oldday}; {summary['completed']} việc xong, {summary['carried']} việc được giữ lại.")
         result.update(message="Một ngày nữa đã có câu chuyện để nhớ.",summary=summary)
     elif action=="more_work":
-        need(c["open"],"Mở ca trước nhé.")
-        need(not dc.past_close(c,career),"Đến giờ đóng cửa rồi: không đón thêm khách. Làm nốt việc dở rồi khép ca nhé.","closing_time")
-        active=[t for t in c["tasks"] if t["status"] not in ("completed","referred","cancelled")]
-        need(len(active)<4,"Đang có đủ việc. Hoàn thành hoặc hẹn lại trước nhé.")
-        slots=[int(t["id"].split("-")[-1]) for t in c["tasks"] if t["day"]==c["day"]]
-        slot=max(slots,default=-1)+1
-        need(slot<12,"Hôm nay đã nhận đủ 12 việc. Khép ca rồi bắt đầu ngày mới nhé.")
+        gate=more_gate(c,career)
+        if gate:raise GameError(gate["error"],gate.get("code","invalid_action"))
+        slot=_next_slot(c)
         t=make_task(career,c["day"],slot,c["turn"]);c["tasks"].append(t);c["active_task"]=t["id"]
         if career=="milk_tea":life.setup_task(s,c,t)
         if mod and hasattr(mod,'on_task'):mod.on_task(s,c,t)
@@ -882,7 +896,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
             need(t["identity"] and len(t["inspected"])==len(t["evidence"]),"Xác minh khách và xem đủ nguồn trước khi đề nghị phương án.")
             need(t["status"] in ("understood","proposed"),"Vụ đã chuyển sang thực hiện hoặc bàn giao, không đổi phương án âm thầm.")
             choice=p.get("solution");allowed=[t["solution"]]+(["refund"] if t["variant"]=="missing" else [])
-            need(choice in allowed,"Phương án chưa phù hợp hồ sơ đã kiểm. Xem lại chứng cứ và chính sách nhé.")
+            need(choice in allowed,_cs_reject(t,choice))
             t["proposal"]=choice;t["status"]="proposed";t["timeline"].append("Đã đề xuất: "+choice+". Chưa thực hiện.")
             result["message"]="Phương án phù hợp. Cần xác nhận phối hợp để việc thực sự bắt đầu."
         elif action=="cs_execute":
@@ -1149,6 +1163,8 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
         c.pop("ext",None)
         c["life"]=life.public_life(s["careers"][cid])
         c["day_clock"]=dc.view(raw,cid)  # giờ trong ngày: HUD clock, closing warnings, the scene's light
+        gate=more_gate(raw,cid,1) if raw.get("open") else None
+        c["more_gate"]={k:v for k,v in gate.items() if k!="error"} if gate else None  # "Đón thêm khách" or the next real step
         c["tasks"]=[task_view(t) for t in s["careers"][cid]["tasks"]]
         if cid in CARE_CAREERS:
             care_lines=care_notices(raw,cid)
@@ -2100,6 +2116,10 @@ CS_SLA_FIRST=pt.longer(120)  # minutes to the first contact on a new case (from 
 CS_UPDATE_BY=12*60  # a waiting case gets its daily update call before noon
 CS_PICKS={"update":"Báo tình trạng thật của đơn","sorry":"Xin lỗi và hẹn giờ cập nhật","ask":"Hỏi khách thêm thông tin","bye":"Cảm ơn và chào khách"}
 CS_CALL_MAX=8
+# The source line that names the fix of each case (shown as "📌 Căn cứ" once every source is read); a wrong pick quotes it.
+CS_BASIS={"missing":2,"delivered":2,"delay":1,"wrong":2,"refund":0,"guide":1}
+CS_SOL_LABEL={"reship":"Gửi bù món thiếu","trace":"Đối soát giao nhận","exchange":"Đổi đúng món","refund":"Thực hiện hoàn","guide":"Hướng dẫn khách"}
+CS_SOL_WHEN={"reship":"kiện thiếu món","trace":"cần đầu mối kiểm lại chặng giao","exchange":"khách nhận sai mã, sai màu","refund":"hồ sơ có yêu cầu hoàn hoặc chính sách cho hoàn","guide":"đơn không lỗi, khách chỉ cần cách làm"}
 CS_FACT={"missing":"Mình nhận có 2 món thôi, đơn ghi 3 món.","delivered":"Mình ở nhà cả ngày mà chẳng ai gọi giao hàng.",
          "delay":"Lần cuối mình thấy kiện nằm ở điểm trung chuyển.","wrong":"Mình đặt hộp xanh mà nhận hộp hồng.",
          "refund":"Yêu cầu hoàn đó mình tạo mấy hôm trước rồi.","guide":"Mình mở ứng dụng mà không thấy mục đơn đâu."}
@@ -2114,6 +2134,18 @@ CS_WORDS=dict(
 
 def _cs_classic(t:dict)->bool:
     return t.get("career")=="customer_care" and not t.get("desk") and isinstance(t.get("evidence"),list)
+
+
+def _cs_basis(t:dict)->dict|None:
+    ev=t.get("evidence") or [];i=CS_BASIS.get(t.get("variant"))
+    return ev[i] if i is not None and i<len(ev) else None
+
+
+def _cs_reject(t:dict,choice:Any)->str:
+    """A wrong fix names when that fix applies and quotes the source line that decides this case (not stored)."""
+    e=_cs_basis(t)
+    if not e or choice not in CS_SOL_LABEL:return "Phương án chưa phù hợp hồ sơ đã kiểm. Xem lại chứng cứ và chính sách nhé."
+    return f'«{CS_SOL_LABEL[choice]}» dùng khi {CS_SOL_WHEN[choice]}. Vụ này, đọc lại 📌 {e["title"]}: “{e["text"]}”'
 
 
 def cs_care(c:dict,create:bool=True)->dict|None:
@@ -2345,6 +2377,7 @@ def cs_task_public(c:dict,t:dict,v:dict)->None:
     v["tone_label"]=CS_TONE_LABEL.get(v["tone"],"bình tĩnh")
     v["picks"]=[dict(id=k,label=l) for k,l in CS_PICKS.items()]
     v["call_left"]=CS_CALL_MAX-(t.get("call_n",0) if t.get("call_day")==c["day"] else 0)
+    e=_cs_basis(t);v["basis"]=e["id"] if e and t["identity"] and len(t["inspected"])>=len(t["evidence"]) else None  # 📌 the line to choose by, once every source is read
 
 
 def _cs_public(c:dict,care:dict)->dict:
