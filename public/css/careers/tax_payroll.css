@@ -139,10 +139,45 @@
 
 /* Recap after payroll is paid (idle panel) */
 .career-job.tp .tp-recap{display:grid;gap:8px;padding:12px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line)}
-.career-job.tp .tp-recap ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-.career-job.tp .tp-recap li{display:grid;gap:2px;padding:8px 12px;border-radius:8px;border-left:4px solid var(--good);background:var(--good-soft);font-size:.967rem;line-height:1.4}
-.career-job.tp .tp-recap li.bad{border-color:var(--bad);background:var(--bad-soft)}
-.career-job.tp .tp-recap li span,.career-job.tp .tp-recap li small{font-size:.933rem;color:var(--ink-2)}
+.career-job.tp .tp-rv{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.career-job.tp .tp-rv-row{display:grid;gap:8px;min-width:0;padding:8px 12px;border-radius:8px;border-left:4px solid var(--good);background:var(--good-soft);font-size:.967rem;line-height:1.4}
+.career-job.tp .tp-rv-row.bad{border-color:var(--bad);background:var(--surface-2)}
+.career-job.tp .tp-rv-row>span,.career-job.tp .tp-rv-row>small{font-size:.933rem;color:var(--ink-2)}
+.career-job.tp .tp-rv-head{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}
+.career-job.tp .tp-rv-head small{color:var(--muted);font-size:.933rem}
+.career-job.tp .tp-rv-head .btn{margin-left:auto}
+.career-job.tp .tp-rv-sum{font-size:.967rem;line-height:1.5;color:var(--ink-2)}
+.career-job.tp .tp-rv-pick{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.tp .tp-rv-pick .tp-qchip{white-space:normal;text-align:left}
+.career-job.tp .tp-rv-row .tp-cells-grid{background:var(--surface);padding:12px 8px 8px;border-radius:6px;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px 6px}
+.career-job.tp .tp-rv-row .tp-cell{grid-template-columns:minmax(0,1fr);gap:0;align-content:center}
+.career-job.tp .tp-rv-row .tp-cell.name{grid-column:1/-1}
+
+/* After payday: the wrong cells outlined in the sheet itself, each with its working and source (feedback #71) */
+.career-job.tp .tp-cell.s-miss{border:2px solid var(--bad);background:var(--bad-soft)}
+.career-job.tp .tp-cell.s-extra{border:2px solid var(--warn);background:var(--warn-soft)}
+.career-job.tp .tp-cell.s-hit{border:2px solid var(--good);background:var(--good-soft)}
+.career-job.tp .tp-cell.picked{box-shadow:0 0 0 3px var(--focus)}
+.career-job.tp .tp-badge{position:absolute;top:-11px;right:8px;padding:0 7px;border-radius:var(--radius-pill);font-size:.933rem;font-weight:800;line-height:1.35;background:var(--bad);color:var(--on-bad,#fff);white-space:nowrap}
+.career-job.tp .tp-badge.extra{background:var(--warn)}
+.career-job.tp .tp-badge.hit{background:var(--good)}
+.career-job.tp .tp-ex{display:grid;gap:6px;min-width:0;padding:10px 12px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--line-strong);line-height:1.45}
+.career-job.tp .tp-ex.s-miss{border-left-color:var(--bad)}
+.career-job.tp .tp-ex.s-extra{border-left-color:var(--warn)}
+.career-job.tp .tp-ex.s-hit{border-left-color:var(--good)}
+.career-job.tp .tp-ex.picked{outline:2px solid var(--focus);outline-offset:1px}
+.career-job.tp .tp-ex-head{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.career-job.tp .tp-ex-vals{display:flex;flex-wrap:wrap;gap:2px 18px;font-size:.967rem}
+.career-job.tp .tp-ex-vals b{font-variant-numeric:tabular-nums}
+.career-job.tp .tp-ex-work{margin:0;padding-left:22px;display:grid;gap:3px;font-size:.933rem;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.career-job.tp .tp-ex-src{font-size:.933rem;color:var(--ink-2)}
+.career-job.tp .tp-ex-tip{font-size:.933rem;color:var(--muted)}
+/* a wrong check of a form step: which boxes do not match */
+.career-job.tp .tp-miss{font-size:.933rem;line-height:1.45;padding:8px 12px;border-radius:var(--radius-sm);background:var(--bad-soft);border-left:4px solid var(--bad);color:var(--ink)}
+.career-job.tp .tp-cells tr.tp-row-bad th{color:var(--bad);font-weight:700}
+.career-job.tp .tp-input.tp-bad,.career-job.tp input.tp-num.tp-bad{border-color:var(--bad)}
+.career-job.tp .tp-step.retried{border-left-color:var(--warn)}
+.career-job.tp .tp-step.retried .tp-no{background:var(--warn);border-color:var(--warn);color:var(--surface)}
 
 /* Day summary card (outside the workbench) */
 .tp-sum .tp-sum-trust{margin:0 0 6px}

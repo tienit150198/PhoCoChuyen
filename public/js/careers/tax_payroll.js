@@ -75,7 +75,8 @@ function inputView(st,t,x){
     case'choice':return `<div class="tp-choices">${st.options.map(o=>`<button type="button" class="tp-choice ${u.sel[st.id]===o.id?'on':''}" data-action="car:pick" data-task="${tid}" data-step="${sid}" data-v="${x.esc(o.id)}" aria-pressed="${u.sel[st.id]===o.id}"><span class="tp-box radio" aria-hidden="true">${u.sel[st.id]===o.id?'●':''}</span>${x.esc(o.label)}</button>`).join('')}</div>`;
     case'multi':{const on=u.multi[st.id]||[];return `<div class="tp-choices">${st.options.map(o=>`<button type="button" class="tp-choice check ${on.includes(o.id)?'on':''}" data-action="car:toggle" data-task="${tid}" data-step="${sid}" data-v="${x.esc(o.id)}" aria-pressed="${on.includes(o.id)}"><span class="tp-box" aria-hidden="true">${on.includes(o.id)?'✓':''}</span>${x.esc(o.label)}</button>`).join('')}</div>`;}
     case'number':return `<label class="tp-cell-row"><span>Đáp số (xu)</span><input class="input tp-num" id="${fid(t,st.id)}" data-preserve type="text" inputmode="numeric" autocomplete="off" placeholder="0"></label>`;
-    case'fields':return `<table class="tp-cells edit"><tbody>${st.fields.map(f=>`<tr><th scope="row"><label for="${fid(t,st.id,f.id)}">${x.esc(f.label)}</label></th><td>${f.options?`<select id="${fid(t,st.id,f.id)}" data-preserve><option value="">Chọn…</option>${f.options.map(o=>`<option value="${x.esc(o.id)}">${x.esc(o.label)}</option>`).join('')}</select>`:`<input class="input tp-num" id="${fid(t,st.id,f.id)}" data-preserve type="text" inputmode="numeric" autocomplete="off" placeholder="0">`}</td></tr>`).join('')}</tbody></table>`;
+    case'fields':{const bad=new Set(u.miss?.[st.id]?.bad||[]),cls=f=>bad.has(f.id)?' tp-bad':'',mark=f=>bad.has(f.id)?' aria-invalid="true"':'';
+      return `<table class="tp-cells edit"><tbody>${st.fields.map(f=>`<tr class="${bad.has(f.id)?'tp-row-bad':''}"><th scope="row"><label for="${fid(t,st.id,f.id)}">${bad.has(f.id)?'✗ ':''}${x.esc(f.label)}</label></th><td>${f.options?`<select class="${cls(f).trim()}" id="${fid(t,st.id,f.id)}" data-preserve${mark(f)}><option value="">Chọn…</option>${f.options.map(o=>`<option value="${x.esc(o.id)}">${x.esc(o.label)}</option>`).join('')}</select>`:`<input class="input tp-num${cls(f)}" id="${fid(t,st.id,f.id)}" data-preserve type="text" inputmode="numeric" autocomplete="off" placeholder="0"${mark(f)}>`}</td></tr>`).join('')}</tbody></table>`;}
     case'match':return `<div class="tp-match">${st.left.map(l=>`<label class="tp-cell-row"><span>${x.esc(l.label)}</span><select id="${fid(t,st.id,l.id)}" data-preserve><option value="">Chọn…</option>${st.right.map(r=>`<option value="${x.esc(r.id)}">${x.esc(r.label)}</option>`).join('')}</select></label>`).join('')}</div>`;
     case'order':{
       const picked=u.order[st.id]||[],rest=st.items.filter(o=>!picked.includes(o.id));
@@ -90,11 +91,12 @@ function inputView(st,t,x){
 function worksheet(t,x){
   const p=t.progress||{at:0,total:0,attempts:{}},steps=t.steps||[],cur=steps[p.at];
   const solved=steps.filter(s=>s.state==='solved'),last=solved[solved.length-1];
-  const done=solved.length?fold(`✓ ${solved.length} bước đã xong <small>xem lại</small>`,`<ol class="tp-steps">${solved.map(st=>`<li class="tp-step solved"><div class="tp-step-head"><span class="tp-no" aria-hidden="true">✓</span><b>${x.esc(st.title)}</b></div><div class="tp-answer">${solvedText(st,x)}</div>${st.explain?`<p class="tp-explain">${x.esc(st.explain)}</p>`:''}</li>`).join('')}</ol>`):'';
+  const done=solved.length?fold(`✓ ${solved.length} bước đã xong <small>xem lại</small>`,`<ol class="tp-steps">${solved.map(st=>`<li class="tp-step solved"><div class="tp-step-head"><span class="tp-no" aria-hidden="true">✓</span><b>${x.esc(st.title)}</b></div><div class="tp-answer">${solvedText(st,x)}</div>${st.explain?`<p class="tp-explain">${x.esc(st.explain)}</p>`:''}${st.work?.length?`<ol class="tp-ex-work">${st.work.map(w=>`<li>${x.esc(w)}</li>`).join('')}</ol>`:''}</li>`).join('')}</ol>`):'';
   let body='';
   if(cur&&cur.state==='current'){
     const tries=p.attempts[cur.id]||0;
-    const hint=tries>0?`<p class="tp-hint">💡 ${x.esc(cur.hints[Math.min(cur.hints.length,tries)-1])}</p>`:'';
+    const where=state(x,t).miss?.[cur.id]?.where;
+    const hint=(where?`<p class="tp-miss" role="status">✗ ${x.esc(where)}</p>`:'')+(tries>0?`<p class="tp-hint">💡 ${x.esc(cur.hints[Math.min(cur.hints.length,tries)-1])}</p>`:'');
     body=`<article class="tp-work" data-step-card="${x.esc(t.id)}:${x.esc(cur.id)}"><header class="tp-work-head"><span class="tp-no" aria-hidden="true">${p.at+1}</span><div class="grow"><small>Bước ${p.at+1}/${p.total}${p.total-p.at-1?` · còn ${p.total-p.at-1} bước sau`:''}${tries>1?` · ${tries} lần kiểm`:''}</small><h3>${x.esc(cur.title)}</h3></div>${cur.tag==='ethic'?'<span class="ok-tag warn">🔒 bảo mật & quy trình</span>':''}</header>
       <p class="tp-prompt">${x.esc(cur.prompt)}</p>${inputView(cur,t,x)}${hint}</article>`;
   }else if(!t.filed)body=`<article class="tp-work done"><header class="tp-work-head"><span class="tp-no" aria-hidden="true">📤</span><div class="grow"><small>Bước cuối</small><h3>Nộp / bàn giao hồ sơ</h3></div></header></article>`;
@@ -147,8 +149,38 @@ function refList(p,x,who=''){
   const flag=v=>/Nghỉ việc|chưa duyệt/.test(v)?'bad':'';
   return `<ul class="tp-ref">${rows.map(r=>`<li><b>${x.esc(r[0])}</b>${r.slice(1).map((v,i)=>`<span class="${flag(String(v))}"><small>${x.esc(p.head[i+1]||'')}</small> ${x.esc(v)}</span>`).join('')}</li>`).join('')}</ul>${p.note?`<p class="tp-paper-note">✎ ${x.esc(p.note)}</p>`:''}`;
 }
+/* ---------------------------------------------------------------- after payday: every cell explained (feedback #71)
+ * The server sends, for a paid grid, each cell's state (hit · miss · extra · ok · moot), its right value, the working and
+ * the papers / rule cards it comes from. Wrong cells get a coloured outline and a badge in the sheet itself; a tap on any
+ * cell opens its working. */
+const CELL_STATE={hit:['good','✓ Bắt đúng lỗi'],miss:['bad','✗ Bỏ sót — ô này sai'],extra:['warn','✗ Đánh dấu nhầm — ô này đúng'],ok:['','✓ Ô này đúng'],moot:['','Không tính']};
+const BADGE={hit:'✓ bắt đúng',miss:'✗ sót',extra:'✗ nhầm'};
+const gcell=x=>(x.ui.gcell??={});
+const exId=(t,r,z)=>fid(t,'ex',r.id,z);
+/** One cell's explanation: what the draft says, the right value, the working and its source. */
+function cellExplain(t,r,z,x,picked=false){
+  const e=r.explain?.[z];if(!e)return '';
+  const c=(r.cells||[]).find(q=>q.z===z)||{},[tone,said]=CELL_STATE[e.s]||CELL_STATE.ok;
+  const vals=`<p class="tp-ex-vals"><span>Bảng nháp: <b>${x.esc(c.v??'')}</b></span>${e.want!=null?`<span>Đúng: <b>${x.esc(e.want)}</b></span>`:''}</p>`;
+  return `<div class="tp-ex s-${x.esc(e.s)}${picked?' picked':''}" id="${exId(t,r,z)}"><p class="tp-ex-head"><b>${x.esc(c.k||z)}</b> <span class="ok-tag ${tone}">${said}</span></p>${vals}
+    <ol class="tp-ex-work">${(e.steps||[]).map(s=>`<li>${x.esc(s)}</li>`).join('')}</ol>${e.src?.length?`<p class="tp-ex-src">📎 Căn cứ: ${e.src.map(s=>`<span>${x.esc(s)}</span>`).join(' · ')}</p>`:''}</div>`;
+}
+/** A paid row: every cell tappable, wrong ones outlined and badged, their working listed under the row. */
+function paidRow(t,r,x){
+  const sel=gcell(x)[t.id],pick=sel?.row===r.id?sel.z:null,ex=r.explain||{};
+  const cell=c=>{const s=ex[c.z]?.s||'ok',b=BADGE[s];
+    return `<button type="button" class="tp-cell s-${s}${c.z==='name'?' name':''}${pick===c.z?' picked':''}" data-action="car:gcell" data-task="${x.esc(t.id)}" data-row="${x.esc(r.id)}" data-cell="${x.esc(c.z)}" aria-pressed="${pick===c.z}" aria-controls="${exId(t,r,c.z)}"><span class="k">${x.esc(c.k)}</span><span class="v">${x.esc(c.v)}</span>${b?`<span class="tp-badge ${s}">${b}</span>`:''}</button>`;};
+  const bad=(r.cells||[]).filter(c=>['miss','extra','hit'].includes(ex[c.z]?.s)).map(c=>c.z);
+  const more=pick&&!bad.includes(pick)?cellExplain(t,r,pick,x,true):'';
+  const ok=r.result?.ok,[ic,label]=RES[ok?'ok':'bad'];
+  const sum=[r.result?.missed?.length?`sót ${r.result.missed.length} ô`:'',r.result?.extra?.length?`đánh dấu nhầm ${r.result.extra.length} ô`:''].filter(Boolean).join(' · ');
+  return `<div class="tp-cells-grid">${(r.cells||[]).map(cell).join('')}</div>
+    <div class="tp-verdict ${ok?'ok':'bad'}" role="status"><b>${ic} ${label}${sum?` · ${sum}`:''}</b>${bad.length?'':'<p>Dòng này không có lỗi và bạn không đánh dấu nhầm ô nào.</p>'}</div>
+    ${bad.map(z=>cellExplain(t,r,z,x,pick===z)).join('')}${more}<p class="tp-ex-tip">👆 Chạm vào ô bất kỳ để xem cách tính.</p>`;
+}
 function rowCard(t,r,x){
   const live=!r.reviewed&&!t.filed,flags=new Set(r.flags||[]),truth=new Set(r.truth?.z||[]),max=x.cc.max_flags||3;
+  if(r.result&&r.explain)return `<section class="tp-person"><header><span class="tp-avatar" aria-hidden="true">${x.esc(nameOf(r).split(' ').pop().slice(0,1))}</span><b>${x.esc(nameOf(r))}</b><small>Dòng ${x.esc(r.id.slice(1))}</small></header>${paidRow(t,r,x)}</section>`;
   const cell=c=>{
     const cls=`${flags.has(c.z)?' flagged':''}${truth.has(c.z)?' truth':''}${c.z==='name'?' name':''}`;
     const inner=`<span class="k">${x.esc(c.k)}</span><span class="v">${x.esc(c.v)}</span>`;
@@ -157,7 +189,7 @@ function rowCard(t,r,x){
   let foot='';
   if(r.result){
     const ok=r.result.ok,[ic,label]=RES[ok?'ok':'bad'];
-    foot=`<div class="tp-verdict ${ok?'ok':'bad'}" role="status"><b>${ic} ${label}</b>${(r.truth?.why||[]).map(w=>`<p>${x.esc(w)}</p>`).join('')}${r.result.missed.length?`<p>Sót: ${r.result.missed.length} ô</p>`:''}${r.result.extra.length?`<p>Đánh dấu nhầm: ${r.result.extra.length} ô</p>`:''}${ok&&!(r.truth?.why||[]).length?'<p>Dòng này đúng từ đầu.</p>':''}</div>`;
+    foot=`<div class="tp-verdict ${ok?'ok':'bad'}" role="status"><b>${ic} ${label}</b>${(r.truth?.why||[]).map(w=>`<p>${x.esc(w)}</p>`).join('')}${r.result.missed.length?`<p>Sót: ${r.result.missed.map(z=>x.esc(cellName(r,z))).join(', ')}</p>`:''}${r.result.extra.length?`<p>Đánh dấu nhầm: ${r.result.extra.map(z=>x.esc(cellName(r,z))).join(', ')}</p>`:''}${ok&&!(r.truth?.why||[]).length?'<p>Dòng này đúng từ đầu.</p>':''}</div>`;
   }else if(r.reviewed){
     foot=`<p class="tp-done">✓ Đã soát${flags.size?` · ${flags.size} ô cần sửa`:' · không thấy sai'}</p>`;
   }else{
@@ -168,17 +200,55 @@ function rowCard(t,r,x){
   return `<section class="tp-person"${r.reviewed||t.filed?'':` data-step-card="${x.esc(t.id)}:${x.esc(r.id)}"`}><header><span class="tp-avatar" aria-hidden="true">${x.esc(nameOf(r).split(' ').pop().slice(0,1))}</span><b>${x.esc(nameOf(r))}</b><small>Dòng ${x.esc(r.id.slice(1))}</small></header>
     <div class="tp-cells-grid">${(r.cells||[]).map(cell).join('')}</div>${foot}</section>`;
 }
-function gridRecap(x){
-  const t=(x.room.tasks||[]).find(v=>v.id===x.ui.lastGrid);
-  if(!t||!t.filed||!t.rows)return '';
-  const g=t.grid||{};
-  const li=t.rows.map(r=>{
-    const res=r.result||{},why=r.truth?.why||[],notes=[];
-    if(res.missed?.length)notes.push(`sót ${res.missed.length} ô`);
-    if(res.extra?.length)notes.push(`đánh dấu nhầm ${res.extra.length} ô`);
-    return `<li class="${res.ok?'ok':'bad'}"><b>${res.ok?'✓':'✗'} ${x.esc(nameOf(r))}</b>${why.length?`<span>${why.map(w=>x.esc(w)).join(' · ')}</span>`:'<span>Dòng này đúng từ đầu.</span>'}${notes.length?`<small>${notes.join(' · ')}</small>`:''}</li>`;
+/** A paid grid: rows with something to look at are open; rows right from the start fold to one line. */
+function gridReview(t,x){
+  const g=t.grid||{},open=((x.ui.rvRow??={})[t.id]??={}),sel=gcell(x)[t.id];
+  const missed=t.rows.reduce((n,r)=>n+(r.result?.missed?.length||0),0),extra=t.rows.reduce((n,r)=>n+(r.result?.extra?.length||0),0);
+  const rich=t.rows.some(r=>r.explain);
+  const rows=t.rows.map(r=>{
+    const res=r.result||{},bad=!res.ok,show=bad||open[r.id]||sel?.row===r.id;
+    const head=`<b>${res.ok?'✓':'✗'} ${x.esc(nameOf(r))}</b><small>Dòng ${x.esc(r.id.slice(1))}</small>`;
+    if(!rich||!r.explain){   // a grid the server could not regenerate: the reasons as before, with the cells named
+      const why=r.truth?.why||[],notes=[];
+      if(res.missed?.length)notes.push(`sót: ${res.missed.map(z=>cellName(r,z)).join(', ')}`);
+      if(res.extra?.length)notes.push(`đánh dấu nhầm: ${res.extra.map(z=>cellName(r,z)).join(', ')}`);
+      return `<li class="tp-rv-row ${res.ok?'ok':'bad'}"><div class="tp-rv-head">${head}</div>${why.length?`<span>${why.map(w=>x.esc(w)).join(' · ')}</span>`:'<span>Dòng này đúng từ đầu.</span>'}${notes.length?`<small>${x.esc(notes.join(' · '))}</small>`:''}</li>`;
+    }
+    const toggle=bad?'':x.button(show?'Thu gọn':'Xem từng ô','car:rvrow',{task:t.id,row:r.id},'ghost small');
+    return `<li class="tp-rv-row ${res.ok?'ok':'bad'}"><div class="tp-rv-head">${head}${toggle}</div>${show?paidRow(t,r,x):r.truth?.z?.length?`<span>✓ Bạn bắt đúng lỗi: ${x.esc(r.truth.z.map(z=>cellName(r,z)).join(', '))}</span>`:'<span>Đúng từ đầu, bạn không đánh dấu nhầm ô nào.</span>'}</li>`;
   }).join('');
-  return `<section class="tp-recap" role="status"><h3 class="ok-h">💸 Bảng lương vừa chuyển · ${Number(g.ok)||0}/${Number(g.total)||t.rows.length} dòng chuẩn</h3><ul>${li}</ul></section>`;
+  const sum=missed||extra?`Sót ${missed} lỗi · đánh dấu nhầm ${extra} ô.${rich?' Viền đỏ: ô sai bạn bỏ sót. Viền cam: ô đúng bạn đánh dấu nhầm. Cách tính nằm ngay dưới mỗi dòng.':''}`:'Bắt đủ mọi lỗi, không giữ lương oan ô nào.';
+  return `<h3 class="ok-h">💸 ${x.esc(t.title)} · ${Number(g.ok)||0}/${Number(g.total)||t.rows.length} dòng chuẩn</h3><p class="tp-rv-sum">${x.esc(sum)}</p><ul class="tp-rv">${rows}</ul>`;
+}
+/** A finished form: each step with the answer that matched, how many checks it took, the explanation and the working. */
+function formReview(t,x){
+  const p=t.progress||{attempts:{}};
+  const li=(t.steps||[]).map(st=>{
+    const miss=Math.max(0,(Number(p.attempts?.[st.id])||1)-1);
+    return `<li class="tp-step solved${miss?' retried':''}"><div class="tp-step-head"><span class="tp-no" aria-hidden="true">${miss?'!':'✓'}</span><b>${x.esc(st.title)}</b>${miss?`<span class="ok-tag warn">${miss} lần chưa khớp</span>`:'<span class="ok-tag good">khớp ngay</span>'}</div>
+      <div class="tp-answer">${solvedText(st,x)}</div>${st.explain?`<p class="tp-explain">${x.esc(st.explain)}</p>`:''}${st.work?.length?`<ol class="tp-ex-work">${st.work.map(w=>`<li>${x.esc(w)}</li>`).join('')}</ol>`:''}</li>`;
+  }).join('');
+  return `<h3 class="ok-h">📄 ${x.esc(t.title)} <small>${t.mistakes?`${t.mistakes} lần chưa khớp`:'khớp hết ngay lần đầu'}</small></h3><ol class="tp-steps">${li}</ol>`;
+}
+/** Finished dossiers still in the save (yesterday and today), newest first. */
+const doneTasks=x=>(x.room.tasks||[]).filter(v=>v.status==='completed'&&v.known&&(v.form==='grid'?v.rows?.length:v.steps?.length)).sort((a,b)=>(b.completed_turn||0)-(a.completed_turn||0));
+/** The review of the dossier that just closed (or the one picked), and the list to revisit the others. */
+function gridRecap(x){
+  const done=doneTasks(x);if(!done.length)return '';
+  const want=x.ui.tpReview??x.ui.okLast,t=done.find(v=>v.id===want);
+  const bad=v=>v.form==='grid'?(v.grid?.ok??0)<(v.grid?.total??0):v.mistakes>0;
+  const chips=done.filter(v=>v.id!==t?.id).map(v=>x.button(`${bad(v)?'✗':'✓'} ${x.esc(v.title)} <small>· ngày ${Number(v.day)||''}</small>`,'car:review',{task:v.id},`tp-qchip ${bad(v)?'bad':'ok'}`)).join('');
+  const body=t?(t.form==='grid'?gridReview(t,x):formReview(t,x)):'';
+  const list=chips?fold(`🗂️ Xem lại hồ sơ đã làm <small>${done.length-(t?1:0)} hồ sơ · cách tính từng ô</small>`,`<div class="tp-rv-pick" role="toolbar" aria-label="Hồ sơ đã làm">${chips}</div>`,!t||(x.ui.okFold?.tpdone??false),'tp-rv-list','tpdone'):'';
+  // data-idle-open: a review the player picked stays open on the done screen across re-renders (app.js jobView).
+  return `<section class="tp-recap" aria-label="Xem lại hồ sơ"${x.ui.tpReview&&t?' data-idle-open':''}>${body}${list}</section>`;
+}
+/** The pay period's own rule cards next to the papers (a grid carried past a period change keeps its own rules). */
+function periodRules(t,x){
+  const p=t.period;if(!p?.rules?.length)return '';
+  const today=x.room.data?.today?.month,other=today!=null&&today!==p.month;
+  const body=`${other?`<p class="tp-hint">⚠️ Bảng này thuộc kỳ lương tháng ${x.esc(p.month)}: soát theo quy định của kỳ đó, không phải kỳ tháng ${x.esc(today)}.</p>`:''}${rulesList(x,p.rules,`Quy định kỳ lương tháng ${p.month}`)}`;
+  return fold(`📋 Quy định kỳ này <small>${p.rules.length} thẻ · mức sàn bảo hiểm, ngày lễ, tạm ứng…</small>`,body,other||(x.ui.okFold?.prules??false),'tp-prules','prules');
 }
 function gridDoc(t,x){
   const rows=t.rows||[],r=rowOf(t,x),g=t.grid||{};
@@ -192,7 +262,7 @@ function gridDoc(t,x){
   const count=t.filed?`<small class="tp-grid-sum">💸 Đã chuyển · ${g.ok}/${g.total} dòng chuẩn</small>`:`<small>${g.reviewed||0}/${g.total||rows.length} đã soát</small>`;
   return `<nav class="tp-queue" aria-label="Bảng lương nháp"><span class="tp-qlabel">👥 Bảng lương</span>${chips}${count}</nav>
     ${r?rowCard(t,r,x):''}
-    <section class="tp-tray"><h3 class="ok-h">🗃️ Hồ sơ gốc để đối chiếu${only?` <small>· dòng của ${x.esc(only)}</small>`:''}</h3>${html}<article class="tp-paper"><h4>${x.esc(p.title)}</h4>${refList(p,x,only)}${toggle?`<p class="tp-refbar">${toggle}</p>`:''}</article></section>`;
+    <section class="tp-tray"><h3 class="ok-h">🗃️ Hồ sơ gốc để đối chiếu${only?` <small>· dòng của ${x.esc(only)}</small>`:''}</h3>${html}<article class="tp-paper"><h4>${x.esc(p.title)}</h4>${refList(p,x,only)}${toggle?`<p class="tp-refbar">${toggle}</p>`:''}</article>${t.filed?'':periodRules(t,x)}</section>`;
 }
 function gridBar(t,x,gd){
   const r=rowOf(t,x),g=t.grid||{};
@@ -318,7 +388,7 @@ export default {
   },
   job(t,x){
     const grid=t.form==='grid',claims=(x.room.data?.claims||[]).length,fresh=(x.room.data?.today?.rules||[]).filter(r=>r.new).length;
-    x.ui.lastGrid=grid?t.id:null;
+    x.ui.lastGrid=grid?t.id:null;x.ui.tpReview=null;   // the review after this dossier closes shows this one
     const unread=openTasks(x).filter(v=>!v.known).length+claims+careBadge(x);
     const tabs=[{id:'inbox',icon:'📥',label:'Hộp thư',badge:unread||'',tone:claims?'bad':''},{id:'doc',icon:'📂',label:'Hồ sơ'},{id:'rules',icon:'📋',label:'Quy định',badge:fresh||'',tone:'warn'}];
     const inbox=inboxPane(x,{tasks:taskMails(x,t,currentMail(t,x)),other:[...claimMails(x),...dayMails(x,{boss:BOSS,key:`${t.id}:${t.known?1:0}`})],...care(x,t)});
@@ -369,6 +439,16 @@ export default {
       (state(x,t).coached??={})[st.id]=true;x.render();
     },
     gpick(d,el,x){gsel(x)[d.task]=d.row;x.render();document.querySelector('.career-job.tp .tp-queue')?.scrollIntoView({block:'nearest'});},
+    /** A paid grid: tap a cell → its working opens under the row (tap again to close an extra one). */
+    gcell(d,el,x){
+      const g=gcell(x),cur=g[d.task];
+      g[d.task]=cur&&cur.row===d.row&&cur.z===d.cell?null:{row:d.row,z:d.cell};
+      x.render();
+      const box=document.getElementById(fid({id:d.task},'ex',d.row,d.cell));
+      if(box&&g[d.task])box.scrollIntoView({block:'nearest'});
+    },
+    rvrow(d,el,x){const o=((x.ui.rvRow??={})[d.task]??={});o[d.row]=!o[d.row];if(!o[d.row]&&gcell(x)[d.task]?.row===d.row)gcell(x)[d.task]=null;x.render();},
+    review(d,el,x){x.ui.tpReview=d.task;x.render();document.querySelector('.career-job.tp .tp-recap')?.scrollIntoView({block:'start'});},
     async flag(d,el,x){
       const on=el.getAttribute('aria-pressed')==='true';
       el.classList.toggle('flagged',!on);el.setAttribute('aria-pressed',String(!on));
@@ -402,7 +482,9 @@ export default {
         const box=document.getElementById(bad.id);if(box){box.classList.add('tp-bad');box.addEventListener('input',()=>box.classList.remove('tp-bad'),{once:true});box.scrollIntoView({block:'center'});box.focus({preventScroll:true});}
         return;}
       if(answer===null){x.toast(st.kind==='choice'?'Chạm chọn một đáp án trước nhé.':st.kind==='multi'?'Chạm chọn ít nhất một ô trước nhé.':st.kind==='order'?'Chạm đủ các việc theo thứ tự trước nhé.':st.kind==='match'?'Chọn đủ từng dòng trước nhé.':'Điền đủ các ô số trước khi kiểm tra nhé.',true);return;}
-      await x.send('tp_submit',{task:t.id,step:st.id,answer});
+      const r=await x.send('tp_submit',{task:t.id,step:st.id,answer});
+      // A wrong check names the boxes that do not match (never their values); they stay outlined until the next check.
+      if(r){(u.miss??={})[st.id]=r.correct===false?{bad:Array.isArray(r.bad)?r.bad:[],where:String(r.where||'')}:null;x.render();}
     },
   },
 };

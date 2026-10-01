@@ -915,5 +915,182 @@ class OfficeCareTests(unittest.TestCase):
         self.assertGreaterEqual(self.care['reliable'], 3)
 
 
+# ---------------------------------------------------------------- feedback #71: every wrong cell named, with its working
+def _grids(days=range(1, 41), slots=(0, 4)):
+    for day in days:
+        for slot in slots:
+            yield T.make_task(day, slot, 1)
+
+
+@unittest.skipUnless('tax_payroll' in PLUGINS, 'tax_payroll is filtered out by MNL_CAREERS')
+class GridExplainTests(unittest.TestCase):
+    def play(self, pick):
+        """A grid where `pick(t)` returns {row id: [cells to flag]} (None: try the next day); every row is then closed and paid."""
+        for t in _grids(range(1, 40), (0,)):
+            flags = pick(t)
+            if flags is not None:
+                break
+        else:
+            self.skipTest('no grid fits')
+        self.j = j = Journey(CAR, slot=0, day=t['day'])
+        tid = j.task['id']
+        j.act('ask', task=tid)
+        for row in j.task['rows']:
+            for z in flags.get(row['id'], []):
+                j.act('tp_flag', task=tid, row=row['id'], cell=z)
+            j.act('tp_row', task=tid, row=row['id'])
+        r = j.act('tp_pay', task=tid, confirm=True)
+        view = next(x for x in public_state(j.state)['careers'][CAR]['tasks'] if x['id'] == tid)
+        return j.get(tid), view, r
+
+    def test_every_cell_has_its_right_value_and_working(self):
+        n = 0
+        for t in _grids():
+            t['flags'] = {}
+            ex = T.grid_explain(t)
+            self.assertIsNotNone(ex, t['id'])
+            for row, x in zip(t['rows'], ex):
+                truth = set(row['_truth']['z'])
+                self.assertEqual(set(x['cells']), {z for z, _ in T.GRID_COLS})
+                for z, c in x['cells'].items():
+                    self.assertTrue(c['steps'] and all(isinstance(s, str) and s for s in c['steps']))
+                    self.assertTrue(c['src'])
+                    self.assertEqual(c['s'], 'miss' if z in truth else 'moot' if c['want'] is None else 'ok')
+                if x['cells']['name']['want'] == 'Xóa cả dòng':
+                    self.assertEqual(truth, {'name'})
+                    continue
+                # The draft differs from the worked-out value exactly where the hidden truth says it is wrong.
+                self.assertEqual({c['z'] for c in row['cells'] if x['cells'][c['z']]['want'] != c['v']}, truth, (t['id'], row['id']))
+                self.assertEqual(len(x['why']), len(truth))
+                n += 1
+        self.assertGreater(n, 300)
+
+    def test_annual_leave_flagged_by_mistake_is_explained(self):
+        # A right day count with annual leave in it, flagged: the review says it is right and shows 26 − unpaid.
+        def pick(t):
+            for row in t['rows']:
+                ex = T.grid_explain(dict(t, flags={}))
+                i = t['rows'].index(row)
+                days = ex[i]['cells']['days']
+                if not row['_truth']['z'] and days['want'] != 'Xóa cả dòng' and any('phép năm' in s and 'vẫn hưởng' in s for s in days['steps']):
+                    return {r['id']: list(r['_truth']['z']) for r in t['rows'] if r is not row} | {row['id']: ['days']}
+            return None
+        t, view, r = self.play(pick)
+        row = next(x for x in view['rows'] if x['result']['extra'] == ['days'])
+        cell = row['explain']['days']
+        self.assertEqual(cell['s'], 'extra')
+        self.assertEqual(cell['want'], next(c['v'] for c in row['cells'] if c['z'] == 'days'))
+        self.assertTrue(any('ngày không lương' in s for s in cell['steps']))
+        self.assertIn('Ngày công', ' '.join(cell['src']))
+        who = next(c['v'] for c in row['cells'] if c['z'] == 'name').split()[-1]
+        self.assertIn(f'{who} · Ngày công hưởng lương', r['message'])
+        self.assertIn(f'{who} · Ngày công hưởng lương', next(s['text'] for s in t['slips'] if s['code'] == 'pay_hold'))
+        validate_state(json.loads(json.dumps(self.j.state)))
+
+    def test_missed_floor_and_duplicate_rows_show_the_right_value(self):
+        def pick(t):
+            kinds = [k for r in t['rows'] for k in r['_truth']['kinds']]
+            if 'ins_floor' not in kinds:
+                return None
+            return {r['id']: [z for z, k in zip(r['_truth']['z'], r['_truth']['kinds']) if k != 'ins_floor'] for r in t['rows']}
+        t, view, r = self.play(pick)
+        row = next(x for x in view['rows'] if x['result']['missed'] == ['ins'])
+        cell = row['explain']['ins']
+        floor = T._rules_raw(t['day'])['floor']
+        self.assertEqual((cell['s'], cell['want']), ('miss', T.xu(floor)))
+        self.assertTrue(any('mức sàn' in s for s in cell['steps']))
+        self.assertTrue(any(c['s'] == 'hit' for x in view['rows'] for c in x['explain'].values()))
+        self.assertIn('Lương đóng BH', r['message'])
+
+    def test_dependant_reason_counts_the_file_sent_in_time(self):
+        # The stored reason said “1 registered, one short” while the draft showed 1: the file sent before the cut-off is the
+        # missing person. The explanation, the slip and the claim say so now.
+        def pick(t):
+            for row in t['rows']:
+                if 'dep_missing' in row['_truth']['kinds'] and any(
+                        h[0] == next(c['v'] for c in row['cells'] if c['z'] == 'name') and 'hồ sơ nộp' in h[3] for h in t['papers'][0]['rows']):
+                    return {r['id']: list(r['_truth']['z']) for r in t['rows'] if r is not row}
+            return None
+        t, view, r = self.play(pick)
+        row = next(x for x in view['rows'] if x['result']['missed'] == ['deps'])
+        cell = row['explain']['deps']
+        n = int(cell['want'].split()[0])
+        self.assertEqual(int(next(c['v'] for c in row['cells'] if c['z'] == 'deps').split()[0]), n - 1)
+        self.assertTrue(any('trước mốc' in s and '(+1)' in s for s in cell['steps']))
+        why = row['truth']['why'][0]
+        self.assertIn('hồ sơ nộp', why)
+        self.assertIn(f'= {n} người', why)
+        claim = self.j.c['ext']['data']['claims'][-1]
+        self.assertEqual(claim['why'], why)
+
+    def test_a_grid_that_does_not_regenerate_keeps_the_stored_reasons(self):
+        t = T.make_task(5, 0, 1)
+        t['rows'] = copy.deepcopy(t['rows'])
+        t['rows'][0]['cells'][1]['v'] = '1 ngày'
+        self.assertIsNone(T.grid_explain(t))
+        t = T.make_task(5, 1, 1)
+        self.assertIsNone(T.grid_explain(t))                                         # not a grid
+
+    def test_grid_view_carries_its_own_period_rules(self):
+        j = Journey(CAR, slot=0, day=11)
+        j.act('ask', task=j.task['id'])
+        v = public_state(j.state)['careers'][CAR]['tasks'][0]
+        self.assertEqual(v['period']['month'], T._rules_raw(11)['m'])
+        cards = {c['id']: c for c in v['period']['rules']}
+        self.assertIn(T.fmt(T._rules_raw(11)['floor']), cards['ins']['text'])
+        self.assertNotIn('explain', v['rows'][0])                                     # nothing before payday
+        self.assertNotIn('_truth', json.dumps(v))
+
+    def test_bracket_lines_add_up(self):
+        for x, months in ((0, 1), (1999, 1), (2000, 1), (3457, 1), (12345, 1), (122580, 12), (24000, 12), (999999, 12)):
+            lines = T.bracket_lines(x, months)
+            self.assertTrue(lines[-1].startswith(f'Thuế = {T.xu(T.pit(x, months))}'), (x, lines))
+
+    def test_wrong_boxes_are_named_never_their_value(self):
+        day, slot = find('payslip')
+        j = Journey(CAR, slot=slot, day=day)
+        j.act('ask')
+        j.act('tp_submit', step='ot', answer=j.task['proc'][0]['_key'])
+        st = j.task['proc'][1]
+        g = dict(st['_key'], leave=st['_key']['leave'] + 3, gross=st['_key']['gross'] + 3)
+        r = j.act('tp_submit', step='gross', answer=g)
+        self.assertFalse(r['correct'])
+        self.assertEqual(r['bad'], ['leave', 'gross'])
+        self.assertIn('Khớp 2/4 ô', r['where'])
+        self.assertIn('“Tổng thu nhập”', r['message'])
+        self.assertNotIn(str(st['_key']['gross']), r['message'])
+        j.act('tp_submit', step='gross', answer=st['_key'])
+        j.act('tp_submit', step='ins', answer=j.task['proc'][2]['_key'])
+        j.act('tp_submit', step='tax', answer=j.task['proc'][3]['_key'])
+        steps = public_state(j.state)['careers'][CAR]['tasks'][0]['steps']
+        tax = next(s for s in steps if s['id'] == 'tax')
+        self.assertTrue(tax['work'][0].startswith('Bậc 1'))
+        self.assertNotIn('work', next(s for s in steps if s['id'] == 'net'))         # not solved yet
+
+    def test_multi_choice_says_how_many_are_right(self):
+        day, slot = find('transfer')
+        j = Journey(CAR, slot=slot, day=day)
+        j.act('ask')
+        st = j.task['proc'][0]
+        other = next(o['id'] for o in st['options'] if o['id'] not in st['_key'])
+        r = j.act('tp_submit', step='errors', answer=[st['_key'][0], other])
+        self.assertIn(f'Đúng 1/{len(st["_key"])} mục cần chọn, thừa 1 mục', r['message'])
+        self.assertEqual(r['bad'], [])
+
+    def test_yearend_review_shows_the_whole_calculation(self):
+        day, slot = find('yearend')
+        j = Journey(CAR, slot=slot, day=day)
+        j.act('ask')
+        for st in copy.deepcopy(j.task['proc']):
+            j.act('tp_submit', task=j.task['id'], step=st['id'], answer=st['_key'])
+        k = j.task['proc'][2]['_key']
+        calc = next(s for s in public_state(j.state)['careers'][CAR]['tasks'][0]['steps'] if s['id'] == 'calc')
+        text = '\n'.join(calc['work'])
+        self.assertIn(f'= {T.fmt(k["deduct"])}', calc['work'][0])
+        self.assertIn(f'= {T.fmt(k["taxable"])}', calc['work'][1])
+        self.assertIn(f'Thuế = {T.xu(k["due"])}', text)
+        self.assertIn(T.xu(abs(k['balance'])) if k['balance'] else '0 xu', calc['work'][-1])
+
+
 if __name__ == '__main__':
     unittest.main()

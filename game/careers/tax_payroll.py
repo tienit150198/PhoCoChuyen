@@ -14,6 +14,7 @@ documents against transactions; this one computes payroll and tax filings.
 """
 from __future__ import annotations
 import copy
+import functools
 from ..jsoncopy import tree_copy, strip_copy
 import unicodedata
 from . import kit, office
@@ -741,12 +742,12 @@ def g_grid(rng, day: int, slot: int) -> dict:
         g = rng.choice(STRANGERS)
         ghost = dict(name=g, role='—', h=40, acct=str(rng.randrange(10 ** 9, 10 ** 10)))
         cells = dict(name=g, days=f'{STD_DAYS} ngày', ot='0 giờ', ins=f'{fmt(max(8200, r["floor"]))} xu', deps='0 người', adv='0', bank=_acct(ghost['acct']))
-        rows.insert(rng.randrange(1, len(rows) + 1), dict(e=None, cells=cells, errs=[dict(z='name', dir='over', fine=15, claim=0, kind='ghost',
+        rows.insert(rng.randrange(1, len(rows) + 1), dict(e=None, ghost=g, cells=cells, errs=[dict(z='name', dir='over', fine=15, claim=0, kind='ghost',
                                                                                         why=f'{g} không có trong hồ sơ nhân sự — “lương ma”.')]))
     elif person_err == 'dup':
         src = rng.choice([x for x in rows if not x['errs']] or rows)
         rows.insert(rows.index(src) + 1 + rng.randrange(0, len(rows) - rows.index(src)),
-                    dict(e=None, cells=dict(src['cells']), errs=[dict(z='name', dir='over', fine=12, claim=0, kind='dup',
+                    dict(e=None, src=src, cells=dict(src['cells']), errs=[dict(z='name', dir='over', fine=12, claim=0, kind='dup',
                                                                      why=f'Trùng dòng với {src["cells"]["name"]} — cùng người, cùng tài khoản, trả hai lần.')]))
     elif person_err == 'resigned':
         name, role = next(x for x in pool if x not in staff)
@@ -797,9 +798,179 @@ def g_grid(rng, day: int, slot: int) -> dict:
                'cutoff': f'Ngân hàng chốt lệnh 09:30 đó em. Bảng {len(out)} người, chuyển {cut}.',
                'inspector': f'Chiều cô Lụa qua soát bảng lương. {len(out)} người, em làm sạch sẽ giùm chị.'}.get(
         mod['id'], f'Bảng lương nháp kỳ tháng {r["m"]} có {len(out)} người. Em soát từng ô rồi chuyển lương nha.')
+    # Who stands behind each row, for the after-payday explanation (never stored: grid_explain regenerates it).
+    facts = [dict(e=row['e'], ghost=row.get('ghost'), src=rows.index(row['src']) if row.get('src') else None) for row in rows]
     return dict(npc=0, title=f'Soát bảng lương kỳ tháng {r["m"]}' + (f' · đợt {slot // 4 + 1}' if slot >= 4 else ''), opening=opening,
                 brief='Soát từng ô của bảng lương nháp với hồ sơ gốc. Chạm vào ô sai để đánh dấu, “✓ Xong dòng” khi soát xong một người, rồi chuyển lương.',
-                papers=papers, rows=out, bad=bad)
+                papers=papers, rows=out, bad=bad, facts=facts)
+
+
+# ------------------------------------------------------------------ after payday: every cell of the grid explained (feedback #71)
+# The hidden people behind a grid are not stored in the task: the grid is regenerated from (day, slot) like the
+# save validator does, checked against the stored rows, and each cell gets its right value, the working and the
+# papers and rule cards it comes from. Nothing here is stored, so old saves and task generation are unchanged.
+OT_KIND = dict(r150='ngày thường', r200='', r300='ngày lễ')        # Sunday lines already say “Chủ nhật”
+CELL_SOURCES = dict(name=(('hr',), ('people',)), days=(('time',), ('leave',)), ot=(('hr', 'time'), ('ot', 'holiday')),
+                    ins=(('hr',), ('ins',)), deps=(('hr',), ('deps',)), adv=(('adv',), ('adv',)), bank=(('hr', 'inbox'), ('bank',)))
+
+
+@functools.lru_cache(maxsize=128)
+def _grid_regen(day: int, slot: int) -> dict:
+    """The generator's output for a grid, hidden people included. Shared: read only."""
+    return g_grid(kit.rng(ID, day, slot, 'grid'), day, slot)
+
+
+def _slot_of(t: dict) -> int:
+    return int(str(t['id']).rsplit('-', 1)[1])
+
+
+def _dec(x100: int) -> str:
+    """Hundredths as a Vietnamese decimal: 14570 → 145,7 · 51600 → 516."""
+    whole, cents = divmod(x100, 100)
+    return fmt(whole) + (f',{cents:02d}'.rstrip('0') if cents else '')
+
+
+def bracket_lines(taxable: int, months: int = 1) -> list[str]:
+    """The progressive table step by step (same arithmetic as pit())."""
+    out, low, n = [], 0, 0
+    for top, rate in BRACKETS:
+        high = None if top is None else top * months
+        if taxable <= low:
+            break
+        n += 1
+        part = (taxable if high is None else min(taxable, high)) - low
+        base = fmt(part) if low == 0 else f'({fmt(min(taxable, high) if high is not None else taxable)} − {fmt(low)})'
+        out.append(f'Bậc {n}: {base} × {rate}% = {_dec(part * rate)}')
+        if high is None:
+            break
+        low = high
+    out.append(f'Thuế = {xu(pit(taxable, months))}' + (' (làm tròn xuống)' if _bracket_cents(taxable, months) else ''))
+    return out
+
+
+def _bracket_cents(taxable: int, months: int) -> int:
+    tax100, low = 0, 0
+    for top, rate in BRACKETS:
+        high = None if top is None else top * months
+        if taxable <= low:
+            break
+        tax100 += ((taxable if high is None else min(taxable, high)) - low) * rate
+        if high is None:
+            break
+        low = high
+    return tax100 % 100
+
+
+def _ot_cell(h: int, ots: list) -> str:
+    hrs, pay = _ot_pay(h, ots)
+    return f'{hrs} giờ · {fmt(pay)} xu' if hrs else '0 giờ'
+
+
+def _person_work(z: str, e: dict, r: dict, papers: dict) -> tuple[str, list]:
+    """Right value and working of one cell for someone who should be paid."""
+    name, first = e['name'], e['name'].split()[-1]
+    if z == 'name':
+        return name, [f'{name} có trong Hồ sơ nhân sự, đang làm, chỉ một dòng trong bảng.']
+    if z == 'days':
+        n = STD_DAYS - e['unpaid']
+        steps = [f'Chấm công: nghỉ không lương {e["unpaid"]} ngày · phép năm {e["annual"]} ngày.',
+                 f'Ngày công hưởng lương = {STD_DAYS} − {e["unpaid"]} ngày không lương = {n} ngày.']
+        if e['annual']:
+            steps.append(f'{e["annual"]} ngày phép năm vẫn hưởng lương — không trừ.')
+        return f'{n} ngày', steps
+    if z == 'ot':
+        steps = [f'Lương giờ của {first}: {e["h"]} xu.']
+        for x in e['ots']:
+            if x['ok']:
+                kind = f' · {OT_KIND[x["rate"]]}' if OT_KIND[x['rate']] else ''
+                steps.append(f'{x["label"]}{kind}: {x["hrs"]} giờ × {e["h"]} × {OT_RATES[x["rate"]]}% = {xu(e["h"] * x["hrs"] * OT_RATES[x["rate"]] // 100)}')
+            else:
+                steps.append(f'{x["label"]}: {x["hrs"]} giờ chưa có phiếu duyệt — không trả.')
+        hrs, pay = _ot_pay(e['h'], e['ots'])
+        steps.append(f'Cộng: {hrs} giờ · {xu(pay)}.' if hrs else 'Không có giờ tăng ca đã duyệt.')
+        return _ot_cell(e['h'], e['ots']), steps
+    if z == 'ins':
+        c, floor = e['contract'], r['floor']
+        steps = [f'Hợp đồng ghi {fmt(c)} · mức sàn kỳ này {fmt(floor)}.',
+                 f'{fmt(c)} thấp hơn mức sàn → đóng theo mức sàn {fmt(floor)}.' if c < floor else
+                 f'{fmt(c)} không thấp hơn mức sàn → giữ đúng số hợp đồng {fmt(c)}.',
+                 'Không bao giờ tính trên tổng thu nhập.']
+        return xu(e['ins']), steps
+    if z == 'deps':
+        p = e['pending']
+        on_time = p is not None and p < r['cut']
+        n = e['deps'] + (1 if on_time else 0)
+        steps = [f'Hồ sơ nhân sự: {e["deps"]} người đã đăng ký.']
+        if p is not None:
+            steps.append(f'Hồ sơ mới nộp {p}/{r["m"]}, trước mốc {r["cut"]}/{r["m"]} → được tính từ kỳ này (+1).' if on_time else
+                         f'Hồ sơ mới nộp {p}/{r["m"]}, không trước mốc {r["cut"]}/{r["m"]} → kỳ sau mới tính.')
+        steps.append(f'Kỳ này tính {n} người.')
+        return f'{n} người', steps
+    if z == 'adv':
+        if not e['adv']:
+            return '0', [f'Sổ tạm ứng không có tên {first} → không trừ.']
+        when = next((row[1] for row in papers['adv']['rows'] if row[0] == name), '')
+        return xu(e['adv']), [f'Sổ tạm ứng: {first} ứng {xu(e["adv"])}' + (f' ngày {when}' if when else '') + '.',
+                              f'Trừ đúng một lần: {xu(e["adv"])}.']
+    steps = [f'Hồ sơ nhân sự: tài khoản {_acct(e["acct"])}.']
+    if e['chat']:
+        steps.append(f'Tin nhắn xin đổi sang {_acct(e["chat"])} không có đơn ký tên — không có giá trị.')
+    return _acct(e['acct']), steps
+
+
+def _dep_missing_why(e: dict, r: dict) -> str:
+    """The stored text counted only registered dependants; with an in-time new file the draft can show exactly that
+    number and still be one short (feedback #71). This one says where the missing person comes from."""
+    p = e['pending']
+    on_time = p is not None and p < r['cut']
+    n = e['deps'] + (1 if on_time else 0)
+    src = f'{e["deps"]} người đã đăng ký' + (f' + 1 hồ sơ nộp {p}/{r["m"]} (trước mốc {r["cut"]}/{r["m"]})' if on_time else '')
+    return f'Hồ sơ nhân sự: {src} = {n} người phụ thuộc; bảng nháp chỉ ghi {n - 1} nên trừ thuế cao hơn.'
+
+
+def grid_explain(t: dict) -> list | None:
+    """Per row (aligned with t['rows']): {cells: {z: {s, want, steps, src}}, why: [...]}, or None when the grid cannot
+    be regenerated exactly (then the stored reasons are shown as before). s: hit = caught · miss = left in ·
+    extra = a right cell flagged · ok = right and left alone · moot = the whole row goes (a cell other than the name)."""
+    if t.get('form') != 'grid' or not t.get('rows'):
+        return None
+    try:
+        g = _grid_regen(t['day'], _slot_of(t))
+    except (ValueError, TypeError, KeyError, IndexError, StopIteration):
+        return None
+    if g['rows'] != t['rows'] or len(g['facts']) != len(t['rows']):
+        return None
+    r = _rules_raw(t['day'])
+    papers = {p['id']: p for p in g['papers']}
+    cards = {c['id']: c['title'] for c in _rule_cards(t['day'])}
+    flags = t.get('flags') or {}
+    out = []
+    for row, f in zip(t['rows'], g['facts']):
+        tr = row['_truth']
+        wrong, marks = set(tr['z']), set(flags.get(row['id'], []))
+        e = f['e']
+        name = next(c['v'] for c in row['cells'] if c['z'] == 'name')
+        gone = None
+        if f['ghost']:
+            gone = [f'{name} không có trong Hồ sơ nhân sự — “lương ma”, không được trả.']
+        elif f['src'] is not None:
+            gone = [f'{name} đã có ở dòng {f["src"] + 1} — cùng người, cùng tài khoản.', 'Mỗi người chỉ được trả một dòng.']
+        elif e and e['status'] != 'Đang làm':
+            gone = [f'Hồ sơ nhân sự: {name} — {e["status"].lower()}.', f'Không còn trong kỳ lương tháng {r["m"]}.']
+        cells = {}
+        for c in row['cells']:
+            z = c['z']
+            if gone is not None:
+                want, steps = ('Xóa cả dòng', gone) if z == 'name' else (None, ['Cả dòng này phải xóa — lỗi nằm ở ô Họ tên, không phải ô này.'])
+            else:
+                want, steps = _person_work(z, e, r, papers)
+            s = ('hit' if z in marks else 'miss') if z in wrong else 'extra' if z in marks else 'moot' if want is None else 'ok'
+            pp, rr = CELL_SOURCES[z]
+            src = [papers[x]['title'] for x in pp if x in papers] + [f'Quy định “{cards[x]}”' for x in rr if x in cards]
+            cells[z] = dict(s=s, want=want, steps=steps, src=src)
+        why = [_dep_missing_why(e, r) if k == 'dep_missing' and e else w for k, w in zip(tr['kinds'], tr['why'])]
+        out.append(dict(cells=cells, why=why))
+    return out
 
 
 # ------------------------------------------------------------------ task factory
@@ -885,11 +1056,13 @@ def _pay_grid(s: dict, c: dict, d: dict, o: dict, t: dict, mod: dict) -> dict:
     t['filed'] = True
     caught = missed = extra = risk = over = 0
     fines, claims, found = 0, [], {}
-    for row in t['rows']:
+    ex = grid_explain(t)
+    for i, row in enumerate(t['rows']):
         tr = row['_truth']
         r = res[row['id']]
         extra += len(r['extra'])
-        for z, kind, why, dr, fine, claim in zip(tr['z'], tr['kinds'], tr['why'], tr['dirs'], tr['fines'], tr['claims']):
+        whys = ex[i]['why'] if ex else tr['why']
+        for z, kind, why, dr, fine, claim in zip(tr['z'], tr['kinds'], whys, tr['dirs'], tr['fines'], tr['claims']):
             if z not in r['missed']:
                 caught += 1
                 continue
@@ -922,7 +1095,7 @@ def _pay_grid(s: dict, c: dict, d: dict, o: dict, t: dict, mod: dict) -> dict:
     d['late'] += int(late)
     d['log'] = ar.last(d['log'] + [dict(day=c['day'], title=t['title'], late=late, mistakes=missed + extra)], 12, 'office.log', c)
     t['mistakes'] += missed + extra
-    _grid_slips(t, found, fines, extra)
+    _grid_slips(t, found, fines, extra, _cells_named(t, res, 'extra'))
     # The errors that went out with the transfer are taken out of the bonus by chị Hồng (react),
     # instead of the old flat −4 per error; the fines and next-day claims stay as they were.
     reaction = cq.react(s, c, t, max(0, GRID_BONUS + adj), who='Chị Hồng')
@@ -933,14 +1106,27 @@ def _pay_grid(s: dict, c: dict, d: dict, o: dict, t: dict, mod: dict) -> dict:
     ok = sum(1 for r in res.values() if r['ok'])
     parts = [f'💸 Đã chuyển lương · {ok}/{len(res)} dòng chuẩn · thưởng +{reward} xu.']
     if missed:
-        parts.append(f'Sót {missed} lỗi' + (f' (bị trừ {paid} xu)' if paid else '') + (f'; {len(claims)} người sẽ khiếu nại vào sáng mai' if claims else '') + '.')
+        parts.append(f'Sót {missed} lỗi ({_cells_named(t, res, "missed")})' + (f' — bị trừ {paid} xu' if paid else '')
+                     + (f'; {len(claims)} người sẽ khiếu nại vào sáng mai' if claims else '') + '.')
     if extra:
-        parts.append(f'Đánh dấu nhầm {extra} ô đúng — chị Hồng mất công soát lại.')
+        parts.append(f'Đánh dấu nhầm {extra} ô đúng ({_cells_named(t, res, "extra")}) — chị Hồng mất công soát lại.')
+    parts.append('Chạm vào từng ô của bảng vừa chuyển để xem cách tính.' if missed or extra else '')
     parts += [note, reaction['message'], lunch]
     return dict(message=' '.join(x for x in parts if x), celebrate=not late and not missed and not extra)
 
 
-def _grid_slips(t: dict, found: dict, fines: int, extra: int) -> None:
+def _cells_named(t: dict, res: dict, key: str) -> str:
+    """“Hằng · Lương đóng BH, dòng 6 · Họ tên”: which cells, so a result line never just says “2 ô”."""
+    label = dict(GRID_COLS)
+    names = [next(c['v'] for c in row['cells'] if c['z'] == 'name') for row in t['rows']]
+    out = []
+    for i, row in enumerate(t['rows']):
+        who = names[i].split()[-1] + (f' (dòng {i + 1})' if names.count(names[i]) > 1 else '')
+        out += [f'{who} · {label[z]}' for z in res[row['id']][key]]
+    return ', '.join(out[:4]) + (f' và {len(out) - 4} ô khác' if len(out) > 4 else '')
+
+
+def _grid_slips(t: dict, found: dict, fines: int, extra: int, held: str = '') -> None:
     """What went out wrong with the payroll, in chị Hồng's words (one slip per kind of error)."""
     if found.get('over'):
         n = len(found['over'])
@@ -952,7 +1138,8 @@ def _grid_slips(t: dict, found: dict, fines: int, extra: int) -> None:
         n = len(found['risk'])
         cq.slip(t, 'pay_risk', 3 if n >= 2 else 2, f'Bảng lương để lọt chỗ sai quy định: {found["risk"][0]}', 'để lọt chỗ sai quy định')
     if extra:
-        cq.slip(t, 'pay_hold', 1, 'Giữ lương oan ở những ô vốn đúng, chị phải soát lại từng dòng.', 'đánh dấu nhầm ô đúng')
+        cq.slip(t, 'pay_hold', 1, 'Giữ lương oan ở những ô vốn đúng' + (f' ({held})' if held else '') + ', chị phải soát lại từng dòng.',
+                'đánh dấu nhầm ô đúng')
 
 
 CLAIM_CHOICES = ('pay_now', 'next', 'deny')
@@ -1066,7 +1253,8 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
             return dict(message=' '.join(x for x in ('✓ ' + msg, lunch) if x), correct=True)
         if gen:
             o['clock'] = min(office.LOCK, o['clock'] + 15)
-        return dict(message=' '.join(x for x in ('✗ Chưa khớp. ' + msg, lunch) if x), correct=False)
+        where, bad = _where_wrong(st, p.get('answer'))
+        return dict(message=' '.join(x for x in ('✗ Chưa khớp.', where, msg, lunch) if x), correct=False, bad=bad, where=where)
     if name == 'tp_file':
         kit.confirm(p, 'Xác nhận nộp/bàn giao hồ sơ.')
         kit.need(procedures.done(t), 'Hồ sơ còn bước chưa kiểm xong.')
@@ -1093,6 +1281,25 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
 
 
 # ------------------------------------------------------------------ review
+def _where_wrong(st: dict, answer) -> tuple[str, list]:
+    """Which part of a wrong answer is off (feedback #71: “chỉ rõ lỗi sai ở đâu”), never the right value:
+    the boxes of a calculation that do not match, how many of the needed items a multiple choice got."""
+    k = st['_key']
+    if st['kind'] == 'fields':
+        wrong = [f for f in st['fields'] if answer.get(f['id']) != k[f['id']]]
+        if not wrong:
+            return '', []
+        names = ', '.join(f'“{f["label"]}”' for f in wrong)
+        return f'Khớp {len(k) - len(wrong)}/{len(k)} ô — chưa khớp: {names}.', [f['id'] for f in wrong]
+    if st['kind'] == 'multi':
+        got, need = set(answer), set(k)
+        more = len(got - need)
+        return f'Đúng {len(got & need)}/{len(need)} mục cần chọn' + (f', thừa {more} mục' if more else '') + '.', []
+    if st['kind'] == 'match':
+        return f'Ghép đúng {sum(1 for a, b in k.items() if answer.get(a) == b)}/{len(k)} dòng.', []
+    return '', []
+
+
 def _speed(t: dict) -> tuple[int, str]:
     if t['late']:
         return 1, 'trễ hạn'
@@ -1155,20 +1362,65 @@ def public_task(t: dict) -> dict:
         return v
     if t.get('form') == 'grid':
         res, flags, rows = t.get('results') or {}, t.get('flags') or {}, []
-        for row in t.get('rows') or []:
+        ex = grid_explain(t) if t.get('filed') and res else None
+        for i, row in enumerate(t.get('rows') or []):
             x = dict(id=row['id'], cells=tree_copy(row['cells']), flags=list(flags.get(row['id'], [])),
                      reviewed=row['id'] in (t.get('reviewed') or []), hinted=row['id'] in (t.get('tips') or []))
             x['tip'] = GRID_HINTS[(row['_truth']['kinds'] or ['clean'])[0]] if x['hinted'] else None
             if t.get('filed') and row['id'] in res:
                 x['result'] = tree_copy(res[row['id']])
-                x['truth'] = dict(z=list(row['_truth']['z']), why=list(row['_truth']['why']))
+                x['truth'] = dict(z=list(row['_truth']['z']), why=list(ex[i]['why'] if ex else row['_truth']['why']))
+                if ex:
+                    x['explain'] = tree_copy(ex[i]['cells'])
             rows.append(x)
-        v.update(rows=rows, steps=[], progress=None,
+        per = _rules_raw(t['day'])
+        # The pay period's own rule cards: a grid carried over a period change is still checked by its own rules.
+        v.update(rows=rows, steps=[], progress=None, period=dict(month=per['m'], rules=_rule_cards(t['day'])),
                  grid=dict(total=len(rows), reviewed=len(t.get('reviewed') or []), flagged=sum(len(x) for x in flags.values()),
                            ok=sum(1 for r in res.values() if r['ok']) if res else None))
         return v
     v['steps'], v['progress'] = procedures.public(t)
+    for st in v['steps']:
+        if st.get('state') == 'solved':
+            work = _step_work(t, st['id'])
+            if work:
+                st['work'] = work
     return v
+
+
+def _kv_int(t: dict, start: str) -> list[int]:
+    """Amounts on the dossier's papers whose row label starts with `start` (“204.000 xu” → 204000)."""
+    out = []
+    for p in t.get('papers') or []:
+        if p.get('kind') != 'kv':
+            continue
+        for k, val in p['rows']:
+            digits = str(val).replace(' xu', '').replace('.', '')
+            if str(k).startswith(start) and digits.isdigit():
+                out.append(int(digits))
+    return out
+
+
+def _step_work(t: dict, sid: str) -> list[str] | None:
+    """Working lines for a solved step whose stored explanation gives only the results (shown after solving)."""
+    st = next((x for x in t.get('proc') or [] if x['id'] == sid), None)
+    if not st or st['kind'] != 'fields':
+        return None
+    k = st['_key']
+    if t.get('form') == 'payslip' and sid == 'tax' and set(k) == {'taxable', 'pit'}:
+        return bracket_lines(k['taxable']) if k['pit'] == pit(k['taxable']) else None
+    if t.get('form') == 'yearend' and sid == 'calc' and set(k) == {'deduct', 'taxable', 'due', 'balance'}:
+        income, ins, withheld = sum(_kv_int(t, 'Thu nhập chịu thuế')), sum(_kv_int(t, 'Bảo hiểm bắt buộc')), sum(_kv_int(t, 'Thuế đã khấu trừ'))
+        months = (k['deduct'] - 12 * PERSONAL) // DEPENDENT
+        if max(0, income - ins - k['deduct']) != k['taxable'] or k['due'] != pit(k['taxable'], 12) or k['due'] - withheld != k['balance']:
+            return None
+        lines = [f'Giảm trừ = {fmt(12 * PERSONAL)} bản thân + {fmt(DEPENDENT)} × {months} tháng người phụ thuộc = {fmt(k["deduct"])}',
+                 f'Thu nhập tính thuế = {fmt(income)} tổng thu nhập − {fmt(ins)} bảo hiểm − {fmt(k["deduct"])} giảm trừ = {fmt(k["taxable"])}']
+        lines += bracket_lines(k['taxable'], 12)
+        lines.append(f'{fmt(k["due"])} − {fmt(withheld)} đã khấu trừ = ' + (f'nộp thêm {xu(k["balance"])}' if k['balance'] > 0 else
+                                                                             f'được hoàn {xu(-k["balance"])}' if k['balance'] < 0 else '0 xu'))
+        return lines
+    return None
 
 
 def _validate_grid(t: dict) -> None:
