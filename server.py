@@ -86,10 +86,13 @@ STATIC_RECHECK=RECHECK  # seconds a resolved static route is trusted before its 
 SHARED_LIMITS=("ai","acct-","newsession:","fb:","fb-day:","fb-ip:")
 
 def live_hint()->dict:
-    """Dev and tests only: LIVE_URL=ws://127.0.0.1:8770/live points the page at a live service (live/) on another
-    port. Production leaves it unset: the page opens wss://<its own host>/live (nginx)."""
+    """Where the page finds the live service (live/: chat, presence), sent in /api/bootstrap as `live.url`.
+    LIVE_URL=/live (production, once mnl-live and nginx's `location = /live` are in place): the page opens
+    wss://<its own host>/live. Unset: the page never opens a socket (no live service yet, no console errors).
+    Dev and tests: a full ws://127.0.0.1:<port>/live for a live service on another port."""
     url=(os.environ.get("LIVE_URL") or "").strip()
-    return {"live":{"url":url}} if re.fullmatch(r"wss?://[A-Za-z0-9.\-]+(:\d{1,5})?/[A-Za-z0-9/_\-]*",url) else {}
+    ok=re.fullmatch(r"/[A-Za-z0-9/_\-]*|wss?://[A-Za-z0-9.\-]+(:\d{1,5})?/[A-Za-z0-9/_\-]*",url)
+    return {"live":{"url":url}} if ok else {}
 
 class SharedLimits:
     """Sliding-window rate limits shared by all worker processes (WORKERS>1), kept in
@@ -380,7 +383,7 @@ class Handler(BaseHTTPRequestHandler):
         scheme="wss" if self.secure() else "ws"
         extra=f"{scheme}://{host}"
         dev=live_hint().get("live")
-        if dev:extra+=" "+urlsplit(dev["url"])._replace(path="").geturl()  # LIVE_URL (dev): the live service's own origin
+        if dev and not dev["url"].startswith("/"):extra+=" "+urlsplit(dev["url"])._replace(path="").geturl()  # LIVE_URL (dev): its own origin
         return csp.replace("connect-src 'self'",f"connect-src 'self' {extra}",1)
 
     def content(self,query:str):

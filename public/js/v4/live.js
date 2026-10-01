@@ -3,8 +3,9 @@
  * welcome (switches, me, friends, chats, unread) and the chat button with its badge; the chat dialog itself
  * (./chat.js) loads on first tap.
  *
- * Nothing shows until the service says `welcome.flags.chat`. Before a first welcome ever arrives (no service
- * yet, or nginx not routing /live) it retries slowly (1, 2, 5, 10 minutes) so the game server never sees a
+ * It opens a socket only when the game server names one (bootstrap `live.url`, env LIVE_URL=/live on the game
+ * server), and nothing shows until the service says `welcome.flags.chat`. Before a first welcome ever arrives
+ * (service down, nginx not routing /live) it retries slowly (1, 2, 5, 10 minutes) so the game server never sees a
  * reconnect storm; after one it reconnects with back-off (1, 2, 4, 8, 15 s, jitter), at once when the tab comes
  * back or the network returns, and resumes from the last message id it holds per open chat. Close codes from
  * the service: 1012 restart (jittered return), 4001 switched off (10 minutes), 4002 another tab took over.
@@ -36,8 +37,8 @@ export const live={
 const emit=(type,f)=>{for(const fn of listeners.get(type)||[]){try{fn(f);}catch(e){console.warn('live:',type,e);}}for(const fn of listeners.get('*')||[]){try{fn(f);}catch(e){console.warn('live:*',e);}}};
 
 function url(){
-  const dev=env?.api?.live?.url;if(dev)return dev;
-  return `${location.protocol==='https:'?'wss':'ws'}://${location.host}/live`;
+  const u=env?.api?.live?.url||'';
+  return u.startsWith('/')?`${location.protocol==='https:'?'wss':'ws'}://${location.host}${u}`:u;
 }
 
 function connect(){
@@ -148,5 +149,5 @@ export function liveBoot(e){
   });
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')live.reconnect();});
   window.addEventListener('online',()=>live.reconnect());
-  connect();
+  if(e.api?.live?.url)connect();   // no live service named by the game server: never a socket
 }

@@ -157,6 +157,17 @@ class AdminEndpointTests(unittest.TestCase):
             self.assertEqual(db.execute('SELECT by_admin FROM chat_mutes').fetchone()[0], 'chat_admin')
         self.assertEqual(self.req(admin, '/api/admin/chat', 'POST', dict(op='mute', pid='d' * 16, hours=3))[0], 400)
 
+    def test_socket_only_when_the_game_names_a_live_service(self):
+        from server import live_hint
+        with patch.dict(os.environ, {'LIVE_URL': ''}):
+            self.assertEqual(live_hint(), {})
+            self.assertNotIn('live', self.req({}, '/api/bootstrap?lite=1')[1])
+        with patch.dict(os.environ, {'LIVE_URL': '/live'}):
+            self.assertEqual(self.req({}, '/api/bootstrap?lite=1')[1]['live'], dict(url='/live'))
+        for bad in ('javascript:alert(1)', 'http://x/live', '/live"x'):
+            with patch.dict(os.environ, {'LIVE_URL': bad}):
+                self.assertEqual(live_hint(), {}, bad)
+
     def test_page_csp_allows_its_own_socket(self):
         status, _, hdrs = self.req({}, '/')
         self.assertEqual(status, 200)
