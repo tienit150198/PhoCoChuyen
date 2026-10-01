@@ -209,6 +209,7 @@ function navItems(c){
   items.push(['people','people','Người quen',L.people.m?.closenessBadge(api)||0],['album','camera','Kỷ niệm'],['workshop','sparkle','Trò nhỏ'],['passport','award','Hộ chiếu'],['town','compass','Bản đồ'],['rank','award','Xếp hạng']);  // Bản đồ: the town map (experience-ui "Khu phố"); Bảng xếp hạng (v4/leaderboard.js)
   items.push(['jrWardrobe','shirt','Tủ đồ']);  // 👗 Tủ đồ (v4/wardrobe.js, opened by journey.js)
   {const chat=L.live.m?.liveNav();if(chat)items.push(chat);}  // 💬 Chat (v4/live.js): only while the live service has it on
+  {const lv=L.live.m?.live;if(lv?.flags.street&&lv.welcomed)items.push(['liveWalk','map','Đi dạo']);}  // 🚶 Đi dạo (v4/walk.js): only while the live service has it on
   items.push(['friends','user','Bạn bè',api.friendAlerts||0],['marriage','heart','Hôn nhân',api.marriageAlerts||0]);  // Bạn bè + Hôn nhân (v4/marriage.js, own dialog; badges from v4/ticker.js)
   items.push(['money','bag','Tiền của bạn']);  // 💰 the money sheet (v4/wealth.js), also behind the HUD money chips
   {const bk=api.state?.journey?.bank;items.push(['bank','coin','Ngân hàng',bk?.unread||(bk?.overdue?'dot':0)]);}  // 🏦 Ngân hàng Phố (v4/bank.js, own dialog)
@@ -1119,6 +1120,7 @@ async function handleAction(action,data,el){
       if(await boardAction(action,data,el,env()))break;
       if((L.rank.m||action==='rank')&&await (await viaLazy(L.rank,el)).leaderboardAction(action,data,el,env()))break;
       if(action==='liveChat'){(await viaLazy(L.live,el)).openChat(data);break;}  // 💬 Chat (v4/chat.js)
+      if(action==='liveWalk'){await (await import('./v4/walk.js')).openWalk(env(),data);break;}  // 🚶 Đi dạo (v4/walk.js): its own dialog
       if(action==='marriage'||action==='friends'){await (await import('./v4/marriage.js')).marriageAction(action,data,el,env());break;}  // Hôn nhân, Bạn bè: lazy
       if(action==='bank'){await (await import('./v4/bank.js')).bankAction(action,data,el,env());break;}  // 🏦 Ngân hàng Phố: lazy
       if(action==='house'){await (await import('./v4/house.js')).houseAction(action,data,el,env());break;}  // 🏠 Nhà của bạn: lazy

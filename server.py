@@ -57,6 +57,7 @@ from game import retention
 from game import leaderboard
 from game import marriage
 from game import system_gift
+from game import live_effects
 from game import live_chat
 from game.content import public_content,content_parts,CAREERS
 from game.engine import GameError,public_state
@@ -493,6 +494,9 @@ class Handler(BaseHTTPRequestHandler):
                         paid,gifts=system_gift.on_load(self.server.store,token,state)
                         if paid:state,revision,_=self.server.store.read(token)
                     except Exception as e:self.log_error("gift on_load: %s",type(e).__name__)  # never blocks loading the game
+                    try:  # 🧧 rewards from the live service (Đi dạo: a lucky envelope): paid once into the save (game/live_effects.py)
+                        if live_effects.on_load(self.server.store,token,state):state,revision,_=self.server.store.read(token)
+                    except Exception as e:self.log_error("live_effects on_load: %s",type(e).__name__)  # never blocks loading the game
                 extra={"Set-Cookie":self.cookie(token)} if created else {}
                 view=public_state(state)
                 # The workplace the first frame opens (app.js career()): boot.js starts its part of the catalogue
@@ -695,6 +699,11 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/leaderboard/visibility":  # "Hiện tên tôi trên bảng xếp hạng"
                 if not self.server.rate_limit("lb-vis:"+token,20):self.error(429,"Chờ một chút nhé.","rate_limited");return
                 self.json(200,leaderboard.set_visible(self.server.store,token,state,data.get("visible")));return
+            if route=="/api/live/effects":  # 🧧 pay the live service's rewards now (the stroll asks right after a red envelope; same as on load)
+                if not self.server.rate_limit("livefx:"+token,30):self.error(429,"Chờ một chút nhé.","rate_limited");return
+                paid=live_effects.on_load(self.server.store,token,state)
+                if paid:state,revision,_=self.server.store.read(token)
+                self.json(200,dict(ok=True,paid=paid,state=public_state(state),revision=revision));return
             if route=="/api/gift/seen":  # 🎁 the player pressed "Nhận quà" on a gift card: it never shows again (game/system_gift.py)
                 if not self.server.rate_limit("gift:"+token,30):self.error(429,"Chờ một chút nhé.","rate_limited");return
                 self.json(200,dict(ok=True,seen=system_gift.seen(self.server.store,token,data.get("id"))));return
