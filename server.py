@@ -52,6 +52,8 @@ from game import accounts
 from game import player_feedback as pfb
 from game import board_ai
 from game import admin_stats
+from game import admin_retention
+from game import retention
 from game import leaderboard
 from game import marriage
 from game import system_gift
@@ -192,6 +194,8 @@ class GameServer(ThreadingHTTPServer):
 
     def server_close(self)->None:
         admin_stats.stop_jobs(store=self.store)  # releases the stats job's lock file
+        try:retention.flush(self.store)  # the last few seconds of action counts (game/retention.py)
+        except Exception as e:sys.stderr.write(f"[retention] flush at close: {type(e).__name__}\n")
         super().server_close()
 
     def content_json(self)->str:
@@ -556,11 +560,17 @@ class Handler(BaseHTTPRequestHandler):
                 if part=="section" and name not in admin_stats.SECTIONS:self.error(400,"Không có mục thống kê này.","bad_section");return
                 if not self.server.rate_limit(f"admin-stats-{name}:"+token,30):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 fresh=query.get("fresh")=="1"
+                csv=query.get("format")=="csv"
+                if csv and name!="retention":self.error(400,"Chỉ mục Giữ chân có bản CSV.","bad_format");return
                 try:
                     if part=="section":data=admin_stats.get_section(self.server.store,name,fresh=fresh)
                     else:data=admin_stats.get_summary(self.server.store,admin_stats.parse_range(query.get("range")),fresh=fresh)
                 except ValueError:self.error(400,"Khoảng ngày chỉ nhận 7, 30 hoặc 90.","bad_range");return
                 except admin_stats.Busy:self.error(503,"Máy chủ đang bận, thử lại sau ít giây nhé.","busy");return  # a time budget ran out: players first
+                if csv:  # Giữ chân as one CSV of its tables (aggregates only)
+                    if data.get("pending"):self.error(503,"Số liệu đang được tính, thử lại sau ít giây nhé.","busy");return
+                    self.respond(200,admin_retention.to_csv(data).encode("utf-8-sig"),"text/csv; charset=utf-8",
+                                 {"Content-Disposition":f"attachment; filename=giu-chan-{data.get('today','')}.csv"});return
                 self.json(200,data);return
             if route.startswith("/api/"):self.error(404,"Không có API này.");return
             if route in ("/","/index.html"):self.page();return
@@ -600,6 +610,7 @@ class Handler(BaseHTTPRequestHandler):
     def _post(self):
         try:
             route=urlsplit(self.path).path
+            if route=="/api/beacon":self.beacon();return  # sendBeacon cannot send the CSRF header: its own checks
             token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen"))
             length=int(self.headers.get("Content-Length","0"))
             if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
@@ -687,6 +698,37 @@ class Handler(BaseHTTPRequestHandler):
         except Exception as e:
             self.log_error("Internal error: %s",type(e).__name__)
             self.error(500,"Không thực hiện được thao tác. Tiến trình trước đó vẫn được giữ.","internal_error")
+
+    def beacon(self):
+        """POST /api/beacon (navigator.sendBeacon, public/js/telemetry.js): where a page was left, client errors,
+        load times, where a new player came from (game/retention.py). The session cookie only (a beacon carries
+        no CSRF header), from this site only (Origin / Sec-Fetch-Site), at most BEACON_MAX bytes, rate limited;
+        never reads a save. 204 when taken."""
+        if not self.valid_host():self.error(403,"Host không được phép.","forbidden");return
+        origin,site=self.headers.get("Origin"),self.headers.get("Sec-Fetch-Site")
+        if origin:
+            parsed=urlsplit(origin)
+            if parsed.scheme not in ("http","https") or parsed.netloc!=self.headers.get("Host"):self.error(403,"Không nhận từ website khác.","forbidden");return
+        if site and site!="same-origin":self.error(403,"Không nhận từ website khác.","forbidden");return
+        if not origin and not site:self.error(403,"Thiếu nguồn gửi.","forbidden");return
+        token=self.token()
+        if not token:self.error(401,"Chưa có phiên chơi.","session_missing");return
+        try:length=int(self.headers.get("Content-Length","0"))
+        except ValueError:length=-1
+        if not 0<length<=retention.BEACON_MAX:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
+        if not (self.server.rate_limit("beacon:"+token,int(os.environ.get("BEACONS_PER_MINUTE","30")))
+                and self.server.rate_limit("beacon-ip:"+self.client_ip(),int(os.environ.get("BEACONS_PER_IP_MINUTE","600")))):
+            self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+        body=self.rfile.read(length);self.body_read=True
+        try:data=json.loads(body)
+        except ValueError:self.error(400,"Dữ liệu không hợp lệ.","bad_request");return
+        if not isinstance(data,dict):self.error(400,"Dữ liệu không hợp lệ.","bad_request");return
+        sid,_=self.server.store.resolve(token)  # the save id behind the cookie (logins/accounts, not the save)
+        if not sid.startswith("revoked:"):
+            try:host=urlsplit("//"+self.headers.get("Host","")).hostname or ""
+            except ValueError:host=""
+            retention.beacon(self.server.store,sid,data,own_host=host)
+        self.respond(204,b"","text/plain; charset=utf-8")
 
     def require_admin(self,token:str):
         """Feedback inbox: only signed-in accounts listed in ADMIN_USERS (403 for everyone else)."""
@@ -1086,6 +1128,7 @@ def _housekeeping(store:Store,stop:threading.Event,limits:SharedLimits|None):
         if now-last_prune>6*3600:
             last_prune=now
             step("prune",lambda:(store.prune(int(os.environ.get("SESSION_IDLE_DAYS","180"))),social.prune(store),pfb.prune(store)))
+            step("stats",lambda:admin_stats.upkeep(store))  # stat tables: rollups, then retention limits (never at the peak hours)
         step("push",lambda:push.deliver_due(store))
 
 
@@ -1148,8 +1191,15 @@ def precompress_later(server:GameServer):
     if server.cas_dir:threading.Thread(target=lambda:server.assets.precompress(server.cas_dir),daemon=True,name="precompress").start()
 
 
+def _flush_and_exit(signum,frame):
+    """A worker's SIGTERM: write its last few seconds of action counts (game/retention.py, at most 1.5 s), then
+    stop at once as before."""
+    t=threading.Thread(target=retention.flush_all,daemon=True);t.start();t.join(1.5)
+    os._exit(0)
+
+
 def _worker(server:GameServer,store:Store,limits:SharedLimits,i:int,n:int)->int:
-    signal.signal(signal.SIGTERM,signal.SIG_DFL);signal.signal(signal.SIGINT,signal.default_int_handler)
+    signal.signal(signal.SIGTERM,_flush_and_exit);signal.signal(signal.SIGINT,signal.default_int_handler)
     server.shared_limits=limits;server.worker=i
     ai._gate=threading.BoundedSemaphore(max(1,math.ceil(max(1,int(os.environ.get("LLM_CONCURRENCY","4") or 4))/n)))
     stop=threading.Event()

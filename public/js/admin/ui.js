@@ -26,6 +26,8 @@ const PATHS={
   sparkle:'M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7Z',
   pause:'M12 2a10 10 0 100 20 10 10 0 000-20ZM10 8.5v7M14 8.5v7',
   pulse:'M3 12h4l2-6 4 12 2-6h6',
+  loop:'M17 2l4 4-4 4M3 11V9a3 3 0 013-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 01-3 3H3',
+  download:'M12 3v12M7 10l5 5 5-5M4 19h16',
 };
 export const icon=(name,size=18)=>`<svg class="ic" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${PATHS[name]||PATHS.sparkle}"/></svg>`;
 

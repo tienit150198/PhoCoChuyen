@@ -161,6 +161,12 @@ Then: bump `game/__init__.py` and add a CHANGELOG entry. Only if the owner asked
 - **Play time:** `stat_play` (one row per player per Vietnam day, trigger on `receipts`, ~12 µs per command) feeds
   the admin "Thời gian chơi" card. Exact from 01/10 00:31; 29–30/09 were backfilled from receipts as estimates
   (`scripts/playtime_backfill.py`, idempotent).
+- **Giữ chân (branch `retention`, not live yet):** `game/retention.py` records funnel steps (`stat_milestones`, kept),
+  commands per player per day (`stat_actions`, buffered in memory and written every 15 s, 60 days, then
+  `stat_actions_daily`), leave/error/load/acquisition beacons (`POST /api/beacon`, 60 days); admin view "Giữ chân"
+  (`game/admin_retention.py`, CSV with `&format=csv`). SCHEMA_VERSION 5 creates the tables at start-up; then run
+  `scripts/milestones_backfill.py` once off-peak (seeds the 30/09+ cohorts). `RETENTION_LOG=0` turns recording off.
+  `stat_play` per-player rows are now kept 60 days (`ADMIN_STATS_PLAY_DAYS`), older days summed into `stat_play_daily`.
 - **nginx site** `/etc/nginx/sites-enabled/phocochuyen` (same as the old server): HTTP/2, static
   `/js /css /i18n /icons /music /fonts` served directly, `?v=` assets from `/opt/mot-ngay-lam-nghe/shared/_v`
   (immutable), a timing log for `/api/` in `/var/log/nginx/phocochuyen_api.log`. `/etc/nginx/conf.d/mnl-realip.conf`

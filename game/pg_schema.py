@@ -34,8 +34,9 @@ Delta-sync hints (TABLES[i]["sync"]):
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 4   # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
-                     # 4: system_gifts
+SCHEMA_VERSION = 5   # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
+                     # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
+                     # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily
 
 # The text forms SQLite produces, computed by PostgreSQL (UTC, independent of TimeZone).
 NOW_TEXT = "to_char(statement_timestamp() AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI:SS')"       # CURRENT_TIMESTAMP
@@ -152,6 +153,40 @@ CREATE TABLE IF NOT EXISTS stat_play (
   PRIMARY KEY (day, sid)
 ) WITH (fillfactor = 90, autovacuum_vacuum_scale_factor = 0.01, autovacuum_analyze_scale_factor = 0.02);
 CREATE TABLE IF NOT EXISTS stat_play_est (day {T} PRIMARY KEY, saves bigint NOT NULL, capped bigint NOT NULL, at double precision NOT NULL);
+-- One row per finished day of stat_play, written before its per-player rows are purged (kept forever).
+CREATE TABLE IF NOT EXISTS stat_play_daily (day {T} PRIMARY KEY, players bigint NOT NULL, secs bigint NOT NULL, sessions bigint NOT NULL,
+  cmds bigint NOT NULL, data {T} NOT NULL, at double precision NOT NULL);
+
+-- Giữ chân (game/retention.py): funnel steps per save (kept), commands per player per day (fillfactor:
+-- today's rows are updated by each worker's flush, HOT), leave beacons, client errors, load times,
+-- where new players came from. None of them is ever read to serve a player.
+CREATE TABLE IF NOT EXISTS stat_milestones (
+  sid {T} NOT NULL, key {T} NOT NULL, at double precision, day bigint, career {T}, detail {T}, PRIMARY KEY (sid, key)
+);
+CREATE TABLE IF NOT EXISTS stat_actions (
+  day {T} NOT NULL, sid {T} NOT NULL, career {T} NOT NULL, action {T} NOT NULL, n integer NOT NULL, errors integer NOT NULL DEFAULT 0,
+  err {T}, PRIMARY KEY (day, sid, career, action)
+) WITH (fillfactor = 90, autovacuum_vacuum_scale_factor = 0.02, autovacuum_analyze_scale_factor = 0.05);
+CREATE TABLE IF NOT EXISTS stat_actions_daily (
+  day {T} NOT NULL, career {T} NOT NULL, action {T} NOT NULL, players bigint NOT NULL, n bigint NOT NULL, errors bigint NOT NULL,
+  err {T}, PRIMARY KEY (day, career, action)
+);
+CREATE TABLE IF NOT EXISTS stat_rollups (kind {T} NOT NULL, day {T} NOT NULL, rows bigint NOT NULL, at double precision NOT NULL, PRIMARY KEY (kind, day));
+CREATE TABLE IF NOT EXISTS stat_leaves (
+  id {ID} PRIMARY KEY, sid {T} NOT NULL, at double precision NOT NULL, day {T} NOT NULL, payload {T} NOT NULL
+);
+CREATE TABLE IF NOT EXISTS stat_leave_last (sid {T} PRIMARY KEY, at double precision NOT NULL, payload {T} NOT NULL) WITH (fillfactor = 80);
+CREATE TABLE IF NOT EXISTS stat_client_errors (
+  day {T} NOT NULL, kind {T} NOT NULL, message_key {T} NOT NULL, screen {T} NOT NULL, count bigint NOT NULL,
+  last_at double precision NOT NULL, sample {T}, PRIMARY KEY (day, kind, message_key, screen)
+);
+CREATE TABLE IF NOT EXISTS stat_loads (
+  day {T} NOT NULL, metric {T} NOT NULL, net {T} NOT NULL, who {T} NOT NULL, cache {T} NOT NULL, tier {T} NOT NULL,
+  bucket integer NOT NULL, n bigint NOT NULL, PRIMARY KEY (day, metric, net, who, cache, tier, bucket)
+);
+CREATE TABLE IF NOT EXISTS stat_acquisition (
+  sid {T} PRIMARY KEY, at double precision NOT NULL, day {T} NOT NULL, source {T}, medium {T}, campaign {T}, ref_domain {T}
+);
 
 CREATE TABLE IF NOT EXISTS hits (k {T} NOT NULL, at double precision NOT NULL);
 
@@ -259,6 +294,9 @@ CREATE INDEX IF NOT EXISTS stat_sessions_seen ON sessions (updated_at, revision,
 CREATE INDEX IF NOT EXISTS stat_births_day ON stat_births (day);
 CREATE INDEX IF NOT EXISTS stat_active_sid ON stat_active (sid);
 CREATE INDEX IF NOT EXISTS stat_play_sid ON stat_play (sid);
+CREATE INDEX IF NOT EXISTS stat_leaves_sid ON stat_leaves USING hash (sid);   -- equality only (delete with the save): ~4x smaller than a btree
+CREATE INDEX IF NOT EXISTS stat_acquisition_day ON stat_acquisition (day);
+CREATE INDEX IF NOT EXISTS stat_milestones_key ON stat_milestones (key, at);   -- "started a workplace" (start:<career>) in a period
 CREATE INDEX IF NOT EXISTS hits_k ON hits (k, at);
 CREATE INDEX IF NOT EXISTS stat_fb_created ON player_feedback (created_at);
 CREATE INDEX IF NOT EXISTS stat_accounts_created ON accounts (created_at);
@@ -325,6 +363,14 @@ BEGIN
   DELETE FROM stat_play WHERE sid = OLD.sid;
   RETURN NULL;
 END $$;
+CREATE OR REPLACE FUNCTION mnl_stat_retention_gone() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  DELETE FROM stat_milestones WHERE sid = OLD.sid;
+  DELETE FROM stat_leaves WHERE sid = left(OLD.sid, 16);   -- stat_leaves / stat_actions keep 16 hex characters (retention.short)
+  DELETE FROM stat_leave_last WHERE sid = OLD.sid;
+  DELETE FROM stat_acquisition WHERE sid = OLD.sid;
+  RETURN NULL;
+END $$;
 CREATE OR REPLACE FUNCTION mnl_stat_fb_seen() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
   INSERT INTO stat_fb_ack (id, at) VALUES (NEW.id, NEW.updated_at) ON CONFLICT DO NOTHING;
@@ -340,6 +386,7 @@ CREATE OR REPLACE TRIGGER stat_session_active AFTER UPDATE OF updated_at ON sess
 CREATE OR REPLACE TRIGGER stat_session_gone AFTER DELETE ON sessions FOR EACH ROW EXECUTE FUNCTION mnl_stat_session_gone();
 CREATE OR REPLACE TRIGGER stat_play_cmd AFTER INSERT ON receipts FOR EACH ROW EXECUTE FUNCTION mnl_stat_play_cmd();
 CREATE OR REPLACE TRIGGER stat_play_gone AFTER DELETE ON sessions FOR EACH ROW EXECUTE FUNCTION mnl_stat_play_gone();
+CREATE OR REPLACE TRIGGER stat_retention_gone AFTER DELETE ON sessions FOR EACH ROW EXECUTE FUNCTION mnl_stat_retention_gone();
 CREATE OR REPLACE TRIGGER stat_fb_seen AFTER UPDATE OF status ON player_feedback FOR EACH ROW
   WHEN (OLD.status = 'new' AND NEW.status <> 'new') EXECUTE FUNCTION mnl_stat_fb_seen();
 CREATE OR REPLACE TRIGGER stat_fb_gone AFTER DELETE ON player_feedback FOR EACH ROW EXECUTE FUNCTION mnl_stat_fb_gone();
@@ -375,7 +422,7 @@ STAGES = (("tables", TABLES_DDL), ("indexes", INDEX_DDL), ("triggers", TRIGGER_D
 # tables (as the table owner, no superuser needed) and ENABLE it again afterwards.
 TRIGGERS = [('sessions', 'stat_session_born'), ('sessions', 'stat_session_active'), ('sessions', 'stat_session_gone'),
             ('player_feedback', 'stat_fb_seen'), ('player_feedback', 'stat_fb_gone'),
-            ('receipts', 'stat_play_cmd'), ('sessions', 'stat_play_gone')]
+            ('receipts', 'stat_play_cmd'), ('sessions', 'stat_play_gone'), ('sessions', 'stat_retention_gone')]
 
 
 def _cols(*spec):
@@ -486,10 +533,42 @@ TABLES = [
          columns=_cols('day text', 'sid text', 'secs bigint', 'sessions bigint', 'cmds bigint', 'first_at double precision',
                        'last_at double precision', 'hours bigint', 'sess_at double precision', 'lens text'),
          key=('day', 'sid'), unique=[], identity=None,
-         sync=dict(mode='updated', column='last_at', note='one row per save per Vietnam day it sent a command; kept 400 days')),
+         sync=dict(mode='updated', column='last_at', note='one row per save per Vietnam day it sent a command; kept ADMIN_STATS_PLAY_DAYS (60), then stat_play_daily')),
     dict(name='stat_play_est', source=None, sqlite_table='stat_play_est',
          columns=_cols('day text', 'saves bigint', 'capped bigint', 'at double precision'),
          key=('day',), unique=[], identity=None, sync=dict(mode='full', note='days seeded by admin_stats.backfill_play')),
+    dict(name='stat_play_daily', source=None, sqlite_table='stat_play_daily',
+         columns=_cols('day text', 'players bigint', 'secs bigint', 'sessions bigint', 'cmds bigint', 'data text', 'at double precision'),
+         key=('day',), unique=[], identity=None, sync=dict(mode='full', note='rollup of a stat_play day before its rows are purged; kept')),
+    # ---- Giữ chân (game/retention.py): written by the game itself, never copied (source None).
+    dict(name='stat_milestones', source=None, sqlite_table='stat_milestones',
+         columns=_cols('sid text', 'key text', 'at double precision', 'day bigint', 'career text', 'detail text'),
+         key=('sid', 'key'), unique=[], identity=None, sync=dict(mode='full', note='one row per save per funnel step; kept; deleted with the save')),
+    dict(name='stat_actions', source=None, sqlite_table='stat_actions',
+         columns=_cols('day text', 'sid text', 'career text', 'action text', 'n bigint', 'errors bigint', 'err text'),
+         key=('day', 'sid', 'career', 'action'), unique=[], identity=None,
+         sync=dict(mode='full', note='commands per save (sid: its first 16 hex characters) per day; kept RETENTION_ACTIONS_DAYS (60), then stat_actions_daily only')),
+    dict(name='stat_actions_daily', source=None, sqlite_table='stat_actions_daily',
+         columns=_cols('day text', 'career text', 'action text', 'players bigint', 'n bigint', 'errors bigint', 'err text'),
+         key=('day', 'career', 'action'), unique=[], identity=None, sync=dict(mode='full', note='rollup of stat_actions; kept')),
+    dict(name='stat_rollups', source=None, sqlite_table='stat_rollups',
+         columns=_cols('kind text', 'day text', 'rows bigint', 'at double precision'),
+         key=('kind', 'day'), unique=[], identity=None, sync=dict(mode='full', note='days already rolled up')),
+    dict(name='stat_leaves', source=None, sqlite_table='stat_leaves',
+         columns=_cols('id bigint', 'sid text', 'at double precision', 'day text', 'payload text'),
+         key=('id',), unique=[], identity='id', sync=dict(mode='insert_only', column='at', note='leave beacons (sid: first 16 hex characters); kept 60 days')),
+    dict(name='stat_leave_last', source=None, sqlite_table='stat_leave_last',
+         columns=_cols('sid text', 'at double precision', 'payload text'),
+         key=('sid',), unique=[], identity=None, sync=dict(mode='updated', column='at', note='the newest leave beacon per save')),
+    dict(name='stat_client_errors', source=None, sqlite_table='stat_client_errors',
+         columns=_cols('day text', 'kind text', 'message_key text', 'screen text', 'count bigint', 'last_at double precision', 'sample text'),
+         key=('day', 'kind', 'message_key', 'screen'), unique=[], identity=None, sync=dict(mode='updated', column='last_at', note='kept 60 days')),
+    dict(name='stat_loads', source=None, sqlite_table='stat_loads',
+         columns=_cols('day text', 'metric text', 'net text', 'who text', 'cache text', 'tier text', 'bucket bigint', 'n bigint'),
+         key=('day', 'metric', 'net', 'who', 'cache', 'tier', 'bucket'), unique=[], identity=None, sync=dict(mode='full', note='load-time histograms')),
+    dict(name='stat_acquisition', source=None, sqlite_table='stat_acquisition',
+         columns=_cols('sid text', 'at double precision', 'day text', 'source text', 'medium text', 'campaign text', 'ref_domain text'),
+         key=('sid',), unique=[], identity=None, sync=dict(mode='full', note='where a new save came from; kept; deleted with the save')),
     dict(name='stat_fb_ack', source='main', sqlite_table='stat_fb_ack',
          columns=_cols('id bigint', 'at double precision'),
          key=('id',), unique=[], identity=None, sync=dict(mode='full', note='id = player_feedback.id (not an identity)')),

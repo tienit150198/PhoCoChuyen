@@ -412,15 +412,30 @@ class SectionTests(Base):
         self.assertIsNone(st._quantile(st._hist(), .5))
         self.assertEqual([st._bucket(x) for x in (0, 599, 600, 3599, 3600, 14399, 14400, 10 ** 7)], [0, 599, 600, 899, 900, 1079, 1080, 1199])
 
-    def test_purge_keeps_400_days(self):
-        self.put(vn_day(-401), 'old', 60)
-        self.put(vn_day(-399), 'kept', 60)
-        self.sql('INSERT INTO stat_play_est(day, saves, capped, at) VALUES (?, 1, 0, 1.0)', (vn_day(-401),))
-        with patch.object(st, 'PURGE_ROWS', 1):
+    def test_purge_keeps_play_days_and_rolls_the_older_ones_up(self):
+        keep = st.PLAY_KEEP_DAYS
+        self.assertEqual(keep, 60)
+        self.put(vn_day(-keep - 1), 'old', 60)
+        self.put(vn_day(-keep - 1), 'old2', 120)
+        self.put(vn_day(-keep + 1), 'kept', 60)
+        self.sql('INSERT INTO stat_play_est(day, saves, capped, at) VALUES (?, 1, 0, 1.0)', (vn_day(-keep - 1),))
+        from game import retention
+        with patch.object(st, 'PURGE_ROWS', 1), patch.object(retention, '_peak', lambda now: False):
             st._Job(self.store, None, pause=0).purge()
         self.assertEqual([r['sid'] for r in self.rows()], ['kept'])
         with self.store.connect() as db:
             self.assertEqual(db.execute('SELECT COUNT(*) FROM stat_play_est').fetchone()[0], 0)
+            day, players, secs, data = db.execute('SELECT day, players, secs, data FROM stat_play_daily').fetchone()
+        # The purged day survives as one summary row (kept forever), with its histograms.
+        self.assertEqual((day, players, secs), (vn_day(-keep - 1), 2, 180))
+        self.assertEqual(sum(json.loads(data)['per_player'].values()), 2)
+
+    def test_purge_waits_out_the_peak_hours(self):
+        self.put(vn_day(-st.PLAY_KEEP_DAYS - 5), 'old', 60)
+        from game import retention
+        with patch.object(retention, '_peak', lambda now: True):
+            self.assertEqual(st.upkeep(self.store).get('skipped'), 'peak')
+        self.assertEqual([r['sid'] for r in self.rows()], ['old'])
 
 
 if __name__ == '__main__':
