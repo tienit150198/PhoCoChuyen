@@ -14,6 +14,39 @@ from game.engine import GameError, migrate_state, new_state, public_state, valid
 PL = PLUGINS.get('pilot')
 
 
+def settle_odd(j, command, scripts, answer=None):
+    """Answer an open encounter the way a careful crew member does, round after round."""
+    from game.careers import air_odd as ao
+    for _ in range(4 * ao.MAX_ROUNDS):             # answering one may bring the next one due
+        ev = j.c['ext']['data']['odd']['ev']
+        if not ev:
+            return
+        x = ao.script(scripts, ev['script'])
+        j.act(command, **(answer or best_answer)(x))
+
+
+def quiet(j):
+    """No encounter planned for the rest of today."""
+    from game.careers import air_odd as ao
+    odd = ao.ensure(j.c['ext']['data'])
+    odd.update(day=j.c['day'], plan=[], fired=0, ev=None)
+
+
+def best_answer(x):
+    k = x['kind']
+    if k == 'bargain':
+        return dict(tone='firm', say=['rule', 'alt'], to='company', n=x['limit'])
+    say = {'charm': ['no', 'rule'], 'harass': ['stop', 'rule'], 'corner': ['speak', 'rule'], 'demand': ['rule', 'alt']}[k]
+    to = 'company' if k in ('charm', 'harass', 'corner') else 'self' if x['rank'] == 'kin' else 'crew'
+    return dict(tone='firm', say=say, to=to)
+
+
+def sky_answer(sk):
+    add = 0 if sk['gust'] < 10 else 5 if sk['gust'] < 16 else 10
+    return dict(wipers=True, brake='med' if sk['brake'] != 'poor' else 'max', add=add,
+                dodge={'left': 'right', 'right': 'left', None: 'keep'}[sk['cell']], go='divert' if sk['brake'] == 'poor' else 'land')
+
+
 def find(pick, days=range(2, 80), slots=range(0, 6)):
     """The first (day, slot) whose generated hop passes `pick`."""
     return next((d, s) for d in days for s in slots if pick(PL.make_task(d, s, 1)))
@@ -31,7 +64,9 @@ class Base(unittest.TestCase):
 
     def at(self, pick):
         day, slot = find(pick)
-        return Journey('pilot', slot=slot, day=day)
+        j = Journey('pilot', slot=slot, day=day)
+        quiet(j)                                   # these tests look at one job: no encounters today
+        return j
 
     def brief(self, j, tid, kg=None):
         j.act('ask', task=tid)
@@ -62,6 +97,9 @@ class Base(unittest.TestCase):
         t = j.get(tid)
         if PL._arrival_problem(t):
             j.act('pl_arrive', task=tid, how='hold' if t['fuel'] >= t['needs']['fuel']['plan'] + PL.HOLD else 'divert')
+        sk = j.c['ext']['data'].get('sky')
+        if sk and sk['task'] == tid and sk['set'] is None:
+            j.act('pl_sky', task=tid, **sky_answer(sk))
         for _ in range(8):
             t = j.get(tid)
             if t['stage'] != 'approach':
@@ -80,6 +118,7 @@ class Base(unittest.TestCase):
         ev = j.c['ext']['data']['desk']['ev']
         if ev:
             j.act('pl_desk', option=kit.desk_script(PL.DESK, ev['script'])['default'])
+        settle_odd(j, 'pl_odd', PL.ODD)
 
 
 class Spec(Base):
@@ -348,6 +387,7 @@ class Approach(Base):
         if t['stage'] == 'cruise':
             ev = t['needs']['event']
             j.act('pl_decide', task=tid, option=ev.get('want') or EV_GOOD[ev['kind']])
+        j.c['ext']['data']['sky'] = None          # these tests read the gates: no rain today (the sky has its own tests)
         return j, tid
 
     def test_going_around_when_unstable_is_right(self):

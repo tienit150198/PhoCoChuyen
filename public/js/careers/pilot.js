@@ -129,6 +129,8 @@ function approachPanel(t,x){
       ${x.cmd(`<span class="pl-opt-label">↪️ Bay đi sân bay dự bị ${x.esc(n.leg.alt)}</span>`,'pl_arrive',{task:t.id,how:'divert'},'pl-opt')}
       ${x.cmd('<span class="pl-opt-label">⬇️ Cố hạ cánh ngay</span>','pl_arrive',{task:t.id,how:'land'},'pl-opt')}</div></section>`;
   }
+  const sk=skyOf(t,x);
+  if(sk)return skyCard(t,sk,x);
   const g=(n.gates[t.ap]||[])[t.gate];
   if(!g)return '';
   const rows=g.rows.map(([label,value,limit])=>`<tr><th>${x.esc(label)}</th><td><b>${x.esc(value)}</b></td><td><small>${x.esc(limit)}</small></td></tr>`).join('');
@@ -138,10 +140,32 @@ function approachPanel(t,x){
     <div class="pl-gate-btns">${x.cmd('✅ Ổn định · tiếp tục','pl_gate',{task:t.id},'primary big pl-gate-go')}${x.cmd('↗️ Bay lại','pl_around',{task:t.id},'big pl-gate-around')}</div></article>`;
 }
 
+/* ------------------------------------------------------------ rain and squalls on arrival */
+/** The airport's weather for this hop, while the approach is not set up yet. */
+function skyOf(t,x){const sk=data(x).sky;return sk&&sk.task===t.id&&!sk.set?sk:null;}
+/** Read the report, then set up the approach yourself: wipers, autobrake, the speed margin, which side of the cell, land or not. */
+function skyCard(t,sk,x){
+  const u=x.ui.sky&&x.ui.sky.task===t.id?x.ui.sky:(x.ui.sky={task:t.id,wipers:null,brake:'',add:null,dodge:sk.cell?'':'keep',go:''});
+  const seg=(k,opts)=>`<div class="pl-sky-seg">${opts.map(([v,l])=>carBtn(x,l,'sky',{k,v},`pl-sky-opt${String(u[k])===String(k==='wipers'?(v==='1'):v)?' on':''}`)).join('')}</div>`;
+  const rows=[['Tầm nhìn',`${Number(sk.vis).toLocaleString('vi-VN')} m`],['Phanh đường băng',sk.braking],['Gió giật',sk.gust?`${sk.gust} kt`:'không'],
+    ...(sk.cell?[['Ô giông',sk.cell==='left'?'bên trái đường tiếp cận':'bên phải đường tiếp cận']]:[])];
+  const ready=u.wipers!==null&&u.brake&&u.add!==null&&u.dodge&&u.go;
+  const payload={task:t.id,wipers:!!u.wipers,brake:u.brake||'med',add:u.add??0,dodge:u.dodge||'keep',go:u.go||'land'};
+  return `<section class="pl-event tense pl-sky"><div class="pl-ev-head"><span aria-hidden="true">${x.esc(sk.emoji)}</span><div><small>Bản tin sân bay ${x.esc(t.needs.leg.to)}</small><h3>${x.esc(sk.name)}</h3></div></div>
+    <table class="pl-read">${rows.map(([a,b])=>`<tr><th>${x.esc(a)}</th><td><b>${x.esc(b)}</b></td></tr>`).join('')}</table>
+    <div class="pl-sky-rows"><small>Gạt mưa</small>${seg('wipers',[['1','Bật'],['0','Tắt']])}
+      <small>Phanh tự động</small>${seg('brake',[['low','Thấp'],['med','Vừa'],['max','Tối đa']])}
+      <small>Cộng tốc độ</small>${seg('add',[['0','+0'],['5','+5 kt'],['10','+10 kt']])}
+      ${sk.cell?`<small>Né ô giông</small>${seg('dodge',[['left','⬅️ Trái'],['right','Phải ➡️']])}`:''}
+      <small>Quyết định</small>${seg('go',[['land','🛬 Tiếp cận'],['divert',`↪️ Đi ${t.needs.leg.alt}`]])}</div>
+    ${x.cmd(ready?'✅ Xác nhận cài đặt':'Chọn đủ các mục',`pl_sky`,payload,'primary big pl-sky-go',!ready)}</section>`;
+}
+
 /* ------------------------------------------------------------ guide */
 function guide(t,x){
   const d=data(x),first=firstTime(x),c=cc(x);
   if(d.desk?.ev)return {steps:[{ok:null,label:'Quyết chuyện ở sân bay',go:{sel:'.pl-desk-opts',label:'👉 Chọn cách xử lý'},pulse:''}],final:null};
+  const o=air.oddStep(x);if(o)return {steps:[o],final:null};
   if(!d.intro)return {steps:[{ok:null,label:'Đọc giới thiệu nghề',go:{cmd:'pl_intro',payload:{},label:'✈️ Vào ca bay'}}],final:null};
   if(!t.known)return {steps:[{ok:null,label:'Nhận bản tin bay',go:{cmd:'ask',payload:{task:t.id},label:'📋 Nhận bản tin bay'}}],final:null};
   const n=t.needs,id=t.id;
@@ -164,6 +188,7 @@ function guide(t,x){
   if(t.stage==='cruise')return {steps:[{ok:null,label:'Quyết định trên đường bay',go:{sel:'.pl-cruise-opts',label:'👉 Chọn cách xử lý'},pulse:''}],final:null};
   if(t.stage==='approach'){
     if(t.problem)return {steps:[{ok:null,label:'Thời tiết ở đích: chờ, dự bị hay hạ cánh',go:{sel:'.pl-arrive',label:'👉 Quyết định khi tới'},pulse:''}],final:null};
+    if(skyOf(t,x))return {steps:[{ok:null,label:'Đọc bản tin sân bay, cài đặt tiếp cận',go:{sel:'.pl-sky',label:'🌧️ Cài đặt tiếp cận'},pulse:''}],final:null};
     const g=(n.gates[t.ap]||[])[t.gate];
     return {steps:[{ok:null,label:`${g?.name||'Cổng'}: đọc số liệu rồi quyết`,go:{sel:'.pl-gate-btns',label:'🛬 Đọc số liệu, quyết định'},pulse:first?'.pl-gate-go':''}],final:null};
   }
@@ -190,7 +215,7 @@ function logbook(x){
 /* ------------------------------------------------------------ the airline shell (air_kit.js) */
 const done=t=>['completed','cancelled','referred'].includes(t.status);
 const pct=(a,b)=>b?`${Math.round(100*a/b)}%`:'—';
-const AIR={id:'pilot',airline:'Hãng bay Cánh Cò',role:'CƠ PHÓ',role_line:'Cơ phó · bay cùng cơ trưởng Vân',back:'✈️ Về buồng lái',
+const AIR={id:'pilot',airline:'Hãng bay Cánh Cò',role:'CƠ PHÓ',role_down:'CƠ PHÓ DỰ BỊ',odd:'pl_odd',rest:'pl_rest',role_line:'Cơ phó · bay cùng cơ trưởng Vân',back:'✈️ Về buồng lái',
   more:'Nhận thêm một chặng',done_word:'chặng',crew:[0,1,2,3],
   row(t){
     if(t.status==='completed')return {status:t.at?`Hạ cánh ${t.at}`:'Đã hạ cánh',tone:'done'};
@@ -220,8 +245,8 @@ export default {
   },
   job(t,x){
     const g=guide(t,x),hint=hintFor(g,x),d=data(x);
-    const top=`${introCard(x,!!x.ui.intro)}${deskCard(x)}`;
-    if(d.desk?.ev||!d.intro||x.ui.intro)return `<div class="career-job pl">${hint}${top}${bottom(t,x,g)}</div>`;
+    const top=`${introCard(x,!!x.ui.intro)}${deskCard(x)}${air.oddCard(x,AIR)}${air.groundCard(x)}`;
+    if(d.desk?.ev||d.odd?.ev||(d.odd?.conduct?.ground&&['brief','walk','start'].includes(t.stage))||!d.intro||x.ui.intro)return `<div class="career-job pl">${hint}${top}${bottom(t,x,g)}</div>`;
     let main='';
     if(!t.known||t.stage==='brief')main=briefPanel(t,x);
     else if(t.stage==='walk')main=walkPanel(t,x);
@@ -233,11 +258,11 @@ export default {
       <div class="workbench"><section class="wb-main">${main}</section></div>${bottom(t,x,g)}</div>`;
   },
   idle(x){
-    const d=data(x),steps=d.desk?.ev?[{ok:null,label:'Quyết chuyện ở sân bay',go:{sel:'.pl-desk-opts',label:'👉 Chọn cách xử lý'},pulse:''}]:!d.intro?[{ok:null,label:'Đọc giới thiệu nghề',go:{cmd:'pl_intro',payload:{},label:'✈️ Vào ca bay'}}]:[];
+    const d=data(x),steps=d.desk?.ev?[{ok:null,label:'Quyết chuyện ở sân bay',go:{sel:'.pl-desk-opts',label:'👉 Chọn cách xử lý'},pulse:''}]:air.oddStep(x)?[air.oddStep(x)]:!d.intro?[{ok:null,label:'Đọc giới thiệu nghề',go:{cmd:'pl_intro',payload:{},label:'✈️ Vào ca bay'}}]:[];
     const hint=pending(steps)?.go?nextHint(x,steps,{}):'';
     const bar=pending(steps)?.go?`<div class="pl-bar">${stepCta(x,steps,{label:'',go:null,ready:false})}</div>`:'';
-    const top=`${introCard(x,!!x.ui.intro)}${deskCard(x)}`;
-    if(d.desk?.ev||!d.intro||x.ui.intro)return `<div class="career-job pl">${hint}${top}${bar}</div>`;
+    const top=`${introCard(x,!!x.ui.intro)}${deskCard(x)}${air.oddCard(x,AIR)}${air.groundCard(x)}`;
+    if(d.desk?.ev||d.odd?.ev||!d.intro||x.ui.intro)return `<div class="career-job pl">${hint}${top}${bar}</div>`;
     return `<div class="career-job pl">${hint}${top}${arcCard(x)}${dayLine(x)}${logbook(x)}${bar}</div>`;
   },
   tick(root){keepBarAboveFooter(root);},
@@ -249,7 +274,9 @@ export default {
   spots:air.SPOTS,
   noDecor:true,  // no "Chăm chút không gian" on the workbench: a crew has no shop to decorate
   actions:{
+    ...air.ACTIONS,
     async seen(d,el,x){x.ui.seen=d.key;x.render();},
+    async sky(d,el,x){x.ui.sky={...(x.ui.sky||{}),[d.k]:d.k==='wipers'?d.v==='1':d.k==='add'?Number(d.v):d.v};x.render();},
     async intro(d,el,x){x.ui.intro=true;x.render();},
     async introClose(d,el,x){x.ui.intro=false;x.render();},
   },

@@ -23,6 +23,12 @@ flight's cabin work:
 Mistakes go through consequences.slip; money only through kit (the salary is the
 pay, a smooth job adds a small bonus). Everything random is rolled from
 (day, slot) or the task id.
+
+Between jobs come the chuyện oái oăm (game/careers/air_odd.py, kept out of the
+generated tasks): passengers who harass or bully, the office's KPI, extra night
+rotations and gym orders, crew who cut corners, family and the lane. The player
+answers in their own tone and words, and brings in chị Thu or the company;
+harassment is always worth reporting, and the company backs the report.
 """
 from __future__ import annotations
 
@@ -31,6 +37,8 @@ import copy
 from ..jsoncopy import tree_copy
 from . import kit
 from . import airline as air
+from . import air_odd as ao
+from .air_odd_content import CABIN as ODD
 from .. import consequences as cq
 from .. import archive as ar
 
@@ -622,7 +630,8 @@ def _fresh_today(day: int) -> dict:
 
 def initial() -> dict:
     return dict(v=1, intro=False, stats=dict(jobs=0, pax=0, served=0, fixed=0, calm=0, medical=0, turb_ok=0, turb_late=0),
-                log=[], regulars={}, arc=dict(seen=[], due=None), turb=None, turbs=[], today=_fresh_today(0), desk=kit.desk_initial())
+                log=[], regulars={}, arc=dict(seen=[], due=None), turb=None, turbs=[], today=_fresh_today(0), desk=kit.desk_initial(),
+                odd=ao.initial())
 
 
 def _data(c: dict) -> dict:
@@ -634,13 +643,25 @@ def _data(c: dict) -> dict:
         d['stats'].setdefault(k, v)
     for k, v in kit.desk_initial().items():
         d['desk'].setdefault(k, copy.deepcopy(v))
+    ao.ensure(d)
     return d
 
 
+# The words of the encounters (air_odd): who to bring in, the office, the rank lost on a demotion.
+CFG = dict(crew='Báo chị Thu', company='Báo phòng an toàn', union='Nhờ công đoàn', office='Phòng điều hành',
+           demoted='tiếp viên dự bị', title='tiếp viên')
+
+
+def _pressure(c: dict, d: dict) -> int:
+    """How hard the airline leans on its crew today: the season, and a player who snapped at the office."""
+    marks = d['odd']['marks']
+    return {'busy': 2, 'rough': 1, 'family': 1}.get(mod_of(c['day'])['id'], 0) + ('strained' in marks) + ('kpi_black' in marks)
+
+
 # ================================================================ the actions
-FREE = ('fa_intro', 'fa_arc')
+FREE = ('fa_intro', 'fa_arc', 'fa_rest')
 NO_TICK = ('fa_intro', 'fa_arc', 'fa_desk', 'fa_door', 'fa_demo', 'fa_fix', 'fa_give', 'fa_skip', 'fa_secure', 'fa_turb_end',
-           'fa_calm', 'fa_ask', 'fa_care')
+           'fa_calm', 'fa_ask', 'fa_care', 'fa_odd', 'fa_rest')
 PHYSICAL = ('fa_door', 'fa_give', 'fa_fix', 'fa_care')
 TURB_OK = ('fa_secure', 'fa_turb_end', 'fa_intro', 'fa_arc')
 
@@ -658,11 +679,23 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
             _turb_resolve(s, c, d)
         else:
             kit.need(False, 'Đèn thắt dây đang sáng! Cất xe, về ghế trước đã.', 'turbulence')
+    odd = d['odd']
+    if name == 'fa_rest':
+        return ao.rest(s, c, odd, p, _pressure(c, d), CFG)
     desk = d['desk']
     if name == 'fa_desk':
-        return kit.desk_choose(s, c, ID, desk, DESK, p.get('option'))
+        result = kit.desk_choose(s, c, ID, desk, DESK, p.get('option'))
+        _odd_tick(s, c, d, result)
+        return result
+    if name == 'fa_odd':
+        result = ao.reply(s, c, ID, odd, ODD, p, CFG, _pressure(c, d))
+        if odd['ev'] is None:
+            _odd_tick(s, c, d, result)
+        return result
     if name not in ('fa_secure', 'fa_turb_end'):
         kit.desk_block(desk, 'Có chuyện trong khoang, quyết xong rồi làm tiếp nhé.')
+        ao.block(odd, 'Có người đang chờ bạn trả lời, xong rồi làm tiếp nhé.')
+        kit.need(not ao.grounded(c, odd), 'Bạn đang tạm đình chỉ bay hết hôm nay. Tan ca, mai lên phòng an toàn trình bày.', 'grounded')
     fn = ACTIONS.get(name)
     kit.need(fn, 'Thao tác không có trong khoang khách.')
     result = fn(s, c, d, p)
@@ -680,6 +713,17 @@ def _after(s: dict, c: dict, d: dict, result: dict) -> None:
     if desk['fired'] > fired and desk['ev']:
         x = kit.desk_script(DESK, desk['ev']['script'])
         result['message'] = f'{result.get("message", "")} 🔔 {x["emoji"]} {x["title"]}: quyết giúp nhé.'.strip()
+        result['surprise'] = True
+        return
+    _odd_tick(s, c, d, result)
+
+
+def _odd_tick(s: dict, c: dict, d: dict, result: dict) -> None:
+    """Someone around the job turns up when today's plan says so (never over a desk surprise or the belt sign)."""
+    tb = d['turb']
+    x = ao.tick(s, c, ID, d['odd'], ODD, busy=d['desk']['ev'] is not None or bool(tb and tb['stage'] == 'coming'))
+    if x:
+        result['message'] = f'{result.get("message", "")} 🔔 {x["emoji"]} {x["title"]}: trả lời giúp nhé.'.strip()
         result['surprise'] = True
 
 
@@ -1042,7 +1086,8 @@ def _medical_done(s, c, d, p):
 def _finish(s: dict, c: dict, d: dict, t: dict, narrative: str, head: str) -> dict:
     t['stage'] = 'done'
     pts = cq.points(t)
-    reward = 0 if cq.safety(t) else max(0, BONUS - 2 * pts)
+    full = 0 if cq.safety(t) else max(0, BONUS - 2 * pts)
+    reward = ao.bonus(d['odd'], full)
     d['today']['jobs'] += 1
     d['stats']['jobs'] += 1
     d['log'] = ar.last(d['log'] + [dict(day=c['day'], kind=t['kind'], title=t['title'][:80], ok=not cq.slips(t))], LOG_MAX, 'flight_attendant.log', c)
@@ -1054,7 +1099,9 @@ def _finish(s: dict, c: dict, d: dict, t: dict, narrative: str, head: str) -> di
         story = REG_STORY[i][min(r['visits'], len(REG_STORY[i])) - 1]
         t['story'] = story
     kit.complete(s, c, t, reward, narrative[:300])
-    msg = head + (f' Thưởng {reward} xu.' if reward else '') + (f' 💬 {story}' if story else '')
+    note = ao.flown(d['odd'], not cq.slips(t), CFG)
+    cut = (' (Đang bị cách chức: không có thưởng.)' if not reward else ' (Mệt quá: nửa thưởng.)') if full and reward < full else ''
+    msg = head + (f' Thưởng {reward} xu.' if reward else '') + cut + (f' {note}' if note else '') + (f' 💬 {story}' if story else '')
     out = dict(message=msg.strip(), celebrate=not cq.slips(t))
     if cq.safety(t):
         out['correct'] = False
@@ -1092,7 +1139,9 @@ def on_start(s: dict, c: dict) -> None:
     d['today'] = _fresh_today(c['day'])
     d['turb'] = None
     _arc_tick(c, d)
+    ao.start(c, ID, d['odd'])
     kit.desk_start(s, c, ID, d['desk'], DESK, mod_of(c['day'])['id'], c['life'].get('mode') == 'festival')
+    ao.tick(s, c, ID, d['odd'], ODD, busy=d['desk']['ev'] is not None)
 
 
 def on_close(s: dict, c: dict) -> dict:
@@ -1102,6 +1151,7 @@ def on_close(s: dict, c: dict) -> dict:
         tb['done'] = list(SECURE_IDS)          # the day ends at the gate: the cabin was secured on the ground
         _turb_resolve(s, c, d)
     desk_note = kit.desk_close(s, c, ID, d['desk'], DESK)
+    odd_note = ao.close(s, c, d['odd'], ODD)
     x = d['today']
     lines = [f'🧳 Đón {x["pax"]} khách ở cửa, mời {x["served"]} món trên xe đẩy.']
     if x['fixed']:
@@ -1113,6 +1163,9 @@ def on_close(s: dict, c: dict) -> dict:
         lines.append('〰️ Cất xe kịp lúc tàu rung.' if last and not last['miss'] else '〰️ Rung lắc giữa giờ phục vụ, lần sau cất xe nhanh hơn nhé.')
     if desk_note:
         lines.append(desk_note)
+    if odd_note:
+        lines.append(odd_note)
+    lines += ao.day_lines(c, d['odd'])
     lines.append('🏠 Tối về tới hẻm, cởi đôi giày bay, bà Tám hỏi hôm nay có gặp ai vui không.')
     return dict(lines=lines, note='Mai báo danh ở sân bay lúc 05:30.', jobs=x['jobs'], pax=x['pax'], served=x['served'], fixed=x['fixed'],
                 medical=x['medical'], turb=x['turb'])
@@ -1275,7 +1328,7 @@ def public_data(c: dict) -> dict:
                 mod=dict(id=mod['id'], emoji=mod['emoji'], label=mod['label'], hint=mod['hint']),
                 arc=dict(seen=list(arc['seen']), total=len(ARC),
                          due=dict(id=due['id'], emoji=due['emoji'], title=due['title'], text=list(due['text'])) if due else None),
-                desk=kit.desk_public(d['desk'], DESK, ID))
+                desk=kit.desk_public(d['desk'], DESK, ID), odd=ao.public(c, ao.ensure(d), ODD, ID, CFG))
 
 
 def content() -> dict:
@@ -1286,6 +1339,8 @@ def content() -> dict:
 
 
 def hint(c: dict, t: dict) -> str:
+    if (c['ext']['data'].get('odd') or {}).get('ev'):
+        return 'Có người đang chờ bạn trả lời: chọn giọng, chọn ý, cần thì báo chị Thu hoặc phòng an toàn.'
     k = t.get('kind')
     if k == 'board':
         return 'Đọc thẻ lên tàu: vali to gửi khoang hàng, pin sạc mang theo người, hàng 1 và 17 chỉ cho người lớn đi lại được.'
@@ -1376,6 +1431,7 @@ def validate_data(c: dict) -> None:
     for v in d['today'].values():
         kit.integer(v, 0, 10 ** 9)
     kit.desk_validate(d['desk'], DESK)
+    ao.validate(d['odd'], ODD)
 
 
 # ================================================================ the plugin spec

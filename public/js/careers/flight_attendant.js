@@ -144,6 +144,7 @@ function guide(t,x){
   const d=data(x),first=firstTime(x),c=cc(x);
   if(d.turb?.stage==='coming')return {steps:[{ok:null,label:'Cất xe, cất bình nóng, về ghế',go:{sel:'.tv-turb-btns',label:'〰️ Cất xe, về ghế!'},pulse:''}],final:null};
   if(d.desk?.ev)return {steps:[{ok:null,label:'Quyết chuyện trong khoang',go:{sel:'.tv-desk-opts',label:'👉 Chọn cách xử lý'},pulse:''}],final:null};
+  const o=air.oddStep(x);if(o)return {steps:[o],final:null};
   if(!d.intro)return {steps:[{ok:null,label:'Đọc giới thiệu nghề',go:{cmd:'fa_intro',payload:{},label:'🧣 Vào ca bay'}}],final:null};
   const id=t.id;
   if(!t.known){
@@ -210,7 +211,7 @@ function dayLine(x){
 
 /* ------------------------------------------------------------ the airline shell (air_kit.js) */
 const JOB={board:'Đón khách',demo:'An toàn',service:'Xe đẩy',calm:'Khách khó chịu',medical:'Sơ cứu'};
-const AIR={id:'flight_attendant',airline:'Hãng bay Cánh Cò',role:'TIẾP VIÊN',role_line:'Tiếp viên · cùng chị Thu lo khoang khách',back:'💺 Về khoang khách',
+const AIR={id:'flight_attendant',airline:'Hãng bay Cánh Cò',role:'TIẾP VIÊN',role_down:'TIẾP VIÊN DỰ BỊ',odd:'fa_odd',rest:'fa_rest',role_line:'Tiếp viên · cùng chị Thu lo khoang khách',back:'💺 Về khoang khách',
   more:'Nhận thêm một việc',done_word:'việc',crew:[0,6],
   row(t){
     if(t.status==='completed')return {status:`✓ ${JOB[t.kind]||'Xong'}`,tone:'done'};
@@ -234,8 +235,8 @@ export default {
   },
   job(t,x){
     const g=guide(t,x),hint=hintFor(g,x),d=data(x);
-    const top=`${introCard(x,!!x.ui.intro)}${turbCard(x)}${deskCard(x)}`;
-    if(d.turb?.stage==='coming'||d.desk?.ev||!d.intro||x.ui.intro)return `<div class="career-job tv">${hint}${top}${bottom(t,x,g)}</div>`;
+    const top=`${introCard(x,!!x.ui.intro)}${turbCard(x)}${deskCard(x)}${air.oddCard(x,AIR)}${air.groundCard(x)}`;
+    if(d.turb?.stage==='coming'||d.desk?.ev||d.odd?.ev||d.odd?.conduct?.ground||!d.intro||x.ui.intro)return `<div class="career-job tv">${hint}${top}${bottom(t,x,g)}</div>`;
     let main='',side='';
     if(!t.known)main=askCard(t,x);
     else if(t.kind==='board')main=boardPanel(t,x);
@@ -249,11 +250,12 @@ export default {
   idle(x){
     const d=data(x),steps=d.turb?.stage==='coming'?[{ok:null,label:'Cất xe, về ghế',go:{sel:'.tv-turb-btns',label:'〰️ Cất xe, về ghế!'},pulse:''}]
       :d.desk?.ev?[{ok:null,label:'Quyết chuyện trong khoang',go:{sel:'.tv-desk-opts',label:'👉 Chọn cách xử lý'},pulse:''}]
+      :air.oddStep(x)?[air.oddStep(x)]
       :!d.intro?[{ok:null,label:'Đọc giới thiệu nghề',go:{cmd:'fa_intro',payload:{},label:'🧣 Vào ca bay'}}]:[];
     const hint=pending(steps)?.go?nextHint(x,steps,{}):'';
     const bar=pending(steps)?.go?`<div class="tv-bar">${stepCta(x,steps,{label:'',go:null,ready:false})}</div>`:'';
-    const top=`${introCard(x,!!x.ui.intro)}${turbCard(x)}${deskCard(x)}`;
-    if(d.turb?.stage==='coming'||d.desk?.ev||!d.intro||x.ui.intro)return `<div class="career-job tv">${hint}${top}${bar}</div>`;
+    const top=`${introCard(x,!!x.ui.intro)}${turbCard(x)}${deskCard(x)}${air.oddCard(x,AIR)}${air.groundCard(x)}`;
+    if(d.turb?.stage==='coming'||d.desk?.ev||d.odd?.ev||!d.intro||x.ui.intro)return `<div class="career-job tv">${hint}${top}${bar}</div>`;
     return `<div class="career-job tv">${hint}${top}${arcCard(x)}${dayLine(x)}${crewBook(x)}${bar}</div>`;
   },
   hudCard(c,t,x,o){return air.hudCard(c,t,x,{...AIR,next:t=>this.next(t,x)},o);},
@@ -273,6 +275,7 @@ export default {
     }
   },
   actions:{
+    ...air.ACTIONS,
     async seen(d,el,x){x.ui.seen=d.key;x.render();},
     async intro(d,el,x){x.ui.intro=true;x.render();},
     async introClose(d,el,x){x.ui.intro=false;x.render();},

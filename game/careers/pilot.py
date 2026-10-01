@@ -25,6 +25,18 @@ Safety over punctuality: delays cost a little patience, a clear announcement
 keeps it; unsafe choices are safety slips (consequences.slip). The job is
 salaried (employment); a flight flown by the book adds a small bonus.
 Everything random is rolled from (day, slot) or the task id.
+
+Around the flights (kept out of the generated tasks, so hops made by an older
+release still validate):
+
+* chuyện oái oăm (game/careers/air_odd.py): passengers, captains, the office,
+  family and the lane push, flirt, cut corners and bargain; the player answers
+  in their own tone and words and decides whom to bring in. Giving in costs
+  conduct points: a reminder, a warning, stood down for the day, demoted;
+* the sky: some hops meet heavy rain or a squall on arrival (rolled from the
+  task id at take-off). The player reads the airport's report and sets the
+  approach: wipers, autobrake, speed for the gusts, which side of the cell,
+  and whether the runway is fit to land on at all.
 """
 from __future__ import annotations
 
@@ -33,6 +45,8 @@ import copy
 from ..jsoncopy import tree_copy
 from . import kit
 from . import airline as air
+from . import air_odd as ao
+from .air_odd_content import PILOT as ODD
 from .. import consequences as cq
 from .. import archive as ar
 
@@ -502,7 +516,8 @@ def _fresh_today(day: int) -> dict:
 def initial() -> dict:
     return dict(v=1, intro=False, logbook=dict(flights=0, minutes=0, landings=0, arounds=0, diverts=0, holds=0, delays=0, safe=0,
                                                ontime=0, fuel_ok=0),
-                log=[], regulars={}, arc=dict(seen=[], due=None), today=_fresh_today(0), desk=kit.desk_initial())
+                log=[], regulars={}, arc=dict(seen=[], due=None), today=_fresh_today(0), desk=kit.desk_initial(),
+                odd=ao.initial(), sky=None)
 
 
 def _data(c: dict) -> dict:
@@ -514,13 +529,26 @@ def _data(c: dict) -> dict:
         d['logbook'].setdefault(k, v)
     for k, v in kit.desk_initial().items():
         d['desk'].setdefault(k, copy.deepcopy(v))
+    ao.ensure(d)
     return d
 
 
+# The words of the encounters (air_odd): who to bring in, the office, the rank lost on a demotion.
+CFG = dict(crew='Báo cơ trưởng Vân', company='Báo phòng an toàn', union='Nhờ công đoàn', office='Điều phái',
+           demoted='cơ phó dự bị', title='cơ phó')
+
+
+def _pressure(c: dict, d: dict) -> int:
+    """How hard the airline leans on its crew today: the season, and a player who snapped at the office."""
+    marks = d['odd']['marks']
+    return {'busy': 2, 'storms': 1, 'wind': 1}.get(mod_of(c['day'])['id'], 0) + ('strained' in marks) + ('kpi_black' in marks)
+
+
 # ================================================================ the actions
-FREE = ('pl_intro', 'pl_arc')
-NO_TICK = ('pl_intro', 'pl_arc', 'pl_fuel', 'pl_check', 'pl_switch', 'pl_pa', 'pl_gate', 'pl_desk')
+FREE = ('pl_intro', 'pl_arc', 'pl_rest')
+NO_TICK = ('pl_intro', 'pl_arc', 'pl_fuel', 'pl_check', 'pl_switch', 'pl_pa', 'pl_gate', 'pl_desk', 'pl_odd', 'pl_sky', 'pl_rest')
 PHYSICAL = ('pl_takeoff', 'pl_park')
+GROUNDED = ('pl_fuel', 'pl_fog', 'pl_check', 'pl_defect', 'pl_switch', 'pl_pa', 'pl_takeoff')   # a crew stood down starts no hop
 
 
 def handle(s: dict, c: dict, name: str, p: dict) -> dict:
@@ -530,10 +558,22 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
         return dict(message='Vào ca thôi! Chị Vân đang chờ ở phòng điều phái.')
     if name == 'pl_arc':
         return _arc_seen(d)
+    odd = d['odd']
+    if name == 'pl_rest':
+        return ao.rest(s, c, odd, p, _pressure(c, d), CFG)
     desk = d['desk']
     if name == 'pl_desk':
-        return kit.desk_choose(s, c, ID, desk, DESK, p.get('option'))
+        result = kit.desk_choose(s, c, ID, desk, DESK, p.get('option'))
+        _odd_tick(s, c, d, result)
+        return result
+    if name == 'pl_odd':
+        result = ao.reply(s, c, ID, odd, ODD, p, CFG, _pressure(c, d))
+        if odd['ev'] is None:
+            _odd_tick(s, c, d, result)
+        return result
     kit.desk_block(desk, 'Có chuyện ở sân bay, quyết xong rồi làm tiếp nhé.')
+    ao.block(odd, 'Có người đang chờ bạn trả lời, xong rồi làm tiếp nhé.')
+    kit.need(not (ao.grounded(c, odd) and name in GROUNDED), 'Bạn đang tạm đình chỉ bay hết hôm nay. Tan ca, mai lên phòng an toàn trình bày.', 'grounded')
     fn = ACTIONS.get(name)
     kit.need(fn, 'Thao tác không có trong buồng lái.')
     result = fn(s, c, d, p)
@@ -549,6 +589,16 @@ def _after(s: dict, c: dict, d: dict, result: dict) -> None:
     if desk['fired'] > fired and desk['ev']:
         x = kit.desk_script(DESK, desk['ev']['script'])
         result['message'] = f'{result.get("message", "")} 🔔 {x["emoji"]} {x["title"]}: quyết giúp nhé.'.strip()
+        result['surprise'] = True
+        return
+    _odd_tick(s, c, d, result)
+
+
+def _odd_tick(s: dict, c: dict, d: dict, result: dict) -> None:
+    """Someone around the job turns up when today's plan says so (never over an open desk surprise)."""
+    x = ao.tick(s, c, ID, d['odd'], ODD, busy=d['desk']['ev'] is not None)
+    if x:
+        result['message'] = f'{result.get("message", "")} 🔔 {x["emoji"]} {x["title"]}: trả lời giúp nhé.'.strip()
         result['surprise'] = True
 
 
@@ -722,6 +772,9 @@ def _takeoff(s, c, d, p):
     if ev:
         x = EVENTS[ev['kind']]
         msg += f' {x["emoji"]} {x["title"]}!'
+    sky = _sky_roll(c, d, t)
+    if sky:
+        msg += f' {SKY[sky["kind"]]["emoji"]} Đài báo {SKY[sky["kind"]]["name"].lower()} ở {n["to"]}.'
     return dict(message=msg)
 
 
@@ -823,6 +876,7 @@ def _gate_ready(t: dict) -> None:
 def _continue(s, c, d, p):
     t = _task(c, p, 'approach')
     _gate_ready(t)
+    _sky_ready(d, t)
     g = _current_gate(t)
     t['gates_log'] = (t['gates_log'] + [dict(ap=t['ap'], g=g['id'], go='land')])[-8:]
     msg = ''
@@ -853,6 +907,7 @@ def _continue(s, c, d, p):
 def _around(s, c, d, p):
     t = _task(c, p, 'approach')
     _gate_ready(t)
+    _sky_ready(d, t)
     g = _current_gate(t)
     kit.need(t['arounds'] < MAX_AROUNDS or not t['at'], 'Dầu chỉ còn đủ cho lần tiếp cận này ở sân bay dự bị: hạ cánh thôi.')
     t['gates_log'] = (t['gates_log'] + [dict(ap=t['ap'], g=g['id'], go='around')])[-8:]
@@ -879,8 +934,11 @@ def _park(s, c, d, p):
     t = _task(c, p, 'landed')
     n = t['needs']['leg']
     pts = cq.points(t)
-    reward = 0 if cq.safety(t) else max(0, BONUS - 3 * pts)
+    full = 0 if cq.safety(t) else max(0, BONUS - 3 * pts)
+    reward = ao.bonus(d['odd'], full)
     t['stage'] = 'done'
+    if d['sky'] and d['sky']['task'] == t['id']:
+        d['sky'] = None
     lb = d['logbook']
     lb['flights'] += 1
     lb['landings'] += 1
@@ -911,9 +969,12 @@ def _park(s, c, d, p):
     line = f'Chuyến {n["code"]} hạ cánh ở {_where(t)}' + (f', trễ {late} phút' if late else ', đúng giờ') + '.'
     kit.complete(s, c, t, reward, line)
     head = '🅿️ Tắt máy, ghi sổ bay.' + (f' Thưởng chuyến bay {reward} xu.' if reward else '')
+    if full and reward < full:
+        head += ' (Đang bị cách chức: không có thưởng.)' if not reward else ' (Mệt quá: nửa thưởng.)'
     if cq.safety(t):
         head += ' 🛡️ Phòng an toàn bay sẽ đọc lại chuyến này cùng bạn.'
-    return dict(message=f'{head} {("💬 " + story) if story else ""}'.strip(), celebrate=not cq.slips(t))
+    note = ao.flown(d['odd'], not cq.slips(t), CFG)
+    return dict(message=f'{head} {note} {("💬 " + story) if story else ""}'.strip(), celebrate=not cq.slips(t))
 
 
 # ================================================================ story and surprises
@@ -935,9 +996,92 @@ def _arc_seen(d: dict) -> dict:
     return dict(message=f'{x["emoji"]} {x["title"]}')
 
 
+# ================================================================ the sky: rain and squalls on arrival
+SKY = {'rain': dict(emoji='🌧️', name='Mưa lớn', text='Mưa to trên sân bay, đường băng ướt.'),
+       'squall': dict(emoji='⛈️', name='Giông sát sân bay', text='Một ô giông đứng sát đường tiếp cận, gió giật mạnh.')}
+BRAKING = {'good': 'Tốt', 'medium': 'Trung bình', 'poor': 'Kém'}
+AUTOBRAKE = ('low', 'med', 'max')
+ADDS = (0, 5, 10)
+DODGE = ('left', 'right', 'keep')
+SKY_CHANCE = {'storms': 0.55, 'wind': 0.4, 'busy': 0.3}
+
+
+def _sky_roll(c: dict, d: dict, t: dict) -> dict | None:
+    """At take-off: heavy rain or a squall waiting at the destination (from the task id; never on day one,
+    never on top of a storm or fog hop, which have their own weather)."""
+    mod = mod_of(c['day'])['id']
+    if c['day'] < 2 or t['kind'] not in ('flight', 'tech') or t['needs']['wx'] in ('storm', 'fog') or t['at']:
+        return None
+    r = kit.rng(ID, 'sky', t['id'], t['day'])
+    if r.random() >= SKY_CHANCE.get(mod, 0.25):
+        return None
+    kind = 'squall' if r.random() < (0.5 if mod == 'storms' else 0.3) else 'rain'
+    if kind == 'rain':
+        brake, gust, cell = r.choice(('good', 'medium', 'medium', 'poor')), r.choice((0, 5, 10, 12, 15)), None
+    else:
+        brake, gust, cell = r.choice(('good', 'medium', 'poor')), r.choice((12, 15, 18, 20)), r.choice(('left', 'right'))
+    d['sky'] = dict(task=t['id'], day=c['day'], kind=kind, brake=brake, gust=gust, cell=cell, vis=r.choice((1200, 1500, 2000, 3000)),
+                    set=None, ok=None)
+    return d['sky']
+
+
+def _sky_ready(d: dict, t: dict) -> None:
+    sk = d['sky']
+    kit.need(not (sk and sk['task'] == t['id'] and sk['set'] is None), 'Đài báo thời tiết xấu ở đích: cài đặt tiếp cận trước đã.')
+
+
+def _sky_need(sk: dict) -> dict:
+    """What the airport's report calls for."""
+    add = 0 if sk['gust'] < 10 else 5 if sk['gust'] < 16 else 10
+    return dict(wipers=True, brake=('low', 'med') if sk['brake'] == 'good' else ('med', 'max'), add=(0, 5) if add == 0 else (add,),
+                dodge={'left': 'right', 'right': 'left', None: 'keep'}[sk['cell']], go='divert' if sk['brake'] == 'poor' else 'land')
+
+
+def _sky(s, c, d, p):
+    t = _task(c, p, 'approach')
+    sk = d['sky']
+    kit.need(sk and sk['task'] == t['id'] and sk['set'] is None, 'Không có báo cáo thời tiết nào chờ cài đặt.')
+    kit.need(type(p.get('wipers')) is bool, 'Gạt mưa: bật hay tắt?')
+    conf = dict(wipers=p['wipers'], brake=kit.one_of(p.get('brake'), AUTOBRAKE, 'Chọn mức phanh tự động.'),
+                add=kit.one_of(p.get('add'), ADDS, 'Chọn tốc độ cộng thêm.'), dodge=kit.one_of(p.get('dodge', 'keep'), DODGE, 'Chọn hướng né.'),
+                go=kit.one_of(p.get('go'), ('land', 'divert'), 'Tiếp cận hay đi sân bay dự bị?'))
+    want = _sky_need(sk)
+    wrong = []
+    if not conf['wipers']:
+        wrong.append(('wipers', 1, 'Mưa to mà không bật gạt mưa, kính mờ đặc lúc tiếp cận.', 'quên gạt mưa', False))
+    if conf['go'] == 'land' and conf['brake'] not in want['brake']:
+        wrong.append(('autobrake', 2, 'Đường băng ướt mà đặt phanh tự động chưa hợp.', 'phanh tự động chưa hợp đường băng', False))
+    if conf['go'] == 'land' and conf['add'] not in want['add']:
+        wrong.append(('vref', 1, 'Tốc độ tiếp cận chưa tính đúng gió giật.', 'tốc độ chưa tính gió giật', False))
+    if sk['cell'] and conf['dodge'] == sk['cell']:
+        wrong.append(('sky_cell', 3, 'Tiếp cận lệch về phía ô giông, tàu bị quăng quật.', 'lao về phía ô giông', True))
+    if conf['go'] == 'land' and want['go'] == 'divert':
+        wrong.append(('sky_poor', 3, 'Đường băng báo phanh kém mà vẫn hạ cánh, tàu trượt dài tới cuối đường băng.', 'hạ cánh khi phanh kém', True))
+    for code, sev, text, note, safety in wrong:
+        t['mistakes'] += 1
+        cq.slip(t, code, sev, text, note, safety=safety)
+    sk['set'] = conf
+    sk['ok'] = not wrong
+    where = t['needs']['leg']['to']
+    if conf['go'] == 'divert':
+        t['at'] = t['needs']['leg']['alt']
+        t.update(ap=1, gate=0)
+        d['today']['diverts'] += 1
+        _late(c, d, t, DELAY['divert'], 'đường băng ở sân bay đến không an toàn')
+        msg = f'↪️ Đi sân bay dự bị {t["at"]}.' + (' Chị Vân: “Phanh kém thì không cố. Đúng bài.”' if want['go'] == 'divert' else
+                                                     ' Chị Vân: “Đường băng vẫn phanh được mà em… thôi, cẩn thận cũng không sai.”')
+    else:
+        msg = f'🛬 Cài đặt xong, tiếp cận {where}.' + ('' if wrong else ' Chị Vân gật đầu: “Chuẩn.”')
+    if wrong:
+        msg += ' ⚠️ ' + ' '.join(w[2] for w in wrong)
+        return dict(message=msg, correct=False)
+    return dict(message=msg, celebrate=True)
+
+
 ACTIONS = {
     'pl_fuel': _fuel, 'pl_fog': _fog, 'pl_check': _check, 'pl_defect': _defect, 'pl_switch': _switch, 'pl_pa': _pa,
     'pl_takeoff': _takeoff, 'pl_decide': _decide, 'pl_arrive': _arrive, 'pl_gate': _continue, 'pl_around': _around, 'pl_park': _park,
+    'pl_sky': _sky,
 }
 
 
@@ -946,12 +1090,16 @@ def on_start(s: dict, c: dict) -> None:
     d = _data(c)
     d['today'] = _fresh_today(c['day'])
     _arc_tick(c, d)
+    ao.start(c, ID, d['odd'])
     kit.desk_start(s, c, ID, d['desk'], DESK, mod_of(c['day'])['id'], c['life'].get('mode') == 'festival')
+    ao.tick(s, c, ID, d['odd'], ODD, busy=d['desk']['ev'] is not None)
 
 
 def on_close(s: dict, c: dict) -> dict:
     d = _data(c)
     desk_note = kit.desk_close(s, c, ID, d['desk'], DESK)
+    odd_note = ao.close(s, c, d['odd'], ODD)
+    d['sky'] = None
     x = d['today']
     lines = [f'✈️ Bay {x["flights"]} chặng, {x["minutes"]} phút trên trời.']
     if x['arounds']:
@@ -964,6 +1112,9 @@ def on_close(s: dict, c: dict) -> dict:
         lines.append(f'⏱️ Tổng cộng trễ {x["delays"]} phút vì an toàn.')
     if desk_note:
         lines.append(desk_note)
+    if odd_note:
+        lines.append(odd_note)
+    lines += ao.day_lines(c, d['odd'])
     lines.append('🏠 Tối về tới đầu hẻm, bà Tám để phần cơm trên bàn.')
     return dict(lines=lines, note='Mai báo danh ở sân bay lúc 05:30.', flights=x['flights'], minutes=x['minutes'], arounds=x['arounds'],
                 diverts=x['diverts'], delays=x['delays'], ontime=x['ontime'])
@@ -975,8 +1126,8 @@ def feedback(c: dict, t: dict) -> dict:
     prep = 2 if codes & {'fuel_low', 'overweight'} or any(k.startswith('ignored_') for k in codes) else \
         3 if codes & {'heavy', 'no_hold', 'rush'} else 4 if t.get('extra') else 5
     order = 3 if 'order' in codes else 5
-    unsafe = codes & {'cell', 'med_far', 'minima', 'land_storm', 'land_fog'}
-    rough = codes & {'unstable', 'crosswind', 'turb', 'cell_over', 'med_wait'}
+    unsafe = codes & {'cell', 'med_far', 'minima', 'land_storm', 'land_fog', 'sky_cell', 'sky_poor'}
+    rough = codes & {'unstable', 'crosswind', 'turb', 'cell_over', 'med_wait', 'autobrake', 'vref', 'wipers'}
     safe = 1 if unsafe else 3 if rough else 4 if 'needless' in codes else 5
     pa = t.get('pa')
     pax = 5 if not t.get('delay') or pa == 'clear' else 3 if pa == 'vague' else 2
@@ -1064,7 +1215,15 @@ def public_data(c: dict) -> dict:
                 mod=dict(id=mod['id'], emoji=mod['emoji'], label=mod['label'], hint=mod['hint']),
                 arc=dict(seen=list(arc['seen']), total=len(ARC),
                          due=dict(id=due['id'], emoji=due['emoji'], title=due['title'], text=list(due['text'])) if due else None),
-                desk=kit.desk_public(d['desk'], DESK, ID))
+                desk=kit.desk_public(d['desk'], DESK, ID), odd=ao.public(c, ao.ensure(d), ODD, ID, CFG),
+                sky=_sky_public(d.get('sky')))
+
+
+def _sky_public(sk: dict | None) -> dict | None:
+    if not sk:
+        return None
+    x = SKY[sk['kind']]
+    return dict(sk, emoji=x['emoji'], name=x['name'], text=x['text'], braking=BRAKING[sk['brake']])
 
 
 def content() -> dict:
@@ -1075,6 +1234,8 @@ def content() -> dict:
 
 
 def hint(c: dict, t: dict) -> str:
+    if (c['ext']['data'].get('odd') or {}).get('ev'):
+        return 'Có người đang chờ bạn trả lời: chọn giọng, chọn ý, cần thì báo cơ trưởng hoặc phòng an toàn.'
     st = t.get('stage')
     if st == 'brief':
         return 'Đọc bản tin → dầu = chặng + dự bị + 30 phút (giông lúc tới: thêm dầu chờ) → sương ở đích thì chờ dưới đất.'
@@ -1158,6 +1319,19 @@ def validate_data(c: dict) -> None:
     for v in d['today'].values():
         kit.integer(v, 0, 10 ** 9)
     kit.desk_validate(d['desk'], DESK)
+    ao.validate(d['odd'], ODD)
+    sk = d['sky']
+    if sk is not None:
+        kit.need(isinstance(sk, dict) and set(sk) == {'task', 'day', 'kind', 'brake', 'gust', 'cell', 'vis', 'set', 'ok'} and sk['kind'] in SKY
+                 and sk['brake'] in BRAKING and sk['cell'] in (None, 'left', 'right') and sk['ok'] in (None, True, False), 'Thời tiết ở đích sai.')
+        kit.text(sk['task'], 60)
+        kit.integer(sk['day'], 1, 10 ** 7)
+        kit.integer(sk['gust'], 0, 40)
+        kit.integer(sk['vis'], 0, 10000)
+        conf = sk['set']
+        kit.need(conf is None or (isinstance(conf, dict) and set(conf) == {'wipers', 'brake', 'add', 'dodge', 'go'} and type(conf['wipers']) is bool
+                                  and conf['brake'] in AUTOBRAKE and conf['add'] in ADDS and conf['dodge'] in DODGE and conf['go'] in ('land', 'divert')),
+                 'Cài đặt tiếp cận sai.')
 
 
 # ================================================================ the plugin spec
