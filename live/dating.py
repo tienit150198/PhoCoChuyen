@@ -37,6 +37,17 @@ Frames (client → server; replies in brackets)
 Server pushes: bench, date, bond {pid}; the welcome carries `bonds` (pids "đang tìm hiểu"), `bench` and `date`
 (a reconnect lands back in the date it left).
 
+Shorter waits (feedback #64, "ngồi ghế đợi lâu quá")
+* The `bench` frame says how many wait now (`n`), how many sat down in the last RECENT_S (`recent`, me included) and
+  the busiest two hours (`hot` [from, to] in Vietnam time, from the dates of the last 7 days and since; None until
+  HOT_MIN dates). Players on the bench get a fresh `bench` when the count changes (at most every MATCH_EVERY).
+* `date_call {}` ("📣 Rủ mọi người"): someone on the bench invites Cả phố. Everyone on Cả phố now (blocks respected)
+  gets `call {ch:'town', id, kind:'date', pid, name, av, at}`, a line with a button to the dating corner; nothing is
+  stored. Once per CALL_EVERY per player, CALL_MAX_HOUR an hour for the whole street; not when chat is muted, not when
+  Cả phố is empty (then nothing is used up). [called {n, wait}]; the bench frame's `call` = seconds until the next one.
+* After NPC_AFTER alone on the bench, the bench frame carries `npc` (which neighbour, 0..NPCS-1): the client seats a
+  neighbour (clearly an NPC) with a few lines and a quick quiz; no rewards. A match (a real player) ends it.
+
 Phase 2 (a bench spot in the street scene) sits players through the same `queue` frame with `spot:'street:<place>'`.
 Everything here is bounded: the queue (3,000 seats), the 24 h memory of pairs (LRU), date ids kept for reports.
 """
@@ -46,6 +57,7 @@ import os
 import re
 import secrets
 import time
+from collections import deque
 
 from .auth import pid_of
 from .dating_content import CARDS, MENU, MENU_INDEX, QUICK
@@ -70,14 +82,22 @@ REASONS = ('spam', 'rude', 'private', 'scam', 'other')
 REPORT_MSGS = 20
 SPOT = re.compile(r'[a-z0-9:_-]{1,40}')
 DATE_ID = re.compile(r'[0-9a-f]{12}')
+RECENT_S = 1800           # "đã ghé trong 30 phút qua"
+HOT_DAYS, HOT_MIN = 7, 5  # the busiest hours: dates of the last 7 days (and since), shown from 5 dates on
+TZ = 7 * 3600             # the hours are shown in Vietnam time
+CALL_EVERY = 600          # 📣 one invitation per player per 10 minutes
+CALL_MAX_HOUR = 6         # and at most this many an hour on the whole street
+NPC_AFTER = 120.0         # seconds alone on the bench before a neighbour sits down
+NPCS = 3                  # neighbours the client knows (public/js/v4/dating.js NPCS)
 
 
 class Seat:
     """One player waiting on the bench."""
-    __slots__ = ('pid', 'pref', 'g', 'since', 'spot')
+    __slots__ = ('pid', 'pref', 'g', 'since', 'spot', 'npc')
 
     def __init__(self, pid: str, pref: str = 'any', g: str | None = None, since: float = 0.0, spot: str = ''):
         self.pid, self.pref, self.g, self.since, self.spot = pid, pref, g, since, spot
+        self.npc = False   # the bench frame with the neighbour went out
 
     def __repr__(self):
         return f'Seat({self.pid}, {self.pref}, {self.g}, {self.since})'
@@ -126,6 +146,40 @@ def match(seats, ok=lambda a, b: True, scan: int = SCAN) -> list:
             used.add(best.pid)
             out.append((a, best))
     return out
+
+
+class Recent:
+    """Distinct players seen in the last `window` seconds (at most `cap` kept: the count saturates there)."""
+
+    def __init__(self, window: float = RECENT_S, cap: int = 20000):
+        self.window, self.cap = window, cap
+        self.last: dict = {}
+        self.log: deque = deque()
+
+    def put(self, pid: str, t: float) -> None:
+        if pid not in self.last and len(self.last) >= self.cap:
+            return
+        self.last[pid] = t
+        self.log.append((t, pid))
+
+    def count(self, now: float) -> int:
+        while self.log and self.log[0][0] < now - self.window:
+            t, pid = self.log.popleft()
+            if self.last.get(pid) == t:
+                del self.last[pid]
+        return len(self.last)
+
+
+def hour_of(t: float) -> int:
+    return int((t + TZ) // 3600) % 24
+
+
+def hot_hours(hours: list, least: int = HOT_MIN) -> list | None:
+    """[from, to] (Vietnam time) of the busiest two hours in a row, or None with fewer than `least` dates."""
+    if sum(hours) < least:
+        return None
+    best = max(range(24), key=lambda h: (hours[h] + hours[(h + 1) % 24], hours[h], -h))   # a tie: from the busier hour
+    return [best, (best + 2) % 24]
 
 
 def pair_key(a: str, b: str) -> tuple:
@@ -265,6 +319,11 @@ class DatingFeature(Feature):
         self.matching = False
         self.last_match = 0.0
         self.started = self.ended = 0
+        self.sat = Recent()             # who sat down lately ("đã ghé")
+        self.hours = [0] * 24           # dates per hour of the day (Vietnam time): the busiest hours
+        self.calls = LRU(20000)         # 📣 pid -> their last invitation
+        self.called: deque = deque()    # when the street was invited in the last hour
+        self.told_n = 0                 # the bench count the waiting players last heard
 
     @property
     def speed(self) -> float:
@@ -281,6 +340,8 @@ class DatingFeature(Feature):
         since = time.time() - AGAIN_S
         for r in await self.db.fetch("SELECT a, b, at FROM live_dates WHERE at>? AND how<>'cancelled' ORDER BY at LIMIT ?", (since, 100000)):
             self.recent.put(pair_key(r['a'], r['b']), float(r['at']))
+        for r in await self.db.fetch('SELECT at FROM live_dates WHERE at>? ORDER BY at DESC LIMIT ?', (time.time() - HOT_DAYS * 86400, 20000)):
+            self.hours[hour_of(float(r['at']))] += 1    # (index live_dates_at)
         chat = self.app.chat
         if chat is not None:
             chat.route('date:', audience=self._audience, can_read=lambda p, ch: p.pid in (self.members.get(ch) or ()))
@@ -327,11 +388,54 @@ class DatingFeature(Feature):
 
     # ---- the bench ------------------------------------------------------------------------------------------
     def bench(self, pid: str) -> dict:
-        s = self.queue.get(pid)
-        f = dict(t='bench', state='wait' if s else 'idle', n=len(self.queue))
+        s, now = self.queue.get(pid), time.time()
+        n = len(self.queue)
+        f = dict(t='bench', state='wait' if s else 'idle', n=n, recent=max(n, self.sat.count(now)), hot=hot_hours(self.hours))
         if s:
-            f.update(waited=round(time.time() - s.since, 1), pref=s.pref)
+            f.update(waited=round(now - s.since, 1), pref=s.pref, call=round(self.call_wait(pid, now)))
+            if s.npc:
+                f['npc'] = int(s.since) % NPCS
         return f
+
+    def npc_due(self, s: Seat, now: float) -> bool:
+        return now - s.since >= NPC_AFTER / self.speed
+
+    def call_wait(self, pid: str, now: float) -> float:
+        """Seconds until this player may invite the street again (0: now)."""
+        while self.called and self.called[0] <= now - 3600:
+            self.called.popleft()
+        last = self.calls.get(pid)
+        mine = max(0.0, last + CALL_EVERY - now) if last is not None else 0.0
+        street = max(0.0, self.called[0] + 3600 - now) if len(self.called) >= CALL_MAX_HOUR else 0.0
+        return max(mine, street)
+
+    @on('date_call', rate=(6, 60))
+    async def call(self, conn, f):
+        """📣 "Rủ mọi người": a line on Cả phố with a button to the dating corner (nothing stored)."""
+        p, now = conn.player, time.time()
+        if p.pid not in self.queue:
+            raise LiveError('sit', 'Ngồi xuống ghế trước đã nhé.')
+        chat = self.app.chat
+        if chat is None:
+            raise LiveError('off', 'Cả phố đang tắt.')
+        if p.muted_until > now:
+            raise LiveError('muted', 'Bạn đang bị tạm khóa chat.', until=round(p.muted_until, 1))
+        last = self.calls.get(p.pid)
+        if last is not None and now - last < CALL_EVERY:
+            raise LiveError('slow', 'Bạn vừa rủ rồi, lát nữa rủ tiếp nhé.', wait=round(last + CALL_EVERY - now))
+        wait = self.call_wait(p.pid, now)
+        if wait > 0:
+            raise LiveError('busy', 'Phố vừa được rủ rồi, lát nữa thử lại nhé.', wait=round(wait))
+        town = chat.town
+        reach = [c for c in town.conns if c.player.pid != p.pid and p.pid not in c.player.hidden and c.player.pid not in p.hidden]
+        if not reach:
+            raise LiveError('empty', 'Cả phố đang vắng, lát nữa rủ nhé.')
+        self.calls.put(p.pid, now)
+        self.called.append(now)
+        town.send(dict(t='call', ch='town', id='call:' + secrets.token_hex(4), kind='date', pid=p.pid, name=p.name, av=p.av,
+                       at=round(now, 3)), sender=p)
+        self.push_bench(p.pid)
+        return dict(t='called', n=len({c.player.pid for c in reach}), wait=CALL_EVERY)
 
     def push_bench(self, pid: str) -> None:
         self.hub.send_many(self.hub.conns_of(pid), self.bench(pid))
@@ -371,6 +475,7 @@ class DatingFeature(Feature):
             if len(self.queue) >= QUEUE_MAX:
                 raise LiveError('full', 'Ghế đang kín chỗ, lát quay lại nha.')
             self.queue[p.pid] = Seat(p.pid, pref, g, time.time(), spot)
+            self.sat.put(p.pid, time.time())
         self.dirty = True
         self.push_bench(p.pid)
         await self.run_matcher()
@@ -448,6 +553,7 @@ class DatingFeature(Feature):
         d = Date(did, ia, ib, time.time(), self.speed)
         self.dates[did] = d
         self.started += 1
+        self.hours[hour_of(t)] += 1
         self.recent.put(pair_key(a.pid, b.pid), t)
         self.members.put(d.ch, d.pids)
         room = self.hub.room(d.ch, cap=2)
@@ -692,6 +798,19 @@ class DatingFeature(Feature):
         if self.queue and (self.dirty or now - self.last_match >= MATCH_EVERY):
             self.dirty = True
             await self.run_matcher()
+            self.tell_bench(now)
+
+    def tell_bench(self, now: float) -> None:
+        """After a matcher run: a neighbour for whoever has been alone NPC_AFTER, and the new count for everyone on the
+        bench when it changed (one frame each, at most every MATCH_EVERY)."""
+        n, changed = len(self.queue), len(self.queue) != self.told_n
+        self.told_n = n
+        for s in list(self.queue.values()):
+            due = not s.npc and self.npc_due(s, now)
+            if due:
+                s.npc = True
+            if due or changed:
+                self.push_bench(s.pid)
 
     def stats(self) -> dict:
         return dict(bench=len(self.queue), dates=len(self.dates), started=self.started, ended=self.ended)

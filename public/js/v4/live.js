@@ -28,7 +28,9 @@ export const live={
   resume:()=>({}),
   on(type,fn){if(!listeners.has(type))listeners.set(type,new Set());listeners.get(type).add(fn);return ()=>listeners.get(type)?.delete(fn);},
   send(frame){if(ws&&ws.readyState===1&&live.state==='open'){ws.send(JSON.stringify(frame));return true;}return false;},
-  unread(){return live.chans.reduce((n,c)=>n+(c.unread||0),0);},
+  /** Unread messages for the badges: a chat whose notifications are off (🔔 quiet) still counts in its own row only. */
+  unread(){return live.chans.reduce((n,c)=>n+(live.quiet(c)?0:(c.unread||0)),0);},
+  quiet(c){return Boolean(c?.quiet&&c.quiet*1000>Date.now());},
   chan(id){return live.chans.find(c=>c.id===id)||null;},
   friend(pid){return live.friends.find(f=>f.pid===pid)||null;},
   /** Bring a chat to the top of the list (a message just arrived or was sent). */
@@ -92,6 +94,7 @@ function frame(f){
     case'muted':if(live.me){live.me.muted=f.until;live.me.town=f.until*1000>Date.now()?'muted':'ok';}break;
     case'chan':{const c=live.chan(f.chan.id);if(c)Object.assign(c,f.chan,{unread:c.unread,last:c.last});else live.chans.unshift(f.chan);break;}
     case'unchan':live.chans=live.chans.filter(c=>c.id!==f.ch);break;
+    case'quiet':{const c=live.chan(f.ch);if(c){if(f.until)c.quiet=f.until;else delete c.quiet;}break;}   // 🔔 notifications of one chat
     case'bond':if(!live.bonds.includes(f.pid))live.bonds.push(f.pid);break;
     case'read':{const c=live.chan(f.ch);if(c){c.unread=0;c.read=Math.max(c.read||0,f.id);}break;}
     case'msg':{

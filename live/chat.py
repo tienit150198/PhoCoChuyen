@@ -6,7 +6,13 @@ Channels
 * `dm:<pidA>:<pidB>` (pids sorted): two friends (`friends` both ways, no block either way). Created by the
   first `send {to: pid}`. A friend with no socket gets one web push per chat per 10 minutes at most.
 * `g:<10 hex>`: a group made by its owner from their friends, at most 20 members; the owner adds and removes,
-  anyone leaves (the oldest member becomes owner when the owner leaves).
+  anyone leaves (the oldest member becomes owner when the owner leaves). Members with no socket get the same
+  web push as a DM (since 1.2.4, feedback #66).
+
+🔔 Notifications per chat (feedback #66): `notify {ch, v}` with v 'on', '8h' or 'off' sets chat_members.muted_until
+(0 = on, a time = quiet until then, QUIET_FOREVER = off; the column is there since schema 6, nothing else used it).
+A quiet chat gets no web push; messages still arrive and its unread count still shows in the list, but the client
+leaves it out of the badges (live.unread). The chat list (`state.chans`) carries `quiet` (until) for quiet chats.
 
 Frames (client → server; replies in brackets)
   sync {}                                   [state {friends, chans}]
@@ -20,7 +26,8 @@ Frames (client → server; replies in brackets)
   group_new {title, pids}  group_add {ch, pids}  group_kick {ch, pid}  group_leave {ch}  members {ch}
   pin {id}  unpin {}                        [pinned {ch:'town', pin} to everyone on Cả phố]   admins only
   react {id, e}                             [reacts {ch, id, r, by, e} to everyone who sees the chat]
-Server pushes: msg, deleted, presence {pid, on}, chan {chan}, unchan {ch}, muted {until}, read, pinned, reacts.
+  notify {ch, v:'on'|'8h'|'off'}            [quiet {ch, until} to my tabs]
+Server pushes: msg, deleted, presence {pid, on}, chan {chan}, unchan {ch}, muted {until}, read, pinned, reacts, quiet.
 
 😍 Reactions (owner, 01/10: "nhấn giữ là reaction"): one of REACTS per player per message (`chat_reacts`, primary key
 (msg, pid)) in Cả phố, DMs and groups. `react {id, e}` sets e; the same e again (or e null) takes it back; another
@@ -70,6 +77,8 @@ GROUPS_OWNED = 20
 CHANS_LISTED = 100
 FRIENDS_MAX = 200
 PUSH_EVERY = 600          # seconds between two pushes of one chat to one player
+QUIET_FOREVER = 4102444800.0   # chat_members.muted_until of a chat whose notifications are off (2100-01-01)
+QUIET_HOURS = 8           # "Tắt 8 giờ"
 PIN_POLL = 30             # seconds between two reads of the pin row (a pin written from outside: scripts/chat_pin.py)
 ADMIN_PID = 'admin'       # rows written straight into the database by the operator (an announcement): admin messages
 REACTS = ('❤️', '😂', '😮', '😢', '👍', '🔥')   # the long-press bar, in this order
@@ -92,11 +101,12 @@ def kind_of(ch: str) -> str:
 
 
 class Chan:
-    __slots__ = ('id', 'kind', 'title', 'owner', 'members')
+    __slots__ = ('id', 'kind', 'title', 'owner', 'members', 'quiet')
 
-    def __init__(self, cid, kind, title='', owner=None, members=None):
+    def __init__(self, cid, kind, title='', owner=None, members=None, quiet=None):
         self.id, self.kind, self.title, self.owner = cid, kind, title, owner
         self.members: dict = members if members is not None else {}   # pid -> sid (dm, group)
+        self.quiet: dict = quiet if quiet is not None else {}         # pid -> muted_until (🔔 notifications off until)
 
 
 def msg_frame(r: dict) -> dict:
@@ -122,6 +132,7 @@ class ChatFeature(Feature):
         self.pin_key = None            # (message id, pinned at) of that pin: what the 30 s poll compares
         self._pin_at = 0.0             # next poll of the pin row
         self.reacts = LRU(REACT_CACHE)  # 😍 message id -> {emoji: count} ({} = none), the only writer is this service
+        self.push_tried = LRU(20000)    # 🔔 (channel, pid) -> last push attempt: no database write per message
 
     # ---- extension: other features' channels -------------------------------------------------------------
     def route(self, prefix: str, audience, can_read) -> None:
@@ -230,7 +241,7 @@ class ChatFeature(Feature):
 
     async def chan_list(self, p) -> list:
         rows = await self.db.fetch(
-            'SELECT c.id, c.kind, c.title, c.owner_pid, m.last_read, m.role, '
+            'SELECT c.id, c.kind, c.title, c.owner_pid, m.last_read, m.role, m.muted_until, '
             'COALESCE((SELECT MAX(x.id) FROM chat_messages x WHERE x.channel=c.id), 0) AS last_id, '
             '(SELECT COUNT(*) FROM chat_members y WHERE y.channel=c.id) AS n '
             'FROM chat_members m JOIN chat_channels c ON c.id=m.channel WHERE m.pid=? ORDER BY last_id DESC LIMIT ?', (p.pid, CHANS_LISTED))
@@ -259,6 +270,8 @@ class ChatFeature(Feature):
         out = []
         for r in rows:
             c = dict(id=r['id'], kind=r['kind'], title=r['title'], unread=unread.get(r['id'], 0), read=int(r['last_read']))
+            if float(r['muted_until'] or 0) > time.time():
+                c['quiet'] = round(float(r['muted_until']))   # 🔔 notifications off until then
             if r['kind'] == 'group':
                 c.update(owner=r['owner_pid'], n=int(r['n']), role=r['role'])
             if r['id'] in peers:
@@ -340,8 +353,10 @@ class ChatFeature(Feature):
         row = await self.db.fetchrow('SELECT id, kind, title, owner_pid FROM chat_channels WHERE id=?', (cid,))
         if not row:
             return None
-        members = {r['pid']: r['sid'] for r in await self.db.fetch('SELECT pid, sid FROM chat_members WHERE channel=?', (cid,))}
-        return self.chans.put(cid, Chan(cid, row['kind'], row['title'], row['owner_pid'], members))
+        rows = await self.db.fetch('SELECT pid, sid, muted_until FROM chat_members WHERE channel=?', (cid,))
+        members = {r['pid']: r['sid'] for r in rows}
+        quiet = {r['pid']: float(r['muted_until']) for r in rows if float(r['muted_until'] or 0) > 0}
+        return self.chans.put(cid, Chan(cid, row['kind'], row['title'], row['owner_pid'], members, quiet))
 
     async def member_chan(self, p, cid) -> Chan:
         c = await self.chan(cid)
@@ -516,10 +531,41 @@ class ChatFeature(Feature):
         frame = await self.store_message(p, c.id, f.get('text'), self.cfg.text_len, 12)
         self.send_to_chan(c, frame, sender=p, skip=conn)
         self.hub.send(conn, dict(frame, cid=cid, to=f.get('to')) if f.get('to') else dict(frame, cid=cid))
-        if c.kind == 'dm':
-            other = next(x for x in c.members if x != p.pid)
-            if not self.hub.online(other):
-                self.spawn(maybe_push(self.db, c.id, other, c.members[other], f'{p.name}: {frame["text"][:80]}', f'/?chat={c.id}', PUSH_EVERY))
+        self.push_offline(c, p, frame)
+        return None
+
+    def push_offline(self, c: Chan, p, frame: dict) -> None:
+        """🔔 A web push to the members of a DM or group with no socket, unless the chat is quiet for them; one per chat
+        per member per PUSH_EVERY (remembered here first, so a busy group writes nothing per message)."""
+        if c.kind not in ('dm', 'group'):
+            return
+        t = time.time()
+        body = f'{p.name}: {frame["text"][:80]}' if c.kind == 'dm' else f'{c.title} · {p.name}: {frame["text"][:80]}'
+        for pid, sid in list(c.members.items()):
+            if pid == p.pid or self.hub.online(pid) or c.quiet.get(pid, 0) > t or pid in p.hidden:
+                continue
+            last = self.push_tried.get((c.id, pid))
+            if last is not None and t - last < PUSH_EVERY:
+                continue
+            self.push_tried.put((c.id, pid), t)
+            self.spawn(maybe_push(self.db, c.id, pid, sid, body, f'/?chat={c.id}', PUSH_EVERY))
+
+    @on('notify', rate=(20, 60))
+    async def notify(self, conn, f):
+        """🔔 Notifications of one DM or group: 'on', '8h' (quiet for QUIET_HOURS) or 'off' (until turned on)."""
+        p, v = conn.player, f.get('v')
+        if v not in ('on', '8h', 'off'):
+            raise LiveError('bad', 'Yêu cầu không hợp lệ.')
+        c = await self.member_chan(p, f.get('ch'))
+        if c.kind not in ('dm', 'group'):
+            raise LiveError('bad', 'Cả phố không gửi thông báo.')
+        until = 0.0 if v == 'on' else time.time() + QUIET_HOURS * 3600 if v == '8h' else QUIET_FOREVER
+        await self.db.execute('UPDATE chat_members SET muted_until=? WHERE channel=? AND pid=?', (until, c.id, p.pid))
+        if until:
+            c.quiet[p.pid] = until
+        else:
+            c.quiet.pop(p.pid, None)
+        self.hub.send_many([x for x in p.conns if x.ready], dict(t='quiet', ch=c.id, until=round(until)))
         return None
 
     @on('history', rate=(20, 10))
@@ -731,6 +777,7 @@ class ChatFeature(Feature):
         await self.db.transaction(run)
         for x in pids:
             c.members[x] = p.friends[x]['sid']
+            c.quiet.pop(x, None)   # a new membership row: notifications on
         self._push_chan(c)
         return None
 

@@ -18,7 +18,7 @@ import {stylesheet} from '../lazy.js';
 const S={dlg:null,env:null,tab:'town',thread:null,view:null,threads:new Map(),
   town:{msgs:[],more:false,joined:false,why:'ok',wait:0,n:0,loaded:false,pin:null},pinOpen:false,reactFor:null,lp:null,
   act:null,report:null,confirm:null,flash:'',flashTimer:0,pending:new Map(),pick:new Set(),gtitle:'',members:null,
-  nextTown:0,cd:0,older:false,synced:0,bound:false};
+  nextTown:0,cd:0,older:false,synced:0,bound:false,notifyOpen:false,notify:null};
 const TABS=[['town','Cả phố'],['inbox','Tin nhắn'],['friends','Bạn bè']];
 const REASONS=[['spam','Spam'],['rude','Thô tục'],['scam','Lừa đảo'],['private','Lộ thông tin'],['other','Khác']];
 const rid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
@@ -27,6 +27,12 @@ const dmId=pid=>{const [a,b]=[me(),pid].sort();return `dm:${a}:${b}`;};
 const coarse=()=>matchMedia('(pointer:coarse)').matches;
 const REACTS=['❤️','😂','😮','😢','👍','🔥'];   // live/chat.py REACTS, same order
 const LP_MS=450,LP_MOVE=10;   // a long press: held this long, moved less than this (px)
+const QUIET_FOREVER=4102444800;   // live/chat.py QUIET_FOREVER: notifications off (not just for 8 hours)
+const CALL_SHOW=900;              // 📣 a dating-corner invitation shows this long (s) on Cả phố
+/** Cả phố holds messages (numeric ids) and 📣 invitation lines (sys, placed after the message they followed: k). */
+const byK=(a,b)=>(a.k??a.id)-(b.k??b.id);
+const lastId=list=>{for(let i=list.length-1;i>=0;i--)if(!list[i].sys)return list[i].id;return 0;};
+const clock=at=>new Date(at*1000).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
 const adm=()=>Boolean(live.me?.adm);   // the server says so (ADMIN_USERS); every admin action is checked there again
 
 /* ---- css + dialog ------------------------------------------------------------------------------- */
@@ -113,7 +119,7 @@ function bind(){
   live.on('welcome',()=>{S.town.joined=false;if(S.dlg?.open){enter();render();}});
   live.on('down',()=>{S.town.joined=false;if(S.dlg?.open)render();});
   live.on('joined',f=>{
-    const T=S.town,after=T.msgs.at(-1)?.id||0;
+    const T=S.town,after=lastId(T.msgs);
     if(f.inc)T.msgs=[...T.msgs,...f.msgs.filter(m=>m.id>after)];else{T.msgs=f.msgs;T.more=f.more;}
     T.loaded=true;T.why=f.why;T.wait=f.wait;T.at=Date.now();T.n=f.n;
     if('pin' in f){if(T.pin?.id!==f.pin?.id)S.pinOpen=false;T.pin=f.pin||null;}
@@ -124,7 +130,7 @@ function bind(){
     const mine=f.cid&&S.pending.has(f.cid);if(mine)S.pending.delete(f.cid);
     if(f.ch==='town'){
       if(f.n)S.town.n=f.n;
-      if(!S.town.msgs.some(m=>m.id===f.id)){S.town.msgs.push(f);S.town.msgs.sort((a,b)=>a.id-b.id);if(S.town.msgs.length>400)S.town.msgs.splice(0,S.town.msgs.length-400);}
+      if(!S.town.msgs.some(m=>m.id===f.id)){S.town.msgs.push(f);S.town.msgs.sort(byK);if(S.town.msgs.length>400)S.town.msgs.splice(0,S.town.msgs.length-400);}
       if(f.pid===me()&&f.wait){S.nextTown=Date.now()+f.wait*1000;countdown();}
     }else{
       const t=S.threads.get(f.ch);if(t&&t.loaded&&!t.msgs.some(m=>m.id===f.id)){t.msgs.push(f);t.msgs.sort((a,b)=>a.id-b.id);}
@@ -134,7 +140,7 @@ function bind(){
     if(S.dlg?.open)render(f.pid===me());
   });
   live.on('history',f=>{
-    if(f.ch==='town'){S.town.msgs=[...f.msgs,...S.town.msgs.filter(m=>!f.msgs.some(x=>x.id===m.id))].sort((a,b)=>a.id-b.id);S.town.more=f.more;S.older=false;render(false,true);return;}
+    if(f.ch==='town'){S.town.msgs=[...f.msgs,...S.town.msgs.filter(m=>!f.msgs.some(x=>x.id===m.id))].sort(byK);S.town.more=f.more;S.older=false;render(false,true);return;}
     const t=thread(f.ch);t.msgs=[...f.msgs,...t.msgs.filter(m=>!f.msgs.some(x=>x.id===m.id))].sort((a,b)=>a.id-b.id);t.more=f.more;t.loaded=true;t.busy=false;
     const first=!f.before;S.older=false;
     if(first)markRead(f.ch);
@@ -146,6 +152,13 @@ function bind(){
     if(S.pinning){S.pinning=false;flash(f.pin?'Đã ghim lên đầu Cả phố.':'Đã bỏ ghim.');}
     if(S.dlg?.open&&(was?.id!==S.town.pin?.id||S.flash))render();
   });
+  live.on('call',f=>{   // 📣 someone on the dating bench invites Cả phố: a line with a button (never stored)
+    const T=S.town;if(f.ch!=='town'||T.msgs.some(m=>m.sys&&m.id===f.id))return;
+    const last=T.msgs.filter(m=>!m.sys).at(-1)?.id||0;
+    T.msgs.push({...f,sys:'date',id:f.id,k:last+.5});T.msgs.sort(byK);
+    if(S.dlg?.open)render();
+  });
+  live.on('quiet',f=>{if(S.dlg?.open){if(S.notify===f.ch){S.notify=null;flash(f.until?(f.until>=QUIET_FOREVER?'Đã tắt thông báo của cuộc trò chuyện này.':`Tắt thông báo đến ${clock(f.until)}.`):'Đã bật thông báo.');}render();}});
   live.on('reacts',f=>{   // 😍 counts of one message changed (f.by reacted f.e, or took theirs back)
     const m=listOf(f.ch)?.find(x=>x.id===f.id);if(!m)return;
     m.r=f.r;if(f.by===me())m.my=f.e||undefined;
@@ -186,12 +199,12 @@ function markRead(ch){const c=live.chan(ch),t=S.threads.get(ch),last=t?.msgs.at(
 /** What the screen shows needs: join Cả phố while it is on screen, load an open chat. */
 function enter(){
   const onTown=S.dlg?.open&&!S.thread&&S.tab==='town'&&!S.view;
-  if(onTown&&!S.town.joined&&live.state==='open'){S.town.joined=live.send({t:'join',ch:'town',...(S.town.msgs.length?{after:S.town.msgs.at(-1).id}:{})});}
+  if(onTown&&!S.town.joined&&live.state==='open'){S.town.joined=live.send({t:'join',ch:'town',...(lastId(S.town.msgs)?{after:lastId(S.town.msgs)}:{})});}
   if(!onTown&&S.town.joined){live.send({t:'leave',ch:'town'});S.town.joined=false;}
   if(S.thread){const t=thread(S.thread);if(!t.loaded&&!t.busy&&live.state==='open'){t.busy=live.send({t:'history',ch:S.thread});}}
 }
 function onClose(){if(S.town.joined){live.send({t:'leave',ch:'town'});S.town.joined=false;}S.act=null;S.report=null;clearTimeout(S.cd);}
-function openThread(ch,draw=true){S.thread=ch;S.view=null;S.act=null;S.report=null;S.confirm=null;S.tab='inbox';const t=thread(ch);if(t.loaded)markRead(ch);if(draw){enter();render(true);}}
+function openThread(ch,draw=true){S.thread=ch;S.notifyOpen=false;S.view=null;S.act=null;S.report=null;S.confirm=null;S.tab='inbox';const t=thread(ch);if(t.loaded)markRead(ch);if(draw){enter();render(true);}}
 
 /* ---- actions ----------------------------------------------------------------------------------- */
 function onAct(act,d,el){
@@ -202,7 +215,7 @@ function onAct(act,d,el){
     case'back':if(S.view==='add'){S.view='members';break;}if(S.view){S.view=null;S.pick.clear();break;}S.thread=null;S.act=null;S.report=null;S.confirm=null;break;
     case'open':openThread(d.ch);return;
     case'dm':{const c=live.chans.find(x=>x.peer?.pid===d.pid);openThread(c?c.id:dmId(d.pid));return;}
-    case'older':{if(S.older)return;const list=S.thread?thread(S.thread).msgs:S.town.msgs;S.older=live.send({t:'history',ch:S.thread||'town',before:list[0]?.id||0});break;}
+    case'older':{if(S.older)return;const list=S.thread?thread(S.thread).msgs:S.town.msgs;S.older=live.send({t:'history',ch:S.thread||'town',before:list.find(m=>!m.sys)?.id||0});break;}
     case'msg':{const id=Number(d.id);S.act=S.act===id?null:id;S.report=null;S.confirm=null;break;}
     case'del':live.send({t:'del',id:Number(d.id)});S.act=null;break;
     case'pin':if(live.send({t:'pin',id:Number(d.id)}))S.pinning=true;S.act=null;break;   // 📌 admins (the server checks)
@@ -223,6 +236,8 @@ function onAct(act,d,el){
     case'friends':S.dlg.close();S.env?.act?.('friends');return;   // Bạn bè (v4/marriage.js): find friends, requests
     case'account':S.dlg.close();S.env?.act?.('v4AccountOpen',{mode:'register'});return;   // guests: register to chat (v4/account.js)
     case'date':S.dlg.close();import('./live.js').then(m=>m.openDate());return;   // 💕 Góc hẹn hò (v4/dating.js)
+    case'notifyMenu':S.notifyOpen=!S.notifyOpen;break;
+    case'notify':if(live.send({t:'notify',ch:S.thread,v:d.v}))S.notify=S.thread;S.notifyOpen=false;break;   // 🔔 the server answers `quiet`
     case'retry':live.reconnect();break;
   }
   enter();render(act==='open'||act==='tab'||act==='back');
@@ -273,8 +288,9 @@ function head(){
     const peer=c?.peer||live.friend(S.thread.slice(3).split(':').find(p=>p!==me()))||{};
     const title=grp?esc(c?.title||'Nhóm'):esc(peer.name||'Bạn bè');
     const sub=grp?`${c?.n||''} người`:peer.on?'Đang online':'';
-    const more=grp?`<button type="button" class="icon-btn" data-ch-act="members" aria-label="Thành viên">${icon('people',19)}</button>`:
-      (peer.pid?`<button type="button" class="ch-mini${S.confirm==='block:'+peer.pid?' warn':''}" data-ch-act="block" data-pid="${esc(peer.pid)}">${S.confirm==='block:'+peer.pid?'Chặn thật?':'Chặn'}</button>`:'');
+    const q=live.quiet(c),bell=c?`<button type="button" class="icon-btn ch-bell${q?' off':''}" data-ch-act="notifyMenu" aria-expanded="${Boolean(S.notifyOpen)}" aria-label="Thông báo: ${q?'Tắt':'Bật'}" title="Thông báo: ${q?'Tắt':'Bật'}"><span aria-hidden="true">${q?'🔕':'🔔'}</span></button>`:'';
+    const more=bell+(grp?`<button type="button" class="icon-btn" data-ch-act="members" aria-label="Thành viên">${icon('people',19)}</button>`:
+      (peer.pid?`<button type="button" class="ch-mini${S.confirm==='block:'+peer.pid?' warn':''}" data-ch-act="block" data-pid="${esc(peer.pid)}">${S.confirm==='block:'+peer.pid?'Chặn thật?':'Chặn'}</button>`:''));
     return `${back}${grp?av('👥','md'):`<span class="ch-av-wrap">${av(peer.av,'md')}${dot(peer.on)}</span>`}<div class="grow ch-title"><h2 data-no-translate>${title}</h2>${sub?`<small>${sub}</small>`:''}</div>${more}${x}`;
   }
   const n=live.unread(),on=live.friends.filter(f=>f.on).length;
@@ -287,6 +303,7 @@ function msgList(list,kind,more){
   let out=more?`<button type="button" class="ch-older" data-ch-act="older"${S.older?' disabled':''}>${S.older?'Đang tải…':'Xem cũ hơn'}</button>`:'';
   let prev=null;
   for(const m of list){
+    if(m.sys){if(m.sys==='date'&&Date.now()/1000-m.at<CALL_SHOW)out+=callLine(m);prev=null;continue;}
     const mine=m.pid===me(),first=!prev||prev.pid!==m.pid||m.at-prev.at>300;
     const name=!mine&&first&&kind!=='dm'?`<b class="ch-name"><span data-no-translate>${esc(m.name)}</span>${badge(m)}</b>`:'';
     const bar=S.act===m.id?actBar(m,mine,kind):'';
@@ -298,6 +315,21 @@ function msgList(list,kind,more){
     prev=m;
   }
   return out;
+}
+/** 📣 "X đang chờ ở góc hẹn hò 💕" with a button that opens Góc hẹn hò (live/dating.py date_call). */
+function callLine(m){
+  const mine=m.pid===me();
+  return `<div class="ch-sys" role="note"><span class="ch-sys-txt">💕 <b data-no-translate>${esc(m.name)}</b> ${mine?'(bạn) ':''}đang chờ ở góc hẹn hò</span>`+
+    (mine?'':`<button type="button" class="ch-mini ch-sys-go" data-ch-act="date">Ghé góc hẹn hò</button>`)+`</div>`;
+}
+/** 🔔 The notification choices of the open chat (under the header). */
+function notifyMenu(){
+  const c=live.chan(S.thread);if(!S.notifyOpen||!c)return '';
+  const q=live.quiet(c),forever=q&&c.quiet>=QUIET_FOREVER;
+  const opt=(v,label,on)=>`<button type="button" class="ch-mini${on?' on':''}" data-ch-act="notify" data-v="${v}" aria-pressed="${on}">${label}</button>`;
+  return `<div class="ch-notify" role="group" aria-label="Thông báo"><p>${q?(forever?'🔕 Đang tắt thông báo':`🔕 Tắt đến ${clock(c.quiet)}`):'🔔 Đang bật thông báo'}</p>`+
+    `<div class="ch-actbar wrap">${opt('on','🔔 Bật',!q)}${opt('8h','🔕 Tắt 8 giờ',q&&!forever)}${opt('off','🔕 Tắt',forever)}</div>`+
+    `<small>Tắt: không báo về máy, không tính vào số tin chưa đọc. Tin vẫn tới như thường.</small></div>`;
 }
 /** 😍 The emoji bar of a held message (mine highlighted). */
 function reactBar(m){
@@ -348,7 +380,7 @@ function body(){
     const t=thread(S.thread);
     if(!t.loaded)return empty('chat','Đang tải…');
     const kind=S.thread.startsWith('g:')?'group':'dm';
-    return t.msgs.length?msgList(t.msgs,kind,t.more):empty('chats','Gửi lời chào đầu tiên 👋');
+    return notifyMenu()+(t.msgs.length?msgList(t.msgs,kind,t.more):empty('chats','Gửi lời chào đầu tiên 👋'));
   }
   if(S.tab==='town'){
     const T=S.town;
@@ -357,11 +389,11 @@ function body(){
   }
   if(S.tab==='inbox'){
     const rows=live.chans.map(c=>{
-      const grp=c.kind==='group',p=c.peer||{},last=c.last;
+      const grp=c.kind==='group',p=c.peer||{},last=c.last,q=live.quiet(c);
       const prev=last?(last.del?'Tin nhắn đã thu hồi':`${last.pid===me()?'Bạn: ':grp?esc(last.name)+': ':''}${esc(last.text)}`):grp?`${c.n||''} người`:'';
-      return `<button type="button" class="ch-row" data-ch-act="open" data-ch="${esc(c.id)}"><span class="ch-av-wrap">${av(grp?'👥':p.av,'md')}${grp?'':dot(p.on)}</span>`+
+      return `<button type="button" class="ch-row${q?' quiet':''}" data-ch-act="open" data-ch="${esc(c.id)}"><span class="ch-av-wrap">${av(grp?'👥':p.av,'md')}${grp?'':dot(p.on)}</span>`+
         `<span class="grow"><b data-no-translate>${esc(grp?c.title:p.name||'Bạn bè')}</b><small data-no-translate>${prev}</small></span>`+
-        `<span class="ch-meta">${last?`<time>${hm(last.at)}</time>`:''}${c.unread?`<em class="badge">${c.unread>99?'99+':c.unread}</em>`:''}</span></button>`;
+        `<span class="ch-meta">${last?`<time>${hm(last.at)}</time>`:''}${q||c.unread?`<span class="ch-meta-r">${q?'<i class="ch-q" aria-label="Đã tắt thông báo">🔕</i>':''}${c.unread?`<em class="badge${q?' mute':''}">${c.unread>99?'99+':c.unread}</em>`:''}</span>`:''}</span></button>`;
     }).join('');
     const make=live.friends.length?`<button type="button" class="ch-new" data-ch-act="groupNew">${icon('plus',16)} Nhóm mới</button>`:'';
     return make+(rows?`<div class="ch-rows">${rows}</div>`:empty('chat','Chưa có tin nhắn.',live.friends.length?`<button type="button" class="btn ghost" data-ch-act="tab" data-tab="friends">Nhắn bạn bè</button>`:''));

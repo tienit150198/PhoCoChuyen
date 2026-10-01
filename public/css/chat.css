@@ -26,7 +26,7 @@ html[data-layout="phone"] .ch-head{padding-top:14px}
 .ch-tabs button{flex:1 1 0;position:relative;display:flex;align-items:center;justify-content:center;gap:5px;min-height:38px;padding:0 8px;border-radius:var(--radius-pill);
   font-weight:600;font-size:.9rem;color:var(--ink-2);white-space:nowrap}
 .ch-tabs button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-sm)}
-.ch-tabs .badge,.ch-meta .badge{min-width:19px;height:19px;padding:0 5px;border-radius:10px;display:inline-grid;place-items:center;font:700 .7rem/1 var(--font);font-style:normal;background:var(--bad);color:var(--on-bad,#fff)}
+.ch-tabs .badge,.ch-meta .badge{position:static;box-shadow:none;min-width:19px;height:19px;padding:0 5px;border-radius:10px;display:inline-grid;place-items:center;font:700 .7rem/1 var(--font);font-style:normal;background:var(--bad);color:var(--on-bad,#fff)}
 .ch-on-n{font-style:normal;font-size:.72rem;font-weight:700;color:var(--good);display:inline-flex;align-items:center;gap:3px}
 .ch-on-n::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--good)}
 .ch-net{display:flex;align-items:center;justify-content:center;gap:6px;padding:5px;font-size:.78rem;background:var(--warn-soft);color:var(--ink-2)}
@@ -134,6 +134,23 @@ html[data-layout="phone"] .ch-head{padding-top:14px}
 .ch-chip.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-text)}
 @keyframes ch-pop{from{opacity:0;transform:scale(.9) translateY(4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.ch-react-bar{animation:none}.ch-emo{transition:none}}
+
+/* 🔔 notifications of one chat: the bell in the header, its choices, a quiet row in the list */
+.ch-bell span{font-size:1.05rem;line-height:1}
+.ch-bell.off{opacity:.75}
+.ch-notify{margin:2px 0 10px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--surface-2)}
+.ch-notify p{margin:0 0 8px;font-weight:700;font-size:.88rem}
+.ch-notify small{display:block;margin-top:8px;color:var(--muted);font-size:.75rem;line-height:1.35}
+.ch-mini.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-text);font-weight:700}
+.ch-row.quiet b{color:var(--ink-2)}
+.ch-meta-r{display:flex;align-items:center;gap:4px}
+.ch-meta .ch-q{font-style:normal;font-size:.78rem;opacity:.8}
+.ch-meta .badge.mute{background:var(--surface-3);color:var(--ink-2)}
+/* 📣 "… đang chờ ở góc hẹn hò" on Cả phố */
+.ch-sys{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 10px;margin:10px auto;padding:8px 12px;max-width:92%;
+  border-radius:14px;border:1px dashed var(--line-strong);background:var(--accent-soft);color:var(--ink);font-size:.84rem;text-align:center}
+.ch-sys-txt b{font-weight:700}
+.ch-sys .ch-sys-go{min-height:30px;border-color:var(--accent);color:var(--accent-text);font-weight:700}
 
 /* the composer */
 .ch-compose{position:relative;display:flex;align-items:flex-end;gap:8px;padding:8px 10px calc(8px + var(--safe-b)) 12px;border-top:1px solid var(--line);background:var(--surface)}

@@ -2,6 +2,9 @@
  * service's: live/dating.py; this file only draws). Its own dialog, opened from the menu entry, the heart in the
  * chat, the "💕" pill on the scene while waiting or on a date, and the bench of every place in Đi dạo (addBench).
  * A match opens the dialog by itself.
+ * Shorter waits (feedback #64): who waits now / sat down lately and the busiest hours (the bench frame), "📣 Rủ mọi
+ * người" (date_call: a line on Cả phố, rate-limited by the server), and after a while alone a neighbour (an NPC,
+ * live/dating.py NPC_AFTER) sits down with a few lines and a quick quiz. No rewards; a real match ends it.
  * No guide, no tips (owner, 01/10): icons, short labels, one line where a line is needed. Player text is always
  * escaped and marked data-no-translate. */
 import {icon,escapeHTML as esc} from '../icons.js';
@@ -9,9 +12,26 @@ import {live} from './live.js';
 import {stylesheet} from '../lazy.js';
 
 const S={dlg:null,env:null,bound:false,bench:{state:'idle',n:0,waited:0,at:0,pref:'any'},pref:pref0(),date:null,at:0,end:null,
-  msgs:[],want:null,menu:false,report:false,confirm:null,flash:'',flashTimer:0,tick:0,pill:null,busy:false};
+  msgs:[],want:null,menu:false,report:false,confirm:null,flash:'',flashTimer:0,tick:0,pill:null,busy:false,npc:null};
 const PREFS=[['m','👦','Bạn nam'],['f','👧','Bạn nữ'],['any','✨','Ai cũng được']];
 const REASONS=[['rude','Thô tục'],['spam','Spam'],['scam','Lừa đảo'],['private','Lộ thông tin'],['other','Khác']];
+/** The neighbours who keep a lonely bench company (live/dating.py NPCS: the bench frame's `npc` picks one). */
+const NPCS=[
+  {av:'👵',name:'Bà Tư bán xôi',lines:['Ngồi chờ ai đó hả con? Bà ngồi chung chút cho vui nha.','Hồi xưa bà với ông cũng quen nhau ở cái ghế đá này đó.','Người hợp gu tới liền à, kiên nhẫn chút.','Rảnh thì chơi hỏi nhanh đáp nhanh với bà nè.']},
+  {av:'🧔',name:'Chú Ba sửa xe',lines:['Chú ghé ngồi nghỉ tay chút, con cứ chờ tự nhiên nha.','Tối nào phố cũng đông, chờ xíu là có bạn à.','Đố vui cho đỡ buồn không? Chú hỏi nè.','Xe cộ gì hư cứ mang qua tiệm chú nha.']},
+  {av:'👩',name:'Chị Mai tiệm hoa',lines:['Chị mới đóng tiệm, ngồi đây hóng gió với em chút.','Hoa hồng hôm nay đẹp lắm, ai được tặng chắc vui ghê.','Chờ người hợp gu cũng như chờ hoa nở, đáng mà.','Chơi đố vui với chị cho đỡ sốt ruột nè.']},
+];
+const QUIZ=[
+  ['Bánh chưng thường gói bằng lá gì?',['Lá dong','Lá chuối','Lá sen']],
+  ['Tết Trung thu vào rằm tháng mấy âm lịch?',['Tháng 8','Tháng 7','Tháng 1']],
+  ['Con giáp đứng đầu trong 12 con giáp?',['Tý (chuột)','Sửu (trâu)','Dần (hổ)']],
+  ['Xôi được nấu từ loại gạo nào?',['Gạo nếp','Gạo tẻ','Gạo lứt']],
+  ['Hồ Gươm còn có tên là gì?',['Hồ Hoàn Kiếm','Hồ Tây','Hồ Trúc Bạch']],
+  ['Áo dài truyền thống có mấy tà?',['Hai tà','Một tà','Ba tà']],
+  ['Một năm có bao nhiêu mùa?',['Bốn mùa','Ba mùa','Năm mùa']],
+  ['Chè ba màu có mấy màu?',['Ba màu','Hai màu','Năm màu']],
+];   // the first option is the answer; the options are shuffled when asked
+const NPC_LINE_MS=7000;
 const LINES={nope:'Hôm nay chưa hợp, phố còn đông người mà!',left:'Bạn đã rời buổi hẹn.',gone:'Bạn ấy có việc phải đi trước rồi. Phố còn đông người mà!'};
 const rid=()=>Math.random().toString(36).slice(2,10);
 function pref0(){try{const v=localStorage.getItem('mnl.datePref');return ['m','f','any'].includes(v)?v:'any';}catch{return 'any';}}
@@ -63,13 +83,18 @@ function bind(){
   live.on('welcome',f=>{welcome(f);paint();});
   live.on('down',()=>paint());
   live.on('state',f=>{if(f.me)paint();});   // live.me.account after a sync (a guest who registered)
-  live.on('bench',f=>{S.bench={...f,at:Date.now()};if(f.state==='wait')S.end=null;paint();});
+  live.on('bench',f=>{
+    S.bench={...f,at:Date.now()};if(f.state==='wait')S.end=null;
+    if(f.state!=='wait'||f.npc==null)S.npc=null;else if(!S.npc||S.npc.k!==f.npc)S.npc={k:f.npc,at:Date.now(),q:null,asked:0,right:0};   // a neighbour sits down
+    paint();
+  });
+  live.on('called',f=>{flash(`📣 Đã rủ ${f.n} người ở Cả phố.`);paint();});
   live.on('date',f=>{
     const first=!S.date||S.date.id!==f.id;
     if(f.step==='end'){S.end=f;S.date=null;S.msgs=[];S.menu=false;S.report=false;S.confirm=null;S.bench={state:'idle',n:S.bench.n,waited:0,at:Date.now()};
       if(f.how==='match'&&navigator.vibrate)try{navigator.vibrate([30,60,30]);}catch{/* not allowed */}
       paint();return;}
-    take(f);
+    take(f);S.npc=null;   // a real player came: the neighbour goes home
     if(first){S.msgs=[];S.want=null;S.end=null;if(!S.dlg?.open&&S.env)openDate(S.env);}   // a match: the dialog comes up by itself
     paint();
   });
@@ -82,7 +107,7 @@ function bind(){
   live.on('error',f=>{
     if(f.code==='account'&&f.ref==='queue'&&live.me){live.me.account=false;S.bench={...S.bench,state:'idle'};}   // the server says: a guest
     if(!S.dlg?.open)return;
-    if(['queue','answer','heart','date_say','date_leave','date_block','date_report'].includes(f.ref)||String(f.ref||'').startsWith('dt')){
+    if(['queue','answer','heart','date_say','date_leave','date_block','date_report','date_call'].includes(f.ref)||String(f.ref||'').startsWith('dt')){
       if(f.code==='no_date'&&S.date){S.date=null;}
       flash(f.msg||'Không gửi được.');paint();
     }
@@ -113,7 +138,10 @@ function onAct(act,d){
     case'close':S.dlg.close();return;
     case'pref':savePref(d.v);if(S.bench.state==='wait')sit();break;
     case'sit':sit();break;
-    case'stand':live.send({t:'queue',op:'stand'});S.bench={...S.bench,state:'idle'};break;
+    case'stand':live.send({t:'queue',op:'stand'});S.bench={...S.bench,state:'idle'};S.npc=null;break;
+    case'call':if(callLeft()>0)return;live.send({t:'date_call'});return;   // 📣 the server answers called / an error
+    case'npcAsk':if(S.npc)ask();break;
+    case'npcPick':{const Q=S.npc?.q;if(!Q||Q.picked!=null)return;Q.picked=Number(d.i);S.npc.asked++;if(Q.opts[Q.picked]===Q.a)S.npc.right++;break;}
     case'again':S.end=null;sit();break;
     case'pick':if(!D||D.mine!=null||D.shown)return;D.mine=Number(d.i);live.send({t:'answer',date:D.id,step:'card',i:D.i,pick:Number(d.i)});break;
     case'want':if(!D||D.give)return;S.want=d.id;break;
@@ -162,21 +190,56 @@ function safety(){
     `<button type="button" class="dt-mi" data-dt="leave">${icon('exit',16)} ${S.confirm==='leave'?'Rời thật?':'Rời buổi hẹn'}</button></div>`;
 }
 
+const callLeft=()=>Math.max(0,(S.bench.call||0)-(Date.now()-(S.bench.at||Date.now()))/1000);
+/** Who waits now, who came lately, the busiest hours (the bench frame). */
+function who(wait){
+  const B=S.bench,n=B.n||0,out=[];
+  out.push(wait?(n>1?`${n} người đang chờ ở góc hẹn hò`:'Chỉ có bạn đang chờ'):n?`${n} người đang chờ ở góc hẹn hò`:'Chưa ai đang chờ');
+  if((B.recent||0)>n)out.push(`${B.recent} người ghé trong 30 phút qua`);
+  const lines=out.map(t=>`<span>${icon('people',14)} ${t}</span>`);
+  if(B.hot)lines.push(`<span>${icon('clock',14)} Đông nhất khoảng ${B.hot[0]}h–${B.hot[1]||24}h</span>`);
+  return `<p class="dt-n dt-who-n">${lines.join('')}</p>`;
+}
+function ask(){
+  const N=S.npc;let i=Math.floor(Math.random()*QUIZ.length);if(N.q&&QUIZ[i][0]===N.q.q)i=(i+1)%QUIZ.length;
+  const [q,opts]=QUIZ[i],a=opts[0],mixed=[...opts].sort(()=>Math.random()-.5);
+  N.q={q,a,opts:mixed,picked:null};
+}
+/** 🧓 The neighbour on the bench (an NPC, never a player): a line every few seconds, a quick quiz on request. */
+function npcView(){
+  const N=S.npc;if(!N)return '';
+  const P=NPCS[N.k%NPCS.length],Q=N.q;
+  let quiz=`<button type="button" class="btn ghost small" data-dt="npcAsk">🎲 Hỏi nhanh đáp nhanh</button>`;
+  if(Q){
+    const done=Q.picked!=null,ok=done&&Q.opts[Q.picked]===Q.a;
+    quiz=`<p class="dt-npc-q">${esc(Q.q)}</p><div class="dt-npc-opts">${Q.opts.map((o,k)=>`<button type="button" class="dt-chip${done&&o===Q.a?' right':''}${done&&k===Q.picked&&!ok?' wrong':''}" data-dt="npcPick" data-i="${k}"${done?' aria-disabled="true"':''}>${esc(o)}</button>`).join('')}</div>`+
+      (done?`<p class="dt-npc-res">${ok?'Đúng rồi! 👏':`Là “${esc(Q.a)}” nha 😄`} <small>${N.right}/${N.asked}</small></p><button type="button" class="btn ghost small" data-dt="npcAsk">Câu khác</button>`:'');
+  }
+  return `<div class="dt-npc" role="group" aria-label="Hàng xóm ngồi cùng"><div class="dt-npc-head"><span class="dt-av md" aria-hidden="true">${P.av}</span>`+
+    `<span class="grow"><b>${esc(P.name)}</b><small>Hàng xóm ngồi chờ cùng</small></span><span class="dt-tag">NPC</span></div>`+
+    `<p class="dt-npc-say">“${esc(npcLine())}”</p>${quiz}</div>`;
+}
+const npcLine=()=>{const N=S.npc,P=NPCS[N.k%NPCS.length];return P.lines[Math.floor((Date.now()-N.at)/NPC_LINE_MS)%P.lines.length];};
+function callBtn(){
+  const left=callLeft();
+  return `<button type="button" class="btn ghost full dt-call" data-dt="call"${left>0||live.state!=='open'?' disabled':''}>📣 ${left>0?`Rủ lại sau ${Math.ceil(left/60)} phút`:'Rủ mọi người'}</button>`;
+}
+
 function bench(){
   const B=S.bench,wait=B.state==='wait';
   const prefs=`<div class="dt-prefs" role="radiogroup" aria-label="Muốn gặp">${PREFS.map(([v,e,l])=>`<button type="button" role="radio" aria-checked="${S.pref===v}" class="dt-pref${S.pref===v?' on':''}" data-dt="pref" data-v="${v}"><span aria-hidden="true">${e}</span>${l}</button>`).join('')}</div>`;
   if(wait){
     const secs=(B.waited||0)+(Date.now()-(B.at||Date.now()))/1000;
     return `<div class="dt-bench wait"><div class="dt-scene" aria-hidden="true"><span class="dt-seat">🪑</span><span class="dt-cup">☕</span><span class="dt-dots"><i></i><i></i><i></i></span></div>`+
-      `<p class="dt-big" role="timer" aria-live="off"><b class="dt-wait">${mmss(secs)}</b></p><p class="dt-line">Đang tìm người hợp gu…</p>${prefs}`+
-      `<button type="button" class="btn ghost full" data-dt="stand">Đứng dậy</button></div>`;
+      `<p class="dt-big" role="timer" aria-live="off"><b class="dt-wait">${mmss(secs)}</b></p><p class="dt-line">Đang tìm người hợp gu…</p>${who(true)}${npcView()}${prefs}`+
+      `${callBtn()}<button type="button" class="btn ghost full" data-dt="stand">Đứng dậy</button></div>`;
   }
   const g=myG();
   return `<div class="dt-bench"><div class="dt-scene" aria-hidden="true"><span class="dt-seat">🪑</span><span class="dt-cup">☕</span><span class="dt-heart">💕</span></div>`+
     `<p class="dt-line"><b>Hẹn 5 phút ở quán cà phê</b></p>${prefs}`+
     (guest()?`<p class="dt-line dt-acc">Tạo tài khoản để hẹn hò.</p><button type="button" class="btn primary full dt-go" data-dt="account">${icon('user',18)} Tạo tài khoản</button>`:
       `<button type="button" class="btn primary full dt-go" data-dt="sit"${live.state!=='open'?' disabled':''}>${icon('chair',18)} Ngồi chờ</button>`)+
-    (B.n?`<p class="dt-n">${icon('people',14)} ${B.n} người đang chờ</p>`:'')+(g?'':`<p class="dt-n">Chọn Nam/Nữ cho nhân vật để người khác tìm thấy bạn.</p>`)+`</div>`;
+    who(false)+(g?'':`<p class="dt-n">Chọn Nam/Nữ cho nhân vật để người khác tìm thấy bạn.</p>`)+`</div>`;
 }
 
 function endView(){
@@ -267,6 +330,8 @@ function clock(){
     if(!S.dlg?.open){clearInterval(S.tick);return;}
     const c=S.dlg.querySelector('.dt-clock b');if(c){const s=left();c.textContent=mmss(s);c.parentElement.classList.toggle('low',s<=10);}
     const w=S.dlg.querySelector('.dt-wait');if(w&&S.bench.state==='wait')w.textContent=mmss((S.bench.waited||0)+(Date.now()-S.bench.at)/1000);
+    const say=S.dlg.querySelector('.dt-npc-say');if(say&&S.npc){const t=`“${npcLine()}”`;if(say.textContent!==t)say.textContent=t;}
+    const call=S.dlg.querySelector('.dt-call');if(call&&call.disabled&&callLeft()<=0&&live.state==='open')render();   // 📣 again
   },250);
 }
 
