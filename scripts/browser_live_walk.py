@@ -108,10 +108,9 @@ async def where(p, pid):
 
 async def open_walk(p):
     await p.page.evaluate("document.querySelector('[data-action=v4Menu]')?.click()")
-    await p.page.wait_for_selector('#rail [data-action=liveWalk]', state='attached', timeout=15000)
-    await p.page.wait_for_timeout(400)
-    if not await p.page.is_visible('#rail [data-action=liveWalk]'):   # the grouped menu (0.9.19): Đi dạo is first in "Khu phố"
-        await p.page.click('#rail .rail-group[data-group=pho]')
+    await p.page.wait_for_selector('#rail [data-action=v4Group][data-group=pho]', timeout=15000)
+    await p.page.click('#rail [data-action=v4Group][data-group=pho]')   # Đi dạo sits first in the Khu phố hub (0.9.19 menu)
+    await p.page.wait_for_selector('#rail [data-action=liveWalk]:visible', timeout=15000)
     await p.page.click('#rail [data-action=liveWalk]')
     await p.page.wait_for_selector('.walk-sheet[open] .wk-canvas', timeout=10000)
 
@@ -172,6 +171,10 @@ async def run(shots: Path) -> list:
             s = await until(c, f"const q=s.people.find(q=>q.pid==='{pa}');return q&&q.said;", 'C sees A\'s bubble')
             said = next(q for q in s['people'] if q['pid'] == pa)['said']
             check('chợ đêm' in said and '0912' not in said, f'bubble on C\'s screen, phone masked ({said!r})')
+            await c.page.fill('.walk-sheet .wk-say input', 'mình là khách nè')   # C is a guest: strolls, never talks
+            await c.page.click('.walk-sheet .wk-send')
+            await c.page.wait_for_function("() => /tài khoản/i.test(document.querySelector('.walk-sheet .wk-toast:not([hidden])')?.innerText||'')", timeout=6000)
+            check(True, 'a guest cannot talk on the street (Tạo tài khoản)')
             await b.page.click('.walk-sheet [data-wk=emotes]')
             await shot(b, '03-emote-tray')
             await b.page.click('.walk-sheet [data-wk=emote][data-e=wave]')

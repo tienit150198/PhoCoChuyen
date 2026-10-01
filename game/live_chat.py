@@ -7,7 +7,8 @@ here, then announced with `pg_notify('mnl_live', <json>)` so the live service ap
 hidden message from its buffers and from every open screen, mutes an online player). On SQLite (dev, tests)
 there is no NOTIFY: the live service sees the change on its next start.
 
-Messages are never deleted (owner rule): an author's own delete empties the text (deleted=1); a hidden
+DMs and groups are never deleted (owner rule); Cả phố keeps its newest 2,000 messages (owner, 01/10: the live
+service prunes older ones, except a reported one still waiting for review). An author's own delete empties the text (deleted=1); a hidden
 message keeps its text for the admin (hidden 1 = three reports, waiting for review; 2 = hidden by an admin).
 """
 from __future__ import annotations

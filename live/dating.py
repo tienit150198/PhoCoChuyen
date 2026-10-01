@@ -2,6 +2,8 @@
 An in-game date, open to everyone (owner, 01/10: "hẹn hò trong game chứ không phải thật nên cứ thoải mái").
 
 The bench ("Góc hẹn hò")
+* Only accounts sit down (owner, 01/10: "người lạ không chat được", as for chat): a guest may look at the bench
+  (`peek`), `sit` answers error 'account'.
 * `queue {op:'sit', pref, g}` sits the player down: pref = who they would like to meet ('any', 'm', 'f'), g = their
   own character's Nam/Nữ ('m', 'f' or null), which the client reads from its save (the character's gender is the
   player's own pick in the game; the live service never reads a save). `queue {op:'stand'}` gets up, `queue
@@ -355,6 +357,10 @@ class DatingFeature(Feature):
             await self.app.chat.refresh(p)
         if not p.name:
             raise LiveError('name', 'Đặt tên nhân vật trước khi hẹn hò nhé.')
+        if not p.account and self.app.chat is not None:
+            await self.app.chat.refresh(p)           # registered after the socket opened
+        if not p.account:
+            raise LiveError('account', 'Tạo tài khoản để hẹn hò nhé.')   # only accounts (owner, 01/10: "người lạ không chat được")
         if not p.loaded and not p.ext.get('hid') and self.app.chat is not None:
             await self.app.chat.load_hidden(p)       # chat off: the blocks are still needed here
             p.ext['hid'] = True

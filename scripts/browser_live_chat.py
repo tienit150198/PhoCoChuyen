@@ -191,14 +191,19 @@ async def run(shots: Path) -> list:
             masked = await text_of(a.page, '.ch-bub')
             check('0912' not in masked and '•••' in masked, 'phone numbers are masked')
 
-            # ---- a brand-new guest reads but cannot post yet ----
+            # ---- a guest (no account) reads but cannot post (owner, 01/10) ----
             c = await phone(browser, base, 'Bé Mới', problems)
             await c.chat_button()
             await c.page.click('.live-fab')
             await c.page.wait_for_selector('.chat-sheet[open] .ch-ro:not([hidden])', timeout=8000)
             ro = await text_of(c.page, '.ch-ro')
-            check('phút nữa' in ro, f'new session: read-only line ({ro!r})')
-            await c.shot(shots, '05-town-new-player-read-only')
+            check('Tạo tài khoản' in ro, f'a guest reads Cả phố but cannot post: read-only line ({ro!r})')
+            check('Chào cả phố' in await text_of(c.page, '.ch-bub'), 'the guest reads Cả phố')
+            await c.shot(shots, '05-town-guest-read-only')
+            await c.page.click('.chat-sheet .ch-ro [data-ch-act=account]')
+            await c.page.wait_for_selector('#sheet[open] #accountRegisterForm', timeout=8000)
+            check(True, '"Tạo tài khoản" opens the register form')
+            await c.shot(shots, '05b-guest-register-form')
 
             # ---- Bạn bè + DM ----
             await b.page.click('[data-ch-act=tab][data-tab=friends]')
@@ -236,8 +241,7 @@ async def run(shots: Path) -> list:
             await a.shot(shots, '11-chat-button-badge')
             await a.page.evaluate("document.querySelector('[data-action=v4Menu]')?.click()")
             await a.page.wait_for_timeout(700)
-            if not await a.page.is_visible('#rail [data-action=liveChat]'):   # the grouped menu (0.9.19): Chat is first in "Quan hệ"
-                await a.page.click('#rail .rail-group[data-group=ban]')
+            await a.page.wait_for_selector('#rail [data-action=liveChat]:visible', timeout=5000)   # Chat is first in the menu, one tap
             menu = await text_of(a.page, '#rail [data-action=liveChat]')
             check('Chat' in menu, f'menu entry "Chat" ({menu!r})')
             await a.shot(shots, '12-menu-entry')

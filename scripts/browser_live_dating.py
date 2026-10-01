@@ -8,7 +8,8 @@ LIVE_DATE_SPEED times faster so the run takes about a minute), then plays phones
   * the match opens Lan Anh's dialog by itself; three cards (private picks, revealed together, "Hợp nhau 2/3"),
     "Chọn món cho nhau", a minute of chat (a contact id is masked), both ❤️ → "Đang tìm hiểu 💕", friends,
     +tinh thần paid on the next load, the bond on the chat's friend list and on the Bạn bè card;
-  * Lan Anh and Bé Na (a guest): Bé Na opens the safety menu and leaves early → Lan Anh gets the gentle line;
+  * Bé Na, a guest, sees the bench with "Tạo tài khoản để hẹn hò." and the register button, registers; then
+    Lan Anh and Bé Na: Bé Na opens the safety menu and leaves early → Lan Anh gets the gentle line;
   * Lan Anh and Tí Sún: ❤️ / 👋 → both see the same kind line, nobody learns who declined;
   * Đi dạo: the bench of the place glows; a tap opens Góc hẹn hò and sits down (LIVE_STREET=1 too);
   * light and dark screenshots. Fails on console errors, page errors or HTTP 5xx.
@@ -196,7 +197,7 @@ async def run(shots: Path, speed: float) -> list:
             await a.shot(shots, '03-scene-pill-waiting')
             await menu(b, 'liveDate', 'ban', click=False)
             order = await b.page.evaluate("[...document.querySelectorAll('#rail .rail-sub[data-group=ban] .rail-item[data-action]')].map(e=>e.dataset.action)")
-            check(order[:2] == ['liveChat', 'liveDate'], f'"Góc hẹn hò" right after Chat in Quan hệ ({order})')
+            check(order[:1] == ['liveDate'], f'"Góc hẹn hò" first in Quan hệ ({order})')
             await b.shot(shots, '04-menu-entry')
             await b.click('#rail [data-action=liveDate]')
             await b.page.wait_for_selector('.dt-sheet[open] .dt-bench')
@@ -276,6 +277,17 @@ async def run(shots: Path, speed: float) -> list:
             with sqlite3.connect(db) as con:
                 con.execute("UPDATE stat_births SET day='2026-01-01'")
             await ready(c)
+            # a guest sees the bench, but only accounts date (owner, 01/10)
+            await open_from_chat(c)
+            await c.page.wait_for_selector('.dt-go[data-dt=account]', timeout=5000)
+            check('Tạo tài khoản để hẹn hò' in await text_of(c.page, '.dt-bench'), 'a guest: "Tạo tài khoản để hẹn hò." and the register button')
+            await c.shot(shots, '19a-guest-bench')
+            await c.click('.dt-go[data-dt=account]')
+            await c.page.wait_for_timeout(800)
+            check(await c.page.evaluate("!document.querySelector('.dt-sheet[open]')"), 'the register button leaves the date corner for the account form')
+            await c.page.keyboard.press('Escape')
+            await c.api('/api/account/register', dict(username='bena_d', password=PW, confirm=PW, display='Bé Na'))
+            await ready(c)
             await open_from_chat(a)
             await sit(a, 'any')
             await open_from_chat(c)
@@ -294,6 +306,7 @@ async def run(shots: Path, speed: float) -> list:
 
             # ---- ❤️ / 👋: the same kind line for both ----
             d = await phone(browser, base, 'Tí Sún', 'male', problems)
+            await d.api('/api/account/register', dict(username='tisun_d', password=PW, confirm=PW, display='Tí Sún'))
             with sqlite3.connect(db) as con:
                 con.execute("UPDATE stat_births SET day='2026-01-01'")
             await ready(d)

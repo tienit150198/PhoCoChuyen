@@ -50,7 +50,7 @@ export async function openDate(env,data={}){
   S.env=env;bind();await stylesheet('/css/dating.css');
   const d=dialog();
   if(!d.open){d.showModal();}
-  if(live.state==='open'&&!S.date)live.send({t:'queue',op:'peek'});
+  if(live.state==='open'&&!S.date){live.send({t:'queue',op:'peek'});if(guest())live.send({t:'sync'});}   // a guest who just registered: the state says so
   if(data.sit&&!S.date&&S.bench.state!=='wait')sit(data.spot);
   render();clock();
 }
@@ -62,6 +62,7 @@ function bind(){
   window.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.dlg?.open)e.stopPropagation();},true);
   live.on('welcome',f=>{welcome(f);paint();});
   live.on('down',()=>paint());
+  live.on('state',f=>{if(f.me)paint();});   // live.me.account after a sync (a guest who registered)
   live.on('bench',f=>{S.bench={...f,at:Date.now()};if(f.state==='wait')S.end=null;paint();});
   live.on('date',f=>{
     const first=!S.date||S.date.id!==f.id;
@@ -79,6 +80,7 @@ function bind(){
   });
   live.on('reported',f=>{if(f.date){S.report=false;S.menu=false;flash('Đã báo cáo. Cảm ơn bạn!');paint();}});
   live.on('error',f=>{
+    if(f.code==='account'&&f.ref==='queue'&&live.me){live.me.account=false;S.bench={...S.bench,state:'idle'};}   // the server says: a guest
     if(!S.dlg?.open)return;
     if(['queue','answer','heart','date_say','date_leave','date_block','date_report'].includes(f.ref)||String(f.ref||'').startsWith('dt')){
       if(f.code==='no_date'&&S.date){S.date=null;}
@@ -94,7 +96,9 @@ function welcome(f){
 function take(f){S.date=f;S.at=Date.now();if(f.step!=='menu')S.want=null;}
 
 /* ---- actions --------------------------------------------------------------------------------------------- */
+const guest=()=>Boolean(live.me)&&!live.me.account;   // only accounts date (owner, 01/10), as for chat
 function sit(spot){
+  if(guest())return;   // the bench shows the register button instead
   if(live.state!=='open'){flash('Mất kết nối, thử lại sau nhé.');return;}
   live.send({t:'queue',op:'sit',pref:S.pref,g:myG(),...(spot?{spot}:{})});
   S.bench={...S.bench,state:'wait',waited:0,at:Date.now(),pref:S.pref};S.end=null;
@@ -123,6 +127,7 @@ function onAct(act,d){
     case'reason':{const id=D?.id||S.end?.id;if(id)live.send({t:'date_report',date:id,reason:d.r});break;}
     case'block':if(S.confirm!=='block'){S.confirm='block';break;}if(D)live.send({t:'date_block',date:D.id});S.menu=false;S.confirm=null;break;
     case'leave':if(S.confirm!=='leave'){S.confirm='leave';break;}if(D)live.send({t:'date_leave',date:D.id});S.menu=false;S.confirm=null;break;
+    case'account':S.dlg.close();S.env?.act?.('v4AccountOpen',{mode:'register'});return;   // guests: register to date (v4/account.js)
     case'dm':S.dlg.close();import('./live.js').then(m=>m.openChat({ch:dmId(d.pid)}));return;
     case'retry':live.reconnect();break;
   }
@@ -169,7 +174,8 @@ function bench(){
   const g=myG();
   return `<div class="dt-bench"><div class="dt-scene" aria-hidden="true"><span class="dt-seat">🪑</span><span class="dt-cup">☕</span><span class="dt-heart">💕</span></div>`+
     `<p class="dt-line"><b>Hẹn 5 phút ở quán cà phê</b></p>${prefs}`+
-    `<button type="button" class="btn primary full dt-go" data-dt="sit"${live.state!=='open'?' disabled':''}>${icon('chair',18)} Ngồi chờ</button>`+
+    (guest()?`<p class="dt-line dt-acc">Tạo tài khoản để hẹn hò.</p><button type="button" class="btn primary full dt-go" data-dt="account">${icon('user',18)} Tạo tài khoản</button>`:
+      `<button type="button" class="btn primary full dt-go" data-dt="sit"${live.state!=='open'?' disabled':''}>${icon('chair',18)} Ngồi chờ</button>`)+
     (B.n?`<p class="dt-n">${icon('people',14)} ${B.n} người đang chờ</p>`:'')+(g?'':`<p class="dt-n">Chọn Nam/Nữ cho nhân vật để người khác tìm thấy bạn.</p>`)+`</div>`;
 }
 

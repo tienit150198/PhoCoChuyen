@@ -72,7 +72,8 @@ class InventoryFlow(unittest.TestCase):
         empty(j.c, 'noodle')
         money = j.c['money']
         o = self.order('noodle', 6)
-        self.assertEqual(j.c['money'], money - o['cost'])
+        # Goods plus the supplier's shipping fee (0.9.20: one fee per order, free above a line).
+        self.assertEqual(j.c['money'], money - o['cost'] - o['ship'])
         self.assertEqual(kit.stock(j.c, 'noodle'), 0, 'paid goods are not on the shelf before counting')
         pub = public_inv(j)
         self.assertEqual(pub['arriving']['noodle'], 6)

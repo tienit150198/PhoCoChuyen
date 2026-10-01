@@ -266,7 +266,7 @@ class DatingLiveTests(LiveCase):
         return c
 
     async def test_one_sided_says_nothing_about_who(self):
-        a, b = await self.pair(accounts=False)
+        a, b = await self.pair()
         await self.sit(a)
         await self.sit(b)
         d = (await a.expect('date', step='hello'))['id']
@@ -293,7 +293,7 @@ class DatingLiveTests(LiveCase):
             self.assertEqual(db.execute('SELECT COUNT(*) FROM friends').fetchone()[0], 0)
 
     async def test_leave_early_and_the_24h_rule(self):
-        a, b = await self.pair(accounts=False)
+        a, b = await self.pair()
         await self.sit(a)
         await self.sit(b)
         d = (await a.expect('date', step='hello'))['id']
@@ -308,14 +308,14 @@ class DatingLiveTests(LiveCase):
         await self.sit(b)
         await asyncio.sleep(1.5)
         await a.nothing('date', wait=0.1)
-        c = await self.connect(self.guest('Mai')[0])
+        c = await self.connect(self.account('Mai')[0])
         await self.sit(c)
         hello = await c.expect('date', step='hello')
         self.assertEqual(hello['peer']['pid'], self.pid(a.sid))          # a waited longest
         self.assertIn(self.pid(b.sid), self.feat.queue)                 # b still waits
 
     async def test_blocked_pairs_never_meet(self):
-        a, b = await self.pair(accounts=False)
+        a, b = await self.pair()
         with self.store.connect() as db:
             db.execute('INSERT INTO blocks(pid, target, at) VALUES(?, ?, ?)', (self.pid(b.sid), self.pid(a.sid), time.time()))
         await self.sit(a)
@@ -326,7 +326,7 @@ class DatingLiveTests(LiveCase):
         self.assertEqual(len(self.feat.queue), 2)
 
     async def test_block_on_the_date_screen(self):
-        a, b = await self.pair(accounts=False)
+        a, b = await self.pair()
         await self.sit(a)
         await self.sit(b)
         d = (await a.expect('date', step='hello'))['id']
@@ -343,7 +343,7 @@ class DatingLiveTests(LiveCase):
     async def test_disconnect_ends_the_date_gently(self):
         dt_gone, dt.GONE_S = dt.GONE_S, 0.5
         try:
-            a, b = await self.pair(accounts=False)
+            a, b = await self.pair()
             await self.sit(a)
             await self.sit(b)
             await a.expect('date', step='hello')
@@ -354,7 +354,7 @@ class DatingLiveTests(LiveCase):
             dt.GONE_S = dt_gone
 
     async def test_reconnect_lands_back_in_the_date(self):
-        a, b = await self.pair(accounts=False)
+        a, b = await self.pair()
         await self.sit(a)
         await self.sit(b)
         d = (await a.expect('date', step='hello'))['id']
@@ -367,7 +367,7 @@ class DatingLiveTests(LiveCase):
         anon = await self.connect(self.guest(None)[0])
         e = await anon.call('queue', 'error', op='sit', pref='any')
         self.assertEqual(e['code'], 'name')
-        a = await self.connect(self.guest('Lan')[0])
+        a = await self.connect(self.account('Lan')[0])
         for bad in (dict(pref='both'), dict(g='x'), dict(spot='<b>')):
             e = await a.call('queue', 'error', op='sit', **bad)
             self.assertEqual(e['code'], 'bad')
@@ -381,6 +381,24 @@ class DatingLiveTests(LiveCase):
         await a.close()
         await asyncio.sleep(0.2)
         self.assertEqual(self.feat.queue, {})           # the last tab closed: off the bench
+
+    async def test_guests_see_the_bench_but_cannot_sit(self):
+        """Only accounts date (owner, 01/10: "người lạ không chat được", as for chat)."""
+        token, sid = self.guest('Bé Khách')
+        g = await self.connect(token)
+        self.assertEqual((await g.call('queue', 'bench', op='peek'))['state'], 'idle')
+        e = await g.call('queue', 'error', op='sit', pref='any', g='f')
+        self.assertEqual(e['code'], 'account')
+        self.assertEqual(self.feat.queue, {})
+        a = await self.connect(self.account('Lan')[0])
+        await self.sit(a)
+        await g.nothing('date', wait=1.3)                  # never matched with the waiting account either
+        self.assertEqual(len(self.feat.queue), 1)            # only Lan waits
+        # the guest registers (an account takes over this save): sitting works without a new socket
+        with self.store.connect() as db:
+            db.execute("INSERT INTO accounts(username, display, pw, sid) VALUES('khach_moi', 'Bé Khách', 'x', ?)", (sid,))
+        await self.sit(g)
+        self.assertEqual((await g.expect('date', step='hello'))['peer']['name'], 'Lan')
 
     async def test_switch_off(self):
         self.cfg.dating = False

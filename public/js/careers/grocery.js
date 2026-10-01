@@ -6,7 +6,7 @@
 import {keepBarAboveFooter} from './food_kit.js';
 import {reqList,fold} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,finalGo,pending,stepLine,goAttrs} from '../v4/guide.js';
-import {restockGo,restockBar,restockButton,shortOf} from '../v4/restock.js';
+import {restockGo,restockBar,restockButton,shortOf,orderQuote} from '../v4/restock.js';
 const ID='grocery';
 const catalogue=x=>x.content.inventory?.items?.[ID]||[];
 const item=(x,id)=>catalogue(x).find(i=>i.id===id)||{id,name:id,emoji:'•',unit:''};
@@ -401,13 +401,15 @@ function rushJob(t,x){
 }
 
 /* ------------------------------------------------------------ bulk orders */
+/** An express order of `n`: goods at the courier's price (and wholesale tier) plus its shipping fee. */
+function rushCost(x,it,n){const sups=x.room.inventory?.suppliers||x.content.inventory?.suppliers||[];return orderQuote(it,n,sups.find(s=>s.id==='express')||{factor:1.35}).total;}
 function bulkJob(t,x){
   const b=t.bulk,n=t.needs,inv=x.room.inventory||{stock:{}},held=x.room.data?.held||{};
   const list=sum(n.lines.map(l=>price(x,l.item)*l.qty));
   const shortOf=l=>Math.max(0,l.qty-Math.max(0,(inv.stock?.[l.item]||0)-(held[l.item]||0)));
   const rows=n.lines.map(l=>{const it=item(x,l.item),s=shortOf(l);
     return `<div class="gr-line ${s?'':'done'}"><span class="gr-emoji">${it.emoji}</span><div class="grow"><b>${x.esc(it.name)} × ${l.qty}</b><small>${x.fmt(price(x,l.item))} xu/${x.esc(priceUnit(x,l.item))} · kho còn ${inv.stock?.[l.item]||0}${s?` · <b class="bad">thiếu ${s}</b>`:' ✓'}</small></div>
-      ${b.stage==='deliver'&&s?x.confirmCmd(`⚡ Nhập ${Math.min(30,s)}`,'inv_order',{item:l.item,qty:Math.min(30,s),supplier:'express'},`Nhập hỏa tốc ${Math.min(30,s)} ${it.unit} ${it.name} · khoảng ${x.fmt(Math.ceil(it.cost*Math.min(30,s)*1.35))} xu? Hỏa tốc 15–30 phút, nhớ mở thùng đếm ở Kho & giá.`,'small ghost'):''}</div>`;}).join('');
+      ${b.stage==='deliver'&&s?x.confirmCmd(`⚡ Nhập ${Math.min(30,s)}`,'inv_order',{item:l.item,qty:Math.min(30,s),supplier:'express'},`Nhập hỏa tốc ${Math.min(30,s)} ${it.unit} ${it.name} · khoảng ${x.fmt(rushCost(x,it,Math.min(30,s)))} xu? Hỏa tốc 15–30 phút, nhớ mở thùng đếm ở Kho & giá.`,'small ghost'):''}</div>`;}).join('');
   let body='',cta='';
   if(b.stage==='quote'){
     const last=b.offers.length?b.offers[b.offers.length-1]:-1;
@@ -516,7 +518,7 @@ function bulkSteps(t,x){
     if(!s)return {ok:true,label:`Đủ ${l.qty} ${it.unit} ${it.name}`};
     const o=(inv.orders||[]).find(v=>v.item===l.item&&v.status==='in_transit'),n=Math.min(30,s);
     const go=o?restockGo(x.room,[{id:l.item,target:(inv.stock?.[l.item]||0)+s}],{task:t.id})
-      :{cmd:'inv_order',payload:{item:l.item,qty:n,supplier:'express'},confirm:`Nhập hỏa tốc ${n} ${it.unit} ${it.name} · khoảng ${x.fmt(Math.ceil(it.cost*n*1.35))} xu?`,label:`⚡ Nhập gấp ${n} ${x.esc(it.name)}`};
+      :{cmd:'inv_order',payload:{item:l.item,qty:n,supplier:'express'},confirm:`Nhập hỏa tốc ${n} ${it.unit} ${it.name} · khoảng ${x.fmt(rushCost(x,it,n))} xu?`,label:`⚡ Nhập gấp ${n} ${x.esc(it.name)}`};
     return {ok:null,label:`Đủ ${l.qty} ${it.unit} ${it.name}`,note:o&&!o.ready_now?`thiếu ${s} · hàng đang về`:`thiếu ${s}`,go};
   });
 }
@@ -548,6 +550,11 @@ function supplierPick(x){
   const short={market:'Chợ đầu mối',partner:'Nhà phân phối',express:'Hỏa tốc'};
   return `<div class="gr-sups" role="radiogroup" aria-label="Nhập từ">${sups.map(s=>`<button type="button" role="radio" aria-checked="${s.id===cur}" class="gr-sup ${s.id===cur?'on':''}" data-action="car:sup" data-sup="${s.id}" title="${x.esc(s.name)}"><b>${x.esc(s.emoji)} ${x.esc(short[s.id]||s.name)}</b><small>${x.esc(s.quote?.label||s.window||(s.lead===0?'có ngay':''))} · ${s.factor<1?'rẻ':s.factor>1?'đắt':'giá gốc'}${s.short>=15?' · hay thiếu':''}</small></button>`).join('')}</div>`;
 }
+/** Drafts waiting in the stock room (đơn gộp): one chip each, straight to its sheet. */
+function cartChips(x){
+  const carts=x.room.inventory?.carts||[],sups=x.room.inventory?.suppliers||x.content.inventory?.suppliers||[];
+  return carts.length?`<div class="inv-carts">${carts.map(k=>{const s=sups.find(v=>v.id===k.supplier);return x.button(`🛒 <b class="inv-badge">${k.lines.length}</b> ${x.esc(s?.name||k.supplier)} · ${x.fmt(k.total)} xu`,'v4Cart',{supplier:k.supplier,open:'1'},'inv-cart-chip');}).join('')}</div>`:'';
+}
 function incoming(x){
   const inv=x.room.inventory||{},orders=(inv.orders||[]).filter(o=>o.status==='in_transit'||(o.status==='received'&&o.actual<o.qty&&!o.claimed&&o.day===x.room.day));
   if(!orders.length)return '';
@@ -566,7 +573,7 @@ function stockView(x){
     const locked=(inv.locked||[]).includes(it.id),q=inv.stock?.[it.id]??0,exp=inv.expiring?.[it.id]||0,near=d.near?.[it.id]||0,held=d.held?.[it.id]||0;
     const p=price(x,it.id),[lo,hi]=d.price_range?.[it.id]||[p,p],step=Math.max(1,Math.round((x.cc.base_prices?.[it.id]||p)*0.05));
     const transit=(inv.orders||[]).filter(o=>o.item===it.id&&o.status==='in_transit').reduce((s,o)=>s+o.qty,0);
-    const room=cap-q-transit,n=Math.min(qty,room,30),cost=Math.max(1,Math.ceil(it.cost*n*sup.factor));
+    const room=cap-q-transit,n=Math.min(qty,room,30),cost=orderQuote(it,n,sup).total,carted=(inv.carts||[]).find(k=>k.supplier===(sup.id||'partner'))?.lines.find(l=>l.item===it.id)?.qty||0;
     const theirs=rv[it.id];
     if(locked)return `<div class="gr-srow locked"><span class="gr-emoji">${it.emoji}</span><div class="gr-sinfo"><b>${x.esc(it.name)}</b><small>🔒 mở ở cấp ${it.unlock||1}</small></div></div>`;
     return `<div class="gr-srow ${q<=3?'low':''} ${exp?'exp':''}"><span class="gr-emoji">${it.emoji}</span>
@@ -577,14 +584,15 @@ function stockView(x){
         ${theirs!=null?`<small class="${p>theirs?'bad':'ok'}">Mây Mart ${x.fmt(theirs)}</small>`:''}</div>
       <div class="gr-sact">${exp?x.confirmCmd('🗑️ Rút hàng hết hạn','gr_pull_today',{item:it.id},`Rút ${exp} ${stockUnit(x,it.id)} ${it.name} hết hạn hôm nay khỏi kệ? Ghi vào hao hụt.`,'small danger'):''}
         ${near&&!exp&&!cleared.includes(it.id)?x.cmd(`🏷️ Xả ${near>12?12:near} món −${100-(x.cc.clear_percent||70)}%`,'gr_clear',{item:it.id},'small ghost'):''}
-        ${n>0?x.confirmCmd(`📦 Nhập ${n} · ${x.fmt(cost)} xu`,'inv_order',{item:it.id,qty:n,supplier:sup.id||'partner'},`Nhập ${n} ${stockUnit(x,it.id)} ${it.name} từ ${sup.name} · ${x.fmt(cost)} xu? ${`Dự kiến nhận: ${sup.quote?.eta_label||sup.window||'sớm'}.`}, mở thùng đếm rồi mới lên kệ.`,'small ghost'):'<small class="muted">Kho đầy</small>'}</div></div>`;
+        ${n>0?x.confirmCmd(`📦 Nhập ${n} · ${x.fmt(cost)} xu`,'inv_order',{item:it.id,qty:n,supplier:sup.id||'partner'},`Nhập ${n} ${stockUnit(x,it.id)} ${it.name} từ ${sup.name} · ${x.fmt(cost)} xu? ${`Dự kiến nhận: ${sup.quote?.eta_label||sup.window||'sớm'}.`}, mở thùng đếm rồi mới lên kệ.`,'small ghost'):'<small class="muted">Kho đầy</small>'}
+        ${n>0&&carted+n<=Math.min(30,room)?x.button(`🛒 +${n} vào đơn`,'v4CartPut',{supplier:sup.id||'partner',item:it.id,qty:n},'small ghost'):carted?`<small class="muted">🛒 ${carted} trong đơn</small>`:''}</div></div>`;
   };
   const open=catalogue(x).filter(it=>!shut.includes(it)),hot=open.filter(needs),calm=open.filter(it=>!needs(it));
   const rows=`${hot.map(row).join('')||'<p class="muted small">Không món nào sắp hết hay sắp hết hạn.</p>'}
     ${calm.length?pane(x,'stock-calm',`📦 ${calm.length} món còn đủ hàng · xem giá & nhập thêm`,calm.map(row).join(''),!hot.length,'gr-stock-more'):''}${lockChip(x,shut)}`;
   return `<div class="card gr-stock"><div class="row spread"><h4>🏷️ Kho & giá</h4><small class="muted">Sức chứa ${cap} mỗi loại</small></div>
     ${rotationNotes(x)}${incoming(x)}
-    <div class="gr-orderbar"><small>Nhập từ</small>${supplierPick(x)}<div class="gr-qty" role="radiogroup" aria-label="Số lượng mỗi lần nhập">${[5,10,20,30].map(v=>`<button type="button" role="radio" aria-checked="${v===qty}" class="btn small ${v===qty?'primary':'ghost'}" data-action="car:qty" data-qty="${v}">${v}</button>`).join('')}</div></div>
+    ${cartChips(x)}<div class="gr-orderbar"><small>Nhập từ</small>${supplierPick(x)}<div class="gr-qty" role="radiogroup" aria-label="Số lượng mỗi lần nhập">${[5,10,20,30].map(v=>`<button type="button" role="radio" aria-checked="${v===qty}" class="btn small ${v===qty?'primary':'ghost'}" data-action="car:qty" data-qty="${v}">${v}</button>`).join('')}</div></div>
     <div class="gr-stock-list">${rows}</div>
     ${rules(x,x.cc.stock_rules,'Quy tắc kho')}</div>`;
 }

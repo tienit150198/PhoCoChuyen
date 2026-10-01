@@ -42,7 +42,11 @@ PID = re.compile(r'[0-9a-f]{16}')
 REASONS = ('spam', 'rude', 'private', 'scam', 'other')
 HIDE_AFTER = 3            # distinct reports that hide a message until an admin decides
 DUP_SECS = 120            # the same text again in the same chat within this: dropped
-PAGE = 50
+PAGE = 30                 # messages per load: the first one and each "Xem cũ hơn" (owner, 01/10)
+RESUME = 50               # messages sent after a reconnect, per open chat
+TOWN_KEEP = 2000          # Cả phố keeps its newest 2,000 messages (owner, 01/10); DMs and groups keep everything
+PRUNE_EVERY = 300         # seconds between two prunings of Cả phố
+PRUNE_BATCH = 500         # rows per batch, at most 5 batches per pruning
 TITLE_LEN = 40
 GROUPS_OWNED = 20
 CHANS_LISTED = 100
@@ -173,10 +177,13 @@ class ChatFeature(Feature):
                 for k, v in p.friends.items() if k not in p.hidden]
 
     def can_town(self, p) -> tuple[str, float]:
-        """('ok', 0) or (why, seconds to wait): 'muted', 'new' (session < 10 min), 'name' (no name yet)."""
+        """('ok', 0) or (why, seconds to wait): 'muted', 'account' (a guest: only accounts chat, owner 01/10),
+        'new' (session < 10 min), 'name' (no name yet)."""
         t = time.time()
         if p.muted_until > t:
             return 'muted', p.muted_until - t
+        if not p.account:
+            return 'account', 0
         if not p.old:
             since = p.since or self.app.first_seen(p.pid)
             left = since + self.cfg.new_secs - t
@@ -295,8 +302,10 @@ class ChatFeature(Feature):
         clean = filters.clean(text, limit, lines)
         if clean is None:
             raise LiveError('text', f'Tin nhắn từ 1 đến {limit} ký tự nhé.')
-        if not p.name:
-            await self.refresh(p)
+        if not p.name or not p.account:
+            await self.refresh(p)   # a guest who just registered or named their character
+        if not p.account:
+            raise LiveError('account', 'Tạo tài khoản để chat nhé.')
         if not p.name:
             raise LiveError('name', 'Đặt tên nhân vật trước khi nhắn nhé.')
         if p.muted_until > t:
@@ -336,10 +345,11 @@ class ChatFeature(Feature):
         self.town.add(conn)
         after = f.get('after')
         msgs = [m for m in self.town.buffer if m['pid'] not in p.hidden]
-        more = self.town_more or len(self.town.buffer) >= self.cfg.buffer
+        more = self.town_more or len(self.town.buffer) >= self.cfg.buffer or len(msgs) > PAGE
+        msgs = msgs[-PAGE:]
         inc = False   # True: only what came after the client's last message (it keeps what it has)
         if type(after) is int and after > 0 and (not self.town.buffer or self.town.buffer[0]['id'] <= after + 1):
-            msgs, inc = [m for m in msgs if m['id'] > after], True
+            msgs, inc = [m for m in self.town.buffer if m['id'] > after and m['pid'] not in p.hidden], True
         why, wait = self.can_town(p)
         return dict(t='joined', ch='town', msgs=msgs, more=more, inc=inc, why=why, wait=round(wait, 1), n=len(self.town.players()))
 
@@ -357,9 +367,11 @@ class ChatFeature(Feature):
         else:
             c = await self.member_chan(p, f.get('ch'))
         if c.kind == 'town':
-            if not p.name:
-                await self.refresh(p)
+            if not p.name or not p.account:
+                await self.refresh(p)   # a guest who just registered can post at once, no reconnect
             why, wait = self.can_town(p)
+            if why == 'account':
+                raise LiveError('account', 'Tạo tài khoản để chat nhé.')
             if why == 'new':
                 raise LiveError('new', 'Người mới vào phố đọc trước, lát nữa nhắn nhé.', wait=round(wait, 1))
             if why == 'name':
@@ -544,6 +556,10 @@ class ChatFeature(Feature):
     @on('group_new', rate=(5, 3600))
     async def group_new(self, conn, f):
         p = conn.player
+        if not p.account:
+            await self.refresh(p)
+        if not p.account:
+            raise LiveError('account', 'Tạo tài khoản để chat nhé.')
         title = filters.clean(f.get('title'), TITLE_LEN, 1)
         if not title:
             raise LiveError('text', f'Tên nhóm từ 1 đến {TITLE_LEN} ký tự.')
@@ -657,9 +673,9 @@ class ChatFeature(Feature):
             if c.kind == 'town':
                 continue    # Cả phố: the client joins again with `after`
             rows = await self.db.fetch('SELECT * FROM chat_messages WHERE channel=? AND id>? AND hidden=0 ORDER BY id LIMIT ?',
-                                       (c.id, after, PAGE + 1))
-            msgs = [msg_frame(r) for r in rows[:PAGE] if r['pid'] not in p.hidden]
-            self.hub.send(conn, dict(t='missed', ch=c.id, msgs=msgs, more=len(rows) > PAGE))
+                                       (c.id, after, RESUME + 1))
+            msgs = [msg_frame(r) for r in rows[:RESUME] if r['pid'] not in p.hidden]
+            self.hub.send(conn, dict(t='missed', ch=c.id, msgs=msgs, more=len(rows) > RESUME))
 
     # ---- admin events (game/live_chat.py NOTIFY) -------------------------------------------------------------
     async def on_notify(self, e: dict):
@@ -701,6 +717,40 @@ class ChatFeature(Feature):
                 p = self.hub.players.get(pid)
                 if p:
                     p.muted_until = got.get(pid, 0.0)
+
+    # ---- Cả phố keeps its newest TOWN_KEEP messages -------------------------------------------------------------
+    async def tick(self, now: float):
+        if not hasattr(self, '_prune_at'):
+            self._prune_at = now + 60   # the first pruning a minute after start: a restart stays light
+        if now >= self._prune_at:
+            self._prune_at = now + PRUNE_EVERY
+            await self.prune_town()
+
+    async def prune_town(self, keep: int = TOWN_KEEP) -> int:
+        """Delete Cả phố messages older than the newest `keep` (owner, 01/10: only Cả phố; DMs and groups are never
+        touched), with their reports. A message whose report is still open (reported, not reviewed) stays until an
+        admin decides. Small batches, a few per call: a long backlog goes over several prunings."""
+        cut = await self.db.fetchval("SELECT id FROM chat_messages WHERE channel='town' ORDER BY id DESC LIMIT 1 OFFSET ?", (keep,))
+        if cut is None:
+            return 0
+        gone = 0
+        for _ in range(5):
+            async def run(tx):
+                ids = [r['id'] for r in await tx.fetch(
+                    "SELECT id FROM chat_messages WHERE channel='town' AND id<=? AND NOT (reports>0 AND reviewed_at IS NULL) "
+                    'ORDER BY id LIMIT ?', (cut, PRUNE_BATCH))]
+                if ids:
+                    marks = ','.join('?' * len(ids))
+                    await tx.execute(f"DELETE FROM chat_messages WHERE channel='town' AND id IN ({marks})", ids)
+                    await tx.execute(f"DELETE FROM reports WHERE kind='chat' AND target IN ({marks})", [str(i) for i in ids])
+                return len(ids)
+            n = await self.db.transaction(run)
+            gone += n
+            if n < PRUNE_BATCH:
+                break
+        self.town_more = self.town_more and bool(await self.db.fetchval(
+            "SELECT 1 FROM chat_messages WHERE channel='town' AND hidden=0 AND id<? LIMIT 1", ((self.town.buffer[0]['id'] if self.town.buffer else 0),)))
+        return gone
 
     # ---- background work ------------------------------------------------------------------------------------
     def spawn(self, coro) -> None:

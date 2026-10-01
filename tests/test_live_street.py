@@ -80,7 +80,7 @@ class StreetCase(LiveCase):
         return self.app.by_name['street']
 
     async def walker(self, name, place='boho', look=LOOK, g='female', title='st_local', token=None):
-        tok = token or self.guest(name)[0]
+        tok = token or self.account(name)[0]   # only accounts talk (owner, 01/10); guests are tested apart
         c = await self.connect(tok)
         c.room = await c.call('walk_in', 'walk_room', place=place, look=look, g=g, title=title)
         return c
@@ -244,6 +244,14 @@ class Talking(StreetCase):
         # someone who was never in this room cannot report it
         far = await self.walker('Xa lạ', place='congvien')
         self.assertEqual((await far.call('report', 'error', id=s2['id'], reason='spam'))['code'], 'no_chat')
+
+    async def test_guests_stroll_and_emote_but_do_not_talk(self):
+        g = await self.walker('Khách Lạ', token=self.guest('Khách Lạ')[0])
+        b = await self.walker('Minh Tú')
+        pg = g.welcome['me']['pid']
+        self.assertEqual((await g.call('say', 'error', text='alo alo'))['code'], 'account')
+        await g.send(t='emote', e='wave')
+        self.assertEqual((await b.expect('emoted', pid=pg))['e'], 'wave')
 
     async def test_muted_players_cannot_talk_and_emotes(self):
         a = await self.walker('Lan Anh')

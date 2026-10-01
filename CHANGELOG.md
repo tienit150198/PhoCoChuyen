@@ -1,3 +1,14 @@
+# v1.0.2 — Gộp đơn nhập hàng
+
+- Kho: giỏ theo từng nhà cung cấp ("🛒 Thêm vào đơn", một lần "Đặt đơn" = một phí ship, một lần giao, một thùng), phí ship 2–5 xu và miễn ship theo ngưỡng (chủ game duyệt), giá sỉ theo số lượng, xin bớt 5/10/15% (nhà cung cấp tự quyết, mỗi ngày một lần), hết hàng một món, xe giao muộn, đơn tối thiểu; giao thiếu/khiếu nại theo cả đơn hoặc từng dòng. Tạp hóa có "🛒 +N vào đơn" ở Kho & giá. Đơn cũ đang giao giữ nguyên. Không có "Có gì mới".
+
+# v1.0.1 — Chat ra ngoài menu
+
+- Chat đứng đầu menu, bấm một lần là vào (không còn nằm trong nhóm Quan hệ). Không có "Có gì mới".
+- Chỉ tài khoản mới được nhắn (Cả phố, bạn bè, nhóm, bong bóng khi đi dạo); khách vẫn đọc, đi dạo, vẫy tay, và có nút "Tạo tài khoản" ngay chỗ ô nhắn. Tạo xong là nhắn được ngay, không cần tải lại.
+- Cả phố giữ 2.000 tin mới nhất (dịch vụ live xóa tin cũ hơn theo lô nhỏ mỗi 5 phút; tin bị báo cáo chưa xử lý được giữ tới khi duyệt). Tin bạn bè và nhóm giữ mãi.
+- Mỗi lần tải 30 tin (lần đầu và mỗi "Xem cũ hơn"), mọi kênh.
+
 # v1.0.0 — Chat
 
 - Dịch vụ live riêng (live/, asyncio + websockets, mnl-live.service, nginx /live): chat bạn bè, nhóm (≤20), kênh Cả phố (online, 10 giây/tin, người mới 10 phút chỉ đọc), chấm online (tắt được), lọc số điện thoại/link/tục nặng (tiếng lóng GenZ được), báo cáo (3 báo cáo tự ẩn), chặn, tab Chat trong admin (ẩn tin, cấm chat 1 giờ/24 giờ/7 ngày). Bảng mới (schema 6): chat_channels, chat_members, chat_messages, chat_mutes, chat_prefs, live_effects. Bật bằng LIVE_URL=/live ở game và LIVE_CHAT=1 ở live.env. Không có hướng dẫn cho chat.

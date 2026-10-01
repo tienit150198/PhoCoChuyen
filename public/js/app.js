@@ -222,11 +222,11 @@ const badgeHTML=b=>b==='dot'?'<i class="dot" aria-hidden="true"></i>':b?`<em cla
 const railItem=([a,i,label,badge],extra='',hide='')=>`<button type="button" class="rail-item${a==='social'?' top-social':''}${extra} ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}${hide}>${icon(i,21)}<span>${label}</span>${badgeHTML(badge)}</button>`;
 /** The work pages, always in sight (rail on desktop/tablet, top of "Thêm" on the phone), in this order. Any
  * entry that is in no group below (a career's own page) joins them, so nothing a career adds is lost. */
-const RAIL_MAIN=['home','prepare','operations','prices','feedback','jobapp'];
+const RAIL_MAIN=['liveChat','home','prepare','operations','prices','feedback','jobapp'];   // 💬 Chat first, one tap (owner, 01/10)
 /** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
 const RAIL_GROUPS=[
   ['pho','building','Khu phố',['liveWalk','nhom','phone','social','town','rank']],
-  ['ban','people','Quan hệ',['liveChat','liveDate','people','friends','marriage']],
+  ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Tiền & nhà',['money','bank','house']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
   ['minh','gift','Của mình',['jrWardrobe','album','passport','workshop','journal']],
