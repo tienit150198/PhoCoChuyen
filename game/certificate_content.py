@@ -9,7 +9,8 @@ written in xu, not professional, medical, tax or legal advice.
 
 Shapes:
 * GROUPS: {id, emoji, name, short, issuer, careers, fee, intro, notes[str],
-  practice[{text, options[{id, label}], answer, why}], bank[same, plus id]}.
+  practice[{text, options[{id, label}], answer, why}], bank[same, plus id]},
+  optional hire=False + perk (a craft certificate for a job without an interview: the perk replaces the hire bonus).
 """
 from __future__ import annotations
 
@@ -510,5 +511,64 @@ GROUPS = [
             _q('oa_ransom', 'Màn hình hiện thông báo đòi tiền chuộc, file đổi đuôi lạ.',
                [('a', 'Trả tiền cho xong'), ('b', 'Rút mạng máy đó, báo trưởng nhóm IT'), ('c', 'Tắt cảnh báo rồi làm tiếp')], 'b',
                'Rút mạng trước để mã độc không lây sang máy khác.'),
+        ]),
+    # A craft certificate (hire=False): the ice-cream shop does not hire through an interview, so this one
+    # carries a perk instead of the hire bonus (game/careers/ice_cream.py reads it: the khoai môn recipe).
+    dict(
+        id='ice_cream_craft', emoji='🍨', name='Chứng chỉ làm kem', short='Làm kem',
+        issuer='Bếp nghề phường cùng tiệm kem Góc Phượng (lớp giả lập)', careers=('ice_cream',), fee=15, hire=False,
+        perk='Cô Hiền dạy công thức kem khoai môn nhà làm ở Tiệm kem Góc Phượng.',
+        intro='Giữ tủ kem đúng nhiệt, múc viên đủ gam, nấu một mẻ kem nhà làm cho mịn, bán sạch sẽ và an toàn.',
+        notes=[
+            'Tủ kem để ở −18 °C (nút số 4). Từ −12 °C kem mềm, viên to, mau chảy; từ −9 °C là nhão. Múc xong ly nào đậy nắp ly đó.',
+            'Hộp kem đã chảy rồi đông lại (mặt lổn nhổn tinh thể đá) thì bỏ, không bán. Chiều nào tủ lên tới −8 °C, sáng mai soi kỹ từng hộp.',
+            'Viên kem chuẩn 60–70 gam trên cân. Kem cứng múc sâu tay, kem mềm múc nhẹ tay. Hộp mang về: trừ bì hộp rỗng trước khi múc.',
+            'Nước ngâm muỗng thay mỗi sáng, đục là thay. Khách dặn dị ứng đậu phộng thì không rắc đậu phộng, kể cả một hạt.',
+            'Kem dừa nhà làm: đong đúng công thức, nấu lửa nhỏ, khuấy đều tới 76–88 °C thì hỗn hợp sánh, tắt bếp. Để sôi là nước cốt tách dầu, kem lợn cợn; khét đáy nồi thì đổ bỏ.',
+            'Nấu xong ngâm nồi vào thau nước đá cho nguội dưới 10 °C rồi mới cho vào máy đánh kem. Còn ấm mà đánh là kem mềm, mau chảy.',
+            'Máy đánh kem chạy đúng giờ trong sổ (kem dừa 25–30 phút). Ít quá kem còn lỏng; lâu quá béo kết hạt. Đổ hộp, dán nhãn ngày, đông qua đêm mới bán.',
+            'Đong thiếu đường hay thiếu bột năng là kem dăm đá; dư đường là kem mềm. Mẻ không đạt thì nói thật: đổ bỏ, ghi hao hụt, không trộn vào hộp tốt.',
+        ],
+        practice=[
+            _p('Nhiệt kế tủ kem chỉ −13 °C. Bạn làm gì?',
+               [('a', 'Vặn nút về số 4 (−18 °C), đậy nắp'), ('b', 'Múc đầy tay cho kịp'), ('c', 'Mở nắp cho thoáng')], 'a', 'Tủ ấm thì kem mềm, viên to và mau chảy.'),
+            _p('Sổ ghi “5 muỗng canh đường, muỗng 20 g”. Đong bao nhiêu?',
+               [('a', '60 g'), ('b', '100 g'), ('c', '160 g')], 'b', '5 × 20 = 100 g.'),
+            _p('Hỗn hợp kem dừa đang 91 °C, sủi lăn tăn.',
+               [('a', 'Tắt bếp ngay'), ('b', 'Vặn lửa lớn cho mau sánh'), ('c', 'Đun thêm mười phút')], 'a', 'Để sôi là nước cốt dừa tách dầu, kem lợn cợn.'),
+            _p('Khách dặn: “Bé nhà chị dị ứng đậu phộng.” Ly kem gọi kèm topping giòn.',
+               [('a', 'Rắc đậu phộng, ít thôi'), ('b', 'Rắc bánh quế vụn'), ('c', 'Rắc đậu phộng rồi nhặt ra')], 'b', 'Dị ứng là không một hạt nào.'),
+        ],
+        bank=[
+            _q('ic_knob', 'Sáng ra nút tủ kem đang ở số 2 (−13 °C). Bạn làm gì trước khi bán?',
+               [('a', 'Vặn về số 4 (−18 °C) rồi mới bán'), ('b', 'Để vậy, kem mềm dễ múc'), ('c', 'Vặn số 6 cho thật lạnh')], 'a',
+               'Số 4 là −18 °C: kem đủ cứng, viên đủ gam, không mau chảy.'),
+            _q('ic_refrozen', 'Một hộp kem mặt lổn nhổn tinh thể đá sau buổi chiều cúp điện.',
+               [('a', 'Múc bán trước cho hết'), ('b', 'Bỏ hộp đó, ghi hao hụt'), ('c', 'Trộn với hộp mới')], 'b',
+               'Kem chảy rồi đông lại thì không bán.'),
+            _q('ic_scoop', 'Viên kem trên cân 47 gam. Chuẩn là bao nhiêu?',
+               [('a', '40–50 gam là đủ'), ('b', '60–70 gam'), ('c', 'Bao nhiêu cũng được')], 'b', 'Viên chuẩn 60–70 gam; thiếu thì múc thêm.'),
+            _q('ic_lid', 'Đang làm ly hai viên, giữa hai lần múc nắp tủ nên thế nào?',
+               [('a', 'Mở luôn cho nhanh'), ('b', 'Đậy lại'), ('c', 'Tháo nắp ra')], 'b', 'Để nắp mở là tủ ấm nhanh, kem mềm nhão.'),
+            _q('ic_tare', 'Khách lấy hộp 500 gam mang về. Bước đầu tiên trên cân?',
+               [('a', 'Đặt hộp rỗng, trừ bì'), ('b', 'Múc kem vào rồi trừ bì'), ('c', 'Cân luôn cả hộp')], 'a', 'Trừ bì khi hộp còn rỗng.'),
+            _q('ic_allergy', 'Khách dặn dị ứng đậu phộng mà lỡ rắc đậu phộng rồi.',
+               [('a', 'Gạt bớt rồi đưa'), ('b', 'Bỏ ly đó, làm ly mới, rắc topping khác'), ('c', 'Đưa luôn, ít thôi')], 'b',
+               'Dị ứng là lỗi an toàn: làm lại ly mới.'),
+            _q('ic_well', 'Thau nước ngâm muỗng từ hôm qua đã đục.',
+               [('a', 'Thay nước sạch'), ('b', 'Lau muỗng bằng khăn'), ('c', 'Để chiều thay')], 'a', 'Nước ngâm muỗng thay mỗi sáng, đục là thay.'),
+            _q('ic_cook', 'Nấu hỗn hợp kem dừa tới khi nào thì tắt bếp?',
+               [('a', 'Khoảng 76–88 °C, hỗn hợp sánh lại'), ('b', 'Khi sôi bùng lên'), ('c', 'Vừa ấm tay là được')], 'a',
+               'Chưa tới thì bột chưa chín (kem dăm đá); sôi là tách dầu.'),
+            _q('ic_cool', 'Hỗn hợp vừa nấu xong còn 60 °C. Cho vào máy đánh kem luôn được không?',
+               [('a', 'Được, máy tự làm lạnh'), ('b', 'Ngâm thau nước đá cho dưới 10 °C rồi mới đánh'), ('c', 'Để qua đêm ngoài bếp')], 'b',
+               'Đánh khi còn ấm thì kem mềm, mau chảy.'),
+            _q('ic_churn', 'Sổ ghi kem dừa đánh 25–30 phút. Hẹn máy bao lâu?',
+               [('a', '15 phút cho nhanh'), ('b', '30 phút'), ('c', '45 phút cho thật bông')], 'b', 'Ít quá kem lỏng; lâu quá béo kết hạt.'),
+            _q('ic_sugar', 'Đong thiếu đường so với công thức thì kem ra sao?',
+               [('a', 'Nhiều dăm đá'), ('b', 'Mềm, mau chảy'), ('c', 'Không sao')], 'a', 'Đường giữ kem mịn; thiếu đường kem đông thành dăm đá.'),
+            _q('ic_burnt', 'Nồi kem bị khét đáy. Bạn làm gì?',
+               [('a', 'Múc phần trên đánh kem'), ('b', 'Đổ bỏ cả mẻ, ghi hao hụt'), ('c', 'Thêm đường cho át mùi')], 'b',
+               'Mùi khét ngấm cả mẻ; đổ bỏ, không bán.'),
         ]),
 ]

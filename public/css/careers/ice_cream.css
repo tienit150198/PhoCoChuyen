@@ -80,6 +80,32 @@
 .career-job.km .km-tubs li>span:first-child{font-size:22px}
 .career-job.km .km-tubs small{color:var(--sk-muted)}
 
+/* ---------- học nghề */
+.career-job.km .km-learn{display:grid;gap:4px;margin-bottom:10px;border-left:4px solid var(--km-mint);background:#f1fbf6}
+.career-job.km .km-learn p{margin:0}
+.career-job.km .km-sc.hm{box-shadow:inset 0 0 0 1px var(--km-mint)}
+
+/* ---------- kem nhà làm */
+.career-job.km .km-batch{margin-top:10px}
+.career-job.km .km-batch h4 small{font-weight:400;color:var(--sk-muted)}
+.career-job.km .km-card{padding:8px 10px;border-radius:12px;background:#fffaf0;border:1px dashed #e6cf9c;margin-bottom:10px}
+.career-job.km .km-card p{margin:0 0 6px}
+.career-job.km .km-ings,.career-job.km .km-steps{margin:0 0 6px;padding-left:18px;display:grid;gap:2px;font-size:14px}
+.career-job.km .km-ings{list-style:none;padding-left:0}
+.career-job.km .km-ings li{display:flex;flex-wrap:wrap;gap:6px;align-items:baseline}
+.career-job.km .km-ings small,.career-job.km .km-steps small{color:var(--sk-muted)}
+.career-job.km .km-steps li small{display:block}
+.career-job.km .km-steps li.done{opacity:.6}
+.career-job.km .km-steps li.now b{color:var(--sk-accent)}
+.career-job.km .km-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0}
+.career-job.km .km-row .btn{min-height:44px}
+.career-job.km .km-meas{display:grid;gap:2px;margin-bottom:6px}
+.career-job.km .km-pot{margin:4px 0}
+.career-job.km .km-rgrid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}
+.career-job.km .km-home{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
+.career-job.km .km-home li{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.career-job.km .km-home small{color:var(--sk-muted)}
+
 @media (max-width:420px){
   .career-job.km .km-knobs{grid-template-columns:repeat(3,minmax(0,1fr))}
   .career-job.km .km-tubs li{grid-template-columns:28px minmax(0,1fr)}
