@@ -29,6 +29,7 @@ from . import certificates as ct
 from . import bank as bk   # 🏦 Ngân hàng Phố (game/bank.py)
 from . import wardrobe as wd   # 👗 Tủ đồ (game/wardrobe.py)
 from . import housing as hs   # 🏠 Nhà của bạn (game/housing.py)
+from . import reno as rn   # 🛠️ Sửa và trang trí nhà (game/reno.py)
 from . import system_gift as sg   # 🎁 Quà từ Phố Có Chuyện (game/system_gift.py)
 from . import live_effects as lfx   # 🧧 rewards from the live service (game/live_effects.py)
 from . import whats_new as wn   # "Có gì mới": read already for a brand-new save (_welcome_settings)
@@ -430,6 +431,7 @@ def upgrade(j: dict) -> None:
         j['stats'].setdefault(k, 0)
     bk.upgrade(j)   # 🏦 term deposits quoted per year (0.9.5)
     hs.upgrade(j)   # 🏠
+    rn.upgrade(j)   # 🛠️
     if j.get('story'):
         for n in range(1, min(int(j.get('chapter', 1)), LAST) + 1):
             _unlock_chapter(j, n)
@@ -616,6 +618,7 @@ def after(s: dict, career: str | None, action: str, p: dict, result: dict) -> No
         _end_of_day(s, career, result)
     bk.on_life_day(s, result)   # 🏦 interest, statements, installments: once per life day (idempotent)
     hs.on_life_day(s, result)   # 🏠 home installments and comfort (after the bank's morning)
+    rn.on_life_day(s, result)   # 🛠️ wear and the Ấm cúng morning (after the home's)
     if action == 'start_day' and career in s['careers']:
         line = _emp().backdoor_remark(s, s['careers'][career], career)   # vào bằng cửa sau: one remark, day one
         if line:
@@ -767,6 +770,8 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(wd.action(s, name, p))
     elif name.startswith('jr_home_'):
         result.update(hs.action(s, name, p))
+    elif name.startswith('jr_reno_'):
+        result.update(rn.action(s, name, p))
     else:
         raise e.GameError('Thao tác hành trình không hợp lệ.', 'unknown_action')
     after(s, None, name, p, result)
@@ -846,7 +851,7 @@ def public(s: dict) -> dict:
         clean_days=j['clean_days'], history=list(reversed(j['history'][-30:])), news=tree_copy(j['news']),
         suggested=suggested(s, ctx), tasks=ctx['tasks'], worked=ctx['places'],
         stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')},
-        bank=bk.public(s), home=hs.public(s), **ct.public(s))
+        bank=bk.public(s), home=hs.public(s), reno=rn.public(s), **ct.public(s))
 
 
 def _skill_ids() -> list[str]:
@@ -870,7 +875,7 @@ def content() -> dict:
                 {k: t[k] for k in ('id', 'cat', 'emoji', 'name', 'desc')} for t in TITLES],
         skills=_emp().STRENGTHS, levels=LEVEL_NAMES, reserve=RESERVE, reopen_fee=REOPEN_FEE, start_wallet=START_WALLET,
         unlock_chapter={cid: n for n, ids in CH_UNLOCKS.items() for cid in ids if cid in CAREERS}, certs=ct.content(),
-        wardrobe=wd.content(), homes=hs.catalogue())
+        wardrobe=wd.content(), homes=hs.catalogue(), reno=rn.catalogue())
 
 
 def validate(s: dict) -> None:
@@ -933,3 +938,4 @@ def validate(s: dict) -> None:
     bk.validate(s)
     wd.validate(s)
     hs.validate(s)
+    rn.validate(s)
