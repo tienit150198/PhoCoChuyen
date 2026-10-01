@@ -55,10 +55,11 @@ def esbuild(files: list[Path], root: Path, flags: list[str]) -> dict[Path, bytes
         raise BuildError("npx (node) is needed to minify the release: install node, or package with --no-minify")
     with tempfile.TemporaryDirectory(prefix="mnl-build-") as out:
         # Paths relative to root: esbuild writes <out>/<path under public/>.
-        cmd = [npx, "--yes", ESBUILD, f"--outbase={root / 'public'}", f"--outdir={out}", *flags, *map(str, files)]
-        run = subprocess.run(cmd, cwd=root, capture_output=True, text=True)
-        if run.returncode:
-            raise BuildError(f"esbuild failed:\n{run.stderr[-4000:]}")
+        for i in range(0, len(files), 40):   # local Windows packaging: the npx.cmd line limit
+            cmd = [npx, "--yes", ESBUILD, "--outbase=public", f"--outdir={out}", *flags, *(str(f.relative_to(root)) for f in files[i:i + 40])]
+            run = subprocess.run(cmd, cwd=root, capture_output=True, text=True)
+            if run.returncode:
+                raise BuildError(f"esbuild failed:\n{run.stderr[-4000:]}")
         if run.stderr.strip():
             print(run.stderr.strip()[-2000:], file=sys.stderr)
         result = {}
@@ -87,7 +88,7 @@ def minify(root: Path = ROOT) -> dict[str, bytes]:
                     raise BuildError(f"{rel}: static imports changed in the minified copy: {before} != {after}")
                 if path.name == "boot.js" and "</script" in data.decode("utf-8").lower():
                     raise BuildError("boot.js: the minified copy can not be inlined (</script)")
-            if len(data) < len(source):
+            if data.strip() and len(data) < len(source):   # a comment-only file (a retired stylesheet) keeps its bytes
                 out[rel] = data
     return out
 

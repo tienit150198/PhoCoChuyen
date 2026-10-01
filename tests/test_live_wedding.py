@@ -144,7 +144,11 @@ class Attendance(WedCase):
         xu = await g2.expect('wed_xu')
         self.assertEqual((xu['n'], xu['max']), (WL.MINUTE_XU, WL.PARTY_MINUTES))
         await self.ticks(at + 270, WL.PARTY_SECS)
-        coins = self.rows("SELECT amount FROM live_effects WHERE sid=? AND kind='coins' AND id LIKE 'wedm:%'", sid)
+        for _ in range(30):   # the last minute is paid by a task: a loaded machine needs more than the ticks' 0.3 s
+            coins = self.rows("SELECT amount FROM live_effects WHERE sid=? AND kind='coins' AND id LIKE 'wedm:%'", sid)
+            if len(coins) >= WL.PARTY_MINUTES:
+                break
+            await asyncio.sleep(0.1)
         self.assertEqual(len(coins), WL.PARTY_MINUTES, '20 xu a minute, 10 minutes')
         r = self.rows('SELECT ok, paid, steps FROM wedding_guests WHERE wedding=? AND sid=?', wid, sid)
         self.assertEqual(r, [dict(ok=1, paid=1, steps=WL.PARTY_MINUTES)])
