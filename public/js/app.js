@@ -1231,6 +1231,8 @@ try{
   // Its stylesheet only styles the workbench: wait for it only when a sheet opens right away (day closed).
   await Promise.all([careerAssets(career(),Boolean(api.state.current&&(!room()?.open||needsJob()))),setLanguage(api.state.settings.lang)]);
   shell.boot(env());journeyBoot(env());boardBoot(env());startTicker(()=>env());$('#loading').hidden=true;$('#app').hidden=false;world.resize();renderMain();
+  try{performance.mark('mnl-first-frame');}catch{/* no User Timing */}   // "time to first game frame" (telemetry.js load beacon)
+  import('./telemetry.js').then(m=>m.telemetryBoot({api,ui})).catch(e=>console.warn('telemetry:',e));  // Giữ chân: leave/error/load beacons
   // The rest of the catalogue (api.more), now that the first frame is out: it never competed with it on the wire.
   api.more().catch(e=>console.warn('content:',e));
   // Always-on features (badges, notices, polls, tips) load once the game is on screen, not before it.

@@ -10,7 +10,10 @@
  * Changing the range aborts the request still running for the old one. The "Trực tiếp"
  * band (…/section?name=live: active players, commands/min, latency, DB size) is polled
  * every LIVE_MS while "Tổng quan" is shown; it costs the server a few index reads. The
- * "Thời gian chơi" card (…?name=playtime) loads when it scrolls into view, like the saves cards. */
+ * "Thời gian chơi" card (…?name=playtime) loads when it scrolls into view, like the saves cards.
+ * "Giữ chân" (…?name=retention, drawn by ./retention.js, imported when the view opens): retention by start
+ * day, the new-player funnel, where players drop off, careers, sources, load times, client errors; its
+ * tables also download as one CSV (…&format=csv). */
 import {AdminAPI} from './api.js';
 import {Inbox} from './inbox.js';
 import {ChatAdmin} from './chat.js';  // 💬 Chat: reports, hide, mute (live chat)
@@ -19,8 +22,8 @@ import {esc,icon,hm,ago,num,toast} from './ui.js';
 
 const api=new AdminAPI();
 const root=document.getElementById('root');
-const VIEWS={'tong-quan':['Tổng quan','chart'],'gop-y':['Góp ý','inbox'],'chat':['Chat','chat'],'he-thong':['Hệ thống','server']};
-const STATS_VIEWS=new Set(['tong-quan','he-thong']);  // views drawn from the stats endpoints
+const VIEWS={'tong-quan':['Tổng quan','chart'],'giu-chan':['Giữ chân','loop'],'gop-y':['Góp ý','inbox'],'chat':['Chat','chat'],'he-thong':['Hệ thống','server']};
+const STATS_VIEWS=new Set(['tong-quan','giu-chan','he-thong']);  // views drawn from the stats endpoints
 const RANGES=[7,30,90];
 const REFRESH_MS=60000;
 const LIVE_MS=15000;
@@ -34,11 +37,15 @@ const store={
 
 const ui={screen:'loading',view:'tong-quan',navOpen:false,login:{error:'',busy:false,replace:false,user:''},unread:null};
 const stats={range:RANGES.includes(store.get('range',7))?store.get('range',7):7,byRange:{},busy:false,error:null,auto:store.get('auto',true)!==false,ctl:null,timer:0,retry:0,pending:false,
-  sections:{saves:{data:null,at:0,busy:false,error:null},system:{data:null,at:0,busy:false,error:null},playtime:{data:null,at:0,busy:false,error:null}},more:{...MORE},
+  sections:{saves:{data:null,at:0,busy:false,error:null},system:{data:null,at:0,busy:false,error:null},playtime:{data:null,at:0,busy:false,error:null},
+    retention:{data:null,at:0,busy:false,error:null}},more:{...MORE},
+  ret:{funnel:['today','yesterday','d7','d30'].includes(store.get('ret-funnel','d7'))?store.get('ret-funnel','d7'):'d7',src:'d7',err:'today'},
   live:{data:null,at:0,busy:false,error:null,ctl:null}};
 let sectionsMod=null;  // ./sections.js once imported
 const loadSectionsMod=()=>sectionsMod?Promise.resolve(sectionsMod):import('./sections.js').then(m=>(sectionsMod=m));
 const chatAdmin=new ChatAdmin(api,{rerender:()=>{if(ui.screen==='app'&&ui.view==='chat')renderView();},forbidden:()=>reauth()});
+let retMod=null;  // ./retention.js once imported ("Giữ chân")
+const loadRetMod=()=>retMod?Promise.resolve(retMod):import('./retention.js').then(m=>(retMod=m));
 const inbox=new Inbox(api,{
   rerender:()=>{if(ui.screen==='app'&&ui.view==='gop-y')renderView();},
   counts:c=>{ui.unread=c?.new??ui.unread;renderBadge();},
@@ -115,6 +122,7 @@ function ensureStats(){
   const e=stats.byRange[stats.range];if(!e||Date.now()-e.at>REFRESH_MS)loadStats();
   if(ui.view==='tong-quan'&&(!stats.live.data||Date.now()-stats.live.at>LIVE_MS))loadLive();
   if(ui.view==='he-thong'){ensureSection('system');ensureSection('saves');}
+  if(ui.view==='giu-chan')ensureSection('retention');
 }
 /** The first screen for the current range. A request still running for another range is aborted. */
 function loadStats(fresh=false){
@@ -159,22 +167,23 @@ function ensureSection(name){
   const s=stats.sections[name];
   if(s&&!s.busy&&!s.error&&!s.retry&&(!s.data||Date.now()-s.at>REFRESH_MS))loadSection(name);
 }
-/** A part loaded on demand (saves | system | playtime); its renderer module is fetched alongside. */
+/** A part loaded on demand (saves | system | playtime | retention); its renderer module is fetched alongside. */
 function loadSection(name,fresh=false){
   const s=stats.sections[name];if(!s||s.busy)return;
   const ctl=s.ctl=new AbortController();
   s.busy=true;s.error=null;
-  Promise.all([api.section(name,{fresh,signal:ctl.signal}),loadSectionsMod()])
+  if(name==='retention'&&ui.view==='giu-chan')renderTools();
+  Promise.all([api.section(name,{fresh,signal:ctl.signal}),name==='retention'?loadRetMod():loadSectionsMod()])
     .then(([d])=>{
       // First pass after a server restart still running: keep the placeholders, ask again.
       if(d.pending){s.pending=d.progress||true;s.retry=setTimeout(()=>{s.retry=0;loadSection(name);},Math.max(1000,d.retry_ms||3000));return;}
-      s.data=d;s.at=Date.now();s.pending=false;
+      s.data=d;s.at=Date.now();s.pending=false;if(d.names)api.setNames(d.names);
     })
     .catch(e=>{if(e.aborted)return;if(e.status===403||e.status===401){reauth();return;}s.error=e.status?tooFast(e):e.message||'Không tải được phần này.';})
     .finally(()=>{if(s.ctl!==ctl)return;s.busy=false;s.ctl=null;if(ui.screen==='app'&&STATS_VIEWS.has(ui.view))renderView();});
 }
 /** Sections worth refreshing on the current view (the saves cards show on both). */
-const shown=name=>name==='saves'||(name==='playtime'?ui.view==='tong-quan':ui.view==='he-thong');
+const shown=name=>name==='retention'?ui.view==='giu-chan':name==='saves'||(name==='playtime'?ui.view==='tong-quan':ui.view==='he-thong');
 setInterval(()=>{
   if(ui.screen!=='app'||!stats.auto||!STATS_VIEWS.has(ui.view)||document.hidden)return;
   loadStats();
@@ -304,6 +313,14 @@ function renderTools(){
     meta.innerHTML=c?`${num(total)} góp ý · <b>${num(c.new||0)}</b> chưa đọc · ${num(c.seen||0)} đã xem · ${num(c.done||0)} xong`:'Hộp thư góp ý của người chơi';
     return;
   }
+  if(ui.view==='giu-chan'){
+    const r=stats.sections.retention,d=r.data;
+    tools.innerHTML=`<button type="button" class="btn ghost sm" data-act="retCsv"${d?'':' disabled'}>${icon('download',15)}<span>CSV</span></button>
+      <label class="switch" title="Tự làm mới mỗi 60 giây"><input type="checkbox" data-act="auto"${stats.auto?' checked':''}><span class="knob" aria-hidden="true"></span><span>Tự làm mới</span></label>
+      <button type="button" class="btn ghost sm" data-act="refresh"${r.busy?' disabled':''}>${icon('refresh',15)}<span>${r.busy?'Đang tải…':'Làm mới'}</span></button>`;
+    meta.innerHTML=d?`Cập nhật ${hm(d.generated_at)}${d.cached&&d.age>5?` (bản đệm ${num(d.age)} giây)`:''} · giờ Việt Nam`:r.busy?'Đang tính số liệu…':'Người chơi rời đi ở đâu, lúc nào';
+    return;
+  }
   const e=stats.byRange[stats.range],d=e?.data,busy=stats.busy||(ui.view==='he-thong'&&stats.sections.system.busy);
   const seg=ui.view==='tong-quan'?`<div class="seg" role="radiogroup" aria-label="Khoảng thời gian">${RANGES.map(n=>`<button type="button" role="radio" aria-checked="${stats.range===n}" class="${stats.range===n?'on':''}" data-act="range" data-range="${n}">${n} ngày</button>`).join('')}</div>`:'';
   tools.innerHTML=`${seg}
@@ -318,6 +335,7 @@ function renderView(){
   const focusAct=document.activeElement?.closest?.('#view')?document.activeElement.dataset.act+'|'+(document.activeElement.dataset.id||'')+'|'+(document.activeElement.dataset.status||document.activeElement.dataset.value||''):null;
   if(ui.view==='gop-y')view.innerHTML=inbox.view();
   else if(ui.view==='chat')view.innerHTML=chatAdmin.view();
+  else if(ui.view==='giu-chan')view.innerHTML=`<div class="stats ret${stats.sections.retention.busy&&stats.sections.retention.data?' is-busy':''}">${retentionBody()}</div>`;
   else{
     const e=stats.byRange[stats.range],d=e?.data;
     let body;
@@ -348,6 +366,26 @@ function playtimePart(){
   if(s.data&&sectionsMod)return sectionsMod.playtimeCard(s.data);
   const err=s.error&&!s.busy?s.error:'';
   return skelCard('Thời gian chơi',{lazy:'playtime',error:err,note:s.pending?'Máy chủ đang cộng số liệu các ngày trước, chờ chút nhé…':''});
+}
+/** "Giữ chân": drawn by ./retention.js once loaded, else placeholders (or the error with a retry). */
+function retentionBody(){
+  const s=stats.sections.retention;
+  if(s.data&&retMod)return retMod.retentionView(s.data,stats.ret,id=>api.career(id));
+  if(s.error&&!s.busy)return `<div class="notice bad">${icon('alert',16)}<div>${esc(s.error)}<br><button type="button" class="btn ghost sm" data-act="retrySection" data-name="retention">Thử lại</button></div></div>`;
+  const k=`<div class="kpi skel-kpi"><span class="kpi-label">&nbsp;</span><b class="kpi-num">&nbsp;</b><small class="kpi-sub">&nbsp;</small></div>`;
+  return (s.pending?'<p class="note">Máy chủ đang tính số liệu, chờ chút nhé…</p>':'')+`<div class="kpis k4 skel" aria-hidden="true">${k.repeat(4)}</div>${skelCard('Quay lại theo ngày bắt đầu',{lines:6})}<div class="cols"><div class="col">${skelCard('Phễu người mới',{lines:8})}</div><div class="col">${skelCard('Trước và sau 0.9.16')}${skelCard('Theo nghề')}</div></div>`;
+}
+/** The CSV of "Giữ chân" (the admin endpoint needs the CSRF header, so no plain link). */
+async function retentionCsv(btn){
+  btn.disabled=true;
+  try{
+    const res=await fetch('/api/admin/stats/section?name=retention&format=csv',{credentials:'same-origin',cache:'no-store',headers:{'X-Game-CSRF':api.csrf}});
+    if(!res.ok)throw new Error(res.status===429?'Chờ một chút rồi thử lại nhé.':`Lỗi ${res.status}`);
+    const url=URL.createObjectURL(await res.blob()),a=document.createElement('a');
+    a.href=url;a.download=`giu-chan-${stats.sections.retention.data?.today||'hom-nay'}.csv`;document.body.append(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),10000);
+  }catch(e){toast(e.message||'Không tải được CSV.','bad');}
+  finally{btn.disabled=false;}
 }
 function systemSkeleton(){
   return `<div class="kpis k4 skel" aria-hidden="true">${'<div class="kpi skel-kpi"><span class="kpi-label">&nbsp;</span><b class="kpi-num">&nbsp;</b><small class="kpi-sub">&nbsp;</small></div>'.repeat(4)}</div>`+
@@ -380,6 +418,8 @@ root.addEventListener('click',async ev=>{
       return;
     }
     case'retrySection':{const s=stats.sections[el.dataset.name];if(!s)return;s.error=null;loadSection(el.dataset.name);renderView();return;}
+    case'retSeg':{const k=el.dataset.key,v=el.dataset.value;if(!(k in stats.ret))return;stats.ret[k]=v;if(k==='funnel')store.set('ret-funnel',v);renderView();return;}
+    case'retCsv':retentionCsv(el);return;
     case'more':{const k=el.dataset.key;if(!(k in MORE))return;stats.more[k]+=MORE[k];renderView();return;}
     case'fbReload':inbox.reset();renderView();return;
   }

@@ -17,6 +17,7 @@ import secrets
 
 from . import db as dbm
 from . import social
+from . import retention as rt
 
 USERNAME = re.compile(r'[a-z0-9_.]{3,24}')
 PASSWORD_MIN, PASSWORD_MAX = 8, 128
@@ -161,6 +162,7 @@ def register(store, token: str, d: dict) -> dict:
             raise AccountError('Tên đăng nhập này đã có người dùng.', 'username_taken', 409) from None
         # Rotate this device onto a login token; keep its CSRF so open tabs keep working.
         new_token, csrf = _new_login(db, sid, row['csrf'])
+        rt.mark(db, sid, 'account')   # Giữ chân (game/retention.py): first time this save got an account
         db.commit()
     except Exception:
         db.rollback()

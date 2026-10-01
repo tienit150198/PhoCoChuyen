@@ -40,6 +40,7 @@ from . import leaderboard as lb
 from . import marriage as mr
 from . import system_gift as sg
 from . import live_chat as lc
+from . import retention as rt
 from .content import CAREERS
 from . import db as dbm
 from . import fastjson as fj
@@ -307,6 +308,7 @@ class Store:
             db.executescript(mr.SCHEMA)  # Hôn nhân (game/marriage.py): codes, rings, proposals, couples, weddings, effects, news, friends, joint fund
             db.executescript(sg.SCHEMA)  # 🎁 Quà từ Phố Có Chuyện (game/system_gift.py)
             db.executescript(lc.SCHEMA)  # 💬 Chat tables of the live service (game/live_chat.py, live/)
+            db.executescript(rt.SCHEMA)  # Giữ chân: milestones, action counts, beacons (game/retention.py)
         mr.bind(self)  # joint_account / joint_spend (game/couple.py) for game/bank.py
 
     def connect(self):
@@ -457,6 +459,7 @@ class Store:
         text=FRESH if lazy else fj.dumps(self.parse_state(FRESH,sid))
         with self.connect() as db:
             db.execute("INSERT INTO sessions(sid,csrf,state) VALUES(?,?,?)",(sid,csrf,text))
+            rt.write_marks(db,sid,[("created",None,None)],1)  # Giữ chân: the first step of the funnel, same transaction
         return token,csrf,True
 
     def csrf(self,token:str)->str:
@@ -503,6 +506,16 @@ class Store:
         if not isinstance(action,str) or not isinstance(payload,dict):raise GameError("Thao tác không hợp lệ.")
         fingerprint=hashlib.sha256(json.dumps([career,action,payload],sort_keys=True,ensure_ascii=False).encode()).hexdigest()
         h=self.digest(token)
+        who=[None]  # the save id once resolved: rt.count() of a rejected command
+        try:
+            out=self._command(h,who,request_id,expected,career,action,payload,internal,fingerprint)
+        except GameError as e:
+            if who[0] and not internal and e.code!="session_missing":rt.count(self,who[0],career,action,e)
+            raise
+        if not internal and not out.get("replayed"):rt.count(self,who[0],career,action)  # Giữ chân: a dict update, written every few seconds
+        return out
+
+    def _command(self,h:str,who:list,request_id:str,expected,career,action:str,payload:dict,internal:bool,fingerprint:str)->dict:
         t0=time.perf_counter()
         for _ in range(OPTIMISTIC_TRIES):
             # 1. A consistent snapshot of the save and of this request's receipt, without any lock.
@@ -511,21 +524,23 @@ class Store:
                 row=db.execute("SELECT s.revision AS revision,s.state AS state,r.request_hash AS rhash,r.result AS rresult FROM sessions s "
                                "LEFT JOIN receipts r ON r.sid=s.sid AND r.request_id=? WHERE s.sid=?",(request_id,sid)).fetchone()
             if not row:raise GameError("Phiên chơi không tồn tại.","session_missing")
+            who[0]=sid
             if row["rhash"] is not None:return self._replay(sid,row,fingerprint)
             if expected is not None and row["revision"]!=expected:raise Conflict("Tiến trình đã thay đổi ở tab khác. Đã đồng bộ lại; hãy xem trạng thái trước khi thao tác tiếp.","revision_conflict")
             # 2. The heavy part, lock-free.
             t1=time.perf_counter()
             try:
-                raw,result,serialized,cut,board=self._compute(sid,row["state"],career,action,tree_copy(payload),internal,row["revision"])
+                raw,result,serialized,cut,board,steps=self._compute(sid,row["state"],career,action,tree_copy(payload),internal,row["revision"])
             except GameError:
                 if self._moved(sid,request_id,row["revision"]):continue  # judged on a save that has moved on: look again
                 raise
             receipt=fj.dumps(result)
             # 3. Short compare-and-set under the write lock.
             t2=time.perf_counter()
-            if self._store(sid,row["revision"],serialized,request_id,fingerprint,receipt,cut,board):
+            if self._store(sid,row["revision"],serialized,request_id,fingerprint,receipt,cut,board,steps):
                 t3=time.perf_counter()
                 lb.remember(sid,row["revision"]+1,board[0])
+                if steps[0]:rt.emit_marks(sid,*steps)
                 view=public_state(raw,migrated=True)
                 _slow(action,career,len(row["state"] or ""),t0,t1,t2,t3,time.perf_counter())
                 return dict(state=view,revision=row["revision"]+1,result=result,replayed=False)
@@ -537,21 +552,25 @@ class Store:
         state=migrate_state(self.parse_state(row["state"],sid),owned=True)
         return dict(state=public_state(state,migrated=True),revision=row["revision"],result=fj.loads(row["rresult"]),replayed=True)
 
-    def _compute(self,sid:str,text:str,career,action:str,payload:dict,internal:bool,revision:int)->tuple[dict,dict,str,list,tuple]:
-        """(new save, result, its text, archive rows, board): what the command cut off from the
-        save's lists, to be written in the same transaction as the save (see game/archive.py), and
-        board = (the save's leaderboard rows, whether a number on a board moved) (game/leaderboard.py)."""
+    def _compute(self,sid:str,text:str,career,action:str,payload:dict,internal:bool,revision:int)->tuple[dict,dict,str,list,tuple,tuple]:
+        """(new save, result, its text, archive rows, board, steps): what the command cut off from the
+        save's lists, to be written in the same transaction as the save (see game/archive.py),
+        board = (the save's leaderboard rows, whether a number on a board moved) (game/leaderboard.py)
+        and steps = ([(milestone, career, detail)], life day): the funnel steps this command crossed
+        (game/retention.py: a dozen counters read from the save before and after, no extra parse)."""
         raw=self.parse_state(text,sid)
         before=dict(raw["careers"]) if isinstance(raw.get("careers"),dict) else {}
         ranked=lb.recall(sid,revision)
         if ranked is None:ranked=lb.summary(raw)  # read before the reducer changes raw in place
+        marked=rt.marks(raw,ranked) if rt.ENABLED and action!="import_save" else None  # likewise
         with ar.collect() as box:
             raw,result,full,known,extra=self._apply(raw,text,career,action,payload,internal,revision)
         serialized=serialize(raw,known,full)
         if len(serialized)>3*1024*1024 and len(serialized.encode())>14*1024*1024:raise GameError("Bản lưu quá lớn. Xóa bớt ảnh trong album trước khi nhập.")
         ranks=lb.summary(raw)
+        steps=(rt.reached(marked,rt.marks(raw,ranks)),rt.life_day(raw)) if marked else ((),None)
         # An imported backup's own archive is older than anything its migration moved out.
-        return raw,result,serialized,extra+_archive_rows(box,before,raw,career if career in CAREERS else ""),(ranks,ranks!=ranked)
+        return raw,result,serialized,extra+_archive_rows(box,before,raw,career if career in CAREERS else ""),(ranks,ranks!=ranked),steps
 
     def _apply(self,raw:dict,text:str,career,action:str,payload:dict,internal:bool,revision:int):
         extra=[]
@@ -595,8 +614,9 @@ class Store:
             if not row:return False
             return row["revision"]!=revision or bool(db.execute("SELECT 1 FROM receipts WHERE sid=? AND request_id=?",(sid,request_id)).fetchone())
 
-    def _store(self,sid:str,revision:int,serialized:str,request_id:str,fingerprint:str,receipt:str,cut:list=(),board:tuple|None=None)->bool:
-        """Compare-and-set: write the new save, its archive rows, its leaderboard rows and its receipt only if the save is still at `revision`."""
+    def _store(self,sid:str,revision:int,serialized:str,request_id:str,fingerprint:str,receipt:str,cut:list=(),board:tuple|None=None,steps:tuple=((),None))->bool:
+        """Compare-and-set: write the new save, its archive rows, its leaderboard rows, its receipt and the
+        funnel steps it crossed (game/retention.py) only if the save is still at `revision`."""
         tw=time.perf_counter()
         if not self.writing():raise sqlite3.OperationalError("database is locked")
         tx=time.perf_counter()
@@ -618,6 +638,7 @@ class Store:
                 db.rollback();return False
             _write_archive(db,sid,cut)
             if board and board[1]:lb.write(db,sid,board[0])  # only when a number on a board moved
+            if steps[0]:rt.write_marks(db,sid,steps[0],steps[1])  # rare: only when a funnel step was crossed
             db.execute("INSERT INTO receipts(sid,request_id,request_hash,result) VALUES(?,?,?,?)",(sid,request_id,fingerprint,receipt))
             db.commit()
             te=(time.perf_counter()-tx)*1000
@@ -660,14 +681,16 @@ class Store:
             if row["rhash"] is not None:
                 db.rollback();return self._replay(sid,row,fingerprint)
             if expected is not None and row["revision"]!=expected:raise Conflict("Tiến trình đã thay đổi ở tab khác. Đã đồng bộ lại; hãy xem trạng thái trước khi thao tác tiếp.","revision_conflict")
-            raw,result,serialized,cut,board=self._compute(sid,row["state"],career,action,payload,internal,row["revision"])
+            raw,result,serialized,cut,board,steps=self._compute(sid,row["state"],career,action,payload,internal,row["revision"])
             revision=row["revision"]+1
             db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?",(serialized,revision,sid))
             _write_archive(db,sid,cut)
             if board[1]:lb.write(db,sid,board[0])
+            if steps[0]:rt.write_marks(db,sid,steps[0],steps[1])
             db.execute("INSERT INTO receipts(sid,request_id,request_hash,result) VALUES(?,?,?,?)",(sid,request_id,fingerprint,fj.dumps(result)))
             db.commit()
             lb.remember(sid,revision,board[0])
+            if steps[0]:rt.emit_marks(sid,*steps)
             return dict(state=public_state(raw,migrated=True),revision=revision,result=result,replayed=False)
         except Exception:
             if db is not None:db.rollback()
@@ -689,6 +712,7 @@ class Store:
             lb.forget(db,[sid])
             db.execute("DELETE FROM logins WHERE sid=?",(sid,))
             db.execute("DELETE FROM accounts WHERE sid=?",(sid,))
+            rt.forget(db,sid)  # its action counts (the other stat rows go with the sessions trigger)
             n=db.execute("DELETE FROM sessions WHERE sid=?",(sid,)).rowcount
         return bool(n)
 
