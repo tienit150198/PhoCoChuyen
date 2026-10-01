@@ -1144,22 +1144,53 @@ def _record_slips(c: dict, t: dict, products: list) -> None:
 
 
 # ------------------------------------------------------------------ actions
+CUT_LOG = 16          # validate_task's bound on cut['steps']
+
+
+def _cut_log(cut: dict, step: str) -> None:
+    """Write a step into the chair's log. A long log (many small "cắt thêm" rounds) folds its repeats first, so it
+    stays within CUT_LOG and no step is ever refused for the log's length (feedback #67)."""
+    steps = cut['steps']
+    if len(steps) >= CUT_LOG - 1:
+        seen = []
+        for x in steps:
+            if x != 'check' and x not in seen:
+                seen.append(x)
+        if steps[-1] == 'check':          # a standing request from the client stays the last word
+            seen.append('check')
+        steps[:] = seen
+    steps.append(step)
+
+
+def cut_ask(t: dict) -> str | None:
+    """What the client asked for at the last mirror check, while it still stands: 'long' (cut a bit more) or
+    'layers'. A turned-down check is logged as a 'check' step on a cut that is not done; any later step answers it."""
+    cut = t['cut']
+    if cut['done'] or not cut['steps'] or cut['steps'][-1] != 'check' or not t['_key'].get('cut'):
+        return None
+    k = t['_key']['cut']
+    if cut['removed'] < k['min']:
+        return 'long'
+    return 'layers' if k['layers'] and 'layers' not in cut['steps'] else None
+
+
 def _cut_step(t: dict, key: dict, who: str, step: str, p: dict) -> dict:
-    """One step at the cutting chair (section → guide → layers → check)."""
+    """One step at the cutting chair (section → guide → layers → check). When the client looks in the mirror and
+    says it is still too long, the guide line is cut again (also after layering: feedback #67) and checked again."""
     cut, k = t['cut'], key['cut']
     if step == 'section':
         kit.need(not cut['steps'], 'Đã chia vùng tóc rồi.')
-        cut['steps'].append('section')
+        _cut_log(cut, 'section')
         return dict(message='Chia 4 vùng: đỉnh, hai bên, gáy; kẹp gọn từng vùng.')
     kit.need('section' in cut['steps'], 'Chia vùng tóc trước đã.')
     if step == 'guide':
-        kit.need('layers' not in cut['steps'], 'Đã tỉa tầng; giờ kiểm đối xứng rồi chốt nhé.')
         length = kit.integer(p.get('length'), 1, 10)
+        again = 'guide' in cut['steps']
         slip = 0
         if _case(t) == 'kid':
             slip = 2 if t['calm'] < 20 else 1 if t['calm'] < 40 else 0
         cut['removed'] += length + slip
-        cut['steps'].append('guide')
+        _cut_log(cut, 'guide')
         lead = ''
         if slip:
             t['mistakes'] += 1
@@ -1170,21 +1201,27 @@ def _cut_step(t: dict, key: dict, who: str, step: str, p: dict) -> dict:
             t['mistakes'] += 1
             _flag(t, 'cut_short')
             return dict(message=f'{lead}Xoẹt! Tổng đã bớt {cut["removed"]} cm — ngắn hơn thỏa thuận. Tóc cắt rồi không nối lại được…')
+        if again:
+            return dict(message=f'{lead}Dóng lại đường chuẩn, cắt thêm {length + slip} cm (tổng đã bớt {cut["removed"]} cm).')
         return dict(message=f'{lead}Cắt đường chuẩn ở gáy rồi dóng theo: bớt {length + slip} cm (tổng {cut["removed"]} cm).')
     kit.need('guide' in cut['steps'], 'Cắt đường chuẩn trước đã.')
     if step == 'layers':
         kit.need('layers' not in cut['steps'], 'Đã tỉa tầng rồi.')
-        cut['steps'].append('layers')
+        _cut_log(cut, 'layers')
         if not k['layers']:
             t['mistakes'] += 1
             _flag(t, 'layers_wrong')
             return dict(message=f'{who} nhíu mày nhìn gương: mẫu của mình là tóc bằng, đâu có tỉa tầng…')
         return dict(message='Nâng từng lớp 90°, tỉa tầng nhẹ — tóc bồng lên thấy rõ.')
-    if cut['removed'] < k['min']:
-        return dict(message=f'{who} soi gương: “Còn hơi dài so với mình dặn.” Cắt thêm chút rồi kiểm lại.')
-    if k['layers'] and 'layers' not in cut['steps']:
+    # A turned-down check is logged once, so the client's request survives a reload (cut_ask); the next step answers it.
+    if cut['removed'] < k['min'] or (k['layers'] and 'layers' not in cut['steps']):
+        if cut['steps'][-1] != 'check':
+            _cut_log(cut, 'check')
+        if cut['removed'] < k['min']:
+            return dict(message=f'{who} soi gương: “Còn hơi dài so với mình dặn.” Cắt thêm chút rồi kiểm lại.')
         return dict(message=f'{who}: “Mẫu có tầng mà em?” Tỉa tầng rồi kiểm lại.')
-    cut['steps'].append('check')
+    if cut['steps'][-1] != 'check':
+        _cut_log(cut, 'check')
     cut['done'] = True
     t['done'].append('cut')
     return dict(message='Kiểm đối xứng bằng gương cầm tay: hai bên đều. ' + (f'{who} tiếc vì ngắn hơn dự định.' if cut['short'] else f'{who} gật gù hài lòng.'))
@@ -1560,13 +1597,12 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         kit.need(t['timer'] is None, 'Đang ủ thuốc, xả xong rồi mới cắt.')
         kit.need(t['washed'], 'Gội ẩm tóc trước khi cắt để đường cắt chính xác.')
         step = kit.one_of(p.get('step'), CUT_STEPS, 'Bước cắt không hợp lệ.')
-        kit.need(len(t['cut']['steps']) < 16, 'Đã thao tác quá nhiều lần, kiểm tra đối xứng đi nào.')
-        before = len(t['cut']['steps'])
         out = _cut_step(t, key, who, step, p)
-        if _case(t) == 'kid' and len(t['cut']['steps']) > before:
+        snip = step != 'check' or t['cut']['done']     # a mirror check the client turns down is not a snip
+        if _case(t) == 'kid' and snip:
             # Every snip on the chair wears a wriggly child down a little more.
             t['calm'] = max(0, t['calm'] - (12 + 3 * kit.tier(t['day'])))
-        if len(t['cut']['steps']) > before:
+        if snip:
             out['message'] += _use_tools(c, t)
         return out
 
@@ -2029,6 +2065,7 @@ def public_task(t: dict) -> dict:
     v['budget'] = k['budget'] if 'budget' in t['asked'] else None
     v['strand_text'] = h['strand'] if t['strand'] else None
     v['look'] = _look(t)
+    v['cut_ask'] = cut_ask(t)
     if t['timer']:
         v['timer']['window'] = _window(t['timer']['kind'], t['timer']['fragile'], t['timer'].get('fast', False))
     if t.get('gen'):
@@ -2166,7 +2203,7 @@ def validate_task(t: dict, original: dict) -> None:
         _check_mix(dict(r, kind=kind))
     cut = t['cut']
     kit.need(isinstance(cut, dict) and set(cut) == set(_empty_cut()), 'Dữ liệu cắt sai.')
-    kit.need(isinstance(cut['steps'], list) and len(cut['steps']) <= 16 and all(x in CUT_STEPS for x in cut['steps']), 'Các bước cắt sai.')
+    kit.need(isinstance(cut['steps'], list) and len(cut['steps']) <= CUT_LOG and all(x in CUT_STEPS for x in cut['steps']), 'Các bước cắt sai.')
     kit.integer(cut['removed'], 0, 160)
     kit.need(type(cut['short']) is bool and type(cut['done']) is bool and cut['done'] == ('cut' in t['done']), 'Trạng thái cắt sai.')
 
