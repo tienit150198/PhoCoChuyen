@@ -1,0 +1,84 @@
+/* Thông cống chú Hai — scoped styles (.career-job.cg), over the street kit (street_kit.css).
+   Its own look: steel blue and galvanised grey, yellow-and-black safety stripes, a cut-away pipe that
+   shows the clog and the water, and the five tool slots on the back of the motorbike. */
+.career-job.cg{--sk-accent:#3f6f8f;--sk-accent-2:#f2c230;--cg-steel:#5f7486;--cg-pipe:#9aa9b5;--cg-water:#4fa3d9;--cg-sludge:#6b5134;--cg-safety:#f2c230}
+
+/* ---------- the pipe */
+.career-job.cg .cg-pipe{display:flex;align-items:center;gap:0;margin:6px 0 10px}
+.career-job.cg .cg-drain,.career-job.cg .cg-out{font-size:24px;flex:none;width:36px;text-align:center}
+.career-job.cg .cg-tube{position:relative;flex:1;height:26px;border-radius:13px;background:linear-gradient(180deg,#c9d3db,var(--cg-pipe) 55%,#7d8c98);box-shadow:inset 0 2px 4px rgb(0 0 0 / 25%);overflow:hidden}
+.career-job.cg .cg-water{position:absolute;left:0;top:6px;bottom:6px;width:38%;border-radius:8px;background:var(--cg-water);opacity:.85}
+.career-job.cg .cg-pipe.slow .cg-water{width:70%;background:repeating-linear-gradient(90deg,var(--cg-water) 0 18px,#8cc6ea 18px 24px)}
+.career-job.cg .cg-pipe.flow .cg-water{width:100%;background:repeating-linear-gradient(90deg,var(--cg-water) 0 18px,#8cc6ea 18px 24px);animation:cg-flow 1.2s linear infinite}
+.career-job.cg .cg-clog{position:absolute;left:40%;top:2px;font-size:18px;line-height:22px}
+@keyframes cg-flow{to{background-position:24px 0}}
+@media (prefers-reduced-motion:reduce){.career-job.cg .cg-pipe.flow .cg-water{animation:none}}
+
+/* ---------- finding the cause */
+.career-job.cg .cg-clues{list-style:none;margin:0 0 10px;padding:0;display:grid;gap:6px}
+.career-job.cg .cg-clues li.seen{display:flex;gap:8px;align-items:flex-start;padding:6px 8px;border-radius:10px;background:var(--sk-surface-2)}
+.career-job.cg .cg-clues li.seen>span{font-size:18px}
+.career-job.cg .cg-clues small{display:block;font-size:14px;line-height:1.35}
+.career-job.cg .cg-how{width:100%;min-height:44px;justify-content:flex-start}
+.career-job.cg .cg-causes{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.career-job.cg .cg-cause{min-height:44px;padding:6px 10px;border-radius:10px;border:2px solid var(--sk-line);background:var(--sk-surface);color:var(--sk-ink);font:inherit;text-align:left;cursor:pointer}
+.career-job.cg .cg-cause.on{border-color:var(--sk-accent);background:color-mix(in srgb,var(--sk-accent) 12%,var(--sk-surface));font-weight:700}
+.career-job.cg .cg-cause:disabled{opacity:.5;cursor:not-allowed}
+
+/* ---------- quote, safety, the work */
+.career-job.cg .cg-quote{border-left:6px solid var(--sk-accent)}
+.career-job.cg .cg-q-high .sk-opt-label{color:var(--sk-bad)}
+.career-job.cg .cg-safety{border:2px solid #222;background:
+  linear-gradient(var(--sk-surface),var(--sk-surface)) padding-box,repeating-linear-gradient(45deg,var(--cg-safety) 0 10px,#222 10px 20px) border-box;border:6px solid transparent}
+.career-job.cg .cg-safelist{margin:0;padding:0 0 0 20px;display:grid;gap:6px}
+.career-job.cg .cg-safelist li.ok{color:var(--sk-good);font-weight:700}
+.career-job.cg .cg-safelist li.ok span{margin-right:6px}
+.career-job.cg .cg-safe{min-height:44px;width:100%;justify-content:flex-start;white-space:normal;text-align:left}
+.career-job.cg .cg-gear-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.career-job.cg .cg-gear-row .btn{min-height:44px}
+.career-job.cg .cg-on{background:color-mix(in srgb,var(--cg-safety) 35%,var(--sk-surface));border-color:#b8921d}
+.career-job.cg .cg-use{grid-template-columns:repeat(3,minmax(0,1fr))}
+.career-job.cg .cg-use .sk-tile{background:linear-gradient(180deg,#eef2f5,#dfe6ec)}
+.career-job.cg .cg-use .sk-tile.used{opacity:.6}
+.career-job.cg .cg-use .sk-tile.away{background:repeating-linear-gradient(135deg,#f3f3f3 0 8px,#e7e7e7 8px 16px)}
+.career-job.cg .cg-extra{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.career-job.cg .cg-extra .btn{min-height:44px;flex:1 1 45%}
+.career-job.cg .cg-fetch{margin-top:10px}
+.career-job.cg .cg-away{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.cg .cg-away .btn{min-height:44px}
+.career-job.cg .cg-row{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.cg .cg-row .btn{min-height:48px;flex:1 1 30%}
+.career-job.cg .cg-place{margin:2px 0;font-weight:700}
+.career-job.cg .cg-place em{color:var(--sk-bad);font-style:normal;font-weight:400}
+
+/* ---------- the morning book and the bike */
+.career-job.cg .cg-booklist{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.cg .cg-booklist li{display:flex;gap:10px;align-items:flex-start;padding:6px 8px;border-radius:10px;background:var(--sk-surface-2)}
+.career-job.cg .cg-booklist li>span{font-size:22px}
+.career-job.cg .cg-booklist small{display:block;color:var(--sk-muted)}
+.career-job.cg .cg-tools{grid-template-columns:repeat(2,minmax(0,1fr))}
+.career-job.cg .cg-tools .sk-tile small{font-size:11px}
+.career-job.cg .cg-tools .sk-tile.selected{background:color-mix(in srgb,var(--sk-accent) 12%,var(--sk-surface))}
+.career-job.cg .cg-bike{border-top:6px solid var(--cg-steel)}
+.career-job.cg .cg-bike-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.career-job.cg .cg-gears{display:flex;gap:4px}
+.career-job.cg .cg-gear{font-size:18px;opacity:.3;filter:grayscale(1)}
+.career-job.cg .cg-gear.on{opacity:1;filter:none}
+.career-job.cg .cg-slots{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.career-job.cg .cg-slot{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:52px;padding:4px 2px;border-radius:10px;border:2px dashed var(--sk-line);text-align:center}
+.career-job.cg .cg-slot.on{border-style:solid;border-color:var(--cg-steel);background:#eef2f5}
+.career-job.cg .cg-slot span{font-size:20px}
+.career-job.cg .cg-slot small{font-size:10px;line-height:1.1;color:var(--sk-muted);overflow-wrap:anywhere}
+.career-job.cg .cg-bike.compact .cg-slot small{display:none}
+.career-job.cg .cg-bike.compact .cg-slot{min-height:40px}
+
+@media (max-width:420px){
+  .career-job.cg .cg-use{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .career-job.cg .cg-causes{grid-template-columns:1fr 1fr}
+}
+
+/* ---------- the awkward people (0.9.16) */
+.career-job.cg .cg-own{margin-top:10px}
+.career-job.cg .cg-counter{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 6px}
+.career-job.cg .cg-counter .btn{min-height:44px}
+.career-job.cg .cg-watch{border-color:#b8921d}

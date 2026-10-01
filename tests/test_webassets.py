@@ -86,6 +86,37 @@ class PageAndContentTests(unittest.TestCase):
         _,html=self.page();self.assertIn(f'content="{data["content_url"]}"',html)
         self.assertLess(len(json.dumps(data).encode()),80_000,'bootstrap stays small without the catalogue')
 
+    def test_content_parts_rebuild_the_whole_catalogue(self):
+        _,_,body=self.req('/api/bootstrap?lite=1');data=json.loads(body);url=data['content_url']
+        whole=json.loads(self.req(url)[2])
+        parts={}
+        for name in ('core','more'):
+            status,h,raw=self.req(f'{url}&part={name}',{'Accept-Encoding':'gzip'})
+            self.assertEqual(status,200,name);self.assertIn('immutable',h['Cache-Control']);self.assertEqual(h['ETag'],f'"{data["content_version"]}-{name}"')
+            parts[name]=json.loads(gzip.decompress(raw))
+        core,more=parts['core'],parts['more']
+        self.assertEqual(core.pop('part'),'core')
+        self.assertLess(len(json.dumps(core,ensure_ascii=False).encode()),len(json.dumps(whole,ensure_ascii=False).encode())//2,'the first frame waits for under half')
+        self.assertTrue(set(core['careers'])==set(whole['careers']) and not any(core['careers'].values()),'career ids only')
+        for key in ('employment','operations','situations'):self.assertNotIn(key,core);self.assertEqual(more[key],whole[key])
+        self.assertNotIn('certs',core['journey']);self.assertNotIn('stories',core['experiences'])
+        rebuilt=dict(core)
+        for key,value in more.items():rebuilt[key]={**core[key],**value} if isinstance(core.get(key),dict) else value
+        rebuilt['careers']={cid:json.loads(self.req(f'{url}&career={cid}')[2]) for cid in core['careers']}
+        self.assertEqual(json.dumps(rebuilt,sort_keys=True),json.dumps(whole,sort_keys=True))
+        self.assertEqual(self.req(f'{url}&career=nope')[0],404);self.assertEqual(self.req(f'{url}&part=nope')[0],404)
+        self.assertEqual(self.req(f'{url}&part=core',{'If-None-Match':f'"{data["content_version"]}-core"'})[0],304)
+
+    def test_bootstrap_names_the_first_workplace_to_preload(self):
+        _,h,body=self.req('/api/bootstrap?lite=1');view=json.loads(body)['state']
+        place=view.get('current') or view.get('focus')
+        warm=h.get('X-Game-Warm','').split(',');self.assertTrue(warm[0].startswith('/js/scenes/'),warm)
+        _,html=self.page();imap=json.loads(re.search(r'<script type="importmap">(.*?)</script>',html,re.S).group(1))['imports']
+        preloaded={u.split('?')[0] for u in re.findall(r'rel="modulepreload" href="([^"]+)"',html)}
+        for path in warm:self.assertIn(path,imap);self.assertNotIn(path,preloaded,'already in the first round')
+        if place in json.loads(self.req(json.loads(body)['content_url']+'&part=core')[2])['careers']:self.assertEqual(h.get('X-Game-Place'),place)
+        else:self.assertNotIn('X-Game-Place',h)
+
     def test_game_version_header_on_every_api_response(self):
         _,html=self.page();own=re.search(r'<meta name="mnl-version" content="([^"]+)"',html).group(1)
         for path in ('/api/health','/api/bootstrap?lite=1','/api/state','/api/nope'):
@@ -157,6 +188,16 @@ class DeployTests(unittest.TestCase):
     def test_module_imports_parser(self):
         src="import {a,\n b} from './x.js';\nimport './side.js';\nexport {c} from \"../y.js\";\nexport const s='./not.js';\nconst m=import('./lazy.js');\n"
         self.assertEqual(sorted(module_imports(src)),['../y.js','./side.js','./x.js'])
+        # Minified release files (scripts/build_static.py): statements share a line.
+        mini='import{a as b}from"./x.js";import"./side.js";export*from"../y.js";export{c as d}from"./z.js";const m=import("./lazy.js");export const s="./not.js";'
+        self.assertEqual(sorted(module_imports(mini)),['../y.js','./side.js','./x.js','./z.js'])
+
+    def test_career_warm_lists_scene_workbench_and_stylesheets(self):
+        warm=WebAssets(PUBLIC,"script-src 'self'",lambda:'c').snapshot().warm
+        self.assertEqual(warm['milk_tea'].split(','),['/js/scenes/teabar.js','/js/careers/milk_tea.js','/js/careers/food_kit.js','/css/careers/milk_tea.css'])
+        self.assertEqual(warm['restaurant'].split(',')[-2:],['/css/careers/food_kit.css','/css/careers/restaurant.css'],'the kit before the career sheet')
+        self.assertEqual(warm['teacher'],'/js/scenes/classroom.js')
+        self.assertEqual(set(warm),set(webassets.js_table((PUBLIC/'js/scenes/index.js').read_text(),'KIND_OF')))
 
 
 class ClientChecks(unittest.TestCase):

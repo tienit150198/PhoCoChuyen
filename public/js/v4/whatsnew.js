@@ -5,9 +5,10 @@
  * - What the player has read is settings.whatsNewSeen in the save, so it
  *   follows the account across devices. localStorage only stands in while the
  *   save has no such key (an older server).
- * - A server-wide notice: new saves start at "" too (engine.new_state), and the
- *   card opens over any screen; it only waits for naming the character and the
- *   tutorial tour.
+ * - A notice for returning players: it opens over any screen and only waits for
+ *   the tutorial tour. A brand-new player never gets it: naming the character marks
+ *   the current notes as read on the server (journey._welcome_settings), and a save
+ *   still in its first life day is marked here, silently (older saves named before that).
  * - Modal dialog: focus stays inside, Esc closes, a backdrop tap does nothing
  *   (no accidental dismissal), a tap in the first moment after it pops up is
  *   ignored, reduced motion is respected.
@@ -16,6 +17,7 @@
 import NOTES from './whatsnew-data.js';
 import {language} from './i18n.js';
 import {icon,escapeHTML as esc} from '../icons.js';
+import {firstDay} from './onboard.js';
 
 const KEY='mnl.wn.seen';
 const VERSION=/^\d{1,3}(\.\d{1,3}){1,2}$/;
@@ -167,6 +169,13 @@ function markSeen(){
   E.api.command('settings',{whatsNewSeen:LATEST},st.current||st.focus).catch(()=>{});   // an older server only loses the sync
 }
 
+/** A named save in its first life day is a new player: the notes count as read, and nothing opens. */
+function newcomer(){
+  const s=E?.api?.state,J=s?.journey;
+  if(!due(s)||!firstDay(s)||!(J?.intro||J?.gender)||dlg?.open)return;
+  markSeen();
+}
+
 /* ------------------------------------------------------------ watching */
 function check(){
   if(done||!due(E?.api?.state)){stopWatch();return;}
@@ -197,5 +206,6 @@ export function whatsNewBoot(env){
       openWhatsNew(E);
     },true);
     if(due(env.api?.state)){stopWatch();calmTicks=0;timer=setInterval(check,700);}
+    env.api?.addEventListener?.('state',newcomer);newcomer();
   }catch(error){console.error('whatsnew:',error);}   // never in the way of the game
 }

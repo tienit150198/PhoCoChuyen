@@ -6,6 +6,7 @@
  * the practice quiz is a separate bank checked here in the browser. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {asset} from '../assets.js';
+import {skeleton} from '../lazy.js';
 
 const attrs=obj=>Object.entries(obj).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 const btn=(label,action,data={},style='',extra='')=>`<button type="button" class="btn ${style}" data-action="${action}"${attrs(data)}${extra}>${label}</button>`;
@@ -145,6 +146,8 @@ export function certsView(env){
   const {api,ui}=env,J=api.state.journey,k=K(api);
   certCss();
   const title='🎓 Thi chứng chỉ';
+  // The question banks come with the catalogue's `more` part (api.js more()): a skeleton until then.
+  if(J?.story&&!k){api.more?.().catch(()=>{});return head(title,'')+`<div class="sheet-body jr-body">${skeleton()}</div>`;}
   if(!J?.story||!k)return head(title,'')+`<div class="sheet-body jr-body"><p class="muted">Thi chứng chỉ có trong hành trình.</p></div>`;
   const st=J.study,sg=st&&k.groups.find(x=>x.id===st.cert);
   const focus=ui.certFocus&&k.groups.some(g=>g.id===ui.certFocus)?ui.certFocus:null;
@@ -169,7 +172,7 @@ export async function certAction(action,data,el,env){
       const payload={cert:g.id,mode:data.mode};if(ui.certCareer&&g.careers.includes(ui.certCareer))payload.career=ui.certCareer;
       if(data.mode==='class'){
         const r=J.certificates?.[g.id],fee=r?.attempts?g.retake_fee:g.fee;
-        const ok=await confirmAction(`Đăng ký ${r?.attempts?'lớp ôn':'lớp cấp tốc'}?`,`${g.name}: học phí ${fee} xu trừ vào ví (ví còn ${J.wallet} xu). ${k.class_days?`Bài thi mở từ Ngày ${J.life_day+k.class_days}.`:'Học xong vào thi luôn hôm nay.'}`,`Đóng ${fee} xu`,{cost:fee,pocket:'wallet'});
+        const ok=await confirmAction(`Đăng ký ${r?.attempts?'lớp ôn':'lớp cấp tốc'}?`,`${g.name}: học phí ${fmt(fee)} xu trừ vào ví (ví còn ${fmt(J.wallet)} xu). ${k.class_days?`Bài thi mở từ Ngày ${J.life_day+k.class_days}.`:'Học xong vào thi luôn hôm nay.'}`,`Đóng ${fee} xu`,{cost:fee,pocket:'wallet'});
         if(!ok)return true;
       }
       ui.certPractice={...(ui.certPractice||{}),[g.id]:{}};ui.certHint={};

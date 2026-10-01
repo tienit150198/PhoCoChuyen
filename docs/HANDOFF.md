@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **0.9.12** (`main` = `b491cbf`), 23 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **0.9.17** (`main` = `4648c63`), 28 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -48,6 +48,15 @@ branch holds what, and what to do next, in order. Details live in the linked doc
   `renderSheet(false)` is for switching screens only). Its "Có gì mới" note, like 0.9.11's, was removed at the
   owner's request (no server-wide notice for fixes); both are described in the CHANGELOG.
 
+### 0.9.13 → 0.9.15 (01/10, night)
+- **0.9.13:** homes (villas, 4 apartment types, +20% prices), "Tiền của bạn" money sheet, faster cold load (minified
+  release), payroll names the empty box and shows whole numbers as 12400. Notes: new features only (homes, money).
+- **0.9.14:** admin "Thời gian chơi" (stat_play, exact from 01/10 00:31).
+- **0.9.15:** five careers: bán trái cây `fruit`, thu gom rác `garbage`, thông ống cống `drain` (chapter 3), phi công
+  `pilot`, tiếp viên `flight_attendant` (chapter 4, own airline UI); each save grows ~15 KB. System gifts:
+  `scripts/grant_gift.py` grants coins with a private popup ("Quà từ Phố Có Chuyện"), paid once through the game's
+  own command path; first use: 100 xu to the one player hit by the 01/10 00:33 502s (`sorry-20261001-910d8b7f`).
+
 ## 2. Rules the owner set (do not break)
 
 1. **Never delete or alter player data.** Old history goes to the archive (paged "Xem cũ hơn"); money and
@@ -56,19 +65,22 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 2. **Less text**, focus on the task, the one next action and the experience; phone first (390 px).
 3. **Deploy with no gap** (`deploy/rolling_release.sh`, `docs/DEPLOY_ROLLING.md`).
    **"Có gì mới" only when the owner says so** (30/09): an entry pops up for every player, so fixes and small
-   releases ship quietly (bump the version, write the CHANGELOG, no `game/whats_new.py` entry). Propose the
-   player-facing lines to the owner instead.
+   releases ship quietly (bump the version, write the CHANGELOG, no `game/whats_new.py` entry). A big release
+   with new features gets a note (01/10), and the note lists **new features only**: no fixes, no price changes.
 4. **Memory:** any in-process cache must be bounded (bytes + rows). The new server has 15 GB; PostgreSQL takes
    3 GB of shared buffers and the game is capped at 8 GB (`MemoryMax`).
 5. **No credentials in the repo or in commits.** Server access comes from the owner.
+6. **Every career, now and future, needs MANY awkward, annoying, strange demands** (01/10): from customers,
+   bosses, neighbours, family, everything around the job; the more exasperating from outsiders the better, while
+   the UI stays easy to read. This is a standing requirement for all career work.
 
 ## 3. Branches (local and on GitHub)
 
 | Branch | State | What it is |
 |---|---|---|
 | `main` | **live 0.9.12** | Notice releases 0.9.8–0.9.10, the 0.9.11 heartbreak hotfix and the 0.9.12 certificate-scroll fix on top of `rel096`. |
-| `rel098` | **in progress → ships as 0.9.13** | Housing (+20% prices, 4 apartment types, 2 villas, grouped listing) + rel095 QA fixes (spouse "tab khác" retry, joint-fund signs, "Free size", credit gauge, English pack ~450 strings) + **pre-deploy task-compatibility gate** (`scripts/check_task_compat.py`) + a **"Tiền của bạn"** money sheet (labelled 🏪 Quỹ / 👛 Ví chips). Must merge `main` (keep the 0.9.8–0.9.12 whats_new entries below its own) and be renumbered **0.9.13**. Not deployed. |
-| `coldload` | **ready** (`7cb07fb`, pushed) | Faster cold page load on weak mobile networks: minified release, catalogue in parts, first workplace preloaded. Slow 4G first screen 5.7 s → 3.9 s (new player), 563 → 394 KB; target < 3 s needs ~100–150 KB less first-screen code (lazy modules). `package.py` now needs node/npx (or `--no-minify`); the first minified release makes every URL cold once. Ships with 0.9.13. |
+| `rel098` | **in progress → ships as 0.9.13** | Housing (+20% prices, 4 apartment types, 2 villas, grouped listing) + rel095 QA fixes (spouse "tab khác" retry, joint-fund signs, "Free size", credit gauge, English pack ~450 strings) + **pre-deploy task-compatibility gate** (`scripts/check_task_compat.py`) + a **"Tiền của bạn"** money sheet (labelled 🏪 Quỹ / 👛 Ví chips). Merged `main` (quiet release: no whats_new entry of its own) and `coldload`; numbered **0.9.13**. Pushed, not deployed. |
+| `coldload` | **merged into `rel098` (0.9.13)** (`7cb07fb`) | Faster cold page load on weak mobile networks: minified release, catalogue in parts, first workplace preloaded. Slow 4G first screen 5.7 s → 3.9 s (new player), 563 → 394 KB; target < 3 s needs ~100–150 KB less first-screen code (lazy modules). `package.py` now needs node/npx (or `--no-minify`); the first minified release makes every URL cold once. Ships in 0.9.13 via `rel098`. |
 | `careers-street` | **in progress** | New careers: bán trái cây (fruit seller), dọn rác (garbage collector), thông ống cống (drain cleaner). Worktree `../PhoCoChuyen-careers-street`. |
 | `careers-air` | **in progress** | New careers: phi công (pilot), tiếp viên hàng không (flight attendant). Worktree `../PhoCoChuyen-careers-air`. Registry files will conflict with `careers-street` at merge; merge one, then the other. |
 | `housing2`, `rel095`, `rel096`, `integ`, `perf-*`, `save-size`, `admin-pg`, `ux-work` | merged | Kept for history. |
@@ -85,8 +97,19 @@ branch holds what, and what to do next, in order. Details live in the linked doc
    - Package with `scripts/package.py` from a clean `git archive`, then `mnl-rolling-release <zip>` **on the
      new server**. While the old server still forwards (§7), mirror the release to it (§7).
    - Afterwards, watch 5xx/400 rates and the slow-cmd log for 10 minutes.
-2. **New careers** (`careers-street`, `careers-air`): review, merge one after the other, full checklist, then a
-   release of their own (0.9.14) with a "Có gì mới" entry.
+2. **Onboarding shipped in 0.9.16 (01/10 02:12, quiet):** one intro screen, day 1 opens on the first customer, first
+   delivery after 10 presses (was 23), no modal before the 3rd customer, tip + level 2 at customer 3 + day-1 gift,
+   one-time hints. Measure it: the 30/09 cohort had 53% picking a workplace and 39% serving a customer; compare the
+   01/10+ cohorts (admin "Thời gian chơi", new players' first day).
+   **0.9.17 (01/10 07:23, quiet):** `street2` + `air2`: player-led haggling, quotes, debts, fees and replies with
+   NPCs deciding from hidden traits (deterministic from the task seed + the player's input), overcharging, grumbling
+   owners, theft, unpaid tabs, night vandals, seduction/harassment handled PG-13 (giving in never rewarded,
+   reporting always protected), storms for pilots. In progress: branch `retention` (milestones, daily action
+   counts, leave beacons, client errors, acquisition, real-user load times; admin "Giữ chân"; details kept 60 days).
+3. **Next versions, in the owner's order:** (a) chat phase 1 (design `docs/superpowers/specs/2026-09-30-live-chat-street-design.md`
+   on branch `live`; the owner said not yet on 01/10), then (b) seven careers: nhân viên gác chắn và bảo trì đường sắt,
+   cán bộ lưu trữ và thư viện, điều dưỡng, thợ dầu khí, trực tổng đài cứu hộ, người gác hải đăng, cứu hộ hồ bơi,
+   together with (c) many more awkward, annoying demands in every existing career (rule 6).
 3. **Retire the old server's role (after 3–7 days, ~03–07/10):** see §7.
 4. **Deploy less often.** Each deploy makes the changed files cold for everyone. Batch changes; hotfixes excepted.
 5. **English pack.** Older screens still have ~15k untranslated strings (English players see Vietnamese).
@@ -131,7 +154,13 @@ Then: bump `game/__init__.py` and add a CHANGELOG entry. Only if the owner asked
   (drop-ins: `50-postgres.conf` with `PG_POOL=6 PG_POOL_MAX=12`, `workers.conf`, `assets.conf`, `keepdata.conf`,
   `zz-pyvendor.conf`). A transient `mot-ngay-lam-nghe-bridge` exists only during a rolling release (:8766).
   `mnl-selfheal.service`, `mnl-pg-backup.timer` (03:40), `certbot.timer`.
-- **Deploy:** `mnl-rolling-release <zip>` (same script as before, `deploy/rolling_release.sh`).
+- **Deploy:** `mnl-rolling-release <zip>` (same script as before, `deploy/rolling_release.sh`). `package.py` now
+  minifies (needs node/npx). `/etc/nginx/nginx.conf` has `worker_shutdown_timeout 20s` (01/10): without it an old
+  nginx worker kept one player's HTTP/2 connection pinned to the stopped bridge for minutes after a release
+  (52 × 502 for that player on 01/10 00:34).
+- **Play time:** `stat_play` (one row per player per Vietnam day, trigger on `receipts`, ~12 µs per command) feeds
+  the admin "Thời gian chơi" card. Exact from 01/10 00:31; 29–30/09 were backfilled from receipts as estimates
+  (`scripts/playtime_backfill.py`, idempotent).
 - **nginx site** `/etc/nginx/sites-enabled/phocochuyen` (same as the old server): HTTP/2, static
   `/js /css /i18n /icons /music /fonts` served directly, `?v=` assets from `/opt/mot-ngay-lam-nghe/shared/_v`
   (immutable), a timing log for `/api/` in `/var/log/nginx/phocochuyen_api.log`. `/etc/nginx/conf.d/mnl-realip.conf`

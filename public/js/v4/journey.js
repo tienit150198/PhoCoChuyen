@@ -14,12 +14,13 @@ import {certsView,certsEntry,certBadges,certTitles,certAction} from './certifica
 import {lifeView,lifeEntry,lifeCard,lifeAction,lifeBoot} from './life.js';
 import {portrait,lookOf} from './look.js';
 import {lazy,skeleton} from '../lazy.js';
+import {FIRST_JOB,quiet,firstDay} from './onboard.js';
 // 👗 Tủ đồ (v4/wardrobe.js): the sheet loads the first time it opens.
 const WD=lazy(()=>import('./wardrobe.js'),{css:['/css/wardrobe.css']});
 
 export const EMOJI={restaurant:'🍜',cafe_bakery:'🥐',grocery:'🛒',repair:'🔧',homestay:'🏡',corp_accounting:'🧮',tax_payroll:'🧾',group_accounting:'🏢',
   mother_baby:'🎁',pharmacy:'💊',accounting:'📒',customer_care:'🎧',teacher:'🍎',tour_guide:'🧭',milk_tea:'🧋',florist:'💐',salon:'💇',
-  pet_care:'🐾',farm:'🌾',delivery:'🛵'};
+  pet_care:'🐾',farm:'🌾',delivery:'🛵',clothing:'👕',pet_shop:'🐠',tra_da:'🧊'};
 const CATS={food:'Ăn uống',shop:'Buôn bán',service:'Dịch vụ',office:'Văn phòng',outdoor:'Ngoài trời'};
 const LEGACY_CAT={mother_baby:'shop',pharmacy:'shop',accounting:'office',customer_care:'office',teacher:'service',tour_guide:'outdoor',milk_tea:'food'};
 const SKILL_SHORT={careful:'Cẩn thận',communication:'Giao tiếp',patience:'Kiên nhẫn',numbers:'Con số',teamwork:'Làm nhóm',creative:'Sáng tạo',tech:'Máy tính',calm:'Bình tĩnh',learning:'Ham học'};
@@ -71,7 +72,8 @@ function meCard(env){
   const span=mat.next?Math.max(1,mat.next-mat.floor):1,pct=mat.next?Math.min(100,Math.round((mat.xp-mat.floor)*100/span)):100;
   const eq=J.equipped_title;
   const skills=(C.skills||[]).map(sk=>{const v=J.skills.find(x=>x.id===sk.id)||{level:0};return `<li class="jr-skill ${v.level?'':'zero'}" title="${esc(sk.name)}"><span aria-hidden="true">${sk.emoji}</span><b>${esc(SKILL_SHORT[sk.id]||sk.name)}</b><i class="jr-pips" aria-label="Mức ${v.level}">${'●'.repeat(v.level)}${'○'.repeat(Math.max(0,6-v.level))}</i></li>`;}).join('');
-  const wallet=J.story?`<button type="button" class="jr-stat ${J.debt?'bad':''}" data-action="jrView" data-view="wallet"><small>Ví của bạn</small><b>${J.debt?`Nợ ${fmt(J.debt)} xu`:`${fmt(J.wallet)} xu`}</b></button>`:'';
+  // 💰 The wallet stat opens "Tiền của bạn" (v4/wealth.js): every pocket in one place, Sổ ví one tap further.
+  const wallet=J.story?`<button type="button" class="jr-stat ${J.debt?'bad':''}" data-action="money"><small>Ví của bạn</small><b>${J.debt?`Nợ ${fmt(J.debt)} xu`:`${fmt(J.wallet)} xu`}</b></button>`:'';
   return `<section class="jr-card jr-me" aria-label="Nhân vật của bạn">
     <div class="jr-me-top"><button type="button" class="jr-avatar" data-action="jrView" data-view="profile" aria-label="Sửa tên và nhân vật">${avatar(J.gender,68,lookOf(api.state))}</button>
       <div class="jr-me-text"><h2>${esc(api.state.name)}</h2>${spouseChip(api)}
@@ -166,31 +168,34 @@ function houseCard(env){
   const p=H.place||{},c=p.cost||{},L=H.own?.loan;
   const sub=p.where_id==='own'?'Nhà của bạn':p.where_id==='shared'?`Nhà chung với ${esc(p.with||'')}`:p.where_id==='rent'?'Phòng thuê':'Thuê theo ngày';
   const cost=p.where_id==='own'||p.where_id==='shared'?`Điện nước ${fmt(c.rent)} xu/ngày`:`Tiền phòng ${fmt(c.rent)} xu/ngày`;
-  const homes=(H.market||[]).filter(m=>m.kind==='own'),can=homes.filter(m=>!(m.missing>0)).pop(),next=homes.find(m=>m.missing>0);
+  const cat=env.api.content.journey?.homes||{groups:[],homes:[]},live=new Map((H.market||[]).map(r=>[r.id,r]));
+  const homes=cat.homes.filter(c=>c.kind==='own'&&live.has(c.id)).map(c=>({...c,...live.get(c.id)})).sort((x,y)=>x.price-y.price),sc=H.offer?.score,can=homes.filter(m=>!(m.missing>0)&&(sc==null||sc>=(m.score||0)||!(m.missing_all>0))).pop(),next=homes.find(m=>m.missing>0);
+  const tone=(cat.groups.find(g=>g.id===p.group)||{}).color;
   const hint=L?(L.overdue?`⏰ Trả góp nhà đang chậm ${fmt(L.overdue)} xu`:`Đã trả ${L.paid_rows}/${L.rows.length} kỳ vay mua nhà`)
     :H.own?'Nhà không còn nợ 🔑':can?`${can.emoji} Đủ tiền trả trước ${esc(can.name)} rồi đó!`:next?`${next.emoji} ${esc(next.name)}: còn thiếu ${fmt(next.missing)} xu để trả trước`:'';
-  return `<section class="jr-card jr-house" aria-label="Nơi bạn ở"><button type="button" class="jr-house-row" data-action="house"><span class="jr-house-emoji" aria-hidden="true">${p.emoji||'🏚️'}</span>
+  return `<section class="jr-card jr-house" aria-label="Nơi bạn ở"><button type="button" class="jr-house-row" data-action="house"><span class="jr-house-emoji" aria-hidden="true"${tone?` style="--hs-tone:${esc(tone)}"`:''}>${p.emoji||'🏚️'}</span>
     <span class="grow"><small>${sub} · ${cost}</small><b>${esc(p.name||'')}</b><em>${hint}</em></span><span class="btn cream small" aria-hidden="true">🏠 Nhà của bạn</span></button></section>`;
 }
 
 /* ------------------------------------------------------------------ intro */
+/** A brand-new player's one screen: who you are and where you start, then straight into the first customer
+ * (app.js quickOpen). The recommended first workplace is picked already; one tap picks another. */
+const jobLabel=m=>{const s=String(m.short||m.place||'').replace(/^(Tiệm|Quán)\s+/,'');return s.charAt(0).toUpperCase()+s.slice(1);};
 function introView(env){
   const {api,ui}=env,J=api.state.journey,C=api.content.journey,ch=C.chapters[0];
-  const step=J.gender&&ui.jrStep!=='who'?'job':ui.jrStep||'arrive';
-  if(step==='arrive'){
-    return `<div class="jr-intro"><div class="jr-street" aria-hidden="true"><span>🏠</span><span>🏪</span><span>🌳</span><span>🧋</span><span>🏮</span><span>🛵</span></div>
-      <span class="eyebrow">Ngày đầu tiên</span><h1>Một khu phố nhỏ, một căn gác thuê</h1>
-      <p class="jr-lead">Bạn vừa chuyển tới đây với một chiếc ba lô. Chưa quen ai, chưa có nghề gì trong tay, chỉ có thật nhiều tò mò.</p>
-      <div class="jr-lines">${ch.intro.slice(0,2).map(l=>say(l,J.gender)).join('')}</div>
-      <button type="button" class="btn primary big full" data-action="jrStep" data-step="who">Chào khu phố ${icon('arrow',16)}</button>
-      ${api.account?'':`<button type="button" class="jr-link acct-intro-link" data-action="v4AccountOpen" data-mode="login">${icon('user',14)} Đã có tài khoản? Đăng nhập</button>`}</div>`;
-  }
-  if(step==='who')return `<div class="jr-intro">${whoForm(env,'Bạn là ai?','Hàng xóm sẽ gọi bạn thế nào?','Đây là mình')}</div>`;
   const ids=ch.unlocks.filter(id=>api.state.careers[id]);
-  return `<div class="jr-intro"><span class="eyebrow">Việc đầu tiên</span><h1>Bắt đầu từ đâu nhỉ?</h1>
-    <div class="jr-lines">${say(ch.intro[2],J.gender)}</div>
-    <div class="jr-first-jobs">${ids.map(id=>{const m=meta(api,id);return `<button type="button" class="jr-job" data-action="choose" data-career="${esc(id)}" style="--career:${colour(m.color)}"><span class="jr-job-emoji" aria-hidden="true">${emojiOf(m)}</span><b>${esc(m.place||m.short)}</b><small>${esc(m.tagline||m.short||'')}</small><span class="jr-job-go">Làm thử ${icon('arrow',14)}</span></button>`;}).join('')}</div>
-    <button type="button" class="jr-link" data-action="jrStep" data-step="who">${icon('back',14)} Sửa tên hoặc nhân vật</button></div>`;
+  const rec=ids.includes(FIRST_JOB)?FIRST_JOB:ids[0],job=ids.includes(ui.jrJob)?ui.jrJob:rec;
+  const pick=ui.jrGender||J.gender||'';
+  const card=(g,label)=>`<button type="button" class="jr-gender ${pick===g?'active':''}" data-action="jrGender" data-gender="${g}" aria-pressed="${pick===g}">${avatar(g,64)}<b>${label}</b></button>`;
+  const chip=id=>{const m=meta(api,id),on=id===job;
+    return `<button type="button" class="onb-job ${on?'active':''} ${id===rec?'rec':''}" data-action="jrJob" data-career="${esc(id)}" aria-pressed="${on}" style="--career:${colour(m.color)}"><span aria-hidden="true">${emojiOf(m)}</span>${esc(jobLabel(m))}${id===rec?'<small>hợp người mới</small>':''}</button>`;};
+  return `<div class="jr-intro onb-intro"><div class="jr-street" aria-hidden="true"><span>🏠</span><span>🏪</span><span>🌳</span><span>🧋</span><span>🏮</span><span>🛵</span></div>
+    <h1>Chào bạn mới! 👋</h1><p class="jr-lead">Một khu phố nhỏ, nhiều nghề để thử.</p>
+    <form class="jr-who" data-jr-form="start"><div class="jr-genders" role="group" aria-label="Giới tính">${card('male','Nam')}${card('female','Nữ')}</div>
+    <label class="jr-name"><span>Tên của bạn</span><input id="jr-name" name="name" maxlength="24" autocomplete="nickname" required value="${esc(api.state.name)}" data-preserve></label>
+    <fieldset class="onb-jobs"><legend>Làm ở đâu trước?</legend><div class="onb-job-row">${ids.map(chip).join('')}</div></fieldset>
+    <button type="submit" class="btn primary big full" ${pick?'':'disabled'}>Vào làm thôi ${icon('arrow',16)}</button></form>
+    ${api.account?'':`<button type="button" class="jr-link acct-intro-link" data-action="v4AccountOpen" data-mode="login">${icon('user',14)} Đã có tài khoản? Đăng nhập</button>`}</div>`;
 }
 
 function whoForm(env,title,sub,cta){
@@ -242,7 +247,9 @@ function walletView(env){
       <div class="jr-fund-actions">${draw}${invest}<div class="row wrap">${pause}</div></div></details>`;
   }).join('')||`<p class="muted">Chưa có nơi làm việc nào. Bắt đầu ở một tiệm trong hẻm nhé.</p>`;
   const kinds={living:'🏠',upkeep:'💡',draw:'👛',invest:'📈',salary:'💵',reopen:'🔑',incident:'⚖️',life:'🌿',study:'📚',backdoor:'🚪',bank:'🏦',home:'🔑'};
-  const row=h=>`<li><span aria-hidden="true">${kinds[h.kind]||'•'}</span><span class="grow">${esc(h.label)}<small>Ngày sống ${fmt(h.day)}</small></span><b class="${h.amount<0?'out':'in'}">${h.amount<0?'−':'+'}${fmt(Math.abs(h.amount))} xu</b></li>`;
+  // A label that brings its own emoji ("🎁 Quà từ Phố Có Chuyện") shows it in place of the kind's.
+  const lead=h=>/^(\p{Extended_Pictographic}\uFE0F?) /u.exec(h.label||'');
+  const row=h=>{const m=lead(h);return `<li><span aria-hidden="true">${m?m[1]:kinds[h.kind]||'•'}</span><span class="grow">${esc(m?h.label.slice(m[0].length):h.label)}<small>Ngày sống ${fmt(h.day)}</small></span><b class="${h.amount<0?'out':'in'}">${h.amount<0?'−':'+'}${fmt(Math.abs(h.amount))} xu</b></li>`;};
   const hist=[...J.history,...olderRows('','wallet')].map(row).join('')||`<li class="muted">Chưa có khoản nào.</li>`;
   const L=J.living;
   return head('Ví của bạn','',{back:true})+`<div class="sheet-body jr-body">
@@ -314,6 +321,12 @@ function titleScene(ids){
     <div class="row wrap jr-scene-actions">${btn('Đeo danh hiệu này','jrEquip',{title:first.id,keep:'1'},'cream')}${btn('Tuyệt!','jrSceneClose',{},'primary')}</div></div>`;
 }
 
+function titleToast(ids){
+  const C=E.api.content.journey,J=E.api.state.journey;
+  const rows=ids.map(id=>{const t=C.titles.find(x=>x.id===id);return t?.secret?{id,...J.secret[id]}:t;}).filter(Boolean);
+  if(rows.length)E.toast?.(`${rows[0].emoji} Danh hiệu mới: ${rows[0].name}${rows.length>1?` (+${rows.length-1})`:''}`,'good');
+}
+
 function whoScene(){
   return `<div class="jr-scene-card">${whoForm(E,'Trước khi đi tiếp…','Khu phố muốn biết thêm một chút về bạn.','Lưu và tiếp tục')}</div>`;
 }
@@ -324,16 +337,21 @@ function storyScene(n){
 }
 
 let asked=false;
+const toasted=new Set();   // title news already said as a toast (first day), while jr_seen is on its way
 function maybeScene(){
   if(!E?.api.state?.journey||!E.api.content?.journey)return;
   const J=E.api.state.journey,d=document.getElementById('jrScene');
   if(d?.open||document.getElementById('stScene')?.open||J.story&&!J.intro)return;
   if(!J.story){maybeStory();return;}
   if(document.getElementById('confirmDialog')?.open){setTimeout(maybeScene,400);return;}
+  const S=E.api.state;
   const ch=J.news.find(n=>n.kind==='chapter');
-  if(ch){openScene(chapterScene(Number(ch.ref)),[ch.id]);return;}
+  if(ch){if(!quiet(S))openScene(chapterScene(Number(ch.ref)),[ch.id]);return;}   // after the first 3 customers
   const ts=J.news.filter(n=>n.kind==='titles');
-  if(ts.length){const ids=[...new Set(ts.flatMap(n=>n.items))];const html=titleScene(ids);if(html){openScene(html,ts.map(n=>n.id));return;}
+  if(ts.length){const ids=[...new Set(ts.flatMap(n=>n.items))];
+    // The first day: a small toast, no card over the work (the titles stay in Hành trình → Danh hiệu).
+    if(firstDay(S)){const fresh=ts.filter(n=>!toasted.has(n.id));if(fresh.length){fresh.forEach(n=>toasted.add(n.id));titleToast(ids);E.cmd('jr_seen',{ids:fresh.map(n=>n.id)},{quiet:true});}return;}
+    const html=titleScene(ids);if(html){openScene(html,ts.map(n=>n.id));return;}
     E.cmd('jr_seen',{ids:ts.map(n=>n.id)},{quiet:true});return;}
   if(!J.gender&&!asked){asked=true;openScene(whoScene());return;}
   maybeStory();   // truyện nghề: a workplace beat, after the journey's own scenes
@@ -368,6 +386,7 @@ export async function journeyAction(action,data,el,env){
   switch(action){
     case'jrView':ui.jrView=data.view||'home';renderSheet(false);document.getElementById('sheet')?.scrollTo?.(0,0);return true;
     case'jrStep':ui.jrStep=data.step;renderSheet(false);return true;
+    case'jrJob':ui.jrJob=data.career;renderSheet();return true;
     case'jrGender':{ui.jrGender=data.gender;const scene=document.getElementById('jrScene');
       if(scene?.open){const name=scene.querySelector('[name="name"]')?.value;openScene(whoScene(),sceneQueue||[]);const input=scene.querySelector('[name="name"]');if(input&&name!=null)input.value=name;}
       else renderSheet();return true;}
@@ -391,6 +410,18 @@ export async function journeyAction(action,data,el,env){
 export async function journeySubmit(f,env){
   const kind=f.dataset.jrForm;if(!kind)return false;
   const {ui,cmd,renderSheet,api}=env;
+  if(kind==='start'){   // the intro's one screen: name + look, then the first workplace (no step in between)
+    const name=f.querySelector('[name="name"]')?.value.trim()||'',gender=ui.jrGender||api.state.journey.gender;
+    if(!gender){env.toast?.('Chọn Nam hoặc Nữ trước nhé.',true);return true;}
+    const btn=f.querySelector('[type="submit"]');if(btn)btn.disabled=true;
+    const r=await cmd('jr_profile',{name,gender});
+    if(!r){if(btn)btn.disabled=false;return true;}
+    ui.jrGender=null;
+    const ids=api.content.journey.chapters[0].unlocks.filter(id=>api.state.careers[id]);
+    const job=ids.includes(ui.jrJob)?ui.jrJob:ids.includes(FIRST_JOB)?FIRST_JOB:ids[0];ui.jrJob=null;
+    if(job)await env.act('choose',{career:job});
+    return true;
+  }
   if(kind==='profile'){
     const name=f.querySelector('[name="name"]')?.value.trim()||'',gender=ui.jrGender||api.state.journey.gender;
     if(!gender){env.toast?.('Chọn Nam hoặc Nữ trước nhé.',true);return true;}

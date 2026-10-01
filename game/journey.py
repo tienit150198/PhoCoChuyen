@@ -29,11 +29,16 @@ from . import certificates as ct
 from . import bank as bk   # 🏦 Ngân hàng Phố (game/bank.py)
 from . import wardrobe as wd   # 👗 Tủ đồ (game/wardrobe.py)
 from . import housing as hs   # 🏠 Nhà của bạn (game/housing.py)
+from . import system_gift as sg   # 🎁 Quà từ Phố Có Chuyện (game/system_gift.py)
+from . import whats_new as wn   # "Có gì mới": read already for a brand-new save (_welcome_settings)
 
 VERSION = 1
 START_WALLET = 60
 RESERVE = 80          # a fund keeps this much after a withdrawal
 REOPEN_FEE = 15
+ONBOARD_MARK = 'onb1'   # settings.notesSeen: named with the new-player onboarding (its contextual hints, v4/onboard.js)
+WELCOME_GIFT = 20     # a brand-new neighbour's gift, into the wallet when the first life day ends
+WELCOME_LABEL = 'Quà chào hàng xóm mới 🎁'
 BREADTH_XP = 80       # maturity bonus for every workplace you really worked at
 LIVING = {1: 10, 2: 12, 3: 14, 4: 16, 5: 18, 6: 20, 7: 20}
 UPKEEP = {'cozy': 4, 'sunny': 7, 'garden': 11}
@@ -45,8 +50,8 @@ CH_UNLOCKS = {
     # New players get every storefront at once; the service places follow after the first day.
     1: ('milk_tea', 'grocery', 'delivery', 'cafe_bakery', 'florist', 'mother_baby', 'restaurant'),
     2: ('pet_care', 'salon', 'repair', 'farm', 'homestay'),
-    3: ('clothing', 'pet_shop', 'tra_da'),
-    4: ('customer_care', 'pharmacy', 'tour_guide', 'teacher', 'accounting'),
+    3: ('clothing', 'pet_shop', 'tra_da', 'fruit', 'garbage', 'drain'),
+    4: ('customer_care', 'pharmacy', 'tour_guide', 'teacher', 'accounting', 'pilot', 'flight_attendant'),
     5: ('corp_accounting', 'tax_payroll'),
     6: ('group_accounting',),
 }
@@ -106,7 +111,8 @@ CHAPTERS = [
          tagline='Có những việc người ta chỉ giao cho người mình tin.',
          intro=[_line('co_lua', 'Mấy chỗ này cần người cẩn thận, nói năng rõ ràng. Cô tin cháu làm được.'),
                 _line('anh_khoa', 'Lớp học Mầm Nắng đang tuyển người. Phải nộp hồ sơ, phỏng vấn đàng hoàng đó.'),
-                _line('anh_khoa', 'Mà hồ sơ giờ ghi được một dòng rất thật: có kinh nghiệm ở một nghề khác trong phố.')],
+                _line('anh_khoa', 'Mà hồ sơ giờ ghi được một dòng rất thật: có kinh nghiệm ở một nghề khác trong phố.'),
+                _line('chu_tu', 'Thằng Mẫn nhà bên làm thợ máy ở sân bay. Nó bảo Hãng bay Cánh Cò đang tuyển cơ phó với tiếp viên đó.')],
          outro=[_line('co_lua', 'Giờ đi đâu trong phố cũng có người gửi lời chào cháu.'),
                 _line('anh_khoa', 'Công ty mình với bên dịch vụ thuế đang tuyển. Kinh nghiệm ở phố ghi vào CV được hết, thử không?')],
          goals=[dict(id='places', goal=5, text='Làm việc ở 5 nơi khác nhau'),
@@ -527,6 +533,9 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
             _wallet(j, -(fee - from_fund), 'upkeep', f'Bù chi phí duy trì · {_place(cid)}', cid)
         idle_total += fee
     j['stats']['upkeep_paid'] += idle_total
+    if day == 1:   # the end of a new player's first day: Bà Tám's welcome, through the wallet like any income
+        _wallet(j, WELCOME_GIFT, 'life', WELCOME_LABEL)
+        notes.append(f'🎁 Bà Tám gửi quà chào hàng xóm mới: +{WELCOME_GIFT} xu vào ví.')
     j['clean_days'] = j['clean_days'] + 1 if j['wallet'] >= 0 else 0
     j['life_day'] += 1
     line = f'Ngày sống {day}: {cost["label"].lower()} {cost["total"]} xu'
@@ -537,7 +546,8 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
         notes.append(f'Ví đang nợ {-j["wallet"]} xu. Rút tiền lời từ một nơi làm việc để trả nhé.')
     summary = result.get('summary')
     if isinstance(summary, dict):
-        summary['journey'] = dict(life_day=day, living=cost['total'], upkeep=idle_total, salary=pay, wallet=j['wallet'])
+        summary['journey'] = dict(life_day=day, living=cost['total'], upkeep=idle_total, salary=pay, wallet=j['wallet'],
+                                  **({'gift': WELCOME_GIFT} if day == 1 else {}))
     result.setdefault('effects', []).extend(notes)
 
 
@@ -603,6 +613,17 @@ def after(s: dict, career: str | None, action: str, p: dict, result: dict) -> No
     _evaluate(s, result)
 
 
+def _welcome_settings(s: dict) -> None:
+    """A brand-new save has just been named (still in the intro): the "Có gì mới" release notes are for
+    returning players, so the current ones count as read, silently; and the save is marked for the
+    contextual first-time hints (the marker rides with the other seen-flags in settings.notesSeen)."""
+    st = s['settings']
+    st['whatsNewSeen'] = wn.newer(st.get('whatsNewSeen', ''), wn.LATEST)
+    seen = [x for x in str(st.get('notesSeen', '')).split(',') if x]
+    if ONBOARD_MARK not in seen and len(seen) < 12:
+        st['notesSeen'] = ','.join(seen + [ONBOARD_MARK])
+
+
 def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]:
     """`jr_*` commands. `career` is ignored, like `settings`."""
     e = _core()
@@ -617,6 +638,8 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
             need(p['gender'] in ('male', 'female'), 'Chọn Nam hoặc Nữ nhé.')
             old, j['gender'] = j['gender'], p['gender']
             wd.on_gender(s, old)
+        if j['story'] and not j['intro'] and j['gender']:
+            _welcome_settings(s)
         result['message'] = f'Chào {s["name"]}! Khu phố đã nhớ tên bạn.'
     elif name == 'jr_equip':
         tid = p.get('title')
@@ -786,7 +809,7 @@ def content() -> dict:
                 {k: t[k] for k in ('id', 'cat', 'emoji', 'name', 'desc')} for t in TITLES],
         skills=_emp().STRENGTHS, levels=LEVEL_NAMES, reserve=RESERVE, reopen_fee=REOPEN_FEE, start_wallet=START_WALLET,
         unlock_chapter={cid: n for n, ids in CH_UNLOCKS.items() for cid in ids if cid in CAREERS}, certs=ct.content(),
-        wardrobe=wd.content())
+        wardrobe=wd.content(), homes=hs.catalogue())
 
 
 def validate(s: dict) -> None:
@@ -841,6 +864,7 @@ def validate(s: dict) -> None:
     need(isinstance(j['stats'], dict) and set(j['stats']) <= set(STATS), 'Thống kê hành trình không hợp lệ.')
     for v in j['stats'].values():
         integer(v, 0, 10**9)
+    sg.validate(j)
     ct.validate(s)
     bk.validate(s)
     wd.validate(s)

@@ -44,6 +44,7 @@ from . import abandon as ab
 from . import dayclock as dc
 from . import wardrobe as wd
 from . import patience as pt
+from . import system_gift as sg
 
 ORIGINAL=("mother_baby","pharmacy","accounting","customer_care")
 UI_THEMES=("kem","tra_xanh","dem","bien","keo")
@@ -526,6 +527,9 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     if action.startswith("lf_"):return doi.action(s,action,p)
     if action.startswith("qn_"):return qn.action(s,career,action,p)  # điểm thân quen: chat, gifts, thanks, invites
     if action.startswith("st_"):return cst.action(s,career,action,p)
+    if action==sg.ACTION:  # 🎁 Quà từ Phố Có Chuyện (game/system_gift.py): the server pays a gift into the wallet
+        need(internal,"Thao tác chỉ dành cho máy chủ.","forbidden")
+        return sg.apply(s,p)
     need(career in CAREERS,"Chọn một nghề trước nhé.")
     jr.gate(s,career,action,internal)
     if career!=s.get("current"):ab.check(s,career,{},internal)  # leaving work in progress only through select_career
@@ -605,7 +609,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         dk.on_start(s,c,career)
         log(s,c,"day","Mở ca ngày "+str(c["day"])+".")
         care_notes+=care_start(s,c,career)
-        result["message"]="Đã mở cửa. Khách đang tới, mình bắt đầu từ một người nhé."
+        # A career may word its own opening (SPEC['open_line']: the air crew report for duty, no shop door).
+        result["message"]=(mod.SPEC.get("open_line") if mod else None) or "Đã mở cửa. Khách đang tới, mình bắt đầu từ một người nhé."
     elif action=="end_day":
         need(c["open"],"Ca chưa mở.")
         need(not c["event"] or c["event"]["stage"]=="resolved" or p.get("carry_event"),"Bạn còn một chuyện đang xử lý. Có thể tiếp tục hoặc chọn mang sang ngày sau.")
@@ -648,7 +653,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         if career=="milk_tea":life.setup_task(s,c,t)
         if mod and hasattr(mod,'on_task'):mod.on_task(s,c,t)
         if career=="customer_care":_cs_task_hook(c,t)
-        result["message"]="Có thêm một vị khách ghé tới."
+        result["message"]=(mod.SPEC.get("more_line") if mod else None) or "Có thêm một vị khách ghé tới."
     elif action=="task_select":
         t=current_task(c,p.get("task"));c["active_task"]=t["id"];t["deferred"]=False
         result["message"]="Đang xem: "+t["title"]

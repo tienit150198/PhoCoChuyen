@@ -16,6 +16,14 @@ const J=()=>S.env?.api?.state?.journey||{};
 const V=()=>J().home||{};
 const onDay=n=>{const d=n-(J().life_day||0);return d===0?`hôm nay (Ngày ${n})`:d===1?`Ngày ${n} (ngày mai)`:d<0?`Ngày ${n} (đã qua)`:`Ngày ${n} (còn ${d} ngày)`;};
 const months=(m)=>m%12===0?`${m/12} năm (${m} tháng)`:`${m} tháng`;
+const lname=s=>String(s||'').slice(0,1).toLowerCase()+String(s||'').slice(1);   // housing.lname: "Biệt thự Sông Hồng" → "biệt thự Sông Hồng"
+const byPrice=list=>[...list].sort((a,b)=>a.price-b.price);
+/* The homes on the market: the static list (content.journey.homes, housing.catalogue) joined by id with what the
+   state says is still missing (housing.public market rows). */
+const CAT=()=>S.env?.api?.content?.journey?.homes||{groups:[],homes:[]};
+function MK(){const live=new Map((V().market||[]).map(r=>[r.id,r]));return CAT().homes.filter(c=>live.has(c.id)).map(c=>({...c,...live.get(c.id)}));}
+const tone=gid=>(CAT().groups.find(g=>g.id===gid)||{}).color||'';
+const toneStyle=gid=>{const c=tone(gid);return c?` style="--hs-tone:${esc(c)}"`:'';};
 
 /* ---- mortgage maths: a mirror of game/bank.py (_interest, _fits, installment) and game/housing.py (schedule) ---- */
 const interest=(rest,bp)=>Math.floor((rest*bp+5000)/10000);
@@ -64,7 +72,7 @@ export async function openHouse(env,kind){
   const sheet=document.getElementById('sheet');if(sheet?.open)env.closeSheet();
   await ensureCss();
   const d=dialog();
-  if(kind&&(V().market||[]).some(m=>m.id===kind))startBuy(kind);else S.view='home';
+  if(kind&&MK().some(m=>m.id===kind))startBuy(kind);else S.view='home';
   if(!d.open){d.showModal();d.scrollTop=0;}
   render();loadJoint();
 }
@@ -98,7 +106,7 @@ const ask=(title,msg,label,money)=>S.env.confirmAction(title,msg,label,money);  
 const FROM_BANK=['account','wallet'];   // housing takes the account first, the rest in cash
 
 function startBuy(kind){
-  const m=(V().market||[]).find(x=>x.id===kind);if(!m)return;
+  const m=MK().find(x=>x.id===kind);if(!m)return;
   const ready=(V().have?.ready||0)+(S.joint?.balance||0);
   S.view='buy';S.buy={kind,down:Math.min(m.price,Math.max(m.down_min,Math.floor(Math.max(0,ready-m.fee)/10)*10)),months:36,joint:0};
 }
@@ -110,14 +118,14 @@ async function onClick(op,data){
     case'back':S.view='home';S.flash=null;render();return;
     case'look':startBuy(data.kind);S.flash=null;render();S.dlg.querySelector('.hs-body')?.scrollTo?.(0,0);return;
     case'bank':S.dlg.close();(await import('./bank.js')).openBank(S.env,data.tab||'save');return;
-    case'rent':{const m=v.market.find(x=>x.id===data.kind);if(!m)return;
-      if(await ask(`Thuê ${m.name.toLowerCase()}?`,`Cọc ${xu(m.deposit)}, trả lại khi dọn đi. Tiền phòng ${xu(m.rent)}/ngày (gác Bà Tám: ${xu(v.attic_rent)}).`,`Thuê · cọc ${xu(m.deposit)}`,{cost:m.deposit,pocket:FROM_BANK}))send('jr_home_rent',{kind:m.id,confirm:true});return;}
+    case'rent':{const m=MK().find(x=>x.id===data.kind);if(!m)return;
+      if(await ask(`Thuê ${lname(m.name)}?`,`Cọc ${xu(m.deposit)}, trả lại khi dọn đi. Tiền phòng ${xu(m.rent)}/ngày (gác Bà Tám: ${xu(v.attic_rent)}).`,`Thuê · cọc ${xu(m.deposit)}`,{cost:m.deposit,pocket:FROM_BANK}))send('jr_home_rent',{kind:m.id,confirm:true});return;}
     case'leave':if(await ask('Trả phòng trọ?',`Nhận lại ${xu(v.rent?.deposit)} tiền cọc, về gác Bà Tám.`,'Trả phòng'))send('jr_home_leave',{confirm:true});return;
     case'sign':{const P=preview();if(!P.ok){S.flash={text:P.why,kind:'warn'};render();return;}
       const m=P.m,loan=P.loan,b=S.buy;
       const body=`Trả ngay ${xu(P.pay)} (gồm phí ${xu(m.fee)})`+(b.joint?`, ${xu(b.joint)} từ quỹ chung`:'')+'. '
         +(loan?`Vay ${xu(loan)}, ${b.months} kỳ × ${xu(P.rows[0].amount)}, lãi ${pct(v.offer.rate)}/năm.`:'Không vay.');
-      if(await ask(`Mua ${m.name.toLowerCase()}?`,body,loan?'Ký hợp đồng mua nhà':`Mua · ${xu(P.pay)}`,{cost:Math.max(0,P.pay-(b.joint||0)),pocket:FROM_BANK})){
+      if(await ask(`Mua ${lname(m.name)}?`,body,loan?'Ký hợp đồng mua nhà':`Mua · ${xu(P.pay)}`,{cost:Math.max(0,P.pay-(b.joint||0)),pocket:FROM_BANK})){
         const r=await send('jr_home_buy',{kind:m.id,down:b.down,confirm:true,...(b.joint?{joint:b.joint}:{}),...(loan?{months:b.months,total_interest:P.interest}:{})});
         if(r&&r.approved!==false){S.view='home';S.jointAt=0;loadJoint(true);render();}
       }return;}
@@ -126,12 +134,12 @@ async function onClick(op,data){
     case'payoff':{const o=v.own?.loan?.payoff;if(!o)return;
       if(await ask('Tất toán khoản vay mua nhà?',`Gốc ${xu(o.principal)}${o.overdue?` + quá hạn ${xu(o.overdue)}`:''} + lãi ${xu(o.interest)} + phí ${xu(o.fee)}. Bớt được ${xu(Math.max(0,o.saved))} tiền lãi.`,`Tất toán · ${xu(o.total)}`,{cost:o.total,pocket:FROM_BANK}))send('jr_home_payoff',{confirm:true});return;}
     case'sell':{const o=v.own;if(!o)return;const sl=o.sell;
-      if(await ask(`Bán ${o.name.toLowerCase()}?`,`Giá hôm nay ${xu(sl.value)}, phí ${xu(sl.fee)}${sl.payoff?`, trả nợ vay ${xu(sl.payoff)}`:''}. Nhận ${xu(sl.get)} vào ${v.have?.bank?'tài khoản':'ví'}${v.married?'. Người ấy dọn ra cùng bạn':''}.`,`Bán · nhận ${xu(sl.get)}`))send('jr_home_sell',{confirm:true,value:sl.value});return;}
+      if(await ask(`Bán ${lname(o.name)}?`,`Giá hôm nay ${xu(sl.value)}, phí ${xu(sl.fee)}${sl.payoff?`, trả nợ vay ${xu(sl.payoff)}`:''}. Nhận ${xu(sl.get)} vào ${v.have?.bank?'tài khoản':'ví'}${v.married?'. Người ấy dọn ra cùng bạn':''}.`,`Bán · nhận ${xu(sl.get)}`))send('jr_home_sell',{confirm:true,value:sl.value});return;}
   }
 }
 
 function onBuyField(el,full){
-  const k=el.name,m=(V().market||[]).find(x=>x.id===S.buy.kind);if(!m)return;
+  const k=el.name,m=MK().find(x=>x.id===S.buy.kind);if(!m)return;
   if(k==='down')S.buy.down=Math.max(0,Math.floor(Number(el.value)||0));
   else if(k==='months')S.buy.months=Number(el.value);
   else if(k==='joint')S.buy.joint=Math.max(0,Math.floor(Number(el.value)||0));
@@ -141,7 +149,7 @@ function onBuyField(el,full){
   render();
 }
 function preview(){
-  const v=V(),b=S.buy,m=(v.market||[]).find(x=>x.id===b.kind),R=v.rules||{};
+  const v=V(),b=S.buy,m=MK().find(x=>x.id===b.kind),R=v.rules||{};
   if(!m)return {ok:false,why:'Chọn một căn nhà nhé.'};
   const loan=m.price-b.down,pay=b.down+m.fee,have=v.have||{},joint=b.joint||0;
   const out={m,loan,pay,rows:null,interest:0};
@@ -154,6 +162,7 @@ function preview(){
   if(loan){
     const o=v.offer||{};
     if(!o.ok)return {...out,ok:false,why:o.text||'Ngân hàng chưa duyệt vay mua nhà.'};
+    if((o.score??0)<(m.score||0))return {...out,ok:false,why:`Vay mua ${lname(m.name)} cần điểm tín dụng từ ${m.score} (bạn đang có ${o.score}). Trả đủ một lần, hoặc giữ điểm tốt thêm ít lâu nhé.`};
     const rows=schedule(loan,o.rate,b.months,J().life_day,R.month_days);
     const int=rows.reduce((x,r)=>x+r.interest,0);
     if(rows[0].amount>o.room)return {...out,rows,interest:int,ok:false,why:`Mỗi kỳ ${xu(rows[0].amount)} vượt ${R.dti_pct}% thu nhập một tháng (${xu(o.room)}): ngân hàng sẽ không duyệt. Trả trước nhiều hơn hoặc vay dài hơn nhé.`};
@@ -196,17 +205,17 @@ function moneyStrip(v){
 
 /* "Bước tiếp theo" (the guide's line, v4/guide.js look): the one thing to do now on the way to a home of your own. */
 function nextStep(v){
-  const h=v.have||{},L=v.own?.loan,homes=(v.market||[]).filter(m=>m.kind==='own');
+  const h=v.have||{},L=v.own?.loan,homes=byPrice(MK().filter(m=>m.kind==='own'));
   let go=null;
   if(L?.overdue)go=L.overdue<=(h.ready||0)?{op:'pay',label:`⏰ Trả ${xu(L.overdue)} trả góp đang quá hạn`}:{op:'bank',data:{tab:'home'},label:'🏦 Nộp tiền vào tài khoản để trả góp',note:`thiếu ${xu(L.overdue-(h.ready||0))}`};
   else if(!v.own&&!v.shared){
     // The dearest home whose down payment is there and whose 3-year installment the bank would take (as startBuy fills the form).
     const o=v.offer||{},R=v.rules||{},ok=m=>{const down=Math.min(m.price,Math.max(m.down_min,Math.floor(Math.max(0,(h.ready||0)-m.fee)/10)*10)),loan=m.price-down;
-      return !loan||(o.ok&&loan>=(R.loan_min||0)&&schedule(loan,o.rate,36,0,R.month_days||5)[0].amount<=o.room);};
+      return !loan||(o.ok&&(o.score??0)>=(m.score||0)&&loan>=(R.loan_min||0)&&schedule(loan,o.rate,36,0,R.month_days||5)[0].amount<=o.room);};
     const cash=homes.filter(m=>!m.missing),can=cash.filter(ok).pop()||cash[0],next=homes.find(m=>m.missing);
-    if(can)go={op:'look',data:{kind:can.id},label:`🔑 Xem & mua ${can.name.toLowerCase()}`};
+    if(can)go={op:'look',data:{kind:can.id},label:`🔑 Xem & mua ${lname(can.name)}`};
     else if(!h.bank)go={op:'bank',data:{tab:'home'},label:'🏦 Mở tài khoản Ngân hàng Phố'};
-    else if(next)go={op:'bank',data:{tab:'save'},label:'🐷 Gửi tiết kiệm mua nhà',note:`còn thiếu ${xu(next.missing)} cho ${next.name.toLowerCase()}`};
+    else if(next)go={op:'bank',data:{tab:'save'},label:'🐷 Gửi tiết kiệm mua nhà',note:`còn thiếu ${xu(next.missing)} cho ${lname(next.name)}`};
   }
   if(!go)return '';
   return `<div class="gd-next hs-next" role="status"><small>Bước tiếp theo</small><button type="button" class="gd-hint" data-hs="${go.op}"${attrs(go.data||{})}${S.busy?' disabled':''}><b>${esc(go.label)}</b>${go.note?`<span class="gd-note">${esc(go.note)}</span>`:''}<i aria-hidden="true">→</i></button></div>`;
@@ -218,9 +227,9 @@ function placeCard(v){
   const who=p.where_id==='shared'?`<p class="hs-tag">💞 Nhà chung với ${esc(p.with)}</p>`:p.where_id==='own'?'<p class="hs-tag">🔑 Nhà đứng tên bạn</p>':p.where_id==='rent'?'<p class="hs-tag">🧾 Đang thuê</p>':'';
   let actions='';
   if(p.where_id==='rent')actions=`<div class="bk-actions">${btn('Trả phòng, nhận lại cọc','leave',{},'ghost')}</div>`;
-  const comfort=p.comfort?`<p class="bk-hint">😊 Tinh thần +${p.comfort} mỗi sáng${v.own?.loan?.late?' (tạm dừng khi trễ hạn trả góp)':''}</p>`:'';
-  return `<section class="bk-card hs-place ${esc(p.where_id||'')}"><div class="hs-place-top"><span class="hs-emoji" aria-hidden="true">${p.emoji||'🏚️'}</span><div class="grow"><small>Nơi bạn đang ở</small><h3>${esc(p.name)}</h3><small>${esc(p.where||'')}</small></div></div>
-    ${who}<p class="hs-cost">${costLine}</p>${comfort}${actions}</section>`;
+  const comfort=p.comfort?`<p class="bk-hint"><span>😊 Tinh thần +${p.comfort} mỗi sáng</span>${v.own?.loan?.late?' <span>(tạm dừng khi trễ hạn trả góp)</span>':''}</p>`:'';
+  return `<section class="bk-card hs-place ${esc(p.where_id||'')}"${toneStyle(p.group)}><div class="hs-place-top"><span class="hs-emoji" aria-hidden="true">${p.emoji||'🏚️'}</span><div class="grow"><small>Nơi bạn đang ở</small><h3>${esc(p.name)}</h3><small>${esc(p.where||'')}</small></div></div>
+    ${who}<p class="hs-cost">${costLine}</p>${comfort}${p.perk?`<p class="bk-hint">${esc(p.perk)}</p>`:''}${actions}</section>`;
 }
 
 function loanCard(v){
@@ -242,30 +251,41 @@ function loanCard(v){
 function ownCard(v){
   const o=v.own;if(!o)return '';
   const grow=o.value-o.price;
-  return `<section class="bk-card"><h3>${o.emoji} Căn nhà của bạn</h3>
-    <dl class="hs-facts"><div><dt>Mua</dt><dd>Ngày ${o.day} · ${xu(o.price)}</dd></div><div><dt>Giá thị trường hôm nay</dt><dd>${xu(o.value)}${grow>0?` <small class="up">(+${fmt(grow)})</small>`:''}</dd></div>
+  return `<section class="bk-card"><h3>${o.emoji} ${esc(o.name)}</h3>
+    <dl class="hs-facts"><div><dt>Ngày mua</dt><dd>Ngày ${o.day} · ${xu(o.price)}</dd></div><div><dt>Giá thị trường hôm nay</dt><dd>${xu(o.value)}${grow>0?` <small class="up">(+${fmt(grow)})</small>`:''}</dd></div>
     <div><dt>Điện nước</dt><dd>${xu(o.upkeep)}/ngày</dd></div><div><dt>Bán ngay thì nhận</dt><dd>${xu(o.sell.get)}</dd></div></dl>
     <p class="bk-hint">Giá nhà tăng ~${pct(v.rules.grow_rate)} mỗi năm. Bán mất ${v.rules.sell_fee_pct}% phí.</p>
     <div class="bk-actions">${btn('Bán nhà','sell',{},'ghost small danger')}</div></section>`;
 }
 
+/* One listing, phone first: the price and the monthly installment up front, "thiếu N xu" when it is not there yet. */
+function monthly(v,m){
+  const o=v.offer||{},R=v.rules||{},loan=m.price-m.down_min;
+  return loan>=(R.loan_min||0)?schedule(loan,o.rate,36,0,R.month_days||5)[0].amount:0;
+}
 function marketCard(v,m){
   const h=v.have||{},owned=!!v.own;
   if(m.kind==='rent'){
     const here=v.rent?.kind===m.id;
-    return `<li class="hs-home"><div class="hs-home-top"><span class="hs-emoji" aria-hidden="true">${m.emoji}</span><div class="grow"><b>${esc(m.name)}</b><small>${esc(m.where)} · cho thuê</small></div><strong class="hs-price">${xu(m.rent)}<small>/ngày</small></strong></div>
-      <ul class="hs-points"><li>Cọc ${xu(m.deposit)}, trả lại khi dọn đi</li><li>😊 +${m.comfort} mỗi sáng</li></ul>
-      ${here?'<p class="bk-alert good">Bạn đang thuê phòng này.</p>':owned?'':m.missing?`<p class="bk-hint">Còn thiếu ${xu(m.missing)} tiền cọc.</p>`:''}
-      ${here||owned?'':`<div class="bk-actions">${btn(`Thuê · cọc ${xu(m.deposit)}`,'rent',{kind:m.id},'ghost',m.missing?' disabled':'')}</div>`}</li>`;
+    return `<li class="hs-home"${toneStyle(m.group)}><div class="hs-home-top"><span class="hs-emoji" aria-hidden="true">${m.emoji}</span><div class="grow"><b>${esc(m.name)}</b><small>${esc(m.where)}</small></div><strong class="hs-price">${xu(m.rent)}<small>/ngày</small></strong></div>
+      <p class="hs-chips"><span>🔒 Cọc ${xu(m.deposit)}</span><span>😊 +${m.comfort}/ngày</span></p>
+      ${here?'<p class="bk-alert good">Bạn đang thuê phòng này.</p>':owned?'':`<div class="hs-go">${m.missing?`<span class="hs-miss">thiếu ${xu(m.missing)}</span>`:'<span class="hs-ok">✓ Đủ tiền cọc</span>'}${btn('Thuê','rent',{kind:m.id},m.missing?'ghost':'primary',m.missing?' disabled':'')}</div>`}</li>`;
   }
-  const mine=v.own?.kind===m.id;
-  const readyFor=Math.min(100,Math.round((h.ready||0)*100/Math.max(1,m.need)));
-  return `<li class="hs-home"><div class="hs-home-top"><span class="hs-emoji" aria-hidden="true">${m.emoji}</span><div class="grow"><b>${esc(m.name)}</b><small>${esc(m.where)}</small></div><strong class="hs-price">${xu(m.price)}</strong></div>
-    <ul class="hs-points"><li>Trả trước từ ${xu(m.down_min)} + phí ${xu(m.fee)}</li><li>Hết tiền phòng, điện nước ${xu(m.upkeep)}/ngày</li><li>😊 +${m.comfort} mỗi sáng</li></ul>
-    ${mine?'<p class="bk-alert good">Đây là nhà của bạn.</p>':owned?'':`<div class="hs-need"><div class="bk-row"><span>Đã có ${xu(h.ready)}</span><span>Cần ${xu(m.need)}</span></div>
-      <div class="bk-bar ${m.missing?'warn':'good'}" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${readyFor}" aria-label="Đủ ${readyFor}% khoản trả trước"><i style="width:${readyFor}%"></i></div>
-      <p class="bk-hint">${m.missing?`Còn thiếu <b>${xu(m.missing)}</b>${S.joint?' (chưa tính quỹ chung)':''}.`:m.missing_all?'Đủ trả trước, phần còn lại vay.':'Đủ mua đứt, không cần vay.'}</p></div>
-      <div class="bk-actions">${btn('Xem & mua','look',{kind:m.id},m.missing?'ghost':'primary')}</div>`}</li>`;
+  const mine=v.own?.kind===m.id,o=v.offer||{},per=monthly(v,m);
+  const scoreShort=o.score!=null&&m.score>(v.rules?.home_score||0)&&o.score<m.score;
+  const status=m.missing?`<span class="hs-miss">thiếu ${xu(m.missing)}${S.joint?' <small>(chưa tính quỹ chung)</small>':''}</span>`
+    :scoreShort&&m.missing_all?`<span class="hs-miss soft">cần điểm tín dụng ${m.score}</span>`:`<span class="hs-ok">✓ ${m.missing_all?'Đủ trả trước':'Đủ mua đứt'}</span>`;
+  return `<li class="hs-home${mine?' mine':''}"${toneStyle(m.group)}><div class="hs-home-top"><span class="hs-emoji" aria-hidden="true">${m.emoji}</span><div class="grow"><b>${esc(m.name)}</b><small>${esc(m.where)}</small></div><strong class="hs-price">${xu(m.price)}</strong></div>
+    <p class="hs-terms"><span>Trả trước <b>${xu(m.need)}</b></span>${per?`<span>Góp <b>${xu(per)}</b>/tháng</span>`:''}</p>
+    <p class="hs-chips"><span>😊 +${m.comfort}/ngày</span><span>⚡ ${xu(m.upkeep)}/ngày</span>${m.perk?`<span>${esc(m.perk)}</span>`:''}${m.score>(v.rules?.home_score||0)?`<span>🏦 Điểm ${m.score}+</span>`:''}</p>
+    ${mine?'<p class="bk-alert good">Đây là nhà của bạn.</p>':owned?'':`<div class="hs-go">${status}${btn('Xem & mua','look',{kind:m.id},m.missing?'ghost':'primary')}</div>`}</li>`;
+}
+function marketGroups(v){
+  const market=MK();
+  return CAT().groups.map(g=>{
+    const list=market.filter(m=>m.group===g.id);if(!list.length)return '';
+    return `<div class="hs-group"${toneStyle(g.id)}><h4><span class="hs-group-ico" aria-hidden="true">${g.emoji}</span>${esc(g.name)}<small>${list.length}</small></h4><ul class="hs-market">${list.map(m=>marketCard(v,m)).join('')}</ul></div>`;
+  }).join('');
 }
 
 function savingsCard(v){
@@ -280,10 +300,9 @@ function savingsCard(v){
 }
 
 function homeView(v){
-  const market=(v.market||[]).map(m=>marketCard(v,m)).join('');
   const log=(v.log||[]).slice(0,8).map(r=>`<li><span>Ngày ${r.day} · ${esc(r.text)}</span>${r.amt?`<b class="${r.amt>0?'up':'down'}">${r.amt>0?'+':'−'}${fmt(Math.abs(r.amt))}</b>`:''}</li>`).join('');
   return moneyStrip(v)+nextStep(v)+placeCard(v)+ownCard(v)+loanCard(v)+
-    `<section class="bk-card"><h3>Nhà đang rao</h3><p class="bk-hint">Trả trước ${v.rules.down_pct}%, còn lại vay ngân hàng.</p><ul class="hs-market">${market}</ul></section>`+
+    `<section class="bk-card hs-listing"><h3>Nhà đang rao</h3><p class="bk-hint">Trả trước ${v.rules.down_pct}% + phí, còn lại vay 3 năm.</p>${marketGroups(v)}</section>`+
     savingsCard(v)+(log?`<section class="bk-card"><h3>Sổ nhà cửa</h3><ul class="bk-score-log">${log}</ul></section>`:'');
 }
 
@@ -296,15 +315,15 @@ function previewHTML(){
   return sum+(P.ok?'':`<p class="bk-alert warn">${esc(P.why)}</p>`)+table;
 }
 function buyView(v){
-  const b=S.buy,m=(v.market||[]).find(x=>x.id===b.kind),R=v.rules,o=v.offer||{},h=v.have||{};
+  const b=S.buy,m=MK().find(x=>x.id===b.kind),R=v.rules,o=v.offer||{},h=v.have||{};
   if(!m){S.view='home';return homeView(v);}
   const loan=m.price-b.down;
   const monthsSel=`<label class="bk-field"><span>Thời hạn vay</span><select name="months">${R.months.map(n=>`<option value="${n}"${b.months===n?' selected':''}>${months(n)} · ${n} kỳ</option>`).join('')}</select></label>`;
   const jointField=S.joint?`<label class="bk-field"><span>Lấy từ quỹ chung (còn ${xu(S.joint.balance)})</span><input id="hs-joint" name="joint" type="number" inputmode="numeric" min="0" max="${Math.min(S.joint.balance,m.price+m.fee)}" step="10" value="${b.joint||0}"></label>`:'';
-  const bankNote=loan>0?(h.bank?`<p class="bk-hint">Lãi <b>${esc(o.rate_text)}</b> (điểm tín dụng ${o.score??''}). Mỗi kỳ tối đa ${xu(o.room)}.${o.ok?'':` <b>${esc(o.text)}</b>`}</p>`
+  const bankNote=loan>0?(h.bank?`<p class="bk-hint">Lãi <b>${esc(o.rate_text)}</b> (điểm tín dụng ${o.score??''}${m.score>R.home_score?`, căn này cần từ ${m.score}`:''}). Mỗi kỳ tối đa ${xu(o.room)}.${o.ok?'':` <b>${esc(o.text)}</b>`}</p>`
     :`<p class="bk-alert warn">Cần tài khoản Ngân hàng Phố để vay. ${btn('Mở Ngân hàng','bank',{tab:'home'},'ghost small')}</p>`):'';
-  return `<section class="bk-card hs-buy"><div class="hs-home-top"><span class="hs-emoji big" aria-hidden="true">${m.emoji}</span><div class="grow"><small>${esc(m.where)}</small><h3>${esc(m.name)}</h3></div><strong class="hs-price">${xu(m.price)}</strong></div>
-    <p>${esc(m.desc)}</p>
+  return `<section class="bk-card hs-buy"${toneStyle(m.group)}><div class="hs-home-top"><span class="hs-emoji big" aria-hidden="true">${m.emoji}</span><div class="grow"><small>${esc(m.where)}</small><h3>${esc(m.name)}</h3></div><strong class="hs-price">${xu(m.price)}</strong></div>
+    <p>${esc(m.desc)}</p><p class="hs-chips"><span>😊 +${m.comfort}/ngày</span><span>⚡ ${xu(m.upkeep)}/ngày</span>${m.perk?`<span>${esc(m.perk)}</span>`:''}</p>
     <div class="bk-move" data-hs-buy>
       <label class="bk-field"><span>Trả trước (ít nhất ${xu(m.down_min)})</span><input id="hs-down" name="down" type="number" inputmode="numeric" min="${m.down_min}" max="${m.price}" step="10" value="${b.down}"></label>
       <label class="bk-toggle"><input type="checkbox" name="all"${b.down>=m.price?' checked':''}><span>Trả đủ một lần, không vay</span></label>

@@ -17,3 +17,26 @@ html[data-layout="phone"]:has(dialog[open] .mn-chip) dialog.sheet .toasts{top:ca
 .mn-short{margin:8px 0 0;padding:8px 12px;border-radius:12px;background:var(--bad-soft);color:var(--bad);font-size:.867rem;font-weight:600}
 .mn-short b{color:inherit}
 html:has(.update-pill.is-open):has(dialog[open] .mn-chip) dialog.sheet .toasts{top:calc(var(--sheet-head-b,20px) + 52px)}
+/* 💰 Tiền của bạn (v4/wealth.js): every pocket, phone first. */
+.wl-body{display:flex;flex-direction:column;gap:12px}
+.wl-total{display:flex;flex-wrap:wrap;gap:8px 20px;padding:14px 16px;border-radius:16px;background:var(--surface-2)}
+.wl-total div{display:flex;flex-direction:column;gap:2px}
+.wl-total small{font-size:.8rem;font-weight:700;color:var(--muted)}
+.wl-total b{font-size:1.6rem;font-weight:800;font-variant-numeric:tabular-nums;color:var(--ink)}
+.wl-total .bad b{color:var(--bad)}
+.wl-card{padding:12px 14px;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+.wl-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
+.wl-head h3{margin:0;font-size:.933rem}
+.wl-link{min-height:36px;padding:4px 8px;border-radius:10px;font-size:.867rem;font-weight:700;color:var(--accent-text);white-space:nowrap}
+@media (hover:hover){.wl-link:hover{background:var(--surface-2)}}
+.wl-list{list-style:none;margin:0;padding:0}
+.wl-row{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:4px 10px;padding:8px 0;border-top:1px solid var(--line)}
+.wl-row:first-child{border-top:0}
+.wl-ico{font-size:1.2rem;line-height:1;width:1.5em;text-align:center}
+.wl-name{display:flex;flex-direction:column;min-width:0;font-weight:600;overflow-wrap:anywhere}
+.wl-name small{font-size:.8rem;font-weight:500;color:var(--muted)}
+.wl-amt{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--ink)}
+.wl-row.bad .wl-amt{color:var(--bad)}
+.wl-row.here .wl-name{color:var(--accent-text)}
+.wl-extra{grid-column:2/-1;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.wl-extra small{font-size:.8rem}

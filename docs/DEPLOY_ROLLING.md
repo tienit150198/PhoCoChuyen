@@ -103,6 +103,23 @@ mnl-rolling-release --check
 
 ## Every release
 
+**Required before building the zip: the task compatibility gate.** Saves keep every generated task, and each
+command regenerates the task's original with the new code and compares its facts. If generation changed, every
+player with an open task of that kind is blocked on "Dữ kiện gốc của nhiệm vụ không hợp lệ" (0.9.6: clothing
+lines gained `ask`/`told`). Run it with the live release as OLD, on the dev machine:
+
+```bash
+git worktree add /tmp/live <live branch or tag>        # or: mkdir /tmp/live && git archive <live> | tar -x -C /tmp/live
+python3 scripts/check_task_compat.py /tmp/live .       # must print "OK" and exit 0
+git worktree remove /tmp/live
+```
+
+It compares `make_task` for every career, day 1..40, slot 0..11, desk and classic, plus the legacy tour trips and the
+situation script ids. A failure lists each differing field. Fix it by keeping generation identical (change what the
+screen shows instead), or, for a display-only key, add it to `engine.LATE_TASK_KEYS` inside a field the validators
+already compare with that tolerance. `tests/test_task_compat.py` runs the same gate against `LIVE_REF` (update it
+to the new live commit after each release).
+
 ```bash
 tmux new -s release            # or: tmux attach -t release
 # (same pre-steps as before if the release needs them: env additions, the MNL_DEV guard…)
@@ -180,3 +197,11 @@ command every 350 ms while the service was restarted (`systemctl restart`) and t
 * **0.9.5 client**: 57 of 57 clicks were applied exactly once (the server's revision delta equals the
   number of distinct request ids answered 200). 7 attempts got 502 and were re-sent. There was no
   error toast, and the "Đang cập nhật máy chủ…" note showed for about 5 s.
+
+
+## nginx: close old workers' connections
+
+A reload leaves old nginx workers alive for their open HTTP/2 connections. If such a worker still points at the
+bridge when the release stops it, that player gets instant 502s until the connection closes (01/10: 52 errors
+for one player). `worker_shutdown_timeout 20s;` in the main `nginx.conf` makes old workers close those
+connections after 20 s, well inside the release's 90 s wait for old workers.

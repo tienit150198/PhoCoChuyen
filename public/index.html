@@ -58,7 +58,11 @@
   <link rel="preload" as="style" href="/css/ai-chat.css">
   <link rel="preload" as="style" href="/css/guide.css">
   <link rel="preload" as="style" href="/css/calm.css">
-  <link rel="preload" href="/fonts/be-vietnam-pro-vietnamese-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" as="style" href="/css/dayclock.css">
+  <link rel="preload" as="style" href="/css/money.css">
+  <link rel="preload" as="style" href="/css/abandon.css">
+  <!-- No font preload: text shows at once in the system font and swaps to Be Vietnam Pro (font-display:swap)
+       without the font bytes competing with the first frame's code and data on a slow link. -->
   <!-- server.py replaces this tag with the import map, the inlined boot script and modulepreloads (game/webassets.py). -->
   <script src="/js/boot.js" data-inline></script>
   <script type="module" src="/js/app.js"></script>
@@ -66,7 +70,7 @@
 <body>
   <div id="loading" role="status"><div class="splash-logo" aria-hidden="true"></div><h1>Phố Có Chuyện</h1><p>Một ngày làm nghề · Đang mở cửa khu phố…</p><div class="splash-bar" aria-hidden="true"><i></i></div></div>
   <div id="app" hidden>
-    <button type="button" class="brand" data-action="home" aria-label="Hành trình của bạn"><img src="/icons/logo-128.webp" alt="Phố Có Chuyện" width="42" height="42" decoding="async"></button>
+    <button type="button" class="brand" data-action="home" aria-label="Hành trình của bạn"><img src="/icons/logo-128.webp" alt="Phố Có Chuyện" width="42" height="42" decoding="async" loading="lazy"></button>
     <header id="topbar" class="topbar"></header>
     <aside id="rail" class="rail" aria-label="Menu"></aside>
     <main id="stage" class="stage">

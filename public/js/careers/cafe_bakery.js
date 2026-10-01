@@ -461,11 +461,14 @@ function ovenPanel(t,x){
   const d=data(x),level=lvl(x),proof=d.proof||[],oven=d.oven||[];
   const recipe=b=>Object.entries(b.recipe).map(([k,q])=>`${q} ${lower(inv(x,k).name)}`).join(' + ');
   const enough=b=>Object.entries(b.recipe).every(([k,q])=>stock(x,k)>=q);
+  // Not enough for a tray: the tile says what is missing ("🧈 thiếu 1 bơ lạt") instead of the whole recipe.
+  const missing=b=>{const m=Object.entries(b.recipe).find(([k,q])=>stock(x,k)<q);if(!m)return '';const i=inv(x,m[0]);return `${i.emoji&&i.emoji!=='•'?i.emoji+' ':''}thiếu ${m[1]-stock(x,m[0])} ${lower(i.name)}`;};
   const wanted=id=>(x.room.tasks||[]).some(v=>v.known&&v.needs&&((v.needs.items||v.needs.pastry||{})[id]))||(d.rules?.box?.status==='open'&&d.rules.box.item===id);
   const racksFull=oven.length>=2;
   const bakeTile=(b,o)=>{const locked=b.unlock>level&&!wanted(b.id),q=freshCount(x,b.id);
-    return tile(x,{emoji:b.emoji,name:o.name,sub:locked?`cấp ${b.unlock}`:recipe(b)+(o.extra?' · '+o.extra:''),count:locked?null:q,empty:!q,cmd:o.cmd,payload:o.payload,locked,wanted:wanted(b.id)&&!q,disabled:o.disabled||!enough(b),
-      label:locked?`${b.name}, mở ở cấp ${b.unlock}`:`${o.name}: tủ kính còn ${q} cái mới`});};
+    const short=!locked&&missing(b);
+    return tile(x,{emoji:b.emoji,name:o.name,sub:locked?`cấp ${b.unlock}`:short||recipe(b)+(o.extra?' · '+o.extra:''),count:locked?null:q,empty:!q,cmd:o.cmd,payload:o.payload,locked,wanted:wanted(b.id)&&!q,disabled:o.disabled||!enough(b),
+      label:locked?`${b.name}, mở ở cấp ${b.unlock}`:short?`${o.name}: ${short}, nhập thêm ở Kho`:`${o.name}: tủ kính còn ${q} cái mới`});};
   const st=d.starter||{};
   const shut=b=>b.unlock>level&&!wanted(b.id),bakeShut=(cc(x).bakes||[]).filter(b=>!b.cake&&shut(b));
   const shape=(cc(x).bakes||[]).filter(b=>b.proof&&!shut(b)).map(b=>bakeTile(b,{name:'Nhào '+lower(b.name),cmd:'cb_shape',payload:{item:b.id},disabled:proof.length>=2,

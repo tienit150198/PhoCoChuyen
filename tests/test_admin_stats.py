@@ -903,7 +903,7 @@ class StatsHTTPTests(unittest.TestCase):
     def test_summary_and_sections_admin_only(self):
         anon, player = self.device(), self.signed('regular_jane')
         paths = ('/api/admin/stats/summary?range=7', '/api/admin/stats/section?name=saves', '/api/admin/stats/section?name=system',
-                 '/api/admin/stats/section?name=live')
+                 '/api/admin/stats/section?name=live', '/api/admin/stats/section?name=playtime')
         for path in paths:
             for dev in (anon, player):
                 status, data = self.req(dev, path)
@@ -942,13 +942,16 @@ class StatsHTTPTests(unittest.TestCase):
         self.assertIn(self.req(admin, ('/api/command', dict(request_id='x' * 12, expected_revision=0, action='nope', payload={})))[0], (400, 409))
         live = ready('/api/admin/stats/section?name=live')
         self.assertGreaterEqual(live['active']['m5'], 1)
+        play = ready('/api/admin/stats/section?name=playtime')
+        self.assertEqual([p['key'] for p in play['periods']], ['today', 'yesterday', 'd7', 'd30'])
+        self.assertEqual(len(play['hours']['avg']), 24)
         self.assertIn(live['backend'], ('SQLite', 'PostgreSQL'))
         with st._cmd_lock:
             self.assertGreaterEqual(sum(r[0] for r in st._cmd[st._cmd_prefix(self.server.store)].values()), 1)
         self.assertEqual(self.req(admin, '/api/admin/stats/summary?range=365')[0], 400)
         self.assertEqual(self.req(admin, '/api/admin/stats/section?name=secrets')[0], 400)
         self.assertEqual(self.req(admin, '/api/admin/stats/section')[0], 400)
-        self.assertNotIn('op_admin3', json.dumps([top, sv, sysd, live]))
+        self.assertNotIn('op_admin3', json.dumps([top, sv, sysd, live, play]))
         with patch.dict(os.environ, {'ADMIN_USERS': ''}):
             for path in paths:
                 self.assertEqual(self.req(admin, path)[0], 403)

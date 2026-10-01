@@ -19,9 +19,9 @@ from __future__ import annotations
 from .incident_content import ALL, EMPLOYEE, RETAIL
 
 EMPLOYED = ('pharmacy', 'customer_care', 'teacher', 'tour_guide', 'repair', 'delivery', 'pet_care', 'salon',
-            'corp_accounting', 'tax_payroll', 'group_accounting')
+            'corp_accounting', 'tax_payroll', 'group_accounting', 'garbage', 'pilot', 'flight_attendant')
 OFFICE = ('accounting', 'customer_care', 'corp_accounting', 'tax_payroll', 'group_accounting')
-FACING = RETAIL + ('homestay', 'delivery', 'tour_guide', 'customer_care')
+FACING = RETAIL + ('homestay', 'delivery', 'tour_guide', 'customer_care', 'fruit', 'drain')
 OWNERS = tuple(c for c in ALL if c not in EMPLOYED)
 STOCKED = RETAIL + ('farm',)
 
@@ -81,6 +81,11 @@ WORK = {
     'clothing': ('Chị Vy với Mai ở tiệm áo', '🧵'),
     'tra_da': ('Chú Tường với ông Khang ở quán trà', '🍵'),
     'pet_shop': ('Nhã với nhóm cứu hộ Chân Nhỏ', '🐾'),
+    'fruit': ('Dì Tư với mấy sạp bên cạnh', '🍊'),
+    'garbage': ('Chị Hạnh với tổ thu gom', '🛒'),
+    'drain': ('Chú Hai với tổ thợ', '🧰'),
+    'pilot': ('Chị Vân với tổ bay Cánh Cò', '🧑‍✈️'),
+    'flight_attendant': ('Chị Thu với các bạn tiếp viên', '💁'),
 }
 
 
@@ -466,6 +471,49 @@ HARD = [
         C('show', 'Mở thùng cho khách xem tem nhãn', 'Khách gật gù, mua thêm hai món.', spirit=6, default=True),
         C('co_lua', 'Nhờ cô Lụa xác nhận giấy tờ tiệm', 'Cô Lụa nói gọn: “Giấy tờ tiệm này đủ hết.”', spirit=5, who='co_lua', bond=2)],
       hit=-12, fact='stock', careers=STOCKED),
+    # ================================================================ the street trades' own hard days
+    H('kh_fruit_scale', 'khach', '⚖️', 'Bị nói cân điêu giữa chợ', [
+        'Một bà khách lạ cân lại túi cam ở sạp bên, la lên: “Cân thiếu!”',
+        'Cân của sạp bên lệch, nhưng cả dãy chợ đã quay sang nhìn.',
+        'Bạn đứng đó, mặt nóng bừng.'], [
+        C('weigh', 'Mời cân lại bằng quả cân 1 ký trước mặt mọi người', 'Kim chỉ đúng 1 ký. Bà khách ngượng, cả chợ gật gù.', spirit=7, default=True),
+        C('argue', 'Cãi lại cho ra lẽ', 'Cãi thắng, nhưng cả buổi chẳng ai ghé sạp.', spirit=-4)], careers=('fruit',), hit=-13, mild=True),
+    H('an_garbage_look', 'an_hiep', '🧤', 'Bị coi thường vì đi gom rác', [
+        'Một người đi qua bịt mũi, kéo con tránh xa: “Học không giỏi thì làm như cô kia đấy.”',
+        'Đứa bé ngoái lại nhìn bạn.',
+        'Tay bạn vẫn đang buộc túi rác nhà họ.'], [
+        C('smile', 'Mỉm cười với đứa bé, làm tiếp', 'Đứa bé vẫy tay chào. Chị Hạnh vỗ vai: “Nghề nào cũng đáng.”', spirit=6, default=True),
+        C('stew', 'Về nhà nghĩ mãi', 'Cả tối ấm ức, ngủ không yên.', spirit=-5)], careers=('garbage',), hit=-14),
+    H('kh_drain_quack', 'khach', '📞', 'Khách chê đắt, gọi thợ dạo', [
+        'Khách nghe báo giá xong bảo thợ dán số ngoài cột điện rẻ hơn một nửa.',
+        'Hôm sau khách gọi lại: thợ dạo đổ hóa chất, ống rò nước ra tường.',
+        'Giờ khách nhờ bạn sửa, còn cằn nhằn.'], [
+        C('help', 'Tới xem, sửa đúng giá, không trách', 'Khách im lặng trả tiền, cuối tuần giới thiệu thêm hai nhà.', spirit=6, default=True),
+        C('told', 'Nói “Đã bảo rồi mà”', 'Nói đúng, nhưng khách giận không gọi nữa.', spirit=-3)], careers=('drain',), hit=-12, mild=True),
+    # ================================================================ ✈️ Hãng bay Cánh Cò (pilot, flight_attendant)
+    H('air_cancel', 'khach', '😤', 'Chuyến bay hủy, khách trút giận', [
+        'Giông cả buổi chiều, chuyến cuối bị hủy.',
+        'Một khách chỉ thẳng mặt bạn: “Hãng gì mà làm ăn như vậy!”',
+        'Bạn chỉ là người mặc đồng phục đứng gần nhất.'], [
+        C('calm', 'Xin lỗi, chỉ khách tới quầy đổi chuyến, rồi ra ngoài thở một chút', 'Khách đi rồi, tay bạn còn run. Nhưng bạn đã làm đúng.',
+          spirit=4, default=True),
+        C('talk', 'Tối về kể với tổ bay trong nhóm chat', 'Ai cũng từng bị như vậy. Một câu “thương nha” đỡ hơn nhiều.', spirit=6)],
+      careers=('pilot', 'flight_attendant'), hit=-13, mild=True),
+    H('air_redeye', 'xui', '🌙', 'Bị gọi bay thay ca tối', [
+        'Đang ăn cơm với bà Tám thì điện thoại reo.',
+        'Tổ bay dự bị ốm, hãng gọi bạn bay thay chuyến tối.',
+        'Về tới hẻm đã gần nửa đêm, chân mỏi rã rời.'], [
+        C('sleep', 'Tắt điện thoại, ngủ một giấc thật sâu', 'Sáng dậy người nhẹ hẳn.', spirit=5, default=True),
+        C('soup', 'Ghé quán cháo đầu hẻm còn mở', 'Bát cháo nóng lúc nửa đêm, ấm cả bụng.', spirit=6, money=-6)],
+      careers=('pilot', 'flight_attendant'), hit=-12, mild=True),
+    H('air_missed', 'xui', '🎂', 'Lỡ bữa sinh nhật bà Tám', [
+        'Hôm nay sinh nhật bà Tám, cả hẻm góp tiền đặt bánh.',
+        'Chuyến về trễ hai tiếng vì thời tiết.',
+        'Về tới nơi bánh đã cắt, mọi người đã về gần hết.'], [
+        C('sorry', 'Gõ cửa phòng bà, xin lỗi và ngồi nghe bà kể chuyện', 'Bà cười: “Đi làm vì người ta, bà hiểu mà.”', spirit=6,
+          who='ba_tam', bond=3, default=True),
+        C('gift', 'Mai mang quà từ đảo về biếu bà', 'Túi hải sản khô từ đảo, bà khoe với cả hẻm.', spirit=5, money=-10, who='ba_tam', bond=2)],
+      careers=('pilot', 'flight_attendant'), hit=-11, mild=True),
 ]
 
 # ---------------------------------------------------------------- neighbours come round

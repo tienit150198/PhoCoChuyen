@@ -20,15 +20,17 @@ from .compensation import comp as _den
 
 ALL = ('mother_baby', 'pharmacy', 'accounting', 'customer_care', 'teacher', 'tour_guide', 'milk_tea', 'restaurant',
        'cafe_bakery', 'florist', 'grocery', 'repair', 'farm', 'delivery', 'homestay', 'pet_care', 'salon',
-       'corp_accounting', 'tax_payroll', 'group_accounting', 'tra_da', 'clothing', 'pet_shop')
-EMPLOYEE = ('teacher', 'corp_accounting', 'tax_payroll', 'group_accounting')
+       'corp_accounting', 'tax_payroll', 'group_accounting', 'tra_da', 'clothing', 'pet_shop',
+       'fruit', 'garbage', 'drain', 'pilot', 'flight_attendant')
+EMPLOYEE = ('teacher', 'corp_accounting', 'tax_payroll', 'group_accounting', 'pilot', 'flight_attendant')
 RETAIL = ('mother_baby', 'pharmacy', 'milk_tea', 'grocery', 'florist', 'cafe_bakery', 'restaurant', 'pet_care', 'salon', 'repair',
           'clothing', 'pet_shop')
 FOOD = ('milk_tea', 'cafe_bakery', 'restaurant')
-FRONT = ('milk_tea', 'cafe_bakery', 'restaurant', 'florist', 'grocery', 'repair', 'tra_da')
+FRONT = ('milk_tea', 'cafe_bakery', 'restaurant', 'florist', 'grocery', 'repair', 'tra_da', 'fruit')
 MUSIC = ('milk_tea', 'cafe_bakery', 'restaurant', 'salon', 'homestay')
-CASH = RETAIL + ('homestay', 'delivery')
-OWNER = tuple(c for c in ALL if c not in EMPLOYEE)
+CASH = RETAIL + ('homestay', 'delivery', 'fruit', 'drain')
+CREW = ('garbage',)   # paid by the ward's cooperative: no licence or lump-sum tax of their own
+OWNER = tuple(c for c in ALL if c not in EMPLOYEE + CREW)
 OFFICE = ('accounting', 'customer_care', 'corp_accounting', 'tax_payroll', 'group_accounting')
 BOOKS = ('accounting', 'corp_accounting', 'tax_payroll', 'group_accounting')
 SHOPS = RETAIL + ('homestay',)

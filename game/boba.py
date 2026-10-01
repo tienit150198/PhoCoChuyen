@@ -155,7 +155,9 @@ def rng(*parts) -> random.Random:
 
 
 # Counter skill ("tay nghề"): grows with cups actually handed over, not with other chores.
-TIERS = (0, 4, 10, 18, 28, 40, 55, 72, 92)
+# Level 2 at the 3rd cup: a new player's first level-up comes with the third customer of day 1,
+# together with the workplace level (engine: 30 XP a job, a level every 90).
+TIERS = (0, 3, 10, 18, 28, 40, 55, 72, 92)
 
 
 def level(c: dict) -> int:

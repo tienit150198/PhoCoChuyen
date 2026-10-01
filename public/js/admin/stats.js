@@ -32,6 +32,7 @@ export function skeleton(){
   const k=`<div class="kpi skel-kpi"><span class="kpi-label">&nbsp;</span><b class="kpi-num">&nbsp;</b><small class="kpi-sub">&nbsp;</small></div>`;
   return `<div class="kpis skel" aria-hidden="true">${k.repeat(6)}</div>`+
     `<section class="card wide skel" aria-busy="true"><header class="card-head"><h2>Người chơi</h2></header><div class="skel-chart" aria-hidden="true"></div>${skelLines(2)}</section>`+
+    `<section class="card wide skel" aria-busy="true"><header class="card-head"><h2>Thời gian chơi</h2></header>${skelLines(4)}</section>`+
     `<div class="cols"><div class="col">${skelCard('Nghề được chơi nhiều')}${skelCard('Kinh tế')}</div><div class="col">${skelCard('Cách chơi')}${skelCard('Góp ý')}</div></div>`;
 }
 
@@ -121,8 +122,8 @@ export function savesFresh(sv){
   return '';
 }
 
-/** `lazy`: {careers, economy, play, life} → HTML of each save-derived card (the real card
- * once ./sections.js drew it, else a placeholder the page loads when it scrolls into view). */
+/** `lazy`: {careers, economy, play, life, playtime} → HTML of each card loaded on demand (the
+ * real card once ./sections.js drew it, else a placeholder the page loads when it scrolls into view). */
 export function overviewView(d,lazy,more,L={}){
   const p=d.players,f=d.feedback,r=p.retention,s={...d.server,db_bytes:L.data?.db_bytes??d.server.db_bytes};  // the live size is the current one
   const kpis=`<div class="kpis">
@@ -133,6 +134,6 @@ export function overviewView(d,lazy,more,L={}){
     ${kpi('Góp ý chưa đọc',num(f.unread),`${num(f.open)} đang mở ${icon('chevron',12)}`,{tone:f.unread?'hot':'',action:'gop-y'})}
     ${kpi('Máy chủ',`v${esc(s.version)}`,`chạy ${span(s.uptime)} · ${bytes(s.db_bytes)}`,{action:'he-thong'})}
   </div>`;
-  return liveView(L.data,{error:L.error})+summaryFresh(d)+kpis+playersCard(d,more)+(lazy.head||'')+`<div class="cols"><div class="col">${lazy.careers}${lazy.economy}${aiCard(d)}</div><div class="col">${lazy.play}${lazy.life}${feedbackCard(d)}${serverCard({...d,server:s})}</div></div>`+
+  return liveView(L.data,{error:L.error})+summaryFresh(d)+kpis+playersCard(d,more)+(lazy.playtime||'')+(lazy.head||'')+`<div class="cols"><div class="col">${lazy.careers}${lazy.economy}${aiCard(d)}</div><div class="col">${lazy.play}${lazy.life}${feedbackCard(d)}${serverCard({...d,server:s})}</div></div>`+
     (lazy.foot||'');
 }

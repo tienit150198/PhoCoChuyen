@@ -209,8 +209,8 @@ def review_voice(c: dict, post: dict, lang: str = 'vi') -> str | None:
     """Rewrite a fresh scripted review in the reviewer's own voice (same stars, same facts, same gripe)."""
     from . import voices
     fb = post.get('feedback') or {}
-    if fb.get('voice') != 'scripted' or fb.get('thread') or fb.get('twist') or fb.get('style'):
-        return None  # careless/fake/styled reviews ("ok", emoji only…) keep their exact wording
+    if fb.get('voice') != 'scripted' or fb.get('thread') or fb.get('twist') or fb.get('style') or fb.get('own'):
+        return None  # careless/fake/styled reviews ("ok", emoji only…) and a career's own voices keep their exact wording
     gripe = fb.get('gripe') if isinstance(fb.get('gripe'), dict) else None
     if gripe and gripe.get('form') == 'one_word':
         return None  # "Bụi." says it all

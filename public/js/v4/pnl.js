@@ -198,6 +198,7 @@ export function pnlCard(x){
     const lines=[];
     if(p.draw)lines.push(['+','Rút tiền lời về ví',p.draw]);
     if(jr?.salary)lines.push(['+','Lương về ví',jr.salary]);
+    if(jr?.gift)lines.push(['+','Quà chào hàng xóm mới 🎁',jr.gift]);   // the end of a new player's first day (game/journey.py)
     if(p.capital)lines.push(['−','Góp vốn vào quỹ',-p.capital]);
     if(jr?.living)lines.push(['−','Tiền phòng và cơm nước',-jr.living]);
     if(jr?.upkeep)lines.push(['−','Duy trì nơi vắng chủ',-jr.upkeep]);

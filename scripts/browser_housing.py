@@ -157,7 +157,8 @@ async def main():
                 await page.wait_for_selector('.hs-sheet[open] .hs-market', timeout=10000)
                 await page.click('.hs-sheet [data-hs="look"][data-kind="can_ho_mini"]')
                 await page.wait_for_selector('.hs-sheet .hs-buy', timeout=5000)
-                await page.fill('#hs-down', '900')
+                from game import housing as hs
+                await page.fill('#hs-down', str(hs.down_min(hs.HOMES['can_ho_mini']['price'])))
                 await page.dispatch_event('#hs-down', 'change')
                 await page.select_option('.hs-buy select[name="months"]', '36')
                 await shot('7-buy-form')

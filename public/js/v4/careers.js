@@ -8,7 +8,8 @@ const modules={};
 const scratch={};
 // Careers whose stylesheet builds on a shared kit. The kit is its own <link> (loaded in parallel, placed
 // before the career's sheet) instead of an @import inside it, which cost a second round trip.
-export const CSS_KIT={cafe_bakery:'food_kit',florist:'food_kit',restaurant:'food_kit',tax_payroll:'office_kit',group_accounting:'office_kit',corp_accounting:'office_kit'};
+export const CSS_KIT={cafe_bakery:'food_kit',florist:'food_kit',restaurant:'food_kit',tax_payroll:'office_kit',group_accounting:'office_kit',corp_accounting:'office_kit',
+  fruit:'street_kit',garbage:'street_kit',drain:'street_kit',pilot:'air_kit',flight_attendant:'air_kit'};
 
 /** Import career workbenches (+ their stylesheets). `waitCss`: also wait (max 1.5 s) until the stylesheets
  * are in, so the first frame of a workbench is never unstyled (startup loads only the current career). */
@@ -29,7 +30,11 @@ export async function loadCareerModules(ids,waitCss=false){
     catch(error){console.warn('Chưa có giao diện nghề',id,error);}
   }));
 }
-export const careerUI=id=>modules[id];
+// A workbench reads its part of the catalogue (ctx.cc) deeply, so it only counts as ready once that part is in
+// too (api.js careerContent, set by app.js): until then the caller shows its "still loading" fallback.
+let dataIn=()=>true;
+export const setCareerData=fn=>{dataIn=fn;};
+export const careerUI=id=>dataIn(id)?modules[id]:undefined;
 export const hasCareerUI=id=>Boolean(modules[id]);
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');

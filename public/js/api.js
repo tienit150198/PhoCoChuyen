@@ -1,4 +1,4 @@
-import {UpdateNotice,OUTDATED_CODES} from './update.js';
+import {UpdateNotice,OUTDATED_CODES,prewarmRelease} from './update.js';
 
 /* A restart (deploy) answers 502/503/504 through the proxy, or drops the connection, for a few seconds.
  * Reads (GET) and commands are then sent again, byte for byte (a command keeps its request_id: the server's
@@ -31,11 +31,22 @@ export class UpdatingNote{
   }
 }
 
+/** Merge a part of the catalogue into it: a key both have as an object (journey, experiences) gets the part's
+ * members added, anything else is set. */
+export function mergeContent(content,part){
+  for(const [key,value] of Object.entries(part||{})){
+    const have=content[key];
+    if(have&&value&&typeof have==='object'&&typeof value==='object'&&!Array.isArray(have)&&!Array.isArray(value))Object.assign(have,value);
+    else content[key]=value;
+  }
+  return content;
+}
+
 /** Ordered mutations + idempotent retry. A lost response never doubles a sale. */
 export class GameAPI extends EventTarget {
   constructor(){super();this.state=null;this.content=null;this.revision=0;this.csrf='';this.ai={configured:false};this.social=null;this.push={enabled:false};this.clockOffset=0;this.connected=false;this.queue=Promise.resolve();
     // The release this page booted with (<meta name="mnl-version">, read by boot.js) vs X-Game-Version.
-    this.updates=new UpdateNotice(globalThis.__mnlBoot?.version||'');
+    this.updates=new UpdateNotice(globalThis.__mnlBoot?.version||'',{prewarm:globalThis.document?()=>prewarmRelease():null});
     this.delays=RETRY_DELAYS;this.retryWindow=RETRY_WINDOW;this.holding=new UpdatingNote(()=>this.lang);}
   /** In-flight request count, announced as a 'net' event (app.js ties it to the tapped button). */
   net(delta){this.inflight=(this.inflight||0)+delta;this.dispatchEvent(new CustomEvent('net',{detail:this.inflight}));}
@@ -84,22 +95,51 @@ export class GameAPI extends EventTarget {
     } finally {clearTimeout(timer);}
   }
   async init(){
-    // boot.js starts /api/bootstrap?lite=1 and /api/content?v=<hash> while the modules download; use them
-    // (a network hiccup asks again). lite=1: the catalogue is not inlined, it comes from /api/content,
-    // which the browser keeps for a year (the URL changes with the content).
+    // boot.js starts /api/bootstrap?lite=1 and /api/content?v=<hash>&part=core while the modules download; use
+    // them (a network hiccup asks again). lite=1: the catalogue is not inlined, it comes from /api/content,
+    // which the browser keeps for a year (the URL changes with the content). Its other parts: more() and
+    // careerContent() below.
     const boot=globalThis.__mnlBoot||{},early=boot.response?{sent:boot.sent,response:boot.response}:null;
     const earlyContent=boot.content&&boot.contentUrl?{sent:boot.sent,response:boot.content,url:boot.contentUrl}:null;
-    boot.response=boot.content=null;let data=null,content=null;
+    this.early=boot.place||null;this.contentBase=boot.contentBase||'';
+    boot.response=boot.content=boot.place=null;let data=null,content=null;
     if(early)try{data=await this.json('/api/bootstrap?lite=1',{},12000,early);}catch(error){if(!transient(error))throw error;}
     data??=await this.json('/api/bootstrap?lite=1');
     content=data.content||null;  // a server from before the split still inlines it
     if(!content&&earlyContent)try{content=await this.json(earlyContent.url,{},30000,earlyContent);}catch(error){if(!transient(error))throw error;}
-    content??=await this.json(data.content_url||'/api/content',{},30000);
+    content??=await this.json(data.content_url||'/api/content',{},30000);  // the whole catalogue
+    this.contentBase||=data.content_url||'';
     // The stylesheets load without blocking the splash (boot.js); the game is shown once they are in.
     await boot.css;
-    this.content=content;this.csrf=data.csrf;this.ai=data.ai;this.social=data.social||null;this.push=data.push||{enabled:false};this.account=data.account||null;this.admin=data.admin===true;this.accept(data);
+    this.content=content;this.csrf=data.csrf;this.ai=data.ai;this.social=data.social||null;this.push=data.push||{enabled:false};this.account=data.account||null;this.admin=data.admin===true;this.gifts=Array.isArray(data.gifts)?data.gifts:[];this.accept(data);
     this.updates.watch(()=>fetch('/api/health',{credentials:'same-origin',cache:'no-store'}).then(r=>{this.updates.seen(r.headers.get('X-Game-Version'));}));
     return data;
+  }
+  /** True once the whole catalogue is in: a `core` part (game/content.py content_parts) lacks CONTENT_LATER. */
+  hasMore(){return this.content?.part!=='core';}
+  /** The catalogue's `more` part (job postings, the shop book, situations, certificate and story texts): fetched
+   * once (app.js asks right after the first frame; a view that needs it asks too and shows a skeleton meanwhile),
+   * merged into this.content, then a 'mnl:lazy' event re-renders the screen. */
+  more(){
+    if(this.hasMore())return Promise.resolve(this.content);
+    return this._more??=this.json(`${this.contentBase}&part=more`,{},30000).then(part=>{
+      mergeContent(this.content,part);this.content.part='whole';
+      globalThis.document?.dispatchEvent(new CustomEvent('mnl:lazy',{detail:{wanted:true}}));
+      return this.content;
+    },error=>{this._more=null;throw error;});
+  }
+  /** False while a plugin workplace's part of the catalogue (content.careers[id]) is still to come. */
+  hasCareerContent(id){const all=this.content?.careers;return !all||!Object.hasOwn(all,id)||Boolean(all[id]);}
+  /** A workplace's own part of the catalogue (content.careers[id], a plugin career's data): loaded with its
+   * workbench (app.js careerAssets), before its first frame. boot.js has usually started it already. */
+  careerContent(id){
+    const all=this.content?.careers;
+    if(!id||this.hasCareerContent(id)||!this.contentBase)return Promise.resolve();
+    this._places??={};
+    const url=`${this.contentBase}&career=${encodeURIComponent(id)}`,early=this.early?.url===url?this.early:null;
+    if(early)this.early=null;
+    return this._places[id]??=(early?this.json(url,{},30000,early).catch(error=>{if(!transient(error))throw error;return this.json(url,{},30000);})
+      :this.json(url,{},30000)).then(part=>{all[id]=part||{};},error=>{delete this._places[id];console.warn('careerContent',id,error);});
   }
   accept(data){
     this.state=data.state;this.revision=data.revision;this.connected=true;this.syncedAt=Date.now();
@@ -110,14 +150,25 @@ export class GameAPI extends EventTarget {
   async refresh(){const data=await this.json('/api/state');this.accept(data);return data;}
   command(action,payload={},career=this.state?.current){
     const execute=async()=>{
-      const request_id=globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`;
-      const body=JSON.stringify({request_id,expected_revision:this.revision,career,action,payload});
+      const send=()=>{
+        const request_id=globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        const body=JSON.stringify({request_id,expected_revision:this.revision,career,action,payload});
+        // The same body (request_id, expected_revision) on every try: see RETRY_DELAYS.
+        return this.json('/api/command',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':this.csrf},body,retry:true});
+      };
       this.dispatchEvent(new CustomEvent('busy',{detail:true}));
       try{
         let data;
-        // The same body (request_id, expected_revision) on every try: see RETRY_DELAYS.
-        try{data=await this.json('/api/command',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':this.csrf},body,retry:true});}
-        catch(error){if(error.status===409&&error.data?.state)this.accept(error.data);throw error;}
+        // 409 revision_conflict: the save moved under this tap (a spouse's gift or fund move landing through the
+        // marriage inbox, a ticker, another tab). Adopt the server's state and send the tap once more against it
+        // (a new request_id; the server checks everything again); a second conflict is reported.
+        for(let tries=0;;tries++){
+          try{data=await send();break;}
+          catch(error){
+            if(error.status===409&&error.data?.state){this.accept(error.data);if(tries===0&&error.data.code==='revision_conflict')continue;}
+            throw error;
+          }
+        }
         this.accept(data);
         // v4/sounds.js: detail sounds and the bank speaker (result.bank) follow each confirmed command.
         this.dispatchEvent(new CustomEvent('result',{detail:{action,career,result:data.result}}));

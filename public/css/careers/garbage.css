@@ -1,0 +1,85 @@
+/* Tổ thu gom phường Mây — scoped styles (.career-job.rc), over the street kit (street_kit.css).
+   Its own look: the crew's green with reflective orange stripes, an evening lane of houses under a
+   street lamp, bags in their sorting colours and a three-compartment cart. */
+.career-job.rc{--sk-accent:#2f8f5b;--sk-accent-2:#f28c28;--rc-vest:#f28c28;--rc-green:#3f9a55;--rc-yellow:#e8b923;--rc-black:#3b3b3b;--rc-red:#d0342c;
+  --rc-dusk:#2e3a55;--rc-dusk-2:#46557a}
+
+/* ---------- the lane at dusk */
+.career-job.rc .rc-lane{margin-top:10px;padding:10px 10px 12px;border-radius:var(--sk-r);color:#f4f1e8;
+  background:linear-gradient(180deg,var(--rc-dusk),var(--rc-dusk-2));border-bottom:10px solid #8d8a83;box-shadow:var(--sk-shadow)}
+.career-job.rc .rc-lane-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.career-job.rc .rc-lane-head b{font-size:15px}
+.career-job.rc .rc-houses{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(58px,1fr));gap:6px}
+.career-job.rc .rc-houses li{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px 18px;border-radius:10px;background:rgb(255 255 255 / 8%);text-align:center}
+.career-job.rc .rc-houses li.here{background:rgb(242 140 40 / 30%);outline:2px solid var(--rc-vest)}
+.career-job.rc .rc-houses li.done{opacity:.7}
+.career-job.rc .rc-house{font-size:24px;line-height:1}
+.career-job.rc .rc-houses small{font-size:10px;line-height:1.15;color:#e9e4d8;overflow-wrap:anywhere}
+.career-job.rc .rc-houses b{font-size:12px}
+.career-job.rc .rc-me{position:absolute;bottom:-4px;font-style:normal;font-size:20px}
+
+/* ---------- a house and its bags */
+.career-job.rc .rc-stop h4{margin-bottom:10px}
+.career-job.rc .rc-bag{display:grid;gap:8px;padding:10px;border-radius:14px;border:2px solid var(--sk-line);background:var(--sk-surface);margin-bottom:10px}
+.career-job.rc .rc-bag.loaded{display:flex;align-items:center;gap:10px;opacity:.75;padding:8px 10px}
+.career-job.rc .rc-bag-head{display:flex;align-items:center;gap:10px}
+.career-job.rc .rc-bag-head small{display:block;color:var(--sk-muted)}
+.career-job.rc .rc-sack{width:34px;height:40px;flex:none;border-radius:40% 40% 18px 18px / 30% 30% 18px 18px;position:relative;box-shadow:inset -6px -4px 0 rgb(0 0 0 / 18%)}
+.career-job.rc .rc-sack::before{content:'';position:absolute;top:-6px;left:11px;width:12px;height:10px;border-radius:50% 50% 2px 2px;background:inherit;filter:brightness(.8)}
+.career-job.rc .rc-xanh .rc-sack{background:var(--rc-green)}
+.career-job.rc .rc-vang .rc-sack{background:var(--rc-yellow)}
+.career-job.rc .rc-den .rc-sack{background:var(--rc-black)}
+.career-job.rc .rc-bag.rc-xanh{border-color:color-mix(in srgb,var(--rc-green) 45%,var(--sk-line))}
+.career-job.rc .rc-bag.rc-vang{border-color:color-mix(in srgb,var(--rc-yellow) 55%,var(--sk-line))}
+.career-job.rc .rc-bag.rc-den{border-color:color-mix(in srgb,var(--rc-black) 45%,var(--sk-line))}
+.career-job.rc .rc-clue{margin:0;padding:6px 10px;border-radius:10px;background:var(--sk-surface-2);font-size:14px}
+.career-job.rc .rc-peek{min-height:44px}
+.career-job.rc .rc-items{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.career-job.rc .rc-items li{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:36px;padding:2px 6px;border-radius:8px}
+.career-job.rc .rc-items li>span{font-size:20px}
+.career-job.rc .rc-items li.haz{background:color-mix(in srgb,var(--rc-red) 12%,transparent);font-weight:700}
+.career-job.rc .rc-items li.out{opacity:.6;font-weight:400}
+.career-job.rc .rc-items .btn{min-height:40px;margin-left:auto}
+.career-job.rc .rc-tos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.career-job.rc .rc-to{min-height:48px;padding:6px 4px;font-weight:700;border-width:2px;white-space:normal;line-height:1.15}
+.career-job.rc .rc-to.rc-huu_co{border-color:var(--rc-green)}
+.career-job.rc .rc-to.rc-tai_che{border-color:var(--rc-yellow)}
+.career-job.rc .rc-to.rc-con_lai{border-color:var(--rc-black)}
+.career-job.rc .rc-note{margin-top:4px}
+.career-job.rc .rc-note .btn{min-height:44px;width:100%}
+
+/* ---------- the cart */
+.career-job.rc .rc-cart{border-top:6px solid var(--rc-vest);background:
+  repeating-linear-gradient(90deg,transparent 0 22px,rgb(242 140 40 / 7%) 22px 30px),var(--sk-surface)}
+.career-job.rc .rc-cart-head{display:flex;justify-content:space-between;align-items:center}
+.career-job.rc .rc-haz{font-weight:700;color:var(--rc-red)}
+.career-job.rc .rc-bins{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:6px 0 8px}
+.career-job.rc .rc-bin{display:grid;gap:4px;font-size:13px}
+.career-job.rc .rc-bin small{color:var(--sk-muted);font-variant-numeric:tabular-nums}
+.career-job.rc .rc-huu_co .sk-meter i{background:var(--rc-green)}
+.career-job.rc .rc-tai_che .sk-meter i{background:var(--rc-yellow)}
+.career-job.rc .rc-con_lai .sk-meter i{background:var(--rc-black)}
+.career-job.rc .rc-bin .sk-meter.bad{outline:2px solid var(--rc-red)}
+.career-job.rc .rc-cart .btn{width:100%;min-height:48px}
+.career-job.rc .rc-cart.compact{padding:10px 12px}
+
+/* ---------- start of shift, complaints */
+.career-job.rc .rc-gear{grid-template-columns:repeat(2,minmax(0,1fr))}
+.career-job.rc .rc-gear .sk-tile.selected{background:color-mix(in srgb,var(--rc-vest) 14%,var(--sk-surface));border-color:var(--rc-vest);box-shadow:inset 0 0 0 2px var(--rc-vest)}
+.career-job.rc .rc-row{display:flex;gap:8px;margin-top:10px}
+.career-job.rc .rc-row .btn{min-height:48px;flex:1}
+.career-job.rc .rc-facts{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.rc .rc-facts li{display:grid;gap:2px;padding:6px 8px;border-radius:10px;background:var(--sk-surface-2)}
+.career-job.rc .rc-facts li .btn{min-height:44px;justify-content:flex-start}
+.career-job.rc .rc-facts li span{font-size:14px}
+
+@media (max-width:420px){
+  .career-job.rc .rc-houses{grid-template-columns:repeat(auto-fit,minmax(52px,1fr))}
+  .career-job.rc .rc-to{font-size:13px}
+}
+
+/* ---------- the awkward people (0.9.16) */
+.career-job.rc .rc-refuse{width:100%;min-height:44px;margin-top:4px;white-space:normal}
+.career-job.rc .rc-fee.paid,.career-job.rc .rc-fee.waived{opacity:.7}
+.career-job.rc .rc-fee.refused{border-color:var(--rc-red)}
+.career-job.rc .rc-fees{margin-top:10px}

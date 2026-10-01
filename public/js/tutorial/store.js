@@ -22,7 +22,13 @@ export function markTourDone(env){
 export const savedRun=()=>get(KEY.run);
 export const saveRun=id=>set(KEY.run,id||null);
 
-export function notesSeen(api){return new Set([...ids(get(KEY.notes)),...ids(api?.state?.settings?.notesSeen)]);}
+/** The new-player marker (v4/onboard.js MARK): only the server sets it, so a copy left in this browser by
+ * another save never spreads to the account in play. */
+const MARK='onb1';
+export function notesSeen(api){
+  const server=ids(api?.state?.settings?.notesSeen);
+  return new Set([...ids(get(KEY.notes)).filter(x=>x!==MARK||server.includes(MARK)),...server]);
+}
 export function markNoteSeen(env,id){
   const all=notesSeen(env?.api);if(all.has(id)&&ids(env?.api?.state?.settings?.notesSeen).includes(id))return;
   all.add(id);const list=[...all].slice(-12).join(',');

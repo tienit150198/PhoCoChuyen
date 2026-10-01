@@ -5,6 +5,7 @@
  * and amount lives in game/incidents.py. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {asset} from '../assets.js';
+import {quiet} from './onboard.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const signed=n=>`${n<0?'−':'+'}${fmt(Math.abs(n))}`;
@@ -116,7 +117,7 @@ export function incidentBoot(env){
   const seen=new Set();
   const check=()=>{
     const s=env.api.state,c=s?.current&&s.careers?.[s.current],a=c?.incidents?.active;
-    if(!a||a.practice||seen.has(a.id))return;
+    if(!a||a.practice||seen.has(a.id)||quiet(s))return;   // never over a new player's first 3 customers (asked again later)
     seen.add(a.id);
     setTimeout(()=>{
       const now=env.api.state?.careers?.[env.api.state.current]?.incidents?.active;

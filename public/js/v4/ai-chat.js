@@ -3,6 +3,7 @@
  * wording when it passes the guards); this module only renders and sends.
  * Contract: docs/superpowers/specs/2026-09-29-ai-characters-design.md */
 import {icon,escapeHTML as esc} from '../icons.js';
+import {quiet} from './onboard.js';
 
 export const CHAT_MAX=200;
 const pending={}; // npc id -> {text}
@@ -75,7 +76,7 @@ export async function aiTalk(env,npc,text){
 
 /* ---- one-time notice ----------------------------------------------------- */
 let dismissed=false,noticeEnv=null;
-function noticeWanted(api){const s=api.state?.settings;return !dismissed&&!!api.ai?.configured&&!!s?.aiConsent&&s.aiNoticeSeen===false;}
+function noticeWanted(api){const s=api.state?.settings;return !dismissed&&!!api.ai?.configured&&!!s?.aiConsent&&s.aiNoticeSeen===false&&!quiet(api.state);}  // not over a new player's first 3 customers
 function noticeHTML(api){
   const E=en(api);
   return `<span class="ai-notice-icon" aria-hidden="true">${icon('sparkle',18)}</span><p>${E?'Characters chat using AI. Do not type real personal information.':'Nhân vật trò chuyện bằng AI. Đừng gõ thông tin cá nhân thật.'} <a href="/privacy" target="_blank" rel="noopener">${E?'Privacy':'Quyền riêng tư'}</a></p>`+

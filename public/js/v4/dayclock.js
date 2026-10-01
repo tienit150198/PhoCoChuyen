@@ -67,7 +67,7 @@ export function lightAt(minute){
   const [a,ra,aa,la]=KEYS[i],[b,rb,ab,lb]=KEYS[i+1],t=b>a?(m-a)/(b-a):0;
   return {rgb:ra.map((v,k)=>mixN(v,rb[k],t)),alpha:mixN(aa,ab,t),lamps:mixN(la,lb,t)};
 }
-const OUTDOOR=new Set(['sidewalk','street','farm']);
+const OUTDOOR=new Set(['sidewalk','street','farm','lane']);
 /** Lamp post (outdoor scenes) standing at (x,y) in scene pixels; `on` 0..1. */
 function lampPost(c,x,y,s,on){
   c.save();c.translate(x,y);c.scale(s,s);

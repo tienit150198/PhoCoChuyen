@@ -30,6 +30,9 @@ NORMS = {
     'tra_da': dict(rate=.16, cash=.80, lo=1, hi=3, bill=6),   # glasses of 3 xu: a tip is a coin or two
     'clothing': dict(rate=.16, cash=.65, lo=2, hi=10, bill=70),
     'pet_shop': dict(rate=.18, cash=.70, lo=2, hi=10, bill=50),
+    'fruit': dict(rate=.14, cash=.70, lo=1, hi=5, bill=14),     # a kilo of fruit: the change is the tip
+    'drain': dict(rate=.22, cash=.80, lo=2, hi=8, bill=20),     # a household call-out: a little extra for a clean job
+    'garbage': dict(rate=.08, cash=0, lo=0, hi=0, bill=25),     # residents thank the crew with a drink, never money
     # rare, and mostly a thank-you gift: money would not be right here
     'accounting': dict(rate=.08, cash=.30, lo=3, hi=10, bill=50),
     'pharmacy': dict(rate=.07, cash=0, lo=0, hi=0, bill=30),
@@ -38,6 +41,9 @@ NORMS = {
     'corp_accounting': dict(rate=.05, cash=0, lo=0, hi=0, bill=70),
     'tax_payroll': dict(rate=.05, cash=0, lo=0, hi=0, bill=70),
     'group_accounting': dict(rate=.05, cash=0, lo=0, hi=0, bill=70),
+    # ✈️ Hãng bay Cánh Cò: nobody tips the crew; a thank-you now and then
+    'pilot': dict(rate=.06, cash=0, lo=0, hi=0, bill=12),
+    'flight_attendant': dict(rate=.07, cash=0, lo=0, hi=0, bill=8),
 }
 DEFAULT_NORM = dict(rate=.15, cash=.70, lo=2, hi=10, bill=40)
 OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting')
@@ -165,6 +171,11 @@ CAREER_LINES = {
                  'Tư vấn thật lòng, không nói quá.'),
     'pet_shop': ('Tư vấn thức ăn kỹ ghê, bé ăn ngon.', 'Bể cá lên đẹp, cá khỏe re.', 'Dặn dò kỹ, nuôi yên tâm hẳn.',
                  'Không bán bừa, quý tiệm ghê.'),
+    'fruit': ('Trái ngọt lịm, cân đủ luôn.', 'Lựa trái giùm khéo ghê.', 'Cân nhanh, tính gọn.', 'Mua ở đây yên tâm, không sợ trái dập.'),
+    'garbage': ('Ngõ sạch bong, cảm ơn tổ thu gom.', 'Tối nào cũng đúng giờ, quý lắm.', 'Nhắc phân loại dễ nghe ghê.',
+                'Làm cực mà lúc nào cũng vui vẻ.'),
+    'drain': ('Thông một phát nước rút ào ào.', 'Báo giá rõ ràng, làm đúng giá.', 'Dọn sạch sẽ, không một vết bẩn.',
+              'Giải thích dễ hiểu, cảm ơn thợ.'),
     'mother_baby': ('Món quà đúng ý bé luôn.', 'Tư vấn kỹ, không bán thừa món nào.', 'Gói quà xinh quá trời.',
                     'Tìm đúng món cho bé rồi.'),
     'tour_guide': ('Chuyến đi đáng nhớ lắm!', 'Kể chuyện hay, cả đoàn mê.', 'Ảnh chụp đẹp ghê, về khoe liền.',
@@ -176,6 +187,8 @@ CAREER_LINES = {
     'corp_accounting': ('Hồ sơ gọn gàng, sếp khen.', 'Số liệu khớp từng dòng.'),
     'tax_payroll': ('Bảng lương khớp từng đồng.', 'Nhờ vậy mà kịp hạn nộp.'),
     'group_accounting': ('Sổ hợp nhất khớp từng dòng.', 'Báo cáo gọn, họp nhẹ cả người.'),
+    'pilot': ('Hạ cánh êm ru, cả khoang vỗ tay.', 'Thông báo rõ ràng, nghe là yên tâm.'),
+    'flight_attendant': ('Tiếp viên chu đáo quá, cảm ơn nhiều.', 'Chuyến bay dễ chịu ghê.'),
 }
 
 # Thank-you gifts that carry no money: (emoji, what).
@@ -194,6 +207,9 @@ GIFTS = {
     'tra_da': (('🍙', 'nắm xôi xéo còn nóng'), ('🍌', 'nải chuối chín'), ('🥜', 'gói lạc rang nhà làm')),
     'clothing': (('🧋', 'một ly trà sữa'), ('💌', 'tấm ảnh mặc đồ mới kèm lời cảm ơn'), ('🍊', 'mấy trái quýt')),
     'pet_shop': (('📸', 'tấm ảnh bé cưng ở nhà mới'), ('🍪', 'hộp bánh quy'), ('🌼', 'chậu sen đá nhỏ')),
+    'fruit': (('🥖', 'ổ bánh mì nóng'), ('🍵', 'ly trà đá mát'), ('💌', 'lời cảm ơn viết trên giấy gói')),
+    'garbage': (('🥤', 'chai nước mát'), ('🍌', 'nải chuối chín'), ('🍰', 'gói bánh bông lan')),
+    'drain': (('☕', 'ly cà phê sữa đá'), ('🍲', 'tô bún bò nóng'), ('💌', 'tấm thiệp cảm ơn')),
     'mother_baby': (('🍬', 'gói kẹo mừng đầy tháng'), ('🍰', 'hộp bánh bông lan'), ('💌', 'tấm thiệp bé nhà vẽ')),
     'tour_guide': (('🔑', 'móc khóa lưu niệm từ quê khách'), ('💌', 'tấm bưu thiếp có chữ ký cả đoàn'), ('🍫', 'thanh sô-cô-la ngoại')),
     'accounting': (('🍯', 'hũ mứt gừng nhà làm'), ('🍊', 'bịch cam sành'), ('💌', 'lời cảm ơn viết tay')),
@@ -204,6 +220,8 @@ GIFTS = {
     'corp_accounting': (('🍰', 'hộp bánh mời cả phòng'), ('☕', 'ly cà phê đặt trên bàn'), ('💌', 'tin nhắn khen gửi sếp')),
     'tax_payroll': (('🍰', 'hộp bánh mời cả phòng'), ('☕', 'ly cà phê đặt trên bàn'), ('🍊', 'túi cam để trên bàn')),
     'group_accounting': (('🍰', 'hộp bánh mời cả phòng'), ('☕', 'ly cà phê đặt trên bàn'), ('💌', 'tin nhắn khen gửi sếp')),
+    'pilot': (('✏️', 'bức vẽ chiếc máy bay của một em nhỏ'), ('🥭', 'mấy trái xoài cát'), ('💌', 'tấm thiệp gửi tổ bay')),
+    'flight_attendant': (('💌', 'mẩu giấy cảm ơn kẹp trong túi ghế'), ('🍬', 'gói kẹo dừa Bến Tre'), ('🥭', 'trái xoài chín')),
 }
 DEFAULT_GIFTS = (('💌', 'tấm thiệp cảm ơn'), ('🍊', 'mấy trái quýt'))
 
@@ -233,6 +251,14 @@ BIG_LINES = (
 )
 
 # The line a happy customer adds to the review.
+# A brand-new player's very first customer (tips.welcome): a warm "wow", a small tip and one of these.
+WELCOME_LINES = (
+    'Người mới hả? Làm khéo ghê, chúc {ac} ngày đầu thật vui nha!',
+    'Ngày đầu mà làm ngon vậy! Chút tip mừng {ac} nè.',
+    'Lần đầu ghé mà thấy thương quán rồi. Cố lên nha {ac}!',
+)
+WELCOME_SHARE = .15     # of the bill, rounded to what people hand over, within the career's lo..hi
+
 REVIEW_CASH = ('Có để lại chút tip cảm ơn 💝', 'Tip nhẹ cho người làm có tâm 💝', 'Xứng đáng được tip, sẽ quay lại 💝')
 REVIEW_BIG = ('Tip hơi nhiều nhưng xứng đáng lắm 🌟',)
 REVIEW_GIFT = 'Có gửi {gift} để cảm ơn 🎁'

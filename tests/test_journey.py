@@ -207,7 +207,8 @@ class Wallet(unittest.TestCase):
         j = p.s['journey']
         self.assertEqual(j['life_day'], 3)
         # milk_tea sat idle while grocery worked: its fund paid that upkeep, not the wallet.
-        self.assertEqual(j['wallet'], jr.START_WALLET - 2 * jr.LIVING[1])
+        # The first life day ended with Bà Tám's welcome gift.
+        self.assertEqual(j['wallet'], jr.START_WALLET - 2 * jr.LIVING[1] + jr.WELCOME_GIFT)
         rows = [h for h in j['history'] if h['kind'] == 'living']
         self.assertEqual([h['amount'] for h in rows], [-jr.LIVING[1]] * 2)
         before = j['wallet']
@@ -346,7 +347,8 @@ class Wallet(unittest.TestCase):
         pay = r['summary']['job']['salary']
         self.assertGreater(pay, 0)
         self.assertEqual(j.c['money'], money)
-        self.assertEqual(j.state['journey']['wallet'], wallet + pay - jr.LIVING[j.state['journey']['chapter']])
+        gift = jr.WELCOME_GIFT   # it was the first life day: Bà Tám's welcome gift comes too
+        self.assertEqual(j.state['journey']['wallet'], wallet + pay - jr.LIVING[j.state['journey']['chapter']] + gift)
         cats = [x['category'] for x in j.c['ops']['finance']['ledger'][-2:]]
         self.assertEqual(cats, ['salary', 'salary_to_wallet'])
         self.assertIn('m_salary', j.state['journey']['titles'])
@@ -362,6 +364,7 @@ class Debt(unittest.TestCase):
         s, _ = act(s, 'milk_tea', 'start_day')
         s['careers']['milk_tea']['metrics']['served'] = 3
         s['journey']['wallet'] = 4
+        s['journey']['life_day'] = 2   # past the first day (whose end brings a welcome gift)
         s, r = act(s, 'milk_tea', 'end_day', carry_event=True)
         j = s['journey']
         self.assertEqual(j['wallet'], 4 - jr.LIVING[1])

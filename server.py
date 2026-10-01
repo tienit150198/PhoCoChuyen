@@ -54,7 +54,8 @@ from game import board_ai
 from game import admin_stats
 from game import leaderboard
 from game import marriage
-from game.content import public_content,CAREERS
+from game import system_gift
+from game.content import public_content,content_parts,CAREERS
 from game.engine import GameError,public_state
 from game.storage import Store,Conflict
 from game import db as dbm
@@ -181,6 +182,7 @@ class GameServer(ThreadingHTTPServer):
         self.cas_dir=None  # Path of STATIC_CAS_DIR once main() has filled it (see Handler.cas_static)
         self._content=None
         self._content_blob=None
+        self._content_parts=None
         # index.html rendered with ?v=<hash> asset URLs, an import map and CSP hashes (game/webassets.py).
         self.assets=WebAssets(PUBLIC,CSP,self.content_version,__version__)
         self.trust_proxy=env_flag("TRUST_PROXY")
@@ -206,6 +208,16 @@ class GameServer(ThreadingHTTPServer):
         return self._content_blob
 
     def content_version(self)->str:return self.content_blob()[2]
+
+    def content_part(self,name:str)->tuple[bytes,bytes]|None:
+        """(JSON bytes, gzip bytes) of one part of the catalogue (game/content.py content_parts): `core`, `more` or
+        `career:<id>`; None for an unknown part. Built once per process, like the whole catalogue."""
+        if self._content_parts is None:
+            parts={}
+            for key,value in content_parts(json.loads(self.content_json())).items():
+                raw=json.dumps(value,ensure_ascii=False,allow_nan=False).encode();parts[key]=(raw,gzip.compress(raw,6))
+            self._content_parts=parts
+        return self._content_parts.get(name)
 
     def game_version(self)->str:
         """`<release>+<build>`: sent as X-Game-Version on every API response; the page compares it with
@@ -355,9 +367,16 @@ class Handler(BaseHTTPRequestHandler):
 
     def content(self,query:str):
         """GET /api/content?v=<hash>: the game catalogue, split out of /api/bootstrap. A matching ?v= is
-        cached for a year (the URL changes with the content); anything else must revalidate."""
+        cached for a year (the URL changes with the content); anything else must revalidate.
+        &part=core|more or &career=<id>: one part of it (game/content.py content_parts), same rules; the page
+        waits only for `core` (and the current workplace's part), public/js/api.js."""
         raw,gz,version=self.server.content_blob();etag=f'"{version}"'
-        v=(parse_qs(query).get("v") or [""])[0]
+        q=parse_qs(query);v=(q.get("v") or [""])[0]
+        part=(q.get("part") or [""])[0] or ("career:"+q["career"][0] if q.get("career") else "")
+        if part:
+            blob=self.server.content_part(part)
+            if blob is None:self.error(404,"Không có phần dữ liệu này.","not_found");return
+            raw,gz=blob;etag=f'"{version}-{part}"'
         cache=IMMUTABLE if v==version else "no-cache"
         if self.headers.get("If-None-Match")==etag:
             self.send_response(304);self.send_header("ETag",etag);self.send_header("Cache-Control",cache);self.send_header("Content-Length","0");self.end_headers();return
@@ -437,6 +456,7 @@ class Handler(BaseHTTPRequestHandler):
                     self.error(429,"Quá nhiều phiên mới từ mạng này. Chờ một chút nhé.");return
                 token,csrf,created=self.server.store.session(existing)
                 state,revision,_=self.server.store.read(token)
+                gifts=[]
                 if not created:
                     try:
                         if social.settle(self.server.store,token,state):state,revision,_=self.server.store.read(token)
@@ -444,15 +464,28 @@ class Handler(BaseHTTPRequestHandler):
                     try:  # Hôn nhân: a wedding whose day has come, gifts that arrived (game/marriage.py)
                         if marriage.on_load(self.server.store,token,state):state,revision,_=self.server.store.read(token)
                     except Exception as e:self.log_error("marriage on_load: %s",type(e).__name__)  # never blocks loading the game
+                    try:  # 🎁 Quà từ Phố Có Chuyện: pay this save's pending gifts, list the cards not seen yet (game/system_gift.py)
+                        paid,gifts=system_gift.on_load(self.server.store,token,state)
+                        if paid:state,revision,_=self.server.store.read(token)
+                    except Exception as e:self.log_error("gift on_load: %s",type(e).__name__)  # never blocks loading the game
                 extra={"Set-Cookie":self.cookie(token)} if created else {}
+                view=public_state(state)
+                # The workplace the first frame opens (app.js career()): boot.js starts its part of the catalogue
+                # (X-Game-Place) and preloads its scene, workbench and stylesheets (X-Game-Warm, game/webassets.py
+                # career_warm) as soon as these headers are in, while the body is still on its way.
+                place=view.get("current") or view.get("focus") or ""
+                if place and self.server.content_part("career:"+place):extra["X-Game-Place"]=place  # plugin workplaces only
+                try:warm=self.server.assets.snapshot().warm.get(place)
+                except (OSError,ValueError):warm=None
+                if warm:extra["X-Game-Warm"]=warm
                 # ?lite=1 (current client): the catalogue comes from GET /api/content?v=<content_version>, cached
                 # by the browser. Without it (a page from before the split, during a deploy) it is still inlined.
                 version=self.server.content_version()
                 lite=(parse_qs(split.query).get("lite") or [""])[0]=="1"
-                self.json(200,dict(state=public_state(state),revision=revision,csrf=csrf,ai=dict(public_config(),configured=ai.available(),chat=True),
+                self.json(200,dict(state=view,revision=revision,csrf=csrf,ai=dict(public_config(),configured=ai.available(),chat=True),
                                    social=social.bootstrap(self.server.store,token,state),push=push.public_config(),account=accounts.status(self.server.store,token),
                                    admin=pfb.is_admin(self.server.store,token),content_version=version,content_url=f"/api/content?v={version}",
-                                   game_version=self.server.game_version()),extra,raw=None if lite else dict(content=self.server.content_blob()[0]));return
+                                   game_version=self.server.game_version(),gifts=gifts),extra,raw=None if lite else dict(content=self.server.content_blob()[0]));return
             if route=="/api/state":
                 _,state,revision,_=self.require_session();self.json(200,dict(state=public_state(state),revision=revision));return
             if route=="/api/save/export":
@@ -567,7 +600,7 @@ class Handler(BaseHTTPRequestHandler):
     def _post(self):
         try:
             route=urlsplit(self.path).path
-            token,state,revision,csrf=self.guarded(light=route=="/api/command")
+            token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen"))
             length=int(self.headers.get("Content-Length","0"))
             if not 0<length<=MAX_BODY:self.error(413,"Nội dung quá lớn hoặc trống.");self.close_connection=True;return
             if not self.headers.get("Content-Type","").startswith("application/json"):self.error(415,"Cần gửi JSON.");self.close_connection=True;return
@@ -614,13 +647,16 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(200,dict(ok=True,item=pfb.update(self.server.store,data.get("id"),data.get("status"),data.get("reply"))));return
             if route=="/api/account/delete":
                 if data.get("confirm")!="XOA":raise GameError("Gõ XOA để xác nhận xóa dữ liệu.")
-                pfb.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);self.server.store.delete(token)
+                pfb.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);system_gift.forget(self.server.store,token);self.server.store.delete(token)
                 self.json(200,dict(deleted=True,message="Đã xóa toàn bộ dữ liệu chơi của bạn trên máy chủ."),{"Set-Cookie":self.cookie("",0)});return
             if route.startswith("/api/account/"):
                 self.account_post(route[len("/api/account/"):],token,data);return
             if route=="/api/leaderboard/visibility":  # "Hiện tên tôi trên bảng xếp hạng"
                 if not self.server.rate_limit("lb-vis:"+token,20):self.error(429,"Chờ một chút nhé.","rate_limited");return
                 self.json(200,leaderboard.set_visible(self.server.store,token,state,data.get("visible")));return
+            if route=="/api/gift/seen":  # 🎁 the player pressed "Nhận quà" on a gift card: it never shows again (game/system_gift.py)
+                if not self.server.rate_limit("gift:"+token,30):self.error(429,"Chờ một chút nhé.","rate_limited");return
+                self.json(200,dict(ok=True,seen=system_gift.seen(self.server.store,token,data.get("id"))));return
             if route.startswith("/api/marriage/"):  # Hôn nhân: ring, proposal, plan, confirm, divorce… (game/marriage.py)
                 if not self.server.rate_limit("marriage:"+token,60):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.","rate_limited");return
                 out=marriage.act(self.server.store,token,route[len("/api/marriage/"):],data)
@@ -1145,7 +1181,7 @@ def main():
     # Before any worker forks: serialise the catalogue, hash the static files and copy them into the
     # content-addressed store that the proxy serves ?v= URLs from (STATIC_CAS_DIR, docs/DEPLOY.md).
     cas=Path(os.environ.get("STATIC_CAS_DIR") or PUBLIC/"_v")
-    try:server.content_blob();written=server.assets.write_cas(cas);server.cas_dir=cas
+    try:server.content_blob();server.content_part("core");written=server.assets.write_cas(cas);server.cas_dir=cas
     except OSError as e:print(f"  Không ghi được bản tĩnh theo mã băm vào {cas} ({type(e).__name__}); các URL ?v= sẽ về no-cache.",flush=True)
     else:
         if written:print(f"  Bản tĩnh theo mã băm: {written} tệp mới trong {cas}",flush=True)

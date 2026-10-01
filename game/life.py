@@ -655,7 +655,7 @@ def _roll(s: dict, L: dict, day: int, career: str | None, facts: set) -> dict | 
         L['recent'][x['id']] = day
         return _new_card(L, day, 'impulse', x['id'], 'buon', 'impulse', career)
     if facts and not early and day - L['rumour'] >= RUMOUR_GAP and rolls[2] < RUMOUR_P:
-        pool = _hard_pool(L, day, career, facts)
+        pool = _hard_pool(L, day, career, facts, _taken(s))
         x = _pick(r, pool, [1.0] * len(pool))
         if x:
             return _fire_hard(s, L, x, day, career, gossip=r.choice(sorted(GOSSIPS)))

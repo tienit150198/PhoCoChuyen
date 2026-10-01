@@ -170,7 +170,9 @@ function segments(key,depth){
 function resolve(key,depth){
   if(!key||!isVi(key))return key;
   if(depth>4)return null;
-  if(memo.has(key))return memo.get(key);
+  // A miss found deep in a nested lookup may only be the depth limit talking: it is reused at the same depth
+  // or deeper, never for a shallower lookup of the same text (a sale message lost its "…đã về tài khoản" line).
+  const seen=memo.get(key);if(seen&&(seen.out!==null||seen.depth<=depth))return seen.out;
   let out=lookup(key,depth);
   if(out===null){
     // "🍜 Bún bò ·" → translate the core, keep emoji/punctuation around it.
@@ -193,7 +195,7 @@ function resolve(key,depth){
   if(out===null&&SEP.test(key))out=segments(key,depth);
   if(out===null){const parts=key.split(/(?<=[.!?…:])\s+/u);if(parts.length>1)out=pieces(parts,depth,' ');}
   if(memo.size>20000)memo.clear();
-  memo.set(key,out);
+  memo.set(key,{out,depth});
   return out;
 }
 

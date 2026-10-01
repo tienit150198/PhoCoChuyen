@@ -71,7 +71,8 @@ export async function openMarriage(env,tab){
 }
 export async function marriageAction(action,data,el,env){
   if(action!=='marriage'&&action!=='friends')return false;
-  await openMarriage(env,action==='friends'?'friends':data?.tab);return true;
+  // "Hôn nhân" never reopens on the Bạn bè tab (a pending proposal would stay hidden there).
+  await openMarriage(env,action==='friends'?'friends':data?.tab||(S.tab==='friends'?'home':''));return true;
 }
 
 async function load(){
@@ -634,7 +635,7 @@ function breakdown(){
     <div class="mr-bd-row sub"><span>Bạn ${xu(bm)} · ${partner} ${xu(bt)} (trừ vào tiền mừng trước)</span></div>
     <div class="mr-bd-fc">${fc?`<div class="mr-bd-row"><span>Khách dự kiến</span><b>${fc.guests[0]}–${fc.guests[1]} / ${q.seats}</b></div>
       <div class="mr-bd-row"><span>Tiền mừng dự kiến</span><b>${xu(fc.gifts[0])}–${xu(fc.gifts[1])}</b></div>
-      <div class="mr-bd-row ${fc.gifts[1]-q.total>=0?'good':'bad'}"><span>Lời / lỗ dự kiến</span><b>${signed(fc.gifts[0]-q.total)} … ${signed(fc.gifts[1]-q.total)}</b></div>
+      <div class="mr-bd-row ${fc.gifts[0]-q.total>=0?'good':fc.gifts[1]-q.total<0?'bad':''}"><span>Lời / lỗ dự kiến</span><b>${signed(fc.gifts[0]-q.total)} … ${signed(fc.gifts[1]-q.total)}</b></div>
       <p class="mr-hint">${esc(fq.mood.emoji)} Không khí: ${esc(fq.mood.label)}. Hàng xóm càng thân càng hay tới và mừng dày.</p>`:'<p class="mr-hint" role="status">Đang ước lượng khách và tiền mừng…</p>'}</div>
     ${short?`<p class="mr-flash warn">Ví của bạn còn ${xu(w)}, chưa đủ phần cọc ${xu(mine)}.</p>`:''}
     ${btn(`Gửi kế hoạch cho ${partner}`,'plan_send',{},'primary big full')}

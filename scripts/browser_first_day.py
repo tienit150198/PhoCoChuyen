@@ -2,8 +2,8 @@
 """First-day sweep (dev tool, needs `pip install playwright` + chromium).
 
 Plays a brand-new STORY-mode player the way production runs (story on, MNL_DEV
-off) on a 390×844 phone: intro → name → pick a chapter-1 workplace → open day 1
-→ finish the first task, only ever pressing the control the game highlights
+off) on a 390×844 phone: the one intro screen (look, name, a chapter-1 workplace)
+→ day 1 opens by itself → finish the first task, only ever pressing the control the game highlights
 (the first-time pulse), the bottom button (.gd-cta) or the "Bước tiếp theo"
 hint, and saying yes to confirm dialogs. A career passes when its first task is
 completed without console errors, error toasts or a step that goes nowhere.
@@ -142,19 +142,26 @@ async def play(browser, base: str, cid: str, shots: Path | None, max_steps: int 
         if dev:
             await dev_start(page, cid)
         else:
-            # The story intro: arrive → who are you → first workplace.
-            # The first-run welcome card (tutorial) comes first: this script plays without the tour.
-            try:
-                await page.click('[data-tut-w="explore"]', timeout=4000)
-            except Exception:
-                pass
-            await page.click('[data-action="jrStep"][data-step="who"]')
+            # The story intro is one screen: look, name, first workplace (milk tea is picked already), go.
+            # Day 1 of that first workplace then opens by itself, straight into the first customer.
             await page.click('[data-action="jrGender"][data-gender="female"]')
             await page.fill('#sheet[open] input', 'Lan')
-            await page.get_by_role('button', name='Đây là mình').click()
-            await page.wait_for_selector(f'.jr-job[data-career="{cid}"]', timeout=8000)
-            await page.click(f'.jr-job[data-career="{cid}"]')
-            await page.wait_for_timeout(900)
+            rec = await page.get_attribute('.onb-job.active', 'data-career')
+            if rec != 'milk_tea':
+                out['problems'].append(f'the recommended first workplace is {rec!r}, not milk_tea')
+            if cid != rec:
+                await page.click(f'.onb-job[data-career="{cid}"]')
+            await page.get_by_role('button', name='Vào làm thôi').click()
+            for _ in range(40):
+                st = await page.evaluate(STATE, cid)
+                if st['open'] and st['current'] == cid:
+                    break
+                await page.wait_for_timeout(250)
+            else:
+                out['problems'].append('day 1 did not open by itself after the intro')
+            await page.wait_for_timeout(700)
+            if await page.evaluate("()=>!!document.querySelector('#sheet[open].prep-sheet, #wnDialog[open], #tutWelcome[open]')"):
+                out['problems'].append('a "Chuẩn bị", "Có gì mới" or welcome sheet is in the way of the first customer')
         await shot('0-start')
         seen_errors: set[str] = set()
         last, same = None, 0

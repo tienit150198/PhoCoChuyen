@@ -1,12 +1,14 @@
-/** Tutorial layer: welcome card → first-run tour for brand-new players, the
- * illustrated guide, and the "something new" announcements for everyone.
+/** Tutorial layer: in-context tips for brand-new players (tips.js, while they play), the
+ * coach-mark tour on request (Cài đặt → Hướng dẫn), the illustrated guide, and the
+ * "something new" announcements for everyone.
  * app.js calls tutorialBoot(env) once after loading and routes the
  * `help` / `tutGuide` / `tutReplay` actions here (tutorialAction). */
 import {startTour,stopTour,tourRunning} from './tour.js';
 import {openGuide,closeGuide,helpButton} from './guide.js';
-import {showWelcome} from './welcome.js';
+import {startTips,stopTips,tipsSaved,hintsBoot} from './tips.js';
 import {announceBoot,quietAll} from './announce.js';
-import {tourDone,savedRun,markTourDone} from './store.js';
+import {tourDone,savedRun,notesSeen,markNoteSeen} from './store.js';
+import {markedNew,quiet} from '../v4/onboard.js';
 
 function css(){
   if(document.querySelector('link[data-tut-css]'))return;
@@ -19,17 +21,16 @@ export function tutorialBoot(env){
 function boot(env){
   css();
   const api=env.api,J=api.state?.journey,done=tourDone(api);
-  // Brand-new story save (still in the first-day intro): welcome card, then the tour.
-  if(J?.story&&!J.intro&&!done){
-    quietAll(env);   // they get the tour, not the "new guide" announcement
-    setTimeout(()=>showWelcome({
-      onStart:()=>startTour(env),
-      onExplore:()=>{markTourDone(env);env.toast('Cần giúp? Mở mục Hướng dẫn 📘','hint');},
-    }),400);
+  // Brand-new story save (still in the first-day intro): no welcome card and no pages before playing;
+  // short tips show up on the controls while they play (tips.js), and pick up again after a reload.
+  if(J?.story&&!J.intro&&!done||tipsSaved()&&!done&&(J?.life_day|0)<=2){
+    quietAll(env);   // they get the tips, not the "new guide" announcement
+    startTips(env);
   }else if(savedRun()&&!done){
     setTimeout(()=>startTour(env,{at:savedRun()}),600);   // a reload in the middle of the tour
   }
   announceBoot(env,{guide:e=>openGuide(e)});
+  hintsBoot(env,{markedNew,quiet,notesSeen,markSeen:markNoteSeen});   // first-time hints (new saves only)
 }
 
 export async function tutorialAction(action,data,el,env){
@@ -37,7 +38,7 @@ export async function tutorialAction(action,data,el,env){
     case'help':case'tutGuide':openGuide(env,{career:data?.career||undefined,tab:data?.tab||undefined,page:data?.page||undefined,sec:data?.sec||undefined,topic:data?.topic||undefined});return true;
     case'tutReplay':
       closeGuide();if(document.getElementById('sheet')?.open)env.closeSheet();
-      if(tourRunning())stopTour('restart');
+      stopTips('replay');if(tourRunning())stopTour('restart');
       setTimeout(()=>startTour(env),250);return true;
   }
   return false;

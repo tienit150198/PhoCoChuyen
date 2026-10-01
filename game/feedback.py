@@ -321,7 +321,8 @@ WRONG_SHOP = (('food', 'Phở tái nguội ngắt, nước dùng nhạt như nư
 DOMAIN = {'milk_tea': 'drink', 'cafe_bakery': 'drink', 'restaurant': 'food', 'mother_baby': 'shop', 'grocery': 'shop', 'pharmacy': 'pharmacy',
           'accounting': 'office', 'corp_accounting': 'office', 'tax_payroll': 'office', 'group_accounting': 'office', 'customer_care': 'office',
           'tour_guide': 'stay', 'homestay': 'stay', 'florist': 'flower', 'repair': 'repair', 'farm': 'farm', 'delivery': 'delivery',
-          'pet_care': 'pet', 'salon': 'salon', 'clothing': 'shop', 'tra_da': 'drink', 'pet_shop': 'pet'}
+          'pet_care': 'pet', 'salon': 'salon', 'clothing': 'shop', 'tra_da': 'drink', 'pet_shop': 'pet',
+          'fruit': 'shop', 'garbage': 'delivery', 'drain': 'repair'}
 # How twist reviewers answer a polite reply.
 TWIST_REPLY = {
     'flip_fix': ['Ơ, mình bấm nhầm sao thật! Sửa lại liền, xin lỗi nha 🙏', 'Trời, tay nhanh hơn não, mình chấm nhầm. Sửa rồi nè.', 'Ủa sao lại 1 sao, mình đâu định vậy. Sửa ngay!'],
@@ -571,6 +572,9 @@ def make_review(s: dict, c: dict, t: dict, status: str) -> dict:
     stars = legacy_stars(t) if career in ('mother_baby', 'pharmacy', 'accounting', 'customer_care') and not t.get('desk') else ev['stars']
     stars = min(stars, ev['cap'])
     fair = stars
+    own = _own_voice(career)
+    if own:
+        return _own_review(t, persona, stars, ev, own(c, t, persona, stars, ev['criteria'], seed))
     unfair = twist = None
     clues = []
     out = {}
@@ -668,6 +672,22 @@ def make_review(s: dict, c: dict, t: dict, status: str) -> dict:
     # Happy asides ("Trà ngon, mai ghé tiếp!") only fit a plain, friendly review.
     return dict(text=text, stars=stars, feedback=fb,
                 aside=not (twist or unfair or style or gripe or said or persona in HARSH or t.get('slips')), **out)
+
+
+def _own_voice(career: str):
+    """A career that writes its own reviews (careers/<id>.py `review_text`), e.g. the air crew: passengers of a
+    flight and the captain's debrief, never the shop voices. Every other career keeps the shared path unchanged."""
+    from .careers import PLUGINS
+    return getattr(PLUGINS.get(career), 'review_text', None)
+
+
+def _own_review(t: dict, persona: str, stars: int, ev: dict, text: str) -> dict:
+    """The career's own words, closed at once: nobody at the airline answers a passenger note on the app, so no
+    twists, shop gripes, reply thread, report or AI rewrite ever reach it (fb['own'])."""
+    fb = dict(persona=persona, criteria=ev['criteria'], cap=ev['cap'], fair=stars, stars_original=stars, unfair=None,
+              thread=[], status='closed', rounds=0, pending=None, voice='scripted', task=t['id'], title=t.get('title', ''),
+              value=int(t.get('_value', 0) or 0), item='chuyến bay', own=True)
+    return dict(text=str(text)[:600], stars=stars, feedback=fb, aside=False)
 
 
 def _kind(fb: dict):
@@ -1019,7 +1039,7 @@ def validate_post(post: dict) -> None:
     if fb.get('report') == 'accepted':
         need(post.get('stars') is None and fb['status'] == 'closed', 'Đánh giá đã gỡ vẫn còn sao.')
         integer(fb.get('removed_stars'), 1, 5)
-    for k in ('stranger', 'viral', 'ignored'):
+    for k in ('stranger', 'viral', 'ignored', 'own'):
         need(type(fb.get(k, False)) is bool, 'Cờ đánh giá sai.')
     _fv.validate_extra(fb)
     _rg.validate(fb)
@@ -1045,7 +1065,7 @@ def public_post(post: dict) -> dict:
     f.pop('report_day', None)
     f['clues'] = list(fb.get('clues') or [])
     f['removed'] = fb.get('report') == 'accepted'
-    f['can_report'] = bool(post.get('stars')) and not fb.get('report') and fb['status'] != 'awaiting'
+    f['can_report'] = bool(post.get('stars')) and not fb.get('report') and fb['status'] != 'awaiting' and not fb.get('own')
     f['can_ignore'] = fb['status'] == 'open' and not fb['thread']
     f.pop('style', None)
     f.pop('aspects', None)

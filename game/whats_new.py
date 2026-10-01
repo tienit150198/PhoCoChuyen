@@ -21,8 +21,9 @@ Then run `python -m game.whats_new` to rewrite public/js/v4/whatsnew-data.js
 (the copy the browser loads lazily, so the first load does not grow).
 
 Players who already saw a version keep it in settings.whatsNewSeen (the save,
-so it follows the account). It is a server-wide notice: a brand-new save starts at ""
-too, so new players see the latest notes once they have named their character.
+so it follows the account). The notes are for returning players: a brand-new save starts
+at "", and naming the character in the story intro marks the current notes as read
+(journey._welcome_settings), so a new player never gets them.
 """
 from __future__ import annotations
 
@@ -31,6 +32,16 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="0.9.15", date="2026-10-01", items=(
+        dict(emoji="🍉", text="Nghề mới: Bán trái cây ở sạp Dì Tư: lựa trái chín, cân đúng từng lạng, trả giá khéo."),
+        dict(emoji="🗑️", text="Nghề mới: Thu gom rác ca tối: phân loại đúng ngăn, tách đồ nguy hại, giữ ngõ sạch."),
+        dict(emoji="🪠", text="Nghề mới: Thông ống cống với chú Hai: tìm đúng chỗ tắc, báo giá trước khi làm."),
+        dict(emoji="✈️", text="Nghề mới: Phi công và Tiếp viên hàng không của Hãng bay Cánh Cò, bay chặng ngắn ra đảo."),
+    )),
+    dict(version="0.9.13", date="2026-10-01", items=(
+        dict(emoji="🏰", text="Mua nhà: thêm biệt thự và 4 loại căn hộ (studio, 1 phòng ngủ, 2 phòng ngủ, penthouse).", go=dict(action="house")),
+        dict(emoji="💰", text="Bấm vào tiền trên cùng để xem hết: ví, quỹ từng nơi làm, ngân hàng, nhà.", go=dict(action="money")),
+    )),
     dict(version="0.9.10", date="2026-09-30", items=(
         dict(emoji="✅", text="Nâng cấp hạ tầng đã xong! Game đã chạy trên máy chủ mới, mạnh và nhanh hơn."),
         dict(emoji="🎮", text="Tiền, nhà, đồ và tiến độ của bạn vẫn giữ nguyên. Chúc mọi người chơi vui, enjoy nhé!"),

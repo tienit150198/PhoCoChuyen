@@ -74,10 +74,29 @@ class EntriesData(unittest.TestCase):
 
 
 class SeenVersionInTheSave(unittest.TestCase):
-    def test_new_players_see_the_notes_too(self):
-        # A server-wide notice: a brand-new save has read nothing yet (also after "Bắt đầu lại").
+    def test_a_new_save_starts_unread(self):
+        # A brand-new save has read nothing yet (also after "Bắt đầu lại"); naming it marks them read (below).
         self.assertEqual(new_state()['settings']['whatsNewSeen'], '')
         s, _ = apply_action(new_state(), None, 'reset_all', {'confirm': 'BAT DAU LAI'})
+        self.assertEqual(s['settings']['whatsNewSeen'], '')
+
+    def test_naming_a_new_story_save_marks_the_notes_read(self):
+        # Release notes are for returning players: a brand-new player never gets them.
+        from game import journey as jr
+        s = new_state()
+        jr.enable_story(s, 3)
+        s, _ = apply_action(s, None, 'jr_profile', {'name': 'Lan'})   # no look yet: still unnamed
+        self.assertEqual(s['settings']['whatsNewSeen'], '')
+        s, _ = apply_action(s, None, 'jr_profile', {'name': 'Lan', 'gender': 'female'})
+        self.assertEqual(s['settings']['whatsNewSeen'], wn.LATEST)
+        validate_state(copy.deepcopy(s))
+        # A player past the intro who renames keeps what they had read.
+        s['journey']['intro'] = True
+        s['settings']['whatsNewSeen'] = '0.9.0'
+        s, _ = apply_action(s, None, 'jr_profile', {'name': 'Lan Anh', 'gender': 'female'})
+        self.assertEqual(s['settings']['whatsNewSeen'], '0.9.0')
+        # No story (sandbox): untouched.
+        s, _ = apply_action(new_state(), None, 'jr_profile', {'name': 'Lan', 'gender': 'male'})
         self.assertEqual(s['settings']['whatsNewSeen'], '')
 
     def test_seen_version_is_stored_and_never_goes_back(self):
