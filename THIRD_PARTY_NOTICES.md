@@ -1,8 +1,8 @@
 # Dependencies and asset provenance
 
-Runtime application code uses the Python standard library and browser APIs; no third-party JavaScript bundle, CDN or image stock pack is shipped. The bundled third-party assets are the font and the CC0 background music listed below.
+Runtime application code uses the Python standard library and browser APIs; no third-party JavaScript bundle, CDN or image stock pack is shipped. The bundled third-party assets are the font, the CC0 background music and the CC0 bell sound listed below.
 
-Room geometry, character drawing, item icons and UI sound effects are authored procedurally in `public/js/`. The visual style is an original 2D vector interpretation; no logo or branded illustration from the user reference images is embedded in the runtime.
+Room geometry, character drawing, item icons and most UI sound effects are authored procedurally in `public/js/`. The visual style is an original 2D vector interpretation; no logo or branded illustration from the user reference images is embedded in the runtime.
 
 `reference/` contains the user's previously generated design baseline. It is retained for traceability and further development, not relabeled as a new third-party asset license.
 
@@ -36,3 +36,11 @@ Four wedding-party tracks in `public/music/wedding-*.mp3`, all **CC0 1.0** (publ
 - *Chinese Hong Kong folk drums and gongs beating 02* by Jor92 (Freesound.org)
 
 They were cut to loop lengths, crossfaded at the loop point and re-encoded to mono MP3; `public/music/CREDITS.md` has the source links.
+
+## Sound effects
+
+One recorded sound in `public/audio/sfx/`, released under **CC0 1.0** (public domain) on Freesound.org:
+
+- *bell ding 1.wav* by 5ro4 (`ting.mp3`, the "ting ting" when money comes in)
+
+`public/audio/sfx/CREDITS.md` has the source link and how the file was cut. The other UI sounds are still synthesised in `public/js/audio.js`.

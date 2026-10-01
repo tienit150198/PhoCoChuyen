@@ -396,7 +396,7 @@ FOREIGN_NAMES = ('zalojsv', 'zalojavascriptinterface', '__gcrweb', 'getreadmode'
 _FRAME = re.compile(r'~|[A-Za-z0-9_./-]{1,80}:\d{1,7}:\d{1,7}')
 _READING = re.compile(r"\((reading|evaluating) '([A-Za-z_$][\w$.]{0,60})'\)")
 _ASSET_HOST = re.compile(r'(?:[a-z][a-z0-9+.-]*://)?([^/\s]+)(/\S*)?', re.I)
-OWN_PATHS = ('/js/', '/css/', '/i18n/', '/music/', '/fonts/', '/icons/', '/sw.js', '/api/')
+OWN_PATHS = ('/js/', '/css/', '/i18n/', '/music/', '/audio/', '/fonts/', '/icons/', '/sw.js', '/api/')
 
 
 def stack_text(st) -> str | None:

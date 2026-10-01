@@ -102,7 +102,7 @@ class CollectTest(unittest.TestCase):
 
 
 class SoundSettingsTest(unittest.TestCase):
-    KEYS = ('npcVoices', 'detailSfx', 'bankVoice')
+    KEYS = ('npcVoices', 'detailSfx', 'bankVoice', 'moneyTing')
 
     def test_defaults_on_and_toggle(self):
         s = new_state()
@@ -122,6 +122,39 @@ class SoundSettingsTest(unittest.TestCase):
         self.assertIs(s['settings']['bankVoice'], False)
         self.assertIs(s['settings']['npcVoices'], True)
         validate_state(s)
+
+
+class MoneyInContractTest(unittest.TestCase):
+    """public/js/v4/sounds.js (moneyIn) hears money coming in from the state alone: journey.wallet, journey.life_day
+    and journey.history, newest row first, each with its amount and kind ('salary' is read as pay)."""
+
+    def test_new_wallet_rows_lead_the_view(self):
+        from game import journey as jr
+        from game.engine import public_state
+        s = new_state()
+        before = public_state(s)['journey']
+        jr._wallet(s['journey'], 120, 'salary', 'Lương ngày 1 · thử')
+        jr._wallet(s['journey'], -40, 'living', 'Tiền ăn ở')
+        after = public_state(s)['journey']
+        self.assertEqual(after['wallet'] - before['wallet'], 80)
+        self.assertEqual([(r['amount'], r['kind']) for r in after['history'][:2]], [(-40, 'living'), (120, 'salary')])
+        self.assertEqual(after['history'][2:], before['history'][:len(after['history']) - 2])
+        self.assertIn('life_day', after)
+
+
+class TingFileTest(unittest.TestCase):
+    """The recorded bell ships small, as MP3 (iOS), with its licence written down."""
+
+    def test_file_size_and_credit(self):
+        from pathlib import Path
+        root = Path(__file__).resolve().parents[1] / 'public' / 'audio' / 'sfx'
+        data = (root / 'ting.mp3').read_bytes()
+        self.assertLess(len(data), 30 * 1024)
+        self.assertTrue(data[:3] == b'ID3' or (data[0] == 0xFF and data[1] & 0xE0 == 0xE0))
+        self.assertLessEqual(sum(p.stat().st_size for p in root.iterdir() if p.is_file()), 500 * 1024)
+        credits = (root / 'CREDITS.md').read_text(encoding='utf-8')
+        self.assertIn('ting.mp3', credits)
+        self.assertIn('CC0', credits)
 
 
 if __name__ == '__main__':

@@ -33,7 +33,7 @@ def main():
             def get(path):return client.open(base+path,timeout=8)
             assert json.load(get('/api/health'))['status']=='ok';checks.append('Fresh extracted server starts with empty SQLite')
             with get('/') as response:assert response.status==200 and b'world' in response.read()
-            for asset in ['/js/app.js','/js/world.js','/js/boba-world.js','/js/operations-ui.js','/css/cozy.css','/js/experience-ui.js','/css/boba.css','/css/game.css','/favicon.svg']:
+            for asset in ['/js/app.js','/js/world.js','/js/boba-world.js','/js/operations-ui.js','/css/cozy.css','/js/experience-ui.js','/css/boba.css','/css/game.css','/favicon.svg','/audio/sfx/ting.mp3']:
                 with get(asset) as response:assert response.status==200 and len(response.read())>0
             checks.append('Index, ES modules, styles and icon served from extracted paths')
             bootstrap=json.load(get('/api/bootstrap'))

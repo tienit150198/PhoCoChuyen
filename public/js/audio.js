@@ -1,4 +1,4 @@
-/** Tiny original synthesised sounds. No audio files or third-party recordings. */
+/** Tiny original synthesised sounds, and one recorded CC0 bell for "ting ting" (public/audio/sfx/CREDITS.md). */
 // One AudioContext for the page: every Sound (app.js, the career desks, v4/sounds.js) and the background music
 // (v4/music.js). Phones cap how many can run, and iOS lets a context start only inside a tap.
 let shared=null,noise=null,primed=false;
@@ -43,6 +43,16 @@ if(doc?.addEventListener){
   // Hidden tab: stop the audio thread (the music resumes in place when the tab is back).
   doc.addEventListener('visibilitychange',()=>{if(hidden()){if(shared?.state==='running')shared.suspend().catch(()=>{});}else wake();});
 }
+/* Recorded sounds (public/audio/sfx/, licences in CREDITS.md there): fetched once, decoded into the shared context. */
+const decoded=new Map();  // url -> Promise<AudioBuffer|null>
+export function loadSample(url){
+  if(!decoded.has(url)){const c=audioContext();decoded.set(url,!c||!globalThis.fetch?Promise.resolve(null)
+    :fetch(url,{credentials:'same-origin'}).then(r=>r.ok?r.arrayBuffer():null).then(b=>b&&new Promise((ok,no)=>c.decodeAudioData(b,ok,no))).catch(()=>null));}
+  return decoded.get(url);
+}
+let tingBuf=null;
+/** The recorded bell for Sound.ting() (v4/sounds.js loads it). */
+export function setTing(buf){tingBuf=buf||null;}
 // Vietnamese tone marks (NFD) → pitch glide of a babble syllable: sắc up, huyền down, hỏi dip, ngã up-hop, nặng short low.
 const TONES={'\u0301':[1,1.18],'\u0300':[1,.84],'\u0309':[.94,1.04],'\u0303':[1.02,1.2],'\u0323':[.86,.8]};
 const VOWEL={a:1500,e:1900,i:2500,o:950,u:750,y:2400};  // brightness of the syllable's filter by its vowel
@@ -66,8 +76,14 @@ export class Sound {
   stopMusic(){}
   /* ---- detail sounds (Cài đặt → Âm thanh chi tiết) ---- */
   bell(freq,delay=0,time=.5,volume=.03){this.tone(freq,time,volume,delay);this.tone(freq*2.76,time*.45,volume*.35,delay);}
-  /** "Ting ting": the bank speaker's two bright dings (the caller checks Loa báo tiền). */
-  ting(){this.bell(1975.5,0,.32,.026);this.bell(1975.5,.17,.42,.026);}
+  /** "Ting ting": the bank speaker's two bright dings (the caller checks its switch). The recorded bell once
+   * v4/sounds.js has loaded it (setTing), else two synthesised dings. */
+  ting(){if(tingBuf&&this.sample(tingBuf,0,.32)){this.sample(tingBuf,.17,.27);return;}this.bell(1975.5,0,.32,.026);this.bell(1975.5,.17,.42,.026);}
+  /** A decoded recorded sound (loadSample) after `delay` s; false when it cannot play. */
+  sample(buf,delay=0,volume=1,rate=1){
+    if(!buf||!this.ready())return false;const t=shared.currentTime+delay,src=shared.createBufferSource(),g=shared.createGain();
+    src.buffer=buf;src.playbackRate.value=rate;g.gain.value=volume*this.volume;src.connect(g);g.connect(shared.destination);src.start(t);return true;
+  }
   coins(){if(this.detail){this.bell(1568,0,.18,.02);this.bell(2093,.07,.26,.02);}}
   /** Cash register "ka-ching": drawer clack, then the bell. */
   register(){if(!this.detail||!this.ready())return;this.hiss(.035,2400,.05,0);[1318.5,1760,2637].forEach((f,i)=>this.bell(f,.06+i*.012,.5,.016));}

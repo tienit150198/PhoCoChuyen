@@ -38,13 +38,14 @@ CMD = """async ([action,payload,career])=>{
 async def main():
     from playwright.async_api import async_playwright
     results, errors = {}, []
-    inject = {'amounts': None}
+    inject = {'amounts': None, 'hits': 0}
 
     async def route(r):
         resp = await r.fetch()
         body = await resp.json()
         if inject['amounts'] and r.request.headers.get('x-game-csrf') and resp.status == 200 and isinstance(body.get('result'), dict):
             body['result']['bank'] = list(inject['amounts'])
+            inject['hits'] += 1
         await r.fulfill(response=resp, body=json.dumps(body))
 
     with server() as base:
@@ -58,6 +59,7 @@ async def main():
             await page.wait_for_selector('#app:not([hidden])', timeout=20000)
             await page.evaluate(CMD, ['select_career', {}, 'grocery'])
             await page.evaluate(CMD, ['start_day', {}, 'grocery'])
+            await page.evaluate(CMD, ['settings', {'whatsNewSeen': '99.0.0'}])   # no "Có gì mới" over the sheet
             await page.reload()
             await page.wait_for_selector('#app:not([hidden])', timeout=20000)
             await page.route('**/api/command', route)
@@ -74,6 +76,14 @@ async def main():
                     await page.click(f'label.switch-row:has(input[data-setting="{key}"])')
                     await page.wait_for_timeout(gap or 250)
 
+            async def drained(n=1):
+                """Stop adding payments once n commands carried one (a busy machine may send a tap late)."""
+                for _ in range(50):
+                    if inject['hits'] >= n:
+                        break
+                    await page.wait_for_timeout(100)
+                inject['amounts'], inject['hits'] = None, 0
+
             async def spoken():
                 return [x for x in await page.evaluate('window.__spoken') if x['text'].strip()]
 
@@ -87,7 +97,7 @@ async def main():
             await reset()
             inject['amounts'] = [42]
             await flip('detailSfx')
-            inject['amounts'] = None
+            await drained()
             await page.wait_for_timeout(1500)
             one = await spoken()
             results['single'] = one
@@ -96,7 +106,7 @@ async def main():
             await reset()
             inject['amounts'] = [42]
             await flip('detailSfx', times=3, gap=120)
-            inject['amounts'] = None
+            await drained(3)
             await page.wait_for_timeout(1800)
             many = await spoken()
             results['coalesced'] = many
@@ -105,7 +115,7 @@ async def main():
             await reset()
             inject['amounts'] = [30, 12]
             await flip('detailSfx')
-            inject['amounts'] = None
+            await drained()
             await page.wait_for_timeout(1500)
             results['one_command_two_payments'] = await spoken()
             assert [x['text'] for x in results['one_command_two_payments']] == ['Đã nhận 2 khoản, 42 xu']
@@ -117,7 +127,7 @@ async def main():
             await reset()
             inject['amounts'] = [42]
             await flip('detailSfx')
-            inject['amounts'] = None
+            await drained()
             await page.wait_for_timeout(1500)
             results['off'] = dict(spoken=await spoken(), chips=await page.eval_on_selector_all('.bank-chip', 'els=>els.length'))
             assert results['off'] == dict(spoken=[], chips=0), results['off']
@@ -129,7 +139,7 @@ async def main():
             await reset()
             inject['amounts'] = [42]
             await flip('detailSfx')
-            inject['amounts'] = None
+            await drained()
             await page.wait_for_timeout(1500)
             results['muted'] = await spoken()
             assert results['muted'] == [], results['muted']
@@ -140,7 +150,7 @@ async def main():
             await reset()
             inject['amounts'] = [42]
             await flip('detailSfx')
-            inject['amounts'] = None
+            await drained()
             await page.wait_for_timeout(1000)
             chips = await page.eval_on_selector_all('.bank-chip', 'els=>els.map(e=>e.textContent)')
             results['no_vi_voice'] = dict(spoken=await spoken(), chips=chips)
@@ -153,7 +163,7 @@ async def main():
             await reset()
             inject['amounts'] = [42]
             await flip('detailSfx')
-            inject['amounts'] = None
+            await drained()
             await page.wait_for_timeout(1500)
             results['english'] = await spoken()
             assert len(results['english']) == 1 and results['english'][0]['text'] == 'Received 42 coins' and results['english'][0]['voice'] == 'en-US', results['english']
