@@ -32,6 +32,12 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.2.0", date="2026-10-01", items=(
+        dict(emoji="🏠", text="Vào nhà của mình: xem từng phòng, sửa nhà và trang trí với 27 món đồ. Nhà càng ấm cúng, sáng dậy càng vui.", go=dict(action="house")),
+        dict(emoji="🧹", text="Nghề mới Nội trợ (mở từ chương 2): giúp việc nhà chị Thảo, đi chợ mặc cả, nấu cơm hợp khẩu vị, giặt giũ, chăm bà, đưa đón bé Su."),
+        dict(emoji="💼", text="Ba vị trí văn phòng mới ở Công ty Cánh Diều (mở từ chương 5): Hành chính – Nhân sự, Thư ký giám đốc, IT văn phòng."),
+        dict(emoji="📋", text="Nghề kế toán có thêm tình huống mới: sếp xin ứng quỹ, công nhân xin ứng lương, họp chốt số lúc nửa đêm…"),
+    )),
     dict(version="1.1.4", date="2026-10-01", items=(
         dict(emoji="⏱️", text="Ở trong tiệc cưới từ 2 phút trở lên mới được tính là đi ăn cưới: tính vào bảng Khách mời của tuần và tiền mừng của cô dâu chú rể."),
         dict(emoji="🛒", text="Sửa lỗi đơn sỉ của bà Sáu bị treo khi bớt giá kịch khung ngay lần đầu: đơn đang kẹt tự được chốt khi vào game."),

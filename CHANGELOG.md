@@ -1,3 +1,10 @@
+# v1.2.0 — Vào nhà, sửa nhà, trang trí; nghề Nội trợ; ba vị trí văn phòng
+
+- 🏠 Trong nhà (game/reno.py, public/js/v4/reno.js): nhà đã mua có nút "Vào nhà": xem từng phòng (SVG, xuống cấp và nâng cấp hiện trong hình), sửa 5 hạng mục (tường, trần mái, sàn, điện nước, bếp; giá theo mức hư và độ rộng nhà), nâng cấp 2 bậc, trang trí 27 món (mua, dời, cất kho, bán lại 50%). Xuống cấp 1 điểm mỗi 4/6/8 ngày sống (không dưới 30%). Ấm cúng ≥10: +1 tinh thần mỗi sáng, ≥24: +2. Khối `journey.reno` chỉ tạo khi người chơi thao tác lần đầu.
+- 🧹 Nghề Nội trợ (`homemaker`, nhà chị Thảo, mở chương 2): đi chợ (5 kiểu, nhớ danh sách, chọn đồ tươi, mặc cả, sổ chợ khớp từng xu), nấu ăn theo khẩu vị và dị ứng, rửa bát, giặt phơi, lau dọn, chăm bà, đưa đón trẻ, tủ lạnh, cây, sự cố, dọn Tết; truyện "Cuốn sổ chợ bìa xanh"; tiếng Anh.
+- 💼 Ba vị trí văn phòng ở Công ty CP Cánh Diều (mở chương 5, phải ứng tuyển): Hành chính – Nhân sự, Thư ký giám đốc, IT văn phòng; máy chủ chấm điểm và trả lương; mỗi nghề truyện 5 đoạn, chứng chỉ "Hành chính văn phòng". Ba nghề kế toán thêm 6 tình huống.
+- "Có gì mới": nhà, Nội trợ, văn phòng, tình huống kế toán.
+
 # v1.1.4 — Đi ăn cưới tính từ 2 phút, sửa đơn sỉ bà Sáu bị treo
 
 - Khách được tính là "đi ăn cưới" khi có mặt ít nhất 2 phút trong tiệc (`GUEST_MIN_MINUTES`, owner 01/10): 15 xu mỗi khách của cô dâu chú rể, số khách trên thẻ cuối tiệc, bảng Khách mời của tuần. Vẫn ghi `wedding_guests` ngay khi vào (lộc 20 xu/phút, phong bì không đổi). Khách thấy "✅ Đã ghi nhận bạn đi ăn cưới" sau phút thứ 2.
