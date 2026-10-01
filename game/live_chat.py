@@ -10,6 +10,11 @@ there is no NOTIFY: the live service sees the change on its next start.
 DMs and groups are never deleted (owner rule); Cả phố keeps its newest 2,000 messages (owner, 01/10: the live
 service prunes older ones, except a reported one still waiting for review). An author's own delete empties the text (deleted=1); a hidden
 message keeps its text for the admin (hidden 1 = three reports, waiting for review; 2 = hidden by an admin).
+
+📌 Admins (ADMIN_USERS) post on Cả phố freely (owner, 01/10): their rows have adm=1 (a row with pid 'admin', written
+straight into the database as an announcement, counts as one too). One message of Cả phố can be pinned
+(`chat_pins`, one row per channel, written by the live service or scripts/chat_pin.py); hiding a message here, or a
+player deleting their data, takes its pin away.
 """
 from __future__ import annotations
 
@@ -36,12 +41,13 @@ CREATE TABLE IF NOT EXISTS chat_members (
 CREATE TABLE IF NOT EXISTS chat_messages (
   id INTEGER PRIMARY KEY AUTOINCREMENT, channel TEXT NOT NULL, pid TEXT NOT NULL, name TEXT NOT NULL DEFAULT '',
   av TEXT NOT NULL DEFAULT '', text TEXT NOT NULL, at REAL NOT NULL, hidden INTEGER NOT NULL DEFAULT 0,
-  deleted INTEGER NOT NULL DEFAULT 0, reports INTEGER NOT NULL DEFAULT 0, reviewed_at REAL
+  deleted INTEGER NOT NULL DEFAULT 0, reports INTEGER NOT NULL DEFAULT 0, reviewed_at REAL, adm INTEGER NOT NULL DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS chat_mutes (
   pid TEXT PRIMARY KEY, until REAL NOT NULL, by_admin TEXT NOT NULL DEFAULT '', reason TEXT NOT NULL DEFAULT '', at REAL NOT NULL
 );
 CREATE TABLE IF NOT EXISTS chat_prefs (pid TEXT PRIMARY KEY, online INTEGER NOT NULL DEFAULT 1, updated REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS chat_pins (channel TEXT PRIMARY KEY, msg INTEGER NOT NULL, by_pid TEXT NOT NULL, at REAL NOT NULL);
 CREATE TABLE IF NOT EXISTS live_effects (
   id TEXT PRIMARY KEY, sid TEXT NOT NULL, kind TEXT NOT NULL, amount INTEGER NOT NULL DEFAULT 0, data TEXT NOT NULL DEFAULT '{}',
   status TEXT NOT NULL DEFAULT 'pending', at REAL NOT NULL, applied_at REAL
@@ -53,6 +59,13 @@ CREATE INDEX IF NOT EXISTS chat_messages_reported ON chat_messages(id) WHERE rep
 CREATE INDEX IF NOT EXISTS live_effects_sid ON live_effects(sid, status);
 CREATE INDEX IF NOT EXISTS live_effects_day ON live_effects(sid, kind, at);
 """
+
+
+def migrate(db) -> None:
+    """Older SQLite files: chat_messages.adm (1.2.x, admin messages) is added in place; old rows read 0."""
+    cols = {r[1] for r in db.execute('PRAGMA table_info(chat_messages)').fetchall()}
+    if 'adm' not in cols:
+        db.execute('ALTER TABLE chat_messages ADD COLUMN adm INTEGER NOT NULL DEFAULT 0')
 
 
 class ChatAdminError(Exception):
@@ -88,7 +101,14 @@ def _kind(channel: str) -> str:
 def _msg(r) -> dict:
     return dict(id=int(r['id']), ch=r['channel'], kind=_kind(r['channel']), pid=r['pid'], name=r['name'], av=r['av'],
                 text=r['text'], at=float(r['at']), hidden=int(r['hidden']), deleted=int(r['deleted']), reports=int(r['reports']),
-                reviewed=r['reviewed_at'] is not None)
+                reviewed=r['reviewed_at'] is not None, adm=1 if r['pid'] == 'admin' or _adm(r) else 0)
+
+
+def _adm(r) -> bool:
+    try:
+        return bool(r['adm'])
+    except (IndexError, KeyError):
+        return False
 
 
 def view(store) -> dict:
@@ -139,6 +159,8 @@ def act(store, admin: str, data: dict) -> dict:
             need(r, 'Không tìm thấy tin nhắn.', 'not_found', 404)
             hidden = 2 if op == 'hide' else 0
             db.execute('UPDATE chat_messages SET hidden=?, reviewed_at=? WHERE id=?', (hidden, t, mid))
+            if hidden:
+                db.execute('DELETE FROM chat_pins WHERE msg=?', (mid,))   # a hidden message is never pinned
             notify(db, dict(op='hide' if hidden else 'unhide', id=mid, ch=r['channel']))
             return _msg(db.execute('SELECT * FROM chat_messages WHERE id=?', (mid,)).fetchone())
         return dict(ok=True, item=store.transaction(run))
@@ -173,6 +195,7 @@ def forget(store, token: str) -> None:
     sid = store.key(token)
     pid = pid_of(sid)
     with store.connect() as db:
+        db.execute('DELETE FROM chat_pins WHERE msg IN (SELECT id FROM chat_messages WHERE pid=?)', (pid,))
         db.execute("UPDATE chat_messages SET text='', deleted=1 WHERE pid=? AND deleted=0", (pid,))
         db.execute('DELETE FROM chat_members WHERE pid=?', (pid,))
         db.execute('DELETE FROM chat_prefs WHERE pid=?', (pid,))

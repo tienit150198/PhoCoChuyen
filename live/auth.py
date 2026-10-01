@@ -6,6 +6,7 @@ it: a rotated pre-registration cookie stops working), then a save that exists. N
     name     the account's display name, else the guest's character name (leaderboard_players, kept by every
              command), else the Phố nghề name; '' = not named yet (can read, cannot post)
     av       the Phố nghề avatar (default 🌸)
+    username the account's username ('' for a guest): an admin is a username listed in ADMIN_USERS (live/config.py)
     age      for "new sessions read-only on Cả phố": born before today (stat_births, Vietnam day) = old; else
              the oldest of the account's creation, the profile's, the first played command (stat_play)
 """
@@ -75,11 +76,13 @@ class Ident:
     since: float | None       # the oldest known timestamp of this player (None: never seen)
     online: bool              # "hiện online" (chat_prefs, default on)
     muted_until: float
+    username: str = ''        # the account's username, lower case ('' = a guest); admins: cfg.admins
 
 
 _SQL = """
 SELECT (SELECT 1 FROM sessions WHERE sid=?) AS has,
        (SELECT display FROM accounts WHERE sid=?) AS display,
+       (SELECT username FROM accounts WHERE sid=?) AS username,
        (SELECT created_at FROM accounts WHERE sid=?) AS acreated,
        (SELECT name FROM leaderboard_players WHERE sid=?) AS gname,
        (SELECT name FROM profiles WHERE sid=?) AS pname,
@@ -117,7 +120,7 @@ async def profile(db, sid: str) -> Ident | None:
     """Name, avatar, age, "hiện online" and mute of a save (None when the save does not exist). Also used to
     refresh a connected player (a guest who named their character after the socket opened)."""
     pid = pid_of(sid)
-    r = await db.fetchrow(_SQL, (sid,) * 9 + (pid, pid))
+    r = await db.fetchrow(_SQL, (sid,) * 10 + (pid, pid))
     if not r or not r['has']:
         return None
     name = clean_name(r['display']) or clean_name(r['gname']) or clean_name(r['pname'])
@@ -126,4 +129,4 @@ async def profile(db, sid: str) -> Ident | None:
     old = bool(r['born']) and str(r['born']) < vn_today()
     return Ident(sid=sid, pid=pid, name=name, av=av, account=r['display'] is not None, old=old,
                  since=float(min(stamps)) if stamps else None, online=r['online'] is None or bool(r['online']),
-                 muted_until=float(r['muted'] or 0))
+                 muted_until=float(r['muted'] or 0), username=str(r['username'] or '').strip().lower())

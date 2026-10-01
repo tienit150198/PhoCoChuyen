@@ -99,6 +99,26 @@ html[data-layout="phone"] .ch-head{padding-top:14px}
 .ch-foot{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
 .ch-make{margin-top:4px}
 
+/* 📌 admin messages and the pinned message of Cả phố */
+.ch-adm{display:inline-flex;align-items:center;margin-left:6px;padding:1px 7px;border-radius:var(--radius-pill);background:var(--accent-soft);color:var(--accent-text);
+  font-style:normal;font-size:.68rem;font-weight:700;line-height:1.5;white-space:nowrap;vertical-align:1px}
+.ch-msg.adm:not(.mine) .ch-bub{background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--line-strong)}
+.ch-bub.adm{cursor:pointer}
+.ch-bub.adm:focus-visible,.ch-pin-main:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.ch-bub a.ch-link,.ch-pin a.ch-link{color:var(--accent-text);text-decoration:underline;text-underline-offset:2px;font-weight:600;overflow-wrap:anywhere}
+.ch-msg.mine .ch-bub a.ch-link{color:inherit}
+.ch-pinned{font-style:normal;margin-right:4px}
+.ch-mini.pin{border-color:var(--accent);color:var(--accent-text)}
+.ch-pinbar{padding:8px 12px 0}
+.ch-pin{display:flex;align-items:flex-start;gap:8px;padding:8px 8px 8px 10px;border-radius:14px;background:var(--accent-soft);border:1px solid var(--line-strong);color:var(--ink)}
+.ch-pin-ico{flex:none;font-size:1rem;line-height:1.45}
+.ch-pin-main{flex:1 1 auto;min-width:0;cursor:pointer}
+.ch-pin-name{display:flex;align-items:center;flex-wrap:wrap;font-size:.78rem;font-weight:700;color:var(--ink-2)}
+.ch-pin-name .ch-adm{margin-left:6px}
+.ch-pin p{margin:2px 0 0;font-size:.88rem;line-height:1.4;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
+.ch-pin.open p{display:block;-webkit-line-clamp:unset;line-clamp:unset;max-height:40dvh;overflow-y:auto;overscroll-behavior:contain}
+.ch-pin .ch-mini{flex:none;min-height:30px;padding:0 10px;font-size:.76rem}
+
 /* the composer */
 .ch-compose{position:relative;display:flex;align-items:flex-end;gap:8px;padding:8px 10px calc(8px + var(--safe-b)) 12px;border-top:1px solid var(--line);background:var(--surface)}
 .ch-compose textarea{flex:1 1 auto;min-height:42px;max-height:112px;padding:10px 14px;border-radius:21px;border:1px solid var(--field-line);background:var(--surface-2);

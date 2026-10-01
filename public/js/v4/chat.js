@@ -3,13 +3,17 @@
  * push (?chat=<id>). Everything goes through the live socket (./live.js); the rules (who may write where,
  * slow mode, filters, blocks, reports) are the live service's (live/chat.py): this file only draws.
  * No guide, no tips (owner, 01/10): icons, short labels, one-line empty states. Player text is always escaped
- * and marked data-no-translate. */
+ * and marked data-no-translate.
+ * 📌 Admins (live.me.adm, decided by the server from ADMIN_USERS): a "📢 Quản trị" badge on their messages (frames
+ * with adm), http(s) links in those messages only become links; the pinned message sits in a bar above Cả phố
+ * (tap: whole text). An admin taps any Cả phố message → "📌 Ghim tin này" in its action row; "Bỏ ghim" there and
+ * on the bar. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {live} from './live.js';
 import {stylesheet} from '../lazy.js';
 
 const S={dlg:null,env:null,tab:'town',thread:null,view:null,threads:new Map(),
-  town:{msgs:[],more:false,joined:false,why:'ok',wait:0,n:0,loaded:false},
+  town:{msgs:[],more:false,joined:false,why:'ok',wait:0,n:0,loaded:false,pin:null},pinOpen:false,
   act:null,report:null,confirm:null,flash:'',flashTimer:0,pending:new Map(),pick:new Set(),gtitle:'',members:null,
   nextTown:0,cd:0,older:false,synced:0,bound:false};
 const TABS=[['town','Cả phố'],['inbox','Tin nhắn'],['friends','Bạn bè']];
@@ -18,6 +22,7 @@ const rid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).sli
 const me=()=>live.me?.pid;
 const dmId=pid=>{const [a,b]=[me(),pid].sort();return `dm:${a}:${b}`;};
 const coarse=()=>matchMedia('(pointer:coarse)').matches;
+const adm=()=>Boolean(live.me?.adm);   // the server says so (ADMIN_USERS); every admin action is checked there again
 
 /* ---- css + dialog ------------------------------------------------------------------------------- */
 const css=()=>stylesheet('/css/chat.css');   // the same link the chat button loaded (./live.js)
@@ -26,18 +31,22 @@ function dialog(){
   const d=document.createElement('dialog');
   d.className='sheet v4-sheet medium chat-sheet';d.setAttribute('aria-label','Chat');
   d.innerHTML=`<div class="ch-root"><header class="ch-head"></header><div class="ch-net" hidden>${icon('refresh',14)} Đang kết nối lại…</div>
-    <div class="ch-body"></div><div class="ch-flash" role="status" aria-live="polite" hidden></div>
+    <div class="ch-pinbar" hidden></div><div class="ch-body"></div><div class="ch-flash" role="status" aria-live="polite" hidden></div>
     <form class="ch-compose" hidden><textarea rows="1" enterkeyhint="send" autocomplete="off" aria-label="Tin nhắn" placeholder="Nhắn gì đó…"></textarea>
     <button type="submit" class="ch-send" aria-label="Gửi">${icon('send',20)}</button><small class="ch-count" hidden></small></form>
     <p class="ch-ro" hidden></p></div>`;
   document.body.append(d);
   d.addEventListener('click',e=>{
     if(e.target===d){d.close();return;}
+    if(e.target.closest('a[href]'))return;   // a link in an admin message opens (a new tab), nothing else
     const el=e.target.closest('[data-ch-act]');if(!el||!d.contains(el)||el.disabled)return;
     e.preventDefault();onAct(el.dataset.chAct,el.dataset,el);
   });
   d.addEventListener('close',onClose);
-  d.addEventListener('keydown',e=>{if(e.key==='Escape')e.stopPropagation();});   // closes the chat only, never pauses the game behind it
+  d.addEventListener('keydown',e=>{
+    if(e.key==='Escape')e.stopPropagation();   // closes the chat only, never pauses the game behind it
+    if((e.key==='Enter'||e.key===' ')&&e.target.matches?.('[role="button"][data-ch-act]')){e.preventDefault();onAct(e.target.dataset.chAct,e.target.dataset,e.target);}
+  });   // closes the chat only, never pauses the game behind it
   const ta=d.querySelector('textarea');
   ta.addEventListener('input',()=>{grow(ta);counter();});
   ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&!coarse()){e.preventDefault();submit();}});
@@ -75,6 +84,7 @@ function bind(){
     const T=S.town,after=T.msgs.at(-1)?.id||0;
     if(f.inc)T.msgs=[...T.msgs,...f.msgs.filter(m=>m.id>after)];else{T.msgs=f.msgs;T.more=f.more;}
     T.loaded=true;T.why=f.why;T.wait=f.wait;T.at=Date.now();T.n=f.n;
+    if('pin' in f){if(T.pin?.id!==f.pin?.id)S.pinOpen=false;T.pin=f.pin||null;}
     if(f.why==='ok'&&f.wait>0)S.nextTown=Date.now()+f.wait*1000;
     if(S.dlg?.open)render(true);
   });
@@ -99,7 +109,13 @@ function bind(){
     if(S.dlg?.open)render(first,!first);
   });
   live.on('missed',f=>{const t=S.threads.get(f.ch);if(!t)return;for(const m of f.msgs)if(!t.msgs.some(x=>x.id===m.id))t.msgs.push(m);t.msgs.sort((a,b)=>a.id-b.id);if(S.dlg?.open)render(true);});
+  live.on('pinned',f=>{
+    const was=S.town.pin;S.town.pin=f.pin||null;S.pinOpen=false;
+    if(S.pinning){S.pinning=false;flash(f.pin?'Đã ghim lên đầu Cả phố.':'Đã bỏ ghim.');}
+    if(S.dlg?.open&&(was?.id!==S.town.pin?.id||S.flash))render();
+  });
   live.on('deleted',f=>{
+    if(f.ch==='town'&&S.town.pin?.id===f.id)S.town.pin=null;
     const list=f.ch==='town'?S.town.msgs:S.threads.get(f.ch)?.msgs;if(!list)return;
     const i=list.findIndex(m=>m.id===f.id);if(i<0)return;
     if(f.hidden)list.splice(i,1);else list[i]={...list[i],text:'',del:1};
@@ -110,6 +126,7 @@ function bind(){
     if(f.code==='slow'&&f.wait&&(S.tab==='town'&&!S.thread)){S.nextTown=Date.now()+f.wait*1000;countdown();}
     if(f.code==='new'){S.town.why='new';S.town.wait=f.wait;S.town.at=Date.now();}
     if(f.code==='muted'&&live.me){live.me.town='muted';live.me.muted=f.until;}
+    if(f.ref==='pin'||f.ref==='unpin')S.pinning=false;
     if(f.code==='no_chat'&&S.thread?.startsWith('dm:')&&!live.chan(S.thread)){const t=thread(S.thread);t.loaded=true;t.busy=false;t.more=false;if(S.dlg?.open)render();return;}   // a first chat with this friend: nothing yet
     if(S.dlg?.open){flash(f.msg||'Không gửi được.');render();}
   });
@@ -118,6 +135,7 @@ function bind(){
   live.on('members',f=>{S.members=f;if(S.dlg?.open)render();});
   live.on('blocked',f=>{
     for(const list of [S.town.msgs,...[...S.threads.values()].map(t=>t.msgs)])for(let i=list.length-1;i>=0;i--)if(list[i].pid===f.pid&&f.on)list.splice(i,1);
+    if(f.on&&S.town.pin?.pid===f.pid)S.town.pin=null;
     if(f.on&&S.thread&&live.chan(S.thread)?.peer?.pid===f.pid){S.thread=null;S.tab='inbox';}
     if(S.dlg?.open){flash(f.on?'Đã chặn. Hai bạn không thấy tin của nhau nữa.':'Đã bỏ chặn.');render();}
   });
@@ -149,6 +167,9 @@ function onAct(act,d,el){
     case'older':{if(S.older)return;const list=S.thread?thread(S.thread).msgs:S.town.msgs;S.older=live.send({t:'history',ch:S.thread||'town',before:list[0]?.id||0});break;}
     case'msg':{const id=Number(d.id);S.act=S.act===id?null:id;S.report=null;S.confirm=null;break;}
     case'del':live.send({t:'del',id:Number(d.id)});S.act=null;break;
+    case'pin':if(live.send({t:'pin',id:Number(d.id)}))S.pinning=true;S.act=null;break;   // 📌 admins (the server checks)
+    case'unpin':if(live.send({t:'unpin'}))S.pinning=true;S.act=null;break;
+    case'pinOpen':S.pinOpen=!S.pinOpen;renderPin();return;
     case'report':S.report=Number(d.id);break;
     case'reason':live.send({t:'report',id:Number(d.id),reason:d.reason});S.act=null;S.report=null;
       {const list=S.thread?thread(S.thread).msgs:S.town.msgs,i=list.findIndex(m=>m.id===Number(d.id));if(i>=0)list.splice(i,1);}break;   // gone for me at once
@@ -178,7 +199,7 @@ function submit(){
   else frame={t:'send',ch,text,cid};
   if(!live.send(frame))return;
   S.pending.set(cid,{ch,text});ta.value='';grow(ta);counter();
-  if(ch==='town'){S.nextTown=Date.now()+(live.limits.town_every||10)*1000;countdown();}
+  if(ch==='town'&&!adm()){S.nextTown=Date.now()+(live.limits.town_every||10)*1000;countdown();}   // admins: no slow mode
 }
 
 /* ---- drawing ----------------------------------------------------------------------------------- */
@@ -187,6 +208,21 @@ const hm=at=>{const d=new Date(at*1000),now=new Date();const t=d.toLocaleTimeStr
 const av=(a,cls='')=>`<span class="ch-av ${cls}" aria-hidden="true">${esc(a||'🌸')}</span>`;
 const dot=on=>on?'<i class="ch-on" aria-label="Đang online"></i>':'';
 const lines=t=>esc(t).replace(/\n/g,'<br>');
+/** An admin message (adm): http(s) addresses become links (new tab, no opener, no referrer); the rest escaped. */
+const URLS=/https?:\/\/[^\s<>"']+/gi;
+function rich(t){
+  t=String(t||'');
+  let out='',last=0;
+  for(const m of t.matchAll(URLS)){
+    const u=m[0].replace(/[.,;:!?)\]}»”’]+$/,'');
+    let ok=false;try{const x=new URL(u);ok=x.protocol==='https:'||x.protocol==='http:';}catch{ok=false;}
+    out+=lines(t.slice(last,m.index))+(ok?`<a class="ch-link" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(u)}</a>`:lines(u));
+    last=m.index+u.length;
+  }
+  return out+lines(t.slice(last));
+}
+const text=m=>m.adm?rich(m.text):lines(m.text);
+const badge=m=>m.adm?'<em class="ch-adm">📢 Quản trị</em>':'';
 
 function head(){
   const x=`<button type="button" class="icon-btn" data-ch-act="close" aria-label="Đóng">${icon('x',20)}</button>`;
@@ -213,19 +249,29 @@ function msgList(list,kind,more){
   let prev=null;
   for(const m of list){
     const mine=m.pid===me(),first=!prev||prev.pid!==m.pid||m.at-prev.at>300;
-    const name=!mine&&first&&kind!=='dm'?`<b class="ch-name" data-no-translate>${esc(m.name)}</b>`:'';
+    const name=!mine&&first&&kind!=='dm'?`<b class="ch-name"><span data-no-translate>${esc(m.name)}</span>${badge(m)}</b>`:'';
     const bar=S.act===m.id?actBar(m,mine,kind):'';
-    out+=`<div class="ch-msg${mine?' mine':''}${first?' first':''}">${mine?'':first?av(m.av):'<span class="ch-av gap"></span>'}<div class="ch-col">${name}`+
-      `<button type="button" class="ch-bub${m.del?' del':''}" data-ch-act="msg" data-id="${m.id}"${m.del?' disabled':''}><span data-no-translate>${m.del?'':lines(m.text)}</span>${m.del?'<i>Tin nhắn đã thu hồi</i>':''}<time>${hm(m.at)}</time></button>${bar}</div></div>`;
+    const pinned=kind==='town'&&S.town.pin?.id===m.id?'<i class="ch-pinned" aria-label="Đang ghim">📌</i>':'';
+    // an admin message with links: a div acting as the button (a link cannot sit inside a <button>)
+    const bub=m.adm&&!m.del?`<div role="button" tabindex="0" class="ch-bub adm" data-ch-act="msg" data-id="${m.id}"><span data-no-translate>${text(m)}</span><time>${pinned}${hm(m.at)}</time></div>`:
+      `<button type="button" class="ch-bub${m.del?' del':''}" data-ch-act="msg" data-id="${m.id}"${m.del?' disabled':''}><span data-no-translate>${m.del?'':lines(m.text)}</span>${m.del?'<i>Tin nhắn đã thu hồi</i>':''}<time>${pinned}${hm(m.at)}</time></button>`;
+    out+=`<div class="ch-msg${mine?' mine':''}${first?' first':''}${m.adm?' adm':''}">${mine?'':first?av(m.av):'<span class="ch-av gap"></span>'}<div class="ch-col">${name}${bub}${bar}</div></div>`;
     prev=m;
   }
   return out;
 }
 function actBar(m,mine,kind){
-  if(mine)return `<div class="ch-actbar"><button type="button" class="ch-mini" data-ch-act="del" data-id="${m.id}">${icon('trash',14)} Thu hồi</button></div>`;
+  // 📌 an admin on Cả phố: pin this message (or unpin it), first in the row
+  const pin=kind==='town'&&adm()?(S.town.pin?.id===m.id?`<button type="button" class="ch-mini pin" data-ch-act="unpin">📌 Bỏ ghim</button>`:
+    `<button type="button" class="ch-mini pin" data-ch-act="pin" data-id="${m.id}">📌 Ghim tin này</button>`):'';
+  if(mine)return `<div class="ch-actbar wrap">${pin}<button type="button" class="ch-mini" data-ch-act="del" data-id="${m.id}">${icon('trash',14)} Thu hồi</button></div>`;
   if(S.report===m.id)return `<div class="ch-actbar wrap">${REASONS.map(([k,l])=>`<button type="button" class="ch-mini" data-ch-act="reason" data-id="${m.id}" data-reason="${k}">${l}</button>`).join('')}</div>`;
   const friend=live.friend(m.pid);
-  return `<div class="ch-actbar">${friend&&kind!=='dm'?`<button type="button" class="ch-mini" data-ch-act="dm" data-pid="${esc(m.pid)}">${icon('chat',14)} Nhắn riêng</button>`:''}`+
+  if(m.adm){   // nobody reports or blocks the Ban quản lý
+    const row=pin+(friend&&kind!=='dm'?`<button type="button" class="ch-mini" data-ch-act="dm" data-pid="${esc(m.pid)}">${icon('chat',14)} Nhắn riêng</button>`:'');
+    return row?`<div class="ch-actbar wrap">${row}</div>`:'';
+  }
+  return `<div class="ch-actbar wrap">${pin}${friend&&kind!=='dm'?`<button type="button" class="ch-mini" data-ch-act="dm" data-pid="${esc(m.pid)}">${icon('chat',14)} Nhắn riêng</button>`:''}`+
     `<button type="button" class="ch-mini" data-ch-act="report" data-id="${m.id}">${icon('flag',14)} Báo cáo</button>`+
     `<button type="button" class="ch-mini${S.confirm==='block:'+m.pid?' warn':''}" data-ch-act="block" data-pid="${esc(m.pid)}">${S.confirm==='block:'+m.pid?'Chặn thật?':'Chặn'}</button></div>`;
 }
@@ -295,8 +341,21 @@ function compose(){
   return {};
 }
 
+/** 📌 The pinned bar above Cả phố: 📌, the name (and the admin badge), two lines of text (tap: all of it). */
+function renderPin(){
+  const d=S.dlg;if(!d)return;
+  const bar=d.querySelector('.ch-pinbar'),p=S.town.pin,show=Boolean(p)&&!S.thread&&S.tab==='town'&&!S.view&&S.town.loaded;
+  bar.hidden=!show;
+  if(!show){bar.innerHTML='';return;}
+  bar.innerHTML=`<div class="ch-pin${S.pinOpen?' open':''}"><span class="ch-pin-ico" aria-hidden="true">📌</span>`+
+    `<div class="ch-pin-main" role="button" tabindex="0" data-ch-act="pinOpen" aria-expanded="${S.pinOpen}" aria-label="Tin đang ghim">`+
+    `<b class="ch-pin-name"><span data-no-translate>${esc(p.name)}</span>${badge(p)}</b><p data-no-translate>${text(p)}</p></div>`+
+    (adm()?`<button type="button" class="ch-mini" data-ch-act="unpin">Bỏ ghim</button>`:'')+`</div>`;
+}
+
 function render(bottom=false,keepFromBottom=false){
   const d=S.dlg;if(!d)return;
+  renderPin();
   const b=d.querySelector('.ch-body'),fromBottom=b.scrollHeight-b.scrollTop-b.clientHeight,atBottom=fromBottom<60;
   d.querySelector('.ch-head').innerHTML=head();
   d.querySelector('.ch-net').hidden=!(live.welcomed&&live.state!=='open');
@@ -308,7 +367,7 @@ function render(bottom=false,keepFromBottom=false){
   const c=compose(),form=d.querySelector('.ch-compose'),ro=d.querySelector('.ch-ro'),ta=form.querySelector('textarea');
   form.hidden=!c||Boolean(c.ro);ro.hidden=!c?.ro;ro.textContent=c?.ro||'';
   if(c?.act==='account'){const b=document.createElement('button');b.type='button';b.className='btn primary small';b.dataset.chAct='account';b.textContent='Tạo tài khoản';ro.append(' ',b);}
-  const town=!S.thread;ta.maxLength=town?(live.limits.town_len||300):(live.limits.text_len||1000);
+  const town=!S.thread;ta.maxLength=town?(adm()?(live.limits.admin_len||500):(live.limits.town_len||300)):(live.limits.text_len||1000);
   ta.placeholder=town?'Nhắn cả phố…':'Nhắn tin…';
   counter();countdown();
 }

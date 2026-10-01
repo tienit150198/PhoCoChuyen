@@ -34,7 +34,7 @@ Delta-sync hints (TABLES[i]["sync"]):
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 9   # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
+SCHEMA_VERSION = 10  # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
                      # 6: live chat (chat_*, live_effects: game/live_chat.py, live/), 1.0.0;
@@ -42,6 +42,8 @@ SCHEMA_VERSION = 9   # 2: leaderboard, marriage/friends/couple tables, stat_fb_c
                      # 8: live weddings (wedding_dates, wedding_parties, wedding_guests, wedding_photos, wedding_race,
                      #    player_closeness: game/wedding_live.py, live/wedding.py), 1.1.0
                      # 9: weekly leaderboard titles (lb_weekly: game/lb_titles.py)
+                     # 10: 📌 admin messages and the pinned message of Cả phố (chat_messages.adm, chat_pins:
+                     #     game/live_chat.py, live/chat.py, scripts/chat_pin.py)
 
 # The text forms SQLite produces, computed by PostgreSQL (UTC, independent of TimeZone).
 NOW_TEXT = "to_char(statement_timestamp() AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI:SS')"       # CURRENT_TIMESTAMP
@@ -303,13 +305,19 @@ CREATE TABLE IF NOT EXISTS chat_members (
 CREATE TABLE IF NOT EXISTS chat_messages (
   id {ID} PRIMARY KEY, channel {T} NOT NULL, pid {T} NOT NULL, name {T} NOT NULL DEFAULT '', av {T} NOT NULL DEFAULT '',
   text {T} NOT NULL, at double precision NOT NULL, hidden bigint NOT NULL DEFAULT 0, deleted bigint NOT NULL DEFAULT 0,
-  reports bigint NOT NULL DEFAULT 0, reviewed_at double precision
+  reports bigint NOT NULL DEFAULT 0, reviewed_at double precision, adm bigint NOT NULL DEFAULT 0
 );
+-- adm = 1: written by an admin (ADMIN_USERS) on Cả phố. Added in 10 (a constant default: no table rewrite).
+ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS adm bigint NOT NULL DEFAULT 0;
 CREATE TABLE IF NOT EXISTS chat_mutes (
   pid {T} PRIMARY KEY, until double precision NOT NULL, by_admin {T} NOT NULL DEFAULT '', reason {T} NOT NULL DEFAULT '',
   at double precision NOT NULL
 );
 CREATE TABLE IF NOT EXISTS chat_prefs (pid {T} PRIMARY KEY, online bigint NOT NULL DEFAULT 1, updated double precision NOT NULL);
+-- 📌 The pinned message of a channel (Cả phố only for now): one row, read by the live service by primary key.
+CREATE TABLE IF NOT EXISTS chat_pins (
+  channel {T} PRIMARY KEY, msg bigint NOT NULL, by_pid {T} NOT NULL, at double precision NOT NULL
+);
 -- Rewards the live service grants (phase 3 dates, phase 2 lucky envelopes); the game server applies them on load.
 CREATE TABLE IF NOT EXISTS live_effects (
   id {T} PRIMARY KEY, sid {T} NOT NULL, kind {T} NOT NULL, amount bigint NOT NULL DEFAULT 0, data {T} NOT NULL DEFAULT '{{}}',
@@ -752,14 +760,17 @@ TABLES = [
          key=('channel', 'pid'), unique=[], identity=None, sync=dict(mode='full', note='last_read/pushed_at change in place')),
     dict(name='chat_messages', source='main', sqlite_table='chat_messages',
          columns=_cols('id bigint', 'channel text', 'pid text', 'name text', 'av text', 'text text', 'at double precision',
-                       'hidden bigint', 'deleted bigint', 'reports bigint', 'reviewed_at double precision'),
-         key=('id',), unique=[], identity='id', sync=dict(mode='full', note='text/hidden/deleted/reports change in place')),
+                       'hidden bigint', 'deleted bigint', 'reports bigint', 'reviewed_at double precision', 'adm bigint'),
+         key=('id',), unique=[], identity='id', sync=dict(mode='full', note='text/hidden/deleted/reports change in place; adm added in 10')),
     dict(name='chat_mutes', source='main', sqlite_table='chat_mutes',
          columns=_cols('pid text', 'until double precision', 'by_admin text', 'reason text', 'at double precision'),
          key=('pid',), unique=[], identity=None, sync=dict(mode='full')),
     dict(name='chat_prefs', source='main', sqlite_table='chat_prefs',
          columns=_cols('pid text', 'online bigint', 'updated double precision'),
          key=('pid',), unique=[], identity=None, sync=dict(mode='full')),
+    dict(name='chat_pins', source='main', sqlite_table='chat_pins',
+         columns=_cols('channel text', 'msg bigint', 'by_pid text', 'at double precision'),
+         key=('channel',), unique=[], identity=None, sync=dict(mode='full', note='one row per pinned channel, replaced in place')),
     dict(name='live_effects', source='main', sqlite_table='live_effects',
          columns=_cols('id text', 'sid text', 'kind text', 'amount bigint', 'data text', 'status text',
                        'at double precision', 'applied_at double precision'),

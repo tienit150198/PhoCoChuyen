@@ -44,6 +44,7 @@ class Player:
         self.name, self.av, self.account = ident.name, ident.av, ident.account
         self.muted_until = ident.muted_until
         self.old, self.since = ident.old, ident.since
+        self.username = getattr(ident, 'username', '')   # admin or not: ChatFeature.is_admin (cfg.admins)
         if not self.conns:   # "hiện online" changes through prefs while connected
             self.show_online = ident.online
 
