@@ -182,7 +182,7 @@ class NotifyTests(LiveCase):
     async def test_hide_and_mute_apply_at_once(self):
         import asyncio
         self.cfg.town_every = 0
-        token, sid = self.guest('Người Nói')
+        token, sid = self.account('Người Nói')   # only accounts post on Cả phố (1.0.1)
         a = await self.connect(token)
         b = await self.connect(self.guest('Người Nghe')[0])
         for c in (a, b):
