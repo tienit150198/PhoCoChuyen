@@ -236,6 +236,8 @@ async def run(shots: Path) -> list:
             await a.shot(shots, '11-chat-button-badge')
             await a.page.evaluate("document.querySelector('[data-action=v4Menu]')?.click()")
             await a.page.wait_for_timeout(700)
+            await a.page.click('#rail [data-action=v4Group][data-group=ban]')   # Chat sits first in the Quan hệ hub (0.9.19 menu)
+            await a.page.wait_for_selector('#rail [data-action=liveChat]:visible', timeout=5000)
             menu = await text_of(a.page, '#rail [data-action=liveChat]')
             check('Chat' in menu, f'menu entry "Chat" ({menu!r})')
             await a.shot(shots, '12-menu-entry')

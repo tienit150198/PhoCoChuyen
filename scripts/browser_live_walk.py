@@ -108,7 +108,9 @@ async def where(p, pid):
 
 async def open_walk(p):
     await p.page.evaluate("document.querySelector('[data-action=v4Menu]')?.click()")
-    await p.page.wait_for_selector('#rail [data-action=liveWalk]', timeout=15000)
+    await p.page.wait_for_selector('#rail [data-action=v4Group][data-group=pho]', timeout=15000)
+    await p.page.click('#rail [data-action=v4Group][data-group=pho]')   # Đi dạo sits first in the Khu phố hub (0.9.19 menu)
+    await p.page.wait_for_selector('#rail [data-action=liveWalk]:visible', timeout=15000)
     await p.page.click('#rail [data-action=liveWalk]')
     await p.page.wait_for_selector('.walk-sheet[open] .wk-canvas', timeout=10000)
 
