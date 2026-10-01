@@ -1,7 +1,7 @@
 """Versioned static assets for the game page.
 
 The page (public/index.html) is rendered at serve time:
-- every /js/, /css/, /i18n/ and /music/ URL carries ?v=<content hash> (12 hex of SHA-256);
+- every /js/, /css/, /i18n/, /music/ and /audio/ URL carries ?v=<content hash> (12 hex of SHA-256);
 - an import map sends every ES module to its ?v= URL, so relative and dynamic imports
   (careers, scenes) resolve to exactly the bytes this server release hashed;
 - the static module graph of /js/app.js is announced with <link rel=modulepreload>
@@ -29,7 +29,7 @@ import threading
 import time
 from pathlib import Path
 
-VERSIONED_DIRS = ("js", "css", "i18n", "music", "icons")
+VERSIONED_DIRS = ("js", "css", "i18n", "music", "audio", "icons")  # audio/: short recorded sounds (public/audio/*/CREDITS.md)
 VERSIONED_SUFFIXES = {".js", ".css", ".json", ".mp3", ".webp", ".png", ".svg"}
 MAPPED_SUFFIXES = (".js", ".css", ".json", ".mp3")  # in the import map (modules + asset() lookups)
 PRECOMPRESS = (".js", ".css", ".json", ".svg")  # text copies that get .gz/.br siblings in the store (precompress)
@@ -63,7 +63,7 @@ _IMPORT = re.compile(r"""(?:^|[;}])[ \t]*import\s*(?:[^;'"()]*?\bfrom\s*)?['"]([
 _EXPORT = re.compile(r"""(?:^|[;}])[ \t]*export\s*[*{][^;'"()]*?\bfrom\s*['"]([^'"]+)['"]""", re.M)
 # `export const KIND_OF={career:'kind',...}` (public/js/scenes/index.js) and CSS_KIT (public/js/v4/careers.js).
 _PAIRS = re.compile(r"""(\w+)\s*:\s*['"](\w+)['"]""")
-_ATTR_URL = re.compile(r"""((?:href|src)="|url\()(/(?:js|css|i18n|music|icons)/[^"?#)]+)("|\))""")
+_ATTR_URL = re.compile(r"""((?:href|src)="|url\()(/(?:js|css|i18n|music|audio|icons)/[^"?#)]+)("|\))""")
 _INLINE_BOOT = re.compile(r"""<script[^>]*\bdata-inline\b[^>]*></script>""")
 
 

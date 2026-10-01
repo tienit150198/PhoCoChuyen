@@ -93,7 +93,8 @@ def default_settings() -> dict:
     return dict(mode="everyday",sound=True,music=False,reduceMotion=False,largeText=False,aiConsent=True,aiAsked=True,aiNoticeSeen=False,securityEvents=True,
         lang="vi",uiTheme="kem",musicTrack="auto",musicVolume=45,sfxVolume=70,notify=False,publicProfile=False,
         tutorialDone=False,notesSeen="",whatsNewSeen="",  # whatsNewSeen: last "Có gì mới" release read (game/whats_new.py); older saves start at ""
-        npcVoices=True,detailSfx=True,bankVoice=True)  # Cài đặt → Âm thanh: giọng nhân vật, âm thanh chi tiết, loa báo tiền
+        npcVoices=True,detailSfx=True,bankVoice=True,  # Cài đặt → Âm thanh: giọng nhân vật, âm thanh chi tiết, giọng đọc số tiền
+        moneyTing=True)  # tiếng "ting ting" khi nhận tiền (public/js/v4/sounds.js)
 
 from .jsoncopy import tree_copy,_SCALARS  # noqa: F401 (re-exported)
 
@@ -1250,7 +1251,7 @@ then runs validate_career on every career the command changed (see Store._comput
     for k in ("sound","music","reduceMotion","largeText","aiConsent","aiAsked","aiNoticeSeen","securityEvents","notify","publicProfile"):need(type(settings.get(k)) is bool,"Thiếu thiết lập bản lưu.")
     for k,choices in SETTING_CHOICES.items():need(settings.get(k) in choices,"Thiết lập bản lưu không hợp lệ.")
     for k in ("musicVolume","sfxVolume"):integer(settings.get(k),0,100)
-    for k in ("npcVoices","detailSfx","bankVoice"):need(type(settings.get(k,True)) is bool,"Thiết lập bản lưu không hợp lệ.")
+    for k in ("npcVoices","detailSfx","bankVoice","moneyTing"):need(type(settings.get(k,True)) is bool,"Thiết lập bản lưu không hợp lệ.")
     need(set(settings)<=set(default_settings()),"Thiết lập lạ trong bản lưu.")
     need(type(settings.get("tutorialDone",False)) is bool,"Thiết lập bản lưu không hợp lệ.");notes_seen(settings.get("notesSeen",""))
     need(wn.valid_seen(settings.get("whatsNewSeen","")),"Thiết lập bản lưu không hợp lệ.")

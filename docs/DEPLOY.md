@@ -45,7 +45,7 @@ Nếu chạy tạm ở cổng khác 80/443 (ví dụ `http://IP:8080` khi chưa 
 
 ### Tài nguyên tĩnh có phiên bản (tải nhanh, không trộn phiên bản)
 
-Trang `/` được server dựng lúc phục vụ: mọi URL `/js/`, `/css/`, `/i18n/`, `/music/`, `/icons/` mang `?v=<mã băm nội dung>` và một import map đưa mọi module ES (kể cả `import()` động) về đúng URL đó. Một URL `?v=` không bao giờ đổi nội dung, nên được giữ một năm (`immutable`); lần vào lại gần như không tải gì. Danh mục game nằm ở `GET /api/content?v=<mã>` (cũng giữ một năm) thay vì trong `/api/bootstrap`.
+Trang `/` được server dựng lúc phục vụ: mọi URL `/js/`, `/css/`, `/i18n/`, `/music/`, `/audio/`, `/icons/` mang `?v=<mã băm nội dung>` và một import map đưa mọi module ES (kể cả `import()` động) về đúng URL đó. Một URL `?v=` không bao giờ đổi nội dung, nên được giữ một năm (`immutable`); lần vào lại gần như không tải gì. Danh mục game nằm ở `GET /api/content?v=<mã>` (cũng giữ một năm) thay vì trong `/api/bootstrap`.
 
 Để một URL `?v=` luôn trả đúng các byte nó gọi tên (kể cả trong lúc deploy, và cho tab cũ còn mở), mỗi tiến trình khi khởi động chép các tệp đó vào kho theo mã băm `STATIC_CAS_DIR/<mã>/<đường dẫn>` (mặc định `public/_v`). Nên đặt kho này **ngoài thư mục release** để các bản cũ vẫn còn:
 
@@ -58,7 +58,7 @@ Nginx (khối `map` đặt trong `http {}`; `location` đặt trong `server {}`)
 ```nginx
 map $arg_v $asset_v { "~^[0-9a-f]{12}$" $arg_v; default ""; }
 
-location ~ ^/(js|css|i18n|icons|music)/ {
+location ~ ^/(js|css|i18n|icons|music|audio)/ {
     if ($asset_v) { rewrite ^ /_v/$asset_v$uri last; }
     root /opt/mot-ngay-lam-nghe/current/public;   # URL không có ?v=: như cũ, no-cache
     try_files $uri =404;
