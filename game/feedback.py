@@ -322,7 +322,7 @@ DOMAIN = {'milk_tea': 'drink', 'cafe_bakery': 'drink', 'restaurant': 'food', 'mo
           'accounting': 'office', 'corp_accounting': 'office', 'tax_payroll': 'office', 'group_accounting': 'office', 'customer_care': 'office',
           'tour_guide': 'stay', 'homestay': 'stay', 'florist': 'flower', 'repair': 'repair', 'farm': 'farm', 'delivery': 'delivery',
           'pet_care': 'pet', 'salon': 'salon', 'clothing': 'shop', 'tra_da': 'drink', 'pet_shop': 'pet',
-          'fruit': 'shop', 'garbage': 'delivery', 'drain': 'repair'}
+          'fruit': 'shop', 'garbage': 'delivery', 'drain': 'repair', 'homemaker': 'stay'}
 # How twist reviewers answer a polite reply.
 TWIST_REPLY = {
     'flip_fix': ['Ơ, mình bấm nhầm sao thật! Sửa lại liền, xin lỗi nha 🙏', 'Trời, tay nhanh hơn não, mình chấm nhầm. Sửa rồi nè.', 'Ủa sao lại 1 sao, mình đâu định vậy. Sửa ngay!'],
