@@ -4,13 +4,15 @@
  * `jr_reno_fix|up`. The checks below (where a piece may stand) only light the free cells: the server decides.
  * Edit mode: hold a piece (tap it in the bag or the shop), then tap a lit cell; or drag a piece (from the room, or
  * up out of the drawer) and drop it. Undo keeps the last moves (jr_deco_layout puts pieces back where they were).
- * Opened from 🏠 Nhà của bạn (v4/house.js); the back button returns there. Styles: bank.css + house.css + reno.css. */
+ * Opened from 🏠 Nhà của bạn (v4/house.js); the back button returns there. Styles: bank.css + house.css + reno.css.
+ * 🎨 Màu (bảng màu): a selected piece opens the palette picker (v4/palette.js); its colour is state.colors.deco[uid]
+ * (jr_wd_deco), kept by the piece in the bag and in the next home. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {Sound} from '../audio.js';
 import * as A from './deco-art.js';
 
 const S={dlg:null,env:null,tab:'deco',room:'',edit:false,held:null,sel:'',drawer:'bag',cat:'',busy:false,flash:null,
-  undo:[],undoKey:'',press:null,drag:null,dragEnd:0,resetStrip:false,toTop:false,pop:'',cheer:false,photo:null,listening:false,lastLv:-1};
+  undo:[],undoKey:'',press:null,drag:null,dragEnd:0,resetStrip:false,toTop:false,pop:'',cheer:false,photo:null,listening:false,lastLv:-1,tryTint:null};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const xu=n=>`${fmt(n)} xu`;
 const low=s=>String(s||'').slice(0,1).toLowerCase()+String(s||'').slice(1);
@@ -24,6 +26,8 @@ const CR=()=>S.env?.api?.content?.journey?.reno||{parts:[],steps:[]};
 let itemMap=null,itemSrc=null;
 const ITEM=k=>{const list=CD().items;if(itemSrc!==list){itemSrc=list;itemMap=new Map(list.map(i=>[i.id,i]));}return itemMap.get(k);};
 const PART=id=>CR().parts.find(x=>x.id===id)||{};
+/** A piece's colour: the one being tried in the picker, else its own from the palette (state.colors.deco). */
+const tintOf=uid=>S.tryTint?.uid===uid?S.tryTint.c:S.env?.api?.state?.colors?.deco?.[uid]||null;
 const POCKET=['account','wallet'];
 const condWord=(c,p)=>c>=85?'Như mới':c>=65?'Còn tốt':c>=45?'Hơi cũ':(PART(p).flaw||'Xuống cấp');
 const tone=c=>c>=65?'good':c>=45?'warn':'bad';
@@ -78,7 +82,7 @@ export async function openReno(env,mode){
   if(!S.listening){
     S.listening=true;
     let seen='';
-    env.api.addEventListener('state',()=>{const j=S.env.api.state?.journey;const key=JSON.stringify([j?.deco,j?.reno,j?.wallet]);if(key===seen)return;seen=key;if(S.dlg?.open&&!S.busy&&!S.drag&&!S.press)render();});
+    env.api.addEventListener('state',()=>{const j=S.env.api.state?.journey;const key=JSON.stringify([j?.deco,j?.reno,j?.wallet,S.env.api.state?.colors?.deco]);if(key===seen)return;seen=key;if(S.dlg?.open&&!S.busy&&!S.drag&&!S.press)render();});
   }
   await ensureCss();
   const d=dialog();
@@ -205,7 +209,7 @@ function roomMarkup(rm,opts={}){
     const it=ITEM(p.k);if(!it)continue;
     const surf=surfUnder(rm,p,it,all),[bx,by,bw,bh]=bbox(it,p,G,surf);
     const sel=!photo&&S.sel===p.id,pop=!photo&&S.pop===p.id,ghost=!photo&&(moving===p.id||(S.held?.src==='room'&&S.held.uid===p.id));
-    const body=A.pieceSVG(it,p.x,p.y,p.f,G,surf);
+    const body=A.pieceSVG(it,p.x,p.y,p.f,G,surf,tintOf(p.id));
     if(photo){out.push(body);continue;}
     out.push(`<g class="dc-it${sel?' sel':''}${pop?' pop':''}${ghost?' ghost':''}" data-uid="${esc(p.id)}" tabindex="${edit?0:-1}" role="button" aria-label="${esc(it.name)}"><g class="dc-piece">${body}</g>`
       +`<rect class="dc-hit" x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="6"/>${sel?`<rect class="dc-selbox" x="${bx-3}" y="${by-3}" width="${bw+6}" height="${bh+6}" rx="9"/>`:''}${pop?sparkles(bx,by,bw,bh):''}</g>`);
@@ -253,6 +257,10 @@ async function onClick(op,data){
         const r=await send('jr_deco_buy',{item:it.id,confirm:true});if(r){sfx('coins');S.held={k:it.id,src:'bag'};render();}}return;}
     case'move':{const p=placed(data.uid);if(!p)return;S.held={k:p.k,src:'room',uid:p.id};S.sel='';sfx('pop');render();return;}
     case'flip':{const p=placed(data.uid);if(!p)return;await placeUid(p.id,p.r,p.x,p.y,p.f?0:1);return;}
+    case'tint':{const p=placed(data.uid),it=ITEM(p?.k);if(!it)return;
+      (await import('./palette.js')).pickColor(S.env,{title:it.name,current:tintOf(p.id)||'goc',preview:c=>A.thumb(it,88,c),
+        onTry:c=>{S.tryTint={uid:p.id,c};paintRoom();},apply:async c=>!!await send('jr_wd_deco',{uid:p.id,color:c}),
+        onClose:()=>{S.tryTint=null;render();}});return;}
     case'pick':return pick(data.uid);
     case'sell':{const p=placed(data.uid)||v.bag.find(b=>b.id===data.uid),it=ITEM(p?.k);if(!it)return;
       if(await S.env.confirmAction(`Bán lại ${low(it.name)}?`,`Nhận ${xu(it.sell)} (${CD().sell_pct}% giá mua).`,`Bán · ${xu(it.sell)}`)){
@@ -382,7 +390,7 @@ function preview(cx,cy){
   if(S.drag)S.drag.at=a;
   const G=A.geom(rm),f=S.held.src==='room'?(placed(S.held.uid)?.f||0):0;
   const [bx,by,bw,bh]=bbox(it,a,G,a.surf);
-  g.innerHTML=`<rect class="dc-hot" x="${bx-3}" y="${by-3}" width="${bw+6}" height="${bh+6}" rx="9"/><g opacity=".75">${A.pieceSVG(it,a.x,a.y,f,G,a.surf)}</g>`;
+  g.innerHTML=`<rect class="dc-hot" x="${bx-3}" y="${by-3}" width="${bw+6}" height="${bh+6}" rx="9"/><g opacity=".75">${A.pieceSVG(it,a.x,a.y,f,G,a.surf,S.held.uid?tintOf(S.held.uid):null)}</g>`;
 }
 async function onUp(e){
   const p=S.press;if(!p||p.id!==e.pointerId)return;
@@ -519,8 +527,8 @@ function heldBar(v){
 }
 function tools(v){
   const p=placed(S.sel),it=ITEM(p?.k);if(!it)return '';
-  return `<div class="dc-tools" role="toolbar" aria-label="${esc(it.name)}">${A.thumb(it,36)}<b>${esc(it.name)}</b>
-    ${btn('↔ Dời','move',{uid:p.id},'ghost small')}${btn('⇋ Lật','flip',{uid:p.id},'ghost small')}${btn('🎒 Thu hồi','pick',{uid:p.id},'ghost small')}${btn(`💰 Bán lại · ${xu(it.sell)}`,'sell',{uid:p.id},'ghost small danger')}</div>`;
+  return `<div class="dc-tools" role="toolbar" aria-label="${esc(it.name)}">${A.thumb(it,36,tintOf(p.id))}<b>${esc(it.name)}</b>
+    ${btn('↔ Dời','move',{uid:p.id},'ghost small')}${btn('⇋ Lật','flip',{uid:p.id},'ghost small')}${btn('🎨 Màu','tint',{uid:p.id},'ghost small')}${btn('🎒 Thu hồi','pick',{uid:p.id},'ghost small')}${btn(`💰 Bán lại · ${xu(it.sell)}`,'sell',{uid:p.id},'ghost small danger')}</div>`;
 }
 function drawer(v){
   const C=CD(),types=new Set(v.rooms.map(r=>r.type)),rm=roomOf(S.room);

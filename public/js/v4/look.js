@@ -3,8 +3,9 @@
  *   lookOf(state)            the look to draw (the saved one, or the gender's default = the pre-0.9.5 look)
  *   portrait(look,gender,…)  the round bust used on the journey card, stories, the board, the ranking…
  *   figure(state), paint*()  the walking character in a workplace (BobaWorld.character, canvas)
- *   look.tint                the worn accessory's colour (1.3, state.wardrobe_colors): every painter above reads
- *                            it through accPaint, so portraits, the street, the wedding and its photos all match
+ *   look.tint                the colours of what is worn {item id: colour id} (bảng màu: accessories from
+ *                            state.wardrobe_colors, clothes and shoes from state.colors): every painter above reads
+ *                            it (accPaint, art), so portraits, the street, the wedding and its photos all match
  * Small and always loaded; the wardrobe sheet itself (v4/wardrobe.js) loads on first use. */
 import {R,E,L,P,heart,bloom} from '../scenes/kit.js';
 
@@ -18,8 +19,9 @@ export const ART={
   shade:{mau_nau:{c:'#5b4436'},mau_den:{c:'#2f2826'},mau_mat_ong:{c:'#9a6a3f'},mau_hong:{c:'#d98fa3'},mau_xanh_khoi:{c:'#6f8ea8'},mau_bach_kim:{c:'#e3d5b8'}},
   skin:{da_sang:{c:'#f5cfae',neck:'#e6b692',face:'#f8dcc2',ear:'#f3ceb1',hand:'#f5d5ba'},da_hong:{c:'#f8d8c6',neck:'#eab9a3',face:'#fbe2d4',ear:'#f2c9b6',hand:'#f7dccb'},
     da_trung:{c:'#e3b389',neck:'#c9966d',face:'#ebbf98',ear:'#dcaa80',hand:'#e6b890'},da_ngam:{c:'#c48d64',neck:'#a8744e',face:'#cc976e',ear:'#b9825b',hand:'#c79168'}},
-  top:{ao_quen:{c:null},ao_thun_kem:{c:'#efdfc4',d:'tee',x:'#dcc7a6'},ao_thun_xanh:{c:'#9cc39a',d:'tee',x:'#84ab82'},ao_so_mi:{c:'#f7f4ec',d:'collar',x:'#ddd6c6'},
-    ao_len:{c:'#c9806a',d:'knit',x:'#e8b49f'},ao_hoodie:{c:'#9d8cc4',d:'hood',x:'#8676b0'},ao_dai:{c:'#5d9ea0',d:'aodai',x:'#f2d38a',long:1},
+  // tx: which shade of a chosen colour (look.tint) the detail takes, 'd' darker or 'l' lighter (none: it keeps its own).
+  top:{ao_quen:{c:null},ao_thun_kem:{c:'#efdfc4',d:'tee',x:'#dcc7a6',tx:'d'},ao_thun_xanh:{c:'#9cc39a',d:'tee',x:'#84ab82',tx:'d'},ao_so_mi:{c:'#f7f4ec',d:'collar',x:'#ddd6c6',tx:'d'},
+    ao_len:{c:'#c9806a',d:'knit',x:'#e8b49f',tx:'l'},ao_hoodie:{c:'#9d8cc4',d:'hood',x:'#8676b0',tx:'d'},ao_dai:{c:'#5d9ea0',d:'aodai',x:'#f2d38a',long:1},
     ao_chi_may:{c:'#e7a0a8',d:'logo',x:'#fff5ee'},ao_hoa:{c:'#7cc0c8',d:'flowers',x:'#fff3d6'},ao_vest:{c:'#56627a',d:'suit',x:'#9b5b6b'},
     ao_cuoi:{c:'#c8453c',d:'aodai',x:'#f2c86a',long:1},vest_cuoi:{c:'#3e4a5c',d:'suit',x:'#c8453c',bow:1}},
   bottom:{quan_kem:{c:'#f0d3b8'},quan_xam:{c:'#6f6a78'},quan_jean:{c:'#5b7ea6'},quan_short:{c:'#c9a978',short:1},vay_xoe:{c:'#e39ab0',skirt:'flare'},vay_dai:{c:'#9fb7d8',skirt:'long'}},
@@ -28,8 +30,9 @@ export const ART={
   acc:{pk_khong:{},kinh_tron:{c:'#6b4f3f',d:'#6b4f3f'},kinh_ram:{c:'#3a3230',d:'#3a3230'},non_la:{c:'#ecd394',d:'#c9a95e',line:'#d6b86f',brim:'#d9bb72'},
     mu_len:{c:'#d8736a',d:'#b95a52',l:'#f3e6d6'},no_toc:{c:'#e0708a',d:'#c85873'},tui_cheo:{c:'#b07a4f',d:'#8a5a3c',l:'#d9a878'}},
 };
-/* Màu phụ kiện (1.3, góp ý #70): look.tint = {accessory id: colour id}; ids, names and prices in game/wardrobe.py COLORS. */
-// A null-prototype map: an id from someone else's look ("__proto__") finds nothing.
+/* Bảng màu (1.3.1 accessories, góp ý #70; then clothes, shoes and furniture): look.tint = {item id: colour id};
+ * ids, names and prices in game/wardrobe.py COLORS. c main, d darker, l lighter. Furniture: v4/deco-art.js tint.
+ * A null-prototype map: an id from someone else's look ("__proto__") finds nothing. */
 export const ACC_COLORS=Object.freeze(Object.assign(Object.create(null),{
   den:{c:'#3a3436',d:'#221e1f',l:'#6b6365'},nau:{c:'#8a5a3c',d:'#5f3c27',l:'#c08f68'},vang:{c:'#e0b43f',d:'#b0821f',l:'#f6df8f'},
   bac:{c:'#c7ccd4',d:'#8b94a1',l:'#eef1f5'},hong:{c:'#f4b0c4',d:'#d77d9a',l:'#fde2ea'},do:{c:'#d2453d',d:'#9e2c27',l:'#f19089'},
@@ -41,21 +44,38 @@ export function accPaint(L,a=L?.acc){
   const base=ART.acc[a]||{},t=ACC_COLORS[L?.tint?.[a]];
   return t&&base.c?{...base,...t,line:t.d,brim:t.d}:base;
 }
+export const PALETTE=ACC_COLORS;
+/** The slots whose item may carry a colour (hair has its own shades). */
+export const TINT_SLOTS=['top','bottom','shoes','acc'];
 const CLASSIC={female:'#e39a8a',male:'#78a3b6'};   // "Áo quen thuộc" on the portrait (in a workplace: the place's colour)
 
 export function defaultLook(gender){return {...DEFAULTS[gender==='male'||gender==='female'?gender:'none']};}
+/** The colour item `id` is worn in, from the state (null: its own): accessories in state.wardrobe_colors (1.3.1),
+ * clothes and shoes in state.colors. */
+export function wornColor(state,id){
+  const c=(ART.acc[id]?state?.wardrobe_colors?.wear:state?.colors?.wear)?.[id];
+  return typeof c==='string'&&ACC_COLORS[c]?c:null;
+}
 /** The look to draw for this state: saved slots that this build knows, the gender's default elsewhere, and the
- * worn accessory's colour from state.wardrobe_colors (tint, only when it is not the accessory's own). */
+ * colours of what is worn (tint, only those that are not the item's own). */
 export function lookOf(state){
   const d=defaultLook(state?.journey?.gender),w=state?.wardrobe?.look;
-  if(!w||typeof w!=='object')return d;
-  for(const k of SLOTS)if(typeof w[k]==='string'&&ART[k][w[k]])d[k]=w[k];
-  if(typeof w.uniform==='boolean')d.uniform=w.uniform;
-  const col=state?.wardrobe_colors?.wear?.[d.acc];
-  if(typeof col==='string'&&ACC_COLORS[col]&&ART.acc[d.acc]?.c)d.tint={[d.acc]:col};
+  if(w&&typeof w==='object'){
+    for(const k of SLOTS)if(typeof w[k]==='string'&&ART[k][w[k]])d[k]=w[k];
+    if(typeof w.uniform==='boolean')d.uniform=w.uniform;
+  }
+  const tint={};
+  for(const k of TINT_SLOTS){const id=d[k],col=wornColor(state,id);if(col&&(k!=='acc'||ART.acc[id]?.c))tint[id]=col;}
+  if(Object.keys(tint).length)d.tint=tint;
   return d;
 }
-const art=(L,slot)=>ART[slot][L[slot]]||ART[slot][DEFAULTS.none[slot]];
+/** An item's art in the colour it is worn in (look.tint): clothes and shoes take c, their detail its d or l shade. */
+const art=(L,slot)=>{
+  const b=ART[slot][L[slot]]||ART[slot][DEFAULTS.none[slot]];
+  if(slot!=='top'&&slot!=='bottom'&&slot!=='shoes')return b;
+  const t=ACC_COLORS[L?.tint?.[L[slot]]];if(!t||!ART[slot][L[slot]])return b;
+  const o={...b,c:t.c};if(b.tx)o.x=t[b.tx];if(b.line)o.line=t.d;return o;
+};
 export const hairColour=L=>art(L,'shade').c;
 export const topColour=(L,gender)=>art(L,'top').c||CLASSIC[gender]||'#c3ab83';
 

@@ -85,9 +85,27 @@ class Data(unittest.TestCase):
             self.assertNotIn('tint', clean_look(dict(LOOK, tint=tint), 'female')[0])
         self.assertNotIn('tint', clean_look(dict(LOOK, acc='pk_khong', tint={'pk_khong': 'do'}), 'male')[0])
         self.assertNotIn('tint', clean_look(dict(LOOK, acc='kinh_moi_2030', tint={'kinh_moi_2030': 'do'}), 'male')[0])
-        for tint in ('hong', ['kinh_tron'], {'kinh_tron': 5}, {'kinh_tron': 'x' * 30}, {f'a{i}': 'do' for i in range(5)}):
+        for tint in ('hong', ['kinh_tron'], {'kinh_tron': 5}, {'kinh_tron': 'x' * 30}, {f'a{i}': 'do' for i in range(sd.TINT_MAX + 1)}):
             with self.assertRaises(LiveError, msg=tint):
                 clean_look(dict(LOOK, tint=tint), 'female')
+
+    def test_clothing_colours_in_the_look(self):
+        """Bảng màu: the colours of the worn top, bottom and shoes travel with the look, like the accessory's."""
+        tint = {'ao_hoodie': 'navy', 'quan_jean': 'mint', 'giay_trang': 'do', 'kinh_tron': 'vang'}
+        look, _ = clean_look(dict(LOOK, tint=tint), 'female')
+        self.assertEqual(look['tint'], tint)
+        # Not worn, unknown item or colour: dropped; a full set of 8 entries is still fine.
+        extra = dict(tint, ao_len='hong', sweater='do', giay_nau='xam', quan_jean='cau_vong')
+        self.assertLessEqual(len(extra), sd.TINT_MAX)
+        look, _ = clean_look(dict(LOOK, tint=extra), 'female')
+        self.assertEqual(look['tint'], {'ao_hoodie': 'navy', 'giay_trang': 'do', 'kinh_tron': 'vang'})
+        self.assertNotIn('tint', clean_look(dict(LOOK, top='dong_phuc', tint={'dong_phuc': 'do'}), 'male')[0])
+
+    def test_paintable_matches_the_game(self):
+        from game import wardrobe as wd
+        self.assertEqual(set(sd.PAINTABLE), set(wd.PAINTABLE))
+        self.assertEqual(tuple(sd.TINT_SLOTS), tuple(wd.TINT_SLOTS))
+        self.assertEqual({c['id'] for c in wd.COLORS} - {'goc'}, set(sd.COLOR_IDS))
 
 
 class StreetCase(LiveCase):
@@ -158,6 +176,16 @@ class Instances(StreetCase):
         self.assertEqual(came['lk']['tint'], {'mu_len': 'navy'})      # only the worn accessory's colour travels
         card = await a.call('card', 'card', pid=came['pid'])
         self.assertEqual(card['lk']['tint'], {'mu_len': 'navy'})
+
+    async def test_another_walker_sees_the_clothing_colours(self):
+        a = await self.walker('Hồng Nhung')
+        tint = {'ao_hoodie': 'navy', 'giay_trang': 'do', 'kinh_tron': 'vang'}
+        b = await self.walker('Quốc Bảo', g='male', look=dict(LOOK, tint=dict(tint, ao_len='hong')))
+        came = await self.ev(a, 'in', name='Quốc Bảo')
+        self.assertEqual(came['lk']['tint'], tint)
+        card = await a.call('card', 'card', pid=came['pid'])
+        self.assertEqual(card['lk']['tint'], tint)
+        await b.close()
 
     async def test_capacity_and_the_fullest_instance(self):
         clients = [await self.walker(f'Người {i}') for i in range(CAP)]
