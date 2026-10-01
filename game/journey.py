@@ -30,6 +30,7 @@ from . import bank as bk   # 🏦 Ngân hàng Phố (game/bank.py)
 from . import wardrobe as wd   # 👗 Tủ đồ (game/wardrobe.py)
 from . import housing as hs   # 🏠 Nhà của bạn (game/housing.py)
 from . import system_gift as sg   # 🎁 Quà từ Phố Có Chuyện (game/system_gift.py)
+from . import live_effects as lfx   # 🧧 rewards from the live service (game/live_effects.py)
 from . import whats_new as wn   # "Có gì mới": read already for a brand-new save (_welcome_settings)
 
 VERSION = 1
@@ -865,6 +866,7 @@ def validate(s: dict) -> None:
     for v in j['stats'].values():
         integer(v, 0, 10**9)
     sg.validate(j)
+    lfx.validate(j)
     ct.validate(s)
     bk.validate(s)
     wd.validate(s)
