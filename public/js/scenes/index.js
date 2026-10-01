@@ -16,7 +16,7 @@ export const KIND_OF={
   tra_da:'sidewalk',
   clothing:'boutique',
   pet_shop:'petshop',
-  fruit:'lane',garbage:'lane',drain:'lane',
+  fruit:'lane',garbage:'lane',drain:'lane',ice_cream:'lane',
   pilot:'airfield',flight_attendant:'airfield',
 };
 export const kindOf=career=>KIND_OF[career]||'shop';
@@ -111,6 +111,12 @@ const CAREER_WORDS={
     idle_line:'Chị Thảo sắp dặn việc.',open_hint:'Đọc sổ tay nhà rồi bắt tay vào việc nhé.',free_eyebrow:'Nhà đang yên',free_title:'Xong việc rồi!',
     free_more:'Nhận thêm một việc hoặc về nhà hôm nay.',more_btn:'Nhận thêm một việc',none_waiting:'Chưa có việc nào đang chờ',next_btn:'Sang việc tiếp theo',
     people_sub:'Những người bạn gặp trong nhà chị Thảo.',feed_sub:'Lời nhắn và nhận xét của cả nhà.'},
+  ice_cream:{shelf:'Chồng ốc quế',evidence:'Hũ topping',counter:'Tủ kem',warehouse:'Thùng hàng',finance:'Cân điện tử',ledger:'SỔ KEM',store:'THÙNG HÀNG',
+    till:'Hộp tiền lẻ',door_open:'Đóng tiệm',door_closed:'Mở tiệm',open_sign:'ĐANG BÁN KEM',closed_sign:'NGHỈ BÁN',
+    cat_line:'Mrrr… cho mèo liếm một muỗng kem dừa thôi mà?',idle_line:'Sắp tới giờ tan học rồi.',open_hint:'Xem tủ kem, thay nước muỗng rồi mở tiệm nhé.',
+    free_eyebrow:'Quầy đang vắng',free_title:'Vãn khách rồi!',free_more:'Mời thêm khách hoặc đóng tiệm hôm nay.',more_btn:'Mời thêm một khách',
+    none_waiting:'Chưa có khách nào đang chờ',next_btn:'Mời khách tiếp theo',
+    people_sub:'Những người bạn gặp ở tiệm kem góc phượng.',feed_sub:'Lời nhắn và đánh giá quanh tiệm kem.'},
   flight_attendant:{shelf:'Xe đẩy suất ăn',evidence:'Phiếu suất ăn đặc biệt',counter:'Cửa ra tàu',warehouse:'Bếp tàu',ledger:'SỔ TIẾP VIÊN',store:'BẾP TÀU',
     open_sign:'ĐANG ĐÓN KHÁCH',idle_line:'Khách chuyến sau đang xếp hàng ở cổng.',open_hint:'Thắt khăn quàng, ra cửa tàu đón khách nhé.',
     free_eyebrow:'Khoang khách đang yên',free_title:'Xong việc rồi!',free_more:'Nhận thêm một việc hoặc tan ca hôm nay.',more_btn:'Nhận thêm một việc',

@@ -58,6 +58,7 @@ STALL = {
     'farm': dict(name='Rổ trứng gà của trại', emoji='🥚', price=4, tags=('food',)),
     'homestay': dict(name='Hũ mứt dâu của homestay', emoji='🍓', price=4, tags=('sweet', 'fruit')),
     'boba': dict(name='Ly trà sữa của tiệm', emoji='🧋', price=3, tags=('sweet',)),
+    'ice_cream': dict(name='Hộp kem dừa của tiệm', emoji='🍨', price=4, tags=('sweet',)),
 }
 
 # Things people give YOU. `bag`: kept in your gift bag (you can pass it on or enjoy it yourself).

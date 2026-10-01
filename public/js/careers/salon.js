@@ -430,9 +430,11 @@ function washPanel(t,x){
 }
 
 function cutPanel(t,x){
-  const u=ui(x,t),c=t.cut,s=c.steps,done=t.done.includes('cut'),kid=caseOf(t)==='kid'&&t.calm!=null;
-  const next=!s.includes('section')?'section':!s.includes('guide')?'guide':'check';
-  const step=(id,label,cond,payload={})=>`<li class="${s.includes(id)?'done':''}">${(id==='check'?(l,c,p,st,dis)=>x.button(l,'car:cutCheck',{task:t.id,n:s.length},st,dis):x.cmd)(label,'sl_cut',{task:t.id,step:id,...payload},id===next&&!done?'primary':s.includes(id)&&id!=='guide'?'ghost small':'small',done||!cond||!t.washed)}</li>`;
+  const u=ui(x,t),c=t.cut,s=c.steps,done=t.done.includes('cut'),kid=caseOf(t)==='kid'&&t.calm!=null,ask=t.cut_ask;
+  // The client's word at the mirror (server-side, survives a reload): "still long" → cut more; "layers?" → layer.
+  const next=!s.includes('section')?'section':!s.includes('guide')||ask==='long'?'guide':ask==='layers'?'layers':'check';
+  const on=id=>id==='check'?done:s.includes(id);
+  const step=(id,label,cond,payload={})=>`<li class="${on(id)?'done':''}">${(id==='check'?(l,c,p,st,dis)=>x.button(l,'car:cutCheck',{task:t.id,n:s.length},st,dis):x.cmd)(label,'sl_cut',{task:t.id,step:id,...payload},id===next&&!done?'primary':on(id)&&id!=='guide'?'ghost small':'small',done||!cond||!t.washed)}</li>`;
   let calm='';
   if(kid&&!done){
     const tools=(x.cc.calm_tools||[]).map(k=>`<button type="button" class="sl-chip ${t.soothed.includes(k.id)?'on':''}" ${cmdAttr(x,'sl_calm',{task:t.id,tool:k.id})} ${t.soothed.includes(k.id)?'disabled':''}><b>${k.emoji} ${x.esc(k.label)}</b></button>`).join('');
@@ -440,7 +442,8 @@ function cutPanel(t,x){
   }
   return `${calm}
     <div class="sl-len"><span>Độ dài cắt bớt</span><button type="button" class="btn small ghost" ${carAttr(x,'len',{task:t.id,d:-1})} aria-label="Bớt 1 cm">−</button><b>${u.len} cm</b><button type="button" class="btn small ghost" ${carAttr(x,'len',{task:t.id,d:1})} aria-label="Thêm 1 cm">+</button><small class="muted">Đã bớt tổng ${c.removed} cm${c.short?' · ⚠️ lẹm':''}</small></div>
-    <ol class="sl-steps">${step('section','1 · Chia vùng',!s.length)}${step('guide',`2 · Cắt đường chuẩn (${u.len} cm)`,s.includes('section')&&!s.includes('layers'),{length:u.len})}${step('layers','3 · Tỉa tầng',s.includes('guide')&&!s.includes('layers'))}${step('check','4 · Soi đối xứng & chốt',s.includes('guide'))}</ol>
+    ${ask==='long'&&!done?'<p class="sl-note">🪞 Khách soi gương thấy còn dài — chọn số cm rồi cắt thêm, soi lại.</p>':''}
+    <ol class="sl-steps">${step('section','1 · Chia vùng',!s.length)}${step('guide',s.includes('guide')?`2 · Cắt thêm (${u.len} cm)`:`2 · Cắt đường chuẩn (${u.len} cm)`,s.includes('section'),{length:u.len})}${step('layers','3 · Tỉa tầng',s.includes('guide')&&!s.includes('layers'))}${step('check','4 · Soi đối xứng & chốt',s.includes('guide'))}</ol>
     ${done?'<p class="sl-note good">✂️ Đã cắt xong.</p>':''}`;
 }
 
@@ -657,10 +660,11 @@ function guideOf(t,x){
       return {steps};
     }
     const len=first?smartLen(t)??u.len:u.len;
-    // A symmetry check the client did not accept ("còn dài" / "mẫu có tầng") reopens the step it asks for.
-    const fail=u.checkFail&&u.checkFail.at===s.length?u.checkFail.why:null;
+    // A symmetry check the client did not accept ("còn dài" / "mẫu có tầng") reopens the step it asks for
+    // (t.cut_ask comes from the server, so it is still there after a reload; also after layering: feedback #67).
+    const fail=t.cut_ask||null;
     steps.push({ok:s.includes('section')||null,label:'Chia vùng tóc',go:s.includes('section')?null:{...cut('section'),label:'✂️ Chia vùng tóc'}});
-    const more=fail==='long',canGuide=s.includes('section')&&(!s.includes('guide')||more)&&!s.includes('layers');
+    const more=fail==='long',canGuide=s.includes('section')&&(!s.includes('guide')||more);
     const guideGo=!canGuide?null:first&&!more||u.lenSet?{...cut('guide',{length:len}),label:`✂️ ${more?'Cắt thêm':'Cắt đường chuẩn · bớt'} ${len} cm`}:{sel:'.sl-len',label:`📏 Chọn số cm cắt ${more?'thêm':'bớt'}`};
     steps.push({ok:s.includes('guide')&&!more||null,label:more?'Khách thấy còn dài: cắt thêm':'Cắt đường chuẩn',note:s.includes('guide')?`đã bớt ${t.cut.removed} cm`:'',go:guideGo});
     const layers=(first&&wantsLayers(t))||fail==='layers';
@@ -775,8 +779,9 @@ export default {
     async cutCheck(d,el,x){
       const u=x.ui[d.task];if(!u)return;
       const r=await x.send('sl_cut',{task:d.task,step:'check'});if(!r)return;
-      const msg=nfc(r.message);
-      if(!/Kiểm đối xứng bằng gương/.test(msg)){u.checkFail={at:Number(d.n)||0,why:/tầng/.test(msg)?'layers':'long'};u.lenSet=false;}
+      // Turned down, the server keeps the client's request (t.cut_ask) and the extra cm is picked again;
+      // accepted, the cut is done and the length no longer matters.
+      u.lenSet=false;
       x.render();
     },
     autoMix(d,el,x){

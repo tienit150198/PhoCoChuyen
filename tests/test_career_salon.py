@@ -335,7 +335,71 @@ class SalonTests(unittest.TestCase):
         crit = {x['key']: x['score'] for x in post['feedback']['criteria']}
         self.assertLessEqual(crit['accuracy'], 3)
 
-    def test_pushy_upsell_is_declined(self):
+    def undercut_on_chair(self):
+        j = self.journey(T_UNDERCUT)        # min 5, max 7 cm, no layers
+        j.act('ask')
+        j.act('sl_consult', topic='length')
+        j.act('sl_plan', services=['cut', 'style'], sessions=1)
+        j.act('sl_wash')
+        j.act('sl_cut', step='section')
+        return j
+
+    def cut_view(self):
+        return public_state(self.j.state)['careers']['salon']['tasks'][0]
+
+    def test_cut_more_after_layers_when_client_says_long(self):
+        """Feedback #67: "khách bảo cắt thêm 1 cm nữa nhưng không bấm được nút cắt, chỉ soi gương được".
+        Layering before the length was reached used to lock the guide cut while the check kept saying "còn dài"."""
+        j = self.undercut_on_chair()
+        j.act('sl_cut', step='guide', length=2)
+        j.act('sl_cut', step='layers')                    # a mistake (flat cut), but it must not lock the chair
+        r = j.act('sl_cut', step='check')
+        self.assertIn('Còn hơi dài', r['message'])
+        self.assertEqual(self.cut_view()['cut_ask'], 'long')
+        self.roundtrip()
+        r = j.act('sl_cut', step='guide', length=3)       # the extra cm the client asked for
+        self.assertIn('cắt thêm 3 cm', r['message'])
+        self.assertIsNone(self.cut_view()['cut_ask'])
+        j.act('sl_cut', step='check')
+        self.assertIn('cut', j.task['done'])
+        self.assertEqual(j.task['cut']['removed'], 5)
+        self.roundtrip()
+
+    def test_cut_more_rounds_and_reload(self):
+        j = self.undercut_on_chair()
+        j.act('sl_cut', step='guide', length=1)
+        for _ in range(4):                                # "cắt thêm 1 cm nữa", several times
+            j.act('sl_cut', step='check')
+            j.act('sl_cut', step='check')                 # asking twice logs the request once
+            self.assertEqual(self.cut_view()['cut_ask'], 'long')
+            self.assertEqual(j.task['cut']['steps'][-2:], ['guide', 'check'])
+            # The request is part of the save: a reload (JSON round trip) still shows it.
+            j.state = json.loads(json.dumps(j.state))
+            self.roundtrip()
+            self.assertEqual(self.cut_view()['cut_ask'], 'long')
+            j.act('sl_cut', step='guide', length=1)
+        r = j.act('sl_cut', step='check')
+        self.assertIn('Kiểm đối xứng bằng gương', r['message'])
+        self.assertIn('cut', j.task['done'])
+        self.assertEqual(j.task['cut']['removed'], 5)
+        self.assertEqual(j.task['mistakes'], 0)
+        self.assertIsNone(self.cut_view()['cut_ask'])
+        self.roundtrip()
+
+    def test_long_cut_log_never_locks_the_chair(self):
+        """An old save at the old 16-step cap (every step refused, the check too) can still cut more and finish."""
+        j = self.undercut_on_chair()
+        j.act('sl_cut', step='guide', length=1)
+        j.task['cut']['steps'] = ['section'] + ['guide'] * 15
+        validate_state(j.state)
+        j.act('sl_cut', step='check')                     # still long: logged, the log folds its repeats
+        self.assertEqual(j.task['cut']['steps'], ['section', 'guide', 'check'])
+        j.act('sl_cut', step='guide', length=4)
+        j.act('sl_cut', step='check')
+        self.assertIn('cut', j.task['done'])
+        self.assertLessEqual(len(j.task['cut']['steps']), S.CUT_LOG)
+        self.roundtrip()
+
         j = self.journey(T_UNDERCUT)
         tid = j.task['id']
         j.act('ask')

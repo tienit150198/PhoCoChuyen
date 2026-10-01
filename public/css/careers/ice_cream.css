@@ -1,0 +1,87 @@
+/* Tiệm kem Góc Phượng — scoped styles (.career-job.km), over the street kit (street_kit.css).
+   Its own look: flame-tree pink and pistachio, a chest freezer with a frosty glass lid, a digital
+   counter scale with a green LCD, scoops in their flavour colours. */
+.career-job.km{--sk-accent:#e0679a;--sk-accent-2:#f3a6c4;--km-mint:#7cc7a8;--km-ice:#dff3fb;--km-ice-2:#b9e2f2;
+  --km-lcd:#1e3b2c;--km-lcd-ink:#9cf2b7;--km-cold:#3d8fc4;--km-soft:#e0a23a;--km-mushy:#d0573f}
+
+/* ---------- the freezer strip */
+.career-job.km .km-fz{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px;padding:8px 10px;border-radius:var(--sk-rs);
+  background:linear-gradient(180deg,var(--km-ice),var(--km-ice-2));border:1px solid var(--km-ice-2);color:#1f3440}
+.career-job.km .km-temp{display:inline-flex;align-items:baseline;gap:6px;flex:1 1 auto;min-width:0}
+.career-job.km .km-temp b{font-size:20px;font-variant-numeric:tabular-nums}
+.career-job.km .km-temp small{font-size:13px}
+.career-job.km .km-fz.feel-soft .km-temp b{color:#9a5f00}
+.career-job.km .km-fz.feel-mushy{background:linear-gradient(180deg,#fde4dc,#f7c6b8);border-color:#f0a894}
+.career-job.km .km-fz.feel-mushy .km-temp b{color:var(--km-mushy)}
+.career-job.km .km-lid{min-height:44px}
+.career-job.km .km-lid.open{background:var(--km-cold);color:#fff;border-color:#2d6f9b;animation:km-blink 1.6s ease-in-out infinite}
+@keyframes km-blink{50%{box-shadow:0 0 0 4px rgb(61 143 196 / 30%)}}
+@media (prefers-reduced-motion:reduce){.career-job.km .km-lid.open{animation:none}}
+.career-job.km .km-well{display:inline-flex;align-items:center;gap:4px}
+.career-job.km .km-well.dirty small{color:var(--km-mushy);font-weight:700}
+.career-job.km .km-well .btn{min-height:40px}
+
+/* ---------- the melt clock */
+.career-job.km .km-melt{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--sk-rs);background:var(--sk-surface-2);border:1px solid var(--sk-line);margin-bottom:10px}
+.career-job.km .km-melt b{margin-left:auto;font-size:20px;font-variant-numeric:tabular-nums}
+.career-job.km .km-melt.soon{background:#fff1d6;border-color:var(--km-soft)}
+.career-job.km .km-melt.late{background:#fde4dc;border-color:var(--km-mushy);color:var(--km-mushy)}
+
+/* ---------- the order */
+.career-job.km .km-chips{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.km .km-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;background:var(--sk-surface-2);border:1px solid var(--sk-line);font-size:14px}
+.career-job.km .km-chip.ok{border-color:var(--sk-good);color:var(--sk-good);font-weight:700}
+.career-job.km .km-tags{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+
+/* ---------- the counter and the scale */
+.career-job.km .km-cups{list-style:none;margin:0 0 10px;padding:0;display:grid;gap:6px}
+.career-job.km .km-cup{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:12px;border:1px dashed var(--sk-line)}
+.career-job.km .km-cup.now{border-style:solid;border-color:var(--sk-accent);background:#fff5f9}
+.career-job.km .km-cup.done{border-color:var(--sk-good)}
+.career-job.km .km-v{font-size:26px}
+.career-job.km .km-cup-body{display:grid;gap:2px;min-width:0}
+.career-job.km .km-scs{display:flex;flex-wrap:wrap;gap:4px}
+.career-job.km .km-sc{display:inline-flex;align-items:center;gap:2px;padding:1px 6px;border-radius:99px;background:var(--sk-surface-2);font-size:16px}
+.career-job.km .km-sc small{font-size:11px;color:var(--sk-muted);font-variant-numeric:tabular-nums}
+.career-job.km .km-sc.low small{color:var(--km-mushy);font-weight:700}
+.career-job.km .km-sc.high small{color:#9a5f00;font-weight:700}
+.career-job.km .km-sc.bad{outline:2px solid var(--sk-bad)}
+.career-job.km .km-scale{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px;border-radius:14px;background:#e9ecef;border:1px solid #cfd4d9}
+.career-job.km .km-lcd{display:inline-flex;align-items:baseline;justify-content:flex-end;gap:3px;min-width:96px;padding:6px 10px;border-radius:8px;
+  background:var(--km-lcd);color:var(--km-lcd-ink);font-family:ui-monospace,Menlo,Consolas,monospace;box-shadow:inset 0 2px 6px rgb(0 0 0 / 40%)}
+.career-job.km .km-lcd b{font-size:28px;letter-spacing:1px}
+.career-job.km .km-lcd.low{color:#ffb4a2}
+.career-job.km .km-lcd.high{color:#ffe08a}
+.career-job.km .km-scale-side{display:grid;gap:6px;min-width:0;flex:1 1 180px;color:#2f2a24}
+.career-job.km .km-adj{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.career-job.km .km-adj .btn,.career-job.km .km-tare{min-height:44px}
+
+/* ---------- scooping, toppings, vessels */
+.career-job.km .km-press{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.career-job.km .km-press .btn{min-height:44px;flex:1 1 90px}
+.career-job.km .km-fgrid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
+.career-job.km .km-toprow{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.km .km-toprow .btn{min-height:44px}
+.career-job.km .km-vgrid{grid-template-columns:repeat(auto-fill,minmax(92px,1fr))}
+.career-job.km .km-pack{border:2px solid var(--sk-accent)}
+
+/* ---------- the morning */
+.career-job.km .km-thermo{display:inline-flex;flex-direction:column;padding:8px 14px;border-radius:12px;background:var(--km-ice);border:1px solid var(--km-ice-2);color:#1f3440}
+.career-job.km .km-thermo b{font-size:26px;font-variant-numeric:tabular-nums}
+.career-job.km .km-thermo.feel-soft b,.career-job.km .km-thermo.feel-mushy b{color:var(--km-mushy)}
+.career-job.km .km-knobs{grid-template-columns:repeat(6,minmax(0,1fr))}
+.career-job.km .km-knobs .sk-tile{min-height:56px;padding:6px 2px}
+.career-job.km .km-bad{color:var(--sk-bad);margin:0 0 6px}
+.career-job.km .km-setup .btn{min-height:48px}
+
+/* ---------- the shop between customers */
+.career-job.km .km-tubs{list-style:none;margin:0 0 8px;padding:0;display:grid;gap:6px}
+.career-job.km .km-tubs li{display:grid;grid-template-columns:28px minmax(90px,auto) minmax(60px,1fr) auto;gap:6px;align-items:center}
+.career-job.km .km-tubs li>span:first-child{font-size:22px}
+.career-job.km .km-tubs small{color:var(--sk-muted)}
+
+@media (max-width:420px){
+  .career-job.km .km-knobs{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .career-job.km .km-tubs li{grid-template-columns:28px minmax(0,1fr)}
+  .career-job.km .km-tubs li .sk-meter,.career-job.km .km-tubs li small{grid-column:2}
+}
