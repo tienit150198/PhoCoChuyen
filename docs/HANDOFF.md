@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **1.0.2** (`main` = `d86dba7`), 28 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **1.0.5** (`main` = `6d86ec3`), 28 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -114,7 +114,12 @@ branch holds what, and what to do next, in order. Details live in the linked doc
    scripts/vendor_websockets.sh), switches in `/etc/mot-ngay-lam-nghe/live.env` (LIVE_CHAT=1, LIVE_STREET=1,
    LIVE_DATING=0; `systemctl restart mnl-live` applies), nginx `location = /live` on both servers (the old one
    forwards it), the game's drop-in `live.conf` sets `LIVE_URL=/live`. `mnl-rolling-release` restarts mnl-live.
-   Next: 1.0.1 dating (`live-dating`, schema 7), `cart` (needs the owner's OK on a shipping fee), 1.1.0 weddings
+   **01/10 later:** 1.0.1 chat first in the menu, only accounts post, Cả phố keeps 2,000 messages, pages of 30;
+   1.0.2 merged supplier orders (shipping fees approved by the owner); 1.0.3 dating (LIVE_DATING=1, schema 7,
+   accounts only; announced); 1.0.4 UX fixes from the retention logs + the grocery bulk-quote fix (#49, ShinMi
+   compensated 2 × 100 xu with private popups); 1.0.5 the weak-network loading error (jobView skeleton, retries),
+   double taps, injected-script noise, client error stacks in the admin.
+   Next: 1.1.0 weddings
    (`live-wedding`, spec docs/superpowers/specs/2026-10-01-live-wedding-design.md). Earlier plan text:
    (Chat v1.0 →
    release 1.0.0 with notes: chat, presence, Cả phố 10 s, strolling, dating bench; no tutorial for chat).
