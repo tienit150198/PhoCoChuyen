@@ -626,9 +626,11 @@ function loveTab(){
 }
 
 function planner(){
-  const c=S.catalog,p=S.plan,v=venueOf(p.venue),partner=esc(S.view.couple.partner.name);
   const w=S.view.wedding;
   if(w&&(w.status==='confirmed'||(w.status==='proposed'&&!w.mine)))return `<p class="mr-hint">Kế hoạch đang chờ bạn xác nhận ở mục “Hai bạn”.</p>${btn('Xem kế hoạch','tab',{tab:'home'},'primary')}`;
+  // No plan being drafted (the wedding is already set, or the view changed under an open tab): nothing to edit here.
+  if(!S.plan)return `<p class="mr-hint">Đám cưới của hai bạn xem ở mục “Hai bạn”.</p>${btn('Xem đám cưới','tab',{tab:'home'},'primary')}`;
+  const c=S.catalog,p=S.plan,v=venueOf(p.venue),partner=esc(S.view.couple.partner.name);
   const venues=c.venues.map(x=>`<label class="mr-option"><input type="radio" name="mr-venue" data-mr-field="venue" value="${x.id}"${x.id===p.venue?' checked':''}><span><b>${x.emoji} ${esc(x.name)}</b><small>Phí ${xu(x.fee)} · tối đa ${x.max_tables} bàn</small><small>${esc(x.desc)}</small></span></label>`).join('');
   const menus=c.menus.map(m=>`<label class="mr-option"><input type="radio" name="mr-menu" data-mr-field="menu" value="${m.id}"${m.id===p.menu?' checked':''}><span><b>${esc(m.name)} · ${xu(v.table_price[m.id])}/bàn</b><small>${m.dishes.map(esc).join(' · ')}</small></span></label>`).join('');
   const anhoi=c.ceremonies.find(x=>x.id==='an_hoi');

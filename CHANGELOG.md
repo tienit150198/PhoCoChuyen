@@ -1,3 +1,8 @@
+# v1.2.3 — Sửa lỗi tab Kế hoạch cưới
+
+- 💍 Lỗi (stat_client_errors, 22 lần 01–02/10: `Cannot read properties of null (reading 'venue')`): cặp đã đính hôn có kế hoạch cưới đã gửi/đã chốt, mở lại tab Kế hoạch thì `planner()` đọc `S.plan` khi chưa có bản nháp nên màn Hôn nhân không vẽ được. Giờ xét trạng thái đám cưới trước, không có bản nháp thì hiện lời nhắc sang mục "Hai bạn".
+- "Có gì mới": sửa lỗi tab Kế hoạch cưới.
+
 # v1.2.2 — 😍 Thả cảm xúc trong chat; màn quản lý chat cho quản trị (tìm kiếm, xem chữ gốc)
 
 - 😍 Cảm xúc (owner 01/10: "nhấn giữ là reaction"): nhấn giữ ~0,45 giây một tin ở Cả phố, nhắn riêng, nhóm (chạm hoặc chuột; kéo/cuộn là hủy; không bôi chữ, không hiện menu iOS) để mở thanh ❤️ 😂 😮 😢 👍 🔥. Mỗi người một cảm xúc mỗi tin: chọn lại cái đang có là bỏ, chọn cái khác là đổi. Dưới bong bóng hiện số đếm, cái của mình được tô; bấm vào một ô để thả/bỏ. Chạm (không giữ) vẫn mở hàng thao tác cũ (báo cáo, thu hồi, 📌 ghim cho quản trị).

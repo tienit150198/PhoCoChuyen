@@ -1,5 +1,9 @@
 [
  {
+  "vi": "điểm thi",
+  "en": ""
+ },
+ {
   "vi": "nghề thạo",
   "en": ""
  },
@@ -1008,6 +1012,14 @@
   "en": ""
  },
  {
+  "vi": "Đám cưới của hai bạn xem ở mục “Hai bạn”.",
+  "en": ""
+ },
+ {
+  "vi": "Xem đám cưới",
+  "en": ""
+ },
+ {
   "vi": "/bàn",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Bạn ấy chưa có tài khoản để kết bạn.",
-  "en": ""
- },
- {
-  "vi": "Đã gửi lời mời kết bạn.",
-  "en": ""
- },
- {
-  "vi": "Chưa gửi được, thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "🚶 Đi dạo",
   "en": ""
  }
 ]

@@ -1,5 +1,6 @@
 {
  "strings": {
+  "Sửa lỗi mục Kế hoạch cưới không mở được khi kế hoạch của hai bạn đã gửi hoặc đã chốt.": "Fixed the Wedding plan tab failing to open once the couple's plan was sent or confirmed.",
   "Thẻ Nhiệm vụ hôm nay ghi rõ cách tính từng việc; nhớ bấm Nhận quà trước khi đóng ca.": "The Today's goals card now says how each goal counts; claim your rewards before you close the shift.",
   "Mở cửa rồi làm xong việc trong ca": "Open up, then finish jobs during the shift",
   "Chơi ở tab Trò nhỏ": "Play one in the Mini games tab",

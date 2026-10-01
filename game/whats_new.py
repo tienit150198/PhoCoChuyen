@@ -32,6 +32,9 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.2.3", date="2026-10-02", items=(
+        dict(emoji="💍", text="Sửa lỗi mục Kế hoạch cưới không mở được khi kế hoạch của hai bạn đã gửi hoặc đã chốt.", go=dict(action="marriage")),
+    )),
     dict(version="1.2.2", date="2026-10-02", items=(
         dict(emoji="😍", text="Thả cảm xúc trong chat: nhấn giữ một tin nhắn rồi chọn ❤️ 😂 😮 😢 👍 🔥. Bấm lại để bỏ, chọn cái khác để đổi.", go=dict(action="liveChat")),
         dict(emoji="💬", text="Dưới mỗi tin hiện số cảm xúc của mọi người; bấm vào một cảm xúc là thả theo ngay."),

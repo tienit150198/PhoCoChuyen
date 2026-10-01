@@ -1172,6 +1172,10 @@
   "en": ""
  },
  {
+  "vi": "Sửa lỗi mục Kế hoạch cưới không mở được khi kế hoạch của hai bạn đã gửi hoặc đã chốt.",
+  "en": ""
+ },
+ {
   "vi": "Thả cảm xúc trong chat: nhấn giữ một tin nhắn rồi chọn ❤️ 😂 😮 😢 👍 🔥. Bấm lại để bỏ, chọn cái khác để đổi.",
   "en": ""
  },
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "Khoảng thời gian",
-  "en": ""
- },
- {
-  "vi": "· tự làm mới mỗi phút",
   "en": ""
  }
 ]
