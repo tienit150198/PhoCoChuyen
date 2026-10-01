@@ -1,7 +1,8 @@
-# v1.1.4 — Đi ăn cưới tính từ 2 phút
+# v1.1.4 — Đi ăn cưới tính từ 2 phút, sửa đơn sỉ bà Sáu bị treo
 
 - Khách được tính là "đi ăn cưới" khi có mặt ít nhất 2 phút trong tiệc (`GUEST_MIN_MINUTES`, owner 01/10): 15 xu mỗi khách của cô dâu chú rể, số khách trên thẻ cuối tiệc, bảng Khách mời của tuần. Vẫn ghi `wedding_guests` ngay khi vào (lộc 20 xu/phút, phong bì không đổi). Khách thấy "✅ Đã ghi nhận bạn đi ăn cưới" sau phút thứ 2.
-- "Có gì mới": luật 2 phút; dòng 1.1.3 về ghi nhận sửa cho khớp.
+- Lỗi (góp ý #57): đơn sỉ tạp hóa báo giá ở mức bớt sâu nhất (hoặc lần thứ 2) luôn được trả lời dứt khoát; bản lưu đang kẹt được trả lời khi tải (`grocery.heal_save` trong `migrate_state`), tiền cọc ghi như một lần chốt thường. Sửa đồ điện: hết 6 lần báo giá thì phần khách chưa duyệt coi như từ chối, không còn kẹt ở "Trả máy".
+- "Có gì mới": luật 2 phút, sửa đơn sỉ bà Sáu; dòng 1.1.3 về ghi nhận sửa cho khớp.
 
 # v1.1.3 — Tiệc cưới 10 phút, ai vào cũng được ghi nhận, phong bì mừng cưới
 

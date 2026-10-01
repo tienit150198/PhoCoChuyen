@@ -34,6 +34,7 @@ from pathlib import Path
 ENTRIES = (
     dict(version="1.1.4", date="2026-10-01", items=(
         dict(emoji="⏱️", text="Ở trong tiệc cưới từ 2 phút trở lên mới được tính là đi ăn cưới: tính vào bảng Khách mời của tuần và tiền mừng của cô dâu chú rể."),
+        dict(emoji="🛒", text="Sửa lỗi đơn sỉ của bà Sáu bị treo khi bớt giá kịch khung ngay lần đầu: đơn đang kẹt tự được chốt khi vào game."),
     )),
     dict(version="1.1.3", date="2026-10-01", items=(
         dict(emoji="💍", text="Tiệc cưới mới: 10 phút rộn ràng có MC, cỗ, múa lân, đèn nháy, nhạc cưới, hàng xóm và các bạn nhỏ vào chung vui.", go=dict(action="liveWed")),
