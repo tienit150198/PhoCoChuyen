@@ -134,7 +134,7 @@ function paint(){
 /** For app.js navItems: the menu entry ([action, icon, label, badge]) when chat is on, else null. */
 export function liveNav(){return live.flags.chat&&live.welcomed?['liveChat','chats','Chat',live.unread()]:null;}
 /** 💕 The "Góc hẹn hò" entry when dates are on, else null. */
-export function dateNav(){return live.flags.dating&&live.welcomed?['liveDate','heart','Góc hẹn hò']:null;}
+export function dateNav(){return live.flags.dating&&live.welcomed?['liveDate','coffee','Góc hẹn hò']:null;}
 
 /* ---- opening the chat from a push (?chat=<id>) ---- */
 let wanted=new URLSearchParams(location.search).get('chat');

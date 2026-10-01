@@ -10,6 +10,7 @@ LIVE_DATE_SPEED times faster so the run takes about a minute), then plays phones
     +tinh thần paid on the next load, the bond on the chat's friend list and on the Bạn bè card;
   * Lan Anh and Bé Na (a guest): Bé Na opens the safety menu and leaves early → Lan Anh gets the gentle line;
   * Lan Anh and Tí Sún: ❤️ / 👋 → both see the same kind line, nobody learns who declined;
+  * Đi dạo: the bench of the place glows; a tap opens Góc hẹn hò and sits down (LIVE_STREET=1 too);
   * light and dark screenshots. Fails on console errors, page errors or HTTP 5xx.
 
   python scripts/browser_live_dating.py [--shots DIR] [--speed 3]
@@ -42,7 +43,7 @@ def servers(tmp: str, speed: float):
     game = subprocess.Popen([sys.executable, 'server.py', '--port', str(gp), '--db', db], cwd=ROOT, env=env,
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     wait_http(f'http://127.0.0.1:{gp}/api/health')
-    lenv = dict(env, LIVE_CHAT='1', LIVE_DATING='1', LIVE_DATE_SPEED=str(speed), LIVE_ORIGINS=f'http://127.0.0.1:{gp}', LIVE_PORT=str(lp))
+    lenv = dict(env, LIVE_CHAT='1', LIVE_STREET='1', LIVE_DATING='1', LIVE_DATE_SPEED=str(speed), LIVE_ORIGINS=f'http://127.0.0.1:{gp}', LIVE_PORT=str(lp))
     log = open(os.path.join(tmp, 'live.log'), 'w')
     live = subprocess.Popen([sys.executable, '-m', 'live', '--db', db], cwd=ROOT, env=lenv, stdout=log, stderr=log)
     wait_http(f'http://127.0.0.1:{lp}/live/health')
@@ -110,11 +111,36 @@ async def open_from_chat(p: Phone):
     await p.page.wait_for_selector('.dt-sheet[open] .dt-bench')
 
 
-async def open_from_menu(p: Phone):
+async def menu(p: Phone, action: str, group: str, click=True):
+    """Open "Thêm", unfold the hub (`group`: ban = Quan hệ, pho = Khu phố) and tap the entry."""
     await p.page.evaluate("document.querySelector('[data-action=v4Menu]')?.click()")
-    await p.page.wait_for_timeout(600)
-    await p.click('#rail [data-action=liveDate]')
+    await p.page.wait_for_timeout(500)
+    if not await p.page.is_visible(f'#rail [data-action={action}]'):
+        await p.click(f'#rail .rail-group[data-group={group}]')
+    await p.page.wait_for_selector(f'#rail [data-action={action}]', state='visible', timeout=8000)
+    if click:
+        await p.click(f'#rail [data-action={action}]')
+
+
+async def open_from_menu(p: Phone):
+    await menu(p, 'liveDate', 'ban')
     await p.page.wait_for_selector('.dt-sheet[open] .dt-bench')
+
+
+WALK = "async () => (await import('/js/v4/walk.js')).walk.state()"
+
+
+async def tap_bench(p: Phone):
+    """Tap the bench of the place the stroll opened on (world point → canvas)."""
+    for _ in range(60):
+        s = await p.page.evaluate(WALK)
+        at = await p.page.evaluate("async () => (await import('/js/v4/walk.js')).walk.spot('bench')")
+        if s['room'] and at:
+            break
+        await p.page.wait_for_timeout(200)
+    box = await p.page.locator('.walk-sheet .wk-canvas').bounding_box()
+    v = s['view']
+    await p.page.touchscreen.tap(box['x'] + v['ox'] + at['x'] * v['k'], box['y'] + v['oy'] + at['y'] * v['k'])
 
 
 async def sit(p: Phone, pref: str):
@@ -168,9 +194,9 @@ async def run(shots: Path, speed: float) -> list:
             await a.page.wait_for_selector('.dt-pill:not([hidden])', timeout=5000)
             check('Đang chờ' in await text_of(a.page, '.dt-pill'), 'the 💕 pill waits on the scene while the dialog is closed')
             await a.shot(shots, '03-scene-pill-waiting')
-            await b.page.evaluate("document.querySelector('[data-action=v4Menu]')?.click()")
-            await b.page.wait_for_timeout(600)
-            check('Góc hẹn hò' in await text_of(b.page, '#rail [data-action=liveDate]'), 'menu entry "Góc hẹn hò"')
+            await menu(b, 'liveDate', 'ban', click=False)
+            order = await b.page.evaluate("[...document.querySelectorAll('#rail .rail-sub[data-group=ban] .rail-item[data-action]')].map(e=>e.dataset.action)")
+            check(order[:2] == ['liveChat', 'liveDate'], f'"Góc hẹn hò" right after Chat in Quan hệ ({order})')
             await b.shot(shots, '04-menu-entry')
             await b.click('#rail [data-action=liveDate]')
             await b.page.wait_for_selector('.dt-sheet[open] .dt-bench')
@@ -233,9 +259,7 @@ async def run(shots: Path, speed: float) -> list:
             check(True, '"Đang tìm hiểu 💕" on the chat friend list')
             await a.shot(shots, '17-chat-friends-bond')
             await a.page.keyboard.press('Escape')
-            await a.page.evaluate("document.querySelector('[data-action=v4Menu]')?.click()")
-            await a.page.wait_for_timeout(500)
-            await a.click('#rail [data-action=friends]')
+            await menu(a, 'friends', 'ban')
             await a.page.wait_for_timeout(1500)
             card = await a.page.evaluate("document.body.innerText")
             check('Đang tìm hiểu 💕' in card, 'the bond on the Bạn bè card')
@@ -297,6 +321,17 @@ async def run(shots: Path, speed: float) -> list:
             await d.page.evaluate("document.documentElement.dataset.theme='dem'")
             await a.shot(shots, '21-nope-hearted-side')
             await d.shot(shots, '22-nope-waved-side-dark')
+
+            # ---- Đi dạo: every place's bench is the dating bench ----
+            await a.page.keyboard.press('Escape')
+            await menu(a, 'liveWalk', 'pho')
+            await a.page.wait_for_selector('.walk-sheet[open] .wk-canvas', timeout=10000)
+            await a.page.wait_for_timeout(1500)
+            await a.shot(shots, '23-walk-bench')
+            await tap_bench(a)
+            await a.page.wait_for_selector('.dt-sheet[open] .dt-bench.wait', timeout=8000)
+            check(True, 'tapping the bench in Đi dạo opens Góc hẹn hò and sits down')
+            await a.shot(shots, '24-walk-bench-sat')
             await browser.close()
         print(Path(live_log).read_text()[-600:], file=sys.stderr)
     for line in checks:

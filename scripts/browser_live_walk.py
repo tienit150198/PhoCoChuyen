@@ -108,7 +108,10 @@ async def where(p, pid):
 
 async def open_walk(p):
     await p.page.evaluate("document.querySelector('[data-action=v4Menu]')?.click()")
-    await p.page.wait_for_selector('#rail [data-action=liveWalk]', timeout=15000)
+    await p.page.wait_for_selector('#rail [data-action=liveWalk]', state='attached', timeout=15000)
+    await p.page.wait_for_timeout(400)
+    if not await p.page.is_visible('#rail [data-action=liveWalk]'):   # the grouped menu (0.9.19): Đi dạo is first in "Khu phố"
+        await p.page.click('#rail .rail-group[data-group=pho]')
     await p.page.click('#rail [data-action=liveWalk]')
     await p.page.wait_for_selector('.walk-sheet[open] .wk-canvas', timeout=10000)
 

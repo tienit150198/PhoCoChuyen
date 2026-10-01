@@ -236,6 +236,8 @@ async def run(shots: Path) -> list:
             await a.shot(shots, '11-chat-button-badge')
             await a.page.evaluate("document.querySelector('[data-action=v4Menu]')?.click()")
             await a.page.wait_for_timeout(700)
+            if not await a.page.is_visible('#rail [data-action=liveChat]'):   # the grouped menu (0.9.19): Chat is first in "Quan hệ"
+                await a.page.click('#rail .rail-group[data-group=ban]')
             menu = await text_of(a.page, '#rail [data-action=liveChat]')
             check('Chat' in menu, f'menu entry "Chat" ({menu!r})')
             await a.shot(shots, '12-menu-entry')

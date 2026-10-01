@@ -67,6 +67,7 @@ def raise_fd_limit(n: int = 65536) -> None:
 
 def most_at_once(spans) -> int:
     """The most (start, end) intervals open at the same moment."""
+    spans = list(spans)
     ev = sorted([(a, 1) for a, _ in spans] + [(b, -1) for _, b in spans], key=lambda x: (x[0], x[1]))
     n = best = 0
     for _, d in ev:
