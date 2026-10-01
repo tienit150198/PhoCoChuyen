@@ -19,7 +19,15 @@ Frames (client → server; replies in brackets)
   prefs {online: bool}                      [prefs {online}]
   group_new {title, pids}  group_add {ch, pids}  group_kick {ch, pid}  group_leave {ch}  members {ch}
   pin {id}  unpin {}                        [pinned {ch:'town', pin} to everyone on Cả phố]   admins only
-Server pushes: msg, deleted, presence {pid, on}, chan {chan}, unchan {ch}, muted {until}, read, pinned.
+  react {id, e}                             [reacts {ch, id, r, by, e} to everyone who sees the chat]
+Server pushes: msg, deleted, presence {pid, on}, chan {chan}, unchan {ch}, muted {until}, read, pinned, reacts.
+
+😍 Reactions (owner, 01/10: "nhấn giữ là reaction"): one of REACTS per player per message (`chat_reacts`, primary key
+(msg, pid)) in Cả phố, DMs and groups. `react {id, e}` sets e; the same e again (or e null) takes it back; another
+replaces it. Not on a hidden or deleted message, not by a muted player or a guest, DMs and groups only for their
+members. Counts go out as `reacts {ch, id, r: {emoji: n}, by, e}` (by: who, e: their reaction now); messages sent
+in pages (joined, history, missed) carry `r` and `my` (my own). Counts are cached in memory per message (LRU, filled
+by one grouped query over the page's ids, the primary key); `my` is read only for messages that have reactions.
 
 📌 Admins (owner, 01/10): an account whose username is in ADMIN_USERS (cfg.admins, read from `accounts` with the
 player's name and age) posts on Cả phố with no slow mode, no "new player" wait, no mute and no duplicate check, up
@@ -64,6 +72,8 @@ FRIENDS_MAX = 200
 PUSH_EVERY = 600          # seconds between two pushes of one chat to one player
 PIN_POLL = 30             # seconds between two reads of the pin row (a pin written from outside: scripts/chat_pin.py)
 ADMIN_PID = 'admin'       # rows written straight into the database by the operator (an announcement): admin messages
+REACTS = ('❤️', '😂', '😮', '😢', '👍', '🔥')   # the long-press bar, in this order
+REACT_CACHE = 20000       # messages whose reaction counts are kept in memory
 
 
 def dm_id(a: str, b: str) -> str:
@@ -111,6 +121,7 @@ class ChatFeature(Feature):
         self.pin: dict | None = None   # 📌 the pinned Cả phố message (its frame, without `t`), or None
         self.pin_key = None            # (message id, pinned at) of that pin: what the 30 s poll compares
         self._pin_at = 0.0             # next poll of the pin row
+        self.reacts = LRU(REACT_CACHE)  # 😍 message id -> {emoji: count} ({} = none), the only writer is this service
 
     # ---- extension: other features' channels -------------------------------------------------------------
     def route(self, prefix: str, audience, can_read) -> None:
@@ -416,10 +427,11 @@ class ChatFeature(Feature):
         if any(c == ch and f == fp and t - at < DUP_SECS for c, f, at in p.recent):
             raise LiveError('dup', 'Bạn vừa gửi câu này rồi.')
         masked = filters.mask(clean)
+        raw = clean if masked != clean else None   # 🔎 what was typed, for the admin screen only (never sent to players)
         row = await self.db.fetchrow(
-            'INSERT INTO chat_messages(channel, pid, name, av, text, at) SELECT ?, ?, ?, ?, ?, ? '
+            'INSERT INTO chat_messages(channel, pid, name, av, text, at, raw) SELECT ?, ?, ?, ?, ?, ?, ? '
             'WHERE NOT EXISTS (SELECT 1 FROM chat_mutes WHERE pid=? AND until>?) RETURNING id',
-            (ch, p.pid, p.name, p.av, masked, t, p.pid, t))
+            (ch, p.pid, p.name, p.av, masked, t, raw, p.pid, t))
         if not row:
             until = await self.db.fetchval('SELECT until FROM chat_mutes WHERE pid=?', (p.pid,))
             p.muted_until = float(until or 0)
@@ -452,8 +464,8 @@ class ChatFeature(Feature):
         if type(after) is int and after > 0 and (not self.town.buffer or self.town.buffer[0]['id'] <= after + 1):
             msgs, inc = [m for m in self.town.buffer if m['id'] > after and m['pid'] not in p.hidden], True
         why, wait = self.can_town(p)
-        return dict(t='joined', ch='town', msgs=msgs, more=more, inc=inc, why=why, wait=round(wait, 1), n=len(self.town.players()),
-                    pin=self.pin_for(p))
+        return dict(t='joined', ch='town', msgs=await self.with_reacts(p, msgs), more=more, inc=inc, why=why, wait=round(wait, 1),
+                    n=len(self.town.players()), pin=self.pin_for(p))
 
     @on('leave', rate=(20, 10))
     async def leave(self, conn, f):
@@ -527,6 +539,8 @@ class ChatFeature(Feature):
                                    (ch, before, PAGE + 1))
         more = len(rows) > PAGE
         msgs = [msg_frame(r) for r in reversed(rows[:PAGE]) if r['pid'] not in p.hidden]
+        if not r:   # 😍 Cả phố, DMs, groups (not the street's bubbles)
+            msgs = await self.with_reacts(p, msgs)
         return dict(t='history', ch=ch, msgs=msgs, more=more, before=f.get('before'))
 
     @on('read', rate=(40, 10))
@@ -546,7 +560,7 @@ class ChatFeature(Feature):
         p, mid = conn.player, f.get('id')
         if type(mid) is not int or mid <= 0:
             raise LiveError('bad', 'Yêu cầu không hợp lệ.')
-        row = await self.db.fetchrow("UPDATE chat_messages SET text='', deleted=1 WHERE id=? AND pid=? AND deleted=0 RETURNING channel", (mid, p.pid))
+        row = await self.db.fetchrow("UPDATE chat_messages SET text='', raw=NULL, deleted=1 WHERE id=? AND pid=? AND deleted=0 RETURNING channel", (mid, p.pid))
         if not row:
             raise LiveError('gone', 'Không thu hồi được tin này.')
         await self.gone(row['channel'], mid, hidden=False)
@@ -554,6 +568,7 @@ class ChatFeature(Feature):
 
     async def gone(self, ch: str, mid: int, hidden: bool) -> None:
         """A message left everyone's screen: deleted by its author (the text is gone) or hidden (moderation)."""
+        self.reacts.pop(mid, None)   # 😍 its reactions leave the screens with it (clients drop them on `deleted`)
         if ch == 'town':
             for m in list(self.town.buffer):
                 if m['id'] == mid:
@@ -768,6 +783,90 @@ class ChatFeature(Feature):
                     on=bool(p.show_online and self.hub.visible(r['pid']))) for r in rows]
         return dict(t='members', ch=c.id, members=out, owner=c.owner, title=c.title)
 
+    # ---- 😍 reactions ---------------------------------------------------------------------------------------
+    @staticmethod
+    def _ordered(counts: dict) -> dict:
+        return {e: counts[e] for e in REACTS if counts.get(e)}
+
+    async def react_counts(self, ids) -> dict:
+        """{id: {emoji: n}} for these messages: from memory, else one grouped query per 200 ids (primary key)."""
+        out, miss = {}, []
+        for i in ids:
+            c = self.reacts.get(i)
+            if c is None:
+                miss.append(i)
+            else:
+                out[i] = c
+        for k in range(0, len(miss), 200):
+            part = miss[k:k + 200]
+            got = {i: {} for i in part}
+            for r in await self.db.fetch(f"SELECT msg, emoji, COUNT(*) AS n FROM chat_reacts WHERE msg IN ({','.join('?' * len(part))}) "
+                                         'GROUP BY msg, emoji', part):
+                got.setdefault(int(r['msg']), {})[r['emoji']] = int(r['n'])
+            for i, c in got.items():
+                out[i] = self.reacts.put(i, c)
+        return out
+
+    async def with_reacts(self, p, msgs: list) -> list:
+        """The messages with `r` (counts) and `my` (p's own) where they have reactions; copies, never the buffer's
+        frames. One more query (p's reactions) only when some message has reactions."""
+        ids = [m['id'] for m in msgs if not m.get('del')]
+        if not ids:
+            return msgs
+        counts = await self.react_counts(ids)
+        has = [i for i in ids if counts.get(i)]
+        if not has:
+            return msgs
+        mine = {int(r['msg']): r['emoji'] for r in await self.db.fetch(
+            f"SELECT msg, emoji FROM chat_reacts WHERE pid=? AND msg IN ({','.join('?' * len(has))})", (p.pid, *has))}
+        out = []
+        for m in msgs:
+            c = None if m.get('del') else counts.get(m['id'])
+            if c:
+                m = dict(m, r=self._ordered(c))
+                if m['id'] in mine:
+                    m['my'] = mine[m['id']]
+            out.append(m)
+        return out
+
+    @on('react', rate=(30, 10))
+    async def react(self, conn, f):
+        p, mid, e = conn.player, f.get('id'), f.get('e')
+        if type(mid) is not int or mid <= 0 or (e is not None and e not in REACTS):
+            raise LiveError('bad', 'Yêu cầu không hợp lệ.')
+        if not p.account:
+            await self.refresh(p)
+        if not p.account:
+            raise LiveError('account', 'Tạo tài khoản để thả cảm xúc nhé.')
+        if p.muted_until > time.time() and not self.is_admin(p):
+            raise LiveError('muted', 'Bạn đang bị tạm khóa chat.', until=round(p.muted_until, 1))
+        row = await self.db.fetchrow('SELECT channel, pid, hidden, deleted FROM chat_messages WHERE id=?', (mid,))
+        if not row or row['hidden'] or row['deleted'] or row['pid'] in p.hidden:
+            raise LiveError('gone', 'Tin nhắn này không còn.')
+        if kind_of(row['channel']) not in ('town', 'dm', 'group'):
+            raise LiveError('bad', 'Không thả cảm xúc ở đây được.')
+        c = await self.member_chan(p, row['channel'])
+        t = time.time()
+
+        async def run(tx):
+            cur = await tx.fetchval('SELECT emoji FROM chat_reacts WHERE msg=? AND pid=?', (mid, p.pid))
+            new = None if e is None or cur == e else e
+            if new is None:
+                if cur is not None:
+                    await tx.execute('DELETE FROM chat_reacts WHERE msg=? AND pid=?', (mid, p.pid))
+            else:
+                await tx.execute('INSERT INTO chat_reacts(msg, pid, emoji, at) VALUES(?, ?, ?, ?) '
+                                 'ON CONFLICT(msg, pid) DO UPDATE SET emoji=excluded.emoji, at=excluded.at', (mid, p.pid, new, t))
+            rows = await tx.fetch('SELECT emoji, COUNT(*) AS n FROM chat_reacts WHERE msg=? GROUP BY emoji', (mid,))
+            return new, {r['emoji']: int(r['n']) for r in rows}
+        new, counts = await self.db.transaction(run)
+        self.reacts.put(mid, counts)
+        frame = dict(t='reacts', ch=c.id, id=mid, r=self._ordered(counts), by=p.pid, e=new)
+        self.send_to_chan(c, frame, sender=p)
+        if c.kind == 'town' and conn not in self.town.conns:
+            self.hub.send(conn, frame)
+        return None
+
     # ---- resume ---------------------------------------------------------------------------------------------
     async def resume(self, conn, resume) -> None:
         """After a reconnect: what each open chat missed (at most 10 chats, 50 messages each)."""
@@ -785,7 +884,7 @@ class ChatFeature(Feature):
                 continue    # Cả phố: the client joins again with `after`
             rows = await self.db.fetch('SELECT * FROM chat_messages WHERE channel=? AND id>? AND hidden=0 ORDER BY id LIMIT ?',
                                        (c.id, after, RESUME + 1))
-            msgs = [msg_frame(r) for r in rows[:RESUME] if r['pid'] not in p.hidden]
+            msgs = await self.with_reacts(p, [msg_frame(r) for r in rows[:RESUME] if r['pid'] not in p.hidden])
             self.hub.send(conn, dict(t='missed', ch=c.id, msgs=msgs, more=len(rows) > RESUME))
 
     # ---- admin events (game/live_chat.py NOTIFY) -------------------------------------------------------------
@@ -860,9 +959,13 @@ class ChatFeature(Feature):
                     marks = ','.join('?' * len(ids))
                     await tx.execute(f"DELETE FROM chat_messages WHERE channel='town' AND id IN ({marks})", ids)
                     await tx.execute(f"DELETE FROM reports WHERE kind='chat' AND target IN ({marks})", [str(i) for i in ids])
+                    await tx.execute(f'DELETE FROM chat_reacts WHERE msg IN ({marks})', ids)
                 return len(ids)
             n = await self.db.transaction(run)
             gone += n
+            if n:
+                for k in [k for k in self.reacts if k <= cut]:
+                    self.reacts.pop(k, None)
             if n < PRUNE_BATCH:
                 break
         self.town_more = self.town_more and bool(await self.db.fetchval(

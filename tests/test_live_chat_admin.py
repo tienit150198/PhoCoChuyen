@@ -285,7 +285,7 @@ class SchemaTests(unittest.TestCase):
         self.assertIn('CREATE TABLE IF NOT EXISTS chat_pins (', pg_schema.TABLES_DDL)
         self.assertIn('ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS adm bigint NOT NULL DEFAULT 0;', pg_schema.TABLES_DDL)
         self.assertEqual(pg_schema.TABLE['chat_pins']['key'], ('channel',))
-        self.assertEqual([c for c, _ in pg_schema.TABLE['chat_messages']['columns']][-1], 'adm')
+        self.assertEqual([c for c, _ in pg_schema.TABLE['chat_messages']['columns']][-2:], ['adm', 'raw'])
         with tempfile.TemporaryDirectory() as d:
             store = Store(Path(d) / 'g.sqlite3')
             with store.connect() as db:

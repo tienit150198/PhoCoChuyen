@@ -585,6 +585,12 @@ class Handler(BaseHTTPRequestHandler):
                 except PermissionError as e:self.error(403,str(e),"forbidden");return
                 self.require_admin(token)
                 self.json(200,live_chat.view(self.server.store));return
+            if route=="/api/admin/chat/messages":  # 🔎 every chat, 200 a page, search, originals of masked text; admin only
+                try:token,_,_,_=self.guarded(light=True)
+                except PermissionError as e:self.error(403,str(e),"forbidden");return
+                self.require_admin(token)
+                if not self.server.rate_limit("chat-search:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,live_chat.search(self.server.store,{k:v[0] for k,v in parse_qs(split.query).items()}));return
             if route=="/api/admin/stats":  # Thống kê (game/admin_stats.py): admin only, cached ~60 s, never reads a save
                 try:token,_,_,_=self.guarded(light=True)
                 except PermissionError as e:self.error(403,str(e),"forbidden");return
@@ -621,6 +627,7 @@ class Handler(BaseHTTPRequestHandler):
             if route in ("/","/index.html"):self.page();return
             self.static(route,split.query)
         except pfb.FeedbackError as e:self.error(e.status,e.message,e.code)
+        except live_chat.ChatAdminError as e:self.error(e.status,e.message,e.code)
         except social.SocialError as e:self.error(e.status,e.message,e.code)
         except marriage.MarriageError as e:self.error(e.status,e.message,e.code)
         except wedding_live.WeddingError as e:self.error(e.status,e.message,e.code)

@@ -256,8 +256,8 @@ async def open_db(cfg) -> PgDB | SqliteDB:
     return db
 
 
-async def wait_for_tables(db, names=('chat_messages', 'chat_channels', 'chat_members', 'chat_mutes', 'chat_prefs', 'chat_pins')) -> None:
-    """The game server creates the tables (SCHEMA_VERSION 10: chat_pins and chat_messages.adm). Until a release that has them has started, wait."""
+async def wait_for_tables(db, names=('chat_messages', 'chat_channels', 'chat_members', 'chat_mutes', 'chat_prefs', 'chat_pins', 'chat_reacts')) -> None:
+    """The game server creates the tables (SCHEMA_VERSION 11: chat_reacts, chat_messages.raw; 10: chat_pins, chat_messages.adm). Until a release that has them has started, wait."""
     said = False
     while True:
         try:

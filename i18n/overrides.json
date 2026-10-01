@@ -1,5 +1,8 @@
 {
  "strings": {
+  "Thả cảm xúc trong chat: nhấn giữ một tin nhắn rồi chọn ❤️ 😂 😮 😢 👍 🔥. Bấm lại để bỏ, chọn cái khác để đổi.": "Reactions in chat: press and hold a message, then pick ❤️ 😂 😮 😢 👍 🔥. Tap it again to remove, pick another to change.",
+  "Dưới mỗi tin hiện số cảm xúc của mọi người; bấm vào một cảm xúc là thả theo ngay.": "Each message shows everyone's reactions with counts; tap one to react the same way.",
+  "Mã người chơi không hợp lệ.": "Invalid player ID.",
   "Đã có phiên bản mới, bạn tải lại để cập nhật nha": "A new version is out, reload to update",
   "lượt": "turn",
   "Đã lưu trên máy": "Saved on this device",

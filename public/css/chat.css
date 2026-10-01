@@ -119,6 +119,22 @@ html[data-layout="phone"] .ch-head{padding-top:14px}
 .ch-pin.open p{display:block;-webkit-line-clamp:unset;line-clamp:unset;max-height:40dvh;overflow-y:auto;overscroll-behavior:contain}
 .ch-pin .ch-mini{flex:none;min-height:30px;padding:0 10px;font-size:.76rem}
 
+/* 😍 reactions: press and hold a bubble (no text selection, no iOS callout), the emoji bar, the chips */
+.ch-bub{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+.ch-react-bar{display:flex;gap:2px;margin:6px 0 2px;padding:4px;border-radius:var(--radius-pill);background:var(--surface);border:1px solid var(--line-strong);
+  box-shadow:var(--shadow);animation:ch-pop .14s var(--ease)}
+.ch-emo{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;font-size:1.35rem;line-height:1;transition:transform var(--dur) var(--ease)}
+.ch-emo:active{transform:scale(1.25)}
+.ch-emo.on{background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent)}
+@media (hover:hover){.ch-emo:hover{transform:scale(1.18);background:var(--surface-2)}}
+.ch-reacts{display:flex;flex-wrap:wrap;gap:4px;margin:3px 2px 0}
+.ch-chip{display:inline-flex;align-items:center;gap:3px;min-height:26px;padding:0 8px;border-radius:var(--radius-pill);border:1px solid var(--line);
+  background:var(--surface);color:var(--ink-2);font-size:.8rem;line-height:1}
+.ch-chip b{font-weight:700;font-variant-numeric:tabular-nums}
+.ch-chip.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-text)}
+@keyframes ch-pop{from{opacity:0;transform:scale(.9) translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.ch-react-bar{animation:none}.ch-emo{transition:none}}
+
 /* the composer */
 .ch-compose{position:relative;display:flex;align-items:flex-end;gap:8px;padding:8px 10px calc(8px + var(--safe-b)) 12px;border-top:1px solid var(--line);background:var(--surface)}
 .ch-compose textarea{flex:1 1 auto;min-height:42px;max-height:112px;padding:10px 14px;border-radius:21px;border:1px solid var(--field-line);background:var(--surface-2);

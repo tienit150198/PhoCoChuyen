@@ -7,13 +7,16 @@
  * 📌 Admins (live.me.adm, decided by the server from ADMIN_USERS): a "📢 Quản trị" badge on their messages (frames
  * with adm), http(s) links in those messages only become links; the pinned message sits in a bar above Cả phố
  * (tap: whole text). An admin taps any Cả phố message → "📌 Ghim tin này" in its action row; "Bỏ ghim" there and
- * on the bar. */
+ * on the bar.
+ * 😍 Reactions: press and hold a message (LP_MS; touch or mouse; moving or scrolling cancels it) for the emoji bar;
+ * one reaction per person per message (the same one again takes it back); chips with counts under the bubble,
+ * mine highlighted, a chip toggles it. A tap still opens the message's action row (report, delete, 📌 for admins). */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {live} from './live.js';
 import {stylesheet} from '../lazy.js';
 
 const S={dlg:null,env:null,tab:'town',thread:null,view:null,threads:new Map(),
-  town:{msgs:[],more:false,joined:false,why:'ok',wait:0,n:0,loaded:false,pin:null},pinOpen:false,
+  town:{msgs:[],more:false,joined:false,why:'ok',wait:0,n:0,loaded:false,pin:null},pinOpen:false,reactFor:null,lp:null,
   act:null,report:null,confirm:null,flash:'',flashTimer:0,pending:new Map(),pick:new Set(),gtitle:'',members:null,
   nextTown:0,cd:0,older:false,synced:0,bound:false};
 const TABS=[['town','Cả phố'],['inbox','Tin nhắn'],['friends','Bạn bè']];
@@ -22,6 +25,8 @@ const rid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).sli
 const me=()=>live.me?.pid;
 const dmId=pid=>{const [a,b]=[me(),pid].sort();return `dm:${a}:${b}`;};
 const coarse=()=>matchMedia('(pointer:coarse)').matches;
+const REACTS=['❤️','😂','😮','😢','👍','🔥'];   // live/chat.py REACTS, same order
+const LP_MS=450,LP_MOVE=10;   // a long press: held this long, moved less than this (px)
 const adm=()=>Boolean(live.me?.adm);   // the server says so (ADMIN_USERS); every admin action is checked there again
 
 /* ---- css + dialog ------------------------------------------------------------------------------- */
@@ -38,13 +43,21 @@ function dialog(){
   document.body.append(d);
   d.addEventListener('click',e=>{
     if(e.target===d){d.close();return;}
+    // the click that ends a long press: swallowed wherever it lands (the bar may have opened under the finger)
+    if(S.lp?.fired&&(!S.lp.up||Date.now()-S.lp.up<400)){S.lp=null;e.preventDefault();return;}
     if(e.target.closest('a[href]'))return;   // a link in an admin message opens (a new tab), nothing else
-    const el=e.target.closest('[data-ch-act]');if(!el||!d.contains(el)||el.disabled)return;
+    const el=e.target.closest('[data-ch-act]');
+    if(!el||!d.contains(el)||el.disabled){if(S.reactFor!=null&&!e.target.closest('.ch-react-bar')){S.reactFor=null;render();}return;}
     e.preventDefault();onAct(el.dataset.chAct,el.dataset,el);
   });
+  // 😍 press and hold a message: the emoji bar
+  d.addEventListener('pointerdown',lpStart);
+  d.addEventListener('pointermove',e=>{if(S.lp?.timer&&Math.hypot(e.clientX-S.lp.x,e.clientY-S.lp.y)>LP_MOVE)lpCancel();},{passive:true});
+  for(const t of ['pointerup','pointercancel','pointerleave'])d.addEventListener(t,lpEnd,{passive:true});
+  d.addEventListener('contextmenu',e=>{if(e.target.closest('.ch-bub'))e.preventDefault();});   // no menu / callout on a held bubble
   d.addEventListener('close',onClose);
   d.addEventListener('keydown',e=>{
-    if(e.key==='Escape')e.stopPropagation();   // closes the chat only, never pauses the game behind it
+    if(e.key==='Escape'){e.stopPropagation();if(S.reactFor!=null){e.preventDefault();S.reactFor=null;render();}}   // closes the chat only, never pauses the game behind it
     if((e.key==='Enter'||e.key===' ')&&e.target.matches?.('[role="button"][data-ch-act]')){e.preventDefault();onAct(e.target.dataset.chAct,e.target.dataset,e.target);}
   });   // closes the chat only, never pauses the game behind it
   const ta=d.querySelector('textarea');
@@ -59,6 +72,25 @@ function dialog(){
   d.querySelector('.ch-body').addEventListener('scroll',onScroll,{passive:true});
   S.dlg=d;return d;
 }
+function lpStart(e){
+  if(e.button>0)return;
+  lpCancel();S.lp=null;
+  const b=e.target.closest('.ch-bub[data-id]');
+  if(!b||b.classList.contains('del')||e.target.closest('a[href]'))return;
+  const id=Number(b.dataset.id);
+  S.lp={id,x:e.clientX,y:e.clientY,fired:0,timer:setTimeout(()=>{if(!S.lp)return;S.lp.timer=0;S.lp.fired=Date.now();openReact(id);},LP_MS)};
+}
+function lpCancel(){if(S.lp?.timer){clearTimeout(S.lp.timer);S.lp.timer=0;}}
+function lpEnd(){lpCancel();if(S.lp?.fired&&!S.lp.up)S.lp.up=Date.now();}   // the finger is up: its click comes right after
+function openReact(id){
+  if(live.me&&!live.me.account){flash('Tạo tài khoản để thả cảm xúc nhé.');render();return;}
+  if(live.me?.muted&&live.me.muted*1000>Date.now()&&!adm()){flash('Bạn đang bị tạm khóa chat.');render();return;}
+  S.reactFor=id;S.act=null;S.report=null;S.confirm=null;
+  try{navigator.vibrate?.(12);}catch{/* not allowed */}
+  render();
+}
+/** The list a message of channel ch is in (Cả phố or an open chat). */
+const listOf=ch=>ch==='town'?S.town.msgs:S.threads.get(ch)?.msgs;
 const grow=ta=>{ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,112)+'px';};
 
 /** The menu entry, the chat button and a push: open on a tab or straight into a chat ({ch}). */
@@ -114,11 +146,16 @@ function bind(){
     if(S.pinning){S.pinning=false;flash(f.pin?'Đã ghim lên đầu Cả phố.':'Đã bỏ ghim.');}
     if(S.dlg?.open&&(was?.id!==S.town.pin?.id||S.flash))render();
   });
+  live.on('reacts',f=>{   // 😍 counts of one message changed (f.by reacted f.e, or took theirs back)
+    const m=listOf(f.ch)?.find(x=>x.id===f.id);if(!m)return;
+    m.r=f.r;if(f.by===me())m.my=f.e||undefined;
+    if(S.dlg?.open)render();
+  });
   live.on('deleted',f=>{
     if(f.ch==='town'&&S.town.pin?.id===f.id)S.town.pin=null;
     const list=f.ch==='town'?S.town.msgs:S.threads.get(f.ch)?.msgs;if(!list)return;
     const i=list.findIndex(m=>m.id===f.id);if(i<0)return;
-    if(f.hidden)list.splice(i,1);else list[i]={...list[i],text:'',del:1};
+    if(f.hidden)list.splice(i,1);else list[i]={...list[i],text:'',del:1,r:undefined,my:undefined};   // its reactions go with it
     if(S.dlg?.open)render();
   });
   live.on('error',f=>{
@@ -158,6 +195,7 @@ function openThread(ch,draw=true){S.thread=ch;S.view=null;S.act=null;S.report=nu
 
 /* ---- actions ----------------------------------------------------------------------------------- */
 function onAct(act,d,el){
+  if(act!=='react')S.reactFor=null;
   switch(act){
     case'close':S.dlg.close();return;
     case'tab':S.tab=d.tab;S.thread=null;S.view=null;S.act=null;S.report=null;break;
@@ -170,6 +208,7 @@ function onAct(act,d,el){
     case'pin':if(live.send({t:'pin',id:Number(d.id)}))S.pinning=true;S.act=null;break;   // 📌 admins (the server checks)
     case'unpin':if(live.send({t:'unpin'}))S.pinning=true;S.act=null;break;
     case'pinOpen':S.pinOpen=!S.pinOpen;renderPin();return;
+    case'react':live.send({t:'react',id:Number(d.id),e:d.e});S.reactFor=null;break;   // the server toggles: the same one again takes it back
     case'report':S.report=Number(d.id);break;
     case'reason':live.send({t:'report',id:Number(d.id),reason:d.reason});S.act=null;S.report=null;
       {const list=S.thread?thread(S.thread).msgs:S.town.msgs,i=list.findIndex(m=>m.id===Number(d.id));if(i>=0)list.splice(i,1);}break;   // gone for me at once
@@ -255,10 +294,21 @@ function msgList(list,kind,more){
     // an admin message with links: a div acting as the button (a link cannot sit inside a <button>)
     const bub=m.adm&&!m.del?`<div role="button" tabindex="0" class="ch-bub adm" data-ch-act="msg" data-id="${m.id}"><span data-no-translate>${text(m)}</span><time>${pinned}${hm(m.at)}</time></div>`:
       `<button type="button" class="ch-bub${m.del?' del':''}" data-ch-act="msg" data-id="${m.id}"${m.del?' disabled':''}><span data-no-translate>${m.del?'':lines(m.text)}</span>${m.del?'<i>Tin nhắn đã thu hồi</i>':''}<time>${pinned}${hm(m.at)}</time></button>`;
-    out+=`<div class="ch-msg${mine?' mine':''}${first?' first':''}${m.adm?' adm':''}">${mine?'':first?av(m.av):'<span class="ch-av gap"></span>'}<div class="ch-col">${name}${bub}${bar}</div></div>`;
+    out+=`<div class="ch-msg${mine?' mine':''}${first?' first':''}${m.adm?' adm':''}">${mine?'':first?av(m.av):'<span class="ch-av gap"></span>'}<div class="ch-col">${name}${bub}${reactBar(m)}${chips(m)}${bar}</div></div>`;
     prev=m;
   }
   return out;
+}
+/** 😍 The emoji bar of a held message (mine highlighted). */
+function reactBar(m){
+  if(S.reactFor!==m.id||m.del)return '';
+  return `<div class="ch-react-bar" role="toolbar" aria-label="Thả cảm xúc">${REACTS.map(e=>`<button type="button" class="ch-emo${m.my===e?' on':''}" data-ch-act="react" data-id="${m.id}" data-e="${e}" aria-pressed="${m.my===e}" aria-label="${e}">${e}</button>`).join('')}</div>`;
+}
+/** 😍 Counts under the bubble; a chip toggles that reaction. */
+function chips(m){
+  const r=m.r&&!m.del?Object.entries(m.r).filter(([,n])=>n>0):[];
+  if(!r.length)return '';
+  return `<div class="ch-reacts">${r.map(([e,n])=>`<button type="button" class="ch-chip${m.my===e?' on':''}" data-ch-act="react" data-id="${m.id}" data-e="${esc(e)}" aria-pressed="${m.my===e}">${esc(e)} <b>${n}</b></button>`).join('')}</div>`;
 }
 function actBar(m,mine,kind){
   // 📌 an admin on Cả phố: pin this message (or unpin it), first in the row
@@ -382,6 +432,7 @@ function countdown(){
   else{btn.disabled=false;btn.classList.remove('wait');if(!btn.querySelector('svg'))btn.innerHTML=icon('send',20);btn.setAttribute('aria-label','Gửi');}
 }
 function onScroll(){
+  lpCancel();
   const b=S.dlg.querySelector('.ch-body');
   if(b.scrollTop<40&&!S.older&&b.querySelector('.ch-older:not([disabled])'))onAct('older',{},null);
 }

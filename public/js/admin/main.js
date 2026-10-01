@@ -434,6 +434,7 @@ root.addEventListener('submit',async ev=>{
   ev.preventDefault();
   const f=ev.target;
   if(f.dataset.form==='login'){await login(f);return;}
+  if(await chatAdmin.submit(f))return;
   await inbox.submit(f);
 });
 addEventListener('keydown',ev=>{if(ev.key==='Escape'&&ui.navOpen){ui.navOpen=false;render();}});
