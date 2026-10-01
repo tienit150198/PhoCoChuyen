@@ -42,8 +42,10 @@ class Player:
 
     def update(self, ident) -> None:
         self.name, self.av, self.account = ident.name, ident.av, ident.account
-        self.show_online, self.muted_until = ident.online, ident.muted_until
+        self.muted_until = ident.muted_until
         self.old, self.since = ident.old, ident.since
+        if not self.conns:   # "hiện online" changes through prefs while connected
+            self.show_online = ident.online
 
     def card(self) -> dict:
         return dict(pid=self.pid, name=self.name, av=self.av)

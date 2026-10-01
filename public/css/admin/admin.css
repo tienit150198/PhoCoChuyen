@@ -378,3 +378,19 @@ small{font-size:.857em}
   .auth-card{padding:22px 18px}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
+
+/* 💬 Chat (public/js/admin/chat.js): reported messages, Cả phố, mutes */
+.chat-admin{display:grid;gap:12px}
+.chat-item{gap:10px}
+.chat-line{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.chat-line:last-child{border-bottom:0}
+.chat-line .grow{flex:1 1 auto;min-width:0}
+.chat-line.is-hidden .chat-text{opacity:.6}
+.chat-av{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--surface-2);font-size:16px}
+.chat-text{white-space:pre-wrap;overflow-wrap:anywhere}
+.chat-btns,.chat-decide{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.chat-mute{display:inline-flex;flex-wrap:wrap;gap:4px}
+.chat-ctx summary{cursor:pointer;color:var(--muted);font-size:12.5px}
+.chat-ctx .chat-line{padding:6px 0 6px 12px;font-size:13px}
+.tag.bad{background:var(--bad-soft,#fde2e2);color:var(--bad,#b42318)}
+@media (max-width:720px){.chat-line .chat-btns{flex-direction:column;align-items:flex-end}}

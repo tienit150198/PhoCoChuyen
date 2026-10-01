@@ -110,6 +110,12 @@ async def identify(db, token: str | None) -> Ident | None:
     sid = await resolve_sid(db, token)
     if not sid:
         return None
+    return await profile(db, sid)
+
+
+async def profile(db, sid: str) -> Ident | None:
+    """Name, avatar, age, "hiện online" and mute of a save (None when the save does not exist). Also used to
+    refresh a connected player (a guest who named their character after the socket opened)."""
     pid = pid_of(sid)
     r = await db.fetchrow(_SQL, (sid,) * 9 + (pid, pid))
     if not r or not r['has']:

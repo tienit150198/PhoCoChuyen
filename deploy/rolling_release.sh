@@ -28,6 +28,7 @@ KEEP=${KEEP:-3}                     # releases kept on disk (never the live one 
 BRIDGE_PG_POOL=${BRIDGE_PG_POOL:-2}          # the bridge's PostgreSQL pool per worker: two servers
 BRIDGE_PG_POOL_MAX=${BRIDGE_PG_POOL_MAX:-6}  # share max_connections for a minute
 BRIDGE_MEMORY_MAX=${BRIDGE_MEMORY_MAX:-}     # e.g. 2G; empty = the unit's own MemoryMax
+LIVE=${LIVE:-mnl-live}              # the live service (chat, live/): restarted on the new release when installed
 SMOKE_URL=${SMOKE_URL:-}            # optional, e.g. https://phocochuyen.io.vn/api/health (asked via 127.0.0.1)
 BACKUPS=${BACKUPS:-/root/nginx-rolling}      # copies of the site file before each edit (outside /etc/nginx)
 UNIT_FILE=/run/systemd/system/$BRIDGE.service   # a runtime unit: gone after a reboot
@@ -214,6 +215,12 @@ drain "$BRIDGE_PORT"
 old_nginx_gone
 stop_bridge
 STAGE=done
+
+# ---- the live service (chat): its sockets close with 1012, clients come back on their own and resume ---------
+if systemctl is-enabled --quiet "$LIVE" 2>/dev/null; then
+  log "== restart $LIVE on the new release"
+  systemctl restart "$LIVE" || log "  WARNING: $LIVE did not restart (journalctl -u $LIVE); the game itself is fine"
+fi
 
 # ---- checks and housekeeping -----------------------------------------------------------------------------
 log "== checks"

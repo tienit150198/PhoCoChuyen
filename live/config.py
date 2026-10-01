@@ -9,7 +9,9 @@
 | `LIVE_MAX_CONN` | 5000 | open sockets at most; more are refused (503) |
 | `LIVE_PER_PLAYER` | 5 | sockets per player (tabs); the oldest is closed for a new one |
 | `LIVE_PER_IP` | 40 | sockets per IP |
+| `LIVE_HANDSHAKES_PER_IP` | 60 | new sockets per IP per minute |
 | `LIVE_PG_POOL` | 8 | PostgreSQL connections at most (plus one for LISTEN) |
+| `LIVE_NEW_SECS` | 600 | sessions younger than this read Cả phố but cannot post there yet |
 | `DATABASE_URL` | unset | PostgreSQL (production); without it `--db <sqlite file>` (dev, tests) |
 """
 from __future__ import annotations
@@ -80,7 +82,8 @@ def from_env(argv=None) -> Config:
     origins = [o.strip().rstrip('/') for o in (os.environ.get('LIVE_ORIGINS') or '').split(',') if o.strip()]
     cfg = Config(host=args.host, port=args.port, chat=_flag('LIVE_CHAT'), street=_flag('LIVE_STREET'), dating=_flag('LIVE_DATING'),
                  trust_proxy=_flag('LIVE_TRUST_PROXY'), max_conn=_int('LIVE_MAX_CONN', 5000), per_player=_int('LIVE_PER_PLAYER', 5),
-                 per_ip=_int('LIVE_PER_IP', 40), pool_max=max(1, _int('LIVE_PG_POOL', 8)), db_url=url,
+                 per_ip=_int('LIVE_PER_IP', 40), pool_max=max(1, _int('LIVE_PG_POOL', 8)), db_url=url, new_secs=float(_int('LIVE_NEW_SECS', 600)),
+                 handshakes_per_ip=_int('LIVE_HANDSHAKES_PER_IP', 60),
                  db_path=None if url else (args.db or 'storage/game.sqlite3'))
     if origins:
         cfg.origins = frozenset(origins)

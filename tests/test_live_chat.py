@@ -91,6 +91,8 @@ class TownTests(LiveCase):
         late = await self.connect(self.guest('Muộn')[0])
         j = await late.call('join', 'joined', ch='town')
         self.assertEqual([m['text'] for m in j['msgs']], ['chào cả phố'])
+        again = await late.call('join', 'joined', ch='town', after=mine['id'])   # back on Cả phố: only what is new
+        self.assertEqual((again['msgs'], again['inc']), ([], True))
         h = await late.call('history', 'history', ch='town', before=mine['id'] + 1)
         self.assertEqual([m['id'] for m in h['msgs']], [mine['id']])
         self.assertFalse(h['more'])

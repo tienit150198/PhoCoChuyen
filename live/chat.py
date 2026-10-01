@@ -31,7 +31,7 @@ import secrets
 import time
 
 from . import filters
-from .auth import pid_of
+from .auth import pid_of, profile
 from .limits import LRU
 from .protocol import Feature, LiveError, on
 from .push import maybe_push
@@ -173,18 +173,25 @@ class ChatFeature(Feature):
                 for k, v in p.friends.items() if k not in p.hidden]
 
     def can_town(self, p) -> tuple[str, float]:
-        """('ok', 0) or (why, seconds to wait): 'name' (no name yet), 'new' (session < 10 min), 'muted'."""
+        """('ok', 0) or (why, seconds to wait): 'muted', 'new' (session < 10 min), 'name' (no name yet)."""
         t = time.time()
         if p.muted_until > t:
             return 'muted', p.muted_until - t
-        if not p.name:
-            return 'name', 0
         if not p.old:
             since = p.since or self.app.first_seen(p.pid)
             left = since + self.cfg.new_secs - t
             if left > 0:
                 return 'new', left
+        if not p.name:
+            return 'name', 0
         return 'ok', max(0.0, p.town_next - t)
+
+    async def refresh(self, p) -> None:
+        """Name, avatar, age and mute again from the database (a guest names their character after the socket
+        opened; a profile picture changed)."""
+        ident = await profile(self.db, p.sid)
+        if ident:
+            p.update(ident)
 
     async def on_hello(self, conn):
         p = conn.player
@@ -289,6 +296,8 @@ class ChatFeature(Feature):
         if clean is None:
             raise LiveError('text', f'Tin nhắn từ 1 đến {limit} ký tự nhé.')
         if not p.name:
+            await self.refresh(p)
+        if not p.name:
             raise LiveError('name', 'Đặt tên nhân vật trước khi nhắn nhé.')
         if p.muted_until > t:
             raise LiveError('muted', 'Bạn đang bị tạm khóa chat.', until=round(p.muted_until, 1))
@@ -311,11 +320,13 @@ class ChatFeature(Feature):
     @on('sync', rate=(6, 60))
     async def sync(self, conn, f):
         p = conn.player
+        await self.refresh(p)
         await self.load_friends(p)
         await self.load_hidden(p)
         why, wait = self.can_town(p)
         return dict(t='state', friends=self.friend_list(p), chans=await self.chan_list(p), town=why, wait=round(wait, 1),
-                    online=p.show_online)
+                    online=p.show_online, me=dict(pid=p.pid, name=p.name, av=p.av, account=p.account, online=p.show_online,
+                                                  town=why, wait=round(wait, 1), muted=round(p.muted_until, 1) if p.muted_until > time.time() else 0))
 
     @on('join', rate=(20, 10))
     async def join(self, conn, f):
@@ -326,12 +337,11 @@ class ChatFeature(Feature):
         after = f.get('after')
         msgs = [m for m in self.town.buffer if m['pid'] not in p.hidden]
         more = self.town_more or len(self.town.buffer) >= self.cfg.buffer
-        if type(after) is int and after > 0:
-            newer = [m for m in msgs if m['id'] > after]
-            if self.town.buffer and self.town.buffer[0]['id'] <= after + 1:
-                msgs, more = newer, False
+        inc = False   # True: only what came after the client's last message (it keeps what it has)
+        if type(after) is int and after > 0 and (not self.town.buffer or self.town.buffer[0]['id'] <= after + 1):
+            msgs, inc = [m for m in msgs if m['id'] > after], True
         why, wait = self.can_town(p)
-        return dict(t='joined', ch='town', msgs=msgs, more=more, why=why, wait=round(wait, 1), n=len(self.town.players()))
+        return dict(t='joined', ch='town', msgs=msgs, more=more, inc=inc, why=why, wait=round(wait, 1), n=len(self.town.players()))
 
     @on('leave', rate=(20, 10))
     async def leave(self, conn, f):
@@ -347,6 +357,8 @@ class ChatFeature(Feature):
         else:
             c = await self.member_chan(p, f.get('ch'))
         if c.kind == 'town':
+            if not p.name:
+                await self.refresh(p)
             why, wait = self.can_town(p)
             if why == 'new':
                 raise LiveError('new', 'Người mới vào phố đọc trước, lát nữa nhắn nhé.', wait=round(wait, 1))
@@ -363,8 +375,9 @@ class ChatFeature(Feature):
                 p.town_next = 0.0
                 raise
             self.town.buffer.append(frame)
-            self.town.send(frame, sender=p, skip=conn)
-            self.hub.send(conn, dict(frame, cid=cid, wait=self.cfg.town_every))
+            n = len({c.player.pid for c in self.town.conns})
+            self.town.send(dict(frame, n=n), sender=p, skip=conn)   # n: people on Cả phố now
+            self.hub.send(conn, dict(frame, cid=cid, wait=self.cfg.town_every, n=n))
             return None
         if c.kind == 'dm':
             other = next((x for x in c.members if x != p.pid), None)

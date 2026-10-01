@@ -85,6 +85,12 @@ STATIC_RECHECK=RECHECK  # seconds a resolved static route is trusted before its 
 # Budgets that must not multiply with WORKERS: AI spend, sign-in attempts, new saves, feedback.
 SHARED_LIMITS=("ai","acct-","newsession:","fb:","fb-day:","fb-ip:")
 
+def live_hint()->dict:
+    """Dev and tests only: LIVE_URL=ws://127.0.0.1:8770/live points the page at a live service (live/) on another
+    port. Production leaves it unset: the page opens wss://<its own host>/live (nginx)."""
+    url=(os.environ.get("LIVE_URL") or "").strip()
+    return {"live":{"url":url}} if re.fullmatch(r"wss?://[A-Za-z0-9.\-]+(:\d{1,5})?/[A-Za-z0-9/_\-]*",url) else {}
+
 class SharedLimits:
     """Sliding-window rate limits shared by all worker processes (WORKERS>1), kept in
     a small side database next to the game database, or in the table `hits` of the
@@ -372,7 +378,10 @@ class Handler(BaseHTTPRequestHandler):
         host=self.headers.get("Host","")
         if not self.valid_host() or not re.fullmatch(r"[A-Za-z0-9.\-]+(:\d{1,5})?|\[[0-9A-Fa-f:]+\](:\d{1,5})?",host):return csp
         scheme="wss" if self.secure() else "ws"
-        return csp.replace("connect-src 'self'",f"connect-src 'self' {scheme}://{host}",1)
+        extra=f"{scheme}://{host}"
+        dev=live_hint().get("live")
+        if dev:extra+=" "+urlsplit(dev["url"])._replace(path="").geturl()  # LIVE_URL (dev): the live service's own origin
+        return csp.replace("connect-src 'self'",f"connect-src 'self' {extra}",1)
 
     def content(self,query:str):
         """GET /api/content?v=<hash>: the game catalogue, split out of /api/bootstrap. A matching ?v= is
@@ -494,7 +503,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(200,dict(state=view,revision=revision,csrf=csrf,ai=dict(public_config(),configured=ai.available(),chat=True),
                                    social=social.bootstrap(self.server.store,token,state),push=push.public_config(),account=accounts.status(self.server.store,token),
                                    admin=pfb.is_admin(self.server.store,token),content_version=version,content_url=f"/api/content?v={version}",
-                                   game_version=self.server.game_version(),gifts=gifts),extra,raw=None if lite else dict(content=self.server.content_blob()[0]));return
+                                   game_version=self.server.game_version(),gifts=gifts,**live_hint()),extra,raw=None if lite else dict(content=self.server.content_blob()[0]));return
             if route=="/api/state":
                 _,state,revision,_=self.require_session();self.json(200,dict(state=public_state(state),revision=revision));return
             if route=="/api/save/export":

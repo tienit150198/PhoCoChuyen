@@ -47,6 +47,7 @@ const L={
   rank:lazy(()=>import('./v4/leaderboard.js')),  // Xếp hạng
   people:lazy(()=>import('./v4/closeness.js')),  // 👥 Người quen: điểm thân quen
   tut:lazy(()=>import('./tutorial/index.js')),  // first-run tour, guide, announcements
+  live:lazy(()=>import('./v4/live.js')),  // 💬 Chat: the live socket, the chat button + badge (the dialog is v4/chat.js)
 };
 const TUT_OPEN=new Set(['help','tutGuide','tutReplay']);  // tutorial actions whose buttons other modules render
 /** A sheet whose code is not in yet: its header (with the close button) and a skeleton. */
@@ -93,7 +94,7 @@ const activeTask=()=>room()?.tasks.find(t=>t.id===(ui.task||room().active_task))
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const LEGACY=['mother_baby','pharmacy','accounting','customer_care','teacher','tour_guide','milk_tea'];
 const plugin=()=>!LEGACY.includes(career());
-const env=()=>({api,ui,cmd,confirmAction,toast,renderSheet,openSheet,closeSheet,world,act:(action,data={})=>handleAction(action,data,null)});
+const env=()=>({api,ui,cmd,confirmAction,toast,renderSheet,renderMain,openSheet,closeSheet,world,act:(action,data={})=>handleAction(action,data,null)});
 /** The one day counter the player sees: the life day in the story, the workplace's own day elsewhere (game/days.py). */
 const dayNo=c=>api.state?.journey?.story&&Number.isInteger(api.state.journey.life_day)?api.state.journey.life_day:c?.day;
 const needsJob=()=>room()?.job?.required&&room().job.status!=='hired';
@@ -204,6 +205,7 @@ function navItems(c){
   if(!EXT.includes(career()))items.push(['journal','book','Sổ tay']);
   items.push(['people','people','Người quen',L.people.m?.closenessBadge(api)||0],['album','camera','Kỷ niệm'],['workshop','sparkle','Trò nhỏ'],['passport','award','Hộ chiếu'],['town','compass','Khu phố'],['rank','award','Xếp hạng']);  // Bảng xếp hạng (v4/leaderboard.js)
   items.push(['jrWardrobe','shirt','Tủ đồ']);  // 👗 Tủ đồ (v4/wardrobe.js, opened by journey.js)
+  {const chat=L.live.m?.liveNav();if(chat)items.push(chat);}  // 💬 Chat (v4/live.js): only while the live service has it on
   items.push(['friends','user','Bạn bè',api.friendAlerts||0],['marriage','heart','Hôn nhân',api.marriageAlerts||0]);  // Bạn bè + Hôn nhân (v4/marriage.js, own dialog; badges from v4/ticker.js)
   {const bk=api.state?.journey?.bank;items.push(['bank','coin','Ngân hàng',bk?.unread||(bk?.overdue?'dot':0)]);}  // 🏦 Ngân hàng Phố (v4/bank.js, own dialog)
   if(api.state?.journey?.story)items.push(['house','home','Nhà của bạn',api.state.journey.home?.own?.loan?.overdue?'dot':0]);  // 🏠 Nhà của bạn (v4/house.js, own dialog)
@@ -212,7 +214,7 @@ function navItems(c){
 }
 const railItem=([a,i,label,badge],extra='')=>`<button type="button" class="rail-item${a==='social'?' top-social':''}${extra} ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}>${icon(i,21)}<span>${label}</span>${badge==='dot'?'<i class="dot" aria-hidden="true"></i>':badge?`<em class="badge">${badge}</em>`:''}</button>`;
 /** Rail entries always in sight on desktop/tablet (plus anything with a badge); the rest sit behind "Thêm". */
-const RAIL_MAIN=['home','prepare','feedback','operations','jobapp'];
+const RAIL_MAIN=['home','prepare','feedback','operations','jobapp','liveChat'];
 /** Scene actions on the phone's tab dock: at most 3 (the workbench always), the 4th slot is "Thêm". */
 function dockItems(){
   const all=sceneActions();if(layout()!=='phone')return all;
@@ -1074,6 +1076,7 @@ async function handleAction(action,data,el){
       if(action.startsWith('desk:')&&await (await viaLazy(L.desk,el)).deskAction(action,data,el,env()))break;
       if(await boardAction(action,data,el,env()))break;
       if((L.rank.m||action==='rank')&&await (await viaLazy(L.rank,el)).leaderboardAction(action,data,el,env()))break;
+      if(action==='liveChat'){(await viaLazy(L.live,el)).openChat(data);break;}  // 💬 Chat (v4/chat.js)
       if(action==='marriage'||action==='friends'){await (await import('./v4/marriage.js')).marriageAction(action,data,el,env());break;}  // Hôn nhân, Bạn bè: lazy
       if(action==='bank'){await (await import('./v4/bank.js')).bankAction(action,data,el,env());break;}  // 🏦 Ngân hàng Phố: lazy
       if(action==='house'){await (await import('./v4/house.js')).houseAction(action,data,el,env());break;}  // 🏠 Nhà của bạn: lazy
@@ -1238,7 +1241,7 @@ try{
   let tutNow=false;try{tutNow=localStorage.getItem('mnl.tut.done')!=='1'&&api.state.settings?.tutorialDone!==true;}catch{}
   if(tutNow)tutBoot[0].get().then(tutBoot[1]).catch(e=>console.warn('lazy boot:',e));
   const bootSteps=[...(tutNow?[]:[tutBoot]),[L.inc,m=>m.incidentBoot(env())],[L.chat,m=>m.aiNoticeBoot(env())],[L.happen,m=>m.happenBoot(env())],
-    [L.people,()=>{}],[L.social,m=>m.startSocialPoll(env())],[L.tips,m=>m.tipsBoot({api,sound})]];
+    [L.people,()=>{}],[L.social,m=>m.startSocialPoll(env())],[L.tips,m=>m.tipsBoot({api,sound})],[L.live,m=>m.liveBoot(env())]];
   const bootNext=i=>{
     if(i>=bootSteps.length){lazyBoot=false;document.dispatchEvent(new CustomEvent('mnl:lazy',{detail:{wanted:true}}));return;}
     const [h,fn]=bootSteps[i];h.get().then(fn).catch(e=>console.warn('lazy boot:',e)).finally(()=>whenIdle(()=>bootNext(i+1),600));

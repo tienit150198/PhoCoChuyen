@@ -1,0 +1,46 @@
+# Phố Có Chuyện live service: chat and online presence (live/, `python3 -m live`) on 127.0.0.1:8770.
+# nginx proxies wss://phocochuyen.io.vn/live here (deploy/live/nginx-live.conf). Install:
+#   cp deploy/live/mnl-live.service /etc/systemd/system/ && systemctl daemon-reload && systemctl enable --now mnl-live
+# User=/Group= and the sandbox lines must match the game's unit: `systemctl cat mot-ngay-lam-nghe`.
+# A deploy (deploy/rolling_release.sh) restarts it after the game; clients reconnect and resume by themselves.
+[Unit]
+Description=Pho Co Chuyen live service (chat, presence) on 127.0.0.1:8770
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mnl
+Group=mnl
+WorkingDirectory=/opt/mot-ngay-lam-nghe/current
+EnvironmentFile=/etc/mot-ngay-lam-nghe/pg.env
+EnvironmentFile=-/etc/mot-ngay-lam-nghe/live.env
+Environment=PYTHONPATH=/opt/mot-ngay-lam-nghe/shared/pyvendor
+Environment=PYTHONUNBUFFERED=1
+Environment=LIVE_HOST=127.0.0.1
+Environment=LIVE_PORT=8770
+ExecStart=/usr/bin/python3 -m live
+Restart=always
+RestartSec=2
+KillSignal=SIGTERM
+TimeoutStopSec=20
+# Budget (spec): 1.5 cores, 768 MB. Measured: 2,000 sockets at 5 Cả phố messages/s used ~8% of a core, ~80 MB.
+CPUQuota=150%
+MemoryMax=768M
+LimitNOFILE=16384
+TasksMax=64
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+LockPersonality=yes
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target
