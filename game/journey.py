@@ -248,6 +248,14 @@ TITLES = [
     _t('x_loyal', 'secret', '🏡', 'Chung thủy một quán', 'Làm 7 ngày sống liền ở cùng một nơi.', lambda x: x['loyal'] >= 7, True),
     _t('x_hopper', 'secret', '🦘', 'Chân sáo', 'Làm ở 3 nơi khác nhau trong 3 ngày sống liền.', lambda x: x['hopper'], True),
     _t('x_comeback', 'secret', '🌅', 'Từ tay trắng', 'Từng nợ tiền nhà, rồi để dành được 300 xu.', lambda x: x['stats'].get('debt_repaid', 0) > 0 and x['wallet'] >= 300, True),
+    # 💍 Live weddings (game/wedding_live.py): granted only through game/live_effects.py, never by _award.
+    _t('w_crowd', 'secret', '🎉', 'Đám cưới đông vui', 'Đám cưới có từ 20 khách ở lại dự.', lambda x: False, True),
+    _t('w_100', 'secret', '💞', 'Trăm ngày bên nhau', 'Tròn 100 ngày cưới.', lambda x: False, True),
+    _t('w_1y', 'secret', '🎂', 'Tròn một năm', 'Tròn một năm ngày cưới.', lambda x: False, True),
+    _t('w_500', 'secret', '💍', 'Năm trăm ngày thương', 'Tròn 500 ngày cưới.', lambda x: False, True),
+    _t('w_1000', 'secret', '👑', 'Nghìn ngày son sắt', 'Tròn 1000 ngày cưới.', lambda x: False, True),
+    _t('w_vip', 'secret', '🥇', 'Khách quý của phố', 'Đứng đầu bảng Khách mời của tuần.', lambda x: False, True),
+    _t('w_pro', 'secret', '🎊', 'Ăn cưới chuyên nghiệp', 'Lọt top 3 Khách mời của tuần.', lambda x: False, True),
 ]
 TITLE_INDEX = {t['id']: t for t in TITLES}
 STATS = ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary', 'reopened', 'paused', 'max_wallet',

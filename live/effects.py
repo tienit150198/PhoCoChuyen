@@ -15,8 +15,8 @@ import time
 from .auth import vn_today
 from datetime import datetime, timedelta, timezone
 
-KINDS = ('coins', 'spirit', 'closeness')
-AMOUNT_MAX = 1000
+KINDS = ('coins', 'spirit', 'closeness', 'title')
+AMOUNT_MAX = 2000                # game/live_effects.py AMOUNT_MAX (the 1000-day anniversary is 1,500 xu)
 
 
 def _day_start(t: float) -> float:

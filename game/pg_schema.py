@@ -34,10 +34,12 @@ Delta-sync hints (TABLES[i]["sync"]):
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 6   # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
+SCHEMA_VERSION = 7   # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
                      # 6: live chat (chat_*, live_effects: game/live_chat.py, live/)
+                     # 7: live weddings (wedding_dates, wedding_parties, wedding_guests, wedding_photos, wedding_race,
+                     #    player_closeness: game/wedding_live.py, live/wedding.py)
 
 # The text forms SQLite produces, computed by PostgreSQL (UTC, independent of TimeZone).
 NOW_TEXT = "to_char(statement_timestamp() AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI:SS')"       # CURRENT_TIMESTAMP
@@ -305,6 +307,28 @@ CREATE TABLE IF NOT EXISTS live_effects (
   id {T} PRIMARY KEY, sid {T} NOT NULL, kind {T} NOT NULL, amount bigint NOT NULL DEFAULT 0, data {T} NOT NULL DEFAULT '{{}}',
   status {T} NOT NULL DEFAULT 'pending', at double precision NOT NULL, applied_at double precision
 );
+-- 💍 Live weddings (game/wedding_live.py, live/wedding.py): the couple's date for good (insert-only), the parties,
+-- the guests who stayed 5 minutes, the group photos, the settled weekly race, closeness between players.
+CREATE TABLE IF NOT EXISTS wedding_dates (
+  couple bigint PRIMARY KEY, at double precision NOT NULL, source {T} NOT NULL, wedding bigint, created double precision NOT NULL
+);
+CREATE TABLE IF NOT EXISTS wedding_parties (
+  wedding bigint PRIMARY KEY, couple bigint NOT NULL, a {T} NOT NULL, b {T} NOT NULL, at double precision NOT NULL,
+  status {T} NOT NULL DEFAULT 'booked', reminded double precision, guests bigint NOT NULL DEFAULT 0, done_at double precision,
+  created double precision NOT NULL
+);
+CREATE TABLE IF NOT EXISTS wedding_guests (
+  wedding bigint NOT NULL, sid {T} NOT NULL, pid {T} NOT NULL, ok bigint NOT NULL DEFAULT 0, paid bigint NOT NULL DEFAULT 0,
+  steps bigint NOT NULL DEFAULT 0, counted_at double precision NOT NULL, day {T} NOT NULL, week {T} NOT NULL,
+  PRIMARY KEY (wedding, sid)
+);
+CREATE TABLE IF NOT EXISTS wedding_photos (
+  wedding bigint NOT NULL, n bigint NOT NULL, sid {T} NOT NULL, at double precision NOT NULL, image {T}, PRIMARY KEY (wedding, n)
+);
+CREATE TABLE IF NOT EXISTS wedding_race (week {T} PRIMARY KEY, settled double precision NOT NULL, top {T} NOT NULL DEFAULT '[]');
+CREATE TABLE IF NOT EXISTS player_closeness (
+  sid {T} NOT NULL, other {T} NOT NULL, points bigint NOT NULL DEFAULT 0, updated double precision NOT NULL, PRIMARY KEY (sid, other)
+);
 """
 
 INDEX_DDL = """
@@ -350,6 +374,9 @@ CREATE INDEX IF NOT EXISTS chat_messages_pid ON chat_messages (pid, id);
 CREATE INDEX IF NOT EXISTS chat_messages_reported ON chat_messages (id) WHERE reports > 0;
 CREATE INDEX IF NOT EXISTS live_effects_sid ON live_effects (sid, status);
 CREATE INDEX IF NOT EXISTS live_effects_day ON live_effects (sid, kind, at);
+CREATE INDEX IF NOT EXISTS wedding_parties_at ON wedding_parties (status, at);
+CREATE INDEX IF NOT EXISTS wedding_guests_week ON wedding_guests (week, ok);
+CREATE INDEX IF NOT EXISTS wedding_guests_sid ON wedding_guests (sid, day);
 """
 
 # No foreign keys (receipts.sid, archive.sid -> sessions.sid in SQLite): the migration's live
@@ -714,6 +741,26 @@ TABLES = [
          columns=_cols('id text', 'sid text', 'kind text', 'amount bigint', 'data text', 'status text',
                        'at double precision', 'applied_at double precision'),
          key=('id',), unique=[], identity=None, sync=dict(mode='full', note='status flips pending -> applied')),
+    dict(name='wedding_dates', source='main', sqlite_table='wedding_dates',
+         columns=_cols('couple bigint', 'at double precision', 'source text', 'wedding bigint', 'created double precision'),
+         key=('couple',), unique=[], identity=None, sync=dict(mode='full', note='insert-only')),
+    dict(name='wedding_parties', source='main', sqlite_table='wedding_parties',
+         columns=_cols('wedding bigint', 'couple bigint', 'a text', 'b text', 'at double precision', 'status text', 'reminded double precision',
+                       'guests bigint', 'done_at double precision', 'created double precision'),
+         key=('wedding',), unique=[], identity=None, sync=dict(mode='full', note='status/reminded/guests change in place')),
+    dict(name='wedding_guests', source='main', sqlite_table='wedding_guests',
+         columns=_cols('wedding bigint', 'sid text', 'pid text', 'ok bigint', 'paid bigint', 'steps bigint', 'counted_at double precision',
+                       'day text', 'week text'),
+         key=('wedding', 'sid'), unique=[], identity=None, sync=dict(mode='full', note='steps change in place')),
+    dict(name='wedding_photos', source='main', sqlite_table='wedding_photos',
+         columns=_cols('wedding bigint', 'n bigint', 'sid text', 'at double precision', 'image text'),
+         key=('wedding', 'n'), unique=[], identity=None, sync=dict(mode='full', note='image set once')),
+    dict(name='wedding_race', source='main', sqlite_table='wedding_race',
+         columns=_cols('week text', 'settled double precision', 'top text'),
+         key=('week',), unique=[], identity=None, sync=dict(mode='full')),
+    dict(name='player_closeness', source='main', sqlite_table='player_closeness',
+         columns=_cols('sid text', 'other text', 'points bigint', 'updated double precision'),
+         key=('sid', 'other'), unique=[], identity=None, sync=dict(mode='full', note='points change in place')),
     dict(name='mnl_meta', source=None, sqlite_table=None,
          columns=_cols('key text', 'value text'),
          key=('key',), unique=[], identity=None, sync=None),

@@ -40,6 +40,7 @@ from . import leaderboard as lb
 from . import marriage as mr
 from . import system_gift as sg
 from . import live_chat as lc
+from . import wedding_live as wl
 from . import retention as rt
 from .content import CAREERS
 from . import db as dbm
@@ -308,6 +309,7 @@ class Store:
             db.executescript(mr.SCHEMA)  # Hôn nhân (game/marriage.py): codes, rings, proposals, couples, weddings, effects, news, friends, joint fund
             db.executescript(sg.SCHEMA)  # 🎁 Quà từ Phố Có Chuyện (game/system_gift.py)
             db.executescript(lc.SCHEMA)  # 💬 Chat tables of the live service (game/live_chat.py, live/)
+            db.executescript(wl.SCHEMA)  # 💍 Live weddings: dates, parties, guests, photos, the weekly race (game/wedding_live.py)
             db.executescript(rt.SCHEMA)  # Giữ chân: milestones, action counts, beacons (game/retention.py)
         mr.bind(self)  # joint_account / joint_spend (game/couple.py) for game/bank.py
 

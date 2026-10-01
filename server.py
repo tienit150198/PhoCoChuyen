@@ -58,6 +58,7 @@ from game import leaderboard
 from game import marriage
 from game import system_gift
 from game import live_effects
+from game import wedding_live
 from game import live_chat
 from game.content import public_content,content_parts,CAREERS
 from game.engine import GameError,public_state
@@ -490,13 +491,16 @@ class Handler(BaseHTTPRequestHandler):
                     try:  # Hôn nhân: a wedding whose day has come, gifts that arrived (game/marriage.py)
                         if marriage.on_load(self.server.store,token,state):state,revision,_=self.server.store.read(token)
                     except Exception as e:self.log_error("marriage on_load: %s",type(e).__name__)  # never blocks loading the game
+                    try:  # 💍 anniversaries of this save's wedding date: reward rows for live_effects below (game/wedding_live.py)
+                        wedding_live.on_load(self.server.store,token,state)
+                    except Exception as e:self.log_error("wedding on_load: %s",type(e).__name__)  # never blocks loading the game
+                    try:  # 🧧 rewards from the live service (Đi dạo, weddings): paid once into the save, before the gift cards (game/live_effects.py)
+                        if live_effects.on_load(self.server.store,token,state):state,revision,_=self.server.store.read(token)
+                    except Exception as e:self.log_error("live_effects on_load: %s",type(e).__name__)  # never blocks loading the game
                     try:  # 🎁 Quà từ Phố Có Chuyện: pay this save's pending gifts, list the cards not seen yet (game/system_gift.py)
                         paid,gifts=system_gift.on_load(self.server.store,token,state)
                         if paid:state,revision,_=self.server.store.read(token)
                     except Exception as e:self.log_error("gift on_load: %s",type(e).__name__)  # never blocks loading the game
-                    try:  # 🧧 rewards from the live service (Đi dạo: a lucky envelope): paid once into the save (game/live_effects.py)
-                        if live_effects.on_load(self.server.store,token,state):state,revision,_=self.server.store.read(token)
-                    except Exception as e:self.log_error("live_effects on_load: %s",type(e).__name__)  # never blocks loading the game
                 extra={"Set-Cookie":self.cookie(token)} if created else {}
                 view=public_state(state)
                 # The workplace the first frame opens (app.js career()): boot.js starts its part of the catalogue
@@ -538,6 +542,11 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/news":  # the ticker (game/marriage.py): public lines, cached ~10 s; + my alerts
                 if not self.server.rate_limit("news:"+self.client_ip(),120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,marriage.news(self.server.store,(parse_qs(split.query).get("since") or ["0"])[0],self.token()));return
+            if route in ("/api/wedding/race","/api/wedding/photos"):  # 💍 Khách mời của tuần (Xếp hạng), the couple's party photos (Kỷ niệm)
+                token,state,_,_=self.require_session()
+                if not self.server.rate_limit("wedding-get:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                sid=self.server.store.key(token)
+                self.json(200,wedding_live.race_view(self.server.store,sid) if route.endswith("race") else dict(photos=wedding_live.photos(self.server.store,sid)));return
             if route=="/api/marriage":  # Hôn nhân: this player's view (+ the price lists with ?catalog=1)
                 token,state,_,_=self.require_session()
                 if not self.server.rate_limit("marriage-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
@@ -608,6 +617,7 @@ class Handler(BaseHTTPRequestHandler):
         except pfb.FeedbackError as e:self.error(e.status,e.message,e.code)
         except social.SocialError as e:self.error(e.status,e.message,e.code)
         except marriage.MarriageError as e:self.error(e.status,e.message,e.code)
+        except wedding_live.WeddingError as e:self.error(e.status,e.message,e.code)
         except GameError as e:self.error(401 if e.code=="session_missing" else 400,e.message,e.code)
         except dbm.Error as e:  # busy/unreachable database (timeout, restart, pool full): an answer, not a reset
             self.log_error("Database error: %s",type(e).__name__)
@@ -703,7 +713,11 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("livefx:"+token,30):self.error(429,"Chờ một chút nhé.","rate_limited");return
                 paid=live_effects.on_load(self.server.store,token,state)
                 if paid:state,revision,_=self.server.store.read(token)
-                self.json(200,dict(ok=True,paid=paid,state=public_state(state),revision=revision));return
+                _,gifts=system_gift.on_load(self.server.store,token,state)   # a party's total, an anniversary: the private card at once
+                self.json(200,dict(ok=True,paid=paid,state=public_state(state),revision=revision,gifts=gifts));return
+            if route=="/api/wedding/photo":  # 💍 the snapshot of a group photo the live service reserved for this player (game/wedding_live.py)
+                if not self.server.rate_limit("wedding-photo:"+token,10):self.error(429,"Chờ một chút nhé.","rate_limited");return
+                self.json(200,wedding_live.save_photo(self.server.store,self.server.store.key(token),data));return
             if route=="/api/gift/seen":  # 🎁 the player pressed "Nhận quà" on a gift card: it never shows again (game/system_gift.py)
                 if not self.server.rate_limit("gift:"+token,30):self.error(429,"Chờ một chút nhé.","rate_limited");return
                 self.json(200,dict(ok=True,seen=system_gift.seen(self.server.store,token,data.get("id"))));return
@@ -728,6 +742,7 @@ class Handler(BaseHTTPRequestHandler):
         except pfb.FeedbackError as e:self.error(e.status,e.message,e.code)
         except social.SocialError as e:self.error(e.status,e.message,e.code)
         except marriage.MarriageError as e:self.error(e.status,e.message,e.code)
+        except wedding_live.WeddingError as e:self.error(e.status,e.message,e.code)
         except live_chat.ChatAdminError as e:self.error(e.status,e.message,e.code)
         except accounts.AccountError as e:self.error(e.status,e.message,e.code)
         except GameError as e:self.error(401 if e.code=="session_missing" else 400,e.message,e.code)
