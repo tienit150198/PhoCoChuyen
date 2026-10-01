@@ -1,5 +1,22 @@
-# v1.3.0 — 🦁 Tiệc cưới sôi động: lân mới, loa và đèn sân khấu, nhạc thu sẵn, mâm cỗ, tung hoa, pháo hoa
+# v1.3.0 — 🏮 Hội chợ dân gian, 🍨 nghề bán kem, 🛏️ ký túc xá, 🔔 ting ting, 🦁 tiệc cưới sôi động
 
+**🏮 Hội chợ dân gian (03/10–07/10, feedback #63).** Khu phố mở hội 5 ngày, chơi bằng xu trong game (`game/fair*.py`, `public/js/v4/fair.js`). Cổng hội vào từ banner Hành trình và mục Khu phố. Chơi kiếm xu, không cần cược: Ô ăn quan với Bé Bi (+15 xu) hoặc Ông Hai (+30 xu, nhìn trước 3 nước), tối đa 90 xu/ngày; Ném vòng cổ chai 2 xu mỗi chai, đủ 5 chai thêm 5 xu, tối đa 45 xu/ngày (server tạo ván và chấm). Thử vận may: Bầu cua 1–20 xu (bão ăn 10), Lô tô tờ 5 xu ăn 23, Chiếu trong 10–50 xu với 4% công an phường ghé (mất cược, phạt max(5, nửa cược), dẹp chiếu 2 phút). Thua tối đa 150 xu/ngày, 400 ván/ngày, không cho vay, chống gửi trùng. Bảng vàng (board `fair20261003`, tối đa 30 điểm/ngày); hội tàn 60 giây thì Top 1 nhận 👑 Vua trò chơi, Top 2–10 nhận 🎪 Cao thủ hội chợ (một lần, `leaderboard_meta` `fair:<edition>`). Năm danh hiệu riêng của hội. Env: `MNL_FAIR_START` (mặc định 2026-10-03), `MNL_FAIR_DAYS` (5), `FAIR_PER_MINUTE` (40). Save thêm `journey.fair` và loại Sổ ví `fair`: mọi worker phải chạy bản này trước giờ mở hội.
+
+**🍨 Nghề bán kem: Tiệm kem Góc Phượng (chương 3).** Cô Hiền kèm ba khách đầu (cân viên kem, đậy nắp tủ, lời dặn, tiền thối; lỗi được nhắc trước khi đưa kem, không ghi điểm). Mỗi ngày nấu một mẻ theo sổ cô Hiền: kem dừa, kem bơ, kem khoai môn (cần Chứng chỉ làm kem; sandbox từ ngày 5): đong theo lon, ly, muỗng; nấu 76–88 °C (89 °C tách dầu, 96 °C khét đổ bỏ); ngâm đá dưới 10 °C; đánh kem đúng phút. Hộp đông qua đêm, hôm sau bán, viên nhà làm +1 xu, tủ tối đa 3 hộp. Chứng chỉ làm kem mới (8 ghi chú, đề 6 câu, đúng 4 đạt, 15 xu), không cộng tỷ lệ nhận việc mà mở công thức khoai môn. Đánh giá của khách thêm "Kem mịn, lạnh".
+
+**🛏️ Ký túc xá Hẻm 7.** Chỗ ở thuê rẻ nhất: giường tầng 7 xu/ngày, cọc 20 xu, ở chung với Quân, anh Tuấn và My (10 khoảnh khắc cùng phòng). Không thêm trường save mới; `rent.kind = 'ky_tuc_xa'` (bản cũ không nhận id này, quay lui cần script).
+
+**🔔 Chat và Góc hẹn hò (feedback #64, #66).** Nhóm chat nhận web push như tin riêng; nút 🔔/🔕 trên đầu mỗi cuộc trò chuyện: Bật / Tắt 8 giờ / Tắt (`chat_members.muted_until`, không DDL). Góc hẹn hò cho biết ai đang chờ, ai vừa ngồi và giờ đông nhất; nút "📣 Rủ mọi người" (10 phút một lần). Sửa số đếm trong danh sách chat bị vẽ lệch ra góc.
+
+**💸 Ting ting.** Tiền về là nghe tiếng chuông CC0 (`public/audio/sfx/ting.mp3`, ghi công trong CREDITS) kèm giọng đọc số tiền của trình duyệt ("Đã nhận 50 xu", dưới 10 xu chỉ ting). Hai công tắc mới trong Cài đặt → Âm thanh. Thư mục `audio` vào VERSIONED_DIRS.
+
+**🧾 Bàn tính lương minh bạch hơn (feedback #71).** Sau khi chuyển bảng lương, mỗi ô được tô theo kết quả (bỏ sót / đánh dấu nhầm / bắt đúng); chạm vào ô để xem giá trị đúng, cách tính từng bước và hồ sơ, quy định làm căn cứ. Thông báo trả lương và phiếu lương ghi tên ô sai. Các phiếu khác nêu ô chưa khớp mà không lộ đáp án; bước tính thuế hiện cách tính theo bậc. Thêm "Xem lại hồ sơ đã làm". Sửa lý do của lỗi "thiếu người phụ thuộc" khi có hồ sơ mới nộp đúng hạn. Cách chấm điểm không đổi.
+
+**📅 Ô ngày giờ ở văn phòng.** Gõ bằng bàn phím số thì tự thêm "/" và ":"; nút 📅 mở lịch chọn ngày (`office_work.js`). Máy chủ vốn đã nhận các định dạng này.
+
+**💇 Tiệm tóc (feedback #67).** Khách chê "còn dài" thì luôn cắt thêm được, kể cả sau khi tỉa tầng; lời chê được lưu qua tải lại trang; nhật ký dài không còn chặn mọi bước.
+
+**🦁 Tiệc cưới sôi động.**
 - 👰 Bảng tên cô dâu chú rể: viên thuốc vàng – hồng, chữ đậm 14px, 👰/🤵 (💍 khi chưa rõ), "Cô dâu"/"Chú rể" bên dưới; chữ màu mận đậm trên nền sáng nên đọc rõ cả giao diện sáng lẫn tối. Hai người đứng sát nhau thì hai bảng tự dạt sang hai bên, không đè lên nhau.
 - 🦁 Múa lân mới (public/js/scenes/stroll.js `paintLion`, vẽ canvas 2D, không ảnh): đầu lân to nhiều màu (bờm, sừng có quả bông, tai xanh, gương trán, lông mày trắng, mắt chớp, má hồng, hàm mở/đóng có răng và lưỡi, râu), thân vải đỏ vảy vàng có tua viền, hai cặp chân bước (người múa đầu và đuôi), đuôi phe phẩy. Lắc đầu, gật theo trống, chồm lên và đớp phong bao lì xì treo trên cột rồi ngậm đi. Ba lượt lân dài hơn: 40–110 s, 280–350 s, 450–505 s của tiệc (cũ là hai lượt ngắn), xe trống đi theo. Lân dạo phố (sự kiện đường phố) dùng chung hình mới.
 - 🔊 Bốn loa ở bốn góc sân rung theo nhịp (đèn LED, sóng âm). 🪩 Sân khấu: quả cầu disco lấp lánh, 6 luồng đèn màu quét từ sân khấu, đổi màu theo phách, sàn nhảy ô màu sáng theo nhịp; nháy tối đa ~2 lần/giây và chỉ trong vùng sân khấu; bật "giảm chuyển động" (hệ thống hoặc cài đặt) thì đèn đứng yên, chỉ đổi màu chậm, không pháo giấy.

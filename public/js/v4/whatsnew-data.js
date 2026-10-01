@@ -2,14 +2,22 @@
  * Release notes for the "Có gì mới" card (whatsnew.js), newest first. Loaded only after the game is up. */
 export default [
  {"version":"1.3.0","date":"2026-10-02","items":[
-  {"emoji":"🦁","text":"Đoàn lân mới về tiệc cưới: đầu lân to rực rỡ, chớp mắt, há miệng, lắc đầu, chồm lên đớp lì xì theo tiếng trống.","go":{"action":"liveWed"}},
-  {"emoji":"🪩","text":"Sân khấu có quả cầu disco, đèn màu quét theo nhạc và bốn cái loa góc sân rung theo từng nhịp."},
-  {"emoji":"🎧","text":"Nhạc cưới mới sôi động hơn, và chú rể được chọn nhạc cho cả tiệc: EDM, remix, house Latin, funk, disco, nhạc chậm cho cặp đôi."},
-  {"emoji":"🎶","text":"Cả tiệc nghe cùng một bài, cùng một nhịp đèn. Chú rể vắng thì cô dâu chọn nhạc nha."},
-  {"emoji":"🍲","text":"Chạm vào bàn cỗ để gắp món: mỗi món thêm tinh thần (tối đa 3 lần). Cụng ly bia “Dzô!” thì say nhẹ, nước ngọt thì thoải mái."},
+  {"emoji":"🏮","text":"Hội chợ dân gian mở 5 ngày từ 03/10: chơi ô ăn quan với Bé Bi, Ông Hai, ném vòng cổ chai kiếm xu, không cần đặt cược!","go":{"action":"fair"}},
+  {"emoji":"👑","text":"Thử vận may với bầu cua, lô tô, chiếu trong (coi chừng công an phường!). Hội tàn, Top 1 Bảng vàng thành Vua trò chơi."},
+  {"emoji":"🍨","text":"Nghề mới: bán kem ở Tiệm kem Góc Phượng, cô Hiền kèm ba khách đầu. Múc đủ ký, đậy nắp tủ kẻo kem chảy."},
+  {"emoji":"🥥","text":"Tự nấu kem dừa, bơ, khoai môn theo sổ cô Hiền: đong, nấu, ngâm đá, đánh kem, mai bán thêm 1 xu. Có Chứng chỉ làm kem."},
+  {"emoji":"🛏️","text":"Ký túc xá Hẻm 7: giường tầng 7 xu/ngày, ở chung với ba bạn cùng phòng, mỗi người một chuyện.","go":{"action":"house"}},
+  {"emoji":"🔕","text":"Tắt hoặc bật thông báo cho từng nhóm chat, tin nhắn riêng. Góc hẹn hò cho biết ai đang chờ, có nút 📣 Rủ mọi người.","go":{"action":"liveChat"}},
+  {"emoji":"🔔","text":"Tiền về là nghe “ting ting” như app ngân hàng, kèm giọng đọc số tiền. Tắt được trong Cài đặt → Âm thanh."},
+  {"emoji":"🧾","text":"Bàn tính lương: ô sai được tô đỏ, chạm vào để xem số đúng, cách tính từng bước và quy định áp dụng."},
+  {"emoji":"📅","text":"Ô ngày giờ ở văn phòng tự thêm dấu / và : khi gõ bằng bàn phím số, hoặc bấm 📅 để chọn ngày trên lịch."},
+  {"emoji":"💇","text":"Tiệm tóc: khách chê “còn dài” thì luôn cắt thêm được, kể cả khi đã tỉa tầng. Hết cảnh soi gương mãi không chốt được."},
+  {"emoji":"🦁","text":"Đoàn lân mới về tiệc cưới: đầu lân to rực rỡ, chớp mắt, há miệng, chồm lên đớp lì xì theo tiếng trống.","go":{"action":"liveWed"}},
+  {"emoji":"🪩","text":"Sân khấu cưới có quả cầu disco, đèn màu quét theo nhạc và bốn cái loa góc sân rung theo từng nhịp."},
+  {"emoji":"🎧","text":"Nhạc cưới mới sôi động, chú rể chọn nhạc cho cả tiệc: EDM, remix, Latin, funk, nhạc chậm. Chú rể vắng thì cô dâu chọn."},
+  {"emoji":"🍲","text":"Chạm vào bàn cỗ để gắp món: mỗi món thêm tinh thần (tối đa 3 lần). Cụng ly bia “Dzô!” thì say nhẹ."},
   {"emoji":"💃","text":"Bước lên sân khấu là nhảy theo nhạc, bấm 💃 Nhảy để xoay một vòng cho cả tiệc cùng xem."},
-  {"emoji":"💐","text":"Gần cuối tiệc, cô dâu chú rể tung hoa cưới: ai bắt được nhận 20 xu. Đứng gần sân khấu dễ bắt hơn đó!"},
-  {"emoji":"🎆","text":"Pháo giấy khi cô dâu chú rể bước vào, pháo hoa rực trời lúc tiệc sắp tàn."},
+  {"emoji":"💐","text":"Cuối tiệc cô dâu chú rể tung hoa: ai bắt được nhận 20 xu. Có pháo giấy lúc vào, pháo hoa lúc tiệc tàn."},
   {"emoji":"👰","text":"Bảng tên cô dâu chú rể to và nổi bật hơn, nhìn là thấy ngay nhân vật chính của buổi tiệc."}
  ]},
  {"version":"1.2.3","date":"2026-10-02","items":[
