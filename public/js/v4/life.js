@@ -8,6 +8,7 @@
  * Design: docs/superpowers/specs/2026-09-29-life-design.md */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {quiet} from './onboard.js';
+import {portrait} from './look.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
@@ -67,16 +68,21 @@ function stageBody(v,L){
     return `<ul class="lf-trail">${v.trail.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>${net.length?`<div class="lf-chips">${net.join('')}</div>`:''}${meter(L,{small:true})}
       <div class="lf-actions">${btn(v.who.length?'Cảm ơn mọi người 💛':'Xong','lfClose',{id:v.id},'primary big full')}</div>`;
   }
-  const ask=st==='react'?'Bạn làm gì?':st==='ask'?'Bạn giúp thế nào?':st==='impulse'?'Giờ sao?':'';
+  const ask=st==='react'?'Bạn làm gì?':st==='ask'?'Bạn giúp thế nào?':st==='impulse'?'Giờ sao?':st==='dorm'?'Bạn tính sao?':'';
   return `${ask?`<h3 class="lf-h">${ask}</h3>`:''}<div class="lf-choices">${ch}</div>`;
 }
 
+/* 🛏️ A Ký túc xá moment (game/life.py kind 'dorm'): the roommates in the scene, drawn like the player's portrait. */
+function mates(v){
+  const rows=(v.who||[]).filter(w=>w.look);
+  return rows.length?`<ul class="lf-mates" aria-label="Bạn cùng phòng">${rows.map(w=>`<li>${portrait(w.look,w.gender,40,w.name)}<span><b>${esc(w.name)}</b><small>${esc(w.role)}</small></span></li>`).join('')}</ul>`:'';
+}
 function sceneHTML(v,L){
   const quiet=v.stage==='done'||v.stage==='joy';
-  const hero=v.stage==='react'||v.stage==='ask'||v.stage==='impulse'||v.stage==='sick'||v.stage==='joy'||(v.kind==='scam'&&v.stage==='gop');
+  const hero=v.stage==='react'||v.stage==='ask'||v.stage==='impulse'||v.stage==='sick'||v.stage==='joy'||v.stage==='dorm'||(v.kind==='scam'&&v.stage==='gop');
   const lines=hero?`<ul class="lf-lines">${v.lines.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`:'';
   const p=hero&&(v.gossip||v.speaker);
-  const who=p?`<p class="lf-gossip"><span aria-hidden="true">${p.emoji}</span> ${esc(p.name)} · <small>${esc(p.role)}</small></p>`:'';
+  const who=v.kind==='dorm'?mates(v):p?`<p class="lf-gossip"><span aria-hidden="true">${p.emoji}</span> ${esc(p.name)} · <small>${esc(p.role)}</small></p>`:'';
   return `<article class="lf-card lf-cat-${esc(v.cat)} lf-st-${esc(v.stage)}">
     <header class="lf-top"><span class="lf-portrait" aria-hidden="true">${v.emoji}</span><div class="grow"><span class="eyebrow">${v.cat_emoji} ${esc(v.cat_label)}</span><h2 id="lfSceneTitle">${esc(v.title)}</h2></div>
       ${quiet?'':btn(icon('x',18),'lfLater',{id:v.id},'ghost small lf-later','aria-label="Để sau"')}</header>

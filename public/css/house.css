@@ -64,6 +64,30 @@
 .hs-sched .bk-sched{max-height:320px;overflow:auto;display:block}
 .hs-buy .bk-toggle{align-items:center}
 
+.hs-chips .up{color:var(--good);font-weight:700}
+
+/* 🛏️ Ký túc xá Hẻm 7: the bunk room (an illustration: its own warm colours in both themes) */
+.hs-dorm{margin:12px auto 0;max-width:460px}
+.hs-dorm-room{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:22px;padding:42px 18px 0;border-radius:var(--radius);border:1px solid var(--line);overflow:hidden;
+  background:linear-gradient(#f6e7d2 0 86%,#d9b48a 86% 100%)}
+.hs-dorm-window{position:absolute;left:50%;top:7px;width:60px;height:28px;margin-left:-30px;border-radius:6px;background:linear-gradient(#bfe3f2,#eef8fb);border:3px solid #a8774f}
+.hs-dorm-window::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:3px;margin-left:-1.5px;background:#a8774f}
+.hs-bunk{position:relative;display:grid;grid-template-rows:1fr 1fr;gap:8px;padding:4px 18px 14px 8px;border:4px solid #8a5a3c;border-bottom:0;border-radius:8px 8px 0 0}
+.hs-ladder{position:absolute;right:2px;top:12px;bottom:0;width:12px;border-left:3px solid #8a5a3c;border-right:3px solid #8a5a3c;background:repeating-linear-gradient(transparent 0 9px,#8a5a3c 9px 12px)}
+.hs-bed{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-height:84px;padding-bottom:14px}
+.hs-bed::after{content:"";position:absolute;left:-4px;right:-4px;bottom:0;height:12px;border-radius:5px;background:#7aa7c7;box-shadow:0 4px 0 #8a5a3c}
+.hs-bed.me::after{background:#e3a96b}
+.hs-bed-face .jr-av{display:block;border-radius:50%;box-shadow:0 0 0 2px #fff}
+.hs-bed-name{position:relative;z-index:1;margin-top:-6px;padding:0 7px;border-radius:999px;background:#fffaf2;color:#4b3936;font-size:.8rem;font-weight:800;white-space:nowrap}
+.hs-bed.me .hs-bed-name{background:#c9683c;color:#fff}
+.hs-mates{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
+.hs-mates li{display:flex;align-items:flex-start;gap:8px;font-size:.92rem;min-width:0}
+.hs-mates small{display:block;color:var(--muted);font-size:.85rem}
+.hs-dorm-say{display:flex;align-items:flex-end;gap:10px;margin-top:12px}
+.hs-dorm-say-face .jr-av{display:block;border-radius:50%}
+.hs-dorm-say p{margin:0;padding:8px 12px;border-radius:14px 14px 14px 4px;background:var(--surface-2,rgba(0,0,0,.04));font-size:.95rem}
+.hs-dorm-say b{display:block;font-size:.85rem}
+
 @media (min-width:720px){
   .hs-market{grid-template-columns:repeat(2,minmax(0,1fr))}
   .hs-facts{grid-template-columns:repeat(4,minmax(0,1fr))}

@@ -175,8 +175,9 @@ function homeMain(env){
 function houseCard(env){
   const H=env.api.state.journey.home;if(!H)return '';
   const p=H.place||{},c=p.cost||{},L=H.own?.loan;
-  const sub=p.where_id==='own'?'Nhà của bạn':p.where_id==='shared'?`Nhà chung với ${esc(p.with||'')}`:p.where_id==='rent'?'Phòng thuê':'Thuê theo ngày';
-  const cost=p.where_id==='own'||p.where_id==='shared'?`Điện nước ${fmt(c.rent)} xu/ngày`:`Tiền phòng ${fmt(c.rent)} xu/ngày`;
+  const bed=p.kind==='ky_tuc_xa';   // 🛏️ Ký túc xá Hẻm 7 (housing.DORM): a bed in a shared room
+  const sub=p.where_id==='own'?'Nhà của bạn':p.where_id==='shared'?`Nhà chung với ${esc(p.with||'')}`:bed?'Ở ghép ký túc xá':p.where_id==='rent'?'Phòng thuê':'Thuê theo ngày';
+  const cost=p.where_id==='own'||p.where_id==='shared'?`Điện nước ${fmt(c.rent)} xu/ngày`:`${bed?'Tiền giường':'Tiền phòng'} ${fmt(c.rent)} xu/ngày`;
   const cat=env.api.content.journey?.homes||{groups:[],homes:[]},live=new Map((H.market||[]).map(r=>[r.id,r]));
   const homes=cat.homes.filter(c=>c.kind==='own'&&live.has(c.id)).map(c=>({...c,...live.get(c.id)})).sort((x,y)=>x.price-y.price),sc=H.offer?.score,can=homes.filter(m=>!(m.missing>0)&&(sc==null||sc>=(m.score||0)||!(m.missing_all>0))).pop(),next=homes.find(m=>m.missing>0);
   const tone=(cat.groups.find(g=>g.id===p.group)||{}).color;

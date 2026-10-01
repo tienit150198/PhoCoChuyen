@@ -5,7 +5,8 @@ In-game calendar, shared with the bank's savings (game/bank.py): 1 tháng = MONT
 
 Where you live decides the "tiền phòng" part of the daily living cost (journey.living_cost):
 * Bà Tám's attic (no `home`, or nothing rented or owned): the chapter's rent, as before;
-* a rented room (`rent`): its own daily rent and a refundable deposit (tiền cọc), +1 tinh thần a day;
+* a rented room (`rent`): its own daily rent and a refundable deposit (tiền cọc), +comfort tinh thần a day
+  (the Ký túc xá's bed has no comfort bonus: its roommates bring small moments instead, see below);
 * your own home (`own`): no rent, only điện nước (upkeep), +comfort tinh thần a day;
 * your spouse's home (`shared`, delivered through the marriage inbox by game/couple.py): the same,
   while the two of you stay married.
@@ -28,12 +29,22 @@ biệt thự) need a higher credit score for the mortgage (`score`); the install
 (validate accepts OLD_PRICES); its market value still grows from the price paid, so nobody gets a windfall.
 Rents did not change (the room's rent is part of the daily living cost, not a house price).
 
+🛏️ Ký túc xá Hẻm 7 (DORM, feedback #59 "ở ghép share tiền phòng"): a bed in a four-bed bunk room, rented and left
+like the other room. Rent DORM_RENT a day: one xu more than Bà Tám's attic in chapter 1, the same in chapter 2 and
+less from chapter 3 on (the attic follows journey.LIVING at 60 %); a small deposit; no comfort bonus. Its three
+roommates (life_content.ROOMMATES) bring the small everyday moments: life cards of kind 'dorm' (game/life.py
+_roll_dorm) and a line of the day on the home card (dorm_view: computed, never stored). Nothing new in the save:
+`rent.kind` simply holds 'ky_tuc_xa' (an older build rejects that id: see the deploy notes). Moving between two
+rented rooms is one command (jr_home_rent while renting the other one: its deposit comes back first).
+
 State `s['journey']['home']` (absent = never rented or bought: older saves load unchanged), see initial().
-Commands arrive as `jr_home_*` through journey.action. Deterministic: nothing here is random.
+Commands arrive as `jr_home_*` through journey.action. Deterministic: the only draw (the dorm's line of the day)
+is seeded by the journey seed and the life day.
 """
 from __future__ import annotations
 
 import copy
+import random
 
 from . import archive as ar
 from . import bank as bk
@@ -74,6 +85,9 @@ GROUP_IDS = tuple(g[0] for g in GROUPS)
 # `score` (the credit score the bank needs to lend on this home, HOME_SCORE when absent).
 # Ids are stored in saves: never rename or remove one.
 HOMES = {
+    'ky_tuc_xa': dict(kind='rent', group='rent', emoji='🛏️', name='Ký túc xá Hẻm 7', where='Hẻm 7 · giường tầng',
+                      desc='Phòng máy lạnh bốn giường tầng, giường nào cũng có rèm riêng và tủ khóa. Ở ghép với ba bạn trẻ, chia nhau tiền phòng.',
+                      perk='👥 Ở ghép với 3 bạn cùng phòng', rent=7, deposit=20, comfort=0),
     'tro_moi': dict(kind='rent', group='rent', emoji='🛏️', name='Phòng trọ khép kín', where='Hẻm 12, cạnh chợ',
                     desc='Phòng 18 m² có gác lửng, cửa sổ, nhà vệ sinh riêng. Cô Hạnh chủ nhà cho nuôi mèo.',
                     rent=14, deposit=60, comfort=1),
@@ -110,6 +124,11 @@ HOMES = {
 }
 OWN = tuple(k for k, v in HOMES.items() if v['kind'] == 'own')
 RENT = tuple(k for k, v in HOMES.items() if v['kind'] == 'rent')
+DORM = 'ky_tuc_xa'
+DORM_RENT = HOMES[DORM]['rent']
+# The drawing of the bunk room (house.js): two bunks, the player has the bottom bed by the window.
+BEDS = ('left_top', 'left_bottom', 'right_top', 'right_bottom')
+YOUR_BED = 'right_bottom'
 
 # List prices before 0.9.13. A home bought then keeps the price paid (own.price, the loan and its schedule),
 # and its market value keeps growing from that price (value_of), so the +20 % is no windfall for owners.
@@ -136,6 +155,8 @@ MOVE_LINES = {
     'rent': 'Bà Tám dúi cho bịch trái cây: “Ở đâu cũng nhớ về ăn cơm với bà nghe cháu.”',
     'own': 'Bà Tám lau nước mắt: “Có nhà rồi, mừng cho cháu quá. Bữa nào tân gia nhớ gọi bà!”',
     'back': 'Bà Tám mở cửa gác, phủi lại cái chiếu: “Phòng vẫn để đó, về lúc nào cũng được.”',
+    'dorm_in': 'Quân, Anh Tuấn và My dọn sẵn giường dưới cạnh cửa sổ, My còn dán tên bạn lên tủ.',
+    'dorm_out': 'My dúi cho cái móc khóa, Anh Tuấn hẹn bữa nào ghé ăn mì chung.',
 }
 
 
@@ -269,7 +290,7 @@ def living(j: dict, total: int) -> dict:
     if place in ('own', 'shared'):
         rent, label = HOMES[kind]['upkeep'], 'Cơm nước và điện nước nhà mình'
     elif place == 'rent':
-        rent, label = HOMES[kind]['rent'], 'Tiền phòng trọ và cơm nước'
+        rent, label = HOMES[kind]['rent'], 'Tiền giường ký túc xá và cơm nước' if kind == DORM else 'Tiền phòng trọ và cơm nước'
     else:
         label = 'Tiền phòng và cơm nước'
     return dict(total=rent + meals, rent=rent, meals=meals, label=label, where=place)
@@ -514,8 +535,9 @@ def _receive(s: dict, amount: int, label: str, day: int) -> str:
 def _leave_rent(s: dict, h: dict, day: int) -> int:
     r = h['rent']
     h['rent'] = None
+    what = 'giường' if r['kind'] == DORM else 'phòng'
     _jr()._wallet(s['journey'], r['deposit'], KIND, f'Nhận lại tiền cọc {lname(HOMES[r["kind"]]["name"])}')
-    _log(h, day, f'Trả phòng {lname(HOMES[r["kind"]]["name"])}, nhận lại {_fmt(r["deposit"])} xu tiền cọc.', r['deposit'])
+    _log(h, day, f'Trả {what} {lname(HOMES[r["kind"]]["name"])}, nhận lại {_fmt(r["deposit"])} xu tiền cọc.', r['deposit'])
     return r['deposit']
 
 
@@ -542,23 +564,34 @@ def apply(s: dict, name: str, p: dict) -> dict:
         kind = p.get('kind')
         need(kind in RENT, 'Chọn phòng muốn thuê nhé.')
         need(not own, 'Bạn đã có nhà riêng rồi.')
-        need(not rent, 'Bạn đang thuê một phòng rồi.')
+        need(not rent or rent['kind'] != kind, 'Bạn đang ở đây rồi.')
         need(p.get('confirm') is True, 'Xác nhận thuê phòng.')
         H = HOMES[kind]
         have = _have(s)
-        need(have['wallet'] + have['balance'] >= H['deposit'],
-             f'Tiền cọc {_fmt(H["deposit"])} xu: bạn còn thiếu {_fmt(H["deposit"] - have["wallet"] - have["balance"])} xu.', 'not_enough')
+        back = rent['deposit'] if rent else 0          # moving from the other rented room: its deposit comes back first
+        need(have['wallet'] + have['balance'] + back >= H['deposit'],
+             f'Tiền cọc {_fmt(H["deposit"])} xu: bạn còn thiếu {_fmt(H["deposit"] - have["wallet"] - have["balance"] - back)} xu.', 'not_enough')
         h = _ensure(s)
+        if rent:
+            _leave_rent(s, h, day)
         _take(s, H['deposit'], f'Đặt cọc {lname(H["name"])}', day)
         h['rent'] = dict(kind=kind, since=day, deposit=H['deposit'])
         _log(h, day, f'Thuê {lname(H["name"])}, đặt cọc {_fmt(H["deposit"])} xu.', -H['deposit'])
-        return dict(message=f'Đã thuê {lname(H["name"])}: tiền phòng {_fmt(H["rent"])} xu/ngày, cọc {_fmt(H["deposit"])} xu '
-                            f'(trả lại khi dọn đi). {MOVE_LINES["rent"]}')
+        bed = kind == DORM
+        msg = (f'Đã thuê {lname(H["name"])}: tiền {"giường" if bed else "phòng"} {_fmt(H["rent"])} xu/ngày, '
+               f'cọc {_fmt(H["deposit"])} xu (trả lại khi dọn đi).')
+        line = MOVE_LINES['dorm_in' if bed else 'rent']
+        if back:
+            msg += f' Đã trả {"giường " if rent["kind"] == DORM else ""}{lname(HOMES[rent["kind"]]["name"])}, nhận lại {_fmt(back)} xu tiền cọc.'
+            line = MOVE_LINES['dorm_in' if bed else 'dorm_out' if rent['kind'] == DORM else 'rent']
+        return dict(message=f'{msg} {line}')
     if name == 'jr_home_leave':
         need(rent, 'Bạn không thuê phòng nào.')
         need(p.get('confirm') is True, 'Xác nhận trả phòng.')
+        bed = rent['kind'] == DORM
         back = _leave_rent(s, h, day)
-        return dict(message=f'Đã trả phòng, nhận lại {_fmt(back)} xu tiền cọc vào ví. {MOVE_LINES["back"]}')
+        return dict(message=f'Đã trả {"giường" if bed else "phòng"}, nhận lại {_fmt(back)} xu tiền cọc vào ví. '
+                            + (MOVE_LINES['dorm_out'] + ' ' if bed else '') + MOVE_LINES['back'])
     if name == 'jr_home_buy':
         kind = p.get('kind')
         need(kind in OWN, 'Chọn căn nhà muốn mua nhé.')
@@ -710,12 +743,13 @@ def catalogue() -> dict:
     return dict(groups=[dict(id=g, emoji=e, name=n, color=c) for g, e, n, c in GROUPS], homes=homes)
 
 
-def _market(ready: int) -> list[dict]:
-    """Per home: what is still missing for the deposit (rent), the down payment and fee, or the whole price."""
+def _market(ready: int, back: int = 0) -> list[dict]:
+    """Per home: what is still missing for the deposit (rent), the down payment and fee, or the whole price.
+    `back`: the deposit of the room rented now, which comes back when moving to the other one."""
     out = []
     for k, H in HOMES.items():
         if H['kind'] == 'rent':
-            out.append(dict(id=k, missing=max(0, H['deposit'] - ready)))
+            out.append(dict(id=k, missing=max(0, H['deposit'] - ready - back)))
         else:
             p, fee = H['price'], buy_fee(H['price'])
             out.append(dict(id=k, missing=max(0, down_min(p) + fee - ready), missing_all=max(0, p + fee - ready)))
@@ -733,7 +767,21 @@ def _place_view(s: dict, h: dict | None) -> dict:
                comfort=H['comfort'], perk=H.get('perk'), cost=cost)
     if place == 'shared':
         out['with'] = h['shared']['name']
+    if place == 'rent' and kind == DORM:
+        out['dorm'] = dorm_view(s)
     return out
+
+
+def dorm_view(s: dict) -> dict:
+    """The bunk room on the home card: the roommates on their beds and one roommate's line of the day
+    (from the journey seed and the life day: the same all day, another one tomorrow). Computed, never stored."""
+    from .life_content import DORM_LINES, ROOMMATES
+    j = s['journey']
+    rng = random.Random(f'dorm-line|{j.get("seed", 0)}|{int(j["life_day"])}')
+    who = rng.choice(sorted(ROOMMATES))
+    mates = [dict(id=k, name=m['name'], emoji=m['emoji'], role=m['role'], bed=m['bed'], gender=m['gender'], look=dict(m['look']))
+             for k, m in ROOMMATES.items()]
+    return dict(mates=mates, you=YOUR_BED, line=dict(who=who, name=ROOMMATES[who]['name'], text=rng.choice(DORM_LINES[who])))
 
 
 def public(s: dict) -> dict:
@@ -744,7 +792,7 @@ def public(s: dict) -> dict:
     have = _have(s)
     ready = have['wallet'] + have['balance']
     attic = attic_rent(j)
-    market = _market(ready)
+    market = _market(ready, h['rent']['deposit'] if h and h['rent'] else 0)
     o = offer(s)
     o['rate_text'] = bk.year_text(o['rate'])
     own = None
