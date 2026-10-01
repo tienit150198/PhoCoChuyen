@@ -553,7 +553,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         need(not (desk_task and desk_task.get("desk")),"Hồ sơ này xử lý ở bàn giấy tờ: đánh dấu dòng sai rồi đóng dấu nhé.")
     if plugin_action and action not in mod.SPEC.get('free_actions',()):
         need(c["open"],"Mở ca trước khi xử lý công việc nhé.")
-    no_tick={"task_select","settings","talk","feed_like","photo","decor_move","event_dismiss","quest_claim","chat_clear","reset_career","theme","sit_dismiss","sit_practice","inv_rate","inv_claim"}
+    no_tick={"task_select","settings","talk","feed_like","photo","decor_move","event_dismiss","quest_claim","chat_clear","reset_career","theme","sit_dismiss","sit_practice","inv_rate","inv_claim","inv_cart","inv_haggle"}
     if mod:no_tick|=set(mod.SPEC.get('no_tick',()))
     no_tick|=CARE_FREE
     if action.startswith("cl_"):need(c["open"],"Mở ca trước khi làm hoạt động lớp nhé.")

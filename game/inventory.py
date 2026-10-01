@@ -10,11 +10,22 @@ window in time of day (15–30 minutes, the next of four van runs, the market's
 afternoon run or tomorrow before opening, one or two days for special goods).
 `clock()` turns the career's turn counter into that time of day. See
 docs/superpowers/specs/2026-09-29-supplier-lead-times.md (§8: waits halved).
+
+Đơn gộp (merged orders): every order pays its supplier's shipping fee once (free from
+`free_from` xu of goods), and a line of `bulk` units or more gets the wholesale price. A
+per-supplier draft (`inv['cart']`) collects lines; `inv_order_cart` places them as ONE order:
+one payment and one row in the books, one van, one arrival, one crate. Each line is stored as
+an ordinary order sharing a `group` id, so counting, claims and older code keep working line by
+line. Suppliers push back (minimum order, one line out of stock, a merged load that rides a
+later run) and can be asked for a discount on a big order: they answer from hidden traits,
+deterministic from the career, the supplier, the day and the order id. Orders placed before
+this carry no `ship` key: they paid no fee.
 """
 from __future__ import annotations
 import copy
 import math
 import random
+import zlib
 from .jsoncopy import tree_copy
 from . import archive as ar
 
@@ -323,10 +334,26 @@ SUPPLIERS = {
              note='Thuốc nhuộm, oxy, toner, keratin chính hãng từ kho hãng: rẻ nhất, 1–2 ngày. Đặt trước khi hết tuýp.'),
     ],
 }
+# Shipping, wholesale tiers and push-back for every supplier (đơn gộp): by id, else by kind.
+# ship: fee per order (xu); free_from: goods total (xu) that ships free; bulk: ((units, % off), …)
+# per line; oos: chance (%) that one line of a merged order is out of stock; min_order: the
+# smallest merged order (xu of goods) the supplier will run a van for.
+TERMS = {
+    'market': dict(ship=2, free_from=40, bulk=((10, 5), (20, 10)), oos=15, min_order=0),
+    'partner': dict(ship=3, free_from=60, bulk=((10, 4), (20, 8)), oos=6, min_order=0),
+    'express': dict(ship=5, free_from=120, bulk=((20, 3),), oos=4, min_order=0),
+}
+KIND_TERMS = {
+    'next': dict(ship=2, free_from=40, bulk=((10, 5), (20, 10)), oos=10, min_order=0),
+    'days': dict(ship=4, free_from=80, bulk=((10, 6), (20, 12)), oos=10, min_order=30),
+    'runs': TERMS['partner'], 'rush': TERMS['express'],
+}
 ALL_SUPPLIERS = {}
 for _list in [DEFAULT_SUPPLIERS, *SUPPLIERS.values()]:
     for _x in _list:
         _x.setdefault('delay', DELAY[_x['kind']])  # every supplier here runs on the halved waits
+        for _k, _v in (TERMS.get(_x['id']) or KIND_TERMS[_x['kind']]).items():
+            _x.setdefault(_k, _v)
         ALL_SUPPLIERS.setdefault(_x['id'], _x)
 
 
@@ -457,6 +484,181 @@ def _schedule(sup: dict, career: str, now: int, seed: str) -> dict:
         at = _after_hours(_r5(hi + extra), career)
         late = sup['voice'].get('late') or 'Xe giao tới trễ hơn hẹn.'
     return dict(placed=now, lo=lo, hi=hi, at=max(at, hi + 5) if late else at, late=late)
+
+
+# ---------------------------------------------------------------- prices, carts and haggling
+CART_LINES = 8      # lines in one supplier's draft
+TRANSIT_LINES = 30  # order lines on the way at once (the order book keeps 40)
+ASKS = (5, 10, 15)  # discounts a player can ask for on a big order (%)
+
+
+def haggle_from(sup: dict) -> int:
+    """A draft this big (xu of goods) is worth bargaining over: half the free-shipping line."""
+    return max(1, sup.get('free_from', 0) // 2)
+
+
+def _h(text: str) -> int:
+    """A stable hash (Python's own hash() changes between processes)."""
+    return zlib.crc32(text.encode('utf-8'))
+
+
+def bulk_pct(sup: dict, qty: int) -> int:
+    return max([p for n, p in sup.get('bulk') or () if qty >= n], default=0)
+
+
+def line_price(it: dict, qty: int, sup: dict) -> dict:
+    """One line: goods cost (wholesale tier applied), unit cost and the next tier to reach.
+    `full` is the price every order paid before wholesale tiers; a tier takes its share off,
+    rounded, and always at least 1 xu (public/js/v4/views.js lineQuote mirrors this)."""
+    pct = bulk_pct(sup, qty)
+    full = max(1, math.ceil(it['cost'] * qty * sup['factor']))
+    off = max(1, (full * pct + 50) // 100) if pct else 0
+    cost = max(1, full - off)
+    unit = math.ceil(it['cost'] * sup['factor']) if not pct else max(1, -(-cost // qty))
+    nxt = next(([n, p] for n, p in sorted(sup.get('bulk') or ()) if qty < n), None)
+    return dict(cost=cost, unit_cost=unit, bulk=pct, full=full, next_tier=nxt)
+
+
+def ship_fee(sup: dict, goods: int) -> int:
+    return 0 if goods >= sup.get('free_from', 0) else sup.get('ship', 0)
+
+
+def _spread(costs: list[int], off: int) -> list[int]:
+    """Share an order-level discount over its lines (exactly `off` in total, biggest lines first)."""
+    total = sum(costs)
+    if not off or not total:
+        return list(costs)
+    shares = [c * off // total for c in costs]
+    rest = off - sum(shares)
+    for i in sorted(range(len(costs)), key=lambda i: -costs[i]):
+        if not rest:
+            break
+        if shares[i] < costs[i]:
+            shares[i] += 1
+            rest -= 1
+    return [c - s for c, s in zip(costs, shares)]
+
+
+def _deal_ok(deal: dict | None, day: int, goods: int, honor: bool = False) -> bool:
+    return bool(deal) and deal.get('day') == day and (honor or goods >= deal.get('sub', 0))
+
+
+def cart_price(career: str, sup: dict, lines: list[dict], deal: dict | None, day: int, honor: bool = False) -> dict:
+    """What a draft costs: lines at their wholesale tier, the haggled discount, the shipping fee."""
+    rows = []
+    for l in lines:
+        it = item(career, l['item'])
+        rows.append(dict(item=it['id'], qty=l['qty'], **line_price(it, l['qty'], sup)))
+    goods = sum(r['cost'] for r in rows)
+    ok = _deal_ok(deal, day, goods, honor)
+    pct = deal['pct'] if ok else 0
+    off = goods * pct // 100
+    ship_base = ship_fee(sup, goods)
+    ship = 0 if ok and deal.get('free_ship') else ship_base
+    return dict(rows=rows, full=sum(r['full'] for r in rows), goods=goods, bulk_off=sum(r['full'] for r in rows) - goods,
+                pct=pct, off=off, ship=ship, ship_base=ship_base, total=goods - off + ship, deal_ok=ok,
+                deal_lost=bool(deal) and deal.get('day') == day and not ok and deal.get('mood') in ('ok', 'counter', 'ship'))
+
+
+def _casual(sup: dict) -> bool:
+    """Market stalls, gardens and small makers talk like people; distributors talk like a counter."""
+    return sup['id'] == 'market' or sup['kind'] == 'next'
+
+
+def _traits(career: str, sup: dict) -> dict:
+    """Hidden, fixed per career and supplier: how much room there is to bargain and how touchy they are."""
+    h = _h(f'trait:{career}:{sup["id"]}')
+    base = 9 if sup['id'] == 'market' else 1 if sup['kind'] == 'rush' else 3 if sup['kind'] == 'runs' else 7 if sup['kind'] == 'days' else 6
+    return dict(room=max(0, base + h % 4 - 1), touchy=(h >> 4) % 3 == 0,
+                ship_instead=sup['id'] == 'partner' or (h >> 6) % 2 == 0)
+
+
+HAGGLE_TALK = {
+    True: dict(ok='Thôi được, lấy nhiều thì bớt {p}% cho em.', counter='{p}% thôi em ơi, bớt nữa là lỗ vốn.',
+               ship='Giá sát lắm rồi, chở miễn phí cho em là được.', no='Bớt vậy lấy gì ăn em? Giá này là chót rồi.',
+               sour='Trả giá kiểu này thì em qua sạp khác đi!'),
+    False: dict(ok='Bên em áp dụng chiết khấu {p}% cho đơn này ạ.', counter='Bên em chỉ duyệt được {p}% thôi ạ, mong quý khách thông cảm.',
+                ship='Giá niêm yết không giảm được ạ, bên em xin miễn phí giao cho đơn này.',
+                no='Giá đã là giá niêm yết, bên em không giảm thêm được ạ.',
+                sour='Yêu cầu đã được ghi nhận. Lần sau quý khách vui lòng đặt theo bảng giá.'),
+}
+RUSH_NO = 'Hỏa tốc tính theo cuốc xe, bên em không giảm ạ.'
+
+
+def haggle(career: str, sup: dict, day: int, ask: int, goods: int) -> dict:
+    """The supplier's answer to "bớt {ask}% nhé?" on `goods` xu: accept, counter, free shipping
+    instead, or no (a touchy one says it rudely). Deterministic: same career, supplier, day and ask,
+    same answer; a big order (twice the free-shipping line) gets two points more room."""
+    t = _traits(career, sup)
+    mood = _h(f'mood:{career}:{sup["id"]}:{day}') % 5 - 2
+    room = max(0, t['room'] + mood + (2 if goods >= 2 * sup.get('free_from', 0) else 0))
+    talk = HAGGLE_TALK[_casual(sup)]
+    deal = dict(day=day, ask=ask, sub=goods, pct=0, free_ship=False)
+    if ask <= room:
+        deal.update(mood='ok', pct=ask)
+    elif room >= 2 and ask <= 2 * room:
+        deal.update(mood='counter', pct=room)
+    elif t['ship_instead'] and ship_fee(sup, goods):
+        deal.update(mood='ship', free_ship=True)
+    else:
+        deal.update(mood='sour' if t['touchy'] and ask >= 2 * max(1, room) else 'no')
+    said = talk[deal['mood']].format(p=deal['pct'])
+    if sup['kind'] == 'rush' and deal['mood'] in ('no', 'sour'):
+        said = RUSH_NO
+    deal['said'] = said
+    return deal
+
+
+def _merge_later(sup: dict, career: str, now: int) -> int | None:
+    """A merged load that misses its van: the placing time whose promise is the next window."""
+    day, minute = divmod(now, DAY_MIN)
+    k = sup['kind']
+    if k == 'runs':
+        run = next((r for r in sup['runs'] if minute < r[0]), None)
+        later = day * DAY_MIN + run[0] if run else (day + 1) * DAY_MIN + sup['runs'][0][0]
+    elif k == 'next' and sup.get('day_run') and minute < sup['day_run'][0]:
+        later = day * DAY_MIN + sup['day_run'][0]
+    elif k == 'rush':
+        later = now + 30
+    else:
+        return None
+    return later if _promise(sup, career, later)[0] > _promise(sup, career, now)[0] else None
+
+
+def cart_view(c: dict, career: str, x: dict) -> list[dict]:
+    """The drafts for the stock room: lines, subtotal, wholesale savings, shipping, haggled
+    discount, total, what the fund lacks, and what the supplier said."""
+    out = []
+    day = c['day']
+    level = 1 + c['xp'] // 90
+    placing = None
+    for sid, cart in (x.get('cart') or {}).items():
+        sup = supplier(career, sid)
+        if not sup or not cart.get('lines'):
+            continue
+        live = [l for l in cart['lines'] if l.get('oos') != day]
+        q = cart_price(career, sup, live, cart.get('deal'), day)
+        rows = {r['item']: r for r in q['rows']}
+        lines = []
+        for l in cart['lines']:
+            it = item(career, l['item'])
+            r = rows.get(l['item']) or dict(line_price(it, l['qty'], sup), item=it['id'], qty=l['qty'])
+            room = max(0, capacity(career) - count(c, it['id']) - _in_transit(x, it['id']))
+            lines.append(dict(r, oos=l.get('oos') == day, room=room, locked=it.get('unlock', 1) > level))
+        deal = cart.get('deal') if (cart.get('deal') or {}).get('day') == day else None
+        asked = (x.get('haggle') or {}).get(sid) == day
+        if placing is None:
+            placing = clock(c, career, c['turn'] + 1)['abs']
+        out.append(dict(supplier=sid, lines=lines, n=len(live), goods=q['goods'], full=q['full'], bulk_off=q['bulk_off'],
+                        pct=q['pct'], off=q['off'], ship=q['ship'], ship_base=q['ship_base'], free_from=sup.get('free_from', 0),
+                        to_free=max(0, sup.get('free_from', 0) - q['goods']) if q['ship_base'] else 0,
+                        min_order=sup.get('min_order', 0), below_min=max(0, sup.get('min_order', 0) - q['goods']) if live else 0,
+                        total=q['total'], short=max(0, q['total'] - c['money']),
+                        deal=dict(deal, lost=q['deal_lost']) if deal else None,
+                        can_haggle=bool(live) and not asked and q['goods'] >= haggle_from(sup),
+                        haggle_from=haggle_from(sup), asked=asked, asks=list(ASKS),
+                        quote=quote(sup, career, placing)))
+    return out
 
 
 # ---------------------------------------------------------------- catalogue and lots
@@ -671,27 +873,54 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         cap = capacity(career)
         need(count(c, it['id']) + _in_transit(x, it['id']) + qty <= cap,
              f'Kho chứa tối đa {cap} phần mỗi loại (tính cả hàng đang giao).')
-        need(len([o for o in x['orders'] if o['status'] == 'in_transit']) < 8, 'Đang có nhiều đơn chờ giao. Nhận bớt rồi đặt tiếp nhé.')
-        cost = max(1, math.ceil(it['cost'] * qty * sup['factor']))
+        need(_shipments(x) < 8, 'Đang có nhiều đơn chờ giao. Nhận bớt rồi đặt tiếp nhé.')
+        need(_transit_lines(x) < TRANSIT_LINES, 'Đang có nhiều hàng chờ giao. Nhận bớt rồi đặt tiếp nhé.')
+        price = line_price(it, qty, sup)
+        cost, fee = price['cost'], ship_fee(sup, price['cost'])
         x['seq'] += 1
         oid = f'po-{x["seq"]}'
-        e.money(s, c, -cost, f'Nhập {qty} {it.get("unit", "phần")} {it["name"]} · {sup["name"]}', oid, category='stock')
+        e.money(s, c, -(cost + fee), f'Nhập {qty} {it.get("unit", "phần")} {it["name"]} · {sup["name"]}' + (f' · ship {fee} xu' if fee else ''),
+                oid, category='stock')
         roll = (c['day'] * 37 + x['seq'] * 11 + sum(map(ord, it['id']))) % 100
         short = min(qty - 1, 1 + roll % 3) if qty > 1 and roll < sup['short'] else 0
         clk = clock(c, career)
         when_ = _schedule(sup, career, clk['abs'], f'{career}:{c["day"]}:{x["seq"]}:{it["id"]}:{sup["id"]}')
         o = dict(id=oid, item=it['id'], qty=qty, actual=qty - short, supplier=sup['id'], cost=cost,
-                 unit_cost=math.ceil(it['cost'] * sup['factor']), status='in_transit', day=c['day'],
-                 claimed=False, rating=None, reply=None, **when_)
+                 unit_cost=price['unit_cost'], status='in_transit', day=c['day'],
+                 claimed=False, rating=None, reply=None, ship=fee, **when_)
         x['orders'].append(o)
         _trim_orders(x)
-        x['day_bought'] += cost
+        x['day_bought'] += cost + fee
         e.metric(c, 'purchases')
         eta = _eta(o, clk['abs'], c, career, clk)
         promise = eta['window'] if o['lo'] != o['hi'] else eta['arrives_time']
-        return dict(message=f'Đã đặt {qty} {it.get("unit", "phần")} {it["name"]} · {cost} xu. {sup["name"]} giao '
+        paid = f'{cost + fee} xu' + (f' (ship {fee} xu)' if fee else '')
+        return dict(message=f'Đã đặt {qty} {it.get("unit", "phần")} {it["name"]} · {paid}. {sup["name"]} giao '
                             f'{eta["eta_label"][0].lower() + eta["eta_label"][1:]} ({promise}); đếm rồi mới nhập kho.',
                     eta=dict(eta, order=oid))
+    if name == 'inv_cart':
+        return _cart_edit(c, career, x, p, level)
+    if name == 'inv_haggle':
+        sup = supplier(career, p.get('supplier'))
+        need(sup, 'Nhà cung cấp không tồn tại.')
+        ask = e.integer(p.get('pct'), 1, 50)
+        need(ask in ASKS, 'Chọn mức xin bớt có sẵn nhé.')
+        cart = (x.get('cart') or {}).get(sup['id'])
+        live = [l for l in (cart or {}).get('lines', []) if l.get('oos') != c['day']]
+        need(live, 'Thêm hàng vào đơn trước rồi mới trả giá nhé.')
+        asked = x.setdefault('haggle', {})
+        need(asked.get(sup['id']) != c['day'], f'{sup["name"]} đã trả lời hôm nay rồi. Mai hỏi lại nhé.')
+        goods = cart_price(career, sup, live, None, c['day'])['goods']
+        need(goods >= haggle_from(sup), f'Đơn từ {haggle_from(sup)} xu mới xin bớt được (đang {goods} xu).')
+        deal = haggle(career, sup, c['day'], ask, goods)
+        for k in [k for k, d in asked.items() if d != c['day']]:
+            del asked[k]  # one answer per supplier per day: yesterday's marks go
+        asked[sup['id']] = c['day']
+        cart['deal'] = deal
+        got = f' · bớt {deal["pct"]}%' if deal['pct'] else ' · miễn ship' if deal['free_ship'] else ''
+        return dict(message=f'{sup["name"]}: “{deal["said"]}”{got}', deal=deal)
+    if name == 'inv_order_cart':
+        return _cart_place(s, c, career, x, p, level)
     if name == 'inv_wait':
         need(c.get('open'), 'Tiệm đang đóng cửa. Mở cửa ngày mới, hàng tới trước giờ mở sẽ chờ sẵn ở cửa.')
         clk = clock(c, career)
@@ -704,6 +933,8 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
             nxt = _eta(waiting[0], clk['abs'], c, career, clk)
             msg += f' {item_name(waiting[0]["item"])}: dự kiến {nxt["eta_label"]}.'
         return dict(message=msg)
+    if p.get('group') is not None and name in ('inv_receive', 'inv_claim', 'inv_rate'):
+        return _group_action(s, c, career, x, name, p)
     order = next((o for o in x['orders'] if o['id'] == p.get('order')), None)
     if name == 'inv_receive':
         need(order and order['status'] == 'in_transit', 'Đơn đã nhận hoặc không tồn tại.')
@@ -769,6 +1000,245 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         x['lots'] = [l for l in x['lots'] if l['id'] != lot['id']]
         return dict(message='Đã bỏ lô hàng và ghi hao hụt.')
     raise e.GameError('Thao tác kho chưa được hỗ trợ.')
+
+
+def _shipments(x: dict) -> int:
+    """Deliveries on the way: a merged order is one van however many lines it has."""
+    return len({o.get('group') or o['id'] for o in x['orders'] if o['status'] == 'in_transit'})
+
+
+def _transit_lines(x: dict) -> int:
+    return sum(1 for o in x['orders'] if o['status'] == 'in_transit')
+
+
+def _cart_edit(c: dict, career: str, x: dict, p: dict, level: int) -> dict:
+    """inv_cart: add lines to a supplier's draft (op add, `item`+`qty` or `lines`; `fit` trims
+    to the room left), change a quantity (set; 0 removes), remove a line, or clear the draft."""
+    from . import engine as e
+    need = e.need
+    sup = supplier(career, p.get('supplier'))
+    need(sup, 'Nhà cung cấp không tồn tại.')
+    op = p.get('op', 'add')
+    need(op in ('add', 'set', 'remove', 'clear'), 'Thao tác đơn gộp không hợp lệ.')
+    carts = x.setdefault('cart', {})
+    cart = carts.setdefault(sup['id'], dict(lines=[]))
+    lines = cart['lines']
+    cap = capacity(career)
+
+    def room(it: dict) -> int:
+        return max(0, cap - count(c, it['id']) - _in_transit(x, it['id']))
+
+    msg = ''
+    if op == 'clear':
+        lines.clear()
+        msg = f'Đã bỏ đơn {sup["name"]}.'
+    elif op == 'add':
+        want = p.get('lines') if p.get('lines') is not None else [dict(item=p.get('item'), qty=p.get('qty'))]
+        need(isinstance(want, list) and 0 < len(want) <= CART_LINES, 'Danh sách hàng không hợp lệ.')
+        fit = p.get('fit') is True
+        added = 0
+        for w in want:
+            need(isinstance(w, dict), 'Danh sách hàng không hợp lệ.')
+            it = item(career, w.get('item'))
+            qty = e.integer(w.get('qty'), 1, 30)
+            need(sells(sup, it['id']), f'{sup["name"]} không bán {it["name"]}. Chọn nhà cung cấp khác nhé.')
+            need(it.get('unlock', 1) <= level, f'Mở khóa {it["name"]} ở cấp {it.get("unlock", 1)}.')
+            row = next((l for l in lines if l['item'] == it['id']), None)
+            have = row['qty'] if row else 0
+            if fit:
+                qty = min(qty, 30 - have, room(it) - have)
+                if qty <= 0:
+                    continue
+            new = have + qty
+            need(new <= 30, f'Mỗi món tối đa 30 {it.get("unit", "phần")} một đơn.')
+            need(new <= room(it), f'Kệ {it["name"]} chỉ còn chỗ cho {room(it)} {it.get("unit", "phần")} (tính cả hàng đang giao).')
+            if row:
+                row['qty'] = new
+            else:
+                need(len(lines) < CART_LINES, f'Một đơn tối đa {CART_LINES} món. Đặt đơn này trước nhé.')
+                lines.append(dict(item=it['id'], qty=new))
+            added += 1
+        need(added, 'Kệ đã đủ hàng, không cần nhập thêm.')
+        msg = f'Đã thêm vào đơn {sup["name"]} · {len(lines)} món.'
+    else:
+        it = item(career, p.get('item'))
+        row = next((l for l in lines if l['item'] == it['id']), None)
+        need(row, 'Món này chưa có trong đơn.')
+        qty = 0 if op == 'remove' else e.integer(p.get('qty'), 0, 30)
+        if qty:
+            need(qty <= room(it), f'Kệ {it["name"]} chỉ còn chỗ cho {room(it)} {it.get("unit", "phần")} (tính cả hàng đang giao).')
+            row['qty'] = qty
+            msg = f'{it["name"]}: {qty} {it.get("unit", "phần")}.'
+        else:
+            lines.remove(row)
+            msg = f'Đã bỏ {it["name"]} khỏi đơn.'
+    if not lines:
+        carts.pop(sup['id'], None)
+    if not carts:
+        x.pop('cart', None)
+    return dict(message=msg)
+
+
+def _cart_place(s: dict, c: dict, career: str, x: dict, p: dict, level: int) -> dict:
+    """inv_order_cart: the supplier's draft as ONE order (one payment, one van, one crate)."""
+    from . import engine as e
+    need = e.need
+    sup = supplier(career, p.get('supplier'))
+    need(sup, 'Nhà cung cấp không tồn tại.')
+    need(p.get('confirm') is True, 'Xác nhận đơn gộp và số tiền trước nhé.')
+    cart = (x.get('cart') or {}).get(sup['id'])
+    need(cart and cart.get('lines'), 'Đơn đang trống. Thêm hàng vào đơn trước nhé.')
+    day = c['day']
+    held = [l for l in cart['lines'] if l.get('oos') == day]
+    lines = [l for l in cart['lines'] if l.get('oos') != day]
+    need(lines, f'Hôm nay {sup["name"]} hết {", ".join(item(career, l["item"])["name"] for l in held)}. Bỏ khỏi đơn hoặc chọn nơi khác nhé.')
+    cap = capacity(career)
+    for l in lines:
+        it = item(career, l['item'])
+        need(sells(sup, it['id']), f'{sup["name"]} không bán {it["name"]}. Bỏ khỏi đơn nhé.')
+        need(it.get('unlock', 1) <= level, f'Mở khóa {it["name"]} ở cấp {it.get("unlock", 1)}.')
+        need(count(c, it['id']) + _in_transit(x, it['id']) + l['qty'] <= cap,
+             f'Kệ {it["name"]} không đủ chỗ cho {l["qty"]} {it.get("unit", "phần")} (tính cả hàng đang giao). Bớt lại nhé.')
+    need(_shipments(x) < 8, 'Đang có nhiều đơn chờ giao. Nhận bớt rồi đặt tiếp nhé.')
+    need(_transit_lines(x) + len(lines) <= TRANSIT_LINES, 'Đang có nhiều hàng chờ giao. Nhận bớt rồi đặt tiếp nhé.')
+    deal = cart.get('deal')
+    q = cart_price(career, sup, lines, deal, day)
+    if sup.get('min_order') and q['goods'] < sup['min_order']:
+        said = (f'Đơn dưới {sup["min_order"]} xu chị không chạy xe đâu em.' if _casual(sup)
+                else f'Bên em chỉ nhận đơn gộp từ {sup["min_order"]} xu ạ.')
+        need(False, f'{sup["name"]}: “{said}” Thêm hàng hoặc đặt lẻ từng món nhé.')
+    need(c['money'] >= q['total'], f'Thiếu {q["total"] - c["money"]} xu để đặt đơn này.')
+    x['seq'] += 1
+    gid = f'po-{x["seq"]}'
+    h = _h(f'{career}:{gid}:{day}:{sup["id"]}')
+    notes = []
+    # Push-back 1: one line is out of stock today. It stays in the draft, nothing is charged for it,
+    # and the haggled price and the shipping quoted still hold (the supplier's fault, not yours).
+    gone = None
+    if len(lines) >= 2 and h % 100 < sup.get('oos', 0):
+        gone = lines[(h // 100) % len(lines)]
+        lines = [l for l in lines if l is not gone]
+        q2 = cart_price(career, sup, lines, deal, day, honor=q['deal_ok'])
+        q = dict(q2, ship=min(q['ship'], q2['ship']))
+        q['total'] = q['goods'] - q['off'] + q['ship']
+        name = item(career, gone['item'])['name']
+        notes.append(f'{sup["name"]}: “' + (f'Hết {name.lower()} rồi em, giao trước mấy món kia nha.' if _casual(sup)
+                                            else f'Kho tạm hết {name.lower()}, bên em giao trước phần còn lại ạ.') +
+                     f'” Không tính tiền {name.lower()}.')
+    clk = clock(c, career)
+    now = clk['abs']
+    placing = now
+    # Push-back 2: a big merged load is packed separately and rides a later van.
+    if len(lines) >= 3 and (h // 7) % 100 < 30:
+        later = _merge_later(sup, career, now)
+        if later is not None:
+            placing = later
+    when_ = _schedule(sup, career, placing, f'{career}:{day}:{x["seq"]}:{gid}:{sup["id"]}')
+    when_['placed'] = now
+    if placing != now:
+        label = when(_r5((when_['lo'] + when_['hi']) / 2), now, approx=True, quote=True)
+        label = label[0].lower() + label[1:]
+        notes.append(f'{sup["name"]}: “' + (f'Gộp {len(lines)} món soạn không kịp chuyến, {label} mới tới nha em.' if _casual(sup)
+                                            else f'Đơn gộp {len(lines)} món cần soạn riêng, {label} mới giao được ạ.') + '”')
+    paid = f'{q["total"]} xu' + (f' (ship {q["ship"]} xu)' if q['ship'] else ' (miễn ship)')
+    e.money(s, c, -q['total'], f'Nhập gộp {len(lines)} món · {sup["name"]}' + (f' · ship {q["ship"]} xu' if q['ship'] else ''),
+            gid, category='stock')
+    costs = _spread([r['cost'] for r in q['rows']], q['off'])
+    first = None
+    for k, (l, r, cost) in enumerate(zip(lines, q['rows'], costs)):
+        roll = (day * 37 + x['seq'] * 11 + sum(map(ord, l['item'])) + k * 17) % 100
+        short = min(l['qty'] - 1, 1 + roll % 3) if l['qty'] > 1 and roll < sup['short'] else 0
+        o = dict(id=f'{gid}-{k + 1}', group=gid, item=l['item'], qty=l['qty'], actual=l['qty'] - short, supplier=sup['id'],
+                 cost=cost, unit_cost=r['unit_cost'], status='in_transit', day=day, claimed=False, rating=None, reply=None,
+                 **when_)
+        if first is None:
+            o.update(ship=q['ship'], off=q['off'])
+            first = o
+        x['orders'].append(o)
+    _trim_orders(x)
+    x['day_bought'] += q['total']
+    e.metric(c, 'purchases')
+    # The draft keeps only what could not ship today.
+    keep = held + ([dict(gone, oos=day)] if gone else [])
+    if keep:
+        x['cart'][sup['id']] = dict(lines=[dict(item=l['item'], qty=l['qty'], oos=day) for l in keep])
+    else:
+        x['cart'].pop(sup['id'], None)
+        if not x['cart']:
+            x.pop('cart', None)
+    eta = _eta(first, now, c, career, clk)
+    promise = eta['window'] if first['lo'] != first['hi'] else eta['arrives_time']
+    msg = f'Đã đặt đơn gộp {len(lines)} món · {paid}.'
+    if placing == now:
+        msg += f' {sup["name"]} giao một chuyến {eta["eta_label"][0].lower() + eta["eta_label"][1:]} ({promise}).'
+    return dict(message=' '.join([msg, *notes]), eta=dict(eta, order=first['id'], group=gid),
+                oos=gone['item'] if gone else None, later=placing != now)
+
+
+def _group_action(s: dict, c: dict, career: str, x: dict, name: str, p: dict) -> dict:
+    """inv_receive / inv_claim / inv_rate on a whole merged order (`group`)."""
+    from . import engine as e
+    need = e.need
+    gid = p.get('group')
+    lines = [o for o in x['orders'] if isinstance(gid, str) and o.get('group') == gid]
+    need(lines, 'Đơn không tồn tại.')
+    sup = _known(career, lines[0]['supplier'])
+    if name == 'inv_receive':
+        lines = [o for o in lines if o['status'] == 'in_transit']
+        need(lines, 'Đơn đã nhận hoặc không tồn tại.')
+        door = clock(c, career, turn=c['turn'] - 1)
+        if door['abs'] < min(o['at'] for o in lines):
+            eta = _eta(lines[0], door['abs'], c, career, door)
+            need(False, f'Hàng chưa tới. Dự kiến {eta["eta_label"]} — làm việc khác trong lúc chờ nhé.')
+        counts = p.get('counts')
+        need(isinstance(counts, dict), 'Đếm từng món trong thùng trước nhé.')
+        for o in lines:
+            it = item(career, o['item'])
+            counted = e.integer(counts.get(o['id']), 0, 60)
+            need(counted == o['actual'], f'Số đếm {it["name"]} chưa khớp số hàng thực có trong thùng. Đếm lại nhé.')
+            room = capacity(career) - count(c, it['id'])
+            need(o['actual'] <= room, f'Kệ {it["name"]} chỉ còn chỗ cho {max(0, room)} {it.get("unit", "phần")}. '
+                 'Bán hoặc bỏ bớt lô cũ rồi nhận thùng này nhé.')
+        got, short = [], []
+        for o in lines:
+            it = item(career, o['item'])
+            if o['actual']:
+                life = _life(it) + (sup.get('fresh', 0) if it.get('life') else 0)
+                add_lot(c, it['id'], o['actual'], o['unit_cost'], life, o['supplier'])
+            o['status'] = 'received'
+            e.metric(c, 'restocked')
+            got.append(f'{o["actual"]}/{o["qty"]} {it["name"]}')
+            if o['actual'] < o['qty']:
+                short.append(dict(order=o['id'], item=it['id'], missing=o['qty'] - o['actual'], refund=_refund(o)))
+        e.log(s, c, 'stock', f'Kiểm nhận đơn gộp từ {sup["name"]}: {", ".join(got)}.', ref=gid)
+        msg = f'Đã nhập kho cả thùng: {", ".join(got)}.'
+        if short:
+            refund = sum(v['refund'] for v in short)
+            msg += f' Giao thiếu {len(short)} món: bấm “Khiếu nại phần thiếu” ngay trong kho để được hoàn {refund} xu.'
+            return dict(message=msg, short=dict(group=gid, order=short[0]['order'], lines=short,
+                                                missing=sum(v['missing'] for v in short), refund=refund))
+        return dict(message=msg)
+    if name == 'inv_claim':
+        due = [o for o in lines if o['status'] == 'received' and o['actual'] < o['qty'] and not o['claimed']]
+        need(due, 'Đơn này giao đủ hoặc đã được giải quyết.')
+        refund = sum(_refund(o) for o in due)
+        for o in due:
+            o['claimed'] = True
+            o['reply'] = sup['voice']['claim']
+        e.money(s, c, refund, f'Hoàn tiền giao thiếu · {sup["name"]}', gid, category='refund')
+        return dict(message=f'{sup["name"]}: “{sup["voice"]["claim"]}” · +{refund} xu.')
+    need(all(o['status'] == 'received' for o in lines) and all(o['rating'] is None for o in lines),
+         'Chỉ đánh giá một lần sau khi nhận hàng.')
+    stars = e.integer(p.get('stars'), 1, 5)
+    note = e.clean_text(p.get('note', ''), 200, 0)
+    reply = sup['voice']['good' if stars >= 4 else 'bad']
+    for o in lines:
+        o.update(rating=stars, note=note, reply=reply)
+    rated = x['supplier_ratings'].setdefault(sup['id'], dict(total=0, count=0))
+    rated['total'] += stars
+    rated['count'] += 1
+    e.metric(c, 'supplier_reviews')
+    return dict(message=f'{sup["name"]} phản hồi: “{reply}”')
 
 
 def on_close(s: dict, c: dict, career: str) -> int:
@@ -837,6 +1307,10 @@ def public(c: dict, career: str) -> dict | None:
     v['suppliers'] = [dict(_static(sp, career), quote=quote(sp, career, placing),
                            rating=(round(ratings[sp['id']]['total'] / ratings[sp['id']]['count'], 1)
                                    if ratings.get(sp['id'], {}).get('count') else None)) for sp in suppliers(career)]
+    # Drafts (đơn gộp), priced by the server; the raw draft and the haggle marks stay inside.
+    v.pop('cart', None)
+    v.pop('haggle', None)
+    v['carts'] = cart_view(c, career, x)
     return v
 
 
@@ -889,8 +1363,40 @@ def validate(c: dict, career: str) -> None:
             need(late is None or (isinstance(late, str) and 0 < len(late) <= 300), 'Ghi chú giao trễ sai.')
             need((late is not None) == (at > hi), 'Giờ giao trễ không khớp.')
         need(o.get('status') in ('in_transit', 'received'), 'Trạng thái đơn nhập sai.')
+        if 'group' in o:  # a line of a merged order (đơn gộp)
+            need(isinstance(o['group'], str) and o['group'].startswith('po-') and len(o['group']) <= 40
+                 and str(o.get('id', '')).startswith(o['group'] + '-'), 'Đơn gộp sai mã.')
+        for k in ('ship', 'off'):  # shipping paid and the haggled discount (orders from 0.9.20 on)
+            if k in o:
+                integer(o[k], 0, 10**6)
         need(type(o.get('claimed')) is bool and o.get('rating') in (None, 1, 2, 3, 4, 5), 'Đánh giá đơn nhập sai.')
     need(isinstance(x['supplier_ratings'], dict) and all(k in ALL_SUPPLIERS for k in x['supplier_ratings']), 'Đánh giá nhà cung cấp sai.')
+    if 'cart' in x:
+        sold = {sp['id'] for sp in suppliers(career)}
+        need(isinstance(x['cart'], dict) and len(x['cart']) <= len(sold), 'Đơn gộp không hợp lệ.')
+        for sid, cart in x['cart'].items():
+            need(sid in sold and isinstance(cart, dict) and set(cart) <= {'lines', 'deal'}, 'Đơn gộp không hợp lệ.')
+            lines = cart.get('lines')
+            need(isinstance(lines, list) and 0 < len(lines) <= CART_LINES, 'Đơn gộp không hợp lệ.')
+            for l in lines:
+                need(isinstance(l, dict) and set(l) <= {'item', 'qty', 'oos'} and l.get('item') in ids, 'Dòng đơn gộp sai.')
+                integer(l.get('qty'), 1, 30)
+                if 'oos' in l:
+                    integer(l['oos'], 1, 10**7)
+            need(len({l['item'] for l in lines}) == len(lines), 'Đơn gộp trùng món.')
+            deal = cart.get('deal')
+            if deal is not None:
+                need(isinstance(deal, dict) and set(deal) == {'day', 'ask', 'sub', 'pct', 'free_ship', 'mood', 'said'}, 'Giá thương lượng sai.')
+                integer(deal['day'], 1, 10**7)
+                integer(deal['ask'], 1, 50)
+                integer(deal['sub'], 0, 10**6)
+                integer(deal['pct'], 0, 50)
+                need(type(deal['free_ship']) is bool and deal['mood'] in ('ok', 'counter', 'ship', 'no', 'sour'), 'Giá thương lượng sai.')
+                clean_text(deal['said'], 300)
+    if 'haggle' in x:
+        need(isinstance(x['haggle'], dict) and len(x['haggle']) <= 12 and all(k in ALL_SUPPLIERS for k in x['haggle']), 'Trả giá sai.')
+        for d in x['haggle'].values():
+            integer(d, 1, 10**7)
 
 
 def content() -> dict:
