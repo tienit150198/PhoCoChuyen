@@ -75,7 +75,9 @@ def _card(db, me: str, other: str) -> dict:
     status = _status_of(db, other)
     mine = db.execute('SELECT c.a,c.b FROM marriage_bonds b JOIN couples c ON c.id=b.couple WHERE b.sid=?', (me,)).fetchone()
     spouse = bool(mine and other in (mine['a'], mine['b']))
-    return dict(name=mr._display(db, other), code=(p or {}).get('code'), status=status, spouse=spouse, career=_career(db, other))
+    from .live_dating import bonded   # 💕 "Đang tìm hiểu": both tapped ❤️ after an in-game date (live/dating.py)
+    return dict(name=mr._display(db, other), code=(p or {}).get('code'), status=status, spouse=spouse, career=_career(db, other),
+                dating=not spouse and bonded(db, me, other))
 
 
 def _count_search(db, sid: str) -> None:

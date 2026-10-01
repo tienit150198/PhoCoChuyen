@@ -45,6 +45,7 @@ from . import dayclock as dc
 from . import wardrobe as wd
 from . import patience as pt
 from . import system_gift as sg
+from . import live_effects as lfx
 
 ORIGINAL=("mother_baby","pharmacy","accounting","customer_care")
 UI_THEMES=("kem","tra_xanh","dem","bien","keo")
@@ -530,6 +531,9 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     if action==sg.ACTION:  # 🎁 Quà từ Phố Có Chuyện (game/system_gift.py): the server pays a gift into the wallet
         need(internal,"Thao tác chỉ dành cho máy chủ.","forbidden")
         return sg.apply(s,p)
+    if action==lfx.ACTION:  # 🎈 Quà từ phố (game/live_effects.py): a reward of the live service (a date, a red envelope)
+        need(internal,"Thao tác chỉ dành cho máy chủ.","forbidden")
+        return lfx.apply(s,p)
     need(career in CAREERS,"Chọn một nghề trước nhé.")
     jr.gate(s,career,action,internal)
     if career!=s.get("current"):ab.check(s,career,{},internal)  # leaving work in progress only through select_career

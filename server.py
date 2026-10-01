@@ -57,6 +57,7 @@ from game import retention
 from game import leaderboard
 from game import marriage
 from game import system_gift
+from game import live_effects, live_dating
 from game import live_chat
 from game.content import public_content,content_parts,CAREERS
 from game.engine import GameError,public_state
@@ -493,6 +494,9 @@ class Handler(BaseHTTPRequestHandler):
                         paid,gifts=system_gift.on_load(self.server.store,token,state)
                         if paid:state,revision,_=self.server.store.read(token)
                     except Exception as e:self.log_error("gift on_load: %s",type(e).__name__)  # never blocks loading the game
+                    try:  # 🎈 Quà từ phố: rewards of the live service (a date's tinh thần, a red envelope), paid once (game/live_effects.py)
+                        if live_effects.on_load(self.server.store,token,state):state,revision,_=self.server.store.read(token)
+                    except Exception as e:self.log_error("live effects on_load: %s",type(e).__name__)  # never blocks loading the game
                 extra={"Set-Cookie":self.cookie(token)} if created else {}
                 view=public_state(state)
                 # The workplace the first frame opens (app.js career()): boot.js starts its part of the catalogue
@@ -688,7 +692,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(200,live_chat.act(self.server.store,(accounts.status(self.server.store,token) or {}).get("username") or "admin",data));return
             if route=="/api/account/delete":
                 if data.get("confirm")!="XOA":raise GameError("Gõ XOA để xác nhận xóa dữ liệu.")
-                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);system_gift.forget(self.server.store,token);self.server.store.delete(token)
+                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);self.server.store.delete(token)
                 self.json(200,dict(deleted=True,message="Đã xóa toàn bộ dữ liệu chơi của bạn trên máy chủ."),{"Set-Cookie":self.cookie("",0)});return
             if route.startswith("/api/account/"):
                 self.account_post(route[len("/api/account/"):],token,data);return

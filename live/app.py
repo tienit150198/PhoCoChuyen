@@ -23,6 +23,7 @@ import time
 from . import PROTOCOL, jsonx
 from .auth import identify, token_from
 from .chat import ChatFeature
+from .dating import DatingFeature
 from .config import Config, from_env
 from .db import Error as DbError, log, open_db, wait_for_tables
 from .hub import Conn, Hub
@@ -37,7 +38,7 @@ except ImportError:  # pragma: no cover
     websockets = None
 
 # Phase 2 adds live.street.StreetFeature, phase 3 live.dating.DatingFeature (one line each).
-FEATURES = [ChatFeature]
+FEATURES = [ChatFeature, DatingFeature]
 HELLO_SECS = 10.0
 NOTIFY_CHANNEL = 'mnl_live'
 
