@@ -4,7 +4,8 @@ export default [
  {"version":"1.0.0","date":"2026-10-01","items":[
   {"emoji":"💬","text":"Chat đã có! Nhắn riêng với bạn bè, hoặc lập nhóm chat tới 20 người.","go":{"action":"liveChat"}},
   {"emoji":"🌏","text":"Kênh Cả phố: trò chuyện với mọi người đang online, mỗi người 1 tin mỗi 10 giây."},
-  {"emoji":"🟢","text":"Chấm xanh cho biết bạn bè nào đang online. Muốn ẩn thì tắt trong Cài đặt."}
+  {"emoji":"🟢","text":"Chấm xanh cho biết bạn bè nào đang online. Muốn ẩn thì tắt trong Cài đặt."},
+  {"emoji":"🚶","text":"Đi dạo khu phố: Bờ hồ, Chợ đêm, Công viên, Phố đi bộ. Gặp người thật, ngồi bàn tám chuyện, nhặt lì xì.","go":{"action":"liveWalk"}}
  ]},
  {"version":"0.9.15","date":"2026-10-01","items":[
   {"emoji":"🍉","text":"Nghề mới: Bán trái cây ở sạp Dì Tư: lựa trái chín, cân đúng từng lạng, trả giá khéo."},

@@ -1,7 +1,8 @@
 # v1.0.0 — Chat
 
 - Dịch vụ live riêng (live/, asyncio + websockets, mnl-live.service, nginx /live): chat bạn bè, nhóm (≤20), kênh Cả phố (online, 10 giây/tin, người mới 10 phút chỉ đọc), chấm online (tắt được), lọc số điện thoại/link/tục nặng (tiếng lóng GenZ được), báo cáo (3 báo cáo tự ẩn), chặn, tab Chat trong admin (ẩn tin, cấm chat 1 giờ/24 giờ/7 ngày). Bảng mới (schema 6): chat_channels, chat_members, chat_messages, chat_mutes, chat_prefs, live_effects. Bật bằng LIVE_URL=/live ở game và LIVE_CHAT=1 ở live.env. Không có hướng dẫn cho chat.
-- "Có gì mới": chat, Cả phố, chấm online.
+- Đi dạo khu phố (live/street.py, v4/walk.js): 4 nơi, ≤20 người mỗi khu, bong bóng, biểu cảm, bàn tám chuyện (72 chủ đề), múa lân, hàng rong, lì xì (≤30 xu/ngày, game/live_effects.py, POST /api/live/effects). Bật bằng LIVE_STREET=1.
+- "Có gì mới": chat, Cả phố, chấm online, đi dạo.
 
 # v0.9.19 — Menu gọn, pha màu dễ
 

@@ -224,7 +224,7 @@ const railItem=([a,i,label,badge],extra='',hide='')=>`<button type="button" clas
 const RAIL_MAIN=['home','prepare','operations','prices','feedback','jobapp'];
 /** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
 const RAIL_GROUPS=[
-  ['pho','building','Khu phố',['nhom','phone','social','town','rank']],
+  ['pho','building','Khu phố',['liveWalk','nhom','phone','social','town','rank']],
   ['ban','people','Quan hệ',['liveChat','people','friends','marriage']],
   ['tien','coin','Tiền & nhà',['money','bank','house']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
