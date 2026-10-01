@@ -91,3 +91,15 @@ export function restockFor(x,ids,what,{task}={}){
   const label=g.ready?`📦 Mở thùng ${w} lên kệ`:g.coming?`🚚 ${w.charAt(0).toUpperCase()+w.slice(1)} đang về${left?` · ${esc(left)}`:''}`:`📦 Hết ${w}: nhập hàng`;
   return {...g,label};
 }
+
+/** Price of one order line from a supplier card (game/inventory.py line_price + ship_fee): `full` the
+ * listed price, `pct` the wholesale tier reached, `cost` the goods, `ship` the fee when this line ships
+ * alone, `total` what a single order costs. Older servers send no terms: no tier, no fee. */
+export function orderQuote(it,qty,sup){
+  const q=Math.max(1,Number(qty)||1),f=Number(sup?.factor)||1;
+  const pct=Math.max(0,...(sup?.bulk||[]).filter(([n])=>q>=n).map(([,p])=>p));
+  const full=Math.max(1,Math.ceil(it.cost*q*f)),off=pct?Math.max(1,Math.floor((full*pct+50)/100)):0,cost=Math.max(1,full-off);
+  const ship=cost>=(Number(sup?.free_from)||0)?0:(Number(sup?.ship)||0);
+  const tier=[...(sup?.bulk||[])].sort((a,b)=>a[0]-b[0]).find(([n])=>q<n)||null;
+  return {full,pct,cost,ship,total:cost+ship,tier};
+}
