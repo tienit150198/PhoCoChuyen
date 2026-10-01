@@ -1,0 +1,136 @@
+/* ==========================================================================
+   🛠️ Trong nhà (public/js/v4/reno.js), on top of bank.css + house.css. Theme tokens for the frame;
+   the room keeps its own paint, tile and wood colours and dims with the scene filter in "Phố đêm".
+   Phone first (390px): the room on top, the panel under it; wider sheets put them side by side.
+   ========================================================================== */
+
+.rn-tabs{margin:0}
+.rn-grid{display:grid;gap:14px;min-width:0}
+.rn-stage{display:grid;gap:8px;min-width:0;align-content:start}
+.rn-panel{display:grid;gap:14px;min-width:0;align-content:start}
+
+/* Rooms */
+.rn-rooms{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px}
+.rn-rooms::-webkit-scrollbar{display:none}
+.rn-room{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font-weight:700;font-size:.9rem;white-space:nowrap;cursor:pointer}
+.rn-room.active{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-text)}
+.rn-room small{min-width:20px;padding:0 6px;border-radius:999px;background:var(--surface-2);color:var(--muted);font-size:.75rem;text-align:center}
+
+/* The room */
+.rn-scene{display:block;width:100%;height:auto;aspect-ratio:360/230;border-radius:var(--radius);border:1px solid var(--line);background:#e9dcc4;filter:var(--scene-filter,none);user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.rn-wall.l0{fill:#e2d3b8}
+.rn-wall.l1{fill:#f7e4c8}
+.rn-wall.l2{fill:#dfeadb}
+.rn-motif{fill:#c4d8bd}
+.rn-wainscot{fill:#b98a5e}
+.rn-window{fill:#bfe3f5}
+.rn-frame{fill:none;stroke:#fffaf1;stroke-width:4}
+.rn-peel{fill:#c9b691;opacity:.85}
+.rn-crack{fill:none;stroke:#7c6a52;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:.75}
+.rn-ceil{fill:#f6f1e7}
+.rn-led{fill:#ffe8a3;opacity:.9}
+.rn-stain{fill:#b48d55;opacity:.45}
+.rn-drip{fill:#7fb6d9}
+.rn-cord{stroke:#5a4a3a;stroke-width:2}
+.rn-bulb{fill:#ffe18a;stroke:#e0b54a;stroke-width:1.5}
+.rn-bulb.led{fill:#fff6cf}
+.rn-bulb.dim{fill:#d8cfb8;stroke:#a89c82}
+.rn-switch{fill:#fffdf6;stroke:#bcae96}
+.rn-floor.l0{fill:#c6bdae}
+.rn-floor.l1{fill:#efe8dc}
+.rn-floor.l2{fill:#c99260}
+.rn-floor.grass{fill:#9fcf82}
+.rn-joint{fill:none;stroke-width:1.2}
+.rn-joint.l0{stroke:#a99f8e}
+.rn-joint.l1{stroke:#d3c7b3}
+.rn-joint.l2{stroke:#a46f3d}
+.rn-hole{fill:#8e8270}
+.rn-grass-tuft{fill:none;stroke:#6aa851;stroke-width:2;stroke-linecap:round}
+.rn-sky{fill:#bfe3f5}
+.rn-sun{fill:#ffd66b}
+.rn-city{fill:#a9c3d3}
+.rn-rail{fill:#6b5b4b}
+.rn-hedge{fill:#5f9f58}
+/* Kitchen */
+.rn-counter{fill:#d6c6aa}
+.rn-counter-top{fill:#9e8a6c}
+.rn-sink{fill:#c7d3db}
+.rn-tap{fill:none;stroke:#8d9aa3;stroke-width:3;stroke-linecap:round}
+.rn-stove{fill:#2f2f35}
+.rn-stove.old{fill:#7d7a74}
+.rn-burner{fill:#4a4a52;stroke:#e46b3c;stroke-width:1.4}
+.rn-shelf{fill:#a77b4f}
+.rn-cab{fill:#f2ebe0;stroke:#cbbda6}
+.rn-cab-line{stroke:#cbbda6;stroke-width:1.5}
+.rn-hood{fill:#b9c0c6}
+.rn-soot{fill:#4a3f35;opacity:.28}
+/* Night (Phố đêm): sky, window and light */
+html[data-theme="dem"] .rn-sky,html[data-theme="dem"] .rn-window{fill:#26304f}
+html[data-theme="dem"] .rn-sun{fill:#f3edc8}
+html[data-theme="dem"] .rn-city{fill:#3a4566}
+html[data-theme="dem"] .rn-bulb:not(.dim){fill:#fff1b8;filter:drop-shadow(0 0 6px #ffd76a)}
+
+/* Furniture and empty slots (44px targets on a 390px phone) */
+.rn-item{cursor:pointer;outline:none}
+.rn-item text{pointer-events:none}
+.rn-hit{fill:transparent}
+.rn-shadow{fill:#000;opacity:.13}
+.rn-ring,.rn-slot circle{fill:rgba(255,255,255,.35);stroke:var(--accent);stroke-width:2.5}
+.rn-slot{cursor:pointer;outline:none}
+.rn-slot circle{fill:rgba(255,255,255,.5);stroke:#6d5a48;stroke-width:1.6;stroke-dasharray:4 3}
+.rn-slot path{stroke:#6d5a48;stroke-width:2.4;stroke-linecap:round}
+.rn-slot.on circle,.rn-slot.go circle{stroke:var(--accent);stroke-width:2.5;stroke-dasharray:none;fill:rgba(255,255,255,.75)}
+.rn-slot.on path,.rn-slot.go path{stroke:var(--accent)}
+.rn-item:focus-visible text,.rn-slot:focus-visible circle{outline:none;stroke:var(--focus);stroke-width:3}
+.rn-item:focus-visible{filter:drop-shadow(0 0 3px var(--focus))}
+@media (prefers-reduced-motion:no-preference){
+  html:not(.reduce-motion) .rn-drip{animation:rn-drip 1.8s ease-in infinite}
+  html:not(.reduce-motion) .rn-drip.d2{animation-delay:.9s}
+  html:not(.reduce-motion) .rn-bulb.dim{animation:rn-flicker 3.2s steps(1) infinite}
+  html:not(.reduce-motion) .rn-slot.go circle{animation:rn-pulse 1.2s ease-in-out infinite}
+}
+@keyframes rn-drip{0%{transform:translateY(0);opacity:0}15%{opacity:1}100%{transform:translateY(110px);opacity:0}}
+@keyframes rn-flicker{0%,100%{fill:#d8cfb8}46%{fill:#ffe18a}50%{fill:#d8cfb8}54%{fill:#ffe18a}58%{fill:#d8cfb8}}
+@keyframes rn-pulse{0%,100%{fill:rgba(255,255,255,.75)}50%{fill:rgba(255,255,255,.35)}}
+
+/* Panels */
+.rn-cozy-top{display:flex;align-items:center;gap:12px}
+.rn-cozy-top small{display:block;font-size:.85rem;color:var(--muted);font-weight:700}
+.rn-cozy-top b{font-size:1.1rem}
+.rn-cozy-num{flex:none;display:inline-grid;place-items:center;min-width:56px;height:56px;padding:0 8px;border-radius:16px;background:var(--accent-soft);color:var(--accent-text);font-size:1.6rem;font-weight:800;font-variant-numeric:tabular-nums}
+.rn-perk{margin:10px 0 0;padding:8px 12px;border-radius:var(--radius-sm);background:var(--surface-2);color:var(--ink-2);font-weight:700;font-size:.95rem}
+.rn-perk.on{background:var(--good-soft);color:var(--good)}
+.rn-flaws{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.rn-flaws li{padding:4px 10px;border-radius:999px;background:var(--warn-soft);color:var(--warn);font-weight:700;font-size:.88rem}
+.rn-parts{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:10px}
+.rn-part{padding:12px;border-radius:var(--radius-sm);border:1px solid var(--line);background:var(--surface)}
+.rn-part-top{display:flex;align-items:center;gap:10px;min-width:0}
+.rn-part-top .grow{min-width:0;flex:1}
+.rn-part-top b{display:block}
+.rn-part-top small{display:block;color:var(--muted);font-size:.88rem}
+.rn-part.bad .rn-part-top small{color:var(--bad);font-weight:700}
+.rn-part.warn .rn-part-top small{color:var(--warn);font-weight:700}
+.rn-part-ico,.rn-shop-ico{flex:none;display:inline-grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--surface-2);font-size:1.4rem;line-height:1}
+.rn-lv{flex:none;color:var(--star);letter-spacing:1px;font-size:1rem}
+.rn-part-go{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.rn-part-go>.btn{flex:1 1 auto;min-height:44px}
+.rn-max{align-self:center;color:var(--muted);font-size:.88rem;font-weight:700}
+.rn-fixall{margin-top:8px}
+.rn-pick-head{display:flex;align-items:center;gap:8px}
+.rn-pick-head h3{flex:1;margin:0}
+.rn-shop{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}
+.rn-shop-row{display:flex;align-items:center;gap:10px;min-width:0;padding:6px 0;border-bottom:1px solid var(--line)}
+.rn-shop-row:last-child{border-bottom:0}
+.rn-shop-row .grow{min-width:0;flex:1}
+.rn-shop-row b{display:block;overflow-wrap:anywhere}
+.rn-shop-row small{display:block;color:var(--muted);font-size:.85rem}
+.rn-shop-row.have small{color:var(--good);font-weight:700}
+.rn-shop-row .btn{flex:none;min-height:44px}
+.rn-shop-row.big{border:0;padding:0}
+.rn-row-go{display:flex;gap:6px;flex:none}
+
+@media (min-width:720px){
+  .hs-facts.rn-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .rn-grid{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:start}
+  .rn-stage{position:sticky;top:0}
+}
