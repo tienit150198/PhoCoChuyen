@@ -56,6 +56,7 @@ from game import admin_retention
 from game import retention
 from game import leaderboard
 from game import lb_titles
+from game import fair_board  # 🏆 Bảng vàng hội chợ: the fair's titles after the end
 from game import marriage
 from game import system_gift
 from game import live_effects, live_dating
@@ -495,6 +496,7 @@ class Handler(BaseHTTPRequestHandler):
                     try:  # 💍 anniversaries of this save's wedding date: reward rows for live_effects below (game/wedding_live.py)
                         wedding_live.on_load(self.server.store,token,state)
                     except Exception as e:self.log_error("wedding on_load: %s",type(e).__name__)  # never blocks loading the game
+                    fair_board.ensure(self.server.store)  # 🏆 the fair's titles, once it is over (rows for live_effects below; never raises)
                     try:  # 🧧 rewards from the live service (Đi dạo, weddings): paid once into the save, before the gift cards (game/live_effects.py)
                         if live_effects.on_load(self.server.store,token,state):state,revision,_=self.server.store.read(token)
                     except Exception as e:self.log_error("live_effects on_load: %s",type(e).__name__)  # never blocks loading the game
@@ -674,6 +676,7 @@ class Handler(BaseHTTPRequestHandler):
             max_commands=int(os.environ.get("COMMANDS_PER_MINUTE","360"))
             if route=="/api/command":
                 if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
+                if str(data.get("action",""))[:5]=="fair_" and not self.server.rate_limit("fair:"+token,int(os.environ.get("FAIR_PER_MINUTE","40"))):self.error(429,"Từ từ thôi, hội chợ còn dài mà!","rate_limited");return  # 🏮 game/fair.py
                 if length>256*1024 and data.get("action")!="import_save":self.error(413,"Thao tác quá lớn.");return
                 result=self.server.store.command(token,data.get("request_id"),data.get("expected_revision"),data.get("career"),data.get("action"),data.get("payload",{}))
                 self.json(200,result);return
@@ -1199,6 +1202,7 @@ def _housekeeping(store:Store,stop:threading.Event,limits:SharedLimits|None):
             step("stats",lambda:admin_stats.upkeep(store))  # stat tables: rollups, then retention limits (never at the peak hours)
         step("push",lambda:push.deliver_due(store))
         lb_titles.run_refresh(store)  # 🏅 Danh hiệu tuần: once a Vietnam day (and the week's freeze on Monday 00:00)
+        fair_board.run_settle(store)  # 🏆 Bảng vàng hội chợ: the titles, once, after the fair closes
 
 
 def tune_gc()->None:

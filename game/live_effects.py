@@ -84,15 +84,17 @@ def apply(s: dict, p: dict) -> tuple[dict, dict]:
     if kind == 'coins':
         jr._wallet(j, amount, KIND, LABELS.get(p.get('src'), LABEL))
         message = f'+{amount} xu vào ví.'
-    elif kind == 'title':   # 💍 a wedding title (game/wedding_live.py TITLE_NAMES): unlocked once, kept like any title
+    elif kind == 'title':   # 💍 a wedding title (game/wedding_live.py TITLE_NAMES) or 🏆 a fair one (game/fair_board.py): unlocked once, kept like any title
         from .wedding_live import TITLE_NAMES
+        from .fair import AWARD_NAMES
+        names = {**TITLE_NAMES, **AWARD_NAMES}
         tid = p.get('title')
-        e.need(tid in TITLE_NAMES and tid in jr.TITLE_INDEX, 'Danh hiệu không hợp lệ.')
+        e.need(tid in names and tid in jr.TITLE_INDEX, 'Danh hiệu không hợp lệ.')
         message = ''
         if tid not in j['titles']:
             j['titles'][tid] = j['life_day']
             jr._news(j, 'titles', 'titles', [tid])
-            message = f'Danh hiệu mới: {TITLE_NAMES[tid]}.'
+            message = f'Danh hiệu mới: {names[tid]}.'
     else:
         L = j.get('life')
         if isinstance(L, dict) and type(L.get('spirit')) is int:

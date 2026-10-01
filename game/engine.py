@@ -46,6 +46,7 @@ from . import wardrobe as wd
 from . import patience as pt
 from . import system_gift as sg
 from . import live_effects as lfx
+from . import fair as fh  # 🏮 Hội chợ dân gian
 
 ORIGINAL=("mother_baby","pharmacy","accounting","customer_care")
 UI_THEMES=("kem","tra_xanh","dem","bien","keo")
@@ -551,6 +552,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     if action.startswith("lf_"):return doi.action(s,action,p)
     if action.startswith("qn_"):return qn.action(s,career,action,p)  # điểm thân quen: chat, gifts, thanks, invites
     if action.startswith("st_"):return cst.action(s,career,action,p)
+    if action.startswith("fair_"):return fh.action(s,action,p)  # 🏮 Hội chợ dân gian (game/fair.py): bầu cua, lô tô, chiếu trong
     if action==sg.ACTION:  # 🎁 Quà từ Phố Có Chuyện (game/system_gift.py): the server pays a gift into the wallet
         need(internal,"Thao tác chỉ dành cho máy chủ.","forbidden")
         return sg.apply(s,p)
@@ -1145,6 +1147,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     v["stories"]=cst.public(s)
     v["closeness"]=qn.public(s,focus)
     v["abandon"]=ab.public(s)
+    v["fair"]=fh.public(s)  # 🏮 Hội chợ dân gian (game/fair.py)
     for cid,c in v["careers"].items():
         if c.get("summary"):continue
         raw=s["careers"][cid];mod=PLUGINS.get(cid)

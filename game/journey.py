@@ -32,6 +32,7 @@ from . import housing as hs   # 🏠 Nhà của bạn (game/housing.py)
 from . import reno as rn   # 🛠️ Sửa và trang trí nhà (game/reno.py)
 from . import system_gift as sg   # 🎁 Quà từ Phố Có Chuyện (game/system_gift.py)
 from . import live_effects as lfx   # 🧧 rewards from the live service (game/live_effects.py)
+from . import fair as fh   # 🏮 Hội chợ dân gian (game/fair.py)
 from . import whats_new as wn   # "Có gì mới": read already for a brand-new save (_welcome_settings)
 
 VERSION = 1
@@ -45,7 +46,7 @@ BREADTH_XP = 80       # maturity bonus for every workplace you really worked at
 LIVING = {1: 10, 2: 12, 3: 14, 4: 16, 5: 18, 6: 20, 7: 20}
 UPKEEP = {'cozy': 4, 'sunny': 7, 'garden': 11}
 MODES = (('calm', .25), ('normal', .55), ('festival', .20))
-HISTORY_KINDS = ('living', 'upkeep', 'draw', 'invest', 'salary', 'reopen', 'incident', 'life', 'study', 'backdoor', 'bank', 'home')
+HISTORY_KINDS = ('living', 'upkeep', 'draw', 'invest', 'salary', 'reopen', 'incident', 'life', 'study', 'backdoor', 'bank', 'home', 'fair')
 NEWS_KINDS = ('chapter', 'titles')
 # 🏷️ Đang đeo: game titles and certificates worn at once (owner, 01/10: "danh hiệu trò chơi và chứng chỉ được chọn
 # nhiều 1 lúc"). Three fit one line of chips on a 390 px phone and keep a name tag short (the first one by name, the
@@ -270,6 +271,7 @@ TITLES = [
     _t('w_vip', 'secret', '🥇', 'Khách quý của phố', 'Đứng đầu bảng Khách mời của tuần.', lambda x: False, True),
     _t('w_pro', 'secret', '🎊', 'Ăn cưới chuyên nghiệp', 'Lọt top 3 Khách mời của tuần.', lambda x: False, True),
 ]
+TITLES += fh.titles(_t)   # 🏮 Hội chợ dân gian: secret, granted by a round or after the fair (game/fair.py)
 TITLE_INDEX = {t['id']: t for t in TITLES}
 STATS = ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary', 'reopened', 'paused', 'max_wallet',
          'debt_repaid', 'calm_days', 'normal_days', 'festival_days', 'homes_bought', 'home_paid')
@@ -941,6 +943,7 @@ def validate(s: dict) -> None:
         integer(v, 0, 10**9)
     sg.validate(j)
     lfx.validate(j)
+    fh.validate(j)   # 🏮 journey['fair'] (optional)
     ct.validate(s)
     bk.validate(s)
     wd.validate(s)
