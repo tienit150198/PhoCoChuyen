@@ -6,7 +6,10 @@
  *   garbage  the rubbish round at dusk: the three-compartment hand cart, bags by
  *            the door in their sorting colours, the red box and the collection time;
  *   drain    chú Hai's call-out: the motorbike with its tool box, an open manhole
- *            behind cones, a coil of drain snake and the price list.
+ *            behind cones, a coil of drain snake and the price list;
+ *   ice_cream cô Hiền's ice-cream corner at the primary-school gate under a flame
+ *            tree: the chest freezer with its glass lid, cones and coconuts, topping
+ *            jars, the digital scale and the little stools.
  * The footprints are the sidewalk scene's (the same walkable street plan), so the
  * props below stand where that plan keeps the floor clear. */
 import {R,E,L,T,P,fit,streetBoard} from './kit.js';
@@ -43,6 +46,26 @@ function marketGate(c,x,base,wd,port){const top=base-(port?150:176);R(c,x,top+30
 function lamp(c,x,base,top){L(c,x,base,x,top,'#4f5560',6);L(c,x,top,x+26,top-2,'#4f5560',4);E(c,x+28,top+6,9,5,'#ffe7a8');
   const g=c.createRadialGradient(x+28,top+10,0,x+28,top+10,120);g.addColorStop(0,'rgba(255,221,140,.45)');g.addColorStop(1,'rgba(255,221,140,0)');c.fillStyle=g;c.fillRect(x-100,top-100,256,300);}
 
+/** The primary-school gate and the flame tree behind the ice-cream corner. */
+function schoolGate(c,x,base,wd,port){const top=base-(port?160:184);R(c,x,top+40,22,base-top-40,'#e8d8bf',3,'#c9a06a',2);R(c,x+wd-22,top+40,22,base-top-40,'#e8d8bf',3,'#c9a06a',2);
+  for(let i=0;i<9;i++)L(c,x+30+i*(wd-60)/8,top+70,x+30+i*(wd-60)/8,base,'#5b6b78',3);L(c,x+22,top+70,x+wd-22,top+70,'#5b6b78',4);L(c,x+22,base-30,x+wd-22,base-30,'#5b6b78',3);
+  R(c,x+wd/2-90,top+30,180,30,'#2f6f9f',6,'#22557a',2);T(c,'TRƯỜNG TIỂU HỌC MÂY',x+wd/2,top+45,port?11:12,'#fff',800);
+  // The flame tree: a trunk and a red canopy.
+  const tx=x+wd+(port?-10:30);L(c,tx,base,tx-6,top-10,'#7a5a3c',port?10:12);
+  for(const [dx,dy,r] of [[-60,-30,46],[0,-50,56],[56,-26,44],[-20,-6,40],[30,4,36]])E(c,tx+dx,top+dy,r,r*.7,'#d94a3a');
+  for(const [dx,dy] of [[-40,-40],[10,-60],[50,-30],[-10,-14],[24,-8]])E(c,tx+dx,top+dy,10,6,'#f28a5a');}
+function freezer(c,w,x0,x1,fy,port){const W=x1-x0,h=port?66:58,top=fy-h,lid=!!data(w).fz?.lid;E(c,(x0+x1)/2,fy+3,W/2+8,7,'#6b584420');
+  R(c,x0,top,W,h,'#f7fbfd',8,'#9fb6c3',2);R(c,x0+8,top+h-18,W-16,8,'#d5e7f0',3);
+  if(lid){P(c,[[x0+6,top],[x1-6,top],[x1-18,top-30],[x0+18,top-30]],'#cfeaf7cc');L(c,x0+18,top-30,x1-18,top-30,'#9fb6c3',2);}
+  else R(c,x0+6,top-6,W-12,10,'#cfeaf7',4,'#9fb6c3',1.5);
+  const cols=['#fff4e0','#f7a8b8','#6b4a3a','#9ccf7a','#b48ad9','#fff9e8'];for(let i=0;i<6;i++)E(c,x0+14+i*(W-28)/5,top+12,(W-40)/14,6,cols[i]);
+  const label=w.words().counter;T(c,label,(x0+x1)/2,top+h/2+6,fit(c,label,W-20,port?13:11),'#2f6f9f',800);}
+function cones(c,x0,x1,fy){const W=x1-x0;for(let i=0;i<4;i++){const x=x0+10+i*(W-20)/3;P(c,[[x-8,fy-40],[x+8,fy-40],[x,fy-8]],'#d9a45a');E(c,x,fy-42,9,7,['#f7a8b8','#fff4e0','#6b4a3a','#9ccf7a'][i]);}
+  R(c,x0+4,fy-8,W-8,8,WOOD,3,WOOD_D,1);}
+function jars(c,x0,x1,fy){const W=x1-x0,cols=['#c98a4a','#ffffff','#5a3a2a','#e8c27a'];for(let i=0;i<4;i++){const x=x0+8+i*(W-16)/4;R(c,x,fy-30,(W-16)/4-6,28,'#e9f4f8',4,'#9fb6c3',1.5);R(c,x+3,fy-18,(W-16)/4-12,14,cols[i],3);R(c,x-1,fy-34,(W-16)/4-4,6,'#e0679a',2);}}
+function stools(c,x0,x1,fy){for(let i=0;i<2;i++){const x=x0+12+i*(x1-x0-24);R(c,x-14,fy-26,28,6,'#2f6f9f',3);L(c,x-10,fy-20,x-12,fy,'#2f6f9f',3);L(c,x+10,fy-20,x+12,fy,'#2f6f9f',3);}}
+function lcdScale(c,x0,x1,fy){const W=x1-x0;R(c,x0+8,fy-34,W-16,30,'#d9dee3',5,'#9aa4a8',1.5);R(c,x0+14,fy-30,(W-28)*.55,14,'#1e3b2c',3);T(c,'65 g',x0+14+(W-28)*.27,fy-23,9,'#9cf2b7',800);R(c,x0+12,fy-40,W-24,6,'#c9d3db',2);}
+
 /* ------------------------------------------------------------ fruit */
 const FRUIT_COL={xoai:'#f2b134',chuoi:'#f5d547',bo:'#5e8f3a',cam:'#f08a24',thanh_long:'#d9447a',nho:'#9bc45a',buoi:'#7fb04a'};
 function fruitPile(c,x,y,col,n=5,s=1){for(let i=0;i<n;i++)E(c,x+(i-(n-1)/2)*9*s,y-4*s-(i%2)*6*s,7*s,6*s,col);}
@@ -53,9 +76,9 @@ function stallTable(c,w,x0,x1,fy,port){const W=x1-x0,h=port?50:44,top=fy-h;E(c,(
   // The round spring scale at the end of the table.
   const sx=x1-W*.1;R(c,sx-18,top-30,36,30,'#3f7fbf',6,'#2d5f91',1.5);E(c,sx,top-18,12,12,'#fffdf6');L(c,sx,top-18,sx+6,top-26,'#d8342a',2);R(c,sx-20,top-36,40,6,'#c9d3db',2);
   const label=w.words().counter;T(c,label,(x0+x1)/2,top+26,fit(c,label,W-20,port?14:12),'#5a3f2c',800);}
-function umbrella(c,cx,fy,s){const top=fy-190*s,rw=130*s;L(c,cx,fy,cx,top,'#9aa4a8',5*s);
-  for(let i=0;i<6;i++){const a=cx-rw+i*rw/3,b=a+rw/6;P(c,[[a,top+44*s],[cx,top],[b,top+44*s]],i%2?'#e0892b':'#fff1dc');}
-  for(let i=0;i<7;i++)E(c,cx-rw+i*rw/3,top+44*s,rw/6,6*s,i%2?'#e0892b':'#fff1dc');}
+function umbrella(c,cx,fy,s,[a1,a2]=['#e0892b','#fff1dc']){const top=fy-190*s,rw=130*s;L(c,cx,fy,cx,top,'#9aa4a8',5*s);
+  for(let i=0;i<6;i++){const a=cx-rw+i*rw/3,b=a+rw/6;P(c,[[a,top+44*s],[cx,top],[b,top+44*s]],i%2?a1:a2);}
+  for(let i=0;i<7;i++)E(c,cx-rw+i*rw/3,top+44*s,rw/6,6*s,i%2?a1:a2);}
 function crates(c,x0,x1,fy){const W=x1-x0;for(let i=0;i<2;i++){const y=fy-i*26;R(c,x0+4+i*6,y-26,W-8-i*12,24,'#d9b97a',3,'#a67c3c',1.5);for(let k=1;k<4;k++)L(c,x0+4+i*6+k*(W-8-i*12)/4,y-26,x0+4+i*6+k*(W-8-i*12)/4,y-2,'#a67c3c',1);}
   fruitPile(c,(x0+x1)/2,fy-52,'#f08a24',5);}
 function priceSign(c,cx,fy,port,lines){const bw=port?118:108,bh=port?56:50,top=fy-bh-22;L(c,cx-bw/2+12,top+bh,cx-bw/2+4,fy,WOOD_D,4);L(c,cx+bw/2-12,top+bh,cx+bw/2-4,fy,WOOD_D,4);
@@ -92,9 +115,9 @@ function room(w,p,port){const c=w.ctx,f=port?F.port:F.land,car=w.career;
   sky(c,w,f);
   const lit=dusk(w);
   if(port){pole(c,40,f.base,200);pole(c,664,f.base,214);wires(c,40,664,200,214,30);tube(c,24,250,150,f.base,'#f3dfb0',lit);tube(c,470,236,210,f.base,'#f2d2c4',lit);
-    if(car==='fruit')marketGate(c,190,f.base,260,true);else tube(c,190,226,260,f.base,'#d6e8d8',lit);}
+    if(car==='fruit')marketGate(c,190,f.base,260,true);else if(car==='ice_cream')schoolGate(c,190,f.base,260,true);else tube(c,190,226,260,f.base,'#d6e8d8',lit);}
   else{pole(c,96,f.base,170);pole(c,1108,f.base,186);wires(c,96,1108,170,186,40);tube(c,78,226,230,f.base,'#f3dfb0',lit);tube(c,650,216,240,f.base,'#f2d2c4',lit);tube(c,900,240,230,f.base,'#d6e8d8',lit);
-    if(car==='fruit')marketGate(c,330,f.base,300,false);else tube(c,330,206,300,f.base,'#efe3cf',lit);}
+    if(car==='fruit')marketGate(c,330,f.base,300,false);else if(car==='ice_cream')schoolGate(c,330,f.base,300,false);else tube(c,330,206,300,f.base,'#efe3cf',lit);}
   pavement(c,f);
   if(car==='garbage')lamp(c,port?600:470,f.base+10,f.base-(port?230:250));
   streetBoard(c,p,port?30:1013,port?282:322,port?1.6:1);
@@ -115,6 +138,14 @@ function props(w){const c=w.ctx,port=w.isPortrait(),b=w.plan().blocks,out=[],car
     out.push([ev[3],()=>basket(c,mid(ev),ev[3],ev[2]-ev[0]+10,'#d9447a')]);
     out.push([fi[3],()=>{R(c,fi[0]+14,fi[3]-30,fi[2]-fi[0]-28,28,'#8fbfa6',4,'#5f8f76',1.5);T(c,w.words().ledger,mid(fi),fi[3]-16,fit(c,w.words().ledger,fi[2]-fi[0]-30,10),'#fff',800);}]);
     out.push([dr[3],()=>priceSign(c,mid(dr),dr[3],port,w.c?.open?['XOÀI CÁT 14 XU/KÝ','cân đủ, trừ bì']:[w.words().closed_sign,'mai mời ghé'])]);
+  }else if(car==='ice_cream'){
+    out.push([wh[3],()=>cones(c,wh[0],wh[2],wh[3])]);
+    out.push([wb[3],()=>jars(c,wb[0],wb[2],wb[3])]);
+    out.push([co[3]-1,()=>umbrella(c,mid(co)+(port?-30:-50),co[3],port?.9:1,['#e0679a','#fff1f6'])]);
+    out.push([co[3],()=>freezer(c,w,co[0],co[2],co[3],port)]);
+    out.push([ev[3],()=>stools(c,ev[0],ev[2],ev[3])]);
+    out.push([fi[3],()=>lcdScale(c,fi[0],fi[2],fi[3])]);
+    out.push([dr[3],()=>priceSign(c,mid(dr),dr[3],port,w.c?.open?['KEM DỪA 6 XU/VIÊN','viên nào cũng lên cân']:[w.words().closed_sign,'chiều mai mời ghé'])]);
   }else if(car==='garbage'){
     out.push([wh[3],()=>{for(const [i,col] of [[0,'#3f9a55'],[1,'#e8b923'],[2,'#4a4a4a']])R(c,wh[0]+i*(wh[2]-wh[0])/3,wh[3]-44,(wh[2]-wh[0])/3-4,44,col,5,'#00000033',1.5);}]);
     out.push([wb[3],()=>bagPile(c,w,wb[0],wb[2],wb[3])]);

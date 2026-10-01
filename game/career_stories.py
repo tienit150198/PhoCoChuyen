@@ -1080,6 +1080,45 @@ ARCS = {
                 ('be_su', 'Chị ơi, em vẽ chị vào tranh cả nhà rồi!'),
                 ('me', 'Em sẽ giữ sổ như chị đã giữ.')]),
         ]),
+    'ice_cream': dict(
+        title='Cái muỗng của cô Hiền', emoji='🍨',
+        keepsake=dict(emoji='🥄', name='Cái muỗng múc kem cán gỗ', desc='Ba mươi năm trong tay cô Hiền, cán gỗ mòn đúng chỗ ngón cái. Viên nào múc bằng nó cũng tròn.'),
+        cast={'hien': _p('Cô Hiền', '👩‍🍳', 'Chủ tiệm kem', 'ice_cream_npc_01'),
+              'chip': _p('Bé Chíp', '🎒', 'Học sinh lớp 2A', 'ice_cream_npc_02'),
+              'ong_tam': _p('Ông Tám', '🥥', 'Khách ruột kem trái dừa', 'ice_cream_npc_03'),
+              'mai_anh': _p('Chị Mai Anh', '🎂', 'Trưởng ban phụ huynh lớp 2A', 'ice_cream_npc_04')},
+        beats=[
+            _b('Tiếng trống tan học', '🔔', 'Bốn giờ rưỡi, trống trường vừa điểm, học sinh ùa ra cổng như ong vỡ tổ.', [
+                ('hien', 'Giờ này là giờ của tiệm. Con múc nhanh mà viên nào cũng phải tròn nghe.'),
+                ('chip', 'Cô ơi, con lấy ốc quế dâu! Con có đủ tiền rồi nè, con đếm ba lần rồi!'),
+                ('hien', 'Đồng nào của tụi nhỏ cũng là tiền để dành. Thối cho đúng.'),
+                ('me', 'Dạ, con đếm lại từng đồng trước mặt bé luôn ạ.')]),
+            _b('Ông Tám và cái muỗng', '🥥', 'Ông Tám kéo ghế đẩu ra dưới gốc phượng, đặt trái dừa lên đùi.', [
+                ('ong_tam', 'Hồi trẻ ông chở kem bằng xe đạp, rao khắp xóm. Một viên kem là sáu mươi lăm gam, không hơn không kém.'),
+                ('ong_tam', 'Viên nhỏ là ông biết liền. Không phải ông keo, mà người bán kem phải có cái tâm.'),
+                ('hien', 'Ông Tám là thầy dạy múc kem của cô đó con.')],
+                _c('Ông Tám nhìn muỗng kem của bạn',
+                   _o('a', 'Đặt từng viên lên cân cho ông xem', [('ong_tam', 'Sáu mươi tám gam. Được! Đứa nhỏ này múc có tâm.')], rel='ong_tam'),
+                   _o('b', 'Nhờ ông chỉ cách kéo muỗng cho viên tròn', [('ong_tam', 'Kéo một vòng sâu, xoay cổ tay, vo tròn. Đó, thấy chưa? Dễ mà.')], rel='ong_tam'))),
+            _b('Đêm cúp điện', '🔌', 'Tối qua cả phố cúp điện ba tiếng. Sáng ra cô Hiền đã đứng chờ bên tủ kem.', [
+                ('hien', 'Cô phủ chăn bông lên tủ cả đêm, dặn không ai được mở nắp.'),
+                ('hien', 'Giờ mình soi từng hộp. Hộp nào mặt kem lổn nhổn đá là kem đã chảy rồi đông lại.'),
+                ('me', 'Bỏ cả hộp hả cô? Tiếc quá…')],
+                _c('Hộp kem dâu đông đá lại',
+                   _o('a', 'Bỏ hộp kem, ghi vào sổ hao hụt', [('hien', 'Đúng rồi con. Một hộp kem không bằng cái bụng tụi nhỏ.')], rel='hien'),
+                   _o('b', 'Hỏi cô cách giữ tủ lạnh lâu khi cúp điện', [('hien', 'Đóng chặt nắp, phủ chăn, bán kem que trước. Ba tiếng vẫn còn cứng.')], rel='hien'))),
+            _b('Sinh nhật lớp 2A', '🎂', 'Chị Mai Anh đặt khay kem sinh nhật cho cả lớp, bé Chíp đứng sau lưng háo hức.', [
+                ('mai_anh', 'Sáu ly, mỗi ly một viên. Lên tới lớp mất mười phút đó em.'),
+                ('chip', 'Hôm nay sinh nhật bạn Bông! Cả lớp hát xong là ăn kem!'),
+                ('me', 'Em xếp vào thùng xốp, lót đá gel, lên tới lớp kem vẫn còn cứng.'),
+                ('mai_anh', 'Cô chủ nhiệm khen kem ngon, tụi nhỏ ngoan cả buổi chiều.')]),
+            _b('Cái muỗng cán gỗ', '🥄', 'Cô Hiền rửa cái muỗng cán gỗ, lau khô rồi đặt vào tay bạn.', [
+                ('hien', 'Cái muỗng này cô dùng ba mươi năm. Cán mòn đúng chỗ ngón tay cái.'),
+                ('hien', 'Mai cô về quê ít bữa. Tiệm giao con, muỗng cũng giao con.'),
+                ('ong_tam', 'Giao đúng người rồi. Viên nào nó múc cũng đủ gam.'),
+                ('chip', 'Con vẽ tiệm kem dán lên tủ rồi nè! Có cô với có {anh} luôn!'),
+                ('me', 'Con sẽ múc viên nào cũng tròn, như cô.')]),
+        ]),
     # ------------------------------------------------------------ ✈️ Hãng bay Cánh Cò
     'pilot': dict(
         title='Đường bay ra đảo', emoji='🛩️',
