@@ -188,6 +188,10 @@ def migrate_state(state:dict,owned:bool=False) -> dict:
         for _cid in ("mother_baby","pharmacy"):  # kho cũ của hai nghề gốc: kiện theo nhịp → giờ giao
             _c=s['careers'].get(_cid)
             if isinstance(_c,dict) and isinstance(_c.get('shipments'),list) and type(_c.get('day')) is int and type(_c.get('turn')) is int:_upgrade_shipments(_c,_cid)
+        # Việc dở mà bản cũ để kẹt (không còn bước nào) nhận lời đáp theo luật hiện hành, vd. đơn sỉ tạp hóa kẹt ở mức bớt sâu nhất (góp ý #57).
+        for _cid,_mod in PLUGINS.items():
+            _c=s['careers'].get(_cid)
+            if isinstance(_c,dict) and hasattr(_mod,'heal_save'):_mod.heal_save(s,_c)
     if isinstance(s.get('settings'),dict):
         if ai_unasked:s['settings'].update(aiConsent=True,aiAsked=True)
         for k,v in default_settings().items():s['settings'].setdefault(k,v)

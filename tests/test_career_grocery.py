@@ -1529,6 +1529,90 @@ class GroceryBulkTests(unittest.TestCase):
         self.assertEqual((t['bulk']['stage'], t['bulk']['offers']), ('deliver', [G.BULK_OFFERS[-1]]))
         roundtrip(j)
 
+    # Feedback #57 (01/10): bà Sáu's order, cut to the deepest discount in the first round, hung with neither a
+    # yes nor a no; the card still asked for another quote and the only button left read "chào khách".
+    def _stuck(self):
+        """A bulk order as saves from before 01/10 left it: the deepest discount turned down, still in 'quote'."""
+        day, slot = find(lambda t: t['kind'] == 'bulk' and t['npc'] == kit.npc_id(G.ID, 4))   # bà Sáu's mâm cơm rằm
+        j = Journey('grocery', slot=slot, day=day)
+        restock(j)
+        j.act('ask')
+        kit.start_work(j.task)                                  # the first quote started work on the order
+        j.task['bulk']['offers'] = [G.BULK_OFFERS[-1]]          # −15%, turned down by the old rules
+        return j, j.task['id']
+
+    def test_stuck_floor_quote_is_answered_when_the_save_is_loaded(self):
+        from game.engine import migrate_state
+        j, tid = self._stuck()
+        money = j.c['money']
+        base = sum(G.PRICES[x['item']] * x['qty'] for x in j.task['needs']['lines'])
+        raw = json.loads(json.dumps(j.state))
+        raw.pop('check', None)                                  # a save from an earlier build
+        before = copy.deepcopy(raw)
+        view = public_state(raw)
+        self.assertEqual(raw, before)                           # showing the save never writes to it
+        shown = next(x for x in view['careers']['grocery']['tasks'] if x['id'] == tid)
+        self.assertEqual(shown['bulk']['stage'], 'deliver')
+        s = migrate_state(raw)
+        t = next(x for x in s['careers']['grocery']['tasks'] if x['id'] == tid)
+        price = base * (100 - G.BULK_OFFERS[-1]) // 100
+        self.assertEqual((t['bulk']['stage'], t['bulk']['price'], t['bulk']['offers']), ('deliver', price, [G.BULK_OFFERS[-1]]))
+        self.assertEqual(t['bulk']['deposit'], -(-price * G.BULK_DEPOSIT // 100))
+        self.assertEqual(s['careers']['grocery']['money'], money + t['bulk']['deposit'])
+        self.assertTrue(any('Bà Sáu' in r['text'] and 'chốt' in r['text'].lower() for r in s['careers']['grocery']['journal']))
+        for cid in s['careers']:                                # nothing else in the save moves
+            if cid != 'grocery':
+                self.assertEqual(s['careers'][cid], before['careers'][cid], cid)
+        validate_state(s)
+        self.assertEqual(migrate_state(s), s)                   # once only
+
+    def test_stuck_floor_quote_is_answered_on_the_next_action(self):
+        j, tid = self._stuck()
+        j.act('task_select', task=tid)                          # any press, not only a quote
+        t = j.get(tid)
+        self.assertEqual(t['bulk']['stage'], 'deliver')
+        self.assertEqual(t['status'], 'in_progress')
+        roundtrip(j)
+        for x in t['needs']['lines']:
+            top_up(j, x['item'], x['qty'])
+        j.act('gr_bulk_deliver', confirm=True)                  # and the order can be delivered as usual
+        self.assertEqual(j.get(tid)['status'], 'completed')
+
+    def test_stale_quote_press_after_the_answer_is_not_an_error(self):
+        # A page opened before the update still shows the old button: pressing it reports the deal, no error toast.
+        j, tid = self._stuck()
+        r = j.act('gr_bulk_quote', task=tid, off=G.BULK_OFFERS[-1])
+        self.assertIn('chốt', r['message'].lower())
+        self.assertEqual(j.get(tid)['bulk']['stage'], 'deliver')
+
+    def test_stuck_quote_she_would_still_refuse_ends_the_order(self):
+        from unittest import mock
+        j, tid = self._stuck()
+        with mock.patch.object(G, '_bulk_takes', return_value=False):
+            j.act('settings')                                   # any press
+        t = j.get(tid)
+        self.assertEqual((t['bulk']['stage'], t['status']), ('lost', 'completed'))
+        self.assertEqual(t['result'], dict(price=0, lost=1))
+        roundtrip(j)
+
+    def test_the_deepest_discount_always_gets_an_answer_in_any_round(self):
+        from unittest import mock
+        for takes in (True, False):
+            for first in G.BULK_OFFERS:
+                rounds = [first] if first == G.BULK_OFFERS[-1] else [first, G.BULK_OFFERS[-1]]
+                j = self._bulk()
+                tid = j.task['id']
+                with mock.patch.object(G, '_bulk_takes', side_effect=lambda t, price: takes):
+                    for off in rounds:
+                        if j.get(tid)['bulk']['stage'] != 'quote':
+                            break
+                        r = j.act('gr_bulk_quote', off=off)
+                t = j.get(tid)
+                self.assertIn(t['bulk']['stage'], ('deliver', 'lost'), (takes, rounds))
+                self.assertTrue(r.get('celebrate') or r.get('refused'))
+                if t['bulk']['stage'] == 'lost':
+                    self.assertIn('không thành', r['message'])
+
     def test_raised_shelf_prices_do_not_make_bulk_orders_impossible(self):
         j = self._bulk()
         tid = j.task['id']

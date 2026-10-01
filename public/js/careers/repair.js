@@ -42,7 +42,16 @@ function suggestGrade(x,t,fault){
   return opts.find(g=>fits(g)&&have(g))||opts.find(fits)||def;
 }
 function gradeFor(x,t,f){const u=local(x,t),fault=faultOf(x,t.needs.device,f);const g=u.grades[f];return g&&g in fault.parts?g:firstTime(x)?suggestGrade(x,t,fault):defaultGrade(x,t,fault);}
-function stage(t){const b=t.bench,open=t.open_scope||[];if(!b.intake)return 0;if(b.final==='pass')return 4;if(!b.diagnosis&&!open.length)return 1;if(open.some(f=>!b.approved[f]))return 2;if(open.length||b.opened)return 3;return 4;}
+/** Every quote round used: the customer will not hear another one, so what they never approved is declined for good. */
+const spentOf=(t,x)=>(t.bench.quote?.rounds||0)>=(x?.cc?.quote_rounds||6);
+/** Open faults still to work on: once the quotes are spent, only the approved ones (the rest is declined). */
+const todoOf=(t,x)=>{const b=t.bench,open=t.open_scope||[];return spentOf(t,x)?open.filter(f=>b.approved[f]):open;};
+function stage(t,x){const b=t.bench,open=t.open_scope||[];if(!b.intake)return 0;if(b.final==='pass')return 4;if(!b.diagnosis&&!open.length)return 1;
+  // Quotes spent with nothing left to quote for: an open device must be closed, done work tested or handed over;
+  // holding the job at step 2 there left no enabled button (return refused once opened or partly fixed; #57 sibling).
+  const todo=todoOf(t,x),fixedAny=Object.keys(b.fixed||{}).length>0;
+  if(open.some(f=>!b.approved[f])&&!(spentOf(t,x)&&(todo.length||b.opened||fixedAny)))return 2;
+  if(todo.length||b.opened)return 3;return 4;}
 const caseOf=t=>t.needs?.case||null;
 const rushLeft=(t,x)=>t.due_turn==null?null:t.due_turn-(x.room.turn||0);
 /* care loop: the server computes every waiting word (clock, arrivals, promises) */
@@ -342,7 +351,7 @@ function fixView(t,x){
   const groups=[dev,'supply'];
   const shelf=items(x).filter(i=>groups.includes(i.group)).map(i=>{const q=x.stock(i.id),lk=locked(x,i.id);
     return `<li class="${lk?'locked':''} ${q===0?'empty':''}"><span aria-hidden="true">${x.esc(i.emoji)}</span><span class="grow">${x.esc(i.name)}</span><b>${lk?`🔒 ${i.unlock}`:q}</b></li>`;}).join('');
-  const closeCta=!open.length&&b.opened?`<div class="rp-cta">${x.cmd(`🔩 ${x.esc(devc.close)}`,'rp_close',{task:t.id},'primary')}</div>`:'';
+  const closeCta=!todoOf(t,x).length&&b.opened?`<div class="rp-cta">${x.cmd(`🔩 ${x.esc(devc.close)}`,'rp_close',{task:t.id},'primary')}</div>`:'';
   const solder=open.some(f=>(faultOf(x,dev,f).supplies||[]).includes('solder'));
   return `${solder?toolWarn(x,'tip'):''}${shellBar(t,x,needOpen)}
     ${btns?`<div class="stack space-top">${btns}</div>`:`<p class="muted small space-top">${b.final==='pass'?'Đã sửa xong.':'Mọi hạng mục đã xử lý.'}</p>`}${closeCta}
@@ -515,7 +524,7 @@ function fixSteps(t,x){
       go:firstTime(x)?{cmd:'rp_shelf',payload:{task:id,days:d},confirm:`Hẹn ${who(x,t.npc)} ${word} tới lấy máy?`,label:`🗄️ Hẹn khách ${word} tới lấy`}:{sel:'.rp-promise',label:'🗄️ Hẹn ngày khách tới lấy'},pulse:`.rp-pr-${d}`});
     else s.push({ok:null,label:`Chờ ${it.name} về ${wait.when}`,go:away});
   }
-  if(!open.length&&b.opened)s.push({ok:null,label:devOf(x,t).close,go:{cmd:'rp_close',payload:{task:id},label:`🔩 ${x.esc(devOf(x,t).close)}`}});
+  if(!todoOf(t,x).length&&b.opened)s.push({ok:null,label:devOf(x,t).close,go:{cmd:'rp_close',payload:{task:id},label:`🔩 ${x.esc(devOf(x,t).close)}`}});
   return s;
 }
 function finishSteps(t,x){
@@ -546,7 +555,7 @@ function taskGuide(t,x){
   if(shelved(x).some(v=>tview(x,v).call))pre.push({ok:null,label:'Khách gọi hỏi máy: trả lời điện thoại',go:{sel:'.rp-call'},pulse:'.rp-call .btn'});
   if(!t.known)return {steps:[...pre,{ok:null,label:'Hỏi khách kể bệnh của máy',go:{cmd:'ask',payload:{task:id},label:'📝 Hỏi khách kể bệnh của máy'}}]};
   if(caseOf(t)==='buyin')return {steps:[...pre,...buyinSteps(t,x)]};
-  const at=stage(t),b=t.bench;
+  const at=stage(t,x),b=t.bench;
   // Opened before the readings settled: finish the diagnosis first, so one quote covers everything.
   const dx=at>=2&&at<4&&!b.diagnosis&&b.final!=='pass'&&remaining(t).length?testSteps(t,x):[];
   const steps=[...pre,...dx,...[intakeSteps,testSteps,quoteSteps,fixSteps,finishSteps][at](t,x)];
@@ -570,7 +579,7 @@ function hintFor(g,x){
 /** The latest result of the step in hand (a reading, the customer's reply, the final test), shown right above the button. */
 function lastResult(t,x){
   if(!t.known||caseOf(t)==='buyin')return '';
-  const b=t.bench,at=stage(t);
+  const b=t.bench,at=stage(t,x);
   if(at===4&&b.final)return b.final==='pass'?'✅ Chạy thử đạt':'❌ Chạy thử chưa đạt';
   if(at===2&&b.quote)return `📨 Khách: “${b.quote.reason}”`;
   const r=b.tests[b.tests.length-1];
@@ -623,7 +632,7 @@ export default {
     if(desk)return `<div class="career-job rp">${hint}${desk}${ticket(t,x)}</div>`;
     const top=alerts(x,true);
     if(caseOf(t)==='buyin')return `<div class="career-job rp">${hint}${top}${lastDesk(x)}${ticket(t,x)}${buyinView(t,x)}${shelfFold(x)}${cta}</div>`;
-    const at=stage(t),u=local(x,t);
+    const at=stage(t,x),u=local(x,t);
     const tab=u.tab!=null&&u.tab<=at?u.tab:at;
     const views=[intakeView,testsView,quoteView,fixView,finishView];
     const titles=['Phiếu nhận máy','Đo kiểm & giả thuyết','Báo giá cho khách','Mở máy & thay sửa','Chạy thử, bảo hành, bàn giao'];

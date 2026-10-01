@@ -2000,38 +2000,84 @@ def _bulk_list(c: dict, t: dict, base: bool = False) -> int:
     return sum((PRICES[x['item']] if base else _price(c, x['item'])) * x['qty'] for x in t['needs']['lines'])
 
 
+def _bulk_takes(t: dict, price: int) -> bool:
+    """Whether the customer takes a bulk quote. Quotes start from the standard price list, not the shop's own shelf
+    prices: a customer buying in bulk compares with other shops' list. Quoting from raised shelf prices made every
+    bulk order impossible (01/10, feedback #49/#52: rice 20 instead of 18, eggs 4 instead of 3 → even −15% stayed
+    above what they would pay). The deepest discount is always within reach (every ceiling is at least 85%)."""
+    return price * 100 <= _bulk_list(None, t, base=True) * t['needs']['_max']
+
+
+def _bulk_stuck(t: dict) -> bool:
+    """A quote still open with no step left: the deepest discount (or a second quote) was turned down. Saves from
+    before 01/10 hang here (#49/#57): the card asked for another quote and nothing lower was allowed."""
+    b = t.get('bulk')
+    return (t.get('kind') == 'bulk' and isinstance(b, dict) and b.get('stage') == 'quote'
+            and isinstance(b.get('offers'), list) and bool(b['offers'])
+            and (b['offers'][-1] == BULK_OFFERS[-1] or len(b['offers']) >= 2))
+
+
+def _bulk_answer(s: dict, c: dict, t: dict) -> dict:
+    """The customer answers the last quote. At the deepest discount, or on the second quote, the answer is final:
+    yes (deposit, then deliver) or no (the order is lost), never "quote again" with nothing lower to offer."""
+    b, n, who = t['bulk'], t['needs'], _who(t)
+    price = _bulk_list(c, t, base=True) * (100 - b['offers'][-1]) // 100
+    if _bulk_takes(t, price):
+        b['stage'] = 'deliver'
+        b['price'] = price
+        b['deposit'] = -(-price * n['deposit'] // 100)
+        kit.money(s, c, b['deposit'], f'Tiền cọc đơn sỉ: {t["title"]}', t['id'], 'revenue')
+        d = _data(c)
+        d['sales'] += b['deposit']
+        d['day_sales'] += b['deposit']
+        return dict(message=f'{who} gật đầu: “Chốt {price} xu nha!” Nhận cọc {b["deposit"]} xu. Soạn đủ hàng rồi giao trước khi đóng ca.', celebrate=True)
+    if len(b['offers']) >= 2 or b['offers'][-1] == BULK_OFFERS[-1]:
+        b['stage'] = 'lost'
+        t['result'] = dict(price=0, lost=1)
+        kit.metric(c, 'gr_bulk_lost')
+        kit.complete(s, c, t, 0, f'{who} không đặt đơn sỉ ở tiệm vì giá chưa hợp.')
+        return dict(message=f'{who}: “Thôi để hỏi thêm bên Mây Mart.” Đơn sỉ không thành.', refused=True)
+    return dict(message=f'{who} nhíu mày: “{price} xu hả? Hơi cao so với chỗ khác đó.” Còn một lần báo giá.', refused=True)
+
+
+def heal_save(s: dict, c: dict) -> None:
+    """migrate_state: a bulk quote left hanging by an older build gets its answer now, by the rules above (feedback
+    #57: bà Sáu's order, cut to −15% in the first round, waited for a quote that could not be made). Only that task
+    moves (its deposit booked like a normal yes); a save it cannot read is left as it is for validation to judge."""
+    tasks = c.get('tasks')
+    if not isinstance(tasks, list) or type(c.get('money')) is not int:
+        return
+    for t in tasks:
+        if not (isinstance(t, dict) and t.get('career') == ID and t.get('status') not in ('completed', 'referred', 'cancelled')
+                and isinstance(t.get('needs'), dict) and _bulk_stuck(t)):
+            continue
+        keep = tree_copy(s)   # rare (a stuck order): the whole save, so a failed answer leaves no trace anywhere
+        try:
+            kit.start_work(t)
+            said = _bulk_answer(s, c, t)
+            kit.log(s, c, 'bulk', f'Đơn sỉ “{t["title"]}”: {said["message"]}', t.get('npc'), t['id'])
+        except (KeyError, TypeError, ValueError, AttributeError, IndexError, kit.eng().GameError):
+            s.clear()
+            s.update(keep)
+            return
+
+
 def _bulk_action(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
     b, n, who = t['bulk'], t['needs'], _who(t)
     kit.start_work(t)
     if name == 'gr_bulk_quote':
-        kit.need(b['stage'] == 'quote', 'Đơn này đã chốt giá rồi.')
         off = kit.integer(p.get('off'), 0, 100)
         kit.need(off in BULK_OFFERS, 'Mức bớt không có trong bảng giá sỉ.')
-        # The deepest discount turned down leaves nothing lower to offer: the customer walks (a bill stuck
-        # there before this, offers == [15], ends on the next tap instead of refusing every price).
-        if not b['offers'] or b['offers'][-1] < BULK_OFFERS[-1]:
+        if b['stage'] != 'quote' and b['offers'] and off == b['offers'][-1] and b['price'] is not None:
+            # A page from before the answer (a stuck quote answered on load, #57) still shows the quote button.
+            return dict(message=f'{who} đã chốt {b["price"]} xu với tiệm rồi.' + (' Soạn đủ hàng rồi giao trước khi đóng ca.' if b['stage'] == 'deliver' else ''))
+        kit.need(b['stage'] == 'quote', 'Đơn này đã chốt giá rồi.')
+        # The deepest discount turned down leaves nothing lower to offer: the customer answers for good, whatever
+        # was pressed (heal_save answers such saves on load; this covers one that slipped through).
+        if not _bulk_stuck(t):
             kit.need(not b['offers'] or off > b['offers'][-1], 'Lần báo giá sau phải bớt nhiều hơn lần trước.')
             b['offers'].append(off)
-        # Bulk quotes start from the standard price list, not the shop's own shelf prices: a customer buying in bulk
-        # compares with other shops' list. Quoting from raised shelf prices made every bulk order impossible (01/10,
-        # feedback #49/#52: rice 20 instead of 18, eggs 4 instead of 3 → even −15% stayed above what they would pay).
-        price = _bulk_list(c, t, base=True) * (100 - b['offers'][-1]) // 100
-        if b['offers'][-1] == off and price * 100 <= _bulk_list(c, t, base=True) * n['_max']:
-            b['stage'] = 'deliver'
-            b['price'] = price
-            b['deposit'] = -(-price * n['deposit'] // 100)
-            kit.money(s, c, b['deposit'], f'Tiền cọc đơn sỉ: {t["title"]}', t['id'], 'revenue')
-            d = _data(c)
-            d['sales'] += b['deposit']
-            d['day_sales'] += b['deposit']
-            return dict(message=f'{who} gật đầu: “Chốt {price} xu nha!” Nhận cọc {b["deposit"]} xu. Soạn đủ hàng rồi giao trước khi đóng ca.', celebrate=True)
-        if len(b['offers']) >= 2 or b['offers'][-1] == BULK_OFFERS[-1]:
-            b['stage'] = 'lost'
-            t['result'] = dict(price=0, lost=1)
-            kit.metric(c, 'gr_bulk_lost')
-            kit.complete(s, c, t, 0, f'{who} không đặt đơn sỉ ở tiệm vì giá chưa hợp.')
-            return dict(message=f'{who}: “Thôi để hỏi thêm bên Mây Mart.” Đơn sỉ không thành.', refused=True)
-        return dict(message=f'{who} nhíu mày: “{price} xu hả? Hơi cao so với chỗ khác đó.” Còn một lần báo giá.', refused=True)
+        return _bulk_answer(s, c, t)
     if name == 'gr_bulk_deliver':
         kit.need(b['stage'] == 'deliver', 'Chốt giá với khách trước đã.')
         kit.confirm(p, 'Xác nhận soạn hàng và giao đơn sỉ.')

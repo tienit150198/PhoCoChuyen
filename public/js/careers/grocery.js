@@ -420,10 +420,14 @@ function bulkJob(t,x){
       ${b.stage==='deliver'&&s&&full?x.button(full.label,full.act,full.data||{},'small ghost'):b.stage==='deliver'&&s&&due?`<button type="button" class="btn small ghost" disabled>⚡ thiếu ${x.fmt(due)} xu</button>`:b.stage==='deliver'&&s?x.confirmCmd(`⚡ Nhập ${Math.min(30,s)}`,'inv_order',{item:l.item,qty:Math.min(30,s),supplier:'express'},`Nhập hỏa tốc ${Math.min(30,s)} ${it.unit} ${it.name} · khoảng ${x.fmt(rushCost(x,it,Math.min(30,s)))} xu? Hỏa tốc 15–30 phút, nhớ mở thùng đếm ở Kho & giá.`,'small ghost'):''}</div>`;}).join('');
   let body='',cta='';
   if(b.stage==='quote'){
-    const last=b.offers.length?b.offers[b.offers.length-1]:-1,left=(x.cc.bulk_offers||[0,5,10,15]).filter(v=>v>last);
-    // Turned down at the lowest price (a save from before 01/10 could hang here): the only move left is to let the customer go.
-    body=`<h4 class="section-title">Báo giá sỉ · giá gốc ${x.money(list)}</h4><p class="small muted">Khách chỉ nghe báo giá tối đa 2 lần${b.offers.length&&left.length?' — còn 1 lần':''}.</p>
-      <div class="gr-choices">${left.map(v=>x.cmd(`${v?`Bớt ${v}%`:'Giá lẻ'} · ${x.fmt(Math.floor(list*(100-v)/100))} xu`,'gr_bulk_quote',{task:t.id,off:v},'gr-choice')).join('')||x.cmd('🙏 Không bớt thêm được · chào khách','gr_bulk_quote',{task:t.id,off:last},'gr-choice')}</div>`;
+    const offs=x.cc.bulk_offers||[0,5,10,15],last=b.offers.length?b.offers[b.offers.length-1]:-1,floor=offs[offs.length-1];
+    // A second quote, or the deepest discount, always gets a yes or a no. A quote left open with no step after it
+    // (saves from before 01/10, feedback #49/#57) is answered by the server on load; if one still shows, the one
+    // button asks the customer to answer that last price: never a dead end, never a "quote again" with nothing lower.
+    const left=b.offers.length>=2||last>=floor?[]:offs.filter(v=>v>last);
+    const w=x.npc(t.npc)?.display_name||'Khách';
+    body=`<h4 class="section-title">Báo giá sỉ · giá gốc ${x.money(list)}</h4><p class="small muted">${!left.length?`Đã báo mức bớt sâu nhất: chờ ${x.esc(w)} trả lời.`:b.offers.length?`Lần trước khách chê cao — còn 1 lần, lần này khách trả lời dứt khoát.`:`Khách chỉ nghe báo giá tối đa 2 lần. Bớt ${floor}% thì khách trả lời ngay.`}</p>
+      <div class="gr-choices">${left.map(v=>x.cmd(`${v?`Bớt ${v}%`:'Giá lẻ'} · ${x.fmt(Math.floor(list*(100-v)/100))} xu`,'gr_bulk_quote',{task:t.id,off:v},'gr-choice')).join('')||x.cmd(`🤝 Hỏi ${x.esc(w)} chốt giá ${x.fmt(Math.floor(list*(100-Math.max(0,last))/100))} xu`,'gr_bulk_quote',{task:t.id,off:Math.max(0,last)},'gr-choice')}</div>`;
   }else if(b.stage==='deliver'){
     const short=n.lines.some(l=>shortOf(l)>0);
     body=`<div class="notice ${short?'amber':'green'}">Đã chốt ${x.money(b.price)} · nhận cọc ${x.money(b.deposit)}. ${short?'Kho còn thiếu hàng.':'Kho đủ hàng, soạn và giao được rồi!'} Giao trước khi đóng ca, không thì phải hoàn cọc.</div>
