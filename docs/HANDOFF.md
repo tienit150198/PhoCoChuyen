@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **1.0.0** (`main` = `3f6ba34`), 28 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **1.0.2** (`main` = `d86dba7`), 28 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -121,6 +121,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 3. **Next versions, in the owner's order:** (a) chat phase 1 (design `docs/superpowers/specs/2026-09-30-live-chat-street-design.md`
    on branch `live`; the owner said not yet on 01/10), then (b) seven careers: nhân viên gác chắn và bảo trì đường sắt,
    cán bộ lưu trữ và thư viện, điều dưỡng, thợ dầu khí, trực tổng đài cứu hộ, người gác hải đăng, cứu hộ hồ bơi,
+   bán kem (added 01/10, feedback #51),
    together with (c) many more awkward, annoying demands in every existing career (rule 6).
 3. **Retire the old server's role (after 3–7 days, ~03–07/10):** see §7.
 4. **Deploy less often.** Each deploy makes the changed files cold for everyone. Batch changes; hotfixes excepted.
