@@ -73,7 +73,7 @@ export class World {
     const career=state.current||'mother_baby';
     if(career!==this.career){this.player={x:NaN,y:NaN,path:[],goal:null,look:1};this.pending=null;this.ambientPeople=[];}
     // Cached career previews show the player too: redraw them when the chosen look changes.
-    const look=JSON.stringify([state.journey?.gender??null,state.wardrobe?.look??null]);if(look!==this.lookKey){this.lookKey=look;this.previewCache.clear();}
+    const look=JSON.stringify([state.journey?.gender??null,state.wardrobe?.look??null,state.colors?.wear??null,state.wardrobe_colors?.wear??null]);if(look!==this.lookKey){this.lookKey=look;this.previewCache.clear();}
     this.career=career;this.game=content;this.state=state;this.c=state.careers[career];this.reduced=state.settings.reduceMotion;
     this.layout();this.setupObjects();this.rev=(this.rev||0)+1;this.wake(true);
   }

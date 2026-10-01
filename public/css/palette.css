@@ -1,0 +1,59 @@
+/* ==========================================================================
+   🎨 Bảng màu của bạn (v4/palette.js): the colour wallet sheet and the small colour picker (decor 🎨 Màu).
+   Loaded on first use. Theme tokens only (app.css), so the light themes and 'dem' both work.
+   ========================================================================== */
+.pl-dlg{width:min(560px,calc(100vw - 48px))}
+.pl-head p{max-width:46ch}
+.pl-body{display:grid;gap:14px}
+.pl-count{display:grid;grid-template-columns:auto 1fr;align-items:baseline;gap:4px 10px;padding:12px 14px;border-radius:16px;background:var(--second-soft);color:var(--ink-2)}
+.pl-count-num{font-size:1.05rem;color:var(--ink)}
+.pl-count-num b{font-size:1.5rem}
+.pl-bar{grid-column:1/-1;display:block;height:8px;border-radius:var(--radius-pill);background:var(--surface);overflow:hidden}
+.pl-bar b{display:block;height:100%;border-radius:inherit;background:var(--second);transition:width .3s var(--ease,ease)}
+.pl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px;margin:0;padding:0;list-style:none}
+.pl-tile{display:grid;justify-items:center;gap:4px;width:100%;min-height:118px;padding:12px 6px 10px;border-radius:18px;background:var(--surface);
+  border:1.5px solid var(--line);color:var(--ink);text-align:center;transition:transform .12s,border-color .12s,box-shadow .12s}
+.pl-tile:not(.have):hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.pl-tile.have{background:var(--surface-2);cursor:default}
+.pl-tile b{font-size:.833rem;line-height:1.3}
+.pl-dot{position:relative;display:grid;place-items:center;width:52px;height:52px}
+.pl-dot svg{display:block}
+.pl-ok,.pl-lock{position:absolute;right:-4px;bottom:-2px;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;
+  font-size:.7rem;font-style:normal;line-height:1;background:var(--surface);box-shadow:var(--shadow-sm)}
+.pl-ok{background:var(--good);color:var(--surface);font-weight:800}
+.pl-chip{display:inline-block;padding:2px 9px;border-radius:var(--radius-pill);background:var(--accent-soft);color:var(--accent-text);font-size:.75rem;font-weight:800}
+.pl-chip.ok{background:var(--good-soft);color:var(--good)}
+.pl-note{margin:0;font-size:.833rem;line-height:1.45;color:var(--muted)}
+.pl-note.good{color:var(--good);font-weight:700}
+.pl-say{margin:0;min-height:1.2em;font-size:.867rem;font-weight:700;line-height:1.45;color:var(--ink-2)}
+.pl-say:empty{display:none}
+.pl-say.good{color:var(--good)}
+.pl-say.bad{color:var(--bad)}
+/* The picker sits low on the screen (its own big preview, and the room above stays in sight). */
+.pl-pick{width:min(520px,calc(100vw - 32px));margin:auto auto 18px}
+.pl-pick::backdrop{background:rgba(20,14,10,.18);backdrop-filter:none;-webkit-backdrop-filter:none}
+.pl-pick-in{display:grid;gap:10px;padding:14px 16px 16px}
+.pl-pick-head{display:flex;align-items:center;gap:12px}
+.pl-pick-head h2{margin:0;font-size:1.15rem;overflow-wrap:anywhere}
+.pl-pick-head .eyebrow{display:block;margin-bottom:2px}
+.pl-prev{flex:none;display:grid;place-items:center;width:88px;height:88px;border-radius:20px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line)}
+.pl-prev svg{display:block}
+.pl-now{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0 0;font-size:.867rem;font-weight:700;color:var(--ink-2)}
+.pl-sws{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;justify-items:center}
+.pl-sw{position:relative;display:grid;place-items:center;width:44px;height:44px;padding:0;border-radius:50%;border:2px solid transparent;background:none;transition:transform .12s}
+.pl-sw svg{display:block}
+.pl-sw:hover{transform:scale(1.06)}
+.pl-sw.on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.pl-sw-lock{position:absolute;right:-2px;bottom:-2px;font-size:.62rem;font-style:normal;line-height:1;padding:2px;border-radius:50%;background:var(--surface);box-shadow:var(--shadow-sm)}
+.pl-go{display:flex;flex-wrap:wrap;gap:8px}
+.pl-go .btn{flex:1 1 160px;min-height:44px}
+/* Phones: a short sheet at the bottom (app.css gives phone sheets height:auto, which would stretch it to the top),
+ * so the room being recoloured stays in sight above it. */
+html[data-layout="phone"] dialog.sheet.pl-pick{width:100%;height:fit-content;max-height:min(70dvh,560px);margin:auto auto 0}
+html[data-layout="phone"] .pl-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+html[data-layout="phone"] .pl-tile{min-height:110px;padding:10px 4px 8px}
+html[data-layout="phone"] .pl-prev{width:72px;height:72px}
+html[data-layout="phone"] .pl-prev svg{width:72px;height:72px}
+@media (prefers-reduced-motion:reduce){.pl-tile,.pl-sw,.pl-bar b{transition:none}.pl-tile:hover,.pl-sw:hover{transform:none}}
+html.reduce-motion .pl-tile,html.reduce-motion .pl-sw,html.reduce-motion .pl-bar b{transition:none}
+html.reduce-motion .pl-tile:hover,html.reduce-motion .pl-sw:hover{transform:none}

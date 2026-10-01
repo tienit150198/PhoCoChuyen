@@ -219,144 +219,243 @@ class Buy(unittest.TestCase):
 
 
 class Colors(unittest.TestCase):
-    """Màu phụ kiện (1.3, góp ý #70): Màu gốc free, another colour unlocked once per accessory + colour."""
+    """Bảng màu: Màu gốc free; a colour unlocked once (40 xu, ánh kim 60) is free on every accessory, top, bottom and pair
+    of shoes (furniture: tests/test_deco.py). 1.3.1's per-accessory colours join the wallet."""
 
     def with_hat(self, wallet=200):
         s = story(wallet=wallet)
         s, _ = act(s, 'jr_wd_buy', item='mu_len')            # 50 xu
         return s
 
-    def test_unlock_pricing_and_the_ledger(self):
-        s = self.with_hat(200)
-        self.assertNotIn('wardrobe_colors', s)                # nothing until the first colour
-        s, r = act(s, 'jr_wd_color', item='mu_len', color='hong', buy=True)
-        self.assertEqual(s['journey']['wallet'], 130)
-        self.assertIn('mở khóa màu Hồng pastel cho Mũ len', r['message'])
+    def test_unlock_once_use_on_every_kind_of_item(self):
+        s = self.with_hat(500)
+        self.assertNotIn('colors', s)                         # nothing until the first colour
+        self.assertNotIn('wardrobe_colors', s)
+        s, r = act(s, 'jr_wd_unlock', color='navy')
+        self.assertEqual(s['journey']['wallet'], 410)
+        self.assertIn('Đã trả 40 xu mở khóa màu Xanh navy.', r['message'])
         row = s['journey']['history'][-1]
-        self.assertEqual((row['amount'], row['kind'], row['label']), (-20, 'life', 'Mở khóa màu phụ kiện · Mũ len · Hồng pastel'))
-        self.assertEqual(s['wardrobe_colors'], dict(v=1, wear={'mu_len': 'hong'}, owned=['mu_len:hong']))
-        self.assertEqual(wd.look_of(s)['tint'], {'mu_len': 'hong'})
-        s, _ = act(s, 'jr_wd_color', item='mu_len', color='vang', buy=True)   # ánh kim: 30 xu
-        self.assertEqual(s['journey']['wallet'], 100)
-        # Unlocked once: switching back and forth (and to Màu gốc) is free.
-        for col in ('hong', 'goc', 'vang', 'hong'):
-            s, _ = act(s, 'jr_wd_color', item='mu_len', color=col)
-        s, _ = act(s, 'jr_wd_color', item='mu_len', color='vang', buy=True)   # already open: no second charge
-        self.assertEqual(s['journey']['wallet'], 100)
-        self.assertEqual(s['wardrobe_colors']['wear'], {'mu_len': 'vang'})
-        s, _ = act(s, 'jr_wd_color', item='mu_len', color='goc')
-        self.assertEqual(s['wardrobe_colors']['wear'], {})
-        self.assertNotIn('tint', wd.look_of(s))
-        # Per accessory: pink on the hat does not open pink for the glasses.
-        s, _ = act(s, 'jr_wd_buy', item='kinh_tron')
-        with self.assertRaises(GameError):
-            act(s, 'jr_wd_color', item='kinh_tron', color='hong')
+        self.assertEqual((row['amount'], row['kind'], row['label']), (-40, 'life', 'Mở khóa màu · Xanh navy'))
+        self.assertEqual(s['colors'], dict(v=1, have=['navy'], wear={}, deco={}))
+        # Mirrored for 1.3.1/1.3.2 (rollback): navy on every accessory, in the 1.3.1 shape.
+        self.assertEqual(s['wardrobe_colors'], dict(v=1, wear={}, owned=[f'{i}:navy' for i in wd.TINTABLE]))
+        # The accessory, the top, the bottom and the shoes: all free now.
+        look = wd.look_of(s)
+        for iid in (look['acc'], look['top'], look['bottom'], look['shoes']):
+            s, r = act(s, 'jr_wd_color', item=iid, color='navy')
+            self.assertNotIn('Đã trả', r['message'])
+        self.assertEqual(s['journey']['wallet'], 410)
+        self.assertEqual(wd.look_of(s)['tint'], {'mu_len': 'navy', 'ao_quen': 'navy', 'quan_kem': 'navy', 'giay_nau': 'navy'})
+        self.assertEqual(s['colors']['wear'], {'ao_quen': 'navy', 'quan_kem': 'navy', 'giay_nau': 'navy'})
+        self.assertEqual(s['wardrobe_colors']['wear'], {'mu_len': 'navy'})   # accessories keep their 1.3.1 home
+        # Back to Màu gốc, and switching through jr_wd_wear's tint, all free.
+        s, r = act(s, 'jr_wd_color', item='giay_nau', color='goc')
+        self.assertEqual(r['message'], 'Giày nâu trở lại màu gốc. Mặc luôn rồi nè!')
+        s, _ = act(s, 'jr_wd_wear', look={'tint': {'quan_kem': 'goc', 'mu_len': 'goc', 'giay_nau': 'navy'}})
+        self.assertEqual(wd.look_of(s)['tint'], {'ao_quen': 'navy', 'giay_nau': 'navy'})
+        self.assertEqual(s['journey']['wallet'], 410)
         validate_state(s)
 
-    def test_staff_price(self):
+    def test_names_do_not_contradict_the_colour(self):
+        s = story(wallet=500)
+        s, _ = act(s, 'jr_wd_buy', item='ao_hoodie')
+        s, r = act(s, 'jr_wd_color', item='ao_hoodie', color='navy', buy=True)
+        self.assertEqual(r['message'], 'Đã trả 40 xu mở khóa màu Xanh navy. Áo hoodie giờ mang màu Xanh navy. Mặc luôn rồi nè!')
+        self.assertEqual(wd.item_name('ao_hoodie', 'navy'), 'Áo hoodie · Xanh navy')
+        self.assertEqual(wd.item_name('ao_hoodie'), 'Áo hoodie tím')
+        self.assertEqual(wd.item_name('giay_do', 'den'), 'Giày búp bê · Đen tuyền')
+        self.assertEqual(wd.item_name('ao_len', 'hong'), 'Áo len mùa đông · Hồng pastel')
+        for it in wd.ITEMS:                                  # a name with a colour word has a plain one
+            if it['slot'] in ('top', 'bottom', 'shoes'):
+                for word in ('tím', 'trắng', 'đỏ', 'đen', 'nâu', 'xám', 'kem', 'xanh'):
+                    self.assertNotIn(f' {word}', f' {it["plain"].lower()}', it['id'])
+
+    def test_metal_colours_and_the_staff_price(self):
+        s = self.with_hat(300)
+        s, _ = act(s, 'jr_wd_unlock', color='vang')
+        self.assertEqual(s['journey']['wallet'], 190)        # ánh kim: 60
         if wd.SHOP not in CAREERS:
-            self.skipTest('clothing is filtered out')
-        s = self.with_hat(200)
+            return
         s['careers'][wd.SHOP]['started'] = True
         before = s['journey']['wallet']
-        s, r = act(s, 'jr_wd_color', item='mu_len', color='mint', buy=True)
-        s, _ = act(s, 'jr_wd_color', item='mu_len', color='bac', buy=True)
-        self.assertEqual(before - s['journey']['wallet'], 16 + 24)
+        s, r = act(s, 'jr_wd_unlock', color='mint')
+        s, _ = act(s, 'jr_wd_unlock', color='bac')
+        self.assertEqual(before - s['journey']['wallet'], 32 + 48)
         self.assertIn('giá nhân viên', r['message'])
+        self.assertEqual(s['journey']['history'][-1]['career'], wd.SHOP)
 
-    def test_locked_colour_cannot_be_used(self):
+    def test_a_second_tap_never_pays_twice(self):
+        s = self.with_hat(300)
+        s, _ = act(s, 'jr_wd_unlock', color='hong')
+        s, r = act(s, 'jr_wd_unlock', color='hong')
+        self.assertTrue(r.get('duplicate'))
+        s, _ = act(s, 'jr_wd_color', item='mu_len', color='hong', buy=True)   # open already: no charge
+        self.assertEqual(s['journey']['wallet'], 210)
+        self.assertEqual(sum(1 for x in s['journey']['history'] if x['label'].startswith('Mở khóa màu')), 1)
+        # Through the store: the same request sent twice is applied once.
+        with tempfile.TemporaryDirectory() as td:
+            store = Store(Path(td) / 'w.db')
+            token, _, _ = store.session()
+            st = story(wallet=100)
+            with store.connect() as db:
+                db.execute('UPDATE sessions SET state=? WHERE sid=?', (json.dumps(st), store.key(token)))
+            rev = store.read(token)[1]
+            store.command(token, 'req-col-0001', rev, None, 'jr_wd_unlock', {'color': 'do'})
+            store.command(token, 'req-col-0001', rev, None, 'jr_wd_unlock', {'color': 'do'})
+            s2 = store.read(token)[0]
+            self.assertEqual((s2['journey']['wallet'], s2['colors']['have']), (60, ['do']))
+            store.close_pool()
+
+    def test_locked_colour_or_item_cannot_be_used(self):
         s = self.with_hat()
         with self.assertRaises(GameError):
             act(s, 'jr_wd_color', item='mu_len', color='do')                 # not unlocked, no buy
         with self.assertRaises(GameError):
-            act(s, 'jr_wd_wear', look={'tint': {'mu_len': 'do'}})
-        s, _ = act(s, 'jr_wd_color', item='mu_len', color='do', buy=True, wear=False)
-        s, _ = act(s, 'jr_wd_wear', look={'acc': 'pk_khong'})
-        s, r = act(s, 'jr_wd_wear', look={'acc': 'mu_len', 'tint': {'mu_len': 'goc'}})
-        self.assertEqual((s['wardrobe']['look']['acc'], s['wardrobe_colors']['wear']), ('mu_len', {}))
-        s, _ = act(s, 'jr_wd_wear', look={'tint': {'mu_len': 'do'}})
-        self.assertEqual(s['wardrobe_colors']['wear'], {'mu_len': 'do'})
-        # An accessory not bought yet: its colour cannot be unlocked (try it on first, buy it, then the colour).
+            act(s, 'jr_wd_wear', look={'tint': {'ao_quen': 'do'}})
+        s, _ = act(s, 'jr_wd_unlock', color='do')
+        s, _ = act(s, 'jr_wd_wear', look={'tint': {'ao_quen': 'do'}})       # the top worn: free now
+        # An item not bought yet: its colour waits (try it on first, buy it, then the colour).
         with self.assertRaises(GameError):
-            act(s, 'jr_wd_color', item='no_toc', color='hong', buy=True)
-        # Locked by level: the sunglasses' colours wait too.
-        with self.assertRaises(GameError):
-            act(s, 'jr_wd_color', item='kinh_ram', color='hong', buy=True)
+            act(s, 'jr_wd_color', item='ao_hoodie', color='do')
+        with self.assertRaises(GameError):                                   # locked by level
+            act(s, 'jr_wd_color', item='kinh_ram', color='do')
+        with self.assertRaises(GameError):                                   # married only
+            act(s, 'jr_wd_color', item='ao_cuoi', color='do')
+        # The colour of something not worn may still be set (it is remembered), when the item is yours.
+        s, _ = act(s, 'jr_wd_color', item='ao_thun_kem', color='do', wear=False)
+        self.assertEqual(s['colors']['wear']['ao_thun_kem'], 'do')
+        self.assertEqual(s['wardrobe']['look']['top'], 'ao_quen')
 
     def test_wallet_never_goes_below_zero(self):
-        s = self.with_hat(60)                                  # 10 xu left
+        s = self.with_hat(80)                                  # 30 xu left
         before = copy.deepcopy(s)
-        with self.assertRaises(GameError) as e:
-            act(s, 'jr_wd_color', item='mu_len', color='hong', buy=True)
-        self.assertIn('Ví chưa đủ 20 xu', str(e.exception))
+        for name, p in (('jr_wd_unlock', {'color': 'hong'}), ('jr_wd_color', {'item': 'mu_len', 'color': 'hong', 'buy': True})):
+            with self.assertRaises(GameError) as e:
+                act(s, name, **p)
+            self.assertIn('Ví chưa đủ 40 xu', str(e.exception))
         self.assertEqual(s, before)
-        self.assertEqual(s['journey']['wallet'], 10)
+        self.assertEqual(s['journey']['wallet'], 30)
 
     def test_bad_payloads(self):
         s = self.with_hat()
-        for p in ({'item': 'pk_khong', 'color': 'hong'}, {'item': 'ao_len', 'color': 'hong'}, {'item': 'mu_len', 'color': 'cau_vong'},
-                  {'item': 'mu_len', 'color': 5}, {'item': 'mu_len'}, {'item': 'mu_len', 'color': 'hong', 'buy': 'yes'},
-                  {'item': 'mu_len', 'color': 'hong', 'buy': True, 'extra': 1}, {'item': 'mu_len', 'color': 'hong', 'wear': 1}):
+        for p in ({'item': 'pk_khong', 'color': 'hong'}, {'item': 'toc_dai', 'color': 'hong'}, {'item': 'mau_hong', 'color': 'hong'},
+                  {'item': 'mu_len', 'color': 'cau_vong'}, {'item': 'mu_len', 'color': 5}, {'item': 'mu_len'},
+                  {'item': 'mu_len', 'color': 'hong', 'buy': 'yes'}, {'item': 'mu_len', 'color': 'hong', 'buy': True, 'extra': 1},
+                  {'item': 'mu_len', 'color': 'hong', 'wear': 1}, {'item': 'mu_len', 'color': 'hong', 'buy': True, 'pay': 'gold'}):
             with self.assertRaises(GameError, msg=p):
                 act(s, 'jr_wd_color', **p)
-        for tint in ({}, {'mu_len': 'cau_vong'}, {'ao_len': 'hong'}, 'hong', {'mu_len': None}):
+        for p in ({}, {'color': 'goc'}, {'color': 'cau_vong'}, {'color': ['hong']}, {'color': 'hong', 'item': 'mu_len'}):
+            with self.assertRaises(GameError, msg=p):
+                act(s, 'jr_wd_unlock', **p)
+        for tint in ({}, {'mu_len': 'cau_vong'}, {'toc_dai': 'hong'}, 'hong', {'mu_len': None}):
             with self.assertRaises(GameError, msg=tint):
                 act(s, 'jr_wd_wear', look={'tint': tint})
 
-    def test_strict_validation_of_the_block(self):
-        s = self.with_hat()
-        s, _ = act(s, 'jr_wd_color', item='mu_len', color='hong', buy=True)
+    def test_strict_validation_of_the_wallet(self):
+        s = self.with_hat(400)
+        s, _ = act(s, 'jr_wd_unlock', color='hong')
+        s, _ = act(s, 'jr_wd_color', item='ao_quen', color='hong')
+        validate_state(s)
         bad = [
-            lambda c: c.update(extra=1),
-            lambda c: c.update(v=2),
-            lambda c: c.update(owned=['mu_len:cau_vong']),
-            lambda c: c.update(owned=['pk_khong:hong']),
-            lambda c: c.update(owned=['mu_len:hong', 'mu_len:hong']),
-            lambda c: c.update(owned='mu_len:hong'),
-            lambda c: c['wear'].update(mu_len='do'),           # worn but never unlocked
-            lambda c: c['wear'].update(ao_len='hong'),
-            lambda c: c.update(wear=['mu_len']),
+            lambda p: p.update(extra=1),
+            lambda p: p.update(v=2),
+            lambda p: p.update(have=['cau_vong']),
+            lambda p: p.update(have=['hong', 'hong']),
+            lambda p: p.update(have='hong'),
+            lambda p: p['wear'].update(ao_len='do'),            # worn but never unlocked
+            lambda p: p['wear'].update(mu_len='hong'),          # accessories live in wardrobe_colors
+            lambda p: p['wear'].update(toc_dai='hong'),
+            lambda p: p.update(wear=['ao_quen']),
+            lambda p: p['deco'].update({'d1': 'do'}),           # a colour not unlocked
+            lambda p: p['deco'].update({'': 'hong'}),
+            lambda p: p['deco'].update({'x' * 13: 'hong'}),
+            lambda p: p.update(deco={f'd{i}': 'hong' for i in range(wd.DECO_MAX + 1)}),
         ]
         for i, breaks in enumerate(bad):
             t = copy.deepcopy(s)
-            breaks(t['wardrobe_colors'])
+            breaks(t['colors'])
             with self.assertRaises(GameError, msg=i):
                 validate_state(t)
+        # The 1.3.1 block stays as strict as 1.3.1 made it.
+        for breaks in (lambda c: c.update(extra=1), lambda c: c['wear'].update(mu_len='do'), lambda c: c.update(owned=['ao_len:hong'])):
+            t = copy.deepcopy(s)
+            breaks(t['wardrobe_colors'])
+            with self.assertRaises(GameError):
+                validate_state(t)
 
-    def test_old_saves_and_a_newer_block(self):
+    def test_migration_from_a_131_save(self):
+        """Colours bought per accessory in 1.3.1 become colours of the wallet; what was worn stays worn."""
+        s = self.with_hat()
+        s['wardrobe_colors'] = dict(v=1, wear={'mu_len': 'hong'}, owned=['mu_len:hong', 'kinh_tron:vang'])
+        validate_state(s)                                     # a valid 1.3.1 save, as it is in production
+        before = copy.deepcopy(s)
+        m = migrate_state(s)
+        self.assertEqual(s, before)                           # the stored save itself is untouched
+        self.assertEqual(m['colors'], dict(v=1, have=['vang', 'hong'], wear={}, deco={}))   # palette order
+        self.assertEqual(m['wardrobe_colors']['wear'], {'mu_len': 'hong'})
+        self.assertEqual(set(m['wardrobe_colors']['owned']), {f'{i}:{c}' for i in wd.TINTABLE for c in ('hong', 'vang')})
+        self.assertEqual(m['wardrobe_colors']['owned'][:2], ['mu_len:hong', 'kinh_tron:vang'])   # nothing removed
+        self.assertEqual(wd.look_of(m)['tint'], {'mu_len': 'hong'})
+        for k in set(s) - {'colors', 'wardrobe_colors', 'check'}:   # nothing else of the player changes
+            self.assertEqual(m[k], s[k], k)
+        validate_state(m)
+        m, _ = act(m, 'jr_wd_color', item='ao_quen', color='vang')   # gold on the top: free
+        self.assertEqual(m['journey']['wallet'], s['journey']['wallet'])
+        self.assertEqual(migrate_state(m)['colors'], m['colors'])    # idempotent
+
+    def test_old_saves_and_newer_blocks(self):
         s = story()                                           # a 1.2 save: no colour key at all
-        validate_state(migrate_state(s))
-        self.assertNotIn('tint', wd.look_of(s))
-        self.assertNotIn('wardrobe_colors', migrate_state(s))
+        m = migrate_state(s)
+        validate_state(m)
+        self.assertNotIn('tint', wd.look_of(m))
+        self.assertNotIn('wardrobe_colors', m)
+        self.assertNotIn('colors', m)
         s['wardrobe_colors'] = dict(v=2, wear={'mu_len': 'cau_vong', 'kinh_tron': 'hong', 'no_toc': 'do'},
                                     owned=['mu_len:cau_vong', 'kinh_tron:hong', 'kinh_tron:hong', 'x'], glitter=True)
+        s['colors'] = dict(v=3, have=['navy', 'cau_vong', 5, 'navy'], wear={'ao_len': 'navy', 'ao_moi_2030': 'navy', 'quan_jean': 'do'},
+                           deco={'d1': 'navy', 'd2': 'cau_vong', 7: 'navy'}, stickers=['x'])
         m = migrate_state(s)
-        self.assertEqual(m['wardrobe_colors'], dict(v=1, wear={'kinh_tron': 'hong'}, owned=['kinh_tron:hong']))
+        self.assertEqual(m['wardrobe_colors']['wear'], {'kinh_tron': 'hong'})
+        self.assertEqual(m['colors']['have'], ['hong', 'navy'])
+        self.assertEqual(m['colors']['wear'], {'ao_len': 'navy'})
+        self.assertEqual(m['colors']['deco'], {})            # no furniture of that id in this save
         validate_state(m)
 
-    def test_the_look_block_keeps_its_shape_for_older_builds(self):
-        # Colours live in their own root key: s['wardrobe'] passes the 1.2 validator unchanged, so a rollback
-        # neither refuses nor "repairs" the save, and the paid colours are still there afterwards.
-        s = self.with_hat()
-        s, _ = act(s, 'jr_wd_color', item='mu_len', color='navy', buy=True)
-        s, _ = act(s, 'jr_wd_wear', look={'tint': {'mu_len': 'goc'}, 'hair': 'toc_dai'})
+    def test_rollback_shape(self):
+        # The look block keeps its 1.2 shape; the 1.3.1 block keeps its 1.3.1 shape and holds every unlocked colour for
+        # every accessory; clothes and furniture live in a root key older builds never read (validate_state lists none).
+        s = self.with_hat(400)
+        s, _ = act(s, 'jr_wd_unlock', color='navy')
+        s, _ = act(s, 'jr_wd_color', item='mu_len', color='navy')
+        s, _ = act(s, 'jr_wd_color', item='ao_quen', color='navy')
         self.assertEqual(set(s['wardrobe']), wd.BLOCK_KEYS)
         self.assertEqual(set(s['wardrobe']['look']), wd.LOOK_KEYS)
+        self.assertEqual(set(s['wardrobe_colors']), {'v', 'wear', 'owned'})
+        self.assertTrue(all(x in wd.PAIRS for x in s['wardrobe_colors']['owned']))
+        self.assertTrue(all(f'{k}:{v}' in s['wardrobe_colors']['owned'] for k, v in s['wardrobe_colors']['wear'].items()))
+        self.assertTrue({f'{i}:navy' for i in wd.TINTABLE} <= set(s['wardrobe_colors']['owned']))
         wd._validate_look(s)
-        before = copy.deepcopy(s['wardrobe'])
-        wd.migrate(s)
-        self.assertEqual(s['wardrobe'], before)
+        wd.validate_colors(s)
+        # What a 1.3.1 build would do with this save: drop nothing, ignore s['colors'].
+        old = copy.deepcopy(s)
+        old.pop('colors')
+        validate_state(old)
 
     def test_public_state_and_content(self):
-        s = self.with_hat()
-        s, _ = act(s, 'jr_wd_color', item='mu_len', color='lavender', buy=True)
+        s = self.with_hat(400)
+        s, _ = act(s, 'jr_wd_unlock', color='lavender')
+        s, _ = act(s, 'jr_wd_color', item='quan_kem', color='lavender')
         v = public_state(s)
+        self.assertEqual(v['colors'], s['colors'])
         self.assertEqual(v['wardrobe_colors'], s['wardrobe_colors'])
-        self.assertLess(len(json.dumps(v['wardrobe_colors'])), 200)
+        self.assertLess(len(json.dumps(v['colors'])), 200)
         c = public_content()['journey']['wardrobe']
         self.assertEqual([x['id'] for x in c['colors']], [x['id'] for x in wd.COLORS])
         self.assertEqual(c['tintable'], list(wd.TINTABLE))
-        self.assertTrue(all(15 <= x['price'] <= 40 for x in c['colors']))
+        self.assertEqual(c['clothes'], [x['id'] for x in wd.ITEMS if x['slot'] in ('top', 'bottom', 'shoes')])
+        self.assertEqual(sorted({x['price'] for x in c['colors']}), [40, 60])
+        self.assertEqual([x['id'] for x in c['colors'] if x['price'] == 60], ['vang', 'bac'])
+        self.assertTrue(all(x['plain'] for x in c['items']))
         self.assertGreaterEqual(len(wd.COLORS), 8)
         shades = [x['id'] for x in wd.ITEMS if x['slot'] == 'shade']
         self.assertEqual(sorted(c['match']), sorted(shades))   # a hint for every hair shade
@@ -368,6 +467,8 @@ class Colors(unittest.TestCase):
         self.assertEqual(re.findall(r'(\w+):\{c:', js), [x['id'] for x in wd.COLORS])
         for iid in wd.TINTABLE:   # every recolourable accessory has its own colours (Màu gốc) in the art
             self.assertRegex(LOOK_JS, r"\b%s:\{c:'#" % iid)
+        self.assertIn("TINT_SLOTS=['top','bottom','shoes','acc']", LOOK_JS)
+        self.assertEqual(wd.TINT_SLOTS, ('top', 'bottom', 'shoes', 'acc'))
 
 
 class ClientData(unittest.TestCase):

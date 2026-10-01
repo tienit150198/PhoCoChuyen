@@ -150,8 +150,12 @@ LOOK_IDS = {
     'shoes': ('giay_nau', 'dep_lao', 'giay_trang', 'giay_do', 'bot_den'),
     'acc': ('pk_khong', 'kinh_tron', 'kinh_ram', 'non_la', 'mu_len', 'no_toc', 'tui_cheo'),
 }
-# Màu phụ kiện (1.3): look['tint'] = {accessory id: colour id} (game/wardrobe.py TINTABLE and COLORS).
+# Bảng màu (1.3.1 accessories, then clothes and shoes): look['tint'] = {worn item id: colour id}
+# (game/wardrobe.py TINTABLE, CLOTHES, TINT_SLOTS and COLORS). Hair keeps its own shades.
 TINTABLE = ('kinh_tron', 'kinh_ram', 'non_la', 'mu_len', 'no_toc', 'tui_cheo')
+TINT_SLOTS = ('top', 'bottom', 'shoes', 'acc')
+PAINTABLE = frozenset(TINTABLE + LOOK_IDS['top'] + LOOK_IDS['bottom'] + LOOK_IDS['shoes'])
+TINT_MAX = 8      # entries a client may send (it sends at most one per slot in TINT_SLOTS)
 COLOR_IDS = ('den', 'nau', 'vang', 'bac', 'hong', 'do', 'dao', 'mint', 'navy', 'lavender', 'trang')
 LOOK_DEFAULTS = {
     'male': dict(hair='toc_ngan', shade='mau_nau', skin='da_sang', top='ao_quen', bottom='quan_xam', shoes='giay_nau', acc='pk_khong'),

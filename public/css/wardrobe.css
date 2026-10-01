@@ -45,7 +45,7 @@ html[data-layout="phone"] .wd-side h3{font-size:1.05rem}
 html[data-layout="phone"] .wd-actions .btn{min-height:44px;padding-inline:10px;font-size:.867rem}
 html[data-layout="phone"] .wd-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 html[data-layout="phone"] .wd-item{min-height:128px;padding:8px 4px}
-/* Màu phụ kiện (1.3, góp ý #70): the colour row of the accessory being tried on (v4/wardrobe.js colorPanel). */
+/* Bảng màu (1.3.1 accessories, góp ý #70; then clothes and shoes): the colour row of what is tried on (v4/wardrobe.js colorPanel). */
 .wd-colors{display:grid;gap:8px;padding:12px 14px}
 .wd-col-empty{margin:0;font-size:.867rem;color:var(--muted)}
 .wd-col-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 10px}
@@ -59,4 +59,9 @@ html[data-layout="phone"] .wd-item{min-height:128px;padding:8px 4px}
 .wd-sw.on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 .wd-sw-lock{position:absolute;right:-2px;bottom:-2px;font-size:.62rem;font-style:normal;line-height:1;padding:2px;border-radius:50%;background:var(--surface);box-shadow:var(--shadow-sm)}
 .wd-sw-good{position:absolute;left:-3px;top:-4px;font-size:.7rem;font-style:normal;line-height:1}
+.wd-col-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px}
+.wd-col-foot .wd-note{flex:1 1 240px}
+.wd-pal{flex:none;min-height:40px}
+html[data-layout="phone"] .wd-pal{width:100%}
 @media (prefers-reduced-motion:reduce){.wd-item,.wd-sw{transition:none}.wd-item:hover,.wd-sw:hover{transform:none}}
+html.reduce-motion .wd-sw{transition:none}html.reduce-motion .wd-sw:hover{transform:none}

@@ -4,7 +4,10 @@
  * roof, the gác lửng's ladder, the dorm's bunk) and 65 pieces of furniture, each a small hand-made drawing.
  * Every colour is an attribute (no stylesheet needed), so the same markup becomes a photo (reno.js → canvas).
  * A piece is drawn from its footprint's front-left corner: x to the right, y up (negative). Wall pieces from the
- * top-left corner of their wall cells. */
+ * top-left corner of their wall cells.
+ * Bảng màu: a piece may wear a colour of the player's palette (state.colors.deco[uid], game/wardrobe.py): TINT says which
+ * of its own colours take the chosen one (its main part: the sofa's fabric, a pot, a frame…), see `tinted`. */
+import {PALETTE} from './look.js';
 
 export const CW=40,FR=30,WR=34,PX=14,CEIL=10,TOP=12,BASE=28;
 const OL='#5b4535';
@@ -259,17 +262,51 @@ export function roomBack(room,G,parts,isNight,uid=''){
   return out.join('');
 }
 
+/* ---------------------------------------------------------------- colours (bảng màu)
+ * TINT[id]: a palette family of the piece ('pink': pink→c, pinkD→d, pinkL→l of the chosen colour), several families,
+ * or {P key or #hex: 'c'|'d'|'l'}. Every piece has an entry (tests/test_deco.py checks it). */
+const FAM={wood:{wood:'c',woodD:'d',woodL:'l'},pink:{pink:'c',pinkD:'d',pinkL:'l'},mint:{mint:'c',mintD:'d',mintL:'l'},
+  sky:{sky:'c',skyD:'d',skyL:'l'},butter:{butter:'c',butterD:'d'},lilac:{lilac:'c',lilacD:'d',lilacL:'l'},peach:{peach:'c',peachD:'d'},
+  red:{red:'c',redD:'d'},grey:{grey:'c',greyD:'d'},dark:{dark:'c',darkL:'l'},pot:{pot:'c',potD:'d'},cream:{cream:'c'},white:{white:'c'}};
+export const TINT={sofa:'pink',ban_tra:'wood',giuong:'sky',tv:'wood',be_ca:'wood',ke_sach:'wood',ban_lam_viec:'wood',dan:'peach',
+  gau_bong:'peach',cay_canh:'pot',ghe_may:'wood',tu_lanh:'mint',ban_an:'pink',noi_com:'pink',may_giat:'grey',hoa_giay:'pot',
+  ban_ngoai:'red',tranh:'wood',den_long:{redD:'c','#b8473f':'d'},den_nhay:['butter','pink','mint','sky','lilac','peach'],dong_ho:'cream',
+  guong:'wood',ke_cay:'pot',anh:'white',lich:'red',may_lanh:'white',ke_bep:'wood',tu_quan_ao:'wood',nem:'lilac',tu_dau_giuong:'wood',
+  ke_go:'wood',goi_om:'grey',rem_giuong:'pink',tham:'lilac',tham_hoa:'peach',ban_hoc:'wood',ghe_hoc:'mint',ghe_luoi:'butter',
+  ban_xep:'wood',ghe_dau:'red',ban_gaming:'dark',ghe_gaming:'red',xich_du:'wood',vong:'sky',den_ban:'butter',den_cay:'cream',
+  den_ngu:'red',den_tha:'wood',den_led:{'#ff7ab8':'c','#ffd36b':'l','#6be0c8':'c','#8a8cff':'d'},cay_monstera:{white:'c',grey:'d'},
+  cay_luoi_ho:'lilac',xuong_rong:'pot',binh_hoa:{'#cdeef7':'c'},gian_rau:'wood',rem:'mint',poster:'lilac',ke_treo:'wood',
+  bang_ghim:'wood',dong_ho_cuc_cu:'wood',quat:'sky',quat_mini:'pink',loa:'sky',may_choi_game:['sky','red'],hop_nhac:'pink',o_meo:'pink'};
+const MAPS=new Map();
+function tintMap(id){
+  if(MAPS.has(id))return MAPS.get(id);
+  const spec=TINT[id];let m=null;
+  if(spec){
+    m=Object.create(null);
+    const add=(k,role)=>{m[String(P[k]||k).toLowerCase()]=role;};
+    if(typeof spec==='string'||Array.isArray(spec))for(const f of [].concat(spec))for(const [k,r] of Object.entries(FAM[f]||{}))add(k,r);
+    else for(const [k,r] of Object.entries(spec))add(k,r);
+  }
+  MAPS.set(id,m);return m;
+}
+/** A piece's markup in colour `col` (a palette id; anything else, e.g. 'goc' or null: its own colours). */
+export function tinted(id,svg,col){
+  const t=col?PALETTE[col]:null,m=t&&tintMap(id);
+  if(!m)return svg;
+  return svg.replace(/#[0-9a-fA-F]{6}(?![0-9a-fA-F])/g,h=>{const r=m[h.toLowerCase()];return r?t[r]:h;});
+}
+
 /** Where a placed piece is drawn: [translate x, translate y] of its origin. surf: the height it stands on. */
 export function spotXY(it,x,y,G,surf=0){
   if(it.spot==='wall')return [PX+x*CW,G.WY+y*WR];
   if(it.spot==='top')return [PX+x*CW,G.FY+(y+1)*FR-6-surf];
   return [PX+x*CW,G.FY+(y+it.h)*FR-3];
 }
-/** One piece's drawing at its spot (flip: mirrored). */
-export function pieceSVG(it,x,y,f,G,surf=0){
+/** One piece's drawing at its spot (flip: mirrored; tint: its colour from the palette, if any). */
+export function pieceSVG(it,x,y,f,G,surf=0,tint=null){
   const a=ART[it.id];if(!a)return '';
   const [tx,ty]=spotXY(it,x,y,G,surf),W=it.w*CW,D=it.spot==='wall'?it.h*WR:it.h*FR;
-  const body=a.d(W,D);
+  const body=tinted(it.id,a.d(W,D),tint);
   return `<g transform="translate(${tx} ${ty})">${f?`<g transform="translate(${W} 0) scale(-1 1)">${body}</g>`:body}</g>`;
 }
 /** A glow at night for a lamp at its spot: [cx, cy, r] in room units, or null. */
@@ -278,12 +315,12 @@ export function glowAt(it,x,y,f,G,surf=0){
   const [tx,ty]=spotXY(it,x,y,G,surf),W=it.w*CW,D=it.spot==='wall'?it.h*WR:it.h*FR,[gx,gy,r]=a.g(W,D);
   return [tx+(f?W-gx:gx),ty+gy,r];
 }
-/** A small picture of a piece for the drawer (its own viewBox). */
-export function thumb(it,size=56){
+/** A small picture of a piece for the drawer (its own viewBox), in colour `tint` when given. */
+export function thumb(it,size=56,tint=null){
   const a=ART[it.id];if(!a)return '';
   const W=it.w*CW,D=it.spot==='wall'?it.h*WR:it.h*FR;
   const vb=it.spot==='wall'?`-4 -4 ${W+8} ${D+8}`:it.spot==='rug'?`-4 ${-D-6} ${W+8} ${D+10}`:`-6 ${-(a.h||40)-8} ${W+12} ${(a.h||40)+12}`;
-  return `<svg class="dc-thumb" viewBox="${vb}" width="${size}" height="${size}" aria-hidden="true" focusable="false">${a.d(W,D)}</svg>`;
+  return `<svg class="dc-thumb" viewBox="${vb}" width="${size}" height="${size}" aria-hidden="true" focusable="false">${tinted(it.id,a.d(W,D),tint)}</svg>`;
 }
 
 /** Mochi the cat, who lives on the Ấm cúng card: 0 sleepy … 4 hearts in her eyes. */
