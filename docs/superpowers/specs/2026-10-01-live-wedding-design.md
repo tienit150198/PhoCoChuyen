@@ -85,3 +85,36 @@ together with chat, and appears in the release notes.
   - the weekly race (ties, payout once);
   - a multi-browser wedding (couple + 3 guests);
   - load: 3 concurrent weddings with 60 guests each.
+
+## 7. Rework after the first party (owner, 01/10/2026 15:00; supersedes §2 and §3 where they differ)
+
+The first live party (#14, 14:15) had 14 guests talking but only 4 recorded: attendance was counted after 5 minutes
+in memory, and the 1.1.2 deploy restarted the live service at 14:20 in the middle of it. The owner then asked:
+
+- **Every guest who walks in is recorded** at once (`wedding_guests`, also the watchers at the gate; players without
+  an account are recorded with ok=0 and never counted). The 1-day account age rule is dropped.
+- **One party of 10 minutes** (the room opens 5 minutes before for guests to gather). **Every minute, everyone
+  present during that minute gets 20 xu** (10 minutes = 200 xu; the couple too). A guest is paid at most at 2
+  weddings a day (anti-farming); beyond that they are still counted. Payments are keyed per minute, so a restart of
+  the live service loses nothing but the seconds before the sockets walk back in.
+- **The couple: 15 xu for every counted guest** (each spouse), no cap but the room's (360); the title
+  "Đám cưới đông vui" at 20 guests stays. Rewards above 2,000 xu are paid in several rows.
+- **Every wedding can hold its party and invite guests for free:** "Tổ chức tiệc cưới" in Hôn nhân lets any couple
+  with a wedding (married, or engaged with a confirmed plan) pick a date and time 10 minutes to 14 days ahead,
+  free, once. For couples married without a date and time, that time becomes their wedding date (cards,
+  anniversaries). "Mời khách" (free, once) tells both spouses' friends (inbox + push) and the phố (news line).
+  Thiệp cưới in the plan is free.
+- **The show** (public/js/v4/wedfeast.js, on the party clock, the same for every guest): the MC's programme, the
+  neighbours at the tables, kids and teens with folk rhymes and Gen Z sayings, two lion dances, twinkling lights, the
+  feast on the tables, the cake and the tower of glasses, and synthesised music (Wagner's Bridal Chorus, public
+  domain, then a tune written for the game, drums under the lion dance), with a mute button.
+- Deploying restarts the live service: never deploy while a party is open or within 15 minutes of one.
+- **Red envelopes** (feedback #56): a guest at an open party (recorded, with an account, not the couple) picks
+  10/20/50/100/200 xu and a ready-made wish. `POST /api/marriage/envelope {wedding, amount, wish, rid}`
+  (game/wedding_live.py `envelope`) debits the wallet (a `marriage_effects` row `wenv:<wedding>:<rid>`, applied) and
+  writes one `live_effects` row per spouse with half (`wedenv:<wedding>:<a|b>:<rid>`). At most 500 xu a guest a
+  wedding; a repeated rid moves nothing. The client then sends `wed_env {rid}`: the live service reads the debit row
+  back (this player's, this wedding's) and tells the room once (`wed_env {pid, name, n, text}`); the couple's
+  private card at the end adds their envelope total.
+- **The wishes board** ("Lời chúc"): what was said at the party and the envelopes stay on a board above the input
+  (the last 3 lines; "Xem hết" shows the last 40), since bubbles fade and the phone keyboard hides them.

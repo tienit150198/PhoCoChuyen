@@ -8,6 +8,7 @@ from unittest.mock import patch
 
 from game import live_effects as lfx
 from game import marriage as mr
+from game import push
 from game import system_gift as sg
 from game import wedding_live as wl
 from game.engine import migrate_state, validate_state
@@ -124,6 +125,164 @@ class LegacyDates(WedBase):
         self.store.transaction(lambda db: db.execute("UPDATE weddings SET status='x' WHERE id=?", (wid,)))
         with self.store.connect() as db:
             self.assertEqual(wl.date_of(db, c), c['married_at'])
+
+
+class Party(WedBase):
+    """🎉 "Tổ chức tiệc cưới" for every couple with a wedding (owner, 01/10): a free date and time for the one 10-minute
+    party, which also becomes the date of couples married without one; "Mời khách" is free and once."""
+    def married_legacy(self):
+        a, b = self.user('an'), self.user('binh')
+        self.engage(a, b)
+        wid = self.plan_and_confirm(a, b)             # an older plan: life days, no party
+        self.clock.t += 10 * DAY
+        self.resolve(a)
+        return a, b, wid
+
+    def test_a_couple_married_without_a_time_picks_one(self):
+        a, b, wid = self.married_legacy()
+        self.assertEqual(self.view(a)['couple']['party']['state'], 'none')
+        for bad in (self.clock.t + 5 * 60, self.clock.t + 15 * DAY, 'tối nay'):
+            with self.assertRaises(mr.MarriageError) as e:
+                self.act(a, 'party', at=bad)
+            self.assertEqual(e.exception.code, 'bad_plan')
+        before = (self.wallet(a), self.wallet(b))
+        at = self.clock.t + 20 * 60
+        self.act(a, 'party', at=at)
+        at = int(at) // 60 * 60
+        self.assertEqual((self.wallet(a), self.wallet(b)), before, 'free')
+        r = self.row('SELECT * FROM wedding_parties')
+        self.assertEqual((r['wedding'], r['status'], r['at']), (wid, 'booked', float(at)))
+        self.assertEqual(self.row('SELECT source, at FROM wedding_dates'), dict(source='party', at=float(at)))
+        self.assertEqual(self.view(b)['couple']['wed_label'], f'💍 Cưới ngày {wl.fmt_at(at)}')
+        self.assertIn('hẹn tiệc cưới', self.view(b)['me']['notice'])
+        v = self.view(b)['couple']['party']
+        self.assertEqual((v['state'], v['at'], v['can_move'], v['invited']), ('booked', at, True, False))
+        self.act(b, 'party', at=at + 3600)                      # moved by the other spouse
+        self.assertEqual(self.row('SELECT at FROM wedding_parties')['at'], float(at + 3600))
+        self.assertEqual(self.row('SELECT at FROM wedding_dates')['at'], float(at + 3600))
+        self.clock.t = at + 3600 - 5 * 60                        # the room is open: too late to move
+        self.assertEqual(self.view(a)['couple']['party']['state'], 'live')
+        with self.assertRaises(mr.MarriageError) as e:
+            self.act(a, 'party', at=self.clock.t + 3600)
+        self.assertEqual(e.exception.code, 'too_late')
+        self.store.transaction(lambda db: db.execute("UPDATE wedding_parties SET status='done'"))
+        self.assertEqual(self.view(a)['couple']['party']['state'], 'done')
+        with self.assertRaises(mr.MarriageError) as e:
+            self.act(a, 'party', at=self.clock.t + 3600)
+        self.assertEqual(e.exception.code, 'done', 'one party per wedding')
+        self.assertEqual(len(self.rows('SELECT * FROM wedding_parties')), 1)
+
+    def test_invite_is_free_once_and_reaches_friends_and_the_phố(self):
+        a, b, wid = self.married_legacy()
+        f = self.user('ban')
+        self.befriend(self.sid(a), self.sid(f))
+        push.ensure(self.store)
+        self.store.transaction(lambda db: db.execute("INSERT INTO push_subs(endpoint, sid, created, prefs) VALUES('https://push.example/9', ?, 1, '{}')", (self.sid(f),)))
+        with self.assertRaises(mr.MarriageError) as e:
+            self.act(a, 'party_invite')
+        self.assertEqual(e.exception.code, 'no_party')
+        self.act(a, 'party', at=self.clock.t + 3600)
+        before = self.wallet(a)
+        out = self.act(b, 'party_invite')
+        self.assertIn('Miễn phí', out['message'])
+        self.assertEqual(self.wallet(a), before)
+        self.assertIn('mời bạn dự tiệc cưới', self.view(f)['me']['notice'])
+        self.assertEqual(len(self.rows("SELECT * FROM push_queue WHERE sid=? AND kind='wedding'", self.sid(f))), 1)
+        self.assertEqual(len(self.rows("SELECT * FROM news WHERE kind='invite'")), 1)
+        self.act(a, 'party_invite')                              # again: nothing more is sent
+        self.assertEqual(len(self.rows("SELECT * FROM push_queue WHERE sid=? AND kind='wedding'", self.sid(f))), 1)
+        self.assertTrue(self.view(a)['couple']['party']['invited'])
+
+    def test_who_can_hold_one(self):
+        a, b = self.user('an'), self.user('binh')
+        self.engage(a, b)
+        self.assertIsNone(self.view(a)['couple']['party'], 'engaged without a confirmed plan: no wedding yet')
+        with self.assertRaises(mr.MarriageError) as e:
+            self.act(a, 'party', at=self.clock.t + 3600)
+        self.assertEqual(e.exception.code, 'no_wedding')
+        wid = self.plan_and_confirm(a, b)                        # confirmed with life days: the party can be set now
+        self.act(a, 'party', at=self.clock.t + 3600)
+        self.assertEqual(self.row('SELECT wedding FROM wedding_parties')['wedding'], wid)
+        c, d, wid2, at = self.couple()                           # booked with the plan: its time is the ceremony's
+        v = self.view(c)['couple']['party']
+        self.assertEqual((v['state'], v['id'], v['at'], v['can_move']), ('booked', wid2, at, False))
+        with self.assertRaises(mr.MarriageError):
+            self.act(c, 'party', at=self.clock.t + 3 * 3600)
+        self.assertEqual(self.row('SELECT source FROM wedding_dates WHERE wedding=?', wid2)['source'], 'booked')
+
+
+class Envelopes(WedBase):
+    """🧧 A guest's red envelope for the couple at a party that is on (feedback #56): from the guest's wallet, half to
+    each spouse, at most ENVELOPE_MAX a guest a wedding, once per request id."""
+    def guest_at(self, wid, tok, ok=1):
+        self.store.transaction(lambda db: db.execute("INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) "
+                                                     "VALUES(?, ?, 'p', ?, 0, 0, ?, 'd', 'w')", (wid, self.sid(tok), ok, self.clock.t)))
+
+    def give(self, tok, wid, amount, rid, wish=0):
+        return self.act(tok, 'envelope', wedding=wid, amount=amount, wish=wish, rid=rid)
+
+    def test_from_the_wallet_half_to_each_spouse_once(self):
+        a, b, wid, at = self.couple()
+        g = self.user('khach', wallet=1000)
+        self.guest_at(wid, g)
+        with self.assertRaises(mr.MarriageError) as e:
+            self.give(g, wid, 50, 'rid-early-0001')
+        self.assertEqual(e.exception.code, 'not_open', 'not before the room opens')
+        self.clock.t = at - 60
+        out = self.give(g, wid, 50, 'rid-first-0001', wish=2)
+        self.assertTrue(out['changed'])
+        self.assertEqual((out['rid'], out['left']), ('rid-first-0001', wl.ENVELOPE_MAX - 50))
+        self.assertEqual(self.wallet(g), 950)
+        rows = self.rows("SELECT sid, amount, data FROM live_effects WHERE id LIKE 'wedenv:%' ORDER BY id")
+        self.assertEqual([(r['sid'], r['amount']) for r in rows], [(self.sid(a), 25), (self.sid(b), 25)])
+        self.assertEqual(json.loads(rows[0]['data'])['src'], 'env')
+        self.assertEqual(json.loads(self.row("SELECT data FROM marriage_effects WHERE id=?", f'wenv:{wid}:rid-first-0001')['data'])['wish'], 2)
+        again = self.give(g, wid, 50, 'rid-first-0001')               # a double tap: nothing more moves
+        self.assertFalse(again['changed'])
+        self.assertEqual(self.wallet(g), 950)
+        self.assertEqual(len(self.rows("SELECT * FROM live_effects WHERE id LIKE 'wedenv:%'")), 2)
+        before = self.wallet(a)
+        self.pay(a)
+        self.assertEqual(self.wallet(a), before + 25)
+        self.assertIn('Phong bì mừng cưới', json.dumps(self.state(a)['journey'], ensure_ascii=False))
+        with self.store.connect() as db:
+            self.assertEqual(wl.envelopes_of(db, self.sid(b), wid, 'b'), 25)
+
+    def test_the_rules(self):
+        a, b, wid, at = self.couple()
+        g, h, poor = self.user('khach'), self.user('lac'), self.user('ngheo', wallet=30)
+        self.clock.t = at + 60
+        for bad in (dict(amount=15), dict(amount=50, wish=99), dict(amount='50')):
+            with self.assertRaises(mr.MarriageError) as e:
+                self.act(g, 'envelope', wedding=wid, **{'wish': 0, **bad})
+            self.assertEqual(e.exception.code, 'bad_envelope')
+        with self.assertRaises(mr.MarriageError) as e:
+            self.give(g, wid, 50, 'rid-notguest-1')
+        self.assertEqual(e.exception.code, 'not_guest', 'only a guest recorded at the party')
+        self.guest_at(wid, h, ok=0)
+        with self.assertRaises(mr.MarriageError) as e:
+            self.give(h, wid, 50, 'rid-notok-0001')
+        self.assertEqual(e.exception.code, 'not_guest')
+        self.guest_at(wid, a)
+        with self.assertRaises(mr.MarriageError) as e:
+            self.give(a, wid, 50, 'rid-own-00001')
+        self.assertEqual(e.exception.code, 'own_wedding')
+        self.guest_at(wid, poor)
+        with self.assertRaises(mr.MarriageError) as e:
+            self.give(poor, wid, 50, 'rid-poor-0001')
+        self.assertEqual(e.exception.code, 'not_enough')
+        self.assertEqual((self.wallet(poor), len(self.rows("SELECT * FROM live_effects WHERE id LIKE 'wedenv:%'"))), (30, 0))
+        self.guest_at(wid, g)
+        for i, n in enumerate((200, 200, 100)):
+            self.give(g, wid, n, f'rid-max-000{i}')
+        with self.assertRaises(mr.MarriageError) as e:
+            self.give(g, wid, 10, 'rid-max-0009')
+        self.assertEqual(e.exception.code, 'envelope_max')
+        self.assertEqual(self.wallet(g), 2000 - wl.ENVELOPE_MAX)
+        self.clock.t = at + wl.PARTY_SECS
+        with self.assertRaises(mr.MarriageError) as e:
+            self.give(poor, wid, 10, 'rid-late-0001')
+        self.assertEqual(e.exception.code, 'not_open', 'the party is over')
 
 
 class Anniversaries(WedBase):

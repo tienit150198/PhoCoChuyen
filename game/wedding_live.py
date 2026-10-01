@@ -26,22 +26,27 @@ import random
 import re
 import time
 
-# ---- owner-approved numbers (01/10/2026); adjustable ----
-BOOK_MIN = 3600                 # a wedding is booked at least 1 hour ahead
+# ---- owner-approved numbers (01/10/2026; the party itself reworked by the owner after the first one); adjustable ----
+BOOK_MIN = 3600                 # a wedding plan is booked at least 1 hour ahead
 BOOK_MAX = 14 * 86400           # and at most 14 days ahead
 CONFIRM_MIN = 15 * 60           # the partner confirms while the time is still at least 15 minutes away
-OPEN_BEFORE = 10 * 60           # the party room opens 10 minutes before the start
-PARTY_SECS = 30 * 60            # and lasts 30 minutes from the start
+PARTY_BOOK_MIN = 10 * 60        # "Tổ chức tiệc cưới" (any couple with a wedding, free): at least 10 minutes ahead
+OPEN_BEFORE = 5 * 60            # the party room opens 5 minutes before the start (guests gather; nothing paid yet)
+PARTY_SECS = 10 * 60            # one party, 10 minutes (owner)
+MINUTE_SECS = 60                # one paid minute (a dev script shortens it)
+PARTY_MINUTES = PARTY_SECS // MINUTE_SECS
+MINUTE_XU = 20                  # every minute of the party, everyone present (the couple too) gets 20 xu (owner)
 REMIND_BEFORE = 30 * 60         # friends get a reminder 30 minutes before
 VISIBLE = 60                    # avatars shown at once; more guests watch from the "đông quá" view, still counted
-GUEST_STEP = 5 * 60             # a guest earns GUEST_XU for every 5 minutes present
-GUEST_XU = 15
-GUEST_STEPS = 4                 # at most 4 per wedding (60 xu)
-GUEST_WEDDINGS_PER_DAY = 2      # rewards from at most 2 weddings a day
+GUEST_WEDDINGS_PER_DAY = 2      # a guest's minute money from at most 2 weddings a day (anti-farming; still counted)
 GUEST_CLOSE = 2                 # closeness with each spouse, once per wedding
-HOST_XU = 30                    # each spouse, for every guest who stayed 5 minutes
-HOST_COUNT_MAX = 50
-HOST_BONUS = ((10, 100, None), (20, 250, 'w_crowd'))
+HOST_XU = 15                    # each spouse, for every counted guest who came (owner: 15 xu a guest, no cap but the room's)
+HOST_COUNT_MAX = 360            # VISIBLE + the watchers (live/wedding.py WATCHERS_MAX)
+HOST_BONUS = ((20, 0, 'w_crowd'),)   # (guests, xu, title): the title "Đám cưới đông vui" at 20 guests
+ENVELOPES = (10, 20, 50, 100, 200)   # 🧧 a guest's red envelope for the couple (feedback #56), split half and half
+ENVELOPE_MAX = 500              # one guest gives at most this much at one wedding
+WISHES = ('Trăm năm hạnh phúc 💕', 'Bách niên giai lão 🎎', 'Sớm có tin vui nha 👶', 'Đầu bạc răng long 👴👵',
+          'Thương nhau dài dài nha 💞', 'Hạnh phúc ngập tràn 🥰')
 ANNIVERSARIES = ((100, 200, 'w_100', '100'), (365, 500, 'w_1y', 'một năm'), (500, 800, 'w_500', '500'),
                  (1000, 1500, 'w_1000', '1000'))   # (days, xu for each spouse, title, "tròn … ngày cưới")
 ANNIV_NPC = (40, 120)           # lì xì from the neighbours on an anniversary (deterministic per couple and milestone)
@@ -148,6 +153,93 @@ def book(db, couple: dict, wedding_id: int, at: float) -> None:
                'ON CONFLICT(wedding) DO NOTHING', (wedding_id, couple['id'], couple['a'], couple['b'], at, t))
 
 
+def party_wedding(db, couple: dict | None) -> dict | None:
+    """The wedding a couple's live party belongs to: married (their done wedding) or engaged with a confirmed plan."""
+    if not couple or couple.get('status') not in ('engaged', 'married'):
+        return None
+    w = db.execute("SELECT id, status, plan FROM weddings WHERE couple=? AND status IN ('confirmed','done') ORDER BY id DESC LIMIT 1",
+                   (couple['id'],)).fetchone()
+    if not w or (couple['status'] == 'engaged' and w['status'] != 'confirmed'):
+        return None
+    return dict(w)
+
+
+def party_view(db, couple: dict | None, t: float | None = None) -> dict | None:
+    """The Hôn nhân sheet's party card: None (no wedding yet) or {state, at, at_label, can_move, invited, guests}.
+    state: 'none' (choose a date and time), 'booked', 'live' (the room is open), 'done'."""
+    t = now() if t is None else t
+    w = party_wedding(db, couple)
+    if not w:
+        return None
+    r = db.execute("SELECT wedding, at, status, guests FROM wedding_parties WHERE couple=? AND status IN ('booked','done') ORDER BY wedding DESC LIMIT 1",
+                   (couple['id'],)).fetchone()
+    if not r:
+        return dict(state='none', min_ahead=PARTY_BOOK_MIN, max_ahead=BOOK_MAX)
+    at = float(r['at'])
+    planned = 'at' in json.loads(w['plan'] or '{}') and int(r['wedding']) == int(w['id'])   # booked with the plan: its time is the ceremony's
+    invited = bool(db.execute('SELECT 1 FROM news WHERE ref=?', (f'wedinv:{r["wedding"]}',)).fetchone())
+    state = 'done' if r['status'] == 'done' or t >= at + PARTY_SECS else 'live' if t >= at - OPEN_BEFORE else 'booked'
+    return dict(state=state, id=int(r['wedding']), at=int(at), at_label=fmt_at(at), end=int(at + PARTY_SECS),
+                can_move=state == 'booked' and not planned and at - t >= PARTY_BOOK_MIN, invited=invited,
+                guests=int(r['guests'] or 0), min_ahead=PARTY_BOOK_MIN, max_ahead=BOOK_MAX)
+
+
+def book_party(db, couple: dict, sid: str, at, t: float | None = None) -> dict:
+    """"Tổ chức tiệc cưới": any couple with a wedding picks (or moves) the date and time of their one live party, free.
+    The time also becomes their wedding date (cards, anniversaries) unless a booked plan already set it. Inside the
+    caller's transaction."""
+    t = now() if t is None else t
+    from .marriage import need as mneed
+    w = party_wedding(db, couple)
+    mneed(w, 'Hai bạn cần chốt kế hoạch cưới trước đã.', 'no_wedding', 409)
+    mneed(type(at) in (int, float) and at == at, 'Giờ tổ chức không hợp lệ.', 'bad_plan')
+    at = float(int(at) // 60 * 60)
+    mneed(at >= t + PARTY_BOOK_MIN, f'Chọn giờ cách bây giờ ít nhất {PARTY_BOOK_MIN // 60} phút để mọi người kịp tới nhé.', 'bad_plan')
+    mneed(at <= t + BOOK_MAX, 'Chọn ngày trong vòng 14 ngày tới nhé.', 'bad_plan')
+    cur = db.execute("SELECT wedding, at, status FROM wedding_parties WHERE couple=? AND status IN ('booked','done') ORDER BY wedding DESC LIMIT 1",
+                     (couple['id'],)).fetchone()
+    if cur:
+        mneed(cur['status'] == 'booked' and float(cur['at']) + PARTY_SECS > t, 'Tiệc cưới của hai bạn đã tổ chức rồi.', 'done', 409)
+        v = party_view(db, couple, t)
+        mneed(v and v['can_move'], 'Tiệc sắp bắt đầu rồi, không đổi giờ được nữa.', 'too_late', 409)
+        db.execute("UPDATE wedding_parties SET at=?, reminded=NULL WHERE wedding=? AND status='booked'", (at, cur['wedding']))
+        wid = int(cur['wedding'])
+    else:
+        db.execute("INSERT INTO wedding_parties(wedding, couple, a, b, at, status, created) VALUES(?, ?, ?, ?, ?, 'booked', ?) "
+                   "ON CONFLICT(wedding) DO UPDATE SET at=excluded.at, status='booked', reminded=NULL WHERE wedding_parties.status='cancelled'",
+                   (w['id'], couple['id'], couple['a'], couple['b'], at, t))
+        wid = int(w['id'])
+    d = db.execute('SELECT source FROM wedding_dates WHERE couple=?', (couple['id'],)).fetchone()
+    if not d:
+        db.execute("INSERT INTO wedding_dates(couple, at, source, wedding, created) VALUES(?, ?, 'party', ?, ?) ON CONFLICT(couple) DO NOTHING",
+                   (couple['id'], at, wid, t))
+    elif d['source'] in ('legacy', 'party'):
+        db.execute("UPDATE wedding_dates SET at=?, source='party', wedding=? WHERE couple=? AND source IN ('legacy','party')", (at, wid, couple['id']))
+    return dict(id=wid, at=at)
+
+
+def invite(db, couple: dict, names: dict, t: float | None = None) -> int:
+    """"Mời khách" (free, once per party): the couple's friends get an inbox line and a web push, and the whole phố a
+    news line. Returns how many friends were told; 0 when already invited."""
+    t = now() if t is None else t
+    from . import marriage as mr
+    from . import push
+    v = party_view(db, couple, t)
+    mr.need(v and v['state'] in ('booked', 'live'), 'Chọn ngày giờ tổ chức tiệc trước đã.', 'no_party', 409)
+    when = fmt_at(v['at'])
+    if not mr._post_news(db, 'invite', f'wedinv:{v["id"]}', f'💌 {names["a"]} & {names["b"]} mời cả phố dự tiệc cưới lúc {when}! Vào Khu phố › Lịch cưới nha.',
+                         couple['a'], couple['b']):
+        return 0
+    rows = db.execute('SELECT DISTINCT friend FROM friends WHERE sid IN (?, ?) AND friend NOT IN (?, ?) LIMIT 400',
+                      (couple['a'], couple['b'], couple['a'], couple['b'])).fetchall()
+    text = f'💌 {names["a"]} và {names["b"]} mời bạn dự tiệc cưới lúc {when}. Mở Khu phố › Lịch cưới để vào dự nhé!'
+    for r in rows:
+        mr.ensure_person_db(db, r['friend'])
+        mr._notice(db, r['friend'], text)
+        push.queue(db, r['friend'], 'wedding', f'{names["a"]} và {names["b"]} mời bạn dự tiệc cưới lúc {when[-5:]} ngày {when[:5]} 💍')
+    return len(rows)
+
+
 def cancel_party(db, couple_id: int) -> None:
     """A divorce or a broken engagement before the day: the party is off."""
     db.execute("UPDATE wedding_parties SET status='cancelled' WHERE couple=? AND status='booked'", (couple_id,))
@@ -229,11 +321,71 @@ def on_load(store, token: str, state: dict | None) -> bool:
     return anniversaries(store, store.key(token))
 
 
+# ---------------------------------------------------------------- 🧧 the guests' red envelopes
+def envelope(store, sid: str, display: str, d: dict) -> dict:
+    """POST /api/marriage/envelope {wedding, amount, wish, rid}: a guest at an open party (recorded, with an account,
+    not the couple) gives a red envelope from the wallet; each spouse gets half as a live_effects row. At most
+    ENVELOPE_MAX a guest a wedding. The sender's debit is a marriage_effects row `wenv:<wedding>:<rid>` (the live
+    service reads it back to tell the room; the couple's end card sums their `wedenv:` rows)."""
+    from . import marriage as mr
+    from . import db as dbm
+    wid, amount, wish = d.get('wedding'), d.get('amount'), d.get('wish', 0)
+    mr.need(type(wid) is int and wid >= 1, 'Đám cưới không hợp lệ.', 'bad_envelope')
+    mr.need(type(amount) is int and amount in ENVELOPES, 'Chọn số tiền trong phong bì nhé.', 'bad_envelope')
+    mr.need(type(wish) is int and 0 <= wish < len(WISHES), 'Chọn một lời chúc nhé.', 'bad_envelope')
+    rid = mr._rid(d)[:24]
+    eid = f'wenv:{wid}:{rid}'
+
+    def check(db, t):
+        p = db.execute('SELECT a, b, at, status FROM wedding_parties WHERE wedding=?', (wid,)).fetchone()
+        mr.need(p and p['status'] == 'booked' and p['at'] - OPEN_BEFORE <= t < p['at'] + PARTY_SECS,
+                'Tiệc cưới này không mở nữa.', 'not_open', 409)
+        mr.need(sid not in (p['a'], p['b']), 'Phong bì là của khách mừng hai bạn đó 😄', 'own_wedding', 409)
+        g = db.execute('SELECT ok FROM wedding_guests WHERE wedding=? AND sid=?', (wid, sid)).fetchone()
+        mr.need(g and int(g['ok']), 'Vào dự tiệc rồi mới gửi phong bì được nhé.', 'not_guest', 409)
+        given = int(db.execute('SELECT COALESCE(SUM(-amount), 0) FROM marriage_effects WHERE sid=? AND id LIKE ?',
+                               (sid, f'wenv:{wid}:%')).fetchone()[0] or 0)
+        mr.need(given + amount <= ENVELOPE_MAX, f'Mỗi đám cưới mừng tối đa {ENVELOPE_MAX} xu thôi. Bạn đã mừng {given} xu rồi 💛',
+                'envelope_max', 409)
+        return p, given
+    with store.connect() as db:
+        if db.execute('SELECT 1 FROM marriage_effects WHERE id=?', (eid,)).fetchone():
+            return dict(message='Phong bì này đã gửi rồi.', changed=False, quiet=True, rid=rid)
+        p, _ = check(db, now())
+        names = dict(a=mr._display(db, p['a']), b=mr._display(db, p['b']))
+    # BANK.PAY: a gift from the wallet, cash (like the spouse transfer)
+    out = mr._effect(eid, sid, 'wallet', -amount, f'🧧 Phong bì mừng cưới {names["a"]} & {names["b"]}', dict(wedding=wid, wish=wish))
+    left = {}
+
+    def fn(s):
+        mr.need(int(s['journey']['wallet']) >= amount, f'Ví của bạn chưa đủ {amount} xu.', 'not_enough')
+        mr._apply_effect(s, out)
+
+    def ops(db):
+        p, given = check(db, now())
+        mr._insert_effects(db, [out], 'applied')
+        for side in ('a', 'b'):
+            grant(db, p[side], 'coins', amount // 2, f'wedenv:{wid}:{side}:{rid}', dict(src='env'))
+        left['n'] = ENVELOPE_MAX - given - amount
+    try:
+        mr._mutate_retry(store, {sid: fn}, ops)
+    except dbm.IntegrityError:   # the same rid twice (a double tap)
+        return dict(message='Phong bì này đã gửi rồi.', changed=False, quiet=True, rid=rid)
+    return dict(message=f'Đã gửi phong bì {amount} xu mừng {names["a"]} & {names["b"]} 🧧', changed=True, quiet=True,
+                rid=rid, left=left.get('n', 0))
+
+
+def envelopes_of(db, couple_sid: str, wid: int, side: str) -> int:
+    """The envelopes one spouse got at one party (their halves)."""
+    return int(db.execute('SELECT COALESCE(SUM(amount), 0) FROM live_effects WHERE sid=? AND id LIKE ?',
+                          (couple_sid, f'wedenv:{wid}:{side}:%')).fetchone()[0] or 0)
+
+
 # ---------------------------------------------------------------- views
 def race(db, week: str, limit: int = 20) -> list:
-    """The week's guests: weddings attended ≥ 5 minutes (counted guests only), most first; a tie goes to whoever
-    reached that count first."""
-    return [dict(r) for r in db.execute('SELECT sid, pid, COUNT(*) AS n, MAX(counted_at) AS last FROM wedding_guests WHERE week=? AND ok=1 '
+    """The week's guests: weddings attended for at least a minute of the party (counted guests only), most first;
+    a tie goes to whoever reached that count first."""
+    return [dict(r) for r in db.execute('SELECT sid, pid, COUNT(*) AS n, MAX(counted_at) AS last FROM wedding_guests WHERE week=? AND ok=1 AND steps>=1 '
                                         'GROUP BY sid, pid ORDER BY n DESC, last ASC, sid LIMIT ?', (week, limit))]
 
 
@@ -245,7 +397,7 @@ def race_view(store, sid: str | None) -> dict:
         rows = race(db, week)
         mine = None
         if sid and not any(r['sid'] == sid for r in rows):
-            r = db.execute('SELECT COUNT(*) AS n FROM wedding_guests WHERE week=? AND ok=1 AND sid=?', (week, sid)).fetchone()
+            r = db.execute('SELECT COUNT(*) AS n FROM wedding_guests WHERE week=? AND ok=1 AND steps>=1 AND sid=?', (week, sid)).fetchone()
             mine = int(r['n']) if r else 0
         top = [dict(rank=i + 1, name=_public_name(db, r['sid'], sid), n=int(r['n']), me=r['sid'] == sid) for i, r in enumerate(rows)]
         prev = db.execute('SELECT top FROM wedding_race WHERE week=?', (last_week,)).fetchone()

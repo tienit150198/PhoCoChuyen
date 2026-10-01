@@ -38,7 +38,7 @@ KIND = 'life'                       # journey wallet history kind (journey.HISTO
 PAYS = ('coins', 'spirit', 'title')  # kinds this build applies to the save
 BESIDE = ('closeness',)             # kinds this build applies beside the save (player_closeness, game/wedding_live.py)
 LABELS = dict(envelope='🧧 Lì xì dạo phố', date='💕 Buổi hẹn trên phố', guest='💍 Đi ăn cưới', host='💍 Khách tới dự đám cưới',
-              anniv='💞 Kỷ niệm ngày cưới', anniv_npc='🧧 Hàng xóm mừng kỷ niệm cưới', race='🥇 Khách mời của tuần')
+              anniv='💞 Kỷ niệm ngày cưới', anniv_npc='🧧 Hàng xóm mừng kỷ niệm cưới', race='🥇 Khách mời của tuần', env='🧧 Phong bì mừng cưới')
 LABEL = '🎁 Quà từ khu phố'         # any other source
 AMOUNT_MAX = 2000                   # live/effects.py AMOUNT_MAX (the 1000-day anniversary is 1,500 xu)
 POPUP_TITLE, POPUP_TEXT = 80, 300   # the private card (game/system_gift.py) a row may carry: data.popup {title, text}

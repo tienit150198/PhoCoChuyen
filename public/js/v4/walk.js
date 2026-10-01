@@ -24,14 +24,18 @@
  * 💍 Wedding parties (live/wedding.py) use the same scene: walk.open(env,{wedding:<id>}) (from the "Lịch cưới" sheet,
  * ./wedding.js) sends `wed_in`; the header shows the couple and the clock, 📸 takes the group photo (the taker's canvas
  * is uploaded to POST /api/wedding/photo for the couple's Kỷ niệm), later guests watch from outside the gate.
+ * The party's show (the MC, neighbours, kids, lion dance, lights, music) is ./wedfeast.js, on the party clock.
+ * At a wedding, what people said stays on the "Lời chúc" board (bubbles fade fast, the keyboard hides them), and a
+ * guest can give the couple a red envelope (🧧: POST /api/marriage/envelope, then `wed_env` tells the room).
  */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {live,openChat} from './live.js';
 import {stylesheet} from '../lazy.js';
 import {lookOf,figureOf,paintPlayer,CANVAS,portrait} from './look.js';
 import {paintPlace,paintLion,paintVendor,paintEnvelope,EDGE,WORLD} from '../scenes/stroll.js';
+import * as feast from './wedfeast.js';
 
-const W=WORLD.w,H=WORLD.h,AV=.5,BUBBLE_MS=6000,EMO_MS=2600,MOVE_GAP=260,PLACE_KEY='mnl.walk.place';
+const W=WORLD.w,H=WORLD.h,AV=.5,LOG_MAX=40,BUBBLE_MS=6000,EMO_MS=2600,MOVE_GAP=260,PLACE_KEY='mnl.walk.place',WSOUND_KEY='mnl.wed.sound';
 const EMOTES=[['wave','👋'],['heart','❤️'],['laugh','😂'],['wow','😮'],['pray','🙏']];
 const EMO=Object.fromEntries(EMOTES);
 const REASONS=[['spam','Spam'],['rude','Thô tục'],['scam','Lừa đảo'],['private','Lộ thông tin'],['other','Khác']];
@@ -39,11 +43,15 @@ const MINE=new Set(['walk_places','walk_in','walk_out','move','say','emote','sit
 const S={env:null,dlg:null,cv:null,ctx:null,stage:null,room:null,geo:null,speed:170,people:new Map(),tables:[],hap:null,envl:null,
   offs:[],off:0,places:[],k:1,ox:0,oy:0,dpr:1,cw:0,ch:0,bg:null,bgKey:'',raf:0,lastDraw:0,card:null,invite:null,sent:null,
   toastTimer:0,moveAt:0,moveTimer:0,pending:null,lastPublic:null,bound:false,hideTimer:0,paused:false,floaters:[],emotes:false,
-  picker:false,down:null,topicKey:'',want:null,wedding:null,wed:null,photo:null,ended:null,burst:0,clock:''};
+  picker:false,down:null,topicKey:'',want:null,wedding:null,wed:null,photo:null,ended:null,burst:0,clock:'',wsound:true,log:[],logOpen:false,logKey:'',envp:null};
+try{S.wsound=localStorage.getItem(WSOUND_KEY)!=='0';}catch{/* storage blocked */}
 const spots=new Map(),hooks={enter:new Set(),leave:new Set()};
 const night=()=>document.documentElement.dataset.theme==='dem';
 const nowS=()=>Date.now()/1000+S.off;
 const me=()=>S.room&&S.people.get(S.room.me);
+const partyS=()=>S.wed?nowS()-S.wed.at:-1e9;
+/** The wedding music plays while this player is at a party that is on (and has not muted it). */
+function syncMusic(){feast.music(Boolean(S.dlg?.open&&S.wed&&S.room&&!S.ended&&S.wsound&&feast.lively(partyS())),partyS);}
 const emit=(k,d)=>{for(const fn of hooks[k])try{fn(d);}catch(e){console.warn('walk:',k,e);}};
 const css=()=>stylesheet('/css/walk.css');
 
@@ -90,6 +98,7 @@ function dialog(){
     <div class="wk-net" hidden>${icon('refresh',14)} Đang kết nối lại…</div>
     <div class="wk-stage"><canvas class="wk-canvas" role="img" tabindex="0"></canvas>
       <div class="wk-topic" hidden></div><div class="wk-banner" hidden></div><div class="wk-card" hidden></div><div class="wk-invite" hidden></div><div class="wk-end" hidden></div>
+      <div class="wk-wishes" hidden></div><div class="wk-envp" role="dialog" aria-label="Phong bì mừng cưới" hidden></div>
       <div class="wk-toast" role="status" aria-live="polite" hidden></div></div>
     <div class="wk-emotes" hidden>${EMOTES.map(([k,e])=>`<button type="button" data-wk="emote" data-e="${k}" aria-label="${k}">${e}</button>`).join('')}</div>
     <form class="wk-say"><button type="button" class="wk-emo-btn" data-wk="emotes" aria-label="Biểu cảm" aria-expanded="false">😊</button>
@@ -131,11 +140,11 @@ export async function openWalk(env,data={}){
 
 function onClose(){
   if(S.room)live.send({t:'walk_out'});
-  const was=S.room;leaveLocal();
+  const was=S.room;leaveLocal();feast.music(false);
   cancelAnimationFrame(S.raf);S.raf=0;
   if(was)emit('leave',{place:was.place,room:was.room});
 }
-function leaveLocal(){S.room=null;S.geo=null;S.people.clear();S.tables=[];S.hap=null;S.envl=null;S.card=null;S.invite=null;S.floaters=[];S.photo=null;paintOverlays();}
+function leaveLocal(){S.log=[];S.logOpen=false;S.envp=null;paintLog();S.room=null;S.geo=null;S.people.clear();S.tables=[];S.hap=null;S.envl=null;S.card=null;S.invite=null;S.floaters=[];S.photo=null;syncMusic();paintOverlays();}
 
 function enter(place){
   const st=S.env?.api?.state||{},me={look:lookOf(st),g:st.journey?.gender??null,title:st.journey?.equipped??null,titles:Array.isArray(st.journey?.worn)?st.journey.worn.map(w=>w.id):undefined};
@@ -164,7 +173,7 @@ function bind(){
     S.wed=f.wed||null;S.wedding=f.wed?f.wed.id:null;S.photo=null;if(f.wed)S.ended=null;
     if(!f.private){S.lastPublic=f.place;try{localStorage.setItem(PLACE_KEY,f.place);}catch{/* storage blocked */}}
     S.places=S.places.map(p=>p.id===f.place?{...p,n:f.people.length}:p);
-    head();paintOverlays();size();loop();
+    head();paintOverlays();size();loop();syncMusic();
     if(before&&before.room!==f.room)emit('leave',{place:before.place,room:before.room});
     emit('enter',{place:f.place,room:f.room,private:f.private});
   });
@@ -183,8 +192,10 @@ function bind(){
     S.tables.forEach((t,i)=>t.seats?.forEach((pid,k)=>{const p=pid&&S.people.get(pid);if(p)p.s=[i,k];}));
     if(seats)paintOverlays();head(true);
   });
-  live.on('said',f=>{const p=S.room&&f.ch===S.room.room&&S.people.get(f.pid);if(!p)return;p.bub={text:f.text,id:f.id,t0:performance.now()};p.said={id:f.id,text:f.text};});
-  live.on('deleted',f=>{if(!S.room||f.ch!==S.room.room)return;for(const p of S.people.values()){if(p.bub?.id===f.id)p.bub=null;if(p.said?.id===f.id)p.said=null;}});
+  live.on('said',f=>{const p=S.room&&f.ch===S.room.room&&S.people.get(f.pid);if(!p)return;p.bub={text:f.text,id:f.id,t0:performance.now()};p.said={id:f.id,text:f.text};
+    if(S.wedding!==null)logAdd({id:f.id,name:p.name,text:f.text});});
+  live.on('deleted',f=>{if(!S.room||f.ch!==S.room.room)return;for(const p of S.people.values()){if(p.bub?.id===f.id)p.bub=null;if(p.said?.id===f.id)p.said=null;}
+    const n=S.log.length;S.log=S.log.filter(l=>l.id!==f.id);if(S.log.length!==n)paintLog();});
   live.on('emoted',f=>{const p=S.people.get(f.pid);if(p)p.emo={e:EMO[f.e]||'👋',t0:performance.now()};});
   live.on('happen',f=>{if(!S.room)return;sample(f.at);S.hap={...f,end:f.at+f.dur};if(f.k==='env')S.envl={id:f.id,x:f.x,y:f.y,until:f.until};});
   live.on('happen_end',f=>{
@@ -201,9 +212,17 @@ function bind(){
     if(f.why==='wed_end'&&open()&&S.wed){S.ended=S.ended||{n:null};leaveLocal();head();paintOverlays();}
   });
   live.on('wed_start',f=>{if(S.wed?.id!==f.id)return;S.burst=performance.now();toast('🎊 Lễ cưới bắt đầu!');});
-  live.on('wed_end',f=>{if(S.wed?.id!==f.id)return;S.ended={n:f.n};head();paintOverlays();});
-  live.on('wed_xu',f=>{const m=me();if(m)S.floaters.push({pid:m.pid,text:`+${f.n} xu`,t0:performance.now()});payNow();});
+  live.on('wed_end',f=>{if(S.wed?.id!==f.id)return;S.ended={n:f.n};syncMusic();head();paintOverlays();});
+  live.on('wed_xu',f=>{
+    if(f.why==='account'){toast('Tạo tài khoản để nhận lộc cưới mỗi phút nhé!');return;}
+    if(f.why==='cap'){toast('Hôm nay bạn đã nhận lộc ở 2 đám cưới rồi. Vẫn được tính là khách nha 💛');return;}
+    const m=me();if(m)S.floaters.push({pid:m.pid,text:`+${f.n} xu`,t0:performance.now()});
+    if(S.wed)S.wed.mins=f.k;payNow();});
   live.on('wed_paid',()=>payNow());
+  live.on('wed_env',f=>{if(S.wed?.id!==f.id)return;   // 🧧 a guest gave the couple a red envelope
+    logAdd({env:f.n,name:f.name,text:f.text});
+    S.floaters.push({pid:f.pid,text:`🧧 ${f.n} xu`,t0:performance.now()});
+    if(S.wed.pids?.includes(S.room?.me)){toast(`🧧 ${f.name} mừng ${f.n} xu`);payNow();}});
   live.on('wed_photo',f=>{if(S.wed?.id!==f.id)return;S.photo={...f,taken:false};S.wed.photos=f.n;head();});
   live.on('reported',()=>{if(open())toast('Đã báo cáo, cảm ơn bạn.');});
   live.on('error',f=>{
@@ -262,6 +281,12 @@ function act(a,d){
   switch(a){
     case'close':S.dlg.close();return;
     case'photo':live.send({t:'wed_photo'});return;
+    case'env':S.envp=S.envp?null:{amount:(S.wed?.envs||[20])[1]??20,wish:0,busy:false};paintEnvp();return;
+    case'envAmt':if(S.envp){S.envp.amount=Number(d.n);paintEnvp();}return;
+    case'envWish':if(S.envp){S.envp.wish=Number(d.n);paintEnvp();}return;
+    case'envSend':sendEnvelope();return;
+    case'log':S.logOpen=!S.logOpen;paintLog();return;
+    case'wsound':S.wsound=!S.wsound;try{localStorage.setItem(WSOUND_KEY,S.wsound?'1':'0');}catch{/* storage blocked */}syncMusic();head();return;
     case'account':S.dlg.close();S.env?.act?.('v4AccountOpen',{mode:'register'});return;   // v4/account.js
     case'places':S.picker=!S.picker;if(S.picker)live.send({t:'walk_places'});head();return;
     case'go':S.picker=false;head();if(d.place!==S.room?.place)enter(d.place);return;
@@ -336,10 +361,13 @@ function head(light=false){
   const n=count(),label=r?`${r.icon} ${r.name}`:'🚶 Đi dạo';
   if(light&&h.dataset.n===String(n)&&h.dataset.room===(r?.room||''))return;
   h.dataset.n=String(n);h.dataset.room=r?.room||'';
+  h.classList.toggle('wk-head-wed',S.wedding!==null);
   if(S.wedding!==null){   // 💍 the couple, the clock, the photo
     const w=S.wed,photo=w&&!w.overflow&&!S.ended&&r&&w.photos<w.photos_max;
     h.innerHTML=`<div class="wk-where wk-wed"><b data-no-translate>${esc(w?`💍 ${w.a} & ${w.b}`:'💍 Đám cưới')}</b>${r?`<small class="wk-n" aria-label="${n} khách">${n}</small>`:''}</div>
-      <span class="wk-clock" aria-live="off">${wedClock()}</span><span class="grow"></span>
+      <span class="wk-clock" aria-live="off">${wedClock()}</span>${w&&!S.ended&&w.overflow!=='account'?`<span class="wk-lucky" title="Lộc cưới">💰 ${w.xu||20} xu/phút</span>`:''}<span class="grow"></span>
+      ${canGive()?`<button type="button" class="icon-btn wk-env-btn" data-wk="env" aria-label="Mừng phong bì cô dâu chú rể" aria-expanded="${Boolean(S.envp)}">🧧</button>`:''}
+      ${r&&!S.ended?`<button type="button" class="icon-btn" data-wk="wsound" aria-label="${S.wsound?'Tắt nhạc cưới':'Bật nhạc cưới'}" aria-pressed="${S.wsound}">${S.wsound?'🔊':'🔇'}</button>`:''}
       ${photo?`<button type="button" class="icon-btn wk-photo-btn" data-wk="photo" aria-label="Chụp ảnh chung">📸</button>`:''}
       <button type="button" class="icon-btn" data-wk="close" aria-label="Đóng">${icon('x',20)}</button>`;
     S.dlg.querySelector('.wk-places').hidden=true;S.picker=false;
@@ -356,16 +384,54 @@ function head(light=false){
   if(S.picker)pl.innerHTML=S.places.map(p=>`<button type="button" class="wk-chip${p.id===r?.place?' on':''}" data-wk="go" data-place="${esc(p.id)}"><span>${p.icon}</span><b>${esc(p.name)}</b><small>${p.n}</small></button>`).join('');
   if(S.cv)S.cv.setAttribute('aria-label',r?`${r.name}: ${n} người đang dạo`:'Đi dạo');
 }
+/** 🧧 A guest with an account at a party that is on (the couple get the envelopes, they do not give them). */
+function canGive(){const w=S.wed,r=S.room;return Boolean(w&&r&&!S.ended&&w.envs&&w.overflow!=='account'&&live.me?.account&&!w.pids?.includes(r.me));}
+/** The wishes board: what was said at the party, newest last (3 lines; tap to see the last 40). */
+function logAdd(l){S.log.push(l);if(S.log.length>LOG_MAX)S.log.splice(0,S.log.length-LOG_MAX);paintLog();}
+function paintLog(){
+  const el=S.dlg?.querySelector('.wk-wishes');if(!el)return;
+  if(S.wedding===null||!S.log.length||S.ended){el.hidden=true;S.logKey='';return;}
+  const key=`${S.logOpen}|${S.log.length}|${S.log.map(l=>l.id??l.name+l.env).join(',')}`;
+  if(key===S.logKey&&!el.hidden)return;   // unchanged: keep where the reader scrolled
+  S.logKey=key;
+  const rows=(S.logOpen?S.log:S.log.slice(-3)).map(l=>`<p class="${l.env?'wk-wish env':'wk-wish'}"><b data-no-translate>${esc(l.name||'Khách')}</b> ${l.env?`🧧 mừng ${l.env} xu${l.text?`: ${esc(l.text)}`:''}`:`<span data-no-translate>${esc(l.text)}</span>`}</p>`).join('');
+  el.classList.toggle('open',S.logOpen);
+  el.innerHTML=`<button type="button" class="wk-wish-head" data-wk="log" aria-expanded="${S.logOpen}">📜 Lời chúc <small>${S.log.length}</small><span>${S.logOpen?'Thu gọn':'Xem hết'}</span></button><div class="wk-wish-list">${rows}</div>`;
+  el.hidden=false;
+  const list=el.querySelector('.wk-wish-list');list.scrollTop=list.scrollHeight;
+}
+function paintEnvp(){
+  const el=S.dlg?.querySelector('.wk-envp');if(!el)return;const e=S.envp,w=S.wed;
+  const b=S.dlg.querySelector('.wk-env-btn');if(b)b.setAttribute('aria-expanded',String(Boolean(e)));
+  if(!e||!w||!canGive()){el.hidden=true;return;}
+  el.innerHTML=`<div class="wk-who"><span class="wk-env-ico" aria-hidden="true">🧧</span><p class="grow"><b>Mừng cô dâu chú rể</b><small>Chia đôi cho <span data-no-translate>${esc(w.a)}</span> và <span data-no-translate>${esc(w.b)}</span> · tối đa ${w.env_max} xu mỗi đám</small></p>
+      <button type="button" class="icon-btn" data-wk="env" aria-label="Đóng">${icon('x',18)}</button></div>
+    <div class="wk-acts wrap">${w.envs.map(n=>`<button type="button" class="wk-pill${n===e.amount?' primary':''}" data-wk="envAmt" data-n="${n}" aria-pressed="${n===e.amount}">${n} xu</button>`).join('')}</div>
+    <div class="wk-acts wrap">${w.wishes.map((t,i)=>`<button type="button" class="wk-pill${i===e.wish?' on':''}" data-wk="envWish" data-n="${i}" aria-pressed="${i===e.wish}">${esc(t)}</button>`).join('')}</div>
+    <div class="wk-acts"><button type="button" class="wk-pill primary wk-env-go" data-wk="envSend"${e.busy?' disabled':''}>🧧 Gửi phong bì ${e.amount} xu</button></div>`;
+  el.hidden=false;
+}
+async function sendEnvelope(){
+  const e=S.envp,w=S.wed,api=S.env?.api;if(!e||!w||!api||e.busy)return;
+  e.busy=true;e.rid=e.rid||`e${Date.now().toString(36)}${Math.random().toString(36).slice(2,10)}`;paintEnvp();
+  try{const d=await api.json('/api/marriage/envelope',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':api.csrf},body:JSON.stringify({wedding:w.id,amount:e.amount,wish:e.wish,rid:e.rid})});
+    if(d?.state&&typeof d.revision==='number'){api.accept({state:d.state,revision:d.revision});S.env.renderMain?.();}
+    if(d?.rid)live.send({t:'wed_env',rid:d.rid});
+    S.envp=null;toast(d?.message||'Đã gửi phong bì 🧧');}
+  catch(x){e.busy=false;e.rid=null;toast(x?.message||'Chưa gửi được, thử lại nhé.');}
+  paintEnvp();
+}
 function net(){if(!S.dlg)return;S.dlg.querySelector('.wk-net').hidden=live.state==='open';}
 function mySeat(){const m=me();return m?.s?S.tables[m.s[0]]:null;}
 function paintOverlays(){
   if(!S.dlg)return;
   const bn=S.dlg.querySelector('.wk-banner');bn.hidden=!(S.wed?.overflow&&!S.ended);
   if(!bn.hidden)bn.innerHTML=S.wed.overflow==='account'   // guests watch; accounts take part and count (owner, 1.0.1)
-    ?`Bạn đang xem từ ngoài cổng. <button type="button" class="wk-pill primary" data-wk="account">Tạo tài khoản</button> để vào dự.`
+    ?`Bạn đang xem từ ngoài cổng. <button type="button" class="wk-pill primary" data-wk="account">Tạo tài khoản</button> để vào dự và nhận lộc mỗi phút.`
     :'Đông quá! Bạn đứng ngoài cổng xem, vẫn được tính là khách 🎉';
   const en=S.dlg.querySelector('.wk-end');en.hidden=!S.ended;
-  if(S.ended)en.innerHTML=`<p class="wk-end-t">💍 Tiệc đã tàn</p>${S.ended.n!=null?`<p>${S.ended.n} khách ở lại chung vui 💛</p>`:''}<button type="button" class="wk-pill primary" data-wk="close">Đóng</button>`;
+  paintLog();paintEnvp();
+  if(S.ended)en.innerHTML=`<p class="wk-end-t">💍 Tiệc đã tàn</p>${S.ended.n!=null?`<p>${S.ended.n} khách đến chung vui 💛</p>`:''}<button type="button" class="wk-pill primary" data-wk="close">Đóng</button>`;
   const tp=S.dlg.querySelector('.wk-topic'),tb=mySeat();
   if(tb&&tb.topic){
     const n=(tb.seats||[]).filter(Boolean).length,key=`${tb.topic}|${tb.votes}|${n}`;
@@ -425,12 +491,15 @@ function sprite(p){
   try{paintPlayer(c,figureOf(p.lk,p.g),CANVAS);}catch(e){console.warn('walk: look',e);}
   p.sp=cv;p.spk=key;return cv;
 }
+const npcs=new Map();   // the wedding show's characters (./wedfeast.js), cached like the players' sprites
+function npcSprite(id,lk,g){let p=npcs.get(id);if(!p||p.lk!==lk){p={lk,g,sp:null,spk:''};npcs.set(id,p);}return sprite(p);}
 function loop(){if(!S.raf&&S.dlg?.open)S.raf=requestAnimationFrame(frame);}
 function frame(ts){
   S.raf=0;if(!S.dlg?.open)return;
   if(document.visibilityState!=='visible'){S.raf=requestAnimationFrame(frame);return;}
   const t=nowS(),busy=!S.room||[...S.people.values()].some(p=>p.bub||p.emo||posAt(p.p,p.at,t)[2])||S.hap||S.envl||S.floaters.length||spots.size;
-  if(busy||ts-S.lastDraw>120){S.lastDraw=ts;draw(ts,t);}
+  const show=S.wed&&!S.ended&&feast.lively(t-S.wed.at);   // the party's lights and dancers: ~25 fps is plenty
+  if(busy||(show&&ts-S.lastDraw>38)||ts-S.lastDraw>120){S.lastDraw=ts;draw(ts,t);}
   S.raf=requestAnimationFrame(frame);
 }
 function draw(ts,t){
@@ -442,6 +511,8 @@ function draw(ts,t){
   const sec=ts/1000,dark=night();
   for(const s of spots.values()){const at=spotAt(s);if(at&&s.draw)try{s.draw(c,{x:at[0],y:at[1],t:sec,night:dark,place:S.room.place});}catch(e){console.warn('walk spot:',e);}}
   if(S.envl){const left=(S.envl.until-t)/45;if(left<=0)S.envl=null;else paintEnvelope(c,S.envl.x,S.envl.y,sec,left);}
+  const fx=S.wed&&!S.ended?{w:S.wed,s:t-S.wed.at,sec,dark,sprite:npcSprite,av:AV}:null;
+  if(fx)feast.ground(c,fx);
   const myPid=S.room.me,list=[];
   for(const p of S.people.values()){const [x,y,moving]=posAt(p.p,p.at,t);p.x=x;p.y=y;p.moving=moving;list.push(p);}
   list.sort((a,b)=>a.y-b.y);
@@ -454,8 +525,10 @@ function draw(ts,t){
   if(h&&h.k!=='env'){const span=h.end-h.at,f=(t-h.at)/span;
     if(f>1)S.hap=null;else if(f>=0){const x=h.rtl?W+90-(W+180)*f:-90+(W+180)*f;
       if(h.k==='lion')paintLion(c,x,h.y,sec,h.rtl);else paintVendor(c,x,h.y,h.who,sec);}}
+  if(fx)feast.over(c,fx);
   c.setTransform(dpr,0,0,dpr,0,0);
   const now=performance.now(),k=S.k,sx=x=>S.ox+x*k,sy=y=>S.oy+y*k;
+  if(fx)feast.talk(c,{...fx,sx,sy,tag,bubble});
   for(const p of list){
     const top=sy(p.y-132*AV)-4;
     tag(c,sx(p.x),top,p.name,p.ti,p.pid===myPid,dark);
@@ -469,7 +542,7 @@ function draw(ts,t){
     c.globalAlpha=Math.min(1,(2200-age)/500);c.font='800 15px "Trebuchet MS",sans-serif';c.textAlign='center';c.textBaseline='bottom';
     c.fillStyle='#b8322c';c.fillText(fl.text,sx(p.x),sy(p.y-132*AV)-34-age/40);c.globalAlpha=1;return true;});
   if(S.wed){
-    const ck=wedClock();if(ck!==S.clock){S.clock=ck;const el=S.dlg.querySelector('.wk-clock');if(el)el.textContent=ck;}
+    const ck=wedClock();if(ck!==S.clock){S.clock=ck;const el=S.dlg.querySelector('.wk-clock');if(el)el.textContent=ck;syncMusic();}
     if(S.burst){const age=now-S.burst;if(age>3500)S.burst=0;else for(let i=0;i<22;i++){const x=S.ox+(120+(i*137)%360)*k,y=S.oy+(300-(age/12)*(1+i%3*.25))*k;
       c.globalAlpha=Math.max(0,1-age/3500);c.font='20px serif';c.textAlign='center';c.fillText(['💖','🎉','🌸','💕'][i%4],x+Math.sin(age/300+i)*10,y+(i%5)*24);c.globalAlpha=1;}}
     const ph=S.photo;

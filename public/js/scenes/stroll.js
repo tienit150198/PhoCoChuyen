@@ -134,6 +134,10 @@ function wedding(c,g,lights){
   R(c,165,196,270,116,'#f1d9c6',12,'#d9b79c',2);R(c,180,120,240,80,'#c8463e',10,'#a9352f',2);
   E(c,300,160,30,30,'#f2c14e');c.font='900 36px serif';c.fillStyle='#c8463e';c.textAlign='center';c.textBaseline='middle';c.fillText('囍',300,162);
   for(const x of [206,394]){bloom(c,x,150,10,'#fbe3ea');bloom(c,x,150,5,'#f6a8bd');}
+  // the wedding cake and the tower of glasses on the stage, the feast table by the tent
+  R(c,176,252,40,26,'#fffdf8',6,'#ecdccb',1.5);c.font='26px serif';c.textAlign='center';c.textBaseline='middle';c.fillText('🎂',196,248);
+  c.font='18px serif';c.fillText('🥂',196,286);
+  R(c,40,236,40,62,'#fffdf8',6,'#ecdccb',1.5);c.font='14px serif';for(const [y,e] of [[250,'🍤'],[268,'🍮'],[286,'🍉']])c.fillText(e,60,y);
   // the red carpet from the gate to the stage, petals on it
   R(c,262,300,76,560,'#c8463e',4);L(c,264,300,264,860,'#e8b44f',2);L(c,336,300,336,860,'#e8b44f',2);
   const r=seeded(91);for(let i=0;i<26;i++)E(c,270+r()*60,320+r()*520,2.6,1.8,['#fbe3ea','#f6a8bd','#fff'][i%3]);
@@ -152,7 +156,10 @@ export function paintTable(c,t,place){
   if(place==='wedding'){   // white cloth, chairs with bows, a vase of pink flowers
     for(const [x,y] of t.seats){E(c,x+2,y+3,13,6,'#00000014');E(c,x,y,12,12,'#f4ebe1');E(c,x,y-7,6,4,'#f3a5b8');}
     E(c,t.x+3,t.y+6,36,15,'#0000001c');E(c,t.x,t.y,33,27,'#fffdf8');c.strokeStyle='#ecdccb';c.lineWidth=2;c.beginPath();c.ellipse(t.x,t.y,33,27,0,0,Math.PI*2);c.stroke();
-    bloom(c,t.x,t.y-4,7,'#f6a8bd');bloom(c,t.x,t.y-4,3,'#fff');return;
+    bloom(c,t.x,t.y-4,7,'#f6a8bd');bloom(c,t.x,t.y-4,3,'#fff');
+    c.font='11px serif';c.textAlign='center';c.textBaseline='middle';   // the cỗ: gà luộc, tôm, nem, canh, xôi gấc
+    for(const [dx,dy,e] of [[-17,-6,'🍗'],[16,-7,'🦐'],[-15,9,'🥟'],[15,9,'🍲'],[0,13,'🍚']])c.fillText(e,t.x+dx,t.y+dy);
+    return;
   }
   const plastic=place==='chodem',top=plastic?'#5da4d6':place==='cafe'?'#9a6b4f':'#c9a27a',stool=plastic?'#d9534f':place==='cafe'?'#7d5a42':'#a7845f';
   for(const [x,y] of t.seats){E(c,x+2,y+3,13,6,'#00000018');E(c,x,y,12,12,stool);E(c,x-3,y-3,4,4,'#ffffff40');}

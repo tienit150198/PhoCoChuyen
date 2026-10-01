@@ -1,3 +1,13 @@
+# v1.1.3 — Tiệc cưới 10 phút, ai vào cũng được ghi nhận, phong bì mừng cưới
+
+- Lỗi: tiệc #14 (01/10 14:15) có 14 khách nói chuyện nhưng chỉ 4 người được ghi nhận: khách phải ở đủ 5 phút (đếm trong bộ nhớ) và bản 1.1.2 khởi động lại dịch vụ live lúc 14:20 giữa tiệc, mất hết thời gian đã ngồi; người chơi dưới 1 ngày tuổi không được tính. Nay khách được ghi vào `wedding_guests` ngay khi bước vào (cả người đứng ngoài cổng; chưa có tài khoản thì ok=0), bỏ luật 1 ngày tuổi.
+- Tiệc 10 phút (mở trước 5 phút để khách tụ lại). Mỗi phút ai có mặt trong phút đó +20 xu (cả cô dâu chú rể), khách nhận tiền ở tối đa 2 đám/ngày; khóa mỗi phút cố định nên khởi động lại dịch vụ live không mất gì. Cô dâu chú rể mỗi người +15 xu mỗi khách (tối đa 360), danh hiệu "Đám cưới đông vui" ở 20 khách; thưởng trên 2.000 xu chia nhiều dòng. Bảng Khách mời của tuần: đám có mặt ít nhất 1 phút.
+- "Tổ chức tiệc cưới" trong Hôn nhân: cặp đã cưới (kể cả cưới trước 1.1.0, chưa có ngày giờ) hoặc đính hôn đã chốt kế hoạch tự chọn ngày giờ tiệc (10 phút đến 14 ngày tới), miễn phí, một lần; giờ đó thành ngày cưới trên thẻ (`wedding_dates` source party). "Mời khách" miễn phí, một lần: bạn bè hai người nhận hộp thư + thông báo đẩy, cả phố nhận dòng tin. Thiệp cưới trong kế hoạch: miễn phí (các kế hoạch đã chốt giữ nguyên giá).
+- Tiệc sinh động (public/js/v4/wedfeast.js, theo đồng hồ tiệc, mọi khách thấy như nhau): MC dẫn chương trình, 6 hàng xóm nói chuyện, 4 bạn nhỏ chạy quanh hát đồng dao và nói câu GenZ, 2 lượt múa lân, đèn nháy, cỗ trên bàn, bánh cưới và tháp ly, nhạc cưới tổng hợp (Wagner, Bridal Chorus, phạm vi công cộng; nhạc vui viết riêng; trống lân), nút tắt nhạc.
+- 🧧 Phong bì mừng cưới (góp ý #56): khách đang dự (có tài khoản, đã ghi nhận, không phải cô dâu chú rể) chọn 10/20/50/100/200 xu và một lời chúc soạn sẵn; trừ ví khách (`marriage_effects` `wenv:<đám>:<rid>`), mỗi người trong đôi nhận một nửa (`live_effects` `wedenv:`), tối đa 500 xu mỗi khách mỗi đám, bấm hai lần không trừ hai lần. Dịch vụ live đọc lại dòng trừ tiền rồi báo cả phòng (`wed_env`); thẻ riêng cuối tiệc của cô dâu chú rể ghi tổng phong bì.
+- 📜 Bảng "Lời chúc" trong tiệc cưới: lời mọi người nói và phong bì được giữ lại (3 dòng mới nhất, bấm "Xem hết" để xem 40 dòng), vì bong bóng chat biến mất nhanh và bàn phím che màn hình. Thanh trên cùng của tiệc thành 2 hàng để tên cô dâu chú rể không bị che.
+- "Có gì mới": tiệc cưới mới, 20 xu/phút, ghi nhận ngay, phong bì mừng cưới, bảng lời chúc, tổ chức tiệc cho mọi cặp.
+
 # v1.1.2 — Danh hiệu tuần của Bảng xếp hạng, đeo nhiều danh hiệu
 
 - Bảng xếp hạng có thêm bảng 🎖️ Danh hiệu (số danh hiệu trò chơi đã có; bằng nhau thì nhiều danh hiệu bí mật hơn, rồi có sớm hơn). Bảng xếp hạng VERSION 2: lần khởi động đầu dựng lại mọi dòng (backfill nền).

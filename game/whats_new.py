@@ -32,6 +32,14 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.1.3", date="2026-10-01", items=(
+        dict(emoji="💍", text="Tiệc cưới mới: 10 phút rộn ràng có MC, cỗ, múa lân, đèn nháy, nhạc cưới, hàng xóm và các bạn nhỏ vào chung vui.", go=dict(action="liveWed")),
+        dict(emoji="💰", text="Có mặt trong tiệc cưới được 20 xu mỗi phút. Mỗi khách đến dự, cô dâu chú rể được 15 xu."),
+        dict(emoji="✅", text="Ai vào dự đều được ghi nhận ngay, không cần ở đủ 5 phút."),
+        dict(emoji="🧧", text="Bỏ phong bì mừng cô dâu chú rể ngay trong tiệc, kèm lời chúc cho cả phòng cùng thấy."),
+        dict(emoji="📜", text="Bảng Lời chúc trong tiệc cưới: lời mọi người nói được giữ lại, không trôi mất nữa."),
+        dict(emoji="🎉", text="Cặp nào đã cưới cũng tổ chức được tiệc: chọn ngày giờ trong Hôn nhân, mời khách miễn phí.", go=dict(action="marriage")),
+    )),
     dict(version="1.1.0", date="2026-10-01", items=(
         dict(emoji="💍", text="Đám cưới trực tiếp: chọn ngày giờ thật, cả phố vào dự, khách nhận +15 xu mỗi 5 phút.", go=dict(action="liveWed")),
         dict(emoji="🎂", text="Kỷ niệm 100 ngày, 1 năm, 500 ngày, 1000 ngày cưới: có quà và danh hiệu riêng."),

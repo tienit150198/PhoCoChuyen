@@ -75,6 +75,13 @@ html[data-layout="phone"] .wk-head{padding-top:12px}
 .wk-wed{cursor:default;min-width:0}
 .wk-clock{flex:none;font-size:.82rem;font-weight:700;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
 .wk-photo-btn{font-size:1.25rem;line-height:1}
+.wk-lucky{flex:none;margin-left:6px;padding:2px 7px;border-radius:999px;font-size:.72rem;font-weight:800;color:#8a5a00;background:#ffe9a8;white-space:nowrap}
+@media (max-width:330px){.wk-lucky{display:none}}
+/* two rows: the couple and ✕, then the clock, the minute money and the buttons (a phone is too narrow for one) */
+.wk-head-wed{flex-wrap:wrap;row-gap:4px;column-gap:6px}
+.wk-head-wed .wk-wed{order:0;flex:1 1 calc(100% - 60px)}
+.wk-head-wed [data-wk=close]{order:1}
+.wk-head-wed>:not(.wk-wed):not([data-wk=close]){order:2}
 .wk-banner{position:absolute;top:8px;left:8px;right:8px;z-index:1;padding:9px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line);
   box-shadow:var(--shadow-sm);font-weight:600;font-size:.88rem;color:var(--ink);text-align:center}
 .wk-end{position:absolute;left:50%;top:50%;z-index:3;transform:translate(-50%,-50%);width:min(300px,calc(100% - 32px));padding:18px 16px;border-radius:20px;
@@ -95,3 +102,23 @@ html[data-layout="phone"] .sheet.wd-sheet{width:100%;max-width:100%}
 .wd-ico{font-size:1.5rem;line-height:1}
 .wd-empty{display:flex;align-items:center;justify-content:center;gap:6px;padding:28px 8px;color:var(--muted);text-align:center;margin:0}
 .wd-race{display:block;width:100%;margin-top:12px;min-height:44px;border-radius:var(--radius-pill);background:var(--surface-2);color:var(--ink-2);font-weight:700}
+/* 💍 the wishes board (what was said at the party stays) and the red envelope picker (feedback #56) */
+.wk-wishes{position:absolute;left:8px;bottom:8px;z-index:1;width:min(80%,340px);border-radius:14px;background:var(--surface);background:color-mix(in srgb,var(--surface) 86%,transparent);
+  border:1px solid var(--line);box-shadow:var(--shadow-sm);overflow:hidden;pointer-events:none}
+.wk-wishes.open{z-index:3;pointer-events:auto;background:var(--surface)}
+.wk-wish-head{display:flex;align-items:center;gap:6px;width:100%;min-height:34px;padding:0 10px;font-size:.8rem;font-weight:800;color:var(--ink-2);text-align:left;pointer-events:auto}
+.wk-wish-head small{padding:0 6px;border-radius:999px;background:var(--surface-2);font-size:.72rem;color:var(--ink-2)}
+.wk-wish-head span{margin-left:auto;font-weight:700;color:var(--accent-text)}
+.wk-wish-list{max-height:4.3em;padding:0 10px 7px;overflow:hidden;font-size:.84rem;line-height:1.38}
+.wk-wishes.open .wk-wish-list{max-height:min(46vh,340px);overflow:auto;overscroll-behavior:contain}
+.wk-wish{margin:0 0 2px;color:var(--ink);overflow-wrap:anywhere}
+.wk-wish b{color:var(--accent-text)}
+.wk-wish.env{color:var(--bad);font-weight:700}
+.wk-envp{position:absolute;left:8px;right:8px;bottom:8px;z-index:3;max-height:calc(100% - 16px);overflow:auto;padding:10px 10px 12px 12px;border-radius:18px;
+  background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-md,var(--shadow-sm))}
+.wk-envp .wk-who small{display:block;color:var(--muted);font-size:.78rem}
+.wk-env-ico{font-size:2rem;line-height:1}
+.wk-pill.on{box-shadow:inset 0 0 0 2px var(--accent);color:var(--ink)}
+.wk-envp .wk-env-go{flex:1 1 auto;justify-content:center;min-height:44px;font-size:.95rem}
+.wk-envp:not([hidden])~.wk-toast,.wk-wishes:not([hidden])~.wk-toast{bottom:auto;top:12px}
+.wk-wishes:not(.open) .wk-wish-list{-webkit-mask-image:linear-gradient(transparent,#000 1.1em);mask-image:linear-gradient(transparent,#000 1.1em)}

@@ -288,10 +288,10 @@ class PlannerMathTests(unittest.TestCase):
     def test_costs_deposit_and_balance(self):
         q = mr.costs(mr.clean_plan(PLAN))
         sub = {s['id']: s['subtotal'] for s in q['sections']}
-        self.assertEqual(sub, dict(venue=200, reception=20 * 40, ceremony=20 + 60 + 30, extras=60 + 25 + 30 + 3 * 20))
-        self.assertEqual(q['total'], 1285)
-        self.assertEqual(q['deposit'], 386)                 # 30 % rounded up
-        self.assertEqual(q['balance'], 1285 - 386)
+        self.assertEqual(sub, dict(venue=200, reception=20 * 40, ceremony=20 + 60 + 30, extras=60 + 25 + 30 + 0))   # thiệp cưới miễn phí (01/10)
+        self.assertEqual(q['total'], 1225)
+        self.assertEqual(q['deposit'], 368)                 # 30 % rounded up
+        self.assertEqual(q['balance'], 1225 - 368)
         self.assertEqual(q['seats'], 200)
 
     def test_menu_price_depends_on_venue(self):
@@ -508,7 +508,7 @@ class WeddingTests(Base):
         v = self.view(self.a)['wedding']
         r = v['result']
         self.assertEqual(r['profit'], r['gifts'] + r['late_total'] - r['total'])
-        self.assertEqual(r['total'], 1285)
+        self.assertEqual(r['total'], 1225)
         self.assertEqual(r['names'], dict(a='An', b='Binh'))
         self.assertTrue(r['speeches'] and r['speeches'][0].startswith('MC'))      # an MC was hired
         self.assertIn('close', r)
@@ -703,7 +703,7 @@ class MarriageHTTPTests(unittest.TestCase):
         status, data = self.req(dev, '/api/marriage/nope', 'POST', {})
         self.assertEqual(status, 404)
         status, data = self.req(dev, '/api/marriage/quote', 'POST', dict(plan=PLAN, mine=50))
-        self.assertEqual((status, data['quote']['total']), (200, 1285))
+        self.assertEqual((status, data['quote']['total']), (200, 1225))
         status, data = self.req(dev, '/api/news?since=0')
         self.assertEqual(data['me']['alerts'], 0)
 

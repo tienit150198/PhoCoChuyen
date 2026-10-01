@@ -1220,6 +1220,7 @@ def view(store, token: str, state: dict | None, with_catalog: bool = False) -> d
                           days_together=max(0, int((t - c['since']) // DAY)))
             from . import wedding_live as wl
             couple['wed_label'] = wl.label_of(db, c)   # 💍 "Cưới ngày 04/10/2026 · 20:30" (booked, or the legacy date)
+            couple['party'] = wl.party_view(db, c, t)   # 🎉 the 10-minute live party: choose its time, invite, watch it go
             w = _row(db, "SELECT * FROM weddings WHERE couple=? AND status IN ('proposed','rejected','confirmed','done') ORDER BY id DESC LIMIT 1", (c['id'],))
             if w:
                 wedding = _wedding_view(db, c, w, sid, day)
@@ -1709,8 +1710,43 @@ def _seen(store, sid: str, display: str, d: dict) -> dict:
     return dict(message='', changed=False)
 
 
+def _party(store, sid: str, display: str, d: dict) -> dict:
+    """🎉 "Tổ chức tiệc cưới" (game/wedding_live.py book_party): pick or move the live party's date and time, free."""
+    from . import wedding_live as wl
+
+    def run(db):
+        c = _bond(db, sid)
+        need(c, 'Bạn đang không có đôi.', 'not_engaged', 409)
+        got = wl.book_party(db, c, sid, d.get('at'))
+        _notice(db, _other(c, sid), f'🎉 {display} đã hẹn tiệc cưới của hai bạn lúc {wl.fmt_at(got["at"])}. Mời bạn bè tới chung vui nhé!')
+        return got
+    got = store.transaction(run)
+    return dict(message=f'Đã hẹn tiệc cưới lúc {wl.fmt_at(got["at"])}. Bấm “Mời khách” để báo bạn bè và cả phố nhé 💌', changed=False)
+
+
+def _party_invite(store, sid: str, display: str, d: dict) -> dict:
+    """💌 "Mời khách" (free, once per party): friends of both get an inbox line and a push, the phố a news line."""
+    from . import wedding_live as wl
+
+    def run(db):
+        c = _bond(db, sid)
+        need(c, 'Bạn đang không có đôi.', 'not_engaged', 409)
+        return wl.invite(db, c, dict(a=_display(db, c['a']), b=_display(db, c['b'])))
+    n = store.transaction(run)
+    if not n:
+        return dict(message='Đã gửi lời mời cả phố. Bạn bè sẽ được nhắc lại trước giờ tiệc 30 phút 💌', changed=False)
+    return dict(message=f'Đã mời {n} người bạn và cả phố. Miễn phí, không mất xu nào 💌', changed=False)
+
+
+def _envelope(store, sid: str, display: str, d: dict) -> dict:
+    """🧧 A guest's red envelope for the couple at a live party (game/wedding_live.py envelope)."""
+    from . import wedding_live as wl
+    return wl.envelope(store, sid, display, d)
+
+
 ACTIONS = dict(ring_buy=_ring_buy, ring_recolor=_ring_recolor, lookup=_lookup, propose=_propose, respond=_respond, cancel=_cancel, block=_block, unblock=_unblock,
-               settings=_settings, plan=_plan, withdraw=_withdraw, reject=_reject, confirm=_confirm, divorce=_divorce, seen=_seen)
+               settings=_settings, plan=_plan, withdraw=_withdraw, reject=_reject, confirm=_confirm, divorce=_divorce, seen=_seen,
+               party=_party, party_invite=_party_invite, envelope=_envelope)
 
 
 # ---------------------------------------------------------------- privacy

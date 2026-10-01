@@ -1,5 +1,5 @@
 /** 💍 Lịch cưới: the weddings the whole phố is invited to (live/wedding.py `wed_list`), opened from the Khu phố hub.
- * A party opens 10 minutes before its time and lasts 30 minutes; "Vào dự" walks in (./walk.js, the same scene kit
+ * A party opens 5 minutes before its time and lasts 10 minutes; "Vào dự" walks in (./walk.js, the same scene kit
  * as Đi dạo). Also the couple's group photos in Kỷ niệm (GET /api/wedding/photos, fillAlbum). No guide, no tips:
  * the list says what is on, the button says what to do. */
 import {icon,escapeHTML as esc} from '../icons.js';

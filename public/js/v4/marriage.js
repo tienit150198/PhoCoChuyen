@@ -11,7 +11,7 @@ import {myPortrait} from './look.js';
 
 const S={dlg:null,env:null,view:null,catalog:null,tab:'home',plan:null,planKey:'',quote:null,qTimer:0,qSeq:0,flash:null,busy:false,
   form:{code:'',ring:'',message:'',announce:true},found:null,confirm:'',answer:{},loading:false,err:'',
-  pick:{},recolor:null,fq:'',fres:null,
+  pick:{},recolor:null,fq:'',fres:null,partyAt:0,
   money:{dep:'',wd:'',send:'',note:'none',loan:false,help:'',hnote:'none',hloan:false,gift:''},repay:{},cline:{},lline:{}};
 const rid=()=>globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -134,6 +134,21 @@ const vnParts=at=>{const d=new Date(at*1000+VN_MS);return {date:d.toISOString().
 const atOf=(date,time)=>{const [y,m,d]=date.split('-').map(Number),[h,mi]=(time||'20:00').split(':').map(Number);return (Date.UTC(y,m-1,d,h,mi)-VN_MS)/1000;};
 function defaultAt(){const now=Date.now()/1000,t=vnParts(now+86400);return atOf(t.date,'20:00');}   // tomorrow 20:00
 const soon=p=>Boolean(p?.at)&&p.at<Date.now()/1000+3600;   // the server books a wedding at least 1 hour ahead (game/wedding_live.py)
+/** 🎉 The live party (game/wedding_live.py party_view): the first choice is 30 minutes from now, on a 5-minute mark. */
+const partyDefault=()=>Math.ceil((Date.now()/1000+30*60)/300)*300;
+function partyCard(c){
+  const p=c.party;if(!p)return '';
+  const when=(label)=>{const at=S.partyAt||partyDefault(),v=vnParts(at),now=Date.now()/1000;
+    return `<div class="mr-when"><label class="field" for="mr-pdate">Ngày<input class="input" id="mr-pdate" type="date" data-mr-field="pdate" min="${vnParts(now).date}" max="${vnParts(now+(p.max_ahead||14*86400)).date}" value="${v.date}"></label>
+      <label class="field" for="mr-ptime">Giờ<input class="input" id="mr-ptime" type="time" step="300" data-mr-field="ptime" value="${v.time}"></label></div>${btn(label,'party',{},'primary')}`;};
+  const perks=`<p class="mr-hint">Miễn phí. Tiệc 10 phút có MC, cỗ, múa lân, nhạc cưới. Ai có mặt được 20 xu mỗi phút, mỗi khách đến hai bạn được 15 xu.</p>`;
+  if(p.state==='none')return `<section class="mr-card mr-accent"><h3>🎉 Tổ chức tiệc cưới</h3><p>Chọn ngày giờ để cả phố vào dự. Đây cũng là ngày cưới hiện trên thẻ của hai bạn.</p>${when('Chốt giờ tiệc')}${perks}</section>`;
+  if(p.state==='done')return `<section class="mr-card"><h3>🎉 Tiệc cưới đã tổ chức</h3><p>${esc(p.at_label)}${p.guests?` · ${p.guests} khách đến chung vui 💛`:''}</p></section>`;
+  if(p.state==='live')return `<section class="mr-card mr-accent"><h3>🎊 Tiệc cưới đang mở!</h3><p>${esc(p.at_label)}</p><div class="mr-actions">${btn('Vào dự','pgo',{id:p.id},'primary big')}${p.invited?'':btn('💌 Mời khách','pinvite',{},'cream')}</div></section>`;
+  return `<section class="mr-card mr-accent"><h3>🎉 Tiệc cưới lúc ${esc(p.at_label)}</h3><p>Tiệc mở trước 5 phút ở Khu phố › Lịch cưới. Bạn bè được nhắc trước 30 phút.</p>
+    <div class="mr-actions">${p.invited?'<span class="tag">💌 Đã mời bạn bè và cả phố</span>':btn('💌 Mời khách (miễn phí)','pinvite',{},'primary')}</div>
+    ${p.can_move?`<details class="mr-more"><summary>Đổi giờ</summary>${when('Lưu giờ mới')}</details>`:''}${perks}</section>`;
+}
 const atLabel=at=>{const p=vnParts(at);return `${p.date.slice(8,10)}/${p.date.slice(5,7)}/${p.date.slice(0,4)} · ${p.time}`;};
 const venueOf=id=>S.catalog.venues.find(v=>v.id===id);
 function costs(p){
@@ -172,6 +187,7 @@ function onField(el,committed){
   if(f==='pannounce'){S.form.announce=v;return;}
   if(f==='answer'){S.answer[el.dataset.id]=v;return;}
   if(f==='wannounce'){S.answer.wedding=v;return;}
+  if(f==='pdate'||f==='ptime'){const box=el.closest('.mr-when');const d=box?.querySelector('[data-mr-field=pdate]')?.value,t=box?.querySelector('[data-mr-field=ptime]')?.value;if(d&&t)S.partyAt=atOf(d,t);return;}
   if(f==='accept'){if(committed)post('settings',{accept:v});return;}
   if(f==='findable'){if(committed)post('friend_settings',{findable:v});return;}
   if(f==='fq'){S.fq=v;S.fres=null;return;}
@@ -205,6 +221,9 @@ async function onClick(mr,data,el){
     case'register':S.dlg.close();env.ui.acctError='';env.ui.acctMode='register';env.openSheet('settings',{setTab:'account'});return;
     case'copy':{const code=S.view?.me?.code||'';try{await navigator.clipboard.writeText(code);S.flash={text:`Đã chép mã ${code}.`,kind:'good'};}catch{S.flash={text:`Mã của bạn: ${code}`,kind:'good'};}render();return;}
     case'seen':post('seen',data.wedding?{wedding:Number(data.wedding)}:{},{quiet:true});return;
+    case'party':post('party',{at:S.partyAt||partyDefault()});return;
+    case'pinvite':post('party_invite');return;
+    case'pgo':S.dlg.close();import('./walk.js').then(m=>m.openWalk(env,{wedding:Number(data.id)})).catch(e=>console.warn('marriage: walk',e));return;
     case'ring_buy':{
       const r=S.catalog.rings.find(x=>x.id===data.tier);if(!r)return;
       const pk=pickOf(r.id),price=r.price+colorExtra(r.id,pk.metal,pk.stone),look=colorName(pk.metal,pk.stone);
@@ -484,7 +503,7 @@ function couple(){
         <div class="mr-actions">${btn(`Xác nhận & đặt cọc ${xu(w.share_mine.deposit)}`,'confirm',{},'primary',short?' disabled':'')}${btn('Muốn bàn lại','reject',{id:w.id},'cream')}</div></section>`;
     }else if(w.status==='confirmed'&&w.at){   // 💍 booked at a real date and time: the party is live (game/wedding_live.py)
       plan=`<section class="mr-card mr-countdown"><div class="mr-count" aria-hidden="true"><b>💍</b></div><div><h3>Cưới lúc ${esc(w.at_label)}</h3>
-        <p>Tiệc mở trước 10 phút ở Khu phố › Lịch cưới. Bạn bè được nhắc trước 30 phút.</p></div></section>
+        <p>Tiệc mở trước 5 phút ở Khu phố › Lịch cưới. Bạn bè được nhắc trước 30 phút.</p></div></section>
         <section class="mr-card"><h3>Kế hoạch đã chốt</h3>${summary(w.quote,w)}<p class="mr-hint">Đã đặt cọc: bạn ${xu(w.deposit_mine)}, ${esc(c.partner.name)} ${xu(w.deposit_partner)}.</p></section>`;
     }else if(w.status==='confirmed'){
       plan=`<section class="mr-card mr-countdown"><div class="mr-count" aria-hidden="true"><b>${w.left}</b><small>ngày</small></div><div><h3>${w.left?`Còn ${w.left} ngày nữa là tới ngày cưới${Number.isInteger(v.me?.life_day)?` (Ngày ${v.me.life_day+w.left})`:''}`:'Ngày cưới đã tới!'}</h3>
@@ -499,7 +518,7 @@ function couple(){
     <label class="field" for="mr-confirm">Gõ <b>${word}</b> để xác nhận<input class="input" id="mr-confirm" data-mr-field="confirm" value="${esc(S.confirm)}" autocomplete="off" spellcheck="false"></label>
     ${btn(married?'Ly hôn':'Hủy hôn ước','divorce',{},'danger',S.confirm.trim()?'':' disabled')}</details>`;
   const split=married?`<p class="mr-hint">Nếu chia tay: quỹ chung chia đôi (lẻ 1 xu thuộc về người không đệ đơn); ai còn nợ thì trả từ phần của mình trước, phần nợ còn lại được xóa.</p>`:'';
-  return `${notice()}${top}${result}${plan}${danger.replace('</details>',split+'</details>')}`;
+  return `${notice()}${top}${partyCard(c)}${result}${plan}${danger.replace('</details>',split+'</details>')}`;
 }
 const viDate=d=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(d||'');return m?`${m[3]}/${m[2]}/${m[1]}`:'';};
 

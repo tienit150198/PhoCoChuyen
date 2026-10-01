@@ -1,7 +1,8 @@
 """💍 Live wedding parties (live/wedding.py): the schedule, the room's window, the couple on the stage, the 60-visible cap
-and the watchers, attendance (5-minute steps, at most 4, 2 weddings a day), the anti-abuse rules, the couple's reward
-scaling (capped at 50 guests, the title at 20), the group photo, the reminder, the weekly race settle (ties, once) and
-its titles on name tags, and the end of the party. Real sockets against a real game database."""
+and the watchers, attendance (everyone recorded on entry, 20 xu for every minute present, 2 paid weddings a day, a
+restart loses nothing), the anti-abuse rules, the couple's 15 xu a guest (the title at 20), the group photo, the
+reminder, the weekly race settle (ties, once) and its titles on name tags, and the end of the party. Real sockets
+against a real game database."""
 import asyncio
 import json
 import time
@@ -101,39 +102,71 @@ class Room(WedCase):
         await a.send(t='say', text='đông vui quá')
         await c.expect('said')                              # watchers see and hear the party
         self.assertEqual((await c.call('say', 'error', text='cho mình vào với'))['code'], 'not_in')
-        await self.ticks(time.time(), WL.GUEST_STEP + 5)
+        await asyncio.sleep(0.3)
         counted = {r['sid'] for r in self.rows('SELECT sid FROM wedding_guests WHERE wedding=?', wid)}
         ok = {r['sid'] for r in self.rows('SELECT sid FROM wedding_guests WHERE wedding=? AND ok=1', wid)}
+        self.assertEqual(len(counted), 4, 'everyone who walked in is recorded at once, the gate too')
         self.assertEqual(len(ok), 3, 'the full-house watcher is counted too; the couple and a player without an account never')
         self.assertNotIn(sb, counted)
+        self.assertIn(sg, counted)
         self.assertNotIn(sg, ok)
+        await self.ticks(at - 1, 62)
         self.assertEqual(self.rows("SELECT * FROM live_effects WHERE sid=?", sg), [])
+        self.assertEqual(len(self.rows("SELECT * FROM live_effects WHERE kind='coins' AND id LIKE 'wedm:%'")), 4, '3 guests and the groom')
+        self.assertEqual((await g.expect('wed_xu'))['why'], 'account')
         await c.call('walk_out', 'walk_left')
         self.assertNotIn(c.welcome['me']['pid'], self.app.hub.rooms[f'wed:{wid}'].data['watch'])
 
 
 @unittest.skipUnless(HAVE_WS, 'needs websockets')
 class Attendance(WedCase):
-    async def test_steps_of_five_minutes_at_most_four(self):
+    async def test_recorded_on_entry_and_paid_every_minute(self):
         (ta, tb), (sa, sb), wid, at = self.party()
         tok, sid = self.account('Hà Vy')
         g = await self.join(tok, wid)
         g2 = await self.connect(tok)                        # a second tab of the same account
         await g2.call('wed_in', 'walk_room', id=wid, look=LOOK)
-        await self.ticks(time.time(), 3 * WL.GUEST_STEP - 10)
+        bride = await self.join(ta, wid)
+        etok, esid = self.account('Ghé Qua')
+        early = await self.join(etok, wid)
+        await asyncio.sleep(0.3)
+        self.assertEqual(self.rows('SELECT ok, paid, steps FROM wedding_guests WHERE wedding=? AND sid=?', wid, sid), [dict(ok=1, paid=0, steps=0)],
+                         'recorded the moment they walk in')
+        await self.ticks(at - 30, 30 + 90)                  # the party starts, and someone leaves after a minute and a half
+        await early.call('walk_out', 'walk_left')
+        await self.ticks(at + 90, 3 * 60)                   # four minutes in
         coins = self.rows("SELECT id, amount FROM live_effects WHERE sid=? AND kind='coins' ORDER BY id", sid)
-        self.assertEqual([r['amount'] for r in coins], [15, 15])
+        self.assertEqual([r['amount'] for r in coins], [WL.MINUTE_XU] * 4)
+        self.assertEqual(len(self.rows("SELECT id FROM live_effects WHERE sid=? AND kind='coins'", sa)), 4, 'the couple are paid too')
+        self.assertEqual(len(self.rows("SELECT id FROM live_effects WHERE sid=? AND kind='coins'", esid)), 2, 'only the minutes present')
         close = self.rows("SELECT data FROM live_effects WHERE sid=? AND kind='closeness'", sid)
         self.assertEqual(sorted(json.loads(r['data'])['with'] for r in close), sorted([sa, sb]))
         xu = await g2.expect('wed_xu')
-        self.assertEqual(xu['n'], 15)
-        await self.ticks(time.time(), 6 * WL.GUEST_STEP)
-        coins = self.rows("SELECT amount FROM live_effects WHERE sid=? AND kind='coins'", sid)
-        self.assertEqual(len(coins), WL.GUEST_STEPS, '60 xu at most per wedding')
-        r = self.rows('SELECT ok, paid, steps FROM wedding_guests WHERE wedding=?', wid)
-        self.assertEqual(r, [dict(ok=1, paid=1, steps=4)])
+        self.assertEqual((xu['n'], xu['max']), (WL.MINUTE_XU, WL.PARTY_MINUTES))
+        await self.ticks(at + 270, WL.PARTY_SECS)
+        coins = self.rows("SELECT amount FROM live_effects WHERE sid=? AND kind='coins' AND id LIKE 'wedm:%'", sid)
+        self.assertEqual(len(coins), WL.PARTY_MINUTES, '20 xu a minute, 10 minutes')
+        r = self.rows('SELECT ok, paid, steps FROM wedding_guests WHERE wedding=? AND sid=?', wid, sid)
+        self.assertEqual(r, [dict(ok=1, paid=1, steps=WL.PARTY_MINUTES)])
+        del bride
 
-    async def test_two_weddings_a_day_and_the_anti_abuse_rules(self):
+    async def test_a_restart_of_the_service_loses_nothing(self):
+        (ta, tb), (sa, sb), wid, at = self.party()
+        tok, sid = self.account('Hà Vy')
+        await self.join(tok, wid)
+        await self.ticks(at - 5, 5 + 125)                   # minutes 1 and 2 paid
+        self.wed.att.clear()                                # a new process: nothing in memory
+        for p in self.wed.parties.values():
+            p.pop('minute', None)
+        g = await self.join(tok, wid)                       # the socket walks back in
+        await asyncio.sleep(0.3)
+        await self.ticks(at + 125, 60)
+        coins = self.rows("SELECT id FROM live_effects WHERE sid=? AND kind='coins' ORDER BY id", sid)
+        self.assertEqual(len(coins), 3)
+        self.assertEqual(self.rows('SELECT paid, steps FROM wedding_guests WHERE wedding=? AND sid=?', wid, sid), [dict(paid=1, steps=3)])
+        self.assertEqual(g.room['wed']['minutes'], WL.PARTY_MINUTES)
+
+    async def test_two_paid_weddings_a_day_and_the_anti_abuse_rules(self):
         (ta, tb), (sa, sb), wid, at = self.party()
         tok, sid = self.account('Hà Vy')
         day, week = WL.vn_day(time.time()), WL.vn_week(time.time())
@@ -141,17 +174,18 @@ class Attendance(WedCase):
             for other in (1, 2):
                 db.execute('INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) VALUES(?,?,?,1,1,4,?,?,?)',
                            (other, sid, 'x', time.time(), day, week))
-        await self.join(tok, wid)
-        await self.join(self.account('Bé Mới', old=False)[0], wid)  # a brand-new account: present, never counted
-        await self.join(self.guest('Lâu Năm')[0], wid)              # no account: watches, never counted
+        g = await self.join(tok, wid)
+        await self.join(self.account('Bé Mới', old=False)[0], wid)  # a brand-new account: counted now (owner, 01/10)
+        await self.join(self.guest('Lâu Năm')[0], wid)              # no account: watches, recorded, never counted
         await self.join(self.guest(None)[0], wid)                   # no name, no account: never counted
         await self.join(ta, wid)                                    # the bride: never her own guest
-        await self.ticks(time.time(), WL.GUEST_STEP + 5)
-        rows = {r['sid']: r for r in self.rows('SELECT sid, ok, paid FROM wedding_guests WHERE wedding=?', wid)}
-        self.assertEqual((rows[sid]['ok'], rows[sid]['paid']), (1, 0), 'counted for the couple and the race, no coins (3rd wedding today)')
-        self.assertEqual(sorted(r['ok'] for r in rows.values()), [0, 0, 0, 1])
+        await self.ticks(at - 1, 62)
+        rows = {r['sid']: r for r in self.rows('SELECT sid, ok, paid, steps FROM wedding_guests WHERE wedding=?', wid)}
+        self.assertEqual((rows[sid]['ok'], rows[sid]['paid'], rows[sid]['steps']), (1, 0, 1), 'counted for the couple and the race, no coins (3rd today)')
+        self.assertEqual(sorted(r['ok'] for r in rows.values()), [0, 0, 1, 1])
         self.assertNotIn(sa, rows)
-        self.assertEqual(self.rows("SELECT * FROM live_effects WHERE sid=? AND id LIKE 'wedg:%'", sid), [])
+        self.assertEqual(self.rows("SELECT * FROM live_effects WHERE sid=? AND id LIKE 'wedm:%'", sid), [])
+        self.assertEqual((await g.expect('wed_xu'))['why'], 'cap')
 
 
 @unittest.skipUnless(HAVE_WS, 'needs websockets')
@@ -163,21 +197,22 @@ class Hosts(WedCase):
                            (wid, f'guest{i:04d}', f'p{i:015d}', ok, time.time(), 'd', 'w'))
 
     async def test_scaling_title_cap_and_once(self):
-        for n, want, title in ((9, 270, False), (12, 460, False), (25, 1100, True), (70, 1850, True)):
+        for n, want, title in ((9, 135, False), (19, 285, False), (25, 375, True), (370, 5400, True)):
             (ta, tb), (sa, sb), wid, at = self.party(wid=100 + n)
             self.counted(wid, n)
             self.counted(wid + 1000, 3)                     # another party's guests
             await self.wed.refresh(time.time())
             p = self.wed.parties[wid]
-            self.assertEqual(await self.wed.settle_party(p), min(n, 50))
+            self.assertEqual(await self.wed.settle_party(p), min(n, WL.HOST_COUNT_MAX))
             await self.wed.settle_party(p)
             for s in (sa, sb):
                 coins = self.rows("SELECT amount, data FROM live_effects WHERE sid=? AND kind='coins'", s)
-                self.assertEqual([c['amount'] for c in coins], [want], (n, coins))
-                self.assertIn('popup', json.loads(coins[0]['data']))
+                self.assertEqual(sum(c['amount'] for c in coins), want, (n, coins))
+                self.assertLessEqual(max(c['amount'] for c in coins), 2000)
+                self.assertEqual(sum('popup' in json.loads(c['data']) for c in coins), 1)
                 titles = self.rows("SELECT data FROM live_effects WHERE sid=? AND kind='title'", s)
                 self.assertEqual(bool(titles), title)
-            self.assertEqual(self.rows('SELECT status, guests FROM wedding_parties WHERE wedding=?', wid), [dict(status='done', guests=min(n, 50))])
+            self.assertEqual(self.rows('SELECT status, guests FROM wedding_parties WHERE wedding=?', wid), [dict(status='done', guests=min(n, WL.HOST_COUNT_MAX))])
             with self.store.connect() as db:
                 db.execute('DELETE FROM live_effects')
 
@@ -196,6 +231,41 @@ class Hosts(WedCase):
         self.assertNotIn(f'wed:{wid}', self.app.hub.rooms)
         self.assertEqual((await guest.call('wed_in', 'error', id=wid, look=LOOK))['code'], 'gone')
         del bride
+
+
+@unittest.skipUnless(HAVE_WS, 'needs websockets')
+class Envelope(WedCase):
+    def given(self, sid, wid, rid, amount, wish, couple):
+        """What POST /api/marriage/envelope writes (game/wedding_live.py envelope): the debit and the two halves."""
+        with self.store.connect() as db:
+            db.execute("INSERT INTO marriage_effects(id, sid, kind, amount, label, data, status, due, at, applied_at) VALUES(?, ?, 'wallet', ?, '', ?, 'applied', 0, ?, ?)",
+                       (f'wenv:{wid}:{rid}', sid, -amount, json.dumps(dict(wedding=wid, wish=wish)), time.time(), time.time()))
+            for side, s in zip('ab', couple):
+                db.execute("INSERT INTO live_effects(id, sid, kind, amount, data, status, at) VALUES(?, ?, 'coins', ?, '{}', 'pending', ?)",
+                           (f'wedenv:{wid}:{side}:{rid}', s, amount // 2, time.time()))
+
+    async def test_the_room_hears_it_once_and_the_couple_card_sums_it(self):
+        (ta, tb), (sa, sb), wid, at = self.party()
+        bride = await self.join(ta, wid)
+        gt, gs = self.account('Bảo')
+        guest = await self.join(gt, wid)
+        self.assertEqual((guest.room['wed']['envs'], guest.room['wed']['env_max']), (list(WL.ENVELOPES), WL.ENVELOPE_MAX))
+        self.given(gs, wid, 'rid-abc-0001', 100, 1, (sa, sb))
+        await guest.send(t='wed_env', rid='rid-abc-0001')
+        e = await bride.expect('wed_env')
+        self.assertEqual((e['n'], e['name'], e['text'], e['pid']), (100, 'Bảo', WL.WISHES[1], guest.welcome['me']['pid']))
+        await guest.send(t='wed_env', rid='rid-abc-0001')                  # told once
+        await bride.nothing('wed_env')
+        self.given(gs, wid, 'rid-abc-0002', 10, 0, (sa, sb))
+        self.assertEqual((await bride.call('wed_env', 'error', rid='rid-abc-0002'))['code'], 'bad', "not the bride's envelope")
+        self.assertEqual((await guest.call('wed_env', 'error', rid='rid-none-0001'))['code'], 'bad', 'no such envelope')
+        await self.wed.refresh(time.time())
+        await self.wed.tick(at + 1)
+        await self.wed.tick(at + WL.PARTY_SECS + 1)
+        await asyncio.sleep(0.3)
+        for s in (sa, sb):
+            card = [json.loads(r['data'])['popup']['text'] for r in self.rows("SELECT data FROM live_effects WHERE sid=? AND id LIKE 'wedhost:%'", s)]
+            self.assertIn('🧧 Phong bì khách mừng: 55 xu', card[0])
 
 
 @unittest.skipUnless(HAVE_WS, 'needs websockets')

@@ -1,8 +1,9 @@
 """💍 Live weddings (switch LIVE_WEDDING; design docs/superpowers/specs/2026-10-01-live-wedding-design.md).
 
-A couple who books their wedding at a real date and time (game/marriage.py → game/wedding_live.py `wedding_parties`)
-throws a party anyone online can attend. This feature reads the booked parties, opens a room `wed:<wedding id>` 10
-minutes before the start and closes it 30 minutes after, and pays the rewards through live/effects.grant (rows the
+A couple who books their wedding at a real date and time (game/marriage.py → game/wedding_live.py `wedding_parties`),
+or any couple with a wedding who picks a time for their party ("Tổ chức tiệc cưới", free), throws one party anyone
+online can attend. This feature reads the booked parties, opens a room `wed:<wedding id>` OPEN_BEFORE (5 minutes)
+before the start, the party lasts PARTY_SECS (10 minutes), and pays the rewards through live/effects.grant (rows the
 game server pays on load, game/live_effects.py). The numbers live in game/wedding_live.py (owner-approved).
 
 The room is the strolling machinery of live/street.py (place 'wedding': a flower gate, the tent, tables): avatars with
@@ -12,13 +13,16 @@ cards. At most VISIBLE (60) avatars: later guests watch from outside the gate ("
 Accounts only (owner, 1.0.1: only accounts talk; the anti-alt rule): a player without an account may watch the party
 from outside the gate (the watchers' view), never chats (store_message refuses), never takes a photo, never counts.
 
-Attendance (memory, one second per tick; written to `wedding_guests` when a guest reaches 5 minutes):
-* one account counts once (by player, whatever the tabs); the couple are never their own guests;
-* a counted guest is an account with a named save at least a day old (stat_births / first seen, as for Cả phố);
-* every 5 minutes present: +15 xu, at most 4 per wedding, and only from 2 weddings a day per player; plus closeness
-  with each spouse once per wedding;
-* at the end each spouse gets 30 xu per counted guest (up to 50), +100 at 10 guests, +250 and the title
-  "Đám cưới đông vui 🎉" at 20, with the private congratulation card.
+Attendance (owner, 01/10 after the first party: everyone who walks in is recorded, the party lasts 10 minutes):
+* a guest is written to `wedding_guests` the moment they walk in (or watch from the gate), whoever they are; one
+  account counts once (by player, whatever the tabs); the couple are never their own guests;
+* a counted guest (ok) is an account with a named save; a player without an account is recorded (ok=0) and watches;
+* every minute of the party (at+60 … at+600) everyone present during that minute gets MINUTE_XU (20 xu): the
+  couple always, counted guests from at most GUEST_WEDDINGS_PER_DAY weddings a day; `steps` = minutes present;
+  closeness with each spouse once per wedding. The minute marks come from the clock and every payment has a fixed
+  key, so a restart of this service loses nothing but the seconds before the guests' sockets walk back in;
+* at the end each spouse gets HOST_XU (15 xu) per counted guest, and the title "Đám cưới đông vui 🎉" at 20, with
+  the private congratulation card.
 
 Also here (one process, so once): the reminder 30 minutes before (the couple's friends: inbox + web push), the
 weekly race settle ("Khách mời của tuần": #1 🥇 Khách quý của phố 300 xu, #2-#3 🎊 Ăn cưới chuyên nghiệp 150 xu;
@@ -31,13 +35,14 @@ Frames (client → server; replies in brackets)
   wed_photo {}                        [the room: wed_photo {n, pid, name, at}: the taker's screen is uploaded to
                                        POST /api/wedding/photo at `at`]
   (walk_out, move, say, emote, sit, stand, topic, card: live/street.py)
-Server pushes: wed_start {id}, wed_end {id, n}, wed_xu {n, steps}, wed_paid {xu}, walk_left {why: 'wed_end'}.
+Server pushes: wed_start {id}, wed_end {id, n}, wed_xu {n, k, max, why?}, wed_paid {xu}, walk_left {why: 'wed_end'}.
 """
 from __future__ import annotations
 
 import asyncio
 import json
 import random
+import re
 import time
 
 from game import wedding_live as WL
@@ -53,18 +58,21 @@ REFRESH = 30.0              # seconds between two reads of the booked parties (a
 PARTIES_MAX = 500
 WATCHERS_MAX = 300          # guests watching from outside the gate, per party
 PHOTO_GAP = 45.0            # seconds between two group photos of one party
+RID = re.compile(r'[A-Za-z0-9\-]{8,24}')   # a red envelope's request id (game/wedding_live.py envelope)
 TASKS_MAX = 2000
 CLOSE_AFTER = 120.0         # the room stays this long after the end (goodbyes), then closes
 
 
 class Att:
     """One player's presence at one party."""
-    __slots__ = ('sid', 'pid', 'secs', 'steps', 'paid', 'reward', 'ok', 'lock')
+    __slots__ = ('sid', 'pid', 'ok', 'couple', 'seen', 'mins', 'paid', 'told', 'lock', 'rec')
 
-    def __init__(self, sid: str, pid: str, ok: bool):
-        self.sid, self.pid, self.ok = sid, pid, ok
-        self.secs, self.steps, self.paid, self.reward = 0.0, 0, 0, None
+    def __init__(self, sid: str, pid: str, ok: bool, couple: bool = False):
+        self.sid, self.pid, self.ok, self.couple = sid, pid, ok, couple
+        self.seen, self.mins, self.told = 0.0, 0, False
+        self.paid = True if couple else None    # None: decided at the first minute (the daily cap)
         self.lock = asyncio.Lock()
+        self.rec = None                          # the task writing the guest row
 
 
 class WeddingFeature(Feature):
@@ -176,11 +184,17 @@ class WeddingFeature(Feature):
     def _open(self, p: dict, now: float) -> bool:
         return p['at'] - WL.OPEN_BEFORE <= now < p['at'] + WL.PARTY_SECS
 
-    def _info(self, p: dict, room, overflow) -> dict:
+    def _mins(self, p: dict, pid: str | None) -> int:
+        a = self.att.get(p['id'], {}).get(pid) if pid else None
+        return a.mins if a else 0
+
+    def _info(self, p: dict, room, overflow, pid: str | None = None) -> dict:
         """overflow: False (in the party), 'full' (more than VISIBLE) or 'account' (a player without an account watches)."""
         n = len(room.data['people']) + len(room.data['watch'])
         return dict(id=p['id'], a=p['na'], b=p['nb'], pids=[p['pa'], p['pb']], at=p['at'], end=p['at'] + WL.PARTY_SECS, n=n,
-                    overflow=overflow, photos=p['photos'] or 0, photos_max=WL.PHOTOS_MAX, visible=WL.VISIBLE)
+                    overflow=overflow, photos=p['photos'] or 0, photos_max=WL.PHOTOS_MAX, visible=WL.VISIBLE,
+                    minutes=WL.PARTY_MINUTES, xu=WL.MINUTE_XU, host_xu=WL.HOST_XU, mins=self._mins(p, pid),
+                    envs=list(WL.ENVELOPES), env_max=WL.ENVELOPE_MAX, wishes=list(WL.WISHES))
 
     @on('wed_list', rate=(10, 10))
     async def wed_list(self, conn, f):
@@ -262,7 +276,8 @@ class WeddingFeature(Feature):
         if p['photos'] is None:
             p['photos'] = int(await self.db.fetchval('SELECT COUNT(*) FROM wedding_photos WHERE wedding=?', (p['id'],)) or 0)
         snap = self.street._snapshot(room, pl, now)
-        snap['wed'] = self._info(p, room, overflow)
+        self._arrive(p, pl, couple, now)
+        snap['wed'] = self._info(p, room, overflow, pl.pid)
         return snap
 
     def _leave_watch(self, player) -> None:
@@ -309,9 +324,35 @@ class WeddingFeature(Feature):
         room.send(dict(t='wed_photo', id=wid, n=n, pid=w.pid, name=w.name, at=round(now + 3, 3)))
         return None
 
+    # ---- 🧧 a guest's red envelope (paid by the game server, POST /api/marriage/envelope) ----------------------
+    @on('wed_env', rate=(10, 60))
+    async def wed_env(self, conn, f):
+        """The sender's client says "sent": the debit row is read back (this player's, this wedding's), then the room
+        sees who gave how much and the wish (once per envelope), and the couple's wallets are paid now."""
+        room, w = self.street._me(conn)
+        wid = room.data.get('wid')
+        p = self.parties.get(wid)
+        rid = f.get('rid')
+        if p is None or not isinstance(rid, str) or not RID.fullmatch(rid):
+            raise LiveError('bad', 'Phong bì không hợp lệ.')
+        eid = f'wenv:{wid}:{rid}'
+        told = p.setdefault('envs', set())
+        if eid in told:
+            return None
+        r = await self.db.fetchrow('SELECT amount, data FROM marriage_effects WHERE id=? AND sid=?', (eid, conn.player.sid))
+        if not r:
+            raise LiveError('bad', 'Phong bì không hợp lệ.')
+        told.add(eid)
+        try:
+            wish = json.loads(r['data'] or '{}').get('wish')
+        except ValueError:
+            wish = None
+        text = WL.WISHES[wish] if type(wish) is int and 0 <= wish < len(WL.WISHES) else ''
+        room.send(dict(t='wed_env', id=wid, pid=w.pid, name=w.name, n=-int(r['amount']), text=text))
+        return None
+
     # ---- every second: attendance, start, end ---------------------------------------------------------------
     async def tick(self, now: float):
-        dt = min(5.0, max(0.0, now - self.last)) if self.last else 1.0   # a clock that steps back adds nothing
         self.last = max(self.last, now)
         if now >= self.next_refresh and self.refreshing is None:
             self.next_refresh = now + REFRESH
@@ -319,7 +360,9 @@ class WeddingFeature(Feature):
         for p in list(self.parties.values()):
             room = self.hub.rooms.get(f'{PREFIX}{p["id"]}')
             if room is not None and self._open(p, now):
-                self._attend(p, room, dt, now)
+                self._attend(p, room, now)
+            if now >= p['at'] and not p.get('closed'):
+                self._minutes(p, now)
             if now >= p['at'] and not p['started']:
                 p['started'] = True
                 if room is not None:
@@ -332,62 +375,111 @@ class WeddingFeature(Feature):
                 self._close(p)
                 self.att.pop(p['id'], None)
 
-    def _attend(self, p: dict, room, dt: float, now: float) -> None:
+    def _arrive(self, p: dict, pl, couple: bool, now: float) -> None:
+        """Walked in (or watching from the gate): recorded at once (a guest row), present from now."""
         att = self.att.setdefault(p['id'], {})
-        present = list(room.data['people']) + list(room.data['watch'])
-        for pid in present:
-            if pid in (p['pa'], p['pb']):
-                continue
-            a = att.get(pid)
-            if a is None:
-                pl = self.hub.players.get(pid)
-                if pl is None:
-                    continue
-                since = pl.since or self.app.first_seen(pid)
-                a = att[pid] = Att(pl.sid, pid, ok=bool(pl.account and pl.name) and (pl.old or now - since >= 86400))
-            a.secs += dt
-            steps = min(WL.GUEST_STEPS, int(a.secs // WL.GUEST_STEP))
-            if steps > a.steps:
-                a.steps = steps
-                self.spawn(self._step(p, a, steps))
+        a = att.get(pl.pid)
+        if a is None:
+            a = att[pl.pid] = Att(pl.sid, pl.pid, ok=couple or bool(pl.account and pl.name), couple=couple)
+        elif not a.ok and pl.account and pl.name:   # signed up or named during the party
+            a.ok, a.rec = True, None
+        a.seen = max(a.seen, now)
+        if not couple and a.rec is None:
+            a.rec = asyncio.ensure_future(self._record(p, a, now))
+            self.tasks.add(a.rec)
+            a.rec.add_done_callback(self.tasks.discard)
 
-    async def _step(self, p: dict, a: Att, steps: int) -> None:
-        """A guest reached steps × 5 minutes: counted (the first time), then paid for every step not paid yet."""
+    async def _record(self, p: dict, a: Att, now: float) -> None:
+        """The guest row (once; after a restart it reads back the minutes and the daily-cap decision already made)."""
+        try:
+            async with a.lock:
+                await self.db.execute('INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) VALUES(?, ?, ?, ?, 0, 0, ?, ?, ?) '
+                                      'ON CONFLICT(wedding, sid) DO NOTHING', (p['id'], a.sid, a.pid, int(a.ok), now, WL.vn_day(now), WL.vn_week(now)))
+                row = await self.db.fetchrow('SELECT ok, paid, steps FROM wedding_guests WHERE wedding=? AND sid=?', (p['id'], a.sid))
+                if row:
+                    a.mins = max(a.mins, int(row['steps']))
+                    if int(row['paid']):
+                        a.paid = True
+                    if a.ok and not int(row['ok']):   # named or signed up since the first visit
+                        await self.db.execute('UPDATE wedding_guests SET ok=1 WHERE wedding=? AND sid=?', (p['id'], a.sid))
+        except DbError as e:
+            a.rec = None   # tried again at the next tick
+            log('wedding record:', type(e).__name__, e)
+
+    def _attend(self, p: dict, room, now: float) -> None:
+        """Every second: who is here (in the party or at the gate) is present during this minute."""
+        for pid, w in list(room.data['people'].items()):
+            self._arrive(p, w.player, pid in (p['pa'], p['pb']), now)
+        for pid, pl in list(room.data['watch'].items()):
+            self._arrive(p, pl, pid in (p['pa'], p['pb']), now)
+
+    def _minutes(self, p: dict, now: float) -> None:
+        """The minute marks at+60 … at+600: everyone present during the minute that just ended is paid."""
+        if 'minute' not in p:   # first seen by this process: the marks already past were paid by the one before
+            p['minute'] = max(0, min(WL.PARTY_MINUTES, int((now - p['at']) // WL.MINUTE_SECS)))
+        while p['minute'] < WL.PARTY_MINUTES and now >= p['at'] + WL.MINUTE_SECS * (p['minute'] + 1):
+            p['minute'] += 1
+            k = p['minute']
+            mark = p['at'] + WL.MINUTE_SECS * k
+            who = [a for a in self.att.get(p['id'], {}).values() if a.seen > mark - WL.MINUTE_SECS]
+            if who:
+                self.spawn(self._pay_minute(p, k, who))
+
+    async def _pay_minute(self, p: dict, k: int, who: list) -> None:
+        for a in who:
+            try:
+                await self._pay_one(p, k, a)
+            except DbError as e:
+                log('wedding minute:', type(e).__name__, e)
+
+    async def _pay_one(self, p: dict, k: int, a: Att) -> None:
+        if a.rec is not None and not a.rec.done():
+            await asyncio.shield(a.rec)
         async with a.lock:
-            now = time.time()
-            if a.reward is None:
-                day, week = WL.vn_day(now), WL.vn_week(now)
+            if not a.couple:
+                a.mins += 1
+                await self.db.execute('UPDATE wedding_guests SET steps=? WHERE wedding=? AND sid=? AND steps<?', (a.mins, p['id'], a.sid, a.mins))
+            if not a.ok:
+                if not a.told:
+                    a.told = True
+                    self.hub.send_many(self.hub.conns_of(a.pid), dict(t='wed_xu', id=p['id'], n=0, k=k, max=WL.PARTY_MINUTES, why='account'))
+                return
+            if a.paid is None:
+                day = WL.vn_day(time.time())
 
                 async def run(tx):
                     n = await tx.fetchval('SELECT COUNT(*) FROM wedding_guests WHERE sid=? AND day=? AND paid=1 AND wedding<>?', (a.sid, day, p['id']))
-                    paid = 1 if a.ok and int(n or 0) < WL.GUEST_WEDDINGS_PER_DAY else 0
-                    await tx.execute('INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) VALUES(?, ?, ?, ?, ?, 0, ?, ?, ?) '
-                                     'ON CONFLICT(wedding, sid) DO NOTHING', (p['id'], a.sid, a.pid, int(a.ok), paid, now, day, week))
-                    row = await tx.fetchrow('SELECT paid, steps FROM wedding_guests WHERE wedding=? AND sid=?', (p['id'], a.sid))
-                    return int(row['paid']), int(row['steps'])
-                paid, done = await self.db.transaction(run)
-                a.reward, a.paid = bool(paid), done
-                if a.reward:
-                    for side in ('a', 'b'):
-                        await effects.grant(self.db, a.sid, 'closeness', WL.GUEST_CLOSE, f'wedc:{p["id"]}:{a.sid[:24]}:{side}', dict(src='wedding', **{'with': p[side]}))
-            if not a.reward or steps <= a.paid:
+                    if int(n or 0) >= WL.GUEST_WEDDINGS_PER_DAY:
+                        return False
+                    await tx.execute('UPDATE wedding_guests SET paid=1 WHERE wedding=? AND sid=?', (p['id'], a.sid))
+                    return True
+                a.paid = bool(await self.db.transaction(run))
+                for side in ('a', 'b'):
+                    await effects.grant(self.db, a.sid, 'closeness', WL.GUEST_CLOSE, f'wedc:{p["id"]}:{a.sid[:24]}:{side}', dict(src='wedding', **{'with': p[side]}))
+            if not a.paid:
+                if not a.told:
+                    a.told = True
+                    self.hub.send_many(self.hub.conns_of(a.pid), dict(t='wed_xu', id=p['id'], n=0, k=k, max=WL.PARTY_MINUTES, why='cap'))
                 return
-            for k in range(a.paid + 1, steps + 1):
-                await effects.grant(self.db, a.sid, 'coins', WL.GUEST_XU, f'wedg:{p["id"]}:{a.sid[:24]}:{k}', dict(src='guest'))
-            await self.db.execute('UPDATE wedding_guests SET steps=? WHERE wedding=? AND sid=? AND steps<?', (steps, p['id'], a.sid, steps))
-            got = (steps - a.paid) * WL.GUEST_XU
-            a.paid = steps
-            self.hub.send_many(self.hub.conns_of(a.pid), dict(t='wed_xu', id=p['id'], n=got, steps=steps, max=WL.GUEST_STEPS))
+            await effects.grant(self.db, a.sid, 'coins', WL.MINUTE_XU, f'wedm:{p["id"]}:{a.sid[:24]}:{k}', dict(src='couple' if a.couple else 'guest'))
+            self.hub.send_many(self.hub.conns_of(a.pid), dict(t='wed_xu', id=p['id'], n=WL.MINUTE_XU, k=k, max=WL.PARTY_MINUTES))
 
     async def settle_party(self, p: dict) -> int:
-        """The end: each spouse's reward for the guests who stayed 5 minutes (once), then the party is done."""
+        """The end: each spouse gets HOST_XU per counted guest who came (once), then the party is done."""
         n = min(WL.HOST_COUNT_MAX, int(await self.db.fetchval('SELECT COUNT(*) FROM wedding_guests WHERE wedding=? AND ok=1', (p['id'],)) or 0))
         total = n * WL.HOST_XU + sum(xu for k, xu, _ in WL.HOST_BONUS if n >= k)
         if total:
             for side, other in (('a', 'nb'), ('b', 'na')):
-                text = f'{n} khách đã ở lại chung vui với bạn và {p[other]}. Mỗi người nhận {total} xu mừng từ khu phố 💛'
-                await effects.grant(self.db, p[side], 'coins', total, f'wedhost:{p["id"]}:{side}',
+                text = f'{n} khách đã đến chung vui với bạn và {p[other]}. Mỗi khách {WL.HOST_XU} xu: bạn nhận {total} xu mừng từ khu phố 💛'
+                env = int(await self.db.fetchval('SELECT COALESCE(SUM(amount), 0) FROM live_effects WHERE sid=? AND id LIKE ?',
+                                                 (p[side], f'wedenv:{p["id"]}:{side}:%')) or 0)
+                if env:   # the guests' red envelopes (already in the wallet): their half
+                    text += f' 🧧 Phong bì khách mừng: {env} xu (đã vào ví).'
+                first = min(total, effects.AMOUNT_MAX)   # a very full party: the rest in more rows (each paid once)
+                await effects.grant(self.db, p[side], 'coins', first, f'wedhost:{p["id"]}:{side}',
                                     dict(src='host', popup=dict(title='💍 Đám cưới của hai bạn', text=text)))
+                for i, k in enumerate(range(first, total, effects.AMOUNT_MAX), 2):
+                    await effects.grant(self.db, p[side], 'coins', min(effects.AMOUNT_MAX, total - k), f'wedhost:{p["id"]}:{side}:{i}', dict(src='host'))
                 for k, _, tid in WL.HOST_BONUS:
                     if tid and n >= k:
                         await effects.grant(self.db, p[side], 'title', 1, f'wedhost:{p["id"]}:{side}:{tid}', dict(title=tid))
@@ -436,7 +528,7 @@ async def settle_week(db, week: str) -> list:
     """Pay a finished week's top 3 of "Khách mời của tuần" (fixed keys: paid once; ties to whoever reached the count
     first), then record it in wedding_race. Safe to run again: the live service runs it at its first schedule read after
     each Monday 00:00 (Vietnam), scripts/wedding_week.py by hand."""
-    rows = await db.fetch('SELECT sid, pid, COUNT(*) AS n, MAX(counted_at) AS last FROM wedding_guests WHERE week=? AND ok=1 '
+    rows = await db.fetch('SELECT sid, pid, COUNT(*) AS n, MAX(counted_at) AS last FROM wedding_guests WHERE week=? AND ok=1 AND steps>=1 '
                           'GROUP BY sid, pid ORDER BY n DESC, last ASC, sid LIMIT ?', (week, len(WL.RACE)))
     top = []
     for (rank, xu, tid), r in zip(WL.RACE, rows):

@@ -2,17 +2,21 @@
 """💍 A live wedding in five browsers: the couple and three guests (dev tool, needs `pip install playwright websockets`).
 
 Starts a game server (story mode, SQLite) and the live service (chat, street, wedding on) on the same database. Here a
-5-minute step is 15 s, at most 4 avatars are visible (so the third guest watches from the gate) and the schedule is
-read every 2 s; everything else is as in production. Five phones (390×844):
+paid minute is 10 s (the party 100 s), at most 4 avatars are visible (so the third guest watches from the gate) and
+the schedule is read every 2 s; everything else is as in production. MNL_PY picks the servers' Python (the live
+service needs websockets 17, Python 3.12) when playwright lives in another one. Five phones (390×844):
   * the couple get 400 xu each through the game's own gift path, become friends, get engaged, and plan the wedding
     in the Hôn nhân planner (a real date and time); the partner confirms; both cards say "Cưới lúc …";
   * the party is moved to "now" in the test database; everyone opens Khu phố › Lịch cưới and walks in: the couple
     stand on the stage ("💍 Cô dâu", "💍 Chú rể"), two guests with accounts come in through the flower gate, the
     third has no account and watches from outside the gate ("Tạo tài khoản để vào dự"), never counted;
   * a guest cheers in a bubble (a phone number masked) and sends ❤️; a guest takes the group photo (3-2-1, flash),
-    which lands in the couple's Kỷ niệm; the ceremony starts (hearts); every guest earns +15 xu per step;
-  * the party ends: everyone sees the end card, the couple get the private card with their total, guests appear on
-    Xếp hạng › Khách mời; dark theme. Fails on console errors, page errors or HTTP 5xx.
+    which lands in the couple's Kỷ niệm; the ceremony starts (hearts), the show runs (MC, neighbours, kids, the lion
+    dance, lights); everyone present earns +20 xu a minute, the couple too;
+  * the party ends: everyone sees the end card, the couple get the private card with 15 xu a guest, guests appear on
+    Xếp hạng › Khách mời; dark theme;
+  * two guests marry with an older plan (no date and time): Hôn nhân offers "Tổ chức tiệc cưới", they pick a time
+    and invite their friends for free. Fails on console errors, page errors or HTTP 5xx.
 
   python scripts/browser_live_wedding.py [--shots DIR]
 """
@@ -39,7 +43,9 @@ LIVE_DEV = """
 import sys
 import game.wedding_live as WL
 import live.wedding as w
-WL.GUEST_STEP = 15
+WL.MINUTE_SECS = 10
+WL.PARTY_SECS = 100
+WL.PARTY_MINUTES = 10
 WL.VISIBLE = 4
 w.REFRESH = 2.0
 w.CLOSE_AFTER = 90.0
@@ -56,12 +62,15 @@ def servers(tmp: str):
     env = dict(os.environ, QUIET='1', PUSH_DISABLED='1', LIVE_URL=f'ws://127.0.0.1:{lp}/live')
     for k in ('MNL_DEV', 'MNL_CAREERS', 'LLM_API_KEY', 'DATABASE_URL'):
         env.pop(k, None)
-    game = subprocess.Popen([sys.executable, 'server.py', '--port', str(gp), '--db', db], cwd=ROOT, env=env,
+    py = os.environ.get('MNL_PY') or sys.executable
+    if os.environ.get('MNL_PYTHONPATH'):   # the servers' own library path (e.g. a vendored websockets for MNL_PY)
+        env['PYTHONPATH'] = os.environ['MNL_PYTHONPATH']
+    game = subprocess.Popen([py, 'server.py', '--port', str(gp), '--db', db], cwd=ROOT, env=env,
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     wait_http(f'http://127.0.0.1:{gp}/api/health')
     lenv = dict(env, LIVE_CHAT='1', LIVE_STREET='1', LIVE_WEDDING='1', LIVE_ORIGINS=f'http://127.0.0.1:{gp}', LIVE_PORT=str(lp))
     log = open(os.path.join(tmp, 'live.log'), 'w')
-    live = subprocess.Popen([sys.executable, '-c', LIVE_DEV, '--db', db], cwd=ROOT, env=lenv, stdout=log, stderr=log)
+    live = subprocess.Popen([py, '-c', LIVE_DEV, '--db', db], cwd=ROOT, env=lenv, stdout=log, stderr=log)
     wait_http(f'http://127.0.0.1:{lp}/live/health')
     try:
         yield f'http://127.0.0.1:{gp}', db, os.path.join(tmp, 'live.log')
@@ -142,6 +151,16 @@ async def run(shots: Path) -> list:
         if not cond:
             problems.append('check: ' + what)
 
+    async def dom(p, selector, timeout=15):
+        """The text of an element once it is there (polled: the game's CSP forbids wait_for_function)."""
+        end = time.monotonic() + timeout
+        while time.monotonic() < end:
+            text = await p.page.evaluate('(q) => document.querySelector(q)?.innerText || ""', selector)
+            if text:
+                return text
+            await asyncio.sleep(0.2)
+        return ''
+
     async def shot(p, name, wait=450):
         await p.page.wait_for_timeout(wait)
         await p.page.screenshot(path=str(shots / f'{name}.png'))
@@ -161,7 +180,7 @@ async def run(shots: Path) -> list:
             await groom.api('/api/marriage/friend_respond', dict(id=rid, answer='accept'))
             sql(db, "UPDATE stat_births SET day='2026-01-01'")          # long-time players: counted guests
             store = Store(db, story=True)
-            for p, name in ((bride, 'lananh_w'), (groom, 'minhtu_w')):    # pocket money through the game's own gift path
+            for p, name in ((bride, 'lananh_w'), (groom, 'minhtu_w'), (guests[0], 'havy_w'), (guests[1], 'bao_w')):   # pocket money (the game's gift path)
                 sid = sql(db, 'SELECT sid FROM accounts WHERE username=?', name)[0][0]
                 system_gift.grant(store, sid, 400, 'Quà cưới thử', 'Tiền để cưới (thử nghiệm).', f'wedtest-{name}')
                 # a couple who has lived in the phố a while (test database only): past a new player's quiet first day
@@ -171,7 +190,7 @@ async def run(shots: Path) -> list:
                 await p.page.reload()
                 await p.page.wait_for_selector('#app:not([hidden])', timeout=30000)
                 await p.chat_button()
-            for p in (bride, groom):   # their pocket money arrives as the private gift card: "Nhận quà"
+            for p in (bride, groom, guests[0], guests[1]):   # their pocket money arrives as the private gift card: "Nhận quà"
                 await cards(p)
             # ---- engaged, then the planner with a real date and time
             await bride.api('/api/marriage/ring_buy', dict(tier='bac'))
@@ -200,6 +219,12 @@ async def run(shots: Path) -> list:
             await bride.page.click('[data-tab=home]')
             await bride.page.wait_for_selector('.mr-countdown', timeout=10000)
             await shot(bride, '02-booked-card')
+            await bride.page.click('[data-mr=pinvite]')
+            await bride.page.wait_for_selector('.mr-flash', timeout=10000)
+            flash = await bride.page.inner_text('.mr-flash')
+            check('Miễn phí' in flash or 'mời' in flash, f'"Mời khách" is free ({flash!r})')
+            check(bool(sql(db, "SELECT 1 FROM news WHERE kind='invite'")), 'the phố gets the invitation on the news line')
+            await shot(bride, '02b-invited')
             await bride.page.keyboard.press('Escape')
             # ---- the party is now (test database only): opens at once, starts in ~70 s
             wid = w['id']
@@ -231,6 +256,8 @@ async def run(shots: Path) -> list:
             s = await until(bride, "return s.people.some(q=>q.said);", 'the bride sees the cheer')
             said = next(q['said'] for q in s['people'] if q['said'])
             check('hạnh phúc' in said and '0912' not in said, f'a bubble, phone masked ({said!r})')
+            board = await dom(bride, '.walk-sheet .wk-wishes:not([hidden])')
+            check('hạnh phúc' in board, f'the cheer stays on the "Lời chúc" board ({board!r})')
             await g2.page.click('.walk-sheet [data-wk=emotes]')
             await g2.page.click('.walk-sheet [data-wk=emote][data-e=heart]')
             await until(groom, "return s.people.some(q=>q.emote==='❤️');", 'the groom sees ❤️')
@@ -243,20 +270,43 @@ async def run(shots: Path) -> list:
                 await asyncio.sleep(0.3)
             check(bool(sql(db, 'SELECT 1 FROM wedding_photos WHERE image IS NOT NULL')), 'the group photo is uploaded for the couple')
             # ---- the ceremony starts, guests earn their steps
-            await bride.page.wait_for_function("() => document.querySelector('.walk-sheet .wk-toast:not([hidden])')?.innerText.includes('Lễ cưới')", timeout=80000)
+            end = time.monotonic() + 80    # (no wait_for_function: the game's CSP forbids eval)
+            while time.monotonic() < end and 'Lễ cưới' not in (await bride.page.evaluate("() => document.querySelector('.walk-sheet .wk-toast:not([hidden])')?.innerText || ''")):
+                await asyncio.sleep(0.2)
             await shot(g2, '07-ceremony-starts', wait=300)
+            recorded = sql(db, 'SELECT COUNT(*), SUM(ok) FROM wedding_guests WHERE wedding=?', wid)[0]
+            check(recorded == (3, 2), f'every guest recorded on entry, the watcher without an account not counted ({recorded})')
             rows = []
             end = time.monotonic() + 30
-            while time.monotonic() < end and len({r[0] for r in rows}) < 2:
-                rows = sql(db, "SELECT sid FROM live_effects WHERE id LIKE 'wedg:%'")
+            while time.monotonic() < end and len({r[0] for r in rows}) < 4:
+                rows = sql(db, "SELECT sid FROM live_effects WHERE id LIKE 'wedm:%'")
                 await asyncio.sleep(0.5)
-            check(len({r[0] for r in rows}) == 2, f'the two guests with accounts earned +15 xu ({len(rows)} rows), the watcher without one nothing')
-            await shot(g1, '08-guest-xu')
+            check(len({r[0] for r in rows}) == 4, f'the couple and the two guests with accounts earn +20 xu a minute ({len(rows)} rows), the watcher nothing')
+            await shot(g1, '08-guest-xu', wait=900)
+            # ---- 🧧 a red envelope for the couple, on everyone's wishes board
+            check(not await bride.page.query_selector('.walk-sheet [data-wk=env]'), 'the couple do not give themselves an envelope')
+            await g1.page.click('.walk-sheet [data-wk=env]')
+            await g1.page.click('.walk-sheet [data-wk=envAmt][data-n="50"]')
+            await g1.page.click('.walk-sheet [data-wk=envWish][data-n="1"]')
+            await shot(g1, '08c-envelope-picker')
+            await g1.page.click('.walk-sheet [data-wk=envSend]')
+            env = await dom(bride, '.walk-sheet .wk-wish.env')
+            check('50 xu' in env and 'Bách niên' in env, f'the room sees the envelope and the wish ({env!r})')
+            halves = sql(db, "SELECT amount FROM live_effects WHERE id LIKE 'wedenv:%'")
+            check(halves == [(25,), (25,)], f'the couple get half each ({halves})')
+            await shot(bride, '08d-envelope-board', wait=600)
+            await bride.page.click('.walk-sheet .wk-wish-head')
+            await shot(bride, '08e-wishes-open')
+            await bride.page.click('.walk-sheet .wk-wish-head')
+            lion = start + 58 - time.time()
+            if lion > 0:
+                await asyncio.sleep(lion)
+            await shot(g2, '08b-lion-dance-kids', wait=0)
             await g1.page.evaluate("document.documentElement.dataset.theme='dem'")
             await shot(g1, '09-party-dark')
             await g1.page.evaluate("document.documentElement.dataset.theme='kem'")
             # ---- the end: the couple's total, the end card
-            sql(db, 'UPDATE wedding_parties SET at=? WHERE wedding=?', time.time() - 1800 + 4, wid)
+            sql(db, 'UPDATE wedding_parties SET at=? WHERE wedding=?', time.time() - 100 + 4, wid)
             await bride.page.wait_for_selector('.walk-sheet .wk-end:not([hidden])', timeout=20000)
             await g2.page.wait_for_selector('.walk-sheet .wk-end:not([hidden])', timeout=20000)
             await shot(g2, '10-party-end')
@@ -267,7 +317,7 @@ async def run(shots: Path) -> list:
             party = sql(db, 'SELECT status, guests FROM wedding_parties WHERE wedding=?', wid)
             check(party == [('done', 2)], f'settled once with 2 counted guests ({party})')
             host = sql(db, "SELECT amount FROM live_effects WHERE id LIKE 'wedhost:%' AND kind='coins'")
-            check(host == [(60,), (60,)], f'each spouse 2 × 30 xu ({host})')
+            check(host == [(30,), (30,)], f'each spouse 2 × 15 xu ({host})')
             await cards(bride, 2.0)
             await bride.page.keyboard.press('Escape')
             await bride.page.wait_for_timeout(500)
@@ -285,6 +335,31 @@ async def run(shots: Path) -> list:
             top = await g1.page.inner_text('.lb-list')
             check('Hà Vy' in top and 'Bảo' in top and top.count('đám cưới') == 2, f'Xếp hạng › Khách mời: the two counted guests ({top!r})')
             await shot(g1, '13-race-board')
+            # ---- an older wedding without a date and time: "Tổ chức tiệc cưới", free
+            await g1.page.keyboard.press('Escape')
+            await g1.api('/api/marriage/friend_request', dict(username='bao_w'))
+            rid = (await g2.api('/api/marriage'))['friends']['incoming'][0]['id']
+            await g2.api('/api/marriage/friend_respond', dict(id=rid, answer='accept'))
+            await g1.api('/api/marriage/ring_buy', dict(tier='bac'))
+            ring = [r for r in (await g1.api('/api/marriage'))['rings'] if r['status'] == 'owned'][0]['id']
+            code = (await g2.api('/api/marriage'))['me']['code']
+            await g1.api('/api/marriage/propose', dict(code=code, ring=ring, message='hem', announce=True))
+            pid = (await g2.api('/api/marriage'))['incoming'][0]['id']
+            await g2.api('/api/marriage/respond', dict(id=pid, answer='accept', announce=True))
+            plan = dict(venue='home', tables=5, menu='binh_dan', ceremonies={}, extras=['cards'], days=3)   # no `at`: an older client
+            await g1.api('/api/marriage/plan', dict(plan=plan, mine=50, announce=True))
+            w2 = (await g2.api('/api/marriage'))['wedding']
+            await g2.api('/api/marriage/confirm', dict(id=w2['id'], version=w2['version'], announce=True))
+            await g1.page.wait_for_timeout(600)
+            await hub(g1, 'marriage', 'ban')
+            await g1.page.wait_for_selector('[data-mr=party]', timeout=10000)
+            await g1.page.evaluate("document.querySelector('[data-mr=party]').scrollIntoView({block:'center'})")
+            await shot(g1, '14-party-pick-time')
+            await g1.page.click('[data-mr=party]')
+            await g1.page.wait_for_selector('[data-mr=pinvite]', timeout=10000)
+            await shot(g1, '15-party-booked')
+            party2 = sql(db, "SELECT status FROM wedding_parties WHERE wedding=?", w2['id'])
+            check(party2 == [('booked',)], f'an older wedding books its party for free ({party2})')
             await browser.close()
         print(Path(live_log).read_text()[-800:], file=sys.stderr)
     for line in checks:

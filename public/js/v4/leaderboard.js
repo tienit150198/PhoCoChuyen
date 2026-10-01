@@ -125,7 +125,7 @@ function pickerHTML(api,board,more){
   return `<nav class="lb-picker${more?' open':''}" aria-label="Chọn bảng">${chip('all','🌟','Tất cả')}${mine.map(one).join('')}${more?rest.map(one).join(''):''}${toggle}</nav>`;
 }
 
-/* ---- 💍 "Khách mời của tuần" (GET /api/wedding/race, game/wedding_live.py): weddings attended ≥ 5 minutes this week ---- */
+/* ---- 💍 "Khách mời của tuần" (GET /api/wedding/race, game/wedding_live.py): weddings attended (at least a minute of the party) this week ---- */
 const wedOn=()=>Boolean(live.flags?.wedding&&live.welcomed);
 function loadWed(env,force=false){
   const {api,ui}=env,s=store(ui),hit=s.data.__wed;
@@ -145,7 +145,7 @@ function wedBody(env){
   const prizes=`<p class="lb-rule">🥇 ${fmt(d.prizes[0].xu)} xu + ${esc(d.prizes[0].title)} · 🥈🥉 ${fmt(d.prizes[1].xu)} xu + ${esc(d.prizes[1].title)}. Bằng nhau thì ai đạt trước đứng trên. Còn ${left} ngày.</p>`;
   const mine=d.mine!=null?`<p class="lb-me-note">Tuần này bạn đã dự ${fmt(d.mine)} đám cưới.</p>`:'';
   const last=d.last?.winners?.length?`<h3 class="space-top">Tuần trước</h3><ol class="lb-list">${d.last.winners.map(w=>`<li class="lb-row${w.me?' me':''}"><span class="lb-rank"><span class="lb-medal" aria-hidden="true">${MEDALS[w.rank-1]}</span></span><span class="lb-who"><span class="lb-name-line"><b class="lb-name" data-no-translate>${esc(w.name)}</b></span><small>${esc(w.title)}</small></span><span class="lb-score"><b>${fmt(w.n)}</b><small>đám cưới</small></span></li>`).join('')}</ol>`:'';
-  return prizes+mine+(d.top.length?`<ol class="lb-list">${d.top.map(row).join('')}</ol>`:`<div class="empty lb-empty">${icon('award',30)}<h3>Tuần này chưa ai dự cưới</h3><p class="muted small">Ở lại một đám cưới 5 phút để có tên.</p></div>`)+last;
+  return prizes+mine+(d.top.length?`<ol class="lb-list">${d.top.map(row).join('')}</ol>`:`<div class="empty lb-empty">${icon('award',30)}<h3>Tuần này chưa ai dự cưới</h3><p class="muted small">Dự một đám cưới để có tên.</p></div>`)+last;
 }
 
 export function leaderboardView(env){

@@ -123,8 +123,8 @@ EXTRAS = [
     dict(id='band', emoji='🎸', name='Ban nhạc & ca sĩ', price=70, mood=2, desc='Ba nhạc công và một ca sĩ hát suốt tiệc.'),
     dict(id='car', emoji='🚗', name='Xe hoa', price=45, mood=1, desc='Xe kết hoa tươi rước dâu, có tài xế.'),
     dict(id='flowers', emoji='💐', name='Trang trí hoa', price=60, mood=1, desc='Cổng hoa, bàn gallery, hoa bàn tiệc.'),
-    dict(id='cards', emoji='💌', name='Thiệp cưới', per10=3, mood=1, attend=6,
-         desc='0,3 xu mỗi khách, tính theo số ghế. Mời bằng thiệp thì khách đến đông hơn.'),
+    dict(id='cards', emoji='💌', name='Thiệp cưới', price=0, mood=1, attend=6,   # mời khách không mất tiền (owner, 01/10)
+         desc='Miễn phí. Mời bằng thiệp thì khách đến đông hơn.'),
     dict(id='confetti', emoji='🎉', name='Pháo giấy', price=15, mood=1, desc='Pháo kim tuyến lúc cô dâu chú rể bước vào.'),
     dict(id='favors', emoji='🎁', name='Quà cảm ơn khách', per10=8, mood=2,
          desc='0,8 xu mỗi khách: hộp kẹo và túi trà nhỏ in tên hai bạn.'),
