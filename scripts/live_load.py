@@ -86,9 +86,15 @@ def free_port() -> int:
 
 
 # ---------------------------------------------------------------- 1. players in a throwaway database
+def sid_of(token: str) -> str:
+    """The save behind a load player's cookie (an account signed in on this device: logins.token = sha256(cookie))."""
+    return hashlib.sha256(('acct:' + token).encode()).hexdigest()
+
+
 def make_players(n: int, db_url: str | None, db_path: str | None, friends_every: int) -> list[str]:
-    """N guest saves with names, born before today; every `friends_every`-th pair are friends. Returns their
-    cookie tokens (sha256(token) = sid, like an anonymous player)."""
+    """N accounts (1.0.1: only accounts post, date and count at weddings) with named saves born before today, each
+    signed in on its own device (a `logins` row); every `friends_every`-th pair are friends. Returns their cookie
+    tokens (sid_of(token) is the save)."""
     if db_url:
         os.environ['DATABASE_URL'] = db_url
     from game import admin_stats, push, social
@@ -98,7 +104,7 @@ def make_players(n: int, db_url: str | None, db_path: str | None, friends_every:
     push.ensure(store)
     admin_stats.ensure(store)
     tokens = [secrets.token_hex(32) for _ in range(n)]
-    sids = [hashlib.sha256(t.encode()).hexdigest() for t in tokens]
+    sids = [sid_of(tok) for tok in tokens]
     t = time.time()
 
     def run(db):
@@ -106,6 +112,8 @@ def make_players(n: int, db_url: str | None, db_path: str | None, friends_every:
             db.execute("INSERT INTO sessions(sid, csrf, state) VALUES(?, ?, '{}')", (sid, secrets.token_hex(8)))
             db.execute('INSERT INTO leaderboard_players(sid, name, updated) VALUES(?, ?, ?)', (sid, f'Thử tải {i}', t))
             db.execute("INSERT INTO stat_births(sid, day) VALUES(?, '2026-01-01') ON CONFLICT(sid) DO UPDATE SET day=excluded.day", (sid,))
+            db.execute('INSERT INTO accounts(username, display, pw, sid) VALUES(?, ?, ?, ?)', (f'load_{i}_{sid[:8]}', f'Thử tải {i}', 'x', sid))
+            db.execute('INSERT INTO logins(token, sid, csrf) VALUES(?, ?, ?)', (hashlib.sha256(tokens[i].encode()).hexdigest(), sid, 'c'))
         for i in range(0, n - 1, max(2, friends_every)):
             a, b = sids[i], sids[i + 1]
             db.execute('INSERT INTO friends(sid, friend, since) VALUES(?, ?, ?)', (a, b, t))
@@ -127,7 +135,7 @@ def make_weddings(tokens: list, n: int, per: int, db_url: str | None, db_path: s
 
     def run(db):
         for k in range(n):
-            a, b = (hashlib.sha256(x.encode()).hexdigest() for x in tokens[k * (per + 2):k * (per + 2) + 2])
+            a, b = (sid_of(x) for x in tokens[k * (per + 2):k * (per + 2) + 2])
             wid = 900000 + k
             db.execute("INSERT INTO couples(id, a, b, status, since) VALUES(?, ?, ?, 'engaged', ?)", (wid, a, b, t))
             db.execute("INSERT INTO wedding_parties(wedding, couple, a, b, at, status, created) VALUES(?, ?, ?, ?, ?, 'booked', ?)", (wid, wid, a, b, t + 60, t))
@@ -178,8 +186,7 @@ def client_proc(idx, url, origin, items, every, churn_per_s, duration, ramp_per_
 
 
 def pid_of_token(token: str) -> str:
-    sid = hashlib.sha256(token.encode()).hexdigest()
-    return hashlib.sha256(('pid:' + sid).encode()).hexdigest()[:16]
+    return hashlib.sha256(('pid:' + sid_of(token)).encode()).hexdigest()[:16]
 
 
 async def _clients(idx, url, origin, items, every, churn_per_s, duration, ramp_per_s, move_every, say_every, q):

@@ -106,3 +106,19 @@ Interpretations (say so if the owner meant otherwise):
    `sudo -u mnl env $(cat /etc/mot-ngay-lam-nghe/pg.env | xargs) python3 scripts/wedding_week.py --dry-run`.
 5. Load test with weddings on the scratch database first:
    `PYTHONPATH=…/pyvendor python3 scripts/live_load.py --db-url postgresql://…/mnl_loadtest --conns 2000 --weddings 3 --guests 60`.
+
+## Measured (local, Apple M-series, client and service on one machine)
+
+Combined, 120 s steady, 2,400 sockets: 3 weddings × 60 guests + the couples (186), 500 strollers in 25 instances,
+1,314 in Cả phố (5 messages/s), 200 café dates at once (400 players, `--date-speed 5`); every player an account.
+
+| | SQLite | PostgreSQL 16 |
+|---|---|---|
+| wedding move delivery p50 / p95 / p99 | 51.9 / 97.6 / 103.1 ms | 51.7 / 98.2 / 104.4 ms |
+| stroll move delivery p95 | 94.9 ms | 95.2 ms |
+| Cả phố delivery p95 | 15.9 ms | 16.8 ms |
+| dates finished (mutual) · answer p95 · bench wait p95 | 1,275 (487) · 3.4 ms · 123 ms | 1,281 (458) · 3.5 ms · 134 ms |
+| live process CPU avg / peak (one core) · RSS | 26.8 % / 31.8 % · 101 MB | 26.1 % / 30.8 % · 98 MB |
+
+Moves are throttled to 10 room diffs per second by design (p95 ≈ 100 ms). The only errors are the six watchers
+outside the gates trying to move or talk (`not_in`), as intended.
