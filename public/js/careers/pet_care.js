@@ -3,7 +3,7 @@
  *  Care loop: regulars' cards and trust, a daily care card per boarder, vaccine/deworming reminders, adoption follow-ups. */
 import {reqList,fold} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,goAttrs,highlight,stepLine} from '../v4/guide.js';
-import {restockFor} from '../v4/restock.js';
+import {restockFor,restockGo} from '../v4/restock.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import * as SF from './stage_fold.js';
 const JOB_ICON={groom:'🛁',board:'🏠',feed:'🥣',adopt:'🏡'};
@@ -21,6 +21,22 @@ const isGen=t=>!!t.gen;
 const cmdAttr=(x,command,payload)=>`data-command="${x.esc(command)}" data-payload="${x.esc(JSON.stringify(payload))}"`;
 const deskOpen=x=>!!x.room.data?.desk?.ev;
 const pickup=(t,x)=>(x.room.day||t.day)+(t.needs?.nights||0);
+/* ---------------------------------------------------------------- supplies a step takes (the server's own counts) */
+/** What the shelf lacks for `need` ({item: qty}, as the server's need()/take() asks): [{id, need, have}], [] when enough. */
+const lacks=(x,need)=>Object.entries(need).filter(([k,q])=>q>0&&x.stock(k)<q).map(([id,q])=>({id,need:q,have:x.stock(id)}));
+/** The control that replaces a step the shelf cannot supply: "📦 Nhập khăn tắm" → the stock room
+ * (an arrived crate is opened first, an order on the way shows when it comes). A guide step `go`. */
+function lackGo(x,short,task,count=false){
+  const g=restockGo(x.room,short,{task}),s=short[0],name=x.esc(itemInfo(x,s.id).name.toLowerCase());
+  return {...g,label:g.full||g.coming?g.label:g.ready?`📦 Mở thùng ${name} lên kệ`:`📦 Nhập ${name}${count?` · thiếu ${s.need-s.have}`:''}`};
+}
+// The bottom button keeps to one line ("📦 Nhập khăn tắm thú cưng"); the button at the step also says how many.
+const lackBtn=(x,short,task,style='small primary')=>{const g=lackGo(x,short,task,true);return x.button(g.label,g.act,g.data||{},style+' pc-lack');};
+/** Towels the dryer step takes first (pc_dry: 1 for a cat or a pet of 10 kg or less by what is known, else 2; once). */
+const towelNeed=t=>{const n=t.needs,kg=t.facts?.kg??n.kg_said;return t.g.towels?0:n.species==='cat'||kg<=10?1:2;};
+const dryLack=(t,x)=>lacks(x,{towel:towelNeed(t)});
+/** pc_bath: one bottle of the chosen shampoo (the owner's own needs none) and one conditioner when ticked. */
+const bathLack=(t,x,v,cond)=>{const sh=x.cc.shampoos.find(s=>s.id===v.shampoo);return sh?lacks(x,{...(sh.item?{[sh.item]:1}:{}),...(cond?{conditioner:1}:{})}):[];};
 
 /* ---------------------------------------------------------------- chart maths (the published game rule, shown to the player) */
 function stageOf(x,species,months){if(months<12)return'young';return months>=(species==='dog'?96:120)?'senior':'adult';}
@@ -285,9 +301,10 @@ function rinseBox(t,x){
 }
 function dryBox(t,x){
   const n=t.needs,g=t.g,heat=g.heat||'warm',need=dryNeed(t,x,heat),off=g.stopped||g.bolt;
-  const label=g.dry?'Đang sấy…':`Khô ${Math.min(100,g.dry_pct)}%`;
+  const label=g.dry?'Đang sấy…':`Khô ${Math.min(100,g.dry_pct)}%`,short=g.dry?[]:dryLack(t,x);
+  // Out of towels: the dryer cannot start (the pet is towelled first), so the row offers the towels.
   return `<h5>💨 Lau & sấy</h5>${timerBar('dry',g.dry,g.dry_pct,100,x.cc.dry_over*100,100/need,label)}
-    <div class="row wrap pc-heats">${g.dry?x.cmd('⏹️ Tắt máy sấy','pc_dry',{task:t.id,mode:'stop'},'primary'):['cool','warm','hot'].map(h=>x.cmd(HEAT[h],'pc_dry',{task:t.id,mode:'start',heat:h},(h==='hot'?'ghost small pc-no':'ghost small')+' pc-heat-'+h,!g.shampoo||!g.rinse_s||!!g.rinse||off)).join('')}</div>
+    <div class="row wrap pc-heats">${g.dry?x.cmd('⏹️ Tắt máy sấy','pc_dry',{task:t.id,mode:'stop'},'primary'):['cool','warm','hot'].map(h=>x.cmd(HEAT[h],'pc_dry',{task:t.id,mode:'start',heat:h},(h==='hot'?'ghost small pc-no':'ghost small')+' pc-heat-'+h,!g.shampoo||!g.rinse_s||!!g.rinse||off||(short.length&&h!=='hot'))).join('')+(short.length?lackBtn(x,short,t.id):'')}</div>
     <p class="small muted">Lông ${n.coat==='long'?'dài':'ngắn'}: khoảng ${Math.round(need*10)/10} giây ở nấc ${heat==='cool'?'mát':'ấm'}${n.humid?' (trời ẩm, lâu gấp rưỡi)':''}.</p>`;
 }
 function groomJob(t,x,now=new Set()){
@@ -315,7 +332,7 @@ function groomJob(t,x,now=new Set()){
         <div class="pc-thermo ${zone}"><span>🌡️</span>${stepBtn(x,'−','temp',-1,30,45)}<b>${temp}°C</b>${stepBtn(x,'+','temp',1,30,45)}
           <small>${zone==='ok'?'✓ Ấm vừa':zone==='cold'?'🥶 Lạnh':zone==='hot'?'🥵 Hơi nóng':'⛔ BỎNG!'} · chuẩn ${tp.low}–${tp.high}°C</small></div>
         <div class="row wrap">${condLocked?`<span class="tag">🔒 Dầu xả mở ở cấp ${condItem.unlock}</span>`:setBtn(x,`✨ Dầu xả (${x.stock('conditioner')})`,'cond',!v.cond,v.cond)}
-          ${x.cmd('🛁 Tắm','pc_bath',{task:t.id,shampoo:v.shampoo,temp:v.temp,cond:!!v.cond&&!condLocked},st(t,x,'bath'),!v.shampoo||off||busy)}</div>`;
+          ${(short=>short.length?x.cmd('🛁 Tắm','pc_bath',{},'ghost',true)+lackBtn(x,short,t.id):x.cmd('🛁 Tắm','pc_bath',{task:t.id,shampoo:v.shampoo,temp:v.temp,cond:!!v.cond&&!condLocked},st(t,x,'bath'),!v.shampoo||off||busy))(bathLack(t,x,v,!!v.cond&&!condLocked))}</div>`;
     }
     // Before the bath only the bath controls; after it the rinse and dry bars (the part stays open while they run).
     const bathDone=g.shampoo!=null&&g.dry_pct>=100&&!busy;
@@ -330,7 +347,7 @@ function groomJob(t,x,now=new Set()){
   }
   if(sv.includes('ears')){
     html+=part(x,t,now,'ears','👂 Vệ sinh tai',g.ears?`<p class="small">✓ ${g.ears==='clean'?'Đã lau tai':'Bỏ qua lau tai'}.</p>`
-      :`<div class="row wrap pc-ears-opts">${x.cmd(`☁️ Lau tai (bông ${x.stock('cotton')})`,'pc_ears',{task:t.id,how:'clean'},'ghost pc-ears-clean',wet||busy||off)}${x.cmd('🙅 Bỏ qua — tai có vấn đề','pc_ears',{task:t.id,how:'skip'},'ghost pc-ears-skip',wet||busy||g.bolt)}</div>
+      :`<div class="row wrap pc-ears-opts">${x.cmd(`☁️ Lau tai (bông ${x.stock('cotton')})`,'pc_ears',{task:t.id,how:'clean'},'ghost pc-ears-clean',wet||busy||off||x.stock('cotton')<2)}${x.stock('cotton')<2&&!wet&&!busy&&!off?lackBtn(x,lacks(x,{cotton:2}),t.id):''}${x.cmd('🙅 Bỏ qua — tai có vấn đề','pc_ears',{task:t.id,how:'skip'},'ghost pc-ears-skip',wet||busy||g.bolt)}</div>
        <p class="small muted">🔴 Tai đỏ, hôi: bỏ qua, báo chủ đi thú y.</p>`,
       {done:!!g.ears,sum:g.ears?(g.ears==='clean'?'đã lau tai':'bỏ qua lau tai'):''});
   }
@@ -594,13 +611,14 @@ function groomGuide(t,x){
       work.push({stage:'bath',ok:bathed||(v.temp>=tp.low&&v.temp<=tp.high)||(v.temp>=tp.burn?false:null),label:`Pha nước ấm ${tp.low}–${tp.high}°C`,note:bathed?`${g.temp}°C`:`đang ${v.temp}°C`,
         go:bathed?null:first?{act:'car:temp',data:{val:tp.low+1},label:`🌡️ Pha nước ${tp.low+1}°C`}:{sel:'.pc-thermo',label:`🌡️ Chỉnh nước ${tp.low}–${tp.high}°C`}});
       const condItem=itemInfo(x,'conditioner'),cond=!!v.cond&&(x.room.level||1)>=(condItem.unlock||1);
-      work.push({stage:'bath',ok:bathed||null,label:'Tắm cho bé',go:bathed||!v.shampoo||off?null:{cmd:'pc_bath',payload:{task:id,shampoo:v.shampoo,temp:v.temp,cond},label:'🛁 Tắm'}});
+      const bl=bathed||!v.shampoo?[]:bathLack(t,x,v,cond);
+      work.push({stage:'bath',ok:bathed||null,label:'Tắm cho bé',go:bathed||!v.shampoo||off?null:bl.length?lackGo(x,bl,id):{cmd:'pc_bath',payload:{task:id,shampoo:v.shampoo,temp:v.temp,cond},label:'🛁 Tắm'}});
       const rinsed=g.rinse_s>=x.cc.rinse_min;
       if(!g.rinse)work.push({stage:'bath',ok:rinsed?true:g.dry_pct>0||g.dry?false:null,label:`Xả sạch bọt (${x.cc.rinse_min} giây)`,note:g.rinse_s?`${Number(g.rinse_s).toFixed(1)} giây`:'',
         go:!rinsed&&bathed&&!g.dry&&!g.dry_pct?{cmd:'pc_rinse',payload:{task:id,mode:'start'},label:g.rinse_s?'🚿 Mở vòi xả thêm':'🚿 Mở vòi xả'}:null});
       const heat=rightHeat(t);
       if(!g.dry)work.push({stage:'bath',ok:dried||null,label:'Sấy khô tới chân lông',note:g.dry_pct?`${Math.min(100,g.dry_pct)}%`:'',
-        go:dried||!bathed||!(g.rinse_s>0)||g.rinse?null:first?{cmd:'pc_dry',payload:{task:id,mode:'start',heat},label:`💨 Bật máy sấy nấc ${heat==='cool'?'mát':'ấm'}`}:{sel:'.pc-heats',label:'💨 Chọn nấc sấy'}});
+        go:dried||!bathed||!(g.rinse_s>0)||g.rinse?null:dryLack(t,x).length?lackGo(x,dryLack(t,x),id):first?{cmd:'pc_dry',payload:{task:id,mode:'start',heat},label:`💨 Bật máy sấy nấc ${heat==='cool'?'mát':'ấm'}`}:{sel:'.pc-heats',label:'💨 Chọn nấc sấy'}});
     }
     const hands=sv.includes('nails')||(sv.includes('ears')&&rightEars(t)==='clean'&&g.ears!=='skip');
     if(hands&&n.species==='dog'&&knownBitey(t)){
@@ -618,7 +636,7 @@ function groomGuide(t,x){
     if(sv.includes('ears')){
       const how=rightEars(t);
       work.push({stage:'ears',ok:g.ears?true:null,label:'Vệ sinh tai',note:g.ears==='skip'?'bỏ qua':'',
-        go:g.ears||wet||off?null:first?{cmd:'pc_ears',payload:{task:id,how},label:how==='skip'?'🙅 Bỏ qua lau tai · tai có vấn đề':'☁️ Lau tai'}:{sel:'.pc-ears-opts',label:'👂 Lau tai hay bỏ qua?'}});
+        go:g.ears||wet||off?null:how==='clean'&&x.stock('cotton')<2?lackGo(x,lacks(x,{cotton:2}),id):first?{cmd:'pc_ears',payload:{task:id,how},label:how==='skip'?'🙅 Bỏ qua lau tai · tai có vấn đề':'☁️ Lau tai'}:{sel:'.pc-ears-opts',label:'👂 Lau tai hay bỏ qua?'}});
     }
     // Calm the pet before the next thing that upsets it (never while the tap or the dryer runs);
     // before the nails (the scariest step) until it is relaxed again.

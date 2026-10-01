@@ -139,6 +139,45 @@ class ClosingTime(unittest.TestCase):
         j.solve(before[0])  # the customer already inside is served to the end
         self.assertEqual(j.get(before[0])['status'], 'completed')
 
+    def test_view_gate_predicts_the_press(self):
+        """room.more_gate (what the dock offers) says None exactly when `more_work` would take a customer: the
+        press ticks the clock first, so one step before closing the gate already reads 'closing'."""
+        for career in ('grocery', 'mother_baby', 'pet_care', 'customer_care', 'milk_tea'):
+            if career in ('grocery', 'pet_care') and career not in PLUGINS:
+                continue
+            j = Journey(career)
+            for _ in range(60):
+                gate = public_state(j.state)['careers'][career]['more_gate']
+                try:
+                    apply_action(copy.deepcopy(j.state), career, 'more_work', {})
+                    took = True
+                except GameError as e:
+                    took = False
+                    self.assertIsNotNone(gate, (career, str(e)))
+                self.assertEqual(gate is None, took, (career, gate, view(j)['time']))
+                self.assertNotIn('error', gate or {})
+                j.act('advance')
+
+    def test_gate_reasons(self):
+        j = Journey('grocery' if 'grocery' in PLUGINS else 'mother_baby')
+        g = lambda: public_state(j.state)['careers'][j.career]['more_gate']
+        self.assertIsNone(g())
+        while sum(t['status'] not in ('completed', 'referred', 'cancelled') for t in j.c['tasks']) < 4:
+            j.act('more_work')
+        self.assertEqual(g()['why'], 'full')
+        self.assertEqual(g()['active'], 4)
+        for t in j.c['tasks']:
+            t['status'] = 'completed'
+        while len([t for t in j.c['tasks'] if t['day'] == j.c['day']]) < 12 and g() is None:
+            j.act('more_work')
+            for t in j.c['tasks']:
+                t['status'] = 'completed'
+        self.assertIn(g()['why'], ('cap', 'closing'))
+        run_to_close(j)
+        self.assertEqual(g()['why'], 'closing')
+        j.act('end_day')
+        self.assertIsNone(g())  # closed: the dock offers "Chuẩn bị ngày mới", not a gate
+
     def test_walk_ins_stop_at_closing(self):
         if 'restaurant' not in PLUGINS:
             self.skipTest('restaurant filtered out')

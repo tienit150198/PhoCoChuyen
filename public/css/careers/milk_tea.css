@@ -383,3 +383,5 @@ html.reduce-motion .mt-event{animation:none}
 @media (prefers-reduced-motion:reduce){.mt-switch i,.mt-switch i:after{transition:none}}
 .career-job.mt .fk-next .warn{color:var(--warn)}
 .career-job.mt .fk-next .now{text-decoration:underline;text-underline-offset:3px}
+/* Bảng giá: the band life_price accepts, under the tea's name (milk_tea.js priceTab). */
+.price-editor .mt-price-band{display:block;font-size:.82rem;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}

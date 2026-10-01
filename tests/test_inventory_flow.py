@@ -293,6 +293,22 @@ class InventoryFlow(unittest.TestCase):
         j.act('inv_receive', order=old['id'], count=old['actual'])
         validate_state(j.state)
 
+    def test_shipments_cap_is_shown_before_it_refuses(self):
+        # 01/10 logs: "Đang có nhiều đơn chờ giao" ×210. The stock screens read the cap from the view
+        # (transit_cap) and count the orders on the way, so the order buttons turn into "receive first".
+        j = self.j
+        cap = public_inv(j)['transit_cap']
+        set_money(j.c, 5000)
+        open_ids = [i['id'] for i in inventory.catalogue('restaurant') if i.get('unlock', 1) <= kit.level(j.c)]
+        for k in range(cap):
+            self.order(open_ids[k % len(open_ids)], 1)
+        self.assertEqual(sum(o['status'] == 'in_transit' for o in public_inv(j)['orders']), cap)
+        before = copy.deepcopy(j.state)
+        with self.assertRaises(GameError) as err:
+            self.order(open_ids[0], 1)
+        self.assertIn('nhiều đơn chờ giao', str(err.exception))
+        self.assertEqual(j.state, before)
+
     def test_locked_items_cannot_be_ordered(self):
         j = self.j
         locked = [i for i in inventory.catalogue('restaurant') if i.get('unlock', 1) > kit.level(j.c)]

@@ -300,6 +300,36 @@ class HomestayTests(unittest.TestCase):
         with self.assertRaises(GameError):
             j.act('hs_clean', room='gac', step='bed')
 
+    def test_amenity_step_needs_what_the_screen_counts(self):
+        """homestay.js hkNeed(): the amenity step takes its own supplies, the minibar's instant noodles (room.mini) and,
+        before the bathroom is scrubbed, a second bath kit. One fewer of any of them is refused untouched (the screen
+        shows "📦 Nhập …" instead), exactly that many goes through."""
+        def set_stock(c, item, n):
+            first = True
+            for lot in c['ext']['inv']['lots']:
+                if lot['item'] == item and lot['expires'] >= c['day']:
+                    lot['qty'], first = (n if first else 0), False
+            self.assertFalse(first, item)
+        for bath in (True, False):
+            with self.subTest(bath=bath):
+                j = Journey('homestay')
+                j.c['ext']['data']['rooms']['gac']['mini'] = 2
+                j.act('hs_clean', room='gac', step='strip')
+                if bath:
+                    j.act('hs_clean', room='gac', step='bath')
+                need = dict(towel=2, soap_kit=1 if bath else 2, water=2, coffee=2, noodles=2)
+                for short in need:
+                    for k, q in need.items():
+                        set_stock(j.c, k, q - (k == short))
+                    before = copy.deepcopy(j.state)
+                    with self.assertRaises(GameError):
+                        j.act('hs_clean', room='gac', step='amenity')
+                    self.assertEqual(j.state, before, short)
+                for k, q in need.items():
+                    set_stock(j.c, k, q)
+                j.act('hs_clean', room='gac', step='amenity')
+                self.assertEqual({k: kit.stock(j.c, k) for k in need}, {k: 0 for k in need})
+
     def test_repair_room(self):
         j = Journey('homestay')
         with self.assertRaises(GameError):          # Ban Công Hồ opens at level 3

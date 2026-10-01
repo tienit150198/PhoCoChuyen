@@ -62,7 +62,7 @@ function floor(x,active){
   const tasks=openTasks(x),dine=tasks.filter(t=>!t.app),apps=tasks.filter(t=>t.app);
   // With nobody waiting, the idle panel shows its own "Đón khách" button.
   // No extra guests while learning the place (first two bowls), same as the other food places.
-  const canAdd=x.room.open&&(x.room.metrics?.served||0)>=2&&tasks.length>0&&tasks.length<4;
+  const canAdd=x.room.open&&!x.room.more_gate&&(x.room.metrics?.served||0)>=2&&tasks.length>0&&tasks.length<4;
   const seats=[];
   for(let i=0;i<4;i++){
     const t=dine[i];

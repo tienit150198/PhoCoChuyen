@@ -218,6 +218,11 @@ html[data-layout="phone"] .career-job.dw{--dw-foot:calc(73px + var(--safe-b,0px)
 .dw-ev.done{border-color:var(--line)}
 .dw-mark{flex:none;display:grid;place-items:center;width:26px;height:26px;margin-top:2px;border-radius:50%;border:2px solid var(--field-line);font-size:.933rem;font-weight:800}
 .dw-ev.done .dw-mark{background:var(--good);border-color:var(--good);color:var(--surface)}
+/* 📌 the support source line that decides the fix: quoted above the choices, flagged in the evidence list */
+.dw-basis{margin:0;display:grid;gap:2px;padding:8px 12px;border-radius:var(--radius-sm);border-left:4px solid var(--warn);background:var(--warn-soft);color:var(--ink);font-size:.967rem}
+.dw-basis b{font-size:.933rem;color:var(--warn)}
+.dw-ev.key{border-color:var(--warn);background:var(--warn-soft)}
+.dw-key{font-style:normal;font-size:.867rem;font-weight:800;color:var(--warn);white-space:nowrap}
 .dw-log{margin:0;padding-left:20px;display:grid;gap:6px;font-size:.933rem;color:var(--ink-2)}
 @container sheet (min-width:760px){
   .dw-cs-grid{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);align-items:start;column-gap:20px}
