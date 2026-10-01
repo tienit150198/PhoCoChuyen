@@ -1,5 +1,9 @@
 [
  {
+  "vi": "Đang dùng",
+  "en": ""
+ },
+ {
   "vi": "Đã mua",
   "en": ""
  },
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "Khay thối còn trống",
-  "en": ""
- },
- {
-  "vi": "Khách đưa vừa đủ, không cần thối.",
   "en": ""
  }
 ]

@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Mâm cỗ",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nhạc",
+  "en": ""
+ },
+ {
   "vi": "Biểu cảm",
   "en": ""
  },
@@ -25,6 +33,10 @@
  },
  {
   "vi": "💐 Sắp tung hoa cưới! Lại gần sân khấu nào",
+  "en": ""
+ },
+ {
+  "vi": "🎧 Đã đổi nhạc",
   "en": ""
  },
  {
@@ -161,6 +173,18 @@
  },
  {
   "vi": ": no rồi",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nhạc cho tiệc",
+  "en": ""
+ },
+ {
+  "vi": "Cả tiệc nghe cùng bài, cùng nhịp đèn · lúc rước dâu và múa lân vẫn giữ nhạc riêng",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đang chọn",
   "en": ""
  },
  {
@@ -468,6 +492,26 @@
   "en": ""
  },
  {
+  "vi": "Chú rể",
+  "en": ""
+ },
+ {
+  "vi": "Cô dâu chú rể",
+  "en": ""
+ },
+ {
+  "vi": "cho nhạc chạy theo chương trình tiệc nha cả nhà! 🎶",
+  "en": ""
+ },
+ {
+  "vi": "chọn nhạc chậm rồi, mời cô dâu chú rể nhảy điệu đầu tiên nào 💞",
+  "en": ""
+ },
+ {
+  "vi": "nhạc mới",
+  "en": ""
+ },
+ {
   "vi": "Chúc hai cháu trăm năm hạnh phúc, sớm có tin vui nha!",
   "en": ""
  },
@@ -625,6 +669,30 @@
  },
  {
   "vi": "Có pháo hoa không ạ? Em muốn xem pháo hoa 🎆",
+  "en": ""
+ },
+ {
+  "vi": "Disco sôi động",
+  "en": ""
+ },
+ {
+  "vi": "Quẩy EDM",
+  "en": ""
+ },
+ {
+  "vi": "Remix bay phòng 140",
+  "en": ""
+ },
+ {
+  "vi": "Funk nhún nhảy",
+  "en": ""
+ },
+ {
+  "vi": "Nhạc chậm cho cặp đôi",
+  "en": ""
+ },
+ {
+  "vi": "Theo chương trình",
   "en": ""
  },
  {
@@ -1753,31 +1821,6 @@
  },
  {
   "vi": "📢 Quỹ tình làng nghĩa xóm: $1 vừa bị lừa mất tiền. Cả hẻm góp chút đỡ đần: $2. Cô đã gửi tận tay rồi ạ. Tình làng nghĩa xóm là thứ quý nhất của hẻm mình 🤝",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📢 Cả hẻm gửi $1 một món quà nhỏ sau chuyện bị lừa: $2. Tiền mất thì làm lại, người còn là còn tất cả ạ 🤝",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cuối tuần đi cà phê sống ảo với Trang nha $1, Trang chụp cho tấm hình đẹp nhất năm. Ai không biết quý $2 là người ta thiệt 💅",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "tối nay em rủ $1 chơi game nha, thua em cho thắng luôn 🎮",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cảm ơn $1 góp $2 xu nha, nhiều quá trời 🙏",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cảm ơn $1 góp $2 xu, ít mà quý lắm 🙏",
   "en": "",
   "pattern": true
  }

@@ -147,3 +147,16 @@ html[data-layout="phone"] .sheet.wd-sheet{width:100%;max-width:100%}
 @media (prefers-reduced-motion:reduce){.wk-toss,.wk-dish.ate{animation:none}.wk-dish{transition:none}}
 .reduce-motion .wk-toss,.reduce-motion .wk-dish.ate{animation:none}
 .wk-tray:not([hidden])~.wk-toast{bottom:auto;top:12px}
+/* 🎧 the groom's playlist (1.3.0): a panel like the mâm cỗ, one song a button */
+.wk-dj{position:absolute;left:8px;right:8px;bottom:8px;z-index:3;max-height:calc(100% - 16px);overflow:auto;padding:10px 10px 12px 12px;border-radius:18px;
+  background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-md,var(--shadow-sm))}
+.wk-dj .wk-who small{display:block;color:var(--muted);font-size:.78rem;line-height:1.3}
+.wk-dj-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+.wk-dj-song{display:flex;align-items:center;gap:8px;min-height:48px;padding:6px 10px;border-radius:14px;text-align:left;color:inherit;
+  background:var(--surface);border:1px solid var(--line)}
+.wk-dj-song span{font-size:1.35rem;line-height:1}
+.wk-dj-song b{flex:1;font-size:.86rem;line-height:1.2}
+.wk-dj-song small{display:block;margin-top:1px;font-size:.68rem;font-weight:800;color:#c2185b}
+.wk-dj-song.on{border-color:#c2185b;box-shadow:inset 0 0 0 1.5px #c2185b}
+.wk-dj-song:active{transform:scale(.97)}
+.wk-dj:not([hidden])~.wk-toast{bottom:auto;top:12px}

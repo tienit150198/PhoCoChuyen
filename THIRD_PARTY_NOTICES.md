@@ -35,4 +35,13 @@ Four wedding-party tracks in `public/music/wedding-*.mp3`, all **CC0 1.0** (publ
 - Richard Wagner, *Bridal Chorus (Treulich gefuehrt)*, the Musopen recording on Wikimedia Commons (the composition is public domain, the recording CC0)
 - *Chinese Hong Kong folk drums and gongs beating 02* by Jor92 (Freesound.org)
 
+The groom's playlist adds six more, all **CC0 1.0** on OpenGameArt.org (title, author, tempo, length):
+
+- `wedding-edm.mp3`: *Joyfully* by MintoDog, 170 BPM, 93.2 s
+- `wedding-remix.mp3`: *Melodic EDM Loops* by Fupi, 140 BPM, 68.6 s
+- `wedding-electro.mp3`: *Vengeance Electro* by Of Far Different Nature, 128 BPM, 60.0 s
+- `wedding-latin.mp3`: *OMW to beat the big bad* by Fupi, 120 BPM, 80.0 s
+- `wedding-funk.mp3`: *Funked Up* by Joth, 87 BPM, 66.2 s
+- `wedding-love.mp3`: *Love Song [instrumental]* by nene, 95 BPM, 80.8 s
+
 They were cut to loop lengths, crossfaded at the loop point and re-encoded to mono MP3; `public/music/CREDITS.md` has the source links.

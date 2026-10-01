@@ -1,5 +1,30 @@
 [
  {
+  "vi": "Xe rác tới muộn, qua $1 mới thấy.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gom $1/$2 túi ở $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nhắc $1 nhà phân loại lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✅ Xong ngõ! $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 túi hữu cơ lên xe ủ phân",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 túi còn lại lên xe ép",
   "en": "",
   "pattern": true
@@ -2221,31 +2246,6 @@
  },
  {
   "vi": "Soát thông báo nghỉ $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nghỉ lễ $1: $2 ngày, từ $3 đến hết $4.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Soát thư trả lời khiếu nại $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 · đơn $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 lúc $2 phòng kinh doanh đã đặt trước.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 lúc $2 có lớp đào tạo an toàn lao động.",
   "en": "",
   "pattern": true
  }

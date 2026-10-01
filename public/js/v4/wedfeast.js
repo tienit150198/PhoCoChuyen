@@ -9,7 +9,10 @@
  * Wagner's Bridal Chorus (Musopen's recording) as the couple comes in, lion dance drums under the lion. Each guest
  * plays the part the party clock is at (a track's position = party seconds into its section, modulo its length), and
  * the speakers and lights follow each track's tempo (beat()), heard or not.
- * Gentle on the eyes: colour changes at most on the beat (≤ 2.2 a second), only on the stage, the beams and the
+ * 🎧 The groom picks the music (live/wedding.py `wed_music`; the bride when he is away): setPick() takes the room's
+ * choice {k, at}, and from party second `at` on that track plays at (s − at) modulo its length for everyone; the march
+ * and the lion drums still come first, then the pick again. The MC says so when the song changes.
+ * Gentle on the eyes: colour changes at most on the beat (≤ 2.9 a second, the 170 BPM EDM), only on the stage, the beams and the
  * speakers, never the whole screen; with "Giảm chuyển động" (or prefers-reduced-motion) the beams stand still and the
  * colours change slowly. */
 import {audioContext,wantAudio,duck} from '../audio.js';
@@ -60,6 +63,14 @@ const MC_LINES=[
   [575,'Pháo hoa nè! Chúc hai bạn trăm năm hạnh phúc! 🎆'],
   [592,'Chúc mọi người về nhà bình an. Hẹn gặp ở đám cưới sau nha! 👋'],
 ];
+/** What the MC says when the groom (the bride, the couple) changes the song. */
+const PICK_BY={groom:'Chú rể',bride:'Cô dâu',couple:'Cô dâu chú rể'};
+function pickLine(P){
+  const who=PICK_BY[P.who]||PICK_BY.couple;
+  if(P.k==='auto')return `${who} cho nhạc chạy theo chương trình tiệc nha cả nhà! 🎶`;
+  if(P.k==='love')return `${who} chọn nhạc chậm rồi, mời cô dâu chú rể nhảy điệu đầu tiên nào 💞`;
+  return `${who} đổi nhạc rồi: ${TRACKS[P.k]?.name||'nhạc mới'}! Quẩy lên nào! 🎧`;
+}
 const NB_LINES=[
   'Chúc hai cháu trăm năm hạnh phúc, sớm có tin vui nha!','Cỗ hôm nay ngon ghê, nem rán giòn rụm luôn!',
   'Hồi xưa bác cưới có năm mâm thôi, giờ linh đình quá!','Cô dâu chú rể đẹp đôi quá trời đất ơi!',
@@ -97,13 +108,15 @@ function chatter(w,s){
   if(s<-300||s>=600)return null;
   const slot=Math.floor(s/7),from=slot*7;if(s-from>SAY)return null;
   const h=hash(w.id*7919+slot+1000);
-  if(MC_LINES.some(([t])=>Math.abs(t-from)<4))return null;   // the MC has the floor
+  if(MC_LINES.some(([t])=>Math.abs(t-from)<4)||(PICK&&Math.abs(PICK.s-from)<6))return null;   // the MC has the floor
   const kid=kidsOn(from)&&h%5<3;
   if(kid){const i=h%KIDS.length;return {who:'kid',i,text:KID_LINES[(h>>>3)%KID_LINES.length],t0:from};}
   if(h%4===3)return null;                                      // a quiet moment now and then
   return {who:'nb',i:h%NB.length,text:fill(NB_LINES[(h>>>3)%NB_LINES.length],w),t0:from};
 }
-function mcLine(w,s){for(const [t,text] of MC_LINES)if(s>=t&&s<t+SAY+1)return {text:fill(text,w),t0:t};return null;}
+function mcLine(w,s){
+  const P=PICK;if(P&&s>=P.s&&s<P.s+SAY+1)return {text:pickLine(P),t0:P.s};   // 🎧 a new song: the MC says so
+  for(const [t,text] of MC_LINES)if(s>=t&&s<t+SAY+1)return {text:fill(text,w),t0:t};return null;}
 /** A kid's spot: running a loop around the lawn while the kids are about, in from the gate and out again. */
 function kidPos(i,s,sec){
   const win=KID_TIMES.find(([a,b])=>s>=a&&s<b);if(!win)return null;
@@ -113,17 +126,34 @@ function kidPos(i,s,sec){
 }
 
 /* ---- the music's clock: which track, where in it, and its beat (heard or not) ---- */
-const TRACKS={   // public/music/CREDITS.md; len: the file's length (s), bpm and off: its tempo and first beat
-  house:{f:'wedding-house',len:67.5,bpm:128,off:.035},
-  disco:{f:'wedding-disco',len:133.09,bpm:110,off:0},
+const TRACKS={   // public/music/CREDITS.md; len: the file's length (s), bpm and off: its tempo and first beat; name: the picker's label
+  house:{f:'wedding-house',len:67.5,bpm:128,off:.035,name:'Funky house',icon:'🏖️'},
+  disco:{f:'wedding-disco',len:133.09,bpm:110,off:0,name:'Disco sôi động',icon:'🪩'},
   march:{f:'wedding-march',len:42,bpm:71,off:.3,once:true},
   lion:{f:'wedding-lion',len:42,bpm:105.6,off:0},
+  edm:{f:'wedding-edm',len:93.176,bpm:170,off:0,name:'Quẩy EDM',icon:'🔥'},
+  remix:{f:'wedding-remix',len:68.571,bpm:140,off:0,name:'Remix bay phòng 140',icon:'🚀'},
+  electro:{f:'wedding-electro',len:60,bpm:128,off:0,name:'Electro house',icon:'⚡'},
+  latin:{f:'wedding-latin',len:80,bpm:120,off:0,name:'House Latin',icon:'🌴'},
+  funk:{f:'wedding-funk',len:66.207,bpm:87,off:.103,name:'Funk nhún nhảy',icon:'🎸'},
+  love:{f:'wedding-love',len:80.842,bpm:95,off:0,name:'Nhạc chậm cho cặp đôi',icon:'💞'},
 };
-/** What plays at party second s: [track, seconds into its section]. */
+const KEYS=Object.keys(TRACKS);
+/** The picker's list (live/wedding.py WL.MUSIC order): [key, icon, label]. */
+export function playlist(keys){
+  return (keys||['auto',...KEYS.filter(k=>TRACKS[k].name)]).filter(k=>k==='auto'||TRACKS[k]?.name)
+    .map(k=>k==='auto'?[k,'🎶','Theo chương trình']:[k,TRACKS[k].icon,TRACKS[k].name]);
+}
+let PICK=null;   // the room's choice: {k, s: the party second it was made, who}
+/** The room's music choice (live/wedding.py wed_music {k, at, who}; null: the programme); partyAt: the party's start. */
+export function setPick(m,partyAt){PICK=m&&(m.k==='auto'||TRACKS[m.k]?.name)&&typeof m.at==='number'?{k:m.k,s:m.at-partyAt,who:m.who}:null;}
+export const picked=()=>PICK?.k||'auto';
+/** What plays at party second s: [track, seconds into its section]. The march and the lion first, then the pick. */
 export function track(s){
   const l=lionAt(s);if(l)return ['lion',s-l[0]];
+  if(s>=0&&s<38)return ['march',s];
+  const P=PICK;if(P&&P.k!=='auto'&&s>=P.s)return [P.k,s-P.s];
   if(s<0)return ['disco',s+300];
-  if(s<38)return ['march',s];
   if(s<280)return ['house',s-38];
   return ['disco',s-280];
 }
@@ -131,7 +161,7 @@ const BT={k:'',n:0,ph:0};
 /** The beat at party second s: {k: the track, n: beat number, ph: 0..1 within the beat}. One shared object. */
 export function beat(s){
   const [k,pos]=track(s),T=TRACKS[k],p=T.once?pos:((pos%T.len)+T.len)%T.len,b=(p-T.off)*T.bpm/60,n=Math.floor(b);
-  BT.k=k;BT.n=n+(k==='house'?1e5:k==='disco'?2e5:k==='lion'?3e5:0);BT.ph=b-n;return BT;
+  BT.k=k;BT.n=n+(KEYS.indexOf(k)+1)*1e5;BT.ph=b-n;return BT;
 }
 
 /* ---- drawing (world units: the 600 × 900 scene) ---- */

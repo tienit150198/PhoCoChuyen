@@ -439,5 +439,70 @@ class Feast(WedCase):
         self.assertEqual((await bride.expect('emoted'))['e'], 'dance')
 
 
+@unittest.skipUnless(HAVE_WS, 'needs websockets')
+class Music(WedCase):
+    """1.3.0 follow-up: the groom picks the music (the bride when he is away), once every MUSIC_GAP seconds a party."""
+
+    def gap(self, wid):
+        self.wed.parties[wid]['music']['at'] -= WL.MUSIC_GAP   # MUSIC_GAP seconds later
+
+    async def test_the_groom_picks_and_everyone_hears_it(self):
+        (ta, tb), (sa, sb), wid, at = self.party()
+        bride = await self.join(ta, wid)
+        groom = await self.join(tb, wid, g='male')
+        guest = await self.join(self.account('Bảo')[0], wid, g='male')
+        self.assertIsNone(guest.room['wed']['music'], 'the programme until someone picks')
+        self.assertEqual(guest.room['wed']['musics'], list(WL.MUSIC))
+        self.assertEqual((await guest.call('wed_music', 'error', k='edm'))['code'], 'bad', 'a guest never picks')
+        self.assertEqual((await bride.call('wed_music', 'error', k='edm'))['code'], 'bad', 'the groom is here: his pick')
+        self.assertEqual((await groom.call('wed_music', 'error', k='j97'))['code'], 'bad', 'only the list')
+        self.assertEqual((await groom.call('wed_music', 'error', k=None))['code'], 'bad')
+        t0 = time.time()
+        await groom.send(t='wed_music', k='edm')
+        m = await guest.expect('wed_music')
+        self.assertEqual((m['k'], m['by'], m['who'], m['name']), ('edm', groom.welcome['me']['pid'], 'groom', 'Minh Tú'))
+        self.assertAlmostEqual(m['at'], t0, delta=2)
+        self.assertEqual((await bride.expect('wed_music'))['k'], 'edm', 'the whole room, the same switch time')
+        slow = await groom.call('wed_music', 'error', k='love')
+        self.assertEqual(slow['code'], 'slow', f'once every {WL.MUSIC_GAP} s')
+        late = await self.join(self.account('Hà Vy')[0], wid)
+        self.assertEqual((late.room['wed']['music']['k'], late.room['wed']['music']['at']), ('edm', m['at']), 'a late guest joins the song')
+        self.gap(wid)
+        await groom.send(t='wed_music', k='auto')
+        self.assertEqual((await late.expect('wed_music'))['k'], 'auto', 'back to the programme')
+
+    async def test_the_bride_picks_when_the_groom_is_away(self):
+        (ta, tb), (sa, sb), wid, at = self.party()
+        bride = await self.join(ta, wid)
+        guest = await self.join(self.account('Bảo')[0], wid, g='male')
+        await bride.send(t='wed_music', k='funk')
+        m = await guest.expect('wed_music')
+        self.assertEqual((m['k'], m['who']), ('funk', 'bride'))
+        groom = await self.join(tb, wid, g='male')
+        self.gap(wid)
+        self.assertEqual((await bride.call('wed_music', 'error', k='love'))['code'], 'bad', 'he came: his pick now')
+        await groom.send(t='wed_music', k='love')
+        self.assertEqual((await guest.expect('wed_music'))['who'], 'groom')
+        await groom.call('walk_out', 'walk_left')
+        self.gap(wid)
+        await bride.send(t='wed_music', k='disco')
+        self.assertEqual((await guest.expect('wed_music'))['k'], 'disco', 'he left: the bride again')
+        await self.wed.tick(at + WL.PARTY_SECS + 1)
+        await asyncio.sleep(0.3)
+        self.gap(wid)
+        self.assertEqual((await bride.call('wed_music', 'error', k='edm'))['code'], 'over')
+
+    async def test_two_brides_or_two_grooms_both_pick(self):
+        (ta, tb), (sa, sb), wid, at = self.party()
+        a = await self.join(ta, wid)
+        b = await self.join(tb, wid)                       # both characters are women
+        await b.send(t='wed_music', k='remix')
+        self.assertEqual((await a.expect('wed_music'))['who'], 'couple')
+        await b.expect('wed_music')                        # her own pick comes back too
+        self.gap(wid)
+        await a.send(t='wed_music', k='latin')
+        self.assertEqual((await b.expect('wed_music'))['k'], 'latin')
+
+
 if __name__ == '__main__':
     unittest.main()
