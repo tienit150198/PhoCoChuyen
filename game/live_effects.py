@@ -15,7 +15,8 @@ game/system_gift.py way:
     receipts are pruned, a row not marked applied (a crash between the two writes) is still a no-op;
   - the row flips pending → applied only from 'pending'.
 * coins: into the journey wallet (👛 Ví) with a wallet-history row (kind 'life', the label of its source).
-  spirit: the life spirit (0-100), when the save has one. title: a wedding title (game/wedding_live.py
+  spirit: the life spirit (0-100), when the save has one; a spirit row may be negative (SPIRIT_DOWN..-1: a beer at a
+  wedding party), every other kind only gives. title: a wedding title (game/wedding_live.py
   TITLE_NAMES) unlocked in the save. closeness: points between two players (`player_closeness`, beside the
   save, under the row's own pending -> applied guard). Kinds this build does not pay stay pending for a later
   build (never paid elsewhere). Story saves only, like system gifts.
@@ -38,9 +39,11 @@ KIND = 'life'                       # journey wallet history kind (journey.HISTO
 PAYS = ('coins', 'spirit', 'title')  # kinds this build applies to the save
 BESIDE = ('closeness',)             # kinds this build applies beside the save (player_closeness, game/wedding_live.py)
 LABELS = dict(envelope='🧧 Lì xì dạo phố', date='💕 Buổi hẹn trên phố', guest='💍 Đi ăn cưới', host='💍 Khách tới dự đám cưới',
-              anniv='💞 Kỷ niệm ngày cưới', anniv_npc='🧧 Hàng xóm mừng kỷ niệm cưới', race='🥇 Khách mời của tuần', env='🧧 Phong bì mừng cưới')
+              anniv='💞 Kỷ niệm ngày cưới', anniv_npc='🧧 Hàng xóm mừng kỷ niệm cưới', race='🥇 Khách mời của tuần', env='🧧 Phong bì mừng cưới',
+              bouquet='💐 Bắt được hoa cưới')
 LABEL = '🎁 Quà từ khu phố'         # any other source
 AMOUNT_MAX = 2000                   # live/effects.py AMOUNT_MAX (the 1000-day anniversary is 1,500 xu)
+SPIRIT_DOWN = -10                   # live/effects.py SPIRIT_DOWN: a 'spirit' row may take this much away at most
 POPUP_TITLE, POPUP_TEXT = 80, 300   # the private card (game/system_gift.py) a row may carry: data.popup {title, text}
 KEPT = 60                           # hashes of paid rows kept in the save
 BATCH = 20                          # rows paid per load at most (the rest on the next load)
@@ -72,7 +75,8 @@ def apply(s: dict, p: dict) -> tuple[dict, dict]:
     e.need(valid_id(eid), 'Mã phần thưởng không hợp lệ.')
     kind = p.get('kind')
     e.need(kind in PAYS, 'Loại phần thưởng không hợp lệ.')
-    amount = e.integer(p.get('amount'), 1, AMOUNT_MAX)
+    amount = e.integer(p.get('amount'), SPIRIT_DOWN if kind == 'spirit' else 1, AMOUNT_MAX)
+    e.need(amount != 0, 'Số lượng không hợp lệ.')
     h = short(eid)
     got = j.get('live_fx') if isinstance(j.get('live_fx'), list) else []
     if h in got:   # already paid (a receipt pruned meanwhile): nothing moves

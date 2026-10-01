@@ -13,6 +13,11 @@ service needs websockets 17, Python 3.12) when playwright lives in another one. 
   * a guest cheers in a bubble (a phone number masked) and sends ❤️; a guest takes the group photo (3-2-1, flash),
     which lands in the couple's Kỷ niệm; the ceremony starts (hearts), the show runs (MC, neighbours, kids, the lion
     dance, lights); everyone present earns +20 xu a minute, the couple too;
+  * 1.3.0: the couple's name tags stand out (gold and rose); the speakers and the stage lights; a guest taps a table:
+    the mâm cỗ opens, three dishes give +1 tinh thần each and the fourth nothing (fixed ids), a beer −1 and "Dzô! 🍻"
+    for the room, a soft drink nothing; a guest walks onto the stage and dances (💃); the new lion bites the lì xì; the
+    MC's bouquet toss: the bride presses "💐 Tung hoa", it flies to a guest present who gets 20 xu (once); fireworks;
+    the recorded wedding music is fetched (/music/wedding-*.mp3);
   * the party ends: everyone sees the end card, the couple get the private card with 15 xu a guest, guests appear on
     Xếp hạng › Khách mời; dark theme;
   * two guests marry with an older plan (no date and time): Hôn nhân offers "Tổ chức tiệc cưới", they pick a time
@@ -47,6 +52,8 @@ WL.MINUTE_SECS = 10
 WL.PARTY_SECS = 100
 WL.PARTY_MINUTES = 10
 WL.VISIBLE = 4
+WL.TOSS_AT = 84
+WL.TOSS_WAIT = 8
 w.REFRESH = 2.0
 w.CLOSE_AFTER = 90.0
 from live.app import main
@@ -95,6 +102,13 @@ async def until(p, js_cond: str, what: str, timeout=10.0):
         if time.monotonic() > end:
             raise AssertionError(f'{p.name}: {what} (state: {json.dumps(s, ensure_ascii=False)[:500]})')
         await asyncio.sleep(0.2)
+
+
+async def tap_world(p, x, y):
+    """Tap the party's canvas at world (x, y) (the 600 × 900 scene)."""
+    pt = await p.page.evaluate("""async ([x, y]) => {const {walk} = await import('/js/v4/walk.js'); const v = walk.state().view;
+        const b = document.querySelector('.walk-sheet .wk-canvas').getBoundingClientRect(); return [b.left + v.ox + x * v.k, b.top + v.oy + y * v.k];}""", [x, y])
+    await p.page.mouse.click(pt[0], pt[1])
 
 
 async def hub(p, action, group='pho'):
@@ -247,6 +261,7 @@ async def run(shots: Path) -> list:
             s = await until(g1, 'return s.people.length===4;', 'four visible')
             titles = sorted(q['name'] for q in s['people'])
             check(titles == sorted(['Lan Anh', 'Minh Tú', 'Hà Vy', 'Bảo']), f'the couple and two guests visible ({titles})')
+            await shot(g1, '04a-couple-name-tags')
             banner = await g3.page.inner_text('.walk-sheet .wk-banner')
             check('Tạo tài khoản' in banner, f'a player without an account watches from the gate ({banner!r})')
             await shot(g3, '05-overflow-watcher')
@@ -283,6 +298,11 @@ async def run(shots: Path) -> list:
                 await asyncio.sleep(0.5)
             check(len({r[0] for r in rows}) == 4, f'the couple and the two guests with accounts earn +20 xu a minute ({len(rows)} rows), the watcher nothing')
             await shot(g1, '08-guest-xu', wait=900)
+            await g2.page.evaluate("document.documentElement.dataset.theme='dem'")
+            await shot(g2, '08a-speakers-lights-dark', wait=600)
+            await g2.page.evaluate("document.documentElement.dataset.theme='kem'")
+            got = await g2.page.evaluate("performance.getEntriesByType('resource').map(e => e.name).filter(n => n.includes('/music/wedding-'))")
+            check(bool(got), f'the recorded wedding music is fetched ({[g.rsplit("/", 1)[1] for g in got]})')
             # ---- 🧧 a red envelope for the couple, on everyone's wishes board
             check(not await bride.page.query_selector('.walk-sheet [data-wk=env]'), 'the couple do not give themselves an envelope')
             await g1.page.click('.walk-sheet [data-wk=env]')
@@ -298,6 +318,33 @@ async def run(shots: Path) -> list:
             await bride.page.click('.walk-sheet .wk-wish-head')
             await shot(bride, '08e-wishes-open')
             await bride.page.click('.walk-sheet .wk-wish-head')
+            # ---- 🍽️ the mâm cỗ: three dishes count, the fourth does not; a beer; a soft drink
+            await tap_world(g1, 125, 470)
+            await g1.page.wait_for_selector('.walk-sheet .wk-tray:not([hidden]) .wk-dish', timeout=10000)
+            await shot(g1, '16-table-tray')
+            for d in (0, 1, 2, 3):
+                await g1.page.click(f'.walk-sheet .wk-tray [data-k=dish][data-d="{d}"]')
+                await g1.page.wait_for_timeout(450)
+            await g1.page.click('.walk-sheet .wk-tray [data-k=beer]')
+            await until(bride, "return s.people.some(q=>q.emote==='🍻');", 'the bride sees "Dzô! 🍻"')
+            await shot(bride, '17-cheers-seen-by-bride', wait=350)
+            await g1.page.wait_for_timeout(450)
+            await g1.page.click('.walk-sheet .wk-tray [data-k=soda]')
+            await g1.page.wait_for_timeout(700)
+            await shot(g1, '17b-tray-after', wait=0)
+            eats = sql(db, "SELECT id, amount FROM live_effects WHERE id LIKE 'weat:%' OR id LIKE 'wbeer:%' ORDER BY id")
+            check([a for _, a in eats] == [-1, 1, 1, 1], f'3 dishes +1 each, the 4th nothing; a beer −1 ({eats})')
+            await g1.page.click('.walk-sheet .wk-tray [data-wk=tray]')
+            # ---- 💃 the stage: Bảo walks up and dances
+            await g2.page.evaluate("async () => (await import('/js/v4/walk.js')).walk.moveTo(395, 296)")
+            await g2.page.wait_for_selector('.walk-sheet .wk-float:not([hidden]) [data-wk=dance]', timeout=10000)
+            off = await g1.page.evaluate("document.querySelector('.walk-sheet .wk-float').hidden")
+            if not off:
+                print('   g1 me:', await g1.page.evaluate("async () => {const st = (await import('/js/v4/walk.js')).walk.state(); return JSON.stringify(st.people.find(q => q.pid === st.me))}"))
+            check(off, 'the dance button only for whoever stands on the stage')
+            await g2.page.click('.walk-sheet .wk-float [data-wk=dance]')
+            await until(g1, "return s.people.some(q=>q.emote==='💃');", 'the room sees 💃')
+            await shot(g2, '18-stage-dance', wait=300)
             lion = start + 58 - time.time()
             if lion > 0:
                 await asyncio.sleep(lion)
@@ -305,6 +352,40 @@ async def run(shots: Path) -> list:
             await g1.page.evaluate("document.documentElement.dataset.theme='dem'")
             await shot(g1, '09-party-dark')
             await g1.page.evaluate("document.documentElement.dataset.theme='kem'")
+            bite = start + 77.6 - time.time()        # the lion window 40-110: it bites the lì xì at 78.5
+            if bite > 0:
+                await asyncio.sleep(bite)
+            await shot(g2, '08f-lion-bites-li-xi', wait=0)
+            # ---- 💐 the bouquet (TOSS_AT 84 here): the bride throws it, a guest present catches it; fireworks (last 25 s)
+            await bride.page.wait_for_selector('.walk-sheet .wk-float:not([hidden]) [data-wk=toss]', timeout=30000)
+            await shot(bride, '19-toss-button', wait=200)
+            await bride.page.click('.walk-sheet .wk-float [data-wk=toss]', force=True)   # it glows (an endless animation)
+            await g1.page.wait_for_timeout(450)
+            await shot(g1, '20-bouquet-flying', wait=0)
+            caught = sql(db, "SELECT s.display, e.amount FROM live_effects e JOIN accounts s ON s.sid=e.sid WHERE e.id LIKE 'wtoss:%'")
+            check(len(caught) == 1 and caught[0][0] in ('Hà Vy', 'Bảo') and caught[0][1] == 20, f'one guest present catches the bouquet, 20 xu ({caught})')
+            catcher, other = (g1, g2) if caught and caught[0][0] == 'Hà Vy' else (g2, g1)
+            told = {}
+            for _ in range(60):   # the toast comes when the bouquet lands (1.7 s), on every phone
+                for p in (catcher, other):
+                    if p.name not in told:
+                        t = await p.page.evaluate("(() => {const e = document.querySelector('.walk-sheet .wk-toast'); return e && !e.hidden ? e.textContent : ''})()")
+                        if 'hoa cưới' in t:
+                            told[p.name] = t
+                            if p is catcher:
+                                await shot(catcher, '21-bouquet-caught', wait=0)
+                if len(told) == 2:
+                    break
+                await asyncio.sleep(0.1)
+            check(told.get(catcher.name, '').startswith('💐 Bạn bắt được hoa cưới! +20 xu') and caught[0][0] in told.get(other.name, ''),
+                  f'the catcher and the room are told ({told})')
+            fw = start + 90 - time.time()
+            if fw > 0:
+                await asyncio.sleep(fw)
+            await shot(g2, '22-fireworks', wait=0)
+            await g2.page.evaluate("document.documentElement.dataset.theme='dem'")
+            await shot(g2, '22b-fireworks-dark', wait=600)
+            await g2.page.evaluate("document.documentElement.dataset.theme='kem'")
             # ---- the end: the couple's total, the end card
             sql(db, 'UPDATE wedding_parties SET at=? WHERE wedding=?', time.time() - 100 + 4, wid)
             await bride.page.wait_for_selector('.walk-sheet .wk-end:not([hidden])', timeout=20000)

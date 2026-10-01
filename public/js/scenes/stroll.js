@@ -153,12 +153,26 @@ function wedding(c,g,lights){
 const DRAW={boho,chodem,congvien,phodibo,cafe,wedding};
 /** Plastic street tables at the market, wooden ones elsewhere. */
 export function paintTable(c,t,place){
-  if(place==='wedding'){   // white cloth, chairs with bows, a vase of pink flowers
+  if(place==='wedding'){   // a full mâm cỗ (1.3.0): white cloth with a pink skirt, chairs with bows, a lẩu in the middle,
+    // six dishes around it, and at every seat a bowl of rice with its chopsticks and a glass
     for(const [x,y] of t.seats){E(c,x+2,y+3,13,6,'#00000014');E(c,x,y,12,12,'#f4ebe1');E(c,x,y-7,6,4,'#f3a5b8');}
-    E(c,t.x+3,t.y+6,36,15,'#0000001c');E(c,t.x,t.y,33,27,'#fffdf8');c.strokeStyle='#ecdccb';c.lineWidth=2;c.beginPath();c.ellipse(t.x,t.y,33,27,0,0,Math.PI*2);c.stroke();
-    bloom(c,t.x,t.y-4,7,'#f6a8bd');bloom(c,t.x,t.y-4,3,'#fff');
-    c.font='11px serif';c.textAlign='center';c.textBaseline='middle';   // the cỗ: gà luộc, tôm, nem, canh, xôi gấc
-    for(const [dx,dy,e] of [[-17,-6,'🍗'],[16,-7,'🦐'],[-15,9,'🥟'],[15,9,'🍲'],[0,13,'🍚']])c.fillText(e,t.x+dx,t.y+dy);
+    E(c,t.x+3,t.y+8,38,16,'#0000001c');E(c,t.x,t.y+3,35,29,'#f6c3cf');E(c,t.x,t.y,34,27,'#fffdf8');
+    c.strokeStyle='#ecdccb';c.lineWidth=1.4;c.beginPath();c.ellipse(t.x,t.y,34,27,0,0,Math.PI*2);c.stroke();
+    E(c,t.x,t.y,21,15,'#f3ebdd');   // the lazy susan
+    for(let k=0;k<6;k++){const an=-Math.PI/2+k*Math.PI/3,px=t.x+Math.cos(an)*14.5,py=t.y+Math.sin(an)*10;
+      E(c,px+.6,py+.8,6.4,4.6,'#00000014');E(c,px,py,6.2,4.6,'#ffffff');c.strokeStyle='#d7c7b0';c.lineWidth=.6;c.stroke();
+      if(k===0){E(c,px,py,4.2,2.9,'#f2c14e');E(c,px+2.2,py-.8,1.6,1.3,'#dfa035');}                                  // gà luộc
+      else if(k===1){E(c,px,py-.3,4,2.9,'#d9342b');E(c,px-1.2,py-1.1,1.6,1,'#ff7a6a');}                                // xôi gấc
+      else if(k===2){for(let i=0;i<3;i++)R(c,px-3.8,py-2.4+i*1.7,7.6,1.5,'#b8692b',.8);}                                // nem rán
+      else if(k===3){E(c,px-1.7,py,2.1,1.6,'#ff8a4c');E(c,px+1.8,py-.3,2.1,1.6,'#ff8a4c');E(c,px,py+1.3,1.8,1.1,'#ff9f6a');}  // tôm
+      else if(k===4){E(c,px,py,3.9,2.7,'#7a3e22');E(c,px-1.5,py-.8,1,1,'#7fbf6a');E(c,px+1.6,py+.5,1,1,'#7fbf6a');}       // bò xào
+      else{E(c,px,py,3.9,2.8,'#8fc97a');E(c,px+1,py-.8,1.5,1.1,'#e8524a');E(c,px-1.4,py+.6,1.2,1,'#f6d06b');}}           // rau, trái cây
+    E(c,t.x,t.y,8.4,6.4,'#3d3a38');E(c,t.x,t.y-.4,7,5,'#e86f35');E(c,t.x-2,t.y-1,1.4,1,'#7fbf6a');E(c,t.x+2.4,t.y+.4,1.2,.9,'#7fbf6a');E(c,t.x+.4,t.y-1.8,1.3,.9,'#fff2c6');   // the lẩu
+    for(const [x,y] of t.seats){const dx=x-t.x,dy=y-t.y,d=Math.hypot(dx,dy)||1,bx=t.x+dx/d*25,by=t.y+dy/d*19.5;
+      E(c,bx,by+.6,5,3.8,'#00000014');E(c,bx,by,4.8,3.8,'#e6dccd');E(c,bx,by-.5,4,2.9,'#ffffff');E(c,bx,by-1.3,2.8,1.8,'#f4efe4');   // a bowl of rice
+      const sx=bx+(dx>0?-7:6.5);L(c,sx,by-4.2,sx+1.4,by+3.6,'#8a5a2b',.9);L(c,sx+1.6,by-4.2,sx+3,by+3.6,'#8a5a2b',.9);              // chopsticks
+      const gx=bx+(dx>0?5.5:-6.5);R(c,gx-1.6,by-4.6,3.4,5.4,'#f2b33d',.8);E(c,gx+.1,by-4.6,1.8,1,'#fffaf0');}                       // a glass of beer
+    bloom(c,t.x+(t.x<300?24:-24),t.y-17,4.2,'#f6a8bd');bloom(c,t.x+(t.x<300?24:-24),t.y-17,1.8,'#fff');
     return;
   }
   const plastic=place==='chodem',top=plastic?'#5da4d6':place==='cafe'?'#9a6b4f':'#c9a27a',stool=plastic?'#d9534f':place==='cafe'?'#7d5a42':'#a7845f';
@@ -182,15 +196,81 @@ export function paintPlace(c,place,geo,night){
 export const EDGE={boho:'#cfe3b1',chodem:'#d3c4b2',congvien:'#c7e2a9',phodibo:'#e8dcc6',cafe:'#b98d6c',wedding:'#d3e8bd'};
 
 /* ---- happenings (drawn every frame, world units) ---- */
-export function paintLion(c,x,y,t,rtl){
+const TAU=Math.PI*2;
+function puff(c,x,y,r,col){c.beginPath();c.arc(x,y,r,0,TAU);c.fillStyle=col;c.fill();}
+/** One dancer's leg: yellow trousers with a red stripe and a fur cuff, a black shoe; (hx,hy) the hip, lift the step. */
+function leg(c,hx,hy,dx,lift){
+  const fx=hx+dx,fy=-lift,kx=(hx+fx)/2+3,ky=(hy+fy)/2-lift*.4;
+  c.lineCap='round';c.strokeStyle='#e9a92e';c.lineWidth=10;c.beginPath();c.moveTo(hx,hy);c.quadraticCurveTo(kx,ky,fx,fy-4);c.stroke();
+  c.strokeStyle='#d8322e';c.lineWidth=2.4;c.beginPath();c.moveTo(hx+1,hy);c.quadraticCurveTo(kx+1,ky,fx+1,fy-6);c.stroke();
+  puff(c,fx-3,fy-8,4.2,'#fff6dc');puff(c,fx+3,fy-8,4.2,'#fff6dc');
+  c.beginPath();c.ellipse(fx+3,fy-1.5,7,3.6,0,0,TAU);c.fillStyle='#2b2220';c.fill();
+}
+const MANE=['#fff6dc','#f5c242','#fff6dc','#ff8a3d','#fff6dc','#f5c242','#fff6dc','#ff6f91'];
+/** The lion's head, facing the viewer and a little to the right; mouth 0..1 open, blink, env: a red envelope held. */
+function lionHead(c,mouth,blink,env,t){
+  for(let i=0;i<18;i++){const a=i/18*TAU,w=Math.sin(t*14+i)*1.2;puff(c,Math.cos(a)*(33+w),Math.sin(a)*(31+w)+2,9.5,MANE[i%MANE.length]);}   // the fluffy trim
+  // the horn on the forehead, a pompom on its tip
+  c.beginPath();c.moveTo(-7,-26);c.quadraticCurveTo(-2,-50,6,-52);c.quadraticCurveTo(8,-40,8,-26);c.closePath();c.fillStyle='#f5c242';c.fill();
+  c.strokeStyle='#d8322e';c.lineWidth=2;c.beginPath();c.moveTo(-3,-32);c.lineTo(7,-34);c.moveTo(-2,-40);c.lineTo(7,-42);c.stroke();puff(c,6,-53,5,'#ff3b3b');
+  // ears
+  for(const s of [-1,1]){c.beginPath();c.ellipse(s*27,-22,8,12,s*.6,0,TAU);c.fillStyle='#2fa35a';c.fill();c.beginPath();c.ellipse(s*27,-22,4,7,s*.6,0,TAU);c.fillStyle='#ffd166';c.fill();}
+  // the face
+  c.beginPath();c.ellipse(0,0,30,28,0,0,TAU);c.fillStyle='#e0342c';c.fill();
+  c.beginPath();c.ellipse(0,-16,25,12,0,Math.PI,TAU);c.fillStyle='#2fa35a';c.fill();   // the green brow band
+  c.strokeStyle='#f5c242';c.lineWidth=2.5;c.beginPath();c.ellipse(0,-16,25,12,0,Math.PI,TAU);c.stroke();
+  puff(c,0,-18,6.5,'#f5c242');puff(c,0,-18,4.8,'#dfe9f2');puff(c,-1.6,-19.6,1.6,'#ffffff');   // the mirror
+  // eyebrows (white fur) and the eyes
+  for(const [ex,s] of [[-11,-1],[13,1]]){
+    for(let k=0;k<3;k++)puff(c,ex-6+k*6,-11-(k===1?1.5:0),3.6,'#fff6dc');
+    if(blink){c.strokeStyle='#3a1414';c.lineWidth=2.4;c.beginPath();c.arc(ex,-2,7,.15*Math.PI,.85*Math.PI);c.stroke();continue;}
+    c.beginPath();c.ellipse(ex,-2,8.5,8,0,0,TAU);c.fillStyle='#ffffff';c.fill();c.strokeStyle='#f5c242';c.lineWidth=2.2;c.stroke();
+    puff(c,ex+1.8,-1.5,4.6,'#1d1a1a');puff(c,ex+3,-3.2,1.5,'#ffffff');
+  }
+  // cheeks
+  puff(c,-24,8,6,'#ff8fb1');puff(c,26,8,6,'#ff8fb1');
+  // the mouth: upper lip with teeth, the jaw drops as it opens
+  const jaw=4+mouth*13;
+  c.beginPath();c.ellipse(1,14+jaw*.5,16,4+jaw*.55,0,0,TAU);c.fillStyle='#5a1212';c.fill();
+  if(mouth>.25){c.beginPath();c.ellipse(1,16+jaw*.7,8,3.5,0,0,TAU);c.fillStyle='#ff7a8a';c.fill();}
+  c.beginPath();c.moveTo(-19,12);c.quadraticCurveTo(1,4,21,12);c.lineTo(21,14);c.quadraticCurveTo(1,9,-19,14);c.closePath();c.fillStyle='#ffffff';c.fill();   // upper teeth
+  c.beginPath();c.ellipse(1,16+jaw,18,5,0,0,TAU);c.fillStyle='#c42620';c.fill();                                                             // the lower jaw
+  c.fillStyle='#ffffff';for(let k=-2;k<=2;k++){c.beginPath();c.moveTo(1+k*6-2.4,13+jaw);c.lineTo(1+k*6,9.5+jaw);c.lineTo(1+k*6+2.4,13+jaw);c.fill();}
+  for(let k=0;k<5;k++)puff(c,-10+k*5.5,23+jaw+Math.abs(k-2)*-1.2+Math.sin(t*10+k)*1,4.4,'#fff6dc');   // the beard
+  if(env){c.save();c.translate(12,12+jaw*.7);c.rotate(.28);c.fillStyle='#a3201d';c.fillRect(-9,-1,18,25);c.fillStyle='#e02d28';c.fillRect(-8,0,16,23);c.fillStyle='#f5c242';c.fillRect(-8,6,16,3);puff(c,0,15,3.4,'#f5c242');c.restore();}   // the lì xì it bit
+  // the nose over everything
+  c.beginPath();c.ellipse(2,6,9.5,6.5,0,0,TAU);c.fillStyle='#f5c242';c.fill();puff(c,-1.5,7,1.8,'#7a3a12');puff(c,5.5,7,1.8,'#7a3a12');
+}
+/** 🦁 Múa lân: a Vietnamese lion danced by two (the head dancer and the tail dancer), feet on the ground at (x, y),
+ * facing right (rtl: left). o (optional): {rear 0..1 the head dancer rises, hop 0..1 a jump, mouth 0..1 (else on its
+ * own), env: holds a red envelope in its mouth, beat 0..1 (the head nods on it)}. ~90 shapes, no allocation. */
+export function paintLion(c,x,y,t,rtl,o){
+  const rear=o?.rear||0,hop=o?.hop||0,beat=o?.beat??((t*2)%1),step=t*8;
+  const mouth=o?.mouth??Math.max(0,Math.sin(t*5.2))**2,blink=(t*1.0+.35)%3.2<.13;
   c.save();c.translate(x,y);if(rtl)c.scale(-1,1);
-  for(let i=4;i>=1;i--){const wob=Math.sin(t*9-i*.8)*6;E(c,-i*22,wob,20,15,i%2?'#d8433a':'#f2c14e');}
-  for(const [dx,ph] of [[-70,0],[-30,1.6]]){const s=Math.sin(t*12+ph)*5;E(c,dx+s,14,5,4,'#3a2f2a');E(c,dx-s,-14,5,4,'#3a2f2a');}
-  for(let a=0;a<12;a++){const an=a/12*Math.PI*2;E(c,8+Math.cos(an)*22,Math.sin(an)*20,8,8,a%2?'#f2c14e':'#fff2c6');}
-  E(c,8,0,22,20,'#d8433a');E(c,16,-7,5,5,'#fff');E(c,16,7,5,5,'#fff');E(c,17,-7,2.5,2.5,'#222');E(c,17,7,2.5,2.5,'#222');
-  R(c,22,-6,8,12,'#f2c14e',3);E(c,0,0,5,5,'#ffe08a');
+  c.beginPath();c.ellipse(-12,3,70*(1-hop*.25),7,0,0,TAU);c.fillStyle='rgba(0,0,0,.16)';c.fill();
+  c.translate(0,-hop*16);
+  const s1=Math.sin(step),s2=Math.sin(step+Math.PI);
+  // the tail dancer's legs, the tail
+  leg(c,-56,-30,-4+s1*6,Math.max(0,s1)*6+hop*4);leg(c,-44,-30,4+s2*6,Math.max(0,s2)*6+hop*4);
+  for(let k=0;k<6;k++)puff(c,-90-Math.cos(k)*6+Math.sin(t*12+k)*2,-50+(k-2.5)*5,6.5,k%2?'#f5c242':'#fff6dc');
+  // the body: rises at the front when the lion rears
+  c.save();c.translate(-50,-30);c.rotate(-rear*.32);c.translate(50,30);
+  const wob=Math.sin(t*6)*5;
+  c.beginPath();c.moveTo(30,-70);c.bezierCurveTo(5,-84+wob,-55,-80-wob,-88,-56);c.lineTo(-86,-28);c.lineTo(26,-28);c.closePath();c.fillStyle='#d8322e';c.fill();
+  c.save();c.clip();c.strokeStyle='#f5c242';c.lineWidth=1.6;   // gold scales
+  for(let r=0;r<4;r++)for(let k=0;k<9;k++){const sx=-80+k*13+(r%2)*6.5,sy=-70+r*11;c.beginPath();c.arc(sx,sy,6,0,Math.PI);c.stroke();}
   c.restore();
-  c.font='22px serif';c.textAlign='center';c.textBaseline='middle';c.fillText('🥁',x+(rtl?60:-120),y+4+Math.sin(t*14)*2);
+  for(let k=0;k<8;k++){const u=k/7,bx=24-u*108,by=-72-Math.sin(u*Math.PI)*8+(k%2?wob*.4:-wob*.4);puff(c,bx,by,4.5,k%2?'#2fa35a':'#f5c242');}   // the spine tufts
+  for(let k=0;k<12;k++){const fx=-84+k*9.6,sw=Math.sin(t*10+k*.9)*1.6;puff(c,fx+sw,-26,5.4,k%3===1?'#f5c242':'#fff6dc');}           // the fringe
+  // the head dancer's legs
+  leg(c,10,-30,-3+s2*7,Math.max(0,s2)*7+rear*10+hop*4);leg(c,22,-30,5+s1*7,Math.max(0,s1)*7+rear*10+hop*4);
+  // the head nods on the beat, shakes a little, lifts as the lion rears
+  const nod=Math.max(0,1-beat*3)*4;
+  c.translate(42,-70+nod-rear*14);c.rotate(Math.sin(t*7.5)*.09-rear*.12);c.scale(.92,.92);
+  lionHead(c,mouth,blink,o?.env,t);
+  c.restore();
+  c.restore();
 }
 export function paintVendor(c,x,y,who,t){
   E(c,x+4,y+16,34,12,'#00000022');R(c,x-30,y-14,60,32,'#c98f5a',8);E(c,x-22,y+18,7,7,'#3a2f2a');E(c,x+22,y+18,7,7,'#3a2f2a');

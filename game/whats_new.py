@@ -32,6 +32,16 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.3.0", date="2026-10-02", items=(
+        dict(emoji="🦁", text="Đoàn lân mới về tiệc cưới: đầu lân to rực rỡ, chớp mắt, há miệng, lắc đầu, chồm lên đớp lì xì theo tiếng trống.", go=dict(action="liveWed")),
+        dict(emoji="🪩", text="Sân khấu có quả cầu disco, đèn màu quét theo nhạc và bốn cái loa góc sân rung theo từng nhịp."),
+        dict(emoji="🎶", text="Nhạc cưới mới, sôi động hơn: nhạc rước dâu, nhạc nhảy và trống lân. Cả tiệc nghe cùng một bài, cùng một nhịp."),
+        dict(emoji="🍲", text="Chạm vào bàn cỗ để gắp món: mỗi món thêm tinh thần (tối đa 3 lần). Cụng ly bia “Dzô!” thì say nhẹ, nước ngọt thì thoải mái."),
+        dict(emoji="💃", text="Bước lên sân khấu là nhảy theo nhạc, bấm 💃 Nhảy để xoay một vòng cho cả tiệc cùng xem."),
+        dict(emoji="💐", text="Gần cuối tiệc, cô dâu chú rể tung hoa cưới: ai bắt được nhận 20 xu. Đứng gần sân khấu dễ bắt hơn đó!"),
+        dict(emoji="🎆", text="Pháo giấy khi cô dâu chú rể bước vào, pháo hoa rực trời lúc tiệc sắp tàn."),
+        dict(emoji="👰", text="Bảng tên cô dâu chú rể to và nổi bật hơn, nhìn là thấy ngay nhân vật chính của buổi tiệc."),
+    )),
     dict(version="1.2.3", date="2026-10-02", items=(
         dict(emoji="💍", text="Sửa lỗi mục Kế hoạch cưới không mở được khi kế hoạch của hai bạn đã gửi hoặc đã chốt.", go=dict(action="marriage")),
     )),

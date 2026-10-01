@@ -54,6 +54,13 @@ ANNIV_NPC = (40, 120)           # lì xì from the neighbours on an anniversary 
 RACE = ((1, 300, 'w_vip'), (2, 150, 'w_pro'), (3, 150, 'w_pro'))
 PHOTOS_MAX = 3                  # group photos kept per wedding
 PHOTO_BYTES = 44 * 1024         # one photo (a canvas snapshot, webp or jpeg; base64 fits the 64 KB POST limit)
+# ---- the party's fun (1.3.0, owner 02/10 after reading the guests' chat at the parties) ----
+DISHES = ('Gà luộc', 'Xôi gấc', 'Nem rán', 'Canh măng', 'Bò xào', 'Lẩu thái', 'Tôm hấp', 'Chè đậu')   # the mâm cỗ (drawn by the client)
+EAT_SPIRIT, EAT_MAX = 1, 3      # gắp một món: +1 tinh thần, at most 3 times a party (owner)
+BEER_SPIRIT, BEER_MAX = -1, 2   # uống bia: −1 tinh thần, at most 2 times a party (owner); nước ngọt: nothing, just fun
+TOSS_AT = 525                   # 💐 the MC calls the bouquet toss (party seconds); the couple gets the "Tung hoa" button
+TOSS_WAIT = 60                  # ... and if neither presses it, the bouquet is thrown for them
+TOSS_XU = 20                    # the guest who catches it (once a party)
 
 TITLE_NAMES = dict(w_crowd='🎉 Đám cưới đông vui', w_100='💞 Trăm ngày bên nhau', w_1y='🎂 Tròn một năm', w_500='💍 Năm trăm ngày thương',
                    w_1000='👑 Nghìn ngày son sắt', w_vip='🥇 Khách quý của phố', w_pro='🎊 Ăn cưới chuyên nghiệp')

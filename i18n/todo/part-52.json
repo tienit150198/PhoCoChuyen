@@ -1,5 +1,85 @@
 [
  {
+  "vi": "Xếp lịch làm việc của sếp ($1 việc)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Xếp $1 cuộc họp vào phòng và giờ: không trùng người, đủ chỗ, đúng thiết bị, tránh giờ người ta bận.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “Rồi rồi, trả nè. Đòi gì đòi dai thế không biết.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 móc ví đếm đủ: “Xin lỗi nha, quên mất tiêu.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “Có nhiêu đây thôi, cầm tạm đi, phần còn lại tính sau.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 dúi mấy tờ: “Đang kẹt, trả dần nha, đừng có hối.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “Mai, mai chắc chắn luôn, hứa đó.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “Cuối tuần có lương là trả liền, gấp gì.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “Ủa trả rồi mà? Nhớ nhầm người rồi đó bà nội.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “Nợ hồi nào? Có giấy tờ gì không mà đòi?”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “Đòi nợ kiểu xã hội đen vậy hả? Có mấy đồng làm như ghê lắm, vl.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 gân cổ: “Làm nhục người ta giữa đường, cút đi cho khuất mắt!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hàng xóm bảo $1 dọn đi đâu mất rồi, số điện thoại cũng không liên lạc được.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Phòng trọ của $1 đã có người khác thuê. Khoản này coi như mất.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Xóa nợ cho $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🤝 Xóa khoản nợ $1 xu cho $2. Coi như làm phúc.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Hôm nay đã đòi $1 rồi. Mai hẵng đòi tiếp.",
   "en": "",
   "pattern": true

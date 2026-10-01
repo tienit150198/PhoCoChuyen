@@ -1,5 +1,93 @@
 [
  {
+  "vi": "Biểu cảm",
+  "en": ""
+ },
+ {
+  "vi": "Dzô! 🍻",
+  "en": ""
+ },
+ {
+  "vi": "No căng bụng rồi 😋",
+  "en": ""
+ },
+ {
+  "vi": "Say rồi, nước ngọt thôi 🥤",
+  "en": ""
+ },
+ {
+  "vi": "Mát lạnh! 🥤",
+  "en": ""
+ },
+ {
+  "vi": "💐 Tới màn tung hoa rồi! Bấm “Tung hoa” nhé",
+  "en": ""
+ },
+ {
+  "vi": "💐 Sắp tung hoa cưới! Lại gần sân khấu nào",
+  "en": ""
+ },
+ {
+  "vi": "☕ Đã rủ, chờ bạn ấy nhé…",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ấy bận rồi, lần sau nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang dạo ở một tab khác.",
+  "en": ""
+ },
+ {
+  "vi": "🎊 Lễ cưới bắt đầu!",
+  "en": ""
+ },
+ {
+  "vi": "Tạo tài khoản để nhận lộc cưới mỗi phút nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay bạn đã nhận lộc ở 2 đám cưới rồi. Vẫn được tính là khách nha 💛",
+  "en": ""
+ },
+ {
+  "vi": "✅ Đã ghi nhận bạn đi ăn cưới 💛",
+  "en": ""
+ },
+ {
+  "vi": "Đã báo cáo, cảm ơn bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Có lỗi, thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Tiệc đã tàn",
+  "en": ""
+ },
+ {
+  "vi": "📸 Đã lưu vào Kỷ niệm của cô dâu chú rể",
+  "en": ""
+ },
+ {
+  "vi": "Chưa lưu được ảnh.",
+  "en": ""
+ },
+ {
+  "vi": "Đã chặn. Hai bạn sẽ không thấy nhau nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Tạo tài khoản để kết bạn nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ấy chưa có tài khoản để kết bạn.",
+  "en": ""
+ },
+ {
   "vi": "Đã gửi lời mời kết bạn.",
   "en": ""
  },
@@ -64,6 +152,22 @@
   "en": ""
  },
  {
+  "vi": "🍺 Cụng ly bia",
+  "en": ""
+ },
+ {
+  "vi": "🥤 Nước ngọt",
+  "en": ""
+ },
+ {
+  "vi": ": no rồi",
+  "en": ""
+ },
+ {
+  "vi": "💃 Nhảy",
+  "en": ""
+ },
+ {
   "vi": "Bạn đang xem từ ngoài cổng.",
   "en": ""
  },
@@ -96,7 +200,23 @@
   "en": ""
  },
  {
+  "vi": "💐 Bạn bắt được hoa cưới!",
+  "en": ""
+ },
+ {
+  "vi": "💐 Hoa rơi xuống sàn mất rồi 😆",
+  "en": ""
+ },
+ {
+  "vi": "💐 Bắt được hoa!",
+  "en": ""
+ },
+ {
   "vi": "📸 Cười lên nào!",
+  "en": ""
+ },
+ {
+  "vi": "Dzô!",
   "en": ""
  },
  {
@@ -304,7 +424,11 @@
   "en": ""
  },
  {
-  "vi": "Cỗ hôm nay có gà luộc, nem rán, tôm hấp, canh măng… cả nhà ăn thật no nha!",
+  "vi": "Cỗ hôm nay có gà luộc, xôi gấc, nem rán, lẩu thái… cả nhà gắp thật nhiều vào nha!",
+  "en": ""
+ },
+ {
+  "vi": "Sàn nhảy mở rồi! Ai thích quẩy thì lên sân khấu cùng cô dâu chú rể nào 💃",
   "en": ""
  },
  {
@@ -312,11 +436,11 @@
   "en": ""
  },
  {
-  "vi": "Chúc {a} và {b} trăm năm hạnh phúc, đầu bạc răng long! 💕",
+  "vi": "Đoàn lân lại tới kìa! Lì xì cho lân lấy hên nào! 🧧",
   "en": ""
  },
  {
-  "vi": "Đoàn lân lại tới kìa! Lì xì cho lân lấy hên nào! 🧧",
+  "vi": "Chúc {a} và {b} trăm năm hạnh phúc, đầu bạc răng long! 💕",
   "en": ""
  },
  {
@@ -324,11 +448,19 @@
   "en": ""
  },
  {
-  "vi": "Cảm ơn cô chú anh chị đã đến chung vui cùng hai bạn!",
+  "vi": "Lân múa thêm một vòng nữa nè, cả nhà vỗ tay nào! 👏",
+  "en": ""
+ },
+ {
+  "vi": "Màn tung hoa cưới đây! Các bạn độc thân lại gần sân khấu nào 💐",
   "en": ""
  },
  {
   "vi": "Tiệc sắp tàn rồi, cả nhà chụp chung tấm ảnh nào! 📸",
+  "en": ""
+ },
+ {
+  "vi": "Pháo hoa nè! Chúc hai bạn trăm năm hạnh phúc! 🎆",
   "en": ""
  },
  {
@@ -389,6 +521,22 @@
  },
  {
   "vi": "Canh măng này ai nấu mà ngọt nước dữ vậy!",
+  "en": ""
+ },
+ {
+  "vi": "Loa to quá, nhưng mà vui! Quẩy lên mọi người ơi 🔊",
+  "en": ""
+ },
+ {
+  "vi": "Xôi gấc đỏ au, ăn lấy may cả năm nha!",
+  "en": ""
+ },
+ {
+  "vi": "Bia thì ít thôi nha, còn chạy xe về đó 🛵",
+  "en": ""
+ },
+ {
+  "vi": "Đèn sân khấu đẹp ghê, như đi xem ca nhạc vậy!",
   "en": ""
  },
  {
@@ -472,7 +620,19 @@
   "en": ""
  },
  {
+  "vi": "Lên sân khấu nhảy đi mọi người, em nhảy trước nè 💃",
+  "en": ""
+ },
+ {
+  "vi": "Có pháo hoa không ạ? Em muốn xem pháo hoa 🎆",
+  "en": ""
+ },
+ {
   "vi": "Tùng tùng cắc! Tùng dinh dinh! 🦁",
+  "en": ""
+ },
+ {
+  "vi": "Lân bắt được lì xì rồi! 🧧",
   "en": ""
  },
  {
@@ -1618,86 +1778,6 @@
  },
  {
   "vi": "Cảm ơn $1 góp $2 xu, ít mà quý lắm 🙏",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 qua phụ một tay từ sáng tới giờ, mồ hôi nhễ nhại luôn. Cảm ơn nha 🙏",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "em vẽ $1 đang làm việc nè 🖍️ tranh đẹp khum mọi người, dưới tranh em ghi “Người giỏi nhất hẻm” 😎",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hóng nè cả nhà: nghe đâu có khách cũ nhắn cảm ơn $1 dài cả trang, nói nhờ hôm đó mà nhà người ta vui cả tuần 🥹 Người hẻm mình giỏi ghê! Tin này chị cho lan thoải mái nha 😂",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "có bịch me hông $1, em xin một trái 🤤",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hoàng hôn trên sân thượng dãy trọ nay đỏ rực luôn cả nhà ơi 🌇 Trang chụp cho $1 một tấm, đẹp xỉu, không có ý khoe đâu nha 📸",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📷 [Ảnh hóa đơn nhập hàng] Hàng về $1 có hóa đơn đàng hoàng hết nha mọi người.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: bán lại. Khách mới có thể gọi món này.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: ngừng bán. Khách mới sẽ không gọi, quầy không cần nhập món này.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 mua từ nhà cung cấp: mở Kho → Đặt hàng (hỏa tốc 15–30 phút).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hồi nhỏ chị ngủ trưa dưới cái bàn cắt vải này đó $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mẹ chưa từng cho ai đụng vô cây kéo đó đâu $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiệm này chú Út mở ba mươi năm rồi đó $1. Hồi nhỏ em ngồi đây coi cá cả buổi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 cười gượng rồi thôi. Chuyện dừng ở đó, sạch sẽ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn báo phòng an toàn. Họ ghi nhận và nhắc khéo $1; hồ sơ bạn thêm dòng “xử lý đúng mực”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 lẩm bẩm rồi ngồi im. Chị Thu nháy mắt: “Lần sau cứ báo luôn, đó là quyền của em.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn báo tổ trưởng, điền biên bản. Hãng lập biên bản $1 và đưa vào danh sách theo dõi; cả tổ đứng về phía bạn.",
   "en": "",
   "pattern": true
  }

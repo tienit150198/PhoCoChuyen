@@ -121,3 +121,45 @@ in memory, and the 1.1.2 deploy restarted the live service at 14:20 in the middl
 - **2 minutes to count** (owner, 01/10, 1.1.4): a guest counts as "đi ăn cưới" (the couple's 15 xu, the guest number
   on the end card, Khách mời của tuần) after at least `GUEST_MIN_MINUTES` = 2 paid minute marks present
   (`wedding_guests.steps >= 2`); the row is still written on entry and the minute money is unchanged.
+
+## 8. A livelier party (1.3.0, owner 02/10/2026; extends §7)
+
+Everything visual stays on the party clock (wedding id + seconds since `at`), so every guest sees the same show; the
+live service only sends frames for real actions (eating, drinking, the bouquet, emotes).
+
+- **The couple's name tags** (walk.js `tag(…, wed)`): a bigger gold-to-rose pill, bold 14px dark-maroon text (readable
+  on light and dark), 👰/🤵 (💍 when unknown), "Cô dâu"/"Chú rể" below. When the two pills would overlap, they are
+  pushed apart and kept on screen (`coupleTags`). Nothing else marks the couple.
+- **The lion dance** (stroll.js `paintLion(c, x, y, t, rtl, o)`, canvas 2D, no images; the street happening uses the
+  same lion): a big head (mane, horn with a pompom, ears, mirror, white brows, blinking eyes, cheeks, a jaw that opens
+  with teeth and tongue, beard), a red cloth body with gold scales and fringe, two dancers' legs stepping, a tail.
+  `o = {rear, hop, mouth, env, beat}`: it nods on the beat, shakes its head, rears and bites the lì xì hanging on a
+  pole, then carries it. Three windows (`wedfeast.LION`): 40–110 s, 280–350 s, 450–505 s, with the drum cart.
+- **Speakers and stage lights** (wedfeast.js `ground`/`over`): four speakers in the corners pulse on the beat; a disco
+  ball, six beams sweeping from the stage and dance-floor tiles change colour on the beat (at most ~2 changes a
+  second, only over the stage). Reduced motion (the system setting or the game's): the lights stand still and only the
+  colours change slowly; no confetti, no spinning.
+- **Music**: recorded, royalty-free tracks (CC0/public domain only, credits in public/music/CREDITS.md):
+  `wedding-march.mp3` (Wagner, Bridal Chorus, Musopen recording, CC0) for the entrance (0–38 s, once),
+  `wedding-house.mp3` (128 BPM) to 280 s, `wedding-disco.mp3` (110 BPM) after it and before the start,
+  `wedding-lion.mp3` (drums and gongs) during the lion windows. Mono 64 kbps, ~2.3 MB together, served from /music/
+  (versioned like the other static files). The playing position is the party second modulo the track length (plus
+  the section offset), so everyone hears the same bar; `beat(s)` gives the shared beat for the lights. The engine
+  (wedfeast.js `music`) decodes at most two tracks, prefetches the next section 12 s ahead, crossfades, and re-syncs
+  when it drifts more than 0.35 s. The game's own music ducks while the party plays (audio.js `duck`); the existing
+  unlock (`wantAudio`) and the mute button are unchanged.
+- **The feast** (live/wedding.py `wed_eat`, 8 a 10 s): tapping a table opens its tray (mâm cỗ: 8 dishes, 🍺 beer,
+  🥤 soft drink) and sits down if a seat is free. A dish gives +1 tinh thần, at most 3 a party (`EAT_SPIRIT`,
+  `EAT_MAX`); a beer −1, at most 2 (`BEER_SPIRIT`, `BEER_MAX`), and the room sees two glasses clink "Dzô! 🍻"; a soft
+  drink does nothing. Only someone inside the room, while the party is open and not ending. Each payment is a
+  `live_effects` row with a fixed id `weat:<wedding>:<sid24>:<n>` / `wbeer:<wedding>:<sid24>:<n>` (n = 1…cap), so a
+  restart never pays twice: the used slots are read back by primary key (`id IN (…)`), never by a scan.
+  `live_effects` accepts a small negative amount for `spirit` only (down to −10). Others see an emote (🥢 + the dish,
+  🍻, 🥤).
+- **The bouquet** (`TOSS_AT` = 525 s): the MC calls it; the couple get "💐 Tung hoa" for `TOSS_WAIT` = 60 s, then it is
+  thrown for them. The live service picks a random guest present with an account (not the couple), weighted towards
+  the stage (1 / (1 + (d/140)²)), and pays `TOSS_XU` = 20 xu once a party (`wtoss:<wedding>`, checked by primary key
+  after a restart). Everyone sees the bouquet fly, who caught it, and a toast.
+- **Dancing**: whoever stands on the stage (`wedfeast.STAGE`) sways on the beat; "💃 Nhảy" (emote `dance`, weddings
+  only) spins them for the room. Confetti when the couple walk in (0–7 s), fireworks in the last 25 s.
+- No DDL, no change to player data; the new constants live in game/wedding_live.py.

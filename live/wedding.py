@@ -29,18 +29,32 @@ weekly race settle ("Khách mời của tuần": #1 🥇 Khách quý của phố
 ties to whoever reached the count first), and the race titles worn on name tags the whole next week.
 Every reward has a fixed key (paid once); settles and reminders are guarded in the database (done once).
 
+The party's fun (1.3.0, owner 02/10 after reading the guests' chat; the show itself is public/js/v4/wedfeast.js on the
+party clock, the same for everyone without a frame). Server frames only for what a player does:
+* 🍽️ the mâm cỗ at the tables: `wed_eat {k: dish|beer|soda, d}`. Gắp một món: +1 tinh thần (EAT_MAX a party), uống
+  bia: −1 tinh thần (BEER_MAX a party), nước ngọt: nothing. The spirit is a live_effects row with a fixed id per slot
+  (`weat:<wedding>:<sid24>:<1..3>`, `wbeer:<wedding>:<sid24>:<1..2>`), so retries, tabs and restarts never pay more
+  than the caps; the taken slots are read back by primary key (never a scan). The room sees who ate or drank what.
+* 💐 the bouquet: at TOSS_AT the room hears `wed_toss_open {until}`; either spouse sends `wed_toss {}`, or after
+  TOSS_WAIT it is thrown for them. One guest present catches it (picked at random, the ones near the stage more
+  likely) and gets TOSS_XU (key `wtoss:<wedding>`: once a party, also after a restart).
+
 Frames (client → server; replies in brackets)
   wed_list {}                         [wed_list {parties: [{id, a, b, at, end, open, n, mine}], now}]
   wed_in {id, look, g, title, titles}         [walk_room {..., wed: {id, a, b, pids, at, end, overflow, photos}}]
   wed_photo {}                        [the room: wed_photo {n, pid, name, at}: the taker's screen is uploaded to
                                        POST /api/wedding/photo at `at`]
+  wed_eat {k, d}                      [wed_ate {k, d, n, left}; the room: wed_eat {pid, k, d}]
+  wed_toss {}                         [the room: wed_toss {by, frm, pid, name, to, xu, at}]
   (walk_out, move, say, emote, sit, stand, topic, card: live/street.py)
-Server pushes: wed_start {id}, wed_end {id, n}, wed_xu {n, k, max, why?}, wed_paid {xu}, walk_left {why: 'wed_end'}.
+Server pushes: wed_start {id}, wed_end {id, n}, wed_xu {n, k, max, why?}, wed_paid {xu}, wed_toss_open {id, until},
+walk_left {why: 'wed_end'}.
 """
 from __future__ import annotations
 
 import asyncio
 import json
+import math
 import random
 import re
 import time
@@ -194,7 +208,8 @@ class WeddingFeature(Feature):
         return dict(id=p['id'], a=p['na'], b=p['nb'], pids=[p['pa'], p['pb']], at=p['at'], end=p['at'] + WL.PARTY_SECS, n=n,
                     overflow=overflow, photos=p['photos'] or 0, photos_max=WL.PHOTOS_MAX, visible=WL.VISIBLE,
                     minutes=WL.PARTY_MINUTES, xu=WL.MINUTE_XU, host_xu=WL.HOST_XU, mins=self._mins(p, pid),
-                    envs=list(WL.ENVELOPES), env_max=WL.ENVELOPE_MAX, wishes=list(WL.WISHES))
+                    envs=list(WL.ENVELOPES), env_max=WL.ENVELOPE_MAX, wishes=list(WL.WISHES),
+                    dishes=list(WL.DISHES), eat=self._left(p, pid), toss=self._toss_view(p))
 
     @on('wed_list', rate=(10, 10))
     async def wed_list(self, conn, f):
@@ -324,6 +339,134 @@ class WeddingFeature(Feature):
         room.send(dict(t='wed_photo', id=wid, n=n, pid=w.pid, name=w.name, at=round(now + 3, 3)))
         return None
 
+    # ---- 🍽️ the mâm cỗ: a dish, a beer, a soft drink -----------------------------------------------------------
+    def _left(self, p: dict, pid: str | None) -> dict:
+        """What this player may still eat and drink with an effect (as far as this process knows)."""
+        a = self.att.get(p['id'], {}).get(pid) if pid else None
+        eats = p.get('eats') or {}
+        out = {}
+        for k, cap in (('dish', WL.EAT_MAX), ('beer', WL.BEER_MAX)):
+            got = eats.get((a.sid, k)) if a else None
+            out[k] = cap - len(got) if got is not None else cap
+        return out
+
+    async def _slots(self, p: dict, sid: str, k: str, prefix: str, cap: int) -> set:
+        """The slots this player already used (cached; read back once by primary key after a restart)."""
+        eats = p.setdefault('eats', {})
+        got = eats.get((sid, k))
+        if got is None:
+            ids = [f'{prefix}:{p["id"]}:{sid[:24]}:{i}' for i in range(1, cap + 1)]
+            rows = await self.db.fetch(f'SELECT id FROM live_effects WHERE id IN ({",".join("?" * len(ids))})', tuple(ids))
+            done = {int(r['id'].rsplit(':', 1)[1]) for r in rows}
+            got = eats.setdefault((sid, k), done)
+        return got
+
+    @on('wed_eat', rate=(8, 10))
+    async def wed_eat(self, conn, f):
+        room, w = self.street._me(conn)
+        p = self.parties.get(room.data.get('wid'))
+        k, d = f.get('k'), f.get('d')
+        if p is None or k not in ('dish', 'beer', 'soda') or (k == 'dish' and not (type(d) is int and 0 <= d < len(WL.DISHES))):
+            raise LiveError('bad', 'Món này không có trên mâm.')
+        d = d if k == 'dish' else None
+        now = time.time()
+        if not self._open(p, now) or p['ending']:
+            raise LiveError('over', 'Tiệc tàn rồi, cỗ dọn mất rồi 😅')
+        pl = conn.player
+        n, left = 0, None
+        if k != 'soda':
+            cap, amount, prefix = (WL.EAT_MAX, WL.EAT_SPIRIT, 'weat') if k == 'dish' else (WL.BEER_MAX, WL.BEER_SPIRIT, 'wbeer')
+            got = await self._slots(p, pl.sid, k, prefix, cap)
+            for i in range(1, cap + 1):
+                if i in got:
+                    continue
+                got.add(i)   # before the await: a second tap takes the next slot
+                try:
+                    ok = await effects.grant(self.db, pl.sid, 'spirit', amount, f'{prefix}:{p["id"]}:{pl.sid[:24]}:{i}', dict(src=f'wed_{k}'))
+                except BaseException:
+                    got.discard(i)
+                    raise
+                if ok:
+                    n = amount
+                break
+            left = cap - len(got)
+        if self.hub.rooms.get(room.id) is room:
+            room.send(dict(t='wed_eat', pid=w.pid, k=k, d=d), sender=pl)
+        return dict(t='wed_ate', id=p['id'], k=k, d=d, n=n, left=left)
+
+    # ---- 💐 the bouquet toss ------------------------------------------------------------------------------------
+    def _toss_view(self, p: dict) -> dict:
+        st = p.get('toss_state')
+        return dict(at=WL.TOSS_AT, open=st == 'open', until=round(p['toss_until'], 3) if st == 'open' else None, done=p.get('toss'))
+
+    def _toss_tick(self, p: dict, room, now: float) -> None:
+        """TOSS_AT: open the toss (once; after a restart only if nobody caught it yet); TOSS_WAIT later: throw it."""
+        st = p.get('toss_state')
+        if st is None and p['at'] + WL.TOSS_AT <= now < p['at'] + WL.PARTY_SECS - 5:
+            p['toss_state'] = 'checking'
+            self.spawn(self._toss_open(p, now))
+        elif st == 'open' and now >= p['toss_until']:
+            p['toss_state'] = 'done'
+            self.spawn(self._toss(p, room, None))
+
+    async def _toss_open(self, p: dict, now: float) -> None:
+        try:
+            caught = await self.db.fetchval('SELECT sid FROM live_effects WHERE id=?', (f'wtoss:{p["id"]}',))
+        except BaseException:
+            p['toss_state'] = None   # tried again at the next tick
+            raise
+        if caught:
+            p['toss_state'] = 'done'
+            return
+        p['toss_until'] = min(now + WL.TOSS_WAIT, p['at'] + WL.PARTY_SECS - 3)
+        p['toss_state'] = 'open'
+        room = self.hub.rooms.get(f'{PREFIX}{p["id"]}')
+        if room is not None:
+            room.send(dict(t='wed_toss_open', id=p['id'], until=round(p['toss_until'], 3)))
+
+    @on('wed_toss', rate=(3, 10))
+    async def wed_toss(self, conn, f):
+        room, w = self.street._me(conn)
+        p = self.parties.get(room.data.get('wid'))
+        if p is None or w.pid not in (p['pa'], p['pb']):
+            raise LiveError('bad', 'Chỉ cô dâu chú rể mới tung hoa được nha 💐')
+        st = p.get('toss_state')
+        if st == 'done':
+            raise LiveError('done', 'Hoa cưới tung rồi!')
+        if st != 'open':
+            raise LiveError('early', 'Chờ MC gọi tung hoa nhé!')
+        p['toss_state'] = 'done'
+        await self._toss(p, room, w.pid)
+        return None
+
+    async def _toss(self, p: dict, room, by: str | None) -> None:
+        """Throw the bouquet: from the spouse who pressed (else either spouse here, else the stage) to one guest present,
+        the ones near the stage likelier. Nobody but the couple here: it lands on the floor."""
+        if room is None or self.hub.rooms.get(room.id) is not room:
+            room = self.hub.rooms.get(f'{PREFIX}{p["id"]}')
+        if room is None:
+            return
+        now = time.time()
+        people = room.data['people']
+        thrower = people.get(by) if by else (people.get(p['pa']) or people.get(p['pb']))
+        sx, sy = GEO['wedding'].spots['stage']
+        fx, fy = thrower.at(now) if thrower else (sx, sy)
+        cands = [w for pid, w in people.items() if pid not in (p['pa'], p['pb']) and w.player.account]
+        out = dict(t='wed_toss', id=p['id'], by=thrower.pid if thrower else None, frm=[round(fx, 1), round(fy, 1)], at=round(now, 3),
+                   pid=None, name=None, to=None, xu=0)
+        if cands:
+            weights = []
+            for w in cands:
+                x, y = w.at(now)
+                weights.append(1.0 / (1.0 + (math.hypot(x - sx, y - sy) / 140.0) ** 2))
+            c = random.choices(cands, weights)[0]
+            cx, cy = c.at(now)
+            ok = await effects.grant(self.db, c.player.sid, 'coins', WL.TOSS_XU, f'wtoss:{p["id"]}', dict(src='bouquet'))
+            out.update(pid=c.pid, name=c.name, to=[round(cx, 1), round(cy, 1)], xu=WL.TOSS_XU if ok else 0)
+        p['toss'] = dict(pid=out['pid'], name=out['name'])
+        if self.hub.rooms.get(room.id) is room:
+            room.send(out)
+
     # ---- 🧧 a guest's red envelope (paid by the game server, POST /api/marriage/envelope) ----------------------
     @on('wed_env', rate=(10, 60))
     async def wed_env(self, conn, f):
@@ -361,6 +504,7 @@ class WeddingFeature(Feature):
             room = self.hub.rooms.get(f'{PREFIX}{p["id"]}')
             if room is not None and self._open(p, now):
                 self._attend(p, room, now)
+                self._toss_tick(p, room, now)
             if now >= p['at'] and not p.get('closed'):
                 self._minutes(p, now)
             if now >= p['at'] and not p['started']:
