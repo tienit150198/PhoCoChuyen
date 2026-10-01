@@ -413,7 +413,7 @@ function rushJob(t,x){
 function rushCost(x,it,n){const sups=x.room.inventory?.suppliers||x.content.inventory?.suppliers||[];return orderQuote(it,n,sups.find(s=>s.id==='express')||{factor:1.35}).total;}
 function bulkJob(t,x){
   const b=t.bulk,n=t.needs,inv=x.room.inventory||{stock:{}},held=x.room.data?.held||{};
-  const list=sum(n.lines.map(l=>price(x,l.item)*l.qty));
+  const list=sum(n.lines.map(l=>(x.cc.base_prices?.[l.item]??price(x,l.item))*l.qty));   // bulk quotes use the standard list, like the server
   const shortOf=l=>Math.max(0,l.qty-Math.max(0,(inv.stock?.[l.item]||0)-(held[l.item]||0))),full=fullGo(inv,t.id);
   const rows=n.lines.map(l=>{const it=item(x,l.item),s=shortOf(l),due=lack(x,rushCost(x,it,Math.min(30,s)));
     return `<div class="gr-line ${s?'':'done'}"><span class="gr-emoji">${it.emoji}</span><div class="grow"><b>${x.esc(it.name)} × ${l.qty}</b><small>${x.fmt(price(x,l.item))} xu/${x.esc(priceUnit(x,l.item))} · kho còn ${inv.stock?.[l.item]||0}${s?` · <b class="bad">thiếu ${s}</b>`:' ✓'}</small></div>
@@ -422,7 +422,7 @@ function bulkJob(t,x){
   if(b.stage==='quote'){
     const last=b.offers.length?b.offers[b.offers.length-1]:-1,left=(x.cc.bulk_offers||[0,5,10,15]).filter(v=>v>last);
     // Turned down at the lowest price (a save from before 01/10 could hang here): the only move left is to let the customer go.
-    body=`<h4 class="section-title">Báo giá sỉ · giá lẻ ${x.money(list)}</h4><p class="small muted">Khách chỉ nghe báo giá tối đa 2 lần${b.offers.length&&left.length?' — còn 1 lần':''}.</p>
+    body=`<h4 class="section-title">Báo giá sỉ · giá gốc ${x.money(list)}</h4><p class="small muted">Khách chỉ nghe báo giá tối đa 2 lần${b.offers.length&&left.length?' — còn 1 lần':''}.</p>
       <div class="gr-choices">${left.map(v=>x.cmd(`${v?`Bớt ${v}%`:'Giá lẻ'} · ${x.fmt(Math.floor(list*(100-v)/100))} xu`,'gr_bulk_quote',{task:t.id,off:v},'gr-choice')).join('')||x.cmd('🙏 Không bớt thêm được · chào khách','gr_bulk_quote',{task:t.id,off:last},'gr-choice')}</div>`;
   }else if(b.stage==='deliver'){
     const short=n.lines.some(l=>shortOf(l)>0);

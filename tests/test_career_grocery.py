@@ -1501,18 +1501,19 @@ class GroceryBulkTests(unittest.TestCase):
         self.assertEqual(t['bulk']['stage'], 'lost')
         self.assertEqual(t['status'], 'completed')
 
-    def test_refused_lowest_quote_ends_the_order(self):
-        # Feedback #49: with prices raised, 15% (the lowest price on the board) turned down said "Còn một lần
-        # báo giá" with nothing lower left to offer; every later quote was refused and the order hung all day.
+    def test_lowest_quote_with_raised_shelf_prices_is_accepted(self):
+        # Feedback #49/#52: with shelf prices raised, quotes were taken from the shelf, so even 15% (the lowest price
+        # on the board) stayed above what the customer would pay and every bulk order was lost. Since 1.0.6 quotes
+        # come from the standard list, and the lowest price is always within reach.
         j = self._bulk()
         for x in j.task['needs']['lines']:
             if G._price(j.c, x['item']) != G._cap_price(x['item']):
                 j.act('gr_tag', item=x['item'], price=G._cap_price(x['item']))
         tid = j.task['id']
         r = j.act('gr_bulk_quote', off=G.BULK_OFFERS[-1])
-        self.assertTrue(r['refused'])
+        self.assertTrue(r.get('celebrate'))
         t = j.get(tid)
-        self.assertEqual((t['bulk']['stage'], t['status'], t['bulk']['offers']), ('lost', 'completed', [G.BULK_OFFERS[-1]]))
+        self.assertEqual((t['bulk']['stage'], t['bulk']['offers']), ('deliver', [G.BULK_OFFERS[-1]]))
         roundtrip(j)
 
     def test_bulk_stuck_at_the_lowest_quote_ends_on_the_next_tap(self):
@@ -1521,10 +1522,23 @@ class GroceryBulkTests(unittest.TestCase):
         for x in j.task['needs']['lines']:
             j.act('gr_tag', item=x['item'], price=G._cap_price(x['item']))
         j.task['bulk']['offers'] = [G.BULK_OFFERS[-1]]          # a save that hung there before the fix
-        money = j.c['money']
         j.act('gr_bulk_quote', off=G.BULK_OFFERS[-1])
         t = j.get(tid)
-        self.assertEqual((t['bulk']['stage'], t['bulk']['offers'], j.c['money']), ('lost', [G.BULK_OFFERS[-1]], money))
+        # Since 1.0.6 the quote is taken from the standard list, so the lowest price closes the deal (it never could
+        # with raised shelf prices: the cause of feedback #49/#52).
+        self.assertEqual((t['bulk']['stage'], t['bulk']['offers']), ('deliver', [G.BULK_OFFERS[-1]]))
+        roundtrip(j)
+
+    def test_raised_shelf_prices_do_not_make_bulk_orders_impossible(self):
+        j = self._bulk()
+        tid = j.task['id']
+        for x in j.task['needs']['lines']:
+            j.act('gr_tag', item=x['item'], price=G._cap_price(x['item']))   # the shop's shelf prices at their cap
+        base = sum(G.PRICES[x['item']] * x['qty'] for x in j.task['needs']['lines'])
+        j.act('gr_bulk_quote', off=15)
+        t = j.get(tid)
+        self.assertEqual(t['bulk']['stage'], 'deliver')
+        self.assertEqual(t['bulk']['price'], base * 85 // 100)
         roundtrip(j)
 
     def test_undelivered_order_is_refunded_at_closing(self):

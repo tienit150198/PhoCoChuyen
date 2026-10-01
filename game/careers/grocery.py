@@ -2012,7 +2012,10 @@ def _bulk_action(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         if not b['offers'] or b['offers'][-1] < BULK_OFFERS[-1]:
             kit.need(not b['offers'] or off > b['offers'][-1], 'Lần báo giá sau phải bớt nhiều hơn lần trước.')
             b['offers'].append(off)
-        price = _bulk_list(c, t) * (100 - b['offers'][-1]) // 100
+        # Bulk quotes start from the standard price list, not the shop's own shelf prices: a customer buying in bulk
+        # compares with other shops' list. Quoting from raised shelf prices made every bulk order impossible (01/10,
+        # feedback #49/#52: rice 20 instead of 18, eggs 4 instead of 3 → even −15% stayed above what they would pay).
+        price = _bulk_list(c, t, base=True) * (100 - b['offers'][-1]) // 100
         if b['offers'][-1] == off and price * 100 <= _bulk_list(c, t, base=True) * n['_max']:
             b['stage'] = 'deliver'
             b['price'] = price
