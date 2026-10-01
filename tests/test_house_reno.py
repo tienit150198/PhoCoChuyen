@@ -307,6 +307,26 @@ class MovingHouse(unittest.TestCase):
         self.assertTrue(all(p['lv'] == 0 for p in v['parts']))              # upgrades stayed with the old home
         self.assertIn('balcony', [r['id'] for r in v['rooms']])
 
+    def test_free_spots_and_skins_keep_the_old_blocks(self):
+        """1.4's free placement and wallpapers live in journey.decor: reno keeps 1.2.0's shape, Ấm cúng its rules."""
+        s = owner(wallet=9000, days=2)
+        s, _ = act(s, 'jr_reno_fix', part='all', cost=view(s)['fix_all'], confirm=True)
+        s, r = act(s, 'jr_deco_buy', item='sofa', confirm=True, put=dict(r='living', x=17, y=11))
+        s, _ = act(s, 'jr_deco_buy', item='ban_tra', confirm=True, put=dict(r='living', x=50, y=40))
+        s, _ = act(s, 'jr_deco_skin', r='living', part='wall', skin='op_go', confirm=True)
+        self.assertEqual(view(s)['cozy'], 4)                                 # a wallpaper is looks only
+        self.assertEqual(set(R(s)), {'v', 'hid', 'day', 'seq', 'parts', 'items', 'spent', 'stats'})
+        self.assertTrue(all(set(i) == {'id', 'k', 'r', 'x'} and i['r'] is None for i in R(s)['items']))
+        s, _ = act(s, 'jr_reno_move', uid=r['uid'], room='living', slot='f2')   # a 1.2.0 page still moves it
+        self.assertEqual(placed(s)[r['uid']], ('sofa', 'living'))
+        self.assertEqual(view(s)['cozy'], 4)
+        s, _ = act(s, 'jr_home_sell', confirm=True, value=hs.value_of(hs.get(s)['own'], s['journey']['life_day']))
+        s, _ = buy(s, 'can_ho_mini')
+        v = deco(s)
+        self.assertEqual((v['items'], v['owned']), ([], ['op_go']))          # a new home starts plain; the wallpaper is still yours
+        self.assertTrue(all(rm['skin'] == {} for rm in v['rooms']))
+        validate_state(s)
+
     def test_furniture_follows_to_the_next_home(self):
         s = owner(wallet=9000)
         s, _ = act(s, 'jr_reno_buy', item='be_ca', room='living', slot='f0', confirm=True)

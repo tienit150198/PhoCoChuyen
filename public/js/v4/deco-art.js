@@ -4,7 +4,9 @@
  * roof, the gác lửng's ladder, the dorm's bunk) and 65 pieces of furniture, each a small hand-made drawing.
  * Every colour is an attribute (no stylesheet needed), so the same markup becomes a photo (reno.js → canvas).
  * A piece is drawn from its footprint's front-left corner: x to the right, y up (negative). Wall pieces from the
- * top-left corner of their wall cells. */
+ * top-left corner of their wall cells. Since 1.4 pieces stand anywhere (anchor(): units → pixels, a small thing on
+ * the surface it stands on), each room may have a wallpaper and a floor (SKINS), the light follows the hour
+ * (lightAt: the sky, a sunbeam through the window, the evening tint, lamps glowing) and the cats have their poses. */
 
 export const CW=40,FR=30,WR=34,PX=14,CEIL=10,TOP=12,BASE=28;
 const OL='#5b4535';
@@ -152,36 +154,96 @@ export const ART={
   hop_nhac:{h:28,top:1,d:()=>box(9,22,0,10,5,P.pinkD,P.pinkL,2)+Pa('M9 -15l-2-11h22l2 11z',P.pink)+R(18,-22,4,8,P.butter,1,1)+C(20,-24,2.5,P.butter,1)+note(32,-14,P.lilacD)},
   o_meo:{h:30,d:()=>shadow(40,30)+E(20,-8,18,8,P.pinkD)+E(20,-10,14,5,P.pinkL,1)+E(22,-15,11,7,P.grey)+Pa('M13 -18l-1-8l6 4z',P.grey,1.2)+Pa('M22 -20l3-7l3 6z',P.grey,1.2)
     +L('M14 -16q1.5 1.5 3 0M20 -16q1.5 1.5 3 0',OL,1.1)+C(18.5,-13,1,P.pinkD,0)+blush(13,-12)+blush(25,-12)+Pa('M32 -12q6 0 4-6',P.grey,1.3)+L('M30 -18l3-2M31 -15h4',P.greyD,1)},
+  ke_go_treo:{h:34,wall:1,d:(W)=>Rn(6,29,W-12,3,'#000',1,.08)+Pa('M12 28v7l7-7z',P.woodD,1.2)+Pa(`M${W-12} 28v7l-7-7z`,P.woodD,1.2)+R(2,23,W-4,6,P.wood,2,1.3)+Rn(5,24,W-10,1.6,'#fff',0,.5)+C(8,26,1,P.woodD,0)+C(W-8,26,1,P.woodD,0)},
 };
 
 /* ---------------------------------------------------------------- the room */
+/** Free placement: units to a grid cell (game/deco_content.py U) and what one unit is in drawing pixels. */
+export const U=20,SX=CW/U,SF=FR/U,SW=WR/U;
 export function geom(room){
   const W=room.cols*CW+PX*2,WY=CEIL+TOP,FY=room.wrows?WY+room.wrows*WR+BASE:(room.out?84:60);
   return {W,H:FY+room.frows*FR+12,WY,FY};
 }
-export const night=()=>{const h=new Date().getHours();return document.documentElement.dataset.theme==='dem'||h>=18||h<6;};
+
+/** The light of the hour (minute of the day 0..1439): the sky, the beam through the window, the room's tint, how
+ * much the lamps glow. Shared by the live room and the photo. */
+export function lightAt(minute){
+  const m=((Math.round(Number(minute))||0)%1440+1440)%1440;
+  if(m>=330&&m<600)return {phase:'morning',night:false,sky:['#ffd9b8','#fff1d6'],beam:'#fff0c2',ba:.42,skew:.55,tint:'#ffe7c4',ta:.07,lamps:0};
+  if(m>=600&&m<900)return {phase:'noon',night:false,sky:['#8fd0f4','#dff1fb'],beam:'#fffbe6',ba:.34,skew:.12,tint:'',ta:0,lamps:0};
+  if(m>=900&&m<1080)return {phase:'golden',night:false,sky:['#ffb27a','#ffe2b0'],beam:'#ffcf8a',ba:.46,skew:-.6,tint:'#ffb066',ta:.1,lamps:.15};
+  if(m>=1080&&m<1170)return {phase:'evening',night:true,sky:['#5a4f96','#e79bb0'],beam:'',ba:0,skew:0,tint:'#5b4f9a',ta:.16,lamps:.75};
+  return {phase:'night',night:true,sky:['#232b52','#4a4f86'],beam:'',ba:0,skew:0,tint:'#1d2448',ta:.26,lamps:1};
+}
+/** Kept for older callers: is it dark outside right now (local clock)? */
+export const night=()=>{const h=new Date().getHours();return h>=18||h<6;};
 
 const WALLS={l0:'#eadcc3',l1:'#f9e7cf',l2:'#dfeee0',studio:'#f3e2cc',attic:'#ecd2ab',tro:'#d9eee5',loft:'#f6e3d3',bunk:'#e7dcf5'};
 const FLOORS={l0:'#cfc6b6',l1:'#efe6d6',l2:'#d29a63',attic:'#c99363',tro:'#eadfcf',loft:'#d7a874',bunk:'#fdf3ec',balcony:'#e2d3bf',yard:'#a8d58a'};
 
-/** Sky through a window or over a balcony: day (sun, cloud) or night (moon, stars). */
-function sky(x,y,w,h,isNight,id){
-  const top=isNight?'#232b52':'#9fd4f2',bot=isNight?'#4a4f86':'#dff1fb';
+/** Sky through a window or over a balcony, by the light of the hour. */
+function sky(x,y,w,h,L,id){
+  const [top,bot]=L.sky;
   let s=`<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${top}"/><stop offset="1" stop-color="${bot}"/></linearGradient></defs>`+Rn(x,y,w,h,`url(#${id})`);
-  if(isNight)s+=C(x+w*.72,y+h*.3,Math.min(7,h*.18),'#fff4c4',0)+C(x+w*.72+3,y+h*.3-2,Math.min(6,h*.16),top,0)
+  if(L.night)s+=C(x+w*.72,y+h*.3,Math.min(7,h*.18),'#fff4c4',0)+C(x+w*.72+3,y+h*.3-2,Math.min(6,h*.16),top,0)
     +[[.15,.2],[.35,.45],[.5,.15],[.85,.7],[.25,.75]].map(([a,b])=>C(x+w*a,y+h*b,1,'#fff',0)).join('');
-  else s+=C(x+w*.78,y+h*.28,Math.min(7,h*.18),'#ffd66b',0)+E(x+w*.32,y+h*.5,Math.min(10,w*.16),Math.min(4,h*.1),'#fff',0)+E(x+w*.4,y+h*.45,Math.min(7,w*.12),Math.min(4,h*.1),'#fff',0);
+  else{
+    const sun=L.phase==='golden'?['#ff9a4d',.82,.62]:L.phase==='morning'?['#ffc46b',.2,.55]:['#ffd66b',.78,.28];
+    s+=C(x+w*sun[1],y+h*sun[2],Math.min(7,h*.18),sun[0],0)+E(x+w*.32,y+h*.5,Math.min(10,w*.16),Math.min(4,h*.1),'#fff',0,' opacity=".9"')+E(x+w*.4,y+h*.45,Math.min(7,w*.12),Math.min(4,h*.1),'#fff',0,' opacity=".9"');
+  }
   return s;
 }
 
+/* ---- wallpapers and floors (game/deco_content.py SKINS) */
+const pat=(id,w,h,body,bg)=>`<pattern id="${id}" width="${w}" height="${h}" patternUnits="userSpaceOnUse">${bg?`<rect width="${w}" height="${h}" fill="${bg}"/>`:''}${body}</pattern>`;
+const flower=(x,y,c,r=2)=>[0,72,144,216,288].map(a=>{const t=a*Math.PI/180;return C(x+Math.cos(t)*r*1.3,y+Math.sin(t)*r*1.3,r,c,0);}).join('')+C(x,y,r*.8,P.butter,0);
+/** Wallpaper: [defs, fill] for the wall (0..FY). */
+const WALL_SKIN={
+  kem:id=>['','#fbeedb'],
+  bac_ha:id=>['','#d5efe4'],
+  hong_dao:id=>['','#fbdcd6'],
+  soc:id=>[pat(id,28,10,Rn(0,0,10,10,'#f9cfd8')+Rn(14,0,6,10,'#cdebdc'),'#fdf3e4'),`url(#${id})`],
+  cham_bi:id=>[pat(id,22,22,C(5,5,3,'#ffffff',0)+C(16,16,3,'#c9ddf2',0),'#e8f1fb'),`url(#${id})`],
+  hoa_nhi:id=>[pat(id,34,30,flower(8,8,'#f9c2d1',1.7)+flower(25,22,'#bfd8f2',1.7)+C(25,7,1.1,P.leaf,0)+C(8,23,1.1,P.leaf,0),'#fff6f0'),`url(#${id})`],
+  may_sao:id=>[pat(id,64,44,E(14,12,10,4,'#ffffff',0)+E(20,10,7,4,'#ffffff',0)+`<path d="M46 26l1.5 3.5l3.5 1.5l-3.5 1.5l-1.5 3.5l-1.5-3.5l-3.5-1.5l3.5-1.5z" fill="#ffe08a"/>`+C(56,8,1.4,'#ffe08a',0)+C(30,36,1.2,'#ffffff',0),'#dce6fb'),`url(#${id})`],
+  gach_the:id=>[pat(id,26,14,Rn(1,1,24,5,'#f0d3bf',1)+Rn(-12,8,24,5,'#ecccb6',1)+Rn(14,8,24,5,'#f0d3bf',1),'#f8e8dc'),`url(#${id})`],
+  op_go:id=>['','#f7ead6'],
+};
+export const SKIN_WALL=Object.keys(WALL_SKIN);
+/** Floor: [defs, fill]. */
+const FLOOR_SKIN={
+  go_sang:id=>[pat(id,90,15,Rn(0,14,90,1,'#c99a62')+Rn(30,0,1,15,'#c99a62')+Rn(75,0,1,15,'#d4a970'),'#e8c597'),`url(#${id})`],
+  gach_trang:id=>[pat(id,30,22,Rn(0,0,30,1,'#ddd6c8')+Rn(0,0,1,22,'#ddd6c8'),'#f6f2ea'),`url(#${id})`],
+  chieu:id=>[pat(id,12,12,Rn(0,0,6,6,'#dcc07a',0,.7)+Rn(6,6,6,6,'#dcc07a',0,.7)+Rn(0,11,12,1,'#c8a85e',0,.6),'#ead69c'),`url(#${id})`],
+  caro:id=>[pat(id,30,22,Rn(0,0,15,11,'#f2b8a8')+Rn(15,11,15,11,'#f2b8a8'),'#fdf3e6'),`url(#${id})`],
+  tham_len:id=>[pat(id,14,12,C(4,4,1.3,'#fbe0e7',0)+C(11,9,1.3,'#e9b3c2',0),'#f6c9d4'),`url(#${id})`],
+  gach_bong:id=>[pat(id,30,30,Rn(0,0,30,30,'#e7f0ec')+Pa('M15 3l5 12l-5 12l-5-12z','#7fb8a8',0)+Pa('M3 15l12-5l12 5l-12 5z','#7fb8a8',0)+C(15,15,3.5,'#f2c14e',0)+Rn(0,0,30,1,'#cfdcd6')+Rn(0,0,1,30,'#cfdcd6'),''),`url(#${id})`],
+  xuong_ca:id=>[pat(id,24,24,`<path d="M0 12l12-12h6l-12 12zM12 24l12-12v6l-6 6z" fill="#c78d55"/><path d="M12 0l12 12v6l-12-12zM0 12l12 12h-6l-6-6z" fill="#b97d47"/>`,'#d79b62'),`url(#${id})`],
+  ga_ke:id=>[pat(id,16,16,Rn(0,0,8,16,'#f7b9c7',0,.45)+Rn(0,0,16,8,'#f7b9c7',0,.45),'#fff6f4'),`url(#${id})`],
+  ga_may:id=>[pat(id,46,30,E(12,10,9,3.5,'#ffffff',0)+E(17,8,6,3.5,'#ffffff',0)+E(34,24,8,3,'#ffffff',0),'#cfe6f7'),`url(#${id})`],
+  ga_dau:id=>[pat(id,26,22,Pa('M7 7q-4 0-4 4q0 5 4 7q4-2 4-7q0-4-4-4z','#ef7f72',0)+Pa('M5 7l2-3l2 3z',P.leaf,0)+C(19,17,1.3,'#f5a9bc',0),'#fff8ef'),`url(#${id})`],
+  ga_meo:id=>[pat(id,30,26,C(9,10,4.5,'#ffffff',0)+Pa('M5 8l0-5l3 3zM13 8l0-5l-3 3z','#ffffff',0)+C(7.5,10,.8,OL,0)+C(10.5,10,.8,OL,0)+C(23,21,1.3,'#f5a9bc',0),'#dccff3'),`url(#${id})`],
+};
+export const SKIN_FLOOR=Object.keys(FLOOR_SKIN);
+
+/** A swatch of a skin for the drawer (its own SVG). */
+export function swatch(id,part,size=54){
+  const fn=(part==='wall'?WALL_SKIN:FLOOR_SKIN)[id],uid=`dcSw${part[0]}${id}`;
+  if(!fn){   // Như ban đầu: the room as it came
+    return `<svg class="dc-swatch" viewBox="0 0 54 40" width="${size}" height="${Math.round(size*40/54)}" aria-hidden="true" focusable="false">${Rn(0,0,54,40,part==='wall'?'#f3e2cc':'#eadfcf',6)}${L('M14 26l8-8l6 6l6-10l8 12','#c9b494',2)}</svg>`;
+  }
+  const [defs,fill]=fn(uid);
+  return `<svg class="dc-swatch" viewBox="0 0 54 40" width="${size}" height="${Math.round(size*40/54)}" aria-hidden="true" focusable="false"><defs>${defs}</defs>${Rn(0,0,54,40,fill,6)}${id==='op_go'?Rn(0,22,54,18,'#d8a874')+Rn(0,20,54,3,'#b47a45')+L('M12 24v16M26 24v16M40 24v16','#c48f5c',1.2):''}</svg>`;
+}
+
 /** The fixtures: drawn with the room, under the furniture (the counter as a floor piece of its row). */
-function fixture(f,room,G,parts,isNight,uid){
+function fixture(f,room,G,parts,Lt,uid){
   const x=PX+f.x*CW,w=f.w*CW;
   if(f.layer==='wall'){
     const y=G.WY+f.y*WR,h=f.h*WR;
     if(f.t==='window'){const id=`dcSky${uid}${f.x}`;
-      return R(x+3,y+2,w-6,h-6,'#fffaf1',4,1.5)+sky(x+7,y+6,w-14,h-14,isNight,id)+L(`M${x+w/2} ${y+6}v${h-14}${f.h>1?`M${x+7} ${y+h/2}h${w-14}`:''}`,'#fffaf1',3)
-        +R(x+1,y+h-6,w-2,5,'#f2e6d2',2,1.2)+(isNight?'':Pa(`M${x+8} ${y+h-6}l${w*0.5} ${G.FY-(y+h)+FR*1.4}h${w*0.9}l${-w*0.25} ${-(G.FY-(y+h)+FR*1.4)}z`,'#fff6c8',0,' opacity=".28"'));}
+      return R(x+3,y+2,w-6,h-6,'#fffaf1',4,1.5)+sky(x+7,y+6,w-14,h-14,Lt,id)+L(`M${x+w/2} ${y+6}v${h-14}${f.h>1?`M${x+7} ${y+h/2}h${w-14}`:''}`,'#fffaf1',3)
+        +R(x+1,y+h-6,w-2,5,'#f2e6d2',2,1.2);}
     if(f.t==='door'){const top=y+2,bot=G.FY;
       return R(x+4,top,w-8,bot-top,P.woodD,4)+Rn(x+8,top+4,w-16,bot-top-4,P.wood,2)+R(x+11,top+8,w-22,(bot-top)*.32,P.woodL,2,1)+R(x+11,top+12+(bot-top)*.36,w-22,(bot-top)*.38,P.woodL,2,1)
         +C(x+w-11,top+(bot-top)*.56,2.2,P.gold,1.1);}
@@ -192,6 +254,8 @@ function fixture(f,room,G,parts,isNight,uid){
       if((parts?.kitchen?.c??100)<60)s+=E(x+w-48,y+4,26,12,'#4a3f35',0,' opacity=".22"');
       return s;}
     if(f.t==='slope')return Pa(`M${x-PX} ${y-TOP-CEIL}h${w+PX+20}L${x-PX} ${y+h+10}z`,'#b98a5e')+L(`M${x-PX} ${y+h-6}L${x+w+6} ${y-TOP-CEIL}M${x-PX} ${y+h-24}L${x+w-14} ${y-TOP-CEIL}`,'#8e6440',2.4);
+    if(f.t==='shelf'){const ly=y+(f.ledge||24);   // the dorm's shelf over the pillow: a plank on two brackets
+      return Rn(x+6,ly+5,w-12,3,'#000',1,.08)+Pa(`M${x+12} ${ly+4}v8l8-8z`,P.woodD,1.2)+Pa(`M${x+w-12} ${ly+4}v8l-8-8z`,P.woodD,1.2)+R(x+3,ly,w-6,5,P.woodL,2,1.3)+Rn(x+6,ly+1,w-12,1.4,'#fff',0,.5);}
     return '';
   }
   // floor fixtures: drawn standing on their row
@@ -203,33 +267,54 @@ function fixture(f,room,G,parts,isNight,uid){
       +(lv?R(w-56,-top-8,40,4,'#2f2f35',1.5,1)+E(w-46,-top-9,6,1.6,'#4a4a52',0)+E(w-26,-top-9,6,1.6,'#4a4a52',0):R(w-50,-top-12,28,8,'#7d7a74',2,1.2)+C(w-36,-top-13,4,'#4a4a52',1));
     return s+'</g>';}
   if(f.t==='ladder')return `<g transform="translate(${x} ${by})">`+Rn(4,-FR+4,CW-8,FR-6,'#6e4a2c',3)+L(`M10 4v${-FR-14}M30 4v${-FR-14}M10 -4h20M10 -14h20M10 -24h20`,P.woodD,2.6)+'</g>';
-  if(f.t==='pillow')return `<g transform="translate(${x} ${by})">`+R(3,-24,CW-6,18,P.white,8)+L('M8 -15q12 4 24 0',P.grey,1.2)+'</g>';
+  if(f.t==='pillow')return `<g transform="translate(${x} ${by})">`+E(CW/2,-6,17,3,'#000',0,' opacity=".08"')+R(3,-24,CW-6,18,P.white,8)+L('M8 -15q12 4 24 0',P.grey,1.2)+C(CW-10,-18,1.6,P.pinkL,0)+'</g>';
   return '';
 }
 
-/** The room's background: ceiling, wall (paint or wallpaper as its upgrade level, the flaws of a worn part), floor,
- * fixtures; outdoors the sky and the city or the garden. parts: journey.reno parts by id (own home) or null. */
-export function roomBack(room,G,parts,isNight,uid=''){
+/** The sunbeam through each window (day only): from the sill down the wall and over the floor. */
+function beams(room,G,Lt,uid){
+  if(!Lt.beam||room.out)return '';
+  const out=[];
+  for(const f of room.fix||[]){
+    if(f.t!=='window'||f.layer!=='wall')continue;
+    const x=PX+f.x*CW+6,w=f.w*CW-12,y=G.WY+(f.y+f.h)*WR-6,reach=Math.min(G.H-8,G.FY+room.frows*FR*.75),drop=reach-y,sk=Lt.skew*drop;
+    const id=`dcBeam${uid}${f.x}`;
+    out.push(`<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${Lt.beam}" stop-opacity="${Lt.ba}"/><stop offset="1" stop-color="${Lt.beam}" stop-opacity="0"/></linearGradient></defs>`
+      +`<path d="M${x} ${y}h${w}l${sk+w*.25} ${drop}h${-w*1.5}z" fill="url(#${id})" pointer-events="none"/>`);
+  }
+  return out.join('');
+}
+
+/** The room's background: ceiling, wall (its skin, or paint and wallpaper as its upgrade level, the flaws of a worn
+ * part), floor, fixtures, the sunbeam; outdoors the sky and the city or the garden. parts: journey.reno parts by id
+ * (own home) or null. Lt: lightAt(). skin: {w, f} chosen for this room. */
+export function roomBack(room,G,parts,Lt,uid='',skin={}){
+  if(typeof Lt==='boolean')Lt=lightAt(Lt?1320:720);
   const out=[],wallLv=parts?.wall?.lv??null,floorLv=parts?.floor?.lv??null,sev=p=>!p?0:p.c<45?2:p.c<60?1:0;
   const wallKey=parts?`l${wallLv}`:room.type==='studio'&&room.id==='attic'?'attic':room.type==='studio'?'tro':room.type;
   const floorKey=room.out?room.type:parts?`l${floorLv}`:room.id==='attic'?'attic':room.type==='studio'?'tro':room.type;
+  const ws=WALL_SKIN[skin?.w],fs=FLOOR_SKIN[skin?.f];
   if(room.out){
-    out.push(sky(0,0,G.W,G.FY,isNight,`dcSkyOut${uid}`));
+    out.push(sky(0,0,G.W,G.FY,Lt,`dcSkyOut${uid}`));
     if(room.type==='balcony'){
       const sky2=[[0,40],[30,56],[54,32],[84,66],[106,46],[146,74],[174,44],[210,66],[240,48],[272,78],[298,52],[330,70],[360,44]].filter(([x])=>x<G.W);
-      out.push(Pa(`M0 ${G.FY}`+sky2.map(([x,h])=>`V${G.FY-h}H${x+30}`).join('')+`V${G.FY}z`,isNight?'#3a4566':'#b9cfdd',0));
-      if(isNight)out.push([[40,G.FY-30],[96,G.FY-50],[150,G.FY-36],[210,G.FY-44]].map(([a,b])=>Rn(a,b,4,4,'#ffd76a',1,.9)).join(''));
+      out.push(Pa(`M0 ${G.FY}`+sky2.map(([x,h])=>`V${G.FY-h}H${x+30}`).join('')+`V${G.FY}z`,Lt.night?'#3a4566':'#b9cfdd',0));
+      if(Lt.night)out.push([[40,G.FY-30],[96,G.FY-50],[150,G.FY-36],[210,G.FY-44]].map(([a,b])=>Rn(a,b,4,4,'#ffd76a',1,.9)).join(''));
       out.push(Rn(0,G.FY-26,G.W,4,'#7a6656',2)+Array.from({length:Math.ceil(G.W/18)},(_,i)=>Rn(i*18+6,G.FY-24,3,24,'#7a6656',1)).join(''));
     }else{
-      out.push(E(G.W*.2,G.FY-30,60,34,isNight?'#2f5a45':'#8cc47a',0)+E(G.W*.75,G.FY-34,70,40,isNight?'#2a5240':'#7cb86c',0)
-        +Rn(0,G.FY-22,G.W,22,isNight?'#2e5a40':'#6aa851')+Array.from({length:Math.ceil(G.W/22)},(_,i)=>R(i*22+4,G.FY-30,12,30,'#f3e6cf',2,1.1)).join(''));
+      out.push(E(G.W*.2,G.FY-30,60,34,Lt.night?'#2f5a45':'#8cc47a',0)+E(G.W*.75,G.FY-34,70,40,Lt.night?'#2a5240':'#7cb86c',0)
+        +Rn(0,G.FY-22,G.W,22,Lt.night?'#2e5a40':'#6aa851')+Array.from({length:Math.ceil(G.W/22)},(_,i)=>R(i*22+4,G.FY-30,12,30,'#f3e6cf',2,1.1)).join(''));
     }
   }else{
-    out.push(Rn(0,0,G.W,G.FY,WALLS[wallKey]||WALLS.l1));
-    if(wallKey==='l2'){out.push(`<defs><pattern id="dcPaper${uid}" width="22" height="22" patternUnits="userSpaceOnUse"><path d="M11 4l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#c4d8bd"/></pattern></defs>`+Rn(0,0,G.W,G.FY,`url(#dcPaper${uid})`)+Rn(0,G.FY-24,G.W,24,'#c99a6c'));}
-    if(wallKey==='attic')out.push(Array.from({length:Math.ceil(G.FY/16)},(_,i)=>L(`M0 ${i*16+8}H${G.W}`,'#d9b98c',1)).join(''));
-    if(wallKey==='tro')out.push(Array.from({length:Math.ceil(G.W/30)},(_,i)=>L(`M${i*30+15} 0V${G.FY}`,'#c9e6da',6,' opacity=".6"')).join(''));
-    if(wallKey==='bunk')out.push(Array.from({length:Math.ceil(G.W/24)*3},(_,i)=>C((i%Math.ceil(G.W/24))*24+12,(i/Math.ceil(G.W/24)|0)*30+30,2,'#d6c6ee',0)).join(''));
+    if(ws){const [defs,fill]=ws(`dcW${uid}`);out.push((defs?`<defs>${defs}</defs>`:'')+Rn(0,0,G.W,G.FY,fill));
+      if(skin.w==='op_go'){const t=G.FY-Math.round((G.FY-G.WY)*.45);out.push(Rn(0,t,G.W,G.FY-t,'#d8a874')+Array.from({length:Math.ceil(G.W/22)},(_,i)=>L(`M${i*22+11} ${t+4}V${G.FY}`,'#c48f5c',1.2)).join('')+R(-2,t-3,G.W+4,5,P.woodD,2,1.1));}
+    }else{
+      out.push(Rn(0,0,G.W,G.FY,WALLS[wallKey]||WALLS.l1));
+      if(wallKey==='l2'){out.push(`<defs><pattern id="dcPaper${uid}" width="22" height="22" patternUnits="userSpaceOnUse"><path d="M11 4l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#c4d8bd"/></pattern></defs>`+Rn(0,0,G.W,G.FY,`url(#dcPaper${uid})`)+Rn(0,G.FY-24,G.W,24,'#c99a6c'));}
+      if(wallKey==='attic')out.push(Array.from({length:Math.ceil(G.FY/16)},(_,i)=>L(`M0 ${i*16+8}H${G.W}`,'#d9b98c',1)).join(''));
+      if(wallKey==='tro')out.push(Array.from({length:Math.ceil(G.W/30)},(_,i)=>L(`M${i*30+15} 0V${G.FY}`,'#c9e6da',6,' opacity=".6"')).join(''));
+      if(wallKey==='bunk')out.push(Array.from({length:Math.ceil(G.W/24)*3},(_,i)=>C((i%Math.ceil(G.W/24))*24+12,(i/Math.ceil(G.W/24)|0)*30+30,2,'#d6c6ee',0)).join(''));
+    }
     const w=parts?.wall;
     if(sev(w))out.push(Pa(`M${G.W*.06} ${G.FY*.55}q10-8 22-2l6 10q-12 10-24 2z`,'#c9b691',0,' opacity=".85"')+Pa(`M${G.W*.72} ${G.FY*.32}q12-6 20 2l-4 12q-12 2-18-6z`,'#c9b691',0,' opacity=".85"')
       +(sev(w)>1?L(`M${G.W*.2} ${CEIL+6}l8 18-6 10 10 16M${G.W*.62} ${G.FY*.6}l-6 14 8 8-4 14`,'#7c6a52',1.6,' opacity=".75"'):''));
@@ -237,46 +322,76 @@ export function roomBack(room,G,parts,isNight,uid=''){
     const roof=parts?.roof;
     if(sev(roof))out.push(E(G.W*.28,CEIL+4,sev(roof)>1?40:26,sev(roof)>1?10:7,'#b48d55',0,' opacity=".45"')+(sev(roof)>1?C(G.W*.3,CEIL+16,2.6,'#7fb6d9',0):''));
     if(parts?.roof?.lv===2)out.push(Rn(0,CEIL-2,G.W,3,'#ffe8a3',0,.9));
-    if(room.type==='bunk')out.push(Rn(0,0,G.W,CEIL+8,P.woodD)+Array.from({length:Math.ceil(G.W/30)},(_,i)=>Rn(i*30+2,2,26,CEIL+2,P.wood,2)).join('')+Rn(0,0,8,G.H,P.woodD)+Rn(G.W-8,0,8,G.H,P.woodD));
-    out.push(Rn(0,G.FY-6,G.W,6,'#c9a27a'));
+    if(room.type==='bunk'){   // the upper bunk's slats overhead, the posts, a little ladder on the right
+      out.push(Rn(0,0,G.W,CEIL+8,P.woodD)+Array.from({length:Math.ceil(G.W/30)},(_,i)=>Rn(i*30+2,2,26,CEIL+2,P.wood,2)).join('')+Rn(0,CEIL+8,G.W,3,'#000',0,.08)
+        +Rn(0,0,8,G.H,P.woodD)+Rn(G.W-8,0,8,G.H,P.woodD)+Rn(2,0,2,G.H,P.wood,0,.6)+Rn(G.W-6,0,2,G.H,P.wood,0,.6));
+    }
+    out.push(Rn(0,G.FY-6,G.W,6,room.type==='bunk'?'#e9ddd2':'#c9a27a'));
   }
   // floor
-  const fc=FLOORS[floorKey]||FLOORS.l1;
-  out.push(Rn(0,G.FY,G.W,G.H-G.FY,fc));
-  if(floorKey==='yard')out.push([[30,G.FY+30],[110,G.FY+60],[200,G.FY+24],[290,G.FY+70],[60,G.FY+90]].filter(([a,b])=>a<G.W&&b<G.H).map(([a,b])=>L(`M${a} ${b}l4-8 4 8`,'#6aa851',2)).join(''));
-  else if(floorKey==='bunk')out.push(Array.from({length:Math.ceil(G.W/26)},(_,i)=>Rn(i*26+10,G.FY,8,G.H-G.FY,'#f6d6df',0,.7)).join('')+Rn(0,G.FY,G.W,5,'#efe2d6'));
-  else{
-    const wood=floorKey==='l2'||floorKey==='attic'||floorKey==='loft',line=wood?'#a46f3d':floorKey==='l0'?'#b5ab99':'#d8ccb8',lines=[];
-    for(let r=1;r<=room.frows;r++)lines.push(`M0 ${G.FY+r*FR}H${G.W}`);
-    if(wood)for(let r=0;r<room.frows;r++)for(let c=0;c<4;c++)lines.push(`M${(c*97+r*53)%G.W+10} ${G.FY+r*FR}v${FR}`);
-    else for(let c=0;c<=room.cols;c++)lines.push(`M${PX+c*CW} ${G.FY}V${G.H}`);
-    out.push(L(lines.join(''),line,1,' opacity=".7"'));
-    const fl=parts?.floor;
-    if(sev(fl))out.push(L(`M${G.W*.18} ${G.FY+20}l14 6-4 10 12 8M${G.W*.74} ${G.FY+50}l10-8 12 4`,'#7c6a52',1.6,' opacity=".75"'));
+  if(fs&&!room.out||fs&&room.type==='balcony'){
+    const [defs,fill]=fs(`dcF${uid}`);out.push(`<defs>${defs}</defs>`+Rn(0,G.FY,G.W,G.H-G.FY,fill));
+    if(room.type==='bunk')out.push(Rn(0,G.FY,G.W,5,'#efe2d6'));
+  }else{
+    const fc=FLOORS[floorKey]||FLOORS.l1;
+    out.push(Rn(0,G.FY,G.W,G.H-G.FY,fc));
+    if(floorKey==='yard')out.push([[30,G.FY+30],[110,G.FY+60],[200,G.FY+24],[290,G.FY+70],[60,G.FY+90]].filter(([a,b])=>a<G.W&&b<G.H).map(([a,b])=>L(`M${a} ${b}l4-8 4 8`,'#6aa851',2)).join(''));
+    else if(floorKey==='bunk')out.push(Array.from({length:Math.ceil(G.W/26)},(_,i)=>Rn(i*26+10,G.FY,8,G.H-G.FY,'#f6d6df',0,.7)).join('')+Rn(0,G.FY,G.W,5,'#efe2d6'));
+    else{
+      const wood=floorKey==='l2'||floorKey==='attic'||floorKey==='loft',line=wood?'#a46f3d':floorKey==='l0'?'#b5ab99':'#d8ccb8',lines=[];
+      for(let r=1;r<=room.frows;r++)lines.push(`M0 ${G.FY+r*FR}H${G.W}`);
+      if(wood)for(let r=0;r<room.frows;r++)for(let c=0;c<4;c++)lines.push(`M${(c*97+r*53)%G.W+10} ${G.FY+r*FR}v${FR}`);
+      else for(let c=0;c<=room.cols;c++)lines.push(`M${PX+c*CW} ${G.FY}V${G.H}`);
+      out.push(L(lines.join(''),line,1,' opacity=".7"'));
+    }
   }
+  const fl=parts?.floor;
+  if(sev(fl)&&!room.out)out.push(L(`M${G.W*.18} ${G.FY+20}l14 6-4 10 12 8M${G.W*.74} ${G.FY+50}l10-8 12 4`,'#7c6a52',1.6,' opacity=".75"'));
   out.push(Rn(0,G.FY,G.W,10,'#000',0,.05));
-  for(const f of room.fix)out.push(fixture(f,room,G,parts,isNight,uid));
+  for(const f of [...room.fix,...(room.more||[])])out.push(fixture(f,room,G,parts,Lt,uid));
+  out.push(beams(room,G,Lt,uid));
   return out.join('');
 }
 
-/** Where a placed piece is drawn: [translate x, translate y] of its origin. surf: the height it stands on. */
-export function spotXY(it,x,y,G,surf=0){
-  if(it.spot==='wall')return [PX+x*CW,G.WY+y*WR];
-  if(it.spot==='top')return [PX+x*CW,G.FY+(y+1)*FR-6-surf];
-  return [PX+x*CW,G.FY+(y+it.h)*FR-3];
+/** The light of the hour over everything (a tint) and the lamps' glow (list of [cx, cy, r]). */
+export function roomLight(G,Lt,glows,uid=''){
+  let s='';
+  if(Lt.ta&&Lt.tint)s+=`<rect width="${G.W}" height="${G.H}" fill="${Lt.tint}" opacity="${Lt.ta}" pointer-events="none"/>`;
+  if(Lt.lamps>.05&&glows.length){
+    s+=`<defs><radialGradient id="dcGlow${uid}"><stop offset="0" stop-color="#fff1b0" stop-opacity="${(.75*Lt.lamps).toFixed(2)}"/><stop offset=".55" stop-color="#ffe08a" stop-opacity="${(.28*Lt.lamps).toFixed(2)}"/><stop offset="1" stop-color="#ffe08a" stop-opacity="0"/></radialGradient></defs>`
+      +`<g pointer-events="none">${glows.map(g=>`<circle cx="${g[0].toFixed(1)}" cy="${g[1].toFixed(1)}" r="${g[2]}" fill="url(#dcGlow${uid})"/>`).join('')}</g>`;
+  }
+  return s;
 }
-/** One piece's drawing at its spot (flip: mirrored). */
-export function pieceSVG(it,x,y,f,G,surf=0){
+
+/** Where a placed piece is drawn: [x, y] of its origin. q: the piece {x, y, on…} in units; host: what it stands on
+ * ({it, q} a placed piece, or {fix} a fixture), when q.on. */
+export function anchor(it,q,G,host=null){
+  if(q.on&&host){
+    if(host.fix){const f=host.fix;
+      if(f.layer==='wall')return [PX+(f.x*U+q.x)*SX,G.WY+f.y*WR+(f.ledge||0)];
+      return [PX+(f.x*U+q.x)*SX,G.FY+(f.y*U+q.y+U)*SF-6-(f.top||f.surface||0)];}
+    const h=host.it,hq=host.q;
+    if(h.spot==='wall')return [PX+(hq.x+q.x)*SX,G.WY+hq.y*SW+(h.ledge||0)];
+    return [PX+(hq.x+q.x)*SX,G.FY+(hq.y+q.y+U)*SF-6-(h.surface||0)];
+  }
+  if(it.spot==='wall')return [PX+q.x*SX,G.WY+q.y*SW];
+  if(it.spot==='top')return [PX+q.x*SX,G.FY+(q.y+U)*SF-6];
+  return [PX+q.x*SX,G.FY+(q.y+it.h*U)*SF-3];
+}
+/** One piece's drawing with its origin at (ax, ay) (f: mirrored). */
+export function pieceAt(it,ax,ay,f){
   const a=ART[it.id];if(!a)return '';
-  const [tx,ty]=spotXY(it,x,y,G,surf),W=it.w*CW,D=it.spot==='wall'?it.h*WR:it.h*FR;
-  const body=a.d(W,D);
-  return `<g transform="translate(${tx} ${ty})">${f?`<g transform="translate(${W} 0) scale(-1 1)">${body}</g>`:body}</g>`;
+  const W=it.w*CW,D=it.spot==='wall'?it.h*WR:it.h*FR,body=a.d(W,D);
+  return `<g transform="translate(${n(ax)} ${n(ay)})">${f?`<g transform="translate(${W} 0) scale(-1 1)">${body}</g>`:body}</g>`;
 }
-/** A glow at night for a lamp at its spot: [cx, cy, r] in room units, or null. */
-export function glowAt(it,x,y,f,G,surf=0){
+/** A small soft shadow under a thing standing on a surface (the floor pieces draw their own). */
+export const contact=(it,ax,ay)=>E(ax+it.w*CW/2,ay-1.5,it.w*CW*.3,2.6,'#000',0,' opacity=".13"');
+/** A glow at night for a lamp with its origin at (ax, ay): [cx, cy, r], or null. */
+export function glowAt(it,ax,ay,f){
   const a=ART[it.id];if(!a?.g)return null;
-  const [tx,ty]=spotXY(it,x,y,G,surf),W=it.w*CW,D=it.spot==='wall'?it.h*WR:it.h*FR,[gx,gy,r]=a.g(W,D);
-  return [tx+(f?W-gx:gx),ty+gy,r];
+  const W=it.w*CW,D=it.spot==='wall'?it.h*WR:it.h*FR,[gx,gy,r]=a.g(W,D);
+  return [ax+(f?W-gx:gx),ay+gy,r];
 }
 /** A small picture of a piece for the drawer (its own viewBox). */
 export function thumb(it,size=56){
@@ -299,6 +414,27 @@ export function mascot(level,size=64){
     +E(32,58,18,4,'#000',0,' opacity=".1"')+Pa('M14 22l2-14l12 8M50 22l-2-14l-12 8',P.cream)+Pa('M17 18l1-6l6 4M47 18l-1-6l-6 4',P.pinkL,0)
     +E(32,46,20,13,P.cream)+E(32,31,19,15,P.cream)+Pa('M50 50q12-2 8-14',P.cream,1.5)+L('M24 22l-2-3M32 20v-3M40 22l2-3',P.peachD,1.4)
     +face+L('M14 33h-6M14 36l-6 2M50 33h6M50 36l6 2',OL,.9)+extra+'</svg>';
+}
+
+/** The cats who live in the room (drawn facing right, paws at 0,0; about 30 px long). coat: 'mochi' (cream, peach
+ * patches) or 'bo' (grey tabby). pose: walk | loaf | sleep | melt. */
+const COATS={mochi:{fur:'#fff6e8',patch:'#f6c79a',ear:'#f7b9c7',stripe:''},bo:{fur:'#cfc8c2',patch:'#b3aaa2',ear:'#efb0bd',stripe:'#9c938b'}};
+export function catSVG(pose,coat='mochi'){
+  const c=COATS[coat]||COATS.mochi,sw=1.3;
+  const head=(x,y)=>Pa(`M${x-7} ${y-3}l1-8l5 4zM${x+7} ${y-3}l-1-8l-5 4z`,c.fur,sw)+Pa(`M${x-5.5} ${y-5}l.6-4l2.4 2zM${x+5.5} ${y-5}l-.6-4l-2.4 2z`,c.ear,0)
+    +E(x,y,8,6.6,c.fur,sw)+(c.stripe?L(`M${x-2} ${y-6}v3M${x} ${y-6.5}v3M${x+2} ${y-6}v3`,c.stripe,1):E(x+4,y-3,3,2.4,c.patch,0));
+  const awake=(x,y)=>eyes(x-3,x+3,y,1.1)+Pa(`M${x-1} ${y+2}h2l-1 1z`,P.pinkD,0)+blush(x-5,y+2.5)+blush(x+5,y+2.5);
+  const asleep=(x,y)=>L(`M${x-4.5} ${y}q1.5 1.5 3 0M${x+1.5} ${y}q1.5 1.5 3 0`,OL,1)+blush(x-5,y+2.5)+blush(x+5,y+2.5);
+  if(pose==='walk')return E(0,0,13,2.2,'#000',0,' opacity=".12"')
+    +`<g class="dc-cat-legs a">${R(-9,-7,3.4,7,c.fur,1.5,1.1)+R(4,-7,3.4,7,c.fur,1.5,1.1)}</g><g class="dc-cat-legs b">${R(-5,-7,3.4,7,c.fur,1.5,1.1)+R(8,-7,3.4,7,c.fur,1.5,1.1)}</g>`
+    +Pa('M-11 -12q-9-4-7-14',c.fur==='#fff6e8'?c.fur:c.fur,sw,' class="dc-cat-tail"')+E(0,-11,13,7,c.fur,sw)+(c.stripe?L('M-4 -17v4M0 -18v4M4 -17v4',c.stripe,1.1):E(-3,-14,5,3,c.patch,0))+head(13,-18)+awake(13,-17);
+  if(pose==='sleep')return E(0,0,15,2.4,'#000',0,' opacity=".12"')+E(0,-7,14,8,c.fur,sw)+(c.stripe?L('M-6 -13v4M-2 -14v4M2 -14v4',c.stripe,1.1):E(-4,-10,6,3.4,c.patch,0))
+    +Pa('M-13 -4q4 4 14 3q8-1 10-4',c.fur,sw)+head(8,-8)+asleep(8,-7)+`<text class="dc-zz" x="12" y="-20" font-size="8" font-weight="800" fill="${OL}">z</text><text class="dc-zz b" x="17" y="-26" font-size="6" font-weight="800" fill="${OL}">z</text>`;
+  if(pose==='melt')return E(0,0,18,2.4,'#000',0,' opacity=".12"')+E(-2,-4,17,5,c.fur,sw)+(c.stripe?L('M-8 -8v3M-4 -9v3M0 -9v3',c.stripe,1.1):E(-6,-6,6,2.4,c.patch,0))
+    +R(10,-4,8,4,c.fur,2,1.1)+Pa('M-18 -3q-6 0-6-4',c.fur,sw)+head(13,-7)+asleep(13,-6);
+  // loaf: sitting tucked in, looking at you
+  return E(0,0,12,2.2,'#000',0,' opacity=".12"')+Pa('M9 -3q8 0 8-6',c.fur,sw,' class="dc-cat-tail"')+R(-10,-14,20,14,c.fur,7,sw)+(c.stripe?L('M-5 -13v4M0 -14v4M5 -13v4',c.stripe,1.1):E(4,-11,5,3,c.patch,0))
+    +head(0,-17)+awake(0,-16);
 }
 
 /** What stands in front of the furniture: the gác lửng's railing, the bunk's front rail (low, so pieces still show). */

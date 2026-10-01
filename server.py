@@ -677,6 +677,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/command":
                 if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
                 if str(data.get("action",""))[:5]=="fair_" and not self.server.rate_limit("fair:"+token,int(os.environ.get("FAIR_PER_MINUTE","40"))):self.error(429,"Từ từ thôi, hội chợ còn dài mà!","rate_limited");return  # 🏮 game/fair.py
+                if str(data.get("action",""))[:8]=="jr_deco_" and not self.server.rate_limit("deco:"+token,int(os.environ.get("DECO_PER_MINUTE","150"))):self.error(429,"Từ từ thôi, bày trí chậm lại chút nhé!","rate_limited");return  # 🪴 game/deco.py: drags send one move each
                 if length>256*1024 and data.get("action")!="import_save":self.error(413,"Thao tác quá lớn.");return
                 result=self.server.store.command(token,data.get("request_id"),data.get("expected_revision"),data.get("career"),data.get("action"),data.get("payload",{}))
                 self.json(200,result);return

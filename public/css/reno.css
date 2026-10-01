@@ -23,43 +23,65 @@
 .dc-room.edit{touch-action:none;cursor:default}
 .dc-hint{position:absolute;right:10px;bottom:10px;padding:4px 10px;border-radius:999px;background:rgba(255,253,248,.9);color:#5b4535;font-size:.8rem;font-weight:700;pointer-events:none;box-shadow:0 1px 4px rgba(0,0,0,.12)}
 
-path.dc-lines{fill:none;stroke:#7a6550;stroke-width:1;stroke-dasharray:3 4;opacity:.28;pointer-events:none}
 .dc-it{outline:none}
 .dc-room.edit .dc-it{cursor:grab}
+.dc-room.dragging,.dc-room.dragging .dc-it{cursor:grabbing}
 .dc-room.holding .dc-it{cursor:crosshair}
 .dc-hit{fill:transparent}
 .dc-it.ghost{opacity:.35}
+.dc-it.drag{opacity:.92}
+.dc-it.drag>.dc-piece{filter:drop-shadow(0 6px 4px rgba(60,40,20,.28))}
+.dc-it.drag.bad>.dc-piece{opacity:.55;filter:drop-shadow(0 0 3px #e2554a) drop-shadow(0 0 1px #e2554a)}
 .dc-selbox{fill:none;stroke:var(--accent);stroke-width:2.2;stroke-dasharray:6 4;pointer-events:none}
 .dc-it:focus-visible .dc-hit{stroke:var(--focus);stroke-width:2.5;fill:rgba(255,255,255,.15)}
-.dc-ok rect{fill:#7fdc9a;fill-opacity:.32;stroke:#3fae66;stroke-width:1.4;stroke-dasharray:4 3}
-.dc-ok circle{fill:#7fdc9a;fill-opacity:.6;stroke:#2f9a56;stroke-width:1.6}
-.dc-hot{fill:#ffffff;fill-opacity:.25;stroke:#2f9a56;stroke-width:2.4}
+/* where the piece in hand may go: its zone, the spots to keep clear, the surfaces small things stand on */
+.dc-zone{fill:#7fdc9a;fill-opacity:.14;stroke:#3fae66;stroke-width:1.6;stroke-dasharray:6 5}
+.dc-nogo{fill:#e2554a;fill-opacity:.12;stroke:#e2554a;stroke-opacity:.45;stroke-width:1.2;stroke-dasharray:3 3}
+.dc-surf{fill:#ffe27a;fill-opacity:.45;stroke:#e0a91c;stroke-width:1.4}
 .dc-float{position:fixed;z-index:20;width:64px;height:64px;pointer-events:none;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25));transform:rotate(-6deg)}
+.dc-buycard.lifted{opacity:.45;transform:scale(.94)}
 
-/* Pop-in, sparkles, Mochi's cheer */
+/* The cats: one transform each, moved by a transition (set from reno.js) */
+.dc-cat{transition-property:transform;transition-timing-function:linear;transition-duration:0ms}
+.dc-zz{opacity:.75}
+
+/* Pop-in, sparkles, Mochi's cheer, the cats walking and breathing */
 @media (prefers-reduced-motion:no-preference){
-  html:not(.reduce-motion) .dc-it.pop>.dc-piece{animation:dc-pop .45s cubic-bezier(.3,1.6,.5,1) both;transform-box:fill-box;transform-origin:50% 100%}
-  html:not(.reduce-motion) .dc-spark{animation:dc-spark .9s ease-out both;transform-box:fill-box;transform-origin:center}
-  html:not(.reduce-motion) .dc-spark.s1{animation-delay:.08s}
-  html:not(.reduce-motion) .dc-spark.s2{animation-delay:.16s}
-  html:not(.reduce-motion) .dc-spark.s3{animation-delay:.1s}
-  html:not(.reduce-motion) .dc-spark.s4{animation-delay:.2s}
-  html:not(.reduce-motion) .dc-ok rect,html:not(.reduce-motion) .dc-ok circle{animation:dc-glow 1.3s ease-in-out infinite}
-  html:not(.reduce-motion) .dc-cozy.cheer .dc-mochi{animation:dc-hop .7s ease-out 2}
-  html:not(.reduce-motion) .dc-card.on .dc-card-pic{animation:dc-wiggle 1.2s ease-in-out infinite}
+  body:not(.reduce-motion) .dc-it.pop>.dc-piece{animation:dc-pop .5s cubic-bezier(.3,1.6,.5,1) both;transform-box:fill-box;transform-origin:50% 100%}
+  body:not(.reduce-motion) .dc-spark{animation:dc-spark .9s ease-out both;transform-box:fill-box;transform-origin:center}
+  body:not(.reduce-motion) .dc-spark.s1{animation-delay:.08s}
+  body:not(.reduce-motion) .dc-spark.s2{animation-delay:.16s}
+  body:not(.reduce-motion) .dc-spark.s3{animation-delay:.1s}
+  body:not(.reduce-motion) .dc-spark.s4{animation-delay:.2s}
+  body:not(.reduce-motion) .dc-ok .dc-surf{animation:dc-glow 1.3s ease-in-out infinite}
+  body:not(.reduce-motion) .dc-cozy.cheer .dc-mochi{animation:dc-hop .7s ease-out 2}
+  body:not(.reduce-motion) .dc-buycard.on .dc-card-pic{animation:dc-wiggle 1.2s ease-in-out infinite}
+  body:not(.reduce-motion) .dc-cat-in.walk .dc-cat-legs.a{animation:dc-step .36s steps(2,jump-none) infinite}
+  body:not(.reduce-motion) .dc-cat-in.walk .dc-cat-legs.b{animation:dc-step .36s steps(2,jump-none) infinite reverse}
+  body:not(.reduce-motion) .dc-cat-in.sleep,body:not(.reduce-motion) .dc-cat-in.melt{animation:dc-breathe 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+  body:not(.reduce-motion) .dc-cat-in .dc-zz{animation:dc-zz 2.6s ease-in-out infinite}
+  body:not(.reduce-motion) .dc-cat-in .dc-zz.b{animation-delay:1.3s}
+  body:not(.reduce-motion) .dc-cat-in.loaf .dc-cat-tail{animation:dc-tail 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:0 100%}
 }
-@keyframes dc-pop{0%{transform:scale(.55) translateY(-10px);opacity:0}70%{transform:scale(1.06)}100%{transform:none;opacity:1}}
+@keyframes dc-pop{0%{transform:scale(.6,.5) translateY(-14px);opacity:0}55%{transform:scale(1.08,.92)}75%{transform:scale(.97,1.04)}100%{transform:none;opacity:1}}
 @keyframes dc-spark{0%{transform:scale(0) rotate(0);opacity:0}40%{opacity:1;transform:scale(1.25) rotate(30deg)}100%{transform:scale(.2) rotate(90deg) translateY(-8px);opacity:0}}
-@keyframes dc-glow{0%,100%{fill-opacity:.22}50%{fill-opacity:.48}}
+@keyframes dc-glow{0%,100%{fill-opacity:.3}50%{fill-opacity:.6}}
 @keyframes dc-hop{0%,100%{transform:none}30%{transform:translateY(-8px) rotate(-4deg)}60%{transform:translateY(0) rotate(3deg)}}
 @keyframes dc-wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
+@keyframes dc-step{0%{transform:translateY(0)}100%{transform:translateY(-1.6px)}}
+@keyframes dc-breathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.03,1.06)}}
+@keyframes dc-zz{0%{opacity:0;transform:translateY(2px)}40%{opacity:.8}100%{opacity:0;transform:translateY(-5px)}}
+@keyframes dc-tail{0%,100%{transform:rotate(0)}50%{transform:rotate(-12deg)}}
 .dc-sparks{pointer-events:none}
 
 /* Toolbars */
-.dc-bar{display:flex;gap:8px;flex-wrap:wrap}
-.dc-bar>.btn{flex:1 1 auto;min-height:44px}
+.dc-actions{display:flex;gap:8px;flex-wrap:wrap}
+.dc-actions>.btn{flex:1 1 auto;min-height:44px}
 .dc-tools,.dc-held{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 10px;border-radius:14px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-sm)}
-.dc-tools>b{flex:1 1 90px;min-width:0;overflow-wrap:anywhere}
+.dc-tools-name{display:flex;align-items:center;gap:8px;flex:1 1 100%;min-width:0}
+.dc-tools-name b{min-width:0;overflow-wrap:anywhere}
+.dc-tools-go{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 100%}
+.dc-tools-go .btn{flex:1 1 auto;padding-inline:8px;white-space:nowrap}
 .dc-tools .btn{min-height:40px}
 .dc-tools .dc-thumb,.dc-held .dc-thumb{flex:none}
 .dc-held{border-color:var(--good);background:var(--good-soft)}
@@ -77,26 +99,40 @@ path.dc-lines{fill:none;stroke:#7a6550;stroke-width:1;stroke-dasharray:3 4;opaci
 .dc-tip small{display:block;color:var(--ink-2)}
 
 /* The drawer: bag or shop, categories, a strip of cards (swipe sideways; drag one up into the room) */
-.dc-drawer{display:grid;gap:8px;padding:10px;border-radius:16px;background:var(--surface-2);border:1px solid var(--line);min-width:0}
+.dc-drawer{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding:10px;border-radius:16px;background:var(--surface-2);border:1px solid var(--line);min-width:0}
 .dc-drawer-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.dc-seg{flex:1 1 200px}
+.dc-seg{flex:1 1 290px;flex-wrap:nowrap;min-width:0}
 .dc-seg>button{min-height:40px}
 .dc-money{flex:none;font-weight:800;color:var(--ink-2);font-size:.9rem}
 .dc-cats{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 .dc-cats::-webkit-scrollbar{display:none}
-.dc-chip{flex:none;min-height:36px;padding:4px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font:700 .85rem/1.2 var(--font);white-space:nowrap;cursor:pointer}
-.dc-chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.dc-catchip{flex:none;min-height:36px;padding:4px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font:700 .85rem/1.2 var(--font);white-space:nowrap;cursor:pointer}
+.dc-catchip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .dc-strip{display:flex;gap:8px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;touch-action:pan-x;padding:2px 2px 6px;min-height:150px}
-.dc-card{position:relative;flex:none;width:104px;display:grid;justify-items:center;align-content:start;gap:2px;padding:8px 6px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);text-align:center;cursor:grab;scroll-snap-align:start;font:inherit;touch-action:pan-x}
-.dc-card b{font-size:.82rem;line-height:1.2;overflow-wrap:anywhere}
-.dc-card small{font-size:.75rem;color:var(--muted)}
+.dc-buycard{position:relative;flex:none;width:104px;display:grid;justify-items:center;align-content:start;gap:2px;padding:8px 6px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);text-align:center;cursor:grab;scroll-snap-align:start;font:inherit;touch-action:pan-x}
+.dc-buycard b{font-size:.82rem;line-height:1.2;overflow-wrap:anywhere}
+.dc-buycard small{font-size:.75rem;color:var(--muted)}
 .dc-card-pic{display:grid;place-items:center;width:62px;height:62px;border-radius:12px;background:var(--surface-2)}
-.dc-card.on{border-color:var(--good);box-shadow:0 0 0 3px var(--good-soft);background:var(--good-soft)}
-.dc-card.off{opacity:.5;cursor:not-allowed}
-.dc-card.poor small{color:var(--bad)}
-.dc-card:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.dc-buycard.on{border-color:var(--good);box-shadow:0 0 0 3px var(--good-soft);background:var(--good-soft)}
+.dc-buycard.off{opacity:.5;cursor:not-allowed}
+.dc-buycard.poor small{color:var(--bad)}
+.dc-buycard:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dc-n,.dc-have{position:absolute;top:6px;right:6px;padding:1px 7px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font:800 .72rem/1.5 var(--font);font-style:normal}
 .dc-have{background:var(--good);color:#fff}
+.dc-seg>button{flex:1 1 auto;min-width:0;padding-inline:6px;white-space:nowrap}
+@media (max-width:420px){.dc-seg>button{font-size:.8rem;padding-inline:4px}.dc-money{margin-left:auto}}
+/* 🎨 Tường & sàn: swatches */
+.dc-skins{min-width:0}
+.dc-skins h4{margin:2px 2px 6px;font-size:.88rem;color:var(--ink-2)}
+.dc-skin-strip{min-height:0}
+.dc-swatch-btn{position:relative;flex:none;width:92px;display:grid;justify-items:center;gap:3px;padding:6px 4px 8px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;text-align:center;cursor:pointer;scroll-snap-align:start}
+.dc-swatch-btn .dc-swatch{display:block;border-radius:8px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+.dc-swatch-btn b{font-size:.78rem;line-height:1.2;overflow-wrap:anywhere}
+.dc-swatch-btn small{font-size:.72rem;color:var(--muted)}
+.dc-swatch-btn.on{border-color:var(--good);box-shadow:0 0 0 3px var(--good-soft);background:var(--good-soft)}
+.dc-swatch-btn.on small{color:var(--good);font-weight:800}
+.dc-swatch-btn.poor{opacity:.55}
+.dc-swatch-btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dc-empty{display:grid;gap:8px;justify-items:start;padding:6px;color:var(--ink-2)}
 .dc-empty p{margin:0}
 
@@ -128,7 +164,7 @@ path.dc-lines{fill:none;stroke:#7a6550;stroke-width:1;stroke-dasharray:3 4;opaci
 .dc-sets em{flex:none;font-style:normal;font-weight:800;color:var(--accent-text)}
 .dc-set-ico{flex:none;display:inline-grid;place-items:center;width:36px;height:36px;border-radius:10px;background:var(--surface-2);font-size:1.25rem}
 .dc-sets li:not(.done) .dc-set-ico{filter:grayscale(.6);opacity:.75}
-.dc-note p{margin:0 0 6px}
+.dc-placenote p{margin:0 0 6px}
 .dc-more{margin-top:6px}
 .dc-why{margin-top:8px}
 .dc-why summary{display:flex;align-items:center;min-height:36px;font-weight:700;font-size:.9rem;color:var(--accent-text);cursor:pointer}

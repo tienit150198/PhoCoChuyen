@@ -12,7 +12,14 @@ height of its top in the drawing, and small things can sit on it. `rooms`: the r
 the theme sets look for. Ids are stored in saves: never rename or remove one (the first 27 came with 1.2.0).
 
 Fixtures (FIX in a room): the window, the door, the kitchen counter, the attic's sloping roof, the dorm's pillow…
-drawn by the room and blocking their cells; a counter is a surface too.
+drawn by the room and blocking their cells; a counter is a surface too. `fix` stays exactly as 1.3.2 had it (the grid
+mirror an older build reads, game/deco.py); built-ins added since then (the dorm's shelf) are in `more`.
+
+Since 1.4 pieces stand anywhere (game/deco.py, free placement): positions are units, U to a cell (x across, y from the
+back of the floor or the top of the wall). FIX_FREE says what each fixture does there: which ones keep pieces off
+(`block`; a doormat by the door and curtains over a window are fine), which ones small things stand on (`top`: the
+height of a floor surface; `ledge`: where a wall shelf's plank is, from the top of its wall cells) and how many
+(`hold` a cell of width). An item's `ledge` (a wall shelf) works the same way. SKINS: wallpapers, floors, the bunk's sheets.
 """
 from __future__ import annotations
 
@@ -30,9 +37,9 @@ CATS = (('bed', '🛏️', 'Giường, tủ & thảm'), ('table', '🪑', 'Bàn 
 SPOTS = ('wall', 'floor', 'rug', 'top')
 
 
-def _i(cat, spot, w, h, price, cozy, rooms, name, emoji, tags=(), surface=0):
+def _i(cat, spot, w, h, price, cozy, rooms, name, emoji, tags=(), surface=0, ledge=0):
     return dict(cat=cat, spot=spot, w=w, h=h, price=price, cozy=cozy, rooms=tuple(rooms), name=name, emoji=emoji,
-                tags=tuple(tags), surface=surface)
+                tags=tuple(tags), surface=surface, ledge=ledge)
 
 
 ITEMS = {
@@ -108,8 +115,11 @@ ITEMS = {
     'may_choi_game': _i('fun', 'top', 1, 1, 220, 2, LIVE + ('loft', 'bunk'), 'Máy chơi game', '👾', ('gaming', 'screen')),
     'hop_nhac': _i('fun', 'top', 1, 1, 55, 1, SMALL, 'Hộp nhạc', '🎶', ('music',)),
     'o_meo': _i('fun', 'floor', 1, 1, 45, 2, LIVE + ('loft',), 'Ổ mèo bông', '🐈', ('soft',)),
+    # 1.4: a plain wall shelf, small things stand on it
+    'ke_go_treo': _i('wall', 'wall', 2, 1, 30, 1, WALLS, 'Kệ gỗ treo trơn', '🪵', (), ledge=24),
 }
 LEGACY = tuple(ITEMS)[:27]          # the 1.2.0 catalogue (reno.py slots)
+KNOWN_132 = tuple(ITEMS)[:65]       # what a 1.3.2 build knows (the grid mirror only holds these)
 
 
 # ---------------------------------------------------------------- rooms
@@ -145,6 +155,19 @@ def own_room(rid: str, wall: int, floor: int, name: str | None = None) -> dict:
     return dict(id=rid, type=rid, emoji=emoji, name=name or base, cols=cols, wrows=wrows, frows=frows, out=out, fix=fix, tags=())
 
 
+# Free placement (1.4): units to a grid cell, and what each fixture does there.
+U = 20
+FIX_FREE = {
+    'window': dict(block=True, allow=('fabric',)),   # curtains may hang over it
+    'door': dict(block=True, rug=True),              # a doormat may lie in front of it
+    'slope': dict(block=True),
+    'splash': dict(),                                # the kitchen tiles: a spice rack hangs there
+    'counter': dict(block=True, top=30, hold=2),
+    'ladder': dict(block=True),
+    'pillow': dict(block=True, top=9, hold=2),       # a teddy on the dorm pillow
+    'shelf': dict(ledge=24, hold=2),                 # the dorm's shelf over the bunk
+}
+
 # Rented rooms and Bà Tám's attic (no structure to repair: the landlord's).
 RENT_ROOMS = {
     'attic': (dict(id='attic', type='studio', emoji='🏚️', name='Căn gác', cols=6, wrows=2, frows=3, out=False, tags=(),
@@ -154,7 +177,7 @@ RENT_ROOMS = {
                 dict(id='loft', type='loft', emoji='🪜', name='Gác lửng', cols=6, wrows=1, frows=2, out=False, tags=(),
                      fix=[_fx('ladder', 'floor', 5, 1)])),
     'ky_tuc_xa': (dict(id='bunk', type='bunk', emoji='🛏️', name='Góc giường của bạn', cols=5, wrows=2, frows=2, out=False,
-                       tags=('bed',), fix=[_fx('pillow', 'floor', 0, 0)]),),
+                       tags=('bed',), fix=[_fx('pillow', 'floor', 0, 0)], more=[_fx('shelf', 'wall', 0, 0, 2, 1)]),),
 }
 
 
@@ -199,3 +222,50 @@ GUESTS = {
              ('🧔', 'Chú Tư', ('“Chú đi ngang thấy đèn sáng nên ghé coi. Cái {item} này được đó nha!”',
                                 '“Nhà gọn gàng sạch sẽ, nhìn là biết chủ nhà siêng.”'))),
 }
+
+
+# ---------------------------------------------------------------- wallpapers and floors (1.4)
+# part 'wall' | 'floor' ('auto': either, the room as it came). price 0: free; a priced one is bought once and then
+# used in any room. types: the room types it suits (None: any room with that part, but not the bunk's mattress and
+# not a garden lawn; the bunk has its own sheets). Ids are stored in saves.
+def _sk(part, name, price, types=None):
+    return dict(part=part, name=name, price=price, types=types)
+
+
+SKINS = {
+    'auto': _sk('both', 'Như ban đầu', 0),
+    'kem': _sk('wall', 'Sơn kem sữa', 0),
+    'bac_ha': _sk('wall', 'Sơn xanh bạc hà', 0),
+    'hong_dao': _sk('wall', 'Sơn hồng đào', 0),
+    'soc': _sk('wall', 'Giấy kẻ sọc pastel', 25),
+    'cham_bi': _sk('wall', 'Giấy chấm bi', 25),
+    'hoa_nhi': _sk('wall', 'Giấy hoa nhí', 35),
+    'may_sao': _sk('wall', 'Giấy mây và sao', 40),
+    'gach_the': _sk('wall', 'Ốp gạch thẻ', 45),
+    'op_go': _sk('wall', 'Ốp gỗ nửa tường', 60),
+    'go_sang': _sk('floor', 'Sàn gỗ sáng', 0),
+    'gach_trang': _sk('floor', 'Gạch men trắng', 0),
+    'chieu': _sk('floor', 'Chiếu cói', 20),
+    'caro': _sk('floor', 'Gạch caro', 30),
+    'tham_len': _sk('floor', 'Thảm len hồng', 40),
+    'gach_bong': _sk('floor', 'Gạch bông', 45),
+    'xuong_ca': _sk('floor', 'Sàn gỗ xương cá', 50),
+    'ga_ke': _sk('floor', 'Ga kẻ hồng', 0, ('bunk',)),
+    'ga_may': _sk('floor', 'Ga mây xanh', 20, ('bunk',)),
+    'ga_dau': _sk('floor', 'Ga dâu tây', 25, ('bunk',)),
+    'ga_meo': _sk('floor', 'Ga mèo con', 30, ('bunk',)),
+}
+
+
+def skin_fits(room: dict, skin: str, part: str) -> bool:
+    """May `skin` cover the `part` ('wall' | 'floor') of `room`?"""
+    S = SKINS.get(skin)
+    if not S or S['part'] not in (part, 'both'):
+        return False
+    if part == 'wall' and (room['out'] or not room['wrows']):
+        return False
+    if skin == 'auto':
+        return True
+    if S['types'] is not None:
+        return room['type'] in S['types']
+    return room['type'] not in ('bunk', 'yard')

@@ -1,18 +1,23 @@
-"""🪴 Bày trí phòng: a browser walk-through (dev tool, needs `pip install playwright` + chromium).
+"""🪴 Bày trí phòng: a browser walk-through with real drags (dev tool, needs `pip install playwright` + chromium).
 
 Runs the real app on a throwaway story-mode server (as scripts/browser_housing.py) and seeds one save straight in its
-database: a named character who bought the old tập thể 24 life days ago, with a sofa and a picture placed the 1.2.0
-way (room slots, migrated on the fly). In the browser, at 390x844 and 1280x800:
-  1. own home: view, edit mode with the tip, the shop, buy a plant by tapping a lit cell, select it, flip it, drag it,
-     put it back in the bag, undo, drag a card up out of the drawer into the room, 📸 the photo, 🛠️ Sửa nhà;
-  2. the home is sold and a phòng trọ rented (server side): everything is back in the bag; set up the trọ and the
-     gác lửng, by tap and by drag;
-  3. the dorm: the bunk corner.
-Light theme and "Phố đêm" for the main screens. Exit 1 on any console error.
+database: a named character who bought the old tập thể 24 life days ago and set it up in 1.3.2 (a grid layout in
+journey.deco, no journey.decor: it converts on load). In the browser, at 390x844 and 1280x800 (pointer down, move in
+steps, up, like a finger):
+  1. own home: the converted room; drag the sofa, drag the coffee table (its lamp rides along), drag a vase up out of
+     the shop onto the table, flip, bring a picture forward, a free wallpaper and a bought one, undo, the cats, the
+     photo, 🛠️ Sửa nhà;
+  2. the home is sold and a phòng trọ rented (server side): everything is in the bag; drag a rug, the sofa onto it,
+     a table and a lamp onto the table, then the gác lửng;
+  3. the dorm: the bunk corner (curtain on the wall, teddy on the pillow, a night light on the shelf, sheets).
+Light theme and "Phố đêm"; the day shots at 10:00 local, then a night pass at 21:00. Exit 1 on any console error or
+a failed step.
 
     python scripts/browser_deco.py [out_dir]
 """
 import asyncio
+import datetime as dt
+import os
 import sys
 from pathlib import Path
 
@@ -21,7 +26,13 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / 'scripts'))
 from browser_housing import server  # noqa: E402
 
-OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT.parent / '_deco_shots'
+OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT.parent / '_decofree_shots'
+
+
+def tz_for(hour: int) -> str:
+    """An Etc/GMT zone where the local time is about `hour` o'clock now."""
+    off = (hour - dt.datetime.now(dt.timezone.utc).hour + 12) % 24 - 12
+    return 'UTC' if off == 0 else f'Etc/GMT{"-" if off > 0 else "+"}{abs(off)}'
 
 
 def mutate(db: str, token: str, fn) -> None:
@@ -33,6 +44,7 @@ def mutate(db: str, token: str, fn) -> None:
 
 
 def seed_own(s):
+    from game import deco as dc
     from game import housing as hs
     from game import journey as jr
     from game import reno as rn
@@ -46,10 +58,16 @@ def seed_own(s):
         j['life_day'] = d
         jr._wallet(j, 60, 'salary', f'Lương ngày {d}')
         hs.on_life_day(s)
-    # the 1.2.0 way: pieces in room slots (deco.layout turns them into grid spots)
+    # the 1.3.2 way: a grid layout in journey.deco (deco.layout converts it to free units)
     r = rn.ensure_block(s)
-    for k, room, slot in (('sofa', 'living', 'f1'), ('tranh', 'living', 'w0'), ('cay_canh', 'living', 'f0')):
-        r['items'].append(dict(id=rn.new_uid(r), k=k, r=room, x=slot))
+    ids = {}
+    for k in ('tham', 'sofa', 'tranh', 'anh', 'ban_tra', 'den_ban', 'cay_canh'):
+        ids[k] = rn.new_uid(r)
+        r['items'].append(dict(id=ids[k], k=k, r=None, x=None))
+    d = j['deco'] = dc.blank(j['life_day'], dc.place(j)['key'])
+    d['pos'] = {ids['tham']: ['living', 0, 1, 0], ids['sofa']: ['living', 0, 1, 0], ids['tranh']: ['living', 3, 0, 0],
+                ids['anh']: ['living', 4, 1, 0], ids['ban_tra']: ['living', 3, 2, 0], ids['den_ban']: ['living', 4, 2, 0],
+                ids['cay_canh']: ['living', 5, 1, 0]}
     j['wallet'] = max(j['wallet'], 4000)
 
 
@@ -68,23 +86,31 @@ def move_to(kind):
 async def main():
     from playwright.async_api import async_playwright
     OUT.mkdir(parents=True, exist_ok=True)
-    errors = []
+    errors, failed = [], []
     with server() as (base, db):
         async with async_playwright() as pw:
             browser = await pw.chromium.launch()
-            for w, h in ((390, 844), (1280, 800)):
-                ctx = await browser.new_context(viewport=dict(width=w, height=h))
+            for w, h, hour, full in ((390, 844, 10, True), (1280, 800, 10, True), (390, 844, 21, False), (1280, 800, 21, False)):
+                if os.environ.get('DECO_ONLY') and os.environ['DECO_ONLY'] != str(w):
+                    continue
+                ctx = await browser.new_context(viewport=dict(width=w, height=h), timezone_id=tz_for(hour), has_touch=w < 500)
+                await ctx.add_init_script("try{localStorage.setItem('mnl.wn.seen','9.9.9')}catch(e){}")
                 page = await ctx.new_page()
                 page.on('console', lambda m: m.type == 'error' and errors.append(m.text))
                 page.on('pageerror', lambda e: errors.append(str(e)))
                 await page.goto(base)
                 await page.wait_for_selector('#app:not([hidden])', timeout=30000)
                 token = next(c['value'] for c in await ctx.cookies() if c['name'] == 'mnl_session')
-                tag = f'{w}x{h}'
+                tag = f'{w}x{h}' + ('' if hour < 18 else '-night')
+
+                def expect(ok, what):
+                    if not ok:
+                        failed.append(f'{tag}: {what}')
+                        print('  ✗', what)
 
                 async def popups():
                     for _ in range(4):
-                        b = page.locator('[data-wn="close"]:visible, [data-action="jrSceneClose"]:visible')
+                        b = page.locator('[data-wn="close"]:visible, [data-action="jrSceneClose"]:visible, button:has-text("Đã hiểu"):visible')
                         if not await b.count():
                             break
                         await b.first.click()
@@ -92,14 +118,14 @@ async def main():
 
                 async def reload():
                     await page.reload()
-                    await page.wait_for_selector('#app:not([hidden])', timeout=30000)
+                    await page.wait_for_selector('#app:not([hidden])', timeout=60000)
                     await page.wait_for_timeout(1500)
                     await popups()
                     await page.evaluate("document.querySelectorAll('dialog[open]:not(#sheet)').forEach(d=>d.close())")
 
-                async def shot(name, full=False):
-                    await page.wait_for_timeout(500)
-                    await page.screenshot(path=str(OUT / f'{tag}-{name}.png'), full_page=full)
+                async def shot(name, fullpage=False):
+                    await page.wait_for_timeout(450)
+                    await page.screenshot(path=str(OUT / f'{tag}-{name}.png'), full_page=fullpage)
 
                 async def confirm():
                     await page.wait_for_selector('#confirmDialog[open]', timeout=5000)
@@ -116,14 +142,27 @@ async def main():
                         await shot(f'{name}-{th}')
                     await theme('kem')
 
-                async def center(sel, last=False):
-                    box = await page.evaluate("""([s,last])=>{const l=[...document.querySelectorAll(s)];const e=last?l[l.length-1]:l[0];if(!e)return null;
-                        e.scrollIntoView?.({block:'center'});const r=e.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2];}""", [sel, last])
-                    assert box, f'nothing at {sel}'
-                    return box
+                async def box(sel, scroll=False):
+                    b = await page.evaluate("""([s,scroll])=>{const e=document.querySelector(s);if(!e)return null;if(scroll)e.scrollIntoView({block:'center'});
+                        const r=e.getBoundingClientRect();return [r.left,r.top,r.width,r.height];}""", [sel, scroll])
+                    if not b:
+                        await page.screenshot(path=str(OUT / f'{tag}-FAIL.png'))
+                    assert b, f'nothing at {sel}'
+                    return b
+
+                async def tap(sel, wait=500):
+                    await popups()
+                    try:
+                        await page.click(sel, timeout=8000)
+                    except Exception:
+                        await page.screenshot(path=str(OUT / f'{tag}-FAIL.png'))
+                        print('  ✗ could not tap', sel, await page.evaluate("[...document.querySelectorAll('dialog[open]')].map(d=>d.id||d.className)"))
+                        raise
+                    await page.wait_for_timeout(wait)
+                    await popups()
 
                 async def flash():
-                    return (await page.inner_text('.dc-sheet .bk-flash'))[:160]
+                    return (await page.inner_text('.dc-sheet .bk-flash'))[:170]
 
                 async def open_place(button):
                     await page.wait_for_selector('.jr-house-row', timeout=10000)
@@ -133,153 +172,212 @@ async def main():
                     await page.click(f'.hs-sheet [data-hs="inside"]{button}')
                     await page.wait_for_selector('.dc-sheet[open] svg.dc-room', timeout=10000)
 
-                async def drag(src, dst_sel, name, dy=-24, last=True):
-                    x, y = src
-                    await page.mouse.move(x, y)
-                    await page.mouse.down()
-                    await page.mouse.move(x + 2, y + dy, steps=4)
+                async def room_top():
+                    await page.evaluate("""()=>{const w=document.querySelector('.dc-sheet .dc-roomwrap'),h=document.querySelector('.dc-sheet .sheet-head');if(!w)return;
+                        w.scrollIntoView({block:'start'});let s=w.parentElement;while(s&&s.scrollHeight<=s.clientHeight+2)s=s.parentElement;
+                        if(s&&h)s.scrollBy(0,-(h.getBoundingClientRect().bottom-s.getBoundingClientRect().top)-8);}""")
                     await page.wait_for_timeout(250)
-                    tx, ty = await center(dst_sel, last)
-                    await page.mouse.move(tx, ty, steps=8)
-                    await shot(name)
-                    print(tag, name, 'ghost:', await page.evaluate("(()=>{const e=document.querySelector('.dc-float');if(!e)return null;const r=e.getBoundingClientRect();return [Math.round(r.left),Math.round(r.top),getComputedStyle(e).position]})()"))
+
+                async def finger(x0, y0, x1, y1, name=None, lift=0):
+                    """Press at (x0, y0), move like a finger to (x1, y1) (first `lift` px straight up), release."""
+                    await page.mouse.move(x0, y0)
+                    await page.mouse.down()
+                    if lift:
+                        await page.mouse.move(x0, y0 - lift, steps=5)
+                    await page.mouse.move(x1, y1, steps=14)
+                    await page.wait_for_timeout(120)
+                    if name:
+                        await shot(name)
                     await page.mouse.up()
-                    await page.wait_for_timeout(1000)
+                    await page.wait_for_timeout(1100)
+                    await popups()
 
-                async def uids():
-                    return await page.evaluate("[...document.querySelectorAll('.dc-sheet .dc-it')].map(g=>g.dataset.uid)")
+                async def drag_piece(k, dx, dy, name=None):
+                    l, t, bw, bh = await box(f'.dc-sheet .dc-it[data-k="{k}"] .dc-hit')
+                    x, y = l + bw / 2, t + bh * .6
+                    await finger(x, y, x + dx, y + dy, name)
 
-                # ---- 1. a home you own
+                async def drag_card(k, target, name=None):
+                    """Drag a drawer card up into the room; `target` (x, y): where the piece's base should land."""
+                    await page.evaluate(f"document.querySelector('.dc-sheet .dc-buycard[data-k=\"{k}\"]')?.scrollIntoView({{block:'nearest',inline:'center'}})")
+                    await room_top()
+                    l, t, bw, bh = await box(f'.dc-sheet .dc-buycard[data-k="{k}"]')
+                    if t + 70 > h:   # the card is below the fold: scroll just enough to grab it, as a thumb would
+                        await page.evaluate("""(dy)=>{let s=document.querySelector('.dc-sheet .dc-roomwrap').parentElement;
+                            while(s&&s.scrollHeight<=s.clientHeight+2)s=s.parentElement;if(s)s.scrollBy(0,dy);}""", t + 80 - h)
+                        await page.wait_for_timeout(150)
+                        l, t, bw, bh = await box(f'.dc-sheet .dc-buycard[data-k="{k}"]')
+                    if callable(target):
+                        target = await target()
+                    await finger(l + bw / 2, min(t + bh / 2, h - 30), target[0], target[1] + 4, name, lift=40)
+
+                async def top_of(k):
+                    l, t, bw, bh = await box(f'.dc-sheet .dc-it[data-k="{k}"] .dc-hit')
+                    return l + bw / 2, t + 7
+
+                def at(fx, fy):
+                    async def go():
+                        l, t, rw, rh = await box('.dc-sheet svg.dc-room')
+                        return l + rw * fx, t + rh * fy
+                    return go
+
+                async def ons():
+                    return await page.evaluate("Object.fromEntries([...document.querySelectorAll('.dc-sheet .dc-it[data-on]')].map(g=>[g.dataset.k,g.dataset.on]))")
+
+                async def kinds():
+                    return await page.evaluate("[...document.querySelectorAll('.dc-sheet .dc-it[data-uid]')].map(g=>g.dataset.k)")
+
+                # ---- 1. a home you own (set up in 1.3.2: converted on load)
                 mutate(db, token, seed_own)
                 await reload()
                 await open_place(':not([data-mode])')
+                got = sorted(await kinds())
+                print(tag, 'converted:', got, await ons())
+                expect(got == sorted(['tham', 'sofa', 'tranh', 'anh', 'ban_tra', 'den_ban', 'cay_canh']), 'every 1.3.2 piece is placed after the conversion')
+                expect((await ons()).get('den_ban'), 'the lamp stands on the coffee table')
                 await both('01-own-view')
-                await page.click('.dc-sheet [data-dc="edit"]')
+                if not full:
+                    await page.wait_for_timeout(5000)
+                    await both('02-own-cats')
+                    await tap('.dc-sheet [data-dc="close"]')
+                    await ctx.close()
+                    continue
+                await tap('.dc-sheet [data-dc="edit"]')
                 await page.wait_for_selector('.dc-sheet svg.dc-room.edit')
                 await shot('02-edit-tip')
-                await page.click('.dc-sheet [data-dc="tipOk"]')
-                await page.click('.dc-sheet [data-dc="drawer"][data-d="shop"]')
-                await page.click('.dc-sheet .dc-card[data-k="den_cay"]')
-                await page.wait_for_selector('.dc-sheet .dc-ok rect')
-                await both('03-holding-lamp')
-                before = set(await uids())
-                await page.mouse.click(*(await center('.dc-sheet .dc-ok rect', last=True)))
+                await tap('.dc-sheet [data-dc="tipOk"]')
+                await room_top()
+                await drag_piece('sofa', 46, 14, '03-dragging-sofa')
+                f = await flash()
+                print(tag, 'sofa:', f)
+                expect('Đã dời sofa' in f, 'drag the sofa')
+                await drag_piece('ban_tra', -70, 18, '04-dragging-table')
+                f = await flash()
+                print(tag, 'table:', f)
+                expect('Đèn bàn đi theo' in f and (await ons()).get('den_ban'), 'the lamp rides along with the table')
+                await tap('.dc-sheet [data-dc="drawer"][data-d="shop"]', 300)
+                await drag_card('binh_hoa', lambda: top_of('ban_tra'), '05-dragging-vase')
                 await confirm()
-                await page.wait_for_timeout(300)
-                await shot('04-bought-pop')
-                new = [u for u in await uids() if u not in before]
-                print(tag, 'buy:', await flash(), new)
-                assert new, 'the lamp is not in the room'
-                lamp = new[0]
-                await page.wait_for_selector('.dc-sheet .dc-tools')   # a piece just placed is selected
-                await shot('05-selected')
-                await page.click('.dc-sheet [data-dc="flip"]')
-                await page.wait_for_timeout(600)
-                print(tag, 'flip:', await flash())
-                await drag(await center(f'.dc-sheet .dc-it[data-uid="{lamp}"] .dc-hit'), '.dc-sheet .dc-ok rect', '06-dragging', dy=12, last=False)
-                print(tag, 'drag:', await flash())
-                await page.click('.dc-sheet [data-dc="pick"]')   # still selected after the drag
-                await page.wait_for_timeout(700)
-                print(tag, 'pick:', await flash())
-                await page.click('.dc-sheet [data-dc="drawer"][data-d="bag"]')
-                await shot('07-in-bag')
-                await page.click('.dc-sheet [data-dc="undo"]')
-                await page.wait_for_timeout(700)
+                f = await flash()
+                print(tag, 'vase:', f, await ons())
+                expect('binh_hoa' in await ons(), 'the vase landed on the table')
+                await shot('06-vase-on-table')
+                # a piece's tools: flip, forward
+                l, t, bw, bh = await box('.dc-sheet .dc-it[data-k="tranh"] .dc-hit', scroll=True)
+                await page.mouse.click(l + bw / 2, t + bh / 2)
+                await page.wait_for_selector('.dc-sheet .dc-tools')
+                await shot('07-selected')
+                await tap('.dc-sheet [data-dc="zup"]', 700)
+                print(tag, 'zup:', await flash())
+                await tap('.dc-sheet [data-dc="flip"]', 700)
+                f = await flash()
+                print(tag, 'flip:', f)
+                expect('Đã lật' in f, 'flip')
+                await tap('.dc-sheet [data-dc="undo"]', 700)
                 print(tag, 'undo:', await flash())
-                assert lamp in await uids(), 'undo did not put the lamp back'
-                # buy two plants to the bag, drag one up out of the drawer
-                await page.click('.dc-sheet [data-dc="drawer"][data-d="shop"]')
-                await page.click('.dc-sheet .dc-card[data-k="cay_monstera"]')
-                await page.click('.dc-sheet [data-dc="buyBag"]')
+                # 🎨 walls and floors
+                await tap('.dc-sheet [data-dc="drawer"][data-d="skin"]', 300)
+                await tap('.dc-sheet [data-dc="skin"][data-part="wall"][data-skin="bac_ha"]', 700)
+                f = await flash()
+                print(tag, 'paint:', f)
+                expect('bạc hà' in f, 'a free paint')
+                await tap('.dc-sheet [data-dc="skin"][data-part="wall"][data-skin="hoa_nhi"]', 400)
+                await shot('08-trying-wallpaper')
                 await confirm()
-                await page.click('.dc-sheet [data-dc="unhold"]')
-                await page.click('.dc-sheet [data-dc="drawer"][data-d="bag"]')
-                await shot('08-bag')
-                before = set(await uids())
-                await drag(await center('.dc-sheet .dc-card[data-k="cay_monstera"]'), '.dc-sheet .dc-ok rect', '09-drag-from-bag')
-                print(tag, 'drop from bag:', await flash())
-                assert set(await uids()) - before, 'the plant did not land'
-                # the kitchen, Ấm cúng card
-                await page.click('.dc-sheet [data-dc="room"][data-room="kitchen"]')
-                await both('10-kitchen-edit')
-                await page.click('.dc-sheet [data-dc="done"]')
-                await page.click('.dc-sheet [data-dc="room"][data-room="living"]')
-                await both('11-living-done')
-                await shot('11b-full', full=True)
-                await page.click('.dc-sheet [data-dc="photo"]')
+                f = await flash()
+                print(tag, 'paper:', f)
+                expect('hoa nhí' in f, 'buy a wallpaper')
+                await tap('.dc-sheet [data-dc="skin"][data-part="floor"][data-skin="go_sang"]', 700)
+                await room_top()
+                await both('09-skins')
+                await tap('.dc-sheet [data-dc="done"]', 5500)   # the cats wander
+                await both('10-living-done')
+                await shot('10b-full', fullpage=True)
+                await tap('.dc-sheet [data-dc="photo"]')
                 await page.wait_for_selector('.dc-sheet .dc-photo img', timeout=10000)
-                await shot('12-photo')
-                await page.click('.dc-sheet [data-dc="photoClose"]')
-                await page.click('.dc-sheet [data-dc="tab"][data-tab="fix"]')
+                await shot('11-photo')
+                await tap('.dc-sheet [data-dc="photoClose"]')
+                await tap('.dc-sheet [data-dc="tab"][data-tab="fix"]')
                 await page.wait_for_selector('.dc-sheet .rn-parts')
-                await both('13-fix')
-                await page.click('.dc-sheet [data-dc="close"]')
+                await shot('12-fix')
+                await tap('.dc-sheet [data-dc="close"]')
 
                 # ---- 2. sold the home, renting the phòng trọ: everything is in the bag
                 mutate(db, token, move_to('tro_moi'))
                 await reload()
                 await open_place('')
-                await page.wait_for_selector('.dc-sheet svg.dc-room')
-                await page.click('.dc-sheet [data-dc="edit"]')
-                n = await page.evaluate("document.querySelectorAll('.dc-sheet .dc-card[data-src=bag]').length")
-                print(tag, 'tro bag kinds:', n, 'placed:', len(await uids()))
-                assert n >= 4 and not await uids(), 'moving did not put things in the bag'
-                await both('14-tro-bag')
-                for k in ('den_cay', 'cay_monstera', 'tranh'):
-                    if await page.locator(f'.dc-sheet .dc-card[data-k="{k}"]:not([disabled])').count():
-                        if not await page.locator(f'.dc-sheet .dc-card.on[data-k="{k}"]').count():
-                            await page.click(f'.dc-sheet .dc-card[data-k="{k}"]')
-                        await page.wait_for_selector(f'.dc-sheet .dc-card.on[data-k="{k}"]')
-                        await page.mouse.click(*(await center('.dc-sheet .dc-ok rect')))
-                        await page.wait_for_timeout(700)
-                        print(tag, k, await flash())
-                await page.click('.dc-sheet [data-dc="drawer"][data-d="shop"]')
-                await page.click('.dc-sheet .dc-card[data-k="ban_hoc"]')
-                await page.mouse.click(*(await center('.dc-sheet .dc-ok rect')))
+                await tap('.dc-sheet [data-dc="edit"]')
+                n = await page.evaluate("document.querySelectorAll('.dc-sheet .dc-buycard[data-src=bag]').length")
+                print(tag, 'tro bag kinds:', n, 'placed:', len(await kinds()))
+                expect(n >= 6 and not await kinds(), 'moving put everything in the bag')
+                await room_top()
+                l, t, rw, rh = await box('.dc-sheet svg.dc-room')
+                await drag_card('tham', at(.42, .9), '13-tro-drag-rug')
+                await drag_card('sofa', at(.45, .86))
+                await drag_card('ban_tra', at(.2, .95))
+                await drag_card('den_ban', lambda: top_of('ban_tra'))
+                print(tag, 'tro:', await kinds(), await ons(), await flash())
+                expect({'tham', 'sofa', 'ban_tra', 'den_ban'} <= set(await kinds()) and 'den_ban' in await ons(), 'set up the trọ by dragging')
+                await tap('.dc-sheet [data-dc="drawer"][data-d="skin"]')
+                await tap('.dc-sheet [data-dc="skin"][data-part="floor"][data-skin="gach_trang"]', 600)
+                await tap('.dc-sheet [data-dc="done"]', 4000)
+                await both('14-tro-done')
+                await tap('.dc-sheet [data-dc="room"][data-room="loft"]')
+                await tap('.dc-sheet [data-dc="edit"]')
+                await tap('.dc-sheet [data-dc="drawer"][data-d="shop"]')
+                await room_top()
+                l, t, rw, rh = await box('.dc-sheet svg.dc-room')
+                await drag_card('nem', at(.4, .74))
                 await confirm()
-                await page.click('.dc-sheet .dc-card[data-k="den_ban"]')
-                await page.wait_for_selector('.dc-sheet .dc-ok circle')
-                await shot('15-tro-lamp-on-desk')
-                await page.mouse.click(*(await center('.dc-sheet .dc-ok circle')))
+                print(tag, 'loft nem:', await flash())
+                await drag_card('gau_bong', lambda: top_of('nem'))
                 await confirm()
-                print(tag, 'desk lamp:', await flash())
-                await page.click('.dc-sheet [data-dc="done"]')
-                await both('16-tro-done')
-                await page.click('.dc-sheet [data-dc="room"][data-room="loft"]')
-                await page.click('.dc-sheet [data-dc="edit"]')
-                await page.click('.dc-sheet [data-dc="drawer"][data-d="shop"]')
-                await page.click('.dc-sheet .dc-card[data-k="nem"]')
-                await page.mouse.click(*(await center('.dc-sheet .dc-ok rect')))
-                await confirm()
-                await page.click('.dc-sheet [data-dc="done"]')
-                await both('17-loft')
-                await page.click('.dc-sheet [data-dc="close"]')
+                print(tag, 'loft:', await kinds(), await ons(), await flash())
+                expect('nem' in await kinds(), 'a mattress in the loft')
+                await tap('.dc-sheet [data-dc="done"]', 3000)
+                await both('15-loft')
+                await tap('.dc-sheet [data-dc="close"]')
 
                 # ---- 3. the dorm: the bunk corner
                 mutate(db, token, move_to('ky_tuc_xa'))
                 await reload()
                 await open_place('')
-                await page.click('.dc-sheet [data-dc="edit"]')
-                await page.click('.dc-sheet [data-dc="drawer"][data-d="shop"]')
-                await page.click('.dc-sheet .dc-card[data-k="rem_giuong"]')
-                await page.mouse.click(*(await center('.dc-sheet .dc-ok rect', last=True)))
+                await tap('.dc-sheet [data-dc="edit"]')
+                await tap('.dc-sheet [data-dc="drawer"][data-d="shop"]')
+                await room_top()
+                l, t, rw, rh = await box('.dc-sheet svg.dc-room')
+                await drag_card('rem_giuong', at(.86, .62), '16-dorm-drag-curtain')
                 await confirm()
-                await page.click('.dc-sheet [data-dc="drawer"][data-d="bag"]')
-                if await page.locator('.dc-sheet .dc-card[data-k="den_cay"]:not([disabled])').count():
-                    await page.click('.dc-sheet .dc-card[data-k="den_cay"]')
-                    await shot('18-dorm-holding')
-                    await page.click('.dc-sheet [data-dc="unhold"]')
-                await page.click('.dc-sheet [data-dc="done"]')
-                await both('19-dorm')
-                await page.click('.dc-sheet [data-dc="back"]')
+                await drag_card('den_ngu', at(.16, .3))   # onto the shelf over the pillow
+                await confirm()
+                await drag_card('poster', at(.55, .62))
+                await confirm()
+                pl = await box('.dc-sheet svg.dc-room')
+                await drag_card('gau_bong', at(.1, .66))   # onto the pillow
+                await confirm()
+                print(tag, 'dorm:', await kinds(), await ons(), await flash())
+                expect({'rem_giuong', 'den_ngu', 'poster'} <= set(await kinds()), 'curtain, night light, poster in the bunk corner')
+                expect((await ons()).get('den_ngu') == '#shelf', 'the night light stands on the bunk shelf')
+                expect((await ons()).get('gau_bong') == '#pillow', 'the teddy sits on the pillow')
+                await tap('.dc-sheet [data-dc="drawer"][data-d="skin"]')
+                await tap('.dc-sheet [data-dc="skin"][data-part="floor"][data-skin="ga_ke"]', 600)
+                expect(not await page.locator('.dc-sheet [data-dc="skin"][data-part="wall"]').count(), 'a dorm bed has no walls to paint')
+                await tap('.dc-sheet [data-dc="skin"][data-part="floor"][data-skin="ga_meo"]', 400)
+                await confirm()
+                print(tag, 'sheets:', await flash())
+                await shot('17-dorm-edit')
+                await tap('.dc-sheet [data-dc="done"]', 4000)
+                await both('18-dorm')
+                await tap('.dc-sheet [data-dc="back"]')
                 await page.wait_for_selector('.hs-sheet[open] .hs-place', timeout=10000)
-                await shot('20-house-card')
+                await shot('19-house-card')
                 await ctx.close()
             await browser.close()
     real = [e for e in errors if 'favicon' not in e]
     print('errors:', real or 'none')
+    print('failed steps:', failed or 'none')
     print('shots:', OUT)
-    return 1 if real else 0
+    return 1 if real or failed else 0
 
 
 if __name__ == '__main__':
