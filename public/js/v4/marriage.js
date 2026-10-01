@@ -97,7 +97,7 @@ function take(view){
   const w=view.wedding;
   if(view.couple?.status==='engaged'&&(!w||['rejected'].includes(w.status)||(w.status==='proposed'&&w.mine))){
     const key=`${view.couple.id}:${w?.id||0}:${w?.version||0}`;
-    if(!S.plan||S.planKey!==key){S.plan=w?{...w.plan,mine:w.split_mine,announce:w.announce_mine}:defaultPlan();S.planKey=key;S.quote=null;askQuote();}
+    if(!S.plan||S.planKey!==key){S.plan=w?{...w.plan,mine:w.split_mine,announce:w.announce_mine}:defaultPlan();S.plan.at??=defaultAt();S.planKey=key;S.quote=null;askQuote();}
   }
   if(S.tab==='plan'&&view.couple?.status!=='engaged')S.tab='home';
   if(!S.form.message&&S.catalog)S.form.message=S.catalog.messages[0].id;
@@ -127,7 +127,13 @@ async function post(op,body={},{quiet=false}={}){
 }
 
 /* ---- the planner (a mirror of wedding_content + marriage.costs, for the live breakdown) ---- */
-function defaultPlan(){return {venue:'restaurant',tables:20,menu:'tieu_chuan',ceremonies:{dam_ngo:false,an_hoi:0,gia_tien:true,le_duong:false},extras:['mc','cards'],days:S.catalog?.days?.[2]||3,mine:50,announce:true};}
+function defaultPlan(){return {venue:'restaurant',tables:20,menu:'tieu_chuan',ceremonies:{dam_ngo:false,an_hoi:0,gia_tien:true,le_duong:false},extras:['mc','cards'],days:S.catalog?.days?.[2]||3,mine:50,announce:true,at:defaultAt()};}
+/* 💍 The wedding's real date and time (Vietnam time; game/wedding_live.py: 1 hour to 14 days ahead). */
+const VN_MS=7*3600*1000;
+const vnParts=at=>{const d=new Date(at*1000+VN_MS);return {date:d.toISOString().slice(0,10),time:d.toISOString().slice(11,16)};};
+const atOf=(date,time)=>{const [y,m,d]=date.split('-').map(Number),[h,mi]=(time||'20:00').split(':').map(Number);return (Date.UTC(y,m-1,d,h,mi)-VN_MS)/1000;};
+function defaultAt(){const now=Date.now()/1000,t=vnParts(now+86400);return atOf(t.date,'20:00');}   // tomorrow 20:00
+const atLabel=at=>{const p=vnParts(at);return `${p.date.slice(8,10)}/${p.date.slice(5,7)}/${p.date.slice(0,4)} · ${p.time}`;};
 const venueOf=id=>S.catalog.venues.find(v=>v.id===id);
 function costs(p){
   const c=S.catalog,v=venueOf(p.venue),m=c.menus.find(x=>x.id===p.menu),tp=v.table_price[p.menu],seats=p.tables*c.seats;
@@ -145,7 +151,7 @@ function costs(p){
   return {sections,total,deposit,balance:total-deposit,seats,tp};
 }
 const split=(x,pct)=>{const a=Math.floor((x*pct+50)/100);return [a,x-a];};
-function planBody(){const p=S.plan;return {venue:p.venue,tables:p.tables,menu:p.menu,ceremonies:{...p.ceremonies},extras:[...p.extras],days:p.days};}
+function planBody(){const p=S.plan;return {venue:p.venue,tables:p.tables,menu:p.menu,ceremonies:{...p.ceremonies},extras:[...p.extras],days:p.days,...(p.at?{at:p.at}:{})};}
 function askQuote(){
   clearTimeout(S.qTimer);const seq=++S.qSeq;
   S.qTimer=setTimeout(async()=>{
@@ -180,6 +186,7 @@ function onField(el,committed){
   if(f==='venue'){p.venue=v;p.tables=clampTables(p.tables);}
   else if(f==='menu')p.menu=v;
   else if(f==='days')p.days=Number(v);
+  else if(f==='at_date'||f==='at_time'){const box=el.closest('.mr-when');const d=box?.querySelector('[data-mr-field=at_date]')?.value,t=box?.querySelector('[data-mr-field=at_time]')?.value;if(d&&t)p.at=atOf(d,t);}
   else if(f==='announce')p.announce=v;
   else if(f.startsWith('cer:'))p.ceremonies[f.slice(4)]=v;
   else if(f.startsWith('extra:')){const id=f.slice(6);p.extras=v?[...new Set([...p.extras,id])]:p.extras.filter(x=>x!==id);}
@@ -435,7 +442,7 @@ function friendsTab(){
     <p class="mr-hint">Gõ đúng từng ký tự: không tìm gần đúng, không có danh sách để lướt. Có mã người chơi (PCC-…) thì nhập mã cũng được. Còn ${F.searches_left??''} lượt tìm hôm nay.</p>${result}</section>`;
   const incoming=F.incoming.length?`<section class="mr-card mr-accent"><h3>Lời mời kết bạn</h3><ul class="mr-list">${F.incoming.map(x=>`<li class="mr-li-wrap"><span><b>${esc(x.name)}</b> muốn kết bạn</span><span class="mr-actions tight">${btn('Chấp nhận','frespond',{id:x.id,answer:'accept'},'primary small')}${btn('Từ chối','frespond',{id:x.id,answer:'decline'},'cream small')}${btn('Chặn','frespond',{id:x.id,answer:'block'},'ghost small')}</span></li>`).join('')}</ul></section>`:'';
   const list=F.list.length?F.list.map(x=>`<article class="mr-card mr-friend"><div class="mr-person"><span class="mr-av" aria-hidden="true">${esc(x.name.slice(0,1).toUpperCase())}</span><div class="grow"><b>${esc(x.name)}${x.spouse?' <span class="tag">Người thương</span>':x.dating?' <span class="tag">Đang tìm hiểu 💕</span>':''}</b>
-      <small>${x.career?`${esc(x.career.career)} · cấp ${x.career.level}`:'Mới vào phố'} · ${esc(STATUS[x.status]||'')}</small></div></div>
+      <small>${x.career?`${esc(x.career.career)} · cấp ${x.career.level}`:'Mới vào phố'} · ${esc(STATUS[x.status]||'')}${x.close?` · 🤝 ${x.close}`:''}</small>${x.wed?`<small>${esc(x.wed)}</small>`:''}</div></div>
       <div class="mr-actions tight">${single&&x.status==='single'?btn('💍 Cầu hôn','fpropose',{code:x.code},'primary small'):''}${x.spouse?'':btn('Hủy kết bạn','fremove',{code:x.code,name:x.name},'ghost small')+btn('Chặn','fblock',{code:x.code,name:x.name},'ghost small')}</div></article>`).join('')
     :`<section class="mr-card"><p>Chưa có bạn bè nào. Xin tên đăng nhập của người quen ngoài đời rồi tìm ở trên nhé.</p></section>`;
   const outgoing=F.outgoing.length?`<section class="mr-card"><h3>Đang chờ trả lời</h3><ul class="mr-list">${F.outgoing.map(x=>`<li><span>${esc(x.name)}</span>${btn('Rút lại','fcancel',{id:x.id},'ghost small')}</li>`).join('')}</ul></section>`:'';
@@ -447,7 +454,7 @@ function friendsTab(){
 const hoursLeft=t=>{const h=Math.max(1,Math.ceil((t*1000-Date.now()-(S.env.api.clockOffset||0)*1000)/3600000));return h>=24?`${Math.ceil(h/24)} ngày`:`${h} giờ`;};
 
 function summary(q,w){
-  return `<div class="mr-summary"><p><b>${esc(venueOf(q.plan.venue).emoji)} ${esc(venueOf(q.plan.venue).name)}</b> · ${q.plan.tables} bàn · thực đơn ${esc(S.catalog.menus.find(m=>m.id===q.plan.menu).name.toLowerCase())} · cưới sau ${q.plan.days} ngày sống</p>
+  return `<div class="mr-summary"><p><b>${esc(venueOf(q.plan.venue).emoji)} ${esc(venueOf(q.plan.venue).name)}</b> · ${q.plan.tables} bàn · thực đơn ${esc(S.catalog.menus.find(m=>m.id===q.plan.menu).name.toLowerCase())} · ${q.plan.at?`💍 ${atLabel(q.plan.at)}`:`cưới sau ${q.plan.days} ngày sống`}</p>
     <dl class="mr-dl"><div><dt>Tổng chi phí</dt><dd>${xu(q.total)}</dd></div><div><dt>Đặt cọc (${S.catalog.deposit_pct}%)</dt><dd>${xu(q.deposit)}</dd></div><div><dt>Trả nốt ngày cưới</dt><dd>${xu(q.balance)}</dd></div>
     ${w?`<div><dt>Bạn góp ${w.split_mine}%</dt><dd>cọc ${xu(w.share_mine.deposit)} · nốt ${xu(w.share_mine.balance)}</dd></div>`:''}
     <div><dt>Khách dự kiến</dt><dd>${q.forecast.guests[0]}–${q.forecast.guests[1]} / ${q.seats}</dd></div><div><dt>Tiền mừng dự kiến</dt><dd>${xu(q.forecast.gifts[0])}–${xu(q.forecast.gifts[1])}</dd></div></dl></div>`;
@@ -457,7 +464,7 @@ function couple(){
   const ring=c.ring?`<div class="mr-home-ring">${ringSVG(c.ring.colors,84,`Nhẫn của hai bạn: ${c.ring.name}, ${colorName(c.ring.metal,c.ring.stone)}`)}<small>${esc(colorName(c.ring.metal,c.ring.stone))}</small></div>`:'';
   const h=v.home||{},hp=h.happy;
   const top=married
-    ?`<section class="mr-card mr-home"><div class="mr-sticker mr-me" aria-hidden="true">${myPortrait(S.env?.api?.state,64,'')}<i>${S.catalog.sticker.emoji}</i></div><div class="grow"><span class="tag">${esc(S.catalog.sticker.name)}</span><h3>Bạn & ${esc(c.partner.name)}</h3><p>Cưới ngày ${esc(w?.result?.date?viDate(w.result.date):'')}${w?.result?` · ${esc(w.result.venue)}`:''} · bên nhau ${c.days_together} ngày</p></div>${ring}</section>
+    ?`<section class="mr-card mr-home"><div class="mr-sticker mr-me" aria-hidden="true">${myPortrait(S.env?.api?.state,64,'')}<i>${S.catalog.sticker.emoji}</i></div><div class="grow"><span class="tag">${esc(S.catalog.sticker.name)}</span><h3>Bạn & ${esc(c.partner.name)}</h3><p>${c.wed_label?esc(c.wed_label):`Cưới ngày ${esc(w?.result?.date?viDate(w.result.date):'')}`}${w?.result?` · ${esc(w.result.venue)}`:''} · bên nhau ${c.days_together} ngày</p></div>${ring}</section>
       ${hp?`<section class="mr-card mr-glance"><button type="button" class="mr-stat" data-mr="tab" data-tab="love"><small>Điểm hạnh phúc</small><b>💗 ${hp.points}/${hp.max}</b><small>${hp.streak?`${hp.streak} ngày liền`:'Gửi một lời chào hôm nay nhé'}</small></button>
         <button type="button" class="mr-stat" data-mr="tab" data-tab="fund"><small>Quỹ chung</small><b>🏦 ${xu(h.fund?.balance||0)}</b><small>${(h.requests||[]).filter(r=>!r.mine).length?'Có lời nhờ đang chờ':'Gửi, rút, giúp nhau'}</small></button></section>`:''}`
     :`<section class="mr-card mr-home"><div class="mr-sticker" aria-hidden="true">💞</div><div class="grow"><h3>Bạn & ${esc(c.partner.name)}</h3><p>Đã đính hôn ${c.days_together?`${c.days_together} ngày`:'hôm nay'}</p></div>${ring}</section>`;
@@ -474,6 +481,10 @@ function couple(){
         ${short?`<p class="mr-flash bad">Ví của bạn còn ${xu(wallet())}, chưa đủ ${xu(w.share_mine.deposit)} tiền cọc. Rút tiền lời từ nơi làm việc về ví trước nhé.</p>`:''}
         <label class="mr-check"><input type="checkbox" data-mr-field="wannounce"${S.answer.wedding===false?'':' checked'}><span>Báo tin cưới cho cả phố (bảng tin chạy chữ)</span></label>
         <div class="mr-actions">${btn(`Xác nhận & đặt cọc ${xu(w.share_mine.deposit)}`,'confirm',{},'primary',short?' disabled':'')}${btn('Muốn bàn lại','reject',{id:w.id},'cream')}</div></section>`;
+    }else if(w.status==='confirmed'&&w.at){   // 💍 booked at a real date and time: the party is live (game/wedding_live.py)
+      plan=`<section class="mr-card mr-countdown"><div class="mr-count" aria-hidden="true"><b>💍</b></div><div><h3>Cưới lúc ${esc(w.at_label)}</h3>
+        <p>Tiệc mở trước 10 phút ở Khu phố › Lịch cưới. Bạn bè được nhắc trước 30 phút.</p></div></section>
+        <section class="mr-card"><h3>Kế hoạch đã chốt</h3>${summary(w.quote,w)}<p class="mr-hint">Đã đặt cọc: bạn ${xu(w.deposit_mine)}, ${esc(c.partner.name)} ${xu(w.deposit_partner)}.</p></section>`;
     }else if(w.status==='confirmed'){
       plan=`<section class="mr-card mr-countdown"><div class="mr-count" aria-hidden="true"><b>${w.left}</b><small>ngày</small></div><div><h3>${w.left?`Còn ${w.left} ngày nữa là tới ngày cưới${Number.isInteger(v.me?.life_day)?` (Ngày ${v.me.life_day+w.left})`:''}`:'Ngày cưới đã tới!'}</h3>
         <p>Tới ngày khi một trong hai bạn sống thêm đủ ngày${w.hours_left?`, hoặc muộn nhất sau ${w.hours_left} giờ nữa`:''}. Cỗ cưới tự diễn ra kể cả khi người kia đang vắng.</p></div></section>
@@ -604,7 +615,7 @@ function planner(){
   const cer=c.ceremonies.filter(x=>x.id!=='an_hoi').map(x=>`<label class="mr-check line"><input type="checkbox" data-mr-field="cer:${x.id}"${p.ceremonies[x.id]?' checked':''}><span><b>${esc(x.name)}</b> · ${xu(x.price)}<small>${esc(x.desc)}</small></span></label>`).join('');
   const anhoiRow=`<div class="mr-anhoi"><b>${esc(anhoi.name)}</b><small>${esc(anhoi.desc)}</small><div class="segmented" role="radiogroup" aria-label="Số mâm tráp ăn hỏi">${[{trays:0,price:0},...anhoi.options].map(o=>`<button type="button" role="radio" aria-checked="${p.ceremonies.an_hoi===o.trays}" class="${p.ceremonies.an_hoi===o.trays?'active':''}" data-mr="an_hoi" data-n="${o.trays}">${o.trays?`${o.trays} mâm · ${o.price} xu`:'Không'}</button>`).join('')}</div></div>`;
   const extras=c.extras.map(x=>`<label class="mr-check line"><input type="checkbox" data-mr-field="extra:${x.id}"${p.extras.includes(x.id)?' checked':''}><span><b>${x.emoji} ${esc(x.name)}</b> · ${x.per10?`${xu(x.per10*p.tables)} (${x.per10} xu/10 khách)`:xu(x.price)}<small>${esc(x.desc)}</small></span></label>`).join('');
-  const days=[];for(let d=c.days[0];d<=c.days[1];d++)days.push(`<option value="${d}"${d===p.days?' selected':''}>Sau ${d} ngày sống</option>`);
+  const when=vnParts(p.at||defaultAt()),first=vnParts(Date.now()/1000+3600).date,last=vnParts(Date.now()/1000+14*86400).date;
   const splits=[[50,'Chia đôi'],[60,'Bạn 60%'],[70,'Bạn 70%'],[40,'Bạn 40%'],[100,'Bạn bao hết']];
   return `<div class="mr-plan"><div class="mr-plan-form">
     <section class="mr-card"><h3>1 · Nơi tổ chức</h3><div class="mr-options">${venues}</div></section>
@@ -616,7 +627,9 @@ function planner(){
     <section class="mr-card"><h3>4 · Nghi lễ</h3>${cer}${anhoiRow}</section>
     <section class="mr-card"><h3>5 · Dịch vụ thêm</h3>${extras}</section>
     <section class="mr-card"><h3>6 · Ngày cưới & góp tiền</h3>
-      <label class="field" for="mr-days">Ngày cưới<select class="input" id="mr-days" data-mr-field="days">${days.join('')}</select></label>
+      <div class="mr-when"><label class="field" for="mr-date">Ngày cưới<input class="input" id="mr-date" type="date" data-mr-field="at_date" min="${first}" max="${last}" value="${when.date}"></label>
+        <label class="field" for="mr-time">Giờ<input class="input" id="mr-time" type="time" step="300" data-mr-field="at_time" value="${when.time}"></label></div>
+      <p class="mr-hint">💍 Cả phố được mời dự tiệc lúc đó.</p>
       <p class="mr-label">Ai góp bao nhiêu</p><div class="segmented mr-split" role="radiogroup" aria-label="Tỉ lệ góp">${splits.map(([pct,label])=>`<button type="button" role="radio" aria-checked="${p.mine===pct}" class="${p.mine===pct?'active':''}" data-mr="split" data-pct="${pct}">${label}</button>`).join('')}</div>
       <label class="field" for="mr-mine"><span class="mr-mine-t">${mineText()}</span><input id="mr-mine" type="range" min="0" max="100" step="5" value="${p.mine}" data-mr-field="mine"></label>
       <label class="mr-check"><input type="checkbox" data-mr-field="announce"${p.announce?' checked':''}><span>Báo tin cưới cho cả phố (cần cả hai đồng ý)</span></label></section>

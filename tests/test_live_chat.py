@@ -16,7 +16,7 @@ class AuthTests(LiveCase):
         token, sid = self.account('Mây Bếp')
         c = await self.connect(token)
         w = c.welcome
-        self.assertEqual(w['flags'], dict(chat=True, street=False, dating=False))
+        self.assertEqual(w['flags'], dict(chat=True, street=False, dating=False, wedding=False))
         self.assertEqual(w['me']['pid'], self.pid(sid))
         self.assertEqual(w['me']['name'], 'Mây Bếp')
         self.assertEqual(w['me']['town'], 'ok')

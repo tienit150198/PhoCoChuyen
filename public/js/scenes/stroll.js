@@ -2,7 +2,7 @@
  * every place is 600 × 900, the walkable rectangles come from the server (`geo.walk`) and are paved; the rest is
  * grass, water, stalls and buildings. Night (the "Phố đêm" theme, and always a little at Chợ đêm) dims the
  * scene and lights the lamps and lanterns. Decorations are seeded, so a place looks the same every time. */
-import {R,E,L,P,bloom} from './kit.js';
+import {R,E,L,P,bloom,heart} from './kit.js';
 
 export const WORLD={w:600,h:900};
 
@@ -121,9 +121,39 @@ function cafe(c,g,lights){
   R(c,250,876,100,14,'#7a5a3e',4);
   lights.push([300,560,140,'255,214,150'],[110,170,60,'255,230,170']);
 }
-const DRAW={boho,chodem,congvien,phodibo,cafe};
+/** 💍 A wedding party (live/wedding.py): the tent and its stage with 囍, the red carpet, the flower gate, four tables. */
+function wedding(c,g,lights){
+  lawn(c,'#d3e8bd','#c6dfac',53);
+  pave(c,g.walk,'#f3ead9','#e9dcc6',34);
+  // the tent: a striped canopy over the stage
+  R(c,90,30,420,190,'#fbf6ee',18,'#e8d9c4',2);
+  c.save();c.beginPath();c.roundRect(90,30,420,190,18);c.clip();for(let x=90;x<510;x+=42){c.fillStyle='#f6dbe1';c.fillRect(x,30,21,190);}c.restore();
+  for(let x=90;x<510;x+=28){c.beginPath();c.arc(x+14,220,14,0,Math.PI);c.fillStyle='#f3c9d3';c.fill();}
+  L(c,100,48,500,48,'#d8b98a',2);for(let x=110;x<500;x+=26){E(c,x,52,4,4,'#fff3c4');lights.push([x,52,30,'255,214,150']);}
+  // the stage and its backdrop
+  R(c,165,196,270,116,'#f1d9c6',12,'#d9b79c',2);R(c,180,120,240,80,'#c8463e',10,'#a9352f',2);
+  E(c,300,160,30,30,'#f2c14e');c.font='900 36px serif';c.fillStyle='#c8463e';c.textAlign='center';c.textBaseline='middle';c.fillText('囍',300,162);
+  for(const x of [206,394]){bloom(c,x,150,10,'#fbe3ea');bloom(c,x,150,5,'#f6a8bd');}
+  // the red carpet from the gate to the stage, petals on it
+  R(c,262,300,76,560,'#c8463e',4);L(c,264,300,264,860,'#e8b44f',2);L(c,336,300,336,860,'#e8b44f',2);
+  const r=seeded(91);for(let i=0;i<26;i++)E(c,270+r()*60,320+r()*520,2.6,1.8,['#fbe3ea','#f6a8bd','#fff'][i%3]);
+  // flower stands along the carpet and heart balloons
+  for(let y=380;y<=780;y+=130)for(const x of [244,356]){R(c,x-5,y,10,26,'#d8c3a5',3);bloom(c,x,y-4,9,'#f6a8bd');bloom(c,x,y-4,4,'#fff');}
+  for(const [x,y,col] of [[60,330,'#f28c9e'],[540,330,'#f7b6c2'],[52,860,'#f6a8bd'],[548,860,'#f28c9e']]){L(c,x,y+40,x,y+6,'#b9a690',1.2);heart(c,x,y,.9,col);}
+  // the flower gate at the entrance
+  c.lineCap='round';c.strokeStyle='#ffffff';c.lineWidth=14;c.beginPath();c.arc(300,872,78,Math.PI,0);c.stroke();
+  for(let a=Math.PI;a<=Math.PI*2+.01;a+=Math.PI/11){const x=300+Math.cos(a)*78,y=872+Math.sin(a)*78;bloom(c,x,y,8,['#f6a8bd','#fbe3ea','#f28c9e'][Math.round(a*7)%3]);}
+  R(c,214,850,14,40,'#e9e0d2',4);R(c,372,850,14,40,'#e9e0d2',4);
+  for(const [x,y] of [[40,560],[560,560],[40,760],[560,760]])lights.push([x,y,60,'255,206,140']);
+}
+const DRAW={boho,chodem,congvien,phodibo,cafe,wedding};
 /** Plastic street tables at the market, wooden ones elsewhere. */
 export function paintTable(c,t,place){
+  if(place==='wedding'){   // white cloth, chairs with bows, a vase of pink flowers
+    for(const [x,y] of t.seats){E(c,x+2,y+3,13,6,'#00000014');E(c,x,y,12,12,'#f4ebe1');E(c,x,y-7,6,4,'#f3a5b8');}
+    E(c,t.x+3,t.y+6,36,15,'#0000001c');E(c,t.x,t.y,33,27,'#fffdf8');c.strokeStyle='#ecdccb';c.lineWidth=2;c.beginPath();c.ellipse(t.x,t.y,33,27,0,0,Math.PI*2);c.stroke();
+    bloom(c,t.x,t.y-4,7,'#f6a8bd');bloom(c,t.x,t.y-4,3,'#fff');return;
+  }
   const plastic=place==='chodem',top=plastic?'#5da4d6':place==='cafe'?'#9a6b4f':'#c9a27a',stool=plastic?'#d9534f':place==='cafe'?'#7d5a42':'#a7845f';
   for(const [x,y] of t.seats){E(c,x+2,y+3,13,6,'#00000018');E(c,x,y,12,12,stool);E(c,x-3,y-3,4,4,'#ffffff40');}
   E(c,t.x+3,t.y+6,34,14,'#00000022');E(c,t.x,t.y,31,26,top);E(c,t.x,t.y-3,26,20,plastic?'#79b6e0':place==='cafe'?'#b88762':'#dcb98f');
@@ -142,7 +172,7 @@ export function paintPlace(c,place,geo,night){
   return lights.length;
 }
 /** The edge colour around the 600×900 world (letterboxing on wide or tall screens). */
-export const EDGE={boho:'#cfe3b1',chodem:'#d3c4b2',congvien:'#c7e2a9',phodibo:'#e8dcc6',cafe:'#b98d6c'};
+export const EDGE={boho:'#cfe3b1',chodem:'#d3c4b2',congvien:'#c7e2a9',phodibo:'#e8dcc6',cafe:'#b98d6c',wedding:'#d3e8bd'};
 
 /* ---- happenings (drawn every frame, world units) ---- */
 export function paintLion(c,x,y,t,rtl){

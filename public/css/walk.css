@@ -70,3 +70,28 @@ html[data-layout="phone"] .wk-head{padding-top:12px}
 .wk-emo-btn[aria-expanded="true"]{box-shadow:inset 0 0 0 2px var(--accent)}
 .wk-send{flex:none;display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:var(--accent);color:var(--accent-ink,#fff)}
 @media (prefers-reduced-motion:reduce){.wk-bar{animation:none}.wk-chev,.wk-emotes button{transition:none}}
+
+/* 💍 wedding parties (live/wedding.py): the couple and the clock in the header, the watchers' banner, the end card */
+.wk-wed{cursor:default;min-width:0}
+.wk-clock{flex:none;font-size:.82rem;font-weight:700;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.wk-photo-btn{font-size:1.25rem;line-height:1}
+.wk-banner{position:absolute;top:8px;left:8px;right:8px;z-index:1;padding:9px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line);
+  box-shadow:var(--shadow-sm);font-weight:600;font-size:.88rem;color:var(--ink);text-align:center}
+.wk-end{position:absolute;left:50%;top:50%;z-index:3;transform:translate(-50%,-50%);width:min(300px,calc(100% - 32px));padding:18px 16px;border-radius:20px;
+  background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-md,var(--shadow-sm));text-align:center}
+.wk-end p{margin:0 0 10px;color:var(--ink-2)}
+.wk-end .wk-end-t{font-size:1.15rem;font-weight:800;color:var(--ink)}
+
+/* 💍 Lịch cưới (public/js/v4/wedding.js) */
+.sheet.wd-sheet{width:min(460px,calc(100vw - 48px));max-height:min(720px,calc(100dvh - 48px));padding:0;overflow:auto}
+html[data-layout="phone"] .sheet.wd-sheet{width:100%;max-width:100%}
+.wd-body{padding:10px 12px 16px}
+.wd-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.wd-row{display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;border-radius:16px;background:var(--surface-2)}
+.wd-row.live{background:var(--surface);box-shadow:inset 0 0 0 2px var(--accent)}
+.wd-row .grow{flex:1 1 auto;min-width:0}
+.wd-row b{font-size:.98rem}
+.wd-row small{display:block;color:var(--muted);font-size:.8rem;margin-top:2px}
+.wd-ico{font-size:1.5rem;line-height:1}
+.wd-empty{display:flex;align-items:center;justify-content:center;gap:6px;padding:28px 8px;color:var(--muted);text-align:center;margin:0}
+.wd-race{display:block;width:100%;margin-top:12px;min-height:44px;border-radius:var(--radius-pill);background:var(--surface-2);color:var(--ink-2);font-weight:700}

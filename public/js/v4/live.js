@@ -76,7 +76,7 @@ function frame(f){
   switch(f.t){
     case'welcome':
       live.welcomed=true;live.flags=f.flags||{};
-      if(!live.flags.chat&&!live.flags.street&&!live.flags.dating){live.state='off';break;}
+      if(!live.flags.chat&&!live.flags.street&&!live.flags.dating&&!live.flags.wedding){live.state='off';break;}
       live.state='open';attempt=0;
       live.me=f.me||null;live.friends=f.friends||[];live.chans=f.chans||[];live.limits=f.limits||{};live.bonds=f.bonds||[];
       if(live.flags.dating&&(f.date||f.bench))import('./dating.js').then(m=>m.datingBoot(env,f)).catch(e=>console.warn('dating:',e));   // back in a date after a reload

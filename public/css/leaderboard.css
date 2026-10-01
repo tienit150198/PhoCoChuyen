@@ -13,6 +13,8 @@
 /* Board kind: Trải nghiệm | Chứng chỉ */
 .lb-kinds{flex-wrap:nowrap}
 .lb-kinds>button{min-height:44px;font-size:.967rem;gap:6px}
+.lb-kinds.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}   /* + 💍 Khách mời của tuần */
+.lb-kinds.three>button{min-width:0;padding:0 4px;gap:3px;font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* Workplace picker */
 .lb-picker{display:flex;flex-wrap:wrap;gap:8px}

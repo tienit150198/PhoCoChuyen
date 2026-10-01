@@ -36,6 +36,14 @@ PLACES = {
         tables=[(115, 250, 3), (480, 765, 4)],
         spots=dict(bench=(300, 565), spawn=(300, 720)),
     ),
+    # 💍 A wedding party (live/wedding.py): the tent and its stage at the top, the red carpet from the flower gate,
+    # four round tables. Never listed, never joined by walk_in.
+    'wedding': dict(
+        name='Đám cưới', icon='💍', private=True,
+        walk=[(30, 300, 570, 870), (170, 205, 430, 310)],
+        tables=[(125, 470, 4), (475, 470, 4), (125, 680, 4), (475, 680, 4)],
+        spots=dict(stage=(300, 250), spawn=(300, 800), gate=(300, 845)),
+    ),
     # "Rủ đi cà phê": a private room for two, opened from a player's card (never listed, never joined by walk_in)
     'cafe': dict(
         name='Quán cà phê', icon='☕', private=True,
@@ -171,6 +179,8 @@ TITLES = {
     'x_streak10': '✨ Mười việc liền mạch', 'x_festival3': '🎏 Mê ngày hội', 'x_calm5': '🍵 Người của ngày thư thả',
     'x_reopen': '🔑 Nghỉ để đi xa hơn', 'x_boss': '🍀 Người gặp may', 'x_loyal': '🏡 Chung thủy một quán', 'x_hopper': '🦘 Chân sáo',
     'x_comeback': '🌅 Từ tay trắng',
+    'w_crowd': '🎉 Đám cưới đông vui', 'w_100': '💞 Trăm ngày bên nhau', 'w_1y': '🎂 Tròn một năm', 'w_500': '💍 Năm trăm ngày thương',
+    'w_1000': '👑 Nghìn ngày son sắt', 'w_vip': '🥇 Khách quý của phố', 'w_pro': '🎊 Ăn cưới chuyên nghiệp',
 }
 
 EMOTES = {'wave': '👋', 'heart': '❤️', 'laugh': '😂', 'wow': '😮', 'pray': '🙏'}

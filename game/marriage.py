@@ -668,8 +668,12 @@ def clean_plan(p) -> dict:
          'Dịch vụ thêm không hợp lệ.', 'bad_plan')
     days = p.get('days', W.DAYS_DEFAULT)
     need(type(days) is int and W.DAYS_MIN <= days <= W.DAYS_MAX, f'Ngày cưới cách từ {W.DAYS_MIN} đến {W.DAYS_MAX} ngày sống.', 'bad_plan')
-    return dict(venue=venue, tables=tables, menu=menu, ceremonies=ceremonies,
-                extras=[x['id'] for x in W.EXTRAS if x['id'] in extras], days=days)
+    out = dict(venue=venue, tables=tables, menu=menu, ceremonies=ceremonies, extras=[x['id'] for x in W.EXTRAS if x['id'] in extras], days=days)
+    at = p.get('at')   # 💍 a real date and time (game/wedding_live.py); its window is checked when sent and confirmed
+    if at is not None:
+        need(type(at) in (int, float) and 1.6e9 < at < 4e9, 'Giờ cưới không hợp lệ.', 'bad_plan')
+        out['at'] = int(at) // 60 * 60
+    return out
 
 
 def mood_points(plan: dict) -> int:
@@ -1149,6 +1153,10 @@ def _wedding_view(db, c: dict, w: dict, sid: str, day: int) -> dict:
         left_theirs = int(w['target_' + other] or 0) - int((p or {}).get('life_day') or 0)
         out.update(target=target, left=max(0, min(target - day, left_theirs)), left_mine=max(0, target - day),
                    due_at=int(w['due_at'] or 0), hours_left=max(0, int(((w['due_at'] or 0) - now()) // 3600)))
+        at = out['plan'].get('at')
+        if at:   # 💍 booked at a real date and time: no life-day countdown (game/wedding_live.py)
+            from . import wedding_live as wl
+            out.update(at=int(at), at_label=wl.fmt_at(at), left=max(0, wl.days_between(now(), at)), left_mine=max(0, wl.days_between(now(), at)))
     if w['status'] == 'done' and w['result']:
         out['result'] = json.loads(w['result'])
         out['side'] = side
@@ -1210,6 +1218,8 @@ def view(store, token: str, state: dict | None, with_catalog: bool = False) -> d
                           ring=_ring_view(cring) if cring else None,
                           since=int(c['since']), married_at=int(c['married_at']) if c['married_at'] else None,
                           days_together=max(0, int((t - c['since']) // DAY)))
+            from . import wedding_live as wl
+            couple['wed_label'] = wl.label_of(db, c)   # 💍 "Cưới ngày 04/10/2026 · 20:30" (booked, or the legacy date)
             w = _row(db, "SELECT * FROM weddings WHERE couple=? AND status IN ('proposed','rejected','confirmed','done') ORDER BY id DESC LIMIT 1", (c['id'],))
             if w:
                 wedding = _wedding_view(db, c, w, sid, day)
@@ -1532,6 +1542,9 @@ def _couple_pool(db, c: dict) -> dict:
 
 def _plan(store, sid: str, display: str, d: dict) -> dict:
     plan = clean_plan(d.get('plan'))
+    if 'at' in plan:   # 💍 1 hour to 14 days ahead (game/wedding_live.py)
+        from . import wedding_live as wl
+        wl.clean_at(plan['at'])
     mine = d.get('mine', 50)
     need(type(mine) is int and 0 <= mine <= 100, 'Tỉ lệ góp là từ 0 đến 100%.', 'bad_plan')
     announce = d.get('announce', True)
@@ -1604,6 +1617,10 @@ def _confirm(store, sid: str, display: str, d: dict) -> dict:
     side = _side(c, sid)
     days = int(w['days'])
     targets = {}
+    at = json.loads(w['plan']).get('at')   # 💍 a real date and time: the ceremony resolves then, the live party is booked
+    if at is not None:
+        from . import wedding_live as wl
+        need(at >= now() + wl.CONFIRM_MIN, 'Giờ cưới đã sát quá rồi. Sửa lại giờ trong kế hoạch rồi gửi nhau nhé.', 'too_late', 409)
 
     def pay(who):
         def fn(s):
@@ -1618,18 +1635,25 @@ def _confirm(store, sid: str, display: str, d: dict) -> dict:
     eff = {who: _effect(f'dep:{wid}:{who}', c[who], 'wallet', -dep[who], 'Đặt cọc tiệc cưới (phần của bạn)') for who in ('a', 'b')}
 
     def ops(db):
+        ta, tb, due = (targets['a'], targets['b'], now() + days * DAY) if at is None else (None, None, float(at))
         if db.execute("UPDATE weddings SET status='confirmed',confirmed_at=?,target_a=?,target_b=?,due_at=?,deposit_a=?,deposit_b=?,announce_"
                       + side + "=? WHERE id=? AND status='proposed' AND version=?",
-                      (now(), targets['a'], targets['b'], now() + days * DAY, dep['a'], dep['b'], int(announce), wid, version)).rowcount != 1:
+                      (now(), ta, tb, due, dep['a'], dep['b'], int(announce), wid, version)).rowcount != 1:
             raise MarriageError('Kế hoạch vừa thay đổi. Xem lại rồi xác nhận nhé.', 'plan_changed', 409)
         _insert_effects(db, [eff['a'], eff['b']], 'applied')
-        _notice(db, w['planner'], f'✅ {display} đã xác nhận kế hoạch cưới. Tiền cọc đã đặt, còn {days} ngày nữa là tới ngày vui!')
+        if at is not None:
+            wl.book(db, c, wid, float(at))
+            _notice(db, w['planner'], f'✅ {display} đã xác nhận kế hoạch cưới. Tiền cọc đã đặt. Hẹn cả phố lúc {wl.fmt_at(at)}! 💍')
+        else:
+            _notice(db, w['planner'], f'✅ {display} đã xác nhận kế hoạch cưới. Tiền cọc đã đặt, còn {days} ngày nữa là tới ngày vui!')
     try:
         _mutate_retry(store, {c['a']: pay('a'), c['b']: pay('b')}, ops)
     except dbm.IntegrityError:
         raise MarriageError('Kế hoạch này đã được xác nhận rồi.', 'gone', 409) from None
     mine = targets.get(side)
     when_ = f'Ngày cưới của bạn: Ngày {mine} (còn {days} ngày).' if mine else f'Còn {days} ngày nữa là tới ngày cưới!'
+    if at is not None:
+        when_ = f'Cưới lúc {wl.fmt_at(at)}: cả phố được mời dự 💍'
     return dict(message=f'Đã chốt kế hoạch và đặt cọc {q["deposit"]} xu (phần của bạn {dep[side]} xu). {when_}',
                 changed=True)
 
@@ -1648,6 +1672,8 @@ def _divorce(store, sid: str, display: str, d: dict) -> dict:
             return None
         db.execute('DELETE FROM marriage_bonds WHERE couple=?', (c['id'],))
         db.execute("UPDATE weddings SET status='cancelled' WHERE couple=? AND status IN ('proposed','rejected','confirmed')", (c['id'],))
+        from . import wedding_live as wl
+        wl.cancel_party(db, c['id'])   # 💍 a booked live party is off too
         until = now() + W.REMARRY_DAYS * DAY
         db.execute('UPDATE marriage_people SET remarry_after=? WHERE sid IN (?,?)', (until, sid, other))
         from . import couple as cp  # the joint fund is split, open debts settled from it
