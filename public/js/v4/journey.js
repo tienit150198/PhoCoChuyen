@@ -168,7 +168,16 @@ function placesSection(env){
 function homeMain(env){
   const {api}=env,J=api.state.journey;
   const top=`<header class="jr-top"><div class="grow"><span class="eyebrow">${J.story?`Khu phố nhỏ · Ngày sống ${fmt(J.life_day)}`:'Khu phố nhỏ · mọi nơi đều mở'}</span><h1>Hành trình của bạn</h1></div>${accountChip(env)}${api.state.current?btn(icon('x',20),'close',{},'ghost small jr-close','aria-label="Đóng"'):''}</header>`;
-  return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col">${meCard(env)}${J.story?houseCard(env):''}${lifeCard(env)}${boardEntry(env)}${J.study?certsEntry(env):''}${J.story?chapterCard(env):''}${J.study?'':certsEntry(env)}${storiesCard(env)}</div><div class="jr-col wide">${placesSection(env)}</div></div></div>`;
+  return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col">${J.story?fairCard(env):''}${meCard(env)}${J.story?houseCard(env):''}${lifeCard(env)}${boardEntry(env)}${J.study?certsEntry(env):''}${J.story?chapterCard(env):''}${J.study?'':certsEntry(env)}${storiesCard(env)}</div><div class="jr-col wide">${placesSection(env)}</div></div></div>`;
+}
+
+/* 🏮 Hội chợ dân gian (v4/fair.js, own dialog; game/fair.py): a small banner while the fair is open or about to open. */
+function fairCard(env){
+  const f=env.api.state.fair;if(!f?.show||f.over)return '';
+  const m=Math.max(0,Math.floor(((f.open?f.closes:f.opens)-f.now)/60));   // from the server's clock when the state came
+  const when=m>=1440?`${Math.floor(m/1440)} ngày ${Math.floor(m%1440/60)} giờ`:m>=60?`${Math.floor(m/60)} giờ ${m%60} phút`:`${Math.max(1,m)} phút`;
+  return `<section class="jr-card jr-fair" aria-label="Hội chợ dân gian"><button type="button" class="jr-fair-row" data-action="fair"><span class="jr-fair-lantern" aria-hidden="true">🏮</span>
+    <span class="grow"><b>${f.open?'Hội chợ dân gian đang mở':'Hội chợ dân gian sắp mở'}</b><small>🦀 Bầu cua · 🎱 Lô tô · 🏆 Bảng vàng · ${f.open?`còn ${when}`:`mở sau ${when}`}</small></span><span class="btn primary small" aria-hidden="true">${f.open?'Vào hội':'Xem'}</span></button></section>`;
 }
 
 /* 🏠 Nhà của bạn (v4/house.js, own dialog): where you live, what it costs, the way to your own home. */
@@ -259,7 +268,7 @@ function walletView(env){
     return `<details class="jr-fundrow ${p.paused?'paused':''}"><summary><span class="jr-place-emoji" aria-hidden="true">${emojiOf(m)}</span><span class="grow"><b>${esc(m.place||m.short)}</b><small>${p.employed?'Làm thuê · lương về ví':p.paused?'Tạm đóng · không tốn phí duy trì':`Duy trì ${fmt(p.upkeep)} xu/ngày khi vắng chủ`}</small></span><b class="jr-amt">${fmt(p.fund)} xu</b></summary>
       <div class="jr-fund-actions">${draw}${invest}<div class="row wrap">${pause}</div></div></details>`;
   }).join('')||`<p class="muted">Chưa có nơi làm việc nào. Bắt đầu ở một tiệm trong hẻm nhé.</p>`;
-  const kinds={living:'🏠',upkeep:'💡',draw:'👛',invest:'📈',salary:'💵',reopen:'🔑',incident:'⚖️',life:'🌿',study:'📚',backdoor:'🚪',bank:'🏦',home:'🔑'};
+  const kinds={living:'🏠',upkeep:'💡',draw:'👛',invest:'📈',salary:'💵',reopen:'🔑',incident:'⚖️',life:'🌿',study:'📚',backdoor:'🚪',bank:'🏦',home:'🔑',fair:'🏮'};
   // A label that brings its own emoji ("🎁 Quà từ Phố Có Chuyện") shows it in place of the kind's.
   const lead=h=>/^(\p{Extended_Pictographic}\uFE0F?) /u.exec(h.label||'');
   const row=h=>{const m=lead(h);return `<li><span aria-hidden="true">${m?m[1]:kinds[h.kind]||'•'}</span><span class="grow">${esc(m?h.label.slice(m[0].length):h.label)}<small>Ngày sống ${fmt(h.day)}</small></span><b class="${h.amount<0?'out':'in'}">${h.amount<0?'−':'+'}${fmt(Math.abs(h.amount))} xu</b></li>`;};
@@ -355,6 +364,7 @@ function maybeScene(){
   if(!E?.api.state?.journey||!E.api.content?.journey)return;
   const J=E.api.state.journey,d=document.getElementById('jrScene');
   if(d?.open||document.getElementById('stScene')?.open||J.story&&!J.intro)return;
+  if(document.querySelector('dialog.fh-sheet[open]')){setTimeout(maybeScene,1500);return;}   // 🏮 not over a dice roll: after the fair's dialog closes
   if(!J.story){maybeStory();return;}
   if(document.getElementById('confirmDialog')?.open){setTimeout(maybeScene,400);return;}
   const S=E.api.state;

@@ -320,3 +320,15 @@ html[data-layout="phone"][data-orientation="landscape"] .jr-gender>svg,html[data
 .jr-house-emoji{flex:none;font-size:2rem;line-height:1}
 @supports (color:color-mix(in srgb,red 50%,blue)){.jr-house-emoji[style*="--hs-tone"]{display:inline-grid;place-items:center;width:52px;height:52px;border-radius:14px;background:color-mix(in srgb,var(--hs-tone) 20%,var(--surface));font-size:1.8rem}}
 html[data-layout="phone"] .jr-house-row .btn{display:none}
+
+/* 🏮 Hội chợ dân gian (v4/fair.js): a festive banner while the fair is open or about to open */
+.jr-fair{padding:0;overflow:hidden;border-color:#e0a23a;background:linear-gradient(100deg,#fff4dc,#ffe3d6 60%,#fff4dc)}
+html[data-theme="dem"] .jr-fair{border-color:#8a5a1c;background:linear-gradient(100deg,#2c2218,#33201f 60%,#2c2218)}
+.jr-fair-row{position:relative;display:flex;gap:12px;align-items:center;width:100%;min-height:64px;padding:18px 16px 14px;border:0;border-radius:inherit;background:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.jr-fair-row::before{content:"";position:absolute;inset:0 0 auto 0;height:8px;background:repeating-linear-gradient(90deg,#d9472b 0 16px,#f2b53a 16px 32px,#2f8f6a 32px 48px,#2f7fd1 48px 64px);-webkit-mask:conic-gradient(from -45deg at 50% 100%,#000 90deg,transparent 0) 0 0/16px 8px repeat-x;mask:conic-gradient(from -45deg at 50% 100%,#000 90deg,transparent 0) 0 0/16px 8px repeat-x}
+.jr-fair-row .grow{min-width:0;flex:1;display:grid;gap:2px}
+.jr-fair-row b{font-size:1.05rem}
+.jr-fair-row small{font-size:.85rem;color:var(--ink-2)}
+.jr-fair-lantern{flex:none;font-size:2rem;line-height:1;transform-origin:50% 0}
+@media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .jr-fair-lantern{animation:jr-fair-sway 3.2s ease-in-out infinite}}
+@keyframes jr-fair-sway{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}

@@ -20,6 +20,11 @@ Boards
 Weekly titles: the top of `all`, `titles`, `certs` and of every workplace board
 hold a title for the week, recomputed daily (game/lb_titles.py).
 
+* ``fair<YYYYMMDD>`` - 🏆 Bảng vàng hội chợ while a folk fair runs (game/fair.py
+  edition()): fair points (participation, never xu), days played. Ties: who
+  reached the score first. Not a weekly-title board: its titles are granted once
+  after the fair (game/fair_board.py).
+
 Server authoritative: rows are derived from the save stored on the server (see
 ``summary``), written by the storage layer in the same transaction as the save
 (Store._store / _command_locked), and only when a number on a board changed.
@@ -40,6 +45,7 @@ from collections import OrderedDict
 
 from . import db as dbm
 from . import lb_titles as lbt   # 🏅 Danh hiệu tuần (the top of each board, refreshed daily)
+from . import fair as fh          # 🏮 Hội chợ dân gian: its board (fh.edition()) while it runs
 from .content import CAREERS
 
 VERSION = 2                # bump when a formula changes: the next start rebuilds every row (2: the titles board)
@@ -176,6 +182,9 @@ def summary(state) -> dict:
     n, secret, last = _titles(state)
     if n:
         out[TITLES] = (n, secret, -last, n, last, secret, 0, n)
+    pts, days = fh.points_of(state.get('journey'))
+    if pts:   # 🏆 Bảng vàng hội chợ: points only; ties go to who reached the score first (since)
+        out[fh.edition()] = (pts, 0, 0, 0, days, 0, 0, 0)
     out[NAME] = guest_name(state.get('name'))
     return out
 
@@ -373,7 +382,7 @@ def parse_query(q: dict) -> tuple[str, int]:
     """(board, limit) of GET /api/leaderboard?career=<id|all>|board=certs|titles&limit=50;
     ValueError with a player-facing message otherwise."""
     board = q.get('board') or q.get('career') or OVERALL
-    if board not in BOARDS:
+    if board not in BOARDS and board != fh.edition():
         raise ValueError('Nghề không hợp lệ.')
     raw = q.get('limit') or str(LIMIT)
     if not (raw.isascii() and raw.isdigit() and len(raw) <= 3 and 1 <= int(raw) <= LIMIT):
@@ -389,6 +398,8 @@ def _row_out(board: str, r) -> dict:
         out.update(certs=r['mastered'], best=r['served'], day=r['days'])
     elif board == TITLES:
         out.update(titles=r['mastered'], secret=r['served'], day=r['days'])
+    elif board.startswith('fair'):
+        out.update(points=r['score'], days=r['days'])
     else:
         out.update(days=r['days'], served=r['served'], stars=r['stars'] / 10 if r['stars'] else None)
         if board == OVERALL:
@@ -467,6 +478,10 @@ def view(store, board: str, limit: int = LIMIT, token: str | None = None) -> dic
                 me['rank'] = None
         me.pop('show', None)
         me['titles'] = [dict(emoji=h['emoji'], name=h['name'], board=h['board'], label=h['label']) for h in holders.get(sid, ())]
+    if board == fh.edition():   # 🏆 the fair's own titles (after the end), no weekly ones
+        from . import fair_board
+        fair_board.ensure(store)
+        return dict(board=board, total=total, rows=rows, me=me, weekly=None, fair=fair_board.board_view(store, sid))
     try:
         weekly = lbt.board_view(store, board, sid)
     except Exception:  # noqa: BLE001 - a database from before the weekly titles: the board still shows
