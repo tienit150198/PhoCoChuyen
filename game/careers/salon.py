@@ -630,30 +630,128 @@ def _bowl_mix(t: dict, b: dict) -> dict | None:
     return _mix(b['shade'], mx['b'], mx['pa'], mx['pb'], t['_hair'].get('warm', 0))
 
 
+# Tones a developer lifts natural hair by (RULES 1–3; 40 vol is never used on the scalp).
+LIFT = {10: 0, 20: 2, 30: 3, 40: 4}
+# What each bowl kind is mixed with, by the rule table (every recipe in the game follows it).
+KIND_RATIO = {'color': '1:1', 'bleach': '1:2', 'toner': '1:2'}
+
+
+def _dev_note(dev, need, tones) -> str | None:
+    """Why the developer is right or wrong for this target: ok, dev40, weak (lifts too few tones), cover (grey needs it),
+    low (too weak, reason unknown), strong — or None while the developer or the one needed is not known."""
+    if need is None or dev is None:
+        return None
+    if dev == need:
+        return 'ok'
+    if dev == 40:
+        return 'dev40'
+    if dev < need:
+        if tones is None:
+            return 'low'
+        return 'weak' if tones > LIFT[dev] else 'cover'
+    return 'strong'
+
+
+def bowl_check(kind: str, shade, mix: dict | None, dev, ratio, want: dict | None, warm: int = 0,
+               photo_blind: bool = False, lift: dict | None = None) -> dict:
+    """The verdict on a bowl, before anything is mixed. Pure (no task, no randomness), so the client runs the very
+    same rules for its preview: public/js/careers/salon_mix.js bowlCheck() is a line-for-line port and
+    tests/test_salon_mix_parity.py runs every combination through both.
+
+    mix: {b, pa, pb} for a v0.5 two-tube colour bowl (shade is tube A), None for a single tube, bleach or toner.
+    want: what the client needs — {level, tone, dev, ratio, grey} for a two-tube bowl, {shade, dev, ratio} otherwise
+    (the server passes the task key; the preview passes what the stylist has found out, dev/shade None if unknown).
+    warm: the brassy base (+1 band); photo_blind: a filtered photo not yet checked; lift: {base, dyed} for the notes.
+    issue is the first thing Linh says, in her order (None: the bowl is right)."""
+    out = dict(issue=None, hit=None, mix=None, text=None, level_ok=None, band_ok=None, nat_ok=None, dlv=None, dband=None,
+               dev_note=None, need=None, cap=LIFT.get(dev), tones=None, block=False)
+    if mix is not None:
+        m = _mix(shade, mix['b'], mix['pa'], mix['pb'], warm)
+        out.update(mix=m, text=_level_text(m))
+        if lift and lift.get('dyed') is not None:
+            # Dye never lifts old dye: anything lighter than the dyed lengths needs bleach.
+            out['block'] = (m['lv'] - lift['dyed'] * m['den']) * 4 > m['den']
+        if not want:
+            out.update(issue='nowant', hit=False)
+            return out
+        lv_ok, bd_ok = _level_ok(m, want['level']), m['band'] == want['tone']
+        nat_ok = not want.get('grey') or 2 * m['nat'] >= m['den']
+        hit = lv_ok and bd_ok
+        need = want.get('dev')
+        tones = want['level'] - lift['base'] if lift and lift.get('base') is not None else None
+        out.update(hit=hit, level_ok=lv_ok, band_ok=bd_ok, nat_ok=nat_ok, dlv=m['lv'] - want['level'] * m['den'],
+                   dband=BAND_IDS.index(m['band']) - BAND_IDS.index(want['tone']), need=need, tones=tones,
+                   dev_note=None if photo_blind else _dev_note(dev, need, tones))
+        if dev == 40:
+            out['issue'] = 'dev40'
+        elif not hit:
+            out['issue'] = 'photo' if photo_blind else 'level' if not lv_ok else 'tone'
+        elif not nat_ok:
+            out['issue'] = 'grey'
+        elif need is not None and dev != need:
+            out['issue'] = 'dev'
+        elif ratio != want['ratio']:
+            out['issue'] = 'ratio'
+        return out
+    if not want:
+        out['issue'] = 'nowant'
+        return out
+    need = want.get('dev')
+    out.update(need=need, dev_note=_dev_note(dev, need, None))
+    if dev == 40:
+        out['issue'] = 'dev40'
+    elif kind != 'bleach' and want.get('shade') is not None and shade != want['shade']:
+        out['issue'] = 'shade'
+    elif need is not None and dev != need:
+        out['issue'] = 'dev'
+    elif ratio != want['ratio']:
+        out['issue'] = 'ratio'
+    return out
+
+
 def _mix_issue(t: dict, shade: str, mx: dict, dev: int, ratio: str) -> tuple:
     want = t['_key'].get('color')
-    if not want:
+    v = bowl_check('color', shade, mx, dev, ratio, want, t['_hair'].get('warm', 0),
+                   t['needs'].get('case') == 'photo' and not t.get('photo_seen'))
+    issue, hit, m = v['issue'], v['hit'], v['mix']
+    if issue == 'nowant':
         return 'Linh (thợ màu) lắc đầu: phiếu của khách không cần bát này.', False
-    m = _mix(shade, mx['b'], mx['pa'], mx['pb'], t['_hair'].get('warm', 0))
-    hit = _level_ok(m, want['level']) and m['band'] == want['tone']
-    if dev == 40:
+    if issue == 'dev40':
         return 'Linh giật mình: oxy 40 vol không bao giờ được thoa sát da đầu!', hit
-    if not hit:
-        if t['needs'].get('case') == 'photo' and not t.get('photo_seen'):
-            return 'Linh nhìn ảnh rồi nhìn tóc khách: “Ảnh này qua filter đó, soi ảnh gốc rồi hãy pha.”', hit
-        if not _level_ok(m, want['level']):
-            return f'Linh ước độ sáng bát: khoảng level {_level_text(m)} — khách cần level {want["level"]}.', hit
+    if issue == 'photo':
+        return 'Linh nhìn ảnh rồi nhìn tóc khách: “Ảnh này qua filter đó, soi ảnh gốc rồi hãy pha.”', hit
+    if issue == 'level':
+        return f'Linh ước độ sáng bát: khoảng level {_level_text(m)} — khách cần level {want["level"]}.', hit
+    if issue == 'tone':
         msg = f'Linh soi ánh: trên tóc này bát ra “{BAND_NAME[m["band"]]}”, khách cần “{BAND_NAME[want["tone"]]}”.'
         if t['_hair'].get('warm') and 'lengths' not in t['inspected']:
             msg += ' Nền tóc đang ánh cam cũng đẩy màu ấm lên — xem kỹ thân tóc.'
         return msg, hit
-    if want.get('grey') and 2 * m['nat'] < m['den']:
+    if issue == 'grey':
         return 'Linh nhắc: tóc bạc nhiều, ít nhất một nửa bát phải là tuýp nền tự nhiên (x.0) — không thì bạc vẫn lộ.', hit
-    if dev != want['dev']:
+    if issue == 'dev':
         return 'Linh nhắc: đếm số tông cần nâng từ chân tóc thật rồi tra bảng oxy.', hit
-    if ratio != want['ratio']:
+    if issue == 'ratio':
         return 'Linh nhắc: tỷ lệ trộn của loại thuốc này chưa đúng bảng pha.', hit
     return None, hit
+
+
+def _recipe_view(t: dict) -> dict:
+    """The half of bowl_check's `want` the stylist has found out (public view, v0.5 tasks): ratios and the bleach and
+    toner developers come from the rule table; the colour's developer once the roots are seen (count the lift from
+    the real roots); the dyed lengths once seen; the toner once the bleach is rinsed (the base shows its tint)."""
+    k, h, seen, out = t['_key'], t['_hair'], t['inspected'], {}
+    if k.get('color'):
+        w, roots = k['color'], 'roots' in seen
+        out['color'] = dict(dev=w['dev'] if roots else None, ratio=w['ratio'], base=h['level'] if roots else None,
+                            dyed=h['shown'] if h['history'] == 'box_dye' and 'lengths' in seen else None)
+    if k.get('bleach'):
+        out['bleach'] = dict(dev=k['bleach']['dev'], ratio=k['bleach']['ratio'])
+    if k.get('toner'):
+        w = k['toner']
+        out['toner'] = dict(dev=w['dev'], ratio=w['ratio'],
+                            shade=w['shade'] if 'bleach' in t['results'] or not k.get('bleach') else None)
+    return out
 
 
 def _empty_cut() -> dict:
@@ -910,18 +1008,18 @@ def _answer(t: dict, topic: str) -> str:
 
 
 def _formula_issue(t: dict, kind: str, shade, dev: int, ratio: str) -> str | None:
-    want = t['_key'].get(kind)
-    if not want:
+    issue = bowl_check(kind, shade, None, dev, ratio, t['_key'].get(kind))['issue']
+    if issue == 'nowant':
         return 'Linh (thợ màu) lắc đầu: phiếu của khách không cần bát này.'
-    if dev == 40:
+    if issue == 'dev40':
         return 'Linh giật mình: oxy 40 vol không bao giờ được thoa sát da đầu!'
-    if kind != 'bleach' and shade != want['shade']:
+    if issue == 'shade':
         if kind == 'color':
             return 'Linh so tuýp với ảnh mẫu và chân tóc: tông, số tuýp này chưa đúng màu khách muốn.'
         return 'Linh soi màu nền sau tẩy: toner này không khử đúng ánh đang có.'
-    if dev != want['dev']:
+    if issue == 'dev':
         return 'Linh nhắc: đếm số tông cần nâng rồi tra bảng oxy.'
-    if ratio != want['ratio']:
+    if issue == 'ratio':
         return 'Linh nhắc: tỷ lệ trộn của loại thuốc này chưa đúng bảng pha.'
     return None
 
@@ -1939,6 +2037,7 @@ def public_task(t: dict) -> dict:
         # What the stylist has actually found out, nothing more.
         v['base_warm'] = h.get('warm', 0) if 'lengths' in t['inspected'] else None
         v['grey'] = h.get('grey', 0) if 'roots' in t['inspected'] else None
+        v['recipe'] = _recipe_view(t)
         v['real'] = ({k2: t['_x']['real'][k2] for k2 in ('level', 'tone', 'text')}
                      if _case(t) == 'photo' and t['photo_seen'] else None)
         col = t['results'].get('color')
@@ -2260,7 +2359,8 @@ def content() -> dict:
                 windows=WINDOWS, cut_steps=CUT_STEPS, finishes=FINISHES, topics=TOPICS, zones=ZONES,
                 retail=[dict(id=x['id'], name=x['name'], emoji=x['emoji'], price=x['price'], unlock=x.get('unlock', 1)) for x in ITEMS if x['group'] == 'goods'],
                 rules=RULES, disclaimer=DISCLAIMER,
-                bands=BANDS, tone=TONE, mix_parts=list(MIX_PARTS), cases=CASES, calm_tools=CALM_TOOLS,
+                bands=BANDS, tone=TONE, mix_parts=list(MIX_PARTS), lift={str(k): v for k, v in LIFT.items()}, kind_ratio=KIND_RATIO,
+                cases=CASES, calm_tools=CALM_TOOLS,
                 care=dict(appts={k: dict(v, id=k) for k, v in APPTS.items()}, keep=APPT_KEEP, clean_sets=CLEAN_SETS, weak=WEAK,
                           bleach_stop=BLEACH_STOP, trust_names=list(TRUST_NAMES), trim_cap=list(TRIM_CAP),
                           health_words=[list(x) for x in HEALTH_WORDS]),

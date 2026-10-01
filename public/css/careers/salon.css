@@ -232,6 +232,41 @@
 .career-job.sl .sl-stats{gap:6px}
 .career-job.sl.sl-idle{gap:10px}
 
+/* Bowl preview ("bảng pha màu dự tính") and the mixing chart: swatches come from game data, the rest from tokens. */
+.career-job.sl .sl-mixprev{display:grid;gap:8px;padding:10px;border-radius:var(--sl-rs);background:var(--sl-s2);border:1px solid var(--sl-line)}
+.career-job.sl .sl-mp-pair{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:6px}
+.career-job.sl .sl-mp-side{display:grid;justify-items:center;align-content:start;text-align:center;gap:2px;min-width:0}
+.career-job.sl .sl-mp-side b{font-size:.92em;line-height:1.25;overflow-wrap:anywhere}
+.career-job.sl .sl-mp-side small{font-size:.76em;color:var(--sl-muted)}
+.career-job.sl .sl-mp-side .sl-swatch{width:40px;height:40px}
+.career-job.sl .sl-mp-arrow{font-size:1.3em;color:var(--sl-muted)}
+.career-job.sl .sl-mp-verdict{margin:0;padding:8px 10px;border-radius:var(--sl-rs);font-weight:800;text-align:center;background:var(--sl-s1);border:2px solid var(--sl-line)}
+.career-job.sl .sl-mp-verdict.good{border-color:var(--sl-good);background:color-mix(in srgb,var(--sl-good) 14%,var(--sl-s1))}
+.career-job.sl .sl-mp-verdict.bad{border-color:var(--sl-bad);background:color-mix(in srgb,var(--sl-bad) 12%,var(--sl-s1))}
+.career-job.sl .sl-mp-verdict.warn{border-color:var(--sl-warn);background:color-mix(in srgb,var(--sl-warn) 12%,var(--sl-s1))}
+.career-job.sl .sl-mp-lines{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:.88em}
+.career-job.sl .sl-mp-lines li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:4px;align-items:start;padding:5px 8px;border-radius:var(--sl-rs);background:var(--sl-s1);border-left:4px solid var(--sl-info)}
+.career-job.sl .sl-mp-lines li.good{border-left-color:var(--sl-good)}
+.career-job.sl .sl-mp-lines li.bad{border-left-color:var(--sl-bad)}
+.career-job.sl .sl-tubes-head{gap:6px;flex-wrap:nowrap;align-items:center}
+.career-job.sl .sl-tubes-head .btn{flex:none}
+.career-job.sl .sl-tubes-head .sl-sub{margin:0}
+.career-job.sl .sl-chart-btn.on{border-color:var(--sl-accent);box-shadow:0 0 0 2px var(--sl-accent) inset}
+.career-job.sl .sl-chart{display:grid;gap:6px;padding:6px;border-radius:var(--sl-rs);background:var(--sl-s2);border:1px solid var(--sl-line)}
+.career-job.sl .sl-ch-ratios .sl-seg{min-width:52px;justify-content:center}
+.career-job.sl .sl-ch-line{margin:0;font-size:.8em;color:var(--sl-muted)}
+.career-job.sl .sl-ch-grid{display:grid;grid-template-columns:32px repeat(6,minmax(0,1fr));gap:3px;align-items:stretch}
+.career-job.sl .sl-ch-head{display:grid;justify-items:center;align-content:center;gap:1px;font-size:.72em;font-weight:800;min-width:0}
+.career-job.sl .sl-ch-head .sl-cap{width:18px;height:18px;border-width:1px}
+.career-job.sl .sl-cell{display:grid;justify-items:center;align-content:center;gap:1px;min-height:58px;min-width:0;padding:4px 1px;border-radius:8px;border:1px solid var(--sl-line);background:var(--sl-s1);color:var(--sl-ink);font:inherit;cursor:pointer;line-height:1.1}
+.career-job.sl .sl-cell i{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--sw);box-shadow:0 0 0 1px var(--sl-line);font-style:normal;font-weight:900;font-size:.8em;color:#fff;text-shadow:0 0 2px #000}
+.career-job.sl .sl-cell b{font-size:.74em;font-variant-numeric:tabular-nums}
+.career-job.sl .sl-cell small{font-size:.62em;letter-spacing:-.02em;color:var(--sl-muted);max-width:100%;overflow:hidden;text-overflow:clip;white-space:nowrap}
+.career-job.sl .sl-cell.solo{border-style:dashed}
+.career-job.sl .sl-cell.hit{border-color:var(--sl-good);box-shadow:0 0 0 2px var(--sl-good) inset}
+.career-job.sl .sl-cell.on{border-color:var(--sl-accent);box-shadow:0 0 0 3px var(--sl-accent) inset}
+.career-job.sl .sl-cell.out{opacity:.5}
+
 /* Next step (guide.js): the bottom bar always does, or names, the next step. */
 .career-job.sl{--fk-foot:0px}
 .career-job.sl .sl-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:4;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--sl-r);background:var(--sl-s1);border:1px solid var(--sl-line);box-shadow:0 -6px 18px rgb(0 0 0 / 10%)}
