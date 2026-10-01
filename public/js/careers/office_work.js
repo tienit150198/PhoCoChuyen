@@ -155,14 +155,45 @@ function slotsDoc(t,x){
 }
 
 /* ---------------------------------------------------------------- fields: a call or a label, typed into a form */
+/* Dates and times on a numeric keypad (feedback 02/10: phones' number pad has no "/" or ":"): typing digits puts the
+ * separators in by itself (05032027 → 05/03/2027, 1430 → 14:30); a date also has 📅, the phone's own calendar. */
+const isoOf=v=>{const m=/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(String(v||'').trim());return m?`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`:'';};
+function fmtDigits(kind,raw){
+  const d=raw.replace(/\D+/g,'');
+  if(kind==='date'){const a=d.slice(0,2),b=d.slice(2,4),y=d.slice(4,8);return a+(d.length>2?'/'+b:'')+(d.length>4?'/'+y:'');}
+  return d.length>=4?d.slice(0,2)+':'+d.slice(2,4):d;   // only once the four digits are in (930 stays 930: 9:30 on the server)
+}
+let fmtBound=false;
+function bindFormat(){
+  if(fmtBound||typeof document==='undefined')return;fmtBound=true;
+  document.addEventListener('input',e=>{
+    const el=e.target;if(!(el instanceof HTMLInputElement))return;
+    const kind=el.dataset.owFmt;
+    if(kind){
+      if(e.inputType&&e.inputType.startsWith('delete'))return;   // let backspace remove a "/" or ":" freely
+      if(/[^\d/:\s.\-h]/i.test(el.value))return;                 // something else typed by hand: leave it
+      if(!/^[\d]+$/.test(el.value.replace(/[/:]/g,'')))return;     // separators typed by hand ("5/3/2027"): leave it
+      const v=fmtDigits(kind,el.value);if(v!==el.value){el.value=v;try{el.setSelectionRange(v.length,v.length);}catch{/* not a text box */}}
+      return;
+    }
+    if(el.dataset.owCal!==undefined)fromCalendar(el);
+  });
+  document.addEventListener('change',e=>{const el=e.target;if(el instanceof HTMLInputElement&&el.dataset.owCal!==undefined)fromCalendar(el);});
+}
+function fromCalendar(el){
+  const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(el.value);const box=document.getElementById(el.dataset.owCal);
+  if(!m||!box)return;box.value=`${m[3]}/${m[2]}/${m[1]}`;box.dispatchEvent(new Event('change',{bubbles:true}));
+}
+
 function fieldsDoc(t,x){
   const w=W(t),ans=t.ans||{},tw=w.twist?.field;
   const script=(w.script||[]).map(l=>`<li class="ow-say${l.new?' new':''}"><b>${x.esc(l.who)}</b><p>${x.esc(l.text)}</p></li>`).join('');
   const box=f=>{const id=fid(t,f.id),v=ans[f.id]??'';
     const input=f.kind==='pick'
       ?`<select id="${id}" data-preserve><option value="">Chọn…</option>${(f.opts||[]).map(o=>`<option value="${x.esc(o.id)}"${o.id===v?' selected':''}>${x.esc(o.label)}</option>`).join('')}</select>`
-      :`<input class="input" id="${id}" data-preserve type="text" autocomplete="off" maxlength="80" value="${x.esc(v)}"${f.kind==='digits'?' inputmode="numeric"':f.kind==='time'?' inputmode="numeric" placeholder="vd 14:30"':f.kind==='date'?' inputmode="numeric" placeholder="vd 05/03/2027"':''}>`;
-    return `<label class="ow-field${f.id===tw?' tw':''}" for="${id}"><span>${x.esc(f.label)}${f.id===tw?' <span class="ok-tag warn">Vừa đổi</span>':''}</span>${input}</label>`;};
+      :`<input class="input" id="${id}" data-preserve type="text" autocomplete="off" maxlength="80" value="${x.esc(v)}"${f.kind==='digits'?' inputmode="numeric"':f.kind==='time'?' inputmode="numeric" placeholder="vd 14:30" data-ow-fmt="time"':f.kind==='date'?' inputmode="numeric" placeholder="vd 05/03/2027" data-ow-fmt="date"':''}>`
+        +(f.kind==='date'?`<span class="ow-cal" title="Chọn trên lịch">📅<input type="date" class="ow-cal-in" data-ow-cal="${id}" aria-label="Chọn ngày trên lịch" value="${x.esc(isoOf(v))}"></span>`:'');
+    return `<label class="ow-field${f.id===tw?' tw':''}${f.kind==='date'?' date':''}" for="${id}"><span>${x.esc(f.label)}${f.id===tw?' <span class="ok-tag warn">Vừa đổi</span>':''}</span>${f.kind==='date'?`<span class="ow-datebox">${input}</span>`:input}</label>`;};
   return `<section class="ow-fields"><h3 class="ok-h">📝 Ghi lại cho đủ <small>${(w.fields||[]).length} ô</small></h3>
     ${script?`<ol class="ow-script" aria-label="Lời người ta nói">${script}</ol>`:''}
     <form class="ow-form" data-step-card="${x.esc(t.id)}:form" onsubmit="return false">${(w.fields||[]).map(box).join('')}</form></section>`;
@@ -247,6 +278,7 @@ function lastFiled(x){
 
 /** A career module for one Cánh Diều desk. c = {id, p (command prefix), boss, cls, title (rules pane), sum (summary title)}. */
 export function officeWork(c){
+  bindFormat();
   const strip=(x,t)=>statusStrip(x,t,{boss:c.boss,op:c.p+'overtime'});
   const care=(x,t)=>({people:mateCards(x,{prefix:c.p,t}),track:trackFold(x,{prefix:c.p,career:c.id})});
   const rules=x=>rulesList(x,x.room.data?.today?.rules||[],c.title);

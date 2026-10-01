@@ -382,6 +382,10 @@ html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-ca
 .career-job.ok.ow .ow-form{display:grid;gap:10px;padding:12px;border-radius:var(--radius);background:var(--surface);border:2px solid var(--accent)}
 .career-job.ok.ow .ow-field{display:grid;gap:4px;font-size:.967rem;font-weight:700}
 .career-job.ok.ow .ow-field.tw>span{color:var(--warn)}
+.career-job.ok.ow .ow-datebox{display:flex;gap:8px;align-items:stretch}
+.career-job.ok.ow .ow-datebox .input{flex:1;min-width:0}
+.career-job.ok.ow .ow-cal{position:relative;flex:none;display:grid;place-items:center;width:46px;border:1px solid var(--field-line);border-radius:12px;background:var(--surface);font-size:1.25rem;cursor:pointer}
+.career-job.ok.ow .ow-cal-in{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
 
 /* seq: the steps you will do */
 .career-job.ok.ow .ow-order{list-style:none;margin:0;padding:0;display:grid;gap:6px}
