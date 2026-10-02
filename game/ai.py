@@ -18,6 +18,7 @@ import urllib.request
 from urllib.parse import urlparse
 
 from . import feedback as fbk
+from . import pagoda_voice as _pv
 from . import spice
 
 _gate = threading.BoundedSemaphore(max(1, int(os.environ.get('LLM_CONCURRENCY', '4') or 4)))
@@ -152,12 +153,12 @@ def _voice_hint(v: dict) -> str:
             f'Nhịp mẫu (không chép): "{v["examples"][0]}" ')
 
 
-def _system(ctx: dict, persona: str, voice: dict | None = None) -> str:
+def _system(ctx: dict, persona: str, voice: dict | None = None, pagoda: bool = False) -> str:
     lang = ctx['language']
     return (
         'Bạn đóng vai một nhân vật hư cấu trong trò chơi mô phỏng nghề nghiệp "Phố Có Chuyện". '
         f'Vai: {ctx["role"]}. Tên: {ctx["persona"]["reviewer"]}. Tính cách: {STYLE_GUIDE.get(persona, ctx["persona"]["style"])}. '
-        + (_voice_hint(voice) if voice else '') +
+        + (_voice_hint(voice) if voice else '') + (_pv.AI_RULE if pagoda else '') +
         'Được phép xéo xắt, khen đểu, mỉa mai nhẹ như bình luận thật trên mạng. ' + spice.review_rule(ctx.get('archetype')) + SAFETY_RULE +
         'Bạn vừa đọc phản hồi của chủ cửa hàng/giáo viên cho review của mình. Hãy tự quyết định như người thật: '
         'nâng sao nếu phản hồi chân thành, có sự thật cụ thể hoặc cách sửa; giữ nguyên nếu chưa thuyết phục; '
@@ -174,14 +175,16 @@ def _system(ctx: dict, persona: str, voice: dict | None = None) -> str:
     )
 
 
-def feedback_decision(c: dict, post: dict, lang: str = 'vi') -> dict | None:
-    """AI proposal for an awaiting review thread, or None to use the scripted one."""
+def feedback_decision(c: dict, post: dict, lang: str = 'vi', career: str | None = None) -> dict | None:
+    """AI proposal for an awaiting review thread, or None to use the scripted one.
+    At the pagoda (`career`) the visitor is told where they are, and a reply in shop words is dropped."""
     fb = post.get('feedback') or {}
     if fb.get('status') != 'awaiting':
         return None
-    ctx = fbk.ai_context(c, post, lang)
+    pagoda = _pv.on(career)
+    ctx = fbk.ai_context(c, post, lang, career)
     voice, _, _ = _review_voice_of(post, fb['persona'], c.get('day'))
-    msgs = [dict(role='system', content=_system(dict(ctx, archetype=_review_arch(post, voice)), fb['persona'], voice)),
+    msgs = [dict(role='system', content=_system(dict(ctx, archetype=_review_arch(post, voice)), fb['persona'], voice, pagoda)),
             dict(role='user', content=json.dumps(dict(context=ctx, instruction='Quyết định và viết câu trả lời của bạn.'), ensure_ascii=False))]
     text, reason = chat(msgs, max_tokens=350, temperature=0.8)
     if not text:
@@ -192,7 +195,7 @@ def feedback_decision(c: dict, post: dict, lang: str = 'vi') -> dict | None:
     decision = data.get('decision')
     stars = data.get('stars')
     reply = _clean(data.get('text'), 420)
-    if decision not in DECISIONS or type(stars) is not int or not reply or unsafe_review(reply):
+    if decision not in DECISIONS or type(stars) is not int or not reply or unsafe_review(reply) or (pagoda and _pv.commercial(reply)):
         return None
     low, high = ctx['allowed_stars']
     return dict(decision=decision, stars=max(low, min(high, stars)), text=reply, mode='ai')
@@ -205,9 +208,11 @@ GRIPE_LENGTH = {'essay': 'noi_nhieu', 'p_essay': 'noi_nhieu', 'passive': 'kiem_l
                 'formal': 'vua', 'p_formal': 'vua'}
 
 
-def review_voice(c: dict, post: dict, lang: str = 'vi') -> str | None:
-    """Rewrite a fresh scripted review in the reviewer's own voice (same stars, same facts, same gripe)."""
+def review_voice(c: dict, post: dict, lang: str = 'vi', career: str | None = None) -> str | None:
+    """Rewrite a fresh scripted review in the reviewer's own voice (same stars, same facts, same gripe).
+    At the pagoda (`career`) the visitor writes about the pagoda, never in shop words."""
     from . import voices
+    pagoda = _pv.on(career)
     fb = post.get('feedback') or {}
     if fb.get('voice') != 'scripted' or fb.get('thread') or fb.get('twist') or fb.get('style') or fb.get('own'):
         return None  # careless/fake/styled reviews ("ok", emoji only…) and a career's own voices keep their exact wording
@@ -238,6 +243,7 @@ def review_voice(c: dict, post: dict, lang: str = 'vi') -> str | None:
         'Giữ nguyên số sao, ý khen/chê và mọi sự thật trong dữ liệu; không thêm sự kiện, số liệu, tên riêng mới. ' + gripe_rule +
         (ASPECT_RULE if aspects else 'Ưu tiên chi tiết cụ thể trong dữ liệu hơn lời khen chê chung chung. ') +
         'Được phép khen đểu, mỉa mai nhẹ, chấm sao kiểu hờn dỗi, lạc đề một chút. ' + spice.review_rule(_review_arch(post, voice)) + SAFETY_RULE +
+        (_pv.AI_RULE if pagoda else '') +
         f'Tối đa {n_sent} câu, dưới {n_chars} ký tự. '
         f'Viết bằng {"English" if lang == "en" else "tiếng Việt"}. Chỉ trả về nội dung review, không kèm giải thích.'])),
         dict(role='user', content=json.dumps(facts, ensure_ascii=False))]
@@ -248,7 +254,7 @@ def review_voice(c: dict, post: dict, lang: str = 'vi') -> str | None:
         return None
     allowed = set(re.findall(r'\d+', json.dumps(facts, ensure_ascii=False)))
     line, _ = clean_reply(text, allowed, post.get('author') or '', sentences=n_sent, chars=n_chars)
-    if not line or len(line) < 8 or unsafe_review(line):
+    if not line or len(line) < 8 or unsafe_review(line) or (pagoda and _pv.commercial(line)):
         return None
     return line
 

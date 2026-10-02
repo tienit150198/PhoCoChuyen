@@ -313,7 +313,7 @@ CLOSE = {
 # ------------------------------------------------------------------ styles
 STYLES = ('short', 'emoji', 'teencode', 'rant', 'lifestory', 'regular', 'handsome', 'sarcastic', 'p_short', 'p_story', 'p_long', 'p_emoji')
 DOMAIN_EMOJI = {'drink': '🧋', 'food': '🍜', 'stay': '🏡', 'flower': '💐', 'repair': '🔧', 'farm': '🥬', 'delivery': '🛵', 'pet': '🐶',
-                'salon': '💇', 'shop': '🛍️', 'pharmacy': '💊', 'office': '📑'}
+                'salon': '💇', 'shop': '🛍️', 'pharmacy': '💊', 'office': '📑', 'pagoda': '🪷'}
 NOUN = {'milk_tea': 'ly trà', 'restaurant': 'tô mì', 'cafe_bakery': 'ly cà phê', 'florist': 'bó hoa', 'grocery': 'đơn hàng', 'repair': 'món đồ sửa',
         'farm': 'mẻ rau', 'delivery': 'đơn giao', 'homestay': 'phòng', 'pet_care': 'bé cưng', 'salon': 'mái tóc', 'teacher': 'buổi học',
         'tour_guide': 'chuyến đi', 'mother_baby': 'món quà', 'pharmacy': 'đơn thuốc', 'clothing': 'bộ đồ', 'tra_da': 'cốc trà đá', 'pet_shop': 'món hàng',
@@ -814,27 +814,32 @@ def tone_decision(s: dict, c: dict, post: dict, tone: str, offer: str) -> dict:
     return out
 
 
-def tone_choices(post: dict) -> list[dict]:
-    """Ready-made replies for the open round: one text per tone, varied per review and round."""
+def tone_choices(post: dict, career: str | None = None) -> list[dict]:
+    """Ready-made replies for the open round: one text per tone, varied per review and round.
+    The pagoda answers in its own words (pagoda_voice.py): same tones, other labels and texts."""
     from .feedback import PERSONAS, _hash
+    from . import pagoda_voice as pv
     fb = post['feedback']
     parent = PERSONAS[fb['persona']]['group'] == 'parent'
+    pagoda = pv.on(career)
     worst = min(fb['criteria'], key=lambda x: x['score'])
     fact = fb['unfair']['truth'] if fb.get('unfair') else worst['note']
-    who = 'phụ huynh' if parent else 'bạn'
+    who = pv.address(post, fb['persona']) if pagoda else 'phụ huynh' if parent else 'bạn'
     item = fb.get('item') or '“' + str(fb.get('title') or 'lần này') + '”'
     happy = (post.get('stars') or 0) >= 4 and worst['score'] >= 4 and not fb.get('unfair')
+    label = pv.topic(fb['unfair'] if fb.get('unfair') else worst) if pagoda else worst['label']
     # Every public view of an open review builds these: the same inputs give the same replies.
-    key = (post['id'], fb['rounds'], parent, happy, worst['label'], fact, item)
-    if type(fb['rounds']) is not int or not all(type(x) is str for x in (post['id'], worst['label'], fact, item)):
+    key = (post['id'], fb['rounds'], parent, happy, label, fact, item, who, pagoda)
+    if type(fb['rounds']) is not int or not all(type(x) is str for x in (post['id'], label, fact, item)):
         key = None  # only plain inputs (1 == True == 1.0 would share a memo row, not a text)
     texts = _TONES_MEMO.get(key) if key is not None else None
     if texts is None:
-        texts = _tone_texts(post['id'], fb['rounds'], parent, happy, who, worst['label'], fact, item, _hash)
+        texts = (pv.tone_texts(post['id'], fb['rounds'], happy, who, label, fact, _hash) if pagoda
+                 else _tone_texts(post['id'], fb['rounds'], parent, happy, who, label, fact, item, _hash))
         if key is not None:
             _TONES_MEMO.put(key, texts, size_of(key) + size_of(texts))
-    return [dict(id=tid, label=spec.get('label_parent', spec['label']) if parent else spec['label'], emoji=spec['emoji'],
-                 risk=spec['risk'], text=text) for tid, text in zip(TONE_ORDER, texts) for spec in (TONES[tid],)]
+    return [dict(id=tid, label=pv.LABEL[tid] if pagoda else spec.get('label_parent', spec['label']) if parent else spec['label'],
+                 emoji=spec['emoji'], risk=spec['risk'], text=text) for tid, text in zip(TONE_ORDER, texts) for spec in (TONES[tid],)]
 
 
 _TONES_MEMO = Memo(entries=4096, budget=8 << 20)  # per worker: the reply texts of at most 4096 open reviews, about 8 MB
@@ -866,15 +871,17 @@ def _fans_today(c: dict) -> int:
     return sum(1 for p in c['feed'] if ((p.get('feedback') or {}).get('twist') or {}).get('kind') == 'fan' and p.get('day') == c['day'])
 
 
-def add_guest(s: dict, c: dict, post: dict, situation: str, seed: int) -> dict | None:
+def add_guest(s: dict, c: dict, post: dict, situation: str, seed: int, career: str | None = None) -> dict | None:
     from .feedback import PERSONAS, teacher_title
+    from . import pagoda_voice as pv
     fb = post['feedback']
     thread = fb['thread']
     if len(thread) >= 8 or sum(1 for x in thread if x.get('role') == 'guest') >= GUESTS_PER_POST or _guests_today(c) >= GUESTS_PER_DAY:
         return None
     grp = 'parent' if PERSONAS[fb['persona']]['group'] == 'parent' else 'customer'
-    name, emoji = _pick(GUEST_NAMES[grp], seed)
-    text = teacher_title(s, _pick(GUEST_TEXT[grp][situation], seed // 3))
+    names, lines = (pv.GUEST_NAMES, pv.GUEST_TEXT) if pv.on(career) else (GUEST_NAMES[grp], GUEST_TEXT[grp])
+    name, emoji = _pick(names, seed)
+    text = teacher_title(s, _pick(lines[situation], seed // 3))
     row = dict(role='guest', name=name, emoji=emoji, side=GUEST_SIDE[situation], text=text, day=c['day'])
     # Bystanders comment on the owner's reply while the reviewer is still reading,
     # so the reviewer's own answer stays the last word of the round.
@@ -889,7 +896,8 @@ def _fans(s: dict, c: dict, career: str, post: dict, n: int) -> int:
     fb = post['feedback']
     parent = PERSONAS[fb['persona']]['group'] == 'parent'
     pool = [k for k in e.NPC_INDEX if k.startswith(career + '_npc_') and k != post['npc']] or [k for k in e.NPC_INDEX if k != post['npc']]
-    rows = FAN_TEXT['parent' if parent else 'customer']
+    from . import pagoda_voice as pv
+    rows = pv.FAN_TEXT if pv.on(career) else FAN_TEXT['parent' if parent else 'customer']
     made = 0
     for i in range(max(0, min(n, FANS_PER_DAY - _fans_today(c)))):
         h = _hash('fan', post['id'], i)
@@ -910,6 +918,7 @@ def _fans(s: dict, c: dict, career: str, post: dict, n: int) -> int:
 def after_resolve(s: dict, c: dict, post: dict, pending: dict, decision: str) -> list[str]:
     """Friends, sass fallout and bystanders once the reviewer has answered."""
     from .feedback import _hash, _pile_on, _kind
+    from . import pagoda_voice as pv
     fb = post['feedback']
     notes = []
     career = _career_of(s, c)
@@ -917,11 +926,12 @@ def after_resolve(s: dict, c: dict, post: dict, pending: dict, decision: str) ->
         n = _fans(s, c, career, post, 1 + _hash('fans', post['id']) % 2)
         if n:
             fb['fans'] = True
-            notes.append(f'{post["author"]} rủ bạn bè ghé ủng hộ: thêm {n} đánh giá tốt.')
+            notes.append(pv.fill(pv.FANS_NOTE, author=post['author'], n=n) if pv.on(career)
+                         else f'{post["author"]} rủ bạn bè ghé ủng hộ: thêm {n} đánh giá tốt.')
     if pending.get('sass') == 'lost' and decision != 'revise_up' and not fb.get('viral') and career:
         fb['viral'] = True
         n = _pile_on(s, c, career, post, 1, 'sass')
-        notes.append(f'Câu cà khịa bị chụp màn hình: thêm {n} đánh giá 1★.')
+        notes.append(pv.fill(pv.SASS_LOST, n=n) if pv.on(career) else f'Câu cà khịa bị chụp màn hình: thêm {n} đánh giá 1★.')
     # Bystanders chime in now and then.
     if c.get('day', 1) >= 2:
         roll = _hash('guest', post['id'], fb['rounds']) % 1000 / 1000
@@ -938,7 +948,7 @@ def after_resolve(s: dict, c: dict, post: dict, pending: dict, decision: str) ->
                 situation = 'defend' if pending.get('sass') != 'lost' else ('agree', 'troll')[_hash('gside', post['id']) % 2]
             else:
                 situation = 'cheer' if (post.get('stars') or 0) >= 4 and seed_side(post) else 'troll'
-            add_guest(s, c, post, situation, _hash('gname', post['id'], fb['rounds']))
+            add_guest(s, c, post, situation, _hash('gname', post['id'], fb['rounds']), career)
     return notes
 
 
