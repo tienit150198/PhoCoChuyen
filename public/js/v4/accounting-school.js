@@ -24,7 +24,7 @@ function missing(u){
   return !!part&&!(part in a.company);
 }
 export async function accountingSchoolOpen(env){
-  const u=state(env);
+  const u=state(env);u.check=null;
   return !!await run(env,'as_view',{},{quiet:true})&&!!u.data;
 }
 const safeURL=url=>/^https:\/\//i.test(String(url||''))?esc(url):'#';
@@ -83,7 +83,7 @@ export function questionView(q,{mode,context='',lesson='',ui,number=1,disabled=f
   if(q.solved)return `<article class="as-question solved">${title}<p>${esc(q.prompt)}</p><div class="as-answer">${answerText(q)}</div>${q.explain?`<p class="as-explain">${esc(q.explain)}</p>`:''}</article>`;
   const schema={kind:q.kind,items:q.items,left:q.left,fields:q.fields};
   const help=mode!=='exam'&&q.help?.length?helpView(q.help,key,ui):'';
-  return `<article class="as-question">${title}<p class="as-prompt">${esc(q.prompt)}</p>${help}<form data-as-form="${mode}" data-key="${esc(key)}" data-question="${esc(q.id)}" data-lesson="${esc(lesson)}" data-kind="${esc(q.kind)}" data-question-data="${esc(JSON.stringify(schema))}"><fieldset class="as-question-controls"${disabled?' disabled':''}>${questionInput(q,d,key)}${message?`<p class="as-feedback ${message.correct===false?'bad':'good'}" role="status">${esc(message.text)}</p>`:''}<button type="submit" class="btn primary">${mode==='exam'?'Nộp câu và tiếp tục':mode==='company'?'Kiểm tra và ghi sổ':'Kiểm tra bài tập'}</button></fieldset></form></article>`;
+  return `<article class="as-question">${title}<p class="as-prompt">${esc(q.prompt)}</p>${help}<form data-as-form="${mode}" data-key="${esc(key)}" data-question="${esc(q.id)}" data-lesson="${esc(lesson)}" data-kind="${esc(q.kind)}" data-question-data="${esc(JSON.stringify(schema))}"><fieldset class="as-question-controls"${disabled?' disabled':''}>${questionInput(q,d,key)}${message?`<p class="as-feedback ${message.correct===false?'bad':'good'}" role="status">${esc(message.text)}</p>`:''}<button type="submit" class="btn primary">${mode==='exam'||mode==='check'?'Nộp câu và tiếp tục':mode==='company'?'Kiểm tra và ghi sổ':'Kiểm tra bài tập'}</button></fieldset></form></article>`;
 }
 
 function helpView(list,key,u){
@@ -104,7 +104,7 @@ function certificate(course,a,api){
   return `<article class="as-certificate"><div class="as-seal" aria-hidden="true">${icon('award',30)}</div><div><span class="eyebrow">${esc(a.certificate_label||'CHỨNG NHẬN TRONG GAME')}</span><h3>${esc(course.name)}</h3><p>${esc(api.state?.name||'Bạn')} · ${c.score}/100 · ${esc(c.date)}</p><small>Mã ${esc(c.serial)} · Ghi nhận học tập trong Phố Có Chuyện</small><div class="as-actions">${btn('Lưu bản để in','asCertificate',{course:course.id},'ghost small')}</div></div></article>`;
 }
 
-function examGate(c,a){return `<section class="as-exam-gate"><div><h3>${c.certificate?'Thi lại để ôn tập':'Thi hoàn thành khóa'}</h3><p>${c.exam_count} câu · đạt từ ${c.pass_mark}/100 · miễn phí thi lại</p>${c.attempts?`<small>Đã thi ${c.attempts} lần · cao nhất ${c.best}/100</small>`:''}</div>${btn('Bắt đầu thi','asExamStart',{course:c.id},'primary',!c.can_exam)}${!c.can_exam?`<p class="as-lock">${esc(c.exam_reason)}</p>`:''}${c.id==='vn_business'?'<p class="as-hint">Cần chứng nhận Kế toán cơ bản và hoàn thành 60 bài của khóa này. Thi đạt tăng lương kế toán doanh nghiệp lên ×3, không cộng dồn khi thi lại.</p>':''}</section>`;}
+function examGate(c,a){return `<section class="as-exam-gate"><div><h3>${c.certificate?'Thi lại để ôn tập':'Thi hoàn thành khóa'}</h3><p>${c.exam_count} câu · đạt từ ${c.pass_mark}/100 · miễn phí thi lại</p>${c.attempts?`<small>Đã thi ${c.attempts} lần · cao nhất ${c.best}/100</small>`:''}</div>${btn('Bắt đầu thi','asExamStart',{course:c.id},'primary',!c.can_exam)}${!c.can_exam?`<p class="as-lock">${esc(c.exam_reason)}</p>`:''}${c.id==='vn_business'?'<p class="as-hint">Cần chứng nhận Kế toán cơ bản và hoàn thành 60 bài của khóa này. Thi đạt mở việc ở Sông Hồng Group, lương kế toán ×3 (ngày lễ ×5), không cộng dồn khi thi lại.</p>':''}</section>`;}
 
 function catalog(a,u,api){
   const c=a.courses.find(x=>x.id===u.course)||a.courses[0];
@@ -122,7 +122,7 @@ function examPage(a,u,api){
   if(exam&&!exam.question)return empty('Chương trình học đang được tải.');  // a view fetched for another tab: as_view brings the question
   if(exam)return `<section class="as-reading as-exam"><div class="as-section-title"><span class="eyebrow">BÀI THI · ${esc(exam.name)}</span><b>Câu ${exam.at+1}/${exam.total}</b></div>${progress(exam.at,exam.total,'Tiến độ thi')}<p class="as-hint">Câu đã nộp được giữ lại. Đáp án và điểm chỉ xuất hiện sau khi nộp đủ bài.</p>${questionView(exam.question,{mode:'exam',context:exam.course,ui:u,number:exam.at+1})}<div class="as-actions">${btn('Hủy bài thi đang làm','asExamCancel',{},'ghost small')}</div></section>`;
   const c=a.courses.find(x=>x.id===u.course)||a.courses[0],review=a.review?.[c.id];
-  return tabs(a.courses.map(x=>[x.id,x.name]),c.id,'asCourse','Khóa thi')+certificate(c,a,api)+examGate(c,a)+(review?`<section class="as-review"><div class="as-section-title"><h3>Kết quả gần nhất: ${review.score}/100</h3>${status(review.passed?'Đạt':'Cần ôn thêm',review.passed?'good':'warn')}</div><p class="as-hint">${review.passed?'Bạn có thể xem lại cách làm.':'Mở lại bài học có liên quan rồi thi lại miễn phí.'}</p><ol>${review.questions.map((r,i)=>`<li class="${r.correct?'good':'bad'}"><details data-fold="review-${esc(r.question.id)}"><summary><span>${r.correct?'✓':'×'} ${i+1}. ${esc(r.question.prompt)}</span></summary><div class="as-answer"><b>Bạn đã nộp:</b><br>${answerText(r.question)}</div><p class="as-explain">${esc(r.question.explain||'')}</p>${btn('Ôn bài liên quan','asLesson',{lesson:r.question.lesson_id},'ghost small')}</details></li>`).join('')}</ol></section>`:'');
+  return tabs(a.courses.map(x=>[x.id,x.name]),c.id,'asCourse','Khóa thi')+certificate(c,a,api)+referralView(a)+examGate(c,a)+(review?`<section class="as-review"><div class="as-section-title"><h3>Kết quả gần nhất: ${review.score}/100</h3>${status(review.passed?'Đạt':'Cần ôn thêm',review.passed?'good':'warn')}</div><p class="as-hint">${review.passed?'Bạn có thể xem lại cách làm.':'Mở lại bài học có liên quan rồi thi lại miễn phí.'}</p><ol>${review.questions.map((r,i)=>`<li class="${r.correct?'good':'bad'}"><details data-fold="review-${esc(r.question.id)}"><summary><span>${r.correct?'✓':'×'} ${i+1}. ${esc(r.question.prompt)}</span></summary><div class="as-answer"><b>Bạn đã nộp:</b><br>${answerText(r.question)}</div><p class="as-explain">${esc(r.question.explain||'')}</p>${btn('Ôn bài liên quan','asLesson',{lesson:r.question.lesson_id},'ghost small')}</details></li>`).join('')}</ol></section>`:'');
 }
 
 function journal(rows,title){
@@ -169,11 +169,63 @@ function companyPage(a,u){
   return `<div class="as-company-head"><div><span class="eyebrow">DOANH NGHIỆP THỰC HÀNH · VND</span><h2>${esc(book.name)}</h2><p>Tháng ${book.period}/2026 · ${book.at}/${book.total} việc đã xong</p></div>${status(book.paid?'Đã nhận lương':book.done?'Đã khóa sổ':'Đang ghi sổ',book.done?'good':'')}</div>${progress(book.at,book.total,'Tiến độ kỳ thực hành')}${tabs([['documents','Chứng từ & việc đang làm'],['journal','Nhật ký'],['ledger','Cân đối phát sinh'],['details','Sổ chi tiết'],['reports','Bốn báo cáo']],tab,'asCompanyTab','Hồ sơ doanh nghiệp')}<div class="as-company-body">${body}</div><details class="as-history" data-fold="company-history"><summary>Danh sách hồ sơ · ${book.at}/${book.total} đã xong</summary><ol>${book.schedule.map(t=>`<li${t.current?' aria-current="step"':''}><span>${t.done?'✓':t.current?'→':'○'}</span>${esc(t.title)}</li>`).join('')}</ol></details><p class="as-policy">${esc(book.policy)}</p>${sources(book.references)}`;
 }
 
+/* 💼 Việc làm kế toán (game/accounting_jobs.py): Giới thiệu việc làm under the certificates, the day's holiday rate,
+ * and the entry check before an accounting shift (start_day refused with 'acct_check' opens it, app.js). The check's
+ * answers stay on this page until the last one; the server grades them (as_job_grade) and again with start_day. */
+const JOB_EMOJI={corp_accounting:'🧮',group_accounting:'🏢'};
+const span=([lo,hi])=>lo===hi?fmt(lo):`${fmt(lo)}–${fmt(hi)}`;
+const holidayLine=h=>h?`<p class="as-holiday" role="status">🎉 Hôm nay lễ (${esc(h)}): lương kế toán x5</p>`:'';
+function referralView(a){
+  const rows=a.referral||[];if(!rows.length)return '';
+  const card=r=>{
+    const go=r.certified?btn(`${r.hired?'Vào làm ở':'Đến'} ${esc(r.place)} ${icon('arrow',13)}`,'choose',{career:r.career},'primary small'):`<p class="as-lock">Cần chứng nhận “${esc(r.course_name)}”.</p>`;
+    const posts=r.postings.map(p=>`<li><span><b>${esc(p.title)}</b><small>${esc(p.org)}</small></span><span class="as-job-pay"><b>${span(p.paid)} xu/ngày</b><small>${span(p.salary)} × 3 · lễ ${span(p.holiday)}</small></span></li>`).join('');
+    return `<article class="as-job${r.certified?' on':''}"><div class="as-job-head"><span class="as-job-emoji" aria-hidden="true">${JOB_EMOJI[r.career]||'💼'}</span><div><h4>${esc(r.place)}</h4><small>${esc(r.short)}${r.hired?' · bạn đang làm ở đây':''}</small></div>${status(r.certified?'Nhận bạn':'Chưa đủ chứng nhận',r.certified?'good':'warn')}</div><ul class="as-job-posts">${posts}</ul>${go}</article>`;
+  };
+  const any=rows.some(r=>r.certified);
+  return `<section class="as-jobs" aria-label="Giới thiệu việc làm"><h3>${icon('briefcase',16)} Giới thiệu việc làm</h3><p class="as-hint">${any?'Những nơi dưới đây nhận người có chứng nhận của bạn. Lương kế toán ×3, ngày lễ ×5; mỗi ca mở bằng vài câu kiểm tra kiến thức.':'Thi đạt chứng nhận để được giới thiệu vào làm. Lương kế toán ×3, ngày lễ ×5.'}</p>${rows.map(card).join('')}</section>`;
+}
+export async function accountingCheckOpen(env,career){
+  const u=state(env),same=u.check?.career===career;
+  u.check={career,attempt:same?u.check.attempt:0,answers:{},at:0,data:null,result:null};
+  return loadCheck(env);
+}
+async function loadCheck(env){
+  const u=state(env),k=u.check;
+  const r=await env.cmd('as_job_check',{career:k.career,attempt:k.attempt},{quiet:true});
+  if(!r?.acct_check){u.check=null;return false;}
+  Object.assign(k,{data:r.acct_check,answers:{},at:0,result:null});
+  u.drafts=Object.fromEntries(Object.entries(u.drafts).filter(([key])=>!key.startsWith('check|')));
+  return true;
+}
+async function gradeCheck(env){
+  const u=state(env),k=u.check,paper={attempt:k.data.attempt,answers:k.answers};env.renderSheet();
+  const r=await env.cmd('as_job_grade',{career:k.career,...paper},{quiet:true});
+  if(!r?.acct_grade){k.at=0;k.answers={};env.renderSheet();return;}
+  if(!r.acct_grade.passed){k.result=r.acct_grade;env.renderSheet();return;}   // the page says it: no toast over it
+  if(await env.cmd('start_day',{acct_check:paper},{career:k.career})){u.check=null;env.closeSheet();env.renderMain();}
+  else{k.at=0;k.answers={};env.renderSheet();}
+}
+function checkPage(u){
+  const k=u.check,d=k.data;
+  if(!d)return empty('Bài kiểm tra đang được tải.');
+  const top=`<div class="as-section-title"><span class="eyebrow">${esc(d.place)}</span><b>Câu ${Math.min(k.at+1,d.total)}/${d.total}</b></div>`;
+  const rate=d.holiday?holidayLine(d.holiday):`<p class="as-hint">Đúng ${d.need}/${d.total} câu là vào ca. Lương hôm nay ×${d.x}.</p>`;
+  if(k.result){
+    const g=k.result;
+    return `<section class="as-reading as-check">${top}${status(`Đúng ${g.right}/${g.total} câu`,'warn')}<p>Cần đúng ${g.need}/${g.total} câu để vào ca. Không mất xu nào: xem lại bài gợi ý rồi làm bài khác.</p>${g.review.length?`<h4>Bài nên xem lại</h4><div class="as-actions">${g.review.map(x=>btn(esc(x.title),'asCheckLesson',{lesson:x.lesson},'ghost small')).join('')}</div>`:''}<div class="as-actions">${btn('Làm bài khác','asCheckRetry',{},'primary')}</div></section>`;
+  }
+  const q=d.questions[k.at];
+  if(!q)return `<section class="as-reading as-check">${top}<p class="as-hint">Đang chấm bài…</p></section>`;
+  return `<section class="as-reading as-check">${top}${progress(k.at,d.total,'Tiến độ kiểm tra')}${rate}${questionView(q,{mode:'check',context:`${d.career}-${d.day}-${d.attempt}`,ui:u,number:k.at+1})}</section>`;
+}
+
 export function accountingSchoolView(env){
   const u=state(env),a=u.data;
   const head=`<header class="sheet-head"><div class="grow"><span class="eyebrow">SỔ HỌC & THỰC HÀNH</span><h2>Học kế toán</h2><p>Từ hiểu nghiệp vụ đến tự lập bộ sổ</p></div><button type="button" class="icon-btn" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
+  if(u.check)return `<header class="sheet-head"><div class="grow"><span class="eyebrow">TRƯỚC GIỜ VÀO CA</span><h2>Kiểm tra kiến thức</h2><p>Vài câu ngắn từ ngân hàng đề của khóa học</p></div><button type="button" class="icon-btn" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header><div class="sheet-body as-school">${checkPage(u)}</div>`;
   if(!a)return head+`<div class="sheet-body">${empty('Chương trình đang được tải. Mở lại sau một chút để tiếp tục.')}</div>`;
-  return head+`<div class="sheet-body as-school">${tabs([['learn','Bài học'],['exam',a.active_exam?'Bài thi đang làm':'Thi & chứng nhận'],['company','Doanh nghiệp thực hành']],u.tab,'asTab','Học kế toán')}<p class="as-salary">${icon('briefcase',16)} Lương kế toán doanh nghiệp: <b>×${a.salary_multiplier}</b>${a.effective_salary?` · hợp đồng áp dụng ${fmt(a.effective_salary)} xu`:''}${a.salary_multiplier===3?' · thi lại không cộng dồn':''}</p>${u.tab==='company'?companyPage(a,u):u.tab==='exam'?examPage(a,u,env.api):catalog(a,u,env.api)}</div>`;
+  return head+`<div class="sheet-body as-school">${tabs([['learn','Bài học'],['exam',a.active_exam?'Bài thi đang làm':'Thi & chứng nhận'],['company','Doanh nghiệp thực hành']],u.tab,'asTab','Học kế toán')}${holidayLine(a.jobs?.holiday)}<p class="as-salary">${icon('briefcase',16)} Lương kế toán doanh nghiệp: <b>×${a.salary_multiplier}</b>${a.effective_salary?` · hợp đồng áp dụng ${fmt(a.effective_salary)} xu`:''}${a.salary_multiplier>1?' · thi lại không cộng dồn':''}</p>${u.tab==='company'?companyPage(a,u):u.tab==='exam'?examPage(a,u,env.api):catalog(a,u,env.api)}</div>`;
 }
 
 export const view=accountingSchoolView;
@@ -214,6 +266,12 @@ export async function accountingSchoolSubmit(form,env){
   const mode=form.dataset.asForm;if(!mode)return false;
   const u=state(env),answer=readAccountingAnswer(form,u),key=form.dataset.key;
   if(answer===null){u.messages[key]={correct:false,text:'Hoàn thành đủ câu trả lời; nhập số nguyên và kiểm tra các tài khoản trước khi nộp.'};env.renderSheet();return true;}
+  if(mode==='check'){
+    const k=u.check;if(!k?.data)return true;
+    k.answers[form.dataset.question]=answer;delete u.drafts[key];k.at+=1;
+    if(k.at>=k.data.questions.length)await gradeCheck(env);else env.renderSheet();
+    return true;
+  }
   const command=mode==='exam'?'as_exam_answer':mode==='company'?'as_company_answer':'as_answer';
   const payload=mode==='company'?{task:form.dataset.question,answer}:{question:form.dataset.question,answer,...(mode==='practice'?{lesson:form.dataset.lesson}:{})};
   const r=await run(env,command,payload,{quiet:true});
@@ -229,7 +287,9 @@ function saveCertificate(course,a,api){
 export async function accountingSchoolAction(action,data,el,env){
   if(!action.startsWith('as'))return false;
   const u=state(env),a=u.data||{courses:[]};
-  if(action==='asTab'||action==='asCourse'||action==='asCompanyTab'){
+  if(action==='asCheckLesson'){u.check=null;action='asLesson';}   // a lesson the check pointed to: back to the school
+  if(action==='asCheckRetry'){if(u.check){u.check.attempt=(u.check.attempt+1)%1000;await loadCheck(env);}}
+  else if(action==='asTab'||action==='asCourse'||action==='asCompanyTab'){
     if(action==='asTab')u.tab=data.tab;else if(action==='asCourse')u.course=data.tab;else u.companyTab=data.tab;
     if(missing(u))await run(env,'as_view',{},{quiet:true});
   }

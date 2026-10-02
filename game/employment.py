@@ -344,7 +344,7 @@ def meet_boss(s: dict, career: str, day: int) -> dict | None:
     rng = _rng('boss-meet', career, day, s.get('seq', 0))
     if rng.random() >= .04:
         return None
-    options = [(k, p) for k in sorted(s['careers']) if k != career and required(k) and _unlocked(s, k)
+    options = [(k, p) for k in sorted(s['careers']) if k != career and required(k) and _unlocked(s, k)   # (a place still needing its exam is not)
                and s['careers'][k].get('job', {}).get('status') in ('none', 'rejected') for p in postings(k)
                if not _needs_exam(s['careers'][k]['job'], k, p)]   # luck never replaces a licence exam
     if not options:
@@ -767,11 +767,14 @@ def on_close(s: dict, c: dict, career: str) -> dict | None:
         return dict(boss=boss) if boss else None
     post = _posting(career, job['employer'])
     from .accounting_school import salary_multiplier
-    multiplier = salary_multiplier(s,career)
-    pay = round(job['salary'] * (.85 if job['probation'] else 1)) * multiplier
+    from .accounting_jobs import pay as boosted
+    multiplier = salary_multiplier(s,career)   # 💼 ×3 kế toán with its certificate, ×5 on a holiday (game/accounting_jobs.py)
+    pay = boosted(round(job['salary'] * (.85 if job['probation'] else 1)), multiplier)
     e.money(s, c, pay, 'Lương ngày ' + str(c['day']) + (' (thử việc 85%)' if job['probation'] else ''), f'salary-{c["day"]}', category='salary')
     job['days_worked'] += 1
     note = dict(salary=pay, probation=job['probation'])
+    if multiplier > 1:
+        note['multiplier'] = multiplier   # the wallet row says ×3 / ×5 (journey._end_of_day)
     if job['probation']:
         today = [f['stars'] for f in c['feed'] if f.get('stars') and f['day'] == c['day'] and f['kind'] == 'review']
         job['reviews_during_probation'] = ar.last(job['reviews_during_probation'] + today, 40, 'job.probation_reviews', c)
@@ -837,7 +840,8 @@ def public(c: dict, career: str, s: dict | None = None) -> dict:
         from .accounting_school import salary_multiplier
         job['base_salary'] = job['salary']
         job['salary_multiplier'] = salary_multiplier(s,career)
-        job['salary'] *= job['salary_multiplier']
+        from .accounting_jobs import pay as boosted
+        job['salary'] = boosted(job['salary'], job['salary_multiplier'])
     job['certs'] = list(job.get('certs') or [])
     ex = exam(career)
     app = job.get('application')

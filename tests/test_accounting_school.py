@@ -74,7 +74,9 @@ class AccountingSchoolTests(unittest.TestCase):
         self.assertFalse(self.school.certified(self.s,'basic'))
         validate_state(self.s)
         self.assertTrue(self.sit('basic')['exam']['passed'])
-        self.assertEqual(self.school.salary_multiplier(self.s, 'corp_accounting'), 1)
+        # 03/10 (game/accounting_jobs.py): the basic certificate is Mây Tre Xanh's, ×3 there; Sông Hồng needs the TT99 one
+        self.assertEqual(self.school.salary_multiplier(self.s, 'corp_accounting'), 3)
+        self.assertEqual(self.school.salary_multiplier(self.s, 'group_accounting'), 1)
         self.learn('vn_business')
         self.assertTrue(self.sit('vn_business')['exam']['passed'])
         certificate = copy.deepcopy(self.s['accounting_school']['exams']['vn_business']['certificate'])
