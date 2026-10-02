@@ -1,3 +1,9 @@
+# v1.4.24 — 🗡️ Phóng dao thay phi tiêu
+
+Chủ game (03/10): "game phi tiêu đổi thành game này đi: càng ngày càng khó, chơi 1 màn xong chọn chơi tiếp hoặc dừng, chơi tiếp mà thua thì thua hết, dừng thì nhận thưởng hiện tại. Lâu lâu thì hiển thị "màn sau x2"".
+
+- feat/fair-knife (b347631, 8171336): `game/fair_knife.py`, lệnh `fair_kn_*`, `v4/fair-knife.js`; gỡ `fair_darts.py`/`fair-darts.js`. Cược 2/5/10/20 xu, 10 màn (bia xoay nhanh dần, đảo chiều, khựng; 6–7 dao, có dao cắm sẵn), qua màn chọn Dừng/Chơi tiếp, thua mất hết; từ màn 2, 25 % màn là 🔥 x2 (không liền nhau). Thang × cược: 1.1, 1.2, 1.6, 2.1, 2.8, 3.9, 5.4, 8, 12, 19. Server giữ seed, client chỉ gửi thời điểm phóng, server chấm lại; quá 60 s là thua; lượt bỏ dở được trả như Dừng cuối ngày VN. Lời hội chợ > 2000 xu: bia khó hơn tới 3 bậc. Lưu ở `journey.fair_kn` (bộ kiểm 1.4.20 bỏ qua). Client cũ: gian phi tiêu ẩn, lệnh cũ trả "tải lại trang".
+
 # v1.4.23 — 📚 Việc làm kế toán TT99 (x3, lễ x5), 📦 Kho & đếm nhanh, 🪟 một thẻ một lúc, 👆 nút chính chỉ chỗ
 
 Chủ game (03/10): "coi code kế toán thông tư 99, làm xong giới thiệu việc làm ở đâu nữa nhé, với check kiến thức này kia, bắt học thi qua mới làm được nhé, và ở đó kế toán lương x3 bình thường, đôi khi lễ tăng lên x5"; gói UI/UX WP-2/3/4 (tham khảo bộ nghiên cứu, giữ thiết kế hiện tại).
