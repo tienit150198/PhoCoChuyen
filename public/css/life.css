@@ -203,3 +203,9 @@ html[data-layout="phone"] .task-hud .note-card.nd-has-lunch:not(.calm-card)>.btn
 @media (prefers-reduced-motion:no-preference){
   html:not(.reduce-motion) .nd-chip,html:not(.reduce-motion) .nd-bed,html:not(.reduce-motion) .nd-opt{transition:background-color .15s ease,border-color .15s ease}
 }
+
+/* 🛕 Đi chùa (v4/chua.js) */
+.cg-wish{margin:10px 0 4px}
+.cg-wish p{margin:0 0 6px}
+.cg-wishes{display:flex;flex-wrap:wrap;gap:6px}
+.cg-wishes .btn{min-height:40px;white-space:normal;text-align:left}
