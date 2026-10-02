@@ -17,7 +17,7 @@ TABLE_SEATS = 10
 TABLES_MIN, TABLES_MAX = 5, 60
 DAYS_MIN, DAYS_MAX, DAYS_DEFAULT = 2, 10, 3   # the wedding is N life days after both confirm
 PROPOSALS_PER_DAY = 3
-DECLINE_DAYS = 3            # a declined proposer waits this long (real days) before asking the same person
+DECLINE_HOURS = 3           # a declined proposer waits this long (real hours) before asking the same person (owner 02/10: 3 tiếng)
 REMARRY_DAYS = 3            # after a divorce, both wait this long before a new proposal
 PROPOSAL_DAYS = 7           # an unanswered proposal expires (the ring comes back)
 

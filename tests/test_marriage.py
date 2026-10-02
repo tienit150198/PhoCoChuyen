@@ -180,7 +180,7 @@ class RingAndProposalTests(Base):
         with self.assertRaises(mr.MarriageError) as e:
             self.act(a, 'propose', code=self.code(b), ring=rid, message='hem')
         self.assertIn('từ chối', e.exception.message)
-        self.clock.t += W.DECLINE_DAYS * DAY + 60
+        self.clock.t += W.DECLINE_HOURS * 3600 + 60
         self.act(a, 'propose', code=self.code(b), ring=rid, message='hem')
         self.assertEqual(len(self.view(b)['incoming']), 1)
 

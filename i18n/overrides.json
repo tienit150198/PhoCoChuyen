@@ -2462,6 +2462,7 @@
   "Nhà gọn gàng sạch sẽ, nhìn là biết chủ nhà siêng.": "Neat and tidy: you can tell the owner works hard."
  },
  "patterns": {
+  "^Người ấy vừa từ chối\\. Cho nhau (\\d+) tiếng để nghĩ thêm nhé\\.$": "They just said no. Give each other $1 hours to think it over.",
   "Chuyến $1 đi $2 mời quý khách ra cửa $3.": "Flight $1 to $2, please make your way to gate $3.",
   "Chuyến $1 đi $2 lùi giờ $3 phút. Mong quý khách thông cảm.": "Flight $1 to $2 is delayed by $3 minutes. Thank you for your patience.",
   "Khách đi $1 xếp hàng từ sớm. Có bà còn ôm theo cả thùng xoài.": "Passengers for $1 queued up early. One grandma even brought a whole box of mangoes.",

@@ -1083,7 +1083,7 @@ def catalog() -> dict:
         extras=[{k: x.get(k) for k in ('id', 'emoji', 'name', 'price', 'per10', 'desc')} for x in W.EXTRAS],
         deposit_pct=W.DEPOSIT_PCT, seats=W.TABLE_SEATS, tables=[W.TABLES_MIN, W.TABLES_MAX],
         days=[W.DAYS_MIN, W.DAYS_MAX, W.DAYS_DEFAULT], tiers=W.TIER_NAMES, sticker=W.STICKER,
-        limits=dict(proposals_per_day=W.PROPOSALS_PER_DAY, decline_days=W.DECLINE_DAYS, remarry_days=W.REMARRY_DAYS,
+        limits=dict(proposals_per_day=W.PROPOSALS_PER_DAY, decline_days=0, decline_hours=W.DECLINE_HOURS, remarry_days=W.REMARRY_DAYS,
                     proposal_days=W.PROPOSAL_DAYS, rings_max=RINGS_MAX))
 
 
@@ -1387,8 +1387,8 @@ def _can_propose(db, sid: str, target: dict | None) -> str | None:
     if db.execute("SELECT 1 FROM proposals WHERE from_sid=? AND to_sid=? AND status='pending'", (sid, target['sid'])).fetchone():
         return 'Bạn đã gửi lời cầu hôn tới người này rồi, chờ hồi âm nhé.'
     if db.execute("SELECT 1 FROM proposals WHERE from_sid=? AND to_sid=? AND status='declined' AND decided>?",
-                  (sid, target['sid'], t - W.DECLINE_DAYS * DAY)).fetchone():
-        return f'Người ấy vừa từ chối. Cho nhau {W.DECLINE_DAYS} ngày để nghĩ thêm nhé.'
+                  (sid, target['sid'], t - W.DECLINE_HOURS * 3600)).fetchone():
+        return f'Người ấy vừa từ chối. Cho nhau {W.DECLINE_HOURS} tiếng để nghĩ thêm nhé.'
     if db.execute('SELECT COUNT(*) FROM proposals WHERE from_sid=? AND at>?', (sid, t - DAY)).fetchone()[0] >= W.PROPOSALS_PER_DAY:
         return f'Mỗi ngày chỉ gửi được {W.PROPOSALS_PER_DAY} lời cầu hôn. Mai thử lại nhé.'
     return None
