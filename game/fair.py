@@ -98,7 +98,7 @@ ROUNDS_DAY = 400
 # staying there. Payouts stay the folk ones (bầu cua per die, xóc đĩa 1:1).
 WIN_P, WIN_P_LOW = .70, .45
 TAPER_FROM, TAPER_TO = 2000, 5000
-GAP_MS = 1200                  # between two rounds of dice/coins
+GAP_MS = 400                   # between two rounds of dice/coins (owner 03/10: nhanh lên; was 1200)
 # 🦀 Bầu cua
 FACES = ('bau', 'cua', 'tom', 'ca', 'ga', 'nai')
 FACE_NAMES = dict(bau='Bầu', cua='Cua', tom='Tôm', ca='Cá', ga='Gà', nai='Nai')
@@ -138,8 +138,8 @@ OAQ_PEOPLE = dict(de=('Bé Bi', '👦'), kho=('Ông Hai', '👴'))
 OAQ_STAGES = ('play', 'won', 'lost', 'draw')
 RING_HIT, RING_ALL = 3, 8      # xu per bottle ringed, and the bonus for all five
 RING_DAY = 80                  # rounds a day at most
-EARN_DAY = dict(oaq=90, ring=45)   # ring: no cap any more, 45 bounds its saved counter
-EARN_UNCAPPED = ('ring',)
+EARN_DAY = dict(oaq=90, ring=45)   # no cap any more (owner 03/10: kiếm không giới hạn); these bound the saved counters
+EARN_UNCAPPED = ('oaq', 'ring')
 EARN_GAMES = tuple(EARN_DAY)
 # 🏆 Bảng vàng hội chợ: points
 POINTS_DAY = 30                # no longer a cap: the saved day counter saturates here (older validators bound it)

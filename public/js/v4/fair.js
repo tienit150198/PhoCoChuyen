@@ -24,7 +24,7 @@ const MINI_BOARD='<svg viewBox="0 0 64 40" aria-hidden="true"><rect x="2" y="6" 
 const MINI_BOTTLES='<svg viewBox="0 0 64 40" aria-hidden="true"><g stroke="#2d5a3d" stroke-width="1.4"><path d="M12 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#7cc79a"/><path d="M28 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#8fb6e8"/><path d="M44 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#f0b46a"/></g><ellipse cx="34" cy="10" rx="7" ry="2.6" fill="none" stroke="#e2462d" stroke-width="2.4"/></svg>';
 const CHIPS=[1,2,5,10];
 const XD_STAKES=[10,20,30,50];
-const NPC_GRACE=2000,ROLL_MS=850,ROUND_GAP=1350;   // the bowl shakes this long; the server wants rounds ≥1.2 s apart (GAP_MS)
+const NPC_GRACE=2000,ROLL_MS=450,ROUND_GAP=450;   // the bowl shakes this long; the server wants rounds ≥0.4 s apart (GAP_MS)
 const LS='mnl.fair.lt';
 
 /* ---- the people of the fair ---- */
@@ -285,7 +285,7 @@ function oaqBoard(){
   const cell=(c)=>{const n=v.b[c],quan=c===0||c===6,hasQ=quan&&v.q[c===0?0:1],cls=['fh-o',quan?'quan '+(c===0?'left':'right'):'',a?.at===c?'at':'',a?.flash===c?'flash':'',S.oaq.sel===c?'sel':'',a?.hl===c?'hl':''].join(' ');
     const label=`${quan?'Ô quan':'Ô'}${hasQ?' còn quan':''}, ${n} dân`;
     const inner=`<span class="fh-pebs">${pebbles(n,hasQ)}</span>${n?`<em class="fh-n">${n}</em>`:''}`;
-    if(mine&&S.oaq.sel==null&&ROW_ME.includes(c)&&n>0)return `<button type="button" class="${cls} pick" data-fh="oaqsel" data-c="${c}" data-fh-key="o-${c}" aria-pressed="${S.oaq.sel===c}" aria-label="${label}">${inner}</button>`;
+    if(mine&&ROW_ME.includes(c)&&n>0)return `<button type="button" class="${cls} pick" data-fh="oaqsel" data-c="${c}" data-fh-key="o-${c}" aria-pressed="${S.oaq.sel===c}" aria-label="${label}">${inner}</button>`;
     return `<div class="${cls}" role="img" aria-label="${label}">${inner}</div>`;};
   return `<div class="fh-oaq" aria-label="Bàn ô ăn quan">${cell(0)}<div class="fh-orow opp">${ROW_OPP.map(cell).join('')}</div><div class="fh-orow me">${ROW_ME.map(cell).join('')}</div>${cell(6)}</div>`;
 }
@@ -303,12 +303,12 @@ function oaqView(){
     const opp=lv=>`<button type="button" class="fh-opp fh-opp-${lv}" data-fh="oaqstart" data-lv="${lv}" data-fh-key="opp-${lv}"${S.busy?' disabled':''}><span class="fh-npc" aria-hidden="true">${people[lv][1]}</span><b>${esc(people[lv][0])}</b><small>${S.busy&&S.oaq.starting===lv?'Đang bày bàn…':`${lv==='de'?'Dễ':'Khó'} · thắng <b>+${xu(pr[lv])}</b>`}</small></button>`;
     return `<section class="fh-stall fh-oaqstall" aria-label="Ô ăn quan">
       <div class="fh-card fh-oaqintro"><h3>🪨 Ô ăn quan</h3><p>Chọn người chơi cùng. Thắng thì được xu, thua không mất gì.</p><div class="fh-opps">${opp('de')}${opp('kho')}</div>${meter(e)}</div>
-      ${how}<p class="fh-rule">Thắng một ván: +${(F().points?.rules||{}).oaq||3} điểm Bảng vàng. Mỗi ngày kiếm từ ô ăn quan tối đa ${xu(e?.cap||90)}.</p></section>`;
+      ${how}<p class="fh-rule">Thắng một ván: +${(F().points?.rules||{}).oaq||3} điểm Bảng vàng.${e?.nocap?' Thắng bao nhiêu ván cũng được xu, không giới hạn.':` Mỗi ngày kiếm từ ô ăn quan tối đa ${xu(e?.cap||90)}.`}</p></section>`;
   }
   const a=S.oaq.anim,v=a||o,lines=OPP[o.lv]||OPP.de,who={name:o.name,emoji:o.emoji};
   if(!S.oaq.say)S.oaq.say=pick(lines.start);
   const me=a?a.cap[0]+10*a.cap[1]:o.me,opp=a?a.cap[2]+10*a.cap[3]:o.opp,cap=v.cap;
-  const turn=a?(a.side===1?`${esc(o.name)} đang rải…`:'Bạn đang rải…'):o.stage==='play'?(S.oaq.sel!=null?'Đã bốc quân ô này: chọn hướng rải':'Lượt của bạn: chạm một ô hàng dưới'):'';
+  const turn=a?(a.side===1?`${esc(o.name)} đang rải…`:'Bạn đang rải…'):o.stage==='play'?(S.oaq.sel!=null?'Chọn hướng rải (bấm ô khác để đổi, bấm lại để bỏ chọn)':'Lượt của bạn: chạm một ô hàng dưới'):'';
   const hand=a&&a.hand>0?`<span class="fh-hand">✋ ${a.hand}</span>`:'';
   const dirs=S.oaq.sel!=null&&!a&&o.stage==='play'?`<div class="fh-dirs">${btn('◀ Rải sang trái','oaqmove',{d:-1},'primary',' data-fh-key="d-l"')}${btn('Rải sang phải ▶','oaqmove',{d:1},'primary',' data-fh-key="d-r"')}</div>`:'';
   const end=S.oaq.end&&o.stage!=='play'&&!a?oaqEnd(o):'';
@@ -903,7 +903,7 @@ async function onClick(op,data){
     case'close':S.dlg.close();return;
     case'tab':S.tab=data.tab;S.flash=null;S.anchor='';if(S.tab!=='lt'){pauseLoto();ltMusic();}render();S.dlg.scrollTop=0;if(S.tab==='board')loadBoard();if(S.tab==='lt')resumeLoto();if(S.tab==='ring')startRingLoop();return;
     case'oaqstart':oaqStart(data.lv==='kho'?'kho':'de');return;
-    case'oaqsel':{if(S.oaq.anim||S.busy||S.oaq.sel!=null)return;S.oaq.sel=Number(data.c);S.oaq.quit=false;sfx('mark');render();return;}   // taken up: no changing the ô
+    case'oaqsel':{if(S.oaq.anim||S.busy)return;const c=Number(data.c);S.oaq.sel=S.oaq.sel===c?null:c;S.oaq.quit=false;sfx('mark');render();return;}   // owner 03/10: change or unpick the ô freely until a direction is chosen
     case'oaqmove':oaqMove(Number(data.d)===-1?-1:1);return;
     case'oaqfast':S.oaq.fast=!S.oaq.fast;render();return;
     case'oaqquit':{if(!S.oaq.quit){S.oaq.quit=true;render();return;}
