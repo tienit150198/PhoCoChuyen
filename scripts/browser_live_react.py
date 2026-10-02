@@ -5,7 +5,7 @@ websockets` + chromium).
 Starts a game server and the live service (chat on, ADMIN_USERS=op_admin) on one SQLite database (servers() of
 scripts/browser_live_pin.py; MNL_PY / MNL_PYTHONPATH as there). Two phones (390×844, touch):
   * the player holds the admin's message with a real touch (CDP touchStart, 600 ms, touchEnd): the emoji bar opens,
-    no action row, no text selected; ❤️ → a chip "❤️ 1" on both phones (highlighted on the player's own);
+    with the action row under it (🗑️ since 03/10), no text selected; ❤️ → a chip "❤️ 1" on both phones (highlighted on the player's own);
   * the admin holds the same message with the mouse and picks ❤️ too (2), then the player taps their chip
     (takes it back: 1); a short tap still opens the action row (📌 Ghim tin này for the admin); dark theme;
   * the admin page (/admin.html#chat › Tin nhắn): 200 a page, searching "0912" finds the player's masked message
@@ -93,7 +93,7 @@ async def run(shots: Path) -> list:
             await until(b.page, "document.querySelector('.ch-react-bar')", 'B: the emoji bar after a long press')
             emo = await b.page.evaluate("[...document.querySelectorAll('.ch-react-bar .ch-emo')].map(e=>e.textContent).join(' ')")
             check(emo == '❤️ 😂 😮 😢 👍 🔥', f'six reactions in order ({emo!r})')
-            check(await b.page.evaluate("!document.querySelector('.ch-actbar')"), 'a long press does not open the action row')
+            check(await b.page.evaluate("!!document.querySelector('.ch-actbar')"), 'a long press opens the action row too (🗑️ owner, 03/10)')
             check(await b.page.evaluate("getSelection().toString()===''"), 'no text selected by the long press')
             await b.page.wait_for_timeout(500)
             check(await chips(b) == '' and await b.page.evaluate("!!document.querySelector('.ch-react-bar')"),
@@ -112,7 +112,7 @@ async def run(shots: Path) -> list:
             # ---- the admin holds it with the mouse, ❤️ too ----
             await hold_mouse(a, '.ch-msg.mine .ch-bub')
             await until(a.page, "document.querySelector('.ch-react-bar')", 'A: the emoji bar (mouse)')
-            check(await a.page.evaluate("!document.querySelector('.ch-actbar')"), 'mouse long press: no action row')
+            check(await a.page.evaluate("!!document.querySelector('.ch-actbar')"), 'mouse long press: the action row too')
             await a.page.click('.ch-react-bar .ch-emo[data-e="😂"]')
             await until(b.page, "document.querySelectorAll('.ch-reacts .ch-chip').length===2", 'B: two kinds')
             await hold_mouse(a, '.ch-msg.mine .ch-bub')

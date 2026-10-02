@@ -12,7 +12,12 @@
  * one reaction per person per message (the same one again takes it back); chips with counts under the bubble,
  * mine highlighted, a chip toggles it. A tap still opens the message's action row (report, delete, 📌 for admins).
  * 🙂 Faces: a message, friend, peer or member with `fc` (live/faces.py) shows the drawn face in the clothes the player
- * wears (./face.js), else its emoji `av`; a `faced` frame redraws that player everywhere here. Mine: Bạn bè tab → builder. */
+ * wears (./face.js), else its emoji `av`; a `faced` frame redraws that player everywhere here. Mine: Bạn bè tab → builder.
+ * 🗑️ Deleting (owner, 03/10; only when the service says welcome.flags.chatdel, an older one keeps the old row): holding a
+ * message (or a right click) opens the emoji bar AND its action row: "Xóa ở phía tôi" (any message, a recalled one too:
+ * gone from my screens only) and, on mine, "Thu hồi" for 24 h (for everyone); both ask "…thật?" first. Tin nhắn: "Chọn"
+ * (or holding a row) ticks chats, "Xóa" empties them for me only (a DM leaves the list until someone writes again).
+ * 🚫 Tin nhắn → "Đã chặn" (welcome.flags.blocks; feedback #93): who I blocked, "Bỏ chặn" each. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {live} from './live.js';
 import {stylesheet} from '../lazy.js';
@@ -22,7 +27,8 @@ import {faceCode} from './face-code.js';
 const S={dlg:null,env:null,tab:'town',thread:null,view:null,threads:new Map(),
   town:{msgs:[],more:false,joined:false,why:'ok',wait:0,n:0,loaded:false,pin:null},pinOpen:false,reactFor:null,lp:null,
   act:null,report:null,confirm:null,flash:'',flashTimer:0,pending:new Map(),pick:new Set(),gtitle:'',members:null,
-  nextTown:0,cd:0,older:false,synced:0,bound:false,notifyOpen:false,notify:null};
+  nextTown:0,cd:0,older:false,synced:0,bound:false,notifyOpen:false,notify:null,
+  sel:null,blocks:null,unblocking:null};   // 🗑️ chats ticked in "Chọn" (a Set, null = not choosing); 🚫 the blocked list
 const TABS=[['town','Cả phố'],['inbox','Tin nhắn'],['friends','Bạn bè']];
 const REASONS=[['spam','Spam'],['rude','Thô tục'],['scam','Lừa đảo'],['private','Lộ thông tin'],['other','Khác']];
 const rid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
@@ -38,6 +44,9 @@ const byK=(a,b)=>(a.k??a.id)-(b.k??b.id);
 const lastId=list=>{for(let i=list.length-1;i>=0;i--)if(!list[i].sys)return list[i].id;return 0;};
 const clock=at=>new Date(at*1000).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
 const adm=()=>Boolean(live.me?.adm);   // the server says so (ADMIN_USERS); every admin action is checked there again
+const DEL=()=>Boolean(live.flags.chatdel&&live.me?.account);   // 🗑️ the service deletes on my side (an account's)
+const RECALL_S=86400,CLEAR_MAX=20;   // live/chat.py RECALL_SECS (Thu hồi for 24 h), CLEAR_MAX (chats per "Xóa")
+const canRecall=m=>!m.del&&(adm()||Date.now()/1000-m.at<RECALL_S);
 
 /* ---- css + dialog ------------------------------------------------------------------------------- */
 const css=()=>stylesheet('/css/chat.css');   // the same link the chat button loaded (./live.js)
@@ -64,7 +73,13 @@ function dialog(){
   d.addEventListener('pointerdown',lpStart);
   d.addEventListener('pointermove',e=>{if(S.lp?.timer&&Math.hypot(e.clientX-S.lp.x,e.clientY-S.lp.y)>LP_MOVE)lpCancel();},{passive:true});
   for(const t of ['pointerup','pointercancel','pointerleave'])d.addEventListener(t,lpEnd,{passive:true});
-  d.addEventListener('contextmenu',e=>{if(e.target.closest('.ch-bub'))e.preventDefault();});   // no menu / callout on a held bubble
+  d.addEventListener('contextmenu',e=>{   // no menu / callout on a held bubble; a right click opens what holding opens
+    const b=e.target.closest('.ch-bub[data-id]'),row=selRow(e.target);
+    if(!b&&!row)return;
+    e.preventDefault();
+    if(S.lp?.fired)return;   // a held finger already opened it
+    if(row)selStart(row.dataset.ch);else if(!b.classList.contains('del')||DEL())openReact(Number(b.dataset.id));
+  });
   d.addEventListener('close',onClose);
   d.addEventListener('keydown',e=>{
     if(e.key==='Escape'){e.stopPropagation();if(S.reactFor!=null){e.preventDefault();S.reactFor=null;render();}}   // closes the chat only, never pauses the game behind it
@@ -78,6 +93,12 @@ function dialog(){
   d.addEventListener('change',e=>{
     if(e.target.dataset.chField==='online')live.send({t:'prefs',online:e.target.checked});
     if(e.target.dataset.chField==='pick'){const p=e.target.value;e.target.checked?S.pick.add(p):S.pick.delete(p);const b=d.querySelector('[data-ch-act="groupMake"],[data-ch-act="groupAddGo"]');if(b)b.disabled=!canMake();}
+    if(e.target.dataset.chField==='selch'&&S.sel){   // 🗑️ a chat ticked for "Xóa"
+      const ch=e.target.value;
+      if(e.target.checked&&S.sel.size>=CLEAR_MAX){e.target.checked=false;flash(`Mỗi lần xóa tối đa ${CLEAR_MAX} cuộc trò chuyện.`);}
+      else if(e.target.checked)S.sel.add(ch);else S.sel.delete(ch);
+      S.confirm=null;render();
+    }
   });
   d.querySelector('.ch-body').addEventListener('scroll',onScroll,{passive:true});
   S.dlg=d;return d;
@@ -85,19 +106,40 @@ function dialog(){
 function lpStart(e){
   if(e.button>0)return;
   lpCancel();S.lp=null;
+  const row=selRow(e.target);
+  if(row){   // 🗑️ holding a chat of the list: "Chọn" with it ticked
+    const ch=row.dataset.ch;
+    S.lp={x:e.clientX,y:e.clientY,fired:0,timer:setTimeout(()=>{if(!S.lp)return;S.lp.timer=0;S.lp.fired=Date.now();selStart(ch);},LP_MS)};
+    return;
+  }
   const b=e.target.closest('.ch-bub[data-id]');
-  if(!b||b.classList.contains('del')||e.target.closest('a[href]'))return;
+  if(!b||(b.classList.contains('del')&&!DEL())||e.target.closest('a[href]'))return;
   const id=Number(b.dataset.id);
   S.lp={id,x:e.clientX,y:e.clientY,fired:0,timer:setTimeout(()=>{if(!S.lp)return;S.lp.timer=0;S.lp.fired=Date.now();openReact(id);},LP_MS)};
 }
 function lpCancel(){if(S.lp?.timer){clearTimeout(S.lp.timer);S.lp.timer=0;}}
 function lpEnd(){lpCancel();if(S.lp?.fired&&!S.lp.up)S.lp.up=Date.now();}   // the finger is up: its click comes right after
+/** A held message: its action row (🗑️ delete, report…) and, when I may react, the emoji bar above it. */
 function openReact(id){
+  const m=listOf(S.thread||'town')?.find(x=>x.id===id);
+  S.act=id;S.reactFor=null;S.report=null;S.confirm=null;
+  try{navigator.vibrate?.(12);}catch{/* not allowed */}
+  if(m?.del){render();return;}   // a recalled message: only "Xóa ở phía tôi"
   if(live.me&&!live.me.account){flash('Tạo tài khoản để thả cảm xúc nhé.');render();return;}
   if(live.me?.muted&&live.me.muted*1000>Date.now()&&!adm()){flash('Bạn đang bị tạm khóa chat.');render();return;}
-  S.reactFor=id;S.act=null;S.report=null;S.confirm=null;
-  try{navigator.vibrate?.(12);}catch{/* not allowed */}
+  S.reactFor=id;
   render();
+}
+/** 🗑️ A row of the chat list that holding (or a right click) ticks, when deleting is on. */
+const selRow=t=>!S.sel&&!S.thread&&!S.view&&S.tab==='inbox'&&DEL()?t.closest('.ch-row[data-ch-act="open"]'):null;
+function selStart(ch){S.sel=new Set(ch?[ch]:[]);S.confirm=null;try{navigator.vibrate?.(12);}catch{/* not allowed */}render();}
+/** 🗑️ Chats emptied on my side (here or in another tab): {ch: newest id gone}; a DM leaves the list (live.js). */
+function dropCleared(chs){for(const [ch,upto] of Object.entries(chs||{})){const t=S.threads.get(ch);if(t)t.msgs=t.msgs.filter(m=>m.id>upto);}}
+/** 🗑️ One message gone from my screens. */
+function dropMsg(ch,id){
+  const list=listOf(ch),i=list?list.findIndex(m=>m.id===id):-1;if(i>=0)list.splice(i,1);
+  const c=live.chan(ch);if(c?.last?.id===id)delete c.last;
+  if(S.act===id)S.act=null;if(S.reactFor===id)S.reactFor=null;
 }
 /** The list a message of channel ch is in (Cả phố or an open chat). */
 const listOf=ch=>ch==='town'?S.town.msgs:S.threads.get(ch)?.msgs;
@@ -189,6 +231,7 @@ function bind(){
     if(f.code==='new'){S.town.why='new';S.town.wait=f.wait;S.town.at=Date.now();}
     if(f.code==='muted'&&live.me){live.me.town='muted';live.me.muted=f.until;}
     if(f.ref==='pin'||f.ref==='unpin')S.pinning=false;
+    if(f.ref==='unblock')S.unblocking=null;
     if(f.code==='no_chat'&&S.thread?.startsWith('dm:')&&!live.chan(S.thread)){const t=thread(S.thread);t.loaded=true;t.busy=false;t.more=false;if(S.dlg?.open)render();return;}   // a first chat with this friend: nothing yet
     if(S.dlg?.open){flash(f.msg||'Không gửi được.');render();}
   });
@@ -198,10 +241,15 @@ function bind(){
   live.on('blocked',f=>{
     for(const list of [S.town.msgs,...[...S.threads.values()].map(t=>t.msgs)])for(let i=list.length-1;i>=0;i--)if(list[i].pid===f.pid&&f.on)list.splice(i,1);
     if(f.on&&S.town.pin?.pid===f.pid)S.town.pin=null;
-    if(f.on&&S.thread&&live.chan(S.thread)?.peer?.pid===f.pid){S.thread=null;S.tab='inbox';}
+    if(f.on&&S.thread&&(live.chan(S.thread)?.peer?.pid===f.pid||S.thread===dmId(f.pid))){S.thread=null;S.tab='inbox';}   // (a DM emptied on my side is not in the list)
+    if(!f.on&&S.blocks)S.blocks=S.blocks.filter(b=>b.pid!==f.pid);S.unblocking=null;   // 🚫 off the list
+    if(!f.on){clearTimeout(S.syncT);S.syncT=setTimeout(()=>live.send({t:'sync'}),1500);}   // unblocked: friends and chats come back (one sync for several)
     if(S.dlg?.open){flash(f.on?'Đã chặn. Hai bạn không thấy tin của nhau nữa.':'Đã bỏ chặn.');render();}
   });
   live.on('reported',()=>{if(S.dlg?.open){flash('Đã báo cáo. Cảm ơn bạn!');render();}});
+  live.on('hid',f=>{dropMsg(f.ch,f.id);if(S.dlg?.open)render();});            // 🗑️ deleted on my side (maybe in another tab)
+  live.on('cleared',f=>{dropCleared(f.chs);if(S.dlg?.open)render();});
+  live.on('blocks',f=>{S.blocks=f.list||[];S.unblocking=null;if(S.dlg?.open)render();});   // 🚫 who I blocked
   live.on('state',f=>{if(f.town){S.town.why=f.town;S.town.wait=f.wait||0;S.town.at=Date.now();}if(S.dlg?.open)render();});
   for(const t of ['presence','prefs','muted','read'])live.on(t,()=>{if(S.dlg?.open)render();});
 }
@@ -223,13 +271,31 @@ function onAct(act,d,el){
   if(act!=='react')S.reactFor=null;
   switch(act){
     case'close':S.dlg.close();return;
-    case'tab':S.tab=d.tab;S.thread=null;S.view=null;S.act=null;S.report=null;break;
+    case'tab':S.tab=d.tab;S.thread=null;S.view=null;S.act=null;S.report=null;S.sel=null;S.confirm=null;break;
     case'back':if(S.view==='add'){S.view='members';break;}if(S.view){S.view=null;S.pick.clear();break;}S.thread=null;S.act=null;S.report=null;S.confirm=null;break;
     case'open':openThread(d.ch);return;
     case'dm':{const c=live.chans.find(x=>x.peer?.pid===d.pid);openThread(c?c.id:dmId(d.pid));return;}
     case'older':{if(S.older)return;const list=S.thread?thread(S.thread).msgs:S.town.msgs;S.older=live.send({t:'history',ch:S.thread||'town',before:list.find(m=>!m.sys)?.id||0});break;}
     case'msg':{const id=Number(d.id);S.act=S.act===id?null:id;S.report=null;S.confirm=null;break;}
-    case'del':live.send({t:'del',id:Number(d.id)});S.act=null;break;
+    case'del':if(S.confirm!=='del:'+d.id){S.confirm='del:'+d.id;break;}live.send({t:'del',id:Number(d.id)});S.act=null;S.confirm=null;break;   // Thu hồi (for everyone)
+    case'hide':{   // 🗑️ Xóa ở phía tôi: gone here at once, the server tells my other tabs
+      if(S.confirm!=='hide:'+d.id){S.confirm='hide:'+d.id;break;}
+      const id=Number(d.id),ch=S.thread||'town';S.confirm=null;
+      if(live.send({t:'hide',id})){dropMsg(ch,id);flash('Đã xóa ở phía bạn.');}
+      break;}
+    case'selMode':selStart(null);return;
+    case'selCancel':S.sel=null;S.confirm=null;break;
+    case'clearGo':{   // 🗑️ the ticked chats, emptied on my side (asks once more first)
+      const chs=[...(S.sel||[])];if(!chs.length)break;
+      if(S.confirm!=='clear'){S.confirm='clear';break;}
+      S.confirm=null;
+      if(live.send({t:'clear',chs})){
+        for(const ch of chs){const c=live.chan(ch);if(c?.kind==='dm')live.chans=live.chans.filter(x=>x!==c);else if(c){delete c.last;c.unread=0;}S.threads.delete(ch);}
+        S.sel=null;flash(chs.length>1?`Đã xóa ${chs.length} cuộc trò chuyện ở phía bạn.`:'Đã xóa cuộc trò chuyện ở phía bạn.');
+      }
+      break;}
+    case'blocks':S.view='blocks';S.sel=null;S.confirm=null;live.send({t:'blocks'});break;   // 🚫 the list (the answer redraws)
+    case'unblock':if(live.send({t:'unblock',pid:d.pid}))S.unblocking=d.pid;break;
     case'pin':if(live.send({t:'pin',id:Number(d.id)}))S.pinning=true;S.act=null;break;   // 📌 admins (the server checks)
     case'unpin':if(live.send({t:'unpin'}))S.pinning=true;S.act=null;break;
     case'pinOpen':S.pinOpen=!S.pinOpen;renderPin();return;
@@ -296,6 +362,7 @@ function head(){
   const x=`<button type="button" class="icon-btn" data-ch-act="close" aria-label="Đóng">${icon('x',20)}</button>`;
   const back=`<button type="button" class="icon-btn" data-ch-act="back" aria-label="Quay lại">${icon('chevron',20,'ch-back-ico')}</button>`;
   if(S.view==='group')return `${back}<h2 class="grow">Nhóm mới</h2>${x}`;
+  if(S.view==='blocks')return `${back}<h2 class="grow">Đã chặn</h2>${x}`;
   if(S.view==='members'||S.view==='add'){const c=live.chan(S.thread);return `${back}<h2 class="grow" data-no-translate>${esc(c?.title||'Nhóm')}</h2>${x}`;}
   if(S.thread){
     const c=live.chan(S.thread),grp=c?.kind==='group'||S.thread.startsWith('g:');
@@ -324,7 +391,7 @@ function msgList(list,kind,more){
     const pinned=kind==='town'&&S.town.pin?.id===m.id?'<i class="ch-pinned" aria-label="Đang ghim">📌</i>':'';
     // an admin message with links: a div acting as the button (a link cannot sit inside a <button>)
     const bub=m.adm&&!m.del?`<div role="button" tabindex="0" class="ch-bub adm" data-ch-act="msg" data-id="${m.id}"><span data-no-translate>${text(m)}</span><time>${pinned}${hm(m.at)}</time></div>`:
-      `<button type="button" class="ch-bub${m.del?' del':''}" data-ch-act="msg" data-id="${m.id}"${m.del?' disabled':''}><span data-no-translate>${m.del?'':lines(m.text)}</span>${m.del?'<i>Tin nhắn đã thu hồi</i>':''}<time>${pinned}${hm(m.at)}</time></button>`;
+      `<button type="button" class="ch-bub${m.del?' del':''}" data-ch-act="msg" data-id="${m.id}"${m.del&&!DEL()?' disabled':''}><span data-no-translate>${m.del?'':lines(m.text)}</span>${m.del?'<i>Tin nhắn đã thu hồi</i>':''}<time>${pinned}${hm(m.at)}</time></button>`;
     out+=`<div class="ch-msg${mine?' mine':''}${first?' first':''}${m.adm?' adm':''}">${mine?'':first?av(m):'<span class="ch-av gap"></span>'}<div class="ch-col">${name}${bub}${reactBar(m)}${chips(m)}${bar}</div></div>`;
     prev=m;
   }
@@ -357,19 +424,26 @@ function chips(m){
   return `<div class="ch-reacts">${r.map(([e,n])=>`<button type="button" class="ch-chip${m.my===e?' on':''}" data-ch-act="react" data-id="${m.id}" data-e="${esc(e)}" aria-pressed="${m.my===e}">${esc(e)} <b>${n}</b></button>`).join('')}</div>`;
 }
 function actBar(m,mine,kind){
+  // 🗑️ "Xóa ở phía tôi" last in every row (a recalled message: alone); "Thu hồi" on mine for 24 h. Both ask again first.
+  const ask=k=>S.confirm===k+':'+m.id;
+  const hide=DEL()?`<button type="button" class="ch-mini${ask('hide')?' warn':''}" data-ch-act="hide" data-id="${m.id}">${icon('trash',14)} ${ask('hide')?'Xóa thật?':'Xóa ở phía tôi'}</button>`:'';
+  if(m.del)return hide?`<div class="ch-actbar wrap">${hide}</div>`:'';
   // 📌 an admin on Cả phố: pin this message (or unpin it), first in the row
   const pin=kind==='town'&&adm()?(S.town.pin?.id===m.id?`<button type="button" class="ch-mini pin" data-ch-act="unpin">📌 Bỏ ghim</button>`:
     `<button type="button" class="ch-mini pin" data-ch-act="pin" data-id="${m.id}">📌 Ghim tin này</button>`):'';
-  if(mine)return `<div class="ch-actbar wrap">${pin}<button type="button" class="ch-mini" data-ch-act="del" data-id="${m.id}">${icon('trash',14)} Thu hồi</button></div>`;
+  if(mine){
+    const rec=canRecall(m)?`<button type="button" class="ch-mini${ask('del')?' warn':''}" data-ch-act="del" data-id="${m.id}">${icon('refresh',14)} ${ask('del')?'Thu hồi thật?':'Thu hồi'}</button>`:'';
+    return pin+rec+hide?`<div class="ch-actbar wrap">${pin}${rec}${hide}</div>`:'';
+  }
   if(S.report===m.id)return `<div class="ch-actbar wrap">${REASONS.map(([k,l])=>`<button type="button" class="ch-mini" data-ch-act="reason" data-id="${m.id}" data-reason="${k}">${l}</button>`).join('')}</div>`;
   const friend=live.friend(m.pid);
   if(m.adm){   // nobody reports or blocks the Ban quản lý
-    const row=pin+(friend&&kind!=='dm'?`<button type="button" class="ch-mini" data-ch-act="dm" data-pid="${esc(m.pid)}">${icon('chat',14)} Nhắn riêng</button>`:'');
+    const row=pin+(friend&&kind!=='dm'?`<button type="button" class="ch-mini" data-ch-act="dm" data-pid="${esc(m.pid)}">${icon('chat',14)} Nhắn riêng</button>`:'')+hide;
     return row?`<div class="ch-actbar wrap">${row}</div>`:'';
   }
   return `<div class="ch-actbar wrap">${pin}${friend&&kind!=='dm'?`<button type="button" class="ch-mini" data-ch-act="dm" data-pid="${esc(m.pid)}">${icon('chat',14)} Nhắn riêng</button>`:''}`+
     `<button type="button" class="ch-mini" data-ch-act="report" data-id="${m.id}">${icon('flag',14)} Báo cáo</button>`+
-    `<button type="button" class="ch-mini${S.confirm==='block:'+m.pid?' warn':''}" data-ch-act="block" data-pid="${esc(m.pid)}">${S.confirm==='block:'+m.pid?'Chặn thật?':'Chặn'}</button></div>`;
+    `<button type="button" class="ch-mini${S.confirm==='block:'+m.pid?' warn':''}" data-ch-act="block" data-pid="${esc(m.pid)}">${S.confirm==='block:'+m.pid?'Chặn thật?':'Chặn'}</button>${hide}</div>`;
 }
 const empty=(ico,text,btn='')=>`<div class="ch-empty">${icon(ico,30)}<p>${text}</p>${btn}</div>`;
 
@@ -382,6 +456,12 @@ function body(){
     return (S.view==='group'?`<label class="ch-field"><span>Tên nhóm</span><input data-ch-field="gtitle" maxlength="40" value="${esc(S.gtitle)}" data-no-translate></label>`:'')+
       (list.length?`<p class="ch-label">Chọn bạn · tối đa ${max}</p><div class="ch-picks">${list.map(f=>`<label class="ch-pick">${av(f)}<span class="grow" data-no-translate>${esc(f.name)}</span>${dot(f.on)}<input type="checkbox" data-ch-field="pick" value="${esc(f.pid)}"${S.pick.has(f.pid)?' checked':''}></label>`).join('')}</div>`:empty('user','Chưa có bạn để mời.'))+
       `<button type="button" class="btn primary full ch-make" data-ch-act="${S.view==='add'?'groupAddGo':'groupMake'}"${canMake()?'':' disabled'}>${S.view==='add'?'Thêm vào nhóm':'Lập nhóm'}</button>`;
+  }
+  if(S.view==='blocks'){   // 🚫 who I blocked (feedback #93)
+    const L=S.blocks;if(!L)return empty('refresh','Đang tải…');
+    if(!L.length)return empty('user','Bạn chưa chặn ai.');
+    return `<div class="ch-rows">${L.map(b=>`<div class="ch-row static"><span class="ch-av-wrap">${av(b,'md')}</span><span class="grow"><b data-no-translate>${esc(b.name)}</b></span>`+
+      `<button type="button" class="ch-mini" data-ch-act="unblock" data-pid="${esc(b.pid)}"${S.unblocking===b.pid?' disabled':''}>Bỏ chặn</button></div>`).join('')}</div>`;
   }
   if(S.view==='members'){
     const M=S.members;if(!M)return empty('people','Đang tải…');
@@ -402,15 +482,26 @@ function body(){
     return (T.n?`<p class="ch-here">${icon('eye',13)} ${T.n} người đang xem</p>`:'')+(T.msgs.length?msgList(T.msgs,'town',T.more):empty('chats','Phố đang yên. Mở lời trước nhé!'));
   }
   if(S.tab==='inbox'){
+    const sel=DEL()?S.sel:null;   // 🗑️ "Chọn": rows become tick boxes
     const rows=live.chans.map(c=>{
       const grp=c.kind==='group',p=c.peer||{},last=c.last,q=live.quiet(c);
       const prev=last?(last.del?'Tin nhắn đã thu hồi':`${last.pid===me()?'Bạn: ':grp?esc(last.name)+': ':''}${esc(last.text)}`):grp?`${c.n||''} người`:'';
-      return `<button type="button" class="ch-row${q?' quiet':''}" data-ch-act="open" data-ch="${esc(c.id)}"><span class="ch-av-wrap">${av(grp?'👥':p,'md')}${grp?'':dot(p.on)}</span>`+
-        `<span class="grow"><b data-no-translate>${esc(grp?c.title:p.name||'Bạn bè')}</b><small data-no-translate>${prev}</small></span>`+
+      const who=`<span class="ch-av-wrap">${av(grp?'👥':p,'md')}${grp?'':dot(p.on)}</span>`+
+        `<span class="grow"><b data-no-translate>${esc(grp?c.title:p.name||'Bạn bè')}</b><small data-no-translate>${prev}</small></span>`;
+      if(sel)return `<label class="ch-row ch-selrow${sel.has(c.id)?' on':''}">${who}<input type="checkbox" data-ch-field="selch" value="${esc(c.id)}"${sel.has(c.id)?' checked':''} aria-label="Chọn"></label>`;
+      return `<button type="button" class="ch-row${q?' quiet':''}" data-ch-act="open" data-ch="${esc(c.id)}">${who}`+
         `<span class="ch-meta">${last?`<time>${hm(last.at)}</time>`:''}${q||c.unread?`<span class="ch-meta-r">${q?'<i class="ch-q" aria-label="Đã tắt thông báo">🔕</i>':''}${c.unread?`<em class="badge${q?' mute':''}">${c.unread>99?'99+':c.unread}</em>`:''}</span>`:''}</span></button>`;
     }).join('');
+    if(sel){
+      const n=sel.size,ask=S.confirm==='clear';
+      return `<div class="ch-tools"><span class="grow">${n?`Đã chọn ${n}`:'Chọn cuộc trò chuyện để xóa'}</span><button type="button" class="ch-mini" data-ch-act="selCancel">Hủy</button></div>`+
+        `<div class="ch-rows">${rows}</div><div class="ch-selfoot"><button type="button" class="btn ${ask?'warn':'ghost'} full" data-ch-act="clearGo"${n?'':' disabled'}>${icon('trash',16)} ${ask?`Xóa ${n} cuộc trò chuyện?`:`Xóa${n?` (${n})`:''}`}</button>`+
+        `<small>Chỉ xóa ở phía bạn, người kia vẫn còn tin nhắn.</small></div>`;
+    }
     const make=live.friends.length?`<button type="button" class="ch-new" data-ch-act="groupNew">${icon('plus',16)} Nhóm mới</button>`:'';
-    return make+(rows?`<div class="ch-rows">${rows}</div>`:empty('chat','Chưa có tin nhắn.',live.friends.length?`<button type="button" class="btn ghost" data-ch-act="tab" data-tab="friends">Nhắn bạn bè</button>`:''));
+    const tools=(live.flags.blocks?`<button type="button" class="ch-mini" data-ch-act="blocks">🚫 Đã chặn${S.blocks?.length?` (${S.blocks.length})`:''}</button>`:'')+
+      (rows&&DEL()?`<button type="button" class="ch-mini" data-ch-act="selMode">${icon('trash',14)} Chọn</button>`:'')+make;
+    return (tools?`<div class="ch-tools">${tools}</div>`:'')+(rows?`<div class="ch-rows">${rows}</div>`:empty('chat','Chưa có tin nhắn.',live.friends.length?`<button type="button" class="btn ghost" data-ch-act="tab" data-tab="friends">Nhắn bạn bè</button>`:''));
   }
   // friends
   const list=[...live.friends].sort((a,b)=>(b.on-a.on)||a.name.localeCompare(b.name,'vi'));
