@@ -429,3 +429,4 @@ html.reduce-motion .fh-fly{animation-duration:.05s}
 
 /* wider screens: the mat and the ticket keep their phone proportions */
 @media (min-width:700px){.fh-body{padding:14px 22px 22px}.fh-plate{transform:scale(1.1)}.fh-face{min-height:100px}}
+.fh-again{justify-content:center;gap:8px;margin-top:8px}
