@@ -2,8 +2,10 @@
 'cane') sell a few folk snacks for a little xu (owner 03/10: "người ta mua đồ ăn, uống nước mía được nữa nhé").
 
 Eating works like the work day's Ăn thêm (game/needs.py, jr_needs_snack): the price comes from the wallet (refused
-when the wallet does not hold it: food never makes debt), no bụng / tỉnh táo go up, and an item is refused when
-nothing it gives has room left (needs.FULL_CAP / WAKE_CAP). No tinh thần, no daily cap, no new state: the needs
+when the wallet does not hold it: food never makes debt) and no bụng / tỉnh táo go up (at most 100). Unlike Ăn thêm
+it is never refused for a full belly: a treat at the fair is bought for the fun of it (owner 03/10: "kẹo bông, nước
+mía… hội chợ không mua được, sửa cho mua nhé": a save fresh from breakfast sits at FULL_CAP, so every cart was shut).
+Eaten when already full, it only says so. No tinh thần, no daily cap, no new state: the needs
 record is created like on any first story action (needs.ensure). Bought only while the fair is open (game/fair.py
 checks it), also in the evening: what is eaten then counts towards tomorrow morning like the dinner does.
 Sổ ví: one row a life day (kind 'fair', "🍡 Ăn vặt hội chợ · N món"), updated in place like the stalls' rows.
@@ -44,12 +46,14 @@ def _n(s: dict) -> dict:
     return nd.get(s) or nd.initial(s['journey']['life_day'])
 
 
-def why(s: dict, x: dict) -> str:
-    """Why this snack cannot be bought now ('' = it can)."""
+def _room(s: dict, x: dict) -> bool:
+    """Whether eating it still moves a bar (else it is eaten just for the taste)."""
     n = _n(s)
-    room = (x['full'] and n['full'] < nd.FULL_CAP) or (x['wake'] and n['wake'] < nd.WAKE_CAP)
-    if not room:
-        return 'Bụng no rồi' if not x['wake'] else 'No bụng, tỉnh táo rồi'
+    return bool((x['full'] and n['full'] < 100) or (x['wake'] and n['wake'] < 100))
+
+
+def why(s: dict, x: dict) -> str:
+    """Why this snack cannot be bought now ('' = it can): only a wallet short of its price."""
     if int(s['journey'].get('wallet', 0)) < x['price']:
         return 'Chưa đủ xu'
     return ''
@@ -76,17 +80,16 @@ def apply(s: dict, p: dict) -> dict:
     need(set(p) == {'item'} and isinstance(p['item'], str) and p['item'] in MENU, 'Chọn một món nha.')
     j = s['journey']
     x = MENU[p['item']]
-    w = why(s, x)
-    need(w != 'Bụng no rồi', 'Bụng no căng rồi, để bụng đi chơi tiếp nha!', 'too_full')
-    need(w != 'No bụng, tỉnh táo rồi', 'No bụng, tỉnh táo cả rồi, lát nữa ghé lại nha!', 'too_full')
-    need(not w, f'Ví còn {max(0, j["wallet"])} xu, chưa đủ {x["price"]} xu.', 'not_enough')
+    need(not why(s, x), f'Ví còn {max(0, j["wallet"])} xu, chưa đủ {x["price"]} xu.', 'not_enough')
+    room = _room(s, x)
     n = nd.ensure(s)
     _row(j, x['price'])
     n['full'] = nd._clamp(n['full'] + x['full'])
     n['wake'] = nd._clamp(n['wake'] + x['wake'])
     gain = ', '.join(([f'no bụng {n["full"]}'] if x['full'] else []) + ([f'tỉnh táo {n["wake"]}'] if x['wake'] else []))
-    msg = f'{x["emoji"]} {x["name"]} ({x["price"]} xu): {x["say"]}'
-    return dict(message=msg, effects=[], fair=dict(game='food', item=p['item'], price=x['price'], say=x['say'],
+    say = x['say'] if room else f'{x["say"]} No căng rồi mà vẫn ráng ăn cho vui!'
+    msg = f'{x["emoji"]} {x["name"]} ({x["price"]} xu): {say}'
+    return dict(message=msg, effects=[], fair=dict(game='food', item=p['item'], price=x['price'], say=say,
                                                    full=n['full'], wake=n['wake'], gain=gain))
 
 

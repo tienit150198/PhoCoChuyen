@@ -1,3 +1,17 @@
+# v1.4.22 — 📱 Thanh dưới 5 nút, 🧭 Hành trình gọn, 👫 đứng tại gian ở bãi hội
+
+Chủ game (03/10): "các bạn chơi trò gì thì bên ngoài thấy người ta đứng trò đó nhé, chứ đừng biến mất".
+
+- 📱 feat/ui-wp1 (9b716d1, a754368, c0cafa0): thanh dưới điện thoại cố định 5 ô (Khách · bàn nghề · Kho · Sổ tiệm · Thêm), Kho mở đúng trang theo nghề, huy hiệu hàng sắp hết; HUD chip 44 px, < 360 px chỉ icon + số; Thêm không lặp lại thanh dưới; phụ đề một dòng cho Khu phố (D5: giữ tên).
+- 🧭 feat/ui-wp5 (466aa94): Hành trình mở đầu bằng "Tiếp tục ở …", nơi làm việc dạng ô 2 cột trên điện thoại, nơi chưa mở cuộn ngang; Chuẩn bị chung: Kho trước, "Hôm nay · thời tiết / Nhiệm vụ" gộp một dòng gập, cấp & XP lên đầu, tab 44 px cuộn ngang.
+- feat/fair-stand (be8274a, 47c71b0): client không còn gửi `fair_out` khi mở trang gian (chỉ khi đóng hội chợ/hết hội); `fair_mv`/`fair_in` thêm trường tùy chọn `s` (gian đang chơi, chữ thường ngắn; sai thì bỏ qua), gửi cho người khác trong `in`/`mv` và snapshot. Người chơi đứng ở điểm đứng của gian, bong bóng emoji trò (xe ăn vặt 🍡/🥤; vay nóng không có bong bóng). Live cũ: vẫn đứng, không bong bóng; client cũ bỏ qua `s`.
+
+# v1.4.21 — ⏱️ Bấm dừng chấm đúng lúc chạm (#100)
+
+Góp ý #100: bấm dừng bị trễ, thanh chạy quá chỗ đã bấm.
+
+- feat/tap-lag (cefe0c0…e27f67a): client gửi `tap_at` (thời điểm chạm) kèm lệnh dừng; server `kit.tap_now(p)` chấm theo đó, kẹp trong [lúc tới − 3 s, lúc tới + 0,25 s], sai kiểu thì dùng giờ tới. Áp dụng: tea_seal, pc_rinse/pc_dry, cb_stop/cb_milk_stop/cb_unload, ao_sew_stop, hs_plate/hs_clean, rs_drain, sl_rinse. Thanh chạy bằng Web Animations (translateX), đóng băng ngay lúc pointerdown. Client cũ/server cũ: chấm lúc tới như trước.
+
 # v1.4.20 — 🔥 Nghề x3 trong tuần, 🎟️ vé số cào, 🏮 35 món nhà, 💬 xóa tin nhắn & bỏ chặn, góp ý người chơi
 
 Chủ game (03/10): "mỗi ngày x3 cho … trò bất kì", "làm liên tiếp, đầu tuần thông báo và tự áp dụng, mấy trò mà chia ra 1 tuần là đủ tất cả trò", "thêm trò cào xổ số… cào bằng tay thật", "thêm phụ kiện ở nhà", "bạn bè cho chọn xóa tin nhắn", "thông báo lâu quá, người ta có thể bấm tắt được"; góp ý #93–#99.
@@ -8,6 +22,8 @@ Chủ game (03/10): "mỗi ngày x3 cho … trò bất kì", "làm liên tiếp,
 - 💬 Chat (feat/chat-delete 4b8809d): giữ tin → "Xóa ở phía tôi" / "Thu hồi" (24 giờ); "Chọn" xóa nhiều cuộc trò chuyện; "🚫 Đã chặn" + Bỏ chặn (#93). Bảng mới `chat_hides`, `chat_clears` (SCHEMA_VERSION 13, chỉ thêm).
 - 🔔 Thông báo (#95, #96): chạm để tắt, thời gian hiện theo độ dài chữ.
 - 🗂️ Bàn văn phòng (#94): cuộc gọi đổi ý về một thẻ đã xếp trả thẻ về "chưa xếp", ghi chú 📞 in trên thẻ, thẻ đó mở trước.
+- 🍡 Hàng ăn vặt (chủ game 03/10: "kẹo bông, nước mía… hội chợ không mua được, sửa cho mua nhé"): bỏ chặn "no rồi" (người vừa ăn sáng đã ở FULL_CAP 90 nên xe nào cũng khóa); chỉ còn chặn khi ví thiếu, no bụng/tỉnh táo vẫn tối đa 100.
+- TikTok login (fix/tiktok-login 2ae19dc, phiên khác) gộp vào 1.4.20.
 - 🪨 Ô ăn quan (#99): câu "quan non" nói rõ cần đủ 5 dân, không tính theo vòng.
 
 # v1.4.19 — 🏆 Bảng vàng theo tiền lời, 👫 thấy nhau ở bãi hội

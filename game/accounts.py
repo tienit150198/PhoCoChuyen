@@ -98,6 +98,13 @@ def _account_for(db, sid: str):
     return db.execute('SELECT * FROM accounts WHERE sid=?', (sid,)).fetchone()
 
 
+def public_account(db, account) -> dict:
+    out = dict(username=account['username'], display=account['display'])
+    if db.execute('SELECT 1 FROM tiktok_identities WHERE uid=?', (account['uid'],)).fetchone():
+        out.update(has_password=account['pw'].startswith('scrypt$'), tiktok_linked=True)
+    return out
+
+
 def status(store, token: str | None) -> dict | None:
     """Public account info for this device (None when playing anonymously)."""
     if not token:
@@ -107,7 +114,7 @@ def status(store, token: str | None) -> dict | None:
         return None
     with store.connect() as db:
         a = _account_for(db, sid)
-    return dict(username=a['username'], display=a['display']) if a else None
+        return public_account(db, a) if a else None
 
 
 def _new_login(db, sid: str, csrf: str | None = None) -> tuple[str, str]:
@@ -156,6 +163,7 @@ def register(store, token: str, d: dict) -> dict:
         need(row, 'Phiên chơi không còn tồn tại. Tải lại trang nhé.', 'session_missing', 401)
         need(not _account_for(db, sid), 'Bạn đang đăng nhập rồi.', 'already_signed_in')
         need(not db.execute('SELECT 1 FROM accounts WHERE username=?', (username,)).fetchone(), 'Tên đăng nhập này đã có người dùng.', 'username_taken', 409)
+        db.execute('DELETE FROM tiktok_flows WHERE source_token=?', (store_digest(token),))
         try:
             db.execute('INSERT INTO accounts(username,display,pw,sid) VALUES(?,?,?,?)', (username, display, pw, sid))
         except dbm.IntegrityError:  # PostgreSQL: the same name was taken by a concurrent registration
@@ -195,6 +203,7 @@ def login(store, token: str | None, d: dict) -> dict:
     need(isinstance(username, str) and isinstance(password, str) and 0 < len(password) <= PASSWORD_MAX and len(username) <= 64, WRONG, 'bad_login', 401)
     with store.connect() as db:
         a = db.execute('SELECT * FROM accounts WHERE username=?', (username.strip().lower(),)).fetchone()
+        public = public_account(db, a) if a else None
     ok = verify_password(password, a['pw'] if a else _DUMMY)
     need(a and ok, WRONG, 'bad_login', 401)
     old_sid, old_login = store.resolve(token) if token else (None, None)
@@ -202,6 +211,8 @@ def login(store, token: str | None, d: dict) -> dict:
     try:
         db.execute('BEGIN IMMEDIATE')
         need(db.execute('SELECT 1 FROM sessions WHERE sid=?', (a['sid'],)).fetchone(), WRONG, 'bad_login', 401)
+        if token:
+            db.execute('DELETE FROM tiktok_flows WHERE source_token=?', (store_digest(token),))
         if old_login:
             db.execute('DELETE FROM logins WHERE token=?', (store_digest(token),))
         new_token, csrf = _new_login(db, a['sid'])
@@ -213,13 +224,14 @@ def login(store, token: str | None, d: dict) -> dict:
         db.close()
     # An anonymous save on this device is replaced (the player confirmed); drop it.
     drop = bool(token) and not old_login and old_sid != a['sid'] and not str(old_sid).startswith('revoked:')
-    return dict(token=new_token, csrf=csrf, drop_anonymous=drop, account=dict(username=a['username'], display=a['display']),
+    return dict(token=new_token, csrf=csrf, drop_anonymous=drop, account=public,
                 message=f'Chào {a["display"]}! Tiến trình của tài khoản đã về máy này.')
 
 
 def logout(store, token: str | None) -> None:
     need(token and store.resolve(token)[1], 'Bạn chưa đăng nhập.', 'not_signed_in')
     with store.connect() as db:
+        db.execute('DELETE FROM tiktok_flows WHERE source_token=?', (store_digest(token),))
         db.execute('DELETE FROM logins WHERE token=?', (store_digest(token),))
 
 
@@ -237,5 +249,6 @@ def change_password(store, token: str, d: dict) -> dict:
     with store.connect() as db:
         db.execute('UPDATE accounts SET pw=?,updated_at=CURRENT_TIMESTAMP WHERE uid=?', (pw, a['uid']))
         # Other devices must sign in again with the new password.
+        db.execute('DELETE FROM tiktok_flows WHERE source_token IN (SELECT token FROM logins WHERE sid=? AND token<>?)', (sid, store_digest(token)))
         db.execute('DELETE FROM logins WHERE sid=? AND token<>?', (sid, store_digest(token)))
     return dict(message='Đã đổi mật khẩu. Các máy khác sẽ cần đăng nhập lại.')

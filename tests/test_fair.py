@@ -1228,16 +1228,17 @@ class FairFood(FairBase):
         self.assertNotIn('lt', public_state(s)['fair']['today_xu'])
         validate_state(s)
 
-    def test_refused_when_full_short_or_closed(self):
-        s = self.fed(full=nd.FULL_CAP)
-        with self.assertRaises(GameError) as e:
-            self.act(s, 'fair_snack', item='keo_bong')
-        self.assertEqual(e.exception.code, 'too_full')
-        s, _ = self.act(s, 'fair_snack', item='nuoc_mia')  # a drink still has room in tỉnh táo
-        s['journey']['needs']['wake'] = nd.WAKE_CAP
-        with self.assertRaises(GameError) as e:
-            self.act(s, 'fair_snack', item='nuoc_mia')
-        self.assertEqual(e.exception.code, 'too_full')
+    def test_full_still_buys_short_or_closed_refused(self):
+        # owner 03/10: "kẹo bông, nước mía… hội chợ không mua được, sửa cho mua nhé" (fresh from breakfast = FULL_CAP)
+        s = self.fed(full=100, wake=100)
+        s, r = self.act(s, 'fair_snack', item='keo_bong')
+        self.assertEqual(s['journey']['wallet'], 50 - ff.MENU['keo_bong']['price'])
+        self.assertEqual((s['journey']['needs']['full'], s['journey']['needs']['wake']), (100, 100))
+        self.assertIn('ăn cho vui', r['fair']['say'])
+        s = self.fed(full=nd.FULL_CAP, wake=nd.WAKE_CAP)
+        s, r = self.act(s, 'fair_snack', item='nuoc_mia')
+        self.assertEqual(s['journey']['needs']['wake'], min(100, nd.WAKE_CAP + ff.MENU['nuoc_mia']['wake']))
+        self.assertNotIn('ăn cho vui', r['fair']['say'])
         s = self.fed(wallet=1)
         with self.assertRaises(GameError) as e:
             self.act(s, 'fair_snack', item='banh_trang')
@@ -1254,13 +1255,13 @@ class FairFood(FairBase):
             self.assertEqual(e.exception.code, 'fair_closed')
 
     def test_the_menu_says_why(self):
-        s = self.fed(wallet=2, full=nd.FULL_CAP, wake=10)
+        s = self.fed(wallet=2, full=100, wake=100)
         food = {x['id']: x for x in public_state(s)['fair']['food']}
         self.assertEqual(set(food), set(ff.MENU))
         self.assertEqual({x['cart'] for x in food.values()}, set(ff.CARTS))
-        self.assertEqual((food['keo_bong']['ok'], food['keo_bong']['why']), (False, 'Bụng no rồi'))
+        self.assertEqual((food['keo_bong']['ok'], food['keo_bong']['why']), (True, ''))   # full: still sold
         self.assertEqual((food['nuoc_mia']['ok'], food['nuoc_mia']['why']), (True, ''))
-        self.assertEqual((food['che']['ok'], food['che']['why']), (False, 'Bụng no rồi'))
+        self.assertEqual((food['che']['ok'], food['che']['why']), (False, 'Chưa đủ xu'))
         s = self.fed(wallet=2)
         food = {x['id']: x for x in public_state(s)['fair']['food']}
         self.assertEqual((food['banh_trang']['ok'], food['banh_trang']['why']), (False, 'Chưa đủ xu'))

@@ -327,7 +327,7 @@ function sealer(t,x){
   const pct=v=>v/S.max*100,start=cup.seal_t||0,held=start?Math.max(0,x.now()-start):0;
   const zones=[['loose',0,S.loose],['ok',S.loose,S.good_lo],['good',S.good_lo,S.good_hi],['ok',S.good_hi,S.burn],['burn',S.burn,S.max]];
   return `<div class="mt-sealer ${start?'running':''}">
-    <div class="mt-gauge" data-seal-start="${start||''}" data-s="${[S.loose,S.good_lo,S.good_hi,S.burn,S.max].join(',')}" aria-hidden="true">${zones.map(([k,a,z])=>`<i class="z ${k}" style="left:${pct(a)}%;width:${pct(z-a)}%"></i>`).join('')}<b class="mt-needle" style="left:${Math.min(100,pct(held))}%"></b></div>
+    <div class="mt-gauge" data-seal-start="${start||''}" data-s="${[S.loose,S.good_lo,S.good_hi,S.burn,S.max].join(',')}" aria-hidden="true">${zones.map(([k,a,z])=>`<i class="z ${k}" style="left:${pct(a)}%;width:${pct(z-a)}%"></i>`).join('')}<b class="mt-needle" style="transform:translateX(${Math.min(100,pct(held))}%)"></b></div>
     <small class="mt-gauge-label" aria-live="polite">${start?'Đang ép nhiệt…':ready?`Nắp đẹp +1 xu: ép rồi nhả tay khi kim vào vùng xanh (${S.good_lo}–${S.good_hi} giây)`:'Pha xong trà, đá, đường rồi mới dán nắp'}</small>
     <div class="mt-seal-btns">${start?jb(x,'✋ Nhả tay!','tea_seal',{task:t.id},'cream big'):jb(x,'🔥 Ép nắp','tea_seal_start',{task:t.id},'cream',!ready)}
     ${start?'':jb(x,'Dán thường','tea_seal',{task:t.id},'ghost small',!ready)}</div>${start?'':wear(x)}</div>`;
@@ -665,6 +665,8 @@ function focusStep(root){
 /** The order ticket sticks just under the sheet header when both scroll in the same box (phones);
  * where the header sits outside the scrolling body it sticks at the top edge. */
 function pinTicket(root){
+  // It walks the ancestors' computed styles (a style pass): once a second is plenty for a header that rarely moves.
+  const t=performance.now();if(t-(root._pinAt||0)<1000)return;root._pinAt=t;
   if(!root.querySelector('.mt-ticket'))return;
   const head=root.closest('dialog')?.querySelector('.sheet-head');
   let sc=root.parentElement;
@@ -760,15 +762,20 @@ export default {
       if(d&&d.style.getPropertyValue('--job-head')!==h)d.style.setProperty('--job-head',h);
       if(!modal.contains(document.activeElement))modal.querySelector('button:not([disabled])')?.focus({preventScroll:true});
     }
-    root.querySelectorAll('[data-seal-start]').forEach(el=>{
-      const start=Number(el.dataset.sealStart);if(!start)return;
-      const [loose,lo,hi,burn,max]=el.dataset.s.split(',').map(Number),held=Math.max(0,x.now()-start);
-      el.querySelector('.mt-needle').style.left=Math.min(100,held/max*100)+'%';
-      const label=el.parentElement.querySelector('.mt-gauge-label');
-      if(label)label.textContent=`${held.toFixed(1)} giây · `+(held<loose?'màng chưa dính…':held<lo?'sắp được rồi…':held<=hi?'VÙNG XANH — NHẢ TAY!':held<=burn?'hơi lâu rồi…':'cháy màng mất!');
-      el.classList.toggle('ready',held>=lo&&held<=hi);el.classList.toggle('over',held>burn);
-    });
   },
+  // The sealer needle while the lever is down (v4/careers.js): it glides on the compositor, its words change five
+  // times a second. "Nhả tay" holds it where it was when the finger came down (tapStop).
+  meters(root,x){
+    for(const el of root.querySelectorAll('[data-seal-start]')){
+      const start=Number(el.dataset.sealStart);if(!start)continue;
+      const [loose,lo,hi,burn,max]=el.dataset.s.split(',').map(Number),held=Math.max(0,x.now()-start);
+      x.slide(el.querySelector('.mt-needle'),held/max*100,100/max);
+      const label=el.parentElement.querySelector('.mt-gauge-label'),text=`${held.toFixed(1)} giây · `+(held<loose?'màng chưa dính…':held<lo?'sắp được rồi…':held<=hi?'VÙNG XANH — NHẢ TAY!':held<=burn?'hơi lâu rồi…':'cháy màng mất!');
+      if(label&&label.textContent!==text)label.textContent=text;
+      el.classList.toggle('ready',held>=lo&&held<=hi);el.classList.toggle('over',held>burn);
+    }
+  },
+  tapStop:op=>op==='tea_seal',
   summary(data,x){
     if(!data||data.served==null)return '';
     const row=(l,v)=>`<div class="kv-row"><span>${l}</span><b>${v}</b></div>`;

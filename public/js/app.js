@@ -19,9 +19,10 @@ import {moneyBoot,confirmMoney,confirmShort,dialogBalances,isSpend,priceIn} from
 import {quickOpen,firstDay} from './v4/onboard.js';  // a brand-new player's first minutes
 import {hudMoney,hudChipsHTML,wealthHTML,loadJoint,jointBalance,wealthAction} from './v4/wealth.js';  // 💰 Tiền của bạn (top bar chips + sheet)
 import {emojiOf} from './v4/journey.js';
+import {lowItems,crates} from './v4/restock.js';  // the bar's Kho badge
 import {setLanguage,t as i18nT} from './v4/i18n.js';
 import {shell} from './v4/shell.js';
-import {accountSubmit,accountNudge,accountAction} from './v4/account.js';
+import {accountSubmit,accountNudge,accountAction,accountBoot} from './v4/account.js';
 import {registerWorker,listenWorker} from './v4/push.js';
 import {homeView as homeV4,futureView as futureV4,journeyBoot,journeyAction,journeySubmit} from './v4/home.js';
 import {procedureSubmit,procedureAction} from './v4/procedure.js';
@@ -259,7 +260,9 @@ function navItems(c){
   return result;
 }
 const badgeHTML=b=>b==='dot'?'<i class="dot" aria-hidden="true"></i>':b?`<em class="badge">${b}</em>`:'';
-const railItem=([a,i,label,badge],extra='',hide='')=>`<button type="button" class="rail-item${a==='social'?' top-social':''}${extra} ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}${hide}>${icon(i,21)}<span>${label}</span>${badgeHTML(badge)}</button>`;
+/** One line under the look-alike Khu phố entries, so each says what it is (owner D5: names stay, lines added). */
+const RAIL_NOTE={town:'Thư viện, chợ, quảng trường…',social:'Ghé tiệm người chơi khác',nhom:'Tin nhắn hàng xóm',phone:'Khách khen, chê, kể chuyện'};
+const railItem=([a,i,label,badge],extra='',hide='')=>`<button type="button" class="rail-item${a==='social'?' top-social':''}${extra} ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}${hide}>${icon(i,21)}<span>${label}</span>${RAIL_NOTE[a]?`<small class="rail-note">${RAIL_NOTE[a]}</small>`:''}${badgeHTML(badge)}</button>`;
 /** The work pages, always in sight (rail on desktop/tablet, top of "Thêm" on the phone), in this order. Any
  * entry that is in no group below (a career's own page) joins them, so nothing a career adds is lost. */
 const RAIL_MAIN=['liveChat','home','prepare','operations','prices','feedback','jobapp','accountingSchool'];   // 💬 Chat first, one tap (owner, 01/10)
@@ -280,11 +283,39 @@ function groupBadge(items){
   let n=0,dot=false;for(const x of items){const b=x[3];if(!b)continue;if(Number.isFinite(Number(b)))n+=Number(b);else dot=true;}
   return n||(dot?'dot':0);
 }
-/** Scene actions on the phone's tab dock: at most 3 (the workbench always), the 4th slot is "Thêm". */
-function dockItems(){
-  const all=sceneActions();if(layout()!=='phone')return all;
-  const keep=new Set([all.find(x=>x[0]==='workbench'),...all].filter(Boolean).slice(0,3));
-  return all.filter(x=>keep.has(x));
+/** "Kho" on the bar: a number of items running low (stock + on the way), or 📦 when a crate is in to count.
+ * Milk tea keeps its own counter (data.boba): what is out and not ordered yet. 0: nothing to say. */
+function stockBadge(c){
+  if(c.inventory){if(crates(c.inventory).ready.length)return '📦';return lowItems(c,api.content,career()).length;}
+  const b=c.data?.boba;if(!b)return 0;
+  const ordered=id=>(b.orders||[]).some(o=>o.item===id);
+  return (b.stations||[]).filter(s=>s.unlocked&&s.on!==false&&s.stock===0&&!ordered(s.id)).length+['M','L'].filter(z=>b.cups&&b.cups[z]===0&&!ordered('cup_'+z)).length;
+}
+/** Phone bar (owner, 03/10: "Nông trại của bà"): the same five places in every career, always in sight:
+ * (1) customers / work list, (2) the bench, (3) Kho, (4) Sổ tiệm, (5) Thêm. A career without a stock room or
+ * a shop book gets its next own scene action there (Tủ hồ sơ, Kế hoạch lớp…), else Chuẩn bị.
+ * Entries are [action, icon, label, badge, full name]; tablet/desktop keep every scene action. */
+function dockItems(c=room()){
+  const all=sceneActions();if(layout()!=='phone')return all.map(([a,i,l])=>[a,i,l,0,l]);
+  const nav=navItems(c),out=[],has=a=>out.some(x=>x[0]===a);
+  // A long name keeps its first half on the bar ("Sân chùa & chánh điện" → "Sân chùa"); the full one is its aria-label.
+  const short=l=>l.length>14&&l.includes(' & ')?l.split(' & ')[0]:l;
+  const add=(x,badge=0,label)=>{if(x&&!has(x[0]))out.push([x[0],x[1],label||short(x[2]),badge,x[2]]);return !!x;};
+  // A career's own 'car:' entries (Bảng nội quy, Sổ tay nhà) open a pane inside its work sheet, so from the
+  // scene they show nothing: those stay in Thêm, and the slot goes to Chuẩn bị.
+  const own=()=>all.find(x=>!has(x[0])&&x[0]!=='decor'&&!x[0].startsWith('car:'));
+  const prep=()=>nav.find(x=>x[0]==='prepare'&&!has('prepare'));
+  add(all.find(x=>x[0]==='queue')||all[0]);
+  add(all.find(x=>x[0]==='workbench'));
+  // Kho: the career's stock room ("Kho kem", "Kho hàng" → "Kho"; "Vật tư", "Tủ hồ sơ" keep their name);
+  // milk tea's lives in Chuẩn bị (the 'warehouse' action opens it on that tab).
+  const kho=all.find(x=>['inventory','warehouse'].includes(x[0]))||(career()==='milk_tea'?['warehouse','box','Kho']:null);
+  if(kho)add(kho,stockBadge(c),/^Kho(\s|$)/.test(kho[2])?'Kho':'');
+  else add(own()||prep());
+  // Sổ tiệm (the career's own word: Sổ chùa…), or the air crew's Sổ bay (careerUI().nav turns it into 'prices').
+  const ops=nav.find(x=>x[0]==='operations'),book=nav.find(x=>x[0]==='prices');
+  if(ops)add(ops,ops[3],wordsFor(career()).books||ops[2]);else add(book||own()||prep(),book?.[3]||0);
+  return out;
 }
 /** Desktop/tablet: the work pages, the hubs (each opens in place under its button) and a footer (Hỏi nhanh, Góp ý,
  * Cài đặt; the career guides open from the "?" of each work screen and Cài đặt).
@@ -292,7 +323,7 @@ function dockItems(){
  * the sheet with a back button. Every entry is always in the markup (hidden when folded) so deep links
  * ("Thử ngay" in Có gì mới) and sweeps still find it by data-action. */
 function railHTML(c){
-  const phone=layout()==='phone',shown=dockItems(),extra=phone?sceneActions().filter(x=>!shown.some(y=>y[0]===x[0])):[];
+  const phone=layout()==='phone',shown=dockItems(c),onBar=x=>phone&&shown.some(y=>y[0]===x[0]),extra=phone?sceneActions().filter(x=>!onBar(x)):[];
   const nav=navItems(c),order=x=>{const i=RAIL_MAIN.indexOf(x[0]);return i<0?RAIL_MAIN.length:i;};
   const main=nav.filter(railMain).sort((a,b)=>order(a)-order(b));
   const groups=RAIL_GROUPS.map(([g,ic,label,ids])=>[g,ic,label,ids.map(id=>nav.find(x=>x[0]===id)).filter(x=>x&&!railMain(x))]).filter(g=>g[3].length);
@@ -300,7 +331,8 @@ function railHTML(c){
   const title=t=>phone?`<p class="rail-title"${hide}>${esc(t)}</p>`:'';
   const mini=(a,i,l,d='')=>`<button type="button" class="rail-mini${ui.view===a?' active':''}" data-action="${a}"${d} aria-label="${l}" title="${l}">${icon(i,19)}<span>${l}</span></button>`;
   return (extra.length?title(wordsFor(career()).rail_in)+extra.map(([a,i,l])=>railItem([a,i,l],'',hide)).join(''):'')+
-    title('Công việc')+main.map(x=>railItem(x,'',hide)).join('')+title('Đời sống')+
+    // The phone's "Thêm" does not repeat the bar: those entries stay in the markup, hidden (deep links, sweeps).
+    title('Công việc')+main.map(x=>railItem(x,'',onBar(x)?' hidden':hide)).join('')+title('Đời sống')+
     groups.map(([g,ic,label,items])=>{const on=open===g,cur=items.some(x=>x[0]===ui.view);
       return `<button type="button" class="rail-item rail-group${cur?' active':''}" data-action="v4Group" data-group="${g}" data-menu-stay aria-expanded="${on}"${hide}>${icon(ic,21)}<span>${label}</span>${badgeHTML(groupBadge(items))}<i class="rail-caret" aria-hidden="true">${icon('chevron',12)}</i></button>`+
         `<div class="rail-sub" data-group="${g}" role="group" aria-label="${label}"${on?'':' hidden'}><div class="rail-sub-head"><button type="button" class="icon-btn rail-back" data-action="v4Group" data-group="" data-menu-stay aria-label="Quay lại">${icon('back',20)}</button><b>${label}</b></div>${items.map(x=>railItem(x)).join('')}</div>`;}).join('')+
@@ -314,9 +346,9 @@ function railGroup(g,focus=true){
   rail.querySelector(ui.railGroup?'.rail-sub:not([hidden]) .rail-back':`.rail-group[data-group="${CSS.escape(was||'')}"]`)?.focus({preventScroll:true});
 }
 function dockHTML(c){
-  const phone=layout()==='phone',low=lowOpen(c),items=dockItems();
+  const phone=layout()==='phone',low=lowOpen(c),items=dockItems(c);
   const more=phone&&navItems(c).some(x=>x[3]&&!items.some(y=>y[0]===x[0]));
-  return items.map(([a,i,l])=>`<button type="button" class="dock-btn${a==='workbench'?' main':''}" data-action="${a}">${icon(i,22)}<span>${l}</span>${a==='feedback'&&low?`<em class="badge">${low}</em>`:''}</button>`).join('')+
+  return items.map(([a,i,l,b,full])=>`<button type="button" class="dock-btn${a==='workbench'?' main':''}${phone&&l.length>14?' long':''}" data-action="${a}"${full!==l?` aria-label="${esc(full)}" title="${esc(full)}"`:''}>${icon(i,22)}<span>${l}</span>${badgeHTML(a==='feedback'&&low?low:b)}</button>`).join('')+
     (phone?`<button type="button" class="dock-btn dock-more" data-action="v4Menu" aria-label="${esc(wordsFor(career()).more_aria)}" aria-expanded="${document.documentElement.classList.contains('menu-open')}">${icon('menu',22)}<span>Thêm</span>${more?'<i class="dot" aria-hidden="true"></i>':''}</button>`:'');
 }
 /** Shop clock when the career keeps one: module `clock(room)` hook, the boba counter or the office desk. */
@@ -330,8 +362,8 @@ function hudClock(c){
 }
 /** Phone HUD keeps big sums short so nothing is cut at 390px: 125.400 → 125,4k, 3.373.500 → 3,37tr. */
 const shortMoney=n=>Math.abs(n)>=999950?`${(n/1e6).toLocaleString('vi-VN',{maximumFractionDigits:2})}tr`:Math.abs(n)>=1e5?`${(n/1e3).toLocaleString('vi-VN',{maximumFractionDigits:1})}k`:fmt(n);
-/** Something new behind the status sheet: Phố nghề / Nhóm phố messages, a life story waiting. */
-const statusDot=()=>Boolean(api.social?.unread||boardUnread(api)||api.state.life?.pending);
+/** Something new behind the status sheet: a life story waiting (Phố nghề / Nhóm phố messages: the dot on Thêm). */
+const statusDot=()=>Boolean(api.state.life?.pending);
 function hudHTML(c,m){
   // 💰 Two labelled chips (v4/wealth.js): this workplace's fund and the wallet; either opens "Tiền của bạn".
   const money=hudChipsHTML(hudMoney(api.state,career()),{phone:layout()==='phone',short:shortMoney});
@@ -364,9 +396,6 @@ function statusView(){
     L?.enabled?tile('stView',esc(L.mood?.emoji||'🙂'),`${L.spirit|0}/100`,'Tinh thần',{view:'life'},L.pending?'!':0):'',
     api.state.needs?.enabled?tile('stView','🍚',`${api.state.needs.full.value|0}/100`,'No bụng',{view:'life'}):'',
     api.state.needs?.enabled?tile('stView','😴',`${api.state.needs.wake.value|0}/100`,'Tỉnh táo',{view:'life'}):'',
-    tile('nhom','💬','','Nhóm phố',{},boardUnread(api)),
-    tile('social',icon('globe',18),'','Phố nghề',{},api.social?.unread||0),
-    tile('settings',icon('settings',18),'','Cài đặt'),
   ].join('');
   const notes=hudNotes(c);
   return header(`Ngày ${dayNo(c)}`,'',esc(c.life.shop_name||m.place))+`<div class="sheet-body st-body">${clockCard(c.day_clock)}${notes.length?`<div class="st-notes">${noteRows(notes)}</div>`:''}<div class="st-grid">${tiles}</div>`+
@@ -1390,6 +1419,7 @@ try{
   // Its stylesheet only styles the workbench: wait for it only when a sheet opens right away (day closed).
   await Promise.all([careerAssets(career(),Boolean(api.state.current&&(!room()?.open||needsJob()))),setLanguage(api.state.settings.lang)]);
   shell.boot(env());journeyBoot(env());boardBoot(env());startTicker(()=>env());$('#loading').hidden=true;$('#app').hidden=false;world.resize();renderMain();
+  const oauthReturned=accountBoot(env());
   ensureCareerUI();  // its workbench failed to come above (the game opens anyway): ask again in the background
   try{performance.mark('mnl-first-frame');}catch{/* no User Timing */}   // "time to first game frame" (telemetry.js load beacon)
   import('./telemetry.js').then(m=>m.telemetryBoot({api,ui})).catch(e=>console.warn('telemetry:',e));  // Giữ chân: leave/error/load beacons
@@ -1401,14 +1431,12 @@ try{
   // through the tour yet gets the tutorial at once (its welcome card is the first thing they should see).
   const tutBoot=[L.tut,m=>m.tutorialBoot(env())];
   let tutNow=false;try{tutNow=localStorage.getItem('mnl.tut.done')!=='1'&&api.state.settings?.tutorialDone!==true;}catch{}
-  if(tutNow)tutBoot[0].get().then(tutBoot[1]).catch(e=>console.warn('lazy boot:',e));
   const bootSteps=[...(tutNow?[]:[tutBoot]),[L.inc,m=>m.incidentBoot(env())],[L.chat,m=>m.aiNoticeBoot(env())],[L.happen,m=>m.happenBoot(env())],
     [L.people,()=>{}],[L.social,m=>m.startSocialPoll(env())],[L.tips,m=>m.tipsBoot({api,sound})],[L.live,m=>m.liveBoot(env())]];
   const bootNext=i=>{
     if(i>=bootSteps.length){lazyBoot=false;document.dispatchEvent(new CustomEvent('mnl:lazy',{detail:{wanted:true}}));return;}
     const [h,fn]=bootSteps[i];h.get().then(fn).catch(e=>console.warn('lazy boot:',e)).finally(()=>whenIdle(()=>bootNext(i+1),600));
   };
-  lazyBoot=true;whenIdle(()=>bootNext(0),1500);
   // Places the player has worked at: their workbench and scene into the HTTP cache, at the lowest priority,
   // long after start-up (the next switch then opens without a network wait).
   whenIdle(()=>{const has=u=>(globalThis.__mnlBoot?.asset?.(u)||u)!==u;
@@ -1418,12 +1446,24 @@ try{
   registerWorker();
   const openSocial=tab=>{ui.socTab=tab||'street';ui.socShop=null;L.social.get().then(m=>{m.invalidate(ui);openSheet('social');}).catch(()=>{});};
   listenWorker(url=>{const q=new URL(url,location.origin).searchParams;if(q.get('social'))openSocial(q.get('social'));});
-  const deep=new URLSearchParams(location.search);
-  if(deep.get('social')){history.replaceState(null,'','/');openSocial(deep.get('social'));}
-  else if(!api.state.current)openSheet('home');else{if(!room().open)openSheet(room().shift_summary?'summary':'prepare');}
-  import('./v4/whatsnew.js').then(m=>m.whatsNewBoot(env())).catch(e=>console.warn('whatsnew:',e));  // "Có gì mới": lazy, off the first load
-  import('./v4/x3week.js').then(m=>m.x3Boot(env())).catch(e=>console.warn('x3week:',e));  // 🔥 Nghề x3 trong tuần (game/x3_week.py)
-  if(api.gifts?.length)import('./v4/gift.js').then(m=>m.giftBoot(env())).catch(e=>console.warn('gift:',e));  // 🎁 Quà từ Phố Có Chuyện: only for a save with a gift
-  if(firstDay(api.state))import('./v4/onboard-fx.js').then(m=>m.onboardBoot(env())).catch(e=>console.warn('onboard:',e));  // a new player's first day only
+  if(!oauthReturned){
+    const deep=new URLSearchParams(location.search);
+    if(deep.get('social')){history.replaceState(null,'','/');openSocial(deep.get('social'));}
+    else if(!api.state.current)openSheet('home');else{if(!room().open)openSheet(room().shift_summary?'summary':'prepare');}
+  }
+  // Callback feedback gets the first screen. Start automatic cards only after the player closes it;
+  // a queued close event from a sheet already reopened is not a dismissal.
+  const bootAutomatic=()=>{
+    if(tutNow)tutBoot[0].get().then(tutBoot[1]).catch(e=>console.warn('lazy boot:',e));
+    lazyBoot=true;whenIdle(()=>bootNext(0),1500);
+    import('./v4/whatsnew.js').then(m=>m.whatsNewBoot(env())).catch(e=>console.warn('whatsnew:',e));  // "Có gì mới": lazy, off the first load
+    import('./v4/x3week.js').then(m=>m.x3Boot(env())).catch(e=>console.warn('x3week:',e));  // 🔥 Nghề x3 trong tuần (game/x3_week.py)
+    if(api.gifts?.length)import('./v4/gift.js').then(m=>m.giftBoot(env())).catch(e=>console.warn('gift:',e));  // 🎁 Quà từ Phố Có Chuyện: only for a save with a gift
+    if(firstDay(api.state))import('./v4/onboard-fx.js').then(m=>m.onboardBoot(env())).catch(e=>console.warn('onboard:',e));  // a new player's first day only
+  };
+  if(oauthReturned){
+    const sheet=$('#sheet'),resumeBoot=()=>{if(sheet.open)return;sheet.removeEventListener('close',resumeBoot);bootAutomatic();};
+    sheet.addEventListener('close',resumeBoot);
+  }else bootAutomatic();
   import('./v4/ticker.js').then(m=>m.tickerBoot(()=>env())).catch(e=>console.warn('ticker:',e));  // Bảng tin cả phố (tin cưới): lazy
 }catch(error){$('#loading').innerHTML=`<div class="loading-leaf">${icon('leaf',45)}</div><h1>Khu phố đang đợi mở cửa</h1><p>Chưa kết nối được. Kiểm tra mạng rồi thử lại nhé.</p><button class="btn primary big" id="reload-btn">Thử kết nối lại</button>`;console.warn(error);$('#reload-btn').onclick=()=>location.reload();}

@@ -684,7 +684,7 @@ async def s_wealth(w: Walk) -> None:
     await w.celebrate()
     await w.close_all()
     geo = await p.evaluate("""()=>{const r=s=>document.querySelector(s).getBoundingClientRect(),f=r('#topbar .hud-fund'),v=r('#topbar .hud-wallet'),t=r('#topbar'),d=r('#topbar .hud-day');
-      return {same:Math.abs(f.top-v.top)<2&&f.height<48,inside:f.left>=d.right-1&&v.right<=t.right+1,words:document.querySelector('#topbar .hud-fund').innerText+' '+document.querySelector('#topbar .hud-wallet').innerText};}""")
+      return {same:Math.abs(f.top-v.top)<2&&f.height<48,inside:f.left>=d.right-1&&v.right<=t.right+1,words:[...document.querySelectorAll('#topbar .hud-fund,#topbar .hud-wallet')].map(e=>e.innerText+' '+e.getAttribute('aria-label')).join(' ')};}""")   # under 360px the words live in the aria-label only
     w.need(geo['same'] and geo['inside'] and any(x in geo['words'] for x in ('Quỹ', 'Fund')) and any(x in geo['words'] for x in ('Ví', 'Wallet')), f'long numbers do not fit the top bar: {geo}')
     await w.check('topbar-big-numbers')
 

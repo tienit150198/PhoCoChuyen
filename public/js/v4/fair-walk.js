@@ -9,7 +9,9 @@
  * things and the player; frames run only while someone walks, else ~12 per second for the crowd's sway (none at
  * all with reduced motion: the player steps straight to where they tapped) and none while the stall pages are up.
  * 🧑‍🤝‍🧑 The other players on the fairground right now walk around it too (./fair-crowd.js, the live socket): joined
- * while this stage is mounted, left on a stall page or when the sheet closes; silent (no "X vừa vào hội"). */
+ * while this stage is mounted, left when the sheet closes (or the fair does); silent (no "X vừa vào hội"). On a stall
+ * page the player stays there for the others, standing at that stall with its badge (play(); owner, 03/10: nobody
+ * vanishes while they play); back on the walk, the badge goes. */
 import {VIEW,plan,route,nearestFree,back as paintBack,props,marks,STALLS} from '../scenes/fair-place.js';
 import {figure,paintPlayer,CANVAS} from './look.js';
 import {t as tr} from './i18n.js';
@@ -17,12 +19,12 @@ import {crowd} from './fair-crowd.js';
 
 const RM=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
 const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contains('reduce-motion')||document.body.classList.contains('reduce-motion');
-const IDLE_MS=80,SAY_MS=4200,WALK_S=.85;
+const IDLE_MS=80,SAY_MS=4200,WALK_S=.85,CARTS={candy:'🍡',cane:'🥤'};
 
 export function setup(ctx){
   const {S,F,go,list,bar,esc,food}=ctx;
   const W=S.walk={el:null,cv:null,c:null,say:null,bg:null,bgKey:'',port:false,k:1,ox:0,oy:0,dpr:1,cw:0,ch:0,
-    me:null,arrive:null,raf:0,last:0,drawn:0,time:0,sayAt:0,ok:null,down:null,at:''};
+    me:null,arrive:null,raf:0,last:0,drawn:0,time:0,sayAt:0,ok:null,down:null,at:'',playing:''};
   const has=()=>({dt:!!F().darts,loan:!!F().cash,xs:!!F().scratch});
   const pl=()=>plan(W.port,has());
   const CR=crowd({state:()=>S.env?.api?.state,redraw:()=>{W.drawn=0;},still});
@@ -61,8 +63,30 @@ export function setup(ctx){
     if(W.el.parentNode!==slot){slot.append(W.el);size();}
     else W.drawn=0;   // the state may have changed (a game going on, a stall added): one fresh frame
     if(!W.raf){W.last=performance.now();W.drawn=0;W.raf=requestAnimationFrame(loop);}
-    if(!W.hooked){W.hooked=true;S.dlg.addEventListener('close',()=>CR.leave());}
-    if(W.me)CR.join(frac([W.me.x,W.me.y]));
+    hook();
+    if(W.me){const here=frac([W.me.x,W.me.y]);if(W.playing){W.playing='';CR.walk([here,here],0);}CR.join(here);}   // off the stall: no badge
+  }
+  function hook(){if(!W.hooked&&S.dlg){W.hooked=true;S.dlg.addEventListener('close',off);}}
+  /** The sheet closed or the fair is over: out of the room. */
+  function off(){W.playing='';CR.leave();}
+  /** After every render of fair.js on a stall page (`id`: the stall's tab, or the food cart): for the others the player
+   * stands at that stall, its badge over them, until they come back to the walk or leave. Opened from the list, the
+   * walk there is played to them; the player stands there too when they come back. "Vay nóng" shows no badge (who
+   * borrows stays their own business), a page without a place on the fairground keeps them where they stood. */
+  function play(id){
+    if(!active()||!S.dlg?.open)return;
+    hook();
+    const spot=pl().spots.find(q=>q.id===id&&(q.kind==='stall'||q.cart)),key=spot?.id||'-';
+    if(W.playing===key)return;
+    W.playing=key;
+    if(!spot){if(W.me)CR.join(frac([W.me.x,W.me.y]));return;}
+    const end=nearestFree(pl(),spot.stand)||spot.stand;
+    if(!W.me)W.me={x:end[0],y:end[1],path:null,step:0};   // straight onto a stall page: the fairground was never drawn
+    const from=[W.me.x,W.me.y],far=Math.hypot(end[0]-from[0],end[1]-from[1])>2,path=far&&!still()?route(pl(),from,end):null;
+    let len=0;if(path)for(let i=1;i<path.length;i++)len+=Math.hypot(path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]);
+    W.me.x=end[0];W.me.y=end[1];W.me.path=null;W.arrive=null;W.at=spot.id;
+    CR.walk((path||[from,end]).map(frac),path?len/Math.max(W.port?380:440,len/WALK_S)*1000:0,id==='loan'?null:spot.id);
+    CR.join(frac(end));
   }
 
   /* ---- layout: the whole fairground fits the stage (its shape follows the width, so it never jumps) ---- */
@@ -124,7 +148,7 @@ export function setup(ctx){
 
   /* ---- frames ---- */
   function loop(now){
-    if(!W.el?.isConnected||!S.dlg?.open){W.raf=0;CR.leave();return;}   // a stall page or the sheet closed
+    if(!W.el?.isConnected||!S.dlg?.open){W.raf=0;if(!S.dlg?.open)off();return;}   // a stall page (still in the room) or the sheet closed
     W.raf=requestAnimationFrame(loop);
     const dt=Math.min(.05,(now-W.last)/1000);W.last=now;W.time+=dt;
     const m=W.me;let moving=CR.busy();
@@ -155,14 +179,16 @@ export function setup(ctx){
       const items=props(c,p,o),fl=p.floor,base=W.port?.92:.78,depth=y=>.94+.12*(y-fl[1])/Math.max(1,fl[3]-fl[1]);
       items.push([W.me.y+.5,()=>drawMe(c,base*depth(W.me.y))]);
       items.push(...CR.items(c,{xy:(u,v)=>[fl[0]+u*(fl[2]-fl[0]),fl[1]+v*(fl[3]-fl[1])],scale:y=>base*depth(y),px:base*W.k*W.dpr,t:W.time,
-        snap:q=>nearestFree(p,q),key:[W.port,p.has.dt,p.has.loan].join('|')}));
+        snap:q=>nearestFree(p,q),key:[W.port,p.has.dt,p.has.loan,p.has.xs].join('|'),stand:id=>p.spots.find(q=>q.id===id)?.stand||null}));
       items.sort((a,b)=>a[0]-b[0]);for(const [,fn] of items)fn();
       const near=p.spots.find(s=>s.kind==='stall'&&Math.hypot(W.me.x-s.stand[0],W.me.y-s.stand[1])<30);
       marks(c,p,o,near?.id||null);
       c.setTransform(W.dpr,0,0,W.dpr,0,0);
-      CR.tags(c,{sx:x=>W.ox+x*W.k,sy:y=>W.oy+y*W.k,fallback:tr('Khách đi hội')});
+      CR.tags(c,{sx:x=>W.ox+x*W.k,sy:y=>W.oy+y*W.k,fallback:tr('Khách đi hội'),badge});
     }catch(e){console.warn('hội chợ: draw',e);}
   }
+  /** The badge over someone playing stall `id` (the stall's own, a snack for the carts; none for the lender). */
+  const badge=id=>id==='loan'?'':STALLS[id]?.icon||CARTS[id]||'';
   function drawMe(c,s){
     const m=W.me;c.save();c.translate(m.x,m.y);c.scale(s,s);
     if(m.path?.length&&!still())c.translate(0,-Math.abs(Math.sin(m.step))*3);
@@ -176,5 +202,5 @@ export function setup(ctx){
     screen:id=>{const s=pl().spots.find(q=>q.id===id);if(!s||!W.cv)return null;const r=W.cv.getBoundingClientRect();return [r.left+W.ox+s.hit[0]*W.k,r.top+W.oy+s.hit[1]*W.k];},
     go:id=>goSpot(pl().spots.find(s=>s.id===id)),walk:(u,v)=>{const f=pl().floor;walkTo([f[0]+u*(f[2]-f[0]),f[1]+v*(f[3]-f[1])]);}};
 
-  return {active,html,mount,stalls:STALLS};
+  return {active,html,mount,play,off,stalls:STALLS};
 }

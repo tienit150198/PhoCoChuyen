@@ -1319,7 +1319,7 @@ def _groom(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
             _add_stress(t, STEP_STRESS['rinse'] if g['rinse_s'] == 0 else 0)
             return dict(message=f'Mở vòi, xả từ đầu xuống đuôi, kỹ nách, bụng, kẽ chân. Cần xả ít nhất {RINSE_MIN} giây.')
         kit.need(g['rinse'] is not None, 'Vòi đang khóa.')
-        secs = max(0.0, kit.now() - g['rinse'])
+        secs = max(0.0, kit.tap_now(p) - g['rinse'])
         g['rinse'] = None
         g['rinse_s'] = round(min(600.0, g['rinse_s'] + secs), 1)
         if g['rinse_s'] < RINSE_MIN:
@@ -1357,7 +1357,7 @@ def _groom(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
             _add_stress(t, STEP_STRESS[heat] + (5 if n['species'] == 'cat' else 0))
             return dict(message=' '.join(msgs + [f'Bật máy sấy nấc {"ấm" if heat == "warm" else "mát"}, sấy ngược chiều lông tới tận chân lông.']) + _stress_note(g, t))
         kit.need(g['dry'] is not None, 'Máy sấy đang tắt.')
-        secs = max(0.0, kit.now() - g['dry'])
+        secs = max(0.0, kit.tap_now(p) - g['dry'])
         need = DRY_NEED[n['coat']] * (1.5 if g['heat'] == 'cool' else 1) * (1.5 if n.get('humid') else 1)
         g['dry'] = None
         g['dry_s'] = round(min(3600.0, g['dry_s'] + secs), 1)

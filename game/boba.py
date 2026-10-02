@@ -37,7 +37,8 @@ CUP_PACK = dict(qty=20, cost=4)
 MAX_TOPPINGS = 3
 BEAT_ACTIONS = {'cup', 'add', 'ice', 'sugar', 'config', 'check', 'seal_start', 'seal', 'serve', 'discard', 'wipe', 'event', 'clean', 'wait', 'greet', 'swap'}
 UNSAFE_MESS = 2
-# Heat-sealer timing (seconds between "Ép nắp" and "Nhả"), measured on the server.
+# Heat-sealer timing (seconds between "Ép nắp" and "Nhả"): the server's clock from the press to the moment
+# "Nhả tay" was tapped (tap_now: as the page saw it, within honest bounds).
 SEAL = dict(loose=0.8, good_lo=1.4, good_hi=2.6, burn=4.2, max=5.0)
 SEAL_QUALITY = (None, 'perfect', 'ok', 'burnt')
 APP_FEE_PCT = 20
@@ -415,6 +416,12 @@ def new_cup() -> dict:
 def now() -> float:
     from .careers import kit
     return kit.now()
+
+
+def tap_now(p: dict) -> float:
+    """When "Nhả tay" was pressed (careers/kit.py tap_now)."""
+    from .careers import kit
+    return kit.tap_now(p)
 
 
 def low(name: str) -> str:
@@ -1479,6 +1486,7 @@ def _station(s: dict, c: dict, b: dict, t: dict, name: str, p: dict) -> dict:
             return dict(message='Máy đang ép nhiệt… nhả tay khi kim vào vùng xanh.', _free=True)
         dome = False
         quality = 'ok'
+        took = None
         if cut:
             need(b['dome'], 'Máy dán nắp đang tạm ngưng vì cúp điện. Làm ly khác hoặc chờ một chút.')
             e.money(s, c, -1, 'Nắp cầu thay màng dán', t['id'], category='materials')
@@ -1486,7 +1494,7 @@ def _station(s: dict, c: dict, b: dict, t: dict, name: str, p: dict) -> dict:
         elif 'sealer' in b['upgrades']:
             quality = 'perfect'
         elif cup.get('seal_t') is not None:
-            took = max(0.0, now() - cup['seal_t'])
+            took = max(0.0, tap_now(p) - cup['seal_t'])
             cup['seal_t'] = None
             z = seal_zones(b)
             if took < z['loose']:
@@ -1500,6 +1508,8 @@ def _station(s: dict, c: dict, b: dict, t: dict, name: str, p: dict) -> dict:
         text = {'perfect': 'Tách! Màng nắp căng bóng, kín đều — hoàn hảo.', 'ok': 'Máy dán nắp kêu “tách” — ly đã kín.',
                 'burnt': 'Ép lâu quá, màng nắp hơi cháy xém. Vẫn kín, nhưng khách sẽ để ý.'}[quality]
         r = dict(message='Nắp cầu đã đậy chặt.' if dome else text, seal=quality)
+        if took is not None:
+            r['held'] = round(took, 2)   # the seconds graded (where the needle stopped)
         if not dome and b['sealer_wear'] in (SEALER_STICKY, SEALER_DIRTY):
             r['message'] += ' Khuôn dán bắt đầu bám keo: lau máy khi rảnh tay nhé.' if b['sealer_wear'] == SEALER_STICKY else ' Máy dán nắp bẩn rồi, lau ngay để nắp đẹp lại.'
         if 'sealer' in b['upgrades']:

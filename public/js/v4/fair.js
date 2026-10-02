@@ -207,7 +207,8 @@ function render(){
   if(S.tab==='xs')XS?.mount();   // a new ticket's silver: painted once, then left to the finger
   if(S.dlg.getAttribute('aria-busy')!==String(S.busy))S.dlg.setAttribute('aria-busy',String(S.busy));
   const walking=walkOn();if(S.dlg.classList.contains('fh-walking')!==walking)S.dlg.classList.toggle('fh-walking',walking);
-  if(walking&&S.tab==='home')WALK.mount();
+  if(walking){if(S.tab==='home')WALK.mount();else WALK.play(S.tab==='food'?S.food.cart:S.tab);}   // on a stall page: seen standing at it
+  else WALK?.off();
 }
 function tickLabels(){
   if(!S.dlg?.open)return;
@@ -1020,7 +1021,7 @@ function foodView(){
     ${say(who,S.food.say||who.hello[0])}
     <div class="fh-card fh-snacks">${rows}</div>${done}
     <div class="fh-go">${btn(other[1],'cart',{v:other[0]},'ghost small',` data-fh-key="cart-${other[0]}"`)}</div>
-    <p class="fh-rule">Ăn vặt trả bằng xu trong ví, no bụng và tỉnh táo tăng như ăn thêm lúc đi làm. No quá thì để bụng lát ăn tiếp nha.</p>
+    <p class="fh-rule">Ăn vặt trả bằng xu trong ví, no bụng và tỉnh táo tăng như ăn thêm lúc đi làm. No rồi vẫn mua ăn cho vui được.</p>
   </section>`;
 }
 async function snack(id){

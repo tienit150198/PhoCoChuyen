@@ -65,7 +65,7 @@
 .career-job.hs .zone.well{background:var(--hs-warn)}
 .career-job.hs .zone.cold{background:var(--hs-info);opacity:.55}
 .career-job.hs .zone.burnt{background:var(--hs-bad)}
-.career-job.hs .hs-track .fill{position:absolute;left:0;top:0;bottom:0;width:0;border-right:3px solid var(--hs-ink);background:transparent}
+.career-job.hs .hs-track .fill{position:absolute;left:0;top:0;bottom:0;width:100%;transform:translateX(-100%);will-change:transform;border-right:3px solid var(--hs-ink);background:transparent}   /* slid by translateX (v4/careers.js slide) */
 .career-job.hs .hs-timer-label{font-weight:700;font-variant-numeric:tabular-nums;color:var(--hs-muted)}
 .career-job.hs .hs-timer.ready .hs-timer-label{color:var(--hs-good)}
 .career-job.hs .hs-timer.over .hs-timer-label{color:var(--hs-bad)}

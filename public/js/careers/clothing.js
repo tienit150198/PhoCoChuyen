@@ -245,7 +245,7 @@ function alterJob(t,x){
     <div class="card ao-opt"><h5>👵 Gửi Bà Tư</h5><p class="small">Chắc tay, đẹp đường may. Chờ một lát, bà lấy ${x.cc.tailor_share||40}% tiền công.</p>${x.cmd('👵 Mang sang gian bên','ao_alter_send',{task:id},'ghost full')}</div></div>`;
   else if(t.stage==='sew'){const z=t.sew?.zone||[.7,.92];
     body=`<p class="small">Phấn ${a.cut} cm. Kim chạy dọc đường may — dừng máy khi kim nằm trong vạch xanh.</p>
-      <div class="ao-sew" data-ao-sew="1" data-start="${a.start||0}" data-sec="${t.sew?.seconds||4}" data-lo="${z[0]}" data-hi="${z[1]}"><div class="ao-seam"><i class="ao-zone" style="left:${z[0]*100}%;width:${(z[1]-z[0])*100}%"></i><i class="ao-needle" style="left:0%"></i></div><small class="ao-sew-label">${a.start?'Máy đang chạy…':'Sẵn sàng'}</small></div>
+      <div class="ao-sew" data-ao-sew="1" data-start="${a.start||0}" data-sec="${t.sew?.seconds||4}" data-lo="${z[0]}" data-hi="${z[1]}"><div class="ao-seam"><i class="ao-zone" style="left:${z[0]*100}%;width:${(z[1]-z[0])*100}%"></i><i class="ao-needle"><b></b></i></div><small class="ao-sew-label">${a.start?'Máy đang chạy…':'Sẵn sàng'}</small></div>
       ${a.start?x.cmd('✋ Dừng máy!','ao_sew_stop',{task:id},'primary big full ao-stop'):x.cmd('🧵 Đạp máy may','ao_sew_start',{task:id},'primary big full')}`;}
   else if(t.stage==='wait')body=`<p class="small">👵 Bà Tư đang may ở gian bên…</p>`;
   else if(t.stage==='ready')body=`<p class="small ao-ok">✓ Đã ${job.toLowerCase()} xong${a.seam==='crooked'?' (đường may hơi xiên)':''}. Tính tiền công cho khách.</p>`;
@@ -518,16 +518,22 @@ export default {
       else document.querySelector('#dock [data-action="workbench"],[data-action="workbench"]')?.click();
     },
   },
-  tick(root,x){
+  tick(root){
     keepBarAboveFooter(root);
     pinTop(root);
-    root.querySelectorAll('[data-ao-sew]').forEach(el=>{
-      const start=Number(el.dataset.start);if(!start)return;
-      const sec=Number(el.dataset.sec)||4,lo=Number(el.dataset.lo),hi=Number(el.dataset.hi),p=Math.max(0,(x.now()-start)/sec);
-      const n=el.querySelector('.ao-needle');if(n)n.style.left=Math.min(100,p*100)+'%';
-      el.classList.toggle('ready',p>=lo&&p<=hi);el.classList.toggle('over',p>hi);
-      const l=el.querySelector('.ao-sew-label');if(l)l.textContent=p<lo?'Kim đang chạy… chưa tới vạch':p<=hi?'TRONG VẠCH — dừng ngay!':'Lố vạch rồi!';
-    });
   },
+  // The sewing needle while the machine runs (v4/careers.js): it glides on the compositor. "Dừng máy" holds it
+  // where it was when the finger came down (tapStop).
+  meters(root,x){
+    for(const el of root.querySelectorAll('[data-ao-sew]')){
+      const start=Number(el.dataset.start);if(!start)continue;
+      const sec=Number(el.dataset.sec)||4,lo=Number(el.dataset.lo),hi=Number(el.dataset.hi),p=Math.max(0,(x.now()-start)/sec);
+      x.slide(el.querySelector('.ao-needle>b'),p*100,100/sec);
+      el.classList.toggle('ready',p>=lo&&p<=hi);el.classList.toggle('over',p>hi);
+      const l=el.querySelector('.ao-sew-label'),text=p<lo?'Kim đang chạy… chưa tới vạch':p<=hi?'TRONG VẠCH — dừng ngay!':'Lố vạch rồi!';
+      if(l&&l.textContent!==text)l.textContent=text;
+    }
+  },
+  tapStop:op=>op==='ao_sew_stop',
   dock:[['inventory','box','Kho','Nhập hàng'],['car:intro','question','Giới thiệu nghề','Công việc & sao']],
 };

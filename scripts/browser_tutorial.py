@@ -279,8 +279,7 @@ async def settings_guide(r: Run, vname: str):
     """Cài đặt: one quiet link to the guide. The guide: its first page replays the tour; every storefront."""
     p = r.page
     await p.evaluate("document.querySelectorAll('#sheet[open]').forEach(d=>d.close())")
-    await r.click('#topbar [data-action="status"]')
-    await r.click('#sheet [data-action="settings"]')
+    await r.click('#rail [data-action="settings"]')   # Cài đặt sits in the menu's footer (the day sheet no longer repeats it)
     await r.wait(500)
     links = await p.evaluate("[...document.querySelectorAll('#sheet[open] .tut-settings [data-action]')].map(e=>e.dataset.action)")
     r.log.append(f'Cài đặt guide links: {links}')

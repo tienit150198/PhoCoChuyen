@@ -1280,7 +1280,7 @@ def _clean(s: dict, c: dict, p: dict) -> dict:
     kit.need(step not in hk['done'], 'Bước này đã làm rồi.')
     if step == 'ready':
         kit.need(all(x in hk['done'] for x in MIDDLE), 'Còn bước chưa làm, chưa thể báo phòng sạch.')
-        air = max(0.0, kit.now() - hk['start'])
+        air = max(0.0, kit.tap_now(p) - hk['start'])
         lim = _air(c)
         worn = 2 if r['wear'] < WEAR_BAD else 1 if r['wear'] < WEAR_LOW else 0
         q = 5 - hk['slips'] - (1 if air < lim['damp'] else 0) - (1 if air > lim['cold'] else 0) - worn - (1 if r['snag'] else 0)
@@ -1814,7 +1814,7 @@ def _breakfast(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         return dict(message=f'Đập trứng vào chảo. Lòng đào: nhấc trong {EGG["raw"]}–{EGG["runny"]} giây; chín kỹ: {EGG["runny"]}–{EGG["well"]} giây.')
     if name == 'hs_plate':
         kit.need(tray['pan'] is not None, 'Chảo đang trống.')
-        sec = max(0.0, kit.now() - tray['pan'])
+        sec = max(0.0, kit.tap_now(p) - tray['pan'])
         done = _doneness(sec)
         tray['eggs'].append(done)
         tray['pan'] = None

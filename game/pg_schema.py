@@ -34,7 +34,8 @@ Delta-sync hints (TABLES[i]["sync"]):
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 13  # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
+SCHEMA_VERSION = 13  # 13: optional TikTok identities and one-use OAuth flows (additive); chat_hides/chat_clears (see below).
+                     # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
                      # 6: live chat (chat_*, live_effects: game/live_chat.py, live/), 1.0.0;
@@ -82,6 +83,17 @@ CREATE TABLE IF NOT EXISTS accounts (
 CREATE TABLE IF NOT EXISTS logins (
   token {T} PRIMARY KEY, sid {T} NOT NULL, csrf {T} NOT NULL,
   created_at {T} NOT NULL DEFAULT {NOW_TEXT}, seen_at {T} NOT NULL DEFAULT {NOW_TEXT}
+);
+CREATE TABLE IF NOT EXISTS tiktok_identities (
+  client_key {T} NOT NULL, open_id {T} NOT NULL, uid bigint NOT NULL, sid {T} NOT NULL,
+  display {T} NOT NULL, created_at {T} NOT NULL DEFAULT {NOW_TEXT},
+  PRIMARY KEY(client_key,open_id), UNIQUE(client_key,uid)
+);
+CREATE TABLE IF NOT EXISTS tiktok_flows (
+  state_hash {T} PRIMARY KEY, binding_hash {T} UNIQUE NOT NULL,
+  source_token {T} NOT NULL, source_sid {T} NOT NULL, source_login bigint NOT NULL,
+  mode {T} NOT NULL, client_key {T} NOT NULL, expires_at double precision NOT NULL,
+  phase {T} NOT NULL, target_uid bigint, nonce_hash {T}
 );
 CREATE TABLE IF NOT EXISTS player_feedback (
   id {ID} PRIMARY KEY, sid {T} NOT NULL, account {T},
@@ -376,6 +388,8 @@ CREATE TABLE IF NOT EXISTS player_closeness (
 
 INDEX_DDL = """
 CREATE INDEX IF NOT EXISTS logins_sid ON logins (sid);
+CREATE INDEX IF NOT EXISTS tiktok_identity_sid ON tiktok_identities (sid);
+CREATE INDEX IF NOT EXISTS tiktok_flow_source ON tiktok_flows (source_sid);
 CREATE INDEX IF NOT EXISTS player_feedback_sid ON player_feedback (sid, id);
 CREATE INDEX IF NOT EXISTS player_feedback_status ON player_feedback (status, id);
 CREATE INDEX IF NOT EXISTS inbox_pid ON inbox (pid, id);
@@ -559,6 +573,15 @@ TABLES = [
          columns=_cols('token text', 'sid text', 'csrf text', 'created_at text', 'seen_at text'),
          key=('token',), unique=[], identity=None,
          sync=dict(mode='full', note='seen_at is refreshed hourly; rows are deleted on logout/password change')),
+    dict(name='tiktok_identities', source='main', sqlite_table='tiktok_identities',
+         columns=_cols('client_key text', 'open_id text', 'uid bigint', 'sid text', 'display text', 'created_at text'),
+         key=('client_key', 'open_id'), unique=[('client_key', 'uid')], identity=None,
+         sync=dict(mode='full', note='optional TikTok identifiers; no provider tokens')),
+    dict(name='tiktok_flows', source='main', sqlite_table='tiktok_flows',
+         columns=_cols('state_hash text', 'binding_hash text', 'source_token text', 'source_sid text', 'source_login bigint',
+                       'mode text', 'client_key text', 'expires_at double precision', 'phase text', 'target_uid bigint', 'nonce_hash text'),
+         key=('state_hash',), unique=[('binding_hash',)], identity=None,
+         sync=dict(mode='full', note='ten-minute one-use OAuth phases; hashes only')),
     dict(name='player_feedback', source='main', sqlite_table='player_feedback',
          columns=_cols('id bigint', 'sid text', 'account text', 'kind text', 'text text', 'context text', 'status text',
                        'reply text', 'created_at double precision', 'updated_at double precision', 'replied_at double precision'),

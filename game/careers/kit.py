@@ -6,6 +6,7 @@ run inside engine.apply_action on a deep-copied candidate state.
 """
 from __future__ import annotations
 import hashlib
+import math
 import random
 import time
 from typing import Any
@@ -18,6 +19,25 @@ clock = time.time
 
 def now() -> float:
     return float(clock())
+
+
+# Stop taps on a running meter (the sealer lever, the rinse tap, the dryer, an espresso shot, the noodle basket…).
+# The workbench sends the moment the player pressed stop (payload `tap_at`, on our clock as the page reads it:
+# public/js/v4/careers.js), so a slow network, a command ahead of it on the wire or a busy phone no longer run
+# the bar past the tap. Kept honest: at most TAP_AHEAD after its arrival (the page's clock estimate may run a
+# little fast) and at most TAP_LAG before it (a weak 3G round trip, a queued command, a retry). An older page
+# sends none and is judged on arrival, as before.
+TAP_LAG = 3.0
+TAP_AHEAD = 0.25
+
+
+def tap_now(p: Any) -> float:
+    """When the stop was pressed: payload `tap_at` within [now - TAP_LAG, now + TAP_AHEAD], else now()."""
+    t = now()
+    at = p.get('tap_at') if isinstance(p, dict) else None
+    if isinstance(at, (int, float)) and not isinstance(at, bool) and math.isfinite(at):
+        return min(t + TAP_AHEAD, max(t - TAP_LAG, float(at)))
+    return t
 
 
 _ENGINE = None
