@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {accountingSchoolView} from '../public/js/v4/accounting-school.js';
-import {acctPlace,acctTag} from '../public/js/v4/acct-jobs.js';
+import {acctPlace,acctTag,acctTags} from '../public/js/v4/acct-jobs.js';
 
 const fx=JSON.parse(fs.readFileSync(0,'utf8'));
 const dangerous='<img src=x onerror=alert(1)>';
@@ -39,4 +39,9 @@ assert.equal(acctPlace({state:{accounting_school:{salary_multiplier:1}}},'corp_a
 assert.equal(acctTag(acctPlace(api({places:{corp_accounting:[1,3,1]}}),'corp_accounting')),'💼 Lương kế toán x3');
 assert.equal(acctTag(acctPlace(api({places:{corp_accounting:[1,5,1]},holiday:'Tết Nguyên đán'}),'corp_accounting')),'🎉 Lễ: lương kế toán x5');
 assert.equal(acctTag(shut),'');
+// a shut card keeps only its lock: no 'Mới mở', no other badge
+const t=(s,c)=>`<span class="${c}">${s}</span>`,built=[t('Mới mở','green'),t('🔥 Lời x3 hôm nay','amber')];
+assert.deepEqual(acctTags(shut,built,t),[t('🔒 Cần thi chứng nhận','amber')]);
+assert.equal(acctTags(null,built,t),built);
+assert.equal(acctTags(acctPlace(api({places:{corp_accounting:[1,3,1]}}),'corp_accounting'),built,t),built);
 console.log('ok');

@@ -11,5 +11,8 @@ export function acctPlace(api,cid){
   return {ok,x,holiday:J.holiday||null,why:ok?'':`Thi đạt chứng nhận “${COURSE[cid]||'kế toán'}” ở Học kế toán rồi mới nhận việc ở đây.`};
 }
 
+/** A place still shut by its exam shows only its lock: no 'Mới mở' or other badge, just the 🔒 line and 'Đi học'. */
+export const acctTags=(a,tags,tag)=>a&&!a.ok?[tag('🔒 Cần thi chứng nhận','amber')]:tags;
+
 /** The tag of a certified place: its rate today. */
 export const acctTag=a=>a?.x>1?(a.holiday?`🎉 Lễ: lương kế toán x${a.x}`:`💼 Lương kế toán x${a.x}`):'';
