@@ -92,6 +92,12 @@ async def play(browser, base: str, shots: Path | None, max_steps: int = 90) -> d
     try:
         await page.goto(base)
         await page.wait_for_selector('#app:not([hidden])', timeout=20000)
+        # "Có gì mới" opens by itself on a fresh save and writes whatsNewSeen; let that write land before the
+        # setup's own writes, or it races them (a harmless 409 "đã thay đổi ở tab khác" in the console).
+        with contextlib.suppress(Exception):
+            await page.wait_for_selector('#wnDialog[open]', timeout=4000)
+            await page.eval_on_selector('#wnDialog .wn-foot [data-wn="close"]', 'e=>e.click()')
+        await page.wait_for_timeout(600)
         await dev_start(page, CID)
         tid, item = await setup(page)
         out['item'] = item
@@ -134,8 +140,19 @@ async def play(browser, base: str, shots: Path | None, max_steps: int = 90) -> d
             if not held and await page.evaluate("!!document.querySelector('[data-fd-pick].inv-good')"):
                 held = True
                 before, total = await page.evaluate(COUNTED)
-                box = await page.locator('#sheet[open] .inv-crate').first.bounding_box()
-                await page.mouse.move(box['x'] + 5, box['y'] + 5)
+                # A real finger cannot reach through a popup: close "Có gì mới" first, as a player would.
+                if await page.evaluate("!!document.querySelector('#wnDialog[open]')"):
+                    await page.eval_on_selector('#wnDialog .wn-foot [data-wn="close"]', 'e=>e.click()')
+                    await page.wait_for_timeout(400)
+                await page.evaluate("document.querySelector('#sheet[open] .inv-crate')?.scrollIntoView({block:'center'})")
+                await page.wait_for_timeout(300)
+                # Press on the crate's last uncounted good (the guide's arrow sits by the first one).
+                box = await page.locator('#sheet[open] .inv-crate').first.locator('.inv-good:not(.on)').last.bounding_box()
+                px, py = box['x'] + box['width'] / 2, box['y'] + box['height'] / 2
+                under = await page.evaluate("([x,y])=>{const e=document.elementFromPoint(x,y);return e?.closest('.inv-crate')?'':(e?.className||e?.tagName||'nothing')}", [px, py])
+                if under:
+                    out['problems'].append(f'press-and-hold: the crate is covered by "{under}"')
+                await page.mouse.move(px, py)
                 await page.mouse.down()
                 await page.wait_for_timeout(1000)
                 await page.mouse.up()

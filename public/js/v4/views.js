@@ -51,8 +51,10 @@ function stockBoot(env){
   stockEnv=env;
   if(stockOn||typeof document==='undefined')return;stockOn=true;
   if(!document.querySelector('link[data-stock-css]')){const l=document.createElement('link');l.rel='stylesheet';l.href=asset('/css/stock.css');l.dataset.stockCss='1';document.head.append(l);}
-  let crate=null,wait=0,beat=0,x0=0,y0=0,counted=0,swallow=0,down=false;
+  let crate=null,key='',wait=0,beat=0,x0=0,y0=0,counted=0,swallow=0,down=false;
   const step=()=>{
+    // The sheet may re-render under the finger (a state refresh): carry on in the same crate's new copy.
+    if(crate&&!crate.isConnected&&key){crate=[...document.querySelectorAll('#sheet .inv-crate')].find(u=>u.querySelector('.inv-good')?.dataset.order===key)||null;crate?.classList.add('holding');}
     const b=crate?.isConnected&&crate.querySelector('.inv-good:not(.on)');
     if(!b){stop();return;}
     const ui=stockEnv.ui,n=tallyOne(ui,b.dataset.order,Number(b.dataset.i));counted++;
@@ -68,7 +70,7 @@ function stockBoot(env){
   document.addEventListener('pointerdown',e=>{
     const ul=e.target.closest?.('#sheet .inv-crate');
     if(!ul||e.button>0||!ul.querySelector('.inv-good:not(.on)'))return;
-    stop();crate=ul;down=true;x0=e.clientX;y0=e.clientY;
+    stop();crate=ul;key=ul.querySelector('.inv-good')?.dataset.order||'';down=true;x0=e.clientX;y0=e.clientY;
     holdSfx.configure(stockEnv?.api?.state?.settings||{});holdSfx.unlock();
     wait=setTimeout(()=>{if(!crate)return;crate.classList.add('holding');step();beat=setInterval(step,HOLD_STEP);},HOLD_WAIT);
   });
