@@ -1,0 +1,42 @@
+/* Stock room (public/js/v4/views.js inventoryView, orderCard): injected the first time the room opens.
+   The bill sits under the quantity, suppliers are compact chips, the crate counts on press-and-hold.
+   Theme tokens only, so every theme (Đêm too) follows. */
+.inv-how{margin:0 0 10px}
+.inv-how>summary{display:flex;align-items:center;min-height:44px;padding:0 4px;font-size:.867rem;color:var(--muted)}
+.inv-how[open]>summary{margin-bottom:0}
+.inv-how p{margin:0 0 6px}
+
+/* Order card: quantity → bill (total, what the fund keeps, why not) → suppliers → buttons. */
+.inv-order .inv-qty .chip,.inv-order .chip.inv-tier{min-height:44px;min-width:44px;justify-content:center;padding-inline:14px}
+.inv-order>.row .btn,.inv-cart>.row .btn{min-width:44px;min-height:44px}
+.inv-tabs button{min-height:44px}
+.inv-total.inv-bill{display:block;margin:12px 0 4px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface-2)}
+.inv-bill #order-total{font-size:max(16px,1.05rem);font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+.inv-bill .inv-after{margin-top:2px;font-weight:700;color:var(--ink-2)}
+.inv-bill small{line-height:1.45}
+.inv-bill #order-why:empty{display:none}
+.inv-sups{display:flex;flex-wrap:wrap;gap:8px}
+.choice.inv-sup{display:grid;gap:2px;flex:1 1 140px;width:auto;min-width:0;min-height:44px;padding:8px 12px;border-radius:12px}
+.choice.inv-sup strong{font-size:.867rem;line-height:1.3;overflow-wrap:anywhere}
+.choice.inv-sup small{margin:0;font-size:.8rem;line-height:1.3;overflow-wrap:anywhere}
+.choice.inv-sup small b{color:var(--accent-text)}
+.inv-sup-more{margin:8px 0 0}
+.inv-sup-more>summary{display:flex;align-items:center;min-height:44px;font-size:.833rem;color:var(--muted)}
+.inv-sup-more p{margin:0 0 4px}
+.inv-order-foot{margin:12px 0 8px}
+.inv-order-foot .btn{min-height:44px}
+
+/* Counting a crate: a tap per good, or press and hold the crate to count one after another. */
+.inv-crate{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.inv-crate.holding{box-shadow:inset 0 0 0 4px var(--good),inset 0 6px 12px rgba(60,35,15,.35)}
+.inv-good.tick{animation:inv-tick .22s ease-out}
+@keyframes inv-tick{0%{transform:scale(1)}45%{transform:scale(1.18)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.inv-good.tick{animation:none}}
+html.reduce-motion .inv-good.tick{animation:none}
+
+/* Đơn gộp lines: 44 px −/+ and ×; on the narrowest phones the name takes its own line. */
+.inv-cl{grid-template-columns:minmax(0,1fr) auto 2.6em 44px}
+.inv-cl-qty{grid-template-columns:44px 2em 44px}
+.inv-cl-qty .btn{min-width:44px;min-height:44px}
+.inv-cl-x{width:44px;height:44px;min-width:44px;min-height:44px}
+@media (max-width:359px){.inv-cl{grid-template-columns:auto minmax(0,1fr) 44px}.inv-cl-name{grid-column:1/-1}}
