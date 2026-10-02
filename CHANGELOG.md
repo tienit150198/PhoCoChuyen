@@ -1,3 +1,9 @@
+# v1.4.12 — 🏮 Hội chợ: mượt, rõ, không chọn lại
+
+- Bấm không nhảy trang: vá DOM tại chỗ thay vì dựng lại cả trang (`fair.js`). Lắc bát / rải quân nhanh hơn, nút chờ máy chủ hiện đang làm.
+- Chiếu trong: không còn bấm Xóc rồi bị từ chối (hạn mức ngày < cược + phạt): khóa nút và nói rõ lý do; dải "mấy ván gần đây"; kết quả ghi bên đã chọn.
+- Ô ăn quan: đã bốc quân thì không chọn lại; máy chủ không cho đi hai lần trên cùng một bàn.
+
 # v1.4.11 — 🏮 Hội chợ: sửa nhanh
 
 - Chủ game (03/10 00:0x): "bấm vào đặt thì tự nhiên nó scroll lên", "chơi xong 1 trận làm sao chơi lại, bầu cua". `fair.js keep()` giữ cả `scrollTop` của dialog; dưới kết quả bầu cua có "🔁 Lắc tiếp" / "Đặt lại"; hết hạn mức ngày thì ghi lý do cạnh nút.

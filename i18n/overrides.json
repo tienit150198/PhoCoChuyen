@@ -1,5 +1,14 @@
 {
  "strings": {
+  "Bạn: thắng": "You: won",
+  "CHẴN": "EVEN",
+  "LẺ": "ODD",
+  "Mấy ván gần đây": "Recent rounds",
+  "Nước này đi rồi, bàn đã sang lượt mới. Coi lại bàn rồi đi tiếp nha.": "That move is done and the board has moved on. Take a look at the board, then play on.",
+  "Ví không đủ xu cho chiếu trong": "Not enough coins in your wallet for chiếu trong",
+  "Đang bày bàn…": "Setting up the board…",
+  "🦀 Ra chơi bầu cua": "🦀 Go play bầu cua",
+  "Hội chợ mượt hơn: bấm không nhảy trang, lắc nhanh hơn. Chiếu trong có “mấy ván gần đây”, ô ăn quan đã bốc thì không chọn lại.": "A smoother fair: taps no longer jump the page and rolls are faster. Chiếu trong shows “recent rounds”, and in ô ăn quan a move can't be re-picked.",
   "Hôm nay chơi đủ rồi, mai ghé lắc tiếp nha.": "That's enough for today, come back tomorrow for more rolls.",
   "Hội chợ đã mở! Bầu cua chơi xong có nút “Lắc tiếp” ngay dưới kết quả, bấm đặt không còn bị nhảy lên đầu trang.": "The fair is open! Bầu cua now has a “Roll again” button under the result, and betting no longer jumps to the top.",
   "🔁 Lắc tiếp": "🔁 Roll again",
