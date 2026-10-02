@@ -50,6 +50,7 @@ HOURS = {
     'drain': (7 * 60 + 30, 19 * 60 + 30),
     'homemaker': (6 * 60 + 30, 18 * 60 + 30),   # the market at dawn, dinner cooked before going home
     'ice_cream': (11 * 60, 21 * 60),    # after lunch, the school run at 16:30, the evening walk
+    'nail': (9 * 60, 21 * 60),          # office lunch breaks, evening and weekend bookings
 }
 EARLY = 30  # goods due after closing wait at the door this many minutes before the next opening
 # How much later than its window a late delivery comes (minutes), by supplier kind; a

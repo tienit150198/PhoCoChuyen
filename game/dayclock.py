@@ -56,6 +56,7 @@ NOTES = {
     'garbage': 'Ca tối: mỗi ngõ có giờ đổ rác, tới muộn là rác bị bới tung.',
     'homemaker': 'Đi chợ từ sáng sớm, 8 giờ hết cá tươi; 11:30 cả nhà ăn trưa, 16:30 đón bé Su.',
     'ice_cream': 'Tiệm mở sau giờ cơm trưa; 16:30 trường tan học là đông nhất.',
+    'nail': 'Trưa đông dân văn phòng tranh thủ giờ nghỉ; tối thứ sáu, cuối tuần kín lịch.',
     'homestay': 'Quầy lễ tân trực tới 22:00; khách tới muộn gọi chuông, sáng mai bàn giao.',
     'milk_tea': 'Ngày đông khách có thể bán quá giờ, muộn nhất 23:00.',
     'corp_accounting': 'Tăng ca được tới 20:00 nếu xin phép trưởng phòng.',
