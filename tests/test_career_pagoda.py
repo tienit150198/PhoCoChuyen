@@ -366,6 +366,23 @@ class Surprises(Base):
                 self.assertTrue(j.act('chua_desk', option=o['id'])['message'], (x['id'], o['id']))
                 validate_state(json.loads(json.dumps(j.state)))
 
+    def test_surprise_reviews_are_written_by_a_visitor_not_the_abbot_or_a_child(self):
+        seen = 0
+        for x in PG.DESK:
+            for o in x['options']:
+                rv = o['effects'].get('review')
+                if not rv:
+                    continue
+                by = rv[2] if len(rv) > 2 else x['npc']
+                self.assertNotIn(by, (0, 4), (x['id'], o['id']))     # thầy Huệ Minh, bé Na (a 4th-grader)
+                j = Journey('pagoda')
+                self.d(j)['desk']['ev'] = dict(id='desk-t', script=x['id'], day=j.c['day'], at='between')
+                j.act('chua_desk', option=o['id'])
+                post = next(p for p in j.c['feed'] if p['kind'] == 'review' and p['source'] == 'desk-t')
+                self.assertEqual(post['npc'], kit.npc_id('pagoda', by))
+                seen += 1
+        self.assertGreater(seen, 5)
+
     def test_situations_are_playable(self):
         j = self.j
         for x in PG.SPEC['situations']:

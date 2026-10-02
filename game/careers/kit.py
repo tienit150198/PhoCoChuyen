@@ -333,7 +333,8 @@ def review(s: dict, c: dict, npc: str, stars: int, text_: str, ref: str) -> dict
 #        need_mark / no_mark (persistent mark names), mods=(daily modifier ids) or None,
 #        text, options=[dict(id, label, hint, effects=dict(...), outcome, good=True|False|None,
 #        luck=dict(p=0.0..1.0, win=dict(effects, outcome, good), lose=dict(...)))], default='option id')
-# Generic effects: money (int), review ([stars, text]), patience (int, all open tasks), xp (int),
+# Generic effects: money (int), review ([stars, text] by the script's npc, or [stars, text, people index] when someone
+# else writes it), patience (int, all open tasks), xp (int),
 # stock ({item: qty}), mark / unmark (name or list). Unknown keys go to the career `hook`.
 DESK_LOG = 60
 
@@ -437,7 +438,7 @@ def _apply_effects(s: dict, c: dict, career: str, desk: dict, x: dict, eff: dict
             if amount:
                 money(s, c, amount, f'{x["title"]}', ref, 'event_income' if amount > 0 else 'event_cost')
         elif key == 'review':
-            review(s, c, npc_id(career, x.get('npc', 0)), v[0], v[1], ref)
+            review(s, c, npc_id(career, v[2] if len(v) > 2 else x.get('npc', 0)), v[0], v[1], ref)
         elif key == 'patience':
             for t in c['tasks']:
                 if t.get('career') == career and t['status'] not in ('completed', 'referred', 'cancelled') and 'patience' in t:
