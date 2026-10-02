@@ -207,7 +207,8 @@ function render(){
   if(S.tab==='xs')XS?.mount();   // a new ticket's silver: painted once, then left to the finger
   if(S.dlg.getAttribute('aria-busy')!==String(S.busy))S.dlg.setAttribute('aria-busy',String(S.busy));
   const walking=walkOn();if(S.dlg.classList.contains('fh-walking')!==walking)S.dlg.classList.toggle('fh-walking',walking);
-  if(walking&&S.tab==='home')WALK.mount();
+  if(walking){if(S.tab==='home')WALK.mount();else WALK.play(S.tab==='food'?S.food.cart:S.tab);}   // on a stall page: seen standing at it
+  else WALK?.off();
 }
 function tickLabels(){
   if(!S.dlg?.open)return;
