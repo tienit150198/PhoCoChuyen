@@ -34,7 +34,7 @@ Delta-sync hints (TABLES[i]["sync"]):
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 11  # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
+SCHEMA_VERSION = 12  # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
                      # 6: live chat (chat_*, live_effects: game/live_chat.py, live/), 1.0.0;
@@ -45,6 +45,7 @@ SCHEMA_VERSION = 11  # 2: leaderboard, marriage/friends/couple tables, stat_fb_c
                      # 10: 📌 admin messages and the pinned message of Cả phố (chat_messages.adm, chat_pins:
                      #     game/live_chat.py, live/chat.py, scripts/chat_pin.py)
                      # 11: 😍 reactions (chat_reacts) and the admin-only original text (chat_messages.raw), 1.2.2
+                     # 12: 🙂 chat faces (chat_faces: live/faces.py, live/chat.py)
 
 # The text forms SQLite produces, computed by PostgreSQL (UTC, independent of TimeZone).
 NOW_TEXT = "to_char(statement_timestamp() AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI:SS')"       # CURRENT_TIMESTAMP
@@ -326,6 +327,8 @@ CREATE TABLE IF NOT EXISTS chat_reacts (
 CREATE TABLE IF NOT EXISTS chat_pins (
   channel {T} PRIMARY KEY, msg bigint NOT NULL, by_pid {T} NOT NULL, at double precision NOT NULL
 );
+-- 🙂 The face of a player's chat avatar (live/faces.py code of whitelisted ids), written by the live service only.
+CREATE TABLE IF NOT EXISTS chat_faces (pid {T} PRIMARY KEY, code {T} NOT NULL, at double precision NOT NULL);
 -- Rewards the live service grants (phase 3 dates, phase 2 lucky envelopes); the game server applies them on load.
 CREATE TABLE IF NOT EXISTS live_effects (
   id {T} PRIMARY KEY, sid {T} NOT NULL, kind {T} NOT NULL, amount bigint NOT NULL DEFAULT 0, data {T} NOT NULL DEFAULT '{{}}',
@@ -776,6 +779,9 @@ TABLES = [
     dict(name='chat_pins', source='main', sqlite_table='chat_pins',
          columns=_cols('channel text', 'msg bigint', 'by_pid text', 'at double precision'),
          key=('channel',), unique=[], identity=None, sync=dict(mode='full', note='one row per pinned channel, replaced in place')),
+    dict(name='chat_faces', source='main', sqlite_table='chat_faces',
+         columns=_cols('pid text', 'code text', 'at double precision'),
+         key=('pid',), unique=[], identity=None, sync=dict(mode='full', note='one row per player, replaced in place')),
     dict(name='live_effects', source='main', sqlite_table='live_effects',
          columns=_cols('id text', 'sid text', 'kind text', 'amount bigint', 'data text', 'status text',
                        'at double precision', 'applied_at double precision'),

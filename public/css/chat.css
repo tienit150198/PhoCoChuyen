@@ -40,6 +40,7 @@ html[data-layout="phone"] .ch-head{padding-top:14px}
 .ch-av{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--surface-2);font-size:17px;line-height:1}
 .ch-av.md{width:42px;height:42px;font-size:22px}
 .ch-av.gap{visibility:hidden}
+.ch-av .fc-svg{display:block;width:100%;height:100%;border-radius:50%}   /* 🙂 a drawn face (v4/face.js) */
 .ch-av-wrap{position:relative;flex:none;display:inline-grid}
 .ch-on{position:absolute;right:0;bottom:0;width:12px;height:12px;border-radius:50%;background:var(--good);box-shadow:0 0 0 2px var(--surface)}
 

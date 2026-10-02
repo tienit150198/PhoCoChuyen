@@ -28,6 +28,7 @@ from . import archive as ar
 from . import certificates as ct
 from . import bank as bk   # 🏦 Ngân hàng Phố (game/bank.py)
 from . import wardrobe as wd   # 👗 Tủ đồ (game/wardrobe.py)
+from . import avatar as avt    # 🙂 Ảnh đại diện khi chat (game/avatar.py)
 from . import housing as hs   # 🏠 Nhà của bạn (game/housing.py)
 from . import reno as rn   # 🛠️ Sửa và trang trí nhà (game/reno.py)
 from . import deco as dc   # 🪴 Bày trí phòng (game/deco.py)
@@ -783,6 +784,8 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(bk.action(s, name, p))
     elif name.startswith('jr_wd_'):
         result.update(wd.action(s, name, p))
+    elif name == 'jr_avatar':
+        result.update(avt.action(s, name, p))
     elif name.startswith('jr_home_'):
         result.update(hs.action(s, name, p))
     elif name.startswith('jr_reno_'):
@@ -962,6 +965,7 @@ def validate(s: dict) -> None:
     ct.validate(s)
     bk.validate(s)
     wd.validate(s)
+    avt.validate(s)   # 🙂 s['avatar'] (optional)
     hs.validate(s)
     rn.validate(s)
     dc.validate(s)

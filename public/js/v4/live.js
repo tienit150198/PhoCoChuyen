@@ -11,13 +11,21 @@
  * the service: 1012 restart (jittered return), 4001 switched off (10 minutes), 4002 another tab took over.
  *
  * For other features: live.on(type, fn) for any server frame, live.send(frame), live.flags, live.unread().
- * 💕 Dates (./dating.js, lazy): live.bonds (pids "đang tìm hiểu"), dateNav(), openDate(), benchSpot(walk) for the stroll's bench. */
+ * 💕 Dates (./dating.js, lazy): live.bonds (pids "đang tìm hiểu"), dateNav(), openDate(), benchSpot(walk) for the stroll's bench.
+ * 🙂 Faces: `hello` carries this save's face code (./face-code.js faceCode: s.avatar and the wardrobe clothes); when it
+ * changes (the builder, Tủ đồ) a `face` frame follows, but only to a service whose welcome `me` has `fc` (an older one
+ * would answer "unknown"). `faced {pid, fc}` updates friends and DM peers. */
 import {icon} from '../icons.js';
 import {stylesheet} from '../lazy.js';
+import {faceCode} from './face-code.js';
 
 const RETRY=[1,2,4,8,15],SLOW=[60,120,300,600],PING_MS=25000,DEAD_MS=60000;
 const listeners=new Map();
-let env=null,ws=null,attempt=0,timer=0,pinger=0,lastFrame=0,fab=null,shown=false,shownDate=false,renderTimer=0,lastTotal=-1,cssAsked=false;
+let env=null,ws=null,attempt=0,timer=0,pinger=0,lastFrame=0,fab=null,shown=false,shownDate=false,renderTimer=0,lastTotal=-1,cssAsked=false,sentFc=null;
+/** The face code of this save ('' while the save is not loaded). */
+const myFc=()=>{try{return env?.api?.state?faceCode(env.api.state):'';}catch(e){console.warn('face:',e);return '';}};
+/** 🙂 After a change of face or clothes: tell a service that knows faces (once per change). */
+function syncFace(){const fc=myFc();if(!fc||fc===sentFc||!live.me||!('fc' in live.me))return;if(live.send({t:'face',fc}))sentFc=fc;}
 
 export const live={
   state:'idle',            // idle | connecting | open | down | off
@@ -52,7 +60,8 @@ function connect(){
   let sock;
   try{sock=new WebSocket(url());}catch{return schedule();}
   ws=sock;
-  sock.onopen=()=>{lastFrame=Date.now();const r=live.resume();sock.send(JSON.stringify({t:'hello',v:1,...(r&&Object.keys(r).length?{resume:r}:{})}));};
+  sock.onopen=()=>{lastFrame=Date.now();const r=live.resume(),fc=myFc();sentFc=fc||null;
+    sock.send(JSON.stringify({t:'hello',v:1,...(r&&Object.keys(r).length?{resume:r}:{}),...(fc?{fc}:{})}));};
   sock.onmessage=e=>{lastFrame=Date.now();let f;try{f=JSON.parse(e.data);}catch{return;}if(f&&typeof f.t==='string')frame(f);};
   sock.onclose=e=>{
     if(ws!==sock)return;
@@ -83,7 +92,7 @@ function frame(f){
       live.me=f.me||null;live.friends=f.friends||[];live.chans=f.chans||[];live.limits=f.limits||{};live.bonds=f.bonds||[];
       if(live.flags.dating&&(f.date||f.bench))import('./dating.js').then(m=>m.datingBoot(env,f)).catch(e=>console.warn('dating:',e));   // back in a date after a reload
       clearInterval(pinger);pinger=setInterval(()=>{if(Date.now()-lastFrame>DEAD_MS){ws?.close();return;}live.send({t:'ping'});},PING_MS);
-      deepLink();
+      deepLink();syncFace();   // the save may have loaded after the hello
       break;
     case'state':
       if(f.friends)live.friends=f.friends;if(f.chans)live.chans=f.chans;if(f.me)live.me=f.me;
@@ -96,6 +105,10 @@ function frame(f){
     case'unchan':live.chans=live.chans.filter(c=>c.id!==f.ch);break;
     case'quiet':{const c=live.chan(f.ch);if(c){if(f.until)c.quiet=f.until;else delete c.quiet;}break;}   // 🔔 notifications of one chat
     case'bond':if(!live.bonds.includes(f.pid))live.bonds.push(f.pid);break;
+    case'faced':{   // 🙂 a face changed (mine from another tab, a friend's, a DM peer's)
+      const put=x=>{if(!x)return;if(f.fc)x.fc=f.fc;else delete x.fc;};
+      if(f.pid===live.me?.pid)put(live.me);put(live.friend(f.pid));for(const c of live.chans)if(c.peer?.pid===f.pid)put(c.peer);
+      break;}
     case'read':{const c=live.chan(f.ch);if(c){c.unread=0;c.read=Math.max(c.read||0,f.id);}break;}
     case'msg':{
       if(f.ch==='town')break;
@@ -166,6 +179,7 @@ export function liveBoot(e){
     if(ch){if(live.state==='open')openChat({ch});else wanted=ch;}
   });
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')live.reconnect();});
+  e.api?.addEventListener?.('state',()=>{if(live.state==='open')syncFace();});   // 🙂 the builder, Tủ đồ, Nam/Nữ
   window.addEventListener('online',()=>live.reconnect());
   if(e.api?.live?.url)connect();   // no live service named by the game server: never a socket
 }

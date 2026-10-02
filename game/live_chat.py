@@ -16,6 +16,9 @@ straight into the database as an announcement, counts as one too). One message o
 (`chat_pins`, one row per channel, written by the live service or scripts/chat_pin.py); hiding a message here, or a
 player deleting their data, takes its pin away.
 
+🙂 `chat_faces` (one row per player: the code of their drawn chat avatar, live/faces.py) is written by the live service;
+deleting a player's data removes it here.
+
 🔎 The admin "Tin nhắn" tab (search(), GET /api/admin/chat/messages): every chat, 200 messages a page, newest first,
 filtered by kind (Cả phố / nhắn riêng / nhóm), chat, player, and words (text, original, name). Each request reads
 at most WINDOW ids back from its cursor (the primary key), so a search never scans the whole table; "Tải cũ hơn"
@@ -60,6 +63,7 @@ CREATE TABLE IF NOT EXISTS chat_mutes (
 CREATE TABLE IF NOT EXISTS chat_prefs (pid TEXT PRIMARY KEY, online INTEGER NOT NULL DEFAULT 1, updated REAL NOT NULL);
 CREATE TABLE IF NOT EXISTS chat_reacts (msg INTEGER NOT NULL, pid TEXT NOT NULL, emoji TEXT NOT NULL, at REAL NOT NULL, PRIMARY KEY (msg, pid));
 CREATE TABLE IF NOT EXISTS chat_pins (channel TEXT PRIMARY KEY, msg INTEGER NOT NULL, by_pid TEXT NOT NULL, at REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS chat_faces (pid TEXT PRIMARY KEY, code TEXT NOT NULL, at REAL NOT NULL);
 CREATE TABLE IF NOT EXISTS live_effects (
   id TEXT PRIMARY KEY, sid TEXT NOT NULL, kind TEXT NOT NULL, amount INTEGER NOT NULL DEFAULT 0, data TEXT NOT NULL DEFAULT '{}',
   status TEXT NOT NULL DEFAULT 'pending', at REAL NOT NULL, applied_at REAL
@@ -290,3 +294,5 @@ def forget(store, token: str) -> None:
         db.execute("UPDATE chat_messages SET text='', raw=NULL, deleted=1 WHERE pid=? AND deleted=0", (pid,))
         db.execute('DELETE FROM chat_members WHERE pid=?', (pid,))
         db.execute('DELETE FROM chat_prefs WHERE pid=?', (pid,))
+        db.execute('DELETE FROM chat_faces WHERE pid=?', (pid,))
+        notify(db, dict(op='face', pid=pid))   # 🙂 the live service forgets the face it keeps in memory

@@ -38,6 +38,7 @@ export function settingsView(env){
       <label class="field">Tên của bạn<input class="input" id="player-name" data-preserve maxlength="24" required value="${esc(api.state.name)}"></label>
       <button class="btn primary full" type="submit">Lưu</button>
       <button type="button" class="btn ghost full" data-action="jrWardrobe"><span aria-hidden="true">👗</span> Thay đồ cho nhân vật</button>
+      <button type="button" class="btn ghost full" data-action="jrAvatar"><span aria-hidden="true">🙂</span> Ảnh đại diện khi chat</button>
     </form>
     ${tutorialSettings()}
     <section class="settings-block"><h3><span aria-hidden="true">✨</span> Có gì mới</h3><button type="button" class="btn small" data-action="whatsNew">Xem các cập nhật mới</button></section>
