@@ -1,9 +1,13 @@
 """🗑️ Deleting in chat (owner, 03/10): "Xóa ở phía tôi" (hide one message for myself), emptying whole chats from the
 chat list (clear, for myself), "Thu hồi" (recall my own message for everyone, within 24 h), and 🚫 the list of people
 I blocked, to unblock them (feedback #93). Nobody else's view changes; the admin side still sees every message."""
+import tempfile
 import time
+import unittest
+from pathlib import Path
 
-from game import live_chat
+from game import live_chat, pg_schema
+from game.storage import Store
 from tests.live_support import LiveCase
 
 
@@ -194,3 +198,19 @@ class DeleteTests(LiveCase):
         r = await a.call('unblock', 'blocked', pid=self.pb)
         self.assertFalse(r['on'])
         self.assertEqual([x['pid'] for x in (await a.call('blocks', 'blocks'))['list']], [self.pid(sc)])
+
+
+class SchemaTests(unittest.TestCase):
+    def test_both_backends(self):
+        self.assertGreaterEqual(pg_schema.SCHEMA_VERSION, 13)   # 13: chat_hides, chat_clears
+        for t, key in (('chat_hides', ('pid', 'msg')), ('chat_clears', ('channel', 'pid'))):
+            self.assertIn(f'CREATE TABLE IF NOT EXISTS {t} (', pg_schema.TABLES_DDL)
+            self.assertEqual(pg_schema.TABLE[t]['key'], key)
+        self.assertIn('CREATE INDEX IF NOT EXISTS chat_hides_msg ON chat_hides (msg);', pg_schema.INDEX_DDL)
+        with tempfile.TemporaryDirectory() as d:
+            store = Store(Path(d) / 'g.sqlite3')
+            with store.connect() as db:
+                for t in ('chat_hides', 'chat_clears'):
+                    cols = {r[1] for r in db.execute(f'PRAGMA table_info({t})').fetchall()}
+                    self.assertEqual(cols, {c for c, _ in pg_schema.TABLE[t]['columns']}, t)
+            store.close_pool()
