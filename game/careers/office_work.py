@@ -255,6 +255,8 @@ def maybe_fire(t: dict, at_file: bool = False) -> str:
         return ''
     if at_file or (tw.get('at', 0) and t['acts'] >= tw['at']):
         t['tw'] = 'fired'
+        if t['work']['type'] == 'sort':   # a card sorted before the call goes back on the pile, so it is seen again
+            t['ans'].pop(tw['item'], None)
         return f'📞 {tw["note"]}'
     return ''
 
@@ -724,6 +726,9 @@ def public_task(t: dict) -> dict:
         kind = w['type']
         if kind == 'sort':
             x['item'] = tw['item']
+            for it in w['items']:   # the call is written on the card itself
+                if it['id'] == tw['item']:
+                    it['note'] = ' · '.join(n for n in (it.get('note'), f'📞 {tw["note"]}') if n)
         elif kind == 'mark':
             x['seg'] = tw['seg']
         elif kind == 'slots':

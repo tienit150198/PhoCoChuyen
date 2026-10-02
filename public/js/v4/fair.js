@@ -373,7 +373,7 @@ async function playTrace(trace,lv){
     if(k==='drop'){a.b[ev[1]]++;a.hand=Math.max(0,a.hand-1);a.at=ev[1];sfx('stone');render();await wait(step());continue;}
     if(k==='cap'){const [,c,dan,quan]=ev;a.b[c]=0;if(quan)a.q[c===0?0:1]=0;a.cap[2*a.side]+=dan;a.cap[2*a.side+1]+=quan;a.flash=c;a.at=null;
       S.oaq.say=pick(a.side===1?lines.cap:lines.lose);sfx('cap');render();await wait(S.oaq.fast?220:420);continue;}
-    if(k==='non'){a.flash=ev[1];S.flash={text:'Quan non: ô quan chưa đủ dân, chưa ăn được.',kind:'warn'};render();await wait(S.oaq.fast?260:520);S.flash=null;continue;}
+    if(k==='non'){a.flash=ev[1];S.flash={text:`Quan non: ô quan cần đủ ${R().quan_non||5} dân mới ăn được, không tính theo vòng.`,kind:'warn'};render();await wait(S.oaq.fast?260:520);S.flash=null;continue;}
     if(k==='seed'){const row=ev[1]===0?ROW_ME:ROW_OPP;row.forEach(c=>{a.b[c]=1;});a.cap[2*ev[1]]-=5;S.flash={text:ev[1]===0?'Hàng bạn hết quân: rải lại 5 dân đã ăn.':'Hàng bên kia hết quân: rải lại 5 dân.',kind:'warn'};render();await wait(S.oaq.fast?260:600);S.flash=null;continue;}
     if(k==='collect'){S.flash={text:'Hết quan, tàn dân: thu quân về đếm điểm!',kind:'good'};render();await wait(S.oaq.fast?260:520);S.flash=null;continue;}
   }

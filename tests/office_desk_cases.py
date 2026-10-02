@@ -221,6 +221,31 @@ class DeskCases:
         self.assertIn('note', v['work']['twist'])
         self.assertTrue(v['result']['lines'])
 
+    def test_a_call_about_a_sorted_card_puts_it_back_with_the_call_on_it(self):
+        sorts = [f['id'] for f in self.M.FORMS if self.M.make_task(*self.find(f['id']), 1)['work']['type'] == 'sort']
+        for form in sorts:
+            try:
+                j = self.journey(form, twist=True)
+            except AssertionError:
+                continue
+            with self.subTest(form=form):
+                tid = j.task['id']
+                j.act('ask', task=tid)
+                tw = j.get(tid)['work']['_twist']
+                items = [it['id'] for it in j.get(tid)['work']['items']]
+                order = [tw['item']] + [k for k in items if k != tw['item']]
+                for k in order:   # the changed card first, so it is already in a tray when the call comes
+                    if j.get(tid)['tw'] == 'fired':
+                        break
+                    j.act(self.P + 'put', task=tid, item=k, bin=j.get(tid)['work']['bins'][0]['id'])
+                self.assertEqual(j.get(tid)['tw'], 'fired')
+                self.assertNotIn(tw['item'], j.get(tid)['ans'])
+                self.assertTrue(ow.ready(j.get(tid)))
+                card = next(it for it in self.view(tid)['work']['items'] if it['id'] == tw['item'])
+                self.assertIn('📞', card['note'])
+                return
+        self.skipTest('no sort form with a call')
+
     def test_case_facts_stay_hidden_until_read_and_gate_the_answer(self):
         j = self.journey('case')
         tid = j.task['id']

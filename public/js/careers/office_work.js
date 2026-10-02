@@ -77,7 +77,7 @@ function resultView(t,x){
 /* ---------------------------------------------------------------- sort: one card at a time, tap its tray */
 function sortDoc(t,x){
   const w=W(t),ans=t.ans||{},s=u(x,t),bins=w.bins||[],items=w.items||[],tw=w.twist?.item;
-  const cur=items.find(i=>i.id===s.card)||items.find(i=>!(i.id in ans))||items[0];if(!cur)return '';
+  const cur=items.find(i=>i.id===s.card)||(tw&&!(tw in ans)&&items.find(i=>i.id===tw))||items.find(i=>!(i.id in ans))||items[0];if(!cur)return '';
   const binOf=id=>bins.find(b=>b.id===id),done=items.filter(i=>i.id in ans).length;
   const chips=items.map((it,i)=>{const b=binOf(ans[it.id]),on=it.id===cur.id;
     return `<button type="button" class="ow-chip${on?' on':''}${b?' done':''}${it.id===tw?' tw':''}" data-action="car:card" data-task="${x.esc(t.id)}" data-card="${x.esc(it.id)}" aria-pressed="${on}" aria-label="${x.esc(`Thẻ ${i+1}: ${it.title}${b?` · ${b.label}`:' · chưa xếp'}`)}"><span>${i+1}</span>${b?`<i aria-hidden="true">${x.esc(b.emoji)}</i>`:''}</button>`;}).join('');
