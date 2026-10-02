@@ -158,8 +158,15 @@ export function soundsBoot({api,world,sound}){
       }catch{chip(note);}
     },ding?SAY_DELAY:0);
   }
+  /* A page may keep the news back a moment (the fair's vé số cào: its prize is in the wallet before the silver is
+   * scratched off): while globalThis.__mnlMoneyHold?.() says so, what comes in waits; __mnlMoneyGo() tells it. */
+  const held=[];
+  globalThis.__mnlMoneyGo=()=>{if(held.length)money(held.splice(0));};
   /** items: [{amount, kind}] (moneyText). */
   function money(items){
+    let hold=false;try{hold=!!globalThis.__mnlMoneyHold?.();}catch{/* the page's check failed: tell it */}
+    if(hold){held.push(...items);return;}
+    if(held.length)items=[...held.splice(0),...items];
     const now=Date.now();
     for(const x of items)if(Number.isInteger(x?.amount)&&x.amount>0)queue.push(x);
     if(!queue.length)return;

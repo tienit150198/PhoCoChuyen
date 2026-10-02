@@ -526,3 +526,29 @@ html:not([data-layout="phone"]) .sheet.medium.fh-sheet.fh-walking{width:min(860p
 html:not([data-layout="phone"]) .fh-walking .fh-body>:not(.fh-walk):not(.fh-strip){max-width:568px;margin-left:auto;margin-right:auto}
 .fh-wstage.land{max-width:calc((100dvh - 210px) * 1100 / 660);margin:0 auto}
 .fh-wstage.port{max-width:calc((100dvh - 210px) * 672 / 764);margin:0 auto}
+
+/* ---- 🎟️ vé số cào (fair-scratch.js): the ticket, its 3 × 3 grid and the silver scratched off on a canvas ---- */
+.fh-xs-card{--xs:#2f8f6a;--xs-2:#bfe6cf;position:relative;width:min(100%,340px);margin:4px auto 10px;padding:10px 10px 8px;border-radius:14px;
+  background:linear-gradient(160deg,var(--xs-2),#fffaf0 55%,var(--xs-2));border:3px solid var(--xs);box-shadow:0 4px 14px rgba(60,30,10,.18);color:#3a2410}
+.fh-xs-card.t5{--xs:#2f7fd1;--xs-2:#cfe2f8}.fh-xs-card.t10{--xs:#d9472b;--xs-2:#f9d3c8}.fh-xs-card.t20{--xs:#8a4bb8;--xs-2:#ead8f6}
+.fh-xs-card::before,.fh-xs-card::after{content:"";position:absolute;top:50%;width:14px;height:14px;margin-top:-7px;border-radius:50%;background:var(--surface)}
+.fh-xs-card::before{left:-9px}.fh-xs-card::after{right:-9px}
+.fh-xs-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:0 4px 8px;font-size:.95rem}
+.fh-xs-top b{color:var(--xs);font-weight:900;letter-spacing:.02em;text-transform:uppercase}
+.fh-xs-top span{padding:1px 8px;border-radius:999px;background:var(--xs);color:#fff;font-weight:800;font-size:.82rem}
+.fh-xs-play{position:relative;border-radius:10px;overflow:hidden}
+.fh-xs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:6px;background:#fff8e6;border:1px dashed color-mix(in srgb,var(--xs) 55%,#fff)}
+.fh-xs-cell{display:grid;place-items:center;align-content:center;aspect-ratio:1.25;border-radius:8px;background:#fff;border:1px solid #ecdcb8;font-variant-numeric:tabular-nums}
+.fh-xs-cell b{font-size:1.35rem;font-weight:900;line-height:1;color:#4a2a12}
+.fh-xs-cell small{font-size:.68rem;color:#8a6a48;font-weight:700}
+.fh-xs-cell.big b{color:#b8301f}
+.fh-xs-card.done .fh-xs-cell:not(.hit){opacity:.72}
+.fh-xs-cell.hit{background:radial-gradient(circle at 50% 40%,#fff4b8,#f2b53a);border-color:#c98a12;box-shadow:0 0 0 2px #c98a12}
+@media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .fh-xs-cell.hit{animation:fh-pop .4s ease-out both}}
+.fh-xs-silver{position:absolute;inset:0;touch-action:none;transition:opacity .35s ease-out}
+.fh-xs-silver.gone{opacity:0;pointer-events:none}
+.fh-xs-silver.still{display:grid;place-items:center;background:linear-gradient(135deg,#aeb4bd,#e6e9ed 45%,#d5d9df 55%,#9fa6b0);color:#5d646e;font-weight:800;font-size:.95rem;touch-action:auto}
+.fh-xs-cv{display:block;width:100%;height:100%;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.fh-xs-cv:active{cursor:grabbing}
+.fh-xs-foot{margin:7px 2px 0;text-align:center;font-size:.78rem;font-weight:700;color:color-mix(in srgb,var(--xs) 75%,#3a2410)}
+.fh-xs .fh-result{width:fit-content;margin:0 auto}

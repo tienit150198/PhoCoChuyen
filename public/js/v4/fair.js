@@ -13,6 +13,7 @@ import {audioContext,wantAudio,duck} from '../audio.js';
 import {language} from './i18n.js';
 import {words,callLine,MC,ACTS,CROWD,STICKERS,MODE_STICKER} from './fair-loto.js';
 import {setup as dartsSetup} from './fair-darts.js';
+import {setup as scratchSetup} from './fair-scratch.js';
 
 const FACES=['bau','cua','tom','ca','ga','nai'];
 const FACE_NAME={bau:'Bầu',cua:'Cua',tom:'Tôm',ca:'Cá',ga:'Gà',nai:'Nai'};
@@ -20,7 +21,7 @@ const GOURD='<svg class="fh-gourd" viewBox="0 0 40 48" aria-hidden="true"><path 
 const FACE_ART={bau:GOURD,cua:'🦀',tom:'🦐',ca:'🐟',ga:'🐓',nai:'🦌'};
 const art=f=>`<span class="fh-art" aria-hidden="true">${FACE_ART[f]||'❔'}</span>`;
 const TITLE_NAMES={f_kinh2:'🎎 Kinh đôi rộn ràng',f_nguoc:'🙃 Đọc ngược như xuôi',f_hu:'🏺 Ôm hũ đêm hội',f_loto:'🎱 Thần lô tô hội chợ',f_bao:'🌪️ Trúng bão bầu cua',f_raid:'🚨 Bị công an hỏi thăm',f_oaq:'🪨 Cao tay ô ăn quan',f_ring:'💍 Tay ném vòng thần sầu',f_dart:'🎯 Mắt thần phi tiêu'};
-const GAMES={home:['🏮','Cổng hội'],oaq:['🪨','Ô ăn quan'],ring:['💍','Ném vòng cổ chai'],bc:['🦀','Bầu cua'],lt:['🎱','Lô tô'],dt:['🎯','Phóng phi tiêu'],xd:['🕯️','Chiếu trong'],board:['🏆','Bảng vàng'],loan:['💸','Vay nóng'],food:['🍡','Hàng ăn vặt']};
+const GAMES={home:['🏮','Cổng hội'],oaq:['🪨','Ô ăn quan'],ring:['💍','Ném vòng cổ chai'],bc:['🦀','Bầu cua'],lt:['🎱','Lô tô'],dt:['🎯','Phóng phi tiêu'],xs:['🎟️','Vé số cào'],xd:['🕯️','Chiếu trong'],board:['🏆','Bảng vàng'],loan:['💸','Vay nóng'],food:['🍡','Hàng ăn vặt']};
 const MINI_BOARD='<svg viewBox="0 0 64 40" aria-hidden="true"><rect x="2" y="6" width="60" height="28" rx="14" fill="#e9c98f" stroke="#8a5a26" stroke-width="2"/><path d="M14 6v28M50 6v28M14 20h36M23 6v28M32 6v28M41 6v28" stroke="#8a5a26" stroke-width="1.6"/><circle cx="8" cy="20" r="4" fill="#5b4636"/><circle cx="56" cy="20" r="4" fill="#5b4636"/><g fill="#7a8b99"><circle cx="18" cy="13" r="1.8"/><circle cx="27" cy="27" r="1.8"/><circle cx="36" cy="13" r="1.8"/><circle cx="45" cy="27" r="1.8"/><circle cx="20" cy="28" r="1.8"/><circle cx="38" cy="25" r="1.8"/></g></svg>';
 const MINI_BOTTLES='<svg viewBox="0 0 64 40" aria-hidden="true"><g stroke="#2d5a3d" stroke-width="1.4"><path d="M12 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#7cc79a"/><path d="M28 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#8fb6e8"/><path d="M44 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#f0b46a"/></g><ellipse cx="34" cy="10" rx="7" ry="2.6" fill="none" stroke="#e2462d" stroke-width="2.4"/></svg>';
 const CHIPS=[1,2,5,10];
@@ -87,6 +88,7 @@ function sfx(kind){
     case'throw':tone(320,.2,.02,0,'sine',900);break;
     case'clink':tone(2350,.3,.03);tone(3150,.22,.02,.035);break;
     case'miss':tone(190,.14,.04,0,'sine',120);break;
+    case'scratch':rattle(0,1);break;
   }
 }
 
@@ -128,7 +130,7 @@ export async function openFair(env,data={}){
   const d=dialog();
   if(data?.tab)S.tab=data.tab;
   else if(!f.open)S.tab='home';
-  else if(!(S.tab==='lt'&&f.loto?.stage==='play')&&!(S.tab==='oaq'&&f.oaq?.stage==='play'))S.tab='home';   // back at the gate unless a game is going on
+  else if(!(S.tab==='lt'&&f.loto?.stage==='play')&&!(S.tab==='oaq'&&f.oaq?.stage==='play')&&!(S.tab==='xs'&&XS?.live()))S.tab='home';   // back at the gate unless a game is going on
   if(!S.bc.say)S.bc.say=pick(DEALER.idle);
   if(!S.xd.say)S.xd.say=pick(HOST.idle);
   if(!d.open){d.showModal();d.scrollTop=0;}
@@ -145,7 +147,7 @@ export async function fairAction(action,data,el,env){
   if(action!=='fair')return false;
   await openFair(env,data);return true;
 }
-const animating=()=>!!S.dt?.flying||S.bc.phase!=='idle'||S.xd.phase!=='idle'||S.busy||!!S.oaq.anim||S.ring.taps.length>0&&!S.ring.result;
+const animating=()=>!!S.dt?.flying||!!XS?.busy()||S.bc.phase!=='idle'||S.xd.phase!=='idle'||S.busy||!!S.oaq.anim||S.ring.taps.length>0&&!S.ring.result;
 
 async function send(action,payload={}){
   const {api}=S.env;
@@ -202,6 +204,7 @@ function render(){
   if(!S.dlg)return;
   keep(()=>{const root=S.dlg.querySelector('.fh-root');tplEl.innerHTML=page();
     const box=document.createElement('div');box.append(tplEl.content);morph(root,Object.assign(box,{className:root.className}));});
+  if(S.tab==='xs')XS?.mount();   // a new ticket's silver: painted once, then left to the finger
   if(S.dlg.getAttribute('aria-busy')!==String(S.busy))S.dlg.setAttribute('aria-busy',String(S.busy));
   const walking=walkOn();if(S.dlg.classList.contains('fh-walking')!==walking)S.dlg.classList.toggle('fh-walking',walking);
   if(walking&&S.tab==='home')WALK.mount();
@@ -233,8 +236,8 @@ function head(){
 /** 🏆 The Bảng vàng's score: the xu won at the fair this edition (an older server sends no `money`: null). */
 const won=()=>{const m=F().money?.total;return typeof m==='number'?m:null;};
 function strip(){
-  const f=F(),m=won(),e=f.earn||{},got=f.today_xu?Object.values(f.today_xu).reduce((a,n)=>a+(Number(n)||0),0):(e.oaq?.today||0)+(e.ring?.today||0);   // every stall's xu this day (today_xu, 1.4.14+)
-  return `<div class="fh-strip" role="status"><span>👛 <b>${xu((f.wallet||0)-ltHold())}</b></span><span>💰 Hôm nay ${got<0?'lỗ':'kiếm'} <b>${xu(Math.abs(got))}</b></span><button type="button" class="fh-pts" data-fh="tab" data-tab="board" data-fh-key="pts">🏆 Bảng vàng${m===null?'':` · ${m<0?'lỗ':'lời'} <b>${xu(Math.abs(m))}</b>`}</button></div>`;
+  const f=F(),m=won(),e=f.earn||{},got=(f.today_xu?Object.values(f.today_xu).reduce((a,n)=>a+(Number(n)||0),0):(e.oaq?.today||0)+(e.ring?.today||0))-xsHold();   // every stall's xu this day (today_xu, 1.4.14+)
+  return `<div class="fh-strip" role="status"><span>👛 <b>${xu((f.wallet||0)-ltHold()-xsHold())}</b></span><span>💰 Hôm nay ${got<0?'lỗ':'kiếm'} <b>${xu(Math.abs(got))}</b></span><button type="button" class="fh-pts" data-fh="tab" data-tab="board" data-fh-key="pts">🏆 Bảng vàng${m===null?'':` · ${m<0?'lỗ':'lời'} <b>${xu(Math.abs(m))}</b>`}</button></div>`;
 }
 /** Inside a stall: the way back to the gate. */
 function nav(){
@@ -244,7 +247,7 @@ function nav(){
   return `<nav class="fh-nav" aria-label="Hội chợ">${btn(back,'tab',{tab:'home'},'ghost small fh-back',' data-fh-key="home"')}<b><span aria-hidden="true">${e}</span> ${esc(l)}</b></nav>`;
 }
 /** The small-stake stalls: what is left of today's loss cap. */
-const xuLine=tab=>{const x=F().today_xu;if(!x||!GAMES[tab]||tab==='home'||tab==='board'||tab==='loan'||tab==='food')return '';const n=x[tab]||0;
+const xuLine=tab=>{const x=F().today_xu;if(!x||!GAMES[tab]||tab==='home'||tab==='board'||tab==='loan'||tab==='food')return '';const n=(x[tab]||0)-(tab==='xs'?xsHold():0);
   return `<p class="fh-luck-left">💰 Hôm nay kiếm ở ${esc(GAMES[tab][1])}: <b>${n>0?'+':n<0?'−':''}${xu(Math.abs(n))}</b></p>`;};
 const luckLine=()=>{const t=F().today||{};if(R().nocap)return '';return `<p class="fh-luck-left">🎟️ Thử vận hôm nay còn chơi được <b>${xu(t.left)}</b> <small>(thua tối đa ${xu(R().cap)} mỗi ngày)</small></p>`;};
 const flash=()=>`<p class="fh-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
@@ -253,7 +256,7 @@ function page(){
   const f=F();
   if(!f.show&&!f.over&&!f.soon)return head()+`<div class="sheet-body fh-body">${closedCard(true)}</div>`;
   if(!f.open&&S.tab!=='board')return head()+`<div class="sheet-body fh-body">${closedCard()}${S.env?.api?.state?.journey?.story?btn('🏆 Xem Bảng vàng hội chợ','tab',{tab:'board'},'cream full'):''}${note()}</div>`;
-  const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView,loan:loanView,food:foodView,dt:()=>F().darts?dt().view():homeView()};
+  const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView,loan:loanView,food:foodView,dt:()=>F().darts?dt().view():homeView(),xs:()=>F().scratch?xs().view():homeView()};
   const body=(views[S.tab]||homeView)(),luck=['bc','xd'].includes(S.tab)||S.tab==='lt'&&!G();   // the newer lô tô: only the wallet limits it
   return head()+giftPop()+`<div class="sheet-body fh-body">${f.open?strip():''}${f.open?nav():''}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${f.open?xuLine(S.tab):''}${body}${note()}</div>`;
 }
@@ -283,6 +286,7 @@ function gateList(){
     <div class="fh-luck">
       ${luck('bc',FACE_ART.cua,'Bầu cua',`Đặt 1–${r.bc_max||20} xu một ván`)}
       ${f.darts?luck('dt','🎯','Phóng phi tiêu',`Đặt ${Math.min(...f.darts.stakes)}–${Math.max(...f.darts.stakes)} xu, cắm vòng màu ăn 1 trả 1`):''}
+      ${f.scratch?luck('xs','🎟️','Vé số cào',`Vé ${Math.min(...f.scratch.tiers)}–${Math.max(...f.scratch.tiers)} xu, cào trúng 3 ô giống nhau`):''}
       ${luck('lt','🎱','Gánh lô tô',f.ganh?`Cô Bảy hô số, vé từ ${xu(Math.min(...Object.values(f.ganh.tiers)))} · ${esc(f.ganh.names?.[f.ganh.modes?.[0]?.[1]]||'')}`:`Tờ dò ${xu(r.loto_price)}, kinh ăn ${xu(r.loto_prize)}`)}
       ${luck('xd','🕯️','Chiếu trong',`Cược ${r.xd_min}–${r.xd_max} xu`,'<span class="fh-warnchip">🚨 công an</span>')}
     </div>
@@ -904,6 +908,11 @@ const walkOn=()=>!!WALK?.active();
 let DT=null;
 const dt=()=>DT??=dartsSetup({S,F,btn,say,xu,esc,send,render,sfx,pick,reduce,titles});
 
+/* ---- 🎟️ Vé số cào: ./fair-scratch.js (set up on first use); its prize is in the wallet before it is scratched open ---- */
+let XS=null;
+const xs=()=>XS??=scratchSetup({S,F,btn,say,xu,esc,send,render,sfx,pick,reduce});
+const xsHold=()=>XS?XS.hold():0;
+
 /* ---- 🏆 Bảng vàng ---- */
 async function loadBoard(force=false){
   const ed=F().board;if(!ed||S.board.loading)return;
@@ -1066,5 +1075,6 @@ async function onClick(op,data){
     case'snack':snack(data.v);return;
     case'ltmusic':{const on=!musicPref();try{localStorage.setItem(LT_MUSIC,on?'1':'0');}catch{/* storage blocked */}ltMusic();render();return;}
     default:if(op.startsWith('dt'))dt().click(op,data);
+      else if(op.startsWith('xs'))xs().click(op,data);
   }
 }
