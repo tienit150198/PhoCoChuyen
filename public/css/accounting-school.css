@@ -147,3 +147,22 @@
 .as-school .as-gloss-list{list-style:none;margin:0;padding:0 12px 12px;max-height:280px;overflow:auto}
 .as-school .as-gloss-list li{padding:6px 0;border-bottom:1px solid var(--as-rule);overflow-wrap:anywhere}
 .as-school .as-gloss-list small{display:block}
+/* 💼 Việc làm kế toán: Giới thiệu việc làm, the holiday rate, the entry check (v4/accounting-school.js). */
+.as-school .as-holiday{margin:0 0 12px;padding:8px 12px;border:1px solid var(--warn,#9b6823);border-radius:var(--radius-sm);background:var(--as-inset);font-size:.875rem;font-weight:700;line-height:1.5}
+.as-school .as-jobs{margin:20px 0}
+.as-school .as-jobs>h3{display:flex;align-items:center;gap:8px}
+.as-school .as-job{padding:16px;border:1px solid var(--as-rule);border-radius:var(--radius);background:var(--as-paper);margin:12px 0;min-width:0}
+.as-school .as-job.on{border-color:var(--as-ledger)}
+.as-school .as-job-head{display:flex;align-items:flex-start;gap:12px}
+.as-school .as-job-head>div{flex:1 1 auto;min-width:0}
+.as-school .as-job-head h4{margin:0;font-size:1rem;overflow-wrap:anywhere}
+.as-school .as-job-emoji{font-size:1.6rem;line-height:1}
+.as-school .as-job-head .as-stamp{flex:0 0 auto;white-space:nowrap}
+.as-school .as-job-posts{list-style:none;margin:12px 0;padding:0;border-top:1px solid var(--as-rule)}
+.as-school .as-job-posts li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--as-rule)}
+.as-school .as-job-posts li>span{display:flex;flex-direction:column;min-width:0}
+.as-school .as-job-posts small{overflow-wrap:anywhere}
+.as-school .as-job-pay{text-align:right;flex:0 0 auto}
+.as-school .as-job-pay b{color:var(--as-ledger);white-space:nowrap}
+.as-school .as-check .as-section-title{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+@media(max-width:420px){.as-school .as-job-posts li{flex-direction:column;gap:4px}.as-school .as-job-pay{text-align:left}.as-school .as-job .btn{width:100%}}

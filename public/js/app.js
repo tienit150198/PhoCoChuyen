@@ -160,9 +160,15 @@ function toast(message,kind=false){if(!message)return;const box=$('#toasts'),cls
   while(box.children.length>1)box.firstElementChild.remove();}
 function download(data,name,type='application/json'){const blob=new Blob([data],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
 async function cmd(action,payload={},options={}){
+  if(action==='start_day'&&!payload?.acct_check&&acctDue(options.career||career())){acctCheck(options.career||career());return null;}
   try{const r=await api.command(action,payload,options.career||career());if(!options.quiet)toast(r.message,r.correct===false?'error':r.celebrate?'good':false);if(r.celebrate){sound.success();world.celebrate();}else sound.click();for(const note of new Set(r.effects||[]))toast(note);if(r.clock)setTimeout(()=>toast(r.clock.text),1400);if(r.needs_say)setTimeout(()=>world.say(r.needs_say),700);return r;}
-  catch(error){if(error.quiet)return null;toast(error.status?error.message:'Mất kết nối. Việc đã xác nhận vẫn được giữ, thử lại sau một chút nhé.',true);sound.error();return null;}  // quiet: a tap the save moved under twice (api.js), the screen already shows why
+  catch(error){if(error.quiet)return null;
+    if(error.data?.code==='acct_check'&&!payload?.acct_check){acctCheck(options.career||career());return null;}   // 💼 kế toán: the entry check first (v4/accounting-school.js)
+    toast(error.status?error.message:'Mất kết nối. Việc đã xác nhận vẫn được giữ, thử lại sau một chút nhé.',true);sound.error();return null;}  // quiet: a tap the save moved under twice (api.js), the screen already shows why
 }
+/** 💼 A certified accountant's shift opens with the knowledge check (game/accounting_jobs.py): state.accounting_school.jobs. */
+const acctDue=cid=>!!api.state?.accounting_school?.jobs?.places?.[cid]?.[2]&&!api.state.careers?.[cid]?.open;
+async function acctCheck(cid){const m=await viaLazy(L.accountingSchool);if(await m.accountingCheckOpen(env(),cid))openSheet('accountingSchool');}
 function closeSheet(){if($('#sheet').open)$('#sheet').close();ui.view=null;ui.ai={};world.paused=ui.paused;}
 function openSheet(view,data={}){if(view!=='job'&&view!=='chat'){ui.task=null;}Object.assign(ui,data);ui.view=view;renderSheet(false);if(!$('#sheet').open){const d=$('#sheet');d.showModal();d.scrollTop=0;d.tabIndex=-1;d.focus({preventScroll:true});}}
 /** "?" of a work screen before the tutorial module has loaded (same markup as tutorial/guide.js helpButton;

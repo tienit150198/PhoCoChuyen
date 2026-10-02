@@ -16,6 +16,7 @@ import {portrait,lookOf} from './look.js';
 import {lazy,skeleton} from '../lazy.js';
 import {FIRST_JOB,quiet,firstDay} from './onboard.js';
 import {highlight} from './guide.js';
+import {acctPlace,acctTag} from './acct-jobs.js';   // 💼 kế toán: exam first, ×3/×5 (game/accounting_jobs.py)
 // 👗 Tủ đồ (v4/wardrobe.js): the sheet loads the first time it opens.
 const WD=lazy(()=>import('./wardrobe.js'),{css:['/css/wardrobe.css']});
 // 🙂 Ảnh đại diện khi chat (v4/avatar.js): likewise.
@@ -125,17 +126,20 @@ function chapterCard(env){
 
 function placeCard(env,cid){
   const {api}=env,J=api.state.journey,m=meta(api,cid),c=api.state.careers[cid],p=J.places[cid];
-  const job=c.job||{},tags=[];
+  const job=c.job||{},tags=[],aj=acctPlace(api,cid);
   if(cid===api.state.current&&c.started)tags.push(tag('Đang làm','blue'));
   if(c.started)tags.push(tag(`Ngày ${c.day} · Cấp ${c.level||1}`,'green'));
   if(p?.paused)tags.push(tag('Tạm đóng','amber'));
   if(job.status==='offer')tags.push(tag('💌 Có thư mời','blue'));
+  else if(aj&&!aj.ok)tags.push(tag('🔒 Cần thi chứng nhận','amber'));
   else if(job.required&&job.status!=='hired')tags.push(tag(icon('briefcase',12)+' Cần xin việc','amber'));
   if(!c.started&&J.story&&(api.content.journey.unlock_chapter||{})[cid]===J.chapter)tags.push(tag('Mới mở','green'));
   if(api.state.x3?.today?.includes(cid))tags.push(tag(`🔥 Lời x${api.state.x3.x} hôm nay`,'amber'));   // game/x3_week.py
+  if(acctTag(aj))tags.push(tag(acctTag(aj),'amber'));
   let money='';
   if(p&&J.story)money=p.employed?`<p class="jr-fund">Làm thuê · lương về ví${abandonTrust(api,cid)}</p>`:`<p class="jr-fund">Quỹ ${fmt(p.fund)} xu · ${p.paused?'không tốn phí duy trì':`duy trì ${fmt(p.upkeep)} xu/ngày`}</p>`;
-  const action=p?.paused?btn('Mở lại','jrReopen',{career:cid},'cream small'):
+  if(aj&&!aj.ok)money=`<p class="jr-fund">🔒 ${esc(aj.why)}</p>`;
+  const action=aj&&!aj.ok?btn(`Đi học ${icon('arrow',13)}`,'accountingSchool',{},'cream small'):p?.paused?btn('Mở lại','jrReopen',{career:cid},'cream small'):
     btn(`${c.started?'Tiếp tục':job.required&&job.status!=='hired'?'Xin việc':'Bắt đầu'} ${icon('arrow',13)}`,'choose',{career:cid},c.started?'primary small':'cream small');
   return `<article class="jr-place ${p?.paused?'paused':''} ${cid===api.state.current?'current':''}" style="--career:${colour(m.color)}"><span class="jr-place-emoji" aria-hidden="true">${emojiOf(m)}</span>
     <div class="jr-place-text"><span class="eyebrow">${esc(CATS[catOf(m)]||'')}</span><h3>${esc(m.place||m.short)}</h3><small>${esc(m.short||'')}</small><div class="jr-tags">${tags.join('')}</div>${money}</div>${action}</article>`;

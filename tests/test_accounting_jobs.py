@@ -389,5 +389,23 @@ class Saves(unittest.TestCase):
         self.assertTrue(aj.certified(back, 'corp_accounting'))
 
 
+
+class Markup(unittest.TestCase):
+    def test_referral_check_and_cards_render_safely(self):
+        import shutil
+        from pathlib import Path
+        node = shutil.which('node')
+        if not node:
+            self.skipTest('node not installed')
+        s = hire(with_certs(story(1), ['basic']))
+        view = school.view(s, {'tab': 'exam', 'course': 'basic'})
+        view['referral'][0]['postings'][0]['org'] = '<img src=x onerror=alert(1)>'
+        data = dict(view=view, check=aj.check_view(s, 'corp_accounting', 0))
+        root = Path(__file__).resolve().parents[1]
+        out = subprocess.run([node, str(root / 'tests/accounting_jobs.mjs')], input=json.dumps(data, ensure_ascii=False), text=True,
+                             encoding='utf-8', cwd=root, capture_output=True, timeout=60)
+        self.assertEqual(out.returncode, 0, out.stderr + out.stdout)
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -8,7 +8,7 @@ Mỗi bài có mục tiêu, phần giảng, ví dụ, nguồn và 3 bài tập. 
 
 Thi cơ bản gồm 24 câu; thi doanh nghiệp rút 40 câu từ 60 câu, phủ đủ 15 chương. Đạt từ 80/100. Khóa doanh nghiệp yêu cầu chứng nhận cơ bản và hoàn thành 60 bài. Có thể thi lại miễn phí; bài chữa hiện sau khi nộp toàn bộ đề. Đề gắn với người chơi/lần thi, giữ qua tải lại.
 
-Chứng nhận là **chứng nhận hoàn thành trong Phố Có Chuyện**. Có tên người chơi, điểm, ngày và số chứng nhận, có thể lưu bản HTML để in. Chứng nhận doanh nghiệp tăng lương nghề `corp_accounting` lên 3 lần; giữ lương hợp đồng làm căn cứ, áp dụng cả mức thử việc và không cộng dồn khi thi lại. Những nghề khác giữ hệ số riêng.
+Chứng nhận là **chứng nhận hoàn thành trong Phố Có Chuyện**. Có tên người chơi, điểm, ngày và số chứng nhận, có thể lưu bản HTML để in. Chứng nhận mở việc làm kế toán và nhân lương: xem [Việc làm kế toán](#việc-làm-kế-toán). Lương hợp đồng vẫn là căn cứ, áp dụng cả mức thử việc và không cộng dồn khi thi lại. Những nghề khác giữ hệ số riêng.
 
 ## Doanh nghiệp thực hành
 
@@ -21,6 +21,22 @@ Số dư cuối tháng chuyển sang tháng sau. Tất cả máy mới, bảo hi
 Mẫu báo cáo lấy mã và nhãn từ [TT99 chính thức trên Công báo](https://congbao.chinhphu.vn/van-ban/thong-tu-so-99-2025-tt-btc-46529.htm): B01 có 126 dòng, B02 có 21, B03 trực tiếp có 27, B09 có 107 đề mục. Chỉ tiêu không phát sinh bằng 0; EPS không áp dụng với hồ sơ doanh nghiệp chưa đại chúng. Báo cáo tháng so sánh tháng trước, tháng 1 dùng số dư đầu năm cho B01; không có số kết quả năm 2025 để so sánh.
 
 Hoàn thành sổ và 4 báo cáo mới nhận lương ca thực hành, một lần mỗi kỳ. Trong chế độ Hành trình, lương về ví cá nhân theo cơ chế lương hiện có, không khép ca nghề đang làm hay đẩy ngày sống. Ngoài Hành trình, lương theo quỹ nghề hiện có.
+
+## Việc làm kế toán
+
+Chủ game 03/10: học TT99 xong thì giới thiệu việc làm, phải học và thi đạt mới được làm, có kiểm tra kiến thức, lương kế toán ×3 và ngày lễ ×5. Mã ở `game/accounting_jobs.py`, giao diện ở `public/js/v4/accounting-school.js` (giới thiệu việc làm, kiểm tra đầu ca) và `public/js/v4/acct-jobs.js` (thẻ nơi làm việc).
+
+| Nơi làm việc | Chứng nhận cần có | Lương hợp đồng | ×3 | ×5 ngày lễ |
+|---|---|---|---|---|
+| Công ty CP Mây Tre Xanh (`corp_accounting`) | Kế toán cơ bản | 55–100 xu/ngày | 165–300 | 275–500 |
+| Sông Hồng Group (`group_accounting`) | Kế toán doanh nghiệp Việt Nam – TT99 (cần cả chứng nhận cơ bản) | 50–120 xu/ngày | 150–360 | 250–600 |
+
+- **Cổng vào (chế độ Hành trình):** chưa có chứng nhận thì mọi thao tác ở nơi đó bị từ chối kèm lý do (`need_cert`); thẻ ở trang Hành trình hiện 🔒, một dòng lý do và nút **Đi học**. Người quen của sếp cũng không mời vào nơi còn thiếu chứng nhận. Chứng nhận mở nơi đó sớm hơn chương truyện (tính từ chứng nhận, không lưu); ca đầu tiên ở đó mới thêm nơi đó vào `journey.unlocked` (lúc đó nơi đó đã `started`, bản 1.4.20 vẫn nhận). Ngoài Hành trình (sandbox, kiểm thử nghề) không có cổng.
+- **Người đang làm (giữ quyền cũ):** bản lưu đã làm ở đó (đã mở ca, đã xong việc, đã nhận lương) hoặc đang có hồ sơ (`hired`, `applying`, `offer`) vẫn làm tiếp không cần thi, ở mức lương thường, không có kiểm tra đầu ca. Tính từ dữ liệu sẵn có, không sửa hay thêm gì vào bản lưu. Nghỉ việc rồi vẫn ứng tuyển lại được. Thi đạt thì nhận ×3/×5 và kiểm tra đầu ca như mọi người.
+- **Kiểm tra kiến thức đầu ca:** người có chứng nhận mở ca bằng 3 câu nhanh (chọn đáp án hoặc tính số) lấy từ ngân hàng đề của khóa tương ứng, ưu tiên 3 chương khác nhau; đúng 2/3 là vào ca. Đề rút theo (hạt giống hành trình, nghề, ngày của nghề, lần làm), nên không lưu gì: `as_job_check` trả đề không có đáp án, `as_job_grade` chấm và chỉ ra bài nên xem lại (không lộ đáp án), `start_day` mang `acct_check` và máy chủ chấm lại. Sai không mất xu; **Làm bài khác** rút đề mới. Máy khách cũ nhận lời từ chối rõ ràng (`acct_check`).
+- **Lương:** ngày thường ×3, ngày nghỉ lễ ×5 (giờ Việt Nam), tối đa 600 xu/ngày; nhân trên lương hợp đồng (thử việc 85% trước), chỉ dòng lương, không nhân cả ngày. Dòng ví ghi `… · x3` hoặc `… · x5`. Lương ca thực hành Mây Tre Xanh trong Học kế toán theo cùng hệ số.
+- **Ngày lễ (Bộ luật Lao động 2019, Điều 112):** mỗi năm 1/1, 30/4, 1/5, 2/9; bảng cố định 2026–2028: Tết Nguyên đán 5 ngày (ngày cuối năm cũ và mùng 1–4: 16–20/2/2026, 5–9/2/2027, 25–29/1/2028), Giỗ Tổ 10/3 âm lịch (26/4/2026, 16/4/2027, 4/4/2028), ngày liền kề Quốc khánh (1/9/2026, 3/9/2027, 1/9/2028). Không tính ngày nghỉ bù. Cần đối chiếu thông báo chính thức hằng năm và nối bảng sau 2028. `MNL_HOLIDAY_OFF=1` tắt mức ngày lễ (bộ kiểm thử bật sẵn).
+- **Với 🔥 nghề x3 trong tuần (`game/x3_week.py`):** hai thứ cộng song song, không nhân nhau. Thưởng tuần tính trên tiền lời của ca (`summary.net`, chốt trước khi trả lương trong `engine.end_day`), còn ×3/×5 chỉ nhân dòng lương.
 
 ## Gợi ý và tra cứu
 
