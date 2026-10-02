@@ -44,6 +44,31 @@ html[data-layout="phone"] .sheet-head .gd-next{margin-top:4px}
 .gd-alt:hover{color:var(--ink)}
 .gd-why{display:block;text-align:center;font-size:.8rem;font-weight:600;color:var(--warn,var(--muted))}
 .btn.gd-cta{white-space:normal;line-height:1.25}
+/* A bottom button that only points ("👆 Chạm: Ly M", guide.js pointers): outlined, never filled like a button
+   that does the step, so it does not read as a dead action. Pressing it puts a ▼ over the control. */
+.btn.gd-cta.gd-point{background:var(--surface);color:var(--accent-text);border:2px solid var(--accent);box-shadow:none}
+.btn.gd-cta.gd-point:hover{background:var(--accent-soft)}
+/* It never pulses itself (a career may light its bar button on a first task): the control it points at does. */
+.gd-point.gd-pulse::before{content:none}
+@media (prefers-reduced-motion:reduce){.gd-point.gd-pulse{outline:none}}
+.gd-mark{position:fixed;left:0;top:0;z-index:40;width:0;height:0;pointer-events:none}
+.gd-mark>i{position:absolute;left:-14px;bottom:2px;width:28px;font-style:normal;font-size:1.3rem;line-height:1;text-align:center;color:var(--accent);
+  text-shadow:0 0 3px var(--surface),0 0 6px var(--surface);animation:gd-bob .45s ease-in-out infinite alternate}
+@keyframes gd-bob{to{transform:translateY(-7px)}}
+@media (prefers-reduced-motion:reduce){.gd-mark>i{animation:none}}
+
+/* Notes over a work screen whose button bar is pinned at the bottom (guide.js placeToasts sets data-gd-bar and the
+   bar's size): one calm line right above the bar, as wide as it, never over the customer or the order (they sit
+   at the top). Two lines at most (three for a red one, which says why something failed); a tap still closes it. */
+html dialog#sheet[data-gd-bar] .toasts{top:auto;bottom:calc(var(--cta-bar-h,104px) + 6px);left:var(--cta-bar-x,50%);
+  width:min(calc(var(--cta-bar-w,520px) - 16px),calc(100vw - 16px),640px);gap:4px}
+html dialog#sheet[data-gd-bar="below"] .toasts{top:calc(var(--cta-bar-b,0px) + 6px);bottom:auto}
+#sheet[data-gd-bar] .toast{width:100%;box-sizing:border-box;padding:8px 12px;line-height:1.35;text-align:left}
+#sheet[data-gd-bar] .toast:not(.multi):not(.hint){display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+#sheet[data-gd-bar] .toast.error:not(.multi){-webkit-line-clamp:3}
+#sheet[data-gd-bar] .toast-lines li{grid-template-columns:1.45em minmax(0,1fr)}
+#sheet[data-gd-bar] .toast-lines li:nth-child(n+3){display:none}
+#sheet[data-gd-bar] .toast-lines .tl-tx{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 
 /* Highlight: a short glow after "go to", a soft pulse on a first task. */
 .gd-flash{animation:gd-flash 1.2s var(--ease) 2;position:relative;z-index:1}
@@ -65,7 +90,8 @@ html[data-layout="phone"] .sheet-head .gd-next{margin-top:4px}
 .gd-rules>summary{cursor:pointer}
 .gd-rules ul{margin:6px 0 0;padding-left:18px}
 
-/* (Toasts over a sheet: app.css puts them just under the sheet's header, on every layout.) */
+/* (Toasts over a sheet: app.css puts them just under the sheet's header, on every layout; a work screen with a
+   pinned button bar has them right above the bar, see #sheet[data-gd-bar] above.) */
 
 /* Instant tap feedback (app.js adds .is-pressed on click, before the server answers). */
 .is-pressed:not(:disabled){filter:brightness(.92);transform:scale(.97);transition:none}
