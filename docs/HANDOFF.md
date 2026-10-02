@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **1.4.3** (02/10 12:20; see "1.3.0" below), 33 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **1.4.4** (02/10 12:59; see "1.3.0" below), 33 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -59,9 +59,16 @@ branch holds what, and what to do next, in order. Details live in the linked doc
     (`SESSION_IDLE_DAYS`); the owner was asked whether to keep those too.
 - Known, pre-existing: `/api/ai/review` answers 400 for ~70 calls/hour (many clients; harmless: the client
   falls back to the scripted review). Cause not found yet (not the career check).
-- In progress (02/10 afternoon): worktrees `wt-tax`, `wt-milktea`, `wt-grocery`, `wt-shops`, `wt-faq`
-  (branches `ux/*` from 2074c20): disable/explain actions the server rejects (data: stat_actions errors), inline
-  hints for tax/accounting, an in-game "Hỏi nhanh". Merge into rel-1.3, then release 1.4.4.
+- **1.4.4** (02/10 12:59, rollback target 1.4.3-20261002121954): buttons that would be refused are disabled with
+  the reason (milk tea, certificates, Sớm Mai, grocery `_pack_gate`, shared stock cart `cart_lines`, mother_baby
+  `fits`, salon stock + 🎨 Bảng màu, customer care "khi nào dùng"), light 📐 hints in tax/accounting (`bad` boxes),
+  ❓ Hỏi nhanh (15 Q&A in the guide), intro "Vào làm thôi" fix, `ops_pay_all`. Owner rule: hints only, the player
+  does every step. Branches `ux/*` merged; worktrees `wt-*` can be removed.
+- Open questions to the owner (02/10): remove the ✓ marks in the salon mixer's "Bảng pha màu" (they show the
+  answer)? Gentler beginner pay in office jobs (proposal in the tax agent report: −2 per mistake, floor half bonus,
+  first ~5 dossiers)? Keep idle anonymous saves forever?
+- Small known: `e.target.closest is not a function` in app.js click handler (pre-existing, ~8/day): guard with
+  `instanceof Element`.
 - Someone left uncommitted Firebase/telemetry work in the main checkout (.env.example, game/webassets.py,
   public/js/telemetry.js, public/privacy.html, tests/test_webassets.py); not ours, not released.
 
