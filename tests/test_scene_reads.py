@@ -1,7 +1,8 @@
 """The room backdrop cache (public/js/boba-world.js backdrop()): a new state repaints the room only when something
-the paint read of the game changed (public/js/scenes/reads.js, checked with node in tests/scene_reads.mjs). In
-the browser, ?deltacheck=1 on localhost also paints each kept backdrop again and compares the pixels
-(globalThis.__mnlBackdrop)."""
+the paint read of the game changed (public/js/scenes/reads.js, checked with node in tests/scene_reads.mjs), and
+the milk tea room keeps its moving bits (clouds past the window, fairy lights) out of it (BobaWorld.ambient), so it
+is painted once instead of every ROOM_TICK. In the browser, ?deltacheck=1 on localhost also paints each kept
+backdrop again and compares the pixels (globalThis.__mnlBackdrop)."""
 import re
 import shutil
 import subprocess
@@ -29,6 +30,16 @@ class SceneReadsTest(unittest.TestCase):
         self.assertIn('this.reduced', key)         # ... but what the paint reads off the world itself does
         self.assertIn("watch(this,['c','state','game'])", backdrop)
         self.assertIn('L.reads?.same(this)', backdrop)
+        self.assertIn('L.ambience', backdrop)
+
+    def test_milk_tea_room_is_still(self):
+        tea = (JS / 'scenes' / 'teabar.js').read_text(encoding='utf-8')
+        rooms = tea.split('function landRoom(', 1)[1].split('/* ---', 1)[0]
+        self.assertNotIn('w.time', rooms)          # world time only inside world.ambient(...)
+        bar = tea.split('function windowBar(', 1)[1].split('\n/**', 1)[0]
+        self.assertIn('world.ambient(', bar)
+        self.assertEqual(bar.count('world.time'), 1)
+        self.assertLess(bar.index('world.ambient('), bar.index('world.time'))
 
 
 if __name__ == '__main__':

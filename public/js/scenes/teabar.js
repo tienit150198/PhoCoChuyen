@@ -140,16 +140,18 @@ function backBar(c,p,x,top,w,bottom,s){R(c,x,top+10,w,bottom-top-10,PINK,4);for(
   // stacked cups
   at(c,x+w*.9,top,s,()=>{for(let i=0;i<5;i++)P(c,[[-11,-4-i*7],[11,-4-i*7],[13,-12-i*7],[-13,-12-i*7]],i%2?'#f7fbfc':'#eef6f8');R(c,-13,-48,26,5,'#dfeef1',2);heart(c,0,-20,.2,PINK_D);});}
 /** Window with a street view, and the window bar ledge in front of it. */
-function windowBar(c,p,x,y,w,h,ledge,apronTo,time,reduced){
+function windowBar(c,p,x,y,w,h,ledge,apronTo,world){
   R(c,x-8,y-8,w+16,h+12,'#f0c3d0',18);const pane=(w-10)/2;
   for(let i=0;i<2;i++){const px=x+i*(pane+10);c.save();c.beginPath();c.roundRect(px,y,pane,h,[pane/2,pane/2,6,6]);c.clip();
     R(c,px,y,pane,h,'#cfeaf0',0);E(c,px+pane*.7,y+h*.3,12,12,i?'#fff2c4':'#cfeaf000');
-    const drift=reduced?0:(time*5+i*40)%(pane+50);E(c,px+drift-25,y+h*.35,16,6,'#ffffffc8');
     R(c,px,y+h*.72,pane,h*.28,'#f3e1cf',0);E(c,px+pane*(i?.25:.75),y+h*.7,pane*.3,h*.24,'#a9d3b3');L(c,px+pane*(i?.25:.75),y+h*.72,px+pane*(i?.25:.75),y+h*.9,'#b08a6c',4);
     R(c,px+pane*(i?.55:.05),y+h*.62,pane*.4,h*.1,i?'#f6c1a8':'#bcd7ef',2);c.restore();
     c.beginPath();c.roundRect(px,y,pane,h,[pane/2,pane/2,6,6]);c.strokeStyle='#fffaf4';c.lineWidth=5;c.stroke();}
-  // a little potted cutie and fairy lights along the arch
-  for(let i=0;i<7;i++){const a=Math.PI+i*Math.PI/6;E(c,x+w/2+Math.cos(a)*(w/2+2),y+w/2*.1+h*.42+Math.sin(a)*(h*.5),2.6,2.6,'#fff1b8');}
+  // A cloud drifting past each pane (inside the frame's white edge), and fairy lights along the arch over them:
+  // drawn on every frame over the cached room (BobaWorld.ambient), so the rest of the room is painted once.
+  world.ambient(c=>{for(let i=0;i<2;i++){const px=x+i*(pane+10);c.save();c.beginPath();c.roundRect(px+2.5,y+2.5,pane-5,h-5,[pane/2-2.5,pane/2-2.5,3.5,3.5]);c.clip();
+      const drift=world.reduced?0:(world.time*5+i*40)%(pane+50);E(c,px+drift-25,y+h*.35,16,6,'#ffffffc8');c.restore();}
+    for(let i=0;i<7;i++){const a=Math.PI+i*Math.PI/6;E(c,x+w/2+Math.cos(a)*(w/2+2),y+w/2*.1+h*.42+Math.sin(a)*(h*.5),2.6,2.6,'#fff1b8');}});
   R(c,x-14,ledge,w+28,11,MARBLE,4,'#dcc8bb',1.5);R(c,x-10,ledge+11,w+20,apronTo-ledge-11,MINT,0);
   for(let xx=x-2;xx<x+w+10;xx+=12)L(c,xx,ledge+16,xx,apronTo-2,'#ffffff90',2.5);R(c,x-10,ledge+11,w+20,4,MINT_D,0);}
 /** Hanging order screen: the `evidence` hotspot. */
@@ -268,7 +270,7 @@ function landRoom(w,p){const c=w.ctx,items=w.c?.ops?.security?.items||[],open=!!
   backBar(c,p,404,398,300,452,1);
   orderScreen(c,p,712,236,80,98,{head:12,row:11,cup:.36},activeOrders(w),179);
   neon(c,897,222,30,open);
-  windowBar(c,p,812,258,172,86,352,452,w.time,w.reduced);
+  windowBar(c,p,812,258,172,86,352,452,w);
   cupGarland(c,184,404,198,6,7);
   // right wall: street notice board, a cup-shaped cutout and the lamp
   R(c,1012,300,65,77,'#d7a9b8',9);R(c,1018,306,53,65,CREAM,6);T(c,'CHUYỆN',1044,324,10,BERRY);T(c,'PHỐ',1044,340,14,BERRY);heart(c,1044,359,.35,PINK_D);
@@ -284,7 +286,7 @@ function portRoom(w,p){const c=w.ctx,items=w.c?.ops?.security?.items||[],open=!!
   menuBoard(c,p,220,170,260,130,{head:17,name:15,price:13,chip:14,cup:.56,cupY:40},open);
   neon(c,350,334,30,open);
   backBar(c,p,214,446,272,511,.9);
-  windowBar(c,p,512,212,132,92,310,346,w.time,w.reduced);
+  windowBar(c,p,512,212,132,92,310,346,w);
   orderScreen(c,p,504,360,94,96,{head:16,row:15,cup:.4},activeOrders(w),346);
   R(c,601,344,52,62,'#d7a9b8',8);R(c,606,349,42,52,CREAM,5);T(c,'CHUYỆN',627,364,9,BERRY);T(c,'PHỐ',627,378,12,BERRY);heart(c,627,393,.28,PINK_D);
   plaque(c,p,608,158,40,44);
