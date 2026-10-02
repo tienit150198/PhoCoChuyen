@@ -499,7 +499,7 @@ class Integrity(unittest.TestCase):
 
     def test_public_state_is_small(self):
         p = Play()
-        self.assertLess(len(json.dumps(public_state(p.s)['journey'], ensure_ascii=False)), 8000)
+        self.assertLess(len(json.dumps(public_state(p.s)['journey'], ensure_ascii=False)), 8500)   # 1.4.8: owning several homes (housing props) added ~180 bytes
 
 
 class Storage(unittest.TestCase):
