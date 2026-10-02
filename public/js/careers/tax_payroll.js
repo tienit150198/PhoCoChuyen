@@ -16,6 +16,12 @@ const state=(x,t)=>x.ui[t.id]??={paper:0,sel:{},multi:{},order:{}};
 const fid=(t,...p)=>['tp',t.id,...p].join('-').replace(/[^a-zA-Z0-9_-]/g,'_');
 const NUMERIC=/^[−-]?[\d.]+( xu)?$/;
 
+/** The toast of a wrong check from a server without `toast`: “✗ Chưa khớp 1/2 ô.” (+ the lunch note, if any). */
+function shortMiss(st,r){
+  const n=st.kind==='fields'?st.fields.length:0,b=Array.isArray(r.bad)?r.bad.length:0,lunch=String(r.message||'').match(/🍜[^.]*\./)?.[0];
+  return `✗ Chưa khớp${n?` ${n-b}/${n} ô`:''}.${lunch?' '+lunch:''}`;
+}
+
 /** Integer typed by a person: "12.400", "12 400", "-900" → 12400 / -900; anything else → null. */
 function parseIntVN(raw){
   const s=String(raw??'').trim().replace(/−/g,'-').replace(/[\s.,_]/g,'').replace(/xu$/i,'');
@@ -87,17 +93,26 @@ const HOW={
     taxable:'Thu nhập chịu thuế của MỌI nơi − bảo hiểm bắt buộc − Tổng giảm trừ.',due:'Áp biểu lũy tiến NĂM (mốc tháng × 12) lên Thu nhập tính thuế cả năm, làm tròn xuống.',
     balance:'Thuế phải nộp cả năm − thuế đã khấu trừ ở mọi nơi; âm là được hoàn.'},
 };
-const how=(t,st,id,x)=>{const s=HOW[`${t.form}:${st.id}`]?.[id];return s?`<p class="ok-note">📐 ${x.esc(s)}</p>`:'';};
+/** One box of a calculation as a small card (owner, 02/10: the two-column table was a wall on a phone): the label on
+ *  top, its 📐 formula folded under it (check() opens it on a box that did not match), the box full width. After a wrong check
+ *  the boxes off say “chưa khớp” in red and the others “khớp” in green, until the next check. `key` is '' for a
+ *  one-number step. */
+function field(t,st,x,{key,label,options,miss}){
+  const id=key?fid(t,st.id,key):fid(t,st.id),bad=!!miss?.bad?.includes(key),ok=!!miss&&!bad&&st.kind==='fields';
+  const how=HOW[`${t.form}:${st.id}`]?.[key],mark=bad?' aria-invalid="true"':'';
+  const box=options?`<select class="${bad?'tp-bad':''}" id="${id}" data-preserve${mark}><option value="">Chọn…</option>${options.map(o=>`<option value="${x.esc(o.id)}">${x.esc(o.label)}</option>`).join('')}</select>`
+    :`<input class="input tp-num${bad?' tp-bad':''}" id="${id}" data-preserve type="text" inputmode="numeric" autocomplete="off" placeholder="0"${mark}>`;
+  return `<div class="tp-field${bad?' bad':ok?' ok':''}"><div class="tp-field-top"><label for="${id}">${x.esc(label)}</label>${bad?'<span class="tp-ftag bad">✗ chưa khớp</span>':ok?'<span class="tp-ftag ok">✓ khớp</span>':''}</div>
+    ${how?`<details class="tp-how" id="${id}-how"><summary>📐 Cách tính</summary><p>${x.esc(how)}</p></details>`:''}${box}</div>`;
+}
 
 function inputView(st,t,x){
-  const u=state(x,t),sid=x.esc(st.id),tid=x.esc(t.id);
+  const u=state(x,t),sid=x.esc(st.id),tid=x.esc(t.id),miss=u.miss?.[st.id];
   switch(st.kind){
     case'choice':return `<div class="tp-choices">${st.options.map(o=>`<button type="button" class="tp-choice ${u.sel[st.id]===o.id?'on':''}" data-action="car:pick" data-task="${tid}" data-step="${sid}" data-v="${x.esc(o.id)}" aria-pressed="${u.sel[st.id]===o.id}"><span class="tp-box radio" aria-hidden="true">${u.sel[st.id]===o.id?'●':''}</span>${x.esc(o.label)}</button>`).join('')}</div>`;
     case'multi':{const on=u.multi[st.id]||[];return `<div class="tp-choices">${st.options.map(o=>`<button type="button" class="tp-choice check ${on.includes(o.id)?'on':''}" data-action="car:toggle" data-task="${tid}" data-step="${sid}" data-v="${x.esc(o.id)}" aria-pressed="${on.includes(o.id)}"><span class="tp-box" aria-hidden="true">${on.includes(o.id)?'✓':''}</span>${x.esc(o.label)}</button>`).join('')}</div>`;}
-    case'number':{const bad=(u.miss?.[st.id]?.bad||[]).includes('');   // a wrong check outlines the box until the next one
-      return `<label class="tp-cell-row"><span>${bad?'✗ ':''}Đáp số (xu)</span><input class="input tp-num${bad?' tp-bad':''}" id="${fid(t,st.id)}" data-preserve type="text" inputmode="numeric" autocomplete="off" placeholder="0"${bad?' aria-invalid="true"':''}></label>${how(t,st,'',x)}`;}
-    case'fields':{const bad=new Set(u.miss?.[st.id]?.bad||[]),cls=f=>bad.has(f.id)?' tp-bad':'',mark=f=>bad.has(f.id)?' aria-invalid="true"':'';
-      return `<table class="tp-cells edit"><tbody>${st.fields.map(f=>`<tr class="${bad.has(f.id)?'tp-row-bad':''}"><th scope="row"><label for="${fid(t,st.id,f.id)}">${bad.has(f.id)?'✗ ':''}${x.esc(f.label)}</label>${how(t,st,f.id,x)}</th><td>${f.options?`<select class="${cls(f).trim()}" id="${fid(t,st.id,f.id)}" data-preserve${mark(f)}><option value="">Chọn…</option>${f.options.map(o=>`<option value="${x.esc(o.id)}">${x.esc(o.label)}</option>`).join('')}</select>`:`<input class="input tp-num${cls(f)}" id="${fid(t,st.id,f.id)}" data-preserve type="text" inputmode="numeric" autocomplete="off" placeholder="0"${mark(f)}>`}</td></tr>`).join('')}</tbody></table>`;}
+    case'number':return `<div class="tp-fields">${field(t,st,x,{key:'',label:'Đáp số (xu)',miss})}</div>`;
+    case'fields':return `<div class="tp-fields">${st.fields.map(f=>field(t,st,x,{key:f.id,label:f.label,options:f.options,miss})).join('')}</div>`;
     case'match':return `<div class="tp-match">${st.left.map(l=>`<label class="tp-cell-row"><span>${x.esc(l.label)}</span><select id="${fid(t,st.id,l.id)}" data-preserve><option value="">Chọn…</option>${st.right.map(r=>`<option value="${x.esc(r.id)}">${x.esc(r.label)}</option>`).join('')}</select></label>`).join('')}</div>`;
     case'order':{
       const picked=u.order[st.id]||[],rest=st.items.filter(o=>!picked.includes(o.id));
@@ -108,6 +123,17 @@ function inputView(st,t,x){
   return '<p class="ok-note">Bước này chưa có giao diện.</p>';
 }
 
+/** What the last checks said, as one card under the step (the toast only says “chưa khớp”): which boxes are off,
+ *  the newest hint, the deeper ones the server worked on the player's own numbers (`deep`, optional), older hints
+ *  greyed. The server unlocks one hint per wrong check (procedures.public); after a reload only those stay. */
+function resultCard(cur,miss,tries,x){
+  const hints=(cur.hints||[]).slice(0,tries).filter(Boolean).reverse(),deep=miss?.deep||[];
+  if(!miss?.where&&!hints.length&&!deep.length)return '';
+  const li=(icon,s,cls='')=>`<li${cls?` class="${cls}"`:''}><span aria-hidden="true">${icon}</span><span>${x.esc(s)}</span></li>`;
+  return `<div class="tp-result${miss?' miss':''}" role="status">${miss?.where?`<p class="tp-result-head">✗ ${x.esc(miss.where)}</p>`:''}
+    <ul class="tp-tips">${hints.slice(0,1).map(s=>li('💡',s)).join('')}${deep.map(s=>li('🔎',s,'deep')).join('')}${hints.slice(1).map(s=>li('💡',s,'old')).join('')}</ul></div>`;
+}
+
 /** The worksheet: the current step big, done steps folded away. */
 function worksheet(t,x){
   const p=t.progress||{at:0,total:0,attempts:{}},steps=t.steps||[],cur=steps[p.at];
@@ -115,9 +141,7 @@ function worksheet(t,x){
   const done=solved.length?fold(`✓ ${solved.length} bước đã xong <small>xem lại</small>`,`<ol class="tp-steps">${solved.map(st=>`<li class="tp-step solved"><div class="tp-step-head"><span class="tp-no" aria-hidden="true">✓</span><b>${x.esc(st.title)}</b></div><div class="tp-answer">${solvedText(st,x)}</div>${st.explain?`<p class="tp-explain">${x.esc(st.explain)}</p>`:''}${st.work?.length?`<ol class="tp-ex-work">${st.work.map(w=>`<li>${x.esc(w)}</li>`).join('')}</ol>`:''}</li>`).join('')}</ol>`):'';
   let body='';
   if(cur&&cur.state==='current'){
-    const tries=p.attempts[cur.id]||0;
-    const where=state(x,t).miss?.[cur.id]?.where;
-    const hint=(where?`<p class="tp-miss" role="status">✗ ${x.esc(where)}</p>`:'')+(tries>0?`<p class="tp-hint">💡 ${x.esc(cur.hints[Math.min(cur.hints.length,tries)-1])}</p>`:'');
+    const tries=p.attempts[cur.id]||0,hint=resultCard(cur,state(x,t).miss?.[cur.id],tries,x);
     body=`<article class="tp-work" data-step-card="${x.esc(t.id)}:${x.esc(cur.id)}"><header class="tp-work-head"><span class="tp-no" aria-hidden="true">${p.at+1}</span><div class="grow"><small>Bước ${p.at+1}/${p.total}${p.total-p.at-1?` · còn ${p.total-p.at-1} bước sau`:''}${tries>1?` · ${tries} lần kiểm`:''}</small><h3>${x.esc(cur.title)}</h3></div>${cur.tag==='ethic'?'<span class="ok-tag warn">🔒 bảo mật & quy trình</span>':''}</header>
       <p class="tp-prompt">${x.esc(cur.prompt)}</p>${inputView(cur,t,x)}${hint}</article>`;
   }else if(!t.filed)body=`<article class="tp-work done"><header class="tp-work-head"><span class="tp-no" aria-hidden="true">📤</span><div class="grow"><small>Bước cuối</small><h3>Nộp / bàn giao hồ sơ</h3></div></header></article>`;
@@ -508,10 +532,19 @@ export default {
         const box=document.getElementById(bad.id);if(box){box.classList.add('tp-bad');box.addEventListener('input',()=>box.classList.remove('tp-bad'),{once:true});box.scrollIntoView({block:'center'});box.focus({preventScroll:true});}
         return;}
       if(answer===null){x.toast(st.kind==='choice'?'Chạm chọn một đáp án trước nhé.':st.kind==='multi'?'Chạm chọn ít nhất một ô trước nhé.':st.kind==='order'?'Chạm đủ các việc theo thứ tự trước nhé.':st.kind==='match'?'Chọn đủ từng dòng trước nhé.':'Điền đủ các ô số trước khi kiểm tra nhé.',true);return;}
-      const r=await x.send('tp_submit',{task:t.id,step:st.id,answer});
-      // A wrong check names the boxes that do not match (never their values); they stay outlined until the next check.
-      // A one-number step has no box names in the reply: its only box ('') is the one off.
-      if(r){(u.miss??={})[st.id]=r.correct===false?{bad:st.kind==='number'?['']:Array.isArray(r.bad)?r.bad:[],where:String(r.where||'')}:null;x.render();}
+      const r=await x.send('tp_submit',{task:t.id,step:st.id,answer},{quiet:true});
+      if(!r)return;
+      // A wrong check names the boxes that do not match (never their values); they stay marked until the next check.
+      // A one-number step has no box names in the reply: its only box ('') is the one off. The toast stays one short
+      // line (`toast`, or the same line built here for an older server); the details go to the card under the step.
+      const wrong=r.correct===false;
+      x.toast(wrong?(r.toast||shortMiss(st,r)):r.message,wrong?true:r.celebrate?'good':false);
+      (u.miss??={})[st.id]=wrong?{bad:st.kind==='number'?['']:Array.isArray(r.bad)?r.bad:[],where:String(r.where||''),
+        deep:Array.isArray(r.deep)?r.deep.filter(s=>typeof s==='string'):[]}:null;
+      x.render();
+      if(!wrong)return;
+      document.querySelectorAll('.career-job.tp .tp-field.bad details.tp-how').forEach(d=>{d.open=true;});   // once: the player may fold it again
+      document.querySelector('.career-job.tp .tp-result')?.scrollIntoView({block:'center'});
     },
   },
 };

@@ -198,3 +198,32 @@
 }
 /* the calculator folds to one line (office_kit .ok-fold) until a step asks for numbers */
 .career-job.tp details.tp-calc{display:block;padding:0}
+/* a calculation: one card per box — the label on top, its formula folded under it, the box full width;
+   two cards a row on a wide sheet. After a wrong check: red “chưa khớp” on the boxes off, green on the rest. */
+.career-job.tp .tp-fields{display:grid;gap:10px;min-width:0}
+@container sheet (min-width:640px){.career-job.tp .tp-fields{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.career-job.tp .tp-field{display:flex;flex-direction:column;gap:6px;min-width:0;padding:10px 12px 12px;border-radius:var(--radius-sm);background:var(--surface-2);border:1px solid var(--line)}
+.career-job.tp .tp-field-top{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+.career-job.tp .tp-field-top label{font-weight:800;line-height:1.3;overflow-wrap:anywhere}
+.career-job.tp .tp-field input,.career-job.tp .tp-field select{width:100%;min-height:48px;font-size:16px;margin-top:auto}
+.career-job.tp .tp-field .tp-num{text-align:left}
+.career-job.tp .tp-field.bad{border-color:var(--bad);background:var(--bad-soft)}
+.career-job.tp .tp-field.ok{border-color:var(--good);background:var(--good-soft)}
+.career-job.tp .tp-field.ok input,.career-job.tp .tp-field.ok select{border-color:var(--good)}
+.career-job.tp .tp-ftag{flex:none;padding:1px 9px;border-radius:var(--radius-pill);font-size:.867rem;font-weight:800;line-height:1.5;white-space:nowrap}
+.career-job.tp .tp-ftag.bad{background:var(--bad);color:var(--on-bad,#fff)}
+.career-job.tp .tp-ftag.ok{background:var(--good);color:var(--surface)}
+.career-job.tp .tp-how{font-size:.9rem;line-height:1.45;color:var(--ink-2)}
+.career-job.tp .tp-how summary{display:inline-flex;align-items:center;gap:4px;min-height:36px;cursor:pointer;font-weight:700;color:var(--muted);list-style:none}
+.career-job.tp .tp-how summary::-webkit-details-marker{display:none}
+.career-job.tp .tp-how summary::after{content:'▾';font-size:.8em}
+.career-job.tp .tp-how[open] summary::after{content:'▴'}
+.career-job.tp .tp-how p{margin:0 0 4px}
+/* what the last checks said: one card under the step */
+.career-job.tp .tp-result{display:grid;gap:8px;padding:10px 12px;border-radius:var(--radius-sm);background:var(--warn-soft);border-left:4px solid var(--warn)}
+.career-job.tp .tp-result.miss{border-left-color:var(--bad)}
+.career-job.tp .tp-result-head{margin:0;font-weight:800;line-height:1.4;color:var(--bad)}
+.career-job.tp .tp-tips{margin:0;padding:0;list-style:none;display:grid;gap:6px;font-size:.933rem;line-height:1.45}
+.career-job.tp .tp-tips li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px;overflow-wrap:anywhere}
+.career-job.tp .tp-tips li.deep{font-weight:600}
+.career-job.tp .tp-tips li.old{color:var(--ink-2)}
