@@ -294,7 +294,7 @@ function roomMarkup(rm,opts={}){
  * (CSS transitions on one transform each; a timer every few seconds; still with reduced motion). ---- */
 const CATS={room:'',list:[],timer:0};
 const NAP={sofa:['sleep',-27],giuong:['sleep','bed'],nem:['sleep',-9],o_meo:['sleep',-9],ghe_luoi:['loaf',-25],tham:['melt','rug'],tham_hoa:['melt','rug'],ghe_may:['loaf',-24],
-  ghe_tam_nang:['sleep',-20],tham_tam:['melt','rug']};
+  ghe_tam_nang:['sleep',-20],tham_tam:['melt','rug'],sap_go:['sleep',-22]};
 function napSpots(rm,G,list){
   const out=[];
   for(const o of list){
