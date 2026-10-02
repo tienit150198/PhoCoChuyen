@@ -44,6 +44,9 @@ Thử vận may, small stakes:
   coloured rings pays 1:1, the odds from darts.win_p(today's net) on the server. No daily money or round limit, only
   the wallet (_guard_free); PT_HIT points a hit, beyond POINTS_DAY too (_points_free). Save: the optional 'dt'
   {n: throws, w: hits, b: hồng tâm}.
+* 🎟️ Vé số cào (game/fair_scratch.py, owner 03/10): buy a vé of one scratch.TIERS price; the server decides it at the
+  purchase (luck_p(…, 'xs', …): wins ~42 %, ~1.03 xu back per xu, ~0.95 at the floor) and pays the prize at once; the
+  player scratches the silver off by hand to see it. Nothing new in the save (the Sổ ví row counts the tickets).
 * 🕯️ Chiếu trong (back corner): xóc đĩa chẵn lẻ (four coins, 1:1), bigger stakes XD_MIN..XD_MAX; the side picked
   is right with win_p, the coins any pattern of that parity alike (xd_toss). Each round
   has RAID_PCT % odds that Công an phường comes by: the stake is confiscated, a fine of stake // FINE_DIV (at least
@@ -80,6 +83,7 @@ import random
 import time
 
 from . import fair_darts as darts
+from . import fair_scratch as scratch
 from . import fair_oaq as oaq
 from . import fair_ring as ring
 from . import fair_cash as fc   # 🎁 tiền vốn and 💸 vay nóng
@@ -108,9 +112,12 @@ WIN_P, WIN_P_LOW = .53, .45     # owner 03/10 01:45: "bầu cua, chiếu trong, 
 # validator rejects unknown keys).
 RUN_FREE, RUN_STEP, RUN_GAP, P_FLOOR = 10, .01, 180, .40
 RUN_GAMES = ('bc', 'xd', 'lt', 'dt')
+# Stalls newer than 1.4.17, whose validator takes only RUN_GAMES in 'fair_run': their run is journey['fair_run2'], the
+# same shape; there is one run at a time (a round of the other kind drops the other key), as if it were one key.
+RUN_GAMES2 = ('xs',)
 # Bầu cua runs cool faster and further (owner 03/10 02:00: "spam mãi cái đó thì giảm tỷ lệ thắng xuống… có thể thấp hơn
 # 30%"), and the bowl opens BC_OPEN_MS after a roll ("mỗi lần bấm đợi 5s để mở"): rounds at least BC_GAP_MS apart.
-RUN_RULES = dict(bc=(.02, .25))  # game: (step a round past RUN_FREE, floor); others RUN_STEP, P_FLOOR
+RUN_RULES = dict(bc=(.02, .25), xs=(scratch.RUN_STEP, scratch.P_LO))  # game: (step a round past RUN_FREE, floor); others RUN_STEP, P_FLOOR
 BC_OPEN_MS = 5000
 BC_GAP_MS = 4800                 # BC_OPEN_MS less a little network slack
 TAPER_FROM, TAPER_TO = 2000, 5000
@@ -192,8 +199,8 @@ OAQ_KEYS = ('lv', 'g', 'at', 'stage')
 RING_KEYS = ('rs', 'at', 'stage')
 EARN_KEYS = ('oaq', 'ring', 'ring_n')   # today: xu earned per game, ném vòng rounds
 LABELS = dict(bc='🦀 Bầu cua hội chợ', xd='🕯️ Chiếu trong hội chợ', lt='🎱 Lô tô hội chợ', oaq='🪨 Ô ăn quan hội chợ',
-              ring='💍 Ném vòng hội chợ', dt='🎯 Phi tiêu hội chợ')
-UNITS = dict(bc='ván', xd='ván', lt='tờ', oaq='ván thắng', ring='lượt', dt='lượt')
+              ring='💍 Ném vòng hội chợ', dt='🎯 Phi tiêu hội chợ', xs='🎟️ Vé số cào hội chợ')
+UNITS = dict(bc='ván', xd='ván', lt='tờ', oaq='ván thắng', ring='lượt', dt='lượt', xs='vé')
 
 CLOSED = 'Hội chợ đã tàn, hẹn lần sau nha!'
 SOON = 'Hội chợ chưa mở đâu, hẹn bạn ngày khai hội nha!'
@@ -330,8 +337,6 @@ def _pay(j: dict, f: dict, game: str, amount: int) -> None:
             st['won'] += amount
         else:
             st['lost'] -= amount
-    count = f['dt']['n'] if game == 'dt' else st['oaq_won' if game == 'oaq' else game]
-    label = f'{LABELS[game]} · {count} {UNITS[game]}'
     last = None
     for row in reversed(j['history'][-12:]):
         if not isinstance(row, dict) or row.get('day') != j['life_day']:
@@ -339,6 +344,11 @@ def _pay(j: dict, f: dict, game: str, amount: int) -> None:
         if row.get('kind') == KIND and row.get('career') is None and str(row.get('label', '')).startswith(LABELS[game]):
             last = row
             break
+    if game == 'xs':   # one _pay a ticket and no counter in the save: the row's own count, one more
+        count = _row_count(last) + 1
+    else:
+        count = f['dt']['n'] if game == 'dt' else st['oaq_won' if game == 'oaq' else game]
+    label = f'{LABELS[game]} · {count} {UNITS[game]}'
     if last is not None and abs(last['amount'] + amount) <= 10**7:
         j['wallet'] += amount
         last['amount'] += amount
@@ -349,6 +359,12 @@ def _pay(j: dict, f: dict, game: str, amount: int) -> None:
         j['stats']['max_wallet'] = max(j['stats']['max_wallet'], j['wallet'])
     else:
         jr._wallet(j, amount, KIND, label)
+
+
+def _row_count(row: dict | None) -> int:
+    """The count at the end of a Sổ ví row's label ("… · 12 vé"), 0 when there is none."""
+    tail = str((row or {}).get('label', '')).rsplit(' · ', 1)[-1].split(' ')[0]
+    return min(10**6, int(tail)) if tail.isdigit() else 0
 
 
 def _earn(j: dict, f: dict, game: str, amount: int) -> int:
@@ -476,9 +492,11 @@ def odds(net: int, hi: float | None = None, lo: float | None = None) -> float:
 
 def _run(j: dict, game: str, t: float) -> int:
     """Count this round in the player's run of `game`; returns its length (1 for a new run)."""
-    r = j.get('fair_run')
+    key, other = ('fair_run2', 'fair_run') if game in RUN_GAMES2 else ('fair_run', 'fair_run2')
+    j.pop(other, None)   # another kind of stall: that run is over
+    r = j.get(key)
     if not (isinstance(r, dict) and r.get('g') == game and 0 <= int(t) - r.get('at', 0) <= RUN_GAP):
-        r = j['fair_run'] = dict(g=game, n=0, at=int(t))
+        r = j[key] = dict(g=game, n=0, at=int(t))
     r['n'] = min(10**6, r['n'] + 1)
     r['at'] = int(t)
     return r['n']
@@ -541,7 +559,7 @@ def _loto_lost(f: dict, lt: dict) -> None:
 
 # ---------------------------------------------------------------- commands
 COMMANDS = ('fair_bc', 'fair_xd', 'fair_loto_buy', 'fair_loto_kinh', 'fair_loto_fold',
-            'fair_oaq_start', 'fair_oaq_move', 'fair_oaq_quit', 'fair_ring_start', 'fair_ring_throw', 'fair_dart')
+            'fair_oaq_start', 'fair_oaq_move', 'fair_oaq_quit', 'fair_ring_start', 'fair_ring_throw', 'fair_dart', 'fair_xs')
 LATE = ('fair_loto_kinh', 'fair_loto_fold', 'fair_oaq_move', 'fair_oaq_quit', 'fair_ring_throw')   # may finish after the close
 
 
@@ -622,6 +640,24 @@ def _dart(e, j: dict, f: dict, p: dict, t: float, got: list) -> dict:
     out = dict(game='dt', win=win, stake=stake, net=delta, x=x, y=y, ring=ring, aim=list(aim))
     msg = ('Hồng tâm! ' if ring == 0 else 'Trúng vòng! ') + f'+{stake} xu.' if win else f'Trật rồi, mất {stake} xu.'
     return dict(fair=out, message=msg, points=pts)
+
+
+def _scratch(e, j: dict, f: dict, p: dict, t: float) -> dict:
+    """🎟️ One vé số cào: the price from the wallet, the ticket decided from _rng and today's net and paid at once
+    (game/fair_scratch.py); the client scratches the silver off to see it, so the message says nothing of the result."""
+    need = e.need
+    price = p.get('price')
+    need(set(p) == {'price'} and type(price) is int and price in scratch.TIERS,
+         f'Vé số cào có giá {", ".join(map(str, scratch.TIERS))} xu thôi nha.')
+    pts = _guard_free(e, f, j, t, price)
+    win = _rng.random() < luck_p(j, f, 'xs', t, scratch.P_HI, scratch.P_LO)
+    mult = scratch.prize_mult(_rng) if win else 0
+    cells = scratch.layout(price, mult, _rng)
+    prize = mult * price
+    _pay(j, f, 'xs', prize - price)
+    out = dict(game='xs', id=_rng.getrandbits(31), price=price, name=scratch.NAMES[price], cells=cells, prize=prize,
+               mult=mult, net=prize - price, hits=[i for i, v in enumerate(cells) if prize and v == prize])
+    return dict(fair=out, message='', points=pts)
 
 
 def _guard_round(e, f: dict, j: dict, t: float, stake: int, worst: int) -> int:
@@ -868,6 +904,9 @@ def apply(s: dict, name: str, p: dict) -> dict:
     elif name == 'fair_dart':   # 🎯 phóng phi tiêu: no daily money or round limit, the wallet only
         d = _dart(e, j, f, p, t, got)
         pts, result['fair'], result['message'] = d['points'], d['fair'], d['message']
+    elif name == 'fair_xs':   # 🎟️ vé số cào: no daily money or ticket limit, the wallet only
+        d = _scratch(e, j, f, p, t)
+        pts, result['fair'], result['message'] = d['points'], d['fair'], d['message']
     elif name == 'fair_ring_throw':
         r = f['ring']
         need(set(p) == {'id', 'taps'}, 'Dữ liệu thao tác không hợp lệ.')
@@ -978,6 +1017,9 @@ def public(s: dict) -> dict:
                 # 🎯 phi tiêu (absent from older servers: the client then leaves the stall out)
                 darts=dict(stakes=list(darts.STAKES), rings=list(darts.RINGS), board=darts.BOARD_R, off=darts.OFF_R,
                            aim_max=darts.AIM_MAX, pt=darts.PT_HIT, **{k: ((f or {}).get('dt') or {}).get(k, 0) for k in DT_KEYS}),
+                # 🎟️ vé số cào (absent from older servers: the client then leaves the stall out)
+                scratch=dict(tiers=list(scratch.TIERS), names={str(k): v for k, v in scratch.NAMES.items()},
+                             cells=scratch.CELLS, match=scratch.MATCH, mults=list(scratch.MULTS)),
                 # 🎱 the gánh lô tô: the vòng of this minute and the next nine, the tiers and side bets, today's tally
                 # (hut_max 0: no limit on Kinh hụt; the older client showed it as "hụt N lần là nghỉ ván")
                 ganh=dict(modes=[[slot + i, mode_of(slot + i)] for i in range(10)], names=dict(MODE_NAMES),
@@ -1004,6 +1046,12 @@ def validate(j: dict) -> None:
         from .engine import need, integer
         r = j['fair_run']
         need(isinstance(r, dict) and set(r) == {'g', 'n', 'at'} and r['g'] in RUN_GAMES, 'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
+        integer(r['n'], 0, 10**6)
+        integer(r['at'], 0, 10**11)
+    if 'fair_run2' in j:
+        from .engine import need, integer
+        r = j['fair_run2']
+        need(isinstance(r, dict) and set(r) == {'g', 'n', 'at'} and r['g'] in RUN_GAMES2, 'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
         integer(r['n'], 0, 10**6)
         integer(r['at'], 0, 10**11)
     if 'fair' not in j:
