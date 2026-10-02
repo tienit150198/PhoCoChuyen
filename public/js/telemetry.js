@@ -11,6 +11,7 @@
  * - once per page load: load timings (first byte, DOMContentLoaded, first game frame), the network type, coarse
  *   device memory / cores, cold or warm cache; and where a new player came from (referrer site, utm_*).
  * Only identifiers and numbers; no text typed by the player, no query strings, no ids. Nothing is stored. */
+import {observabilityBoot,analyticsError} from './observability.js';
 const URL_PATH='/api/beacon',MAX_PAGE=30,MAX_SESSION=60,ERR_DELAY=5000,MAX_TEXT=200;
 const ID=/^[A-Za-z0-9_:.-]{1,48}$/;
 let env=null,taps=[],seen=new Map(),queue=[],timer=0,lastLeave=0,sentPage=0;
@@ -83,6 +84,7 @@ export function error(kind,message,screen,st=''){
   const key=kind+'|'+m,have=seen.get(key);
   if(have){have.n++;have.dirty=true;return;}
   if(seen.size>=MAX_PAGE)return;
+  analyticsError(kind);   // type only; the detailed error stays on our own server
   const item={k:kind,m,s:id(screen)||where().v||'-',n:1,dirty:true};if(st)item.st=st;seen.set(key,item);queue.push(item);
   clearTimeout(timer);timer=setTimeout(()=>flush(),ERR_DELAY);
 }
@@ -134,6 +136,7 @@ function acquisition(){
 
 export function telemetryBoot(e){
   if(env)return;env=e;
+  try{observabilityBoot(e);}catch{/* Google must never affect game beacons */}
   const B=globalThis.__mnlBoot||(globalThis.__mnlBoot={}),T=B.tele||(B.tele={errs:[]});T.on=true;
   // boot.js kept these (with the screen: 'loading' while the splash shows, 'start' between the first frame and now).
   for(const x of (T.errs||[]).splice(0))error(x.k,x.k==='asset'?path(x.m):x.m,x.s||'loading',x.st?stack(x.st):'');

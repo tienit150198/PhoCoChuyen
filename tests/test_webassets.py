@@ -166,8 +166,9 @@ class DeployTests(unittest.TestCase):
             if url in cached:self.assertEqual(cached[url],self.resolve(url),'a cached v1 entry reused by v2 is byte-identical')
         self.assertIn(b"'v2'",self.resolve(v2.url('/js/lib.js')))
         # The v1 tab, still open, lazily imports a module after the deploy: it gets the v1 bytes.
-        self.assertEqual(self.resolve(v1.url('/js/careers/late.js')),b"export default 'late v1';\n")
-        self.assertEqual(self.resolve(v1.url('/js/lib.js')),b"export const a='v1';\n")
+        # Compare the exact original fixture bytes: write_text uses CRLF on Windows.
+        self.assertEqual(self.resolve(v1.url('/js/careers/late.js')),cached[v1.url('/js/careers/late.js')])
+        self.assertEqual(self.resolve(v1.url('/js/lib.js')),cached[v1.url('/js/lib.js')])
         # Unchanged files keep their URL (still cached after the deploy); changed ones get a new one.
         self.assertEqual(v1.url('/css/app.css'),v2.url('/css/app.css'));self.assertNotEqual(v1.url('/js/lib.js'),v2.url('/js/lib.js'))
     def test_recheck_window_from_env(self):

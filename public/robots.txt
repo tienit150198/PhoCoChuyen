@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /live
+
+Sitemap: https://phocochuyen.io.vn/sitemap.xml

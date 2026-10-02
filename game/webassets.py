@@ -29,6 +29,8 @@ import threading
 import time
 from pathlib import Path
 
+from game import observability
+
 VERSIONED_DIRS = ("js", "css", "i18n", "music", "audio", "icons")  # audio/: short recorded sounds (public/audio/*/CREDITS.md)
 VERSIONED_SUFFIXES = {".js", ".css", ".json", ".mp3", ".webp", ".png", ".svg"}
 MAPPED_SUFFIXES = (".js", ".css", ".json", ".mp3")  # in the import map (modules + asset() lookups)
@@ -194,7 +196,7 @@ class WebAssets:
         boot_src = (self.public / "js" / "boot.js").read_text(encoding="utf-8").strip()
         if "</script" in boot_src.lower():
             raise ValueError("boot.js must not contain </script>")
-        head = [f'<script type="importmap">{importmap}</script>',
+        head = [*observability.head_tags(), f'<script type="importmap">{importmap}</script>',
                 f'<meta name="mnl-version" content="{version}">']
         if content:
             head.append(f'<meta name="mnl-content" content="/api/content?v={content}">')
@@ -203,7 +205,7 @@ class WebAssets:
         head += [f'<link rel="modulepreload" href="{u}">' for u in preload if not u.startswith(ENTRY + "?")]
         html = _INLINE_BOOT.sub(lambda _m: "\n  ".join(head), template, count=1)
         html = _ATTR_URL.sub(lambda m: m.group(1) + (f"{m.group(2)}?v={files[m.group(2)]}" if m.group(2) in files else m.group(2)) + m.group(3), html)
-        csp = self.base_csp.replace("script-src 'self'", f"script-src 'self' {csp_hash(importmap)} {csp_hash(boot_src)}", 1)
+        csp = observability.content_security_policy(self.base_csp).replace("script-src 'self'", f"script-src 'self' {csp_hash(importmap)} {csp_hash(boot_src)}", 1)
         return Snapshot(files, build, version, importmap, preload, html.encode("utf-8"), csp, self.career_warm(files, preload))
 
     def career_warm(self, files: dict[str, str], preload: list[str]) -> dict[str, str]:

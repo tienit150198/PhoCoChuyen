@@ -8,6 +8,7 @@
 <link rel="icon" href="/icons/logo-64.png" type="image/png" sizes="64x64">
 <link rel="icon" href="/icons/logo-32.png" type="image/png" sizes="32x32">
 <link rel="stylesheet" href="/css/legal.css">
+<script type="module" src="/js/analytics-preferences.js"></script>
 </head>
 <body>
 <main class="legal">
@@ -15,7 +16,7 @@
 
   <article id="vi" lang="vi">
     <h1>Chính sách quyền riêng tư</h1>
-    <p class="meta">Hiệu lực từ 29/09/2026 · Liên hệ: <a href="mailto:trachanhtv.works@gmail.com">trachanhtv.works@gmail.com</a></p>
+    <p class="meta">Hiệu lực từ 02/10/2026 · Liên hệ: <a href="mailto:trachanhtv.works@gmail.com">trachanhtv.works@gmail.com</a></p>
     <p><b>Phố Có Chuyện</b> là một trò chơi mô phỏng nghề nghiệp miễn phí, làm ra để mọi người cùng chơi và trải nghiệm. Chúng tôi thu thập ít dữ liệu nhất có thể và không bán dữ liệu của bạn.</p>
 
     <h2>1. Chúng tôi lưu những gì?</h2>
@@ -30,7 +31,10 @@
     </ul>
 
     <h2>2. Cookie và bộ nhớ trình duyệt</h2>
-    <p>Chỉ có một cookie cần thiết là <code>mnl_session</code> (HttpOnly, giữ tối đa 1 năm) để nhận ra bản lưu của bạn. Trình duyệt còn lưu vài lựa chọn giao diện như bố cục và ngôn ngữ. Game <b>không có quảng cáo, không có công cụ theo dõi hay phân tích của bên thứ ba</b>.</p>
+    <p>Cookie cần thiết <code>mnl_session</code> (HttpOnly, giữ tối đa 1 năm) nhận ra bản lưu của bạn. Trình duyệt còn lưu vài lựa chọn giao diện như bố cục và ngôn ngữ. Game không có quảng cáo. Khi bạn cho phép thống kê và máy chủ đã bật tính năng, Google Analytics/Firebase dùng cookie và mã cài đặt để đo lượt ghé, nguồn truy cập, thiết bị, các bước chơi, loại lỗi và hiệu năng. Các công cụ này không nhận bản lưu, tên tài khoản, chat hay nội dung góp ý. Thống kê không chạy trước khi bạn cho phép; game tôn trọng lựa chọn Do Not Track và Global Privacy Control của trình duyệt.</p>
+    <p>Bạn có thể đổi lựa chọn thống kê trên trình duyệt này bất cứ lúc nào. Lựa chọn không ảnh hưởng tiến trình game.</p>
+    <p><button type="button" data-analytics-choice="yes">Cho phép thống kê / Allow statistics</button> <button type="button" data-analytics-choice="no">Tắt thống kê / Disable statistics</button></p>
+    <p id="analytics-status" role="status" aria-live="polite"></p>
 
     <h2>3. AI trong game (bật mặc định, tắt được bất cứ lúc nào)</h2>
     <p>Nếu máy chủ có cấu hình AI, tính năng “Nhân vật trò chuyện bằng AI” <b>được bật sẵn</b> để khách hàng, học sinh, phụ huynh… nói chuyện tự nhiên theo tính cách riêng. Lần đầu, game hiện một thông báo nhỏ có nút “Tắt AI”.</p>
@@ -51,6 +55,7 @@
     <p>Chúng tôi không bán hay cho thuê dữ liệu. Dữ liệu chỉ đi qua:</p>
     <ul>
       <li>Nhà cung cấp máy chủ (hosting).</li>
+      <li>Google Analytics và Firebase, chỉ khi bạn cho phép thống kê sử dụng và hiệu năng.</li>
       <li>Nhà cung cấp AI, khi AI đang bật (mặc định bật nếu máy chủ có cấu hình; tắt trong Cài đặt).</li>
       <li>Dịch vụ thông báo của trình duyệt (Google, Mozilla, Apple, Microsoft). Các dịch vụ này chỉ nhận một tín hiệu rỗng: nội dung thông báo được trình duyệt của bạn tải trực tiếp từ máy chủ game.</li>
     </ul>
@@ -87,7 +92,7 @@
 
   <article id="en" lang="en">
     <h1>Privacy Policy</h1>
-    <p class="meta">Effective 29 September 2026 · Contact: <a href="mailto:trachanhtv.works@gmail.com">trachanhtv.works@gmail.com</a></p>
+    <p class="meta">Effective 2 October 2026 · Contact: <a href="mailto:trachanhtv.works@gmail.com">trachanhtv.works@gmail.com</a></p>
     <p><b>Phố Có Chuyện</b> (“A street full of stories”) is a free career-simulation game. We collect as little as possible and never sell your data.</p>
     <h2>1. What we store</h2>
     <ul>
@@ -100,7 +105,7 @@
       <li><b>Technical logs</b>: IP address, time and request path, used for abuse prevention and debugging. Cookies and your typed text are never logged.</li>
     </ul>
     <h2>2. Cookies and browser storage</h2>
-    <p>We use one essential cookie, <code>mnl_session</code> (HttpOnly, up to 1 year). Your browser also keeps a few UI preferences such as layout and language. There are no ads, no trackers and no third-party analytics.</p>
+    <p>The essential <code>mnl_session</code> cookie (HttpOnly, up to 1 year) recognises your save. Your browser also stores UI preferences. There are no ads. When you allow statistics and the operator enables the feature, Google Analytics/Firebase use cookies and installation identifiers to measure visits, referral sources, devices, game steps, error categories and performance. They do not receive your save, account name, chats or feedback. Collection starts only after permission and respects Do Not Track and Global Privacy Control. Use the Allow/Disable statistics buttons above to change your choice on this browser.</p>
     <h2>3. AI (on by default, you can turn it off any time)</h2>
     <p>If the server operator configured an AI provider, “Characters chat using AI” is <b>on by default</b>, so customers, pupils, parents and others talk naturally in their own personality. The first time, the game shows a small notice with a “Turn AI off” button.</p>
     <p>While AI is on, the following is sent to that language-model provider: <b>the messages you type in Chat</b> (with the last few chat turns with that character), <b>your replies to reviews</b>, the fictional review text and a few game facts (the fictional character’s name, personality and current task). Before sending, the server removes links, e-mail addresses and phone-like numbers from what you typed; the player name you chose is replaced by a generic form of address, and your session id and account are never sent. Please do not type real personal information.</p>
@@ -119,6 +124,7 @@
     <p>We do not sell or rent data. It passes only through:</p>
     <ul>
       <li>our hosting provider;</li>
+      <li>Google Analytics and Firebase, only when you allow usage and performance statistics;</li>
       <li>the AI provider, while AI is on (on by default when the server has one; turn it off in Settings);</li>
       <li>browser push services (Google, Mozilla, Apple, Microsoft), which receive only an empty signal. Your browser fetches the notification text directly from the game server.</li>
     </ul>
