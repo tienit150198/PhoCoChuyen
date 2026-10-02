@@ -243,7 +243,7 @@ function page(){
   if(!f.show&&!f.over&&!f.soon)return head()+`<div class="sheet-body fh-body">${closedCard(true)}</div>`;
   if(!f.open&&S.tab!=='board')return head()+`<div class="sheet-body fh-body">${closedCard()}${S.env?.api?.state?.journey?.story?btn('🏆 Xem Bảng vàng hội chợ','tab',{tab:'board'},'cream full'):''}${note()}</div>`;
   const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView};
-  const body=(views[S.tab]||homeView)(),luck=['bc','lt','xd'].includes(S.tab);
+  const body=(views[S.tab]||homeView)(),luck=['bc','xd'].includes(S.tab)||S.tab==='lt'&&!G();   // the newer lô tô: only the wallet limits it
   return head()+`<div class="sheet-body fh-body">${f.open?strip():''}${f.open?nav():''}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${body}${note()}</div>`;
 }
 function closedCard(gone){
@@ -740,7 +740,7 @@ function buyPanel(){
   const g=G(),f=F(),m=curMode()||'thuong',[me,,md]=MODE_INFO[m]||MODE_INFO.thuong,lt=S.lt,price=g.tiers[lt.tier]||5;
   const prize=(g.prizes?.[m]?.[lt.tier]||[])[lt.n-1]||0,rule=g.modes_rule?.[m]||{npcs:4};
   const side=(lt.cl?lt.cls:0)+(lt.cot!=null?lt.cots:0),total=lt.n*price+side;
-  const left=f.today?.left??0,why=f.today?.done?'Hôm nay chơi vậy đủ rồi':total>left?`Hôm nay chỉ còn chơi được ${xu(left)}`:total>(f.wallet||0)?'Ví không đủ xu':S.busy?'Đang mua…':'';
+  const why=total>(f.wallet||0)?'Ví không đủ xu':S.busy?'Đang mua…':'';   // no daily limit: only the wallet
   const next=g.modes.filter(x=>x[0]>nowSlot()).slice(0,2).map(([s,k])=>`<span class="fh-nextmode">${esc(new Date(s*60000).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Ho_Chi_Minh'}))} · ${MODE_INFO[k]?.[0]||''} ${esc(modeLabel(k))}</span>`).join('');
   const tiers=Object.entries(g.tiers).map(([k,p])=>`<button type="button" class="fh-tier${lt.tier===k?' on':''}" data-fh="lttier" data-v="${k}" aria-pressed="${lt.tier===k}" data-fh-key="tier-${k}"><b>${esc(TIER_NAME[k]||k)}</b><small>${xu(p)}/tờ</small></button>`).join('');
   const ns=Array.from({length:g.cards},(_,i)=>i+1).map(n=>`<button type="button" class="fh-chip${lt.n===n?' on':''}" data-fh="ltn" data-v="${n}" aria-pressed="${lt.n===n}" data-fh-key="ltn-${n}">${n}</button>`).join('');
@@ -785,22 +785,25 @@ function howLoto(){
   if(!g)return `<p class="fh-rule">Cô Bảy hô số nào, bạn chạm số đó trên tờ dò. Ai mua tờ trong cùng một phút sẽ nghe chung một lượt số.</p>`;
   const pz=g.prizes||{};
   return `<details class="fh-how"><summary>Cách chơi gánh lô tô</summary><ul>
-    <li>Mua 1 đến ${g.cards} tờ dò. Cô Bảy hô số nào thì bạn tự chạm số đó trên tờ của mình, không ai đánh dấu giùm.</li>
-    <li>Đủ hình của vòng thì bấm “Kinh!”. Cô Bảy dò lại: đúng thì ôm hũ; kinh hụt (hàng chưa đủ) thì bỏ ${xu(g.fine)} vô hũ phạt, hụt ${g.hut_max} lần là nghỉ ván.</li>
+    <li>Mua 1 đến ${g.cards} tờ dò. Cô Bảy hô số nào thì số đó sáng lên trên tờ của bạn, bạn tự chạm để đánh dấu, không ai đánh dấu giùm.</li>
+    <li>Đủ hình của vòng thì bấm “Kinh!”. Cô Bảy dò lại: đúng thì ôm hũ; kinh hụt (hàng chưa đủ) thì bỏ ${xu(g.fine)} vô hũ phạt${g.hut_max?`, hụt ${g.hut_max} lần là nghỉ ván`:' rồi dò tiếp, hụt mấy lần cũng được'}.</li>
     <li>Hũ = tiền tờ của cả chiếu (của bạn và hàng xóm), cô Bảy giữ một chút tiền gánh. Ai đủ trước người đó ăn, hai người cùng lúc thì bạn được.</li>
     <li>Mỗi phút một vòng: thường, Kinh đôi (hai hàng), lật ngược (đọc số ngược). Từ ${g.dem_hours[0]} giờ tới ${g.dem_hours[g.dem_hours.length-1]+1} giờ tối là Hũ đêm hội: kinh cả tờ, sáu người chơi.</li>
     <li>Ví dụ vé vừa 1 tờ: vòng thường ăn ${xu(pz.thuong?.vua?.[0])}, Kinh đôi ${xu(pz.doi?.vua?.[0])}, Hũ đêm hội ${xu(pz.dem?.vua?.[0])}.</li>
     <li>Ai mua tờ trong cùng một phút sẽ nghe chung một lượt số.</li></ul></details>`;
 }
+/** The calls light up on the player's own tờ while a round is called: the latest one glows (cur), the earlier ones
+ * not marked yet keep a soft tint (hint). Hints only: the player still taps to mark. Not in a lật ngược vòng, whose
+ * whole game is flipping the number back by ear. */
 function cardsHtml(v,live=true){
-  const all=new Set(v.seq.slice(0,S.lt.shown||v.chot||0)),check=!live;
+  const all=new Set(v.seq.slice(0,S.lt.shown||v.chot||0)),check=!live,lit=live&&v.mode!=='nguoc',cur=lit&&S.lt.shown?v.seq[S.lt.shown-1]:null;
   return cardsOf(v).map((card,ci)=>{
     const marks=new Set(S.lt.marks[ci]||[]);
     const grid=card.map(row=>{const cells=Array(9).fill(null);row.forEach(n=>{cells[colOf(n)]=n;});
       return `<div class="fh-row" role="row">${cells.map(n=>{
         if(n==null)return '<span class="fh-cell empty" role="gridcell"></span>';
-        const cls=`fh-cell${marks.has(n)?' marked':''}${check&&all.has(n)&&!marks.has(n)?' called':''}`;
-        return live?`<button type="button" role="gridcell" class="${cls}" data-fh="mark" data-c="${ci}" data-n="${n}" data-fh-key="n-${ci}-${n}" aria-pressed="${marks.has(n)}" aria-label="Số ${n}">${n}</button>`
+        const cls=`fh-cell${marks.has(n)?' marked':''}${check&&all.has(n)&&!marks.has(n)?' called':''}${n===cur?' cur':lit&&all.has(n)&&!marks.has(n)?' hint':''}`;
+        return live?`<button type="button" role="gridcell" class="${cls}" data-fh="mark" data-c="${ci}" data-n="${n}" data-fh-key="n-${ci}-${n}" aria-pressed="${marks.has(n)}" aria-label="Số ${n}${n===cur?', vừa gọi':''}">${n}</button>`
           :`<span role="gridcell" class="${cls}">${n}</span>`;}).join('')}</div>`;}).join('');
     return `<div class="fh-ticketcard" role="grid" aria-label="Tờ dò ${ci+1}">${cardsOf(v).length>1?`<span class="fh-cardno">Tờ ${ci+1}</span>`:''}${grid}</div>`;
   }).join('')+(check?`<p class="small muted">Viền đứt: số đã gọi (tới số chốt) mà bạn chưa chạm.</p>`:'');
@@ -825,9 +828,9 @@ function roundView(v){
     <div class="fh-rivals" aria-label="Người chơi khác">${rivals}</div>
     ${cardsHtml(v)}
     <div class="fh-go"><span class="fh-speed" role="group" aria-label="Tốc độ gọi số">${speed}</span>${btn('📣 Kinh!','kinh',{},'primary big fh-kinh',S.lt.claiming?' disabled data-fh-key="kinh"':' data-fh-key="kinh"')}</div>
-    ${hut?`<p class="fh-hutline">🙈 Kinh hụt ${hut}/${v.hut_max||3}${S.lt.hut?.fine?` · đã bỏ ${xu(S.lt.hut.fine)} vô hũ phạt`:''}</p>`:''}
+    ${hut?`<p class="fh-hutline">🙈 Kinh hụt ${hut}${v.hut_max?`/${v.hut_max}`:' lần'}${S.lt.hut?.fine?` · đã bỏ ${xu(S.lt.hut.fine)} vô hũ phạt`:''}</p>`:''}
     <div class="fh-go">${musicBtn()}</div>
-    <p class="fh-rule">Tự chạm số cô Bảy vừa hô trên tờ của bạn. Đủ ${need(v)===1?'một hàng ngang':need(v)===2?'hai hàng ngang trên một tờ':'cả tờ'} thì bấm “Kinh!” trước người khác. Kinh hụt bị phạt nhẹ nha!</p></section>`;
+    <p class="fh-rule">Tự chạm số cô Bảy vừa hô trên tờ của bạn. Đủ ${need(v)===1?'một hàng ngang':need(v)===2?'hai hàng ngang trên một tờ':'cả tờ'} thì bấm “Kinh!” trước người khác. Kinh hụt chỉ bị phạt nhẹ, dò lại rồi hô tiếp nha!</p></section>`;
 }
 
 /* ---- actions ---- */
