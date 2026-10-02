@@ -8,6 +8,8 @@ Chủ game (03/10): "mỗi ngày x3 cho … trò bất kì", "làm liên tiếp,
 - 💬 Chat (feat/chat-delete 4b8809d): giữ tin → "Xóa ở phía tôi" / "Thu hồi" (24 giờ); "Chọn" xóa nhiều cuộc trò chuyện; "🚫 Đã chặn" + Bỏ chặn (#93). Bảng mới `chat_hides`, `chat_clears` (SCHEMA_VERSION 13, chỉ thêm).
 - 🔔 Thông báo (#95, #96): chạm để tắt, thời gian hiện theo độ dài chữ.
 - 🗂️ Bàn văn phòng (#94): cuộc gọi đổi ý về một thẻ đã xếp trả thẻ về "chưa xếp", ghi chú 📞 in trên thẻ, thẻ đó mở trước.
+- 🍡 Hàng ăn vặt (chủ game 03/10: "kẹo bông, nước mía… hội chợ không mua được, sửa cho mua nhé"): bỏ chặn "no rồi" (người vừa ăn sáng đã ở FULL_CAP 90 nên xe nào cũng khóa); chỉ còn chặn khi ví thiếu, no bụng/tỉnh táo vẫn tối đa 100.
+- TikTok login (fix/tiktok-login 2ae19dc, phiên khác) gộp vào 1.4.20.
 - 🪨 Ô ăn quan (#99): câu "quan non" nói rõ cần đủ 5 dân, không tính theo vòng.
 
 # v1.4.19 — 🏆 Bảng vàng theo tiền lời, 👫 thấy nhau ở bãi hội

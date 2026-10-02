@@ -38,6 +38,7 @@ ENTRIES = (
         dict(emoji="🏮", text="Thêm 35 món trang trí nhà đậm chất Việt: sập gỗ, đồng hồ quả lắc, đàn bầu, xe đạp… cùng kệ Trung thu & Tết và 5 bộ mới.", go=dict(action="house")),
         dict(emoji="💬", text="Tin nhắn: giữ một tin để xóa phía mình hoặc thu hồi trong 24 giờ, chọn xóa nhiều cuộc trò chuyện, xem Đã chặn và bỏ chặn.", go=dict(action="liveChat")),
         dict(emoji="🔔", text="Chạm vào thông báo là tắt ngay, không còn che màn chơi."),
+        dict(emoji="🍡", text="Hàng ăn vặt hội chợ: no bụng rồi vẫn mua được kẹo bông, nước mía, chè… ăn cho vui, chỉ cần ví đủ xu.", go=dict(action="fair")),
         dict(emoji="🗂️", text="Lọc CV: tin ứng viên rút hồ sơ đến sau khi đã xếp thẻ thì thẻ tự quay về chưa xếp, ghi chú cuộc gọi in ngay trên thẻ."),
     )),
     dict(version="1.4.19", date="2026-10-03", items=(

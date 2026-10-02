@@ -1020,7 +1020,7 @@ function foodView(){
     ${say(who,S.food.say||who.hello[0])}
     <div class="fh-card fh-snacks">${rows}</div>${done}
     <div class="fh-go">${btn(other[1],'cart',{v:other[0]},'ghost small',` data-fh-key="cart-${other[0]}"`)}</div>
-    <p class="fh-rule">Ăn vặt trả bằng xu trong ví, no bụng và tỉnh táo tăng như ăn thêm lúc đi làm. No quá thì để bụng lát ăn tiếp nha.</p>
+    <p class="fh-rule">Ăn vặt trả bằng xu trong ví, no bụng và tỉnh táo tăng như ăn thêm lúc đi làm. No rồi vẫn mua ăn cho vui được.</p>
   </section>`;
 }
 async function snack(id){
