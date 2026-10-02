@@ -14,6 +14,7 @@ from game import accounts, social
 from game import fair as fh
 from game import fair_board as fb
 from game import fair_oaq as oaq
+from game import fair_cash as fc
 from game import fair_ring as ring
 from game import journey as jr
 from game import leaderboard as lb
@@ -1098,6 +1099,79 @@ class Odds(FairBase):
         self.assertEqual(v['left'], s['journey']['wallet'])
         self.assertEqual(s['journey']['fair']['rounds'], fh.ROUNDS_DAY)   # a counter only, bounded for older validators
         validate_state(s)
+
+
+class FairCash(FairBase):
+    """🎁 tiền vốn and 💸 vay nóng (game/fair_cash.py)."""
+    def test_the_gift_once_per_edition_and_not_winnings(self):
+        s = story(0)
+        self.assertTrue(public_state(s)['fair']['cash']['gift_ready'])
+        s, r = self.act(s, 'fair_gift')
+        self.assertEqual((s['journey']['wallet'], r['fair']['gift']), (fc.GIFT, fc.GIFT))
+        self.assertFalse(public_state(s)['fair']['cash']['gift_ready'])
+        with self.assertRaises(GameError) as e:
+            self.act(s, 'fair_gift')
+        self.assertEqual(e.exception.code, 'fair_gift_done')
+        self.assertNotIn('fair', s['journey'])                         # not in today's net, not in points
+        validate_state(s)
+        self.clock.t = AFTER
+        self.assertFalse(public_state(dict(s, journey=dict(s['journey'], fair_cash=None)))['fair']['cash']['gift_ready'])
+
+    def test_borrow_and_repay(self):
+        s = story(10)
+        for bad in (0, 49, 501, 150, '100', True):
+            with self.assertRaises(GameError, msg=bad):
+                self.act(s, 'fair_borrow', amount=bad)
+        s, r = self.act(s, 'fair_borrow', amount=100)
+        self.assertEqual((s['journey']['wallet'], r['fair']['due']), (110, 120))
+        with self.assertRaises(GameError) as e:                          # one at a time
+            self.act(s, 'fair_borrow', amount=50)
+        self.assertEqual(e.exception.code, 'fair_loan_open')
+        with self.assertRaises(GameError) as e:                          # 110 in the wallet < 120 owed
+            self.act(s, 'fair_repay')
+        self.assertEqual(e.exception.code, 'fair_wallet')
+        self.assertEqual(public_state(s)['fair']['cash']['loan'], dict(p=100, due=120))
+        s['journey']['wallet'] = 130
+        s, _ = self.act(s, 'fair_repay')
+        self.assertEqual((s['journey']['wallet'], s['journey']['fair_cash']['loan']), (10, None))
+        self.assertEqual(fc.owed(50), 60)
+        self.assertEqual(fc.owed(300), 360)
+        rows = [r['label'] for r in s['journey']['history'] if r['kind'] == 'fair']
+        self.assertTrue(any('Vay nóng' in x for x in rows) and any('Trả vay' in x for x in rows))
+        validate_state(s)
+
+    def test_the_close_collects_wallet_then_bank_then_a_debt(self):
+        s = story(0)
+        s, _ = self.act(s, 'fair_borrow', amount=500)                   # owes 600
+        s['journey']['wallet'] = 100
+        from game import bank as bk
+        s['journey']['bank'] = bk.initial(s['journey']['seed'], s['journey']['life_day'])
+        s['journey']['bank']['balance'] = 200
+        self.clock.t = AFTER + 60
+        s, _ = apply_action(s, None, 'settings', {'name': 'Lan'})     # any command after the close
+        j = s['journey']
+        self.assertEqual((j['wallet'], j['bank']['balance'], j['fair_cash']['debt'], j['fair_cash']['loan']), (0, 0, 300, None))
+        self.assertFalse(j['in_debt'])                                  # never below zero
+        j['wallet'] = 120                                               # later income
+        s, _ = apply_action(s, None, 'settings', {'name': 'Lan'})
+        self.assertEqual((s['journey']['wallet'], s['journey']['fair_cash']['debt']), (0, 180))
+        s['journey']['wallet'] = 500
+        s, _ = apply_action(s, None, 'settings', {'name': 'Lan'})     # the rest at the next command
+        self.assertEqual((s['journey']['wallet'], s['journey']['fair_cash']['debt']), (320, 0))
+        validate_state(s)
+        with self.assertRaises(GameError):
+            self.act(s, 'fair_borrow', amount=50)                       # the fair is over
+
+    def test_bad_cash_data_is_refused_and_old_saves_load(self):
+        s = story()
+        validate_state(s)
+        s, _ = self.act(s, 'fair_borrow', amount=200)
+        for k, v in (('debt', -1), ('loan', dict(ed='x', p=200, due=200)), ('extra', 1), ('gift', 5)):
+            bad = json.loads(json.dumps(s))
+            bad['journey']['fair_cash'][k] = v
+            with self.assertRaises(GameError, msg=k):
+                validate_state(bad)
+
 
 class StoreBase(FairBase):
     def setUp(self):

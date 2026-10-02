@@ -515,6 +515,7 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
 
 def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,internal:bool,owned:bool) -> tuple[dict,dict]:
     s=migrate_state(state,owned=owned)
+    fh.settle(s)  # 💸 a vay nóng of a fair that has closed is collected (game/fair_cash.py)
     p=payload or {}
     need(isinstance(p,dict),"Dữ liệu thao tác không hợp lệ.")
     result=dict(message="Đã thực hiện.",effects=[])

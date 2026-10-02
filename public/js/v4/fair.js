@@ -19,7 +19,7 @@ const GOURD='<svg class="fh-gourd" viewBox="0 0 40 48" aria-hidden="true"><path 
 const FACE_ART={bau:GOURD,cua:'🦀',tom:'🦐',ca:'🐟',ga:'🐓',nai:'🦌'};
 const art=f=>`<span class="fh-art" aria-hidden="true">${FACE_ART[f]||'❔'}</span>`;
 const TITLE_NAMES={f_kinh2:'🎎 Kinh đôi rộn ràng',f_nguoc:'🙃 Đọc ngược như xuôi',f_hu:'🏺 Ôm hũ đêm hội',f_loto:'🎱 Thần lô tô hội chợ',f_bao:'🌪️ Trúng bão bầu cua',f_raid:'🚨 Bị công an hỏi thăm',f_oaq:'🪨 Cao tay ô ăn quan',f_ring:'💍 Tay ném vòng thần sầu'};
-const GAMES={home:['🏮','Cổng hội'],oaq:['🪨','Ô ăn quan'],ring:['💍','Ném vòng cổ chai'],bc:['🦀','Bầu cua'],lt:['🎱','Lô tô'],xd:['🕯️','Chiếu trong'],board:['🏆','Bảng vàng']};
+const GAMES={home:['🏮','Cổng hội'],oaq:['🪨','Ô ăn quan'],ring:['💍','Ném vòng cổ chai'],bc:['🦀','Bầu cua'],lt:['🎱','Lô tô'],xd:['🕯️','Chiếu trong'],board:['🏆','Bảng vàng'],loan:['💸','Vay nóng']};
 const MINI_BOARD='<svg viewBox="0 0 64 40" aria-hidden="true"><rect x="2" y="6" width="60" height="28" rx="14" fill="#e9c98f" stroke="#8a5a26" stroke-width="2"/><path d="M14 6v28M50 6v28M14 20h36M23 6v28M32 6v28M41 6v28" stroke="#8a5a26" stroke-width="1.6"/><circle cx="8" cy="20" r="4" fill="#5b4636"/><circle cx="56" cy="20" r="4" fill="#5b4636"/><g fill="#7a8b99"><circle cx="18" cy="13" r="1.8"/><circle cx="27" cy="27" r="1.8"/><circle cx="36" cy="13" r="1.8"/><circle cx="45" cy="27" r="1.8"/><circle cx="20" cy="28" r="1.8"/><circle cx="38" cy="25" r="1.8"/></g></svg>';
 const MINI_BOTTLES='<svg viewBox="0 0 64 40" aria-hidden="true"><g stroke="#2d5a3d" stroke-width="1.4"><path d="M12 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#7cc79a"/><path d="M28 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#8fb6e8"/><path d="M44 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#f0b46a"/></g><ellipse cx="34" cy="10" rx="7" ry="2.6" fill="none" stroke="#e2462d" stroke-width="2.4"/></svg>';
 const CHIPS=[1,2,5,10];
@@ -38,7 +38,7 @@ const OPP={de:{start:['Chơi với em nha! Anh chị đi trước đi.','Em mớ
     cap:['Quân này ông xin nha.','Ăn liên tiếp mới vui!'],lose:['Nước này cháu tính hay đó.','Khá lắm, khá lắm.'],won:['Ván này ông thắng, cháu tập thêm rồi ghé nha.'],lost:['Cháu cao tay thiệt! Ông chịu thua ván này.'],draw:['Huề! Ông cháu mình ngang tay.']}};
 
 /* ---- state ---- */
-const S={dlg:null,env:null,tab:'home',busy:false,lastRound:0,flash:null,skew:0,listening:false,tick:null,
+const S={dlg:null,env:null,tab:'home',busy:false,lastRound:0,gift:null,loan:{amt:100,sure:false},flash:null,skew:0,listening:false,tick:null,
   oaq:{sel:null,anim:null,say:'',fast:false,quit:false,end:null,showEnd:false},
   ring:{round:null,t0:0,taps:[],hits:[],raf:0,result:null,say:''},
   bc:{chip:1,bets:{},phase:'idle',dice:null,last:null,say:''},
@@ -132,6 +132,7 @@ export async function openFair(env,data={}){
   if(!S.xd.say)S.xd.say=pick(HOST.idle);
   if(!d.open){d.showModal();d.scrollTop=0;}
   render();
+  claimGift();
   clearInterval(S.tick);S.tick=setInterval(tickLabels,1000);
   if(S.tab==='board')loadBoard();
   if(S.tab==='lt')resumeLoto();
@@ -242,9 +243,9 @@ function page(){
   const f=F();
   if(!f.show&&!f.over&&!f.soon)return head()+`<div class="sheet-body fh-body">${closedCard(true)}</div>`;
   if(!f.open&&S.tab!=='board')return head()+`<div class="sheet-body fh-body">${closedCard()}${S.env?.api?.state?.journey?.story?btn('🏆 Xem Bảng vàng hội chợ','tab',{tab:'board'},'cream full'):''}${note()}</div>`;
-  const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView};
+  const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView,loan:loanView};
   const body=(views[S.tab]||homeView)(),luck=['bc','lt','xd'].includes(S.tab);
-  return head()+`<div class="sheet-body fh-body">${f.open?strip():''}${f.open?nav():''}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${body}${note()}</div>`;
+  return head()+giftPop()+`<div class="sheet-body fh-body">${f.open?strip():''}${f.open?nav():''}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${body}${note()}</div>`;
 }
 function closedCard(gone){
   const f=F();
@@ -273,6 +274,7 @@ function homeView(){
       ${luck('lt','🎱','Gánh lô tô',f.ganh?`Cô Bảy hô số, vé từ ${xu(Math.min(...Object.values(f.ganh.tiers)))} · ${esc(f.ganh.names?.[f.ganh.modes?.[0]?.[1]]||'')}`:`Tờ dò ${xu(r.loto_price)}, kinh ăn ${xu(r.loto_prize)}`)}
       ${luck('xd','🕯️','Chiếu trong',`Cược ${r.xd_min}–${r.xd_max} xu`,'<span class="fh-warnchip">🚨 công an</span>')}
     </div>
+    ${loanRow()}
     <button type="button" class="fh-goldlink" data-fh="tab" data-tab="board" data-fh-key="g-board"><span aria-hidden="true">🏆</span><span class="grow"><b>Bảng vàng hội chợ</b><small>Bạn ${fmt(p.total)} điểm · Top 1 khi hội tàn thành 👑 Vua trò chơi</small></span><span aria-hidden="true">›</span></button>
   </section>`;
 }
@@ -893,6 +895,69 @@ function boardView(){
   </section>`;
 }
 
+
+/* ---- 🎁 Tiền vốn hội chợ and 💸 Vay nóng (game/fair_cash.py; an older server sends no `cash`: nothing shows) ---- */
+const C=()=>F().cash||null;
+async function claimGift(){
+  const c=C();if(!c?.gift_ready||!F().open||S.gifting)return;
+  S.gifting=true;
+  const r=await send('fair_gift',{});S.gifting=false;
+  if(r?.fair?.gift){S.gift=r.fair.gift;S.flash=null;sfx('win');render();S.dlg?.querySelector('[data-fh="giftok"]')?.focus({preventScroll:true});}
+  else{S.flash=null;render();}   // already claimed (another tab): nothing to say
+}
+function giftPop(){
+  if(!S.gift)return '';
+  return `<div class="fh-giftpop" role="dialog" aria-modal="true" aria-labelledby="fh-gift-h"><div class="fh-giftcard">
+    <div class="fh-giftbox" aria-hidden="true">🎁</div><h3 id="fh-gift-h">Ban tổ chức tặng ${xu(S.gift)} làm vốn chơi hội!</h3>
+    <p>Đã bỏ vô ví của bạn. Chúc bà con chơi hội vui vẻ, ăn nhiều nha!</p>${btn('🏮 Vào hội','giftok',{},'primary big full',' data-fh-key="giftok"')}</div></div>`;
+}
+function loanRow(){
+  const c=C();if(!c)return '';
+  const owe=(c.loan?.due||0)+(c.debt||0);
+  return `<button type="button" class="fh-goldlink fh-loanlink" data-fh="tab" data-tab="loan" data-fh-key="g-loan"><span aria-hidden="true">💸</span><span class="grow"><b>${esc(c.lender)}</b><small>${owe?`Đang nợ <b>${xu(owe)}</b> · trả lúc nào cũng được`:`Vay nhanh ${xu(c.steps[0])}–${xu(c.steps[c.steps.length-1])}, lãi ${c.rate}%`}</small></span><span aria-hidden="true">›</span></button>`;
+}
+function loanView(){
+  const c=C(),f=F();
+  if(!c)return homeView();
+  const who={name:c.lender,emoji:'👵'},owe=(c.loan?.due||0)+(c.debt||0),L0=S.loan;
+  if(owe){
+    const short=(f.wallet||0)<owe;
+    return `<section class="fh-stall fh-loan" aria-label="Vay nóng">
+      ${say(who,short?'Chưa đủ thì cứ chơi tiếp, có đủ rồi ghé trả bà nha.':'Có tiền rồi hả? Trả bà là xong, vay tiếp lúc nào cũng được.')}
+      <div class="fh-card fh-loancard"><h3>Đang nợ ${xu(owe)}</h3>${c.loan?`<p>Vay ${xu(c.loan.p)}, lãi ${c.rate}%: trả ${xu(c.loan.due)}.</p>`:''}${c.debt?`<p>Nợ còn lại từ lần hội trước: ${xu(c.debt)} (tự trừ dần khi có tiền vào ví).</p>`:''}
+      ${btn(S.busy?'Đang trả…':`💸 Trả hết ${xu(owe)}`,'repay',{},'primary big full',short||S.busy?' disabled data-fh-key="repay"':' data-fh-key="repay"')}
+      ${short?`<p class="fh-why">Ví đang có ${xu(f.wallet||0)}, cần đủ ${xu(owe)} để trả hết.</p>`:''}</div>
+      <p class="fh-rule">Hội tàn mà chưa trả thì bà tự thu: lấy tiền trong ví trước, thiếu thì lấy từ tài khoản ngân hàng, vẫn thiếu thì trừ dần khi bạn có tiền vào ví. Ví không bao giờ bị âm.</p>
+    </section>`;
+  }
+  const amt=c.steps.includes(L0.amt)?L0.amt:c.steps[1]||c.steps[0],due=Math.ceil(amt*(100+c.rate)/100);
+  return `<section class="fh-stall fh-loan" aria-label="Vay nóng">
+    ${say(who,'Thiếu vốn chơi hội hả con? Bà cho vay liền, lãi hai chục phần trăm thôi, trả lúc nào cũng được.')}
+    <div class="fh-card fh-loancard"><h3>💸 Vay nóng hội chợ</h3>
+      <div class="fh-chips" role="group" aria-label="Số tiền vay"><span>Vay</span>${c.steps.map(v=>`<button type="button" class="fh-chip${amt===v?' on':''}" data-fh="loanamt" data-v="${v}" aria-pressed="${amt===v}" data-fh-key="loan-${v}">${v}</button>`).join('')}</div>
+      <p class="fh-loansum">Nhận <b>${xu(amt)}</b> · trả lại <b>${xu(due)}</b> <small>(lãi ${c.rate}%)</small></p>
+      ${btn(S.busy?'Đang đếm tiền…':L0.sure?`Chắc chưa? Vay ${xu(amt)}, trả ${xu(due)}`:`Vay ${xu(amt)}`,'borrow',{},'primary big full'+(L0.sure?' danger':''),!f.open||S.busy?' disabled data-fh-key="borrow"':' data-fh-key="borrow"')}
+    </div>
+    <p class="fh-rule">Mỗi lần một khoản. Trả hết lúc nào cũng được ngay tại đây. Hội tàn mà chưa trả thì bà tự thu từ ví, rồi tài khoản ngân hàng; còn thiếu thì trừ dần khi có tiền vào ví.</p>
+  </section>`;
+}
+async function borrow(){
+  const c=C();if(!c||S.busy)return;
+  const amt=c.steps.includes(S.loan.amt)?S.loan.amt:c.steps[1]||c.steps[0];
+  if(!S.loan.sure){S.loan.sure=true;render();return;}
+  S.busy=true;S.loan.sure=false;S.flash=null;render();
+  const r=await send('fair_borrow',{amount:amt});S.busy=false;
+  if(r?.fair?.borrowed){S.flash={text:`Đã vay ${xu(r.fair.borrowed)}, nhớ trả ${xu(r.fair.due)} nha.`,kind:'good'};sfx('open');}
+  render();
+}
+async function repay(){
+  if(S.busy)return;
+  S.busy=true;S.flash=null;render();
+  const r=await send('fair_repay',{});S.busy=false;
+  if(r?.fair?.repaid){S.flash={text:`Đã trả ${xu(r.fair.repaid)}, hết nợ rồi!`,kind:'good'};sfx('win');}
+  render();
+}
+
 /* ---- clicks ---- */
 async function onClick(op,data){
   const b=S.bc,x=S.xd;
@@ -929,6 +994,10 @@ async function onClick(op,data){
     case'ltcls':S.lt.cls=Number(data.v)||2;render();return;
     case'ltcots':S.lt.cots=Number(data.v)||2;render();return;
     case'ltcheck':S.lt.check=!S.lt.check;render();return;
+    case'giftok':S.gift=null;render();return;
+    case'loanamt':S.loan.amt=Number(data.v)||0;S.loan.sure=false;render();return;
+    case'borrow':borrow();return;
+    case'repay':repay();return;
     case'ltmusic':{const on=!musicPref();try{localStorage.setItem(LT_MUSIC,on?'1':'0');}catch{/* storage blocked */}ltMusic();render();return;}
   }
 }
