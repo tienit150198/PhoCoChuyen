@@ -1,5 +1,11 @@
 {
  "strings": {
+  "kiếm": "earned",
+  "lỗ": "lost",
+  "Bầu cua: chú Tám lắc đủ 5 giây mới mở bát. Lắc dồn mãi một chiếu thì vận nguội nhanh lắm nha.": "Bầu cua: Uncle Tám shakes for a full 5 seconds before opening the bowl. Keep shaking at one mat nonstop and your luck cools fast.",
+  "Gánh lô tô cân lại hũ: Kinh ăn khoảng 2,2 lần tiền tờ, thắng thua sát nút như các gian khác.": "The lô tô troupe rebalanced the pot: a Kinh pays about 2.2× the card price, wins and losses as close as the other stalls.",
+  "Dòng “Hôm nay kiếm” trên đầu hội chợ giờ cộng đủ xu thắng thua ở mọi gian.": "The “Earned today” line at the top of the fair now adds up your coins won and lost at every stall.",
+  "Chờ chú Tám mở bát đã nha!": "Wait for Uncle Tám to open the bowl first!",
   "Hội chợ cân lại vận, thắng thua sát nút hơn. Chơi một trò liên tục quá lâu thì vận nguội dần, đổi trò hay nghỉ chút nha.": "Fair luck rebalanced: wins and losses are closer now. Play one game nonstop for too long and your luck cools; switch games or take a break to warm it up.",
   "Ném vòng giờ chỉ để kiếm xu vui, không tính điểm Bảng vàng nữa.": "Ring toss is now just for fun coins and no longer counts toward the Golden Board.",
   " Ném vòng không tính điểm Bảng vàng.": " Ring toss doesn't count toward the Golden Board.",

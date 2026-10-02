@@ -1,3 +1,11 @@
+# v1.4.17 — 🦀 Bầu cua 5 giây, chơi dồn nguội tới 25%, 🎱 lô tô 53%
+
+Chủ game (03/10): "bầu cua dễ thắng quá, spam mãi cái đó thì giảm tỷ lệ thắng… có thể thấp hơn 30%, mỗi lần bấm đợi 5s để mở", "gánh lô tô -> 53%", "bên ngoài luôn hiện hôm nay kiếm 0 xu => lỗi".
+
+- Bầu cua: `RUN_RULES['bc'] = (.02, .25)` (sau 10 ván liên tiếp giảm 2 điểm %/ván, sàn 25%); bát mở sau `BC_OPEN_MS` 5 s, máy chủ đòi các ván cách ≥ `BC_GAP_MS` 4,8 s (`fair_slow`).
+- Lô tô (feat/fair-food ea869e7): thắng/thua bốc trước bằng `luck_p(j, f, 'lt', t)`, rồi chọn `rs` cho ván khớp kết quả; Kinh = 2,2× tiền tờ (hũ đêm 2,3×), LOTO_PRIZE 23 → 11 cho tờ cũ.
+- `fair.js` strip: "Hôm nay kiếm" = tổng `today_xu` mọi gian (trước đó đọc meter ô ăn quan/ném vòng, ra 0 từ khi bỏ trần).
+
 # v1.4.16 — 🎲 Hội chợ: 53%, phi tiêu 51%, chơi dồn thì nguội vận
 
 Chủ game (03/10): "giảm tỷ lệ thắng… hiện tại cao quá làm mất giá xu", "bầu cua, chiếu trong, gánh lô tô -> 53%", "ném vòng -> không tính điểm", "phóng phi tiêu -> 51%", "chơi liên tục 1 game thì tỷ lệ thắng sẽ giảm dần xuống, tối thiểu 40%".
