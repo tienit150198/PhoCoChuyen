@@ -1,7 +1,9 @@
-# v1.4.22 — 👫 Đứng tại gian đang chơi ở bãi hội
+# v1.4.22 — 📱 Thanh dưới 5 nút, 🧭 Hành trình gọn, 👫 đứng tại gian ở bãi hội
 
 Chủ game (03/10): "các bạn chơi trò gì thì bên ngoài thấy người ta đứng trò đó nhé, chứ đừng biến mất".
 
+- 📱 feat/ui-wp1 (9b716d1, a754368, c0cafa0): thanh dưới điện thoại cố định 5 ô (Khách · bàn nghề · Kho · Sổ tiệm · Thêm), Kho mở đúng trang theo nghề, huy hiệu hàng sắp hết; HUD chip 44 px, < 360 px chỉ icon + số; Thêm không lặp lại thanh dưới; phụ đề một dòng cho Khu phố (D5: giữ tên).
+- 🧭 feat/ui-wp5 (466aa94): Hành trình mở đầu bằng "Tiếp tục ở …", nơi làm việc dạng ô 2 cột trên điện thoại, nơi chưa mở cuộn ngang; Chuẩn bị chung: Kho trước, "Hôm nay · thời tiết / Nhiệm vụ" gộp một dòng gập, cấp & XP lên đầu, tab 44 px cuộn ngang.
 - feat/fair-stand (be8274a, 47c71b0): client không còn gửi `fair_out` khi mở trang gian (chỉ khi đóng hội chợ/hết hội); `fair_mv`/`fair_in` thêm trường tùy chọn `s` (gian đang chơi, chữ thường ngắn; sai thì bỏ qua), gửi cho người khác trong `in`/`mv` và snapshot. Người chơi đứng ở điểm đứng của gian, bong bóng emoji trò (xe ăn vặt 🍡/🥤; vay nóng không có bong bóng). Live cũ: vẫn đứng, không bong bóng; client cũ bỏ qua `s`.
 
 # v1.4.21 — ⏱️ Bấm dừng chấm đúng lúc chạm (#100)

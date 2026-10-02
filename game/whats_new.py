@@ -33,6 +33,8 @@ from pathlib import Path
 
 ENTRIES = (
     dict(version="1.4.22", date="2026-10-03", items=(
+        dict(emoji="📱", text="Thanh dưới luôn đủ 5 nút to: Khách, Làm, Kho, Sổ tiệm, Thêm. Kho báo hàng sắp hết, thanh trên gọn hơn trên điện thoại nhỏ."),
+        dict(emoji="🧭", text="Hành trình: nút Tiếp tục nằm ngay đầu, nơi làm việc xếp gọn hai cột. Chuẩn bị gọn lại, Kho lên đầu."),
         dict(emoji="👫", text="Hội chợ: bạn chơi trò nào thì người khác thấy bạn đứng ngay gian đó, kèm biểu tượng trò nhỏ.", go=dict(action="fair")),
     )),
     dict(version="1.4.21", date="2026-10-03", items=(
