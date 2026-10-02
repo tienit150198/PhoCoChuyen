@@ -53,3 +53,14 @@ One recorded sound in `public/audio/sfx/`, released under **CC0 1.0** (public do
 - *bell ding 1.wav* by 5ro4 (`ting.mp3`, the "ting ting" when money comes in)
 
 `public/audio/sfx/CREDITS.md` has the source link and how the file was cut. The other UI sounds are still synthesised in `public/js/audio.js`.
+
+The pagoda ("Vào chùa") plays six recordings in `public/audio/chua/`, each **CC0 1.0** or marked public domain by its author:
+
+- *zenkojibells_norm.wav* by earthmonkey1 (`nen-chua-sang.mp3`)
+- *Monks chanting in Chi Lin nunnery, Hong Kong November 2018* by Oplurus (`tung-kinh-loop.mp3`)
+- *Temple Bell, Valley of the Temples* by Mista Bumpy (`chuong-dai-hong-2.mp3`)
+- *SingingBowl1.ogg* by BambooBeast, Wikimedia Commons, public domain (`chuong-gia-tri.mp3`)
+- *Mokugyo.wav* by jonopodmore (`mo-1.mp3`)
+- *singing monk in buddhism temple in vietnam* by Ottak16 (`su-tung-kinh.mp3`)
+
+`public/music/CREDITS.md` (section "The pagoda") has the source links and how each file was cut.

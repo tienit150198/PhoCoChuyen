@@ -38,3 +38,16 @@ The groom (the bride when he is away) picks one of these, or the house and disco
 | `wedding-latin.mp3` | 🌴 House Latin | OMW to beat the big bad | Fupi | <https://opengameart.org/content/omw-to-beat-the-big-bad> | CC0 | 120 | 80.0 s / 641 KB | the first 40 bars |
 | `wedding-funk.mp3` | 🎸 Funk nhún nhảy | Funked Up | Joth | <https://opengameart.org/content/funked-up> | CC0 | 87 | 66.2 s / 531 KB | the whole 24-bar loop |
 | `wedding-love.mp3` | 💞 Nhạc chậm cho cặp đôi | Love Song [instrumental] | nene | <https://opengameart.org/content/love-song-instrumental> | CC0 | 95 | 80.8 s / 647 KB | bars 24-56 (0:61-2:22), the first dance |
+
+## The pagoda (`public/audio/chua/`, "Vào chùa": `public/js/v4/chua-visit.js`, 1.4.8)
+
+Real recordings, each released under **CC0 1.0 (public domain dedication)** or marked **public domain** by its author (`{{PD-self}}` on Wikimedia Commons). The licence was read on each source page (the Freesound sound page, or the Commons file page and its API metadata) and the files were downloaded on 2026-10-02; Freesound files come from the site's HQ MP3 preview. None is synthesised and none is a song by any artist. Re-encoded to MP3 (mono, 44.1 kHz, 96 kbps); the one-shot sounds peak-normalised to −1.5 dBFS, the chanting levelled to about −20 LUFS and the background loops to about −24 LUFS. "Loop": the last 2 s crossfaded into the first 2 s, so the file repeats without a click.
+
+| File | Length | Title | Author | Source | Licence | Used for · changes |
+|---|---|---|---|---|---|---|
+| `nen-chua-sang.mp3` | 88.0 s (loop) | zenkojibells_norm.wav | earthmonkey1 | <https://freesound.org/people/earthmonkey1/sounds/514135/> | CC0 | The yard and the dining hall: early morning birdsong, temple bells far away (Sakaori, Yamanashi). 142–232 s made into a loop |
+| `tung-kinh-loop.mp3` | 88.0 s (loop) | Monks chanting in Chi Lin nunnery, Hong Kong November 2018 | Oplurus | <https://freesound.org/people/Oplurus/sounds/458983/> | CC0 | The main hall, played soft: chanting heard from inside the nunnery. 0–90 s made into a loop and made louder |
+| `chuong-dai-hong-2.mp3` | 16.0 s | Temple Bell, Valley of the Temples | Mista Bumpy | <https://freesound.org/people/Mista%20Bumpy/sounds/232333/> | CC0 | The bell tower (nghe chuông): the bronze bell at Byōdō-in, Hawaii. The first strike (5.5–21.5 s), faded out over the last 3 s |
+| `chuong-gia-tri.mp3` | 12.8 s | SingingBowl1.ogg ("Sound of a Singing Bowl") | BambooBeast | <https://commons.wikimedia.org/wiki/File:SingingBowl1.ogg> | Public domain (`{{PD-self}}`) | Khấn, and the start and end of a chant (chuông gia trì). Used whole, faded at the end |
+| `mo-1.mp3` | 0.6 s | Mokugyo.wav | jonopodmore | <https://freesound.org/people/jonopodmore/sounds/607215/> | CC0 | Each tap on the mõ, and the abbot's three opening beats: a small mokugyo from Kōya-san with its cloth beater. One strike |
+| `su-tung-kinh.mp3` | 31.1 s | singing monk in buddhism temple in vietnam | Ottak16 | <https://freesound.org/people/Ottak16/sounds/706583/> | CC0 | Thầy's voice under a chant (tụng kinh): a monk chanting in a temple in Vietnam, recorded in 2007. Used whole, faded in and out |
