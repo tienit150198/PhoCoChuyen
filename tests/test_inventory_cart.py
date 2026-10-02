@@ -112,6 +112,51 @@ class Draft(unittest.TestCase):
         validate_state(j.state)
 
 
+class FullDraft(unittest.TestCase):
+    """A draft holds CART_LINES lines: the client is told (`cart_lines`), and a "gộp N món thiếu" batch (`fit`)
+    adds what fits and says what stayed out instead of refusing the whole batch (player data: inv_cart 47% refused)."""
+
+    def items(self, n, skip=()):
+        out = [i['id'] for i in I.catalogue('restaurant') if i.get('unlock', 1) <= 1 and i['id'] not in skip]
+        self.assertGreaterEqual(len(out), n)
+        return out[:n]
+
+    def test_public_says_how_many_lines_a_draft_holds(self):
+        j = fresh()
+        self.assertEqual(public_inv(j)['cart_lines'], I.CART_LINES)
+
+    def test_fit_batch_into_a_nearly_full_draft(self):
+        j = fresh(money=50000)
+        ids = self.items(I.CART_LINES + 2)
+        for i in ids[:I.CART_LINES - 1]:
+            add(j, 'partner', i, 1)
+        rest = ids[I.CART_LINES - 1:]
+        r = j.act('inv_cart', supplier='partner', op='add', lines=[dict(item=i, qty=1) for i in rest], fit=True)
+        self.assertEqual(len(cart(j)['lines']), I.CART_LINES)
+        self.assertIn(f'còn {len(rest) - 1} món chưa thêm', r['message'])
+        self.assertEqual([l['item'] for l in cart(j)['lines']], ids[:I.CART_LINES])
+        validate_state(j.state)
+        # A line already in the full draft still grows; only new lines are left out.
+        r = j.act('inv_cart', supplier='partner', op='add', lines=[dict(item=ids[0], qty=1), dict(item=rest[-1], qty=1)], fit=True)
+        self.assertEqual({l['item']: l['qty'] for l in cart(j)['lines']}[ids[0]], 2)
+        self.assertIn('còn 1 món chưa thêm', r['message'])
+
+    def test_full_draft_refuses_with_the_next_step(self):
+        j = fresh(money=50000)
+        ids = self.items(I.CART_LINES + 1)
+        for i in ids[:I.CART_LINES]:
+            add(j, 'partner', i, 1)
+        before = copy.deepcopy(j.state)
+        with self.assertRaises(GameError) as e:
+            j.act('inv_cart', supplier='partner', op='add', lines=[dict(item=ids[-1], qty=1)], fit=True)
+        self.assertIn(f'đủ {I.CART_LINES} món', e.exception.message)
+        self.assertEqual(j.state, before)
+        with self.assertRaises(GameError) as e:
+            add(j, 'partner', ids[-1], 1)  # a single line without `fit` is refused as before
+        self.assertIn(f'tối đa {I.CART_LINES} món', e.exception.message)
+        self.assertEqual(j.state, before)
+
+
 class Prices(unittest.TestCase):
     def test_bulk_tiers_on_a_line(self):
         sup = I.supplier('restaurant', 'partner')

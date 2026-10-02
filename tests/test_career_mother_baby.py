@@ -372,6 +372,24 @@ class Registry(unittest.TestCase):
         self.assertEqual(cr(j)['fam']['ly']['trust'], 1)
         unchanged(self, j, 'gift_care_swap', line='r2', item='book')
 
+    def test_public_fits_mirrors_the_swap_rule(self):
+        # The client answers a swap on a line that already suits a newborn itself (no error round trip):
+        # `fits` must say exactly which lines gift_care_swap refuses as "không cần đổi".
+        j = self.j
+        lines = pub(j)['reg']['lines']
+        self.assertEqual({l['id']: l['fits'] for l in lines}, {lid: gs.suits(item, 0) for lid, item, qty, n in mb.REGISTRY['lines']})
+        self.assertEqual([l['id'] for l in lines if not l['fits']], ['r2'])
+        for l in lines:
+            target = pub(j)['reg']['swaps'][l['orig']][0]
+            if l['fits']:
+                before = copy.deepcopy(j.state)
+                with self.assertRaises(GameError) as e:
+                    j.act('gift_care_swap', line=l['id'], item=target)
+                self.assertIn('không cần đổi', e.exception.message)
+                self.assertEqual(j.state, before)
+            else:
+                self.assertTrue(j.act('gift_care_swap', line=l['id'], item=target)['celebrate'])
+
     def test_aside_needs_a_buyer_and_stock(self):
         j = self.j
         unchanged(self, j, 'gift_care_aside', line='r1')                 # bought tomorrow

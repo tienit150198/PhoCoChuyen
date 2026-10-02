@@ -1042,6 +1042,7 @@ def _cart_edit(c: dict, career: str, x: dict, p: dict, level: int) -> dict:
         need(isinstance(want, list) and 0 < len(want) <= CART_LINES, 'Danh sách hàng không hợp lệ.')
         fit = p.get('fit') is True
         added = 0
+        left_out = 0  # `fit`: new lines past CART_LINES stay out (the message says so) instead of refusing the batch
         for w in want:
             need(isinstance(w, dict), 'Danh sách hàng không hợp lệ.')
             it = item(career, w.get('item'))
@@ -1060,11 +1061,17 @@ def _cart_edit(c: dict, career: str, x: dict, p: dict, level: int) -> dict:
             if row:
                 row['qty'] = new
             else:
+                if fit and len(lines) >= CART_LINES:
+                    left_out += 1
+                    continue
                 need(len(lines) < CART_LINES, f'Một đơn tối đa {CART_LINES} món. Đặt đơn này trước nhé.')
                 lines.append(dict(item=it['id'], qty=new))
             added += 1
+        need(added or not left_out, f'Đơn {sup["name"]} đủ {CART_LINES} món. Đặt đơn này trước rồi thêm tiếp nhé.')
         need(added, 'Kệ đã đủ hàng, không cần nhập thêm.')
         msg = f'Đã thêm vào đơn {sup["name"]} · {len(lines)} món.'
+        if left_out:
+            msg += f' Đơn đủ {CART_LINES} món: còn {left_out} món chưa thêm, đặt đơn này rồi thêm tiếp.'
     else:
         it = item(career, p.get('item'))
         row = next((l for l in lines if l['item'] == it['id']), None)
@@ -1279,6 +1286,7 @@ def public(c: dict, career: str) -> dict | None:
     v['locked'] = [i['id'] for i in catalogue(career) if i.get('unlock', 1) > level]
     v['capacity'] = capacity(career)
     v['transit_cap'], v['transit_lines'] = TRANSIT_CAP, TRANSIT_LINES
+    v['cart_lines'] = CART_LINES  # lines in one draft (inv_cart refuses one more)
     # Derived numbers for the stock screen: what is on the way, room left on
     # each shelf and how many game days the oldest lot still has.
     v['arriving'] = {i['id']: _in_transit(x, i['id']) for i in catalogue(career)}

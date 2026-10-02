@@ -698,7 +698,8 @@ function accountingJob(t){
   return `<div class="career-job dw dw-ac">${hint}${dwWho(t,'Gửi hồ sơ đối chiếu')}${missing}${tabs}${board}${groups}${hand}${bar}</div>`;
 }
 
-const solutions=[['reship','Gửi bù món thiếu','box','Gửi phần còn thiếu của đơn'],['trace','Đối soát giao nhận','search','Nhờ đầu mối kiểm chặng giao'],['exchange','Đổi đúng món','refresh','Tạo yêu cầu đổi đúng mã'],['refund','Thực hiện hoàn','coin','Hoàn từ quỹ công ty'],['guide','Hướng dẫn khách','book','Chỉ khách tự làm từng bước']];
+// Each option says WHEN it fits (game/engine.py CS_SOL_WHEN), so the evidence decides the pick, not trial and error.
+const solutions=[['reship','Gửi bù món thiếu','box','Khi kiện giao thiếu món'],['trace','Đối soát giao nhận','search','Khi kiện chậm, kẹt hay báo giao mà chưa tới'],['exchange','Đổi đúng món','refresh','Khi khách nhận sai mã, sai màu'],['refund','Thực hiện hoàn','coin','Khi hồ sơ có yêu cầu hoàn hợp lệ'],['guide','Hướng dẫn khách','book','Khi đơn không lỗi, khách cần cách làm']];
 const CS_STEPS=['Xác minh','Chứng cứ','Phương án','Thực hiện','Kiểm kết quả','Đóng vụ'];
 const CS_CHANNELS=['💬 Tin nhắn','📞 Gọi điện','✉️ Thư điện tử'];
 /** Where a support case stands (0–5), from server fields only. */
@@ -810,13 +811,16 @@ function warehouseView(){
   const body=tab==='lots'?phLotBook():tab==='regulars'?phRegulars():stockDesk(cap);
   return header(ph?'Kho & sổ quầy':'Kho nhỏ sau tiệm',esc(c.stock_desk?.clock?.label||''),'KHO HÀNG · SỨC CHỨA '+cap+' / MÃ')+`<div class="sheet-body wh">${tabs}${body}</div>`+footer('',c.open?commandButton('⏳ Chờ thêm 20 phút','advance',{},'ghost small'):'');
 }
+const SHIP_CAP=8;
 function stockDesk(cap){
   const c=room(),id=career(),mb=id==='mother_baby',desk=c.stock_desk||{},care=mb?null:careData(),list=mb?api.content.products:api.content.lots.filter(l=>l.status==='available');
   const waiting=c.shipments.filter(s=>s.status!=='received'),arrived=waiting.filter(s=>s.ready_now),onWay=k=>waiting.filter(s=>s.item===k).reduce((n,s)=>n+s.qty,0),low=list.filter(p=>c.stock[p.id]+onWay(p.id)<=2);
+  // order_stock takes at most SHIP_CAP parcels on the way (game/engine.py): past that, receive one first.
+  const vansFull=c.shipments.filter(s=>s.status==='in_transit').length>=SHIP_CAP;
   const sups=desk.suppliers||[],picked=ui.whSup?.[id],supId=sups.some(s=>s.id===picked)?picked:(desk.default||sups[0]?.id),sup=sups.find(s=>s.id===supId);
   const next=waiting.filter(s=>!s.ready_now).sort((a,b)=>(a.left_min??0)-(b.left_min??0))[0];
   const chip=(n,label,kind)=>n?`<span class="inv-chip ${kind}"><b>${n}</b> ${label}</span>`:'';
-  const strip=`<section class="inv-status" aria-label="Tình trạng kho"><div class="inv-chips">${chip(arrived.length,'kiện đã tới · đếm ở dưới','accent')}${chip(waiting.length-arrived.length,'kiện đang giao','info')}${chip(low.length,'mã sắp hết','warn')}${!waiting.length&&!low.length?`<span class="inv-calm">${icon('check',14)} Kho ổn.</span>`:''}</div>`+
+  const strip=`<section class="inv-status" aria-label="Tình trạng kho"><div class="inv-chips">${chip(arrived.length,'kiện đã tới · đếm ở dưới','accent')}${chip(waiting.length-arrived.length,'kiện đang giao','info')}${chip(low.length,'mã sắp hết','warn')}${vansFull?`<span class="inv-chip warn">🚚 Đủ ${SHIP_CAP} kiện đang giao: nhận bớt rồi đặt tiếp</span>`:''}${!waiting.length&&!low.length?`<span class="inv-calm">${icon('check',14)} Kho ổn.</span>`:''}</div>`+
     `${!arrived.length&&next?`<div class="inv-cta"><p class="wh-next">Kiện sớm nhất: <b>${esc(next.eta_label||'')}</b>${next.left_label?` · ${esc(next.left_label)}`:''}</p>${c.open&&sameDay(next.arrives_day*1440)?commandButton('⏳ Chờ thêm 20 phút','advance',{},'primary'):''}</div>`:''}</section>`;
   const parcel=s=>{const p=product(s.item);return s.ready_now?`<article class="card inv-crate-card open"><div class="row spread"><strong>${esc(p.name)}</strong>${pill('ĐÃ TỚI','green')}</div><div class="inv-slip"><span>Phiếu giao ghi</span><b>${s.qty} món</b></div><ul class="inv-crate" aria-label="Trong kiện">${Array.from({length:s.actual||0},()=>`<li>${itemArt(p.icon||'box',32,p.color)}</li>`).join('')}</ul><form class="inv-receive" data-receive="${esc(s.id)}"><label for="count-${esc(s.id)}">Bạn đếm được</label><input id="count-${esc(s.id)}" class="input" type="number" min="1" max="12" inputmode="numeric" required placeholder="0" style="width:88px"><button class="btn primary" type="submit">${icon('check',15)} Kiểm & nhập kho</button></form></article>`
     :`<article class="card order-row wh-parcel"><div class="row spread"><div class="grow"><strong>${esc(p.name)} · ${s.qty} món</strong><small class="muted block">${esc(s.supplier_emoji||'🚚')} ${esc(s.supplier_name||'')} · đã trả ${fmt(s.cost)} xu</small></div>${pill('ĐANG GIAO','amber')}</div><p class="wh-eta">Dự kiến nhận: <b>${esc(s.eta_label||'')}</b>${s.left_label?` · ${esc(s.left_label)}`:''}</p><span class="wh-prog" aria-hidden="true"><i style="width:${Math.round((s.progress||0)*100)}%"></i></span>${s.late_note?`<p class="wh-late">⚠️ ${esc(s.late_note)}</p>`:''}</article>`;};
@@ -824,7 +828,7 @@ function stockDesk(cap){
   const row=p=>{const q=c.stock[p.id],on=onWay(p.id),held=q-c.available[p.id],room_=Math.max(0,cap-q-on),max=Math.min(6,room_),state=q===0?'out':q+on<=2?'low':'';
     const lots=care?.batches?.filter(b=>b.lot===p.id)||[],first=lots.find(b=>!b.flag),flagged=lots.filter(b=>b.flag).reduce((n,b)=>n+b.qty,0);
     return `<div class="inventory-row inv-row ${state}">${itemArt(p.icon||'box',45,p.color)}<div class="grow"><h4>${esc(p.name)}${mb?'':` · ${esc(p.id)}`}</h4><small><b class="inv-big">${q}</b>/${cap} trên kệ${on?` · <span class="inv-flag info">+${on} đang giao</span>`:''}${held?` · đang giữ ${held}`:''} · ${fmt(p.cost)} xu/món</small>${!mb&&(first||flagged)?`<small class="block">${first?`HSD gần nhất: ngày ${first.exp}`:''}${flagged?` · <b class="wh-bad">${flagged} hộp cần rút</b>`:''}</small>`:''}<span class="inv-bar" aria-hidden="true"><i style="width:${Math.round(q/cap*100)}%"></i><i class="on" style="width:${Math.round(on/cap*100)}%"></i></span></div>`+
-      `<span class="inv-row-act"><input class="input" type="number" id="qty-${p.id}" min="1" max="${Math.max(1,max)}" value="${Math.min(Math.max(1,max),state?Math.min(4,Math.max(1,max)):1)}" aria-label="Số nhập ${esc(p.name)}" style="width:72px"${max?'':' disabled'}><button type="button" class="btn small${state&&max?' primary':''}" data-wh-order="${esc(p.id)}"${max&&c.open?'':' disabled'}>${max?'Đặt nhập':'Kệ đầy'}</button>${!mb?(c.held_lots.includes(p.id)?commandButton('Cô Thu kiểm lại','ph_release',{lot:p.id},'small primary'):commandButton('Tạm giữ','ph_quarantine',{lot:p.id},'small ghost')):''}</span></div>`;};
+      `<span class="inv-row-act"><input class="input" type="number" id="qty-${p.id}" min="1" max="${Math.max(1,max)}" value="${Math.min(Math.max(1,max),state?Math.min(4,Math.max(1,max)):1)}" aria-label="Số nhập ${esc(p.name)}" style="width:72px"${max?'':' disabled'}><button type="button" class="btn small${state&&max&&!vansFull?' primary':''}" data-wh-order="${esc(p.id)}"${max&&c.open&&!vansFull?'':' disabled'}>${!max?'Kệ đầy':vansFull?`Đủ ${SHIP_CAP} kiện`:c.open?'Đặt nhập':mb?'Mở tiệm trước':'Mở quầy trước'}</button>${!mb?(c.held_lots.includes(p.id)?commandButton('Cô Thu kiểm lại','ph_release',{lot:p.id},'small primary'):commandButton('Tạm giữ','ph_quarantine',{lot:p.id},'small ghost')):''}</span></div>`;};
   return strip+(waiting.length?`<h3>Kiện hàng</h3>${arrived.map(parcel).join('')}${waiting.filter(s=>!s.ready_now).map(parcel).join('')}<div class="divider"></div>`:'')+pick+`<h3>Hàng trên kệ</h3>${list.map(row).join('')}`;
 }
 async function whOrder(item){
@@ -1103,7 +1107,10 @@ async function handleAction(action,data,el){
       if(data.confirm&&!await confirmAction('Xác nhận thao tác',data.confirm,'Đồng ý'))break;
       if(data.confirm)p.confirm=true;const r=await cmd(data.op,p);if(r){ui.activityCard=null;if(data.op==='life_activity_start'&&ui.view==='town')openSheet('workshop');else renderSheet();}break;}
     case'expRename':{const value=await inputPrompt('Đặt tên góc của bạn',room().life.shop_name||meta().place,36);if(value!==null)await cmd('life_rename',{name:value});break;}
-    case'expPrice':await cmd('life_price',{item:data.item,price:Number(document.getElementById('price-'+data.item).value)});break;
+    case'expPrice':{const el=document.getElementById('price-'+data.item),v=Number(el?.value),lo=Number(el?.min),hi=Number(el?.max);
+      // The band is on the row (experience-ui priceRow): say it here instead of sending a price life_price refuses.
+      if(!el||!Number.isInteger(v)||(lo&&v<lo)||(hi&&v>hi)){toast(lo&&hi?`Giá từ ${lo} đến ${hi} xu (75%–125% giá gốc).`:'Nhập giá bằng số nhé.',true);break;}
+      await cmd('life_price',{item:data.item,price:v});break;}
     case'expReplyEdit':{const co=room().feed.find(p=>p.id===data.post)?.comments[Number(data.index)];if(!co)break;const text=await inputPrompt('Sửa phản hồi của mình',co.text,500);if(text!==null)await cmd('life_reply_edit',{post:data.post,index:Number(data.index),text});break;}
     case'expCard':ui.activityCard=data.card;renderSheet();break;
     case'expTarget':if(!ui.activityCard){toast('Chọn một thẻ trước nhé.');break;}await cmd('life_activity_assign',{card:ui.activityCard,target:data.target});ui.activityCard=null;renderSheet();break;

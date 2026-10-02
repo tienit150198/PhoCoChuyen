@@ -73,7 +73,9 @@ export function inventoryView(env){
   const pick=ui.orderItem&&byId[ui.orderItem]&&!inv.locked.includes(ui.orderItem)?byId[ui.orderItem]:null;
   const cartNow=!pick&&tab==='stock'&&ui.invCart?cartOf(ui.invCart):null;
   // Several items short: one tap puts them all in ONE draft at a supplier that sells every one of them.
-  const fillGo=(ids,label,qty)=>{const pref=ui.orderRush?'express':'partner',s=[sups.find(x=>x.id===pref),...sups].find(x=>x&&ids.every(id=>sells(x,id)));
+  // A supplier whose draft still has room for these lines comes first (inv_cart takes at most cart_lines; `fit` leaves the rest out).
+  const lineCap=Number(inv.cart_lines)||8,roomFor=(x,ids)=>{const k=cartOf(x.id);return (k?.lines.length||0)+ids.filter(id=>!k?.lines.some(l=>l.item===id)).length<=lineCap;};
+  const fillGo=(ids,label,qty)=>{const pref=ui.orderRush?'express':'partner',list=[sups.find(x=>x.id===pref),...sups].filter(x=>x&&ids.every(id=>sells(x,id))),s=list.find(x=>roomFor(x,ids))||list[0];
     return s?{act:'v4CartFill',data:{supplier:s.id,items:ids.map(id=>`${id}:${qty(id)}`).join(',')},label}:null;};
 
   /* ONE next step for this room (guide.js), in order of what gets goods onto the shelf soonest. */
@@ -250,6 +252,8 @@ function orderCard(env,pick,{cap,stock,on,space,unit,name}){
       `<span style="font-weight:800;color:var(--accent-text)">${ok?esc(x.quote?.label||x.window||''):'Không bán mặt hàng này'}</span>`+
       `${ok?`<small style="margin:0">${x.kind==='rush'||!x.window?'':`${esc(x.window)} · `}${esc(notes)}</small>${terms?`<small style="margin:0">${esc(terms)}</small>`:''}<small class="muted" style="margin:0">${esc(x.note||'')}</small>`:''}</span></button>`;};
   const k=carts.find(k=>k.supplier===sup.id),inDraft=k?.lines.find(l=>l.item===pick.id)?.qty||0;
+  // A full draft takes no new line (inv_cart): the button opens that draft to place it instead.
+  const lineCap=Number(c.inventory?.cart_lines)||8,cartFull=!!k&&!inDraft&&k.lines.length>=lineCap;
   const tier=q.pct?`<span class="tag green">sỉ −${q.pct}%</span>`:q.tier&&q.tier[0]<=max?`<button type="button" class="chip inv-tier" data-action="v4Qty" data-set="${q.tier[0]}">Lấy ${q.tier[0]}: −${q.tier[1]}%</button>`:'';
   const ship=sup.free_from==null?'':q.ship?`Hàng ${fmt(q.cost)} + ship ${fmt(q.ship)} xu`:`Hàng ${fmt(q.cost)} xu · miễn ship`;
   return `<section class="card order-card inv-order" aria-label="Nhập ${esc(pick.name)}"><div class="row spread"><h3>Nhập ${name}</h3>${button(icon('x',14),'v4Order',{item:''},'ghost small')}</div>`+
@@ -257,8 +261,8 @@ function orderCard(env,pick,{cap,stock,on,space,unit,name}){
     `<label class="field" for="order-qty">Số lượng</label><div class="inv-qty"><div class="inv-stepper"><button type="button" class="btn ghost" data-action="v4Qty" data-step="-1" aria-label="Bớt một"${qty<=1?' disabled':''}>−</button><input id="order-qty" class="input" type="number" inputmode="numeric" min="1" max="${Math.max(1,max)}" value="${qty}" data-v4-qty aria-describedby="order-total"><button type="button" class="btn ghost" data-action="v4Qty" data-step="1" aria-label="Thêm một"${qty>=max?' disabled':''}>+</button></div><span class="chip-row">${chips}</span></div>`+
     `<label class="field">Nhà cung cấp</label><div class="choice-grid">${sups.map(supplier).join('')}</div>`+
     `<div class="inv-total"><div class="grow"><strong id="order-total" data-cost="${pick.cost}" data-factor="${sup.factor}" data-terms="${esc(JSON.stringify({bulk:sup.bulk||[],ship:sup.ship,free_from:sup.free_from}))}" data-money="${c.money}" data-fund="${esc(fn)}" data-shelf="${stock+on}" data-cap="${cap}" data-max="${max}">Tổng: ${fmt(cost)} xu</strong> <span id="order-tier">${tier}</span><small class="block" id="order-ship">${esc(ship)}</small><small class="block" id="order-eta">Dự kiến nhận: <b>${esc(sup.quote?.eta_label||sup.window||'')}</b></small><small class="muted block" id="order-after">${esc(fn)} còn ${fmt(Math.max(0,c.money-cost))} xu · kệ sau khi nhận ${stock+on+qty}/${cap}</small><small class="danger-text block" id="order-why" role="status">${esc(why)}</small></div>`+
-    `<div class="inv-order-go"><button type="button" class="btn" id="cart-add" data-action="v4CartAdd" data-item="${esc(pick.id)}"${!space||inDraft>=Math.min(30,space)?' disabled':''}>🛒 Thêm vào đơn${k?` · ${k.lines.length+(inDraft?0:1)}`:''}</button><button type="button" class="btn primary" id="order-go" data-action="v4OrderGo" data-item="${esc(pick.id)}"${why?' disabled':''}>${icon('truck',15)} Đặt ngay</button></div></div>`+
-    `<p class="muted small">Trả tiền khi đặt. Gộp nhiều món một đơn: một lần ship. Hàng vào kệ sau khi bạn mở thùng và đếm đúng.</p></section>`;
+    `<div class="inv-order-go">${cartFull?`<button type="button" class="btn" id="cart-add" data-action="v4Cart" data-supplier="${esc(sup.id)}" data-open="1">🛒 Đơn đủ ${lineCap} món · xem & đặt</button>`:`<button type="button" class="btn" id="cart-add" data-action="v4CartAdd" data-item="${esc(pick.id)}"${!space||inDraft>=Math.min(30,space)?' disabled':''}>🛒 Thêm vào đơn${k?` · ${k.lines.length+(inDraft?0:1)}`:''}</button>`}<button type="button" class="btn primary" id="order-go" data-action="v4OrderGo" data-item="${esc(pick.id)}"${why?' disabled':''}>${icon('truck',15)} Đặt ngay</button></div></div>`+
+    `${cartFull?`<small class="danger-text block" role="status">Đơn ${esc(sup.name)} đủ ${lineCap} món: đặt đơn đó trước, hoặc “Đặt ngay” riêng món này.</small>`:''}<p class="muted small">Trả tiền khi đặt. Gộp nhiều món một đơn (tối đa ${lineCap} món): một lần ship. Hàng vào kệ sau khi bạn mở thùng và đếm đúng.</p></section>`;
 }
 /** A supplier's draft (đơn gộp): lines with −/+ and a wholesale hint, subtotal, savings, shipping,
  * the haggled discount, the total, what the fund lacks, then ONE "Đặt đơn". Server-priced (inventory.cart_view). */
