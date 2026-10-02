@@ -1,3 +1,9 @@
+# v1.4.18 — 🍡 Hàng ăn vặt hội chợ
+
+Chủ game (03/10): "người ta mua đồ ăn, uống nước mía được nữa nhé".
+
+- `game/fair_food.py`, lệnh `fair_snack {item}` (chỉ khi hội mở): cô Út (kẹo bông 2, bắp nướng 3, bánh tráng nướng 4 xu), chú Năm (nước mía 2, chè 3, tàu hũ 2 xu). Tác dụng theo luật Ăn thêm (`needs` full/wake), từ chối khi đã no/tỉnh hoặc ví thiếu. Một dòng Sổ ví mỗi ngày "🍡 Ăn vặt hội chợ · N món". Không lưu gì trong `journey.fair` (feat/fair-food 0a111bb).
+
 # v1.4.17 — 🦀 Bầu cua 5 giây, chơi dồn nguội tới 25%, 🎱 lô tô 53%
 
 Chủ game (03/10): "bầu cua dễ thắng quá, spam mãi cái đó thì giảm tỷ lệ thắng… có thể thấp hơn 30%, mỗi lần bấm đợi 5s để mở", "gánh lô tô -> 53%", "bên ngoài luôn hiện hôm nay kiếm 0 xu => lỗi".
