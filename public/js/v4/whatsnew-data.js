@@ -2,6 +2,7 @@
  * Release notes for the "Có gì mới" card (whatsnew.js), newest first. Loaded only after the game is up. */
 export default [
  {"version":"1.4.14","date":"2026-10-03","items":[
+  {"emoji":"🏮","text":"Hội chợ thành bãi hội thật: đi dạo dưới dây đèn lồng, tới gánh lô tô, lều bầu cua, sạp phi tiêu… bấm vào là chơi.","go":{"action":"fair"}},
   {"emoji":"🎲","text":"Hội chợ hên xui hơn: thắng thua tùy vận. Phi tiêu khó hơn, tâm ngắm chạy nhanh, gió hội chợ lộng hơn.","go":{"action":"fair"}},
   {"emoji":"💰","text":"Mỗi gian hội chợ có dòng “Hôm nay kiếm ở…” để xem xu thắng thua. Kinh lô tô thắng giờ báo luôn điểm hội chợ.","go":{"action":"fair"}}
  ]},

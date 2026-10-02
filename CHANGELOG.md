@@ -2,6 +2,7 @@
 
 Chủ game (03/10): "tỷ lệ thắng đang cao quá, chỉnh tỷ lệ thắng là 60% và hên xui", "phi tiêu thì làm sao cho người ta khó trúng hơn", "sao xu kiếm hôm nay không hiển thị ở loto, rồi điểm nữa sao không thấy tính khi win".
 
+- Bãi hội đi dạo được (feat/fair-walk 77eee50): `public/js/scenes/fair-place.js`, `public/js/v4/fair-walk.js`; bấm gian nào thì đi tới rồi mở gian đó, "📋 Danh sách trò" là lối phụ. `fair.odds(net, hi, lo)` dùng chung cho phi tiêu.
 - `game/fair.py`: WIN_P .70 → .60 (taper tới .45 ở +5000 giữ nguyên).
 - `game/fair_darts.py`: P_HI/P_LO .70/.45 → .40/.30; `fair-darts.js`: tâm ngắm chạy nhanh hơn (chu kỳ ~1,7×).
 - Lô tô thắng: kết quả mang `points` (thẻ Kinh hiện "+N điểm hội chợ"; trước đó máy chủ vẫn cộng điểm nhưng không báo).
