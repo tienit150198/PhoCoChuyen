@@ -126,6 +126,14 @@ function frame(f){
       break;
     }
     case'deleted':{const c=live.chan(f.ch);if(c?.last?.id===f.id){if(f.hidden)delete c.last;else c.last={...c.last,text:'',del:1};}break;}
+    case'hid':{const c=live.chan(f.ch);if(c?.last?.id===f.id)delete c.last;break;}   // 🗑️ deleted on my side (chat.js)
+    case'cleared':   // 🗑️ chats emptied on my side: a DM leaves the list until someone writes, a group stays without its preview
+      for(const [ch,upto] of Object.entries(f.chs||{})){
+        const c=live.chan(ch);if(!c)continue;
+        if(c.kind==='dm'&&(!c.last||c.last.id<=upto))live.chans=live.chans.filter(x=>x!==c);
+        else{if(c.last&&c.last.id<=upto)delete c.last;c.unread=0;c.read=Math.max(c.read||0,upto);}
+      }
+      break;
     case'error':   // 🙂 the face frame was not taken (too fast, busy): send it again later
       if(f.ref==='face'&&f.code!=='bad'&&f.code!=='off'){sentFc=null;syncFaceSoon(Math.max(2,Number(f.wait)||0)*1000+500);}
       break;

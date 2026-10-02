@@ -80,6 +80,15 @@ html[data-layout="phone"] .ch-head{padding-top:14px}
 .ch-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none}
 .ch-meta time{font-size:.7rem;color:var(--muted)}
 .ch-new{display:flex;align-items:center;gap:6px;margin:0 0 6px auto;padding:6px 12px;border-radius:var(--radius-pill);background:var(--accent-soft);color:var(--accent-text);font-weight:600;font-size:.85rem}
+/* 🗑️ Tin nhắn: "Đã chặn", "Chọn", "Nhóm mới"; while choosing, rows are tick boxes and "Xóa" stays at the bottom */
+.ch-tools{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap;margin:0 0 6px}
+.ch-tools .ch-new{margin:0}
+.ch-tools .grow{flex:1 1 auto;min-width:0;color:var(--muted);font-size:.85rem}
+.ch-selrow{cursor:pointer;border-radius:10px}
+.ch-selrow.on{background:var(--accent-soft)}
+.ch-selrow input{width:22px;height:22px;flex:none;margin-right:4px;accent-color:var(--accent)}
+.ch-selfoot{position:sticky;bottom:-14px;display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:8px;padding:10px 0 12px;background:var(--surface);border-top:1px solid var(--line)}
+.ch-selfoot small{color:var(--muted);font-size:.78rem;text-align:center}
 .ch-switch{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 6px;padding:10px 12px;border-radius:14px;background:var(--surface-2);font-weight:600;font-size:.9rem;cursor:pointer}
 .ch-switch input{position:absolute;opacity:0;pointer-events:none}
 .ch-switch i{position:relative;flex:none;width:44px;height:26px;border-radius:13px;background:var(--line-strong);transition:background var(--dur)}

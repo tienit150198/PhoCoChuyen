@@ -229,6 +229,7 @@ async def run(shots: Path) -> list:
             # A takes back a message; B sees it gone
             await a.page.click('.ch-msg.mine .ch-bub')
             await a.page.click('[data-ch-act=del]')
+            await a.page.click('[data-ch-act=del].warn')   # "Thu hồi thật?" (🗑️ since 03/10)
             await b.page.wait_for_selector('.ch-bub.del', timeout=5000)
             check(True, 'delete own: the other side sees "đã thu hồi"')
             await b.shot(shots, '10-dm-deleted')
