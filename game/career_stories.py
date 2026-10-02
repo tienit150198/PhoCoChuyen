@@ -1119,6 +1119,44 @@ ARCS = {
                 ('chip', 'Con vẽ tiệm kem dán lên tủ rồi nè! Có cô với có {anh} luôn!'),
                 ('me', 'Con sẽ múc viên nào cũng tròn, như cô.')]),
         ]),
+    'nail': dict(
+        title='Cây dũa của chị Diệp', emoji='💅',
+        keepsake=dict(emoji='🪮', name='Cây dũa thủy tinh của chị Diệp', desc='Chị Diệp mua từ hồi mới học nghề ở spa. Rửa là sạch, hấp là dùng lại, dũa bao nhiêu móng vẫn mịn.'),
+        cast={'diep': _p('Chị Diệp', '💅', 'Chủ tiệm nail', 'nail_npc_01'),
+              'thao_vy': _p('Chị Thảo Vy', '👰', 'Cô dâu tháng này', 'nail_npc_02'),
+              'ba_nam': _p('Bà Năm', '👵', 'Khách ruột, hưu trí', 'nail_npc_05'),
+              'co_lan': _p('Cô Lan', '🧺', 'Bán vải ngoài chợ', 'nail_npc_07')},
+        beats=[
+            _b('Cái bàn bên cửa sổ', '🪟', 'Chị Diệp kê thêm cái bàn nhỏ cạnh cửa sổ, lau sạch, đặt lên đó cái đèn hơ gel.', [
+                ('diep', 'Hồi ở spa chị làm cho người ta mười năm. Giờ mở tiệm nhỏ, chị muốn khách ngồi đây thấy yên tâm.'),
+                ('diep', 'Yên tâm là sao? Là dụng cụ hấp sạch, dũa mới bóc trước mặt, đèn sáng nào cũng thử.'),
+                ('me', 'Dạ, em nhớ: thử đèn, hấp dụng cụ, rồi mới mở cửa.')]),
+            _b('Bà Năm và lời dặn', '👵', 'Bà Năm ngồi xuống, xòe hai bàn tay gầy, gân xanh nổi lên.', [
+                ('ba_nam', 'Bà uống thuốc loãng máu, trầy một chút là chảy hoài. Con làm nhẹ thôi nghe.'),
+                ('diep', 'Khách nào dặn vậy thì mình chỉ đẩy da, không cắt.'),
+                ('me', 'Dạ, con làm thật nhẹ, bà cứ ngồi nghỉ nha.')],
+                _c('Khóe móng bà Năm có chút da thừa',
+                   _o('a', 'Chỉ đẩy da nhẹ, thoa dầu dưỡng', [('ba_nam', 'Nhẹ tay ghê. Bà ngồi mà muốn ngủ luôn.')], rel='ba_nam'),
+                   _o('b', 'Hỏi chị Diệp cách nhặt da cho an toàn', [('diep', 'Ngâm nước ấm cho mềm, nhặt phần da chết thôi, không chạm da sống.')], rel='diep'))),
+            _b('Cái móng của cô Lan', '🧺', 'Cô Lan chìa bàn tay, giấu ngón trỏ vàng đục dưới mấy ngón kia.', [
+                ('co_lan', 'Con sơn gel đen phủ kín giùm cô. Đi bác sĩ cô ngại lắm.'),
+                ('diep', 'Cô ơi, móng này phải đi khám trước. Sơn phủ lên là nặng thêm, dụng cụ còn mang nấm qua khách khác.'),
+                ('me', 'Phòng khám da liễu phường mở tới năm giờ. Khỏi rồi cô ghé, con làm móng đẹp cho cô.')],
+                _c('Cô Lan ngập ngừng',
+                   _o('a', 'Viết giùm cô địa chỉ phòng khám', [('co_lan', 'Ừ, để cô đi. Người ta nói thật vậy cô mới tin.')], rel='co_lan'),
+                   _o('b', 'Thoa dầu dưỡng tay cho cô, không lấy tiền', [('co_lan', 'Con dễ thương quá. Mai cô đi khám liền.')], rel='co_lan'))),
+            _b('Đêm trước đám cưới', '👰', 'Tám giờ tối, chị Thảo Vy chạy tới với cái điện thoại có ảnh mẫu.', [
+                ('thao_vy', 'Sáng mai chị cưới! Nối móng, gel nude, đính đá ngón áp út, y như ảnh nha em.'),
+                ('diep', 'Lớp nào hơ đủ giờ lớp nấy. Cô dâu cầm hoa, móng bong là cả album thấy.'),
+                ('me', 'Em đính đá trước rồi mới phủ top, hơ thêm một lượt cho chắc.'),
+                ('thao_vy', 'Trời ơi xinh quá! Mai chị chụp tay cầm hoa cho em coi.')]),
+            _b('Cây dũa thủy tinh', '🪮', 'Chị Diệp rửa cây dũa thủy tinh, cho vào tủ hấp, rồi đặt vào tay bạn.', [
+                ('diep', 'Cây này theo chị từ hồi học nghề. Rửa là sạch, hấp là dùng lại, dũa êm như lụa.'),
+                ('diep', 'Mai chị đi học thêm lớp vẽ móng mấy bữa. Bàn này giao em nghe.'),
+                ('ba_nam', 'Giao đúng người rồi. Con nhỏ này nhẹ tay, lại thật thà.'),
+                ('co_lan', 'Cô đi khám rồi, móng đỡ nhiều. Bữa nào khỏi hẳn cô ghé {anh} làm móng!'),
+                ('me', 'Em sẽ giữ bàn này sạch như chị đã giữ.')]),
+        ]),
     # ------------------------------------------------------------ ✈️ Hãng bay Cánh Cò
     'pilot': dict(
         title='Đường bay ra đảo', emoji='🛩️',

@@ -1,4 +1,4 @@
-/** Service scene kind (salon, pet_care, repair): a work room, not a shop
+/** Service scene kind (salon, pet_care, repair, nail): a work room, not a shop
  * counter. The main station (the `workbench` hotspot) is the centre of the
  * room and changes per career: two styling chairs at a lit mirror, a
  * grooming table beside a bath tub, or a repair bench under a ticket board.
@@ -44,10 +44,15 @@ const SEAT='#b8dccf',SEAT_D='#93bfb0',WOOD='#e3b694',WOOD_L='#f3d7bb',WOOD_D='#c
 const at=(c,x,y,s,fn)=>{c.save();c.translate(x,y);c.scale(s,s);fn();c.restore();};
 const mixHex=(a,b,t)=>{const q=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));const A=q(a),B=q(b);return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('');};
 const soft=(p,t=.55)=>mixHex(p.primary,'#ffffff',t);
+/** The nail shop dresses like the salon (mirrors, tiles, flags); only its emblem and main table differ. */
+const look=w=>w.career==='nail'?'salon':w.career;
+/** A polish bottle: body, cap and a little shine. */
+function bottle(c,x,y,s,col){R(c,x-5*s,y-12*s,10*s,12*s,col,3*s,'#00000030',1);R(c,x-2.5*s,y-19*s,5*s,7*s,'#3b3b3b',1.5*s);E(c,x-2*s,y-8*s,1.2*s,2.5*s,'#ffffff90');}
 /** Paw print centred at (x,y). */
 function paw(c,x,y,s,col){E(c,x,y+2*s,7*s,6*s,col);for(const [dx,dy] of [[-7,-6],[-2.5,-10],[2.5,-10],[7,-6]])E(c,x+dx*s,y+dy*s,2.6*s,3.2*s,col);}
 /** The career's emblem (scissors, paw or wrench) in a round badge. */
 function emblem(c,p,k,x,y,r){E(c,x,y,r,r,CREAM);c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.strokeStyle=p.primary;c.lineWidth=2;c.stroke();const s=r/14;
+  if(k==='nail'){bottle(c,x,y+8*s,s,p.primary);return;}
   if(k==='salon'){L(c,x-7*s,y-7*s,x+6*s,y+6*s,p.dark,2.2*s);L(c,x+7*s,y-7*s,x-6*s,y+6*s,p.dark,2.2*s);for(const dx of [-1,1]){c.beginPath();c.arc(x+dx*6*s,y+7*s,3.4*s,0,Math.PI*2);c.strokeStyle=p.primary;c.lineWidth=2*s;c.stroke();}}
   else if(k==='pet_care')paw(c,x,y+2*s,1.05*s,p.primary);
   else{L(c,x-6*s,y+7*s,x+4*s,y-3*s,p.dark,3.2*s);c.beginPath();c.arc(x+6*s,y-5*s,4.6*s,Math.PI*.9,Math.PI*2.35);c.strokeStyle=p.dark;c.lineWidth=3*s;c.stroke();}}
@@ -137,7 +142,7 @@ function ticketBoard(c,p,x,y,w,h){const bw=w*.62;R(c,x,y,bw,h-30,'#c89f7f',10);R
   R(c,cx-30,y+68,60,60,'#dcecef',6,'#9fb3ba',2);L(c,cx-20,y+84,cx+18,y+84,p.primary,2);L(c,cx-4,y+84,cx-4,y+112,p.primary,2);L(c,cx-20,y+112,cx+18,y+112,p.primary,2);R(c,cx-12,y+92,16,10,'#f2c94c',2);E(c,cx+12,y+100,4,4,'#e0795d');}
 
 /* ------------------------------------------------------------ Floor pieces (local units, origin = middle of the feet line) */
-function warehouse(w,p,ts){const c=w.ctx,k=w.career,words=w.words(),items=w.c?.ops?.security?.items||[];
+function warehouse(w,p,ts){const c=w.ctx,k=look(w),words=w.words(),items=w.c?.ops?.security?.items||[];
   const body=k==='repair'?'#c9d9de':k==='salon'?'#f7e4ea':'#edcfae',edge=k==='repair'?'#86a1aa':k==='salon'?'#cf9fb3':'#c8a27e';
   E(c,0,0,42,7,SHADOW);R(c,-37,-168,74,166,edge,9);R(c,-32,-162,64,152,body,6);L(c,0,-160,0,-12,edge,2);
   E(c,-5,-78,2.6,2.6,edge);E(c,5,-78,2.6,2.6,edge);R(c,-34,-10,10,9,edge,2);R(c,24,-10,10,9,edge,2);
@@ -147,7 +152,7 @@ function warehouse(w,p,ts){const c=w.ctx,k=w.career,words=w.words(),items=w.c?.o
   else if(k==='pet_care'){P(c,[[-30,-168],[-2,-168],[-5,-202],[-27,-202]],'#e9b872');R(c,-30,-206,28,6,'#d7a35c',2);paw(c,-16,-184,.8,'#fff8ec');P(c,[[2,-168],[28,-168],[26,-194],[4,-194]],'#9fcfc2');R(c,4,-198,22,6,'#86b9ac',2);E(c,15,-180,5,5,'#fff8ec');}
   else{R(c,-30,-194,40,26,'#dcb68d',3,'#b48d64',1.5);L(c,-30,-186,10,-186,'#b48d64',1.5);R(c,12,-184,18,16,'#e0795d',3);}
   if(items.includes('lock')){R(c,6,-92,16,18,'#d8c596',5,'#a09675',1);c.beginPath();c.arc(14,-92,5,Math.PI,0);c.strokeStyle='#a09675';c.lineWidth=3;c.stroke();}}
-function stationB(w,p){const c=w.ctx,k=w.career;E(c,0,0,74,8,SHADOW);
+function stationB(w,p){const c=w.ctx,k=look(w);E(c,0,0,74,8,SHADOW);
   if(k==='salon'){// shampoo bed: sloping cushion towards a basin
     R(c,-62,-28,100,26,'#f3e6ea',8,'#d6b3c1',2);R(c,-56,-8,8,8,'#cdb9c0',2);R(c,26,-8,8,8,'#cdb9c0',2);
     P(c,[[-66,-28],[38,-28],[38,-62],[-8,-54],[-66,-44]],p.primary);L(c,-62,-44,-8,-53,'#ffffff55',4);L(c,-8,-53,34,-60,'#ffffff55',4);
@@ -177,7 +182,7 @@ function stationB(w,p){const c=w.ctx,k=w.career;E(c,0,0,74,8,SHADOW);
   E(c,-40,-92,20,20,'#d7eef2');c.beginPath();c.arc(-40,-92,20,0,Math.PI*2);c.strokeStyle='#8fb4bd';c.lineWidth=2;c.stroke();for(let i=0;i<3;i++){c.save();c.translate(-40,-92);c.rotate(i*2.1+.3);E(c,0,-10,5,10,'#a8cbd3');c.restore();}E(c,-40,-92,4,4,'#6f8b95');R(c,-43,-72,6,8,'#8fb4bd',2);tag(c,-24,-108,'#eef7f4');
   R(c,-8,-96,20,30,'#3f4b52',4);R(c,-5,-93,14,22,'#9fd1e0',2);L(c,-3,-90,7,-78,'#ffffff',1);tag(c,6,-98,'#fff3d6');
   R(c,24,-94,30,28,'#e7eef0',10,'#9fb3ba',1.5);R(c,50,-88,8,12,'#9fb3ba',3);R(c,30,-100,18,7,'#c9d6da',3);tag(c,28,-100,'#fff8e7');}
-function stationD(w,p){const c=w.ctx,k=w.career;E(c,0,0,32,6,SHADOW);
+function stationD(w,p){const c=w.ctx,k=look(w);E(c,0,0,32,6,SHADOW);
   if(k==='salon'){// hood dryer on a rolling stand
     for(const dx of [-22,-10,10,22])L(c,0,-6,dx,-1,METAL_D,4);for(const dx of [-22,22])E(c,dx,0,4,3,'#7c8a90');
     R(c,-3,-112,6,108,METAL_D,3);R(c,-9,-74,18,20,CREAM,5,'#c8bdb0',1.5);E(c,0,-67,3,3,p.primary);
@@ -201,7 +206,12 @@ function chair(c,p,x){E(c,x,-2,30,6,SHADOW);E(c,x,-6,24,6,'#cfc9cc');E(c,x,-8,19
   L(c,x,-120,x,-128,p.dark,4);R(c,x-15,-138,30,13,p.dark,7);}
 function mainStation(w,p,big){const c=w.ctx,k=w.career,cond=w.c?.ops?.equipment?.condition??100,check=w.c?.upgrades?.includes('workbench');
   E(c,0,0,128,9,SHADOW);
-  if(k==='salon'){chair(c,p,-60);chair(c,p,60);
+  if(k==='nail'){// manicure table: two stools, a hand cushion, the gel lamp glowing, a row of bottles
+    chair(c,p,-82);chair(c,p,82);R(c,-52,-62,8,58,'#c8976c',3);R(c,44,-62,8,58,'#c8976c',3);R(c,-60,-74,120,14,'#f7e4ea',6,'#cf9fb3',2);
+    R(c,-24,-88,30,12,soft(p,.6),6);R(c,14,-104,34,26,'#f4f1f7',8,'#b7a8d8',1.5);R(c,18,-84,26,6,'#6c4bd1',2);
+    const t=w.reduced?0:w.time,g=.35+.15*Math.sin(t*2);c.fillStyle=`rgba(140,110,240,${g})`;c.fillRect(18,-82,26,4);
+    for(let i=0;i<4;i++)bottle(c,-52+i*10,-76,.9,['#b5122e','#e6b3a6','#9cd9c0','#1d1d1f'][i]);}
+  else if(k==='salon'){chair(c,p,-60);chair(c,p,60);
     R(c,-15,-72,30,68,'#f5e9ec',6,'#d1b1bd',1.5);L(c,-13,-50,13,-50,'#d1b1bd',1.5);L(c,-13,-28,13,-28,'#d1b1bd',1.5);E(c,-9,-3,3,3,'#9b9296');E(c,9,-3,3,3,'#9b9296');
     R(c,-11,-92,8,20,p.light,3,'#d1b1bd',1);R(c,-10,-98,6,6,'#9aa6ab',1);L(c,2,-80,12,-80,'#6f5646',2);for(let i=0;i<5;i++)L(c,3+i*2,-80,3+i*2,-75,'#6f5646',1);
     for(const dx of [-1,1]){c.beginPath();c.arc(2+dx*5,-38,3.5,0,Math.PI*2);c.strokeStyle=p.dark;c.lineWidth=1.6;c.stroke();}L(c,-3,-44,8,-60,METAL_D,1.8);L(c,7,-44,-4,-60,METAL_D,1.8);}
@@ -230,9 +240,9 @@ function mainStation(w,p,big){const c=w.ctx,k=w.career,cond=w.c?.ops?.equipment?
     L(c,118,-74,112,-132,METAL_D,4);L(c,112,-132,80,-146,METAL_D,4);E(c,72,-144,15,15,'#e2f2f6c0');c.beginPath();c.arc(72,-144,15,0,Math.PI*2);c.strokeStyle='#6f8b95';c.lineWidth=3;c.stroke();}
   if(check){R(c,big?84:92,-40,24,30,CREAM,4,'#c7ad90',1.5);L(c,big?89:97,-30,big?93:101,-26,'#6fae7c',2);L(c,big?93:101,-26,big?101:109,-34,'#6fae7c',2);L(c,big?89:97,-18,big?103:111,-18,'#c4b3a0',1.5);}
   if(cond<100){const tw=big?124:92,th=big?28:20,ty=-164;L(c,-tw/2+8,ty-10,-tw/2+14,ty,'#b48d64',1.5);L(c,tw/2-8,ty-10,tw/2-14,ty,'#b48d64',1.5);R(c,-tw/2,ty,tw,th,'#f7d995',6,'#d3a35c',1.5);T(c,'CẦN KIỂM',0,ty+th/2+1,big?20:11,'#94643d',800);}}
-function reception(w,p,half,big){const c=w.ctx,k=w.career;E(c,0,2,half+10,7,SHADOW);
+function reception(w,p,half,big){const c=w.ctx,k=look(w);E(c,0,2,half+10,7,SHADOW);
   R(c,-half,-48,half*2,46,soft(p,.55),10,mixHex(p.primary,'#ffffff',.25),2);for(let x=-half+16;x<half-8;x+=18)L(c,x,-40,x,-10,'#ffffff30',2);
-  emblem(c,p,k,0,-25,big?13:14);R(c,-half-6,-60,half*2+12,15,WOOD_L,6,WOOD_D,2);
+  emblem(c,p,w.career,0,-25,big?13:14);R(c,-half-6,-60,half*2+12,15,WOOD_L,6,WOOD_D,2);
   const bx=-half+(big?22:34),tx=half-(big?20:30);
   // appointment book / tickets (evidence)
   P(c,[[bx-22,-66],[bx,-62],[bx,-74],[bx-20,-78]],'#fff8e7');P(c,[[bx+22,-66],[bx,-62],[bx,-74],[bx+20,-78]],'#fffdf5');L(c,bx,-62,bx,-74,'#c7ad90',1.5);
@@ -247,7 +257,7 @@ function financeDesk(w,p,ts){const c=w.ctx,words=w.words();E(c,0,2,46,6,SHADOW);
   T(c,words.ledger,0,-22,fit(c,words.ledger,66,ts,800),'#6f5646',800);R(c,-46,-50,92,12,'#f0d2ad',5,'#c49a74',1.5);
   P(c,[[-24,-52],[0,-49],[0,-61],[-22,-64]],'#fff8e7');P(c,[[24,-52],[0,-49],[0,-61],[22,-64]],'#fffdf5');L(c,0,-49,0,-61,'#c7ad90',1.5);L(c,-18,-58,-5,-56,p.primary,1.5);L(c,5,-56,18,-58,'#c4b3a0',1.5);
   R(c,28,-66,14,16,'#eaf4f5c0',4,'#a9c9d0',1);E(c,35,-54,4,2,'#e6c36b');E(c,33,-58,4,2,'#f3d590');}
-function waitBench(w,p){const c=w.ctx,k=w.career;E(c,0,2,70,6,SHADOW);
+function waitBench(w,p){const c=w.ctx,k=look(w);E(c,0,2,70,6,SHADOW);
   for(const x of [-58,50])R(c,x,-22,8,22,'#b48d64',3);R(c,-66,-70,132,26,WOOD_D,10);R(c,-60,-66,120,18,SEAT,8);
   R(c,-68,-34,136,12,WOOD,6,WOOD_D,1.5);R(c,-62,-42,58,12,SEAT,6);R(c,4,-42,58,12,SEAT,6);heart(c,32,-54,.26,p.primary);
   if(k==='salon'){c.save();c.translate(-34,-44);c.rotate(-.12);R(c,-14,-8,28,8,'#b6c9e3',2);R(c,-12,-14,26,7,soft(p,.5),2);c.restore();P(c,[[-6,-44],[14,-46],[16,-54],[-4,-52]],'#fff8e7');E(c,6,-50,3,4,'#6d2433');}
@@ -257,7 +267,7 @@ function armchair(w,p){const c=w.ctx;E(c,0,2,40,6,SHADOW);for(const x of [-28,24
   R(c,-30,-70,60,40,SEAT,16,SEAT_D,1.5);R(c,-36,-40,72,26,SEAT,10,SEAT_D,1.5);R(c,-40,-52,14,34,SEAT_D,7);R(c,26,-52,14,34,SEAT_D,7);heart(c,0,-52,.3,'#fff8ec');}
 
 /* ------------------------------------------------------------ Rooms */
-function landRoom(w,p){const c=w.ctx,k=w.career,words=w.words();
+function landRoom(w,p){const c=w.ctx,k=look(w),words=w.words();
   E(c,605,724,503,30,'#cba88d22');R(c,85,165,1030,550,'#e3b694',35);R(c,96,168,1008,533,'#fff9ee',30,'#d9ac90',3);
   R(c,108,179,984,301,p.wall,22);wallPattern(c,p,k,108,179,984,262);
   floorTiles(c,p,k,108,445,984,244);R(c,108,434,984,13,'#ecd2b8',4);R(c,108,444,984,4,'#d8b597',2);
@@ -271,7 +281,7 @@ function landRoom(w,p){const c=w.ctx,k=w.career,words=w.words();
   signBoard(c,p,370,62,460,100);
   for(let i=0;i<9;i++){E(c,98+Math.sin(i)*13,186+i*19,15,7,i%2?'#a2c596':'#81b095');E(c,1102+Math.cos(i)*10,185+i*19,15,7,i%2?'#a2c596':'#81b095');}
   w.securityProps();}
-function portRoom(w,p){const c=w.ctx,k=w.career,words=w.words();
+function portRoom(w,p){const c=w.ctx,k=look(w),words=w.words();
   E(c,350,857,324,23,'#cba88d22');R(c,22,114,656,738,'#e1b594',31);R(c,29,117,642,724,'#fff9ed',26,'#d9ae91',3);
   R(c,40,139,620,406,p.wall,21);wallPattern(c,p,k,40,139,620,360);
   floorTiles(c,p,k,40,506,620,323);R(c,40,494,620,14,'#ecd2b8',4);R(c,40,505,620,4,'#d8b597',2);
