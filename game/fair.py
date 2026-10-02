@@ -23,9 +23,9 @@ Thử vận may, small stakes:
   wins). Buy 1..LOTO_CARDS tờ of one LOTO_TIERS price. The pot is everyone's cards ((yours + the neighbours') × price)
   less the stall's LOTO_MODES cut; whoever fills the vòng's pattern first takes it (a tie goes to the player). The
   player marks the called numbers by hand and hô "Kinh!": the server checks that every mark was called and that the
-  marks fill the pattern; a Kinh hụt costs KINH_FINE xu (never above the wallet or the day's room) and the
-  KINH_HUT_MAX-th one puts the cards out of the round. Side bets, placed with the cards and settled at once (the
-  result comes from the round's secret cards): chẵn/lẻ of the số chốt (the call that filled the first pattern on the
+  marks fill the pattern; a Kinh hụt costs KINH_FINE xu (never above the wallet) and nothing else: the cards
+  stay in the round, as many Kinh hụt as the player likes (owner 03/10: "kinh hụt thoải mái nhé"). Side bets, placed
+  with the cards and settled at once (the result comes from the round's secret cards): chẵn/lẻ of the số chốt (the call that filled the first pattern on the
   mat) pays 1:1, but 7 and 70, cô Bảy's own numbers, lose both sides; the cột may mắn (the tờ dò column the số chốt is
   in) pays COT_PAY_HALF/2 times the stake back. Returns with perfect play, from 200 000 simulated rounds each:
 
@@ -36,9 +36,10 @@ Thử vận may, small stakes:
       chẵn/lẻ ≈ 97.6 %, cột may mắn ≈ 94.4 %
 
   (scratch simulation of the same functions; tests/test_fair.py LotoShow checks seeded samples. The older client's
-  plain card is the thường vòng at LOTO_PRICE, paying LOTO_PRIZE.) A purchase is one round of ROUNDS_DAY and its
-  whole stake (tờ + side bets, at most 3 × 10 + 2 × 10 xu) must fit the wallet and the day's DAY_CAP room. The day's
-  tally (Bảng kinh hôm nay: rounds, Kinh, Kinh hụt, the neighbours' wins) is journey['fair']['ltd'].
+  plain card is the thường vòng at LOTO_PRICE, paying LOTO_PRIZE.) A purchase's whole stake (tờ + side bets, at
+  most 3 × 10 + 2 × 10 xu) must fit the wallet, the only limit (owner 03/10: "mỗi ngày chơi không giới hạn tiền",
+  "không giới hạn lượt chơi"; _guard_free: no DAY_CAP, no ROUNDS_DAY). The day's tally (Bảng kinh hôm nay: rounds,
+  Kinh, Kinh hụt, the neighbours' wins) is journey['fair']['ltd'].
 * 🕯️ Chiếu trong (back corner): xóc đĩa chẵn lẻ (four coins, even money), bigger stakes XD_MIN..XD_MAX. Each round
   has RAID_PCT % odds that Công an phường comes by: the stake is confiscated, a fine of half the stake (at least
   FINE_MIN, never more than the wallet holds) is paid, and the corner stays closed RAID_COOLDOWN seconds. The front
@@ -112,8 +113,8 @@ LOTO_CARDS = 3                 # tờ a round at most
 LOTO_MODES = dict(thuong=(1, 4, 8), nguoc=(1, 4, 8), doi=(2, 4, 10), dem=(3, 6, 13))
 MODE_NAMES = dict(thuong='Vòng thường', nguoc='Vòng lật ngược', doi='Vòng Kinh đôi', dem='Hũ đêm hội')
 DEM_HOURS = (20, 21)           # Vietnam hours of the Hũ đêm hội: every round is one
-KINH_FINE = 1                  # a Kinh hụt (the marks do not fill the pattern, or a mark was never called)
-KINH_HUT_MAX = 3               # the third one in a round: the cards are out
+KINH_FINE = 1                  # a Kinh hụt (the marks do not fill the pattern, or a mark was never called); no limit
+FK_MAX = 10**6                 # Kinh hụt counted in a round / a day at most (the save's sane bound)
 SIDE_STAKES = (2, 4, 6, 10)    # side bets (even, so the cột's 8.5× is whole xu)
 BAY_NUMS = (7, 70)             # cô Bảy's own numbers: a số chốt on one of them loses both chẵn and lẻ
 COT_PAY_HALF = 17              # cột may mắn: stake × 17 / 2 back
@@ -458,6 +459,18 @@ def _oaq_end(j: dict, f: dict, o: dict, t: float, got: list) -> dict:
     return out
 
 
+def _guard_free(e, f: dict, j: dict, t: float, stake: int) -> int:
+    """A new round of a stall with no daily money or round limit (owner 03/10: the lô tô, the phi tiêu): open, paid
+    from the wallet (no loans), not too fast. Returns the day's point when this is the first round of the day."""
+    need = e.need
+    need(j['wallet'] >= stake, 'Ví không đủ xu cho ván này. Hội chợ không cho vay để chơi đâu nha.', 'fair_wallet')
+    need(abs(f['net']) + stake < 10**6, ENOUGH, 'fair_enough')   # the save's bound on today's net
+    ms = int(t * 1000)
+    need(ms - f['last'] >= GAP_MS or f['last'] > ms, 'Từ từ thôi, xúc xắc chưa kịp lăn!', 'fair_slow')
+    f['last'] = ms
+    return _day(f, t)
+
+
 def _guard_round(e, f: dict, j: dict, t: float, stake: int, worst: int) -> int:
     """A new round: open, under today's caps, paid from the wallet (no loans), not too fast. Returns the day's
     point when this is the first round of the day."""
@@ -570,7 +583,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
             mode, tier, n, sb = 'thuong', 'vua', 1, {}
         cost = n * LOTO_TIERS[tier]
         stake = cost + sum(b[1] for b in sb.values())
-        pts = _guard_round(e, f, j, t, stake, stake)
+        pts = _guard_free(e, f, j, t, stake)   # no daily money or round limit (owner 03/10)
         lt = f['loto']
         if lt and lt['stage'] == 'play':
             _loto_lost(f, lt)   # a new card folds the old one
@@ -615,17 +628,15 @@ def apply(s: dict, name: str, p: dict) -> dict:
         elif marks is not None and not (set(marks) <= set(rv['seq'][:at])
                                         and sum(set(r) <= set(marks) for r in rv['cards'][ci]) >= rv['need']):
             # Kinh hụt: a mark that was never called, or the marks do not fill the vòng's pattern
-            lt['fk'] = lt.get('fk', 0) + 1
-            _ltd(f)['fk'] += 1
-            fine = min(KINH_FINE, j['wallet'], budget(f, t))
+            # the cards stay in the round however many times (owner: "k giới hạn kinh hụt"); a tiny fine, wallet allowing
+            lt['fk'] = min(FK_MAX, lt.get('fk', 0) + 1)
+            ltd = _ltd(f)
+            ltd['fk'] = min(FK_MAX, ltd['fk'] + 1)
+            fine = max(0, min(KINH_FINE, j['wallet']))
             if fine > 0:
                 _pay(j, f, 'lt', -fine)
-            out = lt['fk'] >= KINH_HUT_MAX
-            if out:
-                _loto_lost(f, lt)
-            result['fair'] = dict(game='lt', won=False, hut=True, fine=fine, fk=lt['fk'], out=out)
-            result['message'] = ('Kinh hụt lần thứ ba, cô Bảy mời nghỉ ván này nha!' if out else
-                                 'Kinh hụt rồi! ' + (f'Bỏ {fine} xu vô hũ phạt nha.' if fine else 'Dò lại cho kỹ nha.'))
+            result['fair'] = dict(game='lt', won=False, hut=True, fine=fine, fk=lt['fk'], out=False)
+            result['message'] = 'Kinh hụt rồi! ' + (f'Bỏ {fine} xu vô hũ phạt nha.' if fine else 'Dò lại cho kỹ nha.')
         elif at > rv['npc_done']:
             _loto_lost(f, lt)
             result['fair'] = dict(game='lt', won=False, by=rv['npc_name'])
@@ -765,7 +776,7 @@ def public(s: dict) -> dict:
                     npc_done=rv['npc_done'], npc_name=rv['npc_name'],
                     # newer fields (the older client reads the ones above: its card is cards[0])
                     cards=rv['cards'], mode=rv['mode'], need=rv['need'], tier=rv['tier'], price=rv['price'],
-                    prize=rv['prize'] if 'mode' in lt else LOTO_PRIZE, fk=lt.get('fk', 0), hut_max=KINH_HUT_MAX,
+                    prize=rv['prize'] if 'mode' in lt else LOTO_PRIZE, fk=lt.get('fk', 0),
                     chot=rv['chot'], chot_n=rv['chot_n'])
         if lt.get('sb'):
             back = side_back(lt['sb'], rv['chot_n'])
@@ -793,9 +804,10 @@ def public(s: dict) -> dict:
                 ring=ring_view((f or {}).get('ring'), t),
                 loto=loto, stats={k: st.get(k, 0) for k in STATS},
                 # 🎱 the gánh lô tô: the vòng of this minute and the next nine, the tiers and side bets, today's tally
+                # (hut_max 0: no limit on Kinh hụt; the older client showed it as "hụt N lần là nghỉ ván")
                 ganh=dict(modes=[[slot + i, mode_of(slot + i)] for i in range(10)], names=dict(MODE_NAMES),
                            tiers=dict(LOTO_TIERS), cards=LOTO_CARDS, side_stakes=list(SIDE_STAKES), bay=list(BAY_NUMS),
-                           cot_pay=COT_PAY_HALF / 2, fine=KINH_FINE, hut_max=KINH_HUT_MAX, dem_hours=list(DEM_HOURS),
+                           cot_pay=COT_PAY_HALF / 2, fine=KINH_FINE, hut_max=0, dem_hours=list(DEM_HOURS),
                            modes_rule={m: dict(need=v[0], npcs=v[1], cut=v[2]) for m, v in LOTO_MODES.items()},
                            prizes={m: {tr: [prize_of(m, pr, n) for n in range(1, LOTO_CARDS + 1)] for tr, pr in LOTO_TIERS.items()}
                                    for m in LOTO_MODES},
@@ -830,7 +842,7 @@ def validate(j: dict) -> None:
         integer(lt['at'], 0, 10**11)
         need(lt.get('mode', 'thuong') in LOTO_MODES and lt.get('tier', 'vua') in LOTO_TIERS, bad, 'invalid_save')
         integer(lt.get('n', 1), 1, LOTO_CARDS)
-        integer(lt.get('fk', 0), 0, KINH_HUT_MAX)
+        integer(lt.get('fk', 0), 0, FK_MAX)   # older saves: at most 3
         sb = lt.get('sb', {})
         need(isinstance(sb, dict) and set(sb) <= {'cl', 'cot'}, bad, 'invalid_save')
         for k, b in sb.items():
@@ -841,7 +853,7 @@ def validate(j: dict) -> None:
         need(isinstance(ltd, dict) and set(ltd) == set(LTD_KEYS) and isinstance(ltd['npc'], list)
              and len(ltd['npc']) == len(NEIGHBOURS), bad, 'invalid_save')
         for v in [ltd['r'], ltd['w'], ltd['fk'], *ltd['npc']]:
-            integer(v, 0, 10**6)
+            integer(v, 0, FK_MAX)
     need(f['ed'] == '' or (isinstance(f['ed'], str) and len(f['ed']) == 12 and f['ed'].startswith('fair') and f['ed'][4:].isdigit()),
          bad, 'invalid_save')
     integer(f['pts'], 0, 10**6)
