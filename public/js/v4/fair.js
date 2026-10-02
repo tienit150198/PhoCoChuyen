@@ -151,9 +151,9 @@ async function send(action,payload={}){
 
 /* ---- rendering ---- */
 function keep(fn){
-  const body=S.dlg?.querySelector('.fh-body'),top=body?.scrollTop,a=document.activeElement,key=a&&S.dlg?.contains(a)?a.dataset.fhKey:'';
+  const body=S.dlg?.querySelector('.fh-body'),top=body?.scrollTop,dtop=S.dlg?.scrollTop,a=document.activeElement,key=a&&S.dlg?.contains(a)?a.dataset.fhKey:'';
   fn();
-  const nb=S.dlg?.querySelector('.fh-body');if(nb&&top!=null)nb.scrollTop=top;
+  const nb=S.dlg?.querySelector('.fh-body');if(nb&&top!=null)nb.scrollTop=top;if(S.dlg&&dtop!=null)S.dlg.scrollTop=dtop;
   if(key){const el=S.dlg.querySelector(`[data-fh-key="${CSS.escape(key)}"]`);el?.focus({preventScroll:true});}
 }
 function render(){
@@ -164,6 +164,7 @@ function render(){
 function tickLabels(){
   if(!S.dlg?.open)return;
   const f=F();
+  if(!f.open&&f.soon&&f.opens*1000<=serverNow()&&!S.opening){S.opening=1;S.env.api.refresh().catch(()=>{/* next tick */}).finally(()=>{setTimeout(()=>{S.opening=0;},5000);render();});}   // the countdown hit 0: fetch the open fair
   if(S.tab==='lt')nextAct();
   S.dlg.querySelectorAll('[data-fh-count]').forEach(el=>{
     const k=el.dataset.fhCount;
@@ -405,13 +406,14 @@ function bcView(){
   const dice=(b.dice||['bau','cua','ca']).map((d,i)=>`<span class="fh-die" style="--i:${i}">${art(d)}<span class="sr-only">${FACE_NAME[d]}</span></span>`).join('');
   const mat=FACES.map(face=>{const n=b.bets[face]||0,hit=hits.has(face);
     return `<button type="button" class="fh-face fh-f-${face}${hit?' hit':''}${n?' bet':''}" data-fh="bet" data-face="${face}" data-fh-key="face-${face}" aria-label="${FACE_NAME[face]}${n?`, đang đặt ${n} xu`:''}"${rolling||stop?' disabled':''}>${art(face)}<b>${FACE_NAME[face]}</b>${n?`<em class="fh-stake">${n}</em>`:''}</button>`;}).join('');
-  const res=b.last&&b.phase==='idle'?bcResult(b.last):'';
+  const again=b.last&&b.phase==='idle'&&!stop?`<div class="row wrap fh-again">${btn('🔁 Lắc tiếp','roll',{},'primary small',total?' data-fh-key="again"':' disabled data-fh-key="again"')}${btn('Đặt lại','clear',{},'ghost small')}</div>`:'';
+  const res=b.last&&b.phase==='idle'?bcResult(b.last)+again:'';
   return `<section class="fh-stall fh-bc" aria-label="Bầu cua tôm cá">
     ${say(DEALER,b.say)}
     <div class="fh-table"><div class="fh-plate ${b.phase==='shake'?'shake':''} ${b.phase==='idle'&&b.dice?'open':''}" aria-live="polite"><div class="fh-dice">${dice}</div><div class="fh-bowl" aria-hidden="true"></div></div>${res}</div>
     <div class="fh-mat" role="group" aria-label="Chiếu bầu cua: chạm một con để đặt">${mat}</div>
     <div class="fh-chips" role="group" aria-label="Mỗi lần chạm đặt"><span>Mỗi chạm</span>${CHIPS.map(c=>`<button type="button" class="fh-chip${b.chip===c?' on':''}" data-fh="chip" data-v="${c}" aria-pressed="${b.chip===c}" data-fh-key="chip-${c}">${c}</button>`).join('')}${btn('Gom lại','clear',{},'ghost small',total&&!rolling?'':' disabled')}</div>
-    <div class="fh-go"><span>Đặt <b>${total}</b>/${max} xu</span>${btn(rolling?'Đang lắc…':'🥣 Lắc!','roll',{},'primary big',total&&!rolling&&!stop?' data-fh-key="roll"':' disabled data-fh-key="roll"')}</div>
+    ${stop?'<p class="fh-rule"><b>Hôm nay chơi đủ rồi, mai ghé lắc tiếp nha.</b></p>':''}<div class="fh-go"><span>Đặt <b>${total}</b>/${max} xu</span>${btn(rolling?'Đang lắc…':'🥣 Lắc!','roll',{},'primary big',total&&!rolling&&!stop?' data-fh-key="roll"':' disabled data-fh-key="roll"')}</div>
     <p class="fh-rule">Ra mấy con trùng mặt đặt thì ăn bấy nhiêu lần tiền cược, kèm tiền vốn. Ba con giống nhau (bão) ăn ${r.bao||10} lần.</p>
   </section>`;
 }

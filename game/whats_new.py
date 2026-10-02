@@ -32,6 +32,9 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.4.11", date="2026-10-03", items=(
+        dict(emoji="🏮", text="Hội chợ đã mở! Bầu cua chơi xong có nút “Lắc tiếp” ngay dưới kết quả, bấm đặt không còn bị nhảy lên đầu trang.", go=dict(action="fair")),
+    )),
     dict(version="1.4.10", date="2026-10-02", items=(
         dict(emoji="🛕", text="Vào chùa Gió Lành: đi dạo sân chùa, chánh điện, nhà ăn. Đi tới lư hương, gác chuông, hồ sen là làm được việc ngay tại đó.", go=dict(action="jrView", data={"view": "life"})),
         dict(emoji="🙏", text="Quỳ trước chánh điện tự chọn lời khấn, ngồi gõ mõ tụng kinh cùng Thầy Huệ Minh. Có tiếng chuông, tiếng mõ, tiếng tụng thật."),

@@ -1,3 +1,8 @@
+# v1.4.11 — 🏮 Hội chợ: sửa nhanh
+
+- Chủ game (03/10 00:0x): "bấm vào đặt thì tự nhiên nó scroll lên", "chơi xong 1 trận làm sao chơi lại, bầu cua". `fair.js keep()` giữ cả `scrollTop` của dialog; dưới kết quả bầu cua có "🔁 Lắc tiếp" / "Đặt lại"; hết hạn mức ngày thì ghi lý do cạnh nút.
+- Đếm ngược về 0 thì client tự `api.refresh()` để mở hội chợ, không cần tải lại trang.
+
 # v1.4.10 — 🛕 Vào chùa Gió Lành
 
 Chủ game (02/10): "chùa là phải mở cái chùa luôn chứ", "vào đó tự bấm khấn… có trụ trì, có tụng kinh", "đi tới đâu có đấy", "chùa có nhạc chùa nữa".

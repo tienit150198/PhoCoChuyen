@@ -1,5 +1,9 @@
 {
  "strings": {
+  "Hôm nay chơi đủ rồi, mai ghé lắc tiếp nha.": "That's enough for today, come back tomorrow for more rolls.",
+  "Hội chợ đã mở! Bầu cua chơi xong có nút “Lắc tiếp” ngay dưới kết quả, bấm đặt không còn bị nhảy lên đầu trang.": "The fair is open! Bầu cua now has a “Roll again” button under the result, and betting no longer jumps to the top.",
+  "🔁 Lắc tiếp": "🔁 Roll again",
+  "Đặt lại": "Reset bets",
   "khoản này thuộc riêng kỳ này hay trải ra nhiều kỳ": "whether it belongs to this period alone or spreads over several",
   "Loại 1 – tài sản ngắn hạn": "Type 1 – current assets",
   "Loại 2 – tài sản dài hạn": "Type 2 – non-current assets",
