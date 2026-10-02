@@ -535,19 +535,27 @@ function orderRows(x){
   if(!list.length)return '<p class="muted small">Chưa có đơn nào đang giao.</p>';
   return `<div class="mt-rows">${list.map(o=>`<div class="mt-row mt-order ${o.late_note?'late':''}"><span class="mt-emo" aria-hidden="true">${x.esc(o.emoji)}</span><div class="grow"><b>${o.cups?`${o.qty} thùng ${x.esc(o.name)}`:`${o.qty} phần ${x.esc(o.name)}`}</b><small>${x.esc(o.supplier_name)} · dự kiến <b>${x.esc(o.eta_label)}</b> · ${x.esc(o.left_label)}</small>${o.late_note?`<small class="mt-late">⏰ ${x.esc(o.late_note)}</small>`:''}<span class="mt-bar" aria-hidden="true"><i style="width:${Math.round((o.progress||0)*100)}%"></i></span></div></div>`).join('')}</div>`;
 }
-/** Supplier cards for the chosen item: the live promise in plain words, price and reliability. */
+/** The order form under a picked row: quantity − n +, then the bill (total and what the shop fund keeps),
+ * the suppliers as compact chips and ONE order button, disabled with the reason when it cannot go
+ * (orderWhy). The quantity starts at the old default (5 portions, 1 crate of cups); the player sets it. */
 function supplierPicker(x,id){
-  const b=B(x),cups=id.startsWith('cup_'),qtys=cups?[1,2,3]:[5,10,20];
-  const qty=qtys.includes(x.ui.mtQty)?x.ui.mtQty:qtys[0];
-  const sups=b.suppliers||[],cheapest=Math.min(...sups.filter(s=>!s.items||s.items.includes(id)).map(s=>s.factor));
-  return `<div class="mt-picker"><div class="mt-qty" role="group" aria-label="Số lượng">${qtys.map(q=>`<button type="button" class="mt-seg ${q===qty?'on':''}" data-action="car:qty" data-qty="${q}" aria-pressed="${q===qty}">${cups?`${q} thùng · ${q*(b.cup_pack?.qty||20)} ly`:`${q} phần`}</button>`).join('')}</div>
-    <div class="mt-sups">${sups.map(s=>{
-      const sells=!s.items||s.items.includes(id),cost=orderCost(x,id,qty,s.factor);
-      const tags=[s.factor===cheapest?'rẻ nhất':'',s.factor>1?'đắt':'',s.late>=12?'hay trễ':''].filter(Boolean);
-      return `<article class="mt-sup ${sells?'':'off'}"><div class="mt-sup-head"><span aria-hidden="true">${x.esc(s.emoji)}</span><b>${x.esc(s.name)}</b></div>
-        ${sells?`<p class="mt-sup-when">${x.esc(s.quote?.label||s.window)}</p><small>${x.esc(s.window)} · giá ×${String(s.factor).replace('.',',')}${tags.length?' · '+tags.map(v=>x.esc(v)).join(' · '):''}</small>${(why=>why?whyBtn(x,`Đặt · ${cost} xu`,why,'small'):jb(x,`Đặt · ${cost} xu`,'tea_order',{item:id,qty,supplier:s.id,confirm:true},'small primary'))(orderWhy(x,id,qty,cost))}`:'<small>Không bán mặt hàng này</small>'}</article>`;}).join('')}</div></div>`;
+  const b=B(x),cups=id.startsWith('cup_'),max=cups?5:20,quick=cups?[1,2,3]:[5,10,20],pack=b.cup_pack?.qty||20;
+  const qty=Math.max(1,Math.min(max,Number(x.ui.mtQty)||quick[0]));
+  const sups=b.suppliers||[],sells=s=>!s.items||s.items.includes(id),cheapest=Math.min(...sups.filter(sells).map(s=>s.factor));
+  const sup=sups.find(s=>s.id===x.ui.mtSup&&sells(s))||sups.find(s=>s.id==='partner'&&sells(s))||sups.find(sells);
+  if(!sup)return '<p class="muted small">Chưa nhà nào bán mặt hàng này.</p>';
+  const cost=orderCost(x,id,qty,sup.factor),why=orderWhy(x,id,qty,cost);
+  const step=(q,label,aria,off)=>`<button type="button" class="btn ghost" data-action="car:qty" data-qty="${q}" aria-label="${aria}"${off?' disabled':''}>${label}</button>`;
+  const chips=quick.map(q=>`<button type="button" class="mt-seg ${q===qty?'on':''}" data-action="car:qty" data-qty="${q}" aria-pressed="${q===qty}">${q}</button>`).join('');
+  const chip=s=>{const ok=sells(s),on=s.id===sup.id,tags=[s.factor===cheapest?'rẻ nhất':s.factor>1?'đắt':'',s.late>=12?'hay trễ':''].filter(Boolean);
+    return `<button type="button" class="mt-sup-chip ${on?'on':''}" data-action="car:sup" data-sup="${x.esc(s.id)}" aria-pressed="${on}"${ok?'':' disabled'}><b><span aria-hidden="true">${x.esc(s.emoji)}</span> ${x.esc(s.name)}</b><small>${ok?`${x.esc(s.quote?.label||s.window)} · ×${String(s.factor).replace('.',',')}${tags.length?' · '+tags.map(v=>x.esc(v)).join(' · '):''}`:'Không bán mặt hàng này'}</small></button>`;};
+  const go=why?whyBtn(x,`🚚 Đặt · ${cost} xu`,why,'primary'):jb(x,cups?`🚚 Đặt ${qty} thùng · ${cost} xu`:`🚚 Đặt ${qty} phần · ${cost} xu`,'tea_order',{item:id,qty,supplier:sup.id,confirm:true},'primary');
+  return `<div class="mt-picker"><div class="mt-order-qty"><div class="mt-stepper" role="group" aria-label="Số lượng">${step(qty-1,'−','Bớt một',qty<=1)}<output aria-live="polite"><b>${qty}</b> <small>${cups?`thùng · ${qty*pack} ly`:'phần'}</small></output>${step(qty+1,'+','Thêm một',qty>=max)}</div><div class="mt-qty-chips" role="group" aria-label="Chọn nhanh">${chips}</div></div>
+    <p class="mt-bill" role="status"><b>Tổng ${cost.toLocaleString('vi-VN')} xu</b><span>Quỹ còn ${Math.max(0,fund(x)-cost).toLocaleString('vi-VN')} xu</span></p>
+    <div class="mt-sup-chips" role="group" aria-label="Nhà cung cấp">${sups.map(chip).join('')}</div>
+    <details class="mt-sup-more"><summary>${x.esc(sup.emoji)} ${x.esc(sup.name)}: giờ giao</summary><p>${x.esc(sup.window)}${sup.note?` · ${x.esc(sup.note)}`:''}</p></details>
+    <div class="mt-order-go">${go}</div></div>`;
 }
-
 /* ---------------------------------------------------------------- prepare */
 const TABS=[['stock','🧺','Kho'],['upgrade','🛠️','Nâng cấp'],['price','🏷️','Giá bán'],['reviews','⭐','Đánh giá'],['recap','📒','Tổng kết']];
 function board(x){
@@ -556,40 +564,62 @@ function board(x){
   return `<div class="chalkboard mt-board"><h2>🧋 Menu hôm nay</h2><div class="chalk-columns">${bases.map(i=>{const s=station(x,i.id),off=s.on===false;return `<div class="${s.unlocked?'':'locked'}${off?' off':''}"><span>${x.esc(i.name)}</span><b>${!s.unlocked?`🔒 cấp ${s.level}`:off?'ngừng bán':`${prices[i.id]||pr.base?.[i.id]||30} xu`}</b></div>`;}).join('')}</div>
     <p class="center">Siro +${pr.flavor??6} xu · Topping +${pr.topping??5} xu · Size L +${pr.size_l??7} xu</p></div>`;
 }
+/** Thresholds for the "Cần nhập / cần ủ" group: cups as the server warns (boba.warnings), a few portions for the rest. */
+const LOW_CUPS=5,LOW_PORTIONS=3;
+/** Kho: what needs making or buying first ("Cần nhập / cần ủ": out, low, old or going off today), then the
+ * pots and the goods to buy, the locked ones folded into one line, the deliveries on the way, the care
+ * list and the how-to folded. A picked row opens its order form right under it. */
 function stockTab(x){
   const b=B(x),pantry=x.room.life?.pantry||[],day=x.room.day,cups=b.cups||{},now=b.now||{},pick=x.ui.mtItem;
   const lot=id=>{const l=pantry.filter(v=>v.item===id&&v.qty>0&&v.expires>=day);return l.length?Math.min(...l.map(v=>v.expires)):null;};
   const batch=id=>(b.batches||[]).find(v=>v.item===id);
-  const locked=i=>`<div class="mt-row locked"><span class="mt-emo" aria-hidden="true">${i.emoji}</span><div class="grow"><b>${x.esc(i.name)}</b><small>🔒 Mở ở tay nghề cấp ${station(x,i.id).level}</small></div></div>`;
+  const all=ings(x),madeIds=all.filter(i=>station(x,i.id).made),boughtIds=all.filter(i=>!station(x,i.id).made);
+  const shut=all.filter(i=>!station(x,i.id).unlocked);
   // Made at the counter: brewed pots, pearl batches, whipped foam.
-  const made=ings(x).filter(i=>station(x,i.id).made).map(i=>{
-    const s=station(x,i.id);if(!s.unlocked)return locked(i);
-    const bt=batch(i.id),first=bt?.lots?.[0],exp=lot(i.id);
+  const madeRow=i=>{
+    const s=station(x,i.id),bt=batch(i.id),first=bt?.lots?.[0],exp=lot(i.id);
     const fresh=s.fresh?(first?`${first.made?`${verb(i.id)} ${first.made} · `:''}<span class="${first.band==='fresh'?'':'warn'}">${x.esc(first.word)}${first.band==='fresh'&&first.good_until?` tới ${first.good_until}`:first.ok_until?` · bỏ lúc ${first.ok_until}`:''}</span>${bt.lots.length>1?` · ${bt.lots.length} mẻ`:''}`:'chưa có mẻ nào'):(exp!=null?`dùng hết ngày ${exp}`:'');
     if(s.on===false&&!s.stock)return `<div class="mt-row off"><span class="mt-emo" aria-hidden="true">${i.emoji}</span><div class="grow"><b>${x.esc(i.name)}</b><small>🚫 Ngừng bán · không cần ${verb(i.id).toLowerCase()}</small></div></div>`;
     return `<div class="mt-row ${s.stock===0?'empty':''}${s.on===false?' off':''}"><span class="mt-emo" aria-hidden="true">${i.emoji}</span><div class="grow"><b>${x.esc(i.name)}${s.on===false?' <small>· ngừng bán</small>':''}</b><small><span class="mt-count-inline ${s.stock===0?'zero':''}">Còn ${s.stock}</span>${fresh?` · ${fresh}`:''}</small></div><div class="mt-row-btns">${s.tired?jb(x,'Đổ mẻ cũ','tea_toss',{item:i.id},'small ghost'):''}${prepBtn(x,i.id)}</div></div>`;
-  }).join('');
+  };
   // Bought from suppliers: cups, syrups, jellies…
   const buyRow=(id,emoji,name,have,sub,off=false)=>{
     const o=pending(x,id),on=pick===id;
     return `<div class="mt-buy ${on?'on':''}"><div class="mt-row ${have===0&&!off?'empty':''}${off?' off':''}"><span class="mt-emo" aria-hidden="true">${emoji}</span><div class="grow"><b>${x.esc(name)}</b><small><span class="mt-count-inline ${have===0?'zero':''}">Còn ${have}</span>${sub?` · ${sub}`:''}${o.length?` · 📦 ${x.esc(o[0].eta_label)}`:''}</small></div><button type="button" class="btn small ${on?'primary':''}" data-action="car:pick" data-item="${x.esc(id)}" aria-expanded="${on}">${on?'Đóng':'Đặt hàng'}</button></div>${on?supplierPicker(x,id):''}</div>`;
   };
-  const cupRows=['M','L'].map(size=>buyRow('cup_'+size,'🥤',`Ly ${size}`,cups[size]||0,`${b.cup_pack?.qty||20} ly/thùng`)).join('');
-  const bought=ings(x).filter(i=>!station(x,i.id).made).map(i=>{const s=station(x,i.id);if(!s.unlocked)return locked(i);const exp=lot(i.id);return buyRow(i.id,i.emoji,i.name,s.stock,`${s.on===false?'🚫 ngừng bán · ':''}${i.cost} xu/phần${exp!=null?` · dùng hết ngày ${exp}`:''}`,s.on===false);}).join('');
+  const cupRow=size=>buyRow('cup_'+size,'🥤',`Ly ${size}`,cups[size]||0,`${b.cup_pack?.qty||20} ly/thùng`);
+  const boughtRow=i=>{const s=station(x,i.id),exp=lot(i.id);
+    return buyRow(i.id,i.emoji,i.name,s.stock,`${s.on===false?'🚫 ngừng bán · ':''}${i.cost} xu/phần${exp!=null&&exp<=day+1?` · ${exp<=day?'hết hạn tối nay':'dùng hết ngày mai'}`:''}`,s.on===false);};
+  // What needs doing first: on the menu and out, low, past its best, or going off tonight.
+  const madeOpen=madeIds.filter(i=>!shut.includes(i)),boughtOpen=boughtIds.filter(i=>!shut.includes(i));
+  const needMade=madeOpen.filter(i=>{const s=station(x,i.id);return s.on!==false&&(s.stock===0||s.tired>0);});
+  const needCups=['M','L'].filter(size=>(cups[size]||0)<LOW_CUPS);
+  const needBought=boughtOpen.filter(i=>{const s=station(x,i.id),exp=lot(i.id);return s.on!==false&&(s.stock<=LOW_PORTIONS||(exp!=null&&exp<=day));});
+  // A hint from yesterday's book (boba history), never a number put into the form.
+  const last=(b.history||[]).filter(h=>Number(h.day)<Number(day)).at(-1);
+  const yday=last&&last.served!=null?`<p class="mt-need-hint"><span>📒 Ngày ${last.day} bán ${last.served} ly</span>${last.dumped?`<span>🗑️ Bỏ cuối ca ${last.dumped} phần</span>`:''}${b.left!=null?`<span>👥 Hôm nay còn ${b.left} khách</span>`:''}</p>`:'';
+  const needN=needMade.length+needCups.length+needBought.length;
+  const need=needN?`<section class="mt-need" aria-labelledby="mtNeedH"><h3 class="section-title" id="mtNeedH">⚠ Cần nhập / cần ủ <small>${needN} món</small></h3>${yday}<div class="mt-rows">${needMade.map(madeRow).join('')}${needCups.map(cupRow).join('')}${needBought.map(boughtRow).join('')}</div></section>`:'';
+  const restMade=madeOpen.filter(i=>!needMade.includes(i)),restCups=['M','L'].filter(s=>!needCups.includes(s)),restBought=boughtOpen.filter(i=>!needBought.includes(i));
+  const lockedFold=shut.length?(()=>{const lv=shut.map(i=>station(x,i.id).level||i.level||1),lo=Math.min(...lv),hi=Math.max(...lv);
+    return `<details class="mt-locked"><summary>🔒 ${shut.length} món mở ở tay nghề cấp ${lo===hi?lo:`${lo}–${hi}`}</summary><p>${shut.map((i,n)=>`${x.esc(i.emoji)} ${x.esc(i.name)} (cấp ${lv[n]})`).join(' · ')}</p></details>`;})():'';
   const night=(b.night||[]).length?`<div class="mt-night">${b.night.map(l=>`<p>${x.esc(l)}</p>`).join('')}</div>`:'';
   const wait=x.room.open&&(b.orders||[]).length?jb(x,'⏳ Chờ thêm 20 phút','tea_wait',{},'ghost small'):'';
   // The money every paid button here comes out of, in sight; when it cannot pay for a full batch of
   // something on the menu, the ways that cost nothing are named.
   const money=fund(x),J=x.state?.journey,wallet=J?.story&&Number.isFinite(Number(J.wallet))?Number(J.wallet):null;
-  const poor=ings(x).some(i=>{const s=station(x,i.id);return s.made&&s.unlocked&&s.on!==false&&prepPlan(x,i.id).poor;});
-  const purse=`<div class="mt-fund${poor?' poor':''}" role="status"><p>🏪 Quỹ tiệm <b>${money.toLocaleString('vi-VN')} xu</b>${wallet!=null?` · 👛 Ví ${wallet.toLocaleString('vi-VN')} xu`:''}<small>Ủ trà, nấu trân châu, đặt hàng đều trừ vào quỹ tiệm.</small></p>${poor?`<p class="mt-fund-tip">Quỹ mỏng: bán ly từ hàng còn trong kho để có thêm xu, tắt bớt món ở 🏷️ Giá bán${wallet>0?', hoặc góp tiền từ ví vào quỹ':''}.</p>${wallet>0?topUp(x):''}`:''}</div>`;
+  const poor=all.some(i=>{const s=station(x,i.id);return s.made&&s.unlocked&&s.on!==false&&prepPlan(x,i.id).poor;});
+  const clock=now.is_open?`🕑 <b>${x.esc(now.time||b.clock||'')}</b>${overtime(b)?' · tăng ca, nhà cung cấp đã nghỉ':''}`:`🕑 Đóng cửa · mở lại ${x.esc(now.open||'08:00')}`;
+  const purse=`<div class="mt-fund${poor?' poor':''}" role="status"><p>🏪 Quỹ tiệm <b>${money.toLocaleString('vi-VN')} xu</b>${wallet!=null?` · 👛 Ví ${wallet.toLocaleString('vi-VN')} xu`:''} · ${clock}</p>${poor?`<p class="mt-fund-tip">Quỹ mỏng: bán ly từ hàng còn trong kho để có thêm xu, tắt bớt món ở 🏷️ Giá bán${wallet>0?', hoặc góp tiền từ ví vào quỹ':''}.</p>${wallet>0?topUp(x):''}`:''}</div>`;
   const nOrd=(b.orders||[]).length,maxOrd=b.max_orders||12;
-  return `${purse}<p class="mt-now">🕑 ${now.is_open?`Bây giờ <b>${x.esc(now.time||b.clock||'')}</b>${overtime(b)?' · tăng ca, nhà cung cấp đã nghỉ':''}`:`Đã đóng cửa · mở lại ${x.esc(now.open||'08:00')}`}</p>${night}
-    <h3 class="section-title">🧋 Việc chăm quầy</h3>${careRows(x,b.care||[],true)}
-    <h3 class="section-title">🫖 Nồi, bình & mẻ hôm nay</h3><p class="muted small">Làm ngay tại quầy. Ủ trà, nấu trân châu mất 20 phút khi quán mở; làm trước giờ mở cửa thì không mất thời gian. Trà ủ và trân châu không để qua đêm.</p><div class="mt-rows">${made}</div>
-    <h3 class="section-title">📦 Đang giao${nOrd?` <small>${nOrd}/${maxOrd} đơn${nOrd>=maxOrd?' · đợi hàng tới rồi mới đặt thêm':''}</small>`:''}</h3>${orderRows(x)}${wait?`<p class="row wrap">${wait}</p>`:''}
-    <h3 class="section-title">🛒 Đặt hàng</h3><p class="muted small">Trả tiền khi đặt. Mỗi nhà giao một kiểu: hỏa tốc 15–30 phút, xe bốn chuyến mỗi ngày, chợ chiều nay hoặc sáng mai, xưởng 1–2 ngày.</p>
-    <div class="mt-rows">${cupRows}${bought}</div>`;
+  const care=b.care||[],bad=care.filter(r=>r.tone!=='ok').length,danger=care.some(r=>r.tone==='danger');
+  const careBox=care.length?`<details class="mt-care-fold"${x.ui.mtPrepCare??danger?' open':''}><summary data-action="car:fold" data-key="mtPrepCare"><span>🧋 Việc chăm quầy</span>${bad?`<em class="mt-care-count ${danger?'danger':''}">${bad}</em>`:'<em class="mt-care-count ok">ổn</em>'}</summary>${careRows(x,care,true)}</details>`:'';
+  return `${purse}${night}${need}
+    ${restMade.length?`<h3 class="section-title">🫖 Nồi, bình & mẻ hôm nay</h3><div class="mt-rows">${restMade.map(madeRow).join('')}</div>`:''}
+    ${restCups.length||restBought.length?`<h3 class="section-title">🛒 Đặt hàng</h3><div class="mt-rows">${restCups.map(cupRow).join('')}${restBought.map(boughtRow).join('')}</div>`:''}${lockedFold}
+    ${nOrd?`<h3 class="section-title">📦 Đang giao <small>${nOrd}/${maxOrd} đơn${nOrd>=maxOrd?' · đợi hàng tới rồi mới đặt thêm':''}</small></h3>${orderRows(x)}${wait?`<p class="row wrap">${wait}</p>`:''}`:''}
+    ${careBox}
+    <details class="mt-how"><summary>❔ Ủ, nấu & đặt hàng thế nào?</summary><p class="muted small">Ủ trà, nấu trân châu, đặt hàng đều trừ vào quỹ tiệm. Ủ trà, nấu trân châu mất 20 phút khi quán mở; làm trước giờ mở cửa thì không mất thời gian. Trà ủ và trân châu không để qua đêm.</p><p class="muted small">Trả tiền khi đặt. Mỗi nhà giao một kiểu: hỏa tốc 15–30 phút, xe bốn chuyến mỗi ngày, chợ chiều nay hoặc sáng mai, xưởng 1–2 ngày.</p></details>`;
 }
 function upgradeTab(x){
   return `<div class="mt-upgrades">${(B(x).upgrades||[]).map(u=>`<article class="mt-upgrade ${u.owned?'owned':''}"><span class="mt-emo big" aria-hidden="true">${x.esc(u.emoji)}</span><div class="grow"><h4>${x.esc(u.name)}</h4><p>${x.esc(u.text)}</p></div>${u.owned?'<span class="tag green">✓ Đã lắp</span>':!u.ready?`<span class="tag">🔒 Tay nghề cấp ${u.level}</span>`:fund(x)<u.price?whyBtn(x,`Lắp · ${u.price} xu`,`Thiếu ${u.price-fund(x)} xu`,'small'):x.confirmCmd(`Lắp · ${u.price} xu`,'tea_upgrade',{id:u.id},`Lắp ${u.name} với giá ${u.price} xu?`,'primary small')}</article>`).join('')}</div>`;
@@ -629,21 +659,27 @@ function recapTab(x){
     ${h.length?`<div class="mt-table" role="table" aria-label="Các ngày gần đây"><div role="row" class="head"><span>Ngày</span><span>Ly</span><span>Chuẩn</span><span>Bỏ về</span><span>Thu</span></div>${h.map(r=>`<div role="row"><span>${r.day}</span><span>${r.served}</span><span>${r.perfect}</span><span>${r.walkouts}</span><span>${r.revenue} xu</span></div>`).join('')}</div>`:'<p class="muted">Khép ca đầu tiên để xem tổng kết từng ngày.</p>'}
     <h3 class="section-title">📒 Sổ khách quen</h3><div class="mt-rows">${(b.notebook||[]).map(r=>`<div class="mt-row mt-regular"><span class="mt-emo" aria-hidden="true">📒</span><div class="grow"><b>${x.esc(r.name)}</b><small>${r.usual?`${x.esc(ing(x,r.usual.base).name)} ${r.usual.size} · ${r.usual.sugar}% đường · ${ICE_TEXT[r.usual.ice]}`:'Chưa ghi ly quen'} · ghé ${r.visits} lần</small>${(r.notes||[]).map(n=>`<small class="mt-note">${x.esc(n.emoji)} ${x.esc(n.text)}</small>`).join('')}${r.next_note?`<small class="muted">Ghé đủ ${r.next_note} lần để biết thêm một điều.</small>`:''}</div></div>`).join('')}</div>`;
 }
+/** Chuẩn bị opens on the work: a compact head (shop name, a one-line level bar), the day and its missions
+ * folded into one line (open by itself when a gift can be claimed), the warnings, then the tabs (Kho first). */
 function prepare(x,tab){
   const c=x.room,b=B(x),mod=b.modifier||{},w=b.warnings||[],tm=b.tomorrow||{};
   tab=TABS.some(v=>v[0]===tab)?tab:'stock';
-  const modes=x.content.experiences?.modes||[];
   const panel={stock:stockTab,upgrade:upgradeTab,price:priceTab,reviews:reviewsTab,recap:recapTab}[tab](x);
-  const goals=(c.life?.goals||[]).map(g=>`<li class="${g.claimed?'done':''}"><div><strong>${x.esc(g.title)}</strong><small>Thưởng ${g.reward} xu</small></div><div class="prep-goal-end">${g.claimed?'<span class="done-mark">✓ Đã nhận</span>':g.current>=g.goal?jb(x,'Nhận quà','life_goal',{goal:g.id},'small primary'):`<b>${Math.min(g.current,g.goal)}/${g.goal}</b>`}</div></li>`).join('');
+  const list=c.life?.goals||[],n=list.length,claim=list.some(g=>!g.claimed&&g.current>=g.goal),done=list.filter(g=>g.claimed||g.current>=g.goal).length;
+  const goals=list.map(g=>`<li class="${g.claimed?'done':''}"><div><strong>${x.esc(g.title)}</strong><small>Thưởng ${g.reward} xu</small></div><div class="prep-goal-end">${g.claimed?'<span class="done-mark">✓ Đã nhận</span>':g.current>=g.goal?jb(x,'Nhận quà','life_goal',{goal:g.id},'small primary'):`<b>${Math.min(g.current,g.goal)}/${g.goal}</b>`}</div></li>`).join('');
+  const dayNo=x.state?.journey?.story?x.state.journey.life_day:c.day,today=c.open?mod:tm,lv=b.level||1,made=b.total||0,pct=b.next_tier?Math.min(100,(b.total||0)/b.next_tier*100):100;
+  const open=x.ui.mtToday??claim;
+  const todayLine=`<details class="mt-today"${open?' open':''}><summary data-action="car:fold" data-key="mtToday"><span class="mt-today-em" aria-hidden="true">${x.esc(today.emoji||'🌤️')}</span><span class="mt-today-t">${x.esc(today.title||'Hôm nay')}</span>${n?`<span class="mt-today-q">· Nhiệm vụ ${done}/${n}</span>`:''}${claim?'<span class="mt-today-gift" aria-label="Có quà để nhận">🎁</span>':''}</summary>
+      <div class="prep-today-grid"><div class="prep-weather"><div><p>${x.esc(c.open?(mod.text||''):(tm.advice||''))}</p></div></div>${c.open&&tm.title&&(b.care||[]).some(r=>r.id==='tomorrow')?`<div class="prep-weather mt-tomorrow"><span class="prep-weather-em" aria-hidden="true">${x.esc(tm.emoji)}</span><div><strong>Mai: ${x.esc(tm.title)}</strong><p>${x.esc(tm.advice)}</p></div></div>`:''}${goals?`<div class="prep-quests"><h3 class="prep-sub">🌞 Nhiệm vụ hôm nay</h3><ul class="prep-goals">${goals}</ul></div>`:''}</div></details>`;
   return `<div class="preparation-topline">${x.button('← Hành trình','home',{},'ghost small')}<span>CHUẨN BỊ NGÀY ${c.day}</span>${x.button(x.icon('x',20),'close',{},'ghost small')}</div>
   <div class="life-content career-job mt mt-prep prep-v2">
-    <header class="prep-head"><div class="prep-id"><span class="sign-kicker">QUẦY TRÀ SỮA</span><h1>${x.esc(c.life?.shop_name||'Trà Mây & Trân Châu')}</h1></div><div class="prep-level"><div class="prep-level-row"><span>⭐ Tay nghề cấp ${b.level||1}</span><small>${b.total||0} ly đã pha</small></div><div class="prep-xp" aria-hidden="true"><i style="width:${b.next_tier?Math.min(100,(b.total||0)/b.next_tier*100):100}%"></i></div></div>${x.button('✏️ Đổi tên','expRename',{},'small ghost')}</header>
-    <section class="prep-block prep-today" aria-label="Hôm nay"><h2 class="prep-h">${c.open?'Hôm nay':`Ngày ${x.state?.journey?.story?x.state.journey.life_day:c.day}`}</h2><div class="prep-today-grid"><div class="prep-weather"><span class="prep-weather-em" aria-hidden="true">${x.esc((c.open?mod:tm).emoji||'🌤️')}</span><div><strong>${x.esc((c.open?mod:tm).title||'')}</strong><p>${x.esc(c.open?(mod.text||''):(tm.advice||''))}</p></div></div>${c.open&&tm.title&&(b.care||[]).some(r=>r.id==='tomorrow')?`<div class="prep-weather mt-tomorrow"><span class="prep-weather-em" aria-hidden="true">${x.esc(tm.emoji)}</span><div><strong>Mai: ${x.esc(tm.title)}</strong><p>${x.esc(tm.advice)}</p></div></div>`:''}${goals?`<div class="prep-quests"><h3 class="prep-sub">🌞 Nhiệm vụ hôm nay</h3><ul class="prep-goals">${goals}</ul></div>`:''}</div></section>
-    ${w.length?`<div class="mt-warns">${w.map(v=>`<button type="button" class="btn mt-warn" data-action="car:prep" data-tab="${v.where==='stock'?'stock':'stock'}">⚠ ${x.esc(v.text)}</button>`).join('')}</div>`:''}
+    <header class="prep-head mt-prep-head"><div class="prep-id"><span class="sign-kicker">QUẦY TRÀ SỮA</span><h1>${x.esc(c.life?.shop_name||'Trà Mây & Trân Châu')}</h1></div><div class="mt-level"><span>⭐ Cấp ${lv} · ${made} ly</span><div class="prep-xp" aria-hidden="true"><i style="width:${pct}%"></i></div></div><button type="button" class="btn small ghost mt-rename" data-action="expRename" aria-label="Đổi tên quán">✏️</button></header>
+    ${todayLine}
+    ${w.length?`<div class="mt-warns">${w.map(v=>`<button type="button" class="btn mt-warn" data-action="car:prep" data-tab="stock">⚠ ${x.esc(v.text)}</button>`).join('')}</div>`:''}
     <nav class="mt-tabs" role="tablist" aria-label="Chuẩn bị quầy">${TABS.map(([id,e,l])=>`<button type="button" role="tab" class="mt-tab ${tab===id?'on':''}" data-action="car:prep" data-tab="${id}" aria-selected="${tab===id}"><span aria-hidden="true">${e}</span> ${l}</button>`).join('')}</nav>
     <section class="mt-panel" role="tabpanel">${panel}</section>
   </div>
-  <footer class="life-sticky">${x.button(c.open?'Về quầy · pha tiếp':`Mở cửa ngày ${x.state?.journey?.story?x.state.journey.life_day:c.day}`,c.open?'workbench':'start',{},'primary jumbo'+(c.metrics?.served>0?'':' gd-pulse'))}</footer>`;
+  <footer class="life-sticky">${x.button(c.open?'Về quầy · pha tiếp':`Mở cửa ngày ${dayNo}`,c.open?'workbench':'start',{},'primary jumbo'+(c.metrics?.served>0?'':' gd-pulse'))}</footer>`;
 }
 
 /* ---------------------------------------------------------------- module */
@@ -713,6 +749,8 @@ export default {
     if(!['prepare','prices'].includes(view)||!x?.room)return '';
     // "Bảng giá" opens on the price tab; tabs switch inside the same sheet.
     if(view==='prices'&&x.ui.lastPage!=='prices')x.ui.prep='price';
+    // Chuẩn bị opened anew (not a re-render of the open sheet) lands on Kho, its first tab.
+    else if(view==='prepare'&&(x.ui.lastPage!=='prepare'||typeof document!=='undefined'&&!document.querySelector('#sheet[open] .mt-prep')))x.ui.prep='stock';
     x.ui.lastPage=view;
     return prepare(x,x.ui.prep);
   },
@@ -722,7 +760,8 @@ export default {
     async prep(data,el,x){x.ui.prep=data.tab;x.render();},
     // Bảng giá: the price goes out inside the band the server accepts (a typed 50 becomes the top of the band).
     async price(data,el,x){const i=document.getElementById('price-'+data.item),v=clampPrice(x,data.item,i?.value);if(v==null){x.toast('Nhập giá bằng số nhé.',true);return;}if(i)i.value=v;await x.send('life_price',{item:data.item,price:v});},
-    async pick(data,el,x){x.ui.mtItem=x.ui.mtItem===data.item?null:data.item;x.render();},
+    async pick(data,el,x){x.ui.mtItem=x.ui.mtItem===data.item?null:data.item;x.ui.mtQty=null;x.render();},
+    async sup(data,el,x){x.ui.mtSup=data.sup||null;x.render();},
     async shelf(data,el,x){(x.ui.mtShelf??={})[data.key]=true;x.render();},
     async showoff(data,el,x){x.ui.mtShowOff=!x.ui.mtShowOff;x.render();},
     async qty(data,el,x){x.ui.mtQty=Number(data.qty)||null;x.render();},
@@ -772,8 +811,16 @@ export default {
   summary(data,x){
     if(!data||data.served==null)return '';
     const row=(l,v)=>`<div class="kv-row"><span>${l}</span><b>${v}</b></div>`;
-    const tm=data.tomorrow;
-    return `<article class="card space-top mt-sum"><h4 class="section-title">🧋 Quầy trà hôm nay</h4><div class="kv">${row('Ly đã trao',data.served)}${row('Ly chuẩn từng lớp',data.perfect)}${data.returned?row('Ly bị trả lại',data.returned):''}${data.walkouts?row('Khách bỏ về / đơn hủy',data.walkouts):''}${row('Doanh thu quầy',`${data.revenue} xu`)}${data.bonus?row('Thưởng thêm',`${data.bonus} xu`):''}${data.fines?row('Tiền phạt',`${data.fines} xu`):''}${data.dumped?row('Trà & trân châu bỏ cuối ca',`${data.dumped} phần`):''}${data.sealer!=null?row('Máy dán nắp',`${data.sealer} ly từ lần lau trước`):''}${data.orders?row('Đơn hàng đang giao',data.orders):''}${row('Tay nghề',`cấp ${data.level}`)}</div>
-      ${tm?`<p class="mt-tomorrow-line"><span aria-hidden="true">${x.esc(tm.emoji)}</span> <b>Mai: ${x.esc(tm.title)}</b><small>${x.esc(tm.advice)}</small></p>`:''}</article>`;
+    const tm=data.tomorrow,b=B(x),cups=b.cups;
+    // "Ngày mai" first: what was thrown away at closing, the cups left, what runs low, then one way to Kho.
+    // Each line only from a field that is there (an older server leaves it out, the line goes too).
+    const low=ings(x).filter(i=>{const s=station(x,i.id);return !s.made&&s.unlocked&&s.on!==false&&s.stock<=LOW_PORTIONS;});
+    const lines=[data.dumped?`🗑️ Bỏ cuối ca <b>${data.dumped} phần</b> trà & trân châu: mai ủ, nấu vừa đủ`:'',
+      cups&&cups.M!=null?`🥤 Ly còn <b>M ${cups.M}</b> · <b>L ${cups.L??0}</b>${['M','L'].some(k=>(cups[k]||0)<LOW_CUPS)?' · sắp hết':''}`:'',
+      low.length?`📦 Sắp hết: ${low.slice(0,4).map(i=>`${x.esc(i.name)} <b>${station(x,i.id).stock}</b>`).join(' · ')}${low.length>4?` · +${low.length-4}`:''}`:'',
+      data.orders?`🚚 Đang giao <b>${data.orders}</b> đơn`:''].filter(Boolean);
+    const plan=`<section class="mt-plan" aria-label="Ngày mai"><h4 class="section-title">🌅 Ngày mai</h4>${tm?`<p class="mt-tomorrow-line"><span aria-hidden="true">${x.esc(tm.emoji)}</span> <b>Mai: ${x.esc(tm.title)}</b><small>${x.esc(tm.advice)}</small></p>`:''}${lines.length?`<ul class="mt-plan-list">${lines.map(l=>`<li>${l}</li>`).join('')}</ul>`:''}${x.button('🧺 Mở Kho','warehouse',{},'primary small mt-plan-go')}</section>`;
+    const kv=`<div class="kv">${row('Ly đã trao',data.served)}${row('Ly chuẩn từng lớp',data.perfect)}${data.returned?row('Ly bị trả lại',data.returned):''}${data.walkouts?row('Khách bỏ về / đơn hủy',data.walkouts):''}${row('Doanh thu quầy',`${data.revenue} xu`)}${data.bonus?row('Thưởng thêm',`${data.bonus} xu`):''}${data.fines?row('Tiền phạt',`${data.fines} xu`):''}${data.dumped?row('Trà & trân châu bỏ cuối ca',`${data.dumped} phần`):''}${data.sealer!=null?row('Máy dán nắp',`${data.sealer} ly từ lần lau trước`):''}${data.orders?row('Đơn hàng đang giao',data.orders):''}${row('Tay nghề',`cấp ${data.level}`)}</div>`;
+    return `<article class="card space-top mt-sum">${plan}<details class="mt-sum-more"><summary>🧋 Quầy trà hôm nay · ${data.served} ly · ${data.revenue} xu</summary>${kv}</details></article>`;
   },
 };
