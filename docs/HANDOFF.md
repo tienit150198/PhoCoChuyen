@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **1.4.5** (02/10 14:18; see "1.3.0" below), 33 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **1.4.6** (02/10 17:22; see "1.3.0" below), 33 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -70,6 +70,13 @@ branch holds what, and what to do next, in order. Details live in the linked doc
   half the bonus, late −4 instead of −8, a wrong check 8 office minutes instead of 15 (`office.rookie`,
   `wrong_min`, `settle(..., new)`). hr_admin/secretary/it_helpdesk (office_work.py) unchanged. Also the
   `e.target.closest` guard in app.js (optional chaining). Worktrees `wt-*` of 1.4.4 removed.
+- **1.4.6** (02/10 17:22, rollback 1.4.5-20261002141722): 🚗 vehicles (`game/garage.py`, `public/js/v4/garage.js`),
+  11 vehicles 120–90,000 xu, paid in full (wallet then bank), one ride a day, resell 70 %. Released from worktree
+  branch `rel-1.4.6` because the main checkout holds ANOTHER session's uncommitted "viral stories" work that also
+  bumped its local version to 1.4.6: **that work must take 1.4.7 or later** (merge origin/main first).
+- In progress on branches (lead session, 02/10): career/nail (done), feat/loto (done; fair opens 03/10–07/10),
+  feat/avatar (done; SCHEMA_VERSION 11→12, deploy game before live), feat/pagoda, feat/homes (multiple
+  properties), feat/interiors (inside/outside workplace scenes).
 - Open questions to the owner (02/10): remove the ✓ marks in the salon mixer's "Bảng pha màu" (they show the
   answer)? Keep idle anonymous saves forever?
 - Someone left uncommitted Firebase/telemetry work in the main checkout (.env.example, game/webassets.py,
