@@ -166,6 +166,10 @@
 html[data-layout="phone"] .task-hud .note-card.nd-has-lunch:not(.calm-card)>.nd-lunch{grid-column:1/-1;grid-row:1}
 html[data-layout="phone"] .task-hud .note-card.nd-has-lunch:not(.calm-card)>.btn{grid-row:2/span 4}
 
+/* Ăn thêm: the lunch strip's look; in the Đời thường sheet it stands alone (no rule under it). */
+.lf-view>.nd-snack{margin:0;padding:12px;border:1px solid var(--line-strong);border-radius:16px;background:var(--surface)}
+.nd-snack .nd-chip:first-child small{color:var(--muted)}
+
 /* The evening sheet */
 .nd-eve{display:grid;gap:12px;align-content:start}
 .nd-eve>*{margin:0;min-width:0}

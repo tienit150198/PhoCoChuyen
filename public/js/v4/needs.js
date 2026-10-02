@@ -4,8 +4,10 @@
  * - needBars(N): the two small bars, drawn like the spirit meter (life.css .lf-meter), for the Đời thường card and
  *   sheet and the evening;
  * - lunchStrip(N): the lunch moment inside the calm card (from 11:30 on the shop clock, one tap, never a modal);
+ * - snackStrip(N): "Ăn thêm", paid snacks and a coffee any time in the work day (the calm card when hungry or
+ *   sleepy, and the Đời thường sheet);
  * - eveningBody(N,pick): the evening sheet after closing the day (dinner, bedtime, "như mọi khi");
- * - needsAction(): ndLunch / ndMeal / ndBed / ndEve / ndUsual.
+ * - needsAction(): ndLunch / ndSnack / ndMeal / ndBed / ndEve / ndUsual.
  * Story mode only (state.needs.enabled), like tinh thần. */
 import {escapeHTML as esc} from '../icons.js';
 
@@ -31,6 +33,20 @@ export function lunchStrip(N,wallet=0){
     return `<button type="button" class="nd-chip${c.id==='nhin'?' skip':''}" data-action="ndLunch" data-meal="${esc(c.id)}"${off?' disabled':''}><span aria-hidden="true">${c.emoji}</span><b>${esc(c.short||c.name)}</b><small>${esc(sub)}</small></button>`;
   };
   return `<div class="nd-lunch" role="group" aria-label="Giờ ăn trưa"><p class="nd-lunch-head"><span aria-hidden="true">🍱</span><b>Trưa rồi, ăn gì đây?</b><small>No bụng ${N.full?.value|0}</small></p><div class="nd-lunch-row">${L.choices.map(chip).join('')}</div></div>`;
+}
+
+/** True when the calm card should offer a snack: hungry or sleepy, and no lunch strip already there. */
+export function snackDue(N){
+  return !!(N?.enabled&&N.snack&&!N.lunch&&((N.full?.value|0)<50||(N.wake?.value|0)<40));
+}
+/** Ăn thêm: four one-tap paid choices (same chips as lunch). `head`: the line above them. */
+export function snackStrip(N,{head='Đói bụng rồi? Ăn thêm gì đó'}={}){
+  const S=N?.enabled&&N.snack;if(!S)return '';
+  const chip=c=>{
+    const sub=c.ok?price(c.price):c.why;
+    return `<button type="button" class="nd-chip" data-action="ndSnack" data-item="${esc(c.id)}"${c.ok?'':' disabled'} title="${esc(c.name)}"><span aria-hidden="true">${c.emoji}</span><b>${esc(c.short||c.name)}</b><small>${esc(sub)}</small></button>`;
+  };
+  return `<div class="nd-lunch nd-snack" role="group" aria-label="Ăn thêm"><p class="nd-lunch-head"><span aria-hidden="true">🍢</span><b>${esc(head)}</b><small>No bụng ${N.full?.value|0} · tỉnh táo ${N.wake?.value|0}</small></p><div class="nd-lunch-row">${S.map(chip).join('')}</div></div>`;
 }
 
 /** The pick shown in the evening sheet: the player's taps, else "như mọi khi"; a bedtime the dinner rules out moves on. */
@@ -86,6 +102,8 @@ export async function needsAction(action,data,el,env){
   const {api,ui,cmd}=env,N=api.state?.needs;
   switch(action){
     case'ndLunch':{if(el)el.disabled=true;await cmd('jr_needs_lunch',{meal:data.meal});env.renderMain?.();return true;}
+    case'ndSnack':{if(el)el.disabled=true;const r=await cmd('jr_needs_snack',{item:data.item});if(el)el.disabled=false;
+      env.renderMain?.();if(r&&document.getElementById('sheet')?.open)env.renderSheet?.(false);return true;}
     case'ndMeal':ui.eve={...(ui.eve||{}),meal:data.meal};env.renderSheet(false);return true;
     case'ndBed':ui.eve={...(ui.eve||{}),bed:Number(data.bed)};env.renderSheet(false);return true;
     case'ndEve':case'ndUsual':{

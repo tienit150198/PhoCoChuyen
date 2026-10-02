@@ -21,6 +21,9 @@ Player feedback: "thêm đói bụng và buồn ngủ … đi làm về chọn m
   lunch are free: nothing is charged twice. Only the optional street food and treats cost xu, from the wallet,
   with the history kind 'living' (an older build accepts it), and only when the wallet holds the price: food never
   makes debt.
+* Ăn thêm (jr_needs_snack {item}): any time during the work day, the player can buy a snack or a coffee, paid
+  from the wallet (SNACK). No daily cap: a food is refused when no bụng is already high (FULL_CAP), the coffee
+  when tỉnh táo is (WAKE_CAP). No tinh thần from snacks, and no new state: nothing to roll back.
 * Tinh thần (game/life.py, journey.life.spirit) moves a little: −1 the first time a bar drops under LOW in a day
   (with a line from the character), +1 for a day fed well, +1 for sleeping on time or for a relaxed late evening,
   +1/+2 for the paid meals. No death spiral: the free routine never triggers a dip on an ordinary day.
@@ -30,7 +33,7 @@ State (absent in older saves; created on the first story action, validate() chec
   seen ([career, career day, minute] last read off the shop clock), lunch (today's lunch id or None),
   low (bars that dipped today), finish (today's closing minute, for the evening), eve ({meal, bed} chosen tonight
   or None), usual ({meal, bed}: "như mọi khi").
-Commands (through journey.action): jr_needs_lunch {meal}, jr_needs_eve {meal, bed}. Both are idempotent: the same
+Commands (through journey.action): jr_needs_lunch {meal}, jr_needs_eve {meal, bed}, jr_needs_snack {item}. The first two are idempotent: the same
 choice again changes nothing; a different one after choosing is refused with code 'already_done'.
 Rollback: an older build ignores `journey.needs` (journey.validate allows extra keys) and keeps loading the save.
 """
@@ -82,6 +85,15 @@ EVE = {
     'vo_chong': dict(emoji='💞', name='Ăn tối cùng {spouse}', price=0, full=50, minutes=60, spirit=2, note='Hai người, một mâm cơm'),
 }
 EVE_IDS = ('nha',) + tuple(EVE)
+
+# Ăn thêm: bought whenever the player wants during the work day. Always paid (the daily cơm nước covers three meals).
+SNACK = {
+    'banh_bao': dict(emoji='🥟', name='Bánh bao nóng', short='Bánh bao', price=3, full=20, wake=0),
+    'xoi': dict(emoji='🍙', name='Gói xôi mặn', short='Xôi mặn', price=5, full=35, wake=0),
+    'pho': dict(emoji='🍜', name='Tô phở bò', short='Tô phở', price=8, full=50, wake=0),
+    'ca_phe': dict(emoji='☕', name='Ly cà phê sữa đá', short='Cà phê', price=3, full=0, wake=15),
+}
+FULL_CAP, WAKE_CAP = 90, 90   # at or above: "no rồi" / "tỉnh rồi", that item is refused
 COOK_SKILL = 3            # Nội trợ: after this many jobs there, your own cooking is a little nicer (+1 tinh thần)
 
 BED_TEXT = {
@@ -396,6 +408,17 @@ def after(s: dict, career: str | None, action: str, result: dict) -> None:
 COMMANDS = ('jr_needs_lunch', 'jr_needs_eve')
 
 
+def _snack_why(j: dict, n: dict, x: dict) -> str:
+    """Why this snack cannot be bought now ('' = it can)."""
+    if x['full'] and n['full'] >= FULL_CAP:
+        return 'Bụng no rồi'
+    if not x['full'] and n['wake'] >= WAKE_CAP:
+        return 'Đang tỉnh rồi'
+    if int(j.get('wallet', 0)) < x['price']:
+        return 'Chưa đủ xu'
+    return ''
+
+
 def _lunch_due(s: dict, n: dict, career: str | None) -> int | None:
     """The shop minute when lunch can be chosen now (None: not now)."""
     j = s['journey']
@@ -431,6 +454,19 @@ def action(s: dict, name: str, p: dict) -> dict:
         else:
             result['message'] = f'{x["emoji"]} Ăn trưa: {x["name"]}' + (f' ({x["price"]} xu)' if x['price'] else '') + f'. No bụng {n["full"]}' \
                 + (f', tỉnh táo {n["wake"]}' if x['wake'] else '') + '.' + (f' Tinh thần +{got}.' if got else '')
+    elif name == 'jr_needs_snack':
+        need(set(p) == {'item'} and p['item'] in SNACK, 'Chọn một món nhé.')
+        need(n['day'] == j['life_day'], 'Tối rồi, chọn bữa tối nhé.', 'not_now')
+        x = SNACK[p['item']]
+        why = _snack_why(j, n, x)
+        need(why != 'Bụng no rồi', 'Bụng no rồi, ăn nữa là căng bụng đó.', 'too_full')
+        need(why != 'Đang tỉnh rồi', 'Đang tỉnh rồi, uống nữa tối khó ngủ đó.', 'too_full')
+        need(not why, f'Ví còn {max(0, j["wallet"])} xu, chưa đủ {x["price"]} xu.', 'not_enough')
+        _jr()._wallet(j, -x['price'], 'living', f'Ăn thêm: {x["name"]}'[:120])
+        n['full'] = _clamp(n['full'] + x['full'])
+        n['wake'] = _clamp(n['wake'] + x['wake'])
+        gain = f'No bụng {n["full"]}.' if x['full'] else f'Tỉnh táo {n["wake"]}.'
+        result['message'] = f'{x["emoji"]} Ăn thêm: {x["name"]} ({x["price"]} xu). {gain}'
     elif name == 'jr_needs_eve':
         need(set(p) == {'meal', 'bed'} and p['meal'] in EVE_IDS and type(p['bed']) is int, 'Chọn bữa tối và giờ đi ngủ nhé.')
         meal, bed = p['meal'], p['bed']
@@ -461,7 +497,10 @@ def public(s: dict, focus: str | None = None) -> dict:
     j = s['journey']
     n = get(s) or initial(j['life_day'])
     v = dict(enabled=True, full=_bar(n['full'], FULL_WORDS), wake=_bar(n['wake'], WAKE_WORDS), low=list(n['low']),
-             lunch=None, today=n['lunch'] if n['day'] == j['life_day'] else None, evening=None)
+             lunch=None, today=n['lunch'] if n['day'] == j['life_day'] else None, evening=None, snack=None)
+    if n['day'] == j['life_day']:
+        v['snack'] = [dict(id=k, emoji=x['emoji'], name=x['name'], short=x['short'], price=x['price'], full=x['full'],
+                           wake=x['wake'], why=_snack_why(j, n, x), ok=not _snack_why(j, n, x)) for k, x in SNACK.items()]
     m = _lunch_due(s, n, focus or s.get('current'))
     if m is not None:
         wallet = int(j.get('wallet', 0))

@@ -27,7 +27,7 @@ import {homeView as homeV4,futureView as futureV4,journeyBoot,journeyAction,jour
 import {procedureSubmit,procedureAction} from './v4/procedure.js';
 import {abandonGate,abandonAfter,abandonSummary} from './v4/abandon.js';
 import {lifeSummary} from './v4/life.js';
-import {lunchStrip,eveningBody,needsAction} from './v4/needs.js';  // 🍚 No bụng · 😴 Tỉnh táo: lunch, the evening
+import {lunchStrip,snackStrip,snackDue,eveningBody,needsAction} from './v4/needs.js';  // 🍚 No bụng · 😴 Tỉnh táo: lunch, the evening
 import {boardView,boardAction,boardSubmit,boardBoot,boardUnread} from './v4/board.js';
 import {lazy,skeleton,idle as whenIdle,prefetch} from './lazy.js';
 /* Features that load on first use (lazy.js), not with the page: a sheet's code comes when it first opens
@@ -384,7 +384,8 @@ function taskCards(c){
   // A career with its own home card (the air crew's boarding pass) draws it; hiring keeps the shared "Xin việc".
   const own=needsJob()?'':careerUI(career())?.hudCard?.(c,t,careerContext(env()),{bell,first,wrap:wrapUp(c),note:closingNote(c.day_clock,!!t,moreGate(c))});if(own)main=own;
   // 🍱 Lunch (v4/needs.js): a strip at the top of the card, from 11:30 on the shop clock; one tap, never a modal.
-  const lunch=c.open&&!needsJob()?lunchStrip(api.state.needs,api.state.journey?.wallet|0):'';
+  // 🍢 Ăn thêm: the same strip when hungry or sleepy outside lunch (paid; the Đời thường sheet always has it).
+  const lunch=c.open&&!needsJob()?lunchStrip(api.state.needs,api.state.journey?.wallet|0)||(snackDue(api.state.needs)?snackStrip(api.state.needs):''):'';
   if(lunch)main=main.replace(/^<article class="/,'<article class="nd-has-lunch ').replace(/^(<article[^>]*>)/,'$1'+lunch);
   // Desktop has a side column for the list; phone and tablet keep it behind the bell (status sheet).
   const list=notes.length&&layout()==='desktop'?`<article class="note-card hud-notes"><span class="eyebrow">Cần để ý · ${notes.length}</span>${noteRows(notes)}</article>`:'';

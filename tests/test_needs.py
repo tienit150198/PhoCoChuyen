@@ -402,5 +402,77 @@ class SafetyTests(unittest.TestCase):
             validate_state(s)
 
 
+class SnackTests(unittest.TestCase):
+    """Ăn thêm: paid, any time in the work day, refused when already full / awake or short of xu."""
+    def test_buy_any_time_in_the_day(self):
+        s = opened()
+        s, _ = until(s, 9 * 60)                            # before lunch, too
+        v = public_state(s)['needs']['snack']
+        self.assertEqual([c['id'] for c in v], list(nd.SNACK))
+        for item, x in nd.SNACK.items():
+            n0 = N(s)
+            if (x['full'] and n0['full'] >= nd.FULL_CAP) or (not x['full'] and n0['wake'] >= nd.WAKE_CAP):
+                continue
+            t, r = jr_act(s, 'jr_needs_snack', item=item)
+            self.assertEqual(t['journey']['wallet'], 100 - x['price'], item)
+            self.assertEqual(N(t)['full'], min(100, n0['full'] + x['full']), item)
+            self.assertEqual(N(t)['wake'], min(100, n0['wake'] + x['wake']), item)
+            self.assertEqual(spirit(t), spirit(s), item)       # no tinh thần from snacks
+            row = t['journey']['history'][-1]
+            self.assertEqual((row['kind'], row['amount']), ('living', -x['price']))
+            self.assertTrue(r['message'])
+        # Lunch is still there after a snack.
+        s, _ = jr_act(s, 'jr_needs_snack', item='banh_bao')
+        s, _ = until(s, nd.LUNCH_FROM)
+        self.assertIsNotNone(public_state(s)['needs']['lunch'])
+
+    def test_again_and_again_until_full(self):
+        s = opened(500)
+        s, _ = until(s, 15 * 60)
+        bought = 0
+        for _ in range(10):
+            try:
+                s, _ = jr_act(s, 'jr_needs_snack', item='xoi')
+                bought += 1
+            except GameError as e:
+                self.assertEqual(e.code, 'too_full')
+                break
+        self.assertGreaterEqual(bought, 1)
+        self.assertGreaterEqual(N(s)['full'], nd.FULL_CAP)
+        self.assertEqual(s['journey']['wallet'], 500 - bought * nd.SNACK['xoi']['price'])
+        self.assertFalse({c['id']: c for c in public_state(s)['needs']['snack']}['xoi']['ok'])
+        validate_state(s)
+
+    def test_coffee_refused_when_awake(self):
+        s = opened()
+        self.assertGreaterEqual(N(s)['wake'], nd.WAKE_CAP)
+        with self.assertRaises(GameError) as e:
+            jr_act(s, 'jr_needs_snack', item='ca_phe')
+        self.assertEqual(e.exception.code, 'too_full')
+
+    def test_never_debt_and_not_in_the_evening(self):
+        s = opened(2)
+        s, _ = until(s, 15 * 60)
+        before = copy.deepcopy(s['journey'])
+        with self.assertRaises(GameError) as e:
+            jr_act(s, 'jr_needs_snack', item='banh_bao')
+        self.assertEqual(e.exception.code, 'not_enough')
+        self.assertEqual(s['journey'], before)
+        self.assertEqual({c['id']: c['why'] for c in public_state(s)['needs']['snack']}['pho'], 'Chưa đủ xu')
+        s['journey']['wallet'] = 100
+        s, _ = close(s)
+        self.assertIsNone(public_state(s)['needs']['snack'])
+        with self.assertRaises(GameError) as e:
+            jr_act(s, 'jr_needs_snack', item='banh_bao')
+        self.assertEqual(e.exception.code, 'not_now')
+
+    def test_junk(self):
+        s = opened()
+        s, _ = until(s, 15 * 60)
+        for p in (dict(), dict(item='nhin'), dict(item=None), dict(item='xoi', x=1), dict(meal='xoi')):
+            with self.assertRaises(GameError, msg=p):
+                jr_act(s, 'jr_needs_snack', **p)
+
+
 if __name__ == '__main__':
     unittest.main()

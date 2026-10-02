@@ -9,7 +9,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {quiet} from './onboard.js';
 import {portrait} from './look.js';
-import {needBars} from './needs.js';   // 🍚 No bụng · 😴 Tỉnh táo next to tinh thần
+import {needBars,snackStrip} from './needs.js';   // 🍚 No bụng · 😴 Tỉnh táo next to tinh thần
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
@@ -174,6 +174,7 @@ export function lifeView(env){
   const log=L.log.map(r=>`<li><span aria-hidden="true">${r.emoji}</span><span class="grow"><b>${esc(r.title)}</b><small>Ngày sống ${fmt(r.day)}${r.who.length?` · ${r.who.map(w=>`${w.emoji} ${esc(w.name)}`).join(', ')}`:''}</small>${r.text?`<p>${esc(r.text)}</p>`:''}</span><span class="lf-log-num">${r.spirit?`<i class="${r.spirit<0?'out':'up'}">${r.spirit>0?'+':'−'}${Math.abs(r.spirit)}</i>`:''}${r.money?`<i class="${r.money<0?'out':'in'}">${xu(r.money)}</i>`:''}</span></li>`).join('')||'<li class="muted">Chưa có chuyện gì. Cứ sống, chuyện sẽ tới.</li>';
   return head('Đời thường')+`<div class="sheet-body jr-body lf-view">
     <section class="jr-card lf-home">${meter(L)}${needBars((env||E)?.api.state?.needs,{wide:true})}<div class="lf-warm"><span aria-hidden="true">🏮</span><span class="grow">Tình làng nghĩa xóm</span><b>${L.warmth} · ${esc(L.warmth_name)}</b></div>${wait}</section>
+    ${snackStrip((env||E)?.api.state?.needs,{head:'Ăn thêm, trả bằng ví'})}
     <h3 class="jr-sub">Xả stress ${L.cope_used?'<small>· hôm nay xả rồi</small>':'<small>· mỗi ngày một lần</small>'}</h3><div class="lf-choices grid">${cope}</div>
     <h3 class="jr-sub">Hàng xóm</h3><ul class="lf-bonds">${bonds}</ul>
     <h3 class="jr-sub">Nhật ký đời thường</h3><ul class="lf-log">${log}</ul></div>`;
