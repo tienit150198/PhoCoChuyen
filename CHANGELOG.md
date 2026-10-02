@@ -1,3 +1,15 @@
+# v1.4.20 — 🔥 Nghề x3 trong tuần, 🎟️ vé số cào, 🏮 35 món nhà, 💬 xóa tin nhắn & bỏ chặn, góp ý người chơi
+
+Chủ game (03/10): "mỗi ngày x3 cho … trò bất kì", "làm liên tiếp, đầu tuần thông báo và tự áp dụng, mấy trò mà chia ra 1 tuần là đủ tất cả trò", "thêm trò cào xổ số… cào bằng tay thật", "thêm phụ kiện ở nhà", "bạn bè cho chọn xóa tin nhắn", "thông báo lâu quá, người ta có thể bấm tắt được"; góp ý #93–#99.
+
+- 🔥 Nghề x3 trong tuần (`game/x3_week.py`): mỗi tuần (thứ Hai → Chủ nhật, giờ VN) chia 35 nghề cho 7 ngày (5 nghề/ngày, seed theo ngày thứ Hai); khép ca đúng ngày của nghề → thưởng thêm 2 × tiền lời ròng của ngày (net của ca, gồm lương; ≥ 0, tối đa 3000) vào ví, dòng Sổ ví "🔥 Thưởng ngày x3" (kind salary). Không lưu gì trong save; `public_state.x3 {x, week, days, day, today}`; `v4/x3week.js` bật lịch tuần một lần mỗi tuần, nút "Hôm nay lời x3" + chip trên thẻ nơi làm việc. `MNL_X3_OFF=1` tắt thưởng (test đặt sẵn). (Bản nháp x3 cho gian hội chợ đã gỡ: chủ game nói x3 là cho nghề.)
+- 🎟️ Vé số cào (feat/fair-scratch 1263dd8): `fair_xs {price}`, vé 2/5/10/20 xu, thắng ~42 % (sàn 39 %), ~1,03 xu trả lại mỗi xu; cào bằng tay trên canvas, 70 % là lộ. Chuỗi vé giữ ở `journey.fair_run2`.
+- 🏮 Trang trí nhà (feat/home-decor2 c98de6f): 35 món mới, kệ "Trung thu & Tết", 5 bộ; `deco_content.KNOWN_1419`; máy 1.4.19 vẫn nhận save có món mới.
+- 💬 Chat (feat/chat-delete 4b8809d): giữ tin → "Xóa ở phía tôi" / "Thu hồi" (24 giờ); "Chọn" xóa nhiều cuộc trò chuyện; "🚫 Đã chặn" + Bỏ chặn (#93). Bảng mới `chat_hides`, `chat_clears` (SCHEMA_VERSION 13, chỉ thêm).
+- 🔔 Thông báo (#95, #96): chạm để tắt, thời gian hiện theo độ dài chữ.
+- 🗂️ Bàn văn phòng (#94): cuộc gọi đổi ý về một thẻ đã xếp trả thẻ về "chưa xếp", ghi chú 📞 in trên thẻ, thẻ đó mở trước.
+- 🪨 Ô ăn quan (#99): câu "quan non" nói rõ cần đủ 5 dân, không tính theo vòng.
+
 # v1.4.19 — 🏆 Bảng vàng theo tiền lời, 👫 thấy nhau ở bãi hội
 
 Chủ game (03/10): "thay vì tính điểm, tính tổng tiền mọi người thắng… tiền thắng nhiều xếp top", "mọi người vào hội chợ thì cho thấy nhau… (k thông báo)".

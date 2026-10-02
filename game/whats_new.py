@@ -32,6 +32,14 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.4.20", date="2026-10-03", items=(
+        dict(emoji="🔥", text="Nghề x3 mỗi tuần: mỗi ngày vài nghề được lời x3 khi khép ca, tuần nào nghề nào cũng có một ngày. Lịch báo ngay đầu tuần.", go=dict(action="x3Week")),
+        dict(emoji="🎟️", text="Dì Hai bán vé số cào ở hội chợ: vé 2–20 xu, tự tay cào lớp bạc, ba ô giống nhau là trúng, có vé trúng gấp 50 lần.", go=dict(action="fair")),
+        dict(emoji="🏮", text="Thêm 35 món trang trí nhà đậm chất Việt: sập gỗ, đồng hồ quả lắc, đàn bầu, xe đạp… cùng kệ Trung thu & Tết và 5 bộ mới.", go=dict(action="house")),
+        dict(emoji="💬", text="Tin nhắn: giữ một tin để xóa phía mình hoặc thu hồi trong 24 giờ, chọn xóa nhiều cuộc trò chuyện, xem Đã chặn và bỏ chặn.", go=dict(action="liveChat")),
+        dict(emoji="🔔", text="Chạm vào thông báo là tắt ngay, không còn che màn chơi."),
+        dict(emoji="🗂️", text="Lọc CV: tin ứng viên rút hồ sơ đến sau khi đã xếp thẻ thì thẻ tự quay về chưa xếp, ghi chú cuộc gọi in ngay trên thẻ."),
+    )),
     dict(version="1.4.19", date="2026-10-03", items=(
         dict(emoji="🏆", text="Bảng vàng hội chợ giờ xếp theo tiền lời: ai thắng nhiều xu nhất ở hội chợ đứng top. Quà tặng và tiền vay không tính.", go=dict(action="fair")),
         dict(emoji="👫", text="Vào bãi hội là thấy người chơi khác đang đi dạo quanh các gian, cùng đi hội cho vui.", go=dict(action="fair")),
