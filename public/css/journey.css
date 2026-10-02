@@ -335,3 +335,44 @@ html[data-theme="dem"] .jr-fair{border-color:#8a5a1c;background:linear-gradient(
 .jr-fair-lantern{flex:none;font-size:2rem;line-height:1;transform-origin:50% 0}
 @media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .jr-fair-lantern{animation:jr-fair-sway 3.2s ease-in-out infinite}}
 @keyframes jr-fair-sway{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+
+/* ---------- Home order (WP-5) ------------------------------------------------
+   The way back to work first, then the character, then the workplaces; the fair, house, life, board,
+   chapter and stories after them. Desktop: the first two and the rest share the left column, the
+   workplaces fill the right one (the 1fr row takes their extra height, so the left column has no gap). */
+.jr-columns{grid-template-rows:auto 1fr}
+.jr-lead{grid-column:1;grid-row:1}
+.jr-col.wide{grid-column:2;grid-row:1/span 2}
+.jr-more{grid-column:1;grid-row:2}
+html[data-layout="tablet"] .jr-columns,html[data-layout="phone"] .jr-columns{grid-template-rows:none}
+html[data-layout="tablet"] .jr-columns>.jr-col,html[data-layout="phone"] .jr-columns>.jr-col{grid-column:auto;grid-row:auto}
+.jr-col:empty{display:none}
+.btn.jr-resume{min-height:56px;white-space:normal;line-height:1.3}
+/* Phone, two or more workplaces: compact tiles two to a row (the name beside its emoji, the button at the foot). */
+html[data-layout="phone"] .jr-grid:has(>.jr-place:nth-child(2)){grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+html[data-layout="phone"] .jr-grid:has(>.jr-place:nth-child(2))>.jr-place{position:relative;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:8px;padding:10px}
+html[data-layout="phone"] .jr-grid:has(>.jr-place:nth-child(2)) .jr-place-emoji{position:absolute;top:10px;left:10px;width:34px;height:34px;border-radius:11px;font-size:1.2rem}
+html[data-layout="phone"] .jr-grid:has(>.jr-place:nth-child(2)) .jr-place-text{flex:1 1 auto}
+html[data-layout="phone"] .jr-grid:has(>.jr-place:nth-child(2)) .jr-place-text .eyebrow{display:none}
+html[data-layout="phone"] .jr-grid:has(>.jr-place:nth-child(2)) .jr-place-text h3{display:flex;align-items:center;min-height:34px;padding-left:42px;font-size:.933rem;line-height:1.25}
+html[data-layout="phone"] .jr-grid:has(>.jr-place:nth-child(2)) .jr-place-text>small{margin-top:4px}
+html[data-layout="phone"] .jr-grid:has(>.jr-place:nth-child(2)) .jr-place>.btn{width:100%;min-height:44px;margin:0}
+/* Phone: the fair is a one-line banner (the games are listed inside the fair). */
+html[data-layout="phone"] .jr-fair-games{display:none}
+html[data-layout="phone"] .jr-fair-row{min-height:56px;padding:14px 12px 10px}
+html[data-layout="phone"] .jr-fair-lantern{font-size:1.6rem}
+/* Phone: the places still ahead are one row that scrolls sideways (a fade at the right edge), the fair's
+   button is the whole row (as for the house), and the chapter card leaves its quote to "Nghe lại câu chuyện". */
+html[data-layout="phone"] .jr-locked-grid{display:flex;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}
+html[data-layout="phone"] .jr-locked-grid::-webkit-scrollbar{display:none}
+html[data-layout="phone"] .jr-locked-grid::after{content:"";flex:none;width:22px}
+html[data-layout="phone"] .jr-locked{flex:0 0 96px;padding:8px 4px}
+html[data-layout="phone"] .jr-locked .jr-place-emoji{width:36px;height:36px;border-radius:11px;font-size:1.2rem}
+html[data-layout="phone"] .jr-locked b{font-size:.8rem}
+html[data-layout="phone"] .jr-locked-cat{display:none}
+html[data-layout="phone"] .jr-fair-row .btn{display:none}
+html[data-layout="phone"] .jr-fair-row b{font-size:1rem}
+html[data-layout="phone"] .jr-house-row{padding:12px 14px}
+html[data-layout="phone"] .jr-chapter>.jr-line.compact{display:none}
+/* 44 px targets on the home: the chips under the name and the workplace filters. */
+.jr-me .jr-title-chip,.jr-filters .chip{min-height:44px}

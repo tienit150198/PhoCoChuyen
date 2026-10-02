@@ -1,5 +1,11 @@
 {
  "strings": {
+  "Đổi tên": "Rename",
+  "🎁 Có quà": "🎁 Reward ready",
+  "Thư viện, chợ, quảng trường…": "Library, market, square…",
+  "Khách khen, chê, kể chuyện": "Customers' praise, complaints and stories",
+  "🪨 Ô ăn quan · 💍 Ném vòng kiếm xu · 🦀 Bầu cua · 🎱 Lô tô ·": "🪨 Ô ăn quan · 💍 Ring toss to earn coins · 🦀 Gourd-crab · 🎱 Lô tô ·",
+  "Ăn vặt trả bằng xu trong ví, no bụng và tỉnh táo tăng như ăn thêm lúc đi làm. No quá thì để bụng lát ăn tiếp nha.": "Snacks are paid from your wallet and raise Fullness and Alert like a snack at work. Too full? Save some room for later.",
   "Hội chợ: bạn chơi trò nào thì người khác thấy bạn đứng ngay gian đó, kèm biểu tượng trò nhỏ.": "Fair: whatever game you play, others see you standing right at that stall, with a small game icon.",
   "Bấm dừng (ép nắp trà sữa, xả nước, sấy, chiết cà phê, may, vớt mì…) là thanh đứng ngay chỗ bạn thấy, mạng chậm cũng chấm đúng.": "Stop taps (sealing milk tea, rinsing, drying, pulling espresso, sewing, draining noodles…) freeze the bar right where you see it, even on a slow network.",
   "Chưa kết nối được với TikTok. Hãy thử lại.": "Couldn't connect to TikTok. Please try again.",
@@ -3488,6 +3494,7 @@
   "Nhà gọn gàng sạch sẽ, nhìn là biết chủ nhà siêng.": "Neat and tidy: you can tell the owner works hard."
  },
  "patterns": {
+  "Nhiệm vụ $1/$2": "Tasks $1/$2",
   "🔥 Thưởng ngày x$1": "🔥 Day bonus x$1",
   "🔥 Hôm nay $1 lời x$2: thưởng thêm $3 xu vào ví.": "🔥 $1 pays x$2 today: a bonus of $3 coins went to your wallet.",
   "Quan non: ô quan cần đủ $1 dân mới ăn được, không tính theo vòng.": "Young mandarin: a mandarin square needs $1 citizens before it can be captured, however many rounds.",
