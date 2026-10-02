@@ -34,7 +34,7 @@ Delta-sync hints (TABLES[i]["sync"]):
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 12  # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
+SCHEMA_VERSION = 13  # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
                      # 6: live chat (chat_*, live_effects: game/live_chat.py, live/), 1.0.0;
@@ -46,6 +46,7 @@ SCHEMA_VERSION = 12  # 2: leaderboard, marriage/friends/couple tables, stat_fb_c
                      #     game/live_chat.py, live/chat.py, scripts/chat_pin.py)
                      # 11: 😍 reactions (chat_reacts) and the admin-only original text (chat_messages.raw), 1.2.2
                      # 12: 🙂 chat faces (chat_faces: live/faces.py, live/chat.py)
+                     # 13: 🗑️ "xóa ở phía tôi" (chat_hides: one message, chat_clears: a whole chat up to an id; live/chat.py)
 
 # The text forms SQLite produces, computed by PostgreSQL (UTC, independent of TimeZone).
 NOW_TEXT = "to_char(statement_timestamp() AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI:SS')"       # CURRENT_TIMESTAMP
@@ -313,6 +314,7 @@ CREATE TABLE IF NOT EXISTS chat_messages (
 ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS adm bigint NOT NULL DEFAULT 0;
 -- raw: what the player typed when the filter masked part of it (NULL when the text is as typed). Admins only,
 -- never sent to players. Added in 11 (nullable, no default: no table rewrite); older rows stay NULL.
+-- Since 13 a message its author takes back (Thu hồi) after somebody reported it keeps its text here for the admin.
 ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS raw {T};
 CREATE TABLE IF NOT EXISTS chat_mutes (
   pid {T} PRIMARY KEY, until double precision NOT NULL, by_admin {T} NOT NULL DEFAULT '', reason {T} NOT NULL DEFAULT '',
@@ -329,6 +331,13 @@ CREATE TABLE IF NOT EXISTS chat_pins (
 );
 -- 🙂 The face of a player's chat avatar (live/faces.py code of whitelisted ids), written by the live service only.
 CREATE TABLE IF NOT EXISTS chat_faces (pid {T} PRIMARY KEY, code {T} NOT NULL, at double precision NOT NULL);
+-- 🗑️ Deleted on one side only (live/chat.py): a message a player removed from their own screen, and a whole chat
+-- emptied for one player (every message up to `upto`, the chat's newest id then). Nobody else's view changes; the
+-- messages themselves stay (admins still see them). Written by the live service only.
+CREATE TABLE IF NOT EXISTS chat_hides (pid {T} NOT NULL, msg bigint NOT NULL, at double precision NOT NULL, PRIMARY KEY (pid, msg));
+CREATE TABLE IF NOT EXISTS chat_clears (
+  channel {T} NOT NULL, pid {T} NOT NULL, upto bigint NOT NULL, at double precision NOT NULL, PRIMARY KEY (channel, pid)
+);
 -- Rewards the live service grants (phase 3 dates, phase 2 lucky envelopes); the game server applies them on load.
 CREATE TABLE IF NOT EXISTS live_effects (
   id {T} PRIMARY KEY, sid {T} NOT NULL, kind {T} NOT NULL, amount bigint NOT NULL DEFAULT 0, data {T} NOT NULL DEFAULT '{{}}',
@@ -409,6 +418,8 @@ CREATE INDEX IF NOT EXISTS chat_messages_channel ON chat_messages (channel, id);
 CREATE INDEX IF NOT EXISTS chat_messages_pid ON chat_messages (pid, id);
 CREATE INDEX IF NOT EXISTS chat_messages_reported ON chat_messages (id) WHERE reports > 0;
 CREATE INDEX IF NOT EXISTS chat_reacts_pid ON chat_reacts (pid);
+CREATE INDEX IF NOT EXISTS chat_hides_msg ON chat_hides (msg);
+CREATE INDEX IF NOT EXISTS chat_clears_pid ON chat_clears (pid);
 CREATE INDEX IF NOT EXISTS live_effects_sid ON live_effects (sid, status);
 CREATE INDEX IF NOT EXISTS live_effects_day ON live_effects (sid, kind, at);
 CREATE INDEX IF NOT EXISTS live_dates_at ON live_dates (at);
@@ -782,6 +793,12 @@ TABLES = [
     dict(name='chat_faces', source='main', sqlite_table='chat_faces',
          columns=_cols('pid text', 'code text', 'at double precision'),
          key=('pid',), unique=[], identity=None, sync=dict(mode='full', note='one row per player, replaced in place')),
+    dict(name='chat_hides', source='main', sqlite_table='chat_hides',
+         columns=_cols('pid text', 'msg bigint', 'at double precision'),
+         key=('pid', 'msg'), unique=[], identity=None, sync=dict(mode='full', note='insert-only; rows of pruned Cả phố messages deleted')),
+    dict(name='chat_clears', source='main', sqlite_table='chat_clears',
+         columns=_cols('channel text', 'pid text', 'upto bigint', 'at double precision'),
+         key=('channel', 'pid'), unique=[], identity=None, sync=dict(mode='full', note='upto replaced in place (only grows)')),
     dict(name='live_effects', source='main', sqlite_table='live_effects',
          columns=_cols('id text', 'sid text', 'kind text', 'amount bigint', 'data text', 'status text',
                        'at double precision', 'applied_at double precision'),

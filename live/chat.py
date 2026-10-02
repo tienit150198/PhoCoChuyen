@@ -28,7 +28,23 @@ Frames (client → server; replies in brackets)
   react {id, e}                             [reacts {ch, id, r, by, e} to everyone who sees the chat]
   notify {ch, v:'on'|'8h'|'off'}            [quiet {ch, until} to my tabs]
   face {fc}                                 [faced {pid, fc} to my tabs, Cả phố and my online friends]
+  hide {id}                                 [hid {ch, id} to my tabs]                   🗑️ when welcome.flags.chatdel
+  clear {chs: [ch, ...]}                    [cleared {chs: {ch: upto}} to my tabs]
+  blocks {}                                 [blocks {list: [{pid, name, av, fc?}]}]     🚫 when welcome.flags.blocks
 Server pushes: msg, deleted, presence {pid, on}, chan {chan}, unchan {ch}, muted {until}, read, pinned, reacts, quiet, faced.
+
+🗑️ Deleting (owner, 03/10: "nhấn giữ để xóa tin nhắn", "bạn bè cho chọn xóa tin nhắn, xóa hết ở màn list"):
+* `del {id}` (Thu hồi): my own message, for everyone, within RECALL_SECS (24 h; admins any time). The row stays as a
+  tombstone (deleted=1, text emptied, shown as "Tin nhắn đã thu hồi"); a message somebody already reported keeps what
+  was written in `raw`, for the admin who reviews the report.
+* `hide {id}` (Xóa ở phía tôi): any message of Cả phố, a DM or a group leaves MY screens only (`chat_hides`).
+* `clear {chs}` (the chat list, "Chọn" → Xóa): whole DMs / groups emptied for me only, up to their newest message
+  (`chat_clears`; they count as read). A DM I emptied leaves my list until a new message comes; a group stays.
+Pages (joined, history, missed) and the chat list leave those out for me; nobody else's view changes and the admin
+screens still show every message. Hidden ids are read for a page by primary key, and only for a player who ever hid
+one (p.ext['hides']); the clear marks of a chat ride with its members (Chan.cleared). The two tables come with
+SCHEMA_VERSION 13 from the game server: until they exist this service runs without them (welcome.flags.chatdel false,
+`hide`/`clear` answer 'off', looked for again every DEL_POLL s), so the game server and this service roll out in any order.
 
 🙂 Faces (owner, 02/10: "avatar cho mọi người chat… chỉnh được áo quần thì sẽ có ở đó luôn"): a player's drawn chat
 avatar with the clothes they wear, as a small code of whitelisted ids (live/faces.py; built by the client from the save,
@@ -68,6 +84,7 @@ import time
 from . import faces as facemod
 from . import filters
 from .auth import pid_of, profile
+from .db import Error as DbError
 from .limits import LRU
 from .protocol import Feature, LiveError, on
 from .push import maybe_push
@@ -95,6 +112,10 @@ ADMIN_PID = 'admin'       # rows written straight into the database by the opera
 REACTS = ('❤️', '😂', '😮', '😢', '👍', '🔥')   # the long-press bar, in this order
 REACT_CACHE = 20000       # messages whose reaction counts are kept in memory
 FACE_CACHE = 20000        # 🙂 players whose face code is kept in memory
+RECALL_SECS = 86400       # 🗑️ a message can be taken back (Thu hồi) for 24 hours
+CLEAR_MAX = 20            # 🗑️ chats emptied by one `clear`
+BLOCKS_LISTED = 50        # 🚫 people listed under "Đã chặn"
+DEL_POLL = 60             # 🗑️ seconds between two looks for the tables of "xóa ở phía tôi" while they are missing
 
 
 def dm_id(a: str, b: str) -> str:
@@ -113,12 +134,13 @@ def kind_of(ch: str) -> str:
 
 
 class Chan:
-    __slots__ = ('id', 'kind', 'title', 'owner', 'members', 'quiet')
+    __slots__ = ('id', 'kind', 'title', 'owner', 'members', 'quiet', 'cleared')
 
-    def __init__(self, cid, kind, title='', owner=None, members=None, quiet=None):
+    def __init__(self, cid, kind, title='', owner=None, members=None, quiet=None, cleared=None):
         self.id, self.kind, self.title, self.owner = cid, kind, title, owner
         self.members: dict = members if members is not None else {}   # pid -> sid (dm, group)
         self.quiet: dict = quiet if quiet is not None else {}         # pid -> muted_until (🔔 notifications off until)
+        self.cleared: dict = cleared if cleared is not None else {}   # pid -> 🗑️ emptied for them up to this id
 
 
 def msg_frame(r: dict) -> dict:
@@ -146,6 +168,8 @@ class ChatFeature(Feature):
         self.reacts = LRU(REACT_CACHE)  # 😍 message id -> {emoji: count} ({} = none), the only writer is this service
         self.push_tried = LRU(20000)    # 🔔 (channel, pid) -> last push attempt: no database write per message
         self.faces = LRU(FACE_CACHE)    # 🙂 pid -> face code ('' = none, shows the emoji)
+        self.del_ok = False             # 🗑️ chat_hides / chat_clears exist (SCHEMA_VERSION 13)
+        self._del_at = 0.0              # next look for them while they are missing
 
     # ---- extension: other features' channels -------------------------------------------------------------
     def route(self, prefix: str, audience, can_read) -> None:
@@ -169,6 +193,24 @@ class ChatFeature(Feature):
             self.town.buffer.append(msg_frame(r))
         await self.sync_pin(announce=False)
         self._pin_at = time.time() + PIN_POLL   # just read: the next look in 30 s
+        await self.check_del()
+
+    async def check_del(self) -> bool:
+        """🗑️ Are the tables of "xóa ở phía tôi" there (a game server of SCHEMA_VERSION 13 has started)? Sets
+        welcome.flags.chatdel; never waits for them (an older database: the rest of the chat works as before)."""
+        try:
+            await self.db.fetchval('SELECT 1 FROM chat_hides LIMIT 1')
+            await self.db.fetchval('SELECT 1 FROM chat_clears LIMIT 1')
+            ok = True
+        except DbError:
+            ok = False
+        if ok and not self.del_ok:
+            self.chans.clear()   # chats read before carry no clear marks
+        self.del_ok = ok
+        self.cfg.flags_extra['chatdel'] = bool(ok and self.cfg.chat)
+        self.cfg.flags_extra['blocks'] = bool(self.cfg.chat)   # 🚫 `blocks` (the list to unblock from) is answered
+        self._del_at = time.time() + DEL_POLL
+        return ok
 
     # ---- admins ----------------------------------------------------------------------------------------------
     def is_admin(self, p) -> bool:
@@ -254,11 +296,15 @@ class ChatFeature(Feature):
         p.hidden = {r['x'] for r in a} | {pid_of(r['x']) for r in b}
 
     async def chan_list(self, p) -> list:
+        clr = ('COALESCE(k.upto, 0) AS upto ', 'LEFT JOIN chat_clears k ON k.channel=m.channel AND k.pid=m.pid ') if self.del_ok else ('0 AS upto ', '')
         rows = await self.db.fetch(
             'SELECT c.id, c.kind, c.title, c.owner_pid, m.last_read, m.role, m.muted_until, '
             'COALESCE((SELECT MAX(x.id) FROM chat_messages x WHERE x.channel=c.id), 0) AS last_id, '
-            '(SELECT COUNT(*) FROM chat_members y WHERE y.channel=c.id) AS n '
-            'FROM chat_members m JOIN chat_channels c ON c.id=m.channel WHERE m.pid=? ORDER BY last_id DESC LIMIT ?', (p.pid, CHANS_LISTED))
+            '(SELECT COUNT(*) FROM chat_members y WHERE y.channel=c.id) AS n, ' + clr[0] +
+            'FROM chat_members m JOIN chat_channels c ON c.id=m.channel ' + clr[1] +
+            'WHERE m.pid=? ORDER BY last_id DESC LIMIT ?', (p.pid, CHANS_LISTED))
+        # 🗑️ a DM I emptied leaves my list until somebody writes again
+        rows = [r for r in rows if not (r['kind'] == 'dm' and r['upto'] and int(r['last_id']) <= int(r['upto']))]
         if not rows:
             return []
         ids = [r['id'] for r in rows]
@@ -266,7 +312,9 @@ class ChatFeature(Feature):
         unread = {r['ch']: int(r['n']) for r in await self.db.fetch(
             'SELECT m.channel AS ch, COUNT(x.id) AS n FROM chat_members m JOIN chat_messages x ON x.channel=m.channel '
             'AND x.id>m.last_read AND x.pid<>m.pid AND x.deleted=0 AND x.hidden=0 WHERE m.pid=? GROUP BY m.channel', (p.pid,))}
-        lasts = [r['last_id'] for r in rows if r['last_id']]
+        lasts = [int(r['last_id']) for r in rows if r['last_id'] and int(r['last_id']) > int(r['upto'])]
+        gone = await self.my_hides(p, lasts)   # 🗑️ a last message I deleted on my side: no preview
+        lasts = [i for i in lasts if i not in gone]
         last = {}
         if lasts:
             for r in await self.db.fetch(f"SELECT * FROM chat_messages WHERE id IN ({','.join('?' * len(lasts))})", lasts):
@@ -344,6 +392,8 @@ class ChatFeature(Feature):
             await self.load_hidden(p)
             p.fc = (await self.faces_of([p.pid])).get(p.pid) or None
             p.loaded = True
+        if self.del_ok and 'hides' not in p.ext:   # 🗑️ ever deleted a message on their side? (else no lookups per page)
+            p.ext['hides'] = bool(await self.db.fetchval('SELECT 1 FROM chat_hides WHERE pid=? LIMIT 1', (p.pid,)))
         await self.fit_face(p)   # the profile emoji may have changed since (read again at every connect)
         fc = conn.ext.pop('fc', None)
         if fc is not None:   # a client of this release: the face it wears now (an older one keeps the stored face)
@@ -384,10 +434,15 @@ class ChatFeature(Feature):
         row = await self.db.fetchrow('SELECT id, kind, title, owner_pid FROM chat_channels WHERE id=?', (cid,))
         if not row:
             return None
-        rows = await self.db.fetch('SELECT pid, sid, muted_until FROM chat_members WHERE channel=?', (cid,))
+        if self.del_ok:   # 🗑️ with what each member emptied (chat_clears, its primary key)
+            rows = await self.db.fetch('SELECT m.pid, m.sid, m.muted_until, k.upto FROM chat_members m '
+                                       'LEFT JOIN chat_clears k ON k.channel=m.channel AND k.pid=m.pid WHERE m.channel=?', (cid,))
+        else:
+            rows = await self.db.fetch('SELECT pid, sid, muted_until FROM chat_members WHERE channel=?', (cid,))
         members = {r['pid']: r['sid'] for r in rows}
         quiet = {r['pid']: float(r['muted_until']) for r in rows if float(r['muted_until'] or 0) > 0}
-        return self.chans.put(cid, Chan(cid, row['kind'], row['title'], row['owner_pid'], members, quiet))
+        cleared = {r['pid']: int(r['upto']) for r in rows if r.get('upto')}
+        return self.chans.put(cid, Chan(cid, row['kind'], row['title'], row['owner_pid'], members, quiet, cleared))
 
     async def member_chan(self, p, cid) -> Chan:
         c = await self.chan(cid)
@@ -591,6 +646,7 @@ class ChatFeature(Feature):
         inc = False   # True: only what came after the client's last message (it keeps what it has)
         if type(after) is int and after > 0 and (not self.town.buffer or self.town.buffer[0]['id'] <= after + 1):
             msgs, inc = [m for m in self.town.buffer if m['id'] > after and m['pid'] not in p.hidden], True
+        msgs = await self.without_hides(p, msgs)
         why, wait = self.can_town(p)
         return dict(t='joined', ch='town', msgs=await self.with_faces(await self.with_reacts(p, msgs)), more=more, inc=inc, why=why, wait=round(wait, 1),
                     n=len(self.town.players()), pin=self.pin_for(p))
@@ -689,17 +745,18 @@ class ChatFeature(Feature):
         if r:
             if not r[1](p, ch):
                 raise LiveError('no_chat', 'Không tìm thấy cuộc trò chuyện này.')
+            upto = 0
         else:
-            await self.member_chan(p, ch)
+            upto = (await self.member_chan(p, ch)).cleared.get(p.pid, 0)   # 🗑️ emptied for me up to there
         before = f.get('before')
         if type(before) is not int or before <= 0:
             before = 2 ** 62
-        rows = await self.db.fetch('SELECT * FROM chat_messages WHERE channel=? AND id<? AND hidden=0 ORDER BY id DESC LIMIT ?',
-                                   (ch, before, PAGE + 1))
+        rows = await self.db.fetch('SELECT * FROM chat_messages WHERE channel=? AND id<? AND id>? AND hidden=0 ORDER BY id DESC LIMIT ?',
+                                   (ch, before, upto, PAGE + 1))
         more = len(rows) > PAGE
         msgs = [msg_frame(r) for r in reversed(rows[:PAGE]) if r['pid'] not in p.hidden]
         if not r:   # 😍 Cả phố, DMs, groups (not the street's bubbles)
-            msgs = await self.with_reacts(p, msgs)
+            msgs = await self.with_reacts(p, await self.without_hides(p, msgs))
         return dict(t='history', ch=ch, msgs=await self.with_faces(msgs), more=more, before=f.get('before'))
 
     @on('read', rate=(40, 10))
@@ -716,13 +773,93 @@ class ChatFeature(Feature):
 
     @on('del', rate=(10, 10))
     async def delete(self, conn, f):
+        """Thu hồi: my own message, for everyone, within RECALL_SECS (admins: any time). A reported message keeps what
+        was written in `raw` for the admin who reviews it; any other loses its text."""
         p, mid = conn.player, f.get('id')
         if type(mid) is not int or mid <= 0:
             raise LiveError('bad', 'Yêu cầu không hợp lệ.')
-        row = await self.db.fetchrow("UPDATE chat_messages SET text='', raw=NULL, deleted=1 WHERE id=? AND pid=? AND deleted=0 RETURNING channel", (mid, p.pid))
+        since = 0.0 if self.is_admin(p) else time.time() - RECALL_SECS
+        row = await self.db.fetchrow("UPDATE chat_messages SET text='', raw=CASE WHEN reports>0 THEN COALESCE(raw, text) ELSE NULL END, deleted=1 "
+                                     'WHERE id=? AND pid=? AND deleted=0 AND at>? RETURNING channel', (mid, p.pid, since))
         if not row:
+            if since and await self.db.fetchval('SELECT 1 FROM chat_messages WHERE id=? AND pid=? AND deleted=0', (mid, p.pid)):
+                raise LiveError('old', 'Tin đã quá 24 giờ, không thu hồi được nữa.')
             raise LiveError('gone', 'Không thu hồi được tin này.')
         await self.gone(row['channel'], mid, hidden=False)
+        return None
+
+    # ---- 🗑️ deleted on my side only ---------------------------------------------------------------------------
+    async def my_hides(self, p, ids) -> set:
+        """Which of these message ids p deleted on their side: primary-key lookups, only for a player who ever did."""
+        ids = [i for i in ids if type(i) is int]
+        if not ids or not self.del_ok or not p.ext.get('hides'):
+            return set()
+        out = set()
+        for k in range(0, len(ids), 200):
+            part = ids[k:k + 200]
+            out.update(int(r['msg']) for r in await self.db.fetch(
+                f"SELECT msg FROM chat_hides WHERE pid=? AND msg IN ({','.join('?' * len(part))})", (p.pid, *part)))
+        return out
+
+    async def without_hides(self, p, msgs: list) -> list:
+        gone = await self.my_hides(p, [m['id'] for m in msgs])
+        return [m for m in msgs if m['id'] not in gone] if gone else msgs
+
+    async def need_del(self, p) -> None:
+        if not self.del_ok:
+            raise LiveError('off', 'Chưa xóa được lúc này, thử lại sau nhé.')
+        if not p.account:
+            await self.refresh(p)   # a guest who just registered
+        if not p.account:
+            raise LiveError('account', 'Tạo tài khoản để dùng chat nhé.')
+
+    @on('hide', rate=(30, 60))
+    async def hide(self, conn, f):
+        """Xóa ở phía tôi: one message of Cả phố, a DM or a group leaves my screens (every tab), nobody else's."""
+        p, mid = conn.player, f.get('id')
+        if type(mid) is not int or mid <= 0:
+            raise LiveError('bad', 'Yêu cầu không hợp lệ.')
+        await self.need_del(p)
+        row = await self.db.fetchrow('SELECT channel FROM chat_messages WHERE id=?', (mid,))
+        if not row or kind_of(row['channel']) not in ('town', 'dm', 'group'):
+            raise LiveError('gone', 'Tin nhắn này không còn.')
+        await self.member_chan(p, row['channel'])
+        await self.db.execute('INSERT INTO chat_hides(pid, msg, at) VALUES(?, ?, ?) ON CONFLICT(pid, msg) DO NOTHING', (p.pid, mid, time.time()))
+        p.ext['hides'] = True
+        self.hub.send_many([x for x in p.conns if x.ready], dict(t='hid', ch=row['channel'], id=mid))
+        return None
+
+    @on('clear', rate=(10, 60))
+    async def clear(self, conn, f):
+        """Empty whole DMs / groups for me (the chat list's "Xóa"): every message up to the newest one now leaves my
+        screens, and they count as read. The others in the chat keep theirs."""
+        p, chs = conn.player, f.get('chs')
+        if not isinstance(chs, list) or not chs or len(chs) > CLEAR_MAX or not all(isinstance(x, str) for x in chs) or len(set(chs)) != len(chs):
+            raise LiveError('bad', 'Chọn cuộc trò chuyện để xóa nhé.')
+        await self.need_del(p)
+        cs = []
+        for ch in chs:
+            c = await self.member_chan(p, ch)
+            if c.kind not in ('dm', 'group'):
+                raise LiveError('bad', 'Không xóa được Cả phố.')
+            cs.append(c)
+        t = time.time()
+
+        async def run(tx):
+            out = {}
+            for c in cs:
+                upto = int(await tx.fetchval('SELECT COALESCE(MAX(id), 0) FROM chat_messages WHERE channel=?', (c.id,)) or 0)
+                if upto:
+                    await tx.execute('INSERT INTO chat_clears(channel, pid, upto, at) VALUES(?, ?, ?, ?) ON CONFLICT(channel, pid) '
+                                     'DO UPDATE SET upto=excluded.upto, at=excluded.at WHERE chat_clears.upto<excluded.upto', (c.id, p.pid, upto, t))
+                    await tx.execute('UPDATE chat_members SET last_read=? WHERE channel=? AND pid=? AND last_read<?', (upto, c.id, p.pid, upto))
+                out[c.id] = upto
+            return out
+        done = await self.db.transaction(run)
+        for c in cs:
+            if done.get(c.id):
+                c.cleared[p.pid] = max(c.cleared.get(p.pid, 0), done[c.id])
+        self.hub.send_many([x for x in p.conns if x.ready], dict(t='cleared', chs=done))
         return None
 
     async def gone(self, ch: str, mid: int, hidden: bool) -> None:
@@ -802,6 +939,27 @@ class ChatFeature(Feature):
         if o:
             await self.load_hidden(o)
         return dict(t='blocked', pid=other, on=other in p.hidden)
+
+    @on('blocks', rate=(10, 60))
+    async def block_list(self, conn, f):
+        """🚫 Who I blocked (my own `blocks` rows, newest first, at most BLOCKS_LISTED), to unblock them (feedback #93).
+        The name: my friend's, else the one on their newest chat message (index chat_messages_pid), else a stand-in."""
+        p = conn.player
+        rows = await self.db.fetch('SELECT target FROM blocks WHERE pid=? ORDER BY at DESC LIMIT ?', (p.pid, BLOCKS_LISTED))
+        out = []
+        for r in rows:
+            x, fr = r['target'], p.friends.get(r['target'])
+            if fr:
+                name, av = fr['name'], fr['av']
+            else:
+                m = await self.db.fetchrow('SELECT name, av FROM chat_messages WHERE pid=? ORDER BY id DESC LIMIT 1', (x,))
+                name, av = (m['name'], m['av']) if m else ('', '')
+            out.append(dict(pid=x, name=name or 'Một người chơi', av=av or '🌸'))
+        fx = await self.faces_of([x['pid'] for x in out])
+        for x in out:
+            if fx.get(x['pid']):
+                x['fc'] = fx[x['pid']]
+        return dict(t='blocks', list=out)
 
     @on('prefs', rate=(10, 60))
     async def prefs(self, conn, f):
@@ -1045,8 +1203,9 @@ class ChatFeature(Feature):
             if c.kind == 'town':
                 continue    # Cả phố: the client joins again with `after`
             rows = await self.db.fetch('SELECT * FROM chat_messages WHERE channel=? AND id>? AND hidden=0 ORDER BY id LIMIT ?',
-                                       (c.id, after, RESUME + 1))
-            msgs = await self.with_faces(await self.with_reacts(p, [msg_frame(r) for r in rows[:RESUME] if r['pid'] not in p.hidden]))
+                                       (c.id, max(after, c.cleared.get(p.pid, 0)), RESUME + 1))
+            msgs = await self.without_hides(p, [msg_frame(r) for r in rows[:RESUME] if r['pid'] not in p.hidden])
+            msgs = await self.with_faces(await self.with_reacts(p, msgs))
             self.hub.send(conn, dict(t='missed', ch=c.id, msgs=msgs, more=len(rows) > RESUME))
 
     # ---- admin events (game/live_chat.py NOTIFY) -------------------------------------------------------------
@@ -1108,6 +1267,8 @@ class ChatFeature(Feature):
         if now >= self._pin_at:   # 📌 a pin written from outside (scripts/chat_pin.py), a message hidden by an admin
             self._pin_at = now + PIN_POLL
             await self.sync_pin()
+        if not self.del_ok and now >= self._del_at:   # 🗑️ the game server of SCHEMA_VERSION 13 may have started since
+            await self.check_del()
 
     async def prune_town(self, keep: int = TOWN_KEEP) -> int:
         """Delete Cả phố messages older than the newest `keep` (owner, 01/10: only Cả phố; DMs and groups are never
@@ -1127,6 +1288,8 @@ class ChatFeature(Feature):
                     await tx.execute(f"DELETE FROM chat_messages WHERE channel='town' AND id IN ({marks})", ids)
                     await tx.execute(f"DELETE FROM reports WHERE kind='chat' AND target IN ({marks})", [str(i) for i in ids])
                     await tx.execute(f'DELETE FROM chat_reacts WHERE msg IN ({marks})', ids)
+                    if self.del_ok:
+                        await tx.execute(f'DELETE FROM chat_hides WHERE msg IN ({marks})', ids)
                 return len(ids)
             n = await self.db.transaction(run)
             gone += n

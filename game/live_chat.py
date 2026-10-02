@@ -8,7 +8,8 @@ hidden message from its buffers and from every open screen, mutes an online play
 there is no NOTIFY: the live service sees the change on its next start.
 
 DMs and groups are never deleted (owner rule); Cả phố keeps its newest 2,000 messages (owner, 01/10: the live
-service prunes older ones, except a reported one still waiting for review). An author's own delete empties the text (deleted=1); a hidden
+service prunes older ones, except a reported one still waiting for review). An author's own delete (Thu hồi, within 24 h)
+empties the text (deleted=1; a message already reported keeps what was written in `raw`, for the admin); a hidden
 message keeps its text for the admin (hidden 1 = three reports, waiting for review; 2 = hidden by an admin).
 
 📌 Admins (ADMIN_USERS) post on Cả phố freely (owner, 01/10): their rows have adm=1 (a row with pid 'admin', written
@@ -18,6 +19,10 @@ player deleting their data, takes its pin away.
 
 🙂 `chat_faces` (one row per player: the code of their drawn chat avatar, live/faces.py) is written by the live service;
 deleting a player's data removes it here.
+
+🗑️ "Xóa ở phía tôi" (live/chat.py): `chat_hides` (one message gone from one player's screens) and `chat_clears` (a whole
+chat emptied for one player, up to an id) are written by the live service; the messages stay, so this tab and the
+reports queue still show them. Deleting a player's data removes those rows here.
 
 🔎 The admin "Tin nhắn" tab (search(), GET /api/admin/chat/messages): every chat, 200 messages a page, newest first,
 filtered by kind (Cả phố / nhắn riêng / nhóm), chat, player, and words (text, original, name). Each request reads
@@ -64,6 +69,8 @@ CREATE TABLE IF NOT EXISTS chat_prefs (pid TEXT PRIMARY KEY, online INTEGER NOT 
 CREATE TABLE IF NOT EXISTS chat_reacts (msg INTEGER NOT NULL, pid TEXT NOT NULL, emoji TEXT NOT NULL, at REAL NOT NULL, PRIMARY KEY (msg, pid));
 CREATE TABLE IF NOT EXISTS chat_pins (channel TEXT PRIMARY KEY, msg INTEGER NOT NULL, by_pid TEXT NOT NULL, at REAL NOT NULL);
 CREATE TABLE IF NOT EXISTS chat_faces (pid TEXT PRIMARY KEY, code TEXT NOT NULL, at REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS chat_hides (pid TEXT NOT NULL, msg INTEGER NOT NULL, at REAL NOT NULL, PRIMARY KEY (pid, msg));
+CREATE TABLE IF NOT EXISTS chat_clears (channel TEXT NOT NULL, pid TEXT NOT NULL, upto INTEGER NOT NULL, at REAL NOT NULL, PRIMARY KEY (channel, pid));
 CREATE TABLE IF NOT EXISTS live_effects (
   id TEXT PRIMARY KEY, sid TEXT NOT NULL, kind TEXT NOT NULL, amount INTEGER NOT NULL DEFAULT 0, data TEXT NOT NULL DEFAULT '{}',
   status TEXT NOT NULL DEFAULT 'pending', at REAL NOT NULL, applied_at REAL
@@ -73,6 +80,8 @@ CREATE INDEX IF NOT EXISTS chat_messages_channel ON chat_messages(channel, id);
 CREATE INDEX IF NOT EXISTS chat_messages_pid ON chat_messages(pid, id);
 CREATE INDEX IF NOT EXISTS chat_messages_reported ON chat_messages(id) WHERE reports > 0;
 CREATE INDEX IF NOT EXISTS chat_reacts_pid ON chat_reacts(pid);
+CREATE INDEX IF NOT EXISTS chat_hides_msg ON chat_hides(msg);
+CREATE INDEX IF NOT EXISTS chat_clears_pid ON chat_clears(pid);
 CREATE INDEX IF NOT EXISTS live_effects_sid ON live_effects(sid, status);
 CREATE INDEX IF NOT EXISTS live_effects_day ON live_effects(sid, kind, at);
 """
@@ -295,4 +304,6 @@ def forget(store, token: str) -> None:
         db.execute('DELETE FROM chat_members WHERE pid=?', (pid,))
         db.execute('DELETE FROM chat_prefs WHERE pid=?', (pid,))
         db.execute('DELETE FROM chat_faces WHERE pid=?', (pid,))
+        db.execute('DELETE FROM chat_hides WHERE pid=?', (pid,))    # 🗑️ what they deleted on their side
+        db.execute('DELETE FROM chat_clears WHERE pid=?', (pid,))
         notify(db, dict(op='face', pid=pid))   # 🙂 the live service forgets the face it keeps in memory
