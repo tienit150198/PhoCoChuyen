@@ -776,7 +776,9 @@ def _shape(s, c, d, p):
     _filing(t)
     t['shape'], t['len'] = shape, length
     _work(t)
-    return dict(message=f'🪵 {"Bấm ngắn bớt, d" if rank(length) < rank(now) else "D"}ũa dáng {_lower(SHAPES[shape])}, độ dài {LEN_NAME[length]}.')
+    if rank(length) < rank(now):
+        return dict(message=f'🪵 Bấm ngắn bớt, dũa dáng {_lower(SHAPES[shape])}, độ dài {LEN_NAME[length]}.')
+    return dict(message=f'🪵 Dũa dáng {_lower(SHAPES[shape])}, độ dài {LEN_NAME[length]}.')
 
 
 def _cuticle(s, c, d, p):
@@ -848,7 +850,9 @@ def _coat(s, c, d, p):
     what = {'base': 'lớp base' if kind == 'gel' else 'lớp sơn lót', 'top': 'lớp top' if kind == 'gel' else 'lớp sơn bóng',
             'color': f'lớp {_lower(COLOUR[colour]["name"]) if colour else ""}'}[layer]
     warn = ' ⚠️ Sơn lem ra da ở khóe ngón áp út.' if skin else ''
-    return dict(message=f'🖌️ Quét {"dày" if thick == "day" else "mỏng"} {what}' + (' (gel).' if kind == 'gel' else ' (sơn thường).') + warn)
+    how = 'gel' if kind == 'gel' else 'sơn thường'
+    line = f'🖌️ Quét dày {what} ({how}).' if thick == 'day' else f'🖌️ Quét mỏng {what} ({how}).'
+    return dict(message=line + warn)
 
 
 def _clean(s, c, d, p):
