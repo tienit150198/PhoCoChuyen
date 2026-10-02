@@ -3518,6 +3518,10 @@
   "Nhà gọn gàng sạch sẽ, nhìn là biết chủ nhà siêng.": "Neat and tidy: you can tell the owner works hard."
  },
  "patterns": {
+  "Ở ngay trên: chạm $1": "Right above: tap $1",
+  "Ở ngay trên: $1": "Right above: $1",
+  "Chạm: $1": "Tap: $1",
+  "Chỉ chỗ: $1": "Show where: $1",
   "🚚 Đặt · $1 xu": "🚚 Order · $1 coins",
   "🚚 Đặt $1 thùng · $2 xu": "🚚 Order $1 crate(s) · $2 coins",
   "🚚 Đặt $1 phần · $2 xu": "🚚 Order $1 portions · $2 coins",

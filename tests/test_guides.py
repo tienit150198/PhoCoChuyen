@@ -2,6 +2,8 @@
 the button names the guides quote exist in the game, and the browser copy is current."""
 import json
 import re
+import shutil
+import subprocess
 import unittest
 from pathlib import Path
 
@@ -172,6 +174,18 @@ class QuickAnswers(unittest.TestCase):
         self.assertIn("mini('tutGuide','question','Hỏi nhanh'", app, 'the menu footer opens Hỏi nhanh in one tap')
         tut = (ROOT / 'public' / 'js' / 'tutorial' / 'index.js').read_text(encoding='utf-8')
         self.assertIn('data-topic="quick"', tut, 'Cài đặt opens Hỏi nhanh')
+
+
+class NextStepButton(unittest.TestCase):
+    """The work screen's bottom button (public/js/v4/guide.js): a step it can only point at reads as a pointer."""
+
+    def test_pointer_button(self):
+        node = shutil.which('node')
+        if not node:
+            self.skipTest('node not installed')
+        out = subprocess.run([node, str(ROOT / 'tests' / 'guide_cta.mjs')], cwd=ROOT, capture_output=True, text=True,
+                             encoding='utf-8', timeout=60)
+        self.assertEqual(out.returncode, 0, out.stderr + out.stdout)
 
 
 class BrowserCopy(unittest.TestCase):
