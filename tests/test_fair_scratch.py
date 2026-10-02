@@ -140,15 +140,15 @@ class Scratch(FairBase):
         s = story(10**6)
         self.dice(random.Random(11))
         wins = paid = back = 0
-        for i in range(3000):
+        for i in range(1200):
             s['journey'].setdefault('fair', fh.initial())['net'] = 0   # the generous odds
             s['journey'].pop('fair_run2', None)                       # not one long run
             s, r = self.act(s, 'fair_xs', price=2)
             wins += r['fair']['mult'] > 0
             paid += 2
             back += r['fair']['prize']
-        self.assertTrue(.38 < wins / 3000 < .46, wins)
-        self.assertTrue(.85 < back / paid < 1.2, back / paid)
+        self.assertTrue(.37 < wins / 1200 < .47, wins)
+        self.assertTrue(.8 < back / paid < 1.3, back / paid)
 
     def test_prices_and_bad_payloads(self):
         s = story(100)

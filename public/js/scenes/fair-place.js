@@ -1,13 +1,13 @@
 /** 🏮 Hội chợ dân gian as a place to walk around (v4/fair-walk.js): one evening fairground under strings of lanterns.
  * Back row: cô Bảy's gánh lô tô stage, chú Tám's bầu cua tent, cô Tư's ném vòng counter, anh Sáu's phi tiêu board
  * (when the server has the stall). On the ground: the ô ăn quan mat (Bé Bi, Ông Hai), the Bảng vàng, bà Sáu's
- * vay nóng stool by the Cổng hội (when the server lends), anh Ba's chiếu trong tucked in a dark corner, two food
- * carts and the crowd. Walking uses the pagoda's path finder (scenes/chua-place.js: one floor rectangle, footprints,
+ * vay nóng stool by the Cổng hội (when the server lends), dì Hai's vé số cào stand (when the server sells them), anh
+ * Ba's chiếu trong tucked in a dark corner, two food carts and the crowd. Walking uses the pagoda's path finder (scenes/chua-place.js: one floor rectangle, footprints,
  * a grid A* string-pulled), so a plan here has the same shape:
  *   plan(port, has) → {floor, blocks, spots:[{id, kind, hit, r, stand, tab?, line?}], entry:{gate}, crowd:[{x,y,seed}]}
  *   kind 'stall' opens the stall `tab` of v4/fair.js, 'look' (the gate, the carts) and 'npc' (the crowd) say a line;
  *   a cart (cart: true) opens its menu instead when the server sells food.
- *   has: {dt, loan} (stalls an older server does not have are left out).
+ *   has: {dt, loan, xs} (stalls an older server does not have are left out).
  * Pure (no DOM, no server); scene pixels: landscape 1200×790, portrait 700×890 like the workplaces. Nothing moves
  * when `reduced` is set. back() paints what never moves (cached by the caller), props() what stands on the floor. */
 import {R,E,L,T,P,fit} from './kit.js';
@@ -23,19 +23,19 @@ const LAYOUT={
   land:{floor:[80,440,1120,740],
     lt:{x:225,y:420,w:270},bc:{x:490,y:420,w:170},ring:{x:710,y:420,w:170},dt:{x:920,y:420,w:150},
     xd:{x:1075,y:520,w:110,stand:[1065,562]},oaq:{x:565,y:600,w:250},board:{x:820,y:610},loan:{x:290,y:610},
-    gate:{x:140,y:740,w:130},candy:{x:380,y:705},cane:{x:960,y:705},
-    crowd:[[180,522],[600,505],[815,500],[380,528],[1000,612],[720,652],[470,702]],back:['lt','bc','ring','dt']},
+    xs:{x:720,y:686},gate:{x:140,y:740,w:130},candy:{x:380,y:705},cane:{x:960,y:705},
+    crowd:[[180,522],[600,505],[815,500],[380,528],[1000,612],[1075,652],[470,702]],back:['lt','bc','ring','dt']},
   port:{floor:[30,445,670,860],
     lt:{x:137,y:430,w:220},bc:{x:367,y:435,w:175},ring:{x:582,y:435,w:175},dt:{x:597,y:632,w:135},
     xd:{x:615,y:850,w:110,stand:[528,826]},oaq:{x:290,y:640,w:220},board:{x:65,y:572},loan:{x:260,y:800},
-    gate:{x:105,y:860,w:126},candy:{x:430,y:770},cane:{x:460,y:540},
-    crowd:[[230,522],[545,522],[640,732],[372,702],[120,692]],back:['lt','bc','ring']},
+    xs:{x:565,y:722},gate:{x:105,y:860,w:126},candy:{x:430,y:770},cane:{x:460,y:540},
+    crowd:[[230,522],[545,522],[190,762],[372,702],[120,692]],back:['lt','bc','ring']},
 };
 /** The stalls: the tab of v4/fair.js they open, their badge and the words on their sign. */
 export const STALLS={
   lt:{tab:'lt',icon:'🎱',name:'Gánh lô tô'},bc:{tab:'bc',icon:'🦀',name:'Bầu cua'},ring:{tab:'ring',icon:'💍',name:'Ném vòng'},
   dt:{tab:'dt',icon:'🎯',name:'Phi tiêu'},xd:{tab:'xd',icon:'🕯️',name:'Chiếu trong'},oaq:{tab:'oaq',icon:'🪨',name:'Ô ăn quan'},
-  board:{tab:'board',icon:'🏆',name:'Bảng vàng'},loan:{tab:'loan',icon:'💸',name:'Vay nóng'},
+  board:{tab:'board',icon:'🏆',name:'Bảng vàng'},loan:{tab:'loan',icon:'💸',name:'Vay nóng'},xs:{tab:'xs',icon:'🎟️',name:'Vé số cào'},
 };
 export const LOOKS={
   gate:'Cổng hội treo đầy lồng đèn đỏ. Bà con vô chơi vui nha!',
@@ -43,15 +43,16 @@ export const LOOKS={
   cane:'Nước mía ép tại chỗ, thêm chút tắc cho thơm, mát lạnh luôn!',
 };
 export const CROWD_LINES=['Hội năm nay vui quá trời!','Qua coi cô Bảy hô lô tô kìa, vui lắm!','Tui ném vòng trúng ba chai rồi đó!','Bầu cua chỗ chú Tám đông ghê ha.',
-  'Mẹ ơi, con muốn ăn kẹo bông!','Đi chậm thôi, đông người lắm.','Ông Hai chơi ô ăn quan cao tay lắm đó.','Tối nay có đèn lồng đẹp ghê.'];
+  'Mẹ ơi, con muốn ăn kẹo bông!','Đi chậm thôi, đông người lắm.','Ông Hai chơi ô ăn quan cao tay lắm đó.','Tối nay có đèn lồng đẹp ghê.',
+  'Tui mới cào vé số chỗ dì Hai, trúng gấp đôi nè!'];
 
 const S=(id,kind,hit,r,stand,more={})=>({id,kind,hit,r,stand,...more});
 const CACHE=new Map();
-/** The fairground for this orientation; `has` {dt, loan}: the optional stalls. */
+/** The fairground for this orientation; `has` {dt, loan, xs}: the optional stalls. */
 export function plan(port,has={}){
-  const key=[port,!!has.dt,!!has.loan].join('|');
+  const key=[port,!!has.dt,!!has.loan,!!has.xs].join('|');
   if(CACHE.has(key))return CACHE.get(key);
-  const Lo=LAYOUT[port?'port':'land'],big=port?1.25:1,blocks=[],spots=[],on=id=>id!=='dt'&&id!=='loan'||!!has[id];
+  const Lo=LAYOUT[port?'port':'land'],big=port?1.25:1,blocks=[],spots=[],on=id=>!['dt','loan','xs'].includes(id)||!!has[id];
   // mark: where the stall's badge floats (clear of the keeper's face and the signs)
   const stall=(id,block,hit,r,stand,mark)=>{if(!on(id))return;blocks.push(block);spots.push(S(id,'stall',hit,r,stand,{tab:STALLS[id].tab,mark}));};
   for(const id of ['lt','bc','ring','dt']){
@@ -64,6 +65,7 @@ export function plan(port,has={}){
   {const s=Lo.oaq;stall('oaq',[s.x-s.w/2,s.y-45,s.x+s.w/2,s.y],[s.x,s.y-34],Math.max(80,s.w*.4)*big,[s.x,s.y+40],[s.x,s.y-70*big]);}
   {const s=Lo.board;stall('board',[s.x-30,s.y-18,s.x+30,s.y],[s.x,s.y-62],50*big,[s.x,s.y+40],[s.x+40*big,s.y-122*big]);}
   {const s=Lo.loan;stall('loan',[s.x-35,s.y-18,s.x+35,s.y],[s.x,s.y-56],48*big,[s.x,s.y+40],[s.x-44*big,s.y-62*big]);}
+  {const s=Lo.xs;stall('xs',[s.x-62,s.y-20,s.x+38,s.y],[s.x-8,s.y-58],50*big,[s.x,s.y+36],[s.x+58*big,s.y-84*big]);}
   const g=Lo.gate,entry=[g.x,g.y-40];
   blocks.push([g.x-g.w/2-8,g.y-14,g.x-g.w/2+8,g.y],[g.x+g.w/2-8,g.y-14,g.x+g.w/2+8,g.y]);
   spots.push(S('gate','look',[g.x,g.y-150],62*big,entry,{line:LOOKS.gate}));
@@ -71,7 +73,7 @@ export function plan(port,has={}){
   const crowd=Lo.crowd.map(([x,y],i)=>({x,y,seed:i*7+3}));
   for(const q of crowd){blocks.push([q.x-24,q.y-7,q.x+24,q.y+6]);
     spots.push(S('npc:'+q.seed,'npc',[q.x,q.y-58],34*big,[q.x,Math.min(Lo.floor[3]-4,q.y+40)],{line:CROWD_LINES[q.seed%CROWD_LINES.length]}));}
-  const pl={floor:Lo.floor,blocks,spots,entry:{gate:entry},crowd,port,has:{dt:on('dt'),loan:on('loan')}};
+  const pl={floor:Lo.floor,blocks,spots,entry:{gate:entry},crowd,port,has:{dt:on('dt'),loan:on('loan'),xs:on('xs')}};
   if(CACHE.size>16)CACHE.clear();
   CACHE.set(key,pl);return pl;
 }
@@ -173,6 +175,7 @@ export function props(c,pl,o={}){
   {const s=Lo.oaq;out.push([s.y,()=>mat(c,s,big,ts)]);}
   {const s=Lo.board;out.push([s.y,()=>board(c,s,big)]);}
   if(pl.has.loan){const s=Lo.loan;out.push([s.y,()=>lender(c,s,big)]);}
+  if(pl.has.xs){const s=Lo.xs;out.push([s.y,()=>tickets(c,s,big,ts)]);}
   {const g=Lo.gate;out.push([g.y-110,()=>gate(c,g,big)]);}   // the player walks through it: in front of it at the way in
   out.push([Lo.candy.y,()=>cart(c,Lo.candy,big,'candy')],[Lo.cane.y,()=>cart(c,Lo.cane,big,'cane')]);
   for(const q of pl.crowd)out.push([q.y,()=>folk(c,q.x,q.y,s1,q.seed,{...ts,kid:q.seed%5===0,hat:q.seed%4===2?'non':''})]);
@@ -214,6 +217,19 @@ function board(c,s,big){
 function lender(c,s,big){
   const {x,y}=s;R(c,x-26,y-22,52,22,WOOD,5,WOOD_D,1.5);sitter(c,x-6,y-22,.95,17);E(c,x-6,y-68,11,6,'#b9b1a8');
   R(c,x+16,y-34,24,14,'#7a8b99',3,'#4a5560',1.2);sign(c,x+4,y-100*big,'💸 VAY NÓNG',{size:12*big,bg:'#fff1d6',min:80});
+}
+/** Dì Hai's vé số cào: dì Hai in her nón lá with a fan of tickets, a little glass case on legs, a sign. */
+const TICKET=['#e2462d','#f0b44a','#3c8fd0','#5aa06a','#c86bb0'];
+function tickets(c,s,big,ts){
+  const {x,y}=s;
+  folk(c,x-48,y-2,.84*Math.min(big,1.15),26,{...ts,top:'#7fb07a',hat:'non'});
+  for(let i=0;i<3;i++){c.save();c.translate(x-34,y-60);c.rotate(-.3+i*.32);R(c,-3,-16,7,14,TICKET[i+1],1.5);c.restore();}   // a fan of tickets in her hand
+  L(c,x-30,y,x-30,y-34,WOOD_D,3);L(c,x+30,y,x+30,y-34,WOOD_D,3);
+  R(c,x-38,y-62,76,34,WOOD,5,WOOD_D,2);R(c,x-34,y-58,68,26,'#d8eef5',3,'#7a9aa8',1.2);
+  for(let r=0;r<2;r++)for(let i=0;i<5;i++){const tx=x-30+i*12.5,ty=y-55+r*12;R(c,tx,ty,10,9,TICKET[(i+r*2)%5],1.5);R(c,tx+2,ty+3,6,3,'#dfe3e8',1);}
+  E(c,x-20,y-56,10,2,'#ffffff66');
+  L(c,x-26,y-62,x-26,y-80,WOOD_D,2.4);L(c,x+26,y-62,x+26,y-80,WOOD_D,2.4);
+  sign(c,x,y-86,'VÉ SỐ CÀO',{size:12*big,bg:'#fff1d6',edge:RED_D,ink:RED_D,min:84});
 }
 function gate(c,g,big){
   const {x,y,w}=g,hw=w/2,top=y-200*Math.min(big,1.1);

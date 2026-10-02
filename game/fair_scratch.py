@@ -10,10 +10,12 @@ its prize in exactly 3 boxes and every other amount at most twice, a losing one 
 rule on the ticket, "3 ô giống nhau trúng số đó", always reads the same as the result). The client only scratches it
 open; nothing it sends decides anything.
 
-The table (scratch simulation, scripts in the commit message; 100 000 tickets each):
-  P_HI 43 %: wins 43 %, 104 xu back per 100 xu of tickets; at the floor (P_LO 39 %, today's net far up or one long
-  run of tickets): wins 39 %, 95 xu back. About one ticket in two that wins only gives the price back (hoàn vé), so
-  tickets that come out ahead are ~22 % (~20 % at the floor); 10× or more is ~1 ticket in 45, 50× ~1 in 1 200.
+The table (a simulation of these functions, 100 000 tickets each):
+  P_HI 42 %: wins 42.0 %, 1.03 xu back per xu of tickets, 22 % of tickets come out ahead; at the floor (P_LO 39 %: today's
+  net far up, or a long run of tickets in a row): wins 39.0 %, 0.95 xu back; runs of 60 tickets then a break: 0.97.
+  About one winning ticket in two only gives the price back (hoàn vé); 10x or more is ~1 ticket in 48, 50x ~1 in 1 200.
+  The longest losing streak seen was 22 tickets, the longest winning one 11; 50 tickets of 5 xu: median -20 xu, 38 %
+  of such sessions end ahead.
 """
 from __future__ import annotations
 

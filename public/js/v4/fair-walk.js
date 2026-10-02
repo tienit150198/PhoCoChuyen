@@ -21,7 +21,7 @@ export function setup(ctx){
   const {S,F,go,list,bar,esc,food}=ctx;
   const W=S.walk={el:null,cv:null,c:null,say:null,bg:null,bgKey:'',port:false,k:1,ox:0,oy:0,dpr:1,cw:0,ch:0,
     me:null,arrive:null,raf:0,last:0,drawn:0,time:0,sayAt:0,ok:null,down:null,at:''};
-  const has=()=>({dt:!!F().darts,loan:!!F().cash});
+  const has=()=>({dt:!!F().darts,loan:!!F().cash,xs:!!F().scratch});
   const pl=()=>plan(W.port,has());
 
   /** Can this browser draw it? (else the list stays, as before) */
