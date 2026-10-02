@@ -102,7 +102,7 @@ ROUNDS_DAY = 400
 # khoảng 2000 xu thì cho thua dần bớt đi"): a round is a win with WIN_P (bầu cua: the bets come out ahead; xóc đĩa:
 # the side picked is right), tapering linearly from TAPER_FROM xu of today's luck net to WIN_P_LOW at TAPER_TO and
 # staying there. Payouts stay the folk ones (bầu cua per die, xóc đĩa 1:1).
-WIN_P, WIN_P_LOW = .70, .45
+WIN_P, WIN_P_LOW = .60, .45     # owner 03/10 01:20: "tỷ lệ thắng là 60% và hên xui" (was .70)
 TAPER_FROM, TAPER_TO = 2000, 5000
 GAP_MS = 400                   # between two rounds of dice/coins (owner 03/10: nhanh lên; was 1200)
 # 🦀 Bầu cua
@@ -748,8 +748,8 @@ def apply(s: dict, name: str, p: dict) -> dict:
             _grant(j, 'f_loto', got)
             if rv['mode'] in ('doi', 'nguoc', 'dem'):
                 _grant(j, dict(doi='f_kinh2', nguoc='f_nguoc', dem='f_hu')[rv['mode']], got)
-            result['fair'] = dict(game='lt', won=True, prize=prize, mode=rv['mode'], **({} if marks is not None else dict(row=row)))
-            result['message'] = f'Kinh! Bạn thắng {prize} xu.'
+            result['fair'] = dict(game='lt', won=True, prize=prize, mode=rv['mode'], points=pts, **({} if marks is not None else dict(row=row)))
+            result['message'] = f'Kinh! Bạn thắng {prize} xu.' + (f' +{pts} điểm hội chợ.' if pts else '')
     elif name == 'fair_loto_fold':
         need(not p, 'Dữ liệu thao tác không hợp lệ.')
         lt = f['loto']
@@ -853,6 +853,21 @@ def action(s: dict, name: str, p: dict) -> tuple[dict, dict]:
 
 
 # ---------------------------------------------------------------- views
+def today_xu(j: dict) -> dict:
+    """Each stall's xu this life day (owner 03/10: "xu kiếm hôm nay"), read off its Sổ ví row (_pay keeps one per game
+    and life day), so nothing new is saved."""
+    out = {}
+    for row in reversed((j.get('history') or [])[-40:]):
+        if not isinstance(row, dict) or row.get('day') != j.get('life_day'):
+            break
+        if row.get('kind') == KIND and row.get('career') is None:
+            label = str(row.get('label', ''))
+            game = next((g for g, name in LABELS.items() if label.startswith(name)), None)
+            if game and game not in out and isinstance(row.get('amount'), int):
+                out[game] = row['amount']
+    return out
+
+
 def public(s: dict) -> dict:
     """api.state.fair. Outside the days around the fair: a few numbers only."""
     j = s.get('journey') or {}
@@ -886,7 +901,7 @@ def public(s: dict) -> dict:
     o = (f or {}).get('oaq')
     ltd = (f or {}).get('ltd') if f and f.get('date') == vn_date(t) else None
     slot = int(t // 60)
-    return dict(base, show=True, now=int(t), board=edition(), cash=fc.public(j, edition(), opens <= t < closes),   # the clock (countdowns, cooldowns) only around the fair
+    return dict(base, show=True, now=int(t), board=edition(), today_xu=today_xu(j), cash=fc.public(j, edition(), opens <= t < closes),   # the clock (countdowns, cooldowns) only around the fair
                 points=dict(total=pts, today=dpts, cap=0, days=pdays,
                             rules=dict(day=PT_DAY, bc=PT_BC, xd=PT_XD, loto=PT_LOTO, oaq=PT_OAQ, ring3=PT_RING3, ring5=PT_RING5,
                                        dt=darts.PT_HIT)),

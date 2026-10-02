@@ -238,6 +238,8 @@ function nav(){
   return `<nav class="fh-nav" aria-label="Hội chợ">${btn('<span aria-hidden="true">‹</span> Cổng hội','tab',{tab:'home'},'ghost small fh-back',' data-fh-key="home"')}<b><span aria-hidden="true">${e}</span> ${esc(l)}</b></nav>`;
 }
 /** The small-stake stalls: what is left of today's loss cap. */
+const xuLine=tab=>{const x=F().today_xu;if(!x||!GAMES[tab]||tab==='home'||tab==='board'||tab==='loan')return '';const n=x[tab]||0;
+  return `<p class="fh-luck-left">💰 Hôm nay kiếm ở ${esc(GAMES[tab][1])}: <b>${n>0?'+':n<0?'−':''}${xu(Math.abs(n))}</b></p>`;};
 const luckLine=()=>{const t=F().today||{};if(R().nocap)return '';return `<p class="fh-luck-left">🎟️ Thử vận hôm nay còn chơi được <b>${xu(t.left)}</b> <small>(thua tối đa ${xu(R().cap)} mỗi ngày)</small></p>`;};
 const flash=()=>`<p class="fh-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
 const note=()=>`<p class="fh-note">🎪 Trò chơi dân gian ở hội chợ, chơi bằng xu trong game. Không có tiền thật.</p>`;
@@ -247,7 +249,7 @@ function page(){
   if(!f.open&&S.tab!=='board')return head()+`<div class="sheet-body fh-body">${closedCard()}${S.env?.api?.state?.journey?.story?btn('🏆 Xem Bảng vàng hội chợ','tab',{tab:'board'},'cream full'):''}${note()}</div>`;
   const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView,loan:loanView,dt:()=>F().darts?dt().view():homeView()};
   const body=(views[S.tab]||homeView)(),luck=['bc','xd'].includes(S.tab)||S.tab==='lt'&&!G();   // the newer lô tô: only the wallet limits it
-  return head()+giftPop()+`<div class="sheet-body fh-body">${f.open?strip():''}${f.open?nav():''}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${body}${note()}</div>`;
+  return head()+giftPop()+`<div class="sheet-body fh-body">${f.open?strip():''}${f.open?nav():''}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${f.open?xuLine(S.tab):''}${body}${note()}</div>`;
 }
 function closedCard(gone){
   const f=F();

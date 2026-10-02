@@ -32,6 +32,10 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.4.14", date="2026-10-03", items=(
+        dict(emoji="🎲", text="Hội chợ hên xui hơn: thắng thua tùy vận. Phi tiêu khó hơn, tâm ngắm chạy nhanh, gió hội chợ lộng hơn.", go=dict(action="fair")),
+        dict(emoji="💰", text="Mỗi gian hội chợ có dòng “Hôm nay kiếm ở…” để xem xu thắng thua. Kinh lô tô thắng giờ báo luôn điểm hội chợ.", go=dict(action="fair")),
+    )),
     dict(version="1.4.13", date="2026-10-03", items=(
         dict(emoji="🎁", text="Vào hội chợ là được ban tổ chức tặng ngay 500 xu tiền vốn chơi hội!", go=dict(action="fair")),
         dict(emoji="💸", text="Thiếu vốn? Bà Sáu ở cổng hội cho vay nóng 50–500 xu, lãi 20%, trả lúc nào cũng được, hội tàn thì thu.", go=dict(action="fair")),

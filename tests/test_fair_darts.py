@@ -27,12 +27,12 @@ class Draws(random.Random):
 
 class Odds(unittest.TestCase):
     def test_the_taper(self):
-        self.assertEqual(darts.win_p(-5000), 0.70)
-        self.assertEqual(darts.win_p(0), 0.70)
-        self.assertEqual(darts.win_p(1999), 0.70)
-        self.assertAlmostEqual(darts.win_p(3500), 0.575)
-        self.assertEqual(darts.win_p(5000), 0.45)
-        self.assertEqual(darts.win_p(10**6), 0.45)
+        self.assertEqual(darts.win_p(-5000), 0.40)                   # owner 03/10: darts harder to hit
+        self.assertEqual(darts.win_p(0), 0.40)
+        self.assertEqual(darts.win_p(1999), 0.40)
+        self.assertAlmostEqual(darts.win_p(3500), 0.35)
+        self.assertEqual(darts.win_p(5000), 0.30)
+        self.assertEqual(darts.win_p(10**6), 0.30)
         xs = [darts.win_p(n) for n in range(1500, 5600, 50)]
         self.assertEqual(xs, sorted(xs, reverse=True))
 
@@ -80,16 +80,16 @@ class Darts(FairBase):
         s = story(100)
         s['journey']['fair'] = fh.initial()
         s['journey']['fair']['date'] = fh.vn_date(self.clock.t + 2)
-        s['journey']['fair']['net'] = 3500           # odds 57.5 %: a draw of .6 misses, .57 hits
-        s, r = self.throw(s, 5, [.6])
+        s['journey']['fair']['net'] = 3500           # odds 35 %: a draw of .36 misses, .34 hits
+        s, r = self.throw(s, 5, [.36])
         self.assertFalse(r['fair']['win'])
-        s, r = self.throw(s, 5, [.57])
+        s, r = self.throw(s, 5, [.34])
         self.assertTrue(r['fair']['win'])
-        s['journey']['fair']['net'] = 9000           # far ahead: 45 %
-        s, r = self.throw(s, 5, [.46])
+        s['journey']['fair']['net'] = 9000           # far ahead: 30 %
+        s, r = self.throw(s, 5, [.31])
         self.assertFalse(r['fair']['win'])
-        s['journey']['fair']['net'] = -400           # behind: 70 %
-        s, r = self.throw(s, 5, [.69])
+        s['journey']['fair']['net'] = -400           # behind: 40 %
+        s, r = self.throw(s, 5, [.39])
         self.assertTrue(r['fair']['win'])
 
     def test_win_rate_over_many_throws(self):
@@ -101,7 +101,7 @@ class Darts(FairBase):
             s['journey']['fair']['net'] = 0          # keep the generous odds
             s, r = self.act(s, 'fair_dart', stake=2)
             wins += r['fair']['win']
-        self.assertTrue(0.64 < wins / 1500 < 0.76, wins)
+        self.assertTrue(0.34 < wins / 1500 < 0.46, wins)
 
     def test_stakes_and_bad_payloads(self):
         s = story(100)

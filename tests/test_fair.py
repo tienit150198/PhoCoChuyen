@@ -344,6 +344,8 @@ class Loto(FairBase):
         self.assertTrue(r['fair']['won'])
         self.assertEqual(s['journey']['wallet'], 100 - fh.LOTO_PRICE + fh.LOTO_PRIZE)
         self.assertIn('f_loto', s['journey']['titles'])
+        self.assertGreaterEqual(r['fair']['points'], fh.PT_LOTO)          # the Kinh card shows the points (owner 03/10)
+        self.assertEqual(public_state(s)['fair']['today_xu']['lt'], fh.LOTO_PRIZE - fh.LOTO_PRICE)   # 💰 xu kiếm hôm nay
         with self.assertRaises(GameError):
             self.act(s, 'fair_loto_kinh', row=row, at=k)
         validate_state(s)
@@ -1060,20 +1062,21 @@ class Odds(FairBase):
     def test_bau_cua(self):
         for bets in ({'cua': 5}, {'cua': 3, 'tom': 2}, {'ga': 10, 'nai': 10}):
             rate, ev = self.rounds(self.bc(bets))
-            self.assertTrue(.68 <= rate <= .72, (bets, rate))
-            self.assertGreater(ev, .2, bets)
+            self.assertTrue(fh.WIN_P - .02 <= rate <= fh.WIN_P + .02, (bets, rate))
+            self.assertGreater(ev, 0, bets)
 
     def test_xoc_dia(self):
         rate, ev = self.rounds(self.xd('le', 20))
-        self.assertTrue(.67 <= rate <= .71, rate)   # the 2 % raids lose too
-        self.assertTrue(.3 < ev < .45, ev)
+        self.assertTrue(fh.WIN_P - .03 <= rate <= fh.WIN_P + .01, rate)   # the 2 % raids lose too
+        self.assertTrue(.1 < ev < .25, ev)
 
     def test_the_lean_tapers_off(self):
         self.assertEqual(fh.win_p(None, OPEN), fh.WIN_P)
         rate, _ = self.rounds(self.xd('chan', 10), net=fh.TAPER_FROM - 1)
-        self.assertTrue(.67 <= rate <= .71, rate)
+        self.assertTrue(fh.WIN_P - .03 <= rate <= fh.WIN_P + .01, rate)
         rate, _ = self.rounds(self.bc({'cua': 5}), net=(fh.TAPER_FROM + fh.TAPER_TO) // 2)
-        self.assertTrue(.555 <= rate <= .595, rate)
+        mid = (fh.WIN_P + fh.WIN_P_LOW) / 2
+        self.assertTrue(mid - .02 <= rate <= mid + .02, rate)
         rate, _ = self.rounds(self.bc({'cua': 5}), net=fh.TAPER_TO - 1)
         self.assertTrue(.43 <= rate <= .47, rate)
 

@@ -1,3 +1,12 @@
+# v1.4.14 — 🎲 Hội chợ hên xui, phi tiêu khó hơn, xu hôm nay
+
+Chủ game (03/10): "tỷ lệ thắng đang cao quá, chỉnh tỷ lệ thắng là 60% và hên xui", "phi tiêu thì làm sao cho người ta khó trúng hơn", "sao xu kiếm hôm nay không hiển thị ở loto, rồi điểm nữa sao không thấy tính khi win".
+
+- `game/fair.py`: WIN_P .70 → .60 (taper tới .45 ở +5000 giữ nguyên).
+- `game/fair_darts.py`: P_HI/P_LO .70/.45 → .40/.30; `fair-darts.js`: tâm ngắm chạy nhanh hơn (chu kỳ ~1,7×).
+- Lô tô thắng: kết quả mang `points` (thẻ Kinh hiện "+N điểm hội chợ"; trước đó máy chủ vẫn cộng điểm nhưng không báo).
+- `public.fair.today_xu`: xu từng gian trong ngày đời (đọc từ dòng Sổ ví, không lưu gì mới); `fair.js` hiện "💰 Hôm nay kiếm ở …".
+
 # v1.4.13 — 🎪 Hội chợ: dễ ăn, không giới hạn, nhanh hơn
 
 Chủ game (03/10): "lâu dài người chơi ăn", "thắng 70% số ván", "thắng khoảng 2000 xu thì cho thua dần bớt đi", "riêng ô ăn quan vẫn giữ như hiện tại", "mỗi ngày chơi không giới hạn tiền", "không giới hạn lượt chơi", "kiếm k giới hạn, điểm và lượt chơi không giới hạn", "kinh hụt thoải mái", "đọc số nào thì bảng của người ta màu phải sáng lên", "ném vòng là 1 chai có thể có nhiều vòng", "đẩy tốc độ hội chợ lên", "bấm 1 ô rồi bỏ chọn ô đó để qua ô khác được chứ".

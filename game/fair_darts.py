@@ -23,7 +23,7 @@ OFF_R = 116                    # the farthest a dart is drawn
 AIM_MAX = 120                  # the aim the client may send, per axis
 SPREAD = 14                    # the throw's scatter around the aim (a gauss sigma, board units)
 # the odds by today's fair net (xu): HI below NET_LO, LO from NET_HI on, a straight line between
-P_HI, P_LO = 0.70, 0.45
+P_HI, P_LO = 0.40, 0.30         # owner 03/10 01:20: "phi tiêu khó trúng hơn" (was 0.70, 0.45)
 NET_LO, NET_HI = 2000, 5000
 PT_HIT = 1                     # fair points for a dart in the coloured rings
 

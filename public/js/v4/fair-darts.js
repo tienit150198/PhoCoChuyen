@@ -11,8 +11,8 @@ const THROWER={name:'Anh Sáu phi tiêu',emoji:'🧔🏽',
 const RING_NAME=['hồng tâm','vòng vàng','vòng đỏ','vòng xanh','vòng rơm','ngoài bảng'];
 const KEEP=6;   // darts left on the board
 
-/** The crosshair at `t` ms: a slow Lissajous loop over the board (board units, centre 0,0). */
-export const aimAt=(t,r=88)=>({x:r*Math.sin(t/1130),y:r*Math.sin(t/790+1.1)});
+/** The crosshair at `t` ms: a Lissajous loop over the board (board units, centre 0,0); quicker since 03/10 (harder to aim). */
+export const aimAt=(t,r=92)=>({x:r*Math.sin(t/640),y:r*Math.sin(t/430+1.1)});
 
 export function setup(ctx){
   const {S,F,btn,say,xu,esc,send,render,sfx,pick,reduce,titles}=ctx;
