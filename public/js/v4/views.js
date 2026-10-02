@@ -82,7 +82,7 @@ export function inventoryView(env){
   const fillGo=(ids,label,qty)=>{const pref=ui.orderRush?'express':'partner',list=[sups.find(x=>x.id===pref),...sups].filter(x=>x&&ids.every(id=>sells(x,id)));
     const s=list.find(x=>roomFor(x,ids))||[...list].sort((a,b)=>lineFree(b)-lineFree(a))[0];
     if(!s||lineFree(s)<1)return null;
-    const lines=fitDraft(ids.map(id=>({id,cost:byId[id].cost,q:qty(id)})),s,Number(c.money)||0,{free:lineFree(s),have:Number(cartOf(s.id)?.goods)||0});
+    const lines=fitDraft(ids.map(id=>({id,cost:byId[id].cost,q:qty(id)})),s,Math.floor((Number(c.money)||0)*.8),{free:lineFree(s),have:Number(cartOf(s.id)?.goods)||0});
     return lines.length>=2?{act:'v4CartFill',data:{supplier:s.id,items:lines.map(l=>`${l.id}:${l.q}`).join(',')},label:label(lines.length),n:lines.length}:null;};
 
   /* ONE next step for this room (guide.js), in order of what gets goods onto the shelf soonest. */

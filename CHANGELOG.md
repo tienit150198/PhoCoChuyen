@@ -1,3 +1,8 @@
+# v1.4.9 — 💍 Cầu hôn lại sau 3 tiếng, 📦 sửa đơn gộp
+
+- Chủ game (02/10): "cầu hôn bị từ chối thì 3 tiếng sau mới được cầu hôn lại" — `wedding_content.DECLINE_HOURS = 3` (thay `DECLINE_DAYS = 3`).
+- Tiệm nail báo lỗi "Danh sách hàng không hợp lệ." khi bấm "Gộp N món thiếu": gợi ý gửi 20 dòng, đơn tối đa 8. Server nhận tới 40 dòng khi `fit` (phần dư báo lại như cũ); client `fitDraft` (`public/js/v4/restock.js`) soạn đơn vừa chỗ và vừa quỹ.
+
 # v1.4.8 — 🏘️ Nhiều nhà, 🛫 bên trong nơi làm việc
 
 Chủ game (02/10): "cho phép sở hữu nhiều bất động sản/nhà nhé"; góp ý người chơi về sân bay: "nên làm thêm phần bên trong nữa ạ" → "mấy map cụ thể thì có bên trong bên ngoài, bổ sung này kia vào đa dạng lên".

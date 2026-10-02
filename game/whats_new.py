@@ -32,6 +32,10 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.4.9", date="2026-10-02", items=(
+        dict(emoji="💍", text="Cầu hôn bị từ chối thì chỉ cần chờ 3 tiếng là được ngỏ lời lại, không còn phải đợi 3 ngày."),
+        dict(emoji="📦", text="Sửa lỗi nút “Gộp món thiếu vào một đơn” ở tiệm nail và các tiệm: đơn gợi ý giờ vừa 8 món và vừa tiền trong quỹ."),
+    )),
     dict(version="1.4.8", date="2026-10-02", items=(
         dict(emoji="🏘️", text="Sở hữu tới 4 căn nhà: mua thêm, cho người thuê lấy tiền nhà mỗi tháng, hoặc dọn qua căn khác ở (20 xu thuê xe tải).", go=dict(action="house")),
         dict(emoji="🛫", text="Nơi làm việc có cả bên trong: sân bay có sảnh ga, cổng ra tàu, khoang khách, buồng lái; tiệm có bếp sau, kho, phòng gội."),
