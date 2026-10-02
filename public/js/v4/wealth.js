@@ -63,15 +63,19 @@ export function pockets(state,{joint=null,current=null}={}){
   if(!places.length&&current&&state?.careers?.[current]&&Number.isFinite(Number(state.careers[current].money)))
     places.push({cid:current,fund:num(state.careers[current].money),max:0,employed:false,paused:false});
   const own=story?j.home?.own:null;
-  const home=own?{kind:own.kind,name:own.name,emoji:own.emoji||'🏠',value:num(own.value),loan:num(own.loan?.left)}:null;
+  const view=x=>({kind:x.kind,name:x.name,emoji:x.emoji||'🏠',value:num(x.value),loan:num(x.loan?.left)});
+  const home=own?view(own):null;
+  // 🏘️ Every home you own (housing.py VERSION 2): the one you live in first, then the others, empty or let.
+  const props=story&&Array.isArray(j.home?.props)?j.home.props:[];
+  const homes=[...(home?[{...home,live:true}]:[]),...props.map(x=>({...view(x),live:false,let:Boolean(x.let)}))];
   const jointFund=story&&joint!=null&&Number.isFinite(Number(joint))?Number(joint):null;
-  let assets=Math.max(0,wallet||0)+places.reduce((s,p)=>s+Math.max(0,p.fund),0)+(jointFund||0)+(home?.value||0);
-  let debt=Math.max(0,-(wallet||0))+places.reduce((s,p)=>s+Math.max(0,-p.fund),0)+(home?.loan||0);
+  let assets=Math.max(0,wallet||0)+places.reduce((s,p)=>s+Math.max(0,p.fund),0)+(jointFund||0)+homes.reduce((s,x)=>s+x.value,0);
+  let debt=Math.max(0,-(wallet||0))+places.reduce((s,p)=>s+Math.max(0,-p.fund),0)+homes.reduce((s,x)=>s+x.loan,0);
   if(bank?.open){
     assets+=bank.balance+bank.demand+bank.terms.reduce((s,t)=>s+t.amount,0);
     debt+=bank.loans.reduce((s,l)=>s+l.left,0)+bank.card;
   }
-  return {story,wallet,bank,places,joint:jointFund,home,assets,debt,net:assets-debt};
+  return {story,wallet,bank,places,joint:jointFund,home,homes,assets,debt,net:assets-debt};
 }
 
 /* ---------------------------------------------------------------- the sheet */
@@ -110,8 +114,8 @@ export function wealthHTML(state,o={}){
     parts.push(section('Quỹ nơi làm việc',rows,P.story?link('Góp vốn, tạm đóng','stView',{view:'wallet'}):''));
   }
   if(P.joint!=null)parts.push(section('Quỹ chung',row('💞','Quỹ chung vợ chồng',xu(P.joint),{id:'joint'}),link('Hôn nhân','marriage')));
-  if(P.home)parts.push(section('Nhà',row(esc(P.home.emoji),esc(P.home.name),xu(P.home.value),{id:'home',sub:'giá thị trường hôm nay'})+
-    (P.home.loan?row('📝','Vay mua nhà',minus(P.home.loan),{cls:'bad',id:'home-loan',sub:'còn phải trả'}):''),link('Chi tiết','house')));
+  if(P.homes.length)parts.push(section('Nhà',P.homes.map(x=>row(esc(x.emoji),esc(x.name),xu(x.value),{id:'home',sub:x.live?'giá thị trường hôm nay':x.let?'đang cho thuê':'đang để trống'})+
+    (x.loan?row('📝',x.live?'Vay mua nhà':`Vay mua ${esc(x.name.slice(0,1).toLowerCase()+x.name.slice(1))}`,minus(x.loan),{cls:'bad',id:'home-loan',sub:'còn phải trả'}):'')).join(''),link('Chi tiết','house')));
   const title=typeof o.head==='function'?o.head('Tiền của bạn',day?`Ngày sống ${fmt(day)}`:''):`<header class="sheet-head"><h2>Tiền của bạn</h2></header>`;
   return title+`<div class="sheet-body wl-body">${parts.join('')}</div>`;
 }

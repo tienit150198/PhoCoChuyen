@@ -24,6 +24,9 @@
 .hs-place.own,.hs-place.shared{border-color:var(--good)}
 .hs-tag{display:inline-block;margin:10px 0 0;padding:4px 10px;border-radius:999px;background:var(--good-soft);color:var(--good);font-weight:700;font-size:.9rem}
 .hs-cost{margin:8px 0 0;font-weight:600}
+/* 🏘️ Another home you own: empty (a quiet tag) or let */
+.hs-tag.idle{background:var(--surface-2,rgba(0,0,0,.04));color:var(--ink-2)}
+.hs-prop .hs-tag{margin-top:8px}
 
 /* Market: Phòng thuê / Căn hộ / Nhà phố / Biệt thự */
 .hs-group{margin-top:14px}

@@ -415,8 +415,9 @@ function loan(b){
     <div class="bk-loan-preview">${o.ok?previewHTML():''}</div>
     <p class="bk-hint">Hạn mức dựa trên thu nhập ${xu(b.income.avg)}/ngày và điểm ${b.score.value}. Tiền trả góp mỗi kỳ (cộng các khoản đang vay) không quá ${R.dti_pct}% thu nhập một tuần. Nộp hồ sơ làm điểm giảm nhẹ.</p>
     <div class="bk-actions">${btn('Xem lại & ký hợp đồng','loanSign',{},'primary',o.ok?'':' disabled')}</div></section>`;
-  const H=J().home,HL=H?.own?.loan;
-  const house=HL?`<section class="bk-card ${HL.overdue?'bk-late':''}"><h3>🏠 Vay mua nhà · ${xu(HL.principal)}</h3><p class="bk-hint">Lãi ${esc(HL.rate_text)} · đã trả ${HL.paid_rows}/${HL.rows.length} kỳ · còn phải trả <b>${xu(HL.left)}</b>${HL.next?` · kỳ tới ${onDay(HL.next.due)}`:''}</p>${HL.overdue?`<p class="bk-alert warn">Chậm ${xu(HL.overdue)}.</p>`:''}<div class="bk-actions">${btn('Xem ở Nhà của bạn','house',{},'ghost')}</div></section>`
+  const H=J().home,HLS=[H?.own,...(Array.isArray(H?.props)?H.props:[])].filter(x=>x?.loan);   // 🏘️ every home you own (housing.py VERSION 2)
+  const house=HLS.length?HLS.map(x=>{const HL=x.loan,nm=x.live===false?`Vay mua ${esc(x.name.slice(0,1).toLowerCase()+x.name.slice(1))}`:'Vay mua nhà';
+    return `<section class="bk-card ${HL.overdue?'bk-late':''}"><h3>🏠 ${nm} · ${xu(HL.principal)}</h3><p class="bk-hint">Lãi ${esc(HL.rate_text)} · đã trả ${HL.paid_rows}/${HL.rows.length} kỳ · còn phải trả <b>${xu(HL.left)}</b>${HL.next?` · kỳ tới ${onDay(HL.next.due)}`:''}</p>${HL.overdue?`<p class="bk-alert warn">Chậm ${xu(HL.overdue)}.</p>`:''}<div class="bk-actions">${btn('Xem ở Nhà của bạn','house',{},'ghost')}</div></section>`;}).join('')
     :`<section class="bk-card"><h3>🏠 Vay mua nhà</h3><p class="bk-hint">Trả trước ít nhất 30% giá nhà, phần còn lại vay tới 3 năm, trả góp mỗi tháng trong game.</p><div class="bk-actions">${btn('Nhà của bạn','house',{},'ghost')}</div></section>`;
-  return (active||(HL?'':`<section class="bk-card"><p class="bk-hint">Bạn không có khoản vay nào. 🎈</p></section>`))+house+form;
+  return (active||(HLS.length?'':`<section class="bk-card"><p class="bk-hint">Bạn không có khoản vay nào. 🎈</p></section>`))+house+form;
 }
