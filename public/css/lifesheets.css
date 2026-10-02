@@ -16,15 +16,13 @@
 
 .lx-nav{display:flex;gap:4px;margin:0 20px 12px;padding:4px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
 .lx-nav::-webkit-scrollbar{display:none}
-.lx-tab{flex:1 0 auto;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:6px 12px;border:0;border-radius:10px;background:transparent;color:var(--ink-2);font:inherit;font-size:.867rem;font-weight:700;line-height:1.2;white-space:nowrap;cursor:pointer;transition:background var(--dur),color var(--dur)}
+.lx-tab{flex:1 0 auto;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:6px 12px;border:0;border-radius:10px;background:transparent;color:var(--ink-2);font:inherit;font-size:.867rem;font-weight:700;line-height:1.2;white-space:nowrap;cursor:pointer;transition:background var(--dur),color var(--dur)}
 .lx-tab .em{margin:0;font-size:1.05rem;line-height:1}
 .lx-tab:hover{background:var(--surface);color:var(--ink)}
 .lx-tab.active{background:var(--surface);color:var(--accent-text);box-shadow:var(--shadow-sm)}
 html[data-layout="phone"] .lx-top>.sheet-head{padding-bottom:8px}
 html[data-layout="phone"] .lx-head h2{font-size:1.133rem}
-html[data-layout="phone"] .lx-nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0;margin:0 max(8px,var(--safe-r)) 10px max(8px,var(--safe-l));padding:3px}
-html[data-layout="phone"] .lx-tab{flex-direction:column;gap:2px;min-width:0;min-height:50px;padding:5px 0;font-size:.68rem;letter-spacing:-.01em;white-space:normal;text-align:center;overflow-wrap:anywhere}
-html[data-layout="phone"] .lx-tab .em{font-size:1.2rem}
+html[data-layout="phone"] .lx-nav{margin:0 max(8px,var(--safe-r)) 10px max(8px,var(--safe-l));padding:3px}
 
 /* Content + cards */
 .life-content.lx{display:grid;gap:12px;align-content:start}
@@ -220,3 +218,43 @@ html .mt-panel .chalkboard.mt-board{padding:14px 16px;border:1px solid var(--lin
 .price-editor input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]){flex:none;width:84px;min-height:40px;padding:6px 10px;font-size:1rem;font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
 .price-editor .btn{flex:none}
 html[data-theme="dem"] .lx-medal{opacity:.8}
+
+/* ---------- Chuẩn bị (WP-5) ----------------------------------------------------
+   Same order in every career: restock line, Kho and the other links, then "Hôm nay + Nhiệm vụ" folded
+   to one line. The level sits in the head under the shop name, and the name is the rename button. */
+.lx-rename{display:inline-block;max-width:100%;min-height:44px;margin:-8px 0 -8px -6px;padding:8px 6px;border:0;border-radius:10px;background:none;color:inherit;font:inherit;line-height:inherit;text-align:left;cursor:pointer}
+.lx-rename:hover{background:var(--surface-2)}
+.lx-rename:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+.lx-rename .em{margin-left:2px;font-size:.8em;opacity:.75}
+/* Room under the level line for the money chip that hangs on the head's bottom edge (v4/money.js). */
+.lx-head:has(.lx-level-line){padding-bottom:16px}
+html[data-layout="phone"] .lx-top>.lx-head:has(.lx-level-line){padding-bottom:14px}
+.lx-level-line{display:flex;align-items:center;gap:8px;margin-top:4px;font-size:.833rem}
+.lx-level-line b{font-size:.833rem;white-space:nowrap}
+.lx-level-line .lx-bar{flex:1 1 auto;max-width:200px;height:6px;margin:0}
+.lx-level-line small{font-weight:700;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.lx-fold{padding:0}
+.lx-fold>summary{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px 8px 8px;list-style:none;cursor:pointer}
+.lx-fold>summary::-webkit-details-marker{display:none}
+.lx-fold>summary::after{content:"";flex:none;width:8px;height:8px;margin:0 4px 4px 2px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform var(--dur)}
+.lx-fold[open]>summary::after{margin-bottom:-4px;transform:rotate(-135deg)}
+.lx-fold>summary .grow{display:grid;gap:1px;min-width:0}
+.lx-fold>summary b{font-size:1rem;line-height:1.35}
+.lx-fold>summary small{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;font-size:.833rem;font-weight:600;color:var(--muted)}
+.lx-fold>summary small:empty{display:none}
+.lx-fold>summary>.tag{flex:none}
+.lx-fold>summary:focus-visible{outline:3px solid var(--focus);outline-offset:-3px;border-radius:inherit}
+.lx-fold-body{padding:12px 16px 16px;border-top:1px solid var(--line)}
+.lx-fold-body>*{margin:0}
+.lx-fold-body>*+*{margin-top:8px}
+.lx-today-text{color:var(--ink-2);line-height:1.5}
+.lx-today-sub{display:block;font-size:.833rem;color:var(--muted)}
+.lx-fold-body>.lx-h{margin-top:14px}
+/* Tabs: 44 px targets; a phone scrolls the strip sideways with a fade at the right edge until its end
+   (experience-ui.js sets data-end and brings the open tab into view). */
+.lx-nav{position:relative}
+.lx-nav:not([data-end]){-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent)}
+html[data-layout="phone"] .lx-nav{display:flex;gap:2px;overflow-x:auto;overscroll-behavior-x:contain}
+html[data-layout="phone"] .lx-nav::after{content:"";flex:none;width:28px}
+html[data-layout="phone"] .lx-tab{flex:none;flex-direction:row;gap:5px;min-height:44px;padding:4px 11px;font-size:.833rem;letter-spacing:0;white-space:nowrap}
+html[data-layout="phone"] .lx-tab .em{font-size:1.1rem}

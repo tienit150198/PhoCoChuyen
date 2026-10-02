@@ -102,16 +102,21 @@ function meCard(env){
   </section>`;
 }
 
+/** The way back to work, first thing on the journey home: the workplace the story suggests (game/journey.py
+ * suggested), worded by where the player stands there (hired, offer, started). The chapter card below keeps the
+ * story and its goals, without a second copy of this button. */
+function resumeCard(env){
+  const {api}=env,sid=api.state.journey.suggested,room=sid?api.state.careers[sid]:null;if(!room)return '';
+  const sm=meta(api,sid),place=sm.place||sm.short,job=room.job||{};
+  const label=job.required&&job.status!=='hired'?(job.status==='offer'?`Xem thư mời ở ${place}`:`Xin việc ở ${place}`):room.started?`Tiếp tục ở ${place}`:`Thử làm ở ${place}`;
+  return `<button type="button" class="btn primary big full jr-cta jr-resume" data-action="choose" data-career="${esc(sid)}"><span aria-hidden="true">${emojiOf(sm)}</span> ${esc(label)} ${icon('arrow',16)}</button>`;
+}
+
 function chapterCard(env){
   const {api}=env,J=api.state.journey,C=api.content.journey,g=J.gender;
-  const sid=J.suggested,sm=sid?meta(api,sid):null,room=sid?api.state.careers[sid]:null;
-  const place=sm?(sm.place||sm.short):'';
-  const job=room?.job||{};
-  const label=!room?'':job.required&&job.status!=='hired'?(job.status==='offer'?`Xem thư mời ở ${place}`:`Xin việc ở ${place}`):room.started?`Tiếp tục ở ${place}`:`Thử làm ở ${place}`;
-  const cta=sid?`<button type="button" class="btn primary big full jr-cta" data-action="choose" data-career="${esc(sid)}"><span aria-hidden="true">${emojiOf(sm)}</span> ${esc(label)} ${icon('arrow',16)}</button>`:'';
   if(J.finale){
     const last=C.chapters[C.chapters.length-1];
-    return `<section class="jr-card jr-chapter finale"><div class="jr-ch-art" aria-hidden="true">🏮</div><span class="eyebrow">HÀNH TRÌNH TIẾP DIỄN</span><h2>Người của khu phố</h2><p class="muted">Khu phố đã là nhà. Mỗi ngày vẫn còn những việc nhỏ đáng làm.</p>${say(last.outro[0],g)}${cta}</section>`;
+    return `<section class="jr-card jr-chapter finale"><div class="jr-ch-art" aria-hidden="true">🏮</div><span class="eyebrow">HÀNH TRÌNH TIẾP DIỄN</span><h2>Người của khu phố</h2><p class="muted">Khu phố đã là nhà. Mỗi ngày vẫn còn những việc nhỏ đáng làm.</p>${say(last.outro[0],g)}</section>`;
   }
   const ch=C.chapters.find(x=>x.n===J.chapter);if(!ch)return '';
   const goals=J.goals.map(x=>`<li class="${x.done?'done':''}"><span class="jr-check" aria-hidden="true">${x.done?icon('check',14):''}</span><span class="grow">${esc(x.text)}</span><b>${fmt(Math.min(x.cur,x.goal))}/${fmt(x.goal)}</b></li>`).join('');
@@ -120,7 +125,7 @@ function chapterCard(env){
   return `<section class="jr-card jr-chapter"><div class="jr-ch-top"><div class="jr-ch-art" aria-hidden="true">${ch.art}</div><div class="grow"><span class="eyebrow">Chương ${ch.n}/${C.chapters.length}</span><h2>${esc(ch.title)}</h2><p class="muted">${esc(ch.tagline)}</p></div></div>
     ${say(ch.intro[ch.intro.length-1],g,'compact')}
     <button type="button" class="jr-link" data-action="jrStory" data-n="${ch.n}">${icon('book',14)} Nghe lại câu chuyện</button>
-    <h3 class="jr-goals-title">Việc cần làm <small>${done}/${J.goals.length}</small></h3><ul class="jr-goals">${goals}</ul>${paused}${cta}</section>`;
+    <h3 class="jr-goals-title">Việc cần làm <small>${done}/${J.goals.length}</small></h3><ul class="jr-goals">${goals}</ul>${paused}</section>`;
 }
 
 function placeCard(env,cid){
@@ -144,7 +149,7 @@ function placeCard(env,cid){
 function lockedTile(env,cid){
   const {api}=env,J=api.state.journey,m=meta(api,cid),n=(api.content.journey.unlock_chapter||{})[cid];
   const hint=n===J.chapter+1?'Sắp mở':'Còn ở phía trước';
-  return `<article class="jr-locked" aria-label="Nơi làm việc chưa mở"><span class="jr-place-emoji silhouette" aria-hidden="true">${emojiOf(m)}</span><b>🔒 Chưa mở</b><small>${esc(CATS[catOf(m)]||'')}<br>${hint}</small></article>`;
+  return `<article class="jr-locked" aria-label="Nơi làm việc chưa mở"><span class="jr-place-emoji silhouette" aria-hidden="true">${emojiOf(m)}</span><b>🔒 Chưa mở</b><small><span class="jr-locked-cat">${esc(CATS[catOf(m)]||'')}<br></span>${hint}</small></article>`;
 }
 
 /** 🔥 Today's x3 careers (game/x3_week.py); the week's list opens from here (v4/x3week.js). */
@@ -183,7 +188,8 @@ function placesSection(env){
 function homeMain(env){
   const {api}=env,J=api.state.journey;
   const top=`<header class="jr-top"><div class="grow"><span class="eyebrow">${J.story?`Khu phố nhỏ · Ngày sống ${fmt(J.life_day)}`:'Khu phố nhỏ · mọi nơi đều mở'}</span><h1>Hành trình của bạn</h1></div>${accountChip(env)}${api.state.current?btn(icon('x',20),'close',{},'ghost small jr-close','aria-label="Đóng"'):''}</header>`;
-  return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col">${J.story?fairCard(env):''}${meCard(env)}${J.story?houseCard(env):''}${lifeCard(env)}${boardEntry(env)}${J.study?certsEntry(env):''}${J.story?chapterCard(env):''}${J.study?'':certsEntry(env)}${storiesCard(env)}</div><div class="jr-col wide">${placesSection(env)}</div></div></div>`;
+  const more=`${J.story?fairCard(env):''}${J.story?houseCard(env):''}${lifeCard(env)}${boardEntry(env)}${J.study?certsEntry(env):''}${J.story?chapterCard(env):''}${J.study?'':certsEntry(env)}${storiesCard(env)}`;
+  return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col jr-lead">${resumeCard(env)}${meCard(env)}</div><div class="jr-col wide">${placesSection(env)}</div><div class="jr-col jr-more">${more}</div></div></div>`;
 }
 
 /* 🏮 Hội chợ dân gian (v4/fair.js, own dialog; game/fair.py): a small banner while the fair is open or about to open. */
@@ -192,7 +198,7 @@ function fairCard(env){
   const m=Math.max(0,Math.floor(((f.open?f.closes:f.opens)-f.now)/60));   // from the server's clock when the state came
   const when=m>=1440?`${Math.floor(m/1440)} ngày ${Math.floor(m%1440/60)} giờ`:m>=60?`${Math.floor(m/60)} giờ ${m%60} phút`:`${Math.max(1,m)} phút`;
   return `<section class="jr-card jr-fair" aria-label="Hội chợ dân gian"><button type="button" class="jr-fair-row" data-action="fair"><span class="jr-fair-lantern" aria-hidden="true">🏮</span>
-    <span class="grow"><b>${f.open?'Hội chợ dân gian đang mở':'Hội chợ dân gian sắp mở'}</b><small>🪨 Ô ăn quan · 💍 Ném vòng kiếm xu · 🦀 Bầu cua · 🎱 Lô tô · ${f.open?`còn ${when}`:`mở sau ${when}`}</small></span><span class="btn primary small" aria-hidden="true">${f.open?'Vào hội':'Xem'}</span></button></section>`;
+    <span class="grow"><b>${f.open?'Hội chợ dân gian đang mở':'Hội chợ dân gian sắp mở'}</b><small><span class="jr-fair-games">🪨 Ô ăn quan · 💍 Ném vòng kiếm xu · 🦀 Bầu cua · 🎱 Lô tô · </span>${f.open?`còn ${when}`:`mở sau ${when}`}</small></span><span class="btn primary small" aria-hidden="true">${f.open?'Vào hội':'Xem'}</span></button></section>`;
 }
 
 /* 🏠 Nhà của bạn (v4/house.js, own dialog): where you live, what it costs, the way to your own home. */

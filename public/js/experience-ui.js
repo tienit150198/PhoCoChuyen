@@ -23,11 +23,20 @@ export function nextStep(t){
 /* ------------------------------------------------------------ life sheets
  * Chuẩn bị · Bảng giá · Trò nhỏ · Hộ chiếu · Khu phố share one shell: a sticky
  * top (back, shop name, close) with the tab bar, then cards (styles: css/lifesheets.css). */
-const TABS=[['prepare','🧺','Chuẩn bị'],['prices','🏷️','Bảng giá'],['workshop','🧩','Trò nhỏ'],['passport','🌟','Hộ chiếu'],['town','🗺️','Khu phố'],['phone','💬','Chuyện phố']];
+const TABS=[['prepare','🧺','Chuẩn bị'],['prices','🏷️','Bảng giá'],['workshop','🧩','Trò nhỏ'],['passport','🌟','Hộ chiếu'],['town','🗺️','Khu phố','Thư viện, chợ, quảng trường…'],['phone','💬','Chuyện phố','Khách khen, chê, kể chuyện']];
 const KIND_EM={sort:'🧺',pairs:'🃏',sequence:'🔢',match:'🔗'};
 const tile=(s,cls='')=>`<span class="lx-tile ${cls}" aria-hidden="true">${s}</span>`;
 const h3=s=>`<h3 class="lx-h">${s}</h3>`;
-export function lifeNav(view){return `<nav class="lx-nav" aria-label="Các góc trải nghiệm">${TABS.map(([id,emoji,label])=>`<button type="button" class="lx-tab${view===id?' active':''}" data-action="${id}"${view===id?' aria-current="page"':''}>${em(emoji)}<span>${label}</span></button>`).join('')}</nav>`;}
+export function lifeNav(view){return `<nav class="lx-nav" aria-label="Các góc trải nghiệm">${TABS.map(([id,emoji,label,sub])=>`<button type="button" class="lx-tab${view===id?' active':''}" data-action="${id}"${view===id?' aria-current="page"':''}${sub?` title="${sub}"`:''}>${em(emoji)}<span>${label}</span></button>`).join('')}</nav>`;}
+/* On a phone the tab strip scrolls sideways with a fade at its right edge (lifesheets.css). After each render the
+ * open tab is brought into view, and the fade goes once the strip is scrolled to its end. */
+const navEnd=n=>n.toggleAttribute('data-end',n.scrollLeft+n.clientWidth>=n.scrollWidth-2);
+if(typeof document!=='undefined'){
+ document.addEventListener('sheetrender',()=>{const n=document.querySelector('#sheet .lx-nav');if(!n)return;const a=n.querySelector('.lx-tab.active');
+  if(a&&n.scrollWidth>n.clientWidth+2){const l=a.offsetLeft,r=l+a.offsetWidth;if(l<n.scrollLeft||r>n.scrollLeft+n.clientWidth-32)n.scrollLeft=Math.max(0,l-(n.clientWidth-a.offsetWidth)/2);}
+  navEnd(n);});
+ document.addEventListener('scroll',e=>{if(e.target?.classList?.contains('lx-nav'))navEnd(e.target);},true);
+}
 export function guestRibbon(t,c,content){
  const person=content.npcs.find(n=>n.id===t.npc);const patience=c.life.mode==='calm'?100:(t.patience??100);
  let words=t.opening;
@@ -37,8 +46,8 @@ export function guestRibbon(t,c,content){
 /** The day the player sees (life day in the story; game/days.py): set by experienceView. */
 let STATE=null;
 const dayNo=c=>STATE?.journey?.story&&Number.isInteger(STATE.journey.life_day)?STATE.journey.life_day:c.day;
-function shell(view,c,meta,body,foot=''){
- return `<div class="lx-top"><header class="sheet-head lx-head"><button type="button" class="btn ghost small icon-btn lx-back" data-action="home" aria-label="Quay lại hành trình">${icon('back',18)}</button><div class="grow"><span class="eyebrow">Ngày ${dayNo(c)} · ${esc(meta.short||'')}</span><h2>${esc(c.life.shop_name||meta.place)}</h2></div><button type="button" class="btn ghost small icon-btn" data-action="close" aria-label="Đóng">${icon('x',20)}</button></header>${lifeNav(view)}</div><div class="life-content lx lx-${view}">${body}</div>${foot}`;
+function shell(view,c,meta,body,foot='',{title='',line=''}={}){
+ return `<div class="lx-top"><header class="sheet-head lx-head"><button type="button" class="btn ghost small icon-btn lx-back" data-action="home" aria-label="Quay lại hành trình">${icon('back',18)}</button><div class="grow"><span class="eyebrow">Ngày ${dayNo(c)} · ${esc(meta.short||'')}</span><h2>${title||esc(c.life.shop_name||meta.place)}</h2>${line}</div><button type="button" class="btn ghost small icon-btn" data-action="close" aria-label="Đóng">${icon('x',20)}</button></header>${lifeNav(view)}</div><div class="life-content lx lx-${view}">${body}</div>${foot}`;
 }
 /** Story mode: a place that is not open yet shows a lock card instead of its sheets. */
 function lockedView(cid,c,content,meta,state){
@@ -63,16 +72,21 @@ function ingredientArt(ing){
 function prepView(cid,c,content,meta){
  const ingredients=content.experiences.ingredients,w=c.life.weather||{},mode=c.life.mode!=='normal'?(content.experiences.modes.find(m=>m.id===c.life.mode)||{}):null;
  const xp=Math.max(0,Math.min(100,Math.round((c.xp_in_level||0)/90*100)));
- const level=`<section class="lx-card lx-level"><div class="grow"><div class="lx-level-row"><b>🌟 Cấp ${c.level}</b><small>${c.xp_in_level}/90 XP</small></div><div class="lx-bar" role="progressbar" aria-label="Kinh nghiệm" aria-valuemin="0" aria-valuemax="90" aria-valuenow="${c.xp_in_level||0}"><i style="width:${xp}%"></i></div></div>${b('✏️ Đổi tên','expRename',{},'small ghost')}</section>`;
- const today=`<section class="lx-card lx-today">${h3('Hôm nay')}<div class="lx-weather">${tile(w.emoji||'🌤️','big')}<div class="grow"><b>${esc(w.name||'')}</b>${mode?` <span class="tag ${c.life.mode==='festival'?'amber':'blue'}">${c.life.mode==='festival'?'🎏':'☁️'} ${esc(mode.name||'')}</span>`:''}<p>${esc(w.description||'')}</p><small>Dự kiến ${c.life.forecast} lượt đầu ca · có thể nhận thêm</small></div></div></section>`;
+ const title=`<button type="button" class="lx-rename" data-action="expRename">${esc(c.life.shop_name||meta.place)} <span class="em" aria-hidden="true">✏️</span><span class="sr-only">Đổi tên</span></button>`;
+ const level=`<div class="lx-level-line"><b>🌟 Cấp ${c.level}</b><span class="lx-bar" role="progressbar" aria-label="Kinh nghiệm" aria-valuemin="0" aria-valuemax="90" aria-valuenow="${c.xp_in_level||0}"><i style="width:${xp}%"></i></span><small>${c.xp_in_level}/90 XP</small></div>`;
+ // One line until opened; a reward waiting to be taken opens it (a new summary, so app.js keeps no old fold state).
+ const goals=c.life.goals,done=goals.filter(g=>g.claimed||g.current>=g.goal).length,gift=goals.some(g=>!g.claimed&&g.current>=g.goal);
+ const modeTag=mode?`<span class="tag ${c.life.mode==='festival'?'amber':'blue'}">${c.life.mode==='festival'?'🎏':'☁️'} ${esc(mode.name||'')}</span>`:'';
+ const today=`<details class="lx-card lx-fold lx-today"${gift?' open':''}><summary>${tile(w.emoji||'🌤️')}<span class="grow"><b><span>Hôm nay</span>${w.name?` · <span>${esc(w.name)}</span>`:''}</b><small>${goals.length?`<span>Nhiệm vụ ${done}/${goals.length}</span> `:''}${modeTag}</small></span>${gift?'<span class="tag amber">🎁 Có quà</span>':''}</summary>
+  <div class="lx-fold-body"><p class="lx-today-text">${esc(w.description||'')}</p><small class="lx-today-sub">Dự kiến ${c.life.forecast} lượt đầu ca · có thể nhận thêm</small>${goals.length?`${h3('🌞 Nhiệm vụ hôm nay')}${goalList(c)}<p class="lx-goal-note">Đóng ca là tính lại từ đầu, nhớ bấm Nhận quà trước khi đóng ca.</p>`:''}</div></details>`;
  let stock;
  if(cid==='milk_tea')stock=`<section class="lx-card lx-wide">${h3('🧺 Chuẩn bị từng mẻ nhỏ')}<div class="prep-ingredients">${ingredients.map(i=>{const lots=c.life.pantry.filter(l=>l.item===i.id&&l.qty>0&&l.expires>=c.day),exp=Math.min(...lots.map(l=>l.expires));return `<article>${ingredientArt(i)}<div><strong>${i.name}</strong><small>${i.cost} xu/phần · giữ ${i.life} ngày</small><span class="tag ${exp===c.day?'amber':'green'}">Còn ${c.life.stock[i.id]} ${lots.length?'· hết ngày '+exp:''}</span></div>${doB('+5','tea_prepare',{item:i.id,qty:5,confirm:true},'primary small',`Chuẩn bị 5 phần ${i.name}: ${i.cost*5} xu.`)}</article>`;}).join('')}</div></section>`;
  else {const link=(e,label,action)=>b(tile(e)+`<span class="grow">${label}</span>`+icon('chevron',16),action,{},'lx-link');
-  stock=`<section class="lx-card">${h3('Trước giờ mở cửa')}<div class="lx-links">${link('🧺',cid==='mother_baby'||cid==='pharmacy'?'Kiểm kho & nhập hàng':'Xem công việc được giữ','warehouse')}${link('👥','Xếp ca nhân viên','staff')}${link('🪴','Trang trí góc của mình','decor')}${link('💌','Đọc chuyện đang chờ','passport')}</div></section>`;}
- const grid=`<div class="lx-grid">${today}${goalCard(c)}</div>${stock}`;
+  // 'warehouse' opens the stock room of a shop that keeps stock (app.js), else the held jobs.
+  stock=`<section class="lx-card">${h3('Trước giờ mở cửa')}<div class="lx-links">${link('🧺',cid==='mother_baby'||cid==='pharmacy'||c.inventory?'Kiểm kho & nhập hàng':'Xem công việc được giữ','warehouse')}${link('👥','Xếp ca nhân viên','staff')}${link('🪴','Trang trí góc của mình','decor')}${link('💌','Đọc chuyện đang chờ','passport')}</div></section>`;}
  // Stocked shops: one line before opening when shelves are empty or low, with the way to restock.
  const short=cid!=='milk_tea'&&c.inventory?restockBar(c,lowItems(c,content,cid),{urgent:false}):'';
- return shell('prepare',c,meta,(short?`<section class="lx-card lx-restock">${short}</section>`:'')+level+grid,`<footer class="life-sticky">${b(c.open?'Về quầy · tiếp tục chơi':'Mở cửa ngày '+dayNo(c),c.open?'close':'start',{},'primary jumbo')}</footer>`);
+ return shell('prepare',c,meta,(short?`<section class="lx-card lx-restock">${short}</section>`:'')+stock+today,`<footer class="life-sticky">${b(c.open?'Về quầy · tiếp tục chơi':'Mở cửa ngày '+dayNo(c),c.open?'close':'start',{},'primary jumbo')}</footer>`,{title,line:level});
 }
 /** life_price's trial band (game/experiences.py): round(base×75%)–round(base×125%), Python rounding (half to even). */
 const pyRound=v=>{const f=Math.floor(v),d=v-f;return d>0.5||(d===0.5&&f%2)?f+1:f;};

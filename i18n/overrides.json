@@ -1,5 +1,10 @@
 {
  "strings": {
+  "Đổi tên": "Rename",
+  "🎁 Có quà": "🎁 Reward ready",
+  "Thư viện, chợ, quảng trường…": "Library, market, square…",
+  "Khách khen, chê, kể chuyện": "Customers' praise, complaints and stories",
+  "🪨 Ô ăn quan · 💍 Ném vòng kiếm xu · 🦀 Bầu cua · 🎱 Lô tô ·": "🪨 Ô ăn quan · 💍 Ring toss to earn coins · 🦀 Gourd-crab · 🎱 Lô tô ·",
   "Biết rồi": "Got it",
   "Bấm để tắt": "Tap to dismiss",
   "Lọc CV: tin ứng viên rút hồ sơ đến sau khi đã xếp thẻ thì thẻ tự quay về chưa xếp, ghi chú cuộc gọi in ngay trên thẻ.": "CV screening: if a candidate withdraws after you sorted their card, the card goes back to unsorted with the call noted on it.",
@@ -3474,6 +3479,7 @@
   "Nhà gọn gàng sạch sẽ, nhìn là biết chủ nhà siêng.": "Neat and tidy: you can tell the owner works hard."
  },
  "patterns": {
+  "Nhiệm vụ $1/$2": "Tasks $1/$2",
   "🔥 Thưởng ngày x$1": "🔥 Day bonus x$1",
   "🔥 Hôm nay $1 lời x$2: thưởng thêm $3 xu vào ví.": "🔥 $1 pays x$2 today: a bonus of $3 coins went to your wallet.",
   "Quan non: ô quan cần đủ $1 dân mới ăn được, không tính theo vòng.": "Young mandarin: a mandarin square needs $1 citizens before it can be captured, however many rounds.",
