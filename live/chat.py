@@ -27,7 +27,17 @@ Frames (client → server; replies in brackets)
   pin {id}  unpin {}                        [pinned {ch:'town', pin} to everyone on Cả phố]   admins only
   react {id, e}                             [reacts {ch, id, r, by, e} to everyone who sees the chat]
   notify {ch, v:'on'|'8h'|'off'}            [quiet {ch, until} to my tabs]
-Server pushes: msg, deleted, presence {pid, on}, chan {chan}, unchan {ch}, muted {until}, read, pinned, reacts, quiet.
+  face {fc}                                 [faced {pid, fc} to my tabs, Cả phố and my online friends]
+Server pushes: msg, deleted, presence {pid, on}, chan {chan}, unchan {ch}, muted {until}, read, pinned, reacts, quiet, faced.
+
+🙂 Faces (owner, 02/10: "avatar cho mọi người chat… chỉnh được áo quần thì sẽ có ở đó luôn"): a player's drawn chat
+avatar with the clothes they wear, as a small code of whitelisted ids (live/faces.py; built by the client from the save,
+public/js/v4/face-code.js). It comes with `hello {fc}` and `face {fc}` (only once the welcome's `me` has an `fc` key: an
+older service never gets a frame it does not know), is kept per player in `chat_faces` (this service is its only
+writer, so the in-memory cache is the truth) and goes out as `fc` beside `av`: on live messages, on the messages of a
+page (joined, history, missed: the author's face NOW, so a change of clothes shows on the old lines too), on friends,
+DM peers, members and `me`. A frame without `fc` (an older service, a player who keeps an emoji) shows `av` as
+before; an older client ignores `fc` and `faced`.
 
 😍 Reactions (owner, 01/10: "nhấn giữ là reaction"): one of REACTS per player per message (`chat_reacts`, primary key
 (msg, pid)) in Cả phố, DMs and groups. `react {id, e}` sets e; the same e again (or e null) takes it back; another
@@ -55,6 +65,7 @@ import re
 import secrets
 import time
 
+from . import faces as facemod
 from . import filters
 from .auth import pid_of, profile
 from .limits import LRU
@@ -83,6 +94,7 @@ PIN_POLL = 30             # seconds between two reads of the pin row (a pin writ
 ADMIN_PID = 'admin'       # rows written straight into the database by the operator (an announcement): admin messages
 REACTS = ('❤️', '😂', '😮', '😢', '👍', '🔥')   # the long-press bar, in this order
 REACT_CACHE = 20000       # messages whose reaction counts are kept in memory
+FACE_CACHE = 20000        # 🙂 players whose face code is kept in memory
 
 
 def dm_id(a: str, b: str) -> str:
@@ -133,6 +145,7 @@ class ChatFeature(Feature):
         self._pin_at = 0.0             # next poll of the pin row
         self.reacts = LRU(REACT_CACHE)  # 😍 message id -> {emoji: count} ({} = none), the only writer is this service
         self.push_tried = LRU(20000)    # 🔔 (channel, pid) -> last push attempt: no database write per message
+        self.faces = LRU(FACE_CACHE)    # 🙂 pid -> face code ('' = none, shows the emoji)
 
     # ---- extension: other features' channels -------------------------------------------------------------
     def route(self, prefix: str, audience, can_read) -> None:
@@ -233,6 +246,7 @@ class ChatFeature(Feature):
         from .auth import AVATARS, clean_name
         p.friends = {pid_of(r['sid']): dict(sid=r['sid'], name=clean_name(r['name']) or 'Một người chơi',
                                             av=r['av'] if r['av'] in AVATARS else '🌸') for r in rows}
+        await self.faces_of(p.friends)
 
     async def load_hidden(self, p) -> None:
         a = await self.db.fetch('SELECT target AS x FROM blocks WHERE pid=? UNION SELECT pid AS x FROM blocks WHERE target=?', (p.pid, p.pid))
@@ -267,6 +281,7 @@ class ChatFeature(Feature):
                     f"LEFT JOIN profiles pr ON pr.sid=m.sid WHERE m.channel IN ({','.join('?' * len(dms))}) AND m.pid<>?", (*dms, p.pid)):
                 peers[r['channel']] = dict(pid=r['pid'], name=clean_name(r['display']) or clean_name(r['gname']) or 'Một người chơi',
                                            av=r['avatar'] if r['avatar'] in AVATARS else '🌸', friend=r['pid'] in p.friends)
+        fx = await self.faces_of([x['pid'] for x in peers.values()])
         out = []
         for r in rows:
             c = dict(id=r['id'], kind=r['kind'], title=r['title'], unread=unread.get(r['id'], 0), read=int(r['last_read']))
@@ -276,6 +291,8 @@ class ChatFeature(Feature):
                 c.update(owner=r['owner_pid'], n=int(r['n']), role=r['role'])
             if r['id'] in peers:
                 c['peer'] = peers[r['id']]
+                if fx.get(c['peer']['pid']):
+                    c['peer']['fc'] = fx[c['peer']['pid']]
                 c['peer']['on'] = p.show_online and self.hub.visible(c['peer']['pid'])
             m = last.get(r['id'])
             if m and m['hidden'] == 0 and m['pid'] not in p.hidden:
@@ -284,8 +301,14 @@ class ChatFeature(Feature):
         return out
 
     def friend_list(self, p) -> list:
-        return [dict(pid=k, name=v['name'], av=v['av'], on=bool(p.show_online and self.hub.visible(k)))
-                for k, v in p.friends.items() if k not in p.hidden]
+        out = []
+        for k, v in p.friends.items():
+            if k not in p.hidden:
+                f = dict(pid=k, name=v['name'], av=v['av'], on=bool(p.show_online and self.hub.visible(k)))
+                if self.faces.get(k):   # filled by load_friends, kept current by `face`
+                    f['fc'] = self.faces[k]
+                out.append(f)
+        return out
 
     def can_town(self, p) -> tuple[str, float]:
         """('ok', 0) or (why, seconds to wait): 'muted', 'account' (a guest: only accounts chat, owner 01/10),
@@ -318,7 +341,13 @@ class ChatFeature(Feature):
         if not p.loaded:
             await self.load_friends(p)
             await self.load_hidden(p)
+            p.fc = (await self.faces_of([p.pid])).get(p.pid) or None
             p.loaded = True
+        fc = conn.ext.pop('fc', None)
+        if fc is not None:   # a client of this release: the face it wears now (an older one keeps the stored face)
+            code = facemod.clean(fc, p.av)
+            if code is not None and await self.store_face(p, code):
+                self.announce_face(p, skip_conn=conn)
         conn.ext['chans'] = await self.chan_list(p)
 
     def welcome(self, conn) -> dict:
@@ -330,8 +359,8 @@ class ChatFeature(Feature):
     def me(self, p) -> dict:
         why, wait = self.can_town(p)
         adm = self.is_admin(p)
-        out = dict(pid=p.pid, name=p.name, av=p.av, account=p.account, online=p.show_online, town=why, wait=round(wait, 1),
-                   muted=round(p.muted_until, 1) if p.muted_until > time.time() and not adm else 0)
+        out = dict(pid=p.pid, name=p.name, av=p.av, fc=p.fc or '', account=p.account, online=p.show_online, town=why,
+                   wait=round(wait, 1), muted=round(p.muted_until, 1) if p.muted_until > time.time() and not adm else 0)
         if adm:
             out['adm'] = 1
         return out
@@ -436,7 +465,7 @@ class ChatFeature(Feature):
             row = await self.db.fetchrow('INSERT INTO chat_messages(channel, pid, name, av, text, at, adm) VALUES(?, ?, ?, ?, ?, ?, 1) RETURNING id',
                                          (ch, p.pid, p.name, p.av, clean, t))
             p.recent.append((ch, fp, t))
-            return dict(t='msg', ch=ch, id=int(row['id']), pid=p.pid, name=p.name, av=p.av, text=clean, at=round(t, 3), adm=1)
+            return self._faced(p, dict(t='msg', ch=ch, id=int(row['id']), pid=p.pid, name=p.name, av=p.av, text=clean, at=round(t, 3), adm=1))
         if p.muted_until > t:
             raise LiveError('muted', 'Bạn đang bị tạm khóa chat.', until=round(p.muted_until, 1))
         if any(c == ch and f == fp and t - at < DUP_SECS for c, f, at in p.recent):
@@ -452,7 +481,83 @@ class ChatFeature(Feature):
             p.muted_until = float(until or 0)
             raise LiveError('muted', 'Bạn đang bị tạm khóa chat.', until=round(p.muted_until, 1))
         p.recent.append((ch, fp, t))
-        return dict(t='msg', ch=ch, id=int(row['id']), pid=p.pid, name=p.name, av=p.av, text=masked, at=round(t, 3))
+        return self._faced(p, dict(t='msg', ch=ch, id=int(row['id']), pid=p.pid, name=p.name, av=p.av, text=masked, at=round(t, 3)))
+
+    # ---- 🙂 faces ---------------------------------------------------------------------------------------------
+    @staticmethod
+    def _faced(p, frame: dict) -> dict:
+        if p.fc:
+            frame['fc'] = p.fc
+        return frame
+
+    async def faces_of(self, pids) -> dict:
+        """{pid: face code ('' = none)} for these players: from memory, else one primary-key query per 500."""
+        out, miss = {}, []
+        for pid in set(pids):
+            v = self.faces.get(pid)
+            if v is None:
+                miss.append(pid)
+            else:
+                out[pid] = v
+        for i in range(0, len(miss), 500):
+            part = miss[i:i + 500]
+            got = {r['pid']: r['code'] for r in await self.db.fetch(
+                f"SELECT pid, code FROM chat_faces WHERE pid IN ({','.join('?' * len(part))})", part)}
+            for pid in part:
+                out[pid] = self.faces.put(pid, facemod.clean(got.get(pid)) or '')
+        return out
+
+    async def with_faces(self, msgs: list) -> list:
+        """The messages with their authors' faces now (copies where it changes; a frame of the buffer keeps the face
+        its author had when it was sent)."""
+        if not msgs:
+            return msgs
+        fx = await self.faces_of(m['pid'] for m in msgs)
+        out = []
+        for m in msgs:
+            fc = fx.get(m['pid']) or None
+            if m.get('fc') != fc:
+                m = dict(m)
+                if fc:
+                    m['fc'] = fc
+                else:
+                    m.pop('fc', None)
+            out.append(m)
+        return out
+
+    async def store_face(self, p, code: str) -> bool:
+        """Keep my face (a cleaned code, '' = none). True when it changed."""
+        if code == (p.fc or ''):
+            return False
+        if code:
+            await self.db.execute('INSERT INTO chat_faces(pid, code, at) VALUES(?, ?, ?) '
+                                  'ON CONFLICT(pid) DO UPDATE SET code=excluded.code, at=excluded.at', (p.pid, code, time.time()))
+        else:
+            await self.db.execute('DELETE FROM chat_faces WHERE pid=?', (p.pid,))
+        p.fc = code or None
+        self.faces.put(p.pid, code)
+        return True
+
+    def announce_face(self, p, skip_conn=None) -> None:
+        """`faced {pid, fc}` to my other tabs, everyone on Cả phố and my online friends (open screens redraw my lines)."""
+        conns = {c for c in p.conns if c.ready} | set(self.town.conns)
+        for pid in p.friends:
+            o = self.hub.players.get(pid)
+            if o:
+                conns |= {c for c in o.conns if c.ready}
+        conns = [c for c in conns if c is not skip_conn and c.player.pid not in p.hidden and p.pid not in c.player.hidden]
+        self.hub.send_many(conns, dict(t='faced', pid=p.pid, fc=p.fc or ''))
+
+    @on('face', rate=(6, 60))
+    async def face(self, conn, f):
+        """🙂 My face changed (the builder, the wardrobe): '' = back to my emoji."""
+        p, fc = conn.player, f.get('fc')
+        code = '' if fc == '' else facemod.clean(fc, p.av)
+        if code is None:
+            raise LiveError('bad', 'Ảnh đại diện không hợp lệ.')
+        if await self.store_face(p, code):
+            self.announce_face(p, skip_conn=conn)
+        return dict(t='faced', pid=p.pid, fc=p.fc or '')
 
     # ---- handlers ------------------------------------------------------------------------------------------
     @on('sync', rate=(6, 60))
@@ -479,7 +584,7 @@ class ChatFeature(Feature):
         if type(after) is int and after > 0 and (not self.town.buffer or self.town.buffer[0]['id'] <= after + 1):
             msgs, inc = [m for m in self.town.buffer if m['id'] > after and m['pid'] not in p.hidden], True
         why, wait = self.can_town(p)
-        return dict(t='joined', ch='town', msgs=await self.with_reacts(p, msgs), more=more, inc=inc, why=why, wait=round(wait, 1),
+        return dict(t='joined', ch='town', msgs=await self.with_faces(await self.with_reacts(p, msgs)), more=more, inc=inc, why=why, wait=round(wait, 1),
                     n=len(self.town.players()), pin=self.pin_for(p))
 
     @on('leave', rate=(20, 10))
@@ -587,7 +692,7 @@ class ChatFeature(Feature):
         msgs = [msg_frame(r) for r in reversed(rows[:PAGE]) if r['pid'] not in p.hidden]
         if not r:   # 😍 Cả phố, DMs, groups (not the street's bubbles)
             msgs = await self.with_reacts(p, msgs)
-        return dict(t='history', ch=ch, msgs=msgs, more=more, before=f.get('before'))
+        return dict(t='history', ch=ch, msgs=await self.with_faces(msgs), more=more, before=f.get('before'))
 
     @on('read', rate=(40, 10))
     async def read(self, conn, f):
@@ -825,9 +930,11 @@ class ChatFeature(Feature):
         rows = await self.db.fetch('SELECT m.pid, m.role, a.display, lp.name AS gname, pr.avatar FROM chat_members m '
                                    'LEFT JOIN accounts a ON a.sid=m.sid LEFT JOIN leaderboard_players lp ON lp.sid=m.sid '
                                    'LEFT JOIN profiles pr ON pr.sid=m.sid WHERE m.channel=? ORDER BY CASE WHEN m.role=\'owner\' THEN 0 ELSE 1 END, m.joined, m.pid', (c.id,))
+        fx = await self.faces_of([r['pid'] for r in rows])
         out = [dict(pid=r['pid'], role=r['role'], name=clean_name(r['display']) or clean_name(r['gname']) or 'Một người chơi',
                     av=r['avatar'] if r['avatar'] in AVATARS else '🌸', friend=r['pid'] in p.friends,
-                    on=bool(p.show_online and self.hub.visible(r['pid']))) for r in rows]
+                    on=bool(p.show_online and self.hub.visible(r['pid'])), **({'fc': fx[r['pid']]} if fx.get(r['pid']) else {}))
+               for r in rows]
         return dict(t='members', ch=c.id, members=out, owner=c.owner, title=c.title)
 
     # ---- 😍 reactions ---------------------------------------------------------------------------------------
@@ -931,7 +1038,7 @@ class ChatFeature(Feature):
                 continue    # Cả phố: the client joins again with `after`
             rows = await self.db.fetch('SELECT * FROM chat_messages WHERE channel=? AND id>? AND hidden=0 ORDER BY id LIMIT ?',
                                        (c.id, after, RESUME + 1))
-            msgs = await self.with_reacts(p, [msg_frame(r) for r in rows[:RESUME] if r['pid'] not in p.hidden])
+            msgs = await self.with_faces(await self.with_reacts(p, [msg_frame(r) for r in rows[:RESUME] if r['pid'] not in p.hidden]))
             self.hub.send(conn, dict(t='missed', ch=c.id, msgs=msgs, more=len(rows) > RESUME))
 
     # ---- admin events (game/live_chat.py NOTIFY) -------------------------------------------------------------
@@ -954,6 +1061,11 @@ class ChatFeature(Feature):
                     self.send_to_chan(c, frame)
         elif op == 'pin':   # scripts/chat_pin.py on PostgreSQL
             await self.sync_pin()
+        elif op == 'face' and isinstance(e.get('pid'), str):   # 🙂 a player deleted their data (game/live_chat.py forget)
+            self.faces.put(e['pid'], '')
+            p = self.hub.players.get(e['pid'])
+            if p:
+                p.fc = None
         elif op == 'mute' and isinstance(e.get('pid'), str):
             p = self.hub.players.get(e['pid'])
             if p:

@@ -38,6 +38,7 @@ class Player:
         self.announced = False         # friends were told I am online
         self.gone_task = None
         self.ext: dict = {}            # per-player state of phase 2/3 features
+        self.fc = None                 # 🙂 the face code shown next to my messages (live/faces.py), None: my emoji
         self.update(ident)
 
     def update(self, ident) -> None:

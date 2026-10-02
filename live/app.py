@@ -129,6 +129,7 @@ class App:
                 hub.send(conn, dict(t='welcome', v=PROTOCOL, flags=self.cfg.flags(), at=round(time.time(), 3)))
                 await self.kick(conn, 4001, 'off')
                 return
+            conn.ext['fc'] = hello.get('fc')   # 🙂 the face this client wears now (live/faces.py; older clients send none)
             try:
                 for feat in self.features:
                     if feat.enabled():

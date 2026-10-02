@@ -91,6 +91,14 @@ NPC_AFTER = 120.0         # seconds alone on the bench before a neighbour sits d
 NPCS = 3                  # neighbours the client knows (public/js/v4/dating.js NPCS)
 
 
+def _peer(pid: str, info: dict) -> dict:
+    """The partner on a date: name, emoji and, when they wear one, their face (🙂 live/faces.py)."""
+    out = dict(pid=pid, name=info['name'], av=info['av'])
+    if info.get('fc'):
+        out['fc'] = info['fc']
+    return out
+
+
 class Seat:
     """One player waiting on the bench."""
     __slots__ = ('pid', 'pref', 'g', 'since', 'spot', 'npc')
@@ -278,10 +286,11 @@ class Date:
 
     # ---- what one player sees -------------------------------------------------------------------------------
     def view(self, pid: str, now: float) -> dict:
+        """The date as `pid` sees it (the partner's face as it was when the date began: live/faces.py)."""
         o = self.other(pid)
         peer = self.info[o]
         f = dict(t='date', id=self.id, step=self.step, left=round(max(0.0, self.until - now), 1), of=N_CARDS,
-                 peer=dict(pid=o, name=peer['name'], av=peer['av']))
+                 peer=_peer(o, peer))
         n = self.revealed()
         f['cards'] = [dict(q=CARDS[c][0], opts=list(CARDS[c][1]), me=self.picks[pid][k], them=self.picks[o][k])
                       for k, c in enumerate(self.cards[:n])]
@@ -508,7 +517,7 @@ class DatingFeature(Feature):
         p = self.hub.players.get(pid)
         if p is None or not self.hub.online(pid):
             return None
-        return dict(pid=p.pid, sid=p.sid, name=p.name, av=p.av, account=bool(p.account))
+        return dict(pid=p.pid, sid=p.sid, name=p.name, av=p.av, fc=p.fc or '', account=bool(p.account))
 
     async def begin(self, a: Seat, b: Seat) -> None:
         """Seat two players at a café table (both are taken off the bench first)."""
@@ -732,7 +741,7 @@ class DatingFeature(Feature):
         for pid in d.pids:
             o = d.other(pid)
             end = dict(t='date', id=d.id, step='end', same=d.same(), of=N_CARDS, hits=d.hits(),
-                       peer=dict(pid=o, name=d.info[o]['name'], av=d.info[o]['av']))
+                       peer=_peer(o, d.info[o]))
             if result == 'left':
                 end['how'] = 'left' if pid == by else 'gone'
             else:
