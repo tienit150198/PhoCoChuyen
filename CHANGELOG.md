@@ -1,3 +1,12 @@
+# v1.4.5 — 💼 Lương nghề văn phòng ổn hơn cho người mới
+
+Chủ game duyệt (02/10): "để tiền ổn xíu cho mn chơi game này, tăng xíu nhé". Áp dụng cho Thuế & lương, Kế toán doanh nghiệp, Kế toán hợp nhất (`game/careers/office.py`: `pay`, `rookie`, `wrong_min`).
+
+- **Tăng chung:** mỗi hồ sơ +2 xu (`RAISE`), sàn thưởng 14 xu thay vì 10 (khay chứng từ, bàn đối chiếu trước là 8). Hồ sơ sạch 32 xu; bảng lương 32 xu trước phản ứng của chị Hồng.
+- **Đang thử việc** (hạng 0 của lộ trình, tới lần thăng chức đầu): mỗi lỗi trừ một nửa (2 xu, khay 2 xu), không bao giờ dưới nửa thưởng; nộp trễ −4 xu thay vì −8; trả lời sai tốn 8 phút văn phòng thay vì 15. Thăng chức rồi thì luật như cũ.
+- Không đổi cách sinh hồ sơ (check_task_compat OK), không đổi dạng save. Thẻ tờ khai hiện đúng số thưởng mới (`pay`, tùy chọn).
+- Hướng dẫn trong game cập nhật số mới. Sửa lỗi JS `e.target.closest is not a function` khi bấm vào nút không phải phần tử HTML.
+
 # v1.4.4 — 💡 Bớt khó hiểu: nút ghi lý do, Hỏi nhanh, thanh toán tất cả
 
 Theo chat người chơi và số thao tác bị từ chối trên máy chủ (stat_actions). Nguyên tắc chủ game: chỉ gợi ý, người chơi tự làm (không tự điền, không chọn sẵn, không lộ đáp án).

@@ -1,5 +1,16 @@
 {
  "strings": {
+  "✅ Hồ sơ không sai bước nào được 32 xu. Mỗi lần sai bị trừ dần; đang thử việc thì trừ nhẹ hơn.": "✅ A dossier with no wrong step pays 32 xu. Each mistake takes a little off; on probation it takes less.",
+  "Tính là sai lý do. Mỗi lần trừ 5 xu thưởng khay (thử việc 2 xu), tối thiểu còn 14 xu.": "Counts as a wrong reason. Each one takes 5 xu off the tray bonus (2 xu on probation), never below 14 xu.",
+  "Bớt 8 xu thưởng hồ sơ (thử việc 4 xu) và mất 3 tin tưởng. Việc bỏ dở cuối ngày mất 2 tin tưởng mỗi cái, tối đa 6.": "8 xu off the dossier bonus (4 xu on probation) and −3 trust. Work left unfinished at day end costs 2 trust each, up to 6.",
+  "⏰ Chuyển lương trước hạn. Hồ sơ không sai bước được đủ thưởng, mỗi lần sai trừ 4 xu (thử việc 2 xu).": "⏰ Send the payroll before the deadline. A dossier with no wrong step gets the full bonus; each mistake costs 4 xu (2 xu on probation).",
+  "Bớt 8 xu thưởng (thử việc 4 xu), mất 3 tin tưởng; bảng lương trễ mất thêm 2. Tờ khai trễ: 3 xu mỗi ngày, tới ngày 5 sếp nộp thay, −3 tin tưởng.": "8 xu off the bonus (4 xu on probation), −3 trust; a late payroll costs 2 more. Late returns: 3 xu a day; on day 5 the boss files it for you, −3 trust.",
+  "⏰ Nộp trước hạn: +2 tin tưởng, tin tưởng từ 75 thêm 5 xu. Không sai bước được 32 xu.": "⏰ Hand in before the deadline: +2 trust; at 75 trust or more, +5 xu. No wrong step pays 32 xu.",
+  "Mất 20 phút (thử việc 13 phút), mất 1 tin tưởng, thưởng bàn đối chiếu bị trừ 4 xu mỗi lỗi (thử việc 2 xu).": "Costs 20 minutes (13 on probation) and 1 trust; the matching-board bonus loses 4 xu per mistake (2 xu on probation).",
+  "Mất thêm 15 phút (thử việc 8 phút), thưởng giảm dần. Nhiều lỗi vẫn còn 14 xu.": "Costs 15 more minutes (8 on probation) and the bonus shrinks. Even with many mistakes you still get 14 xu.",
+  "Thuế & kế toán: mỗi hồ sơ thưởng thêm 2 xu, làm sai nhiều vẫn được ít nhất 14 xu (trước là 10).": "Tax & accounting: every dossier pays 2 xu more, and even with many mistakes you get at least 14 xu (was 10).",
+  "Đang thử việc nghề văn phòng: sai một bước chỉ trừ 2 xu, luôn giữ nửa thưởng, nộp trễ trừ nhẹ hơn, sửa sai đỡ tốn giờ.": "On probation in an office job: a wrong step costs only 2 xu, you always keep half the bonus, lateness costs less, fixing mistakes takes less time.",
+  "Mỗi lần ghép sai tốn thêm thời gian soát lại (người đang thử việc tốn ít hơn).": "Each wrong match costs extra time to recheck (less while on probation).",
   "Hôm nay khách không ghé lấy giỏ": "The customer isn't picking up a basket today",
   "Giỏ đủ rồi: khách ghé lấy lúc đóng ca": "Basket complete: the customer picks it up at closing",
   "Giỏ đủ món rồi: khách ghé lấy lúc đóng ca.": "Basket complete: the customer picks it up at closing.",
@@ -1832,6 +1843,7 @@
   "Nhà gọn gàng sạch sẽ, nhìn là biết chủ nhà siêng.": "Neat and tidy: you can tell the owner works hard."
  },
  "patterns": {
+  "(+$1 phút soát lại)": "(+$1 min to recheck)",
   "Kệ hết $1: nhập ở Kho": "Shelf out of $1: restock in Stock",
   "Kệ hết $1: nhập thêm ở Kho rồi soạn tiếp nhé.": "Shelf out of $1: restock in Stock, then keep packing.",
   "Đơn $1 đủ $2 món. Đặt đơn này trước rồi thêm tiếp nhé.": "The $1 order is full at $2 items. Place this order first, then add more.",
