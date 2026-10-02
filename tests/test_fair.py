@@ -901,6 +901,23 @@ class OAQStall(FairBase):
         with self.assertRaises(GameError):
             self.act(s, 'fair_oaq_move', cell=1, dir=True)
 
+    def test_a_move_for_an_old_board_is_refused(self):
+        s = story(0)
+        s, r = self.act(s, 'fair_oaq_start', lv='de')
+        self.assertEqual(public_state(s)['fair']['rules']['oaq_turn'], 1)
+        ply = r['fair']['view']['ply']
+        c, d = greedy_move(s['journey']['fair']['oaq']['g'])
+        s, r = self.act(s, 'fair_oaq_move', cell=c, dir=d, ply=ply)       # the newer client: the board it played on
+        self.assertGreater(r['fair']['view']['ply'], ply)
+        if s['journey']['fair']['oaq']['stage'] == 'play':
+            c, d = greedy_move(s['journey']['fair']['oaq']['g'])
+            with self.assertRaises(GameError) as e:                       # a second tap / another tab: the same ply again
+                self.act(s, 'fair_oaq_move', cell=c, dir=d, ply=ply)
+            self.assertEqual(e.exception.code, 'fair_oaq_turn')
+            with self.assertRaises(GameError):
+                self.act(s, 'fair_oaq_move', cell=c, dir=d, ply='1')
+            s, _ = self.act(s, 'fair_oaq_move', cell=c, dir=d)               # the older client: no ply, as before
+
     def test_a_game_begun_while_open_can_be_finished(self):
         s = story(0)
         self.clock.t = AFTER - 60

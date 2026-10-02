@@ -285,7 +285,7 @@ function oaqBoard(){
   const cell=(c)=>{const n=v.b[c],quan=c===0||c===6,hasQ=quan&&v.q[c===0?0:1],cls=['fh-o',quan?'quan '+(c===0?'left':'right'):'',a?.at===c?'at':'',a?.flash===c?'flash':'',S.oaq.sel===c?'sel':'',a?.hl===c?'hl':''].join(' ');
     const label=`${quan?'Ô quan':'Ô'}${hasQ?' còn quan':''}, ${n} dân`;
     const inner=`<span class="fh-pebs">${pebbles(n,hasQ)}</span>${n?`<em class="fh-n">${n}</em>`:''}`;
-    if(mine&&ROW_ME.includes(c)&&n>0)return `<button type="button" class="${cls} pick" data-fh="oaqsel" data-c="${c}" data-fh-key="o-${c}" aria-pressed="${S.oaq.sel===c}" aria-label="${label}">${inner}</button>`;
+    if(mine&&S.oaq.sel==null&&ROW_ME.includes(c)&&n>0)return `<button type="button" class="${cls} pick" data-fh="oaqsel" data-c="${c}" data-fh-key="o-${c}" aria-pressed="${S.oaq.sel===c}" aria-label="${label}">${inner}</button>`;
     return `<div class="${cls}" role="img" aria-label="${label}">${inner}</div>`;};
   return `<div class="fh-oaq" aria-label="Bàn ô ăn quan">${cell(0)}<div class="fh-orow opp">${ROW_OPP.map(cell).join('')}</div><div class="fh-orow me">${ROW_ME.map(cell).join('')}</div>${cell(6)}</div>`;
 }
@@ -308,7 +308,7 @@ function oaqView(){
   const a=S.oaq.anim,v=a||o,lines=OPP[o.lv]||OPP.de,who={name:o.name,emoji:o.emoji};
   if(!S.oaq.say)S.oaq.say=pick(lines.start);
   const me=a?a.cap[0]+10*a.cap[1]:o.me,opp=a?a.cap[2]+10*a.cap[3]:o.opp,cap=v.cap;
-  const turn=a?(a.side===1?`${esc(o.name)} đang rải…`:'Bạn đang rải…'):o.stage==='play'?(S.oaq.sel!=null?'Chọn hướng rải':'Lượt của bạn: chạm một ô hàng dưới'):'';
+  const turn=a?(a.side===1?`${esc(o.name)} đang rải…`:'Bạn đang rải…'):o.stage==='play'?(S.oaq.sel!=null?'Đã bốc quân ô này: chọn hướng rải':'Lượt của bạn: chạm một ô hàng dưới'):'';
   const hand=a&&a.hand>0?`<span class="fh-hand">✋ ${a.hand}</span>`:'';
   const dirs=S.oaq.sel!=null&&!a&&o.stage==='play'?`<div class="fh-dirs">${btn('◀ Rải sang trái','oaqmove',{d:-1},'primary',' data-fh-key="d-l"')}${btn('Rải sang phải ▶','oaqmove',{d:1},'primary',' data-fh-key="d-r"')}</div>`:'';
   const end=S.oaq.end&&o.stage!=='play'&&!a?oaqEnd(o):'';
@@ -316,8 +316,8 @@ function oaqView(){
     ${say(who,S.oaq.say)}
     <div class="fh-oscore"><span class="opp"><em>${esc(o.emoji)} ${esc(o.name)}</em><b>${opp}</b><small>${cap[2]} dân${cap[3]?` · ${cap[3]} quan`:''}</small></span><span class="me"><em>🙂 Bạn</em><b>${me}</b><small>${cap[0]} dân${cap[1]?` · ${cap[1]} quan`:''}</small></span></div>
     ${oaqBoard()}
-    <div class="fh-oturn" aria-live="polite"><span>${turn}</span>${hand}</div>
-    ${dirs}${end}
+    ${dirs}<div class="fh-oturn" aria-live="polite"><span>${turn}</span>${hand}</div>
+    ${end}
     <div class="fh-go">${btn(S.oaq.fast?'⏯️ Rải chậm':'⏩ Rải nhanh','oaqfast',{},'ghost small',' data-fh-key="oaqfast"')}${o.stage==='play'?btn(S.oaq.quit?'Chắc chưa? Bỏ ván':'Bỏ ván','oaqquit',{},'ghost small'+(S.oaq.quit?' danger':''),a?' disabled':' data-fh-key="oaqquit"'):''}</div>
     ${how}</section>`;
 }
@@ -327,7 +327,7 @@ function oaqEnd(o){
   const pay=x.stage==='won'?(x.prize?`<p class="fh-prize">+${xu(x.prize)}${x.points?` · +${x.points} điểm hội chợ`:''}</p>`:`<p class="muted small">Hôm nay đã kiếm đủ xu từ ô ăn quan${x.points?`, vẫn được +${x.points} điểm hội chợ`:''}. Mai ghé tiếp nha!</p>`):'<p class="muted small">Thua không mất xu nào.</p>';
   const other=o.lv==='de'?'kho':'de';
   return `<div class="fh-card fh-oend ${x.stage}"><h3>${head}</h3>${pay}${x.titles?.includes('f_oaq')?'<p class="fh-award">🪨 Danh hiệu mới: <b>Cao tay ô ăn quan</b></p>':''}
-    <div class="row wrap fh-oend-go">${btn(`Ván mới với ${esc(o.name)}`,'oaqstart',{lv:o.lv},'primary',' data-fh-key="again"')}${btn(`Chơi với ${esc((people[other]||[''])[0])}`,'oaqstart',{lv:other},'ghost')}</div></div>`;
+    <div class="row wrap fh-oend-go">${btn(`Ván mới với ${esc(o.name)}`,'oaqstart',{lv:o.lv},'primary',S.busy?' disabled data-fh-key="again"':' data-fh-key="again"')}${btn(`Chơi với ${esc((people[other]||[''])[0])}`,'oaqstart',{lv:other},'ghost',S.busy?' disabled data-fh-key="other"':' data-fh-key="other"')}</div></div>`;
 }
 const wait=ms=>new Promise(ok=>setTimeout(ok,reduce()?Math.min(ms,60):ms));
 async function oaqStart(lv){
@@ -340,8 +340,8 @@ async function oaqMove(dir){
   const o=F().oaq,cell=S.oaq.sel;if(!o||o.stage!=='play'||cell==null||S.busy||S.oaq.anim)return;
   S.oaq.sel=null;S.oaq.quit=false;S.busy=true;S.flash=null;
   S.oaq.anim={b:[...o.b],q:[...o.q],cap:[...o.cap],hand:0,at:null,hl:cell,flash:null,side:0};render();
-  const r=await send('fair_oaq_move',{cell,dir});
-  if(!r?.fair){S.oaq.anim=null;S.busy=false;render();return;}
+  const r=await send('fair_oaq_move',{cell,dir,...(R().oaq_turn&&Number.isInteger(o.ply)?{ply:o.ply}:{})});   // the newer server refuses a move for a board that moved on
+  if(!r?.fair){S.oaq.anim=null;S.busy=false;if(S.err==='fair_oaq_turn')await S.env.api.refresh().catch(()=>{/* the next state */});render();return;}
   await playTrace(r.fair.trace||[],o.lv);
   S.oaq.anim=null;S.busy=false;
   const x=r.fair.end;
@@ -899,7 +899,7 @@ async function onClick(op,data){
     case'close':S.dlg.close();return;
     case'tab':S.tab=data.tab;S.flash=null;S.anchor='';if(S.tab!=='lt'){pauseLoto();ltMusic();}render();S.dlg.scrollTop=0;if(S.tab==='board')loadBoard();if(S.tab==='lt')resumeLoto();if(S.tab==='ring')startRingLoop();return;
     case'oaqstart':oaqStart(data.lv==='kho'?'kho':'de');return;
-    case'oaqsel':{if(S.oaq.anim||S.busy)return;const c=Number(data.c);S.oaq.sel=S.oaq.sel===c?null:c;S.oaq.quit=false;sfx('mark');render();return;}
+    case'oaqsel':{if(S.oaq.anim||S.busy||S.oaq.sel!=null)return;S.oaq.sel=Number(data.c);S.oaq.quit=false;sfx('mark');render();return;}   // taken up: no changing the ô
     case'oaqmove':oaqMove(Number(data.d)===-1?-1:1);return;
     case'oaqfast':S.oaq.fast=!S.oaq.fast;render();return;
     case'oaqquit':{if(!S.oaq.quit){S.oaq.quit=true;render();return;}

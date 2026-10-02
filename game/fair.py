@@ -661,9 +661,12 @@ def apply(s: dict, name: str, p: dict) -> dict:
     elif name == 'fair_oaq_move':
         o = f['oaq']
         need(o and o['stage'] == 'play', 'Ván ô ăn quan này đã xong rồi.', 'fair_oaq_over')
-        need(set(p) == {'cell', 'dir'} and p['dir'] in (1, -1) and type(p['dir']) is int and type(p['cell']) is int,
-             'Dữ liệu thao tác không hợp lệ.')
+        need(set(p) in ({'cell', 'dir'}, {'cell', 'dir', 'ply'}) and p['dir'] in (1, -1) and type(p['dir']) is int
+             and type(p['cell']) is int, 'Dữ liệu thao tác không hợp lệ.')
         g = o['g']
+        # The newer client sends the board's ply it played on: a second tap, a retry or another tab cannot play twice
+        need('ply' not in p or (type(p['ply']) is int and p['ply'] == g['ply']),
+             'Nước này đi rồi, bàn đã sang lượt mới. Coi lại bàn rồi đi tiếp nha.', 'fair_oaq_turn')
         need(p['cell'] in oaq.ROWS[0] and g['b'][p['cell']] > 0, 'Chọn một ô của bạn còn quân nha.', 'fair_oaq_cell')
         trace: list = [['turn', 0, p['cell'], p['dir']]]
         oaq.play(g, 0, p['cell'], p['dir'], trace)
@@ -785,7 +788,7 @@ def public(s: dict) -> dict:
                            loto_price=LOTO_PRICE, loto_prize=LOTO_PRIZE, loto_npcs=LOTO_NPCS, faces=list(FACES),
                            oaq_prize=dict(OAQ_PRIZE), oaq_people={k: list(v) for k, v in OAQ_PEOPLE.items()}, quan=oaq.QUAN,
                            quan_non=oaq.QUAN_NON, ring_hit=RING_HIT, ring_all=RING_ALL, rings=ring.RINGS, ring_tol=ring.TOL,
-                           ring_day=RING_DAY, ring_left=max(0, RING_DAY - earn['ring_n'])),
+                           ring_day=RING_DAY, ring_left=max(0, RING_DAY - earn['ring_n']), oaq_turn=1),
                 oaq=oaq_view(o) if o and (o['stage'] == 'play' or t - o['at'] < 6 * 3600) else None,
                 ring=ring_view((f or {}).get('ring'), t),
                 loto=loto, stats={k: st.get(k, 0) for k in STATS},
