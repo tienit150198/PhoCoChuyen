@@ -227,7 +227,7 @@ export function inventoryView(env){
   // "?" → the illustrated "Nhập hàng & xếp kệ" page, where the workplace has one (tutorial/guide-data.js).
   const help=(GUIDE[api.state.current]?.pages||[]).some(p=>p.id==='restock')?`<button type="button" class="icon-btn tut-help" data-action="tutGuide" data-career="${esc(api.state.current)}" data-tab="work" data-page="restock" aria-label="Cách nhập hàng & xếp kệ">?</button>`:'';
   return head('Kho & nhập hàng',`Mỗi loại chứa tối đa ${cap}`,'KHO · '+esc(place)).replace('<button class="icon-btn" type="button" data-action="close"',help+'<button class="icon-btn" type="button" data-action="close"')+
-    `<div class="sheet-body">${hint}${strip}${door}${shortBox}${tabs([['stock','Kệ hàng'],['orders',`Thùng hàng${transitS.length?` · ${transitS.length}`:''}`],['lots','Hạn dùng']],tab,'v4InvTab')}<div class="space-top">${body}</div></div>`;
+    `<div class="sheet-body"><p class="small muted inv-how">📦 Đặt hàng → chờ thùng về → mở thùng, chạm đếm từng món → nhận lên kệ: lúc đó mới bán được.</p>${hint}${strip}${door}${shortBox}${tabs([['stock','Kệ hàng'],['orders',`Thùng hàng${transitS.length?` · ${transitS.length}`:''}`],['lots','Hạn dùng']],tab,'v4InvTab')}<div class="space-top">${body}</div></div>`;
 }
 /** Order card: stepper + quick chips (never past the room left), suppliers,
  * a live total (wholesale tier and shipping included) and the reason when ordering is not
@@ -631,13 +631,13 @@ const toastOr=(env,text)=>env.toast?env.toast(text,true):null;
 /** The crate's real count is on screen (one tile per unit, inventory.public count_hint), so a count that
  * cannot match is caught before inv_receive refuses it: say how it is off without giving the number, and
  * light the input and the goods not tapped yet. false = send it. */
-function countOff(env,id,count){
+function countOff(env,id,count,what=''){
   const ui=env.ui,o=(env.api.state.careers[env.api.state.current]?.inventory?.orders||[]).find(v=>v.id===id),n=o?.count_hint;
   if(n==null||count===Number(n))return false;
   const k=(ui.invTally?.[id]||[]).length;
   const msg=count===o.qty?`${count} là số trên phiếu: thùng có thể giao thiếu, chạm đếm từng món trong thùng.`
     :k<n?'Đếm lệch: còn món chưa chạm trong thùng, chạm hết rồi nhận.':`Bạn chạm đếm được ${k} món nhưng ô ghi ${count}.`;
-  toastOr(env,msg);
+  toastOr(env,what?`${what}: ${msg}`:msg);
   const inp=document.getElementById('count-'+id);if(inp){inp.setAttribute('aria-invalid','true');inp.focus();}
   document.querySelectorAll(`#crate-${CSS.escape(id)} .inv-good:not(.on)`).forEach(b=>b.classList.add('miss'));
   return true;
@@ -707,6 +707,8 @@ export async function v4Action(action,data,el,env){
       for(const o of lines){const inp=document.getElementById('count-'+o.id),raw=String(inp?.value??ui.invCount?.[o.id]??'').trim();
         if(raw===''){const it=api.content.inventory.items[api.state.current].find(i=>i.id===o.item);toastOr(env,`Đếm ${it?.name||'từng món'} trong thùng trước đã nhé.`);inp?.focus();return true;}
         counts[o.id]=Number(raw);}
+      // Same check as one crate (countOff): a line that cannot match is pointed out before inv_receive refuses the lot.
+      for(const o of lines){const it=api.content.inventory.items[api.state.current].find(i=>i.id===o.item);if(countOff(env,o.id,counts[o.id],it?.name||''))return true;}
       if(lines.length&&await cmd('inv_receive',{group:data.group,counts})){for(const o of lines)for(const k of ['invCount','invTally','invTyped'])if(ui[k])delete ui[k][o.id];
         if(ui.invOpen===data.group||lines.some(o=>o.id===ui.invOpen))ui.invOpen=null;renderSheet();}
       return true;}

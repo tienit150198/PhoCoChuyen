@@ -1950,6 +1950,7 @@ html.reduce-motion *,html.reduce-motion *::before,html.reduce-motion *::after{an
 
 /* ---------- 30. Stock room (Kho & nhập hàng) ----------------------------- */
 .inv-status{display:grid;gap:10px;margin:0 0 14px;padding:12px;border-radius:var(--radius);background:var(--surface-2);border:1px solid var(--line)}
+.inv-how{margin:0 0 10px;line-height:1.45}
 .inv-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .inv-chip{display:inline-flex;align-items:center;gap:5px;min-height:40px;padding:4px 12px;border-radius:var(--radius-pill);border:1px solid transparent;background:var(--surface);color:var(--ink-2);font-size:.833rem;font-weight:700}
 .inv-chip b{font-size:1rem;font-variant-numeric:tabular-nums}
