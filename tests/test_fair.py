@@ -82,6 +82,9 @@ class FairBase(unittest.TestCase):
         p = mock.patch.object(fh, 'now', self.clock)
         p.start()
         self.addCleanup(p.stop)
+        g = mock.patch.object(fh, 'BC_GAP_MS', 0)   # the test clock steps 2 s a call; test_the_bowl_opens_after_5_s checks the gap
+        g.start()
+        self.addCleanup(g.stop)
         self.dice(Dice())
 
     def dice(self, d):
@@ -95,6 +98,24 @@ class FairBase(unittest.TestCase):
 
 
 class BauCua(FairBase):
+    def test_the_bowl_opens_after_5_s(self):
+        s = story(100)                                     # owner 03/10: mỗi lần bấm đợi 5s để mở
+        with mock.patch.object(fh, 'BC_GAP_MS', 4800):
+            s, r = self.act(s, 'fair_bc', bets={'cua': 1})
+            with self.assertRaises(GameError) as e:
+                self.act(s, 'fair_bc', bets={'cua': 1})
+            self.assertEqual(e.exception.code, 'fair_slow')
+            self.clock.t += 5
+            s, r = self.act(s, 'fair_bc', bets={'cua': 1})
+        self.assertEqual(public_state(s)['fair']['rules']['bc_open'], 5000)
+
+    def test_a_long_bau_cua_run_goes_below_30(self):
+        j, f = {}, dict(fh.initial(), date=fh.vn_date(OPEN))   # owner 03/10: spam bầu cua → under 30 %
+        ps = [fh.luck_p(j, f, 'bc', OPEN + 5 * i) for i in range(40)]
+        self.assertEqual(ps[0], fh.WIN_P)
+        self.assertLess(ps[-1], .30)
+        self.assertEqual(ps[-1], fh.RUN_RULES['bc'][1])
+
     def test_standard_payouts_and_the_bao_bonus(self):
         s = story(100)
         self.dice(Dice(faces=['cua', 'cua', 'tom']))
@@ -1073,11 +1094,11 @@ class Odds(FairBase):
 
     def test_a_long_run_of_one_stall(self):
         j, f = {}, dict(fh.initial(), date=fh.vn_date(OPEN))   # owner 03/10: spam one game, the odds fall to 40 %
-        ps = [fh.luck_p(j, f, 'bc', OPEN + i) for i in range(40)]
+        ps = [fh.luck_p(j, f, 'xd', OPEN + i) for i in range(40)]
         self.assertEqual(ps[:fh.RUN_FREE], [fh.WIN_P] * fh.RUN_FREE)
         self.assertAlmostEqual(ps[fh.RUN_FREE], fh.WIN_P - fh.RUN_STEP)
         self.assertEqual(ps[-1], fh.P_FLOOR)
-        self.assertEqual(fh.luck_p(j, f, 'xd', OPEN + 41), fh.WIN_P)            # another stall: a new run
+        self.assertEqual(fh.luck_p(j, f, 'bc', OPEN + 41), fh.WIN_P)            # another stall: a new run
         j['fair_run'] = dict(g='xd', n=30, at=int(OPEN))
         self.assertEqual(fh.luck_p(j, f, 'xd', OPEN + fh.RUN_GAP + 5), fh.WIN_P)   # a break: a new run
         s = story(100)

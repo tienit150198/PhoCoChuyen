@@ -109,6 +109,11 @@ WIN_P, WIN_P_LOW = .53, .45     # owner 03/10 01:45: "bầu cua, chiếu trong, 
 # validator rejects unknown keys).
 RUN_FREE, RUN_STEP, RUN_GAP, P_FLOOR = 10, .01, 180, .40
 RUN_GAMES = ('bc', 'xd', 'lt', 'dt')
+# Bầu cua runs cool faster and further (owner 03/10 02:00: "spam mãi cái đó thì giảm tỷ lệ thắng xuống… có thể thấp hơn
+# 30%"), and the bowl opens BC_OPEN_MS after a roll ("mỗi lần bấm đợi 5s để mở"): rounds at least BC_GAP_MS apart.
+RUN_RULES = dict(bc=(.02, .25))  # game: (step a round past RUN_FREE, floor); others RUN_STEP, P_FLOOR
+BC_OPEN_MS = 5000
+BC_GAP_MS = 4800                 # BC_OPEN_MS less a little network slack
 TAPER_FROM, TAPER_TO = 2000, 5000
 GAP_MS = 400                   # between two rounds of dice/coins (owner 03/10: nhanh lên; was 1200)
 # 🦀 Bầu cua
@@ -466,7 +471,8 @@ def luck_p(j: dict, f: dict | None, game: str, t: float, hi: float | None = None
     """The odds of the next round of a luck stall: odds() by today's net, less RUN_STEP a round past RUN_FREE in a row
     of the same stall, never below P_FLOOR. Counts the round in the run."""
     n = _run(j, game, t)
-    return max(P_FLOOR, odds(_today(f, t)['net'], hi, lo) - RUN_STEP * max(0, n - RUN_FREE))
+    step, floor = RUN_RULES.get(game, (RUN_STEP, P_FLOOR))
+    return max(floor, odds(_today(f, t)['net'], hi, lo) - step * max(0, n - RUN_FREE))
 
 
 def win_p(f: dict | None, t: float) -> float:
@@ -642,6 +648,8 @@ def apply(s: dict, name: str, p: dict) -> dict:
             need(type(v) is int and 1 <= v <= BC_MAX, f'Mỗi ván đặt tối đa {BC_MAX} xu.')
         stake = sum(bets.values())
         need(stake <= BC_MAX, f'Mỗi ván đặt tối đa {BC_MAX} xu.')
+        need(f is None or int(t * 1000) - f['last'] >= BC_GAP_MS or f['last'] > int(t * 1000),
+             'Chờ chú Tám mở bát đã nha!', 'fair_slow')
         want = _rng.random() < luck_p(j, f, 'bc', t)
         pts = _guard_round(e, f, j, t, stake, stake)
         dice = bc_roll(bets, want)
@@ -940,7 +948,7 @@ def public(s: dict) -> dict:
                 earn={g: dict(today=earn[g], cap=EARN_DAY[g], left=max(0, EARN_DAY[g] - earn[g])) if g not in EARN_UNCAPPED
                       else dict(today=0, cap=0, left=1, nocap=True) for g in EARN_GAMES},
                 raid_left=max(0, int((f or {}).get('raid_until', 0) - t)) if f else 0,
-                rules=dict(cap=DAY_CAP, bc_max=BC_MAX, bao=BAO, xd_min=XD_MIN, xd_max=XD_MAX, raid_pct=RAID_PCT, fine_min=FINE_MIN,
+                rules=dict(bc_open=BC_OPEN_MS, cap=DAY_CAP, bc_max=BC_MAX, bao=BAO, xd_min=XD_MIN, xd_max=XD_MAX, raid_pct=RAID_PCT, fine_min=FINE_MIN,
                            loto_price=LOTO_PRICE, loto_prize=LOTO_PRIZE, loto_npcs=LOTO_NPCS, faces=list(FACES),
                            oaq_prize=dict(OAQ_PRIZE), oaq_people={k: list(v) for k, v in OAQ_PEOPLE.items()}, quan=oaq.QUAN,
                            quan_non=oaq.QUAN_NON, ring_hit=RING_HIT, ring_all=RING_ALL, rings=ring.RINGS, ring_tol=ring.TOL,

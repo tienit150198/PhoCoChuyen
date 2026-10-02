@@ -480,7 +480,8 @@ function bcResult(l){
 async function roll(){
   const b=S.bc,total=bcTotal();if(!total||b.phase!=='idle'||bcWhy(total))return;
   b.phase='shake';b.say='Lắc nè, lắc nè… xóc xóc xóc!';S.flash=null;render();sfx('shake');
-  const r=await shaken(()=>send('fair_bc',{bets:{...b.bets}}));
+  const wait=R().bc_open||0;if(wait)b.say=`Lắc nè, lắc nè… ${Math.round(wait/1000)} giây nữa mở bát!`;render();
+  const r=await shaken(()=>send('fair_bc',{bets:{...b.bets}}),Math.max(ROLL_MS,wait),Math.max(ROUND_GAP,wait));   // owner 03/10: the bowl opens after 5 s
   if(!r?.fair){b.phase='idle';b.say=pick(DEALER.idle);render();return;}
   const x=r.fair;b.dice=x.dice;b.last={...x};b.phase='idle';
   b.say=x.bao?`Bão! Bão! Ba con ${FACE_NAME[x.bao].toLowerCase()} luôn bà con ơi!`:x.net>0?'Trúng rồi! Chú chung tiền liền nè!':x.net===0?'Huề vốn, vui là chính!':'Ván sau gỡ lại nha, đừng buồn!';
@@ -488,9 +489,9 @@ async function roll(){
   titles(x);render();
 }
 /** The round goes to the server while the bowl shakes (at least ROLL_MS; a quick "Lắc tiếp" waits out the server's gap). */
-async function shaken(go){
-  const hold=Math.max(0,S.lastRound+ROUND_GAP-Date.now());
-  const [r]=await Promise.all([new Promise(ok=>setTimeout(ok,hold)).then(()=>{S.lastRound=Date.now();return go();}),new Promise(ok=>setTimeout(ok,reduce()?250:ROLL_MS))]);
+async function shaken(go,open=ROLL_MS,gap=ROUND_GAP){
+  const hold=Math.max(0,S.lastRound+gap-Date.now());
+  const [r]=await Promise.all([new Promise(ok=>setTimeout(ok,hold)).then(()=>{S.lastRound=Date.now();return go();}),new Promise(ok=>setTimeout(ok,reduce()?Math.min(open,1000):open))]);
   return r;
 }
 function titles(x){if(x.titles?.length)S.flash={text:`🎉 Danh hiệu mới: ${x.titles.map(t=>TITLE_NAMES[t]||t).join(', ')}`,kind:'good'};}
