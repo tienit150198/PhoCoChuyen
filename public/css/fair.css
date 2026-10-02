@@ -552,3 +552,15 @@ html:not([data-layout="phone"]) .fh-walking .fh-body>:not(.fh-walk):not(.fh-stri
 .fh-xs-cv:active{cursor:grabbing}
 .fh-xs-foot{margin:7px 2px 0;text-align:center;font-size:.78rem;font-weight:700;color:color-mix(in srgb,var(--xs) 75%,#3a2410)}
 .fh-xs .fh-result{width:fit-content;margin:0 auto}
+/* 🔥 Gian x3 */
+.fh-x3bar{display:flex;align-items:center;gap:10px;width:100%;margin:8px 0;padding:10px 12px;border-radius:14px;border:2px solid color-mix(in srgb,#e8590c 55%,var(--line));background:color-mix(in srgb,#ff7a1a 14%,var(--surface));color:inherit;text-align:left;font:inherit;cursor:pointer}
+.fh-x3bar small{display:block;color:var(--ink-2)}
+.fh-x3ico{font-size:1.6rem;line-height:1}
+.fh-x3line{margin:8px 0;padding:8px 12px;border-radius:12px;background:color-mix(in srgb,#ff7a1a 14%,var(--surface));font-weight:600}
+.fh-x3chip{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:.72rem;font-weight:700;color:#fff;background:#d9480f;vertical-align:middle}
+.fh-x3week{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:4px;text-align:left}
+.fh-x3week li{display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:10px;background:color-mix(in srgb,var(--line) 35%,transparent)}
+.fh-x3week li b{min-width:28px}
+.fh-x3week li em{margin-left:auto;font-style:normal;font-size:.75rem;font-weight:700;color:#d9480f}
+.fh-x3week li.on{background:color-mix(in srgb,#ff7a1a 24%,var(--surface));font-weight:700}
+.fh-x3week li.past{opacity:.55}

@@ -87,6 +87,9 @@ class FairBase(unittest.TestCase):
         g = mock.patch.object(fh, 'BC_GAP_MS', 0)   # the test clock steps 2 s a call; test_the_bowl_opens_after_5_s checks the gap
         g.start()
         self.addCleanup(g.stop)
+        x = mock.patch.object(fh, 'BOOST_X', 1)   # the 🔥 x3 stall of the test's day pays as usual (GianX3 checks x3)
+        x.start()
+        self.addCleanup(x.stop)
         self.dice(Dice())
 
     def dice(self, d):
@@ -1491,3 +1494,58 @@ class Board(StoreBase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class GianX3(FairBase):
+    """🔥 Gian x3 (owner 03/10): a stall a day, every stall once a week, a win's profit ×3 on its day."""
+    def setUp(self):
+        super().setUp()
+        x = mock.patch.object(fh, 'BOOST_X', 3)
+        x.start()
+        self.addCleanup(x.stop)
+
+    def test_every_stall_has_its_day_each_week(self):
+        weeks = set()
+        for w in range(12):
+            mon = at(2026, 10, 5) + w * 7 * 86400
+            week, days = fh.boost_week(mon)
+            self.assertEqual(week, fh.vn_date(mon))
+            self.assertEqual(sorted(days), sorted(fh.BOOST_GAMES))
+            for i in range(7):
+                self.assertEqual(fh.boost_week(mon + i * 86400 + 3600 * 11), (week, days))
+                self.assertEqual(fh.boost_of(mon + i * 86400 + 3600 * 11), days[i])
+            weeks.add(tuple(days))
+        self.assertGreater(len(weeks), 6)   # a new order each week
+
+    def test_a_win_on_the_stall_s_day_pays_its_profit_x3(self):
+        with mock.patch.object(fh, 'boost_of', lambda t: 'xd'):
+            s = story(200)
+            self.dice(Dice(coins=[1, 1, 0, 0], draws=[.9]))
+            s, r = self.act(s, 'fair_xd', side='chan', stake=30)
+            self.assertEqual((r['fair']['net'], r['fair'].get('x3')), (90, True))
+            self.assertIn('x3', r['message'])
+            self.dice(Dice(coins=[1, 0, 0, 0], draws=[.9, .9]))
+            s, r = self.act(s, 'fair_xd', side='chan', stake=10)
+            self.assertEqual(r['fair']['net'], -10)   # a loss stays a loss
+            self.assertNotIn('x3', r['fair'])
+            self.assertEqual(s['journey']['wallet'], 280)
+            self.assertEqual(fh.money_of(s['journey'])[0], 80)
+
+    def test_bau_cua_x3_and_the_other_stalls_as_usual(self):
+        with mock.patch.object(fh, 'boost_of', lambda t: 'bc'):
+            s = story(100)
+            self.dice(Dice(faces=['cua', 'cua', 'tom']))
+            s, r = self.act(s, 'fair_bc', bets={'cua': 5, 'ca': 3})
+            self.assertEqual((r['fair']['back'], r['fair']['net']), (15, 21))
+            self.dice(Dice(coins=[1, 1, 0, 0], draws=[.9]))
+            s, r = self.act(s, 'fair_xd', side='chan', stake=10)
+            self.assertEqual(r['fair']['net'], 10)
+            self.assertNotIn('x3', r['fair'])
+            self.assertEqual(s['journey']['wallet'], 131)
+
+    def test_the_week_in_the_public_state(self):
+        x = public_state(story(100))['fair']['x3']
+        self.assertEqual(x['x'], 3)
+        self.assertEqual(len(x['days']), 7)
+        self.assertEqual(x['today'], fh.boost_of(self.clock.t))
+        self.assertEqual((x['week'], x['days']), fh.boost_week(self.clock.t))

@@ -25,7 +25,7 @@ export function setup(ctx){
   const R=()=>F().scratch||null;
 
   /** Prize xu already in the wallet but not yet scratched open (fair.js takes it off what it shows). */
-  const hold=()=>D.t&&!D.done?D.t.prize:0;
+  const hold=()=>D.t&&!D.done?D.t.prize+(D.t.bonus||0):0;   // 🔥 x3 day: the bonus waits too
   const live=()=>!!D.t&&!D.done;
 
   function card(){
@@ -46,7 +46,7 @@ export function setup(ctx){
     const t=D.t;
     if(!t.prize)return `<div class="fh-result bad"><b>Chưa trúng</b><small>−${xu(t.price)}</small></div>`;
     if(t.prize===t.price)return `<div class="fh-result good"><b>Hoàn vé ${xu(t.prize)}</b><small>Ba ô đúng bằng giá vé</small></div>`;
-    return `<div class="fh-result good"><b>🎉 Trúng ${xu(t.prize)}!</b><small>Lời ${xu(t.net)} · gấp ${t.mult} lần giá vé</small></div>`;
+    return `<div class="fh-result good"><b>🎉 Trúng ${xu(t.prize)}!</b><small>Lời ${xu(t.net)} · gấp ${t.mult} lần giá vé${t.bonus?` · 🔥 x3 thêm ${xu(t.bonus)}`:''}</small></div>`;
   }
   function view(){
     const f=F(),r=R(),tiers=r?.tiers||[2,5,10,20],wallet=f.wallet||0,on=live(),busy=D.buying||S.busy;

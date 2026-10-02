@@ -136,6 +136,7 @@ export async function openFair(env,data={}){
   if(!d.open){d.showModal();d.scrollTop=0;}
   render();
   claimGift();
+  if(f.open&&f.x3&&!x3Seen()){S.x3pop=true;render();}   // 🔥 the week's x3 list, once a week
   ltMusic();
   clearInterval(S.tick);S.tick=setInterval(tickLabels,1000);
   if(S.tab==='board')loadBoard();
@@ -258,7 +259,7 @@ function page(){
   if(!f.open&&S.tab!=='board')return head()+`<div class="sheet-body fh-body">${closedCard()}${S.env?.api?.state?.journey?.story?btn('🏆 Xem Bảng vàng hội chợ','tab',{tab:'board'},'cream full'):''}${note()}</div>`;
   const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView,loan:loanView,food:foodView,dt:()=>F().darts?dt().view():homeView(),xs:()=>F().scratch?xs().view():homeView()};
   const body=(views[S.tab]||homeView)(),luck=['bc','xd'].includes(S.tab)||S.tab==='lt'&&!G();   // the newer lô tô: only the wallet limits it
-  return head()+giftPop()+`<div class="sheet-body fh-body">${f.open?strip():''}${f.open?nav():''}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${f.open?xuLine(S.tab):''}${body}${note()}</div>`;
+  return head()+giftPop()+x3Pop()+`<div class="sheet-body fh-body">${f.open?strip():''}${f.open?nav():''}${x3Bar()}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${f.open?xuLine(S.tab):''}${body}${note()}</div>`;
 }
 function closedCard(gone){
   const f=F();
@@ -275,12 +276,12 @@ const homeView=()=>walkOn()?WALK.html():gateList();
 function gateList(){
   const f=F(),r=R(),e=f.earn||{},o=f.oaq,m=won(),pr=r.oaq_prize||{de:15,kho:30};
   const oaqLine=o?.stage==='play'?`<em class="fh-live">Đang chơi dở với ${esc(o.name)} · chơi tiếp</em>`:`Đấu với Bé Bi (thắng +${pr.de} xu) hoặc Ông Hai (thắng +${pr.kho} xu)`;
-  const luck=(id,ico,name,sub,warn='')=>`<button type="button" class="fh-luckgame" data-fh="tab" data-tab="${id}" data-fh-key="g-${id}"><span class="fh-lico" aria-hidden="true">${ico}</span><span class="grow"><b>${name}</b><small>${sub}</small></span>${warn}${f.loto?.stage==='play'&&id==='lt'?'<i class="fh-dot" aria-label="đang chơi"></i>':''}</button>`;
+  const luck=(id,ico,name,sub,warn='')=>`<button type="button" class="fh-luckgame" data-fh="tab" data-tab="${id}" data-fh-key="g-${id}"><span class="fh-lico" aria-hidden="true">${ico}</span><span class="grow"><b>${name}${x3Chip(id)}</b><small>${sub}</small></span>${warn}${f.loto?.stage==='play'&&id==='lt'?'<i class="fh-dot" aria-label="đang chơi"></i>':''}</button>`;
   return `<section class="fh-gate" aria-label="Cổng hội">
     <div class="fh-sec"><h3>💰 Chơi kiếm xu</h3><span class="fh-tag good">Không cần đặt cược</span></div>
     <div class="fh-earn">
-      <button type="button" class="fh-game" data-fh="tab" data-tab="oaq" data-fh-key="g-oaq"><span class="fh-gico">${MINI_BOARD}</span><span class="grow"><b>Ô ăn quan</b><small>${oaqLine}</small>${meter(e.oaq)}</span></button>
-      <button type="button" class="fh-game" data-fh="tab" data-tab="ring" data-fh-key="g-ring"><span class="fh-gico">${MINI_BOTTLES}</span><span class="grow"><b>Ném vòng cổ chai</b><small>${r.nocap?`Mỗi vòng trúng +${r.ring_hit} xu, trúng cả ${r.rings||5} vòng thêm ${r.ring_all} xu`:`Trúng mỗi chai +${r.ring_hit||2} xu, đủ ${r.rings||5} chai thêm ${r.ring_all||5} xu`}</small>${meter(e.ring)}</span></button>
+      <button type="button" class="fh-game" data-fh="tab" data-tab="oaq" data-fh-key="g-oaq"><span class="fh-gico">${MINI_BOARD}</span><span class="grow"><b>Ô ăn quan${x3Chip('oaq')}</b><small>${oaqLine}</small>${meter(e.oaq)}</span></button>
+      <button type="button" class="fh-game" data-fh="tab" data-tab="ring" data-fh-key="g-ring"><span class="fh-gico">${MINI_BOTTLES}</span><span class="grow"><b>Ném vòng cổ chai${x3Chip('ring')}</b><small>${r.nocap?`Mỗi vòng trúng +${r.ring_hit} xu, trúng cả ${r.rings||5} vòng thêm ${r.ring_all} xu`:`Trúng mỗi chai +${r.ring_hit||2} xu, đủ ${r.rings||5} chai thêm ${r.ring_all||5} xu`}</small>${meter(e.ring)}</span></button>
     </div>
     <div class="fh-sec"><h3>🎲 Thử vận may</h3><span class="fh-tag">Cược nhỏ bằng xu</span></div>
     <div class="fh-luck">
@@ -937,6 +938,31 @@ function boardView(){
 }
 
 
+/* ---- 🔥 Gian x3 (game/fair.py BOOST_*; an older server sends no `x3`: nothing shows): one stall a day, every stall
+ * once a week; the week's list pops up the first time the fair is opened that week ---- */
+const X3=()=>F().x3||null;
+const X3_LS='mnl-fair-x3-week',DOW=['T2','T3','T4','T5','T6','T7','CN'];
+const x3Seen=()=>{try{return localStorage.getItem(X3_LS)===X3()?.week;}catch{return true;}};
+const x3Name=g=>GAMES[g]?`${GAMES[g][0]} ${GAMES[g][1]}`:g;
+const x3Chip=id=>X3()?.today===id?`<span class="fh-x3chip">🔥 x${X3().x}</span>`:'';
+function x3Week(){
+  const x=X3();if(!x)return '';
+  const di=(new Date(serverNow()+7*3600e3).getUTCDay()+6)%7;   // today, Monday 0 (VN time)
+  return `<ol class="fh-x3week">${x.days.map((g,i)=>`<li class="${i===di?'on':i<di?'past':''}"><b>${DOW[i]}</b><span>${esc(x3Name(g))}</span>${i===di?'<em>hôm nay</em>':''}</li>`).join('')}</ol>`;
+}
+function x3Bar(){
+  const x=X3();if(!x||!F().open)return '';
+  if(S.tab==='home')return `<button type="button" class="fh-x3bar" data-fh="x3week" data-fh-key="x3bar"><span class="fh-x3ico" aria-hidden="true">🔥</span><span class="grow"><b>Hôm nay ${esc(x3Name(x.today))} lời x${x.x}</b><small>Mỗi ngày một gian, cả tuần gian nào cũng có ngày · xem lịch tuần</small></span><span aria-hidden="true">›</span></button>`;
+  if(S.tab===x.today)return `<p class="fh-x3line" role="note">🔥 Hôm nay gian này lời x${x.x}: thắng ván nào, tiền lời nhân ${x.x}!</p>`;
+  return '';
+}
+function x3Pop(){
+  const x=X3();if(!S.x3pop||!x||S.gift)return '';
+  return `<div class="fh-giftpop" role="dialog" aria-modal="true" aria-labelledby="fh-x3-h"><div class="fh-giftcard fh-x3card">
+    <div class="fh-giftbox" aria-hidden="true">🔥</div><h3 id="fh-x3-h">Tuần này mỗi ngày một gian lời x${x.x}</h3>
+    <p>Đúng ngày của gian nào, thắng ván ở gian đó thì tiền lời nhân ${x.x}. Thua thì vẫn như thường.</p>${x3Week()}${btn('🏮 Biết rồi, vào hội','x3ok',{},'primary big full',' data-fh-key="x3ok"')}</div></div>`;
+}
+
 /* ---- 🎁 Tiền vốn hội chợ and 💸 Vay nóng (game/fair_cash.py; an older server sends no `cash`: nothing shows) ---- */
 const C=()=>F().cash||null;
 async function claimGift(){
@@ -1068,6 +1094,8 @@ async function onClick(op,data){
     case'ltcots':S.lt.cots=Number(data.v)||2;render();return;
     case'ltcheck':S.lt.check=!S.lt.check;render();return;
     case'giftok':S.gift=null;render();return;
+    case'x3ok':S.x3pop=false;try{localStorage.setItem(X3_LS,X3()?.week||'');}catch{/* storage blocked */}render();return;
+    case'x3week':S.x3pop=true;render();return;
     case'loanamt':S.loan.amt=Number(data.v)||0;S.loan.sure=false;render();return;
     case'borrow':borrow();return;
     case'repay':repay();return;
