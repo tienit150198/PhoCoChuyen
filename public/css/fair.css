@@ -73,7 +73,7 @@ html:not([data-layout="phone"]) .sheet.medium.fh-sheet{width:min(600px,calc(100v
 .fh-bowl::before{content:"";position:absolute;left:12%;right:12%;top:46%;height:10px;border-radius:4px;background:repeating-linear-gradient(90deg,#f6e3b8 0 8px,#2e6ca8 8px 12px);opacity:.85}
 .fh-bowl::after{content:"";position:absolute;left:50%;top:-8px;width:34px;height:14px;margin-left:-17px;border-radius:8px 8px 4px 4px;background:#9c4a20}
 .fh-plate.open .fh-bowl{transform:translate(108%,-4%) rotate(16deg);opacity:.92}
-.fh-plate.open .fh-die,.fh-plate.open .fh-coin{animation:fh-pop .4s cubic-bezier(.3,1.6,.5,1) both;animation-delay:calc(var(--i) * 90ms + 150ms)}
+.fh-plate.open .fh-die,.fh-plate.open .fh-coin{animation:fh-pop .32s cubic-bezier(.3,1.6,.5,1) both;animation-delay:calc(var(--i) * 60ms + 60ms)}
 @keyframes fh-pop{from{transform:scale(.5);opacity:0}to{transform:none;opacity:1}}
 .fh-plate.shake{animation:fh-shake .16s ease-in-out infinite alternate}
 @keyframes fh-shake{0%{transform:translate(-5px,1px) rotate(-4deg)}100%{transform:translate(5px,-2px) rotate(4deg)}}

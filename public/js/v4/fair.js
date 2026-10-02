@@ -24,7 +24,7 @@ const MINI_BOARD='<svg viewBox="0 0 64 40" aria-hidden="true"><rect x="2" y="6" 
 const MINI_BOTTLES='<svg viewBox="0 0 64 40" aria-hidden="true"><g stroke="#2d5a3d" stroke-width="1.4"><path d="M12 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#7cc79a"/><path d="M28 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#8fb6e8"/><path d="M44 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#f0b46a"/></g><ellipse cx="34" cy="10" rx="7" ry="2.6" fill="none" stroke="#e2462d" stroke-width="2.4"/></svg>';
 const CHIPS=[1,2,5,10];
 const XD_STAKES=[10,20,30,50];
-const NPC_GRACE=2000,ROLL_MS=1400;
+const NPC_GRACE=2000,ROLL_MS=850,ROUND_GAP=1350;   // the bowl shakes this long; the server wants rounds ≥1.2 s apart (GAP_MS)
 const LS='mnl.fair.lt';
 
 /* ---- the people of the fair ---- */
@@ -38,7 +38,7 @@ const OPP={de:{start:['Chơi với em nha! Anh chị đi trước đi.','Em mớ
     cap:['Quân này ông xin nha.','Ăn liên tiếp mới vui!'],lose:['Nước này cháu tính hay đó.','Khá lắm, khá lắm.'],won:['Ván này ông thắng, cháu tập thêm rồi ghé nha.'],lost:['Cháu cao tay thiệt! Ông chịu thua ván này.'],draw:['Huề! Ông cháu mình ngang tay.']}};
 
 /* ---- state ---- */
-const S={dlg:null,env:null,tab:'home',busy:false,flash:null,skew:0,listening:false,tick:null,
+const S={dlg:null,env:null,tab:'home',busy:false,lastRound:0,flash:null,skew:0,listening:false,tick:null,
   oaq:{sel:null,anim:null,say:'',fast:false,quit:false,end:null,showEnd:false},
   ring:{round:null,t0:0,taps:[],hits:[],raf:0,result:null,say:''},
   bc:{chip:1,bets:{},phase:'idle',dice:null,last:null,say:''},
@@ -300,7 +300,7 @@ function oaqView(){
       <li>Hàng mình hết quân thì lấy 5 dân đã ăn rải lại mỗi ô một quân; không đủ thì ván kết thúc.</li>
       <li>Hết cả hai ô quan: mỗi bên thu dân còn trên hàng mình. Nhiều điểm hơn thì thắng.</li></ul></details>`;
   if(!o||(o.stage!=='play'&&!S.oaq.showEnd)){
-    const opp=lv=>`<button type="button" class="fh-opp fh-opp-${lv}" data-fh="oaqstart" data-lv="${lv}" data-fh-key="opp-${lv}"${S.busy?' disabled':''}><span class="fh-npc" aria-hidden="true">${people[lv][1]}</span><b>${esc(people[lv][0])}</b><small>${lv==='de'?'Dễ':'Khó'} · thắng <b>+${xu(pr[lv])}</b></small></button>`;
+    const opp=lv=>`<button type="button" class="fh-opp fh-opp-${lv}" data-fh="oaqstart" data-lv="${lv}" data-fh-key="opp-${lv}"${S.busy?' disabled':''}><span class="fh-npc" aria-hidden="true">${people[lv][1]}</span><b>${esc(people[lv][0])}</b><small>${S.busy&&S.oaq.starting===lv?'Đang bày bàn…':`${lv==='de'?'Dễ':'Khó'} · thắng <b>+${xu(pr[lv])}</b>`}</small></button>`;
     return `<section class="fh-stall fh-oaqstall" aria-label="Ô ăn quan">
       <div class="fh-card fh-oaqintro"><h3>🪨 Ô ăn quan</h3><p>Chọn người chơi cùng. Thắng thì được xu, thua không mất gì.</p><div class="fh-opps">${opp('de')}${opp('kho')}</div>${meter(e)}</div>
       ${how}<p class="fh-rule">Thắng một ván: +${(F().points?.rules||{}).oaq||3} điểm Bảng vàng. Mỗi ngày kiếm từ ô ăn quan tối đa ${xu(e?.cap||90)}.</p></section>`;
@@ -331,8 +331,8 @@ function oaqEnd(o){
 }
 const wait=ms=>new Promise(ok=>setTimeout(ok,reduce()?Math.min(ms,60):ms));
 async function oaqStart(lv){
-  if(S.busy)return;S.busy=true;S.flash=null;render();
-  const r=await send('fair_oaq_start',{lv});S.busy=false;
+  if(S.busy)return;S.busy=true;S.oaq.starting=lv;S.flash=null;render();
+  const r=await send('fair_oaq_start',{lv});S.busy=false;S.oaq.starting=null;
   if(r?.fair){S.oaq={...S.oaq,sel:null,anim:null,end:null,showEnd:true,quit:false,say:pick((OPP[lv]||OPP.de).start)};}
   render();
 }
@@ -350,18 +350,18 @@ async function oaqMove(dir){
   render();
 }
 async function playTrace(trace,lv){
-  const a=S.oaq.anim,lines=OPP[lv]||OPP.de,step=()=>S.oaq.fast?55:150;
+  const a=S.oaq.anim,lines=OPP[lv]||OPP.de,step=()=>S.oaq.fast?50:115;
   for(const ev of trace){
     if(!S.oaq.anim)return;
     const [k]=ev;
-    if(k==='turn'){a.side=ev[1];a.hl=ev[2];a.at=null;a.flash=null;if(ev[1]===1){S.oaq.say=pick(lines.think);render();await wait(S.oaq.fast?300:750);}continue;}
-    if(k==='pick'){a.b[ev[1]]=0;a.hand=ev[2];a.at=ev[1];a.hl=null;sfx('stone');render();await wait(step()+60);continue;}
+    if(k==='turn'){a.side=ev[1];a.hl=ev[2];a.at=null;a.flash=null;if(ev[1]===1){S.oaq.say=pick(lines.think);render();await wait(S.oaq.fast?250:480);}continue;}
+    if(k==='pick'){a.b[ev[1]]=0;a.hand=ev[2];a.at=ev[1];a.hl=null;sfx('stone');render();await wait(step()+40);continue;}
     if(k==='drop'){a.b[ev[1]]++;a.hand=Math.max(0,a.hand-1);a.at=ev[1];sfx('stone');render();await wait(step());continue;}
     if(k==='cap'){const [,c,dan,quan]=ev;a.b[c]=0;if(quan)a.q[c===0?0:1]=0;a.cap[2*a.side]+=dan;a.cap[2*a.side+1]+=quan;a.flash=c;a.at=null;
-      S.oaq.say=pick(a.side===1?lines.cap:lines.lose);sfx('cap');render();await wait(S.oaq.fast?250:600);continue;}
-    if(k==='non'){a.flash=ev[1];S.flash={text:'Quan non: ô quan chưa đủ dân, chưa ăn được.',kind:'warn'};render();await wait(S.oaq.fast?300:700);S.flash=null;continue;}
-    if(k==='seed'){const row=ev[1]===0?ROW_ME:ROW_OPP;row.forEach(c=>{a.b[c]=1;});a.cap[2*ev[1]]-=5;S.flash={text:ev[1]===0?'Hàng bạn hết quân: rải lại 5 dân đã ăn.':'Hàng bên kia hết quân: rải lại 5 dân.',kind:'warn'};render();await wait(S.oaq.fast?300:800);S.flash=null;continue;}
-    if(k==='collect'){S.flash={text:'Hết quan, tàn dân: thu quân về đếm điểm!',kind:'good'};render();await wait(S.oaq.fast?300:700);S.flash=null;continue;}
+      S.oaq.say=pick(a.side===1?lines.cap:lines.lose);sfx('cap');render();await wait(S.oaq.fast?220:420);continue;}
+    if(k==='non'){a.flash=ev[1];S.flash={text:'Quan non: ô quan chưa đủ dân, chưa ăn được.',kind:'warn'};render();await wait(S.oaq.fast?260:520);S.flash=null;continue;}
+    if(k==='seed'){const row=ev[1]===0?ROW_ME:ROW_OPP;row.forEach(c=>{a.b[c]=1;});a.cap[2*ev[1]]-=5;S.flash={text:ev[1]===0?'Hàng bạn hết quân: rải lại 5 dân đã ăn.':'Hàng bên kia hết quân: rải lại 5 dân.',kind:'warn'};render();await wait(S.oaq.fast?260:600);S.flash=null;continue;}
+    if(k==='collect'){S.flash={text:'Hết quan, tàn dân: thu quân về đếm điểm!',kind:'good'};render();await wait(S.oaq.fast?260:520);S.flash=null;continue;}
   }
   a.at=null;a.hl=null;
 }
@@ -382,7 +382,7 @@ function ringView(){
   if(res){const n=res.n;go=`<div class="fh-card fh-ringres ${n>=3?'good':''}"><h3>${n===rings?'🎉 Trúng cả '+n+' chai!':`Trúng ${n}/${rings} chai`}</h3>${res.prize?`<p class="fh-prize">+${xu(res.prize)}${res.points?` · +${res.points} điểm hội chợ`:''}</p>`:n&&res.capped?'<p class="muted small">Hôm nay đã kiếm đủ xu từ ném vòng, mai ghé tiếp nha!</p>':'<p class="muted small">Lượt sau canh kỹ hơn nha!</p>'}${res.titles?.includes('f_ring')?'<p class="fh-award">💍 Danh hiệu mới: <b>Tay ném vòng thần sầu</b></p>':''}</div>`+
     btn('🎯 Ném lượt nữa (miễn phí)','ringstart',{},'primary big full',S.busy||!r.ring_left?' disabled':' data-fh-key="ringstart"');}
   else if(rd)go=btn(R0.taps.length>=rings?'Đang đếm…':'🫳 Ném!','throw',{},'primary big full fh-throw',R0.taps.length>=rings?' disabled':' data-fh-key="throw"');
-  else go=btn(`🎯 Phát ${rings} vòng (miễn phí)`,'ringstart',{},'primary big full',S.busy||!r.ring_left?' disabled':' data-fh-key="ringstart"');
+  else go=btn(S.busy?'Cô Tư đang phát vòng…':`🎯 Phát ${rings} vòng (miễn phí)`,'ringstart',{},'primary big full',S.busy||!r.ring_left?' disabled':' data-fh-key="ringstart"');
   return `<section class="fh-stall fh-ringstall" aria-label="Ném vòng cổ chai">
     ${say(RINGER,R0.say)}
     <div class="fh-ringstage${rd&&!res?' live':''}"><div class="fh-track" aria-hidden="true" data-fh-live><span class="fh-aim" style="left:${trackPos(rd?ringX(rd,0):50)}"><i></i></span></div><div class="fh-fly-layer" aria-hidden="true" data-fh-live></div><div class="fh-shelf">${bottles}</div></div>
@@ -463,12 +463,18 @@ function bcResult(l){
 async function roll(){
   const b=S.bc,total=bcTotal();if(!total||b.phase!=='idle')return;
   b.phase='shake';b.say='Lắc nè, lắc nè… xóc xóc xóc!';S.flash=null;render();sfx('shake');
-  const [r]=await Promise.all([send('fair_bc',{bets:{...b.bets}}),new Promise(ok=>setTimeout(ok,reduce()?300:ROLL_MS))]);
+  const r=await shaken(()=>send('fair_bc',{bets:{...b.bets}}));
   if(!r?.fair){b.phase='idle';b.say=pick(DEALER.idle);render();return;}
   const x=r.fair;b.dice=x.dice;b.last={...x};b.phase='idle';
   b.say=x.bao?`Bão! Bão! Ba con ${FACE_NAME[x.bao].toLowerCase()} luôn bà con ơi!`:x.net>0?'Trúng rồi! Chú chung tiền liền nè!':x.net===0?'Huề vốn, vui là chính!':'Ván sau gỡ lại nha, đừng buồn!';
   sfx('open');setTimeout(()=>sfx(x.net>0?'win':x.net<0?'lose':'open'),260);
   titles(x);render();
+}
+/** The round goes to the server while the bowl shakes (at least ROLL_MS; a quick "Lắc tiếp" waits out the server's gap). */
+async function shaken(go){
+  const hold=Math.max(0,S.lastRound+ROUND_GAP-Date.now());
+  const [r]=await Promise.all([new Promise(ok=>setTimeout(ok,hold)).then(()=>{S.lastRound=Date.now();return go();}),new Promise(ok=>setTimeout(ok,reduce()?250:ROLL_MS))]);
+  return r;
 }
 function titles(x){if(x.titles?.length)S.flash={text:`🎉 Danh hiệu mới: ${x.titles.map(t=>TITLE_NAMES[t]||t).join(', ')}`,kind:'good'};}
 
@@ -501,7 +507,7 @@ function raidCard(r){
 async function shakeXd(){
   const x=S.xd;if(x.phase!=='idle')return;
   x.phase='shake';x.say='Xóc nè! Nghe kêu lắc cắc chưa…';S.flash=null;render();sfx('shake');
-  const [r]=await Promise.all([send('fair_xd',{side:x.side,stake:x.stake}),new Promise(ok=>setTimeout(ok,reduce()?300:ROLL_MS))]);
+  const r=await shaken(()=>send('fair_xd',{side:x.side,stake:x.stake}));
   x.phase='idle';
   if(!r?.fair){x.say=pick(HOST.idle);render();return;}
   const d=r.fair;
@@ -729,7 +735,7 @@ function buyPanel(){
         <div class="fh-picks cols">${cot}${lt.cot!=null?btn('Bỏ','ltcot',{v:''},'ghost small'):''}</div>
         ${lt.cot!=null?`<div class="fh-chips"><span>Đặt</span>${g.side_stakes.map(s=>chip('ltcots',s,lt.cots===s)).join('')}</div>`:''}</div>
     </details>
-    ${btn(`🎟️ Mua ${lt.n} tờ · ${xu(total)}`,'buy',{},'primary big full',why?` disabled data-fh-key="buy" title="${esc(why)}"`:' data-fh-key="buy"')}
+    ${btn(S.busy?'Cô Bảy đang xé tờ…':`🎟️ Mua ${lt.n} tờ · ${xu(total)}`,'buy',{},'primary big full',why?` disabled data-fh-key="buy" title="${esc(why)}"`:' data-fh-key="buy"')}
     ${why&&!S.busy?`<p class="fh-why">${esc(why)}</p>`:''}
   </div>`;
 }
