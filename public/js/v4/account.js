@@ -12,6 +12,18 @@ const field=(id,label,type,auto,extra='')=>`<label class="field" for="${id}">${l
 const USER_ATTRS='required minlength="3" maxlength="24" autocapitalize="none" autocorrect="off" spellcheck="false" pattern="[A-Za-z0-9_.]{3,24}"';
 
 function errorLine(ui){return `<p class="acct-error" role="alert" aria-live="polite">${ui.acctError?`${icon('alert',15)} ${esc(ui.acctError)}`:''}</p>`;}
+const tiktokButton=(api,mode='login')=>api.auth?.tiktok?.enabled?`<div class="settings-block">${btn(mode==='link'?'Liên kết TikTok với tài khoản này':'Tiếp tục với TikTok','v4AccountTikTok',{mode},'cream full')}<p class="small muted">${mode==='link'?'Giữ nguyên tên đăng nhập, mật khẩu và tiến trình.':'TikTok chỉ cung cấp mã tài khoản và tên hiển thị. Không cần mật khẩu game.'} <a href="/privacy" target="_blank" rel="noopener">Quyền riêng tư</a></p>${api.auth.tiktok.mode==='sandbox'?'<p class="small muted">Đăng nhập TikTok đang thử nghiệm cho tài khoản được mời.</p>':''}</div>`:'';
+
+/** Consume only server-whitelisted callback markers, then remove them from the address. */
+export function accountBoot(env){
+  const url=new URL(location.href),marker=url.searchParams.get('tiktok');if(!marker)return false;
+  url.searchParams.delete('tiktok');history.replaceState(null,'',url.pathname+url.search+url.hash);
+  const errors={tiktok_unavailable:'Đăng nhập TikTok chưa được bật. Bạn vẫn có thể dùng tài khoản thường.',tiktok_state:'Phiên đăng nhập TikTok đã hết hạn hoặc không hợp lệ. Hãy thử lại.',tiktok_session:'Phiên chơi đã thay đổi. Hãy thử lại.',tiktok_denied:'Bạn đã hủy cấp quyền TikTok. Tiến trình vẫn được giữ nguyên.',tiktok_provider:'Chưa kết nối được với TikTok. Tiến trình vẫn được giữ nguyên. Hãy thử lại.',tiktok_conflict:'TikTok này đã liên kết với một tài khoản khác.',tiktok_mode:'Hãy đăng nhập tài khoản thường trước khi liên kết TikTok.'};
+  const messages={success:'Đã đăng nhập bằng TikTok.',linked:'Đã liên kết TikTok. Tiến trình và mật khẩu được giữ nguyên.',cancelled:'Đã hủy đăng nhập. Tiến trình vẫn được giữ nguyên.'};
+  if(!Object.hasOwn(errors,marker)&&!Object.hasOwn(messages,marker))return false;
+  env.ui.acctMode='login';env.ui.acctError=errors[marker]||'';env.openSheet('settings',{setTab:'account'});
+  if(messages[marker])env.toast(messages[marker]);return true;
+}
 
 /** Small card: "keep your progress". Hidden once signed in or dismissed on this device. */
 export function accountNudge(env){
@@ -33,14 +45,15 @@ export function accountPane(env){
   const {api,ui}=env,a=api.account;
   if(a)return `<section class="settings-block"><h3>${icon('user',18)} Tài khoản</h3>
       <p class="acct-who">${icon('cloud',18)}<span>Đang đăng nhập: <b>${esc(a.display)}</b> <small class="muted">(${esc(a.username)})</small></span></p>
-      <div class="row wrap">${btn('💍 Hôn nhân · mã người chơi','marriage',{},'cream')}${btn(`${icon('exit',16)} Đăng xuất`,'v4AccountLogout',{},'ghost')}</div></section>
-    <form id="accountPasswordForm" class="settings-block acct-form" novalidate><h3>${icon('lock',18)} Đổi mật khẩu</h3>
+      <div class="row wrap">${btn('💍 Hôn nhân · mã người chơi','marriage',{},'cream')}${btn(`${icon('exit',16)} Đăng xuất`,'v4AccountLogout',{},'ghost')}</div>
+      ${a.tiktok_linked?'<p class="small muted">Đã liên kết TikTok.</p>':tiktokButton(api,'link')}${errorLine(ui)}</section>
+    ${a.has_password===false?'':`<form id="accountPasswordForm" class="settings-block acct-form" novalidate><h3>${icon('lock',18)} Đổi mật khẩu</h3>
       <input type="text" name="username" autocomplete="username" value="${esc(a.username)}" hidden>
       ${field('acct-current','Mật khẩu hiện tại','password','current-password','required maxlength="128"')}
       ${field('acct-new','Mật khẩu mới','password','new-password','required minlength="8" maxlength="128"')}
       ${field('acct-new2','Nhập lại mật khẩu mới','password','new-password','required minlength="8" maxlength="128"')}
       <p class="small acct-warn">${icon('alert',15)} Nhớ kỹ mật khẩu — hiện chưa có cách lấy lại.</p>
-      ${errorLine(ui)}<button class="btn primary full" type="submit">Đổi mật khẩu</button></form>`;
+      ${errorLine(ui)}<button class="btn primary full" type="submit">Đổi mật khẩu</button></form>`}`;
   const mode=ui.acctMode==='login'?'login':'register';
   const tabs=`<div class="segmented acct-switch" role="tablist">${[['register','Tạo tài khoản'],['login','Đăng nhập']].map(([id,label])=>`<button type="button" role="tab" aria-selected="${id===mode}" class="${id===mode?'active':''}" data-action="v4AccountMode" data-mode="${id}">${label}</button>`).join('')}</div>`;
   const form=mode==='register'
@@ -57,7 +70,7 @@ export function accountPane(env){
       ${field('acct-username','Tên đăng nhập','text','username',USER_ATTRS)}
       ${field('acct-password','Mật khẩu','password','current-password','required maxlength="128"')}
       ${errorLine(ui)}<button class="btn primary full" type="submit">Đăng nhập</button></form>`;
-  return `<section class="settings-block"><h3>${icon('cloud',18)} Giữ tiến trình</h3>${tabs}${form}</section>`;
+  return `<section class="settings-block"><h3>${icon('cloud',18)} Giữ tiến trình</h3>${tabs}${form}${tiktokButton(api)}</section>`;
 }
 
 async function send(env,form,route,body){
@@ -108,6 +121,12 @@ export async function accountSubmit(f,env){
 export async function accountAction(action,data,el,env){
   const {api,ui,renderSheet,openSheet,toast,confirmAction}=env;
   switch(action){
+    case'v4AccountTikTok':{
+      ui.acctError='';if(el)el.disabled=true;
+      try{const r=await api.accountPost('tiktok/start',{mode:data.mode==='link'?'link':'login'});location.assign(r.authorization_url);}
+      catch(e){ui.acctError=e.message||'Chưa kết nối được với TikTok. Hãy thử lại.';renderSheet();if(el?.isConnected)el.disabled=false;}
+      return true;
+    }
     case'v4AccountOpen':ui.acctError='';if(data.mode)ui.acctMode=data.mode;openSheet('settings',{setTab:'account'});return true;
     case'v4AccountMode':ui.acctMode=data.mode;ui.acctError='';renderSheet();return true;
     case'v4AccountDismiss':try{localStorage.setItem(NUDGE_KEY,'off');}catch{/* storage blocked: hide for now */}el.closest('.acct-nudge')?.remove();return true;

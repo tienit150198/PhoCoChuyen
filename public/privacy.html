@@ -16,13 +16,14 @@
 
   <article id="vi" lang="vi">
     <h1>Chính sách quyền riêng tư</h1>
-    <p class="meta">Hiệu lực từ 02/10/2026 · Liên hệ: <a href="mailto:trachanhtv.works@gmail.com">trachanhtv.works@gmail.com</a></p>
+    <p class="meta">Hiệu lực từ 03/10/2026 · Liên hệ: <a href="mailto:trachanhtv.works@gmail.com">trachanhtv.works@gmail.com</a></p>
     <p><b>Phố Có Chuyện</b> là một trò chơi mô phỏng nghề nghiệp miễn phí, làm ra để mọi người cùng chơi và trải nghiệm. Chúng tôi thu thập ít dữ liệu nhất có thể và không bán dữ liệu của bạn.</p>
 
     <h2>1. Chúng tôi lưu những gì?</h2>
     <ul>
       <li><b>Bản lưu trò chơi</b>: tiến trình, xu trong game, kho hàng, đánh giá của khách hư cấu và những câu bạn gõ trong game (ví dụ lời trả lời review). Bản lưu gắn với một mã phiên ngẫu nhiên trong cookie, <b>không cần email, mật khẩu hay số điện thoại</b>.</li>
       <li><b>Tài khoản (tùy chọn)</b>: tên đăng nhập, tên hiển thị và mật khẩu đã được băm (không ai đọc lại được mật khẩu gốc). Không có email nên chưa có cách lấy lại mật khẩu.</li>
+      <li><b>Đăng nhập TikTok (tùy chọn)</b>: khi bạn chọn nút TikTok và đồng ý trên TikTok, game chỉ xin quyền <code>user.info.basic</code> để nhận mã định danh <code>open_id</code> và tên hiển thị. Mã định danh được gắn với tài khoản và bản lưu để bạn đăng nhập lại; tên hiển thị chỉ dùng để gọi tên bạn, không dùng để ghép tài khoản. Tài khoản tạo bằng TikTok không có mật khẩu game. Bạn có thể chọn “Liên kết TikTok” khi đã đăng nhập tài khoản thường; tên đăng nhập, mật khẩu và bản lưu hiện có được giữ nguyên. Game không đọc mật khẩu TikTok, không lưu access token hay refresh token, và không nhận video, email hoặc số điện thoại của bạn.</li>
       <li><b>Hồ sơ Phố nghề (tùy chọn)</b>: tên hiển thị, lời giới thiệu, biểu tượng, và thống kê quán (nghề, cấp, số sao). Chỉ hiện với người khác khi bạn tự bật.</li>
       <li><b>Nội dung bạn đăng</b> ở Phố nghề: đánh giá quán, trả lời, bài viết, bình luận, biểu cảm, quà tặng, hàng đăng bán, báo cáo và danh sách chặn/theo dõi.</li>
       <li><b>Thông báo đẩy (tùy chọn)</b>: địa chỉ nhận thông báo do trình duyệt cấp, giờ nhắc và múi giờ bạn chọn.</li>
@@ -32,6 +33,7 @@
 
     <h2>2. Cookie và bộ nhớ trình duyệt</h2>
     <p>Cookie cần thiết <code>mnl_session</code> (HttpOnly, giữ tối đa 1 năm) nhận ra bản lưu của bạn. Trình duyệt còn lưu vài lựa chọn giao diện như bố cục và ngôn ngữ. Game không có quảng cáo. Khi bạn cho phép thống kê và máy chủ đã bật tính năng, Google Analytics/Firebase dùng cookie và mã cài đặt để đo lượt ghé, nguồn truy cập, thiết bị, các bước chơi, loại lỗi và hiệu năng. Các công cụ này không nhận bản lưu, tên tài khoản, chat hay nội dung góp ý. Thống kê không chạy trước khi bạn cho phép; game tôn trọng lựa chọn Do Not Track và Global Privacy Control của trình duyệt.</p>
+    <p>Khi bắt đầu đăng nhập TikTok, cookie cần thiết <code>mnl_tiktok_flow</code> (HttpOnly, Secure, SameSite=Lax) tồn tại tối đa 10 phút để kiểm tra lần quay về đúng trình duyệt. Máy chủ lưu mã kiểm tra đã băm và phiên chơi gốc, không lưu mã cấp quyền hoặc token TikTok. Nếu đăng nhập làm thay tiến trình đang chơi trên máy này bằng bản lưu của một tài khoản có sẵn, game yêu cầu xác nhận; hủy hoặc cấp quyền thất bại giữ nguyên bản lưu hiện tại.</p>
     <p>Bạn có thể đổi lựa chọn thống kê trên trình duyệt này bất cứ lúc nào. Lựa chọn không ảnh hưởng tiến trình game.</p>
     <p><button type="button" data-analytics-choice="yes">Cho phép thống kê / Allow statistics</button> <button type="button" data-analytics-choice="no">Tắt thống kê / Disable statistics</button></p>
     <p id="analytics-status" role="status" aria-live="polite"></p>
@@ -56,6 +58,7 @@
     <ul>
       <li>Nhà cung cấp máy chủ (hosting).</li>
       <li>Google Analytics và Firebase, chỉ khi bạn cho phép thống kê sử dụng và hiệu năng.</li>
+      <li>TikTok, chỉ khi bạn chọn đăng nhập hoặc liên kết và đồng ý cấp quyền. Trình duyệt mở màn hình cấp quyền của TikTok; máy chủ đổi mã cấp quyền để kiểm tra danh tính, rồi bỏ token ngay sau yêu cầu. Chính sách của TikTok áp dụng cho hoạt động trên TikTok.</li>
       <li>Nhà cung cấp AI, khi AI đang bật (mặc định bật nếu máy chủ có cấu hình; tắt trong Cài đặt).</li>
       <li>Dịch vụ thông báo của trình duyệt (Google, Mozilla, Apple, Microsoft). Các dịch vụ này chỉ nhận một tín hiệu rỗng: nội dung thông báo được trình duyệt của bạn tải trực tiếp từ máy chủ game.</li>
     </ul>
@@ -75,6 +78,7 @@
     <h2>7. Quyền của bạn</h2>
     <ul>
       <li><b>Xóa ngay</b>: vào Cài đặt → “Xóa dữ liệu của tôi”. Toàn bộ bản lưu, tài khoản, hồ sơ, nội dung Phố nghề, góp ý và đăng ký thông báo sẽ bị xóa khỏi máy chủ.</li>
+      <li><b>Xóa liên kết TikTok</b>: “Xóa dữ liệu của tôi” cũng xóa mã định danh, tên hiển thị TikTok và các phiên đăng nhập TikTok đang chờ của tài khoản. Bạn có thể rút quyền của ứng dụng trong TikTok; thao tác đó không tự xóa bản lưu trên game, nên hãy dùng chức năng xóa dữ liệu khi muốn xóa bản lưu.</li>
       <li><b>Xóa riêng góp ý</b>: gửi email tới <a href="mailto:trachanhtv.works@gmail.com">trachanhtv.works@gmail.com</a>, kèm tên đăng nhập (nếu có) hoặc nội dung và thời gian gửi góp ý để chúng tôi tìm đúng.</li>
       <li><b>Tải bản lưu</b>: vào Cài đặt → “Xuất bản lưu”.</li>
       <li><b>Rút lại đồng ý</b>: bạn có thể tắt AI, thông báo hay hồ sơ công khai bất cứ lúc nào.</li>
@@ -93,12 +97,13 @@
 
   <article id="en" lang="en">
     <h1>Privacy Policy</h1>
-    <p class="meta">Effective 2 October 2026 · Contact: <a href="mailto:trachanhtv.works@gmail.com">trachanhtv.works@gmail.com</a></p>
+    <p class="meta">Effective 3 October 2026 · Contact: <a href="mailto:trachanhtv.works@gmail.com">trachanhtv.works@gmail.com</a></p>
     <p><b>Phố Có Chuyện</b> (“A street full of stories”) is a free career-simulation game. We collect as little as possible and never sell your data.</p>
     <h2>1. What we store</h2>
     <ul>
       <li><b>Your game save</b>: progress, in-game coins, stock, reviews from fictional customers, and text you type in the game. It is linked to a random session cookie. No email, password or phone number is needed.</li>
       <li><b>Optional account</b>: a username, a display name and a hashed password (the original password cannot be read back). There is no email, so a lost password cannot be recovered yet.</li>
+      <li><b>Optional TikTok login</b>: choosing TikTok and consenting on TikTok grants only <code>user.info.basic</code>, which supplies your <code>open_id</code> identifier and display name. We associate the identifier with your account and save for future sign-ins; the name is cosmetic and never matches or merges accounts. A TikTok-created account has no game password. Choosing “Link TikTok” while signed in to a local account preserves its username, password and save. We never read your TikTok password, retain access or refresh tokens, or receive videos, email addresses or phone numbers.</li>
       <li><b>Optional public profile</b> in the shared street: display name, short bio, an emoji avatar and shop stats. Other players see it only when you turn it on.</li>
       <li><b>Content you post</b> on the shared street: shop reviews, replies, posts, comments, reactions, gifts, market listings, reports, blocks and follows.</li>
       <li><b>Optional push notifications</b>: the delivery address your browser gives us, plus your reminder hour and time-zone offset.</li>
@@ -107,6 +112,7 @@
     </ul>
     <h2>2. Cookies and browser storage</h2>
     <p>The essential <code>mnl_session</code> cookie (HttpOnly, up to 1 year) recognises your save. Your browser also stores UI preferences. There are no ads. When you allow statistics and the operator enables the feature, Google Analytics/Firebase use cookies and installation identifiers to measure visits, referral sources, devices, game steps, error categories and performance. They do not receive your save, account name, chats or feedback. Collection starts only after permission and respects Do Not Track and Global Privacy Control. Use the Allow/Disable statistics buttons above to change your choice on this browser.</p>
+    <p>Starting TikTok login sets the essential <code>mnl_tiktok_flow</code> cookie (HttpOnly, Secure, SameSite=Lax) for up to 10 minutes to bind the return to your browser. The server keeps hashed verification values and the original game session, without retaining authorization codes or TikTok tokens. Signing in to an existing account asks for confirmation before replacing progress on this device. Cancellation or failed authorization preserves your current save.</p>
     <h2>3. AI (on by default, you can turn it off any time)</h2>
     <p>If the server operator configured an AI provider, “Characters chat using AI” is <b>on by default</b>, so customers, pupils, parents and others talk naturally in their own personality. The first time, the game shows a small notice with a “Turn AI off” button.</p>
     <p>While AI is on, the following is sent to that language-model provider: <b>the messages you type in Chat</b> (with the last few chat turns with that character), <b>your replies to reviews</b>, the fictional review text and a few game facts (the fictional character’s name, personality and current task). Before sending, the server removes links, e-mail addresses and phone-like numbers from what you typed; the player name you chose is replaced by a generic form of address, and your session id and account are never sent. Please do not type real personal information.</p>
@@ -126,6 +132,7 @@
     <ul>
       <li>our hosting provider;</li>
       <li>Google Analytics and Firebase, only when you allow usage and performance statistics;</li>
+      <li>TikTok, only when you choose login or linking and consent. Your browser opens TikTok’s consent screen; the game server exchanges the authorization code to verify identity and discards the token after the request. TikTok’s policy governs activity on TikTok;</li>
       <li>the AI provider, while AI is on (on by default when the server has one; turn it off in Settings);</li>
       <li>browser push services (Google, Mozilla, Apple, Microsoft), which receive only an empty signal. Your browser fetches the notification text directly from the game server.</li>
     </ul>
@@ -143,6 +150,7 @@
     <h2>7. Your rights</h2>
     <ul>
       <li><b>Delete now</b>: Settings → “Delete my data” erases your save, account, profile, street content, feedback and push subscriptions from the server.</li>
+      <li><b>Delete TikTok linking</b>: “Delete my data” also removes the TikTok identifier, display name and pending TikTok login flows for the account. You may revoke the app’s permission in TikTok; this does not automatically erase your game save, so use the game’s deletion control to erase it.</li>
       <li><b>Delete only your feedback</b>: email <a href="mailto:trachanhtv.works@gmail.com">trachanhtv.works@gmail.com</a> with your username (if any) or the text and time of the note so we can find it.</li>
       <li><b>Export</b>: Settings → “Export save”.</li>
       <li><b>Withdraw consent</b>: you can turn off AI, notifications or your public profile at any time.</li>
