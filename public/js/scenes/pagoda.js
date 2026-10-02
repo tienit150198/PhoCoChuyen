@@ -91,3 +91,5 @@ export default {
   room(w,p){room(w,p,w.isPortrait());},
   props(w,p){return props(w,p);},
 };
+/** The pieces, for the walkable pagoda of "Vào chùa" (scenes/chua-place.js): the same gate, hall and bell tower. */
+export {F,RED,RED_D,GOLD,WALL,WALL_D,sky,roof,hall,gate,areca,bellTower,yard,brooms,bonsai,lotus};

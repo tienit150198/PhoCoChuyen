@@ -207,6 +207,7 @@ export async function lifeAction(action,data,el,env){
     case'lfChoose':{await cmd('lf_choose',{id:data.id,choice:data.choice},{quiet:true});render();return true;}
     case'lfClose':{const r=await cmd('lf_close',{id:data.id},{quiet:true});if(r){const d=document.getElementById('lfScene');if(d?.open)d.close();}return true;}
     case'lfCope':{const r=await cmd('lf_cope',{choice:data.choice});if(r)env.renderSheet?.(false);return true;}
+    case'lfChuaVisit':{const m=await import('./chua-visit.js');await m.openChua(env);return true;}   // 🛕 Vào chùa
     case'lfChua':{const r=await cmd('jr_chua_do',data.wish?{act:data.act,wish:data.wish}:{act:data.act});if(r)env.renderSheet?.(false);return true;}
   }
   return false;
