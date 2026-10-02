@@ -32,6 +32,12 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.4.15", date="2026-10-03", items=(
+        dict(emoji="📚", text="Học kế toán theo TT99: 84 bài, thi lấy chứng nhận, tập làm sổ công ty Mây Tre Xanh, có gợi ý từng bước và tra cứu tài khoản."),
+        dict(emoji="🧾", text="Hồ sơ lương ở văn phòng gọn, dễ nhìn hơn: mỗi ô một thẻ, kết quả một thẻ, sai thì có gợi ý kỹ theo đúng số bạn nhập."),
+        dict(emoji="🛕", text="Ở chùa, khách thập phương và thầy trụ trì nói bằng giọng nhà chùa, nhẹ nhàng, không giống lời ngoài phố."),
+        dict(emoji="🛁", text="Nhà nào cũng có nhà tắm, biệt thự có hồ bơi. Thêm 15 món đồ nhà tắm, hồ bơi và nút thư giãn mỗi ngày.", go=dict(action="house")),
+    )),
     dict(version="1.4.14", date="2026-10-03", items=(
         dict(emoji="🏮", text="Hội chợ thành bãi hội thật: đi dạo dưới dây đèn lồng, tới gánh lô tô, lều bầu cua, sạp phi tiêu… bấm vào là chơi.", go=dict(action="fair")),
         dict(emoji="🎲", text="Hội chợ hên xui hơn: thắng thua tùy vận. Phi tiêu khó hơn, tâm ngắm chạy nhanh, gió hội chợ lộng hơn.", go=dict(action="fair")),

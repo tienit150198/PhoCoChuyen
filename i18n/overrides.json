@@ -1,5 +1,9 @@
 {
  "strings": {
+  "Học kế toán theo TT99: 84 bài, thi lấy chứng nhận, tập làm sổ công ty Mây Tre Xanh, có gợi ý từng bước và tra cứu tài khoản.": "Learn accounting under Circular 99: 84 lessons, a certification exam, and practice books for the Mây Tre Xanh company, with step-by-step hints and an account lookup.",
+  "Hồ sơ lương ở văn phòng gọn, dễ nhìn hơn: mỗi ô một thẻ, kết quả một thẻ, sai thì có gợi ý kỹ theo đúng số bạn nhập.": "The office payroll dossier is tidier: one card per box, one result card, and detailed hints based on the numbers you entered when something's off.",
+  "Ở chùa, khách thập phương và thầy trụ trì nói bằng giọng nhà chùa, nhẹ nhàng, không giống lời ngoài phố.": "At the pagoda, pilgrims and the abbot speak in the temple's own gentle voice, not like the talk out on the street.",
+  "Nhà nào cũng có nhà tắm, biệt thự có hồ bơi. Thêm 15 món đồ nhà tắm, hồ bơi và nút thư giãn mỗi ngày.": "Every home now has a bathroom, and villas have a pool. 15 new bathroom and pool pieces, plus a daily unwind button.",
   "Nhà tắm": "Bathroom",
   "Phòng tắm lớn": "Big bathroom",
   "Nhà tắm chung": "Shared bathroom",

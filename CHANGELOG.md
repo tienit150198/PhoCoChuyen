@@ -1,3 +1,12 @@
+# v1.4.15 — 📚 Học kế toán TT99, 🧾 hồ sơ lương, 🛕 giọng chùa, 🛁 nhà tắm & hồ bơi
+
+Chủ game (02–03/10): "kế toán có cái thông tư 99 đưa lên luôn", "thông tư 99 gợi ý nhiều lên", "giao diện xấu quá, làm sao dễ coi hơn" (hồ sơ lương), "cách trả lời của chùa khác các bên còn lại mới đúng", "nhà chưa có nhà tắm, biệt thự 60k cũng k có hồ bơi".
+
+- Học kế toán (TT99): trường + công ty thực hành Mây Tre Xanh, 84 bài, thi chứng nhận, gợi ý, tra cứu tài khoản; migration lười, payload công khai nhỏ, không lộ đáp án (374d610, 6f18bc5, a958ac0, 730bc5d).
+- Bàn lương: mỗi ô một thẻ, một thẻ kết quả, gợi ý sâu theo số người chơi nhập (dc39d25, 6dc6d4c, a0ffed1).
+- Chùa: cảm nhận/hồi đáp/quà biếu/danh hiệu tuần bằng giọng nhà chùa, không từ buôn bán (feat/pagoda-voice).
+- Nhà: phòng tắm cho mọi chỗ ở, hồ bơi cho biệt thự, 15 món đồ, thư giãn mỗi ngày (feat/home-rooms).
+
 # v1.4.14 — 🎲 Hội chợ hên xui, phi tiêu khó hơn, xu hôm nay
 
 Chủ game (03/10): "tỷ lệ thắng đang cao quá, chỉnh tỷ lệ thắng là 60% và hên xui", "phi tiêu thì làm sao cho người ta khó trúng hơn", "sao xu kiếm hôm nay không hiển thị ở loto, rồi điểm nữa sao không thấy tính khi win".
