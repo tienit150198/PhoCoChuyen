@@ -8,19 +8,29 @@ fills you up. Never xu, never a cost, nothing that can go wrong.
 * The lunar day is read off the life day (LUNAR_OFFSET: life day 1 is the 11th, so the first full moon comes on
   life day 5). Rằm (15) and mùng 1 (1) are the days of the free vegetarian meal.
 * A wish (the `nguyen` act) is one of WISHES, a short line written on a slip of red paper and tied by the gate.
+* 1.4.8, "Vào chùa" (public/js/v4/chua-visit.js): the pagoda is a place the player walks around in; each act
+  happens where it belongs. Two acts only exist there (SCENE_ACTS): `khan`, kneeling in the main hall and
+  putting a prayer together from KHAN_WHO × KHAN_WHAT (the player picks both, nothing is preset; ông bà đã
+  khuất only goes with yên nghỉ), and `tung`, chanting with thầy Huệ Minh while the player keeps the wooden
+  fish (mõ) on the beat: `beat` (0..BEATS) taps landed on time, more of them lift the spirit a little more,
+  none is never a failure. Talking with the abbot is unlimited and changes nothing: his lines for the day
+  (ABBOT, picked by the lunar day) ride along in public().
 
 State (absent in older saves; created on the first visit, validate() checks it strictly when present):
   journey['chua'] = {v, day (the life day of `did`), did (acts done that day), n (acts done in all)}.
-Command (through journey.action): jr_chua_do {act, wish?}. Story mode only (code 'locked' otherwise); the same act
+Command (through journey.action): jr_chua_do {act, wish?, who?, what?, beat?}. Story mode only (code 'locked' otherwise); the same act
 twice a day is refused with 'already_done', a fourth act with 'limit'. An older build answers jr_chua_do with
 'unknown_action' and ignores journey['chua'] (journey.validate allows extra keys).
+Rolling release: public()['acts'] keeps only the acts an older client can draw as buttons; the scene's own acts
+come in `more` with what the scene needs (`khan`, `chant`, `abbot`), and a client that finds no `more` keeps the
+old list (an older server).
 """
 from __future__ import annotations
 
 from . import needs as nd
 
 VERSION = 1
-DAILY = 3                 # acts per life day
+DAILY = 4                 # acts per life day (3 before the walkable pagoda, 1.4.8)
 LUNAR_OFFSET = 10         # life day 1 = the 11th of the lunar month
 KEYS = {'v', 'day', 'did', 'n'}
 
@@ -38,13 +48,51 @@ ACTS = {
                  text='Bạn mượn cây chổi tre, phụ quét lá bàng ngoài sân. Quét xong, sân sạch, lòng cũng nhẹ.'),
     'com': dict(emoji='🍚', name='Ăn cơm chay cùng mọi người', spirit=2, wake=0, full=30, feast=True,
                 text='Bà Nhạn múc cho bạn bát canh nấm nóng. Cả bàn ăn chậm, nói nhỏ, ai cũng no.'),
+    # only in the walkable pagoda (SCENE_ACTS): the prayer is put together by the player, the chant is kept by them
+    'khan': dict(emoji='🙏', name='Quỳ khấn trước điện Phật', spirit=3, wake=0, full=0, feast=False,
+                 text='Bạn quỳ trên chiếu, chắp tay khấn nhỏ.'),
+    'tung': dict(emoji='📿', name='Tụng kinh cùng thầy', spirit=4, wake=0, full=0, feast=False, text=''),
 }
+SCENE_ACTS = ('khan', 'tung')
+BEATS = 12                # mõ beats in one chant
 WISHES = {
     'nha': 'Cho cả nhà mạnh khỏe.',
     'viec': 'Cho công việc suôn sẻ.',
     'ban': 'Cho người bạn đang ốm mau khỏe.',
     'pho': 'Cho khu phố bình an.',
 }
+# Khấn: who for × what for. Respectful and plain: health, peace, kindness; never luck, money or exams.
+KHAN_WHAT = {
+    'khoe': 'được mạnh khỏe',
+    'binh_an': 'được bình an',
+    'thanh_than': 'được thanh thản trong lòng',
+    'thuong': 'luôn thương nhau',
+    'sieng': 'siêng năng, làm việc tử tế',
+    'kien_nhan': 'biết kiên nhẫn hơn mỗi ngày',
+    'yen_nghi': 'được yên nghỉ',
+}
+KHAN_WHO = {   # id → (words, what may go with it)
+    'cha_me': ('cha mẹ', ('khoe', 'binh_an', 'thanh_than')),
+    'ca_nha': ('cả nhà', ('khoe', 'binh_an', 'thuong')),
+    'ong_ba': ('ông bà đã khuất', ('yen_nghi',)),
+    'ban': ('người bạn đang ốm', ('khoe', 'thanh_than')),
+    'pho': ('bà con khu phố', ('binh_an', 'thuong')),
+    'minh': ('bản thân con', ('thanh_than', 'sieng', 'kien_nhan')),
+}
+# Thầy Huệ Minh, a few words for the day (two lines picked by the lunar day; rằm and mùng 1 have their own).
+ABBOT = (
+    'Đi chậm thôi con. Chùa không có gì phải vội.',
+    'Thắp một nén hương là đủ. Lòng thành không nằm ở số nén.',
+    'Hôm nay con mệt thì ngồi nghỉ ở hiên. Nghỉ cũng là tu.',
+    'Nói lời hiền với người nhà trước, rồi hẵng khấn cho người xa.',
+    'Ăn cơm thì biết mình đang ăn cơm. Quét sân thì biết mình đang quét sân.',
+    'Giận ai thì thở ba hơi thật chậm rồi hẵng nói.',
+    'Cầu cho người khác bình an, lòng mình cũng an theo.',
+    'Chùa không bán may mắn. Việc lành con làm mới theo con về nhà.',
+    'Mỗi sáng thức dậy, mỉm cười một cái trước khi cầm điện thoại.',
+)
+ABBOT_RAM = 'Rằm rồi, tối nay chùa có khóa lễ. Con ở lại ăn bát cơm chay với mọi người nhé.'
+ABBOT_MUNG1 = 'Mùng một đầu tháng, mình bắt đầu lại cho nhẹ nhàng. Việc cũ chưa xong thì làm tiếp, đừng tự trách.'
 
 
 # ---------------------------------------------------------------- helpers
@@ -95,6 +143,27 @@ def why_not(s: dict, act: str) -> str:
     return ''
 
 
+def chant_text(beat: int) -> str:
+    """How the chant went: the more beats kept, the warmer; never a scolding."""
+    if beat >= BEATS - 2:
+        return 'Tiếng mõ của bạn đều, hòa vào giọng tụng trầm của thầy. Tụng xong, cả chánh điện lặng yên.'
+    if beat >= BEATS // 2:
+        return 'Có lúc bạn gõ lệch nhịp, thầy vẫn tụng chậm rãi chờ bạn bắt kịp. Tụng xong, lòng nhẹ hẳn.'
+    return 'Bạn gõ mõ chưa quen tay. Thầy cười hiền: “Lần sau mình tụng chậm hơn chút.”'
+
+
+def abbot_lines(life_day: int) -> list:
+    """Thầy Huệ Minh's words for the day: the rằm / mùng 1 line first on those days, then two from ABBOT."""
+    d = lunar(life_day)
+    i = (life_day * 7) % len(ABBOT)
+    out = [ABBOT[i], ABBOT[(i + 4) % len(ABBOT)]]
+    if d == 15:
+        out.insert(0, ABBOT_RAM)
+    elif d == 1:
+        out.insert(0, ABBOT_MUNG1)
+    return out
+
+
 # ---------------------------------------------------------------- command
 COMMANDS = ('jr_chua_do',)
 
@@ -104,14 +173,23 @@ def action(s: dict, name: str, p: dict) -> dict:
     need = e.need
     need(_story(s), 'Đi chùa chỉ có trong hành trình.', 'locked')
     need(name in COMMANDS, 'Thao tác không hợp lệ.', 'unknown_action')
-    need(isinstance(p, dict) and set(p) <= {'act', 'wish'} and p.get('act') in ACTS, 'Chọn một việc ở chùa nhé.')
+    need(isinstance(p, dict) and set(p) <= {'act', 'wish', 'who', 'what', 'beat'} and p.get('act') in ACTS,
+         'Chọn một việc ở chùa nhé.')
     act = p['act']
     x = ACTS[act]
-    wish = p.get('wish')
+    wish, who, what, beat = p.get('wish'), p.get('who'), p.get('what'), p.get('beat')
+    extra = {k for k in ('wish', 'who', 'what', 'beat') if p.get(k) is not None}
     if act == 'nguyen':
         need(wish in WISHES, 'Chọn một lời nguyện nhé.')
+        need(extra == {'wish'}, 'Chọn một việc ở chùa nhé.')
+    elif act == 'khan':
+        need(who in KHAN_WHO, 'Bạn khấn cho ai?')
+        need(what in KHAN_WHO[who][1], 'Bạn mong điều gì?')
+        need(extra == {'who', 'what'}, 'Chọn một việc ở chùa nhé.')
+    elif act == 'tung':
+        need(type(beat) is int and 0 <= beat <= BEATS and extra == {'beat'}, 'Buổi tụng kinh không hợp lệ.')
     else:
-        need(wish is None, 'Chọn một việc ở chùa nhé.')
+        need(not extra, 'Chọn một việc ở chùa nhé.')
     why = why_not(s, act)
     need(why != 'Hôm nay làm rồi', 'Hôm nay bạn làm việc này rồi. Mai lại ghé nhé.', 'already_done')
     need(why != 'Hôm nay ở chùa đủ rồi', f'Hôm nay ghé chùa đủ {DAILY} việc rồi. Mai lại ghé nhé.', 'limit')
@@ -123,7 +201,7 @@ def action(s: dict, name: str, p: dict) -> dict:
         c = j['chua'] = dict(v=VERSION, day=j['life_day'], did=[], n=int(c['n']) if isinstance(c, dict) else 0)
     c['did'].append(act)
     c['n'] = min(10**6, c['n'] + 1)
-    got = nd._spirit(s, x['spirit'])
+    got = nd._spirit(s, 1 + 3 * beat // BEATS if act == 'tung' else x['spirit'])
     parts = []
     if x['wake'] or x['full']:
         n = nd.ensure(s)
@@ -135,7 +213,14 @@ def action(s: dict, name: str, p: dict) -> dict:
             parts.append(f'no bụng {n["full"]}')
     if got:
         parts.insert(0, f'tinh thần +{got}')
-    text = f'{x["text"]} “{WISHES[wish]}”' if act == 'nguyen' else x['text']
+    if act == 'nguyen':
+        text = f'{x["text"]} “{WISHES[wish]}”'
+    elif act == 'khan':
+        text = f'{x["text"]} “Con cầu mong {KHAN_WHO[who][0]} {KHAN_WHAT[what]}.”'
+    elif act == 'tung':
+        text = chant_text(beat)
+    else:
+        text = x['text']
     tail = f' ({", ".join(parts)})' if parts else ''
     return dict(message=f'{x["emoji"]} {text}{tail}', effects=[])
 
@@ -147,13 +232,17 @@ def public(s: dict) -> dict:
     j = s['journey']
     did = _today(s)
     day = j['life_day']
-    acts = []
+    acts, more = [], []
     for k, x in ACTS.items():
         why = why_not(s, k)
-        acts.append(dict(id=k, emoji=x['emoji'], name=x['name'], spirit=x['spirit'], wake=x['wake'], full=x['full'],
-                         feast=x['feast'], done=k in did, ok=not why, why=why))
+        (more if k in SCENE_ACTS else acts).append(
+            dict(id=k, emoji=x['emoji'], name=x['name'], spirit=x['spirit'], wake=x['wake'], full=x['full'],
+                 feast=x['feast'], done=k in did, ok=not why, why=why))
     return dict(enabled=True, lunar=lunar(day), label=lunar_label(day), feast=feast_day(day), daily=DAILY,
-                left=max(0, DAILY - len(did)), acts=acts, wishes=[dict(id=k, text=v) for k, v in WISHES.items()])
+                left=max(0, DAILY - len(did)), acts=acts, wishes=[dict(id=k, text=v) for k, v in WISHES.items()],
+                more=more, chant=dict(beats=BEATS), abbot=abbot_lines(day),
+                khan=dict(who=[dict(id=k, text=v[0], what=list(v[1])) for k, v in KHAN_WHO.items()],
+                          what=[dict(id=k, text=v) for k, v in KHAN_WHAT.items()]))
 
 
 # ---------------------------------------------------------------- validation
