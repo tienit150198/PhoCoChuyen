@@ -1,3 +1,10 @@
+# v1.4.25 — ⚡ Gửi state theo phần (delta), vẽ nền quán trà sữa một lần
+
+Chủ game: "có gì tối ưu lại k chậm thì vẫn tiếp tục tối ưu"; góp ý #100 (chậm, lag).
+
+- feat/state-delta (f9846f5, 46a05fe, a862c4c, 08ba757): `game/state_delta.py`; trang gửi `X-Game-Delta: 1` và `known` (hash các phần đang giữ); server chia dict/list > 2 KB thành phần (tới 6 tầng), phần trang đã có ghi `0` + `delta.refs`; không nhớ gì về trang. 409 và export luôn trả đủ. Trang cũ / server cũ: như trước. Trả lời gzip p50 ~28 KB → ~5,8 KB; parse JSON p50 84 → 11 ms (4x CPU). `api.js inflate()`, thiếu phần thì đọc `GET /api/state`. Dev `?deltacheck=1`: đóng băng state, so với `/api/state`; 0 lệch trên first_day 7 nghề, hội chợ, nhà, garage.
+- Nền phòng (`boba-world.js backdrop()`): khóa cache theo những gì phòng đọc (`scenes/reads.js`), không theo `rev`; mây/đèn trà sữa vẽ chồng bằng `ambient()`. Phiên 30 lệnh: vẽ nền 189 → 10 lần, script main-thread 10,2 → 4,0 s.
+
 # v1.4.24 — 🗡️ Phóng dao thay phi tiêu
 
 Chủ game (03/10): "game phi tiêu đổi thành game này đi: càng ngày càng khó, chơi 1 màn xong chọn chơi tiếp hoặc dừng, chơi tiếp mà thua thì thua hết, dừng thì nhận thưởng hiện tại. Lâu lâu thì hiển thị "màn sau x2"".
