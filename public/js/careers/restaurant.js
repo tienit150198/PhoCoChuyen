@@ -442,7 +442,7 @@ function boilBar(start,x,id,shift){
   const w=x.cc.boil||{raw:7,perfect:13,soft:19},scale=BASE_SCALE+shift,z=v=>(v+shift)/scale*100;
   const elapsed=start?Math.max(0,x.now()-start):0;
   return `<div class="boil" data-boil-start="${start||''}" data-shift="${shift}" data-task="${x.esc(id||'')}">
-    <div class="boil-track"><i class="zone raw" style="width:${z(w.raw)}%"></i><i class="zone perfect" style="left:${z(w.raw)}%;width:${(w.perfect-w.raw)/scale*100}%"></i><i class="zone soft" style="left:${z(w.perfect)}%;width:${(w.soft-w.perfect)/scale*100}%"></i><b class="boil-fill" style="width:${Math.min(100,elapsed/scale*100)}%"></b></div>
+    <div class="boil-track"><i class="zone raw" style="width:${z(w.raw)}%"></i><i class="zone perfect" style="left:${z(w.raw)}%;width:${(w.perfect-w.raw)/scale*100}%"></i><i class="zone soft" style="left:${z(w.perfect)}%;width:${(w.soft-w.perfect)/scale*100}%"></i><b class="boil-fill" style="transform:translateX(${Math.min(100,elapsed/scale*100)-100}%)"></b></div>
     <small class="boil-label">${start?elapsed.toFixed(1)+' giây':'Rổ trống'}${shift?' · lửa nhỏ':''}</small></div>`;
 }
 /** Two baskets. The one for this bowl says "Vớt mì"; a free one "Thả mì". */
@@ -678,14 +678,6 @@ export default {
   tick(root,x){
     keepBarAboveFooter(root);
     pinTop(root);
-    const w=x.cc.boil||{raw:7,perfect:13,soft:19};
-    root.querySelectorAll('[data-boil-start]').forEach(el=>{
-      const start=Number(el.dataset.boilStart);if(!start)return;
-      const shift=Number(el.dataset.shift)||0,scale=BASE_SCALE+shift,s=Math.max(0,x.now()-start);
-      el.querySelector('.boil-fill').style.width=Math.min(100,s/scale*100)+'%';
-      el.querySelector('.boil-label').textContent=s.toFixed(1)+' giây · '+(s<w.raw+shift?'chưa chín':s<=w.perfect+shift?'VỚT NGAY!':s<=w.soft+shift?'hơi mềm':'nát rồi');
-      el.classList.toggle('ready',s>=w.raw+shift&&s<=w.perfect+shift);el.classList.toggle('over',s>w.soft+shift);
-    });
     // An armed basket (day 1) lifts itself once safely in the green zone.
     const ui=x.ui,armed=ui.autoDrain??={};
     for(const t of openTasks(x)){
@@ -704,6 +696,26 @@ export default {
       (b.closest('button')||b).classList.toggle('rs-now',boilPhase(x,t.bowl?.boiling||0)==='ok'&&!!t.bowl?.boiling);
     }
   },
+  // The noodle baskets (v4/careers.js): the bars glide on the compositor, the words change five times a second.
+  // "Vớt mì" holds them where they were when the finger came down (tapStop; the step button only when it lifts now,
+  // not when it only says how long to wait or arms the day-1 lift).
+  meters(root,x){
+    const w=x.cc.boil||{raw:7,perfect:13,soft:19};
+    root.querySelectorAll('[data-boil-start]').forEach(el=>{
+      const start=Number(el.dataset.boilStart);if(!start)return;
+      const shift=Number(el.dataset.shift)||0,scale=BASE_SCALE+shift,s=Math.max(0,x.now()-start);
+      x.slide(el.querySelector('.boil-fill'),s/scale*100,100/scale,true);
+      const l=el.querySelector('.boil-label'),text=s.toFixed(1)+' giây · '+(s<w.raw+shift?'chưa chín':s<=w.perfect+shift?'VỚT NGAY!':s<=w.soft+shift?'hơi mềm':'nát rồi');
+      if(l.textContent!==text)l.textContent=text;
+      el.classList.toggle('ready',s>=w.raw+shift&&s<=w.perfect+shift);el.classList.toggle('over',s>w.soft+shift);
+    });
+    for(const b of (root.closest('dialog')||document).querySelectorAll('[data-action="car:drain"]')){
+      const st=openTasks(x).find(v=>v.id===b.dataset.task)?.bowl?.boiling;
+      const now=!!st&&(easyDay(x)?liftIn(x,st)<=0:boilPhase(x,st)!=='early');
+      if(now!==('tapStop' in b.dataset)){if(now)b.dataset.tapStop='rs_drain';else delete b.dataset.tapStop;}
+    }
+  },
+  tapStop:op=>op==='rs_drain',
   page(view,x){return view==='prices'?menuPage(x):'';},
   summary(data,x){return gradeCard(data,x)+careSummary(data?.care,x);},
   actions:{

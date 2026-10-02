@@ -73,7 +73,7 @@ function stepRun(x,cards,{seq=false}={}){
 }
 function bar(kind,start,zones,scale){
   return `<div class="hs-timer ${kind}" data-hs-timer="${kind}" data-start="${start||''}">
-    <div class="hs-track">${zones.map(([cls,a,b])=>`<i class="zone ${cls}" style="left:${a/scale*100}%;width:${(b-a)/scale*100}%"></i>`).join('')}<b class="fill" style="width:0%"></b></div>
+    <div class="hs-track">${zones.map(([cls,a,b])=>`<i class="zone ${cls}" style="left:${a/scale*100}%;width:${(b-a)/scale*100}%"></i>`).join('')}<b class="fill"></b></div>
     <small class="hs-timer-label">${start?'…':kind==='pan'?'Chảo đang trống':'Cửa sổ đang đóng'}</small></div>`;
 }
 const bubble=(x,who,text)=>`<div class="hs-bubble"><b>${x.esc(who)}</b> “${x.esc(text)}”</div>`;
@@ -868,18 +868,21 @@ export default {
     return `<div class="career-job hs">${hint}${lastDesk(x)}${todayLine(x)}${ticketCard(t,x)}${running(t,x,false)}<div class="workbench"><section class="wb-main">${main(t,x)}</section><aside class="wb-side">${side(t,x)}</aside></div>
       ${more}${bottomBar(g,x)}</div>`;
   },
-  tick(root,x){
-    keepBarAboveFooter(root);keepClear(root);holdUntilReady(root,x);followStep(root,x);
+  tick(root,x){keepBarAboveFooter(root);keepClear(root);holdUntilReady(root,x);followStep(root,x);},
+  // The egg pan and the open windows (v4/careers.js): the bars glide on the compositor, the words change five times a
+  // second. "Nhấc trứng" / "báo phòng sạch" hold them where they were when the finger came down (tapStop).
+  meters(root,x){
     const w=x.cc.egg||{raw:5,runny:11,well:18},air=airOf(x);
     root.querySelectorAll('[data-hs-timer]').forEach(el=>{
       const start=Number(el.dataset.start);if(!start)return;
       const s=Math.max(0,x.now()-start),pan=el.dataset.hsTimer==='pan',scale=pan?PAN_SCALE:AIR_SCALE;
-      el.querySelector('.fill').style.width=Math.min(100,s/scale*100)+'%';
+      x.slide(el.querySelector('.fill'),s/scale*100,100/scale,true);
       el.querySelector('.hs-timer-label').textContent=s.toFixed(1)+' giây · '+(pan?(s<w.raw?'lòng trắng còn sống':s<=w.runny?'LÒNG ĐÀO — nhấc nếu khách thích':s<=w.well?'CHÍN KỸ':'cháy mất rồi!'):(s<air.damp?'phòng còn mùi ẩm':s<=air.cold?'thoáng mát, thơm gỗ thông':'phòng lạnh dần'));
       el.classList.toggle('ready',pan?(s>=w.raw&&s<=w.well):(s>=air.damp&&s<=air.cold));
       el.classList.toggle('over',pan?s>w.well:s>air.cold);
     });
   },
+  tapStop:(op,p)=>op==='hs_plate'||(op==='hs_clean'&&p.step==='ready'),
   actions:{
     ...tillActions,
     async sel(data,el,x){

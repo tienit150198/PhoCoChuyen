@@ -1486,6 +1486,7 @@ def _station(s: dict, c: dict, b: dict, t: dict, name: str, p: dict) -> dict:
             return dict(message='Máy đang ép nhiệt… nhả tay khi kim vào vùng xanh.', _free=True)
         dome = False
         quality = 'ok'
+        took = None
         if cut:
             need(b['dome'], 'Máy dán nắp đang tạm ngưng vì cúp điện. Làm ly khác hoặc chờ một chút.')
             e.money(s, c, -1, 'Nắp cầu thay màng dán', t['id'], category='materials')
@@ -1507,6 +1508,8 @@ def _station(s: dict, c: dict, b: dict, t: dict, name: str, p: dict) -> dict:
         text = {'perfect': 'Tách! Màng nắp căng bóng, kín đều — hoàn hảo.', 'ok': 'Máy dán nắp kêu “tách” — ly đã kín.',
                 'burnt': 'Ép lâu quá, màng nắp hơi cháy xém. Vẫn kín, nhưng khách sẽ để ý.'}[quality]
         r = dict(message='Nắp cầu đã đậy chặt.' if dome else text, seal=quality)
+        if took is not None:
+            r['held'] = round(took, 2)   # the seconds graded (where the needle stopped)
         if not dome and b['sealer_wear'] in (SEALER_STICKY, SEALER_DIRTY):
             r['message'] += ' Khuôn dán bắt đầu bám keo: lau máy khi rảnh tay nhé.' if b['sealer_wear'] == SEALER_STICKY else ' Máy dán nắp bẩn rồi, lau ngay để nắp đẹp lại.'
         if 'sealer' in b['upgrades']:

@@ -165,6 +165,8 @@ export class GameAPI extends EventTarget {
   async refresh(){const since=this.accepted,data=await this.json('/api/state');this.accept(data,since);return data;}
   command(action,payload={},career=this.state?.current){
     const tap=JSON.stringify([career,action,payload]);
+    // A stop tap on a running meter (v4/careers.js): the moment the finger came down rides along as tap_at.
+    const stamp=this.tapStamp?.(action);if(stamp)payload={...payload,tap_at:stamp.at};
     const execute=async()=>{
       let expected=this.revision;
       const send=()=>{
@@ -206,7 +208,7 @@ export class GameAPI extends EventTarget {
         if(transient(error)){this.connected=false;this.dispatchEvent(new Event('offline'));error.message='Mất kết nối máy chủ. Tiến trình đã xác nhận vẫn được lưu. Khởi động lại server rồi thử lại nhé.';}
         else if(!error.quiet)this.dispatchEvent(new CustomEvent('rejected',{detail:{action,career,status:error.status,code:error.data?.code||'',message:error.message}}));  // its toast text (telemetry.js)
         throw error;
-      }finally{this.dispatchEvent(new CustomEvent('busy',{detail:false}));}
+      }finally{this.dispatchEvent(new CustomEvent('busy',{detail:false}));stamp?.done();}
     };
     const job=this.queue.then(execute,execute);this.queue=job.catch(()=>{});return job;
   }

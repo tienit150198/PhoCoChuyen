@@ -89,7 +89,7 @@
 .career-job.sl .sl-track .z.ideal{background:var(--sl-good);opacity:.6}
 .career-job.sl .sl-track .z.over{background:var(--sl-warn)}
 .career-job.sl .sl-track .z.damage{background:var(--sl-bad)}
-.career-job.sl .sl-fill{position:absolute;top:5px;bottom:5px;left:0;border-radius:99px;background:var(--sl-ink);transition:width .2s linear}
+.career-job.sl .sl-fill{position:absolute;top:5px;bottom:5px;left:0;width:100%;transform:translateX(-100%);will-change:transform;border-radius:99px;background:var(--sl-ink)}   /* slid by translateX (v4/careers.js slide) */
 .career-job.sl .sl-timer.ready .sl-label{color:var(--sl-good);font-weight:800}
 .career-job.sl .sl-timer.late .sl-label{color:var(--sl-bad);font-weight:800}
 .career-job.sl .sl-results{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:.88em}

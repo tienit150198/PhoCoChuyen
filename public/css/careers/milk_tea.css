@@ -139,7 +139,11 @@ html.reduce-motion .mt-event{animation:none}
 .mt-gauge .z.ok{background:var(--warn-soft)}
 .mt-gauge .z.good{background:var(--good);opacity:.75}
 .mt-gauge .z.burn{background:var(--bad);opacity:.7}
-.mt-needle{position:absolute;top:-2px;bottom:-2px;width:4px;margin-left:-2px;border-radius:2px;background:var(--ink);box-shadow:0 0 0 2px var(--surface);transition:left .2s linear}
+/* The needle is a full-width layer moved by translateX (a % of its own width = of the gauge), drawn as a line at its
+ * left edge: moving it each frame needs no layout and no repaint (the old `left` + transition laid out the page
+ * 60 times a second and showed the needle a fifth of a second behind). */
+.mt-needle{position:absolute;inset:0;transform:translateX(0);will-change:transform;pointer-events:none}
+.mt-needle::before{content:"";position:absolute;top:-2px;bottom:-2px;left:-2px;width:4px;border-radius:2px;background:var(--ink);box-shadow:0 0 0 2px var(--surface)}
 .mt-gauge.ready{box-shadow:0 0 0 3px var(--good)}
 .mt-gauge.over{box-shadow:0 0 0 3px var(--bad)}
 .mt-gauge-label{font-size:.8rem;font-weight:700;color:var(--ink-2,var(--ink))}
