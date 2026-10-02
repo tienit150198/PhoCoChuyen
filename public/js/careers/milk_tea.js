@@ -14,7 +14,8 @@ const SEAL_TEXT={perfect:'✨ Nắp căng đẹp',ok:'✓ Đã dán nắp',burnt
 const DONE=['completed','referred','cancelled'];
 
 const pay=(x,o)=>x.esc(JSON.stringify(o));
-const B=x=>x.room.data?.boba||{};
+// The room can be missing for a moment (a sheet re-rendered while the day reloads): read it softly.
+const B=x=>x?.room?.data?.boba||{};
 const ings=x=>x.content.experiences?.ingredients||[];
 const ing=(x,id)=>ings(x).find(i=>i.id===id)||{id,name:id,emoji:'•',color:'#d8c7a8',group:'topping',level:1,cost:0};
 const low=s=>s?s[0].toLocaleLowerCase('vi')+s.slice(1):'';
@@ -636,6 +637,7 @@ export default {
     return `<div class="career-job mt" data-mt-at="${x.esc(at)}" data-mt-key="${x.esc(`${t.id}|${n?.label||''}|${n?.ok}`)}">${hintFor(t,x)}${hud(x)}${eventCard(x)}${alerts(x)}${(B(x).care||[]).some(r=>r.tone!=='ok')?careFold(x):''}${appRow(t,x)}${queueRow(t,x)}${customer(t,x,brew)}${outOfStock(t,x)}${t.known?layout:''}${bar}</div>`;
   },
   idle(x){
+    if(!x?.room)return '';
     const b=B(x),waiting=x.room.tasks.filter(open),left=b.left||0,orders=b.orders||[];
     const who=waiting[0]?.customer||'khách';
     // more_gate (engine.more_gate): the server would refuse one more guest (closing time, the day's 12 dealt): close the day instead.
@@ -649,7 +651,7 @@ export default {
     return `<div class="career-job mt">${B(x).event?'':nextHint(x,[step])}${hud(x)}${eventCard(x)}${alerts(x)}${night}${careFold(x)}${orders.length?`<section class="mt-orders"><h4>📦 Đang giao</h4>${orderRows(x)}</section>`:''}<div class="row wrap">${next}${wait}${x.button('🧺 Kho & đặt hàng','prepare',{},'ghost')}</div></div>`;
   },
   page(view,x){
-    if(!['prepare','prices'].includes(view))return '';
+    if(!['prepare','prices'].includes(view)||!x?.room)return '';
     // "Bảng giá" opens on the price tab; tabs switch inside the same sheet.
     if(view==='prices'&&x.ui.lastPage!=='prices')x.ui.prep='price';
     x.ui.lastPage=view;
