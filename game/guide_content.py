@@ -21,6 +21,10 @@ browser loads when the hub first opens; tests/test_guides.py checks it is curren
   real screen (an existing data-action), `stub` a feature that is still being added.
 * INDEX: the top level of "Hướng dẫn chơi" (Bắt đầu, Tiền bạc, Việc làm, Các nghề, Đời sống & bạn bè,
   Cài đặt), each part listing GROUPS ids; FAQ: topic ids shown first as "Hay được hỏi".
+* QUICK: "❓ Hỏi nhanh", the questions players ask most in the town chat, each answered in 1–3 short
+  lines that name the real buttons: {id, emoji, q, a[str], go?}. `go` only opens a screen, never does
+  the thing for the player: {action, label, data?, nav?} a real data-action (`nav`: only while the menu
+  has that entry, e.g. Lịch cưới), or {sec, label} the "Hướng dẫn nghề" section of the current workplace.
 
 Text rules: short player Vietnamese, whole literals (the English pack translates each line
 whole, [[ ]] included). `[[Nút]]` is a real on-screen label without its emoji; the hub draws
@@ -5205,11 +5209,116 @@ FAQ = ['money_withdraw',
  'joint_account',
  'short_pay']
 
+# "❓ Hỏi nhanh": short answers to what players ask in the town chat (shown first in the hub and opened by
+# Cài đặt → Hỏi nhanh and the menu). Answers point to the screen; the player does the step.
+QUICK = [{'id': 'q_goal',
+  'emoji': '🌱',
+  'q': 'Game này chơi để làm gì? Nên đi đâu trước?',
+  'a': ['🏘️ Bạn là người mới dọn tới khu phố, sống một đời và thử làm nhiều nghề. Không vội, cứ từ từ.',
+        '🧭 Mở [[Hành trình]]: “Việc cần làm” của chương cho biết nên làm gì, nút to ngay dưới đưa bạn tới đúng chỗ.',
+        '👉 Đang làm thì bấm [[Làm tiếp]]. Nút to ở cuối màn hình làm việc luôn làm bước kế tiếp.'],
+  'go': {'action': 'home', 'label': 'Mở Hành trình'}},
+ {'id': 'q_howto',
+  'emoji': '❓',
+  'q': 'Nghề này chơi kiểu gì?',
+  'a': ['❓ Trên màn hình làm việc, bấm nút ? ở góc trên: mở hướng dẫn của đúng nghề đang làm, có từng bước và lỗi hay gặp.',
+        '✨ Việc đầu tiên ở mỗi nơi, chỗ cần bấm sẽ sáng lên. Cứ làm theo dòng “Bước tiếp theo”.'],
+  'go': {'sec': 'steps', 'label': 'Xem cách làm ở nơi đang làm'}},
+ {'id': 'q_switch',
+  'emoji': '🔁',
+  'q': 'Đổi nghề, quay lại chỗ làm cũ thế nào?',
+  'a': ['🧭 Mở [[Hành trình]], kéo xuống “Nơi làm việc”, bấm [[Tiếp tục]] hoặc [[Bắt đầu]] ở nơi muốn làm.',
+        '🔁 Game mở lại đúng nơi bạn làm lần trước, nên mới thấy “làm một chỗ hoài”. Đổi lúc nào cũng được.',
+        '⚠️ Làm xong việc đang dở hoặc bấm [[Khép ca hôm nay]] rồi hãy đi, để khỏi bị phạt bỏ dở việc.'],
+  'go': {'action': 'home', 'label': 'Mở Hành trình'}},
+ {'id': 'q_quit',
+  'emoji': '👋',
+  'q': 'Nghỉ việc thế nào?',
+  'a': ['💼 Chỉ nơi làm thuê (giáo viên, nhà thuốc, văn phòng…) mới cần xin nghỉ. Bấm [[Khép ca hôm nay]] trước.',
+        '📋 Rồi mở [[Việc làm]] trong menu, ở Hồ sơ công việc bấm [[Xin nghỉ việc]]. Muốn làm lại thì xin việc lại.',
+        '🏪 Tiệm của bạn thì cứ sang nơi khác. Muốn khỏi tốn phí duy trì: [[Tiền của bạn]] → [[Góp vốn, tạm đóng]] → [[Tạm đóng]].'],
+  'go': {'action': 'jobapp', 'label': 'Mở Việc làm', 'nav': True}},
+ {'id': 'q_unlock',
+  'emoji': '🔓',
+  'q': 'Mở thêm nghề mới thế nào?',
+  'a': ['📚 Nơi làm mới mở theo chương. Làm đủ các mục “Việc cần làm” của chương trong [[Hành trình]] là mở thêm.',
+        '🔒 Ô “Sắp mở” ở cuối “Nơi làm việc” là các nơi của chương sau. Nơi làm thuê và văn phòng mở về sau.'],
+  'go': {'action': 'home', 'label': 'Mở Hành trình'}},
+ {'id': 'q_rich',
+  'emoji': '💰',
+  'q': 'Làm nghề gì có nhiều tiền?',
+  'a': ['🏪 Tiệm của bạn: tiền lời vào quỹ tiệm. Làm đúng, được 5★, nhập hàng vừa đủ bán là lời nhiều.',
+        '💼 Làm thuê: lương cố định mỗi ngày. Nơi mở về sau lương cao hơn, như phi công 65–110 xu, kế toán tập đoàn 50–120 xu.',
+        '👛 Tiền lời nằm trong quỹ tiệm, nhớ rút về ví để tiêu.'],
+  'go': {'action': 'money', 'label': 'Mở Tiền của bạn'}},
+ {'id': 'q_withdraw',
+  'emoji': '🏧',
+  'q': 'Rút tiền về ví thế nào?',
+  'a': ['👛 Chạm ô tiền ở góc trên để mở [[Tiền của bạn]]. Tiền trong quỹ tiệm: bấm [[Rút về ví]] ở nơi muốn rút.',
+        '🏦 Tiền trong ngân hàng: mở [[Ngân hàng]], gõ số xu rồi bấm [[Rút tiền]]. Cây ATM Ngân hàng Phố không mất phí.',
+        '🔒 Quỹ tiệm luôn giữ lại 80 xu và tiền hóa đơn chưa trả, nên không rút hết được.'],
+  'go': {'action': 'money', 'label': 'Mở Tiền của bạn'}},
+ {'id': 'q_salary',
+  'emoji': '📚',
+  'q': 'Làm giáo viên (làm thuê) sao chưa có lương?',
+  'a': ['📝 Phải được nhận việc trước: [[Xin việc]], qua phỏng vấn rồi ký hợp đồng.',
+        '💵 Lương trả khi bấm [[Khép ca hôm nay]], nếu hôm đó xong ít nhất 1 việc (giáo viên: dạy xong 1 tiết). Thử việc nhận 85%.',
+        '👛 Lương về thẳng ví, không vào quỹ tiệm. Xem dòng “Lương ngày …” trong sổ ví.'],
+  'go': {'action': 'jobapp', 'label': 'Mở Việc làm', 'nav': True}},
+ {'id': 'q_needs',
+  'emoji': '🍚',
+  'q': 'No bụng, tỉnh táo thấp quá thì làm sao?',
+  'a': ['🍱 Buổi trưa (11:30–13:30 giờ tiệm) thẻ việc hỏi “Trưa rồi, ăn gì đây?”: chọn một món.',
+        '🍢 Đói hay buồn ngủ giữa ca: chọn món ở “Ăn thêm” trên thẻ việc hoặc trong Đời thường, trả bằng ví. ☕ Cà phê giúp tỉnh táo.',
+        '🌙 Tối khép ca, chọn bữa tối và ngủ sớm: ngủ lúc 22:00 thì sáng mai tỉnh táo 100.'],
+  'go': {'action': 'stView', 'label': 'Mở Đời thường', 'data': {'view': 'life'}}},
+ {'id': 'q_stock',
+  'emoji': '📦',
+  'q': 'Kho ở đâu, nhập hàng thế nào?',
+  'a': ['📦 Tiệm bán hàng nào cũng có kho riêng. Cách mở kho của nơi đang làm có trong Hướng dẫn nghề, mục Nhập hàng.',
+        '🛒 Chọn món, số lượng và nhà cung cấp rồi bấm [[Đặt hàng]]. Hàng tới thì mở thùng, đếm rồi xếp lên kệ.',
+        '💼 Nơi làm thuê (lớp học, văn phòng…) không có kho.'],
+  'go': {'sec': 'prep', 'label': 'Xem cách nhập hàng ở nơi đang làm'}},
+ {'id': 'q_wedding',
+  'emoji': '💍',
+  'q': 'Đi dự đám cưới thế nào?',
+  'a': ['💍 Mở menu [[Khu phố]] → [[Lịch cưới]]. Tiệc mở 5 phút trước giờ, kéo dài 10 phút: bấm [[Vào dự]].',
+        '🪙 Có tài khoản thì mỗi phút ở lại được 20 xu (tối đa 2 đám mỗi ngày). Chưa có tài khoản thì chỉ xem.',
+        '💌 Bạn bè cưới sẽ mời bạn và nhắc trước giờ tiệc.'],
+  'go': {'action': 'liveWed', 'label': 'Mở Lịch cưới', 'nav': True}},
+ {'id': 'q_envelope',
+  'emoji': '🧧',
+  'q': 'Mừng cưới bao nhiêu?',
+  'a': ['🧧 Tùy lòng, không bắt buộc. Trong tiệc bấm 🧧, chọn 10, 20, 50, 100 hoặc 200 xu và một lời chúc, rồi [[Gửi phong bì]].',
+        '👛 Tiền lấy từ ví, chia đôi cho cô dâu chú rể. Mỗi đám mừng tối đa 500 xu. Cần có tài khoản.'],
+  'go': {'action': 'liveWed', 'label': 'Mở Lịch cưới', 'nav': True}},
+ {'id': 'q_name',
+  'emoji': '✏️',
+  'q': 'Đổi tên thế nào?',
+  'a': ['✏️ Mở [[Hành trình]], chạm ảnh nhân vật, sửa “Tên của bạn” rồi bấm [[Lưu lại]]. Hoặc [[Cài đặt]] → [[Cách chơi]] → [[Hồ sơ]].',
+        '💬 Tên trong Chat và Bạn bè là tên hiển thị đặt lúc tạo tài khoản; trong game chưa đổi được.'],
+  'go': {'action': 'stView', 'label': 'Mở Nhân vật của bạn', 'data': {'view': 'profile'}}},
+ {'id': 'q_house',
+  'emoji': '🏠',
+  'q': 'Mua nhà ở đâu?',
+  'a': ['🏠 Mở [[Nhà của bạn]]: thẻ 🏠 trong [[Hành trình]], hoặc menu [[Tiền & nhà]].',
+        '🔑 Chọn căn muốn mua: trả trước ít nhất 30% giá và 2% phí, phần còn lại vay Ngân hàng Phố (cần mở tài khoản).',
+        '🐷 Chưa đủ tiền thì gửi tiết kiệm trong [[Ngân hàng]] để dành dần.'],
+  'go': {'action': 'house', 'label': 'Mở Nhà của bạn', 'nav': True}},
+ {'id': 'q_find',
+  'emoji': '🔎',
+  'q': 'Tìm tên, xem mã người chơi ở đâu?',
+  'a': ['💬 Chat [[Cả phố]] không có ô tìm tên.',
+        '🔎 Mở [[Bạn bè]] (menu [[Quan hệ]]), ô [[Tìm bạn]]: gõ đúng tên đăng nhập hoặc mã người chơi (PCC-…) của bạn ấy.',
+        '🪪 Mã của bạn ở cuối trang Bạn bè: bấm [[Chép mã]] để gửi cho bạn bè.'],
+  'go': {'action': 'friends', 'label': 'Mở Bạn bè'}}]
+
 
 def public() -> dict:
     """JSON-ready copy for the browser (the hub keeps only the workplaces that exist in the game)."""
     careers = {cid: {k: v for k, v in CAREERS[cid].items() if k != 'buttons'} for cid in ORDER if cid in CAREERS}
-    return dict(order=[cid for cid in ORDER if cid in CAREERS], careers=careers, groups=GROUPS, index=INDEX, faq=FAQ)
+    return dict(order=[cid for cid in ORDER if cid in CAREERS], careers=careers, groups=GROUPS, index=INDEX, faq=FAQ,
+                quick=QUICK)
 
 
 def render_js() -> str:
@@ -5218,9 +5327,10 @@ def render_js() -> str:
     data = public()
     careers = ',\n'.join(f'  {dump(k)}:{dump(v)}' for k, v in data['careers'].items())
     groups = ',\n'.join('  ' + dump(g) for g in data['groups'])
+    quick = ',\n'.join('  ' + dump(q) for q in data['quick'])
     return ('/* GENERATED by `python -m game.guide_content` from game/guide_content.py: edit that file, not this one. */\n'
             f'export default {{\n "order":{dump(data["order"])},\n "careers":{{\n{careers}\n }},\n "groups":[\n{groups}\n ],\n'
-            f' "index":{dump(data["index"])},\n "faq":{dump(data["faq"])}\n}};\n')
+            f' "index":{dump(data["index"])},\n "faq":{dump(data["faq"])},\n "quick":[\n{quick}\n ]\n}};\n')
 
 
 DATA_JS = Path(__file__).resolve().parents[1] / 'public' / 'js' / 'tutorial' / 'guide-content.js'

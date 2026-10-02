@@ -131,6 +131,49 @@ class GameGuide(unittest.TestCase):
                                         f'topic {t["id"]}: no control handles data-action "{a}"')
 
 
+class QuickAnswers(unittest.TestCase):
+    """❓ Hỏi nhanh: a short answer per question players ask, naming real buttons; its button only opens a screen."""
+
+    def test_short_answers(self):
+        self.assertTrue(10 <= len(G.QUICK) <= 15, 'keep Hỏi nhanh to 10–15 questions')
+        ids = [x['id'] for x in G.QUICK]
+        self.assertEqual(len(ids), len(set(ids)), 'question ids are unique')
+        topics = {t['id'] for g in G.GROUPS for t in g['topics']}
+        for x in G.QUICK:
+            with self.subTest(q=x['id']):
+                self.assertNotIn(x['id'], topics | {'quick'}, 'a question id is not a topic id (both open by `topic`)')
+                self.assertTrue(x['emoji'] and x['q'].strip() and len(x['q']) <= 80 and '<' not in x['q'])
+                self.assertTrue(1 <= len(x['a']) <= 3, 'answer in 1–3 lines')
+                for line in x['a']:
+                    self.assertTrue(isinstance(line, str) and line.strip() and len(line) <= 160 and '<' not in line, line)
+                    self.assertEqual(line.count('[['), line.count(']]'))
+                    for label in LABEL.findall(line):
+                        self.assertIn(label, SOURCE, f'{x["id"]}: "{label}" is not in the game UI')
+
+    def test_buttons_open_real_screens(self):
+        for x in G.QUICK:
+            go = x.get('go')
+            if not go:
+                continue
+            with self.subTest(q=x['id']):
+                self.assertTrue(go.get('label'))
+                if 'sec' in go:
+                    self.assertIn(go['sec'], G.SECTIONS)
+                    continue
+                a = go['action']
+                self.assertTrue(re.search(rf"""data-action="{a}"|case\s*'{a}'|\['{a}',|action===?'{a}'""", SOURCE),
+                                f'{x["id"]}: no control handles data-action "{a}"')
+
+    def test_hub_and_menu_are_wired(self):
+        guide = (ROOT / 'public' / 'js' / 'tutorial' / 'guide.js').read_text(encoding='utf-8')
+        self.assertIn('Hỏi nhanh', guide)
+        self.assertIn('id="gh-quick"', guide)
+        app = (ROOT / 'public' / 'js' / 'app.js').read_text(encoding='utf-8')
+        self.assertIn("mini('tutGuide','question','Hỏi nhanh'", app, 'the menu footer opens Hỏi nhanh in one tap')
+        tut = (ROOT / 'public' / 'js' / 'tutorial' / 'index.js').read_text(encoding='utf-8')
+        self.assertIn('data-topic="quick"', tut, 'Cài đặt opens Hỏi nhanh')
+
+
 class BrowserCopy(unittest.TestCase):
     def test_generated_js_is_current(self):
         js = (ROOT / 'public' / 'js' / 'tutorial' / 'guide-content.js').read_text(encoding='utf-8')

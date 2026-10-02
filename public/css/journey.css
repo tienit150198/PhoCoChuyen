@@ -152,6 +152,8 @@ button.jr-stat:hover{border-color:var(--line-strong)}
 .onb-intro .jr-lead{margin-bottom:10px}
 .onb-intro .jr-who{gap:14px}
 .onb-intro .jr-gender{padding:10px 8px 8px;gap:4px}
+.onb-need{margin:-6px 0 0;color:var(--ink-2);font-size:.9rem;font-weight:700}   /* "👆 Chọn Nam hoặc Nữ để bắt đầu" until a look is picked */
+.jr-genders.gd-flash{border-radius:var(--radius-lg)}
 .onb-jobs{margin:0;padding:0;border:0;min-width:0;text-align:left}
 .onb-jobs legend{padding:0;margin:0 0 6px;font-weight:700;font-size:.9rem}
 .onb-job-row{display:flex;flex-wrap:wrap;gap:8px}

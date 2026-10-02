@@ -7,7 +7,8 @@
  * - "Hướng dẫn nghề" (tab id `work`): one workplace at a time (defaults to the current one): its jobs,
  *   the steps with the real button names, what earns 5★, common mistakes and what they cost,
  *   restocking, surprises; plus the illustrated screenshot steps where the workplace has them.
- * A search box looks through both.
+ * A search box looks through both. "❓ Hỏi nhanh" (QUICK) sits first on "Hướng dẫn chơi": the questions players
+ * ask most, 1–3 short lines each and a button that only opens the screen (the player does the step).
  *
  * Words come from the server catalogue (`api.content.guide`, game/guide_content.py); the screenshots
  * and their marks from ./guide-data.js. `[[Nút]]` in a line is a real button name, drawn as a chip.
@@ -76,6 +77,24 @@ function topicCard(topic,{open=false}={}){
   return `<details class="gh-topic${topic.stub?' stub':''}" id="gh-t-${esc(topic.id)}"${open?' open':''}><summary><span class="gh-ico" aria-hidden="true">${topic.emoji||'•'}</span><span class="grow">${esc(topic.title)}</span>${topic.stub?'<em class="gh-soon">Sắp có</em>':''}</summary>`+
     `<div class="gh-topic-body">${pic}<ul class="gh-points">${(topic.points||[]).map(p=>L('li',p)).join('')}</ul>${go}</div></details>`;
 }
+/** "❓ Hỏi nhanh": one folded card per question. Its button opens the screen (an app data-action) or the
+ * "Hướng dẫn nghề" section of the workplace in hand; a menu-only screen (`nav`, e.g. Lịch cưới while weddings
+ * are off) shows no button when the menu has no such entry. */
+function quickGo(go){
+  if(!go)return '';
+  if(go.sec)return `<button type="button" class="btn small gh-go" data-tut-career="${esc(current()||'')}" data-gh-sec="${esc(go.sec)}">${esc(go.label||'Xem')} →</button>`;
+  if(go.nav&&!document.querySelector(`#rail [data-action="${CSS.escape(go.action)}"]`))return '';
+  return `<button type="button" class="btn small gh-go" data-gh-go data-action="${esc(go.action)}"${Object.entries(go.data||{}).map(([k,v])=>` data-${esc(k)}="${esc(v)}"`).join('')}>${esc(go.label||'Mở')} →</button>`;
+}
+function quickCard(x,{open=false}={}){
+  return `<details class="gh-topic gh-qa" id="gh-q-${esc(x.id)}"${open?' open':''}><summary><span class="gh-ico" aria-hidden="true">${x.emoji||'❓'}</span>${L('span',x.q,'grow')}</summary>`+
+    `<div class="gh-topic-body"><ul class="gh-points">${(x.a||[]).map(p=>L('li',p)).join('')}</ul>${quickGo(x.go)}</div></details>`;
+}
+function quickSection(){
+  const rows=data()?.quick||[];
+  if(!rows.length)return '';
+  return `<section class="gh-quick" id="gh-quick" aria-labelledby="gh-quick-h"><h3 class="gh-faq-title" id="gh-quick-h"><span aria-hidden="true">❓</span> Hỏi nhanh</h3>${rows.map(x=>quickCard(x,{open:view.open===x.id})).join('')}</section>`;
+}
 function playTab(){
   const g=data();
   const replay=`<button type="button" class="btn primary full tut-replay" data-action="tutReplay">▶ Xem lại hướng dẫn (1 phút)</button>`;
@@ -88,7 +107,7 @@ function playTab(){
   // Top level: a few big parts (Bắt đầu, Tiền bạc, Việc làm, Các nghề…), each holding one or more topic groups.
   const byId=Object.fromEntries(g.groups.map(gr=>[gr.id,gr]));
   const parts=(g.index?.length?g.index:g.groups.map(gr=>({id:gr.id,emoji:gr.emoji,title:gr.title,groups:[gr.id]})));
-  const toc=`<nav class="gh-toc" aria-label="Mục lục">${parts.map(pt=>`<button type="button" class="chip" ${pt.tab?`data-tut-tab="${esc(pt.tab)}"`:`data-gh-jump="gh-p-${esc(pt.id)}"`}><span aria-hidden="true">${pt.emoji}</span> ${esc(pt.title)}</button>`).join('')}</nav>`;
+  const toc=`<nav class="gh-toc" aria-label="Mục lục">${g.quick?.length?'<button type="button" class="chip" data-gh-jump="gh-quick"><span aria-hidden="true">❓</span> Hỏi nhanh</button>':''}${parts.map(pt=>`<button type="button" class="chip" ${pt.tab?`data-tut-tab="${esc(pt.tab)}"`:`data-gh-jump="gh-p-${esc(pt.id)}"`}><span aria-hidden="true">${pt.emoji}</span> ${esc(pt.title)}</button>`).join('')}</nav>`;
   const topics=Object.fromEntries(g.groups.flatMap(gr=>gr.topics.map(tp=>[tp.id,tp])));
   const faq=(g.faq||[]).map(id=>topics[id]).filter(Boolean);
   const ask=faq.length?`<section class="gh-faq" aria-labelledby="gh-faq-h"><h3 class="gh-faq-title" id="gh-faq-h"><span aria-hidden="true">❓</span> Hay được hỏi</h3>${faq.map(tp=>`<button type="button" class="gh-faq-q" data-gh-topic="${esc(tp.id)}"><span class="gh-ico" aria-hidden="true">${tp.emoji||'•'}</span><span class="grow">${esc(tp.title)}</span><span aria-hidden="true">→</span></button>`).join('')}</section>`:'';
@@ -99,7 +118,7 @@ function playTab(){
     const inner=pt.tab==='work'?`<p class="gh-part-lead">Chọn một nghề để xem cách làm từng việc, lỗi hay gặp, nhập hàng và mẹo được 5★.</p>${careers()}`:grs.map(gr=>group(gr,grs.length>1)).join('');
     return inner?`<section class="gh-part" id="gh-p-${esc(pt.id)}"><h3 class="gh-part-title"><span aria-hidden="true">${pt.emoji}</span> ${esc(pt.title)}</h3>${inner}</section>`:'';
   }).join('');
-  return replay+toc+ask+body;
+  return replay+toc+quickSection()+ask+body;
 }
 
 /* ------------------------------------------------------------ Hướng dẫn nghề */
@@ -162,6 +181,7 @@ function search(q){
   const words=norm(q).trim().split(/\s+/).filter(Boolean),hit=s=>{const f=norm(s);return words.every(w=>f.includes(w));};
   // Topics whose title matches come first ("rút tiền" → "Rút tiền về ví thế nào?"), then the other hits.
   const top=[],out=[];
+  for(const x of g.quick||[])if(hit([x.q,...(x.a||[])].join(' ')))top.push(quickCard(x,{open:true}));
   for(const gr of g.groups||[])for(const tp of gr.topics||[])
     if(hit(tp.title))top.push(topicCard(tp,{open:true}));
     else if(hit([tp.title,...(tp.points||[])].join(' ')))out.push(topicCard(tp,{open:true}));
@@ -235,7 +255,7 @@ function render(top=true){
 
 /** Open the guide. `tab`: 'play' | 'work'; `career` picks the "Hướng dẫn nghề" page of that workplace,
  * `sec` one of its sections open (e.g. 'prep'), `page` one of its illustrated extra pages (e.g. 'restock');
- * `topic` opens one "Hướng dẫn chơi" topic. */
+ * `topic` opens one "Hướng dẫn chơi" topic or "Hỏi nhanh" question ('quick': the "Hỏi nhanh" list). */
 export function openGuide(env,{career,tab,page,topic,sec}={}){
   if(env)ENV=env;
   const cur=current();
@@ -249,7 +269,8 @@ export function openGuide(env,{career,tab,page,topic,sec}={}){
 function place(d,topic){
   if(view.sec&&view.tab==='work')d.querySelector(`.gh-sec[data-sec="${CSS.escape(view.sec)}"]`)?.scrollIntoView({block:'start'});
   else if(view.page)d.querySelector('.gh-shots')?.scrollIntoView({block:'start'});
-  else if(topic)d.querySelector('#gh-t-'+CSS.escape(topic))?.scrollIntoView({block:'start'});
+  else if(topic==='quick')d.querySelector('#gh-quick')?.scrollIntoView({block:'start'});
+  else if(topic)d.querySelector('#gh-t-'+CSS.escape(topic)+',#gh-q-'+CSS.escape(topic))?.scrollIntoView({block:'start'});
   else if(view.tab==='work')d.querySelector('.gh-pick .selected')?.scrollIntoView({block:'nearest',inline:'center'});
 }
 export const closeGuide=()=>{const d=document.getElementById('tutGuide');if(d?.open)d.close();};

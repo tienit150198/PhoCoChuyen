@@ -278,8 +278,8 @@ function dockItems(){
   const keep=new Set([all.find(x=>x[0]==='workbench'),...all].filter(Boolean).slice(0,3));
   return all.filter(x=>keep.has(x));
 }
-/** Desktop/tablet: the work pages, the hubs (each opens in place under its button) and a footer (Góp ý, Cài đặt;
- * the guides open from the "?" of each work screen and Cài đặt, not from here).
+/** Desktop/tablet: the work pages, the hubs (each opens in place under its button) and a footer (Hỏi nhanh, Góp ý,
+ * Cài đặt; the career guides open from the "?" of each work screen and Cài đặt).
  * Phone ("Thêm" sheet): the scene actions the dock has no room for, the same entries in a grid; a hub fills
  * the sheet with a back button. Every entry is always in the markup (hidden when folded) so deep links
  * ("Thử ngay" in Có gì mới) and sweeps still find it by data-action. */
@@ -290,13 +290,13 @@ function railHTML(c){
   const groups=RAIL_GROUPS.map(([g,ic,label,ids])=>[g,ic,label,ids.map(id=>nav.find(x=>x[0]===id)).filter(Boolean)]).filter(g=>g[3].length);
   const open=groups.some(g=>g[0]===ui.railGroup)?ui.railGroup:null,hide=phone&&open?' hidden':'';
   const title=t=>phone?`<p class="rail-title"${hide}>${esc(t)}</p>`:'';
-  const mini=(a,i,l)=>`<button type="button" class="rail-mini${ui.view===a?' active':''}" data-action="${a}" aria-label="${l}" title="${l}">${icon(i,19)}<span>${l}</span></button>`;
+  const mini=(a,i,l,d='')=>`<button type="button" class="rail-mini${ui.view===a?' active':''}" data-action="${a}"${d} aria-label="${l}" title="${l}">${icon(i,19)}<span>${l}</span></button>`;
   return (extra.length?title(wordsFor(career()).rail_in)+extra.map(([a,i,l])=>railItem([a,i,l],'',hide)).join(''):'')+
     title('Công việc')+main.map(x=>railItem(x,'',hide)).join('')+title('Đời sống')+
     groups.map(([g,ic,label,items])=>{const on=open===g,cur=items.some(x=>x[0]===ui.view);
       return `<button type="button" class="rail-item rail-group${cur?' active':''}" data-action="v4Group" data-group="${g}" data-menu-stay aria-expanded="${on}"${hide}>${icon(ic,21)}<span>${label}</span>${badgeHTML(groupBadge(items))}<i class="rail-caret" aria-hidden="true">${icon('chevron',12)}</i></button>`+
         `<div class="rail-sub" data-group="${g}" role="group" aria-label="${label}"${on?'':' hidden'}><div class="rail-sub-head"><button type="button" class="icon-btn rail-back" data-action="v4Group" data-group="" data-menu-stay aria-label="Quay lại">${icon('back',20)}</button><b>${label}</b></div>${items.map(x=>railItem(x)).join('')}</div>`;}).join('')+
-    `<div class="rail-foot"${hide}>${mini('gopy','chat','Góp ý')}${mini('settings','settings','Cài đặt')}</div>`;
+    `<div class="rail-foot"${hide}>${mini('tutGuide','question','Hỏi nhanh',' data-topic="quick"')}${mini('gopy','chat','Góp ý')}${mini('settings','settings','Cài đặt')}</div>`;   // ❓ Hỏi nhanh (tutorial/guide.js)
 }
 /** Open or fold a hub (data-group="" folds). Phone: the sheet scrolls back to the top and focus follows. */
 function railGroup(g,focus=true){
