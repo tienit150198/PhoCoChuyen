@@ -1,32 +1,34 @@
 /** 🏮 Hội chợ dân gian: the gate (Cổng hội) puts the earn-xu stalls first (ô ăn quan against a neighbour, ném vòng
  * cổ chai), then the small-stake ones (bầu cua tôm cá, lô tô, the back corner's xóc đĩa and Công an phường), the Bảng vàng.
  * Every rule, result and number is the server's (game/fair*.py): this file renders
- * api.state.fair, sends `fair_*` commands and plays the show around their results (the bowl shaking, the lô tô
- * caller's rhymes, the raid). The lô tô calls of a round come with the state; the caller reads them out at the
- * player's pace (paused while the stall is not on screen) and "Kinh!" is checked by the server against those calls.
+ * api.state.fair, sends `fair_*` commands and plays the show around their results (the bowl shaking, the gánh lô tô,
+ * the raid). The lô tô calls of a round come with the state; cô Bảy Lô Tô reads them out at the player's pace (paused
+ * while the stall is not on screen), the player marks the tờ dò by hand and "Kinh!" is checked by the server against
+ * those calls and marks. Her verses and the troupe's acts: ./fair-loto.js.
  * Its own dialog (like the bank), opened with data-action="fair" (Khu phố hub, the journey banner).
- * Styles: /css/fair.css. Sounds: tiny Web Audio synths (no recordings), off when the game's sound is off. */
+ * Styles: /css/fair.css. Sounds: tiny Web Audio effects, off when the game's sound is off. Music: only the gánh lô tô
+ * plays one recorded CC0 track (public/music/CREDITS.md), and only while the game's music is on. */
 import {icon,escapeHTML as esc} from '../icons.js';
-import {audioContext} from '../audio.js';
+import {audioContext,wantAudio,duck} from '../audio.js';
 import {language} from './i18n.js';
+import {words,callLine,MC,ACTS,CROWD,STICKERS,MODE_STICKER} from './fair-loto.js';
 
 const FACES=['bau','cua','tom','ca','ga','nai'];
 const FACE_NAME={bau:'Bầu',cua:'Cua',tom:'Tôm',ca:'Cá',ga:'Gà',nai:'Nai'};
 const GOURD='<svg class="fh-gourd" viewBox="0 0 40 48" aria-hidden="true"><path d="M20 4c1.2 0 2 .9 2 2v3.4c2.9 1 4.8 3.6 4.8 6.6 0 1.8-.6 3.4-1.7 4.7C31 22.8 35 27.6 35 33.5 35 41.2 28.3 46 20 46S5 41.2 5 33.5c0-5.9 4-10.7 9.9-12.8-1.1-1.3-1.7-2.9-1.7-4.7 0-3 1.9-5.6 4.8-6.6V6c0-1.1.8-2 2-2z" fill="#86b84a" stroke="#3f6b1d" stroke-width="2"/><path d="M21 6.5c2.6-2.4 6.6-2.6 9.2-.6" fill="none" stroke="#3f6b1d" stroke-width="2" stroke-linecap="round"/><path d="M13 31c1.5-3 4-4.6 7-5" fill="none" stroke="#e9f5d3" stroke-width="2.4" stroke-linecap="round" opacity=".8"/></svg>';
 const FACE_ART={bau:GOURD,cua:'🦀',tom:'🦐',ca:'🐟',ga:'🐓',nai:'🦌'};
 const art=f=>`<span class="fh-art" aria-hidden="true">${FACE_ART[f]||'❔'}</span>`;
-const TITLE_NAMES={f_loto:'🎱 Thần lô tô hội chợ',f_bao:'🌪️ Trúng bão bầu cua',f_raid:'🚨 Bị công an hỏi thăm',f_oaq:'🪨 Cao tay ô ăn quan',f_ring:'💍 Tay ném vòng thần sầu'};
+const TITLE_NAMES={f_kinh2:'🎎 Kinh đôi rộn ràng',f_nguoc:'🙃 Đọc ngược như xuôi',f_hu:'🏺 Ôm hũ đêm hội',f_loto:'🎱 Thần lô tô hội chợ',f_bao:'🌪️ Trúng bão bầu cua',f_raid:'🚨 Bị công an hỏi thăm',f_oaq:'🪨 Cao tay ô ăn quan',f_ring:'💍 Tay ném vòng thần sầu'};
 const GAMES={home:['🏮','Cổng hội'],oaq:['🪨','Ô ăn quan'],ring:['💍','Ném vòng cổ chai'],bc:['🦀','Bầu cua'],lt:['🎱','Lô tô'],xd:['🕯️','Chiếu trong'],board:['🏆','Bảng vàng']};
 const MINI_BOARD='<svg viewBox="0 0 64 40" aria-hidden="true"><rect x="2" y="6" width="60" height="28" rx="14" fill="#e9c98f" stroke="#8a5a26" stroke-width="2"/><path d="M14 6v28M50 6v28M14 20h36M23 6v28M32 6v28M41 6v28" stroke="#8a5a26" stroke-width="1.6"/><circle cx="8" cy="20" r="4" fill="#5b4636"/><circle cx="56" cy="20" r="4" fill="#5b4636"/><g fill="#7a8b99"><circle cx="18" cy="13" r="1.8"/><circle cx="27" cy="27" r="1.8"/><circle cx="36" cy="13" r="1.8"/><circle cx="45" cy="27" r="1.8"/><circle cx="20" cy="28" r="1.8"/><circle cx="38" cy="25" r="1.8"/></g></svg>';
 const MINI_BOTTLES='<svg viewBox="0 0 64 40" aria-hidden="true"><g stroke="#2d5a3d" stroke-width="1.4"><path d="M12 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#7cc79a"/><path d="M28 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#8fb6e8"/><path d="M44 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#f0b46a"/></g><ellipse cx="34" cy="10" rx="7" ry="2.6" fill="none" stroke="#e2462d" stroke-width="2.4"/></svg>';
 const CHIPS=[1,2,5,10];
 const XD_STAKES=[10,20,30,50];
-const CALL_MS=2300,FAST_MS=1100,NPC_GRACE=2000,ROLL_MS=1400;
+const NPC_GRACE=2000,ROLL_MS=1400;
 const LS='mnl.fair.lt';
 
 /* ---- the people of the fair ---- */
 const DEALER={name:'Chú Tám bầu cua',emoji:'🧔🏻',idle:['Bầu cua cá cọp đây, đặt đi bà con ơi!','Đặt lẹ đặt lẹ, chú lắc liền nè!','Ai chơi thì đặt, ai coi thì vỗ tay cho vui nha!','Con gì cũng có, ván nào cũng vui!']};
-const CALLER={name:'Cô Út lô tô',emoji:'💃🏻'};
 const HOST={name:'Anh Ba chiếu trong',emoji:'🕶️',idle:['Chơi lớn không? Chẵn lẻ, ăn một trả một.','Nói nhỏ thôi… ngó chừng phía ngoài giùm anh.','Xóc nè, xóc nè! Chẵn hay lẻ, đặt đi!']};
 const RINGER={name:'Cô Tư ném vòng',emoji:'👩🏻',idle:['Ném vòng cổ chai đây! Không mất xu, trúng là có quà!','Canh cho kỹ, vòng ngay miệng chai thì ném!','Mỗi lượt năm cái vòng, ném trúng chai nào ăn chai đó!'],
   hit:['Trúng rồi! Tay ném chắc ghê!','Vô cổ chai luôn!','Đẹp! Thêm chai nữa nè!'],miss:['Hụt chút xíu!','Trật rồi, canh lại nha!','Ui, vòng nảy ra mất!']};
@@ -35,45 +37,14 @@ const OPP={de:{start:['Chơi với em nha! Anh chị đi trước đi.','Em mớ
   kho:{start:['Ông chơi ô ăn quan từ hồi còn để chỏm. Mời cháu đi trước.','Bàn bày rồi, cháu đi trước đi.'],think:['Hừm… để ông tính.','Đi nước này coi sao.','Cháu coi kỹ nè.'],
     cap:['Quân này ông xin nha.','Ăn liên tiếp mới vui!'],lose:['Nước này cháu tính hay đó.','Khá lắm, khá lắm.'],won:['Ván này ông thắng, cháu tập thêm rồi ghé nha.'],lost:['Cháu cao tay thiệt! Ông chịu thua ván này.'],draw:['Huề! Ông cháu mình ngang tay.']}};
 
-/* ---- lô tô calls: folk-style rhymes written for the game, the number at the rhyme ---- */
-const UNITS=['','một','hai','ba','bốn','năm','sáu','bảy','tám','chín'];
-function words(n){
-  if(n<10)return UNITS[n];
-  const t=Math.floor(n/10),u=n%10,head=t===1?'mười':UNITS[t]+' mươi';
-  if(!u)return head;
-  const tail=u===1&&t>1?'mốt':u===4&&t>1?'tư':u===5?'lăm':UNITS[u];
-  return head+' '+tail;
-}
-const RHYME={
-  mot:['Nắng lên ruộng lúa xanh tươi tốt, ra con số {w}!','Bánh xèo đổ chảo thơm lừng mùi bột, ra con số {w}!'],
-  hai:['Cây cau trước ngõ thẳng hàng dài, ra con số {w}!','Gánh hàng rong đi khắp phố dài, chờ hoài mới thấy {w}!'],
-  ba:['Hội chợ đông vui khắp xóm gần xa, mời bà con dò số {w}!','Bánh tráng phơi nắng trước hiên nhà, ra con số {w}!'],
-  bon:['Trẻ con chạy giỡn lòng bồn chồn, ra con số {w}!','Thuyền ai xuôi nước chảy bon bon, ra con số {w}!'],
-  tu:['Nhớ ai mà viết lá thư, ra con số {w}!','Ngồi dò cho kỹ chớ có chần chừ, ra con số {w}!'],
-  nam:['Ai đi xa nhớ ghé về thăm, ra con số {w}!','Đêm nay trăng sáng như rằm, ra con số {w}!'],
-  sau:['Hai đứa mình đi hội cùng nhau, ra con số {w}!','Miếng trầu têm với quả cau, ra con số {w}!'],
-  bay:['Hội chợ vui quá, vỗ tay vỗ tay, ra con số {w}!','Cánh diều no gió tung bay, ra con số {w}!'],
-  tam:['Ai ăn quýt ngọt, ai ăn cam, ra con số {w}!','Áo ai phơi nắng màu lam, ra con số {w}!'],
-  chin:['Đứng đây mà ngó mà nhìn, ra con số {w}!','Lời thương nhắn gửi ai tin, ra con số {w}!'],
-  muoi:['Cô hàng nước miệng cười tươi, ra con số {w}!','Cả phố đi hội vui tươi, ra con số {w}!'],
-};
-const END={một:'mot',mốt:'mot',hai:'hai',ba:'ba',bốn:'bon',tư:'tu',năm:'nam',lăm:'nam',sáu:'sau',bảy:'bay',tám:'tam',chín:'chin',mười:'muoi',mươi:'muoi'};
-const SPECIAL={1:'Mở hàng con số đầu dàn: số một!',90:'Lớn nhất cả dàn: chín mươi!',45:'Bốn mươi lăm, ai chờ thì dò cho kỹ, bốn mươi lăm!'};
-/** The line for a number: the same for everyone in the same minute (slot). */
-function callLine(n,slot){
-  if(language()==='en')return `Number ${n}!`;
-  if(SPECIAL[n]&&(slot+n)%2===0)return SPECIAL[n];
-  const w=words(n),lines=RHYME[END[w.split(' ').pop()]]||RHYME.muoi;
-  return lines[(slot*7+n)%lines.length].replace('{w}',w);
-}
-
 /* ---- state ---- */
 const S={dlg:null,env:null,tab:'home',busy:false,flash:null,skew:0,listening:false,tick:null,
   oaq:{sel:null,anim:null,say:'',fast:false,quit:false,end:null,showEnd:false},
   ring:{round:null,t0:0,taps:[],hits:[],raf:0,result:null,say:''},
   bc:{chip:1,bets:{},phase:'idle',dice:null,last:null,say:''},
   xd:{side:'chan',stake:10,phase:'idle',coins:null,last:null,raid:null,say:''},
-  lt:{id:null,shown:0,marks:[],timer:null,fast:false,over:null,won:null,claiming:false,npcAt:0},
+  lt:{id:null,shown:0,marks:[],timer:null,speed:1,over:null,won:null,hut:null,claiming:false,check:false,hot:false,say:'',
+    act:0,actAt:0,actSay:'',tier:'vua',n:1,cl:null,cls:2,cot:null,cots:2},
   board:{data:null,at:0,loading:false,error:''}};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const xu=n=>`${fmt(n)} xu`;
@@ -131,14 +102,14 @@ function dialog(){
   if(S.dlg)return S.dlg;
   const d=document.createElement('dialog');
   d.className='sheet v4-sheet medium fh-sheet';d.setAttribute('aria-labelledby','fh-title');
-  d.innerHTML='<div class="fh-root"></div>';
+  d.innerHTML='<div class="fh-root"></div><div class="fh-reactlayer" aria-hidden="true"></div>';
   document.body.append(d);
   d.addEventListener('click',e=>{
     if(e.target===d){d.close();return;}
     const el=e.target.closest('[data-fh]');if(!el||!d.contains(el)||el.disabled)return;
     e.preventDefault();onClick(el.dataset.fh,el.dataset,el);
   });
-  d.addEventListener('close',()=>{pauseLoto();stopRing();clearInterval(S.tick);S.tick=null;S.flash=null;});
+  d.addEventListener('close',()=>{pauseLoto();ltMusic();stopRing();clearInterval(S.tick);S.tick=null;S.flash=null;});
   S.dlg=d;return d;
 }
 export async function openFair(env,data={}){
@@ -175,7 +146,7 @@ const animating=()=>S.bc.phase!=='idle'||S.xd.phase!=='idle'||S.busy||!!S.oaq.an
 async function send(action,payload={}){
   const {api}=S.env;
   try{return await api.command(action,payload);}
-  catch(e){S.flash=e.quiet?null:{text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}
+  catch(e){S.err=e.code||e.data?.code||'';S.flash=e.quiet?null:{text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}
 }
 
 /* ---- rendering ---- */
@@ -193,6 +164,7 @@ function render(){
 function tickLabels(){
   if(!S.dlg?.open)return;
   const f=F();
+  if(S.tab==='lt')nextAct();
   S.dlg.querySelectorAll('[data-fh-count]').forEach(el=>{
     const k=el.dataset.fhCount;
     if(k==='close')el.textContent=f.open?`còn ${left(f.closes*1000-serverNow())}`:f.soon?`mở sau ${left(f.opens*1000-serverNow())}`:'đã tàn';
@@ -214,7 +186,7 @@ function head(){
 }
 function strip(){
   const f=F(),p=f.points||{},e=f.earn||{},got=(e.oaq?.today||0)+(e.ring?.today||0);
-  return `<div class="fh-strip" role="status"><span>👛 <b>${xu(f.wallet)}</b></span><span>💰 Hôm nay kiếm <b>${xu(got)}</b></span><button type="button" class="fh-pts" data-fh="tab" data-tab="board" data-fh-key="pts">🏆 <b>${fmt(p.total)}</b> điểm</button></div>`;
+  return `<div class="fh-strip" role="status"><span>👛 <b>${xu((f.wallet||0)-ltHold())}</b></span><span>💰 Hôm nay kiếm <b>${xu(got)}</b></span><button type="button" class="fh-pts" data-fh="tab" data-tab="board" data-fh-key="pts">🏆 <b>${fmt(p.total)}</b> điểm</button></div>`;
 }
 /** Inside a stall: the way back to the gate. */
 function nav(){
@@ -258,7 +230,7 @@ function homeView(){
     <div class="fh-sec"><h3>🎲 Thử vận may</h3><span class="fh-tag">Cược nhỏ bằng xu</span></div>
     <div class="fh-luck">
       ${luck('bc',FACE_ART.cua,'Bầu cua',`Đặt 1–${r.bc_max||20} xu một ván`)}
-      ${luck('lt','🎱','Lô tô',`Tờ dò ${xu(r.loto_price)}, kinh ăn ${xu(r.loto_prize)}`)}
+      ${luck('lt','🎱','Gánh lô tô',f.ganh?`Cô Bảy hô số, vé từ ${xu(Math.min(...Object.values(f.ganh.tiers)))} · ${esc(f.ganh.names?.[f.ganh.modes?.[0]?.[1]]||'')}`:`Tờ dò ${xu(r.loto_price)}, kinh ăn ${xu(r.loto_prize)}`)}
       ${luck('xd','🕯️','Chiếu trong',`Cược ${r.xd_min}–${r.xd_max} xu`,'<span class="fh-warnchip">🚨 công an</span>')}
     </div>
     <button type="button" class="fh-goldlink" data-fh="tab" data-tab="board" data-fh-key="g-board"><span aria-hidden="true">🏆</span><span class="grow"><b>Bảng vàng hội chợ</b><small>Bạn ${fmt(p.total)} điểm · Top 1 khi hội tàn thành 👑 Vua trò chơi</small></span><span aria-hidden="true">›</span></button>
@@ -497,89 +469,329 @@ async function shakeXd(){
   sfx('open');setTimeout(()=>sfx(d.net>0?'win':'lose'),260);titles(d);render();
 }
 
-/* ---- 🎱 Lô tô ---- */
+/* ---- 🎱 Gánh lô tô: cô Bảy hô số, the troupe between rounds, tờ dò marked by hand, Kinh checked by the server ---- */
 const colOf=n=>n<10?0:n>=90?8:Math.floor(n/10);
+const COLS=['1–9','10–19','20–29','30–39','40–49','50–59','60–69','70–79','80–90'];
+const SPEEDS=[['🐢','Chậm',3300],['🙂','Vừa',2300],['🐇','Nhanh',1200]];
+const TIER_NAME={nho:'Vé nhỏ',vua:'Vé vừa',lon:'Vé lớn'};
+const MODE_INFO={thuong:['🎱','Vòng thường','Đủ một hàng ngang trên một tờ là kinh.'],
+  nguoc:['🙃','Vòng lật ngược','Cô Bảy đọc số lộn ngược: nghe 21 là số 12, nghe 07 là số 70. Dò cho tỉnh nha!'],
+  doi:['🎎','Vòng Kinh đôi','Phải đủ hai hàng ngang trên cùng một tờ mới kinh.'],
+  dem:['🏺','Hũ đêm hội','Kinh cả tờ: đủ hết 15 số. Sáu người cùng chơi nên hũ to!']};
+const LT_TRACK={f:'wedding-funk',name:'Funk nhún nhảy'};   // CC0, public/music/CREDITS.md
+const LT_MUSIC='mnl.fair.ltmusic';
+/** The newer server's gánh lô tô (rules, the vòng of this minute and the next two, today's tally); null: older server. */
+const G=()=>F().ganh||null;
 function L(){const v=F().loto;return v&&!v.expired?v:null;}
+const need=v=>v?.need||1;
+const flip=n=>String(n).split('').reverse().join('');
+/** The number as the board and the caller show it: reversed in a lật ngược vòng. */
+const shownNum=(v,n)=>v?.mode==='nguoc'?flip(n):String(n);
+const nowSlot=()=>Math.floor(serverNow()/60000);
+/** This minute's vòng from the server's list (null once the list is behind the clock: the server then decides). */
+function curMode(){const g=G();if(!g)return 'thuong';const m=g.modes.find(x=>x[0]===nowSlot());return m?m[1]:null;}
+const modeLabel=m=>G()?.names?.[m]||MODE_INFO[m]?.[1]||m;
+
 function syncLoto(){
   const v=L();
   if(!v){if(S.lt.id){pauseLoto();S.lt.id=null;}return null;}
   if(v.id!==S.lt.id){
     pauseLoto();
     let saved=null;try{saved=JSON.parse(localStorage.getItem(LS)||'null');}catch{/* storage blocked */}
-    const ok=saved&&saved.id===v.id;
-    S.lt={...S.lt,id:v.id,shown:ok?Math.min(saved.shown|0,v.npc_done):0,marks:ok&&Array.isArray(saved.marks)?saved.marks.filter(n=>Number.isInteger(n)):[],over:null,won:null,claiming:false,npcAt:0};
+    const ok=saved&&saved.id===v.id,cards=(v.cards||[v.card]).length;
+    let marks=ok&&Array.isArray(saved.marks)?saved.marks:[];
+    if(marks.length&&!Array.isArray(marks[0]))marks=[marks];   // the older save: one card
+    marks=Array.from({length:cards},(_,i)=>(Array.isArray(marks[i])?marks[i]:[]).filter(n=>Number.isInteger(n)));
+    S.lt={...S.lt,id:v.id,shown:ok?Math.min(saved.shown|0,v.npc_done):0,marks,over:null,won:null,hut:null,claiming:false,check:false,
+      say:ok?S.lt.say:MC.ready};
   }
-  if(v.stage==='won'&&!S.lt.won)S.lt.won={prize:R().loto_prize};
+  if(v.stage==='won'&&!S.lt.won)S.lt.won={prize:v.prize??R().loto_prize,mode:v.mode,quiet:true};
   if(v.stage==='lost'&&!S.lt.over&&!S.lt.won)S.lt.over={by:v.npc_name,quiet:true};
   return v;
 }
 function saveLoto(){try{localStorage.setItem(LS,JSON.stringify({id:S.lt.id,shown:S.lt.shown,marks:S.lt.marks}));}catch{/* storage blocked */}}
 function pauseLoto(){clearTimeout(S.lt.timer);S.lt.timer=null;}
+const playing=v=>v&&v.stage==='play'&&!S.lt.over&&!S.lt.won;
 function resumeLoto(){
-  const v=syncLoto();pauseLoto();
-  if(!v||v.stage!=='play'||S.lt.over||S.lt.won||!S.dlg?.open||S.tab!=='lt')return;
-  S.lt.timer=setTimeout(stepLoto,S.lt.shown?(S.lt.fast?FAST_MS:CALL_MS):900);
+  const v=syncLoto();pauseLoto();ltMusic();
+  if(!playing(v)||!S.dlg?.open||S.tab!=='lt')return;
+  S.lt.timer=setTimeout(stepLoto,S.lt.shown?SPEEDS[S.lt.speed][2]:900);
 }
 function stepLoto(){
-  const v=L();if(!v||v.stage!=='play'||S.lt.over||S.lt.won)return;
-  if(S.lt.shown>=v.npc_done){   // a neighbour's row is full: they shout, unless the player beats them to it
-    if(!S.lt.claiming){S.lt.over={by:v.npc_name};sfx('lose');saveLoto();render();send('fair_loto_fold',{});}
+  const v=L();if(!playing(v))return;
+  if(S.lt.shown>=v.npc_done){   // a neighbour's pattern is full: they shout, unless the player beats them to it
+    if(!S.lt.claiming){S.lt.over={by:v.npc_name};S.lt.say=pick(MC.lose).replace('{who}',v.npc_name);sfx('lose');react('😮',3);saveLoto();render();send('fair_loto_fold',{});}
     return;
   }
-  S.lt.shown++;saveLoto();sfx('call');render();
-  S.lt.timer=setTimeout(stepLoto,S.lt.shown>=v.npc_done?NPC_GRACE:(S.lt.fast?FAST_MS:CALL_MS));
+  S.lt.shown++;
+  const i=S.lt.shown-1,n=v.seq[i];
+  S.lt.say=lineFor(v,i,n);
+  const hot=rivalMiss(v,calledSet(v)).some(x=>x.miss<=1);
+  if(hot&&!S.lt.hot){S.lt.hot=true;react('😱',2);}
+  saveLoto();sfx('call');render();
+  if(hot&&Math.random()<.18)setTimeout(()=>{if(S.lt.id===v.id&&playing(L())){S.lt.say=pick(MC.near);render();}},Math.min(900,SPEEDS[S.lt.speed][2]/2));
+  S.lt.timer=setTimeout(stepLoto,S.lt.shown>=v.npc_done?NPC_GRACE:SPEEDS[S.lt.speed][2]);
+}
+function lineFor(v,i,n){
+  if(v.mode!=='nguoc')return callLine(v.seq,i,v.slot,language()==='en');
+  const r=flip(n);
+  if(language()==='en')return `Flipped: ${r}!`;
+  return r.startsWith('0')?`Lật ngược nè bà con: không ${words(Number(r[1]))}! Ngược lại là số mấy?`:`${callLine(v.seq,i,v.slot,false,Number(r))} (lật ngược!)`;
 }
 const calledSet=v=>new Set(v.seq.slice(0,S.lt.shown));
-function readyRow(v){
-  const marks=new Set(S.lt.marks),called=calledSet(v);
-  return v.card.findIndex(row=>row.every(n=>marks.has(n)&&called.has(n)));
+const cardsOf=v=>v.cards||[v.card];
+/** Full rows on a card by the player's own marks (marks only ever hold called numbers). */
+const fullRows=(v,ci)=>{const m=new Set(S.lt.marks[ci]||[]);return cardsOf(v)[ci].filter(row=>row.every(n=>m.has(n))).length;};
+function bestCard(v){
+  let best=0,score=-1;
+  cardsOf(v).forEach((_,ci)=>{const s=fullRows(v,ci)*100+(S.lt.marks[ci]||[]).length;if(s>score){score=s;best=ci;}});
+  return best;
 }
 function rivalMiss(v,called){
-  return v.npcs.map(n=>({...n,miss:Math.min(...n.rows.map(r=>r.filter(x=>!called.has(x)).length))}));
+  const k=need(v);
+  return v.npcs.map(n=>({...n,miss:n.rows.map(r=>r.filter(x=>!called.has(x)).length).sort((a,b)=>a-b).slice(0,k).reduce((a,b)=>a+b,0)}));
 }
+/** Side-bet winnings already in the wallet but not yet shown (the server settles them at the purchase). */
+function ltHold(){const v=L();if(!v||!playing(v)||!v.side)return 0;return Object.values(v.side).reduce((a,s)=>a+(s.back||0),0);}
+
+/* ---- the stage: cô Bảy, the troupe, the crowd ---- */
+const MC_ART=`<svg class="fh-mcart" viewBox="0 0 90 120" aria-hidden="true">
+  <g class="fh-mc-fan"><path d="M70 62 L52 34 A32 32 0 0 1 88 44 Z" fill="#f6a5c8" stroke="#c2477e" stroke-width="1.5"/><path d="M70 62 L58 36 M70 62 L66 33 M70 62 L75 34 M70 62 L82 38" stroke="#c2477e" stroke-width="1.2"/><circle cx="70" cy="62" r="2.4" fill="#8a5a26"/></g>
+  <path d="M28 66 Q45 58 62 66 L72 116 Q45 122 18 116 Z" fill="#d9387a"/>
+  <g class="fh-sequin" fill="#ffe27a"><circle cx="34" cy="80" r="1.6"/><circle cx="46" cy="74" r="1.6"/><circle cx="56" cy="86" r="1.6"/><circle cx="40" cy="96" r="1.6"/><circle cx="52" cy="104" r="1.6"/><circle cx="28" cy="108" r="1.6"/><circle cx="62" cy="108" r="1.6"/></g>
+  <g class="fh-sequin b" fill="#fff"><circle cx="40" cy="70" r="1.2"/><circle cx="50" cy="94" r="1.2"/><circle cx="33" cy="99" r="1.2"/><circle cx="60" cy="98" r="1.2"/><circle cx="45" cy="112" r="1.2"/></g>
+  <path d="M60 68 L70 62" stroke="#f3c9a4" stroke-width="5" stroke-linecap="round"/>
+  <path d="M30 68 L20 80 L24 86" stroke="#f3c9a4" stroke-width="5" stroke-linecap="round" fill="none"/><rect x="19" y="80" width="6" height="12" rx="3" fill="#333" transform="rotate(-20 22 86)"/><circle cx="19" cy="78" r="4.5" fill="#666"/>
+  <circle cx="45" cy="22" r="13" fill="#2b1d16"/><circle cx="45" cy="40" r="17" fill="#f3c9a4"/><path d="M28 36 Q30 20 45 20 Q60 20 62 36 Q55 28 45 28 Q35 28 28 36Z" fill="#2b1d16"/>
+  <circle cx="57" cy="20" r="5" fill="#ff7aa8"/><circle cx="57" cy="20" r="2" fill="#ffe27a"/>
+  <circle cx="39" cy="40" r="2" fill="#2b1d16"/><circle cx="51" cy="40" r="2" fill="#2b1d16"/><circle cx="35" cy="46" r="3" fill="#ff9bb8" opacity=".7"/><circle cx="55" cy="46" r="3" fill="#ff9bb8" opacity=".7"/>
+  <path d="M40 48 Q45 53 50 48" stroke="#b83a3a" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`;
+function stageHtml(v){
+  const live=playing(v),cur=live&&S.lt.shown?v.seq[S.lt.shown-1]:null;
+  const ball=`<span class="fh-ball${cur?' pop':''}${v?.mode==='nguoc'&&cur?' flip':''}" aria-live="polite" aria-label="${cur?`Số vừa gọi: ${shownNum(v,cur)}`:'Chưa gọi số'}">${cur!=null?esc(shownNum(v,cur)):'🎱'}</span>`;
+  return `<div class="fh-stage${live?' live':''}" aria-label="Sân khấu lô tô">
+    <div class="fh-curtain" aria-hidden="true"></div><div class="fh-spot" aria-hidden="true"></div>
+    <div class="fh-mc">${MC_ART}<b>${esc(MC.name)}</b></div>
+    <div class="fh-mcsay"><div class="fh-bubble"><small>${esc(MC.name)}</small><p>${esc(S.lt.say||pick(MC.hello))}</p></div>${live?ball:''}</div>
+  </div>`;
+}
+function actsHtml(){
+  const a=ACTS[S.lt.act%ACTS.length],line=S.lt.actSay||a.say[0];
+  return `<div class="fh-acts fh-act-${a.k}" aria-live="polite"><span class="fh-performer" aria-hidden="true">${a.k==='juggle'?'🤹<i class="fh-ballz"><b></b><b></b><b></b></i>':a.k==='sing'?'🎤<i class="fh-notes">♪ ♫ ♪</i>':a.who}</span><div><b>🎪 ${esc(a.name)}</b><small>${esc(line)}</small></div></div>`;
+}
+function crowdHtml(){
+  const people=(G()?.neighbours||[['Bác Tư','👴'],['Bà Năm','👵'],['Chú Sáu','🧔'],['Cô Ba','👩'],['Anh Tèo','🧑'],['Chị Mận','👧']]);
+  return `<div class="fh-crowd" aria-hidden="true">${people.map(([,e],i)=>`<span style="--i:${i}">${e}</span>`).join('')}</div>`;
+}
+/** Emoji floating up from the crowd (decoration only). */
+function react(e,count=1){
+  if(reduce())return;
+  const box=S.dlg?.querySelector('.fh-reactlayer'),st=S.dlg?.querySelector('.fh-stage');if(!box||!st)return;
+  box.style.top=`${Math.round(st.getBoundingClientRect().bottom-S.dlg.getBoundingClientRect().top)}px`;   // just above the crowd
+  for(let k=0;k<count;k++){const el=document.createElement('i');el.textContent=e==='*'?pick(CROWD):e;el.style.left=`${10+Math.random()*80}%`;el.style.animationDelay=`${k*.15}s`;box.append(el);setTimeout(()=>el.remove(),2200);}
+}
+/** The troupe's next act, every few seconds while no round is being called (only that box is redrawn). */
+function nextAct(){
+  if(S.tab!=='lt'||!S.dlg?.open||playing(L()))return;
+  const g=G(),slot=nowSlot();
+  if(g&&S.lt.slot!==slot&&!S.busy){
+    S.lt.slot=slot;
+    if(g.modes.filter(x=>x[0]>=slot).length<4&&Date.now()-(S.lt.asked||0)>30000){S.lt.asked=Date.now();S.env.api.refresh().catch(()=>{/* later */});}
+    render();return;
+  }
+  if(Date.now()-S.lt.actAt<7000)return;
+  S.lt.actAt=Date.now();S.lt.act=(S.lt.act+1)%ACTS.length;S.lt.actSay=pick(ACTS[S.lt.act].say);
+  const el=S.dlg.querySelector('.fh-acts');if(el)el.outerHTML=actsHtml();
+  react('*',2);
+}
+
+/* ---- the music: one CC0 recording looped while the stall is on screen, only when the game's music is on ---- */
+const LM={on:false,src:null,g:null,buf:null,loading:null};
+const musicPref=()=>{try{return localStorage.getItem(LT_MUSIC)!=='0';}catch{return true;}};
+const gameMusic=()=>{const st=S.env?.api?.state?.settings||{};return st.music!==false&&st.musicTrack!=='off';};
+function ltMusic(){
+  const st=S.env?.api?.state?.settings||{};
+  const want=gameMusic()&&musicPref()&&!!S.dlg?.open&&S.tab==='lt'&&F().open;
+  if(want&&!LM.on){
+    const c=audioContext();if(!c)return;
+    LM.on=true;wantAudio('fair',true);duck('fair',true);
+    LM.g=c.createGain();LM.g.gain.value=0;LM.g.connect(c.destination);
+    const url=globalThis.__mnlBoot?.asset?.(`/music/${LT_TRACK.f}.mp3`)||`/music/${LT_TRACK.f}.mp3`;
+    LM.loading??=fetch(url).then(r=>{if(!r.ok)throw new Error(r.status);return r.arrayBuffer();}).then(b=>new Promise((ok,no)=>{const p=c.decodeAudioData(b,ok,no);p?.catch?.(()=>{});}));
+    LM.loading.then(buf=>{
+      if(!LM.on||LM.src)return;
+      LM.buf=buf;const src=c.createBufferSource();src.buffer=buf;src.loop=true;src.connect(LM.g);src.start();LM.src=src;
+      const vol=Math.max(0,Math.min(1,(st.musicVolume??45)/100))*.5,t=c.currentTime;LM.g.gain.setValueAtTime(0,t);LM.g.gain.linearRampToValueAtTime(vol,t+1.2);
+    }).catch(()=>{LM.loading=null;/* the show goes on without music */});
+  }else if(!want&&LM.on){
+    LM.on=false;duck('fair',false);wantAudio('fair',false);
+    const {src,g}=LM;LM.src=null;LM.g=null;
+    const c=audioContext();
+    if(g&&c){const t=c.currentTime;g.gain.cancelScheduledValues(t);g.gain.setValueAtTime(g.gain.value,t);g.gain.linearRampToValueAtTime(0,t+.4);}
+    setTimeout(()=>{try{src?.stop();}catch{/* not started */}try{g?.disconnect();}catch{/* gone */}},450);
+    if(!S.dlg?.open){LM.loading=null;LM.buf=null;}   // a decoded song is MBs: kept only while the fair is open
+  }
+}
+function musicBtn(){
+  if(!gameMusic())return `<button type="button" class="btn ghost small" disabled title="Nhạc nền đang tắt trong Cài đặt">🔇 Nhạc (đang tắt trong Cài đặt)</button>`;
+  const on=musicPref();
+  return btn(on?'🔊 Nhạc gánh':'🔇 Nhạc gánh','ltmusic',{},'ghost small',` aria-pressed="${on}" data-fh-key="ltmusic"`);
+}
+
+/* ---- views ---- */
 function lotoView(){
-  const v=syncLoto(),r=R(),f=F();
-  if(!v||S.lt.won||S.lt.over)return `<section class="fh-stall fh-lt" aria-label="Lô tô">${say(CALLER,S.lt.won?'Kinh rồi! Chúc mừng người thắng, ván sau chơi tiếp nha bà con!':S.lt.over?`${S.lt.over.by} kinh rồi! Ván sau tới lượt mình nha.`:'Lô tô hội chợ đây! Ai mua tờ dò thì ngồi xuống, ai chưa mua thì nghe cho vui!')}
-    ${S.lt.won?`<div class="fh-card fh-kinhcard"><div class="fh-big" aria-hidden="true">🎉</div><h3>Kinh! +${xu(S.lt.won.prize)}</h3>${S.lt.won.titles?.includes('f_loto')?'<p class="fh-award">🎱 Danh hiệu mới: <b>Thần lô tô hội chợ</b></p>':''}${S.lt.won.points?`<p class="muted small">+${S.lt.won.points} điểm hội chợ</p>`:''}</div>`:''}
-    ${S.lt.over&&!S.lt.over.quiet?`<div class="fh-card fh-lostcard"><b>📣 ${esc(S.lt.over.by)}: “Kinh!”</b><small>${S.lt.over.mine?'Tờ của bạn cũng vừa đủ hàng mà chưa kịp hô. Lần sau hô lẹ nha!':'Ván này người khác đủ hàng trước rồi.'}</small></div>`:''}
-    <div class="fh-card fh-buy"><div class="fh-ticket" aria-hidden="true"><i></i><i></i><i></i></div><div class="grow"><b>Tờ dò ${xu(r.loto_price)}</b><small>Đủ 5 số một hàng ngang trước ${r.loto_npcs} người chơi khác: hô “Kinh!” ăn ${xu(r.loto_prize)}.</small></div></div>
-    ${btn(`🎟️ Mua tờ dò · ${xu(r.loto_price)}`,'buy',{},'primary big full',f.today?.done||S.busy?' disabled data-fh-key="buy"':' data-fh-key="buy"')}
-    <p class="fh-rule">Cô Út hô số nào, bạn chạm số đó trên tờ dò. Ai mua tờ trong cùng một phút sẽ nghe chung một lượt số.</p></section>`;
-  const called=calledSet(v),marks=new Set(S.lt.marks),cur=S.lt.shown?v.seq[S.lt.shown-1]:null,ready=readyRow(v);
-  const grid=v.card.map((row,ri)=>{const cells=Array(9).fill(null);row.forEach(n=>{cells[colOf(n)]=n;});
-    return `<div class="fh-row${ready===ri?' full':''}" role="row">${cells.map(n=>n==null?'<span class="fh-cell empty" role="gridcell"></span>':
-      `<button type="button" role="gridcell" class="fh-cell${marks.has(n)?' marked':called.has(n)?' called':''}" data-fh="mark" data-n="${n}" data-fh-key="n-${n}" aria-pressed="${marks.has(n)}" aria-label="Số ${n}${called.has(n)?', đã gọi':''}">${n}</button>`).join('')}</div>`;}).join('');
-  const rivals=rivalMiss(v,called).map(n=>`<span class="fh-rival${n.miss<=1?' hot':''}"><span aria-hidden="true">${n.emoji}</span>${esc(n.name)}<em>${n.miss<=1?'chờ 1!':`còn ${n.miss}`}</em></span>`).join('');
-  const recent=v.seq.slice(Math.max(0,S.lt.shown-7),Math.max(0,S.lt.shown-1)).reverse().map(n=>`<i>${n}</i>`).join('');
+  const v=syncLoto();
+  if(!S.lt.say)S.lt.say=pick(MC.hello);
+  if(playing(v))return roundView(v);
   return `<section class="fh-stall fh-lt" aria-label="Lô tô">
-    ${say(CALLER,cur?callLine(cur,v.slot):'Chuẩn bị nha bà con… số đầu tiên ra liền!','caller')}
-    <div class="fh-callrow"><span class="fh-ball${cur?' pop':''}" aria-live="polite" aria-label="${cur?`Số vừa gọi: ${cur}`:'Chưa gọi số'}">${cur??'–'}</span><div class="grow"><div class="fh-recent" aria-label="Các số vừa gọi">${recent}</div><small>Đã gọi ${S.lt.shown}/90 · ván phút ${esc(v.minute)}</small></div></div>
-    <div class="fh-rivals" aria-label="Người chơi khác">${rivals}</div>
-    <div class="fh-ticketcard" role="grid" aria-label="Tờ dò của bạn">${grid}</div>
-    <div class="fh-go">${btn(S.lt.fast?'⏯️ Gọi chậm':'⏩ Gọi nhanh','fast',{},'ghost small')}${btn('📣 Kinh!','kinh',{},`primary big fh-kinh${ready>=0?' ready':''}`,ready>=0&&!S.lt.claiming?' data-fh-key="kinh"':' disabled data-fh-key="kinh"')}</div>
-    <p class="fh-rule">Chạm số đã gọi để đánh dấu. Đủ một hàng ngang thì bấm “Kinh!” trước người khác.</p></section>`;
+    ${stageHtml(v)}${crowdHtml()}${actsHtml()}
+    ${v?endCard(v):''}
+    ${G()?buyPanel():oldBuy()}
+    ${G()?todayBoard():''}
+    <div class="fh-go">${musicBtn()}</div>
+    ${howLoto()}</section>`;
 }
+function endCard(v){
+  const W=S.lt.won,O=S.lt.over;if(!W&&!O)return '';
+  let h='';
+  if(W){const [se,sn]=MODE_STICKER[W.mode]||STICKERS[(Number(String(v.id).split('-')[1])||0)%STICKERS.length];
+    h=`<div class="fh-card fh-kinhcard"><div class="fh-sticker" aria-hidden="true">${se}</div><h3>Kinh! +${xu(W.prize)}</h3><p class="fh-award">Nhãn dán: <b>${esc(sn)}</b></p>${(W.titles||[]).map(t=>`<p class="fh-award">🎉 Danh hiệu mới: <b>${esc(TITLE_NAMES[t]||t)}</b></p>`).join('')}${W.points?`<p class="muted small">+${W.points} điểm hội chợ</p>`:''}</div>`;}
+  else if(O.out)h=`<div class="fh-card fh-lostcard"><b>🙈 Kinh hụt ba lần, cô Bảy mời nghỉ ván này</b><small>Ván sau dò kỹ rồi hãy hô nha!</small></div>`;
+  else if(!O.quiet)h=`<div class="fh-card fh-lostcard"><b>📣 ${esc(O.by)}: “Kinh!”</b><small>${O.mine?'Tờ của bạn cũng vừa đủ mà chưa kịp hô. Lần sau hô lẹ nha!':'Ván này người khác đủ trước rồi.'}</small></div>`;
+  const side=v.side?`<div class="fh-card fh-sideres"><b>🎯 Số chốt ván: ${esc(shownNum(v,v.chot_n))}${v.mode==='nguoc'?` <small>(tức số ${v.chot_n})</small>`:''}</b>${Object.entries(v.side).map(([k,s])=>`<span class="${s.back?'good':'bad'}">${k==='cl'?`Chẵn/lẻ: ${s.pick==='chan'?'Chẵn':'Lẻ'}`:`Cột ${COLS[s.pick]}`} · ${s.back?`ăn ${xu(s.back)}`:`thua ${xu(s.stake)}`}</span>`).join('')}</div>`:'';
+  const check=`<button type="button" class="btn ghost small" data-fh="ltcheck" aria-pressed="${S.lt.check}" data-fh-key="ltcheck">${S.lt.check?'Ẩn bản dò':'🔍 Tự dò lại tờ vừa chơi'}</button>`;
+  return h+side+`<div class="fh-go">${check}</div>${S.lt.check?cardsHtml(v,false):''}`;
+}
+function buyPanel(){
+  const g=G(),f=F(),m=curMode()||'thuong',[me,,md]=MODE_INFO[m]||MODE_INFO.thuong,lt=S.lt,price=g.tiers[lt.tier]||5;
+  const prize=(g.prizes?.[m]?.[lt.tier]||[])[lt.n-1]||0,rule=g.modes_rule?.[m]||{npcs:4};
+  const side=(lt.cl?lt.cls:0)+(lt.cot!=null?lt.cots:0),total=lt.n*price+side;
+  const left=f.today?.left??0,why=f.today?.done?'Hôm nay chơi vậy đủ rồi':total>left?`Hôm nay chỉ còn chơi được ${xu(left)}`:total>(f.wallet||0)?'Ví không đủ xu':S.busy?'Đang mua…':'';
+  const next=g.modes.filter(x=>x[0]>nowSlot()).slice(0,2).map(([s,k])=>`<span class="fh-nextmode">${esc(new Date(s*60000).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Ho_Chi_Minh'}))} · ${MODE_INFO[k]?.[0]||''} ${esc(modeLabel(k))}</span>`).join('');
+  const tiers=Object.entries(g.tiers).map(([k,p])=>`<button type="button" class="fh-tier${lt.tier===k?' on':''}" data-fh="lttier" data-v="${k}" aria-pressed="${lt.tier===k}" data-fh-key="tier-${k}"><b>${esc(TIER_NAME[k]||k)}</b><small>${xu(p)}/tờ</small></button>`).join('');
+  const ns=Array.from({length:g.cards},(_,i)=>i+1).map(n=>`<button type="button" class="fh-chip${lt.n===n?' on':''}" data-fh="ltn" data-v="${n}" aria-pressed="${lt.n===n}" data-fh-key="ltn-${n}">${n}</button>`).join('');
+  const chip=(op,v,on)=>`<button type="button" class="fh-chip small${on?' on':''}" data-fh="${op}" data-v="${v}" aria-pressed="${on}" data-fh-key="${op}-${v}">${v}</button>`;
+  const cl=[['chan','Chẵn'],['le','Lẻ']].map(([k,l])=>`<button type="button" class="fh-pickb${lt.cl===k?' on':''}" data-fh="ltcl" data-v="${k}" aria-pressed="${lt.cl===k}" data-fh-key="cl-${k}">${l}</button>`).join('');
+  const cot=COLS.map((l,i)=>`<button type="button" class="fh-pickb${lt.cot===i?' on':''}" data-fh="ltcot" data-v="${i}" aria-pressed="${lt.cot===i}" data-fh-key="cot-${i}">${l}</button>`).join('');
+  return `<div class="fh-card fh-ltbuy">
+    <div class="fh-modebar mode-${m}"><span class="fh-modeico" aria-hidden="true">${me}</span><div class="grow"><b>${esc(modeLabel(m))}</b><small>${esc(md)}</small></div></div>
+    <div class="fh-nextmodes"><small>Phút sau:</small>${next}</div>
+    <h4>🎟️ Chọn vé</h4><div class="fh-lttiers" role="group" aria-label="Loại vé">${tiers}</div>
+    <div class="fh-chips" role="group" aria-label="Số tờ"><span>Số tờ</span>${ns}</div>
+    <p class="fh-pot">🏺 Hũ ván này: <b>${xu(prize)}</b> <small>· ${lt.n} tờ của bạn + ${rule.npcs} tờ hàng xóm, cô Bảy giữ ${rule.cut}% tiền gánh</small></p>
+    <details class="fh-side"${lt.cl||lt.cot!=null?' open':''}><summary>🎲 Cược phụ (tùy chọn)</summary>
+      <p class="small muted">Đoán về <b>số chốt ván</b>: con số làm đủ tờ đầu tiên trên chiếu (của bạn hay hàng xóm). Kết quả mở khi ván xong.</p>
+      <div class="fh-sidebet"><b>Chẵn hay lẻ?</b> <small>ăn 1 trả 1 · số 7 và 70 là số ruột cô Bảy: ra hai số đó thì cô Bảy ăn cả hai cửa</small>
+        <div class="fh-picks">${cl}${lt.cl?btn('Bỏ','ltcl',{v:''},'ghost small'):''}</div>
+        ${lt.cl?`<div class="fh-chips"><span>Đặt</span>${g.side_stakes.map(s=>chip('ltcls',s,lt.cls===s)).join('')}</div>`:''}</div>
+      <div class="fh-sidebet"><b>🍀 Cột may mắn</b> <small>số chốt nằm ở cột nào trên tờ dò · trúng ăn ${String(g.cot_pay).replace('.',',')} lần tiền đặt</small>
+        <div class="fh-picks cols">${cot}${lt.cot!=null?btn('Bỏ','ltcot',{v:''},'ghost small'):''}</div>
+        ${lt.cot!=null?`<div class="fh-chips"><span>Đặt</span>${g.side_stakes.map(s=>chip('ltcots',s,lt.cots===s)).join('')}</div>`:''}</div>
+    </details>
+    ${btn(`🎟️ Mua ${lt.n} tờ · ${xu(total)}`,'buy',{},'primary big full',why?` disabled data-fh-key="buy" title="${esc(why)}"`:' data-fh-key="buy"')}
+    ${why&&!S.busy?`<p class="fh-why">${esc(why)}</p>`:''}
+  </div>`;
+}
+function oldBuy(){
+  const r=R(),f=F();
+  return `<div class="fh-card fh-buy"><div class="fh-ticket" aria-hidden="true"><i></i><i></i><i></i></div><div class="grow"><b>Tờ dò ${xu(r.loto_price)}</b><small>Đủ 5 số một hàng ngang trước ${r.loto_npcs} người chơi khác: hô “Kinh!” ăn ${xu(r.loto_prize)}.</small></div></div>
+    ${btn(`🎟️ Mua tờ dò · ${xu(r.loto_price)}`,'buy',{},'primary big full',f.today?.done||S.busy?' disabled data-fh-key="buy"':' data-fh-key="buy"')}`;
+}
+function todayBoard(){
+  const g=G(),t=g.today||{},people=g.neighbours||[];
+  const rows=[['Bạn','🙂',t.w||0,true],...people.map(([n,e],i)=>[n,e,(t.npc||[])[i]||0,false])].sort((a,b)=>b[2]-a[2]||(b[3]-a[3]));
+  if(!t.r)return '';
+  const top=rows[0][2]>0?rows[0]:null;
+  return `<details class="fh-how fh-ltday"><summary>🏅 Bảng kinh hôm nay</summary>
+    <ol>${rows.map((r,i)=>`<li class="${r[3]?'me':''}"><span aria-hidden="true">${r[1]}</span><b>${esc(r[0])}</b><em>${r[2]} lần kinh</em>${i===0&&top?' <span class="fh-crownmini">👑 Vua kinh hôm nay</span>':''}</li>`).join('')}</ol>
+    <p class="small muted">Hôm nay bạn chơi ${t.r} ván${t.fk?`, kinh hụt ${t.fk} lần 🙈`:''}. Bảng này tính lại mỗi ngày.</p></details>`;
+}
+function howLoto(){
+  const g=G();
+  if(!g)return `<p class="fh-rule">Cô Bảy hô số nào, bạn chạm số đó trên tờ dò. Ai mua tờ trong cùng một phút sẽ nghe chung một lượt số.</p>`;
+  const pz=g.prizes||{};
+  return `<details class="fh-how"><summary>Cách chơi gánh lô tô</summary><ul>
+    <li>Mua 1 đến ${g.cards} tờ dò. Cô Bảy hô số nào thì bạn tự chạm số đó trên tờ của mình, không ai đánh dấu giùm.</li>
+    <li>Đủ hình của vòng thì bấm “Kinh!”. Cô Bảy dò lại: đúng thì ôm hũ; kinh hụt (hàng chưa đủ) thì bỏ ${xu(g.fine)} vô hũ phạt, hụt ${g.hut_max} lần là nghỉ ván.</li>
+    <li>Hũ = tiền tờ của cả chiếu (của bạn và hàng xóm), cô Bảy giữ một chút tiền gánh. Ai đủ trước người đó ăn, hai người cùng lúc thì bạn được.</li>
+    <li>Mỗi phút một vòng: thường, Kinh đôi (hai hàng), lật ngược (đọc số ngược). Từ ${g.dem_hours[0]} giờ tới ${g.dem_hours[g.dem_hours.length-1]+1} giờ tối là Hũ đêm hội: kinh cả tờ, sáu người chơi.</li>
+    <li>Ví dụ vé vừa 1 tờ: vòng thường ăn ${xu(pz.thuong?.vua?.[0])}, Kinh đôi ${xu(pz.doi?.vua?.[0])}, Hũ đêm hội ${xu(pz.dem?.vua?.[0])}.</li>
+    <li>Ai mua tờ trong cùng một phút sẽ nghe chung một lượt số.</li></ul></details>`;
+}
+function cardsHtml(v,live=true){
+  const all=new Set(v.seq.slice(0,S.lt.shown||v.chot||0)),check=!live;
+  return cardsOf(v).map((card,ci)=>{
+    const marks=new Set(S.lt.marks[ci]||[]);
+    const grid=card.map(row=>{const cells=Array(9).fill(null);row.forEach(n=>{cells[colOf(n)]=n;});
+      return `<div class="fh-row" role="row">${cells.map(n=>{
+        if(n==null)return '<span class="fh-cell empty" role="gridcell"></span>';
+        const cls=`fh-cell${marks.has(n)?' marked':''}${check&&all.has(n)&&!marks.has(n)?' called':''}`;
+        return live?`<button type="button" role="gridcell" class="${cls}" data-fh="mark" data-c="${ci}" data-n="${n}" data-fh-key="n-${ci}-${n}" aria-pressed="${marks.has(n)}" aria-label="Số ${n}">${n}</button>`
+          :`<span role="gridcell" class="${cls}">${n}</span>`;}).join('')}</div>`;}).join('');
+    return `<div class="fh-ticketcard" role="grid" aria-label="Tờ dò ${ci+1}">${cardsOf(v).length>1?`<span class="fh-cardno">Tờ ${ci+1}</span>`:''}${grid}</div>`;
+  }).join('')+(check?`<p class="small muted">Viền đứt: số đã gọi (tới số chốt) mà bạn chưa chạm.</p>`:'');
+}
+function boardHtml(v){
+  if(v.mode==='nguoc')return `<div class="fh-bigboard covered" aria-label="Bảng số úp lại trong vòng lật ngược"><span>🙃 Vòng lật ngược: bảng số úp lại, nghe cô Bảy đọc rồi tự lật nha!</span></div>`;
+  const called=calledSet(v),cur=S.lt.shown?v.seq[S.lt.shown-1]:null;
+  let h='';for(let n=1;n<=90;n++)h+=`<i class="${called.has(n)?'on':''}${n===cur?' cur':''}">${n}</i>`;
+  return `<div class="fh-bigboard" aria-label="Bảng số đã gọi">${h}</div>`;
+}
+function roundView(v){
+  const called=calledSet(v);
+  const rivals=rivalMiss(v,called).map(n=>`<span class="fh-rival${n.miss<=1?' hot':''}"><span aria-hidden="true">${n.emoji}</span>${esc(n.name)}<em>${n.miss<=1?'chờ 1!':`còn ${n.miss}`}</em></span>`).join('');
+  const recent=v.seq.slice(Math.max(0,S.lt.shown-7),Math.max(0,S.lt.shown-1)).reverse().map(n=>`<i>${esc(shownNum(v,n))}</i>`).join('');
+  const [me]=MODE_INFO[v.mode||'thuong']||MODE_INFO.thuong;
+  const hut=v.fk||S.lt.hut?.fk||0;
+  const speed=SPEEDS.map(([e,l],i)=>`<button type="button" class="fh-chip small${S.lt.speed===i?' on':''}" data-fh="ltspeed" data-v="${i}" aria-pressed="${S.lt.speed===i}" aria-label="Gọi ${l.toLowerCase()}" data-fh-key="sp-${i}">${e}</button>`).join('');
+  return `<section class="fh-stall fh-lt" aria-label="Lô tô">
+    ${stageHtml(v)}
+    <div class="fh-callrow"><div class="grow"><div class="fh-recent" aria-label="Các số vừa gọi">${recent}</div><small>${me} ${esc(modeLabel(v.mode||'thuong'))} · đã gọi ${S.lt.shown}/90 · ván phút ${esc(v.minute)}${v.prize?` · hũ ${xu(v.prize)}`:''}</small></div></div>
+    ${boardHtml(v)}
+    <div class="fh-rivals" aria-label="Người chơi khác">${rivals}</div>
+    ${cardsHtml(v)}
+    <div class="fh-go"><span class="fh-speed" role="group" aria-label="Tốc độ gọi số">${speed}</span>${btn('📣 Kinh!','kinh',{},'primary big fh-kinh',S.lt.claiming?' disabled data-fh-key="kinh"':' data-fh-key="kinh"')}</div>
+    ${hut?`<p class="fh-hutline">🙈 Kinh hụt ${hut}/${v.hut_max||3}${S.lt.hut?.fine?` · đã bỏ ${xu(S.lt.hut.fine)} vô hũ phạt`:''}</p>`:''}
+    <div class="fh-go">${musicBtn()}</div>
+    <p class="fh-rule">Tự chạm số cô Bảy vừa hô trên tờ của bạn. Đủ ${need(v)===1?'một hàng ngang':need(v)===2?'hai hàng ngang trên một tờ':'cả tờ'} thì bấm “Kinh!” trước người khác. Kinh hụt bị phạt nhẹ nha!</p></section>`;
+}
+
+/* ---- actions ---- */
 async function buy(){
-  if(S.busy)return;S.busy=true;S.flash=null;render();
-  const r=await send('fair_loto_buy',{});S.busy=false;
-  if(r?.fair){S.lt.id=null;syncLoto();}
+  if(S.busy)return;
+  const g=G(),lt=S.lt;
+  const mode=curMode();
+  const p=g?{tier:lt.tier,n:lt.n,...(mode?{mode}:{}),...(lt.cl?{cl:[lt.cl,lt.cls]}:{}),...(lt.cot!=null?{cot:[lt.cot,lt.cots]}:{})}:{};
+  S.busy=true;S.flash=null;render();
+  const r=await send('fair_loto_buy',p);S.busy=false;
+  if(r?.fair){S.lt.id=null;S.lt.hot=false;syncLoto();S.lt.say=MC.ready;react('👏',3);}
+  else if(S.err==='fair_loto_mode')await S.env.api.refresh().catch(()=>{/* the next state */});   // the vòng changed meanwhile
   render();resumeLoto();
 }
 async function kinh(){
-  const v=L();if(!v||S.lt.claiming)return;
-  const row=readyRow(v);if(row<0)return;
+  const v=L();if(!playing(v)||S.lt.claiming)return;
+  let p;
+  if(!G()){   // the older server: a full row of the first card, by the player's own marks
+    const m=new Set(S.lt.marks[0]||[]),row=v.card.findIndex(r=>r.every(n=>m.has(n)));
+    if(row<0){S.flash={text:'Hàng nào đủ 5 số mới kinh được nha!',kind:'warn'};render();return;}
+    p={row,at:S.lt.shown};
+  }else{const ci=bestCard(v);p={card:ci,at:S.lt.shown,marks:[...(S.lt.marks[ci]||[])]};}
   S.lt.claiming=true;pauseLoto();render();
-  const r=await send('fair_loto_kinh',{row,at:S.lt.shown});
+  const r=await send('fair_loto_kinh',p);
   S.lt.claiming=false;
-  if(r?.fair?.won){S.lt.won={prize:r.fair.prize,titles:r.fair.titles||[],points:r.fair.points||0};sfx('kinh');titles(r.fair);}
-  else if(r?.fair){S.lt.over={by:r.fair.by||v.npc_name,mine:true};sfx('lose');}
-  else{resumeLoto();}
+  const x=r?.fair;
+  if(x?.won){S.lt.won={prize:x.prize,mode:x.mode||v.mode,titles:x.titles||[],points:x.points||0};S.lt.say=pick(MC.win);sfx('kinh');react('🎉',4);react('👏',3);titles(x);}
+  else if(x?.hut){S.lt.hut={...x};S.lt.say=pick(MC.hut);sfx('lose');react('😂',4);
+    if(x.out){S.lt.over={by:v.npc_name,out:true};}}
+  else if(x){S.lt.over={by:x.by||v.npc_name,mine:!x.late};S.lt.say=pick(MC.lose).replace('{who}',x.by||v.npc_name);sfx('lose');}
   saveLoto();render();
+  if(!S.lt.over&&!S.lt.won)resumeLoto();
 }
-function mark(n){
-  const v=L();if(!v)return;
-  if(!calledSet(v).has(n)){S.flash={text:`Số ${n} chưa gọi đâu, đợi Cô Út hô nha!`,kind:'warn'};render();return;}
-  const i=S.lt.marks.indexOf(n);if(i>=0)S.lt.marks.splice(i,1);else S.lt.marks.push(n);
+function mark(ci,n){
+  const v=L();if(!playing(v))return;
+  if(!calledSet(v).has(n)){S.flash={text:v.mode==='nguoc'?`Số ${n} chưa gọi đâu. Vòng lật ngược nhớ lật số lại nha!`:`Số ${n} chưa gọi đâu, đợi cô Bảy hô nha!`,kind:'warn'};render();return;}
+  const list=S.lt.marks[ci]||(S.lt.marks[ci]=[]);
+  const i=list.indexOf(n);if(i>=0)list.splice(i,1);else list.push(n);
   S.flash=null;sfx('mark');saveLoto();render();
 }
 
@@ -612,7 +824,7 @@ async function onClick(op,data){
   const b=S.bc,x=S.xd;
   switch(op){
     case'close':S.dlg.close();return;
-    case'tab':S.tab=data.tab;S.flash=null;if(S.tab!=='lt')pauseLoto();render();S.dlg.querySelector('.fh-body')?.scrollTo?.(0,0);if(S.tab==='board')loadBoard();if(S.tab==='lt')resumeLoto();if(S.tab==='ring')startRingLoop();return;
+    case'tab':S.tab=data.tab;S.flash=null;if(S.tab!=='lt'){pauseLoto();ltMusic();}render();S.dlg.querySelector('.fh-body')?.scrollTo?.(0,0);if(S.tab==='board')loadBoard();if(S.tab==='lt')resumeLoto();if(S.tab==='ring')startRingLoop();return;
     case'oaqstart':oaqStart(data.lv==='kho'?'kho':'de');return;
     case'oaqsel':{if(S.oaq.anim||S.busy)return;const c=Number(data.c);S.oaq.sel=S.oaq.sel===c?null:c;S.oaq.quit=false;sfx('mark');render();return;}
     case'oaqmove':oaqMove(Number(data.d)===-1?-1:1);return;
@@ -633,8 +845,16 @@ async function onClick(op,data){
     case'shakexd':shakeXd();return;
     case'raidok':x.raid=null;S.tab=data.tab||'bc';render();if(S.tab==='lt')resumeLoto();return;
     case'buy':buy();return;
-    case'mark':mark(Number(data.n));return;
+    case'mark':mark(Number(data.c)||0,Number(data.n));return;
     case'kinh':kinh();return;
-    case'fast':S.lt.fast=!S.lt.fast;render();if(S.lt.timer){pauseLoto();resumeLoto();}return;
+    case'ltspeed':S.lt.speed=Math.max(0,Math.min(2,Number(data.v)||0));render();if(S.lt.timer){pauseLoto();resumeLoto();}return;
+    case'lttier':if(G()?.tiers?.[data.v])S.lt.tier=data.v;render();return;
+    case'ltn':S.lt.n=Math.max(1,Math.min(G()?.cards||1,Number(data.v)||1));render();return;
+    case'ltcl':S.lt.cl=data.v==='chan'||data.v==='le'?data.v:null;render();return;
+    case'ltcot':{const c=data.v===''?null:Number(data.v);S.lt.cot=Number.isInteger(c)&&c>=0&&c<=8?c:null;render();return;}
+    case'ltcls':S.lt.cls=Number(data.v)||2;render();return;
+    case'ltcots':S.lt.cots=Number(data.v)||2;render();return;
+    case'ltcheck':S.lt.check=!S.lt.check;render();return;
+    case'ltmusic':{const on=!musicPref();try{localStorage.setItem(LT_MUSIC,on?'1':'0');}catch{/* storage blocked */}ltMusic();render();return;}
   }
 }

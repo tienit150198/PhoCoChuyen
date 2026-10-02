@@ -1,6 +1,6 @@
 /* ==========================================================================
    🏮 Hội chợ dân gian (public/js/v4/fair.js): lanterns and bunting, the gate, the ô ăn quan board, the ném vòng
-   shelf, the bầu cua mat and bowl, the lô tô ticket, the back corner's dark mat and the raid, the Bảng vàng. Theme tokens for surfaces and text; the festive colours
+   shelf, the bầu cua mat and bowl, the gánh lô tô (stage, troupe, board, tickets), the back corner's dark mat and the raid, the Bảng vàng. Theme tokens for surfaces and text; the festive colours
    are fixed and mixed into the theme's surface (light themes and "Phố đêm"). Phone first (390px), 44px targets.
    ========================================================================== */
 .fh-sheet{--fh-red:#d9472b;--fh-gold:#f2b53a;--fh-green:#2f8f6a;--fh-blue:#2f7fd1;--fh-paper:#fff7dc;--fh-ink:#4a2a12}
@@ -167,6 +167,114 @@ html[data-theme="dem"] .fh-cell{background:color-mix(in srgb,#000 20%,var(--fh-p
 .fh-cell.marked{border-color:#a3261a;color:#fff;background:radial-gradient(circle,#e2462d 0 58%,#b8301f 60% 100%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
 .fh-kinh.ready{box-shadow:0 0 0 3px var(--fh-gold)}
 @media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .fh-kinh.ready{animation:fh-throb .8s ease-in-out infinite}}
+
+/* ---- 🎱 gánh lô tô: the stage (cô Bảy, curtain, spotlight), the troupe, the crowd, the board, tickets and bets ---- */
+.fh-stage{position:relative;display:flex;align-items:flex-end;gap:10px;min-height:150px;margin:0 0 6px;padding:24px 12px 10px;border-radius:16px 16px 0 0;overflow:hidden;
+  background:linear-gradient(180deg,#3a1240,#6b1d4f 55%,#8c3a2a);color:#fff;box-shadow:var(--shadow-sm)}
+.fh-curtain{position:absolute;inset:0 0 auto 0;height:20px;background:repeating-linear-gradient(90deg,#c0213a 0 18px,#e0344e 18px 26px);
+  -webkit-mask:radial-gradient(circle at 13px 0,#000 16px,transparent 17px) 0 0/26px 20px repeat-x;mask:radial-gradient(circle at 13px 0,#000 16px,transparent 17px) 0 0/26px 20px repeat-x}
+.fh-spot{position:absolute;left:4%;bottom:-20px;width:120px;height:170px;background:radial-gradient(ellipse at 50% 100%,rgba(255,240,180,.45),transparent 70%);pointer-events:none}
+.fh-mc{position:relative;flex:none;display:flex;flex-direction:column;align-items:center;width:86px}
+.fh-mc b{margin-top:-2px;padding:1px 8px;border-radius:999px;background:var(--fh-gold);color:#4a2a00;font-size:.68rem;white-space:nowrap}
+.fh-mcart{width:86px;height:112px;overflow:visible}
+.fh-mc-fan{transform-origin:70px 62px;transform-box:view-box}
+.fh-mcsay{position:relative;flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.fh-mcsay .fh-bubble{align-self:stretch;background:#fff8ee;border-color:#ffd9a8;border-radius:14px 14px 14px 4px}
+.fh-mcsay .fh-bubble small{color:#b8306a}
+.fh-mcsay .fh-bubble p{color:#3b1d10}
+.fh-stage .fh-ball{width:70px;height:70px;font-size:1.8rem}
+.fh-ball.flip{background:radial-gradient(circle at 50% 50%,#f3fff0 0 46%,var(--fh-green) 47% 100%);color:#123d22}
+@media (prefers-reduced-motion:no-preference){
+  html:not(.reduce-motion) .fh-mc-fan{animation:fh-fan 1.4s ease-in-out infinite}
+  html:not(.reduce-motion) .fh-sequin{animation:fh-twinkle 1.2s ease-in-out infinite}
+  html:not(.reduce-motion) .fh-sequin.b{animation-delay:-.6s}
+  html:not(.reduce-motion) .fh-stage.live .fh-mcart{animation:fh-hop 2.3s ease-in-out infinite}
+  html:not(.reduce-motion) .fh-spot{animation:fh-spot 6s ease-in-out infinite}
+}
+@keyframes fh-fan{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(14deg)}}
+@keyframes fh-twinkle{50%{opacity:.25}}
+@keyframes fh-hop{0%,100%{transform:none}12%{transform:translateY(-4px) rotate(-2deg)}24%{transform:none}}
+@keyframes fh-spot{50%{transform:translateX(40px)}}
+.fh-crowd{display:flex;justify-content:space-around;margin:-6px 0 10px;padding:4px 6px;border-radius:0 0 14px 14px;background:color-mix(in srgb,#6b1d4f 18%,var(--surface-2));font-size:1.45rem}
+.fh-crowd span{display:inline-block}
+@media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .fh-crowd span{animation:fh-bob 1.38s ease-in-out infinite;animation-delay:calc(var(--i)*-.23s)}}
+@keyframes fh-bob{50%{transform:translateY(-3px)}}
+.fh-reactlayer{position:absolute;left:0;right:0;top:260px;height:0;pointer-events:none;z-index:3}
+.fh-reactlayer i{position:absolute;bottom:0;font-size:1.6rem;font-style:normal;opacity:0;animation:fh-float 2s ease-out forwards}
+@keyframes fh-float{0%{transform:translateY(0) scale(.6);opacity:0}15%{opacity:1}100%{transform:translateY(-150px) scale(1.2);opacity:0}}
+.fh-acts{display:flex;gap:12px;align-items:center;margin:0 0 12px;padding:10px 12px;border-radius:14px;border:1px dashed color-mix(in srgb,#e85a9a 55%,var(--line));background:color-mix(in srgb,#e85a9a 9%,var(--surface))}
+.fh-acts b{display:block;font-size:.9rem}
+.fh-acts small{display:block;font-size:.86rem;color:var(--ink-2)}
+.fh-performer{position:relative;flex:none;display:inline-grid;place-items:center;width:64px;height:58px;font-size:2rem;white-space:nowrap}
+.fh-act-dance .fh-performer{font-size:1.55rem}
+.fh-ballz{position:absolute;inset:0}
+.fh-ballz b{position:absolute;left:50%;top:50%;width:9px;height:9px;margin:-4px;border-radius:50%;background:var(--fh-red)}
+.fh-ballz b:nth-child(2){background:var(--fh-gold)}
+.fh-ballz b:nth-child(3){background:var(--fh-blue)}
+.fh-notes{position:absolute;top:-6px;right:-10px;font-size:.85rem;font-style:normal;color:#e85a9a}
+@media (prefers-reduced-motion:no-preference){
+  html:not(.reduce-motion) .fh-act-dance .fh-performer{animation:fh-dance .9s ease-in-out infinite alternate}
+  html:not(.reduce-motion) .fh-act-drum .fh-performer{animation:fh-drum .35s ease-in-out infinite alternate}
+  html:not(.reduce-motion) .fh-ballz b{animation:fh-juggle 1.2s linear infinite}
+  html:not(.reduce-motion) .fh-ballz b:nth-child(2){animation-delay:-.4s}
+  html:not(.reduce-motion) .fh-ballz b:nth-child(3){animation-delay:-.8s}
+  html:not(.reduce-motion) .fh-act-skit .fh-performer{animation:fh-sway 1.6s ease-in-out infinite}
+  html:not(.reduce-motion) .fh-notes{animation:fh-notes 1.6s ease-in-out infinite}
+}
+@keyframes fh-dance{from{transform:rotate(-10deg) translateX(-3px)}to{transform:rotate(10deg) translateX(3px)}}
+@keyframes fh-drum{to{transform:translateY(-4px) scale(1.06)}}
+@keyframes fh-juggle{0%{transform:rotate(0) translateY(-24px) rotate(0)}100%{transform:rotate(360deg) translateY(-24px) rotate(-360deg)}}
+@keyframes fh-notes{50%{transform:translateY(-6px);opacity:.6}}
+.fh-ltbuy h4{margin:12px 0 6px;font-size:.95rem}
+.fh-modebar{display:flex;gap:10px;align-items:center;padding:10px;border-radius:12px;background:color-mix(in srgb,var(--fh-gold) 18%,var(--surface-2))}
+.fh-modebar b{display:block}
+.fh-modebar small{display:block;font-size:.84rem;color:var(--ink-2)}
+.fh-modebar.mode-doi{background:color-mix(in srgb,#e85a9a 16%,var(--surface-2))}
+.fh-modebar.mode-nguoc{background:color-mix(in srgb,var(--fh-green) 16%,var(--surface-2))}
+.fh-modebar.mode-dem{background:linear-gradient(90deg,color-mix(in srgb,#3a1240 30%,var(--surface-2)),color-mix(in srgb,var(--fh-gold) 30%,var(--surface-2)))}
+.fh-modeico{flex:none;font-size:1.8rem}
+.fh-nextmodes{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0 0;font-size:.78rem;color:var(--muted)}
+.fh-nextmode{padding:2px 8px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2)}
+.fh-lttiers{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.fh-tier{min-height:52px;padding:6px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;cursor:pointer}
+.fh-tier b{display:block;font-size:.9rem}
+.fh-tier small{display:block;font-size:.78rem;color:var(--ink-2)}
+.fh-tier.on{border-color:#e85a9a;background:color-mix(in srgb,#e85a9a 14%,var(--surface));box-shadow:0 0 0 2px color-mix(in srgb,#e85a9a 35%,transparent)}
+.fh-chip.small{width:40px;height:40px;font-size:.85rem}
+.fh-pot{margin:10px 0 0;font-size:.92rem}
+.fh-pot small{color:var(--muted)}
+.fh-side{margin:10px 0;padding:8px 10px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}
+.fh-side summary{cursor:pointer;font-weight:700;min-height:36px;display:flex;align-items:center}
+.fh-sidebet{margin:10px 0 0}
+.fh-side b{font-size:.95rem}
+.fh-side p b{font-size:inherit}
+.fh-sidebet>small{display:block;font-size:.8rem;color:var(--muted)}
+.fh-picks{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0}
+.fh-picks.cols{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr))}
+.fh-pickb{min-height:40px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:700 .85rem/1 var(--font);cursor:pointer}
+.fh-pickb.on{background:color-mix(in srgb,var(--fh-green) 22%,var(--surface));border-color:var(--fh-green)}
+.fh-why{margin:6px 0 0;font-size:.82rem;color:var(--bad);text-align:center}
+.fh-bigboard{display:grid;grid-template-columns:repeat(15,1fr);gap:2px;margin:0 0 10px;padding:6px;border-radius:12px;background:#2b1530}
+.fh-bigboard i{display:grid;place-items:center;aspect-ratio:1;min-width:0;border-radius:4px;font:700 .62rem/1 var(--font);font-style:normal;color:#8f7a95;background:#3b2242}
+.fh-bigboard i.on{color:#4a2a00;background:#ffd56b}
+.fh-bigboard i.cur{background:#ff7aa8;color:#fff;box-shadow:0 0 0 2px #fff}
+@media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .fh-bigboard i.cur{animation:fh-pop .4s cubic-bezier(.3,1.6,.5,1)}}
+.fh-bigboard.covered{display:block;padding:12px;color:#ffe3f0;font-size:.85rem;text-align:center}
+.fh-ticketcard{position:relative;margin:0 0 10px}
+.fh-cardno{position:absolute;top:-9px;left:10px;padding:0 8px;border-radius:999px;background:#e57aa6;color:#fff;font-size:.7rem;font-weight:800}
+.fh-speed{display:inline-flex;gap:4px}
+.fh-hutline{margin:8px 0 0;font-size:.85rem;color:var(--bad);text-align:center}
+.fh-sticker{font-size:3rem;line-height:1}
+@media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .fh-sticker{animation:fh-pop .5s cubic-bezier(.3,1.6,.5,1)}}
+.fh-sideres{display:flex;flex-direction:column;gap:4px}
+.fh-sideres span{font-size:.88rem}
+.fh-sideres .good{color:var(--good,#2f8f6a);font-weight:700}
+.fh-sideres .bad{color:var(--muted)}
+.fh-ltday ol{margin:6px 0;padding-left:0;list-style:none;display:grid;gap:4px}
+.fh-ltday li{display:flex;align-items:center;gap:8px;font-size:.9rem}
+.fh-ltday li.me b{color:var(--accent-text)}
+.fh-ltday li em{margin-left:auto;font-style:normal;color:var(--muted)}
+.fh-crownmini{font-size:.75rem;padding:1px 6px;border-radius:999px;background:color-mix(in srgb,var(--fh-gold) 30%,var(--surface))}
 
 /* ---- 🏆 Bảng vàng ---- */
 .fh-crown{background:linear-gradient(180deg,color-mix(in srgb,var(--fh-gold) 22%,var(--surface)),var(--surface))}
