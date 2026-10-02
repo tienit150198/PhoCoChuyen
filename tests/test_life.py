@@ -7,7 +7,7 @@ from game import invest as iv
 from game import journey as jr
 from game import life as lf
 from game.engine import GameError, apply_action, new_state, public_state, validate_state
-from game.life_content import ASK, COMFORT, COPE, HARD, JOYS, WORK
+from game.life_content import ASK, COMFORT, COPE, HARD, JOYS, NOT_FOR_CALLING, WORK
 from game.content import CAREERS
 
 
@@ -404,6 +404,23 @@ class Taken(unittest.TestCase):
         self.assertTrue(lf._taken(s))
         self.assertFalse(lf._taken(dict(marriage=dict(spouse=None))))
         self.assertFalse(lf._taken({}))
+
+
+class Calling(unittest.TestCase):
+    def test_a_monk_gets_no_heartbreak_beer_or_meat(self):
+        L = dict(recent={}, bonds={})
+        self.assertNotIn('that_tinh', {x['cat'] for x in lf._hard_pool(L, 40, 'pagoda')})
+        self.assertIn('that_tinh', {x['cat'] for x in lf._hard_pool(L, 40, 'teacher')})
+        cats = tuple({c for k in COMFORT for c in k['cats']})
+        seen = set()
+        for seed in range(300):
+            for cat in cats:
+                k = lf._pick_comfort({}, L, (cat,), 40, 'pagoda', random.Random(seed))
+                if k:
+                    seen.add(k)
+        self.assertTrue(seen)
+        self.assertFalse(seen & ({'work_karaoke'} | set(NOT_FOR_CALLING)), seen)
+        self.assertIn('khoa_bia', {lf._pick_comfort({}, L, ('ru',), 40, 'teacher', random.Random(i)) for i in range(200)})
 
 
 if __name__ == '__main__':

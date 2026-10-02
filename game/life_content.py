@@ -623,6 +623,9 @@ COMFORT = [
       'Ăn cơm tối với Cô Ba', 'Bữa cơm có canh chua, cá kho. Cô Ba không nhắc chuyện kia câu nào.', 16, advice=True),
 ]
 
+# Meat, fish, snails or beer: never offered to a monk (CALLING), nor is a karaoke night with the 'work' crowd.
+NOT_FOR_CALLING = ('khoa_bia', 'ba_tam_chao', 'friends_bien', 'friends_pho', 'khoa_khuyen', 'co_ba_khuyen')
+
 # Gifts after a scam or a loss (instead of money).
 GIFTS = {
     'phone': dict(emoji='📱', name='Chiếc điện thoại cũ', text='Anh Khoa đưa chiếc điện thoại cũ còn xài tốt: “Xài tạm nha em.”', who='anh_khoa', spirit=16, money=0),

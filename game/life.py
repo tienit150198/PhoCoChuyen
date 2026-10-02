@@ -32,7 +32,7 @@ import copy
 import random
 
 from .life_content import (ASK, CALLING, CATS, COMFORT, COPE, COPE_INDEX, DORM, FACTS, FRIENDS, GIFTS, GOSSIPS, HARD, IMPULSE,
-                           JOYS, ROOMMATES, SICK, TOKENS, WORK)
+                           JOYS, NOT_FOR_CALLING, ROOMMATES, SICK, TOKENS, WORK)
 from . import archive as ar
 
 VERSION = 1
@@ -381,8 +381,8 @@ def _why(s: dict, c: dict) -> str | None:
 def _pick_comfort(s: dict, L: dict, cats: tuple, day: int, career: str | None, rng: random.Random,
                   advice: bool = False) -> str | None:
     pool = [k for k in COMFORT if set(k['cats']) & set(cats)]
-    if career in CALLING:      # the abbot does not take anyone out to karaoke
-        pool = [k for k in pool if k['who'] != 'work']
+    if career in CALLING:      # the abbot does not take anyone out to karaoke; no beer, meat or fish for a monk
+        pool = [k for k in pool if k['who'] != 'work' and k['id'] not in NOT_FOR_CALLING]
     if advice:
         pool = [k for k in pool if k['advice']] or pool
     fresh = [k for k in pool if day - L['recent'].get(k['id'], -99) >= COMFORT_RECENT]
@@ -628,6 +628,8 @@ def _hard_pool(L: dict, day: int, career: str | None, facts: set | None = None, 
         if x['careers'] and career not in x['careers']:
             continue
         if x['id'] in PARTNER_STORIES or (taken and x['cat'] == 'that_tinh'):
+            continue
+        if career in CALLING and x['cat'] == 'that_tinh':     # a monk has no heartbreak days
             continue
         if day <= CALM_UNTIL and not x['mild']:
             continue
