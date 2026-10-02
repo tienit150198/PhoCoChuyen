@@ -124,7 +124,7 @@ export async function openFair(env,data={}){
   }
   const f=F();if(typeof f.now==='number')S.skew=f.now*1000-Date.now();
   const sheet=document.getElementById('sheet');if(sheet?.open)env.closeSheet();
-  await ensureCss();
+  await Promise.all([ensureCss(),loadWalk()]);
   const d=dialog();
   if(data?.tab)S.tab=data.tab;
   else if(!f.open)S.tab='home';
@@ -134,6 +134,7 @@ export async function openFair(env,data={}){
   if(!d.open){d.showModal();d.scrollTop=0;}
   render();
   claimGift();
+  ltMusic();
   clearInterval(S.tick);S.tick=setInterval(tickLabels,1000);
   if(S.tab==='board')loadBoard();
   if(S.tab==='lt')resumeLoto();
@@ -202,6 +203,8 @@ function render(){
   keep(()=>{const root=S.dlg.querySelector('.fh-root');tplEl.innerHTML=page();
     const box=document.createElement('div');box.append(tplEl.content);morph(root,Object.assign(box,{className:root.className}));});
   if(S.dlg.getAttribute('aria-busy')!==String(S.busy))S.dlg.setAttribute('aria-busy',String(S.busy));
+  const walking=walkOn();if(S.dlg.classList.contains('fh-walking')!==walking)S.dlg.classList.toggle('fh-walking',walking);
+  if(walking&&S.tab==='home')WALK.mount();
 }
 function tickLabels(){
   if(!S.dlg?.open)return;
@@ -235,7 +238,8 @@ function strip(){
 function nav(){
   if(S.tab==='home')return '';
   const [e,l]=GAMES[S.tab]||GAMES.home;
-  return `<nav class="fh-nav" aria-label="Hội chợ">${btn('<span aria-hidden="true">‹</span> Cổng hội','tab',{tab:'home'},'ghost small fh-back',' data-fh-key="home"')}<b><span aria-hidden="true">${e}</span> ${esc(l)}</b></nav>`;
+  const back=walkOn()?'<span aria-hidden="true">←</span> Ra lối đi':'<span aria-hidden="true">‹</span> Cổng hội';
+  return `<nav class="fh-nav" aria-label="Hội chợ">${btn(back,'tab',{tab:'home'},'ghost small fh-back',' data-fh-key="home"')}<b><span aria-hidden="true">${e}</span> ${esc(l)}</b></nav>`;
 }
 /** The small-stake stalls: what is left of today's loss cap. */
 const luckLine=()=>{const t=F().today||{};if(R().nocap)return '';return `<p class="fh-luck-left">🎟️ Thử vận hôm nay còn chơi được <b>${xu(t.left)}</b> <small>(thua tối đa ${xu(R().cap)} mỗi ngày)</small></p>`;};
@@ -260,7 +264,8 @@ const say=(who,text,cls='')=>`<div class="fh-npcline ${cls}"><span class="fh-npc
 /* ---- 🏮 Cổng hội: the earn-xu stalls first, then the small-stake ones ---- */
 const meter=(e,label='Hôm nay đã kiếm')=>{if(e?.nocap)return '';e=e||{today:0,cap:1};const pct=Math.min(100,Math.round(e.today/Math.max(1,e.cap)*100));
   return `<span class="fh-meter${e.today>=e.cap?' full':''}" aria-hidden="true"><i style="width:${pct}%"></i></span><small class="fh-meterlabel">${e.today>=e.cap?'Hôm nay đã kiếm đủ':label} <b>${fmt(e.today)}</b>/${xu(e.cap)}</small>`;};
-function homeView(){
+const homeView=()=>walkOn()?WALK.html():gateList();
+function gateList(){
   const f=F(),r=R(),e=f.earn||{},o=f.oaq,p=f.points||{},pr=r.oaq_prize||{de:15,kho:30};
   const oaqLine=o?.stage==='play'?`<em class="fh-live">Đang chơi dở với ${esc(o.name)} · chơi tiếp</em>`:`Đấu với Bé Bi (thắng +${pr.de} xu) hoặc Ông Hai (thắng +${pr.kho} xu)`;
   const luck=(id,ico,name,sub,warn='')=>`<button type="button" class="fh-luckgame" data-fh="tab" data-tab="${id}" data-fh-key="g-${id}"><span class="fh-lico" aria-hidden="true">${ico}</span><span class="grow"><b>${name}</b><small>${sub}</small></span>${warn}${f.loto?.stage==='play'&&id==='lt'?'<i class="fh-dot" aria-label="đang chơi"></i>':''}</button>`;
@@ -690,7 +695,9 @@ const musicPref=()=>{try{return localStorage.getItem(LT_MUSIC)!=='0';}catch{retu
 const gameMusic=()=>{const st=S.env?.api?.state?.settings||{};return st.music!==false&&st.musicTrack!=='off';};
 function ltMusic(){
   const st=S.env?.api?.state?.settings||{};
-  const want=gameMusic()&&musicPref()&&!!S.dlg?.open&&S.tab==='lt'&&F().open;
+  const want=gameMusic()&&musicPref()&&!!S.dlg?.open&&F().open&&(S.tab==='lt'||S.tab==='home'&&walkOn());
+  const level=Math.max(0,Math.min(1,(st.musicVolume??45)/100))*(S.tab==='lt'?.5:.3);
+  if(want&&LM.on&&LM.g){const c=audioContext();if(c)try{LM.g.gain.setTargetAtTime(level,c.currentTime,.5);}catch{/* gone */}}
   if(want&&!LM.on){
     const c=audioContext();if(!c)return;
     LM.on=true;wantAudio('fair',true);duck('fair',true);
@@ -700,7 +707,7 @@ function ltMusic(){
     LM.loading.then(buf=>{
       if(!LM.on||LM.src)return;
       LM.buf=buf;const src=c.createBufferSource();src.buffer=buf;src.loop=true;src.connect(LM.g);src.start();LM.src=src;
-      const vol=Math.max(0,Math.min(1,(st.musicVolume??45)/100))*.5,t=c.currentTime;LM.g.gain.setValueAtTime(0,t);LM.g.gain.linearRampToValueAtTime(vol,t+1.2);
+      const t=c.currentTime;LM.g.gain.setValueAtTime(0,t);LM.g.gain.linearRampToValueAtTime(level,t+1.2);
     }).catch(()=>{LM.loading=null;/* the show goes on without music */});
   }else if(!want&&LM.on){
     LM.on=false;duck('fair',false);wantAudio('fair',false);
@@ -711,10 +718,10 @@ function ltMusic(){
     if(!S.dlg?.open){LM.loading=null;LM.buf=null;}   // a decoded song is MBs: kept only while the fair is open
   }
 }
-function musicBtn(){
+function musicBtn(name='Nhạc gánh'){
   if(!gameMusic())return `<button type="button" class="btn ghost small" disabled title="Nhạc nền đang tắt trong Cài đặt">🔇 Nhạc (đang tắt trong Cài đặt)</button>`;
   const on=musicPref();
-  return btn(on?'🔊 Nhạc gánh':'🔇 Nhạc gánh','ltmusic',{},'ghost small',` aria-pressed="${on}" data-fh-key="ltmusic"`);
+  return btn(`${on?'🔊':'🔇'} ${name}`,'ltmusic',{},'ghost small',` aria-pressed="${on}" data-fh-key="ltmusic"`);
 }
 
 /* ---- views ---- */
@@ -877,6 +884,14 @@ function mark(ci,n){
   S.flash=null;sfx('mark');saveLoto();render();
 }
 
+/* ---- 🏮 Đi dạo hội chợ: ./fair-walk.js (loaded with the fair's styles, set up with this file's helpers) ---- */
+let WALK=null,walkLoad=null;
+function loadWalk(){
+  return walkLoad??=import('./fair-walk.js').then(m=>{WALK=m.setup({S,F,esc,list:gateList,bar:()=>gameMusic()?musicBtn('Nhạc hội'):'',
+    go:tab=>onClick('tab',{tab})});}).catch(e=>{console.warn('hội chợ: no fairground',e);});   // the list stays
+}
+const walkOn=()=>!!WALK?.active();
+
 /* ---- 🎯 Phóng phi tiêu: ./fair-darts.js (set up on first use, with this file's helpers) ---- */
 let DT=null;
 const dt=()=>DT??=dartsSetup({S,F,btn,say,xu,esc,send,render,sfx,pick,reduce,titles});
@@ -973,7 +988,7 @@ async function onClick(op,data){
   const b=S.bc,x=S.xd;
   switch(op){
     case'close':S.dlg.close();return;
-    case'tab':S.tab=data.tab;S.flash=null;S.anchor='';if(S.tab!=='lt'){pauseLoto();ltMusic();}render();S.dlg.scrollTop=0;if(S.tab==='board')loadBoard();if(S.tab==='lt')resumeLoto();if(S.tab==='ring')startRingLoop();if(S.tab==='dt')dt().start();return;
+    case'tab':S.tab=data.tab;S.flash=null;S.anchor='';if(S.tab!=='lt')pauseLoto();ltMusic();render();S.dlg.scrollTop=0;if(S.tab==='board')loadBoard();if(S.tab==='lt')resumeLoto();if(S.tab==='ring')startRingLoop();if(S.tab==='dt')dt().start();return;
     case'oaqstart':oaqStart(data.lv==='kho'?'kho':'de');return;
     case'oaqsel':{if(S.oaq.anim||S.busy)return;const c=Number(data.c);S.oaq.sel=S.oaq.sel===c?null:c;S.oaq.quit=false;sfx('mark');render();return;}   // owner 03/10: change or unpick the ô freely until a direction is chosen
     case'oaqmove':oaqMove(Number(data.d)===-1?-1:1);return;
