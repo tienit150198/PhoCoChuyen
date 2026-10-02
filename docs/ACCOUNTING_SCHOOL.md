@@ -22,14 +22,18 @@ Mẫu báo cáo lấy mã và nhãn từ [TT99 chính thức trên Công báo](h
 
 Hoàn thành sổ và 4 báo cáo mới nhận lương ca thực hành, một lần mỗi kỳ. Trong chế độ Hành trình, lương về ví cá nhân theo cơ chế lương hiện có, không khép ca nghề đang làm hay đẩy ngày sống. Ngoài Hành trình, lương theo quỹ nghề hiện có.
 
+## Gợi ý và tra cứu
+
+Mỗi bài tập chưa giải và mỗi chứng từ đã mở có hai gợi ý, bấm “Cần gợi ý?” để xem lần lượt: (1) đọc lại phần nào, tìm gì trong chứng từ; (2) nhóm tài khoản dùng tới và tính chất tăng ghi Nợ/Có, không nêu số hiệu, bên ghi hay số tiền. Trả lời sai nhận gợi ý thứ ba theo đúng chỗ sai (dòng nào, bên Nợ/Có, đảo bên, số tiền chưa khớp, ô hay cặp nào chưa đúng). Bài thi tính điểm không có gợi ý. “Tra cứu TT99” cho tìm số hiệu hoặc tên tài khoản, kèm nhóm và tính chất. Vị trí phương án của câu nhiều lựa chọn, sắp xếp và ghép cặp được xáo theo đề nên vị trí/mã phương án không lộ đáp án; tham chiếu của chứng từ không còn liệt kê tài khoản; báo cáo B01–B03/B09 đang lập được ẩn tới khi chấm đúng.
+
 ## Dữ liệu và kiểm tra
 
-Bản lưu cũ tự thêm trạng thái học rỗng. Tiến độ bài, bài thi và chứng nhận được kiểm tra bằng bộ đề gốc. Kỳ sau cần hồ sơ bài làm đã hoàn thành của tất cả kỳ trước. Định khoản chỉ nhận 3 trường tài khoản Nợ/Có/số tiền, tránh dữ liệu phụ không giới hạn. Không thể nhận lại lương đã trả bằng gửi lại lệnh.
+Khối `accounting_school` chỉ được tạo khi người chơi mở Học kế toán lần đầu (lệnh `as_*`), không thêm vào bản lưu khi nâng cấp: bản lưu chưa học giữ nguyên, bản 1.4.8 vẫn nhận bản lưu có khối này (không kiểm khóa lạ) nên phát hành cuốn chiếu và quay lui đều an toàn. `public_state` chỉ mang bản tóm tắt (hệ số lương, chứng nhận, kỳ đang làm, khoảng 150 byte); nội dung từng tab đi kèm kết quả lệnh `as_*` (`accounting_view`, không lưu vào biên nhận lệnh). Tiến độ bài, bài thi và chứng nhận được kiểm tra bằng bộ đề gốc; kỳ đã khóa chỉ giữ số lần thử lại (bút toán là đáp án cố định). Khi đầy đủ 12 kỳ, khối này khoảng 36 KB. Định khoản chỉ nhận 3 trường tài khoản Nợ/Có/số tiền, tránh dữ liệu phụ không giới hạn. Không thể nhận lại lương đã trả bằng gửi lại lệnh.
 
 Kiểm thử bao phủ toàn bộ đáp án biên soạn, học/thi lại/chứng nhận, lương thường và thử việc, ví cá nhân, bản lưu cũ và dữ liệu sửa sai, đầy đủ 12 tháng, tiền không âm ở từng bước, cân đối sổ/B01/B03 và giao diện 7 dạng bài.
 
 ```text
-python -m unittest tests.test_accounting_content tests.test_accounting_school tests.test_accounting_company tests.test_accounting_ui
+python -m unittest tests.test_accounting_content tests.test_accounting_school tests.test_accounting_company tests.test_accounting_ui tests.test_accounting_release
 node scripts/check_js.mjs
 python scripts/run_checks.py
 ```
