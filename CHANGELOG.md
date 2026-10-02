@@ -1,3 +1,11 @@
+# v1.4.6 — 🚗 Xe, máy bay, du thuyền
+
+Chủ game (02/10): "thêm cả cái xe, máy bay, du thuyền cho mọi người mua nhé".
+
+- `game/garage.py` + `public/js/v4/garage.js`: 11 phương tiện, 120 xu (xe đạp) tới 90.000 xu (phản lực riêng). Trả đủ một lần (ví trước, rồi tài khoản ngân hàng), không vay, không quẹt thẻ, ví không âm; mỗi mẫu một chiếc; 11 màu sơn; biển tên chỉ chủ thấy.
+- Chip xe "đang đi" trên hồ sơ, xe đậu trước nhà, trên thẻ Phố nghề. Một chuyến đi chơi mỗi ngày sống (+tinh thần, tiền xăng ghi trên nút). Bán lại 70%.
+- Save cũ không đổi (`journey.garage` chỉ tạo khi mua chiếc đầu tiên). Không phí ngầm.
+
 # v1.4.5 — 💼 Lương nghề văn phòng ổn hơn cho người mới
 
 Chủ game duyệt (02/10): "để tiền ổn xíu cho mn chơi game này, tăng xíu nhé". Áp dụng cho Thuế & lương, Kế toán doanh nghiệp, Kế toán hợp nhất (`game/careers/office.py`: `pay`, `rookie`, `wrong_min`).
