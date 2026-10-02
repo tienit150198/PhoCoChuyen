@@ -9,7 +9,7 @@ import {certInfo,certCss} from './certificates.js';
 import {lockChip} from '../careers/stage_fold.js';
 import {wordsFor} from '../scenes/index.js';
 import {fundLabel} from './money.js';
-import {orderQuote,vans,vansLine} from './restock.js';
+import {orderQuote,fitDraft,vans,vansLine} from './restock.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 /** The workplace money word the 💰 chip uses too ("Quỹ tiệm", "Quỹ nông trại"…; v4/money.js). */
@@ -75,8 +75,15 @@ export function inventoryView(env){
   // Several items short: one tap puts them all in ONE draft at a supplier that sells every one of them.
   // A supplier whose draft still has room for these lines comes first (inv_cart takes at most cart_lines; `fit` leaves the rest out).
   const lineCap=Number(inv.cart_lines)||8,roomFor=(x,ids)=>{const k=cartOf(x.id);return (k?.lines.length||0)+ids.filter(id=>!k?.lines.some(l=>l.item===id)).length<=lineCap;};
-  const fillGo=(ids,label,qty)=>{const pref=ui.orderRush?'express':'partner',list=[sups.find(x=>x.id===pref),...sups].filter(x=>x&&ids.every(id=>sells(x,id))),s=list.find(x=>roomFor(x,ids))||list[0];
-    return s?{act:'v4CartFill',data:{supplier:s.id,items:ids.map(id=>`${id}:${qty(id)}`).join(',')},label}:null;};
+  // The draft it offers is one the player can place (restock.js fitDraft): no more lines than the draft has
+  // left (the nail shop, 20 items low, sent them all and inv_cart refused the lot) and trimmed to what the
+  // fund pays. Under two lines: null (the single-item order form below says why). `label(n)`: the button.
+  const lineFree=x=>lineCap-(cartOf(x.id)?.lines.length||0);
+  const fillGo=(ids,label,qty)=>{const pref=ui.orderRush?'express':'partner',list=[sups.find(x=>x.id===pref),...sups].filter(x=>x&&ids.every(id=>sells(x,id)));
+    const s=list.find(x=>roomFor(x,ids))||[...list].sort((a,b)=>lineFree(b)-lineFree(a))[0];
+    if(!s||lineFree(s)<1)return null;
+    const lines=fitDraft(ids.map(id=>({id,cost:byId[id].cost,q:qty(id)})),s,Number(c.money)||0,{free:lineFree(s),have:Number(cartOf(s.id)?.goods)||0});
+    return lines.length>=2?{act:'v4CartFill',data:{supplier:s.id,items:lines.map(l=>`${l.id}:${l.q}`).join(',')},label:label(lines.length),n:lines.length}:null;};
 
   /* ONE next step for this room (guide.js), in order of what gets goods onto the shelf soonest. */
   const steps=[];
@@ -104,10 +111,13 @@ export function inventoryView(env){
     steps.push(full&&ready[0]?{ok:null,label:'Mở thùng đã tới rồi đặt tiếp',go:{act:'v4InvOpen',data:{order:ready[0].id},label:'📦 Mở thùng đã tới & xếp lên kệ'}}
       :full&&o?{ok:null,label:'Đợi thùng về rồi đặt tiếp',note:o.left_label||o.eta_label||'',go:today(o)?waitGo:null}:{ok:null,label:`Đặt ${pick.name}`,go:{act:'v4OrderGo',data:{item:pick.id},label:`🚚 Đặt ${name(pick)}`}});}
   if(!steps.length&&cartNow&&cartNow.n&&!cartNow.short&&!cartNow.below_min&&!vans(inv).full)steps.push({ok:null,label:'Đặt đơn gộp',go:{act:'v4CartGo',data:{supplier:cartNow.supplier},label:`🚚 Đặt đơn gộp · ${cartNow.n} món`}});
+  // The open draft cannot be placed yet: the reason as the step (the draft card shows it too), not another draft to fill.
+  if(!steps.length&&cartNow&&cartNow.n&&(cartNow.short||cartNow.below_min))
+    steps.push({ok:null,label:cartNow.short?`Bớt hàng trong đơn: ${fundName(api.state.current)} thiếu ${fmt(cartNow.short)} xu`:`Thêm hàng: đơn gộp từ ${fmt(cartNow.min_order)} xu`});
   if(!steps.length&&!cartNow){
     const want=missing.filter(id=>!arriving[id]&&room(id)>0&&!inCart(id));
-    const go=want.length>=2?fillGo(want,`🛒 Gộp ${want.length} món thiếu · một đơn`,id=>Math.min(room(id),Math.max(need(id)-stock(id),10))):null;
-    if(go)steps.push({ok:null,label:`Gộp ${want.length} món thiếu vào một đơn`,go});
+    const go=want.length>=2?fillGo(want,n=>`🛒 Gộp ${n} món thiếu · một đơn`,id=>Math.min(room(id),Math.max(need(id)-stock(id),10))):null;
+    if(go)steps.push({ok:null,label:`Gộp ${go.n} món thiếu vào một đơn`,go});
   }
   if(!steps.length)for(const id of missing){if(arriving[id]||inCart(id))continue;steps.push({ok:null,label:`Nhập ${byId[id].name}`,go:{act:'v4Order',data:{item:id},label:`📦 Nhập ${name(byId[id])}`}});break;}
   if(!steps.length&&focus.length&&!cartNow){const k=carts.find(k=>k.lines.some(l=>focus.includes(l.item)));
@@ -118,10 +128,10 @@ export function inventoryView(env){
   }
   if(!steps.length&&!focus.length){
     const lowFree=low.filter(i=>room(i.id)>0&&!inCart(i.id)).map(i=>i.id);
-    const fill=lowFree.length>=2?fillGo(lowFree,`🛒 Gộp ${lowFree.length} món sắp hết · một đơn`,id=>Math.min(room(id),10)):null;
+    const fill=lowFree.length>=2?fillGo(lowFree,n=>`🛒 Gộp ${n} món sắp hết · một đơn`,id=>Math.min(room(id),10)):null;
     if(ready.length)steps.push({ok:null,label:'Mở thùng',go:{act:'v4InvOpen',data:{order:readyS[0].id},label:'📦 Mở thùng & xếp lên kệ'}});
     else if(carts.length&&!cartNow)steps.push({ok:null,label:'Đặt đơn đang soạn',go:{act:'v4Cart',data:{supplier:carts[0].supplier,open:'1'},label:`🛒 Xem đơn đang soạn · ${carts[0].lines.length} món`}});
-    else if(fill)steps.push({ok:null,label:`Nhập thêm ${lowFree.length} món sắp hết`,go:fill});
+    else if(fill)steps.push({ok:null,label:`Nhập thêm ${fill.n} món sắp hết`,go:fill});
     else if(low.length)steps.push({ok:null,label:`Nhập thêm ${low[0].name}`,go:{act:'v4Order',data:{item:low[0].id},label:`📦 Nhập thêm ${name(low[0])}`}});
     else if(tonight)steps.push({ok:null,label:'Xem hàng hết hạn tối nay',go:{act:'v4InvTab',data:{tab:'lots'},label:'⏰ Xem hàng hết hạn tối nay'}});
   }

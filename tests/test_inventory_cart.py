@@ -157,6 +157,48 @@ class FullDraft(unittest.TestCase):
         self.assertEqual(j.state, before)
 
 
+class LongBatch(unittest.TestCase):
+    """The nail shop opens with 20 items low and the stock room's "🛒 Gộp N món" step listed them all:
+    inv_cart refused the whole batch ("Danh sách hàng không hợp lệ."). A `fit` batch longer than a draft
+    now fills the draft and says what stayed out; without `fit` the old limit stands."""
+
+    def low(self, j):
+        inv = public_inv(j)
+        return [i['id'] for i in I.catalogue('nail') if inv['stock'].get(i['id'], 0) <= 6]
+
+    def test_nail_shop_twenty_low_items(self):
+        j = Journey('nail')
+        low = self.low(j)
+        self.assertGreater(len(low), I.CART_LINES)
+        r = j.act('inv_cart', supplier='partner', op='add', lines=[dict(item=i, qty=10) for i in low], fit=True)
+        self.assertEqual([l['item'] for l in cart(j)['lines']], low[:I.CART_LINES])
+        self.assertIn(f'còn {len(low) - I.CART_LINES} món chưa thêm', r['message'])
+        validate_state(j.state)
+
+    def test_guide_sized_draft_is_placed(self):
+        # What views.js fillGo now sends for a fresh nail shop (restock.js fitDraft, 320 xu in the fund).
+        j = Journey('nail')
+        lines = [dict(item=i, qty=6) for i in self.low(j)[:I.CART_LINES]]
+        lines[0]['qty'] = 5
+        j.act('inv_cart', supplier='partner', op='add', lines=lines, fit=True)
+        k = cart(j)
+        self.assertEqual((k['n'], k['short']), (I.CART_LINES, 0))
+        money = j.c['money']
+        r, _ = place(j)
+        self.assertEqual(j.c['money'], money - k['total'])
+        validate_state(j.state)
+
+    def test_limits_without_fit_and_too_long(self):
+        j = Journey('nail')
+        low = self.low(j)
+        before = copy.deepcopy(j.state)
+        with self.assertRaises(GameError):
+            j.act('inv_cart', supplier='partner', op='add', lines=[dict(item=i, qty=1) for i in low[:I.CART_LINES + 1]])
+        with self.assertRaises(GameError):
+            j.act('inv_cart', supplier='partner', op='add', lines=[dict(item=low[0], qty=1)] * (I.FIT_LINES + 1), fit=True)
+        self.assertEqual(j.state, before)
+
+
 class Prices(unittest.TestCase):
     def test_bulk_tiers_on_a_line(self):
         sup = I.supplier('restaurant', 'partner')
