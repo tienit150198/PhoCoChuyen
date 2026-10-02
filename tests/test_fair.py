@@ -455,7 +455,7 @@ class LotoShow(FairBase):
             self.act(s, 'fair_loto_buy', tier='vua', n=1, mode=other)
         self.assertEqual(e.exception.code, 'fair_loto_mode')
 
-    def test_caps_hold_with_several_cards_and_side_bets(self):
+    def test_only_the_wallet_limits_a_purchase(self):
         s = story(25)
         with self.assertRaises(GameError) as e:        # 3 × 10 > the wallet: no loans
             self.buy(s, tier='lon', n=3)
@@ -463,9 +463,12 @@ class LotoShow(FairBase):
         s = story(1000)
         s['journey']['fair'] = fh.initial()
         f = s['journey']['fair']
-        f.update(date=fh.vn_date(self.clock.t + 120), net=-500)   # no daily cap any more: only the wallet
-        s, r, rv = self.buy(s, tier='lon', n=1, cl=['chan', 4], cot=[2, 6])
-        self.assertEqual(s['journey']['fair']['rounds'], 1)            # one purchase: one round of ROUNDS_DAY
+        # owner 03/10: no daily money cap and no round limit for the lô tô; the wallet is the only limit
+        f.update(date=fh.vn_date(self.clock.t + 120), net=-(fh.DAY_CAP + 500), rounds=fh.ROUNDS_DAY)
+        s, r, rv = self.buy(s, tier='lon', n=1, cl=['chan', 6], cot=[2, 6])
+        self.assertEqual(s['journey']['fair']['rounds'], fh.ROUNDS_DAY)   # not counted against the other stalls' rounds
+        self.assertLess(s['journey']['fair']['net'], -fh.DAY_CAP)
+        validate_state(s)
 
     def test_side_bets_are_settled_at_the_purchase(self):
         s = story(200)
@@ -550,7 +553,7 @@ class LotoShow(FairBase):
         self.assertTrue(r['fair']['hut'])
         self.assertEqual(s['journey']['fair']['loto']['fk'], 2)
 
-    def test_kinh_hut_a_small_funny_penalty(self):
+    def test_kinh_hut_a_small_funny_penalty_and_no_limit(self):
         s = story(200)
         s, _, rv = self.buy(s)
         k = rv['mine']
@@ -559,14 +562,16 @@ class LotoShow(FairBase):
         s, r = self.act(s, 'fair_loto_kinh', card=0, at=k, marks=marks_for(rv, 0, k) + [uncalled])   # marked a number never called
         self.assertEqual((r['fair']['hut'], r['fair']['fine'], r['fair']['out']), (True, fh.KINH_FINE, False))
         self.assertEqual(s['journey']['wallet'], w - fh.KINH_FINE)
-        for i in range(2, fh.KINH_HUT_MAX + 1):
+        for i in range(2, 8):                           # owner 03/10: "kinh hụt thoải mái", the cards stay in
             s, r = self.act(s, 'fair_loto_kinh', card=0, at=k, marks=[])
-        self.assertTrue(r['fair']['out'])
-        self.assertEqual(s['journey']['fair']['loto']['stage'], 'lost')
-        self.assertEqual(s['journey']['wallet'], w - fh.KINH_FINE * fh.KINH_HUT_MAX)
-        self.assertEqual(s['journey']['fair']['ltd']['fk'], fh.KINH_HUT_MAX)
-        with self.assertRaises(GameError):              # out of the round
-            self.act(s, 'fair_loto_kinh', card=0, at=k, marks=marks_for(rv, 0, k))
+            self.assertEqual((r['fair']['hut'], r['fair']['out'], r['fair']['fk']), (True, False, min(i, 3)))   # the stored count stays ≤ 3 (older servers' bound)
+        self.assertEqual(s['journey']['fair']['loto']['stage'], 'play')
+        self.assertEqual(s['journey']['wallet'], w - fh.KINH_FINE * 7)
+        self.assertEqual(s['journey']['fair']['ltd']['fk'], 7)
+        validate_state(s)
+        s, r = self.act(s, 'fair_loto_kinh', card=0, at=k, marks=marks_for(rv, 0, k))   # and can still win the round
+        self.assertTrue(r['fair']['won'])
+        self.assertNotIn('hut_max', public_state(s)['fair']['loto'])
         validate_state(s)
 
     def test_the_fine_never_takes_the_wallet_below_zero(self):
@@ -630,7 +635,10 @@ class LotoShow(FairBase):
         s = story(200)
         s, _, _ = self.buy(s, tier='lon', n=2, cl=['chan', 2], cot=[0, 2])
         validate_state(s)
-        for patch in (dict(mode='x'), dict(tier='x'), dict(n=4), dict(fk=9), dict(sb={'cl': ['chan', 3]}), dict(sb={'x': [1, 2]}),
+        ok = json.loads(json.dumps(s))
+        ok['journey']['fair']['loto']['fk'] = 9         # any number of Kinh hụt now
+        validate_state(ok)
+        for patch in (dict(mode='x'), dict(tier='x'), dict(n=4), dict(fk=-1), dict(fk=fh.FK_MAX + 1), dict(sb={'cl': ['chan', 3]}), dict(sb={'x': [1, 2]}),
                       dict(sb={'cot': [9, 2]}), dict(extra=1)):
             bad = json.loads(json.dumps(s))
             bad['journey']['fair']['loto'].update(patch)
@@ -853,18 +861,18 @@ class OAQStall(FairBase):
         self.assertEqual(j['history'][-1]['label'], f'{fh.LABELS["oaq"]} · 1 ván thắng')
         validate_state(s)
 
-    def test_the_daily_earning_cap(self):
-        s = story(0)
+    def test_no_daily_earning_cap(self):
+        s = story(0)                                                   # owner 03/10: kiếm không giới hạn
         with mock.patch.object(oaq, 'ai_move', weakest):
             prizes = []
             for _ in range(4):
                 s, _ = self.act(s, 'fair_oaq_start', lv='kho')
                 s, r = self.finish(s)
                 prizes.append(r['fair']['end']['prize'])
-        self.assertEqual(prizes, [30, 30, 30, 0])
-        self.assertTrue(r['fair']['end']['capped'])
-        self.assertEqual(s['journey']['wallet'], fh.EARN_DAY['oaq'])
-        self.assertEqual(public_state(s)['fair']['earn']['oaq'], dict(today=90, cap=90, left=0))
+        self.assertEqual(prizes, [30, 30, 30, 30])
+        self.assertEqual(s['journey']['wallet'], 120)
+        self.assertLessEqual(s['journey']['fair']['earn']['oaq'], fh.EARN_DAY['oaq'])   # the counter stays in the older bound
+        self.assertTrue(public_state(s)['fair']['earn']['oaq']['nocap'])
         self.clock.t = at(2026, 10, 5, 9)                              # a new day
         with mock.patch.object(oaq, 'ai_move', weakest):
             s, _ = self.act(s, 'fair_oaq_start', lv='de')
