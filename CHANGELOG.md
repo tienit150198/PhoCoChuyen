@@ -6,6 +6,8 @@ Chủ game (03/10): "lâu dài người chơi ăn", "thắng 70% số ván", "th
 - Bỏ: trần thua 150 xu/ngày, 400 lượt/ngày, 80 lượt ném vòng/ngày, trần xu kiếm ô ăn quan/ném vòng, trần điểm/ngày. Chỉ ví giới hạn (không bao giờ âm). Các bộ đếm trong save dừng ở mốc cũ để máy chủ 1.4.12 (rolling release) vẫn nhận save.
 - Ném vòng: một chai ăn nhiều vòng, 3 xu mỗi vòng trúng, +8 khi đủ 5.
 - Lô tô (feat/fair-loto2 eef4a92, d2fe874): kinh hụt không giới hạn (phạt 1 xu, không quá ví), số vừa gọi sáng lên trên tờ dò (không tự đánh dấu).
+- Quà vào hội 500 xu (một lần mỗi save mỗi kỳ hội) và Vay nóng của Bà Sáu: 50–500 xu, lãi 20%, một khoản một lúc, trả bất cứ lúc nào; hội tàn thì `fh.settle` thu từ ví, rồi ngân hàng, phần còn lại ghi nợ (ví không bao giờ âm). Save: `journey.fair_cash` (5e6738d).
+- Phóng phi tiêu (game/fair_darts.py, 26ab755): đặt 2–50 xu, 1:1, 70%→45% như trên, +1 điểm mỗi phát trúng, danh hiệu hồng tâm.
 - Nhanh hơn: GAP_MS 1200 → 400, lắc bát 850 → 450 ms.
 - Ô ăn quan: luật như cũ; chọn ô rồi vẫn đổi / bỏ chọn được tới khi bấm hướng rải (máy chủ vẫn chặn đi hai lần bằng ply).
 

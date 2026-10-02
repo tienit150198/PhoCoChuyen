@@ -1,5 +1,11 @@
 {
  "strings": {
+  "(hết nợ)": "(debt cleared)",
+  "Hội chợ thu vay nóng": "Fair collects the quick loan",
+  "Hội chợ đang đóng.": "The fair is closed.",
+  "· trả lại": "· repay",
+  "Vào hội chợ là được ban tổ chức tặng ngay 500 xu tiền vốn chơi hội!": "Enter the fair and the organisers give you 500 xu to play with right away!",
+  "Thiếu vốn? Bà Sáu ở cổng hội cho vay nóng 50–500 xu, lãi 20%, trả lúc nào cũng được, hội tàn thì thu.": "Short on cash? Bà Sáu at the gate lends 50–500 xu at 20% interest. Repay anytime; it's collected when the fair closes.",
   "· thua": "· lost",
   "· bị kiểm tra": "· raided",
   "Bốn đồng xu, mặt đỏ chẵn (0, 2, 4) là Chẵn, lẻ (1, 3) là Lẻ. Đoán trúng ăn 1:1.": "Four coins: an even number of red faces (0, 2, 4) is Even, odd (1, 3) is Odd. A right guess pays 1:1.",
