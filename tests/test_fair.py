@@ -105,13 +105,13 @@ class BauCua(FairBase):
         s, r = self.act(s, 'fair_bc', bets={'nai': 2})
         self.assertEqual((r['fair']['back'], r['fair']['bao']), (2 * (1 + fh.BAO), 'nai'))
         self.assertIn('f_bao', s['journey']['titles'])
-        self.dice(Dice(faces=['ga', 'bau', 'ca']))
+        self.dice(Dice(faces=['ga', 'bau', 'ca'], draws=[.9]))   # a draw past WIN_P: a round that goes the house's way
         s, r = self.act(s, 'fair_bc', bets={'tom': 4})
         self.assertEqual(r['fair']['net'], -4)
         validate_state(s)
 
-    def test_house_edge_is_slight(self):
-        """Exact return of one xu on a face over the 216 outcomes."""
+    def test_fair_dice_alone_would_favour_the_house(self):
+        """Exact return of one xu on a face over the 216 outcomes: why the rounds are drawn the player's way."""
         faces = fh.FACES
         back = 0
         for a in faces:
@@ -140,27 +140,18 @@ class BauCua(FairBase):
         with self.assertRaises(GameError):
             self.act(s, 'fair_bc', bets={'cua': 1})
 
-    def test_daily_net_loss_cap_and_a_win_gives_room_back(self):
+    def test_no_daily_loss_cap_only_the_wallet(self):
         s = story(1000)
-        self.dice(Dice(faces=['ga'] * 300))
-        lost = 0
-        while lost + 20 <= fh.DAY_CAP:
+        self.dice(Dice(faces=['ga'] * 300, draws=[.99] * 300))
+        for _ in range(20):                                               # 400 xu lost: way past the old 150 a day
             s, r = self.act(s, 'fair_bc', bets={'cua': 20})
-            lost += 20
-        left = fh.DAY_CAP - lost
+        self.assertEqual((s['journey']['fair']['net'], s['journey']['wallet']), (-400, 600))
+        self.assertFalse(public_state(s)['fair']['today']['done'])
+        validate_state(s)
+        s['journey']['wallet'] = 5
         with self.assertRaises(GameError) as e:
-            self.act(s, 'fair_bc', bets={'cua': 20})
-        self.assertEqual(e.exception.code, 'fair_enough')
-        s, _ = self.act(s, 'fair_bc', bets={'cua': left})
-        with self.assertRaises(GameError) as e:
-            self.act(s, 'fair_bc', bets={'cua': 1})
-        self.assertIn('đủ rồi', e.exception.message)
-        self.assertEqual(s['journey']['fair']['net'], -fh.DAY_CAP)
-        self.assertTrue(public_state(s)['fair']['today']['done'])
-        # the next Vietnam day starts afresh
-        self.clock.t = at(2026, 10, 5, 8)
-        s, _ = self.act(s, 'fair_bc', bets={'cua': 1})
-        self.assertEqual(s['journey']['fair']['net'], -1)
+            self.act(s, 'fair_bc', bets={'cua': 6})
+        self.assertEqual(e.exception.code, 'fair_wallet')
 
     def test_too_fast(self):
         s = story(100)
@@ -173,7 +164,7 @@ class BauCua(FairBase):
 
     def test_one_wallet_row_per_game_and_day(self):
         s = story(500)
-        self.dice(Dice(faces=['cua'] * 3 + ['ga'] * 3 + ['cua', 'tom', 'ga']))
+        self.dice(Dice(faces=['cua'] * 3 + ['ga'] * 3 + ['cua', 'tom', 'ga'], draws=[.1, .9, .1]))
         s, _ = self.act(s, 'fair_bc', bets={'cua': 2})
         s, _ = self.act(s, 'fair_loto_buy')
         s, _ = self.act(s, 'fair_bc', bets={'cua': 2})
@@ -191,7 +182,7 @@ class ChieuTrong(FairBase):
         self.dice(Dice(coins=[1, 1, 0, 0], draws=[.9]))
         s, r = self.act(s, 'fair_xd', side='chan', stake=30)
         self.assertEqual((r['fair']['raid'], r['fair']['even'], r['fair']['net']), (False, True, 30))
-        self.dice(Dice(coins=[1, 0, 0, 0], draws=[.9]))
+        self.dice(Dice(coins=[1, 0, 0, 0], draws=[.9, .9]))
         s, r = self.act(s, 'fair_xd', side='chan', stake=10)
         self.assertEqual(r['fair']['net'], -10)
         self.assertEqual(s['journey']['wallet'], 220)
@@ -208,8 +199,8 @@ class ChieuTrong(FairBase):
         s, r = self.act(s, 'fair_xd', side='le', stake=40)
         f = r['fair']
         self.assertTrue(f['raid'])
-        self.assertEqual((f['stake'], f['fine'], f['net']), (40, 20, -60))
-        self.assertEqual(s['journey']['wallet'], 140)
+        self.assertEqual((f['stake'], f['fine'], f['net']), (40, 40 // fh.FINE_DIV, -40 - 40 // fh.FINE_DIV))
+        self.assertEqual(s['journey']['wallet'], 200 - 40 - 40 // fh.FINE_DIV)
         self.assertIn('f_raid', s['journey']['titles'])
         self.assertIn('Công an phường', r['message'])
         with self.assertRaises(GameError) as e:
@@ -243,16 +234,12 @@ class ChieuTrong(FairBase):
         s, r = self.act(s, 'fair_xd', side='chan', stake=10)
         self.assertTrue(r['fair']['raid'])
 
-    def test_the_day_cap_counts_the_fine(self):
+    def test_the_fine_is_a_quarter_of_the_stake(self):
         s = story(1000)
-        s['journey']['fair'] = dict(fh.initial(), date=fh.vn_date(OPEN), net=-(fh.DAY_CAP - 20), ed=fh.edition())
-        with self.assertRaises(GameError) as e:   # 20 at stake + 10 fine > 20 left
-            self.act(s, 'fair_xd', side='chan', stake=20)
-        self.assertEqual(e.exception.code, 'fair_enough')
         self.dice(Dice(draws=[0.0]))
-        s, r = self.act(s, 'fair_xd', side='chan', stake=13)   # 13 + 6 fits
-        self.assertGreaterEqual(s['journey']['fair']['net'], -fh.DAY_CAP)
-
+        s, r = self.act(s, 'fair_xd', side='chan', stake=50)
+        self.assertEqual((r['fair']['fine'], r['fair']['net']), (12, -62))
+        self.assertEqual(fh.xd_fine(10), fh.FINE_MIN)
 
 class Calendar(FairBase):
     def test_closed_outside_the_window(self):
@@ -475,12 +462,8 @@ class LotoShow(FairBase):
         s = story(1000)
         s['journey']['fair'] = fh.initial()
         f = s['journey']['fair']
-        f.update(date=fh.vn_date(self.clock.t + 120), net=-(fh.DAY_CAP - 20))   # 20 xu of room left today
-        with self.assertRaises(GameError) as e:        # 10 + 6 + 6 = 22 > 20
-            self.buy(s, tier='lon', n=1, cl=['chan', 6], cot=[2, 6])
-        self.assertEqual(e.exception.code, 'fair_enough')
+        f.update(date=fh.vn_date(self.clock.t + 120), net=-500)   # no daily cap any more: only the wallet
         s, r, rv = self.buy(s, tier='lon', n=1, cl=['chan', 4], cot=[2, 6])
-        self.assertGreaterEqual(s['journey']['fair']['net'], -fh.DAY_CAP)
         self.assertEqual(s['journey']['fair']['rounds'], 1)            # one purchase: one round of ROUNDS_DAY
 
     def test_side_bets_are_settled_at_the_purchase(self):
@@ -677,9 +660,9 @@ class LotoShow(FairBase):
 
 
 class Points(FairBase):
-    def test_points_rules_and_the_daily_cap(self):
+    def test_points_rules_and_no_daily_cap(self):
         s = story(1000)
-        self.dice(Dice(faces=['cua', 'ga', 'ga'] + ['ga'] * 3))
+        self.dice(Dice(faces=['cua', 'ga', 'ga'] + ['ga'] * 3, draws=[.1, .9]))
         s, r = self.act(s, 'fair_bc', bets={'cua': 1})
         self.assertEqual(r['fair']['points'], 2)            # the day + a face that came up
         s, r = self.act(s, 'fair_bc', bets={'cua': 1})
@@ -691,12 +674,13 @@ class Points(FairBase):
         for _ in range(40):
             s, r = self.act(s, 'fair_bc', bets={'cua': 1})
         f = s['journey']['fair']
-        self.assertEqual((f['dpts'], f['pts']), (fh.POINTS_DAY, fh.POINTS_DAY))
+        self.assertEqual((f['dpts'], f['pts']), (fh.POINTS_DAY, 42))   # no daily maximum; the saved counter stops at 30
+        validate_state(s)
         self.clock.t = at(2026, 10, 5, 9)
         s, r = self.act(s, 'fair_bc', bets={'cua': 1})
         self.assertEqual(r['fair']['points'], 2)
-        self.assertEqual((s['journey']['fair']['pts'], s['journey']['fair']['pdays']), (fh.POINTS_DAY + 2, 2))
-        self.assertEqual(lb.summary(s)[fh.edition()][:1], (fh.POINTS_DAY + 2,))
+        self.assertEqual((s['journey']['fair']['pts'], s['journey']['fair']['pdays']), (44, 2))
+        self.assertEqual(lb.summary(s)[fh.edition()][:1], (44,))
 
     def test_no_points_after_the_close(self):
         s = story(100)
@@ -966,7 +950,7 @@ class RingToss(FairBase):
     def test_formula_and_judge(self):
         p = dict(xs=[10, 30, 50, 70, 90], period=2000, phase=0.0)
         self.assertEqual((ring.x_at(p, 0), ring.x_at(p, 500), ring.x_at(p, 1000), ring.x_at(p, 1500)), (0, 50, 100, 50))
-        self.assertEqual(ring.judge(p, [500, 520, 1500, 100, 1900]), [2, -1, -1, 0, -1])
+        self.assertEqual(ring.judge(p, [500, 520, 1500, 100, 1900]), [2, 2, 2, 0, 0])   # one bottle takes several rings
 
     def test_all_five_pays_the_bonus_points_and_title(self):
         s = story(0)
@@ -1006,9 +990,10 @@ class RingToss(FairBase):
         with self.assertRaises(GameError):
             self.act(s, 'fair_ring_throw', id=rd['id'] + 1, taps=taps)
 
-    def test_the_daily_earning_cap(self):
+    def test_no_round_limit_and_no_earning_cap(self):
         s = story(0)
         paid = []
+        s['journey']['fair'] = dict(fh.initial(), date=fh.vn_date(OPEN), ed=fh.edition(), earn=dict(oaq=0, ring=fh.EARN_DAY['ring'], ring_n=fh.RING_DAY))
         for _ in range(4):
             s, rd = self.start(s)
             taps = aim(rd)
@@ -1016,10 +1001,103 @@ class RingToss(FairBase):
             s, r = self.act(s, 'fair_ring_throw', id=rd['id'], taps=taps)
             paid.append(r['fair']['prize'])
             self.dice(Dice(bits=12345 + len(paid)))
-        self.assertEqual(paid, [15, 15, 15, 0])
-        self.assertEqual(s['journey']['wallet'], fh.EARN_DAY['ring'])
+        self.assertEqual(paid, [23, 23, 23, 23])
+        self.assertEqual(s['journey']['wallet'], 92)
         self.assertEqual(s['journey']['fair']['net'], 0)
+        self.assertEqual(s['journey']['fair']['earn']['ring_n'], fh.RING_DAY)   # counters stop at the older bounds
+        validate_state(s)
 
+
+
+class Odds(FairBase):
+    """The dice and coin stalls lean the player's way (WIN_P of the rounds, tapering from TAPER_FROM to WIN_P_LOW at
+    TAPER_TO), simulated with a seeded random.Random standing in for the OS source; what is shown matches the result."""
+    N = 20000
+
+    def setUp(self):
+        super().setUp()
+        self.dice(random.Random(20261003))
+
+    def rounds(self, roll, net=0, n=None):
+        """Win rate and return per xu staked over n rounds drawn like fair_bc / fair_xd do at today's luck net."""
+        f = dict(fh.initial(), date=fh.vn_date(OPEN), net=net)
+        wins = gained = staked = 0
+        for _ in range(n or self.N):
+            stake, d = roll(fh._rng.random() < fh.win_p(f, OPEN))
+            wins += d > 0
+            gained += d
+            staked += stake
+        return wins / (n or self.N), gained / staked
+
+    def bc(self, bets):
+        stake = sum(bets.values())
+
+        def roll(want):
+            dice = fh.bc_roll(bets, want)
+            self.assertEqual(len(dice), 3)
+            return stake, fh.bc_back(bets, dice) - stake
+        return roll
+
+    def xd(self, side, stake):
+        def roll(want):
+            if fh._rng.random() * 100 < fh.RAID_PCT:
+                return stake, -stake - fh.xd_fine(stake)
+            coins = fh.xd_toss(side, want)
+            right = (side == 'chan') == (sum(coins) % 2 == 0)
+            self.assertEqual(right, want)                                # the coins always match the outcome
+            return stake, stake if right else -stake
+        return roll
+
+    def test_bau_cua(self):
+        for bets in ({'cua': 5}, {'cua': 3, 'tom': 2}, {'ga': 10, 'nai': 10}):
+            rate, ev = self.rounds(self.bc(bets))
+            self.assertTrue(.68 <= rate <= .72, (bets, rate))
+            self.assertGreater(ev, .2, bets)
+
+    def test_xoc_dia(self):
+        rate, ev = self.rounds(self.xd('le', 20))
+        self.assertTrue(.67 <= rate <= .71, rate)   # the 2 % raids lose too
+        self.assertTrue(.3 < ev < .45, ev)
+
+    def test_the_lean_tapers_off(self):
+        self.assertEqual(fh.win_p(None, OPEN), fh.WIN_P)
+        rate, _ = self.rounds(self.xd('chan', 10), net=fh.TAPER_FROM - 1)
+        self.assertTrue(.67 <= rate <= .71, rate)
+        rate, _ = self.rounds(self.bc({'cua': 5}), net=(fh.TAPER_FROM + fh.TAPER_TO) // 2)
+        self.assertTrue(.555 <= rate <= .595, rate)
+        rate, _ = self.rounds(self.bc({'cua': 5}), net=fh.TAPER_TO - 1)
+        self.assertTrue(.43 <= rate <= .47, rate)
+
+    def test_the_rounds_played_show_what_they_paid(self):
+        s = story(10 ** 5)
+        for i in range(150):
+            self.clock.t = OPEN + 3 * i
+            bets = {'cua': 3, 'ga': 2}
+            before = s['journey']['wallet']
+            s, r = self.act(s, 'fair_bc', bets=bets)
+            self.clock.t += 3
+            self.assertEqual(r['fair']['back'], fh.bc_back(bets, r['fair']['dice']))
+            self.assertEqual(s['journey']['wallet'] - before, r['fair']['net'])
+            s['journey']['fair']['raid_until'] = 0                       # past any raid's cooldown
+            s, r = self.act(s, 'fair_xd', side='le', stake=20)
+            if not r['fair']['raid']:
+                self.assertEqual(r['fair']['even'], sum(r['fair']['coins']) % 2 == 0)
+                self.assertEqual(r['fair']['net'] > 0, not r['fair']['even'])
+        validate_state(s)
+
+    def test_no_win_stop_no_daily_cap_no_round_limit(self):
+        s = story(10 ** 6)
+        s['journey']['fair'] = dict(fh.initial(), date=fh.vn_date(OPEN), net=fh.TAPER_TO + 3000, rounds=fh.ROUNDS_DAY,
+                                    ed=fh.edition())
+        self.assertEqual(fh.win_p(s['journey']['fair'], OPEN), fh.WIN_P_LOW)   # far past the taper: stays at the low end
+        s, _ = self.act(s, 'fair_bc', bets={'cua': 1})
+        s['journey']['fair']['net'] = -10 ** 5                             # a big losing day: still playable
+        s, _ = self.act(s, 'fair_xd', side='chan', stake=50)
+        v = public_state(s)['fair']['today']
+        self.assertFalse(v['done'])
+        self.assertEqual(v['left'], s['journey']['wallet'])
+        self.assertEqual(s['journey']['fair']['rounds'], fh.ROUNDS_DAY)   # a counter only, bounded for older validators
+        validate_state(s)
 
 class StoreBase(FairBase):
     def setUp(self):

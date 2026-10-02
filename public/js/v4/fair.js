@@ -235,7 +235,7 @@ function nav(){
   return `<nav class="fh-nav" aria-label="Hội chợ">${btn('<span aria-hidden="true">‹</span> Cổng hội','tab',{tab:'home'},'ghost small fh-back',' data-fh-key="home"')}<b><span aria-hidden="true">${e}</span> ${esc(l)}</b></nav>`;
 }
 /** The small-stake stalls: what is left of today's loss cap. */
-const luckLine=()=>{const t=F().today||{};return `<p class="fh-luck-left">🎟️ Thử vận hôm nay còn chơi được <b>${xu(t.left)}</b> <small>(thua tối đa ${xu(R().cap)} mỗi ngày)</small></p>`;};
+const luckLine=()=>{const t=F().today||{};if(R().nocap)return '';return `<p class="fh-luck-left">🎟️ Thử vận hôm nay còn chơi được <b>${xu(t.left)}</b> <small>(thua tối đa ${xu(R().cap)} mỗi ngày)</small></p>`;};
 const flash=()=>`<p class="fh-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
 const note=()=>`<p class="fh-note">🎪 Trò chơi dân gian ở hội chợ, chơi bằng xu trong game. Không có tiền thật.</p>`;
 function page(){
@@ -255,7 +255,7 @@ const enoughCard=()=>`<section class="fh-card fh-enough"><span aria-hidden="true
 const say=(who,text,cls='')=>`<div class="fh-npcline ${cls}"><span class="fh-npc" aria-hidden="true">${who.emoji}</span><div class="fh-bubble"><small>${esc(who.name)}</small><p>${esc(text)}</p></div></div>`;
 
 /* ---- 🏮 Cổng hội: the earn-xu stalls first, then the small-stake ones ---- */
-const meter=(e,label='Hôm nay đã kiếm')=>{e=e||{today:0,cap:1};const pct=Math.min(100,Math.round(e.today/Math.max(1,e.cap)*100));
+const meter=(e,label='Hôm nay đã kiếm')=>{if(e?.nocap)return '';e=e||{today:0,cap:1};const pct=Math.min(100,Math.round(e.today/Math.max(1,e.cap)*100));
   return `<span class="fh-meter${e.today>=e.cap?' full':''}" aria-hidden="true"><i style="width:${pct}%"></i></span><small class="fh-meterlabel">${e.today>=e.cap?'Hôm nay đã kiếm đủ':label} <b>${fmt(e.today)}</b>/${xu(e.cap)}</small>`;};
 function homeView(){
   const f=F(),r=R(),e=f.earn||{},o=f.oaq,p=f.points||{},pr=r.oaq_prize||{de:15,kho:30};
@@ -265,7 +265,7 @@ function homeView(){
     <div class="fh-sec"><h3>💰 Chơi kiếm xu</h3><span class="fh-tag good">Không cần đặt cược</span></div>
     <div class="fh-earn">
       <button type="button" class="fh-game" data-fh="tab" data-tab="oaq" data-fh-key="g-oaq"><span class="fh-gico">${MINI_BOARD}</span><span class="grow"><b>Ô ăn quan</b><small>${oaqLine}</small>${meter(e.oaq)}</span></button>
-      <button type="button" class="fh-game" data-fh="tab" data-tab="ring" data-fh-key="g-ring"><span class="fh-gico">${MINI_BOTTLES}</span><span class="grow"><b>Ném vòng cổ chai</b><small>Trúng mỗi chai +${r.ring_hit||2} xu, đủ ${r.rings||5} chai thêm ${r.ring_all||5} xu</small>${meter(e.ring)}</span></button>
+      <button type="button" class="fh-game" data-fh="tab" data-tab="ring" data-fh-key="g-ring"><span class="fh-gico">${MINI_BOTTLES}</span><span class="grow"><b>Ném vòng cổ chai</b><small>${r.nocap?`Mỗi vòng trúng +${r.ring_hit} xu, trúng cả ${r.rings||5} vòng thêm ${r.ring_all} xu`:`Trúng mỗi chai +${r.ring_hit||2} xu, đủ ${r.rings||5} chai thêm ${r.ring_all||5} xu`}</small>${meter(e.ring)}</span></button>
     </div>
     <div class="fh-sec"><h3>🎲 Thử vận may</h3><span class="fh-tag">Cược nhỏ bằng xu</span></div>
     <div class="fh-luck">
@@ -370,7 +370,8 @@ async function playTrace(trace,lv){
 /** Where the ring is at `t` ms (0..100): the same arithmetic as x_at in game/fair_ring.py. */
 const ringX=(p,t)=>{const u=((t/p.period)+p.phase)%1;return 100*(1-Math.abs(2*u-1));};
 const trackPos=x=>`calc(6% + ${x*0.88}%)`;
-function ringJudge(p,taps){const rung=new Set();return taps.map(t=>{const x=ringX(p,t);const i=p.xs.findIndex((bx,k)=>!rung.has(k)&&Math.abs(x-bx)<=R().ring_tol);if(i>=0)rung.add(i);return i;});}
+/** Same as judge in game/fair_ring.py: the newer server lets one bottle take several rings (rules.nocap). */
+function ringJudge(p,taps){const rung=new Set(),many=!!R().nocap;return taps.map(t=>{const x=ringX(p,t);const i=p.xs.findIndex((bx,k)=>(many||!rung.has(k))&&Math.abs(x-bx)<=R().ring_tol);if(i>=0)rung.add(i);return i;});}
 function ringView(){
   const f=F(),r=R(),e=(f.earn||{}).ring,R0=S.ring,rd=R0.round,res=R0.result;
   if(!R0.say)R0.say=pick(RINGER.idle);
@@ -389,7 +390,7 @@ function ringView(){
     <div class="fh-ringsleft" aria-label="Còn ${rings-used} vòng">${left}</div>
     ${go}
     <div class="fh-ringmeter">${meter(e)}</div>
-    <p class="fh-rule">Bấm “Ném!” khi vòng ở ngay trên miệng chai. Mỗi chai chỉ tính một lần. Trúng ${r.ring_hit||2} xu một chai, đủ ${rings} chai thêm ${r.ring_all||5} xu. Từ 3 chai: +${(F().points?.rules||{}).ring3||1} điểm, đủ ${rings} chai: +${(F().points?.rules||{}).ring5||2} điểm.</p>
+    <p class="fh-rule">${r.nocap?`Bấm “Ném!” khi vòng ở ngay trên miệng chai. Một chai ăn được nhiều vòng. Mỗi vòng trúng ${r.ring_hit} xu, trúng cả ${rings} vòng thêm ${r.ring_all} xu. Trúng từ 3 vòng: +${(F().points?.rules||{}).ring3||1} điểm, cả ${rings} vòng: +${(F().points?.rules||{}).ring5||2} điểm.`:`Bấm “Ném!” khi vòng ở ngay trên miệng chai. Mỗi chai chỉ tính một lần. Trúng ${r.ring_hit||2} xu một chai, đủ ${rings} chai thêm ${r.ring_all||5} xu. Từ 3 chai: +${(F().points?.rules||{}).ring3||1} điểm, đủ ${rings} chai: +${(F().points?.rules||{}).ring5||2} điểm.`}</p>
   </section>`;
 }
 function stopRing(){cancelAnimationFrame(S.ring.raf);S.ring.raf=0;}
@@ -440,7 +441,7 @@ async function finishRing(rd){
 /* ---- 🦀 Bầu cua ---- */
 const bcTotal=()=>Object.values(S.bc.bets).reduce((a,b)=>a+b,0);
 /** Most a bầu cua round may stake now: the table's max, today's room, the wallet (the server checks the same). */
-function bcCap(){const f=F(),max=R().bc_max||20;return {max,cap:Math.max(0,Math.min(max,f.today?.left??max,f.wallet??max)),left:f.today?.left??max,wallet:f.wallet??max};}
+function bcCap(){const f=F(),max=R().bc_max||20,left=R().nocap?Infinity:f.today?.left??max;return {max,cap:Math.max(0,Math.min(max,left,f.wallet??max)),left,wallet:f.wallet??max};}
 function bcWhy(total){const c=bcCap();return total>c.left?`Hôm nay chỉ còn chơi được ${xu(c.left)}`:total>c.wallet?'Ví không đủ xu':'';}
 function bcView(){
   const f=F(),b=S.bc,r=R(),total=bcTotal(),max=bcCap().cap,stop=f.today?.done,rolling=b.phase!=='idle',why=bcWhy(total);
@@ -485,10 +486,10 @@ function titles(x){if(x.titles?.length)S.flash={text:`🎉 Danh hiệu mới: ${
 /* ---- 🕯️ Chiếu trong (xóc đĩa) ---- */
 /** What a chiếu trong round may cost at worst (the stake, or the stake and the fine when the police come): the
  * server checks that against today's room (game/fair.py fair_xd, _guard_round). */
-const xdWorst=st=>st+Math.max(R().fine_min||5,Math.floor(st/2));
+const xdWorst=st=>st+Math.max(R().fine_min||5,Math.floor(st/(R().xd_fine_div||2)));
 /** Why a stake cannot be played right now ('' when it can). */
 function xdWhy(st){
-  const f=F(),left=f.today?.left??Infinity;
+  const f=F(),left=R().nocap?Infinity:f.today?.left??Infinity;
   if(f.today?.done)return 'Hôm nay chơi vậy đủ rồi';
   if(xdWorst(st)>left)return `Hôm nay chỉ còn chơi được ${xu(left)}`;
   if(st>(f.wallet||0))return 'Ví không đủ xu';
@@ -496,7 +497,7 @@ function xdWhy(st){
 }
 const SIDE_NAME={chan:'CHẴN',le:'LẺ'};
 function xdView(){
-  const f=F(),x=S.xd,r=R(),wait=raidLeft(),busy=x.phase!=='idle',left=f.today?.left??0;
+  const f=F(),x=S.xd,r=R(),wait=raidLeft(),busy=x.phase!=='idle',left=R().nocap?Infinity:f.today?.left??0;
   if(x.raid)return raidCard(x.raid);
   const minSt=Math.min(...XD_STAKES),can=XD_STAKES.filter(v=>!xdWhy(v)),why=xdWhy(x.stake);
   const coins=(x.coins||[1,0,1,0]).map((c,i)=>`<span class="fh-coin ${c?'red':'white'}" style="--i:${i}"></span>`).join('');
@@ -516,7 +517,7 @@ function xdView(){
     <div class="fh-chips" role="group" aria-label="Tiền cược"><span>Cược</span>${XD_STAKES.map(v=>{const no=xdWhy(v);return `<button type="button" class="fh-chip${x.stake===v?' on':''}" data-fh="stake" data-v="${v}" aria-pressed="${x.stake===v}" data-fh-key="stake-${v}"${dis||no?' disabled':''}${no?` title="${esc(no)}"`:''}>${v}</button>`;}).join('')}</div>
     <div class="fh-go"><span>Chọn <b>${x.side==='chan'?'Chẵn':'Lẻ'}</b> · <b>${xu(x.stake)}</b></span>${btn(busy?'Đang xóc…':'🫙 Xóc!','shakexd',{},'primary big',dis||why?' disabled data-fh-key="xd"':' data-fh-key="xd"')}</div>
     ${why&&!wait&&can.length?`<p class="fh-why">${esc(why)}: chọn mức cược nhỏ hơn nha (tính cả tiền phạt ${xu(xdWorst(x.stake)-x.stake)} nếu công an ghé).</p>`:''}
-    <p class="fh-rule">Bốn đồng xu, mặt đỏ chẵn (0, 2, 4) là Chẵn, lẻ (1, 3) là Lẻ. Đoán trúng ăn một trả một. Mỗi đồng tung ngẫu nhiên, ván trước không ảnh hưởng ván sau.</p>
+    <p class="fh-rule">Bốn đồng xu, mặt đỏ chẵn (0, 2, 4) là Chẵn, lẻ (1, 3) là Lẻ. Đoán trúng ăn 1:1.</p>
   </section>`;
 }
 function raidCard(r){
@@ -884,11 +885,11 @@ function boardView(){
   const won=fair?.winners?.length?`<div class="fh-card fh-crowned"><h3>Hội đã tàn · Bảng vàng chung cuộc</h3><ol>${fair.winners.map(w=>`<li class="${w.me?'me':''}"><span aria-hidden="true">${esc(w.emoji)}</span><b>${esc(w.name)}</b><small>${esc(w.title)} · ${fmt(w.score)} điểm</small></li>`).join('')}</ol></div>`:'';
   const rows=B?.rows?.length?`<ol class="fh-board">${B.rows.map(r=>`<li class="${r.me?'me':''}${r.rank===1?' first':''}"><span class="fh-rank">${r.rank===1?'👑':r.rank<=10?'🎪':r.rank}</span><span class="grow"><b>${esc(r.name||'')}</b>${r.guest?'<em class="fh-guest">khách</em>':''}<small>${fmt(r.days)} ngày chơi</small></span><b class="fh-score">${fmt(r.points??r.score)}</b></li>`).join('')}</ol>`
     :S.board.loading||!B?'<p class="muted fh-wait">Đang mở Bảng vàng…</p>':'<p class="muted fh-wait">Chưa ai có điểm. Chơi một ván là có tên trên bảng!</p>';
-  const mine=me?`<div class="fh-me"><span>Bạn: <b>${fmt(p.total)}</b> điểm${me.rank&&me.visible!==false?` · hạng <b>${fmt(me.rank)}</b>`:''}</span>${f.open?`<small>Hôm nay ${fmt(p.today)}/${fmt(p.cap)} điểm</small>`:''}${me.visible===false?`<small class="fh-hidden">Tên bạn đang ẩn nên chưa lên bảng và chưa nhận được danh hiệu. Bật “Hiện tên tôi” ở Xếp hạng nhé.</small>`:''}</div>`:'';
+  const mine=me?`<div class="fh-me"><span>Bạn: <b>${fmt(p.total)}</b> điểm${me.rank&&me.visible!==false?` · hạng <b>${fmt(me.rank)}</b>`:''}</span>${f.open&&p.cap?`<small>Hôm nay ${fmt(p.today)}/${fmt(p.cap)} điểm</small>`:''}${me.visible===false?`<small class="fh-hidden">Tên bạn đang ẩn nên chưa lên bảng và chưa nhận được danh hiệu. Bật “Hiện tên tôi” ở Xếp hạng nhé.</small>`:''}</div>`:'';
   return `<section class="fh-stall fh-gold" aria-label="Bảng vàng hội chợ">
     <div class="fh-card fh-crown"><h3>🏆 Bảng vàng hội chợ</h3><ul class="fh-tiers">${tiers}</ul><p class="small">${f.over?'Danh hiệu đã trao khi hội tàn.':`Trao khi hội tàn (${esc(dateOf(f.closes))} 00:00), giữ mãi trong bộ sưu tập.`}</p></div>
     ${won}${mine}${S.board.error?`<p class="fh-flash bad">${esc(S.board.error)}</p>`:''}${rows}
-    <details class="fh-how"><summary>Cách tính điểm</summary><ul><li>Mỗi ngày ghé hội chơi: +${rules.day}</li><li>Thắng một ván ô ăn quan: +${rules.oaq}</li><li>Ném vòng trúng từ 3 chai: +${rules.ring3}, đủ 5 chai: +${rules.ring5}</li><li>Ván bầu cua có con trùng mặt đặt: +${rules.bc}</li><li>Thắng một ván chiếu trong: +${rules.xd} (bị công an kiểm tra: 0)</li><li>Kinh thắng một ván lô tô: +${rules.loto}</li><li>Tối đa ${fmt(p.cap||30)} điểm mỗi ngày. Bằng điểm thì ai đạt trước đứng trên.</li></ul><p class="small muted">Điểm tính theo lượt chơi, không theo số xu thắng, nên cược nhỏ cũng lên bảng được.</p></details>
+    <details class="fh-how"><summary>Cách tính điểm</summary><ul><li>Mỗi ngày ghé hội chơi: +${rules.day}</li><li>Thắng một ván ô ăn quan: +${rules.oaq}</li><li>Ném vòng trúng từ 3 chai: +${rules.ring3}, đủ 5 chai: +${rules.ring5}</li><li>Ván bầu cua có con trùng mặt đặt: +${rules.bc}</li><li>Thắng một ván chiếu trong: +${rules.xd} (bị công an kiểm tra: 0)</li><li>Kinh thắng một ván lô tô: +${rules.loto}</li>${p.cap?`<li>Tối đa ${fmt(p.cap)} điểm mỗi ngày.</li>`:''}<li>Bằng điểm thì ai đạt trước đứng trên.</li></ul><p class="small muted">Điểm tính theo lượt chơi, không theo số xu thắng, nên cược nhỏ cũng lên bảng được.</p></details>
   </section>`;
 }
 

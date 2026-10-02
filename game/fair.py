@@ -8,14 +8,15 @@ kiếm xu nhé"); each pays at most a few xu a Vietnam day (EARN_DAY):
 
 * 🪨 Ô ăn quan against a neighbour (game/fair_oaq.py: the rules and the opponent): Bé Bi ("de") or Ông Hai ("kho").
   A win pays OAQ_PRIZE xu by level and PT_OAQ points; a loss or a draw costs nothing.
-* 💍 Ném vòng cổ chai (game/fair_ring.py): RINGS throws at five bottles, timing a swinging ring; RING_HIT xu a bottle
-  ringed, RING_ALL more for all five.
+* 💍 Ném vòng cổ chai (game/fair_ring.py): RINGS throws at five bottles, timing a swinging ring; RING_HIT xu a ring
+  that lands (a bottle can take several), RING_ALL more when all five land; no daily cap since 03/10.
 
 Thử vận may, small stakes:
 
 * 🦀 Bầu cua tôm cá: six faces, three dice in a covered bowl; bet 1..BC_MAX xu in all on one or more faces. A face
   that shows k times pays the stake back plus 1:1 per die (standard rules); a "bão" (all three dice the face you bet)
-  pays BAO:1 instead of 3:1, which keeps the house edge slight (95.4 % back over many rounds instead of 92.1 %).
+  pays BAO:1 instead of 3:1. Since 03/10 a round is drawn to come out ahead for the bets with win_p (WIN_P, tapering
+  above TAPER_FROM of today's luck net), any of those dice alike (bc_roll).
 * 🎱 Gánh lô tô (owner 02/10: "loto thì có nhạc, có mc, có người biểu diễn, mn đặt cược loto được nhé"): tờ dò of 3
   rows of 5 numbers (1..90). The caller's numbers come from the minute the cards were bought (everyone who buys in the
   same minute hears the same calls), and so does the minute's vòng (mode_of: Kinh đôi, lật ngược, the evening's Hũ đêm
@@ -39,23 +40,23 @@ Thử vận may, small stakes:
   plain card is the thường vòng at LOTO_PRICE, paying LOTO_PRIZE.) A purchase is one round of ROUNDS_DAY and its
   whole stake (tờ + side bets, at most 3 × 10 + 2 × 10 xu) must fit the wallet and the day's DAY_CAP room. The day's
   tally (Bảng kinh hôm nay: rounds, Kinh, Kinh hụt, the neighbours' wins) is journey['fair']['ltd'].
-* 🕯️ Chiếu trong (back corner): xóc đĩa chẵn lẻ (four coins, even money), bigger stakes XD_MIN..XD_MAX. Each round
-  has RAID_PCT % odds that Công an phường comes by: the stake is confiscated, a fine of half the stake (at least
+* 🕯️ Chiếu trong (back corner): xóc đĩa chẵn lẻ (four coins, 1:1), bigger stakes XD_MIN..XD_MAX; the side picked
+  is right with win_p, the coins any pattern of that parity alike (xd_toss). Each round
+  has RAID_PCT % odds that Công an phường comes by: the stake is confiscated, a fine of stake // FINE_DIV (at least
   FINE_MIN, never more than the wallet holds) is paid, and the corner stays closed RAID_COOLDOWN seconds. The front
   stalls are never raided.
 
 Safety: the fair is open FAIR_DAYS days from FAIR_START (Vietnam dates; env MNL_FAIR_START=YYYY-MM-DD and
-MNL_FAIR_DAYS override them at deploy), story saves only, no stake above what the wallet holds (no loans), a net
-loss of at most DAY_CAP xu per Vietnam day (wins give some room back), ROUNDS_DAY rounds a day, a short pause between
-rounds (and a per-session rate limit in server.py). Dice, coins, cards and raids come from the OS random source
+MNL_FAIR_DAYS override them at deploy), story saves only, no stake above what the wallet holds; since 03/10 no daily
+money cap and no round limit (owner), a short pause between rounds (and a per-session rate limit in server.py). Dice, coins, cards and raids come from the OS random source
 (server side; nothing the client sends decides a result). Request ids/revisions make every command idempotent
 (game/storage.py).
 
 🏆 Bảng vàng hội chợ (owner: "event hội chợ mà top thì nhận danh hiệu vua trò chơi nhé"): fair points, never xu,
 so big stakes or a lucky streak do not decide it and nobody is pushed to bet more: +1 for each day played, +3 for an ô
 ăn quan won, +1 for a ném vòng round with 3 bottles or more (+2 for all five), +1 for a bầu cua round where a face you
-bet came up, +1 for a xóc đĩa round won (a raided one: 0), +3 for a lô tô won; at most
-POINTS_DAY a Vietnam day, and only while the fair is open. The points ride in the save and on the leaderboard table
+bet came up, +1 for a xóc đĩa round won (a raided one: 0), +3 for a lô tô won; no daily maximum since 03/10,
+and only while the fair is open. The points ride in the save and on the leaderboard table
 (board `edition()`, game/leaderboard.py summary; ties: who reached the score first); the titles after the end are
 game/fair_board.py.
 
@@ -85,19 +86,30 @@ SHOW_AFTER = 3 * 86400         # and "đã tàn" this long after the end
 VN = datetime.timezone(datetime.timedelta(hours=7))
 KIND = 'fair'                  # journey wallet history kind (journey.HISTORY_KINDS)
 
-DAY_CAP = 150                  # net loss a Vietnam day at most
+# No daily money cap and no round limit (owner 03/10: "mỗi ngày chơi không giới hạn tiền", "không giới hạn lượt
+# chơi"): the wallet is the only limit. DAY_CAP and ROUNDS_DAY are kept only as the bounds an older server's validator
+# puts on the saved counters (rolling release), which therefore stop there.
+DAY_CAP = 150
 ROUNDS_DAY = 400
+# The dice and coin stalls lean the player's way (owner 03/10: "tổng phải lời", "thắng 70% số ván", "người ta thắng
+# khoảng 2000 xu thì cho thua dần bớt đi"): a round is a win with WIN_P (bầu cua: the bets come out ahead; xóc đĩa:
+# the side picked is right), tapering linearly from TAPER_FROM xu of today's luck net to WIN_P_LOW at TAPER_TO and
+# staying there. Payouts stay the folk ones (bầu cua per die, xóc đĩa 1:1).
+WIN_P, WIN_P_LOW = .70, .45
+TAPER_FROM, TAPER_TO = 2000, 5000
 GAP_MS = 1200                  # between two rounds of dice/coins
 # 🦀 Bầu cua
 FACES = ('bau', 'cua', 'tom', 'ca', 'ga', 'nai')
 FACE_NAMES = dict(bau='Bầu', cua='Cua', tom='Tôm', ca='Cá', ga='Gà', nai='Nai')
+BC_OUTCOMES = [(x, y, z) for x in FACES for y in FACES for z in FACES]   # the 216 ways three dice land
 BC_MAX = 20
 BAO = 10                       # three dice on the face you bet: BAO:1 (standard rules: 3:1)
 # 🕯️ Chiếu trong
 XD_MIN, XD_MAX = 10, 50
 SIDES = ('chan', 'le')
-RAID_PCT = 4
-FINE_MIN = 5
+RAID_PCT = 2
+FINE_MIN = 3
+FINE_DIV = 4                   # a raid's fine: stake // FINE_DIV, at least FINE_MIN
 RAID_COOLDOWN = 120
 # 🎱 Lô tô
 LOTO_PRICE = 5
@@ -123,12 +135,13 @@ LTD_KEYS = ('r', 'w', 'fk', 'npc')            # today's lô tô: rounds, Kinh wo
 OAQ_PRIZE = dict(de=15, kho=30)
 OAQ_PEOPLE = dict(de=('Bé Bi', '👦'), kho=('Ông Hai', '👴'))
 OAQ_STAGES = ('play', 'won', 'lost', 'draw')
-RING_HIT, RING_ALL = 2, 5      # xu per bottle ringed, and the bonus for all five
+RING_HIT, RING_ALL = 3, 8      # xu per bottle ringed, and the bonus for all five
 RING_DAY = 80                  # rounds a day at most
-EARN_DAY = dict(oaq=90, ring=45)
+EARN_DAY = dict(oaq=90, ring=45)   # ring: no cap any more, 45 bounds its saved counter
+EARN_UNCAPPED = ('ring',)
 EARN_GAMES = tuple(EARN_DAY)
 # 🏆 Bảng vàng hội chợ: points
-POINTS_DAY = 30
+POINTS_DAY = 30                # no longer a cap: the saved day counter saturates here (older validators bound it)
 PT_DAY, PT_BC, PT_XD, PT_LOTO = 1, 1, 1, 3
 PT_OAQ, PT_RING3, PT_RING5 = 3, 1, 2
 
@@ -239,13 +252,13 @@ def _state(j: dict, t: float) -> dict:
 
 
 def _points(f: dict, n: int, t: float) -> int:
-    """Add up to `n` fair points (today's cap, only while the fair is open); returns how many counted."""
+    """Add `n` fair points (only while the fair is open; no daily maximum, owner 03/10); returns how many counted.
+    `dpts` stays a counter that stops at POINTS_DAY: an older server's validator (rolling release) bounds it."""
     if n <= 0 or not is_open(t):
         return 0
-    add = max(0, min(n, POINTS_DAY - f['dpts']))
-    f['dpts'] += add
-    f['pts'] += add
-    return add
+    f['dpts'] = min(POINTS_DAY, f['dpts'] + n)
+    f['pts'] += n
+    return n
 
 
 def _day(f: dict, t: float) -> int:
@@ -275,8 +288,8 @@ def _today(f: dict | None, t: float) -> dict:
 
 
 def budget(f: dict | None, t: float) -> int:
-    """How much more may be lost today: DAY_CAP plus today's net (a win gives room back)."""
-    return max(0, DAY_CAP + _today(f, t)['net'])
+    """How much more may be lost today: no daily cap any more (the wallet is the limit)."""
+    return 10 ** 9
 
 
 def _pay(j: dict, f: dict, game: str, amount: int) -> None:
@@ -315,10 +328,15 @@ def _pay(j: dict, f: dict, game: str, amount: int) -> None:
 
 
 def _earn(j: dict, f: dict, game: str, amount: int) -> int:
-    """Pay a skill stall's reward, up to what is left of today's EARN_DAY for that game; returns what was paid."""
-    paid = max(0, min(amount, EARN_DAY[game] - f['earn'][game]))
-    if paid:
+    """Pay a skill stall's reward, up to what is left of today's EARN_DAY for that game (ô ăn quan; ném vòng has no
+    cap since 03/10, its counter stops at the older bound); returns what was paid."""
+    if game in EARN_UNCAPPED:
+        paid = max(0, amount)
+        f['earn'][game] = min(EARN_DAY[game], f['earn'][game] + paid)
+    else:
+        paid = max(0, min(amount, EARN_DAY[game] - f['earn'][game]))
         f['earn'][game] += paid
+    if paid:
         _pay(j, f, game, paid)
     return paid
 
@@ -409,6 +427,45 @@ def side_back(sb: dict | None, x: int) -> dict:
     return out
 
 
+def win_p(f: dict | None, t: float) -> float:
+    """How likely the next luck round goes the player's way: WIN_P, tapering above TAPER_FROM of today's luck net."""
+    net = _today(f, t)['net']
+    if net <= TAPER_FROM:
+        return WIN_P
+    return max(WIN_P_LOW, WIN_P - (WIN_P - WIN_P_LOW) * (net - TAPER_FROM) / (TAPER_TO - TAPER_FROM))
+
+
+def bc_back(bets: dict, dice: list) -> int:
+    """What a bầu cua round pays back (stakes included): 1:1 a die on the face, BAO:1 for all three."""
+    back = 0
+    for face, b in bets.items():
+        k = dice.count(face)
+        back += b * (1 + BAO) if k == 3 else b * (1 + k) if k else 0
+    return back
+
+
+def bc_roll(bets: dict, want: bool) -> list:
+    """Three dice for a round that comes out ahead for the bets (want) or not: any of those outcomes alike."""
+    stake = sum(bets.values())
+    dice = [_rng.choice(FACES) for _ in range(3)]
+    if (bc_back(bets, dice) > stake) != want:
+        pool = [d for d in BC_OUTCOMES if (bc_back(bets, d) > stake) == want]
+        dice = list(_rng.choice(pool)) if pool else dice
+    return dice
+
+
+def xd_toss(side: str, want: bool) -> list:
+    """Four coins that make `side` right (want) or wrong: any of the 8 patterns of that parity alike."""
+    coins = [_rng.randrange(2) for _ in range(4)]
+    if ((side == 'chan') == (sum(coins) % 2 == 0)) != want:
+        coins[_rng.randrange(4)] ^= 1   # one coin turned (a uniform wrong pattern and coin give a uniform right one)
+    return coins
+
+
+def xd_fine(stake: int) -> int:
+    return max(FINE_MIN, stake // FINE_DIV)
+
+
 def _ltd(f: dict) -> dict:
     """Today's lô tô counters (the Bảng kinh hôm nay), created on first use."""
     return f.setdefault('ltd', dict(r=0, w=0, fk=0, npc=[0] * len(NEIGHBOURS)))
@@ -462,15 +519,11 @@ def _guard_round(e, f: dict, j: dict, t: float, stake: int, worst: int) -> int:
     """A new round: open, under today's caps, paid from the wallet (no loans), not too fast. Returns the day's
     point when this is the first round of the day."""
     need = e.need
-    need(f['rounds'] < ROUNDS_DAY, ENOUGH, 'fair_enough')
-    left = budget(f, t)
-    need(left > 0, ENOUGH, 'fair_enough')
-    need(worst <= left, f'Hôm nay bạn chỉ chơi thêm được {left} xu nữa thôi. {ENOUGH}' if left < worst else ENOUGH, 'fair_enough')
     need(j['wallet'] >= stake, 'Ví không đủ xu cho ván này. Hội chợ không cho vay để chơi đâu nha.', 'fair_wallet')
     ms = int(t * 1000)
     need(ms - f['last'] >= GAP_MS or f['last'] > ms, 'Từ từ thôi, xúc xắc chưa kịp lăn!', 'fair_slow')
     f['last'] = ms
-    f['rounds'] += 1
+    f['rounds'] = min(ROUNDS_DAY, f['rounds'] + 1)   # a counter only (no limit); bounded for older validators
     return _day(f, t)
 
 
@@ -499,16 +552,11 @@ def apply(s: dict, name: str, p: dict) -> dict:
             need(type(v) is int and 1 <= v <= BC_MAX, f'Mỗi ván đặt tối đa {BC_MAX} xu.')
         stake = sum(bets.values())
         need(stake <= BC_MAX, f'Mỗi ván đặt tối đa {BC_MAX} xu.')
+        want = _rng.random() < win_p(f, t)
         pts = _guard_round(e, f, j, t, stake, stake)
-        dice = [_rng.choice(FACES) for _ in range(3)]
-        back, bao = 0, None
-        for face, b in bets.items():
-            k = dice.count(face)
-            if k == 3:
-                back += b * (1 + BAO)
-                bao = face
-            elif k:
-                back += b * (1 + k)
+        dice = bc_roll(bets, want)
+        back = bc_back(bets, dice)
+        bao = next((face for face in bets if dice.count(face) == 3), None)
         st['bc'] += 1
         if back:
             pts += _points(f, PT_BC, t)
@@ -527,7 +575,8 @@ def apply(s: dict, name: str, p: dict) -> dict:
         wait = f['raid_until'] - int(t)
         need(wait <= 0, f'Chiếu trong vừa bị dẹp, {max(1, -(-wait // 60))} phút nữa mới bày lại. Ra trước chơi bầu cua, lô tô cho lành nha.',
              'fair_raided')
-        fine = max(FINE_MIN, stake // 2)
+        fine = xd_fine(stake)
+        want = None
         pts = _guard_round(e, f, j, t, stake, stake + fine)
         st['xd'] += 1
         if _rng.random() * 100 < RAID_PCT:
@@ -539,7 +588,8 @@ def apply(s: dict, name: str, p: dict) -> dict:
             result['fair'] = dict(game='xd', raid=True, side=p['side'], stake=stake, fine=fine, net=-(stake + fine), cooldown=RAID_COOLDOWN)
             result['message'] = f'Công an phường kiểm tra! Mất {stake} xu tiền cược và nộp phạt {fine} xu.'
         else:
-            coins = [_rng.randrange(2) for _ in range(4)]
+            want = _rng.random() < win_p(f, t)
+            coins = xd_toss(p['side'], want)
             even = sum(coins) % 2 == 0
             win = (p['side'] == 'chan') == even
             delta = stake if win else -stake
@@ -692,12 +742,11 @@ def apply(s: dict, name: str, p: dict) -> dict:
         result['fair'] = dict(game='oaq', quit=True, view=oaq_view(o))
     elif name == 'fair_ring_start':
         need(not p, 'Dữ liệu thao tác không hợp lệ.')
-        need(f['earn']['ring_n'] < RING_DAY, 'Hôm nay ném vòng vậy đủ rồi, mai ghé tiếp nha.', 'fair_enough')
         ms = int(t * 1000)
         r = f['ring']
         need(not (r and r['stage'] == 'play' and ms - r['at'] < 1500), 'Từ từ thôi, vòng chưa phát xong!', 'fair_slow')
         pts = _day(f, t)
-        f['earn']['ring_n'] += 1
+        f['earn']['ring_n'] = min(RING_DAY, f['earn']['ring_n'] + 1)   # a counter only, bounded for older validators
         st['ring'] += 1
         f['ring'] = dict(rs=_rng.getrandbits(31), at=ms, stage='play')
         result['fair'] = dict(game='ring', round=ring_view(f['ring'], t))
@@ -770,7 +819,6 @@ def public(s: dict) -> dict:
         if lt.get('sb'):
             back = side_back(lt['sb'], rv['chot_n'])
             loto['side'] = {k: dict(pick=b[0], stake=b[1], back=back[k]) for k, b in lt['sb'].items()}
-    left = budget(f, t)
     pts, pdays = points_of(j)
     dpts = f['dpts'] if f and f.get('date') == vn_date(t) and f.get('ed') == edition() else 0
     earn = today['earn']
@@ -778,17 +826,18 @@ def public(s: dict) -> dict:
     ltd = (f or {}).get('ltd') if f and f.get('date') == vn_date(t) else None
     slot = int(t // 60)
     return dict(base, show=True, now=int(t), board=edition(),   # the clock (countdowns, cooldowns) only around the fair
-                points=dict(total=pts, today=dpts, cap=POINTS_DAY, days=pdays,
+                points=dict(total=pts, today=dpts, cap=0, days=pdays,
                             rules=dict(day=PT_DAY, bc=PT_BC, xd=PT_XD, loto=PT_LOTO, oaq=PT_OAQ, ring3=PT_RING3, ring5=PT_RING5)),
                 soon=t < opens, over=t >= closes, wallet=j.get('wallet', 0), played=bool(f) and f.get('pday') == vn_date(t),
-                today=dict(net=today['net'], rounds=today['rounds'], left=left, done=left <= 0 or today['rounds'] >= ROUNDS_DAY),
-                earn={g: dict(today=earn[g], cap=EARN_DAY[g], left=max(0, EARN_DAY[g] - earn[g])) for g in EARN_GAMES},
+                today=dict(net=today['net'], rounds=today['rounds'], left=max(0, j.get('wallet', 0)), done=False),
+                earn={g: dict(today=earn[g], cap=EARN_DAY[g], left=max(0, EARN_DAY[g] - earn[g])) if g not in EARN_UNCAPPED
+                      else dict(today=0, cap=0, left=1, nocap=True) for g in EARN_GAMES},
                 raid_left=max(0, int((f or {}).get('raid_until', 0) - t)) if f else 0,
                 rules=dict(cap=DAY_CAP, bc_max=BC_MAX, bao=BAO, xd_min=XD_MIN, xd_max=XD_MAX, raid_pct=RAID_PCT, fine_min=FINE_MIN,
                            loto_price=LOTO_PRICE, loto_prize=LOTO_PRIZE, loto_npcs=LOTO_NPCS, faces=list(FACES),
                            oaq_prize=dict(OAQ_PRIZE), oaq_people={k: list(v) for k, v in OAQ_PEOPLE.items()}, quan=oaq.QUAN,
                            quan_non=oaq.QUAN_NON, ring_hit=RING_HIT, ring_all=RING_ALL, rings=ring.RINGS, ring_tol=ring.TOL,
-                           ring_day=RING_DAY, ring_left=max(0, RING_DAY - earn['ring_n']), oaq_turn=1),
+                           ring_day=RING_DAY, ring_left=RING_DAY, oaq_turn=1, xd_fine_div=FINE_DIV, nocap=1),
                 oaq=oaq_view(o) if o and (o['stage'] == 'play' or t - o['at'] < 6 * 3600) else None,
                 ring=ring_view((f or {}).get('ring'), t),
                 loto=loto, stats={k: st.get(k, 0) for k in STATS},

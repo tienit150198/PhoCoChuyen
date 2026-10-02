@@ -3,11 +3,12 @@ reward and the save are in game/fair.py, the stall in public/js/v4/fair.js (whic
 
 A round: BOTTLES bottles stand on a shelf at x (0..100); a ring swings over them, back and forth, x(t) a triangle wave
 of period `period` ms starting at `phase`. The player has RINGS throws: each lands where the ring is at that moment
-(milliseconds since the round started, on the player's clock). A throw within TOL of a bottle not ringed yet rings it.
+(milliseconds since the round started, on the player's clock). A throw within TOL of a bottle rings it (owner 03/10:
+one bottle can take several rings).
 
 The server draws the round from a seed and judges the throw times the client sends, against the same formula; they
 must be increasing, at least GAP ms apart and not later than the time the server has seen pass (plus a little for the
-network). A script could still aim perfectly: the reward is small and capped per day (game/fair.py), like any
+network). A script could still aim perfectly: the reward is small (game/fair.py), like any
 timing game in a browser.
 """
 from __future__ import annotations
@@ -37,19 +38,11 @@ def x_at(p: dict, t: int) -> float:
 
 
 def judge(p: dict, taps: list[int]) -> list[int]:
-    """For each throw: the bottle it rang (index), or -1."""
-    rung: set[int] = set()
+    """For each throw: the bottle it rang (index), or -1. A bottle can be rung more than once."""
     out = []
     for t in taps:
         x = x_at(p, t)
-        hit = -1
-        for i, bx in enumerate(p['xs']):
-            if i not in rung and abs(x - bx) <= TOL:
-                hit = i
-                break
-        if hit >= 0:
-            rung.add(hit)
-        out.append(hit)
+        out.append(next((i for i, bx in enumerate(p['xs']) if abs(x - bx) <= TOL), -1))
     return out
 
 
