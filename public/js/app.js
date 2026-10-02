@@ -1402,14 +1402,12 @@ try{
   // through the tour yet gets the tutorial at once (its welcome card is the first thing they should see).
   const tutBoot=[L.tut,m=>m.tutorialBoot(env())];
   let tutNow=false;try{tutNow=localStorage.getItem('mnl.tut.done')!=='1'&&api.state.settings?.tutorialDone!==true;}catch{}
-  if(tutNow&&!oauthReturned)tutBoot[0].get().then(tutBoot[1]).catch(e=>console.warn('lazy boot:',e));
   const bootSteps=[...(tutNow?[]:[tutBoot]),[L.inc,m=>m.incidentBoot(env())],[L.chat,m=>m.aiNoticeBoot(env())],[L.happen,m=>m.happenBoot(env())],
     [L.people,()=>{}],[L.social,m=>m.startSocialPoll(env())],[L.tips,m=>m.tipsBoot({api,sound})],[L.live,m=>m.liveBoot(env())]];
   const bootNext=i=>{
     if(i>=bootSteps.length){lazyBoot=false;document.dispatchEvent(new CustomEvent('mnl:lazy',{detail:{wanted:true}}));return;}
     const [h,fn]=bootSteps[i];h.get().then(fn).catch(e=>console.warn('lazy boot:',e)).finally(()=>whenIdle(()=>bootNext(i+1),600));
   };
-  lazyBoot=true;whenIdle(()=>bootNext(0),1500);
   // Places the player has worked at: their workbench and scene into the HTTP cache, at the lowest priority,
   // long after start-up (the next switch then opens without a network wait).
   whenIdle(()=>{const has=u=>(globalThis.__mnlBoot?.asset?.(u)||u)!==u;
@@ -1419,12 +1417,24 @@ try{
   registerWorker();
   const openSocial=tab=>{ui.socTab=tab||'street';ui.socShop=null;L.social.get().then(m=>{m.invalidate(ui);openSheet('social');}).catch(()=>{});};
   listenWorker(url=>{const q=new URL(url,location.origin).searchParams;if(q.get('social'))openSocial(q.get('social'));});
-  const deep=new URLSearchParams(location.search);
-  if(deep.get('social')){history.replaceState(null,'','/');openSocial(deep.get('social'));}
-  else if(!api.state.current)openSheet('home');else{if(!room().open)openSheet(room().shift_summary?'summary':'prepare');}
-  import('./v4/whatsnew.js').then(m=>m.whatsNewBoot(env())).catch(e=>console.warn('whatsnew:',e));  // "Có gì mới": lazy, off the first load
-  import('./v4/x3week.js').then(m=>m.x3Boot(env())).catch(e=>console.warn('x3week:',e));  // 🔥 Nghề x3 trong tuần (game/x3_week.py)
-  if(api.gifts?.length)import('./v4/gift.js').then(m=>m.giftBoot(env())).catch(e=>console.warn('gift:',e));  // 🎁 Quà từ Phố Có Chuyện: only for a save with a gift
-  if(firstDay(api.state))import('./v4/onboard-fx.js').then(m=>m.onboardBoot(env())).catch(e=>console.warn('onboard:',e));  // a new player's first day only
+  if(!oauthReturned){
+    const deep=new URLSearchParams(location.search);
+    if(deep.get('social')){history.replaceState(null,'','/');openSocial(deep.get('social'));}
+    else if(!api.state.current)openSheet('home');else{if(!room().open)openSheet(room().shift_summary?'summary':'prepare');}
+  }
+  // Callback feedback gets the first screen. Start automatic cards only after the player closes it;
+  // a queued close event from a sheet already reopened is not a dismissal.
+  const bootAutomatic=()=>{
+    if(tutNow)tutBoot[0].get().then(tutBoot[1]).catch(e=>console.warn('lazy boot:',e));
+    lazyBoot=true;whenIdle(()=>bootNext(0),1500);
+    import('./v4/whatsnew.js').then(m=>m.whatsNewBoot(env())).catch(e=>console.warn('whatsnew:',e));  // "Có gì mới": lazy, off the first load
+    import('./v4/x3week.js').then(m=>m.x3Boot(env())).catch(e=>console.warn('x3week:',e));  // 🔥 Nghề x3 trong tuần (game/x3_week.py)
+    if(api.gifts?.length)import('./v4/gift.js').then(m=>m.giftBoot(env())).catch(e=>console.warn('gift:',e));  // 🎁 Quà từ Phố Có Chuyện: only for a save with a gift
+    if(firstDay(api.state))import('./v4/onboard-fx.js').then(m=>m.onboardBoot(env())).catch(e=>console.warn('onboard:',e));  // a new player's first day only
+  };
+  if(oauthReturned){
+    const sheet=$('#sheet'),resumeBoot=()=>{if(sheet.open)return;sheet.removeEventListener('close',resumeBoot);bootAutomatic();};
+    sheet.addEventListener('close',resumeBoot);
+  }else bootAutomatic();
   import('./v4/ticker.js').then(m=>m.tickerBoot(()=>env())).catch(e=>console.warn('ticker:',e));  // Bảng tin cả phố (tin cưới): lazy
 }catch(error){$('#loading').innerHTML=`<div class="loading-leaf">${icon('leaf',45)}</div><h1>Khu phố đang đợi mở cửa</h1><p>Chưa kết nối được. Kiểm tra mạng rồi thử lại nhé.</p><button class="btn primary big" id="reload-btn">Thử kết nối lại</button>`;console.warn(error);$('#reload-btn').onclick=()=>location.reload();}
