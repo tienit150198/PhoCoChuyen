@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **1.4.1** (02/10 07:09; see "1.3.0" below), 33 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **1.4.3** (02/10 12:20; see "1.3.0" below), 33 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -47,8 +47,21 @@ branch holds what, and what to do next, in order. Details live in the linked doc
   shadow so 1.3.2 still loads), wallpapers/floors/sheets, cats. `DECO_PER_MINUTE` (150).
 - **1.4.1** (02/10 07:09): hunger/sleep bars, lunch strip and evening screen (`game/needs.py`, `journey.needs`,
   journey only; feedback #72).
-- Known, pre-existing since 01/10: milk_tea.js "Cannot read properties of undefined (reading 'data')" on the
-  prepare screen (~40/day in stat_client_errors). Not fixed yet.
+- **1.4.2 + 1.4.3** (deployed together 02/10 12:20, rollback target 1.4.1-20261002070851):
+  - 1.4.2: admin "Tổng quan đầu tư" (9 tabs, CSV, printable report; `docs/ADMIN_METRICS.md`,
+    `scripts/verify_admin_metrics.sql`), new tables `stat_counters`, `stat_kpi_daily`, `stat_players` (created by
+    admin_stats.ensure); optional consented Firebase/GA (inert until `SITE_URL` + `FIREBASE_*` are set; not set on
+    prod); milk_tea.js 'reading data' crash fixed.
+  - 1.4.3: 🍢 Ăn thêm (`jr_needs_snack`, paid, no new state). **Player statistics are kept forever** (owner 02/10):
+    no time-based deletes by default (`ADMIN_STATS_*_DAYS`, `RETENTION_*_DAYS` = 0), and a deleted save keeps
+    its stat rows (the PostgreSQL `mnl_stat_*_gone` functions were replaced by no-ops at startup: verified
+    `deletes = f` on prod). Privacy page says so. Idle anonymous saves are still deleted after 180 days
+    (`SESSION_IDLE_DAYS`); the owner was asked whether to keep those too.
+- Known, pre-existing: `/api/ai/review` answers 400 for ~70 calls/hour (many clients; harmless: the client
+  falls back to the scripted review). Cause not found yet (not the career check).
+- In progress (02/10 afternoon): worktrees `wt-tax`, `wt-milktea`, `wt-grocery`, `wt-shops`, `wt-faq`
+  (branches `ux/*` from 2074c20): disable/explain actions the server rejects (data: stat_actions errors), inline
+  hints for tax/accounting, an in-game "Hỏi nhanh". Merge into rel-1.3, then release 1.4.4.
 - Someone left uncommitted Firebase/telemetry work in the main checkout (.env.example, game/webassets.py,
   public/js/telemetry.js, public/privacy.html, tests/test_webassets.py); not ours, not released.
 
