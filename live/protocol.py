@@ -42,7 +42,7 @@ def on(kind: str, rate: tuple | None = None):
 
 class Feature:
     name = 'core'
-    flag: str | None = None      # 'chat' | 'street' | 'dating' | None (always on)
+    flag: str | None = None      # 'chat' | 'street' | 'dating' | 'wedding' | 'fair' | None (always on)
 
     def __init__(self, app):
         self.app, self.hub, self.cfg = app, app.hub, app.cfg
