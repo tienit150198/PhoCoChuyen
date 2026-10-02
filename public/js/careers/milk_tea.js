@@ -111,25 +111,67 @@ function outOfStock(t,x){
   if(!t?.known||t.cup?.sealed)return '';
   const b=B(x),want=ordered(t);if(!want)return '';
   const items=t.cup?.items||[],rows=[];
-  const miss=[...(want.flavor?[want.flavor]:[]),...want.toppings].filter(k=>!items.includes(k)&&!station(x,k).made&&station(x,k).stock===0);
+  // Made at the counter (pearls, foam, a tea): only when the counter cannot make it now (fund, shelf).
+  const made=k=>station(x,k).made,blocked=k=>made(k)&&prepPlan(x,k).why;
+  const miss=[...(want.flavor?[want.flavor]:[]),...want.toppings].filter(k=>!items.includes(k)&&station(x,k).stock===0&&(!made(k)||blocked(k)));
   for(const k of miss){
-    const i=ing(x,k),o=soonest(x,k),swap=swappable(x,k,want);
-    rows.push(`<div class="mt-alert warn mt-out"><span>🚫 Hết <b>${x.esc(low(i.name))}</b>${o?` · 📦 ${x.esc(o.eta_label)}`:swap?'':' · không còn topping khác để mời đổi'}</span><span class="mt-out-btns">${swap?jb(x,'🙏 Mời khách đổi','tea_swap',{task:t.id,item:k},'small cream'):''}${o?'':jb(x,`⚡ Gọi hỏa tốc · ${expressCost(x,k,5)} xu`,'tea_order',{item:k,qty:5,supplier:'express',confirm:true},'small ghost')}</span></div>`);
+    const i=ing(x,k),o=soonest(x,k),swap=swappable(x,k,want),why=blocked(k);
+    if(why){rows.push(`<div class="mt-alert warn mt-out"><span>🚫 Hết <b>${x.esc(low(i.name))}</b> · chưa ${x.esc(low(verb(k)))} thêm được: ${x.esc(low(why))}</span><span class="mt-out-btns">${swap?jb(x,'🙏 Mời khách đổi','tea_swap',{task:t.id,item:k},'small cream'):''}${why.startsWith('Thiếu')?topUp(x):''}</span></div>`);continue;}
+    rows.push(`<div class="mt-alert warn mt-out"><span>🚫 Hết <b>${x.esc(low(i.name))}</b>${o?` · 📦 ${x.esc(o.eta_label)}`:swap?'':' · không còn topping khác để mời đổi'}</span><span class="mt-out-btns">${swap?jb(x,'🙏 Mời khách đổi','tea_swap',{task:t.id,item:k},'small cream'):''}${o?'':expressBtn(x,k,5,'small ghost')}</span></div>`);
   }
+  // The tea itself (made here): out and the counter cannot brew more now.
+  const base=(t.ticket||[]).find(r=>r.k==='base')?.want||t.needs?.base;
+  if(base&&!hasGroup(x,t.cup||{},'base')&&station(x,base).stock===0&&blocked(base)){const why=blocked(base);
+    rows.push(`<div class="mt-alert warn mt-out"><span>🚫 Hết <b>${x.esc(low(ing(x,base).name))}</b> · chưa ủ thêm được: ${x.esc(low(why))}</span><span class="mt-out-btns">${why.startsWith('Thiếu')?topUp(x):''}</span></div>`);}
   const cups=b.cups||{},size=want.size;
   if(!t.cup?.placed&&cups[size]===0){
     const o=soonest(x,'cup_'+size),other=size==='M'?'L':'M';
-    rows.push(`<div class="mt-alert warn mt-out"><span>🚫 Hết ly <b>${size}</b>${o?` · 📦 ${x.esc(o.eta_label)}`:''}</span><span class="mt-out-btns">${cups[other]?jb(x,size==='M'?'🥤 Mời lên ly L, giữ giá':'🧋 Mời xuống ly M','tea_swap',{task:t.id,item:'cup_'+size},'small cream'):''}${o?'':jb(x,`⚡ Gọi hỏa tốc · ${expressCost(x,'cup_'+size,1)} xu`,'tea_order',{item:'cup_'+size,qty:1,supplier:'express',confirm:true},'small ghost')}</span></div>`);
+    rows.push(`<div class="mt-alert warn mt-out"><span>🚫 Hết ly <b>${size}</b>${o?` · 📦 ${x.esc(o.eta_label)}`:''}</span><span class="mt-out-btns">${cups[other]?jb(x,size==='M'?'🥤 Mời lên ly L, giữ giá':'🧋 Mời xuống ly M','tea_swap',{task:t.id,item:'cup_'+size},'small cream'):''}${o?'':expressBtn(x,'cup_'+size,1,'small ghost')}</span></div>`);
   }
   return rows.join('');
 }
 const unitCost=(x,id)=>id.startsWith('cup_')?(B(x).cup_pack?.cost||4):ing(x,id).cost||0;
-const orderCost=(x,id,qty,factor)=>Math.max(1,Math.round(qty*unitCost(x,id)*factor));
+// Rounded like the server (game/boba.py _order: Python round, ties to even), so the price shown is the price taken.
+const orderCost=(x,id,qty,factor)=>Math.max(1,pyRound(qty*unitCost(x,id)*factor));
 const expressCost=(x,id,qty)=>orderCost(x,id,qty,B(x).express?.factor||1.35);
+/* A paid tap the server must refuse (game/boba.py _prepare/_order, engine.money "Chưa đủ xu…") is drawn
+ * disabled with its reason ("Thiếu 3 xu", "Kho đầy 60/60", "Đang chờ 12/12 đơn") and never sent.
+ * stations[].held, shelf_cap, max_orders and cup_cap come from the server (1.4.4); older servers: fallbacks. */
+const fund=x=>Number(x.room?.money)||0;
+const shelfCap=x=>B(x).shelf_cap||60;
+const heldOf=(x,id)=>{const s=station(x,id);return s.held??s.stock??0;};
+/** A batch made at the counter: five portions, or as many as the shop fund pays for and the shelf still takes
+ * (the label says which); {why} when not even one can be made now. */
+function prepPlan(x,id){
+  const unit=ing(x,id).cost||0,cap=shelfCap(x),held=heldOf(x,id),room=Math.max(0,cap-held),money=fund(x);
+  if(!room)return {qty:0,cost:0,why:`Kho đầy ${held}/${cap}`,label:`${verb(id)} +5`};
+  const qty=Math.min(5,room,unit?Math.floor(money/unit):5);
+  if(qty<1)return {qty:0,cost:unit,why:`Thiếu ${unit-money} xu`,label:`${verb(id)} +1 · ${unit} xu`,poor:true};
+  return {qty,cost:qty*unit,why:'',label:`${verb(id)} +${qty} · ${qty*unit} xu`,poor:qty<5&&qty<room};
+}
+/** Why a supplier order of `qty` for `cost` xu would be refused now; '' when it goes through. */
+function orderWhy(x,id,qty,cost){
+  const b=B(x),n=(b.orders||[]).length,max=b.max_orders||12,p=b.pending?.[id]||0;
+  if(n>=max)return `Đang chờ ${n}/${max} đơn`;
+  if(id.startsWith('cup_')){
+    const cap=b.cup_cap||120,pack=b.cup_pack?.qty||20,have=(b.cups?.[id.slice(4)]||0)+p*pack;
+    if(have+qty*pack>cap)return have>=cap?`Chồng ly đầy ${have}/${cap}`:`Chồng ly chỉ còn chỗ ${cap-have} ly`;
+  }else{
+    const cap=shelfCap(x),have=heldOf(x,id)+p;
+    if(have+qty>cap)return have>=cap?`Kho đầy ${have}/${cap}`:`Kho chỉ còn chỗ ${cap-have} phần`;
+  }
+  return cost>fund(x)?`Thiếu ${cost-fund(x)} xu`:'';
+}
+const whyBtn=(x,label,why,style='')=>`<button type="button" class="btn ${style}" disabled>${label}<small class="mt-why">${x.esc(why)}</small></button>`;
+const prepBtn=(x,id,style='small')=>{const p=prepPlan(x,id);return p.why?whyBtn(x,p.label,p.why,style):jb(x,p.label,'tea_prepare',{item:id,qty:p.qty,confirm:true},style);};
+const expressBtn=(x,id,qty,style)=>{const cost=expressCost(x,id,qty),label=`⚡ Gọi hỏa tốc · ${cost} xu`,why=orderWhy(x,id,qty,cost);
+  return why?whyBtn(x,label,why,style):jb(x,label,'tea_order',{item:id,qty,supplier:'express',confirm:true},style);};
+/** Story mode: the fund is short, so the free way out is named: move money from the wallet into the shop fund. */
+const topUp=x=>x.state?.journey?.story?x.button('👛 Góp tiền từ ví vào quỹ','stView',{view:'wallet'},'small ghost'):'';
 function eventCard(x){
   const ev=B(x).event;if(!ev)return '';
   const body=ev.stage==='open'
-    ?`<p>${x.esc(ev.text)}</p><div class="mt-choices">${(ev.choices||[]).map(o=>`<button type="button" class="btn ${o.cost?'':'cream'}" ${cmdAttr(x,'tea_event',{choice:o.id})}${o.cost&&x.room.money<o.cost?' disabled':''}><span>${x.esc(o.label)}</span>${o.cost||o.hint?`<small>${o.cost?`${o.cost} xu`:''}${o.cost&&o.hint?' · ':''}${o.hint?x.esc(o.hint):''}</small>`:''}</button>`).join('')}</div>`
+    ?`<p>${x.esc(ev.text)}</p><div class="mt-choices">${(ev.choices||[]).map(o=>`<button type="button" class="btn ${o.cost?'':'cream'}" ${cmdAttr(x,'tea_event',{choice:o.id})}${o.cost&&fund(x)<o.cost?' disabled':''}><span>${x.esc(o.label)}</span>${o.cost||o.hint?`<small>${o.cost?`${o.cost} xu`:''}${o.cost&&fund(x)<o.cost?` · thiếu ${o.cost-fund(x)} xu`:''}${o.cost&&o.hint?' · ':''}${o.hint?x.esc(o.hint):''}</small>`:''}</button>`).join('')}</div>`
     :`<p class="mt-result ${ev.good?'good':'bad'}">${x.esc(ev.result||'')}</p>${(ev.effects||[]).length?`<ul class="mt-effects">${ev.effects.map(e=>`<li>${x.esc(e)}</li>`).join('')}</ul>`:''}${jb(x,ev.good?'Tuyệt, làm tiếp':'Buồn ghê, làm tiếp','tea_event_ok',{},'primary')}`;
   // Shown as a modal over the counter so it is never scrolled out of view; focus is moved in by tick().
   return `<div class="mt-modal"><section class="mt-event ${ev.stage}" role="alertdialog" aria-modal="true" aria-labelledby="mtEvTitle"><h3 id="mtEvTitle"><span aria-hidden="true">${x.esc(ev.emoji||'❗')}</span> ${x.esc(ev.title)}</h3>${body}</section></div>`;
@@ -213,10 +255,13 @@ function shelf(t,x,group,title){
     const s=station(x,i.id),inCup=items.includes(i.id);
     if(off.includes(i))return tile(x,{k:i.id,name:i.name,emoji:i.emoji,count:s.stock,cls:'off',disabled:true,sub:'Ngừng bán',label:`${i.name}: ngừng bán`});
     if(s.stock===0&&!inCup){
-      if(s.made){const v=verb(i.id);return tile(x,{k:i.id,name:i.name,emoji:i.emoji,count:0,cls:'restock',cmd:'tea_prepare',payload:{item:i.id,qty:5,confirm:true},sub:`${v} +5 · ${i.cost*5} xu`,label:`${i.name} đã hết. ${v} 5 phần, ${i.cost*5} xu${s.fresh?', mất 20 phút':''}`});}
+      if(s.made){const p=prepPlan(x,i.id);
+        if(p.why)return tile(x,{k:i.id,name:i.name,emoji:i.emoji,count:0,cls:'restock',disabled:true,sub:p.why,label:`${i.name} đã hết. Chưa ${low(verb(i.id))} thêm được: ${low(p.why)}`});
+        return tile(x,{k:i.id,name:i.name,emoji:i.emoji,count:0,cls:'restock',cmd:'tea_prepare',payload:{item:i.id,qty:p.qty,confirm:true},sub:p.label,label:`${i.name} đã hết. ${verb(i.id)} ${p.qty} phần, ${p.cost} xu${s.fresh?', mất 20 phút':''}`});}
       const o=soonest(x,i.id);
       if(o)return tile(x,{name:i.name,emoji:i.emoji,count:0,cls:'restock wait',disabled:true,sub:`📦 ${o.eta_label}`,label:`${i.name} đã hết, hàng tới ${o.eta_label}`});
-      const cost=expressCost(x,i.id,5);
+      const cost=expressCost(x,i.id,5),why=orderWhy(x,i.id,5,cost);
+      if(why)return tile(x,{name:i.name,emoji:i.emoji,count:0,cls:'restock',disabled:true,sub:why,label:`${i.name} đã hết. Chưa gọi hỏa tốc được: ${low(why)}`});
       return tile(x,{name:i.name,emoji:i.emoji,count:0,cls:'restock',cmd:'tea_order',payload:{item:i.id,qty:5,supplier:'express',confirm:true},sub:`⚡ +5 · ${cost} xu`,label:`${i.name} đã hết. Gọi hỏa tốc 5 phần, ${cost} xu, tới trong 15–30 phút`});
     }
     const disabled=!ready||inCup||have>=limit||needBase;
@@ -253,14 +298,16 @@ const verb=id=>['pearls','white_pearl'].includes(id)?'Nấu':['foam','cheese'].i
 function cupStack(t,x){
   const b=B(x),cup=t.cup,cups=b.cups||{M:0,L:0};
   return `<section class="mt-shelf cups"><h4>🥤 Chồng ly</h4><div class="mt-grid two">${['M','L'].map(size=>{
-    const on=cup.placed&&cup.size===size,locked=(cup.items||[]).length&&!on;
+    // Tea in the cup: neither size can be taken (game/boba.py tea_cup: "Ly đã có trà…"); the other one says why.
+    const on=cup.placed&&cup.size===size,filled=!!(cup.items||[]).length,locked=filled&&!on&&!cup.sealed;
     if(!cups[size]){
       const o=soonest(x,'cup_'+size);
       if(o)return tile(x,{name:`Ly ${size}`,emoji:'🥤',count:0,cls:'restock wait',disabled:true,sub:`📦 ${o.eta_label}`,label:`Hết ly ${size}, hàng tới ${o.eta_label}`});
-      const cost=expressCost(x,'cup_'+size,1);
+      const cost=expressCost(x,'cup_'+size,1),why=orderWhy(x,'cup_'+size,1,cost);
+      if(why)return tile(x,{name:`Ly ${size}`,emoji:'🥤',count:0,cls:'restock',disabled:true,sub:why,label:`Hết ly ${size}. Chưa gọi hỏa tốc được: ${low(why)}`});
       return tile(x,{name:`Ly ${size}`,emoji:'🥤',count:0,cls:'restock',cmd:'tea_order',payload:{item:'cup_'+size,qty:1,supplier:'express',confirm:true},sub:`⚡ +${b.cup_pack?.qty||20} · ${cost} xu`,label:`Hết ly ${size}. Gọi hỏa tốc ${b.cup_pack?.qty||20} ly, ${cost} xu`});
     }
-    return tile(x,{k:'cup_'+size,name:`Ly ${size}`,emoji:size==='L'?'🥤':'🧋',count:cups[size],on,disabled:!t.known||cup.sealed||locked,cmd:'tea_cup',payload:{task:t.id,size},label:`Ly size ${size}, còn ${cups[size]} ly`});
+    return tile(x,{k:'cup_'+size,name:`Ly ${size}`,emoji:size==='L'?'🥤':'🧋',count:cups[size],on,disabled:!t.known||cup.sealed||filled,cmd:'tea_cup',payload:{task:t.id,size},sub:locked?'Đổ ly để đổi cỡ':'',label:`Ly size ${size}, còn ${cups[size]} ly${locked?'. Ly đang có trà: đổ ly rồi mới đổi cỡ':''}`});
   }).join('')}</div></section>`;
 }
 function dials(t,x){
@@ -333,9 +380,12 @@ function brewSteps(t,x){
   // The right tile: tap it for the player on a first task, otherwise point at it.
   const tap=(k,op,payload,label)=>first?run(op,payload,label):{sel:kSel(k),label};
   // A needed ingredient that has run out: make more at the counter, or ask the guest to swap.
-  const refill=k=>{const s=station(x,k),i=ing(x,k);
-    if(s.made)return run('tea_prepare',{item:k,qty:5,confirm:true},`${verb(k)} thêm ${x.esc(low(i.name))} · ${i.cost*5} xu`);
-    const want=ordered(t);if(want&&!swappable(x,k,want))return {sel:'.mt-out',label:soonest(x,k)?`📦 Hết ${x.esc(low(i.name))}: chờ hàng về`:`⚡ Hết ${x.esc(low(i.name))}: gọi hỏa tốc`};
+  // The counter cannot make more now (fund, shelf): the step points at the out-of-stock row that says why.
+  const refill=k=>{const s=station(x,k),i=ing(x,k),want=ordered(t);
+    if(s.made){const p=prepPlan(x,k);
+      if(!p.why)return run('tea_prepare',{item:k,qty:p.qty,confirm:true},`${verb(k)} thêm ${x.esc(low(i.name))} · ${p.cost} xu`);
+      return {sel:'.mt-out',label:want&&i.group!=='base'&&swappable(x,k,want)?`🙏 Hết ${x.esc(low(i.name))}: mời khách đổi`:`🚫 Hết ${x.esc(low(i.name))}: ${x.esc(low(p.why))}`};}
+    if(want&&!swappable(x,k,want))return {sel:'.mt-out',label:soonest(x,k)?`📦 Hết ${x.esc(low(i.name))}: chờ hàng về`:`⚡ Hết ${x.esc(low(i.name))}: gọi hỏa tốc`};
     return {sel:'.mt-out',label:`🙏 Hết ${x.esc(low(i.name))}: mời khách đổi`};};
   const name=k=>low(ing(x,k).name),hasBase=hasGroup(x,cup,'base');
   const tops=items.filter(k=>ing(x,k).group==='topping').length;
@@ -461,8 +511,8 @@ const TONE={ok:'✓',warn:'!',danger:'✗'};
 function careBtns(r,x,sheet=false){
   const b=B(x),open=!!x.room.open;
   if(r.id.startsWith('pot-')){
-    const id=r.id.slice(4),i=ing(x,id);
-    return jb(x,`Nấu +5 · ${i.cost*5} xu`,'tea_prepare',{item:id,qty:5,confirm:true},'small')+(r.tone==='warn'&&station(x,id).tired?jb(x,'Đổ mẻ cũ','tea_toss',{item:id},'small ghost'):'');
+    const id=r.id.slice(4);
+    return prepBtn(x,id)+(r.tone==='warn'&&station(x,id).tired?jb(x,'Đổ mẻ cũ','tea_toss',{item:id},'small ghost'):'');
   }
   if(r.id==='sealer'&&r.tone!=='ok'&&open)return jb(x,'🧽 Lau máy · 20 phút','tea_clean',{},'small');
   if(['tea','tea-empty','cups'].includes(r.id)&&!sheet)return x.button('🧺 Mở kho','prepare',{},'small ghost');
@@ -493,7 +543,7 @@ function supplierPicker(x,id){
       const sells=!s.items||s.items.includes(id),cost=orderCost(x,id,qty,s.factor);
       const tags=[s.factor===cheapest?'rẻ nhất':'',s.factor>1?'đắt':'',s.late>=12?'hay trễ':''].filter(Boolean);
       return `<article class="mt-sup ${sells?'':'off'}"><div class="mt-sup-head"><span aria-hidden="true">${x.esc(s.emoji)}</span><b>${x.esc(s.name)}</b></div>
-        ${sells?`<p class="mt-sup-when">${x.esc(s.quote?.label||s.window)}</p><small>${x.esc(s.window)} · giá ×${String(s.factor).replace('.',',')}${tags.length?' · '+tags.map(v=>x.esc(v)).join(' · '):''}</small>${jb(x,`Đặt · ${cost} xu`,'tea_order',{item:id,qty,supplier:s.id,confirm:true},'small primary',x.room.money<cost)}`:'<small>Không bán mặt hàng này</small>'}</article>`;}).join('')}</div></div>`;
+        ${sells?`<p class="mt-sup-when">${x.esc(s.quote?.label||s.window)}</p><small>${x.esc(s.window)} · giá ×${String(s.factor).replace('.',',')}${tags.length?' · '+tags.map(v=>x.esc(v)).join(' · '):''}</small>${(why=>why?whyBtn(x,`Đặt · ${cost} xu`,why,'small'):jb(x,`Đặt · ${cost} xu`,'tea_order',{item:id,qty,supplier:s.id,confirm:true},'small primary'))(orderWhy(x,id,qty,cost))}`:'<small>Không bán mặt hàng này</small>'}</article>`;}).join('')}</div></div>`;
 }
 
 /* ---------------------------------------------------------------- prepare */
@@ -515,7 +565,7 @@ function stockTab(x){
     const bt=batch(i.id),first=bt?.lots?.[0],exp=lot(i.id);
     const fresh=s.fresh?(first?`${first.made?`${verb(i.id)} ${first.made} · `:''}<span class="${first.band==='fresh'?'':'warn'}">${x.esc(first.word)}${first.band==='fresh'&&first.good_until?` tới ${first.good_until}`:first.ok_until?` · bỏ lúc ${first.ok_until}`:''}</span>${bt.lots.length>1?` · ${bt.lots.length} mẻ`:''}`:'chưa có mẻ nào'):(exp!=null?`dùng hết ngày ${exp}`:'');
     if(s.on===false&&!s.stock)return `<div class="mt-row off"><span class="mt-emo" aria-hidden="true">${i.emoji}</span><div class="grow"><b>${x.esc(i.name)}</b><small>🚫 Ngừng bán · không cần ${verb(i.id).toLowerCase()}</small></div></div>`;
-    return `<div class="mt-row ${s.stock===0?'empty':''}${s.on===false?' off':''}"><span class="mt-emo" aria-hidden="true">${i.emoji}</span><div class="grow"><b>${x.esc(i.name)}${s.on===false?' <small>· ngừng bán</small>':''}</b><small><span class="mt-count-inline ${s.stock===0?'zero':''}">Còn ${s.stock}</span>${fresh?` · ${fresh}`:''}</small></div><div class="mt-row-btns">${s.tired?jb(x,'Đổ mẻ cũ','tea_toss',{item:i.id},'small ghost'):''}${jb(x,`${verb(i.id)} +5 · ${i.cost*5} xu`,'tea_prepare',{item:i.id,qty:5,confirm:true},'small')}</div></div>`;
+    return `<div class="mt-row ${s.stock===0?'empty':''}${s.on===false?' off':''}"><span class="mt-emo" aria-hidden="true">${i.emoji}</span><div class="grow"><b>${x.esc(i.name)}${s.on===false?' <small>· ngừng bán</small>':''}</b><small><span class="mt-count-inline ${s.stock===0?'zero':''}">Còn ${s.stock}</span>${fresh?` · ${fresh}`:''}</small></div><div class="mt-row-btns">${s.tired?jb(x,'Đổ mẻ cũ','tea_toss',{item:i.id},'small ghost'):''}${prepBtn(x,i.id)}</div></div>`;
   }).join('');
   // Bought from suppliers: cups, syrups, jellies…
   const buyRow=(id,emoji,name,have,sub,off=false)=>{
@@ -526,15 +576,21 @@ function stockTab(x){
   const bought=ings(x).filter(i=>!station(x,i.id).made).map(i=>{const s=station(x,i.id);if(!s.unlocked)return locked(i);const exp=lot(i.id);return buyRow(i.id,i.emoji,i.name,s.stock,`${s.on===false?'🚫 ngừng bán · ':''}${i.cost} xu/phần${exp!=null?` · dùng hết ngày ${exp}`:''}`,s.on===false);}).join('');
   const night=(b.night||[]).length?`<div class="mt-night">${b.night.map(l=>`<p>${x.esc(l)}</p>`).join('')}</div>`:'';
   const wait=x.room.open&&(b.orders||[]).length?jb(x,'⏳ Chờ thêm 20 phút','tea_wait',{},'ghost small'):'';
-  return `<p class="mt-now">🕑 ${now.is_open?`Bây giờ <b>${x.esc(now.time||b.clock||'')}</b>${overtime(b)?' · tăng ca, nhà cung cấp đã nghỉ':''}`:`Đã đóng cửa · mở lại ${x.esc(now.open||'08:00')}`}</p>${night}
+  // The money every paid button here comes out of, in sight; when it cannot pay for a full batch of
+  // something on the menu, the ways that cost nothing are named.
+  const money=fund(x),J=x.state?.journey,wallet=J?.story&&Number.isFinite(Number(J.wallet))?Number(J.wallet):null;
+  const poor=ings(x).some(i=>{const s=station(x,i.id);return s.made&&s.unlocked&&s.on!==false&&prepPlan(x,i.id).poor;});
+  const purse=`<div class="mt-fund${poor?' poor':''}" role="status"><p>🏪 Quỹ tiệm <b>${money.toLocaleString('vi-VN')} xu</b>${wallet!=null?` · 👛 Ví ${wallet.toLocaleString('vi-VN')} xu`:''}<small>Ủ trà, nấu trân châu, đặt hàng đều trừ vào quỹ tiệm.</small></p>${poor?`<p class="mt-fund-tip">Quỹ mỏng: bán ly từ hàng còn trong kho để có thêm xu, tắt bớt món ở 🏷️ Giá bán${wallet>0?', hoặc góp tiền từ ví vào quỹ':''}.</p>${wallet>0?topUp(x):''}`:''}</div>`;
+  const nOrd=(b.orders||[]).length,maxOrd=b.max_orders||12;
+  return `${purse}<p class="mt-now">🕑 ${now.is_open?`Bây giờ <b>${x.esc(now.time||b.clock||'')}</b>${overtime(b)?' · tăng ca, nhà cung cấp đã nghỉ':''}`:`Đã đóng cửa · mở lại ${x.esc(now.open||'08:00')}`}</p>${night}
     <h3 class="section-title">🧋 Việc chăm quầy</h3>${careRows(x,b.care||[],true)}
     <h3 class="section-title">🫖 Nồi, bình & mẻ hôm nay</h3><p class="muted small">Làm ngay tại quầy. Ủ trà, nấu trân châu mất 20 phút khi quán mở; làm trước giờ mở cửa thì không mất thời gian. Trà ủ và trân châu không để qua đêm.</p><div class="mt-rows">${made}</div>
-    <h3 class="section-title">📦 Đang giao</h3>${orderRows(x)}${wait?`<p class="row wrap">${wait}</p>`:''}
+    <h3 class="section-title">📦 Đang giao${nOrd?` <small>${nOrd}/${maxOrd} đơn${nOrd>=maxOrd?' · đợi hàng tới rồi mới đặt thêm':''}</small>`:''}</h3>${orderRows(x)}${wait?`<p class="row wrap">${wait}</p>`:''}
     <h3 class="section-title">🛒 Đặt hàng</h3><p class="muted small">Trả tiền khi đặt. Mỗi nhà giao một kiểu: hỏa tốc 15–30 phút, xe bốn chuyến mỗi ngày, chợ chiều nay hoặc sáng mai, xưởng 1–2 ngày.</p>
     <div class="mt-rows">${cupRows}${bought}</div>`;
 }
 function upgradeTab(x){
-  return `<div class="mt-upgrades">${(B(x).upgrades||[]).map(u=>`<article class="mt-upgrade ${u.owned?'owned':''}"><span class="mt-emo big" aria-hidden="true">${x.esc(u.emoji)}</span><div class="grow"><h4>${x.esc(u.name)}</h4><p>${x.esc(u.text)}</p></div>${u.owned?'<span class="tag green">✓ Đã lắp</span>':!u.ready?`<span class="tag">🔒 Tay nghề cấp ${u.level}</span>`:x.confirmCmd(`Lắp · ${u.price} xu`,'tea_upgrade',{id:u.id},`Lắp ${u.name} với giá ${u.price} xu?`,'primary small',x.room.money<u.price)}</article>`).join('')}</div>`;
+  return `<div class="mt-upgrades">${(B(x).upgrades||[]).map(u=>`<article class="mt-upgrade ${u.owned?'owned':''}"><span class="mt-emo big" aria-hidden="true">${x.esc(u.emoji)}</span><div class="grow"><h4>${x.esc(u.name)}</h4><p>${x.esc(u.text)}</p></div>${u.owned?'<span class="tag green">✓ Đã lắp</span>':!u.ready?`<span class="tag">🔒 Tay nghề cấp ${u.level}</span>`:fund(x)<u.price?whyBtn(x,`Lắp · ${u.price} xu`,`Thiếu ${u.price-fund(x)} xu`,'small'):x.confirmCmd(`Lắp · ${u.price} xu`,'tea_upgrade',{id:u.id},`Lắp ${u.name} với giá ${u.price} xu?`,'primary small')}</article>`).join('')}</div>`;
 }
 /** "Món đang bán": one switch per tea, syrup and topping, on the same two-column leader rows as the menu.
  * Off: new customers never order it and the counter needs none of it in stock. The last tea stays on. */
@@ -590,6 +646,7 @@ function prepare(x,tab){
 
 /* ---------------------------------------------------------------- module */
 let focusKey='';
+const flying=new Set();  // counter taps on the wire (op|payload): a double tap is not sent twice
 /** Bring the next step's control into view once when the step changes, unless it is already
  * visible between the sheet header and the pinned bar. Scrolls only; never rebuilds the DOM. */
 function focusStep(root){
@@ -670,6 +727,13 @@ export default {
     async fold(data,el,x){const d=el.closest('details');if(data.key)x.ui[data.key]=d?!d.open:!x.ui[data.key];},
     async go(data,el,x){
       let payload={};try{payload=JSON.parse(data.payload||'{}');}catch{return;}
+      // A second tap on the same control while it is on the wire is a double tap: once it lands the screen has
+      // moved on (the greeting is done, the batch is made), so sending it again only earns a refusal.
+      const key=`${data.op}|${data.payload||''}`;if(flying.has(key))return;
+      // Drawn before the gate closed (engine.more_gate): say why instead of pressing into a sure refusal.
+      if(data.op==='more_work'&&x.room?.more_gate){const g=x.room.more_gate;x.toast(g.why==='full'?'Đang có đủ khách: làm nốt ly đang chờ nhé.':g.why==='cap'?'Hôm nay đủ khách rồi: làm nốt rồi khép ca nhé.':'Sắp đóng cửa: không đón thêm khách. Làm nốt rồi khép ca nhé.','hint');x.render();return;}
+      if(data.op==='tea_greet'&&x.room?.tasks?.find(t=>t.id===payload.task)?.greeted){x.render();return;}
+      flying.add(key);
       sfx.configure(x.state.settings||{});sfx.unlock();
       try{
         const r=await x.api.command(data.op,payload)||{};
@@ -679,6 +743,7 @@ export default {
         for(const note of new Set(r.effects||[]))x.toast(note);
         x.render();
       }catch(error){sfx.error();x.toast(error.status?error.message:'Mất kết nối. Việc đã xác nhận vẫn được giữ, thử lại sau một chút nhé.',true);}
+      finally{flying.delete(key);}
     },
   },
   tick(root,x){
