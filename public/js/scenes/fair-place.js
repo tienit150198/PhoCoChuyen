@@ -5,7 +5,8 @@
  * carts and the crowd. Walking uses the pagoda's path finder (scenes/chua-place.js: one floor rectangle, footprints,
  * a grid A* string-pulled), so a plan here has the same shape:
  *   plan(port, has) → {floor, blocks, spots:[{id, kind, hit, r, stand, tab?, line?}], entry:{gate}, crowd:[{x,y,seed}]}
- *   kind 'stall' opens the stall `tab` of v4/fair.js, 'look' (the gate, the carts) and 'npc' (the crowd) say a line.
+ *   kind 'stall' opens the stall `tab` of v4/fair.js, 'look' (the gate, the carts) and 'npc' (the crowd) say a line;
+ *   a cart (cart: true) opens its menu instead when the server sells food.
  *   has: {dt, loan} (stalls an older server does not have are left out).
  * Pure (no DOM, no server); scene pixels: landscape 1200×790, portrait 700×890 like the workplaces. Nothing moves
  * when `reduced` is set. back() paints what never moves (cached by the caller), props() what stands on the floor. */
@@ -66,7 +67,7 @@ export function plan(port,has={}){
   const g=Lo.gate,entry=[g.x,g.y-40];
   blocks.push([g.x-g.w/2-8,g.y-14,g.x-g.w/2+8,g.y],[g.x+g.w/2-8,g.y-14,g.x+g.w/2+8,g.y]);
   spots.push(S('gate','look',[g.x,g.y-150],62*big,entry,{line:LOOKS.gate}));
-  for(const id of ['candy','cane']){const c=Lo[id];blocks.push([c.x-35,c.y-20,c.x+35,c.y]);spots.push(S(id,'look',[c.x,c.y-62],44*big,[c.x,c.y+30],{line:LOOKS[id]}));}
+  for(const id of ['candy','cane']){const c=Lo[id];blocks.push([c.x-35,c.y-20,c.x+35,c.y]);spots.push(S(id,'look',[c.x,c.y-62],44*big,[c.x,c.y+30],{line:LOOKS[id],cart:true}));}
   const crowd=Lo.crowd.map(([x,y],i)=>({x,y,seed:i*7+3}));
   for(const q of crowd){blocks.push([q.x-24,q.y-7,q.x+24,q.y+6]);
     spots.push(S('npc:'+q.seed,'npc',[q.x,q.y-58],34*big,[q.x,Math.min(Lo.floor[3]-4,q.y+40)],{line:CROWD_LINES[q.seed%CROWD_LINES.length]}));}

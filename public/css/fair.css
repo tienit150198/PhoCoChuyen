@@ -486,6 +486,24 @@ html.reduce-motion .fh-fly{animation-duration:.05s}
 .fh-loansum{margin:10px 0;font-size:1rem}
 .fh-loansum small{color:var(--muted)}
 
+/* ---- 🍡 Hàng ăn vặt (the food carts; game/fair_food.py) ---- */
+.fh-foodlink{margin-top:8px}
+.fh-snacks{display:grid;gap:4px;padding:8px 12px}
+.fh-snack{display:flex;align-items:center;gap:10px;min-height:56px;padding:6px 0}
+.fh-snack+.fh-snack{border-top:1px dashed var(--line)}
+.fh-snack .grow{min-width:0;flex:1;display:grid}
+.fh-snack small{font-size:.8rem;color:var(--muted)}
+.fh-snack small.fh-snackwhy{color:var(--bad)}
+.fh-snack .btn{flex:none;min-width:72px}
+.fh-snackico{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:color-mix(in srgb,var(--fh-gold) 22%,var(--surface-2));font-size:1.5rem}
+.fh-snackres{display:flex;gap:10px;align-items:center;background:var(--good-soft,var(--surface-2));border-color:color-mix(in srgb,var(--good) 35%,var(--line))}
+.fh-snackres>span{font-size:2rem;line-height:1}
+.fh-snackres{min-height:74px}
+.fh-snackres.idle{background:var(--surface-2);border-color:var(--line)}
+.fh-snackres.idle b{font-weight:600;color:var(--ink-2)}
+.fh-snackres small{display:block;color:var(--ink-2);font-size:.85rem}
+@media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .fh-snackres:not(.idle)>span{animation:fh-pop .5s cubic-bezier(.3,1.6,.5,1)}}
+
 /* ---- 🏮 Đi dạo hội chợ (public/js/v4/fair-walk.js, scenes/fair-place.js) ---- */
 .fh-walk{margin:0 0 6px}
 .fh-wslot{min-height:120px}
