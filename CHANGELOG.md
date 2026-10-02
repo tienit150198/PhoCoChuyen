@@ -1,3 +1,14 @@
+# v1.4.7 — 💅 Tiệm nail, 🛕 chùa, 🎱 lô tô, 🧑‍🎤 avatar chat
+
+Chủ game (02/10): "có 1 cái làm móng hay nail đi", "thêm thầy chùa nữa, mn đi chùa được nhé", "loto thì có nhạc, có mc, có người biểu diễn…", "avatar cho mọi người chat ấy, set nhiều hơn và đa dạng hơn".
+
+- Nghề `nail` (`game/careers/nail.py`): tiệm chị Diệp, mở ở chương 2. Gel, móng úp, đính đá, dưỡng da tay; vệ sinh dụng cụ; hoàn tiền bong gel theo số tiền khách thật sự trả.
+- Nghề `pagoda` (`game/careers/pagoda.py`, `pagoda_content.py`): phụ việc chùa, phụ cấp cố định 6–10 xu, không nhận tiền khách, không bán "đồ được ban phước". Ngày ở chùa không hiện thẻ bia, thịt, thất tình.
+- Đi chùa (`game/chua.py`, `public/js/v4/chua.js`): trong mục Đời sống, miễn phí, tối đa 3 việc/ngày.
+- Gánh lô tô (`game/fair.py`, `public/js/v4/fair-loto.js`): MC cô Bảy Lô Tô, 118 câu thơ tự viết, nhạc CC0 `wedding-funk.mp3`. Tổng cược ≤ 50 xu/ván, trần theo ngày, Kinh sai phạt 1 xu (không quá ví).
+- Ảnh đại diện chat (`game/avatar.py`, `live/faces.py`, `public/js/v4/face.js`, `avatar.js`): SCHEMA 11→12 thêm bảng `chat_faces` (chỉ CREATE TABLE IF NOT EXISTS). Mã mặt được server dựng lại từ danh sách cho phép. Deploy game server trước live.
+- Lùi bản: save có `nail`/`pagoda` trong `careers` bị 1.4.6 từ chối — lùi bản phải khôi phục, không chỉ đổi code.
+
 # v1.4.6 — 🚗 Xe, máy bay, du thuyền
 
 Chủ game (02/10): "thêm cả cái xe, máy bay, du thuyền cho mọi người mua nhé".
