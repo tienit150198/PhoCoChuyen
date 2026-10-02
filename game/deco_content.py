@@ -38,7 +38,7 @@ POOLSIDE = ('pool', 'yard')
 
 CATS = (('bed', '🛏️', 'Giường, tủ & thảm'), ('table', '🪑', 'Bàn ghế'), ('light', '💡', 'Đèn'), ('plant', '🪴', 'Cây & hoa'),
         ('wall', '🖼️', 'Trang trí tường'), ('fun', '🧸', 'Đồ chơi & tiện ích'), ('bath', '🛁', 'Nhà tắm'),
-        ('pool', '🏖️', 'Hồ bơi & sân vườn'))
+        ('pool', '🏖️', 'Hồ bơi & sân vườn'), ('le', '🏮', 'Trung thu & Tết'))
 SPOTS = ('wall', 'floor', 'rug', 'top')
 
 
@@ -139,9 +139,51 @@ ITEMS = {
     'lo_nuong': _i('pool', 'floor', 1, 1, 160, 2, POOLSIDE + ('balcony',), 'Lò nướng BBQ', '🍢', ('grill',)),
     'cay_dua': _i('pool', 'floor', 1, 1, 110, 2, POOLSIDE, 'Cây dừa cảnh', '🌴', ('plant',)),
     'den_vuon': _i('pool', 'floor', 1, 1, 60, 1, POOLSIDE + ('balcony',), 'Đèn sân vườn', '🕯️', ('lamp',)),
+    # After 1.4.19 (KNOWN_1419): đồ nhà kiểu Việt. Phòng khách
+    'sap_go': _i('table', 'floor', 3, 1, 280, 3, ('living',), 'Sập gỗ', '🪵', ('seat',), surface=16),
+    'am_chen': _i('fun', 'top', 1, 1, 30, 1, SMALL + OUT + ('pool',), 'Bộ ấm chén', '🍵', ('tea',)),
+    'tranh_dong_ho': _i('wall', 'wall', 2, 1, 65, 2, IN + ('loft',), 'Tranh Đông Hồ', '🐖', ('art',)),
+    'dong_ho_qua_lac': _i('wall', 'wall', 1, 2, 95, 2, IN, 'Đồng hồ quả lắc', '🕰️'),
+    'cay_kim_tien': _i('plant', 'floor', 1, 1, 70, 2, IN + OUT + ('loft',) + BATH + ('pool',), 'Chậu kim tiền', '🪴', ('plant',)),
+    'quat_tran': _i('fun', 'wall', 2, 1, 140, 1, IN + ('loft',), 'Quạt trần', '🌀'),
+    'dan_bau': _i('fun', 'floor', 2, 1, 150, 2, LIVE + ('loft',), 'Đàn bầu', '🎼', ('music',)),
+    'binh_sen': _i('plant', 'top', 1, 1, 35, 1, SMALL + BATH, 'Bình gốm cắm sen', '🪷', ('plant', 'flower')),
+    'radio': _i('fun', 'top', 1, 1, 60, 1, SMALL, 'Radio cát-xét', '📻', ('music',)),
+    'may_may': _i('table', 'floor', 2, 1, 130, 2, LIVE + ('loft',), 'Máy may đạp chân', '🧵', (), surface=22),
+    # Phòng ngủ
+    'man_tuyn': _i('bed', 'wall', 3, 2, 55, 2, SLEEP + ('bunk',), 'Màn tuyn', '🛏️', ('fabric', 'soft')),
+    'ban_trang_diem': _i('bed', 'floor', 2, 1, 170, 2, ('bed', 'bed2'), 'Bàn trang điểm', '💄', (), surface=24),
+    'gau_bong_lon': _i('fun', 'floor', 1, 1, 95, 2, SLEEP + ('living', 'loft'), 'Gấu bông khổng lồ', '🐻', ('soft',)),
+    'den_sao': _i('light', 'top', 1, 1, 45, 1, SMALL, 'Đèn chiếu sao', '🌟', ('lamp',)),
+    'moc_ao': _i('bed', 'floor', 1, 1, 45, 1, LIVE + ('loft',), 'Cây treo quần áo', '🧥'),
+    # Bếp
+    'am_sieu_toc': _i('fun', 'top', 1, 1, 30, 1, ('kitchen', 'studio', 'living'), 'Ấm siêu tốc', '♨️', ('kitchen',)),
+    'lo_vi_song': _i('fun', 'top', 1, 1, 130, 1, ('kitchen', 'studio'), 'Lò vi sóng', '⏲️', ('kitchen',)),
+    'chan_bat': _i('bed', 'floor', 1, 1, 120, 2, ('kitchen',), 'Chạn bát gỗ', '🥣', ('kitchen',)),
+    'tu_lanh_magnet': _i('fun', 'floor', 2, 1, 300, 3, ('kitchen',), 'Tủ lạnh dán magnet', '🧲', ('kitchen',)),
+    'gio_trai_cay': _i('fun', 'top', 1, 1, 20, 1, SMALL + OUT + ('pool',), 'Giỏ trái cây', '🍊', ('fruit',)),
+    # Nhà tắm, hồ bơi
+    'duong_xi': _i('plant', 'wall', 1, 1, 45, 2, WALLS, 'Giỏ dương xỉ treo', '🌿', ('plant',)),
+    'nen_thom': _i('light', 'top', 1, 1, 25, 1, SMALL + BATH + ('bathc',), 'Nến thơm', '🕯️', ('lamp',)),
+    'ao_choang': _i('bath', 'wall', 1, 1, 35, 1, BATH, 'Áo choàng tắm', '👘', ('towel', 'soft')),
+    'phao_hong_hac': _i('pool', 'floor', 2, 1, 90, 2, ('pool',), 'Phao hồng hạc', '🦩', ('toy', 'float')),
+    # Ban công, sân vườn
+    'bonsai': _i('plant', 'floor', 1, 1, 160, 3, OUT + ('living', 'pool'), 'Chậu bonsai', '🌳', ('plant',)),
+    'long_chim': _i('pool', 'floor', 1, 1, 110, 2, OUT + ('living',), 'Lồng chim chào mào', '🐦', ('bird',)),
+    'xe_dap': _i('pool', 'floor', 2, 1, 140, 1, OUT + ('living',), 'Xe đạp mini', '🚲', ('ride',)),
+    'ban_co_tuong': _i('table', 'floor', 2, 1, 85, 2, OUT + ('living', 'pool'), 'Bàn cờ tướng', '♟️', ()),
+    'chum_nuoc': _i('pool', 'floor', 1, 1, 55, 1, OUT + ('pool',), 'Chum sành', '🏺', ('water',)),
+    # Trung thu & Tết
+    'long_den_sao': _i('le', 'wall', 1, 1, 30, 1, WALLS, 'Lồng đèn ông sao', '⭐', ('lamp',)),
+    'den_keo_quan': _i('le', 'top', 1, 1, 55, 2, SMALL + OUT, 'Đèn kéo quân', '🏮', ('lamp',)),
+    'cay_mai': _i('le', 'floor', 1, 1, 150, 3, IN + OUT + ('loft', 'pool'), 'Chậu mai vàng', '🌼', ('plant', 'flower')),
+    'canh_dao': _i('le', 'floor', 1, 1, 130, 3, IN + OUT + ('loft',), 'Bình đào Tết', '🌸', ('plant', 'flower')),
+    'cau_doi': _i('le', 'wall', 2, 2, 40, 1, IN, 'Câu đối đỏ', '🧧', ('art',)),
+    'mam_ngu_qua': _i('le', 'top', 1, 1, 45, 1, SMALL + OUT, 'Mâm ngũ quả', '🍍'),
 }
 LEGACY = tuple(ITEMS)[:27]          # the 1.2.0 catalogue (reno.py slots)
 KNOWN_132 = tuple(ITEMS)[:65]       # what a 1.3.2 build knows (the grid mirror only holds these)
+KNOWN_1419 = tuple(ITEMS)[:81]      # what 1.4.11–1.4.19 know (an older build keeps the others in reno.items, unshown)
 
 
 # ---------------------------------------------------------------- rooms
@@ -261,8 +303,15 @@ SETS = {
     'vuon': dict(emoji='🌺', name='Vườn nhỏ', bonus=3, need=(('hoa_giay',), ('gian_rau',), ('vong', 'xich_du', 'ghe_may', 'ban_ngoai'))),
     # 1.4.11
     'spa': dict(emoji='🛁', name='Phòng tắm thư giãn', bonus=3, need=(('bon_tam', 'buong_tam'), ('ke_khan', 'gio_do_tam'), ('tag', 'plant'))),
-    'resort': dict(emoji='🏖️', name='Hồ bơi nghỉ dưỡng', bonus=3, need=(('ghe_tam_nang',), ('du_che',), ('phao', 'vit_cao_su'))),
+    'resort': dict(emoji='🏖️', name='Hồ bơi nghỉ dưỡng', bonus=3, need=(('ghe_tam_nang',), ('du_che',), ('phao', 'vit_cao_su', 'phao_hong_hac'))),
     'bbq': dict(emoji='🍢', name='Tiệc nướng ngoài trời', bonus=2, need=(('lo_nuong',), ('ban_ngoai', 'ban_tra'), ('ghe_may', 'ghe_dau', 'ghe_tam_nang'))),
+    # After 1.4.19. Only 'tet' can be done in a rented room or the attic (the others want a living room, a kitchen, a bedroom
+    # or a yard): every set possible where you live rides in deco.public, and the attic's state stays small.
+    'tet': dict(emoji='🧧', name='Góc Tết sum vầy', bonus=3, need=(('cay_mai', 'canh_dao'), ('cau_doi',), ('mam_ngu_qua',))),
+    'xua': dict(emoji='🫖', name='Phòng khách xưa', bonus=3, need=(('sap_go',), ('tranh_dong_ho',), ('dong_ho_qua_lac', 'am_chen', 'radio'))),
+    'hien': dict(emoji='🐦', name='Hiên nhà thong thả', bonus=2, need=(('bonsai',), ('long_chim',), ('ban_co_tuong', 'am_chen'))),
+    'bep_moi': dict(emoji='🍱', name='Bếp tiện nghi', bonus=2, need=(('lo_vi_song',), ('am_sieu_toc',), ('chan_bat', 'tu_lanh_magnet'))),
+    'mo': dict(emoji='🌙', name='Phòng ngủ mộng mơ', bonus=2, need=(('ban_trang_diem',), ('gau_bong_lon',), ('den_sao', 'man_tuyn'))),
 }
 # What a missing ('tag', t) entry is called in a hint ("Thiếu: một cây đèn").
 TAG_WORDS = {'desk': 'một cái bàn', 'lamp': 'một cây đèn', 'books': 'kệ sách', 'plant': 'một chậu cây', 'rug': 'một tấm thảm',
