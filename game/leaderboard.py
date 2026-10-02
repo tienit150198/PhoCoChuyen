@@ -20,10 +20,12 @@ Boards
 Weekly titles: the top of `all`, `titles`, `certs` and of every workplace board
 hold a title for the week, recomputed daily (game/lb_titles.py).
 
-* ``fair<YYYYMMDD>`` - 🏆 Bảng vàng hội chợ while a folk fair runs (game/fair.py
-  edition()): fair points (participation, never xu), days played. Ties: who
-  reached the score first. Not a weekly-title board: its titles are granted once
-  after the fair (game/fair_board.py).
+* ``fair<YYYYMMDD>xu`` - 🏆 Bảng vàng hội chợ while a folk fair runs (game/fair.py
+  board()): the xu won at the fair this edition (fair.money_of; only players
+  ahead have a row), days played. Ties: who reached the score first. Not a
+  weekly-title board: its titles are granted once after the fair
+  (game/fair_board.py). The rows of ``fair<YYYYMMDD>`` (its points until 03/10)
+  are no longer read.
 
 Server authoritative: rows are derived from the save stored on the server (see
 ``summary``), written by the storage layer in the same transaction as the save
@@ -45,7 +47,7 @@ from collections import OrderedDict
 
 from . import db as dbm
 from . import lb_titles as lbt   # 🏅 Danh hiệu tuần (the top of each board, refreshed daily)
-from . import fair as fh          # 🏮 Hội chợ dân gian: its board (fh.edition()) while it runs
+from . import fair as fh          # 🏮 Hội chợ dân gian: its board (fh.board()) while it runs
 from .content import CAREERS
 
 VERSION = 2                # bump when a formula changes: the next start rebuilds every row (2: the titles board)
@@ -182,11 +184,18 @@ def summary(state) -> dict:
     n, secret, last = _titles(state)
     if n:
         out[TITLES] = (n, secret, -last, n, last, secret, 0, n)
-    pts, days = fh.points_of(state.get('journey'))
-    if pts:   # 🏆 Bảng vàng hội chợ: points only; ties go to who reached the score first (since)
-        out[fh.edition()] = (pts, 0, 0, 0, days, 0, 0, 0)
+    won, days = fh.money_of(state.get('journey'))
+    if won > 0:   # 🏆 Bảng vàng hội chợ: xu won, players ahead only; ties go to who reached the score first (since)
+        out[fh.board()] = (won, 0, 0, 0, days, 0, 0, 0)
     out[NAME] = guest_name(state.get('name'))
     return out
+
+
+def heal(rows: dict) -> bool:
+    """Write these rows even though no number moved, on the first command a process sees of a save (game/storage.py,
+    the summary was not remembered): only for a save on the fair's board, whose row an older server (rolling release)
+    may have dropped, or that earned it before the board counted xu. One upsert that changes nothing at worst."""
+    return fh.board() in rows
 
 
 def diff(old: dict, new: dict) -> dict | None:
@@ -382,7 +391,7 @@ def parse_query(q: dict) -> tuple[str, int]:
     """(board, limit) of GET /api/leaderboard?career=<id|all>|board=certs|titles&limit=50;
     ValueError with a player-facing message otherwise."""
     board = q.get('board') or q.get('career') or OVERALL
-    if board not in BOARDS and board != fh.edition():
+    if board not in BOARDS and board not in (fh.board(), fh.edition()):   # edition: an older client (rolling release)
         raise ValueError('Nghề không hợp lệ.')
     raw = q.get('limit') or str(LIMIT)
     if not (raw.isascii() and raw.isdigit() and len(raw) <= 3 and 1 <= int(raw) <= LIMIT):
@@ -399,7 +408,7 @@ def _row_out(board: str, r) -> dict:
     elif board == TITLES:
         out.update(titles=r['mastered'], secret=r['served'], day=r['days'])
     elif board.startswith('fair'):
-        out.update(points=r['score'], days=r['days'])
+        out.update(xu=r['score'], days=r['days'])
     else:
         out.update(days=r['days'], served=r['served'], stars=r['stars'] / 10 if r['stars'] else None)
         if board == OVERALL:
@@ -451,6 +460,9 @@ def view(store, board: str, limit: int = LIMIT, token: str | None = None) -> dic
     ("Bạn"), even outside the top or while their name is hidden, and the board's
     weekly titles (game/lb_titles.py: who holds them, last updated, last week's)."""
     lbt.ensure(store)
+    asked = board
+    if board == fh.edition():   # an older client (rolling release) asks for the fair's board by its edition
+        board = fh.board()
     top, total = _top(store, board, limit)
     sid = _viewer(store, token)
     holders = lbt.holders(store)
@@ -478,10 +490,10 @@ def view(store, board: str, limit: int = LIMIT, token: str | None = None) -> dic
                 me['rank'] = None
         me.pop('show', None)
         me['titles'] = [dict(emoji=h['emoji'], name=h['name'], board=h['board'], label=h['label']) for h in holders.get(sid, ())]
-    if board == fh.edition():   # 🏆 the fair's own titles (after the end), no weekly ones
+    if board == fh.board():   # 🏆 the fair's own titles (after the end), no weekly ones
         from . import fair_board
         fair_board.ensure(store)
-        return dict(board=board, total=total, rows=rows, me=me, weekly=None, fair=fair_board.board_view(store, sid))
+        return dict(board=asked, total=total, rows=rows, me=me, weekly=None, fair=fair_board.board_view(store, sid))
     try:
         weekly = lbt.board_view(store, board, sid)
     except Exception:  # noqa: BLE001 - a database from before the weekly titles: the board still shows

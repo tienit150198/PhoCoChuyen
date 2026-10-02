@@ -1,5 +1,5 @@
 """🎯 Phóng phi tiêu at the fair (game/fair_darts.py, game/fair.py fair_dart): the odds by today's net, the stake
-rules, the wallet as the only limit, the landing point, the points, the title and the save."""
+rules, the wallet as the only limit, the landing point, the Bảng vàng's xu, the title and the save."""
 import json
 import math
 import random
@@ -140,17 +140,18 @@ class Darts(FairBase):
             self.throw(s, 2, [.1])
         self.assertEqual(e.exception.code, 'fair_slow')
 
-    def test_points_a_hit_and_no_daily_max(self):
+    def test_the_board_counts_xu_not_points(self):
         s = story(100)
         s['journey']['fair'] = fh.initial()
         f = s['journey']['fair']
         f.update(date=fh.vn_date(self.clock.t + 2), ed=fh.edition(), pday=fh.vn_date(self.clock.t + 2),
                  dpts=fh.POINTS_DAY, pts=40)
-        s, r = self.throw(s, 2, [.1])
-        self.assertEqual(r['fair']['points'], darts.PT_HIT)
-        self.assertEqual((s['journey']['fair']['pts'], s['journey']['fair']['dpts']), (41, fh.POINTS_DAY))
+        s, r = self.throw(s, 5, [.1])
+        self.assertNotIn('points', r['fair'])
+        self.assertEqual((s['journey']['fair']['pts'], fh.money_of(s['journey'])[0]), (40, 5))   # old points untouched
         s, r = self.throw(s, 2, [.99])
-        self.assertEqual(r['fair']['points'], 0)
+        self.assertEqual(fh.money_of(s['journey'])[0], 3)
+        self.assertNotIn('pt', public_state(s)['fair']['darts'])
         validate_state(s)
 
     def test_bullseye_title(self):

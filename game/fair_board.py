@@ -1,8 +1,9 @@
 """🏆 Bảng vàng hội chợ: the fair's leaderboard and its titles after the end (owner 02/10: "event hội chợ mà top thì
 nhận danh hiệu vua trò chơi nhé").
 
-* The board: fair points (game/fair.py: participation, never xu) on the existing leaderboard table, board
-  `fair.edition()` ('fair20261003'). Its rows come with the save like every board (game/leaderboard.py summary,
+* The board: the xu won at the fair this edition (game/fair.py money_of; owner 03/10: "tiền thắng nhiều xếp top",
+  before that participation points) on the existing leaderboard table, board `fair.board()` ('fair20261003xu'; only
+  players ahead). Its rows come with the save like every board (game/leaderboard.py summary,
   written in the save's own transaction), so the top 20 is one indexed range of `leaderboard_rank`, never a scan
   of the saves; the same privacy rules (accounts under their display name unless hidden, guests only when they
   opted in and named their character). Ties: who reached the score first (`since`).
@@ -74,7 +75,7 @@ def settle(store, t: float | None = None, best_effort_ms: int | None = None) -> 
             if db.execute('INSERT INTO leaderboard_meta(k,v) VALUES(?,?) ON CONFLICT(k) DO NOTHING', (META + ed, '[]')).rowcount != 1:
                 return False
             winners = []
-            for rank, sid, score in standings(db, ed):
+            for rank, sid, score in standings(db, fh.board()):
                 tid = title_for(rank)
                 grant(db, sid, 'title', 1, f'{ed}:{tid}:{sid}', dict(title=tid, src='fair'))
                 winners.append(dict(rank=rank, sid=sid, score=score, title=tid))

@@ -1,6 +1,6 @@
 """🏮 Hội chợ dân gian (game/fair.py, game/fair_board.py, game/fair_oaq.py, game/fair_ring.py): payouts, caps, the
 back corner's raids, the calendar, idempotent commands, old saves, the lô tô round, ô ăn quan (rules, the opponents,
-the prize and its daily cap), ném vòng, the Bảng vàng points and the one-time titles after the fair."""
+the prize and its daily cap), ném vòng, the Bảng vàng (xu won) and the one-time titles after the fair."""
 import datetime
 import json
 import os
@@ -305,7 +305,8 @@ class OldSaves(FairBase):
         self.assertNotIn('fair', s['journey'])
         validate_state(migrate_state(s))
         v = public_state(s)['fair']
-        self.assertEqual(v['points']['total'], 0)
+        self.assertEqual(v['money'], dict(total=0, days=0))
+        self.assertNotIn('points', v)
         self.assertIsNone(v['loto'])
 
     def test_bad_fair_data_is_refused(self):
@@ -374,7 +375,7 @@ class Loto(FairBase):
         self.assertTrue(r['fair']['won'])
         self.assertEqual(s['journey']['wallet'], 100 - fh.LOTO_PRICE + fh.LOTO_PRIZE)
         self.assertIn('f_loto', s['journey']['titles'])
-        self.assertGreaterEqual(r['fair']['points'], fh.PT_LOTO)          # the Kinh card shows the points (owner 03/10)
+        self.assertNotIn('points', r['fair'])                            # no fair points any more (owner 03/10: xu won)
         self.assertEqual(public_state(s)['fair']['today_xu']['lt'], fh.LOTO_PRIZE - fh.LOTO_PRICE)   # 💰 xu kiếm hôm nay
         with self.assertRaises(GameError):
             self.act(s, 'fair_loto_kinh', row=row, at=k)
@@ -719,53 +720,72 @@ class LotoShow(FairBase):
         self.assertEqual((r['fair']['won'], r['fair']['prize'], r['fair']['row']), (True, fh.LOTO_PRIZE, row))
 
 
-class Points(FairBase):
-    def test_points_rules_and_no_daily_cap(self):
+class Money(FairBase):
+    """🏆 Bảng vàng (owner 03/10: "tính tổng tiền mọi người thắng… tiền thắng nhiều xếp top"): the xu won this edition."""
+    def test_the_score_is_the_xu_won_at_every_stall(self):
         s = story(1000)
-        self.dice(Dice(faces=['cua', 'ga', 'ga'] + ['ga'] * 3, draws=[.1, .9]))
-        s, r = self.act(s, 'fair_bc', bets={'cua': 1})
-        self.assertEqual(r['fair']['points'], 2)            # the day + a face that came up
-        s, r = self.act(s, 'fair_bc', bets={'cua': 1})
-        self.assertEqual(r['fair']['points'], 0)            # nothing came up
+        self.dice(Dice(faces=['cua', 'cua', 'tom']))
+        s, r = self.act(s, 'fair_bc', bets={'cua': 5, 'ca': 3})              # +7
+        self.assertNotIn('points', r['fair'])
         self.dice(Dice(draws=[0.0]))
-        s, r = self.act(s, 'fair_xd', side='chan', stake=10)
-        self.assertEqual(r['fair']['points'], 0)            # raided: nothing
-        self.dice(Dice(faces=['cua'] * 300))
-        for _ in range(40):
-            s['journey'].pop('fair_run', None)                # not a run: the odds stay where they are
-            s, r = self.act(s, 'fair_bc', bets={'cua': 1})
-        f = s['journey']['fair']
-        self.assertEqual((f['dpts'], f['pts']), (fh.POINTS_DAY, 42))   # no daily maximum; the saved counter stops at 30
+        s, r = self.act(s, 'fair_xd', side='chan', stake=10)               # raided: the stake and the fine
+        self.assertTrue(r['fair']['raid'])
+        lost = -r['fair']['net']
+        with mock.patch.object(oaq, 'ai_move', weakest):
+            s, _ = self.act(s, 'fair_oaq_start', lv='kho')
+            s, r = OAQStall.finish(self, s)
+        self.assertEqual(r['fair']['end']['prize'], fh.OAQ_PRIZE['kho'])   # a skill stall's xu count too
+        won = 7 - lost + fh.OAQ_PRIZE['kho']
+        self.assertEqual(s['journey']['wallet'], 1000 + won)
+        self.assertEqual(fh.money_of(s['journey']), (won, 1))
+        self.assertEqual(lb.summary(s)[fh.board()], (won, 0, 0, 0, 1, 0, 0, 0))
+        self.assertNotIn(fh.edition(), lb.summary(s))                       # the points board is not written any more
+        v = public_state(s)['fair']
+        self.assertEqual((v['money'], v['board']), (dict(total=won, days=1), fh.board()))
         validate_state(s)
-        self.clock.t = at(2026, 10, 5, 9)
-        s, r = self.act(s, 'fair_bc', bets={'cua': 1})
-        self.assertEqual(r['fair']['points'], 2)
-        self.assertEqual((s['journey']['fair']['pts'], s['journey']['fair']['pdays']), (44, 2))
-        self.assertEqual(lb.summary(s)[fh.edition()][:1], (44,))
 
-    def test_no_points_after_the_close(self):
+    def test_the_gift_and_a_loan_are_not_winnings(self):
+        s = story(0)
+        s, _ = self.act(s, 'fair_gift')
+        s, _ = self.act(s, 'fair_borrow', amount=100)
+        self.assertEqual(fh.money_of(s['journey']), (0, 0))
+        self.assertNotIn(fh.board(), lb.summary(s))
+
+    def test_a_loss_is_below_zero_and_off_the_board(self):
         s = story(100)
-        self.clock.t = at(2026, 10, 7, 23, 58)
-        slot = int(self.clock.t // 60) + 1
-        self.dice(loto_dice(winning_rs(True, slot), True))
-        self.clock.t = slot * 60 + 1
-        s, r = self.act(s, 'fair_loto_buy')
-        before = s['journey']['fair']['pts']
-        rv = fh.round_view(s['journey']['fair']['loto'])
-        pos = {n: i for i, n in enumerate(rv['seq'])}
-        row = min(range(3), key=lambda i: max(pos[n] for n in rv['card'][i]))
-        self.clock.t = AFTER + 30
-        s, r = self.act(s, 'fair_loto_kinh', row=row, at=max(pos[n] for n in rv['card'][row]) + 1)
-        self.assertTrue(r['fair']['won'])                    # the card bought while open is paid
-        self.assertEqual(s['journey']['fair']['pts'], before)  # but the board is closed
+        self.dice(Dice(faces=['ga', 'bau', 'ca'], draws=[.9]))
+        s, r = self.act(s, 'fair_bc', bets={'tom': 4})
+        self.assertEqual(r['fair']['net'], -4)
+        self.assertEqual(fh.money_of(s['journey'])[0], -4)
+        self.assertNotIn(fh.board(), lb.summary(s))
+        self.assertEqual(public_state(s)['fair']['money']['total'], -4)     # shown as lỗ
+        validate_state(s)
+
+    def test_an_older_save_with_points_keeps_them_untouched(self):
+        s = story(100)
+        s['journey']['fair'] = dict(fh.initial(), date=fh.vn_date(OPEN), ed=fh.edition(), pts=40, dpts=fh.POINTS_DAY, pdays=1,
+                                    pday=fh.vn_date(OPEN), stats=dict(fh.initial()['stats'], won=30, lost=10, earned=15))
+        validate_state(s)
+        self.assertEqual(fh.money_of(s['journey']), (35, 1))
+        self.dice(Dice(faces=['cua', 'ga', 'ga']))
+        s, _ = self.act(s, 'fair_bc', bets={'cua': 1})                      # +1
+        f = s['journey']['fair']
+        self.assertEqual((f['pts'], f['dpts'], fh.money_of(s['journey'])), (40, fh.POINTS_DAY, (36, 1)))
 
     def test_a_new_edition_starts_from_zero(self):
         s = story(100)
+        self.dice(Dice(faces=['cua', 'cua', 'cua']))
         s, _ = self.act(s, 'fair_bc', bets={'cua': 1})
-        self.assertGreater(s['journey']['fair']['pts'], 0)
+        self.assertGreater(fh.money_of(s['journey'])[0], 0)
         with mock.patch.dict(os.environ, {'MNL_FAIR_START': '2026-12-01'}):
-            self.assertEqual(fh.points_of(s['journey']), (0, 0))
-            self.assertNotIn(fh.edition(), lb.summary(s))
+            self.assertEqual(fh.money_of(s['journey']), (0, 0))
+            self.assertNotIn(fh.board(), lb.summary(s))
+            self.clock.t = at(2026, 12, 2)
+            self.dice(Dice(faces=['ga', 'bau', 'ca'], draws=[.9]))
+            s, _ = self.act(s, 'fair_bc', bets={'tom': 2})
+            self.assertEqual(fh.money_of(s['journey']), (-2, 1))           # this edition's money only
+            self.assertEqual(s['journey']['fair']['stats']['bc'], 2)        # the other stats stay lifetime
+        validate_state(s)
 
 
 def board(b, q=(1, 1), cap=(0, 0, 0, 0), ply=0):
@@ -897,15 +917,15 @@ class OAQStall(FairBase):
             self.assertTrue(r['fair']['trace'])
         return s, r
 
-    def test_a_win_pays_the_level_prize_and_points(self):
+    def test_a_win_pays_the_level_prize(self):
         s = story(0)
         with mock.patch.object(oaq, 'ai_move', weakest):
             s, r = self.act(s, 'fair_oaq_start', lv='kho')
-            self.assertEqual(r['fair']['points'], fh.PT_DAY)          # the day played: no chance round needed
+            self.assertEqual(s['journey']['fair']['pdays'], 1)        # the day played: no chance round needed
             self.assertEqual(r['fair']['view']['b'], oaq.new_game()['b'])
             s, r = self.finish(s)
         end = r['fair']['end']
-        self.assertEqual((end['stage'], end['prize'], end['points']), ('won', fh.OAQ_PRIZE['kho'], fh.PT_OAQ))
+        self.assertEqual((end['stage'], end['prize']), ('won', fh.OAQ_PRIZE['kho']))
         j = s['journey']
         self.assertEqual(j['wallet'], fh.OAQ_PRIZE['kho'])
         self.assertIn('f_oaq', j['titles'])
@@ -971,7 +991,6 @@ class OAQStall(FairBase):
             self.clock.t = AFTER + 10
             s, r = self.finish(s)
             self.assertEqual(r['fair']['end']['prize'], fh.OAQ_PRIZE['de'])
-            self.assertEqual(r['fair']['end']['points'], 0)          # the board is closed
             with self.assertRaises(GameError):
                 self.act(s, 'fair_oaq_start', lv='de')
 
@@ -1013,7 +1032,7 @@ class RingToss(FairBase):
         self.assertEqual((ring.x_at(p, 0), ring.x_at(p, 500), ring.x_at(p, 1000), ring.x_at(p, 1500)), (0, 50, 100, 50))
         self.assertEqual(ring.judge(p, [500, 520, 1500, 100, 1900]), [2, 2, 2, 0, 0])   # one bottle takes several rings
 
-    def test_all_five_pays_the_bonus_points_and_title(self):
+    def test_all_five_pays_the_bonus_and_title(self):
         s = story(0)
         s, rd = self.start(s)
         taps = aim(rd)
@@ -1021,7 +1040,7 @@ class RingToss(FairBase):
         self.clock.t += taps[-1] / 1000
         s, r = self.act(s, 'fair_ring_throw', id=rd['id'], taps=taps)
         self.assertEqual((r['fair']['n'], r['fair']['prize']), (5, 5 * fh.RING_HIT + fh.RING_ALL))
-        self.assertEqual(r['fair']['points'], fh.PT_RING5)
+        self.assertEqual(fh.money_of(s['journey'])[0], 5 * fh.RING_HIT + fh.RING_ALL)
         self.assertIn('f_ring', s['journey']['titles'])
         self.assertIsNone(public_state(s)['fair']['ring'])          # the round is done
         with self.assertRaises(GameError):                          # and paid once
@@ -1307,15 +1326,18 @@ class Board(StoreBase):
         a, b, c = self.player('Anh Ba'), self.player('Chị Tư'), self.player('Cô Năm')
         self.score(b, 5)
         self.score(a, 9)
-        self.score(c, 5)    # same points as b, reached later
-        ed = fh.edition()
+        self.score(c, 5)    # as much as b, reached later
+        ed = fh.board()
         view = lb.view(self.store, ed, 20, a)
         self.assertEqual([r['name'] for r in view['rows']], ['Anh Ba', 'Chị Tư', 'Cô Năm'])
-        self.assertEqual([r['points'] for r in view['rows']], [10, 6, 6])
-        self.assertEqual(view['me']['rank'], 1)
+        self.assertEqual([r['xu'] for r in view['rows']], [90, 50, 50])     # bão: 10 xu a round
+        self.assertEqual((view['me']['rank'], view['me']['xu']), (1, 90))
+        old = lb.view(self.store, fh.edition(), 20, a)                       # an older client asks by the edition
+        self.assertEqual((old['board'], old['rows'], bool(old['fair'])), (fh.edition(), view['rows'], True))
         self.assertFalse(view['fair']['settled'])
         self.assertEqual([t['name'] for t in view['fair']['tiers']], ['Vua trò chơi', 'Cao thủ hội chợ'])
         self.assertEqual(lb.parse_query({'board': ed}), (ed, 50))
+        self.assertEqual(lb.parse_query({'board': fh.edition()}), (fh.edition(), 50))
         # not before the end
         self.assertIsNone(fb.settle(self.store, AFTER - 1))
         got = fb.settle(self.store, AFTER + fb.GRACE)
@@ -1345,12 +1367,47 @@ class Board(StoreBase):
         self.score(b, 3)
         lb.set_visible(self.store, a, self.store.read(a)[0], False)
         lb.clear_cache()
-        rows = lb.view(self.store, fh.edition(), 20, a)
+        rows = lb.view(self.store, fh.board(), 20, a)
         self.assertEqual([r['name'] for r in rows['rows']], ['Chị Tư'])
         self.assertIsNotNone(rows['me']['rank'])   # still sees their own place
         got = fb.settle(self.store, AFTER + fb.GRACE)
         self.assertEqual([(w['rank'], w['title']) for w in got], [(1, 'f_king')])
         self.assertEqual(got[0]['sid'], self.store.key(b))
+
+
+    def test_a_loss_leaves_the_board_and_old_point_rows_are_not_read(self):
+        a, b = self.player('Anh Ba'), self.player('Chị Tư')
+        self.score(a, 2)
+        with self.store.connect() as db:   # a row an older server wrote: points on the edition's own board
+            db.execute("INSERT INTO leaderboard(sid,board,score,k1,k2,level,days,served,stars,mastered,since,updated) "
+                       "VALUES(?,?,500,0,0,0,1,0,0,0,1,1)", (self.store.key(b), fh.edition()))
+            db.commit()
+        lb.clear_cache()
+        self.assertEqual([r['name'] for r in lb.view(self.store, fh.board(), 20, a)['rows']], ['Anh Ba'])
+        self.dice(Dice(faces=['ga', 'bau', 'ca'], draws=[.9] * 5))
+        for _ in range(3):
+            self.cmd(a, 'fair_bc', {'bets': {'tom': 20}})                    # 20 xu − 60 xu: a loss
+        lb.clear_cache()
+        self.assertEqual(lb.view(self.store, fh.board(), 20, a)['rows'], [])
+        self.assertIsNone(lb.view(self.store, fh.board(), 20, a)['me']['rank'])
+
+    def test_a_row_dropped_meanwhile_comes_back_on_the_next_command(self):
+        """Rolling release: an older server's write drops the xu row (or the save won before the board counted xu);
+        the first command a process sees of that save writes it again, even with no number moving."""
+        a = self.player('Anh Ba')
+        self.score(a, 2)
+        sid = self.store.key(a)
+        with self.store.connect() as db:
+            db.execute('DELETE FROM leaderboard WHERE sid=?', (sid,))
+            db.commit()
+        self.cmd(a, 'settings', {'sound': False})                            # remembered: nothing moved, nothing written
+        with self.store.connect() as db:
+            self.assertIsNone(db.execute('SELECT 1 FROM leaderboard WHERE sid=? AND board=?', (sid, fh.board())).fetchone())
+        with lb._recent_lock:
+            lb._recent.clear()                                              # another process (or a restart)
+        self.cmd(a, 'settings', {'sound': True})
+        with self.store.connect() as db:
+            self.assertEqual(db.execute('SELECT score FROM leaderboard WHERE sid=? AND board=?', (sid, fh.board())).fetchone()[0], 20)
 
 
 if __name__ == '__main__':

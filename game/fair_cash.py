@@ -2,12 +2,12 @@
 lãi 20%, và vào thì thưởng tất cả 500 xu tiền vốn" — the fair's own exception to "no loans at the fair").
 
 * The gift: GIFT xu into the wallet once per save and fair edition, claimed by the newer client when the player first
-  opens the fair while it is open (fair_gift). Not fair winnings: not in today's net, not in points.
+  opens the fair while it is open (fair_gift). Not fair winnings: not in today's net, not on the Bảng vàng.
 * The loan (Bà Sáu cho vay nóng): one at a time, LOAN_MIN..LOAN_MAX xu from the LOAN_STEPS, owed ×(100 + RATE) %
   rounded up, flat. fair_borrow pays it into the wallet, fair_repay pays it all back from the wallet. Once the fair
   has closed, settle() (run before every command, engine._apply_action) takes what is owed from the wallet, then from
   the bank account (like game/garage.py pays), never below zero; what is still missing stays as `debt`, taken from the
-  wallet at later commands (so from later income) until it is paid. Not winnings either (not in net, caps or points).
+  wallet at later commands (so from later income) until it is paid. Not winnings either (not in net, caps or the Bảng vàng).
 
 Save: journey['fair_cash'] (optional, created on first use) {v, gift: the edition claimed or '', loan: None or
 {ed, p, due}, debt}. It sits beside journey['fair'] (not inside it) because an older server's fair validator refuses

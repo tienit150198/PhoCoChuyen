@@ -581,8 +581,8 @@ class Store:
         (game/retention.py: a dozen counters read from the save before and after, no extra parse)."""
         raw=self.parse_state(text,sid)
         before=dict(raw["careers"]) if isinstance(raw.get("careers"),dict) else {}
-        ranked=lb.recall(sid,revision)
-        if ranked is None:ranked=lb.summary(raw)  # read before the reducer changes raw in place
+        hit=lb.recall(sid,revision)
+        ranked=hit if hit is not None else lb.summary(raw)  # read before the reducer changes raw in place
         marked=rt.marks(raw,ranked) if rt.ENABLED and action!="import_save" else None  # likewise
         x0=kpi.xu(raw) if action not in kpi.ECON_SKIP else None  # likewise: the xu held before (a few dict reads)
         with ar.collect() as box:
@@ -593,7 +593,7 @@ class Store:
         ranks=lb.summary(raw)
         steps=(rt.reached(marked,rt.marks(raw,ranks)),rt.life_day(raw)) if marked else ((),None)
         # An imported backup's own archive is older than anything its migration moved out.
-        return raw,result,serialized,extra+_archive_rows(box,before,raw,career if career in CAREERS else ""),(ranks,ranks!=ranked),steps
+        return raw,result,serialized,extra+_archive_rows(box,before,raw,career if career in CAREERS else ""),(ranks,ranks!=ranked or (hit is None and lb.heal(ranks))),steps
 
     def _apply(self,raw:dict,text:str,career,action:str,payload:dict,internal:bool,revision:int):
         extra=[]

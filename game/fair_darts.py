@@ -1,5 +1,5 @@
-"""🎯 Phóng phi tiêu at the fair (owner 03/10): a small-stake luck stall. Pure functions; the command, the wallet, the
-points and the save are in game/fair.py (fair_dart), the stall in public/js/v4/fair-darts.js.
+"""🎯 Phóng phi tiêu at the fair (owner 03/10): a small-stake luck stall. Pure functions; the command, the wallet and the
+save are in game/fair.py (fair_dart), the stall in public/js/v4/fair-darts.js.
 
 The player picks a stake (STAKES), aims a swinging crosshair at the board and throws. The aim only says where the dart
 heads: whether it sticks in the coloured rings (WIN_R, a win: the stake back plus as much again) or in the straw ring
@@ -24,7 +24,6 @@ AIM_MAX = 120                  # the aim the client may send, per axis
 SPREAD = 14                    # the throw's scatter around the aim (a gauss sigma, board units)
 # the odds by today's fair net: the shared taper (game.fair.odds) with darts' own, lower ends
 P_HI, P_LO = 0.51, 0.45         # owner 03/10 01:45: "phóng phi tiêu -> tỷ lệ thắng 51%" (was 0.40, 0.30)
-PT_HIT = 1                     # fair points for a dart in the coloured rings
 
 
 def win_p(net: int) -> float:
