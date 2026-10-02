@@ -32,6 +32,13 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.4.4", date="2026-10-02", items=(
+        dict(emoji="💡", text="Nút nào chưa làm được giờ mờ đi và ghi lý do (thiếu xu, kho đầy, chưa mở ca…), không còn bấm hoài bị báo lỗi."),
+        dict(emoji="❓", text="Hỏi nhanh: 15 câu hay hỏi (đổi nghề, nghỉ việc, rút tiền, dự đám cưới…) ở cuối menu và trong Cài đặt."),
+        dict(emoji="🧾", text="Sổ thu chi có nút Thanh toán tất cả: trả mọi hóa đơn một lần, khoản quá hạn trước, không bao giờ âm quỹ."),
+        dict(emoji="📐", text="Thuế và kế toán: dòng gợi ý số lấy từ đâu dưới mỗi ô, điền sai thì ô lệch được đánh dấu. Bạn vẫn tự tính nhé."),
+        dict(emoji="🎨", text="Salon có Bảng màu tra level và tuýp nhuộm; tạp hóa, trà sữa, mẹ & bé, Sớm Mai chỉ rõ bước tiếp theo hơn."),
+    )),
     dict(version="1.4.3", date="2026-10-02", items=(
         dict(emoji="🍢", text="Ăn thêm: đói hay buồn ngủ thì mua bánh bao, xôi, phở hay ly cà phê lúc nào cũng được trong ngày làm, trả bằng ví.", go=dict(action="jrView", data={"view": "life"})),
         dict(emoji="☕", text="Khi bụng đói, ô việc đang làm hiện sẵn món ăn thêm; trang Đời thường lúc nào cũng có."),

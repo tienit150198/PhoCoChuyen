@@ -1,3 +1,20 @@
+# v1.4.4 — 💡 Bớt khó hiểu: nút ghi lý do, Hỏi nhanh, thanh toán tất cả
+
+Theo chat người chơi và số thao tác bị từ chối trên máy chủ (stat_actions). Nguyên tắc chủ game: chỉ gợi ý, người chơi tự làm (không tự điền, không chọn sẵn, không lộ đáp án).
+
+- **Nút ghi lý do** (server vẫn là nguồn luật; trường public mới đều tùy chọn):
+  - **Trà sữa:** Ủ/đặt hàng ghi "Thiếu N xu", "Kho đầy", "Đang chờ N/N đơn"; dòng quỹ tiệm/ví; chặn bấm đúp. `boba.py` thêm `held`, `shelf_cap`, `max_orders`, `cup_cap`.
+  - **Chứng chỉ:** lớp không trả được thì khóa, tự học miễn phí lên đầu; sửa lỗi chặn người trả bằng thẻ.
+  - **Sớm Mai:** rót hình chỉ khi đã chiết shot và đánh sữa.
+  - **Tạp hóa:** "Soạn giỏ" chỉ khi soạn được (`_pack_gate`), nếu không thì "Kệ hết …: nhập ở Kho" và nút Sang Kho.
+  - **Kho (mọi nghề):** một dòng cách nhập hàng; đếm sai thùng gộp báo trước. **Giỏ đặt hàng** đủ 8 món thì nút chuyển sang xem đơn; gộp nhiều món thêm phần vừa giỏ (`cart_lines`).
+  - **Mẹ & bé:** đổi món đã hợp thì chị Ly giải thích tại chỗ (`fits`); tiệm chưa mở thì khóa tư vấn quà; giá hiện khoảng cho phép.
+  - **Salon:** hết hàng thì khóa gội/keratin; thẻ 🎨 Bảng màu (tra cứu chung).
+  - **Trạm lắng nghe:** mỗi phương án ghi "khi nào dùng".
+- **Thuế và kế toán (chỉnh nhẹ):** dòng 📐 dưới mỗi ô; ô sai được đánh dấu (`bad` trong kết quả `ca_step`/`ga_step`); văn phòng đóng cửa thì chỉ còn Khép ca; bàn kế toán khóa nút khi chưa đủ điều kiện. Lương và cách chấm không đổi.
+- **❓ Hỏi nhanh:** 15 câu trong Hướng dẫn, nút ở cuối menu và Cài đặt → Cách chơi; "Đi tới" chỉ mở màn hình. Màn mở đầu: "Vào làm thôi" không còn bấm mà không có phản ứng gì khi chưa chọn Nam/Nữ.
+- **🧾 Thanh toán tất cả** (`ops_pay_all`): khoản quá hạn trước, khoản quỹ không đủ thì để lại, không âm quỹ.
+
 # v1.4.3 — 🍢 Ăn thêm, số liệu giữ mãi mãi
 
 **🍢 Ăn thêm (góp ý của chủ game sau #72).** Trong ngày làm, người chơi chủ động mua thêm đồ ăn bất cứ lúc nào, trả bằng ví: bánh bao 3 xu (+20 no bụng), xôi mặn 5 xu (+35), tô phở 8 xu (+50), cà phê sữa đá 3 xu (+15 tỉnh táo). Không giới hạn số lần; chỉ từ chối khi đã no (≥ 90) / đã tỉnh (≥ 90) hoặc ví không đủ (không bao giờ nợ). Không cộng tinh thần, không thêm trường nào vào bản lưu (`jr_needs_snack`). Hiện trong ô việc đang làm khi no bụng < 50 hoặc tỉnh táo < 40, và luôn có trong trang Đời thường.
