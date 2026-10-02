@@ -181,6 +181,22 @@ function rules(x){
     <div class="sl-levels">${x.cc.levels.map(l=>`<span style="--sw:${x.esc(l.color)}" title="${x.esc(l.name)}"><i></i>${l.level}</span>`).join('')}</div></details>`;
 }
 
+/** "🎨 Bảng màu": a reference card, closed by default. Only the salon's fixed shades (x.cc levels, dyes, toners) and
+ * how tube codes and two-tube bowls read in general: nothing about the client in the chair, nothing selected or
+ * marked, no verdict (the player still picks every tube). */
+const FAM_WORD={N:'tự nhiên',A:'tro, lạnh',G:'vàng, ấm',R:'đỏ, ấm đậm'};
+function palette(x){
+  const lv=(x.cc.levels||[]).map(l=>`<li><span class="sl-pal-sw" style="--sw:${x.esc(l.color)}" aria-hidden="true"></span><b>${l.level}</b> ${x.esc(l.name)}</li>`).join('');
+  const dy=(x.cc.dyes||[]).map(d=>`<li><span class="sl-cap" style="--sw:${x.esc(d.color)}" aria-hidden="true"></span><span><b>${x.esc(d.code)}</b> ${x.esc(d.tone)}<small>level ${d.level} · ánh ${x.esc(FAM_WORD[d.fam]||'')}</small></span></li>`).join('');
+  const tn=(x.cc.toners||[]).map(d=>`<li><span class="sl-cap" style="--sw:${x.esc(d.color)}" aria-hidden="true"></span><span><b>${x.esc(d.code)}</b> ${x.esc(d.tone)}</span></li>`).join('');
+  return `<details class="sl-rules sl-palette"><summary>🎨 Bảng màu</summary>
+    <p class="small">Mã tuýp: số trước dấu chấm là level (1 đen → 10 bạch kim), số sau là ánh: .0 tự nhiên · .1 tro lạnh · .3 vàng ấm · .6 đỏ.</p>
+    <h5 class="sl-sub">Level tóc</h5><ul class="sl-pal-levels">${lv}</ul>
+    <h5 class="sl-sub">Tuýp nhuộm trong tủ</h5><ul class="sl-pal-tubes">${dy}</ul>
+    ${tn?`<h5 class="sl-sub">Toner</h5><ul class="sl-pal-tubes">${tn}</ul>`:''}
+    <h5 class="sl-sub">Pha hai tuýp</h5><ul><li>Level bát = trung bình theo số phần: 1 phần 3.0 + 1 phần 7.3 ra level 5; 2 phần 3.0 + 1 phần 6.1 ra level 4.</li><li>Ánh tro kéo màu lạnh đi, ánh vàng hay đỏ kéo màu ấm lên; tuýp .0 giữ màu tự nhiên.</li><li>Thuốc nhuộm không làm sáng màu nhuộm cũ: muốn sáng hơn thì tẩy trước, rồi toner khử ánh còn lại.</li></ul></details>`;
+}
+
 function ticket(t,x){
   const who=x.npc(t.npc),n=t.needs,ph=n.photo,cs=caseOf(t),ci=cs?x.cc.cases?.[cs]:null,left=rushLeft(t,x);
   const sw=ph.level?`<span class="sl-swatch" style="--sw:${x.esc(levelColor(x,ph.level))}" aria-hidden="true"></span>`:'<span class="sl-swatch cut" aria-hidden="true">✂️</span>';
@@ -379,7 +395,7 @@ function colorPanel(t,x){
   const left=chemLeft(t),u=ui(x,t);
   const results=Object.entries(t.results||{}).map(([k,r])=>`<li class="${r.zone==='ideal'&&r.ok?'ok':r.zone==='damage'||r.zone==='under'?'bad':'warn'}">${svc(x,k).emoji} ${x.esc(svc(x,k).name)}: ${x.esc(ZONE_TEXT[r.zone])} (${r.secs} giây)${r.ok?'':' · công thức lệch'}</li>`).join('');
   const mixRes=t.mix_result?`<p class="sl-note"><span class="sl-dot" style="--sw:${x.esc(t.mix_result.color)}" aria-hidden="true"></span> Màu đã lên: level ${x.esc(t.mix_result.level)} · ${x.esc(bandName(x,t.mix_result.band))}</p>`:'';
-  const tail=`${results?`<ul class="sl-results">${results}</ul>`:''}${mixRes}${rules(x)}`;
+  const tail=`${results?`<ul class="sl-results">${results}</ul>`:''}${mixRes}${rules(x)}${palette(x)}`;
   if(t.timer)return tail;
   if(t.bowl){
     const b=t.bowl;
@@ -422,11 +438,16 @@ function bowlOrder(t,x,u){
   return {payload,ready:ready&&!blocked,out,blocked,mixing};
 }
 
+/** What sl_wash / sl_treat take from the shelf (game/careers/salon.py): one of each, refused when one is out. */
+const WASH_ITEMS=['shampoo','conditioner','towel'],TREAT_ITEMS=['keratin'];
+const outOf=(x,ids)=>ids.filter(id=>!x.stock(id));
+/** "📦 Hết Khăn tắm: nhập ở Kho" + the restock button, shown before the tap instead of after it. */
+const outLine=(x,t,out)=>out.length?`<div class="sl-note bad rs-inline"><span>📦 Hết ${out.map(id=>x.esc(itemName(x,id))).join(', ')}: nhập ở Kho</span>${restockButton(x.room,out,{task:t.id},'small')}</div>`:'';
 function washPanel(t,x){
-  const kid=caseOf(t)==='kid'&&t.calm!=null;
+  const kid=caseOf(t)==='kid'&&t.calm!=null,out=t.washed?[]:outOf(x,WASH_ITEMS);
   return `${t.washed?'<p class="small">✅ Tóc đã gội, xả sạch.</p>':''}
-    ${kid&&!t.washed?'<p class="sl-note">🧒 Bé nào gội xong cũng hay vẩy nước, bớt ngồi yên một chút.</p>':''}
-    <div class="sl-cta">${x.cmd('🫧 Gội & xả','sl_wash',{task:t.id},'full',t.washed||!!t.timer)}</div>`;
+    ${kid&&!t.washed?'<p class="sl-note">🧒 Bé nào gội xong cũng hay vẩy nước, bớt ngồi yên một chút.</p>':''}${outLine(x,t,out)}
+    <div class="sl-cta">${x.cmd('🫧 Gội & xả','sl_wash',{task:t.id},'full',t.washed||!!t.timer||out.length>0)}</div>`;
 }
 
 function cutPanel(t,x){
@@ -449,7 +470,8 @@ function cutPanel(t,x){
 
 function finishPanel(t,x){
   const ps=t.plan.services,parts=[];
-  if(ps.includes('treatment'))parts.push(`<div class="sl-cta"><p class="small">💧 Keratin phục hồi · còn ${x.stock('keratin')} lượt</p>${x.cmd(t.done.includes('treatment')?'✅ Đã phục hồi':'💧 Thoa keratin & hấp','sl_treat',{task:t.id},'full',t.done.includes('treatment'))}</div>`);
+  if(ps.includes('treatment')){const done=t.done.includes('treatment'),out=done?[]:outOf(x,TREAT_ITEMS);
+    parts.push(`<div class="sl-cta"><p class="small">💧 Keratin phục hồi · còn ${x.stock('keratin')} lượt</p>${outLine(x,t,out)}${x.cmd(done?'✅ Đã phục hồi':'💧 Thoa keratin & hấp','sl_treat',{task:t.id},'full',done||out.length>0)}</div>`);}
   if(ps.includes('style')){
     const wait=ps.includes('treatment')&&!t.done.includes('treatment');
     parts.push(`<h5 class="sl-sub">Kiểu sấy hợp thói quen & dịp của khách</h5><div class="sl-grid sl-finishes">${x.cc.finishes.map(f=>`<button type="button" class="sl-tile ${t.styled===f.id?'selected':''}" ${cmdAttr(x,'sl_style',{task:t.id,finish:f.id})} ${t.done.includes('style')||wait?'disabled':''}><span class="sl-emoji" aria-hidden="true">${f.emoji}</span><b>${x.esc(f.name)}</b><small>${x.esc(f.note)}</small></button>`).join('')}</div>`);
@@ -651,7 +673,7 @@ function guideOf(t,x){
     steps.push({ok:null,label:`Trộn bát ${svc(x,kind).name.toLowerCase()}`,go:o.ready?{cmd:'sl_mix',payload:o.payload,label:'🥣 Trộn bát'}:o.out.length?restockFor(x,o.out,o.out.map(k=>itemName(x,k)).join(', '),{task:id}):null});
     return {steps};
   }
-  if(at==='wash'){steps.push({ok:null,label:'Gội & xả cho khách',go:{cmd:'sl_wash',payload:{task:id},label:'🫧 Gội & xả'}});return {steps};}
+  if(at==='wash'){const out=outOf(x,WASH_ITEMS);steps.push({ok:null,label:'Gội & xả cho khách',go:out.length?restockFor(x,out,out.map(k=>itemName(x,k)).join(', '),{task:id}):{cmd:'sl_wash',payload:{task:id},label:'🫧 Gội & xả'}});return {steps};}
   if(at==='cut'){
     const s=t.cut.steps,cut=(step,extra={})=>({cmd:'sl_cut',payload:{task:id,step,...extra}});
     if(caseOf(t)==='kid'&&t.calm!=null&&!s.includes('guide')&&t.calm<40+(s.includes('section')?0:12+3*(Number(d.tier)||0))){
@@ -674,7 +696,8 @@ function guideOf(t,x){
   }
   if(at==='finish'){
     const ps=t.plan.services;
-    if(ps.includes('treatment'))steps.push({ok:t.done.includes('treatment')||null,label:'Thoa keratin & hấp',go:t.done.includes('treatment')?null:{cmd:'sl_treat',payload:{task:id},label:'💧 Thoa keratin & hấp'}});
+    if(ps.includes('treatment')){const out=outOf(x,TREAT_ITEMS);
+      steps.push({ok:t.done.includes('treatment')||null,label:'Thoa keratin & hấp',go:t.done.includes('treatment')?null:out.length?restockFor(x,out,out.map(k=>itemName(x,k)).join(', '),{task:id}):{cmd:'sl_treat',payload:{task:id},label:'💧 Thoa keratin & hấp'}});}
     if(ps.includes('style')&&!t.done.includes('style')){
       const wait=ps.includes('treatment')&&!t.done.includes('treatment'),f=first?smartFinish(t):null,fin=x.cc.finishes.find(v=>v.id===f);
       steps.push({ok:null,label:'Sấy tạo kiểu',go:wait?null:fin?{cmd:'sl_style',payload:{task:id,finish:fin.id},label:`${fin.emoji} Sấy: ${x.esc(fin.name.toLowerCase())}`}:{sel:'.sl-finishes',label:'💨 Chọn kiểu sấy hợp khách'}});
