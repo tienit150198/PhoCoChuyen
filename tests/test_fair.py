@@ -860,18 +860,18 @@ class OAQStall(FairBase):
         self.assertEqual(j['history'][-1]['label'], f'{fh.LABELS["oaq"]} · 1 ván thắng')
         validate_state(s)
 
-    def test_the_daily_earning_cap(self):
-        s = story(0)
+    def test_no_daily_earning_cap(self):
+        s = story(0)                                                   # owner 03/10: kiếm không giới hạn
         with mock.patch.object(oaq, 'ai_move', weakest):
             prizes = []
             for _ in range(4):
                 s, _ = self.act(s, 'fair_oaq_start', lv='kho')
                 s, r = self.finish(s)
                 prizes.append(r['fair']['end']['prize'])
-        self.assertEqual(prizes, [30, 30, 30, 0])
-        self.assertTrue(r['fair']['end']['capped'])
-        self.assertEqual(s['journey']['wallet'], fh.EARN_DAY['oaq'])
-        self.assertEqual(public_state(s)['fair']['earn']['oaq'], dict(today=90, cap=90, left=0))
+        self.assertEqual(prizes, [30, 30, 30, 30])
+        self.assertEqual(s['journey']['wallet'], 120)
+        self.assertLessEqual(s['journey']['fair']['earn']['oaq'], fh.EARN_DAY['oaq'])   # the counter stays in the older bound
+        self.assertTrue(public_state(s)['fair']['earn']['oaq']['nocap'])
         self.clock.t = at(2026, 10, 5, 9)                              # a new day
         with mock.patch.object(oaq, 'ai_move', weakest):
             s, _ = self.act(s, 'fair_oaq_start', lv='de')

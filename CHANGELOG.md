@@ -1,3 +1,14 @@
+# v1.4.13 — 🎪 Hội chợ: dễ ăn, không giới hạn, nhanh hơn
+
+Chủ game (03/10): "lâu dài người chơi ăn", "thắng 70% số ván", "thắng khoảng 2000 xu thì cho thua dần bớt đi", "riêng ô ăn quan vẫn giữ như hiện tại", "mỗi ngày chơi không giới hạn tiền", "không giới hạn lượt chơi", "kiếm k giới hạn, điểm và lượt chơi không giới hạn", "kinh hụt thoải mái", "đọc số nào thì bảng của người ta màu phải sáng lên", "ném vòng là 1 chai có thể có nhiều vòng", "đẩy tốc độ hội chợ lên", "bấm 1 ô rồi bỏ chọn ô đó để qua ô khác được chứ".
+
+- Bầu cua / xóc đĩa (feat/fair-walk 4cca065): máy chủ bốc thắng/thua theo `win_p` (70% khi lãi thử vận hôm nay ≤ +2000, giảm tuyến tính còn 45% ở +5000 rồi giữ), rồi chọn xúc xắc/đồng xu khớp kết quả. Xóc đĩa 1:1, công an 2% (từ 4%), phạt stake//4 (tối thiểu 3).
+- Bỏ: trần thua 150 xu/ngày, 400 lượt/ngày, 80 lượt ném vòng/ngày, trần xu kiếm ô ăn quan/ném vòng, trần điểm/ngày. Chỉ ví giới hạn (không bao giờ âm). Các bộ đếm trong save dừng ở mốc cũ để máy chủ 1.4.12 (rolling release) vẫn nhận save.
+- Ném vòng: một chai ăn nhiều vòng, 3 xu mỗi vòng trúng, +8 khi đủ 5.
+- Lô tô (feat/fair-loto2 eef4a92, d2fe874): kinh hụt không giới hạn (phạt 1 xu, không quá ví), số vừa gọi sáng lên trên tờ dò (không tự đánh dấu).
+- Nhanh hơn: GAP_MS 1200 → 400, lắc bát 850 → 450 ms.
+- Ô ăn quan: luật như cũ; chọn ô rồi vẫn đổi / bỏ chọn được tới khi bấm hướng rải (máy chủ vẫn chặn đi hai lần bằng ply).
+
 # v1.4.12 — 🏮 Hội chợ: mượt, rõ, không chọn lại
 
 - Bấm không nhảy trang: vá DOM tại chỗ thay vì dựng lại cả trang (`fair.js`). Lắc bát / rải quân nhanh hơn, nút chờ máy chủ hiện đang làm.
