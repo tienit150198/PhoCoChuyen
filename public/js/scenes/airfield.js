@@ -5,8 +5,10 @@
  *   pilot: the fuel bowser, the dispatch desk with the weather screen, the weather board;
  *   flight_attendant: the galley carts, the boarding gate desk, the life-vest demo stand.
  * The day's weather comes from the career's public data (room.data.mod). Footprints follow
- * the street plan (see shop.js for the PLAN schema). */
+ * the street plan (see shop.js for the PLAN schema). The apron is the main area of the airport: its doors
+ * (`go:` spots) lead into the gate and up the airstairs into the cabin (scenes/airport.js). */
 import {R,E,L,T,P,fit,heart,streetBoard} from './kit.js';
+import {AREAS,areaFor} from './airport.js';   // inside: crew room, terminal, gate, cabin, cockpit
 
 export const PLAN={
  land:{badge:{board:[31,-23]},floor:[110,470,1090,658],lane:525,line:580,home:[800,530],kx:82,ky:45,sway:38,
@@ -17,7 +19,8 @@ export const PLAN={
    decor:{corner:[140,652],front:[880,655],center:[520,656]},sill:{plant:[420,266],lamp:[480,266],seat:[540,266],rug:[600,622]},
    spots:{shelf:[[450,372],100,[[450,525]]],evidence:[[900,418],60,[[900,525]]],workbench:[[252,560],62,[[360,606],[252,572]]],counter:[[660,428],60,[[660,525]]],
      warehouse:[[167,470],48,[[167,566],[250,525]]],board:[[1045,360],48,[[1045,525]]],finance:[[1035,540],42,[[950,572],[1035,606]]],
-     property:[[332,232],35,[[380,525]]],security:[[262,228],30,[[250,525]]],door:[[1030,606],45,[[950,636],[1030,612]]],pet:[[262,420],38,[[262,525]]]}},
+     property:[[332,232],35,[[380,525]]],security:[[262,228],30,[[250,525]]],door:[[1030,606],45,[[950,636],[1030,612]]],pet:[[262,420],38,[[262,525]]],
+     'go:gate':[[330,410],40,[[300,505]]],'go:cabin':[[557,404],40,[[520,520]]]}},
  port:{badge:{board:[46,-40]},floor:[48,512,652,792],lane:575,line:630,home:[165,615],kx:51,ky:57,sway:24,
    blocks:[[50,515,132,582],[66,690,222,722],[340,512,492,542],[578,522,634,545],[562,678,652,700],[470,764,574,782]],
    bench:[548,742,648,758],garden:[[190,522],[520,522]],
@@ -26,7 +29,8 @@ export const PLAN={
    decor:{corner:[72,770],front:[622,792],center:[430,712]},sill:{plant:[220,300],lamp:[275,300],seat:[340,300],rug:[330,700]},
    spots:{shelf:[[280,412],100,[[280,575]]],evidence:[[606,470],55,[[606,582]]],workbench:[[144,650],58,[[262,706],[144,676]]],counter:[[416,470],56,[[416,575]]],
      warehouse:[[92,545],45,[[92,615],[165,575]]],board:[[82,342],50,[[165,575]]],finance:[[607,655],42,[[520,690],[607,730]]],
-     property:[[168,240],35,[[230,575]]],security:[[85,247],30,[[165,575]]],door:[[522,742],45,[[430,772],[522,742]]],pet:[[505,480],38,[[520,578]]]}},
+     property:[[168,240],35,[[230,575]]],security:[[85,247],30,[[165,575]]],door:[[522,742],45,[[430,772],[522,742]]],pet:[[505,480],38,[[520,578]]],
+     'go:gate':[[200,400],36,[[185,560]]],'go:cabin':[[356,452],36,[[300,575]]]}},
 };
 
 const NAVY='#2f5d8a',TEAL='#1f7a78',GREY='#b9c1c8',GREY_D='#8d979f',WHITE='#f8fafc',GLASS='#bcd9ea',YEL='#f2c14e',RED='#d9534f';
@@ -133,4 +137,6 @@ export default {
   plan:PLAN,
   room(w,p){room(w,p,w.isPortrait());},
   props(w,p){return props(w,p);},
+  areas:AREAS,
+  areaFor,
 };
