@@ -1308,7 +1308,8 @@ def _where_wrong(st: dict, answer) -> tuple[str, list]:
 
 
 def _bands(x: int, months: int = 1) -> list:
-    """The player's own taxable income cut at the bracket limits: ['tới 2.000', '2.000–5.000', '5.000–8.168']."""
+    """The player's own taxable income cut at the bracket limits: ['tới 2.000', '2.000–5.000', '5.000–8.168'] (joined with commas:
+    a capture with “ · ” is a list to the English pack, not one phrase)."""
     out, low = [], 0
     for top, _ in BRACKETS:
         high = None if top is None else top * months
@@ -1334,7 +1335,7 @@ def _tax_tips(taxable: int, tax: int, months: int, tries: int) -> list:
         out.append(f'Lũy tiến không nhân cả {fmt(taxable)} với một mức thuế suất: mỗi phần chỉ chịu thuế suất của bậc chứa nó.')
     if tries >= 2 and taxable > 0:
         parts = _bands(taxable, months)
-        out.append(f'Chia thu nhập tính thuế {fmt(taxable)} thành từng bậc: {" · ".join(parts)}. Tính thuế từng bậc rồi cộng lại, làm tròn xuống.'
+        out.append(f'Chia thu nhập tính thuế {fmt(taxable)} thành từng bậc: {", ".join(parts)}. Tính thuế từng bậc rồi cộng lại, làm tròn xuống.'
                    if len(parts) > 1 else f'Thu nhập tính thuế {fmt(taxable)} chưa vượt bậc đầu: chỉ một mức thuế suất, làm tròn xuống.')
     return out
 
