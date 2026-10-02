@@ -335,6 +335,7 @@ class ChatFeature(Feature):
         ident = await profile(self.db, p.sid)
         if ident:
             p.update(ident)
+            await self.fit_face(p)
 
     async def on_hello(self, conn):
         p = conn.player
@@ -343,6 +344,7 @@ class ChatFeature(Feature):
             await self.load_hidden(p)
             p.fc = (await self.faces_of([p.pid])).get(p.pid) or None
             p.loaded = True
+        await self.fit_face(p)   # the profile emoji may have changed since (read again at every connect)
         fc = conn.ext.pop('fc', None)
         if fc is not None:   # a client of this release: the face it wears now (an older one keeps the stored face)
             code = facemod.clean(fc, p.av)
@@ -537,6 +539,12 @@ class ChatFeature(Feature):
         p.fc = code or None
         self.faces.put(p.pid, code)
         return True
+
+    async def fit_face(self, p) -> None:
+        """The stored face was cleaned without knowing its owner: an automatic face (a1) of someone who has since picked
+        an emoji in their Phố nghề profile goes, so the emoji shows."""
+        if p.fc and facemod.clean(p.fc, p.av) == '' and await self.store_face(p, ''):
+            self.announce_face(p)
 
     def announce_face(self, p, skip_conn=None) -> None:
         """`faced {pid, fc}` to my other tabs, everyone on Cả phố and my online friends (open screens redraw my lines)."""

@@ -246,3 +246,16 @@ class ChatFaces(LiveCase):
         # built on purpose: shown
         self.assertEqual((await a.call('face', 'faced', fc=code('f1')))['fc'], code('f1'))
 
+    async def test_a_stored_automatic_face_gives_way_to_an_emoji_picked_later(self):
+        ta, sa = self.account('Mây')
+        a = await self.connect(ta, hello=False)
+        await a.send(t='hello', v=1, fc=code('a1'))
+        self.assertEqual((await a.expect('welcome'))['me']['fc'], code('a1'))      # no emoji yet: the drawn face
+        await a.close()
+        with self.store.connect() as db:
+            db.execute("INSERT INTO profiles(pid, sid, avatar, created, updated, seen) VALUES(?, ?, '🐱', 0, 0, 0)", (self.pid(sa), sa))
+        a2 = await self.connect(ta)                                                 # an older tab: no fc in its hello
+        self.assertEqual((a2.welcome['me']['av'], a2.welcome['me']['fc']), ('🐱', ''))
+        with self.store.connect() as db:
+            self.assertIsNone(db.execute('SELECT code FROM chat_faces WHERE pid=?', (self.pid(sa),)).fetchone())
+
