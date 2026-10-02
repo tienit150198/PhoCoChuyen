@@ -1,3 +1,9 @@
+# v1.4.21 — ⏱️ Bấm dừng chấm đúng lúc chạm (#100)
+
+Góp ý #100: bấm dừng bị trễ, thanh chạy quá chỗ đã bấm.
+
+- feat/tap-lag (cefe0c0…e27f67a): client gửi `tap_at` (thời điểm chạm) kèm lệnh dừng; server `kit.tap_now(p)` chấm theo đó, kẹp trong [lúc tới − 3 s, lúc tới + 0,25 s], sai kiểu thì dùng giờ tới. Áp dụng: tea_seal, pc_rinse/pc_dry, cb_stop/cb_milk_stop/cb_unload, ao_sew_stop, hs_plate/hs_clean, rs_drain, sl_rinse. Thanh chạy bằng Web Animations (translateX), đóng băng ngay lúc pointerdown. Client cũ/server cũ: chấm lúc tới như trước.
+
 # v1.4.20 — 🔥 Nghề x3 trong tuần, 🎟️ vé số cào, 🏮 35 món nhà, 💬 xóa tin nhắn & bỏ chặn, góp ý người chơi
 
 Chủ game (03/10): "mỗi ngày x3 cho … trò bất kì", "làm liên tiếp, đầu tuần thông báo và tự áp dụng, mấy trò mà chia ra 1 tuần là đủ tất cả trò", "thêm trò cào xổ số… cào bằng tay thật", "thêm phụ kiện ở nhà", "bạn bè cho chọn xóa tin nhắn", "thông báo lâu quá, người ta có thể bấm tắt được"; góp ý #93–#99.
