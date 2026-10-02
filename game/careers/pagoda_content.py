@@ -156,7 +156,7 @@ GUIDE = [
             S('huong', '🏺', 'Thắp hương ở lư lớn ngoài sân', ('duoc',), 'mỗi người một nén', why='Lư lớn ngoài sân là chỗ thắp hương cho khách.'),
             S('anh', '📷', 'Chụp ảnh cổng tam quan, hàng cau', ('duoc',), 'ngoài sân', why='Chụp ảnh ngoài sân thì thoải mái.'),
             S('le', '🛕', 'Vào chánh điện lễ Phật', ('nhe',), 'cả đoàn', why='Vào chánh điện: bỏ dép, nói nhỏ, không đèn flash.'),
-            S('tien', '🪙', 'Đặt tiền lẻ lên tay tượng', ('nhe',), 'thấy người khác làm', why='Chỉ khách bỏ vào hòm công đức, không nhét tiền lên tượng.'),
+            S('tien', '🪙', 'Đặt tiền lẻ lên tay tượng', ('nhe',), 'thấy người khác làm', why='Nhắc nhẹ khách đừng đặt tiền lên tượng; nếu muốn gửi thì có hòm công đức.'),
             S('tang', '🚪', 'Vào tăng xá xem chỗ các thầy ở', ('khong',), 'tò mò', why='Tăng xá là chỗ ở, khách không vào.'),
             S('sen', '🪷', 'Hái hoa sen trong hồ mang về', ('khong',), 'hoa đẹp quá', why='Hoa sen để cả xóm ngắm, không hái.'),
             S('bo', '🧧', 'Cắm cả bó nhang lên bàn Phật', ('khong',), 'cho thành tâm', why='Cả bó nhang trên bàn Phật: khói mù, dễ cháy.',
@@ -170,11 +170,11 @@ GUIDE = [
     ], note='Khách ở cổng: trang phục, chỗ thắp hương, chỗ cần yên lặng. Nói nhẹ nhàng, không làm ai ngượng.', mods=(None, 'tour'), weight=2),
     V('g_han', 'guide', 8, 'Khách nhờ “giải hạn”', 'Anh Phát dúi vào tay bạn một phong bì: “Thầy xem giúp em năm nay sao xấu, giải hạn hết bao nhiêu em cũng chịu. Em mới mở tiệm.”', [
         choose('han', 'Trả lời anh Phát', 'Anh Phát lo lắng thật, tay còn cầm tờ lịch ghi “ngày xấu”.', [
-            C('that', 'Nhẹ nhàng nói chùa không xem số, không nhận tiền giải hạn; mời anh ngồi uống trà, nghe anh lo chuyện gì', 'good',
+            C('that', 'Nhẹ nhàng nói chùa không xem số, không thu tiền, không hứa giải được hạn; mời anh ngồi uống trà, nghe anh lo chuyện gì', 'good',
               'Anh Phát kể chuyện vay tiền mở tiệm. Nói ra rồi, anh thở phào.'),
             C('thay', 'Hẹn anh hỏi thầy trụ trì rồi trả lời', 'ok', 'Anh Phát ngồi chờ. Thầy Huệ Minh ra, nói chuyện với anh rất lâu.'),
-            C('nhan', 'Nhận phong bì, đọc đại vài câu cho anh yên tâm', 'bad', 'Anh Phát về, tin rằng đã “giải” xong.', 3,
-              'Nhận tiền “giải hạn”: lấy tiền của người đang lo sợ.', 'hn'),
+            C('nhan', 'Nhận phong bì, hứa đọc vài câu là giải được hạn', 'bad', 'Anh Phát về, tin rằng đã “giải” xong.', 3,
+              'Thu tiền, hứa giải được hạn cho người đang lo sợ.', 'hn'),
             C('che', 'Cười, bảo anh mê tín quá', 'bad', 'Anh Phát cúi mặt, đứng dậy đi về.', 1, 'Chê người đang lo là mê tín.', 'mn')]),
         choose('phong_bi', 'Phong bì trên bàn', 'Lúc về, anh Phát vẫn để lại phong bì: “Em gửi chùa, thầy cầm giúp em.”', [
             C('hom', 'Mời anh tự bỏ vào hòm công đức nếu anh muốn, rồi ghi sổ, viết giấy cho anh; không ai bắt', 'good',
@@ -182,7 +182,7 @@ GUIDE = [
             C('tra', 'Trả lại anh, nói chùa không cần', 'ok', 'Anh Phát cất phong bì, hơi ngại.'),
             C('tui', 'Cầm phong bì, cất vào túi áo', 'bad', 'Phong bì nằm trong túi áo bạn.', 3, 'Tiền gửi chùa cầm tay, không vào hòm, không vào sổ.', 'hn')],
             when=['han', ['that', 'thay', 'che']], skip='Phong bì đã nằm trong túi áo bạn.'),
-    ], note='Chùa không xem số, không giải hạn lấy tiền. Tiền công đức chỉ vào hòm và vào sổ.', min_day=2),
+    ], note='Chùa không xem số, không thu tiền, không hứa giải được hạn cho ai. Tiền công đức chỉ vào hòm và vào sổ.', min_day=2),
 ]
 
 KITCHEN = [
@@ -552,19 +552,19 @@ SITUATIONS = [
                 dict(id='way', title='Thầy trụ trì', source='Thầy Huệ Minh', text='Chùa có tụng kinh cầu an chung mỗi rằm, ai cũng dự được, không thu tiền.'),
                 dict(id='shop', title='Tiệm của anh Phát', source='Bé Na', text='Bé Na kể tiệm anh Phát bán điện thoại cũ, không ghi giá rõ ràng.')],
          options=[dict(id='listen', label='Mời anh dự lễ cầu an rằm, không thu tiền; ngồi nghe anh lo, gợi ý ghi giá rõ ràng cho khách tin', requires=['worry', 'way'], quality='good', stars=5,
-                       review='Không bán lễ giải hạn, còn ngồi nghe tôi lo. Về tôi ghi giá rõ ràng, khách tin hơn.',
+                       review='Chùa không lấy tiền, không hứa giải được hạn, còn ngồi nghe tôi lo. Về tôi ghi giá rõ ràng, khách tin hơn.',
                        outcome='Tháng sau tiệm anh Phát đông khách hơn. Anh lên chùa phát cơm rằm.',
                        perspectives=[dict(who='Anh Phát', emoji='📱', text='Hóa ra cái em cần là có người nghe.'),
                                      dict(who='Thầy Huệ Minh', emoji='🙏', text='Lo lắng thì cần người nghe, không cần lễ to.')]),
-                  dict(id='do', label='Nhận mâm lễ, làm lễ riêng cho anh', quality='bad', stars=2,
-                       review='Chùa nhận làm lễ giải sao riêng, gửi bao nhiêu cũng nhận.',
+                  dict(id='do', label='Nhận phong bì, làm lễ riêng, hứa với anh là giải được hạn', quality='bad', stars=2,
+                       review='Gửi bao nhiêu chùa cũng nhận, còn hứa chắc là giải được hạn.',
                        outcome='Anh Phát về yên tâm được ba hôm, rồi lại lo.',
-                       perspectives=[dict(who='Cô Hạnh', emoji='🧮', text='Lễ “giải sao” thì ghi sổ thế nào đây thầy?'),
+                       perspectives=[dict(who='Cô Hạnh', emoji='🧮', text='Tiền gửi để “giải hạn” thì ghi sổ thế nào đây thầy?'),
                                      dict(who='Anh Phát', emoji='😟', text='Em gửi nhiều rồi mà sao vẫn lo?')]),
                   dict(id='refuse', label='Từ chối, bảo anh mang lễ về', requires=['way'], quality='ok', stars=3,
                        review='Từ chối đúng, nhưng hơi lạnh lùng.',
                        outcome='Anh Phát mang mâm lễ về, buồn thiu.',
                        perspectives=[dict(who='Anh Phát', emoji='😞', text='Em chỉ muốn yên tâm thôi mà.'),
                                      dict(who='Bà Nhạn', emoji='🍲', text='Từ chối thì từ chối, mời người ta chén trà đã chứ.')])],
-         lesson='Chùa không bán lễ giải hạn. Người lo lắng cần được nghe, mời dự lễ chung, không thu tiền.'),
+         lesson='Chùa không thu tiền, không hứa giải được hạn cho ai. Người lo lắng cần được nghe: mời dự lễ cầu an chung, không thu tiền.'),
 ]
