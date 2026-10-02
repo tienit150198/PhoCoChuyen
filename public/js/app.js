@@ -144,7 +144,7 @@ const notice=(text,kind='',ico='leaf')=>`<div class="notice ${kind}">${icon(ico,
  * with a 💡, auto-dismiss) or plain. Same text is never stacked twice. Career desks reach it as env.toast(text,'hint'). */
 /* Long enough to read (owner: toasts were too quick): a floor per kind plus reading time
  * (~15 characters a second), capped. Toasts never take taps (.toasts is pointer-events:none). */
-const toastLife=(message,cls)=>Math.min(12000,Math.max(cls==='error'?6000:cls==='hint'?4000:4500,1500+String(message).length*65));
+const toastLife=(message,cls)=>Math.min(8000,Math.max(cls==='error'?4500:cls==='hint'?3000:3200,1200+String(message).length*45));   // owner 03/10: shorter, and a tap closes it
 function toast(message,kind=false){if(!message)return;const box=$('#toasts'),cls=kind===true||kind==='error'?'error':kind==='good'?'good':kind==='hint'?'hint':'',life=toastLife(message,cls);
   const mount=$('#confirmDialog').open?$('#confirmDialog'):$('#sheet').open?$('#sheet'):document.body;mount.append(box);
   if(mount.id==='sheet')requestAnimationFrame(headMeasure);   // the header may have moved (a centred sheet changing height)
@@ -154,6 +154,7 @@ function toast(message,kind=false){if(!message)return;const box=$('#toasts'),cls
   if(cls==='hint'&&box.querySelector('.toast.error:not(.leaving)'))return;
   const el=document.createElement('div');el.className=`toast ${cls}`.trim();el.dataset.msg=message;fillToast(el,message);
   if(cls==='hint'){const face=document.createElement('span');face.className='hint-face';face.setAttribute('aria-hidden','true');face.textContent='💡';el.prepend(face);}
+  el.title='Bấm để tắt';el.addEventListener('click',()=>{clearTimeout(el._t);el.classList.add('leaving');setTimeout(()=>el.remove(),320);});   // owner 03/10: tap to close, so it stops covering the screen
   box.append(el);leave(el);
   // Calm screen: one toast at a time, the newest wins.
   while(box.children.length>1)box.firstElementChild.remove();}
