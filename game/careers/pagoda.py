@@ -753,5 +753,6 @@ SPEC = dict(
                    'Cơm chay ngon, đúng là chay.'],
     situations=SITUATIONS,
     more_line='Thầy Huệ Minh nhờ thêm một việc.',
+    open_line='Cổng chùa đã mở. Khách thập phương đang lên, mình đón từng người nhé.',
     guide='Sáng: thức dậy, thỉnh chuông, công phu rồi mới điểm tâm. Mỗi việc: nghe dặn → làm từng bước (chọn, xếp, sắp thứ tự, quyết định, đếm tiền công đức). Hương đèn, trang phục, bếp chay, công đức: xem Bảng nội quy.',
 )

@@ -264,6 +264,13 @@ GIFT_LINES = {
                'Nhà mình cảm ơn {gv} nhiều ạ.'),
 }
 
+# A workplace whose thank-you gifts have their own words (adult voices; kids and tourists keep theirs).
+# At the pagoda nobody "tips": visitors bring fruit or tea for everyone (game/pagoda_voice.py).
+CAREER_GIFT_LINES = {
+    'pagoda': ('Biếu chùa ít trái cây nhà trồng, nhận cho bà con vui nhé.', 'Có gói trà, pha mời khách thập phương nhé.',
+               'Chút lòng thành của nhà, nhận giúp nha.'),
+}
+
 # The rare surprise tip.
 BIG_LINES = (
     'Hôm nay nhà có chuyện vui, cứ giữ hết đi!',
@@ -282,6 +289,9 @@ WELCOME_LINES = (
     'Ngày đầu mà làm ngon vậy! Chút tip mừng {ac} nè.',
     'Lần đầu ghé mà thấy thương quán rồi. Cố lên nha {ac}!',
 )
+CAREER_WELCOME = {
+    'pagoda': ('Lần đầu thấy mặt ở chùa mà làm việc chu đáo ghê. A Di Đà Phật.', 'Hôm đầu mà đã quen việc, bà con lên chùa vui lắm.'),
+}
 WELCOME_SHARE = .15     # of the bill, rounded to what people hand over, within the career's lo..hi
 
 REVIEW_CASH = ('Có để lại chút tip cảm ơn 💝', 'Tip nhẹ cho người làm có tâm 💝', 'Xứng đáng được tip, sẽ quay lại 💝')

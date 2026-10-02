@@ -21,6 +21,11 @@ REPORT = (
     '📣 Báo cáo trên app: {what} Mong quán kiểm tra lại cách làm việc.',
     '📣 Báo cáo trên app: {what} Tôi đã gửi phản ánh để quản lý xử lý.',
 )
+# Where a complaint goes at a workplace with no app (game/pagoda_voice.py: the pagoda's own words).
+REPORT_CAREER = {
+    'pagoda': ('🙏 Góp ý gửi thầy trụ trì: {what} Mong chùa nhắc nhở lại.',
+               '🙏 Khách thập phương nhờ chuyển lời lên thầy trụ trì: {what}'),
+}
 REPORT_REPEAT = (
     '📣 Báo cáo trên app: Hôm nay quán làm sai liên tục. {what}',
 )
@@ -54,7 +59,8 @@ def reaction_line(kind: str, t: dict, cut: int) -> str:
 def report_text(t: dict, repeat: bool = False) -> str:
     seed = sum(ord(ch) for ch in t['id'])
     what = _texts(t, 2) or 'Làm sai điều tôi đã dặn.'
-    return _pick(REPORT_REPEAT if repeat else REPORT, seed).format(what=what)[:500]
+    rows = REPORT_CAREER.get(t.get('career')) or (REPORT_REPEAT if repeat else REPORT)
+    return _pick(rows, seed).format(what=what)[:500]
 
 
 def weave(text: str, t: dict, seed: int) -> str:

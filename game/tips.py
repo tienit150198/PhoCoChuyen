@@ -290,6 +290,8 @@ def decide(s: dict, c: dict, t: dict) -> dict:
                     emoji='🌟' if big else '💝', gift='')
     emoji, gift = rng.choice(tc.GIFTS.get(career, tc.DEFAULT_GIFTS))
     pool = tc.GIFT_LINES.get(v, tc.GIFT_LINES['plain'])
+    if v not in ('kid', 'tourist') and career in tc.CAREER_GIFT_LINES:
+        pool = tc.CAREER_GIFT_LINES[career]
     line = _fill(pool[rng.randrange(len(pool))], s, spoken)
     return dict(out, kind='gift', line=line, who=spoken['who'], voice=v, emoji=emoji, gift=gift)
 
@@ -310,7 +312,8 @@ def _welcome(s: dict, c: dict, t: dict, out: dict) -> dict:
     n = norm(career)
     spoken = voice(s, c, t, _hash('tip-voice', t['id']))
     seed = _hash('tip-welcome', t['id'])
-    line = _fill(tc.WELCOME_LINES[seed % len(tc.WELCOME_LINES)], s, spoken)
+    lines = tc.CAREER_WELCOME.get(career, tc.WELCOME_LINES)
+    line = _fill(lines[seed % len(lines)], s, spoken)
     paid = bill(c, t)
     base = dict(out, p=100, big=False, line=line, who=spoken['who'], voice=spoken['voice'])
     if paid > 0:
