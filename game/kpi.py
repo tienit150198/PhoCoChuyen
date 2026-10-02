@@ -57,7 +57,7 @@ RET_KS = (1, 3, 7, 14, 30)
 FEATURES = (
     ('bank', ('jr_bk_', 'jr_invest', 'iv_')),
     ('learn', ('jr_cert', 'cl_')),
-    ('home', ('jr_home', 'jr_reno', 'jr_deco', 'jr_equip', 'jr_garage')),
+    ('home', ('jr_home', 'jr_reno', 'jr_deco', 'jr_equip', 'jr_garage', 'jr_relax')),
     ('wardrobe', ('jr_wd_',)),
     ('needs', ('jr_needs',)),
     ('board', ('bd_',)),
