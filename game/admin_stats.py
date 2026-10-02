@@ -51,8 +51,9 @@ How players are protected
   `stat_play` (one row per save per day, kept by a trigger on receipts: one receipt = one game
   command; see "play time" below) and `stat_births`. Finished days are summed once per worker.
   backfill_play() seeds the last days from receipts, once, by hand (estimates: stat_play_est).
-  Per-player rows are kept PLAY_KEEP_DAYS (60); upkeep() first sums each older day into
-  stat_play_daily (kept), then deletes it.
+  Per-player rows are kept forever by default (PLAY_KEEP_DAYS 0; owner, 02/10: statistics are never lost);
+  upkeep() sums each day older than PLAY_ROLL_DAYS into stat_play_daily (faster pages).
+  Every stat table here outlives its save: the *_gone triggers no longer delete.
 * Giữ chân (GET /api/admin/stats/section?name=retention[&format=csv]): game/admin_retention.py,
   from the tables of game/retention.py. upkeep() (this job and the server's housekeeping) also
   runs retention.maintain(): rollups and pruning of those tables.
@@ -106,8 +107,19 @@ SUMMARY_EVERY = 60.0       # the job's copy of the first screen (served when a l
 KPI_EVERY = float(os.environ.get('ADMIN_STATS_KPI_EVERY', '600') or 600)   # the investor overview (game/admin_kpi.py)
 IDLE = 600.0               # the job stops this long after the last admin request
 SAMPLE = max(100, int(os.environ.get('ADMIN_STATS_SAMPLE', '400') or 400))
-KEEP_DAYS = 120            # stat_active history kept
-PLAY_KEEP_DAYS = max(31, int(os.environ.get('ADMIN_STATS_PLAY_DAYS', '60') or 60))  # stat_play rows kept (older days: stat_play_daily only)
+def _keep_days(name: str, low: int = 1) -> int:
+    """Days of per-player stat rows kept: 0 (the default) keeps them forever. Owner, 02/10: player statistics are
+    never lost and never changed, so nothing is deleted unless the operator sets a limit on purpose."""
+    try:
+        v = int(os.environ.get(name) or 0)
+    except ValueError:
+        v = 0
+    return max(low, v) if v > 0 else 0
+
+
+KEEP_DAYS = _keep_days('ADMIN_STATS_ACTIVE_DAYS', 31)     # stat_active history kept (0: forever)
+PLAY_KEEP_DAYS = _keep_days('ADMIN_STATS_PLAY_DAYS', 31)  # stat_play rows kept (0: forever)
+PLAY_ROLL_DAYS = 60   # stat_play days older than this are also summed into stat_play_daily (faster pages; rows stay)
 COHORT_DAYS = 30           # retention looks at players who started in the last 30 days (or the range, if longer)
 TZ = '+7 hours'
 VN = datetime.timezone(datetime.timedelta(hours=7))
@@ -152,10 +164,7 @@ END;
 CREATE TRIGGER IF NOT EXISTS stat_session_active AFTER UPDATE OF updated_at ON sessions BEGIN
   INSERT OR IGNORE INTO stat_active(day, sid) VALUES (date('now', '{TZ}'), NEW.sid);
 END;
-CREATE TRIGGER IF NOT EXISTS stat_session_gone AFTER DELETE ON sessions BEGIN
-  DELETE FROM stat_births WHERE sid = OLD.sid;
-  DELETE FROM stat_active WHERE sid = OLD.sid;
-END;
+DROP TRIGGER IF EXISTS stat_session_gone;
 CREATE TABLE IF NOT EXISTS stat_play (day TEXT NOT NULL, sid TEXT NOT NULL, secs INTEGER NOT NULL, sessions INTEGER NOT NULL,
   cmds INTEGER NOT NULL, first_at REAL NOT NULL, last_at REAL NOT NULL, hours INTEGER NOT NULL DEFAULT 0,
   sess_at REAL NOT NULL, lens TEXT NOT NULL DEFAULT '', PRIMARY KEY(day, sid)) WITHOUT ROWID;
@@ -177,16 +186,12 @@ CREATE TRIGGER IF NOT EXISTS stat_play_cmd AFTER INSERT ON receipts BEGIN
     lens = CASE WHEN excluded.last_at - last_at <= {PLAY_GAP} THEN lens
                 ELSE lens || (CAST(round(last_at - sess_at) AS INTEGER) + {PLAY_IDLE_TAIL}) || ',' END;
 END;
-CREATE TRIGGER IF NOT EXISTS stat_play_gone AFTER DELETE ON sessions BEGIN
-  DELETE FROM stat_play WHERE sid = OLD.sid;
-END;
+DROP TRIGGER IF EXISTS stat_play_gone;
 CREATE TRIGGER IF NOT EXISTS stat_fb_seen AFTER UPDATE OF status ON player_feedback
   WHEN OLD.status = 'new' AND NEW.status != 'new' BEGIN
   INSERT OR IGNORE INTO stat_fb_ack(id, at) VALUES (NEW.id, NEW.updated_at);
 END;
-CREATE TRIGGER IF NOT EXISTS stat_fb_gone AFTER DELETE ON player_feedback BEGIN
-  DELETE FROM stat_fb_ack WHERE id = OLD.id;
-END;
+DROP TRIGGER IF EXISTS stat_fb_gone;
 """
 # PostgreSQL: tables, indexes and triggers come from game/pg_schema.py; these two indexes
 # serve only the admin queries (small tables, built in milliseconds). Created here too so
@@ -216,6 +221,24 @@ def ensure(store) -> None:
     install_command_timer(store)
 
 
+# Stat rows outlive their save (owner, 02/10: statistics are kept forever, unchanged). The PostgreSQL triggers
+# stay (same names as game/pg_schema.py) but their functions no longer delete; a function is replaced only while
+# it still deletes, so a started server does one catalog write at most, once.
+KEEP_FUNCTIONS = ('mnl_stat_session_gone', 'mnl_stat_play_gone', 'mnl_stat_retention_gone', 'mnl_stat_fb_gone')
+
+
+def _keep_pg(store) -> None:
+    for fn in KEEP_FUNCTIONS:
+        try:
+            with store.connect() as db:
+                row = db.execute('SELECT p.prosrc FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace '
+                                 'WHERE n.nspname = current_schema() AND p.proname = ?', (fn,)).fetchone()
+                if row and 'DELETE' in str(row[0]).upper():
+                    db.execute(f'CREATE OR REPLACE FUNCTION {fn}() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RETURN NULL; END $$')
+        except dbm.Error:
+            pass   # two workers at once: the other one did it
+
+
 def _ensure_pg(store) -> None:
     """The admin indexes, skipped when present. Several workers start at once, and two
     concurrent CREATE INDEX IF NOT EXISTS can still collide: the loser just moves on (the
@@ -228,6 +251,7 @@ def _ensure_pg(store) -> None:
                     db.execute(sql)
         except dbm.Error:
             pass
+    _keep_pg(store)
 
 
 # ---------------------------------------------------------------- AI counters (in memory)
@@ -1818,9 +1842,10 @@ def play_rollup(store, day: str) -> bool:
 
 
 def upkeep(store, now: float | None = None, force: bool = False) -> dict:
-    """Bounded stat tables, in short writes: stat_active days older than KEEP_DAYS (one day per
-    write); stat_play days older than PLAY_KEEP_DAYS, each first summed into stat_play_daily (kept),
-    PURGE_ROWS rows per write; then the Giữ chân tables (game/retention.py maintain: rollups and
+    """Stat upkeep, in short writes: the daily KPI freeze; stat_play days older than PLAY_ROLL_DAYS summed
+    into stat_play_daily. Rows are deleted only when the operator sets a limit (ADMIN_STATS_ACTIVE_DAYS /
+    ADMIN_STATS_PLAY_DAYS; default 0 = kept forever): stat_active days older than KEEP_DAYS (one day per write),
+    stat_play days older than PLAY_KEEP_DAYS, PURGE_ROWS rows per write; then the Giữ chân tables (game/retention.py maintain: rollups and
     pruning). Never at the peak hours (unless `force`). Run by the admin job and by the server's
     housekeeping."""
     from . import retention
@@ -1829,28 +1854,34 @@ def upkeep(store, now: float | None = None, force: bool = False) -> dict:
         out['skipped'] = 'peak'
         return out
     today = datetime.datetime.now(VN).date()
-    cut = (today - datetime.timedelta(days=KEEP_DAYS)).isoformat()
     # The finished days are frozen first (daily KPIs, stat_players): a stat_active day is only
     # dropped once it is frozen, so no number loses its history.
     try:
         out['freeze'] = kpi.freeze(store, now)
     except Exception as exc:  # noqa: BLE001
         _log('freeze', exc)
+    if KEEP_DAYS:   # only when the operator set a limit (default: kept forever)
+        cut = (today - datetime.timedelta(days=KEEP_DAYS)).isoformat()
+        with _read(store, 1000) as db:
+            done = db.execute("SELECT MAX(day) FROM stat_kpi_daily WHERE key = '_done'").fetchone()[0]
+        cut = min(cut, kpi.plus(done, 1) if done else '0000-00-00')
+        with _read(store, 1000) as db:
+            days = [r[0] for r in db.execute('SELECT DISTINCT day FROM stat_active WHERE day < ? ORDER BY day LIMIT 30', (cut,))]
+        for day in days:
+            with store.connect() as db:
+                out['active'] += db.execute('DELETE FROM stat_active WHERE day = ?', (day,)).rowcount
+            time.sleep(0.05)
+    roll = (today - datetime.timedelta(days=PLAY_ROLL_DAYS)).isoformat()
+    cut = (today - datetime.timedelta(days=PLAY_KEEP_DAYS)).isoformat() if PLAY_KEEP_DAYS else None
     with _read(store, 1000) as db:
-        done = db.execute("SELECT MAX(day) FROM stat_kpi_daily WHERE key = '_done'").fetchone()[0]
-    cut = min(cut, kpi.plus(done, 1) if done else '0000-00-00')
-    with _read(store, 1000) as db:
-        days = [r[0] for r in db.execute('SELECT DISTINCT day FROM stat_active WHERE day < ? ORDER BY day LIMIT 30', (cut,))]
+        rolled = {r[0] for r in db.execute('SELECT day FROM stat_play_daily WHERE day < ?', (roll,))}
+        days = [r[0] for r in db.execute('SELECT DISTINCT day FROM stat_play WHERE day < ? ORDER BY day', (roll,)) if r[0] not in rolled][:30]
+        if cut:
+            days += [r[0] for r in db.execute('SELECT DISTINCT day FROM stat_play WHERE day < ? ORDER BY day LIMIT 30', (cut,))
+                     if r[0] not in days]
     for day in days:
-        with store.connect() as db:
-            out['active'] += db.execute('DELETE FROM stat_active WHERE day = ?', (day,)).rowcount
-        time.sleep(0.05)
-    cut = (today - datetime.timedelta(days=PLAY_KEEP_DAYS)).isoformat()
-    with _read(store, 1000) as db:
-        days = [r[0] for r in db.execute('SELECT DISTINCT day FROM stat_play WHERE day < ? ORDER BY day LIMIT 30', (cut,))]
-    for day in days:
-        if not play_rollup(store, day):
-            continue
+        if not play_rollup(store, day) or not cut or day >= cut:
+            continue   # summed into stat_play_daily; its rows stay unless a limit is set
         while True:
             with store.connect() as db:
                 n = db.execute('DELETE FROM stat_play WHERE day = ? AND sid IN (SELECT sid FROM stat_play WHERE day = ? ORDER BY sid LIMIT ?)',
@@ -1859,8 +1890,9 @@ def upkeep(store, now: float | None = None, force: bool = False) -> dict:
             time.sleep(0.05)
             if n < PURGE_ROWS:
                 break
-    with store.connect() as db:
-        db.execute('DELETE FROM stat_play_est WHERE day < ?', (cut,))
+    if cut:
+        with store.connect() as db:
+            db.execute('DELETE FROM stat_play_est WHERE day < ?', (cut,))
     out['retention'] = retention.maintain(store, now, force=force)
     return out
 _jobs: dict[str, _Job] = {}

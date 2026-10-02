@@ -292,7 +292,7 @@ class FreezeTests(Base):
             db.execute('DELETE FROM sessions WHERE sid = ?', (token_sid,))
         with self.store.connect() as db:
             f2 = kpi.frozen(db, day(-21))
-            self.assertEqual(db.execute('SELECT COUNT(*) FROM stat_players WHERE sid = ?', ('p0',)).fetchone()[0], 0)
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM stat_players WHERE sid = ?', ('p0',)).fetchone()[0], 1)   # kept forever
         self.assertEqual(f2[day(-3)]['dau'], 6)
 
     def test_players_table_and_lifetime(self):
@@ -336,8 +336,29 @@ class FreezeTests(Base):
             got = kpi.features_day(db, d)
         self.assertEqual((got['feat:bank'], got['feat:work'], got['feat:board'], got['feat:fair']), (1, 2, 1, 0))
 
+    def test_stats_kept_forever_and_outlive_the_save(self):
+        """Owner, 02/10: player statistics are never lost. No time limit, and a deleted save keeps its stat rows."""
+        self.assertEqual((st.KEEP_DAYS, st.PLAY_KEEP_DAYS), (0, 0))
+        old = day(-400)
+        self.born('x', old, [old])
+        st.upkeep(self.store, force=True)
+        st.upkeep(self.store, force=True)
+        self.assertEqual(self.q('SELECT COUNT(*) FROM stat_active WHERE day = ?', (old,))[0][0], 1)
+        with self.store.connect() as db:
+            db.execute("INSERT INTO stat_milestones(sid, key, at, day, career, detail) VALUES ('x', 'k', 1.0, 1, NULL, NULL)")
+            db.execute("INSERT INTO stat_acquisition(sid, at, day, source) VALUES ('x', 1.0, ?, 'zalo')", (old,))
+            if not db.execute("SELECT 1 FROM stat_players WHERE sid = 'x'").fetchone():
+                db.execute("INSERT INTO stat_players(sid, first_day, last_day, days) VALUES ('x', ?, ?, 1)", (old, old))
+            rt.forget(db, 'x')
+            db.execute("DELETE FROM sessions WHERE sid = 'x'")
+        for t in ('stat_births', 'stat_active', 'stat_players', 'stat_milestones', 'stat_acquisition'):
+            self.assertEqual(self.q(f"SELECT COUNT(*) FROM {t} WHERE sid = 'x'")[0][0], 1, t)
+
     def test_upkeep_keeps_unfrozen_activity(self):
-        """stat_active days past KEEP_DAYS are dropped only once frozen (their numbers kept)."""
+        """With an operator limit, stat_active days past KEEP_DAYS are dropped only once frozen (their numbers kept)."""
+        patcher = patch.object(st, 'KEEP_DAYS', 120)
+        patcher.start()
+        self.addCleanup(patcher.stop)
         old = day(-(st.KEEP_DAYS + 5))
         self.born('x', old, [old])
         with patch.object(kpi, 'freeze', return_value={}):              # the freeze has not reached that day

@@ -160,7 +160,7 @@ class TriggerTests(Base):
         self.assertEqual((r['cmds'], r['secs']), (1, 60))
         self.assertEqual(self.store.read(tok)[1], first['revision'])
 
-    def test_deleting_a_save_drops_its_rows_and_pruning_receipts_keeps_them(self):
+    def test_deleting_a_save_or_its_receipts_keeps_its_rows(self):
         tok, sid = self.player()
         other, osid = self.player()
         self.cmd(tok)
@@ -170,7 +170,7 @@ class TriggerTests(Base):
             self.assertEqual(db.execute('SELECT COUNT(*) FROM receipts WHERE sid IN (?, ?)', (sid, osid)).fetchone()[0], 0)
         self.assertEqual(len(self.rows(sid)), 1)
         self.store.delete(tok)
-        self.assertEqual(self.rows(sid), [])
+        self.assertEqual(len(self.rows(sid)), 1)      # statistics are kept forever (owner, 02/10)
         self.assertEqual(len(self.rows(osid)), 1)
 
     def test_schema_is_idempotent_and_matches_on_both_backends(self):
@@ -183,7 +183,9 @@ class TriggerTests(Base):
         else:
             with self.store.connect() as db:
                 names = {r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type = 'trigger'")}
-        self.assertTrue({'stat_play_cmd', 'stat_play_gone'} <= names)
+        self.assertIn('stat_play_cmd', names)
+        if not self.store.pg:
+            self.assertNotIn('stat_play_gone', names)   # a deleted save keeps its play rows (kept forever)
         self.assertIn(('receipts', 'stat_play_cmd'), pg_schema.TRIGGERS)
         cols = [c for c, _ in pg_schema.TABLE['stat_play']['columns']]
         self.assertEqual(cols[:7], ['day', 'sid', 'secs', 'sessions', 'cmds', 'first_at', 'last_at'])
@@ -412,9 +414,27 @@ class SectionTests(Base):
         self.assertIsNone(st._quantile(st._hist(), .5))
         self.assertEqual([st._bucket(x) for x in (0, 599, 600, 3599, 3600, 14399, 14400, 10 ** 7)], [0, 599, 600, 899, 900, 1079, 1080, 1199])
 
+    def test_play_rows_kept_forever_by_default(self):
+        self.assertEqual(st.PLAY_KEEP_DAYS, 0)
+        old = vn_day(-st.PLAY_ROLL_DAYS - 30)
+        self.put(old, 'old', 60)
+        self.put(old, 'old2', 120)
+        self.sql('INSERT INTO stat_play_est(day, saves, capped, at) VALUES (?, 1, 0, 1.0)', (old,))
+        from game import retention
+        with patch.object(retention, '_peak', lambda now: False):
+            st._Job(self.store, None, pause=0).purge()
+            st._Job(self.store, None, pause=0).purge()
+        self.assertEqual(sorted(r['sid'] for r in self.rows()), ['old', 'old2'])      # every row stays
+        with self.store.connect() as db:
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM stat_play_est').fetchone()[0], 1)
+            self.assertEqual([tuple(r) for r in db.execute('SELECT day, players, secs FROM stat_play_daily')], [(old, 2, 180)])   # summed once
+
     def test_purge_keeps_play_days_and_rolls_the_older_ones_up(self):
-        keep = st.PLAY_KEEP_DAYS
-        self.assertEqual(keep, 60)
+        """Only with an operator limit (ADMIN_STATS_PLAY_DAYS); the default keeps every row."""
+        keep = 60
+        patcher = patch.object(st, 'PLAY_KEEP_DAYS', keep)
+        patcher.start()
+        self.addCleanup(patcher.stop)
         self.put(vn_day(-keep - 1), 'old', 60)
         self.put(vn_day(-keep - 1), 'old2', 120)
         self.put(vn_day(-keep + 1), 'kept', 60)

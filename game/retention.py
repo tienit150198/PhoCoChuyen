@@ -19,8 +19,9 @@ What is recorded (tables on both backends: SCHEMA here for SQLite, game/pg_schem
   rejected ones (GameError) counted in `errors` with the last error code or message (short).
   count() only adds to an in-memory buffer (a lock and a dict update); a thread per process
   writes it every FLUSH_EVERY seconds in ONE statement (sorted keys, so workers never deadlock).
-  Kept ACTIONS_KEEP_DAYS, then rolled up per day into stat_actions_daily(day, career, action,
-  players, n, errors, err) (kept forever) and deleted in small batches (maintain()).
+  Rolled up per day into stat_actions_daily(day, career, action, players, n, errors, err) (maintain()).
+  Every table here is kept forever by default (*_KEEP_DAYS 0; owner, 02/10: player statistics are never lost
+  or changed), even after its save is deleted; an operator limit (RETENTION_*_DAYS) deletes in small batches.
 * Browser beacons (POST /api/beacon, server.py): session cookie only, never a save:
   - leave {v view, p popup/sheet, c career, d life day, t tutorial/onboarding step, s seconds
     since load, a last 3 UI actions} -> stat_leaves(id, sid, at, day, payload) (short sid, VN day; kept
@@ -65,17 +66,19 @@ VN = datetime.timezone(datetime.timedelta(hours=7))
 ENABLED = os.environ.get('RETENTION_LOG', '1').strip().lower() not in ('0', 'false', 'no', 'off')
 
 
-def _env_int(name: str, default: int) -> int:
+def _env_int(name: str, default: int = 0) -> int:
+    """Days kept; 0 (the default) = forever. Owner, 02/10: player statistics are never lost and never changed."""
     try:
-        return max(1, int(os.environ.get(name) or default))
+        v = int(os.environ.get(name) or default)
     except ValueError:
-        return default
+        v = default
+    return max(1, v) if v > 0 else 0
 
 
-ACTIONS_KEEP_DAYS = _env_int('RETENTION_ACTIONS_DAYS', 60)   # per-player action rows (then the daily rollup only)
-LEAVES_KEEP_DAYS = _env_int('RETENTION_LEAVES_DAYS', 60)     # leave beacons
-ERRORS_KEEP_DAYS = _env_int('RETENTION_ERRORS_DAYS', 60)     # client error rows (already aggregated)
-LOADS_KEEP_DAYS = _env_int('RETENTION_LOADS_DAYS', 400)      # load-time histograms (a few thousand rows a day)
+ACTIONS_KEEP_DAYS = _env_int('RETENTION_ACTIONS_DAYS')   # per-player action rows (rolled up daily as well); 0: forever
+LEAVES_KEEP_DAYS = _env_int('RETENTION_LEAVES_DAYS')     # leave beacons; 0: forever
+ERRORS_KEEP_DAYS = _env_int('RETENTION_ERRORS_DAYS')     # client error rows (already aggregated); 0: forever
+LOADS_KEEP_DAYS = _env_int('RETENTION_LOADS_DAYS')       # load-time histograms (a few thousand rows a day); 0: forever
 FLUSH_EVERY = 15.0       # seconds between two writes of a process's action counts
 FLUSH_KEYS = 4000        # ... or sooner once this many (day, save, career, action) keys wait
 BUFFER_MAX = 40000       # hard cap of waiting keys per process; past it new keys are dropped (counted)
@@ -123,12 +126,7 @@ CREATE TABLE IF NOT EXISTS stat_loads (day TEXT NOT NULL, metric TEXT NOT NULL, 
 CREATE TABLE IF NOT EXISTS stat_acquisition (sid TEXT PRIMARY KEY, at REAL NOT NULL, day TEXT NOT NULL, source TEXT,
   medium TEXT, campaign TEXT, ref_domain TEXT);
 CREATE INDEX IF NOT EXISTS stat_acquisition_day ON stat_acquisition(day);
-CREATE TRIGGER IF NOT EXISTS stat_retention_gone AFTER DELETE ON sessions BEGIN
-  DELETE FROM stat_milestones WHERE sid = OLD.sid;
-  DELETE FROM stat_leaves WHERE sid = substr(OLD.sid, 1, 16);
-  DELETE FROM stat_leave_last WHERE sid = OLD.sid;
-  DELETE FROM stat_acquisition WHERE sid = OLD.sid;
-END;
+DROP TRIGGER IF EXISTS stat_retention_gone;
 """
 SID_LEN = 16   # stat_actions / stat_leaves keep this many hex characters of the save id (64 bits)
 
@@ -576,23 +574,10 @@ def flush(store) -> int:
 
 
 def forget(db, sid: str) -> None:
-    """A save is being deleted (Store.delete): its action rows, one primary-key range per day it
-    could have (from the oldest day kept to today: no full scan), and this process's waiting
-    counts. The other stat rows go with the sessions trigger."""
-    with _buf_lock:
-        for slot in _bufs.values():
-            for k in [k for k in slot[1] if k[1] == sid]:
-                del slot[1][k]
-    from . import kpi
-    if kpi._exists(db, 'stat_players'):   # 📊 its lifetime row (first/last active day); checked first: a failed
-        db.execute('DELETE FROM stat_players WHERE sid = ?', (sid,))   # statement would abort a PostgreSQL transaction
-    first = db.execute('SELECT MIN(day) FROM stat_actions').fetchone()[0]
-    if not first:
-        return
-    day, today = first, vn_day()
-    while day <= today:
-        db.execute('DELETE FROM stat_actions WHERE day = ? AND sid = ?', (day, short(sid)))
-        day = _plus(day, 1)
+    """A save is being deleted (Store.delete). Its stat rows stay (owner, 02/10: player statistics are kept forever
+    and never changed): they hold no name or account, only the save's random id, so nothing links them to a person
+    once the save is gone. Kept as a hook for the callers."""
+    return None
 
 
 def _flush_at_exit() -> None:
@@ -882,7 +867,7 @@ def maintain(store, now: float | None = None, pause: float = PAUSE, force: bool 
         return out
     try:
         today = vn_day(now)
-        cut = _plus(today, -ACTIONS_KEEP_DAYS)
+        cut = _plus(today, -(ACTIONS_KEEP_DAYS or 60))   # how far back unrolled days are looked for
         with store.connect() as db:
             first = db.execute('SELECT MIN(day) FROM stat_actions').fetchone()[0]   # the primary key's first column: one index read
             start = min(first or today, _plus(cut, -10))
@@ -900,15 +885,20 @@ def maintain(store, now: float | None = None, pause: float = PAUSE, force: bool 
                     if pause:
                         time.sleep(pause)
             d = _plus(d, 1)
-        with store.connect() as db:
-            old = [r[0] for r in db.execute("SELECT day FROM stat_rollups WHERE kind = 'actions' AND day < ? ORDER BY day", (cut,))]
-        for d in old:   # only rolled days are deleted: nothing is lost without its daily summary
-            out['actions'] += _delete_batches(store, 'stat_actions', 'day = ?', (d,), pause)
-        t = now - LEAVES_KEEP_DAYS * 86400
-        out['leaves'] = _delete_batches(store, 'stat_leaves', 'at < ?', (t,), pause)
-        out['last'] = _delete_batches(store, 'stat_leave_last', 'at < ?', (t,), pause)
-        out['errors'] = _delete_batches(store, 'stat_client_errors', 'day < ?', (_plus(today, -ERRORS_KEEP_DAYS),), pause)
-        out['loads'] = _delete_batches(store, 'stat_loads', 'day < ?', (_plus(today, -LOADS_KEEP_DAYS),), pause)
+        # Deleting only when the operator set a limit (default: every row kept forever).
+        if ACTIONS_KEEP_DAYS:
+            with store.connect() as db:
+                old = [r[0] for r in db.execute("SELECT day FROM stat_rollups WHERE kind = 'actions' AND day < ? ORDER BY day", (cut,))]
+            for d in old:   # only rolled days are deleted: nothing is lost without its daily summary
+                out['actions'] += _delete_batches(store, 'stat_actions', 'day = ?', (d,), pause)
+        if LEAVES_KEEP_DAYS:
+            t = now - LEAVES_KEEP_DAYS * 86400
+            out['leaves'] = _delete_batches(store, 'stat_leaves', 'at < ?', (t,), pause)
+            out['last'] = _delete_batches(store, 'stat_leave_last', 'at < ?', (t,), pause)
+        if ERRORS_KEEP_DAYS:
+            out['errors'] = _delete_batches(store, 'stat_client_errors', 'day < ?', (_plus(today, -ERRORS_KEEP_DAYS),), pause)
+        if LOADS_KEEP_DAYS:
+            out['loads'] = _delete_batches(store, 'stat_loads', 'day < ?', (_plus(today, -LOADS_KEEP_DAYS),), pause)
         return out
     finally:
         _unlock(fd)

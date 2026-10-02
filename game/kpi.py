@@ -26,8 +26,8 @@ no change to any existing table):
   (the saves sample's wallet, overwritten while the day runs). A day is frozen FREEZE_AFTER after its midnight.
 * stat_players(sid, first_day, last_day, days): every save that ever sent a command since tracking began
   (stat_active), its first and last active Vietnam day and how many days it was active. Filled by freeze() from
-  stat_active, one finished day at a time, in order; deleted with the save on the player's own "Xóa dữ liệu"
-  (retention.forget). The basis of "người từng chơi", lifetime active days and resurrection.
+  stat_active, one finished day at a time, in order; kept forever, even after the save is deleted (owner, 02/10:
+  player statistics are never lost or changed). The basis of "người từng chơi", lifetime active days and resurrection.
 freeze() runs from the admin job and from the server's housekeeping (admin_stats.upkeep, never at the peak
 hours), a bounded number of days per call, each day in its own short transaction.
 """

@@ -726,7 +726,7 @@ class Store:
             lb.forget(db,[sid])
             db.execute("DELETE FROM logins WHERE sid=?",(sid,))
             db.execute("DELETE FROM accounts WHERE sid=?",(sid,))
-            rt.forget(db,sid)  # its action counts (the other stat rows go with the sessions trigger)
+            rt.forget(db,sid)  # stat rows are kept (anonymous once the save is gone)
             n=db.execute("DELETE FROM sessions WHERE sid=?",(sid,)).rowcount
         return bool(n)
 

@@ -271,7 +271,8 @@ class ActionTests(Base):
         self.assertEqual(rt.flush(self.store), 3)
         self.assertEqual(self.rows(), {})          # no such saves: nothing is written for them
 
-    def test_deleting_the_save_deletes_its_rows(self):
+    def test_deleting_the_save_keeps_its_rows(self):
+        """Owner, 02/10: player statistics are kept forever; the rows only carry the save's random id."""
         tok, sid = self.player()
         other, osid = self.player()
         for t in (tok, other):
@@ -285,8 +286,8 @@ class ActionTests(Base):
         self.sql('INSERT INTO stat_acquisition(sid, at, day, source) VALUES (?, ?, ?, ?)', (sid, time.time(), day(), 'fb'))
         self.assertTrue(self.store.delete(tok))
         rt.flush(self.store)
-        for table in ('stat_actions', 'stat_milestones', 'stat_leaves', 'stat_leave_last', 'stat_acquisition'):
-            self.assertEqual(self.q(f'SELECT COUNT(*) FROM {table} WHERE sid IN (?, ?)', (sid, sid[:16])), [(0,)], table)
+        for table in ('stat_actions', 'stat_leaves', 'stat_leave_last', 'stat_acquisition'):
+            self.assertGreaterEqual(self.q(f'SELECT COUNT(*) FROM {table} WHERE sid IN (?, ?)', (sid, sid[:16]))[0][0], 1, table)
         self.assertEqual(self.q('SELECT COUNT(*) FROM stat_actions WHERE sid = ?', (osid[:16],)), [(1,)])
 
     def test_error_text_is_short_and_impersonal(self):
@@ -654,7 +655,26 @@ class MathTests(Base):
 
 # ---------------------------------------------------------------- pruning and rollups
 class PruneTests(Base):
+    def test_everything_kept_forever_by_default(self):
+        self.assertEqual((rt.ACTIONS_KEEP_DAYS, rt.LEAVES_KEEP_DAYS, rt.ERRORS_KEEP_DAYS, rt.LOADS_KEEP_DAYS), (0, 0, 0, 0))
+        old, now = day(-500), time.time()
+        self.sql("INSERT INTO stat_actions(day, sid, career, action, n, errors, err) VALUES (?, 'a', 'milk_tea', 'serve', 3, 0, NULL)", (day(-70),))
+        self.sql('INSERT INTO stat_leaves(sid, at, day, payload) VALUES (?, ?, ?, ?)', ('a', now - 500 * 86400, old, '{}'))
+        self.sql('INSERT INTO stat_leave_last(sid, at, payload) VALUES (?, ?, ?)', ('z', now - 500 * 86400, '{}'))
+        self.sql("INSERT INTO stat_client_errors(day, kind, message_key, screen, count, last_at) VALUES (?, 'js', 'x', '-', 1, 1.0)", (old,))
+        self.sql("INSERT INTO stat_loads(day, metric, net, who, cache, tier, bucket, n) VALUES (?, 'frame', '4g', 'new', '?', '?', 3, 1)", (old,))
+        out = rt.maintain(self.store, now, pause=0, force=True)
+        self.assertEqual((out['actions'], out['leaves'], out['last'], out['errors'], out['loads']), (0, 0, 0, 0, 0))
+        for t in ('stat_actions', 'stat_leaves', 'stat_leave_last', 'stat_client_errors', 'stat_loads'):
+            self.assertEqual(self.q(f'SELECT COUNT(*) FROM {t}'), [(1,)], t)
+        self.assertEqual(len(self.q('SELECT * FROM stat_actions_daily')), 1)     # still rolled up for the pages
+
     def test_rollup_then_prune(self):
+        """Only with operator limits (RETENTION_*_DAYS)."""
+        for name, v in (('ACTIONS_KEEP_DAYS', 60), ('LEAVES_KEEP_DAYS', 60), ('ERRORS_KEEP_DAYS', 60), ('LOADS_KEEP_DAYS', 400)):
+            patcher = patch.object(rt, name, v)
+            patcher.start()
+            self.addCleanup(patcher.stop)
         old, kept = day(-rt.ACTIONS_KEEP_DAYS - 2), day(-3)
         for d in (old, kept):
             for sid, n, e in (('a', 3, 1), ('b', 2, 0)):

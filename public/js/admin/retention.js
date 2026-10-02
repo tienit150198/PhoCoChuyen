@@ -129,7 +129,7 @@ function errorsCard(d,ui){
 function sizesLine(d){
   const S=d.sizes;if(!S.tables.length)return '';
   const top=S.tables.slice(0,4).map(t=>`<code>${esc(t.name)}</code> ${bytes(t.bytes)}`).join(' · ');
-  return `<p class="foot">${icon('server',14)} Dung lượng log: <b>${bytes(S.total)}</b> · ${top}${S.tables.length>4?` · ${S.tables.length-4} bảng khác`:''}. Giữ chi tiết ${num(d.rules.actions_days)} ngày (thao tác, rời trang, lỗi); mốc và nguồn giữ lâu dài.</p>`;
+  return `<p class="foot">${icon('server',14)} Dung lượng log: <b>${bytes(S.total)}</b> · ${top}${S.tables.length>4?` · ${S.tables.length-4} bảng khác`:''}. ${d.rules.actions_days?`Giữ chi tiết ${num(d.rules.actions_days)} ngày (thao tác, rời trang, lỗi); mốc và nguồn giữ lâu dài.`:'Mọi số liệu được giữ mãi, kể cả khi bản lưu bị xoá.'}</p>`;
 }
 
 /** The whole view. `ui`: {funnel, src, err} (segment choices); `name`: career id → name. */

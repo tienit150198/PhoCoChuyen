@@ -219,10 +219,10 @@ class MetricsTests(Seeded):
         self.store.command(tok, 'req-000001', 1, None, 'settings', dict(lang='en'))
         with self.store.connect() as db:
             self.assertEqual(db.execute('SELECT COUNT(*) FROM stat_active WHERE sid=?', (sid,)).fetchone()[0], 1)
-        self.store.delete(tok)
+        self.store.delete(tok)   # the save goes; its statistics stay (owner, 02/10: kept forever)
         with self.store.connect() as db:
-            self.assertEqual(db.execute('SELECT COUNT(*) FROM stat_births WHERE sid=?', (sid,)).fetchone()[0], 0)
-            self.assertEqual(db.execute('SELECT COUNT(*) FROM stat_active WHERE sid=?', (sid,)).fetchone()[0], 0)
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM stat_births WHERE sid=?', (sid,)).fetchone()[0], 1)
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM stat_active WHERE sid=?', (sid,)).fetchone()[0], 1)
         st.ensure(self.store)   # idempotent
 
     def test_feedback_counts_newest_and_ack_time(self):
@@ -244,9 +244,9 @@ class MetricsTests(Seeded):
         self.assertEqual(fb['newest'][0]['text'], 'Góp ý loại praise')
         with self.store.connect() as db:
             self.assertEqual(db.execute('SELECT COUNT(*) FROM stat_fb_ack').fetchone()[0], 2)
-        pfb.forget(self.store, tok)
+        pfb.forget(self.store, tok)   # the notes go; the reply-time statistics stay (ids and times only)
         with self.store.connect() as db:
-            self.assertEqual(db.execute('SELECT COUNT(*) FROM stat_fb_ack').fetchone()[0], 0)
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM stat_fb_ack').fetchone()[0], 2)
 
     def test_server_section(self):
         self.seed()

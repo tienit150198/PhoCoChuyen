@@ -66,7 +66,7 @@ Trang còn cho tải về:
 | Chỉ số | Ý nghĩa | Cách tính | Giới hạn |
 |---|---|---|---|
 | **DAU** | Số người có thao tác trong ngày VN. | `COUNT(*) FROM stat_active WHERE day = ?` (trigger khi bản lưu đổi `updated_at`) | |
-| WAU / MAU | Số người khác nhau có thao tác trong 7 hoặc 30 ngày, tính đến hết ngày đó. | `COUNT(DISTINCT sid)` trên `stat_active` | `stat_active` chỉ giữ 120 ngày; ngày cũ hơn dùng số đông cứng. |
+| WAU / MAU | Số người khác nhau có thao tác trong 7 hoặc 30 ngày, tính đến hết ngày đó. | `COUNT(DISTINCT sid)` trên `stat_active` | `stat_active` giữ mãi (từ 1.4.3); số đông cứng vẫn là nguồn chính cho ngày cũ. |
 | Độ dính (DAU/MAU) | Một người chơi trong tháng quay lại trung bình bao nhiêu phần trăm số ngày. 20% tương đương khoảng 6 ngày mỗi tháng. | DAU ÷ MAU của cùng ngày, sau đó lấy trung bình | |
 | Người quay lại | DAU trừ người chơi mới. | `dau − new_players` | |
 | Người trở lại sau ≥ 7 ngày | Người hoạt động hôm nay mà lần hoạt động trước cách đó từ 8 ngày trở lên. | `stat_players.last_day ≤ ngày − 8` trước khi cập nhật | Bảng mới, nhưng dựng lại được từ nhật ký ngày (`stat_active`) nên có số cho cả các ngày trước. |
@@ -95,7 +95,7 @@ Trang còn cho tải về:
 
 | Chỉ số | Ý nghĩa | Cách tính | Giới hạn |
 |---|---|---|---|
-| Dùng tính năng | Trong người hoạt động, bao nhiêu phần trăm dùng một nhóm tính năng (ngân hàng, học, nhà, tủ đồ…), lấy trung bình mỗi ngày. | người có thao tác thuộc nhóm (theo tiền tố tên lệnh, `kpi.FEATURES`) ÷ DAU, 7 ngày | `stat_actions` chỉ giữ 60 ngày. Ngày cũ hơn dùng số đông cứng. |
+| Dùng tính năng | Trong người hoạt động, bao nhiêu phần trăm dùng một nhóm tính năng (ngân hàng, học, nhà, tủ đồ…), lấy trung bình mỗi ngày. | người có thao tác thuộc nhóm (theo tiền tố tên lệnh, `kpi.FEATURES`) ÷ DAU, 7 ngày | `stat_actions` giữ mãi (từ 1.4.3); ngày cũ dùng số đông cứng. |
 | Người trên bảng xếp hạng | Người có tên trên bảng tổng. | `leaderboard board='all'` | |
 | Đã thành thạo ≥ 1 nghề | Phần trăm người đã lên cấp 3 ở ít nhất một nơi làm. | `mastered ≥ 1 ÷ người trên bảng` | |
 | Ngày làm việc (trung vị) | Số ngày làm việc trong game (không phải ngày thật), cộng mọi nơi làm. | trung vị `leaderboard.days` | |
@@ -161,6 +161,15 @@ Trang còn cho tải về:
 | 10 | Tỉ lệ rời bỏ đếm cả bản lưu "ma" (lỗi 1). | Tỉ lệ rời bỏ bị thổi phồng. | Chỉ tính bản lưu có ngày hoạt động. |
 
 Mỗi lỗi có một bài kiểm thử tái hiện trong `tests/test_admin_kpi.py`.
+
+## 10b. Giữ số liệu mãi mãi (từ 1.4.3)
+
+Theo yêu cầu chủ game (02/10): số liệu thống kê người chơi không bao giờ bị xoá hay sửa.
+
+- Không còn xoá theo hạn: `stat_active`, `stat_play`, `stat_play_est`, `stat_actions`, `stat_leaves`, `stat_leave_last`, `stat_client_errors`, `stat_loads` đều giữ mãi. Các biến `ADMIN_STATS_ACTIVE_DAYS`, `ADMIN_STATS_PLAY_DAYS`, `RETENTION_*_DAYS` mặc định 0 = giữ mãi; chỉ khi người vận hành tự đặt số mới xoá.
+- Bản lưu bị xoá (người chơi tự xoá, bản lưu khách bỏ trống, bản lưu không hoạt động lâu) **không còn kéo theo số liệu**: các trigger `*_gone` không xoá gì nữa, `retention.forget` không xoá. Dòng số liệu chỉ mang mã ngẫu nhiên của bản lưu, không tên, không tài khoản, nên sau khi bản lưu mất thì không còn nối được tới người nào.
+- Số theo ngày vẫn được đông cứng vào `stat_kpi_daily` / `stat_players` như trước.
+- Dung lượng tăng dần theo số người chơi; trang Giữ chân hiện dung lượng log để theo dõi.
 
 ## 11. Các giới hạn đã biết (chưa sửa, cần nói rõ khi trình bày)
 

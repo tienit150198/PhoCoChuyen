@@ -431,10 +431,9 @@ BEGIN
   INSERT INTO stat_active (day, sid) VALUES ({VN_DAY}, NEW.sid) ON CONFLICT DO NOTHING;
   RETURN NULL;
 END $$;
+-- A deleted save keeps its stat rows (owner, 02/10: statistics kept forever): the *_gone functions do nothing.
 CREATE OR REPLACE FUNCTION mnl_stat_session_gone() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
-  DELETE FROM stat_births WHERE sid = OLD.sid;
-  DELETE FROM stat_active WHERE sid = OLD.sid;
   RETURN NULL;
 END $$;
 CREATE OR REPLACE FUNCTION mnl_stat_play_cmd() RETURNS trigger LANGUAGE plpgsql AS $$
@@ -457,15 +456,10 @@ BEGIN
 END $$;
 CREATE OR REPLACE FUNCTION mnl_stat_play_gone() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
-  DELETE FROM stat_play WHERE sid = OLD.sid;
   RETURN NULL;
 END $$;
 CREATE OR REPLACE FUNCTION mnl_stat_retention_gone() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
-  DELETE FROM stat_milestones WHERE sid = OLD.sid;
-  DELETE FROM stat_leaves WHERE sid = left(OLD.sid, 16);   -- stat_leaves / stat_actions keep 16 hex characters (retention.short)
-  DELETE FROM stat_leave_last WHERE sid = OLD.sid;
-  DELETE FROM stat_acquisition WHERE sid = OLD.sid;
   RETURN NULL;
 END $$;
 CREATE OR REPLACE FUNCTION mnl_stat_fb_seen() RETURNS trigger LANGUAGE plpgsql AS $$
@@ -475,7 +469,6 @@ BEGIN
 END $$;
 CREATE OR REPLACE FUNCTION mnl_stat_fb_gone() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
-  DELETE FROM stat_fb_ack WHERE id = OLD.id;
   RETURN NULL;
 END $$;
 CREATE OR REPLACE TRIGGER stat_session_born AFTER INSERT ON sessions FOR EACH ROW EXECUTE FUNCTION mnl_stat_session_born();
