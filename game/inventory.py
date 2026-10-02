@@ -492,6 +492,7 @@ def _schedule(sup: dict, career: str, now: int, seed: str) -> dict:
 
 # ---------------------------------------------------------------- prices, carts and haggling
 CART_LINES = 8      # lines in one supplier's draft
+FIT_LINES = 40      # lines one inv_cart `fit` call may list (the rest past CART_LINES stays out)
 TRANSIT_LINES = 30  # order lines on the way at once (the order book keeps 40)
 ASKS = (5, 10, 15)  # discounts a player can ask for on a big order (%)
 
@@ -1041,8 +1042,11 @@ def _cart_edit(c: dict, career: str, x: dict, p: dict, level: int) -> dict:
         msg = f'Đã bỏ đơn {sup["name"]}.'
     elif op == 'add':
         want = p.get('lines') if p.get('lines') is not None else [dict(item=p.get('item'), qty=p.get('qty'))]
-        need(isinstance(want, list) and 0 < len(want) <= CART_LINES, 'Danh sách hàng không hợp lệ.')
         fit = p.get('fit') is True
+        # `fit` (the stock room's "Gộp N món" step) may list more than one draft holds: a shop with many
+        # items low (the nail shop has 20) sent them all, and the whole batch was refused. The lines past
+        # CART_LINES now stay out like any other `fit` overflow; the list is still bounded.
+        need(isinstance(want, list) and 0 < len(want) <= (FIT_LINES if fit else CART_LINES), 'Danh sách hàng không hợp lệ.')
         added = 0
         left_out = 0  # `fit`: new lines past CART_LINES stay out (the message says so) instead of refusing the batch
         for w in want:
