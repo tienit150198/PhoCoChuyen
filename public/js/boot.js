@@ -21,7 +21,7 @@
   const store=key=>{try{return localStorage.getItem(key);}catch{return null;}};
   try{const t=store('mnl.theme');if(t&&/^[a-z_]+$/.test(t))d.documentElement.dataset.theme=t;}catch{/* ignore */}
   try{
-    B.response=fetch('/api/bootstrap?lite=1',{credentials:'same-origin'});
+    B.response=fetch('/api/bootstrap?lite=1',{credentials:'same-origin',headers:{'X-Game-Delta':'1'}});  // its state's parts named (api.js Held)
     const content=meta('mnl-content');
     if(content){B.contentBase=content;B.contentUrl=content+'&part=core';B.content=fetch(B.contentUrl,{credentials:'same-origin'});}
   }catch{/* old browser: api.js fetches */}

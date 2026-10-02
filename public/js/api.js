@@ -44,18 +44,67 @@ export function mergeContent(content,part){
   return content;
 }
 
+/* Smaller state answers (game/state_delta.py). Every request says X-Game-Delta: 1; an answer whose `state` is the
+ * public state then also has `delta` = {refs:[[path,hash]…], keys:[[path,hash]…]}: `keys` name the parts of the state
+ * sent in it (by a hash of their JSON), `refs` the places where the state holds a 0 instead of a part this page
+ * already has. A command sends the hashes it holds (`known`), so what did not change does not come again. A server
+ * that knows nothing of this answers in full without `delta`: taken as before, and the held parts are dropped.
+ * The parts are shared between the states this page keeps: nothing may change a state in place (it never did:
+ * every answer replaced it whole). */
+/** The parts a page holds: hash → part, and the named parts inside each split one (lent on when it is reused whole). */
+export class Held{
+  constructor(parts=new Map(),kids=new Map()){this.parts=parts;this.kids=kids;}
+  /** For a command's `known`: the hashes, 8 characters each, one after the other. */
+  known(){return [...this.parts.keys()].join('');}
+}
+const NONE=new Held();
+const at=(root,path,n=path.length)=>{
+  let node=root;
+  for(let i=0;i<n;i++){if(node===null||typeof node!=='object')throw new Error('state delta: no such path');node=node[path[i]];}
+  return node;
+};
+/** Fill the 0 placeholders of an answer's state from `held` (the parts the page held when it sent the request) and
+ * return the parts it holds after it, or null for an answer without `delta` (a whole state). Throws when a
+ * reference cannot be filled: the caller reads the whole state instead. Taking the same answer twice is harmless. */
+export function inflate(data,held=NONE){
+  const d=data?.delta;if(!d||typeof d!=='object')return null;
+  if(d.held)return d.held;
+  const refs=Array.isArray(d.refs)?d.refs:[],keys=Array.isArray(d.keys)?d.keys:[];
+  const parts=new Map(),kids=new Map(),state=data.state;
+  const carry=h=>{if(parts.has(h))return;parts.set(h,held.parts.get(h));const k=held.kids.get(h);if(k){kids.set(h,k);for(const x of k)carry(x);}};
+  for(const [path,h] of refs){
+    if(!held.parts.has(h))throw new Error('state delta: a part this page does not hold');
+    const parent=at(state,path,path.length-1),key=path[path.length-1];
+    if(parent===null||typeof parent!=='object'||parent[key]!==0)throw new Error('state delta: no placeholder');
+    parent[key]=held.parts.get(h);carry(h);
+  }
+  const named=new Map();
+  for(const [path,h] of keys){parts.set(h,at(state,path));named.set(JSON.stringify(path),h);}
+  for(const list of [refs,keys])for(const [path,h] of list){
+    for(let n=path.length-1;n>0;n--){const p=named.get(JSON.stringify(path.slice(0,n)));if(p!==undefined){const k=kids.get(p);if(k)k.push(h);else kids.set(p,[h]);break;}}
+  }
+  Object.defineProperty(d,'held',{value:new Held(parts,kids)});
+  return d.held;
+}
+/** Dev only (localhost with ?deltacheck=1, or localStorage mnl.deltacheck=1): every adopted state is frozen (a change in
+ * place throws where it is made) and each command's state is compared with a fresh GET /api/state. */
+const DELTA_CHECK=(()=>{try{return /^(localhost|127\.0\.0\.1)$/.test(globalThis.location?.hostname||'')&&(/[?&]deltacheck=1\b/.test(globalThis.location.search)||globalThis.localStorage?.getItem('mnl.deltacheck')==='1');}catch{return false;}})();
+const freeze=x=>{if(x&&typeof x==='object'&&!Object.isFrozen(x)){Object.freeze(x);for(const v of Object.values(x))freeze(v);}return x;};
+const canon=x=>Array.isArray(x)?`[${x.map(canon).join(',')}]`:x&&typeof x==='object'?`{${Object.keys(x).sort().map(k=>JSON.stringify(k)+':'+canon(x[k])).join(',')}}`:JSON.stringify(x);
+
 /** Ordered mutations + idempotent retry. A lost response never doubles a sale. */
 export class GameAPI extends EventTarget {
   constructor(){super();this.state=null;this.content=null;this.revision=0;this.accepted=0;this.done=[];this.csrf='';this.ai={configured:false};this.social=null;this.push={enabled:false};this.clockOffset=0;this.connected=false;this.queue=Promise.resolve();
     // The release this page booted with (<meta name="mnl-version">, read by boot.js) vs X-Game-Version.
     this.updates=new UpdateNotice(globalThis.__mnlBoot?.version||'',{prewarm:globalThis.document?()=>prewarmRelease():null});
-    this.delays=RETRY_DELAYS;this.retryWindow=RETRY_WINDOW;this.holding=new UpdatingNote(()=>this.lang);}
+    this.delays=RETRY_DELAYS;this.retryWindow=RETRY_WINDOW;this.holding=new UpdatingNote(()=>this.lang);this.held=NONE;
+    if(DELTA_CHECK)globalThis.__mnlApi=this;}  // dev only: scripts/browser_state_delta.py reads the page's state
   /** In-flight request count, announced as a 'net' event (app.js ties it to the tapped button). */
   net(delta){this.inflight=(this.inflight||0)+delta;this.dispatchEvent(new CustomEvent('net',{detail:this.inflight}));}
   /** One API call. `options.retry`: send again through a restart (default: GET yes, other methods no;
    * command() turns it on). `early`: a request boot.js already sent, never re-sent here. */
   async json(url,options={},timeout=12000,early=null){
-    const {retry,...init}=options;
+    const {retry,...init}=options;init.headers={...init.headers,'X-Game-Delta':'1'};  // see Held
     // Writes on the wire (commands, posts): the update pill never reloads the page under one (update.js).
     const write=Boolean(init.method&&init.method!=='GET');if(write)this.writing=(this.writing||0)+1;
     this.net(1);
@@ -155,22 +204,37 @@ export class GameAPI extends EventTarget {
    * step undone and the next tap is not sent against that older revision. Returns whether it was adopted. */
   accept(data,since){
     if(since!==undefined&&since!==this.accepted&&typeof data?.revision==='number'&&data.revision<this.revision)return false;
+    // A command's answer was filled in command(); any other `delta` only names parts (it has no references).
+    const held=inflate(data,this.held);
     this.accepted++;
-    this.state=data.state;this.revision=data.revision;this.connected=true;this.syncedAt=Date.now();
+    this.state=DELTA_CHECK?freeze(data.state):data.state;this.revision=data.revision;this.connected=true;this.syncedAt=Date.now();this.held=held||NONE;
     // boot.js starts the English pack early for English players.
     const lang=data.state?.settings?.lang;if(lang&&lang!==this.lang){this.lang=lang;try{localStorage.setItem('mnl.lang',lang);}catch{/* storage blocked */}}
     this.dispatchEvent(new CustomEvent('state',{detail:data}));
     return true;
   }
+  /** Dev only (DELTA_CHECK): the state built from references equals the server's whole state. */
+  async deltaCheck(){
+    const mine=this.state,revision=this.revision;
+    try{
+      const r=await fetch('/api/state',{credentials:'same-origin',cache:'no-store'}),whole=await r.json();
+      if(whole.revision!==revision||this.state!==mine)return;  // moved on meanwhile: nothing to compare
+      const D=globalThis.__mnlDelta??={checked:0,bad:0};D.checked++;
+      const plain=s=>s?.fair?{...s,fair:{...s.fair,now:0,ganh:s.fair.ganh&&{...s.fair.ganh,modes:0}}}:s;  // these move with the clock
+      const a=canon(plain(mine)),b=canon(plain(whole.state));
+      if(a!==b){let i=0;while(a[i]===b[i])i++;D.bad++;console.error('state delta: the merged state differs from /api/state at revision',revision,a.slice(Math.max(0,i-160),i+60),b.slice(Math.max(0,i-160),i+60));}
+    }catch(error){console.warn('deltaCheck',error);}
+  }
   async refresh(){const since=this.accepted,data=await this.json('/api/state');this.accept(data,since);return data;}
   command(action,payload={},career=this.state?.current){
     const tap=JSON.stringify([career,action,payload]);
     const execute=async()=>{
-      let expected=this.revision;
+      let expected=this.revision,held=this.held;
       const send=()=>{
         const request_id=globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`;
-        expected=this.revision;
-        const body=JSON.stringify({request_id,expected_revision:expected,career,action,payload});
+        expected=this.revision;held=this.held;
+        // `known`: the parts held now; the answer refers to them (filled from `held`, whatever is adopted meanwhile).
+        const known=held.known(),body=JSON.stringify({request_id,expected_revision:expected,career,action,payload,...known?{known}:{}});
         // The same body (request_id, expected_revision) on every try: see RETRY_DELAYS.
         return this.json('/api/command',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':this.csrf},body,retry:true});
       };
@@ -197,7 +261,12 @@ export class GameAPI extends EventTarget {
             throw error;
           }
         }
+        try{inflate(data,held);}
+        catch(error){  // never seen: a reference to a part not held. The whole state instead (the command did land).
+          console.warn(error);const whole=await this.json('/api/state');data={...data,state:whole.state,revision:whole.revision,delta:whole.delta};
+        }
         this.accept(data);
+        if(DELTA_CHECK&&data.delta?.refs?.length)this.deltaCheck();
         this.done.push({tap,revision:data.revision,at:Date.now()});if(this.done.length>8)this.done.shift();   // landed (or replayed: landed before)
         // v4/sounds.js: detail sounds and the bank speaker (result.bank) follow each confirmed command.
         this.dispatchEvent(new CustomEvent('result',{detail:{action,career,result:data.result}}));
