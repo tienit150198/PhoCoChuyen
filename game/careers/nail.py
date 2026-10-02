@@ -478,9 +478,12 @@ def initial() -> dict:
 
 def _data(c: dict) -> dict:
     d = c['ext']['data']
+    kit.need(isinstance(d, dict), 'Số liệu tiệm nail sai.')
     base = initial()
     for k, v in base.items():
         d.setdefault(k, copy.deepcopy(v))
+    for k in ('stats', 'today', 'shop', 'lamp', 'tools', 'desk'):
+        kit.need(isinstance(d[k], dict), 'Số liệu tiệm nail sai.')
     for k in ('stats', 'today', 'shop', 'lamp', 'tools'):
         for kk, v in base[k].items():
             d[k].setdefault(kk, v)
@@ -1076,9 +1079,6 @@ def _done(s, c, d, p):
              'Còn lớp gel chưa hơ đèn. Vẫn giao cho khách?')
     _checks(c, d, t)
     t['price'] = price_of(c, t)
-    peel = _under(t)
-    if peel and not any(x['code'] == 'wet' for x in cq.slips(t)):
-        d['peel'] = (d['peel'] + [dict(id=t['id'], day=c['day'], npc=t['npc'], title=t['title'][:80], price=t['price'])])[-12:]
     if any(x['l'] == 'color' and x['p'] == 'gel' for x in t['coats']):
         d['today']['gel'] += 1
         d['stats']['gel'] += 1
@@ -1114,7 +1114,10 @@ def _decline(s, c, d, p):
             items.append('tips')
         if n.get('art') == 'da':
             items.append('da')
-        if items and all(has(c, d, x) for x in items):
+        if not items:                      # nothing from the shelf is needed for this set: "out of stock" is no excuse
+            t['mistakes'] += 1
+            cq.slip(t, 'wrong_refuse', 1, 'Tôi đâu cần đồ gì đặc biệt mà bảo hết.', 'từ chối khi chẳng cần đồ gì')
+        elif all(has(c, d, x) for x in items):
             t['mistakes'] += 1
             cq.slip(t, 'wrong_refuse', 1, 'Lọ màu đó trên kệ kia mà bảo hết.', 'từ chối khi còn hàng')
         msg = f'Nói thật với {_who(t)}: tiệm hết đồ cho bộ này, hẹn hôm sau.'
@@ -1135,6 +1138,10 @@ def _pay(s, c, d, p):
         return dict(message='💵 ' + chk['message'], correct=False)
     react = cq.react(s, c, t, t['price'], who=who)
     st = till.settle(s, c, t, rec, react, who)
+    # Gel cured a little short peels in a couple of days: only a client who paid comes back for her money,
+    # and the record keeps what she actually paid (after any cut today).
+    if react['pay'] > 0 and _under(t) and not any(x['code'] == 'wet' for x in cq.slips(t)):
+        d['peel'] = (d['peel'] + [dict(id=t['id'], day=c['day'], npc=t['npc'], title=t['title'][:80], price=react['pay'])])[-12:]
     net = react['pay'] - st['loss']
     d['today']['clients'] += 1
     d['stats']['clients'] += 1
@@ -1190,6 +1197,22 @@ ACTIONS = {
 
 
 # ================================================================ day start and close
+def _peel_refund(c: dict, x: dict) -> int | None:
+    """Half the bill back for a peeled set, never more than she paid. `price` in the record is what she paid
+    (older saves recorded the full bill at hand-over, even when she never paid). None: nothing was paid."""
+    paid, full = max(0, x['price']), x['price']
+    t = next((t for t in c['tasks'] if t.get('id') == x['id']), None)
+    if t is not None:
+        r = t.get('reaction')
+        if t.get('stage') != 'done' or not isinstance(r, dict):
+            return None
+        full = max(0, int(t.get('price') or 0))
+        paid = min(paid, max(0, full - int(r.get('cut') or 0)))
+    if paid <= 0:
+        return None
+    return min(full // 2, paid)
+
+
 def on_start(s: dict, c: dict) -> None:
     d = _data(c)
     day = c['day']
@@ -1204,8 +1227,11 @@ def on_start(s: dict, c: dict) -> None:
         if x['day'] >= day:
             keep.append(x)
             continue
+        refund = _peel_refund(c, x)
+        if refund is None:                 # (older saves) the client never paid: she does not come back for money
+            continue
         kit.review(s, c, x['npc'], 2, f'Làm {_lower(x["title"])} hôm trước, mới hai ngày gel đã bong mép mấy móng. Hơ đèn chưa đủ hay sao?', x['id'])
-        lost = min(max(1, x['price'] // 2), c['money'])
+        lost = min(refund, c['money'])
         if lost:
             kit.money(s, c, -lost, f'Làm lại bộ gel bong: {x["title"]}'[:120], x['id'], 'refund')
         kit.log(s, c, 'promise', f'💅 Khách quay lại vì gel bong sớm ({x["title"]}). Chị Diệp: “Lớp nào cũng hơ đủ giờ, sáng nào cũng thử đèn nghe em.”',

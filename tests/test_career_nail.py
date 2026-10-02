@@ -370,6 +370,18 @@ class Health(Base):
         self.j.act('nl_decline', task=t['id'], why='stock')
         self.assertFalse(self.codes(t['id']))
 
+    def test_out_of_stock_is_no_excuse_when_the_set_needs_nothing_from_the_shelf(self):
+        t = self.at(1, 2)
+        self.assertIsNone(t['needs']['polish'])
+        self.j.act('ask', task=t['id'])
+        self.j.act('nl_decline', task=t['id'], why='stock')
+        self.assertIn('wrong_refuse', self.codes(t['id']))
+
+    def test_corrupt_shop_data_is_a_clean_error(self):
+        t = self.at(1, 1)
+        self.d['stats'] = []
+        self.refused('tiệm nail', 'nl_inspect', task=t['id'])
+
     def test_cutting_deep_on_blood_thinners_bleeds(self):
         t = self.at(1, 2)
         self.assertTrue(t['needs']['blood'])
@@ -442,6 +454,52 @@ class Gel(Base):
         feed = [x for x in self.j.c['feed'] if x.get('source') == t['id'] and x.get('kind') == 'review']
         self.assertEqual(feed[0]['stars'], 2)
         self.assertIn('bong', feed[0]['text'])
+        validate_state(self.j.state)
+
+    def overnight(self):
+        self.settle_desk()
+        self.j.act('end_day', carry_event=True)
+        before = self.j.c['money']
+        self.j.act('start_day')
+        return before - self.j.c['money']
+
+    def test_the_peel_refund_is_half_the_bill_and_never_more_than_was_paid(self):
+        t = self.at(1, 3)
+        self.d['lamp']['weak'] = True
+        self.make(t['id'], short=True)
+        self.done_pay(t['id'])
+        t = self.j.get(t['id'])
+        paid = t['price'] - t['reaction']['cut']
+        self.assertEqual([x['price'] for x in self.d['peel']], [paid])
+        self.assertEqual(self.overnight(), min(t['price'] // 2, paid))
+
+    def test_no_peel_refund_when_the_client_did_not_pay(self):
+        t = self.at(1, 3)
+        self.d['lamp']['weak'] = True
+        self.d['tools'] = dict(clean=False, by='other')        # dirty tools: she refuses to pay
+        self.make(t['id'], short=True)
+        self.done_pay(t['id'])
+        self.assertEqual(self.d['peel'], [])
+        self.assertEqual(self.overnight(), 0)
+        t = self.at(1, 3)                                       # handed over but never paid: no record at all
+        self.d['lamp']['weak'] = True
+        self.make(t['id'], short=True)
+        self.j.act('nl_done', task=t['id'])
+        self.assertEqual(self.d['peel'], [])
+        self.assertEqual(self.overnight(), 0)
+
+    def test_an_old_peel_record_is_bounded_by_what_was_paid(self):
+        t = self.at(1, 3)
+        self.d['lamp']['weak'] = True
+        self.make(t['id'], short=True)
+        self.j.act('nl_done', task=t['id'])                     # old saves recorded at the hand-over
+        tt = self.j.get(t['id'])
+        rec = dict(id=t['id'], day=1, npc=tt['npc'], title=tt['title'][:80], price=tt['price'])
+        self.d['peel'] = [rec, dict(rec, id='gone-1', price=7)]
+        validate_state(self.j.state)
+        self.assertEqual(self.overnight(), 3)                   # unpaid: skipped; a task no longer kept: 7 // 2
+        self.assertEqual(self.d['peel'], [])
+        self.assertEqual(self.d['stats']['peeled'], 1)
         validate_state(self.j.state)
 
     def test_long_cure_on_a_good_led_burns(self):
