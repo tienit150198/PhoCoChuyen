@@ -182,8 +182,10 @@ function bind(){
     if(S.dlg?.open)render();
   });
   live.on('error',f=>{
-    if(S.pending.has(f.ref)){const p=S.pending.get(f.ref);S.pending.delete(f.ref);const ta=S.dlg?.querySelector('textarea');if(ta&&!ta.value){ta.value=p.text;grow(ta);}}
-    if(f.code==='slow'&&f.wait&&(S.tab==='town'&&!S.thread)){S.nextTown=Date.now()+f.wait*1000;countdown();}
+    if(f.ref==='face')return;   // 🙂 the avatar sync (live.js) tries again by itself
+    const p=S.pending.get(f.ref);
+    if(p){S.pending.delete(f.ref);const ta=S.dlg?.querySelector('textarea');if(ta&&!ta.value){ta.value=p.text;grow(ta);}}
+    if(f.code==='slow'&&f.wait&&p?.ch==='town'){S.nextTown=Date.now()+f.wait*1000;countdown();}   // only a town message starts the town wait
     if(f.code==='new'){S.town.why='new';S.town.wait=f.wait;S.town.at=Date.now();}
     if(f.code==='muted'&&live.me){live.me.town='muted';live.me.muted=f.until;}
     if(f.ref==='pin'||f.ref==='unpin')S.pinning=false;

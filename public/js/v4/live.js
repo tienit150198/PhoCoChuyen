@@ -21,11 +21,13 @@ import {faceCode} from './face-code.js';
 
 const RETRY=[1,2,4,8,15],SLOW=[60,120,300,600],PING_MS=25000,DEAD_MS=60000;
 const listeners=new Map();
-let env=null,ws=null,attempt=0,timer=0,pinger=0,lastFrame=0,fab=null,shown=false,shownDate=false,renderTimer=0,lastTotal=-1,cssAsked=false,sentFc=null;
+let env=null,ws=null,attempt=0,timer=0,pinger=0,lastFrame=0,fab=null,shown=false,shownDate=false,renderTimer=0,lastTotal=-1,cssAsked=false,sentFc=null,faceTimer=0;
 /** The face code of this save ('' while the save is not loaded). */
 const myFc=()=>{try{return env?.api?.state?faceCode(env.api.state):'';}catch(e){console.warn('face:',e);return '';}};
 /** 🙂 After a change of face or clothes: tell a service that knows faces (once per change). */
-function syncFace(){const fc=myFc();if(!fc||fc===sentFc||!live.me||!('fc' in live.me))return;if(live.send({t:'face',fc}))sentFc=fc;}
+function syncFace(){clearTimeout(faceTimer);const fc=myFc();if(!fc||fc===sentFc||!live.me||!('fc' in live.me))return;if(live.send({t:'face',fc}))sentFc=fc;}
+/** Trying outfits changes the save many times a minute: one frame once the player settles (the server allows 6 a minute). */
+const syncFaceSoon=(ms=2000)=>{clearTimeout(faceTimer);faceTimer=setTimeout(syncFace,ms);};
 
 export const live={
   state:'idle',            // idle | connecting | open | down | off
@@ -124,6 +126,9 @@ function frame(f){
       break;
     }
     case'deleted':{const c=live.chan(f.ch);if(c?.last?.id===f.id){if(f.hidden)delete c.last;else c.last={...c.last,text:'',del:1};}break;}
+    case'error':   // 🙂 the face frame was not taken (too fast, busy): send it again later
+      if(f.ref==='face'&&f.code!=='bad'&&f.code!=='off'){sentFc=null;syncFaceSoon(Math.max(2,Number(f.wait)||0)*1000+500);}
+      break;
   }
   emit(f.t,f);paint();
 }
@@ -179,7 +184,7 @@ export function liveBoot(e){
     if(ch){if(live.state==='open')openChat({ch});else wanted=ch;}
   });
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')live.reconnect();});
-  e.api?.addEventListener?.('state',()=>{if(live.state==='open')syncFace();});   // 🙂 the builder, Tủ đồ, Nam/Nữ
+  e.api?.addEventListener?.('state',()=>{if(live.state==='open')syncFaceSoon();});   // 🙂 the builder, Tủ đồ, Nam/Nữ
   window.addEventListener('online',()=>live.reconnect());
   if(e.api?.live?.url)connect();   // no live service named by the game server: never a socket
 }
