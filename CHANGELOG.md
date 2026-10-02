@@ -1,3 +1,9 @@
+# v1.4.22 — 👫 Đứng tại gian đang chơi ở bãi hội
+
+Chủ game (03/10): "các bạn chơi trò gì thì bên ngoài thấy người ta đứng trò đó nhé, chứ đừng biến mất".
+
+- feat/fair-stand (be8274a, 47c71b0): client không còn gửi `fair_out` khi mở trang gian (chỉ khi đóng hội chợ/hết hội); `fair_mv`/`fair_in` thêm trường tùy chọn `s` (gian đang chơi, chữ thường ngắn; sai thì bỏ qua), gửi cho người khác trong `in`/`mv` và snapshot. Người chơi đứng ở điểm đứng của gian, bong bóng emoji trò (xe ăn vặt 🍡/🥤; vay nóng không có bong bóng). Live cũ: vẫn đứng, không bong bóng; client cũ bỏ qua `s`.
+
 # v1.4.21 — ⏱️ Bấm dừng chấm đúng lúc chạm (#100)
 
 Góp ý #100: bấm dừng bị trễ, thanh chạy quá chỗ đã bấm.
