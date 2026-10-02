@@ -1,9 +1,10 @@
 /** 💰 Money in sight while spending (v0.9.5, player feedback: "muốn mua đồ mà không biết còn bao nhiêu
  * tiền, phải ra màn hình chính xem").
  *
- * One small chip, "👛 Ví 1.234 xu · 🏪 Quỹ tiệm 560 xu", hangs on the bottom edge of the header of whatever
- * sheet the player spends or moves money in (stock room, work screens, shop, bank, rings, classes…): it
- * adds no height to the header and is redrawn after every command. The same line sits in every confirm
+ * One small chip, "👛 Ví 1.234 xu · 🏪 Quỹ tiệm 560 xu", on its own right-aligned line at the foot of the header
+ * of whatever sheet the player spends or moves money in (stock room, work screens, shop, bank, rings,
+ * classes…): part of the header, so it never covers a tab, a button or the first row, and redrawn after
+ * every command. The same line sits in every confirm
  * dialog that talks money, with "còn thiếu N xu" when the price is over the balance it comes out of.
  *
  * Which pockets a sheet shows is decided in ONE place, the `scope(dialog)` callback app.js passes to
@@ -156,13 +157,15 @@ function syncAll(){
 function sync(d){
   if(d.id==='confirmDialog')return;   // the confirm has its own line (confirmMoney)
   const b=d.open?dialogBalances(d):null,head=b?d.querySelector(HEADS):null;
-  for(const el of d.querySelectorAll('.mn-chip'))if(el.parentElement!==head)el.remove();
+  for(const el of d.querySelectorAll('.mn-line'))if(el.parentElement!==head)el.remove();
+  for(const el of d.querySelectorAll('.mn-chip'))if(!el.parentElement?.classList.contains('mn-line'))el.remove();   // an older build's chip
   if(!head)return;
-  let chip=head.querySelector(':scope>.mn-chip');
+  let chip=head.querySelector(':scope>.mn-line>.mn-chip');
   const html=chipHTML(b,{phone:booted.phone()});
   if(!chip){
+    const line=document.createElement('div');line.className='mn-line';
     chip=document.createElement('span');chip.className='mn-chip';chip.dataset.testid='money-chip';
-    head.append(chip);
+    line.append(chip);head.append(line);
   }
   if(chip._html===html)return;
   chip.innerHTML=html;chip._html=html;

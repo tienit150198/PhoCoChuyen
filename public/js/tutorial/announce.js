@@ -33,12 +33,16 @@ function pending(){
   const seen=notesSeen(E.api),n=NOTES.find(x=>!seen.has(x.id));
   if(n)return {key:n.id,emoji:n.emoji,text:n.text,label:n.label,later:'Để sau',seen:()=>markNoteSeen(E,n.id),go:()=>ACTIONS[n.action]?.(E)};
   const cid=guideDue(E.api.state,seen);
-  return cid?{key:'guide:'+cid,emoji:'📘',text:'Lần đầu làm ở đây?',label:'Xem hướng dẫn',later:'Bỏ qua',seen:()=>markGuideSeen(E,cid),go:()=>ACTIONS.guide?.(E,cid)}:null;
+  return cid?{key:'guide:'+cid,pill:true,emoji:'📘',text:'Lần đầu làm ở đây?',label:'Xem hướng dẫn',later:'Bỏ qua',seen:()=>markGuideSeen(E,cid),go:()=>ACTIONS.guide?.(E,cid)}:null;
 }
 function hide(){card?.remove();card=null;shown=null;}
+/** An announcement is a small card; the first-time guide is one slim pill ("📘 Lần đầu làm ở đây? Xem hướng dẫn · ✕")
+ * that leaves the scene and the customers in sight. */
 function show(n){
-  card=document.createElement('aside');card.className='tut-note';card.setAttribute('role','status');card.setAttribute('aria-label','Thông báo');card.dataset.note=n.key;
-  card.innerHTML=`<span class="tut-note-emoji" aria-hidden="true">${n.emoji}</span><p>${n.text}</p><div class="tut-note-btns"><button type="button" class="btn ghost small" data-note="later">${n.later}</button><button type="button" class="btn primary small" data-note="go">${n.label}</button></div>`;
+  card=document.createElement('aside');card.className=n.pill?'tut-note tut-pill':'tut-note';card.setAttribute('role','status');card.setAttribute('aria-label','Thông báo');card.dataset.note=n.key;
+  card.innerHTML=n.pill
+    ?`<button type="button" class="tut-pill-go" data-note="go"><span class="tut-note-emoji" aria-hidden="true">${n.emoji}</span><span class="tut-pill-text">${n.text}</span><b>${n.label}</b></button><button type="button" class="tut-pill-x" data-note="later" aria-label="${n.later}">✕</button>`
+    :`<span class="tut-note-emoji" aria-hidden="true">${n.emoji}</span><p>${n.text}</p><div class="tut-note-btns"><button type="button" class="btn ghost small" data-note="later">${n.later}</button><button type="button" class="btn primary small" data-note="go">${n.label}</button></div>`;
   card.addEventListener('click',e=>{
     const b=e.target.closest('[data-note]');if(!b||b===card)return;
     n.seen();hide();

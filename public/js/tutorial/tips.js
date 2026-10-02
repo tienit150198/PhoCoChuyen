@@ -32,9 +32,10 @@ const calmStage=()=>!topDialog()&&!document.documentElement.classList.contains('
 
 /* ------------------------------------------------------------------ the tips */
 /** `when`: the moment is here; `find`: the control to point at; `done`: the player did it;
- * `ttl`: a look-here tip leaves by itself after that many ms on screen. */
+ * `ttl`: a look-here tip leaves by itself after that many ms on screen; `cls` 'slim': a compact line that
+ * sits beside the bottom bar and keeps off the customer card and the buttons (see placeBubble). */
 const TIPS=[
-  {id:'work',emoji:'👆',text:'Bấm nút sáng để làm từng bước cho khách.',
+  {id:'work',emoji:'👆',cls:'slim',text:'Bấm nút sáng để làm từng bước cho khách.',
     when:()=>view()==='job'&&!!room()?.open,
     find:()=>{const s=$('#sheet[open]');return s&&(first('.gd-cta',s)||first('.gd-pulse',s)||first('.sheet-body .btn.primary',s));},
     done:()=>run.acted||(room()?.metrics?.served|0)>0},
@@ -64,7 +65,12 @@ export function showBubble({id,emoji,text,el,onClose,cls=''}){
 }
 export function hideBubble(){bubble?.remove();bubble=null;}
 export const bubbleUp=()=>!!bubble?.isConnected;
-/** Follow the control (a sheet scrolls, the layout changes); hide while it is off screen. */
+/** What a slim bubble keeps off: the buttons, tabs and the customer / order card of the screen it is on. */
+const AVOID='button,[role="tab"],.gd-ctas,[class*="customer"],[class*="ticket"],[class*="guest"]';
+const overlap=(a,b)=>Math.max(0,Math.min(a.right,b.right)-Math.max(a.left,b.left))*Math.max(0,Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top));
+/** Follow the control (a sheet scrolls, the layout changes); hide while it is off screen. A slim bubble
+ * stands beside the bottom bar the control sits in, on the side (above or under) where it covers the least
+ * of the customer card and the buttons, and never the control itself. */
 export function placeBubble(){
   if(!bubble)return;
   const el=bubble._el,r=vis(el)?el.getBoundingClientRect():null;
@@ -73,11 +79,24 @@ export function placeBubble(){
   const pad=5;Object.assign(spot.style,{left:r.left-pad+'px',top:r.top-pad+'px',width:r.width+2*pad+'px',height:r.height+2*pad+'px'});
   const W=innerWidth,H=innerHeight,m=12,bw=Math.min(320,W-2*m),bh=b.offsetHeight||64;
   b.style.width=bw+'px';
-  const above=r.top-14-bh>=m,below=r.bottom+14+bh<=H-m;
-  const up=r.top>H*0.5?above:!below&&above;   // controls low on the screen get the bubble above them
-  const top=up?r.top-pad-12-bh:r.bottom+pad+12;
   const left=Math.round(Math.min(W-bw-m,Math.max(m,r.left+r.width/2-bw/2)));
-  b.style.left=left+'px';b.style.top=Math.round(Math.max(m,Math.min(H-bh-m,top)))+'px';
+  const clamp=t=>Math.round(Math.max(m,Math.min(H-bh-m,t)));
+  let up,top;
+  if(bubble.classList.contains('slim')){
+    const bar=el.closest('.gd-ctas'),a=(bar&&vis(bar)?bar:el).getBoundingClientRect();
+    const root=bubble.parentElement||document.body;
+    const keep=[...root.querySelectorAll(AVOID)].filter(x=>x!==el&&!x.contains(el)&&!b.contains(x)&&vis(x)).map(x=>x.getBoundingClientRect());
+    const cost=t=>{const box={left,right:left+bw,top:t,bottom:t+bh};
+      return keep.reduce((s,q)=>s+overlap(box,q),0)+4*overlap(box,r)+(t<m||t+bh>H-m?1e6:0);};
+    const upT=a.top-10-bh,downT=a.bottom+10;
+    up=cost(upT)<cost(downT);
+    top=clamp(up?upT:downT);
+  }else{
+    const above=r.top-14-bh>=m,below=r.bottom+14+bh<=H-m;
+    up=r.top>H*0.5?above:!below&&above;   // controls low on the screen get the bubble above them
+    top=clamp(up?r.top-pad-12-bh:r.bottom+pad+12);
+  }
+  b.style.left=left+'px';b.style.top=top+'px';
   arrow.dataset.side=up?'bottom':'top';arrow.hidden=false;
   arrow.style.left=Math.round(Math.min(bw-22,Math.max(10,r.left+r.width/2-left-8)))+'px';
 }
@@ -93,7 +112,7 @@ function tick(){
   // Not there, or under a newer dialog (a confirm, a scene): wait out of sight.
   if(!el||top&&!top.contains(el)){if(bubbleUp())bubble.hidden=true;return;}
   if(!bubbleUp()||bubble.dataset.tip!==tip.id||bubble._el!==el||bubble.parentElement!==(top||document.body)){
-    showBubble({id:tip.id,emoji:tip.emoji,text:typeof tip.text==='function'?tip.text():tip.text,el,onClose:()=>stopTips('off')});
+    showBubble({id:tip.id,emoji:tip.emoji,text:typeof tip.text==='function'?tip.text():tip.text,el,cls:tip.cls,onClose:()=>stopTips('off')});
   }else placeBubble();
   run.shown||=performance.now();
 }
