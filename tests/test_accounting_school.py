@@ -140,7 +140,8 @@ class AccountingSchoolTests(unittest.TestCase):
         lesson = self.school.course('basic')['chapters'][0]['lessons'][0]
         s, result = apply_action(self.s, None, 'as_open', {'lesson': lesson['id']})
         self.assertIn('accounting_school', s)
-        self.assertEqual(public_state(s)['accounting_school']['lesson']['id'], lesson['id'])
+        self.assertEqual(result['accounting_view']['lesson']['id'], lesson['id'])
+        self.assertNotIn('courses', public_state(s)['accounting_school'])  # public_state only carries the summary
         validate_state(s)
         self.assertNotIn('accounting_school', self.s)
 

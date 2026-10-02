@@ -5,7 +5,28 @@ const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const vnd=n=>n==null?'—':`${fmt(n)} đ`;
 const attr=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(String(v))}"`).join('');
 const btn=(label,action,data={},tone='',disabled=false)=>`<button type="button" class="btn ${tone}" data-action="${action}"${attr(data)}${disabled?' disabled':''}>${label}</button>`;
-const state=env=>env.ui.accounting??={tab:'learn',course:'basic',companyTab:'documents',detailTab:'assets',reportTab:'B01',drafts:{},messages:{}};
+const state=env=>env.ui.accounting??={tab:'learn',course:'basic',companyTab:'documents',detailTab:'assets',reportTab:'B01',drafts:{},messages:{},hints:{},glossQuery:''};
+/** The school's view rides on every as_* answer (result.accounting_view, shaped by `view`): public_state only has a summary. */
+const viewSpec=u=>({tab:u.tab,sub:u.companyTab,course:u.course,...(u.glossary?{}:{glossary:true})});
+async function run(env,command,payload={},options={}){
+  const u=state(env),r=await env.cmd(command,{...payload,view:viewSpec(u)},options);
+  if(r?.accounting_view){u.data=r.accounting_view;if(r.accounting_view.glossary)u.glossary=r.accounting_view.glossary;}
+  else if(r&&command!=='as_view')await run(env,'as_view',{},{quiet:true});  // a replayed answer carries no view: ask again
+  return r;
+}
+/** What the tab on screen needs that the last view did not bring (then one as_view fetches it). */
+function missing(u){
+  const a=u.data;if(!a)return true;
+  if(u.tab==='learn')return !a.courses?.find(c=>c.id===u.course)?.chapters||!!(a.selected&&!a.lesson);
+  if(u.tab==='exam'){const c=a.courses?.find(x=>x.id===u.course);return !!(a.active_exam&&!a.active_exam.question)||!!(c?.attempts&&!a.active_exam&&!a.review?.[u.course]);}
+  if(!a.company)return a.tab!=='company';
+  const part={journal:'journal',ledger:'ledger',details:'details',reports:'statements'}[u.companyTab];
+  return !!part&&!(part in a.company);
+}
+export async function accountingSchoolOpen(env){
+  const u=state(env);
+  return !!await run(env,'as_view',{},{quiet:true})&&!!u.data;
+}
 const safeURL=url=>/^https:\/\//i.test(String(url||''))?esc(url):'#';
 const source=r=>`<a href="${safeURL(r.url)}" target="_blank" rel="noopener noreferrer">${esc(r.label||'Nguồn chính thức')}${icon('arrow',12)}</a>${r.locator?`<small>${esc(r.locator)}</small>`:''}`;
 const sources=rows=>rows?.length?`<details class="as-sources"><summary>Căn cứ và nguồn tra cứu</summary><ul>${rows.map(r=>`<li>${source(r)}</li>`).join('')}</ul></details>`:'';
@@ -61,7 +82,20 @@ export function questionView(q,{mode,context='',lesson='',ui,number=1,disabled=f
   const title=`<div class="as-question-title"><span class="as-question-no">${q.solved?'✓':number}</span><h4>${esc(q.title)}</h4>${q.solved?status('Đã làm đúng','good'):''}</div>`;
   if(q.solved)return `<article class="as-question solved">${title}<p>${esc(q.prompt)}</p><div class="as-answer">${answerText(q)}</div>${q.explain?`<p class="as-explain">${esc(q.explain)}</p>`:''}</article>`;
   const schema={kind:q.kind,items:q.items,left:q.left,fields:q.fields};
-  return `<article class="as-question">${title}<p class="as-prompt">${esc(q.prompt)}</p><form data-as-form="${mode}" data-key="${esc(key)}" data-question="${esc(q.id)}" data-lesson="${esc(lesson)}" data-kind="${esc(q.kind)}" data-question-data="${esc(JSON.stringify(schema))}"><fieldset class="as-question-controls"${disabled?' disabled':''}>${questionInput(q,d,key)}${message?`<p class="as-feedback ${message.correct===false?'bad':'good'}" role="status">${esc(message.text)}</p>`:''}<button type="submit" class="btn primary">${mode==='exam'?'Nộp câu và tiếp tục':mode==='company'?'Kiểm tra và ghi sổ':'Kiểm tra bài tập'}</button></fieldset></form></article>`;
+  const help=mode!=='exam'&&q.help?.length?helpView(q.help,key,ui):'';
+  return `<article class="as-question">${title}<p class="as-prompt">${esc(q.prompt)}</p>${help}<form data-as-form="${mode}" data-key="${esc(key)}" data-question="${esc(q.id)}" data-lesson="${esc(lesson)}" data-kind="${esc(q.kind)}" data-question-data="${esc(JSON.stringify(schema))}"><fieldset class="as-question-controls"${disabled?' disabled':''}>${questionInput(q,d,key)}${message?`<p class="as-feedback ${message.correct===false?'bad':'good'}" role="status">${esc(message.text)}</p>`:''}<button type="submit" class="btn primary">${mode==='exam'?'Nộp câu và tiếp tục':mode==='company'?'Kiểm tra và ghi sổ':'Kiểm tra bài tập'}</button></fieldset></form></article>`;
+}
+
+function helpView(list,key,u){
+  const n=Math.min(u.hints?.[key]||0,list.length);
+  return `<div class="as-help">${list.slice(0,n).map((h,i)=>`<p class="as-hint-line"><b>Gợi ý ${i+1}</b> ${esc(h)}</p>`).join('')}${n<list.length?btn(n?'Gợi ý tiếp':'Cần gợi ý?','asHint',{key},'ghost small'):''}</div>`;
+}
+const fold=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/gi,'d').toLowerCase();
+/** Tra cứu TT99: the chart of accounts the player searches themselves (code → name, how it moves). */
+function glossaryView(u){
+  const rows=u.glossary||[];if(!rows.length)return '';
+  const q=fold(u.glossQuery).trim(),hit=q?rows.filter(r=>r.code.startsWith(q)||fold(r.name).includes(q)):rows;
+  return `<details class="as-gloss" data-fold="as-gloss"><summary>${icon('search',14)} Tra cứu TT99 · hệ thống tài khoản</summary><label class="as-field"><span>Tìm theo số hiệu hoặc tên</span><input class="input" type="search" data-as-gloss value="${esc(u.glossQuery||'')}" placeholder="131, phải thu…" autocomplete="off"></label><ul class="as-gloss-list">${hit.slice(0,30).map(r=>`<li><b>${esc(r.code)}</b> <span>${esc(r.name)}</span><small>${esc(r.group)} · ${esc(r.nature)}</small></li>`).join('')||`<li class="as-empty">Không thấy tài khoản khớp.</li>`}</ul>${hit.length>30?`<p class="as-hint">Còn ${hit.length-30} tài khoản, gõ cụ thể hơn để thu hẹp.</p>`:''}</details>`;
 }
 
 function certificate(course,a,api){
@@ -74,12 +108,12 @@ function examGate(c,a){return `<section class="as-exam-gate"><div><h3>${c.certif
 
 function catalog(a,u,api){
   const c=a.courses.find(x=>x.id===u.course)||a.courses[0];
-  if(!c)return empty('Chương trình học đang được tải.');
+  if(!c?.chapters)return empty('Chương trình học đang được tải.');
   const selected=a.lesson?.id?.startsWith(c.id+'_')?a.lesson:null;
   const first=c.chapters.flatMap(ch=>ch.lessons).find(l=>!l.done)||c.chapters[0]?.lessons[0];
   const index=`<aside class="as-index" aria-label="Mục lục khóa học"><div class="as-course-title"><span class="eyebrow">${c.id==='basic'?'NỀN TẢNG':'DOANH NGHIỆP · TT99'}</span><h3>${esc(c.name)}</h3><p>${c.done}/${c.total} bài hoàn thành</p>${progress(c.done,c.total,c.name)}</div>${c.chapters.map(ch=>`<details class="as-chapter" data-fold="${esc(ch.id)}"${ch.lessons.some(l=>l.id===selected?.id)||!selected&&ch===c.chapters[0]?' open':''}><summary>${esc(ch.title)}<small>${ch.lessons.filter(l=>l.done).length}/${ch.lessons.length}</small></summary><ol>${ch.lessons.map(l=>`<li><button type="button" class="as-lesson-link${l.id===selected?.id?' on':''}" data-action="asLesson" data-lesson="${esc(l.id)}"${l.id===selected?.id?' aria-current="page"':''}><span aria-hidden="true">${l.done?'✓':l.read?'◒':'○'}</span><span>${esc(l.title)}<small>${l.solved}/${l.questions} bài tập${l.done?' · hoàn thành':''}</small></span></button></li>`).join('')}</ol></details>`).join('')}</aside>`;
   const intro=`<article class="as-reading"><span class="eyebrow">BẮT ĐẦU TỪ BẢN CHẤT GIAO DỊCH</span><h2>${esc(c.name)}</h2><p>${esc(c.description)}</p><div class="as-actions">${first?btn(c.done?'Mở lại bài học':'Tiếp tục học','asLesson',{lesson:first.id},'primary'):''}</div><p class="as-hint">Đọc bài và ví dụ, rồi làm đúng ba bài tập để hoàn thành từng bài. Tiến độ được giữ trong bản lưu.</p>${flow('source')}${certificate(c,a,api)}${examGate(c,a)}</article>`;
-  const reading=selected?`<article class="as-reading"><div class="as-reading-head"><span class="eyebrow">${esc(c.name)}</span>${status(selected.done?'Bài đã hoàn thành':'Đang học',selected.done?'good':'')}<h2>${esc(selected.title)}</h2></div><section class="as-objectives"><h3>Sau bài này</h3><ul>${selected.objectives.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></section><div class="as-lesson-body">${selected.body.map(p=>`<p>${esc(p)}</p>`).join('')}</div><section class="as-example"><span class="eyebrow">THEO DÕI CÁCH LÀM</span><h3>${esc(selected.example.title)}</h3><ol>${selected.example.lines.map(p=>`<li>${esc(p)}</li>`).join('')}</ol></section>${sources(selected.references)}<section class="as-practice"><div class="as-section-title"><h3>Tự làm bài tập</h3><small>${selected.questions.filter(q=>q.solved).length}/${selected.questions.length} đã đúng</small></div>${selected.questions.map((q,i)=>questionView(q,{mode:'practice',context:selected.id,lesson:selected.id,ui:u,number:i+1})).join('')}</section>${selected.done?`<div class="as-next">${status('Hoàn thành bài','good')}${first&&!first.done?btn('Bài tiếp theo →','asLesson',{lesson:first.id},'primary'):btn('Xem điều kiện thi →','asTab',{tab:'exam'},'primary')}</div>`:''}</article>`:intro;
+  const reading=selected?`<article class="as-reading"><div class="as-reading-head"><span class="eyebrow">${esc(c.name)}</span>${status(selected.done?'Bài đã hoàn thành':'Đang học',selected.done?'good':'')}<h2>${esc(selected.title)}</h2></div><section class="as-objectives"><h3>Sau bài này</h3><ul>${selected.objectives.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></section><div class="as-lesson-body">${selected.body.map(p=>`<p>${esc(p)}</p>`).join('')}</div><section class="as-example"><span class="eyebrow">THEO DÕI CÁCH LÀM</span><h3>${esc(selected.example.title)}</h3><ol>${selected.example.lines.map(p=>`<li>${esc(p)}</li>`).join('')}</ol></section>${sources(selected.references)}${glossaryView(u)}<section class="as-practice"><div class="as-section-title"><h3>Tự làm bài tập</h3><small>${selected.questions.filter(q=>q.solved).length}/${selected.questions.length} đã đúng</small></div>${selected.questions.map((q,i)=>questionView(q,{mode:'practice',context:selected.id,lesson:selected.id,ui:u,number:i+1})).join('')}</section>${selected.done?`<div class="as-next">${status('Hoàn thành bài','good')}${first&&!first.done?btn('Bài tiếp theo →','asLesson',{lesson:first.id},'primary'):btn('Xem điều kiện thi →','asTab',{tab:'exam'},'primary')}</div>`:''}</article>`:intro;
   return tabs(a.courses.map(x=>[x.id,x.name]),c.id,'asCourse','Chọn khóa học')+`<div class="as-study-layout">${index}${reading}</div>`;
 }
 
@@ -113,6 +147,7 @@ function companyDetails(book,u){
 function financialReports(book,u){
   const reports=book.statements||{},tab=['B01','B02','B03','B09'].includes(u.reportTab)?u.reportTab:'B01',report=reports[tab];
   if(!report)return empty('Báo cáo đang được chuẩn bị từ sổ đã ghi.');
+  if(report.locked)return tabs([['B01','B01 · Tình hình tài chính'],['B02','B02 · Kết quả'],['B03','B03 · Dòng tiền'],['B09','B09 · Thuyết minh']],tab,'asReportTab','Bốn báo cáo tài chính')+empty('Bạn đang lập báo cáo này ở việc hiện tại. Lấy số từ Cân đối phát sinh và Sổ chi tiết; bản đầy đủ hiện ra sau khi chấm đúng.');
   const columns=[{key:'code',label:'Mã'},{key:'label',label:'Chỉ tiêu'}];
   if(tab==='B09')columns.push({key:'text',label:'Thuyết minh'});
   else columns.push({key:'value',label:'Kỳ này (VND)',type:'money'},{key:'previous',label:report.comparison||'Kỳ trước (VND)',type:'money'});
@@ -124,7 +159,7 @@ function companyPage(a,u){
   const book=a.company;
   if(!book)return `<article class="as-reading"><span class="eyebrow">VĂN PHÒNG THỰC HÀNH</span><h2>Công ty CP Mây Tre Xanh</h2><p>Đi từ chứng từ đến bộ sổ và bốn báo cáo trong 12 kỳ của năm 2026. Hồ sơ dùng VND; lương trong trò chơi dùng xu.</p>${flow('source')}${btn('Nhận việc thực hành','asCompanyJoin',{},'primary',!a.company_unlocked)}${!a.company_unlocked?'<p class="as-lock">Thi đạt chứng nhận Kế toán doanh nghiệp Việt Nam để nhận việc.</p>':''}<p class="as-hint">Lương kế toán doanh nghiệp áp dụng ×3 sau khi đạt chứng nhận, không cộng dồn sau thi lại. Nghề hiện tại của bạn vẫn được giữ.</p>${sources([a.reference])}</article>`;
   const task=book.task,tab=u.companyTab||'documents',read=!!task&&!task.docs?.some(d=>d.closed);
-  const workspace=task?`<div class="as-section-title"><div><span class="eyebrow">VIỆC ${book.at+1}/${book.total}</span><h3>${esc(task.title)}</h3></div>${status(read?'Đã mở nguồn':'Đọc nguồn trước',read?'good':'warn')}</div>${flow(read?'entry':'source')}<section class="as-documents">${read?(task.docs||[]).map(d=>`<article class="as-document"><small>${esc(d.id)}</small><h4>${esc(d.title)}</h4>${(d.lines||[]).map(x=>`<p>${esc(x)}</p>`).join('')}</article>`).join(''):`${btn('Mở chứng từ gốc','asInspect',{task:task.id},'primary')}<ul>${(task.docs||[]).map(d=>`<li>${esc(d.title)}</li>`).join('')}</ul>`}</section>${read?questionView(task,{mode:'company',context:book.period,ui:u,number:book.at+1}):'<p class="as-hint">Mở và đọc hồ sơ trước khi nhập bút toán. Sổ sách cập nhật sau khi câu trả lời được chấm đúng.</p>'}${sources(task.references)}`:`<article class="as-reading"><h3>Đã hoàn thành bộ sổ tháng ${book.period}</h3><p>Chứng từ, kết chuyển và bốn báo cáo đã được chấm đúng. ${book.mistakes?`Có ${book.mistakes} lần thử lại.`:''}</p>${btn(book.paid?'Đã nhận lương kỳ này':'Nhận lương ca thực hành','asCompanyFinish',{},'primary',book.paid)}${book.paid&&book.period<12?btn('Mở tháng tiếp theo →','asCompanyNext',{},'ghost'):''}${book.period===12&&book.paid?status('Hoàn thành 12 kỳ năm 2026','good'):''}</article>`;
+  const workspace=task?`<div class="as-section-title"><div><span class="eyebrow">VIỆC ${book.at+1}/${book.total}</span><h3>${esc(task.title)}</h3></div>${status(read?'Đã mở nguồn':'Đọc nguồn trước',read?'good':'warn')}</div>${flow(read?'entry':'source')}<section class="as-documents">${read?(task.docs||[]).map(d=>`<article class="as-document"><small>${esc(d.id)}</small><h4>${esc(d.title)}</h4>${(d.lines||[]).map(x=>`<p>${esc(x)}</p>`).join('')}</article>`).join(''):`${btn('Mở chứng từ gốc','asInspect',{task:task.id},'primary')}<ul>${(task.docs||[]).map(d=>`<li>${esc(d.title)}</li>`).join('')}</ul>`}</section>${read?glossaryView(u)+questionView(task,{mode:'company',context:book.period,ui:u,number:book.at+1}):'<p class="as-hint">Mở và đọc hồ sơ trước khi nhập bút toán. Sổ sách cập nhật sau khi câu trả lời được chấm đúng.</p>'}${sources(task.references)}`:`<article class="as-reading"><h3>Đã hoàn thành bộ sổ tháng ${book.period}</h3><p>Chứng từ, kết chuyển và bốn báo cáo đã được chấm đúng. ${book.mistakes?`Có ${book.mistakes} lần thử lại.`:''}</p>${btn(book.paid?'Đã nhận lương kỳ này':'Nhận lương ca thực hành','asCompanyFinish',{},'primary',book.paid)}${book.paid&&book.period<12?btn('Mở tháng tiếp theo →','asCompanyNext',{},'ghost'):''}${book.period===12&&book.paid?status('Hoàn thành 12 kỳ năm 2026','good'):''}</article>`;
   let body=workspace;
   if(tab==='journal')body=journal(book.journal||[],'Nhật ký kỳ hiện tại')+`<details class="as-history" data-fold="previous-journal"><summary>Nhật ký các kỳ trước · ${(book.previous_journal||[]).length} hồ sơ</summary>${journal(book.previous_journal||[],'Nhật ký các kỳ trước')}</details>`;
   if(tab==='ledger')body=table('Bảng cân đối số phát sinh',book.ledger,[{key:'account',label:'TK'},{key:'name',label:'Tên tài khoản'},...['opening_debit','opening_credit','movement_debit','movement_credit','debit','credit'].map((key,i)=>({key,label:['Đầu kỳ Nợ','Đầu kỳ Có','Phát sinh Nợ','Phát sinh Có','Cuối kỳ Nợ','Cuối kỳ Có'][i],type:'money'}))],{total:true});
@@ -134,7 +169,7 @@ function companyPage(a,u){
 }
 
 export function accountingSchoolView(env){
-  const a=env.api.state?.accounting_school,u=state(env);
+  const u=state(env),a=u.data;
   const head=`<header class="sheet-head"><div class="grow"><span class="eyebrow">SỔ HỌC & THỰC HÀNH</span><h2>Học kế toán</h2><p>Từ hiểu nghiệp vụ đến tự lập bộ sổ</p></div><button type="button" class="icon-btn" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
   if(!a)return head+`<div class="sheet-body">${empty('Chương trình đang được tải. Mở lại sau một chút để tiếp tục.')}</div>`;
   return head+`<div class="sheet-body as-school">${tabs([['learn','Bài học'],['exam',a.active_exam?'Bài thi đang làm':'Thi & chứng nhận'],['company','Doanh nghiệp thực hành']],u.tab,'asTab','Học kế toán')}<p class="as-salary">${icon('briefcase',16)} Lương kế toán doanh nghiệp: <b>×${a.salary_multiplier}</b>${a.effective_salary?` · hợp đồng áp dụng ${fmt(a.effective_salary)} xu`:''}${a.salary_multiplier===3?' · thi lại không cộng dồn':''}</p>${u.tab==='company'?companyPage(a,u):u.tab==='exam'?examPage(a,u,env.api):catalog(a,u,env.api)}</div>`;
@@ -152,6 +187,7 @@ function capture(form,u){
   else{d.values={};for(const [key,value] of data)d.values[key]=value;if(form.dataset.kind==='multi')d.values.ans=data.getAll('ans');}
 }
 export function accountingSchoolInput(target,env){
+  if(target.dataset?.asGloss!==undefined){const u=state(env);if(u.glossQuery!==target.value){u.glossQuery=target.value;env.renderSheet();}return true;}
   const form=target.closest?.('form[data-as-form]');if(!form)return false;
   capture(form,state(env));return true;
 }
@@ -179,7 +215,7 @@ export async function accountingSchoolSubmit(form,env){
   if(answer===null){u.messages[key]={correct:false,text:'Hoàn thành đủ câu trả lời; nhập số nguyên và kiểm tra các tài khoản trước khi nộp.'};env.renderSheet();return true;}
   const command=mode==='exam'?'as_exam_answer':mode==='company'?'as_company_answer':'as_answer';
   const payload=mode==='company'?{task:form.dataset.question,answer}:{question:form.dataset.question,answer,...(mode==='practice'?{lesson:form.dataset.lesson}:{})};
-  const r=await env.cmd(command,payload,{quiet:true});
+  const r=await run(env,command,payload,{quiet:true});
   if(r){u.messages[key]={correct:r.correct,text:r.message};if(r.correct||mode==='exam')delete u.drafts[key];if(r.exam){u.course=r.exam.course;u.tab='exam';}env.toast(r.message,r.correct===false);env.renderSheet();}
   return true;
 }
@@ -191,24 +227,26 @@ function saveCertificate(course,a,api){
 }
 export async function accountingSchoolAction(action,data,el,env){
   if(!action.startsWith('as'))return false;
-  const u=state(env),a=env.api.state.accounting_school;
-  if(action==='asTab')u.tab=data.tab;
-  else if(action==='asCourse')u.course=data.tab;
-  else if(action==='asCompanyTab')u.companyTab=data.tab;
+  const u=state(env),a=u.data||{courses:[]};
+  if(action==='asTab'||action==='asCourse'||action==='asCompanyTab'){
+    if(action==='asTab')u.tab=data.tab;else if(action==='asCourse')u.course=data.tab;else u.companyTab=data.tab;
+    if(missing(u))await run(env,'as_view',{},{quiet:true});
+  }
+  else if(action==='asHint')u.hints[data.key]=(u.hints[data.key]||0)+1;
   else if(action==='asDetailTab')u.detailTab=data.tab;
   else if(action==='asReportTab')u.reportTab=data.tab;
-  else if(action==='asLesson'){if(await env.cmd('as_open',{lesson:data.lesson},{quiet:true})){u.course=a.courses.find(c=>c.chapters.some(ch=>ch.lessons.some(l=>l.id===data.lesson)))?.id||u.course;u.tab='learn';}}
+  else if(action==='asLesson'){u.course=a.courses.find(c=>String(data.lesson).startsWith(c.id+'_'))?.id||u.course;u.tab='learn';await run(env,'as_open',{lesson:data.lesson},{quiet:true});}
   else if(action==='asOrderAdd'){const d=u.drafts[data.key];if(d&&!d.order.includes(data.item))d.order.push(data.item);}
   else if(action==='asOrderRemove')u.drafts[data.key]?.order.splice(Number(data.index),1);
   else if(action==='asEntryAdd'){const d=u.drafts[data.key];if(d&&d.entries.length<8)d.entries.push({debit:'',credit:'',amount:''});}
   else if(action==='asEntryRemove'){const d=u.drafts[data.key];if(d&&d.entries.length>1)d.entries.splice(Number(data.index),1);}
-  else if(action==='asExamStart'){if(await env.cmd('as_exam_start',{course:data.course})){u.drafts=Object.fromEntries(Object.entries(u.drafts).filter(([key])=>!key.startsWith('exam|')));u.messages={};u.course=data.course;u.tab='exam';}}
-  else if(action==='asExamCancel'){if(await env.confirmAction('Hủy bài thi đang làm?','Các câu đã nộp trong lần thi này sẽ bị bỏ. Bài học và chứng nhận đã có vẫn được giữ.','Hủy bài thi'))await env.cmd('as_exam_cancel',{confirm:true});}
+  else if(action==='asExamStart'){u.course=data.course;u.tab='exam';if(await run(env,'as_exam_start',{course:data.course})){u.drafts=Object.fromEntries(Object.entries(u.drafts).filter(([key])=>!key.startsWith('exam|')));u.messages={};u.course=data.course;u.tab='exam';}}
+  else if(action==='asExamCancel'){if(await env.confirmAction('Hủy bài thi đang làm?','Các câu đã nộp trong lần thi này sẽ bị bỏ. Bài học và chứng nhận đã có vẫn được giữ.','Hủy bài thi'))await run(env,'as_exam_cancel',{confirm:true});}
   else if(action==='asCertificate')saveCertificate(a.courses.find(c=>c.id===data.course),a,env.api);
-  else if(action==='asCompanyJoin'){if(await env.cmd('as_company_join')){u.tab='company';u.companyTab='documents';}}
-  else if(action==='asInspect')await env.cmd('as_company_inspect',{task:data.task},{quiet:true});
-  else if(action==='asCompanyFinish')await env.cmd('as_company_finish');
-  else if(action==='asCompanyNext'){if(await env.cmd('as_company_next'))u.companyTab='documents';}
+  else if(action==='asCompanyJoin'){u.tab='company';u.companyTab='documents';await run(env,'as_company_join');}
+  else if(action==='asInspect')await run(env,'as_company_inspect',{task:data.task},{quiet:true});
+  else if(action==='asCompanyFinish')await run(env,'as_company_finish');
+  else if(action==='asCompanyNext'){u.companyTab='documents';await run(env,'as_company_next');}
   else return false;
   env.renderSheet();return true;
 }

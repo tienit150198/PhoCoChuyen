@@ -60,22 +60,22 @@ def build_basic():
         L('accounts', 'Nợ, Có và số dư', ['Xác định chiều tăng giảm', 'Đọc số dư tài khoản đúng bản chất'], [
             'Nợ và Có là tên hai bên tài khoản, không đồng nghĩa nợ tiền và có tiền trong đời thường. Tài sản thường tăng bên Nợ; nợ phải trả và vốn chủ thường tăng bên Có. Chi phí thường tăng bên Nợ và doanh thu thường tăng bên Có. Tài khoản điều chỉnh có chiều khác cần đọc hướng dẫn riêng.',
             'Số dư cuối kỳ bằng số dư đầu cộng tăng trừ giảm theo bản chất của tài khoản. Một tài khoản công nợ có thể có số dư chi tiết hai bên theo từng đối tượng; không bù trừ khách nợ với khách ứng trước. Tài khoản doanh thu, chi phí được kết chuyển nên thông thường không còn số dư sau khóa sổ.'],
-          ['TK111 đầu kỳ dư Nợ 5.000.000đ, thu 3.000.000đ, chi 2.000.000đ: cuối kỳ dư Nợ 6.000.000đ.', 'TK331 dư Có 7.000.000đ, mua chịu thêm 4.000.000đ, trả 6.000.000đ: dư Có 5.000.000đ.'], [
+          ['TK 111 đầu kỳ dư Nợ 5.000.000đ, thu 3.000.000đ, chi 2.000.000đ: cuối kỳ dư Nợ 6.000.000đ.', 'TK 331 dư Có 7.000.000đ, mua chịu thêm 4.000.000đ, trả 6.000.000đ: dư Có 5.000.000đ.'], [
             G('Ghép loại tài khoản với bên tăng thông thường.', [('Tài sản', 'Nợ'), ('Nợ phải trả', 'Có')], 'Tài sản và nguồn nợ có chiều tăng đối nhau.'),
             N('Tiền đầu kỳ 8.000.000đ, thu 5.000.000đ, chi 6.000.000đ. Tiền cuối kỳ?', 7000000, '8 + 5 − 6 = 7 triệu đồng.'),
-            C('Dư Có chi tiết TK131 của một khách thường phản ánh gì?', 'Khách đã ứng trước', 'Tiền đang trong két', 'Chi phí khấu hao', explain='TK131 theo đối tượng có thể phản ánh ứng trước của khách.')],
+            C('Dư Có chi tiết TK 131 của một khách thường phản ánh gì?', 'Khách đã ứng trước', 'Tiền đang trong két', 'Chi phí khấu hao', explain='TK 131 theo đối tượng có thể phản ánh ứng trước của khách.')],
           N('Nợ người bán đầu kỳ 9.000.000đ, mua chịu 5.000.000đ, trả 8.000.000đ. Nợ cuối kỳ?', 6000000, '9 + 5 − 8 = 6 triệu đồng.'), 'Điều 11; Phụ lục II – kết cấu tài khoản'),
         L('journal', 'Bút toán kép và định khoản', ['Ghi hai mặt của giao dịch', 'Kiểm tra tổng Nợ bằng tổng Có'], [
             'Định khoản bắt đầu từ bản chất nghiệp vụ: tài sản nào tăng giảm, nghĩa vụ nào phát sinh hoặc được thanh toán, doanh thu chi phí nào thỏa điều kiện. Sau đó chọn tài khoản và chiều Nợ Có. Mỗi bút toán có tổng Nợ bằng tổng Có; bút toán ghép có thể có nhiều tài khoản mỗi bên.',
             'Cân bút toán là điều kiện cần, chưa chứng minh ghi đúng: ghi Nợ tiền/Có doanh thu cho tiền vay vẫn cân nhưng sai. Trong trò chơi, mỗi dòng thể hiện một cặp Nợ/Có cùng số tiền; nhiều dòng có thể mô tả một chứng từ ghép. Luôn giữ giải thích và số chứng từ để kiểm tra bản chất.'],
-          ['Mua hàng 4.000.000đ chưa thuế, chưa trả: Nợ156/Có331 4.000.000đ.', 'Trả nợ bằng tiền gửi 4.000.000đ: Nợ331/Có112 4.000.000đ; không ghi chi phí lần hai.'], [
-            E('Mua hàng hóa 3.200.000đ, không xét thuế, nhập kho và chưa trả người bán.', [('156', '331', 3200000)], 'Hàng tăng bên Nợ156, nghĩa vụ tăng bên Có331.'),
-            E('Thanh toán nợ người bán 2.700.000đ bằng tiền gửi không kỳ hạn.', [('331', '112', 2700000)], 'Nợ giảm Nợ331, tiền giảm Có112.'),
+          ['Mua hàng 4.000.000đ chưa thuế, chưa trả: Nợ 156/Có 331 4.000.000đ.', 'Trả nợ bằng tiền gửi 4.000.000đ: Nợ 331/Có 112 4.000.000đ; không ghi chi phí lần hai.'], [
+            E('Mua hàng hóa 3.200.000đ, không xét thuế, nhập kho và chưa trả người bán.', [('156', '331', 3200000)], 'Hàng tăng bên Nợ 156, nghĩa vụ tăng bên Có 331.'),
+            E('Thanh toán nợ người bán 2.700.000đ bằng tiền gửi không kỳ hạn.', [('331', '112', 2700000)], 'Nợ giảm Nợ 331, tiền giảm Có 112.'),
             C('Bút toán cân có chắc đúng bản chất không?', 'Không; cần kiểm tra tài khoản và chứng từ', 'Có vì tổng đã bằng nhau', 'Có nếu có hai dòng', explain='Ghi sai tài khoản có thể vẫn bảo toàn tổng Nợ/Có.')],
           E('Nhận vốn góp hợp lệ 18.000.000đ vào tài khoản thanh toán của công ty.', [('112', '411', 18000000)], 'Tăng tiền gửi và vốn đầu tư của chủ sở hữu.'), 'Điều 11; Phụ lục II – 112, 156, 331, 411'),
         L('ledger', 'Nhật ký, sổ cái và sổ chi tiết', ['Chuyển chứng từ thành dữ liệu sổ', 'Đối chiếu tổng hợp với chi tiết'], [
             'Nhật ký ghi nghiệp vụ theo thời gian; sổ cái tổng hợp theo từng tài khoản; sổ chi tiết theo khách, nhà cung cấp, vật tư, tài sản hoặc hợp đồng. Cùng một nghiệp vụ phải được liên kết giữa các sổ bằng số chứng từ và đối tượng, tránh nhập hai lần tạo giao dịch trùng.',
-            'Tổng chi tiết phải đối chiếu với tài khoản tổng hợp theo cùng thời điểm và phạm vi. Sổ TK131 tổng hợp không đủ để đòi nợ nếu thiếu từng khách và hạn trả. Đơn vị có thể thiết kế sổ phù hợp nhưng phải cung cấp đủ thông tin để lập báo cáo và truy vết nghiệp vụ theo quy định.'],
+            'Tổng chi tiết phải đối chiếu với tài khoản tổng hợp theo cùng thời điểm và phạm vi. Sổ TK 131 tổng hợp không đủ để đòi nợ nếu thiếu từng khách và hạn trả. Đơn vị có thể thiết kế sổ phù hợp nhưng phải cung cấp đủ thông tin để lập báo cáo và truy vết nghiệp vụ theo quy định.'],
           ['Khách An nợ 6.000.000đ, khách Bình nợ 4.000.000đ: tổng chi tiết phải thu 10.000.000đ.', 'Nếu sổ cái ghi 11.000.000đ, tìm chứng từ thiếu đối tượng hoặc bị ghi trùng 1.000.000đ.'], [
             N('Chi tiết ba khách dư Nợ 2.000.000đ, 3.500.000đ, 4.000.000đ. Tổng dư Nợ chi tiết?', 9500000, 'Cộng theo cùng bên: 2 + 3,5 + 4 = 9,5 triệu đồng.'),
             C('Sổ nào giúp biết hạn trả của từng khách?', 'Sổ chi tiết công nợ', 'Chỉ sổ tổng doanh thu', 'Chỉ bảng chấm công', explain='Chi tiết công nợ chứa đối tượng và điều kiện thanh toán.'),
@@ -84,21 +84,21 @@ def build_basic():
     ]))
     chapters.append(('workingcapital', '4. Tiền, công nợ và hàng tồn kho', [
         L('cash', 'Tiền mặt và tiền gửi', ['Định khoản thu chi tiền', 'Đối chiếu số dư và phân loại tiền'], [
-            'Tiền mặt tại quỹ theo dõi ở TK111; tiền gửi không kỳ hạn theo TK112. Tiền gửi có kỳ hạn được phân loại theo bản chất đầu tư, không mặc nhiên đưa hết vào112. Thu chi cần căn cứ, phê duyệt và thông tin người nhận; chuyển giữa quỹ và ngân hàng không tạo doanh thu chi phí.',
-            'Sổ ngân hàng và sao kê có thể khác do thời điểm hạch toán, phí ngân hàng hoặc giao dịch chưa hoàn tất. Lập bảng đối chiếu từng nguyên nhân và chỉ ghi bổ sung khoản thuộc sổ đơn vị còn thiếu. Khoản thấu chi được phản ánh theo khoản vay, không trình bày112 âm như tiền hiện có.'],
-          ['Rút 5.000.000đ từ tài khoản thanh toán về quỹ: Nợ111/Có112.', 'Ngân hàng trừ phí 20.000đ chưa ghi sổ: xác minh phí rồi ghi chi phí phù hợp/Có112.'], [
+            'Tiền mặt tại quỹ theo dõi ở TK 111; tiền gửi không kỳ hạn theo TK 112. Tiền gửi có kỳ hạn được phân loại theo bản chất đầu tư, không mặc nhiên đưa hết vào 112. Thu chi cần căn cứ, phê duyệt và thông tin người nhận; chuyển giữa quỹ và ngân hàng không tạo doanh thu chi phí.',
+            'Sổ ngân hàng và sao kê có thể khác do thời điểm hạch toán, phí ngân hàng hoặc giao dịch chưa hoàn tất. Lập bảng đối chiếu từng nguyên nhân và chỉ ghi bổ sung khoản thuộc sổ đơn vị còn thiếu. Khoản thấu chi được phản ánh theo khoản vay, không trình bày 112 âm như tiền hiện có.'],
+          ['Rút 5.000.000đ từ tài khoản thanh toán về quỹ: Nợ 111/Có 112.', 'Ngân hàng trừ phí 20.000đ chưa ghi sổ: xác minh phí rồi ghi chi phí phù hợp/Có 112.'], [
             E('Nộp tiền mặt 4.000.000đ vào tài khoản thanh toán, ngân hàng đã báo Có.', [('112', '111', 4000000)], 'Chỉ chuyển giữa hai loại tiền.'),
             N('Sổ tiền gửi 12.000.000đ, ngân hàng trừ phí chưa ghi 30.000đ. Số tiền sau bổ sung?', 11970000, '12.000.000 − 30.000 = 11.970.000đ.'),
-            C('Theo TT99, TK112 có tên gì?', 'Tiền gửi không kỳ hạn', 'Mọi loại tiền gửi và tiền vay', 'Chi phí trả trước', explain='Tên TK112 được đổi phù hợp phạm vi tiền gửi không kỳ hạn.')],
-          E('Rút tiền gửi không kỳ hạn về quỹ 7.500.000đ, đủ chứng từ.', [('111', '112', 7500000)], 'Tăng quỹ và giảm tiền gửi cùng số tiền.'), 'Phụ lục II – TK111,112,113,128,341'),
+            C('Theo TT99, TK 112 có tên gì?', 'Tiền gửi không kỳ hạn', 'Mọi loại tiền gửi và tiền vay', 'Chi phí trả trước', explain='Tên TK 112 được đổi phù hợp phạm vi tiền gửi không kỳ hạn.')],
+          E('Rút tiền gửi không kỳ hạn về quỹ 7.500.000đ, đủ chứng từ.', [('111', '112', 7500000)], 'Tăng quỹ và giảm tiền gửi cùng số tiền.'), 'Phụ lục II – TK 111,112,113,128,341'),
         L('receivable', 'Phải thu và phải trả', ['Phân biệt mua bán với thanh toán', 'Theo dõi từng đối tượng'], [
             'Bán hàng chưa thu tiền tạo phải thu khách hàng nếu đủ điều kiện ghi doanh thu. Mua hàng chưa trả tạo phải trả người bán. Khi thanh toán, giảm công nợ tương ứng thay vì ghi lại doanh thu hoặc giá mua. Cần theo từng khách, nhà cung cấp, hóa đơn, hạn thanh toán và ngoại tệ nếu có.',
-            'Khoản ứng trước phải được phân loại theo đối tượng và bản chất. Khách ứng trước có thể là số dư Có chi tiết131; trả trước người bán là số dư Nợ chi tiết331. Không bù trừ tùy tiện giữa các bên vì làm mất thông tin về quyền thu và nghĩa vụ trả. Đối chiếu định kỳ giúp phát hiện thanh toán phân bổ sai.'],
-          ['Bán chịu 9.000.000đ không xét thuế: Nợ131/Có511 9.000.000đ; giá vốn ghi riêng.', 'Khách trả 4.000.000đ: Nợ112/Có131; còn phải thu 5.000.000đ.'], [
+            'Khoản ứng trước phải được phân loại theo đối tượng và bản chất. Khách ứng trước có thể là số dư Có chi tiết 131; trả trước người bán là số dư Nợ chi tiết 331. Không bù trừ tùy tiện giữa các bên vì làm mất thông tin về quyền thu và nghĩa vụ trả. Đối chiếu định kỳ giúp phát hiện thanh toán phân bổ sai.'],
+          ['Bán chịu 9.000.000đ không xét thuế: Nợ 131/Có 511 9.000.000đ; giá vốn ghi riêng.', 'Khách trả 4.000.000đ: Nợ 112/Có 131; còn phải thu 5.000.000đ.'], [
             E('Khách thanh toán khoản nợ cũ 3.000.000đ bằng chuyển khoản.', [('112', '131', 3000000)], 'Thu nợ tăng tiền và giảm phải thu.'),
             N('Phải thu đầu tháng 8.000.000đ, bán chịu thêm 5.000.000đ, thu 7.000.000đ. Cuối tháng?', 6000000, '8 + 5 − 7 = 6 triệu đồng.'),
-            C('Một khách trả trước chưa giao hàng. Có nên ghi doanh thu ngay chỉ vì đã thu tiền?', 'Không; theo dõi ứng trước và điều kiện doanh thu', 'Có, luôn ghi511', 'Có, ghi711', explain='Thu tiền và ghi doanh thu là hai quyết định riêng.')],
-          N('Nợ người bán 13.000.000đ, trả 4.500.000đ, không mua thêm. Còn phải trả bao nhiêu?', 8500000, '13 − 4,5 = 8,5 triệu đồng.'), 'Phụ lục II – TK131,331'),
+            C('Một khách trả trước chưa giao hàng. Có nên ghi doanh thu ngay chỉ vì đã thu tiền?', 'Không; theo dõi ứng trước và điều kiện doanh thu', 'Có, luôn ghi 511', 'Có, ghi 711', explain='Thu tiền và ghi doanh thu là hai quyết định riêng.')],
+          N('Nợ người bán 13.000.000đ, trả 4.500.000đ, không mua thêm. Còn phải trả bao nhiêu?', 8500000, '13 − 4,5 = 8,5 triệu đồng.'), 'Phụ lục II – TK 131,331'),
         L('inventory', 'Giá gốc và xuất kho', ['Tính giá tồn và giá xuất', 'Phân biệt hàng với chi phí kỳ'], [
             'Hàng tồn kho được ghi theo giá gốc phù hợp VAS02, gồm chi phí mua và chi phí cần thiết để đưa hàng về địa điểm, trạng thái hiện tại. Thuế được khấu trừ không đưa vào giá gốc; thuế không được hoàn lại có thể thuộc giá gốc. Chi phí bất thường và chi phí bán hàng không mặc nhiên vốn hóa vào kho.',
             'Chính sách tính giá xuất kho phải phù hợp và nhất quán, chẳng hạn bình quân hoặc nhập trước xuất trước. Theo dõi cả lượng và giá trị, đối chiếu kiểm kê và đánh giá giá trị thuần có thể thực hiện. Khi bán, ghi doanh thu riêng với giá vốn; tồn kho chưa bán không tự thành toàn bộ chi phí kỳ.'],
@@ -106,83 +106,83 @@ def build_basic():
             N('Tồn 5 sản phẩm giá 200.000đ; mua 5 sản phẩm giá 240.000đ. Đơn giá bình quân?', 220000, '(1.000.000 + 1.200.000)/10 = 220.000đ.'),
             E('Xuất hàng đã bán, giá vốn 1.400.000đ, theo kê khai thường xuyên.', [('632', '156', 1400000)], 'Giá vốn tăng và hàng hóa giảm.'),
             C('Phí vận chuyển hàng từ người bán về kho, cần thiết và bình thường thuộc đâu?', 'Giá gốc hàng mua', 'Vốn chủ sở hữu', 'Doanh thu tài chính', explain='Chi phí cần để đưa hàng về kho thuộc giá gốc theo điều kiện VAS02.')],
-          N('Nhập trước 4 sản phẩm đơn giá 300.000đ, nhập sau 6 sản phẩm đơn giá 350.000đ. Xuất5 theo FIFO, giá xuất?', 1550000, '4 × 300.000 + 1 × 350.000 = 1.550.000đ.'), 'Phụ lục II – TK152,155,156,632; VAS02'),
+          N('Nhập trước 4 sản phẩm đơn giá 300.000đ, nhập sau 6 sản phẩm đơn giá 350.000đ. Xuất 5 theo FIFO, giá xuất?', 1550000, '4 × 300.000 + 1 × 350.000 = 1.550.000đ.'), 'Phụ lục II – TK 152,155,156,632; VAS02'),
     ]))
     chapters.append(('operations', '5. Tài sản dài hạn, doanh thu và chi phí', [
         L('fixedasset', 'Tài sản cố định và khấu hao', ['Tách giá mua với chi phí kỳ', 'Tính khấu hao đường thẳng'], [
             'Tài sản cố định dùng qua nhiều kỳ cần thỏa điều kiện ghi nhận theo chuẩn mực và quy định liên quan. Nguyên giá gồm khoản cần để đưa tài sản vào trạng thái sẵn sàng sử dụng, không chỉ giá hóa đơn. Chi phí vận hành hằng ngày và sửa chữa thông thường không tự trở thành nguyên giá.',
             'Khấu hao phân bổ giá trị phải khấu hao trong thời gian sử dụng hữu ích theo phương pháp phù hợp. Giá trị còn lại bằng nguyên giá trừ hao mòn lũy kế và các điều chỉnh liên quan. Khấu hao không phải lập quỹ tiền và không giảm tiền ngay; thời gian khấu hao kế toán và cách xác định chi phí thuế có thể khác nhau.'],
-          ['Nguyên giá 60.000.000đ, giá trị thu hồi giả định 0, dùng5 năm: khấu hao năm12.000.000đ, tháng1.000.000đ.', 'Máy dùng quản lý: Nợ642/Có214 1.000.000đ mỗi tháng theo giả định.'], [
-            N('Máy nguyên giá 48.000.000đ, giá trị thu hồi0, khấu hao đều48tháng. Khấu hao tháng?', 1000000, '48.000.000/48 = 1.000.000đ.'),
+          ['Nguyên giá 60.000.000đ, giá trị thu hồi giả định 0, dùng 5 năm: khấu hao năm 12.000.000đ, tháng 1.000.000đ.', 'Máy dùng quản lý: Nợ 642/Có 214 1.000.000đ mỗi tháng theo giả định.'], [
+            N('Máy nguyên giá 48.000.000đ, giá trị thu hồi 0, khấu hao đều 48tháng. Khấu hao tháng?', 1000000, '48.000.000/48 = 1.000.000đ.'),
             E('Trích khấu hao máy phục vụ quản lý tháng này 800.000đ.', [('642', '214', 800000)], 'Chi phí quản lý tăng, hao mòn lũy kế tăng.'),
             C('Khấu hao có đồng nghĩa chi tiền mỗi tháng không?', 'Không; đây là phân bổ giá trị tài sản', 'Có; bắt buộc trả ngân hàng', 'Có; tiền tự chuyển sang quỹ', explain='Bút toán khấu hao không dùng tài khoản tiền.')],
-          N('TSCĐ nguyên giá72.000.000đ, hao mòn lũy kế18.000.000đ. Giá trị còn lại?', 54000000, '72 − 18 =54 triệu đồng.'), 'Phụ lục II – TK211,213,214; VAS03,04'),
+          N('TSCĐ nguyên giá 72.000.000đ, hao mòn lũy kế 18.000.000đ. Giá trị còn lại?', 54000000, '72 − 18 =54 triệu đồng.'), 'Phụ lục II – TK 211,213,214; VAS03,04'),
         L('revenue', 'Doanh thu và các khoản giảm trừ', ['Kiểm tra thời điểm doanh thu', 'Tính doanh thu thuần'], [
             'Doanh thu được ghi khi giao dịch thỏa điều kiện theo chuẩn mực, không đơn thuần khi xuất hóa đơn hoặc thu tiền. Với bán hàng cần xem việc chuyển giao, khả năng thu lợi ích và xác định giá trị; dịch vụ xem kết quả thực hiện phù hợp. Khoản thu hộ và thuế gián thu phải phân biệt với doanh thu của đơn vị.',
             'Doanh thu thuần phản ánh doanh thu sau các khoản giảm trừ phù hợp, như hàng trả lại, giảm giá và chiết khấu thương mại. Chiết khấu thanh toán vì trả sớm có bản chất tài chính khác chiết khấu thương mại. Giá vốn ghi riêng, không trừ trực tiếp vào tài khoản doanh thu để mất dấu vết.'],
-          ['Bán hàng20.000.000đ, giảm giá hợp lệ1.000.000đ, không xét thuế: doanh thu thuần19.000.000đ.', 'Giá vốn12.000.000đ: lợi nhuận gộp7.000.000đ.'], [
-            N('Doanh thu30.000.000đ, hàng trả lại2.000.000đ, giảm giá1.000.000đ. Doanh thu thuần?', 27000000, '30 −2 −1=27 triệu đồng.'),
-            E('Dịch vụ đã hoàn thành đủ điều kiện, chưa thu tiền, giá chưa thuế4.000.000đ; đề không xét VAT.', [('131', '511', 4000000)], 'Ghi phải thu và doanh thu dịch vụ đã hoàn thành.'),
+          ['Bán hàng 20.000.000đ, giảm giá hợp lệ 1.000.000đ, không xét thuế: doanh thu thuần 19.000.000đ.', 'Giá vốn 12.000.000đ: lợi nhuận gộp 7.000.000đ.'], [
+            N('Doanh thu 30.000.000đ, hàng trả lại 2.000.000đ, giảm giá 1.000.000đ. Doanh thu thuần?', 27000000, '30 −2 −1=27 triệu đồng.'),
+            E('Dịch vụ đã hoàn thành đủ điều kiện, chưa thu tiền, giá chưa thuế 4.000.000đ; đề không xét VAT.', [('131', '511', 4000000)], 'Ghi phải thu và doanh thu dịch vụ đã hoàn thành.'),
             C('Ưu đãi vì khách trả tiền sớm thuộc bản chất nào?', 'Chiết khấu thanh toán', 'Chiết khấu thương mại theo lượng', 'Vốn góp bổ sung', explain='Điều kiện thanh toán sớm tạo khoản tài chính.')],
-          N('Doanh thu thuần45.000.000đ, giá vốn28.000.000đ. Lợi nhuận gộp?', 17000000, '45 −28=17 triệu đồng.'), 'Phụ lục II – TK511,521,632,635; VAS14'),
-        L('expense', 'Chi phí và phân bổ nhiều kỳ', ['Phân loại chi phí theo chức năng', 'Phân bổ TK242 theo thời gian hưởng lợi'], [
-            'Chi phí cần gắn với kỳ và chức năng sử dụng: bán hàng, quản lý, tài chính, sản xuất hoặc chi phí khác. Không chọn tài khoản theo người thanh toán. Một khoản dùng trong nhiều kỳ có thể ghi TK242 nếu thỏa điều kiện; theo TT99 tên là Chi phí chờ phân bổ và không chỉ giới hạn khoản đã trả bằng tiền.',
-            'Phân bổ phải theo thời gian hoặc tiêu thức hưởng lợi hợp lý và có hồ sơ. Chi trước không luôn là chi phí chờ phân bổ: đặt cọc có thể là tài sản phải thu hoặc ký cược, mua máy có thể là TSCĐ. Ngược lại, khoản đủ điều kiện242 có thể đã phát sinh nghĩa vụ nhưng chưa thanh toán.'],
-          ['Công cụ dùng quản lý trị giá6.000.000đ phân bổ6tháng: mỗi tháng1.000.000đ.', 'Ghi Nợ242/Có331 khi nhận đủ điều kiện chưa trả; mỗi tháng Nợ642/Có242 1.000.000đ.'], [
-            N('Chi phí đủ điều kiện242 là9.000.000đ, phân bổ đều9tháng. Chi phí tháng?', 1000000, '9.000.000/9=1.000.000đ.'),
-            E('Phân bổ chi phí chờ phân bổ dùng cho bán hàng tháng này500.000đ.', [('641', '242', 500000)], 'Tăng chi phí bán hàng và giảm giá trị chờ phân bổ.'),
-            C('TK242 có chỉ ghi khi đã trả tiền không?', 'Không; xét chi phí thực tế và nhiều kỳ hưởng lợi', 'Có; cứ chi tiền đều242', 'Có; mọi khoản chưa trả đều331 và không có tài sản', explain='TK242 theo TT99 phản ánh chi phí thực tế chờ phân bổ cả đã trả và chưa trả.')],
-          N('Khoản242 ban đầu12.000.000đ, đã phân bổ5tháng mỗi tháng1.000.000đ. Còn lại?', 7000000, '12 −5=7 triệu đồng.'), 'Phụ lục II – TK242,641,642'),
+          N('Doanh thu thuần 45.000.000đ, giá vốn 28.000.000đ. Lợi nhuận gộp?', 17000000, '45 −28=17 triệu đồng.'), 'Phụ lục II – TK 511,521,632,635; VAS14'),
+        L('expense', 'Chi phí và phân bổ nhiều kỳ', ['Phân loại chi phí theo chức năng', 'Phân bổ TK 242 theo thời gian hưởng lợi'], [
+            'Chi phí cần gắn với kỳ và chức năng sử dụng: bán hàng, quản lý, tài chính, sản xuất hoặc chi phí khác. Không chọn tài khoản theo người thanh toán. Một khoản dùng trong nhiều kỳ có thể ghi TK 242 nếu thỏa điều kiện; theo TT99 tên là Chi phí chờ phân bổ và không chỉ giới hạn khoản đã trả bằng tiền.',
+            'Phân bổ phải theo thời gian hoặc tiêu thức hưởng lợi hợp lý và có hồ sơ. Chi trước không luôn là chi phí chờ phân bổ: đặt cọc có thể là tài sản phải thu hoặc ký cược, mua máy có thể là TSCĐ. Ngược lại, khoản đủ điều kiện 242 có thể đã phát sinh nghĩa vụ nhưng chưa thanh toán.'],
+          ['Công cụ dùng quản lý trị giá 6.000.000đ phân bổ 6tháng: mỗi tháng 1.000.000đ.', 'Ghi Nợ 242/Có 331 khi nhận đủ điều kiện chưa trả; mỗi tháng Nợ 642/Có 242 1.000.000đ.'], [
+            N('Chi phí đủ điều kiện 242 là 9.000.000đ, phân bổ đều 9tháng. Chi phí tháng?', 1000000, '9.000.000/9=1.000.000đ.'),
+            E('Phân bổ chi phí chờ phân bổ dùng cho bán hàng tháng này 500.000đ.', [('641', '242', 500000)], 'Tăng chi phí bán hàng và giảm giá trị chờ phân bổ.'),
+            C('TK 242 có chỉ ghi khi đã trả tiền không?', 'Không; xét chi phí thực tế và nhiều kỳ hưởng lợi', 'Có; cứ chi tiền đều 242', 'Có; mọi khoản chưa trả đều 331 và không có tài sản', explain='TK 242 theo TT99 phản ánh chi phí thực tế chờ phân bổ cả đã trả và chưa trả.')],
+          N('Khoản 242 ban đầu 12.000.000đ, đã phân bổ 5tháng mỗi tháng 1.000.000đ. Còn lại?', 7000000, '12 −5=7 triệu đồng.'), 'Phụ lục II – TK 242,641,642'),
     ]))
     chapters.append(('adjustments', '6. Điều chỉnh và khóa sổ', [
         L('adjusting', 'Bút toán điều chỉnh cuối kỳ', ['Ghi đúng kỳ cho chi phí', 'Đối chiếu trước khóa sổ'], [
             'Cuối kỳ cần kiểm tra khoản chưa ghi, trả trước, phải trả, khấu hao, dự phòng và phân bổ. Bút toán điều chỉnh làm số liệu phản ánh tài sản, nghĩa vụ và kết quả đúng kỳ. Điều chỉnh phải có cơ sở ước tính hoặc chứng từ; không tạo chi phí tùy ý để đạt một mức lợi nhuận mong muốn.',
             'Phân biệt chi phí phải trả có căn cứ với dự phòng cho nghĩa vụ không chắc chắn. Khi có hóa đơn hoặc quyết toán thực tế, đối chiếu khoản ước tính và ghi chênh lệch đúng chính sách. Khóa sổ chỉ thực hiện sau đối chiếu tiền, hàng, công nợ và các sổ chi tiết quan trọng, với hồ sơ phê duyệt.'],
-          ['Lãi vay đã phát sinh trong tháng600.000đ chưa trả: Nợ635/Có335 theo hồ sơ.', 'Khi chi trả600.000đ: Nợ335/Có112; không ghi lại chi phí lãi.'], [
+          ['Lãi vay đã phát sinh trong tháng 600.000đ chưa trả: Nợ 635/Có 335 theo hồ sơ.', 'Khi chi trả 600.000đ: Nợ 335/Có 112; không ghi lại chi phí lãi.'], [
             E('Lãi vay tháng này đã phát sinh700.000đ có căn cứ, chưa thanh toán và ghi chi phí phải trả.', [('635', '335', 700000)], 'Chi phí tài chính và chi phí phải trả cùng tăng.'),
-            N('Chi phí điện đã ước tính1.800.000đ; thực tế2.000.000đ. Điều chỉnh tăng chi phí?', 200000, '2.000.000−1.800.000=200.000đ.'),
+            N('Chi phí điện đã ước tính 1.800.000đ; thực tế 2.000.000đ. Điều chỉnh tăng chi phí?', 200000, '2.000.000−1.800.000=200.000đ.'),
             C('Mục đích điều chỉnh cuối kỳ là gì?', 'Ghi tài sản, nghĩa vụ và kết quả đúng kỳ', 'Tự chọn lợi nhuận cho đẹp', 'Xóa mọi số dư nợ', explain='Điều chỉnh tuân theo bản chất và căn cứ của giao dịch.')],
-          E('Phân bổ chi phí quản lý đã ghi242 kỳ này1.250.000đ.', [('642', '242', 1250000)], 'Đưa phần hưởng lợi kỳ này vào chi phí quản lý.'), 'Phụ lục II – TK242,335,352'),
+          E('Phân bổ chi phí quản lý đã ghi 242 kỳ này 1.250.000đ.', [('642', '242', 1250000)], 'Đưa phần hưởng lợi kỳ này vào chi phí quản lý.'), 'Phụ lục II – TK 242,335,352'),
         L('trialbalance', 'Bảng cân đối số phát sinh', ['Tính số dư theo phát sinh', 'Hiểu giới hạn kiểm tra cân đối'], [
             'Bảng cân đối số phát sinh tổng hợp số dư đầu, phát sinh Nợ Có và số dư cuối theo tài khoản. Tổng phát sinh Nợ phải bằng tổng phát sinh Có khi ghi kép đầy đủ. Tổng số dư theo hai bên cũng phải cân, nhưng đây là kiểm tra số học chứ không phải chứng nhận mọi giao dịch đúng.',
             'Giao dịch bỏ sót cả hai bên, ghi nhầm hai tài khoản hoặc ghi đúng số tiền nhưng sai kỳ vẫn có thể làm bảng cân. Cần kết hợp đối chiếu sổ chi tiết, chứng từ, kiểm kê và xét nội dung số dư bất thường. Không cộng doanh thu vào tiền để suy ra số dư quỹ vì chúng thuộc tài khoản khác.'],
-          ['TK111 đầu10.000.000đ, phát sinh Nợ8.000.000đ, phát sinh Có6.000.000đ: dư cuối Nợ12.000.000đ.', 'Một giao dịch mua hàng chịu bị bỏ sót cả156 và331 không làm tổng Nợ/Có lệch.'], [
-            N('TK112 dư đầu20.000.000đ, thu9.000.000đ, chi12.000.000đ. Dư cuối?', 17000000, '20+9−12=17 triệu đồng.'),
-            C('Bỏ sót cả hai bên một giao dịch có thể làm bảng vẫn cân không?', 'Có', 'Không bao giờ', 'Chỉ khi số tiền bằng0', explain='Không có bên nào được ghi nên hai tổng vẫn có thể bằng nhau.'),
-            F('Phát sinh Nợ toàn sổ85.000.000đ, phát sinh Có84.500.000đ. Điền tổng và lệch.', [('debit', 'Tổng Nợ', 85000000), ('difference', 'Chênh lệch', 500000)], 'Chênh500.000đ cần kiểm tra ghi kép và tổng hợp.')],
-          N('TK331 dư Có11.000.000đ, phát sinh Có7.000.000đ và Nợ9.000.000đ. Dư Có cuối?', 9000000, '11+7−9=9 triệu đồng.'), 'Điều 12–13; Phụ lục III'),
+          ['TK 111 đầu 10.000.000đ, phát sinh Nợ 8.000.000đ, phát sinh Có 6.000.000đ: dư cuối Nợ 12.000.000đ.', 'Một giao dịch mua hàng chịu bị bỏ sót cả 156 và 331 không làm tổng Nợ/Có lệch.'], [
+            N('TK 112 dư đầu 20.000.000đ, thu 9.000.000đ, chi 12.000.000đ. Dư cuối?', 17000000, '20+9−12=17 triệu đồng.'),
+            C('Bỏ sót cả hai bên một giao dịch có thể làm bảng vẫn cân không?', 'Có', 'Không bao giờ', 'Chỉ khi số tiền bằng 0', explain='Không có bên nào được ghi nên hai tổng vẫn có thể bằng nhau.'),
+            F('Phát sinh Nợ toàn sổ 85.000.000đ, phát sinh Có 84.500.000đ. Điền tổng và lệch.', [('debit', 'Tổng Nợ', 85000000), ('difference', 'Chênh lệch', 500000)], 'Chênh 500.000đ cần kiểm tra ghi kép và tổng hợp.')],
+          N('TK 331 dư Có 11.000.000đ, phát sinh Có 7.000.000đ và Nợ 9.000.000đ. Dư Có cuối?', 9000000, '11+7−9=9 triệu đồng.'), 'Điều 12–13; Phụ lục III'),
         L('closing', 'Kết chuyển và xác định lợi nhuận', ['Kết chuyển doanh thu chi phí', 'Phân biệt tài khoản tạm thời và lâu dài'], [
-            'Sau điều chỉnh, kết chuyển giảm trừ521 sang511 trước, rồi đưa doanh thu511,515,711 và chi phí632,635,641,642,811,821 phù hợp vào911. Chi phí sản xuất621,622,623,627 được xử lý qua tập hợp giá thành và154, không đưa toàn bộ thẳng vào911 bất kể sản phẩm đã bán hay chưa.',
-            'Chênh lệch911 sau chi phí thuế được chuyển sang lợi nhuận sau thuế chưa phân phối năm nay. Lãi ghi Nợ911/Có4212; lỗ ghi ngược lại. Tài khoản tiền, tài sản, nợ và vốn không bị xóa cuối năm. Kết chuyển không tạo dòng tiền, và lợi nhuận giữ lại không có nghĩa toàn bộ nằm trong ngân hàng.'],
-          ['Doanh thu thuần40.000.000đ, tổng chi phí32.000.000đ: lãi8.000.000đ theo giả định đã bao gồm thuế.', 'Kết chuyển lãi: Nợ911/Có4212 8.000.000đ.'], [
-            E('Kết chuyển doanh thu511 sau giảm trừ là16.000.000đ sang911.', [('511', '911', 16000000)], 'Xóa doanh thu bên Nợ và ghi bên Có911.'),
-            N('Doanh thu55.000.000đ, tổng chi phí sau thuế49.000.000đ. Lợi nhuận chuyển4212?', 6000000, '55−49=6 triệu đồng.'),
-            C('TK112 có bị kết chuyển hết vào911 cuối năm không?', 'Không; số dư tiền được chuyển kỳ sau', 'Có, vì mọi tài khoản đều khóa về0', 'Có, chuyển vào doanh thu', explain='Tiền là tài khoản tài sản có số dư chuyển kỳ sau.')],
-          E('Sau kết chuyển,911 xác định lỗ3.000.000đ kỳ hiện tại. Ghi sang4212.', [('4212', '911', 3000000)], 'Lỗ làm giảm lợi nhuận chưa phân phối.'), 'Phụ lục II – TK521,911,421'),
+            'Sau điều chỉnh, kết chuyển giảm trừ 521 sang 511 trước, rồi đưa doanh thu 511,515,711 và chi phí 632,635,641,642,811,821 phù hợp vào 911. Chi phí sản xuất 621,622,623,627 được xử lý qua tập hợp giá thành và 154, không đưa toàn bộ thẳng vào 911 bất kể sản phẩm đã bán hay chưa.',
+            'Chênh lệch 911 sau chi phí thuế được chuyển sang lợi nhuận sau thuế chưa phân phối năm nay. Lãi ghi Nợ 911/Có 4212; lỗ ghi ngược lại. Tài khoản tiền, tài sản, nợ và vốn không bị xóa cuối năm. Kết chuyển không tạo dòng tiền, và lợi nhuận giữ lại không có nghĩa toàn bộ nằm trong ngân hàng.'],
+          ['Doanh thu thuần 40.000.000đ, tổng chi phí 32.000.000đ: lãi 8.000.000đ theo giả định đã bao gồm thuế.', 'Kết chuyển lãi: Nợ 911/Có 4212 8.000.000đ.'], [
+            E('Kết chuyển doanh thu 511 sau giảm trừ là 16.000.000đ sang 911.', [('511', '911', 16000000)], 'Xóa doanh thu bên Nợ và ghi bên Có 911.'),
+            N('Doanh thu 55.000.000đ, tổng chi phí sau thuế 49.000.000đ. Lợi nhuận chuyển 4212?', 6000000, '55−49=6 triệu đồng.'),
+            C('TK 112 có bị kết chuyển hết vào 911 cuối năm không?', 'Không; số dư tiền được chuyển kỳ sau', 'Có, vì mọi tài khoản đều khóa về 0', 'Có, chuyển vào doanh thu', explain='Tiền là tài khoản tài sản có số dư chuyển kỳ sau.')],
+          E('Sau kết chuyển,911 xác định lỗ 3.000.000đ kỳ hiện tại. Ghi sang 4212.', [('4212', '911', 3000000)], 'Lỗ làm giảm lợi nhuận chưa phân phối.'), 'Phụ lục II – TK 521,911,421'),
     ]))
     chapters.append(('reports', '7. Đọc bốn báo cáo tài chính', [
         L('position', 'Báo cáo tình hình tài chính', ['Phân loại nguồn lực và nghĩa vụ', 'Không bù trừ công nợ khác đối tượng'], [
             'Báo cáo tình hình tài chính trình bày tài sản, nợ phải trả và vốn chủ tại một thời điểm. Việc phân loại ngắn hạn, dài hạn dựa trên chu kỳ kinh doanh và điều kiện thời hạn theo quy định, không chỉ dựa tên tài khoản. Các tài khoản điều chỉnh giảm như hao mòn và dự phòng ảnh hưởng giá trị trình bày tài sản.',
-            'Dư chi tiết Nợ131 và Có131 cần trình bày theo bản chất phải thu và người mua trả trước, không dùng số dư thuần của tài khoản để bù tất cả khách. Tương tự331 có trả trước người bán và phải trả. Đọc báo cáo cần xem thuyết minh kỳ hạn, tài sản thế chấp và nghĩa vụ để hiểu khả năng thanh toán.'],
-          ['Khách A nợ6.000.000đ; khách B ứng trước2.000.000đ: trình bày phải thu6.000.000đ và nghĩa vụ2.000.000đ.', 'TSCĐ nguyên giá50.000.000đ trừ hao mòn10.000.000đ: giá trị còn lại40.000.000đ.'], [
-            N('Tài sản150.000.000đ, nợ60.000.000đ. Vốn chủ trình bày?', 90000000, '150−60=90 triệu đồng.'),
-            C('Khách khác nhau có dư Nợ và Có131. Có bù hết để trình bày một số không?', 'Không; phân loại theo chi tiết và bản chất', 'Có vì cùng131', 'Có vì cùng tháng', explain='Quyền thu và nghĩa vụ với các khách khác nhau cần trình bày đúng bản chất.'),
-            F('Nguyên giá80.000.000đ, hao mòn25.000.000đ. Điền hai chỉ tiêu.', [('cost', 'Nguyên giá', 80000000), ('carrying', 'Giá trị còn lại', 55000000)], 'Giá trị còn lại80−25=55 triệu đồng.')],
-          N('Hàng tồn kho giá gốc36.000.000đ và dự phòng giảm giá4.000.000đ. Giá trị trình bày thuần?', 32000000, '36−4=32 triệu đồng.'), 'Điều 17; Phụ lục IV – B01-DN'),
+            'Dư chi tiết Nợ 131 và Có 131 cần trình bày theo bản chất phải thu và người mua trả trước, không dùng số dư thuần của tài khoản để bù tất cả khách. Tương tự 331 có trả trước người bán và phải trả. Đọc báo cáo cần xem thuyết minh kỳ hạn, tài sản thế chấp và nghĩa vụ để hiểu khả năng thanh toán.'],
+          ['Khách A nợ 6.000.000đ; khách B ứng trước 2.000.000đ: trình bày phải thu 6.000.000đ và nghĩa vụ 2.000.000đ.', 'TSCĐ nguyên giá 50.000.000đ trừ hao mòn 10.000.000đ: giá trị còn lại 40.000.000đ.'], [
+            N('Tài sản 150.000.000đ, nợ 60.000.000đ. Vốn chủ trình bày?', 90000000, '150−60=90 triệu đồng.'),
+            C('Khách khác nhau có dư Nợ và Có 131. Có bù hết để trình bày một số không?', 'Không; phân loại theo chi tiết và bản chất', 'Có vì cùng 131', 'Có vì cùng tháng', explain='Quyền thu và nghĩa vụ với các khách khác nhau cần trình bày đúng bản chất.'),
+            F('Nguyên giá 80.000.000đ, hao mòn 25.000.000đ. Điền hai chỉ tiêu.', [('cost', 'Nguyên giá', 80000000), ('carrying', 'Giá trị còn lại', 55000000)], 'Giá trị còn lại 80−25=55 triệu đồng.')],
+          N('Hàng tồn kho giá gốc 36.000.000đ và dự phòng giảm giá 4.000.000đ. Giá trị trình bày thuần?', 32000000, '36−4=32 triệu đồng.'), 'Điều 17; Phụ lục IV – B01-DN'),
         L('performance', 'Báo cáo kết quả hoạt động kinh doanh', ['Tính lợi nhuận theo tầng', 'Phân biệt gộp, trước thuế và sau thuế'], [
             'Báo cáo kết quả hoạt động kinh doanh trình bày doanh thu, chi phí và kết quả của một kỳ. Doanh thu thuần trừ giá vốn ra lợi nhuận gộp; thêm kết quả tài chính và trừ chi phí bán hàng, quản lý tạo kết quả hoạt động. Thu nhập khác, chi phí khác và thuế tiếp tục ảnh hưởng lợi nhuận sau thuế.',
             'Lợi nhuận không bằng tổng thu tiền trừ tổng chi tiền: mua TSCĐ, vay vốn và trả nợ có thể làm tiền đổi mà không đi trực tiếp qua kết quả kỳ. Thuế thu nhập hiện hành và thuế thu nhập hoãn lại có căn cứ khác nhau. Đọc tỷ suất cần so cùng phạm vi, chính sách và kỳ để tránh kết luận sai.'],
-          ['Doanh thu thuần100.000.000đ, giá vốn60.000.000đ: lợi nhuận gộp40.000.000đ.', 'Bán hàng10.000.000đ, quản lý12.000.000đ, không khoản khác: trước thuế18.000.000đ.'], [
-            N('Doanh thu thuần80.000.000đ, giá vốn50.000.000đ. Lợi nhuận gộp?', 30000000, '80−50=30 triệu đồng.'),
-            F('Lợi nhuận trước thuế20.000.000đ, chi phí thuế giả định4.000.000đ. Điền kết quả.', [('before_tax', 'Trước thuế', 20000000), ('after_tax', 'Sau thuế', 16000000)], 'Sau thuế20−4=16 triệu đồng.'),
+          ['Doanh thu thuần 100.000.000đ, giá vốn 60.000.000đ: lợi nhuận gộp 40.000.000đ.', 'Bán hàng 10.000.000đ, quản lý 12.000.000đ, không khoản khác: trước thuế 18.000.000đ.'], [
+            N('Doanh thu thuần 80.000.000đ, giá vốn 50.000.000đ. Lợi nhuận gộp?', 30000000, '80−50=30 triệu đồng.'),
+            F('Lợi nhuận trước thuế 20.000.000đ, chi phí thuế giả định 4.000.000đ. Điền kết quả.', [('before_tax', 'Trước thuế', 20000000), ('after_tax', 'Sau thuế', 16000000)], 'Sau thuế 20−4=16 triệu đồng.'),
             C('Khoản vay ngân hàng nhận trong kỳ có phải doanh thu kinh doanh không?', 'Không; phát sinh nghĩa vụ vay', 'Có; vì thu tiền', 'Có; ghi doanh thu tài chính toàn bộ', explain='Vay là giao dịch tài trợ vốn, không phải doanh thu.')],
-          N('Lãi gộp25.000.000đ, lãi tài chính2.000.000đ, chi phí tài chính1.000.000đ, bán hàng4.000.000đ, quản lý7.000.000đ. Kết quả hoạt động?', 15000000, '25+2−1−4−7=15 triệu đồng.'), 'Điều 17; Phụ lục IV – B02-DN'),
+          N('Lãi gộp 25.000.000đ, lãi tài chính 2.000.000đ, chi phí tài chính 1.000.000đ, bán hàng 4.000.000đ, quản lý 7.000.000đ. Kết quả hoạt động?', 15000000, '25+2−1−4−7=15 triệu đồng.'), 'Điều 17; Phụ lục IV – B02-DN'),
         L('cashnotes', 'Lưu chuyển tiền tệ và thuyết minh', ['Phân loại ba dòng tiền', 'Đọc chính sách và thông tin bổ sung'], [
             'Báo cáo lưu chuyển tiền tệ chia dòng tiền thành hoạt động kinh doanh, đầu tư và tài chính. Thu từ khách và chi cho hoạt động thường thuộc kinh doanh; mua TSCĐ thuộc đầu tư; nhận vốn góp và vay thuộc tài chính. Chuyển giữa các khoản tiền hoặc tương đương tiền không tự tạo dòng lưu chuyển bên ngoài.',
             'Bản thuyết minh là thành phần của bộ báo cáo, trình bày chính sách kế toán, chi tiết chỉ tiêu, rủi ro và thông tin khác theo quy định. Báo cáo lợi nhuận và dòng tiền có thể khác do công nợ, tồn kho, khấu hao. Giao dịch không dùng tiền không ghi như dòng tiền nhưng có thể cần thuyết minh; phân loại chi tiết còn theo VAS24 và mẫu TT99.'],
-          ['Thu khách30.000.000đ, chi hoạt động20.000.000đ: dòng kinh doanh10.000.000đ.', 'Mua máy8.000.000đ, nhận vốn5.000.000đ: tiền tăng ròng7.000.000đ nếu không khoản khác.'], [
+          ['Thu khách 30.000.000đ, chi hoạt động 20.000.000đ: dòng kinh doanh10.000.000đ.', 'Mua máy 8.000.000đ, nhận vốn 5.000.000đ: tiền tăng ròng 7.000.000đ nếu không khoản khác.'], [
             G('Ghép giao dịch với loại dòng tiền.', [('Thu nợ khách', 'Kinh doanh'), ('Mua máy sản xuất', 'Đầu tư'), ('Nhận vốn góp tiền', 'Tài chính')], 'Phân loại dựa bản chất hoạt động, không chỉ tài khoản ngân hàng.'),
-            N('Tiền đầu kỳ9.000.000đ, dòng ròng kinh doanh6.000.000đ, đầu tư−4.000.000đ, tài chính3.000.000đ. Cuối kỳ?', 14000000, '9+6−4+3=14 triệu đồng.'),
+            N('Tiền đầu kỳ 9.000.000đ, dòng ròng kinh doanh6.000.000đ, đầu tư−4.000.000đ, tài chính 3.000.000đ. Cuối kỳ?', 14000000, '9+6−4+3=14 triệu đồng.'),
             C('Chính sách khấu hao và phương pháp tính giá xuất kho được trình bày ở đâu?', 'Bản thuyết minh báo cáo tài chính', 'Chỉ phiếu thu', 'Chỉ giấy giao hàng', explain='Thuyết minh giúp người đọc hiểu cơ sở số liệu.')],
           C('Mua máy bằng khoản vay trả thẳng nhà cung cấp, không qua tiền doanh nghiệp, cần xử lý B03 thế nào?', 'Xem là giao dịch không dùng tiền và thuyết minh phù hợp', 'Ghi thu và chi tiền giả', 'Bỏ khỏi mọi thông tin báo cáo', explain='Không tạo dòng tiền không có thật; vẫn xem nghĩa vụ thuyết minh.'), 'Điều 17; Phụ lục IV – B03-DN,B09-DN; VAS24'),
     ]))
@@ -190,15 +190,15 @@ def build_basic():
         L('tax', 'Phân biệt kế toán với nghĩa vụ thuế', ['Tách lợi nhuận kế toán và thu nhập tính thuế', 'Dùng giả định thuế đúng phạm vi'], [
             'TT99 hướng dẫn chế độ kế toán; nghĩa vụ thuế được xác định bằng pháp luật thuế. Một khoản được ghi chi phí kế toán không có nghĩa chắc chắn được trừ khi tính thuế. Chênh lệch có thể vĩnh viễn hoặc tạm thời, cần hồ sơ đối chiếu; không sửa sai bản chất kế toán chỉ để làm bằng số trên tờ khai.',
             'Các bài học số học đặt tỷ lệ VAT, thuế thu nhập doanh nghiệp hoặc khấu trừ người lao động như giả định riêng của đề. Khi làm thực tế phải kiểm tra kỳ áp dụng, loại giao dịch, điều kiện chứng từ và văn bản thuế hiện hành. VAS17 cung cấp nguyên tắc thuế thu nhập hiện hành và hoãn lại, khác vai trò hệ thống tài khoản TT99.'],
-          ['Lợi nhuận kế toán20.000.000đ có chi phí không được trừ2.000.000đ, giả định không chênh khác: thu nhập tính thuế22.000.000đ.', 'Thuế suất giả định20%: thuế hiện hành4.400.000đ; không suy từ ví dụ ra thuế suất cho mọi doanh nghiệp.'], [
-            N('Lợi nhuận kế toán10.000.000đ, cộng chi phí không được trừ1.000.000đ, giả định không khoản khác. Thu nhập tính thuế?', 11000000, '10+1=11 triệu đồng theo giả định đề.'),
-            N('Thu nhập tính thuế12.000.000đ, thuế suất đề giả định20%. Thuế hiện hành?', 2400000, '12.000.000×20%=2.400.000đ.'),
-            C('TT99 có tự quyết định mọi thuế suất VAT không?', 'Không; phải dùng pháp luật thuế áp dụng', 'Có; mọi trường hợp đều cùng một tỷ lệ', 'Có; không cần xem hóa đơn', explain='Điều1 tách chế độ kế toán khỏi xác định nghĩa vụ thuế.')],
-          N('Giá hàng10.000.000đ chưa thuế, VAT giả định10% và được khấu trừ. Tổng thanh toán?', 11000000, 'VAT1.000.000đ; tổng11.000.000đ.'), 'Điều 1; Phụ lục II – TK133,333,821; VAS17'),
+          ['Lợi nhuận kế toán 20.000.000đ có chi phí không được trừ 2.000.000đ, giả định không chênh khác: thu nhập tính thuế 22.000.000đ.', 'Thuế suất giả định 20%: thuế hiện hành 4.400.000đ; không suy từ ví dụ ra thuế suất cho mọi doanh nghiệp.'], [
+            N('Lợi nhuận kế toán 10.000.000đ, cộng chi phí không được trừ 1.000.000đ, giả định không khoản khác. Thu nhập tính thuế?', 11000000, '10+1=11 triệu đồng theo giả định đề.'),
+            N('Thu nhập tính thuế 12.000.000đ, thuế suất đề giả định 20%. Thuế hiện hành?', 2400000, '12.000.000×20%=2.400.000đ.'),
+            C('TT99 có tự quyết định mọi thuế suất VAT không?', 'Không; phải dùng pháp luật thuế áp dụng', 'Có; mọi trường hợp đều cùng một tỷ lệ', 'Có; không cần xem hóa đơn', explain='Điều 1 tách chế độ kế toán khỏi xác định nghĩa vụ thuế.')],
+          N('Giá hàng 10.000.000đ chưa thuế, VAT giả định 10% và được khấu trừ. Tổng thanh toán?', 11000000, 'VAT1.000.000đ; tổng 11.000.000đ.'), 'Điều 1; Phụ lục II – TK 133,333,821; VAS17'),
         L('ethics', 'Đạo đức và xét đoán kế toán', ['Từ chối sửa chứng từ sai sự thật', 'Ghi rõ giả định và bằng chứng'], [
             'Người làm kế toán chịu trách nhiệm về số liệu và phải giữ tính trung thực. Áp lực tăng lợi nhuận không cho phép ghi doanh thu chưa đủ điều kiện, giấu nợ hoặc thay ngày chứng từ. Khi bất đồng, thu thập căn cứ, trao đổi người có thẩm quyền và lưu quyết định xử lý theo quy trình của đơn vị.',
             'Xét đoán hợp lý khác với đoán tùy ý: ước tính tuổi thọ tài sản cần dữ liệu sử dụng, dự phòng cần hồ sơ khả năng thu hồi, phân bổ cần tiêu thức hưởng lợi. Phân biệt điều đã biết, giả định và điều cần xác minh giúp người đọc đánh giá chất lượng thông tin. Bảo mật hồ sơ không có nghĩa che sai phạm với người có thẩm quyền kiểm tra.'],
-          ['Bộ phận kinh doanh muốn ghi12.000.000đ đơn chưa giao: kiểm tra hợp đồng và điều kiện ghi nhận, không ghi vì chỉ tiêu.', 'Hồ sơ xét đoán tuổi thọ máy gồm hướng dẫn nhà sản xuất, tần suất dùng và quyết định phê duyệt.'], [
+          ['Bộ phận kinh doanh muốn ghi 12.000.000đ đơn chưa giao: kiểm tra hợp đồng và điều kiện ghi nhận, không ghi vì chỉ tiêu.', 'Hồ sơ xét đoán tuổi thọ máy gồm hướng dẫn nhà sản xuất, tần suất dùng và quyết định phê duyệt.'], [
             C('Quản lý đề nghị đổi ngày chứng từ sang năm trước để tăng lãi. Cách xử lý?', 'Từ chối làm sai và trình căn cứ theo quy trình', 'Sửa ngày rồi xóa bản cũ', 'Ghi luôn vì cấp trên chịu hết trách nhiệm', explain='Chỉ đạo không thay thế trách nhiệm về tính trung thực.'),
             M('Ước tính kế toán đáng tin cậy cần gì?', ['Dữ liệu và căn cứ hợp lý', 'Phê duyệt và lưu hồ sơ xét đoán'], ['Chọn số để đạt lợi nhuận mong muốn'], 'Ước tính cần căn cứ và trách nhiệm giải trình.'),
             C('Chia sẻ sổ lương lên nhóm công khai để hỏi nghiệp vụ có phù hợp không?', 'Không; dùng dữ liệu đã ẩn danh và kênh có quyền', 'Có vì là số kế toán', 'Có nếu gửi ban đêm', explain='Thông tin nhân sự phải được bảo vệ theo quyền truy cập.')],
@@ -206,11 +206,11 @@ def build_basic():
         L('cycle', 'Từ nghiệp vụ đến bộ báo cáo', ['Thực hiện chu trình đầy đủ', 'Kiểm tra mối liên hệ giữa báo cáo'], [
             'Chu trình kế toán bắt đầu từ chứng từ, định khoản, ghi nhật ký và sổ chi tiết, chuyển sổ cái, đối chiếu, điều chỉnh, kết chuyển rồi lập báo cáo. Mỗi bước có đầu vào và kiểm soát; bỏ kiểm kê hoặc công nợ có thể khiến số liệu cân nhưng thiếu thực tế. Bộ báo cáo TT99 gồm bốn thành phần liên hệ với nhau.',
             'Bài tổng hợp đơn giản vẫn phải phân biệt tiền, hàng, công nợ, doanh thu và lợi nhuận. Lãi chưa thu tiền làm phải thu tăng; mua hàng chưa bán làm kho tăng; vay làm tiền và nợ tăng. Tái lập từng số từ chứng từ giúp phát hiện sai. Chứng nhận hoàn thành trong trò chơi ghi nhận học tập, không thay chứng chỉ hành nghề ngoài đời.'],
-          ['Nhận vốn20.000.000đ, mua hàng tiền mặt8.000.000đ, bán thu tiền12.000.000đ với giá vốn5.000.000đ, không thuế: tiền24.000.000đ, kho3.000.000đ.', 'Tài sản27.000.000đ = vốn góp20.000.000đ + lãi7.000.000đ; đối chiếu phương trình và kết quả.'], [
-            N('Vốn tiền30.000.000đ; mua hàng10.000.000đ; bán thu tiền14.000.000đ. Tiền cuối kỳ?', 34000000, '30−10+14=34 triệu đồng.'),
-            N('Hàng mua10.000.000đ, xuất bán giá vốn6.000.000đ. Tồn kho còn?', 4000000, '10−6=4 triệu đồng.'),
+          ['Nhận vốn 20.000.000đ, mua hàng tiền mặt 8.000.000đ, bán thu tiền 12.000.000đ với giá vốn 5.000.000đ, không thuế: tiền 24.000.000đ, kho3.000.000đ.', 'Tài sản 27.000.000đ = vốn góp 20.000.000đ + lãi 7.000.000đ; đối chiếu phương trình và kết quả.'], [
+            N('Vốn tiền 30.000.000đ; mua hàng 10.000.000đ; bán thu tiền 14.000.000đ. Tiền cuối kỳ?', 34000000, '30−10+14=34 triệu đồng.'),
+            N('Hàng mua10.000.000đ, xuất bán giá vốn 6.000.000đ. Tồn kho còn?', 4000000, '10−6=4 triệu đồng.'),
             O('Sắp xếp các bước cuối chu trình sau khi đã ghi sổ.', ['Đối chiếu và điều chỉnh', 'Kết chuyển kết quả', 'Lập và kiểm tra bộ báo cáo'], 'Số liệu được kiểm tra trước kết chuyển và báo cáo.')],
-          F('Nhận vốn40.000.000đ; mua hàng12.000.000đ tiền; bán thu18.000.000đ, giá vốn8.000.000đ; không thuế và không khoản khác. Điền tiền, kho và lãi.', [('cash', 'Tiền', 46000000), ('stock', 'Kho', 4000000), ('profit', 'Lãi', 10000000)], 'Tiền40−12+18=46; kho12−8=4; lãi18−8=10 triệu. Tài sản50 bằng vốn40+lãi10.'), 'Điều 11–17; Phụ lục II–IV'),
+          F('Nhận vốn 40.000.000đ; mua hàng 12.000.000đ tiền; bán thu 18.000.000đ, giá vốn 8.000.000đ; không thuế và không khoản khác. Điền tiền, kho và lãi.', [('cash', 'Tiền', 46000000), ('stock', 'Kho', 4000000), ('profit', 'Lãi', 10000000)], 'Tiền 40−12+18=46; kho12−8=4; lãi 18−8=10 triệu. Tài sản 50 bằng vốn 40+lãi 10.'), 'Điều 11–17; Phụ lục II–IV'),
     ]))
     return build_course('basic', 'Kế toán cơ bản',
                         '24 bài từ bản chất giao dịch, ghi kép và chứng từ đến khóa sổ và đọc đủ bốn thành phần báo cáo tài chính.', chapters)

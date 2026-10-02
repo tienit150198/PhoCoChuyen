@@ -16,7 +16,7 @@ class AccountingUITests(unittest.TestCase):
         if not node:self.skipTest('node not installed')
         questions={}
         for l in content.LESSONS.values():
-            for q in l['questions']:questions.setdefault(q['kind'],school._safe_question(q))
+            for q in l['questions']:questions.setdefault(q['kind'],school._safe_question(q,lesson=l))
         data=dict(questions=list(questions.values()),school_state=dict(accounting_school=school.public(new_state()),name='Học viên'),book=company.public(company.initial()))
         out=subprocess.run([node,str(ROOT/'tests/accounting_school.mjs')],input=json.dumps(data,ensure_ascii=False),text=True,encoding='utf-8',
                            cwd=ROOT,capture_output=True,timeout=60)

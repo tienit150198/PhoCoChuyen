@@ -236,7 +236,6 @@ function sceneActions(){
 }
 function navItems(c){
   const items=[['home','grid','Hành trình'],['prepare','coffee','Chuẩn bị'],['feedback','star','Đánh giá',lowOpen(c)],['phone','phone','Chuyện phố',feedUnread(c)?'dot':0],['situation','flag','Tình huống',openSituation(c)?'dot':0],['incident','shield','Chuyện đời',L.inc.m?.incidentBadge(c)||0]];
-  items.push(['accountingSchool','book','Học kế toán']);
   items.splice(4,0,['nhom','chat','Nhóm phố',boardUnread(api)],['social','globe','Phố nghề',api.social?.unread||0]);  // Nhóm Cư Dân Phố (v4/board.js), Phố nghề (v4/social.js)
   if(c.job?.required)items.push(['jobapp','briefcase','Việc làm',needsJob()?'dot':0]);
   items.push(['operations','store','Sổ tiệm',c.ops?.alerts?.length?'dot':0]);
@@ -255,21 +254,24 @@ function navItems(c){
   if(api.state?.fair?.show)items.push(['fair','flag','Hội chợ',api.state.fair.open&&!api.state.fair.played?'dot':0]);  // 🏮 Hội chợ dân gian (v4/fair.js, own dialog): only around the fair's days
   // A career with its own shell (the air crew: no Sổ tiệm, a flight log instead) reshapes the list; others keep it.
   const result=careerUI(career())?.nav?.(items,careerContext(env()))||items;
-  if(!result.some(x=>x[0]==='accountingSchool'))result.push(['accountingSchool','book','Học kế toán']);
+  if(!result.some(x=>x[0]==='accountingSchool'))result.push(['accountingSchool','calculator','Học kế toán']);  // 📒 Học kế toán (v4/accounting-school.js): every career, after a career's own reshaping
   return result;
 }
 const badgeHTML=b=>b==='dot'?'<i class="dot" aria-hidden="true"></i>':b?`<em class="badge">${b}</em>`:'';
 const railItem=([a,i,label,badge],extra='',hide='')=>`<button type="button" class="rail-item${a==='social'?' top-social':''}${extra} ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}${hide}>${icon(i,21)}<span>${label}</span>${badgeHTML(badge)}</button>`;
 /** The work pages, always in sight (rail on desktop/tablet, top of "Thêm" on the phone), in this order. Any
  * entry that is in no group below (a career's own page) joins them, so nothing a career adds is lost. */
-const RAIL_MAIN=['liveChat','home','accountingSchool','prepare','operations','prices','feedback','jobapp'];   // 💬 Chat first, one tap (owner, 01/10)
+const RAIL_MAIN=['liveChat','home','prepare','operations','prices','feedback','jobapp','accountingSchool'];   // 💬 Chat first, one tap (owner, 01/10)
+/** Học kế toán is a work page for the office accountants; everyone else finds it under "Của mình". */
+const ACC_CAREERS=['accounting','corp_accounting','tax_payroll','group_accounting'];
+const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREERS.includes(career()));
 /** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
 const RAIL_GROUPS=[
   ['pho','building','Khu phố',['fair','liveWalk','liveWed','nhom','phone','social','town','rank']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Tiền & nhà',['money','bank','house','garage']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
-  ['minh','gift','Của mình',['jrWardrobe','album','passport','workshop','journal']],
+  ['minh','gift','Của mình',['jrWardrobe','album','passport','workshop','journal','accountingSchool']],
 ];
 const RAIL_GROUPED=new Set(RAIL_GROUPS.flatMap(g=>g[3]));
 /** Numbers add up; a dot alone stays a dot. */
@@ -291,8 +293,8 @@ function dockItems(){
 function railHTML(c){
   const phone=layout()==='phone',shown=dockItems(),extra=phone?sceneActions().filter(x=>!shown.some(y=>y[0]===x[0])):[];
   const nav=navItems(c),order=x=>{const i=RAIL_MAIN.indexOf(x[0]);return i<0?RAIL_MAIN.length:i;};
-  const main=nav.filter(x=>!RAIL_GROUPED.has(x[0])).sort((a,b)=>order(a)-order(b));
-  const groups=RAIL_GROUPS.map(([g,ic,label,ids])=>[g,ic,label,ids.map(id=>nav.find(x=>x[0]===id)).filter(Boolean)]).filter(g=>g[3].length);
+  const main=nav.filter(railMain).sort((a,b)=>order(a)-order(b));
+  const groups=RAIL_GROUPS.map(([g,ic,label,ids])=>[g,ic,label,ids.map(id=>nav.find(x=>x[0]===id)).filter(x=>x&&!railMain(x))]).filter(g=>g[3].length);
   const open=groups.some(g=>g[0]===ui.railGroup)?ui.railGroup:null,hide=phone&&open?' hidden':'';
   const title=t=>phone?`<p class="rail-title"${hide}>${esc(t)}</p>`:'';
   const mini=(a,i,l,d='')=>`<button type="button" class="rail-mini${ui.view===a?' active':''}" data-action="${a}"${d} aria-label="${l}" title="${l}">${icon(i,19)}<span>${l}</span></button>`;
@@ -1141,7 +1143,7 @@ async function handleAction(action,data,el){
     case'teaConfig':await cmd('tea_config',{task:activeTask().id,size:$('#tea-size').value,sugar:Number($('#tea-sugar').value),ice:$('#tea-ice').value});break;
     case'expVisit':ui.townPlace=data.place;await cmd('life_town',{place:data.place});renderSheet();break;
     case'home':openSheet('home');break;
-    case'accountingSchool':if(await cmd('as_view',{}, {quiet:true}))openSheet('accountingSchool');break;
+    case'accountingSchool':if(await (await viaLazy(L.accountingSchool,el)).accountingSchoolOpen(env()))openSheet('accountingSchool');break;
     case'v4Group':railGroup(data.group||'');break;
     // "Thêm" opens on its first page, not inside the hub left open last time.
     case'v4Menu':if(ui.railGroup&&layout()==='phone')railGroup(null,false);await shell.action(action,data,el,env());break;
@@ -1228,7 +1230,7 @@ async function handleAction(action,data,el){
       if((L.social.m||action==='social')&&await (await viaLazy(L.social,el)).socialAction(action,data,el,env()))break;
       if((L.fb.m||action==='gopy')&&await (await viaLazy(L.fb,el)).feedbackAction(action,data,el,env()))break;
       if(procedureAction(action,data,el,env()))break;
-      if(action.startsWith('as')&&await (await viaLazy(L.accountingSchool,el)).accountingSchoolAction(action,data,el,env()))break;
+      if(/^as[A-Z]/.test(action)&&await (await viaLazy(L.accountingSchool,el)).accountingSchoolAction(action,data,el,env()))break;
       if(action==='classroom'){openSheet('classroom');break;}
       if(await shell.action(action,data,el,env()))break;
       toast('Chưa có tương tác này.',true);

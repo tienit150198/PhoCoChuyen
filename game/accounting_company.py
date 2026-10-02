@@ -65,13 +65,12 @@ def _transactions(period: int) -> list:
     def add(sid, title, entries, source, explain, activity=None, party=None, closing=False, scaled=True):
         lines = [dict(debit=d, credit=c, amount=amount(a) if scaled else a) for d, c, a in entries]
         text = source.format(**{f'n{i}': _n(line['amount']) for i, line in enumerate(lines)})
-        codes = sorted({x for line in lines for x in (line['debit'], line['credit'])})
         rows.append(dict(id=sid, title=title, kind='entry', prompt='Đọc chứng từ rồi lập các dòng Nợ/Có bằng VND.',
                          _key=lines, explain=explain, activity=activity, party=party, closing=closing,
                          docs=[dict(id=sid + '_source', title=title + ' · chứng từ gốc', lines=[text])],
                          accounts=[dict(id=a, name=name) for a, name in CHART.items()],
                          references=[dict(label='Thông tư 99/2025/TT-BTC', url=SOURCE,
-                                          locator='Phụ lục II – ' + ', '.join('TK ' + c for c in codes))]))
+                                          locator='Phụ lục II – Hệ thống tài khoản kế toán và hướng dẫn ghi chép')]))
     add('capital', 'Góp thêm vốn bằng chuyển khoản', [('112','411',50_000_000)],
         'Ngân hàng báo Có {n0}; nghị quyết và hồ sơ góp vốn đã hoàn tất, không phải khoản vay.',
         'Tiền gửi không kỳ hạn tăng bên Nợ 112; vốn đầu tư của chủ sở hữu tăng bên Có 411.', 'financing')
@@ -85,7 +84,7 @@ def _transactions(period: int) -> list:
         'Ứng trước tạo số dư Nợ chi tiết 331. Khi trình bày B01 phải tách khỏi số dư Có của nhà cung cấp khác.', 'operating','ncc_truoc')
     add('cash_withdrawal', 'Rút tiền gửi bổ sung quỹ tiền mặt', [('111','112',5_000_000)],
         'Báo Nợ ngân hàng và phiếu thu xác nhận rút {n0} vào quỹ; thủ quỹ đã kiểm nhận.',
-        'Chuyển từ112 sang111, không làm tăng/giảm tổng tiền, không là một dòng tiền kinh doanh/đầu tư/tài chính.')
+        'Chuyển từ 112 sang 111, không làm tăng/giảm tổng tiền, không là một dòng tiền kinh doanh/đầu tư/tài chính.')
     add('cash_transfer', 'Nộp tiền mặt vào ngân hàng', [('112','111',2_000_000)],
         'Phiếu chi và giấy nộp tiền {n0}; ngân hàng đã ghi Có tài khoản không kỳ hạn.',
         'Chuyển giữa tiền mặt và tiền gửi: tổng tiền không đổi, không là dòng tiền từ kinh doanh/đầu tư/tài chính.')
@@ -96,12 +95,12 @@ def _transactions(period: int) -> list:
         'Khách khach_dat chuyển {n0} đặt mua hàng, công ty chưa giao sản phẩm và chưa ghi doanh thu.',
         'Có chi tiết 131 của khach_dat là người mua trả tiền trước; không bù với khách khác còn nợ.', 'operating','khach_dat')
     add('old_receipt', 'Thu công nợ đầu kỳ', [('112','131',12_000_000)],
-        'Ngân hàng báo Có {n0} từ khach_cu thanh toán công nợ đang theo dõi; tháng1 là hóa đơn đầu năm, các tháng sau là các hóa đơn còn nợ trong sổ chi tiết.', 'Thu nợ chỉ giảm131, không ghi doanh thu lần thứ hai.', 'operating','khach_cu')
+        'Ngân hàng báo Có {n0} từ khach_cu thanh toán công nợ đang theo dõi; tháng 1 là hóa đơn đầu năm, các tháng sau là các hóa đơn còn nợ trong sổ chi tiết.', 'Thu nợ chỉ giảm 131, không ghi doanh thu lần thứ hai.', 'operating','khach_cu')
     add('machine', 'Mua máy đã nghiệm thu đưa vào sử dụng', [('211','331',36_000_000),('1332','331',3_600_000)],
         'Máy đủ tiêu chuẩn TSCĐ, sẵn sàng sử dụng. Nguyên giá chưa thuế {n0}, thuế đủ điều kiện khấu trừ {n1}. Chưa trả ncc_may.',
-        'Máy có nguyên giá từ30 triệu đồng, thời gian sử dụng120 kỳ và đủ tiêu chuẩn TSCĐ. Ghi211; thuế khấu trừ của TSCĐ tách1332; công nợ riêng ncc_may.', party='ncc_may')
+        'Máy có nguyên giá từ 30 triệu đồng, thời gian sử dụng 120 kỳ và đủ tiêu chuẩn TSCĐ. Ghi 211; thuế khấu trừ của TSCĐ tách 1332; công nợ riêng ncc_may.', party='ncc_may')
     add('loan', 'Nhận khoản vay ngân hàng', [('112','341',10_000_000)],
-        'Hợp đồng vay và báo Có {n0}. Đây là vay, không phải vốn góp. Hồ sơ toàn bộ dư nợ đầu kỳ và khoản mới xác nhận phải trả trong12 tháng tới.', 'Tăng112 và nợ vay341; dòng tiền tài chính, dư nợ ngắn hạn trên B01.', 'financing')
+        'Hợp đồng vay và báo Có {n0}. Đây là vay, không phải vốn góp. Hồ sơ toàn bộ dư nợ đầu kỳ và khoản mới xác nhận phải trả trong 12 tháng tới.', 'Tăng 112 và nợ vay 341; dòng tiền tài chính, dư nợ ngắn hạn trên B01.', 'financing')
     add('issue', 'Xuất nguyên liệu cho sản xuất', [('621','152',8_000_000)],
         'Phiếu xuất cho lệnh sản xuất SP01: trị giá xuất kho đã xác định {n0}.',
         'Tập hợp chi phí nguyên liệu trực tiếp ở 621, giảm 152. Chưa ghi ngay giá vốn hàng bán.')
@@ -116,16 +115,16 @@ def _transactions(period: int) -> list:
         'Bảng tính nghĩa vụ do bộ phận lương cung cấp: phần doanh nghiệp chịu của sản xuất {n0}, quản lý {n1}. Bài này dùng số đã được xác định, không xác định tỷ lệ pháp luật.',
         'Phần doanh nghiệp chịu phân bổ vào chi phí bộ phận tương ứng và khoản phải nộp 3383.')
     add('production_dep', 'Khấu hao máy sản xuất', [('627','214',production_dep)],
-        'Bảng khấu hao: máy đầu năm500.000 đồng/kỳ, các máy mới dùng120 kỳ, đủ một kỳ ngay khi sẵn sàng sử dụng theo giả định thời điểm đầu kỳ; phân xưởng chịu tổng {n0}.',
-        'Khấu hao phân xưởng gồm tài sản đầu kỳ và các máy đã mua ở kỳ trước/kỳ này, ghi627/214; không giảm nguyên giá211.', scaled=False)
+        'Bảng khấu hao: máy đầu năm 500.000 đồng/kỳ, các máy mới dùng 120 kỳ, đủ một kỳ ngay khi sẵn sàng sử dụng theo giả định thời điểm đầu kỳ; phân xưởng chịu tổng {n0}.',
+        'Khấu hao phân xưởng gồm tài sản đầu kỳ và các máy đã mua ở kỳ trước/kỳ này, ghi 627/214; không giảm nguyên giá 211.', scaled=False)
     add('admin_dep', 'Khấu hao tài sản quản lý', [('642','214',300_000)],
-        'Bảng khấu hao tài sản quản lý đầu năm: {n0} trong kỳ; không có tăng giảm tài sản quản lý.', 'Khấu hao quản lý ghi642/214; chi phí không bằng một khoản tiền đã chi trong kỳ.', scaled=False)
+        'Bảng khấu hao tài sản quản lý đầu năm: {n0} trong kỳ; không có tăng giảm tài sản quản lý.', 'Khấu hao quản lý ghi 642/214; chi phí không bằng một khoản tiền đã chi trong kỳ.', scaled=False)
     add('production_cost', 'Kết chuyển chi phí sản xuất', [('154','621',amount(8_000_000)),('154','622',amount(4_800_000)),('154','627',production_overhead)],
         'Bảng tập hợp SP01: nguyên liệu {n0}, nhân công gồm khoản trích {n1}, sản xuất chung {n2}; không còn chi phí bỏ sót.',
-        'Chuyển621,622,627 vào154 để tập hợp giá thành, gồm khấu hao toàn bộ máy đang dùng; không kết chuyển trực tiếp vào911.',scaled=False)
+        'Chuyển 621,622,627 vào 154 để tập hợp giá thành, gồm khấu hao toàn bộ máy đang dùng; không kết chuyển trực tiếp vào 911.',scaled=False)
     add('finished', 'Nhập kho sản phẩm hoàn thành', [('155','154',production_total)],
         'SP01 hoàn thành toàn bộ, không có dở dang cuối kỳ; bảng tính giá thành và phiếu nhập xác nhận {n0}.',
-        'Sản phẩm hoàn thành ghi155, giảm154; tổng giá thành khớp cả ba nhóm chi phí.',scaled=False)
+        'Sản phẩm hoàn thành ghi 155, giảm 154; tổng giá thành khớp cả ba nhóm chi phí.',scaled=False)
     add('product_sale', 'Bán sản phẩm và ghi giá vốn', [('131','511',20_000_000),('131','3331',2_000_000),('632','155',12_000_000)],
         'Khach_cu nhận và chấp nhận sản phẩm. Doanh thu chưa thuế {n0}, thuế đầu ra theo hóa đơn {n1}, giá vốn theo phiếu xuất {n2}; chưa thu tiền.',
         'Ghi doanh thu và nghĩa vụ thuế theo chứng từ, đồng thời ghi giá vốn 632 và giảm sản phẩm 155.', party='khach_cu')
@@ -144,8 +143,8 @@ def _transactions(period: int) -> list:
         'Chi trả hợp đồng bảo hiểm phục vụ quản lý {n0}, hưởng lợi 12 kỳ; dịch vụ không có thuế đầu vào khấu trừ trong bộ dữ liệu.',
         'Ghi chi phí chờ phân bổ 242 vì nhiều kỳ hưởng lợi; không ghi hết vào chi phí kỳ hiện tại.', 'operating')
     add('allocation', 'Phân bổ các hợp đồng bảo hiểm đang hưởng lợi', [('642','242',allocation)],
-        'Mỗi kỳ mua một hợp đồng bảo hiểm12 kỳ. Bảng phân bổ gồm hợp đồng hiện tại và tất cả hợp đồng chưa hết từ các kỳ trước, tổng kỳ này {n0}.',
-        'Giảm242 và ghi642 cho toàn bộ hợp đồng đang hưởng lợi, không bỏ sót chi phí kỳ trước chuyển sang.',scaled=False)
+        'Mỗi kỳ mua một hợp đồng bảo hiểm 12 kỳ. Bảng phân bổ gồm hợp đồng hiện tại và tất cả hợp đồng chưa hết từ các kỳ trước, tổng kỳ này {n0}.',
+        'Giảm 242 và ghi 642 cho toàn bộ hợp đồng đang hưởng lợi, không bỏ sót chi phí kỳ trước chuyển sang.',scaled=False)
     add('machine_pay', 'Thanh toán nhà cung cấp máy', [('331','112',39_600_000)],
         'Chuyển {n0} trả toàn bộ hóa đơn ncc_may đã nhập TSCĐ; không phải nhà cung cấp nguyên liệu.',
         'Giảm công nợ máy 331. Dòng tiền đầu tư vì mua TSCĐ, dù tài khoản đối ứng là 331.', 'investing','ncc_may')
@@ -160,28 +159,28 @@ def _transactions(period: int) -> list:
     if period>6:
         principal=10_000_000*(10+(period-7)%3)//10
         add('term_maturity','Thu tiền gửi kỳ hạn đã đáo hạn',[('112','1281',principal*103//100)],
-            'Khoản gửi đầu kỳ'+str(period-6)+' đủ6 tháng, hợp đồng3%/6 tháng. Gốc'+_n(principal)+' và lãi đã dự thu'+_n(principal*3//100)+'; ngân hàng trả tổng{n0}.',
-            'Giảm1281 cho cả gốc và lãi đã dự thu, không ghi515 lần hai. Khi lập B03 tách thu gốc mã24 và thu lãi mã27.', 'investing',scaled=False)
+            'Khoản gửi đầu kỳ'+str(period-6)+' đủ 6 tháng, hợp đồng 3%/6 tháng. Gốc'+_n(principal)+' và lãi đã dự thu'+_n(principal*3//100)+'; ngân hàng trả tổng{n0}.',
+            'Giảm 1281 cho cả gốc và lãi đã dự thu, không ghi 515 lần hai. Khi lập B03 tách thu gốc mã 24 và thu lãi mã 27.', 'investing',scaled=False)
     deposit_interest=sum(50_000*(10+(p-1)%3)//10 for p in range(max(1,period-5),period+1))
     add('term_interest_accrual','Dự thu lãi tiền gửi có kỳ hạn',[('1281','515',deposit_interest)],
-        'Hợp đồng3% cho6 kỳ, nhận lãi khi đáo hạn. Bảng từng khoản tiền gửi đang còn hiệu lực xác nhận lãi kiếm được trong kỳ{n0}; chưa thu tiền.',
-        'Theo hướng dẫnTK128, lãi nhận sau ghiNợ1281/Có515 từng kỳ; khi nhận chỉ giảm1281, không tạo doanh thu lần hai.',scaled=False)
+        'Hợp đồng 3% cho 6 kỳ, nhận lãi khi đáo hạn. Bảng từng khoản tiền gửi đang còn hiệu lực xác nhận lãi kiếm được trong kỳ{n0}; chưa thu tiền.',
+        'Theo hướng dẫnTK 128, lãi nhận sau ghiNợ 1281/Có 515 từng kỳ; khi nhận chỉ giảm 1281, không tạo doanh thu lần hai.',scaled=False)
     usd=100*factor//10; trade_rate=25_000+(period-1)*100; close_rate=26_000+(period-1)*100
     previous_usd=sum(100*(10+(p-1)%3)//10 for p in range(1,period))
     fx_gain=usd*(close_rate-trade_rate)+previous_usd*100
     add('fx_invoice', 'Doanh thu dịch vụ bằng ngoại tệ', [('131','511',usd*trade_rate)],
         f'Dịch vụ hoàn thành cho khach_fx: {usd}USD; tỷ giá giao dịch thực tế{trade_rate}VND/USD theo hồ sơ ngân hàng; giá trị ghi sổ {{n0}}. Chưa thu tiền, không có thuế đầu ra trong bảng nghĩa vụ đã cung cấp.',
-        'Ghi131/511 theo tỷ giá giao dịch thực tế; theo dõi USD ở sổ chi tiết, số nguyên tệ không tăng khi đánh giá lại.', party='khach_fx',scaled=False)
+        'Ghi 131/511 theo tỷ giá giao dịch thực tế; theo dõi USD ở sổ chi tiết, số nguyên tệ không tăng khi đánh giá lại.', party='khach_fx',scaled=False)
     add('fx_revalue', 'Đánh giá lại toàn bộ phải thu ngoại tệ', [('131','515',fx_gain)],
         f'Tất cả hóa đơn khach_fx từ đầu năm chưa thanh toán, tổng{previous_usd+usd}USD. Tỷ giá mua bán chuyển khoản trung bình cuối kỳ của ngân hàng thường giao dịch{close_rate}VND/USD. Khoản cũ đã đánh giá ở tỷ giá{close_rate-100}cuối kỳ trước. Bảng xác nhận tăng giá trị VND {{n0}}.',
-        'Đánh giá cả khoản cũ và khoản mới theo tỷ giá cuối kỳ đã xác định; tăng131/515 nhưng không thay đổi USD và không tạo dòng tiền.', party='khach_fx',scaled=False)
+        'Đánh giá cả khoản cũ và khoản mới theo tỷ giá cuối kỳ đã xác định; tăng 131/515 nhưng không thay đổi USD và không tạo dòng tiền.', party='khach_fx',scaled=False)
     reserve=amount(400_000)
     reserve_before=0 if period==1 else 400_000*(10+(period-2)%3)//10
     difference=reserve-reserve_before
     add('allowance', 'Điều chỉnh dự phòng khoản phải thu khó đòi',
         [('642','2293',difference)] if difference>0 else [('2293','642',-difference)],
         'Bảng ước tính: dự phòng cần có cuối kỳ'+_n(reserve)+', số đã lập'+_n(reserve_before)+'. '+('Bổ sung' if difference>0 else 'Hoàn nhập')+' chênh lệch{n0}; không xóa nợ.',
-        'Chỉ ghi chênh lệch giữa mức dự phòng cần có và số đang có: bổ sung642/2293 hoặc hoàn nhập2293/642.',scaled=False)
+        'Chỉ ghi chênh lệch giữa mức dự phòng cần có và số đang có: bổ sung642/2293 hoặc hoàn nhập 2293/642.',scaled=False)
     add('admin_cash', 'Chi phí quản lý bằng tiền mặt', [('642','111',500_000)],
         'Phiếu chi và hồ sơ công tác phí quản lý xác nhận {n0}, phân loại chi phí khác bằng tiền; không có thuế đầu vào khấu trừ trong dữ liệu.',
         'Ghi chi phí quản lý và giảm tiền mặt; dòng tiền hoạt động kinh doanh.', 'operating')
@@ -189,8 +188,8 @@ def _transactions(period: int) -> list:
         'Thu {n0} cho hợp đồng dịch vụ ba kỳ; điều kiện phân bổ doanh thu theo tiến độ đã được xác định, không có thuế đầu ra trong bộ dữ liệu.',
         'Thu tiền chưa đồng nghĩa ghi nhận toàn bộ doanh thu; phần chờ phân bổ theo hợp đồng ghi 3387.', 'operating')
     add('service_revenue', 'Ghi doanh thu các hợp đồng dịch vụ đang thực hiện', [('3387','511',service_revenue)],
-        'Mỗi hợp đồng thực hiện3 kỳ. Biên bản gồm hợp đồng mới và hợp đồng cũ còn thời gian thực hiện, tổng phần hoàn thành kỳ này{n0}.',
-        'Ghi phần hoàn thành của toàn bộ hợp đồng đang thực hiện, giảm3387 và tăng511; không bỏ sót các kỳ còn lại của hợp đồng cũ.',scaled=False)
+        'Mỗi hợp đồng thực hiện 3 kỳ. Biên bản gồm hợp đồng mới và hợp đồng cũ còn thời gian thực hiện, tổng phần hoàn thành kỳ này{n0}.',
+        'Ghi phần hoàn thành của toàn bộ hợp đồng đang thực hiện, giảm 3387 và tăng 511; không bỏ sót các kỳ còn lại của hợp đồng cũ.',scaled=False)
     add('tax_current', 'Ghi thuế TNDN hiện hành', [('8211','3334',1_000_000)],
         'Bộ phận thuế cung cấp bảng xác định nghĩa vụ hợp lệ: thuế TNDN hiện hành kỳ này {n0}. Không suy ra thuế suất từ TT99.',
         'Ghi chi phí thuế hiện hành 8211 và khoản phải nộp 3334; xác định nghĩa vụ thực hiện theo luật thuế.')
@@ -203,7 +202,7 @@ def _transactions(period: int) -> list:
     retained='4211' if period==1 else '4212'
     add('dividend', 'Ghi nhận nghĩa vụ chia cổ tức', [(retained,'332',2_000_000)],
         'Nghị quyết và hồ sơ pháp lý xác nhận công ty đã không còn quyền từ chối chi trả cổ tức {n0}, đủ lợi nhuận được phân phối.',
-        'Giảm lợi nhuận đủ điều kiện phân phối: tháng1 dùng4211 của năm trước, các tháng sau dùng4212 đã kết chuyển từ kỳ trước. Ghi nghĩa vụTK332; cổ tức không là chi phí.')
+        'Giảm lợi nhuận đủ điều kiện phân phối: tháng 1 dùng 4211 của năm trước, các tháng sau dùng 4212 đã kết chuyển từ kỳ trước. Ghi nghĩa vụTK 332; cổ tức không là chi phí.')
     add('dividend_pay', 'Trả cổ tức đã công bố', [('332','112',2_000_000)],
         'Ngân hàng xác nhận trả {n0}, khớp nghĩa vụ cổ tức đã ghi nhận.', 'Giảm 332 và 112; dòng tiền tài chính.', 'financing')
     tax_bal=_post(dict(_opening(period)[0]),rows)
@@ -213,20 +212,20 @@ def _transactions(period: int) -> list:
         if used:offset.append(('3331',account,used));deductible-=used
     add('vat_offset','Khấu trừ GTGT đầu vào với thuế đầu ra',offset,
         'Bảng xác nhận GTGT được khấu trừ cuối kỳ: thuế đầu ra sau điều chỉnh'+_n(max(-tax_bal.get('3331',0),0))+
-        ', số đủ điều kiện1331 '+_n(tax_bal.get('1331',0))+' và1332 '+_n(tax_bal.get('1332',0))+
-        '. Phân bổ khấu trừ theo bảng: dùng1331 trước, phần còn lại1332; không vượt thuế đầu ra. Thuế đầu vào chưa dùng chuyển kỳ sau.',
-        'Cuối kỳ ghiNợ3331/Có133 theo bảng khấu trừ; giảm đồng thời đầu ra phải nộp và đầu vào đã sử dụng, phần đầu vào còn được khấu trừ giữ nguyên133. Không là một dòng tiền.',scaled=False)
+        ', số đủ điều kiện 1331 '+_n(tax_bal.get('1331',0))+' và 1332 '+_n(tax_bal.get('1332',0))+
+        '. Phân bổ khấu trừ theo bảng: dùng 1331 trước, phần còn lại 1332; không vượt thuế đầu ra. Thuế đầu vào chưa dùng chuyển kỳ sau.',
+        'Cuối kỳ ghiNợ 3331/Có 133 theo bảng khấu trừ; giảm đồng thời đầu ra phải nộp và đầu vào đã sử dụng, phần đầu vào còn được khấu trừ giữ nguyên 133. Không là một dòng tiền.',scaled=False)
     add('close_discount', 'Kết chuyển giảm trừ doanh thu', [('511','521',1_000_000)],
-        'Bảng khóa sổ: tổng phát sinh giảm trừ bên Nợ521 là {n0}.', 'Kết chuyển 521 sang 511 trước khi kết chuyển doanh thu thuần vào 911.', closing=True)
+        'Bảng khóa sổ: tổng phát sinh giảm trừ bên Nợ 521 là {n0}.', 'Kết chuyển 521 sang 511 trước khi kết chuyển doanh thu thuần vào 911.', closing=True)
     balances=_post({},rows)
     add('close_revenue', 'Kết chuyển doanh thu thuần và tài chính', [('511','911',-balances['511']),('515','911',-balances['515'])],
-        'Bảng khóa sổ đã trừ521: doanh thu thuần {n0}; doanh thu tài chính {n1}.', 'Kết chuyển doanh thu thuần511 và doanh thu tài chính515 vào911.', closing=True,scaled=False)
+        'Bảng khóa sổ đã trừ 521: doanh thu thuần {n0}; doanh thu tài chính {n1}.', 'Kết chuyển doanh thu thuần 511 và doanh thu tài chính 515 vào 911.', closing=True,scaled=False)
     add('close_expense', 'Kết chuyển chi phí và thuế', [('911',a,balances[a]) for a in ('632','635','641','642','8211','8212')],
         'Bảng chi phí khóa sổ: giá vốn {n0}; tài chính {n1}; bán hàng {n2}; quản lý {n3}; thuế hiện hành {n4}; thuế hoãn lại {n5}.',
-        'Kết chuyển các chi phí vào bên Nợ911; chi phí sản xuất đã qua154/155/632, không chuyển trực tiếp621-627.', closing=True,scaled=False)
+        'Kết chuyển các chi phí vào bên Nợ 911; chi phí sản xuất đã qua 154/155/632, không chuyển trực tiếp 621-627.', closing=True,scaled=False)
     profit=-balances['511']-balances['515']-sum(balances[a] for a in ('632','635','641','642','8211','8212'))
     add('close_profit', 'Kết chuyển lợi nhuận sau thuế', [('911','4212',profit)],
-        'Bảng xác định kết quả sau thuế: kỳ này lãi {n0}.', 'Lãi kết chuyển Nợ911/Có4212; sau khóa sổ911 và các tài khoản doanh thu, chi phí đều hết số dư.', closing=True,scaled=False)
+        'Bảng xác định kết quả sau thuế: kỳ này lãi {n0}.', 'Lãi kết chuyển Nợ 911/Có 4212; sau khóa sổ 911 và các tài khoản doanh thu, chi phí đều hết số dư.', closing=True,scaled=False)
     return rows
 
 
@@ -310,11 +309,11 @@ def tasks(book):
                          references=[dict(label='Thông tư 99/2025/TT-BTC',url=SOURCE,locator='Phụ lục IV – '+title)]))
     rows.append(dict(id='notes', report='notes', title='B09-DN · Thuyết minh chính sách và số liệu', kind='choice',
                      prompt='Chọn thuyết minh phù hợp với hồ sơ doanh nghiệp và số đã ghi.',
-                     options=[dict(id='consistent',label='VND; hoạt động liên tục; trình bày công nợ theo từng đối tượng; tiền gửi 6 tháng ở1281; bảng thuế và tỷ giá có căn cứ riêng.'),
+                     options=[dict(id='consistent',label='VND; hoạt động liên tục; trình bày công nợ theo từng đối tượng; tiền gửi 6 tháng ở 1281; bảng thuế và tỷ giá có căn cứ riêng.'),
                               dict(id='offset',label='Bù khoản khách trả trước với khách còn nợ để báo cáo gọn; coi tiền gửi 6 tháng là tiền.'),
                               dict(id='cash_only',label='Chỉ ghi nghiệp vụ đã thu hoặc chi tiền; bỏ dự phòng, khấu hao và thuế hoãn lại.')],
                      _key='consistent', explain='Thuyết minh phải khớp đơn vị tiền tệ, cơ sở lập, chính sách và số chi tiết trong bộ sổ, giải thích các khoản trọng yếu và các giả định.',
-                     docs=[dict(id='notes_source',title='Hồ sơ chính sách',lines=['Doanh nghiệp sản xuất – thương mại; kỳ tháng thuộc năm2026; VND; hoạt động liên tục; kê khai thường xuyên. Giá trị xuất kho đã được bảng tính giá thành xác định; tiền gửi 6 tháng không là tương đương tiền. Các nghĩa vụ thuế và bảng tỷ giá có hồ sơ độc lập.'])],
+                     docs=[dict(id='notes_source',title='Hồ sơ chính sách',lines=['Doanh nghiệp sản xuất – thương mại; kỳ tháng thuộc năm 2026; VND; hoạt động liên tục; kê khai thường xuyên. Giá trị xuất kho đã được bảng tính giá thành xác định; tiền gửi 6 tháng không là tương đương tiền. Các nghĩa vụ thuế và bảng tỷ giá có hồ sơ độc lập.'])],
                      references=[dict(label='Thông tư 99/2025/TT-BTC',url=SOURCE,locator='Phụ lục IV – B09-DN')]))
     return rows
 
@@ -333,7 +332,8 @@ def submit(book, task_id, answer):
     _need(_shape(task,answer), 'Câu trả lời chưa đúng định dạng; kiểm tài khoản và số tiền.')
     if not _check(task,answer):
         book['mistakes'] += 1
-        return dict(correct=False,message='Chưa khớp chứng từ. Kiểm đúng kỳ, đối tượng, giá chưa thuế/thuế và bên Nợ/Có; xem Sổ sách rồi thử lại.')
+        from .accounting_hints import wrong
+        return dict(correct=False,message=wrong(task,answer))
     book['answers'][task_id] = tree_copy(answer)
     book['at'] += 1
     return dict(correct=True,message=task['explain'],done=book['at']==len(rows))
@@ -355,29 +355,51 @@ def _shape(task, answer):
 
 def next_period(book):
     _need(book['at'] == len(tasks(book)), 'Hoàn thành khóa sổ và bốn báo cáo trước khi mở kỳ tiếp.')
-    _need(book['period'] < 12, 'Bạn đã hoàn thành trọn12 kỳ thực hành năm2026.')
+    _need(book['period'] < 12, 'Bạn đã hoàn thành trọn 12 kỳ thực hành năm 2026.')
     period = book['period'] + 1
     history=tree_copy(book['history'])
-    history[str(book['period'])]=dict(answers=tree_copy(book['answers']),mistakes=book['mistakes'])
+    history[str(book['period'])]=dict(mistakes=book['mistakes'])  # its entries are the fixed key (_transactions)
     book.update(initial(),period=period,history=history)
 
 
-def public(book):
+REPORT_FORMS = {'B01': 'position', 'B02': 'profit', 'B03': 'cashflow', 'B09': 'notes'}
+SECTIONS = ('documents', 'journal', 'ledger', 'details', 'reports')
+
+
+def public(book, section=None):
+    """The practice desk. `section` (a sub-tab) picks the one heavy part sent with it; None: all of them.
+    While a report is still to be filled in, its finished form stays hidden (it would hold the answer)."""
     from . import accounting_statements as statements
+    from .accounting_hints import company_help
     rows = tasks(book)
     task = tree_copy(rows[book['at']]) if book['at'] < len(rows) else None
     if task:
+        help_ = company_help(rows[book['at']])
         task.pop('_key');task.pop('explain')
         if task['id'] not in book['inspected']:
             task['docs'] = [dict(id=d['id'],title=d['title'],closed=True) for d in task['docs']]
-    return dict(name=NAME, period=book['period'],year=2026,at=book['at'],total=len(rows),done=book['at']==len(rows),
-                mistakes=book['mistakes'],paid=book['paid'],task=task,chart=dict(CHART),
+        else:task['help'] = help_
+    want = lambda name: section is None or section == name
+    view = dict(name=NAME, period=book['period'],year=2026,at=book['at'],total=len(rows),done=book['at']==len(rows),
+                mistakes=book['mistakes'],paid=book['paid'],task=task,chart=dict(CHART),section=section,
                 schedule=[dict(id=t['id'],title=t['title'],done=i<book['at'],current=i==book['at']) for i,t in enumerate(rows)],
-                ledger=statements.trial_balance(book),details=statements.details(book),statements=statements.public(book),
-                journal=[dict(id=t['id'],title=t['title'],entries=tree_copy(t['_key']),activity=t['activity']) for t in _transactions(book['period'])[:book['at']]],
-                previous_journal=[dict(period=p,id=t['id'],title=t['title'],entries=tree_copy(t['_key']),activity=t['activity']) for p in range(1,book['period']) for t in _transactions(p)],
-                reports=reports(book),references=[dict(label='Thông tư99 và phụ lục',url=SOURCE)],
+                references=[dict(label='Thông tư 99 và phụ lục',url=SOURCE)],
                 policy='Dữ liệu giả lập bằng VND; nghĩa vụ thuế, trích lương và giá trị quy đổi lấy từ bảng có sẵn. TT99 hướng dẫn ghi nhận và trình bày; không xác định nghĩa vụ thuế.')
+    if want('ledger'): view['ledger'] = statements.trial_balance(book)
+    if want('details'): view['details'] = statements.details(book)
+    if want('journal'):
+        view['journal'] = [dict(id=t['id'],title=t['title'],entries=tree_copy(t['_key']),activity=t['activity']) for t in _transactions(book['period'])[:book['at']]]
+        p = book['period'] - 1  # the month before (the doc: current and previous period)
+        view['previous_journal'] = [dict(period=p,id=t['id'],title=t['title'],entries=tree_copy(t['_key']),activity=t['activity']) for t in _transactions(p)] if p else []
+    if want('reports'):
+        forms = statements.public(book)
+        recorded = len(_transactions(book['period']))
+        index = {t['id']: i for i, t in enumerate(rows)}
+        for fid, rid in REPORT_FORMS.items():
+            if recorded <= book['at'] <= index[rid]:
+                forms[fid] = dict(title=forms[fid]['title'], rows=[], locked=True)
+        view['statements'] = forms
+    return view
 
 
 def validate(book):
@@ -385,12 +407,9 @@ def validate(book):
     _need(isinstance(book,dict) and set(book)==set(initial()), 'Sổ doanh nghiệp không hợp lệ.')
     integer(book['period'],1,12)
     _need(isinstance(book['history'],dict) and set(book['history'])=={str(p) for p in range(1,book['period'])}, 'Thiếu bộ sổ đã hoàn thành của kỳ trước.')
-    for period,proof in book['history'].items():
-        prior=tasks(dict(period=int(period),at=0))
-        _need(isinstance(proof,dict) and set(proof)=={'answers','mistakes'},'Hồ sơ khóa kỳ trước không hợp lệ.')
+    for proof in book['history'].values():
+        _need(isinstance(proof,dict) and set(proof)=={'mistakes'},'Hồ sơ khóa kỳ trước không hợp lệ.')
         integer(proof['mistakes'],0,10**6)
-        _need(isinstance(proof['answers'],dict) and set(proof['answers'])=={t['id'] for t in prior},'Kỳ trước chưa đủ bút toán và báo cáo.')
-        for t in prior:_need(_shape(t,proof['answers'][t['id']]) and _check(t,proof['answers'][t['id']]),'Bài thực hành kỳ trước không hợp lệ.')
     rows = tasks(book)
     integer(book['at'],0,len(rows));integer(book['mistakes'],0,10**6)
     _need(type(book['paid']) is bool and (not book['paid'] or book['at']==len(rows)), 'Kỳ lương chưa đủ điều kiện.')

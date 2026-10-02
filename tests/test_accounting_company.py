@@ -42,12 +42,12 @@ class AccountingCompanyTests(unittest.TestCase):
             values = lambda fid: {r['code']: r['value'] for r in forms[fid]['rows']}
             b1, b2, b3 = (values(fid) for fid in ('B01', 'B02', 'B03'))
             self.assertEqual(b1['280'], b1['440'])
-            self.assertEqual(b1['280'], view['reports']['assets'])
+            self.assertEqual(b1['280'], self.company.reports(self.book)['assets'])
             opening = self.company._opening(period)[0]
             distribution = next(t['_key'][0] for t in self.company._transactions(period) if t['id']=='dividend')
             self.assertEqual(b1['420a'], -opening.get('4211',0)-opening.get('4212',0)-distribution['amount'])
-            self.assertEqual(b1['420b'], view['reports']['profit'])
-            self.assertEqual(b2['60'], view['reports']['profit'])
+            self.assertEqual(b1['420b'], self.company.reports(self.book)['profit'])
+            self.assertEqual(b2['60'], self.company.reports(self.book)['profit'])
             balance=self.company.ledger(self.book)
             self.assertEqual(balance.get('3331',0),0)
             self.assertGreater(balance.get('1332',0),0)

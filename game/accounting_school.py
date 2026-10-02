@@ -5,6 +5,7 @@ import hashlib
 import random
 import re
 from . import accounting_company as company
+from . import accounting_hints as hints
 from . import procedures
 from .jsoncopy import tree_copy
 
@@ -35,7 +36,15 @@ def initial():
 
 
 def migrate(s):
+    """The school's block is created on first use (an as_* command), never by migrate_state: saves that never
+    opened it stay byte for byte what an older build wrote (rolling release, rollback)."""
     if 'accounting_school' not in s: s['accounting_school']=initial()
+
+
+def _school(s):
+    """Read-only: the block, or an empty one for a save that never opened the school (not stored)."""
+    a=s.get('accounting_school')
+    return a if isinstance(a,dict) else initial()
 
 
 def _need(ok,message):
@@ -56,7 +65,7 @@ def _shape(q,answer):
 
 def lesson_done(s,lid):
     lesson=_content().LESSONS.get(lid)
-    rec=s['accounting_school']['progress'].get(lid)
+    rec=_school(s)['progress'].get(lid)
     return bool(lesson and rec and rec.get('read') and len(rec['answers'])==len(lesson['questions']))
 
 
@@ -92,14 +101,27 @@ def _grade(cid,paper):
     return (200*right+len(paper['qs']))//(2*len(paper['qs']))
 
 
-def _safe_question(q,answer=None,solved=False):
+def _safe_question(q,answer=None,solved=False,lesson=None):
+    """A question without its key. `lesson`: a practice question, which carries hints 1–2 while unsolved
+    (exam questions never do)."""
     view={k:tree_copy(v) for k,v in q.items() if not k.startswith('_') and k not in ('explain','hint','hints')}
     view['solved']=solved
-    if solved: view.update(answer=tree_copy(answer),explain=q.get('explain','Chính xác.'))
+    if solved:
+        view.update(answer=tree_copy(answer),explain=q.get('explain','Chính xác.'))
+        view.pop('accounts',None)  # the account picker (~90 rows): a solved entry only shows its codes
+    elif lesson is not None: view['help']=hints.lesson_help(q,lesson)
     return view
 
 
 def action(s,name,p):
+    """One as_* command. Its result carries the school's own view (`accounting_view`), shaped by the optional
+    p['view'] (tab, company sub-tab, course, glossary): public_state only carries summary()."""
+    result=_action(s,name,p)
+    result['accounting_view']=view(s,p.get('view'))
+    return result
+
+
+def _action(s,name,p):
     migrate(s); a=s['accounting_school']
     if name=='as_view': return dict(message='Học kế toán: chọn khóa hoặc tiếp tục bài đang học.')
     if name=='as_open':
@@ -119,8 +141,7 @@ def action(s,name,p):
         _need(_shape(q,answer),'Câu trả lời chưa đúng định dạng.')
         rec['attempts']+=1
         if not _check(q,answer):
-            hints=q.get('hints') or [q.get('hint','Đối chiếu khái niệm, ví dụ và chứng từ trong bài; kiểm lại số tiền và tài khoản.')]
-            return dict(correct=False,message=hints[min(rec['attempts']-1,len(hints)-1)])
+            return dict(correct=False,message=hints.wrong(q,answer))
         rec['answers'][q['id']]=tree_copy(answer)
         return dict(correct=True,message=q.get('explain','Chính xác.'),lesson_done=lesson_done(s,lid))
     if name=='as_exam_start':
@@ -152,7 +173,7 @@ def action(s,name,p):
             rec['certificate']=dict(id='pcc-accounting-'+cid,course=cid,score=score,date=ct.today_vn(),
                                     serial=ct.serial(seed,cid,rec['attempts']),proof=tree_copy(paper))
         a['active_exam']=None
-        return dict(message=f'Kết quả {score}/100. '+('Đạt chứng chỉ trong game.' if passed else 'Chưa đạt80 điểm; xem bài chữa và thi lại miễn phí.'),
+        return dict(message=f'Kết quả {score}/100. '+('Đạt chứng chỉ trong game.' if passed else 'Chưa đạt 80 điểm; xem bài chữa và thi lại miễn phí.'),
                     exam=dict(course=cid,score=score,passed=passed),celebrate=passed)
     if name.startswith('as_company_'):
         _need(certified(s,'vn_business'),'Thi đạt chứng chỉ Kế toán doanh nghiệp Việt Nam trước khi vào làm.')
@@ -176,22 +197,46 @@ def action(s,name,p):
             _need(not book['paid'],'Lương ca này đã nhận; không thể nhận lần hai.')
             from . import engine as e
             pay=round(c['job']['salary']*(.85 if c['job']['probation'] else 1))*salary_multiplier(s,'corp_accounting')
-            e.money(s,c,pay,f'Lương ca thực hành TT99 · tháng{book["period"]}',f'tt99-salary-{book["period"]}',category='salary')
+            e.money(s,c,pay,f'Lương ca thực hành TT99 · tháng {book["period"]}',f'tt99-salary-{book["period"]}',category='salary')
             from . import journey
             if s['journey']['story']:
                 journey._transfer(s,c,-pay,'Lương thực hành chuyển về ví','salary_to_wallet')
                 journey._wallet(s['journey'],pay,'salary',f'Lương ca TT99 tháng {book["period"]}','corp_accounting')
                 s['journey']['stats']['salary']+=pay
             book['paid']=True; c['job']['days_worked']+=1
-            return dict(message=f'Bộ sổ và báo cáo đã khớp. Nhận lương ca thực hành {pay}xu (lương hợp đồng ×3).',salary=pay,celebrate=True)
+            return dict(message=f'Bộ sổ và báo cáo đã khớp. Nhận lương ca thực hành {pay} xu'+(' (lương hợp đồng ×3).' if salary_multiplier(s,'corp_accounting')==3 else '.'),salary=pay,celebrate=True)
         if name=='as_company_next':
             _need(book['paid'],'Nhận lương và xem tổng kết trước khi mở kỳ kế tiếp.')
             company.next_period(book); return dict(message='Mở kỳ tiếp theo; số dư cuối kỳ trước chuyển thành số dư đầu kỳ này.')
     _need(False,'Thao tác học kế toán không tồn tại.')
 
 
-def public(s):
-    migrate(s);a=s['accounting_school']; courses=[]
+TABS = ('learn', 'exam', 'company')
+
+
+def summary(s):
+    """What public_state carries on every command: a few numbers (the curriculum and the books ride on as_*
+    results only, see view). A save that never opened the school gets the same shape, nothing is stored."""
+    a=_school(s); m=salary_multiplier(s,'corp_accounting')
+    c=s['careers'].get('corp_accounting'); base=c['job']['salary'] if isinstance(c,dict) and isinstance(c.get('job'),dict) else 0
+    book=a.get('company')
+    return dict(salary_multiplier=m,base_salary=base,effective_salary=base*m,
+                certified=[cid for cid in COURSE_IDS if certified(s,cid)],exam=a.get('active_exam') is not None,
+                company=dict(period=book['period'],at=book['at'],paid=book['paid']) if isinstance(book,dict) else None)
+
+
+def _spec(raw):
+    """p['view'] from the client: {tab, sub, course, glossary}. Anything else falls back to defaults."""
+    raw=raw if isinstance(raw,dict) else {}
+    pick=lambda k,allowed,default:raw.get(k) if isinstance(raw.get(k),str) and raw.get(k) in allowed else default
+    return dict(tab=pick('tab',TABS,None),sub=pick('sub',company.SECTIONS,'documents'),
+                course=pick('course',COURSE_IDS,None),glossary=raw.get('glossary') is True)
+
+
+def view(s,raw=None):
+    """The school's own view, for one tab (raw: see _spec); raw=None: every part (tests, tools)."""
+    spec=_spec(raw) if raw is not None else dict(tab=None,sub=None,course=None,glossary=True)
+    tab=spec['tab'];a=_school(s);courses=[]
     for cid in COURSE_IDS:
         c=course(cid); chapters=[];total=0;done=0
         for ch in c['chapters']:
@@ -204,37 +249,45 @@ def public(s):
             chapters.append(dict(id=ch['id'],title=ch['title'],lessons=lessons))
         reason='Hoàn thành tất cả bài tập của khóa.' if done<total else 'Thi đạt khóa cơ bản trước.' if cid=='vn_business' and not certified(s,'basic') else 'Hoàn thành bài thi đang làm.' if a['active_exam'] else ''
         rec=a['exams'].get(cid,{}); cert=rec.get('certificate')
-        courses.append(dict(id=cid,name=c['name'],description=c['description'],chapters=chapters,total=total,done=done,
+        full=tab is None or (tab=='learn' and spec['course'] in (None,cid))  # the lesson index of the course on screen
+        courses.append(dict(id=cid,name=c['name'],description=c['description'],chapters=chapters if full else None,total=total,done=done,
                             can_exam=not reason,exam_reason=reason,pass_mark=PASS_MARK,exam_count=min(DRAW[cid],len(_content().EXAM_BANK[cid])),
                             attempts=rec.get('attempts',0),best=rec.get('best',0),score=rec.get('score',0),
                             certificate={k:v for k,v in cert.items() if k!='proof'} if cert else None))
     lesson=None; lid=a['selected']
-    if lid:
+    if lid and tab in (None,'learn'):
         l=_content().LESSONS[lid]; rec=a['progress'][lid]
         lesson={k:tree_copy(v) for k,v in l.items() if k!='questions' and not k.startswith('_')}
-        lesson['questions']=[_safe_question(q,rec['answers'].get(q['id']),q['id'] in rec['answers']) for q in l['questions']]
+        lesson['questions']=[_safe_question(q,rec['answers'].get(q['id']),q['id'] in rec['answers'],l) for q in l['questions']]
         lesson['done']=lesson_done(s,lid)
     exam=None;paper=a['active_exam']
     if paper:
         at=len(paper['answers']);q=exam_question(paper['course'],paper['qs'][at])
-        exam=dict(course=paper['course'],name=course(paper['course'])['name'],at=at,total=len(paper['qs']),question=_safe_question(q))
+        exam=dict(course=paper['course'],name=course(paper['course'])['name'],at=at,total=len(paper['qs']),
+                  question=_safe_question(q) if tab in (None,'exam') else None)
     review={}
     for cid,rec in a['exams'].items():
         last=rec.get('last')
-        if last:
+        if last and (tab is None or (tab=='exam' and spec['course'] in (None,cid))):
             review[cid]=dict(score=rec['score'],passed=rec['score']>=PASS_MARK,questions=[dict(question=_safe_question(exam_question(cid,qid),last['answers'][qid],True),
                             correct=_check(exam_question(cid,qid),last['answers'][qid])) for qid in last['qs']])
-    c=s['careers'].get('corp_accounting');base=c['job']['salary'] if c else 0
-    return dict(courses=courses,selected=lid,lesson=lesson,active_exam=exam,review=review,
-                salary_multiplier=salary_multiplier(s,'corp_accounting'),base_salary=base,effective_salary=base*salary_multiplier(s,'corp_accounting'),
-                company_unlocked=certified(s,'vn_business'),company=company.public(a['company']) if a['company'] else None,
-                certificate_label='Chứng nhận hoàn thành trong Phố Có Chuyện',
-                reference=dict(label='Thông tư99/2025/TT-BTC chính thức',url=company.SOURCE))
+    book=a['company']
+    out=dict(summary(s),courses=courses,selected=lid,lesson=lesson,active_exam=exam,review=review,
+             company_unlocked=certified(s,'vn_business'),
+             company=company.public(book,spec['sub']) if book and tab in (None,'company') else None,
+             certificate_label='Chứng nhận hoàn thành trong Phố Có Chuyện',
+             reference=dict(label='Thông tư 99/2025/TT-BTC chính thức',url=company.SOURCE),tab=tab)
+    if spec['glossary']:out['glossary']=hints.glossary()
+    return out
+
+
+public=view  # every part: tests and tools
 
 
 def validate(s):
     from .engine import integer
-    a=s.get('accounting_school')
+    if 'accounting_school' not in s: return  # never opened (older saves, new players): nothing stored yet
+    a=s['accounting_school']
     _need(isinstance(a,dict) and set(a)==set(initial()) and type(a['v']) is int and a['v']==1,'Tiến độ học kế toán không hợp lệ.')
     lessons=_content().LESSONS
     _need(a['selected'] is None or (isinstance(a['selected'],str) and a['selected'] in lessons),'Bài học đang mở không tồn tại.')
