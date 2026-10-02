@@ -231,8 +231,8 @@ function head(){
   </header>`;
 }
 function strip(){
-  const f=F(),p=f.points||{},e=f.earn||{},got=(e.oaq?.today||0)+(e.ring?.today||0);
-  return `<div class="fh-strip" role="status"><span>👛 <b>${xu((f.wallet||0)-ltHold())}</b></span><span>💰 Hôm nay kiếm <b>${xu(got)}</b></span><button type="button" class="fh-pts" data-fh="tab" data-tab="board" data-fh-key="pts">🏆 <b>${fmt(p.total)}</b> điểm</button></div>`;
+  const f=F(),p=f.points||{},e=f.earn||{},got=f.today_xu?Object.values(f.today_xu).reduce((a,n)=>a+(Number(n)||0),0):(e.oaq?.today||0)+(e.ring?.today||0);   // every stall's xu this day (today_xu, 1.4.14+)
+  return `<div class="fh-strip" role="status"><span>👛 <b>${xu((f.wallet||0)-ltHold())}</b></span><span>💰 Hôm nay ${got<0?'lỗ':'kiếm'} <b>${xu(Math.abs(got))}</b></span><button type="button" class="fh-pts" data-fh="tab" data-tab="board" data-fh-key="pts">🏆 <b>${fmt(p.total)}</b> điểm</button></div>`;
 }
 /** Inside a stall: the way back to the gate. */
 function nav(){
