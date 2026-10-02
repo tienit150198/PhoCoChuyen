@@ -294,6 +294,9 @@ Then: bump `game/__init__.py` and add a CHANGELOG entry. Only if the owner asked
 
 ## 7. The move of 30/09 and the old server 103.179.190.51
 
+- **RETIRED 02/10 ~16:55 (owner: "xóa cái server cũ ở dkbike đi, đừng đụng vào dkbike").** On 103.179.190.51 our nginx sites (phocochuyen, mot-ngay-lam-nghe), the phocochuyen cert, ufw 8080, all mnl/mot-ngay units and timers, /opt /etc /var/lib /var/log game dirs, /var/backups/mot-ngay-lam-nghe-pg, user mnl, /root leftovers, /opt/pyspy and the `phocochuyen` database + roles mnl/mnl_repl were removed; the host PostgreSQL (it held only our db) is stopped and disabled. dk_bike untouched (10 containers up, cms 200, api same as before). Final dump kept on the new server: `/var/lib/mot-ngay-lam-nghe/from-old-server/phocochuyen-old-final-20261002.dump` (pg_dump -Fc, 569 MB, sha256 34dcc5ff…, 51 tables). Our key was removed from its authorized_keys; on the new server `mnl-mirror-old`, `/root/.ssh/mnl_old*`, `mnl-pg-tunnel.service` and `conf.d/mnl-realip.conf` are gone. Do not mirror releases any more. The text below is history.
+
+
 - **How it went:** streaming replica over an SSH tunnel (built 20:00–20:16 at 15 MB/s), tested on a
   throwaway copy (browser + load test), maintenance notice 21:00–21:10, then at 21:00:23 the old game stopped,
   the replica confirmed the last WAL position and was promoted, the new game started and the old nginx began
