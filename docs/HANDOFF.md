@@ -5,7 +5,8 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **1.4.10** (02/10 23:33; see "1.3.0" below), 35 careers, PostgreSQL 16,
+- **03/10 fair releases:** 1.4.11 (00:08) quick fix, 1.4.12 (00:37) no scroll jumps / faster taps / chiếu trong clarity, 1.4.13 (01:11, owner said deploy during the 01:00 wedding) = branch `rel-1.4.13b` @ e85bebf: no daily limits at the fair (money, rounds, earnings, points; wallet only), win_p 70% → 45% taper from +2000 to +5000 net, xóc đĩa 1:1 raids 2% fine stake//4, ném vòng many rings per bottle, lô tô unlimited Kinh hụt + called-number highlight (also lật ngược), new 🎯 darts (game/fair_darts.py), 500 xu gift + Vay nóng 20% (journey.fair_cash, fh.settle at close), GAP_MS 400, ô ăn quan re-pick. In progress: walkable fairground (feat/fair-walk, has odds unification 77ec031), bundle `rel-bundle` (desk-ui, acc-school TT99, pagoda-voice, home-rooms) not yet shipped.
+- **Production:** https://phocochuyen.io.vn runs **1.4.13** (03/10 01:11; see "1.3.0" below), 35 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
