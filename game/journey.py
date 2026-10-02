@@ -31,6 +31,7 @@ from . import wardrobe as wd   # 👗 Tủ đồ (game/wardrobe.py)
 from . import housing as hs   # 🏠 Nhà của bạn (game/housing.py)
 from . import reno as rn   # 🛠️ Sửa và trang trí nhà (game/reno.py)
 from . import deco as dc   # 🪴 Bày trí phòng (game/deco.py)
+from . import garage as gr   # 🚗 Xe & phương tiện (game/garage.py)
 from . import system_gift as sg   # 🎁 Quà từ Phố Có Chuyện (game/system_gift.py)
 from . import live_effects as lfx   # 🧧 rewards from the live service (game/live_effects.py)
 from . import fair as fh   # 🏮 Hội chợ dân gian (game/fair.py)
@@ -444,6 +445,7 @@ def upgrade(j: dict) -> None:
     hs.upgrade(j)   # 🏠
     rn.upgrade(j)   # 🛠️
     dc.upgrade(j)   # 🪴
+    gr.upgrade(j)   # 🚗
     if j.get('story'):
         for n in range(1, min(int(j.get('chapter', 1)), LAST) + 1):
             _unlock_chapter(j, n)
@@ -787,6 +789,8 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(rn.action(s, name, p))
     elif name.startswith('jr_deco_'):
         result.update(dc.action(s, name, p))
+    elif name.startswith('jr_garage_'):
+        result.update(gr.action(s, name, p))
     elif name.startswith('jr_needs_'):
         result.update(nd.action(s, name, p))
     else:
@@ -868,7 +872,8 @@ def public(s: dict) -> dict:
         clean_days=j['clean_days'], history=list(reversed(j['history'][-30:])), news=tree_copy(j['news']),
         suggested=suggested(s, ctx), tasks=ctx['tasks'], worked=ctx['places'],
         stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')},
-        bank=bk.public(s), home=hs.public(s), reno=rn.public(s), deco=dc.public(s), **ct.public(s))
+        bank=bk.public(s), home=hs.public(s), reno=rn.public(s), deco=dc.public(s),
+        garage=gr.public(s), **ct.public(s))
 
 
 def _skill_ids() -> list[str]:
@@ -892,7 +897,8 @@ def content() -> dict:
                 {k: t[k] for k in ('id', 'cat', 'emoji', 'name', 'desc')} for t in TITLES],
         skills=_emp().STRENGTHS, levels=LEVEL_NAMES, reserve=RESERVE, reopen_fee=REOPEN_FEE, start_wallet=START_WALLET,
         unlock_chapter={cid: n for n, ids in CH_UNLOCKS.items() for cid in ids if cid in CAREERS}, certs=ct.content(),
-        wardrobe=wd.content(), homes=hs.catalogue(), reno=rn.catalogue(), deco=dc.catalogue())
+        wardrobe=wd.content(), homes=hs.catalogue(), reno=rn.catalogue(), deco=dc.catalogue(),
+        garage=gr.catalogue())
 
 
 def validate(s: dict) -> None:
@@ -959,3 +965,4 @@ def validate(s: dict) -> None:
     hs.validate(s)
     rn.validate(s)
     dc.validate(s)
+    gr.validate(s)   # 🚗 journey['garage'] (optional)

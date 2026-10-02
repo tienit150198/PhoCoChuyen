@@ -120,6 +120,7 @@ async function onClick(op,data){
     case'look':startBuy(data.kind);S.flash=null;render();S.dlg.querySelector('.hs-body')?.scrollTo?.(0,0);return;
     case'bank':S.dlg.close();(await import('./bank.js')).openBank(S.env,data.tab||'save');return;
     case'inside':S.dlg.close();(await import('./reno.js')).openReno(S.env,data.mode);return;   // 🛠️ Trong nhà: xem, sửa, trang trí
+    case'garage':S.dlg.close();(await import('./garage.js')).openGarage(S.env);return;   // 🚗 the vehicle parked out front
     case'rent':{const m=MK().find(x=>x.id===data.kind);if(!m)return;
       const was=v.rent,back=was?.deposit||0,bed=m.id===DORM,unit=bed?'Tiền giường':'Tiền phòng';
       const body=(was?`Trả ${lname(was.name)}, nhận lại cọc ${xu(back)}. `:'')+`Cọc ${xu(m.deposit)}, trả lại khi dọn đi. ${unit} ${xu(m.rent)}/ngày (gác Bà Tám: ${xu(v.attic_rent)}).`+(bed?' Ở ghép với 3 bạn cùng phòng.':'');
@@ -254,11 +255,19 @@ function placeCard(v){
   else if(p.where_id==='own'&&J().reno){const R=J().reno,worn=R.parts.filter(x=>x.worn).length;
     actions=`<p class="hs-chips"><span>🪴 Ấm cúng ${R.cozy}</span><span>🛠️ ${worn?`${worn} chỗ cần sửa`:'Nhà sạch đẹp'}</span></p><div class="bk-actions">${btn('🚪 Vào nhà','inside',{},'primary')}${worn?btn('🛠️ Sửa nhà','inside',{mode:'fix'},'ghost'):''}</div>`;}
   else if(DC)actions=`${deco}<div class="bk-actions">${setUp}</div>`;
+  actions+=parked();
   const comfort=p.comfort?`<p class="bk-hint"><span>😊 Tinh thần +${p.comfort} mỗi sáng</span>${v.own?.loan?.late?' <span>(tạm dừng khi trễ hạn trả góp)</span>':''}</p>`:'';
   return `<section class="bk-card hs-place ${esc(p.where_id||'')}"${toneStyle(p.group)}><div class="hs-place-top"><span class="hs-emoji" aria-hidden="true">${p.emoji||'🏚️'}</span><div class="grow"><small>Nơi bạn đang ở</small><h3>${esc(p.name)}</h3><small>${esc(p.where||'')}</small></div></div>
     ${who}<p class="hs-cost">${costLine}</p>${comfort}${p.perk&&!bed?`<p class="bk-hint">${esc(p.perk)}</p>`:''}${actions}</section>`;
 }
 
+/* 🚗 The vehicle the player rides (game/garage.py), parked out front: one line, a tap opens the garage. */
+function parked(){
+  const g=J().garage,c=g?.ride&&g.cars?.find(x=>x.id===g.ride),it=c&&(S.env?.api?.content?.journey?.garage?.vehicles||[]).find(x=>x.id===c.id);
+  if(!it)return '';
+  const hex=(S.env.api.content.journey.garage.paints||[]).find(x=>x.id===c.color)?.hex||'';
+  return `<div class="bk-actions"><button type="button" class="btn ghost small" data-hs="garage"${S.busy?' disabled':''}><span aria-hidden="true">🅿️ ${it.emoji}</span> ${hex?`<i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${esc(hex)}" aria-hidden="true"></i>`:''}${esc(it.name)} đậu trước nhà</button></div>`;
+}
 function loanCard(v){
   const o=v.own,L=o?.loan;if(!L)return '';
   const day=v.life_day,R=v.rules;
