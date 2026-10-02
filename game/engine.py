@@ -525,7 +525,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     care_notes=[]
     if action=="select_career":
         need(career in CAREERS,"Nghề này đang ở danh mục mở rộng, chưa chơi được.")
-        jr.gate(s,career,action,internal)
+        jr.gate(s,career,action,internal,p)
         left=ab.check(s,career,p,internal)  # bỏ dở việc: work in progress at the place you leave (confirm + penalty)
         jr.on_select(s,career)
         s["current"]=career
@@ -573,7 +573,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         need(internal,"Thao tác chỉ dành cho máy chủ.","forbidden")
         return lfx.apply(s,p)
     need(career in CAREERS,"Chọn một nghề trước nhé.")
-    jr.gate(s,career,action,internal)
+    jr.gate(s,career,action,internal,p)
     if career!=s.get("current"):ab.check(s,career,{},internal)  # leaving work in progress only through select_career
     c=s["careers"][career]
     s["current"]=career

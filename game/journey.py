@@ -40,6 +40,7 @@ from . import needs as nd   # 🍚 No bụng, 😴 Tỉnh táo (game/needs.py)
 from . import chua as cg    # 🛕 Đi chùa (game/chua.py)
 from . import relax as rx   # 🏊 Thư giãn ở nhà: hồ bơi, bồn tắm (game/relax.py)
 from . import x3_week as x3   # 🔥 Nghề x3 trong tuần (game/x3_week.py)
+from . import accounting_jobs as aj   # 💼 Việc làm kế toán: exam gate, entry check, ×3/×5 (game/accounting_jobs.py)
 from . import whats_new as wn   # "Có gì mới": read already for a brand-new save (_welcome_settings)
 
 VERSION = 1
@@ -470,7 +471,10 @@ def roll_mode(s: dict, career: str, day: int) -> str:
 
 def is_unlocked(s: dict, career: str) -> bool:
     j = s.get('journey')
-    return not j or not j.get('story') or career in j.get('unlocked', ())
+    if not j or not j.get('story'):
+        return True
+    # 💼 an accounting place: its certificate opens it early, and without it (nor past work there) it stays shut
+    return (career in j.get('unlocked', ()) or aj.opens(s, career)) and aj.can_work(s, career)[0]
 
 
 def _playable(s: dict, cid: str) -> bool:
@@ -511,15 +515,19 @@ def living_cost(j: dict) -> dict:
 
 
 # ---------------------------------------------------------------- engine hooks
-def gate(s: dict, career: str, action: str, internal: bool = False) -> None:
-    """Called for every career action before anything changes."""
+def gate(s: dict, career: str, action: str, internal: bool = False, p: dict | None = None) -> None:
+    """Called for every career action before anything changes (p: its payload)."""
     e = _core()
     if action == 'life_mode':
         raise e.GameError('Nhịp mỗi ngày do khu phố quyết định. Cứ mở cửa, hôm nay ra sao sẽ biết ngay!')
     j = s['journey']
     if internal or not j['story']:
         return
-    e.need(career in j['unlocked'], LOCKED, 'locked')
+    e.need(career in j['unlocked'] or aj.opens(s, career), LOCKED, 'locked')
+    ok, why = aj.can_work(s, career)   # 💼 an accounting place takes you once you pass its exam
+    e.need(ok, why, 'need_cert')
+    if action == 'start_day' and not s['careers'][career]['open']:
+        aj.gate_start(s, career, p if isinstance(p, dict) else {})   # kiểm tra kiến thức đầu ca
     if action == 'select_career':
         e.need(j['intro'] or j['gender'], 'Chọn nhân vật của bạn trước nhé.', 'no_profile')
     if action == 'start_day':
@@ -545,12 +553,15 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
     j['days'] = ar.last(j['days'] + [dict(d=day, c=career, m=ended_mode)], 60, 'journey.days', ar.JOURNEY)
     notes = []
     # Salary is personal money: it lands in the wallet on payday.
-    pay = int(((result.get('summary') or {}).get('job') or {}).get('salary') or 0)
+    job_note = ((result.get('summary') or {}).get('job') or {})
+    pay = int(job_note.get('salary') or 0)
     if pay > 0 and c['money'] >= pay:
+        times = job_note.get('multiplier') if isinstance(job_note.get('multiplier'), int) else 1   # 💼 ×3 / ×5 kế toán
         _transfer(s, c, -pay, 'Lương chuyển về ví', 'salary_to_wallet')
-        _wallet(j, pay, 'salary', f'Lương ngày {c["day"] - 1} · {_place(career)}', career)
+        _wallet(j, pay, 'salary', f'Lương ngày {c["day"] - 1} · {_place(career)}' + (f' · x{times}' if times > 1 else ''), career)
         j['stats']['salary'] += pay
-        notes.append(f'Lương {pay} xu đã về ví của bạn.')
+        notes.append(f'Lương {pay} xu đã về ví của bạn.' if times <= 1 else
+                     f'Lương kế toán x{times}{" ngày lễ" if times == aj.X5 else ""}: {pay} xu đã về ví của bạn.')
     # 🔥 This career's x3 day (game/x3_week.py): the day's net once more, twice, into the wallet.
     if x3.on(career):
         extra = x3.bonus(int((result.get('summary') or {}).get('net') or 0))
@@ -650,6 +661,8 @@ def after(s: dict, career: str | None, action: str, p: dict, result: dict) -> No
             result.setdefault('effects', []).append(line)
     if not j['story']:
         return
+    if action == 'start_day' and career in s['careers'] and career not in j['unlocked'] and s['careers'][career].get('started'):
+        j['unlocked'].append(career)   # 💼 opened early by a certificate: kept once worked (an older build accepts it)
     for cid in list(j['paused']):
         if not s['careers'].get(cid, {}).get('started'):
             j['paused'].pop(cid)
@@ -877,7 +890,8 @@ def public(s: dict) -> dict:
     eq = TITLE_INDEX.get(j['equipped'])
     return dict(
         story=j['story'], gender=j['gender'], intro=j['intro'], chapter=j['chapter'], done=list(j['done']),
-        finale=j['chapter'] > LAST, unlocked=list(j['unlocked']) if j['story'] else list(s['careers']),
+        finale=j['chapter'] > LAST,
+        unlocked=list(j['unlocked']) + [cid for cid in aj.opened(s) if cid not in j['unlocked']] if j['story'] else list(s['careers']),
         wallet=j['wallet'], debt=max(0, -j['wallet']), life_day=j['life_day'], living=living_cost(j),
         places=places, titles=sorted(([tid, day] for tid, day in j['titles'].items()), key=lambda x: (-x[1], x[0])),
         equipped=j['equipped'], equipped_title=dict(id=eq['id'], name=eq['name'], emoji=eq['emoji']) if eq else None,

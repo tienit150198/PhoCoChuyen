@@ -80,7 +80,10 @@ def certified(s,cid):
     return isinstance(cert,dict) and cert.get('id')=='pcc-accounting-'+cid
 
 
-def salary_multiplier(s,career): return 3 if career=='corp_accounting' and certified(s,'vn_business') else 1
+def salary_multiplier(s,career):
+    """×3 at an accounting place with its certificate, ×5 on a public holiday (game/accounting_jobs.py)."""
+    from . import accounting_jobs as jobs
+    return jobs.multiplier(s,career)
 
 
 def _draw(s,cid,attempt):
@@ -116,6 +119,9 @@ def _safe_question(q,answer=None,solved=False,lesson=None):
 def action(s,name,p):
     """One as_* command. Its result carries the school's own view (`accounting_view`), shaped by the optional
     p['view'] (tab, company sub-tab, course, glossary): public_state only carries summary()."""
+    if name in ('as_job_check','as_job_grade'):  # 💼 the entry check of an accounting shift: no school view, nothing stored
+        from . import accounting_jobs as jobs
+        return jobs.action(s,name,p)
     result=_action(s,name,p)
     result['accounting_view']=view(s,p.get('view'))
     return result
@@ -173,7 +179,7 @@ def _action(s,name,p):
             rec['certificate']=dict(id='pcc-accounting-'+cid,course=cid,score=score,date=ct.today_vn(),
                                     serial=ct.serial(seed,cid,rec['attempts']),proof=tree_copy(paper))
         a['active_exam']=None
-        return dict(message=f'Kết quả {score}/100. '+('Đạt chứng chỉ trong game.' if passed else 'Chưa đạt 80 điểm; xem bài chữa và thi lại miễn phí.'),
+        return dict(message=f'Kết quả {score}/100. '+(_passed_line(cid) if passed else 'Chưa đạt 80 điểm; xem bài chữa và thi lại miễn phí.'),
                     exam=dict(course=cid,score=score,passed=passed),celebrate=passed)
     if name.startswith('as_company_'):
         _need(certified(s,'vn_business'),'Thi đạt chứng chỉ Kế toán doanh nghiệp Việt Nam trước khi vào làm.')
@@ -186,7 +192,7 @@ def _action(s,name,p):
                 _need(not c.get('open'),'Khép ca kế toán hiện tại trước khi nhận việc.')
                 c['job']=emp.hired_record('corp_accounting','ca-hq',c['day'])
             if a['company'] is None: a['company']=company.initial()
-            return dict(message='Nhận việc thực hành tại Mây Tre Xanh. Lương kế toán doanh nghiệp ×3; mở chứng từ và ghi sổ bằng VND.')
+            return dict(message=f'Nhận việc thực hành tại Mây Tre Xanh. Lương kế toán doanh nghiệp ×{salary_multiplier(s,"corp_accounting")}; mở chứng từ và ghi sổ bằng VND.')
         book=a['company']; _need(isinstance(book,dict),'Nhận việc doanh nghiệp trước khi làm hồ sơ.')
         _need(c['job']['status']=='hired','Nhận lại việc kế toán trước khi tiếp tục doanh nghiệp.')
         if name=='as_company_inspect':
@@ -196,7 +202,9 @@ def _action(s,name,p):
             _need(book['at']==len(company.tasks(book)),'Hoàn thành sổ và bốn báo cáo trước khi nhận lương ca thực hành.')
             _need(not book['paid'],'Lương ca này đã nhận; không thể nhận lần hai.')
             from . import engine as e
-            pay=round(c['job']['salary']*(.85 if c['job']['probation'] else 1))*salary_multiplier(s,'corp_accounting')
+            from . import accounting_jobs as jobs
+            m=salary_multiplier(s,'corp_accounting')
+            pay=jobs.pay(round(c['job']['salary']*(.85 if c['job']['probation'] else 1)),m)
             e.money(s,c,pay,f'Lương ca thực hành TT99 · tháng {book["period"]}',f'tt99-salary-{book["period"]}',category='salary')
             from . import journey
             if s['journey']['story']:
@@ -204,11 +212,23 @@ def _action(s,name,p):
                 journey._wallet(s['journey'],pay,'salary',f'Lương ca TT99 tháng {book["period"]}','corp_accounting')
                 s['journey']['stats']['salary']+=pay
             book['paid']=True; c['job']['days_worked']+=1
-            return dict(message=f'Bộ sổ và báo cáo đã khớp. Nhận lương ca thực hành {pay} xu'+(' (lương hợp đồng ×3).' if salary_multiplier(s,'corp_accounting')==3 else '.'),salary=pay,celebrate=True)
+            return dict(message=f'Bộ sổ và báo cáo đã khớp. Nhận lương ca thực hành {pay} xu'+(f' (lương hợp đồng ×{m}).' if m>1 else '.'),salary=pay,celebrate=True)
         if name=='as_company_next':
             _need(book['paid'],'Nhận lương và xem tổng kết trước khi mở kỳ kế tiếp.')
             company.next_period(book); return dict(message='Mở kỳ tiếp theo; số dư cuối kỳ trước chuyển thành số dư đầu kỳ này.')
     _need(False,'Thao tác học kế toán không tồn tại.')
+
+
+def _passed_line(cid):
+    """The exam result line of a pass: the places the certificate opens (Giới thiệu việc làm, exam tab)."""
+    from . import accounting_jobs as jobs
+    places=[jobs._place(k) for k,c in jobs.JOBS.items() if c==cid]
+    return 'Đạt chứng chỉ trong game.'+(f' Giới thiệu việc làm: {", ".join(places)} nhận bạn, lương kế toán ×{jobs.X3}.' if places else '')
+
+
+def _referral(s):
+    from . import accounting_jobs as jobs
+    return jobs.referral(s)
 
 
 TABS = ('learn', 'exam', 'company')
@@ -217,12 +237,14 @@ TABS = ('learn', 'exam', 'company')
 def summary(s):
     """What public_state carries on every command: a few numbers (the curriculum and the books ride on as_*
     results only, see view). A save that never opened the school gets the same shape, nothing is stored."""
+    from . import accounting_jobs as jobs
     a=_school(s); m=salary_multiplier(s,'corp_accounting')
     c=s['careers'].get('corp_accounting'); base=c['job']['salary'] if isinstance(c,dict) and isinstance(c.get('job'),dict) else 0
     book=a.get('company')
-    return dict(salary_multiplier=m,base_salary=base,effective_salary=base*m,
+    return dict(salary_multiplier=m,base_salary=base,effective_salary=jobs.pay(base,m),
                 certified=[cid for cid in COURSE_IDS if certified(s,cid)],exam=a.get('active_exam') is not None,
-                company=dict(period=book['period'],at=book['at'],paid=book['paid']) if isinstance(book,dict) else None)
+                company=dict(period=book['period'],at=book['at'],paid=book['paid']) if isinstance(book,dict) else None,
+                jobs=jobs.summary(s))  # 💼 accounting places: the rule, today's rate (×3, ×5 on a holiday)
 
 
 def _spec(raw):
@@ -273,7 +295,7 @@ def view(s,raw=None):
                             correct=_check(exam_question(cid,qid),last['answers'][qid])) for qid in last['qs']])
     book=a['company']
     out=dict(summary(s),courses=courses,selected=lid,lesson=lesson,active_exam=exam,review=review,
-             company_unlocked=certified(s,'vn_business'),
+             company_unlocked=certified(s,'vn_business'),referral=_referral(s),
              company=company.public(book,spec['sub']) if book and tab in (None,'company') else None,
              certificate_label='Chứng nhận hoàn thành trong Phố Có Chuyện',
              reference=dict(label='Thông tư 99/2025/TT-BTC chính thức',url=company.SOURCE),tab=tab)
