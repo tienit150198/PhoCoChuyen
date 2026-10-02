@@ -2634,3 +2634,18 @@ html[data-layout="phone"] .cozy-till.hud-money:has(.tight){gap:3px}
 html[data-layout="phone"] .hud-chip.tight .hud-ico,html[lang="en"][data-layout="phone"] .hud-chip .hud-ico{display:none}   /* "Fund", "Wallet" are longer words */
 html[data-layout="phone"] .topbar .hud-day{flex-shrink:0}
 body.reduce-motion .hud-chip.bump b{animation:none}
+/* Inside / outside (public/js/scenes/areas.js): one chip per area of the workplace, beside or under the title card. */
+.scene-areas{position:absolute;z-index:2;left:16px;top:60px;display:flex;gap:3px;padding:3px;border-radius:var(--radius-pill);background:color-mix(in srgb,var(--surface) 90%,transparent);border:1px solid var(--line);box-shadow:var(--shadow-sm);overflow-x:auto;scrollbar-width:none;max-width:calc(100% - 32px)}
+.scene-areas::-webkit-scrollbar{display:none}
+.scene-areas[hidden]{display:none}
+.sa-chip{position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:34px;min-width:34px;padding:0 8px;border:0;border-radius:var(--radius-pill);background:transparent;color:var(--ink-2);font:inherit;font-size:.833rem;line-height:1;cursor:pointer}
+.sa-chip span{font-size:1.05rem}
+.sa-chip b{font-weight:700;white-space:nowrap}
+.sa-chip.on{background:var(--career-strong);color:var(--career-ink)}
+.sa-chip:not(.on):hover{background:var(--surface-2)}
+.sa-chip:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.sa-dot{position:absolute;top:3px;right:3px;width:8px;height:8px;border-radius:50%;background:var(--star);box-shadow:0 0 0 2px var(--surface)}
+html[data-layout="phone"] .scene-areas{left:10px}
+html[data-layout="phone"] .sa-chip{min-height:32px;min-width:32px;padding:0 6px;font-size:.8rem}
+@media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) body:not(.reduce-motion) .sa-dot{animation:sa-pulse 1.6s ease-in-out infinite}}
+@keyframes sa-pulse{50%{transform:scale(1.35)}}

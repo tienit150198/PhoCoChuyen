@@ -13,6 +13,7 @@ import {World} from './world.js';
 import {t as tr} from './v4/i18n.js';
 import {R,E,L,T,P,fit,heart,bloom,plantAt,mascot} from './scenes/kit.js';
 import {sceneFor,wordsFor} from './scenes/index.js';
+import {areaList,areaOf,planOf,areaSpots,areaTap,enterArea,autoArea,focusDoor,doorTags,areaFade,fading,areaBar,onMain} from './scenes/areas.js';  // inside / outside
 import shop from './scenes/shop.js';
 import {language} from './v4/i18n.js';
 import {daylight} from './v4/dayclock.js';
@@ -60,9 +61,18 @@ export class BobaWorld extends World {
  /** The scene kind for this career (public/js/scenes); redraws once a lazily loaded kind arrives. Before the
   * first state (a frame drawn while the page boots) the storefront stands in: loading the placeholder career's
   * kind then would cost a request nobody sees, on the slowest part of a cold start. */
- scene(){return this.state?sceneFor(this.career,()=>{if(this.c&&this.width)this.setupObjects();}):shop;}
+ scene(){return this.state?sceneFor(this.career,()=>{if(this.c&&this.width){this.setupObjects();autoArea(this);}}):shop;}
  words(){return wordsFor(this.career);}
- plan(){const s=this.scene();return this.isPortrait()?s.plan.port:s.plan.land;}
+ /** The plan of the area the player is in (scenes/areas.js): the scene's own, or an interior's. */
+ plan(){return planOf(this,this.scene());}
+ /** Lamp posts and outdoor light: the area says (an interior of a street scene is indoors), else the kind. */
+ outdoor(){const a=areaOf(this);return a&&!a.main?!!a.outdoor:null;}
+ update(state,content){super.update(state,content);autoArea(this);}
+ busy(){return super.busy()||fading(this);}
+ goToHotspot(h){if(!areaTap(this,h))super.goToHotspot(h);}
+ /** The workplace's areas (ids) and stepping into one (scenes/areas.js; the area chips and the sweeps use these). */
+ areaIds(){return areaList(this).map(a=>a.id);}
+ enterArea(id){enterArea(this,id);}
  preview(career){this.previewRendering=true;try{return super.preview(career);}finally{this.previewRendering=false;}}
  resize(){const was=this.isPortrait();super.resize();if(this.c){if(was!==this.isPortrait()){this.player.path=[];this.player.goal=null;this.pending=null;}this.setupObjects();}}
  say(text,npc=null){super.say(text,npc);this.speech.npc=npc;}
@@ -91,8 +101,8 @@ export class BobaWorld extends World {
      // Phones: fit the room between the title card and the task card that float over the canvas, measured
      // live. The sign drawn at the top of the scene (y < 140) repeats the title card, so it may go under it.
      const doc=globalThis.document,cv=this.canvas?.getBoundingClientRect?.(),box=sel=>{const r=doc?.querySelector?.(sel)?.getBoundingClientRect?.();return r&&r.height?r:null;};
-     const head=box('.scene-heading'),hud=box('#taskHUD');
-     const top=cv&&head?Math.max(8,head.bottom-cv.top+6):106,bottom=cv&&hud?Math.max(0,cv.bottom-hud.top+4):110,band=Math.max(180,this.height-top-bottom);
+     const head=box('.scene-heading'),bar=box('#sceneAreas:not([hidden])'),hud=box('#taskHUD');
+     const top=cv&&head?Math.max(8,head.bottom-cv.top+6,bar?bar.bottom-cv.top+6:0):106,bottom=cv&&hud?Math.max(0,cv.bottom-hud.top+4):110,band=Math.max(180,this.height-top-bottom);
      const from=140,to=850,span=to-from;this.scale=Math.min(this.width/705,band/span);
      this.offset={x:(this.width-700*this.scale)/2,y:top+(band-span*this.scale)/2-from*this.scale};return;}
    // Tablets float the task card over the canvas's right edge, so keep that strip clear. The desktop layout
@@ -131,9 +141,9 @@ export class BobaWorld extends World {
  decorFootprints(){const pl=this.plan(),out=[];
    for(const [id,entry] of Object.entries(this.c?.decor||{})){const at=pl.decor[entry?.spot],f=DECOR_FOOT[id];if(at&&f)out.push([at[0]+f[0],at[1]+f[1],at[0]+f[2],at[1]+f[3]]);}
    return out;}
- setupObjects(){const c=this.c||{},pl=this.plan(),tile=([x,y])=>this.unproject(x,y),tier=c.ops?.property?.tier||'cozy';
+ setupObjects(){const c=this.c||{},pl=this.plan(),tile=([x,y])=>this.unproject(x,y),tier=c.ops?.property?.tier||'cozy',area=areaOf(this),main=!area||area.main,crowd=main||!!area.people;
    this.hotspots=[];this.people=[];
-   this.props=[...pl.blocks,...(tier!=='cozy'?[pl.bench]:[]),...(tier==='garden'?pl.garden.map(([x,y])=>[x-12,y-6,x+12,y+4]):[]),...this.decorFootprints()];
+   this.props=main?[...pl.blocks,...(tier!=='cozy'?[pl.bench]:[]),...(tier==='garden'?pl.garden.map(([x,y])=>[x-12,y-6,x+12,y+4]):[]),...this.decorFootprints()]:[...pl.blocks];
    const add=(id,label,at,range,go,z=0)=>{const t=tile(at);this.hotspots.push({id,label,x:t.x,y:t.y,z,range,point:this.project(t.x,t.y,z),approach:go.map(tile)});};
    const spot=(key,id,label)=>{const [at,range,go]=pl.spots[key];add(id,label,at,range,go);};
    // Talk to someone across the counter when they stand in front of it,
@@ -143,6 +153,7 @@ export class BobaWorld extends World {
      const spots=go||[...(across&&feet[0]>=pl.counterSpan[0]&&feet[0]<=pl.counterSpan[1]?[[feet[0],pl.lane]]:[]),...beside(feet)];
      add(id,label,feet,39,spots,49);this.people.push({id,x:t.x,y:t.y,rx:PERSON.rx+sway,ry:PERSON.ry});};
    const w=this.words(),station=this.game?.catalogue?.find(x=>x.id===this.career)?.station;
+   if(main){
    spot('shelf','shelf',w.shelf);
    spot('evidence','evidence',w.evidence);
    spot('workbench','workbench',station||'Bàn làm việc');
@@ -154,17 +165,24 @@ export class BobaWorld extends World {
    spot('security','ops:security',w.security);
    spot('door','door',c.open?w.door_open:w.door_closed);
    spot('pet','pet',w.pet);
+   }
+   // Doors to the other areas, things to look at, and an interior's own stations (scenes/areas.js).
+   areaSpots(this,pl,add,{...w,workbench:station||'Bàn làm việc',door:c.open?w.door_open:w.door_closed});
+   const hired=main?(c.ops?.staff||[]).filter(e=>e.status==='hired'):[];
+   if(crowd){
    const active=c.tasks?.filter(t=>!['completed','referred','cancelled'].includes(t.status))||[],used=new Set();let slot=0;
-   for(const t of active){if(slot>=4)break;if(used.has(t.npc))continue;used.add(t.npc);person('npc:'+t.npc,this.npcName(t.npc),pl.customers[slot++],{across:true});}
+   for(const t of active){if(slot>=(pl.customers?.length||0))break;if(used.has(t.npc))continue;used.add(t.npc);person('npc:'+t.npc,this.npcName(t.npc),pl.customers[slot++],{across:true});}
+   if(main){   // an interior only has the task people
    if(c.event&&c.event.stage!=='resolved')person('event','Chuyện mới',pl.event);
-   const hired=(c.ops?.staff||[]).filter(e=>e.status==='hired');
    hired.forEach((e,i)=>{const base=this.staffBase(i),working=this.staffWorking(e);person('staff:'+e.id,e.name+' · '+(working?'đang phụ':'nghỉ'),base,{sway:working?pl.sway:0,go:[[base[0],pl.lane]]});});
    if(c.upgrades?.includes('assistant')&&!hired.length){const base=this.staffBase(0);person('assistant','Bạn phụ việc cũ',base,{go:[[base[0],pl.lane]]});}
    const caseNow=c.ops?.security?.current_case;
    if(caseNow&&['reported','result'].includes(caseNow.status))person('officer','Công an khu phố',pl.officer);
+   }}
    // Staff hit targets start at their base spot; animate() keeps them in step.
    hired.forEach((e,i)=>{const h=this.hotspots.find(h=>h.id==='staff:'+e.id);if(h){Object.assign(h,this.staffPosition(i,e));h.point=this.project(h.x,h.y,h.z);}});
    this.navBuild();this.rev=(this.rev||0)+1;this.wake?.(true);
+   if(areaBar(this))this.layout();
  }
  staffBase(i){const s=this.plan().staff;return [s.x+i*s.step,s.y];}
  staffWorking(e){return !!(this.c?.open&&e.on_shift&&e.rest_until<=this.c.turn);}
@@ -180,7 +198,7 @@ export class BobaWorld extends World {
  }
  palette(){const meta=!themes[this.career]&&this.game?.catalogue?.find(x=>x.id===this.career);const p={...(themes[this.career]||(meta?pluginTheme(meta):themes.mother_baby))};if(this.c?.life?.shop_name)p.title=this.c.life.shop_name;if(this.c?.theme==='sage')p.wall='#edf5e8';if(this.c?.theme==='lavender')p.wall='#f3e9fb';if(this.c?.theme==='warm')p.wall='#fff0da';return p;}
  plantAt(x,y,size=1){plantAt(this.ctx,x,y,size);}
- drawRoom(){this.scene().room(this,this.palette());}
+ drawRoom(){const a=areaOf(this);if(a&&!a.main)a.room(this,this.palette());else this.scene().room(this,this.palette());}
  /** Storefront back wall (scenes/shop.js). */
  shopRoom(){if(this.isPortrait()){this.portraitRoom();return;}const c=this.ctx,p=this.palette();
    E(c,605,724,503,30,'#cba88d22');R(c,85,165,1030,550,'#e3b694',35);R(c,96,168,1008,533,'#fff9ee',30,'#d9ac90',3);
@@ -211,7 +229,7 @@ export class BobaWorld extends World {
    this.securityProps();
  }
  /** Things standing on the floor, as [depth, draw] pairs sorted with people. */
- floorProps(){const c=this.ctx,p=this.palette(),out=this.scene().props(this,p);
+ floorProps(){const p=this.palette(),a=areaOf(this);if(a&&!a.main)return a.props(this,p);const out=this.scene().props(this,p);
    out.push(...this.decorProps(p));return out;}
  /** Storefront furniture (scenes/shop.js): counter, store, ledger, door sign, bench. */
  shopProps(){const c=this.ctx,p=this.palette(),w=this.words(),tier=this.c?.ops?.property?.tier||'cozy',open=this.c?.open,items=this.c?.ops?.security?.items||[],out=[];
@@ -242,7 +260,7 @@ export class BobaWorld extends World {
    return out;
  }
  /** Flat or wall-hung decor, drawn before anyone stands on the floor. */
- wallDecor(){const c=this.ctx,p=this.palette(),pl=this.plan(),portrait=this.isPortrait();
+ wallDecor(){if(!onMain(this))return;const c=this.ctx,p=this.palette(),pl=this.plan(),portrait=this.isPortrait();
    for(const [id,entry] of Object.entries(this.c?.decor||{})){
      if(id==='rug'){const at=pl.decor[entry?.spot]||pl.sill.rug;E(c,at[0],at[1],portrait?40:45,portrait?15:16,'#d4b6ce66');T(c,'♡',at[0],at[1],19,'#b6869e');}
      // "By the window" means on the sill: no footprint on the floor.
@@ -336,10 +354,10 @@ export class BobaWorld extends World {
    else if(kind==='overalls'){R(c,-15,-38,30,22,pal.dark,6);L(c,-11,-38,-15,-52,pal.dark,4);L(c,11,-38,15,-52,pal.dark,4);E(c,-10,-36,2,2,'#f3d590');E(c,10,-36,2,2,'#f3d590');R(c,-6,-32,12,7,'#ffffff30',2);}
    else{P(c,[[-13,-46],[13,-46],[18,-16],[-18,-16]],pal.dark);L(c,-14,-48,-10,-59,pal.dark,3);L(c,14,-48,10,-59,pal.dark,3);R(c,-8,-31,16,9,'#ffffff28',3);heart(c,0,-26,.2,'#fff7e8');}
  }
- drawFurnitureAndActors(){const staff=this.c?.ops?.staff?.filter(e=>e.status==='hired')||[],items=[];
+ drawFurnitureAndActors(){const staff=onMain(this)?this.c?.ops?.staff?.filter(e=>e.status==='hired')||[]:[],items=[];
    if(!this.decorCached)this.wallDecor();   // live frames have it in the cached backdrop
    // Mướp naps on the window sill, out of everyone's way.
-   const cat=this.plan().cat,ct=this.unproject(cat[0],cat[1]);this.cat(ct.x,ct.y);
+   const cat=this.plan().cat;if(cat){const ct=this.unproject(cat[0],cat[1]);this.cat(ct.x,ct.y);}
    this.drawMarker();
    staff.forEach((e,i)=>{const p=this.staffPosition(i,e);items.push([this.project(p.x,p.y).y,()=>this.character(p.x,p.y,e.id,false,p.moving)]);});
    for(const h of this.hotspots){const id=h.id.startsWith('npc:')?h.id.slice(4):h.id==='event'?this.c.event.npc:h.id==='officer'?'officer':h.id==='assistant'?this.career+'_npc_04':null;if(id)items.push([this.project(h.x,h.y).y,()=>this.character(h.x,h.y,id)]);}
@@ -354,9 +372,10 @@ export class BobaWorld extends World {
    c.save();c.globalAlpha=.35+.5*k;c.strokeStyle=pal.primary;c.lineWidth=3;c.beginPath();c.ellipse(p.x,p.y,18+10*(1-k),6+3*(1-k),0,0,Math.PI*2);c.stroke();c.restore();}
  /** The one hotspot worth a marker right now (calm screen): the station while a task is in hand. Closed, the
   * task card's "Chuẩn bị ngày mới" is the only call to action, so no marker (it would sit on the door sign). */
- focusSpot(){const c=this.c;if(!c?.open)return null;return c.tasks?.some(t=>t.id===c.active_task&&!['completed','referred','cancelled'].includes(t.status))?'workbench':null;}
+ focusSpot(){const c=this.c;if(!c?.open)return null;return focusDoor(this,c.tasks?.some(t=>t.id===c.active_task&&!['completed','referred','cancelled'].includes(t.status))?'workbench':null);}
  labels(){const c=this.ctx,p=this.palette(),activeNPC=this.c?.tasks?.find(t=>t.id===this.c.active_task)?.npc,focus=this.focusSpot();
-   for(const h of this.hotspots){const isNPC=h.id.startsWith('npc:'),isStaff=h.id.startsWith('staff:'),hover=this.hover?.id===h.id;
+   doorTags(this,p,R,T,fit);
+   for(const h of this.hotspots){const isNPC=h.id.startsWith('npc:'),isStaff=h.id.startsWith('staff:'),hover=this.hover?.id===h.id&&!h.id.startsWith('go:');
      // Name tags: only the customer in hand (and a new event / the officer); the others show on hover or tap.
      if(isNPC&&h.id.slice(4)!==activeNPC||isStaff){if(hover){const pt=this.project(h.x,h.y,h.z+52),w=Math.min(290,h.label.length*7+25);R(c,pt.x-w/2,pt.y-17,w,32,p.dark,12);T(c,h.label,pt.x,pt.y,12,'#fff8ed');}continue;}
      if(isNPC||isStaff||h.id==='event'||h.id==='officer'){
@@ -423,7 +442,7 @@ export class BobaWorld extends World {
   * seconds, so walking and people stay at full rate while the room's slow ambience ticks along. After a
   * long idle spell (World.longIdle) that ambience holds still until the player is back. */
  backdrop(){const cv=this.canvas,main=this.ctx;
-   const key=[this.rev,cv.width,cv.height,this.dpr,this.scale,this.offset.x,this.offset.y,this.isPortrait(),this.career,this.scene().id,language()].join('|');
+   const key=[this.rev,cv.width,cv.height,this.dpr,this.scale,this.offset.x,this.offset.y,this.isPortrait(),this.career,this.scene().id,areaOf(this)?.id,language()].join('|');
    let L=this.layer;
    if(!L||L.canvas.width!==cv.width||L.canvas.height!==cv.height){const canvas=globalThis.document.createElement('canvas');canvas.width=cv.width;canvas.height=cv.height;L=this.layer={canvas,ctx:canvas.getContext('2d',{alpha:false}),key:null};}
    if(L.key!==key||L.animated&&!this.reduced&&!this.longIdle&&Math.abs(this.time-L.at)>=ROOM_TICK){
@@ -438,8 +457,10 @@ export class BobaWorld extends World {
    this.decorCached=true;try{this.drawFurnitureAndActors();}finally{this.decorCached=false;}
    daylight(this);  // giờ trong ngày: tint + evening lights over the room and people, under name tags (v4/dayclock.js)
    this.labels();
+   if(this.fx?.ev&&!onMain(this))autoArea(this);   // a live happening plays on the main floor
    this.fx?.draw(this); // live happenings (v4/scene-events.js)
    for(const p of this.particles){c.globalAlpha=Math.max(0,p.life/p.max);R(c,p.x,p.y,p.size,p.size,p.color,2);}c.globalAlpha=1;this.drawSpeech();
    if(this.navDebug)this.drawNavDebug();
+   areaFade(this);
  }
 }
