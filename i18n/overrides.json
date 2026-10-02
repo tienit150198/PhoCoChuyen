@@ -1,5 +1,10 @@
 {
  "strings": {
+  "Kho": "Stock",
+  "Thư viện, chợ, quảng trường…": "Library, market, square…",
+  "Ghé tiệm người chơi khác": "Visit other players' shops",
+  "Tin nhắn hàng xóm": "Messages from neighbors",
+  "Khách khen, chê, kể chuyện": "Customers' praise, gripes and stories",
   "Biết rồi": "Got it",
   "Bấm để tắt": "Tap to dismiss",
   "Lọc CV: tin ứng viên rút hồ sơ đến sau khi đã xếp thẻ thì thẻ tự quay về chưa xếp, ghi chú cuộc gọi in ngay trên thẻ.": "CV screening: if a candidate withdraws after you sorted their card, the card goes back to unsorted with the call noted on it.",
