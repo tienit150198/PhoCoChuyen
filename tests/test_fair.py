@@ -15,6 +15,8 @@ from game import fair as fh
 from game import fair_board as fb
 from game import fair_oaq as oaq
 from game import fair_cash as fc
+from game import fair_food as ff
+from game import needs as nd
 from game import fair_ring as ring
 from game import journey as jr
 from game import leaderboard as lb
@@ -1155,6 +1157,81 @@ class Odds(FairBase):
         self.assertEqual(v['left'], s['journey']['wallet'])
         self.assertEqual(s['journey']['fair']['rounds'], fh.ROUNDS_DAY)   # a counter only, bounded for older validators
         validate_state(s)
+
+
+class FairFood(FairBase):
+    """🍡 The food carts (game/fair_food.py): a few xu from the wallet, no bụng / tỉnh táo up like the work day's Ăn
+    thêm, one Sổ ví row a day, refused when full, short of xu or closed; nothing new in journey['fair']."""
+
+    def fed(self, wallet=50, full=50, wake=50):
+        s = story(wallet)
+        n = nd.ensure(s)
+        n.update(full=full, wake=wake)
+        validate_state(s)
+        return s
+
+    def test_a_snack_costs_xu_and_fills_the_belly(self):
+        s = self.fed()
+        s, r = self.act(s, 'fair_snack', item='bap_nuong')
+        x = ff.MENU['bap_nuong']
+        self.assertEqual(s['journey']['wallet'], 50 - x['price'])
+        self.assertEqual(s['journey']['needs']['full'], 50 + x['full'])
+        self.assertEqual((r['fair']['game'], r['fair']['say'], r['fair']['points']), ('food', x['say'], 0))
+        s, r = self.act(s, 'fair_snack', item='nuoc_mia')
+        y = ff.MENU['nuoc_mia']
+        self.assertEqual(s['journey']['needs']['wake'], 50 + y['wake'])
+        row = s['journey']['history'][-1]
+        self.assertEqual((row['kind'], row['label'], row['amount']), ('fair', '🍡 Ăn vặt hội chợ · 2 món', -(x['price'] + y['price'])))
+        self.assertNotIn('fair', s['journey'])            # not a game: journey['fair'] is not even created
+        self.assertNotIn('lt', public_state(s)['fair']['today_xu'])
+        validate_state(s)
+
+    def test_refused_when_full_short_or_closed(self):
+        s = self.fed(full=nd.FULL_CAP)
+        with self.assertRaises(GameError) as e:
+            self.act(s, 'fair_snack', item='keo_bong')
+        self.assertEqual(e.exception.code, 'too_full')
+        s, _ = self.act(s, 'fair_snack', item='nuoc_mia')  # a drink still has room in tỉnh táo
+        s['journey']['needs']['wake'] = nd.WAKE_CAP
+        with self.assertRaises(GameError) as e:
+            self.act(s, 'fair_snack', item='nuoc_mia')
+        self.assertEqual(e.exception.code, 'too_full')
+        s = self.fed(wallet=1)
+        with self.assertRaises(GameError) as e:
+            self.act(s, 'fair_snack', item='banh_trang')
+        self.assertEqual(e.exception.code, 'not_enough')
+        self.assertEqual(s['journey']['wallet'], 1)
+        for bad in (dict(item='pho'), dict(item=['che']), dict(), dict(item='che', n=2)):
+            with self.assertRaises(GameError, msg=bad):
+                self.act(s, 'fair_snack', **bad)
+        s = self.fed()
+        for t in (BEFORE, AFTER):
+            self.clock.t = t
+            with self.assertRaises(GameError) as e:
+                self.act(s, 'fair_snack', item='keo_bong')
+            self.assertEqual(e.exception.code, 'fair_closed')
+
+    def test_the_menu_says_why(self):
+        s = self.fed(wallet=2, full=nd.FULL_CAP, wake=10)
+        food = {x['id']: x for x in public_state(s)['fair']['food']}
+        self.assertEqual(set(food), set(ff.MENU))
+        self.assertEqual({x['cart'] for x in food.values()}, set(ff.CARTS))
+        self.assertEqual((food['keo_bong']['ok'], food['keo_bong']['why']), (False, 'Bụng no rồi'))
+        self.assertEqual((food['nuoc_mia']['ok'], food['nuoc_mia']['why']), (True, ''))
+        self.assertEqual((food['che']['ok'], food['che']['why']), (False, 'Bụng no rồi'))
+        s = self.fed(wallet=2)
+        food = {x['id']: x for x in public_state(s)['fair']['food']}
+        self.assertEqual((food['banh_trang']['ok'], food['banh_trang']['why']), (False, 'Chưa đủ xu'))
+        self.assertTrue(food['keo_bong']['ok'])
+
+    def test_a_new_life_day_starts_a_new_row(self):
+        s = self.fed()
+        s, _ = self.act(s, 'fair_snack', item='tau_hu')
+        s['journey']['life_day'] += 1
+        s['journey']['needs']['full'] = 40
+        s, _ = self.act(s, 'fair_snack', item='tau_hu')
+        rows = [r for r in s['journey']['history'] if r['label'].startswith(ff.LABEL)]
+        self.assertEqual([r['label'] for r in rows], ['🍡 Ăn vặt hội chợ · 1 món'] * 2)
 
 
 class FairCash(FairBase):

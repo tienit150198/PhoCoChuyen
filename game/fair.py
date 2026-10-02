@@ -50,6 +50,10 @@ Thử vận may, small stakes:
   FINE_MIN, never more than the wallet holds) is paid, and the corner stays closed RAID_COOLDOWN seconds. The front
   stalls are never raided.
 
+* 🍡 Hàng ăn vặt (game/fair_food.py, fair_snack, owner 03/10): the walkable fairground's two food carts sell kẹo bông,
+  bắp nướng, nước mía… for a few xu; eating moves no bụng / tỉnh táo like the work day's Ăn thêm (game/needs.py).
+  Not a game: no net, no points, nothing saved in journey['fair'].
+
 Safety: the fair is open FAIR_DAYS days from FAIR_START (Vietnam dates; env MNL_FAIR_START=YYYY-MM-DD and
 MNL_FAIR_DAYS override them at deploy), story saves only, no stake above what the wallet holds; since 03/10 no daily
 money cap and no round limit (owner), a short pause between rounds (and a per-session rate limit in server.py). Dice, coins, cards and raids come from the OS random source
@@ -83,6 +87,7 @@ from . import fair_darts as darts
 from . import fair_oaq as oaq
 from . import fair_ring as ring
 from . import fair_cash as fc   # 🎁 tiền vốn and 💸 vay nóng
+from . import fair_food as ff   # 🍡 the food carts
 
 VERSION = 1
 FAIR_START = '2026-10-03'      # first day (Vietnam date), 00:00 UTC+7
@@ -636,12 +641,18 @@ def apply(s: dict, name: str, p: dict) -> dict:
     need = e.need
     j = s['journey']
     need(isinstance(p, dict), 'Dữ liệu thao tác không hợp lệ.')
-    need(name in COMMANDS or name in fc.COMMANDS, 'Thao tác hội chợ không hợp lệ.', 'unknown_action')
+    need(name in COMMANDS or name in fc.COMMANDS or name in ff.COMMANDS, 'Thao tác hội chợ không hợp lệ.', 'unknown_action')
     need(j.get('story'), 'Hội chợ chỉ có trong hành trình.', 'not_story')
     t = now()
     opens, closes = window()
     if name in fc.COMMANDS:
         result = fc.apply(s, name, p, t, edition(), opens <= t < closes)
+        result['fair']['points'] = 0
+        return result
+    if name in ff.COMMANDS:   # 🍡 a snack from the food carts: only while the fair is open
+        need(t >= opens, SOON, 'fair_closed')
+        need(t < closes, CLOSED, 'fair_closed')
+        result = ff.apply(s, p)
         result['fair']['points'] = 0
         return result
     if name not in LATE:   # a card, a game or a round begun while open can still be finished
@@ -967,6 +978,7 @@ def public(s: dict) -> dict:
                 oaq=oaq_view(o) if o and (o['stage'] == 'play' or t - o['at'] < 6 * 3600) else None,
                 ring=ring_view((f or {}).get('ring'), t),
                 loto=loto, stats={k: st.get(k, 0) for k in STATS},
+                food=ff.public(s),   # 🍡 the food carts' menus (absent from older servers: the carts only say a line)
                 # 🎯 phi tiêu (absent from older servers: the client then leaves the stall out)
                 darts=dict(stakes=list(darts.STAKES), rings=list(darts.RINGS), board=darts.BOARD_R, off=darts.OFF_R,
                            aim_max=darts.AIM_MAX, pt=darts.PT_HIT, **{k: ((f or {}).get('dt') or {}).get(k, 0) for k in DT_KEYS}),
