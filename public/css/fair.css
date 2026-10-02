@@ -448,3 +448,29 @@ html.reduce-motion .fh-fly{animation-duration:.05s}
 /* wider screens: the mat and the ticket keep their phone proportions */
 @media (min-width:700px){.fh-body{padding:14px 22px 22px}.fh-plate{transform:scale(1.1)}.fh-face{min-height:100px}}
 .fh-again{justify-content:center;gap:8px;margin-top:8px}
+
+/* ---- 🎯 Phóng phi tiêu (public/js/v4/fair-darts.js) ---- */
+.fh-dt-stage{position:relative;width:min(100%,320px);aspect-ratio:1;margin:0 auto 10px;touch-action:manipulation}
+.fh-dt-board{display:block;width:100%;height:100%}
+.fh-dt-frame{fill:#8a5a26;stroke:#5b3a1c;stroke-width:4}
+.fh-dt-straw{fill:#e8cf8f}
+.fh-dt-strawlines{fill:none;stroke:#c9a55a;stroke-width:40;stroke-dasharray:2 5;opacity:.7}
+.fh-dt-green{fill:var(--fh-green)}
+.fh-dt-red{fill:var(--fh-red)}
+.fh-dt-gold{fill:var(--fh-gold)}
+.fh-dt-bull{fill:#b8301f;stroke:#fff;stroke-width:1.5}
+.fh-dt-edge{fill:none;stroke:#fff;stroke-width:2;stroke-dasharray:6 5;opacity:.85}
+.fh-dt-dart line{stroke:#5b3a1c;stroke-width:2.4;stroke-linecap:round}
+.fh-dt-dart path{fill:#2f7fd1}
+.fh-dt-dart circle{fill:#333;stroke:#fff;stroke-width:1}
+.fh-dt-dart.miss{opacity:.75}
+.fh-dt-dart:not(.new){opacity:.6}
+.fh-dt-pin{transform-box:fill-box;transform-origin:0 100%}
+@media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .fh-dt-dart.new .fh-dt-pin{animation:fh-dt-in .32s cubic-bezier(.2,1.4,.5,1) both}}
+@keyframes fh-dt-in{from{transform:scale(2.6) translate(10px,-14px);opacity:0}to{transform:none;opacity:1}}
+.fh-dt-aimlayer{position:absolute;inset:0;pointer-events:none}
+.fh-dt-aim{position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 2px rgba(0,0,0,.45),inset 0 0 0 2px rgba(0,0,0,.25)}
+.fh-dt-aim::before,.fh-dt-aim::after{content:"";position:absolute;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+.fh-dt-aim::before{left:50%;top:-6px;bottom:-6px;width:2px;margin-left:-1px}
+.fh-dt-aim::after{top:50%;left:-6px;right:-6px;height:2px;margin-top:-1px}
+.fh-dt .fh-result{margin:0 auto 10px;max-width:320px}
