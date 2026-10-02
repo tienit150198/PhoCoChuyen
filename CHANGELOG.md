@@ -1,3 +1,10 @@
+# v1.4.19 — 🏆 Bảng vàng theo tiền lời, 👫 thấy nhau ở bãi hội
+
+Chủ game (03/10): "thay vì tính điểm, tính tổng tiền mọi người thắng… tiền thắng nhiều xếp top", "mọi người vào hội chợ thì cho thấy nhau… (k thông báo)".
+
+- Bảng vàng (feat/fair-money c14b8f8): điểm = `money_of(j)` = stats won − lost + earned (không tính quà 500 xu, vay nóng, ăn vặt). Bảng mới `fair20261003xu`, chỉ người đang lời; hàng cũ theo điểm không đọc nữa, xóa dần khi người chơi ghi lại. `lb.heal()` ghi lại hàng khi tiến trình gặp save lần đầu. Bỏ điểm khỏi UI.
+- Bãi hội nhiều người (feat/fair-crowd 5df2ec2): `live/fair.py` phòng tối đa 30, vị trí theo tỉ lệ sàn, giới hạn như phố, chặn được tôn trọng, không thông báo. `LIVE_FAIR` mặc định theo `LIVE_STREET`. Client `fair-crowd.js`.
+
 # v1.4.18 — 🍡 Hàng ăn vặt hội chợ
 
 Chủ game (03/10): "người ta mua đồ ăn, uống nước mía được nữa nhé".
