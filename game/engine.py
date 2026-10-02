@@ -43,6 +43,7 @@ from . import closeness as qn
 from . import abandon as ab
 from . import dayclock as dc
 from . import wardrobe as wd
+from . import avatar as avt
 from . import patience as pt
 from . import system_gift as sg
 from . import live_effects as lfx
@@ -185,6 +186,7 @@ def migrate_state(state:dict,owned:bool=False) -> dict:
         haps.migrate(s)  # chuyện bất ngờ trong ca: live happenings in the scene
         cst.migrate(s)  # truyện nghề: an empty story book for older saves
         wd.migrate(s)  # tủ đồ: the look older saves were drawn with (game/wardrobe.py)
+        avt.migrate(s)  # ảnh đại diện: a block a newer build wrote keeps what this build knows (game/avatar.py)
         emp.migrate(s)  # xin việc: nơi đã làm trước khi cần tuyển dụng thì coi như đã ký hợp đồng
         inv.migrate(s)  # kho: đơn nhập cũ theo nhịp → giờ giao dự kiến
         _trim_histories(s)  # v0.8.1: journal, cash book and day recaps beyond the new caps move to the archive
