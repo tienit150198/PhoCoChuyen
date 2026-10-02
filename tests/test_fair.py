@@ -390,6 +390,292 @@ class Loto(FairBase):
         self.assertLess(rtp, 1.03)
 
 
+def slot_with(mode: str, start: float) -> int:
+    """The first minute from `start` whose vòng is `mode` (fh.mode_of)."""
+    slot = int(start // 60) + 1
+    while fh.mode_of(slot) != mode:
+        slot += 1
+    return slot
+
+
+def show_rs(lt: dict, want_win: bool) -> int:
+    """A round id (rs) where the player's best card does (not) fill the vòng's pattern first."""
+    for rs in range(5000):
+        rv = fh.round_view(dict(lt, rs=rs))
+        if (rv['mine'] <= rv['npc_done']) == want_win:
+            return rs
+    raise AssertionError('no such round')
+
+
+def marks_for(rv: dict, ci: int, k: int) -> list:
+    """Every number of card ci called in the first k calls: what a player who marked by hand would hold."""
+    called = set(rv['seq'][:k])
+    return [n for r in rv['cards'][ci] for n in r if n in called]
+
+
+class LotoShow(FairBase):
+    """🎱 Gánh lô tô: tiers, several tờ, the vòng of the minute, side bets, Kinh by the player's own marks (no
+    auto-mark), Kinh hụt, the day's tally, the caps, old saves and the older client."""
+
+    def buy(self, s, mode='thuong', win=True, **p):
+        slot = slot_with(mode, self.clock.t)
+        p.setdefault('tier', 'vua')
+        p.setdefault('n', 1)
+        lt = dict(slot=slot, rs=0, at=0, stage='play', mode=mode, tier=p['tier'], n=p['n'], fk=0)
+        if win is not None:
+            self.dice(Dice(bits=show_rs(lt, win)))
+        self.clock.t = slot * 60 + 1
+        s, r = self.act(s, 'fair_loto_buy', mode=mode, **p)
+        return s, r, fh.round_view(s['journey']['fair']['loto'])
+
+    def test_the_old_client_buys_the_plain_card(self):
+        s = story(100)
+        s, r = self.act(s, 'fair_loto_buy')
+        lt = s['journey']['fair']['loto']
+        self.assertEqual(set(lt), set(fh.LOTO_KEYS))            # nothing new in the save for the older client's card
+        self.assertEqual(s['journey']['wallet'], 100 - fh.LOTO_PRICE)
+        v = public_state(s)['fair']['loto']
+        self.assertEqual((v['mode'], v['cards'], v['prize'], v['need']), ('thuong', [v['card']], fh.LOTO_PRIZE, 1))
+        self.assertEqual(fh.prize_of('thuong', fh.LOTO_TIERS['vua'], 1), fh.LOTO_PRIZE)
+
+    def test_tiers_cards_and_what_they_cost(self):
+        s = story(200)
+        s, r, rv = self.buy(s, tier='lon', n=3)
+        self.assertEqual(s['journey']['wallet'], 200 - 30)
+        self.assertEqual((len(rv['cards']), rv['price'], r['fair']['cost']), (3, 10, 30))
+        self.assertEqual(len({n for c in rv['cards'] for r_ in c for n in r_}) > 15, True)   # three different tờ
+        v = public_state(s)['fair']
+        self.assertEqual(v['loto']['cards'], rv['cards'])
+        g = v['ganh']
+        self.assertEqual(len(g['modes']), 10)
+        self.assertEqual(g['prizes']['thuong']['lon'][2], rv['prize'])
+        validate_state(s)
+
+    def test_bad_purchases_are_refused(self):
+        s = story(200)
+        slot = slot_with('thuong', self.clock.t)
+        self.clock.t = slot * 60 + 1
+        for p in (dict(tier='xl', n=1), dict(tier='vua', n=4), dict(tier='vua', n=0), dict(tier='vua', n='1'),
+                  dict(tier='vua', n=1, cl=['chan', 3]), dict(tier='vua', n=1, cl=['ba', 2]), dict(tier='vua', n=1, cot=[9, 2]),
+                  dict(tier='vua', n=1, cot=['1', 2]), dict(tier='vua', n=1, extra=1), dict(tier=['vua'], n=1),
+                  dict(tier='vua', n=1, cl='chan'), dict(tier='vua', n=1, cl=[['chan'], 2])):
+            with self.assertRaises(GameError, msg=p):
+                self.act(s, 'fair_loto_buy', **p)
+            self.clock.t = slot * 60 + 1
+        other = next(m for m in fh.LOTO_MODES if m != fh.mode_of(slot))
+        with self.assertRaises(GameError) as e:
+            self.act(s, 'fair_loto_buy', tier='vua', n=1, mode=other)
+        self.assertEqual(e.exception.code, 'fair_loto_mode')
+
+    def test_caps_hold_with_several_cards_and_side_bets(self):
+        s = story(25)
+        with self.assertRaises(GameError) as e:        # 3 × 10 > the wallet: no loans
+            self.buy(s, tier='lon', n=3)
+        self.assertEqual(e.exception.code, 'fair_wallet')
+        s = story(1000)
+        s['journey']['fair'] = fh.initial()
+        f = s['journey']['fair']
+        f.update(date=fh.vn_date(self.clock.t + 120), net=-(fh.DAY_CAP - 20))   # 20 xu of room left today
+        with self.assertRaises(GameError) as e:        # 10 + 6 + 6 = 22 > 20
+            self.buy(s, tier='lon', n=1, cl=['chan', 6], cot=[2, 6])
+        self.assertEqual(e.exception.code, 'fair_enough')
+        s, r, rv = self.buy(s, tier='lon', n=1, cl=['chan', 4], cot=[2, 6])
+        self.assertGreaterEqual(s['journey']['fair']['net'], -fh.DAY_CAP)
+        self.assertEqual(s['journey']['fair']['rounds'], 1)            # one purchase: one round of ROUNDS_DAY
+
+    def test_side_bets_are_settled_at_the_purchase(self):
+        s = story(200)
+        s, r, rv = self.buy(s, tier='nho', n=1, cl=['le', 4], cot=[3, 6])
+        back = fh.side_back({'cl': ['le', 4], 'cot': [3, 6]}, rv['chot_n'])
+        self.assertEqual(s['journey']['wallet'], 200 - 2 - 4 - 6 + back['cl'] + back['cot'])
+        self.assertEqual(rv['chot'], min(rv['mine'], rv['npc_done']))
+        self.assertEqual(rv['chot_n'], rv['seq'][rv['chot'] - 1])
+        side = public_state(s)['fair']['loto']['side']
+        self.assertEqual({k: v['back'] for k, v in side.items()}, back)
+        # a later Kinh or fold pays nothing more on the side
+        w = s['journey']['wallet']
+        s, _ = self.act(s, 'fair_loto_fold')
+        self.assertEqual(s['journey']['wallet'], w)
+
+    def test_side_bet_odds(self):
+        sb = lambda k, pick, stake=2: fh.side_back({k: [pick, stake]}, x)[k]
+        for x in range(1, 91):
+            want = 0 if x in fh.BAY_NUMS else 4 if x % 2 == 0 else 0
+            self.assertEqual(sb('cl', 'chan', 2), want, x)
+            col = 0 if x < 10 else min(8, x // 10)
+            self.assertEqual(sb('cot', col, 4), 34, x)       # 4 × 8.5
+            self.assertEqual(sb('cot', (col + 1) % 9, 4), 0)
+        self.assertEqual(fh.side_back({'cl': ['le', 6]}, 7), {'cl': 0})   # cô Bảy's 7 loses lẻ too
+        self.assertEqual(fh.side_back({'cl': ['chan', 6]}, 70), {'cl': 0})
+
+    def test_odds_with_perfect_play(self):
+        """Seeded rounds: every vòng and number of tờ gives back a bit less than it costs (the 200 000-round
+        figures are in game/fair.py), and so do the side bets on the số chốt."""
+        rng = random.Random(4242)
+        for mode, (need, npcs, _) in fh.LOTO_MODES.items():
+            if mode == 'nguoc':
+                continue   # the thường rules, read backwards
+            wins = [0, 0, 0]
+            for _ in range(1500):
+                seq = list(range(1, 91)); rng.shuffle(seq); pos = {n: i for i, n in enumerate(seq)}
+                mine = [fh.done_at(fh.card(rng), pos, need) for _ in range(3)]
+                nd = min(fh.done_at(fh.card(rng), pos, need) for _ in range(npcs))
+                for n in (1, 2, 3):
+                    wins[n - 1] += min(mine[:n]) <= nd
+            for n in (1, 2, 3):
+                for tier, price in fh.LOTO_TIERS.items():
+                    rtp = wins[n - 1] / 1500 * fh.prize_of(mode, price, n) / (n * price)
+                    self.assertGreater(rtp, .85, (mode, tier, n))
+                    self.assertLess(rtp, 1.03, (mode, tier, n))
+        cl = cot = 0
+        for rs in range(1500):
+            rv = fh.round_view(dict(slot=rs * 11, rs=rs, at=0, stage='play', mode='thuong', tier='vua', n=1))
+            cl += fh.side_back({'cl': ['chan', 2]}, rv['chot_n'])['cl'] / 2
+            cot += sum(fh.side_back({'cot': [c, 2]}, rv['chot_n'])['cot'] for c in range(9)) / 2 / 9
+        self.assertTrue(.9 < cl / 1500 < 1.02, cl / 1500)
+        self.assertTrue(.85 < cot / 1500 < 1.0, cot / 1500)
+
+    def test_kinh_by_the_players_own_marks(self):
+        s = story(200)
+        s, _, rv = self.buy(s, n=2)
+        k = rv['mine']
+        ci = min(range(2), key=lambda i: fh.done_at(rv['cards'][i], {n: j for j, n in enumerate(rv['seq'])}))
+        with self.assertRaises(GameError):              # a mark that is not on that tờ: refused outright
+            self.act(s, 'fair_loto_kinh', card=ci, at=k, marks=[n for n in range(1, 91) if n not in {x for r in rv['cards'][ci] for x in r}][:1])
+        w = s['journey']['wallet']
+        s, r = self.act(s, 'fair_loto_kinh', card=ci, at=k, marks=marks_for(rv, ci, k))
+        self.assertTrue(r['fair']['won'])
+        self.assertEqual(s['journey']['wallet'], w + rv['prize'])
+        self.assertEqual(s['journey']['fair']['ltd']['w'], 1)
+        validate_state(s)
+
+    def test_no_auto_mark(self):
+        """The server never marks for the player: a full row on the tờ is not a Kinh until the player marked it."""
+        s = story(200)
+        s, _, rv = self.buy(s)
+        k = rv['mine']
+        for bad in (dict(card=0, at=k, marks=None), dict(card=1, at=k, marks=[]), dict(card=0, at=0, marks=[]),
+                    dict(card=0, at=k, marks=['1']), dict(card=0, at=k, marks=[rv['card'][0][0]] * 2)):
+            with self.assertRaises(GameError, msg=bad):
+                self.act(s, 'fair_loto_kinh', **bad)
+        s, r = self.act(s, 'fair_loto_kinh', card=0, at=k, marks=[])
+        self.assertTrue(r['fair']['hut'])
+        partial = marks_for(rv, 0, k)
+        full = [row for row in rv['cards'][0] if set(row) <= set(partial)]
+        s, r = self.act(s, 'fair_loto_kinh', card=0, at=k, marks=[n for n in partial if n not in full[0][:1]])
+        self.assertTrue(r['fair']['hut'])
+        self.assertEqual(s['journey']['fair']['loto']['fk'], 2)
+
+    def test_kinh_hut_a_small_funny_penalty(self):
+        s = story(200)
+        s, _, rv = self.buy(s)
+        k = rv['mine']
+        w = s['journey']['wallet']
+        uncalled = next(n for r_ in rv['cards'][0] for n in r_ if n not in rv['seq'][:k])
+        s, r = self.act(s, 'fair_loto_kinh', card=0, at=k, marks=marks_for(rv, 0, k) + [uncalled])   # marked a number never called
+        self.assertEqual((r['fair']['hut'], r['fair']['fine'], r['fair']['out']), (True, fh.KINH_FINE, False))
+        self.assertEqual(s['journey']['wallet'], w - fh.KINH_FINE)
+        for i in range(2, fh.KINH_HUT_MAX + 1):
+            s, r = self.act(s, 'fair_loto_kinh', card=0, at=k, marks=[])
+        self.assertTrue(r['fair']['out'])
+        self.assertEqual(s['journey']['fair']['loto']['stage'], 'lost')
+        self.assertEqual(s['journey']['wallet'], w - fh.KINH_FINE * fh.KINH_HUT_MAX)
+        self.assertEqual(s['journey']['fair']['ltd']['fk'], fh.KINH_HUT_MAX)
+        with self.assertRaises(GameError):              # out of the round
+            self.act(s, 'fair_loto_kinh', card=0, at=k, marks=marks_for(rv, 0, k))
+        validate_state(s)
+
+    def test_the_fine_never_takes_the_wallet_below_zero(self):
+        s = story(2)
+        s, _, rv = self.buy(s, tier='nho')
+        self.assertEqual(s['journey']['wallet'], 0)
+        s, r = self.act(s, 'fair_loto_kinh', card=0, at=rv['mine'], marks=[])
+        self.assertEqual((r['fair']['hut'], r['fair']['fine']), (True, 0))
+        self.assertEqual(s['journey']['wallet'], 0)
+
+    def test_kinh_doi_needs_two_rows_and_the_title(self):
+        s = story(200)
+        s, _, rv = self.buy(s, 'doi')
+        self.assertEqual(rv['need'], 2)
+        pos = {n: i for i, n in enumerate(rv['seq'])}
+        one = fh.done_at(rv['card'], pos, 1)
+        if one < rv['mine']:   # one row full, the second not yet: a Kinh hụt
+            s, r = self.act(s, 'fair_loto_kinh', card=0, at=one, marks=marks_for(rv, 0, one))
+            self.assertTrue(r['fair']['hut'])
+        s, r = self.act(s, 'fair_loto_kinh', card=0, at=rv['mine'], marks=marks_for(rv, 0, rv['mine']))
+        self.assertTrue(r['fair']['won'])
+        self.assertIn('f_kinh2', s['journey']['titles'])
+        s2, _, _ = self.buy(story(200), 'doi')
+        with self.assertRaises(GameError):              # the older client cannot claim a Kinh đôi with one row
+            self.act(s2, 'fair_loto_kinh', row=0, at=90)
+
+    def test_hu_dem_hoi_and_lat_nguoc(self):
+        t = at(2026, 10, 4, 20, 5)
+        self.assertEqual({fh.mode_of(int(t // 60) + i) for i in range(100)}, {'dem'})
+        self.assertNotIn('dem', {fh.mode_of(int(at(2026, 10, 4, 12) // 60) + i) for i in range(100)})
+        self.clock.t = t
+        s = story(200)
+        s, _, rv = self.buy(s, 'dem')
+        self.assertEqual((rv['need'], len(rv['npcs'])), (3, 6))
+        s, r = self.act(s, 'fair_loto_kinh', card=0, at=rv['mine'], marks=marks_for(rv, 0, rv['mine']))
+        self.assertTrue(r['fair']['won'])
+        self.assertEqual(r['fair']['prize'], fh.prize_of('dem', 5, 1))
+        self.assertIn('f_hu', s['journey']['titles'])
+        self.clock.t = OPEN
+        s, _, rv = self.buy(s, 'nguoc')
+        s, r = self.act(s, 'fair_loto_kinh', card=0, at=rv['mine'], marks=marks_for(rv, 0, rv['mine']))
+        self.assertIn('f_nguoc', s['journey']['titles'])
+
+    def test_late_and_lost_rounds_tally_the_neighbour(self):
+        s = story(200)
+        s, _, rv = self.buy(s, win=False)
+        s, r = self.act(s, 'fair_loto_kinh', card=0, at=rv['mine'], marks=marks_for(rv, 0, rv['mine']))
+        self.assertEqual((r['fair']['won'], r['fair']['by']), (False, rv['npc_name']))
+        ltd = s['journey']['fair']['ltd']
+        self.assertEqual((ltd['r'], ltd['w'], sum(ltd['npc']), ltd['npc'][rv['npc_k']]), (1, 0, 1, 1))
+        s, _, rv = self.buy(s)
+        s, _, _ = self.buy(s)                            # a new purchase folds the round being played
+        self.assertEqual(sum(s['journey']['fair']['ltd']['npc']), 2)
+        self.assertEqual(public_state(s)['fair']['ganh']['today']['r'], 3)
+        self.clock.t = at(2026, 10, 5, 9)
+        s, _ = self.act(s, 'fair_bc', bets={'cua': 1})
+        self.assertNotIn('ltd', s['journey']['fair'])   # a new Vietnam day: a new tally
+        self.assertEqual(public_state(s)['fair']['ganh']['today']['r'], 0)
+
+    def test_saves_old_and_new(self):
+        s = story(200)
+        s, _, _ = self.buy(s, tier='lon', n=2, cl=['chan', 2], cot=[0, 2])
+        validate_state(s)
+        for patch in (dict(mode='x'), dict(tier='x'), dict(n=4), dict(fk=9), dict(sb={'cl': ['chan', 3]}), dict(sb={'x': [1, 2]}),
+                      dict(sb={'cot': [9, 2]}), dict(extra=1)):
+            bad = json.loads(json.dumps(s))
+            bad['journey']['fair']['loto'].update(patch)
+            with self.assertRaises(GameError, msg=patch):
+                validate_state(bad)
+        for ltd in ({'r': 1}, dict(r=1, w=0, fk=0, npc=[0]), dict(r=-1, w=0, fk=0, npc=[0] * 6)):
+            bad = json.loads(json.dumps(s))
+            bad['journey']['fair']['ltd'] = ltd
+            with self.assertRaises(GameError, msg=ltd):
+                validate_state(bad)
+        old = json.loads(json.dumps(s))                 # a save from before the gánh lô tô
+        old['journey']['fair'].pop('ltd')
+        old['journey']['fair']['loto'] = dict(slot=1, rs=2, at=3, stage='lost')
+        validate_state(old)
+
+    def test_the_older_client_on_a_plain_card(self):
+        """A card bought by the older client is claimed the old way and pays LOTO_PRIZE."""
+        s = story(100)
+        slot = int(self.clock.t // 60) + 1
+        self.dice(Dice(bits=winning_rs(True, slot)))
+        self.clock.t = slot * 60 + 1
+        s, _ = self.act(s, 'fair_loto_buy')
+        rv = fh.round_view(s['journey']['fair']['loto'])
+        pos = {n: i for i, n in enumerate(rv['seq'])}
+        row = min(range(3), key=lambda i: max(pos[n] for n in rv['card'][i]))
+        s, r = self.act(s, 'fair_loto_kinh', row=row, at=max(pos[n] for n in rv['card'][row]) + 1)
+        self.assertEqual((r['fair']['won'], r['fair']['prize'], r['fair']['row']), (True, fh.LOTO_PRIZE, row))
+
+
 class Points(FairBase):
     def test_points_rules_and_the_daily_cap(self):
         s = story(1000)
