@@ -1,3 +1,11 @@
+# v1.4.10 — 🛕 Vào chùa Gió Lành
+
+Chủ game (02/10): "chùa là phải mở cái chùa luôn chứ", "vào đó tự bấm khấn… có trụ trì, có tụng kinh", "đi tới đâu có đấy", "chùa có nhạc chùa nữa".
+
+- Màn "Vào chùa" (Đời thường → Đi chùa): sân chùa, chánh điện, nhà ăn; mỗi việc ở đúng chỗ. Khấn tự chọn (sức khỏe, bình an), tụng kinh tự gõ mõ 12 nhịp (+1…+4 tinh thần), Thầy Huệ Minh nói chuyện theo ngày âm lịch. Miễn phí, 4 việc/ngày (trước 3).
+- Âm thanh CC0/public domain thật (Freesound, Wikimedia Commons; nguồn trong `public/music/CREDITS.md`): chuông, mõ, chuông gia trì, tiếng tụng, tiếng sáng ở sân; theo công tắc "Âm thanh", tải khi vào chùa.
+- Lùi bản trong ngày: save đã khấn/tụng hoặc làm 4 việc bị 1.4.9 từ chối tới hết ngày sống đó.
+
 # v1.4.9 — 💍 Cầu hôn lại sau 3 tiếng, 📦 sửa đơn gộp
 
 - Chủ game (02/10): "cầu hôn bị từ chối thì 3 tiếng sau mới được cầu hôn lại" — `wedding_content.DECLINE_HOURS = 3` (thay `DECLINE_DAYS = 3`).
