@@ -7,7 +7,7 @@ import time
 import unittest
 
 from live.config import from_env
-from live.fair import CAP, MAX_POINTS, clean_point
+from live.fair import CAP, MAX_POINTS, clean_point, clean_stall
 from live.protocol import LiveError
 from tests.live_support import HAVE_WS, LiveCase
 
@@ -22,6 +22,12 @@ class Units(unittest.TestCase):
         for bad in (None, 'x', [1], [1, 2, 3], ['1', 2], [float('nan'), 0], [0, float('inf')], [True, 0]):
             with self.assertRaises(LiveError):
                 clean_point(bad)
+
+    def test_stall_ids_are_short_words_or_none(self):
+        for ok in ('lt', 'bc', 'ring', 'candy', 'oaq'):
+            self.assertEqual(clean_stall(ok), ok)
+        for odd in (None, '', 'LT', 'lô', 'toolongid', 'a b', '../x', 5, ['lt'], True):
+            self.assertIsNone(clean_stall(odd), odd)
 
     def test_switch_follows_the_street_unless_set(self):
         import os
@@ -184,6 +190,46 @@ class Walks(FairCase):
         self.assertGreater(len(diffs), 5)
         self.assertLessEqual(len(diffs), math.ceil(span * 10) + 1, f'{len(diffs)} diffs in {span:.2f}s')
         self.assertFalse([f for f in watcher.frames if f.get('t') == 'error'])
+
+
+@unittest.skipUnless(HAVE_WS, 'needs websockets')
+class Stalls(FairCase):
+    """Owner, 03/10: someone playing a stall is seen standing at it (never gone), with which stall it is."""
+    async def test_playing_a_stall_travels_with_walks_and_snapshots(self):
+        a = await self.goer('Lan Anh')
+        b = await self.goer('Minh Tú')
+        await self.ev(a, 'in', pid=b.pid)
+        self.assertNotIn('s', b.room['people'][0], 'nothing new while nobody plays: old clients see the same frames')
+        await a.send(t='fair_mv', p=[[0.2, 0.9], [0.14, 0.08]], ms=500, s='lt')
+        mv = await self.ev(b, 'mv', pid=a.pid)
+        self.assertEqual((mv['p'][-1], mv['s']), ([0.14, 0.08], 'lt'))
+        self.assertEqual(self.room('fair:1').data['people'][a.pid].s, 'lt')
+        c = await self.goer('Hà Vy')                                  # comes in later: sees her at the lô tô
+        self.assertEqual({p['pid']: p.get('s') for p in c.room['people']}, {a.pid: 'lt', b.pid: None})
+        await asyncio.sleep(0.3)
+        await a.send(t='fair_mv', p=[[0.14, 0.08], [0.14, 0.08]], ms=0)   # back on the walk: no `s`, no badge
+        mv = await self.ev(b, 'mv', pid=a.pid)
+        self.assertNotIn('s', mv)
+        self.assertIsNone(self.room('fair:1').data['people'][a.pid].s)
+        await asyncio.sleep(0.3)
+        await a.send(t='fair_mv', p=[[0.14, 0.08], [0.5, 0.5]], ms=300, s='NOPE!')   # odd: a plain walk, never an error
+        self.assertNotIn('s', await self.ev(b, 'mv', pid=a.pid))
+        self.assertFalse([f for f in a.frames if f.get('t') == 'error'])
+
+    async def test_coming_in_at_a_stall_and_staying_while_playing(self):
+        a = await self.goer('Lan Anh')
+        tok, _ = self.guest('Minh Tú')
+        b = await self.connect(tok)
+        r = await b.call('fair_in', 'fair_room', look=LOOK, g='male', x=0.45, y=0.1, s='bc')   # a reconnect on the bầu cua page
+        came = await self.ev(a, 'in', pid=r['me'])
+        self.assertEqual((came['x'], came['y'], came['s']), (0.45, 0.1, 'bc'))
+        a.frames.clear()
+        await asyncio.sleep(1.2)                                       # a while at the stall, no walk: still there
+        await self.app.by_name['fair'].tick(time.time())
+        self.assertIn(r['me'], self.room('fair:1').data['people'])
+        self.assertFalse([e for f in a.frames for e in f.get('ev', []) if e.get('k') == 'out'])
+        await b.close()
+        self.assertEqual((await self.ev(a, 'out'))['pid'], r['me'])   # leaving the fair still walks out
 
 
 @unittest.skipUnless(HAVE_WS, 'needs websockets')

@@ -12,12 +12,17 @@ Rooms and positions (memory only, never the database)
   they stand) and how long that walk takes there (≤ MAX_MS); the others replay it. At most 4 per second per player.
 * Diffs (comings and goings, walks) are queued and sent as one `fair` frame at most every FLUSH = 0.1 s per room;
   several walks of one player in that window send only the last (a player's own events come back too: ignored).
+* Playing a stall (owner, 03/10: "chơi trò gì thì bên ngoài thấy người ta đứng trò đó"): a player on a stall page stays
+  in the room, standing at that stall's stand point; `fair_mv` / `fair_in` may carry `s`, the id of the stall they play
+  (a short lowercase word: 'lt', 'bc', 'candy'…; anything else counts as none). Every walk sets it anew (a walk
+  without `s` is a walk away), it travels on `mv` / `in` events and in the snapshot only while set. The others draw the
+  player at their own fairground's stand of that stall with the stall's badge over them. Older peers ignore `s`.
 * Blocks: blocked players are never put in the same instance; a block made at the fair makes both invisible to
   each other at once (an `out` for each), and no frame from one reaches the other.
 
 Frames (client → server; replies in brackets)
-  fair_in {look, g, x, y}      [fair_room {room, me, people: [{pid, name, lk, g, x, y}], cap}]
-  fair_mv {p, ms}              fair_out {}  [fair_left {why: 'out'}]
+  fair_in {look, g, x, y, s?}  [fair_room {room, me, people: [{pid, name, lk, g, x, y, s?}], cap}]
+  fair_mv {p, ms, s?}          fair_out {}  [fair_left {why: 'out'}]
 Server pushes: fair {ev: [{k: in|mv|out, ...}]}, fair_left {why: 'other'}.
 A live service without this file answers `fair_in` with error 'unknown'; clients only send it when the welcome's
 flags have `fair` (an older service has no such flag: nobody else is drawn, the fairground works as before).
@@ -27,6 +32,7 @@ from __future__ import annotations
 import asyncio
 import math
 import random
+import re
 import time
 
 from .protocol import Feature, LiveError, on
@@ -39,6 +45,7 @@ FLUSH = 0.1               # seconds between two room diffs (≤ 10 per second)
 EVENTS_MAX = 300          # queued diff events per room before an early flush
 MAX_POINTS = 16           # points of one walk
 MAX_MS = 3000             # the longest walk a client replays (the fairground's walks take under a second)
+STALL = re.compile(r'[a-z]{1,8}')   # a stall id (`s`): the stalls of scenes/fair-place.js and the food carts
 
 
 def _num(v) -> bool:
@@ -56,17 +63,26 @@ def clean_point(pt) -> list:
     return [_frac(pt[0]), _frac(pt[1])]
 
 
-class Goer:
-    __slots__ = ('pid', 'player', 'name', 'look', 'g', 'x', 'y')
+def clean_stall(v) -> str | None:
+    """The stall a player plays (`s`), or None: never refused, an odd value just counts as none."""
+    return v if isinstance(v, str) and STALL.fullmatch(v) else None
 
-    def __init__(self, player, look: dict, g, at: list):
+
+class Goer:
+    __slots__ = ('pid', 'player', 'name', 'look', 'g', 'x', 'y', 's')
+
+    def __init__(self, player, look: dict, g, at: list, s: str | None = None):
         self.pid, self.player = player.pid, player
         self.name = player.name or ''
         self.look, self.g = look, g
         self.x, self.y = at
+        self.s = s
 
     def public(self) -> dict:
-        return dict(pid=self.pid, name=self.name, lk=self.look, g=self.g, x=self.x, y=self.y)
+        d = dict(pid=self.pid, name=self.name, lk=self.look, g=self.g, x=self.x, y=self.y)
+        if self.s:
+            d['s'] = self.s
+        return d
 
 
 class FairFeature(Feature):
@@ -188,7 +204,7 @@ class FairFeature(Feature):
         self._leave_player(p, 'other', keep=conn)
         room = self._pick(p)
         room.add(conn)
-        w = Goer(p, look, g, at)
+        w = Goer(p, look, g, at, clean_stall(f.get('s')))
         room.data['people'][p.pid] = w
         p.ext['fair'] = room.id
         conn.ext['fair'] = room.id
@@ -212,7 +228,11 @@ class FairFeature(Feature):
         if len(path) == 1:
             path.insert(0, [w.x, w.y])
         w.x, w.y = path[-1]
-        self._queue(room, w.pid, dict(k='mv', pid=w.pid, p=path, ms=int(min(MAX_MS, max(0, ms)))))
+        w.s = clean_stall(f.get('s'))
+        ev = dict(k='mv', pid=w.pid, p=path, ms=int(min(MAX_MS, max(0, ms))))
+        if w.s:
+            ev['s'] = w.s
+        self._queue(room, w.pid, ev)
         return None
 
     # ---- every second: a block made at the fair --------------------------------------------------------------
