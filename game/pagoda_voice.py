@@ -410,6 +410,15 @@ REMEMBER = 'Đã sửa cảm nhận sau khi đọc lời chùa hồi đáp.'
 VIRAL = 'Câu trả lời gắt bị chụp lại, lan khắp xóm: thêm {n} cảm nhận 1★.'
 SASS_LOST = 'Câu đùa bị chụp lại, bà con không vui: thêm {n} cảm nhận 1★.'
 OFFER_LEDGER = 'Biếu khách thập phương: '
+# What happens after an answer, in the game's status line.
+RESOLVED = {'revise_up': 'đã sửa cảm nhận tốt hơn', 'revise_down': 'đã sửa cảm nhận thấp hơn', 'argue': 'muốn nói thêm',
+            'keep': 'giữ nguyên cảm nhận'}
+IGNORED = 'Đã để đó. Cảm nhận vẫn giữ nguyên.'
+PHOT_LINE = 'Chùa im lặng thì tôi kể với bà con trong xóm vậy.'
+PHOT_MSG = '{author} kể chuyện khắp xóm: thêm {n} cảm nhận 1★.'
+REPORT_OK = 'Cảm nhận này đã được gỡ. Điểm trung bình không còn tính nó.'
+REPORT_NO = 'Không gỡ được: khách có ghé chùa thật. {author} biết chuyện và buồn hơn.'
+REPORT_EXTRA = ' Thêm {n} cảm nhận 1★ vì chuyện này.'
 
 # The optional AI voice (game/ai.py): where the visitor is and what never to say.
 AI_ROLE = 'khách thập phương ghé chùa Gió Lành viết cảm nhận, rồi đọc lời hồi đáp của thầy trẻ ở chùa'

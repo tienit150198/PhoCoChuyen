@@ -877,7 +877,7 @@ def action(s: dict, c: dict, career: str, name: str, p: dict, internal: bool = F
         fb['pending'] = dict(decision, turn=c['turn'])
         e.metric(c, 'replies')
         e.metric(c, 'review_replies')
-        out = dict(message='Đã gửi phản hồi. ' + (post['author'] or 'Khách') + ' đang đọc…', awaiting=post['id'])
+        out = dict(message=('Đã gửi lời hồi đáp. ' if _pv.on(career) else 'Đã gửi phản hồi. ') + (post['author'] or 'Khách') + ' đang đọc…', awaiting=post['id'])
         if (tone == 'harsh' or classify(reply)['rude']) and not fb.get('viral'):
             # Screenshots travel fast: once per review, strangers pile on.
             fb['viral'] = True
@@ -897,10 +897,11 @@ def action(s: dict, c: dict, career: str, name: str, p: dict, internal: bool = F
             # Silence is an answer too: the threat gets posted.
             fb['viral'] = True
             n = _pile_on(s, c, career, post, 2, 'phot')
-            fb['thread'].append(dict(role='customer', text='Im lặng thì mình đăng nhé. Mọi người tự đánh giá.', day=c['day'], decision='keep', stars=post['stars'], mode='scripted'))
+            pg = _pv.on(career)
+            fb['thread'].append(dict(role='customer', text=_pv.PHOT_LINE if pg else 'Im lặng thì mình đăng nhé. Mọi người tự đánh giá.', day=c['day'], decision='keep', stars=post['stars'], mode='scripted'))
             fb['thread'] = ar.last(fb['thread'], 8, 'review.thread', c)
-            return dict(message=f'{post["author"]} đăng bài bóc phốt: thêm {n} đánh giá 1★.', viral=n)
-        return dict(message='Đã bỏ qua. Đánh giá vẫn giữ nguyên.')
+            return dict(message=_pv.fill(_pv.PHOT_MSG, author=post['author'], n=n) if pg else f'{post["author"]} đăng bài bóc phốt: thêm {n} đánh giá 1★.', viral=n)
+        return dict(message=_pv.IGNORED if _pv.on(career) else 'Đã bỏ qua. Đánh giá vẫn giữ nguyên.')
     if name == 'fb_report':
         post = _post(c, p.get('post'))
         fb = post['feedback']
@@ -917,7 +918,8 @@ def action(s: dict, c: dict, career: str, name: str, p: dict, internal: bool = F
             post['stars'] = None
             fb['status'] = 'closed'
             e.metric(c, 'reviews_removed')
-            return dict(message='Ban đại diện lớp đã gỡ tin nhắn này khỏi nhóm.' if parent else 'Nền tảng đã gỡ đánh giá này. Điểm trung bình không còn tính nó.', report='accepted')
+            return dict(message='Ban đại diện lớp đã gỡ tin nhắn này khỏi nhóm.' if parent else _pv.REPORT_OK if _pv.on(career)
+                        else 'Nền tảng đã gỡ đánh giá này. Điểm trung bình không còn tính nó.', report='accepted')
         # A wrong report: the reviewer finds out.
         fb['report'] = 'rejected'
         seed = _hash('report', post['id'])
@@ -934,12 +936,15 @@ def action(s: dict, c: dict, career: str, name: str, p: dict, internal: bool = F
         fb['status'] = 'closed'
         if post['npc'] in e.NPC_INDEX and not fb.get('stranger'):
             c['relationships'][post['npc']] = max(0, c['relationships'].get(post['npc'], 0) - 6)
+        pg = _pv.on(career)
         if parent:
             msg = f'Nhà trường không gỡ: đó là góp ý thật. {post["author"]} biết chuyện và bực hơn.'
+        elif pg:
+            msg = _pv.fill(_pv.REPORT_NO, author=post['author'])
         else:
             msg = f'Báo cáo bị từ chối: đánh giá có trải nghiệm thật. {post["author"]} biết chuyện và bực hơn.'
         if extra:
-            msg += f' Thêm {extra} đánh giá 1★ vì chuyện này.'
+            msg += _pv.fill(_pv.REPORT_EXTRA, n=extra) if pg else f' Thêm {extra} đánh giá 1★ vì chuyện này.'
         return dict(message=msg, report='rejected')
     if name == 'fb_resolve':
         need(internal, 'Thao tác chỉ dành cho máy chủ.', 'forbidden')
@@ -986,13 +991,14 @@ def resolve(s: dict, c: dict, post: dict, decision, stars, text, mode: str) -> d
     fb['pending'] = None
     fb['status'] = 'open' if decision == 'argue' and fb['rounds'] < 3 else 'closed'
     npc = post['npc']
+    pg = _pv.on(_fv._career_of(s, c))
     if npc in e.NPC_INDEX and not fb.get('stranger'):
         if decision == 'revise_up':
-            e.remember(s, c, npc, _pv.REMEMBER if _pv.on(_fv._career_of(s, c)) else 'Đã sửa đánh giá sau khi đọc phản hồi của chủ quán.', post['id'])
+            e.remember(s, c, npc, _pv.REMEMBER if pg else 'Đã sửa đánh giá sau khi đọc phản hồi của chủ quán.', post['id'])
             e.metric(c, 'reviews_improved')
         elif decision == 'revise_down':
             c['relationships'][npc] = max(0, c['relationships'].get(npc, 0) - 6)
-    label = {'revise_up': 'đã nâng đánh giá', 'revise_down': 'đã hạ đánh giá', 'argue': 'muốn đối chất lại', 'keep': 'giữ nguyên đánh giá'}[decision]
+    label = (_pv.RESOLVED if pg else {'revise_up': 'đã nâng đánh giá', 'revise_down': 'đã hạ đánh giá', 'argue': 'muốn đối chất lại', 'keep': 'giữ nguyên đánh giá'})[decision]
     extra = _fv.after_resolve(s, c, post, pending, decision)  # friends, sass fallout, bystanders
     fb['thread'] = ar.last(fb['thread'], 8, 'review.thread', c)
     message = f'{post["author"]} {label}: “{text}”'
