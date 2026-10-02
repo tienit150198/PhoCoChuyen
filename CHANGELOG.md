@@ -1,3 +1,11 @@
+# v1.4.8 — 🏘️ Nhiều nhà, 🛫 bên trong nơi làm việc
+
+Chủ game (02/10): "cho phép sở hữu nhiều bất động sản/nhà nhé"; góp ý người chơi về sân bay: "nên làm thêm phần bên trong nữa ạ" → "mấy map cụ thể thì có bên trong bên ngoài, bổ sung này kia vào đa dạng lên".
+
+- `game/housing.py` VERSION 2: `own` là nhà đang ở, các căn khác trong `props` (để trống hoặc cho thuê, tiền thuê mỗi tháng = 5%/năm giá niêm yết). Tối đa 4 căn. Hạn mức vay 40% tính mọi khoản vay nhà. Dọn nhà 20 xu. Save v1 nâng cấp tại chỗ, không mất gì.
+- Khu bên trong (`public/js/scenes/areas.js`, `interior.js`, `airport.js`, `backroom.js`): sân bay 5 khu; milk tea, cafe, quán ăn, tạp hoá, hoa, mẹ & bé, quần áo, salon, thú cưng, sửa chữa, homestay, shipper có thêm khu. Chỉ phía client, không đổi nhiệm vụ/kinh tế/save.
+- Lùi bản: save có nhà v2 bị bản cũ từ chối — lùi bản phải khôi phục dữ liệu.
+
 # v1.4.7 — 💅 Tiệm nail, 🛕 chùa, 🎱 lô tô, 🧑‍🎤 avatar chat
 
 Chủ game (02/10): "có 1 cái làm móng hay nail đi", "thêm thầy chùa nữa, mn đi chùa được nhé", "loto thì có nhạc, có mc, có người biểu diễn…", "avatar cho mọi người chat ấy, set nhiều hơn và đa dạng hơn".
