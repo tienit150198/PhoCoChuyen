@@ -2302,6 +2302,38 @@ def _list_value(c: dict, units: dict) -> int:
     return max(0, total)
 
 
+def _pack_gate(c: dict, key: int) -> dict | None:
+    """Why "🧺 Soạn giỏ" for regular `key` would pack nothing now (None: the tap packs at least one item).
+    _pack and the public view (lists_view[].pack, care rows) share this one rule, so the screen never offers a
+    tap that must fail (half of all gr_pack taps did: a partly packed basket kept its button while the shelf
+    had none of the missing goods). It says why and offers the next real step instead (restock, open the shift).
+    Read only: `c` may be the public view's copy."""
+    want = _list_for(key, c['day'])
+    if not want:
+        return dict(code='not_today', why='Hôm nay khách không ghé lấy giỏ',
+                    error=f'Hôm nay {PEOPLE[key][0]} không ghé lấy giỏ. Soạn đúng ngày cho hàng tươi nhé.')
+    row = _data(c)['lists'][str(key)]
+    packed = row['packed'] if row['day'] == c['day'] else {}
+    gap = {k: q - packed.get(k, 0) for k, q in want.items() if packed.get(k, 0) < q}
+    if not gap:
+        return dict(code='full', why='Giỏ đủ rồi: khách ghé lấy lúc đóng ca',
+                    error='Giỏ đủ món rồi: khách ghé lấy lúc đóng ca.')
+    if all(_available(c, k, None) <= 0 for k in gap):
+        names = ', '.join(ITEM_INDEX[k]['name'] for k in gap)
+        return dict(code='empty', why=f'Kệ hết {names}: nhập ở Kho', items=[dict(item=k, need=q) for k, q in gap.items()],
+                    error=f'Kệ hết {names}: nhập thêm ở Kho rồi soạn tiếp nhé.')
+    if not c.get('open'):
+        # The engine refuses every gr_ action while the shift is closed (checked after the shelf: ordering works closed).
+        return dict(code='closed', why='Mở ca trước', error='Mở ca trước khi xử lý công việc nhé.')
+    return None
+
+
+def _pack_view(c: dict, key: int) -> dict:
+    """The gate as the screen shows it: {ok: True} or {ok: False, code, why[, items]} (no server error text)."""
+    gate = _pack_gate(c, key)
+    return dict(ok=True) if gate is None else dict({k: v for k, v in gate.items() if k != 'error'}, ok=False)
+
+
 def _pack(s: dict, c: dict, p: dict) -> dict:
     d = _data(c)
     npc = p.get('npc')
@@ -2311,8 +2343,9 @@ def _pack(s: dict, c: dict, p: dict) -> dict:
     except ValueError:
         key = -1
     kit.need(key in LISTS, 'Không có khách quen này.')
+    gate = _pack_gate(c, key)
+    kit.need(gate is None, (gate or {}).get('error', ''))
     want = _list_for(key, c['day'])
-    kit.need(want, f'Hôm nay {PEOPLE[key][0]} không ghé lấy giỏ. Soạn đúng ngày cho hàng tươi nhé.')
     row = d['lists'][str(key)]
     if row['day'] != c['day']:
         row.update(day=c['day'], packed={}, stale=0)
@@ -2487,7 +2520,7 @@ def _care(c: dict) -> list:
         full = all(packed.get(k, 0) >= q for k, q in want.items())
         rows.append(dict(ok=True if full else None, icon='🧺', label=f'Soạn giỏ quen cho {PEOPLE[key][0]}',
                          note='đủ món, chờ khách ghé' if full else f'{sum(packed.values())}/{sum(want.values())} món · khách ghé lúc đóng ca',
-                         do=None if full else dict(cmd='gr_pack', npc=kit.npc_id(ID, key))))
+                         do=None if full else dict(cmd='gr_pack', npc=kit.npc_id(ID, key)), pack=_pack_view(c, key)))
     for key, row in sorted(d['ledger'].items()):
         if row['balance'] <= 0:
             continue
@@ -3075,6 +3108,8 @@ def public_data(c: dict) -> dict:
                 lists.append(dict(npc=kit.npc_id(ID, key), name=PEOPLE[key][0], when=when, day=day, pay=LISTS[key]['pay'], say=LISTS[key]['say'],
                                   items=[dict(item=k, qty=q, packed=packed.get(k, 0)) for k, q in want.items()],
                                   value=_list_value(c, want), stale=row['stale'] if packed else 0))
+                if when == 'today':
+                    lists[-1]['pack'] = _pack_view(view, key)   # optional: older clients read the items themselves
         nxt = next(dd for dd in range(max(c['day'], LIST_FROM), max(c['day'], LIST_FROM) + 7) if dd % 7 == LISTS[key]['wd'])
         row['next'] = nxt
         row['bond_name'] = BOND_NAMES[row['bond']]

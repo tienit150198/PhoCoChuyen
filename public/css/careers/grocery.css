@@ -133,6 +133,10 @@
 .career-job.gr .gr-list h4{margin:0}
 .career-job.gr .gr-list p{margin:2px 0 0}
 .career-job.gr .gr-list .bad{color:var(--gr-bad);font-weight:600}
+.career-job.gr .gr-why{display:block;color:var(--gr-warn);font-weight:600}
+.career-job.gr .gr-packwhy{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:6px 8px}
+.career-job.gr .gr-packwhy .gr-why{display:inline}
+.career-job.gr .gr-how{margin:4px 0 8px}
 .career-job.gr .gr-bonds ul{list-style:none;margin:6px 0 10px;padding:0;display:flex;flex-direction:column;gap:6px}
 .career-job.gr .gr-bonds li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 8px;align-items:baseline}
 .career-job.gr .gr-bonds li small{grid-column:1/-1;color:var(--gr-muted)}
