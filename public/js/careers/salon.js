@@ -275,7 +275,7 @@ function timerBar(t,x){
   const pct=v=>Math.min(100,v/scale*100);
   const el=Math.max(0,x.now()-tm.start);
   return `<div class="sl-timer" data-sl-start="${tm.start}" data-under="${w.under}" data-ideal="${w.ideal}" data-over="${w.over}" data-scale="${scale}">
-    <div class="sl-track"><i class="z under" style="width:${pct(w.under)}%"></i><i class="z ideal" style="left:${pct(w.under)}%;width:${pct(w.ideal)-pct(w.under)}%"></i><i class="z over" style="left:${pct(w.ideal)}%;width:${pct(w.over)-pct(w.ideal)}%"></i><i class="z damage" style="left:${pct(w.over)}%;width:${100-pct(w.over)}%"></i><b class="sl-fill" style="width:${pct(el)}%"></b></div>
+    <div class="sl-track"><i class="z under" style="width:${pct(w.under)}%"></i><i class="z ideal" style="left:${pct(w.under)}%;width:${pct(w.ideal)-pct(w.under)}%"></i><i class="z over" style="left:${pct(w.ideal)}%;width:${pct(w.over)-pct(w.ideal)}%"></i><i class="z damage" style="left:${pct(w.over)}%;width:${100-pct(w.over)}%"></i><b class="sl-fill" style="transform:translateX(${pct(el)-100}%)"></b></div>
     <div class="row spread wrap"><small class="sl-label" aria-live="off">${el.toFixed(1)} giây</small><small class="muted">Vùng xanh: ${w.under}–${w.ideal} giây${tm.fragile?' · tóc đã qua hóa chất':''}${tm.fast?' · trời nóng, thuốc lên nhanh':''}</small></div>
   </div>`;
 }
@@ -837,11 +837,15 @@ export default {
     keepBarAboveFooter(root);
     const p=root.querySelector('.sl-panel[data-sl-key]');
     if(p&&p.dataset.slKey!==revealed){revealed=p.dataset.slKey;if(p.dataset.slReveal==='1')reveal(root,root.querySelector('.sl-timer-card')||(p.dataset.slFocus&&p.querySelector(p.dataset.slFocus))||p);}
+  },
+  // The dye timer (v4/careers.js): the bar glides on the compositor, the words change five times a second.
+  // "Xả thuốc" holds it where it was when the finger came down (tapStop).
+  meters(root,x){
     root.querySelectorAll('[data-sl-start]').forEach(el=>{
       const start=Number(el.dataset.slStart);if(!start)return;
       const s=Math.max(0,x.now()-start),w=el.dataset;
       const under=Number(w.under),ideal=Number(w.ideal),over=Number(w.over),scale=Number(w.scale);
-      el.querySelector('.sl-fill').style.width=Math.min(100,s/scale*100)+'%';
+      x.slide(el.querySelector('.sl-fill'),s/scale*100,100/scale,true);
       el.querySelector('.sl-label').textContent=s.toFixed(1)+' giây · '+(s<under?'chưa đủ giờ':s<=ideal?'XẢ NGAY!':s<=over?'quá giờ rồi':'tóc đang cháy!');
       el.classList.toggle('ready',s>=under&&s<=ideal);el.classList.toggle('late',s>ideal);
       // Bottom bar: count down, then swap to "rinse" in the green zone (attributes and text only, never new nodes).
@@ -852,5 +856,6 @@ export default {
       root.querySelector('.sl-rinse-top')?.classList.toggle('primary',on);
     });
   },
+  tapStop:op=>op==='sl_rinse',
   dock:[['inventory','box','Kho','Thuốc & vật tư']],
 };

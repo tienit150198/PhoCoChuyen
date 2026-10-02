@@ -124,7 +124,8 @@
 .career-job .cb-zone.bright,.career-job .cb-zone.strong,.career-job .cb-zone.hot,.career-job .cb-zone.dark{background:color-mix(in srgb,var(--warn,#c98a2b) 26%,transparent)}
 .career-job .cb-zone.balanced,.career-job .cb-zone.silky,.career-job .cb-zone.golden{background:color-mix(in srgb,var(--good,#4f8a4b) 38%,transparent)}
 .career-job .cb-zone.bitter,.career-job .cb-zone.scalded,.career-job .cb-zone.burnt{background:color-mix(in srgb,var(--bad,#c0533f) 34%,transparent)}
-.career-job .cb-fill{position:absolute;left:0;top:5px;bottom:5px;border-radius:99px;background:color-mix(in srgb,var(--ink,#3b2a20) 55%,transparent);transition:width .2s linear}
+/* Live fills are the track's full width slid in from the left (translateX, set every frame): no layout per frame. */
+.career-job .cb-fill{position:absolute;left:0;top:5px;bottom:5px;width:100%;transform:translateX(-100%);will-change:transform;border-radius:99px;background:color-mix(in srgb,var(--ink,#3b2a20) 55%,transparent)}
 .career-job .cb-meter-label{display:block;margin-top:3px;font-weight:700;font-variant-numeric:tabular-nums}
 .career-job .cb-meter.ready .cb-track{box-shadow:0 0 0 2px var(--good,#4f8a4b)}
 .career-job .cb-meter.ready .cb-meter-label{color:var(--good,#4f8a4b)}
@@ -282,7 +283,7 @@ html.reduce-motion .career-job .cb-fill{transition:none}
 .cb-mini{display:flex;align-items:center;gap:8px;flex:1 0 100%;min-width:0;margin-top:2px}
 .cb-mini-track{position:relative;flex:1 1 auto;height:10px;border-radius:99px;overflow:hidden;
   background:linear-gradient(90deg,transparent var(--a),color-mix(in srgb,var(--good,#4f8a4b) 70%,#fff) var(--a),color-mix(in srgb,var(--good,#4f8a4b) 70%,#fff) var(--b),transparent var(--b)),color-mix(in srgb,currentColor 22%,transparent)}
-.cb-mini .cb-fill{position:absolute;left:0;top:2px;bottom:2px;width:0;border-radius:99px;background:currentColor;transition:width .2s linear}
+.cb-mini .cb-fill{position:absolute;left:0;top:2px;bottom:2px;width:100%;transform:translateX(-100%);will-change:transform;border-radius:99px;background:currentColor}
 .cb-mini .cb-meter-label{flex:none;margin:0;font-size:.75rem;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
 .gd-hint .cb-mini{margin-top:4px}
 /* "Now!" glow: the guide.css ring (opacity on ::before, no repaint per frame), faster. */

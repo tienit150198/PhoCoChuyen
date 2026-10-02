@@ -1539,7 +1539,7 @@ html[data-layout="phone"] .settings-tabs{flex-wrap:nowrap;overflow-x:auto;scroll
 .zone.raw{background:var(--info-soft)}
 .zone.perfect{background:var(--good-soft);box-shadow:inset 2px 0 0 var(--good),inset -2px 0 0 var(--good)}
 .zone.soft{background:var(--warn-soft)}
-.boil-fill{position:absolute;left:0;top:0;bottom:0;width:0;border-right:3px solid var(--ink);background:repeating-linear-gradient(135deg,rgba(120,90,40,.16) 0 6px,rgba(120,90,40,.04) 6px 12px);transition:width .25s linear}
+.boil-fill{position:absolute;left:0;top:0;bottom:0;width:100%;transform:translateX(-100%);will-change:transform;border-right:3px solid var(--ink);background:repeating-linear-gradient(135deg,rgba(120,90,40,.16) 0 6px,rgba(120,90,40,.04) 6px 12px)}   /* slid by translateX (v4/careers.js slide) */
 .boil-label{font-size:.833rem;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
 .boil.ready .boil-track{box-shadow:0 0 0 3px var(--good)}
 .boil.ready .boil-label{color:var(--good)}

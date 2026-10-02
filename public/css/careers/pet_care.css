@@ -100,7 +100,8 @@
 /* ---------- real-time bars */
 .career-job.pc .pc-timer{display:grid;gap:4px;margin:6px 0}
 .career-job.pc .pc-track{position:relative;height:20px;border-radius:99px;background:var(--pc-s2);border:1px solid var(--pc-line);overflow:hidden}
-.career-job.pc .pc-track .fill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--pc-info);opacity:.75}
+/* The fill is the track's full width slid in from the left (translateX, set every frame): no layout per frame. */
+.career-job.pc .pc-track .fill{position:absolute;left:0;top:0;bottom:0;width:100%;transform:translateX(-100%);will-change:transform;background:var(--pc-info);opacity:.75}
 .career-job.pc .pc-timer.dry .fill{background:var(--pc-warn)}
 .career-job.pc .pc-track em{position:absolute;top:0;bottom:0;width:3px;background:var(--pc-good)}
 .career-job.pc .pc-timer-label{font-weight:700;font-variant-numeric:tabular-nums;color:var(--pc-muted)}
@@ -228,8 +229,12 @@
   background:var(--pc-s1);border:1px solid var(--pc-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
 .career-job.pc .pc-bar .btn.grow{flex:1 1 auto;min-width:0}
 .career-job.pc .pc-bar .btn small{font-weight:600;opacity:.85}
-.career-job.pc .btn.pc-ready,.gd-hint.pc-ready{box-shadow:0 0 0 3px var(--pc-good,var(--good,#4f8a4f));animation:pc-ready 1.2s ease-in-out infinite}
-@keyframes pc-ready{50%{box-shadow:0 0 0 6px var(--pc-good,var(--good,#4f8a4f))}}
+/* "Time to turn it off": a fixed ring plus a wider one on ::before whose opacity breathes (compositor only; the
+ * old animated box-shadow repainted the button every frame while the tap or the dryer ran). */
+.career-job.pc .btn.pc-ready,.gd-hint.pc-ready{position:relative;box-shadow:0 0 0 3px var(--pc-good,var(--good,#4f8a4f))}
+.career-job.pc .btn.pc-ready::before,.gd-hint.pc-ready::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:0 0 0 6px var(--pc-good,var(--good,#4f8a4f));opacity:0;will-change:opacity;animation:pc-ready 1.2s ease-in-out infinite}
+@keyframes pc-ready{50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.career-job.pc .btn.pc-ready::before,.gd-hint.pc-ready::before{animation:none}}
 [data-pc-live]{font-variant-numeric:tabular-nums}
 .career-job.pc .pc-part,.career-job.pc .tile,.career-job.pc button.pc-pen{min-height:44px}
 

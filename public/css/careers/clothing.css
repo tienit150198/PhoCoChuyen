@@ -131,9 +131,13 @@
 .career-job.ao .ao-sew{margin:10px 0}
 .career-job.ao .ao-seam{position:relative;height:36px;border-radius:8px;background:repeating-linear-gradient(90deg,var(--ao-s2) 0 8px,var(--ao-line) 8px 12px);border:1px solid var(--ao-line)}
 .career-job.ao .ao-zone{position:absolute;top:0;bottom:0;background:color-mix(in srgb,var(--ao-good) 35%,transparent);border-inline:2px solid var(--ao-good)}
-.career-job.ao .ao-needle{position:absolute;top:-6px;bottom:-6px;width:4px;margin-left:-2px;background:var(--ao-violet);border-radius:2px}
-.career-job.ao .ao-sew.ready .ao-needle{background:var(--ao-good)}
-.career-job.ao .ao-sew.over .ao-needle{background:var(--ao-bad)}
+/* The needle: a still clip box over the seam, with a full-width layer inside moved by translateX (a % of the seam)
+ * and drawn as a line at its left edge: moving it each frame needs no layout. */
+.career-job.ao .ao-needle{position:absolute;top:-6px;bottom:-6px;left:0;right:0;overflow:hidden;pointer-events:none}
+.career-job.ao .ao-needle>b{position:absolute;inset:0;transform:translateX(0);will-change:transform}
+.career-job.ao .ao-needle>b::before{content:"";position:absolute;top:0;bottom:0;left:-2px;width:4px;background:var(--ao-violet);border-radius:2px}
+.career-job.ao .ao-sew.ready .ao-needle>b::before{background:var(--ao-good)}
+.career-job.ao .ao-sew.over .ao-needle>b::before{background:var(--ao-bad)}
 .career-job.ao .ao-sew-label{display:block;margin-top:6px;font-weight:700}
 .career-job.ao .ao-sew.ready .ao-sew-label{color:var(--ao-good)}
 .career-job.ao .ao-sew.over .ao-sew-label{color:var(--ao-bad)}

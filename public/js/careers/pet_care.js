@@ -290,7 +290,7 @@ function stepStrip(t,x){
 }
 function timerBar(kind,start,base,need,over,rate,label){
   return `<div class="pc-timer ${kind}" data-pc-timer="${kind}" data-start="${start||''}" data-base="${base}" data-need="${need}" data-over="${over}" data-rate="${rate}">
-    <div class="pc-track"><b class="fill" style="width:${Math.min(100,base/over*100)}%"></b><em style="left:${need/over*100}%"></em></div>
+    <div class="pc-track"><b class="fill" style="transform:translateX(${Math.min(100,base/over*100)-100}%)"></b><em style="left:${need/over*100}%"></em></div>
     <small class="pc-timer-label" aria-live="polite">${label}</small></div>`;
 }
 function dryNeed(t,x,heat){const n=t.needs;return (x.cc.dry_need[n.coat]||6)*(heat==='cool'?1.5:1)*(n.humid?1.5:1);}
@@ -795,27 +795,32 @@ export default {
     return `<div class="career-job pc">${hint}${lastDesk(x)}${todayChip(x)}${ticket(t,x)}${regularCard(t,x)}<div class="workbench"><section class="wb-main">${main(t,x,gd.now)}</section><aside class="wb-side">${side(t,x,gd)}</aside></div>
       <div class="pc-more">${extra}${care}${shopFold(x)}</div>${bar}</div>`;
   },
-  tick(root,x){
-    keepBarAboveFooter(root);
-    // Live timer buttons (hint + bottom bar): text only, the buttons themselves stay put.
+  tick(root){keepBarAboveFooter(root);},
+  // The running tap and dryer (v4/careers.js): the bars glide on the compositor, the words change five times a
+  // second. A stop tap holds them where they were when the finger came down (tapStop).
+  meters(root,x){
+    // Live timer buttons (hint + bottom bar): text only, the buttons themselves stay put. Once it is time, the
+    // button is a stop control too (data-tap-stop); before that a tap only says how long is left.
     const t=x.room.tasks.find(v=>v.id===x.ui.tid);
-    if(t?.g)(root.closest('dialog')||document).querySelectorAll('[data-pc-live]').forEach(el=>{
-      const kind=el.dataset.pcLive;if(!t.g[kind])return;
-      const label=liveLabel(kind,t,x);if(el.textContent!==label)el.textContent=label;
-      el.closest('button')?.classList.toggle('pc-ready',timerReady(kind,t,x));
-    });
-    root.querySelectorAll('[data-pc-timer]').forEach(el=>{
-      const start=Number(el.dataset.start);if(!start)return;
+    if(t?.g)for(const el of (root.closest('dialog')||document).querySelectorAll('[data-pc-live]')){
+      const kind=el.dataset.pcLive;if(!t.g[kind])continue;
+      const label=liveLabel(kind,t,x),ready=timerReady(kind,t,x),b=el.closest('button');
+      if(el.textContent!==label)el.textContent=label;
+      if(b){b.classList.toggle('pc-ready',ready);const op=ready?(kind==='rinse'?'pc_rinse':'pc_dry'):'';if((b.dataset.tapStop||'')!==op){if(op)b.dataset.tapStop=op;else delete b.dataset.tapStop;}}
+    }
+    for(const el of root.querySelectorAll('[data-pc-timer]')){
+      const start=Number(el.dataset.start);if(!start)continue;
       const kind=el.dataset.pcTimer,base=Number(el.dataset.base)||0,need=Number(el.dataset.need)||1,over=Number(el.dataset.over)||need*2,rate=Number(el.dataset.rate)||1;
       const value=base+Math.max(0,x.now()-start)*rate;
       const label=kind==='rinse'?`${value.toFixed(1)} giây · ${value<need?'còn bọt, xả tiếp':'nước đã trong — khóa vòi được rồi'}`
         :`${Math.floor(value)}% · ${value<need?'chân lông còn ẩm':value<over?'khô rồi — tắt máy':'quá lâu, da khô xơ!'}`;
-      el.querySelector('.fill').style.width=Math.min(100,value/over*100)+'%';
-      el.querySelector('.pc-timer-label').textContent=label;
+      x.slide(el.querySelector('.fill'),value/over*100,rate/over*100,true);
+      const l=el.querySelector('.pc-timer-label');if(l.textContent!==label)l.textContent=label;
       el.classList.toggle('ready',value>=need&&value<over);
       el.classList.toggle('over',value>=over);
-    });
+    }
   },
+  tapStop:(op,p)=>(op==='pc_rinse'||op==='pc_dry')&&p.mode==='stop',
   actions:{
     ...SF.foldActions,
     async set(data,el,x){

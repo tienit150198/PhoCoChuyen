@@ -54,7 +54,7 @@ function tile(x,o){
 const seg=(x,action,key,value,label,current)=>`<button type="button" class="cb-seg ${current===value?'on is-selected':''}" data-action="car:${action}" data-${key}="${x.esc(value)}" aria-pressed="${current===value}">${x.esc(label)}</button>`;
 /** One requirement row for ui-kit reqList (ok: true ✓ / false ✗ / null ○). */
 const R=(ok,icon,label,value='',note='',tone='',go=null)=>({ok,icon,label,value,note,tone,go});
-const bar=(cls,attrs,zones,fill,label)=>`<div class="cb-meter ${cls}" ${attrs}><div class="cb-track">${zones.map(([k,a,b])=>`<i class="cb-zone ${k}" style="left:${a}%;width:${Math.max(0,b-a)}%"></i>`).join('')}<b class="cb-fill" style="width:${Math.min(100,Math.max(0,fill))}%"></b></div><small class="cb-meter-label">${label}</small></div>`;
+const bar=(cls,attrs,zones,fill,label)=>`<div class="cb-meter ${cls}" ${attrs}><div class="cb-track">${zones.map(([k,a,b])=>`<i class="cb-zone ${k}" style="left:${a}%;width:${Math.max(0,b-a)}%"></i>`).join('')}<b class="cb-fill" style="transform:translateX(${Math.min(100,Math.max(0,fill))-100}%)"></b></div><small class="cb-meter-label">${label}</small></div>`;
 
 /* ---------- real-time meters (the server decides the result from its own clock) ---------- */
 function shotMeter(x,start,flow){
@@ -159,7 +159,7 @@ function pickGo(t,x,id,old=false){
 }
 const backGo=(t,x,i)=>({cmd:'cb_return',payload:{task:t.id,index:i},label:`↩️ Trả ${x.esc(lower(bake(x,t.bag.items[i].item).name))} về tủ`});
 const bagGo=(t,x)=>t.bag.bagged||!t.bag.items.length?null:!t.bag.has_bag&&!stock(x,'bag')?restock(x,'túi giấy','bag'):{cmd:'cb_bag',payload:{task:t.id},label:'🛍️ Cho bánh vào túi'};
-/** A small live bar for the bottom button and the hint (tick() moves it). */
+/** A small live bar for the bottom button and the hint (meters() moves it). */
 const mini=(attrs,a,b)=>`<span class="cb-mini" ${attrs} style="--a:${a}%;--b:${b}%"><span class="cb-mini-track"><b class="cb-fill"></b></span><small class="cb-meter-label"></small></span>`;
 const pct=(v,s)=>(v/s*100).toFixed(1);
 function shotMini(x,start,flow){const e=cc(x).extract||{bright:25,balanced:30};return mini(`data-shot-start="${start}" data-flow="${flow||1}"`,pct(e.bright,SHOT_SCALE),pct(e.balanced,SHOT_SCALE));}
@@ -685,34 +685,35 @@ export default {
       await x.send('cb_write',{task:data.task,text});
     },
   },
-  tick(root,x){
-    keepBarAboveFooter(root);
-    // The hint sits in the sheet header (outside root): move every live bar in the sheet.
-    // A bar inside a button (bottom button, hint) makes that button glow in the good window.
+  tick(root){keepBarAboveFooter(root);},
+  // The live bars (shot, steam wand, oven racks; v4/careers.js): they glide on the compositor, their words change
+  // five times a second. The hint sits in the sheet header (outside root): every live bar in the sheet.
+  // A bar inside a button (bottom button, hint) makes that button glow in the good window. A stop tap holds them
+  // where they were when the finger came down (tapStop).
+  meters(root,x){
     const scope=root.closest('dialog')||root,now=(el,on)=>el.closest('button')?.classList.toggle('cb-now',on);
     const e=x.cc.extract||{sour:20,bright:25,balanced:30,strong:35},st=x.cc.steam||{base:5,rate:4.2,cool:55,silky:68,hot:76};
-    scope.querySelectorAll('[data-shot-start]').forEach(el=>{
-      const start=Number(el.dataset.shotStart);if(!start)return;
+    const draw=(el,p,perSec,text)=>{x.slide(el.querySelector('.cb-fill'),p,perSec,true);const l=el.querySelector('.cb-meter-label');if(l.textContent!==text)l.textContent=text;};
+    for(const el of scope.querySelectorAll('[data-shot-start]')){
+      const start=Number(el.dataset.shotStart);if(!start)continue;
       const s=Math.max(0,x.now()-start)*Number(el.dataset.flow||1);
-      el.querySelector('.cb-fill').style.width=Math.min(100,s/SHOT_SCALE*100)+'%';
-      el.querySelector('.cb-meter-label').textContent=s.toFixed(1)+' giây · '+(s<e.sour?'chua':s<e.bright?'hơi chua':s<=e.balanced?'DỪNG NGAY!':s<=e.strong?'hơi đậm':'đắng khét');
+      draw(el,s/SHOT_SCALE*100,Number(el.dataset.flow||1)/SHOT_SCALE*100,s.toFixed(1)+' giây · '+(s<e.sour?'chua':s<e.bright?'hơi chua':s<=e.balanced?'DỪNG NGAY!':s<=e.strong?'hơi đậm':'đắng khét'));
       el.classList.toggle('ready',s>=e.bright&&s<=e.balanced);el.classList.toggle('over',s>e.strong);now(el,s>=e.bright&&s<=e.balanced);
-    });
-    scope.querySelectorAll('[data-steam-start]').forEach(el=>{
-      const start=Number(el.dataset.steamStart);if(!start)return;
+    }
+    for(const el of scope.querySelectorAll('[data-steam-start]')){
+      const start=Number(el.dataset.steamStart);if(!start)continue;
       const temp=st.base+st.rate*Math.max(0,x.now()-start);
-      el.querySelector('.cb-fill').style.width=Math.min(100,temp/TEMP_SCALE*100)+'%';
-      el.querySelector('.cb-meter-label').textContent=Math.round(temp)+' °C · '+(temp<st.cool?'còn nguội':temp<=st.silky?'TẮT VÒI!':temp<=st.hot?'quá nóng':'khét sữa');
+      draw(el,temp/TEMP_SCALE*100,st.rate/TEMP_SCALE*100,Math.round(temp)+' °C · '+(temp<st.cool?'còn nguội':temp<=st.silky?'TẮT VÒI!':temp<=st.hot?'quá nóng':'khét sữa'));
       el.classList.toggle('ready',temp>=st.cool&&temp<=st.silky);el.classList.toggle('over',temp>st.hot);now(el,temp>=st.cool&&temp<=st.silky);
-    });
-    scope.querySelectorAll('[data-oven-start]').forEach(el=>{
-      const start=Number(el.dataset.ovenStart);if(!start)return;
+    }
+    for(const el of scope.querySelectorAll('[data-oven-start]')){
+      const start=Number(el.dataset.ovenStart);if(!start)continue;
       const [a,g,z]=(el.dataset.w||'10,20,30').split(',').map(Number),shift=Number(el.dataset.shift)||0,sec=Math.max(0,x.now()-start)+shift;
-      el.querySelector('.cb-fill').style.width=Math.min(100,sec/(z+6)*100)+'%';
-      el.querySelector('.cb-meter-label').textContent=sec.toFixed(1)+' giây · '+(sec<a?'còn nhạt':sec<g?'VÀNG ĐỀU, LẤY RA!':sec<z?'sậm màu':'cháy rồi!');
+      draw(el,sec/(z+6)*100,100/(z+6),sec.toFixed(1)+' giây · '+(sec<a?'còn nhạt':sec<g?'VÀNG ĐỀU, LẤY RA!':sec<z?'sậm màu':'cháy rồi!'));
       el.classList.toggle('ready',sec>=a&&sec<g);el.classList.toggle('over',sec>=z);now(el,sec>=a&&sec<g);
-    });
+    }
   },
+  tapStop:op=>op==='cb_stop'||op==='cb_milk_stop'||op==='cb_unload',
   summary(data,x){
     const care=data&&data.care;
     const night=care?`<article class="card space-top cb-care-sum"><h4>🌙 Qua đêm ở tiệm</h4><ul class="small">${(care.lines||[]).map(l=>`<li>${x.esc(l)}</li>`).join('')}</ul>${care.tip?`<p class="fk-tomorrow"><span aria-hidden="true">❄️</span> <b>${x.esc(care.tip)}</b></p>`:''}</article>`:'';
