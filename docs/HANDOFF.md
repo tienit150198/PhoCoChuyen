@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **1.4.4** (02/10 12:59; see "1.3.0" below), 33 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **1.4.5** (02/10 14:18; see "1.3.0" below), 33 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -64,11 +64,14 @@ branch holds what, and what to do next, in order. Details live in the linked doc
   `fits`, salon stock + 🎨 Bảng màu, customer care "khi nào dùng"), light 📐 hints in tax/accounting (`bad` boxes),
   ❓ Hỏi nhanh (15 Q&A in the guide), intro "Vào làm thôi" fix, `ops_pay_all`. Owner rule: hints only, the player
   does every step. Branches `ux/*` merged; worktrees `wt-*` can be removed.
+- **1.4.5** (02/10 14:18, rollback target 1.4.4-20261002125824): office pay (owner: "để tiền ổn xíu, tăng xíu").
+  tax_payroll / corp_accounting / group_accounting dossiers pay +2 xu with a 14 xu floor (`office.pay`, `RAISE`,
+  `MIN_PAY`); on probation (care track rank 0, until the first promotion) a mistake costs half, pay never under
+  half the bonus, late −4 instead of −8, a wrong check 8 office minutes instead of 15 (`office.rookie`,
+  `wrong_min`, `settle(..., new)`). hr_admin/secretary/it_helpdesk (office_work.py) unchanged. Also the
+  `e.target.closest` guard in app.js (optional chaining). Worktrees `wt-*` of 1.4.4 removed.
 - Open questions to the owner (02/10): remove the ✓ marks in the salon mixer's "Bảng pha màu" (they show the
-  answer)? Gentler beginner pay in office jobs (proposal in the tax agent report: −2 per mistake, floor half bonus,
-  first ~5 dossiers)? Keep idle anonymous saves forever?
-- Small known: `e.target.closest is not a function` in app.js click handler (pre-existing, ~8/day): guard with
-  `instanceof Element`.
+  answer)? Keep idle anonymous saves forever?
 - Someone left uncommitted Firebase/telemetry work in the main checkout (.env.example, game/webassets.py,
   public/js/telemetry.js, public/privacy.html, tests/test_webassets.py); not ours, not released.
 
