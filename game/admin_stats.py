@@ -85,6 +85,7 @@ import time
 from pathlib import Path
 
 from . import __version__
+from . import kpi
 from .pg_schema import PLAY_GAP, PLAY_IDLE_TAIL
 
 try:  # PostgreSQL backend (game/db.py); a tree without it is SQLite only
@@ -102,6 +103,7 @@ BUSY_WAIT = 60.0           # ... and gives the pass up after waiting this long (
 SUMMARY_TTL = 30.0
 SYSTEM_EVERY = 120.0       # table sizes
 SUMMARY_EVERY = 60.0       # the job's copy of the first screen (served when a live read runs out of time)
+KPI_EVERY = float(os.environ.get('ADMIN_STATS_KPI_EVERY', '600') or 600)   # the investor overview (game/admin_kpi.py)
 IDLE = 600.0               # the job stops this long after the last admin request
 SAMPLE = max(100, int(os.environ.get('ADMIN_STATS_SAMPLE', '400') or 400))
 KEEP_DAYS = 120            # stat_active history kept
@@ -202,13 +204,15 @@ def _store_pg(store) -> bool:
 
 
 def ensure(store) -> None:
-    """Idempotent: indexes, day tables and triggers (see the module doc)."""
+    """Idempotent: indexes, day tables and triggers (see the module doc), and the investor KPI tables of
+    game/kpi.py (stat_counters, stat_kpi_daily, stat_players: new tables only, nothing existing is altered)."""
     if _store_pg(store):
         _ensure_pg(store)
     else:
         with store.connect() as db:
             db.executescript(SCHEMA)
-    install_ai_counters()
+            db.executescript(kpi.SCHEMA)
+    install_ai_counters(store)
     install_command_timer(store)
 
 
@@ -216,10 +220,11 @@ def _ensure_pg(store) -> None:
     """The admin indexes, skipped when present. Several workers start at once, and two
     concurrent CREATE INDEX IF NOT EXISTS can still collide: the loser just moves on (the
     admin queries work without the index, only slower)."""
-    for name, sql in PG_INDEXES:
+    for name, sql in PG_INDEXES + kpi.PG_DDL:
         try:
             with store.connect() as db:
-                if not db.execute('SELECT 1 FROM pg_indexes WHERE schemaname = current_schema() AND indexname = ?', (name,)).fetchone():
+                if not db.execute('SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace '
+                                  'WHERE n.nspname = current_schema() AND c.relname = ?', (name,)).fetchone():
                     db.execute(sql)
         except dbm.Error:
             pass
@@ -230,6 +235,11 @@ _ai_lock = threading.Lock()
 _ai: dict[str, dict] = {}
 _blocked: dict[str, set] = {}
 AI_KEYS = ('calls', 'ok', 'failed', 'busy', 'rejected', 'guard')
+# The store whose stat_counters keep the AI counts of every worker (kpi.add, `ai:<key>`): before 1.4.2 each worker
+# process only had its own in-memory counts, so with WORKERS=8 the page showed ~1/8 of the calls, and 0 after a restart.
+_ai_store = [None]
+AI_TTL = 10.0
+_ai_read: dict = {}   # db path -> (monotonic time, days)
 
 
 def _today() -> str:
@@ -245,6 +255,7 @@ def _bump(key: str, n: int = 1) -> None:
             for old in sorted(_ai)[:-AI_DAYS]:
                 _ai.pop(old, None)
                 _blocked.pop(old, None)
+    kpi.add(_ai_store[0], 'ai:' + key, n)
 
 
 def _counted_chat(real):
@@ -292,20 +303,53 @@ def _counted_abusive(real):
     return abusive
 
 
-def install_ai_counters() -> None:
+def install_ai_counters(store=None) -> None:
     from . import ai
+    if store is not None:
+        _ai_store[0] = store
     for name, wrap in (('chat', _counted_chat), ('clean_reply', _counted_clean), ('abusive', _counted_abusive)):
         fn = getattr(ai, name, None)
         if callable(fn) and not getattr(fn, '_counted', False):
             setattr(ai, name, wrap(fn))
 
 
-def ai_usage() -> dict:
-    with _ai_lock:
-        days = [dict(day=d, **row) for d, row in sorted(_ai.items())]
-    total = {k: sum(r[k] for r in days) for k in AI_KEYS}
+def ai_usage(store=None) -> dict:
+    """AI calls per Vietnam day. With `store`: every worker's counts from stat_counters (`ai:*`, written every
+    kpi.FLUSH_EVERY seconds, kept), plus this process's counts not written yet (`persisted` True). Without it, or
+    when that read fails: this process's own memory since it started (`persisted` False)."""
     from . import ai
-    return dict(since=round(STARTED, 3), configured=bool(ai.available()), total=total, days=days[-AI_DAYS:])
+    days = None
+    if store is not None:
+        try:
+            days = _ai_persisted(store)
+        except (Busy, OSError) + _db_errors() as exc:
+            _log('ai usage', exc)
+            days = None
+    persisted = days is not None
+    if days is None:
+        with _ai_lock:
+            days = [dict(day=d, **row) for d, row in sorted(_ai.items())]
+    total = {k: sum(r[k] for r in days) for k in AI_KEYS}
+    since = (days[0]['day'] if days else _today()) if persisted else None
+    return dict(since=round(STARTED, 3), since_day=since, persisted=persisted, configured=bool(ai.available()), total=total,
+                days=days[-AI_DAYS:])
+
+
+def _ai_persisted(store) -> list:
+    now = time.monotonic()
+    hit = _ai_read.get(store.path)
+    if hit and now - hit[0] < AI_TTL:
+        got = hit[1]
+    else:
+        first = (datetime.datetime.now(VN).date() - datetime.timedelta(days=AI_DAYS - 1)).isoformat()
+        with _read(store, LIVE_MS) as db:
+            got = kpi.read(db, first, 'ai:')
+        _ai_read[store.path] = (now, got)
+    merged = {d: dict(v) for d, v in got.items()}
+    for (d, k), n in kpi.pending(store).items():   # this worker's last seconds, not written yet
+        if k.startswith('ai:'):
+            merged.setdefault(d, {})[k] = merged.get(d, {}).get(k, 0) + n
+    return [dict(day=d, **{k: int(merged[d].get('ai:' + k, 0)) for k in AI_KEYS}) for d in sorted(merged)]
 
 
 # ---------------------------------------------------------------- command timings (in memory, per worker)
@@ -359,7 +403,9 @@ def install_command_timer(store) -> None:
         try:
             return real(*args, **kwargs)
         finally:
-            record_command((time.perf_counter() - t0) * 1000, prefix)
+            ms = (time.perf_counter() - t0) * 1000
+            record_command(ms, prefix)
+            kpi.add(store, f'cmd_ms:{bisect.bisect_left(CMD_EDGES, ms)}')   # the day's latency histogram (kept)
     command._timed = True
     command.__wrapped__ = real
     command.__doc__ = real.__doc__
@@ -668,29 +714,56 @@ def play_stats(rows: list[dict]) -> dict:
 
 
 # ---------------------------------------------------------------- SQL sections
+# A save "has played" when a command of its player changed it. revision > 0 alone is not
+# enough: reading a save migrates it (a release that adds a career) and bumps its revision
+# without a command, so never-played saves of a new release looked played. Since the day log
+# exists (stat_births), a save born under it counts only with a logged active day (stat_active,
+# or stat_players once those days are past KEEP_DAYS); older saves keep the revision test.
+_GHOST = ('SELECT COUNT(*), SUM(CASE WHEN NOT EXISTS (SELECT 1 FROM accounts c WHERE c.sid = b.sid) THEN 1 ELSE 0 END) '
+          'FROM stat_births b JOIN sessions s ON s.sid = b.sid WHERE s.revision > 0 '
+          'AND NOT EXISTS (SELECT 1 FROM stat_active a WHERE a.sid = b.sid) '
+          'AND NOT EXISTS (SELECT 1 FROM stat_players p WHERE p.sid = b.sid)')
+
+
+def ghosts(db) -> tuple[int, int]:
+    """(saves, of which guests) with revision > 0 that never had a command (see _GHOST)."""
+    r = db.execute(_GHOST).fetchone()
+    return int(r[0] or 0), int(r[1] or 0)
+
+
+def tracked_since(db) -> str | None:
+    """First Vietnam day of the day log (stat_births / stat_active), or None before it."""
+    return db.execute('SELECT MIN(day) FROM stat_births').fetchone()[0]
+
+
 def players(db, days: int, today: datetime.date) -> dict:
     span = _days(today, days)
     start = span[0]
     since = (datetime.datetime.combine(today - datetime.timedelta(days=max(days, 30) + 1), datetime.time()) - datetime.timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')
+    tracked = tracked_since(db)
+    # The saves' own last change only fills the days before the day log existed: after that the
+    # log has every command, and a save's updated_at may be its creation (never played, migrated).
+    until = kpi.utc_of(tracked) if tracked else '9999-12-31 00:00:00'
     total = db.execute('SELECT COUNT(*) FROM sessions').fetchone()[0]
-    played = db.execute('SELECT COUNT(*) FROM sessions WHERE revision > 0').fetchone()[0]
+    ghost, ghost_guests = ghosts(db)
+    played = db.execute('SELECT COUNT(*) FROM sessions WHERE revision > 0').fetchone()[0] - ghost
     accounts = db.execute('SELECT COUNT(*) FROM accounts').fetchone()[0]
     owned = db.execute('SELECT COUNT(*) FROM sessions WHERE sid IN (SELECT sid FROM accounts)').fetchone()[0]
-    guests = db.execute('SELECT COUNT(*) FROM sessions WHERE revision > 0 AND sid NOT IN (SELECT sid FROM accounts)').fetchone()[0]
-    # Activity: the day log, plus each save's last change (covers days before the log existed).
+    guests = db.execute('SELECT COUNT(*) FROM sessions WHERE revision > 0 AND sid NOT IN (SELECT sid FROM accounts)').fetchone()[0] - ghost_guests
+    # Activity: the day log, plus each save's last change for the days before the log.
     pg = _is_pg(db)
     if pg:
         run = db.pg
         act = ("WITH act AS (SELECT day, sid FROM stat_active WHERE day >= %(from)s UNION "
                "SELECT to_char(updated_at::timestamp + interval '7 hours', 'YYYY-MM-DD'), sid FROM sessions "
-               "WHERE updated_at >= %(since)s AND revision > 0) ")
+               "WHERE updated_at >= %(since)s AND updated_at < %(until)s AND revision > 0) ")
         mark = '%(start)s'
     else:
         run = db.execute
         act = (f"WITH act AS (SELECT day, sid FROM stat_active WHERE day >= :from UNION "
-               f"SELECT date(updated_at, '{TZ}'), sid FROM sessions WHERE updated_at >= :since AND revision > 0) ")
+               f"SELECT date(updated_at, '{TZ}'), sid FROM sessions WHERE updated_at >= :since AND updated_at < :until AND revision > 0) ")
         mark = ':start'
-    args = dict(since=since, **{'from': (today - datetime.timedelta(days=max(days, 30) - 1)).isoformat()})
+    args = dict(since=since, until=until, **{'from': (today - datetime.timedelta(days=max(days, 30) - 1)).isoformat()})
     dau = _series(span, run(act + f'SELECT day, COUNT(*) FROM act WHERE day >= {mark} GROUP BY day', dict(args, start=start)))
     # 7 and 30 days in one pass over the union (it is the heaviest read of the summary).
     w7, m30 = ('%(w7)s', '%(start)s') if pg else (':w7', ':start')
@@ -699,16 +772,18 @@ def players(db, days: int, today: datetime.date) -> dict:
                                                 dict(args, w7=(today - datetime.timedelta(days=6)).isoformat(),
                                                      start=(today - datetime.timedelta(days=29)).isoformat())).fetchone())
     new_sessions = _series(span, db.execute('SELECT day, COUNT(*) FROM stat_births WHERE day >= ? GROUP BY day', (start,)))
+    # New players of a day: saves born that day that also played that day (the cohort of the
+    # retention numbers; a save that plays first a week later does not change an old day).
     new_players = _series(span, db.execute('SELECT b.day, COUNT(*) FROM stat_births b WHERE b.day >= ? AND EXISTS '
-                                           '(SELECT 1 FROM stat_active a WHERE a.sid = b.sid) GROUP BY b.day', (start,)))
+                                           '(SELECT 1 FROM stat_active a WHERE a.sid = b.sid AND a.day = b.day) GROUP BY b.day', (start,)))
     # created_at is UTC text: the range starts at Vietnam midnight of `start` (an index range, not a scan).
     utc_start = (datetime.datetime.fromisoformat(start) - datetime.timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')
     day_of = "to_char(created_at::timestamp + interval '7 hours', 'YYYY-MM-DD')" if pg else f"date(created_at, '{TZ}')"
     new_accounts = _series(span, db.execute(f'SELECT {day_of} AS d, COUNT(*) FROM accounts WHERE created_at >= ? GROUP BY d', (utc_start,)))
-    tracked = db.execute('SELECT MIN(day) FROM stat_births').fetchone()[0]
     return dict(days=span, total=total, played=played, accounts=accounts, guests=guests, account_saves=owned,
                 dau=dau, new_sessions=new_sessions, new_players=new_players, new_accounts=new_accounts,
-                wau=wau, mau=mau, retention=retention(db, today, max(days, COHORT_DAYS)), tracked_since=tracked)
+                wau=wau, mau=mau, retention=retention(db, today, max(days, COHORT_DAYS)), tracked_since=tracked,
+                unplayed_migrated=ghost)
 
 
 _RETENTION_SQL = """
@@ -749,20 +824,31 @@ def feedback(db, days: int, now: float) -> dict:
     for r in db.execute('SELECT kind, status, COUNT(*) FROM player_feedback GROUP BY kind, status'):
         if r[0] in table and r[1] in statuses:
             table[r[0]][r[1]] = r[2]
-    in_range = db.execute('SELECT COUNT(*) FROM player_feedback WHERE created_at >= ?', (now - days * 86400,)).fetchone()[0]
+    # "The last N days" = from Vietnam midnight N-1 days ago, as every other card (not now - N×24 h).
+    today = datetime.datetime.fromtimestamp(now, VN).date()
+    from_t = kpi.epoch_of((today - datetime.timedelta(days=days - 1)).isoformat())
+    in_range = db.execute('SELECT COUNT(*) FROM player_feedback WHERE created_at >= ?', (from_t,)).fetchone()[0]
     # First time a note left "new": the trigger's exact time, else the best guess from older rows.
     least = 'LEAST' if _is_pg(db) else 'MIN'  # SQLite's MIN(a, b) is PostgreSQL's LEAST(a, b)
+    ack_from = kpi.epoch_of((today - datetime.timedelta(days=max(days, 30) - 1)).isoformat())
     waits = [r[0] for r in db.execute(
         f"SELECT COALESCE(a.at, {least}(p.updated_at, COALESCE(p.replied_at, p.updated_at))) - p.created_at FROM player_feedback p "
-        'LEFT JOIN stat_fb_ack a ON a.id = p.id WHERE p.status != ? AND p.created_at >= ?', ('new', now - max(days, 30) * 86400)) if r[0] is not None]
+        'LEFT JOIN stat_fb_ack a ON a.id = p.id WHERE p.status != ? AND p.created_at >= ?', ('new', ack_from)) if r[0] is not None]
     waits = [max(0.0, w) for w in waits]
+    # The median above only knows the notes already read: the ones still waiting are told apart
+    # (how many, the oldest), so a backlog cannot hide behind a fast median.
+    w = db.execute('SELECT COUNT(*), MIN(created_at) FROM player_feedback WHERE status = ? AND created_at >= ?', ('new', ack_from)).fetchone()
+    waiting, oldest = int(w[0] or 0), w[1]
+    asked = len(waits) + waiting
     newest = [dict(id=r[0], kind=r[1], status=r[2], text=(r[3] or '').split('\n')[0][:90], created_at=r[4])
               for r in db.execute('SELECT id, kind, status, text, created_at FROM player_feedback ORDER BY id DESC LIMIT 5')]
     open_n = sum(table[k]['new'] + table[k]['seen'] for k in kinds)
     return dict(kinds=[dict(kind=k, **table[k]) for k in kinds], open=open_n, unread=sum(table[k]['new'] for k in kinds),
-                total=sum(sum(v.values()) for v in table.values()), in_range=in_range,
+                total=sum(sum(v.values()) for v in table.values()), in_range=in_range, range_from=round(from_t, 3),
                 ack=dict(n=len(waits), median_h=round(_pct(waits, .5) / 3600, 1) if waits else None,
-                         avg_h=round(sum(waits) / len(waits) / 3600, 1) if waits else None),
+                         avg_h=round(sum(waits) / len(waits) / 3600, 1) if waits else None,
+                         waiting=waiting, oldest_wait_h=round(max(0.0, now - float(oldest)) / 3600, 1) if oldest is not None else None,
+                         read_pct=round(100 * len(waits) / asked, 1) if asked else None, window_days=max(days, 30)),
                 newest=newest)
 
 
@@ -784,6 +870,32 @@ def server_light(store) -> dict:
                 db_bytes=None if pg else _file_bytes(store), python='.'.join(map(str, sys.version_info[:3])),
                 sqlite=None if pg else sqlite3.sqlite_version, database='PostgreSQL' if pg else 'SQLite ' + sqlite3.sqlite_version,
                 backend='PostgreSQL' if pg else 'SQLite', story=bool(getattr(store, 'story', False)))
+
+
+SIZE_EDGES = (10_000, 25_000, 50_000, 100_000, 200_000, 400_000)   # bytes
+
+
+def save_sizes(store, sids: list) -> dict | None:
+    """Stored size of the given saves (the job's sample): median, p90, max and a histogram.
+    PostgreSQL: pg_column_size (the stored, compressed bytes; no detoasting). SQLite:
+    octet_length (3.43+, read from the record header), else None. 100 saves per statement."""
+    pg = _store_pg(store)
+    if not pg and sqlite3.sqlite_version_info < (3, 43, 0):
+        return None
+    expr = 'pg_column_size(state)' if pg else 'octet_length(state)'
+    sizes = []
+    for i in range(0, len(sids), 100):
+        part = sids[i:i + 100]
+        with _read(store, 2000) as db:
+            sizes += [int(r[0] or 0) for r in db.execute(
+                f"SELECT {expr} FROM sessions WHERE sid IN ({','.join('?' * len(part))})", tuple(part))]
+    if not sizes:
+        return dict(n=0, median=None, p90=None, max=None, hist=[], edges=list(SIZE_EDGES), stored='compressed' if pg else 'raw')
+    hist = [0] * (len(SIZE_EDGES) + 1)
+    for b in sizes:
+        hist[bisect.bisect_right(SIZE_EDGES, b)] += 1
+    return dict(n=len(sizes), median=_pct(sizes, .5), p90=_pct(sizes, .9), max=max(sizes), avg=round(sum(sizes) / len(sizes)),
+                hist=hist, edges=list(SIZE_EDGES), stored='compressed' if pg else 'raw')
 
 
 def career_names() -> dict:
@@ -1421,7 +1533,7 @@ class _Job:
         self.event = threading.Event()
         self.thread = None
         self.saves_at = self.sys_at = self.summary_at = 0.0
-        self.purged_at = 0.0
+        self.purged_at = self.kpi_at = 0.0
         self.phase, self.beat_at = 'start', 0.0
         loaded = _load_json(self.p['rows'], {})
         self.rows = loaded if isinstance(loaded, dict) else {}   # sid -> [revision, compact row or None]
@@ -1470,8 +1582,11 @@ class _Job:
         t0 = time.perf_counter()
         self.engine = 'sql'
         with _read(self.store, 5000) as db:
-            head = [(r[0], r[1]) for r in db.execute(
-                'SELECT sid, revision FROM sessions WHERE revision > 0 ORDER BY updated_at DESC LIMIT ?', (SAMPLE,))]
+            got = db.execute('SELECT sid, revision, updated_at FROM sessions WHERE revision > 0 ORDER BY updated_at DESC LIMIT ?', (SAMPLE,)).fetchall()
+        head = [(r[0], r[1]) for r in got]
+        # The sample is not random: it is the SAMPLE saves changed last, i.e. every player active
+        # since `covers` (a census of the recent players, which the page says).
+        covers = min((r[2] for r in got), default=None)
         rev = dict(head)
         todo = [sid for sid, r in head if (self.rows.get(sid) or [None])[0] != r]
         i, batch, skipped, shown = 0, CHUNK, 0, time.monotonic()
@@ -1505,15 +1620,42 @@ class _Job:
             del self.rows[sid]
         rows = [self.rows[sid][1] for sid, _ in head if sid in self.rows and self.rows[sid][1] is not None]
         skipped = sum(1 for sid, _ in head if sid in self.rows and self.rows[sid][1] is None)
-        out = dict(play_stats(rows), sample=dict(size=len(rows), limit=SAMPLE, engine=self.engine, reread=len(todo), skipped=skipped))
+        out = dict(play_stats(rows), sample=dict(size=len(rows), limit=SAMPLE, engine=self.engine, reread=len(todo), skipped=skipped,
+                                                 covers_since=covers, kind='recent'))
+        try:
+            out['sizes'] = save_sizes(self.store, [sid for sid, _ in head])
+        except (Busy,) + _db_errors() as exc:
+            _log('save sizes', exc)
+        try:  # the day's median wallet of the sample, kept (the history of the economy card)
+            w = out['economy']['wallet']
+            if w.get('median') is not None:
+                kpi.set_daily(self.store, 'wallet_median', w['median'])
+                kpi.set_daily(self.store, 'wallet_p90', w['p90'])
+                kpi.set_daily(self.store, 'wallet_n', len(rows))
+        except Exception as exc:  # noqa: BLE001 - a missing history point is not worth a failed pass
+            _log('wallet history', exc)
         out['generated_at'] = round(time.time(), 3)
         out['took_ms'] = round((time.perf_counter() - t0) * 1000, 1)
         self.out['saves'] = out
+        if self.out.get('invest'):   # the overview's sample parts follow the new sample (no other read)
+            from . import admin_kpi
+            admin_kpi.with_saves(self.out['invest'], out)
         self.out.pop('progress', None)
         self.out.pop('deferred', None)
         self.saves_at = time.time()
         if todo or not os.path.exists(self.p['rows']):
             _write_json(self.p['rows'], self.rows)
+
+    def pass_kpi(self) -> None:
+        """The investor overview (game/admin_kpi.py): first the finished days are frozen (short
+        writes, in order), then the payload is computed under its own budgets."""
+        from . import admin_kpi
+        self.beat('kpi')
+        if self.lock_fd is None or self.may_go():
+            self.out['kpi_freeze'] = kpi.freeze(self.store, pause=0.05 if self.pause else 0)
+        self.beat('kpi')
+        self.out['invest'] = admin_kpi.compute(self.store, self.out.get('saves'))
+        self.kpi_at = time.time()
 
     def may_go(self) -> bool:
         """Background pass only, before each chunk: False once the operator left the page, or
@@ -1623,6 +1765,12 @@ class _Job:
                     if not self.step('system', self.pass_system):
                         self.sys_at = time.time()
                     self.write()
+                # The investor overview before the saves (small tables only; it reuses the last
+                # saves result for the wallet and size cards).
+                if now - self.kpi_at >= KPI_EVERY or fresh > self.kpi_at:
+                    if not self.step('kpi', self.pass_kpi):
+                        self.kpi_at = time.time()
+                    self.write()
                 if now - self.saves_at >= SAVES_EVERY or fresh > self.saves_at:
                     if not self.step('saves', self.pass_saves):
                         self.saves_at = time.time() - SAVES_EVERY + SAVES_RETRY
@@ -1682,6 +1830,15 @@ def upkeep(store, now: float | None = None, force: bool = False) -> dict:
         return out
     today = datetime.datetime.now(VN).date()
     cut = (today - datetime.timedelta(days=KEEP_DAYS)).isoformat()
+    # The finished days are frozen first (daily KPIs, stat_players): a stat_active day is only
+    # dropped once it is frozen, so no number loses its history.
+    try:
+        out['freeze'] = kpi.freeze(store, now)
+    except Exception as exc:  # noqa: BLE001
+        _log('freeze', exc)
+    with _read(store, 1000) as db:
+        done = db.execute("SELECT MAX(day) FROM stat_kpi_daily WHERE key = '_done'").fetchone()[0]
+    cut = min(cut, kpi.plus(done, 1) if done else '0000-00-00')
     with _read(store, 1000) as db:
         days = [r[0] for r in db.execute('SELECT DISTINCT day FROM stat_active WHERE day < ? ORDER BY day LIMIT 30', (cut,))]
     for day in days:
@@ -1736,6 +1893,7 @@ def refresh_now(store) -> dict:
     job.pass_summary()
     job.pass_system()
     job.pass_saves()
+    job.pass_kpi()
     job.write()
     return job.out
 
@@ -1775,7 +1933,7 @@ def summary(store, days: int, ms: int | None = None) -> dict:
         srv['db_bytes'] = sysd.get('db_bytes')
     if sysd.get('database', '').startswith('PostgreSQL'):
         srv['database'] = sysd['database']
-    return _stamp(dict(range=days, today=today.isoformat(), players=who, feedback=fb, ai=ai_usage(),
+    return _stamp(dict(range=days, today=today.isoformat(), players=who, feedback=fb, ai=ai_usage(store),
                        server=srv, names=career_names()), t0)
 
 
@@ -1795,7 +1953,7 @@ def _summary_now(store, days: int) -> dict:
     got = (_result(store).get('summary') or {}).get(str(days))
     if not got:
         raise Busy('admin stats: the first summary is still being computed')
-    return dict(got, ai=ai_usage(), stale=True)
+    return dict(got, ai=ai_usage(store), stale=True)
 
 
 def _with_age(data: dict, store=None) -> dict:
@@ -1834,7 +1992,7 @@ def system_section(store) -> dict:
         return dict(pending=True, retry_ms=3000)
     srv = dict(server_light(store), tables=sysd['tables'], db_bytes=sysd['db_bytes'], database=sysd['database'])
     return dict(server=srv, generated_at=sysd['generated_at'], took_ms=sysd['took_ms'], cached=True,
-                age=round(max(0.0, time.time() - sysd['generated_at']), 1), ai=ai_usage(),
+                age=round(max(0.0, time.time() - sysd['generated_at']), 1), ai=ai_usage(store),
                 snapshot=snapshot_info(store, sysd['generated_at'], SYSTEM_EVERY), errors=r.get('errors') or {})
 
 
@@ -1849,7 +2007,7 @@ def _full(store, days: int) -> dict:
         sv = _empty_saves()
     srv = dict(top['server'], tables=(_result(store).get('system') or {}).get('tables', []))
     out = dict(range=days, today=top['today'], players=top['players'], **{k: sv[k] for k in ('play', 'economy', 'life', 'board')},
-               feedback=top['feedback'], ai=ai_usage(), server=srv, sample={k: sv['sample'][k] for k in ('size', 'limit', 'engine')},
+               feedback=top['feedback'], ai=ai_usage(store), server=srv, sample={k: sv['sample'][k] for k in ('size', 'limit', 'engine')},
                pending=pending, saves_at=sv.get('generated_at'))
     return _stamp(out, t0)
 
@@ -1946,7 +2104,7 @@ def get(store, value=None, fresh: bool = False) -> dict:
     """GET /api/admin/stats: the full payload, cached per range for TTL."""
     days = parse_range(value)
     wake(store, fresh)
-    return dict(_serve((store.path, days), lambda: _full(store, days), TTL, fresh), ai=ai_usage())
+    return dict(_serve((store.path, days), lambda: _full(store, days), TTL, fresh), ai=ai_usage(store))
 
 
 def get_summary(store, value=None, fresh: bool = False) -> dict:
@@ -1955,12 +2113,25 @@ def get_summary(store, value=None, fresh: bool = False) -> dict:
     days = parse_range(value)
     wake(store)
     try:
-        return _with_age(dict(_serve(('summary', store.path, days), lambda: _summary_now(store, days), SUMMARY_TTL, fresh), ai=ai_usage()), store)
+        return _with_age(dict(_serve(('summary', store.path, days), lambda: _summary_now(store, days), SUMMARY_TTL, fresh), ai=ai_usage(store)), store)
     except Busy:  # nothing to show yet: the page keeps its placeholders and asks again
         return dict(pending=True, retry_ms=3000, range=days)
 
 
-SECTIONS = ('saves', 'system', 'live', 'playtime', 'retention')
+SECTIONS = ('saves', 'system', 'live', 'playtime', 'retention', 'invest')
+
+
+def invest_section(store) -> dict:
+    """"Tổng quan đầu tư" (game/admin_kpi.py): the job's copy (computed every KPI_EVERY while
+    an operator looks), or {pending} before its first pass. AI calls are read fresh."""
+    r = _result(store)
+    inv = r.get('invest')
+    if not inv:
+        return dict(pending=True, retry_ms=3000, errors=r.get('errors') or {})
+    out = dict(inv, cached=True, age=round(max(0.0, time.time() - float(inv.get('generated_at') or 0)), 1),
+               errors=r.get('errors') or {})
+    out['next_in'] = round(max(0.0, KPI_EVERY - out['age']), 0)
+    return out
 
 
 def get_live(store) -> dict:
@@ -1984,6 +2155,8 @@ def get_section(store, name, fresh: bool = False) -> dict:
         from . import admin_retention
         return admin_retention.get(store, fresh)
     wake(store, fresh)
+    if name == 'invest':
+        return invest_section(store)
     return saves_section(store) if name == 'saves' else system_section(store)
 
 

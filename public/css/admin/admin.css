@@ -439,3 +439,75 @@ small{font-size:.857em}
 .linkish{padding:0;color:inherit;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
 .chat-more{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:4px}
 @media (max-width:720px){.chat-line .chat-btns{flex-direction:column;align-items:flex-end}}
+
+/* 📊 Tổng quan đầu tư (invest.js) */
+.inv-view{display:grid;gap:14px}
+.tabs{display:flex;gap:4px;overflow-x:auto;margin:0 0 2px;padding:0 0 2px;border-bottom:1px solid var(--line);scrollbar-width:thin}
+.tabs>button{flex:none;min-height:38px;padding:0 12px;border-bottom:3px solid transparent;font-size:13.5px;font-weight:700;color:var(--muted);white-space:nowrap}
+.tabs>button:hover{color:var(--ink)}
+.tabs>button.on{color:var(--accent-text);border-bottom-color:var(--accent)}
+.kpis.inv{grid-template-columns:repeat(auto-fill,minmax(178px,1fr))}
+.kpi.m{grid-template-rows:auto auto 1fr auto}
+.kpi.m .kpi-label{flex-wrap:nowrap;justify-content:space-between}
+.kpi.m .ci{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.kpi.m.rev .kpi-num{color:var(--muted)}
+.m-foot{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;min-height:20px;margin-top:4px}
+.m-foot:empty{display:none}
+.spark{width:96px;height:24px;flex:none;overflow:visible}
+.spark path{fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.since{font-size:10.5px;font-weight:700;color:var(--info);white-space:nowrap}
+.since.warn{color:var(--warn)}
+.info{display:inline-grid;place-items:center;flex:none;width:24px;height:24px;margin:-4px -6px -4px 0;border-radius:50%;color:var(--muted);cursor:help}
+.info:hover,.info:focus-visible{color:var(--accent-text);background:var(--surface-2)}
+.chart figcaption .info{margin:-4px 0}
+.card-head .info{margin:0}
+.tip.wide{max-width:min(340px,calc(100vw - 16px));white-space:pre-line;font-weight:600;line-height:1.45;padding:8px 10px}
+.heatmap th,.heatmap td{padding:4px 2px;font-size:11px}
+.heatmap td.heat{min-width:26px;text-align:center;color:var(--ink);border-bottom:2px solid var(--surface)}
+.heatmap td.na{color:var(--muted)}
+.heatmap th{text-align:center}
+.heat-tbl td.part{opacity:.6}
+.tbl td.neg{color:var(--bad)}
+.bar.neg i{background:var(--bad)}
+.kv.kv1{grid-template-columns:minmax(0,1fr)}
+.nw{white-space:nowrap}
+.tools a.btn{text-decoration:none}
+@media (max-width:640px){
+  .kpis.inv{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpi.m{padding:10px 11px}
+  .spark{width:72px}
+  .tools .btn{margin-left:0}
+  .tabs{margin:0 -16px;padding:0 16px 2px}
+}
+
+/* printable report (#bao-cao) */
+.report{display:grid;gap:16px}
+.rep-page{display:grid;gap:12px;align-content:start;padding:22px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.rep-cover h1{font-size:28px;font-weight:800}
+.rep-sub{font-size:16px;font-weight:700;color:var(--ink-2)}
+.rep-head{display:grid;gap:2px;padding-bottom:8px;border-bottom:2px solid var(--accent)}
+.rep-head h2{font-size:18px;font-weight:800}
+.rep-head small,.rep-page h3{font-size:12px;color:var(--muted)}
+.rep-page h3{margin-top:4px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.rep-tbl{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+.rep-tbl th{padding:5px 6px;border-bottom:1px solid var(--line-strong);font-size:11px;text-align:left;color:var(--muted)}
+.rep-tbl td{padding:5px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.rep-tbl th.v{text-align:right}
+.rep-tbl td.v{text-align:right;white-space:nowrap;font-weight:800}
+.rep-tbl small{color:var(--ink-2);line-height:1.4}
+@media (max-width:640px){.rep-page{padding:14px}.rep-tbl{font-size:12px}}
+@media print{
+  :root{color-scheme:light;--bg:#fff;--surface:#fff;--surface-2:#f4f4f4;--ink:#111;--ink-2:#333;--muted:#555;--line:#ddd;--line-strong:#bbb;--accent:#c44b30;--accent-text:#a53d26;--second:#3f8f7a}
+  body{background:#fff}
+  .side,.main-head,.toasts,.tip,.tabs,.info,.more-row{display:none!important}
+  .app{display:block}
+  .main{padding:0;max-width:none}
+  .main-head{position:static;padding:0 0 8px;background:none;backdrop-filter:none}
+  .report{display:block}
+  .rep-page{break-after:page;page-break-after:always;border:0;border-radius:0;padding:0;margin:0}
+  .rep-page:last-child{break-after:auto;page-break-after:auto}
+  .rep-tbl tr,.card,.kpi,.chart{break-inside:avoid}
+  .scroll{overflow:visible;max-height:none!important}
+  a[href]{text-decoration:none;color:inherit}
+}
+@page{size:A4;margin:14mm 12mm}

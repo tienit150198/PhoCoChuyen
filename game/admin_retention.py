@@ -39,8 +39,11 @@ from . import retention as rt
 RET_TTL = 300.0
 RET_MS = int(os.environ.get('ADMIN_STATS_RETENTION_MS', '8000') or 8000)   # all reads of one section request
 RET_STATEMENT_MS = 4000
-COHORT_DAYS = 30
+# 60 start days: with 30, a D30 needs day + 30 < today, so no listed cohort could ever show it
+# (and D14 had only a couple of cohorts). Finished cohort days are cached (see _cohort_cache).
+COHORT_DAYS = 60
 COHORT_KS = (1, 3, 7, 14, 30)
+CAREER_DAYS = 30                   # the career table: players who started in the last 30 days
 BY_DAY = 14
 BY_DAY_KEYS = ('picked', 'served1', 'served3', 'served10', 'day1', 'day3', 'day7', 'account')
 ONBOARDING_DAY = '2026-10-01'      # 0.9.16 (the new first session) went live in the night to 01/10
@@ -238,7 +241,10 @@ def _last_steps(rows) -> dict:
 
 def churn(db, now: float, today: datetime.date) -> dict:
     lo, hi = _utc(now - CHURN_MAX * 86400), _utc(now - CHURN_MIN * 86400)
-    total = int(db.execute('SELECT COUNT(*) FROM sessions WHERE updated_at >= ? AND updated_at < ? AND revision > 0', (lo, hi)).fetchone()[0])
+    # A save counts with a logged command (stat_active): revision > 0 alone also matches saves only
+    # migrated on read (never played), whose updated_at is their creation.
+    total = int(db.execute('SELECT COUNT(*) FROM sessions s WHERE s.updated_at >= ? AND s.updated_at < ? AND s.revision > 0 '
+                           'AND EXISTS (SELECT 1 FROM stat_active a WHERE a.sid = s.sid)', (lo, hi)).fetchone()[0])
     payloads = [_leave(r[0]) for r in db.execute(
         'SELECT l.payload FROM sessions s JOIN stat_leave_last l ON l.sid = s.sid '
         'WHERE s.updated_at >= ? AND s.updated_at < ? AND s.revision > 0', (lo, hi))]
@@ -294,7 +300,7 @@ def careers(db, now: float, today: datetime.date) -> list:
             f"SUM(CASE WHEN {p7} < ? THEN 1 ELSE 0 END), "
             f"SUM(CASE WHEN {p7} < ? AND EXISTS (SELECT 1 FROM stat_active a WHERE a.sid = b.sid AND a.day = {p7}) THEN 1 ELSE 0 END) "
             "FROM stat_births b JOIN stat_milestones m ON m.sid = b.sid AND m.key = 'served1' "
-            "WHERE b.day >= ? AND m.career IS NOT NULL GROUP BY m.career", (t, t, t, t, _day(today, COHORT_DAYS - 1))):
+            "WHERE b.day >= ? AND m.career IS NOT NULL GROUP BY m.career", (t, t, t, t, _day(today, CAREER_DAYS - 1))):
         main[career] = dict(n=int(n), d3=_pct(int(k3 or 0), int(n3 or 0)), d3_n=int(n3 or 0), d7=_pct(int(k7 or 0), int(n7 or 0)), d7_n=int(n7 or 0))
     errs = action_errors(db, today)
     ids = sorted(set(started) | set(main) | set(errs), key=lambda c: (-(main.get(c) or {}).get('n', 0), -started.get(c, 0), c))

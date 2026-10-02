@@ -66,19 +66,21 @@ function feedbackCard(d){
     return `<li><span class="mini-top"><span><span aria-hidden="true">${emo}</span> ${esc(label)}</span>${tag(st,tone)}<small>#${num(it.id)} · ${ago(it.created_at)}</small></span><span class="mini-text">${esc(it.text)}</span></li>`;}).join('')}</ul>`:'<p class="note">Chưa có góp ý nào.</p>';
   return card('Góp ý',
     table(['Loại',...Object.values(STATUS).map(([l])=>l)],rows)+
-    kv([['Đang mở',num(f.open)],['Chưa đọc',num(f.unread)],[`Mới trong ${d.range} ngày`,num(f.in_range)],['Chờ được đọc',`${hours(f.ack.median_h)} <small>TB ${hours(f.ack.avg_h)}</small>`]],'kv4')+
+    kv([['Đang mở',num(f.open)],['Chưa đọc',num(f.unread)],[`Mới trong ${d.range} ngày`,num(f.in_range)],['Chờ được đọc',`${hours(f.ack.median_h)} <small>TB ${hours(f.ack.avg_h)}</small>`],
+      f.ack.waiting!=null&&['Còn chờ đọc',`${num(f.ack.waiting)}${f.ack.waiting?` <small>lâu nhất ${hours(f.ack.oldest_wait_h)}</small>`:''}`],
+      f.ack.read_pct!=null&&['Đã đọc',`${pct(f.ack.read_pct)} <small>${num(f.ack.window_days)} ngày</small>`]],'kv4')+
     `<h3 class="sub">5 góp ý mới nhất</h3>${newest}`,
     {extra:`<button type="button" class="btn ghost sm" data-go="gop-y">${icon('inbox',15)} Mở hộp góp ý</button>`});
 }
 function aiCard(d){
   const a=d.ai,t=a.total;
   const rows=a.days.slice(-7).reverse().map(r=>`<tr><td>${dm(r.day)}</td><td>${num(r.calls)}</td><td>${num(r.ok)}</td><td>${num(r.failed+r.busy)}</td><td>${num(r.rejected)}</td><td>${num(r.guard)}</td></tr>`);
-  return card('AI <small>từ lúc khởi động</small>',
+  return card(a.persisted?`AI <small>mọi tiến trình${a.since_day?` · từ ${dm(a.since_day)}`:''}</small>`:'AI <small>từ lúc khởi động</small>',
     (a.configured?'':`<div class="notice warn">${icon('alert',16)}<div>Máy chủ chưa cấu hình AI: nhân vật dùng lời có sẵn.</div></div>`)+
     kv([['Lượt gọi',num(t.calls)],['Thành công',`${num(t.ok)} <small>${share(t.ok,t.calls)}</small>`],['Lỗi · bận',`${num(t.failed)} · ${num(t.busy)}`],
       ['Câu AI bị lọc',num(t.rejected)],['Chặn lời lẽ xấu',num(t.guard)]],'kv3')+
     (rows.length?table(['Ngày','Gọi','Được','Lỗi','Lọc','Chặn'],rows):''),
-    {note:`Đếm trong bộ nhớ từ ${stamp(a.since)}; khởi động lại máy chủ thì về 0.`});
+    {note:a.persisted?`Cộng mọi tiến trình máy chủ, lưu trong cơ sở dữ liệu (ghi mỗi 30 giây; khởi động lại không mất).`:`Chỉ tiến trình này, đếm trong bộ nhớ từ ${stamp(a.since)}; khởi động lại máy chủ thì về 0.`});
 }
 function serverCard(d){
   const s=d.server;
@@ -129,7 +131,7 @@ export function overviewView(d,lazy,more,L={}){
   const kpis=`<div class="kpis">
     ${kpi('Hoạt động hôm nay',num(last(p.dau)),`7 ngày ${num(p.wau)} · 30 ngày ${num(p.mau)}`)}
     ${kpi('Người mới hôm nay',num(last(p.new_players)),`${num(last(p.new_sessions))} lượt mở · ${num(last(p.new_accounts))} tài khoản`)}
-    ${kpi('Giữ chân D1',pct(r.d1),`D7 ${pct(r.d7)} · nhóm ${num(r.cohort)} người`)}
+    ${kpi('Giữ chân D1',pct(r.d1),`D7 ${pct(r.d7)} · trên ${num(r.d1_n)} người đủ 1 ngày`)}
     ${kpi('Người chơi',num(p.played),`${num(p.account_saves)} tài khoản · ${num(p.guests)} khách`)}
     ${kpi('Góp ý chưa đọc',num(f.unread),`${num(f.open)} đang mở ${icon('chevron',12)}`,{tone:f.unread?'hot':'',action:'gop-y'})}
     ${kpi('Máy chủ',`v${esc(s.version)}`,`chạy ${span(s.uptime)} · ${bytes(s.db_bytes)}`,{action:'he-thong'})}

@@ -13,7 +13,10 @@
  * "Thời gian chơi" card (…?name=playtime) loads when it scrolls into view, like the saves cards.
  * "Giữ chân" (…?name=retention, drawn by ./retention.js, imported when the view opens): retention by start
  * day, the new-player funnel, where players drop off, careers, sources, load times, client errors; its
- * tables also download as one CSV (…&format=csv). */
+ * tables also download as one CSV (…&format=csv).
+ * "Tổng quan đầu tư" (…?name=invest, drawn by ./invest.js): the job's copy of game/admin_kpi.py (computed in the
+ * background every 10 minutes while this page asks for it), in tabs with a period selector; CSV per tab
+ * (…&part=…) and a printable report (#bao-cao, not in the menu). */
 import {AdminAPI} from './api.js';
 import {Inbox} from './inbox.js';
 import {ChatAdmin} from './chat.js';  // 💬 Chat: reports, hide, mute (live chat)
@@ -22,8 +25,11 @@ import {esc,icon,hm,ago,num,toast} from './ui.js';
 
 const api=new AdminAPI();
 const root=document.getElementById('root');
-const VIEWS={'tong-quan':['Tổng quan','chart'],'giu-chan':['Giữ chân','loop'],'gop-y':['Góp ý','inbox'],'chat':['Chat','chat'],'he-thong':['Hệ thống','server']};
-const STATS_VIEWS=new Set(['tong-quan','giu-chan','he-thong']);  // views drawn from the stats endpoints
+const VIEWS={'tong-quan':['Tổng quan','chart'],'dau-tu':['Tổng quan đầu tư','trend'],'giu-chan':['Giữ chân','loop'],'gop-y':['Góp ý','inbox'],'chat':['Chat','chat'],'he-thong':['Hệ thống','server'],
+  'bao-cao':['Báo cáo số liệu','print']};
+const HIDDEN=new Set(['bao-cao']);  // reached from "Xuất báo cáo", not listed in the menu
+const INVEST_VIEWS=new Set(['dau-tu','bao-cao']);  // drawn from …/section?name=invest only (no summary request)
+const STATS_VIEWS=new Set(['tong-quan','giu-chan','he-thong',...INVEST_VIEWS]);  // views drawn from the stats endpoints
 const RANGES=[7,30,90];
 const REFRESH_MS=60000;
 const LIVE_MS=15000;
@@ -38,7 +44,8 @@ const store={
 const ui={screen:'loading',view:'tong-quan',navOpen:false,login:{error:'',busy:false,replace:false,user:''},unread:null};
 const stats={range:RANGES.includes(store.get('range',7))?store.get('range',7):7,byRange:{},busy:false,error:null,auto:store.get('auto',true)!==false,ctl:null,timer:0,retry:0,pending:false,
   sections:{saves:{data:null,at:0,busy:false,error:null},system:{data:null,at:0,busy:false,error:null},playtime:{data:null,at:0,busy:false,error:null},
-    retention:{data:null,at:0,busy:false,error:null}},more:{...MORE},
+    retention:{data:null,at:0,busy:false,error:null},invest:{data:null,at:0,busy:false,error:null}},more:{...MORE},
+  inv:{tab:store.get('inv-tab','tong'),period:['7','30','90','0'].includes(String(store.get('inv-period','30')))?String(store.get('inv-period','30')):'30'},
   ret:{funnel:['today','yesterday','d7','d30'].includes(store.get('ret-funnel','d7'))?store.get('ret-funnel','d7'):'d7',src:'d7',err:'today'},
   live:{data:null,at:0,busy:false,error:null,ctl:null}};
 let sectionsMod=null;  // ./sections.js once imported
@@ -46,6 +53,9 @@ const loadSectionsMod=()=>sectionsMod?Promise.resolve(sectionsMod):import('./sec
 const chatAdmin=new ChatAdmin(api,{rerender:()=>{if(ui.screen==='app'&&ui.view==='chat')renderView();},forbidden:()=>reauth()});
 let retMod=null;  // ./retention.js once imported ("Giữ chân")
 const loadRetMod=()=>retMod?Promise.resolve(retMod):import('./retention.js').then(m=>(retMod=m));
+let invMod=null;  // ./invest.js once imported ("Tổng quan đầu tư" and its printable report)
+const loadInvMod=()=>invMod?Promise.resolve(invMod):import('./invest.js').then(m=>(invMod=m));
+const modFor=name=>name==='retention'?loadRetMod():name==='invest'?loadInvMod():loadSectionsMod();
 const inbox=new Inbox(api,{
   rerender:()=>{if(ui.screen==='app'&&ui.view==='gop-y')renderView();},
   counts:c=>{ui.unread=c?.new??ui.unread;renderBadge();},
@@ -119,6 +129,7 @@ function resetStats(){
 }
 const tooFast=e=>e.status===429?'Làm mới hơi dồn dập. Chờ một chút nhé.':e.message;
 function ensureStats(){
+  if(INVEST_VIEWS.has(ui.view)){ensureSection('invest');return;}
   const e=stats.byRange[stats.range];if(!e||Date.now()-e.at>REFRESH_MS)loadStats();
   if(ui.view==='tong-quan'&&(!stats.live.data||Date.now()-stats.live.at>LIVE_MS))loadLive();
   if(ui.view==='he-thong'){ensureSection('system');ensureSection('saves');}
@@ -172,8 +183,8 @@ function loadSection(name,fresh=false){
   const s=stats.sections[name];if(!s||s.busy)return;
   const ctl=s.ctl=new AbortController();
   s.busy=true;s.error=null;
-  if(name==='retention'&&ui.view==='giu-chan')renderTools();
-  Promise.all([api.section(name,{fresh,signal:ctl.signal}),name==='retention'?loadRetMod():loadSectionsMod()])
+  if(name==='retention'&&ui.view==='giu-chan'||name==='invest'&&INVEST_VIEWS.has(ui.view))renderTools();
+  Promise.all([api.section(name,{fresh,signal:ctl.signal}),modFor(name)])
     .then(([d])=>{
       // First pass after a server restart still running: keep the placeholders, ask again.
       if(d.pending){s.pending=d.progress||true;s.retry=setTimeout(()=>{s.retry=0;loadSection(name);},Math.max(1000,d.retry_ms||3000));return;}
@@ -183,10 +194,11 @@ function loadSection(name,fresh=false){
     .finally(()=>{if(s.ctl!==ctl)return;s.busy=false;s.ctl=null;if(ui.screen==='app'&&STATS_VIEWS.has(ui.view))renderView();});
 }
 /** Sections worth refreshing on the current view (the saves cards show on both). */
-const shown=name=>name==='retention'?ui.view==='giu-chan':name==='saves'||(name==='playtime'?ui.view==='tong-quan':ui.view==='he-thong');
+const shown=name=>name==='invest'?INVEST_VIEWS.has(ui.view):INVEST_VIEWS.has(ui.view)?false:
+  name==='retention'?ui.view==='giu-chan':name==='saves'||(name==='playtime'?ui.view==='tong-quan':ui.view==='he-thong');
 setInterval(()=>{
   if(ui.screen!=='app'||!stats.auto||!STATS_VIEWS.has(ui.view)||document.hidden)return;
-  loadStats();
+  if(!INVEST_VIEWS.has(ui.view))loadStats();
   for(const [name,s] of Object.entries(stats.sections))if(s.data&&shown(name))loadSection(name);
 },REFRESH_MS);
 /** Range buttons: the choice shows at once; the request goes out once the clicking settles. */
@@ -258,7 +270,7 @@ function offlineView(){
     <button class="btn primary full" type="button" data-act="retry">${icon('refresh',16)} Thử lại</button></div></main>`;
 }
 function appView(){
-  const nav=Object.entries(VIEWS).map(([id,[label,ic]])=>`<a href="#${id}" class="${ui.view===id?'on':''}"${ui.view===id?' aria-current="page"':''}>${icon(ic,18)}<span>${label}</span>${id==='gop-y'?'<span class="badge" data-badge hidden></span>':''}</a>`).join('');
+  const nav=Object.entries(VIEWS).filter(([id])=>!HIDDEN.has(id)).map(([id,[label,ic]])=>`<a href="#${id}" class="${ui.view===id?'on':''}"${ui.view===id?' aria-current="page"':''}>${icon(ic,18)}<span>${label}</span>${id==='gop-y'?'<span class="badge" data-badge hidden></span>':''}</a>`).join('');
   return `<div class="app${ui.navOpen?' nav-open':''}">
     <aside class="side">
       <div class="side-top">${brand('Vận hành')}<button type="button" class="menu-btn" data-act="nav" aria-expanded="${ui.navOpen}" aria-controls="side-menu" aria-label="${ui.navOpen?'Đóng menu':'Mở menu'}">${icon(ui.navOpen?'x':'menu',22)}</button></div>
@@ -321,6 +333,18 @@ function renderTools(){
     meta.innerHTML=d?`Cập nhật ${hm(d.generated_at)}${d.cached&&d.age>5?` (bản đệm ${num(d.age)} giây)`:''} · giờ Việt Nam`:r.busy?'Đang tính số liệu…':'Người chơi rời đi ở đâu, lúc nào';
     return;
   }
+  if(INVEST_VIEWS.has(ui.view)){
+    const s=stats.sections.invest,d=s.data,rep=ui.view==='bao-cao';
+    const per=`<div class="seg" role="radiogroup" aria-label="Kỳ tính">${[['7','7 ngày'],['30','30 ngày'],['90','90 ngày'],['0','Tất cả']].map(([v,l])=>`<button type="button" role="radio" aria-checked="${stats.inv.period===v}" class="${stats.inv.period===v?'on':''}" data-act="invPeriod" data-value="${v}">${l}</button>`).join('')}</div>`;
+    const part=rep?'all':invMod?.PART?.[stats.inv.tab]||'all';
+    tools.innerHTML=`${per}
+      <button type="button" class="btn ghost sm" data-act="invCsv" data-part="${part}"${d?'':' disabled'} title="${part==='all'?'Mọi phần trong một tệp CSV':'CSV của phần đang xem'}">${icon('download',15)}<span>CSV</span></button>
+      ${rep?`<button type="button" class="btn primary sm" data-act="print"${d?'':' disabled'}>${icon('print',15)}<span>In / Lưu PDF</span></button><a class="btn ghost sm" href="#dau-tu">${icon('back',15)}<span>Quay lại</span></a>`
+        :`<a class="btn ghost sm" href="#bao-cao"${d?'':' aria-disabled="true"'}>${icon('print',15)}<span>Xuất báo cáo</span></a>`}
+      <button type="button" class="btn ghost sm" data-act="refresh"${s.busy?' disabled':''}>${icon('refresh',15)}<span>${s.busy?'Đang tải…':'Làm mới'}</span></button>`;
+    meta.innerHTML=d?`Số liệu lúc ${hm(d.generated_at)} · giờ Việt Nam · tính nền mỗi 10 phút khi trang mở${d.next_in?` (lần sau ~${num(Math.ceil(d.next_in/60))} phút)`:''}`:s.busy?'Đang tính số liệu…':'Số liệu cho nhà đầu tư, người mua hoặc nhận nhượng quyền';
+    return;
+  }
   const e=stats.byRange[stats.range],d=e?.data,busy=stats.busy||(ui.view==='he-thong'&&stats.sections.system.busy);
   const seg=ui.view==='tong-quan'?`<div class="seg" role="radiogroup" aria-label="Khoảng thời gian">${RANGES.map(n=>`<button type="button" role="radio" aria-checked="${stats.range===n}" class="${stats.range===n?'on':''}" data-act="range" data-range="${n}">${n} ngày</button>`).join('')}</div>`:'';
   tools.innerHTML=`${seg}
@@ -336,6 +360,7 @@ function renderView(){
   if(ui.view==='gop-y')view.innerHTML=inbox.view();
   else if(ui.view==='chat')view.innerHTML=chatAdmin.view();
   else if(ui.view==='giu-chan')view.innerHTML=`<div class="stats ret${stats.sections.retention.busy&&stats.sections.retention.data?' is-busy':''}">${retentionBody()}</div>`;
+  else if(INVEST_VIEWS.has(ui.view))view.innerHTML=`<div class="stats inv-view${stats.sections.invest.busy&&stats.sections.invest.data?' is-busy':''}">${investBody()}</div>`;
   else{
     const e=stats.byRange[stats.range],d=e?.data;
     let body;
@@ -375,18 +400,32 @@ function retentionBody(){
   const k=`<div class="kpi skel-kpi"><span class="kpi-label">&nbsp;</span><b class="kpi-num">&nbsp;</b><small class="kpi-sub">&nbsp;</small></div>`;
   return (s.pending?'<p class="note">Máy chủ đang tính số liệu, chờ chút nhé…</p>':'')+`<div class="kpis k4 skel" aria-hidden="true">${k.repeat(4)}</div>${skelCard('Quay lại theo ngày bắt đầu',{lines:6})}<div class="cols"><div class="col">${skelCard('Phễu người mới',{lines:8})}</div><div class="col">${skelCard('Trước và sau 0.9.16')}${skelCard('Theo nghề')}</div></div>`;
 }
-/** The CSV of "Giữ chân" (the admin endpoint needs the CSRF header, so no plain link). */
-async function retentionCsv(btn){
+/** "Tổng quan đầu tư" / its printable report: drawn by ./invest.js once loaded, else placeholders. */
+function investBody(){
+  const s=stats.sections.invest;
+  if(s.data&&invMod){
+    const name=id=>api.career(id);
+    return ui.view==='bao-cao'?invMod.reportView(s.data,stats.inv,name):invMod.investView(s.data,stats.inv,name);
+  }
+  if(s.error&&!s.busy)return `<div class="notice bad">${icon('alert',16)}<div>${esc(s.error)}<br><button type="button" class="btn ghost sm" data-act="retrySection" data-name="invest">Thử lại</button></div></div>`;
+  const k=`<div class="kpi skel-kpi"><span class="kpi-label">&nbsp;</span><b class="kpi-num">&nbsp;</b><small class="kpi-sub">&nbsp;</small></div>`;
+  return (s.pending?'<p class="note">Máy chủ đang tính số liệu lần đầu (chạy nền, không ảnh hưởng người chơi), chờ chút nhé…</p>':'')+
+    `<div class="kpis k4 skel" aria-hidden="true">${k.repeat(8)}</div>${skelCard('Người hoạt động mỗi ngày',{lines:6})}`;
+}
+/** A CSV of the stats endpoint (it needs the CSRF header, so no plain link). */
+async function downloadCsv(btn,query,file){
   btn.disabled=true;
   try{
-    const res=await fetch('/api/admin/stats/section?name=retention&format=csv',{credentials:'same-origin',cache:'no-store',headers:{'X-Game-CSRF':api.csrf}});
-    if(!res.ok)throw new Error(res.status===429?'Chờ một chút rồi thử lại nhé.':`Lỗi ${res.status}`);
+    const res=await fetch(`/api/admin/stats/section?${query}&format=csv`,{credentials:'same-origin',cache:'no-store',headers:{'X-Game-CSRF':api.csrf}});
+    if(!res.ok)throw new Error(res.status===429?'Chờ một chút rồi thử lại nhé.':res.status===503?'Số liệu đang được tính, thử lại sau ít phút nhé.':`Lỗi ${res.status}`);
     const url=URL.createObjectURL(await res.blob()),a=document.createElement('a');
-    a.href=url;a.download=`giu-chan-${stats.sections.retention.data?.today||'hom-nay'}.csv`;document.body.append(a);a.click();a.remove();
+    a.href=url;a.download=file;document.body.append(a);a.click();a.remove();
     setTimeout(()=>URL.revokeObjectURL(url),10000);
   }catch(e){toast(e.message||'Không tải được CSV.','bad');}
   finally{btn.disabled=false;}
 }
+const retentionCsv=btn=>downloadCsv(btn,'name=retention',`giu-chan-${stats.sections.retention.data?.today||'hom-nay'}.csv`);
+const investCsv=btn=>{const part=btn.dataset.part||'all';return downloadCsv(btn,`name=invest&part=${encodeURIComponent(part)}`,`tong-quan-dau-tu-${part}-${stats.sections.invest.data?.today||'hom-nay'}.csv`);};
 function systemSkeleton(){
   return `<div class="kpis k4 skel" aria-hidden="true">${'<div class="kpi skel-kpi"><span class="kpi-label">&nbsp;</span><b class="kpi-num">&nbsp;</b><small class="kpi-sub">&nbsp;</small></div>'.repeat(4)}</div>`+
     `<div class="cols"><div class="col">${skelCard('Bảng dữ liệu',{lines:8})}</div><div class="col">${skelCard('Môi trường')}${skelCard('Số liệu thống kê')}</div></div>`;
@@ -413,13 +452,19 @@ root.addEventListener('click',async ev=>{
     case'cancelReplace':ui.login.replace=false;ui.login.error='';render();return;
     case'range':pickRange(Number(el.dataset.range));return;
     case'refresh':{
-      stats.error=null;loadStats(true);if(ui.view==='tong-quan')loadLive();
+      stats.error=null;if(!INVEST_VIEWS.has(ui.view))loadStats(true);if(ui.view==='tong-quan')loadLive();
       for(const [name,s] of Object.entries(stats.sections))if(s.data&&shown(name)){s.error=null;loadSection(name,true);}
       return;
     }
     case'retrySection':{const s=stats.sections[el.dataset.name];if(!s)return;s.error=null;loadSection(el.dataset.name);renderView();return;}
     case'retSeg':{const k=el.dataset.key,v=el.dataset.value;if(!(k in stats.ret))return;stats.ret[k]=v;if(k==='funnel')store.set('ret-funnel',v);renderView();return;}
     case'retCsv':retentionCsv(el);return;
+    case'invCsv':investCsv(el);return;
+    case'invTab':{const v=el.dataset.value;if(!invMod?.TABS.some(([k])=>k===v))return;stats.inv.tab=v;store.set('inv-tab',v);renderView();
+      document.querySelector('.tabs [aria-current]')?.focus({preventScroll:true});return;}
+    case'invPeriod':{const v=el.dataset.value;if(!['7','30','90','0'].includes(v))return;stats.inv.period=v;store.set('inv-period',v);renderView();return;}
+    case'info':showTip(el,true);return;
+    case'print':print();return;
     case'more':{const k=el.dataset.key;if(!(k in MORE))return;stats.more[k]+=MORE[k];renderView();return;}
     case'fbReload':inbox.reset();renderView();return;
   }
@@ -442,14 +487,24 @@ media.addEventListener?.('change',()=>{if(!document.documentElement.dataset.them
 
 /* Hover tooltip for chart bars ([data-tip]); a single floating element. */
 const tip=document.createElement('div');tip.className='tip';tip.setAttribute('role','presentation');tip.hidden=true;document.body.append(tip);
-root.addEventListener('pointerover',ev=>{
-  const t=ev.target.closest('[data-tip]');if(!t){tip.hidden=true;return;}
-  tip.textContent=t.dataset.tip;tip.hidden=false;
-  const r=t.getBoundingClientRect(),w=tip.offsetWidth;
+/* The ⓘ buttons (.info) carry long definitions: a wider, wrapping tip, also shown on tap and keyboard focus
+ * (phones have no hover); it stays until the next tap elsewhere. */
+let tipPinned=null;
+function showTip(t,pin=false){
+  tip.textContent=t.dataset.tip;tip.classList.toggle('wide',t.classList.contains('info'));tip.hidden=false;
+  const r=t.getBoundingClientRect(),w=tip.offsetWidth,h=tip.offsetHeight;
   tip.style.left=`${Math.max(8,Math.min(innerWidth-w-8,r.left+r.width/2-w/2))}px`;
-  tip.style.top=`${Math.max(8,r.top-tip.offsetHeight-6)}px`;
+  tip.style.top=`${r.top-h-6<8?Math.min(innerHeight-h-8,r.bottom+6):r.top-h-6}px`;
+  tipPinned=pin?t:null;
+}
+root.addEventListener('pointerover',ev=>{
+  const t=ev.target.closest('[data-tip]');if(!t){if(!tipPinned)tip.hidden=true;return;}
+  showTip(t,tipPinned===t);
 });
-root.addEventListener('pointerleave',()=>{tip.hidden=true;});
-addEventListener('scroll',()=>{tip.hidden=true;},{passive:true});
+root.addEventListener('pointerdown',ev=>{if(tipPinned&&!ev.target.closest('.info')){tipPinned=null;tip.hidden=true;}});
+root.addEventListener('focusin',ev=>{const t=ev.target.closest?.('.info[data-tip]');if(t)showTip(t,true);});
+root.addEventListener('focusout',ev=>{if(ev.target===tipPinned){tipPinned=null;tip.hidden=true;}});
+root.addEventListener('pointerleave',()=>{if(!tipPinned)tip.hidden=true;});
+addEventListener('scroll',()=>{tip.hidden=true;tipPinned=null;},{passive:true});
 
 boot();

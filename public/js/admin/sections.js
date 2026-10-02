@@ -4,7 +4,7 @@
  *  - "Thời gian chơi" (…?name=playtime: small day tables kept by a trigger, never the saves);
  *  - the "Hệ thống" view (…?name=system, plus the summary and the sample facts).
  * Aggregates only: no names, session ids or contact details. */
-import {esc,icon,num,dec,pct,share,stamp,bytes,span,tag,hm,ago,dm} from './ui.js';
+import {esc,icon,num,dec,pct,share,stamp,bytes,span,tag,hm,ago,dm,utcText} from './ui.js';
 import {kpi,kv,card,table,moreButton,savesFresh} from './stats.js';
 
 const THEME={kem:'Kem sữa',tra_xanh:'Trà xanh',bien:'Biển chiều',keo:'Kẹo ngọt',dem:'Phố đêm'};
@@ -55,7 +55,7 @@ function lifeCard(d){
 /** The four save-derived cards of "Tổng quan" plus the sample footnote. */
 export function savesCards(d,name,more){
   return {head:savesFresh(d),careers:careersCard(d,name,more),economy:economyCard(d),play:playCard(d),life:lifeCard(d),
-    foot:`<p class="foot">Số về cách chơi, kinh tế, đời sống lấy từ mẫu ${num(d.sample.size)} lượt chơi có thao tác gần nhất (tối đa ${num(d.sample.limit)}), cập nhật ${stamp(d.generated_at)}. Không chứa tên, mã phiên hay thông tin liên lạc.</p>`};
+    foot:`<p class="foot">Số về cách chơi, kinh tế, đời sống lấy từ ${num(d.sample.size)} lượt chơi có thao tác gần nhất (tối đa ${num(d.sample.limit)})${d.sample.covers_since?`, tức mọi người chơi có thao tác từ ${stamp(utcText(d.sample.covers_since))}`:''}: không phải mẫu ngẫu nhiên của mọi người chơi, mà là toàn bộ người chơi gần đây. Cập nhật ${stamp(d.generated_at)}. Không chứa tên, mã phiên hay thông tin liên lạc.</p>`};
 }
 
 /* ---- Thời gian chơi (…/section?name=playtime) ------------------------------------------- */

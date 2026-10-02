@@ -53,7 +53,9 @@ from game import player_feedback as pfb
 from game import board_ai
 from game import admin_stats
 from game import admin_retention
+from game import admin_kpi
 from game import retention
+from game import kpi  # 📊 Tổng quan đầu tư: counters (a dict update each) and daily rollups
 from game import leaderboard
 from game import lb_titles
 from game import fair_board  # 🏆 Bảng vàng hội chợ: the fair's titles after the end
@@ -210,6 +212,8 @@ class GameServer(ThreadingHTTPServer):
         admin_stats.stop_jobs(store=self.store)  # releases the stats job's lock file
         try:retention.flush(self.store)  # the last few seconds of action counts (game/retention.py)
         except Exception as e:sys.stderr.write(f"[retention] flush at close: {type(e).__name__}\n")
+        try:kpi.flush(self.store)  # and of the 📊 counters (game/kpi.py)
+        except Exception as e:sys.stderr.write(f"[kpi] flush at close: {type(e).__name__}\n")
         super().server_close()
 
     def content_json(self)->str:
@@ -285,6 +289,7 @@ class Handler(BaseHTTPRequestHandler):
     def respond(self,status:int,data:bytes,ctype:str,extra:dict|None=None,compress:bool=False,cache:str|None=None,csp:str=CSP):
         if compress and len(data)>1400 and "gzip" in self.headers.get("Accept-Encoding",""):
             data=gzip.compress(data,API_GZIP_LEVEL);extra=dict(extra or {},**{"Content-Encoding":"gzip"})
+        if self.path.startswith("/api/"):kpi.add(self.server.store,f"http:{status//100}xx")  # 📊 answers by class (a dict update)
         self.send_response(status)
         self.send_header("Content-Type",ctype)
         self.send_header("Content-Length",str(len(data)))
@@ -484,6 +489,7 @@ class Handler(BaseHTTPRequestHandler):
                 if not existing and not self.server.rate_limit("newsession:"+ip,int(os.environ.get("NEW_SESSIONS_PER_MINUTE","20"))):
                     self.error(429,"Quá nhiều phiên mới từ mạng này. Chờ một chút nhé.");return
                 token,csrf,created=self.server.store.session(existing)
+                if created:kpi.count_session(self.server.store,self.headers.get("User-Agent",""),self.headers.get("Accept-Language",""))  # 📊 device mix, bots apart
                 state,revision,_=self.server.store.read(token)
                 gifts=[]
                 if not created:
@@ -614,14 +620,20 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit(f"admin-stats-{name}:"+token,30):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 fresh=query.get("fresh")=="1"
                 csv=query.get("format")=="csv"
-                if csv and name!="retention":self.error(400,"Chỉ mục Giữ chân có bản CSV.","bad_format");return
+                if csv and name not in ("retention","invest"):self.error(400,"Chỉ mục Giữ chân và Tổng quan đầu tư có bản CSV.","bad_format");return
                 try:
                     if part=="section":data=admin_stats.get_section(self.server.store,name,fresh=fresh)
                     else:data=admin_stats.get_summary(self.server.store,admin_stats.parse_range(query.get("range")),fresh=fresh)
                 except ValueError:self.error(400,"Khoảng ngày chỉ nhận 7, 30 hoặc 90.","bad_range");return
                 except admin_stats.Busy:self.error(503,"Máy chủ đang bận, thử lại sau ít giây nhé.","busy");return  # a time budget ran out: players first
-                if csv:  # Giữ chân as one CSV of its tables (aggregates only)
+                if csv:  # Giữ chân / Tổng quan đầu tư as one CSV of their tables (aggregates only, cells under 5 players hidden)
                     if data.get("pending"):self.error(503,"Số liệu đang được tính, thử lại sau ít giây nhé.","busy");return
+                    if name=="invest":
+                        part=query.get("part") or "all"
+                        try:body=admin_kpi.to_csv(data,part)
+                        except ValueError:self.error(400,"Không có phần báo cáo này.","bad_part");return
+                        self.respond(200,body.encode("utf-8-sig"),"text/csv; charset=utf-8",
+                                     {"Content-Disposition":f"attachment; filename=tong-quan-dau-tu-{part}-{data.get('today','')}.csv"});return
                     self.respond(200,admin_retention.to_csv(data).encode("utf-8-sig"),"text/csv; charset=utf-8",
                                  {"Content-Disposition":f"attachment; filename=giu-chan-{data.get('today','')}.csv"});return
                 self.json(200,data);return
@@ -1183,6 +1195,13 @@ def _housekeeping(store:Store,stop:threading.Event,limits:SharedLimits|None):
     last_prune=last_hourly=0.0;last_checkpoint=time.time()
     # Bảng xếp hạng: fill it from saves stored before it existed (small batches, off the request path).
     threading.Thread(target=leaderboard.run_backfill,args=(store,stop),daemon=True,name="leaderboard-backfill").start()
+    # 📊 One sample a minute (players online, commands per minute, server up): its own thread, so a long
+    # housekeeping step never leaves a minute out.
+    def minutes():
+        while not stop.wait(15):
+            try:kpi.sample_minute(store)
+            except Exception as e:sys.stderr.write(f"[maintenance] kpi minute: {type(e).__name__}\n")
+    threading.Thread(target=minutes,daemon=True,name="kpi-minute").start()
     def step(name,fn):
         try:fn()
         except Exception as e:  # never kill the server for housekeeping
@@ -1268,7 +1287,7 @@ def precompress_later(server:GameServer):
 def _flush_and_exit(signum,frame):
     """A worker's SIGTERM: write its last few seconds of action counts (game/retention.py, at most 1.5 s), then
     stop at once as before."""
-    t=threading.Thread(target=retention.flush_all,daemon=True);t.start();t.join(1.5)
+    t=threading.Thread(target=lambda:(retention.flush_all(),kpi.flush_all()),daemon=True);t.start();t.join(1.5)
     os._exit(0)
 
 

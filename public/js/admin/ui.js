@@ -30,6 +30,9 @@ const PATHS={
   pulse:'M3 12h4l2-6 4 12 2-6h6',
   loop:'M17 2l4 4-4 4M3 11V9a3 3 0 013-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 01-3 3H3',
   download:'M12 3v12M7 10l5 5 5-5M4 19h16',
+  trend:'M3 17l6-6 4 4 8-8M15 7h6v6',
+  info:'M12 2a10 10 0 100 20 10 10 0 000-20ZM12 11v6M12 7.5h.01',
+  print:'M6 9V3h12v6M6 18H4v-7h16v7h-2M7 14h10v7H7v-7Z',
 };
 export const icon=(name,size=18)=>`<svg class="ic" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${PATHS[name]||PATHS.sparkle}"/></svg>`;
 
@@ -39,11 +42,18 @@ export const dec=n=>n==null?'—':nf1.format(n);
 export const pct=n=>n==null?'—':`${nf1.format(n)}%`;
 export const share=(n,total)=>total?pct(Math.round(1000*n/total)/10):'';
 export const dm=iso=>`${iso.slice(8,10)}/${iso.slice(5,7)}`;
-export const clock=t=>new Date(t*1000).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
-export const clockS=t=>new Date(t*1000).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-/** "14:23", or "14:23 29/09" when not today. */
-export function hm(t){if(t==null)return'—';const d=new Date(t*1000);return d.toDateString()===new Date().toDateString()?clock(t):`${clock(t)} ${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;}
-export const stamp=t=>new Date(t*1000).toLocaleString('vi-VN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit',year:'numeric'});
+/* Every time on this site is Vietnam time (the server's days are Vietnam days), whatever the
+ * operator's own computer is set to. */
+export const TZ='Asia/Ho_Chi_Minh';
+export const clock=t=>new Date(t*1000).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',timeZone:TZ});
+export const clockS=t=>new Date(t*1000).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit',timeZone:TZ});
+/** The Vietnam day of a unix time, "YYYY-MM-DD". */
+export const vnDay=t=>new Date(t*1000).toLocaleDateString('en-CA',{timeZone:TZ});
+/** "14:23", or "14:23 29/09" when not today (Vietnam days). */
+export function hm(t){if(t==null)return'—';const d=vnDay(t);return d===vnDay(Date.now()/1000)?clock(t):`${clock(t)} ${dm(d)}`;}
+export const stamp=t=>new Date(t*1000).toLocaleString('vi-VN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit',year:'numeric',timeZone:TZ});
+/** A UTC text of the database ("YYYY-MM-DD HH:MM:SS") as unix time. */
+export const utcText=s=>s?Date.parse(String(s).replace(' ','T')+'Z')/1000:null;
 export const last=a=>a?.length?a[a.length-1]:0;
 export function bytes(b){if(b==null)return'—';const u=['B','KB','MB','GB'];let i=0;while(b>=1024&&i<u.length-1){b/=1024;i++;}return `${nf1.format(b)} ${u[i]}`;}
 export function span(s){if(s==null)return'—';const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return d?`${d} ngày ${h} giờ`:h?`${h} giờ ${m} phút`:`${m} phút`;}

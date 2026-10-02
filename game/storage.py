@@ -43,6 +43,7 @@ from . import live_chat as lc
 from . import live_dating as ldt
 from . import wedding_live as wl
 from . import retention as rt
+from . import kpi
 from .content import CAREERS
 from . import db as dbm
 from . import fastjson as fj
@@ -516,8 +517,13 @@ class Store:
         try:
             out=self._command(h,who,request_id,expected,career,action,payload,internal,fingerprint)
         except GameError as e:
+            kpi.econ_drop()
             if who[0] and not internal and e.code!="session_missing":rt.count(self,who[0],career,action,e)
             raise
+        except BaseException:
+            kpi.econ_drop();raise
+        if out.get("replayed"):kpi.econ_drop()
+        else:kpi.econ_commit(self)  # 📊 xu created/destroyed by this command: a dict update, written every 30 s
         if not internal and not out.get("replayed"):rt.count(self,who[0],career,action)  # Giữ chân: a dict update, written every few seconds
         return out
 
@@ -569,8 +575,10 @@ class Store:
         ranked=lb.recall(sid,revision)
         if ranked is None:ranked=lb.summary(raw)  # read before the reducer changes raw in place
         marked=rt.marks(raw,ranked) if rt.ENABLED and action!="import_save" else None  # likewise
+        x0=kpi.xu(raw) if action not in kpi.ECON_SKIP else None  # likewise: the xu held before (a few dict reads)
         with ar.collect() as box:
             raw,result,full,known,extra=self._apply(raw,text,career,action,payload,internal,revision)
+        kpi.econ_mark(action,x0,kpi.xu(raw) if x0 is not None else None)
         serialized=serialize(raw,known,full)
         if len(serialized)>3*1024*1024 and len(serialized.encode())>14*1024*1024:raise GameError("Bản lưu quá lớn. Xóa bớt ảnh trong album trước khi nhập.")
         ranks=lb.summary(raw)

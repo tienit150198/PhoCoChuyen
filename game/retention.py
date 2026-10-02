@@ -583,6 +583,9 @@ def forget(db, sid: str) -> None:
         for slot in _bufs.values():
             for k in [k for k in slot[1] if k[1] == sid]:
                 del slot[1][k]
+    from . import kpi
+    if kpi._exists(db, 'stat_players'):   # 📊 its lifetime row (first/last active day); checked first: a failed
+        db.execute('DELETE FROM stat_players WHERE sid = ?', (sid,))   # statement would abort a PostgreSQL transaction
     first = db.execute('SELECT MIN(day) FROM stat_actions').fetchone()[0]
     if not first:
         return
