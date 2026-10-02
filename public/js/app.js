@@ -40,6 +40,7 @@ const L={
   settings:lazy(()=>import('./v4/settings.js')),  // Cài đặt (+ the Xếp hạng privacy row)
   social:lazy(()=>import('./v4/social.js')),  // Phố nghề
   classroom:lazy(()=>import('./v4/classroom.js')),  // Lớp học
+  accountingSchool:lazy(()=>import('./v4/accounting-school.js'),{css:['/css/accounting-school.css']}),
   desk:lazy(()=>import('./desk.js')),  // office dossiers
   inc:lazy(()=>import('./v4/incidents.js')),  // Chuyện đời
   chat:lazy(()=>import('./v4/ai-chat.js')),  // AI characters
@@ -252,20 +253,25 @@ function navItems(c){
   if(api.state?.journey?.story&&api.state.journey.garage)items.push(['garage','bike','Xe & phương tiện']);  // 🚗 (v4/garage.js, own dialog): only once the server has it
   if(api.state?.fair?.show)items.push(['fair','flag','Hội chợ',api.state.fair.open&&!api.state.fair.played?'dot':0]);  // 🏮 Hội chợ dân gian (v4/fair.js, own dialog): only around the fair's days
   // A career with its own shell (the air crew: no Sổ tiệm, a flight log instead) reshapes the list; others keep it.
-  return careerUI(career())?.nav?.(items,careerContext(env()))||items;
+  const result=careerUI(career())?.nav?.(items,careerContext(env()))||items;
+  if(!result.some(x=>x[0]==='accountingSchool'))result.push(['accountingSchool','calculator','Học kế toán']);  // 📒 Học kế toán (v4/accounting-school.js): every career, after a career's own reshaping
+  return result;
 }
 const badgeHTML=b=>b==='dot'?'<i class="dot" aria-hidden="true"></i>':b?`<em class="badge">${b}</em>`:'';
 const railItem=([a,i,label,badge],extra='',hide='')=>`<button type="button" class="rail-item${a==='social'?' top-social':''}${extra} ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}${hide}>${icon(i,21)}<span>${label}</span>${badgeHTML(badge)}</button>`;
 /** The work pages, always in sight (rail on desktop/tablet, top of "Thêm" on the phone), in this order. Any
  * entry that is in no group below (a career's own page) joins them, so nothing a career adds is lost. */
-const RAIL_MAIN=['liveChat','home','prepare','operations','prices','feedback','jobapp'];   // 💬 Chat first, one tap (owner, 01/10)
+const RAIL_MAIN=['liveChat','home','prepare','operations','prices','feedback','jobapp','accountingSchool'];   // 💬 Chat first, one tap (owner, 01/10)
+/** Học kế toán is a work page for the office accountants; everyone else finds it under "Của mình". */
+const ACC_CAREERS=['accounting','corp_accounting','tax_payroll','group_accounting'];
+const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREERS.includes(career()));
 /** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
 const RAIL_GROUPS=[
   ['pho','building','Khu phố',['fair','liveWalk','liveWed','nhom','phone','social','town','rank']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Tiền & nhà',['money','bank','house','garage']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
-  ['minh','gift','Của mình',['jrWardrobe','album','passport','workshop','journal']],
+  ['minh','gift','Của mình',['jrWardrobe','album','passport','workshop','journal','accountingSchool']],
 ];
 const RAIL_GROUPED=new Set(RAIL_GROUPS.flatMap(g=>g[3]));
 /** Numbers add up; a dot alone stays a dot. */
@@ -287,8 +293,8 @@ function dockItems(){
 function railHTML(c){
   const phone=layout()==='phone',shown=dockItems(),extra=phone?sceneActions().filter(x=>!shown.some(y=>y[0]===x[0])):[];
   const nav=navItems(c),order=x=>{const i=RAIL_MAIN.indexOf(x[0]);return i<0?RAIL_MAIN.length:i;};
-  const main=nav.filter(x=>!RAIL_GROUPED.has(x[0])).sort((a,b)=>order(a)-order(b));
-  const groups=RAIL_GROUPS.map(([g,ic,label,ids])=>[g,ic,label,ids.map(id=>nav.find(x=>x[0]===id)).filter(Boolean)]).filter(g=>g[3].length);
+  const main=nav.filter(railMain).sort((a,b)=>order(a)-order(b));
+  const groups=RAIL_GROUPS.map(([g,ic,label,ids])=>[g,ic,label,ids.map(id=>nav.find(x=>x[0]===id)).filter(x=>x&&!railMain(x))]).filter(g=>g[3].length);
   const open=groups.some(g=>g[0]===ui.railGroup)?ui.railGroup:null,hide=phone&&open?' hidden':'';
   const title=t=>phone?`<p class="rail-title"${hide}>${esc(t)}</p>`:'';
   const mini=(a,i,l,d='')=>`<button type="button" class="rail-mini${ui.view===a?' active':''}" data-action="${a}"${d} aria-label="${l}" title="${l}">${icon(i,19)}<span>${l}</span></button>`;
@@ -490,6 +496,7 @@ function renderSheet(preserve=true){
     case'incident':dialog.classList.add('medium','v4-sheet','inc-sheet');html=lazyView(L.inc,m=>m.incidentView(env()));break;
     case'jobapp':dialog.classList.add('medium','v4-sheet');html=moreView(()=>jobAppView(env()));break;
     case'classroom':dialog.classList.add('wide','v4-sheet');html=lazyView(L.classroom,m=>m.classroomView(env()));break;
+    case'accountingSchool':dialog.classList.add('wide','v4-sheet','as-sheet');html=lazyView(L.accountingSchool,m=>m.accountingSchoolView(env()));break;
     case'operations':dialog.classList.add('operations');html=moreView(()=>lazyView(L.ops,m=>m.operationsView(career(),room(),api.content.operations,ui,api.state)));break;
     default:html=header('Một khoảng thảnh thơi')+`<div class="sheet-body">${empty('Cửa sổ chưa mở','Quay lại cảnh để tiếp tục nhé.')}</div>`;
   }}
@@ -983,8 +990,9 @@ function summaryView(){
   const next=c.open?button('Về quầy','close',{},'primary big'):eve?button('🌙 Ăn tối, đi ngủ','evening',{},'primary big'):button(icon('play',15)+' Bắt đầu ngày '+dayNo(c),'start',{},'primary big');
   if(!s)return header('Mình khép ca nhé?','','TỔNG KẾT NGÀY')+`<div class="sheet-body">${empty('Chưa có ngày nào khép lại','','sun')}</div>`+footer('',next);
   const rv=s.reviews||{},job=s.job||null,ops=s.operations,net=Number(s.net)||0,own=careerUI(career())?.daySummary?.(s,careerContext(env()))||null;
+  const pagoda=career()==='pagoda';   // visitors' impressions at the pagoda (game/pagoda_voice.py)
   const stat=(cls,big,label,sub='')=>`<div class="sum-stat ${cls}"><strong>${big}</strong><small>${label}</small>${sub?`<em${sub.startsWith('<span')?' class="ck-chips"':''}>${sub}</em>`:''}</div>`;
-  const stats=`<div class="sum-stats">${stat(net>=0?'good':'bad',`${net>=0?'+':'−'}${fmt(Math.abs(net))}<span> xu</span>`,'Thay đổi trong ca',`<span class="ck-delta up">thu ${fmt(s.income)}</span><span class="ck-delta down">chi ${fmt(s.cost)}</span>`)}${stat('',`${s.completed}`,'Việc đã xong',s.carried?`${s.carried} việc để mai`:'')}${stat('star',rv.count?`★ ${rv.average}`:'—',rv.count?`${rv.count} đánh giá mới`:'Chưa có đánh giá mới')}</div>`;
+  const stats=`<div class="sum-stats">${stat(net>=0?'good':'bad',`${net>=0?'+':'−'}${fmt(Math.abs(net))}<span> xu</span>`,'Thay đổi trong ca',`<span class="ck-delta up">thu ${fmt(s.income)}</span><span class="ck-delta down">chi ${fmt(s.cost)}</span>`)}${stat('',`${s.completed}`,'Việc đã xong',s.carried?`${s.carried} việc để mai`:'')}${stat('star',rv.count?`★ ${rv.average}`:'—',rv.count?`${rv.count} ${pagoda?'cảm nhận':'đánh giá'} mới`:pagoda?'Chưa có cảm nhận mới':'Chưa có đánh giá mới')}</div>`;
   const notes=[];
   if(job?.boss)notes.push(`<article class="sum-boss"><span class="eyebrow">Một cuộc gặp may mắn</span><h3>${esc(job.boss.org)} · ${esc(job.boss.title)}</h3><p>${esc(job.boss.text)}</p>${button(icon('mail',15)+' Xem thư mời','bossOffer',{career:job.boss.career},'primary small')}</article>`);
   if(s.incidents&&L.inc.use())notes.push(L.inc.m.incidentSummary(s.incidents));
@@ -995,7 +1003,7 @@ function summaryView(){
   const jr=s.journey;
   if(jr&&(jr.living||jr.upkeep||jr.salary))notes.push(notice(`<b>Ngày sống thứ ${jr.life_day}</b>${s.clock?`<p>Bạn xong việc lúc ${esc(s.clock.finish)}.</p>`:''}<p>Tiền phòng và cơm nước: −${fmt(jr.living)} xu.</p>${jr.upkeep?`<p>Duy trì các nơi làm khác: −${fmt(jr.upkeep)} xu.</p>`:''}${jr.salary?`<p>Lương về ví: +${fmt(jr.salary)} xu.</p>`:''}${jr.gift?`<p>🎁 Quà chào hàng xóm mới: +${fmt(jr.gift)} xu.</p>`:''}<p>Ví của bạn còn <b>${fmt(jr.wallet)} xu</b>.</p>${jr.wallet<0?'<p>Ví đang nợ: trả hết nợ thì câu chuyện mới đi tiếp.</p>':''}`,jr.wallet<0?'amber':'','home'));
   if(job?.salary)notes.push(notice(`<b>Lương hôm nay +${fmt(job.salary)} xu</b>${job.result==='official'?'<p>Hết thử việc: bạn đã được ký hợp đồng chính thức! 🎉</p>':job.result==='extended'?'<p>Thử việc được gia hạn thêm 2 ngày. Cố lên nhé!</p>':job.probation?'<p>Đang thử việc: nhận 85% lương.</p>':''}`,'success','briefcase'));
-  if(rv.open||(rv.count&&rv.weakest&&rv.average<4.5))notes.push(notice(`${rv.count&&rv.weakest&&rv.average<4.5?`Khách góp ý nhiều nhất về <b>${esc(rv.weakest)}</b>.`:''}${rv.open?` Còn ${rv.open} đánh giá chờ bạn trả lời.`:''}<br>${button('Xem đánh giá','feedback',{filter:rv.open?'open':'all'},'small')}`,'amber','star'));
+  if(rv.open||(rv.count&&rv.weakest&&rv.average<4.5))notes.push(notice(pagoda?`${rv.count&&rv.weakest&&rv.average<4.5?`Khách thập phương nhắc nhiều nhất về <b>${esc(rv.weakest)}</b>.`:''}${rv.open?` Còn ${rv.open} cảm nhận chờ bạn hồi đáp.`:''}<br>${button('Xem cảm nhận','feedback',{filter:rv.open?'open':'all'},'small')}`:`${rv.count&&rv.weakest&&rv.average<4.5?`Khách góp ý nhiều nhất về <b>${esc(rv.weakest)}</b>.`:''}${rv.open?` Còn ${rv.open} đánh giá chờ bạn trả lời.`:''}<br>${button('Xem đánh giá','feedback',{filter:rv.open?'open':'all'},'small')}`,'amber','star'));
   if(ops?.unpaid)notes.push(notice(`<b>${esc(wordsFor(career()).books)}: còn ${fmt(ops.unpaid)} xu cần trả</b><p class="ck-chips"><span class="ck-delta flat">Lương ${fmt(ops.wages)}</span><span class="ck-delta flat">điện nước ${fmt(ops.utilities)}</span><span class="ck-delta flat">thuê ${fmt(ops.rent_accrued)} xu</span>${ops.period?'<span class="ck-delta warn">vừa kết kỳ thuế</span>':''}</p>${button('Mở sổ thu chi','finance',{},'small')}`,'','mail'));
   const details=`<details class="sum-more space-top"><summary>Chi tiết cả ngày</summary>${experienceSummary(c)}<div class="kv"><div class="kv-row"><span>Xu thu vào</span><b>+${fmt(s.income)}</b></div><div class="kv-row"><span>Xu đã chi trong ca</span><b>−${fmt(s.cost)}</b></div><div class="kv-row"><span>Chuyện đã xử lý</span><b>${s.events}</b></div></div></details>`;
   // A career with its own day page (the air crew's flight log) replaces the headline and the big numbers; the notes stay shared.
@@ -1136,6 +1144,7 @@ async function handleAction(action,data,el){
     case'teaConfig':await cmd('tea_config',{task:activeTask().id,size:$('#tea-size').value,sugar:Number($('#tea-sugar').value),ice:$('#tea-ice').value});break;
     case'expVisit':ui.townPlace=data.place;await cmd('life_town',{place:data.place});renderSheet();break;
     case'home':openSheet('home');break;
+    case'accountingSchool':if(await (await viaLazy(L.accountingSchool,el)).accountingSchoolOpen(env()))openSheet('accountingSchool');break;
     case'v4Group':railGroup(data.group||'');break;
     // "Thêm" opens on its first page, not inside the hub left open last time.
     case'v4Menu':if(ui.railGroup&&layout()==='phone')railGroup(null,false);await shell.action(action,data,el,env());break;
@@ -1222,6 +1231,7 @@ async function handleAction(action,data,el){
       if((L.social.m||action==='social')&&await (await viaLazy(L.social,el)).socialAction(action,data,el,env()))break;
       if((L.fb.m||action==='gopy')&&await (await viaLazy(L.fb,el)).feedbackAction(action,data,el,env()))break;
       if(procedureAction(action,data,el,env()))break;
+      if(/^as[A-Z]/.test(action)&&await (await viaLazy(L.accountingSchool,el)).accountingSchoolAction(action,data,el,env()))break;
       if(action==='classroom'){openSheet('classroom');break;}
       if(await shell.action(action,data,el,env()))break;
       toast('Chưa có tương tác này.',true);
@@ -1267,6 +1277,7 @@ document.addEventListener('submit',async e=>{
   if(await boardSubmit(f,env()))return;
   if(await v4Submit(f,env()))return;
   if(await accountSubmit(f,env()))return;
+  if(L.accountingSchool.m&&await L.accountingSchool.m.accountingSchoolSubmit(f,env()))return;
   if(L.social.m&&await L.social.m.socialSubmit(f,env()))return;
   if(L.fb.m&&await L.fb.m.feedbackSubmit(f,env()))return;
   if(await procedureSubmit(f,env()))return;
@@ -1279,6 +1290,7 @@ document.addEventListener('submit',async e=>{
   else if(f.id==='settingsForm'){await cmd('settings',{name:$('#player-name').value});}
 });
 document.addEventListener('input',e=>{
+  if(L.accountingSchool.m?.accountingSchoolInput(e.target,env()))return;
   if(careerInput(e.target,env(),'input'))return;
   if(v4Input(e.target,env()))return;
   if(L.settings.m?.settingsInput(e.target))return;
@@ -1288,6 +1300,7 @@ document.addEventListener('input',e=>{
 });
 document.addEventListener('change',async e=>{
   const el=e.target;
+  if(L.accountingSchool.m?.accountingSchoolInput(el,env()))return;
   if(careerInput(el,env(),'change'))return;
   if(L.settings.m&&await L.settings.m.settingsChange(el,env()))return;
   if(el.dataset.staffRole)await cmd('ops_assign',{employee:el.dataset.staffRole,role:el.value});

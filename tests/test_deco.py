@@ -81,7 +81,7 @@ def renter(kind='tro_moi', wallet=6000):
 
 class Catalogue(unittest.TestCase):
     def test_items(self):
-        self.assertEqual(len(DC.ITEMS), 66)
+        self.assertEqual(len(DC.ITEMS), 81)
         self.assertEqual(DC.KNOWN_132, tuple(DC.ITEMS)[:65])                # what a 1.3.2 build knows: its mirror holds only these
         self.assertNotIn('ke_go_treo', DC.KNOWN_132)
         self.assertEqual((DC.ITEMS['ke_go_treo']['spot'], DC.ITEMS['ke_go_treo']['ledge']), ('wall', 24))

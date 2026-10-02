@@ -81,6 +81,8 @@ def normalize(s: str) -> str:
     s=unicodedata.normalize("NFD",s.lower()).replace("đ","d")
     return "".join(c for c in s if unicodedata.category(c)!="Mn")
 
+from . import accounting_school as accounting_school_
+
 def new_state() -> dict:
     return dict(schema=4,name="Mây",current=None,seq=0,
         settings=dict(default_settings(),whatsNewSeen=""),  # "Có gì mới" is server-wide: new players see it too
@@ -552,6 +554,11 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         ar.record([s],"reset_all",ar.JOURNEY)  # the whole previous journey stays in the archive
         return fresh,dict(message="Đã tạo hành trình mới.")
     if action.startswith("jr_"):return jr.action(s,career,action,p)
+    if action.startswith('as_'):  # Học kế toán (game/accounting_school.py): its block is created on first use
+        result=accounting_school_.action(s,action,p)
+        validate_state(s)
+        if _SCOPED.get():accounting_school_.validate(s)  # validate_state skips it when scoped
+        return s,result
     if action.startswith("iv_"):return iv.action(s,action,p)
     if action.startswith("bd_"):return bd.action(s,career,action,p,internal)
     if action.startswith("lf_"):return doi.action(s,action,p)
@@ -1156,6 +1163,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     v["closeness"]=qn.public(s,focus)
     v["abandon"]=ab.public(s)
     v["fair"]=fh.public(s)  # 🏮 Hội chợ dân gian (game/fair.py)
+    v['accounting_school']=accounting_school_.summary(s)  # small: the school's own view rides on as_* results
     for cid,c in v["careers"].items():
         if c.get("summary"):continue
         raw=s["careers"][cid];mod=PLUGINS.get(cid)
@@ -1174,7 +1182,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
             from . import classroom
             c["classroom"]=classroom.public(raw);c["data"].pop("class",None)
         if cid in ("milk_tea","mother_baby"):life.public_counter(raw,cid,c["data"])
-        c["feed"]=[fbk.public_post(f) for f in raw["feed"]]
+        c["feed"]=[fbk.public_post(f,cid) for f in raw["feed"]]
         c["feedback_stats"]=fbk.stats(raw)
         c.pop("ext",None)
         c["life"]=life.public_life(s["careers"][cid])
@@ -1252,6 +1260,7 @@ then runs validate_career on every career the command changed (see Store._comput
     need(s.get("current") in CAREERS or s.get("current") is None,"Nghề trong bản lưu không hợp lệ.")
     clean_text(s.get("name"),24);integer(s.get("seq"),0,10**9)
     jr.validate(s)
+    if not _SCOPED.get():accounting_school_.validate(s)  # scoped: only as_* commands change it (they validate it themselves)
     iv.validate(s)
     bd.validate(s)
     doi.validate(s)

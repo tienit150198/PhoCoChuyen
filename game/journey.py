@@ -38,6 +38,7 @@ from . import live_effects as lfx   # 🧧 rewards from the live service (game/l
 from . import fair as fh   # 🏮 Hội chợ dân gian (game/fair.py)
 from . import needs as nd   # 🍚 No bụng, 😴 Tỉnh táo (game/needs.py)
 from . import chua as cg    # 🛕 Đi chùa (game/chua.py)
+from . import relax as rx   # 🏊 Thư giãn ở nhà: hồ bơi, bồn tắm (game/relax.py)
 from . import whats_new as wn   # "Có gì mới": read already for a brand-new save (_welcome_settings)
 
 VERSION = 1
@@ -799,6 +800,8 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(nd.action(s, name, p))
     elif name.startswith('jr_chua_'):
         result.update(cg.action(s, name, p))
+    elif name.startswith('jr_relax_'):
+        result.update(rx.action(s, name, p))
     else:
         raise e.GameError('Thao tác hành trình không hợp lệ.', 'unknown_action')
     after(s, None, name, p, result)
@@ -966,6 +969,7 @@ def validate(s: dict) -> None:
     fh.validate(j)   # 🏮 journey['fair'] (optional)
     nd.validate(s)   # 🍚😴 journey['needs'] (optional)
     cg.validate(s)   # 🛕 journey['chua'] (optional)
+    rx.validate(s)   # 🏊 journey['relax'] (optional)
     ct.validate(s)
     bk.validate(s)
     wd.validate(s)

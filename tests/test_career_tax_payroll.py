@@ -118,6 +118,54 @@ class TaxPayrollTests(unittest.TestCase):
         self.assertNotIn(str(j.task['proc'][1]['_key']['gross']), r['message'])
         self.assertEqual(j.task['mistakes'], 3)
 
+    def test_deeper_hints_work_on_the_players_numbers_never_the_key(self):
+        import re
+        nums = lambda lines: {int(n.replace('.', '')) for n in re.findall(r'\d[\d.]*\d|\d', ' '.join(lines))}
+        j = self.journey('payslip')
+        j.act('ask')
+        for st in copy.deepcopy(j.task['proc'][:3]):
+            j.act('tp_submit', step=st['id'], answer=st['_key'])
+        key = dict(j.task['proc'][3]['_key'])
+        # A tax bigger than the taxable income: a sanity check at once, a short toast, the message as before.
+        r = j.act('tp_submit', step='tax', answer=dict(taxable=key['taxable'], pit=key['taxable'] * 3))
+        self.assertFalse(r['correct'])
+        self.assertEqual((r['bad'], r['toast']), (['pit'], '✗ Chưa khớp 1/2 ô.'))
+        self.assertIn('Khớp 1/2 ô', r['message'])
+        self.assertTrue(any('không thể lớn hơn thu nhập tính thuế' in x for x in r['deep']), r['deep'])
+        self.assertNotIn('Chia thu nhập', ' '.join(r['deep']))           # the method waits for a second miss
+        # A flat rate on the whole income, second check: the brackets cut on the player's own taxable income.
+        r = j.act('tp_submit', step='tax', answer=dict(taxable=key['taxable'], pit=key['taxable'] * 15 // 100))
+        deep = ' '.join(r['deep'])
+        self.assertIn(f'Chia thu nhập tính thuế {T.fmt(key["taxable"])} thành từng bậc: tới 2.000', deep)
+        self.assertIn('không nhân cả', deep)
+        self.assertNotIn(key['pit'], nums(r['deep']))
+        # A wrong taxable income is checked against the gross already matched, never against the key.
+        r = j.act('tp_submit', step='tax', answer=dict(taxable=key['taxable'] + 99999, pit=0))
+        self.assertTrue(any('phải nhỏ hơn Tổng thu nhập' in x for x in r['deep']), r['deep'])
+        self.assertFalse(nums(r['deep']) & set(key.values()))
+
+    def test_deeper_hints_never_hold_a_right_value(self):
+        import re
+        nums = lambda lines: {int(n.replace('.', '')) for n in re.findall(r'\d[\d.]*\d|\d', ' '.join(lines))}
+        seen = 0
+        for form in FORMS:
+            j = self.journey(form)
+            j.act('ask')
+            for st in copy.deepcopy(j.task['proc']):
+                if st['kind'] in ('fields', 'number'):
+                    k = st['_key']
+                    for bump in (7, 3001, -50000):
+                        wrong = k + bump if st['kind'] == 'number' else {f: v + bump if type(v) is int else v for f, v in k.items()}
+                        r = j.act('tp_submit', step=st['id'], answer=wrong)
+                        self.assertFalse(r['correct'])
+                        self.assertIsInstance(r['deep'], list)
+                        seen += len(r['deep'])
+                        right = {k} if st['kind'] == 'number' else {v for v in k.values() if type(v) is int}
+                        public = {0, 12, T.PERSONAL, T.DEPENDENT} | {top * m for top, _ in T.BRACKETS[:-1] for m in (1, 12)}   # the rules' own numbers
+                        self.assertFalse(nums(r['deep']) & right - public, (form, st['id'], r['deep']))
+                j.act('tp_submit', step=st['id'], answer=st['_key'])
+        self.assertGreater(seen, 10)
+
     def test_malformed_and_out_of_order_rejected_without_mistake(self):
         j = self.journey('payslip')
         with self.assertRaises(GameError):

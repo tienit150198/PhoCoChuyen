@@ -78,6 +78,15 @@ class Conflict(GameError):
 ARCHIVE_IMPORT_MAX=200000       # archive rows accepted with an imported backup
 ARCHIVE_ROW_MAX=2*1024*1024     # characters of one archived row (album photos are the largest)
 
+TRANSIENT=("accounting_view",)  # result parts only for the answer on the wire (Học kế toán's own view): not kept in receipts
+
+
+def _receipt(result:dict)->str:
+    """The stored receipt of a command: its result without the transient views (a replay answers without them;
+    the client asks again, see public/js/v4/accounting-school.js)."""
+    return fj.dumps({k:v for k,v in result.items() if k not in TRANSIENT} if any(k in result for k in TRANSIENT) else result)
+
+
 def _archive_rows(box,careers_before:dict,raw:dict,default:str)->list:
     """(career, kind, day, row_json) for what the command cut off, oldest first per list.
     A row's owner is a career record (found by identity, in the save before or after
@@ -546,7 +555,7 @@ class Store:
             except GameError:
                 if self._moved(sid,request_id,row["revision"]):continue  # judged on a save that has moved on: look again
                 raise
-            receipt=fj.dumps(result)
+            receipt=_receipt(result)
             # 3. Short compare-and-set under the write lock.
             t2=time.perf_counter()
             if self._store(sid,row["revision"],serialized,request_id,fingerprint,receipt,cut,board,steps):
@@ -701,7 +710,7 @@ class Store:
             _write_archive(db,sid,cut)
             if board[1]:lb.write(db,sid,board[0])
             if steps[0]:rt.write_marks(db,sid,steps[0],steps[1])
-            db.execute("INSERT INTO receipts(sid,request_id,request_hash,result) VALUES(?,?,?,?)",(sid,request_id,fingerprint,fj.dumps(result)))
+            db.execute("INSERT INTO receipts(sid,request_id,request_hash,result) VALUES(?,?,?,?)",(sid,request_id,fingerprint,_receipt(result)))
             db.commit()
             lb.remember(sid,revision,board[0])
             if steps[0]:rt.emit_marks(sid,*steps)

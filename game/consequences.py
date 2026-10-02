@@ -244,7 +244,7 @@ def _escalate(s: dict, c: dict, t: dict) -> list[str]:
         post['report'] = True
     e.metric(c, 'complaints')
     e.log(s, c, 'complaint', text, t['npc'], t['id'])
-    notes.append('📣 Khách gửi báo cáo lên app.')
+    notes.append('🙏 Khách thập phương gửi góp ý lên thầy trụ trì.' if t['career'] == 'pagoda' else '📣 Khách gửi báo cáo lên app.')
     drop = 4 if safety(t) else 2
     box = c.get('incidents')
     if isinstance(box, dict) and isinstance(box.get('trust'), int):

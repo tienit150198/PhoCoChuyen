@@ -142,10 +142,15 @@ def submit(t: dict, step_id, answer) -> tuple[bool, str]:
     hints = st.get('hints') or [st.get('hint', 'Đọc lại chứng từ liên quan rồi thử lại.')]
     hint = hints[min(len(hints), ps['attempts'][st['id']]) - 1]
     if st['kind'] == 'order':  # say where it goes wrong, not only the general rule
-        good, first = max(((sum(a == b for a, b in zip(answer, key)), next((i for i, (a, b) in enumerate(zip(answer, key)) if a != b), 0))
-                           for key in orders(st['_key'])), key=lambda x: x[0])
-        return False, f'Đúng {good}/{len(answer)} vị trí, xem lại từ ô số {first + 1}. {hint}'
+        return False, f'{order_where(st, answer)} {hint}'
     return False, hint
+
+
+def order_where(st: dict, answer: list) -> str:
+    """Where a wrong order goes off (never the right order): how many places match, the first one to look at."""
+    good, first = max(((sum(a == b for a, b in zip(answer, key)), next((i for i, (a, b) in enumerate(zip(answer, key)) if a != b), 0))
+                       for key in orders(st['_key'])), key=lambda x: x[0])
+    return f'Đúng {good}/{len(answer)} vị trí, xem lại từ ô số {first + 1}.'
 
 
 def done(t: dict) -> bool:

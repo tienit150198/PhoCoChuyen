@@ -62,7 +62,15 @@
   body:not(.reduce-motion) .dc-cat-in .dc-zz{animation:dc-zz 2.6s ease-in-out infinite}
   body:not(.reduce-motion) .dc-cat-in .dc-zz.b{animation-delay:1.3s}
   body:not(.reduce-motion) .dc-cat-in.loaf .dc-cat-tail{animation:dc-tail 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:0 100%}
+  body:not(.reduce-motion) .dc-room .dc-wave{animation:dc-wave 3.4s ease-in-out infinite alternate}
+  body:not(.reduce-motion) .dc-room .dc-wave.w1{animation-duration:4.1s;animation-delay:-1.2s}
+  body:not(.reduce-motion) .dc-room .dc-wave.w2{animation-duration:3s;animation-delay:-2s}
+  body:not(.reduce-motion) .dc-room .dc-glint{animation:dc-glint 2.6s ease-in-out infinite}
+  body:not(.reduce-motion) .dc-room .dc-glint.g1{animation-delay:-.9s}
+  body:not(.reduce-motion) .dc-room .dc-glint.g2{animation-delay:-1.7s}
 }
+@keyframes dc-wave{0%{transform:translateX(-5px)}100%{transform:translateX(5px)}}
+@keyframes dc-glint{0%,100%{opacity:0}50%{opacity:.9}}
 @keyframes dc-pop{0%{transform:scale(.6,.5) translateY(-14px);opacity:0}55%{transform:scale(1.08,.92)}75%{transform:scale(.97,1.04)}100%{transform:none;opacity:1}}
 @keyframes dc-spark{0%{transform:scale(0) rotate(0);opacity:0}40%{opacity:1;transform:scale(1.25) rotate(30deg)}100%{transform:scale(.2) rotate(90deg) translateY(-8px);opacity:0}}
 @keyframes dc-glow{0%,100%{fill-opacity:.3}50%{fill-opacity:.6}}
@@ -148,6 +156,12 @@
 .dc-meter>b{position:absolute;top:2px;bottom:2px;width:2px;margin-left:-1px;border-radius:2px;background:var(--line-strong)}
 .dc-break{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0}
 .dc-break span,.dc-stats span{padding:3px 10px;border-radius:999px;background:var(--surface-2);color:var(--ink-2);font-weight:700;font-size:.82rem}
+.dc-relax h3{margin:0 0 8px}
+.dc-relax ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.dc-relax li{display:flex;align-items:center;gap:4px 12px;flex-wrap:wrap}
+.dc-relax li .btn{min-width:min(100%,220px);justify-content:flex-start}
+.dc-relax li small{color:var(--muted)}
+.dc-relax .bk-hint{margin:8px 0 0}
 .dc-guest{display:flex;align-items:flex-start;gap:12px;background:var(--second-soft)}
 .dc-guest-face{flex:none;font-size:2rem;line-height:1}
 .dc-guest p{margin:0}

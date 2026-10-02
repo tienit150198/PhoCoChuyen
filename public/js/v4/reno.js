@@ -25,7 +25,12 @@ const low=s=>String(s||'').slice(0,1).toLowerCase()+String(s||'').slice(1);
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 const btn=(label,op,data={},cls='',extra='')=>`<button type="button" class="btn ${cls}" data-dc="${op}"${attrs(data)}${S.busy?' disabled':''}${extra}>${label}</button>`;
 const J=()=>S.env?.api?.state?.journey||{};
-const V=()=>J().deco||null;                       // the place you live in, its rooms and pieces (deco.public)
+/* The place you live in, its rooms and pieces (deco.public). 1.4.11: the new rooms (the bathroom, a villa's pool) come
+ * as `more` [{t: template, s: skin}] with the templates in the catalogue (`kits`); here they join `rooms`. */
+let vSrc=null,vOut=null;
+const V=()=>{const d=J().deco||null;if(!d?.more?.length)return d;
+  if(vSrc!==d){const kits=CD().kits||{};vSrc=d;vOut={...d,rooms:[...d.rooms,...d.more.filter(m=>kits[m.t]).map(m=>({...kits[m.t],skin:m.s||{}}))]};}
+  return vOut;};
 const R=()=>J().reno||null;                       // the structure of a home you own (reno.public)
 const CD=()=>S.env?.api?.content?.journey?.deco||{items:[],cats:[],sets:[],levels:[],skins:[]};
 const CR=()=>S.env?.api?.content?.journey?.reno||{parts:[],steps:[]};
@@ -288,7 +293,8 @@ function roomMarkup(rm,opts={}){
 /* ---- 🐈 the cats: Mochi always, Bơ too once the room is Rất ấm cúng. They wander and nap on rugs, beds, sofas
  * (CSS transitions on one transform each; a timer every few seconds; still with reduced motion). ---- */
 const CATS={room:'',list:[],timer:0};
-const NAP={sofa:['sleep',-27],giuong:['sleep','bed'],nem:['sleep',-9],o_meo:['sleep',-9],ghe_luoi:['loaf',-25],tham:['melt','rug'],tham_hoa:['melt','rug'],ghe_may:['loaf',-24]};
+const NAP={sofa:['sleep',-27],giuong:['sleep','bed'],nem:['sleep',-9],o_meo:['sleep',-9],ghe_luoi:['loaf',-25],tham:['melt','rug'],tham_hoa:['melt','rug'],ghe_may:['loaf',-24],
+  ghe_tam_nang:['sleep',-20],tham_tam:['melt','rug']};
 function napSpots(rm,G,list){
   const out=[];
   for(const o of list){
@@ -300,7 +306,12 @@ function napSpots(rm,G,list){
   if(rm.type==='bunk')out.push({x:A.PX+A.CW*2.6,y:G.FY+A.FR*1.3,pose:'sleep'});
   return out;
 }
-function floorSpot(rm,G){return {x:A.PX+18+Math.random()*(rm.cols*A.CW-36),y:G.FY+A.FR*.55+Math.random()*Math.max(4,rm.frows*A.FR-A.FR*.7),pose:Math.random()<.5?'loaf':'sleep'};}
+function floorSpot(rm,G){
+  for(let i=0;;i++){   // not in the pool (or on a fixture that keeps pieces off)
+    const s={x:A.PX+18+Math.random()*(rm.cols*A.CW-36),y:G.FY+A.FR*.55+Math.random()*Math.max(4,rm.frows*A.FR-A.FR*.7),pose:Math.random()<.5?'loaf':'sleep'};
+    if(i>8||!(rm.fix||[]).some(f=>f.t==='pool'&&s.x>A.PX+f.x*A.CW-14&&s.x<A.PX+(f.x+f.w)*A.CW+14&&s.y>G.FY+f.y*A.FR-4&&s.y<G.FY+(f.y+f.h)*A.FR+12))return s;
+  }
+}
 function catsWanted(){const v=V();return v&&v.cozy.total>=24?2:1;}
 function catsFor(rm,G,list){
   const want=catsWanted();
@@ -413,6 +424,8 @@ async function onClick(op,data){
       finally{S.busy=false;render();}return;}
     case'photoClose':S.photo=null;render();return;
     case'tipOk':tipDone();render();return;
+    case'relax':{const a=(V()?.relax||[]).find(x=>x.id===data.act);if(!a||!a.ok)return;
+      const r=await send('jr_relax_do',{act:a.id},{loud:true});if(r)sfx('chime');return;}
     case'fix':{const r=R();const all=data.part==='all',p=r.parts.find(x=>x.id===data.part),cost=all?r.fix_all:p?.fix;if(!cost)return;
       const what=all?'Sửa cả nhà?':`Sửa ${low(PART(p.id).name)}?`,body=all?r.parts.filter(x=>x.fix).map(x=>`${PART(x.id).name} ${xu(x.fix)}`).join(' · '):`${condWord(p.c,p.id)} (${p.c}%) → như mới.`;
       if(await ask(what,body,`Sửa · ${xu(cost)}`,cost)){const res=await send('jr_reno_fix',{part:data.part,cost,confirm:true});if(res)sfx('success');}return;}
@@ -719,7 +732,7 @@ function decoPage(v){
     ?`<div class="dc-actions">${btn('↶ Hoàn tác','undo',{},'ghost',S.undo.length?'':' disabled')}${btn('🎒 Cất hết','pickAll',{},'ghost',v.items.length?'':' disabled')}${btn('✓ Xong','done',{},'primary')}</div>`
     :`<div class="dc-actions">${btn(v.items.length?'✏️ Bày trí phòng':'✏️ Bắt đầu bày trí','edit',{},'primary')}${btn('📸 Chụp phòng','photo',{},'ghost')}</div>`;
   const stage=`<div class="dc-stage">${roomTabs(v)}<div class="dc-roomwrap">${svg}${S.edit?'':'<span class="dc-hint" aria-hidden="true">Chạm phòng để bày trí</span>'}</div>${S.edit?(S.held?heldBar(v):S.sel?tools(v):''):''}${tip}${bar}${S.edit&&!wide?drawer(v):''}</div>`;
-  return `<div class="dc-grid">${stage}<div class="dc-side">${S.edit&&wide?drawer(v):''}${cozyCard(v)}${guestCard(v)}${setsCard(v)}${placeNote(v)}</div></div>`;
+  return `<div class="dc-grid">${stage}<div class="dc-side">${relaxCard(v,rm)}${S.edit&&wide?drawer(v):''}${cozyCard(v)}${guestCard(v)}${setsCard(v)}${placeNote(v)}</div></div>`;
 }
 function roomTabs(v){
   if(v.rooms.length<2)return '';
@@ -782,6 +795,7 @@ function skinStrip(v,rm){
     if(s.part!==part&&s.part!=='both')return false;
     if(part==='wall'&&(rm.out||!rm.wrows))return false;
     if(s.id==='auto')return true;
+    if((CD().no_skin||[]).includes(rm.type))return false;
     return s.types?s.types.includes(rm.type):!['bunk','yard'].includes(rm.type);
   };
   const row=(part,title)=>{
@@ -820,6 +834,12 @@ function cozyCard(v){
     <div class="dc-meter" role="meter" aria-label="Ấm cúng" aria-valuemin="0" aria-valuemax="${MAXC}" aria-valuenow="${Math.min(MAXC,c.total)}"><i style="width:${Math.min(100,c.total/MAXC*100)}%"></i>${marks}</div>
     <p class="dc-break"><span>Đồ đạc ${c.items}</span><span>Bộ góc ${c.sets}</span>${own?`<span>Nâng cấp nhà ${c.up}</span>`:''}</p>
     ${perk}${next}${guest}</section>`;
+}
+/** 🏊 the pool's and the bathroom's moment of the day (game/relax.py), under the room it belongs to. */
+function relaxCard(v,rm){
+  const acts=(v.relax||[]).filter(a=>a.room===rm.id);if(!acts.length)return '';
+  const row=a=>`<li>${btn(`${a.emoji} ${esc(a.name)}`,'relax',{act:a.id},a.ok?'primary':'ghost',a.ok?'':' disabled')}<small>${a.done?'✓ Hôm nay rồi':a.ok?`😊 Tinh thần +${a.spirit}`:esc(a.why)}</small></li>`;
+  return `<section class="bk-card dc-relax"><h3>${rm.type==='pool'?'🏖️ Thư giãn bên hồ':'🛁 Thư giãn trong nhà tắm'}</h3><ul>${acts.map(row).join('')}</ul><p class="bk-hint">Miễn phí, mỗi ngày một lần.</p></section>`;
 }
 function guestCard(v){
   const g=v.guest;if(!g)return '';
