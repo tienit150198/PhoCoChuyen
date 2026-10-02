@@ -107,7 +107,7 @@ function dialog(){
   d.addEventListener('click',e=>{
     if(e.target===d){d.close();return;}
     const el=e.target.closest('[data-fh]');if(!el||!d.contains(el)||el.disabled)return;
-    e.preventDefault();onClick(el.dataset.fh,el.dataset,el);
+    e.preventDefault();S.anchor=el.dataset.fhKey||'';S.anchorAt=performance.now();onClick(el.dataset.fh,el.dataset,el);
   });
   d.addEventListener('close',()=>{pauseLoto();ltMusic();stopRing();clearInterval(S.tick);S.tick=null;S.flash=null;});
   S.dlg=d;return d;
@@ -149,17 +149,56 @@ async function send(action,payload={}){
   catch(e){S.err=e.code||e.data?.code||'';S.flash=e.quiet?null:{text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}
 }
 
-/* ---- rendering ---- */
+/* ---- rendering ----
+ * Every render patches the page in place (morph): only the nodes that changed are touched, so the dialog never
+ * loses its height, the tapped button and the focus stay, open <details> stay open and running CSS animations
+ * do not restart. The control the player just tapped is then held at the same spot on screen (content above it
+ * may grow or shrink: a result line, a flash); the dialog's scroll is written only when it really has to move,
+ * so a call tick of the lô tô never fights a finger that is scrolling. */
+const keyOf=n=>n.nodeType!==1?'':(n.getAttribute('data-fh-key')||'')+'|'+(n.getAttribute('data-fh')||'')+(n.nodeName==='SECTION'||n.nodeName==='DETAILS'?'|'+n.className:'');
+const same=(a,b)=>a.nodeType===b.nodeType&&a.nodeName===b.nodeName&&keyOf(a)===keyOf(b);
+function morph(from,to){
+  if(from.nodeType!==1){if(from.nodeValue!==to.nodeValue)from.nodeValue=to.nodeValue;return;}
+  const det=from.nodeName==='DETAILS';   // a <details> the player opened or closed keeps that
+  for(const {name} of [...from.attributes])if(!to.hasAttribute(name)&&!(det&&name==='open'))from.removeAttribute(name);
+  for(const {name,value} of [...to.attributes])if(from.getAttribute(name)!==value&&!(det&&name==='open'))from.setAttribute(name,value);
+  if(from.hasAttribute('data-fh-live'))return;   // drawn by script (the flying rings, the swinging aim): left alone
+  const a=[...from.childNodes],b=[...to.childNodes];
+  let i=0,j=0;
+  for(;j<b.length;j++){
+    const n=b[j],o=a[i];
+    if(!o){from.append(n);continue;}
+    if(same(o,n)){morph(o,n);i++;continue;}
+    if(a[i+1]&&same(a[i+1],n)){o.remove();morph(a[i+1],n);i+=2;continue;}   // a node went away
+    if(b[j+1]&&same(o,b[j+1])){from.insertBefore(n,o);continue;}   // a node came in
+    from.replaceChild(n,o);i++;
+  }
+  for(;i<a.length;i++)a[i].remove();
+}
+const tplEl=document.createElement('template');
+const byKey=k=>k?S.dlg.querySelector(`[data-fh-key="${CSS.escape(k)}"]`):null;
+/** What to hold still: the control just tapped (for a moment after the tap), else the first keyed control on screen. */
+function anchorEl(d){
+  if(S.anchor&&performance.now()-S.anchorAt<700){const el=byKey(S.anchor);if(el)return el;}
+  if(d.scrollTop<1)return null;
+  const top=d.getBoundingClientRect().top;
+  for(const el of d.querySelectorAll('[data-fh-key]'))if(el.getBoundingClientRect().top>=top)return el;
+  return null;
+}
 function keep(fn){
-  const body=S.dlg?.querySelector('.fh-body'),top=body?.scrollTop,dtop=S.dlg?.scrollTop,a=document.activeElement,key=a&&S.dlg?.contains(a)?a.dataset.fhKey:'';
+  const d=S.dlg,an=anchorEl(d),ak=an?.dataset.fhKey,y0=an?an.getBoundingClientRect().top:0;
+  const top=d.scrollTop,a=document.activeElement,key=a&&d.contains(a)?a.dataset.fhKey:'';
   fn();
-  const nb=S.dlg?.querySelector('.fh-body');if(nb&&top!=null)nb.scrollTop=top;if(S.dlg&&dtop!=null)S.dlg.scrollTop=dtop;
-  if(key){const el=S.dlg.querySelector(`[data-fh-key="${CSS.escape(key)}"]`);el?.focus({preventScroll:true});}
+  const an2=byKey(ak);
+  if(an2){const dy=an2.getBoundingClientRect().top-y0;if(Math.abs(dy)>1)d.scrollTop+=dy;}   // held at the same spot on screen
+  else if(Math.abs(d.scrollTop-top)>1)d.scrollTop=top;
+  if(key&&!a.isConnected)byKey(key)?.focus({preventScroll:true});
 }
 function render(){
   if(!S.dlg)return;
-  keep(()=>{S.dlg.querySelector('.fh-root').innerHTML=page();});
-  S.dlg.setAttribute('aria-busy',String(S.busy));
+  keep(()=>{const root=S.dlg.querySelector('.fh-root');tplEl.innerHTML=page();
+    const box=document.createElement('div');box.append(tplEl.content);morph(root,Object.assign(box,{className:root.className}));});
+  if(S.dlg.getAttribute('aria-busy')!==String(S.busy))S.dlg.setAttribute('aria-busy',String(S.busy));
 }
 function tickLabels(){
   if(!S.dlg?.open)return;
@@ -346,7 +385,7 @@ function ringView(){
   else go=btn(`🎯 Phát ${rings} vòng (miễn phí)`,'ringstart',{},'primary big full',S.busy||!r.ring_left?' disabled':' data-fh-key="ringstart"');
   return `<section class="fh-stall fh-ringstall" aria-label="Ném vòng cổ chai">
     ${say(RINGER,R0.say)}
-    <div class="fh-ringstage${rd&&!res?' live':''}"><div class="fh-track" aria-hidden="true"><span class="fh-aim" style="left:${trackPos(rd?ringX(rd,0):50)}"><i></i></span></div><div class="fh-fly-layer" aria-hidden="true"></div><div class="fh-shelf">${bottles}</div></div>
+    <div class="fh-ringstage${rd&&!res?' live':''}"><div class="fh-track" aria-hidden="true" data-fh-live><span class="fh-aim" style="left:${trackPos(rd?ringX(rd,0):50)}"><i></i></span></div><div class="fh-fly-layer" aria-hidden="true" data-fh-live></div><div class="fh-shelf">${bottles}</div></div>
     <div class="fh-ringsleft" aria-label="Còn ${rings-used} vòng">${left}</div>
     ${go}
     <div class="fh-ringmeter">${meter(e)}</div>
@@ -406,13 +445,13 @@ function bcView(){
   const dice=(b.dice||['bau','cua','ca']).map((d,i)=>`<span class="fh-die" style="--i:${i}">${art(d)}<span class="sr-only">${FACE_NAME[d]}</span></span>`).join('');
   const mat=FACES.map(face=>{const n=b.bets[face]||0,hit=hits.has(face);
     return `<button type="button" class="fh-face fh-f-${face}${hit?' hit':''}${n?' bet':''}" data-fh="bet" data-face="${face}" data-fh-key="face-${face}" aria-label="${FACE_NAME[face]}${n?`, đang đặt ${n} xu`:''}"${rolling||stop?' disabled':''}>${art(face)}<b>${FACE_NAME[face]}</b>${n?`<em class="fh-stake">${n}</em>`:''}</button>`;}).join('');
-  const again=b.last&&b.phase==='idle'&&!stop?`<div class="row wrap fh-again">${btn('🔁 Lắc tiếp','roll',{},'primary small',total?' data-fh-key="again"':' disabled data-fh-key="again"')}${btn('Đặt lại','clear',{},'ghost small')}</div>`:'';
+  const again=b.last&&b.phase==='idle'&&!stop?`<div class="row wrap fh-again">${btn('🔁 Lắc tiếp','roll',{},'primary small',total?' data-fh-key="again"':' disabled data-fh-key="again"')}${btn('Đặt lại','clear',{},'ghost small',' data-fh-key="reset"')}</div>`:'';
   const res=b.last&&b.phase==='idle'?bcResult(b.last)+again:'';
   return `<section class="fh-stall fh-bc" aria-label="Bầu cua tôm cá">
     ${say(DEALER,b.say)}
     <div class="fh-table"><div class="fh-plate ${b.phase==='shake'?'shake':''} ${b.phase==='idle'&&b.dice?'open':''}" aria-live="polite"><div class="fh-dice">${dice}</div><div class="fh-bowl" aria-hidden="true"></div></div>${res}</div>
     <div class="fh-mat" role="group" aria-label="Chiếu bầu cua: chạm một con để đặt">${mat}</div>
-    <div class="fh-chips" role="group" aria-label="Mỗi lần chạm đặt"><span>Mỗi chạm</span>${CHIPS.map(c=>`<button type="button" class="fh-chip${b.chip===c?' on':''}" data-fh="chip" data-v="${c}" aria-pressed="${b.chip===c}" data-fh-key="chip-${c}">${c}</button>`).join('')}${btn('Gom lại','clear',{},'ghost small',total&&!rolling?'':' disabled')}</div>
+    <div class="fh-chips" role="group" aria-label="Mỗi lần chạm đặt"><span>Mỗi chạm</span>${CHIPS.map(c=>`<button type="button" class="fh-chip${b.chip===c?' on':''}" data-fh="chip" data-v="${c}" aria-pressed="${b.chip===c}" data-fh-key="chip-${c}">${c}</button>`).join('')}${btn('Gom lại','clear',{},'ghost small',total&&!rolling?' data-fh-key="gom"':' disabled data-fh-key="gom"')}</div>
     ${stop?'<p class="fh-rule"><b>Hôm nay chơi đủ rồi, mai ghé lắc tiếp nha.</b></p>':''}<div class="fh-go"><span>Đặt <b>${total}</b>/${max} xu</span>${btn(rolling?'Đang lắc…':'🥣 Lắc!','roll',{},'primary big',total&&!rolling&&!stop?' data-fh-key="roll"':' disabled data-fh-key="roll"')}</div>
     <p class="fh-rule">Ra mấy con trùng mặt đặt thì ăn bấy nhiêu lần tiền cược, kèm tiền vốn. Ba con giống nhau (bão) ăn ${r.bao||10} lần.</p>
   </section>`;
@@ -570,7 +609,7 @@ const MC_ART=`<svg class="fh-mcart" viewBox="0 0 90 120" aria-hidden="true">
   <path d="M40 48 Q45 53 50 48" stroke="#b83a3a" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`;
 function stageHtml(v){
   const live=playing(v),cur=live&&S.lt.shown?v.seq[S.lt.shown-1]:null;
-  const ball=`<span class="fh-ball${cur?' pop':''}${v?.mode==='nguoc'&&cur?' flip':''}" aria-live="polite" aria-label="${cur?`Số vừa gọi: ${shownNum(v,cur)}`:'Chưa gọi số'}">${cur!=null?esc(shownNum(v,cur)):'🎱'}</span>`;
+  const ball=`<span data-fh-key="ball-${S.lt.shown}" class="fh-ball${cur?' pop':''}${v?.mode==='nguoc'&&cur?' flip':''}" aria-live="polite" aria-label="${cur?`Số vừa gọi: ${shownNum(v,cur)}`:'Chưa gọi số'}">${cur!=null?esc(shownNum(v,cur)):'🎱'}</span>`;
   return `<div class="fh-stage${live?' live':''}" aria-label="Sân khấu lô tô">
     <div class="fh-curtain" aria-hidden="true"></div><div class="fh-spot" aria-hidden="true"></div>
     <div class="fh-mc">${MC_ART}<b>${esc(MC.name)}</b></div>
@@ -826,7 +865,7 @@ async function onClick(op,data){
   const b=S.bc,x=S.xd;
   switch(op){
     case'close':S.dlg.close();return;
-    case'tab':S.tab=data.tab;S.flash=null;if(S.tab!=='lt'){pauseLoto();ltMusic();}render();S.dlg.querySelector('.fh-body')?.scrollTo?.(0,0);if(S.tab==='board')loadBoard();if(S.tab==='lt')resumeLoto();if(S.tab==='ring')startRingLoop();return;
+    case'tab':S.tab=data.tab;S.flash=null;S.anchor='';if(S.tab!=='lt'){pauseLoto();ltMusic();}render();S.dlg.scrollTop=0;if(S.tab==='board')loadBoard();if(S.tab==='lt')resumeLoto();if(S.tab==='ring')startRingLoop();return;
     case'oaqstart':oaqStart(data.lv==='kho'?'kho':'de');return;
     case'oaqsel':{if(S.oaq.anim||S.busy)return;const c=Number(data.c);S.oaq.sel=S.oaq.sel===c?null:c;S.oaq.quit=false;sfx('mark');render();return;}
     case'oaqmove':oaqMove(Number(data.d)===-1?-1:1);return;
@@ -845,7 +884,7 @@ async function onClick(op,data){
     case'side':x.side=data.v==='le'?'le':'chan';render();return;
     case'stake':x.stake=Number(data.v)||10;render();return;
     case'shakexd':shakeXd();return;
-    case'raidok':x.raid=null;S.tab=data.tab||'bc';render();if(S.tab==='lt')resumeLoto();return;
+    case'raidok':x.raid=null;S.tab=data.tab||'bc';render();S.dlg.scrollTop=0;if(S.tab==='lt')resumeLoto();return;
     case'buy':buy();return;
     case'mark':mark(Number(data.c)||0,Number(data.n));return;
     case'kinh':kinh();return;

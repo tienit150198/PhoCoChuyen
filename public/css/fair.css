@@ -7,6 +7,7 @@
 html[data-theme="dem"] .fh-sheet{--fh-paper:#30291c;--fh-ink:#f6e7c8}
 html:not([data-layout="phone"]) .sheet.medium.fh-sheet{width:min(600px,calc(100vw - 32px))}
 .fh-root{display:flex;flex-direction:column;min-height:0}
+.fh-sheet{overflow-anchor:none}   /* fair.js holds the tapped control in place itself (Safari has no scroll anchoring) */
 
 /* ---- head: bunting, lanterns, title ---- */
 .fh-head{position:relative;padding:44px 12px 10px 16px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,color-mix(in srgb,var(--fh-gold) 16%,var(--surface)),var(--surface))}
@@ -183,6 +184,7 @@ html[data-theme="dem"] .fh-cell{background:color-mix(in srgb,#000 20%,var(--fh-p
 .fh-mcsay .fh-bubble small{color:#b8306a}
 .fh-mcsay .fh-bubble p{color:#3b1d10}
 .fh-stage .fh-ball{width:70px;height:70px;font-size:1.8rem}
+.fh-stage.live .fh-mcsay .fh-bubble p{min-height:4em}   /* a longer verse does not push the tờ dò down */
 .fh-ball.flip{background:radial-gradient(circle at 50% 50%,#f3fff0 0 46%,var(--fh-green) 47% 100%);color:#123d22}
 @media (prefers-reduced-motion:no-preference){
   html:not(.reduce-motion) .fh-mc-fan{animation:fh-fan 1.4s ease-in-out infinite}
