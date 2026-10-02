@@ -1,0 +1,68 @@
+/* 🛕 Vào chùa (public/js/v4/chua-visit.js): the walkable pagoda, a canvas scene with a panel for what happens
+   where the player stands. Theme tokens only; phone first. */
+.sheet.cv-sheet{width:min(1180px,calc(100vw - 48px));height:min(900px,calc(100dvh - 48px));overflow:hidden;padding:0}
+html[data-layout="phone"] .sheet.cv-sheet{width:100%;max-width:100%;height:calc(100dvh - max(10px,var(--safe-t,0px)));max-height:none}
+.cv-root{display:flex;flex-direction:column;height:100%;min-height:0}
+.cv-head{display:flex;align-items:center;gap:10px;padding:8px 8px 6px 14px;border-bottom:1px solid var(--line)}
+html[data-layout="phone"] .cv-head{padding-top:12px}
+.cv-head .grow{flex:1 1 auto;min-width:0}
+.cv-head h2{margin:0;font-size:1.08rem;line-height:1.2}
+.cv-logo{font-size:1.5rem;line-height:1}
+.cv-day{margin:2px 0 0;font-size:.82rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cv-areas{display:flex;gap:6px;padding:6px 10px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line);background:var(--surface)}
+.cv-chip{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 13px;border-radius:var(--radius-pill,999px);border:1px solid var(--line-strong);background:var(--surface-2);color:var(--ink);font:inherit;font-size:.9rem;white-space:nowrap;cursor:pointer}
+.cv-chip b{font-weight:700}
+.cv-chip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-text)}
+.cv-chip:focus-visible,.cv-spot:focus-visible,.cv-pick:focus-visible,.cv-mo:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+.cv-stage{position:relative;flex:1 1 auto;min-height:0;overflow:hidden;touch-action:manipulation;background:#efe4d2}
+html[data-theme="dem"] .cv-stage{background:#2a2621}
+.cv-canvas{position:absolute;inset:0;display:block;width:100%;height:100%;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;filter:var(--scene-filter,none)}
+.cv-canvas:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+
+.cv-here{display:flex;gap:6px;padding:7px 10px calc(7px + var(--safe-b,0px));overflow-x:auto;scrollbar-width:thin;border-top:1px solid var(--line);background:var(--surface)}
+.cv-spot{flex:none;display:inline-flex;align-items:center;gap:4px;min-height:38px;padding:0 12px;border-radius:var(--radius-pill,999px);border:1px solid var(--line);background:var(--surface-2);color:var(--ink-2);font:inherit;font-size:.86rem;font-weight:600;white-space:nowrap;cursor:pointer}
+.cv-spot.door{border-style:dashed}
+.cv-spot.done{color:var(--muted)}
+.cv-spot i{font-style:normal;color:var(--good)}
+
+/* the panel over the scene */
+.cv-panel{position:absolute;left:8px;right:8px;bottom:8px;z-index:2;max-height:calc(100% - 16px);overflow:auto;padding:10px 12px 12px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow,var(--shadow-sm))}
+@media (min-width:760px){.cv-panel{left:auto;width:min(470px,calc(100% - 16px))}}
+.cv-panel p{margin:6px 0;font-size:.93rem;line-height:1.45;color:var(--ink-2)}
+.cv-p-head{display:flex;align-items:center;gap:10px}
+.cv-p-head .grow{flex:1 1 auto;min-width:0}
+.cv-p-head b{display:block;font-size:1rem}
+.cv-p-head small{display:block;color:var(--good);font-weight:700;font-size:.8rem}
+.cv-p-emoji{font-size:1.6rem;line-height:1}
+.cv-p-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.cv-why{color:var(--warn)!important;font-weight:600}
+.cv-result{padding:8px 10px;border-radius:12px;background:var(--surface-2)}
+.cv-line{font-style:italic}
+.cv-wait{margin:0;color:var(--muted)}
+.cv-q{margin:10px 0 6px;font-size:.88rem;color:var(--ink)}
+.cv-q small{font-weight:600;color:var(--muted)}
+.cv-chips{display:flex;flex-wrap:wrap;gap:6px}
+.cv-pick{min-height:38px;padding:5px 11px;border-radius:12px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);font:inherit;font-size:.88rem;text-align:left;cursor:pointer}
+.cv-pick.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-text);font-weight:700}
+.cv-pick[disabled]{opacity:.5;cursor:not-allowed}
+.cv-prayer{margin-top:10px!important;padding:8px 10px;border-radius:12px;background:var(--surface-2);font-size:.95rem!important;color:var(--ink)!important}
+
+/* tụng kinh */
+.cv-chant{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:6px}
+.cv-lines{grid-column:1/-1;margin:0;padding:0;list-style:none;max-height:7.2em;overflow:auto;scrollbar-width:none}
+.cv-lines li{padding:3px 8px;border-radius:8px;font-size:.95rem;color:var(--muted);transition:background var(--dur,.2s),color var(--dur,.2s)}
+.cv-lines li.on{background:var(--accent-soft);color:var(--ink);font-weight:700}
+.cv-beats{display:flex;flex-wrap:wrap;gap:5px}
+.cv-beats i{width:12px;height:12px;border-radius:50%;background:var(--surface-3,var(--line));border:1px solid var(--line-strong)}
+.cv-beats i.hit{background:var(--good);border-color:var(--good)}
+.cv-beats i.miss{background:transparent;border-style:dashed}
+.cv-mo{position:relative;display:grid;place-items:center;width:96px;height:96px;border-radius:50%;border:2px solid #a5642f;background:#f6e3c6;color:#5a3216;font:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.cv-mo b{position:absolute;bottom:12px;font-size:.78rem}
+.cv-mo-face{display:block;margin-top:-14px}
+.cv-ring{position:absolute;inset:-4px;border-radius:50%;border:3px solid #d9a441;pointer-events:none;will-change:transform}
+.cv-mo.beat{background:#fbefd6;box-shadow:0 0 0 4px #d9a44166}
+.cv-mo.hit{background:#e3f1dc}
+.cv-count{grid-column:1/-1;margin:0!important;font-size:.85rem!important;color:var(--muted)!important}
+@media (prefers-reduced-motion:reduce){.cv-ring{display:none}.cv-lines li{transition:none}}
+html.reduce-motion .cv-ring{display:none}

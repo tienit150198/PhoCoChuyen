@@ -209,3 +209,13 @@ html[data-layout="phone"] .task-hud .note-card.nd-has-lunch:not(.calm-card)>.btn
 .cg-wish p{margin:0 0 6px}
 .cg-wishes{display:flex;flex-wrap:wrap;gap:6px}
 .cg-wishes .btn{min-height:40px;white-space:normal;text-align:left}
+/* 🛕 Vào chùa: the way into the walkable pagoda (v4/chua.js; the scene itself is css/chua.css) */
+.cg-enter{display:flex;align-items:center;gap:12px;width:100%;margin:0 0 10px;padding:12px 14px;border-radius:16px;border:1px solid var(--line-strong);background:linear-gradient(135deg,#fbefd6,#f3e3c1);color:#5a3f2c;font:inherit;text-align:left;cursor:pointer}
+html[data-theme="dem"] .cg-enter{background:var(--surface-2);color:var(--ink)}
+.cg-enter:hover{border-color:var(--accent)}
+.cg-enter:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.cg-enter .grow{flex:1 1 auto}
+.cg-enter b{display:block;font-size:1.02rem}
+.cg-enter small{display:block;font-size:.82rem;opacity:.85}
+.cg-enter-ico{font-size:2rem;line-height:1}
+.cg-quick>summary{cursor:pointer;margin:4px 0 8px;font-size:.88rem;color:var(--muted);font-weight:600}
