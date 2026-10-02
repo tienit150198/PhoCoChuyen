@@ -48,6 +48,7 @@ from . import patience as pt
 from . import system_gift as sg
 from . import live_effects as lfx
 from . import fair as fh  # 🏮 Hội chợ dân gian
+from . import x3_week as x3w  # 🔥 Nghề x3 trong tuần
 from . import needs as nd  # 🍚 No bụng, 😴 Tỉnh táo
 from . import chua as cg  # 🛕 Đi chùa
 
@@ -1163,6 +1164,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     v["closeness"]=qn.public(s,focus)
     v["abandon"]=ab.public(s)
     v["fair"]=fh.public(s)  # 🏮 Hội chợ dân gian (game/fair.py)
+    v["x3"]=x3w.public()  # 🔥 Nghề x3 trong tuần (game/x3_week.py)
     v['accounting_school']=accounting_school_.summary(s)  # small: the school's own view rides on as_* results
     for cid,c in v["careers"].items():
         if c.get("summary"):continue

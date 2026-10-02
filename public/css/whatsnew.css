@@ -54,3 +54,15 @@
 @keyframes wn-in{from{opacity:0;transform:translateY(8px) scale(.97)}}
 @media (prefers-reduced-motion:reduce){.wn-dialog[open]{animation:none}}
 .reduce-motion .wn-dialog[open]{animation:none}
+
+/* 🔥 Nghề x3 trong tuần (v4/x3week.js): the week's list in the same card */
+.x3-how{margin:2px 0 12px;color:var(--ink-2)}
+.x3-week{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.x3-week li{display:grid;gap:6px;padding:9px 11px;border-radius:12px;border:1px solid var(--line)}
+.x3-week li b small{font-weight:400;color:var(--ink-2)}
+.x3-week li em{font-style:normal;font-size:.75rem;font-weight:700;color:#c2410c}
+.x3-week li.on{border:2px solid #f08c00;background:color-mix(in srgb,#ffa94d 16%,var(--surface))}
+.x3-week li.past{opacity:.55}
+.x3-jobs{display:flex;flex-wrap:wrap;gap:5px}
+.x3-job{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;font-size:.82rem;background:color-mix(in srgb,var(--line) 45%,transparent)}
+.x3-job.lk{opacity:.6}

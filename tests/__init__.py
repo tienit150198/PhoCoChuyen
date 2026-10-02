@@ -4,3 +4,6 @@
 import os
 
 os.environ.setdefault("DB_POOL", "0")
+# 🔥 Nghề x3 (game/x3_week.py) follows the real calendar: off, so a test's wallet does not depend on the day it runs
+# (tests/test_x3_week.py turns it on where it checks it).
+os.environ.setdefault("MNL_X3_OFF", "1")

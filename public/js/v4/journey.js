@@ -132,6 +132,7 @@ function placeCard(env,cid){
   if(job.status==='offer')tags.push(tag('💌 Có thư mời','blue'));
   else if(job.required&&job.status!=='hired')tags.push(tag(icon('briefcase',12)+' Cần xin việc','amber'));
   if(!c.started&&J.story&&(api.content.journey.unlock_chapter||{})[cid]===J.chapter)tags.push(tag('Mới mở','green'));
+  if(api.state.x3?.today?.includes(cid))tags.push(tag(`🔥 Lời x${api.state.x3.x} hôm nay`,'amber'));   // game/x3_week.py
   let money='';
   if(p&&J.story)money=p.employed?`<p class="jr-fund">Làm thuê · lương về ví${abandonTrust(api,cid)}</p>`:`<p class="jr-fund">Quỹ ${fmt(p.fund)} xu · ${p.paused?'không tốn phí duy trì':`duy trì ${fmt(p.upkeep)} xu/ngày`}</p>`;
   const action=p?.paused?btn('Mở lại','jrReopen',{career:cid},'cream small'):
@@ -144,6 +145,13 @@ function lockedTile(env,cid){
   const {api}=env,J=api.state.journey,m=meta(api,cid),n=(api.content.journey.unlock_chapter||{})[cid];
   const hint=n===J.chapter+1?'Sắp mở':'Còn ở phía trước';
   return `<article class="jr-locked" aria-label="Nơi làm việc chưa mở"><span class="jr-place-emoji silhouette" aria-hidden="true">${emojiOf(m)}</span><b>🔒 Chưa mở</b><small>${esc(CATS[catOf(m)]||'')}<br>${hint}</small></article>`;
+}
+
+/** 🔥 Today's x3 careers (game/x3_week.py); the week's list opens from here (v4/x3week.js). */
+function x3Banner(env){
+  const x=env.api.state.x3;if(!x?.today?.length)return '';
+  const names=x.today.map(id=>{const m=meta(env.api,id);return `${emojiOf(m)} ${m.short||id}`;}).join(' · ');
+  return `<button type="button" class="jr-x3" data-action="x3Week"><span class="jr-x3-ico" aria-hidden="true">🔥</span><span class="grow"><b>Hôm nay lời x${x.x}</b><small>${esc(names)}</small><em>Xem nghề x${x.x} cả tuần ›</em></span></button>`;
 }
 
 function placesSection(env){
@@ -167,7 +175,7 @@ function placesSection(env){
   // The next chapter's places show as silhouettes; the rest stay one quiet tile.
   const soon=locked.filter(id=>order(id)===J.chapter+1),later=locked.length-soon.length;
   const rest=later?`<article class="jr-locked more" aria-label="Những nơi còn ở phía trước"><span class="jr-place-emoji silhouette" aria-hidden="true">🏙️</span><b>+${later} nơi nữa</b><small>Còn ở phía trước</small></article>`:'';
-  return `<section class="jr-places" aria-label="Nơi làm việc"><div class="jr-sec-head"><h2>Nơi làm việc</h2><small>${open.length}/${all.length} nơi đã mở</small></div>${chips}
+  return `<section class="jr-places" aria-label="Nơi làm việc"><div class="jr-sec-head"><h2>Nơi làm việc</h2><small>${open.length}/${all.length} nơi đã mở</small></div>${x3Banner(env)}${chips}
     <div class="jr-grid">${shown.map(id=>placeCard(env,id)).join('')}</div>
     ${locked.length?`<h3 class="jr-sub">Còn ở phía trước</h3><div class="jr-locked-grid">${soon.map(id=>lockedTile(env,id)).join('')}${rest}</div>`:''}</section>`;
 }

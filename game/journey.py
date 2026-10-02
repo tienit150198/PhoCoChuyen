@@ -39,6 +39,7 @@ from . import fair as fh   # 🏮 Hội chợ dân gian (game/fair.py)
 from . import needs as nd   # 🍚 No bụng, 😴 Tỉnh táo (game/needs.py)
 from . import chua as cg    # 🛕 Đi chùa (game/chua.py)
 from . import relax as rx   # 🏊 Thư giãn ở nhà: hồ bơi, bồn tắm (game/relax.py)
+from . import x3_week as x3   # 🔥 Nghề x3 trong tuần (game/x3_week.py)
 from . import whats_new as wn   # "Có gì mới": read already for a brand-new save (_welcome_settings)
 
 VERSION = 1
@@ -550,6 +551,12 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
         _wallet(j, pay, 'salary', f'Lương ngày {c["day"] - 1} · {_place(career)}', career)
         j['stats']['salary'] += pay
         notes.append(f'Lương {pay} xu đã về ví của bạn.')
+    # 🔥 This career's x3 day (game/x3_week.py): the day's net once more, twice, into the wallet.
+    if x3.on(career):
+        extra = x3.bonus(int((result.get('summary') or {}).get('net') or 0))
+        if extra > 0:
+            _wallet(j, extra, 'salary', f'🔥 Thưởng ngày x{x3.X} · {_place(career)}', career)
+            notes.append(f'🔥 Hôm nay {_place(career)} lời x{x3.X}: thưởng thêm {extra} xu vào ví.')
     # Rent and meals for the day that just ended.
     cost = living_cost(j)
     _wallet(j, -cost['total'], 'living', cost['label'])

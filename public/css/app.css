@@ -2649,3 +2649,8 @@ html[data-layout="phone"] .scene-areas{left:10px}
 html[data-layout="phone"] .sa-chip{min-height:32px;min-width:32px;padding:0 6px;font-size:.8rem}
 @media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) body:not(.reduce-motion) .sa-dot{animation:sa-pulse 1.6s ease-in-out infinite}}
 @keyframes sa-pulse{50%{transform:scale(1.35)}}
+/* 🔥 Nghề x3 hôm nay on the Nơi làm việc list (v4/journey.js x3Banner) */
+.jr-x3{display:flex;align-items:center;gap:10px;width:100%;margin:0 0 10px;padding:10px 12px;border-radius:14px;border:2px solid color-mix(in srgb,#f08c00 60%,var(--line));background:color-mix(in srgb,#ffa94d 16%,var(--surface));color:inherit;font:inherit;text-align:left;cursor:pointer}
+.jr-x3 small{display:block;color:var(--ink-2)}
+.jr-x3 em{display:block;margin-top:2px;font-style:normal;font-size:.8rem;font-weight:600;color:#c2410c}
+.jr-x3-ico{font-size:1.7rem;line-height:1}
