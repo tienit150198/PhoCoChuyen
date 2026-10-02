@@ -1,11 +1,12 @@
 /** 🔥 Nghề x3 trong tuần (game/x3_week.py → state.x3 {x, week, days, day, today}): every career has one day a week
  * when closing its shift pays the day's net X times. A centred card with the week's list opens by itself once a
- * week (after "Có gì mới" and the tutorial), and any time from the banner on the Nơi làm việc list
+ * week at a break point (v4/popup-gate.js: after a gift and "Có gì mới", never over the day summary, the work
+ * screen or another card; over a calm sheet such as the journey home it may), and any time from the banner on the Nơi làm việc list
  * (data-action="x3Week"). What week was shown is kept in localStorage (a lost key only shows the card again).
  * It borrows the "Có gì mới" card's look (css/whatsnew.css). app.js loads this module lazily (x3Boot). */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {emojiOf} from './journey.js';
-import {blocker} from './whatsnew.js';
+import {quiet,turn,want} from './popup-gate.js';
 import {firstDay} from './onboard.js';
 
 const KEY='mnl.x3.week',DOW=['Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy','Chủ nhật'];
@@ -64,10 +65,11 @@ function due(){
   return !!(x?.week&&J?.story&&J.intro&&!firstDay(s)&&seen()!==x.week&&seen()!=='blocked');
 }
 function check(){
-  if(!due()){calm=0;return;}
-  if(blocker()||document.querySelector('dialog[open]:not(#sheet)')){calm=0;return;}   // after "Có gì mới", a gift, the fair, the tour (the sheet: over it)
-  if(++calm<3)return;
-  calm=0;openX3(E,{byItself:true});
+  if(!due()){calm=0;want('x3',false);return;}
+  want('x3');
+  if(!quiet(dlg)||!turn('x3')){calm=0;return;}   // a gift or "Có gì mới" first; never over the summary, the work or another card
+  if(++calm<2)return;
+  calm=0;want('x3',false);openX3(E,{byItself:true});
 }
 /** Called once by app.js after the game is on screen. */
 export function x3Boot(env){

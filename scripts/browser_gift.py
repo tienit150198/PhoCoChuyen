@@ -87,6 +87,7 @@ def seed(db: str, token: str, name: str, theme: str = 'kem', lang: str = 'vi') -
     def fn(s):
         s['name'] = name
         s['journey'].update(gender='female', intro=True)
+        s['journey']['life_day'] = max(2, int(s['journey'].get('life_day') or 1))   # past the first day (its first 3 customers keep cards away)
         s['settings'].update(tutorialDone=True, uiTheme=theme, lang=lang)
     mr._mutate_retry(store, {store.key(token): fn}, tries=20)
     store.close_pool()

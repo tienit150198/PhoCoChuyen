@@ -7,6 +7,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {avatar,emojiOf} from './journey.js';
 import {lookOf} from './look.js';
 import {firstDay} from './onboard.js';
+import {quiet,turn,want,whenQuiet} from './popup-gate.js';
 
 let E=null;
 let cur=null;              // {id, shown, answered:{reply,note,label}|null, keepsake}
@@ -82,18 +83,22 @@ function close(){
 }
 function dismiss(){if(cur&&!cur.answered)snoozed.add(cur.id);close();}
 
-/** Called by the journey after its own scenes: show the next due beat, if any. */
+/** Called by the journey after its own scenes: show the next due beat, if any, at a break point
+ * (v4/popup-gate.js): never over the day summary, the evening, the work screen or another card, and after
+ * a gift, "Có gì mới" and the x3 card. Not quiet yet: it asks again when the sheet closes. */
 export function maybeStory(){
   const st=stories();if(!st||!E)return;
   const J=E.api.state.journey;
   if(J?.story&&!J.intro)return;                     // the first-run intro comes first
   if(firstDay(E.api.state))return;                  // a brand-new player's first day stays on the work: stories from day 2
-  if(document.getElementById('stScene')?.open||document.getElementById('jrScene')?.open)return;
+  if(document.getElementById('stScene')?.open)return;
   if(J?.news?.length)return;                        // a chapter or title scene is about to open
-  if(document.getElementById('confirmDialog')?.open){setTimeout(maybeStory,400);return;}
   // Only the workplace you are at tells its story; the others wait on the journey home.
   const here=st.due.find(d=>d.career===E.api.state.current&&!snoozed.has(d.id));
-  if(here)open(here.id);
+  if(!here){want('story',false);return;}
+  want('story');
+  if(!quiet(document.getElementById('stScene'))||!turn('story')){whenQuiet(maybeStory);return;}
+  want('story',false);open(here.id);
 }
 
 export function storiesBoot(env){E=env;dialog();}

@@ -8,10 +8,12 @@
  *   a tap in the first moment after it pops up is ignored, reduced motion is respected. Esc counts as
  *   the button (the coins are in the wallet either way).
  * - It waits for the game to be on screen, naming the character, a new player's first 3 customers,
- *   the tutorial and an open "Có gì mới" card.
+ *   the tutorial, and a break point (v4/popup-gate.js): no other card or question open, not over the
+ *   day summary or a customer at work. It comes first of the cards that open by themselves.
  * app.js imports this module only when the bootstrap carried a gift. */
 import {escapeHTML as esc} from '../icons.js';
 import {quiet} from './onboard.js';
+import {why,want} from './popup-gate.js';
 
 let E=null,queue=[],dlg=null,timer=0,calm=0,openedAt=0,back=null,cssReady=null;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -28,7 +30,7 @@ export function blocker(env=E,doc=document){
     if(String(d.id||'').startsWith('tut'))return 'tour';
     if(d.id==='wnDialog')return 'whatsnew';
   }
-  return '';
+  return why(dlg,{strict:false},doc);
 }
 
 function html(g){
@@ -76,13 +78,13 @@ function accept(){
   queue.shift();
   if(api)api.gifts=queue.slice();
   if(queue.length){show();return;}
-  dlg.close();
+  want('gift',false);dlg.close();
   if(back?.isConnected&&typeof back.focus==='function')back.focus({preventScroll:true});
   back=null;
 }
 
 function check(){
-  if(!queue.length){stop();return;}
+  if(!queue.length){stop();want('gift',false);return;}
   // Two calm checks in a row (about a second): never in the gap between two sheets.
   if(blocker()){calm=0;return;}
   if(++calm<2)return;
@@ -104,6 +106,6 @@ export function giftBoot(env){
     E=env;
     queue=(env?.api?.gifts||[]).filter(g=>g&&typeof g.id==='string'&&Number(g.coins)>0);
     if(!queue.length)return;
-    loadCss();calm=0;stop();timer=setInterval(check,700);
+    want('gift');loadCss();calm=0;stop();timer=setInterval(check,700);
   }catch(error){console.error('gift:',error);}   // never in the way of the game
 }

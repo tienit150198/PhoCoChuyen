@@ -5,8 +5,9 @@
  * - What the player has read is settings.whatsNewSeen in the save, so it
  *   follows the account across devices. localStorage only stands in while the
  *   save has no such key (an older server).
- * - A notice for returning players: it opens over any screen and only waits for
- *   the tutorial tour. A brand-new player never gets it: naming the character marks
+ * - A notice for returning players: it waits for a break point (v4/popup-gate.js): never over the
+ *   day summary, a customer on the work screen, the tutorial or another card, and after a
+ *   🎁 gift card. A brand-new player never gets it: naming the character marks
  *   the current notes as read on the server (journey._welcome_settings), and a save
  *   still in its first life day is marked here, silently (older saves named before that).
  * - Modal dialog: focus stays inside, Esc closes, a backdrop tap does nothing
@@ -18,6 +19,7 @@ import NOTES from './whatsnew-data.js';
 import {language} from './i18n.js';
 import {icon,escapeHTML as esc} from '../icons.js';
 import {firstDay} from './onboard.js';
+import {why,turn,want} from './popup-gate.js';
 
 const KEY='mnl.wn.seen';
 const VERSION=/^\d{1,3}(\.\d{1,3}){1,2}$/;
@@ -46,9 +48,10 @@ export const due=state=>!!LATEST&&compare(LATEST,seenVersion(state))>0;
 let E=null,timer=0,calmTicks=0,dlg=null,auto=false,openedAt=0,back=null,older=false,done=false,sent='',cssReady=null;
 const reduced=()=>document.documentElement.classList.contains('reduce-motion')||document.body.classList.contains('reduce-motion')||matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/** Why the card has to wait right now ('' = it may open). A server-wide notice: it opens over
- * any screen (work, a decision, the first day) and waits only for loading, a hidden tab,
- * naming the character and the tutorial (the tour or its welcome card). */
+/** Why the card has to wait right now ('' = it may open): loading, a hidden tab, naming the
+ * character, the tutorial (the tour or its welcome card), then the shared popup rule
+ * (v4/popup-gate.js: another card or question, the day summary, the evening, a customer at work,
+ * the phone menu, a gift card still to come). The first day is fine. */
 export function blocker(env=E,doc=document){
   const s=env?.api?.state;if(!s)return 'loading';
   const J=s.journey;
@@ -58,7 +61,7 @@ export function blocker(env=E,doc=document){
   for(const d of doc.querySelectorAll('dialog[open]')){
     if(d!==dlg&&String(d.id||'').startsWith('tut'))return 'tour';   // the tutorial's welcome card
   }
-  return '';
+  return why(dlg,{strict:false},doc)||(turn('whatsnew')?'':'turn');
 }
 
 /* ------------------------------------------------------------ markup */
@@ -161,7 +164,7 @@ function close(restore=true){
 }
 /** Remember the latest release as read: in the save (follows the account), and locally as a stand-in. */
 function markSeen(){
-  done=true;stopWatch();
+  done=true;stopWatch();want('whatsnew',false);
   const st=E?.api?.state;if(!LATEST||!st)return;
   store.set(LATEST);
   if(sent===LATEST||compare(LATEST,st.settings?.whatsNewSeen||'')<=0)return;
@@ -178,7 +181,7 @@ function newcomer(){
 
 /* ------------------------------------------------------------ watching */
 function check(){
-  if(done||!due(E?.api?.state)){stopWatch();return;}
+  if(done||!due(E?.api?.state)){stopWatch();want('whatsnew',false);return;}
   // Two calm checks in a row (about a second): never in the gap between two sheets.
   if(blocker()){calmTicks=0;return;}
   if(++calmTicks<2)return;
@@ -205,7 +208,7 @@ export function whatsNewBoot(env){
       e.preventDefault();e.stopImmediatePropagation();   // handled here, not by app.js
       openWhatsNew(E);
     },true);
-    if(due(env.api?.state)){stopWatch();calmTicks=0;timer=setInterval(check,700);}
+    if(due(env.api?.state)){stopWatch();calmTicks=0;want('whatsnew');timer=setInterval(check,700);}
     env.api?.addEventListener?.('state',newcomer);newcomer();
   }catch(error){console.error('whatsnew:',error);}   // never in the way of the game
 }

@@ -3,6 +3,7 @@
 import assert from 'node:assert/strict';
 import NOTES from '../public/js/v4/whatsnew-data.js';
 import {compare,due,seenVersion,blocker,LATEST} from '../public/js/v4/whatsnew.js';
+import {want} from '../public/js/v4/popup-gate.js';
 
 assert.equal(LATEST,NOTES[0].version);
 assert.ok(compare('0.9.1','0.9.0')>0);
@@ -21,19 +22,32 @@ assert.equal(seenVersion(st('0.5.0')),'0.5.0');
 assert.equal(seenVersion(st(undefined)),'','no key in the save and no storage: nothing read');
 
 // What keeps it waiting.
-function doc({hidden=false,tour=false,decision=false,menu=false,dialogs=[]}={}){
+// `sheet`: the open sheet's classes and what it holds ('cozy-job', 'cozy-summary', '.done-body'…).
+function doc({hidden=false,tour=false,decision=false,menu=false,dialogs=[],sheet=null}={}){
+  const sh=sheet&&{id:'sheet',open:true,classList:{contains:c=>sheet.includes(c)},querySelector:q=>sheet.includes(q)?{}:null};
+  if(sh)dialogs=[sh,...dialogs];
   return {hidden,
-    getElementById:id=>id==='tutLayer'&&tour?{isConnected:true}:null,
+    getElementById:id=>id==='tutLayer'&&tour?{isConnected:true}:id==='sheet'?sh:null,
     querySelectorAll:sel=>sel==='dialog[open]'?dialogs:sel==='.hap-choices'&&decision?[{offsetParent:{}},{offsetParent:null}]:[],
     documentElement:{classList:{contains:c=>c==='menu-open'&&menu}}};
 }
 const env=(state,view=null,paused=false)=>({api:{state},ui:{view,paused}});
 const back=st('');
 assert.equal(blocker(env(back),doc()),'','a returning player');
-assert.equal(blocker(env(back,'job'),doc({dialogs:[{id:'sheet'}]})),'','over a work screen too (server-wide notice)');
-assert.equal(blocker(env(back),doc({dialogs:[{id:'confirmDialog'}]})),'','over a question too');
-assert.equal(blocker(env(back),doc({decision:true})),'','over a live decision too');
-assert.equal(blocker(env(back),doc({menu:true})),'');
+// One popup at a time (v4/popup-gate.js): never over the summary, a customer, the evening or another card.
+assert.equal(blocker(env(back,'home'),doc({sheet:['home']})),'','over a calm sheet (the journey home)');
+assert.equal(blocker(env(back,'job'),doc({sheet:['cozy-job']})),'work','not over a customer at work');
+assert.equal(blocker(env(back,'job'),doc({sheet:['cozy-job','.done-body']})),'','over the task-done card it may');
+assert.equal(blocker(env(back,'summary'),doc({sheet:['cozy-summary','.summary-v6']})),'summary','not over the day summary');
+assert.equal(blocker(env(back,'evening'),doc({sheet:['nd-sheet']})),'evening');
+assert.equal(blocker(env(back),doc({dialogs:[{id:'confirmDialog'}]})),'confirmDialog','not over a question');
+assert.equal(blocker(env(back),doc({dialogs:[{id:'stScene'}]})),'stScene','not over another card');
+assert.equal(blocker(env(back),doc({decision:true})),'','over a live decision in the scene it may');
+assert.equal(blocker(env(back),doc({menu:true})),'menu');
+want('gift');
+assert.equal(blocker(env(back),doc()),'turn','a gift card comes first');
+want('gift',false);
+assert.equal(blocker(env(back),doc()),'');
 assert.equal(blocker(env(back),doc({dialogs:[{id:'tutWelcome'}]})),'tour','never over the tutorial welcome card');
 assert.equal(blocker(env(back),doc({tour:true})),'tour','never over the tour');
 assert.equal(blocker(env(back),doc({hidden:true})),'hidden');
