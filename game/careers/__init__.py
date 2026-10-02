@@ -17,6 +17,7 @@ ORDER = (
     'fruit', 'garbage', 'drain',   # street trades: fruit stall, rubbish round, drain cleaning
     'homemaker',                   # nội trợ: a home helper in a three-generation family
     'ice_cream',                   # bán kem: cô Hiền's ice-cream corner by the school gate
+    'nail',                        # tiệm nail: chị Diệp's little nail shop on the street
     'pilot', 'flight_attendant',
     'hr_admin', 'secretary', 'it_helpdesk',   # Công ty CP Cánh Diều: HR, the director's secretary, IT helpdesk
 )
