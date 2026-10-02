@@ -31,7 +31,7 @@ from __future__ import annotations
 import copy
 import random
 
-from .life_content import (ASK, CATS, COMFORT, COPE, COPE_INDEX, DORM, FACTS, FRIENDS, GIFTS, GOSSIPS, HARD, IMPULSE,
+from .life_content import (ASK, CALLING, CATS, COMFORT, COPE, COPE_INDEX, DORM, FACTS, FRIENDS, GIFTS, GOSSIPS, HARD, IMPULSE,
                            JOYS, ROOMMATES, SICK, TOKENS, WORK)
 from . import archive as ar
 
@@ -381,6 +381,8 @@ def _why(s: dict, c: dict) -> str | None:
 def _pick_comfort(s: dict, L: dict, cats: tuple, day: int, career: str | None, rng: random.Random,
                   advice: bool = False) -> str | None:
     pool = [k for k in COMFORT if set(k['cats']) & set(cats)]
+    if career in CALLING:      # the abbot does not take anyone out to karaoke
+        pool = [k for k in pool if k['who'] != 'work']
     if advice:
         pool = [k for k in pool if k['advice']] or pool
     fresh = [k for k in pool if day - L['recent'].get(k['id'], -99) >= COMFORT_RECENT]

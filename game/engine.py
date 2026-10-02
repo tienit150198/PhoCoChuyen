@@ -49,6 +49,7 @@ from . import system_gift as sg
 from . import live_effects as lfx
 from . import fair as fh  # 🏮 Hội chợ dân gian
 from . import needs as nd  # 🍚 No bụng, 😴 Tỉnh táo
+from . import chua as cg  # 🛕 Đi chùa
 
 ORIGINAL=("mother_baby","pharmacy","accounting","customer_care")
 UI_THEMES=("kem","tra_xanh","dem","bien","keo")
@@ -1149,6 +1150,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     v["board"]=bd.summary(s)
     v["life"]=doi.public(s)
     v["needs"]=nd.public(s,focus)  # 🍚😴 (game/needs.py)
+    v["chua"]=cg.public(s)  # 🛕 Đi chùa (game/chua.py)
     v["stories"]=cst.public(s)
     v["closeness"]=qn.public(s,focus)
     v["abandon"]=ab.public(s)

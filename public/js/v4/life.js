@@ -10,6 +10,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {quiet} from './onboard.js';
 import {portrait} from './look.js';
 import {needBars,snackStrip} from './needs.js';   // 🍚 No bụng · 😴 Tỉnh táo next to tinh thần
+import {chuaSection} from './chua.js';             // 🛕 Đi chùa (optional: an older server sends no state.chua)
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
@@ -176,6 +177,7 @@ export function lifeView(env){
     <section class="jr-card lf-home">${meter(L)}${needBars((env||E)?.api.state?.needs,{wide:true})}<div class="lf-warm"><span aria-hidden="true">🏮</span><span class="grow">Tình làng nghĩa xóm</span><b>${L.warmth} · ${esc(L.warmth_name)}</b></div>${wait}</section>
     ${snackStrip((env||E)?.api.state?.needs,{head:'Ăn thêm, trả bằng ví'})}
     <h3 class="jr-sub">Xả stress ${L.cope_used?'<small>· hôm nay xả rồi</small>':'<small>· mỗi ngày một lần</small>'}</h3><div class="lf-choices grid">${cope}</div>
+    ${chuaSection((env||E)?.api.state?.chua)}
     <h3 class="jr-sub">Hàng xóm</h3><ul class="lf-bonds">${bonds}</ul>
     <h3 class="jr-sub">Nhật ký đời thường</h3><ul class="lf-log">${log}</ul></div>`;
 }
@@ -205,6 +207,7 @@ export async function lifeAction(action,data,el,env){
     case'lfChoose':{await cmd('lf_choose',{id:data.id,choice:data.choice},{quiet:true});render();return true;}
     case'lfClose':{const r=await cmd('lf_close',{id:data.id},{quiet:true});if(r){const d=document.getElementById('lfScene');if(d?.open)d.close();}return true;}
     case'lfCope':{const r=await cmd('lf_cope',{choice:data.choice});if(r)env.renderSheet?.(false);return true;}
+    case'lfChua':{const r=await cmd('jr_chua_do',data.wish?{act:data.act,wish:data.wish}:{act:data.act});if(r)env.renderSheet?.(false);return true;}
   }
   return false;
 }

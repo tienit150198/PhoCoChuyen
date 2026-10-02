@@ -1,0 +1,61 @@
+/* Chùa Gió Lành — scoped styles (.career-job.pg), over the street kit (street_kit.css).
+   Its own look: temple saffron and old-paper cream, the rules board with a lacquer-red margin, steps as
+   beads on a string, the donation bills laid out on the table to be counted. */
+.career-job.pg{--sk-accent:#b0613a;--sk-accent-2:#e2a35f;--pg-paper:#fff6e6;--pg-margin:#d9534f;--pg-ink-soft:#8a5a3c}
+
+/* ---------- the job tag and the progress beads */
+.career-job.pg .pg-kind{background:color-mix(in srgb,var(--sk-accent) 14%,var(--sk-surface));color:var(--sk-ink);border-radius:99px;padding:2px 8px;font-size:12px;white-space:nowrap}
+.career-job.pg .pg-progress{list-style:none;display:flex;gap:4px;margin:10px 0 0;padding:0;overflow-x:auto;scrollbar-width:none}
+.career-job.pg .pg-progress::-webkit-scrollbar{display:none}
+.career-job.pg .pg-progress li{flex:1 1 0;min-width:44px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 2px;border-radius:10px;
+  background:var(--sk-surface-2);border:1px solid var(--sk-line);color:var(--sk-muted)}
+.career-job.pg .pg-progress li>span{font-size:16px;line-height:1.2}
+.career-job.pg .pg-progress li small{font-size:11px;line-height:1.2;text-align:center;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.career-job.pg .pg-progress li.now{border-color:var(--sk-accent);box-shadow:inset 0 0 0 1px var(--sk-accent);color:var(--sk-ink);background:var(--sk-surface)}
+.career-job.pg .pg-progress li.done{color:var(--sk-good)}
+.career-job.pg .pg-progress li.skip{opacity:.55}
+
+/* ---------- the step card */
+.career-job.pg .pg-step{margin-top:10px}
+.career-job.pg .pg-step h4{font-size:17px}
+.career-job.pg .pg-lead{margin:-4px 0 8px}
+.career-job.pg .pg-text{margin:0 0 10px;line-height:1.45}
+.career-job.pg .pg-picks{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+.career-job.pg .pg-picks .sk-tile{min-height:96px;justify-content:flex-start;padding-top:10px}
+.career-job.pg .pg-sorts{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.career-job.pg .pg-sort{padding:8px;border-radius:var(--sk-rs);border:1px solid var(--sk-line);background:var(--sk-surface)}
+.career-job.pg .pg-sort.set{border-color:color-mix(in srgb,var(--sk-accent) 45%,var(--sk-line))}
+.career-job.pg .pg-item{display:flex;gap:8px;align-items:flex-start}
+.career-job.pg .pg-item>span{font-size:24px;line-height:1}
+.career-job.pg .pg-item small{display:block;color:var(--sk-muted);font-size:12px}
+.career-job.pg .pg-bins{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.career-job.pg .pg-bin{min-height:40px;flex:1 1 40%;justify-content:flex-start;text-align:left;white-space:normal;line-height:1.2;font-size:13px}
+.career-job.pg .pg-bin.on{border-color:var(--sk-accent);background:color-mix(in srgb,var(--sk-accent) 16%,var(--sk-surface));font-weight:700}
+.career-job.pg .pg-seq{list-style:none;margin:0 0 10px;padding:0;display:grid;gap:6px}
+.career-job.pg .pg-seq li{display:flex;align-items:center;gap:8px;min-height:44px;padding:4px 8px;border-radius:var(--sk-rs);background:var(--pg-paper);color:#3b2a1d;border:1px solid var(--sk-line)}
+.career-job.pg .pg-seq li>b{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--sk-accent);color:#fff;font-size:13px;flex:none}
+.career-job.pg .pg-seq .grow{flex:1;min-width:0}
+.career-job.pg .pg-undo{min-width:44px;min-height:40px}
+
+/* ---------- the donation count */
+.career-job.pg .pg-tally p{margin:0 0 6px}
+.career-job.pg .pg-bills{list-style:none;margin:0 0 10px;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.career-job.pg .pg-bill{display:flex;align-items:baseline;gap:2px;min-width:52px;justify-content:center;padding:6px 8px;border-radius:6px;
+  background:var(--pg-paper);color:#3b2a1d;border:1px solid color-mix(in srgb,var(--sk-accent-2) 60%,var(--sk-line));font-variant-numeric:tabular-nums}
+.career-job.pg .pg-bill b{font-size:17px}
+.career-job.pg .pg-bill small{font-size:11px;color:#6b5442}
+
+/* ---------- the rules board, the job's lines */
+.career-job.pg .pg-notebook{margin-top:10px}
+.career-job.pg .pg-notes{list-style:none;margin:0;padding:10px;display:grid;gap:8px;background:var(--pg-paper);border-left:4px solid var(--pg-margin);border-radius:var(--sk-rs)}
+.career-job.pg .pg-notes li{display:flex;gap:8px;align-items:flex-start;color:#3b2a1d}
+.career-job.pg .pg-notes li>span{font-size:20px;flex:none}
+.career-job.pg .pg-notes small{display:block;font-size:13px;line-height:1.4;color:#5b4636}
+.career-job.pg .pg-lines{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:4px;font-size:14px;line-height:1.4}
+.career-job.pg .pg-lines li{padding:6px 8px;border-radius:8px;background:var(--sk-surface-2)}
+.career-job.pg .pg-lines-pane{margin-top:10px}
+.career-job.pg .pg-note{margin:10px 2px 0}
+
+@media (max-width:420px){
+  .career-job.pg .pg-picks{grid-template-columns:repeat(2,minmax(0,1fr))}
+}

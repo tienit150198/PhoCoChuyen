@@ -322,7 +322,7 @@ DOMAIN = {'milk_tea': 'drink', 'cafe_bakery': 'drink', 'restaurant': 'food', 'mo
           'accounting': 'office', 'corp_accounting': 'office', 'tax_payroll': 'office', 'group_accounting': 'office', 'customer_care': 'office',
           'tour_guide': 'stay', 'homestay': 'stay', 'florist': 'flower', 'repair': 'repair', 'farm': 'farm', 'delivery': 'delivery',
           'pet_care': 'pet', 'salon': 'salon', 'clothing': 'shop', 'tra_da': 'drink', 'pet_shop': 'pet',
-          'fruit': 'shop', 'garbage': 'delivery', 'drain': 'repair', 'homemaker': 'stay', 'ice_cream': 'food', 'nail': 'salon',
+          'fruit': 'shop', 'garbage': 'delivery', 'drain': 'repair', 'homemaker': 'stay', 'ice_cream': 'food', 'nail': 'salon', 'pagoda': 'stay',
           'hr_admin': 'office', 'secretary': 'office', 'it_helpdesk': 'office'}
 # How twist reviewers answer a polite reply.
 TWIST_REPLY = {
