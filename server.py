@@ -1132,7 +1132,7 @@ class Handler(BaseHTTPRequestHandler):
             return dict(state=public_state(state),revision=revision,result=dict(message=""),mode="none")
         proposal=None
         if state["settings"].get("aiConsent") and ai.available() and self.ai_budget(token):
-            proposal=ai.feedback_decision(c,post,state["settings"].get("lang","vi"))
+            proposal=ai.feedback_decision(c,post,state["settings"].get("lang","vi"),career)
         payload=dict(post=post["id"],**(proposal or dict(mode="scripted")))
         rid="srv-fb-"+hashlib.sha256(f'{career}|{post["id"]}'.encode()).hexdigest()[:24]+f'-{post["feedback"]["rounds"]}'
         out=self._internal(token,rid,career,"fb_resolve",payload,(state,revision))
@@ -1144,7 +1144,7 @@ class Handler(BaseHTTPRequestHandler):
         if not post or fb.get("voice")!="scripted" or fb.get("thread") or not state["settings"].get("aiConsent") or not ai.available():
             return dict(mode="none")
         if not self.ai_budget(token):return dict(mode="none",reason="rate_limit")
-        text=ai.review_voice(c,post,state["settings"].get("lang","vi"))
+        text=ai.review_voice(c,post,state["settings"].get("lang","vi"),career)
         if not text:return dict(mode="none",reason="unavailable")
         rid="srv-rv-"+hashlib.sha256(f'{career}|{post["id"]}'.encode()).hexdigest()[:24]
         return dict(self._internal(token,rid,career,"fb_voice",dict(post=post["id"],text=text),(state,revision)),mode="ai")

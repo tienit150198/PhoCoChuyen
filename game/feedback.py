@@ -322,7 +322,7 @@ DOMAIN = {'milk_tea': 'drink', 'cafe_bakery': 'drink', 'restaurant': 'food', 'mo
           'accounting': 'office', 'corp_accounting': 'office', 'tax_payroll': 'office', 'group_accounting': 'office', 'customer_care': 'office',
           'tour_guide': 'stay', 'homestay': 'stay', 'florist': 'flower', 'repair': 'repair', 'farm': 'farm', 'delivery': 'delivery',
           'pet_care': 'pet', 'salon': 'salon', 'clothing': 'shop', 'tra_da': 'drink', 'pet_shop': 'pet',
-          'fruit': 'shop', 'garbage': 'delivery', 'drain': 'repair', 'homemaker': 'stay', 'ice_cream': 'food', 'nail': 'salon', 'pagoda': 'stay',
+          'fruit': 'shop', 'garbage': 'delivery', 'drain': 'repair', 'homemaker': 'stay', 'ice_cream': 'food', 'nail': 'salon', 'pagoda': 'pagoda',
           'hr_admin': 'office', 'secretary': 'office', 'it_helpdesk': 'office'}
 # How twist reviewers answer a polite reply.
 TWIST_REPLY = {
@@ -576,6 +576,9 @@ def make_review(s: dict, c: dict, t: dict, status: str) -> dict:
     own = _own_voice(career)
     if own:
         return _own_review(t, persona, stars, ev, own(c, t, persona, stars, ev['criteria'], seed))
+    if _pv.on(career):
+        # The pagoda's visitors write about calm and kindness, not service (pagoda_voice.py).
+        return _pv.make_review(s, c, t, status, ev, persona, stars, seed)
     unfair = twist = None
     clues = []
     out = {}
@@ -814,6 +817,8 @@ def _pile_on(s: dict, c: dict, career: str, post: dict, count: int, why: str) ->
     texts = PILE_ON['phot' if why == 'phot' else ('report_parent' if parent else 'report') if why == 'report' else 'parent' if parent else 'customer']
     personas = MOOD_PARENT if parent else ('rude', 'genz', 'sour', 'troll')
     label = 'Cách trả lời phụ huynh' if parent else 'Thái độ khi trả lời khách'
+    if _pv.on(career):
+        texts, label = _pv.PILE_ON['phot' if why == 'phot' else 'report' if why == 'report' else 'customer'], _pv.PILE_LABEL
     made = 0
     for i in range(count):
         h = _hash('pile', post['id'], why, i)
@@ -855,7 +860,7 @@ def action(s: dict, c: dict, career: str, name: str, p: dict, internal: bool = F
             tone = 'harsh'                      # the words win over the label
         if offer != 'none':
             need(not any(x.get('offer', 'none') != 'none' for x in fb['thread'] if x['role'] == 'owner'), 'Mỗi review chỉ bù đắp một lần.')
-            e.money(s, c, -OFFERS[offer], 'Bù đắp cho khách: ' + (post['author'] or 'khách'), post['id'], category='compensation')
+            e.money(s, c, -OFFERS[offer], (_pv.OFFER_LEDGER if _pv.on(career) else 'Bù đắp cho khách: ') + (post['author'] or 'khách'), post['id'], category='compensation')
         row = dict(role='owner', text=reply, day=c['day'], offer=offer)
         if tone != 'free':
             row['tone'] = tone
@@ -865,6 +870,8 @@ def action(s: dict, c: dict, career: str, name: str, p: dict, internal: bool = F
             decision = _fv.tone_decision(s, c, post, tone, given[-1] if given else 'none')
         else:
             decision = scripted_decision(fb['persona'], fb, post['stars'], reply, offer)
+        if _pv.on(career):
+            decision = _pv.react(s, post, decision, _hash('pagoda-react', post['id'], fb['rounds'], tone))
         fb['rounds'] += 1
         fb['status'] = 'awaiting'
         fb['pending'] = dict(decision, turn=c['turn'])
@@ -876,7 +883,8 @@ def action(s: dict, c: dict, career: str, name: str, p: dict, internal: bool = F
             fb['viral'] = True
             n = 1 + (1 if fb['persona'] in ('drama', 'rude', 'parent_rude', 'knowitall') else 0) + _hash('viral', post['id']) % 2
             n = _pile_on(s, c, career, post, n, 'rude')
-            out['message'] = f'Câu trả lời gắt bị chụp màn hình lan đi: thêm {n} đánh giá 1★.'
+            out['message'] = (_pv.fill(_pv.VIRAL, n=n) if _pv.on(career)
+                              else f'Câu trả lời gắt bị chụp màn hình lan đi: thêm {n} đánh giá 1★.')
             out['viral'] = n
         return out
     if name == 'fb_ignore':
@@ -913,7 +921,7 @@ def action(s: dict, c: dict, career: str, name: str, p: dict, internal: bool = F
         # A wrong report: the reviewer finds out.
         fb['report'] = 'rejected'
         seed = _hash('report', post['id'])
-        rows = REPORT_ANGRY['parent' if parent else 'customer']
+        rows = _pv.REPORT_ANGRY if _pv.on(career) else REPORT_ANGRY['parent' if parent else 'customer']
         new = max(1, post['stars'] - 1)
         fb['thread'].append(dict(role='customer', text=teacher_title(s, rows[seed % len(rows)]), day=c['day'],
                                  decision='revise_down' if new < post['stars'] else 'keep', stars=new, mode='scripted'))
@@ -980,7 +988,7 @@ def resolve(s: dict, c: dict, post: dict, decision, stars, text, mode: str) -> d
     npc = post['npc']
     if npc in e.NPC_INDEX and not fb.get('stranger'):
         if decision == 'revise_up':
-            e.remember(s, c, npc, 'Đã sửa đánh giá sau khi đọc phản hồi của chủ quán.', post['id'])
+            e.remember(s, c, npc, _pv.REMEMBER if _pv.on(_fv._career_of(s, c)) else 'Đã sửa đánh giá sau khi đọc phản hồi của chủ quán.', post['id'])
             e.metric(c, 'reviews_improved')
         elif decision == 'revise_down':
             c['relationships'][npc] = max(0, c['relationships'].get(npc, 0) - 6)
@@ -1047,7 +1055,7 @@ def validate_post(post: dict) -> None:
     _ra.validate(fb)
 
 
-def public_post(post: dict) -> dict:
+def public_post(post: dict, career: str | None = None) -> dict:
     fb = post.get('feedback')
     if not fb:
         return post
@@ -1071,7 +1079,7 @@ def public_post(post: dict) -> dict:
     f.pop('style', None)
     f.pop('aspects', None)
     if fb['status'] == 'open' and fb['rounds'] < 3 and post.get('stars'):
-        f['tones'] = _fv.tone_choices(post)
+        f['tones'] = _fv.tone_choices(post, career)
     if fb.get('report') and tw:
         f['kind_label'] = TWIST_LABEL.get(tw['kind'], '')
     v['feedback'] = f
@@ -1093,12 +1101,12 @@ def stats(c: dict) -> dict:
                 criteria=[dict(label=k, avg=round(v[0] / v[1], 1), count=v[1]) for k, v in by.items()])
 
 
-def ai_context(c: dict, post: dict, lang: str = 'vi') -> dict:
+def ai_context(c: dict, post: dict, lang: str = 'vi', career: str | None = None) -> dict:
     fb = post['feedback']
     per = PERSONAS[fb['persona']]
     low, high = _bounds(fb, post['stars'])
     return dict(language='English' if lang == 'en' else 'tiếng Việt', persona=dict(name=per['name'], style=per['style'], reviewer=post['author']),
-                role='phụ huynh học sinh phản hồi giáo viên' if per['group'] == 'parent' else 'khách hàng phản hồi cửa hàng/dịch vụ',
+                role=_pv.AI_ROLE if _pv.on(career) else 'phụ huynh học sinh phản hồi giáo viên' if per['group'] == 'parent' else 'khách hàng phản hồi cửa hàng/dịch vụ',
                 facts=dict(task=fb.get('title'), criteria=fb['criteria'], unfair_claim=fb.get('unfair'), situation=TWIST_AI.get(_kind(fb)) or _rg.situation(fb) or _ra.situation(fb),
                            aspects=_ra.ai_facts(fb)),
                 review=dict(stars_now=post['stars'], stars_original=fb['stars_original'], text=post['text']),
@@ -1141,6 +1149,8 @@ def day_summary(c: dict, day: int) -> dict:
                 weakest=weakest, open=sum(1 for p in rows if (p.get('feedback') or {}).get('status') == 'open'))
 
 
+# Chùa Gió Lành's own words in the whole thread (pagoda_voice.py).
+from . import pagoda_voice as _pv  # noqa: E402
 # Livelier threads: extra voices, reply tones, third parties (feedback_voices.py).
 from . import feedback_voices as _fv  # noqa: E402
 _fv.install(globals())

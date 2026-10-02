@@ -1173,7 +1173,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
             from . import classroom
             c["classroom"]=classroom.public(raw);c["data"].pop("class",None)
         if cid in ("milk_tea","mother_baby"):life.public_counter(raw,cid,c["data"])
-        c["feed"]=[fbk.public_post(f) for f in raw["feed"]]
+        c["feed"]=[fbk.public_post(f,cid) for f in raw["feed"]]
         c["feedback_stats"]=fbk.stats(raw)
         c.pop("ext",None)
         c["life"]=life.public_life(s["careers"][cid])
