@@ -15,6 +15,7 @@ import {lifeView,lifeEntry,lifeCard,lifeAction,lifeBoot} from './life.js';
 import {portrait,lookOf} from './look.js';
 import {lazy,skeleton} from '../lazy.js';
 import {FIRST_JOB,quiet,firstDay} from './onboard.js';
+import {highlight} from './guide.js';
 // 👗 Tủ đồ (v4/wardrobe.js): the sheet loads the first time it opens.
 const WD=lazy(()=>import('./wardrobe.js'),{css:['/css/wardrobe.css']});
 
@@ -210,10 +211,10 @@ function introView(env){
     return `<button type="button" class="onb-job ${on?'active':''} ${id===rec?'rec':''}" data-action="jrJob" data-career="${esc(id)}" aria-pressed="${on}" style="--career:${colour(m.color)}"><span aria-hidden="true">${emojiOf(m)}</span>${esc(jobLabel(m))}${id===rec?'<small>hợp người mới</small>':''}</button>`;};
   return `<div class="jr-intro onb-intro"><div class="jr-street" aria-hidden="true"><span>🏠</span><span>🏪</span><span>🌳</span><span>🧋</span><span>🏮</span><span>🛵</span></div>
     <h1>Chào bạn mới! 👋</h1><p class="jr-lead">Một khu phố nhỏ, nhiều nghề để thử.</p>
-    <form class="jr-who" data-jr-form="start"><div class="jr-genders" role="group" aria-label="Giới tính">${card('male','Nam')}${card('female','Nữ')}</div>
+    <form class="jr-who" data-jr-form="start"><div class="jr-genders" role="group" aria-label="Giới tính">${card('male','Nam')}${card('female','Nữ')}</div>${pick?'':'<p class="onb-need" id="onb-need">👆 Chọn Nam hoặc Nữ để bắt đầu</p>'}
     <label class="jr-name"><span>Tên của bạn</span><input id="jr-name" name="name" maxlength="24" autocomplete="nickname" required value="${esc(api.state.name)}" data-preserve></label>
     <fieldset class="onb-jobs"><legend>Làm ở đâu trước?</legend><div class="onb-job-row">${ids.map(chip).join('')}</div></fieldset>
-    <button type="submit" class="btn primary big full" ${pick?'':'disabled'}>Vào làm thôi ${icon('arrow',16)}</button></form>
+    <button type="submit" class="btn primary big full"${pick?'':' aria-describedby="onb-need"'}>Vào làm thôi ${icon('arrow',16)}</button></form>
     ${api.account?'':`<button type="button" class="jr-link acct-intro-link" data-action="v4AccountOpen" data-mode="login">${icon('user',14)} Đã có tài khoản? Đăng nhập</button>`}</div>`;
 }
 
@@ -443,7 +444,8 @@ export async function journeySubmit(f,env){
   const {ui,cmd,renderSheet,api}=env;
   if(kind==='start'){   // the intro's one screen: name + look, then the first workplace (no step in between)
     const name=f.querySelector('[name="name"]')?.value.trim()||'',gender=ui.jrGender||api.state.journey.gender;
-    if(!gender){env.toast?.('Chọn Nam hoặc Nữ trước nhé.',true);return true;}
+    // The button stays tappable before a look is picked (a disabled one gave no answer): say why and show where.
+    if(!gender){env.toast?.('Chọn Nam hoặc Nữ trước nhé.',true);highlight(f.querySelector('.jr-genders'));return true;}
     const btn=f.querySelector('[type="submit"]');if(btn)btn.disabled=true;
     const r=await cmd('jr_profile',{name,gender});
     if(!r){if(btn)btn.disabled=false;return true;}
