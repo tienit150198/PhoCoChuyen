@@ -12,6 +12,7 @@
  * pieces at a smaller scale and keeps its text at 16 scene px or more.
  */
 import {R,E,L,T,P,fit,heart,bloom,plantAt,signBoard,streetBoard,openSign} from './kit.js';
+import {room,shopFor,taskOf} from './backroom.js';
 
 export const PLAN={
  land:{badge:{board:[0,-44]},floor:[130,452,1070,682],lane:596,line:596,home:[600,596],kx:82,ky:45,sway:28,
@@ -21,7 +22,7 @@ export const PLAN={
    customers:[[440,655],[560,662],[680,655],[800,662]],event:[320,660],officer:[250,598],
    staff:{x:300,step:115,y:548},cat:[940,404],counterSpan:[380,860],
    decor:{corner:[120,600],front:[990,600],center:[798,600]},sill:{plant:[780,404],lamp:[825,404],seat:[875,404],rug:[600,640]},
-   spots:{shelf:[[311,300],90,[[311,596]]],evidence:[[905,462],55,[[905,580]]],workbench:[[599,430],80,[[599,596],[540,596]]],
+   spots:{'go:wash':[[150,390],40,[[175,596]]],'go:kennel':[[150,390],40,[[175,596]]],'go:parts':[[150,390],40,[[175,596]]],shelf:[[311,300],90,[[311,596]]],evidence:[[905,462],55,[[905,580]]],workbench:[[599,430],80,[[599,596],[540,596]]],
      counter:[[1002,462],55,[[1002,580]]],warehouse:[[175,470],48,[[175,566],[175,596]]],board:[[1055,350],45,[[1050,582]]],
      finance:[[922,612],42,[[922,628],[1000,628]]],property:[[1000,302],30,[[1000,580]]],security:[[205,222],30,[[190,596],[350,596]]],
      door:[[1030,636],45,[[1040,626],[960,628]]],pet:[[940,390],38,[[846,560]]]}},
@@ -32,7 +33,7 @@ export const PLAN={
    customers:[[160,738],[290,745],[420,738],[520,745]],event:[300,812],officer:[446,800],
    staff:{x:150,step:100,y:624},cat:[545,336],counterSpan:[100,560],
    decor:{corner:[96,690],front:[638,792],center:[615,745]},sill:{plant:[495,336],lamp:[592,336],seat:[622,336],rug:[352,760]},
-   spots:{shelf:[[170,380],70,[[170,676]]],evidence:[[574,532],45,[[574,650]]],workbench:[[352,500],65,[[352,676]]],
+   spots:{'go:wash':[[77,460],36,[[140,676]]],'go:kennel':[[77,460],36,[[140,676]]],'go:parts':[[77,460],36,[[140,676]]],shelf:[[170,380],70,[[170,676]]],evidence:[[574,532],45,[[574,650]]],workbench:[[352,500],65,[[352,676]]],
      counter:[[628,532],45,[[628,650]]],warehouse:[[77,540],42,[[80,660],[140,676]]],board:[[600,388],42,[[610,650]]],
      finance:[[615,666],40,[[540,692]]],property:[[502,376],30,[[500,676]]],security:[[90,242],30,[[140,676]]],
      door:[[540,796],45,[[540,768],[440,772]]],pet:[[545,322],36,[[520,660]]]}},
@@ -319,8 +320,53 @@ function portProps(w,p){const c=w.ctx,pl=PLAN.port,tier=w.c?.ops?.property?.tier
   if(tier==='garden')for(const [x,y] of pl.garden)out.push([y+4,()=>plantAt(c,x,y,.55)]);
   return out;}
 
+/* ------------------------------------------------------------ the back rooms (scenes/backroom.js) */
+/** Salon: Phòng gội (wash chairs, towels, supplies). Pet care: Phòng lưu chuồng (boarding pets, food).
+ * Repair: Kho linh kiện (parts, the test bench). */
+const WASH=room({id:'wash',name:'Phòng gội',icon:'🫧',back:'salon',sign:'PHÒNG GỘI ĐẦU',
+  theme:{wall:'#f3eef6',wallLow:'#e2f0f3',floor:'#e6e0d8',floor2:'#ddd5cb',tile:56,rim:'#b9a8c9',trim:'#9fc7cf',ink:'#7a5e8c',door:'#9fc7cf'},
+  win:{u0:.14,u1:.32,frame:'#e2f0f3'},clock:[.5,.27],
+  items:[
+    {k:'washchair',u:.32,v:.46,w:.14,h:120,spot:'workbench',label:'Ghế gội đầu'},
+    {k:'washchair',u:.56,v:.46,w:.14,h:120,col:'#56606c',spot:'look:wash',label:'Ghế gội thứ hai'},
+    {k:'shelf',u:.86,v:.1,w:.16,h:220,col:'#e8e0ee',board:'#b9a8c9',fill:['🧴','🧼','🪮','💆','🧽'],spot:'warehouse',label:'Kho vật tư'},
+    {k:'basket',u:.15,v:.72,w:.1,h:40,fill:['#ffffff','#bfe7d8','#fde4ec']},
+  ],
+  looks:{wash:()=>'Nước ấm vừa tay, dầu gội hương bưởi. Khách nào cũng lim dim.'},
+  chat:['Nước ấm vừa chưa chị?','Khăn sạch phơi xong rồi nè!','Khách hẹn 3 giờ tới sớm đó.'],
+});
+const KENNEL=room({id:'kennel',name:'Phòng lưu chuồng',icon:'🐾',back:'groom',sign:'PHÒNG LƯU CHUỒNG',
+  theme:{wall:'#f4efe2',wallLow:'#e3efd9',floor:'#e2d6c2',floor2:'#d8cab3',tile:62,rim:'#b9a48f',trim:'#8fbf8a',ink:'#6f8a4f',door:'#8fbf8a'},
+  clock:[.5,.27],
+  items:[
+    {k:'cages',u:.26,v:.1,w:.3,h:210,fill:['🐶','🐱','🐰','🐹','🐕','🐈'],spot:'look:cages',label:'Dãy chuồng'},
+    {k:'cages',u:.64,v:.1,w:.24,h:210,fill:['🐱','🐶','🐹','🐈']},
+    {k:'shelf',u:.88,v:.1,w:.14,h:220,fill:['🦴','🥫','🧸','🧼'],spot:'warehouse',label:'Kho thức ăn & vật tư'},
+    {k:'table',u:.46,v:.62,w:.22,h:56,fill:['🥣','🦴','💊'],spot:'workbench',label:'Bàn chăm thú'},
+  ],
+  looks:{cages:w=>['Bé Mochi đang ngủ ngáy khò khò.','Một bé mèo thò chân ra đòi vuốt ve.','Hai bé cún ngồi nhìn bạn, đuôi vẫy tít.'][(w.c?.day||0)%3]},
+  chat:['Bé lông xù đòi ra chơi kìa!','Tới giờ cho ăn chiều rồi nha.','Chuồng số 3 cần thay lót.'],
+});
+const PARTS=room({id:'parts',name:'Kho linh kiện',icon:'🔩',back:'shop',sign:'KHO LINH KIỆN',
+  theme:{wall:'#eef1f3',wallLow:'#dfe5ea',floor:'#d6d0c6',floor2:'#ccc5ba',tile:60,rim:'#9aa6b0',trim:'#e3b04b',ink:'#4f6273',door:'#6d8aa5'},
+  clock:[.6,.24],calendar:[.6,.42],
+  items:[
+    {k:'shelf',u:.22,v:.1,w:.22,h:240,col:'#9aa6b0',board:'#6d7880',fill:['#e3b04b','#9cc3d5','#e3a7b8','#b8d39c'],spot:'warehouse',label:'Kệ linh kiện'},
+    {k:'boxes',u:.84,v:.1,w:.2,h:150,fill:['ỐC VÍT','DÂY ĐIỆN','PIN']},
+    {k:'desk',u:.5,v:.6,w:.26,h:58,col:'#dfe5ea',book:'#4f6273',fill:['🔌','📻','🔋'],spot:'workbench',label:'Bàn thử máy'},
+  ],
+  chat:['Ai thấy cái tua vít bake đâu không?','Linh kiện mới về để kệ trên nha.','Cái quạt này chạy lại rồi nè!'],
+});
+const BACK={
+  salon:[{id:'salon',name:'Phòng làm tóc',icon:'💇',main:true},WASH],
+  pet_care:[{id:'groom',name:'Phòng chăm sóc',icon:'✂️',main:true},KENNEL],
+  repair:[{id:'shop',name:'Tiệm sửa',icon:'🔧',main:true},PARTS],
+};
+
 export default {
   id:'service',
+  areas:w=>BACK[w.career]||[],
+  areaFor:w=>BACK[w.career]?shopFor(BACK[w.career][0].id)(w):null,
   plan:PLAN,
   room(w,p){if(w.isPortrait())portRoom(w,p);else landRoom(w,p);},
   props(w,p){return w.isPortrait()?portProps(w,p):landProps(w,p);},

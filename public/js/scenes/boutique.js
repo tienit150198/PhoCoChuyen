@@ -14,10 +14,12 @@
  * PLAN schema: see scenes/shop.js. Floor pieces use local units with the
  * origin at the middle of their feet line, placed with `at(x, y, scale)`. */
 import {R,E,L,T,P,fit,streetBoard} from './kit.js';
+import {room,shopFor,taskOf} from './backroom.js';
 import flowershop from './flowershop.js';
 
 // Same floor plan and hotspots as the flower shop (the furniture sits in the same places).
-export const PLAN=flowershop.plan;
+export const PLAN=Object.fromEntries(Object.entries(flowershop.plan).map(([o,pl])=>[o,{...pl,spots:{...pl.spots,
+  'go:fitting':o==='land'?[[196,318],40,[[225,530]]]:[[99,390],36,[[190,616]]]}}]));
 
 /* ------------------------------------------------------------ Palette & helpers */
 const LILAC='#ece6f7',LILAC_D='#c9bde6',VIOLET='#6a58a6',VIOLET_D='#4d3f82',MUSTARD='#d9a521',MUSTARD_L='#f0cf6e',
@@ -205,8 +207,27 @@ function portProps(w,p){const c=w.ctx,stage=look(w),out=[];
   if(stage>=1)out.push([818,()=>at(c,130,818,.9,()=>entrance(w,c,stage))]);
   return out;}
 
+/* ------------------------------------------------------------ fitting rooms and stock (scenes/backroom.js) */
+/** Phòng thử & kho: two fitting booths (someone's feet under the curtain now and then), the tall mirror,
+ * the stock boxes by size and the rail of new arrivals. */
+const FITTING=room({id:'fitting',name:'Phòng thử & kho',icon:'🪞',back:'shop',sign:'PHÒNG THỬ ĐỒ',
+  theme:{wall:'#ece6f7',wallLow:'#fbf8ff',floor:'#e9d6bf',floor2:'#e0cab0',tile:58,rim:'#c9bde6',trim:'#d9a521',ink:'#6a58a6',door:'#8f7fc4'},
+  clock:[.655,.2],
+  items:[
+    {k:'curtain',u:.2,v:.12,w:.14,h:230,col:'#c4b2e0',tag:'PHÒNG 1',tagBg:'#6a58a6',spot:'look:fit1',label:'Phòng thử 1'},
+    {k:'curtain',u:.37,v:.12,w:.14,h:230,col:'#f0b8c8',tag:'PHÒNG 2',tagBg:'#6a58a6',spot:'look:fit2',label:'Phòng thử 2'},
+    {k:'mirror',u:.53,v:.1,w:.08,h:220},
+    {k:'boxes',u:.81,v:.1,w:.24,h:160,fill:['ÁO S','ÁO M','QUẦN','VÁY'],spot:'warehouse',label:'Kho đồ'},
+    {k:'rack',u:.58,v:.58,w:.26,h:150,fill:['#f2c1cf','#a9c9e8','#f7f5ef','#2f3f63','#a6dcc8','#f0c23b'],spot:'shelf',label:'Sào đồ mới về'},
+  ],
+  looks:{fit1:()=>'Có ai đang thử đồ. Chỉ thấy đôi dép dưới rèm.',fit2:()=>'Rèm phòng thử in hoa nhỏ, Bà Tư tự tay may.'},
+  chat:['Chị ơi có size M không?','Lô áo mới về, ủi giùm em vài cái!','Phòng 2 có khách đang thử nha.'],
+});
+
 export default {
   id:'boutique',
+  areas:[{id:'shop',name:'Gian đồ',icon:'👗',main:true},FITTING],
+  areaFor:shopFor('shop'),
   plan:PLAN,
   room(w,p){if(w.isPortrait())portRoom(w,p);else landRoom(w,p);},
   props(w,p){return w.isPortrait()?portProps(w,p):landProps(w,p);},

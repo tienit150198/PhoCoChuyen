@@ -15,6 +15,7 @@
  * their feet line and placed with `at(x, y, scale)`, so portrait reuses them.
  */
 import {R,E,L,T,P,fit,heart,bloom,streetBoard} from './kit.js';
+import {room,shopFor,taskOf} from './backroom.js';
 
 export const PLAN={
  land:{floor:[130,452,1070,682],lane:520,line:520,home:[600,520],kx:82,ky:45,sway:30,
@@ -24,7 +25,7 @@ export const PLAN={
    staff:{x:545,step:110,y:470},cat:[690,402],counterSpan:[420,980],
    decor:{corner:[165,568],front:[700,678],center:[1062,574]},sill:{plant:[540,400],lamp:[575,400],seat:[620,400],rug:[640,622]},
    wall:{poster:[952,405]},badge:{board:[33,-24]},
-   spots:{shelf:[[375,380],95,[[375,520]]],evidence:[[835,500],45,[[835,520]]],workbench:[[585,470],70,[[585,520],[515,520]]],
+   spots:{'go:work':[[196,318],40,[[225,530]]],shelf:[[375,380],95,[[375,520]]],evidence:[[835,500],45,[[835,520]]],workbench:[[585,470],70,[[585,520],[515,520]]],
      counter:[[935,495],50,[[935,520]]],warehouse:[[196,400],55,[[225,530],[196,545]]],board:[[920,297],45,[[920,520]]],
      finance:[[1028,618],42,[[950,650],[1028,610]]],property:[[1025,233],32,[[995,520]]],security:[[170,222],30,[[250,520]]],
      door:[[1025,370],55,[[1025,520]]],pet:[[690,384],38,[[690,520]]]}},
@@ -35,7 +36,7 @@ export const PLAN={
    staff:{x:200,step:100,y:584},cat:[500,400],counterSpan:[120,610],
    decor:{corner:[90,745],front:[480,818],center:[620,740]},sill:{plant:[378,400],lamp:[405,400],seat:[443,400],rug:[330,736]},
    wall:{poster:[98,318]},badge:{board:[27,-18]},
-   spots:{shelf:[[253,440],90,[[253,616]]],evidence:[[475,590],45,[[475,616]]],workbench:[[262,578],60,[[262,616],[200,616]]],
+   spots:{'go:work':[[99,390],36,[[190,616]]],shelf:[[253,440],90,[[253,616]]],evidence:[[475,590],45,[[475,616]]],workbench:[[262,578],60,[[262,616],[200,616]]],
      counter:[[565,586],45,[[565,616]]],warehouse:[[99,470],45,[[100,632],[190,616]]],board:[[576,227],40,[[576,590]]],
      finance:[[600,776],40,[[525,790],[600,776]]],property:[[630,226],30,[[620,590]]],security:[[87,240],30,[[175,616]]],
      door:[[598,400],50,[[598,580]]],pet:[[500,385],36,[[500,616]]]}},
@@ -327,8 +328,25 @@ function portProps(w,p){const c=w.ctx,tier=w.c?.ops?.property?.tier||'cozy',out=
   if(tier==='garden')w.plan().garden.forEach(([x,y],i)=>out.push([y+4,()=>potBloom(c,x,y,.9,i%2?'#f7c948':p.primary)]));
   return out;}
 
+/* ------------------------------------------------------------ the workroom (scenes/backroom.js) */
+/** Phòng cắm hoa: the flower cooler, ribbons and paper, the long wrapping table, buckets soaking. */
+const WORK=room({id:'work',name:'Phòng cắm hoa',icon:'✂️',back:'shop',sign:'PHÒNG CẮM HOA',
+  theme:{wall:'#eef3e6',wallLow:'#f6efe4',floor:'#e6d9c3',floor2:'#dccdb4',tile:60,rim:'#a9b79a',trim:'#8fae7f',ink:'#5f7f4f',door:'#7fa06f'},
+  win:{u0:.36,u1:.6,frame:'#f6efe4'},clock:[.68,.22],
+  items:[
+    {k:'fridge',u:.2,v:.1,w:.19,h:230,tag:'TỦ MÁT HOA',top:'#7fa06f',fill:['🌹','🌷','💐','🌸','🌻'],spot:'warehouse',label:'Tủ mát hoa'},
+    {k:'shelf',u:.84,v:.1,w:.16,h:220,col:'#d9b48e',fill:['🎀','🧺','🫙','✂️','📜'],spot:'look:ribbons',label:'Kệ ruy băng'},
+    {k:'table',u:.48,v:.58,w:.32,h:58,col:'#efe4d2',cloth:'#d8c4a4',fill:['💐','🎀','✂️'],spot:'workbench',label:'Bàn bó hoa'},
+    {k:'buckets',u:.8,v:.7,w:.2,h:50,spot:'look:buckets',label:'Xô hoa ngâm nước'},
+  ],
+  looks:{ribbons:()=>'Ruy băng lụa, giấy kraft, giỏ mây. Đủ để gói cả trăm bó.',buckets:()=>'Hoa mới về được ngâm nước cho uống no rồi mới bó.'},
+  chat:['Hoa hồng Đà Lạt về rồi nè!','Nhớ thay nước xô hoa cúc nha.','Khách đặt bó cưới chiều nay đó.'],
+});
+
 export default {
   id:'flowershop',
+  areas:[{id:'shop',name:'Tiệm hoa',icon:'💐',main:true},WORK],
+  areaFor:shopFor('shop'),
   plan:PLAN,
   room(w,p){if(w.isPortrait())portRoom(w,p);else landRoom(w,p);},
   props(w,p){return w.isPortrait()?portProps(w,p):landProps(w,p);},

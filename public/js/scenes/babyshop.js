@@ -16,6 +16,7 @@
  * them at a smaller scale.
  */
 import {R,E,L,T,P,fit,heart,bloom,plantAt,mascot,signBoard,streetBoard} from './kit.js';
+import {room,shopFor,taskOf} from './backroom.js';
 
 /* ------------------------------------------------------------ Floor plan */
 export const PLAN={
@@ -26,7 +27,7 @@ export const PLAN={
    staff:{x:300,step:130,y:470},cat:[490,352],counterSpan:[315,850],
    decor:{corner:[1050,545],front:[800,676],center:[500,628]},sill:{plant:[440,352],lamp:[462,352],seat:[538,352],rug:[590,662]},
    wall:{poster:[612,318]},
-   spots:{shelf:[[311,320],90,[[311,515]]],evidence:[[748,330],95,[[748,515]]],workbench:[[405,548],62,[[405,515]]],counter:[[755,548],60,[[755,515]]],
+   spots:{'go:store':[[162,312],40,[[230,515]]],shelf:[[311,320],90,[[311,515]]],evidence:[[748,330],95,[[748,515]]],workbench:[[405,548],62,[[405,515]]],counter:[[755,548],60,[[755,515]]],
      warehouse:[[162,392],48,[[165,500],[230,515]]],board:[[898,290],42,[[898,515]]],finance:[[1028,612],42,[[950,655],[960,622]]],
      property:[[1016,236],32,[[995,515]]],security:[[150,206],30,[[250,515]]],door:[[1016,380],55,[[1016,505]]],pet:[[490,332],38,[[490,515]]]}},
  port:{badge:{board:[0,-40]},floor:[62,512,638,822],lane:575,line:575,home:[330,575],kx:51,ky:57,sway:22,
@@ -36,7 +37,7 @@ export const PLAN={
    staff:{x:150,step:95,y:532},cat:[350,360],counterSpan:[98,560],
    decor:{corner:[612,752],front:[150,768],center:[400,762]},sill:{plant:[298,360],lamp:[320,360],seat:[398,360],rug:[365,796]},
    wall:{poster:[350,442]},
-   spots:{shelf:[[195,380],70,[[195,575]]],evidence:[[503,384],62,[[503,575]]],workbench:[[185,600],58,[[185,575]]],counter:[[469,598],56,[[469,575]]],
+   spots:{'go:store':[[79,362],36,[[130,575]]],shelf:[[195,380],70,[[195,575]]],evidence:[[503,384],62,[[503,575]]],workbench:[[185,600],58,[[185,575]]],counter:[[469,598],56,[[469,575]]],
      warehouse:[[79,440],45,[[92,562],[130,575]]],board:[[620,238],42,[[612,575]]],finance:[[600,774],40,[[530,804],[540,775]]],
      property:[[620,297],30,[[600,575]]],security:[[70,206],30,[[140,575]]],door:[[618,440],50,[[618,568]]],pet:[[350,344],36,[[350,575]]]}},
 };
@@ -315,8 +316,24 @@ function portProps(w,p){const c=w.ctx,words=w.words(),tier=w.c?.ops?.property?.t
   if(tier==='garden')for(const [x,y] of w.plan().garden)out.push([y+4,()=>plantAt(c,x,y,.5)]);
   return out;}
 
+/* ------------------------------------------------------------ the back store (scenes/backroom.js) */
+/** Kho hàng: nappies by size, milk tins and soft toys, the packing table (the order in hand). */
+const STORE=room({id:'store',name:'Kho hàng',icon:'📦',back:'shop',sign:'KHO MÂY NHỎ',
+  theme:{wall:'#eef4fb',wallLow:'#fde4ec',floor:'#f1e6da',floor2:'#e8dccd',tile:66,rim:'#c9bde6',trim:'#f5b3c7',ink:'#7a8cc4',door:'#9fb7e0'},
+  win:{u0:.66,u1:.9,frame:'#fde4ec'},clock:[.395,.26],
+  items:[
+    {k:'boxes',u:.22,v:.1,w:.26,h:170,fill:['BỈM S','BỈM M','BỈM L','BỈM XL'],spot:'warehouse',label:'Kho bỉm & sữa'},
+    {k:'shelf',u:.52,v:.1,w:.16,h:230,col:'#e8d6f0',board:'#c9bde6',fill:['🍼','🥫','🧴','🧸','🧦']},
+    {k:'desk',u:.7,v:.62,w:.22,h:58,col:'#f6efe4',book:'#f5b3c7',lamp:'#9fb7e0',fill:['📦','🏷️'],spot:'workbench',label:'Bàn đóng gói'},
+    {k:'basket',u:.3,v:.68,w:.12,h:42,fill:['#f5b3c7','#bfe7d8','#f0cf8a']},
+  ],
+  chat:['Sữa lon mới về, nhớ xem hạn dùng nha!','Bỉm size M sắp hết rồi đó.','Có mẹ bầu gọi hỏi váy bầu nè.'],
+});
+
 export default {
   id:'babyshop',
+  areas:[{id:'shop',name:'Gian hàng',icon:'🧸',main:true},STORE],
+  areaFor:shopFor('shop'),
   plan:PLAN,
   room(w,p){if(w.isPortrait())portRoom(w,p);else landRoom(w,p);},
   props(w,p){return w.isPortrait()?portProps(w,p):landProps(w,p);},
