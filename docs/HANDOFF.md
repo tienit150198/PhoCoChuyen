@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **1.4.8** (02/10 22:35; see "1.3.0" below), 35 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **1.4.10** (02/10 23:33; see "1.3.0" below), 35 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -83,7 +83,13 @@ branch holds what, and what to do next, in order. Details live in the linked doc
   interiors (client only: `public/js/scenes/areas.js`, `interior.js`, `airport.js`, `backroom.js`).
 - 02/10 22:30 owner gift: 500 xu "tiền mừng cưới" to each spouse of the 14 done weddings no admin attended
   (`live_effects` ids `wedadmin:<wedding>:<a|b>`, 28 rows, idempotent). Future weddings: not automatic.
-- In progress: `feat/chua-visit` (worktree `wt-chua`): a walkable pagoda for Đi chùa (khấn, sư trụ trì, tụng kinh).
+- **1.4.9** (02/10 23:23, rollback 1.4.8-20261002223440): proposal decline cooldown 3 days → 3 hours
+  (`wedding_content.DECLINE_HOURS`); stock-room "Gộp N món" draft fits 8 lines + 80 % of the fund (`restock.fitDraft`).
+- **1.4.10** (02/10 23:33, rollback 1.4.9-20261002232224): walkable Chùa Gió Lành (`public/js/v4/chua-visit.js`,
+  khấn, tụng kinh, CC0 audio in `public/audio/chua/`), Đi chùa 4 acts/day.
+- In progress (lead session): `feat/acc-school` (wt-acc: the main checkout's uncommitted "Học kế toán" TT99 work, copied
+  and under review — the original files in the main checkout are untouched), `feat/desk-ui` (office dossier layout +
+  deeper hints), `feat/pagoda-voice` (pagoda replies/feedback in its own voice), `feat/home-rooms` (bathroom, pool…).
 - Open questions to the owner (02/10): remove the ✓ marks in the salon mixer's "Bảng pha màu" (they show the
   answer)? Keep idle anonymous saves forever?
 - Someone left uncommitted Firebase/telemetry work in the main checkout (.env.example, game/webassets.py,
