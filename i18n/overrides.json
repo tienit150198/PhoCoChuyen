@@ -3297,6 +3297,8 @@
   "Nhà gọn gàng sạch sẽ, nhìn là biết chủ nhà siêng.": "Neat and tidy: you can tell the owner works hard."
  },
  "patterns": {
+  "kinh ăn gấp $1 lần tiền tờ": "a Bingo pays $1× the card price",
+  "Kinh ăn gấp $1 lần tiền tờ bạn mua, Hũ đêm hội gấp $2 lần. Ai đủ trước người đó ăn, hai người cùng lúc thì bạn được.": "A Bingo pays $1× what your cards cost, the fair-night jackpot $2×. First to fill takes it; if two fill at once, you win.",
   "🏊 $1 (tinh thần +$2, tỉnh táo $3, no bụng $4)": "🏊 $1 (morale +$2, alert $3, full $4)",
   "🏊 $1 (tỉnh táo $2, no bụng $3)": "🏊 $1 (alert $2, full $3)",
   "🌴 $1 (tinh thần +$2)": "🌴 $1 (morale +$2)",

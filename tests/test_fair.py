@@ -302,10 +302,19 @@ class OldSaves(FairBase):
             validate_state(bad)
 
 
+def fits(rv: dict, want_win: bool) -> bool:
+    """The rounds fair.loto_rs draws: won with a call to spare, or a neighbour first."""
+    return rv['mine'] < rv['npc_done'] if want_win else rv['npc_done'] < rv['mine']
+
+
+def loto_dice(rs: int, want_win: bool) -> Dice:
+    """fair._rng for a purchase: the draw that decides the round, then the round id."""
+    return Dice(bits=rs, draws=[0 if want_win else .99])
+
+
 def winning_rs(want_win: bool, slot: int) -> int:
     for rs in range(5000):
-        rv = fh.round_view(dict(slot=slot, rs=rs, at=0, stage='play'))
-        if (rv['mine'] <= rv['npc_done']) == want_win:
+        if fits(fh.round_view(dict(slot=slot, rs=rs, at=0, stage='play')), want_win):
             return rs
     raise AssertionError('no such round')
 
@@ -325,7 +334,7 @@ class Loto(FairBase):
 
     def _buy(self, s, win):
         slot = int(self.clock.t // 60) + 1
-        self.dice(Dice(bits=winning_rs(win, slot)))
+        self.dice(loto_dice(winning_rs(win, slot), win))
         self.clock.t = slot * 60 + 1
         s, r = self.act(s, 'fair_loto_buy')
         return s, fh.round_view(s['journey']['fair']['loto'])
@@ -372,12 +381,32 @@ class Loto(FairBase):
         s, _ = self.act(s, 'fair_loto_fold')
         self.assertEqual(s['journey']['fair']['loto']['stage'], 'lost')
 
-    def test_rtp_with_perfect_play(self):
-        """Over many rounds a perfect player gets back a bit less than the card price."""
-        wins = sum(1 for rs in range(3000) for rv in [fh.round_view(dict(slot=rs * 7, rs=rs, at=0, stage='play'))] if rv['mine'] <= rv['npc_done'])
-        rtp = wins / 3000 * fh.LOTO_PRIZE / fh.LOTO_PRICE
-        self.assertGreater(rtp, .85)
-        self.assertLess(rtp, 1.03)
+    def test_the_round_is_decided_first(self):
+        """Owner 03/10: "tỷ lệ thắng 53%": the draw (fair._rng) decides, the round id fits it; a won round leaves the
+        player at least one call to hô before the first neighbour."""
+        self.dice(random.Random(7))
+        for want in (True, False) * 20:
+            lt = dict(slot=29_000_000 + fh._rng.randrange(10**4), rs=0, at=0, stage='play')
+            lt['rs'] = fh.loto_rs(lt, want)
+            self.assertTrue(0 <= lt['rs'] < 2**31)
+            rv = fh.round_view(lt)
+            self.assertTrue(fits(rv, want), want)
+            self.assertEqual(rv, fh.round_view(dict(lt)))   # replays the same from {slot, rs}
+            self.assertEqual(sorted(rv['seq']), list(range(1, 91)))
+
+    def test_a_round_bought_before_the_change_still_plays(self):
+        """A round in a save from 1.4.15 (any rs, the plain card or the gánh) is replayed and paid the same way."""
+        s = story(100)
+        slot = int(self.clock.t // 60) + 1
+        rs = winning_rs(True, slot)
+        s['journey']['fair'] = dict(fh.initial(), date=fh.vn_date(self.clock.t), ed=fh.edition(),
+                                    loto=dict(slot=slot, rs=rs, at=int(self.clock.t), stage='play'))
+        validate_state(s)
+        rv = fh.round_view(s['journey']['fair']['loto'])
+        pos = {n: i for i, n in enumerate(rv['seq'])}
+        row = min(range(3), key=lambda i: max(pos[n] for n in rv['card'][i]))
+        s, r = self.act(s, 'fair_loto_kinh', row=row, at=max(pos[n] for n in rv['card'][row]) + 1)
+        self.assertEqual((r['fair']['won'], r['fair']['prize']), (True, fh.LOTO_PRIZE))
 
 
 def slot_with(mode: str, start: float) -> int:
@@ -391,8 +420,7 @@ def slot_with(mode: str, start: float) -> int:
 def show_rs(lt: dict, want_win: bool) -> int:
     """A round id (rs) where the player's best card does (not) fill the vòng's pattern first."""
     for rs in range(5000):
-        rv = fh.round_view(dict(lt, rs=rs))
-        if (rv['mine'] <= rv['npc_done']) == want_win:
+        if fits(fh.round_view(dict(lt, rs=rs)), want_win):
             return rs
     raise AssertionError('no such round')
 
@@ -413,7 +441,7 @@ class LotoShow(FairBase):
         p.setdefault('n', 1)
         lt = dict(slot=slot, rs=0, at=0, stage='play', mode=mode, tier=p['tier'], n=p['n'], fk=0)
         if win is not None:
-            self.dice(Dice(bits=show_rs(lt, win)))
+            self.dice(loto_dice(show_rs(lt, win), win))
         self.clock.t = slot * 60 + 1
         s, r = self.act(s, 'fair_loto_buy', mode=mode, **p)
         return s, r, fh.round_view(s['journey']['fair']['loto'])
@@ -498,31 +526,31 @@ class LotoShow(FairBase):
         self.assertEqual(fh.side_back({'cl': ['chan', 6]}, 70), {'cl': 0})
 
     def test_odds_with_perfect_play(self):
-        """Seeded rounds: every vòng and number of tờ gives back a bit less than it costs (the 200 000-round
-        figures are in game/fair.py), and so do the side bets on the số chốt."""
-        rng = random.Random(4242)
-        for mode, (need, npcs, _) in fh.LOTO_MODES.items():
-            if mode == 'nguoc':
-                continue   # the thường rules, read backwards
-            wins = [0, 0, 0]
-            for _ in range(1500):
-                seq = list(range(1, 91)); rng.shuffle(seq); pos = {n: i for i, n in enumerate(seq)}
-                mine = [fh.done_at(fh.card(rng), pos, need) for _ in range(3)]
-                nd = min(fh.done_at(fh.card(rng), pos, need) for _ in range(npcs))
-                for n in (1, 2, 3):
-                    wins[n - 1] += min(mine[:n]) <= nd
-            for n in (1, 2, 3):
-                for tier, price in fh.LOTO_TIERS.items():
-                    rtp = wins[n - 1] / 1500 * fh.prize_of(mode, price, n) / (n * price)
-                    self.assertGreater(rtp, .85, (mode, tier, n))
-                    self.assertLess(rtp, 1.03, (mode, tier, n))
+        """Seeded purchases drawn like fair_loto_buy: a perfect player wins about WIN_P of the rounds of every vòng and
+        comes out a little ahead (the 20 000-round figures are in game/fair.py); the side bets keep a small edge."""
+        self.dice(random.Random(4242))
         cl = cot = 0
-        for rs in range(1500):
-            rv = fh.round_view(dict(slot=rs * 11, rs=rs, at=0, stage='play', mode='thuong', tier='vua', n=1))
-            cl += fh.side_back({'cl': ['chan', 2]}, rv['chot_n'])['cl'] / 2
-            cot += sum(fh.side_back({'cot': [c, 2]}, rv['chot_n'])['cot'] for c in range(9)) / 2 / 9
-        self.assertTrue(.9 < cl / 1500 < 1.02, cl / 1500)
-        self.assertTrue(.85 < cot / 1500 < 1.0, cot / 1500)
+        for mode in fh.LOTO_MODES:
+            for n in (1, 3):
+                wins = gain = 0
+                N = 300
+                for i in range(N):
+                    lt = dict(slot=29_000_000 + i, rs=0, at=0, stage='play', mode=mode, tier='vua', n=n, fk=0)
+                    lt['rs'] = fh.loto_rs(lt, fh._rng.random() < fh.odds(0))
+                    rv = fh.round_view(lt)
+                    won = rv['mine'] <= rv['npc_done']
+                    wins += won
+                    gain += (rv['prize'] if won else 0) - n * rv['price']
+                    if mode == 'thuong':
+                        cl += fh.side_back({'cl': ['chan', 2]}, rv['chot_n'])['cl'] / 2
+                        cot += sum(fh.side_back({'cot': [c, 2]}, rv['chot_n'])['cot'] for c in range(9)) / 2 / 9
+                self.assertTrue(fh.WIN_P - .08 < wins / N < fh.WIN_P + .08, (mode, n, wins / N))
+                ev = gain / (N * n * 5)
+                self.assertTrue(0 < ev < .4, (mode, n, ev))
+        for k in fh.LOTO_MODES:   # at the taper's low end a Kinh about breaks even
+            self.assertTrue(.95 < fh.WIN_P_LOW * fh.LOTO_PAY[k] / 10 < 1.08, k)
+        self.assertTrue(.88 < cl / 600 < 1.05, cl / 600)
+        self.assertTrue(.8 < cot / 600 < 1.05, cot / 600)
 
     def test_kinh_by_the_players_own_marks(self):
         s = story(200)
@@ -660,7 +688,7 @@ class LotoShow(FairBase):
         """A card bought by the older client is claimed the old way and pays LOTO_PRIZE."""
         s = story(100)
         slot = int(self.clock.t // 60) + 1
-        self.dice(Dice(bits=winning_rs(True, slot)))
+        self.dice(loto_dice(winning_rs(True, slot), True))
         self.clock.t = slot * 60 + 1
         s, _ = self.act(s, 'fair_loto_buy')
         rv = fh.round_view(s['journey']['fair']['loto'])
@@ -698,7 +726,7 @@ class Points(FairBase):
         s = story(100)
         self.clock.t = at(2026, 10, 7, 23, 58)
         slot = int(self.clock.t // 60) + 1
-        self.dice(Dice(bits=winning_rs(True, slot)))
+        self.dice(loto_dice(winning_rs(True, slot), True))
         self.clock.t = slot * 60 + 1
         s, r = self.act(s, 'fair_loto_buy')
         before = s['journey']['fair']['pts']

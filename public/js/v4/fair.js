@@ -577,6 +577,8 @@ const nowSlot=()=>Math.floor(serverNow()/60000);
 /** This minute's vòng from the server's list (null once the list is behind the clock: the server then decides). */
 function curMode(){const g=G();if(!g)return 'thuong';const m=g.modes.find(x=>x[0]===nowSlot());return m?m[1]:null;}
 const modeLabel=m=>G()?.names?.[m]||MODE_INFO[m]?.[1]||m;
+/** A Kinh's multiple of the tờ's price ("2,2"); newer servers send it in modes_rule.pay. */
+const payX=x=>language()==='en'?String(x):String(x).replace('.',',');
 
 function syncLoto(){
   const v=L();
@@ -766,7 +768,7 @@ function buyPanel(){
     <div class="fh-nextmodes"><small>Phút sau:</small>${next}</div>
     <h4>🎟️ Chọn vé</h4><div class="fh-lttiers" role="group" aria-label="Loại vé">${tiers}</div>
     <div class="fh-chips" role="group" aria-label="Số tờ"><span>Số tờ</span>${ns}</div>
-    <p class="fh-pot">🏺 Hũ ván này: <b>${xu(prize)}</b> <small>· ${lt.n} tờ của bạn + ${rule.npcs} tờ hàng xóm, cô Bảy giữ ${rule.cut}% tiền gánh</small></p>
+    <p class="fh-pot">🏺 Hũ ván này: <b>${xu(prize)}</b> <small>· ${rule.pay?`kinh ăn gấp ${payX(rule.pay)} lần tiền tờ`:`${lt.n} tờ của bạn + ${rule.npcs} tờ hàng xóm, cô Bảy giữ ${rule.cut}% tiền gánh`}</small></p>
     <details class="fh-side"${lt.cl||lt.cot!=null?' open':''}><summary>🎲 Cược phụ (tùy chọn)</summary>
       <p class="small muted">Đoán về <b>số chốt ván</b>: con số làm đủ tờ đầu tiên trên chiếu (của bạn hay hàng xóm). Kết quả mở khi ván xong.</p>
       <div class="fh-sidebet"><b>Chẵn hay lẻ?</b> <small>ăn 1 trả 1 · số 7 và 70 là số ruột cô Bảy: ra hai số đó thì cô Bảy ăn cả hai cửa</small>
@@ -801,7 +803,7 @@ function howLoto(){
   return `<details class="fh-how"><summary>Cách chơi gánh lô tô</summary><ul>
     <li>Mua 1 đến ${g.cards} tờ dò. Cô Bảy hô số nào thì số đó sáng lên trên tờ của bạn, bạn tự chạm để đánh dấu, không ai đánh dấu giùm.</li>
     <li>Đủ hình của vòng thì bấm “Kinh!”. Cô Bảy dò lại: đúng thì ôm hũ; kinh hụt (hàng chưa đủ) thì bỏ ${xu(g.fine)} vô hũ phạt${g.hut_max?`, hụt ${g.hut_max} lần là nghỉ ván`:' rồi dò tiếp, hụt mấy lần cũng được'}.</li>
-    <li>Hũ = tiền tờ của cả chiếu (của bạn và hàng xóm), cô Bảy giữ một chút tiền gánh. Ai đủ trước người đó ăn, hai người cùng lúc thì bạn được.</li>
+    <li>${g.modes_rule?.thuong?.pay?`Kinh ăn gấp ${payX(g.modes_rule.thuong.pay)} lần tiền tờ bạn mua, Hũ đêm hội gấp ${payX(g.modes_rule.dem?.pay||g.modes_rule.thuong.pay)} lần. Ai đủ trước người đó ăn, hai người cùng lúc thì bạn được.`:'Hũ = tiền tờ của cả chiếu (của bạn và hàng xóm), cô Bảy giữ một chút tiền gánh. Ai đủ trước người đó ăn, hai người cùng lúc thì bạn được.'}</li>
     <li>Mỗi phút một vòng: thường, Kinh đôi (hai hàng), lật ngược (đọc số ngược). Từ ${g.dem_hours[0]} giờ tới ${g.dem_hours[g.dem_hours.length-1]+1} giờ tối là Hũ đêm hội: kinh cả tờ, sáu người chơi.</li>
     <li>Ví dụ vé vừa 1 tờ: vòng thường ăn ${xu(pz.thuong?.vua?.[0])}, Kinh đôi ${xu(pz.doi?.vua?.[0])}, Hũ đêm hội ${xu(pz.dem?.vua?.[0])}.</li>
     <li>Ai mua tờ trong cùng một phút sẽ nghe chung một lượt số.</li></ul></details>`;
