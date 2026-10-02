@@ -293,7 +293,7 @@ function stockBadge(c){
 }
 /** Phone bar (owner, 03/10: "Nông trại của bà"): the same five places in every career, always in sight:
  * (1) customers / work list, (2) the bench, (3) Kho, (4) Sổ tiệm, (5) Thêm. A career without a stock room or
- * a shop book gets its next own scene action there (Tủ hồ sơ, Bảng nội quy, Kế hoạch lớp…), then Chuẩn bị.
+ * a shop book gets its next own scene action there (Tủ hồ sơ, Kế hoạch lớp…), else Chuẩn bị.
  * Entries are [action, icon, label, badge, full name]; tablet/desktop keep every scene action. */
 function dockItems(c=room()){
   const all=sceneActions();if(layout()!=='phone')return all.map(([a,i,l])=>[a,i,l,0,l]);
@@ -301,7 +301,9 @@ function dockItems(c=room()){
   // A long name keeps its first half on the bar ("Sân chùa & chánh điện" → "Sân chùa"); the full one is its aria-label.
   const short=l=>l.length>14&&l.includes(' & ')?l.split(' & ')[0]:l;
   const add=(x,badge=0,label)=>{if(x&&!has(x[0]))out.push([x[0],x[1],label||short(x[2]),badge,x[2]]);return !!x;};
-  const own=()=>all.find(x=>!has(x[0])&&x[0]!=='decor');
+  // A career's own 'car:' entries (Bảng nội quy, Sổ tay nhà) open a pane inside its work sheet, so from the
+  // scene they show nothing: those stay in Thêm, and the slot goes to Chuẩn bị.
+  const own=()=>all.find(x=>!has(x[0])&&x[0]!=='decor'&&!x[0].startsWith('car:'));
   const prep=()=>nav.find(x=>x[0]==='prepare'&&!has('prepare'));
   add(all.find(x=>x[0]==='queue')||all[0]);
   add(all.find(x=>x[0]==='workbench'));
