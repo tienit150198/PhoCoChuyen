@@ -260,7 +260,8 @@ class Gripes(unittest.TestCase):
         self.assertFalse([m for m in clean if (m['feedback'].get('gripe') or {}).get('id') in ('dusty', 'mosquito')])
 
     def test_every_group_has_its_own_gripes(self):
-        for group in set(RG.GROUP.values()):
+        # The pagoda writes no side gripes at all (game/pagoda_voice.py), so it has none on purpose.
+        for group in set(RG.GROUP.values()) - {'pagoda'}:
             neg = [g for g in RG.GRIPES.values() if group in g['groups'] and not g['pos']]
             pos = [g for g in RG.GRIPES.values() if group in g['groups'] and g['pos']]
             self.assertGreaterEqual(len(neg), 4, group)
