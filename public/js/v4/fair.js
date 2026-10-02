@@ -42,7 +42,7 @@ const S={dlg:null,env:null,tab:'home',busy:false,lastRound:0,flash:null,skew:0,l
   oaq:{sel:null,anim:null,say:'',fast:false,quit:false,end:null,showEnd:false},
   ring:{round:null,t0:0,taps:[],hits:[],raf:0,result:null,say:''},
   bc:{chip:1,bets:{},phase:'idle',dice:null,last:null,say:''},
-  xd:{side:'chan',stake:10,phase:'idle',coins:null,last:null,raid:null,say:''},
+  xd:{side:'chan',stake:10,phase:'idle',coins:null,last:null,raid:null,say:'',hist:[],tally:{w:0,l:0,raid:0}},
   lt:{id:null,shown:0,marks:[],timer:null,speed:1,over:null,won:null,hut:null,claiming:false,check:false,hot:false,say:'',
     act:0,actAt:0,actSay:'',tier:'vua',n:1,cl:null,cls:2,cot:null,cots:2},
   board:{data:null,at:0,loading:false,error:''}};
@@ -439,20 +439,24 @@ async function finishRing(rd){
 
 /* ---- 🦀 Bầu cua ---- */
 const bcTotal=()=>Object.values(S.bc.bets).reduce((a,b)=>a+b,0);
+/** Most a bầu cua round may stake now: the table's max, today's room, the wallet (the server checks the same). */
+function bcCap(){const f=F(),max=R().bc_max||20;return {max,cap:Math.max(0,Math.min(max,f.today?.left??max,f.wallet??max)),left:f.today?.left??max,wallet:f.wallet??max};}
+function bcWhy(total){const c=bcCap();return total>c.left?`Hôm nay chỉ còn chơi được ${xu(c.left)}`:total>c.wallet?'Ví không đủ xu':'';}
 function bcView(){
-  const f=F(),b=S.bc,r=R(),total=bcTotal(),max=r.bc_max||20,stop=f.today?.done,rolling=b.phase!=='idle';
+  const f=F(),b=S.bc,r=R(),total=bcTotal(),max=bcCap().cap,stop=f.today?.done,rolling=b.phase!=='idle',why=bcWhy(total);
   const hits=b.last&&b.phase==='idle'?new Set(b.last.dice):new Set();
   const dice=(b.dice||['bau','cua','ca']).map((d,i)=>`<span class="fh-die" style="--i:${i}">${art(d)}<span class="sr-only">${FACE_NAME[d]}</span></span>`).join('');
   const mat=FACES.map(face=>{const n=b.bets[face]||0,hit=hits.has(face);
     return `<button type="button" class="fh-face fh-f-${face}${hit?' hit':''}${n?' bet':''}" data-fh="bet" data-face="${face}" data-fh-key="face-${face}" aria-label="${FACE_NAME[face]}${n?`, đang đặt ${n} xu`:''}"${rolling||stop?' disabled':''}>${art(face)}<b>${FACE_NAME[face]}</b>${n?`<em class="fh-stake">${n}</em>`:''}</button>`;}).join('');
-  const again=b.last&&b.phase==='idle'&&!stop?`<div class="row wrap fh-again">${btn('🔁 Lắc tiếp','roll',{},'primary small',total?' data-fh-key="again"':' disabled data-fh-key="again"')}${btn('Đặt lại','clear',{},'ghost small',' data-fh-key="reset"')}</div>`:'';
+  const again=b.last&&b.phase==='idle'&&!stop?`<div class="row wrap fh-again">${btn('🔁 Lắc tiếp','roll',{},'primary small',total&&!why?' data-fh-key="again"':' disabled data-fh-key="again"')}${btn('Đặt lại','clear',{},'ghost small',' data-fh-key="reset"')}</div>`:'';
   const res=b.last&&b.phase==='idle'?bcResult(b.last)+again:'';
   return `<section class="fh-stall fh-bc" aria-label="Bầu cua tôm cá">
     ${say(DEALER,b.say)}
     <div class="fh-table"><div class="fh-plate ${b.phase==='shake'?'shake':''} ${b.phase==='idle'&&b.dice?'open':''}" aria-live="polite"><div class="fh-dice">${dice}</div><div class="fh-bowl" aria-hidden="true"></div></div>${res}</div>
     <div class="fh-mat" role="group" aria-label="Chiếu bầu cua: chạm một con để đặt">${mat}</div>
     <div class="fh-chips" role="group" aria-label="Mỗi lần chạm đặt"><span>Mỗi chạm</span>${CHIPS.map(c=>`<button type="button" class="fh-chip${b.chip===c?' on':''}" data-fh="chip" data-v="${c}" aria-pressed="${b.chip===c}" data-fh-key="chip-${c}">${c}</button>`).join('')}${btn('Gom lại','clear',{},'ghost small',total&&!rolling?' data-fh-key="gom"':' disabled data-fh-key="gom"')}</div>
-    ${stop?'<p class="fh-rule"><b>Hôm nay chơi đủ rồi, mai ghé lắc tiếp nha.</b></p>':''}<div class="fh-go"><span>Đặt <b>${total}</b>/${max} xu</span>${btn(rolling?'Đang lắc…':'🥣 Lắc!','roll',{},'primary big',total&&!rolling&&!stop?' data-fh-key="roll"':' disabled data-fh-key="roll"')}</div>
+    ${stop?'<p class="fh-rule"><b>Hôm nay chơi đủ rồi, mai ghé lắc tiếp nha.</b></p>':''}<div class="fh-go"><span>Đặt <b>${total}</b>/${max} xu</span>${btn(rolling?'Đang lắc…':'🥣 Lắc!','roll',{},'primary big',total&&!rolling&&!stop&&!why?' data-fh-key="roll"':' disabled data-fh-key="roll"')}</div>
+    ${why&&!stop&&!rolling?`<p class="fh-why">${esc(why)}: bớt tiền đặt nha (Gom lại rồi đặt ít hơn).</p>`:''}
     <p class="fh-rule">Ra mấy con trùng mặt đặt thì ăn bấy nhiêu lần tiền cược, kèm tiền vốn. Ba con giống nhau (bão) ăn ${r.bao||10} lần.</p>
   </section>`;
 }
@@ -461,7 +465,7 @@ function bcResult(l){
   return `<div class="fh-result ${cls}"><b>${l.bao?'🌪️ Bão! ':''}${l.net>0?`+${xu(l.net)}`:l.net<0?`−${xu(-l.net)}`:'Hòa vốn'}</b>${l.points?`<small>+${l.points} điểm hội chợ</small>`:''}</div>`;
 }
 async function roll(){
-  const b=S.bc,total=bcTotal();if(!total||b.phase!=='idle')return;
+  const b=S.bc,total=bcTotal();if(!total||b.phase!=='idle'||bcWhy(total))return;
   b.phase='shake';b.say='Lắc nè, lắc nè… xóc xóc xóc!';S.flash=null;render();sfx('shake');
   const r=await shaken(()=>send('fair_bc',{bets:{...b.bets}}));
   if(!r?.fair){b.phase='idle';b.say=pick(DEALER.idle);render();return;}
@@ -479,20 +483,40 @@ async function shaken(go){
 function titles(x){if(x.titles?.length)S.flash={text:`🎉 Danh hiệu mới: ${x.titles.map(t=>TITLE_NAMES[t]||t).join(', ')}`,kind:'good'};}
 
 /* ---- 🕯️ Chiếu trong (xóc đĩa) ---- */
+/** What a chiếu trong round may cost at worst (the stake, or the stake and the fine when the police come): the
+ * server checks that against today's room (game/fair.py fair_xd, _guard_round). */
+const xdWorst=st=>st+Math.max(R().fine_min||5,Math.floor(st/2));
+/** Why a stake cannot be played right now ('' when it can). */
+function xdWhy(st){
+  const f=F(),left=f.today?.left??Infinity;
+  if(f.today?.done)return 'Hôm nay chơi vậy đủ rồi';
+  if(xdWorst(st)>left)return `Hôm nay chỉ còn chơi được ${xu(left)}`;
+  if(st>(f.wallet||0))return 'Ví không đủ xu';
+  return '';
+}
+const SIDE_NAME={chan:'CHẴN',le:'LẺ'};
 function xdView(){
-  const f=F(),x=S.xd,r=R(),wait=raidLeft(),busy=x.phase!=='idle',stop=f.today?.done;
+  const f=F(),x=S.xd,r=R(),wait=raidLeft(),busy=x.phase!=='idle',left=f.today?.left??0;
   if(x.raid)return raidCard(x.raid);
+  const minSt=Math.min(...XD_STAKES),can=XD_STAKES.filter(v=>!xdWhy(v)),why=xdWhy(x.stake);
   const coins=(x.coins||[1,0,1,0]).map((c,i)=>`<span class="fh-coin ${c?'red':'white'}" style="--i:${i}"></span>`).join('');
-  const res=x.last&&x.phase==='idle'?`<div class="fh-result ${x.last.net>0?'good':'bad'}"><b>${x.last.even?'Chẵn':'Lẻ'}! ${x.last.net>0?`+${xu(x.last.net)}`:`−${xu(-x.last.net)}`}</b>${x.last.points?`<small>+${x.last.points} điểm hội chợ</small>`:''}</div>`:'';
+  const L0=x.last&&x.phase==='idle'?x.last:null;
+  const res=L0?`<div class="fh-result ${L0.net>0?'good':'bad'}"><b>Ra ${L0.even?'CHẴN':'LẺ'} (${L0.coins.filter(Boolean).length} đỏ)</b><small>Bạn chọn ${SIDE_NAME[L0.side]||''} · ${L0.net>0?`thắng ${xu(L0.net)}`:`thua ${xu(-L0.net)}`}${L0.points?` · +${L0.points} điểm hội chợ`:''}</small></div>`:'';
   const closed=wait>0?`<section class="fh-card fh-swept"><span aria-hidden="true">🧹</span><div><b>Chiếu dẹp rồi, bày lại sau <span data-fh-count="raid">${clock(wait)}</span></b><small>Ra trước chơi bầu cua, lô tô cho lành nha.</small></div></section>`:'';
+  const broke=!wait&&!can.length?`<section class="fh-card fh-enough"><span aria-hidden="true">🍵</span><div><b>${f.today?.done?'Hôm nay chơi vậy đủ rồi, mai ghé tiếp nha.':left<xdWorst(minSt)?`Hôm nay chỉ còn chơi được ${xu(left)}, chiếu trong cần ít nhất ${xu(xdWorst(minSt))}`:'Ví không đủ xu cho chiếu trong'}</b><small>Chiếu trong tính cả tiền phạt nếu công an ghé (cược ${minSt} + phạt ${xdWorst(minSt)-minSt}). Ra trước chơi bầu cua hay ô ăn quan nha.</small>${btn('🦀 Ra chơi bầu cua','tab',{tab:'bc'},'ghost small',' data-fh-key="xd-bc"')}</div></section>`:'';
+  const hist=x.hist.length?`<div class="fh-xdhist" aria-label="Mấy ván gần đây"><small>Mấy ván gần đây</small><span class="fh-xdchips">${x.hist.map(h=>`<i class="${h.even?'chan':'le'}${h.win?' win':''}" title="${h.even?'Chẵn':'Lẻ'} · ${h.win?'thắng':'thua'}">${h.even?'C':'L'}</i>`).join('')}</span><small>Bạn: thắng <b>${x.tally.w}</b> · thua <b>${x.tally.l}</b>${x.tally.raid?` · bị kiểm tra ${x.tally.raid}`:''}</small></div>`:'';
+  const dis=busy||wait>0;
   return `<section class="fh-stall fh-xd" aria-label="Chiếu trong: xóc đĩa chẵn lẻ">
     ${say(HOST,x.say,'dark')}
     <p class="fh-warn">⚠️ Chiếu trong cược lớn hơn (${r.xd_min}–${r.xd_max} xu). Thỉnh thoảng công an phường ghé kiểm tra: mất tiền cược và bị phạt.</p>
-    ${closed}
+    ${closed}${broke}
     <div class="fh-table dark"><div class="fh-plate xd ${x.phase==='shake'?'shake':''} ${x.phase==='idle'&&x.coins?'open':''}"><div class="fh-coins">${coins}</div><div class="fh-bowl" aria-hidden="true"></div></div>${res}</div>
-    <div class="fh-sides" role="group" aria-label="Chọn chẵn hay lẻ">${[['chan','Chẵn','0, 2 hoặc 4 mặt đỏ'],['le','Lẻ','1 hoặc 3 mặt đỏ']].map(([id,l,s])=>`<button type="button" class="fh-side${x.side===id?' on':''}" data-fh="side" data-v="${id}" aria-pressed="${x.side===id}" data-fh-key="side-${id}"${busy||wait>0?' disabled':''}><b>${l}</b><small>${s}</small></button>`).join('')}</div>
-    <div class="fh-chips" role="group" aria-label="Tiền cược"><span>Cược</span>${XD_STAKES.map(v=>`<button type="button" class="fh-chip${x.stake===v?' on':''}" data-fh="stake" data-v="${v}" aria-pressed="${x.stake===v}" data-fh-key="stake-${v}"${busy||wait>0?' disabled':''}>${v}</button>`).join('')}</div>
-    <div class="fh-go"><span>${x.side==='chan'?'Chẵn':'Lẻ'} · <b>${xu(x.stake)}</b></span>${btn(busy?'Đang xóc…':'🫙 Xóc!','shakexd',{},'primary big',busy||wait>0||stop?' disabled data-fh-key="xd"':' data-fh-key="xd"')}</div>
+    ${hist}
+    <div class="fh-xsides" role="group" aria-label="Chọn chẵn hay lẻ">${[['chan','Chẵn','0, 2 hoặc 4 mặt đỏ'],['le','Lẻ','1 hoặc 3 mặt đỏ']].map(([id,l,s])=>`<button type="button" class="fh-xside${x.side===id?' on':''}" data-fh="side" data-v="${id}" aria-pressed="${x.side===id}" data-fh-key="side-${id}"${dis?' disabled':''}>${x.side===id?'<em class="fh-tick" aria-hidden="true">✓</em>':''}<b>${l}</b><small>${s}</small></button>`).join('')}</div>
+    <div class="fh-chips" role="group" aria-label="Tiền cược"><span>Cược</span>${XD_STAKES.map(v=>{const no=xdWhy(v);return `<button type="button" class="fh-chip${x.stake===v?' on':''}" data-fh="stake" data-v="${v}" aria-pressed="${x.stake===v}" data-fh-key="stake-${v}"${dis||no?' disabled':''}${no?` title="${esc(no)}"`:''}>${v}</button>`;}).join('')}</div>
+    <div class="fh-go"><span>Chọn <b>${x.side==='chan'?'Chẵn':'Lẻ'}</b> · <b>${xu(x.stake)}</b></span>${btn(busy?'Đang xóc…':'🫙 Xóc!','shakexd',{},'primary big',dis||why?' disabled data-fh-key="xd"':' data-fh-key="xd"')}</div>
+    ${why&&!wait&&can.length?`<p class="fh-why">${esc(why)}: chọn mức cược nhỏ hơn nha (tính cả tiền phạt ${xu(xdWorst(x.stake)-x.stake)} nếu công an ghé).</p>`:''}
+    <p class="fh-rule">Bốn đồng xu, mặt đỏ chẵn (0, 2, 4) là Chẵn, lẻ (1, 3) là Lẻ. Đoán trúng ăn một trả một. Mỗi đồng tung ngẫu nhiên, ván trước không ảnh hưởng ván sau.</p>
   </section>`;
 }
 function raidCard(r){
@@ -505,14 +529,16 @@ function raidCard(r){
     <div class="row wrap fh-raid-go">${btn('Dạ, em ra chơi bầu cua','raidok',{tab:'bc'},'primary')}${btn('Đi dò lô tô','raidok',{tab:'lt'},'ghost')}</div></section>`;
 }
 async function shakeXd(){
-  const x=S.xd;if(x.phase!=='idle')return;
+  const x=S.xd;if(x.phase!=='idle'||xdWhy(x.stake)||raidLeft()>0)return;
+  const side=x.side,stake=x.stake;
   x.phase='shake';x.say='Xóc nè! Nghe kêu lắc cắc chưa…';S.flash=null;render();sfx('shake');
-  const r=await shaken(()=>send('fair_xd',{side:x.side,stake:x.stake}));
+  const r=await shaken(()=>send('fair_xd',{side,stake}));
   x.phase='idle';
   if(!r?.fair){x.say=pick(HOST.idle);render();return;}
   const d=r.fair;
-  if(d.raid){x.raid={...d};x.coins=null;x.last=null;x.say=pick(HOST.idle);sfx('siren');render();return;}
-  x.coins=d.coins;x.last={...d};x.say=d.net>0?'Hên quá ta! Anh chung liền.':'Ván sau chắc chắn tới lượt em!';
+  if(d.raid){x.raid={...d};x.coins=null;x.last=null;x.tally.raid++;x.say=pick(HOST.idle);sfx('siren');render();return;}
+  x.coins=d.coins;x.last={...d,side:d.side||side};x.say=d.net>0?'Hên quá ta! Anh chung liền.':'Ván sau chắc chắn tới lượt em!';
+  x.hist=[{even:d.even,win:d.net>0},...x.hist].slice(0,10);x.tally[d.net>0?'w':'l']++;
   sfx('open');setTimeout(()=>sfx(d.net>0?'win':'lose'),260);titles(d);render();
 }
 
@@ -882,8 +908,8 @@ async function onClick(op,data){
     case'ringstart':ringStart();return;
     case'throw':ringThrow();return;
     case'chip':b.chip=Number(data.v)||1;render();return;
-    case'bet':{if(b.phase!=='idle')return;const max=R().bc_max||20,room=max-bcTotal();
-      if(room<=0){S.flash={text:`Mỗi ván đặt tối đa ${max} xu thôi nha.`,kind:'warn'};render();return;}
+    case'bet':{if(b.phase!=='idle')return;const c=bcCap(),room=c.cap-bcTotal();
+      if(room<=0){S.flash={text:c.cap<c.max?(c.left<=c.wallet?`Hôm nay chỉ còn chơi được ${xu(c.left)} thôi nha.`:`Ví chỉ còn ${xu(c.wallet)} thôi nha.`):`Mỗi ván đặt tối đa ${c.max} xu thôi nha.`,kind:'warn'};render();return;}
       const add=Math.min(b.chip,room);b.bets={...b.bets,[data.face]:(b.bets[data.face]||0)+add};b.last=null;S.flash=null;sfx('mark');render();return;}
     case'clear':b.bets={};b.last=null;render();return;
     case'roll':roll();return;

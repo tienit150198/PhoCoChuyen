@@ -119,11 +119,20 @@ html.reduce-motion .fh-plate.shake{animation:none}
 .fh-coin{display:inline-block;width:32px;height:32px;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,.35)}
 .fh-coin.red{background:radial-gradient(circle at 35% 30%,#ff9b86,#d22d1a 60%,#8f1408)}
 .fh-coin.white{background:radial-gradient(circle at 35% 30%,#ffffff,#efe6d2 60%,#bfae8c)}
-.fh-sides{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.fh-side{display:flex;flex-direction:column;align-items:center;gap:2px;min-height:64px;padding:8px;border-radius:14px;border:2px solid var(--line-strong);background:var(--surface);color:var(--ink);font:inherit;cursor:pointer}
-.fh-side b{font-size:1.15rem}
-.fh-side small{font-size:.78rem;color:var(--muted)}
-.fh-side.on{border-color:var(--accent);background:var(--accent-soft)}
+.fh-xsides{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fh-xside{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:64px;padding:8px;border-radius:14px;border:2px solid var(--line-strong);background:var(--surface);color:var(--ink);font:inherit;cursor:pointer}
+.fh-xside b{font-size:1.15rem}
+.fh-xside small{font-size:.78rem;color:var(--muted)}
+.fh-xside.on{border:3px solid var(--accent);background:var(--accent-soft);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent)}
+.fh-xside.on b{color:var(--accent-text)}
+.fh-tick{position:absolute;top:6px;right:8px;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font:800 .8rem/1 var(--font);font-style:normal}
+.fh-xdhist{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:0 0 10px;font-size:.8rem;color:var(--muted)}
+.fh-xdhist b{color:var(--ink)}
+.fh-xdchips{display:flex;gap:3px;flex-wrap:wrap}
+.fh-xdchips i{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;font:800 .72rem/1 var(--font);font-style:normal;border:2px solid transparent}
+.fh-xdchips i.chan{background:color-mix(in srgb,var(--fh-blue) 22%,var(--surface));color:var(--ink)}
+.fh-xdchips i.le{background:color-mix(in srgb,var(--fh-red) 22%,var(--surface));color:var(--ink)}
+.fh-xdchips i.win{border-color:var(--good)}
 .fh-raid{text-align:center;border-color:color-mix(in srgb,var(--bad) 45%,var(--line));background:linear-gradient(180deg,var(--bad-soft),var(--surface) 60%)}
 .fh-siren{display:flex;justify-content:center;gap:10px;margin:0 0 6px}
 .fh-siren i{display:block;width:34px;height:18px;border-radius:18px 18px 4px 4px;background:#e0302a;box-shadow:0 0 16px #e0302a}
