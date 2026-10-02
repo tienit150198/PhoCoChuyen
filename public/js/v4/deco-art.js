@@ -158,6 +158,42 @@ export const ART={
   o_meo:{h:30,d:()=>shadow(40,30)+E(20,-8,18,8,P.pinkD)+E(20,-10,14,5,P.pinkL,1)+E(22,-15,11,7,P.grey)+Pa('M13 -18l-1-8l6 4z',P.grey,1.2)+Pa('M22 -20l3-7l3 6z',P.grey,1.2)
     +L('M14 -16q1.5 1.5 3 0M20 -16q1.5 1.5 3 0',OL,1.1)+C(18.5,-13,1,P.pinkD,0)+blush(13,-12)+blush(25,-12)+Pa('M32 -12q6 0 4-6',P.grey,1.3)+L('M30 -18l3-2M31 -15h4',P.greyD,1)},
   ke_go_treo:{h:34,wall:1,d:(W)=>Rn(6,29,W-12,3,'#000',1,.08)+Pa('M12 28v7l7-7z',P.woodD,1.2)+Pa(`M${W-12} 28v7l-7-7z`,P.woodD,1.2)+R(2,23,W-4,6,P.wood,2,1.3)+Rn(5,24,W-10,1.6,'#fff',0,.5)+C(8,26,1,P.woodD,0)+C(W-8,26,1,P.woodD,0)},
+  /* 1.4.11: nhà tắm */
+  bon_tam:{h:58,d:(W,D)=>shadow(W,D)+C(18,-5,4.5,P.gold,1.2)+C(W-18,-5,4.5,P.gold,1.2)
+    +Pa(`M5 -42h${W-10}q0 32-20 36h${-(W-50)}q-20-4-20-36z`,P.white)+Rn(14,-30,W-28,3,P.sky,1.5)+shine(16,-38,4,18)
+    +R(1,-47,W-2,8,P.white,4)+Rn(7,-46,W-14,4,'#bfe7f7',2)
+    +C(30,-50,6,'#ffffff',1)+C(41,-52,4.5,'#ffffff',1)+C(35,-57,3.5,'#ffffff',1)+C(52,-50,3,'#ffffff',1)
+    +L(`M${W-16} -46v-12h-9`,P.greyD,3)+C(W-16,-58,2.4,P.grey,1)},
+  buong_tam:{h:94,d:()=>shadow(40,30)+R(1,-8,38,8,P.grey,2)+Rn(4,-92,32,84,P.skyL,3,.55)+L('M4 -92v84M36 -92v84M4 -92h32',P.greyD,2.4)
+    +L('M28 -88v6h-8',P.greyD,2.4)+E(19,-80,5,2,P.grey,1.1)+L('M15 -74v6M19 -72v8M23 -74v5',P.skyD,1.2,' opacity=".8"')
+    +L('M10 -60l6-14',P.white,2,' opacity=".7"')+C(31,-46,2,P.greyD,1)},
+  bon_rua:{h:44,d:(W)=>shadow(W,30)+box(3,W-6,0,20,8,P.wood,P.woodL,3)+L(`M${W/2} -18v16`,OL,1.2)+C(W/2-6,-11,1.6,P.cream,1)+C(W/2+6,-11,1.6,P.cream,1)
+    +E(W/2,-28.5,15,3.5,P.white,1.4)+E(W/2,-28.5,10,2,'#cfe6f1',0)+L(`M${W/2+12} -30v-10h-7`,P.greyD,2.4)},
+  guong_tam:{h:34,wall:1,g:(W)=>[W/2,8,40],d:(W,H)=>R(10,5,W-20,H-9,P.woodL,7)+Rn(14,9,W-28,H-17,'#dff1fb',4)+L(`M${W/2-8} 18l8-7M${W/2-2} 22l12-11`,'#fff',2)
+    +[18,32,48,62].filter(x=>x<W-10).map(x=>C(x,4,2.8,P.butter,1)).join('')},
+  ke_khan:{h:34,wall:1,d:(W)=>R(6,6,W-12,3.5,P.greyD,1.5,1)+R(4,4,4,8,P.grey,1.5,1)+R(W-8,4,4,8,P.grey,1.5,1)
+    +R(12,8,24,22,P.pink,3)+Rn(12,22,24,3,P.pinkD)+R(42,8,24,17,P.mint,3)+Rn(42,19,24,2.5,P.mintD)},
+  ke_tam:{h:36,d:()=>shadow(40,30)+R(7,-36,4,36,P.woodD,1.5,1.1)+R(29,-36,4,36,P.woodD,1.5,1.1)+R(4,-34,32,4,P.wood,2,1.2)+R(4,-20,32,4,P.wood,2,1.2)+R(4,-6,32,4,P.wood,2,1.2)
+    +R(10,-30,6,10,P.pink,2,1)+R(18,-28,5,8,P.mint,2,1)+E(29,-24,4,3.5,P.butter,1)+R(10,-16,18,9,P.white,3,1)+Rn(10,-12,18,2,P.skyD,1)},
+  gio_do_tam:{h:24,top:1,d:()=>E(20,-2,13,2.5,'#000',0,' opacity=".1"')+R(11,-21,6,12,P.pink,2)+R(18,-19,5,10,P.mint,2)+E(28,-12,5,4,P.sky)
+    +R(7,-12,26,12,P.woodL,3)+L('M9 -8h22M9 -4h22',P.woodD,.9)+L('M14 -12v12M20 -12v12M26 -12v12',P.woodD,.7)},
+  tham_tam:{h:14,rug:1,d:(W,D)=>R(4,-D+5,W-8,D-9,P.sky,8)+R(9,-D+9,W-18,D-17,P.skyL,5,1)+[W*.3,W*.5,W*.7].map(x=>Pa(`M${x} ${-D/2-3}q-2.5 3 0 5q2.5-2 0-5z`,P.skyD,0)).join('')},
+  vit_cao_su:{h:24,top:1,d:()=>E(20,-2,11,2.5,'#000',0,' opacity=".1"')+Pa('M8 -8q0-9 10-9h6q8 0 9 8q-3 7-13 7q-12 0-12-6z',P.butter)+C(25,-18,6.5,P.butter)
+    +Pa('M30 -18l6 1l-6 2.5z',P.peachD,1)+C(26,-20,1.3,OL,0)+blush(24,-16)+Pa('M10 -10q5-5 10 0',P.butterD,1)},
+  /* hồ bơi & sân vườn */
+  ghe_tam_nang:{h:46,d:(W)=>shadow(W,30)+legs([8,W-14],-10,10,P.greyD,3)+R(4,-16,W-8,6,P.white,3)+R(6,-21,W-34,6,P.sky,3)+L(`M14 -21v6M26 -21v6M38 -21v6`,P.skyD,1)
+    +Pa(`M${W-32} -18l20-26q4-3 7 1l-17 25z`,P.sky)+Rn(14,-25,20,4,P.butter,2)},
+  du_che:{h:100,d:()=>E(20,-3,11,3,P.greyD)+R(18.5,-84,3,82,P.greyD,1,1)+Pa('M-16 -72q36-32 72 0z',P.red)+Pa('M8 -72q12-28 24 0z',P.cream,1.2)
+    +Pa('M-16 -72q4 4 8 0q4 4 8 0q4 4 8 0q4 4 8 0q4 4 8 0q4 4 8 0q4 4 8 0q4 4 8 0q4 4 8 0',P.red,1.2)+C(20,-90,2.6,P.red,1.2)},
+  phao:{h:20,d:()=>E(20,-4,17,3,'#000',0,' opacity=".08"')+E(20,-9,17,8.5,P.red)+Pa('M12 -16q-8 2-8 7l8 0zM28 -2q8-2 8-7l-8 0z',P.white,1)+E(20,-10,7.5,3.4,'#7ec4e6',1.2)},
+  lo_nuong:{h:58,g:()=>[20,-34,22],d:()=>shadow(40,30)+L('M10 0l6-18M30 0l-6-18M20 -18v18',P.dark,2.2)+Pa('M5 -34h30q0 17-15 17q-15 0-15-17z',P.dark)
+    +R(3,-36,34,3,P.greyD,1.5,1)+R(7,-41,26,3,P.peachD,1.5,1)+[11,18,25].map(x=>C(x,-42,2.4,[P.redD,P.leafD,P.butterD][(x-11)/7],1)).join('')
+    +L('M14 -48q-3-4 0-8M24 -50q-3-4 0-8',P.greyD,1.1,' opacity=".6"')+Rn(10,-27,20,2,P.red,1)},
+  cay_dua:{h:92,d:()=>shadow(40,30)+Pa('M18 -18q-2-30 4-62h4q-4 32-2 62z',P.woodD,1.3)+L('M19 -30h6M20 -42h6M21 -54h6M23 -66h5',P.wood,1.4)
+    +leafE(10,-80,5,15,-60,P.leaf)+leafE(36,-80,5,15,60,P.leaf)+leafE(14,-88,4.5,13,-25,P.leafL)+leafE(32,-88,4.5,13,25,P.leafL)+leafE(24,-92,4,11,0,P.leafD)
+    +C(22,-77,3,P.woodD,1)+C(27,-76,3,P.woodD,1)+pot(20,26,18)},
+  den_vuon:{h:76,g:()=>[20,-62,30],d:()=>E(20,-3,9,3,P.dark)+R(18,-56,4,54,P.dark,1.5,1.1)+R(12,-70,16,15,P.butter,3)+Rn(15,-67,10,9,'#fff3b0',2)
+    +Pa('M10 -70l10-8l10 8z',P.dark)+C(20,-79,1.8,P.dark,0)+R(11,-56,18,3,P.dark,1.5,1)},
 };
 
 /* ---------------------------------------------------------------- the room */
@@ -182,7 +218,9 @@ export function lightAt(minute){
 export const night=()=>{const h=new Date().getHours();return h>=18||h<6;};
 
 const WALLS={l0:'#eadcc3',l1:'#f9e7cf',l2:'#dfeee0',studio:'#f3e2cc',attic:'#ecd2ab',tro:'#d9eee5',loft:'#f6e3d3',bunk:'#e7dcf5'};
-const FLOORS={l0:'#cfc6b6',l1:'#efe6d6',l2:'#d29a63',attic:'#c99363',tro:'#eadfcf',loft:'#d7a874',bunk:'#fdf3ec',balcony:'#e2d3bf',yard:'#a8d58a'};
+const FLOORS={l0:'#cfc6b6',l1:'#efe6d6',l2:'#d29a63',attic:'#c99363',tro:'#eadfcf',loft:'#d7a874',bunk:'#fdf3ec',balcony:'#e2d3bf',yard:'#a8d58a',pool:'#efe2cc'};
+/** 1.4.11: a bathroom (its own or the shared one) is tiled up to two thirds of the wall, and on the floor. */
+const tiledRoom=room=>room.type==='bath'||room.type==='bathc';
 
 /** Sky through a window or over a balcony, by the light of the hour. */
 function sky(x,y,w,h,L,id){
@@ -259,6 +297,10 @@ function fixture(f,room,G,parts,Lt,uid){
     if(f.t==='slope')return Pa(`M${x-PX} ${y-TOP-CEIL}h${w+PX+20}L${x-PX} ${y+h+10}z`,'#b98a5e')+L(`M${x-PX} ${y+h-6}L${x+w+6} ${y-TOP-CEIL}M${x-PX} ${y+h-24}L${x+w-14} ${y-TOP-CEIL}`,'#8e6440',2.4);
     if(f.t==='shelf'){const ly=y+(f.ledge||24);   // the dorm's shelf over the pillow: a plank on two brackets
       return Rn(x+6,ly+5,w-12,3,'#000',1,.08)+Pa(`M${x+12} ${ly+4}v8l8-8z`,P.woodD,1.2)+Pa(`M${x+w-12} ${ly+4}v8l-8-8z`,P.woodD,1.2)+R(x+3,ly,w-6,5,P.woodL,2,1.3)+Rn(x+6,ly+1,w-12,1.4,'#fff',0,.5);}
+    if(f.t==='shower'){const v=y+h*.55;   // the shower on the bathroom wall: its pipe and head, the tap, the hose, the drain
+      return Rn(x+2,y,w-4,G.FY-y,'#cfe8ec',3,.55)+L(`M${x+30} ${y+2}v10h-12`,'#9aa7b0',3)+E(x+16,y+14,8,3,'#c7d3db',1.3)
+        +L(`M${x+12} ${y+20}v8M${x+16} ${y+19}v12M${x+20} ${y+20}v7`,'#7fb8e0',1.3,' opacity=".75"')
+        +R(x+26,v,8,10,'#c7d3db',2,1.1)+L(`M${x+30} ${v+10}q-14 6-8 ${G.FY-v-16}`,'#9aa7b0',1.6)+E(x+w/2,G.FY+8,8,2.4,'#9aa7b0',0);}
     return '';
   }
   // floor fixtures: drawn standing on their row
@@ -270,6 +312,15 @@ function fixture(f,room,G,parts,Lt,uid){
       +(lv?R(w-56,-top-8,40,4,'#2f2f35',1.5,1)+E(w-46,-top-9,6,1.6,'#4a4a52',0)+E(w-26,-top-9,6,1.6,'#4a4a52',0):R(w-50,-top-12,28,8,'#7d7a74',2,1.2)+C(w-36,-top-13,4,'#4a4a52',1));
     return s+'</g>';}
   if(f.t==='ladder')return `<g transform="translate(${x} ${by})">`+Rn(4,-FR+4,CW-8,FR-6,'#6e4a2c',3)+L(`M10 4v${-FR-14}M30 4v${-FR-14}M10 -4h20M10 -14h20M10 -24h20`,P.woodD,2.6)+'</g>';
+  if(f.t==='toilet')return `<g transform="translate(${x} ${by})">`+E(CW/2,-4,15,3,'#000',0,' opacity=".08"')+R(9,-46,22,24,P.white,3)+R(7,-48,26,5,P.white,2.5)+C(CW/2,-38,2,P.grey,1)
+    +Pa('M6 -24h28q0 14-9 19h-10q-9-5-9-19z',P.white)+E(CW/2,-24,14,3.4,P.white)+E(CW/2,-24,9,1.8,'#cfe6f1',0)+'</g>';
+  if(f.t==='pool'){const y0=G.FY+f.y*FR,h=f.h*FR,id=`dcPool${uid}`,dk=Lt.night;   // the water: waves drift (CSS, not with reduced motion)
+    const waves=[.28,.55,.8].map((t,i)=>{let d=`M${x+12+i*6} ${n(y0+h*t)}`;for(let a=x+12+i*6;a<x+w-24;a+=16)d+='q4 -3 8 0t8 0';return L(d,'#ffffff',1.4,` class="dc-wave w${i}" opacity=".7"`);}).join('');
+    return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${dk?'#2c5b86':'#3aa5d4'}"/><stop offset="1" stop-color="${dk?'#4a8cbc':'#93def3'}"/></linearGradient></defs>`
+      +R(x-7,y0-7,w+14,h+14,'#f4ead9',10,1.5)+L(Array.from({length:f.w*2},(_,i)=>`M${x+i*20} ${y0-7}v7M${x+i*20} ${y0+h}v7`).join(''),'#e2d4bd',1)
+      +Rn(x,y0,w,h,`url(#${id})`,6)+Rn(x,y0,w,7,'#000',4,.13)+(dk?E(x+w/2,y0+h*.6,w*.3,h*.3,'#bff3ff',0,' opacity=".35"'):'')
+      +`<g pointer-events="none">${waves}${[[.2,.4],[.62,.25],[.8,.68]].map(([a,b],i)=>C(x+w*a,y0+h*b,1.6,'#ffffff',0).replace('/>',` class="dc-glint g${i}"/>`)).join('')}</g>`
+      +L(`M${x+w-20} ${y0-12}v20M${x+w-10} ${y0-12}v20M${x+w-20} ${y0-2}h10M${x+w-20} ${y0+6}h10`,'#aab8c2',2.4);}
   if(f.t==='pillow')return `<g transform="translate(${x} ${by})">`+E(CW/2,-6,17,3,'#000',0,' opacity=".08"')+R(3,-24,CW-6,18,P.white,8)+L('M8 -15q12 4 24 0',P.grey,1.2)+C(CW-10,-18,1.6,P.pinkL,0)+'</g>';
   return '';
 }
@@ -311,6 +362,9 @@ export function roomBack(room,G,parts,Lt,uid='',skin={}){
   }else{
     if(ws){const [defs,fill]=ws(`dcW${uid}`);out.push((defs?`<defs>${defs}</defs>`:'')+Rn(0,0,G.W,G.FY,fill));
       if(skin.w==='op_go'){const t=G.FY-Math.round((G.FY-G.WY)*.45);out.push(Rn(0,t,G.W,G.FY-t,'#d8a874')+Array.from({length:Math.ceil(G.W/22)},(_,i)=>L(`M${i*22+11} ${t+4}V${G.FY}`,'#c48f5c',1.2)).join('')+R(-2,t-3,G.W+4,5,P.woodD,2,1.1));}
+    }else if(tiledRoom(room)){const t=Math.round(CEIL+(G.FY-CEIL)*.34),id=`dcTile${uid}`;
+      out.push(Rn(0,0,G.W,G.FY,wallLv===0?'#ece4d4':'#f6f0e5')+`<defs>${pat(id,20,20,Rn(0,0,20,1,'#c3dcd9')+Rn(0,0,1,20,'#c3dcd9'),'#e3f2f0')}</defs>`
+        +Rn(0,t,G.W,G.FY-t,`url(#${id})`)+R(-2,t-3,G.W+4,5,'#9fcfca',2,1));
     }else{
       out.push(Rn(0,0,G.W,G.FY,WALLS[wallKey]||WALLS.l1));
       if(wallKey==='l2'){out.push(`<defs><pattern id="dcPaper${uid}" width="22" height="22" patternUnits="userSpaceOnUse"><path d="M11 4l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#c4d8bd"/></pattern></defs>`+Rn(0,0,G.W,G.FY,`url(#dcPaper${uid})`)+Rn(0,G.FY-24,G.W,24,'#c99a6c'));}
@@ -335,6 +389,8 @@ export function roomBack(room,G,parts,Lt,uid='',skin={}){
   if(fs&&!room.out||fs&&room.type==='balcony'){
     const [defs,fill]=fs(`dcF${uid}`);out.push(`<defs>${defs}</defs>`+Rn(0,G.FY,G.W,G.H-G.FY,fill));
     if(room.type==='bunk')out.push(Rn(0,G.FY,G.W,5,'#efe2d6'));
+  }else if(tiledRoom(room)){const id=`dcFt${uid}`;
+    out.push(`<defs>${pat(id,24,18,Rn(0,0,12,9,'#d3e8ec')+Rn(12,9,12,9,'#d3e8ec')+Rn(0,17,24,1,'#c0d9de'),'#f2f9f9')}</defs>`+Rn(0,G.FY,G.W,G.H-G.FY,`url(#${id})`));
   }else{
     const fc=FLOORS[floorKey]||FLOORS.l1;
     out.push(Rn(0,G.FY,G.W,G.H-G.FY,fc));
@@ -370,7 +426,9 @@ export const TINT={sofa:'pink',ban_tra:'wood',giuong:'sky',tv:'wood',be_ca:'wood
   ban_xep:'wood',ghe_dau:'red',ban_gaming:'dark',ghe_gaming:'red',xich_du:'wood',vong:'sky',den_ban:'butter',den_cay:'cream',
   den_ngu:'red',den_tha:'wood',den_led:{'#ff7ab8':'c','#ffd36b':'l','#6be0c8':'c','#8a8cff':'d'},cay_monstera:{white:'c',grey:'d'},
   cay_luoi_ho:'lilac',xuong_rong:'pot',binh_hoa:{'#cdeef7':'c'},gian_rau:'wood',rem:'mint',poster:'lilac',ke_treo:'wood',
-  bang_ghim:'wood',dong_ho_cuc_cu:'wood',quat:'sky',quat_mini:'pink',loa:'sky',may_choi_game:['sky','red'],hop_nhac:'pink',o_meo:'pink',ke_go_treo:'wood'};
+  bang_ghim:'wood',dong_ho_cuc_cu:'wood',quat:'sky',quat_mini:'pink',loa:'sky',may_choi_game:['sky','red'],hop_nhac:'pink',o_meo:'pink',ke_go_treo:'wood',
+  bon_tam:'white',buong_tam:'sky',bon_rua:'wood',guong_tam:'wood',ke_khan:'pink',ke_tam:'wood',gio_do_tam:'wood',tham_tam:'sky',
+  vit_cao_su:'butter',ghe_tam_nang:'sky',du_che:'red',phao:'red',lo_nuong:'dark',cay_dua:'pot',den_vuon:'dark'};
 const MAPS=new Map();
 function tintMap(id){
   if(MAPS.has(id))return MAPS.get(id);

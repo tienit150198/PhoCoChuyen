@@ -158,7 +158,7 @@ HOMES = {
                     desc='Sân trước có cây khế và giàn bông giấy, cổng sắt sơn xanh, chỗ để hai chiếc xe.',
                     price=14400, upkeep=5, comfort=4),
     'biet_thu_vuon': dict(kind='own', group='villa', emoji='🌳', name='Biệt thự Vườn Cau', where='Đường ven kênh, cuối phố',
-                          desc='Hai tầng giữa vườn cau và hàng chuối. Sáng nghe chim, chiều hái rau, cuối tuần cả xóm sang chơi.',
+                          desc='Hai tầng giữa vườn cau và hàng chuối, hồ bơi nhỏ sau nhà. Sáng nghe chim, chiều hái rau, cuối tuần cả xóm sang chơi.',
                           perk='🌳 Vườn rộng, có xích đu', price=36000, upkeep=12, comfort=6, score=700),
     'biet_thu_song': dict(kind='own', group='villa', emoji='🌅', name='Biệt thự Sông Hồng', where='Bờ sông, cuối con đê',
                           desc='Ba tầng nhìn ra sông, hồ bơi nhỏ sau nhà. Hoàng hôn đổ xuống mặt nước mỗi chiều.',

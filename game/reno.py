@@ -84,7 +84,7 @@ HOUSES = {
     'nha_pho': dict(size=110, start=72, rooms=(('living', 3, 4), ('bed', 2, 3), ('kitchen', 2, 3), ('balcony', 0, 2))),
     'nha_san': dict(size=140, start=70, rooms=(('living', 3, 4), ('bed', 2, 3), ('bed2', 2, 3), ('kitchen', 2, 3), ('yard', 0, 4, 'Sân trước'))),
     'biet_thu_vuon': dict(size=240, start=85, rooms=(('living', 3, 5), ('bed', 3, 4), ('bed2', 2, 3), ('kitchen', 2, 3), ('yard', 0, 5, 'Vườn cau'))),
-    'biet_thu_song': dict(size=320, start=92, rooms=(('living', 3, 5), ('bed', 3, 4), ('bed2', 3, 4), ('kitchen', 2, 4), ('yard', 0, 5, 'Sân hồ bơi'))),
+    'biet_thu_song': dict(size=320, start=92, rooms=(('living', 3, 5), ('bed', 3, 4), ('bed2', 3, 4), ('kitchen', 2, 4), ('yard', 0, 5, 'Sân ven sông'))),
 }
 # A part's start against the home's: the kitchen and the walls age first.
 START_OFF = dict(wall=-5, roof=0, floor=5, power=-3, kitchen=-8)

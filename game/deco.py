@@ -80,6 +80,8 @@ _ON = re.compile(r'^#?[a-z0-9_]{1,24}$')
 _NONCE = re.compile(r'^[A-Za-z0-9_-]{4,40}$')
 _SKIN = re.compile(r'^[a-z0-9_]{1,24}$')
 FREE_KEYS = {'v', 'at', 'sig', 'items', 'skins', 'owned', 'ops'}
+NEW_KEYS = {'v', 'at', 'items'}   # journey.decor_new (1.4.11)
+NEW_VERSION = 1
 
 
 def _rn():
@@ -90,6 +92,11 @@ def _rn():
 def _core():
     from . import engine
     return engine
+
+
+def _rx():
+    from . import relax
+    return relax
 
 
 def layer_of(k: str) -> str:
@@ -109,6 +116,15 @@ def get(s: dict) -> dict | None:
     j = s.get('journey')
     d = j.get('deco') if isinstance(j, dict) else None
     return d if isinstance(d, dict) else None
+
+
+def get_new(s: dict) -> dict | None:
+    """journey.decor_new: the free layout of the rooms added since 1.4.11 (the bathroom, a villa's pool), apart from
+    journey.decor so that an older build, which checks every piece there against the rooms it knows, never sees them
+    (it keeps them in its bag; the key itself it ignores). {v, at (the place), items {uid: piece}}; absent when empty."""
+    j = s.get('journey')
+    X = j.get('decor_new') if isinstance(j, dict) else None
+    return X if isinstance(X, dict) else None
 
 
 def get_free(s: dict) -> dict | None:
@@ -150,21 +166,35 @@ def place(j: dict) -> dict:
 _ROOMS: dict = {}
 
 
+def kit_room(kit: str) -> dict:
+    """A room every home of a kind gets since 1.4.11 (deco_content.KITS), marked new (an older build does not know it)."""
+    return dict(DC.KITS[kit], kit=kit, new=True)
+
+
 def rooms_of(key: str) -> list | None:
-    """The rooms of the place `key` (None: a place this build does not know). Shared, never changed."""
+    """The rooms of the place `key` (None: a place this build does not know). Shared, never changed.
+    The rooms it always had come first, then its new ones (deco_content.EXTRA_ROOMS: the bathroom, a villa's pool)."""
     if key in _ROOMS:
         return _ROOMS[key]
     bits = key.split(':')
     out = None
+    kind = ''
     if key == 'attic':
-        out = list(DC.RENT_ROOMS['attic'])
+        out, kind = list(DC.RENT_ROOMS['attic']), 'attic'
     elif bits[0] == 'rent' and len(bits) == 3 and bits[1] in DC.RENT_ROOMS:
-        out = list(DC.RENT_ROOMS[bits[1]])
+        out, kind = list(DC.RENT_ROOMS[bits[1]]), bits[1]
     elif bits[0] in ('own', 'shared') and bits[-1] in _rn().HOUSES:
-        out = [DC.own_room(*row) for row in _rn().HOUSES[bits[-1]]['rooms']]
+        out, kind = [DC.own_room(*row) for row in _rn().HOUSES[bits[-1]]['rooms']], bits[-1]
+    if out is not None:
+        out += [kit_room(k) for k in DC.EXTRA_ROOMS.get(kind, ())]
     if out is not None and len(_ROOMS) < 64:
         _ROOMS[key] = out
     return out
+
+
+def old_rooms(rooms: list) -> list:
+    """The rooms an older build knows (the 1.3.2 grid mirror is about these only)."""
+    return [r for r in rooms if not r.get('new')]
 
 
 # ---------------------------------------------------------------- the 1.3.2 grid (the mirror an older build reads)
@@ -487,6 +517,7 @@ def grid_guess(rooms: list, kinds: dict, fpos: dict) -> dict:
 
 def to_grid(rooms: list, kinds: dict, fpos: dict, order: list) -> dict:
     """The grid mirror of a free layout: what a 1.3.2 build would show (its rules; the rest waits in its bag)."""
+    rooms = old_rooms(rooms)
     g = grid_guess(rooms, kinds, fpos)
     kept, _out = settle(rooms, kinds, {u: g[u] for u in fpos if u in g}, order)
     return kept
@@ -511,7 +542,8 @@ def _merge(rooms: list, kinds: dict, order: list, fpos: dict, gpos: dict) -> dic
 
 # ---------------------------------------------------------------- the layout as it stands today
 def layout(s: dict) -> dict:
-    """Today's layout without writing anything: place, rooms, kinds {uid: k}, order, pos {uid: piece}, skins."""
+    """Today's layout without writing anything: place, rooms, kinds {uid: k}, order, pos {uid: piece} (journey.decor and
+    journey.decor_new together), skins, journey (for _store)."""
     j = s['journey']
     pl = place(j)
     rooms = rooms_of(pl['key']) or []
@@ -535,8 +567,11 @@ def layout(s: dict) -> dict:
         skins = {rm: dict(v) for rm, v in D['skins'].items()}
     else:
         pos = from_grid(rooms, kinds, gpos)
+    X = get_new(s)
+    if X is not None and X['at'] == pl['key']:   # the new rooms' pieces (a piece an older build has placed since: its spot)
+        pos.update({u: dict(v) for u, v in X['items'].items() if u in kinds and u not in pos})
     pos, _ = settle_free(rooms, kinds, pos, order)
-    return dict(place=pl, rooms=rooms, kinds=kinds, order=order, pos=pos, skins=skins)
+    return dict(place=pl, rooms=rooms, kinds=kinds, order=order, pos=pos, skins=skins, journey=j)
 
 
 def _match(need: tuple, items: list, tags: tuple) -> tuple[int, list]:
@@ -661,6 +696,9 @@ def on_life_day(s: dict, result: dict | None = None) -> list[str]:
         d['at'], d['pos'] = pl['key'], {}
     if D is not None and D['at'] != pl['key']:
         D.update(at=pl['key'], items={}, skins={}, sig=sig(d['pos']))
+    X = get_new(s)
+    if X is not None and X['at'] != pl['key']:
+        j.pop('decor_new')
     target = int(j['life_day'])
     d['day'] = max(d['day'], target - CATCHUP)
     if d['day'] < target:
@@ -696,7 +734,8 @@ _WHY = {
     'room_full': '{room} bày đủ {cap} món rồi. Thu hồi bớt món khác nhé.',
 }
 FIX_NAMES = {'door': 'cửa ra vào', 'window': 'cửa sổ', 'counter': 'kệ bếp', 'splash': 'tường bếp', 'slope': 'mái gác',
-             'ladder': 'cầu thang', 'pillow': 'cái gối', 'shelf': 'kệ đầu giường'}
+             'ladder': 'cầu thang', 'pillow': 'cái gối', 'shelf': 'kệ đầu giường', 'shower': 'vòi sen', 'toilet': 'bồn cầu',
+             'pool': 'hồ bơi'}
 
 
 def why(code: str, k: str, room: dict, other: str, kinds: dict) -> str:
@@ -729,9 +768,17 @@ def _ensure(s: dict) -> tuple[dict, dict, dict]:
 
 
 def _store(d: dict, D: dict, L: dict, pos: dict) -> None:
-    """Write the free layout and its grid mirror (what an older build reads)."""
-    D['items'] = {u: dict(pos[u]) for u in L['order'] if u in pos}
-    L['pos'] = {u: dict(v) for u, v in D['items'].items()}
+    """Write the free layout and its grid mirror (what an older build reads). The pieces in the new rooms go to
+    journey.decor_new, the others to journey.decor (an older build checks every piece there against its own rooms)."""
+    j = L['journey']
+    new = {r['id'] for r in L['rooms'] if r.get('new')}
+    D['items'] = {u: dict(pos[u]) for u in L['order'] if u in pos and pos[u]['r'] not in new}
+    xs = {u: dict(pos[u]) for u in L['order'] if u in pos and pos[u]['r'] in new}
+    if xs:
+        j['decor_new'] = dict(v=NEW_VERSION, at=L['place']['key'], items=xs)
+    else:
+        j.pop('decor_new', None)
+    L['pos'] = {u: dict(v) for u, v in list(D['items'].items()) + list(xs.items())}
     g = to_grid(L['rooms'], L['kinds'], D['items'], L['order'])
     d['pos'] = {u: list(g[u]) for u in L['order'] if u in g}
     D['sig'] = sig(d['pos'])
@@ -1136,7 +1183,8 @@ def catalogue() -> dict:
                 skins=[dict(id=k, part=v['part'], name=v['name'], price=v['price'], types=list(v['types']) if v['types'] else None)
                        for k, v in SKINS.items()],
                 levels=[dict(min=low, name=n) for low, n in LEVELS], rent_steps=[dict(min=low, spirit=n) for low, n in RENT_STEPS],
-                fix_names=dict(FIX_NAMES), sell_pct=SELL_PCT, guest_min=GUEST_MIN, u=U, z_max=Z_MAX)
+                fix_names=dict(FIX_NAMES), sell_pct=SELL_PCT, guest_min=GUEST_MIN, u=U, z_max=Z_MAX,
+                kits={k: _room_view(kit_room(k)) for k in DC.KITS}, no_skin=list(DC.NO_SKIN))
 
 
 def _place_name(pl: dict) -> tuple[str, str]:
@@ -1150,6 +1198,11 @@ def _fix_view(f: dict) -> dict:
     P = _ff(f)
     return dict(f, block=bool(P.get('block')), rug=bool(P.get('rug')), allow=list(P.get('allow', ())), top=P.get('top', 0),
                 ledge=P.get('ledge', 0), hold=P.get('hold', 0))
+
+
+def _room_view(x: dict) -> dict:
+    return dict(id=x['id'], type=x['type'], emoji=x['emoji'], name=x['name'], cols=x['cols'], wrows=x['wrows'],
+                frows=x['frows'], out=x['out'], tags=list(x['tags']), fix=[_fix_view(f) for f in fixtures(x)], cap=room_cap(x))
 
 
 def public(s: dict) -> dict | None:
@@ -1188,16 +1241,21 @@ def public(s: dict) -> dict | None:
     g = guest(s, L, total, j['life_day'])
     stats = dict(d['stats']) if d else {k: 0 for k in STATS}
     owned = [k for k in (D['owned'] if D else []) if k in SKINS]
-    return dict(place=dict(key=pl['key'], where=pl['where'], kind=pl['kind'], name=name, emoji=emoji, repairs=own),
-                rooms=[dict(id=x['id'], type=x['type'], emoji=x['emoji'], name=x['name'], cols=x['cols'], wrows=x['wrows'],
-                            frows=x['frows'], out=x['out'], tags=list(x['tags']), fix=[_fix_view(f) for f in fixtures(x)],
-                            cap=room_cap(x), skin={k: v for k, v in L['skins'].get(x['id'], {}).items() if v in SKINS})
-                       for x in L['rooms']],
-                items=placed, bag=bag, count=len(r['items']) if r else 0, max=rn.ITEMS_MAX, owned=owned,
-                cozy=dict(total=total, items=pts['items'], sets=pts['sets'], up=up, level=level_of(total), perk=perk,
-                          off=off, steps=steps, next=nxt),
-                sets=[x for x in sets if x['done'] or x['possible']], guest=g, stats=stats, tip=stats['placed'] == 0 and not placed,
-                ready=have['wallet'] + have['balance'])
+    skin = lambda x: {k: v for k, v in L['skins'].get(x['id'], {}).items() if v in SKINS}   # noqa: E731
+    # `rooms`: the rooms every build draws; `more`: the new ones by their template (catalogue `kits`), which a page
+    # loaded before 1.4.11 ignores ({t: kit[, s: its skin]}).
+    more = [dict(t=x['kit'], s=skin(x)) if skin(x) else dict(t=x['kit']) for x in L['rooms'] if x.get('new')]
+    out = dict(place=dict(key=pl['key'], where=pl['where'], kind=pl['kind'], name=name, emoji=emoji, repairs=own),
+               rooms=[dict(_room_view(x), skin=skin(x)) for x in L['rooms'] if not x.get('new')], more=more,
+               items=placed, bag=bag, count=len(r['items']) if r else 0, max=rn.ITEMS_MAX, owned=owned,
+               cozy=dict(total=total, items=pts['items'], sets=pts['sets'], up=up, level=level_of(total), perk=perk,
+                         off=off, steps=steps, next=nxt),
+               sets=[x for x in sets if x['done'] or x['possible']], guest=g, stats=stats, tip=stats['placed'] == 0 and not placed,
+               ready=have['wallet'] + have['balance'])
+    acts = _rx().view(s, L)
+    if acts:
+        out['relax'] = acts
+    return out
 
 
 # ---------------------------------------------------------------- saves
@@ -1228,6 +1286,16 @@ def upgrade(j: dict) -> None:
         for u, v in list(D['items'].items()):   # standing on a piece that was sold: into the bag
             if isinstance(v, dict) and isinstance(v.get('on'), str) and v['on'] and v['on'][0] != '#' and v['on'] not in D['items']:
                 D['items'].pop(u)
+    X = j.get('decor_new') if isinstance(j, dict) else None
+    if isinstance(X, dict) and isinstance(X.get('items'), dict):
+        placed = set(D['items']) if isinstance(D, dict) and isinstance(D.get('items'), dict) else set()
+        for u in [u for u in X['items'] if u not in kinds or u in placed]:   # sold, or placed by an older build since
+            X['items'].pop(u)
+        for u, v in list(X['items'].items()):
+            if isinstance(v, dict) and isinstance(v.get('on'), str) and v['on'] and v['on'][0] != '#' and v['on'] not in X['items']:
+                X['items'].pop(u)
+        if not X['items']:
+            j.pop('decor_new')
 
 
 def _piece_ok(v) -> bool:
@@ -1290,5 +1358,23 @@ def validate(s: dict) -> None:
         need(isinstance(D['ops'], list) and len(D['ops']) <= OPS_MAX and all(isinstance(x, str) and _NONCE.match(x) for x in D['ops']), bad)
         rooms = rooms_of(D['at'])
         if rooms is not None and all(kinds[u] in ITEMS for u in D['items']):   # a newer build's pieces or place: shape only
+            new = {r['id'] for r in rooms if r.get('new')}
+            need(not any(v['r'] in new for v in D['items'].values()), bad)
             _kept, out = settle_free(rooms, kinds, D['items'], list(kinds))
+            need(not out, bad)
+    if j.get('decor_new') is not None:
+        X = j['decor_new']
+        bad = 'Dữ liệu bày trí phòng không hợp lệ.'
+        need(isinstance(X, dict) and set(X) == NEW_KEYS and X['v'] == NEW_VERSION, bad, 'invalid_save')
+        need(isinstance(X['at'], str) and _KEY.match(X['at']), bad)
+        need(isinstance(X['items'], dict) and 0 < len(X['items']) <= _rn().ITEMS_MAX, bad)
+        D = j.get('decor')
+        placed = set(D['items']) if isinstance(D, dict) else set()
+        for uid, v in X['items'].items():
+            need(uid in kinds and uid not in placed and _piece_ok(v), bad)
+        rooms = rooms_of(X['at'])
+        if rooms is not None and all(kinds[u] in ITEMS for u in X['items']):
+            new = {r['id'] for r in rooms if r.get('new')}
+            need(all(v['r'] in new for v in X['items'].values()), bad)
+            _kept, out = settle_free(rooms, kinds, X['items'], list(kinds))
             need(not out, bad)
