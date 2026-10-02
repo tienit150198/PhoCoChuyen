@@ -69,10 +69,12 @@ from game.engine import GameError,public_state
 from game.storage import Store,Conflict
 from game import db as dbm
 from game import fastjson as fj
+from game import state_delta  # smaller state answers for pages that hold the parts already
 from game.dialogue import public_config,rephrase
 from game.webassets import WebAssets,IMMUTABLE,content_hash,RECHECK
 
 MAX_BODY=16*1024*1024
+FULL=frozenset()  # json(known=FULL): the whole state, its parts named (game/state_delta.py) for a page that asks
 # gzip level of API responses (/api/command answers ~150 KB of JSON): 4 costs ~2/3 of the CPU of 5
 # for ~5% more bytes; the CPU is what runs out first under load. Static files are compressed once (6).
 try:API_GZIP_LEVEL=max(1,min(9,int(os.environ.get("API_GZIP_LEVEL") or 4)))
@@ -309,10 +311,16 @@ class Handler(BaseHTTPRequestHandler):
             try:self.wfile.write(data)
             except (BrokenPipeError,ConnectionResetError):pass
 
-    def json(self,status:int,data:dict,extra:dict|None=None,raw:dict|None=None):
+    def json(self,status:int,data:dict,extra:dict|None=None,raw:dict|None=None,known:frozenset|None=None):
         """`raw`: extra top-level members whose values are already JSON (bytes or text).
-        The body is compact UTF-8 JSON (game/fastjson.py: orjson when installed)."""
+        The body is compact UTF-8 JSON (game/fastjson.py: orjson when installed).
+        `known` (routes whose `state` is the public state): for a page that sent X-Game-Delta: 1, the state goes
+        as parts named by hashes, those in `known` (the page holds them) as references (game/state_delta.py).
+        Pages without the header get the answer of before, byte for byte."""
         if isinstance(data,dict):data=dict(data,server_time=round(time.time(),3))
+        if known is not None and isinstance(data,dict) and isinstance(data.get("state"),dict) and self.headers.get("X-Game-Delta")=="1":
+            body,data["delta"]=state_delta.encode(data.pop("state"),known)
+            raw=dict(raw or {},state=body)
         body=fj.dumps_body(data)
         if raw:body=body[:-1]+b"".join(b","+json.dumps(k).encode()+b":"+(v if isinstance(v,bytes) else v.encode()) for k,v in raw.items())+b"}"
         self.respond(status,body,"application/json; charset=utf-8",extra,compress=True)
@@ -532,9 +540,9 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(200,dict(state=view,revision=revision,csrf=csrf,ai=dict(public_config(),configured=ai.available(),chat=True),
                                    social=social.bootstrap(self.server.store,token,state),push=push.public_config(),account=accounts.status(self.server.store,token),
                                    admin=pfb.is_admin(self.server.store,token),content_version=version,content_url=f"/api/content?v={version}",
-                                   game_version=self.server.game_version(),gifts=gifts,lb_titles=[dict(emoji=h["emoji"],name=h["name"],label=h["label"],board=h["board"]) for h in ranks],**live_hint()),extra,raw=None if lite else dict(content=self.server.content_blob()[0]));return
+                                   game_version=self.server.game_version(),gifts=gifts,lb_titles=[dict(emoji=h["emoji"],name=h["name"],label=h["label"],board=h["board"]) for h in ranks],**live_hint()),extra,raw=None if lite else dict(content=self.server.content_blob()[0]),known=FULL);return
             if route=="/api/state":
-                _,state,revision,_=self.require_session();self.json(200,dict(state=public_state(state),revision=revision));return
+                _,state,revision,_=self.require_session();self.json(200,dict(state=public_state(state),revision=revision),known=FULL);return
             if route=="/api/save/export":
                 token,state,revision,_=self.require_session()
                 data=dict(format="mot-ngay-lam-nghe/save-v4",app_version=__version__,state=state,archive=self.server.store.archive_export(token))
@@ -692,30 +700,30 @@ class Handler(BaseHTTPRequestHandler):
                 if str(data.get("action",""))[:8]=="jr_deco_" and not self.server.rate_limit("deco:"+token,int(os.environ.get("DECO_PER_MINUTE","150"))):self.error(429,"Từ từ thôi, bày trí chậm lại chút nhé!","rate_limited");return  # 🪴 game/deco.py: drags send one move each
                 if length>256*1024 and data.get("action")!="import_save":self.error(413,"Thao tác quá lớn.");return
                 result=self.server.store.command(token,data.get("request_id"),data.get("expected_revision"),data.get("career"),data.get("action"),data.get("payload",{}))
-                self.json(200,result);return
+                self.json(200,result,known=state_delta.parse_known(data.get("known")));return
             if length>64*1024:self.error(413,"Nội dung quá lớn.");return
             if route=="/api/ai/rephrase":
                 if not self.ai_budget(token):self.json(200,dict(mode="scripted",reason="rate_limit"));return
                 self.json(200,rephrase(state,data.get("career"),data.get("npc")));return
             if route=="/api/ai/chat":
                 if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
-                self.json(200,self.ai_chat(token,state,revision,data));return
+                self.json(200,self.ai_chat(token,state,revision,data),known=FULL);return
             if route=="/api/ai/interview":
                 if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
-                self.json(200,self.ai_interview(token,revision,data));return
+                self.json(200,self.ai_interview(token,revision,data),known=FULL);return
             if route=="/api/ai/class":
                 if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
-                self.json(200,self.ai_class(token,state,revision,data));return
+                self.json(200,self.ai_class(token,state,revision,data),known=FULL);return
             if route=="/api/ai/board":  # Nhóm Cư Dân Phố: post/reply (+ AI replies), open (+ AI exchange)
                 if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
-                self.json(200,board_ai.ai_board(self,token,state,revision,data));return
+                self.json(200,board_ai.ai_board(self,token,state,revision,data),known=FULL);return
             if route=="/api/ai/support_call":
                 if not self.server.rate_limit("cmd:"+token,max_commands):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
-                self.json(200,self.ai_support_call(token,state,revision,data));return
+                self.json(200,self.ai_support_call(token,state,revision,data),known=FULL);return
             if route=="/api/ai/feedback":
-                self.json(200,self.ai_feedback(token,state,revision,data));return
+                self.json(200,self.ai_feedback(token,state,revision,data),known=FULL);return
             if route=="/api/ai/review":
-                self.json(200,self.ai_review(token,state,revision,data));return
+                self.json(200,self.ai_review(token,state,revision,data),known=FULL);return
             if route=="/api/feedback":
                 ip=self.client_ip();per10=int(os.environ.get("FEEDBACK_PER_10MIN","5"));per_day=int(os.environ.get("FEEDBACK_PER_DAY","30"))
                 if not (self.server.rate_limit("fb:"+token,per10,600) and self.server.rate_limit("fb-day:"+token,per_day,86400) and self.server.rate_limit("fb-ip:"+ip,per10*4,600)):
@@ -743,7 +751,7 @@ class Handler(BaseHTTPRequestHandler):
                 paid=live_effects.on_load(self.server.store,token,state)
                 if paid:state,revision,_=self.server.store.read(token)
                 _,gifts=system_gift.on_load(self.server.store,token,state)   # a party's total, an anniversary: the private card at once
-                self.json(200,dict(ok=True,paid=paid,state=public_state(state),revision=revision,gifts=gifts));return
+                self.json(200,dict(ok=True,paid=paid,state=public_state(state),revision=revision,gifts=gifts),known=FULL);return
             if route=="/api/wedding/photo":  # 💍 the snapshot of a group photo the live service reserved for this player (game/wedding_live.py)
                 if not self.server.rate_limit("wedding-photo:"+token,10):self.error(429,"Chờ một chút nhé.","rate_limited");return
                 self.json(200,wedding_live.save_photo(self.server.store,self.server.store.key(token),data));return
@@ -755,7 +763,7 @@ class Handler(BaseHTTPRequestHandler):
                 out=marriage.act(self.server.store,token,route[len("/api/marriage/"):],data)
                 if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
                 if not out.pop("quiet",False):out["view"]=marriage.view(self.server.store,token,state)
-                self.json(200,out);return
+                self.json(200,out,known=FULL);return
             if route.startswith("/api/social/"):
                 if not self.server.rate_limit("social:"+token,60):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
                 self.json(200,social.post(self.server.store,token,state,route[len("/api/social/"):],data));return
@@ -765,7 +773,7 @@ class Handler(BaseHTTPRequestHandler):
             self.error(404,"Không có API này.")
         except Conflict as e:
             try:
-                _,current,rev,_=self.require_session();self.json(409,dict(error=e.message,code=e.code,state=public_state(current),revision=rev))
+                _,current,rev,_=self.require_session();self.json(409,dict(error=e.message,code=e.code,state=public_state(current),revision=rev),known=FULL)  # whole: no references
             except GameError:self.error(409,e.message,e.code)
         except PermissionError as e:self.error(403,str(e),"forbidden");self.close_connection=True
         except pfb.FeedbackError as e:self.error(e.status,e.message,e.code)

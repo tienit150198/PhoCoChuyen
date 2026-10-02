@@ -31,6 +31,8 @@ Cookie `mnl_session` HttpOnly, SameSite=Strict, Path=/; giữ cookie từ bootst
 
 Thành công trả `state`, `revision`, `result` và `replayed`. Retry cùng ý định phải dùng cùng request_id + payload + expected_revision. Cùng ID nhưng nội dung khác bị từ chối. Xung đột revision trả 409 kèm state hiện tại; lấy lại dữ liệu trước khi tạo một ý định mới. Không tự đổi ID và gửi lại lệnh đã thành công để tránh cộng thưởng hai lần.
 
+Trả state gọn (`game/state_delta.py`, `public/js/api.js` Held/inflate): trang gửi header `X-Game-Delta: 1` thì mọi câu trả lời có `state` công khai (bootstrap, `/api/state`, `/api/command`, AI, hôn nhân, 409…) kèm thêm `delta = {refs, keys}`: `keys` là `[[path, hash]]` của các phần state được gửi trong câu trả lời (hash = 48 bit BLAKE2b của JSON phần đó, 8 ký tự base64url), `refs` là `[[path, hash]]` những chỗ state ghi `0` thay cho phần trang đã giữ. `/api/command` nhận thêm `known`: các hash trang đang giữ, nối liền (8 ký tự mỗi hash); phần nào trùng hash thì không gửi lại. Tham chiếu theo nội dung nên server không nhớ gì về trang (khởi động lại, tab khác, nhập bản lưu đều an toàn); 409 luôn trả state đầy đủ. Không có header: câu trả lời y như trước (trang cũ). Server cũ bỏ qua header và `known`, trả state đầy đủ không có `delta`: trang mới nhận như trước.
+
 Các nghề hợp lệ: `mother_baby`, `pharmacy`, `accounting`, `customer_care`.
 
 | Nhóm | Action và payload điển hình |
