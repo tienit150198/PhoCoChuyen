@@ -37,7 +37,8 @@ CUP_PACK = dict(qty=20, cost=4)
 MAX_TOPPINGS = 3
 BEAT_ACTIONS = {'cup', 'add', 'ice', 'sugar', 'config', 'check', 'seal_start', 'seal', 'serve', 'discard', 'wipe', 'event', 'clean', 'wait', 'greet', 'swap'}
 UNSAFE_MESS = 2
-# Heat-sealer timing (seconds between "Ép nắp" and "Nhả"), measured on the server.
+# Heat-sealer timing (seconds between "Ép nắp" and "Nhả"): the server's clock from the press to the moment
+# "Nhả tay" was tapped (tap_now: as the page saw it, within honest bounds).
 SEAL = dict(loose=0.8, good_lo=1.4, good_hi=2.6, burn=4.2, max=5.0)
 SEAL_QUALITY = (None, 'perfect', 'ok', 'burnt')
 APP_FEE_PCT = 20
@@ -415,6 +416,12 @@ def new_cup() -> dict:
 def now() -> float:
     from .careers import kit
     return kit.now()
+
+
+def tap_now(p: dict) -> float:
+    """When "Nhả tay" was pressed (careers/kit.py tap_now)."""
+    from .careers import kit
+    return kit.tap_now(p)
 
 
 def low(name: str) -> str:
@@ -1486,7 +1493,7 @@ def _station(s: dict, c: dict, b: dict, t: dict, name: str, p: dict) -> dict:
         elif 'sealer' in b['upgrades']:
             quality = 'perfect'
         elif cup.get('seal_t') is not None:
-            took = max(0.0, now() - cup['seal_t'])
+            took = max(0.0, tap_now(p) - cup['seal_t'])
             cup['seal_t'] = None
             z = seal_zones(b)
             if took < z['loose']:

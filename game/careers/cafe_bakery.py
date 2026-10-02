@@ -962,7 +962,7 @@ def _bar(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
     if name in ('cb_pull', 'cb_stop'):
         if name == 'cb_stop':
             kit.need(dr['pulling'], 'Chưa chiết shot nào. Bấm “Chiết shot” trước nhé.')
-            eff = max(0.0, kit.now() - dr['pulling']) * _flow(dr['dose'])
+            eff = max(0.0, kit.tap_now(p) - dr['pulling']) * _flow(dr['dose'])
         else:
             eff = AUTO_SHOT
         x = _shot_class(eff, dr['dose']['grind'])
@@ -1001,7 +1001,7 @@ def _bar(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
     if name in ('cb_milk', 'cb_milk_stop'):
         if name == 'cb_milk_stop':
             kit.need(dr['steaming'], 'Vòi hơi chưa bật. Bấm “Đánh nóng” trước nhé.')
-            temp = min(99.0, steam_temp(max(0.0, kit.now() - dr['steaming'])))
+            temp = min(99.0, steam_temp(max(0.0, kit.tap_now(p) - dr['steaming'])))
         else:
             temp = AUTO_MILK
         tex = _milk_tex(temp)
@@ -1268,7 +1268,7 @@ def _unload(s: dict, c: dict, d: dict, p: dict) -> dict:
     rack = next((r for r in d['oven'] if r['id'] == p.get('rack')), None)
     kit.need(rack, 'Tầng lò này đang trống.')
     b = BAKES[rack['item']]
-    sec = max(0.0, kit.now() - rack['start'])
+    sec = max(0.0, kit.tap_now(p) - rack['start'])
     done = _doneness(rack['item'], sec + rack.get('shift', 0))
     d['oven'] = [r for r in d['oven'] if r['id'] != rack['id']]
     label = dict(pale='còn nhạt màu, ruột chưa chín', golden='vàng đều, thơm lừng', dark='hơi sậm màu', burnt='cháy đen')[done]

@@ -1028,7 +1028,7 @@ def _handle(s: dict, c: dict, d: dict, pl: dict, name: str, p: dict) -> dict:
         msg = f'Đã thả mì. Vớt khi thanh luộc vào vùng xanh ({BOIL["raw"] + shift}–{BOIL["perfect"] + shift} giây).'
     elif name == 'rs_drain':
         kit.need(bowl['boiling'], 'Mì đã vớt ra tô rồi, làm bước tiếp theo nhé.' if bowl['noodles'] else 'Chưa thả mì vào rổ. Bấm “🍜 Thả mì” trước nhé.')
-        seconds = max(0.0, kit.now() - bowl['boiling'])
+        seconds = max(0.0, kit.tap_now(p) - bowl['boiling'])
         shift = WEAK_FIRE if rules.get('weak_fire') else 0
         done = _doneness(max(0.0, seconds - shift))
         bowl['noodles'].append(done)

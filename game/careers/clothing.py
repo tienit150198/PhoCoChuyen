@@ -1158,7 +1158,7 @@ def _alter(s, c, t, name, p):
         return dict(message='Rè rè rè… kim chạy dọc đường phấn. Dừng khi kim tới vạch xanh!', start=a['start'])
     if name == 'ao_sew_stop':
         kit.need(t['stage'] == 'sew' and a['start'] is not None, 'Máy chưa chạy.')
-        prog = (kit.now() - a['start']) / SEW_SECONDS
+        prog = max(0.0, kit.tap_now(p) - a['start']) / SEW_SECONDS
         lo, hi = SEW_ZONE_EASY if kit.tier(c['day']) == 0 else SEW_ZONE
         if prog < lo:
             return dict(message='Kim chưa tới vạch, đạp thêm chút nữa rồi dừng.', refused=True)

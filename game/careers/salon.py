@@ -1533,7 +1533,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
     if name == 'sl_rinse':
         tm = t['timer']
         kit.need(tm, 'Chưa có thuốc nào đang ủ.')
-        secs = max(0.0, kit.now() - tm['start'])
+        secs = max(0.0, kit.tap_now(p) - tm['start'])
         zone = _zone(secs, _window(tm['kind'], tm['fragile'], tm.get('fast', False)))
         res = dict(zone=zone, secs=round(min(secs, 10**6), 1), ok=tm['bowl']['ok'], shade=tm['bowl']['shade'], dev=tm['bowl']['dev'],
                    ratio=tm['bowl']['ratio'])
