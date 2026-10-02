@@ -1,0 +1,128 @@
+/** 🏮 Đi hội cùng nhau: the other players walking the fairground right now (live/fair.py over the live socket,
+ * ./live.js), drawn among the stalls by ./fair-walk.js. Silent by design (owner, 03/10): nobody is announced coming
+ * or going, no toast, no chat; they are simply there, walking. Only while the fairground itself is on screen: the
+ * walk joins when it mounts and leaves on a stall page or when the sheet closes.
+ * Positions travel as fractions of the floor (the landscape and portrait fairgrounds differ): a walk is the path this
+ * client walks ([[x,y],...], 0..1) and how long it takes here; the others replay it from where they see the walker.
+ * A live service without the room (no welcome.flags.fair) or no socket at all: nobody else is drawn, nothing is sent.
+ * Light: at most CAP others (the server's instance size), each a cached sprite; frames only while someone walks. */
+import {live} from './live.js';
+import {lookOf,figureOf,paintPlayer,CANVAS} from './look.js';
+
+const CAP=30,GAP=260,PTS=16,AV_W=110,AV_H=160;
+const ok=()=>Boolean(live.flags?.fair)&&live.state==='open';
+const r3=v=>Math.round(Math.min(1,Math.max(0,v))*1000)/1000;
+
+/** state(): the save (look, gender); redraw(): a frame is due; still(): reduced motion (the others jump). */
+export function crowd({state,redraw,still}){
+  const C={want:false,room:null,me:null,at:null,people:new Map(),pend:null,sentAt:0,timer:0,retry:0,joining:false};
+  const clear=()=>{C.room=null;C.me=null;C.joining=false;C.people.clear();clearTimeout(C.timer);C.pend=null;redraw();};
+
+  function join(at){
+    C.want=true;if(at)C.at=at.map(r3);
+    if(C.room||C.joining||!ok())return;
+    const st=state()||{};
+    C.joining=live.send({t:'fair_in',look:lookOf(st),g:st.journey?.gender??null,x:C.at?.[0]??.2,y:C.at?.[1]??.95});
+  }
+  function leave(){
+    if(!C.want&&!C.room)return;
+    C.want=false;clearTimeout(C.retry);
+    if(C.room||C.joining)live.send({t:'fair_out'});
+    clear();
+  }
+  /** My walk (scene points already turned into fractions, the first where I stand), ms long here. */
+  function walk(path,ms){
+    if(!path?.length)return;
+    C.at=path[path.length-1].map(r3);
+    if(!C.room)return;
+    let p=path.map(q=>q.map(r3));
+    if(p.length>PTS){const n=p.length;p=Array.from({length:PTS},(_,i)=>p[Math.round(i*(n-1)/(PTS-1))]);}
+    C.pend={p,ms:Math.max(0,Math.round(ms))};
+    const wait=C.sentAt+GAP-performance.now();clearTimeout(C.timer);
+    if(wait<=0)flush();else C.timer=setTimeout(flush,wait);
+  }
+  function flush(){if(!C.pend||!C.room)return;live.send({t:'fair_mv',...C.pend});C.pend=null;C.sentAt=performance.now();}
+
+  /* ---- the others ---- */
+  function person(e){return {pid:e.pid,name:e.name||'',lk:e.lk,g:e.g,x:e.x,y:e.y,path:null,t0:0,ms:0,len:0,sp:null,spk:''};}
+  function add(e){if(e.pid===C.me||C.people.has(e.pid)||C.people.size>=CAP||typeof e.x!=='number')return;C.people.set(e.pid,person(e));}
+  function move(e){
+    const q=C.people.get(e.pid);if(!q||!Array.isArray(e.p)||!e.p.length)return;
+    const end=e.p[e.p.length-1];
+    if(still()||!(e.ms>0)){q.x=end[0];q.y=end[1];q.path=null;return;}
+    const now=performance.now(),[x,y]=at(q,now),path=[[x,y],...e.p.slice(1)];   // from where this player sees them
+    let len=0;for(let i=1;i<path.length;i++)len+=Math.hypot(path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]);
+    if(len<1e-4){q.x=end[0];q.y=end[1];q.path=null;return;}
+    q.path=path;q.len=len;q.t0=now;q.ms=Math.min(3000,e.ms);q.x=end[0];q.y=end[1];
+  }
+  /** Where someone is now (fractions) and whether they are walking. */
+  function at(q,now){
+    if(!q.path)return [q.x,q.y,false];
+    const k=(now-q.t0)/q.ms;if(k>=1){q.path=null;return [q.x,q.y,false];}
+    let left=k*q.len;
+    for(let i=1;i<q.path.length;i++){const a=q.path[i-1],b=q.path[i],seg=Math.hypot(b[0]-a[0],b[1]-a[1]);
+      if(left<=seg&&seg>0){const u=left/seg;return [a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u,true];}left-=seg;}
+    return [q.x,q.y,false];
+  }
+
+  live.on('fair_room',f=>{
+    C.joining=false;
+    if(!C.want){live.send({t:'fair_out'});return;}
+    C.room=f.room;C.me=f.me;C.people.clear();
+    for(const e of (f.people||[]).slice(0,CAP))add(e);
+    redraw();
+  });
+  live.on('fair',f=>{
+    if(!C.room||!Array.isArray(f.ev))return;
+    for(const e of f.ev){
+      if(e.pid===C.me)continue;
+      if(e.k==='in')add(e);else if(e.k==='out')C.people.delete(e.pid);else if(e.k==='mv')move(e);
+    }
+    redraw();
+  });
+  live.on('fair_left',f=>{if(f.why==='other'){C.want=false;clear();}});   // another tab of mine walks the fair now
+  live.on('welcome',()=>{C.room=null;C.joining=false;C.people.clear();if(C.want)join();});
+  live.on('down',()=>{if(C.room||C.people.size)clear();C.joining=false;});
+  live.on('error',f=>{
+    if(f.ref==='fair_in'){C.joining=false;
+      if(f.code==='slow'&&C.want){clearTimeout(C.retry);C.retry=setTimeout(()=>{if(C.want)join();},(Math.max(1,Number(f.wait)||1)+.5)*1000);}}
+    else if(f.ref==='fair_mv'&&f.code==='not_in'){C.room=null;C.people.clear();if(C.want)join();redraw();}
+  });
+
+  /* ---- drawing (scene units: `xy` maps fractions onto this fairground, `scale(y)` is the figure's size there) ---- */
+  function sprite(q,px){
+    const key=String(Math.round(px*100));if(q.sp&&q.spk===key)return q.sp;
+    const cv=q.sp||document.createElement('canvas');cv.width=Math.ceil(AV_W*px);cv.height=Math.ceil(AV_H*px);
+    const c=cv.getContext('2d');c.setTransform(px,0,0,px,55*px,150*px);c.clearRect(-55,-150,AV_W,AV_H);
+    try{paintPlayer(c,figureOf(q.lk,q.g),CANVAS);}catch(e){console.warn('hội chợ: look',e);}
+    q.sp=cv;q.spk=key;return cv;
+  }
+  /** [[depth y, draw]] for each other walker (sorted with the stalls and me by the caller); fills q.sx/q.sy for tags.
+   * snap(p): someone standing still is put on free floor of this layout (theirs may be the other one), `key` names it. */
+  function items(c,{xy,scale,px,t,snap,key}){
+    const out=[],now=performance.now();
+    for(const q of C.people.values()){
+      const [u,v,moving]=at(q,now);let [x,y]=xy(u,v);
+      if(!moving&&snap){const k=`${u},${v},${key}`;if(q.snk!==k){q.snk=k;q.snp=snap([x,y])||[x,y];}[x,y]=q.snp;}
+      const s=scale(y);q.sx=x;q.sy=y;q.top=y-132*s;
+      out.push([y,()=>{const sp=sprite(q,px),bob=moving&&!still()?-Math.abs(Math.sin(t*9+x*.05))*3:0;
+        c.drawImage(sp,x-55*s,y-150*s+bob,AV_W*s,AV_H*s);}]);
+    }
+    return out;
+  }
+  /** Small names over the others (screen units; `fallback` for a player without a name). */
+  function tags(c,{sx,sy,fallback}){
+    if(!C.people.size)return;
+    c.font='700 10px "Trebuchet MS",sans-serif';c.textAlign='center';c.textBaseline='middle';
+    for(const q of C.people.values()){
+      if(typeof q.sx!=='number')continue;
+      const name=q.name||fallback,x=sx(q.sx),y=sy(q.top)-8,w=c.measureText(name).width+10;
+      c.fillStyle='rgba(255,250,240,.82)';c.beginPath();c.roundRect?c.roundRect(x-w/2,y-7.5,w,15,7.5):c.rect(x-w/2,y-7.5,w,15);c.fill();
+      c.fillStyle='#4a3226';c.fillText(name,x,y+.5);
+    }
+  }
+  const busy=()=>{for(const q of C.people.values())if(q.path)return true;return false;};
+
+  return {join,leave,walk,items,tags,busy,
+    state:()=>({on:Boolean(C.room),room:C.room,me:C.me,people:[...C.people.values()].map(q=>{const [x,y,m]=at(q,performance.now());return {pid:q.pid,name:q.name,x,y,walking:m};})})};
+}

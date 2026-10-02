@@ -8,10 +8,12 @@
  * Light on phones: the backdrop is painted once per size into a cached bitmap, a frame is the bitmap, the floor's
  * things and the player; frames run only while someone walks, else ~12 per second for the crowd's sway (none at
  * all with reduced motion: the player steps straight to where they tapped) and none while the stall pages are up.
- * Nothing here goes to the server. */
+ * 🧑‍🤝‍🧑 The other players on the fairground right now walk around it too (./fair-crowd.js, the live socket): joined
+ * while this stage is mounted, left on a stall page or when the sheet closes; silent (no "X vừa vào hội"). */
 import {VIEW,plan,route,nearestFree,back as paintBack,props,marks,STALLS} from '../scenes/fair-place.js';
 import {figure,paintPlayer,CANVAS} from './look.js';
 import {t as tr} from './i18n.js';
+import {crowd} from './fair-crowd.js';
 
 const RM=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
 const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contains('reduce-motion')||document.body.classList.contains('reduce-motion');
@@ -23,6 +25,9 @@ export function setup(ctx){
     me:null,arrive:null,raf:0,last:0,drawn:0,time:0,sayAt:0,ok:null,down:null,at:''};
   const has=()=>({dt:!!F().darts,loan:!!F().cash});
   const pl=()=>plan(W.port,has());
+  const CR=crowd({state:()=>S.env?.api?.state,redraw:()=>{W.drawn=0;},still});
+  /** Scene point → fractions of the floor (what the others get: their fairground may be the other layout). */
+  const frac=([x,y])=>{const f=pl().floor;return [(x-f[0])/(f[2]-f[0]),(y-f[1])/(f[3]-f[1])];};
 
   /** Can this browser draw it? (else the list stays, as before) */
   function ok(){
@@ -56,6 +61,8 @@ export function setup(ctx){
     if(W.el.parentNode!==slot){slot.append(W.el);size();}
     else W.drawn=0;   // the state may have changed (a game going on, a stall added): one fresh frame
     if(!W.raf){W.last=performance.now();W.drawn=0;W.raf=requestAnimationFrame(loop);}
+    if(!W.hooked){W.hooked=true;S.dlg.addEventListener('close',()=>CR.leave());}
+    if(W.me)CR.join(frac([W.me.x,W.me.y]));
   }
 
   /* ---- layout: the whole fairground fits the stage (its shape follows the width, so it never jumps) ---- */
@@ -71,7 +78,7 @@ export function setup(ctx){
     const w=Math.round(cw*W.dpr),h=Math.round(ch*W.dpr);if(W.cv.width!==w)W.cv.width=w;if(W.cv.height!==h)W.cv.height=h;
     const [x0,y0,x1,y1]=VIEW[W.port?'port':'land'],k=Math.min(cw/(x1-x0),ch/(y1-y0));
     W.k=k;W.ox=(cw-(x1-x0)*k)/2-x0*k;W.oy=(ch-(y1-y0)*k)/2-y0*k;
-    if(!W.me)place(pl().entry.gate);
+    if(!W.me){const g=pl().entry.gate;place([g[0]+(Math.random()-.5)*90,g[1]+Math.random()*14]);}   // a little apart from whoever came in just before
     W.drawn=0;draw();
   }
   function place(p){const q=nearestFree(pl(),p)||p;W.me={x:q[0],y:q[1],path:null,step:0};}
@@ -80,10 +87,12 @@ export function setup(ctx){
   /* ---- walking ---- */
   function walkTo(p,then=null){
     const path=route(pl(),[W.me.x,W.me.y],p);W.arrive=then;
-    if(!path||still()){const end=path?path[path.length-1]:[W.me.x,W.me.y];W.me.x=end[0];W.me.y=end[1];W.me.path=null;W.drawn=0;arrived();return;}
+    if(!path||still()){const from=[W.me.x,W.me.y],end=path?path[path.length-1]:from;W.me.x=end[0];W.me.y=end[1];W.me.path=null;W.drawn=0;
+      CR.walk([frac(from),frac(end)],0);arrived();return;}
     W.me.path=path.slice(1);
     let len=0;for(let i=1;i<path.length;i++)len+=Math.hypot(path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]);
     W.me.len=len/WALK_S;   // a long walk goes faster: no walk takes more than WALK_S
+    CR.walk(path.map(frac),len/Math.max(W.port?380:440,W.me.len)*1000);   // the others see the same walk, as long
   }
   function arrived(){const f=W.arrive;W.arrive=null;W.me.path=null;if(f)f();}
   function hitSpot(p){let best=null,bd=Infinity;for(const s of pl().spots){const d=Math.hypot(s.hit[0]-p[0],s.hit[1]-p[1]);if(d<=s.r&&d<bd){bd=d;best=s;}}return best;}
@@ -115,10 +124,10 @@ export function setup(ctx){
 
   /* ---- frames ---- */
   function loop(now){
-    if(!W.el?.isConnected||!S.dlg?.open){W.raf=0;return;}
+    if(!W.el?.isConnected||!S.dlg?.open){W.raf=0;CR.leave();return;}   // a stall page or the sheet closed
     W.raf=requestAnimationFrame(loop);
     const dt=Math.min(.05,(now-W.last)/1000);W.last=now;W.time+=dt;
-    const m=W.me;let moving=false;
+    const m=W.me;let moving=CR.busy();
     if(m?.path?.length){
       const sp=Math.max(W.port?380:440,m.len||0)*dt,[tx,ty]=m.path[0],dx=tx-m.x,dy=ty-m.y,d=Math.hypot(dx,dy);moving=true;
       if(d<=sp){m.x=tx;m.y=ty;m.path.shift();if(!m.path.length)arrived();}else{m.x+=dx/d*sp;m.y+=dy/d*sp;}
@@ -145,9 +154,13 @@ export function setup(ctx){
     try{
       const items=props(c,p,o),fl=p.floor,base=W.port?.92:.78,depth=y=>.94+.12*(y-fl[1])/Math.max(1,fl[3]-fl[1]);
       items.push([W.me.y+.5,()=>drawMe(c,base*depth(W.me.y))]);
+      items.push(...CR.items(c,{xy:(u,v)=>[fl[0]+u*(fl[2]-fl[0]),fl[1]+v*(fl[3]-fl[1])],scale:y=>base*depth(y),px:base*W.k*W.dpr,t:W.time,
+        snap:q=>nearestFree(p,q),key:[W.port,p.has.dt,p.has.loan].join('|')}));
       items.sort((a,b)=>a[0]-b[0]);for(const [,fn] of items)fn();
       const near=p.spots.find(s=>s.kind==='stall'&&Math.hypot(W.me.x-s.stand[0],W.me.y-s.stand[1])<30);
       marks(c,p,o,near?.id||null);
+      c.setTransform(W.dpr,0,0,W.dpr,0,0);
+      CR.tags(c,{sx:x=>W.ox+x*W.k,sy:y=>W.oy+y*W.k,fallback:tr('Khách đi hội')});
     }catch(e){console.warn('hội chợ: draw',e);}
   }
   function drawMe(c,s){
@@ -159,9 +172,9 @@ export function setup(ctx){
 
   /* ---- test hooks (scratch browser checks) ---- */
   globalThis.__fairWalk={state:()=>({on:!!W.el?.isConnected,port:W.port,me:W.me&&[W.me.x,W.me.y],walking:!!W.me?.path?.length,at:W.at,
-    spots:pl().spots.map(s=>s.id),stage:W.el?.getBoundingClientRect().toJSON()}),
+    spots:pl().spots.map(s=>s.id),stage:W.el?.getBoundingClientRect().toJSON(),crowd:CR.state()}),
     screen:id=>{const s=pl().spots.find(q=>q.id===id);if(!s||!W.cv)return null;const r=W.cv.getBoundingClientRect();return [r.left+W.ox+s.hit[0]*W.k,r.top+W.oy+s.hit[1]*W.k];},
-    go:id=>goSpot(pl().spots.find(s=>s.id===id))};
+    go:id=>goSpot(pl().spots.find(s=>s.id===id)),walk:(u,v)=>{const f=pl().floor;walkTo([f[0]+u*(f[2]-f[0]),f[1]+v*(f[3]-f[1])]);}};
 
   return {active,html,mount,stalls:STALLS};
 }
