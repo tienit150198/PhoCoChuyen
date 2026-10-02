@@ -449,17 +449,6 @@ html.reduce-motion .fh-fly{animation-duration:.05s}
 @media (min-width:700px){.fh-body{padding:14px 22px 22px}.fh-plate{transform:scale(1.1)}.fh-face{min-height:100px}}
 .fh-again{justify-content:center;gap:8px;margin-top:8px}
 
-/* ---- 🎁 tiền vốn popup, 💸 vay nóng ---- */
-.fh-giftpop{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:16px;background:color-mix(in srgb,#000 45%,transparent)}
-.fh-giftcard{width:min(360px,100%);padding:22px 18px 18px;border-radius:20px;text-align:center;background:linear-gradient(180deg,color-mix(in srgb,var(--fh-gold) 30%,var(--surface)),var(--surface));border:2px solid color-mix(in srgb,var(--fh-gold) 70%,var(--line));box-shadow:var(--shadow-lg)}
-.fh-giftcard h3{margin:6px 0 6px;font-size:1.2rem}
-.fh-giftcard p{margin:0 0 14px;color:var(--ink-2)}
-.fh-giftbox{font-size:3.2rem;line-height:1}
-@media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .fh-giftbox{animation:fh-pop .5s cubic-bezier(.3,1.6,.5,1)}}
-.fh-loanlink{margin-top:8px}
-.fh-loancard h3{margin:0 0 8px}
-.fh-loansum{margin:10px 0;font-size:1rem}
-.fh-loansum small{color:var(--muted)}
 /* ---- 🎯 Phóng phi tiêu (public/js/v4/fair-darts.js) ---- */
 .fh-dt-stage{position:relative;width:min(100%,320px);aspect-ratio:1;margin:0 auto 10px;touch-action:manipulation}
 .fh-dt-board{display:block;width:100%;height:100%}
@@ -485,3 +474,14 @@ html.reduce-motion .fh-fly{animation-duration:.05s}
 .fh-dt-aim::before{left:50%;top:-6px;bottom:-6px;width:2px;margin-left:-1px}
 .fh-dt-aim::after{top:50%;left:-6px;right:-6px;height:2px;margin-top:-1px}
 .fh-dt .fh-result{margin:0 auto 10px;max-width:320px}
+/* ---- 🎁 tiền vốn popup, 💸 vay nóng ---- */
+.fh-giftpop{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:16px;background:color-mix(in srgb,#000 45%,transparent)}
+.fh-giftcard{width:min(360px,100%);padding:22px 18px 18px;border-radius:20px;text-align:center;background:linear-gradient(180deg,color-mix(in srgb,var(--fh-gold) 30%,var(--surface)),var(--surface));border:2px solid color-mix(in srgb,var(--fh-gold) 70%,var(--line));box-shadow:var(--shadow-lg)}
+.fh-giftcard h3{margin:6px 0 6px;font-size:1.2rem}
+.fh-giftcard p{margin:0 0 14px;color:var(--ink-2)}
+.fh-giftbox{font-size:3.2rem;line-height:1}
+@media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .fh-giftbox{animation:fh-pop .5s cubic-bezier(.3,1.6,.5,1)}}
+.fh-loanlink{margin-top:8px}
+.fh-loancard h3{margin:0 0 8px}
+.fh-loansum{margin:10px 0;font-size:1rem}
+.fh-loansum small{color:var(--muted)}

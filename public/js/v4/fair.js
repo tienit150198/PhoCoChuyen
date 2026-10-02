@@ -245,7 +245,7 @@ function page(){
   const f=F();
   if(!f.show&&!f.over&&!f.soon)return head()+`<div class="sheet-body fh-body">${closedCard(true)}</div>`;
   if(!f.open&&S.tab!=='board')return head()+`<div class="sheet-body fh-body">${closedCard()}${S.env?.api?.state?.journey?.story?btn('🏆 Xem Bảng vàng hội chợ','tab',{tab:'board'},'cream full'):''}${note()}</div>`;
-  const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView,dt:()=>F().darts?dt().view():homeView(),loan:loanView};
+  const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView,loan:loanView,dt:()=>F().darts?dt().view():homeView()};
   const body=(views[S.tab]||homeView)(),luck=['bc','xd'].includes(S.tab)||S.tab==='lt'&&!G();   // the newer lô tô: only the wallet limits it
   return head()+giftPop()+`<div class="sheet-body fh-body">${f.open?strip():''}${f.open?nav():''}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${body}${note()}</div>`;
 }

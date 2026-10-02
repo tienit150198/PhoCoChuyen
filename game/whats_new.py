@@ -33,6 +33,8 @@ from pathlib import Path
 
 ENTRIES = (
     dict(version="1.4.13", date="2026-10-03", items=(
+        dict(emoji="🎁", text="Vào hội chợ là được ban tổ chức tặng ngay 500 xu tiền vốn chơi hội!", go=dict(action="fair")),
+        dict(emoji="💸", text="Thiếu vốn? Bà Sáu ở cổng hội cho vay nóng 50–500 xu, lãi 20%, trả lúc nào cũng được, hội tàn thì thu.", go=dict(action="fair")),
         dict(emoji="🎯", text="Trò mới ở hội chợ: Phóng phi tiêu với anh Sáu. Cắm vòng màu là ăn 1 trả 1, cắm ngay hồng tâm còn có danh hiệu.", go=dict(action="fair")),
         dict(emoji="🎪", text="Hội chợ không còn giới hạn mỗi ngày: lượt chơi, tiền cược, xu kiếm được, điểm đều thoải mái. Lắc nhanh hơn.", go=dict(action="fair")),
         dict(emoji="🦀", text="Bầu cua, chiếu trong ăn 1:1 và dễ thắng hơn hẳn. Công an ít ghé hơn, phạt nhẹ hơn. Ném vòng: một chai ăn nhiều vòng.", go=dict(action="fair")),
