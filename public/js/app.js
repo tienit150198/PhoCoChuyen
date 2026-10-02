@@ -21,7 +21,7 @@ import {hudMoney,hudChipsHTML,wealthHTML,loadJoint,jointBalance,wealthAction} fr
 import {emojiOf} from './v4/journey.js';
 import {setLanguage,t as i18nT} from './v4/i18n.js';
 import {shell} from './v4/shell.js';
-import {accountSubmit,accountNudge,accountAction} from './v4/account.js';
+import {accountSubmit,accountNudge,accountAction,accountBoot} from './v4/account.js';
 import {registerWorker,listenWorker} from './v4/push.js';
 import {homeView as homeV4,futureView as futureV4,journeyBoot,journeyAction,journeySubmit} from './v4/home.js';
 import {procedureSubmit,procedureAction} from './v4/procedure.js';
@@ -1390,6 +1390,7 @@ try{
   // Its stylesheet only styles the workbench: wait for it only when a sheet opens right away (day closed).
   await Promise.all([careerAssets(career(),Boolean(api.state.current&&(!room()?.open||needsJob()))),setLanguage(api.state.settings.lang)]);
   shell.boot(env());journeyBoot(env());boardBoot(env());startTicker(()=>env());$('#loading').hidden=true;$('#app').hidden=false;world.resize();renderMain();
+  const oauthReturned=accountBoot(env());
   ensureCareerUI();  // its workbench failed to come above (the game opens anyway): ask again in the background
   try{performance.mark('mnl-first-frame');}catch{/* no User Timing */}   // "time to first game frame" (telemetry.js load beacon)
   import('./telemetry.js').then(m=>m.telemetryBoot({api,ui})).catch(e=>console.warn('telemetry:',e));  // Giữ chân: leave/error/load beacons
@@ -1401,7 +1402,7 @@ try{
   // through the tour yet gets the tutorial at once (its welcome card is the first thing they should see).
   const tutBoot=[L.tut,m=>m.tutorialBoot(env())];
   let tutNow=false;try{tutNow=localStorage.getItem('mnl.tut.done')!=='1'&&api.state.settings?.tutorialDone!==true;}catch{}
-  if(tutNow)tutBoot[0].get().then(tutBoot[1]).catch(e=>console.warn('lazy boot:',e));
+  if(tutNow&&!oauthReturned)tutBoot[0].get().then(tutBoot[1]).catch(e=>console.warn('lazy boot:',e));
   const bootSteps=[...(tutNow?[]:[tutBoot]),[L.inc,m=>m.incidentBoot(env())],[L.chat,m=>m.aiNoticeBoot(env())],[L.happen,m=>m.happenBoot(env())],
     [L.people,()=>{}],[L.social,m=>m.startSocialPoll(env())],[L.tips,m=>m.tipsBoot({api,sound})],[L.live,m=>m.liveBoot(env())]];
   const bootNext=i=>{

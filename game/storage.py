@@ -298,6 +298,19 @@ class Store:
               created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, seen_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
             CREATE INDEX IF NOT EXISTS logins_sid ON logins(sid);
+            CREATE TABLE IF NOT EXISTS tiktok_identities (
+              client_key TEXT NOT NULL, open_id TEXT NOT NULL, uid INTEGER NOT NULL, sid TEXT NOT NULL,
+              display TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              PRIMARY KEY(client_key,open_id), UNIQUE(client_key,uid)
+            );
+            CREATE TABLE IF NOT EXISTS tiktok_flows (
+              state_hash TEXT PRIMARY KEY, binding_hash TEXT UNIQUE NOT NULL,
+              source_token TEXT NOT NULL, source_sid TEXT NOT NULL, source_login INTEGER NOT NULL,
+              mode TEXT NOT NULL, client_key TEXT NOT NULL, expires_at REAL NOT NULL, phase TEXT NOT NULL,
+              target_uid INTEGER, nonce_hash TEXT
+            );
+            CREATE INDEX IF NOT EXISTS tiktok_identity_sid ON tiktok_identities(sid);
+            CREATE INDEX IF NOT EXISTS tiktok_flow_source ON tiktok_flows(source_sid);
             -- Player feedback ("Góp ý", game/player_feedback.py): private notes to the operator.
             CREATE TABLE IF NOT EXISTS player_feedback (
               id INTEGER PRIMARY KEY AUTOINCREMENT, sid TEXT NOT NULL, account TEXT,
@@ -734,6 +747,8 @@ class Store:
             db.execute("DELETE FROM receipts WHERE sid=?",(sid,))
             lb.forget(db,[sid])
             db.execute("DELETE FROM logins WHERE sid=?",(sid,))
+            db.execute("DELETE FROM tiktok_flows WHERE source_sid=? OR target_uid IN (SELECT uid FROM accounts WHERE sid=?)",(sid,sid))
+            db.execute("DELETE FROM tiktok_identities WHERE sid=?",(sid,))
             db.execute("DELETE FROM accounts WHERE sid=?",(sid,))
             rt.forget(db,sid)  # stat rows are kept (anonymous once the save is gone)
             n=db.execute("DELETE FROM sessions WHERE sid=?",(sid,)).rowcount

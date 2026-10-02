@@ -46,7 +46,7 @@ export function mergeContent(content,part){
 
 /** Ordered mutations + idempotent retry. A lost response never doubles a sale. */
 export class GameAPI extends EventTarget {
-  constructor(){super();this.state=null;this.content=null;this.revision=0;this.accepted=0;this.done=[];this.csrf='';this.ai={configured:false};this.social=null;this.push={enabled:false};this.clockOffset=0;this.connected=false;this.queue=Promise.resolve();
+  constructor(){super();this.state=null;this.content=null;this.revision=0;this.accepted=0;this.done=[];this.csrf='';this.ai={configured:false};this.auth={tiktok:{enabled:false,mode:'sandbox'}};this.social=null;this.push={enabled:false};this.clockOffset=0;this.connected=false;this.queue=Promise.resolve();
     // The release this page booted with (<meta name="mnl-version">, read by boot.js) vs X-Game-Version.
     this.updates=new UpdateNotice(globalThis.__mnlBoot?.version||'',{prewarm:globalThis.document?()=>prewarmRelease():null});
     this.delays=RETRY_DELAYS;this.retryWindow=RETRY_WINDOW;this.holding=new UpdatingNote(()=>this.lang);}
@@ -120,7 +120,7 @@ export class GameAPI extends EventTarget {
     this.contentBase||=data.content_url||'';
     // The stylesheets load without blocking the splash (boot.js); the game is shown once they are in.
     await boot.css;
-    this.content=content;this.csrf=data.csrf;this.ai=data.ai;this.social=data.social||null;this.push=data.push||{enabled:false};this.account=data.account||null;this.admin=data.admin===true;this.gifts=Array.isArray(data.gifts)?data.gifts:[];this.lbTitles=Array.isArray(data.lb_titles)?data.lb_titles:[];this.live=data.live||null;this.accept(data);
+    this.content=content;this.csrf=data.csrf;this.ai=data.ai;this.auth=data.auth||{tiktok:{enabled:false,mode:'sandbox'}};this.social=data.social||null;this.push=data.push||{enabled:false};this.account=data.account||null;this.admin=data.admin===true;this.gifts=Array.isArray(data.gifts)?data.gifts:[];this.lbTitles=Array.isArray(data.lb_titles)?data.lb_titles:[];this.live=data.live||null;this.accept(data);
     this.updates.watch(()=>fetch('/api/health',{credentials:'same-origin',cache:'no-store'}).then(r=>{this.updates.seen(r.headers.get('X-Game-Version'));}));
     return data;
   }

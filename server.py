@@ -12,6 +12,7 @@ from collections import defaultdict,deque
 import gc
 import gzip
 import hashlib
+import html
 import json
 import math
 import mimetypes
@@ -49,6 +50,7 @@ from game import ai
 from game import social
 from game import push
 from game import accounts
+from game import tiktok_auth
 from game import player_feedback as pfb
 from game import board_ai
 from game import admin_stats
@@ -272,6 +274,9 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self,format,*args):
         if not os.environ.get("QUIET"):
             # Never log cookies, request bodies, endpoint keys or dialogue text.
+            # OAuth query values contain authorization codes/state. Keep only the route.
+            if urlsplit(self.path).path.startswith('/auth/tiktok/'):
+                args=tuple(str(a).replace(self.path,urlsplit(self.path).path) for a in args)
             sys.stderr.write("[%s] %s\n"%(self.log_date_time_string(),format%args))
 
     # ---- request helpers -------------------------------------------------
@@ -303,7 +308,8 @@ class Handler(BaseHTTPRequestHandler):
         if self.secure():self.send_header("Strict-Transport-Security","max-age=31536000")
         if compress:self.send_header("Vary","Accept-Encoding")
         self.send_header("Cache-Control",cache or ("no-store" if self.path.startswith("/api/") else "no-cache"))
-        for k,v in (extra or {}).items():self.send_header(k,v)
+        for k,v in (extra or {}).items():
+            for value in v if isinstance(v,list) else [v]:self.send_header(k,value)
         self.end_headers()
         if self.command!="HEAD":
             try:self.wfile.write(data)
@@ -333,6 +339,63 @@ class Handler(BaseHTTPRequestHandler):
 
     def cookie(self,token:str,max_age:int=31536000)->str:
         return f"{COOKIE}={token}; HttpOnly; SameSite=Strict; Path=/; Max-Age={max_age}"+("; Secure" if self.secure() else "")
+
+    def tiktok_cookie(self,value:str,max_age:int=600)->str:
+        return f"{tiktok_auth.FLOW_COOKIE}={value}; HttpOnly; Secure; SameSite=Lax; Path=/auth/tiktok; Max-Age={max_age}"
+
+    def tiktok_binding(self):
+        try:
+            c=SimpleCookie();c.load(self.headers.get('Cookie',''))
+            return c[tiktok_auth.FLOW_COOKIE].value if tiktok_auth.FLOW_COOKIE in c else None
+        except Exception:return None
+
+    def tiktok_redirect(self,out=None,error=None):
+        status=(out or {}).get('status','')
+        marker=status if status in ('success','linked','cancelled') else 'error'
+        if error:marker=error if error in tiktok_auth.SAFE_ERRORS else 'tiktok_provider'
+        cookies=[self.tiktok_cookie('',0)]
+        if out and out.get('token'):cookies.append(self.cookie(out['token']))
+        self.respond(303,b'',"text/plain; charset=utf-8",{'Location':'/?tiktok='+marker,'Set-Cookie':cookies},cache='no-store')
+
+    def tiktok_callback(self,query):
+        try:
+            q=parse_qs(query,keep_blank_values=True,max_num_fields=8)
+            if any(len(q.get(k,[]))>1 for k in ('state','code','error')):tiktok_auth.fail()
+            out=tiktok_auth.callback(self.server.store,(q.get('state') or [None])[0],self.tiktok_binding(),
+                                     (q.get('code') or [None])[0],(q.get('error') or [None])[0])
+            if out['status']=='confirm':
+                self.respond(303,b'',"text/plain; charset=utf-8",{'Location':'/auth/tiktok/confirm'},cache='no-store');return
+            self.tiktok_redirect(out)
+        except accounts.AccountError as e:self.tiktok_redirect(error=e.code)
+        except Exception:self.tiktok_redirect(error='tiktok_provider')  # no traceback/provider data
+
+    def tiktok_confirmation_page(self):
+        try:
+            out=tiktok_auth.confirmation(self.server.store,self.tiktok_binding())
+            name=html.escape(out['display']);nonce=html.escape(out['nonce'],quote=True)
+            page=f'''<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Xác nhận đăng nhập · Phố Có Chuyện</title><link rel="stylesheet" href="/css/legal.css"></head><body><main class="legal"><h1>Thay tiến trình trên máy này?</h1><p>Bạn đang đăng nhập tài khoản <b>{name}</b>. Tiến trình đang chơi trên máy này sẽ được thay bằng tiến trình của tài khoản. Hủy để giữ phiên chơi hiện tại, hoặc quay lại game và xuất bản lưu trước khi đăng nhập.</p><p>Replace this device’s progress with the account save? Cancel keeps your current game. You can return to the game and export it before signing in.</p><form action="/auth/tiktok/confirm" method="post"><input type="hidden" name="nonce" value="{nonce}"><button type="submit" name="choice" value="confirm">Đăng nhập / Sign in</button> <button type="submit" name="choice" value="cancel">Hủy, giữ tiến trình / Cancel</button></form><p><a href="/">Quay lại game / Return to game</a></p></main></body></html>'''
+            self.respond(200,page.encode(),"text/html; charset=utf-8",cache='no-store')
+        except accounts.AccountError as e:self.tiktok_redirect(error=e.code)
+        except Exception:self.tiktok_redirect(error='tiktok_provider')
+
+    def tiktok_confirm(self):
+        try:
+            if not self.valid_host():tiktok_auth.fail()
+            origin=self.headers.get('Origin')
+            if origin:
+                parsed=urlsplit(origin)
+                if parsed.scheme not in ('http','https') or parsed.netloc!=self.headers.get('Host'):tiktok_auth.fail()
+            if self.headers.get('Sec-Fetch-Site')=='cross-site':tiktok_auth.fail()
+            length=int(self.headers.get('Content-Length','0'))
+            if not 0<length<=4096:tiktok_auth.fail()
+            if not self.headers.get('Content-Type','').startswith('application/x-www-form-urlencoded'):tiktok_auth.fail()
+            raw=self.rfile.read(length);self.body_read=True
+            data=parse_qs(raw.decode('utf-8'),keep_blank_values=True,max_num_fields=4)
+            if any(len(data.get(k,[]))!=1 for k in ('nonce','choice')):tiktok_auth.fail()
+            out=tiktok_auth.confirm(self.server.store,self.tiktok_binding(),data['nonce'][0],data['choice'][0])
+            self.tiktok_redirect(out)
+        except accounts.AccountError as e:self.tiktok_redirect(error=e.code)
+        except Exception:self.tiktok_redirect(error='tiktok_provider')
 
     def require_session(self)->tuple[str,dict,int,str]:
         token=self.token()
@@ -479,6 +542,10 @@ class Handler(BaseHTTPRequestHandler):
         if not self.valid_host():self.error(403,"Host không được phép.");return
         split=urlsplit(self.path);route=split.path
         try:
+            if route=="/auth/tiktok/callback":
+                if self.command!='GET':self.respond(405,b'',"text/plain",{'Allow':'GET'},cache='no-store');return
+                self.tiktok_callback(split.query);return
+            if route=="/auth/tiktok/confirm":self.tiktok_confirmation_page();return
             if route=="/api/health":
                 self.json(200,dict(status="ok",version=__version__,game_version=self.server.game_version(),careers=len(CAREERS)));return
             if route=="/api/content":self.content(split.query);return
@@ -530,7 +597,7 @@ class Handler(BaseHTTPRequestHandler):
                 version=self.server.content_version()
                 lite=(parse_qs(split.query).get("lite") or [""])[0]=="1"
                 self.json(200,dict(state=view,revision=revision,csrf=csrf,ai=dict(public_config(),configured=ai.available(),chat=True),
-                                   social=social.bootstrap(self.server.store,token,state),push=push.public_config(),account=accounts.status(self.server.store,token),
+                                   social=social.bootstrap(self.server.store,token,state),push=push.public_config(),account=accounts.status(self.server.store,token),auth=dict(tiktok=tiktok_auth.public_config()),
                                    admin=pfb.is_admin(self.server.store,token),content_version=version,content_url=f"/api/content?v={version}",
                                    game_version=self.server.game_version(),gifts=gifts,lb_titles=[dict(emoji=h["emoji"],name=h["name"],label=h["label"],board=h["board"]) for h in ranks],**live_hint()),extra,raw=None if lite else dict(content=self.server.content_blob()[0]));return
             if route=="/api/state":
@@ -677,6 +744,7 @@ class Handler(BaseHTTPRequestHandler):
     def _post(self):
         try:
             route=urlsplit(self.path).path
+            if route=="/auth/tiktok/confirm":self.tiktok_confirm();return
             if route=="/api/beacon":self.beacon();return  # sendBeacon cannot send the CSRF header: its own checks
             token,state,revision,csrf=self.guarded(light=route in ("/api/command","/api/gift/seen"))
             length=int(self.headers.get("Content-Length","0"))
@@ -824,6 +892,10 @@ class Handler(BaseHTTPRequestHandler):
         """Register / login / logout / change password. Bodies are never logged."""
         store,ip,limit=self.server.store,self.client_ip(),self.server.rate_limit
         slow=lambda:accounts.AccountError("Thử quá nhiều lần. Chờ vài phút rồi thử lại nhé.","rate_limited",429)
+        if name=="tiktok/start":
+            if not limit("acct-tiktok:"+ip,10,600):raise slow()
+            out=tiktok_auth.start(store,token,data.get('mode'))
+            self.json(200,dict(authorization_url=out['authorization_url']),{'Set-Cookie':self.tiktok_cookie(out['binding'])});return
         if name=="register":
             if not (limit("acct-reg:"+ip,int(os.environ.get("REGISTER_PER_10MIN","5")),600) and limit("acct-reg-h:"+ip,int(os.environ.get("REGISTER_PER_HOUR","20")),3600)):raise slow()
             out=accounts.register(store,token,data)
