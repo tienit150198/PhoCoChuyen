@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **1.4.0** (02/10 06:47; see "1.3.0" below), 33 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **1.4.1** (02/10 07:09; see "1.3.0" below), 33 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -45,7 +45,12 @@ branch holds what, and what to do next, in order. Details live in the linked doc
   and real diplomas + souvenir photo for certificates (optional `earned_on`; album accepts JPEG).
 - **1.4.0** (02/10 06:47): free drag-and-drop decor (`journey.decor` block; `journey.deco` kept as the 1.3.2 grid
   shadow so 1.3.2 still loads), wallpapers/floors/sheets, cats. `DECO_PER_MINUTE` (150).
-- In progress (not live): branch `needs` (hunger/sleep bars, feedback #72).
+- **1.4.1** (02/10 07:09): hunger/sleep bars, lunch strip and evening screen (`game/needs.py`, `journey.needs`,
+  journey only; feedback #72).
+- Known, pre-existing since 01/10: milk_tea.js "Cannot read properties of undefined (reading 'data')" on the
+  prepare screen (~40/day in stat_client_errors). Not fixed yet.
+- Someone left uncommitted Firebase/telemetry work in the main checkout (.env.example, game/webassets.py,
+  public/js/telemetry.js, public/privacy.html, tests/test_webassets.py); not ours, not released.
 
 ### What 1.2.1 → 1.2.3 added (01–02/10)
 - **1.2.1** (01/10 23:50, quiet, no "Có gì mới"): admins (`ADMIN_USERS`, now also in `/etc/mot-ngay-lam-nghe/live.env`)
