@@ -258,33 +258,6 @@ def vn_date(t: float) -> str:
     return datetime.datetime.fromtimestamp(t, VN).date().isoformat()
 
 
-# 🔥 Gian x3 (owner 03/10: "mỗi ngày x3 cho … trò bất kì", "làm liên tiếp, đầu tuần thông báo và tự áp dụng, mấy trò
-# mà chia ra 1 tuần là đủ tất cả trò"): every week (Monday to Sunday, VN time) the stalls are shuffled, one a day, so
-# each has its day; on it a win's profit (what comes back above the stake, a skill stall's reward) is paid BOOST_X
-# times. A loss stays as it is. Nothing in the save: the week and the day are worked out from the date.
-BOOST_X = 3
-BOOST_GAMES = ('bc', 'xd', 'lt', 'dt', 'xs', 'oaq', 'ring')
-
-
-def boost_week(t: float) -> tuple[str, list]:
-    """(this week's Monday 'YYYY-MM-DD', the stall of each day Monday..Sunday)."""
-    d = datetime.datetime.fromtimestamp(t, VN).date()
-    monday = d - datetime.timedelta(days=d.weekday())
-    g = list(BOOST_GAMES)
-    random.Random(f'fair-x3|{monday.isoformat()}').shuffle(g)
-    return monday.isoformat(), [g[i % len(g)] for i in range(7)]
-
-
-def boost_of(t: float) -> str:
-    """Today's 🔥 x3 stall."""
-    return boost_week(t)[1][datetime.datetime.fromtimestamp(t, VN).weekday()]
-
-
-def _x3(game: str, t: float, gain: int) -> int:
-    """A win's profit, BOOST_X times on the stall's day."""
-    return gain * BOOST_X if gain > 0 and boost_of(t) == game else gain
-
-
 def edition() -> str:
     """This fair's id ('fair20261003'): the save's edition (its days, its money), its titles' settle mark."""
     return 'fair' + _start_date().strftime('%Y%m%d')
@@ -618,11 +591,8 @@ def _oaq_end(j: dict, f: dict, o: dict, t: float, got: list) -> dict:
     out = dict(stage=o['stage'], me=me, opp=opp, prize=0)
     if o['stage'] == 'won':
         f['stats']['oaq_won'] += 1
-        full = _x3('oaq', t, OAQ_PRIZE[o['lv']])
-        out['prize'] = _earn(j, f, 'oaq', full)
-        out['capped'] = out['prize'] < full
-        if full > OAQ_PRIZE[o['lv']]:
-            out['x3'] = True
+        out['prize'] = _earn(j, f, 'oaq', OAQ_PRIZE[o['lv']])
+        out['capped'] = out['prize'] < OAQ_PRIZE[o['lv']]
         if o['lv'] == 'kho':
             _grant(j, 'f_oaq', got)
     return out
@@ -653,7 +623,7 @@ def _dart(e, j: dict, f: dict, p: dict, t: float, got: list) -> dict:
     x, y = darts.land(aim, win, _rng)
     ring = darts.ring_of(x, y)
     dt['n'] = min(10**9, dt['n'] + 1)
-    delta = _x3('dt', t, stake) if win else -stake
+    delta = stake if win else -stake
     _pay(j, f, 'dt', delta)
     if win:
         dt['w'] = min(10**9, dt['w'] + 1)
@@ -661,10 +631,7 @@ def _dart(e, j: dict, f: dict, p: dict, t: float, got: list) -> dict:
             dt['b'] = min(10**9, dt['b'] + 1)
             _grant(j, 'f_dart', got)
     out = dict(game='dt', win=win, stake=stake, net=delta, x=x, y=y, ring=ring, aim=list(aim))
-    if delta > stake:
-        out['x3'] = True
-    msg = (('Hồng tâm! ' if ring == 0 else 'Trúng vòng! ') + f'+{delta} xu.' + (' 🔥 Gian x3 hôm nay!' if delta > stake else '')
-           if win else f'Trật rồi, mất {stake} xu.')
+    msg = ('Hồng tâm! ' if ring == 0 else 'Trúng vòng! ') + f'+{stake} xu.' if win else f'Trật rồi, mất {stake} xu.'
     return dict(fair=out, message=msg)
 
 
@@ -680,12 +647,9 @@ def _scratch(e, j: dict, f: dict, p: dict, t: float) -> dict:
     mult = scratch.prize_mult(_rng) if win else 0
     cells = scratch.layout(price, mult, _rng)
     prize = mult * price
-    net = _x3('xs', t, prize - price)
-    _pay(j, f, 'xs', net)
+    _pay(j, f, 'xs', prize - price)
     out = dict(game='xs', id=_rng.getrandbits(31), price=price, name=scratch.NAMES[price], cells=cells, prize=prize,
-               mult=mult, net=net, hits=[i for i, v in enumerate(cells) if prize and v == prize])
-    if net > prize - price:   # 🔥 the day's x3: the bonus on top of the ticket's prize
-        out.update(x3=True, bonus=net - (prize - price))
+               mult=mult, net=prize - price, hits=[i for i, v in enumerate(cells) if prize and v == prize])
     return dict(fair=out, message='')
 
 
@@ -738,7 +702,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
         back = bc_back(bets, dice)
         bao = next((face for face in bets if dice.count(face) == 3), None)
         st['bc'] += 1
-        delta = _x3('bc', t, back - stake)
+        delta = back - stake
         _pay(j, f, 'bc', delta)
         if bao:
             st['bao'] += 1
@@ -746,9 +710,6 @@ def apply(s: dict, name: str, p: dict) -> dict:
         result['fair'] = dict(game='bc', dice=dice, bets=dict(bets), stake=stake, back=back, net=delta, bao=bao)
         result['message'] = (f'Bão {FACE_NAMES[bao].lower()}! +{delta} xu.' if bao else
                              f'Thắng {delta} xu.' if delta > 0 else 'Hòa vốn.' if delta == 0 else f'Thua {-delta} xu.')
-        if delta > back - stake:
-            result['fair']['x3'] = True
-            result['message'] += ' 🔥 Gian x3 hôm nay!'
     elif name == 'fair_xd':
         need(set(p) == {'side', 'stake'} and p.get('side') in SIDES, 'Chọn chẵn hay lẻ nha.')
         stake = p['stake']
@@ -773,13 +734,10 @@ def apply(s: dict, name: str, p: dict) -> dict:
             coins = xd_toss(p['side'], want)
             even = sum(coins) % 2 == 0
             win = (p['side'] == 'chan') == even
-            delta = _x3('xd', t, stake) if win else -stake
+            delta = stake if win else -stake
             _pay(j, f, 'xd', delta)
             result['fair'] = dict(game='xd', raid=False, side=p['side'], stake=stake, coins=coins, even=even, net=delta)
-            result['message'] = f'{"Chẵn" if even else "Lẻ"}! ' + (f'Thắng {delta} xu.' if win else f'Thua {stake} xu.')
-            if delta > stake:
-                result['fair']['x3'] = True
-                result['message'] += ' 🔥 Gian x3 hôm nay!'
+            result['message'] = f'{"Chẵn" if even else "Lẻ"}! ' + (f'Thắng {stake} xu.' if win else f'Thua {stake} xu.')
     elif name == 'fair_loto_buy':
         slot = int(t // 60)
         if p:   # the newer client: a tier, 1..LOTO_CARDS tờ, side bets, the vòng it showed; the older one sends {}
@@ -864,9 +822,6 @@ def apply(s: dict, name: str, p: dict) -> dict:
             result['message'] = f'Chậm một nhịp rồi! {rv["npc_name"]} đã hô “Kinh!” trước.'
         else:
             prize = rv['prize']   # the plain card's is LOTO_PRIZE
-            gain = prize - rv['n'] * rv['price']
-            boosted = _x3('lt', t, gain) - gain if gain > 0 else 0
-            prize += boosted
             lt['stage'] = 'won'
             st['lt_won'] += 1
             _ltd(f)['w'] += 1
@@ -876,9 +831,6 @@ def apply(s: dict, name: str, p: dict) -> dict:
                 _grant(j, dict(doi='f_kinh2', nguoc='f_nguoc', dem='f_hu')[rv['mode']], got)
             result['fair'] = dict(game='lt', won=True, prize=prize, mode=rv['mode'], **({} if marks is not None else dict(row=row)))
             result['message'] = f'Kinh! Bạn thắng {prize} xu.'
-            if boosted:
-                result['fair']['x3'] = True
-                result['message'] += ' 🔥 Gian x3 hôm nay!'
     elif name == 'fair_loto_fold':
         need(not p, 'Dữ liệu thao tác không hợp lệ.')
         lt = f['loto']
@@ -956,14 +908,11 @@ def apply(s: dict, name: str, p: dict) -> dict:
             hits = ring.judge(ring.params(r['rs']), p['taps'])
             n = sum(h >= 0 for h in hits)
             st['ring_hits'] += n
-            base = n * RING_HIT + (RING_ALL if n == ring.BOTTLES else 0)
-            full = _x3('ring', t, base)
-            prize = _earn(j, f, 'ring', full)
+            prize = _earn(j, f, 'ring', n * RING_HIT + (RING_ALL if n == ring.BOTTLES else 0))
             if n == ring.BOTTLES:
                 _grant(j, 'f_ring', got)
+            full = n * RING_HIT + (RING_ALL if n == ring.BOTTLES else 0)
             result['fair'] = dict(game='ring', hits=hits, n=n, prize=prize, capped=prize < full)
-            if full > base:
-                result['fair']['x3'] = True
             result['message'] = f'Trúng {n}/{ring.BOTTLES} cổ chai' + (f', +{prize} xu.' if prize else '.')
     if got:
         result['fair']['titles'] = got
@@ -1048,8 +997,6 @@ def public(s: dict) -> dict:
                 oaq=oaq_view(o) if o and (o['stage'] == 'play' or t - o['at'] < 6 * 3600) else None,
                 ring=ring_view((f or {}).get('ring'), t),
                 loto=loto, stats={k: st.get(k, 0) for k in STATS},
-                # 🔥 Gian x3: this week's stall of each day (Monday..Sunday) and today's (absent from older servers)
-                x3=dict(x=BOOST_X, week=boost_week(t)[0], days=boost_week(t)[1], today=boost_of(t)),
                 food=ff.public(s),   # 🍡 the food carts' menus (absent from older servers: the carts only say a line)
                 # 🎯 phi tiêu (absent from older servers: the client then leaves the stall out)
                 darts=dict(stakes=list(darts.STAKES), rings=list(darts.RINGS), board=darts.BOARD_R, off=darts.OFF_R,
