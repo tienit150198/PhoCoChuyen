@@ -41,6 +41,10 @@ Thử vận may, small stakes:
   most 3 × 10 + 2 × 10 xu) must fit the wallet, the only limit (owner 03/10: "mỗi ngày chơi không giới hạn tiền",
   "không giới hạn lượt chơi"; _guard_free: no DAY_CAP, no ROUNDS_DAY). The day's tally (Bảng kinh hôm nay: rounds,
   Kinh, Kinh hụt, the neighbours' wins) is journey['fair']['ltd'].
+* 🎯 Phóng phi tiêu (game/fair_darts.py, owner 03/10): pick a stake (darts.STAKES), aim, throw; a dart in the
+  coloured rings pays 1:1, the odds from darts.win_p(today's net) on the server. No daily money or round limit, only
+  the wallet (_guard_free); PT_HIT points a hit, beyond POINTS_DAY too (_points_free). Save: the optional 'dt'
+  {n: throws, w: hits, b: hồng tâm}.
 * 🕯️ Chiếu trong (back corner): xóc đĩa chẵn lẻ (four coins, 1:1), bigger stakes XD_MIN..XD_MAX; the side picked
   is right with win_p, the coins any pattern of that parity alike (xd_toss). Each round
   has RAID_PCT % odds that Công an phường comes by: the stake is confiscated, a fine of stake // FINE_DIV (at least
@@ -76,6 +80,7 @@ import os
 import random
 import time
 
+from . import fair_darts as darts
 from . import fair_oaq as oaq
 from . import fair_ring as ring
 
@@ -154,6 +159,7 @@ TITLE_ROWS = (   # journey.TITLES (secret, granted here only)
     ('f_nguoc', '🙃', 'Đọc ngược như xuôi', 'Thắng một vòng lô tô lật ngược ở hội chợ.'),
     ('f_hu', '🏺', 'Ôm hũ đêm hội', 'Kinh cả tờ, ôm Hũ đêm hội ở gánh lô tô.'),
     ('f_bao', '🌪️', 'Trúng bão bầu cua', 'Ba con xúc xắc cùng ra đúng mặt bạn đặt ở hội chợ.'),
+    ('f_dart', '🎯', 'Mắt thần phi tiêu', 'Phóng phi tiêu cắm ngay hồng tâm ở hội chợ dân gian.'),
     ('f_raid', '🚨', 'Bị công an hỏi thăm', 'Đang chơi ở chiếu trong thì công an phường tới kiểm tra.'),
     ('f_king', '👑', 'Vua trò chơi', 'Đứng đầu Bảng vàng hội chợ dân gian khi hội tàn.'),
     ('f_master', '🎪', 'Cao thủ hội chợ', 'Lọt top 10 Bảng vàng hội chợ dân gian khi hội tàn.'),
@@ -163,14 +169,15 @@ AWARD_NAMES = {tid: f'{emoji} {name}' for tid, emoji, name, _ in TITLE_ROWS if t
 STATS = ('bc', 'xd', 'lt', 'lt_won', 'raids', 'bao', 'won', 'lost', 'oaq', 'oaq_won', 'ring', 'ring_hits', 'earned')
 KEYS = ('v', 'date', 'net', 'rounds', 'last', 'raid_until', 'loto', 'stats', 'ed', 'pts', 'dpts', 'pdays', 'pday',
         'earn', 'oaq', 'ring')
-KEYS_OPT = ('ltd',)            # newer keys, added on first use (older saves load without them)
+KEYS_OPT = ('ltd', 'dt')       # newer keys, added on first use (older saves load without them)
+DT_KEYS = ('n', 'w', 'b')      # 🎯 phi tiêu, lifetime: throws, hits, hồng tâm
 LOTO_KEYS = ('slot', 'rs', 'at', 'stage')
 OAQ_KEYS = ('lv', 'g', 'at', 'stage')
 RING_KEYS = ('rs', 'at', 'stage')
 EARN_KEYS = ('oaq', 'ring', 'ring_n')   # today: xu earned per game, ném vòng rounds
 LABELS = dict(bc='🦀 Bầu cua hội chợ', xd='🕯️ Chiếu trong hội chợ', lt='🎱 Lô tô hội chợ', oaq='🪨 Ô ăn quan hội chợ',
-              ring='💍 Ném vòng hội chợ')
-UNITS = dict(bc='ván', xd='ván', lt='tờ', oaq='ván thắng', ring='lượt')
+              ring='💍 Ném vòng hội chợ', dt='🎯 Phi tiêu hội chợ')
+UNITS = dict(bc='ván', xd='ván', lt='tờ', oaq='ván thắng', ring='lượt', dt='lượt')
 
 CLOSED = 'Hội chợ đã tàn, hẹn lần sau nha!'
 SOON = 'Hội chợ chưa mở đâu, hẹn bạn ngày khai hội nha!'
@@ -307,7 +314,7 @@ def _pay(j: dict, f: dict, game: str, amount: int) -> None:
             st['won'] += amount
         else:
             st['lost'] -= amount
-    count = st['oaq_won' if game == 'oaq' else game]
+    count = f['dt']['n'] if game == 'dt' else st['oaq_won' if game == 'oaq' else game]
     label = f'{LABELS[game]} · {count} {UNITS[game]}'
     last = None
     for row in reversed(j['history'][-12:]):
@@ -480,7 +487,7 @@ def _loto_lost(f: dict, lt: dict) -> None:
 
 # ---------------------------------------------------------------- commands
 COMMANDS = ('fair_bc', 'fair_xd', 'fair_loto_buy', 'fair_loto_kinh', 'fair_loto_fold',
-            'fair_oaq_start', 'fair_oaq_move', 'fair_oaq_quit', 'fair_ring_start', 'fair_ring_throw')
+            'fair_oaq_start', 'fair_oaq_move', 'fair_oaq_quit', 'fair_ring_start', 'fair_ring_throw', 'fair_dart')
 LATE = ('fair_loto_kinh', 'fair_loto_fold', 'fair_oaq_move', 'fair_oaq_quit', 'fair_ring_throw')   # may finish after the close
 
 
@@ -526,6 +533,41 @@ def _guard_free(e, f: dict, j: dict, t: float, stake: int) -> int:
     need(ms - f['last'] >= GAP_MS or f['last'] > ms, 'Từ từ thôi, xúc xắc chưa kịp lăn!', 'fair_slow')
     f['last'] = ms
     return _day(f, t)
+
+
+def _points_free(f: dict, n: int, t: float) -> int:
+    """Fair points with no daily max (🎯 phi tiêu, owner 03/10): all of them count; today's tally stops at POINTS_DAY."""
+    if n <= 0 or not is_open(t):
+        return 0
+    f['pts'] = min(10**6, f['pts'] + n)
+    f['dpts'] = min(POINTS_DAY, f['dpts'] + n)
+    return n
+
+
+def _dart(e, j: dict, f: dict, p: dict, t: float, got: list) -> dict:
+    """🎯 One throw: the stake from the wallet, the result from _rng and today's net (game/fair_darts.py)."""
+    need = e.need
+    need(set(p) in ({'stake'}, {'stake', 'aim'}), 'Dữ liệu thao tác không hợp lệ.')
+    stake, aim = p['stake'], p.get('aim', [0, 0])
+    need(type(stake) is int and stake in darts.STAKES, f'Phi tiêu đặt {", ".join(map(str, darts.STAKES))} xu thôi nha.')
+    need(darts.aim_ok(aim), 'Dữ liệu thao tác không hợp lệ.')
+    pts = _guard_free(e, f, j, t, stake)
+    dt = f.setdefault('dt', {k: 0 for k in DT_KEYS})
+    win = _rng.random() < darts.win_p(f['net'])
+    x, y = darts.land(aim, win, _rng)
+    ring = darts.ring_of(x, y)
+    dt['n'] = min(10**9, dt['n'] + 1)
+    delta = stake if win else -stake
+    _pay(j, f, 'dt', delta)
+    if win:
+        dt['w'] = min(10**9, dt['w'] + 1)
+        pts += _points_free(f, darts.PT_HIT, t)
+        if ring == 0:
+            dt['b'] = min(10**9, dt['b'] + 1)
+            _grant(j, 'f_dart', got)
+    out = dict(game='dt', win=win, stake=stake, net=delta, x=x, y=y, ring=ring, aim=list(aim))
+    msg = ('Hồng tâm! ' if ring == 0 else 'Trúng vòng! ') + f'+{stake} xu.' if win else f'Trật rồi, mất {stake} xu.'
+    return dict(fair=out, message=msg, points=pts)
 
 
 def _guard_round(e, f: dict, j: dict, t: float, stake: int, worst: int) -> int:
@@ -761,6 +803,9 @@ def apply(s: dict, name: str, p: dict) -> dict:
         st['ring'] += 1
         f['ring'] = dict(rs=_rng.getrandbits(31), at=ms, stage='play')
         result['fair'] = dict(game='ring', round=ring_view(f['ring'], t))
+    elif name == 'fair_dart':   # 🎯 phóng phi tiêu: no daily money or round limit, the wallet only
+        d = _dart(e, j, f, p, t, got)
+        pts, result['fair'], result['message'] = d['points'], d['fair'], d['message']
     elif name == 'fair_ring_throw':
         r = f['ring']
         need(set(p) == {'id', 'taps'}, 'Dữ liệu thao tác không hợp lệ.')
@@ -838,7 +883,8 @@ def public(s: dict) -> dict:
     slot = int(t // 60)
     return dict(base, show=True, now=int(t), board=edition(),   # the clock (countdowns, cooldowns) only around the fair
                 points=dict(total=pts, today=dpts, cap=0, days=pdays,
-                            rules=dict(day=PT_DAY, bc=PT_BC, xd=PT_XD, loto=PT_LOTO, oaq=PT_OAQ, ring3=PT_RING3, ring5=PT_RING5)),
+                            rules=dict(day=PT_DAY, bc=PT_BC, xd=PT_XD, loto=PT_LOTO, oaq=PT_OAQ, ring3=PT_RING3, ring5=PT_RING5,
+                                       dt=darts.PT_HIT)),
                 soon=t < opens, over=t >= closes, wallet=j.get('wallet', 0), played=bool(f) and f.get('pday') == vn_date(t),
                 today=dict(net=today['net'], rounds=today['rounds'], left=max(0, j.get('wallet', 0)), done=False),
                 earn={g: dict(today=earn[g], cap=EARN_DAY[g], left=max(0, EARN_DAY[g] - earn[g])) if g not in EARN_UNCAPPED
@@ -852,6 +898,9 @@ def public(s: dict) -> dict:
                 oaq=oaq_view(o) if o and (o['stage'] == 'play' or t - o['at'] < 6 * 3600) else None,
                 ring=ring_view((f or {}).get('ring'), t),
                 loto=loto, stats={k: st.get(k, 0) for k in STATS},
+                # 🎯 phi tiêu (absent from older servers: the client then leaves the stall out)
+                darts=dict(stakes=list(darts.STAKES), rings=list(darts.RINGS), board=darts.BOARD_R, off=darts.OFF_R,
+                           aim_max=darts.AIM_MAX, pt=darts.PT_HIT, **{k: ((f or {}).get('dt') or {}).get(k, 0) for k in DT_KEYS}),
                 # 🎱 the gánh lô tô: the vòng of this minute and the next nine, the tiers and side bets, today's tally
                 # (hut_max 0: no limit on Kinh hụt; the older client showed it as "hụt N lần là nghỉ ván")
                 ganh=dict(modes=[[slot + i, mode_of(slot + i)] for i in range(10)], names=dict(MODE_NAMES),
@@ -897,6 +946,11 @@ def validate(j: dict) -> None:
         for k, b in sb.items():
             need(isinstance(b, list) and len(b) == 2 and b[1] in SIDE_STAKES and type(b[1]) is int
                  and (b[0] in ('chan', 'le') if k == 'cl' else type(b[0]) is int and 0 <= b[0] <= 8), bad, 'invalid_save')
+    dt = f.get('dt')
+    if dt is not None:
+        need(isinstance(dt, dict) and set(dt) == set(DT_KEYS), bad, 'invalid_save')
+        for v in dt.values():
+            integer(v, 0, 10**9)
     ltd = f.get('ltd')
     if ltd is not None:
         need(isinstance(ltd, dict) and set(ltd) == set(LTD_KEYS) and isinstance(ltd['npc'], list)
