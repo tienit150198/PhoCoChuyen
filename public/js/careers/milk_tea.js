@@ -142,12 +142,14 @@ const shelfCap=x=>B(x).shelf_cap||60;
 const heldOf=(x,id)=>{const s=station(x,id);return s.held??s.stock??0;};
 /** A batch made at the counter: five portions, or as many as the shop fund pays for and the shelf still takes
  * (the label says which); {why} when not even one can be made now. */
+// The full batch's words as the guide names them ("[[Nấu +5]] trân châu", game/guide_content.py).
+const FULL={'Nấu':'Nấu +5','Ủ':'Ủ +5','Đánh':'Đánh +5'};
 function prepPlan(x,id){
   const unit=ing(x,id).cost||0,cap=shelfCap(x),held=heldOf(x,id),room=Math.max(0,cap-held),money=fund(x);
-  if(!room)return {qty:0,cost:0,why:`Kho đầy ${held}/${cap}`,label:`${verb(id)} +5`};
+  if(!room)return {qty:0,cost:0,why:`Kho đầy ${held}/${cap}`,label:FULL[verb(id)]};
   const qty=Math.min(5,room,unit?Math.floor(money/unit):5);
   if(qty<1)return {qty:0,cost:unit,why:`Thiếu ${unit-money} xu`,label:`${verb(id)} +1 · ${unit} xu`,poor:true};
-  return {qty,cost:qty*unit,why:'',label:`${verb(id)} +${qty} · ${qty*unit} xu`,poor:qty<5&&qty<room};
+  return {qty,cost:qty*unit,why:'',label:`${qty===5?FULL[verb(id)]:`${verb(id)} +${qty}`} · ${qty*unit} xu`,poor:qty<5&&qty<room};
 }
 /** Why a supplier order of `qty` for `cost` xu would be refused now; '' when it goes through. */
 function orderWhy(x,id,qty,cost){
