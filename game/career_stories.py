@@ -1156,6 +1156,7 @@ ARCS = {
                 ('ba_nam', 'Giao đúng người rồi. Con nhỏ này nhẹ tay, lại thật thà.'),
                 ('co_lan', 'Cô đi khám rồi, móng đỡ nhiều. Bữa nào khỏi hẳn cô ghé {anh} làm móng!'),
                 ('me', 'Em sẽ giữ bàn này sạch như chị đã giữ.')]),
+        ]),
     'pagoda': dict(
         title='Tiếng chuông chùa Gió Lành', emoji='🔔',
         keepsake=dict(emoji='🪵', name='Cái dùi chuông gỗ mít', desc='Thầy Huệ Minh dùng mấy chục năm, chỗ tay cầm nhẵn bóng. Đánh bằng nó, tiếng chuông trầm và ngân dài.'),
