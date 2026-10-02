@@ -766,7 +766,9 @@ def on_close(s: dict, c: dict, career: str) -> dict | None:
     if job['status'] != 'hired' or c['day_completed'] < 1:
         return dict(boss=boss) if boss else None
     post = _posting(career, job['employer'])
-    pay = round(job['salary'] * (.85 if job['probation'] else 1))
+    from .accounting_school import salary_multiplier
+    multiplier = salary_multiplier(s,career)
+    pay = round(job['salary'] * (.85 if job['probation'] else 1)) * multiplier
     e.money(s, c, pay, 'Lương ngày ' + str(c['day']) + (' (thử việc 85%)' if job['probation'] else ''), f'salary-{c["day"]}', category='salary')
     job['days_worked'] += 1
     note = dict(salary=pay, probation=job['probation'])
@@ -832,6 +834,10 @@ def public(c: dict, career: str, s: dict | None = None) -> dict:
     job['required'] = required(career)
     if s is not None:
         job['retry'] = retry_view(s, c)
+        from .accounting_school import salary_multiplier
+        job['base_salary'] = job['salary']
+        job['salary_multiplier'] = salary_multiplier(s,career)
+        job['salary'] *= job['salary_multiplier']
     job['certs'] = list(job.get('certs') or [])
     ex = exam(career)
     app = job.get('application')
