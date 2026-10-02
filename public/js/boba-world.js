@@ -17,6 +17,7 @@ import {areaList,areaOf,planOf,areaSpots,areaTap,enterArea,autoArea,focusDoor,do
 import shop from './scenes/shop.js';
 import {language} from './v4/i18n.js';
 import {daylight} from './v4/dayclock.js';
+import {watch,CHECK} from './scenes/reads.js';   // what the room read of the game: a new state keeps its backdrop unless that changed
 import {figure,paintLegs,paintHairBack,paintTop,paintHairFront,paintAcc} from './v4/look.js';  // Tủ đồ: the player's look
 const themes={
  teacher:{primary:'#8ca97c',dark:'#556e46',light:'#f0f2dc',mint:'#e5d8ac',wall:'#fcf5df',awning:'#b5c897',title:'Lớp học Mầm Nắng',sub:'CÙNG THỬ · CÙNG HIỂU · CÙNG TIẾN BỘ',shelves:['Góc học liệu','Hộp đồ lớp mình']},
@@ -437,20 +438,40 @@ export class BobaWorld extends World {
    for(let x=14;x<this.width;x+=34)for(let y=14;y<this.height;y+=34)E(c,x,y,1,1,'#dec6b838');
    c.translate(this.offset.x,this.offset.y);c.scale(this.scale,this.scale);if(this.isPortrait()){c.save();c.beginPath();c.roundRect(22,140,656,760,[26,26,0,0]);c.clip();this.drawRoom();c.restore();}else this.drawRoom();this.wallDecor();}
  /** The backdrop is drawn once into an offscreen canvas and blitted each frame. It is redrawn when the
-  * state, size, pixel ratio, layout, scene or language changes (rev counts update()/setupObjects()), and,
-  * for scenes whose room animates with world time (clouds, steam, lanterns…), at most every ROOM_TICK
-  * seconds, so walking and people stay at full rate while the room's slow ambience ticks along. After a
-  * long idle spell (World.longIdle) that ambience holds still until the player is back. */
+  * size, pixel ratio, layout, scene, area, language or reduced motion changes; when a new state (rev counts
+  * update()/setupObjects()) changes something the paint read of the game (this.c, this.state, this.game,
+  * noted by scenes/reads.js: a served order moves the queue on the order screen, a tick of the clock does
+  * not); and, for scenes whose room animates with world time (clouds, steam, lanterns…), at most every
+  * ROOM_TICK seconds, so walking and people stay at full rate while the room's slow ambience ticks along.
+  * After a long idle spell (World.longIdle) that ambience holds still until the player is back. A room can
+  * also keep its moving bits out of the backdrop (ambient()): then it is painted once and they move every frame. */
  backdrop(){const cv=this.canvas,main=this.ctx;
-   const key=[this.rev,cv.width,cv.height,this.dpr,this.scale,this.offset.x,this.offset.y,this.isPortrait(),this.career,this.scene().id,areaOf(this)?.id,language()].join('|');
+   const key=[cv.width,cv.height,this.dpr,this.scale,this.offset.x,this.offset.y,this.isPortrait(),this.career,this.scene().id,areaOf(this)?.id,language(),!!this.reduced].join('|');
    let L=this.layer;
    if(!L||L.canvas.width!==cv.width||L.canvas.height!==cv.height){const canvas=globalThis.document.createElement('canvas');canvas.width=cv.width;canvas.height=cv.height;L=this.layer={canvas,ctx:canvas.getContext('2d',{alpha:false}),key:null};}
-   if(L.key!==key||L.animated&&!this.reduced&&!this.longIdle&&Math.abs(this.time-L.at)>=ROOM_TICK){
+   if(L.key===key&&L.rev!==this.rev&&L.reads?.same(this)){L.rev=this.rev;if(CHECK)this.checkBackdrop(L);}   // a new state, nothing the room shows changed
+   if(L.key!==key||L.rev!==this.rev||L.animated&&!this.reduced&&!this.longIdle&&Math.abs(this.time-L.at)>=ROOM_TICK){
      // Same pen state as painting straight onto the stage would have had, in and out.
-     copyPen(main,L.ctx);this.ctx=L.ctx;this.timeRead=false;
-     try{this.paintBackdrop();}finally{this.ctx=main;}
-     L.key=key;L.animated=this.timeRead;L.at=this.time;}
-   main.setTransform(1,0,0,1,0,0);main.drawImage(L.canvas,0,0);copyPen(L.ctx,main);}
+     copyPen(main,L.ctx);this.ctx=L.ctx;this.timeRead=false;this.ambience=[];const reads=watch(this,['c','state','game']);
+     try{this.paintBackdrop();}finally{this.ctx=main;reads.stop();L.ambience=this.ambience;this.ambience=null;}
+     L.key=key;L.rev=this.rev;L.reads=reads;L.animated=this.timeRead;L.at=this.time;}
+   main.setTransform(1,0,0,1,0,0);main.drawImage(L.canvas,0,0);copyPen(L.ctx,main);
+   for(const [m,draw] of L.ambience){main.save();main.setTransform(m);try{draw(main);}finally{main.restore();}}}
+ /** A small moving part of the room (a cloud drifting past the window): `draw(c)` paints it in the room's
+  * coordinates. Painting the backdrop, it is kept and drawn on every frame over the cached room instead of
+  * making the whole room repaint with world time; nothing the room draws after it may overlap it. Painting
+  * straight onto a canvas (a career preview, layers off), it is drawn there and then. */
+ ambient(draw){if(this.ambience)this.ambience.push([this.ctx.getTransform(),draw]);else draw(this.ctx);}
+ /** Dev check (scenes/reads.js CHECK): a backdrop kept through a new state must be what painting it now gives,
+  * at the same world time. Counts in globalThis.__mnlBackdrop {kept, bad}; a difference is logged. */
+ checkBackdrop(L){const D=globalThis.__mnlBackdrop??={kept:0,bad:0};D.kept++;
+   const cv=globalThis.document.createElement('canvas');cv.width=L.canvas.width;cv.height=L.canvas.height;
+   const ctx=cv.getContext('2d',{alpha:false}),main=this.ctx,time=this._time,read=this.timeRead;
+   copyPen(L.ctx,ctx);this.ctx=ctx;this._time=L.at;this.ambience=[];
+   try{this.paintBackdrop();}finally{this.ctx=main;this._time=time;this.timeRead=read;this.ambience=null;}
+   const a=L.ctx.getImageData(0,0,cv.width,cv.height).data,b=ctx.getImageData(0,0,cv.width,cv.height).data;
+   let diff=0;for(let i=0;i<a.length;i+=4)if(a[i]!==b[i]||a[i+1]!==b[i+1]||a[i+2]!==b[i+2])diff++;
+   if(diff){D.bad++;console.error(`backdrop kept stale: ${this.career} ${areaOf(this)?.id||''} ${diff} px differ`);}}
  draw(){const c=this.ctx;if(!this.width)this.resize();
    if(this.layers===false)this.paintBackdrop();else this.backdrop();
    c.setTransform(this.dpr,0,0,this.dpr,0,0);c.translate(this.offset.x,this.offset.y);c.scale(this.scale,this.scale);
