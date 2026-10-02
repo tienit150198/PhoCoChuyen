@@ -86,6 +86,8 @@ class MilkTeaSealTests(TapStopTest):
         j, tid, t0 = self.ready()
         now, tapped, late = self.twin(j, 'tea_seal', t0 + 2.0, 1.2, lambda c: self.quality(c, tid), task=tid)
         self.assertEqual((now, tapped, late), ('perfect', 'perfect', 'ok'))   # 3.2 s on arrival: past the green zone
+        s, r = self.stop(j, 'tea_seal', t0 + 2.0, t0 + 2.4, task=tid)
+        self.assertEqual(r['held'], 2.0)                                        # the seconds graded, for the page's checks
 
     def test_a_moment_too_old_or_in_the_future_is_bounded(self):
         j, tid, t0 = self.ready()
