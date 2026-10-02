@@ -2313,6 +2313,67 @@ class GroceryListTests(unittest.TestCase):
         j.act('gr_pack', npc='grocery_npc_05')
         self.assertEqual(j.c['ext']['data']['lists']['4']['packed']['egg'], G._list_for(4, 3)['egg'])
 
+    def _pack_view(self, j, npc='grocery_npc_05'):
+        data = public_state(j.state)['careers']['grocery']['data']
+        lst = next(x for x in data['lists_view'] if x['npc'] == npc and x['when'] == 'today')
+        care = next((r for r in data['care'] if r.get('icon') == '🧺' and r['label'].endswith(lst['name'])), None)
+        self.assertEqual(care['pack'], lst['pack'])
+        self.assertTrue(all('pack' not in x for x in data['lists_view'] if x['when'] == 'tomorrow'))
+        return lst['pack']
+
+    def test_pack_is_offered_only_when_the_tap_packs_something(self):
+        # Half of all gr_pack taps were refused: a partly packed basket kept its "🧺 Soạn" button while the shelf
+        # had none of the missing goods. The view now carries the server's own rule (ok / code / why), and every
+        # press it allows succeeds while every press it blocks is refused with the same reason.
+        j = self._day(3)
+        want = G._list_for(4, 3)
+        self.assertEqual(self._pack_view(j), {'ok': True})
+        set_stock(j, 'egg', 3)
+        j.act('gr_pack', npc='grocery_npc_05')                    # everything but the missing eggs
+        g = self._pack_view(j)
+        self.assertEqual((g['ok'], g['code'], g['items']), (False, 'empty', [{'item': 'egg', 'need': want['egg'] - 3}]))
+        self.assertEqual(g['why'], 'Kệ hết Trứng gà: nhập ở Kho')
+        self.assertNotIn('error', g)
+        with self.assertRaises(GameError) as e:
+            j.act('gr_pack', npc='grocery_npc_05')
+        self.assertIn('Kệ hết Trứng gà', e.exception.message)
+        top_up(j, 'egg', 20)
+        self.assertTrue(self._pack_view(j)['ok'])
+        j.act('gr_pack', npc='grocery_npc_05')
+        g = self._pack_view(j)
+        self.assertEqual((g['ok'], g['code']), (False, 'full'))
+        with self.assertRaises(GameError) as e:
+            j.act('gr_pack', npc='grocery_npc_05')
+        self.assertIn('Giỏ đủ món rồi', e.exception.message)
+        roundtrip(j)
+
+    def test_pack_view_counts_goods_held_on_open_bills_and_the_closed_shift(self):
+        j = self._day(3)
+        set_stock(j, 'egg', 0)
+        for k in ('rice', 'greens', 'tomato'):
+            set_stock(j, k, 0)
+        self.assertEqual(self._pack_view(j)['code'], 'empty')
+        top_up(j, 'egg', 2)
+        self.assertTrue(self._pack_view(j)['ok'])
+        # Two eggs rung up on an open bill are not on offer for the basket (_available).
+        bill = next(t for t in j.c['tasks'] if t['kind'] == 'checkout')
+        saved = (bill['known'], bill['stage'], dict(bill['scanned']))
+        bill.update(known=True, stage='basket', scanned={'egg': 2})
+        self.assertEqual(self._pack_view(j)['code'], 'empty')
+        with self.assertRaises(GameError):
+            j.act('gr_pack', npc='grocery_npc_05')
+        bill.update(known=saved[0], stage=saved[1], scanned=saved[2])
+        # Closed shift: the engine refuses every gr_ action; the view says "Mở ca trước" when goods are there,
+        # and names the empty shelf first otherwise (ordering works while closed).
+        j.c['open'] = False
+        g = self._pack_view(j)
+        self.assertEqual((g['code'], g['why']), ('closed', 'Mở ca trước'))
+        with self.assertRaises(GameError) as e:
+            j.act('gr_pack', npc='grocery_npc_05')
+        self.assertIn('Mở ca trước', e.exception.message)
+        set_stock(j, 'egg', 0)
+        self.assertEqual(self._pack_view(j)['code'], 'empty')
+
     def test_chi_lan_list_goes_on_the_book(self):
         j = self._day(6)
         before = row(j, 2)['balance']

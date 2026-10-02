@@ -608,6 +608,7 @@ function stockView(x){
   const rows=`${hot.map(row).join('')||'<p class="muted small">Không món nào sắp hết hay sắp hết hạn.</p>'}
     ${calm.length?pane(x,'stock-calm',`📦 ${calm.length} món còn đủ hàng · xem giá & nhập thêm`,calm.map(row).join(''),!hot.length,'gr-stock-more'):''}${lockChip(x,shut)}`;
   return `<div class="card gr-stock"><div class="row spread"><h4>🏷️ Kho & giá</h4><small class="muted">Sức chứa ${cap} mỗi loại</small></div>
+    <p class="small muted gr-how">Bấm 📦 Nhập để đặt hàng → thùng về thì mở ở 📦 Kho, chạm đếm từng món → hàng mới lên kệ. Chỉnh giá bán bằng − / +.</p>
     ${rotationNotes(x)}${incoming(x)}
     ${cartChips(x)}<div class="gr-orderbar"><small>Nhập từ</small>${supplierPick(x)}${vline?`<div class="rs-bar" role="status"><p class="rs-line"><b>${vline}</b>${full?' · nhận bớt thùng rồi đặt tiếp':''}</p>${full?x.button(full.label,full.act,full.data||{},'small primary rs-btn'):''}</div>`:''}<div class="gr-qty" role="radiogroup" aria-label="Số lượng mỗi lần nhập">${[5,10,20,30].map(v=>`<button type="button" role="radio" aria-checked="${v===qty}" class="btn small ${v===qty?'primary':'ghost'}" data-action="car:qty" data-qty="${v}">${v}</button>`).join('')}</div></div>
     <div class="gr-stock-list">${rows}</div>
@@ -642,19 +643,44 @@ function foldBox(x,key,summary,body,auto=false,cls=''){
   return `<details class="fold gr-fold ${cls}"${open?' open':''}><summary data-action="car:fold" data-key="${x.esc(key)}">${summary}</summary><div class="fold-body">${body}</div></details>`;
 }
 const CARE_MARK={true:['ok','✓','xong'],false:['bad','!','cần làm ngay'],null:['','○','chưa làm']};
+/** Why "🧺 Soạn giỏ" would pack nothing now (game/careers/grocery.py _pack_gate; null: the tap packs something):
+ * {code:'full'|'empty'|'closed'|'not_today', why}. The server sends it as lists_view[].pack and on the care row;
+ * an older server does not, so the same rule is read from the list and the shelf (stock minus what bills hold). */
+function packGate(x,l,sent){
+  const p=sent||l?.pack;if(p)return p.ok?null:p;
+  if(!l||l.when!=='today')return {code:'not_today',why:'Hôm nay khách không ghé lấy giỏ'};
+  const gap=l.items.filter(i=>i.packed<i.qty);
+  if(!gap.length)return {code:'full',why:'Giỏ đủ rồi: khách ghé lấy lúc đóng ca'};
+  if(gap.every(i=>free(x,i.item)<=0))return {code:'empty',why:`Kệ hết ${gap.map(i=>item(x,i.item).name).join(', ')}: nhập ở Kho`};
+  if(!x.room.open)return {code:'closed',why:'Mở ca trước'};
+  return null;
+}
+const todayList=(x,npc)=>(x.room.data?.lists_view||[]).find(l=>l.npc===npc&&l.when==='today');
+/** The next real step when a basket cannot be packed: the stock room (the player orders and counts there),
+ * or the shift's own "Mở ca" bar while it is closed (the button stays, greyed). */
+function packBlocked(x,g,npc,label){
+  if(g.code==='empty')return x.button('📦 Sang Kho','inventory',{},'small primary');
+  if(g.code==='closed')return x.cmd(label,'gr_pack',{npc},'small',true);
+  return '';
+}
+function careWhy(x,r){
+  if(r.do?.cmd!=='gr_pack')return '';
+  const g=packGate(x,todayList(x,r.do.npc),r.pack);
+  return g?`<small class="gr-why">${x.esc(g.why)}</small>`:'';
+}
 function careAct(x,r){
   const d=r.do;if(!d)return '';
   if(d.tab)return carBtn(x,'Xem','tab',{tab:d.tab},'small ghost');
   if(d.cmd==='gr_pull_today')return x.confirmCmd('🗑️ Rút','gr_pull_today',{item:d.item},'Rút hàng hết hạn hôm nay khỏi kệ? Giá trị được ghi vào hao hụt.','small danger');
   if(d.cmd==='gr_rotate')return x.cmd('🔄 Xoay','gr_rotate',{item:d.item},'small');
-  if(d.cmd==='gr_pack')return x.cmd('🧺 Soạn','gr_pack',{npc:d.npc},'small');
+  if(d.cmd==='gr_pack'){const g=packGate(x,todayList(x,d.npc),r.pack);return g?packBlocked(x,g,d.npc,'🧺 Soạn'):x.cmd('🧺 Soạn','gr_pack',{npc:d.npc},'small');}
   if(d.cmd==='gr_remind')return x.cmd('💬 Nhắc','gr_remind',{npc:d.npc},'small ghost');
   return '';
 }
 /* reqList rows with one action button each (same markup and styles as ui-kit reqList). */
 function careList(x,rows,label){
   return `<ul class="req-list gr-care" aria-label="${x.esc(label)}">${rows.map(r=>{const [cls,mark,said]=CARE_MARK[r.ok===true?'true':r.ok===false?'false':'null'];
-    return `<li class="req-row ${cls}${r.tone?' tone-'+x.esc(r.tone):''}"><span class="req-mark" aria-label="${said}">${mark}</span><span class="req-icon" aria-hidden="true">${x.esc(r.icon||'')}</span><span class="req-label">${x.esc(r.label)}${r.note?`<small>${x.esc(r.note)}</small>`:''}</span>${careAct(x,r)}</li>`;}).join('')}</ul>`;
+    return `<li class="req-row ${cls}${r.tone?' tone-'+x.esc(r.tone):''}"><span class="req-mark" aria-label="${said}">${mark}</span><span class="req-icon" aria-hidden="true">${x.esc(r.icon||'')}</span><span class="req-label">${x.esc(r.label)}${r.note?`<small>${x.esc(r.note)}</small>`:''}${careWhy(x,r)}</span>${careAct(x,r)}</li>`;}).join('')}</ul>`;
 }
 function careCard(x){
   const rows=x.room.data?.care||[];
@@ -690,11 +716,16 @@ function listCard(x,l){
     return today?{ok:i.packed>=i.qty?true:null,icon:it.emoji,label:`${i.qty} ${stockUnit(x,i.item)} ${it.name}`,value:`${i.packed}/${i.qty}`,note:i.packed<i.qty&&have<i.qty-i.packed?`kho còn ${have}`:''}
       :{ok:have>=i.qty?true:null,icon:it.emoji,label:`${i.qty} ${stockUnit(x,i.item)} ${it.name}`,value:`kho ${have}`,tone:have<i.qty?'warn':''};});
   const full=l.items.every(i=>i.packed>=i.qty),pay={cash:'💵 tiền mặt',transfer:'📱 chuyển khoản',credit:'📒 ghi sổ'}[l.pay]||'';
+  // Today: "🧺 Soạn giỏ" only when the tap packs something; otherwise why, and the next step (game _pack_gate).
+  const g=today?packGate(x,l):null;
+  const act=!today?'<small class="muted">Nhập đủ hàng hôm nay, mai soạn.</small>'
+    :g?`<span class="gr-packwhy"><small class="gr-why">${x.esc(g.why)}</small>${packBlocked(x,g,l.npc,'🧺 Soạn giỏ')}</span>`
+    :x.cmd('🧺 Soạn giỏ','gr_pack',{npc:l.npc},'small primary');
   return `<article class="card gr-list ${today?'today':''}"><div class="row">${x.portrait(w,40)}<div class="grow"><div class="row spread wrap"><h4>${x.esc(l.name)}</h4><span class="tag ${today?(full?'green':'amber'):'blue'}">${today?(full?'Đã soạn · chờ khách':'Hôm nay · ghé lúc đóng ca'):'Ngày mai'}</span></div>
     <p class="small muted">“${x.esc(l.say)}”</p></div></div>
     ${reqList(rows,x.esc,'Danh sách giỏ quen')}
     ${l.stale?`<p class="small bad">⚠ ${l.stale} món trong giỏ hết hạn hôm nay — khách sẽ không vui.</p>`:''}
-    <div class="row spread wrap space-top"><small class="muted">Khoảng ${x.fmt(l.value)} xu · ${pay}</small>${today&&!full?x.cmd('🧺 Soạn giỏ','gr_pack',{npc:l.npc},'small primary'):today?'':'<small class="muted">Nhập đủ hàng hôm nay, mai soạn.</small>'}</div></article>`;
+    <div class="row spread wrap space-top"><small class="muted">Khoảng ${x.fmt(l.value)} xu · ${pay}</small>${act}</div></article>`;
 }
 function listsView(x){
   const d=x.room.data||{},ls=d.lists_view||[],regs=Object.values(d.lists||{});
