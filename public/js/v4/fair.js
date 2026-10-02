@@ -795,7 +795,7 @@ function howLoto(){
  * not marked yet keep a soft tint (hint). Hints only: the player still taps to mark. Not in a lật ngược vòng, whose
  * whole game is flipping the number back by ear. */
 function cardsHtml(v,live=true){
-  const all=new Set(v.seq.slice(0,S.lt.shown||v.chot||0)),check=!live,lit=live&&v.mode!=='nguoc',cur=lit&&S.lt.shown?v.seq[S.lt.shown-1]:null;
+  const all=new Set(v.seq.slice(0,live?S.lt.shown:S.lt.shown||v.chot||0)),check=!live,lit=live&&v.mode!=='nguoc',cur=lit&&S.lt.shown?v.seq[S.lt.shown-1]:null;
   return cardsOf(v).map((card,ci)=>{
     const marks=new Set(S.lt.marks[ci]||[]);
     const grid=card.map(row=>{const cells=Array(9).fill(null);row.forEach(n=>{cells[colOf(n)]=n;});
