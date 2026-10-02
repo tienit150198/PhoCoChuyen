@@ -1,6 +1,6 @@
 /** 🏮 Đi dạo hội chợ: the fair's gate (Cổng hội) as a fairground to walk (scenes/fair-place.js). The player walks
  * up to a stall and its page (the same stall pages as before, v4/fair.js) opens; "← Ra lối đi" brings them back to
- * where they stood. The gate, the food carts and the crowd say a line. A small "Danh sách trò" list under the
+ * where they stood. The two food carts open their menu (v4/fair.js Hàng ăn vặt); the gate and the crowd say a line. A small "Danh sách trò" list under the
  * fairground opens any stall straight away (and is the keyboard's way in; the canvas also walks with the arrows).
  * fair.js owns the dialog and passes its helpers in (setup); its render() patches the page in place and calls
  * mount() after, which puts the one persistent stage (canvas + bubble) back into the page's data-fh-live slot, so a
@@ -20,7 +20,7 @@ const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contain
 const IDLE_MS=80,SAY_MS=4200,WALK_S=.85;
 
 export function setup(ctx){
-  const {S,F,go,list,bar,esc}=ctx;
+  const {S,F,go,list,bar,esc,food}=ctx;
   const W=S.walk={el:null,cv:null,c:null,say:null,bg:null,bgKey:'',port:false,k:1,ox:0,oy:0,dpr:1,cw:0,ch:0,
     me:null,arrive:null,raf:0,last:0,drawn:0,time:0,sayAt:0,ok:null,down:null,at:''};
   const has=()=>({dt:!!F().darts,loan:!!F().cash});
@@ -102,7 +102,7 @@ export function setup(ctx){
   }
   function goSpot(s){
     if(!s)return;hush();
-    walkTo(s.stand,()=>{if(s.kind==='stall'){W.at=s.id;go(s.tab);}else speak(s);});
+    walkTo(s.stand,()=>{if(s.kind==='stall'){W.at=s.id;go(s.tab);}else if(s.cart&&food?.(s.id))W.at=s.id;else speak(s);});   // a food cart opens its menu (else, an older server: its line)
   }
   /** Arrows walk, Enter / Space opens what the player stands at. */
   function onKey(e){

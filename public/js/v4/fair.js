@@ -20,7 +20,7 @@ const GOURD='<svg class="fh-gourd" viewBox="0 0 40 48" aria-hidden="true"><path 
 const FACE_ART={bau:GOURD,cua:'🦀',tom:'🦐',ca:'🐟',ga:'🐓',nai:'🦌'};
 const art=f=>`<span class="fh-art" aria-hidden="true">${FACE_ART[f]||'❔'}</span>`;
 const TITLE_NAMES={f_kinh2:'🎎 Kinh đôi rộn ràng',f_nguoc:'🙃 Đọc ngược như xuôi',f_hu:'🏺 Ôm hũ đêm hội',f_loto:'🎱 Thần lô tô hội chợ',f_bao:'🌪️ Trúng bão bầu cua',f_raid:'🚨 Bị công an hỏi thăm',f_oaq:'🪨 Cao tay ô ăn quan',f_ring:'💍 Tay ném vòng thần sầu',f_dart:'🎯 Mắt thần phi tiêu'};
-const GAMES={home:['🏮','Cổng hội'],oaq:['🪨','Ô ăn quan'],ring:['💍','Ném vòng cổ chai'],bc:['🦀','Bầu cua'],lt:['🎱','Lô tô'],dt:['🎯','Phóng phi tiêu'],xd:['🕯️','Chiếu trong'],board:['🏆','Bảng vàng'],loan:['💸','Vay nóng']};
+const GAMES={home:['🏮','Cổng hội'],oaq:['🪨','Ô ăn quan'],ring:['💍','Ném vòng cổ chai'],bc:['🦀','Bầu cua'],lt:['🎱','Lô tô'],dt:['🎯','Phóng phi tiêu'],xd:['🕯️','Chiếu trong'],board:['🏆','Bảng vàng'],loan:['💸','Vay nóng'],food:['🍡','Hàng ăn vặt']};
 const MINI_BOARD='<svg viewBox="0 0 64 40" aria-hidden="true"><rect x="2" y="6" width="60" height="28" rx="14" fill="#e9c98f" stroke="#8a5a26" stroke-width="2"/><path d="M14 6v28M50 6v28M14 20h36M23 6v28M32 6v28M41 6v28" stroke="#8a5a26" stroke-width="1.6"/><circle cx="8" cy="20" r="4" fill="#5b4636"/><circle cx="56" cy="20" r="4" fill="#5b4636"/><g fill="#7a8b99"><circle cx="18" cy="13" r="1.8"/><circle cx="27" cy="27" r="1.8"/><circle cx="36" cy="13" r="1.8"/><circle cx="45" cy="27" r="1.8"/><circle cx="20" cy="28" r="1.8"/><circle cx="38" cy="25" r="1.8"/></g></svg>';
 const MINI_BOTTLES='<svg viewBox="0 0 64 40" aria-hidden="true"><g stroke="#2d5a3d" stroke-width="1.4"><path d="M12 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#7cc79a"/><path d="M28 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#8fb6e8"/><path d="M44 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#f0b46a"/></g><ellipse cx="34" cy="10" rx="7" ry="2.6" fill="none" stroke="#e2462d" stroke-width="2.4"/></svg>';
 const CHIPS=[1,2,5,10];
@@ -46,7 +46,7 @@ const S={dlg:null,env:null,tab:'home',busy:false,lastRound:0,gift:null,loan:{amt
   xd:{side:'chan',stake:10,phase:'idle',coins:null,last:null,raid:null,say:'',hist:[],tally:{w:0,l:0,raid:0}},
   lt:{id:null,shown:0,marks:[],timer:null,speed:1,over:null,won:null,hut:null,claiming:false,check:false,hot:false,say:'',
     act:0,actAt:0,actSay:'',tier:'vua',n:1,cl:null,cls:2,cot:null,cots:2},
-  board:{data:null,at:0,loading:false,error:''}};
+  board:{data:null,at:0,loading:false,error:''},food:{cart:'candy',say:'',last:null,buying:''}};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const xu=n=>`${fmt(n)} xu`;
 const F=()=>S.env?.api?.state?.fair||{};
@@ -231,8 +231,8 @@ function head(){
   </header>`;
 }
 function strip(){
-  const f=F(),p=f.points||{},e=f.earn||{},got=(e.oaq?.today||0)+(e.ring?.today||0);
-  return `<div class="fh-strip" role="status"><span>👛 <b>${xu((f.wallet||0)-ltHold())}</b></span><span>💰 Hôm nay kiếm <b>${xu(got)}</b></span><button type="button" class="fh-pts" data-fh="tab" data-tab="board" data-fh-key="pts">🏆 <b>${fmt(p.total)}</b> điểm</button></div>`;
+  const f=F(),p=f.points||{},e=f.earn||{},got=f.today_xu?Object.values(f.today_xu).reduce((a,n)=>a+(Number(n)||0),0):(e.oaq?.today||0)+(e.ring?.today||0);   // every stall's xu this day (today_xu, 1.4.14+)
+  return `<div class="fh-strip" role="status"><span>👛 <b>${xu((f.wallet||0)-ltHold())}</b></span><span>💰 Hôm nay ${got<0?'lỗ':'kiếm'} <b>${xu(Math.abs(got))}</b></span><button type="button" class="fh-pts" data-fh="tab" data-tab="board" data-fh-key="pts">🏆 <b>${fmt(p.total)}</b> điểm</button></div>`;
 }
 /** Inside a stall: the way back to the gate. */
 function nav(){
@@ -242,7 +242,7 @@ function nav(){
   return `<nav class="fh-nav" aria-label="Hội chợ">${btn(back,'tab',{tab:'home'},'ghost small fh-back',' data-fh-key="home"')}<b><span aria-hidden="true">${e}</span> ${esc(l)}</b></nav>`;
 }
 /** The small-stake stalls: what is left of today's loss cap. */
-const xuLine=tab=>{const x=F().today_xu;if(!x||!GAMES[tab]||tab==='home'||tab==='board'||tab==='loan')return '';const n=x[tab]||0;
+const xuLine=tab=>{const x=F().today_xu;if(!x||!GAMES[tab]||tab==='home'||tab==='board'||tab==='loan'||tab==='food')return '';const n=x[tab]||0;
   return `<p class="fh-luck-left">💰 Hôm nay kiếm ở ${esc(GAMES[tab][1])}: <b>${n>0?'+':n<0?'−':''}${xu(Math.abs(n))}</b></p>`;};
 const luckLine=()=>{const t=F().today||{};if(R().nocap)return '';return `<p class="fh-luck-left">🎟️ Thử vận hôm nay còn chơi được <b>${xu(t.left)}</b> <small>(thua tối đa ${xu(R().cap)} mỗi ngày)</small></p>`;};
 const flash=()=>`<p class="fh-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
@@ -251,7 +251,7 @@ function page(){
   const f=F();
   if(!f.show&&!f.over&&!f.soon)return head()+`<div class="sheet-body fh-body">${closedCard(true)}</div>`;
   if(!f.open&&S.tab!=='board')return head()+`<div class="sheet-body fh-body">${closedCard()}${S.env?.api?.state?.journey?.story?btn('🏆 Xem Bảng vàng hội chợ','tab',{tab:'board'},'cream full'):''}${note()}</div>`;
-  const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView,loan:loanView,dt:()=>F().darts?dt().view():homeView()};
+  const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView,loan:loanView,food:foodView,dt:()=>F().darts?dt().view():homeView()};
   const body=(views[S.tab]||homeView)(),luck=['bc','xd'].includes(S.tab)||S.tab==='lt'&&!G();   // the newer lô tô: only the wallet limits it
   return head()+giftPop()+`<div class="sheet-body fh-body">${f.open?strip():''}${f.open?nav():''}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${f.open?xuLine(S.tab):''}${body}${note()}</div>`;
 }
@@ -284,7 +284,7 @@ function gateList(){
       ${luck('lt','🎱','Gánh lô tô',f.ganh?`Cô Bảy hô số, vé từ ${xu(Math.min(...Object.values(f.ganh.tiers)))} · ${esc(f.ganh.names?.[f.ganh.modes?.[0]?.[1]]||'')}`:`Tờ dò ${xu(r.loto_price)}, kinh ăn ${xu(r.loto_prize)}`)}
       ${luck('xd','🕯️','Chiếu trong',`Cược ${r.xd_min}–${r.xd_max} xu`,'<span class="fh-warnchip">🚨 công an</span>')}
     </div>
-    ${loanRow()}
+    ${loanRow()}${foodRow()}
     <button type="button" class="fh-goldlink" data-fh="tab" data-tab="board" data-fh-key="g-board"><span aria-hidden="true">🏆</span><span class="grow"><b>Bảng vàng hội chợ</b><small>Bạn ${fmt(p.total)} điểm · Top 1 khi hội tàn thành 👑 Vua trò chơi</small></span><span aria-hidden="true">›</span></button>
   </section>`;
 }
@@ -480,7 +480,8 @@ function bcResult(l){
 async function roll(){
   const b=S.bc,total=bcTotal();if(!total||b.phase!=='idle'||bcWhy(total))return;
   b.phase='shake';b.say='Lắc nè, lắc nè… xóc xóc xóc!';S.flash=null;render();sfx('shake');
-  const r=await shaken(()=>send('fair_bc',{bets:{...b.bets}}));
+  const wait=R().bc_open||0;if(wait)b.say=`Lắc nè, lắc nè… ${Math.round(wait/1000)} giây nữa mở bát!`;render();
+  const r=await shaken(()=>send('fair_bc',{bets:{...b.bets}}),Math.max(ROLL_MS,wait),Math.max(ROUND_GAP,wait));   // owner 03/10: the bowl opens after 5 s
   if(!r?.fair){b.phase='idle';b.say=pick(DEALER.idle);render();return;}
   const x=r.fair;b.dice=x.dice;b.last={...x};b.phase='idle';
   b.say=x.bao?`Bão! Bão! Ba con ${FACE_NAME[x.bao].toLowerCase()} luôn bà con ơi!`:x.net>0?'Trúng rồi! Chú chung tiền liền nè!':x.net===0?'Huề vốn, vui là chính!':'Ván sau gỡ lại nha, đừng buồn!';
@@ -488,9 +489,9 @@ async function roll(){
   titles(x);render();
 }
 /** The round goes to the server while the bowl shakes (at least ROLL_MS; a quick "Lắc tiếp" waits out the server's gap). */
-async function shaken(go){
-  const hold=Math.max(0,S.lastRound+ROUND_GAP-Date.now());
-  const [r]=await Promise.all([new Promise(ok=>setTimeout(ok,hold)).then(()=>{S.lastRound=Date.now();return go();}),new Promise(ok=>setTimeout(ok,reduce()?250:ROLL_MS))]);
+async function shaken(go,open=ROLL_MS,gap=ROUND_GAP){
+  const hold=Math.max(0,S.lastRound+gap-Date.now());
+  const [r]=await Promise.all([new Promise(ok=>setTimeout(ok,hold)).then(()=>{S.lastRound=Date.now();return go();}),new Promise(ok=>setTimeout(ok,reduce()?Math.min(open,1000):open))]);
   return r;
 }
 function titles(x){if(x.titles?.length)S.flash={text:`🎉 Danh hiệu mới: ${x.titles.map(t=>TITLE_NAMES[t]||t).join(', ')}`,kind:'good'};}
@@ -577,6 +578,8 @@ const nowSlot=()=>Math.floor(serverNow()/60000);
 /** This minute's vòng from the server's list (null once the list is behind the clock: the server then decides). */
 function curMode(){const g=G();if(!g)return 'thuong';const m=g.modes.find(x=>x[0]===nowSlot());return m?m[1]:null;}
 const modeLabel=m=>G()?.names?.[m]||MODE_INFO[m]?.[1]||m;
+/** A Kinh's multiple of the tờ's price ("2,2"); newer servers send it in modes_rule.pay. */
+const payX=x=>language()==='en'?String(x):String(x).replace('.',',');
 
 function syncLoto(){
   const v=L();
@@ -766,7 +769,7 @@ function buyPanel(){
     <div class="fh-nextmodes"><small>Phút sau:</small>${next}</div>
     <h4>🎟️ Chọn vé</h4><div class="fh-lttiers" role="group" aria-label="Loại vé">${tiers}</div>
     <div class="fh-chips" role="group" aria-label="Số tờ"><span>Số tờ</span>${ns}</div>
-    <p class="fh-pot">🏺 Hũ ván này: <b>${xu(prize)}</b> <small>· ${lt.n} tờ của bạn + ${rule.npcs} tờ hàng xóm, cô Bảy giữ ${rule.cut}% tiền gánh</small></p>
+    <p class="fh-pot">🏺 Hũ ván này: <b>${xu(prize)}</b> <small>· ${rule.pay?`kinh ăn gấp ${payX(rule.pay)} lần tiền tờ`:`${lt.n} tờ của bạn + ${rule.npcs} tờ hàng xóm, cô Bảy giữ ${rule.cut}% tiền gánh`}</small></p>
     <details class="fh-side"${lt.cl||lt.cot!=null?' open':''}><summary>🎲 Cược phụ (tùy chọn)</summary>
       <p class="small muted">Đoán về <b>số chốt ván</b>: con số làm đủ tờ đầu tiên trên chiếu (của bạn hay hàng xóm). Kết quả mở khi ván xong.</p>
       <div class="fh-sidebet"><b>Chẵn hay lẻ?</b> <small>ăn 1 trả 1 · số 7 và 70 là số ruột cô Bảy: ra hai số đó thì cô Bảy ăn cả hai cửa</small>
@@ -801,7 +804,7 @@ function howLoto(){
   return `<details class="fh-how"><summary>Cách chơi gánh lô tô</summary><ul>
     <li>Mua 1 đến ${g.cards} tờ dò. Cô Bảy hô số nào thì số đó sáng lên trên tờ của bạn, bạn tự chạm để đánh dấu, không ai đánh dấu giùm.</li>
     <li>Đủ hình của vòng thì bấm “Kinh!”. Cô Bảy dò lại: đúng thì ôm hũ; kinh hụt (hàng chưa đủ) thì bỏ ${xu(g.fine)} vô hũ phạt${g.hut_max?`, hụt ${g.hut_max} lần là nghỉ ván`:' rồi dò tiếp, hụt mấy lần cũng được'}.</li>
-    <li>Hũ = tiền tờ của cả chiếu (của bạn và hàng xóm), cô Bảy giữ một chút tiền gánh. Ai đủ trước người đó ăn, hai người cùng lúc thì bạn được.</li>
+    <li>${g.modes_rule?.thuong?.pay?`Kinh ăn gấp ${payX(g.modes_rule.thuong.pay)} lần tiền tờ bạn mua, Hũ đêm hội gấp ${payX(g.modes_rule.dem?.pay||g.modes_rule.thuong.pay)} lần. Ai đủ trước người đó ăn, hai người cùng lúc thì bạn được.`:'Hũ = tiền tờ của cả chiếu (của bạn và hàng xóm), cô Bảy giữ một chút tiền gánh. Ai đủ trước người đó ăn, hai người cùng lúc thì bạn được.'}</li>
     <li>Mỗi phút một vòng: thường, Kinh đôi (hai hàng), lật ngược (đọc số ngược). Từ ${g.dem_hours[0]} giờ tới ${g.dem_hours[g.dem_hours.length-1]+1} giờ tối là Hũ đêm hội: kinh cả tờ, sáu người chơi.</li>
     <li>Ví dụ vé vừa 1 tờ: vòng thường ăn ${xu(pz.thuong?.vua?.[0])}, Kinh đôi ${xu(pz.doi?.vua?.[0])}, Hũ đêm hội ${xu(pz.dem?.vua?.[0])}.</li>
     <li>Ai mua tờ trong cùng một phút sẽ nghe chung một lượt số.</li></ul></details>`;
@@ -891,7 +894,7 @@ function mark(ci,n){
 let WALK=null,walkLoad=null;
 function loadWalk(){
   return walkLoad??=import('./fair-walk.js').then(m=>{WALK=m.setup({S,F,esc,list:gateList,bar:()=>gameMusic()?musicBtn('Nhạc hội'):'',
-    go:tab=>onClick('tab',{tab})});}).catch(e=>{console.warn('hội chợ: no fairground',e);});   // the list stays
+    go:tab=>onClick('tab',{tab}),food:cart=>F().food?(onClick('cart',{v:cart}),true):false});}).catch(e=>{console.warn('hội chợ: no fairground',e);});   // the list stays
 }
 const walkOn=()=>!!WALK?.active();
 
@@ -986,6 +989,38 @@ async function repay(){
   render();
 }
 
+/* ---- 🍡 Hàng ăn vặt: the two food carts (game/fair_food.py; an older server sends no `food`: they only say a line) ---- */
+const CARTS={candy:{name:'Cô Út kẹo bông',emoji:'👩🏻',hello:['Kẹo bông gòn đây! Hồng hồng, xốp xốp, ngọt lịm nè!','Bắp nướng mỡ hành mới lên lò nè, thơm lừng!','Bánh tráng nướng giòn rụm, ăn liền cho nóng nha!']},
+  cane:{name:'Chú Năm nước mía',emoji:'👨🏻',hello:['Nước mía ép tại chỗ, thêm chút tắc cho thơm, mát lạnh luôn!','Chè ba màu mát lạnh đây bà con ơi!','Tàu hũ nước đường gừng, ăn ấm bụng nè!']}};
+function foodRow(){
+  if(!F().food)return '';
+  return `<button type="button" class="fh-goldlink fh-foodlink" data-fh="cart" data-v="candy" data-fh-key="g-food"><span aria-hidden="true">🍡</span><span class="grow"><b>Hàng ăn vặt</b><small>Kẹo bông, bắp nướng, nước mía, chè… vài xu một món</small></span><span aria-hidden="true">›</span></button>`;
+}
+function foodView(){
+  const items=F().food;if(!items)return homeView();
+  const c=S.food.cart==='cane'?'cane':'candy',who=CARTS[c],L0=S.food.last?.cart===c?S.food.last:null;
+  const rows=items.filter(x=>x.cart===c).map(x=>{
+    const gain=[x.full?`no bụng +${x.full}`:'',x.wake?`tỉnh táo +${x.wake}`:''].filter(Boolean).join(' · ');
+    return `<div class="fh-snack"><span class="fh-snackico" aria-hidden="true">${x.emoji}</span><span class="grow"><b>${esc(x.name)}</b><small>${esc(gain)}</small>${x.ok?'':`<small class="fh-snackwhy">${esc(x.why)}</small>`}</span>`+
+      btn(S.food.buying===x.id?'…':xu(x.price),'snack',{v:x.id},'primary small',!x.ok||S.busy?` disabled data-fh-key="snack-${x.id}"${x.why?` title="${esc(x.why)}"`:''}`:` data-fh-key="snack-${x.id}"`)+'</div>';}).join('');
+  // the result has its slot from the start (a hint before the first món), so the page never changes height on a tap
+  const done=`<div class="fh-card fh-snackres${L0?'':' idle'}" role="status" data-fh-key="snackres"><span aria-hidden="true">${L0?L0.emoji:'🍡'}</span><div><b>${esc(L0?L0.say:c==='cane'?'Chọn món đi, chú Năm làm liền!':'Chọn món đi, cô Út làm liền!')}</b><small>${esc(L0?L0.gain:'Trả bằng xu trong ví, ăn xong no bụng hơn.')}</small></div></div>`;
+  const other=c==='cane'?['candy','🍭 Qua xe kẹo bông']:['cane','🥤 Qua xe nước mía'];
+  return `<section class="fh-stall fh-food" aria-label="Hàng ăn vặt">
+    ${say(who,S.food.say||who.hello[0])}
+    <div class="fh-card fh-snacks">${rows}</div>${done}
+    <div class="fh-go">${btn(other[1],'cart',{v:other[0]},'ghost small',` data-fh-key="cart-${other[0]}"`)}</div>
+    <p class="fh-rule">Ăn vặt trả bằng xu trong ví, no bụng và tỉnh táo tăng như ăn thêm lúc đi làm. No quá thì để bụng lát ăn tiếp nha.</p>
+  </section>`;
+}
+async function snack(id){
+  const x=(F().food||[]).find(q=>q.id===id);if(!x||!x.ok||S.busy)return;
+  S.busy=true;S.food.buying=id;S.flash=null;render();
+  const r=await send('fair_snack',{item:id});S.busy=false;S.food.buying='';
+  if(r?.fair?.game==='food'){S.food.last={cart:x.cart,emoji:x.emoji,say:r.fair.say,gain:`No bụng ${r.fair.full} · tỉnh táo ${r.fair.wake}`};sfx('open');}
+  render();
+}
+
 /* ---- clicks ---- */
 async function onClick(op,data){
   const b=S.bc,x=S.xd;
@@ -1026,6 +1061,8 @@ async function onClick(op,data){
     case'loanamt':S.loan.amt=Number(data.v)||0;S.loan.sure=false;render();return;
     case'borrow':borrow();return;
     case'repay':repay();return;
+    case'cart':S.food.cart=data.v==='cane'?'cane':'candy';S.food.say=pick(CARTS[S.food.cart].hello);S.food.last=null;onClick('tab',{tab:'food'});return;
+    case'snack':snack(data.v);return;
     case'ltmusic':{const on=!musicPref();try{localStorage.setItem(LT_MUSIC,on?'1':'0');}catch{/* storage blocked */}ltMusic();render();return;}
     default:if(op.startsWith('dt'))dt().click(op,data);
   }
