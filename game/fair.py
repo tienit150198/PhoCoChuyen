@@ -1156,9 +1156,11 @@ def public(s: dict) -> dict:
 
 
 def knife_public(j: dict, f: dict | None, t: float) -> dict:
-    """api.state.fair.knife: the stall's rules (the ladder in tenths of the stake), the player's tally, the run."""
+    """api.state.fair.knife: the stall's rules (the ladder in tenths of the stake, prizes: in xu for each stake), the
+    player's tally, the run."""
     k = j.get(KN_KEY) if isinstance(j.get(KN_KEY), dict) else {}
-    return dict(stakes=list(knife.STAKES), ladder=list(knife.LADDER), levels=knife.LEVELS, gap=knife.GAP,
+    return dict(stakes=list(knife.STAKES), ladder=list(knife.LADDER), prizes=[list(knife.prizes(x)) for x in knife.STAKES],
+                levels=knife.LEVELS, gap=knife.GAP,
                 draw=knife.DRAW_W, fly=knife.FLY_MS, impact=knife.IMPACT, min_tap=knife.MIN_TAP, level_ms=knife.LEVEL_MS,
                 hot=knife.heat(_today(f, t)['net']), **{x: k.get(x, 0) for x in ('n', 'w', 'b', 'top')},
                 run=_kn_view_run(k.get('run'), t))

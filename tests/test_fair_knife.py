@@ -56,6 +56,16 @@ class Ladder(unittest.TestCase):
         self.assertEqual((kn.prize(2, 1), kn.prize(5, 1), kn.prize(10, 1)), (2, 6, 11))   # rounded half up
         self.assertEqual(kn.x2_bonus(10, 4), kn.prize(10, 4) - kn.prize(10, 3))
         self.assertEqual(kn.prize(10, 4, 7), kn.prize(10, 4) + 7)
+        self.assertEqual(kn.prizes(2), (2, 3, 4, 5, 6, 8, 11, 16, 24, 38))   # rounding never makes a step worth 0
+        self.assertEqual(kn.prizes(5), (6, 7, 8, 11, 14, 20, 27, 40, 60, 95))
+        for st in kn.STAKES:
+            self.assertTrue(all(kn.x2_bonus(st, k) >= 1 for k in range(2, kn.LEVELS + 1)), st)
+
+    def test_the_client_gets_the_ladder_in_xu(self):
+        from game.fair import knife_public
+        k = knife_public({}, None, 0.0)
+        self.assertEqual(k['prizes'], [list(kn.prizes(st)) for st in kn.STAKES])
+        self.assertEqual(k['ladder'], list(kn.LADDER))
 
     def test_heat(self):
         self.assertEqual([kn.heat(n) for n in (-500, 0, 2000, 2001, 3000, 3001, 4000, 4001, 10**6)], [0, 0, 0, 1, 1, 2, 2, 3, 3])

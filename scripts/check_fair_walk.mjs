@@ -1,5 +1,5 @@
 // Headless check of the walkable fairground (public/js/scenes/fair-place.js, v4/fair-walk.js), no browser needed.
-// For both compositions (landscape, portrait) × the optional stalls (phi tiêu, vay nóng: an older server has neither):
+// For both compositions (landscape, portrait) × the optional stalls (phóng dao, vay nóng: an older server has neither):
 //   • the way in (the Cổng hội) and every hotspot's standing point are on free floor, and every hotspot is reachable
 //     from the gate and from every other hotspot, along paths whose every few pixels are free floor;
 //   • random taps give paths over free floor only (no walking through a tent, the mat, a cart or a person);
@@ -26,7 +26,7 @@ const along=(pl,path)=>{for(let i=1;i<path.length;i++){const [a,b]=[path[i-1],pa
 let paths=0,combos=0;
 for(const port of [false,true])for(const dt of [true,false])for(const loan of [true,false])for(const xs of [true,false]){
   combos++;seed=SEED+combos*7919;   // each layout its own taps (a new optional stall does not reshuffle the others)
-  const pl=plan(port,{dt,loan,xs}),tag=`${port?'portrait':'landscape'}${dt?'':' no-darts'}${loan?'':' no-loan'}${xs?'':' no-scratch'}`;
+  const pl=plan(port,{dt,loan,xs}),tag=`${port?'portrait':'landscape'}${dt?'':' no-knife'}${loan?'':' no-loan'}${xs?'':' no-scratch'}`;
   for(const id of Object.keys(STALLS)){const want=id==='dt'?dt:id==='loan'?loan:id==='xs'?xs:true,has=pl.spots.some(s=>s.id===id);
     if(want!==has)problems.push(`${tag}: stall ${id} ${has?'shown but off':'missing'}`);}
   const gate=pl.entry.gate;if(blocked(pl,gate[0],gate[1]))problems.push(`${tag}: the gate is not free floor`);

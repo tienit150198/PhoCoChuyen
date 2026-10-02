@@ -11,7 +11,8 @@ the player chooses: "Dừng" (prize(): LADDER tenths of the stake, plus the 🔥
 harder level, everything riding on it). From level 2 on, X2_P of the levels (never two in a row) are 🔥 x2, told
 before the choice: that level's step of the ladder pays twice. Level LEVELS cleared: paid by itself (phá đảo).
 
-The ladder (× the stake, "Dừng" after level k): 1.1 1.2 1.6 2.1 2.8 3.9 5.4 8 12 19. Harder each level: more knives,
+The ladder (× the stake, "Dừng" after level k): 1.1 1.2 1.6 2.1 2.8 3.9 5.4 8 12 19 (in xu: prizes(); every level
+and every x2 is worth at least 1 xu more, also at the 2 and 5 xu stakes). Harder each level: more knives,
 a faster board that more and more often speeds up, slows down, stops short or turns back (DIFF). On a day the
 player's fair net is far up the board is up to HEAT_MAX levels harder (heat(), like the luck stalls' taper).
 
@@ -27,18 +28,18 @@ The table: scripts/sim_fair_knife.py (3 000 levels a level, 30 000 runs a stake 
 players watch the board REACT ms late, wait for a clear spot and are off by a gauss of `sigma` ms; "average" is
 sigma 38 ms, "weak" 45, "good" 22 (a practised thumb).
   Clear rate by level (heat 0):  1    2    3    4    5    6    7    8    9    10
-    weak                         75%  72%  67%  67%  66%  60%  57%  52%  54%  49%
+    weak                         75%  72%  67%  67%  66%  60%  58%  52%  54%  49%
     average                      85%  82%  78%  77%  73%  71%  69%  66%  63%  60%
     good                        100%  98%  97%  96%  94%  94%  93%  91%  87%  86%
   Return per xu staked (the 4 stakes' rounding and the x2 levels included), "Dừng" after level K:
     K =                          1    2    3    4    5    6    7    8    9    10
-    average                     .94  .85  .92  .96  .96  .97  .92  .91  .86  .81
-    average, on into x2 levels  .93  .89  .96  .99 1.00 1.00  .95  .94  .90  .81
-    weak                        .84  .66  .61  .56  .50  .43  .35  .27  .22  .16
-    good                       1.11 1.19 1.60 2.11 2.71 3.63 4.73 6.44 8.49 11.7
-  A sensible player (stops after 2..5 levels, plays on into a 🔥 x2 one): average .96, weak .60, good 1.97 (a skill
-  game: a good thumb wins). On a hot day (heat 1 / 2 / 3) the sensible average player gets .82 / .73 / .67 back and
-  the good one 1.86 / 1.76 / 1.73.
+    average                     .94  .89  .94  .98  .95  .96  .92  .91  .87  .81
+    average, on into x2 levels  .95  .93  .98 1.00 1.00  .99  .95  .95  .90  .81
+    weak                        .84  .70  .63  .57  .50  .43  .35  .27  .22  .17
+    good                       1.11 1.25 1.64 2.14 2.71 3.63 4.74 6.44 8.49 11.7
+  A sensible player (stops after 2..5 levels, plays on into a 🔥 x2 one): average .98, weak .62, good 2.01 (a skill
+  game: a good thumb wins). On a hot day (heat 1 / 2 / 3) the sensible average player gets .84 / .74 / .69 back and
+  the good one 1.89 / 1.79 / 1.76.
 """
 from __future__ import annotations
 
@@ -47,7 +48,8 @@ import random
 
 STAKES = (2, 5, 10, 20)
 LEVELS = 10
-# After clearing level k (1..LEVELS), "Dừng" pays LADDER[k - 1] tenths of the stake (rounded, half up).
+# After clearing level k (1..LEVELS), "Dừng" pays LADDER[k - 1] tenths of the stake (rounded, half up), and at least
+# 1 xu more than after level k - 1 (prizes(): at 2 and 5 xu the rounding would make a step worth nothing).
 LADDER = (11, 12, 16, 21, 28, 39, 54, 80, 120, 190)
 X2_P = .25                     # the next level (2..LEVELS) is a 🔥 x2 one: its step pays double; never two in a row
 GAP = 10.0                     # degrees: two knives whose centres are closer than this on the rim touch (a loss)
@@ -88,16 +90,31 @@ def heat(net: int) -> int:
     return 0 if net <= TAPER_FROM else min(HEAT_MAX, 1 + (net - TAPER_FROM - 1) // 1000)
 
 
+_PRIZES: dict[int, tuple[int, ...]] = {}
+
+
+def prizes(stake: int) -> tuple[int, ...]:
+    """The ladder in xu for a stake: LADDER tenths rounded half up, each level at least 1 xu over the one before
+    (2 xu: 2 3 4 5 6 8 11 16 24 38; 5 xu: 6 7 8 11 14 20 27 40 60 95; 10 and 20 xu: exactly the tenths)."""
+    if stake not in _PRIZES:
+        out, p = [], 0
+        for m in LADDER:
+            p = max((stake * m + 5) // 10, p + 1)
+            out.append(p)
+        _PRIZES[stake] = tuple(out)
+    return _PRIZES[stake]
+
+
 def prize(stake: int, cleared: int, bonus: int = 0) -> int:
     """What "Dừng" pays after `cleared` levels (0: nothing, the stake was lost or the run never cleared a level), plus
     the x2 levels' bonus."""
     if cleared <= 0:
         return 0
-    return (stake * LADDER[cleared - 1] + 5) // 10 + bonus
+    return prizes(stake)[cleared - 1] + bonus
 
 
 def x2_bonus(stake: int, level: int) -> int:
-    """A 🔥 x2 level's extra: its step once more (level ≥ 2)."""
+    """A 🔥 x2 level's extra: its step once more (level ≥ 2; at least 1 xu, see prizes())."""
     return prize(stake, level) - prize(stake, level - 1)
 
 
@@ -197,13 +214,13 @@ def lands(sc: dict, tap: int) -> float:
 def judge(sc: dict, taps: list[int]) -> tuple[list[float], int]:
     """Throw the taps in order: (the knives stuck, board degrees; the index of the throw that hit a knife, or -1).
     Throws after a hit or after the level's `need` do not count."""
-    stuck: list[float] = []
+    stuck: list[float] = []   # compared unrounded, like judge() in public/js/v4/fair-knife.js
     for i, t in enumerate(taps[:sc['need']]):
         a = lands(sc, t)
         if any(dist(a, b) < GAP for b in sc['pre'] + stuck):
-            return stuck, i
-        stuck.append(round(a, 2))
-    return stuck, -1
+            return [round(x, 2) for x in stuck], i
+        stuck.append(a)
+    return [round(x, 2) for x in stuck], -1
 
 
 def taps_ok(taps: object, need: int, elapsed_ms: int) -> bool:
