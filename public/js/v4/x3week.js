@@ -65,7 +65,7 @@ function due(){
 }
 function check(){
   if(!due()){calm=0;return;}
-  if(blocker()||document.querySelector('dialog[open]')){calm=0;return;}   // "Có gì mới", a sheet, the tour: after them
+  if(blocker()||document.querySelector('dialog[open]:not(#sheet)')){calm=0;return;}   // after "Có gì mới", a gift, the fair, the tour (the sheet: over it)
   if(++calm<3)return;
   calm=0;openX3(E,{byItself:true});
 }
