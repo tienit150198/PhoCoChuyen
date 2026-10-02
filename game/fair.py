@@ -83,6 +83,7 @@ import time
 from . import fair_darts as darts
 from . import fair_oaq as oaq
 from . import fair_ring as ring
+from . import fair_cash as fc   # 🎁 tiền vốn and 💸 vay nóng
 
 VERSION = 1
 FAIR_START = '2026-10-03'      # first day (Vietnam date), 00:00 UTC+7
@@ -588,10 +589,14 @@ def apply(s: dict, name: str, p: dict) -> dict:
     need = e.need
     j = s['journey']
     need(isinstance(p, dict), 'Dữ liệu thao tác không hợp lệ.')
-    need(name in COMMANDS, 'Thao tác hội chợ không hợp lệ.', 'unknown_action')
+    need(name in COMMANDS or name in fc.COMMANDS, 'Thao tác hội chợ không hợp lệ.', 'unknown_action')
     need(j.get('story'), 'Hội chợ chỉ có trong hành trình.', 'not_story')
     t = now()
     opens, closes = window()
+    if name in fc.COMMANDS:
+        result = fc.apply(s, name, p, t, edition(), opens <= t < closes)
+        result['fair']['points'] = 0
+        return result
     if name not in LATE:   # a card, a game or a round begun while open can still be finished
         need(t >= opens, SOON, 'fair_closed')
         need(t < closes, CLOSED, 'fair_closed')
@@ -881,7 +886,7 @@ def public(s: dict) -> dict:
     o = (f or {}).get('oaq')
     ltd = (f or {}).get('ltd') if f and f.get('date') == vn_date(t) else None
     slot = int(t // 60)
-    return dict(base, show=True, now=int(t), board=edition(),   # the clock (countdowns, cooldowns) only around the fair
+    return dict(base, show=True, now=int(t), board=edition(), cash=fc.public(j, edition(), opens <= t < closes),   # the clock (countdowns, cooldowns) only around the fair
                 points=dict(total=pts, today=dpts, cap=0, days=pdays,
                             rules=dict(day=PT_DAY, bc=PT_BC, xd=PT_XD, loto=PT_LOTO, oaq=PT_OAQ, ring3=PT_RING3, ring5=PT_RING5,
                                        dt=darts.PT_HIT)),
@@ -913,8 +918,16 @@ def public(s: dict) -> dict:
                            today=dict(ltd) if ltd else dict(r=0, w=0, fk=0, npc=[0] * len(NEIGHBOURS))))
 
 
+def settle(s: dict) -> None:
+    """Before every command (engine._apply_action): a vay nóng of a fair that has closed is collected (fair_cash)."""
+    j = s.get('journey')
+    if isinstance(j, dict) and 'fair_cash' in j:
+        fc.settle(s, edition(), now() >= window()[1])
+
+
 def validate(j: dict) -> None:
-    """journey['fair'] (optional)."""
+    """journey['fair'] and journey['fair_cash'] (both optional)."""
+    fc.validate(j)
     if 'fair' not in j:
         return
     from .engine import need, integer
