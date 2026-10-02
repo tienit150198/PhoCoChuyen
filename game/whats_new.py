@@ -43,7 +43,7 @@ ENTRIES = (
     )),
     dict(version="1.4.7", date="2026-10-02", items=(
         dict(emoji="💅", text="Nghề mới: Tiệm nail của chị Diệp. Sơn gel, úp móng, đính đá, dưỡng da tay, giữ dụng cụ sạch sẽ để khách yên tâm."),
-        dict(emoji="🛕", text="Nghề mới: phụ việc ở chùa. Quét sân, thắp đèn, đón khách thập phương, giữ chùa thanh tịnh. Không xin tiền ai cả."),
+        dict(emoji="🛕", text="Làm công quả ở chùa Gió Lành, ngôi chùa lâu năm của phố: quét sân, thắp đèn, đón khách thập phương. Không xin tiền ai."),
         dict(emoji="🙏", text="Đi chùa: thắp hương, nghe chuông, viết lời nguyện, phụ quét sân. Miễn phí, mỗi ngày tối đa 3 việc, tinh thần nhẹ nhõm hẳn.", go=dict(action="jrView", data={"view": "life"})),
         dict(emoji="🎱", text="Gánh lô tô ở hội chợ: cô Bảy hô thơ, có nhạc, có người múa. Mua tấm, dò số, hô Kinh! Đặt ít xu cho vui thôi nhé.", go=dict(action="fair")),
         dict(emoji="🧑‍🎤", text="Ảnh đại diện chat: chọn gương mặt, tóc, biểu cảm; áo quần lấy luôn từ Tủ đồ. Hiện cạnh tin nhắn của bạn.", go=dict(action="jrAvatar")),

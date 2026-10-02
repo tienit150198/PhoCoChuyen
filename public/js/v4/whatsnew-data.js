@@ -12,7 +12,7 @@ export default [
  ]},
  {"version":"1.4.7","date":"2026-10-02","items":[
   {"emoji":"💅","text":"Nghề mới: Tiệm nail của chị Diệp. Sơn gel, úp móng, đính đá, dưỡng da tay, giữ dụng cụ sạch sẽ để khách yên tâm."},
-  {"emoji":"🛕","text":"Nghề mới: phụ việc ở chùa. Quét sân, thắp đèn, đón khách thập phương, giữ chùa thanh tịnh. Không xin tiền ai cả."},
+  {"emoji":"🛕","text":"Làm công quả ở chùa Gió Lành, ngôi chùa lâu năm của phố: quét sân, thắp đèn, đón khách thập phương. Không xin tiền ai."},
   {"emoji":"🙏","text":"Đi chùa: thắp hương, nghe chuông, viết lời nguyện, phụ quét sân. Miễn phí, mỗi ngày tối đa 3 việc, tinh thần nhẹ nhõm hẳn.","go":{"action":"jrView","data":{"view":"life"}}},
   {"emoji":"🎱","text":"Gánh lô tô ở hội chợ: cô Bảy hô thơ, có nhạc, có người múa. Mua tấm, dò số, hô Kinh! Đặt ít xu cho vui thôi nhé.","go":{"action":"fair"}},
   {"emoji":"🧑‍🎤","text":"Ảnh đại diện chat: chọn gương mặt, tóc, biểu cảm; áo quần lấy luôn từ Tủ đồ. Hiện cạnh tin nhắn của bạn.","go":{"action":"jrAvatar"}}
