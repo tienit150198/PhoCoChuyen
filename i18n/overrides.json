@@ -1,5 +1,12 @@
 {
  "strings": {
+  "Chỉ chỗ": "Show where",
+  "chạm": "tap",
+  "Ở ngay trên": "Right above",
+  "Học kế toán xong được giới thiệu việc làm: thi đạt mới vào làm, kiểm tra 3 câu đầu ca, lương kế toán x3, ngày lễ x5.": "Finish accounting school and get job referrals: pass the exam to work, answer 3 quick questions before a shift, accounting pay x3, x5 on holidays.",
+  "Kho gọn hơn: tổng tiền ngay dưới số lượng, giữ ngón tay trên thùng hàng để đếm nhanh. Tổng kết ngày mở đầu bằng “Ngày mai”.": "Tidier stock room: the total sits right under the quantity, hold your finger on a crate to count fast. The day summary starts with “Tomorrow”.",
+  "Mỗi lúc chỉ một thẻ thông báo, không còn chồng lên tổng kết ngày hay khách đang chờ. Dòng ví & quỹ tiệm không che nút nữa.": "Only one card at a time, never over the day summary or a waiting customer. The wallet & shop fund line no longer covers buttons.",
+  "Nút chính dưới màn hình luôn chỉ rõ chỗ cần chạm (“👆 Chạm: Ly size M”); thông báo hiện ngay trên nút, không che khách.": "The main button always shows where to tap (“👆 Tap: Cup size M”); messages appear right above it, not over the customer.",
   "Tết Dương lịch": "New Year's Day",
   "Ngày Giải phóng miền Nam 30/4": "Reunification Day 30/4",
   "Ngày Quốc tế Lao động 1/5": "International Labour Day 1/5",

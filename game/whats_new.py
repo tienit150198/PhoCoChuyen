@@ -32,6 +32,12 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.4.23", date="2026-10-03", items=(
+        dict(emoji="📚", text="Học kế toán xong được giới thiệu việc làm: thi đạt mới vào làm, kiểm tra 3 câu đầu ca, lương kế toán x3, ngày lễ x5.", go=dict(action="accountingSchool")),
+        dict(emoji="📦", text="Kho gọn hơn: tổng tiền ngay dưới số lượng, giữ ngón tay trên thùng hàng để đếm nhanh. Tổng kết ngày mở đầu bằng “Ngày mai”."),
+        dict(emoji="🪟", text="Mỗi lúc chỉ một thẻ thông báo, không còn chồng lên tổng kết ngày hay khách đang chờ. Dòng ví & quỹ tiệm không che nút nữa."),
+        dict(emoji="👆", text="Nút chính dưới màn hình luôn chỉ rõ chỗ cần chạm (“👆 Chạm: Ly size M”); thông báo hiện ngay trên nút, không che khách."),
+    )),
     dict(version="1.4.22", date="2026-10-03", items=(
         dict(emoji="📱", text="Thanh dưới luôn đủ 5 nút to: Khách, Làm, Kho, Sổ tiệm, Thêm. Kho báo hàng sắp hết, thanh trên gọn hơn trên điện thoại nhỏ."),
         dict(emoji="🧭", text="Hành trình: nút Tiếp tục nằm ngay đầu, nơi làm việc xếp gọn hai cột. Chuẩn bị gọn lại, Kho lên đầu."),

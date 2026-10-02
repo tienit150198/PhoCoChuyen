@@ -1,3 +1,12 @@
+# v1.4.23 — 📚 Việc làm kế toán TT99 (x3, lễ x5), 📦 Kho & đếm nhanh, 🪟 một thẻ một lúc, 👆 nút chính chỉ chỗ
+
+Chủ game (03/10): "coi code kế toán thông tư 99, làm xong giới thiệu việc làm ở đâu nữa nhé, với check kiến thức này kia, bắt học thi qua mới làm được nhé, và ở đó kế toán lương x3 bình thường, đôi khi lễ tăng lên x5"; gói UI/UX WP-2/3/4 (tham khảo bộ nghiên cứu, giữ thiết kế hiện tại).
+
+- 📚 feat/acct-jobs (4f6141e, ce27e21, ce1eaca): `game/accounting_jobs.py`. Hành trình: Mây Tre Xanh cần chứng nhận Kế toán cơ bản, Sông Hồng Group cần Kế toán DN Việt Nam (TT99); máy chủ chặn `need_cert`, thẻ 🔒 + "Đi học". Người đã làm/đã nộp hồ sơ giữ quyền cũ (x1, không kiểm tra). Kiểm tra đầu ca 3 câu từ ngân hàng đề (đúng 2/3), đề theo seed, không lưu gì. Lương x3, ngày lễ VN x5 (1/1, Tết, Giỗ Tổ, 30/4, 1/5, 2/9 + ngày liền kề; bảng 2026–2028), trần 600 xu/ngày, chỉ nhân dòng lương; x3_week cộng riêng. Giới thiệu việc làm trong tab Thi & chứng nhận. Không thêm khóa save.
+- 📦 feat/ui-wp3 (ef9b569…e55eede): hóa đơn ngay dưới số lượng, nhà cung cấp dạng chip, giữ để đếm (~7 món/giây, D4, góp ý #97), Chuẩn bị trà sữa mở Kho trước, tổng kết ngày mở đầu "🌅 Ngày mai". `public/css/stock.css` mới.
+- 🪟 feat/ui-wp2 (3ae8a17, 2dac23b, 7316f0c): `v4/popup-gate.js` một quy tắc chung (quà → Có gì mới → x3 → truyện), không mở trên tổng kết/khách đang chờ; mẹo lần đầu cạnh thanh dưới; dòng ví/quỹ nằm trong header sheet.
+- 👆 feat/ui-wp4 (ee0b12f): từ khách thứ 2 nút chính dạng viền "👆 Chạm: …", cuộn tới + mũi tên ▼, không làm thay; toast một dòng ngay trên thanh dưới. D1: khách đầu giữ như cũ.
+
 # v1.4.22 — 📱 Thanh dưới 5 nút, 🧭 Hành trình gọn, 👫 đứng tại gian ở bãi hội
 
 Chủ game (03/10): "các bạn chơi trò gì thì bên ngoài thấy người ta đứng trò đó nhé, chứ đừng biến mất".
