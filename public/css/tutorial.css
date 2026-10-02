@@ -143,4 +143,10 @@
 .gh-hit{margin:0 0 8px}
 .gh-hit-head{display:flex;align-items:center;gap:8px;width:100%;min-height:48px;padding:6px 14px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line);color:var(--ink);font:inherit;font-weight:700;text-align:left;cursor:pointer}
 .gh-none,.gh-count-line{margin:4px 2px 10px}
+/* ❓ Hỏi nhanh: the most asked questions, first on "Hướng dẫn chơi" (folded cards, short answers). */
+.gh-quick{display:grid;gap:0;margin:0 0 16px;padding:12px;border-radius:var(--radius);background:var(--accent-soft);border:1px solid var(--line-strong);scroll-margin-top:84px}
+.gh-quick .gh-faq-title{margin:0 0 8px}
+.gh-quick .gh-ico{background:var(--surface-2)}
+.gh-qa:last-child{margin-bottom:0}
+.gh-qa>summary>.grow{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
 html.large-text .gh-hub{font-size:1.1rem}

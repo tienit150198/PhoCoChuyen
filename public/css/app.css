@@ -2441,6 +2441,7 @@ html[data-layout="phone"] .dock-btn.main>svg{background:transparent;color:var(--
 .rail-sub .rail-item.active{background:var(--accent-soft)}
 .rail-sub-head{display:none}
 .rail-foot{display:grid;grid-template-columns:1fr 1fr;gap:2px;flex:none;margin-top:auto;padding-top:6px}
+.rail-foot>.rail-mini[data-topic="quick"]{grid-column:1/-1}   /* ❓ Hỏi nhanh: its own row over Góp ý · Cài đặt (one row on the phone) */
 .rail-mini{position:relative;display:flex;align-items:center;justify-content:center;gap:6px;min-height:42px;border-radius:12px;color:var(--muted);font-size:.8rem;font-weight:600;transition:background var(--dur),color var(--dur)}
 .rail-mini span{display:none}
 @media (hover:hover){.rail-mini:hover{background:var(--surface-2);color:var(--ink)}}
