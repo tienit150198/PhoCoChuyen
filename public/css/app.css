@@ -2654,3 +2654,53 @@ html[data-layout="phone"] .sa-chip{min-height:32px;min-width:32px;padding:0 6px;
 .jr-x3 small{display:block;color:var(--ink-2)}
 .jr-x3 em{display:block;margin-top:2px;font-style:normal;font-size:.8rem;font-weight:600;color:#c2410c}
 .jr-x3-ico{font-size:1.7rem;line-height:1}
+/* ---------- 41. Phone bar and a calm HUD (owner 03/10, "Nông trại của bà") ---------- */
+/* Five fixed places, the same in every career: Khách · bench · Kho · Sổ tiệm · Thêm. Big icon, a label that
+   wraps to two lines instead of being cut; at 320px each slot is still ~60px wide. */
+html[data-layout="phone"]{--dock-h:76px}
+html[data-layout="phone"].large-text{--dock-h:82px}
+html[data-layout="phone"] .dock{gap:2px;padding-top:2px}
+html[data-layout="phone"] .dock-btn{flex:1 1 0;min-width:0;max-width:none;height:calc(var(--dock-h) - 6px);min-height:56px;justify-content:flex-start;gap:3px;padding:5px 1px 0;font-size:.8rem}
+html[data-layout="phone"] .dock-btn>svg{width:50px;height:30px;padding:1px 11px;flex:none}
+html[data-layout="phone"] .dock-btn>span{flex:none;max-width:100%;line-height:1.15;overflow-wrap:normal}
+html[data-layout="phone"] .dock-btn.main{color:var(--accent-text)}
+html[data-layout="phone"] .dock-btn.main>svg{background:var(--accent-soft);color:var(--accent-text)}
+html[data-layout="phone"] .dock-btn .badge{top:0;right:calc(50% - 32px)}
+html[data-layout="phone"] .dock-btn .dot{top:4px;right:calc(50% - 26px)}
+html[data-layout="phone"].large-text .dock-btn{font-size:.8rem}
+@media (max-width:360px){html[data-layout="phone"] .dock-btn>svg{width:44px;padding:1px 8px}}
+/* A name that still needs three lines ("Việc khoang khách" at 320px): a smaller icon makes the room. */
+html[data-layout="phone"] .dock-btn.long{gap:2px;padding-top:4px}
+html[data-layout="phone"] .dock-btn.long>svg{height:24px;padding-top:0;padding-bottom:0}
+html[data-layout="phone"] .dock-btn.long>span{-webkit-line-clamp:3;font-size:.75rem;line-height:1.08}
+html[data-layout="phone"][data-orientation="landscape"] .dock-btn{height:44px;min-height:44px;padding:0 4px;gap:4px}
+html[data-layout="phone"][data-orientation="landscape"] .dock-btn>svg{width:32px;height:28px;padding:2px}
+/* "Thêm": one plain line under the look-alike Khu phố entries (Bản đồ, Phố nghề, Nhóm phố, Chuyện phố). */
+.rail-note{display:none;max-width:100%;font-size:.75rem;font-weight:500;line-height:1.25;color:var(--muted)}
+html[data-layout="phone"] .rail-sub .rail-note{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+/* A hub with those lines opens as two columns of wide rows (icon, name, the line under it) so nothing is cut. */
+html[data-layout="phone"] .rail:has(>.rail-sub:not([hidden]) .rail-note){grid-template-columns:repeat(2,minmax(0,1fr))}
+html[data-layout="phone"] .rail-sub:not([hidden]):has(.rail-note) .rail-item{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;align-content:center;justify-items:start;column-gap:10px;row-gap:1px;min-height:64px;padding:8px 26px 8px 10px;text-align:left}
+html[data-layout="phone"] .rail-sub:not([hidden]):has(.rail-note) .rail-item>svg{grid-row:1/span 2;align-self:center}
+html[data-layout="phone"] .rail-sub:not([hidden]):has(.rail-note) .rail-item>span{grid-column:2;max-width:100%}
+html[data-layout="phone"] .rail-sub:not([hidden]):has(.rail-note) .rail-item:not(:has(.rail-note))>span{grid-row:1/span 2;align-self:center}
+html[data-layout="phone"] .rail-sub:not([hidden]):has(.rail-note) .rail-item>.rail-note{grid-column:2}
+html[data-layout="phone"] .rail-sub:not([hidden]):has(.rail-note) .rail-item>.badge{top:6px;right:6px}
+html[data-layout="phone"] .rail-sub:not([hidden]):has(.rail-note) .rail-item>.dot{top:8px;right:10px}
+/* HUD: 44px chips; under 360px they keep the icon and the number only (the words stay in the aria-label), so
+   the wallet is never cut at the right edge. */
+html[data-layout="phone"] .hud-chip{align-items:center;min-height:44px}
+html[data-layout="phone"] .topbar .cozy-day.hud-day{min-height:44px}
+@media (max-width:359px){
+html[data-layout="phone"] .hud-chip small{display:none}
+html[data-layout="phone"] .hud-chip .hud-ico,html[data-layout="phone"] .hud-chip.tight .hud-ico,html[lang="en"][data-layout="phone"] .hud-chip .hud-ico{display:inline}
+html[data-layout="phone"] .topbar{padding-left:max(4px,var(--safe-l));padding-right:max(4px,var(--safe-r))}
+html[data-layout="phone"] .cozy-till.hud-money,html[data-layout="phone"] .cozy-till.hud-money:has(.tight){gap:3px}
+html[data-layout="phone"] .hud-chip,html[data-layout="phone"] .hud-chip.tight{gap:3px;padding:4px 5px}
+html[data-layout="phone"] .topbar .cozy-day.hud-day{gap:4px;padding:2px 6px 2px 4px}
+html[data-layout="phone"] .topbar .cozy-day.hud-day>svg{display:none}
+}
+/* Task card: the step reads on two lines ("Nghe khách gọi món", not "Nghe…"); on a narrow phone the face goes
+   so the words get the room. */
+html[data-layout="phone"] .calm-what b{flex:1 1 auto;line-height:1.25}
+@media (max-width:360px){html[data-layout="phone"] .task-hud .calm-what .npc-mini{display:none}}
