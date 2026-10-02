@@ -209,7 +209,12 @@ def snapshot(state: dict) -> dict:
     eq = TITLE_INDEX.get(j.get('equipped'))
     title = dict(emoji=eq['emoji'], name=eq['name']) if eq else None
     worn = [dict(emoji=w['emoji'], name=w['name']) for w in worn_view(j)] if isinstance(j, dict) else []
-    return dict(current=state.get('current'), careers=careers[:14], title=title, titles=worn), served
+    out = dict(current=state.get('current'), careers=careers[:14], title=title, titles=worn)
+    from .garage import ride_view
+    ride = ride_view(state) if isinstance(j, dict) else None
+    if ride:   # 🚗 the vehicle the player rides (game/garage.py), shown on the player's card
+        out['ride'] = dict(emoji=ride['emoji'], name=ride['name'], color=ride['color'])
+    return out, served
 
 
 SEEN_EVERY = 120   # seconds between "last seen" refreshes of a profile
