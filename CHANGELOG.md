@@ -1,3 +1,11 @@
+# v1.4.16 — 🎲 Hội chợ: 53%, phi tiêu 51%, chơi dồn thì nguội vận
+
+Chủ game (03/10): "giảm tỷ lệ thắng… hiện tại cao quá làm mất giá xu", "bầu cua, chiếu trong, gánh lô tô -> 53%", "ném vòng -> không tính điểm", "phóng phi tiêu -> 51%", "chơi liên tục 1 game thì tỷ lệ thắng sẽ giảm dần xuống, tối thiểu 40%".
+
+- `game/fair.py`: WIN_P .60 → .53 (taper tới .45 giữ nguyên). `luck_p()`: sau RUN_FREE=10 ván liên tiếp cùng một gian (mỗi ván cách ≤ RUN_GAP=180 s) giảm RUN_STEP=1 điểm % mỗi ván, sàn P_FLOOR=.40. Chuỗi ván ở `journey.fair_run` {g, n, at} (tùy chọn, ngoài `journey.fair`).
+- `game/fair_darts.py`: P_HI/P_LO .40/.30 → .51/.45.
+- Ném vòng: PT_RING3/PT_RING5 = 0 (không điểm Bảng vàng); tỉ lệ giữ nguyên. Lô tô 53% ở bản sau (feat/fair-food).
+
 # v1.4.15 — 📚 Học kế toán TT99, 🧾 hồ sơ lương, 🛕 giọng chùa, 🛁 nhà tắm & hồ bơi
 
 Chủ game (02–03/10): "kế toán có cái thông tư 99 đưa lên luôn", "thông tư 99 gợi ý nhiều lên", "giao diện xấu quá, làm sao dễ coi hơn" (hồ sơ lương), "cách trả lời của chùa khác các bên còn lại mới đúng", "nhà chưa có nhà tắm, biệt thự 60k cũng k có hồ bơi".
