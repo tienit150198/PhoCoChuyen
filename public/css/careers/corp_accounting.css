@@ -97,6 +97,7 @@
 .career-job.ca .ca-match,.career-job.ca .ca-fields{display:grid;gap:10px}
 .career-job.ca .ca-mrow{display:grid;gap:4px;font-size:.967rem;line-height:1.4}
 .career-job.ca .ca-mrow select{width:100%}
+.career-job.ca .ca-bad{color:var(--bad)}
 @container sheet (min-width:560px){.career-job.ca .ca-mrow{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center}}
 .career-job.ca .ca-handover{border-color:var(--good)}
 .career-job.ca .ca-handover .ca-dot{background:var(--good);border-color:var(--good)}

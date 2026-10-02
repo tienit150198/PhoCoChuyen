@@ -595,6 +595,20 @@ class CorpAccountingTests(unittest.TestCase):
         self.assertIn('+20', r['message'])
         self.assertEqual(j.c['money'], money + 20)
 
+    def test_wrong_fields_check_names_the_boxes_off(self):
+        tid = self.use('depreciation')
+        j = self.j
+        j.act('ask', task=tid)
+        self.open_all(tid)
+        st = j.get(tid)['proc'][0]
+        self.assertEqual(st['kind'], 'fields')
+        wrong = copy.deepcopy(answer(st))
+        k = sorted(wrong)[-1]
+        wrong[k] += 10
+        r = j.act('ca_step', task=tid, step=st['id'], answer=wrong)
+        self.assertFalse(r['correct'])
+        self.assertEqual(r['bad'], [k])
+
     def test_unbalanced_and_malformed_entries_rejected_without_mistake(self):
         tid = self.use('journal')
         j = self.j
