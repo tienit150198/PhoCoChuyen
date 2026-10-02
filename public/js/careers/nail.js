@@ -177,7 +177,10 @@ function guide(t,x){
   if(!t.known)return {steps:[{ok:null,label:'Hỏi khách',go:{cmd:'ask',payload:{task:t.id},label:'👂 Hỏi khách muốn làm gì'}}],final:null,pulse:'.sk-ask'};
   if(t.stage==='pay'){const s=changeStep(x,t.id,t.cash),steps=s?[s]:[];return {steps,final:{label:'💵 ĐƯA TIỀN THỐI',go:finalGo(steps,'nl_pay',{task:t.id,...changePayload(x,t.id,t.cash)}),ready:true}};}
   const steps=serveSteps(t,x),worked=(t.coats||[]).length||t.shape||t.care;
-  return {steps,final:{label:'💅 GIAO MÓNG',go:finalGo(steps,'nl_done',{task:t.id,confirm:true}),ready:!!worked,why:'làm móng trước đã'}};
+  // A gel coat never cured: the server asks first; confirm is only sent once the player accepts the warning.
+  const wet=(t.coats||[]).some(c=>c.p==='gel'&&c.cure==null);
+  const go=wet?{cmd:'nl_done',payload:{task:t.id,confirm:true},confirm:'Còn lớp gel chưa hơ đèn. Vẫn giao cho khách?'}:finalGo(steps,'nl_done',{task:t.id});
+  return {steps,final:{label:'💅 GIAO MÓNG',go,ready:!!worked,why:'làm móng trước đã'}};
 }
 const hintFor=(g,x)=>nextHint(x,g.steps,{final:g.final&&g.final.ready!==false&&g.final.go?{label:g.final.label.replace(/^[^\p{L}]+/u,''),go:g.final.go}:null,pulse:g.pulse});
 
