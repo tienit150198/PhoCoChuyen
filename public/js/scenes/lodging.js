@@ -8,6 +8,8 @@
  * guest-ledger desk (finance) and the front door sign with luggage.
  * Plan schema: see scenes/shop.js. */
 import {R,E,L,T,P,fit,heart,signBoard,streetBoard} from './kit.js';
+import {room,shopFor,taskOf} from './backroom.js';
+import {spotAt} from './interior.js';
 
 const WOOD='#c4946c',WOOD_D='#a87a57',WOOD_L='#dcb08a';
 const TAGS=['#a9c79f','#b6c9e3','#e8cc95','#efb5ca','#c9b5dc','#a9d6c6'];
@@ -21,7 +23,7 @@ export const PLAN={
    customers:[[590,624],[710,630],[830,622],[650,676]],event:[440,655],officer:[320,665],
    staff:{x:530,step:100,y:462},cat:[972,482],counterSpan:[530,870],
    decor:{corner:[130,668],front:[880,675],center:[150,522]},sill:{plant:[545,432],lamp:[600,432],seat:[670,432],rug:[420,610]},
-   spots:{shelf:[[770,352],48,[[765,505]]],evidence:[[859,360],45,[[860,505]]],workbench:[[610,470],58,[[610,505]]],counter:[[790,470],52,[[790,505]]],
+   spots:{'go:hall':[[258,322],40,[[250,505]]],shelf:[[770,352],48,[[765,505]]],evidence:[[859,360],45,[[860,505]]],workbench:[[610,470],58,[[610,505]]],counter:[[790,470],52,[[790,505]]],
      warehouse:[[258,404],45,[[250,505]]],board:[[343,361],45,[[343,505]]],finance:[[195,566],42,[[195,652],[282,600]]],
      property:[[972,326],35,[[925,505]]],security:[[166,230],30,[[215,505]]],door:[[988,632],45,[[900,655],[990,615]]],pet:[[972,462],38,[[972,505]]]}},
  port:{badge:{board:[-50,-40],shelf:[50,-18]},wall:{poster:[546,410]},anchors:{window:[310,572],glass:[310,380]},floor:[62,512,638,822],lane:572,line:626,home:[330,572],kx:51,ky:57,sway:24,
@@ -30,7 +32,7 @@ export const PLAN={
    customers:[[250,705],[370,700],[490,706],[240,772]],event:[120,735],officer:[430,772],
    staff:{x:215,step:95,y:545},cat:[135,545],counterSpan:[225,505],
    decor:{corner:[85,700],front:[600,640],center:[350,812]},sill:{plant:[255,474],lamp:[300,474],seat:[355,474],rug:[330,740]},
-   spots:{shelf:[[457,372],45,[[457,572]]],evidence:[[457,462],45,[[480,572]]],workbench:[[290,582],55,[[290,572]]],counter:[[440,582],50,[[440,572]]],
+   spots:{'go:hall':[[562,392],36,[[565,572]]],shelf:[[457,372],45,[[457,572]]],evidence:[[457,462],45,[[480,572]]],workbench:[[290,582],55,[[290,572]]],counter:[[440,582],50,[[440,572]]],
      warehouse:[[562,472],45,[[565,572]]],board:[[600,246],55,[[560,572]]],finance:[[605,712],42,[[605,698],[520,745]]],
      property:[[130,372],35,[[130,572]]],security:[[622,168],30,[[595,572]]],door:[[525,795],45,[[410,800],[525,765]]],pet:[[135,528],38,[[135,572]]]}},
 };
@@ -271,8 +273,56 @@ function bench(c,p,x0,x1,bottom,port,garden){const w=x1-x0;
   R(c,x0+10,bottom-44,34,18,p.mint,8);R(c,x1-44,bottom-44,34,18,'#f2c7b4',8);
   T(c,'ngồi nghỉ nhé',x0+w/2,bottom-46,port?16:11,'#fff8ec');if(garden)hydrangea(c,x1-6,bottom-64,12,HYD[2]);}
 
+/* ------------------------------------------------------------ the rooms' hallway and the kitchen (scenes/backroom.js) */
+/** Hành lang phòng: the guest room doors, each with its state today (clean, to tidy, guests in, being
+ * fixed); the housekeeping cart. Bếp ăn sáng: the stove and the breakfast table. */
+const DOORS=[['suong',1,'Sương Sớm'],['quy',2,'Dã Quỳ'],['thong',3,'Đồi Thông'],['ho',4,'Ban Công Hồ'],['gac',5,'Gác Mái']];
+const STATE={clean:['✨','Sạch','#8fbf8a'],dirty:['🧺','Cần dọn','#e3b04b'],occupied:['💤','Đang có khách','#6fa3d6'],maintenance:['🔧','Bảo trì','#d9534f']};
+const doorU=i=>.2+i*.16;
+function guestDoors(c,g,w){const k=g.k,rooms=w.c?.data?.rooms||{},level=w.c?.data?.level||1;
+  DOORS.forEach(([id,no,name],i)=>{const x=g.X(doorU(i)),wd=78*k,ht=g.base-g.H(.34),top=g.base-ht,r=rooms[id],locked=id==='ho'&&level<3,st=STATE[r?.status]||STATE.clean;
+    R(c,x-wd/2-7*k,top-7*k,wd+14*k,ht+7*k,'#a87a57',8*k);R(c,x-wd/2,top,wd,ht,locked?'#b9a48f':'#c4946c',6*k);
+    R(c,x-wd/2+8*k,top+10*k,wd-16*k,ht*.36,'#dcb08a',4*k);R(c,x-wd/2+8*k,top+ht*.5,wd-16*k,ht*.4,'#dcb08a',4*k);E(c,x+wd/2-12*k,top+ht*.55,4*k,4*k,'#f2d48c');
+    R(c,x-18*k,top-34*k,36*k,22*k,'#fffaf0',5,'#a87a57',1.5);T(c,String(no),x,top-23*k,g.port?14:12,'#6b4a33',800);
+    if(locked){T(c,'🔒',x,top+ht*.3,22*k);return;}
+    R(c,x-wd/2+4*k,top+ht*.24,wd-8*k,26*k,st[2],13*k);T(c,`${st[0]} ${st[1]}`,x,top+ht*.24+13*k,fit(c,`${st[0]} ${st[1]}`,wd-12*k,g.port?12:11),'#fff',800);
+    if(r?.status==='dirty')R(c,x+wd/2-4*k,g.base-30*k,20*k,26*k,'#f6efe4',4,'#c9b49a',1);});}
+const HALL=room({id:'hall',name:'Hành lang phòng',icon:'🚪',back:'lobby',sign:'CÁC PHÒNG NGHỈ',
+  theme:{wall:'#f3e6d4',wallLow:'#dcb08a',floor:'#c4946c',floor2:'#b9895f',tile:0,rim:'#a87a57',trim:'#a87a57',ink:'#6b4a33',door:'#8a6e58'},
+  wall:guestDoors,
+  spots:g=>Object.fromEntries(DOORS.map(([id],i)=>['look:'+id,spotAt(g,[g.X(doorU(i)),g.H(.6)],40,[doorU(i),.22])])),
+  labels:Object.fromEntries(DOORS.map(([id,no,name])=>['look:'+id,`Phòng ${no} · ${name}`])),
+  items:[
+    {k:'cart',u:.5,v:.66,w:.12,h:80,fill:['#ffffff','#bfe7d8','#f5e6c8'],spot:'workbench',label:'Xe dọn phòng'},
+    {k:'basket',u:.86,v:.74,w:.1,h:42,fill:['#ffffff','#e6d3b3']},
+    {k:'plant',u:.13,v:.74,w:.06,h:80,s:.9},
+  ],
+  looks:Object.fromEntries(DOORS.map(([id,no,name])=>[id,w=>{const r=w.c?.data?.rooms?.[id];if(id==='ho'&&(w.c?.data?.level||1)<3)return `Phòng ${name} còn khóa. Homestay lớn thêm chút nữa mới mở.`;
+    return {dirty:`Phòng ${name} khách mới trả. Thay ga, lau sàn, bổ sung nước là đón khách mới được.`,occupied:`Phòng ${name} đang có khách. Đi nhẹ chân thôi.`,
+      maintenance:`Phòng ${name} đang sửa. Đợi thợ xong mới nhận khách.`}[r?.status]||`Phòng ${name} sạch thơm, chăn gấp vuông vức.`;}])),
+  chat:['Phòng Đồi Thông xin thêm cái chăn!','Ga giường phơi khô rồi nè.','Sương xuống dày ghê, đóng cửa sổ giùm nha.'],
+  calendar:[.08,.2],backU:.06,walker:false,
+});
+const BREAKFAST=room({id:'kitchen',name:'Bếp ăn sáng',icon:'🍳',back:'lobby',sign:'BẾP ĂN SÁNG',
+  theme:{wall:'#f6eee2',wallLow:'#e3cdb2',floor:'#d9bf9e',floor2:'#cfb38f',tile:58,rim:'#a87a57',trim:'#a87a57',ink:'#6b4a33',door:'#8a6e58'},
+  win:{u0:.6,u1:.74,frame:'#e3cdb2'},clock:[.46,.27],
+  items:[
+    {k:'counter',u:.38,v:.1,w:.3,h:84,pots:[.2,.48],brew:['#f2d48c','#c98a5a'],sink:.82,fill:['🍳','🥖','🍓'],spot:'workbench',label:'Bếp ăn sáng'},
+    {k:'fridge',u:.86,v:.1,w:.13,h:220,tag:'TỦ LẠNH',top:'#a87a57',fill:['🥚','🥛','🍓','🧈']},
+    {k:'table',u:.55,v:.62,w:.3,h:56,cloth:'#f5e6c8',fill:['☕','🥐','🍓'],spot:'look:table',label:'Bàn ăn sáng'},
+  ],
+  looks:{table:()=>'Bàn ăn sáng nhìn ra đồi thông. Trứng, bánh mì, dâu Đà Lạt, cà phê nóng.'},
+  chat:['Khách phòng Đồi Thông muốn trứng lòng đào!','Dâu tây mới hái nè.','Sương dày quá, bật lò sưởi chưa?'],
+});
+/** Where the homestay's work is: check-out (the room inspection) in the hallway, breakfast in the kitchen,
+ * everything else at the reception. */
+const stayFor=w=>{const t=taskOf(w);if(!t)return {key:'idle'};const area=t.job==='checkout'?'hall':t.job==='breakfast'?'kitchen':'lobby';
+  return {key:'t:'+t.id+':'+area,area,spot:area==='lobby'?null:'workbench'};};
+
 export default {
   id:'lodging',
+  areas:[{id:'lobby',name:'Sảnh',icon:'🛎️',main:true},HALL,BREAKFAST],
+  areaFor:stayFor,
   plan:PLAN,
   room(w,p){if(w.isPortrait())portRoom(w,p);else landRoom(w,p);},
   props(w,p){return w.isPortrait()?portProps(w,p):landProps(w,p);},

@@ -18,6 +18,7 @@
  * covers the top) and its text at 16 scene px or more.
  */
 import {R,E,L,T,P,fit,heart,bloom,plantAt,streetBoard} from './kit.js';
+import {room,shopFor,taskOf} from './backroom.js';
 
 export const PLAN={
  land:{floor:[130,452,1070,682],lane:522,line:600,home:[600,522],kx:82,ky:45,sway:30,
@@ -27,7 +28,7 @@ export const PLAN={
    staff:{x:300,step:120,y:484},cat:[962,424],counterSpan:[240,730],
    decor:{corner:[150,614],front:[930,674],center:[640,676]},sill:{plant:[812,402],lamp:[842,402],seat:[905,406],rug:[520,662]},
    wall:{poster:[1036,432]},badge:{workbench:[-30,-20],board:[34,-32]},
-   spots:{shelf:[[350,486],62,[[350,522]]],evidence:[[704,358],45,[[730,522]]],workbench:[[500,392],82,[[520,522]]],counter:[[680,486],52,[[680,522]]],
+   spots:{'go:bakery':[[150,388],40,[[246,522]]],shelf:[[350,486],62,[[350,522]]],evidence:[[704,358],45,[[730,522]]],workbench:[[500,392],82,[[520,522]]],counter:[[680,486],52,[[680,522]]],
      warehouse:[[175,470],48,[[175,566],[246,522]]],board:[[1050,340],45,[[1045,505]]],finance:[[1040,540],42,[[975,572],[1040,612]]],
      property:[[1030,254],30,[[1045,505]]],security:[[150,202],30,[[250,522]]],door:[[1026,630],45,[[940,650],[1026,612]]],pet:[[962,404],38,[[935,522]]]}},
  port:{floor:[62,512,638,822],lane:574,line:660,home:[330,574],kx:51,ky:57,sway:22,
@@ -37,7 +38,7 @@ export const PLAN={
    staff:{x:175,step:95,y:536},cat:[566,338],counterSpan:[110,520],
    decor:{corner:[92,690],front:[420,815],center:[330,760]},sill:{plant:[500,336],lamp:[528,336],seat:[618,336],rug:[330,745]},
    wall:{poster:[85,300]},badge:{workbench:[0,-10],board:[-50,-6],'ops:finance':[0,-12]},
-   spots:{shelf:[[205,586],58,[[205,574]]],evidence:[[436,350],40,[[430,574]]],workbench:[[270,440],70,[[290,574]]],counter:[[470,586],50,[[470,574]]],
+   spots:{'go:bakery':[[80,460],36,[[140,574]]],shelf:[[205,586],58,[[205,574]]],evidence:[[436,350],40,[[430,574]]],workbench:[[270,440],70,[[290,574]]],counter:[[470,586],50,[[470,574]]],
      warehouse:[[82,545],45,[[80,676],[140,574]]],board:[[603,395],42,[[548,574]]],finance:[[622,522],38,[[548,574],[615,592]]],
      property:[[508,400],30,[[508,574]]],security:[[90,236],30,[[140,574]]],door:[[530,798],45,[[440,786],[530,776]]],pet:[[566,318],36,[[548,574]]]}},
 };
@@ -320,8 +321,26 @@ function portProps(w,p){const c=w.ctx,pl=PLAN.port,tier=w.c?.ops?.property?.tier
   if(tier==='garden')for(const [x,y] of pl.garden)out.push([y+4,()=>plantAt(c,x,y,.55)]);
   return out;}
 
+/* ------------------------------------------------------------ the bakery (scenes/backroom.js) */
+/** Lò bánh: the deck oven, the cooling rack, butter in the fridge, the kneading table, the flour sacks. */
+const BAKERY=room({id:'bakery',name:'Lò bánh',icon:'🔥',back:'shop',sign:'LÒ BÁNH SỚM MAI',
+  theme:{wall:'#fbf1e2',wallLow:'#f3dfc4',floor:'#e9cfa8',floor2:'#e1c49b',tile:60,rim:'#c99b7d',trim:'#c4946c',ink:'#a0623f',door:'#b97a52'},
+  win:{u0:.12,u1:.24,frame:'#f3dfc4'},clock:[.555,.27],
+  items:[
+    {k:'oven',u:.4,v:.1,w:.22,h:210,fill:['🥖','🥐','🍞'],spot:'look:oven',label:'Lò nướng'},
+    {k:'shelf',u:.68,v:.1,w:.14,h:230,col:'#d9b48e',fill:['🥐','🍞','🥯','🧁','🥖'],spot:'shelf',label:'Giá bánh mới ra lò'},
+    {k:'fridge',u:.88,v:.1,w:.13,h:220,tag:'BƠ SỮA',top:'#c4946c',fill:['🧈','🥚','🥛','🍓']},
+    {k:'table',u:.5,v:.58,w:.3,h:58,col:'#f4efe6',fill:['🥣','🧈','🥚'],spot:'workbench',label:'Bàn nhồi bột'},
+    {k:'sacks',u:.18,v:.64,w:.16,h:70,fill:['BỘT MÌ','ĐƯỜNG'],spot:'warehouse',label:'Kho bột'},
+  ],
+  looks:{oven:()=>'Lò đá nóng hừng hực. Vỏ bánh mì nứt lách tách nghe vui tai.'},
+  chat:['Mẻ croissant thứ hai ra lò rồi!','Bé Men hôm nay nở đẹp ghê.','Ai canh giùm lò năm phút nha.'],
+});
+
 export default {
   id:'cafe',
+  areas:[{id:'shop',name:'Gian bánh',icon:'🥐',main:true},BAKERY],
+  areaFor:shopFor('shop'),
   plan:PLAN,
   room(w,p){if(w.isPortrait())portRoom(w,p);else landRoom(w,p);},
   props(w,p){return w.isPortrait()?portProps(w,p):landProps(w,p);},

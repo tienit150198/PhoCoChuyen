@@ -109,13 +109,13 @@ export function daylight(w){
     const far=Math.abs(L.alpha-target.alpha)>.004||Math.abs(L.lamps-target.lamps)>.004;
     if(far)w.wake?.(true);else Object.assign(L,{alpha:target.alpha,lamps:target.lamps,rgb:[...target.rgb]});
   }
-  const cur=w._light,kind=w.scene?.()?.id;
+  const cur=w._light,kind=w.scene?.()?.id,outdoor=w.outdoor?.()??OUTDOOR.has(kind);   // an interior says for itself (scenes/areas.js)
   c.save();
   // Outdoor lamp posts stand in every light; they only glow in the evening.
-  if(OUTDOOR.has(kind))for(const [x,y] of lampSpots(w))lampPost(c,x,y,w.isPortrait?.()?.9:1,cur.lamps);
+  if(outdoor)for(const [x,y] of lampSpots(w))lampPost(c,x,y,w.isPortrait?.()?.9:1,cur.lamps);
   if(cur.alpha>.005){
     // Multiply tint, a little lighter over the room itself (its lights are on) than around it.
-    const rgb=cur.rgb.map(Math.round).join(','),port=w.isPortrait?.(),cx=port?350:600,cy=port?470:470,inner=OUTDOOR.has(kind)?.85:1-.45*cur.lamps;
+    const rgb=cur.rgb.map(Math.round).join(','),port=w.isPortrait?.(),cx=port?350:600,cy=port?470:470,inner=outdoor?.85:1-.45*cur.lamps;
     const g=c.createRadialGradient(cx,cy,port?120:180,cx,cy,port?560:720);g.addColorStop(0,`rgba(${rgb},${cur.alpha*inner})`);g.addColorStop(1,`rgba(${rgb},${cur.alpha})`);
     c.globalCompositeOperation='multiply';c.fillStyle=g;
     const tl={x:-w.offset.x/w.scale,y:-w.offset.y/w.scale};c.fillRect(tl.x,tl.y,w.width/w.scale,w.height/w.scale);
@@ -124,7 +124,7 @@ export function daylight(w){
   if(cur.lamps>.02){
     c.globalCompositeOperation='lighter';const a=.34*cur.lamps;
     for(const [x,y,r,col] of lightSpots(w))glow(c,x,y,r,a,col);
-    if(OUTDOOR.has(kind)){const s=w.isPortrait?.()?.9:1;for(const [x,y] of lampSpots(w)){glow(c,x+24*s,y-150*s,90,a*1.2,'255,220,150');glow(c,x+10,y,110,a*.8,'255,214,140');}}
+    if(outdoor){const s=w.isPortrait?.()?.9:1;for(const [x,y] of lampSpots(w)){glow(c,x+24*s,y-150*s,90,a*1.2,'255,220,150');glow(c,x+10,y,110,a*.8,'255,214,140');}}
     c.globalCompositeOperation='source-over';
   }
   c.restore();

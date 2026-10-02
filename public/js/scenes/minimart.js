@@ -22,6 +22,7 @@
  * text at about 16 scene px and nothing important above y≈150.
  */
 import {R,E,L,T,P,fit,heart,bloom,plantAt,streetBoard} from './kit.js';
+import {room,shopFor,taskOf} from './backroom.js';
 
 export const PLAN={
  land:{floor:[130,452,1070,682],lane:505,line:563,home:[600,505],kx:82,ky:45,sway:30,
@@ -31,7 +32,7 @@ export const PLAN={
    staff:{x:440,step:110,y:470},cat:[763,241],counterSpan:[300,760],
    decor:{corner:[1050,530],front:[720,674],center:[460,672]},sill:{plant:[585,380],lamp:[635,380],seat:[682,380],rug:[560,652]},
    badge:{board:[0,-18]},
-   spots:{shelf:[[236,320],100,[[236,505]]],evidence:[[540,452],48,[[540,505]]],workbench:[[400,440],56,[[400,505]]],
+   spots:{'go:stock':[[421,262],40,[[421,505]]],shelf:[[236,320],100,[[236,505]]],evidence:[[540,452],48,[[540,505]]],workbench:[[400,440],56,[[400,505]]],
      counter:[[672,424],55,[[672,505]]],warehouse:[[421,340],48,[[421,505]]],board:[[858,330],45,[[858,505]]],
      finance:[[1007,570],42,[[930,600],[1007,640]]],property:[[859,237],32,[[880,505]]],security:[[421,226],30,[[421,505],[350,505]]],
      door:[[994,360],60,[[994,505],[994,560]]],pet:[[763,222],38,[[763,505]]]}},
@@ -42,7 +43,7 @@ export const PLAN={
    staff:{x:175,step:95,y:526},cat:[493,269],counterSpan:[132,540],
    decor:{corner:[80,540],front:[612,790],center:[420,812]},sill:{plant:[352,472],lamp:[386,472],seat:[416,472],rug:[330,735]},
    badge:{board:[0,-33]},
-   spots:{shelf:[[137,330],90,[[137,572]]],evidence:[[330,528],44,[[330,572]]],workbench:[[212,516],48,[[212,572]]],
+   spots:{'go:stock':[[278,345],36,[[278,572]]],shelf:[[137,330],90,[[137,572]]],evidence:[[330,528],44,[[330,572]]],workbench:[[212,516],48,[[212,572]]],
      counter:[[452,500],48,[[452,572]]],warehouse:[[278,420],42,[[278,572]]],board:[[384,388],40,[[400,572]]],
      finance:[[602,660],40,[[540,700],[602,736]]],property:[[379,305],30,[[370,572]]],security:[[278,306],26,[[250,572]]],
      door:[[602,400],48,[[602,572],[602,630]]],pet:[[493,250],36,[[493,572]]]}},
@@ -306,8 +307,26 @@ function portProps(w,p){const c=w.ctx,words=w.words(),tier=w.c?.ops?.property?.t
   if(tier==='garden')for(const [x,y] of PLAN.port.garden)out.push([y+4,()=>plantAt(c,x,y,.55)]);
   return out;}
 
+/* ------------------------------------------------------------ the stock room (scenes/backroom.js) */
+/** Kho hàng: shelves of cartons, stacks of noodles and fish sauce, rice sacks, Cô Ba's ledger desk. */
+const STOCK=room({id:'stock',name:'Kho hàng',icon:'📦',back:'store',sign:'KHO HÀNG CÔ BA',
+  theme:{wall:'#eef3ea',wallLow:'#cfe3d3',floor:'#e7dccb',floor2:'#dccfba',tile:64,rim:'#a9b79a',trim:'#7fae8f',ink:'#4f7a5c',door:'#7fae8f'},
+  clock:[.7,.18],calendar:[.7,.42],
+  items:[
+    {k:'shelf',u:.2,v:.1,w:.2,h:240,col:'#c9a27e',fill:['#e3a7b8','#9cc3d5','#f0cf8a','#b8d39c','#e2c39d'],spot:'warehouse',label:'Kệ hàng dự trữ'},
+    {k:'boxes',u:.5,v:.1,w:.24,h:160,fill:['MÌ GÓI','NƯỚC MẮM','DẦU ĂN','BỘT GIẶT','SỮA']},
+    {k:'sacks',u:.86,v:.14,w:.18,h:72,fill:['GẠO','ĐƯỜNG','MUỐI'],spot:'look:rice',label:'Bao gạo'},
+    {k:'boxes',u:.26,v:.62,w:.16,h:92,fill:['NƯỚC SUỐI','BÁNH']},
+    {k:'desk',u:.64,v:.62,w:.22,h:58,fill:['🧮'],book:'#4f7a5c',spot:'finance',label:'Sổ thu chi'},
+  ],
+  looks:{rice:()=>'Gạo thơm với gạo nở. Ai mua lẻ thì xúc bằng lon sữa bò.'},
+  chat:['Xe hàng tới rồi, ra phụ một tay!','Cô Ba ơi, thùng mì này để đâu?','Nhớ đếm lại thùng nước suối nha.'],
+});
+
 export default {
   id:'minimart',
+  areas:[{id:'store',name:'Gian hàng',icon:'🛒',main:true},STOCK],
+  areaFor:shopFor('store'),
   plan:PLAN,
   room(w,p){if(w.isPortrait())portRoom(w,p);else landRoom(w,p);},
   props(w,p){return w.isPortrait()?portProps(w,p):landProps(w,p);},

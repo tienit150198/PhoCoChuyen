@@ -195,7 +195,7 @@ class DeployTests(unittest.TestCase):
 
     def test_career_warm_lists_scene_workbench_and_stylesheets(self):
         warm=WebAssets(PUBLIC,"script-src 'self'",lambda:'c').snapshot().warm
-        self.assertEqual(warm['milk_tea'].split(','),['/js/scenes/teabar.js','/js/careers/milk_tea.js','/js/careers/food_kit.js','/css/careers/milk_tea.css'])
+        self.assertEqual(warm['milk_tea'].split(','),['/js/scenes/teabar.js','/js/scenes/backroom.js','/js/scenes/interior.js','/js/careers/milk_tea.js','/js/careers/food_kit.js','/css/careers/milk_tea.css'])
         self.assertEqual(warm['restaurant'].split(',')[-2:],['/css/careers/food_kit.css','/css/careers/restaurant.css'],'the kit before the career sheet')
         self.assertEqual(warm['teacher'],'/js/scenes/classroom.js')
         self.assertEqual(set(warm),set(webassets.js_table((PUBLIC/'js/scenes/index.js').read_text(),'KIND_OF')))

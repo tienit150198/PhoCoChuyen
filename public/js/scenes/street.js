@@ -9,6 +9,7 @@
  * Both careers share one plan (see shop.js for the PLAN schema); only the
  * drawing on each footprint changes. */
 import {R,E,L,T,P,fit,heart,bloom,plantAt,signBoard,streetBoard} from './kit.js';
+import {room,shopFor,taskOf} from './backroom.js';
 
 export const PLAN={
  land:{badge:{board:[31,-23]},floor:[110,470,1090,658],lane:525,line:580,home:[800,530],kx:82,ky:45,sway:38,
@@ -17,7 +18,7 @@ export const PLAN={
    customers:[[455,620],[580,634],[705,620],[830,638]],event:[340,652],officer:[885,598],
    staff:{x:360,step:125,y:565},cat:[262,440],counterSpan:[570,750],
    decor:{corner:[140,652],front:[880,655],center:[520,656]},sill:{plant:[420,266],lamp:[480,266],seat:[540,266],rug:[600,622]},
-   spots:{shelf:[[450,372],100,[[450,525]]],evidence:[[900,418],60,[[900,525]]],workbench:[[252,560],62,[[360,606],[252,572]]],counter:[[660,428],60,[[660,525]]],
+   spots:{'go:sort':[[150,392],40,[[250,525]]],shelf:[[450,372],100,[[450,525]]],evidence:[[900,418],60,[[900,525]]],workbench:[[252,560],62,[[360,606],[252,572]]],counter:[[660,428],60,[[660,525]]],
      warehouse:[[167,470],48,[[167,566],[250,525]]],board:[[1045,360],48,[[1045,525]]],finance:[[1035,540],42,[[950,572],[1035,606]]],
      property:[[332,232],35,[[380,525]]],security:[[262,228],30,[[250,525]]],door:[[1030,606],45,[[950,636],[1030,612]]],pet:[[262,420],38,[[262,525]]]}},
  port:{badge:{board:[46,-40]},floor:[48,512,652,792],lane:575,line:630,home:[165,615],kx:51,ky:57,sway:24,
@@ -26,7 +27,7 @@ export const PLAN={
    customers:[[230,650],[350,660],[470,648],[330,740]],event:[290,790],officer:[410,790],
    staff:{x:250,step:105,y:612},cat:[505,500],counterSpan:[340,492],
    decor:{corner:[72,770],front:[622,792],center:[430,712]},sill:{plant:[220,300],lamp:[275,300],seat:[340,300],rug:[330,700]},
-   spots:{shelf:[[280,412],100,[[280,575]]],evidence:[[606,470],55,[[606,582]]],workbench:[[144,650],58,[[262,706],[144,676]]],counter:[[416,470],56,[[416,575]]],
+   spots:{'go:sort':[[92,462],36,[[165,575]]],shelf:[[280,412],100,[[280,575]]],evidence:[[606,470],55,[[606,582]]],workbench:[[144,650],58,[[262,706],[144,676]]],counter:[[416,470],56,[[416,575]]],
      warehouse:[[92,545],45,[[92,615],[165,575]]],board:[[82,342],50,[[165,575]]],finance:[[607,655],42,[[520,690],[607,730]]],
      property:[[168,240],35,[[230,575]]],security:[[85,247],30,[[165,575]]],door:[[522,742],45,[[430,772],[522,742]]],pet:[[505,480],38,[[520,578]]]}},
 };
@@ -300,8 +301,76 @@ function streetProps(w,p){const c=w.ctx,port=w.isPortrait(),pl=w.plan(),b=pl.blo
   return out;
 }
 
+/* ------------------------------------------------------------ delivery: the sorting room and the stop (scenes/backroom.js) */
+/** Kho phân loại: the conveyor, the shelves of parcels waiting, the scale. The stop: wherever the rider is
+ * now (data.at): a building lobby, a shop counter or a house gate, with the hand-over spot (the task). */
+const SORT=room({id:'sort',name:'Kho phân loại',icon:'📦',back:'depot',sign:'KHO PHÂN LOẠI',
+  theme:{wall:'#f1ece4',wallLow:'#e3d6c2',floor:'#c9c3b8',floor2:'#c0b9ad',tile:64,rim:'#a5855e',trim:'#e07a3f',ink:'#c0602f',door:'#e07a3f'},
+  clock:[.5,.27],calendar:[.36,.36],
+  items:[
+    {k:'shelf',u:.18,v:.1,w:.2,h:240,col:'#9aa6b0',board:'#6d7880',fill:['#d9b38c','#e2c39d','#cfa57d','#f0cf8a'],spot:'warehouse',label:'Kệ hàng chờ giao'},
+    {k:'boxes',u:.82,v:.1,w:.22,h:150,fill:['HỎA TỐC','COD','DỄ VỠ','HÀNG LẠNH']},
+    {k:'belt',u:.48,v:.5,w:.46,d:.1,h:46,spot:'workbench',label:'Băng chuyền phân loại'},
+    {k:'desk',u:.8,v:.7,w:.18,h:56,book:'#e07a3f',fill:['⚖️','🧾'],spot:'look:scale',label:'Cân hàng'},
+  ],
+  looks:{scale:()=>'Cân điện tử của bưu cục. Hàng nặng quá ký là phải báo thêm phí.'},
+  chat:['Đơn hỏa tốc nè, ai chạy?','Nhớ nộp tiền COD trước 6 giờ nha.','Hàng dễ vỡ để kệ trên cùng!'],
+});
+const PLACES={apt:['Chung cư Mây Xanh','🏢','lobby'],office:['Tòa văn phòng Cỏ May','🏬','lobby'],com:['Cơm tấm Cô Ba','🍛','shop'],bun:['Bún bò Dì Năm','🍜','shop'],
+  tra:['Trà sữa Mây Hồng','🧋','shop'],market:['Chợ Chiều','🧺','shop'],vet:['Phòng khám thú y Mèo Mướp','🐾','shop'],garage:['Tiệm sửa xe Chú Bảy','🔧','shop'],
+  gas:['Cây xăng Gió Lộng','⛽','shop'],villa:['Nhà vườn Sứ Trắng','🏡','gate'],alley:['Hẻm Ốc Bươu','🏘️','gate'],school:['Trường Bồ Câu','🏫','gate']};
+const LOBBY=room({id:'stop',name:'',icon:'',back:'depot',sign:'SẢNH',
+  theme:{wall:'#eef1f3',wallLow:'#dfe5ea',floor:'#e4e1dc',floor2:'#d9d5ce',tile:72,rim:'#9aa6b0',trim:'#6d8aa5',ink:'#4f6273',door:'#6d8aa5'},
+  clock:[.5,.27],
+  items:[
+    {k:'mailboxes',u:.26,v:.1,w:.2,h:150,spot:'look:mail',label:'Hộp thư từng căn'},
+    {k:'stairs',u:.78,v:.1,w:.28,h:230,spot:'look:stairs',label:'Cầu thang'},
+    {k:'desk',u:.5,v:.6,w:.24,h:58,book:'#6d8aa5',fill:['📦','🖊️'],spot:'workbench',label:'Bàn bảo vệ · giao hàng'},
+    {k:'plant',u:.13,v:.74,w:.06,h:80,s:.9},
+  ],
+  looks:{mail:()=>'Hộp thư từng căn. Có căn nhét đầy tờ rơi.',stairs:w=>w.c?.data?.at==='apt'?'Sáu tầng, không thang máy. Hít một hơi rồi leo.':'Thang máy đang bảo trì, đi bộ vậy.'},
+  chat:['Shipper ơi, để hàng ở bàn bảo vệ nha!','Căn 502 xuống liền nè!'],
+});
+const COUNTER=room({id:'stop',name:'',icon:'',back:'depot',sign:'NHẬN & GIAO HÀNG',
+  theme:{wall:'#fbf1e2',wallLow:'#f3dfc4',floor:'#e9d6bc',floor2:'#e0caac',tile:60,rim:'#c99b7d',trim:'#e07a3f',ink:'#a0623f',door:'#b97a52'},
+  win:{u0:.14,u1:.32,frame:'#f3dfc4'},clock:[.5,.27],
+  items:[
+    {k:'counter',u:.62,v:.1,w:.32,h:84,pots:[.2,.5],brew:['#c98a5a','#e8b04b'],fill:['🥡','🧾','🛍️'],spot:'workbench',label:'Quầy nhận · giao hàng'},
+    {k:'shelf',u:.88,v:.1,w:.12,h:220,fill:['🥡','🛍️','📦','🧃']},
+    {k:'table',u:.32,v:.6,w:.18,h:56,fill:['🛵','🧾']},
+  ],
+  chat:['Đơn của anh shipper xong rồi nè!','Chờ chút xíu, đang đóng hộp!'],
+});
+const GATE=room({id:'stop',name:'',icon:'',back:'depot',sign:'',outdoor:true,
+  theme:{wall:'#cfe6f2',wallLow:'#a8c99a',floor:'#d8d2c4',floor2:'#cfc8b8',tile:80,rim:'#8fae7f',trim:'#8fae7f',ink:'#4f6f3f',door:'#7a6a5a'},
+  win:{u0:.12,u1:.88,top:.06,bottom:.6,bars:0,frame:'#cfe6f2'},
+  items:[
+    {k:'mailboxes',u:.3,v:.12,w:.1,h:90},
+    {k:'plant',u:.12,v:.74,w:.06,h:80,s:1},
+    {k:'plant',u:.88,v:.74,w:.06,h:80,s:1},
+    {k:'desk',u:.6,v:.58,w:.22,h:56,book:'#8fae7f',fill:['🔔','📦'],spot:'workbench',label:'Cổng nhà · giao hàng'},
+  ],
+  wall:(c,g)=>{const k=g.k;R(c,g.f.x,g.H(.6),g.f.w,g.base-g.H(.6),'#e9e1d2',0);for(let i=0;i<14;i++)R(c,g.X(.05+i*.065),g.H(.55),10*k,g.base-g.H(.55),'#7a6a5a',3);L(c,g.f.x,g.H(.62),g.f.x+g.f.w,g.H(.62),'#7a6a5a',5);
+    for(let i=0;i<8;i++)E(c,g.X(.08+i*.12),g.H(.6),40*k,22*k,'#9fc48f');},
+  chat:['Ai đó? À, shipper hả!','Để hàng ở cổng giùm cô nha!'],walker:false,
+});
+const STOPS={lobby:LOBBY,shop:COUNTER,gate:GATE};
+/** The stop the rider is at (or, at the depot, the next one planned). */
+const placeOf=w=>{const d=w.c?.data||{},id=d.at&&d.at!=='hub'?d.at:(d.route||[])[0]||'apt';return PLACES[id]?id:'apt';};
+function deliveryAreas(w){
+  const pick=()=>STOPS[PLACES[placeOf(w)][2]];
+  const stop={id:'stop',main:false,get name(){return PLACES[placeOf(w)][0];},get icon(){return PLACES[placeOf(w)][1];},
+    get plan(){return pick().plan;},room:(w2,p)=>pick().room(w2,p),props:(w2,p)=>pick().props(w2,p),get looks(){return pick().looks;},get outdoor(){return pick().outdoor;},people:false};
+  return [{id:'depot',name:'Bưu cục',icon:'📮',main:true},SORT,stop];
+}
+/** Where the rider's work is: at the depot its own floor, out on the round the stop they've reached. */
+const runFor=w=>{const c=w.c;if(!c?.open)return {key:'off'};const at=c.data?.at;if(!at)return {key:'?'};
+  return at==='hub'?{key:'at:hub',area:'depot'}:{key:'at:'+at,area:'stop'};};
+
 export default {
   id:'street',
+  areas:w=>w.career==='delivery'?deliveryAreas(w):[],
+  areaFor:w=>w.career==='delivery'?runFor(w):null,
   plan:PLAN,
   room(w,p){(w.isPortrait()?portRoom:landRoom)(w,p);},
   props(w,p){return streetProps(w,p);},

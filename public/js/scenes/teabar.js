@@ -12,6 +12,7 @@
  * PLAN schema: see scenes/shop.js. Portrait keeps everything important
  * below scene y≈200 (the title card and hint float over the top). */
 import {R,E,L,T,P,fit,heart,bloom,plantAt} from './kit.js';
+import {room,shopFor,taskOf} from './backroom.js';
 import {t as tr} from '../v4/i18n.js';
 
 export const PLAN={
@@ -24,7 +25,7 @@ export const PLAN={
    decor:{corner:[138,640],front:[925,676],center:[712,672]},sill:{plant:[828,352],lamp:[868,352],seat:[912,352],rug:[575,662]},
    wall:{poster:[1044,236]},
    badge:{board:[36,-22]},
-   spots:{shelf:[[310,300],90,[[310,505]]],evidence:[[751,285],50,[[751,505]]],workbench:[[398,462],62,[[446,505]]],counter:[[588,462],60,[[634,505]]],
+   spots:{'go:prep':[[150,392],40,[[252,505]]],shelf:[[310,300],90,[[310,505]]],evidence:[[751,285],50,[[751,505]]],workbench:[[398,462],62,[[446,505]]],counter:[[588,462],60,[[634,505]]],
      warehouse:[[174,470],48,[[252,505],[172,562]]],board:[[1044,338],45,[[1044,515]]],finance:[[1028,535],42,[[946,570],[1028,612]]],
      property:[[172,293],30,[[252,505]]],security:[[150,218],30,[[252,505]]],door:[[1026,640],45,[[940,640],[1026,612]]],pet:[[962,335],38,[[995,515]]]}},
  port:{badge:{board:[-36,-6]},floor:[62,512,638,822],lane:572,line:626,home:[330,572],kx:51,ky:57,sway:24,
@@ -34,7 +35,7 @@ export const PLAN={
    staff:{x:175,step:95,y:526},cat:[578,320],counterSpan:[124,500],
    decor:{corner:[90,700],front:[410,818],center:[335,760]},sill:{plant:[522,320],lamp:[546,320],seat:[626,320],rug:[330,745]},
    wall:{poster:[627,452]},
-   spots:{shelf:[[128,340],80,[[175,572]]],evidence:[[550,386],45,[[550,572]]],workbench:[[214,528],58,[[262,572]]],counter:[[392,526],56,[[436,572]]],
+   spots:{'go:prep':[[80,470],36,[[142,572]]],shelf:[[128,340],80,[[175,572]]],evidence:[[550,386],45,[[550,572]]],workbench:[[214,528],58,[[262,572]]],counter:[[392,526],56,[[436,572]]],
      warehouse:[[82,560],45,[[142,572],[82,672]]],board:[[627,375],40,[[615,572]]],finance:[[605,728],42,[[605,782],[520,760]]],
      property:[[628,180],30,[[600,572]]],security:[[85,180],30,[[175,572]]],door:[[527,802],45,[[527,775],[440,800]]],pet:[[578,305],36,[[578,572]]]}},
 };
@@ -312,8 +313,26 @@ function portProps(w,p){const c=w.ctx,pl=PLAN.port,tier=w.c?.ops?.property?.tier
   if(tier==='garden')for(const [x,y] of pl.garden)out.push([y+4,()=>plantAt(c,x,y,.5)]);
   return out;}
 
+/* ------------------------------------------------------------ the back kitchen (scenes/backroom.js) */
+/** Bếp sau: the pearl pots on the stove, the topping shelf, the milk fridge, the recipe table (the task). */
+const PREP=room({id:'prep',name:'Bếp sau',icon:'🍳',back:'bar',sign:'BẾP TRÂN CHÂU',
+  theme:{wall:'#fde4ec',wallLow:'#e6f7f0',floor:'#f3ece6',floor2:'#ebe1d8',tile:70,rim:'#dc8aa6',trim:'#88c6b0',ink:'#c4668b',door:'#88c6b0'},
+  win:{u0:.13,u1:.29,frame:'#e6f7f0'},clock:[.5,.27],calendar:[.34,.32],
+  items:[
+    {k:'shelf',u:.42,v:.1,w:.12,h:230,fill:['🍯','🫙','🥥','🍓','🍵','🧋'],spot:'warehouse',label:'Kệ nguyên liệu'},
+    {k:'counter',u:.66,v:.1,w:.3,h:84,pots:[.18,.5,.82],brew:['#5a382d','#a8683c','#efe0c8'],potCol:['#c0c7cd','#e4eaee','#c0c7cd'],spot:'look:pots',label:'Nồi trân châu'},
+    {k:'fridge',u:.89,v:.1,w:.13,h:220,tag:'SỮA TƯƠI',top:'#88c6b0',fill:['🥛','🍓','🥭','🧊','🍑']},
+    {k:'table',u:.5,v:.56,w:.26,h:58,fill:['🧋','🫖','🥄'],cloth:'#fde4ec',spot:'workbench',label:'Bàn thử công thức'},
+    {k:'sacks',u:.2,v:.62,w:.14,h:62,fill:['ĐƯỜNG','BỘT','TRÀ']},
+  ],
+  looks:{pots:()=>'Trân châu đường đen đang sôi lăn tăn. Khuấy đều tay kẻo dính đáy.'},
+  chat:['Trân châu mẻ mới chín rồi nha!','Ai lấy giùm thùng sữa tươi với…','Đơn online nổ quá trời!'],
+});
+
 export default {
   id:'teabar',
+  areas:[{id:'bar',name:'Quầy bar',icon:'🧋',main:true},PREP],
+  areaFor:shopFor('bar'),
   plan:PLAN,
   room(w,p){if(w.isPortrait())portRoom(w,p);else landRoom(w,p);},
   props(w,p){return w.isPortrait()?portProps(w,p):landProps(w,p);},

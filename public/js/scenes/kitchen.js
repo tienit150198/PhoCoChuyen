@@ -14,6 +14,7 @@
  * Phones: nothing important above y≈150 and no big sign (the title card
  * names the place); landscape keeps a sign above the wall. */
 import {R,E,L,T,P,fit,heart,bloom,plantAt,streetBoard} from './kit.js';
+import {room,shopFor,taskOf} from './backroom.js';
 import {t as tr} from '../v4/i18n.js';
 
 /* ------------------------------------------------------------ Floor plan */
@@ -32,7 +33,7 @@ export const PLAN={
    staff:{x:390,step:112,y:476},cat:[793,290],counterSpan:[0,0],
    decor:{corner:[1052,600],front:[715,676],center:[470,678]},sill:{plant:[858,379],lamp:[893,379],seat:[922,379],rug:[465,662]},
    badge:{workbench:[0,-30],board:[0,-46]},wall:{poster:[702,222]},
-   spots:{shelf:[[273,318],58,[[273,505]]],evidence:[[702,294],40,[[702,505]]],workbench:[[495,330],72,[[495,505]]],counter:[[712,462],48,[[712,505]]],
+   spots:{'go:prep':[[163,262],40,[[163,505]]],shelf:[[273,318],58,[[273,505]]],evidence:[[702,294],40,[[702,505]]],workbench:[[495,330],72,[[495,505]]],counter:[[712,462],48,[[712,505]]],
      warehouse:[[163,352],50,[[163,505]]],board:[[976,334],40,[[976,505]]],finance:[[1027,604],42,[[940,648],[1027,675]]],
      property:[[1049,246],32,[[1049,505]]],security:[[131,172],28,[[180,505]]],door:[[1049,376],52,[[1049,505]]],pet:[[793,270],36,[[793,505]]]}},
  port:{floor:[62,512,638,822],lane:572,line:572,home:[330,572],kx:51,ky:57,sway:22,
@@ -42,7 +43,7 @@ export const PLAN={
    staff:{x:170,step:105,y:532},cat:[606,362],counterSpan:[0,0],
    decor:{corner:[620,620],front:[500,822],center:[330,762]},sill:{plant:[92,556],lamp:[122,556],seat:[154,556],rug:[330,762]},
    badge:{workbench:[0,-40],board:[0,-50]},wall:{poster:[516,264]},
-   spots:{shelf:[[98,262],50,[[98,572]]],evidence:[[507,336],40,[[507,572]]],workbench:[[292,412],72,[[292,572]]],counter:[[418,532],46,[[418,572]]],
+   spots:{'go:prep':[[82,352],36,[[82,572]]],shelf:[[98,262],50,[[98,572]]],evidence:[[507,336],40,[[507,572]]],workbench:[[292,412],72,[[292,572]]],counter:[[418,532],46,[[418,572]]],
      warehouse:[[82,430],45,[[82,572]]],board:[[604,296],40,[[604,572]]],finance:[[126,754],44,[[226,790],[126,772]]],
      property:[[606,228],32,[[606,572]]],security:[[74,188],28,[[150,572]]],door:[[590,770],45,[[520,800],[590,770]]],pet:[[606,344],36,[[606,572]]]}},
 };
@@ -334,8 +335,25 @@ function portProps(w,p){const c=w.ctx,words=w.words(),tier=w.c?.ops?.property?.t
   if(tier==='garden')for(const [x,y] of w.plan().garden)out.push([y+4,()=>plantAt(c,x,y,.5)]);
   return out;}
 
+/* ------------------------------------------------------------ the cold store (scenes/backroom.js) */
+/** Kho lạnh & sơ chế: the walk-in fridge, the prep counter with the sink, spare spices, crates of greens. */
+const PREP=room({id:'prep',name:'Kho lạnh & sơ chế',icon:'🧊',back:'dining',sign:'KHU SƠ CHẾ',
+  theme:{wall:'#e9f1ef',wallLow:'#cfe3df',floor:'#c9d3d6',floor2:'#bfcacd',tile:56,rim:'#8fa3a8',trim:'#4f8f8a',ink:'#a8402f',door:'#4f8f8a'},
+  clock:[.58,.27],calendar:[.35,.34],
+  items:[
+    {k:'fridge',u:.2,v:.1,w:.19,h:232,tag:'KHO LẠNH',top:'#4f8f8a',fill:['🥩','🦐','🥬','🧊','🍤','🥚'],spot:'warehouse',label:'Kho lạnh'},
+    {k:'counter',u:.58,v:.1,w:.34,h:84,sink:.16,top:'#e4eaee',col:'#c0c7cd',fill:['🔪','🥬','🧅','🌶️','🥕'],spot:'workbench',label:'Bàn sơ chế'},
+    {k:'shelf',u:.88,v:.1,w:.13,h:220,col:'#c0c7cd',board:'#9aa6b0',fill:['🌶️','🧄','🫙','🧂'],spot:'shelf',label:'Kệ gia vị dự trữ'},
+    {k:'boxes',u:.5,v:.64,w:.2,h:76,fill:['RAU','MÌ','ĐÁ'],spot:'look:crates',label:'Thùng hàng sáng nay'},
+  ],
+  looks:{crates:()=>'Thùng rau sáng nay: cải thảo, hành boa rô, nấm kim châm. Tươi rói.'},
+  chat:['Bàn 3 thêm một tô cấp 7!','Hết hành phi rồi, phi thêm nha!','Rau mới về, rửa liền nè.'],
+});
+
 export default {
   id:'kitchen',
+  areas:[{id:'dining',name:'Quán',icon:'🍜',main:true},PREP],
+  areaFor:shopFor('dining'),
   plan:PLAN,
   room(w,p){if(w.isPortrait())portRoom(w,p);else landRoom(w,p);},
   props(w,p){return w.isPortrait()?portProps(w,p):landProps(w,p);},
