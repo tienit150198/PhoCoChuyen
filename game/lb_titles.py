@@ -52,6 +52,8 @@ CAREER_NOUN = dict(
     tour_guide='dẫn tour', teacher='bục giảng', accounting='sổ sách', pilot='buồng lái', flight_attendant='khoang khách',
     corp_accounting='kế toán doanh nghiệp', tax_payroll='thuế & lương', group_accounting='kế toán tập đoàn',
     hr_admin='nhân sự', secretary='thư ký', it_helpdesk='IT văn phòng')
+# A workplace whose top 1 is not a "Trùm": nobody is the boss of a pagoda (game/pagoda_voice.py).
+CAREER_TITLE = dict(pagoda=('🪷', 'Siêng việc chùa nhất tuần'))
 HOLDERS_SECONDS = 60.0          # how long a process trusts its copy of the current holders
 
 SCHEMA = """
@@ -94,6 +96,8 @@ def title_of(board: str, rank: int) -> dict | None:
     if board in BOARD_TITLES:
         emoji, name = BOARD_TITLES[board][tier]
         label = TIER_LABELS[tier]
+    elif board in CAREER_TITLE:
+        (emoji, name), label = CAREER_TITLE[board], 'Top 1'
     else:
         emoji, name, label = CAREER_EMOJI, f'Trùm {career_noun(board)}', 'Top 1'
     return dict(emoji=emoji, name=name, text=f'{emoji} {name}', tier=tier, label=label)
