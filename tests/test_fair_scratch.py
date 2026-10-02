@@ -10,7 +10,19 @@ from game import fair_scratch as xs
 from game.engine import GameError, public_state, validate_state
 
 from tests.test_fair import AFTER, OPEN, FairBase, story
-from tests.test_fair_darts import Draws
+
+
+class Draws(random.Random):
+    """A seeded random source whose random() (the win draw) comes from a list."""
+    def __new__(cls, draws=(), seed=7):   # Python 3.12's Random.__new__ takes one argument at most
+        return super().__new__(cls, seed)
+
+    def __init__(self, draws=(), seed=7):
+        super().__init__(seed)
+        self.draws = list(draws)
+
+    def random(self):
+        return self.draws.pop(0) if self.draws else super().random()
 
 
 class Table(unittest.TestCase):

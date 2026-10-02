@@ -1,5 +1,5 @@
 /** 🏮 Hội chợ dân gian as a place to walk around (v4/fair-walk.js): one evening fairground under strings of lanterns.
- * Back row: cô Bảy's gánh lô tô stage, chú Tám's bầu cua tent, cô Tư's ném vòng counter, anh Sáu's phi tiêu board
+ * Back row: cô Bảy's gánh lô tô stage, chú Tám's bầu cua tent, cô Tư's ném vòng counter, anh Sáu's phóng dao board
  * (when the server has the stall). On the ground: the ô ăn quan mat (Bé Bi, Ông Hai), the Bảng vàng, bà Sáu's
  * vay nóng stool by the Cổng hội (when the server lends), dì Hai's vé số cào stand (when the server sells them), anh
  * Ba's chiếu trong tucked in a dark corner, two food carts and the crowd. Walking uses the pagoda's path finder (scenes/chua-place.js: one floor rectangle, footprints,
@@ -34,7 +34,7 @@ const LAYOUT={
 /** The stalls: the tab of v4/fair.js they open, their badge and the words on their sign. */
 export const STALLS={
   lt:{tab:'lt',icon:'🎱',name:'Gánh lô tô'},bc:{tab:'bc',icon:'🦀',name:'Bầu cua'},ring:{tab:'ring',icon:'💍',name:'Ném vòng'},
-  dt:{tab:'dt',icon:'🎯',name:'Phi tiêu'},xd:{tab:'xd',icon:'🕯️',name:'Chiếu trong'},oaq:{tab:'oaq',icon:'🪨',name:'Ô ăn quan'},
+  dt:{tab:'dt',icon:'🗡️',name:'Phóng dao'},xd:{tab:'xd',icon:'🕯️',name:'Chiếu trong'},oaq:{tab:'oaq',icon:'🪨',name:'Ô ăn quan'},
   board:{tab:'board',icon:'🏆',name:'Bảng vàng'},loan:{tab:'loan',icon:'💸',name:'Vay nóng'},xs:{tab:'xs',icon:'🎟️',name:'Vé số cào'},
 };
 export const LOOKS={
@@ -130,7 +130,7 @@ export function back(c,port,has={},o={}){
   if(Lb.includes('lt'))stage(c,Lo.lt,big,o);
   if(Lb.includes('bc'))tent(c,Lo.bc,big,'#d9534f','BẦU CUA',o,'bc');
   if(Lb.includes('ring'))tent(c,Lo.ring,big,'#4f8fc0','NÉM VÒNG',o,'ring');
-  if(Lb.includes('dt')&&has.dt)tent(c,Lo.dt,big,'#5aa06a','PHI TIÊU',o,'dt');
+  if(Lb.includes('dt')&&has.dt)tent(c,Lo.dt,big,'#5aa06a','PHÓNG DAO',o,'dt');
   else if(Lb.includes('dt'))emptyStall(c,Lo.dt,big);
 }
 /** Cô Bảy's gánh lô tô: a little wooden stage, red curtains, a bulb string, her mic. */
@@ -150,8 +150,7 @@ function tent(c,s,big,col,label,o,id){
   R(c,x-hw+6,top+20,w-12,y-top-20,'#f6e6c8',4);
   L(c,x-hw+8,top+16,x-hw+8,y,WOOD_D,5);L(c,x+hw-8,top+16,x+hw-8,y,WOOD_D,5);
   if(id==='ring')for(let r=0;r<3;r++)for(let i=0;i<5;i++){const bx=x-hw+26+i*(w-52)/4,by=top+64+r*28;R(c,bx-5,by-16,10,18,['#7cc79a','#8fb6e8','#f0b46a'][(i+r)%3],3);R(c,bx-2,by-22,4,7,'#5a7d6a',1);R(c,x-hw+14,by+2,w-28,4,WOOD,1);}
-  if(id==='dt'){const cx=x,cy=top+78;E(c,cx,cy,34,34,WOOD_D);E(c,cx,cy,30,30,'#e8cf8f');E(c,cx,cy,20,20,'#5aa06a');E(c,cx,cy,13,13,'#d9534f');E(c,cx,cy,7,7,GOLD);E(c,cx,cy,2.6,2.6,'#8f2d2a');
-    L(c,cx+9,cy-6,cx+20,cy-14,'#5b3a1c',2);L(c,cx-12,cy+4,cx-22,cy+0,'#5b3a1c',2);}
+  if(id==='dt')knifeBoard(c,x,top+78,30);
   if(id==='bc'){for(let i=0;i<3;i++)E(c,x-30+i*30,top+60,9,9,['#fff','#fde3d8','#fff'][i]);}
   const k=KEEP[id];folk(c,id==='dt'?x+hw-32:x,y-26,.9*Math.min(big,1.2),k.seed,{t:o.t,reduced:o.reduced,top:k.top,hat:k.hat});
   // the awning: stripes, scallops, the sign
@@ -163,7 +162,15 @@ function tent(c,s,big,col,label,o,id){
   if(id==='bc'){const fw=(w-40)/3;['🎃','🦀','🦐','🐟','🐓','🦌'].forEach((e,i)=>{const fx=x-hw+20+(i%3)*fw,fy=y-36+(i>2?16:0);R(c,fx+1,fy+1,fw-2,14,i%2?'#fff3df':'#ffe2c8',3);T(c,e,fx+fw/2,fy+8,10,INK,400);});}
   if(id==='ring')for(let i=0;i<4;i++){c.strokeStyle=['#e2462d','#f0b44a','#3c8fd0','#5aa06a'][i];c.lineWidth=3;c.beginPath();c.ellipse(x-36+i*24,y-22,9,4,0,0,Math.PI*2);c.stroke();}
 }
-/** Where the phi tiêu stands on a server that has none: a folded tent. */
+/** Anh Sáu's board: a round of wood, its growth rings, a red heart and three knives stuck in it (v4/fair-knife.js). */
+function knifeBoard(c,x,y,r){
+  E(c,x+2,y+3,r+3,r+3,'#00000030');E(c,x,y,r+3,r+3,WOOD_D);E(c,x,y,r,r,'#d9a868');
+  c.strokeStyle='#8a5a2666';c.lineWidth=1;for(let k=.3;k<1;k+=.22){c.beginPath();c.arc(x,y,r*k,0,Math.PI*2);c.stroke();}
+  E(c,x,y,r*.22,r*.22,'#d9472b');E(c,x,y,r*.08,r*.08,GOLD);
+  for(const a of [-.6,1.7,3.4]){const cs=Math.cos(a),sn=Math.sin(a),t0=r*.7,t1=r*1.55,mid=r*1.05;
+    L(c,x+cs*t0,y+sn*t0,x+cs*mid,y+sn*mid,'#dfe4ea',3.4);L(c,x+cs*mid,y+sn*mid,x+cs*t1,y+sn*t1,'#7a4a22',4);}
+}
+/** Where the phóng dao stands on a server that has none: a folded tent. */
 function emptyStall(c,s,big){const {x,y,w}=s;R(c,x-w/2+20,y-30,w-40,26,'#b4936c',6);L(c,x-w/2+24,y-30,x+w/2-24,y-30,'#8a6a48',3);T(c,'…',x,y-50,18*big,'#8a6a48',800);}
 
 /** The things on the floor: [[depth y, draw]] (sorted with the player by the caller). */
@@ -181,11 +188,11 @@ export function props(c,pl,o={}){
   for(const q of pl.crowd)out.push([q.y,()=>folk(c,q.x,q.y,s1,q.seed,{...ts,kid:q.seed%5===0,hat:q.seed%4===2?'non':''})]);
   return out;
 }
-/** Anh Sáu's phi tiêu as a booth on the floor (portrait). */
+/** Anh Sáu's phóng dao as a booth on the floor (portrait). */
 function booth(c,s,big,ts){
   const {x,y,w}=s,hw=w/2,cy=y-118;
-  L(c,x-hw+12,y,x-hw+12,cy-40,WOOD_D,5);L(c,x+hw-12,y,x+hw-12,cy-40,WOOD_D,5);R(c,x-hw+8,cy-56,w-16,22,'#5aa06a',6);sign(c,x,cy-66,'PHI TIÊU',{size:14*big,min:80});
-  E(c,x,cy,36,36,WOOD_D);E(c,x,cy,32,32,'#e8cf8f');E(c,x,cy,22,22,'#5aa06a');E(c,x,cy,14,14,'#d9534f');E(c,x,cy,7,7,GOLD);E(c,x,cy,2.6,2.6,'#8f2d2a');
+  L(c,x-hw+12,y,x-hw+12,cy-40,WOOD_D,5);L(c,x+hw-12,y,x+hw-12,cy-40,WOOD_D,5);R(c,x-hw+8,cy-56,w-16,22,'#5aa06a',6);sign(c,x,cy-66,'PHÓNG DAO',{size:14*big,min:80});
+  knifeBoard(c,x,cy,32);
   folk(c,x+hw-20,y-4,.86,14,{...ts,top:'#4b7a5a'});
   R(c,x-hw+6,y-30,w-12,30,WOOD,6,WOOD_D,2);
 }
