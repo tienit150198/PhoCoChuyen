@@ -23,7 +23,8 @@ EMPLOYED = ('pharmacy', 'customer_care', 'teacher', 'tour_guide', 'repair', 'del
             'hr_admin', 'secretary', 'it_helpdesk')
 OFFICE = ('accounting', 'customer_care', 'corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
 FACING = RETAIL + ('homestay', 'delivery', 'tour_guide', 'customer_care', 'fruit', 'drain', 'ice_cream')
-OWNERS = tuple(c for c in ALL if c not in EMPLOYED)
+CALLING = ('pagoda',)      # a monk: no boss, no shop, no rent; the pagoda is not a place for a karaoke night
+OWNERS = tuple(c for c in ALL if c not in EMPLOYED + CALLING)
 STOCKED = RETAIL + ('farm',)
 
 CATS = {
@@ -91,6 +92,7 @@ WORK = {
     'drain': ('Chú Hai với tổ thợ', '🧰'),
     'homemaker': ('Chị Thảo với bà Lành', '🏠'),
     'ice_cream': ('Cô Hiền với chú bảo vệ trường', '🍨'),
+    'pagoda': ('Thầy trụ trì với bà Nhạn', '🛕'),
     'pilot': ('Chị Vân với tổ bay Cánh Cò', '🧑‍✈️'),
     'flight_attendant': ('Chị Thu với các bạn tiếp viên', '💁'),
 }
@@ -497,6 +499,24 @@ HARD = [
         'Giờ khách nhờ bạn sửa, còn cằn nhằn.'], [
         C('help', 'Tới xem, sửa đúng giá, không trách', 'Khách im lặng trả tiền, cuối tuần giới thiệu thêm hai nhà.', spirit=6, default=True),
         C('told', 'Nói “Đã bảo rồi mà”', 'Nói đúng, nhưng khách giận không gọi nữa.', spirit=-3)], careers=('drain',), hit=-12, mild=True),
+    H('kh_chua_shawl', 'khach', '🧣', 'Mời mượn khăn choàng, bị quay clip', [
+        'Bạn nhẹ nhàng mời chị khách mặc váy ngắn mượn khăn choàng ở cổng.',
+        'Chị khách giơ điện thoại quay: “Chùa gì mà đuổi khách!”',
+        'Tối đó clip có mấy trăm lượt xem.'], [
+        C('calm', 'Không cãi, nhờ thầy trụ trì đăng lại bảng nội quy cho mọi người', 'Mấy hôm sau có người bình luận: “Thầy nói nhẹ nhàng mà.” Chuyện lắng xuống.', spirit=5, default=True),
+        C('read', 'Ngồi đọc hết bình luận', 'Càng đọc càng buồn. Tắt máy lúc nửa đêm.', spirit=-5)], careers=CALLING, hit=-13),
+    H('an_chua_young', 'an_hiep', '🙏', 'Bị nói “trẻ vậy mà đi tu”', [
+        'Một anh khách nhìn bạn từ đầu tới chân: “Trẻ vậy mà vô chùa, chắc trốn việc nhà.”',
+        'Mấy người đứng gần cười khẩy.',
+        'Bạn đang ôm chồng chén vừa rửa.'], [
+        C('smile', 'Mỉm cười chào anh, làm tiếp', 'Anh khách ngượng, lát sau tự phụ bạn bưng chén ra bếp.', spirit=6, default=True),
+        C('stew', 'Về phòng nghĩ mãi', 'Cả buổi chiều thấy nặng lòng.', spirit=-4)], careers=CALLING, hit=-12, mild=True),
+    H('kh_chua_donation', 'khach', '📒', 'Người đòi lại tiền công đức', [
+        'Một chú khách đứng giữa sân nói to: “Tiền tôi bỏ hòm tuần trước chắc vô túi ai rồi!”',
+        'Người đi lễ quay lại nhìn.',
+        'Cô Hạnh cầm cuốn sổ đỏ đứng sau lưng bạn.'], [
+        C('book', 'Mời chú vào nhà khách, mở sổ và giấy công đức cho chú xem', 'Tên chú có trong sổ, đúng ngày, đúng số. Chú gãi đầu xin lỗi.', spirit=6, default=True),
+        C('argue', 'Cãi lại ngay giữa sân', 'Hai bên to tiếng. Người đi lễ lắc đầu bỏ về.', spirit=-4)], careers=CALLING, hit=-14),
     # ================================================================ ✈️ Hãng bay Cánh Cò (pilot, flight_attendant)
     H('air_cancel', 'khach', '😤', 'Chuyến bay hủy, khách trút giận', [
         'Giông cả buổi chiều, chuyến cuối bị hủy.',

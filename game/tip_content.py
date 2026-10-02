@@ -35,6 +35,7 @@ NORMS = {
     'garbage': dict(rate=.08, cash=0, lo=0, hi=0, bill=25),     # residents thank the crew with a drink, never money
     'homemaker': dict(rate=.10, cash=0, lo=0, hi=0, bill=18),   # the family thanks with food from the kitchen, never money
     'ice_cream': dict(rate=.12, cash=.65, lo=1, hi=4, bill=10),  # a cone or a cup: the coins are the tip
+    'pagoda': dict(rate=.06, cash=0, lo=0, hi=0, bill=8),       # visitors thank with fruit or tea, never money
     # rare, and mostly a thank-you gift: money would not be right here
     'accounting': dict(rate=.08, cash=.30, lo=3, hi=10, bill=50),
     'pharmacy': dict(rate=.07, cash=0, lo=0, hi=0, bill=30),
@@ -185,6 +186,8 @@ CAREER_LINES = {
                   'Bà với các cháu quý lắm.'),
     'ice_cream': ('Viên kem tròn xoe, đủ gam luôn.', 'Kem lạnh mịn, không chảy giọt nào.', 'Nhớ cả lời dặn dị ứng của bé.',
                   'Múc nhanh, cười tươi, bé nhà mê lắm.'),
+    'pagoda': ('Sân chùa sạch, mát quá.', 'Thầy nói chuyện nhẹ nhàng, dễ nghe.', 'Chỉ dẫn tận tình, không làm khách ngượng.',
+               'Cơm chay ngon, đúng là chay.'),
     'mother_baby': ('Món quà đúng ý bé luôn.', 'Tư vấn kỹ, không bán thừa món nào.', 'Gói quà xinh quá trời.',
                     'Tìm đúng món cho bé rồi.'),
     'tour_guide': ('Chuyến đi đáng nhớ lắm!', 'Kể chuyện hay, cả đoàn mê.', 'Ảnh chụp đẹp ghê, về khoe liền.',
@@ -224,6 +227,7 @@ GIFTS = {
     'drain': (('☕', 'ly cà phê sữa đá'), ('🍲', 'tô bún bò nóng'), ('💌', 'tấm thiệp cảm ơn')),
     'homemaker': (('🥒', 'hũ dưa cải bà Lành muối'), ('🎨', 'bức tranh bé Su vẽ'), ('🍊', 'túi cam quê anh Dũng')),
     'ice_cream': (('🎨', 'bức tranh cây kem bé vẽ bằng bút sáp'), ('🍬', 'nắm kẹo me trong túi áo học sinh'), ('💌', 'tấm thiệp cảm ơn của lớp 2A')),
+    'pagoda': (('🍊', 'túi cam Phật tử biếu'), ('🍵', 'gói trà mạn ông Bảy gửi'), ('💌', 'tấm thiệp bé Na vẽ quả chuông')),
     'mother_baby': (('🍬', 'gói kẹo mừng đầy tháng'), ('🍰', 'hộp bánh bông lan'), ('💌', 'tấm thiệp bé nhà vẽ')),
     'tour_guide': (('🔑', 'móc khóa lưu niệm từ quê khách'), ('💌', 'tấm bưu thiếp có chữ ký cả đoàn'), ('🍫', 'thanh sô-cô-la ngoại')),
     'accounting': (('🍯', 'hũ mứt gừng nhà làm'), ('🍊', 'bịch cam sành'), ('💌', 'lời cảm ơn viết tay')),

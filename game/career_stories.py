@@ -1119,6 +1119,43 @@ ARCS = {
                 ('chip', 'Con vẽ tiệm kem dán lên tủ rồi nè! Có cô với có {anh} luôn!'),
                 ('me', 'Con sẽ múc viên nào cũng tròn, như cô.')]),
         ]),
+    'pagoda': dict(
+        title='Tiếng chuông chùa Gió Lành', emoji='🔔',
+        keepsake=dict(emoji='🪵', name='Cái dùi chuông gỗ mít', desc='Thầy Huệ Minh dùng mấy chục năm, chỗ tay cầm nhẵn bóng. Đánh bằng nó, tiếng chuông trầm và ngân dài.'),
+        cast={'thay': _p('Thầy Huệ Minh', '🙏', 'Thầy trụ trì', 'pagoda_npc_01'),
+              'nhan': _p('Bà Nhạn', '🍲', 'Trưởng ban trai soạn', 'pagoda_npc_02'),
+              'na': _p('Bé Na', '👧', 'Học sinh lớp 4', 'pagoda_npc_05'),
+              'ong_bay': _p('Ông Bảy Đò', '👴', 'Chèo đò bến sông ngày trước', 'pagoda_npc_07')},
+        beats=[
+            _b('Tiếng chuông đầu ngày', '🔔', 'Bốn giờ sáng, sương còn đọng trên hàng cau. Thầy Huệ Minh dắt bạn lên gác chuông.', [
+                ('thay', 'Chuông này cả làng góp đồng mà đúc. Năm bão, cành đa quật lõm một góc, từ đó tiếng nó trầm hơn.'),
+                ('thay', 'Thỉnh chuông không cần mạnh tay. Chậm, đều, chờ tiếng ngân tắt hẳn rồi mới đánh tiếng sau.'),
+                ('me', 'Dạ, con nghe tiếng ngân rồi mới đánh tiếp ạ.')]),
+            _b('Ông Bảy dưới bến', '🛶', 'Rằm, ông Bảy Đò chống gậy lên chùa, ngồi nghỉ ở bậc thềm thứ sáu.', [
+                ('ong_bay', 'Hồi ông chèo đò, sáng nào nghe chuông chùa là biết sắp tới bến.'),
+                ('ong_bay', 'Năm bão đó, cả làng khiêng chuông lên gác, ông cũng ghé vai vô.'),
+                ('me', 'Ông kể con nghe nữa đi ông.')],
+                _c('Ông Bảy muốn lên tận gác chuông',
+                   _o('a', 'Đỡ ông đi từng bậc, nghỉ ở chiếu nghỉ', [('ong_bay', 'Thầy đi chậm như ông. Lên tới nơi rồi, ông sờ được quả chuông rồi.')], rel='ong_bay'),
+                   _o('b', 'Mời ông ngồi dưới hiên, con đánh ba tiếng cho ông nghe', [('ong_bay', 'Đó, tiếng đó đó. Y như ngày xưa.')], rel='ong_bay'))),
+            _b('Nồi canh của bà Nhạn', '🍲', 'Trưa rằm, bếp chùa nghi ngút khói. Bà Nhạn đưa bạn cái vá.', [
+                ('nhan', 'Canh chay ngọt là nhờ nấm với củ cải, chứ không nhờ bột ngọt, càng không nhờ nước mắm.'),
+                ('nhan', 'Người ta tin bếp chùa mà ăn. Mình giữ cái tin đó.'),
+                ('me', 'Dạ, con nếm bằng chén riêng, không nêm gì ngoài đồ chay ạ.')],
+                _c('Bà Nhạn hỏi bạn nêm thế nào',
+                   _o('a', 'Thêm chút đường phèn, chút muối', [('nhan', 'Được. Vừa miệng rồi đó.')], rel='nhan'),
+                   _o('b', 'Hỏi bà bí quyết nấu nước dùng', [('nhan', 'Củ cải nướng sơ, nấm đông cô ngâm từ sáng, lửa liu riu. Vậy thôi.')], rel='nhan'))),
+            _b('Bé Na và hồ sen', '🪷', 'Bé Na chạy lên khoe tờ giấy đặt tên cho mười hai con cá đỏ trong hồ.', [
+                ('na', 'Con đặt tên hết rồi! Con to nhất là Chuông, vì nó bơi chậm như tiếng chuông!'),
+                ('me', 'Vậy con nhỏ nhất tên gì?'),
+                ('na', 'Tên Gió Lành! Con viết bài văn về chùa mình, cô giáo khen lắm.')]),
+            _b('Cái dùi chuông', '🪵', 'Sáng nay thầy Huệ Minh không lên gác chuông. Thầy đặt cái dùi gỗ mít vào tay bạn.', [
+                ('thay', 'Dùi này thầy dùng ba mươi năm. Tay cầm nhẵn đúng chỗ.'),
+                ('thay', 'Từ mai con thỉnh chuông sáng. Không cần hay, chỉ cần đều.'),
+                ('ong_bay', 'Dưới bến ông nghe rồi. Tiếng chuông trầm y như ngày xưa.'),
+                ('na', 'Thầy ơi, con viết về thầy trong bài văn luôn rồi!'),
+                ('me', 'Con sẽ thỉnh chuông chậm và đều, như thầy.')]),
+        ]),
     # ------------------------------------------------------------ ✈️ Hãng bay Cánh Cò
     'pilot': dict(
         title='Đường bay ra đảo', emoji='🛩️',

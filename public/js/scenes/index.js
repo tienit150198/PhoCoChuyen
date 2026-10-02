@@ -17,6 +17,7 @@ export const KIND_OF={
   clothing:'boutique',
   pet_shop:'petshop',
   fruit:'lane',garbage:'lane',drain:'lane',ice_cream:'lane',
+  pagoda:'pagoda',
   pilot:'airfield',flight_attendant:'airfield',
 };
 export const kindOf=career=>KIND_OF[career]||'shop';
@@ -117,6 +118,12 @@ const CAREER_WORDS={
     free_eyebrow:'Quầy đang vắng',free_title:'Vãn khách rồi!',free_more:'Mời thêm khách hoặc đóng tiệm hôm nay.',more_btn:'Mời thêm một khách',
     none_waiting:'Chưa có khách nào đang chờ',next_btn:'Mời khách tiếp theo',
     people_sub:'Những người bạn gặp ở tiệm kem góc phượng.',feed_sub:'Lời nhắn và đánh giá quanh tiệm kem.'},
+  pagoda:{shelf:'Chậu cây kiểng',evidence:'Bảng nội quy',counter:'Lư hương lớn',warehouse:'Nhà kho sau chùa',finance:'HÒM CÔNG ĐỨC',ledger:'SỔ CÔNG ĐỨC',store:'NHÀ KHO',
+    till:'Tiền chi dùng',door_open:'Đóng cổng chùa',door_closed:'Mở cổng chùa',open_sign:'CỔNG CHÙA ĐANG MỞ',closed_sign:'ĐÃ ĐÓNG CỔNG',property:'Chùa Gió Lành',
+    cat_line:'Mrrr… nằm hiên chùa nghe chuông, mát ghê.',pet:'Chơi với Mướp dưới hiên chùa',security:'Trông coi sân chùa',board:'Chuyện xóm',
+    idle_line:'Tiếng chuông sáng sắp vang.',open_hint:'Thỉnh chuông, công phu rồi mở cổng chùa nhé.',free_eyebrow:'Sân chùa đang yên',free_title:'Xong việc rồi!',
+    free_more:'Nhận thêm một việc hoặc đóng cổng hôm nay.',more_btn:'Nhận thêm một việc',none_waiting:'Chưa có việc nào đang chờ',next_btn:'Sang việc tiếp theo',
+    people_sub:'Những người bạn gặp ở chùa Gió Lành.',feed_sub:'Lời nhắn và cảm nhận của khách đi chùa.',rail_in:'Trong chùa',books:'Sổ chùa'},
   flight_attendant:{shelf:'Xe đẩy suất ăn',evidence:'Phiếu suất ăn đặc biệt',counter:'Cửa ra tàu',warehouse:'Bếp tàu',ledger:'SỔ TIẾP VIÊN',store:'BẾP TÀU',
     open_sign:'ĐANG ĐÓN KHÁCH',idle_line:'Khách chuyến sau đang xếp hàng ở cổng.',open_hint:'Thắt khăn quàng, ra cửa tàu đón khách nhé.',
     free_eyebrow:'Khoang khách đang yên',free_title:'Xong việc rồi!',free_more:'Nhận thêm một việc hoặc tan ca hôm nay.',more_btn:'Nhận thêm một việc',
