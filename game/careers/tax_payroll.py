@@ -1254,7 +1254,11 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         if gen:
             o['clock'] = min(office.LOCK, o['clock'] + office.wrong_min(d))
         where, bad = _where_wrong(st, p.get('answer'))
-        return dict(message=' '.join(x for x in ('✗ Chưa khớp.', where, msg, lunch) if x), correct=False, bad=bad, where=where)
+        # `toast` (a short line for the toast) and `deep` (hints worked on the player's own numbers) are optional:
+        # an older client keeps showing `message`, which stays as it was.
+        short = f'✗ Chưa khớp {len(st["fields"]) - len(bad)}/{len(st["fields"])} ô.' if st['kind'] == 'fields' else '✗ Chưa khớp.'
+        return dict(message=' '.join(x for x in ('✗ Chưa khớp.', where, msg, lunch) if x), correct=False, bad=bad, where=where,
+                    toast=' '.join(x for x in (short, lunch) if x), deep=_deeper(t, st, p.get('answer'), bad))
     if name == 'tp_file':
         kit.confirm(p, 'Xác nhận nộp/bàn giao hồ sơ.')
         kit.need(procedures.done(t), 'Hồ sơ còn bước chưa kiểm xong.')
@@ -1298,7 +1302,122 @@ def _where_wrong(st: dict, answer) -> tuple[str, list]:
         return f'Đúng {len(got & need)}/{len(need)} mục cần chọn' + (f', thừa {more} mục' if more else '') + '.', []
     if st['kind'] == 'match':
         return f'Ghép đúng {sum(1 for a, b in k.items() if answer.get(a) == b)}/{len(k)} dòng.', []
+    if st['kind'] == 'order':
+        return procedures.order_where(st, answer), []
     return '', []
+
+
+def _bands(x: int, months: int = 1) -> list:
+    """The player's own taxable income cut at the bracket limits: ['tới 2.000', '2.000–5.000', '5.000–8.168'] (joined with commas:
+    a capture with “ · ” is a list to the English pack, not one phrase)."""
+    out, low = [], 0
+    for top, _ in BRACKETS:
+        high = None if top is None else top * months
+        end = x if high is None or x <= high else high
+        out.append(f'tới {fmt(end)}' if low == 0 else f'{fmt(low)}–{fmt(end)}')
+        if end == x:
+            break
+        low = high
+    return out
+
+
+def _tax_tips(taxable: int, tax: int, months: int, tries: int) -> list:
+    """A wrong progressive tax: sanity checks on the two numbers the player typed, then (from the second
+    check) the method on their own taxable income. Never the tax of a bracket, never the right total."""
+    out = []
+    if tax < 0:
+        out.append('Thuế không âm.')
+    elif taxable > 0 and tax > taxable:
+        out.append(f'Thuế không thể lớn hơn thu nhập tính thuế ({fmt(taxable)}).')
+    elif taxable > 0 and tax * 5 > taxable:
+        out.append(f'Bậc cao nhất cũng chỉ 20%: thuế không thể vượt 1/5 thu nhập tính thuế ({fmt(taxable)}).')
+    elif taxable > BRACKETS[0][0] * months and any(tax == taxable * r // 100 for _, r in BRACKETS):
+        out.append(f'Lũy tiến không nhân cả {fmt(taxable)} với một mức thuế suất: mỗi phần chỉ chịu thuế suất của bậc chứa nó.')
+    if tries >= 2 and taxable > 0:
+        parts = _bands(taxable, months)
+        out.append(f'Chia thu nhập tính thuế {fmt(taxable)} thành từng bậc: {", ".join(parts)}. Tính thuế từng bậc rồi cộng lại, làm tròn xuống.'
+                   if len(parts) > 1 else f'Thu nhập tính thuế {fmt(taxable)} chưa vượt bậc đầu: chỉ một mức thuế suất, làm tròn xuống.')
+    return out
+
+
+def _deeper(t: dict, st: dict, answer, bad: list) -> list:
+    """More hints after a wrong check (owner, 02/10: “gợi ý nhiều lên”), worked on the numbers the player typed and the
+    steps already matched: sanity checks at once, the method from the second check on. Hints only: never the right
+    value, never a part of it. Keyed like the client's 📐 lines (form:step)."""
+    tries = t['proc_state']['attempts'].get(st['id'], 0)
+    prev = t['proc_state']['answers']
+    a = answer if isinstance(answer, dict) else {}
+    num = answer if type(answer) is int else None
+    gross = (prev.get('gross') or {}).get('gross')
+    key, out = f'{t["form"]}:{st["id"]}', []
+    if key == 'payslip:gross':
+        dr, leave = a.get('day_rate'), a.get('leave')
+        if tries >= 2 and 'day_rate' in bad:
+            out.append('Lương 1 ngày = Lương giờ (Hợp đồng) × 8 giờ — không chia lương tháng cho 30.')
+        if 'leave' in bad and dr and dr > 0 and leave % dr:
+            out.append(f'Trừ nghỉ = số ngày nghỉ KHÔNG lương × Lương 1 ngày bạn ghi ({fmt(dr)}), nên phải chia hết cho {fmt(dr)}.')
+        elif tries >= 2 and 'leave' in bad:
+            out.append('Chỉ đếm dòng “Nghỉ việc riêng KHÔNG lương” trong Bảng chấm công; nghỉ phép năm vẫn có lương.')
+        if tries >= 2 and 'ot' in bad:
+            out.append('Tính riêng từng dòng tăng ca: giờ × lương giờ × hệ số đã xếp ở bước 1 (150% là × 3 ÷ 2), rồi cộng các dòng.')
+        if tries >= 2 and 'gross' in bad:
+            out.append(f'Cộng bằng chính số của bạn: Lương cơ bản tháng (Hợp đồng) − {fmt(leave)} + ăn trưa + trách nhiệm + điện thoại + {fmt(a["ot"])}.')
+    elif key == 'payslip:ins':
+        if type(gross) is int and any(f in bad and a[f] == gross * INS[f] // 1000 for f in INS):
+            out.append(f'Bảo hiểm tính trên Lương đóng bảo hiểm trong Hợp đồng, không phải Tổng thu nhập ({fmt(gross)}).')
+        if not a['bhxh'] > a['bhyt'] > a['bhtn']:
+            out.append('Cùng một số gốc: BHXH (8%) phải lớn nhất, rồi BHYT (1,5%), nhỏ nhất là BHTN (1%).')
+        if tries >= 2:
+            out.append('Nhân xong thì bỏ phần lẻ (làm tròn xuống), không làm tròn lên.')
+    elif key == 'payslip:tax':
+        if 'taxable' in bad:
+            if a['taxable'] < 0:
+                out.append('Thu nhập tính thuế không âm: trừ xong mà âm thì ghi 0.')
+            elif type(gross) is int and a['taxable'] >= gross:
+                out.append(f'Thu nhập tính thuế phải nhỏ hơn Tổng thu nhập ({fmt(gross)}): còn trừ ăn trưa, bảo hiểm và giảm trừ gia cảnh.')
+            if tries >= 2 and type(gross) is int:
+                out.append(f'Đi từng nấc từ Tổng thu nhập {fmt(gross)}: − ăn trưa (miễn tối đa 700) − BHXH − BHYT − BHTN (bước 3) − 5.000 bản thân − 2.000 × người phụ thuộc ĐÃ đăng ký (Ghi chú nhân sự).')
+        if 'pit' in bad:
+            out += _tax_tips(a['taxable'], a['pit'], 1, tries)
+    elif key == 'payslip:net' and num is not None:
+        if type(gross) is int and num > gross:
+            out.append(f'Thực lĩnh không thể lớn hơn Tổng thu nhập ({fmt(gross)}).')
+        if tries >= 2 and type(gross) is int:
+            out.append(f'Lấy Tổng thu nhập {fmt(gross)} trừ BHXH, BHYT, BHTN (bước 3) và Thuế TNCN (bước 4); phụ cấp đã nằm trong Tổng thu nhập.')
+    elif key == 'vat:vat' and tries >= 2:
+        out.append('Chỉ cộng cột “Thuế GTGT”, không cộng cột tiền hàng; đầu vào bỏ các tờ đã loại ở bước 1.')
+    elif key == 'vat:payable' and num is not None:
+        if num < 0 and _vat_pos(prev):
+            out.append('Đầu ra lớn hơn đầu vào thì số phải nộp là số dương.')
+        if tries >= 2:
+            out.append('Lấy Thuế đầu ra trừ Thuế đầu vào được khấu trừ — hai số đã khớp ở bước trước, đừng cộng lại từ hóa đơn.')
+    elif key == 'calendar:late' and tries >= 2:
+        out.append('Nhân số tiền thuế với 3, nhân tiếp số ngày trễ, rồi chia 10.000 và bỏ phần lẻ.')
+    elif key == 'question:diff' and num is not None:
+        if num < 0:
+            out.append('Tháng 8 thực lĩnh cao hơn, nên chênh lệch là số dương: lấy tháng 8 trừ tháng 9.')
+        if tries >= 2:
+            out.append('Dùng dòng “Thực lĩnh” cuối mỗi phiếu, không phải Tổng thu nhập.')
+    elif key == 'transfer:total' and tries >= 2:
+        out.append('Cộng từng dòng của Bảng lương ĐÃ DUYỆT bằng 🧮 Máy tính bàn; đừng lấy dòng tổng của file nháp.')
+    elif key == 'yearend:calc':
+        if 'deduct' in bad:
+            if a['deduct'] < 12 * PERSONAL:
+                out.append(f'Riêng phần bản thân cả năm đã là 12 × {fmt(PERSONAL)}.')
+            if tries >= 2:
+                out.append(f'Người phụ thuộc tính theo SỐ THÁNG trên giấy “Người phụ thuộc đã đăng ký”: {fmt(DEPENDENT)} × số tháng.')
+        if tries >= 2 and 'taxable' in bad:
+            out.append(f'Cộng thu nhập chịu thuế của MỌI chứng từ khấu trừ, trừ bảo hiểm bắt buộc, rồi trừ Tổng giảm trừ bạn ghi ({fmt(a["deduct"])}).')
+        if 'due' in bad:
+            out += _tax_tips(a['taxable'], a['due'], 12, tries)
+        if tries >= 2 and 'balance' in bad:
+            out.append(f'Lấy Thuế phải nộp cả năm bạn ghi ({fmt(a["due"])}) trừ tổng “Thuế đã khấu trừ” ở MỌI chứng từ; âm nghĩa là được hoàn.')
+    return out[:4]
+
+
+def _vat_pos(prev: dict) -> bool:
+    v = prev.get('vat') or {}
+    return type(v.get('output')) is int and type(v.get('input')) is int and v['output'] > v['input']
 
 
 def _speed(t: dict) -> tuple[int, str]:

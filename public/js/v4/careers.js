@@ -63,7 +63,7 @@ export function careerContext(env){
     money:n=>`${fmt(n)} xu`,
     now:()=>Date.now()/1000+(api.clockOffset||0),
     render:()=>renderSheet(),
-    send:async(command,payload={})=>cmd(command,payload),
+    send:async(command,payload={},options={})=>cmd(command,payload,options),   // options.quiet: the career shows its own toast
     ask:(title,text,label)=>confirmAction(title,text,label),
     toast,
     // Shared step engine UI (game/procedures.py public steps); submit + order
