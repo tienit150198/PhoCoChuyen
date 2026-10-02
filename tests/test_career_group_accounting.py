@@ -191,7 +191,7 @@ class GroupAccountingTests(unittest.TestCase):
         d = j.c['ext']['data']
         self.assertEqual(d['elim'], {'331': agreed, '131': -agreed})
         self.assertIn('ic', d['milestones'])
-        self.assertEqual(j.c['money'], money + 30)
+        self.assertEqual(j.c['money'], money + 30 + office.RAISE)
         self.assertEqual(d['boards'], 1)
         post = next(p for p in j.c['feed'] if p['kind'] == 'review')
         self.assertEqual(post['stars'], 5)
@@ -214,7 +214,7 @@ class GroupAccountingTests(unittest.TestCase):
         self.assertFalse(r['correct'])
         self.assertEqual(j.get(tid)['mistakes'], 1)
         self.assertEqual(j.get(tid)['board'], {})
-        self.assertEqual(self.o['clock'], clock + 20)
+        self.assertEqual(self.o['clock'], clock + office.COST['pair'] + office.ROOKIE_WRONG)
         self.assertEqual(self.o['trust'], trust - 1)
         with self.assertRaises(GameError):
             j.act('ga_pair', task=tid, a=b['id'], b=a['id'])
@@ -501,7 +501,7 @@ class GroupAccountingTests(unittest.TestCase):
         r = j.act('ga_submit', task=tid, confirm=True)
         self.assertIn('Trễ hạn', r['message'])
         self.assertTrue(j.get(tid)['late'])
-        self.assertEqual(j.c['money'], money + 30 - office.LATE_CUT)
+        self.assertEqual(j.c['money'], money + 30 + office.RAISE - office.ROOKIE_LATE_CUT)
         self.assertEqual(self.o['trust'], trust - 3)
 
     def test_audit_visit_rewards_clean_or_writes_a_letter(self):
@@ -608,7 +608,7 @@ class GroupAccountingTests(unittest.TestCase):
         r = j.act('ga_step', task=tid, step=cause['id'], answer=wrong)
         self.assertFalse(r['correct'])
         self.assertEqual(j.get(tid)['mistakes'], 1)
-        self.assertEqual(self.o['clock'], clock + office.COST['step'] + office.COST['wrong'])
+        self.assertEqual(self.o['clock'], clock + office.COST['step'] + office.ROOKIE_WRONG)
         fix = j.get(tid)['proc'][2]
         self.assertNotIn(fix['_key'], ('split', 'plug'))
 
@@ -784,7 +784,7 @@ class GroupAccountingTests(unittest.TestCase):
         money = self.j.c['money']
         self.solve(old['id'])
         self.assertEqual(self.j.get(old['id'])['status'], 'completed')
-        self.assertEqual(self.j.c['money'], money + 30)
+        self.assertEqual(self.j.c['money'], money + 30 + office.RAISE)
         roundtrip(self.j)
 
     def test_public_data_and_content(self):
@@ -906,7 +906,7 @@ class ConsequenceTests(unittest.TestCase):
         t = j.get(tid)
         self.assertEqual(t['mistakes'], 1)
         self.assertFalse(t.get('slips'))
-        self.assertEqual(j.c['money'], money + 26)
+        self.assertEqual(j.c['money'], money + 30)          # on probation: 30 + 2 − 2 for the one wrong pair
         self.assertNotIn('uy tín', r['message'])
         validate_state(json.loads(json.dumps(j.state)))
 

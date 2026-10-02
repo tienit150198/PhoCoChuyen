@@ -1080,7 +1080,7 @@ def _pay_grid(s: dict, c: dict, d: dict, o: dict, t: dict, mod: dict) -> dict:
     office.trust(o, min(3, caught) - 3 * over - 2 * risk - min(3, extra) - len(claims))
     paid = office.fine(s, c, o, fines, 'Trừ thưởng: chuyển lương sai', t['id']) if fines else 0
     d['claims'] = ar.last(d['claims'] + claims, 20, 'office.claims', c)
-    late, adj, note = office.settle(o, t, c['day'])
+    late, adj, note = office.settle(o, t, c['day'], office.rookie(d))
     t['late'] = late
     if late:
         office.trust(o, -2)
@@ -1098,7 +1098,7 @@ def _pay_grid(s: dict, c: dict, d: dict, o: dict, t: dict, mod: dict) -> dict:
     _grid_slips(t, found, fines, extra, _cells_named(t, res, 'extra'))
     # The errors that went out with the transfer are taken out of the bonus by chị Hồng (react),
     # instead of the old flat −4 per error; the fines and next-day claims stay as they were.
-    reaction = cq.react(s, c, t, max(0, GRID_BONUS + adj), who='Chị Hồng')
+    reaction = cq.react(s, c, t, max(0, GRID_BONUS + office.RAISE + adj), who='Chị Hồng')
     reward = reaction['pay']
     kit.metric(c, 'tp_filed')
     kit.metric(c, 'tp_grids')
@@ -1252,7 +1252,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
             kit.metric(c, 'tp_steps')
             return dict(message=' '.join(x for x in ('✓ ' + msg, lunch) if x), correct=True)
         if gen:
-            o['clock'] = min(office.LOCK, o['clock'] + 15)
+            o['clock'] = min(office.LOCK, o['clock'] + office.wrong_min(d))
         where, bad = _where_wrong(st, p.get('answer'))
         return dict(message=' '.join(x for x in ('✗ Chưa khớp.', where, msg, lunch) if x), correct=False, bad=bad, where=where)
     if name == 'tp_file':
@@ -1260,12 +1260,13 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         kit.need(procedures.done(t), 'Hồ sơ còn bước chưa kiểm xong.')
         if gen:
             lunch = office.spend(o, 10 + office.review_cost(o))
-            late, adj, note = office.settle(o, t, c['day'])
-            reward = max(0, max(10, t['bonus'] - 4 * t['mistakes']) + adj)
+            new = office.rookie(d)
+            late, adj, note = office.settle(o, t, c['day'], new)
+            reward = max(0, office.pay(t['bonus'], t['mistakes'], new) + adj)
         else:
             lunch, note = '', ''
             late = c['turn'] > t['due_turn']
-            reward = 0 if late else max(10, t['bonus'] - 4 * t['mistakes'])
+            reward = 0 if late else office.pay(t['bonus'], t['mistakes'], office.rookie(d))
         t['filed'] = True
         t['late'] = late
         d['filed'] += 1
@@ -1357,6 +1358,8 @@ def _strip(v):
 
 def public_task(t: dict) -> dict:
     v = {k: strip_copy(val) for k, val in t.items() if not k.startswith('_') and k not in ('proc', 'proc_state', 'rows', 'flags', 'results')}
+    if type(t.get('bonus')) is int:
+        v['pay'] = max(office.MIN_PAY, t['bonus'] + office.RAISE)       # what a clean hand-in pays (1.4.5 raise)
     if not t['known']:
         v.update(papers=None, brief=None, steps=None, progress=None, rows=None)
         return v

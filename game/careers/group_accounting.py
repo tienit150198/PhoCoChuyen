@@ -1040,11 +1040,12 @@ def _left(t: dict) -> int:
 
 
 def _miss(d: dict, o: dict, t: dict, text: str) -> dict:
-    lunch = office.spend(o, office.COST['pair'] + office.COST['wrong'])
+    lost = office.COST['pair'] + office.wrong_min(d)
+    lunch = office.spend(o, lost)
     t['mistakes'] += 1
     office.trust(o, -1)
     d['slips'] += 1
-    return dict(message=' '.join(x for x in ('✗ ' + text, '(+20 phút soát lại)', lunch) if x), correct=False)
+    return dict(message=' '.join(x for x in ('✗ ' + text, f'(+{lost} phút soát lại)', lunch) if x), correct=False)
 
 
 def _done_msg(t: dict, why: str, lunch: str) -> dict:
@@ -1218,7 +1219,7 @@ def _post(c: dict, t: dict, st: dict) -> None:
 
 def _finish(s: dict, c: dict, d: dict, o: dict, t: dict, base: int, lead: str = '') -> dict:
     lunch = office.spend(o, office.COST['submit'] + office.review_cost(o))
-    late, adj, note = office.settle(o, t, c['day'])
+    late, adj, note = office.settle(o, t, c['day'], office.rookie(d))
     t['late'] = late
     ms = KINDS[t['variant']]['milestone']
     if ms not in d['milestones']:
@@ -1317,7 +1318,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
             answer, diag = _entry_answer(st, answer)
         kit.start_work(t)
         ok, msg = procedures.submit(t, st['id'], answer)
-        lunch = office.spend(o, office.COST['step'] + (0 if ok else office.COST['wrong']))
+        lunch = office.spend(o, office.COST['step'] + (0 if ok else office.wrong_min(d)))
         if not ok:
             # Which boxes of a calculation are off (never their values): the client marks them.
             bad = [f['id'] for f in st['fields'] if answer.get(f['id']) != st['_key'][f['id']]] if st['kind'] == 'fields' else []
@@ -1337,14 +1338,14 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
             A, B = _short(t['ic']['a']), _short(t['ic']['b'])
             _post_lines(c, t, f'Loại trừ công nợ nội bộ {A} ↔ {B}', [('331', '131', agreed)])
             d['boards'] += 1
-            return _finish(s, c, d, o, t, max(8, 30 - 4 * t['mistakes']), f'✂️ Hai sổ khớp {_n(agreed)} xu → loại trừ Nợ 331 / Có 131.')
+            return _finish(s, c, d, o, t, office.pay(30, t['mistakes'], office.rookie(d)), f'✂️ Hai sổ khớp {_n(agreed)} xu → loại trừ Nợ 331 / Có 131.')
         kit.need(procedures.done(t), 'Hồ sơ còn bước chưa làm xong.')
         note = kit.one_of(p.get('note'), HANDOVER, 'Chọn một ghi chú bàn giao.')
         kit.confirm(p, 'Xác nhận nộp hồ sơ cho người giao việc.')
         office.need_open(o)
         t['handover'] = note
         m = t['mistakes']
-        return _finish(s, c, d, o, t, 30 if m == 0 else max(10, 24 - 4 * m))
+        return _finish(s, c, d, o, t, office.pay(30, 0, False) if m == 0 else office.pay(24, m, office.rookie(d)))
     raise kit.eng().GameError('Thao tác hợp nhất không hợp lệ.')
 
 

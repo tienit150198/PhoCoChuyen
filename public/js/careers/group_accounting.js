@@ -333,7 +333,7 @@ function currentMail(t,x){
   const timed=typeof t.due==='number',k=t.kind_info||{};
   const chips=[`<span class="ok-tag">${x.esc(k.emoji||'🧾')} ${x.esc(k.name||'Hồ sơ hợp nhất')}</span>`,
     !timed?`<span class="ok-tag ${t.patience<50?'warn':''}">Kiên nhẫn ${Number(t.patience)||0}%</span>`:''].join('');
-  const help=!t.known&&t.variant==='match'?'<p class="ok-note">Mỗi lần ghép sai tốn 20 phút soát lại.</p>':'';
+  const help=!t.known&&t.variant==='match'?'<p class="ok-note">Mỗi lần ghép sai tốn thêm thời gian soát lại (người đang thử việc tốn ít hơn).</p>':'';
   return `<p class="ok-quote">“${x.esc(t.opening)}”</p>${t.brief?`<p class="ok-brief">🎯 ${x.esc(t.brief)}</p>`:''}<div class="ok-chips">${chips}</div>${help}`;
 }
 function dossierBar(t,x,g){

@@ -23,6 +23,12 @@ TRUST_HIGH, TRUST_LOW = 75, 35
 TRUST_BONUS = 5                                        # xu per dossier while trust is high
 LOW_TRUST_REVIEW = 20                                  # minutes the boss spends re-checking when trust is low
 LATE_CUT = 8                                           # xu taken off a dossier bonus when it is late
+# Dossier pay (owner 02/10: "để tiền ổn xíu cho mn chơi"): every dossier pays RAISE more and never under MIN_PAY.
+# On probation (rank 0 of the career track, see corp_accounting RANK_NEEDS) a slip costs half as much, the pay
+# never drops under half the bonus, a late hand-in costs ROOKIE_LATE_CUT and a wrong check ROOKIE_WRONG minutes.
+# From the first promotion on, the normal rules apply.
+RAISE, MIN_PAY, SLIP = 2, 14, 4
+ROOKIE_LATE_CUT, ROOKIE_WRONG = 4, 8
 NOTES = 10
 
 # Minutes each kind of work takes on the office clock.
@@ -87,6 +93,27 @@ def spend(o: dict, minutes: int) -> str:
         note = '🍜 Nghỉ trưa 12:00–13:00.'
     o['clock'] = min(LOCK, after)
     return note
+
+
+def rookie(d: dict) -> bool:
+    """Still on probation in this office career (rank 0 of its track)."""
+    cr = d.get('care')
+    return isinstance(cr, dict) and cr.get('rank', 0) == 0
+
+
+def pay(bonus: int, mistakes: int, new: bool, slip: int = SLIP) -> int:
+    """Bonus of a handed-in dossier before lateness: `slip` xu off per mistake, never under MIN_PAY;
+    on probation half of that per mistake and never under half the bonus."""
+    base = int(bonus) + RAISE
+    m = max(0, int(mistakes))
+    if new:
+        return max(MIN_PAY, base // 2, base - slip // 2 * m)
+    return max(MIN_PAY, base - slip * m)
+
+
+def wrong_min(d: dict) -> int:
+    """Office minutes a wrong check costs (less while on probation)."""
+    return ROOKIE_WRONG if rookie(d) else COST['wrong']
 
 
 def trust(o: dict, delta: int) -> int:
@@ -160,15 +187,17 @@ def is_late(t: dict, o: dict, day: int) -> bool:
     return day > t.get('due_day', day) or o['clock'] > t['due']
 
 
-def settle(o: dict, t: dict, day: int) -> tuple[bool, int, str]:
-    """A dossier is handed in: lateness, bonus change and a short note. Updates trust and streak."""
+def settle(o: dict, t: dict, day: int, new: bool = False) -> tuple[bool, int, str]:
+    """A dossier is handed in: lateness, bonus change and a short note. Updates trust and streak.
+    `new`: on probation, a late hand-in costs ROOKIE_LATE_CUT instead of LATE_CUT."""
     late = is_late(t, o, day)
     if late:
         o['late'] += 1
         o['day_late'] += 1
         o['streak'] = 0
         trust(o, -3)
-        return True, -LATE_CUT, f'Trễ hạn {hhmm(t["due"])} (−{LATE_CUT} xu, sếp −3 tin tưởng).'
+        cut = ROOKIE_LATE_CUT if new else LATE_CUT
+        return True, -cut, f'Trễ hạn {hhmm(t["due"])} (−{cut} xu, sếp −3 tin tưởng).'
     if type(t.get('due')) is int:
         o['ontime'] += 1
         o['streak'] += 1

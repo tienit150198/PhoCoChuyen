@@ -27,6 +27,10 @@ def day_with(mod_id):
     return next(d for d in range(1, 80) if CA._mod(d)['id'] == mod_id)
 
 
+def office_rank_days(rank):
+    return CA.RANK_NEEDS[rank][0]
+
+
 def roundtrip(j):
     validate_state(json.loads(json.dumps(j.state)))
 
@@ -90,12 +94,12 @@ class CorpAccountingTests(unittest.TestCase):
         j = self.j
         money = j.c['money']
         r = self.solve(tid)
-        self.assertIn('+30', r['message'])
+        self.assertIn('+32', r['message'])
         self.assertIn('Kịp hạn', r['message'])
         t = j.get(tid)
         self.assertEqual(t['status'], 'completed')
         self.assertFalse(t['late'])
-        self.assertEqual(j.c['money'], money + 30)
+        self.assertEqual(j.c['money'], money + 30 + office.RAISE)
         post = next(p for p in j.c['feed'] if p['kind'] == 'review')
         self.assertEqual(post['stars'], 5)
         self.assertEqual({x['key'] for x in post['feedback']['criteria']}, {'accuracy', 'independence', 'speed', 'handover'})
@@ -110,7 +114,7 @@ class CorpAccountingTests(unittest.TestCase):
         tid = j.task['id']
         money = j.c['money']
         r = self.solve(tid)
-        self.assertIn('+30', r['message'])
+        self.assertIn('+32', r['message'])
         self.assertIn('sạch khay', r['message'])
         t = j.get(tid)
         self.assertEqual(t['status'], 'completed')
@@ -119,7 +123,7 @@ class CorpAccountingTests(unittest.TestCase):
         d = j.c['ext']['data']
         self.assertEqual(d['catches'], bad)
         self.assertEqual(d['desks'], 1)
-        self.assertEqual(j.c['money'], money + 30)
+        self.assertEqual(j.c['money'], money + 30 + office.RAISE)
         self.assertEqual(self.office['trust'], office.TRUST_START + bad + 2)
         post = next(p for p in j.c['feed'] if p['kind'] == 'review')
         self.assertEqual({x['key'] for x in post['feedback']['criteria']}, {'accuracy', 'vigilance', 'grounds', 'speed'})
@@ -467,7 +471,7 @@ class CorpAccountingTests(unittest.TestCase):
         j = self.j
         j.get(tid)['due'] = office.OPEN + 30
         r = self.solve(tid)
-        self.assertIn('+22', r['message'])
+        self.assertIn(f'+{30 + office.RAISE - office.ROOKIE_LATE_CUT}', r['message'])   # on probation: half the late cut
         self.assertIn('Trễ hạn', r['message'])
         self.assertTrue(j.get(tid)['late'])
         self.assertEqual(self.office['trust'], office.TRUST_START - 3)
@@ -586,14 +590,40 @@ class CorpAccountingTests(unittest.TestCase):
         clock = self.office['clock']
         r = j.act('ca_step', task=tid, step=st['id'], answer=wrong)
         self.assertFalse(r['correct'])
-        self.assertEqual(self.office['clock'], clock + office.COST['step'] + office.COST['wrong'])
+        self.assertEqual(self.office['clock'], clock + office.COST['step'] + office.ROOKIE_WRONG)
         self.assertEqual(j.get(tid)['mistakes'], 1)
         for s in j.get(tid)['proc']:
             j.act('ca_step', task=tid, step=s['id'], answer=answer(s))
         money = j.c['money']
         r = j.act('ca_submit', task=tid, note='specific', confirm=True)
-        self.assertIn('+20', r['message'])
-        self.assertEqual(j.c['money'], money + 20)
+        self.assertIn('+24', r['message'])                  # on probation: 24 + 2 − 2 for the one wrong answer
+        self.assertEqual(j.c['money'], money + 24)
+
+    def test_after_probation_a_wrong_answer_costs_the_full_rules(self):
+        # Owner 02/10: gentler pay only while on probation (rank 0); from the first promotion the normal rules.
+        tid = self.use('depreciation')
+        j = self.j
+        care = j.c['ext']['data']['care']
+        care.update(rank=1, reliable=office_rank_days(1))
+        j.act('ask', task=tid)
+        self.open_all(tid)
+        st = j.get(tid)['proc'][0]
+        wrong = copy.deepcopy(answer(st))
+        if st['kind'] == 'fields':
+            wrong[next(iter(wrong))] += 10
+        elif st['kind'] == 'number':
+            wrong += 10
+        else:
+            self.skipTest('first step is not numeric')
+        clock = self.office['clock']
+        self.assertFalse(j.act('ca_step', task=tid, step=st['id'], answer=wrong)['correct'])
+        self.assertEqual(self.office['clock'], clock + office.COST['step'] + office.COST['wrong'])
+        for s in j.get(tid)['proc']:
+            j.act('ca_step', task=tid, step=s['id'], answer=answer(s))
+        money = j.c['money']
+        j.act('ca_submit', task=tid, note='specific', confirm=True)
+        self.assertEqual(j.c['money'], money + 24 + office.RAISE - office.SLIP)
+        roundtrip(j)
 
     def test_wrong_fields_check_names_the_boxes_off(self):
         tid = self.use('depreciation')
@@ -759,7 +789,7 @@ class CorpAccountingTests(unittest.TestCase):
         j.state = s
         tid = old['id']
         r = self.solve(tid)
-        self.assertIn('+30', r['message'])
+        self.assertIn('+32', r['message'])
         self.assertEqual(j.get(tid)['status'], 'completed')
         roundtrip(j)
 
@@ -958,9 +988,9 @@ class ConsequenceTests(unittest.TestCase):
         cut = t['reaction']['cut']
         self.assertGreater(cut, 0)
         bonus = [e['amount'] for e in j.c['ops']['finance']['ledger'] if e['ref'] == t['id'] and e['category'] != 'penalty']
-        self.assertEqual(bonus, [30 - cut])  # one cut, taken once; the fine at the stamp stays separate
+        self.assertEqual(bonus, [30 + office.RAISE - cut])  # one cut, taken once; the fine at the stamp stays separate
         fine = min(case['_truth']['fine'], money)
-        self.assertEqual(j.c['money'], money - fine + 30 - cut)
+        self.assertEqual(j.c['money'], money - fine + 30 + office.RAISE - cut)
         self.assertIn('Chị Hạnh', r['message'])
         self.assertFalse(r['celebrate'])
         validate_state(json.loads(json.dumps(j.state)))
@@ -991,7 +1021,7 @@ class ConsequenceTests(unittest.TestCase):
         j, t, money, r = self.tray(lambda i, c: c['_truth']['v'])
         self.assertFalse(t.get('slips'))
         self.assertEqual(t['reaction']['kind'], 'accept')
-        self.assertEqual(j.c['money'], money + 30)
+        self.assertEqual(j.c['money'], money + 30 + office.RAISE)
         self.assertEqual(self.review(j, t['id'])['stars'], 5)
 
     def test_wrong_step_answers_are_blocked_and_counted_not_slips(self):
@@ -1015,7 +1045,7 @@ class ConsequenceTests(unittest.TestCase):
         r = j.act('ca_submit', task=tid, note='specific', confirm=True)
         t = j.get(tid)
         self.assertFalse(t.get('slips'))
-        self.assertIn('+20', r['message'])
+        self.assertIn('+24', r['message'])                  # on probation: 24 + 2 − 2 for the one wrong answer
 
 
 

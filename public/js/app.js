@@ -1244,7 +1244,7 @@ function replayHeld(){
   el?.click();
 }
 document.addEventListener('click',async e=>{
-  const el=e.target.closest('[data-action],[data-command]');if(!el||el.disabled)return;sound.unlock();sound.configure(api.state?.settings||{sound:true,music:false});
+  const el=e.target.closest?.('[data-action],[data-command]');if(!el||el.disabled)return;sound.unlock();sound.configure(api.state?.settings||{sound:true,music:false});
   pressed(el);
   // Additional input while a mutation is on the wire waits for it; retries carry an idempotency key.
   // A second tap on the control already on the wire is a double tap, not a new wish.
@@ -1255,9 +1255,9 @@ document.addEventListener('click',async e=>{
   if(el.dataset.command){const action=el.dataset.command,payload=JSON.parse(el.dataset.payload||'{}');const result=await cmd(action,payload);if(result){if(action==='defer'){ui.task=null;openSheet('queue');}if(action==='event_dismiss'){openSheet('journal',{journalTab:'library'});}if(action==='more_work'){ui.task=null;await openJob(null,'shelf');}if(action==='ask'){world.say(result.message,activeTask()?.npc);}}}
   else{try{await handleAction(el.dataset.action,el.dataset,el);}catch(error){console.error(error);toast('Thao tác chưa hoàn tất. '+error.message,true);}}
 });
-document.addEventListener('dragstart',e=>{const el=e.target.closest('[data-drag-card]');if(el){ui.activityCard=el.dataset.dragCard;e.dataTransfer.setData('text/plain',ui.activityCard);}});
-document.addEventListener('dragover',e=>{if(e.target.closest('[data-drop-target]'))e.preventDefault();});
-document.addEventListener('drop',async e=>{const el=e.target.closest('[data-drop-target]');if(!el||ui.busy)return;e.preventDefault();const card=e.dataTransfer.getData('text/plain');if(!card)return;await cmd('life_activity_assign',{card,target:el.dataset.dropTarget});ui.activityCard=null;renderSheet();});
+document.addEventListener('dragstart',e=>{const el=e.target.closest?.('[data-drag-card]');if(el){ui.activityCard=el.dataset.dragCard;e.dataTransfer.setData('text/plain',ui.activityCard);}});
+document.addEventListener('dragover',e=>{if(e.target.closest?.('[data-drop-target]'))e.preventDefault();});
+document.addEventListener('drop',async e=>{const el=e.target.closest?.('[data-drop-target]');if(!el||ui.busy)return;e.preventDefault();const card=e.dataTransfer.getData('text/plain');if(!card)return;await cmd('life_activity_assign',{card,target:el.dataset.dropTarget});ui.activityCard=null;renderSheet();});
 document.addEventListener('submit',async e=>{
   const f=e.target;if(!(f instanceof HTMLFormElement))return;e.preventDefault();sound.unlock();if(ui.busy)return;
   if(await careerSubmit(f,env()))return;

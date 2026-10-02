@@ -75,7 +75,7 @@ class TaxPayrollTests(unittest.TestCase):
                 t = j.get(tid)
                 self.assertEqual(t['status'], 'completed')
                 self.assertFalse(t['late'])
-                self.assertEqual(j.c['money'], money + t['bonus'])
+                self.assertEqual(j.c['money'], money + max(office.MIN_PAY, t['bonus'] + office.RAISE))
                 self.assertTrue(r.get('celebrate'))
                 post = next(p for p in j.c['feed'] if p['kind'] == 'review' and p['source'] == tid)
                 self.assertEqual(post['stars'], 5)
@@ -181,7 +181,7 @@ class TaxPayrollTests(unittest.TestCase):
         r = j.act('tp_file', task=tid, confirm=True)
         t = j.get(tid)
         self.assertTrue(t['late'])
-        self.assertEqual(j.c['money'], money + t['bonus'] - office.LATE_CUT)
+        self.assertEqual(j.c['money'], money + t['bonus'] + office.RAISE - office.ROOKIE_LATE_CUT)
         self.assertIn('Trễ hạn', r['message'])
         post = next(p for p in j.c['feed'] if p['kind'] == 'review' and p['source'] == tid)
         crit = {x['key']: x['score'] for x in post['feedback']['criteria']}
@@ -199,7 +199,7 @@ class TaxPayrollTests(unittest.TestCase):
         money = j.c['money']
         j.task['due'] = office.LOCK
         j.act('tp_file', confirm=True)
-        self.assertEqual(j.c['money'], money + 30 - 4)
+        self.assertEqual(j.c['money'], money + 30 + office.RAISE - 2)   # on probation a mistake costs 2
         post = next(p for p in j.c['feed'] if p['kind'] == 'review' and p['source'] == tid)
         crit = {x['key']: x['score'] for x in post['feedback']['criteria']}
         self.assertEqual(crit['care'], 2)
@@ -333,7 +333,7 @@ class TaxPayrollTests(unittest.TestCase):
         t = j.get(tid)
         self.assertEqual(t['status'], 'completed')
         self.assertTrue(r['celebrate'])
-        self.assertEqual(j.c['money'], money + T.GRID_BONUS)
+        self.assertEqual(j.c['money'], money + T.GRID_BONUS + office.RAISE)
         self.assertTrue(all(x['ok'] for x in t['results'].values()))
         caught = sum(len(x['_truth']['z']) for x in t['rows'])
         self.assertEqual(self.office['trust'], office.TRUST_START + min(3, caught) + 2)
@@ -579,7 +579,7 @@ class TaxPayrollTests(unittest.TestCase):
         money = j.c['money']
         r = j.act('tp_pay', task=tid, confirm=True)
         self.assertTrue(j.get(tid)['late'])
-        self.assertEqual(j.c['money'], money + T.GRID_BONUS - office.LATE_CUT)
+        self.assertEqual(j.c['money'], money + T.GRID_BONUS + office.RAISE - office.ROOKIE_LATE_CUT)
         self.assertIn('Trễ hạn', r['message'])
         self.assertTrue(any('chốt lệnh' in n['text'] for n in self.office['notes']))
 
@@ -673,7 +673,7 @@ class ConsequenceTests(unittest.TestCase):
     def test_clean_payroll_has_no_slips(self):
         j, t, money, r = self.run_grid(lambda t: [])
         self.assertFalse(t.get('slips'))
-        self.assertEqual(j.c['money'], money + T.GRID_BONUS)
+        self.assertEqual(j.c['money'], money + T.GRID_BONUS + office.RAISE)
         self.assertEqual(self.review(j, t['id'])['stars'], 5)
 
     def test_missed_overpayment_is_named_and_cut_once(self):
@@ -686,7 +686,8 @@ class ConsequenceTests(unittest.TestCase):
         cut = t['reaction']['cut']
         self.assertGreater(cut, 0)
         bonus = [e['amount'] for e in j.c['ops']['finance']['ledger'] if e['ref'] == t['id'] and e['category'] != 'penalty']
-        self.assertEqual(bonus, [T.GRID_BONUS - cut] if T.GRID_BONUS - cut else [])
+        full = T.GRID_BONUS + office.RAISE
+        self.assertEqual(bonus, [full - cut] if full - cut else [])
         self.assertIn('Chị Hồng', r['message'])
         validate_state(json.loads(json.dumps(j.state)))
 
