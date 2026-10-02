@@ -7,7 +7,7 @@ import shop from './shop.js';
 export const KIND_OF={
   // Each storefront career has its own scene (falls back to the shared 'shop' storefront until it loads).
   milk_tea:'teabar',cafe_bakery:'cafe',restaurant:'kitchen',grocery:'minimart',florist:'flowershop',mother_baby:'babyshop',pharmacy:'drugstore',
-  salon:'service',pet_care:'service',repair:'service',
+  salon:'service',pet_care:'service',repair:'service',nail:'service',
   teacher:'classroom',
   accounting:'office',corp_accounting:'office',tax_payroll:'office',group_accounting:'office',customer_care:'office',hr_admin:'office',secretary:'office',it_helpdesk:'office',
   farm:'farm',
@@ -117,6 +117,12 @@ const CAREER_WORDS={
     free_eyebrow:'Quầy đang vắng',free_title:'Vãn khách rồi!',free_more:'Mời thêm khách hoặc đóng tiệm hôm nay.',more_btn:'Mời thêm một khách',
     none_waiting:'Chưa có khách nào đang chờ',next_btn:'Mời khách tiếp theo',
     people_sub:'Những người bạn gặp ở tiệm kem góc phượng.',feed_sub:'Lời nhắn và đánh giá quanh tiệm kem.'},
+  nail:{shelf:'Kệ sơn gel',evidence:'Sổ hẹn khách',counter:'Quầy tính tiền',warehouse:'Tủ vật tư',finance:'Sổ thu chi',ledger:'SỔ TIỆM NAIL',store:'TỦ VẬT TƯ',
+    till:'Hộp tiền',door_open:'Đóng tiệm',door_closed:'Mở tiệm',open_sign:'ĐANG LÀM MÓNG',closed_sign:'HẸN MAI NHA',
+    cat_line:'Mrrr… móng mèo cũng cần dũa tròn lắm đó.',idle_line:'Khách sắp ghé làm móng.',open_hint:'Thử đèn, hấp dụng cụ rồi mở tiệm nhé.',
+    free_eyebrow:'Bàn đang trống',free_title:'Vãn khách rồi!',free_more:'Mời thêm khách hoặc đóng tiệm hôm nay.',more_btn:'Mời thêm một khách',
+    none_waiting:'Chưa có khách nào đang chờ',next_btn:'Mời khách tiếp theo',
+    people_sub:'Những người bạn gặp ở tiệm nail của chị Diệp.',feed_sub:'Lời nhắn và đánh giá quanh tiệm nail.'},
   flight_attendant:{shelf:'Xe đẩy suất ăn',evidence:'Phiếu suất ăn đặc biệt',counter:'Cửa ra tàu',warehouse:'Bếp tàu',ledger:'SỔ TIẾP VIÊN',store:'BẾP TÀU',
     open_sign:'ĐANG ĐÓN KHÁCH',idle_line:'Khách chuyến sau đang xếp hàng ở cổng.',open_hint:'Thắt khăn quàng, ra cửa tàu đón khách nhé.',
     free_eyebrow:'Khoang khách đang yên',free_title:'Xong việc rồi!',free_more:'Nhận thêm một việc hoặc tan ca hôm nay.',more_btn:'Nhận thêm một việc',
