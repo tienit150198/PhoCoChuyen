@@ -248,6 +248,26 @@ export function bar(x,t,next,main='',always=false){
     <div class="ok-bar-btns ok-back"><button type="button" class="btn ${back}" data-action="car:tab" data-tab="doc" data-key="${x.esc(tabKey(t))}">📂 Về hồ sơ</button></div></div>`;
 }
 
+/* ---------------------------------------------------------------- the office is shut (office.need_open: office_closed) */
+/** After 17:30 (20:00 with overtime) every piece of work that takes office time is refused. */
+export const shut=x=>Boolean(x.room.open&&x.room.data?.office?.closed);
+/** While shut, the career's work buttons are drawn disabled: its commands (`prefix…`, except overtime and what
+ * `free(op, tag)` lets through) and its client actions that send one (`acts`, e.g. ['check'] for car:check). */
+export function shutWork(x,html,{prefix,acts=[],free=()=>false}){
+  if(!shut(x))return html;
+  return String(html).replace(/<button\b[^>]*>/g,tag=>{
+    if(/\sdisabled\b/.test(tag))return tag;
+    const op=/\sdata-(?:command|op)="([^"]*)"/.exec(tag)?.[1]||'',act=/\sdata-action="car:([^"]*)"/.exec(tag)?.[1]||'';
+    const work=acts.includes(act)||op.startsWith(prefix)&&op!==prefix+'overtime'&&!free(op,tag);
+    return work?tag.replace(/>$/,' disabled title="Văn phòng đã đóng cửa">'):tag;
+  });
+}
+/** The bottom bar while shut: why, and the day's close (app.js “end”). Overtime stays in the status strip. */
+export function shutBar(x,t){
+  const o=x.room.data.office;
+  return bar(x,t,`🌇 Văn phòng đóng cửa lúc ${x.esc(o.limit_time||'17:30')} — việc dở được giữ nguyên.`,x.button(`${x.icon('exit',16)} Khép ca · xem tổng kết`,'end',{},'primary big grow'));
+}
+
 /* ---------------------------------------------------------------- next step (v4/guide.js) */
 /** What the server tells the first dossier's screen (office.coach): null on every later dossier. */
 export const coachOf=(x,t)=>firstTime(x)&&x.room.data?.coach?.[t.id]||null;

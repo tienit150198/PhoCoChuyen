@@ -663,6 +663,18 @@ function accountingSteps(t){
   }
   return rows;
 }
+/** “Đánh dấu trùng” as engine ac_duplicate checks it: only a copy (its source names the original, shown once read)
+ * whose original is read too; otherwise drawn disabled with the reason. */
+function dupButton(t,d){
+  if(d.duplicate_of&&t.inspected.includes(d.duplicate_of))return commandButton('Đánh dấu trùng','ac_duplicate',{task:t.id,doc:d.id},'ghost');
+  return d.duplicate_of?commandButton('Mở cả hai bản gốc trước','ac_duplicate',{task:t.id,doc:d.id},'ghost',true)
+    :commandButton('Đánh dấu trùng','ac_duplicate',{task:t.id,doc:d.id},'ghost',true).replace('<button ','<button title="Chỉ bản sao cùng nguồn mới loại trùng" ');
+}
+/** Why engine ac_match would refuse the picked cards before even adding them up ('' when it would not). */
+function matchBlock(t,ds){
+  return ds.some(d=>!t.inspected.includes(d.id))?'Đọc đủ bản gốc trước':ds.some(d=>d.missing)?'Thẻ thiếu nguồn chưa ghép được':ds.some(d=>d.duplicate_of)?'Loại bản trùng trước'
+    :ds.some(d=>d.original!==undefined&&d.original!==d.amount)?'Sửa theo gốc trước':'';
+}
 function accountingJob(t){
   const inG=(k,id)=>t.groups.some(g=>g[k].includes(id)),sum=a=>a.reduce((s,x)=>s+x.amount,0);
   const selD=t.docs.filter(d=>ui.docs.has(d.id)),selT=t.transactions.filter(x=>ui.transactions.has(x.id)),ds=sum(selD),ts=sum(selT);
@@ -673,7 +685,7 @@ function accountingJob(t){
   const docCard=d=>{
     const seen=t.inspected.includes(d.id),used=inG('docs',d.id),removed=t.removed.includes(d.id),sel=ui.docs.has(d.id),off=seen&&d.original!==undefined&&d.original!==d.amount;
     const [label,tone]=removed?['Đã loại trùng','']:used?['Đã ghép','green']:d.missing?['Thiếu nguồn','amber']:!seen?['Chưa đọc gốc','']:off?['Lệch gốc','danger']:['Đã đọc','blue'];
-    const act=removed||used||d.missing?'':!seen?commandButton(icon('eye',15)+' Mở gốc','ac_inspect',{task:t.id,doc:d.id},'ghost'):off?commandButton('Sửa theo gốc','ac_correct',{task:t.id,doc:d.id},'ghost'):commandButton('Đánh dấu trùng','ac_duplicate',{task:t.id,doc:d.id},'ghost');
+    const act=removed||used||d.missing?'':!seen?commandButton(icon('eye',15)+' Mở gốc','ac_inspect',{task:t.id,doc:d.id},'ghost'):off?commandButton('Sửa theo gốc','ac_correct',{task:t.id,doc:d.id},'ghost'):dupButton(t,d);
     const src=seen?`<p>${esc(d.source)}</p><p>Số gốc: <b>${fmt(d.original)} xu</b>${off?` · đang ghi ${fmt(d.amount)} xu`:''}</p>`:d.missing?'<p>Nguồn chưa được gửi. Xin người gửi bổ sung.</p>':'<p>Chưa mở.</p>';
     return `<li class="dw-card${sel?' selected':''}${used||removed?' settled':''}">${pick('selectDoc',d.id,sel,used||removed,used?icon('link',18):removed?icon('minus',18):'')}<div class="dw-card-main"><div class="dw-line"><b class="dw-code">${esc(d.id)}</b><span class="dw-amt">${fmt(d.amount)} xu</span>${dwState(label,tone)}</div><div class="dw-row2">${fold(`<b class="dw-sub">${esc(d.ref)}</b>${d.kind==='hoàn'?' · khoản hoàn':''}`,src)}${act}</div></div></li>`;};
   const txCard=x=>{const used=inG('transactions',x.id),sel=ui.transactions.has(x.id);
@@ -691,7 +703,7 @@ function accountingJob(t){
   const both=selD.length&&selT.length;
   const bar=allDone?dwBar('<b>Đã ghép đủ.</b> Kiểm lại rồi bàn giao.',button(icon('check',16)+' Bàn giao','completeAC',{},'primary'))
     :selD.length||selT.length?dwBar(`<span class="dw-sums"><span><small>Chứng từ · ${selD.length}</small><b>${fmt(ds)}</b></span><i class="${both?ds===ts?'ok':'bad':''}" aria-label="${both?ds===ts?'bằng nhau':'chưa bằng':'so với'}">${both?ds===ts?'=':'≠':'⇄'}</i><span><small>Giao dịch · ${selT.length}</small><b>${fmt(ts)}</b></span></span>`,
-      `<button type="button" class="btn ghost icon-btn" data-action="clearSelection" aria-label="Bỏ chọn">${icon('x',18)}</button>`+(both?button(icon('link',16)+' Ghép nhóm','match',{},'primary')
+      `<button type="button" class="btn ghost icon-btn" data-action="clearSelection" aria-label="Bỏ chọn">${icon('x',18)}</button>`+(both?(matchBlock(t,selD)?`<button type="button" class="btn primary" disabled>${icon('link',16)} ${esc(matchBlock(t,selD))}</button>`:button(icon('link',16)+' Ghép nhóm','match',{},'primary'))
         :button(selD.length?'Chọn giao dịch →':'← Chọn chứng từ','jobTab',{tab:selD.length?'acTx':'acDocs'},'primary dw-swap')+`<button type="button" class="btn dw-wide-only" disabled>${icon('link',16)} Ghép nhóm</button>`))
     :dwBar(read<t.docs.length?'Mở bản gốc, rồi chọn chứng từ và giao dịch cùng mã HD.':'Chọn chứng từ và giao dịch cùng mã HD.');
   const steps=accountingSteps(t),hint=nextHint({room:room()},steps,{final:allDone?{label:'Kiểm & bàn giao hồ sơ',go:{act:'completeAC'}}:null,cta:false});

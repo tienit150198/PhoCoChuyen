@@ -3,7 +3,7 @@
  *  tờ khai làm từng bước với giấy tờ gốc và máy tính bàn), 📋 Quy định (quy định kỳ lương + sổ tay luật),
  *  and a sticky bar with the next step and the main action. */
 import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,dueOf,openTasks,planCard,mateCards,trackFold,careSummary,foldToggle,
-  coachOf,goto,gotoAction,guideOf} from './office_kit.js';
+  coachOf,goto,gotoAction,guideOf,shut,shutWork,shutBar} from './office_kit.js';
 import {pending,stepLine} from '../v4/guide.js';
 
 const BOSS='Chị Hồng';
@@ -69,14 +69,35 @@ function solvedText(st,x){
   return '';
 }
 
+/** One line under each box of a form: where its number comes from and the formula, in words (never the number).
+ *  Keyed by form:step, then the field id ('' for a one-number step). Same rules as 📘 Sổ tay quy định. */
+const HOW={
+  'payslip:gross':{day_rate:'Lương giờ (Hợp đồng) × 8 giờ.',leave:'Số ngày nghỉ KHÔNG lương (Bảng chấm công) × Lương 1 ngày. Nghỉ phép năm không trừ.',
+    ot:'Mỗi dòng tăng ca: số giờ × Lương giờ × hệ số đã xếp ở bước 1, rồi cộng lại.',gross:'Lương cơ bản − Trừ nghỉ không lương + 3 phụ cấp trong Hợp đồng + Tiền tăng ca.'},
+  'payslip:ins':{bhxh:'Lương đóng bảo hiểm (Hợp đồng) × 8%, làm tròn xuống.',bhyt:'Lương đóng bảo hiểm × 1,5% (× 15 ÷ 1000), làm tròn xuống.',bhtn:'Lương đóng bảo hiểm × 1%, làm tròn xuống.'},
+  'payslip:tax':{taxable:'Tổng thu nhập − ăn trưa (miễn tối đa 700) − 3 khoản bảo hiểm − 5000 bản thân − 2000 × người phụ thuộc ĐÃ đăng ký.',
+    pit:'Áp biểu lũy tiến tháng (📋 Quy định · Thuế TNCN) lên Thu nhập tính thuế, làm tròn xuống.'},
+  'payslip:net':{'':'Tổng thu nhập − 3 khoản bảo hiểm − Thuế TNCN (số của các bước trên).'},
+  'transfer:total':{'':'Tổng thực lĩnh trên Bảng lương ĐÃ DUYỆT — không lấy tổng file nháp.'},
+  'vat:vat':{output:'Cộng cột “Thuế GTGT” của mọi hóa đơn bán ra.',input:'Cộng cột “Thuế GTGT” của hóa đơn mua vào, bỏ các tờ đã loại ở bước 1.'},
+  'vat:payable':{'':'Thuế đầu ra − thuế đầu vào được khấu trừ (bước trước).'},
+  'calendar:late':{'':'Số tiền thuế × 3 × số ngày trễ ÷ 10000 (0,03% mỗi ngày), làm tròn xuống.'},
+  'question:diff':{'':'Dòng “Thực lĩnh” phiếu tháng 8 − dòng “Thực lĩnh” phiếu tháng 9.'},
+  'yearend:calc':{deduct:'12 × 5000 bản thân + 2000 × số tháng có người phụ thuộc (giấy “Người phụ thuộc đã đăng ký”).',
+    taxable:'Thu nhập chịu thuế của MỌI nơi − bảo hiểm bắt buộc − Tổng giảm trừ.',due:'Áp biểu lũy tiến NĂM (mốc tháng × 12) lên Thu nhập tính thuế cả năm, làm tròn xuống.',
+    balance:'Thuế phải nộp cả năm − thuế đã khấu trừ ở mọi nơi; âm là được hoàn.'},
+};
+const how=(t,st,id,x)=>{const s=HOW[`${t.form}:${st.id}`]?.[id];return s?`<p class="ok-note">📐 ${x.esc(s)}</p>`:'';};
+
 function inputView(st,t,x){
   const u=state(x,t),sid=x.esc(st.id),tid=x.esc(t.id);
   switch(st.kind){
     case'choice':return `<div class="tp-choices">${st.options.map(o=>`<button type="button" class="tp-choice ${u.sel[st.id]===o.id?'on':''}" data-action="car:pick" data-task="${tid}" data-step="${sid}" data-v="${x.esc(o.id)}" aria-pressed="${u.sel[st.id]===o.id}"><span class="tp-box radio" aria-hidden="true">${u.sel[st.id]===o.id?'●':''}</span>${x.esc(o.label)}</button>`).join('')}</div>`;
     case'multi':{const on=u.multi[st.id]||[];return `<div class="tp-choices">${st.options.map(o=>`<button type="button" class="tp-choice check ${on.includes(o.id)?'on':''}" data-action="car:toggle" data-task="${tid}" data-step="${sid}" data-v="${x.esc(o.id)}" aria-pressed="${on.includes(o.id)}"><span class="tp-box" aria-hidden="true">${on.includes(o.id)?'✓':''}</span>${x.esc(o.label)}</button>`).join('')}</div>`;}
-    case'number':return `<label class="tp-cell-row"><span>Đáp số (xu)</span><input class="input tp-num" id="${fid(t,st.id)}" data-preserve type="text" inputmode="numeric" autocomplete="off" placeholder="0"></label>`;
+    case'number':{const bad=(u.miss?.[st.id]?.bad||[]).includes('');   // a wrong check outlines the box until the next one
+      return `<label class="tp-cell-row"><span>${bad?'✗ ':''}Đáp số (xu)</span><input class="input tp-num${bad?' tp-bad':''}" id="${fid(t,st.id)}" data-preserve type="text" inputmode="numeric" autocomplete="off" placeholder="0"${bad?' aria-invalid="true"':''}></label>${how(t,st,'',x)}`;}
     case'fields':{const bad=new Set(u.miss?.[st.id]?.bad||[]),cls=f=>bad.has(f.id)?' tp-bad':'',mark=f=>bad.has(f.id)?' aria-invalid="true"':'';
-      return `<table class="tp-cells edit"><tbody>${st.fields.map(f=>`<tr class="${bad.has(f.id)?'tp-row-bad':''}"><th scope="row"><label for="${fid(t,st.id,f.id)}">${bad.has(f.id)?'✗ ':''}${x.esc(f.label)}</label></th><td>${f.options?`<select class="${cls(f).trim()}" id="${fid(t,st.id,f.id)}" data-preserve${mark(f)}><option value="">Chọn…</option>${f.options.map(o=>`<option value="${x.esc(o.id)}">${x.esc(o.label)}</option>`).join('')}</select>`:`<input class="input tp-num${cls(f)}" id="${fid(t,st.id,f.id)}" data-preserve type="text" inputmode="numeric" autocomplete="off" placeholder="0"${mark(f)}>`}</td></tr>`).join('')}</tbody></table>`;}
+      return `<table class="tp-cells edit"><tbody>${st.fields.map(f=>`<tr class="${bad.has(f.id)?'tp-row-bad':''}"><th scope="row"><label for="${fid(t,st.id,f.id)}">${bad.has(f.id)?'✗ ':''}${x.esc(f.label)}</label>${how(t,st,f.id,x)}</th><td>${f.options?`<select class="${cls(f).trim()}" id="${fid(t,st.id,f.id)}" data-preserve${mark(f)}><option value="">Chọn…</option>${f.options.map(o=>`<option value="${x.esc(o.id)}">${x.esc(o.label)}</option>`).join('')}</select>`:`<input class="input tp-num${cls(f)}" id="${fid(t,st.id,f.id)}" data-preserve type="text" inputmode="numeric" autocomplete="off" placeholder="0"${mark(f)}>`}</td></tr>`).join('')}</tbody></table>`;}
     case'match':return `<div class="tp-match">${st.left.map(l=>`<label class="tp-cell-row"><span>${x.esc(l.label)}</span><select id="${fid(t,st.id,l.id)}" data-preserve><option value="">Chọn…</option>${st.right.map(r=>`<option value="${x.esc(r.id)}">${x.esc(r.label)}</option>`).join('')}</select></label>`).join('')}</div>`;
     case'order':{
       const picked=u.order[st.id]||[],rest=st.items.filter(o=>!picked.includes(o.id));
@@ -358,6 +379,8 @@ const careBadge=x=>{const c=x.room.data?.care;return (c?.asked?1:0)+((c?.plan?.i
 
 /* ---------------------------------------------------------------- the office desktop */
 const strip=(x,t)=>statusStrip(x,t,{boss:BOSS,op:'tp_overtime'});
+/** Office shut: every tp_ command takes office time (claims: only “pay now”); car:check / car:flag send one. */
+const SHUT={prefix:'tp_',acts:['check','flag'],free:(op,tag)=>op==='tp_claim'&&!tag.includes('pay_now')};
 function currentMail(t,x){
   const label=x.cc.labels?.[t.form]||'Hồ sơ',due=dueOf(t,x),left=typeof t.due_turn==='number'?t.due_turn-(x.room.turn||0):null;
   const chips=[`<span class="ok-tag">${x.esc(label)}</span>`,
@@ -383,6 +406,7 @@ export default {
   id:'tax_payroll',
   css:true,
   next(t,x){
+    if(x&&t.gen&&shut(x))return `Văn phòng đóng cửa lúc ${x.room.data.office.limit_time} — khép ca`;
     try{const n=x&&pending(guideFor(t,x).steps);if(n)return stepLine(n);}catch{/* the fixed lines below */}
     return nextText(t);
   },
@@ -394,15 +418,17 @@ export default {
     const inbox=inboxPane(x,{tasks:taskMails(x,t,currentMail(t,x)),other:[...claimMails(x),...dayMails(x,{boss:BOSS,key:`${t.id}:${t.known?1:0}`})],...care(x,t)});
     const rules=todayRules(x)+lawBook(x);
     const gd=guideFor(t,x),g=guideOf(x,t,gd.steps,gd.final);
-    if(!t.known)return plain(desk(x,t,{cls:'tp',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules,
+    if(!t.known)return plain(desk(x,t,{cls:'tp',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox:shutWork(x,inbox,SHUT),rules,
       doc:`<p class="ok-empty"><span aria-hidden="true">✉️</span><b>${x.esc(t.title)}</b><span>${grid?'Bảng lương nháp còn nằm trên bàn chị Hồng.':'Hồ sơ còn trong phong bì.'}</span></p>`},
       bar:bar(x,t,'',g.cta,true)}));
-    if(grid)return plain(desk(x,t,{cls:'tp',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules,doc:gridDoc(t,x)},bar:gridBar(t,x,g)}));
-    return plain(desk(x,t,{cls:'tp',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules,doc:formDoc(t,x)},bar:formBar(t,x,g)}));
+    // Office shut (a timed dossier): its work is drawn disabled, the hint steps aside and the bar closes the day.
+    const off=shut(x)&&Boolean(t.gen),hint=off?'':g.hint,work=html=>shutWork(x,html,SHUT),doc=html=>off?work(html):html;
+    if(grid)return plain(desk(x,t,{cls:'tp',tabs,strip:strip(x,t),hint,panes:{inbox:work(inbox),rules,doc:doc(gridDoc(t,x))},bar:off?shutBar(x,t):gridBar(t,x,g)}));
+    return plain(desk(x,t,{cls:'tp',tabs,strip:strip(x,t),hint,panes:{inbox:work(inbox),rules,doc:doc(formDoc(t,x))},bar:off?shutBar(x,t):formBar(t,x,g)}));
   },
   idle(x){
     const d=x.room.data||{};if(!d.office)return '';
-    return plain(idleDesk(x,{cls:'tp',strip:strip(x,null),recap:gridRecap(x),tasks:taskMails(x,null),other:[...claimMails(x),...dayMails(x,{boss:BOSS})],rules:todayRules(x),...care(x,null)}));
+    return plain(shutWork(x,idleDesk(x,{cls:'tp',strip:strip(x,null),recap:gridRecap(x),tasks:taskMails(x,null),other:[...claimMails(x),...dayMails(x,{boss:BOSS})],rules:todayRules(x),...care(x,null)}),SHUT));
   },
   summary(data,x){
     if(!data||typeof data!=='object')return '';
@@ -484,7 +510,8 @@ export default {
       if(answer===null){x.toast(st.kind==='choice'?'Chạm chọn một đáp án trước nhé.':st.kind==='multi'?'Chạm chọn ít nhất một ô trước nhé.':st.kind==='order'?'Chạm đủ các việc theo thứ tự trước nhé.':st.kind==='match'?'Chọn đủ từng dòng trước nhé.':'Điền đủ các ô số trước khi kiểm tra nhé.',true);return;}
       const r=await x.send('tp_submit',{task:t.id,step:st.id,answer});
       // A wrong check names the boxes that do not match (never their values); they stay outlined until the next check.
-      if(r){(u.miss??={})[st.id]=r.correct===false?{bad:Array.isArray(r.bad)?r.bad:[],where:String(r.where||'')}:null;x.render();}
+      // A one-number step has no box names in the reply: its only box ('') is the one off.
+      if(r){(u.miss??={})[st.id]=r.correct===false?{bad:st.kind==='number'?['']:Array.isArray(r.bad)?r.bad:[],where:String(r.where||'')}:null;x.render();}
     },
   },
 };

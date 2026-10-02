@@ -15,6 +15,7 @@ const COLOR={do:'#d9463b',xanh:'#2f7fd1',tim:'#8a4fd0'};
 const CLINIC={hp:'PK Hạnh Phúc',ak:'PK An Khang',mh:'PK Mây Hồng'};
 const MOOD={new:'Khách mới',angry:'Đang bực',polite:'Lịch sự',suspect:'Cần xác minh',public:'Công khai',threat:'Căng thẳng'};
 const GRADE={perfect:['Chuẩn','good'],good:['Đạt','warn'],wrong:['Chưa đúng','bad']};
+const MAX_MARKS=30;   // game/desk.py MAX_MARKS: desk_flag refuses more marks than this
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(String(v))}"`).join('');
 const act=(label,action,data={},cls='')=>`<button type="button" class="btn ${cls}" data-action="${action}"${attrs(data)}>${label}</button>`;
 const cmdBtn=(label,command,payload={},cls='',disabled=false)=>`<button type="button" class="btn ${cls}" data-command="${command}" data-payload="${esc(JSON.stringify(payload))}"${disabled?' disabled':''}>${label}</button>`;
@@ -71,7 +72,11 @@ function docCard(t,d,api){
     if(f.locked)return `<div class="dk-field locked"><span>${esc(f.label)}</span><em>🔒 cần kiểm</em></div>`;
     const stamp=m?`<span class="dk-mark ${m.result}">${m.result==='found'?'✔':m.result==='partial'?'?':'×'}</span>`:'';
     const art=f.mark?stampArt(f.mark,30):'';
-    const chips=sel?`<div class="dk-chips" role="group" aria-label="Chọn quy định bị trái">${t.rules.map(r=>act(esc(r.short),'desk:flag',{task:t.id,field:ref,rule:r.id},'dk-chip'+(r.new?' fresh':''))).join('')}${act('Bỏ chọn','desk:unsel',{},'dk-chip ghost')}</div>`:'';
+    // desk_flag refuses a rule already marked on this line and any mark past MAX_MARKS: those chips are drawn disabled.
+    const full=(t.marks||[]).length>=MAX_MARKS,tried=r=>(t.marks||[]).some(x=>x.field===ref&&x.rule===r.id);
+    const chip=r=>{const b=act(esc(r.short),'desk:flag',{task:t.id,field:ref,rule:r.id},'dk-chip'+(r.new?' fresh':''));
+      return full||tried(r)?b.replace('<button ',`<button disabled title="${full?'Đủ dấu rồi':'Đã đánh dấu quy định này'}" `):b;};
+    const chips=sel?`<div class="dk-chips" role="group" aria-label="Chọn quy định bị trái">${full?'<p class="dk-hint">Đủ dấu rồi: đóng dấu quyết định.</p>':''}${t.rules.map(chip).join('')}${act('Bỏ chọn','desk:unsel',{},'dk-chip ghost')}</div>`:'';
     return `<button type="button" class="dk-field ${sel?'sel':''} ${m?m.result:''}" data-action="desk:sel" data-field="${esc(ref)}" data-task="${esc(t.id)}" aria-pressed="${sel}"><span>${esc(f.label)}</span><strong>${art}${esc(f.value)}</strong>${stamp}</button>${chips}`;}).join('');
   return `<article class="dk-doc ${esc(d.kind)}"><h4>${d.icon} ${esc(d.title)}</h4>${rows}</article>`;
 }

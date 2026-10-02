@@ -5,7 +5,7 @@
  *  and a sticky bar with the next step and the main action.
  *  No inline handlers: every button goes through data-command / data-action="car:*". */
 import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,openTasks,planCard,mateCards,trackFold,careSummary,foldToggle,
-  coachOf,goto,gotoAction,guideOf,procSteps,coachFill} from './office_kit.js';
+  coachOf,goto,gotoAction,guideOf,procSteps,coachFill,shut,shutWork,shutBar} from './office_kit.js';
 import {pending,stepLine} from '../v4/guide.js';
 
 const P='ca_';
@@ -99,6 +99,25 @@ function voucher(t,st,x){
     <div class="ca-vfoot"><span>Tổng Nợ <b data-sum="debit">0</b></span><span>Tổng Có <b data-sum="credit">0</b></span><span class="ca-bal" data-bal>—</span></div>
   </div>`;
 }
+/** One line under each box of a calculation: where its number comes from and the formula, in words (never the number).
+ *  Keyed by variant:step, then the field id ('' for a one-number step, '*' for every box of the step). */
+const HOW={
+  'invoice_out:calc':{base:'Số lượng THỰC GIAO (Biên bản giao nhận) × Đơn giá chưa thuế (Đơn đặt hàng).',vat:'Tiền hàng chưa thuế × 10%.',total:'Tiền hàng chưa thuế + Thuế GTGT.'},
+  'bank_rec:adjusted':{'':'Số dư cuối kỳ theo Sổ tiền gửi, cộng tiền vào / trừ tiền ra của các khoản cần ghi bổ sung.'},
+  'ageing:balance':{'':'Cộng cột “Còn phải thu” của mọi hóa đơn chưa thu đủ (Sổ chi tiết công nợ 131).'},
+  'petty_cash:count':{'':'Bảng kiểm đếm: mỗi dòng mệnh giá × số tờ, rồi cộng lại.'},
+  'petty_cash:book':{'':'Sổ quỹ: tồn quỹ đầu ngày + các phiếu thu − các phiếu chi.'},
+  'depreciation:monthly':{'*':'Nguyên giá ÷ (số năm × 12), theo Sổ tài sản cố định. Mới dùng trong tháng hoặc đã khấu hao hết thì ghi 0.'},
+  'depreciation:nbv':{'':'Nguyên giá − hao mòn lũy kế − khấu hao tháng này (Sổ tài sản cố định).'},
+  'inventory_count:diff':{'*':'Thực đếm (Biên bản kiểm kê) − Tồn theo sổ (Thẻ kho). Thiếu ghi số âm, khớp ghi 0.'},
+  'inventory_count:value':{'':'Số lượng thiếu (bước trước) × Đơn giá vốn trên Thẻ kho.'},
+  'month_close:vat_pay':{'':'Thuế đầu ra (TK 3331) − thuế đầu vào được khấu trừ (TK 133), trên bảng số dư.'},
+  'trial_balance:diff':{'':'Tổng cột Dư Nợ và tổng cột Dư Có của bảng cân đối thử: lấy tổng lớn trừ tổng nhỏ.'},
+  'trial_balance:is':{rev:'Số dư TK 511 trên Sổ cái.',gross:'Doanh thu thuần − Giá vốn (TK 632).',pbt:'Lợi nhuận gộp − chi phí bán hàng (641) − chi phí quản lý (642), theo số đã sửa.'},
+};
+const how=(t,st,id,x)=>{const h=HOW[`${t.variant}:${st.id}`],s=h?.[id]??h?.['*'];return s?`<p class="ok-note">📐 ${x.esc(s)}</p>`:'';};
+/** Boxes the last wrong check named (server `bad`; '' = a one-number step), outlined until the next check. */
+const missOf=(x,t,st)=>new Set(x.ui.miss?.[dkey(t,st)]||[]);
 function widget(t,st,x){
   const k=dkey(t,st),dr=drafts(x);
   if(st.kind==='choice')return `<div class="ca-options">${(st.options||[]).map(o=>x.cmd(x.esc(o.label),P+'step',{task:t.id,step:st.id,answer:o.id},'ca-opt').replace('<button ',`<button data-opt="${x.esc(o.id)}" `)).join('')}</div>`;
@@ -106,7 +125,8 @@ function widget(t,st,x){
     const sel=dr[k]||[];
     return `<div class="ca-checks" data-multi="${x.esc(k)}">${(st.options||[]).map(o=>`<label class="ca-check"><input type="checkbox" value="${x.esc(o.id)}" ${sel.includes(o.id)?'checked':''}><span>${x.esc(o.label)}</span></label>`).join('')}</div>`;
   }
-  if(st.kind==='number')return `<div class="ca-numrow"><input class="ca-input" type="number" inputmode="numeric" step="1" data-num="${x.esc(k)}" value="${x.esc(dr[k]??'')}" aria-label="${x.esc(st.title)}"><span class="ca-unit">${x.esc(st.unit||'')}</span></div>`;
+  if(st.kind==='number'){const bad=missOf(x,t,st).has('');
+    return `<div class="ca-numrow">${bad?'<span class="ca-bad" aria-hidden="true">✗</span>':''}<input class="ca-input" type="number" inputmode="numeric" step="1" data-num="${x.esc(k)}" value="${x.esc(dr[k]??'')}" aria-label="${x.esc(st.title)}"${bad?' aria-invalid="true"':''}><span class="ca-unit">${x.esc(st.unit||'')}</span></div>${how(t,st,'',x)}`;}
   if(st.kind==='order'){
     const ids=dr[k]??=(st.items||[]).map(i=>i.id);
     const item=id=>(st.items||[]).find(i=>i.id===id)?.label||id;
@@ -117,8 +137,8 @@ function widget(t,st,x){
     return `<div class="ca-match" data-match="${x.esc(k)}">${(st.left||[]).map(l=>`<label class="ca-mrow"><span>${x.esc(l.label)}</span><select data-left="${x.esc(l.id)}"><option value="">— chọn —</option>${(st.right||[]).map(r=>`<option value="${x.esc(r.id)}" ${cur[l.id]===r.id?'selected':''}>${x.esc(r.label)}</option>`).join('')}</select></label>`).join('')}</div>`;
   }
   if(st.kind==='fields'){
-    const cur=dr[k]||{};
-    return `<div class="ca-fields" data-fields="${x.esc(k)}">${(st.fields||[]).map(f=>`<label class="ca-mrow"><span>${x.esc(f.label)}</span>${f.options?`<select data-field="${x.esc(f.id)}"><option value="">— chọn —</option>${f.options.map(o=>`<option value="${x.esc(o.id)}" ${cur[f.id]===o.id?'selected':''}>${x.esc(o.label)}</option>`).join('')}</select>`:`<span class="ca-numrow"><input class="ca-input" type="number" inputmode="numeric" step="1" data-field="${x.esc(f.id)}" value="${x.esc(cur[f.id]??'')}"><span class="ca-unit">${x.esc(f.unit||'')}</span></span>`}</label>`).join('')}</div>`;
+    const cur=dr[k]||{},bad=missOf(x,t,st);
+    return `<div class="ca-fields" data-fields="${x.esc(k)}">${(st.fields||[]).map(f=>`<label class="ca-mrow"><span${bad.has(f.id)?' class="ca-bad"':''}>${bad.has(f.id)?'✗ ':''}${x.esc(f.label)}</span>${f.options?`<select data-field="${x.esc(f.id)}"><option value="">— chọn —</option>${f.options.map(o=>`<option value="${x.esc(o.id)}" ${cur[f.id]===o.id?'selected':''}>${x.esc(o.label)}</option>`).join('')}</select>`:`<span class="ca-numrow"><input class="ca-input" type="number" inputmode="numeric" step="1" data-field="${x.esc(f.id)}" value="${x.esc(cur[f.id]??'')}"${bad.has(f.id)?' aria-invalid="true"':''}><span class="ca-unit">${x.esc(f.unit||'')}</span></span>`}</label>${how(t,st,f.id,x)}`).join('')}</div>`;
   }
   if(st.kind==='entry')return voucher(t,st,x);
   return '';
@@ -287,6 +307,8 @@ const careBadge=x=>x.room.data?.care?.asked?1:0;
 
 /* ---------------------------------------------------------------- the office desktop */
 const strip=(x,t)=>statusStrip(x,t,{boss:BOSS,op:'ca_overtime'});
+/** Office shut: every ca_ command takes office time; these car: actions send one. */
+const SHUT={prefix:'ca_',acts:['open','multi','num','order','match','fields','entry','submit','stamp','circle']};
 const todayRules=x=>rulesList(x,x.room.data?.today?.rules||[],'Quy định đang áp dụng');
 function currentMail(t,x){
   const timed=typeof t.due==='number',k=t.kind_info||{};
@@ -332,6 +354,7 @@ export default {
   id:'corp_accounting',
   css:true,
   next(t,x){
+    if(x&&t.known&&shut(x))return `Văn phòng đóng cửa lúc ${x.room.data.office.limit_time} — khép ca`;
     try{const n=x&&pending(guideFor(t,x).steps);if(n)return stepLine(n);}catch{/* the fixed lines below */}
     return nextText(t);
   },
@@ -349,12 +372,14 @@ export default {
         rules:todayRules(x),books:booksPane(x)},
         bar:bar(x,t,'',g.cta,true)});
     }
-    if(isDesk)return desk(x,t,{cls:'ca',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,doc:deskDoc(t,x),rules:todayRules(x)+binder(t,x)},bar:deskBar(t,x,g)});
-    return desk(x,t,{cls:'ca',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,doc:stepCard(t,x)+docsPanel(t,x),rules:todayRules(x)||'<p class="ok-note">Hôm nay chưa có quy định mới.</p>',books:booksPane(x)},bar:dossierBar(t,x,g)});
+    // Office shut: the work is drawn disabled, the hint steps aside and the bar closes the day.
+    const off=shut(x),hint=off?'':g.hint,work=html=>shutWork(x,html,SHUT);
+    if(isDesk)return desk(x,t,{cls:'ca',tabs,strip:strip(x,t),hint,panes:{inbox:work(inbox),doc:work(deskDoc(t,x)),rules:work(todayRules(x)+binder(t,x))},bar:off?shutBar(x,t):deskBar(t,x,g)});
+    return desk(x,t,{cls:'ca',tabs,strip:strip(x,t),hint,panes:{inbox:work(inbox),doc:work(stepCard(t,x)+docsPanel(t,x)),rules:todayRules(x)||'<p class="ok-note">Hôm nay chưa có quy định mới.</p>',books:booksPane(x)},bar:off?shutBar(x,t):dossierBar(t,x,g)});
   },
   idle(x){
     const d=x.room.data||{};if(!d.office)return '';
-    return idleDesk(x,{cls:'ca',strip:strip(x,null),recap:trayRecap(x),tasks:taskMails(x,null),other:dayMails(x,{boss:BOSS}),rules:todayRules(x),...care(x,null)});
+    return shutWork(x,idleDesk(x,{cls:'ca',strip:strip(x,null),recap:trayRecap(x),tasks:taskMails(x,null),other:dayMails(x,{boss:BOSS}),rules:todayRules(x),...care(x,null)}),SHUT);
   },
   summary(data,x){
     if(!data||typeof data!=='object')return '';
@@ -502,4 +527,9 @@ function stepOf(x,data){
   const t=(x.room.tasks||[]).find(v=>v.id===data.task);
   return [t,t&&(t.proc||[]).find(s=>s.id===data.step)];
 }
-function send(x,t,st,answer){return x.send(P+'step',{task:t.id,step:st.id,answer});}
+/** A step check. A wrong one names the boxes that are off (never their values): marked until the next check. */
+async function send(x,t,st,answer){
+  const r=await x.send(P+'step',{task:t.id,step:st.id,answer});
+  if(r){(x.ui.miss??={})[dkey(t,st)]=r.correct===false?(st.kind==='number'?['']:Array.isArray(r.bad)?r.bad:[]):null;if(r.correct===false)x.render();}
+  return r;
+}

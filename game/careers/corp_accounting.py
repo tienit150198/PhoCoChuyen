@@ -1628,7 +1628,9 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         ok, msg = procedures.submit(t, st['id'], answer)
         lunch = office.spend(o, office.COST['step'] + (0 if ok else office.COST['wrong']))
         if not ok:
-            return dict(message=' '.join(x for x in (diag, msg, lunch) if x), correct=False)
+            # Which boxes of a calculation are off (never their values): the client marks them.
+            bad = [f['id'] for f in st['fields'] if answer.get(f['id']) != st['_key'][f['id']]] if st['kind'] == 'fields' else []
+            return dict(message=' '.join(x for x in (diag, msg, lunch) if x), correct=False, bad=bad)
         if st['kind'] == 'entry' and st.get('post', True):
             _post(c, t, st)
         if procedures.done(t):

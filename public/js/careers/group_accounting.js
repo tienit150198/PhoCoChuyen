@@ -5,7 +5,7 @@
  *  and a sticky bar with the next step and the main action.
  *  No inline handlers: every button goes through data-command / data-action="car:*". */
 import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,openTasks,hhmm,planCard,mateCards,trackFold,careSummary,foldToggle,
-  coachOf,goto,gotoAction,guideOf,procSteps,coachFill} from './office_kit.js';
+  coachOf,goto,gotoAction,guideOf,procSteps,coachFill,shut,shutWork,shutBar} from './office_kit.js';
 import {pending,stepLine} from '../v4/guide.js';
 
 const P='ga_';
@@ -76,6 +76,27 @@ function voucher(t,st,x){
     <div class="ga-vfoot"><span>Tổng Nợ <b data-sum="debit">0</b></span><span>Tổng Có <b data-sum="credit">0</b></span><span class="ga-bal" data-bal>—</span></div>
   </div>`;
 }
+/** One line under each box of a calculation: where its number comes from and the formula, in words (never the number).
+ *  Keyed by variant:step, then the field id ('' for a one-number step, '*' for every box of the step). */
+const HOW={
+  'ic_rec:diff':{'':'Số dư trên Sổ phải thu − số dư trên Sổ phải trả.'},
+  'ic_rec:agreed':{'':'Số dư của bên KHÔNG phải điều chỉnh (theo nguyên nhân ở bước trước).'},
+  'elim_upi:upi':{'':'Hàng nội bộ CÒN TỒN cuối kỳ (giá nội bộ) × tỷ suất lãi gộp; phần đã bán ra ngoài không tính.'},
+  'elim_div:parent':{'':'Tổng cổ tức (Nghị quyết) × tỷ lệ sở hữu của công ty mẹ (Cơ cấu sở hữu).'},
+  'elim_div:nci':{'':'Tổng cổ tức − phần của công ty mẹ.'},
+  'fx_translate:tr':{'*':'Số NM trên Bảng cân đối thử × tỷ giá đã chọn ở bước trước (Tỷ giá tập đoàn duyệt).'},
+  'fx_translate:diff':{'':'Tài sản − nợ phải trả (đã quy đổi) − vốn góp × tỷ giá lịch sử − (doanh thu − chi phí đã quy đổi). Có thể âm.'},
+  'worksheet:cons':{'*':'Cộng ngang số của ba công ty trên dòng đó, rồi cộng cột loại trừ (số âm).'},
+  'worksheet:ta':{'':'Cộng tổng tài sản ba công ty − các khoản loại trừ phía tài sản (phải thu nội bộ, khoản đầu tư).'},
+  'nci:nci_profit':{'':'Lợi nhuận sau thuế của SH Logistics × tỷ lệ của cổ đông ngoài (Cơ cấu sở hữu).'},
+  'nci:parent_profit':{'':'Lợi nhuận hợp nhất (Kết quả hợp nhất) − phần của cổ đông không kiểm soát.'},
+  'nci:nci_close':{'':'30% vốn chủ đầu năm + phần lãi của cổ đông không kiểm soát − 30% cổ tức đã chia.'},
+  'pbc:mat':{'':'5% × lợi nhuận trước thuế (giấy Mức trọng yếu).'},
+  'variance:var':{'*':'Thực tế − Ngân sách trên cùng dòng, giữ nguyên dấu (âm nếu thực tế nhỏ hơn).'},
+};
+const how=(t,st,id,x)=>{const h=HOW[`${t.variant}:${st.id}`],s=h?.[id]??h?.['*'];return s?`<p class="ok-note">📐 ${x.esc(s)}</p>`:'';};
+/** Boxes the last wrong check named (server `bad`; '' = a one-number step), outlined until the next check. */
+const missOf=(x,t,st)=>new Set(x.ui.miss?.[dkey(t,st)]||[]);
 function widget(t,st,x){
   const k=dkey(t,st),dr=drafts(x);
   if(st.kind==='choice')return `<div class="ga-options">${(st.options||[]).map(o=>x.cmd(x.esc(o.label),P+'step',{task:t.id,step:st.id,answer:o.id},'ga-opt').replace('<button ',`<button data-opt="${x.esc(o.id)}" `)).join('')}</div>`;
@@ -83,7 +104,8 @@ function widget(t,st,x){
     const sel=dr[k]||[];
     return `<div class="ga-checks" data-multi="${x.esc(k)}">${(st.options||[]).map(o=>`<label class="ga-check"><input type="checkbox" value="${x.esc(o.id)}" ${sel.includes(o.id)?'checked':''}><span>${x.esc(o.label)}</span></label>`).join('')}</div>`;
   }
-  if(st.kind==='number')return `<div class="ga-numrow"><input class="ga-input" type="number" inputmode="numeric" step="1" data-num="${x.esc(k)}" value="${x.esc(dr[k]??'')}" aria-label="${x.esc(st.title)}"><span class="ga-unit">${x.esc(st.unit||'')}</span></div>`;
+  if(st.kind==='number'){const bad=missOf(x,t,st).has('');
+    return `<div class="ga-numrow">${bad?'<span class="ga-bad" aria-hidden="true">✗</span>':''}<input class="ga-input" type="number" inputmode="numeric" step="1" data-num="${x.esc(k)}" value="${x.esc(dr[k]??'')}" aria-label="${x.esc(st.title)}"${bad?' aria-invalid="true"':''}><span class="ga-unit">${x.esc(st.unit||'')}</span></div>${how(t,st,'',x)}`;}
   if(st.kind==='order'){
     const ids=dr[k]??=(st.items||[]).map(i=>i.id);
     const item=id=>(st.items||[]).find(i=>i.id===id)?.label||id;
@@ -94,8 +116,8 @@ function widget(t,st,x){
     return `<div class="ga-match" data-match="${x.esc(k)}">${(st.left||[]).map(l=>`<label class="ga-mrow"><span>${x.esc(l.label)}</span><select data-left="${x.esc(l.id)}"><option value="">— chọn —</option>${(st.right||[]).map(r=>`<option value="${x.esc(r.id)}" ${cur[l.id]===r.id?'selected':''}>${x.esc(r.label)}</option>`).join('')}</select></label>`).join('')}</div>`;
   }
   if(st.kind==='fields'){
-    const cur=dr[k]||{};
-    return `<div class="ga-fields" data-fields="${x.esc(k)}">${(st.fields||[]).map(f=>`<label class="ga-mrow"><span>${x.esc(f.label)}</span>${f.options?`<select data-field="${x.esc(f.id)}"><option value="">— chọn —</option>${f.options.map(o=>`<option value="${x.esc(o.id)}" ${cur[f.id]===o.id?'selected':''}>${x.esc(o.label)}</option>`).join('')}</select>`:`<span class="ga-numrow"><input class="ga-input" type="number" inputmode="numeric" step="1" data-field="${x.esc(f.id)}" value="${x.esc(cur[f.id]??'')}"><span class="ga-unit">${x.esc(f.unit||'')}</span></span>`}</label>`).join('')}</div>`;
+    const cur=dr[k]||{},bad=missOf(x,t,st);
+    return `<div class="ga-fields" data-fields="${x.esc(k)}">${(st.fields||[]).map(f=>`<label class="ga-mrow"><span${bad.has(f.id)?' class="ga-bad"':''}>${bad.has(f.id)?'✗ ':''}${x.esc(f.label)}</span>${f.options?`<select data-field="${x.esc(f.id)}"><option value="">— chọn —</option>${f.options.map(o=>`<option value="${x.esc(o.id)}" ${cur[f.id]===o.id?'selected':''}>${x.esc(o.label)}</option>`).join('')}</select>`:`<span class="ga-numrow"><input class="ga-input" type="number" inputmode="numeric" step="1" data-field="${x.esc(f.id)}" value="${x.esc(cur[f.id]??'')}"${bad.has(f.id)?' aria-invalid="true"':''}><span class="ga-unit">${x.esc(f.unit||'')}</span></span>`}</label>${how(t,st,f.id,x)}`).join('')}</div>`;
   }
   if(st.kind==='entry')return voucher(t,st,x);
   return '';
@@ -175,7 +197,12 @@ function stepOf(x,data){
   const t=(x.room.tasks||[]).find(v=>v.id===data.task);
   return [t,t&&(t.proc||[]).find(s=>s.id===data.step)];
 }
-const send=(x,t,st,answer)=>x.send(P+'step',{task:t.id,step:st.id,answer});
+/** A step check. A wrong one names the boxes that are off (never their values): marked until the next check. */
+async function send(x,t,st,answer){
+  const r=await x.send(P+'step',{task:t.id,step:st.id,answer});
+  if(r){(x.ui.miss??={})[dkey(t,st)]=r.correct===false?(st.kind==='number'?['']:Array.isArray(r.bad)?r.bad:[]):null;if(r.correct===false)x.render();}
+  return r;
+}
 
 function fxCard(x,hot){
   const f=x.room.data?.today?.fx;if(!f)return '';
@@ -299,6 +326,8 @@ const care=(x,t)=>({plan:packPlan(x),people:mateCards(x,{prefix:P,t}),track:trac
 const careBadge=x=>{const p=x.room.data?.care?.plan;return (x.room.data?.care?.asked?1:0)+((p?.items)||[]).filter(i=>i.can_review).length+((p?.queries)||[]).length;};
 
 const strip=(x,t)=>statusStrip(x,t,{boss:BOSS,op:'ga_overtime'});
+/** Office shut: every ga_ command takes office time; these car: actions send one. */
+const SHUT={prefix:'ga_',acts:['open','multi','num','order','match','fields','entry','submit']};
 const todayRules=x=>rulesList(x,x.room.data?.today?.rules||[],'Quy định đối chiếu');
 function currentMail(t,x){
   const timed=typeof t.due==='number',k=t.kind_info||{};
@@ -328,6 +357,7 @@ export default {
   id:'group_accounting',
   css:true,
   next(t,x){
+    if(x&&t.known&&shut(x))return `Văn phòng đóng cửa lúc ${x.room.data.office.limit_time} — khép ca`;
     try{const n=x&&pending(guideFor(t,x).steps);if(n)return stepLine(n);}catch{/* the fixed lines below */}
     if(!t.known)return t.variant==='match'?'Nhận hai sổ đối chiếu':'Nhận hồ sơ từ người giao việc';
     if(t.variant==='match'){
@@ -354,16 +384,18 @@ export default {
     if(!t.known)return desk(x,t,{cls:'ga',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules,books:booksPane(x),
       doc:`<p class="ok-empty"><span aria-hidden="true">✉️</span><b>${x.esc(t.title)}</b><span>${board?'Hai sổ đối chiếu còn nằm trong hộp thư của công ty con.':'Hồ sơ còn trong phong bì.'}</span></p>`},
       bar:bar(x,t,'',g.cta,true)});
+    // Office shut: the work is drawn disabled, the hint steps aside and the bar closes the day.
+    const off=shut(x),hint=off?'':g.hint,work=html=>shutWork(x,html,SHUT);
     if(board){
       // Picking lines and choosing why stay in the bar; the guide's button covers the rest (waiting, ready, nothing picked).
       const sel=msel(x,t),picked=!waiting(t,x)&&!(t.meter||{}).ready&&(sel.a||sel.b);
-      return desk(x,t,{cls:'ga',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules,books:booksPane(x),doc:boardDoc(t,x)},bar:boardBar(t,x,picked?{cta:''}:g)});
+      return desk(x,t,{cls:'ga',tabs,strip:strip(x,t),hint,panes:{inbox:work(inbox),rules,books:booksPane(x),doc:work(boardDoc(t,x))},bar:off?shutBar(x,t):boardBar(t,x,picked?{cta:''}:g)});
     }
-    return desk(x,t,{cls:'ga',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules,books:booksPane(x),doc:stepCard(t,x)+docsPanel(t,x)},bar:dossierBar(t,x,g)});
+    return desk(x,t,{cls:'ga',tabs,strip:strip(x,t),hint,panes:{inbox:work(inbox),rules,books:booksPane(x),doc:work(stepCard(t,x)+docsPanel(t,x))},bar:off?shutBar(x,t):dossierBar(t,x,g)});
   },
   idle(x){
     const d=x.room.data||{};if(!d.office)return '';
-    return idleDesk(x,{cls:'ga',strip:strip(x,null),recap:boardRecap(x),tasks:taskMails(x,null),other:dayMails(x,{boss:BOSS}),rules:todayRules(x),...care(x,null)});
+    return shutWork(x,idleDesk(x,{cls:'ga',strip:strip(x,null),recap:boardRecap(x),tasks:taskMails(x,null),other:dayMails(x,{boss:BOSS}),rules:todayRules(x),...care(x,null)}),SHUT);
   },
   summary(data,x){
     if(!data||typeof data!=='object')return '';

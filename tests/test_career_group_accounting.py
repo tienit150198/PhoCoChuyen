@@ -655,6 +655,22 @@ class GroupAccountingTests(unittest.TestCase):
         self.assertEqual(rates, dict(ta='closing', tl='closing', rev='average', exp='average', cap='historical'))
         self.solve(tid)
 
+    def test_wrong_fields_check_names_the_boxes_off(self):
+        tid = self.use('fx_translate')
+        j = self.j
+        j.act('ask', task=tid)
+        self.open_all(tid)
+        for st in j.get(tid)['proc']:
+            if st['kind'] == 'fields':
+                break
+            self.assertTrue(j.act('ga_step', task=tid, step=st['id'], answer=answer(st))['correct'])
+        wrong = copy.deepcopy(answer(st))
+        wrong['ta'] += 1
+        wrong['rev'] -= 1
+        r = j.act('ga_step', task=tid, step=st['id'], answer=wrong)
+        self.assertFalse(r['correct'])
+        self.assertEqual(sorted(r['bad']), ['rev', 'ta'])
+
     def test_worksheet_consolidated_balance_ties(self):
         seen = 0
         for day in range(1, 41):
