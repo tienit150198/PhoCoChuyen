@@ -22,20 +22,16 @@ BOARD_R = 100                  # 60..100: the straw ring, a miss; beyond: off th
 OFF_R = 116                    # the farthest a dart is drawn
 AIM_MAX = 120                  # the aim the client may send, per axis
 SPREAD = 14                    # the throw's scatter around the aim (a gauss sigma, board units)
-# the odds by today's fair net (xu): HI below NET_LO, LO from NET_HI on, a straight line between
+# the odds by today's fair net: the shared taper (game.fair.odds) with darts' own, lower ends
 P_HI, P_LO = 0.40, 0.30         # owner 03/10 01:20: "phi tiêu khó trúng hơn" (was 0.70, 0.45)
-NET_LO, NET_HI = 2000, 5000
 PT_HIT = 1                     # fair points for a dart in the coloured rings
 
 
 def win_p(net: int) -> float:
-    """The odds of a win given the player's fair net today. Self-contained here; the other luck stalls may get the
-    same taper later (one helper to share then)."""
-    if net < NET_LO:
-        return P_HI
-    if net >= NET_HI:
-        return P_LO
-    return P_HI - (P_HI - P_LO) * (net - NET_LO) / (NET_HI - NET_LO)
+    """The odds of a win given the player's fair net today: the taper of bầu cua and xóc đĩa (game.fair.odds), from P_HI
+    down to P_LO."""
+    from .fair import odds
+    return odds(net, P_HI, P_LO)
 
 
 def aim_ok(aim: object) -> bool:

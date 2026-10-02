@@ -436,12 +436,19 @@ def side_back(sb: dict | None, x: int) -> dict:
     return out
 
 
-def win_p(f: dict | None, t: float) -> float:
-    """How likely the next luck round goes the player's way: WIN_P, tapering above TAPER_FROM of today's luck net."""
-    net = _today(f, t)['net']
+def odds(net: int, hi: float | None = None, lo: float | None = None) -> float:
+    """How likely a luck round (bầu cua, xóc đĩa, phi tiêu) goes the player's way given today's luck net: WIN_P up to
+    TAPER_FROM, then straight down to WIN_P_LOW at TAPER_TO, and WIN_P_LOW from there on."""
+    hi = WIN_P if hi is None else hi
+    lo = WIN_P_LOW if lo is None else lo
     if net <= TAPER_FROM:
-        return WIN_P
-    return max(WIN_P_LOW, WIN_P - (WIN_P - WIN_P_LOW) * (net - TAPER_FROM) / (TAPER_TO - TAPER_FROM))
+        return hi
+    return max(lo, hi - (hi - lo) * (net - TAPER_FROM) / (TAPER_TO - TAPER_FROM))
+
+
+def win_p(f: dict | None, t: float) -> float:
+    """odds() for the next luck round of this fair state (today's net; 0 on a new day)."""
+    return odds(_today(f, t)['net'])
 
 
 def bc_back(bets: dict, dice: list) -> int:
