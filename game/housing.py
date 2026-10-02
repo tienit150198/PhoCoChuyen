@@ -37,9 +37,34 @@ _roll_dorm) and a line of the day on the home card (dorm_view: computed, never s
 `rent.kind` simply holds 'ky_tuc_xa' (an older build rejects that id: see the deploy notes). Moving between two
 rented rooms is one command (jr_home_rent while renting the other one: its deposit comes back first).
 
+🏘️ Several homes (VERSION 2, the owner's "cho phép sở hữu nhiều bất động sản"): up to OWNED_MAX homes at once.
+`own` is still the one you live in (the comfort bonus, điện nước, reno.py's repairs, deco.py's room, the spouse's
+shared home all read it, unchanged); `props` holds the others, each "Đang để trống" (no cost at all) or "Cho thuê"
+(`let`). Each home keeps its own price, loan, schedule and late fees; every installment is taken the same way.
+* Buying another: the same down payment, fee and mortgage rules per home; the bank's 40 % limit counts the
+  installments of every home loan already running (offer: `others`), so loans cannot pile up. A second home is
+  bought "để trống" unless the player chooses to move in (`move_in`); the joint fund only pays for a home the
+  couple moves into (the others belong to the buyer alone). The same listing cannot be bought twice.
+* Dọn nhà (jr_home_move): into a home you own that is empty, for MOVE_FEE xu (a truck), shown before confirming.
+  The home you leave becomes an empty one; a rented room is given back (deposit returned). reno.py's parts and
+  upgrades of the home you leave are kept on it (`keep`) and come back when you return (worn by the days away);
+  deco.py's furniture goes to the bag as on every move (never lost; the paints you bought stay yours).
+* Cho thuê (jr_home_let): a tenant (TENANTS, picked from the journey seed) moves into an empty home and pays
+  rent_of(kind) a month, RENT_BP a year of the list price (5 %: under a term deposit, as real rents are), at the
+  home's own month boundary (the days its installments fall due), pro rata for a part month, into the bank
+  account (else the wallet). Rent is not income for the bank's limit. Light, capped tenant moments: at most one
+  every TENANT_GAP days, one boundary in TENANT_ODDS: the tenant pays LATE_DAYS late (never lost), or a small
+  repair (FIX_PCT % of that month's rent) comes out of the rent. Never anything taken from the wallet.
+  Taking the home back (jr_home_let on=False) settles the rent to that day.
+* Selling (jr_home_sell, `id`): any home; the one you live in sends you back to Bà Tám's attic (move to another
+  home first to live there). Paying (jr_home_pay / jr_home_payoff, `id`) works per home. Without `id` (a page
+  loaded before 2) every command means the home you live in, as before.
+Saves: upgrade() turns a version 1 block into version 2 in place (props [], and `mv`, `let`, `keep` on the home);
+nothing else changes (loan, schedule, history, stats). validate() accepts both versions.
+
 State `s['journey']['home']` (absent = never rented or bought: older saves load unchanged), see initial().
-Commands arrive as `jr_home_*` through journey.action. Deterministic: the only draw (the dorm's line of the day)
-is seeded by the journey seed and the life day.
+Commands arrive as `jr_home_*` through journey.action. Deterministic: the draws (the dorm's line of the day, a
+tenant and their moments) are seeded by the journey seed, the home and the life day.
 """
 from __future__ import annotations
 
@@ -51,7 +76,7 @@ from . import bank as bk
 from . import bank_content as BK
 from . import days as dy
 
-VERSION = 1
+VERSION = 2                       # 2: several homes (props); version 1 blocks are upgraded in place
 KIND = 'home'                     # journey wallet history kind (journey.HISTORY_KINDS)
 MONTH_DAYS = bk.MONTH_DAYS        # 5 life days
 YEAR_DAYS = bk.YEAR_DAYS          # 60 life days
@@ -68,8 +93,25 @@ GRACE = 3                         # life days of grace before a late fee
 LATE_PCT, LATE_MIN = 2, 2
 PAYOFF_FEE_PCT, PAYOFF_FEE_MIN = 1, 5
 LOG_MAX, PAST_MAX = 30, 6
-STATS = ('bought', 'sold', 'paid_off', 'ontime', 'late', 'comfort', 'home_days', 'rent_days')
-COMMANDS = ('jr_home_rent', 'jr_home_leave', 'jr_home_buy', 'jr_home_pay', 'jr_home_payoff', 'jr_home_sell')
+OWNED_MAX = 4                     # homes owned at once, the one you live in included
+MOVE_FEE = 20                     # dọn nhà: a truck for the furniture
+RENT_BP = 500                     # cho thuê: a month's rent = list price × 5 % a year / 12
+TENANT_GAP = 3 * MONTH_DAYS       # life days between two tenant moments, at least
+TENANT_ODDS = 4                   # one month boundary in four (seeded) brings one
+LATE_DAYS = 2                     # a tenant who asks pays this many days later
+FIX_PCT, FIX_MIN = 20, 3          # a small repair, out of that month's rent
+STATS = ('bought', 'sold', 'paid_off', 'ontime', 'late', 'comfort', 'home_days', 'rent_days', 'moves', 'rent_in')
+STATS_V1 = STATS[:8]
+COMMANDS = ('jr_home_rent', 'jr_home_leave', 'jr_home_buy', 'jr_home_pay', 'jr_home_payoff', 'jr_home_sell',
+            'jr_home_move', 'jr_home_let')
+OWN_V1 = ('id', 'kind', 'price', 'day', 'down', 'fee', 'joint', 'loan')
+OWN_KEYS = OWN_V1 + ('mv', 'let', 'keep')   # mv: moves into it (the spouse's inbox id), let: the tenant, keep: reno parts
+LET_KEYS = ('who', 'since', 'rent', 'paid', 'ev', 'owed', 'od')
+
+# Tenants (emoji, name inside a sentence). Indexes are stored in saves: append only.
+TENANTS = (('👩‍🏫', 'Cô giáo Hà'), ('👨‍👩‍👧', 'Vợ chồng anh Tài'), ('🧑‍🎓', 'Hai bạn sinh viên'), ('👩‍💼', 'Chị Lan'),
+           ('👴', 'Ông Sáu'), ('👨‍🍳', 'Anh Phúc đầu bếp'))
+REPAIRS = ('vòi nước bị rỉ', 'bóng đèn nhà tắm bị hư', 'ổ khóa cửa bị kẹt', 'máy nước nóng chập chờn', 'cửa sổ bị kẹt bản lề')
 
 ATTIC = dict(emoji='🏚️', name='Căn gác nhà Bà Tám', where='Trên gác nhà Bà Tám, đầu hẻm',
              desc='Phòng nhỏ trên gác, cửa sổ nhìn ra hẻm. Tiền phòng và cơm nước Bà Tám tính theo ngày.')
@@ -157,6 +199,7 @@ MOVE_LINES = {
     'back': 'Bà Tám mở cửa gác, phủi lại cái chiếu: “Phòng vẫn để đó, về lúc nào cũng được.”',
     'dorm_in': 'Quân, Anh Tuấn và My dọn sẵn giường dưới cạnh cửa sổ, My còn dán tên bạn lên tủ.',
     'dorm_out': 'My dúi cho cái móc khóa, Anh Tuấn hẹn bữa nào ghé ăn mì chung.',
+    'move': 'Hàng xóm cũ phụ khiêng cái tủ lên xe, còn dặn: “Cuối tuần nhớ ghé uống trà nghe!”',
 }
 
 
@@ -169,6 +212,11 @@ def _core():
 def _jr():
     from . import journey
     return journey
+
+
+def _rn():
+    from . import reno
+    return reno
 
 
 def _couple():
@@ -188,32 +236,70 @@ def _ceil10(x: int) -> int:
 
 def initial(day: int = 1) -> dict:
     return dict(v=VERSION, seq=0, day=int(day), rent=None, own=None, shared=None, past=[], log=[],
-                stats={k: 0 for k in STATS})
+                stats={k: 0 for k in STATS}, props=[])
+
+
+def _up(h: dict, day: int = 1) -> None:
+    """Version 1 -> 2 in place, lossless: the home you live in gets mv/let/keep, `props` starts empty; every
+    other field (the loan, its schedule and fees, the log, the stats) stays as it is. Idempotent."""
+    for k, v in initial(day).items():
+        if k != 'v':
+            h.setdefault(k, copy.deepcopy(v))
+    if isinstance(h.get('stats'), dict):
+        for k in STATS:
+            h['stats'].setdefault(k, 0)
+    for x in [h.get('own')] + (h['props'] if isinstance(h.get('props'), list) else []):
+        if isinstance(x, dict):
+            x.setdefault('mv', 0)
+            x.setdefault('let', None)
+            x.setdefault('keep', None)
+    if h.get('v') == 1:
+        h['v'] = VERSION
 
 
 def get(s: dict) -> dict | None:
     j = s.get('journey')
     h = j.get('home') if isinstance(j, dict) else None
-    return h if isinstance(h, dict) else None
+    if not isinstance(h, dict):
+        return None
+    if h.get('v') == 1 or 'props' not in h:   # a version 1 block that has not been through upgrade() yet
+        _up(h, int(j.get('life_day') or 1))
+    return h
 
 
 def _ensure(s: dict) -> dict:
     j = s['journey']
     if not isinstance(j.get('home'), dict):
         j['home'] = initial(j['life_day'])
-    return j['home']
+    return get(s)
 
 
 def upgrade(j: dict) -> None:
-    """Future fields join an existing `home` here (setdefault only). Absent stays absent."""
+    """On load: version 1 becomes 2 (_up), future fields join here (setdefault only). Absent stays absent."""
     h = j.get('home') if isinstance(j, dict) else None
     if not isinstance(h, dict):
         return
-    for k, v in initial(int(j.get('life_day') or 1)).items():
-        h.setdefault(k, copy.deepcopy(v))
-    if isinstance(h.get('stats'), dict):
-        for k in STATS:
-            h['stats'].setdefault(k, 0)
+    _up(h, int(j.get('life_day') or 1))
+
+
+def homes(h: dict | None) -> list[dict]:
+    """Every home you own: the one you live in first, then the others."""
+    if not h:
+        return []
+    return ([h['own']] if h['own'] else []) + list(h['props'])
+
+
+def find(h: dict | None, hid) -> dict | None:
+    return next((x for x in homes(h) if x['id'] == hid), None)
+
+
+def rent_of(kind: str) -> int:
+    """A month's rent from a tenant: RENT_BP a year of today's list price."""
+    return -(-HOMES[kind]['price'] * RENT_BP // (10000 * 12))
+
+
+def tenant(L: dict) -> tuple[str, str]:
+    return TENANTS[L['who']] if 0 <= L['who'] < len(TENANTS) else ('🙂', 'Người thuê')
 
 
 def _log(h: dict, day: int, text: str, amt: int = 0) -> None:
@@ -337,8 +423,16 @@ def offer(s: dict, score: int = HOME_SCORE) -> dict:
                     rate=RATES[-1][1], room=0, score=None)
     why, text = bk._screen(s, b, score)
     inc = bk.income(s)
-    room = max(0, inc['avg'] * MONTH_DAYS * DTI_PCT // 100 - bk._weekly_due(b) * MONTH_DAYS // 7)
-    return dict(ok=why is None, why=why, text=text, rate=rate_for(b['score']), room=room, score=b['score'])
+    others = home_due(get(s))
+    room = max(0, inc['avg'] * MONTH_DAYS * DTI_PCT // 100 - bk._weekly_due(b) * MONTH_DAYS // 7 - others)
+    return dict(ok=why is None, why=why, text=text, rate=rate_for(b['score']), room=room, score=b['score'], others=others)
+
+
+def home_due(h: dict | None) -> int:
+    """What the home loans already running take in a month (each one's largest installment still to pay):
+    the bank's 40 % limit counts them all before lending on another home."""
+    return sum(max((r['amount'] - r['paid'] for r in x['loan']['rows'] if r['paid'] < r['amount']), default=0)
+               for x in homes(h) if x['loan'])
 
 
 def _payoff(ln: dict, day: int, fee: bool = True) -> dict:
@@ -360,9 +454,13 @@ def _late(ln: dict | None) -> bool:
 
 
 # ---------------------------------------------------------------- the daily tick
-def _close_loan(s: dict, h: dict, day: int, why: str) -> None:
-    own = h['own']
-    own['loan'] = None
+def _what(h: dict, x: dict) -> str:
+    """The loan in the bank's words: the home you live in keeps "vay mua nhà"; another home is named."""
+    return 'vay mua nhà' if x is h['own'] else f'vay mua {lname(HOMES[x["kind"]]["name"])}'
+
+
+def _close_loan(s: dict, h: dict, x: dict, day: int, why: str) -> None:
+    x['loan'] = None
     s['journey']['stats']['home_paid'] = s['journey']['stats'].get('home_paid', 0) + 1
     h['stats']['paid_off'] += 1
     b = bk.get(s)
@@ -370,13 +468,15 @@ def _close_loan(s: dict, h: dict, day: int, why: str) -> None:
         bk._score(b, day, why)
 
 
-def _tick_loan(s: dict, h: dict, n: int, notes: list) -> None:
+def _tick_loan(s: dict, h: dict, x: dict, n: int, notes: list) -> None:
     b = bk.get(s)
-    own = h['own']
-    ln = own['loan']
+    ln = x['loan']
     if b is None or ln is None:
         return
-    name = HOMES[own['kind']]['name']
+    name = HOMES[x['kind']]['name']
+    what = _what(h, x)
+    What = what[:1].upper() + what[1:]
+    tag = '' if x is h['own'] else f' · {name}'
     total = len(ln['rows'])
     j = s['journey']
     for r in ln['rows']:
@@ -384,23 +484,23 @@ def _tick_loan(s: dict, h: dict, n: int, notes: list) -> None:
             continue
         left = r['amount'] - r['paid']
         if r['due'] == n + 1 and b['balance'] + max(0, j['wallet']) < left:
-            notes.append('🏠 ' + bk._inbox(b, n, 'sms', f'{BK.BANK_NAME}: Ngày mai (Ngày {r["due"]}) đến hạn trả góp nhà kỳ {r["k"]}/{total}, '
+            notes.append('🏠 ' + bk._inbox(b, n, 'sms', f'{BK.BANK_NAME}: Ngày mai (Ngày {r["due"]}) đến hạn trả góp nhà kỳ {r["k"]}/{total}{tag}, '
                                                         f'{_fmt(left)} xu. Tài khoản và ví hiện chưa đủ, quý khách nhớ nộp thêm nhé.'))
         if r['due'] > n:
             continue
         if bk._debit(s, b, left, f'Trả góp nhà kỳ {r["k"]}/{total} · {name}', n):
             r['paid'] = r['amount']
-            bk._log(b, n, 'loan', f'Kỳ {r["k"]}/{total} · Vay mua nhà', -left)
+            bk._log(b, n, 'loan', f'Kỳ {r["k"]}/{total} · {What}', -left)
             if not r['late']:
                 bk._score(b, n, 'home_ok')
                 h['stats']['ontime'] += 1
-                bk._inbox(b, n, 'sms', BK.INSTALLMENT_SMS.format(bank=BK.BANK_NAME, amount=_fmt(left), k=r['k'], n=total, what='vay mua nhà'))
+                bk._inbox(b, n, 'sms', BK.INSTALLMENT_SMS.format(bank=BK.BANK_NAME, amount=_fmt(left), k=r['k'], n=total, what=what))
             else:
-                notes.append(f'🏠 Đã trích {_fmt(left)} xu trả kỳ {r["k"]} khoản vay mua nhà đang trễ.')
+                notes.append(f'🏠 Đã trích {_fmt(left)} xu trả kỳ {r["k"]} khoản {what} đang trễ.')
             continue
         late_for = n - r['due']
         if late_for == 0:
-            notes.append('🏠 ' + bk._inbox(b, n, 'sms', f'{BK.BANK_NAME}: Kỳ trả góp nhà {r["k"]}/{total} ({_fmt(left)} xu) chưa trích được vì '
+            notes.append('🏠 ' + bk._inbox(b, n, 'sms', f'{BK.BANK_NAME}: Kỳ trả góp nhà {r["k"]}/{total}{tag} ({_fmt(left)} xu) chưa trích được vì '
                                                         f'tài khoản và ví chưa đủ. Quý khách có {GRACE} ngày ân hạn, ngân hàng thử lại mỗi sáng, chưa tính phí.'))
         elif late_for == GRACE and not r['late']:
             fee = max(LATE_MIN, -(-r['amount'] * LATE_PCT // 100))
@@ -410,21 +510,78 @@ def _tick_loan(s: dict, h: dict, n: int, notes: list) -> None:
             b['misses'] += 1
             h['stats']['late'] += 1
             bk._score(b, n, 'home_late')
-            bk._log(b, n, 'loan', f'Phạt trễ hạn kỳ {r["k"]} · Vay mua nhà', -fee)
-            notes.append('⚠️ ' + bk._inbox(b, n, 'sms', BK.REMIND_SMS[1].format(bank=BK.BANK_NAME, what=f'trả góp nhà kỳ {r["k"]}',
+            bk._log(b, n, 'loan', f'Phạt trễ hạn kỳ {r["k"]} · {What}', -fee)
+            notes.append('⚠️ ' + bk._inbox(b, n, 'sms', BK.REMIND_SMS[1].format(bank=BK.BANK_NAME, what=f'trả góp nhà kỳ {r["k"]}{tag}',
                                                                               amount=_fmt(r['amount'] - r['paid']))))
         elif r['late'] and late_for > GRACE and (late_for - GRACE) % MONTH_DAYS == 0:
-            notes.append('📞 ' + bk._call(s, b, n, 'vay mua nhà', r['amount'] - r['paid'], late_for))
+            notes.append('📞 ' + bk._call(s, b, n, what, r['amount'] - r['paid'], late_for))
     if all(r['paid'] >= r['amount'] for r in ln['rows']):
-        _close_loan(s, h, n, 'home_done')
+        _close_loan(s, h, x, n, 'home_done')
         _log(h, n, f'Trả xong khoản vay mua {lname(name)}.')
         notes.append(f'🎉 Bạn đã trả xong khoản vay mua nhà. {name} giờ hoàn toàn là của bạn!')
 
 
+def _rent_due(L: dict, n: int) -> int:
+    """The rent for the days since the last payment (one month at most)."""
+    return L['rent'] * min(MONTH_DAYS, max(0, n - L['paid'])) // MONTH_DAYS
+
+
+def _settle(s: dict, h: dict, x: dict, day: int) -> int:
+    """The tenant leaves: the rent up to `day` and anything they asked to pay later, into the account (else the wallet)."""
+    L = x['let']
+    got = _rent_due(L, day) + L['owed']
+    x['let'] = None
+    if got:
+        _receive(s, got, f'Tiền thuê {lname(HOMES[x["kind"]]["name"])}', day)
+        h['stats']['rent_in'] += got
+    return got
+
+
+def _tick_let(s: dict, h: dict, x: dict, n: int, notes: list) -> None:
+    """A tenant's morning: the rent at the home's month boundary (the days its installments fall due), now and
+    then one light moment (TENANT_GAP, TENANT_ODDS). Never takes anything from the player."""
+    L = x['let']
+    name = lname(HOMES[x['kind']]['name'])
+    who = tenant(L)[1]
+    if L['owed'] and n >= L['od']:
+        got = L['owed']
+        L.update(owed=0, od=0)
+        _receive(s, got, f'Tiền thuê {name}', n)
+        h['stats']['rent_in'] += got
+        notes.append(f'🏠 {who} gửi đủ {_fmt(got)} xu tiền nhà {name} còn khất.')
+    if (n - x['day']) % MONTH_DAYS or n <= L['paid']:
+        return
+    amount = _rent_due(L, n)
+    L['paid'] = n
+    if amount == L['rent'] and n - L['ev'] >= TENANT_GAP:
+        rng = random.Random(f'tenant|{s["journey"].get("seed", 0)}|{x["id"]}|{n}')
+        roll = rng.randrange(TENANT_ODDS * 2)
+        if roll == 0:
+            L.update(owed=L['owed'] + amount, od=n + LATE_DAYS, ev=n)
+            _log(h, n, f'{who} xin khất tiền thuê {name} {LATE_DAYS} ngày.')
+            notes.append(f'🏠 {who} xin khất tiền nhà {name} {LATE_DAYS} ngày, hứa gửi đủ {_fmt(amount)} xu.')
+            return
+        if roll == 1:
+            cost = max(FIX_MIN, amount * FIX_PCT // 100)
+            amount = max(0, amount - cost)
+            L['ev'] = n
+            what = rng.choice(REPAIRS)
+            _log(h, n, f'Sửa {what} ở {name}: {_fmt(cost)} xu, trừ vào tiền thuê.')
+            notes.append(f'🔧 {who} báo {what} ở {name}: thợ sửa hết {_fmt(cost)} xu, trừ vào tiền thuê tháng này.')
+    if amount:
+        _receive(s, amount, f'Tiền thuê {name}', n)
+        h['stats']['rent_in'] += amount
+        notes.append(f'🏠 Nhận {_fmt(amount)} xu tiền thuê {name}.')
+
+
 def _tick(s: dict, h: dict, n: int, notes: list) -> None:
-    """Morning of life day `n`."""
-    if h['own'] and h['own']['loan']:
-        _tick_loan(s, h, n, notes)
+    """Morning of life day `n`: the tenants' rent first (it may pay an installment), then every home loan."""
+    for x in h['props']:
+        if x['let']:
+            _tick_let(s, h, x, n, notes)
+    for x in homes(h):
+        if x['loan']:
+            _tick_loan(s, h, x, n, notes)
     place, kind = where(h)
     if place == 'attic':
         return
@@ -469,9 +626,9 @@ def partner_effects(state: dict, couple_id: int, side: str, other_sid: str, effe
         return []
     out = []
     own = h['own']
-    if own:
+    if own:   # only the home you live in; moving into it again (mv) is a new effect, so the spouse follows every move
         name = str(state.get('name') or 'Người ấy')[:24]
-        out.append(effect(f'home:{couple_id}:{side}:{own["id"]}', other_sid, 'home', 0,
+        out.append(effect(f'home:{couple_id}:{side}:{own["id"]}' + (f'.{own["mv"]}' if own.get('mv') else ''), other_sid, 'home', 0,
                           f'{name} đón bạn về ở chung {lname(HOMES[own["kind"]]["name"])}',
                           dict(set='in', couple=couple_id, id=own['id'], kind=own['kind'], name=name)))
     for p in h['past']:
@@ -547,6 +704,35 @@ def _int(p: dict, key: str, low: int, high: int, msg: str) -> int:
     return v
 
 
+def _pick(h: dict | None, p: dict) -> dict | None:
+    """The home a command is about: `id`, or (a page loaded before several homes) the one you live in."""
+    hid = p.get('id')
+    if hid is None:
+        return h['own'] if h else None
+    return find(h, hid) if isinstance(hid, str) else None
+
+
+def _move_out(s: dict, h: dict, day: int) -> None:
+    """The home you live in becomes one of the others, empty; reno.py's parts and upgrades stay with it."""
+    own = h['own']
+    own['keep'] = _rn().leave_home(s, own, day)
+    h['own'] = None
+    h['props'].append(own)
+
+
+def _move_in(s: dict, h: dict, x: dict, day: int) -> None:
+    h['props'] = [o for o in h['props'] if o is not x]
+    keep, x['keep'] = x['keep'], None
+    x['mv'] += 1
+    h['own'] = x
+    _rn().enter_home(s, x, keep, day)
+
+
+def next_rent_day(x: dict, day: int) -> int:
+    """The next month boundary of a home (its installments' days): when the tenant pays."""
+    return day + MONTH_DAYS - (day - x['day']) % MONTH_DAYS
+
+
 def apply(s: dict, name: str, p: dict) -> dict:
     """`jr_home_*` commands. Everything is checked before anything changes (a declined mortgage is a
     normal result: the bank's inquiry stays on the record, like bank.py's declines)."""
@@ -595,8 +781,11 @@ def apply(s: dict, name: str, p: dict) -> dict:
     if name == 'jr_home_buy':
         kind = p.get('kind')
         need(kind in OWN, 'Chọn căn nhà muốn mua nhé.')
-        need(not own, 'Bạn đang có nhà rồi. Muốn đổi nhà thì bán căn hiện tại trước nhé.')
         H = HOMES[kind]
+        need(not any(x['kind'] == kind for x in homes(h)), f'{H["name"]} đã là nhà của bạn rồi.', 'owned')
+        need(len(homes(h)) < OWNED_MAX, f'Bạn đang có {OWNED_MAX} căn nhà. Bán bớt một căn rồi hãy mua thêm nhé.', 'too_many')
+        move_in = p.get('move_in', own is None)      # a page loaded before several homes never sends it
+        need(type(move_in) is bool, 'Chọn dọn về ở hay để trống nhé.')
         price, fee = H['price'], buy_fee(H['price'])
         down = _int(p, 'down', down_min(price), price, f'Trả trước từ {_fmt(down_min(price))} xu ({DOWN_PCT}% giá nhà) tới {_fmt(price)} xu.')
         loan = price - down
@@ -604,6 +793,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
         pay = down + fee
         joint = p.get('joint', 0)
         need(type(joint) is int and 0 <= joint <= pay, 'Số xu lấy từ quỹ chung không hợp lệ.')
+        need(not joint or move_in, 'Quỹ chung chỉ góp mua căn nhà cả hai cùng về ở.', 'no_joint')
         need(p.get('confirm') is True, 'Xác nhận ký hợp đồng mua nhà.')
         have = _have(s)
         short = pay - joint - have['balance'] - have['wallet']
@@ -628,22 +818,30 @@ def apply(s: dict, name: str, p: dict) -> dict:
             if not o['ok']:
                 return dict(message=f'Hồ sơ vay mua nhà chưa được duyệt. {o["text"]}', approved=False)
             if q['installment'] > o['room']:
+                others = f', đã trừ {_fmt(o["others"])} xu trả góp các căn đang vay' if o['others'] else ''
                 return dict(message=f'Hồ sơ vay mua nhà chưa được duyệt: mỗi kỳ {_fmt(q["installment"])} xu vượt {DTI_PCT}% thu nhập một tháng '
-                                    f'({_fmt(o["room"])} xu). Trả trước nhiều hơn hoặc vay dài hơn nhé.', approved=False)
+                                    f'({_fmt(o["room"])} xu{others}). Trả trước nhiều hơn hoặc vay dài hơn nhé.', approved=False, why='dti')
         h = _ensure(s)
         if joint:   # its own database transaction, idempotent by ref (a retried command never pays twice)
             sp = _spouse(s) or {}
             _couple().joint_spend(s, joint, f'Mua {lname(H["name"])}', f'home{sp.get("side", "x")}{day}n{h["seq"] + 1}', kind='home')
         hid = _seq(h)
         _take(s, pay - joint, f'Trả trước mua {lname(H["name"])}', day)
-        back = _leave_rent(s, h, day) if h['rent'] else 0
         ln = None
         if loan:
             ln = dict(principal=loan, rate=rate, months=months, start=day, rows=q['rows'])
             bk._log(b, day, 'loan', f'Giải ngân vay mua nhà: {_fmt(loan)} xu trả thẳng cho bên bán', 0)
             bk._inbox(b, day, 'sms', f'{BK.BANK_NAME}: Khoản vay mua nhà {_fmt(loan)} xu đã giải ngân cho bên bán. Trả góp {months} kỳ, mỗi kỳ '
                                      f'{_fmt(q["installment"])} xu, cứ {MONTH_DAYS} ngày một kỳ, kỳ đầu Ngày {q["rows"][0]["due"]}.')
-        h['own'] = dict(id=hid, kind=kind, price=price, day=day, down=down, fee=fee, joint=joint, loan=ln)
+        x = dict(id=hid, kind=kind, price=price, day=day, down=down, fee=fee, joint=joint, loan=ln, mv=0, let=None, keep=None)
+        left, back = h['own'], 0
+        if move_in:
+            if left:
+                _move_out(s, h, day)
+            back = _leave_rent(s, h, day) if h['rent'] else 0
+            h['own'] = x
+        else:
+            h['props'].append(x)
         h['stats']['bought'] += 1
         j['stats']['homes_bought'] = j['stats'].get('homes_bought', 0) + 1
         _log(h, day, f'Mua {lname(H["name"])} giá {_fmt(price)} xu' + (f', vay {_fmt(loan)} xu' if loan else ', trả đủ một lần') + '.', -pay)
@@ -653,10 +851,66 @@ def apply(s: dict, name: str, p: dict) -> dict:
             msg += f' Khoản vay {_fmt(loan)} xu trả {months} kỳ, mỗi kỳ khoảng {_fmt(q["installment"])} xu, kỳ đầu {dy.on_day(s, q["rows"][0]["due"])}.'
         if back:
             msg += f' Đã trả phòng trọ, nhận lại {_fmt(back)} xu tiền cọc.'
-        return dict(message=f'{msg} {MOVE_LINES["own"]}', approved=True, home=kind)
+        if not move_in:
+            return dict(message=f'{msg} Căn này đang để trống: dọn về ở hoặc cho thuê lúc nào cũng được.', approved=True, home=kind, id=hid)
+        if left:
+            msg += f' {HOMES[left["kind"]]["name"]} giờ để trống.'
+        return dict(message=f'{msg} {MOVE_LINES["own"] if not left else MOVE_LINES["move"]}', approved=True, home=kind, id=hid)
+    if name == 'jr_home_move':
+        x = find(h, p.get('id')) if h and isinstance(p.get('id'), str) else None
+        need(x is not None, 'Chọn căn nhà muốn dọn về nhé.')
+        H = HOMES[x['kind']]
+        need(x is not own, 'Bạn đang ở đây rồi.', 'here')
+        need(not x['let'], f'{H["name"]} đang cho thuê: báo khách trả nhà trước rồi mới dọn về được nhé.', 'let')
+        need(p.get('confirm') is True, 'Xác nhận dọn nhà.')
+        have = _have(s)
+        back = rent['deposit'] if rent else 0
+        short = MOVE_FEE - have['wallet'] - have['balance'] - back
+        need(short <= 0, f'Thuê xe dọn nhà {_fmt(MOVE_FEE)} xu: bạn còn thiếu {_fmt(short)} xu.', 'not_enough')
+        if rent:
+            _leave_rent(s, h, day)
+        _take(s, MOVE_FEE, f'Thuê xe dọn về {lname(H["name"])}', day)
+        if own:
+            _move_out(s, h, day)
+        _move_in(s, h, x, day)
+        h['stats']['moves'] += 1
+        _log(h, day, f'Dọn về {lname(H["name"])}.', -MOVE_FEE)
+        msg = f'Đã dọn về {lname(H["name"])}, xe chở đồ {_fmt(MOVE_FEE)} xu.'
+        if own:
+            msg += f' {HOMES[own["kind"]]["name"]} giờ để trống.'
+        if back:
+            msg += f' Đã trả phòng, nhận lại {_fmt(back)} xu tiền cọc.'
+        return dict(message=f'{msg} {MOVE_LINES["move"]}')
+    if name == 'jr_home_let':
+        x = find(h, p.get('id')) if h and isinstance(p.get('id'), str) else None
+        need(x is not None, 'Chọn căn nhà nhé.')
+        H = HOMES[x['kind']]
+        on = p.get('on')
+        need(type(on) is bool, 'Chọn cho thuê hay lấy lại nhà nhé.')
+        need(p.get('confirm') is True, 'Xác nhận nhé.')
+        hn = lname(H['name'])
+        if on:
+            need(x is not own, 'Bạn đang ở căn này: dọn sang căn khác rồi mới cho thuê được nhé.', 'here')
+            need(not x['let'], f'{H["name"]} đang có người thuê rồi.', 'let')
+            who = random.Random(f'tenant-in|{j.get("seed", 0)}|{x["id"]}|{day}').randrange(len(TENANTS))
+            x['let'] = dict(who=who, since=day, rent=rent_of(x['kind']), paid=day, ev=day, owed=0, od=0)
+            emoji, tname = TENANTS[who]
+            _log(h, day, f'Cho {tname} thuê {hn}, {_fmt(x["let"]["rent"])} xu/tháng.')
+            to = 'tài khoản' if bk.get(s) is not None else 'ví'
+            return dict(message=f'{emoji} {tname} dọn vào {hn}. Tiền thuê {_fmt(x["let"]["rent"])} xu/tháng, vào {to} mỗi {MONTH_DAYS} ngày, '
+                                f'kỳ đầu {dy.on_day(s, next_rent_day(x, day))} (tính theo số ngày ở).')
+        need(x['let'], f'{H["name"]} đang để trống.', 'empty')
+        tname = tenant(x['let'])[1]
+        got = _settle(s, h, x, day)
+        _log(h, day, f'{tname} trả nhà {hn}.', got)
+        return dict(message=f'{tname} đã trả nhà {hn}' + (f', gửi nốt {_fmt(got)} xu tiền thuê' if got else '') + '. Căn nhà đang để trống.')
     if name in ('jr_home_pay', 'jr_home_payoff'):
-        need(own and own['loan'], 'Bạn không có khoản vay mua nhà nào.')
-        ln = own['loan']
+        x = _pick(h, p)
+        need(x and x['loan'], 'Bạn không có khoản vay mua nhà nào.')
+        ln = x['loan']
+        what = _what(h, x)
+        What = what[:1].upper() + what[1:]
+        tag = '' if x is own else f' · {HOMES[x["kind"]]["name"]}'
         b = bk.get(s)
         have = _have(s)
         if name == 'jr_home_pay':
@@ -666,51 +920,60 @@ def apply(s: dict, name: str, p: dict) -> dict:
             amount = sum(r['amount'] - r['paid'] for r in rows)
             need(have['balance'] + have['wallet'] >= amount, f'Cần {_fmt(amount)} xu: tài khoản và ví còn thiếu '
                                                               f'{_fmt(amount - have["balance"] - have["wallet"])} xu.', 'not_enough')
-            _take(s, amount, f'Trả góp nhà kỳ {", ".join(str(r["k"]) for r in rows)}', day)
+            _take(s, amount, f'Trả góp nhà kỳ {", ".join(str(r["k"]) for r in rows)}{tag}', day)
             for r in rows:
                 r['paid'] = r['amount']
-            bk._log(b, day, 'loan', f'Trả kỳ {", ".join(str(r["k"]) for r in rows)} · Vay mua nhà', -amount)
-            msg = f'Đã trả {_fmt(amount)} xu cho khoản vay mua nhà.'
+            bk._log(b, day, 'loan', f'Trả kỳ {", ".join(str(r["k"]) for r in rows)} · {What}', -amount)
+            msg = f'Đã trả {_fmt(amount)} xu cho khoản {what}.'
             if all(r['paid'] >= r['amount'] for r in ln['rows']):
-                _close_loan(s, h, day, 'home_done')
-                _log(h, day, 'Trả xong khoản vay mua nhà.')
+                _close_loan(s, h, x, day, 'home_done')
+                _log(h, day, f'Trả xong khoản {what}.')
                 msg += ' Khoản vay đã trả xong, căn nhà hoàn toàn là của bạn!'
             return dict(message=msg)
         need(p.get('confirm') is True, 'Xác nhận tất toán khoản vay mua nhà.')
         off = _payoff(ln, day)
         need(have['balance'] + have['wallet'] >= off['total'], f'Tất toán cần {_fmt(off["total"])} xu: tài khoản và ví còn thiếu '
                                                                 f'{_fmt(off["total"] - have["balance"] - have["wallet"])} xu.', 'not_enough')
-        _take(s, off['total'], 'Tất toán sớm vay mua nhà', day)
+        _take(s, off['total'], f'Tất toán sớm {what}', day)
         b['stats']['fees'] += off['fee']
-        bk._log(b, day, 'loan', f'Tất toán sớm vay mua nhà · phí {_fmt(off["fee"])} xu', -off['total'])
-        _close_loan(s, h, day, 'home_done')
-        _log(h, day, f'Tất toán sớm khoản vay mua nhà: {_fmt(off["total"])} xu.', -off['total'])
+        bk._log(b, day, 'loan', f'Tất toán sớm {what} · phí {_fmt(off["fee"])} xu', -off['total'])
+        _close_loan(s, h, x, day, 'home_done')
+        _log(h, day, f'Tất toán sớm khoản {what}: {_fmt(off["total"])} xu.', -off['total'])
         return dict(message=f'Đã tất toán {_fmt(off["total"])} xu (phí trả trước hạn {_fmt(off["fee"])} xu), bớt được '
                             f'{_fmt(max(0, off["saved"]))} xu tiền lãi. Căn nhà giờ không còn nợ!')
     # jr_home_sell
-    need(own, 'Bạn chưa có nhà để bán.')
+    x = _pick(h, p)
+    need(x, 'Bạn chưa có nhà để bán.')
     need(p.get('confirm') is True, 'Xác nhận bán nhà.')
-    value = value_of(own, day)
+    value = value_of(x, day)
     need(p.get('value') == value, 'Giá thị trường vừa thay đổi. Xem lại rồi bán nhé.', 'stale_quote')
     fee = sell_fee(value)
-    off = _payoff(own['loan'], day, fee=False) if own['loan'] else None
+    off = _payoff(x['loan'], day, fee=False) if x['loan'] else None
     got = value - fee - (off['total'] if off else 0)
-    need(got >= 0, 'Tiền bán nhà chưa đủ trả hết khoản vay. Nộp thêm tiền trả bớt nợ rồi hãy bán nhé.')
-    H = HOMES[own['kind']]
+    need(got >= 0, 'Tiền bán nhà chưa đủ trả hết khoản vay. Nộp thêm tiền trả bớt nợ rồi hãy bán nhé.', 'underwater')
+    H = HOMES[x['kind']]
+    live = x is own
     b = bk.get(s)
+    left = ''
+    if x['let']:
+        tname = tenant(x['let'])[1]
+        rent_back = _settle(s, h, x, day)
+        left = f' {tname} dọn đi' + (f', gửi nốt {_fmt(rent_back)} xu tiền thuê.' if rent_back else '.')
     if off:
-        bk._log(b, day, 'loan', f'Bán nhà, trả hết vay mua nhà: {_fmt(off["total"])} xu', -off['total'])
-        _close_loan(s, h, day, '')
+        bk._log(b, day, 'loan', f'Bán nhà, trả hết {_what(h, x)}: {_fmt(off["total"])} xu', -off['total'])
+        _close_loan(s, h, x, day, '')
     to = _receive(s, got, f'Tiền bán {lname(H["name"])}', day) if got else 'ví'
-    h['past'] = ar.last(h['past'] + [dict(id=own['id'], kind=own['kind'], bought=own['day'], sold=day, price=own['price'], got=got)], PAST_MAX, 'home.past', ar.JOURNEY)
-    h['own'] = None
+    h['past'] = ar.last(h['past'] + [dict(id=x['id'], kind=x['kind'], bought=x['day'], sold=day, price=x['price'], got=got)], PAST_MAX, 'home.past', ar.JOURNEY)
+    if live:
+        h['own'] = None
+    else:
+        h['props'] = [o for o in h['props'] if o is not x]
     h['stats']['sold'] += 1
     _log(h, day, f'Bán {lname(H["name"])} được {_fmt(value)} xu, phí {_fmt(fee)} xu' + (f', trả nợ vay {_fmt(off["total"])} xu' if off else '') + '.', got)
     msg = f'Đã bán {lname(H["name"])} giá {_fmt(value)} xu (phí môi giới, thuế {_fmt(fee)} xu)'
     msg += f', trả hết nợ vay {_fmt(off["total"])} xu' if off else ''
-    msg += f'. {_fmt(got)} xu đã về {to}.'
-    back = where(h)[0]
-    return dict(message=msg + (' ' + MOVE_LINES['back'] if back == 'attic' else ''))
+    msg += f'. {_fmt(got)} xu đã về {to}.' + left
+    return dict(message=msg + (' ' + MOVE_LINES['back'] if live and where(h)[0] == 'attic' else ''))
 
 
 def action(s: dict, name: str, p: dict) -> dict:
@@ -723,7 +986,8 @@ def rules() -> dict:
     return dict(month_days=MONTH_DAYS, year_days=YEAR_DAYS, down_pct=DOWN_PCT, buy_fee_pct=BUY_FEE_PCT, sell_fee_pct=SELL_FEE_PCT,
                 fee_min=FEE_MIN, grow_rate=GROW_RATE, grow_cap_pct=GROW_CAP_PCT, home_score=HOME_SCORE,
                 rates=[dict(min=low, rate=rate) for low, rate in RATES], months=list(LOAN_MONTHS), loan_min=LOAN_MIN, dti_pct=DTI_PCT,
-                grace=GRACE, late_pct=LATE_PCT, late_min=LATE_MIN, payoff_fee_pct=PAYOFF_FEE_PCT, payoff_fee_min=PAYOFF_FEE_MIN)
+                grace=GRACE, late_pct=LATE_PCT, late_min=LATE_MIN, payoff_fee_pct=PAYOFF_FEE_PCT, payoff_fee_min=PAYOFF_FEE_MIN,
+                owned_max=OWNED_MAX, move_fee=MOVE_FEE, rent_bp=RENT_BP, late_days=LATE_DAYS, fix_pct=FIX_PCT)
 
 
 def catalogue() -> dict:
@@ -738,7 +1002,7 @@ def catalogue() -> dict:
         else:
             p = H['price']
             row.update(price=p, upkeep=H['upkeep'], down_min=down_min(p), fee=buy_fee(p), need=down_min(p) + buy_fee(p),
-                       cash_all=p + buy_fee(p), score=need_score(k))
+                       cash_all=p + buy_fee(p), score=need_score(k), let_rent=rent_of(k))
         homes.append(row)
     return dict(groups=[dict(id=g, emoji=e, name=n, color=c) for g, e, n, c in GROUPS], homes=homes)
 
@@ -784,6 +1048,40 @@ def dorm_view(s: dict) -> dict:
     return dict(mates=mates, you=YOUR_BED, line=dict(who=who, name=ROOMMATES[who]['name'], text=rng.choice(DORM_LINES[who])))
 
 
+def _home_view(s: dict, h: dict, x: dict, day: int, ready: int) -> dict:
+    """One home you own as the page shows it (`own` keeps 0.9's fields; the others add their tenant and what can be done)."""
+    H = HOMES[x['kind']]
+    value = value_of(x, day)
+    fee = sell_fee(value)
+    ln = x['loan']
+    loan = None
+    off_sale = _payoff(ln, day, fee=False) if ln else None
+    if ln:
+        nxt = next((r for r in ln['rows'] if r['paid'] < r['amount']), None)
+        loan = dict(ln, rate_text=bk.year_text(ln['rate']), left=sum(r['amount'] - r['paid'] for r in ln['rows']),
+                    principal_left=sum(r['principal'] for r in ln['rows'] if r['paid'] < r['amount']), next=nxt,
+                    overdue=sum(r['amount'] - r['paid'] for r in ln['rows'] if r['due'] <= day and r['paid'] < r['amount']),
+                    late=_late(ln), payoff=_payoff(ln, day), paid_rows=sum(1 for r in ln['rows'] if r['paid'] >= r['amount']))
+    get_ = value - fee - (off_sale['total'] if off_sale else 0)
+    out = {k: v for k, v in x.items() if k != 'keep'}
+    out.update(emoji=H['emoji'], group=H['group'], perk=H.get('perk'), list_price=H['price'], name=H['name'], where=H['where'],
+               desc=H['desc'], upkeep=H['upkeep'], comfort=H['comfort'], value=value, loan=loan, live=x is h['own'],
+               let_rent=rent_of(x['kind']),
+               sell=dict(value=value, fee=fee, payoff=off_sale['total'] if off_sale else 0, get=get_, ok=get_ >= 0,
+                         why='' if get_ >= 0 else 'Tiền bán chưa đủ trả hết nợ vay'))
+    L = x['let']
+    if L:
+        emoji, who = tenant(L)
+        nd = next_rent_day(x, day)
+        out['let'] = dict(L, emoji=emoji, name=who, next=nd, next_amount=_rent_due(L, nd))
+    if x is not h['own']:
+        back = h['rent']['deposit'] if h['rent'] else 0
+        out['move'] = dict(ok=not L and ready + back >= MOVE_FEE, fee=MOVE_FEE,
+                           why='Đang cho thuê: lấy lại nhà trước' if L else '' if ready + back >= MOVE_FEE
+                           else f'Thiếu {_fmt(MOVE_FEE - ready - back)} xu thuê xe')
+    return out
+
+
 def public(s: dict) -> dict:
     j = s['journey']
     h = get(s)
@@ -795,25 +1093,9 @@ def public(s: dict) -> dict:
     market = _market(ready, h['rent']['deposit'] if h and h['rent'] else 0)
     o = offer(s)
     o['rate_text'] = bk.year_text(o['rate'])
-    own = None
-    if h and h['own']:
-        x = h['own']
-        H = HOMES[x['kind']]
-        value = value_of(x, day)
-        fee = sell_fee(value)
-        ln = x['loan']
-        loan = None
-        off_sale = _payoff(ln, day, fee=False) if ln else None
-        if ln:
-            nxt = next((r for r in ln['rows'] if r['paid'] < r['amount']), None)
-            loan = dict(ln, rate_text=bk.year_text(ln['rate']), left=sum(r['amount'] - r['paid'] for r in ln['rows']),
-                        principal_left=sum(r['principal'] for r in ln['rows'] if r['paid'] < r['amount']), next=nxt,
-                        overdue=sum(r['amount'] - r['paid'] for r in ln['rows'] if r['due'] <= day and r['paid'] < r['amount']),
-                        late=_late(ln), payoff=_payoff(ln, day), paid_rows=sum(1 for r in ln['rows'] if r['paid'] >= r['amount']))
-        own = dict(x, emoji=H['emoji'], group=H['group'], perk=H.get('perk'), list_price=H['price'], name=H['name'], where=H['where'],
-                   desc=H['desc'], upkeep=H['upkeep'], comfort=H['comfort'],
-                   value=value, loan=loan, sell=dict(value=value, fee=fee, payoff=off_sale['total'] if off_sale else 0,
-                                                     get=value - fee - (off_sale['total'] if off_sale else 0)))
+    own = _home_view(s, h, h['own'], day, ready) if h and h['own'] else None
+    props = [_home_view(s, h, x, day, ready) for x in h['props']] if h else []
+    count = len(homes(h))
     rent = None
     if h and h['rent']:
         H = HOMES[h['rent']['kind']]
@@ -823,13 +1105,69 @@ def public(s: dict) -> dict:
         H = HOMES[h['shared']['kind']]
         shared = dict(h['shared'], emoji=H['emoji'], home=H['name'], where=H['where'], upkeep=H['upkeep'], comfort=H['comfort'])
     sp = _spouse(s)
+    full = count >= OWNED_MAX
     return dict(story=bool(j.get('story')), life_day=day, have=dict(have, ready=ready, bank=b is not None, debt=max(0, -j['wallet']),
                 savings=bk._savings_total(b) if b else 0), place=_place_view(s, h), attic_rent=attic, market=market, offer=o,
                 own=own, rent=rent, shared=shared, married=bool(sp), spouse=(sp or {}).get('name'),
-                log=list(reversed(h['log'])) if h else [], stats=dict(h['stats']) if h else {k: 0 for k in STATS}, rules=rules())
+                log=list(reversed(h['log'])) if h else [], stats=dict(h['stats']) if h else {k: 0 for k in STATS}, rules=rules(),
+                props=props, count=count, owned=[x['kind'] for x in homes(h)],
+                can_buy=dict(ok=not full, why=f'Đã có {OWNED_MAX} căn nhà: bán bớt một căn rồi hãy mua thêm' if full else ''))
 
 
 # ---------------------------------------------------------------- validation
+def _valid_home(s: dict, x, v: int, live: bool) -> None:
+    """One home you own (version 1: the 0.9 fields only; version 2 adds mv, let, keep)."""
+    e = _core()
+    need, integer, txt = e.need, e.integer, e.clean_text
+    j = s['journey']
+    bad = 'Dữ liệu nhà ở không hợp lệ.'
+    need(isinstance(x, dict) and set(x) == set(OWN_V1 if v == 1 else OWN_KEYS) and x['kind'] in OWN
+         and x['price'] in prices(x['kind']) and x['fee'] == buy_fee(x['price']), bad)
+    txt(x['id'], 16)
+    integer(x['day'], 1, 10**6)
+    integer(x['down'], down_min(x['price']), x['price'])
+    integer(x['joint'], 0, x['down'] + x['fee'])
+    ln = x['loan']
+    if ln is not None:
+        need(bk.get(s) is not None, bad)
+        need(isinstance(ln, dict) and set(ln) == {'principal', 'rate', 'months', 'start', 'rows'} and ln['months'] in LOAN_MONTHS
+             and ln['rate'] in [rate for _, rate in RATES] and ln['principal'] == x['price'] - x['down'] and ln['start'] == x['day'], bad)
+        rows = ln['rows']
+        need(isinstance(rows, list) and len(rows) == ln['months'], bad)
+        for i, row in enumerate(rows):
+            need(isinstance(row, dict) and set(row) == {'k', 'due', 'principal', 'interest', 'amount', 'paid', 'fee', 'late'}
+                 and row['k'] == i + 1 and row['due'] == ln['start'] + MONTH_DAYS * (i + 1) and type(row['late']) is bool, bad)
+            for k in ('principal', 'interest', 'amount', 'paid', 'fee'):
+                integer(row[k], 0, bk.AMOUNT_MAX * 2)
+            need(row['amount'] == row['principal'] + row['interest'] + row['fee'] and row['paid'] <= row['amount'], bad)
+        need(sum(row['principal'] for row in rows) == ln['principal'], bad)
+    if v == 1:
+        return
+    integer(x['mv'], 0, 10**6)
+    L = x['let']
+    need(L is None or not live, bad)                 # the home you live in is never let
+    if L is not None:
+        need(isinstance(L, dict) and set(L) == set(LET_KEYS), bad)
+        integer(L['who'], 0, 99)
+        integer(L['rent'], 1, bk.AMOUNT_MAX)
+        for k in ('since', 'paid', 'ev'):
+            integer(L[k], 1, 10**6)
+        need(x['day'] <= L['since'] <= L['paid'] <= j['life_day'] and L['ev'] <= j['life_day'], bad)
+        integer(L['owed'], 0, L['rent'] * 2)
+        integer(L['od'], 0, 10**6)
+    K = x['keep']
+    need(K is None or not live, bad)                 # reno.py's block holds the parts of the home you live in
+    if K is not None:
+        parts = _rn().PART_IDS
+        need(isinstance(K, dict) and set(K) == {'day', 'parts'} and isinstance(K['parts'], dict) and set(K['parts']) == set(parts), bad)
+        integer(K['day'], 1, 10**6)
+        need(K['day'] <= j['life_day'], bad)
+        for p in K['parts'].values():
+            need(isinstance(p, dict) and set(p) == {'c', 'lv'}, bad)
+            integer(p['c'], 0, 100)
+            integer(p['lv'], 0, _rn().LV_MAX)
+
+
 def validate(s: dict) -> None:
     e = _core()
     need, integer, txt = e.need, e.integer, e.clean_text
@@ -838,13 +1176,16 @@ def validate(s: dict) -> None:
         return
     h = j['home']
     bad = 'Dữ liệu nhà ở không hợp lệ.'
-    need(isinstance(h, dict) and set(h) == set(initial()) and h['v'] == VERSION, bad, 'invalid_save')
+    need(isinstance(h, dict) and h.get('v') in (1, VERSION), bad, 'invalid_save')
+    v = h['v']
+    keys = set(initial()) - {'props'} if v == 1 else set(initial())     # version 1: a save not upgraded yet (still accepted)
+    need(set(h) == keys, bad, 'invalid_save')
     integer(h['seq'], 0, 10**6)
     integer(h['day'], 1, 10**6)
     need(h['day'] <= j['life_day'], bad)
-    need(isinstance(h['stats'], dict) and set(h['stats']) == set(STATS), bad)
-    for v in h['stats'].values():
-        integer(v, 0, 10**9)
+    need(isinstance(h['stats'], dict) and set(h['stats']) == set(STATS_V1 if v == 1 else STATS), bad)
+    for n in h['stats'].values():
+        integer(n, 0, 10**9)
     r = h['rent']
     if r is not None:
         need(isinstance(r, dict) and set(r) == {'kind', 'since', 'deposit'} and r['kind'] in RENT and r['deposit'] == HOMES[r['kind']]['deposit'], bad)
@@ -852,26 +1193,14 @@ def validate(s: dict) -> None:
     x = h['own']
     need(not (x and r), bad)
     if x is not None:
-        need(isinstance(x, dict) and set(x) == {'id', 'kind', 'price', 'day', 'down', 'fee', 'joint', 'loan'} and x['kind'] in OWN
-             and x['price'] in prices(x['kind']) and x['fee'] == buy_fee(x['price']), bad)
-        txt(x['id'], 16)
-        integer(x['day'], 1, 10**6)
-        integer(x['down'], down_min(x['price']), x['price'])
-        integer(x['joint'], 0, x['down'] + x['fee'])
-        ln = x['loan']
-        if ln is not None:
-            need(bk.get(s) is not None, bad)
-            need(isinstance(ln, dict) and set(ln) == {'principal', 'rate', 'months', 'start', 'rows'} and ln['months'] in LOAN_MONTHS
-                 and ln['rate'] in [rate for _, rate in RATES] and ln['principal'] == x['price'] - x['down'] and ln['start'] == x['day'], bad)
-            rows = ln['rows']
-            need(isinstance(rows, list) and len(rows) == ln['months'], bad)
-            for i, row in enumerate(rows):
-                need(isinstance(row, dict) and set(row) == {'k', 'due', 'principal', 'interest', 'amount', 'paid', 'fee', 'late'}
-                     and row['k'] == i + 1 and row['due'] == ln['start'] + MONTH_DAYS * (i + 1) and type(row['late']) is bool, bad)
-                for k in ('principal', 'interest', 'amount', 'paid', 'fee'):
-                    integer(row[k], 0, bk.AMOUNT_MAX * 2)
-                need(row['amount'] == row['principal'] + row['interest'] + row['fee'] and row['paid'] <= row['amount'], bad)
-            need(sum(row['principal'] for row in rows) == ln['principal'], bad)
+        _valid_home(s, x, v, True)
+    owned = [x] if x is not None else []
+    if v != 1:
+        need(isinstance(h['props'], list) and len(h['props']) + len(owned) <= OWNED_MAX, bad)
+        for o in h['props']:
+            _valid_home(s, o, v, False)
+        owned += h['props']
+        need(len({o['id'] for o in owned}) == len(owned) and len({o['kind'] for o in owned}) == len(owned), bad)
     sh = h['shared']
     if sh is not None:
         need(isinstance(sh, dict) and set(sh) == {'couple', 'id', 'kind', 'name', 'since'} and sh['kind'] in OWN, bad)

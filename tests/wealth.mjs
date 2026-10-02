@@ -75,6 +75,15 @@ assert.doesNotMatch(html,/data-wl-debt="0"/);assert.match(html,/data-wl-debt="40
 assert.match(html,/Chưa mở tài khoản/);assert.doesNotMatch(html,/data-wl="joint"|data-wl="home"/);
 assert.doesNotMatch(wealthHTML({journey:{story:true,wallet:5,places:{},bank:{open:false}}}),/data-wl-debt/,'no debt: no "Nợ" line');
 
+// Several homes (housing.py VERSION 2): every one counts, the empty and the let ones too.
+const two={journey:{story:true,wallet:0,life_day:9,places:{},bank:{open:false},home:{own:{kind:'tap_the',name:'Căn tập thể cũ',value:1800},
+  props:[{kind:'nha_pho',name:'Nhà phố nhỏ',emoji:'🏠',value:7800,loan:{left:5000},let:{rent:33}},{kind:'can_ho_mini',name:'Căn hộ mini',value:3600,let:null}]}}};
+const PT=pockets(two);
+assert.deepEqual(PT.homes.map(x=>[x.kind,x.live,Boolean(x.let)]),[['tap_the',true,false],['nha_pho',false,true],['can_ho_mini',false,false]]);
+assert.equal(PT.assets,1800+7800+3600);assert.equal(PT.debt,5000);assert.equal(PT.home.kind,'tap_the');
+html=wealthHTML(two);
+assert.match(html,/đang cho thuê/);assert.match(html,/đang để trống/);assert.match(html,/Vay mua nhà phố nhỏ/);
+
 // Married: from the marriage view or the house view.
 assert.ok(married({marriage:{spouse:{status:'married'}}}));
 assert.ok(married({journey:{home:{married:true}}}));

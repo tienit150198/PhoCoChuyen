@@ -12,6 +12,9 @@ rooms too. The furniture itself (what the player owns) is still the list `items`
 also exists for a player without a home (hid None, no parts). 1.2.0 kept a room and a slot per piece (`r`, `x`);
 deco.py reads those as grid positions and clears them, and the 1.2.0 commands jr_reno_buy/move/store/sell still
 work through deco.legacy. When the home is sold the next home starts with its own condition and no upgrades.
+Since several homes (housing.py VERSION 2) the block follows the home you live in; moving to another home you own
+hands the parts of the one you leave to housing.py (leave_home: kept on that home) and brings them back when you
+return (enter_home), so repairs and upgrades are never lost by moving.
 
 Ấm cúng: the decor points (deco.decor_points: each distinct kind placed + the theme sets) + COZY_LV per upgrade
 level. From COZY_STEPS it adds +1 / +2 tinh thần each morning (on top of the home's own comfort) while the parts
@@ -181,6 +184,30 @@ def _sync(r: dict, own: dict | None, day: int) -> bool:
         r['parts'] = {}
     r['day'] = max(r['day'], day)
     return True
+
+
+def leave_home(s: dict, own: dict, day: int) -> dict | None:
+    """🏘️ Moving out of a home you keep (housing.py, several homes): its parts and upgrades as they stand today,
+    for housing.py to keep on that home (`keep`). None: nobody has worked on it (its view is computed)."""
+    r = get(s)
+    if r is None or r['hid'] != own['id'] or not r['parts']:
+        return None
+    _wear_to(r, day)
+    return dict(day=int(r['day']), parts=tree_copy(r['parts']))
+
+
+def enter_home(s: dict, own: dict, keep: dict | None, day: int) -> None:
+    """🏘️ Moving back into a home you own: its kept parts come back, worn by the days it stood empty (no Ấm cúng
+    bonus for those days). Without `keep` the block simply follows the home on the next morning (_sync)."""
+    r = get(s)
+    if r is None or not keep:
+        return
+    for it in r['items']:
+        it['r'] = it['x'] = None
+    r['hid'] = own['id']
+    r['parts'] = tree_copy(keep['parts'])
+    r['day'] = int(keep['day'])
+    _wear_to(r, day)
 
 
 def upgrade(j: dict) -> None:
