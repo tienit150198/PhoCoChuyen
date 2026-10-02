@@ -1,5 +1,19 @@
 {
  "strings": {
+  "Bảng vàng · lời": "Golden board · up",
+  "Bảng vàng · lỗ": "Golden board · down",
+  "Bạn đang lời": "You're up",
+  "Bạn đang lỗ": "You're down",
+  "· hạng": "· rank",
+  "Ai thắng nhiều xu nhất đứng đầu · Top 1 khi hội tàn thành 👑 Vua trò chơi": "Whoever wins the most coins leads · #1 when the fair ends becomes 👑 King of games",
+  "Hôm nay đã kiếm đủ xu từ ô ăn quan. Mai ghé tiếp nha!": "You've earned today's max from ô ăn quan. Come back tomorrow!",
+  "Chưa ai lời xu nào. Thắng là có tên trên bảng!": "Nobody is up yet. Win some coins to get on the board!",
+  "Chỉ ai đang lời mới có tên trên bảng.": "Only players who are up get on the board.",
+  "Cách xếp hạng": "How the ranking works",
+  "Xếp theo số xu bạn thắng ở hội chợ lần này: tiền thắng trừ tiền thua ở bầu cua, phi tiêu, lô tô, chiếu trong, cộng xu kiếm từ ô ăn quan và ném vòng.": "Ranked by the coins you've won at this fair: winnings minus losses at gourd-crab, darts, lô tô and the back corner, plus coins earned at ô ăn quan and ring toss.",
+  "Tiền vốn được tặng, tiền vay và tiền trả nợ không tính.": "The gift money, loans and repayments don't count.",
+  "Bằng xu thì ai đạt trước đứng trên.": "On a tie, whoever got there first ranks higher.",
+  "Tâm ngắm chạy vòng vòng trên bảng, bấm “Phóng!” khi nó ở chỗ bạn muốn. Phi tiêu cắm trong vòng màu (xanh, đỏ, vàng, hồng tâm) là trúng: ăn một trả một. Cắm vòng rơm ngoài cùng hay rớt ra ngoài là mất tiền đặt. Gió hội chợ hay thổi lệch, nên trúng trật còn nhờ vận may.": "The crosshair circles the board; tap “Throw!” when it's where you want. A dart in a coloured ring (green, red, yellow, bullseye) wins: you get your stake back plus as much again. The outer straw ring or off the board loses the stake. The fair wind often blows darts off, so a hit is partly luck.",
   "Hội chợ cân lại vận, thắng thua sát nút hơn. Chơi một trò liên tục quá lâu thì vận nguội dần, đổi trò hay nghỉ chút nha.": "Fair luck rebalanced: wins and losses are closer now. Play one game nonstop for too long and your luck cools; switch games or take a break to warm it up.",
   "Ném vòng giờ chỉ để kiếm xu vui, không tính điểm Bảng vàng nữa.": "Ring toss is now just for fun coins and no longer counts toward the Golden Board.",
   " Ném vòng không tính điểm Bảng vàng.": " Ring toss doesn't count toward the Golden Board.",
@@ -3301,6 +3315,11 @@
   "Nhà gọn gàng sạch sẽ, nhìn là biết chủ nhà siêng.": "Neat and tidy: you can tell the owner works hard."
  },
  "patterns": {
+  "Bạn đang lời $1 xu · Top 1 khi hội tàn thành 👑 Vua trò chơi": "You're up $1 coins · #1 when the fair ends becomes 👑 King of games",
+  "Bạn đang lỗ $1 xu · Top 1 khi hội tàn thành 👑 Vua trò chơi": "You're down $1 coins · #1 when the fair ends becomes 👑 King of games",
+  "Bấm “Ném!” khi vòng ở ngay trên miệng chai. Một chai ăn được nhiều vòng. Mỗi vòng trúng $1 xu, trúng cả $2 vòng thêm $3 xu.": "Tap “Throw!” when the ring is right over a bottle's neck. One bottle can take several rings. $1 coins per ring that lands, $3 coins more if all $2 land.",
+  "Bấm “Ném!” khi vòng ở ngay trên miệng chai. Mỗi chai chỉ tính một lần. Trúng $1 xu một chai, đủ $2 chai thêm $3 xu.": "Tap “Throw!” when the ring is right over a bottle. Each bottle counts once. $1 coins a bottle, $3 more for all $2.",
+  "Mỗi ngày kiếm từ ô ăn quan tối đa $1 xu.": "Ô ăn quan pays at most $1 coins a day.",
   "kinh ăn gấp $1 lần tiền tờ": "a Bingo pays $1× the card price",
   "Kinh ăn gấp $1 lần tiền tờ bạn mua, Hũ đêm hội gấp $2 lần. Ai đủ trước người đó ăn, hai người cùng lúc thì bạn được.": "A Bingo pays $1× what your cards cost, the fair-night jackpot $2×. First to fill takes it; if two fill at once, you win.",
   "🏊 $1 (tinh thần +$2, tỉnh táo $3, no bụng $4)": "🏊 $1 (morale +$2, alert $3, full $4)",

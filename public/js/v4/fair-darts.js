@@ -32,7 +32,7 @@ export function setup(ctx){
     if(!D.say)D.say=pick(THROWER.idle);
     if(!stakes.includes(D.stake))D.stake=stakes[1]||stakes[0];
     const why=D.stake>wallet?'Ví không đủ xu':'';
-    const res=L0&&!D.flying?`<div class="fh-result ${L0.win?'good':'bad'}"><b>${L0.win?`${L0.ring===0?'🎯 Hồng tâm! ':''}+${xu(L0.net)}`:`−${xu(-L0.net)}`}</b><small>Cắm ${RING_NAME[L0.ring]||''}${L0.points?` · +${L0.points} điểm hội chợ`:''}</small></div>`:'';
+    const res=L0&&!D.flying?`<div class="fh-result ${L0.win?'good':'bad'}"><b>${L0.win?`${L0.ring===0?'🎯 Hồng tâm! ':''}+${xu(L0.net)}`:`−${xu(-L0.net)}`}</b><small>Cắm ${RING_NAME[L0.ring]||''}</small></div>`:'';
     const tally=r&&r.n?`<p class="fh-rule">Bạn đã phóng <b>${r.n}</b> phát, trúng <b>${r.w}</b>${r.b?`, hồng tâm ${r.b}`:''}.</p>`:'';
     return `<section class="fh-stall fh-dt" aria-label="Phóng phi tiêu">
       ${say(THROWER,D.say)}
@@ -41,7 +41,7 @@ export function setup(ctx){
       <div class="fh-go"><span>Đặt <b>${xu(D.stake)}</b> · trúng ăn <b>${xu(D.stake)}</b></span>${btn(busy?'Phi tiêu đang bay…':'🎯 Phóng!','dtthrow',{},'primary big',busy||why?' disabled data-fh-key="dtthrow"':' data-fh-key="dtthrow"')}</div>
       ${why&&!busy?`<p class="fh-why">${esc(why)}: chọn mức đặt nhỏ hơn nha.</p>`:''}
       ${tally}
-      <p class="fh-rule">Tâm ngắm chạy vòng vòng trên bảng, bấm “Phóng!” khi nó ở chỗ bạn muốn. Phi tiêu cắm trong vòng màu (xanh, đỏ, vàng, hồng tâm) là trúng: ăn một trả một. Cắm vòng rơm ngoài cùng hay rớt ra ngoài là mất tiền đặt. Gió hội chợ hay thổi lệch, nên trúng trật còn nhờ vận may. Mỗi phát trúng: +${r?.pt||1} điểm hội chợ.</p>
+      <p class="fh-rule">Tâm ngắm chạy vòng vòng trên bảng, bấm “Phóng!” khi nó ở chỗ bạn muốn. Phi tiêu cắm trong vòng màu (xanh, đỏ, vàng, hồng tâm) là trúng: ăn một trả một. Cắm vòng rơm ngoài cùng hay rớt ra ngoài là mất tiền đặt. Gió hội chợ hay thổi lệch, nên trúng trật còn nhờ vận may.</p>
     </section>`;
   }
 
