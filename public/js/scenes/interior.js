@@ -63,14 +63,14 @@ export function weatherOf(w){
   return 'clear';
 }
 /** Sky colours [top, bottom] at the workplace's clock (the daylight layer tints the room on top of this). */
-export function skyAt(w){
-  const m=Number(w.c?.day_clock?.minute??600),wx=weatherOf(w),grey=wx==='rain'||wx==='storm'||wx==='fog';
+export function skyAt(w,wx=weatherOf(w)){
+  const m=Number(w.c?.day_clock?.minute??600),grey=wx==='rain'||wx==='storm'||wx==='fog';
   const sky=m<300||m>1230?['#27315a','#4b4f7a']:m<420?['#f2b8a0','#fbe0c4']:m>1110?['#e9967a','#f7c99a']:['#9fd2ee','#e8f5fb'];
   return grey&&m>=300&&m<=1230?['#a9b4bf','#d9dee2']:sky;
 }
 /** A window: frame, the sky at this hour, an optional view drawn by view(c,x,y,wd,ht), rain, a sill. */
-export function windowPane(c,w,x,y,wd,ht,{frame='#e8dccb',bars=2,barW=4,view=null,r=10,sill=true}={}){
-  const [a,b]=skyAt(w),wx=weatherOf(w),g=c.createLinearGradient(0,y,0,y+ht);g.addColorStop(0,a);g.addColorStop(1,b);
+export function windowPane(c,w,x,y,wd,ht,{frame='#e8dccb',bars=2,barW=4,view=null,r=10,sill=true,wx:sky=null}={}){
+  const wx=sky||weatherOf(w),[a,b]=skyAt(w,wx),g=c.createLinearGradient(0,y,0,y+ht);g.addColorStop(0,a);g.addColorStop(1,b);
   R(c,x-6,y-6,wd+12,ht+12,frame,r+4);c.save();c.beginPath();c.roundRect(x,y,wd,ht,r);c.clip();c.fillStyle=g;c.fillRect(x,y,wd,ht);
   const m=Number(w.c?.day_clock?.minute??600);if(m<300||m>1230)for(let i=0;i<6;i++)E(c,x+wd*hash(i+x)%wd,y+ht*.1+ht*.4*hash(i*3+y),1.4,1.4,'#fff8d8');
   if(view)view(c,x,y,wd,ht);

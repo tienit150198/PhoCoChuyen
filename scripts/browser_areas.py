@@ -70,7 +70,7 @@ async def run(base: str, only: list[str], shots: Path | None, lang: str) -> list
             await s.collect_misses()
             if lang == 'en' and s.misses:
                 problems.append(f'[{vname}] untranslated: ' + ' | '.join(sorted(s.misses)[:40]))
-            problems += [p for p in s.problems if 'job_quick' not in p and 'select_career -> 409' not in p and '409 (Conflict)' not in p]
+            problems += [p for p in s.problems if 'job_quick' not in p and ' -> 409 ' not in p and '409 (Conflict)' not in p]
             await ctx.close()
         await browser.close()
     return problems

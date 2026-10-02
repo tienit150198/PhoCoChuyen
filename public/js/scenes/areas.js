@@ -16,6 +16,8 @@
  * changes (another task, the next step of a flight, the shift opens or ends) the player is taken there;
  * otherwise they may look around freely. A live happening (v4/scene-events.js) always plays on the main area.
  * The area chips over the stage (#sceneAreas) do the same as walking through a door. */
+import {t as tr} from '../v4/i18n.js';
+
 const FADE=.32;
 const STAND=['shelf','evidence','workbench','counter','warehouse','board','finance','property','security','door','pet'];
 
@@ -101,7 +103,7 @@ export function focusDoor(w,focus){
 export function doorTags(w,p,R,T,fit){
   const c=w.ctx,port=w.isPortrait(),size=port?17:12,hgt=port?30:24,fx=port?[28,672]:[70,1130];
   for(const h of w.hotspots){if(!h.id.startsWith('go:'))continue;
-    const pt=w.project(h.x,h.y,h.z),label=h.label+' ›',wd=Math.min(port?250:200,Math.max(70,label.length*(port?9.5:7)+24));
+    const to=areaList(w).find(a=>a.id===h.id.slice(3)),pt=w.project(h.x,h.y,h.z),label=to?`${to.icon} ${tr(to.name)} ›`:h.label+' ›',wd=Math.min(port?250:200,Math.max(70,label.length*(port?9.5:7)+24));
     pt.x=Math.max(fx[0]+wd/2,Math.min(fx[1]-wd/2,pt.x));   // inside the frame, never cut by the screen edge
     const hover=w.hover?.id===h.id;
     R(c,pt.x-wd/2,pt.y-hgt/2,wd,hgt,hover?p.dark:'#fffaf0ee',hgt/2,hover?p.dark:'#c9b49a',1.5);
