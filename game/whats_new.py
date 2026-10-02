@@ -32,6 +32,10 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.4.3", date="2026-10-02", items=(
+        dict(emoji="🍢", text="Ăn thêm: đói hay buồn ngủ thì mua bánh bao, xôi, phở hay ly cà phê lúc nào cũng được trong ngày làm, trả bằng ví.", go=dict(action="jrView", data={"view": "life"})),
+        dict(emoji="☕", text="Khi bụng đói, ô việc đang làm hiện sẵn món ăn thêm; trang Đời thường lúc nào cũng có."),
+    )),
     dict(version="1.4.2", date="2026-10-02", items=(
         dict(emoji="🧋", text="Quán trà sữa: sửa lỗi màn Kho & đặt hàng, Bảng giá đôi khi báo lỗi khi vừa mở."),
     )),
