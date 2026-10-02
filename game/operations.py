@@ -428,7 +428,7 @@ def tick(s:dict,c:dict,career:str,action:str) -> list[str]:
 def action(s:dict,c:dict,career:str,name:str,p:dict) -> dict:
     eng=_core();need=eng.need;o=c['ops'];f=o['finance'];sec=o['security'];result=dict(message='Đã cập nhật Sổ tiệm.')
     # Mutations requiring coins/assets always require an explicit confirmation.
-    confirm_names={'hire','train','bonus','dismiss','pay_bill','move_property','buy_security','incident_choose','report','recover','reward','insurance_claim','grant','insurance_toggle'}
+    confirm_names={'hire','train','bonus','dismiss','pay_bill','pay_all','move_property','buy_security','incident_choose','report','recover','reward','insurance_claim','grant','insurance_toggle'}
     name=name.removeprefix('ops_')
     if name in confirm_names:need(p.get('confirm') is True,'Cần xác nhận chi phí hoặc hành động trước khi thực hiện.')
     if name=='hire':
@@ -486,6 +486,18 @@ def action(s:dict,c:dict,career:str,name:str,p:dict) -> dict:
     elif name=='pay_bill':
         b=next((b for b in f['bills'] if b['id']==p.get('bill')),None);need(b,'Không tìm thấy khoản cần trả.');need(b['status']=='unpaid','Khoản này đã được thanh toán rồi.')
         eng.money(s,c,-b['amount'],b['label'],b['id'],category=b['kind']);b['status']='paid';b['paid_day']=c['day'];result['message']='Đã thanh toán '+b['label']+'. Biên nhận chỉ ghi một lần.'
+    elif name=='pay_all':
+        # "Thanh toán tất cả" (owner, 02/10): every unpaid bill in one tap, overdue first; one that the till cannot
+        # cover is skipped (never debt), the rest are still paid. Same receipts as paying each one.
+        due=sorted((b for b in f['bills'] if b['status']=='unpaid'),key=lambda b:(b['due'],b['id']))
+        need(due,'Không còn khoản nào cần trả.')
+        paid=[]
+        for b in due:
+            if c['money']<b['amount']:continue
+            eng.money(s,c,-b['amount'],b['label'],b['id'],category=b['kind']);b['status']='paid';b['paid_day']=c['day'];paid.append(b)
+        need(paid,'Chưa đủ xu cho khoản nào. Hoàn thành thêm việc rồi trả nhé.','not_enough')
+        left=len(due)-len(paid)
+        result['message']=f"Đã thanh toán {len(paid)} khoản, tổng {sum(b['amount'] for b in paid)} xu."+(f' Còn {left} khoản chưa đủ xu.' if left else '')
     elif name=='extend_bill':
         b=next((b for b in f['bills'] if b['id']==p.get('bill')),None);need(b and b['status']=='unpaid','Khoản này không cần gia hạn.');need(not b['extended'],'Mỗi khoản chỉ được gia hạn một lần.')
         b['due']=max(b['due'],c['day'])+3;b['extended']=True;eng.log(s,c,'bill','Gia hạn '+b['label']+' tới ngày '+str(b['due']),ref=b['id'])

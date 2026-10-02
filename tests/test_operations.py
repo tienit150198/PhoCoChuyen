@@ -222,6 +222,37 @@ class OperationsTests(unittest.TestCase):
         self.no_effect('pay_bill',bill=bid);self.act('pay_bill',bill=bid,confirm=True)
         self.assertEqual(self.c['money'],before-b['amount']);self.no_effect('pay_bill',bill=bid,confirm=True);self.assert_valid()
 
+    def test_pay_all_bills_at_once(self):
+        for _ in range(3):
+            self.close();self.j.act('start_day')
+        self.close()
+        unpaid=[b for b in self.o['finance']['bills'] if b['status']=='unpaid']
+        self.assertGreater(len(unpaid),1)
+        self.no_effect('pay_all')                                   # needs the confirmation like each bill
+        total=sum(b['amount'] for b in unpaid);money(self.j.state,self.c,total+5-self.c['money'],'Thử',category='revenue');before=self.c['money']
+        r=self.act('pay_all',confirm=True)
+        self.assertEqual(self.c['money'],before-total)
+        now={b['id']:b for b in self.o['finance']['bills']}   # apply_action returns a new state
+        self.assertTrue(all(now[b['id']]['status']=='paid' and now[b['id']]['paid_day']==self.c['day'] for b in unpaid))
+        self.assertIn(str(len(unpaid))+' khoản',r['message'])
+        self.no_effect('pay_all',confirm=True)                      # nothing left
+        self.assert_valid()
+
+    def test_pay_all_skips_what_the_till_cannot_cover(self):
+        for _ in range(3):
+            self.close();self.j.act('start_day')
+        self.close()
+        unpaid=sorted((b for b in self.o['finance']['bills'] if b['status']=='unpaid'),key=lambda b:(b['due'],b['id']))
+        money(self.j.state,self.c,unpaid[0]['amount']-self.c['money'],'Thử',category='revenue')
+        self.act('pay_all',confirm=True)
+        self.assertEqual(self.c['money'],0)                         # never below zero
+        now={b['id']:b for b in self.o['finance']['bills']}
+        self.assertEqual(now[unpaid[0]['id']]['status'],'paid')
+        self.assertTrue(any(now[b['id']]['status']=='unpaid' for b in unpaid))
+        with self.assertRaises(GameError) as e:self.act('pay_all',confirm=True)
+        self.assertEqual(e.exception.code,'not_enough')
+        self.assert_valid()
+
     def test_insufficient_funds_rollback_and_one_time_emergency_grant(self):
         money(self.j.state,self.c,-310,'Chi phí fixture',category='other_cost')
         self.no_effect('hire',candidate='mother_baby-staff-1',confirm=True)
