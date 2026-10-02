@@ -764,7 +764,9 @@ def public(c: dict) -> dict:
         lab = gs.LABELS[now]
         lines.append(dict(id=lid, item=now, orig=item, name=names[now]['name'], orig_name=names[item]['name'], qty=qty, label=lab['label'], warn=lab['warn'],
                           price=_price(c, now) * qty, bought=day >= cr['start'] + n, bought_day=cr['start'] + n, aside=line['aside'], swapped=line['swap'] is not None,
-                          stock=_e().available(c, now) if isinstance(c.get('stock'), dict) and now in c['stock'] else 0))
+                          stock=_e().available(c, now) if isinstance(c.get('stock'), dict) and now in c['stock'] else 0,
+                          # gift_care_swap's rule: only a line whose box does not suit a newborn can be swapped.
+                          fits=gs.suits(item, 0)))
     shower = cr['start'] + REGISTRY['shower']
     reg_view = dict(state=reg['state'], family='ly', open=cr['start'] + REGISTRY['open'], shower=shower, shower_date=gs.date_text(shower),
                     lines=lines, swaps={x[1]: swaps(x[1]) for x in REGISTRY['lines']},

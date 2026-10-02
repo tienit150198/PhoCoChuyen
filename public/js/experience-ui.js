@@ -74,18 +74,22 @@ function prepView(cid,c,content,meta){
  const short=cid!=='milk_tea'&&c.inventory?restockBar(c,lowItems(c,content,cid),{urgent:false}):'';
  return shell('prepare',c,meta,(short?`<section class="lx-card lx-restock">${short}</section>`:'')+level+grid,`<footer class="life-sticky">${b(c.open?'Về quầy · tiếp tục chơi':'Mở cửa ngày '+dayNo(c),c.open?'close':'start',{},'primary jumbo')}</footer>`);
 }
+/** life_price's trial band (game/experiences.py): round(base×75%)–round(base×125%), Python rounding (half to even). */
+const pyRound=v=>{const f=Math.floor(v),d=v-f;return d>0.5||(d===0.5&&f%2)?f+1:f;};
+const band=base=>[pyRound(base*.75),pyRound(base*1.25)];
 function priceRow(i,value,lo,hi,open,art=''){
- return `<li class="lx-price">${art||tile(i.emoji||'🏷️')}<label class="grow" for="price-${i.id}">${esc(i.name)}</label><span class="lx-price-in"><input class="input" type="number" inputmode="numeric" id="price-${i.id}" min="${lo}" max="${hi}" value="${value}" data-preserve aria-label="Giá ${esc(i.name)}" ${open?'disabled':''}><small>xu</small></span>${b('Lưu giá','expPrice',{item:i.id},'small')}</li>`;
+ // The band sits under the name, and "Lưu giá" waits for the shop to close like the input (life_price refuses both).
+ return `<li class="lx-price">${art||tile(i.emoji||'🏷️')}<label class="grow" for="price-${i.id}">${esc(i.name)}<small class="lx-band">Giá ${lo}–${hi} xu</small></label><span class="lx-price-in"><input class="input" type="number" inputmode="numeric" id="price-${i.id}" min="${lo}" max="${hi}" value="${value}" data-preserve aria-label="Giá ${esc(i.name)}, từ ${lo} đến ${hi} xu" ${open?'disabled':''}><small>xu</small></span>${b('Lưu giá','expPrice',{item:i.id},'small').replace('<button ',open?'<button disabled ':'<button ')}</li>`;
 }
 function priceView(cid,c,content,meta){
  const ing=content.experiences.ingredients,fixed=(list,add)=>`<ul class="lx-rows">${list.map(i=>`<li>${tile(i.emoji||'•')}<span class="grow">${esc(i.name)}</span><b>${add}</b></li>`).join('')}</ul>`;
  let body;
  if(cid==='milk_tea'){
   const bases=ing.filter(x=>x.group==='base').map(i=>({...i,price:{milk:30,black:25,matcha:35}[i.id]||30}));
-  body=`<section class="lx-card">${h3('🧋 Menu hôm nay')}<p class="lx-hint">Đổi giá trong khoảng 75%–125% giá gốc trước khi mở ca.</p><ul class="lx-prices">${bases.map(i=>priceRow(i,c.life.prices[i.id]||i.price,Math.round(i.price*.75),Math.round(i.price*1.25),c.open)).join('')}</ul></section>
+  body=`<section class="lx-card">${h3('🧋 Menu hôm nay')}<p class="lx-hint">Đổi giá trong khoảng 75%–125% giá gốc trước khi mở ca${c.open?' (đang mở ca: đóng ca rồi đổi)':''}.</p><ul class="lx-prices">${bases.map(i=>priceRow(i,c.life.prices[i.id]||i.price,...band(i.price),c.open)).join('')}</ul></section>
    <div class="lx-grid"><section class="lx-card">${h3('Hương vị')}${fixed(ing.filter(i=>i.group==='flavor'),'+6 xu')}</section><section class="lx-card">${h3('Topping')}${fixed(ing.filter(i=>i.group==='topping'),'+5 xu')}<p class="lx-hint">Size L +7 xu · 0 / 30 / 50 / 100% đường</p></section></div>`;
  }else if(cid==='mother_baby'){
-  body=`<section class="lx-card">${h3('🎁 Những món nhỏ xinh')}<p class="lx-hint">Đổi giá trong khoảng 75%–125% giá gốc trước khi mở ca.</p><ul class="lx-prices">${content.products.map(i=>priceRow(i,c.life.prices[i.id]||i.price,Math.round(i.price*.75),Math.round(i.price*1.25),c.open,`<span class="lx-tile art" aria-hidden="true">${itemArt(i.icon,40,i.color)}</span>`)).join('')}</ul></section>`;
+  body=`<section class="lx-card">${h3('🎁 Những món nhỏ xinh')}<p class="lx-hint">Đổi giá trong khoảng 75%–125% giá gốc trước khi mở ca${c.open?' (đang mở ca: đóng ca rồi đổi)':''}.</p><ul class="lx-prices">${content.products.map(i=>priceRow(i,c.life.prices[i.id]||i.price,...band(i.price),c.open,`<span class="lx-tile art" aria-hidden="true">${itemArt(i.icon,40,i.color)}</span>`)).join('')}</ul></section>`;
  }else if(cid==='tour_guide'){
   body=`<section class="lx-card">${h3('🧭 Chuyến đi hôm nay')}<ul class="lx-rows">${content.experiences.places.filter(i=>i.id!=='gate').map(p=>`<li>${tile(p.emoji)}<span class="grow">${esc(p.name)}</span><small>${p.minutes}′</small><b>${p.fee} xu</b></li>`).join('')}</ul><p class="lx-hint">Nghề này nhận thù lao theo công việc.</p></section>`;
  }else{

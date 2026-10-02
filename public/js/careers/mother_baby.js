@@ -123,12 +123,12 @@ function steps(t,x,tab){
 function kitDesk(t,x){
   const k=t.gift?.kit||{asked:[],answers:[]};
   return `<section class="mb-desk"><h4>🍼 Hỏi han bố mẹ lần đầu</h4><p class="muted small">Bộ đồ gọn thôi: tối đa 4 loại, 6 món.</p>
-    <div class="mb-qa">${TOPICS.map(([id,q])=>{const a=k.answers.find(v=>v.topic===id);return a?`<div class="mb-answer"><b>${x.esc(q)}</b><p>“${x.esc(a.text)}”</p></div>`:qb(x,x.esc(q),'gift_ask',{task:t.id,topic:id},'cream');}).join('')}</div></section>`;
+    <div class="mb-qa">${TOPICS.map(([id,q])=>{const a=k.answers.find(v=>v.topic===id);return a?`<div class="mb-answer"><b>${x.esc(q)}</b><p>“${x.esc(a.text)}”</p></div>`:qb(x,x.esc(q),'gift_ask',{task:t.id,topic:id},'cream',!x.room.open);}).join('')}</div></section>`;
 }
 function safetyNote(t,x){
   const v=t.gift||{},n=t.needs||{},want=product(x,n.product),lb=label(x,n.product);
   if(v.swap)return `<p class="mb-note good">🛡️ Khách đã đồng ý đổi sang <b>${x.esc(product(x,v.swap).name)}</b>. Lấy đúng món này nhé.</p>`;
-  return `<p class="mb-note">🔎 <b>${x.esc(want.name)}</b>${lb?` · 🏷️ ${x.esc(lb.label)}`:''} · 👶 ${v.age} tháng. Chưa hợp tuổi → “💬 Gợi ý thay”.</p>`;
+  return `<p class="mb-note">🔎 <b>${x.esc(want.name)}</b>${lb?` · 🏷️ ${x.esc(lb.label)}`:''} · 👶 ${v.age} tháng. Chưa hợp tuổi → “💬 Gợi ý thay”.${x.room.open?'':' <b>Mở cửa tiệm trước.</b>'}</p>`;
 }
 function bulkList(t,x,steps=[]){
   const items=t.gift?.items||{};
@@ -149,7 +149,7 @@ function shelf(t,x){
     return `<article class="mb-card ${inBasket?'on':''} ${asked?'asked':''} ${want?'want':''}"><div class="mb-art">${art(p,64)}<em class="mb-stock ${stock<=0?'zero':''}" aria-label="Còn ${stock}">${stock}</em>${inBasket?`<em class="mb-inbasket">×${inBasket}</em>`:''}</div>
       <h5>${x.esc(p.name)}</h5>${lb?`<span class="mb-label ${lb.warn?'warn':''}" title="${x.esc(lb.warn||'')}">🏷️ ${x.esc(lb.label)}</span>`:''}${asked?'<span class="mb-asked">Khách hỏi món này</span>':want?`<span class="mb-want">🎯 Khách cần ${named[p.id]}</span>`:''}
       <div class="mb-card-foot"><b class="mb-price">${price(x,p.id)} xu</b><div class="mb-card-btns">${inBasket?`<button type="button" class="btn small ghost" ${cmdAttr(x,'basket_remove',{task:t.id,item:p.id})} aria-label="Bớt một ${x.esc(p.name)}">−</button>`:''}${canPick?`<button type="button" class="btn small primary" ${cmdAttr(x,'shop_pick',{task:t.id,item:p.id})} aria-label="Thêm ${x.esc(p.name)} vào giỏ">＋ Thêm</button>`:stock<=0&&t.known?x.button('Hết · nhập','warehouse',{},'small ghost mb-out'):''}</div></div>
-      ${safety&&!asked&&lb?.use!=='card'?`<button type="button" class="btn small cream full" ${cmdAttr(x,'gift_advise',{task:t.id,item:p.id})}>💬 Gợi ý thay</button>`:''}</article>`;
+      ${safety&&!asked&&lb?.use!=='card'?`<button type="button" class="btn small cream full" ${cmdAttr(x,'gift_advise',{task:t.id,item:p.id})}${x.room.open?'':' disabled'}>💬 Gợi ý thay</button>`:''}</article>`;
   }).join('');
   return `${chips}<div class="mb-shelf">${cards||'<p class="muted">Không có món nào trong nhóm này.</p>'}</div>`;
 }
@@ -177,10 +177,10 @@ function returnDesk(t,x){
   const book=r.book?`<div class="mb-book" role="table" aria-label="Sổ bán hàng"><div role="row" class="head"><span>Ngày</span><span>Món</span><span>Giá</span><span>Trả bằng</span></div>${r.book.map(l=>`<div role="row"><span>${x.esc(l.date)}</span><span>${x.esc(product(x,l.item).name)}</span><span>${l.price} xu</span><span>${x.esc(l.pay)}</span></div>`).join('')||'<div role="row"><span>Không có dòng nào</span></div>'}</div>`:'';
   const ready=seen.has('tag')&&seen.has('item');
   return `<section class="mb-desk mb-return"><div class="mb-return-item">${art(p,72)}<div><h4>${x.esc(p.name)}</h4><p class="small">Khách nói mua ngày <b>${x.esc(r.said_date)}</b> · giá ${p.price} xu</p></div></div>
-    <div class="mb-inspect">${seen.has('book')?'':qb(x,'📖 Tra sổ bán hàng','gift_book',{task:t.id},'cream')}${seen.has('tag')?'':qb(x,'🏷️ Xem tem','gift_inspect',{task:t.id,part:'tag'},'cream')}${seen.has('item')?'':qb(x,'🔍 Xem kỹ món hàng','gift_inspect',{task:t.id,part:'item'},'cream')}</div>
+    <div class="mb-inspect">${seen.has('book')?'':qb(x,'📖 Tra sổ bán hàng','gift_book',{task:t.id},'cream',!x.room.open)}${seen.has('tag')?'':qb(x,'🏷️ Xem tem','gift_inspect',{task:t.id,part:'tag'},'cream',!x.room.open)}${seen.has('item')?'':qb(x,'🔍 Xem kỹ món hàng','gift_inspect',{task:t.id,part:'item'},'cream',!x.room.open)}</div>
     ${r.tag?`<p class="mb-finding">🏷️ ${x.esc(r.tag)}</p>`:''}${r.look?`<p class="mb-finding">🔍 ${x.esc(r.look)}</p>`:''}${book}
     <h4>Cách xử lý</h4>
-    <div class="mb-resolve">${RESOLVE.map(([id,l,sub])=>`<button type="button" class="btn ${ready?'cream':'ghost'}" data-action="v4Cmd" data-op="gift_resolve" data-payload="${pay(x,{task:t.id,choice:id})}" data-confirm="${x.esc(`${l.replace(/^\S+\s/,'')}: chốt cách này với khách?`)}"><span>${l}</span><small>${sub}</small></button>`).join('')}</div>
+    <div class="mb-resolve">${RESOLVE.map(([id,l,sub])=>`<button type="button" class="btn ${ready?'cream':'ghost'}" data-action="v4Cmd" data-op="gift_resolve" data-payload="${pay(x,{task:t.id,choice:id})}" data-confirm="${x.esc(`${l.replace(/^\S+\s/,'')}: chốt cách này với khách?`)}"${x.room.open?'':' disabled'}><span>${l}</span><small>${sub}</small></button>`).join('')}</div>
     ${r.verdict?`<p class="mb-note">${x.esc(r.verdict)}</p>`:''}</section>`;
 }
 /* ---------------------------------------------------------------- pinned request: what the customer asked, always in view */
@@ -231,12 +231,18 @@ function pickupCard(x,f){
 }
 function registryCard(x){
   const c=C(x),reg=c.reg;if(!reg||reg.state!=='open')return '';
-  const busy=!x.room.open,names=c.item_names||{};
+  const busy=!x.room.open,names=c.item_names||{},parent=c.fam?.find(f=>f.id===reg.family)?.parent||'Chị Ly';
   const rows=reg.lines.map(l=>{
     const mark=l.aside?'✓':l.bought?'!':'○',state=l.aside?'Đã để riêng vào hộp':l.bought?'Bạn bè đã mua · cần để riêng':`Chưa ai mua`;
     const btns=[!l.aside&&l.bought?qb(x,`📦 Để riêng <small>(kệ ${l.stock})</small>`,'gift_care_aside',{line:l.id},l.stock>=l.qty?'primary small':'ghost small',busy||l.stock<l.qty):'',
       !l.aside&&!l.swapped?`<button type="button" class="btn ghost small" data-action="car:swapOpen" data-line="${l.id}" aria-expanded="${x.ui.swapLine===l.id}">💬 Gợi ý đổi</button>`:''].join('');
-    const picker=x.ui.swapLine===l.id&&!l.aside&&!l.swapped?`<div class="mb-opts one">${(reg.swaps[l.orig]||[]).map(k=>qb(x,`→ ${x.esc(names[k]||k)}`,'gift_care_swap',{line:l.id,item:k},'cream small',busy)).join('')}<small class="muted">Chỉ đổi khi nhãn hộp chưa hợp bé sơ sinh. Chị Ly đồng ý thì bạn bè mua món mới.</small></div>`:'';
+    // Reading the label is the judgement, so every line keeps "Gợi ý đổi". A swap on a box that already suits a
+    // newborn (gift_care_swap refuses it; `fits` is the server's rule, older servers: no warning) is answered softly
+    // right here by the parent, with the reason, instead of an error.
+    const fits=l.fits??!l.warn,said=x.ui.swapNo===l.id;
+    const opts=(reg.swaps[l.orig]||[]).map(k=>fits?`<button type="button" class="btn cream small" data-action="car:swapNo" data-line="${l.id}"${busy?' disabled':''}>→ ${x.esc(names[k]||k)}</button>`
+      :qb(x,`→ ${x.esc(names[k]||k)}`,'gift_care_swap',{line:l.id,item:k},'cream small',busy)).join('');
+    const picker=x.ui.swapLine===l.id&&!l.aside&&!l.swapped?`<div class="mb-opts one">${said?`<p class="mb-note" role="status">${x.esc(parent)}: “Hộp ghi ‘${x.esc(l.label)}’ mà bạn, bé sơ sinh dùng được rồi. Mình giữ món này nhé.”</p>`:''}${opts}<small class="muted">Đọc 🏷️ nhãn hộp: bé sơ sinh dùng món ghi 0+ hoặc từ 0 tháng. Nhãn đã hợp thì giữ món ${x.esc(parent)} chọn, chỉ đổi khi nhãn chưa hợp.${busy?' Mở cửa tiệm trước.':''}</small></div>`:'';
     return `<li class="mb-reg-line ${l.aside?'ok':l.bought?'todo':''}"><span class="mb-reg-mark" aria-hidden="true">${mark}</span><div class="grow"><b>${l.qty} × ${x.esc(l.name)}</b><span class="mb-label ${l.warn?'warn':''}">🏷️ ${x.esc(l.label)}</span><small class="mb-reg-state">${x.esc(state)}${l.bought||l.aside?'':` · dự kiến ngày ${l.bought_day}`}${l.swapped?` · đã đổi từ ${x.esc(l.orig_name)}`:''}</small>${btns?`<div class="row wrap">${btns}</div>`:''}${picker}</div></li>`;
   }).join('');
   const boxed=reg.lines.filter(l=>l.aside).length,missing=reg.lines.filter(l=>l.bought&&!l.aside).length;
@@ -318,6 +324,8 @@ function toStock(x,id,need=1){
   // Arriving tomorrow: keep the order for then instead of waiting the evening out.
   if(box.length&&Number(box[0].arrives_day)>Number(x.room.day)&&x.room.active_task)return {cmd:'defer',payload:{task:x.room.active_task},label:`⏸ Giữ đơn, thùng ${nm} về${eta}`};
   if(box.length)return {cmd:'advance',payload:{},label:`⏳ Chờ thùng ${nm}${eta}`};
+  // order_stock takes at most 8 parcels on the way (game/engine.py): receive one at the stock room first.
+  if((x.room.shipments||[]).filter(o=>o.status==='in_transit').length>=8)return {act:'warehouse',label:'🚚 Đủ 8 kiện đang giao · nhận bớt ở Kho'};
   const cap=Number(inv.capacity)||12,have=Number(inv.stock?.[id])||0,qty=Math.max(1,Math.min(6,cap-have,Math.max(need,3)));
   const sup=(x.room.stock_desk?.suppliers||[]).find(v=>v.id==='express'),cost=Math.ceil((product(x,id).cost||0)*qty*(sup?.factor||1.35));
   return {cmd:'order_stock',payload:{item:id,qty,supplier:'express'},confirm:`Kệ hết ${product(x,id).name}. Gọi hỏa tốc ${qty} món, khoảng ${cost} xu?`,label:`⚡ Nhập gấp ${nm}`};
@@ -347,7 +355,10 @@ function fairReturn(r){
 }
 function orderSteps(t,x){
   const v=t.gift||{},n=t.needs||{},id=t.id,first=firstTime(x),rows=[],basket=t.basket||{};
-  const ev=G(x).event;if(ev)rows.push(eventStep(ev,x,first));
+  const ev=G(x).event;
+  // The shop is closed (a held order before the day starts): every desk action waits for "Mở cửa".
+  if(x.room.open===false&&ev?.stage!=='done')return [{ok:null,label:'Mở cửa tiệm trước',go:{act:'prepare',label:'🏪 Mở cửa tiệm'}}];
+  if(ev)rows.push(eventStep(ev,x,first));
   if(!t.known){rows.push({ok:null,label:'Hỏi nhu cầu khách',go:go('ask',{task:id},'💬 Hỏi nhu cầu khách')});return rows;}
   if(v.kind==='return'){
     const r=v.ret||{},seen=r.seen||[];
@@ -493,7 +504,9 @@ export default {
     },
     async careToggle(data,el,x){x.ui.careOpen=!x.ui.careOpen;x.render();},
     async pick(data,el,x){const pk=pickOf(x,data.fam);pk[data.k]=pk[data.k]===data.v?undefined:data.v;x.ui.careOpen=true;x.render();},
-    async swapOpen(data,el,x){x.ui.swapLine=x.ui.swapLine===data.line?null:data.line;x.ui.careOpen=true;x.render();},
+    async swapOpen(data,el,x){x.ui.swapLine=x.ui.swapLine===data.line?null:data.line;x.ui.swapNo=null;x.ui.careOpen=true;x.render();},
+    /* A swap the label does not call for: the parent explains, nothing is sent (gift_care_swap would refuse it). */
+    async swapNo(data,el,x){x.ui.swapNo=data.line;x.ui.careOpen=true;sfx.configure(x.state.settings||{});sfx.click();x.render();},
     async oq(data,el,x){const q=(x.ui.oq??={});q[data.item]=Math.max(1,Math.min(4,(q[data.item]??2)+Number(data.d||0)));x.ui.careOpen=true;x.render();},
     async order(data,el,x){
       const q=(x.ui.oq??={})[data.item]??2,cost=Number(data.cost||0)*q,c=C(x);
