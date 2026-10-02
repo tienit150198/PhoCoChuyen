@@ -385,3 +385,10 @@ html.reduce-motion .mt-event{animation:none}
 .career-job.mt .fk-next .now{text-decoration:underline;text-underline-offset:3px}
 /* Bảng giá: the band life_price accepts, under the tea's name (milk_tea.js priceTab). */
 .price-editor .mt-price-band{display:block;font-size:.82rem;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+/* A paid tap the server would refuse: disabled, with the reason on the button (milk_tea.js whyBtn, prepPlan, orderWhy). */
+.career-job.mt .btn .mt-why,.mt-prep .btn .mt-why{display:block;font-size:.72rem;font-weight:700;color:var(--bad);white-space:normal}
+.mt-fund{margin:0 0 8px;padding:8px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);font-size:.9rem}
+.mt-fund p{margin:0}
+.mt-fund small{display:block;color:var(--muted)}
+.mt-fund.poor{border-color:var(--warn);background:var(--warn-soft)}
+.mt-fund .mt-fund-tip{margin:6px 0;font-weight:600}

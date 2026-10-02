@@ -166,6 +166,8 @@ function shotMini(x,start,flow){const e=cc(x).extract||{bright:25,balanced:30};r
 function thermMini(x,start){const st=cc(x).steam||{cool:55,silky:68};return mini(`data-steam-start="${start}"`,pct(st.cool,TEMP_SCALE),pct(st.silky,TEMP_SCALE));}
 function rackMini(x,r){const [a,g,z]=bake(x,r.item).window;return mini(`data-oven-start="${r.start}" data-shift="${Number(r.shift)||0}" data-w="${a},${g},${z}"`,pct(a,z+6),pct(g,z+6));}
 
+/** What latte art still waits for (game/careers/cafe_bakery.py cb_art), '' when it can be poured now. */
+const artWait=d=>!d.shots.length?'Chiết shot trước':d.steaming?'Tắt vòi hơi trước':!(d.milk&&d.milk.mode==='steam')?'Đánh sữa nóng trước':'';
 function drinkRows(t,x){
   if(hidden(t))return [R(null,'💭','Đoán đúng món khách đang thèm','','','',{sel:'.cb-guess'})];
   if(plated(t))return [R(true,'🛎️',`Đủ ${t.cups.length} ly trên khay, giao một lượt`)];
@@ -202,9 +204,11 @@ function drinkRows(t,x){
     rows.push(R(ok,m.emoji||'🥛',n.iced?m.name:`${m.name}, bọt ${foam}`,mm?.temp?Math.round(mm.temp)+' °C':n.iced?'rót lạnh':'55–68 °C','','',go));
   }else if(d.milk)rows.push(R(false,'🚫','Món này không có sữa','','','',dump));
   if(n.art){
-    const a=art(x,n.art),hot=d.milk&&d.milk.mode==='steam'&&d.milk.tex!=='silky';
-    rows.push(R(d.art?d.art===n.art:null,a?.emoji||'🎨',`Vẽ ${lower(a?.name||n.art)}`,'',d.art==='blob'?'hình bị loang — sữa phải 55–68 °C':!d.art&&hot?'sữa không mịn, hình sẽ loang':'','',
-      d.art?null:{cmd:'cb_art',payload:{task:id,pattern:n.art},label:`${x.esc(a?.emoji||'🎨')} Rót hình ${x.esc(lower(a?.name||n.art))}`}));
+    // cb_art pours steamed milk onto a pulled shot: until both are in the cup the row says which comes first
+    // and offers no tap (the server would refuse "Rót sữa lên espresso — chiết shot trước đã.").
+    const a=art(x,n.art),hot=d.milk&&d.milk.mode==='steam'&&d.milk.tex!=='silky',wait=artWait(d);
+    rows.push(R(d.art?d.art===n.art:null,a?.emoji||'🎨',`Vẽ ${lower(a?.name||n.art)}`,'',d.art==='blob'?'hình bị loang — sữa phải 55–68 °C':!d.art&&wait?wait:!d.art&&hot?'sữa không mịn, hình sẽ loang':'','',
+      d.art||wait?null:{cmd:'cb_art',payload:{task:id,pattern:n.art},label:`${x.esc(a?.emoji||'🎨')} Rót hình ${x.esc(lower(a?.name||n.art))}`}));
   }
   const items=t.bag.items;
   for(const [k,q] of Object.entries(n.pastry||{})){
@@ -429,8 +433,9 @@ function barPanel(t,x){
     :`${x.cmd(auto?'♨️ Đánh nóng (máy tự tắt)':'♨️ Đánh nóng','cb_milk',{task:t.id,milk:ui.milk||'',mode:'steam',foam:ui.foam||'',...(auto?{auto:true}:{})},'',!d.container||!!d.milk||!mk||!mk.steam||!ui.foam||busyWand||!stock(x,ui.milk))}${x.cmd('🧊 Rót lạnh','cb_milk',{task:t.id,milk:ui.milk||'',mode:'cold'},'ghost',!d.container||!!d.milk||!mk||!stock(x,ui.milk))}`;
   const artShut=(cc(x).arts||[]).filter(a=>a.unlock>level&&n.art!==a.id);
   const arts=(cc(x).arts||[]).filter(a=>!artShut.includes(a)).map(a=>{const locked=a.unlock>level&&n.art!==a.id;
-    return tile(x,{emoji:a.emoji,name:a.name,sub:locked?`cấp ${a.unlock}`:'rót tạo hình',cmd:'cb_art',payload:{task:t.id,pattern:a.id},locked,selected:d.art===a.id,wanted:!d.art&&n.art===a.id,
-      disabled:!d.milk||d.milk.mode!=='steam'||!!d.art||!d.shots.length,label:locked?`Hình ${a.name}, mở ở cấp ${a.unlock}`:`Rót hình ${a.name}`});}).join('');
+    const wait=d.art?'':artWait(d);
+    return tile(x,{emoji:a.emoji,name:a.name,sub:locked?`cấp ${a.unlock}`:wait||'rót tạo hình',cmd:'cb_art',payload:{task:t.id,pattern:a.id},locked,selected:d.art===a.id,wanted:!d.art&&!wait&&n.art===a.id,
+      disabled:!!wait||!!d.art,label:locked?`Hình ${a.name}, mở ở cấp ${a.unlock}`:wait?`Rót hình ${a.name}: ${wait.toLowerCase()}`:`Rót hình ${a.name}`});}).join('');
   const pastry=Object.keys(n.pastry||{}).length,cur=stationNow(t,x),dk=drink(x,n.drink),S=(...a)=>station(x,t,cur,...a);
   const cname=(cc(x).containers||[]).find(c=>c.id===d.container)?.name||'';
   const shotLine=d.shots.map((s,i)=>`Shot ${i+1}: ${s.sec}s`).join(' · ');

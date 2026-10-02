@@ -142,3 +142,6 @@
 @keyframes dp-blink{50%{opacity:.5}}
 @media (prefers-reduced-motion:reduce){.dp-dialog[open],.dp-dialog.reveal .dp-sheet,.dp-dialog.reveal .dp-cheer,.dp-dialog.reveal .dp-cap,.dp-wait p{animation:none}.dp-dialog.reveal .dp-sheet svg{animation:none}.dp-confetti{display:none}}
 html.reduce-motion .dp-dialog[open],html.reduce-motion .dp-dialog.reveal .dp-sheet{animation:none}
+/* The class button when the wallet cannot pay it: what is missing, under the price (certificates.js shortLine). */
+.ct-why{display:block;font-weight:700;color:var(--bad)}
+.ct-big small.ct-why{opacity:1}

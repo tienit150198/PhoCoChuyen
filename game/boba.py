@@ -32,6 +32,7 @@ ICE_TEXT = {'none': 'không đá', 'little': 'ít đá', 'normal': 'đá vừa',
 CUP_START = {'M': 30, 'L': 20}
 APP_GRACE = pt.longer(10)  # beats an app driver still waits past the pickup time before cancelling
 CUP_CAP = 120
+SHELF_CAP = 60  # portions of one ingredient on the shelf (unexpired by date: held())
 CUP_PACK = dict(qty=20, cost=4)
 MAX_TOPPINGS = 3
 BEAT_ACTIONS = {'cup', 'add', 'ice', 'sugar', 'config', 'check', 'seal_start', 'seal', 'serve', 'discard', 'wipe', 'event', 'clean', 'wait', 'greet', 'swap'}
@@ -678,7 +679,7 @@ def _deliver(s: dict, c: dict, b: dict, now: int | None = None) -> list[str]:
             b['cups'][size] += max(0, got)
             text = f"{o['qty'] * CUP_PACK['qty']} ly {size}"
         else:
-            got = min(o['qty'], 60 - held(c)[o['item']])
+            got = min(o['qty'], SHELF_CAP - held(c)[o['item']])
             if got > 0:
                 add_lot(s, c, o['item'], got, o['unit'])
             text = f"{o['qty']} phần {low(ING[o['item']]['name'])}"
@@ -1255,7 +1256,7 @@ def _prepare(s: dict, c: dict, p: dict) -> dict:
     need(item in MADE, f"{ING[item]['name']} mua từ nhà cung cấp: mở Kho → Đặt hàng (hỏa tốc 15–30 phút).")
     qty = e.integer(p.get('qty'), 1, 20)
     need(p.get('confirm') is True, 'Xác nhận chi phí trước khi nhập.')
-    need(held(c)[item] + qty <= 60, 'Kho chứa tối đa 60 phần mỗi loại.')
+    need(held(c)[item] + qty <= SHELF_CAP, f'Kho chứa tối đa {SHELF_CAP} phần mỗi loại.')
     ing = ING[item]
     cost = qty * ing['cost']
     verb = 'Nấu' if item in ('pearls', 'white_pearl') else 'Ủ' if item in BASES else 'Đánh'
@@ -1296,7 +1297,7 @@ def _order(s: dict, c: dict, p: dict) -> dict:
         need(b['cups'][size] + (_pending(b, item) + qty) * CUP_PACK['qty'] <= CUP_CAP, f'Chồng ly {size} không còn chỗ cho ngần ấy ly.')
         base = CUP_PACK['cost']
     else:
-        need(held(c)[item] + _pending(b, item) + qty <= 60, 'Kho chứa tối đa 60 phần mỗi loại (tính cả hàng đang giao).')
+        need(held(c)[item] + _pending(b, item) + qty <= SHELF_CAP, f'Kho chứa tối đa {SHELF_CAP} phần mỗi loại (tính cả hàng đang giao).')
         base = ING[item]['cost']
     cost = max(1, round(qty * base * sup['factor']))
     unit = min(20, max(0, round(base * sup['factor'])))
@@ -2225,7 +2226,7 @@ def _resolve(s: dict, c: dict, b: dict, ev: dict, choice: str) -> None:
         else:
             sup = SUP_INDEX['partner']
             cost = f['billed'] * f['cost']
-            if c['money'] >= cost and held(c)[f['item']] + _pending(b, f['item']) + f['billed'] <= 60 and len(b['orders']) < MAX_ORDERS:
+            if c['money'] >= cost and held(c)[f['item']] + _pending(b, f['item']) + f['billed'] <= SHELF_CAP and len(b['orders']) < MAX_ORDERS:
                 o = _place(s, c, b, f['item'], f['billed'], sup, cost, f['cost'], 'Đặt lại ' + ING[f['item']]['name'])
                 v = order_view(c, o)
                 result = f"Bạn trả thùng. Bình hẹn giao lại đủ {f['billed']} phần theo chuyến Hạt Nắng: {v['eta_label']}."
@@ -2297,6 +2298,7 @@ def public(c: dict) -> dict:
                        text=event_text(c, ev), choices=event_choices(c, ev) if ev['stage'] == 'open' else [],
                        result=ev.get('result'), effects=ev.get('effects', []), good=ev.get('good', False), task=ev.get('task'))
     st = stock(c)
+    hl = held(c)
     notebook = []
     for npc, row in REGULARS.items():
         entry = b['notebook'].get(npc)
@@ -2324,9 +2326,12 @@ def public(c: dict) -> dict:
         quota=b['quota'], arrived=b['arrived'], left=left if c['open'] else None, served=b['served'], perfect=b['perfect'],
         returned=b['returned'], walkouts=b['walkouts'], revenue=b['revenue'], fines=b['fines'], streak=c['life'].get('streak', 0),
         best_streak=c['life'].get('best_streak', 0),
+        # held: what counts against SHELF_CAP (stock leaves out stale batches); with shelf_cap, max_orders and
+        # cup_cap the client draws a prepare or order the server must refuse as disabled, with the reason (1.4.4).
         stations=[dict(id=x['id'], group=x['group'], level=x.get('level', 1), unlocked=x.get('level', 1) <= lv, stock=st[x['id']],
-                       tired=tired.get(x['id'], 0), made=x['id'] in MADE, fresh=x['id'] in FRESH, on=x['id'] not in b['menu_off'])
+                       held=hl[x['id']], tired=tired.get(x['id'], 0), made=x['id'] in MADE, fresh=x['id'] in FRESH, on=x['id'] not in b['menu_off'])
                   for x in data.INGREDIENTS],
+        shelf_cap=SHELF_CAP, max_orders=MAX_ORDERS, cup_cap=CUP_CAP,
         menu_off=list(b['menu_off']),
         upgrades=[dict(u, owned=u['id'] in b['upgrades'], ready=lv >= u['level']) for u in UPGRADES],
         event=ev_view, notebook=notebook, warnings=warnings(c), history=b['history'][-7:], sold_out=b['sold_out'],
