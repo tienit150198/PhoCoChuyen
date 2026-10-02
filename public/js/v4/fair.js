@@ -402,7 +402,7 @@ function ringView(){
     <div class="fh-ringsleft" aria-label="Còn ${rings-used} vòng">${left}</div>
     ${go}
     <div class="fh-ringmeter">${meter(e)}</div>
-    <p class="fh-rule">${r.nocap?`Bấm “Ném!” khi vòng ở ngay trên miệng chai. Một chai ăn được nhiều vòng. Mỗi vòng trúng ${r.ring_hit} xu, trúng cả ${rings} vòng thêm ${r.ring_all} xu. Trúng từ 3 vòng: +${(F().points?.rules||{}).ring3||1} điểm, cả ${rings} vòng: +${(F().points?.rules||{}).ring5||2} điểm.`:`Bấm “Ném!” khi vòng ở ngay trên miệng chai. Mỗi chai chỉ tính một lần. Trúng ${r.ring_hit||2} xu một chai, đủ ${rings} chai thêm ${r.ring_all||5} xu. Từ 3 chai: +${(F().points?.rules||{}).ring3||1} điểm, đủ ${rings} chai: +${(F().points?.rules||{}).ring5||2} điểm.`}</p>
+    <p class="fh-rule">${r.nocap?`Bấm “Ném!” khi vòng ở ngay trên miệng chai. Một chai ăn được nhiều vòng. Mỗi vòng trúng ${r.ring_hit} xu, trúng cả ${rings} vòng thêm ${r.ring_all} xu.${(F().points?.rules||{}).ring3?` Trúng từ 3 vòng: +${F().points.rules.ring3} điểm, cả ${rings} vòng: +${F().points.rules.ring5} điểm.`:' Ném vòng không tính điểm Bảng vàng.'}`:`Bấm “Ném!” khi vòng ở ngay trên miệng chai. Mỗi chai chỉ tính một lần. Trúng ${r.ring_hit||2} xu một chai, đủ ${rings} chai thêm ${r.ring_all||5} xu. Từ 3 chai: +${(F().points?.rules||{}).ring3||1} điểm, đủ ${rings} chai: +${(F().points?.rules||{}).ring5||2} điểm.`}</p>
   </section>`;
 }
 function stopRing(){cancelAnimationFrame(S.ring.raf);S.ring.raf=0;}
@@ -919,7 +919,7 @@ function boardView(){
   return `<section class="fh-stall fh-gold" aria-label="Bảng vàng hội chợ">
     <div class="fh-card fh-crown"><h3>🏆 Bảng vàng hội chợ</h3><ul class="fh-tiers">${tiers}</ul><p class="small">${f.over?'Danh hiệu đã trao khi hội tàn.':`Trao khi hội tàn (${esc(dateOf(f.closes))} 00:00), giữ mãi trong bộ sưu tập.`}</p></div>
     ${won}${mine}${S.board.error?`<p class="fh-flash bad">${esc(S.board.error)}</p>`:''}${rows}
-    <details class="fh-how"><summary>Cách tính điểm</summary><ul><li>Mỗi ngày ghé hội chơi: +${rules.day}</li><li>Thắng một ván ô ăn quan: +${rules.oaq}</li><li>Ném vòng trúng từ 3 chai: +${rules.ring3}, đủ 5 chai: +${rules.ring5}</li><li>Ván bầu cua có con trùng mặt đặt: +${rules.bc}</li><li>Thắng một ván chiếu trong: +${rules.xd} (bị công an kiểm tra: 0)</li><li>Kinh thắng một ván lô tô: +${rules.loto}</li>${rules.dt?`<li>Phóng phi tiêu trúng vòng màu: +${rules.dt} mỗi phát</li>`:''}${p.cap?`<li>Tối đa ${fmt(p.cap)} điểm mỗi ngày.</li>`:''}<li>Bằng điểm thì ai đạt trước đứng trên.</li></ul><p class="small muted">Điểm tính theo lượt chơi, không theo số xu thắng, nên cược nhỏ cũng lên bảng được.</p></details>
+    <details class="fh-how"><summary>Cách tính điểm</summary><ul><li>Mỗi ngày ghé hội chơi: +${rules.day}</li><li>Thắng một ván ô ăn quan: +${rules.oaq}</li>${rules.ring3?`<li>Ném vòng trúng từ 3 chai: +${rules.ring3}, đủ 5 chai: +${rules.ring5}</li>`:''}<li>Ván bầu cua có con trùng mặt đặt: +${rules.bc}</li><li>Thắng một ván chiếu trong: +${rules.xd} (bị công an kiểm tra: 0)</li><li>Kinh thắng một ván lô tô: +${rules.loto}</li>${rules.dt?`<li>Phóng phi tiêu trúng vòng màu: +${rules.dt} mỗi phát</li>`:''}${p.cap?`<li>Tối đa ${fmt(p.cap)} điểm mỗi ngày.</li>`:''}<li>Bằng điểm thì ai đạt trước đứng trên.</li></ul><p class="small muted">Điểm tính theo lượt chơi, không theo số xu thắng, nên cược nhỏ cũng lên bảng được.</p></details>
   </section>`;
 }
 

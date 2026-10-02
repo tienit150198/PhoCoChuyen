@@ -23,7 +23,7 @@ OFF_R = 116                    # the farthest a dart is drawn
 AIM_MAX = 120                  # the aim the client may send, per axis
 SPREAD = 14                    # the throw's scatter around the aim (a gauss sigma, board units)
 # the odds by today's fair net: the shared taper (game.fair.odds) with darts' own, lower ends
-P_HI, P_LO = 0.40, 0.30         # owner 03/10 01:20: "phi tiêu khó trúng hơn" (was 0.70, 0.45)
+P_HI, P_LO = 0.51, 0.45         # owner 03/10 01:45: "phóng phi tiêu -> tỷ lệ thắng 51%" (was 0.40, 0.30)
 PT_HIT = 1                     # fair points for a dart in the coloured rings
 
 

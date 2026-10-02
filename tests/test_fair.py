@@ -683,6 +683,7 @@ class Points(FairBase):
         self.assertEqual(r['fair']['points'], 0)            # raided: nothing
         self.dice(Dice(faces=['cua'] * 300))
         for _ in range(40):
+            s['journey'].pop('fair_run', None)                # not a run: the odds stay where they are
             s, r = self.act(s, 'fair_bc', bets={'cua': 1})
         f = s['journey']['fair']
         self.assertEqual((f['dpts'], f['pts']), (fh.POINTS_DAY, 42))   # no daily maximum; the saved counter stops at 30
@@ -1068,7 +1069,23 @@ class Odds(FairBase):
     def test_xoc_dia(self):
         rate, ev = self.rounds(self.xd('le', 20))
         self.assertTrue(fh.WIN_P - .03 <= rate <= fh.WIN_P + .01, rate)   # the 2 % raids lose too
-        self.assertTrue(.1 < ev < .25, ev)
+        self.assertTrue(-.02 < ev < .1, ev)   # 53 %: about even money
+
+    def test_a_long_run_of_one_stall(self):
+        j, f = {}, dict(fh.initial(), date=fh.vn_date(OPEN))   # owner 03/10: spam one game, the odds fall to 40 %
+        ps = [fh.luck_p(j, f, 'bc', OPEN + i) for i in range(40)]
+        self.assertEqual(ps[:fh.RUN_FREE], [fh.WIN_P] * fh.RUN_FREE)
+        self.assertAlmostEqual(ps[fh.RUN_FREE], fh.WIN_P - fh.RUN_STEP)
+        self.assertEqual(ps[-1], fh.P_FLOOR)
+        self.assertEqual(fh.luck_p(j, f, 'xd', OPEN + 41), fh.WIN_P)            # another stall: a new run
+        j['fair_run'] = dict(g='xd', n=30, at=int(OPEN))
+        self.assertEqual(fh.luck_p(j, f, 'xd', OPEN + fh.RUN_GAP + 5), fh.WIN_P)   # a break: a new run
+        s = story(100)
+        s['journey']['fair_run'] = dict(g='bc', n=3, at=1)
+        validate_state(s)
+        s['journey']['fair_run'] = dict(g='oaq', n=3, at=1)
+        with self.assertRaises(GameError):
+            validate_state(s)
 
     def test_the_lean_tapers_off(self):
         self.assertEqual(fh.win_p(None, OPEN), fh.WIN_P)

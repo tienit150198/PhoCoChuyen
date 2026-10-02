@@ -102,7 +102,13 @@ ROUNDS_DAY = 400
 # khoảng 2000 xu thì cho thua dần bớt đi"): a round is a win with WIN_P (bầu cua: the bets come out ahead; xóc đĩa:
 # the side picked is right), tapering linearly from TAPER_FROM xu of today's luck net to WIN_P_LOW at TAPER_TO and
 # staying there. Payouts stay the folk ones (bầu cua per die, xóc đĩa 1:1).
-WIN_P, WIN_P_LOW = .60, .45     # owner 03/10 01:20: "tỷ lệ thắng là 60% và hên xui" (was .70)
+WIN_P, WIN_P_LOW = .53, .45     # owner 03/10 01:45: "bầu cua, chiếu trong, gánh lô tô -> tỷ lệ thắng 53%" (was .60)
+# One stall played on and on (owner 03/10: "chơi liên tục 1 game thì tỷ lệ thắng sẽ giảm dần xuống, tối thiểu 40%"):
+# after RUN_FREE rounds in a row of the same stall (each within RUN_GAP s of the one before) the odds drop RUN_STEP a
+# round, never below P_FLOOR. The run is journey['fair_run'] {g, n, at} (optional; outside journey['fair'], whose older
+# validator rejects unknown keys).
+RUN_FREE, RUN_STEP, RUN_GAP, P_FLOOR = 10, .01, 180, .40
+RUN_GAMES = ('bc', 'xd', 'lt', 'dt')
 TAPER_FROM, TAPER_TO = 2000, 5000
 GAP_MS = 400                   # between two rounds of dice/coins (owner 03/10: nhanh lên; was 1200)
 # 🦀 Bầu cua
@@ -150,7 +156,7 @@ EARN_GAMES = tuple(EARN_DAY)
 # 🏆 Bảng vàng hội chợ: points
 POINTS_DAY = 30                # no longer a cap: the saved day counter saturates here (older validators bound it)
 PT_DAY, PT_BC, PT_XD, PT_LOTO = 1, 1, 1, 3
-PT_OAQ, PT_RING3, PT_RING5 = 3, 1, 2
+PT_OAQ, PT_RING3, PT_RING5 = 3, 0, 0   # ném vòng: no fair points (owner 03/10 01:45; was 1, 2)
 
 TITLE_ROWS = (   # journey.TITLES (secret, granted here only)
     ('f_oaq', '🪨', 'Cao tay ô ăn quan', 'Thắng Ông Hai một ván ô ăn quan ở hội chợ dân gian.'),
@@ -446,6 +452,23 @@ def odds(net: int, hi: float | None = None, lo: float | None = None) -> float:
     return max(lo, hi - (hi - lo) * (net - TAPER_FROM) / (TAPER_TO - TAPER_FROM))
 
 
+def _run(j: dict, game: str, t: float) -> int:
+    """Count this round in the player's run of `game`; returns its length (1 for a new run)."""
+    r = j.get('fair_run')
+    if not (isinstance(r, dict) and r.get('g') == game and 0 <= int(t) - r.get('at', 0) <= RUN_GAP):
+        r = j['fair_run'] = dict(g=game, n=0, at=int(t))
+    r['n'] = min(10**6, r['n'] + 1)
+    r['at'] = int(t)
+    return r['n']
+
+
+def luck_p(j: dict, f: dict | None, game: str, t: float, hi: float | None = None, lo: float | None = None) -> float:
+    """The odds of the next round of a luck stall: odds() by today's net, less RUN_STEP a round past RUN_FREE in a row
+    of the same stall, never below P_FLOOR. Counts the round in the run."""
+    n = _run(j, game, t)
+    return max(P_FLOOR, odds(_today(f, t)['net'], hi, lo) - RUN_STEP * max(0, n - RUN_FREE))
+
+
 def win_p(f: dict | None, t: float) -> float:
     """odds() for the next luck round of this fair state (today's net; 0 on a new day)."""
     return odds(_today(f, t)['net'])
@@ -561,7 +584,7 @@ def _dart(e, j: dict, f: dict, p: dict, t: float, got: list) -> dict:
     need(darts.aim_ok(aim), 'Dữ liệu thao tác không hợp lệ.')
     pts = _guard_free(e, f, j, t, stake)
     dt = f.setdefault('dt', {k: 0 for k in DT_KEYS})
-    win = _rng.random() < darts.win_p(f['net'])
+    win = _rng.random() < luck_p(j, f, 'dt', t, darts.P_HI, darts.P_LO)
     x, y = darts.land(aim, win, _rng)
     ring = darts.ring_of(x, y)
     dt['n'] = min(10**9, dt['n'] + 1)
@@ -619,7 +642,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
             need(type(v) is int and 1 <= v <= BC_MAX, f'Mỗi ván đặt tối đa {BC_MAX} xu.')
         stake = sum(bets.values())
         need(stake <= BC_MAX, f'Mỗi ván đặt tối đa {BC_MAX} xu.')
-        want = _rng.random() < win_p(f, t)
+        want = _rng.random() < luck_p(j, f, 'bc', t)
         pts = _guard_round(e, f, j, t, stake, stake)
         dice = bc_roll(bets, want)
         back = bc_back(bets, dice)
@@ -655,7 +678,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
             result['fair'] = dict(game='xd', raid=True, side=p['side'], stake=stake, fine=fine, net=-(stake + fine), cooldown=RAID_COOLDOWN)
             result['message'] = f'Công an phường kiểm tra! Mất {stake} xu tiền cược và nộp phạt {fine} xu.'
         else:
-            want = _rng.random() < win_p(f, t)
+            want = _rng.random() < luck_p(j, f, 'xd', t)
             coins = xd_toss(p['side'], want)
             even = sum(coins) % 2 == 0
             win = (p['side'] == 'chan') == even
@@ -950,6 +973,12 @@ def settle(s: dict) -> None:
 def validate(j: dict) -> None:
     """journey['fair'] and journey['fair_cash'] (both optional)."""
     fc.validate(j)
+    if 'fair_run' in j:
+        from .engine import need, integer
+        r = j['fair_run']
+        need(isinstance(r, dict) and set(r) == {'g', 'n', 'at'} and r['g'] in RUN_GAMES, 'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
+        integer(r['n'], 0, 10**6)
+        integer(r['at'], 0, 10**11)
     if 'fair' not in j:
         return
     from .engine import need, integer
