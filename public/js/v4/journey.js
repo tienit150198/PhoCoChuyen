@@ -78,6 +78,9 @@ function wornChips(api,J){
   return `<div class="jr-worn">${top}${worn.map(w=>chip(w)).join('')||`<button type="button" class="jr-title-chip empty" data-action="jrView" data-view="titles">Chọn danh hiệu để đeo</button>`}</div>`;
 }
 const spouseChip=api=>{const sp=api.state.marriage?.spouse;return sp?`<button type="button" class="jr-title-chip" data-action="marriage"><span aria-hidden="true">${sp.status==='married'?'🏡':'💞'}</span> ${sp.status==='married'?'Đã về chung một nhà':'Đã đính hôn'} · ${esc(sp.name)}</button>`:'';};
+/* 🚗 The vehicle the player rides (game/garage.py), next to Thay đồ; it opens the garage (v4/garage.js). */
+const rideChip=api=>{const g=api.state.journey.garage,c=g?.ride&&g.cars?.find(x=>x.id===g.ride),it=c&&(api.content.journey?.garage?.vehicles||[]).find(v=>v.id===c.id);
+  return it?`<button type="button" class="jr-title-chip" data-action="garage"><span aria-hidden="true">${it.emoji}</span> ${esc(it.name)}</button>`:'';};
 function meCard(env){
   const {api}=env,J=api.state.journey,C=api.content.journey,mat=J.maturity;
   const span=mat.next?Math.max(1,mat.next-mat.floor):1,pct=mat.next?Math.min(100,Math.round((mat.xp-mat.floor)*100/span)):100;
@@ -88,7 +91,7 @@ function meCard(env){
     <div class="jr-me-top"><button type="button" class="jr-avatar" data-action="jrView" data-view="profile" aria-label="Sửa tên và nhân vật">${avatar(J.gender,68,lookOf(api.state))}</button>
       <div class="jr-me-text"><h2>${esc(api.state.name)}</h2>${spouseChip(api)}
         ${J.story?wornChips(api,J):''}
-        <button type="button" class="jr-title-chip jr-wd-chip" data-action="jrWardrobe"><span aria-hidden="true">👗</span> Thay đồ</button>
+        <button type="button" class="jr-title-chip jr-wd-chip" data-action="jrWardrobe"><span aria-hidden="true">👗</span> Thay đồ</button>${rideChip(api)}
         <div class="jr-level"><div class="jr-level-row"><b>Trưởng thành cấp ${mat.level}</b><small>${esc(mat.name)}</small></div><div class="jr-bar" role="progressbar" aria-label="Kinh nghiệm trưởng thành" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div></div></div></div>
     ${J.story?`<div class="jr-stats">${wallet}<div class="jr-stat"><small>Ngày sống</small><b>${fmt(J.life_day)}</b></div><button type="button" class="jr-stat" data-action="jrView" data-view="titles"><small>Danh hiệu</small><b>${J.titles.length}</b></button></div>`:''}
     ${certBadges(env)}
