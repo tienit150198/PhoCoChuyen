@@ -10,6 +10,7 @@ import {lockChip} from '../careers/stage_fold.js';
 import {wordsFor} from '../scenes/index.js';
 import {fundLabel} from './money.js';
 import {orderQuote,fitDraft,vans,vansLine} from './restock.js';
+import {Sound} from '../audio.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 /** The workplace money word the 💰 chip uses too ("Quỹ tiệm", "Quỹ nông trại"…; v4/money.js). */
@@ -35,12 +36,58 @@ const shipments=list=>{const out=[],seen=new Map();
   return out;};
 /** What a shipment cost: the goods of every line plus the one shipping fee (kept on its first line). */
 const paidOf=g=>g.lines.reduce((n,o)=>n+Number(o.cost||0)+Number(o.ship||0),0);
+const COUNT_TIP='👆 Chạm từng món · giữ để đếm nhanh';
+/** Counting a crate is the player's job (a crate can come short), but a tap per unit was slow (player
+ * feedback #97): press and hold the crate and the goods are counted one after another, about seven a
+ * second, until you let go or nothing is left uncounted. Every unit still lights up as it is counted and
+ * the box shows only what was counted; tapping single goods works as before. The latest env is kept so
+ * the listeners (installed once) re-render the sheet that is open now. */
+const HOLD_WAIT=300,HOLD_STEP=140;
+let stockEnv=null,stockOn=false;
+const holdSfx=new Sound();
+function tallyOne(ui,order,k){const t=(ui.invTally??={}),on=new Set(t[order]||[]);on.add(k);t[order]=[...on];
+  (ui.invCount??={})[order]=String(on.size);if(ui.invTyped)delete ui.invTyped[order];return on.size;}
+function stockBoot(env){
+  stockEnv=env;
+  if(stockOn||typeof document==='undefined')return;stockOn=true;
+  if(!document.querySelector('link[data-stock-css]')){const l=document.createElement('link');l.rel='stylesheet';l.href=asset('/css/stock.css');l.dataset.stockCss='1';document.head.append(l);}
+  let crate=null,key='',wait=0,beat=0,x0=0,y0=0,counted=0,swallow=0,down=false;
+  const step=()=>{
+    // The sheet may re-render under the finger (a state refresh): carry on in the same crate's new copy.
+    if(crate&&!crate.isConnected&&key){crate=[...document.querySelectorAll('#sheet .inv-crate')].find(u=>u.querySelector('.inv-good')?.dataset.order===key)||null;crate?.classList.add('holding');}
+    const b=crate?.isConnected&&crate.querySelector('.inv-good:not(.on)');
+    if(!b){stop();return;}
+    const ui=stockEnv.ui,n=tallyOne(ui,b.dataset.order,Number(b.dataset.i));counted++;
+    b.classList.add('on','tick');b.setAttribute('aria-pressed','true');b.setAttribute('aria-label',`${b.getAttribute('aria-label')||''}, đã đếm`);
+    const inp=document.getElementById('count-'+b.dataset.order);if(inp){inp.value=String(n);inp.removeAttribute('aria-invalid');}
+    holdSfx.pop();
+  };
+  const stop=()=>{
+    clearTimeout(wait);clearInterval(beat);wait=beat=0;crate?.classList.remove('holding');crate=null;
+    // What was counted lands like taps do: the next step, the note "N món" (one re-render, not one per unit).
+    if(counted){counted=0;swallow=down?Infinity:Date.now()+600;stockEnv?.renderSheet?.();}
+  };
+  document.addEventListener('pointerdown',e=>{
+    const ul=e.target.closest?.('#sheet .inv-crate');
+    if(!ul||e.button>0||!ul.querySelector('.inv-good:not(.on)'))return;
+    stop();crate=ul;key=ul.querySelector('.inv-good')?.dataset.order||'';down=true;x0=e.clientX;y0=e.clientY;
+    holdSfx.configure(stockEnv?.api?.state?.settings||{});holdSfx.unlock();
+    wait=setTimeout(()=>{if(!crate)return;crate.classList.add('holding');step();beat=setInterval(step,HOLD_STEP);},HOLD_WAIT);
+  });
+  // A finger that slides is scrolling the sheet, not holding.
+  document.addEventListener('pointermove',e=>{if(crate&&!beat&&Math.hypot(e.clientX-x0,e.clientY-y0)>10)stop();});
+  for(const t of ['pointerup','pointercancel'])document.addEventListener(t,()=>{down=false;if(crate)stop();if(swallow===Infinity)swallow=Date.now()+600;});
+  document.addEventListener('contextmenu',e=>{if(e.target.closest?.('#sheet .inv-crate'))e.preventDefault();});
+  // The click that ends a hold is not also a tap (it would un-count the good under the finger).
+  window.addEventListener('click',e=>{if(swallow&&Date.now()<swallow&&e.target.closest?.('#sheet .inv-crate')){swallow=0;e.preventDefault();e.stopImmediatePropagation();}},true);
+}
 /** Stock room: a status strip with ONE next step, shelf bins (count, fill,
  * goods on the way, expiry), an order card with a stepper and suppliers,
  * per-supplier drafts (đơn gộp: several lines, one fee, one delivery),
  * crates to open and count by eye (the slip may differ from what is inside),
  * and lots by days left. The server stays authoritative for every rule. */
 export function inventoryView(env){
+  stockBoot(env);
   const {api,ui}=env,c=api.state.careers[api.state.current],inv=c.inventory,content=api.content;
   if(!inv)return head('Nghề này không nhập hàng')+`<div class="sheet-body"><div class="empty">${icon('box',32)}<p>Không có kho nguyên liệu ở nghề này.</p></div></div>`;
   const items=content.inventory.items[api.state.current]||[],byId=Object.fromEntries(items.map(i=>[i.id,i]));
@@ -67,7 +114,7 @@ export function inventoryView(env){
   const opened=g=>ui.invOpen===g.id||g.lines.some(l=>l.id===ui.invOpen)||readyS.length===1;
   const tallied=o=>(ui.invTally?.[o.id]||[]).length;
   const counted=o=>{const typed=Boolean(ui.invTyped?.[o.id])&&String(ui.invCount?.[o.id]??'').trim()!=='',k=tallied(o),n=Number(o.count_hint)||0;
-    return {ok:k>=n||typed||null,note:k?`${k} món`:'',go:k<n&&!typed?{sel:`#crate-${o.id} .inv-good:not(.on)`,label:'👆 Chạm từng món để đếm'}:null};};
+    return {ok:k>=n||typed||null,note:k?`${k} món`:'',go:k<n&&!typed?{sel:`#crate-${o.id} .inv-good:not(.on)`,label:COUNT_TIP}:null};};
   const sups=supplierList(env),supOf=sid=>sups.find(x=>x.id===sid)||content.inventory.suppliers.find(x=>x.id===sid);
   // A draft open in the stock tab (đơn gộp): opened from its chip, or right after something was added.
   const pick=ui.orderItem&&byId[ui.orderItem]&&!inv.locked.includes(ui.orderItem)?byId[ui.orderItem]:null;
@@ -153,14 +200,14 @@ export function inventoryView(env){
   const counter=o=>`<div class="inv-stepper"><button type="button" class="btn ghost" data-action="v4Count" data-target="count-${esc(o.id)}" data-step="-1" aria-label="Bớt một">−</button><input id="count-${esc(o.id)}" class="input" type="number" min="0" max="60" inputmode="numeric" value="${esc(ui.invCount?.[o.id]??'')}" placeholder="0" data-v4-count="${esc(o.id)}" required><button type="button" class="btn ghost" data-action="v4Count" data-target="count-${esc(o.id)}" data-step="1" aria-label="Thêm một">+</button></div>`;
   const crate=o=>{
     const i=byId[o.item]||{name:o.item},s=sup(o),isOpen=opened({id:o.id,lines:[o]});
-    const form=`<div class="inv-slip"><span>Phiếu giao ghi</span><b>${o.qty} ${esc(unit(i))}</b></div><p class="inv-tip">👆 Chạm từng món để đếm</p><ul class="inv-crate" aria-label="Trong thùng">${goodsOf(o,i)}</ul>`+
+    const form=`<div class="inv-slip"><span>Phiếu giao ghi</span><b>${o.qty} ${esc(unit(i))}</b></div><p class="inv-tip">${COUNT_TIP}</p><ul class="inv-crate" aria-label="Trong thùng">${goodsOf(o,i)}</ul>`+
       `<form class="inv-receive" data-v4-receive="${esc(o.id)}"><label for="count-${esc(o.id)}">Bạn đếm được</label>${counter(o)}<button class="btn primary" type="button" data-action="v4Receive" data-order="${esc(o.id)}">${icon('check',15)} Nhận vào kệ</button></form>`+
       `<p class="muted small">Phiếu có thể ghi khác; thiếu thì nhận đúng số có rồi khiếu nại.</p>`;
     return `<article class="card inv-crate-card${isOpen?' open':''}" id="crate-${esc(o.id)}"><div class="row spread"><div><strong>${name(i)}</strong><small class="muted block">${esc(s?.emoji||'')} ${esc(s?.name||'')} · đã trả ${fmt(paidOf({lines:[o]}))} xu${o.arrives_time?` · tới lúc ${esc(o.arrives_time)}`:''}</small></div>${pill('ĐÃ TỚI','green')}</div>${isOpen?form:button(`📦 Mở thùng & xếp lên kệ`,'v4InvOpen',{order:o.id},'primary big full inv-open')}</article>`;};
   // One crate for a merged order: a slip and a pile per line, one count each, one "receive" for all.
   const groupCrate=g=>{
     const s=sup(g.o),isOpen=opened(g),list=g.lines.map(o=>`${esc(byId[o.item]?.emoji||'📦')} ${esc(byId[o.item]?.name||o.item)} ×${o.qty}`).join(' · ');
-    const body=isOpen?`<p class="inv-tip">👆 Chạm từng món để đếm</p>`+g.lines.map(o=>{const i=byId[o.item]||{name:o.item};
+    const body=isOpen?`<p class="inv-tip">${COUNT_TIP}</p>`+g.lines.map(o=>{const i=byId[o.item]||{name:o.item};
         return `<div class="inv-gline" id="crate-${esc(o.id)}"><div class="inv-slip"><span>${name(i)}</span><b>${o.qty} ${esc(unit(i))}</b></div><ul class="inv-crate" aria-label="${esc(i.name)} trong thùng">${goodsOf(o,i)}</ul><div class="inv-receive"><label for="count-${esc(o.id)}">Đếm được</label>${counter(o)}</div></div>`;}).join('')+
       `<button class="btn primary big full" type="button" data-action="v4ReceiveGroup" data-group="${esc(g.id)}">${icon('check',15)} Nhận cả thùng lên kệ</button><p class="muted small">Phiếu có thể ghi khác; thiếu thì nhận đúng số có rồi khiếu nại.</p>`
       :`<p class="inv-gnames">${list}</p>${button(`📦 Mở thùng gộp · ${g.lines.length} món`,'v4InvOpen',{order:g.id},'primary big full inv-open')}`;
@@ -239,7 +286,7 @@ export function inventoryView(env){
   // "?" → the illustrated "Nhập hàng & xếp kệ" page, where the workplace has one (tutorial/guide-data.js).
   const help=(GUIDE[api.state.current]?.pages||[]).some(p=>p.id==='restock')?`<button type="button" class="icon-btn tut-help" data-action="tutGuide" data-career="${esc(api.state.current)}" data-tab="work" data-page="restock" aria-label="Cách nhập hàng & xếp kệ">?</button>`:'';
   return head('Kho & nhập hàng',`Mỗi loại chứa tối đa ${cap}`,'KHO · '+esc(place)).replace('<button class="icon-btn" type="button" data-action="close"',help+'<button class="icon-btn" type="button" data-action="close"')+
-    `<div class="sheet-body"><p class="small muted inv-how">📦 Đặt hàng → chờ thùng về → mở thùng, chạm đếm từng món → nhận lên kệ: lúc đó mới bán được.</p>${hint}${strip}${door}${shortBox}${tabs([['stock','Kệ hàng'],['orders',`Thùng hàng${transitS.length?` · ${transitS.length}`:''}`],['lots','Hạn dùng']],tab,'v4InvTab')}<div class="space-top">${body}</div></div>`;
+    `<div class="sheet-body"><details class="inv-how"><summary>❔ Nhập hàng thế nào?</summary><p class="small muted">📦 Đặt hàng → chờ thùng về → mở thùng, chạm đếm từng món → nhận lên kệ: lúc đó mới bán được.</p></details>${hint}${strip}${door}${shortBox}${tabs([['stock','Kệ hàng'],['orders',`Thùng hàng${transitS.length?` · ${transitS.length}`:''}`],['lots','Hạn dùng']],tab,'v4InvTab').replace('class="pill-tabs"','class="pill-tabs inv-tabs"')}<div class="space-top">${body}</div></div>`;
 }
 /** Order card: stepper + quick chips (never past the room left), suppliers,
  * a live total (wholesale tier and shipping included) and the reason when ordering is not
@@ -254,13 +301,14 @@ function orderCard(env,pick,{cap,stock,on,space,unit,name}){
   const why=!space?'Kệ đã đầy (tính cả hàng đang giao).':vans(c.inventory).full?`${vansLine(c.inventory)}: nhận bớt thùng rồi đặt tiếp.`:cost>c.money?`${fn} còn ${fmt(c.money)} xu, thiếu ${fmt(cost-c.money)} xu.`:'';
   const chips=[5,10].filter(n=>n<max).map(n=>`<button type="button" class="chip ${n===qty?'selected':''}" data-action="v4Qty" data-set="${n}">${n}</button>`).join('')+(max?`<button type="button" class="chip ${qty===max?'selected':''}" data-action="v4Qty" data-set="${max}">${space<=30?'Đầy kệ':'Tối đa'} · ${max}</button>`:'');
   const cheapest=Math.min(...sups.filter(x=>sells(x,pick.id)).map(x=>x.factor));
+  const priceWord=x=>`${x.factor===cheapest&&x.factor<1?'rẻ nhất':x.factor<1?'rẻ hơn':x.factor>1?'đắt hơn':'giá niêm yết'} ×${String(x.factor).replace('.',',')}`;
+  // Suppliers as compact chips (name, when, price); the chosen one's terms and notes sit in a fold under them.
   const supplier=x=>{const ok=sells(x,pick.id),on=ok&&x.id===sup.id,k=carts.find(k=>k.supplier===x.id);
-    const price=`${x.factor===cheapest&&x.factor<1?'rẻ nhất':x.factor<1?'rẻ hơn':x.factor>1?'đắt hơn':'giá niêm yết'} ×${String(x.factor).replace('.',',')}`;
-    const notes=[price,x.short>=15?'hay thiếu hàng':'',x.late>=12?'hay trễ hẹn':'',x.fresh?`tươi thêm ${x.fresh} ngày`:'',x.rating?`${x.rating}★`:''].filter(Boolean).join(' · ');
+    return `<button type="button" class="choice inv-sup ${on?'selected':''}" data-action="v4Supplier" data-supplier="${esc(x.id)}" aria-pressed="${on}"${ok?'':' disabled'}><strong>${esc(x.emoji)} ${esc(x.name)}${k?` <span class="inv-badge" aria-label="đơn đang soạn ${k.lines.length} món">🛒 ${k.lines.length}</span>`:''}</strong>`+
+      `<small>${ok?`<b>${esc(x.quote?.label||x.window||'')}</b> · ×${String(x.factor).replace('.',',')}`:'Không bán mặt hàng này'}</small></button>`;};
+  const supMore=x=>{const notes=[priceWord(x),x.short>=15?'hay thiếu hàng':'',x.late>=12?'hay trễ hẹn':'',x.fresh?`tươi thêm ${x.fresh} ngày`:'',x.rating?`${x.rating}★`:''].filter(Boolean).join(' · ');
     const terms=x.free_from!=null?[x.ship?`ship ${x.ship} xu (miễn từ ${x.free_from})`:'',(x.bulk||[]).length?`sỉ từ ${x.bulk[0][0]}: −${x.bulk[0][1]}%`:''].filter(Boolean).join(' · '):'';
-    return `<button type="button" class="choice ${on?'selected':''}" data-action="v4Supplier" data-supplier="${esc(x.id)}" aria-pressed="${on}"${ok?'':' disabled'}><span class="grow" style="display:grid;gap:3px;min-width:0"><strong>${esc(x.emoji)} ${esc(x.name)}${k?` <span class="inv-badge" aria-label="đơn đang soạn ${k.lines.length} món">🛒 ${k.lines.length}</span>`:''}</strong>`+
-      `<span style="font-weight:800;color:var(--accent-text)">${ok?esc(x.quote?.label||x.window||''):'Không bán mặt hàng này'}</span>`+
-      `${ok?`<small style="margin:0">${x.kind==='rush'||!x.window?'':`${esc(x.window)} · `}${esc(notes)}</small>${terms?`<small style="margin:0">${esc(terms)}</small>`:''}<small class="muted" style="margin:0">${esc(x.note||'')}</small>`:''}</span></button>`;};
+    return `<details class="inv-sup-more"><summary>${esc(x.emoji)} ${esc(x.name)}: giờ giao & điều kiện</summary><p class="small">${x.kind==='rush'||!x.window?'':`${esc(x.window)} · `}${esc(notes)}</p>${terms?`<p class="small">${esc(terms)}</p>`:''}${x.note?`<p class="small muted">${esc(x.note)}</p>`:''}</details>`;};
   const k=carts.find(k=>k.supplier===sup.id),inDraft=k?.lines.find(l=>l.item===pick.id)?.qty||0;
   // A full draft takes no new line (inv_cart): the button opens that draft to place it instead.
   const lineCap=Number(c.inventory?.cart_lines)||8,cartFull=!!k&&!inDraft&&k.lines.length>=lineCap;
@@ -269,9 +317,10 @@ function orderCard(env,pick,{cap,stock,on,space,unit,name}){
   return `<section class="card order-card inv-order" aria-label="Nhập ${esc(pick.name)}"><div class="row spread"><h3>Nhập ${name}</h3>${button(icon('x',14),'v4Order',{item:''},'ghost small')}</div>`+
     `<p class="inv-facts"><span>Trên kệ <b>${stock}</b></span><span>Đang giao <b>${on}</b></span><span>Còn chỗ <b>${space}</b></span>${vansLine(c.inventory)?`<span>${vansLine(c.inventory)}</span>`:''}<span>Giá gốc <b>${pick.cost}</b> xu/${esc(unit)}</span>${pick.life?`<span>Dùng trong <b>${pick.life}</b> ngày</span>`:''}</p>`+
     `<label class="field" for="order-qty">Số lượng</label><div class="inv-qty"><div class="inv-stepper"><button type="button" class="btn ghost" data-action="v4Qty" data-step="-1" aria-label="Bớt một"${qty<=1?' disabled':''}>−</button><input id="order-qty" class="input" type="number" inputmode="numeric" min="1" max="${Math.max(1,max)}" value="${qty}" data-v4-qty aria-describedby="order-total"><button type="button" class="btn ghost" data-action="v4Qty" data-step="1" aria-label="Thêm một"${qty>=max?' disabled':''}>+</button></div><span class="chip-row">${chips}</span></div>`+
-    `<label class="field">Nhà cung cấp</label><div class="choice-grid">${sups.map(supplier).join('')}</div>`+
-    `<div class="inv-total"><div class="grow"><strong id="order-total" data-cost="${pick.cost}" data-factor="${sup.factor}" data-terms="${esc(JSON.stringify({bulk:sup.bulk||[],ship:sup.ship,free_from:sup.free_from}))}" data-money="${c.money}" data-fund="${esc(fn)}" data-shelf="${stock+on}" data-cap="${cap}" data-max="${max}">Tổng: ${fmt(cost)} xu</strong> <span id="order-tier">${tier}</span><small class="block" id="order-ship">${esc(ship)}</small><small class="block" id="order-eta">Dự kiến nhận: <b>${esc(sup.quote?.eta_label||sup.window||'')}</b></small><small class="muted block" id="order-after">${esc(fn)} còn ${fmt(Math.max(0,c.money-cost))} xu · kệ sau khi nhận ${stock+on+qty}/${cap}</small><small class="danger-text block" id="order-why" role="status">${esc(why)}</small></div>`+
-    `<div class="inv-order-go">${cartFull?`<button type="button" class="btn" id="cart-add" data-action="v4Cart" data-supplier="${esc(sup.id)}" data-open="1">🛒 Đơn đủ ${lineCap} món · xem & đặt</button>`:`<button type="button" class="btn" id="cart-add" data-action="v4CartAdd" data-item="${esc(pick.id)}"${!space||inDraft>=Math.min(30,space)?' disabled':''}>🛒 Thêm vào đơn${k?` · ${k.lines.length+(inDraft?0:1)}`:''}</button>`}<button type="button" class="btn primary" id="order-go" data-action="v4OrderGo" data-item="${esc(pick.id)}"${why?' disabled':''}>${icon('truck',15)} Đặt ngay</button></div></div>`+
+    // The bill right under the number you choose: total, what the fund keeps, and why it cannot go yet.
+    `<div class="inv-total inv-bill"><div class="grow"><strong id="order-total" data-cost="${pick.cost}" data-factor="${sup.factor}" data-terms="${esc(JSON.stringify({bulk:sup.bulk||[],ship:sup.ship,free_from:sup.free_from}))}" data-money="${c.money}" data-fund="${esc(fn)}" data-shelf="${stock+on}" data-cap="${cap}" data-max="${max}">Tổng: ${fmt(cost)} xu</strong> <span id="order-tier">${tier}</span><small class="block inv-after" id="order-after">${esc(fn)} còn ${fmt(Math.max(0,c.money-cost))} xu · kệ sau khi nhận ${stock+on+qty}/${cap}</small><small class="block" id="order-ship">${esc(ship)}</small><small class="block" id="order-eta">Dự kiến nhận: <b>${esc(sup.quote?.eta_label||sup.window||'')}</b></small><small class="danger-text block" id="order-why" role="status">${esc(why)}</small></div></div>`+
+    `<label class="field">Nhà cung cấp</label><div class="inv-sups">${sups.map(supplier).join('')}</div>${supMore(sup)}`+
+    `<div class="inv-order-go inv-order-foot">${cartFull?`<button type="button" class="btn" id="cart-add" data-action="v4Cart" data-supplier="${esc(sup.id)}" data-open="1">🛒 Đơn đủ ${lineCap} món · xem & đặt</button>`:`<button type="button" class="btn" id="cart-add" data-action="v4CartAdd" data-item="${esc(pick.id)}"${!space||inDraft>=Math.min(30,space)?' disabled':''}>🛒 Thêm vào đơn${k?` · ${k.lines.length+(inDraft?0:1)}`:''}</button>`}<button type="button" class="btn primary" id="order-go" data-action="v4OrderGo" data-item="${esc(pick.id)}"${why?' disabled':''}>${icon('truck',15)} Đặt ngay</button></div>`+
     `${cartFull?`<small class="danger-text block" role="status">Đơn ${esc(sup.name)} đủ ${lineCap} món: đặt đơn đó trước, hoặc “Đặt ngay” riêng món này.</small>`:''}<p class="muted small">Trả tiền khi đặt. Gộp nhiều món một đơn (tối đa ${lineCap} món): một lần ship. Hàng vào kệ sau khi bạn mở thùng và đếm đúng.</p></section>`;
 }
 /** A supplier's draft (đơn gộp): lines with −/+ and a wholesale hint, subtotal, savings, shipping,

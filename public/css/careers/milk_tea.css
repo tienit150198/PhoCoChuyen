@@ -313,16 +313,16 @@ html.reduce-motion .mt-event{animation:none}
 @media (min-width:900px){.career-job.mt .fk-bar{flex-wrap:nowrap}.career-job.mt .fk-bar-btns{flex:0 1 380px}}
 
 /* UX compaction: finished and later stations are one tappable line; locked tiles are one chip;
-   the status chips stay on one row (swipe for the rest) instead of wrapping to two. */
+   the status chips wrap (see .mt-hud below). */
 .mt-folded{padding:0}
 .mt-fold-sum{display:block;width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius-sm,10px);background:var(--surface);color:inherit;font:inherit;font-weight:700;font-size:.92rem;text-align:left;cursor:pointer;overflow-wrap:anywhere}
 .mt-fold-sum::after{content:" ▾";color:var(--muted);font-weight:400}
 .mt-folded.done .mt-fold-sum{color:var(--good,#4f8a4b)}
 .mt-fold-sum:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .mt-lockchip{margin:6px 0 0;display:inline-block;font-size:.82rem;padding:4px 10px;border-radius:99px;border:1px dashed var(--line);color:var(--muted);background:var(--surface-2)}
-.mt-hud{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-.mt-hud::-webkit-scrollbar{display:none}
-.mt-hud>.mt-chip{flex:none;white-space:nowrap}
+/* Status chips wrap to a second line on a phone: nothing clipped at 320 px, no hidden swipe. */
+.mt-hud{flex-wrap:wrap}
+.mt-hud>.mt-chip{flex:0 1 auto;min-width:0;white-space:normal;overflow-wrap:anywhere}
 
 /* 0.9.5 · Pinned order ticket: the order (one line per cup, Ly tabs), a live checklist and one
    patience bar stay at the top of the counter while the stations scroll under it. */
@@ -396,3 +396,71 @@ html.reduce-motion .mt-event{animation:none}
 .mt-fund small{display:block;color:var(--muted)}
 .mt-fund.poor{border-color:var(--warn);background:var(--warn-soft)}
 .mt-fund .mt-fund-tip{margin:6px 0;font-weight:600}
+
+/* WP-3 · Chuẩn bị opens on Kho: a compact head (name, one-line level), the day and missions in one fold,
+   then the tabs. Kho: "Cần nhập / cần ủ" first, locked goods in one fold, the order form shows the bill. */
+.mt-prep .mt-prep-head{flex-wrap:nowrap;align-items:center;gap:8px 10px}
+.mt-prep .mt-prep-head .prep-id{flex:1 1 auto;min-width:0}
+.mt-prep .mt-prep-head .prep-id h1{font-size:1.25rem;line-height:1.2}
+.mt-level{flex:0 1 150px;min-width:96px;display:grid;gap:4px;font-size:.8rem;font-weight:700;color:var(--ink-2)}
+.mt-level>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mt-level .prep-xp{height:6px;margin:0}
+.btn.mt-rename{flex:none;min-width:44px;min-height:44px;padding:0;font-size:1.1rem}
+.mt-today{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface-2)}
+.mt-today>summary{display:flex;align-items:center;gap:6px;min-height:44px;padding:6px 12px;margin:0;font-size:.9rem;font-weight:800;color:var(--ink);list-style:none;flex-wrap:wrap}
+.mt-today>summary::-webkit-details-marker{display:none}
+.mt-today>summary::after{content:"▸";margin-left:auto;color:var(--muted);font-weight:400}
+.mt-today[open]>summary::after{content:"▾"}
+.mt-today-em{font-size:1.15rem;line-height:1}
+.mt-today-t{min-width:0;overflow-wrap:anywhere}
+.mt-today-q{color:var(--accent-text);white-space:nowrap}
+.mt-today .prep-today-grid{padding:0 12px 12px}
+.mt-today .prep-weather p{margin:0}
+.mt-need{margin:0 0 4px;padding:8px;border-radius:var(--radius);border:1.5px solid var(--warn);background:var(--warn-soft)}
+.mt-need .section-title{margin:0 0 4px}
+.mt-need .section-title small,.mt-panel .section-title small{font-weight:600;color:var(--muted)}
+.mt-need-hint{display:flex;flex-wrap:wrap;gap:2px 12px;margin:0 0 6px;font-size:.85rem;font-weight:600;color:var(--ink-2)}
+.mt-locked{margin:8px 0 0}
+.mt-locked>summary,.mt-how>summary{display:flex;align-items:center;min-height:44px;padding:0 10px;border-radius:12px;border:1px dashed var(--line-strong);background:var(--surface-2);font-size:.85rem;font-weight:700;color:var(--muted)}
+.mt-locked p{margin:6px 4px 0;font-size:.85rem;color:var(--muted);line-height:1.5}
+.mt-how{margin:10px 0 0}
+.mt-how p{margin:6px 4px 0}
+.mt-panel>.mt-care-fold{margin-top:12px}
+/* Order form: − n + and quick picks, the bill, supplier chips, one button. */
+.mt-order-qty{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.mt-stepper{display:inline-grid;grid-template-columns:44px minmax(84px,auto) 44px;align-items:center;gap:6px}
+.mt-stepper .btn{min-width:44px;min-height:44px;padding:0;font-size:1.25rem}
+.mt-stepper output{text-align:center;font-variant-numeric:tabular-nums;line-height:1.15}
+.mt-stepper output b{font-size:1.2rem}
+.mt-stepper output small{display:block;font-size:.75rem;color:var(--muted)}
+.mt-qty-chips{display:flex;gap:4px;flex:1 1 140px}
+.mt-qty-chips .mt-seg{flex:1;min-width:44px}
+.mt-bill{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;margin:0;padding:8px 10px;border-radius:10px;border:1px solid var(--line-strong);background:var(--surface)}
+.mt-bill b{font-size:max(16px,1rem);font-variant-numeric:tabular-nums}
+.mt-bill span{font-size:.9rem;font-weight:700;color:var(--ink-2)}
+.mt-sup-chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.mt-sup-chip{display:grid;gap:2px;min-height:44px;padding:6px 10px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;text-align:left;cursor:pointer;min-width:0}
+.mt-sup-chip b{font-size:.85rem;line-height:1.25;overflow-wrap:anywhere}
+.mt-sup-chip small{font-size:.75rem;line-height:1.3;color:var(--muted);overflow-wrap:anywhere}
+.mt-sup-chip.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 1px var(--accent)}
+.mt-sup-chip.on small{color:var(--accent-text)}
+.mt-sup-chip:disabled{opacity:.5;border-style:dashed;cursor:not-allowed}
+.mt-sup-more>summary{display:flex;align-items:center;min-height:44px;margin:0;font-size:.82rem;color:var(--muted)}
+.mt-sup-more p{margin:0 0 4px;font-size:.82rem;color:var(--muted)}
+.mt-order-go .btn{width:100%;min-height:48px}
+/* Day summary: "Ngày mai" first, one way to Kho, today's numbers folded. */
+.mt-plan .section-title{margin:0 0 6px}
+.mt-plan .mt-tomorrow-line{margin:0 0 6px}
+.mt-plan-list{margin:0 0 8px;padding:0;list-style:none;display:grid;gap:4px;font-size:.9rem}
+.mt-plan-list li{padding:6px 10px;border-radius:10px;background:var(--surface-2);overflow-wrap:anywhere}
+.btn.mt-plan-go{min-height:44px}
+.mt-sum-more{margin-top:10px}
+.mt-sum-more>summary{display:flex;align-items:center;min-height:44px}
+.mt-prep .mt-panel .mt-row{padding:6px 10px;gap:8px}
+.mt-sum-more>summary,.mt-locked>summary,.mt-how>summary{list-style:none;gap:6px}
+.mt-sum-more>summary::-webkit-details-marker,.mt-locked>summary::-webkit-details-marker,.mt-how>summary::-webkit-details-marker{display:none}
+.mt-sum-more>summary::after,.mt-locked>summary::after,.mt-how>summary::after{content:"▸";margin-left:auto;color:var(--muted);font-weight:400}
+.mt-sum-more[open]>summary::after,.mt-locked[open]>summary::after,.mt-how[open]>summary::after{content:"▾"}
+/* Kho rows keep their button on the same line down to 320 px (the name wraps instead). */
+.mt-prep .mt-panel .mt-row .grow{min-width:96px}
+.mt-prep .mt-panel .mt-row>.btn,.mt-prep .mt-panel .mt-row-btns .btn{min-height:44px;white-space:nowrap}

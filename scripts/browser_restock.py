@@ -9,7 +9,8 @@ confirm dialogs, the same "follow the game" picker as browser_first_day.py:
   counter → "📦 Nhập hàng" → stock room filtered to that item, order form open → "Đặt"
   → "⏳ Chờ thêm 20 phút" until the crate is at the door (the express courier: 30–60 minutes of
   shop time, each wait is one 20-minute beat, inventory.clock) → "Mở thùng & xếp lên kệ"
-  → tap each item in the crate to count it → "Nhận lên kệ" → "Về bán tiếp" → scan → bill → paid.
+  → count the crate (once press-and-hold on the crate, then tap the rest) → "Nhận lên kệ" → "Về bán tiếp"
+  → scan → bill → paid.
 
 Passes when the item is back on the shelf, the customer is served with it on the bill, and no
 console error, error toast or dead end happened on the way.
@@ -33,6 +34,7 @@ CID = 'grocery'
 PREFER = ('milk', 'bread', 'egg', 'noodle', 'soda', 'snack')
 
 STATE = """async (cid)=>{const s=await fetch('/api/state').then(r=>r.json());return s;}"""
+COUNTED = "[document.querySelectorAll('#sheet[open] .inv-crate .inv-good.on').length,document.querySelectorAll('#sheet[open] .inv-crate .inv-good').length]"
 
 
 def task_of(st: dict, tid: str) -> dict:
@@ -90,6 +92,12 @@ async def play(browser, base: str, shots: Path | None, max_steps: int = 90) -> d
     try:
         await page.goto(base)
         await page.wait_for_selector('#app:not([hidden])', timeout=20000)
+        # "Có gì mới" opens by itself on a fresh save and writes whatsNewSeen; let that write land before the
+        # setup's own writes, or it races them (a harmless 409 "đã thay đổi ở tab khác" in the console).
+        with contextlib.suppress(Exception):
+            await page.wait_for_selector('#wnDialog[open]', timeout=4000)
+            await page.eval_on_selector('#wnDialog .wn-foot [data-wn="close"]', 'e=>e.click()')
+        await page.wait_for_timeout(600)
         await dev_start(page, CID)
         tid, item = await setup(page)
         out['item'] = item
@@ -98,7 +106,7 @@ async def play(browser, base: str, shots: Path | None, max_steps: int = 90) -> d
         await page.wait_for_timeout(800)
         seen: set[str] = set()
         views: list[str] = []
-        last, same, restocked = None, 0, False
+        last, same, restocked, held = None, 0, False, False
         for i in range(max_steps):
             st = await page.evaluate(STATE, CID)
             c = st['state']['careers'][CID]
@@ -127,6 +135,33 @@ async def play(browser, base: str, shots: Path | None, max_steps: int = 90) -> d
             if same >= 3:
                 out['problems'].append(f'stuck: pressing "{pick.get("text")}" changes nothing')
                 break
+            # The crate's goods: the first time, press and hold the crate's rim (counts one after another),
+            # then the picker taps whatever is left, one good at a time.
+            if not held and await page.evaluate("!!document.querySelector('[data-fd-pick].inv-good')"):
+                held = True
+                before, total = await page.evaluate(COUNTED)
+                # A real finger cannot reach through a popup: close "Có gì mới" first, as a player would.
+                if await page.evaluate("!!document.querySelector('#wnDialog[open]')"):
+                    await page.eval_on_selector('#wnDialog .wn-foot [data-wn="close"]', 'e=>e.click()')
+                    await page.wait_for_timeout(400)
+                await page.evaluate("document.querySelector('#sheet[open] .inv-crate')?.scrollIntoView({block:'center'})")
+                await page.wait_for_timeout(300)
+                # Press on the crate's last uncounted good (the guide's arrow sits by the first one).
+                box = await page.locator('#sheet[open] .inv-crate').first.locator('.inv-good:not(.on)').last.bounding_box()
+                px, py = box['x'] + box['width'] / 2, box['y'] + box['height'] / 2
+                under = await page.evaluate("([x,y])=>{const e=document.elementFromPoint(x,y);return e?.closest('.inv-crate')?'':(e?.className||e?.tagName||'nothing')}", [px, py])
+                if under:
+                    out['problems'].append(f'press-and-hold: the crate is covered by "{under}"')
+                await page.mouse.move(px, py)
+                await page.mouse.down()
+                await page.wait_for_timeout(1000)
+                await page.mouse.up()
+                await page.wait_for_timeout(500)
+                after, _ = await page.evaluate(COUNTED)
+                out['steps'].append(f'[stock room] hold: counted {before} → {after} of {total}')
+                if after - before < min(3, total - before):
+                    out['problems'].append(f'press-and-hold on the crate counted {after - before} goods in 1 s')
+                continue
             sel = pick.get('sel') or '[data-fd-pick]'
             await page.eval_on_selector(sel, 'e=>e.click()')
             await page.wait_for_timeout(650)
