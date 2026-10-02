@@ -5,7 +5,7 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 
 ## 1. What is live
 
-- **Production:** https://phocochuyen.io.vn runs **1.4.6** (02/10 17:22; see "1.3.0" below), 33 careers, PostgreSQL 16,
+- **Production:** https://phocochuyen.io.vn runs **1.4.8** (02/10 22:35; see "1.3.0" below), 35 careers, PostgreSQL 16,
   on the **new server 103.195.238.178** since 30/09 21:00 (see §6 and §7).
 - **Traffic (30/09 21:20):** ~370 players active in 5 min, ~560 in 15 min, ~1,340 in 1 h; 24,500 saves,
   ~2,000 accounts. Busiest minute so far: 30/09 20:59, 3,427 API requests (57/s, 41 commands/s).
@@ -73,10 +73,17 @@ branch holds what, and what to do next, in order. Details live in the linked doc
 - **1.4.6** (02/10 17:22, rollback 1.4.5-20261002141722): 🚗 vehicles (`game/garage.py`, `public/js/v4/garage.js`),
   11 vehicles 120–90,000 xu, paid in full (wallet then bank), one ride a day, resell 70 %. Released from worktree
   branch `rel-1.4.6` because the main checkout holds ANOTHER session's uncommitted "viral stories" work that also
-  bumped its local version to 1.4.6: **that work must take 1.4.7 or later** (merge origin/main first).
-- In progress on branches (lead session, 02/10): career/nail (done), feat/loto (done; fair opens 03/10–07/10),
-  feat/avatar (done; SCHEMA_VERSION 11→12, deploy game before live), feat/pagoda, feat/homes (multiple
-  properties), feat/interiors (inside/outside workplace scenes).
+  bumped its local version to 1.4.6: **that work must now take 1.4.9 or later** (merge origin/main first).
+- **1.4.7** (02/10 22:23, rollback 1.4.6-20261002172134, branch `rel-next`): 💅 nail career (chị Diệp, chapter 2),
+  🛕 pagoda career + Đi chùa (`game/chua.py`, free, 3 acts/day, in Đời thường), 🎱 gánh lô tô (`game/fair.py`,
+  MC cô Bảy, CC0 `wedding-funk.mp3`), 🧑‍🎤 chat avatars (`game/avatar.py`, `live/faces.py`, SCHEMA 11→12 table
+  `chat_faces`). Saves with nail/pagoda careers are refused by 1.4.6: a rollback needs a restore, not a code revert.
+- **1.4.8** (02/10 22:35, rollback 1.4.7-20261002222234, branch `rel-next`): 🏘️ several homes (`game/housing.py`
+  VERSION 2, `props`, up to 4, let for rent 5 %/yr, move 20 xu; v2 saves refused by older builds) and 🛫 workplace
+  interiors (client only: `public/js/scenes/areas.js`, `interior.js`, `airport.js`, `backroom.js`).
+- 02/10 22:30 owner gift: 500 xu "tiền mừng cưới" to each spouse of the 14 done weddings no admin attended
+  (`live_effects` ids `wedadmin:<wedding>:<a|b>`, 28 rows, idempotent). Future weddings: not automatic.
+- In progress: `feat/chua-visit` (worktree `wt-chua`): a walkable pagoda for Đi chùa (khấn, sư trụ trì, tụng kinh).
 - Open questions to the owner (02/10): remove the ✓ marks in the salon mixer's "Bảng pha màu" (they show the
   answer)? Keep idle anonymous saves forever?
 - Someone left uncommitted Firebase/telemetry work in the main checkout (.env.example, game/webassets.py,
