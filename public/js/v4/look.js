@@ -6,7 +6,8 @@
  *   look.tint                the colours of what is worn {item id: colour id} (bảng màu: accessories from
  *                            state.wardrobe_colors, clothes and shoes from state.colors): every painter above reads
  *                            it (accPaint, art), so portraits, the street, the wedding and its photos all match
- * Small and always loaded; the wardrobe sheet itself (v4/wardrobe.js) loads on first use. */
+ * Small and always loaded; the wardrobe sheet itself (v4/wardrobe.js) loads on first use. The chat face (v4/face.js)
+ * draws the wardrobe top and accessory with art(), topDetail() and accBust(). */
 import {R,E,L,P,heart,bloom} from '../scenes/kit.js';
 
 export const SLOTS=['hair','shade','skin','top','bottom','shoes','acc'];
@@ -70,7 +71,7 @@ export function lookOf(state){
   return d;
 }
 /** An item's art in the colour it is worn in (look.tint): clothes and shoes take c, their detail its d or l shade. */
-const art=(L,slot)=>{
+export const art=(L,slot)=>{
   const b=ART[slot][L[slot]]||ART[slot][DEFAULTS.none[slot]];
   if(slot!=='top'&&slot!=='bottom'&&slot!=='shoes')return b;
   const t=ACC_COLORS[L?.tint?.[L[slot]]];if(!t||!ART[slot][L[slot]])return b;
@@ -99,7 +100,7 @@ function hairFront(h,c){
   }
   return `<path d="M21 38Q21 15 40 15Q59 15 59 38Q52 25 41 22Q31 26 21 38Z" fill="${c}"/>`;
 }
-function topDetail(t){
+export function topDetail(t){
   const x=t.x;
   switch(t.d){
     case'tee':return `<path d="M33 61q7 5 14 0" fill="none" stroke="${x}" stroke-width="2.4"/>`;
@@ -115,7 +116,7 @@ function topDetail(t){
   }
   return '';
 }
-function accBust(a,k){
+export function accBust(a,k){
   switch(a){
     case'kinh_tron':return `<g fill="none" stroke="${k.d}" stroke-width="1.6"><circle cx="33" cy="40" r="5.8"/><circle cx="47" cy="40" r="5.8"/><path d="M38.8 40h2.4M27.2 39l-5-2M52.8 39l5-2"/></g>`;
     case'kinh_ram':return `<g fill="${k.d}"><rect x="26" y="35.5" width="12.5" height="9" rx="4"/><rect x="41.5" y="35.5" width="12.5" height="9" rx="4"/></g><path d="M38.5 39h3" stroke="${k.d}" stroke-width="1.6"/><path d="M29 38.5h4" stroke="#fff" stroke-opacity=".5" stroke-width="1.2" stroke-linecap="round"/>`;

@@ -10,10 +10,14 @@
  * on the bar.
  * 😍 Reactions: press and hold a message (LP_MS; touch or mouse; moving or scrolling cancels it) for the emoji bar;
  * one reaction per person per message (the same one again takes it back); chips with counts under the bubble,
- * mine highlighted, a chip toggles it. A tap still opens the message's action row (report, delete, 📌 for admins). */
+ * mine highlighted, a chip toggles it. A tap still opens the message's action row (report, delete, 📌 for admins).
+ * 🙂 Faces: a message, friend, peer or member with `fc` (live/faces.py) shows the drawn face in the clothes the player
+ * wears (./face.js), else its emoji `av`; a `faced` frame redraws that player everywhere here. Mine: Bạn bè tab → builder. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {live} from './live.js';
 import {stylesheet} from '../lazy.js';
+import {avInner} from './face.js';
+import {faceCode} from './face-code.js';
 
 const S={dlg:null,env:null,tab:'town',thread:null,view:null,threads:new Map(),
   town:{msgs:[],more:false,joined:false,why:'ok',wait:0,n:0,loaded:false,pin:null},pinOpen:false,reactFor:null,lp:null,
@@ -118,6 +122,12 @@ function bind(){
   live.resume=()=>{const t=S.thread&&S.threads.get(S.thread),last=t?.msgs.at(-1)?.id;return last?{[S.thread]:last}:{};};
   live.on('welcome',()=>{S.town.joined=false;if(S.dlg?.open){enter();render();}});
   live.on('down',()=>{S.town.joined=false;if(S.dlg?.open)render();});
+  live.on('faced',f=>{   // 🙂 someone's face changed: their lines here too (live.js updates friends and peers)
+    for(const list of [S.town.msgs,S.town.pin?[S.town.pin]:[],...[...S.threads.values()].map(t=>t.msgs)])
+      for(const m of list)if(m.pid===f.pid){if(f.fc)m.fc=f.fc;else delete m.fc;}
+    for(const m of S.members?.members||[])if(m.pid===f.pid){if(f.fc)m.fc=f.fc;else delete m.fc;}
+    if(S.dlg?.open)render();
+  });
   live.on('joined',f=>{
     const T=S.town,after=lastId(T.msgs);
     if(f.inc)T.msgs=[...T.msgs,...f.msgs.filter(m=>m.id>after)];else{T.msgs=f.msgs;T.more=f.more;}
@@ -236,6 +246,7 @@ function onAct(act,d,el){
     case'friends':S.dlg.close();S.env?.act?.('friends');return;   // Bạn bè (v4/marriage.js): find friends, requests
     case'account':S.dlg.close();S.env?.act?.('v4AccountOpen',{mode:'register'});return;   // guests: register to chat (v4/account.js)
     case'date':S.dlg.close();import('./live.js').then(m=>m.openDate());return;   // 💕 Góc hẹn hò (v4/dating.js)
+    case'avatar':S.dlg.close();S.env?.act?.('jrAvatar');return;   // 🙂 the builder (v4/avatar.js)
     case'notifyMenu':S.notifyOpen=!S.notifyOpen;break;
     case'notify':if(live.send({t:'notify',ch:S.thread,v:d.v}))S.notify=S.thread;S.notifyOpen=false;break;   // 🔔 the server answers `quiet`
     case'retry':live.reconnect();break;
@@ -259,7 +270,8 @@ function submit(){
 /* ---- drawing ----------------------------------------------------------------------------------- */
 function flash(text){S.flash=text;clearTimeout(S.flashTimer);S.flashTimer=setTimeout(()=>{S.flash='';const f=S.dlg?.querySelector('.ch-flash');if(f)f.hidden=true;},3800);}
 const hm=at=>{const d=new Date(at*1000),now=new Date();const t=d.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});return d.toDateString()===now.toDateString()?t:`${d.getDate()}/${d.getMonth()+1}`;};
-const av=(a,cls='')=>`<span class="ch-av ${cls}" aria-hidden="true">${esc(a||'🌸')}</span>`;
+/** An avatar: a person or a message {av, fc} (its face, else its emoji), or an emoji string ('👥'). */
+const av=(a,cls='')=>`<span class="ch-av ${cls}" aria-hidden="true">${typeof a==='string'?esc(a):avInner(a)}</span>`;
 const dot=on=>on?'<i class="ch-on" aria-label="Đang online"></i>':'';
 const lines=t=>esc(t).replace(/\n/g,'<br>');
 /** An admin message (adm): http(s) addresses become links (new tab, no opener, no referrer); the rest escaped. */
@@ -291,7 +303,7 @@ function head(){
     const q=live.quiet(c),bell=c?`<button type="button" class="icon-btn ch-bell${q?' off':''}" data-ch-act="notifyMenu" aria-expanded="${Boolean(S.notifyOpen)}" aria-label="Thông báo: ${q?'Tắt':'Bật'}" title="Thông báo: ${q?'Tắt':'Bật'}"><span aria-hidden="true">${q?'🔕':'🔔'}</span></button>`:'';
     const more=bell+(grp?`<button type="button" class="icon-btn" data-ch-act="members" aria-label="Thành viên">${icon('people',19)}</button>`:
       (peer.pid?`<button type="button" class="ch-mini${S.confirm==='block:'+peer.pid?' warn':''}" data-ch-act="block" data-pid="${esc(peer.pid)}">${S.confirm==='block:'+peer.pid?'Chặn thật?':'Chặn'}</button>`:''));
-    return `${back}${grp?av('👥','md'):`<span class="ch-av-wrap">${av(peer.av,'md')}${dot(peer.on)}</span>`}<div class="grow ch-title"><h2 data-no-translate>${title}</h2>${sub?`<small>${sub}</small>`:''}</div>${more}${x}`;
+    return `${back}${grp?av('👥','md'):`<span class="ch-av-wrap">${av(peer,'md')}${dot(peer.on)}</span>`}<div class="grow ch-title"><h2 data-no-translate>${title}</h2>${sub?`<small>${sub}</small>`:''}</div>${more}${x}`;
   }
   const n=live.unread(),on=live.friends.filter(f=>f.on).length;
   const date=live.flags.dating?`<button type="button" class="icon-btn ch-date" data-ch-act="date" aria-label="Góc hẹn hò" title="Góc hẹn hò">${icon('heart',19)}</button>`:'';   // 💕 v4/dating.js
@@ -311,7 +323,7 @@ function msgList(list,kind,more){
     // an admin message with links: a div acting as the button (a link cannot sit inside a <button>)
     const bub=m.adm&&!m.del?`<div role="button" tabindex="0" class="ch-bub adm" data-ch-act="msg" data-id="${m.id}"><span data-no-translate>${text(m)}</span><time>${pinned}${hm(m.at)}</time></div>`:
       `<button type="button" class="ch-bub${m.del?' del':''}" data-ch-act="msg" data-id="${m.id}"${m.del?' disabled':''}><span data-no-translate>${m.del?'':lines(m.text)}</span>${m.del?'<i>Tin nhắn đã thu hồi</i>':''}<time>${pinned}${hm(m.at)}</time></button>`;
-    out+=`<div class="ch-msg${mine?' mine':''}${first?' first':''}${m.adm?' adm':''}">${mine?'':first?av(m.av):'<span class="ch-av gap"></span>'}<div class="ch-col">${name}${bub}${reactBar(m)}${chips(m)}${bar}</div></div>`;
+    out+=`<div class="ch-msg${mine?' mine':''}${first?' first':''}${m.adm?' adm':''}">${mine?'':first?av(m):'<span class="ch-av gap"></span>'}<div class="ch-col">${name}${bub}${reactBar(m)}${chips(m)}${bar}</div></div>`;
     prev=m;
   }
   return out;
@@ -366,13 +378,13 @@ function body(){
     const list=live.friends.filter(f=>S.view!=='add'||!inGroup.has(f.pid));
     const max=(live.limits.group_max||20)-1-(S.view==='add'?inGroup.size-1:0);
     return (S.view==='group'?`<label class="ch-field"><span>Tên nhóm</span><input data-ch-field="gtitle" maxlength="40" value="${esc(S.gtitle)}" data-no-translate></label>`:'')+
-      (list.length?`<p class="ch-label">Chọn bạn · tối đa ${max}</p><div class="ch-picks">${list.map(f=>`<label class="ch-pick">${av(f.av)}<span class="grow" data-no-translate>${esc(f.name)}</span>${dot(f.on)}<input type="checkbox" data-ch-field="pick" value="${esc(f.pid)}"${S.pick.has(f.pid)?' checked':''}></label>`).join('')}</div>`:empty('user','Chưa có bạn để mời.'))+
+      (list.length?`<p class="ch-label">Chọn bạn · tối đa ${max}</p><div class="ch-picks">${list.map(f=>`<label class="ch-pick">${av(f)}<span class="grow" data-no-translate>${esc(f.name)}</span>${dot(f.on)}<input type="checkbox" data-ch-field="pick" value="${esc(f.pid)}"${S.pick.has(f.pid)?' checked':''}></label>`).join('')}</div>`:empty('user','Chưa có bạn để mời.'))+
       `<button type="button" class="btn primary full ch-make" data-ch-act="${S.view==='add'?'groupAddGo':'groupMake'}"${canMake()?'':' disabled'}>${S.view==='add'?'Thêm vào nhóm':'Lập nhóm'}</button>`;
   }
   if(S.view==='members'){
     const M=S.members;if(!M)return empty('people','Đang tải…');
     const owner=M.owner===me();
-    return `<div class="ch-rows">${M.members.map(m=>`<div class="ch-row static">${`<span class="ch-av-wrap">${av(m.av,'md')}${dot(m.on)}</span>`}<span class="grow"><b data-no-translate>${esc(m.name)}</b>${m.role==='owner'?'<small>Trưởng nhóm</small>':''}</span>`+
+    return `<div class="ch-rows">${M.members.map(m=>`<div class="ch-row static">${`<span class="ch-av-wrap">${av(m,'md')}${dot(m.on)}</span>`}<span class="grow"><b data-no-translate>${esc(m.name)}</b>${m.role==='owner'?'<small>Trưởng nhóm</small>':''}</span>`+
       (owner&&m.pid!==me()?`<button type="button" class="ch-mini${S.confirm==='kick:'+m.pid?' warn':''}" data-ch-act="kick" data-pid="${esc(m.pid)}">${S.confirm==='kick:'+m.pid?'Mời ra thật?':'Mời ra'}</button>`:'')+`</div>`).join('')}</div>`+
       `<div class="ch-foot">${owner&&M.members.length<(live.limits.group_max||20)?`<button type="button" class="btn ghost" data-ch-act="groupAdd">${icon('plus',16)} Thêm bạn</button>`:''}<button type="button" class="btn ghost${S.confirm==='leave'?' warn':''}" data-ch-act="leave">${icon('exit',16)} ${S.confirm==='leave'?'Rời thật?':'Rời nhóm'}</button></div>`;
   }
@@ -391,7 +403,7 @@ function body(){
     const rows=live.chans.map(c=>{
       const grp=c.kind==='group',p=c.peer||{},last=c.last,q=live.quiet(c);
       const prev=last?(last.del?'Tin nhắn đã thu hồi':`${last.pid===me()?'Bạn: ':grp?esc(last.name)+': ':''}${esc(last.text)}`):grp?`${c.n||''} người`:'';
-      return `<button type="button" class="ch-row${q?' quiet':''}" data-ch-act="open" data-ch="${esc(c.id)}"><span class="ch-av-wrap">${av(grp?'👥':p.av,'md')}${grp?'':dot(p.on)}</span>`+
+      return `<button type="button" class="ch-row${q?' quiet':''}" data-ch-act="open" data-ch="${esc(c.id)}"><span class="ch-av-wrap">${av(grp?'👥':p,'md')}${grp?'':dot(p.on)}</span>`+
         `<span class="grow"><b data-no-translate>${esc(grp?c.title:p.name||'Bạn bè')}</b><small data-no-translate>${prev}</small></span>`+
         `<span class="ch-meta">${last?`<time>${hm(last.at)}</time>`:''}${q||c.unread?`<span class="ch-meta-r">${q?'<i class="ch-q" aria-label="Đã tắt thông báo">🔕</i>':''}${c.unread?`<em class="badge${q?' mute':''}">${c.unread>99?'99+':c.unread}</em>`:''}</span>`:''}</span></button>`;
     }).join('');
@@ -400,9 +412,11 @@ function body(){
   }
   // friends
   const list=[...live.friends].sort((a,b)=>(b.on-a.on)||a.name.localeCompare(b.name,'vi'));
-  const toggle=`<label class="ch-switch"><span>Hiện online</span><input type="checkbox" role="switch" data-ch-field="online"${live.me?.online!==false?' checked':''}><i aria-hidden="true"></i></label>`;
+  const mine=live.me?{av:live.me.av,fc:S.env?.api?.state?faceCode(S.env.api.state):live.me.fc}:null;
+  const toggle=(mine?`<button type="button" class="ch-row ch-me" data-ch-act="avatar"><span class="ch-av-wrap">${av(mine,'md')}</span><span class="grow"><b>Ảnh đại diện</b><small>Đổi gương mặt, áo theo Tủ đồ</small></span>${icon('arrow',16)}</button>`:'')+
+    `<label class="ch-switch"><span>Hiện online</span><input type="checkbox" role="switch" data-ch-field="online"${live.me?.online!==false?' checked':''}><i aria-hidden="true"></i></label>`;
   if(!list.length)return toggle+empty('user',live.me?.account?'Chưa có bạn bè.':'Có tài khoản để kết bạn.',`<button type="button" class="btn ghost" data-ch-act="friends">${icon('user',16)} ${live.me?.account?'Tìm bạn':'Kết bạn'}</button>`);
-  return toggle+`<div class="ch-rows">${list.map(f=>`<button type="button" class="ch-row" data-ch-act="dm" data-pid="${esc(f.pid)}"><span class="ch-av-wrap">${av(f.av,'md')}${dot(f.on)}</span><span class="grow"><b data-no-translate>${esc(f.name)}</b>${live.bonds?.includes(f.pid)?'<small class="ch-bond">Đang tìm hiểu 💕</small>':f.on?'<small class="ch-online">Đang online</small>':''}</span>${icon('chat',18)}</button>`).join('')}</div>`;
+  return toggle+`<div class="ch-rows">${list.map(f=>`<button type="button" class="ch-row" data-ch-act="dm" data-pid="${esc(f.pid)}"><span class="ch-av-wrap">${av(f,'md')}${dot(f.on)}</span><span class="grow"><b data-no-translate>${esc(f.name)}</b>${live.bonds?.includes(f.pid)?'<small class="ch-bond">Đang tìm hiểu 💕</small>':f.on?'<small class="ch-online">Đang online</small>':''}</span>${icon('chat',18)}</button>`).join('')}</div>`;
 }
 
 /** What the composer may do on this screen: null = hidden, {ro: line} = read-only, {} = write. */

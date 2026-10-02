@@ -10,6 +10,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {live} from './live.js';
 import {stylesheet} from '../lazy.js';
+import {avInner} from './face.js';
 
 const S={dlg:null,env:null,bound:false,bench:{state:'idle',n:0,waited:0,at:0,pref:'any'},pref:pref0(),date:null,at:0,end:null,
   msgs:[],want:null,menu:false,report:false,confirm:null,flash:'',flashTimer:0,tick:0,pill:null,busy:false,npc:null};
@@ -39,7 +40,8 @@ const savePref=v=>{S.pref=v;try{localStorage.setItem('mnl.datePref',v);}catch{/*
 const myG=()=>({male:'m',female:'f'})[S.env?.api?.state?.journey?.gender]||null;
 const left=()=>S.date?Math.max(0,S.date.left-(Date.now()-S.at)/1000):0;
 const mmss=s=>`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
-const av=(a,cls='')=>`<span class="dt-av ${cls}" aria-hidden="true">${esc(a||'🌸')}</span>`;
+/** An avatar from a person {av, fc} (🙂 their face when they wear one, ./face.js), or an emoji string. */
+const av=(a,cls='')=>`<span class="dt-av ${cls}" aria-hidden="true">${a&&typeof a==='object'?avInner(a):esc(a||'🌸')}</span>`;
 const peer=()=>S.date?.peer||S.end?.peer||{};
 const pname=()=>`<b data-no-translate>${esc(peer().name||'Bạn ấy')}</b>`;
 
@@ -172,7 +174,7 @@ function head(){
   const D=S.date;
   if(!D)return `<span class="dt-logo" aria-hidden="true">${icon('heart',18)}</span><h2 class="grow">Góc hẹn hò</h2>${x}`;
   const p=D.peer||{};
-  return `${av(p.av,'md')}<div class="grow dt-who"><h2 data-no-translate>${esc(p.name||'Bạn ấy')}</h2><small>${steps(D)}</small></div>`+
+  return `${av(p,'md')}<div class="grow dt-who"><h2 data-no-translate>${esc(p.name||'Bạn ấy')}</h2><small>${steps(D)}</small></div>`+
     `<span class="dt-clock" aria-label="Còn lại"><b>${mmss(left())}</b></span>`+
     `<button type="button" class="icon-btn" data-dt="menu" aria-label="Thêm" aria-expanded="${S.menu}">${icon('menu',19)}</button>${x}`;
 }
@@ -246,7 +248,7 @@ function endView(){
   const E=S.end,p=E.peer||{},sum=`<p class="dt-sum">Hợp nhau ${E.same||0}/${E.of||3}${E.hits!=null?` · Gọi trúng món ${E.hits}/2`:''}</p>`;
   if(E.how==='match'){
     const chips=[E.spirit?`<span class="dt-tag good">+${E.spirit} tinh thần</span>`:'',E.friends?`<span class="dt-tag">Đã là bạn bè</span>`:''].join('');
-    return `<div class="dt-end match"><div class="dt-pair" aria-hidden="true">${av(live.me?.av,'lg')}<span class="dt-beat">💕</span>${av(p.av,'lg')}</div>`+
+    return `<div class="dt-end match"><div class="dt-pair" aria-hidden="true">${av(live.me,'lg')}<span class="dt-beat">💕</span>${av(p,'lg')}</div>`+
       `<h3>Đang tìm hiểu 💕</h3><p class="dt-line">${pname()} cũng thả tim!</p>${chips?`<div class="dt-tags">${chips}</div>`:''}${sum}`+
       `<div class="dt-actions">${E.friends?`<button type="button" class="btn primary" data-dt="dm" data-pid="${esc(p.pid||'')}">${icon('chat',16)} Nhắn tin</button>`:''}<button type="button" class="btn ghost" data-dt="again">Ngồi ghế tiếp</button></div></div>`;
   }
@@ -260,7 +262,7 @@ function cardView(D){
   const opts=D.opts.map((o,k)=>{
     const me=mine===k,th=shown&&their===k;
     return `<button type="button" class="dt-opt${me?' me':''}${th?' them':''}${mine!=null&&!me&&!th?' dim':''}" data-dt="pick" data-i="${k}"${mine!=null||shown?' aria-disabled="true"':''}>`+
-      `<span>${esc(o)}</span>${me||th?`<span class="dt-who-picked">${me?av(live.me?.av,'xs'):''}${th?av(D.peer?.av,'xs'):''}</span>`:''}</button>`;
+      `<span>${esc(o)}</span>${me||th?`<span class="dt-who-picked">${me?av(live.me,'xs'):''}${th?av(D.peer,'xs'):''}</span>`:''}</button>`;
   }).join('');
   const verdict=shown?(mine!=null&&mine===their?'<p class="dt-verdict good">Hợp nhau! 💞</p>':their==null?'<p class="dt-verdict">Bạn ấy chưa kịp chọn 😴</p>':'<p class="dt-verdict">Khác gu 😆</p>'):
     mine!=null?`<p class="dt-wait-line">${D.peer_done?`${icon('check',14)} ${pname()} chọn rồi`:`Chờ ${pname()}…`}</p>`:'';
@@ -300,7 +302,7 @@ function body(){
   const D=S.date;
   if(!D)return S.end?safety()+endView():bench();
   let main='';
-  if(D.step==='hello')main=`<div class="dt-hello"><div class="dt-pair" aria-hidden="true">${av(live.me?.av,'lg')}<span class="dt-table">☕</span>${av(D.peer?.av,'lg')}</div><h3>Gặp ${pname()}!</h3><p class="dt-line">5 phút ở quán cà phê phố</p></div>`;
+  if(D.step==='hello')main=`<div class="dt-hello"><div class="dt-pair" aria-hidden="true">${av(live.me,'lg')}<span class="dt-table">☕</span>${av(D.peer,'lg')}</div><h3>Gặp ${pname()}!</h3><p class="dt-line">5 phút ở quán cà phê phố</p></div>`;
   else if(D.step==='card')main=cardView(D);
   else if(D.step==='menu')main=menuView(D);
   else if(D.step==='chat')main=chatView(D);

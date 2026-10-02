@@ -1,0 +1,41 @@
+/* ==========================================================================
+   🙂 Ảnh đại diện (v4/avatar.js): the preview, the part tabs and the options.
+   Loaded with the module the first time the builder opens. Theme tokens only
+   (app.css). The face itself is an inline SVG (v4/face.js, class fc-svg).
+   ========================================================================== */
+.av{display:grid;gap:14px}
+.av .fc-svg{display:block;border-radius:50%}
+.av-stage{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center}
+.av-big{display:grid;place-items:center;width:124px;height:124px;border-radius:50%;background:var(--surface-2);box-shadow:0 0 0 4px var(--surface),0 0 0 6px var(--line)}
+.av-side{display:grid;gap:10px;min-width:0}
+.av-chat{display:flex;align-items:flex-end;gap:8px;min-width:0}
+.av-mini{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;overflow:hidden;background:var(--surface-2)}
+.av-bub{display:grid;gap:2px;min-width:0;padding:8px 12px;border-radius:16px 16px 16px 4px;background:var(--surface-2);font-size:.867rem;line-height:1.35}
+.av-bub b{font-size:.75rem;color:var(--accent-text);overflow-wrap:anywhere}
+.av-actions{display:flex;flex-wrap:wrap;gap:8px}
+.av-emoji{display:grid;place-items:center;width:34px;height:34px;font-size:1.3rem;line-height:1}
+.av-emoji.big{width:112px;height:112px;font-size:4rem}
+.av-kind{max-width:360px}
+.av-tabs{display:flex;flex-wrap:wrap;gap:8px;padding:2px}
+.av-tab{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 14px;border-radius:var(--radius-pill);
+  background:var(--surface);border:1px solid var(--line);color:var(--ink-2);font-weight:700;font-size:.867rem}
+.av-tab.active{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.av-part{display:grid;gap:8px}
+.av-part h4{margin:0;font-size:.867rem;color:var(--ink-2)}
+.av-opts{display:flex;flex-wrap:wrap;gap:8px}
+.av-opt{display:grid;justify-items:center;gap:3px;min-width:64px;padding:6px 6px 5px;border-radius:14px;background:var(--surface);border:1.5px solid var(--line);
+  transition:transform .12s,border-color .12s}
+.av-opt small{font-size:.733rem;font-weight:600;color:var(--muted);line-height:1.2;max-width:72px;text-align:center}
+.av-opt:hover{transform:translateY(-1px)}
+.av-opt.on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.av-opt.on small{color:var(--accent-text)}
+.av-opt.sw{min-width:0;width:44px;height:44px;padding:0;place-items:center;border-radius:50%}
+.av-opt.sw i{display:block;width:32px;height:32px;border-radius:50%;box-shadow:inset 0 0 0 1px #0000001f}
+.av-opt.em{min-width:0;width:48px;height:48px;padding:0;place-items:center;font-size:1.5rem}
+.av-tu svg{display:block;border-radius:50%}
+.av-note{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0}
+html[data-layout="phone"] .av-stage{grid-template-columns:96px minmax(0,1fr);gap:12px}
+html[data-layout="phone"] .av-big{width:96px;height:96px}
+html[data-layout="phone"] .av-big .fc-svg{width:88px;height:88px}
+html[data-layout="phone"] .av-opt{min-width:58px}
+@media (prefers-reduced-motion:reduce){.av-opt:hover{transform:none}}
