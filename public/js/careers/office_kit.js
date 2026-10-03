@@ -9,7 +9,7 @@
  * Pure string builders plus two client-only helpers (tab switch, bar offset):
  * every game action still goes through the career's own commands. */
 
-import {nextHint,stepCta,pending,goAttrs,firstTime,highlight} from '../v4/guide.js';
+import {nextHint,stepCta,pending,goAttrs,firstTime,bareLabel,guideAction} from '../v4/guide.js';
 
 const DONE=['completed','cancelled','referred'];
 export const openTasks=x=>(x.room.tasks||[]).filter(t=>!DONE.includes(t.status));
@@ -243,7 +243,7 @@ export function bar(x,t,next,main='',always=false){
   const cap=String(next).replace(/^\s*(\S)/,(m,c)=>m.replace(c,c.toUpperCase()));
   const label=next&&!echoes(next,main)?`<p class="ok-next" aria-live="polite">${cap}</p>`:'';
   const back=main?'primary big grow gd-cta':'ghost';
-  return `<div class="ok-bar${always?' always':''}${main?'':' bare'}">${label}
+  return `<div class="ok-bar${always?' always':''}${main?'':' bare'}" data-cta-bar>${label}
     ${main?`<div class="ok-bar-btns ok-main">${main}</div>`:''}
     <div class="ok-bar-btns ok-back"><button type="button" class="btn ${back}" data-action="car:tab" data-tab="doc" data-key="${x.esc(tabKey(t))}">📂 Về hồ sơ</button></div></div>`;
 }
@@ -273,10 +273,20 @@ export function shutBar(x,t){
 export const coachOf=(x,t)=>firstTime(x)&&x.room.data?.coach?.[t.id]||null;
 /** A step that lives on the document: bring the 📂 tab forward, then scroll to `sel` and flash it. */
 export const goto=(x,t,sel,label='')=>({act:'car:goto',data:{tab:'doc',key:tabKey(t),sel},...(label?{label}:{})});
+/** car:goto — the 📂 tab comes forward, then the control glows like any pointer (v4/guide.js): a ▼ over it, and when it
+ * was in view already one line above the bar says so. It never does the step. */
 export function gotoAction(data,el,x){
   switchTab(data,el,x);
-  const root=rootOf(el);if(!root||!data.sel)return;
-  requestAnimationFrame(()=>{const all=[...root.querySelectorAll(data.sel)];highlight(all.find(e=>e.offsetParent!==null)||all[0]);});
+  if(!rootOf(el)||!data.sel)return;
+  requestAnimationFrame(()=>guideAction('v4Go',{sel:data.sel},el));
+}
+/** The bottom button of a step that only points (a goto): outlined, “👆 <what to do>”, never filled like a button that
+ * does the step (the WP-4 pointer look). The finish stays reachable as “hoặc …” once it is allowed. */
+function pointCta(x,n,final){
+  const say=bareLabel(n.go.label||'')||bareLabel(n.label,false);
+  const btn=`<button type="button" class="btn big grow gd-cta gd-point"${goAttrs(n.go)} data-say="${x.esc(say)}" aria-label="${x.esc('Chỉ chỗ: '+say)}">👆 ${x.esc(say)}</button>`;
+  if(!final||final.ready===false)return btn;
+  return `<div class="gd-ctas">${btn}<button type="button" class="gd-alt"${goAttrs(final.go)}>hoặc ${final.alt||final.label}</button></div>`;
 }
 const plainLabel=s=>String(s||'').replace(/<[^>]*>/g,'').replace(/^[^\p{L}\p{N}]+/u,'').trim();
 /** The one-line hint (top of the job, pinned in the sheet header) and the bar's main button, from one step list.
@@ -287,9 +297,11 @@ export function guideOf(x,t,steps,final=null,{done='',main=''}={}){
   const hs=steps.map(s=>s.hintGo?{...s,go:s.hintGo}:s.go?{...s,go:{...s.go,label:''}}:s);
   const hint=nextHint(x,hs,{final:final&&final.ready!==false?{label:plainLabel(final.label),go:final.go}:null,done});
   let cta=main;
+  const n=pending(steps);
+  if(!cta&&n?.go?.act==='car:goto')cta=pointCta(x,n,final);
   if(!cta){
     if(final)cta=stepCta(x,steps,final,{style:'primary big grow'});
-    else{const n=pending(steps);cta=n?.go?`<button type="button" class="btn primary big grow gd-cta"${goAttrs(n.go)}>${n.go.label||`👉 ${x.esc(n.label)}`}</button>`:'';}
+    else{cta=n?.go?`<button type="button" class="btn primary big grow gd-cta"${goAttrs(n.go)}>${n.go.label||`👉 ${x.esc(n.label)}`}</button>`:'';}
   }
   return {hint,cta};
 }
