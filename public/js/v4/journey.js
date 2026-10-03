@@ -21,6 +21,33 @@ import {acctPlace,acctTag,acctTags} from './acct-jobs.js';   // 💼 kế toán:
 const WD=lazy(()=>import('./wardrobe.js'),{css:['/css/wardrobe.css']});
 // 🙂 Ảnh đại diện khi chat (v4/avatar.js): likewise.
 const AV=lazy(()=>import('./avatar.js'),{css:['/css/avatar.css']});
+// 🗺️ Bản đồ phố (v4/town-walk.js): the home as a town to walk, loaded the first time it shows.
+const TW=lazy(()=>import('./town-walk.js'),{css:['/css/town.css']});
+
+/* 🗺️ Màn hình chính: "Bản đồ phố" (the default) or "Danh sách" (this list), a per-device choice in Cài đặt, kept like
+ * the layout choice (localStorage). ui.homeMode: the other one opened for now ("📋 Danh sách" on the town, "🗺️ Bản đồ
+ * phố" on the list or the menu); the "Hành trình" entry clears it. A browser without canvas keeps the list. */
+const HOME_KEY='mnl.home';
+export const homePref=()=>{try{return localStorage.getItem(HOME_KEY)==='list'?'list':'town';}catch{return 'town';}};
+export function setHomePref(v){try{localStorage.setItem(HOME_KEY,v==='list'?'list':'town');}catch{/* storage blocked */}}
+let canvasOK=null;
+export function townOK(){
+  if(canvasOK===null){try{canvasOK=!!document.createElement('canvas').getContext('2d')&&typeof ResizeObserver==='function';}catch{canvasOK=false;}}
+  return canvasOK;
+}
+const townWanted=ui=>townOK()&&(ui.homeMode||homePref())==='town';
+/** Does the home sheet show the town now? (app.js gives the sheet its fixed height then) */
+export function townOn(env){
+  const {api,ui}=env,J=api.state?.journey;
+  if(!J||!api.content?.journey||!townWanted(ui)||(ui.jrView&&ui.jrView!=='home'))return false;
+  return !(J.story&&!J.intro&&!J.gender);   // a brand-new player picks a look and a name first
+}
+/** What the town needs from here (the list's own helpers, so both say the same). */
+const TOWN_HELP={emojiOf:m=>emojiOf(m),catOf:m=>catOf(m),get CATS(){return CATS;},FIRST_JOB,acctPlace:(api,cid)=>acctPlace(api,cid)};
+function townPage(env){
+  const m=TW.use();
+  return m?m.townHTML(env,TOWN_HELP):`<div class="tw-home"><header class="tw-top home-top"><div class="tw-title"><h2>Khu phố</h2></div><button type="button" class="tw-chip tw-list" data-action="jrList">📋 Danh sách</button></header>${skeleton()}</div>`;
+}
 
 export const EMOJI={restaurant:'🍜',cafe_bakery:'🥐',grocery:'🛒',repair:'🔧',homestay:'🏡',corp_accounting:'🧮',tax_payroll:'🧾',group_accounting:'🏢',hr_admin:'🗂️',secretary:'📅',it_helpdesk:'🖥️',
   mother_baby:'🎁',pharmacy:'💊',accounting:'📒',customer_care:'🎧',teacher:'🍎',tour_guide:'🧭',milk_tea:'🧋',florist:'💐',salon:'💇',
@@ -58,6 +85,7 @@ function head(title,sub,{back=false,close=false,eyebrow='HÀNH TRÌNH'}={}){
 export function journeyHome(env){
   const {api,ui}=env,J=api.state.journey;
   if(!J||!api.content.journey)return `<div class="jr-home"><p class="muted">Khu phố đang thức dậy…</p></div>`;
+  if(townOn(env))return townPage(env);
   if(J.story&&!J.intro)return introView(env);
   if(ui.jrView==='titles')return titlesView(env);
   if(ui.jrView==='wallet')return walletView(env);
@@ -192,7 +220,8 @@ function placesSection(env){
 
 function homeMain(env){
   const {api}=env,J=api.state.journey;
-  const top=`<header class="jr-top"><div class="grow"><span class="eyebrow">${J.story?`Khu phố nhỏ · Ngày sống ${fmt(J.life_day)}`:'Khu phố nhỏ · mọi nơi đều mở'}</span><h1>Hành trình của bạn</h1></div>${accountChip(env)}${api.state.current?btn(icon('x',20),'close',{},'ghost small jr-close','aria-label="Đóng"'):''}</header>`;
+  const town=townOK()?btn('🗺️ Bản đồ phố','jrTown',{},'cream small jr-town'):'';
+  const top=`<header class="jr-top"><div class="grow"><span class="eyebrow">${J.story?`Khu phố nhỏ · Ngày sống ${fmt(J.life_day)}`:'Khu phố nhỏ · mọi nơi đều mở'}</span><h1>Hành trình của bạn</h1></div>${town}${accountChip(env)}${api.state.current?btn(icon('x',20),'close',{},'ghost small jr-close','aria-label="Đóng"'):''}</header>`;
   const more=`${J.story?fairCard(env):''}${J.story?houseCard(env):''}${lifeCard(env)}${boardEntry(env)}${J.study?certsEntry(env):''}${J.story?chapterCard(env):''}${J.study?'':certsEntry(env)}${storiesCard(env)}`;
   return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col jr-lead">${resumeCard(env)}${meCard(env)}</div><div class="jr-col wide">${placesSection(env)}</div><div class="jr-col jr-more">${more}</div></div></div>`;
 }
@@ -231,7 +260,7 @@ function introView(env){
   const {api,ui}=env,J=api.state.journey,C=api.content.journey,ch=C.chapters[0];
   const ids=ch.unlocks.filter(id=>api.state.careers[id]);
   const rec=ids.includes(FIRST_JOB)?FIRST_JOB:ids[0],job=ids.includes(ui.jrJob)?ui.jrJob:rec;
-  const pick=ui.jrGender||J.gender||'';
+  const pick=ui.jrGender||J.gender||'',town=townWanted(ui);   // 🗺️ the town is the way in: no job to pick here
   const card=(g,label)=>`<button type="button" class="jr-gender ${pick===g?'active':''}" data-action="jrGender" data-gender="${g}" aria-pressed="${pick===g}">${avatar(g,64)}<b>${label}</b></button>`;
   const chip=id=>{const m=meta(api,id),on=id===job;
     return `<button type="button" class="onb-job ${on?'active':''} ${id===rec?'rec':''}" data-action="jrJob" data-career="${esc(id)}" aria-pressed="${on}" style="--career:${colour(m.color)}"><span aria-hidden="true">${emojiOf(m)}</span>${esc(jobLabel(m))}${id===rec?'<small>hợp người mới</small>':''}</button>`;};
@@ -239,8 +268,9 @@ function introView(env){
     <h1>Chào bạn mới! 👋</h1><p class="jr-lead">Một khu phố nhỏ, nhiều nghề để thử.</p>
     <form class="jr-who" data-jr-form="start"><div class="jr-genders" role="group" aria-label="Giới tính">${card('male','Nam')}${card('female','Nữ')}</div>${pick?'':'<p class="onb-need" id="onb-need">👆 Chọn Nam hoặc Nữ để bắt đầu</p>'}
     <label class="jr-name"><span>Tên của bạn</span><input id="jr-name" name="name" maxlength="24" autocomplete="nickname" required value="${esc(api.state.name)}" data-preserve></label>
-    <fieldset class="onb-jobs"><legend>Làm ở đâu trước?</legend><div class="onb-job-row">${ids.map(chip).join('')}</div></fieldset>
-    <button type="submit" class="btn primary big full"${pick?'':' aria-describedby="onb-need"'}>Vào làm thôi ${icon('arrow',16)}</button></form>
+    ${town?'':`<fieldset class="onb-jobs"><legend>Làm ở đâu trước?</legend><div class="onb-job-row">${ids.map(chip).join('')}</div></fieldset>`}
+    <button type="submit" class="btn primary big full"${pick?'':' aria-describedby="onb-need"'}>${town?'Vào phố thôi':'Vào làm thôi'} ${icon('arrow',16)}</button></form>
+    ${!town&&J.gender&&townOK()?`<button type="button" class="jr-link" data-action="jrTown">🗺️ Bản đồ phố</button>`:''}
     ${api.account?'':`<button type="button" class="jr-link acct-intro-link" data-action="v4AccountOpen" data-mode="login">${icon('user',14)} Đã có tài khoản? Đăng nhập</button>`}</div>`;
 }
 
@@ -417,6 +447,7 @@ function hud(){document.getElementById('jrHud')?.remove();}
 /* ------------------------------------------------------------------ wiring */
 export function journeyBoot(env){
   E=env;sceneDialog();storiesBoot(env);lifeBoot(env);
+  document.addEventListener('sheetrender',()=>{if(TW.m&&E?.ui.view==='home')TW.m.townMount(E,TOWN_HELP);});   // 🗺️ the stage back into its slot
   const sheet=document.getElementById('sheet');
   // The first-run intro cannot be dismissed into an empty scene.
   sheet?.addEventListener('cancel',e=>{const J=E.api.state?.journey;if(E.ui.view==='home'&&J?.story&&!J.intro)e.preventDefault();});
@@ -465,6 +496,9 @@ export async function journeyAction(action,data,el,env){
     case'jrSceneNext':{const n=Number(data.n);openScene(chapterScene(n,1),sceneQueue||[]);return true;}
     case'jrSceneClose':await closeScene();return true;
     case'jrHome':ui.jrView='home';env.openSheet('home');return true;
+    // 🗺️ the town ⇄ the list, for now (the "Hành trình" entry goes back to the setting's choice)
+    case'jrList':case'jrTown':{ui.homeMode=action==='jrList'?'list':'town';ui.jrView='home';
+      if(ui.view==='home'&&document.getElementById('sheet')?.open){renderSheet(false);document.getElementById('sheet')?.scrollTo?.(0,0);}else env.openSheet('home');return true;}
   }
   return false;
 }
@@ -477,9 +511,11 @@ export async function journeySubmit(f,env){
     // The button stays tappable before a look is picked (a disabled one gave no answer): say why and show where.
     if(!gender){env.toast?.('Chọn Nam hoặc Nữ trước nhé.',true);highlight(f.querySelector('.jr-genders'));return true;}
     const btn=f.querySelector('[type="submit"]');if(btn)btn.disabled=true;
+    const town=townWanted(ui);
     const r=await cmd('jr_profile',{name,gender});
     if(!r){if(btn)btn.disabled=false;return true;}
     ui.jrGender=null;
+    if(town){ui.jrJob=null;renderSheet(false);return true;}   // 🗺️ into the town: the lit shops show where to start
     const ids=api.content.journey.chapters[0].unlocks.filter(id=>api.state.careers[id]);
     const job=ids.includes(ui.jrJob)?ui.jrJob:ids.includes(FIRST_JOB)?FIRST_JOB:ids[0];ui.jrJob=null;
     if(job)await env.act('choose',{career:job});

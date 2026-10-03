@@ -1,0 +1,305 @@
+/** 🗺️ Bản đồ phố: the home screen as a small town to stroll (owner 03/10: "như hàng rong hồi xưa, đi dạo rồi vào
+ * các nơi công việc để làm"). The player's own character (outfit and all, v4/look.js) walks the streets of
+ * scenes/town-place.js: tap the street to walk, tap a shop to walk to its door; at the door a small card says what it
+ * is and holds one button, the same one the Hành trình list has ("Vào làm" = data-action choose: the same server
+ * action, the same confirms, the same first-day start). Landmarks open what already exists (Ngân hàng, Nhà mình,
+ * Gara, Cổng hội chợ, Quầy của bạn, Đi dạo, Nhóm phố, Quảng trường). "📋 Danh sách" on top opens the list
+ * (v4/journey.js homeMain), unchanged; it is also the keyboard's and a screen reader's way in.
+ * journey.js owns the sheet: it calls townHTML() for the page and townMount() after each render, which puts the one
+ * persistent stage (canvas + card) back into the page's slot (data-morph-keep: a render never rebuilds it).
+ * Light on phones, like the fair's walk (v4/fair-walk.js): the town is painted once per size and state into a cached
+ * bitmap; a frame is a slice of it, the glow and the player (one cached sprite). Frames run only while the player
+ * walks or the view moves (and ~12 a second for a new player's lit shops; none with reduced motion). */
+import {plan,route,nearest,itemAt,districtAt,back,marks,LANDMARKS,SIGNS} from '../scenes/town-place.js';
+import {figure,paintPlayer,CANVAS,lookOf} from './look.js';
+import {t as tr,language} from './i18n.js';
+import {lightAt} from './dayclock.js';
+import {escapeHTML as esc,icon} from '../icons.js';
+
+const RM=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
+const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contains('reduce-motion')||document.body.classList.contains('reduce-motion');
+const ME=.5;                  // the character (about 140 units tall) in town pixels
+const SPEED=270,MAX_WALK=2.4; // town pixels a second; no walk takes longer than MAX_WALK seconds
+const IDLE_MS=84,MAX_PX=7e6;  // the glow's frame gap; the cached town bitmap's pixel budget
+const LM_COLOR={bank:'#8d7b4c',garage:'#5a6f88',fair:'#c8423a',board:'#a8743f',walk:'#5f8f3e',house:'#d9573b',quay:'#e0892b',square:'#418d94'};
+const fmt=n=>Number(n||0).toLocaleString('vi-VN');
+
+const W={env:null,h:null,el:null,cv:null,c:null,where:null,whereText:'',card:null,pl:null,bg:null,bgKey:'',bs:1,k:1,cw:0,ch:0,dpr:1,
+  cam:{x:0,y:0},free:false,me:null,raf:0,last:0,time:0,drawn:0,down:null,at:'',lastCur:undefined,look:null,st:null,stKey:'',
+  sprite:null,spriteKey:'',ok:null,hooked:false,frames:[]};
+
+/* ------------------------------------------------------------ what the town shows */
+const S=()=>W.env.api.state;
+const meta=id=>W.env.api.content.catalogue.find(m=>m.id===id)||{id,short:id,place:id};
+/** Every career this save has, in catalogue order. */
+const careerIds=()=>W.env.api.content.catalogue.map(m=>m.id).filter(id=>S().careers[id]);
+const CH1=()=>(W.env.api.content.journey?.chapters?.[0]?.unlocks||[]);
+function landmarkOn(lm){
+  const s=S(),J=s.journey||{},api=W.env.api;
+  switch(lm){
+    case'garage':return !!(J.story&&J.garage);
+    case'fair':return !!s.fair?.show;
+    case'walk':{const lv=W.env.live?.();return !!(lv?.flags?.street&&lv.welcomed);}
+    case'house':return !!J.story;
+    case'quay':return !!(J.story&&api.content.journey?.quay);
+    case'square':return !!(s.current&&api.content.experiences?.town);
+    default:return true;   // bank, board: always in the menu too
+  }
+}
+/** Who is new (nothing started yet): the lit shops, the arrow, the one hint line. */
+function guide(){
+  const s=S(),J=s.journey||{},open=new Set(J.story?J.unlocked||[]:Object.keys(s.careers));
+  const fresh=!!J.story&&!Object.values(s.careers).some(c=>c?.started);
+  const lit=fresh?CH1().filter(id=>open.has(id)&&s.careers[id]):J.suggested&&J.suggested!==s.current&&open.has(J.suggested)?[J.suggested]:[];
+  const arrow=fresh?(lit.includes(W.h.FIRST_JOB)?W.h.FIRST_JOB:lit[0]||null):null;
+  return {fresh,lit,arrow,open};
+}
+/** Each building's look: colour, sign, and its state (locked, current, ×3, lit, closed for now). */
+function stateFn(){
+  const s=S(),J=s.journey||{},g=guide(),x3=new Set(s.x3?.today||[]),lit=new Set(g.lit);
+  return it=>{
+    if(it.lm){const L=LANDMARKS[it.lm];return {color:LM_COLOR[it.lm],emoji:L.emoji,name:L.name,off:!landmarkOn(it.lm)};}
+    const m=meta(it.id),sg=SIGNS[it.id]||[W.h.emojiOf(m),m.short||m.place||it.id];
+    return {color:/^#[0-9a-f]{6}/i.test(m.color||'')?m.color:'#c4a27a',emoji:sg[0],name:sg[1],lock:!g.open.has(it.id),cur:it.id===s.current,
+      x3:x3.has(it.id),glow:lit.has(it.id),paused:!!J.places?.[it.id]?.paused};
+  };
+}
+/** The time of day of the place the player works at (its own clock), else none: the town stays bright. */
+function tint(){
+  const s=S(),dc=s.current&&s.careers[s.current]?.day_clock;
+  if(!dc||!Number.isFinite(dc.minute))return null;
+  const m=Math.round(dc.minute/20)*20;return {...lightAt(m),m};
+}
+
+/* ------------------------------------------------------------ the page */
+/** The page: a slim top bar (where, ×3, Danh sách, close), a new player's one hint line, the stage's slot. */
+export function townHTML(env,h){
+  W.env=env;W.h=h;
+  const s=env.api.state,J=s.journey||{},g=guide();
+  const x3=s.x3?.today?.length?`<button type="button" class="tw-chip tw-x3" data-action="x3Week" aria-label="${esc(`Hôm nay lời x${s.x3.x}`)}">🔥 x${esc(s.x3.x)}</button>`:'';
+  const close=s.current?`<button type="button" class="icon-btn tw-close" data-action="close" aria-label="Đóng">${icon('x',20)}</button>`:'';
+  const day=J.story?`<small>Ngày sống ${fmt(J.life_day)}</small>`:'';
+  const hint=g.fresh?`<p class="tw-hint" role="status"><span aria-hidden="true">👉</span> Đi tới một tiệm đang sáng để làm</p>`:'';
+  return `<div class="tw-home"><header class="tw-top home-top"><div class="tw-title"><h2>Khu phố</h2>${day}</div>${x3}
+    <button type="button" class="tw-chip tw-list" data-action="jrList">📋 Danh sách</button>${close}</header>${hint}
+    <div class="tw-slot" data-tw-slot><i class="tw-end" hidden></i></div></div>`;
+}
+/** Can this browser draw it? (else the list shows, as before) */
+export function townOK(){
+  if(W.ok===null){try{W.ok=!!document.createElement('canvas').getContext('2d')&&typeof ResizeObserver==='function';}catch{W.ok=false;}}
+  return W.ok;
+}
+
+/* ------------------------------------------------------------ the stage */
+function build(){
+  const el=document.createElement('div');el.className='tw-stage';el.setAttribute('data-morph-keep','');
+  el.innerHTML=`<canvas class="tw-canvas" tabindex="0" role="img"></canvas><div class="tw-where" aria-hidden="true"></div><div class="tw-card" hidden></div>`;
+  W.el=el;W.cv=el.querySelector('canvas');W.c=W.cv.getContext('2d');W.where=el.querySelector('.tw-where');W.card=el.querySelector('.tw-card');
+  W.cv.setAttribute('aria-label',tr('Khu phố: chạm vào một nơi để đi tới. Mũi tên để đi, Enter để vào.'));
+  W.cv.addEventListener('pointerdown',down);W.cv.addEventListener('pointermove',move);W.cv.addEventListener('pointerup',up);W.cv.addEventListener('pointercancel',()=>{W.down=null;});
+  W.cv.addEventListener('wheel',wheel,{passive:false});
+  W.cv.addEventListener('keydown',onKey);
+  W.card.addEventListener('click',e=>{if(e.target.closest('[data-tw-x]'))hide();});
+  el.addEventListener('keydown',e=>{if(e.key==='Escape'&&!W.card.hidden){e.preventDefault();e.stopPropagation();hide();W.cv.focus({preventScroll:true});}});
+  let sizing=0;new ResizeObserver(()=>{cancelAnimationFrame(sizing);sizing=requestAnimationFrame(size);}).observe(el);
+}
+/** After each render of the home sheet: the stage into its slot, the town brought up to date. */
+export function townMount(env,h){
+  W.env=env;W.h=h;
+  // The sheet renders before it opens (app.js openSheet): mount into the slot either way, and size/animate once the
+  // dialog is up (the next frame).
+  const slot=document.querySelector('#sheet [data-tw-slot]');
+  if(!slot)return;
+  if(!W.el)build();
+  if(!W.hooked){W.hooked=true;env.api.addEventListener('state',()=>{if(visible())refresh();});}
+  if(W.el.parentNode!==slot){slot.prepend(W.el);W.cw=0;}
+  refresh();
+  if(!W.cw)size();
+  if(!visible())requestAnimationFrame(()=>{if(visible()){size();kick();}});
+}
+const visible=()=>!!W.el?.isConnected&&!!W.el.closest('dialog[open]');
+/** The save changed (or the stage came back): a new plan when the careers changed, the player at the door of the
+ * place they work at when that changed (back from work: at its door), the town repainted when anything shows
+ * differently. */
+function refresh(){
+  const ids=careerIds(),cats=Object.fromEntries(ids.map(id=>[id,meta(id).category||'']));
+  W.pl=plan(ids,cats);
+  const st=stateFn();W.st=st;
+  const t=tint();W.tintNow=t;
+  W.stKey=JSON.stringify([W.pl.items.map(it=>{const s=st(it);return [s.lock,s.cur,s.x3,s.glow,s.paused,s.off,s.name];}),t?.m??-1,language()]);
+  const cur=S().current||null;
+  if(!W.me||cur!==W.lastCur){W.lastCur=cur;place(spawn());W.free=false;snap();hide();}
+  else if(W.at){const it=W.pl.items.find(x=>x.key===W.at);if(it&&!W.card.hidden)showCard(it,false);}
+  W.drawn=0;kick();
+}
+function doorOf(key){return W.pl.items.find(it=>it.key===key);}
+/** Where the player comes in: the door of the place they work at, a new player just left of the first lit shop, else
+ * the suggested place's door, else home. */
+function spawn(){
+  const s=S(),g=guide(),cur=s.current&&doorOf(s.current);
+  if(cur)return cur.stand;
+  if(g.arrow){const it=doorOf(g.arrow);if(it)return [it.stand[0]-150,it.stand[1]];}
+  const sug=s.journey?.suggested&&doorOf(s.journey.suggested);if(sug)return sug.stand;
+  return (doorOf('lm:house')||W.pl.items[0]).stand;
+}
+function place(p){const q=nearest(W.pl,p);W.me={x:q[0],y:q[1],path:null,step:0,len:0};}
+
+/* ---- size and camera ---- */
+function size(){
+  if(!W.el?.isConnected)return;
+  const r=W.el.getBoundingClientRect(),cw=Math.max(1,r.width),ch=Math.max(1,r.height);
+  W.dpr=Math.min(2,globalThis.devicePixelRatio||1);W.cw=cw;W.ch=ch;
+  const w=Math.round(cw*W.dpr),h=Math.round(ch*W.dpr);if(W.cv.width!==w)W.cv.width=w;if(W.cv.height!==h)W.cv.height=h;
+  W.k=Math.max(.6,Math.min(1,cw/560,ch/600));
+  if(W.me)snap();
+  W.drawn=0;draw();
+}
+const view=()=>[W.cw/W.k,W.ch/W.k];
+/** Where the camera wants to be: the player a little below the middle, inside the town (centred when it is smaller). */
+function camGoal(){
+  const [vw,vh]=view(),{W:TW,H:TH}=W.pl,fit=(v,len,full)=>full<=len?(full-len)/2:Math.max(0,Math.min(full-len,v));
+  return [fit(W.me.x-vw/2,vw,TW),fit(W.me.y-vh*.58,vh,TH)];
+}
+function clampCam(){const [vw,vh]=view(),{W:TW,H:TH}=W.pl,f=(v,len,full)=>full<=len?(full-len)/2:Math.max(0,Math.min(full-len,v));W.cam.x=f(W.cam.x,vw,TW);W.cam.y=f(W.cam.y,vh,TH);}
+function snap(){if(!W.me||!W.pl)return;const [x,y]=camGoal();W.cam.x=x;W.cam.y=y;}
+const toWorld=(cx,cy)=>{const r=W.cv.getBoundingClientRect();return [W.cam.x+(cx-r.left)/W.k,W.cam.y+(cy-r.top)/W.k];};
+
+/* ---- input: tap to walk, drag to look around, wheel on a desktop, arrows / WASD ---- */
+function down(e){W.down={x:e.clientX,y:e.clientY,t:performance.now(),cx:W.cam.x,cy:W.cam.y,pan:false,id:e.pointerId};}
+function move(e){
+  const d=W.down;if(!d||d.id!==e.pointerId)return;
+  const dx=e.clientX-d.x,dy=e.clientY-d.y;
+  if(!d.pan&&Math.hypot(dx,dy)>12){d.pan=true;try{W.cv.setPointerCapture(e.pointerId);}catch{/* gone */}}
+  if(d.pan){W.free=true;W.cam.x=d.cx-dx/W.k;W.cam.y=d.cy-dy/W.k;clampCam();W.drawn=0;kick();}
+}
+function up(e){
+  const d=W.down;W.down=null;if(!d||d.pan||performance.now()-d.t>900)return;
+  tapAt(e.clientX,e.clientY);
+}
+function wheel(e){if(e.ctrlKey)return;e.preventDefault();W.free=true;W.cam.x+=(e.shiftKey?e.deltaY:e.deltaX)/W.k;if(!e.shiftKey)W.cam.y+=e.deltaY/W.k;clampCam();W.drawn=0;kick();}
+function tapAt(cx,cy){
+  const p=toWorld(cx,cy),it=itemAt(W.pl,p);
+  if(it&&!W.st(it).off)goItem(it);else{hide();walkTo(p);}
+}
+function goItem(it,focus=false){hide();walkTo(it.stand,()=>showCard(it,focus));}
+function onKey(e){
+  const step={ArrowLeft:[-70,0],ArrowRight:[70,0],ArrowUp:[0,-60],ArrowDown:[0,60],a:[-70,0],d:[70,0],w:[0,-60],s:[0,60]}[e.key.length===1?e.key.toLowerCase():e.key];
+  if(step){e.preventDefault();hide();walkTo([W.me.x+step[0],W.me.y+step[1]]);return;}
+  if(e.key==='Enter'||e.key===' '){
+    let best=null,bd=110;for(const it of W.pl.items){if(W.st(it).off)continue;const d=Math.hypot(it.stand[0]-W.me.x,it.stand[1]-W.me.y);if(d<bd){bd=d;best=it;}}
+    if(best){e.preventDefault();goItem(best,true);}
+  }
+}
+
+/* ---- walking ---- */
+function walkTo(p,then=null){
+  W.free=false;W.arrive=then;
+  const path=route(W.pl,[W.me.x,W.me.y],p);
+  if(!path||still()){const end=path?path[path.length-1]:[W.me.x,W.me.y];W.me.x=end[0];W.me.y=end[1];W.me.path=null;snap();W.drawn=0;kick();arrived();return;}
+  let len=0;for(let i=1;i<path.length;i++)len+=Math.hypot(path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]);
+  W.me.path=path.slice(1);W.me.len=len/MAX_WALK;
+  kick();
+}
+function arrived(){const f=W.arrive;W.arrive=null;if(W.me)W.me.path=null;if(f)f();}
+
+/* ---- the card at a door ---- */
+const tag=(t,kind='')=>`<span class="tw-tag ${kind}">${t}</span>`;
+const act=(label,action,data={},style='primary')=>`<button type="button" class="btn ${style} tw-go" data-action="${action}"${Object.entries(data).map(([k,v])=>` data-${k}="${esc(v)}"`).join('')}>${label}</button>`;
+function cardHTML(it){
+  const s=S(),J=s.journey||{},st=W.st(it),x=`<button type="button" class="tw-card-x" data-tw-x aria-label="Đóng">×</button>`;
+  if(it.lm){const L=LANDMARKS[it.lm];
+    return `<span class="tw-card-ico" aria-hidden="true">${L.emoji}</span><div class="tw-card-text"><b>${esc(L.name)}</b></div>${act(`Vào ${icon('arrow',14)}`,L.action)}${x}`;}
+  const m=meta(it.id),c=s.careers[it.id]||{},h=W.h;
+  if(st.lock){const n=(W.env.api.content.journey?.unlock_chapter||{})[it.id];
+    return `<span class="tw-card-ico locked" aria-hidden="true">${esc(st.emoji)}</span><div class="tw-card-text"><b>🔒 ${n===J.chapter+1?'Sắp mở':'Còn ở phía trước'}</b><small>${esc(h.CATS[h.catOf(m)]||'')}</small></div>${x}`;}
+  const job=c.job||{},aj=h.acctPlace(W.env.api,it.id),tags=[],cur=it.id===s.current,ab=s.abandon?.preview;
+  if(cur&&ab&&!ab.soft&&ab.career===it.id)tags.push(tag('⏳ Đang làm dở','amber'));
+  if(st.x3)tags.push(tag(`🔥 Lời x${s.x3.x} hôm nay`,'hot'));
+  if(cur&&c.promo?.rank>0&&c.promo.title)tags.push(tag(`🎖️ ${esc(c.promo.title)}`,'blue'));
+  if(st.paused)tags.push(tag('Tạm đóng','amber'));
+  if(job.status==='offer')tags.push(tag('💌 Có thư mời','blue'));
+  else if(job.required&&job.status!=='hired')tags.push(tag('Cần xin việc','amber'));
+  if(!c.started&&J.story&&(W.env.api.content.journey?.unlock_chapter||{})[it.id]===J.chapter&&J.chapter>1)tags.push(tag('Mới mở','green'));
+  if(guide().arrow===it.id)tags.push(tag('Hợp người mới','green'));
+  const why=aj&&!aj.ok?`<small class="tw-why">🔒 ${esc(aj.why)}</small>`:'';
+  const button=aj&&!aj.ok?act(`Đi học ${icon('arrow',14)}`,'accountingSchool',{},'cream'):st.paused?act('Mở lại','jrReopen',{career:it.id},'cream'):
+    act(`${cur&&c.started?'Vào tiếp':'Vào làm'} ${icon('arrow',14)}`,'choose',{career:it.id});
+  return `<span class="tw-card-ico" aria-hidden="true">${esc(st.emoji)}</span><div class="tw-card-text"><b>${esc(m.place||m.short)}</b><small>${esc(m.short||'')}</small>${why}${tags.length?`<div class="tw-tags">${tags.join('')}</div>`:''}</div>${button}${x}`;
+}
+function showCard(it,focus=false){
+  if(!W.card)return;
+  W.at=it.key;W.card.innerHTML=cardHTML(it);W.card.style.setProperty('--tw-c',W.st(it).color||'#c4a27a');W.card.hidden=false;
+  if(focus)W.card.querySelector('.tw-go,[data-tw-x]')?.focus({preventScroll:true});
+  W.drawn=0;kick();
+}
+function hide(){if(W.card&&!W.card.hidden){W.card.hidden=true;W.card.innerHTML='';}W.at='';}
+
+/* ---- frames ---- */
+function kick(){if(!W.raf&&visible()){W.last=performance.now();W.raf=requestAnimationFrame(loop);}}
+function animating(){return !still()&&!document.hidden&&(W.marks?.glow?.length||W.marks?.arrow);}
+function loop(now){
+  W.raf=0;if(!visible()||!W.me)return;
+  const dt=Math.min(.05,(now-W.last)/1000);W.last=now;W.time+=dt;
+  const m=W.me;let busy=false;
+  if(m.path?.length){
+    const sp=Math.max(SPEED,m.len||0)*dt,[tx,ty]=m.path[0],dx=tx-m.x,dy=ty-m.y,d=Math.hypot(dx,dy);busy=true;
+    if(d<=sp){m.x=tx;m.y=ty;m.path.shift();if(!m.path.length)arrived();}else{m.x+=dx/d*sp;m.y+=dy/d*sp;}
+    m.step+=dt*10;
+  }
+  if(!W.free){const [gx,gy]=camGoal(),k=1-Math.exp(-dt*7),ex=gx-W.cam.x,ey=gy-W.cam.y;
+    if(Math.abs(ex)>.4||Math.abs(ey)>.4){W.cam.x+=ex*k;W.cam.y+=ey*k;busy=true;}else{W.cam.x=gx;W.cam.y=gy;}}
+  const anim=animating();
+  if(busy||!W.drawn||(anim&&now-W.drawn>=IDLE_MS)){const t0=performance.now();draw();W.drawn=now||1;W.frames.push(performance.now()-t0);if(W.frames.length>240)W.frames.shift();}
+  if(busy||anim||!W.drawn)W.raf=requestAnimationFrame(loop);
+}
+function backdrop(){
+  const {W:TW,H:TH}=W.pl,bs=Math.min(W.k*W.dpr,Math.sqrt(MAX_PX/(TW*TH)));
+  const key=[W.pl.key,bs.toFixed(3),W.stKey].join('|');
+  if(W.bg&&W.bgKey===key)return W.bg;
+  const bg=W.bg||document.createElement('canvas');bg.width=Math.ceil(TW*bs);bg.height=Math.ceil(TH*bs);
+  const c=bg.getContext('2d');c.setTransform(bs,0,0,bs,0,0);
+  try{back(c,W.pl,W.st,{tint:W.tintNow});}catch(e){console.warn('khu phố: backdrop',e);}
+  W.bg=bg;W.bgKey=key;W.bs=bs;return bg;
+}
+/** The player as one small bitmap, made again only when the look or the zoom changes. */
+function sprite(){
+  const sc=ME*W.k*W.dpr,look=lookOf(S()),key=JSON.stringify([look,S().journey?.gender,sc.toFixed(3)]);
+  if(W.sprite&&W.spriteKey===key)return W.sprite;
+  const cv=W.sprite||document.createElement('canvas'),w=Math.ceil(110*sc),h=Math.ceil(170*sc);cv.width=w;cv.height=h;
+  const c=cv.getContext('2d');c.setTransform(sc,0,0,sc,w/2,h-12*sc);
+  try{paintPlayer(c,figure(S()),CANVAS);}catch{/* look not ready */}
+  W.sprite=cv;W.spriteKey=key;W.spriteFoot=[w/2,h-12*sc];return cv;
+}
+function draw(){
+  const c=W.c;if(!c||!W.cw||!W.me||!W.pl)return;
+  const g=guide(),items=W.pl.items,find=id=>items.find(it=>it.id===id);
+  W.marks={glow:g.lit.map(find).filter(Boolean),arrow:g.arrow&&find(g.arrow)};
+  const bg=backdrop(),d=W.dpr,k=W.k,bs=W.bs,[vw,vh]=view();
+  c.setTransform(1,0,0,1,0,0);c.fillStyle='#efe0c6';c.fillRect(0,0,W.cv.width,W.cv.height);
+  // The visible slice of the cached town (cut to the bitmap: some browsers draw nothing for a source past its edge).
+  const sx=Math.max(0,W.cam.x),sy=Math.max(0,W.cam.y),ex=Math.min(W.pl.W,W.cam.x+vw),ey=Math.min(W.pl.H,W.cam.y+vh);
+  if(ex>sx&&ey>sy)c.drawImage(bg,sx*bs,sy*bs,(ex-sx)*bs,(ey-sy)*bs,(sx-W.cam.x)*k*d,(sy-W.cam.y)*k*d,(ex-sx)*k*d,(ey-sy)*k*d);
+  c.setTransform(k*d,0,0,k*d,-W.cam.x*k*d,-W.cam.y*k*d);
+  const inView=it=>it.x1>W.cam.x-20&&it.x0<W.cam.x+vw+20&&it.G>W.cam.y-20&&it.G-it.h<W.cam.y+vh+20;
+  const near=W.at?items.find(it=>it.key===W.at):null;
+  try{marks(c,W.pl,{t:W.time,reduced:still(),glow:W.marks.glow.filter(inView),arrow:W.marks.arrow&&inView(W.marks.arrow)?W.marks.arrow:null,near});}catch(e){console.warn('khu phố: marks',e);}
+  // The player: the cached sprite, a little hop while walking.
+  const sp=sprite(),m=W.me,hop=m.path?.length&&!still()?Math.abs(Math.sin(m.step))*3:0;
+  c.setTransform(1,0,0,1,0,0);
+  c.drawImage(sp,Math.round((m.x-W.cam.x)*k*d-W.spriteFoot[0]),Math.round((m.y-W.cam.y-hop)*k*d-W.spriteFoot[1]));
+  // Where the view is, top left (written only when it changes: no layout per frame).
+  const dist=districtAt(W.pl,[W.cam.x+vw/2,W.cam.y+vh*.58]),text=`${dist.emoji} ${tr(dist.name)}`;
+  if(text!==W.whereText){W.whereText=text;W.where.textContent=text;}
+}
+
+/* ---- test hooks (scratch browser checks) ---- */
+globalThis.__townWalk={
+  state:()=>({on:visible(),me:W.me&&[Math.round(W.me.x),Math.round(W.me.y)],walking:!!W.me?.path?.length,at:W.at,card:!!W.card&&!W.card.hidden,
+    cam:[Math.round(W.cam.x),Math.round(W.cam.y)],k:W.k,size:W.pl&&[W.pl.W,W.pl.H],items:W.pl?.items.length,where:W.whereText,
+    lit:W.marks?.glow?.map(it=>it.key)||[],arrow:W.marks?.arrow?.key||null}),
+  /** Client point of a building's sign (null when it is off the view). */
+  screen:key=>{const it=W.pl?.items.find(x=>x.key===key);if(!it||!W.cv)return null;const r=W.cv.getBoundingClientRect(),x=r.left+(it.cx-W.cam.x)*W.k,y=r.top+(it.G-it.h*.55-W.cam.y)*W.k;
+    return x>r.left+4&&x<r.right-4&&y>r.top+4&&y<r.bottom-4?[x,y]:null;},
+  go:key=>{const it=W.pl?.items.find(x=>x.key===key);if(it)goItem(it);return !!it;},
+  frames:reset=>{const f=W.frames.slice();if(reset)W.frames.length=0;return f;},
+};

@@ -18,7 +18,7 @@ import {inventoryView,feedbackView,situationView,jobView as jobAppView,v4Action,
 import {moneyBoot,confirmMoney,confirmShort,dialogBalances,isSpend,priceIn} from './v4/money.js';  // 💰 Ví / Quỹ tiệm in sight while spending
 import {quickOpen,firstDay} from './v4/onboard.js';  // a brand-new player's first minutes
 import {hudMoney,hudChipsHTML,wealthHTML,loadJoint,jointBalance,wealthAction} from './v4/wealth.js';  // 💰 Tiền của bạn (top bar chips + sheet)
-import {emojiOf} from './v4/journey.js';
+import {emojiOf,townOn} from './v4/journey.js';
 import {lowItems,crates} from './v4/restock.js';  // the bar's Kho badge
 import {setLanguage,t as i18nT} from './v4/i18n.js';
 import {shell} from './v4/shell.js';
@@ -132,7 +132,7 @@ const activeTask=()=>room()?.tasks.find(t=>t.id===(ui.task||room().active_task))
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const LEGACY=['mother_baby','pharmacy','accounting','customer_care','teacher','tour_guide','milk_tea'];
 const plugin=()=>!LEGACY.includes(career());
-const env=()=>({api,ui,cmd,confirmAction,toast,renderSheet,renderMain,openSheet,closeSheet,world,act:(action,data={})=>handleAction(action,data,null)});
+const env=()=>({api,ui,cmd,confirmAction,toast,renderSheet,renderMain,openSheet,closeSheet,world,act:(action,data={})=>handleAction(action,data,null),live:()=>L.live.m?.live||null});  // live: 🗺️ the town's Đi dạo sign (v4/town-walk.js)
 /** The one day counter the player sees: the life day in the story, the workplace's own day elsewhere (game/days.py). */
 const dayNo=c=>api.state?.journey?.story&&Number.isInteger(api.state.journey.life_day)?api.state.journey.life_day:c?.day;
 const needsJob=()=>room()?.job?.required&&room().job.status!=='hired';
@@ -264,7 +264,7 @@ function navItems(c){
   if(c.job?.required)items.push(['jobapp','briefcase','Việc làm',needsJob()?'dot':0]);
   items.push(['operations','store','Sổ tiệm',c.ops?.alerts?.length?'dot':0]);
   if(!EXT.includes(career()))items.push(['journal','book','Sổ tay']);
-  items.push(['people','people','Người quen',L.people.m?.closenessBadge(api)||0],['album','camera','Kỷ niệm'],['workshop','sparkle','Trò nhỏ'],['passport','award','Hộ chiếu'],['town','compass','Bản đồ'],['rank','award','Xếp hạng']);  // Bản đồ: the town map (experience-ui "Khu phố"); Bảng xếp hạng (v4/leaderboard.js)
+  items.push(['people','people','Người quen',L.people.m?.closenessBadge(api)||0],['album','camera','Kỷ niệm'],['workshop','sparkle','Trò nhỏ'],['passport','award','Hộ chiếu'],['jrTown','compass','Bản đồ phố'],['rank','award','Xếp hạng']);  // 🗺️ Bản đồ phố: the walkable town (v4/town-walk.js; the old Khu phố map is its 🎏 Quảng trường); Bảng xếp hạng (v4/leaderboard.js)
   items.push(['jrWardrobe','shirt','Tủ đồ']);  // 👗 Tủ đồ (v4/wardrobe.js, opened by journey.js)
   {const chat=L.live.m?.liveNav();if(chat)items.push(chat);}  // 💬 Chat (v4/live.js): only while the live service has it on
   {const lv=L.live.m?.live;if(lv?.flags.street&&lv.welcomed)items.push(['liveWalk','map','Đi dạo']);}  // 🚶 Đi dạo (v4/walk.js): only while the live service has it on
@@ -290,7 +290,7 @@ function quayBadge(){const q=api.state?.journey?.quay;return q?.shift||(q?.stall
 async function quayFlush(){try{const d=await api.post('/api/quay/flush',{});if(d?.state&&typeof d.revision==='number')api.accept({state:d.state,revision:d.revision});}catch{/* the next load settles it */}}
 const badgeHTML=b=>b==='dot'?'<i class="dot" aria-hidden="true"></i>':b?`<em class="badge">${b}</em>`:'';
 /** One line under the look-alike Khu phố entries, so each says what it is (owner D5: names stay, lines added). */
-const RAIL_NOTE={town:'Thư viện, chợ, quảng trường…',social:'Ghé tiệm người chơi khác',nhom:'Tin nhắn hàng xóm',phone:'Khách khen, chê, kể chuyện'};
+const RAIL_NOTE={jrTown:'Dạo phố, vào nơi làm',social:'Ghé tiệm người chơi khác',nhom:'Tin nhắn hàng xóm',phone:'Khách khen, chê, kể chuyện'};
 const railItem=([a,i,label,badge],extra='',hide='')=>`<button type="button" class="rail-item${a==='social'?' top-social':''}${extra} ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}${hide}>${icon(i,21)}<span>${label}</span>${RAIL_NOTE[a]?`<small class="rail-note">${RAIL_NOTE[a]}</small>`:''}${badgeHTML(badge)}</button>`;
 /** The work pages, always in sight (rail on desktop/tablet, top of "Thêm" on the phone), in this order. Any
  * entry that is in no group below (a career's own page) joins them, so nothing a career adds is lost. */
@@ -300,7 +300,7 @@ const ACC_CAREERS=['accounting','corp_accounting','tax_payroll','group_accountin
 const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREERS.includes(career()));
 /** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
 const RAIL_GROUPS=[
-  ['pho','building','Khu phố',['fair','liveWalk','liveWed','nhom','phone','social','town','rank']],
+  ['pho','building','Khu phố',['fair','liveWalk','liveWed','nhom','phone','social','jrTown','rank']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Ngân hàng & nhà',['money','bank','house','garage','rui','vang','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
@@ -541,7 +541,7 @@ function renderSheet(preserve=true){
   // Class names are collected off-DOM and written once, only when they differ (no style invalidation per render).
   let html;const cls=document.createElement('i');cls.className='sheet';
   {const dialog=cls;switch(ui.view){
-    case'home':dialog.classList.add('home');html=homeView();break;
+    case'home':dialog.classList.add('home');if(townOn(env()))dialog.classList.add('tw-sheet');html=homeView();break;  // 🗺️ the town: one fixed height (css/town.css)
     case'future':html=futureView();break;
     case'job':dialog.classList.add('cozy-job');html=jobView();break;
     case'prepare':case'prices':case'workshop':case'passport':case'town':dialog.classList.add('cozy-sheet',ui.view==='prepare'?'prep-sheet':'life-sheet');html=careerUI(career())?.page?.(ui.view,careerContext(env()))||(ui.view==='passport'?moreView:f=>f())(()=>experienceView(ui.view,career(),room(),api.content,meta(),ui,api.state));break;
@@ -1252,7 +1252,7 @@ async function handleAction(action,data,el){
     case'tourPlan':await cmd('tour_plan',{task:activeTask().id,route:ui.tourRoute});break;
     case'teaConfig':await cmd('tea_config',{task:activeTask().id,size:$('#tea-size').value,sugar:Number($('#tea-sugar').value),ice:$('#tea-ice').value});break;
     case'expVisit':ui.townPlace=data.place;await cmd('life_town',{place:data.place});renderSheet();break;
-    case'home':openSheet('home');break;
+    case'home':openSheet('home',{homeMode:null});break;  // 🗺️ the setting's choice again (Bản đồ phố / Danh sách)
     case'accountingSchool':if(await (await viaLazy(L.accountingSchool,el)).accountingSchoolOpen(env()))openSheet('accountingSchool');break;
     case'v4Group':railGroup(data.group||'');break;
     // "Thêm" opens on its first page, not inside the hub left open last time.
