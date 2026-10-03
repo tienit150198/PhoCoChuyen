@@ -19,14 +19,14 @@ PEOPLE = [
 
 # ---------------------------------------------------------------- the cleaning cart
 TOOLS = {
-    'phat_tran': dict(name='Chổi phất trần', short='Phất trần', emoji='🪶'),
-    'hut_bui': dict(name='Máy hút bụi', short='Hút bụi', emoji='🌀'),
-    'choi': dict(name='Chổi quét nhà', short='Chổi', emoji='🧹'),
-    'khan_xanh': dict(name='Khăn xanh', short='Khăn xanh', emoji='🟦', note='kính, gương'),
-    'khan_vang': dict(name='Khăn vàng', short='Khăn vàng', emoji='🟨', note='bàn, kệ, bếp'),
-    'khan_do': dict(name='Khăn đỏ', short='Khăn đỏ', emoji='🟥', note='chỉ bồn cầu'),
-    'ban_chai': dict(name='Bàn chải cọ', short='Bàn chải', emoji='🪥'),
-    'cay_lau': dict(name='Cây lau nhà', short='Cây lau', emoji='🪣'),
+    'phat_tran': dict(name='Chổi phất trần', short='Phất trần', emoji='🪶', verb='Phủi'),
+    'hut_bui': dict(name='Máy hút bụi', short='Hút bụi', emoji='🌀', verb='Hút'),
+    'choi': dict(name='Chổi quét nhà', short='Chổi', emoji='🧹', verb='Quét'),
+    'khan_xanh': dict(name='Khăn xanh', short='Khăn xanh', emoji='🟦', note='kính, gương', verb='Lau'),
+    'khan_vang': dict(name='Khăn vàng', short='Khăn vàng', emoji='🟨', note='bàn, kệ, bếp', verb='Lau'),
+    'khan_do': dict(name='Khăn đỏ', short='Khăn đỏ', emoji='🟥', note='chỉ bồn cầu', verb='Lau'),
+    'ban_chai': dict(name='Bàn chải cọ', short='Bàn chải', emoji='🪥', verb='Cọ'),
+    'cay_lau': dict(name='Cây lau nhà', short='Cây lau', emoji='🪣', verb='Lau'),
 }
 # item: the bottle in the cart (None: nothing to use up)
 PRODUCTS = {
@@ -86,10 +86,10 @@ SPOTS = {
     'sofa': S('Sofa vải', '🛋️', 1, 'vải, lông, bụi', ['hut_bui'], ['kho'], FABRIC),
     'nem': S('Nệm giường', '🛏️', 1, 'vải, bụi', ['hut_bui'], ['kho'], FABRIC),
     # sàn
-    'san_quet': S('Quét sàn', '🧹', 2, 'bụi, tóc', ['choi', 'hut_bui'], ['kho']),
+    'san_quet': S('Bụi tóc trên sàn', '🧹', 2, 'bụi, tóc', ['choi', 'hut_bui'], ['kho']),
     'tham': S('Thảm', '🟫', 2, 'bụi, lông', ['hut_bui'], ['kho'], FABRIC),
-    'san_lau': S('Lau sàn', '✨', 3, 'gạch men', ['cay_lau'], ['lau_san', 'nuoc']),
-    'san_go': S('Lau sàn gỗ', '🪵', 3, 'gỗ, vắt kiệt', ['cay_lau'], ['nuoc', 'lau_san'], WOOD),
+    'san_lau': S('Sàn gạch', '✨', 3, 'gạch men', ['cay_lau'], ['lau_san', 'nuoc']),
+    'san_go': S('Sàn gỗ', '🪵', 3, 'gỗ, vắt kiệt', ['cay_lau'], ['nuoc', 'lau_san'], WOOD),
     'san_tam': S('Sàn nhà tắm', '🚿', 3, 'gạch, cặn', ['ban_chai', 'cay_lau'], ['da_nang']),
 }
 FLOOR_WET = ('san_lau', 'san_go')     # a 'gentle' home (cat, toddler): these take clean water only

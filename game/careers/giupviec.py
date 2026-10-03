@@ -60,11 +60,11 @@ LESSONS = gc.LESSONS
 CATCH = gc.CATCH
 
 ITEMS = [
-    dict(id='chai_kinh', name='Chai nước lau kính', emoji='🫧', group='chai', unit='chai', cost=3, start=2),
-    dict(id='chai_da_nang', name='Chai tẩy rửa dịu', emoji='🧴', group='chai', unit='chai', cost=3, start=2),
-    dict(id='chai_dau_mo', name='Chai tẩy dầu mỡ', emoji='🍋', group='chai', unit='chai', cost=4, start=2),
-    dict(id='chai_toilet', name='Chai tẩy bồn cầu', emoji='🧪', group='chai', unit='chai', cost=3, start=2),
-    dict(id='chai_lau_san', name='Can nước lau sàn', emoji='🌸', group='chai', unit='can', cost=4, start=2),
+    dict(id='chai_kinh', name='Chai nước lau kính', emoji='🫧', group='chai', unit='chai', cost=3, start=4),
+    dict(id='chai_da_nang', name='Chai tẩy rửa dịu', emoji='🧴', group='chai', unit='chai', cost=3, start=4),
+    dict(id='chai_dau_mo', name='Chai tẩy dầu mỡ', emoji='🍋', group='chai', unit='chai', cost=4, start=4),
+    dict(id='chai_toilet', name='Chai tẩy bồn cầu', emoji='🧪', group='chai', unit='chai', cost=3, start=4),
+    dict(id='chai_lau_san', name='Can nước lau sàn', emoji='🌸', group='chai', unit='can', cost=4, start=4),
 ]
 PRICES = dict(room=12)
 REGULAR_BONUS = 4          # a happy client adds this to the next job
@@ -521,7 +521,7 @@ def _wipe(s, c, d, p):
     d['today']['wipes'] += 1
     d['stats']['wipes'] += 1
     if t['dirt'][key] > 0:
-        return dict(message=f'{TOOLS[tool]["emoji"]} Lau {_lower(sp["name"])}… còn {t["dirt"][key]} lượt nữa.', correct=True)
+        return dict(message=f'{TOOLS[tool]["emoji"]} {TOOLS[tool]["verb"]} {_lower(sp["name"])}… còn {t["dirt"][key]} lượt nữa.', correct=True)
     # top to bottom: dust falls on what is below and already clean
     fell = []
     if sp['lvl'] < 3:
