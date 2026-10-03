@@ -1,5 +1,12 @@
 {
  "strings": {
+  "Mừng cô dâu chú rể": "Gift for the bride and groom",
+  "Chia đôi cho": "Split between",
+  "Số khác": "Other amount",
+  "Số xu muốn mừng": "Coins to give",
+  "Nhập số xu muốn mừng nhé.": "Enter how many coins to give.",
+  "Ví của bạn đang hết tiền.": "Your wallet is empty.",
+  "tùy lòng": "as you like",
   "Học kế toán TT99: sửa các đề bị dính số tài khoản với số tiền (như phần 11 câu 2), đọc rõ ràng hơn.": "TT99 accounting course: fixed questions where account numbers ran into amounts (like part 11 question 2), now easy to read.",
   "Thu gom rác: dán phiếu không thu túi chưa phân loại xong vẫn đẩy xe tới nhà sau được, không còn bị kẹt giữa ngõ.": "Rubbish round: after leaving an unsorted bag with a sticker you can push the cart on to the next house, no more getting stuck mid-lane.",
   "Chơi mượt hơn: mỗi lần chạm tải ít dữ liệu hơn khoảng 5 lần, quán trà sữa vẽ nhẹ hơn, đỡ giật trên máy yếu.": "Smoother play: each tap downloads about 5 times less data and the milk tea shop draws lighter, with less stutter on slower phones.",
@@ -1775,8 +1782,8 @@
   "💌 Bạn bè cưới sẽ mời bạn và nhắc trước giờ tiệc.": "💌 Friends who get married will invite you and remind you before the party.",
   "Mở Lịch cưới": "Open Wedding calendar",
   "Mừng cưới bao nhiêu?": "How much should I give as a wedding gift?",
-  "🧧 Tùy lòng, không bắt buộc. Trong tiệc bấm 🧧, chọn 10, 20, 50, 100 hoặc 200 xu và một lời chúc, rồi [[Gửi phong bì]].": "🧧 It's up to you, not required. At the party tap 🧧, choose 10, 20, 50, 100 or 200 coins and a wish, then [[Send envelope]].",
-  "👛 Tiền lấy từ ví, chia đôi cho cô dâu chú rể. Mỗi đám mừng tối đa 500 xu. Cần có tài khoản.": "👛 The money comes from your wallet and is split between the bride and groom. Up to 500 coins per wedding. Requires an account.",
+  "🧧 Tùy lòng, không bắt buộc. Trong tiệc bấm 🧧, chọn nhanh 10, 20, 50, 100, 200 xu hoặc gõ số khác, chọn một lời chúc, rồi [[Gửi phong bì]].": "🧧 It's up to you, not required. At the party tap 🧧, pick 10, 20, 50, 100 or 200 coins or type another amount, choose a wish, then [[Send envelope]].",
+  "👛 Tiền lấy từ ví, chia đôi cho cô dâu chú rể. Mừng bao nhiêu, mấy phong bì cũng được, miễn ví còn đủ. Cần có tài khoản.": "👛 The money comes from your wallet and is split between the bride and groom. Give any amount, as many envelopes as you like, as long as your wallet has enough. Requires an account.",
   "Đổi tên thế nào?": "How do I change my name?",
   "✏️ Mở [[Hành trình]], chạm ảnh nhân vật, sửa “Tên của bạn” rồi bấm [[Lưu lại]]. Hoặc [[Cài đặt]] → [[Cách chơi]] → [[Hồ sơ]].": "✏️ Open [[Journey]], tap your character picture, edit “Your name”, then tap [[Save]]. Or [[Settings]] → [[How to play]] → [[Files]].",
   "💬 Tên trong Chat và Bạn bè là tên hiển thị đặt lúc tạo tài khoản; trong game chưa đổi được.": "💬 Your name in Chat and Friends is the display name set when you created your account; it can't be changed in the game yet.",
@@ -3608,6 +3615,10 @@
   "Qua màn": "Level cleared"
  },
  "patterns": {
+  "🧧 Gửi phong bì $1 xu": "🧧 Send a $1-coin envelope",
+  "Ví của bạn chỉ còn $1 xu.": "Your wallet only has $1 coins.",
+  "Ví của bạn chưa đủ $1 xu.": "Your wallet doesn't have $1 coins.",
+  "Đã gửi phong bì $1 xu mừng $2 & $3 🧧": "Sent a $1-coin envelope to $2 & $3 🧧",
   "Thi đạt chứng nhận “$1” ở Học kế toán rồi mới nhận việc ở đây nhé.": "Pass the “$1” certificate in Accounting school before taking a job here.",
   "Thi đạt chứng nhận “$1” ở Học kế toán rồi mới nhận việc ở đây.": "Pass the “$1” certificate in Accounting school before taking a job here.",
   "🔒 Thi đạt chứng nhận “$1” ở Học kế toán rồi mới nhận việc ở đây.": "🔒 Pass the “$1” certificate in Accounting school before taking a job here.",
