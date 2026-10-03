@@ -1,5 +1,6 @@
 {
  "strings": {
+  "🔥 Ngày x3: tổng kết cuối ngày giờ hiện rõ dòng thưởng x3 (thưởng vẫn luôn vào ví khi khép ngày).": "🔥 x3 days: the day summary now shows the x3 bonus line (it always reached your wallet at day close).",
   "CHỤP ẢNH": "TAKE PHOTOS",
   "Mai trời": "Tomorrow's sky",
   "Rủ bạn vô buồng chụp ảnh đi, khung Tết đẹp lắm!": "Bring a friend into the photo booth, the Tết frame is lovely!",
@@ -6261,6 +6262,7 @@
   "Mang về 32": "Takeaway 32"
  },
  "patterns": {
+  "🔥 Thưởng ngày x3: +$1 xu.": "🔥 x3 day bonus: +$1 coins.",
   "Thưởng việc của đội — $1": "Team job bonus — $1",
   "$1: $2 việc": "$1: $2 jobs",
   "+$1 xu thưởng": "+$1 bonus coins",

@@ -40,6 +40,7 @@ ENTRIES = (
         dict(emoji="🧧", text="Đám cưới: gửi phong bì thoải mái, có mức 500 xu. Mạng chập chờn cũng không bao giờ bị trừ tiền hai lần."),
         dict(emoji="🌱", text="Nông trại có phân bón lá thúc: luống rau lớn nhanh hơn."),
         dict(emoji="🌅", text="Cuối ngày có mục Ngày mai để chuẩn bị trước; nhiều nghề dễ nhìn, dễ bấm hơn trên điện thoại."),
+        dict(emoji="🔥", text="🔥 Ngày x3: tổng kết cuối ngày giờ hiện rõ dòng thưởng x3 (thưởng vẫn luôn vào ví khi khép ngày)."),
         dict(emoji="⭐", text="Đánh giá chỉ ghi “Đã trả lời” khi bạn trả lời thật. Nhận xét sau chuyến bay thì không cần trả lời."),
     )),
     dict(version="1.4.33", date="2026-10-03", items=(

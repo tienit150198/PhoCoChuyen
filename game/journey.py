@@ -566,6 +566,7 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
         notes.append(f'Lương {pay} xu đã về ví của bạn.' if times <= 1 else
                      f'Lương kế toán x{times}{" ngày lễ" if times == aj.X5 else ""}: {pay} xu đã về ví của bạn.')
     # 🔥 This career's x3 day (game/x3_week.py): the day's net once more, twice, into the wallet.
+    extra = 0
     if x3.on(career):
         extra = x3.bonus(int((result.get('summary') or {}).get('net') or 0))
         if extra > 0:
@@ -604,7 +605,7 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
     summary = result.get('summary')
     if isinstance(summary, dict):
         summary['journey'] = dict(life_day=day, living=cost['total'], upkeep=idle_total, salary=pay, wallet=j['wallet'],
-                                  **({'gift': WELCOME_GIFT} if day == 1 else {}))
+                                  **({'gift': WELCOME_GIFT} if day == 1 else {}), **({'x3': extra} if extra > 0 else {}))
     result.setdefault('effects', []).extend(notes)
 
 
