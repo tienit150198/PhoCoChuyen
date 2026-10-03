@@ -269,18 +269,22 @@ function cardHTML(it){
     return `<span class="tw-card-ico" aria-hidden="true">${L.emoji}</span><div class="tw-card-text"><b>${esc(L.name)}</b>${soft}</div>${act(`Vào ${icon('arrow',14)}`,L.action)}${x}`;}
   const m=meta(it.id),c=s.careers[it.id]||{},h=W.h;
   if(st.lock){const n=(W.env.api.content.journey?.unlock_chapter||{})[it.id];
-    return `<span class="tw-card-ico locked" aria-hidden="true">${esc(st.emoji)}</span><div class="tw-card-text"><b>🔒 ${n===J.chapter+1?'Sắp mở':'Còn ở phía trước'}</b><small>${esc(h.CATS[h.catOf(m)]||'')}</small></div>${x}`;}
+    // How it opens (feedback #140 "sao không mở tiệm được"): its chapter, reached by the goals in 📋 Danh sách.
+    const how=n?(n===J.chapter+1?`Mở ở chương ${n}: làm xong việc cần làm của chương này trong 📋 Danh sách.`:`Mở ở chương ${n}. Đang ở chương ${J.chapter||1}.`):'';
+    return `<span class="tw-card-ico locked" aria-hidden="true">${esc(st.emoji)}</span><div class="tw-card-text"><b>🔒 ${esc(m.place||m.short||st.name)}</b><small>${esc(how||(n===J.chapter+1?'Sắp mở':'Còn ở phía trước'))}</small></div>${n?act('📋 Danh sách','jrList',{},'cream'):''}${x}`;}
   const job=c.job||{},aj=h.acctPlace(W.env.api,it.id),tags=[],cur=it.id===s.current,ab=s.abandon?.preview;
   if(cur&&ab&&!ab.soft&&ab.career===it.id)tags.push(tag('⏳ Đang làm dở','amber'));
   if(st.x3)tags.push(tag(`🔥 Lời x${s.x3.x} hôm nay`,'hot'));
   if(cur&&c.promo?.rank>0&&c.promo.title)tags.push(tag(`🎖️ ${esc(c.promo.title)}`,'blue'));
-  if(st.paused)tags.push(tag('Tạm đóng','amber'));
+  if(st.paused)tags.push(tag('⏸ Đang tạm đóng','amber'));
   if(job.status==='offer')tags.push(tag('💌 Có thư mời','blue'));
   else if(job.required&&job.status!=='hired')tags.push(tag('Cần xin việc','amber'));
   if(!c.started&&J.story&&(W.env.api.content.journey?.unlock_chapter||{})[it.id]===J.chapter&&J.chapter>1)tags.push(tag('Mới mở','green'));
   if(guide().arrow===it.id)tags.push(tag('Hợp người mới','green'));
-  const why=aj&&!aj.ok?`<small class="tw-why">🔒 ${esc(aj.why)}</small>`:'';
-  const button=aj&&!aj.ok?act(`Đi học ${icon('arrow',14)}`,'accountingSchool',{},'cream'):st.paused?act('Mở lại','jrReopen',{career:it.id},'cream'):
+  const fee=W.env.api.content.journey?.reopen_fee||0;
+  // ⏸ A place the player closed (Tạm đóng) still has its sign: say why "Vào làm" is not there and what reopening costs.
+  const why=aj&&!aj.ok?`<small class="tw-why">🔒 ${esc(aj.why)}</small>`:st.paused?`<small class="tw-why">Bạn đã tạm đóng nơi này. Mở lại tốn ${fmt(fee)} xu (quỹ tiệm trả trước, thiếu thì lấy từ ví) rồi vào làm ngay.</small>`:'';
+  const button=aj&&!aj.ok?act(`Đi học ${icon('arrow',14)}`,'accountingSchool',{},'cream'):st.paused?act(`Mở lại · ${fmt(fee)} xu`,'jrReopen',{career:it.id,go:1},'primary'):
     act(`${cur&&c.started?'Vào tiếp':'Vào làm'} ${icon('arrow',14)}`,'choose',{career:it.id});
   return `<span class="tw-card-ico" aria-hidden="true">${esc(st.emoji)}</span><div class="tw-card-text"><b>${esc(m.place||m.short)}</b><small>${esc(m.short||'')}</small>${why}${tags.length?`<div class="tw-tags">${tags.join('')}</div>`:''}</div>${button}${x}`;
 }
