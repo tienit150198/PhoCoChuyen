@@ -720,16 +720,21 @@ OLD_LOAD = ('import json,sys;from game.engine import validate_state,migrate_stat
             's=migrate_state(json.load(sys.stdin));validate_state(s);print(json.dumps(s))')
 
 
+# Careers this release adds next to the shop (the base tree knows none of them): a rollback strips them all.
+ADDED = ('pho', 'com')
+
+
 def rollback_strip(s):
     """What a rollback to a tree without the shop needs: the career block gone, the id and the shop's NPCs and
-    story beats out of every list and key."""
+    story beats out of every list and key (the same for every career added with it)."""
     s = copy.deepcopy(s)
-    s['careers'].pop('pho', None)
-    if s.get('current') == 'pho':
+    for cid in ADDED:
+        s['careers'].pop(cid, None)
+    if s.get('current') in ADDED:
         s['current'] = next(iter(s['careers']))
 
     def ours(v):
-        return isinstance(v, str) and (v == 'pho' or v.startswith('pho_'))
+        return isinstance(v, str) and any(v == cid or v.startswith(cid + '_') for cid in ADDED)
 
     def scrub(o):
         if isinstance(o, dict):
@@ -799,7 +804,7 @@ class OldTree(Base):
         validate_state(again)
         self.assertEqual(json.dumps(again['careers']['pho'], sort_keys=True), json.dumps(initial_career('pho'), sort_keys=True))
         for cid in again['careers']:
-            if cid != 'pho':
+            if cid not in ADDED:
                 self.assertEqual(again['careers'][cid]['tasks'], self.j.state['careers'][cid]['tasks'], cid)
 
 

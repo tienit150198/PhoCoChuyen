@@ -1,0 +1,84 @@
+/* Cơm tấm Dì Bảy — scoped styles (.career-job.ct), over the street kit (street_kit.css).
+   Its own look: broken-rice cream, caramel sườn, charcoal ember on the grill gauge, a warm glass case.
+   Tints are mixed from the theme surface so light and dark both read. */
+.career-job.ct{--sk-accent:#c8742c;--sk-accent-2:#e6a865;--ct-rice:#f6ead2;--ct-ember:#d9542b;--ct-raw:#e9a0a8;--ct-ok:#5e9c4c;--ct-xem:#d79b2e;--ct-khet:#3b2a24;
+  --ct-tint:color-mix(in srgb,var(--sk-accent) 10%,var(--sk-surface))}
+
+/* ---------- the stall strip: two pots and the bowl of nước mắm */
+.career-job.ct .ct-stall{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:10px}
+.career-job.ct .ct-pot{display:grid;gap:2px;align-content:start;padding:6px 8px;border-radius:var(--sk-rs);background:var(--ct-tint);border:1px solid var(--sk-line);min-width:0}
+.career-job.ct .ct-pot>span[aria-hidden]{font-size:20px;line-height:1}
+.career-job.ct .ct-pot b{font-size:13px;line-height:1.2}
+.career-job.ct .ct-pot small{font-size:12px;color:var(--sk-muted)}
+.career-job.ct .ct-pot.cooking{border-style:dashed;border-color:var(--sk-accent-2)}
+.career-job.ct .ct-pot.empty{opacity:.7}
+.career-job.ct .ct-bad{color:var(--sk-bad)!important;font-weight:700}
+
+/* ---------- the order */
+.career-job.ct .ct-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0}
+.career-job.ct .ct-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:12px;background:var(--sk-surface-2);border:1px solid var(--sk-line);font-size:14px;line-height:1.3}
+.career-job.ct .ct-chip.ok{border-color:var(--sk-good);color:var(--sk-good);font-weight:700}
+.career-job.ct .ct-tags{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+
+/* ---------- the counter and the plate being made */
+.career-job.ct .ct-plates{list-style:none;margin:0 0 10px;padding:0;display:grid;gap:6px}
+.career-job.ct .ct-plate{display:flex;align-items:flex-start;gap:8px;padding:6px 8px;border-radius:12px;border:1px dashed var(--sk-line)}
+.career-job.ct .ct-plate.now{border-style:solid;border-color:var(--sk-accent);background:var(--ct-tint)}
+.career-job.ct .ct-v{font-size:26px;line-height:1}
+.career-job.ct .ct-plate-body{display:grid;gap:2px;min-width:0}
+.career-job.ct .ct-plate-body small{color:var(--sk-muted)}
+.career-job.ct .ct-its{display:flex;flex-wrap:wrap;gap:4px}
+.career-job.ct .ct-it{padding:1px 8px;border-radius:99px;background:var(--sk-surface-2);font-size:13px}
+.career-job.ct .ct-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0}
+.career-job.ct .ct-row .btn{min-height:44px}
+.career-job.ct .ct-make,.career-job.ct .ct-grill,.career-job.ct .ct-refill,.career-job.ct .ct-shop{margin-top:10px}
+.career-job.ct .ct-case{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
+.career-job.ct .ct-case .sk-tile{min-height:76px}
+.career-job.ct .ct-cook{display:grid;gap:4px;margin-bottom:8px}
+.career-job.ct .ct-cook .ct-pot{max-width:220px}
+
+/* ---------- the grill and its gauge */
+.career-job.ct .ct-gauge{display:grid;gap:4px;margin:6px 0}
+.career-job.ct .ct-track{position:relative;display:flex;height:22px;border-radius:99px;overflow:hidden;border:1px solid var(--sk-line)}
+.career-job.ct .ct-z{display:block;height:100%}
+.career-job.ct .ct-z.raw{background:var(--ct-raw)}
+.career-job.ct .ct-z.ok{background:var(--ct-ok)}
+.career-job.ct .ct-z.xem{background:var(--ct-xem)}
+.career-job.ct .ct-z.khet{flex:1;background:var(--ct-khet)}
+.career-job.ct .ct-needle{position:absolute;inset:0;pointer-events:none;will-change:transform}
+.career-job.ct .ct-needle::before{content:'';position:absolute;left:-2px;top:-2px;bottom:-2px;width:4px;border-radius:2px;background:var(--sk-ink);box-shadow:0 0 0 2px var(--sk-surface)}
+.career-job.ct .ct-gauge-label{font-variant-numeric:tabular-nums;font-weight:600}
+.career-job.ct .ct-gauge.ready .ct-gauge-label{color:var(--ct-ok)}
+.career-job.ct .ct-gauge.over .ct-gauge-label{color:var(--sk-bad)}
+.career-job.ct .ct-stop{min-height:48px}
+.career-job.ct .ct-rack{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.career-job.ct .ct-rack li{display:inline-flex;align-items:center;gap:2px}
+.career-job.ct .ct-pc{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:4px 10px;border-radius:12px;border:1px solid var(--sk-line);background:var(--sk-surface-2)}
+.career-job.ct .ct-pc small{font-size:12px}
+.career-job.ct .ct-pc.q-ok{border-color:var(--ct-ok)}
+.career-job.ct .ct-pc.q-song{border-color:var(--ct-raw);color:var(--sk-bad)}
+.career-job.ct .ct-pc.q-xem{border-color:var(--ct-xem)}
+.career-job.ct .ct-pc.q-khet{border-color:var(--ct-khet);color:var(--sk-bad)}
+.career-job.ct .ct-toss{min-width:44px;min-height:44px}
+.career-job.ct h4 small{font-weight:400;color:var(--sk-muted)}
+
+/* ---------- the glass case between customers */
+.career-job.ct .ct-trays{list-style:none;margin:0 0 6px;padding:0;display:grid;gap:6px}
+.career-job.ct .ct-trays li{display:grid;grid-template-columns:28px minmax(0,1fr) 90px auto;gap:6px;align-items:center}
+.career-job.ct .ct-trays li>span:first-child{font-size:22px}
+.career-job.ct .ct-trays small{color:var(--sk-muted)}
+
+/* ---------- the evening */
+.ct-sum .ct-plan{display:grid;gap:6px}
+.ct-sum .ct-tomorrow{margin:0}
+.ct-sum .ct-tomorrow small{display:block;color:var(--muted,#766c60)}
+.ct-sum .ct-plan-list{margin:0;padding-left:18px;display:grid;gap:4px}
+.ct-sum .ct-plan-go{justify-self:start;min-height:44px}
+.ct-sum .ct-sum-more{margin-top:8px}
+
+@media (max-width:420px){
+  .career-job.ct .ct-stall{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+  .career-job.ct .ct-trays li{grid-template-columns:28px minmax(0,1fr) auto}
+  .career-job.ct .ct-trays li .sk-meter,.career-job.ct .ct-trays li small{grid-column:2}
+}
+@media (prefers-reduced-motion:reduce){.career-job.ct .ct-needle{transition:none}}

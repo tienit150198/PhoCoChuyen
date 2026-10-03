@@ -60,6 +60,7 @@ STALL = {
     'boba': dict(name='Ly trà sữa của tiệm', emoji='🧋', price=3, tags=('sweet',)),
     'ice_cream': dict(name='Hộp kem dừa của tiệm', emoji='🍨', price=4, tags=('sweet',)),
     'pho': dict(name='Túi phở mang về của quán', emoji='🍜', price=4, tags=('food',)),
+    'com': dict(name='Hộp cơm tấm sườn của quán', emoji='🍚', price=4, tags=('food',)),
     'nail': dict(name='Chậu sen đá nhỏ trên bàn nail', emoji='🪴', price=4, tags=('flower',)),
 }
 

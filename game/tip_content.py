@@ -35,6 +35,7 @@ NORMS = {
     'garbage': dict(rate=.08, cash=0, lo=0, hi=0, bill=25),     # residents thank the crew with a drink, never money
     'homemaker': dict(rate=.10, cash=0, lo=0, hi=0, bill=18),   # the family thanks with food from the kitchen, never money
     'ice_cream': dict(rate=.12, cash=.65, lo=1, hi=4, bill=10),  # a cone or a cup: the coins are the tip
+    'com': dict(rate=.08, cash=.60, lo=1, hi=3, bill=14),        # a plate of rice: the small change is the tip
     'nail': dict(rate=.18, cash=.70, lo=1, hi=5, bill=15),       # a regular rounds up for a neat set
     'pho': dict(rate=.10, cash=.60, lo=1, hi=4, bill=10),        # a bowl of phở: the small change stays on the table
     'pagoda': dict(rate=.06, cash=0, lo=0, hi=0, bill=8),       # visitors thank with fruit or tea, never money
@@ -188,6 +189,8 @@ CAREER_LINES = {
                   'Bà với các cháu quý lắm.'),
     'nail': ('Mười móng đều tăm tắp, y ảnh mẫu.', 'Dụng cụ hấp sạch, dũa mới bóc trước mặt.', 'Gel bóng, hai tuần chưa bong.',
              'Nhẹ tay, không đau chút nào.'),
+    'com': ('Cơm dẻo, sườn thơm mùi than.', 'Nước mắm vừa miệng, chan là mê.', 'Nhớ cả lời dặn ăn chay của mẹ tôi.',
+            'Dĩa cơm đầy đặn, xới nhanh tay.'),
     'ice_cream': ('Viên kem tròn xoe, đủ gam luôn.', 'Kem lạnh mịn, không chảy giọt nào.', 'Nhớ cả lời dặn dị ứng của bé.',
                   'Múc nhanh, cười tươi, bé nhà mê lắm.'),
     'pho': ('Nước dùng trong, ngọt xương.', 'Tái chín hồng, bánh tơi mềm.', 'Nhớ cả lời dặn không mì chính.',
@@ -233,6 +236,7 @@ GIFTS = {
     'drain': (('☕', 'ly cà phê sữa đá'), ('🍲', 'tô bún bò nóng'), ('💌', 'tấm thiệp cảm ơn')),
     'homemaker': (('🥒', 'hũ dưa cải bà Lành muối'), ('🎨', 'bức tranh bé Su vẽ'), ('🍊', 'túi cam quê anh Dũng')),
     'nail': (('🌸', 'chậu sen đá nhỏ để bàn làm móng'), ('🍯', 'hũ mứt gừng nhà làm'), ('💌', 'tấm thiệp cảm ơn vẽ bàn tay')),
+    'com': (('🍋', 'bịch chanh nhà trồng của chú Bình'), ('🌿', 'bó húng quế bà Sương trồng'), ('🥬', 'bó rau muống non của chị Lụa')),
     'ice_cream': (('🎨', 'bức tranh cây kem bé vẽ bằng bút sáp'), ('🍬', 'nắm kẹo me trong túi áo học sinh'), ('💌', 'tấm thiệp cảm ơn của lớp 2A')),
     'pho': (('🍙', 'gói xôi xéo chị Nguyệt để phần'), ('🎨', 'bức tranh nồi phở bé Bống vẽ'), ('🫙', 'chai tương đen anh Sáu mang từ Sài Gòn')),
     'pagoda': (('🍊', 'túi cam Phật tử biếu'), ('🍵', 'gói trà mạn ông Bảy gửi'), ('💌', 'tấm thiệp bé Na vẽ quả chuông')),

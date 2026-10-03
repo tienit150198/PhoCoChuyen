@@ -16,7 +16,7 @@ BANNED = ('NPC', 'trong game', 'của game', 'trò chơi', 'mô phỏng', 'giả
 CRIT = {
     'milk_tea': ('accuracy', 'speed', 'attitude'), 'cafe_bakery': ('accuracy', 'taste', 'presentation'),
     'restaurant': ('broth', 'taste', 'hygiene', 'speed'), 'tra_da': ('tea', 'clean', 'manner', 'spot'),
-    'ice_cream': ('order', 'scoop', 'cold', 'clean', 'speed'), 'pho': ('order', 'broth', 'banh', 'clean', 'speed'), 'nail': ('service', 'finish', 'clean', 'gentle', 'speed'),
+    'ice_cream': ('order', 'scoop', 'cold', 'clean', 'speed'), 'pho': ('order', 'broth', 'banh', 'clean', 'speed'), 'com': ('order', 'rice', 'taste', 'care', 'speed'), 'nail': ('service', 'finish', 'clean', 'gentle', 'speed'),
     'grocery': ('accuracy', 'price', 'dates', 'speed'), 'clothing': ('accuracy', 'care', 'manner', 'style'), 'pet_shop': ('ask', 'bill'),
     'florist': ('care', 'fresh'), 'mother_baby': ('accuracy', 'presentation', 'speed'), 'pharmacy': ('accuracy', 'care', 'speed'),
     'salon': ('attitude', 'care', 'speed'), 'repair': ('diagnosis', 'honesty', 'speed'), 'pet_care': ('coat', 'gentle', 'calm'),
