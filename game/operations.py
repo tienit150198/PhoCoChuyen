@@ -184,6 +184,12 @@ def _attendance(c:dict, employee:dict) -> None:
     a.setdefault(employee['id'],dict(name=employee['name'],wage=employee['wage'],role=employee['role']))
 
 
+def paused(o:dict, e:dict) -> bool:
+    """A real (not practice) incident of this employee is still open: they stop work until it is closed."""
+    i=o['incident']
+    return bool(i and not i['practice'] and i['status']!='resolved' and i['employee']==e['id'])
+
+
 def _payroll(c:dict, day:int, staff_id:str|None=None) -> list[dict]:
     created=[]
     for sid,a in c['ops']['attendance'].get(str(day),{}).items():
@@ -208,7 +214,10 @@ def on_close(s:dict,c:dict,career:str) -> dict:
     o=c['ops'];f=o['finance'];eng=_core();day=c['day']
     eng.need(f['last_closed']!=day,'Ngày này đã được kết sổ.')
     invoices=_payroll(c,day)
-    workers=len(o['attendance'].get(str(day),{}))
+    present=o['attendance'].get(str(day),{});workers=len(present)
+    # The day's summary names what each hired person did: jobs, no shift today, or paused by an open incident.
+    team=[dict(name=e['name'],jobs=present[e['id']].get('jobs',0) if e['id'] in present else 0,shift=e['id'] in present,paused=paused(o,e))
+          for e in o['staff'] if e['status']=='hired']
     utility=RULES['utility_base']+workers+(1 if 'camera' in o['security']['items'] else 0)
     bill(c,f'utility-{day}','utility',f'Điện nước · ngày {day}',utility,day+1,f'day-{day}')
     if o['security']['insurance']:
@@ -228,7 +237,7 @@ def on_close(s:dict,c:dict,career:str) -> dict:
     f['last_closed']=day
     o['attendance']={k:v for k,v in o['attendance'].items() if int(k)>=day-14}
     return dict(wages=sum(b['amount'] for b in invoices),utilities=utility,rent_accrued=PROPERTY_INDEX[o['property']['tier']]['daily_rent'],
-                period=period,unpaid=sum(b['amount'] for b in f['bills'] if b['status']=='unpaid'))
+                period=period,unpaid=sum(b['amount'] for b in f['bills'] if b['status']=='unpaid'),staff=team)
 
 
 def _employee(c:dict,sid:Any) -> dict:
@@ -376,12 +385,14 @@ def tick(s:dict,c:dict,career:str,action:str) -> list[str]:
     o['work_ticks']+=1
     for e in o['staff']:
         if e['status']!='hired' or not e['on_shift']:continue
+        # Their own open incident pauses them until it is closed. Checked before the shift is recorded: a paused
+        # employee used to be logged present (wage billed, "ca thực làm") and grow tired for days doing nothing.
+        if paused(o,e):continue
         if e['rest_until']>c['turn']:
             e['fatigue']=max(0,e['fatigue']-4);continue
         _attendance(c,e);e['fatigue']=min(100,e['fatigue']+1)
         if e['fatigue']>=90:
             e['rest_until']=c['turn']+4;notes.append(e['name']+' đang nghỉ một chút rồi quay lại.');continue
-        if o['incident'] and not o['incident']['practice'] and o['incident']['status']!='resolved' and o['incident']['employee']==e['id']:continue
         e['progress']+=1
         interval=3 if e['speed']>=80 else 4
         if e['progress']<interval:continue
@@ -389,6 +400,7 @@ def tick(s:dict,c:dict,career:str,action:str) -> list[str]:
         note=_assist(s,c,career,e)
         if note:
             e['jobs']+=1;e['last_work']=note
+            row=o['attendance'][str(c['day'])][e['id']];row['jobs']=row.get('jobs',0)+1  # today's count (optional key)
             eng.log(s,c,'staff_work',e['name']+': '+note,ref=e['id'])
             if e['jobs']%4==1:notes.append(e['name']+': '+note)
             risk=max(3,33-e['precision']//3+e['fatigue']//6)
@@ -397,7 +409,7 @@ def tick(s:dict,c:dict,career:str,action:str) -> list[str]:
                 choices=['accident','equipment','wrong_item']
                 kind='damage' if e['morale']<45 and _random(c,5)==0 else choices[_random(c,3)]
                 spawn_incident(s,c,career,kind,False,e)
-                notes.append('Có sự cố của '+e['name']+'. Mở Sổ tiệm → Nhân viên để kiểm tra.')
+                notes.append('Có sự cố của '+e['name']+'. Bạn ấy tạm dừng việc tới khi xử lý xong: mở Sổ tiệm → Nhân viên.')
     incident=o['incident']
     if incident and incident['status']=='repairing' and c['turn']>=incident['ready_turn']:
         incident['status']='ready';notes.append('Việc sửa đã về kết quả. Hãy kiểm và xác nhận trong Sổ tiệm.')
@@ -667,6 +679,7 @@ def validate(c:dict,career:str) -> None:
         need(isinstance(day,str) and day.isdigit() and isinstance(rows,dict),'Bảng ca sai cấu trúc.')
         for sid,row in rows.items():
             need(sid in CANDIDATE_INDEX and CANDIDATE_INDEX[sid]['career']==career,'Ca sai nhân viên.');need(isinstance(row,dict) and row.get('wage')==CANDIDATE_INDEX[sid]['wage'] and row.get('name')==CANDIDATE_INDEX[sid]['name'] and row.get('role') in ROLES[career],'Dữ kiện ca sai.')
+            if 'jobs' in row:integer(row['jobs'],0,10**6)  # 1.4.31+: jobs done that day; absent in older saves
     need(isinstance(o['equipment'],dict),'Thiếu trạng thái dụng cụ.');integer(o['equipment'].get('condition'),0,100);txt(o['equipment'].get('label'),100)
     f=o['finance'];need(isinstance(f,dict) and set(template['finance'])<=set(f),'Sổ thu chi thiếu trường.')
     integer(f['opening_balance'],-10**12,10**12)
