@@ -234,7 +234,7 @@ function signBoard(c,it,t,s){
   const y=it.G-it.h+(it.kind==='cart'?-6:14),w=Math.min(it.w-10,150),x=it.cx-w/2;
   R(c,x,y,w,30,t.sign,10,s.lock?t.trim:t.dark,2);
   if(s.lock){c.save();c.globalAlpha=.45;T(c,s.emoji,it.cx+12,y+15,16,INK,400);c.restore();T(c,'🔒',it.cx-12,y+15,15,INK,400);return;}
-  const text=`${s.emoji} ${s.name}`;T(c,text,it.cx,y+15.5,fit(c,text,w-12,15,800),t.ink,800);
+  const text=`${s.emoji} ${tr(s.name)}`;T(c,text,it.cx,y+15.5,fit(c,text,w-12,15,800),t.ink,800);   // the name alone translated ("Mẹ & bé" whole, not by its pieces)
   if(s.x3){R(c,x+w-30,y-12,38,20,'#e8572d',10,'#ffffff',1.5);T(c,'🔥x3',x+w-11,y-2,11,'#ffffff',900);}
 }
 function emptyLot(c,it){
