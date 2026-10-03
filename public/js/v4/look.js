@@ -223,12 +223,14 @@ export function paintAcc(c,F,K=CANVAS){
     case'tui_cheo':K.L(c,-18,-50,15,-25,k.d,3);K.R(c,9,-31,17,13,k.c,4);K.R(c,12,-29,11,3,k.l,1.5);break;
   }
 }
-/** The whole player as BobaWorld draws it, with the work layer off (the wardrobe mirror). */
-export function paintPlayer(c,F,K=SVG){
+/** The whole player as BobaWorld draws it, with the work layer off (the wardrobe mirror). `arms` (optional, the fair's
+ * photobooth poses): {l, r} hand points [x, y]; a side given gets a sleeve from the shoulder to that hand instead of the
+ * hand resting at the side (drawn last, over the face and hair). */
+export function paintPlayer(c,F,K=SVG,arms=null){
   const sk=F.skin,male=F.g==='male';
   K.E(c,0,0,26,8,'#81644823');
   paintLegs(c,F,0,K);paintHairBack(c,F,K);
-  K.R(c,-23,-52,46,36,F.topC||F.classic,15);K.E(c,-25,-36,8,14,sk.hand);K.E(c,25,-36,8,14,sk.hand);
+  K.R(c,-23,-52,46,36,F.topC||F.classic,15);if(!arms?.l)K.E(c,-25,-36,8,14,sk.hand);if(!arms?.r)K.E(c,25,-36,8,14,sk.hand);
   paintTop(c,F,K);
   K.E(c,0,-84,33,35,F.hair);K.E(c,-29,-71,5,8,sk.ear);K.E(c,29,-71,5,8,sk.ear);K.E(c,0,-77,29,28,sk.face);
   K.path(c,F.short?FRONT.short:FRONT.soft,F.hair);
@@ -237,6 +239,7 @@ export function paintPlayer(c,F,K=SVG){
   if(male){K.L(c,-16,-89,-6,-90,F.hair,2.4);K.L(c,6,-90,16,-89,F.hair,2.4);}
   K.stroke(c,'M4 -66A4 4 0 0 1 -4 -66','#b17c69',1.6);
   paintHairFront(c,F,K);paintAcc(c,F,K);
+  if(arms)for(const [s,p] of [[-1,arms.l],[1,arms.r]])if(p){K.L(c,s*20,-44,p[0],p[1],F.topC||F.classic,11);K.E(c,p[0],p[1],7,7.5,sk.hand);}
 }
 /** Full-body SVG of a look (the wardrobe mirror and the item tiles). */
 export function figureSVG(Lk,gender,{w=120,h=170,label='',box='-50 -146 100 154'}={}){
