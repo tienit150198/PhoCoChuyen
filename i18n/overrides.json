@@ -3633,6 +3633,7 @@
   "Qua màn": "Level cleared"
  },
  "patterns": {
+  "🔥 Thưởng ngày x3: +$1 xu.": "🔥 x3 day bonus: +$1 coins.",
   "Thưởng việc của đội — $1": "Team job bonus — $1",
   "$1: $2 việc": "$1: $2 jobs",
   "+$1 xu thưởng": "+$1 bonus coins",

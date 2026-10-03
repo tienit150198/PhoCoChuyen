@@ -128,6 +128,14 @@ class ClosedDay(unittest.TestCase):
         self.assertEqual(summary['net'], 140)
         self.assertEqual(rows, [280])
 
+    def test_the_day_summary_shows_the_bonus(self):
+        # Owner 03/10: "gom rác thấy k có thưởng gì cả": the bonus was paid but the summary card never listed it.
+        summary, rows = self.day('grocery', 50)
+        self.assertEqual(rows, [100])
+        self.assertEqual(summary['journey']['x3'], 100)
+        summary, rows = self.day('grocery', 0)
+        self.assertNotIn('x3', summary['journey'])
+
 
 if __name__ == '__main__':
     unittest.main()
