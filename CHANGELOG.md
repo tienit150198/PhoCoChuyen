@@ -1,3 +1,9 @@
+# v1.6.2 — 🛒 quán quá giờ đóng cửa không giữ chân, 🏡 mua nhà không tự dọn, 📖 hướng dẫn 1.6
+
+- `game/abandon.py`: chỗ làm đã quá giờ đóng cửa thì đổi chỗ không hỏi, không phạt, việc dở giữ nguyên (feedback #140: Tạp hóa 21:30 dở ca làm "Ở lại làm nốt" kéo về mãi). Bản xem trước/kết quả thêm khóa tùy chọn `closing`.
+- Nhà: mua nhà khi đang ở (nhà mình hoặc nhà chung) không tự dọn; thẻ "Nhà chung với …" và nút "💞 Về ở chung" (`jr_home_move` `to=shared`, feedback #137). Bản đồ phố: tiệm tạm đóng kéo cửa, nhãn ⏸, nút Mở lại vào làm luôn.
+- Hướng dẫn: chuyển khoản (số lấy từ `bank_xfer.py`), bản đồ phố, đi xe, chụp ảnh hội chợ, tự lái/tự bay/nông trại.
+
 # v1.6.1 — ✈️ phi công tự bay, 📸 buồng chụp một màn, 💸 chuyển khoản cần 1 ngày, 🎁 admin tặng xu
 
 - Phi công tự bay góc nhìn thứ nhất (`public/js/careers/pilot_fly.js`), trường `flown` tùy chọn; ⏩ Bay nhanh làm đường lui.
