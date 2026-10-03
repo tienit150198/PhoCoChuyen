@@ -318,7 +318,7 @@ NOUN = {'milk_tea': 'ly trà', 'restaurant': 'tô mì', 'cafe_bakery': 'ly cà p
         'farm': 'mẻ rau', 'delivery': 'đơn giao', 'homestay': 'phòng', 'pet_care': 'bé cưng', 'salon': 'mái tóc', 'teacher': 'buổi học',
         'tour_guide': 'chuyến đi', 'mother_baby': 'món quà', 'pharmacy': 'đơn thuốc', 'clothing': 'bộ đồ', 'tra_da': 'cốc trà đá', 'pet_shop': 'món hàng',
         'fruit': 'ký trái cây', 'garbage': 'chuyến thu gom', 'drain': 'đường ống', 'homemaker': 'việc nhà', 'ice_cream': 'ly kem', 'pho': 'tô phở', 'com': 'dĩa cơm',
-        'nail': 'bộ móng', 'pagoda': 'việc chùa', 'photobooth': 'dải ảnh'}
+        'nail': 'bộ móng', 'pagoda': 'việc chùa', 'photobooth': 'dải ảnh', 'babysitter': 'buổi trông bé'}
 BASE_NAME = {'milk': 'trà sữa', 'black': 'hồng trà', 'matcha': 'matcha', 'green': 'lục trà', 'oolong': 'olong', 'thai': 'trà Thái'}
 SHORT = {'pos': ['ok', 'Ổn.', 'Được nha.', 'Ngon.', '10 điểm.', 'Ok áp 👌', 'Sẽ quay lại.', 'Không chê.', 'Đỉnh.', 'Ưng.', 'Good.', 'Được đấy.']}
 EMOJI = {'pos': ['{e}👍✨', '😍{e}😍', '🔥🔥🔥', '💯{e}', '🥰{e}🥰', '👏👏👏', '{e}{e}{e}', '🤤{e}', '⭐⭐⭐⭐⭐', '😋👌']}

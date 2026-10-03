@@ -55,6 +55,7 @@ HOURS = {
     'pho': (5 * 60 + 30, 14 * 60),      # breakfast from 5:30, the pot runs low after lunch
     'pagoda': (5 * 60, 19 * 60),        # the gate opens after morning chanting, closes after the evening one
     'photobooth': (11 * 60, 22 * 60),   # after lunch, the school run at 17:00, the night market
+    'babysitter': (7 * 60 + 30, 18 * 60),   # the child is dropped off at 7:30 and picked up at 18:00
 }
 EARLY = 30  # goods due after closing wait at the door this many minutes before the next opening
 # How much later than its window a late delivery comes (minutes), by supplier kind; a

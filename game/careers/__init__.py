@@ -22,6 +22,7 @@ ORDER = (
     'pho',                         # bán phở: bác Lâm's phở shop under the old banyan, the broth pot on all day
     'com',                         # bán cơm: dì Bảy's broken-rice stall at the mouth of the market
     'photobooth',                  # photobooth: chị Lam's Tiệm ảnh Tách Tách by the night market
+    'babysitter',                  # bảo mẫu: a day minding one family's child for cô Tâm's sitting service
     'pilot', 'flight_attendant',
     'hr_admin', 'secretary', 'it_helpdesk',   # Công ty CP Cánh Diều: HR, the director's secretary, IT helpdesk
 )
