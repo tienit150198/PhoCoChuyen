@@ -9,8 +9,10 @@
  *   arithmetic: + - × * x / : ( )
  *
  * `unit` is the unit shown beside the box (st.unit / f.unit; '' or 'đ' for đồng). A bare number keeps the box's
- * meaning: in a box in triệu, "10" is 10 and so is "10 triệu" or "10.000.000đ". Every number carries its own unit:
- * "6 + 4 triệu" is 6 + 4 triệu (= 10 in a triệu box, 4.000.006 in an đồng box). The box's own unit word ("ngày",
+ * meaning: in a box in triệu, "10" is 10 and so is "10 triệu" or "10.000.000đ". One unit written at the very end,
+ * with every other number bare, scales the whole sum ("6 + 4 triệu" = 10 triệu, "(2+3) triệu" = 5 triệu, as the TT99
+ * questions write it), unless a bare number is already as large as that unit ("1.500.000 + 2tr" = 3.500.000);
+ * otherwise each number keeps its own unit ("100k + 5 triệu", "2tr + 5"). The box's own unit word ("ngày",
  * "xu", "kg"…) may follow a number too. The result must be a whole number of the box's unit; the server still checks
  * it as before. Exact arithmetic on fractions (BigInt): no floating error, and no eval/Function (CSP). */
 
@@ -59,6 +61,14 @@ function tokens(src,unit){
   const base=baseOf(unit),out=[];let i=0;
   const letters=at=>/^[a-z]+/.exec(body.slice(at))?.[0]||'';
   const skip=()=>{while(body[i]===' ')i++;};
+  /** A unit word at i (k, triệu đồng, đ, the box's own word…) → its factor in the box's unit, consumed; else null. */
+  const unitAt=()=>{
+    const at=i;skip();const w=letters(i);
+    if(MAG[w]){i+=w.length;const at2=i;skip();const cw=letters(i);if(CUR.includes(cw)||(word&&cw===word))i+=cw.length;else i=at2;return div(q(B(MAG[w])),q(base));}
+    if(CUR.includes(w)){i+=w.length;return div(q(ONE),q(base));}
+    if(word&&w===word){i+=w.length;return q(ONE);}
+    i=at;return null;
+  };
   while(i<body.length){
     const c=body[i];
     if(c===' '){i++;continue;}
@@ -66,36 +76,53 @@ function tokens(src,unit){
       const m=/^\d+(?:[., ]\d+)*/.exec(body.slice(i));
       let raw=m[0];while(/[ ]\d+$/.test(raw)&&!/^\d{3}$/.test(raw.slice(raw.lastIndexOf(' ')+1)))raw=raw.slice(0,raw.lastIndexOf(' '));
       i+=raw.length;
-      let v=numeral(raw);if(!v)throw new Error('number');
-      const at=i;skip();
-      const w=letters(i);
-      if(MAG[w]){
-        i+=w.length;let f=q(B(MAG[w]));
-        const tail=/^\d+/.exec(body.slice(i))?.[0];   // 1tr5 = 1,5 triệu
-        if(tail&&!/[., ]/.test(raw)){v=add(v,q(B(tail),TEN**B(tail.length)));i+=tail.length;}
-        skip();const cw=letters(i);if(CUR.includes(cw))i+=cw.length;else if(cw===word&&word)i+=cw.length;
-        v=div(mul(v,f),q(base));
-      }else if(CUR.includes(w)){i+=w.length;v=div(v,q(base));}
-      else if(word&&w===word)i+=w.length;
-      else i=at;
+      let lit=numeral(raw);if(!lit)throw new Error('number');
+      const tok={t:'n'};
+      const at=i;skip();const w=letters(i),after=i+w.length;i=at;
+      const f=unitAt();
+      const tail=f&&MAG[w]&&i===after?/^\d+/.exec(body.slice(i))?.[0]:null;   // 1tr5 = 1,5 triệu
+      if(tail&&!/[., ]/.test(raw)){
+        lit=add(lit,q(B(tail),TEN**B(tail.length)));i+=tail.length;tok.tail=true;
+        const at2=i;skip();if(CUR.includes(letters(i)))i+=letters(i).length;else i=at2;   // "1tr5 đồng"
+      }
       skip();
-      while(body[i]==='%'){i++;if(own!=='%')v=div(v,q(B(100)));skip();}
+      let pct=false;
+      while(body[i]==='%'){i++;if(own!=='%'){lit=div(lit,q(B(100)));pct=true;}skip();}
       if(/\d/.test(body[i]||''))throw new Error('number');
-      out.push({t:'n',v});continue;
+      Object.assign(tok,{bare:lit,v:f?mul(lit,f):lit,f,pct});
+      out.push(tok);continue;
     }
-    if('+-*/()'.includes(c)){out.push({t:c});i++;continue;}
+    if(c===')'){out.push({t:')'});i++;const f=unitAt();if(f)out.push({t:'u',f});continue;}   // (2+3) triệu
+    if('+-*/('.includes(c)){out.push({t:c});i++;continue;}
     if(c==='x'&&!/[a-z]/.test(body[i+1]||'')){out.push({t:'*'});i++;continue;}
     throw new Error('char');
   }
   return out;
 }
 
+/** One unit written at the very end with every other number bare scales the whole sum, the way the TT99 questions
+ *  write it: "6 + 4 triệu" = 10 triệu, "(2+3) triệu" = 5 triệu. Otherwise every number keeps its own unit
+ *  ("100k + 5 triệu", "2tr + 5"); a unit after a bracket anywhere else is not read. */
+function scaled(list){
+  const marked=list.filter(x=>x.f||x.t==='u'),last=list[list.length-1];
+  // …unless a bare number is already as large as that unit: "1.500.000 + 2tr" writes đồng, so it stays 3.500.000
+  // (a unit after a bracket, "(1.000 + 5) k", always covers the bracket).
+  const below=(x,f)=>(x.n<ZERO?-x.n:x.n)*f.d<f.n*x.d;   // |x| < f, both fractions
+  const small=last?.t==='u'||!!last?.f&&list.every(x=>x.t!=='n'||x===last||below(x.bare,last.f));   // a unit after a bracket is plain
+  if(marked.length===1&&marked[0]===last&&!last.tail&&!last.pct&&small){
+    if(last.t==='u')return mul(evaluate(list.slice(0,-1),true),last.f);
+    return mul(evaluate(list,true),last.f);
+  }
+  if(list.some(x=>x.t==='u'))throw new Error('syntax');
+  return evaluate(list,false);
+}
+
 /** Recursive descent: expr = term (± term)*, term = unary (×÷ unary)*, unary = -unary | primary, primary = n | ( expr ). */
-function evaluate(list){
+function evaluate(list,bare){
   let i=0;
   const peek=()=>list[i]?.t,need=t=>{if(peek()!==t)throw new Error('syntax');i++;};
   const primary=()=>{
-    if(peek()==='n')return {v:list[i++].v,lit:true};
+    if(peek()==='n'){const n=list[i++];return {v:bare?n.bare:n.v,lit:true};}
     if(peek()==='('){i++;const r=expr();need(')');return {v:r.v,bracketed:!!r.lit};}
     throw new Error('syntax');
   };
@@ -120,7 +147,7 @@ export function parseAmount(raw,unit=''){
   if(!text)return {ok:false,reason:'empty'};
   if(text.length>120)return {ok:false,reason:'syntax'};
   let v;
-  try{v=evaluate(tokens(text,unit));}catch{return {ok:false,reason:'syntax'};}
+  try{v=scaled(tokens(text,unit));}catch{return {ok:false,reason:'syntax'};}
   const abs=x=>x<ZERO?-x:x;
   if(abs(v.n)>LIMIT*v.d)return {ok:false,reason:'big'};
   if(v.d!==ONE)return {ok:false,reason:'fraction',approx:Number(v.n)/Number(v.d)};

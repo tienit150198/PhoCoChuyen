@@ -23,7 +23,15 @@ ok('1.000.000 × 10%',100000);ok('1.5 million',1500000);ok('-500,000',-500000);o
 // Arithmetic
 ok('6+4',10);ok('6 + 4',10);ok('3×4',12);ok('3*4',12);ok('3x4',12);ok('3 x 4',12);ok('3 X 4',12);ok('10/2',5);ok('10 : 2',5);ok('10÷2',5);
 ok('(2+3)*1.000',5000);ok('2*(3+4)-1',13);ok('-2*-3',6);ok('10-15',-5);ok('6 − 4',2);ok('1tr - 250k',750000);ok('6+4=',10);
-ok('6 + 4 triệu',4000006);                  // every number carries its own unit
+// One unit at the very end, every other number bare: it scales the whole sum ("6+4=10 triệu", coordinator 03/10)
+ok('6 + 4 triệu',10000000);ok('6+4 triệu',10000000);ok('6+4tr',10000000);ok('(2+3) triệu',5000000);ok('(2+3)triệu',5000000);
+ok('(2+3) tr đồng',5000000);ok('2 × 3 triệu',6000000);ok('10 - 2k',8000);ok('15 + 5 nghìn',20000);ok('1.500 + 500 nghìn',501500);ok('999 + 1k',1000000);ok('(1.000 + 5) k',1005000);ok('-6 - 4 triệu',-10000000);ok('6+4 đ',10);
+ok('(10) triệu',-10000000);ok('2×(3+4) tỷ',14000000000);ok('1,5 + 1 triệu',2500000);
+// Otherwise every number keeps its own unit
+ok('100k + 5 triệu',5100000);ok('2tr + 5',2000005);ok('2tr + 5 triệu',7000000);ok('6 + 1tr5',1500006);no('100 + 10%','fraction');ok('100 + 1000 × 10%',200);ok('1.000 × 10% + 5',105);
+ok('10 triệu',10000000);ok('(10 triệu)',-10000000);
+no('(2+3) triệu + 1','syntax');no('(2tr+3) triệu','syntax');no('(2+3) triệu đồng k','syntax');
+ok('6 + 4 triệu',10,'triệu');ok('(2+3) triệu',5,'triệu');ok('6+4 ngày',10,'ngày');ok('6 + 4 xu',10,'xu');ok('2k + 5 xu',2005,'xu');
 ok('1.500.000 + 2tr',3500000);
 no('10/3','fraction');no('1/0','syntax');no('5/2','fraction');
 // Rejects
