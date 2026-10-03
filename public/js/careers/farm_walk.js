@@ -616,7 +616,7 @@ function signs(d,t){
   const out=[],m=W.x.cc.moisture||{low:40,dry:25,high:80};
   for(const p of d.plots||[]){const b=BEDS[p.id];if(!b)continue;const c=p.crop?cropOf(p.crop):null;
     const [line,tone_]=bedLine(p,m);
-    out.push({x:b[0]-1.25,y:0.78,z:b[1]-0.98,w:0.95,h:0.5,key:`b|${p.id}|${c?.id}|${line}|${Math.round(p.moisture/10)}`,paint:g=>board(g,[`${p.id}  ${c?c.emoji+' '+c.name:'🟫 '+tr('Luống trống')}`,line],tone_,p.crop?p.moisture:null,m)});
+    out.push({x:b[0]-1.25,y:0.78,z:b[1]-0.98,w:0.95,h:0.5,key:`b|${p.id}|${c?.id}|${line}|${Math.round(p.moisture/10)}`,paint:g=>board(g,[`${p.id}  ${c?c.emoji+' '+tr(c.name):'🟫 '+tr('Luống trống')}`,line],tone_,p.crop?p.moisture:null,m)});
     const bub=bubble(p,m);if(bub)out.push({x:b[0],y:1.55,z:b[1],bubble:bub});}
   out.push({x:-9,y:2.35,z:15.95,w:1.5,h:0.42,key:'coop',paint:g=>plate(g,'CHUỒNG GÀ')});
   out.push({x:9.25,y:2.25,z:15.95,w:1.5,h:0.42,key:'shed',paint:g=>plate(g,'NHÀ KHO')});
