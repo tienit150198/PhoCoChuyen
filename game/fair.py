@@ -60,6 +60,9 @@ Thử vận may, small stakes:
 * 🍡 Hàng ăn vặt (game/fair_food.py, fair_snack, owner 03/10): the walkable fairground's two food carts sell kẹo bông,
   bắp nướng, nước mía… for a few xu; eating moves no bụng / tỉnh táo like the work day's Ăn thêm (game/needs.py).
   Not a game: no net, not on the Bảng vàng, nothing saved in journey['fair'].
+* 📸 Buồng chụp ảnh (game/fair_photo.py, fair_photo, owner 03/10): the photobooth's ticket, a few xu a shoot; the photos
+  are taken in the browsers (with others through live/booth.py) and never reach the server. Like the food carts: no
+  net, not on the Bảng vàng, nothing saved but its Sổ ví row.
 
 Safety: the fair is open FAIR_DAYS days from FAIR_START (Vietnam dates; env MNL_FAIR_START=YYYY-MM-DD and
 MNL_FAIR_DAYS override them at deploy), story saves only, no stake above what the wallet holds; since 03/10 no daily
@@ -97,6 +100,7 @@ from . import fair_oaq as oaq
 from . import fair_ring as ring
 from . import fair_cash as fc   # 🎁 tiền vốn and 💸 vay nóng
 from . import fair_food as ff   # 🍡 the food carts
+from . import fair_photo as fp  # 📸 the photobooth's ticket
 
 VERSION = 1
 FAIR_START = '2026-10-03'      # first day (Vietnam date), 00:00 UTC+7
@@ -807,7 +811,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
     need = e.need
     j = s['journey']
     need(isinstance(p, dict), 'Dữ liệu thao tác không hợp lệ.')
-    need(name in COMMANDS or name in fc.COMMANDS or name in ff.COMMANDS, 'Thao tác hội chợ không hợp lệ.', 'unknown_action')
+    need(name in COMMANDS or name in fc.COMMANDS or name in ff.COMMANDS or name in fp.COMMANDS, 'Thao tác hội chợ không hợp lệ.', 'unknown_action')
     need(j.get('story'), 'Hội chợ chỉ có trong hành trình.', 'not_story')
     t = now()
     opens, closes = window()
@@ -817,6 +821,10 @@ def apply(s: dict, name: str, p: dict) -> dict:
         need(t >= opens, SOON, 'fair_closed')
         need(t < closes, CLOSED, 'fair_closed')
         return ff.apply(s, p)
+    if name in fp.COMMANDS:   # 📸 a photobooth ticket: only while the fair is open
+        need(t >= opens, SOON, 'fair_closed')
+        need(t < closes, CLOSED, 'fair_closed')
+        return fp.apply(s, p)
     if name not in LATE:   # a card, a game or a round begun while open can still be finished
         need(t >= opens, SOON, 'fair_closed')
         need(t < closes, CLOSED, 'fair_closed')
@@ -1137,6 +1145,7 @@ def public(s: dict) -> dict:
                 ring=ring_view((f or {}).get('ring'), t),
                 loto=loto, stats={k: st.get(k, 0) for k in STATS},
                 food=ff.public(s),   # 🍡 the food carts' menus (absent from older servers: the carts only say a line)
+                photo=fp.public(s),   # 📸 the photobooth's ticket (absent from older servers: the client leaves the booth out)
                 # 🗡️ phóng dao, in the phi tiêu's place (absent from older servers: the client then leaves the stall
                 # out; `darts` is gone, so an older client leaves the phi tiêu out)
                 knife=knife_public(j, f, t),

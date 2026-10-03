@@ -16,6 +16,7 @@ from game import fair_board as fb
 from game import fair_oaq as oaq
 from game import fair_cash as fc
 from game import fair_food as ff
+from game import fair_photo as fp
 from game import needs as nd
 from game import fair_ring as ring
 from game import journey as jr
@@ -1275,6 +1276,48 @@ class FairFood(FairBase):
         s, _ = self.act(s, 'fair_snack', item='tau_hu')
         rows = [r for r in s['journey']['history'] if r['label'].startswith(ff.LABEL)]
         self.assertEqual([r['label'] for r in rows], ['🍡 Ăn vặt hội chợ · 1 món'] * 2)
+
+
+
+class FairPhoto(FairBase):
+    """📸 The photobooth's ticket (game/fair_photo.py): PRICE xu from the wallet a shoot, one Sổ ví row a life day,
+    refused when short (never debt), closed or malformed; nothing new in the save (the validator of the release before
+    it, which is this one's, takes the save as it is), not on the Bảng vàng."""
+
+    def test_a_ticket_costs_the_price_one_row_a_day(self):
+        s = story(12)
+        self.assertEqual(public_state(s)['fair']['photo'], dict(price=fp.PRICE, shots=fp.SHOTS, ok=True, why=''))
+        s, r = self.act(s, 'fair_photo')
+        self.assertEqual(r['fair'], dict(game='photo', price=fp.PRICE, shots=fp.SHOTS, n=1))
+        s, r = self.act(s, 'fair_photo', mode='friends')
+        self.assertEqual((s['journey']['wallet'], r['fair']['n']), (12 - 2 * fp.PRICE, 2))
+        row = s['journey']['history'][-1]
+        self.assertEqual((row['kind'], row['label'], row['amount']), ('fair', '📸 Chụp ảnh hội chợ · 2 lượt', -2 * fp.PRICE))
+        self.assertEqual([k for k in s['journey'] if k.startswith('fair')], [])   # nothing of the fair in the save
+        self.assertEqual(fh.money_of(s['journey']), (0, 0))
+        self.assertEqual(public_state(s)['fair']['photo'], dict(price=fp.PRICE, shots=fp.SHOTS, ok=False, why='Chưa đủ xu'))
+        with self.assertRaises(GameError) as e:
+            self.act(s, 'fair_photo', mode='stranger')
+        self.assertEqual(e.exception.code, 'not_enough')
+        self.assertEqual(s['journey']['wallet'], 12 - 2 * fp.PRICE)   # never below what it holds
+        s['journey']['life_day'] += 1
+        s['journey']['wallet'] = 20
+        s, _ = self.act(s, 'fair_photo')
+        rows = [r['label'] for r in s['journey']['history'] if r['label'].startswith(fp.LABEL)]
+        self.assertEqual(rows, ['📸 Chụp ảnh hội chợ · 2 lượt', '📸 Chụp ảnh hội chợ · 1 lượt'])
+        validate_state(s)
+
+    def test_refused_when_closed_or_malformed(self):
+        s = story(50)
+        for bad in (dict(mode='group'), dict(mode=3), dict(n=4), dict(mode='solo', price=0)):
+            with self.assertRaises(GameError, msg=bad):
+                self.act(s, 'fair_photo', **bad)
+        for t in (BEFORE, AFTER):
+            self.clock.t = t
+            with self.assertRaises(GameError) as e:
+                self.act(s, 'fair_photo')
+            self.assertEqual(e.exception.code, 'fair_closed')
+        self.assertEqual(s['journey']['wallet'], 50)
 
 
 class FairCash(FairBase):

@@ -5,7 +5,7 @@
 | `LIVE_HOST`, `LIVE_PORT` | 127.0.0.1, 8770 | where it listens (nginx proxies `/live` here) |
 | `LIVE_CHAT`, `LIVE_STREET`, `LIVE_DATING` | 0 | the switches of the three phases, sent to clients in `welcome.flags` |
 | `LIVE_WEDDING` | 0 | live wedding parties, the reminder and the weekly guest race (live/wedding.py) |
-| `LIVE_FAIR` | as `LIVE_STREET` | players walking the hội chợ's fairground see each other (live/fair.py) |
+| `LIVE_FAIR` | as `LIVE_STREET` | players walking the hội chợ's fairground see each other (live/fair.py), and its photobooth's shared rooms (live/booth.py, welcome flag `booth`) |
 | `LIVE_ORIGINS` | the local game | allowed `Origin` values, comma-separated (`https://phocochuyen.io.vn,...`) |
 | `LIVE_TRUST_PROXY` | 0 | 1 behind nginx: the client IP is `X-Real-IP` (set by nginx), else the socket peer |
 | `LIVE_MAX_CONN` | 5000 | open sockets at most; more are refused (503) |
