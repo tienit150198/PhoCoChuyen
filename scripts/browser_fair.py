@@ -67,6 +67,7 @@ async def walk(base, db, errors):
         browser = await pw.chromium.launch()
         for w, h in ((390, 844), (1280, 800)):
             ctx = await browser.new_context(viewport=dict(width=w, height=h))
+            await ctx.add_init_script("try{localStorage.setItem('mnl.home','list')}catch(e){}")  # the list as home (the town is the default): the fair's row
             page = await ctx.new_page()
             page.on('console', lambda m: m.type == 'error' and errors.append(m.text))
             page.on('pageerror', lambda e: errors.append(str(e)))
@@ -261,6 +262,7 @@ async def closed(base, db, errors):
     async with async_playwright() as pw:
         browser = await pw.chromium.launch()
         ctx = await browser.new_context(viewport=dict(width=390, height=844))
+        await ctx.add_init_script("try{localStorage.setItem('mnl.home','list')}catch(e){}")  # the list as home (the town is the default): the fair's row
         page = await ctx.new_page()
         page.on('console', lambda m: m.type == 'error' and errors.append(m.text))
         page.on('pageerror', lambda e: errors.append(str(e)))
