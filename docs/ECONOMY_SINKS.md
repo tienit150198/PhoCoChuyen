@@ -32,8 +32,13 @@ billed: one Sổ ví row per part ("Phí giữ xe & bảo dưỡng · 3 xe", "Ph
 line ("🧾 Hóa đơn tháng: …"). Paid from cash (never below 0), then the bank account; what both do not cover is waived
 and said so ("… được miễn, không tính nợ"), never owed. The first morning under this build, a player who owns
 something billable gets one line: "🧾 Ban quản lý gửi thông báo: … khoảng N xu mỗi tháng …".
+Browser smoke: `python scripts/browser_sinks.py` (garage fees and bill, the new models, phí bảo trì, the savings tier).
+
 Shown before paying: the garage listing, buy page and each vehicle (`upkeep`), the month's bill and its day on
 "Xe của bạn"; the home listing, buy page, owned homes (`care`) and the month's total on Nhà của bạn; the guide.
+
+In the admin stats (kpi xu_out per action) the bills count under the command that ran the morning (mostly `end_day`,
+i.e. the "work" group), since they are paid in journey.after like the bank's and the home's mornings.
 
 ## Simulation (`python scripts/sim_economy.py`)
 
