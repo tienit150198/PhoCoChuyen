@@ -213,7 +213,7 @@ class Party(WedBase):
 
 class Envelopes(WedBase):
     """🧧 A guest's red envelope for the couple at a party that is on (feedback #56): from the guest's wallet, half to
-    each spouse, at most ENVELOPE_MAX a guest a wedding, once per request id."""
+    each spouse, once per request id; no cap on giving (any amount the wallet holds, any number), never minting."""
     def guest_at(self, wid, tok, ok=1):
         self.store.transaction(lambda db: db.execute("INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) "
                                                      "VALUES(?, ?, 'p', ?, 0, 0, ?, 'd', 'w')", (wid, self.sid(tok), ok, self.clock.t)))
@@ -231,7 +231,7 @@ class Envelopes(WedBase):
         self.clock.t = at - 60
         out = self.give(g, wid, 50, 'rid-first-0001', wish=2)
         self.assertTrue(out['changed'])
-        self.assertEqual((out['rid'], out['left']), ('rid-first-0001', wl.ENVELOPE_MAX - 50))
+        self.assertEqual(out['rid'], 'rid-first-0001')
         self.assertEqual(self.wallet(g), 950)
         rows = self.rows("SELECT sid, amount, data FROM live_effects WHERE id LIKE 'wedenv:%' ORDER BY id")
         self.assertEqual([(r['sid'], r['amount']) for r in rows], [(self.sid(a), 25), (self.sid(b), 25)])
@@ -252,7 +252,7 @@ class Envelopes(WedBase):
         a, b, wid, at = self.couple()
         g, h, poor = self.user('khach'), self.user('lac'), self.user('ngheo', wallet=30)
         self.clock.t = at + 60
-        for bad in (dict(amount=15), dict(amount=50, wish=99), dict(amount='50')):
+        for bad in (dict(amount=0), dict(amount=-5), dict(amount=True), dict(amount=12.5), dict(amount=50, wish=99), dict(amount='50')):
             with self.assertRaises(mr.MarriageError) as e:
                 self.act(g, 'envelope', wedding=wid, **{'wish': 0, **bad})
             self.assertEqual(e.exception.code, 'bad_envelope')
@@ -273,16 +273,54 @@ class Envelopes(WedBase):
         self.assertEqual(e.exception.code, 'not_enough')
         self.assertEqual((self.wallet(poor), len(self.rows("SELECT * FROM live_effects WHERE id LIKE 'wedenv:%'"))), (30, 0))
         self.guest_at(wid, g)
-        for i, n in enumerate((200, 200, 100)):
+        for i, n in enumerate((200, 200, 100, 10, 15)):          # past the old 500 a wedding, and not a quick pick
             self.give(g, wid, n, f'rid-max-000{i}')
-        with self.assertRaises(mr.MarriageError) as e:
-            self.give(g, wid, 10, 'rid-max-0009')
-        self.assertEqual(e.exception.code, 'envelope_max')
-        self.assertEqual(self.wallet(g), 2000 - wl.ENVELOPE_MAX)
+        self.assertEqual(self.wallet(g), 2000 - 525)
         self.clock.t = at + wl.PARTY_SECS
         with self.assertRaises(mr.MarriageError) as e:
             self.give(poor, wid, 10, 'rid-late-0001')
         self.assertEqual(e.exception.code, 'not_open', 'the party is over')
+
+
+    def test_no_cap_a_pure_transfer(self):
+        """Many envelopes, a big one, the whole wallet: the couple gets exactly what left the guest's wallet (the odd xu
+        to the first spouse; a half over live_effects.AMOUNT_MAX in more rows), and an empty wallet is refused."""
+        a, b, wid, at = self.couple()
+        g = self.user('khach', wallet=20000)
+        self.guest_at(wid, g)
+        self.clock.t = at + 60
+        wa, wb = self.wallet(a), self.wallet(b)
+        for i in range(12):                                         # many envelopes at one wedding
+            self.give(g, wid, 50, f'rid-many-{i:04d}')
+        self.give(g, wid, 7, 'rid-odd-00001')                       # an odd amount: 4 + 3
+        self.give(g, wid, 9001, 'rid-big-00001')                    # a big one: 4501 + 4500, rows of at most 2000
+        rest = self.wallet(g)
+        self.assertEqual(rest, 20000 - 600 - 7 - 9001)
+        self.give(g, wid, rest, 'rid-all-00001')                    # the whole wallet
+        self.assertEqual(self.wallet(g), 0)
+        with self.assertRaises(mr.MarriageError) as e:
+            self.give(g, wid, 1, 'rid-zero-0001')
+        self.assertEqual(e.exception.code, 'not_enough', 'never below 0')
+        self.assertEqual(self.wallet(g), 0)
+        rows = self.rows("SELECT id, sid, amount FROM live_effects WHERE id LIKE 'wedenv:%'")
+        self.assertTrue(all(1 <= r['amount'] <= lfx.AMOUNT_MAX for r in rows))
+        self.assertEqual(sum(r['amount'] for r in rows), 20000, 'no xu made, none lost')
+        big = sorted((r['id'], r['amount']) for r in rows if ':rid-big-00001' in r['id'])
+        self.assertEqual(big, [(f'wedenv:{wid}:a:rid-big-00001', 2000), (f'wedenv:{wid}:a:rid-big-00001:2', 2000),
+                               (f'wedenv:{wid}:a:rid-big-00001:3', 501), (f'wedenv:{wid}:b:rid-big-00001', 2000),
+                               (f'wedenv:{wid}:b:rid-big-00001:2', 2000), (f'wedenv:{wid}:b:rid-big-00001:3', 500)])
+        debit = self.row("SELECT COALESCE(SUM(amount), 0) AS n FROM marriage_effects WHERE sid=? AND id LIKE 'wenv:%'", self.sid(g))['n']
+        self.assertEqual(debit, -20000)
+        with self.store.connect() as db:
+            got = (wl.envelopes_of(db, self.sid(a), wid, 'a'), wl.envelopes_of(db, self.sid(b), wid, 'b'))
+        self.assertEqual(got, (300 + 4 + 4501 + rest - rest // 2, 300 + 3 + 4500 + rest // 2))
+        while self.pay(a):                                          # paid in batches of live_effects.BATCH rows
+            pass
+        while self.pay(b):
+            pass
+        self.assertEqual((self.wallet(a) - wa, self.wallet(b) - wb), got)
+        self.assertFalse(self.pay(a), 'each row once')
+        self.assertEqual(self.wallet(a) - wa, got[0])
 
 
 class Anniversaries(WedBase):

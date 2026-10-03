@@ -208,12 +208,13 @@ class WeddingFeature(Feature):
         return a.mins if a else 0
 
     def _info(self, p: dict, room, overflow, pid: str | None = None) -> dict:
-        """overflow: False (in the party), 'full' (more than VISIBLE) or 'account' (a player without an account watches)."""
+        """overflow: False (in the party), 'full' (more than VISIBLE) or 'account' (a player without an account watches).
+        🧧 envs: quick picks; env_free: any amount, no cap (env_max is only the text older clients print)."""
         n = len(room.data['people']) + len(room.data['watch'])
         return dict(id=p['id'], a=p['na'], b=p['nb'], pids=[p['pa'], p['pb']], at=p['at'], end=p['at'] + WL.PARTY_SECS, n=n,
                     overflow=overflow, photos=p['photos'] or 0, photos_max=WL.PHOTOS_MAX, visible=WL.VISIBLE,
                     minutes=WL.PARTY_MINUTES, xu=WL.MINUTE_XU, host_xu=WL.HOST_XU, mins=self._mins(p, pid),
-                    envs=list(WL.ENVELOPES), env_max=WL.ENVELOPE_MAX, wishes=list(WL.WISHES),
+                    envs=list(WL.ENVELOPES), env_free=True, env_max=WL.ENVELOPE_MAX_OLD, wishes=list(WL.WISHES),
                     dishes=list(WL.DISHES), eat=self._left(p, pid), toss=self._toss_view(p), music=p.get('music'),
                     musics=list(WL.MUSIC))
 
@@ -510,7 +511,7 @@ class WeddingFeature(Feature):
         return None
 
     # ---- 🧧 a guest's red envelope (paid by the game server, POST /api/marriage/envelope) ----------------------
-    @on('wed_env', rate=(10, 60))
+    @on('wed_env', rate=(30, 60))   # spam guard only: each one is an envelope already paid (no cap on giving)
     async def wed_env(self, conn, f):
         """The sender's client says "sent": the debit row is read back (this player's, this wedding's), then the room
         sees who gave how much and the wish (once per envelope), and the couple's wallets are paid now."""
