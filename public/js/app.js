@@ -6,7 +6,7 @@ import {wordsFor,kindOf} from './scenes/index.js';
 // to it (careerAssets below), so no career flashes the storefront and startup isn't waiting on all of them.
 import {nextStep,lifeNav,guestRibbon,experienceView,extendedJob,experienceSummary,teachTour} from './experience-ui.js';
 import {icon,portrait,itemArt,escapeHTML as esc} from './icons.js';
-import {fillToast} from './toast-lines.js';
+import {fillToast,toastHead} from './toast-lines.js';
 import {reqList,fold} from './ui-kit.js';
 import {olderRows,olderButton,loadOlder,syncOlder} from './archive.js';
 import {Sound} from './audio.js';
@@ -147,16 +147,25 @@ const notice=(text,kind='',ico='leaf')=>`<div class="notice ${kind}">${icon(ico,
 /* Long enough to read (owner: toasts were too quick): a floor per kind plus reading time
  * (~15 characters a second), capped. Toasts never take taps (.toasts is pointer-events:none). */
 const toastLife=(message,cls)=>Math.min(8000,Math.max(cls==='error'?4500:cls==='hint'?3000:3200,1200+String(message).length*45));   // owner 03/10: shorter, and a tap closes it
-function toast(message,kind=false){if(!message)return;const box=$('#toasts'),cls=kind===true||kind==='error'?'error':kind==='good'?'good':kind==='hint'?'hint':'',life=toastLife(message,cls);
+/* A toast says a few words (toast-lines.js toastHead: ≤8, an error its first sentence; owner 03/10 "chữ ít thôi"):
+ * a note with more to it shows a small ▾, and a first tap opens the whole text (a second tap closes it).
+ * The text is put into English first (when that is on), so the few words are cut from the shown language. */
+function toast(message,kind=false){if(!message)return;const box=$('#toasts'),cls=kind===true||kind==='error'?'error':kind==='good'?'good':kind==='hint'?'hint':'';
+  const said=String(i18nT(String(message))),{head,more}=toastHead(said,{error:cls==='error'});let life=toastLife(head,cls);
   const mount=$('#confirmDialog').open?$('#confirmDialog'):$('#sheet').open?$('#sheet'):document.body;mount.append(box);
   if(mount.id==='sheet')requestAnimationFrame(headMeasure);   // the header may have moved (a centred sheet changing height)
   const leave=el=>{clearTimeout(el._t);el._t=setTimeout(()=>{el.classList.add('leaving');setTimeout(()=>el.remove(),320);},life);};
   const same=[...box.children].find(x=>x.dataset.msg===message&&!x.classList.contains('leaving'));
   if(same){same.classList.remove('bump');void same.offsetWidth;same.classList.add('bump');leave(same);return;}
   if(cls==='hint'&&box.querySelector('.toast.error:not(.leaving)'))return;
-  const el=document.createElement('div');el.className=`toast ${cls}`.trim();el.dataset.msg=message;fillToast(el,message);
-  if(cls==='hint'){const face=document.createElement('span');face.className='hint-face';face.setAttribute('aria-hidden','true');face.textContent='💡';el.prepend(face);}
-  el.title='Bấm để tắt';el.addEventListener('click',()=>{clearTimeout(el._t);el.classList.add('leaving');setTimeout(()=>el.remove(),320);});   // owner 03/10: tap to close, so it stops covering the screen
+  const el=document.createElement('div');el.className=`toast ${cls}`.trim();el.dataset.msg=message;
+  const fill=text=>{fillToast(el,text);if(cls==='hint'){const face=document.createElement('span');face.className='hint-face';face.setAttribute('aria-hidden','true');face.textContent='💡';el.prepend(face);}};
+  fill(head);
+  if(more){el.classList.add('has-more');el.insertAdjacentHTML('beforeend','<i class="toast-more" aria-hidden="true">▾</i>');}
+  el.title=more?said:'Bấm để tắt';
+  el.addEventListener('click',()=>{
+    if(more&&!el.classList.contains('open')){el.classList.add('open');el.classList.remove('has-more');fill(said);life=toastLife(said,cls);leave(el);return;}
+    clearTimeout(el._t);el.classList.add('leaving');setTimeout(()=>el.remove(),320);});   // owner 03/10: tap to close, so it stops covering the screen
   box.append(el);leave(el);
   // Calm screen: one toast at a time, the newest wins.
   while(box.children.length>1)box.firstElementChild.remove();}
