@@ -25,9 +25,9 @@ export function nextStep(t){
  return maps[t?.career]?.[t.stage]||'Một công việc nhỏ đang chờ';
 }
 /* ------------------------------------------------------------ life sheets
- * Chuẩn bị · Bảng giá · Trò nhỏ · Hộ chiếu · Khu phố share one shell: a sticky
+ * Chuẩn bị · Bảng giá · Trò nhỏ · Hộ chiếu · Quảng trường (the old "Khu phố" map; the town itself is v4/town-walk.js) share one shell: a sticky
  * top (back, shop name, close) with the tab bar, then cards (styles: css/lifesheets.css). */
-const TABS=[['prepare','🧺','Chuẩn bị'],['prices','🏷️','Bảng giá'],['workshop','🧩','Trò nhỏ'],['passport','🌟','Hộ chiếu'],['town','🗺️','Khu phố','Thư viện, chợ, quảng trường…'],['phone','💬','Chuyện phố','Khách khen, chê, kể chuyện']];
+const TABS=[['prepare','🧺','Chuẩn bị'],['prices','🏷️','Bảng giá'],['workshop','🧩','Trò nhỏ'],['passport','🌟','Hộ chiếu'],['town','🎏','Quảng trường','Thư viện, chợ, vườn nghỉ…'],['phone','💬','Chuyện phố','Khách khen, chê, kể chuyện']];
 const KIND_EM={sort:'🧺',pairs:'🃏',sequence:'🔢',match:'🔗'};
 const tile=(s,cls='')=>`<span class="lx-tile ${cls}" aria-hidden="true">${s}</span>`;
 const h3=s=>`<h3 class="lx-h">${s}</h3>`;

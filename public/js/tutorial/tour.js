@@ -69,9 +69,10 @@ const STEPS=[
     when:()=>!inIntro()&&sheetView()!=='home',plan:()=>!inIntro(),
     find:()=>vis('#jrHud:not([hidden])')||vis('#rail [data-action="home"]')||vis('.brand')||vis('#dock [data-action="v4Menu"]'),
     done:()=>sheetView()==='home'},
-  {id:'pick',emoji:'🏪',text:'Chọn một tiệm để làm.',
+  // 🗺️ The town as home (v4/town-walk.js): the card's "Vào làm" once at a door, else the town itself.
+  {id:'pick',emoji:'🏪',text:()=>vis('#sheet[open] .tw-stage')&&!firstVis('#sheet[open] [data-action="choose"]')?'Đi tới một tiệm rồi bấm Vào làm.':'Chọn một tiệm để làm.',
     when:()=>sheetView()==='home',wait:2500,
-    find:()=>firstVis('#sheet[open] .jr-first-jobs .jr-job')||firstVis('#sheet[open] .jr-cta')||firstVis('#sheet[open] [data-action="choose"]'),
+    find:()=>firstVis('#sheet[open] .jr-first-jobs .jr-job')||firstVis('#sheet[open] .jr-cta')||firstVis('#sheet[open] [data-action="choose"]')||vis('#sheet[open] .tw-stage'),
     done:()=>run.flags.chose&&sheetView()!=='home'},
   {id:'hire',emoji:'📝',text:'Xin việc trước, làm theo từng bước.',center:true,
     when:()=>{const j=room()?.job;return !!(j?.required&&j.status!=='hired');},plan:()=>false,

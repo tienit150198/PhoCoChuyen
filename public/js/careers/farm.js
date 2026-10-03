@@ -2,7 +2,7 @@
  *  table. Field state is persistent and turn-based; everything is recomputed
  *  on the server, the client only shows it. */
 import {reqList} from '../ui-kit.js';
-import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
+import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,stepLine,goAttrs,bareLabel} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {planBox,stockLines,figures} from './plan_kit.js';
 const ID='farm';
@@ -112,15 +112,26 @@ function thucBlock(p,x){
     <p class="small muted">Mỗi liều rút ${t.step}% thời gian lớn, tốn ${t.soil} đất màu. Tối đa ${t.max}% mỗi vụ.</p>
     ${t.options.length?`<div class="fa-actions">${t.options.map(btn).join('')}</div>`:''}${why?`<p class="small fa-why">${x.esc(why)}</p>`:''}</div>`;
 }
+/* The seed choice of an empty bed (the workbench's open bed, and the bed you stand at in 🚶 Tự đi). */
+function seedTiles(p,x,cls=''){
+  const st=(x.room.inventory||{}).stock||{},level=x.room.level||1,rot=p.rotation||{};
+  return `<div class="tile-grid fa-seeds${cls?' '+cls:''}">${x.cc.crops.map(c=>{const locked=c.unlock>level,q=st[c.seed]||0,r=rot[c.id];
+        const tag=r==='rotate'?'<em class="fa-rot good">luân canh +màu</em>':r==='same'?'<em class="fa-rot bad">trùng vụ trước</em>':'';
+        return tile(x,'fa_plant',{plot:p.id,crop:c.id},`<span class="tile-emoji">${c.emoji}</span><b>${x.esc(c.name)}</b><small>${locked?'🔒 cấp '+c.unlock:q+' '+x.esc(supply(x,c.seed).unit)}</small>${tag}`,`${locked?'locked':''} ${!q?'empty':''}`,locked||!q);}).join('')}</div>`;
+}
+/* What the harvest button asks first. */
+function harvestAsk(p,x){
+  const th=x.cc.thresholds;
+  return p.safe_in?`⛔ Luống này còn ${p.safe_in} nhịp cách ly sau khi dùng hóa chất. Thu bây giờ thì cả lô phải hủy, không được bán. Vẫn thu?`
+    :p.growth<th.ripe?'Cây còn non: thu bây giờ được ít và chỉ đạt loại B. Vẫn thu?':p.growth>=th.over?'Cây đã quá lứa: chỉ đạt loại B. Thu hoạch?':'Thu hoạch luống này vào kho mát?';
+}
 function plotPanel(p,x){
   if(!p)return '';
-  const th=x.cc.thresholds,m=x.cc.moisture,inv=x.room.inventory||{stock:{}},st=inv.stock||{},level=x.room.level||1;
+  const th=x.cc.thresholds,m=x.cc.moisture,inv=x.room.inventory||{stock:{}},st=inv.stock||{};
   if(!p.crop){
-    const prev=p.prev?produce(x,p.prev):null,rot=p.rotation||{};
+    const prev=p.prev?produce(x,p.prev):null;
     return `<div class="card fa-panel"><h4>${x.esc(p.id)} · Luống trống</h4>
-      <dl class="kv"><dt>Đất màu</dt><dd>${p.soil}/100 ${p.soil<soilLow(x)?'<b class="fa-bad">bạc màu</b>':''}<small class="muted"> · để trống qua đêm +${x.cc.soil?.rest??8}</small></dd><dt>Độ ẩm · cỏ</dt><dd>${p.moisture}% · ${p.weeds}/3</dd><dt>Vụ trước</dt><dd>${prev?`${prev.emoji} ${x.esc(prev.name)}`:'chưa rõ'}</dd></dl>      <div class="tile-grid fa-seeds">${x.cc.crops.map(c=>{const locked=c.unlock>level,q=st[c.seed]||0,r=rot[c.id];
-        const tag=r==='rotate'?'<em class="fa-rot good">luân canh +màu</em>':r==='same'?'<em class="fa-rot bad">trùng vụ trước</em>':'';
-        return tile(x,'fa_plant',{plot:p.id,crop:c.id},`<span class="tile-emoji">${c.emoji}</span><b>${x.esc(c.name)}</b><small>${locked?'🔒 cấp '+c.unlock:q+' '+x.esc(supply(x,c.seed).unit)}</small>${tag}`,`${locked?'locked':''} ${!q?'empty':''}`,locked||!q);}).join('')}</div>
+      <dl class="kv"><dt>Đất màu</dt><dd>${p.soil}/100 ${p.soil<soilLow(x)?'<b class="fa-bad">bạc màu</b>':''}<small class="muted"> · để trống qua đêm +${x.cc.soil?.rest??8}</small></dd><dt>Độ ẩm · cỏ</dt><dd>${p.moisture}% · ${p.weeds}/3</dd><dt>Vụ trước</dt><dd>${prev?`${prev.emoji} ${x.esc(prev.name)}`:'chưa rõ'}</dd></dl>      ${seedTiles(p,x)}
       <div class="fa-actions space-top">${x.cmd(p.compost?'🟫 Đã bón lót compost':`🟫 Bón lót compost (${st.compost||0}) · +${x.cc.soil?.add?.compost??20} màu`,'fa_fertilize',{plot:p.id,kind:'compost'},'small ghost',p.compost||!st.compost)}</div></div>`;
   }
   const c=produce(x,p.crop);
@@ -128,8 +139,7 @@ function plotPanel(p,x){
   const budget=p.cap?Math.min(100,Math.round((p.grown||0)/p.cap*100)):0;
   const scouted=p.scouted_ago==null?'chưa thăm':p.scouted_ago===0?'vừa thăm':`thăm ${p.scouted_ago} nhịp trước`;
   const canHarvest=p.growth>=th.young&&p.growth<th.rotten;
-  const harvestQ=p.safe_in?`⛔ Luống này còn ${p.safe_in} nhịp cách ly sau khi dùng hóa chất. Thu bây giờ thì cả lô phải hủy, không được bán. Vẫn thu?`
-    :p.growth<th.ripe?'Cây còn non: thu bây giờ được ít và chỉ đạt loại B. Vẫn thu?':p.growth>=th.over?'Cây đã quá lứa: chỉ đạt loại B. Thu hoạch?':'Thu hoạch luống này vào kho mát?';
+  const harvestQ=harvestAsk(p,x);
   return `<div class="card fa-panel"><div class="row spread"><h4>${x.esc(p.id)} · ${c.emoji} ${x.esc(c.name)}</h4><span class="tag ${p.organic?'green':'amber'}">${p.organic?'🌿 Hữu cơ':'🧪 Đã dùng hóa chất'}</span></div>
     <dl class="kv"><dt>Độ lớn</dt><dd>${p.growth} · ${x.esc(left)}</dd><dt>Ngày của vụ</dt><dd>ngày ${p.day_no}</dd>
       <dt>Sức lớn hôm nay</dt><dd><span class="fa-budget"><span class="fa-meter budget"><i style="width:${budget}%"></i></span><small>${p.grown||0}/${p.cap}${(p.grown||0)>=p.cap?' · đủ, chờ qua đêm':''}</small></span></dd>
@@ -364,6 +374,144 @@ function idleSteps(x){
   return rows;
 }
 
+/* ------------------------------------------------------------ 🚶 Tự đi
+ * The farm as a place to walk in (careers/farm_walk.js draws it, loaded on first use): the beds, the coop, the
+ * cold room and the packing table, the trader's truck, the scooter. Same steps and the same commands as the
+ * workbench: a step whose place is elsewhere becomes "📍 go there" (the walk takes about a second), the place you
+ * stand at shows its own buttons, and the delivery is a ride on the scooter that ends with the same `fa_deliver`.
+ * "⏩ Bấm nhanh" is the workbench above, unchanged. The choice (and the camera) is kept on this device. */
+const PREF='mnl.farm.walk';
+const prefs=()=>{try{return JSON.parse(localStorage.getItem(PREF)||'{}')||{};}catch{return {};}};
+const setPref=o=>{try{localStorage.setItem(PREF,JSON.stringify({...prefs(),...o}));}catch{/* storage off: this visit only */}};
+const walking=x=>!x.ui.fvOff&&prefs().mode!=='tap';
+let walkMod=null;
+const walkLoad=()=>walkMod??=import('./farm_walk.js').catch(error=>{console.error(error);return null;});
+const PLACE={tank:'Bồn nước',coop:'Chuồng gà',shed:'Nhà kho',pack:'Bàn đóng hàng',bike:'Xe máy',truck:'Xe anh Tuấn',board:'Bảng thời tiết'};
+const placeName=id=>/^P[1-6]$/.test(id||'')?`Luống ${id}`:PLACE[id]||'';
+/* Where a step is done. */
+const BED=new Set(['fa_water','fa_drain','fa_weed','fa_scout','fa_fertilize','fa_spray','fa_boost','fa_harvest','fa_clear','fa_plant']);
+const AT={fa_feed:'coop',fa_clean:'coop',fa_collect:'coop',fa_hen:'coop',fa_pack:'pack',fa_unpack:'pack',fa_label:'pack',fa_discard:'pack',fa_pledge:'truck',fa_sell:'truck',fa_deliver:'bike'};
+function spotOf(go,x){
+  if(!go)return null;
+  if(go.cmd)return BED.has(go.cmd)?(go.payload?.plot==='all'?'tank':go.payload?.plot||null):AT[go.cmd]||null;
+  if(go.act==='car:open')return go.data?.plot||null;
+  if(go.act==='inventory')return 'shed';
+  if(go.sel==='.fa-seeds')return x.ui.plot||null;
+  if(go.sel==='.fa-labels')return 'pack';
+  return null;
+}
+function walkGo(go,x){
+  const at=spotOf(go,x);
+  if(!at)return go;
+  if(at!==x.ui.fvNear)return {act:'car:fvgo',data:{to:at},label:`📍 ${x.esc(bareLabel(go.label||''))}`};
+  // At the empty bed the seeds are right under the stage.
+  if(go.act==='car:open')return {sel:'.fa-seeds',label:`🌱 Chọn hạt gieo luống ${x.esc(at)}`};
+  return go;
+}
+const walkSteps=(steps,x)=>(steps||[]).map(s=>s&&s.ok!==true&&s.go?{...s,go:walkGo(s.go,x)}:s);
+/* The finish: walk to the scooter, then ride. A finish asked early keeps the workbench's question. */
+function walkFinal(t,x,g){
+  const f=g.final;if(!f||f.go?.cmd!=='fa_deliver')return f;
+  if(x.ui.fvNear!=='bike')return {...f,label:'🛵 Ra xe chở hàng',go:{act:'car:fvgo',data:{to:'bike'},label:'🛵 Ra xe chở hàng'}};
+  return {...f,label:'🛵 Chở hàng đi giao',go:{act:'car:fvride',data:{task:t.id,ask:f.go.confirm||''},label:'🛵 Chở hàng đi giao'}};
+}
+/* Who waits at the end of the road (by farm_npc_0N), and how they look. */
+const BUYER={1:['HTX rau Đồi Gió',{hair:'#5a5250',top:'#7f9a5c',hat:true}],2:['Nhà hàng Bếp Mây',{hair:'#2f2420',top:'#ffffff'}],3:['Sạp cô Hai',{hair:'#3a2c26',top:'#d98a7a'}],
+  4:['Vựa anh Tuấn',{hair:'#3c2f28',top:'#8fb3cf',hat:true}],5:['Nhà bé Mít',{hair:'#3a2a22',top:'#f2c84b'}],6:['Lò bánh flan Bà Năm',{hair:'#d8d4cf',top:'#b89ad0'}],7:['Quán chay Lá Xanh',{hair:'#2f2622',top:'#7fae63'}]};
+const sameGo=(a,b)=>!!(a&&b)&&(a.cmd||a.act)===(b.cmd||b.act)&&JSON.stringify(a.payload||a.data||{})===JSON.stringify(b.payload||b.data||{});
+/* The buttons of the place you stand at (only the ones that do something now). */
+function placeActs(at,t,x,g){
+  const d=data(x),st=(x.room.inventory||{}).stock||{},coop=d.coop||{},th=x.cc.thresholds,out=[];
+  const add=(label,go,cls='')=>out.push({...go,label,cls});
+  const more=(label,what)=>add(label,{act:'car:fvmore',data:{more:what}},'ghost');
+  if(/^P[1-6]$/.test(at||'')){
+    const p=d.plots.find(q=>q.id===at);if(!p)return out;
+    if(!p.crop){if(!p.compost&&st.compost)add('🟫 Bón lót',{cmd:'fa_fertilize',payload:{plot:p.id,kind:'compost'}},'ghost');return out;}
+    if(p.stage==='rotten')add('🧹 Dọn luống',{cmd:'fa_clear',payload:{plot:p.id},confirm:'Nhổ bỏ toàn bộ cây trên luống này?'});
+    else{
+      if(p.growth>=th.young&&p.growth<th.rotten)add('🧺 Thu hoạch',{cmd:'fa_harvest',payload:{plot:p.id},confirm:harvestAsk(p,x)});
+      add('💧 Tưới',{cmd:'fa_water',payload:{plot:p.id}});
+      if(p.weeds)add('🌾 Nhổ cỏ',{cmd:'fa_weed',payload:{plot:p.id}});
+      add('🔍 Thăm sâu',{cmd:'fa_scout',payload:{plot:p.id}},'ghost');
+    }
+    more('🟫 Bón & phun','bed');
+  }else if(at==='tank'){
+    if(!d.nopump&&d.plots.some(p=>p.crop))add('🚿 Mở van tưới cả vườn',{cmd:'fa_water',payload:{plot:'all'}});
+  }else if(at==='coop'){
+    if(!d.fed_today&&st.feed)add('🌾 Cho gà ăn',{cmd:'fa_feed',payload:{}});
+    if(!coop.cleaned_today)add('🧹 Dọn chuồng',{cmd:'fa_clean',payload:{}});
+    if(coop.nest)add(`🧺 Nhặt ${coop.nest} trứng`,{cmd:'fa_collect',payload:{}});
+    more('🐔 Xem đàn gà','coop');
+  }else if(at==='pack')more(t?'❄️ Kho mát & thùng hàng':'❄️ Kho mát','pack');
+  else if(at==='truck')more('📈 Bán sỉ cho anh Tuấn','market');
+  else if(at==='shed')add('📦 Kho vật tư',{act:'inventory'});
+  else if(at==='board')more('🌤️ Xem dự báo','sky');
+  else if(at==='bike'&&t?.known&&(t.crate||[]).length){const f=walkFinal(t,x,g);if(f?.go)add(f.label,f.go);}
+  return out;
+}
+function placeLine(at,x){
+  if(!at)return '';
+  const p=/^P[1-6]$/.test(at)?data(x).plots.find(q=>q.id===at):null,c=p?.crop?produce(x,p.crop):null;
+  return `<p class="fv-at"><b>📍 ${x.esc(placeName(at))}</b>${c?` · ${c.emoji} ${x.esc(c.name)} <small>${x.esc(when(p))}</small>`:p?' · <small>🌱 chọn hạt để gieo</small>':''}</p>`;
+}
+function orderChip(t,x){
+  if(!t)return '';
+  const who=x.npc(t.npc);
+  if(!t.known)return `<div class="fv-chip">${x.portrait(who,32)}<span class="fv-chip-who"><b>${x.esc(who.display_name)}</b><small>📞 đang gọi đặt hàng</small></span></div>`;
+  const items=Object.entries(t.needs.items).map(([k,q])=>{const h=packed(t,k);return `<span class="${h>=q?'ok':''}">${produce(x,k).emoji} ${h}/${q}</span>`;}).join('');
+  return `<button type="button" class="fv-chip" data-action="car:fvmore" data-more="order" aria-label="Đơn của ${x.esc(who.display_name)}">${x.portrait(who,32)}<span class="fv-chip-who"><b>${x.esc(who.display_name)}</b><span class="patience"><span class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></span></span></span>
+    <span class="fa-strip">${items}<span class="${t.label?'ok':''}">${t.label==='organic'?'🌿':'🏷️'} ${t.label?'✓':'—'}</span></span><b class="price">${x.money(t.quoted_price||0)}</b></button>`;
+}
+function drawer(t,x,g){
+  const what=x.ui.fvMore;if(!what)return '';
+  const d=data(x),p=d.plots.find(q=>q.id===x.ui.fvNear);let body='',title='';
+  if(what==='bed'&&p){title=placeName(p.id);body=plotPanel(p,x);}
+  else if(what==='coop'){title='🐔 Chuồng gà';body=coopTab(x);}
+  else if(what==='pack'){title='❄️ Kho mát';body=coldTab(t,x)+(t?crateSide(t,x,g):'');}
+  else if(what==='market'){title='📈 Chợ đầu mối';body=marketTab(x);}
+  else if(what==='sky'){title='🌤️ Thời tiết';const was=x.ui.wxOpen;x.ui.wxOpen=true;body=weatherBar(x);x.ui.wxOpen=was;}
+  else if(what==='order'&&t){title='🧾 Đơn hàng';const was=x.ui.orderOpen;x.ui.orderOpen=true;body=orderTicket(t,x);x.ui.orderOpen=was;}
+  if(!body)return '';
+  return `<section class="fv-drawer" role="dialog" aria-label="${x.esc(plainTitle(title))}"><div class="fv-drawer-head"><b>${title}</b>${carBtn(x,'✕','fvmore',{more:''},'ghost small fv-x',' aria-label="Đóng"')}</div>${body}</section>`;
+}
+const plainTitle=s=>String(s).replace(/<[^>]*>/g,'');
+const seg=(x,label,items)=>`<div class="fv-seg" role="group" aria-label="${label}">${items.map(([text,action,dat,on])=>carBtn(x,text,action,dat,on?'on':'',` aria-pressed="${on}"`)).join('')}</div>`;
+const modeSeg=(x,walk)=>seg(x,'Cách chơi',[['🚶 Tự đi','fvmode',{mode:'walk'},walk],['⏩ Bấm nhanh','fvmode',{mode:'tap'},!walk]]);
+const camSeg=x=>seg(x,'Góc nhìn',[['👁️ Thứ nhất','fvcam',{cam:'fp'},x.ui.fvCam!=='tp'],['Thứ ba','fvcam',{cam:'tp'},x.ui.fvCam==='tp']]);
+/** The walk view: the stage first (re-renders keep it), the order, the overlay switches, the place's buttons and
+ * the next-step button under it. `t` null: between orders. */
+function walkView(t,x,g,idle=false){
+  x.ui.fvCam??=prefs().cam==='tp'?'tp':'fp';
+  x.ui.fvTask=t?.id||null;
+  const steps=walkSteps(g.steps,x),final=(t&&walkFinal(t,x,g))||{label:'',go:null,ready:false},at=x.ui.fvNear||null;
+  const next=pending(g.steps);
+  x.ui.fvTarget=spotOf(next?.go,x)||(t&&!next&&g.final?.ready!==false&&g.final?.go?'bike':null);
+  const ride=x.ui.fvRide;
+  const hint=ride?'':t?hintFor({steps,final},x):pending(steps)?.go?nextHint(x,steps,{}):'';
+  let acts;
+  if(ride)acts=`<p class="fv-at"><b>🛵 ${x.esc(ride.place||'')}</b></p><button type="button" class="btn primary big grow gd-cta fv-honk" data-action="car:fvhonk" data-fd-wait=".fv-arrived">📯 Bóp còi</button>`;
+  else{
+    const cta=t||pending(steps)?.go?stepCta(x,steps,final):'',ctaGo=pending(steps)?.go;
+    const own=placeActs(at,t,x,g).filter(o=>!sameGo(o,ctaGo)&&!(o.act==='car:fvride'&&cta.includes('car:fvride')));
+    const p=/^P[1-6]$/.test(at||'')?data(x).plots.find(q=>q.id===at):null;
+    const seeds=p&&!p.crop?seedTiles(p,x,'fv-seeds'):'';
+    const labels=at==='pack'&&t&&labelStep(t,x,g)?labelTiles(t,x,'fa-bar-labels'):'';
+    acts=`${placeLine(at,x)}${seeds}${labels}${own.length?`<div class="fv-btns">${own.map(o=>`<button type="button" class="btn small fv-btn ${o.cls}"${goAttrs(o)}>${o.label}</button>`).join('')}</div>`:''}${cta}`;
+  }
+  const top=ride?'':`<div class="fv-top">${camSeg(x)}${modeSeg(x,true)}</div>`;
+  return `<div class="career-job fa fa-walk"${idle?' data-idle-open':''}><div class="fv-host" id="fvHost"><i hidden></i></div>${hint}${top}${ride?'':drawer(t,x,g)}
+    ${deskCard(x)}<div class="fa-bar fv-acts">${orderChip(t,x)}${acts}</div></div>`;
+}
+/* What the engine tells the workbench. */
+const HOOKS={
+  near(x,id){x.ui.fvNear=id||null;if(/^P[1-6]$/.test(id||''))x.ui.plot=id;if(x.ui.fvMore&&!['order','sky'].includes(x.ui.fvMore))x.ui.fvMore=null;x.render();},
+  ride(x,info){x.ui.fvRide=info||null;x.ui.fvMore=null;x.render();},
+  deliver:(x,task)=>x.send('fa_deliver',{task,confirm:true}),
+  slow(x){setPref({mode:'tap'});x.toast('Máy hơi chậm nên vườn chuyển sang Bấm nhanh. Muốn đi lại thì chạm 🚶 Tự đi.');x.render();},
+  broken(x){x.ui.fvOff=true;x.render();},
+  hint(){if(prefs().hint)return false;setPref({hint:1});return true;},
+};
+
 export default {
   id:ID,
   css:true,
@@ -378,23 +526,37 @@ export default {
   job(t,x){
     const g=taskGuide(t,x),hint=hintFor(g,x);
     if(data(x).desk?.ev)return `<div class="career-job fa">${hint}${deskCard(x)}${weatherBar(x)}${bottomBar(t,x,g)}</div>`;
+    if(walking(x))return walkView(t,x,g);
     const tab=x.ui.tab||'field';
     const main=tab==='coop'?coopTab(x):tab==='cold'?coldTab(t,x):tab==='market'?marketTab(x):fieldTab(x);
     // The order first; the weather and the farm's tabs below it. The bar keeps the next step in reach.
-    return `<div class="career-job fa">${hint}${deskCard(x)}${orderTicket(t,x)}${weatherBar(x)}${tabs(x)}
+    return `<div class="career-job fa">${hint}${x.ui.fvOff?'':modeSeg(x,false)}${deskCard(x)}${orderTicket(t,x)}${weatherBar(x)}${tabs(x)}
       <div class="workbench"><section class="wb-main">${main}</section><aside class="wb-side">${crateSide(t,x,g)}</aside></div>${bottomBar(t,x,g)}</div>`;
   },
   idle(x){
     const steps=idleSteps(x),todo=pending(steps)?.go;
     const hint=todo?nextHint(x,steps,{}):'',bar=todo?`<div class="fa-bar">${stepCta(x,steps,{label:'',go:null,ready:false})}</div>`:'';
     if(data(x).desk?.ev)return `<div class="career-job fa">${hint}${deskCard(x)}${weatherBar(x)}${bar}</div>`;
+    if(walking(x))return walkView(null,x,{steps},true);
     const tab=x.ui.tab||'field';
     const main=tab==='coop'?coopTab(x):tab==='cold'?coldTab(null,x):tab==='market'?marketTab(x):fieldTab(x);
-    return `<div class="career-job fa">${hint}${weatherBar(x)}${deskCard(x)}${tabs(x)}
+    return `<div class="career-job fa">${hint}${x.ui.fvOff?'':modeSeg(x,false)}${weatherBar(x)}${deskCard(x)}${tabs(x)}
       <div class="workbench single"><section class="wb-main">${main}</section></div>${bar}</div>`;
   },
   // The next-step bar rides above the sheet's own sticky footer.
-  tick(root){keepBarAboveFooter(root);},
+  // 🚶 Tự đi: the stage goes into #fvHost (again after a render that replaced the host) and keeps drawing.
+  tick(root,x){
+    keepBarAboveFooter(root);
+    const host=root.querySelector(':scope>#fvHost');
+    if(!host)return;
+    walkLoad().then(m=>{
+      if(!m){x.ui.fvOff=true;x.render();return;}
+      if(!host.isConnected)return;
+      // A ride the page no longer has (reloaded engine, another order now): back to the farm.
+      if(x.ui.fvRide&&(!m.riding()||m.riding()!==x.ui.fvTask)){if(m.riding())m.cancelRide();x.ui.fvRide=null;x.render();return;}
+      m.mount(host,x,HOOKS);
+    });
+  },
   // Day summary: "Ngày mai" first (the weather, beds to pick, eggs, the night's pests and soil, supplies), one way
   // to the supplies, the day's figures folded.
   summary(sum,x){
@@ -422,6 +584,19 @@ export default {
     async wx(data,el,x){x.ui.wxOpen=!x.ui.wxOpen;x.render();},
     async order(data,el,x){x.ui.orderOpen=!x.ui.orderOpen;x.render();},
     async steps(data,el,x){x.ui.stepsOpen=!x.ui.stepsOpen;x.render();},
+    // 🚶 Tự đi
+    async fvgo(d,el,x){const m=await walkLoad();x.ui.fvMore=null;m?.go(d.to);},
+    async fvride(d,el,x){
+      const t=(x.room.tasks||[]).find(q=>q.id===d.task);if(!t||!t.known)return;
+      if(d.ask&&!await x.ask('Xác nhận',d.ask,'Đồng ý'))return;
+      const m=await walkLoad();if(!m)return;
+      const [sign,look]=BUYER[Number(String(t.npc).slice(-2))]||[x.npc(t.npc).display_name,{hair:'#3a2c26',top:'#8fb3cf'}];
+      m.ride({task:t.id,place:sign,sign,look:{skin:'#e9c3a0',...look}});
+    },
+    async fvhonk(d,el,x){(await walkLoad())?.honk();},
+    async fvcam(d,el,x){const cam=d.cam==='tp'?'tp':'fp';x.ui.fvCam=cam;setPref({cam});(await walkLoad())?.camera(cam);x.render();},
+    async fvmode(d,el,x){const mode=d.mode==='tap'?'tap':'walk';setPref({mode});x.ui.fvMore=null;x.render();},
+    async fvmore(d,el,x){x.ui.fvMore=d.more&&x.ui.fvMore!==d.more?d.more:null;x.render();},
   },
   dock:[['inventory','box','Kho vật tư','Hạt giống, phân, bao bì']],
 };
