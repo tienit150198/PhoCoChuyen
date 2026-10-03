@@ -125,3 +125,8 @@ html[data-theme="dem"] .career-job.pb{--sk-accent:#ff8fb1;--sk-accent-2:#c46a8a;
 .pb-sum-more>summary::-webkit-details-marker{display:none}
 .pb-sum-more>summary::after{content:"▸";margin-left:auto;color:var(--muted);font-weight:400}
 .pb-sum-more[open]>summary::after{content:"▾"}
+/* past the set-up: a slim order card and a one-line lesson, so the camera, the choice and the print stay in view */
+.career-job.pb .pb-slim{padding:10px 12px}
+.career-job.pb .pb-slim p{margin:0}
+.career-job.pb .pb-slim .pb-chips{margin-top:6px}
+.career-job.pb .pb-learn.slim{margin:0 0 8px;padding:8px 12px;border:1px dashed var(--sk-accent);border-radius:12px;font-size:.86rem;background:var(--pb-paper)}

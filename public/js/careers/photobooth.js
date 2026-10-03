@@ -30,7 +30,7 @@ const fltText=(x,f)=>f==='none'?'giữ màu gốc':`màu ${lower(NAME(x,'filters
 const PAINT=new Map();
 let LIVE=null;
 /** A canvas drawn once per `key` (the key changes when the picture would). */
-function canvas(key,paint,cls='',label=''){PAINT.set(key,paint);return `<canvas class="pb-cv ${cls}" data-pb-k="${key.replace(/"/g,'')}"${label?` role="img" aria-label="${label}"`:''}></canvas>`;}
+function canvas(key,paint,cls='',label=''){const k=String(key).replace(/["'<>&]/g,'');PAINT.set(k,paint);return `<canvas class="pb-cv ${cls}" data-pb-k="${k}"${label?` role="img" aria-label="${label}"`:''}></canvas>`;}
 function fit(cv,w,h){const r=Math.min(2,Math.max(1,globalThis.devicePixelRatio||1));cv.width=Math.round(w*r);cv.height=Math.round(h*r);const c=cv.getContext('2d');c.setTransform(r,0,0,r,0,0);return c;}
 function fog(c,w,h){c.save();const g=c.createRadialGradient(w/2,h/2,h*.1,w/2,h/2,w*.7);g.addColorStop(0,'rgba(255,255,255,.28)');g.addColorStop(1,'rgba(240,244,248,.62)');c.fillStyle=g;c.fillRect(0,0,w,h);c.restore();}
 /** The people of this group as photo-frames.js draws them. */
@@ -57,24 +57,30 @@ function stripOf(x,t,src){
 function printCanvas(x,t,src,cls,scale){
   const p=stripOf(x,t,src);
   const key=`print-${t.id}-${PF.sig(p.strip,p.frame,p.deco)}-${(src.pick||[]).map(i=>t.shots[i]?.q).join('')}-${scale}`;
-  return canvas(key,cv=>{PF.draw(cv,p.strip,p.frame,p.deco,{scale,brand:BRAND,t:x.t,paintShot:(c,s,w,h)=>paintCell(c,s,w,h)});},`pb-print ${cls} lay-${p.strip.layout}`,'Ảnh in');
+  const dpr=Math.min(2,Math.max(1,globalThis.devicePixelRatio||1));
+  return canvas(key,cv=>{PF.draw(cv,p.strip,p.frame,p.deco,{scale:scale*dpr,brand:BRAND,t:x.t,paintShot:(c,s,w,h)=>paintCell(c,s,w,h)});},`pb-print ${cls} lay-${p.strip.layout}`,'Ảnh in');
 }
 
 /* ------------------------------------------------------------ the order */
-function ticket(t,x){
+/** `tab`: past the set-up the card shrinks to a name and the words that matter on that tab, so the work stays in view. */
+function ticket(t,x,tab='set'){
   if(!t.known)return askCard(x,t,'👂 Hỏi khách muốn chụp gì');
   const n=need(t),st=t.set||{},de=t.deco||{};
   const chip=(ok,s)=>`<span class="pb-chip ${ok?'ok':''}">${s}</span>`;
   const props=n.props?.length?n.props.map(k=>x.esc(lower(NAME(x,'props',k)))).join(', '):'không đạo cụ';
   const sts=n.st?.length?`dán ${n.st.map(k=>x.esc(lower(NAME(x,'stickers',k)))).join(', ')}${n.free?' (+ tùy ý)':''}`:n.free?'sticker tùy ý':'không sticker';
-  const chips=[chip(st.pkg===n.pkg,`${x.esc(PK(x,n.pkg).emoji)} ${x.esc(PK(x,n.pkg).name)}`),
+  const list=[chip(st.pkg===n.pkg,`${x.esc(PK(x,n.pkg).emoji)} ${x.esc(PK(x,n.pkg).name)}`),
     chip((n.frames||[]).includes(st.frame),`🖼️ ${(n.frames||[]).map(k=>x.esc(NAME(x,'frames',k))).join(' / ')}`),
     chip((n.bd||[]).includes(st.bd),`🎨 ${(n.bd||[]).map(k=>x.esc(lower(NAME(x,'backdrops',k)))).join(' / ')}`),
     chip(sameSet(st.props,n.props),`🎩 ${props}`),
     chip(st.light===n.light,`${LIGHT_EMOJI[n.light]||'💡'} ${x.esc(lower(NAME(x,'lights',n.light)))}`),
     chip((n.st||[]).every(k=>(de.st||[]).includes(k))&&(n.free||sameSet(de.st,n.st)),`✨ ${sts}`),
     chip(de.date===n.date,n.date?'📅 có ngày tháng':'📅 không ghi ngày'),
-    chip(de.flt===n.flt,`🎞️ ${x.esc(fltText(x,n.flt))}`)].join('');
+    chip(de.flt===n.flt,`🎞️ ${x.esc(fltText(x,n.flt))}`)],chips=list.join('');
+  if(tab!=='set'){
+    const pick={shoot:[0,2,3,4],pick:[5,6,7],print:[0,1],pay:[]}[tab]||[];
+    return `<article class="card pb-slim"><p><b>${x.esc(x.npc(t.npc).display_name)}</b> <span class="muted small">· ${x.esc(t.title)}</span></p>${pick.length?`<p class="pb-chips">${pick.map(i=>list[i]).join('')}</p>`:''}</article>`;
+  }
   const tags=[n.check?'<span class="tag amber">👀 Soi ảnh kỹ</span>':'',n.kid?'<span class="tag">🧒 Bé khó ngồi yên</span>':'',n.old?'<span class="tag">👴 Cười chậm</span>':''].join('');
   return person(x,t,`<p class="pb-chips">${chips}</p>${n.note?`<p class="muted small">${x.esc(n.note)}</p>`:''}`,tags?`<span class="pb-tags">${tags}</span>`:'');
 }
@@ -193,27 +199,33 @@ function setupSteps(t,x){
 }
 
 /* ------------------------------------------------------------ học nghề: the first customers with chị Lam */
-function learnCard(x){
+function learnCard(x,full=true){
   const l=data(x).learn;if(!l?.on)return '';
+  if(!full)return `<p class="pb-learn slim" aria-label="Học nghề">📷 Học nghề · khách ${Math.min(l.n+1,l.of)}/${l.of} · <b>${x.esc(l.title||'')}</b></p>`;
   return `<section class="card pb-learn" aria-label="Học nghề"><span class="eyebrow">📷 Học nghề với chị Lam · khách ${Math.min(l.n+1,l.of)}/${l.of}</span><b>${x.esc(l.title||'')}</b><p class="small">${x.esc(l.text||'')}</p><p class="small muted">Chị đứng cạnh máy in: lỡ sai chỗ nào, chị nhắc trước khi in.</p></section>`;
 }
 
 /* ------------------------------------------------------------ the guide */
+/** The first customer ever: the morning set-up counts as served, so firstTime() alone would end the walk-through early. */
+const isFirst=x=>firstTime(x)||!(Number(data(x).stats?.customers)>0);
+/** The one button that sends this command with this payload (what a pointer arrow lands on). */
+const ctl=(cmd,payload)=>`[data-command="${cmd}"][data-payload='${JSON.stringify(payload)}']`;
 function orderSteps(t,x){
-  const d=data(x),n=need(t),st=t.set||{},de=t.deco||{},shots=t.shots||[],k=kOf(x,t),first=firstTime(x),rows=[];
-  // first customer: the button does the step; later ones: it only points at the control.
-  const go=(cmd,payload,label,sel)=>first?{cmd,payload,label}:{sel,label};
+  const d=data(x),n=need(t),st=t.set||{},de=t.deco||{},shots=t.shots||[],k=kOf(x,t),rows=[];
+  // first customer (the morning set-up is not one): the button does the step; later ones: it only points at the very control.
+  const first=isFirst(x);
+  const go=(cmd,payload,label,sel)=>first?{cmd,payload,label}:{sel:sel==null?ctl(cmd,payload):sel,label};
   if(!d.booth?.open)rows.push({ok:null,tab:'set',label:'Mở tiệm xong mới chụp',go:null});
   // ① the booth
-  rows.push({ok:st.pkg===n.pkg?true:st.pkg?false:null,tab:'set',label:`Gói ${lower(PK(x,n.pkg).name)}`,go:go('pb_pkg',{task:t.id,pkg:n.pkg},`${PK(x,n.pkg).emoji} Gói ${x.esc(lower(PK(x,n.pkg).name))}`,'.pb-pkgs')});
+  rows.push({ok:st.pkg===n.pkg?true:st.pkg?false:null,tab:'set',label:`Gói ${lower(PK(x,n.pkg).name)}`,go:go('pb_pkg',{task:t.id,pkg:n.pkg},`${PK(x,n.pkg).emoji} Gói ${x.esc(lower(PK(x,n.pkg).name))}`)});
   rows.push({ok:(n.frames||[]).includes(st.frame)?true:st.frame?false:null,tab:'set',label:`Khung ${(n.frames||[]).map(f=>NAME(x,'frames',f)).join(' / ')}`,
-    go:go('pb_frame',{task:t.id,frame:n.frames[0]},`🖼️ Khung ${x.esc(NAME(x,'frames',n.frames[0]))}`,'.pb-frames')});
+    go:go('pb_frame',{task:t.id,frame:n.frames[0]},`🖼️ Khung ${x.esc(NAME(x,'frames',n.frames[0]))}`)});
   rows.push({ok:(n.bd||[]).includes(st.bd)?true:st.bd?false:null,tab:'set',label:(n.bd||[]).map(b=>NAME(x,'backdrops',b)).join(' / '),
-    go:go('pb_bd',{task:t.id,bd:n.bd[0]},`🎨 ${x.esc(NAME(x,'backdrops',n.bd[0]))}`,'.pb-bds')});
-  for(const p of n.props||[])if(!(st.props||[]).includes(p))rows.push({ok:null,tab:'set',label:`Đưa khách ${lower(NAME(x,'props',p))}`,go:go('pb_prop',{task:t.id,prop:p},`🎩 ${x.esc(NAME(x,'props',p))}`,'.pb-props')});
-  for(const p of st.props||[])if(!(n.props||[]).includes(p))rows.push({ok:false,tab:'set',label:`Khách không dặn ${lower(NAME(x,'props',p))}`,go:go('pb_prop',{task:t.id,prop:p},`↩️ Cất ${x.esc(lower(NAME(x,'props',p)))}`,'.pb-props')});
+    go:go('pb_bd',{task:t.id,bd:n.bd[0]},`🎨 ${x.esc(NAME(x,'backdrops',n.bd[0]))}`)});
+  for(const p of n.props||[])if(!(st.props||[]).includes(p))rows.push({ok:null,tab:'set',label:`Đưa khách ${lower(NAME(x,'props',p))}`,go:go('pb_prop',{task:t.id,prop:p},`🎩 ${x.esc(NAME(x,'props',p))}`)});
+  for(const p of st.props||[])if(!(n.props||[]).includes(p))rows.push({ok:false,tab:'set',label:`Khách không dặn ${lower(NAME(x,'props',p))}`,go:go('pb_prop',{task:t.id,prop:p},`↩️ Cất ${x.esc(lower(NAME(x,'props',p)))}`)});
   if(sameSet(st.props,n.props))rows.push({ok:true,tab:'set',label:n.props?.length?`Đạo cụ: ${n.props.map(p=>lower(NAME(x,'props',p))).join(', ')}`:'Không đạo cụ'});
-  rows.push({ok:st.light===n.light?true:st.light?false:null,tab:'set',label:NAME(x,'lights',n.light),go:go('pb_light',{task:t.id,light:n.light},`${LIGHT_EMOJI[n.light]||'💡'} ${x.esc(NAME(x,'lights',n.light))}`,'.pb-lights')});
+  rows.push({ok:st.light===n.light?true:st.light?false:null,tab:'set',label:NAME(x,'lights',n.light),go:go('pb_light',{task:t.id,light:n.light},`${LIGHT_EMOJI[n.light]||'💡'} ${x.esc(NAME(x,'lights',n.light))}`)});
   // ② the camera: good shots taken with the booth as asked
   const right=s=>(n.bd||[]).includes(s.bd)&&s.light===n.light&&sameSet(s.props,n.props)&&!s.haze;
   const good=shots.filter(s=>s.q==='good'&&right(s)).length,max=Number(cc(x).max_shots||8),setOk=st.bd&&(n.bd||[]).includes(st.bd)&&st.light===n.light&&sameSet(st.props,n.props);
@@ -231,12 +243,12 @@ function orderSteps(t,x){
     const pick=t.pick||[],okPick=sameSet(pick,t.want);
     const extra=pick.find(i=>!t.want.includes(i)),miss=t.want.find(i=>!pick.includes(i));
     rows.push({ok:okPick?true:extra!=null?false:null,tab:'pick',label:`Chọn đúng tấm ${t.want.map(i=>i+1).join(', ')}`,note:`${pick.length}/${k}`,
-      go:okPick?null:extra!=null?go('pb_pick',{task:t.id,i:extra},`↩️ Bỏ tấm ${extra+1}`,'.pb-grid'):go('pb_pick',{task:t.id,i:miss},`☑️ Chọn tấm ${miss+1}`,'.pb-grid')});
+      go:okPick?null:extra!=null?go('pb_pick',{task:t.id,i:extra},`↩️ Bỏ tấm ${extra+1}`):go('pb_pick',{task:t.id,i:miss},`☑️ Chọn tấm ${miss+1}`)});
   }
-  for(const s of n.st||[])if(!(de.st||[]).includes(s))rows.push({ok:null,tab:'pick',label:`Dán ${lower(NAME(x,'stickers',s))}`,go:go('pb_sticker',{task:t.id,st:s},`✨ ${x.esc(NAME(x,'stickers',s))}`,'.pb-sts')});
-  if(!n.free)for(const s of de.st||[])if(!(n.st||[]).includes(s))rows.push({ok:false,tab:'pick',label:`Khách không dặn ${lower(NAME(x,'stickers',s))}`,go:go('pb_sticker',{task:t.id,st:s},`↩️ Gỡ ${x.esc(lower(NAME(x,'stickers',s)))}`,'.pb-sts')});
-  rows.push({ok:de.date===n.date?true:null,tab:'pick',label:n.date?'Đóng ngày tháng':'Không ghi ngày',go:go('pb_date',{task:t.id,on:!!n.date},n.date?'📅 Có ngày':'Không ghi ngày','.pb-date')});
-  rows.push({ok:de.flt===n.flt?true:null,tab:'pick',label:fltText(x,n.flt).replace(/^./,c=>c.toUpperCase()),go:go('pb_filter',{task:t.id,flt:n.flt},`🎞️ ${x.esc(NAME(x,'filters',n.flt))}`,'.pb-flts')});
+  for(const s of n.st||[])if(!(de.st||[]).includes(s))rows.push({ok:null,tab:'pick',label:`Dán ${lower(NAME(x,'stickers',s))}`,go:go('pb_sticker',{task:t.id,st:s},`✨ ${x.esc(NAME(x,'stickers',s))}`)});
+  if(!n.free)for(const s of de.st||[])if(!(n.st||[]).includes(s))rows.push({ok:false,tab:'pick',label:`Khách không dặn ${lower(NAME(x,'stickers',s))}`,go:go('pb_sticker',{task:t.id,st:s},`↩️ Gỡ ${x.esc(lower(NAME(x,'stickers',s)))}`)});
+  rows.push({ok:de.date===n.date?true:null,tab:'pick',label:n.date?'Đóng ngày tháng':'Không ghi ngày',go:go('pb_date',{task:t.id,on:!!n.date},n.date?'📅 Có ngày':'Không ghi ngày')});
+  rows.push({ok:de.flt===n.flt?true:null,tab:'pick',label:fltText(x,n.flt).replace(/^./,c=>c.toUpperCase()),go:go('pb_filter',{task:t.id,flt:n.flt},`🎞️ ${x.esc(NAME(x,'filters',n.flt))}`)});
   // ④ the printer and the trimming table
   const pr=t.printed,cur=pr&&pr.pkg===st.pkg&&pr.frame===st.frame&&sameSet(pr.pick,t.pick)&&sameSet(pr.st,de.st)&&pr.date===de.date&&pr.flt===de.flt;
   if(!t.trim)rows.push({ok:cur?true:pr?false:null,tab:'print',label:pr&&!cur?'In lại theo chỉnh mới':'In ảnh',
@@ -256,14 +268,14 @@ function guide(t,x){
   if(t.kind==='setup'){const steps=setupSteps(t,x);return {steps,final:{label:'📸 MỞ TIỆM',go:finalGo(steps,'pb_open',{task:t.id}),ready:true}};}
   if(!t.known)return {steps:[{ok:null,label:'Hỏi khách',go:{cmd:'ask',payload:{task:t.id},label:'👂 Hỏi khách muốn chụp gì'}}],final:null,pulse:'.sk-ask'};
   if(t.stage==='pay'){const s=changeStep(x,t.id,t.cash),steps=s?[s]:[];return {steps,final:{label:'💵 ĐƯA TIỀN THỐI',go:finalGo(steps,'pb_pay',{task:t.id,...changePayload(x,t.id,t.cash)}),ready:true}};}
-  const steps=orderSteps(t,x),tab=tabOf(t,x,steps);
+  const steps=orderSteps(t,x),tab=tabOf(t,x,steps),first=isFirst(x);
   // A pointer at a control on another tab first opens that tab (it never does the step).
   for(const s of steps)if(s.go?.sel&&s.tab&&s.tab!==tab)s.go={act:'car:tab',data:{tab:s.tab,task:t.id},label:`👉 Sang mục ${TABS.find(([k])=>k===s.tab)[1]}`};
   const pk=PK(x,need(t).pkg),out=!t.printed&&(!stockOf(x,pk.paper)||(pk.frame&&!stockOf(x,pk.frame)));
-  if(out)return {steps,tab,final:{label:'🙏 Nói thật: tiệm hết giấy, khung',go:{cmd:'pb_decline',payload:{task:t.id}},ready:true}};
-  return {steps,tab,final:{label:'🖼️ ĐƯA ẢNH',go:finalGo(steps,'pb_serve',{task:t.id}),ready:!!t.trim,why:'in và cắt ảnh trước đã'}};
+  if(out)return {steps,tab,final:{label:'🙏 Nói thật: tiệm hết giấy, khung',go:{cmd:'pb_decline',payload:{task:t.id}},ready:true},first};
+  return {steps,tab,first,final:{label:'🖼️ ĐƯA ẢNH',go:finalGo(steps,'pb_serve',{task:t.id}),ready:!!t.trim,why:'in và cắt ảnh trước đã'}};
 }
-const hintFor=(g,x)=>nextHint(x,g.steps,{final:g.final&&g.final.ready!==false&&g.final.go?{label:g.final.label.replace(/^[^\p{L}]+/u,''),go:g.final.go}:null,pulse:g.pulse});
+const hintFor=(g,x)=>nextHint(x,g.steps,{final:g.final&&g.final.ready!==false&&g.final.go?{label:g.final.label.replace(/^[^\p{L}]+/u,''),go:g.final.go}:null,pulse:g.pulse,glow:!!g.first});
 function tabsRow(t,x,tab,steps){
   return `<div class="pb-tabs" role="tablist">${TABS.map(([k,l])=>{const left=steps.filter(s=>s.tab===k&&s.ok!==true).length;
     return act(x,`${x.esc(l)}${left?`<small>${left}</small>`:'<small>✓</small>'}`,'tab',{tab:k,task:t.id},`pb-tab ${k===tab?'on':''}`,` role="tab" aria-selected="${k===tab}"`);}).join('')}</div>`;
@@ -299,7 +311,8 @@ export default {
       main=tab==='set'?setPanel(t,x):tab==='shoot'?camPanel(t,x):tab==='pick'?pickPanel(t,x):printPanel(t,x);
       side=stepRows(x,g.steps.filter(s=>s.tab===tab),'Việc của bước này');
     }
-    const head=t.kind==='setup'?dayBar(x):`${learnCard(x)}${ticket(t,x)}${dayBar(x)}`;
+    const at=!t.known?'set':t.stage==='pay'?'pay':g.tab||'set';
+    const head=t.kind==='setup'?dayBar(x):`${learnCard(x,at==='set')}${ticket(t,x,at)}${dayBar(x)}`;
     return `<div class="career-job sk pb">${hint}${top}${head}${tabs}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${bottom(x,g)}</div>`;
   },
   idle(x){
