@@ -1380,7 +1380,9 @@ document.addEventListener('click',async e=>{
   pressed(el);
   // Additional input while a mutation is on the wire waits for it; retries carry an idempotency key.
   // A second tap on the control already on the wire is a double tap, not a new wish.
-  if(ui.busy&&!['close','confirmNo','confirmYes'].includes(el.dataset.action)){try{const k=tapKey(el);heldTap=k===flightTap?null:k;}catch{heldTap=null;}holdMark(heldTap?el:null);return;}
+  // data-quick (a milk tea pick): the workbench shows it at once and queues its command itself (api.command keeps
+  // the order), so quick picks in a row are not held behind each other.
+  if(ui.busy&&!['close','confirmNo','confirmYes'].includes(el.dataset.action)&&!el.hasAttribute('data-quick')){try{const k=tapKey(el);heldTap=k===flightTap?null:k;}catch{heldTap=null;}holdMark(heldTap?el:null);return;}
   try{flightTap=tapKey(el);}catch{flightTap=null;}
   // "Đón thêm khách" drawn before the gate closed (a career panel, an older render): no press into a sure refusal.
   if(el.dataset.command==='more_work'&&moreGate(room())){const g=moreGate(room());toast(g.why==='full'?'Đang có đủ việc: làm tiếp việc đang chờ nhé.':g.why==='cap'?'Hôm nay đủ khách rồi: làm nốt rồi khép ca nhé.':'Sắp đóng cửa: không đón thêm khách. Làm nốt rồi khép ca nhé.','hint');if(room().tasks.some(x=>!ended(x))){ui.task=null;await openJob(null,'shelf');}else{renderMain();renderSheet();}return;}
@@ -1439,7 +1441,10 @@ window.addEventListener('resize',()=>{clearTimeout(responsiveTimer);responsiveTi
 // Badges set outside a render (v4/ticker.js, v4/marriage.js): redraw the rail so its hubs carry them too.
 document.addEventListener('mnl:badges',()=>{if(api.state&&api.content&&!$('#app').hidden){setHTML($('#rail'),railHTML(room()));setHTML($('#dock'),dockHTML(room()));}});
 window.addEventListener('layoutchange',()=>{world.resize();if(api.state&&api.content)renderMain();});
-api.addEventListener('state',()=>{syncOlder(api.revision);ensureCareerUI();renderMain();if(ui.view)renderSheet();shell.update(env());});
+/* A workbench showing picks ahead of the server (milk tea: module.settling) skips drawing its sheet for an answer that
+ * another queued answer follows: the sheet shows those picks already, and the last answer draws it. */
+const settling=()=>{if(ui.view!=='job')return false;try{return !!careerUI(career())?.settling?.(careerContext(env()));}catch{return false;}};
+api.addEventListener('state',()=>{syncOlder(api.revision);ensureCareerUI();renderMain();if(ui.view&&!settling())renderSheet();shell.update(env());});
 api.addEventListener('busy',e=>{ui.busy=e.detail;document.body.classList.toggle('busy',ui.busy);$('#saveState')?.setAttribute('aria-busy',String(ui.busy));if(!ui.busy&&heldTap)setTimeout(replayHeld,60);else if(!ui.busy)holdMark(null);});
 /* "Game mất chữ": an iPhone tab left open across a deploy came back with every card of the work sheet
  * blank (containers, portrait and button shapes drawn, no words) while the DOM still held the text.
@@ -1481,7 +1486,7 @@ api.addEventListener('net',e=>{
  * Anything else that switches careers is covered by ensureCareerUI (re-renders once the module is in). */
 const CAREER_MODULES=[];
 // Its part of the catalogue (api.careerContent: a plugin workplace's data) comes with its workbench.
-const careerAssets=(id,waitCss=true)=>Promise.all([CAREER_MODULES.includes(id)&&!hasCareerUI(id)?loadCareerModules([id],waitCss):null,api.careerContent(id),import(`./scenes/${kindOf(id)}.js`).catch(()=>{}),id==='teacher'||id==='tour_guide'?teachTour().catch(()=>{}):null]);
+const careerAssets=(id,waitCss=true)=>Promise.all([CAREER_MODULES.includes(id)&&!hasCareerUI(id)?loadCareerModules([id],waitCss):null,api.careerContent(id),import(`./scenes/${kindOf(id)}.js`).catch(()=>{}),id==='teacher'||id==='tour_guide'?teachTour(api).catch(()=>{}):null]);
 setCareerData(id=>api.hasCareerContent(id));  // careerUI(id) waits for the workplace's data part too
 /* The current workplace's workbench and data part, when they are not in (a switch, or a start-up whose fetch failed
  * on a weak network: the game opens anyway). Failed again: asked for once more after 2, 4, 8 … 30 s, not on every

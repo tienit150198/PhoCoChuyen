@@ -10,6 +10,8 @@ import copy
 import http.client
 import json
 import os
+import shutil
+import subprocess
 import tempfile
 import threading
 import unittest
@@ -534,6 +536,77 @@ class ClassRouteTests(unittest.TestCase):
             status, data = self.req(dict(kind='pupil', pupil=kid, task=tid, op='voice'))
         self.assertEqual((status, data['mode'], data['reason']), (200, 'scripted', 'rate_limit'))
         self.assertEqual(FakeLLM.requests, [])
+
+    # "Ad sao cái chỗ trả lời học sinh á mình bấm rồi mà bị đứng lun ạ" (chat 03/10): a reply waited for the model.
+    def test_reply_later_answers_after_the_rules_then_voice_rewords_the_reaction(self):
+        j, tid = self.at_ask()
+        kid = j.get(tid)['room']['ask']['kid']
+        rev = self.saved()[1]
+        status, data = self.req(dict(kind='pupil', pupil=kid, task=tid, option='a', later=True, expected_revision=rev))
+        self.assertEqual((status, data['mode'], data['reason']), (200, 'scripted', 'later'), data)
+        self.assertEqual(FakeLLM.requests, [])                      # the answer did not wait for the model
+        ask = self.ask(tid)
+        self.assertEqual(ask['state'], 'done')                      # the rules ran (and were stored)
+        self.assertEqual(data['revision'], self.saved()[1])
+        reaction = ask['lines'][-1]
+        self.assertEqual((reaction['who'], reaction['mode']), ('pupil', 'scripted'))
+        self.assertEqual(data['reply'], reaction['text'])
+        # Then the client asks for the wording: the reaction (not the question) is reworded, once.
+        status, data = self.req(dict(kind='pupil', pupil=kid, task=tid, op='voice'))
+        self.assertEqual((status, data['mode'], data['reply']), (200, 'ai', FakeLLM.reply), data)
+        ask = self.ask(tid)
+        self.assertEqual((ask['lines'][-1]['mode'], ask['lines'][-1]['canonical']), ('ai', reaction['text']))
+        self.assertEqual(ask['lines'][0]['mode'], 'scripted')
+        sent = json.loads(FakeLLM.requests[0]['messages'][1]['content'])
+        self.assertEqual(sent['player_says'], ask['lines'][-2]['text'])  # the teacher's answer, as an inline reply sends
+        self.assertEqual(self.req(dict(kind='pupil', pupil=kid, task=tid, op='voice'))[1]['reason'], 'nothing_to_voice')
+        validate_state(self.saved()[0])
+
+    def test_later_only_on_a_reply_and_only_when_true(self):
+        j, tid = self.at_ask()
+        kid = j.get(tid)['room']['ask']['kid']
+        status, data = self.req(dict(kind='pupil', pupil=kid, task=tid, op='voice', later=True))
+        self.assertEqual((status, data['mode']), (200, 'ai'), data)  # a voice is a voice
+        FakeLLM.reply = 'Ồ, giữ số ba trong đầu rồi đếm tiếp, con làm được rồi!'
+        status, data = self.req(dict(kind='pupil', pupil=kid, task=tid, option='a', later='yes'))
+        self.assertEqual((status, data['mode']), (200, 'ai'), data)  # anything but true: the reply voices inline, as before
+        self.assertEqual(len(FakeLLM.requests), 2)
+
+    def test_parent_reply_later_then_voice(self):
+        j, tid = period_at_ask()
+        finish(j, tid)
+        self.put(j.state)
+        kid = next(k for k, th in care(j)['threads'].items() if th and th[-1].get('ask'))
+        trust = care(j)['parents'][kid]['trust']
+        status, data = self.req(dict(kind='parent', pupil=kid, later=True,
+                                     text=f'Dạ, {TL.KID[kid]["name"]} học Toán tiến bộ, tuần này cô sẽ kèm thêm, cảm ơn chị!'))
+        self.assertEqual((status, data['mode'], data['reason'], data['result']['quality']), (200, 'scripted', 'later', 'good'), data)
+        self.assertEqual(FakeLLM.requests, [])
+        cr = self.saved()[0]['careers']['teacher']['ext']['data']['class']['care']
+        self.assertEqual(cr['parents'][kid]['trust'], min(10, trust + 2))
+        FakeLLM.reply = 'Dạ chị cảm ơn cô nhiều, tối nay nhà sẽ làm cùng con.'
+        status, data = self.req(dict(kind='parent', pupil=kid, op='voice'))
+        self.assertEqual((status, data['mode']), (200, 'ai'), data)
+        th = self.saved()[0]['careers']['teacher']['ext']['data']['class']['care']['threads'][kid]
+        self.assertEqual([x['who'] for x in th[-2:]], ['teacher', 'parent'])
+        self.assertEqual(th[-1]['mode'], 'ai')
+        self.assertEqual(cr['parents'][kid]['trust'], self.saved()[0]['careers']['teacher']['ext']['data']['class']['care']['parents'][kid]['trust'])
+        validate_state(self.saved()[0])
+
+
+class ClassSendClientTests(unittest.TestCase):
+    """The page side (tests/class_send.mjs with node): a voice never holds the command queue, the answers wait
+    VOICE_HOLD at most, a reply goes with later:true then the reaction is voiced, and loading the lesson module
+    binds the api (after a reload mid-lesson the first tap on an answer used to do nothing)."""
+
+    def test_class_send(self):
+        node = shutil.which('node')
+        if not node:
+            self.skipTest('node not installed')
+        root = Path(__file__).resolve().parents[1]
+        out = subprocess.run([node, str(root / 'tests' / 'class_send.mjs')], cwd=root, capture_output=True, text=True,
+                             encoding='utf-8', timeout=60)
+        self.assertEqual(out.returncode, 0, out.stderr + out.stdout)
 
 
 if __name__ == '__main__':
