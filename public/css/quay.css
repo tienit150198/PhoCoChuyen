@@ -1,0 +1,64 @@
+/* ==========================================================================
+   🏪 Quầy của bạn (public/js/v4/quay.js), on top of bank.css. Theme tokens only.
+   Phone first (390px): one column, 44px targets, the till's button always in sight.
+   ========================================================================== */
+
+.qy-logo{display:inline-grid;place-items:center;flex:none;width:44px;height:44px;border-radius:12px;background:#8a4b1f;font-size:1.5rem}
+.qy-help{display:inline-grid;place-items:center;width:28px;height:28px;margin-left:4px;border-radius:50%;border:1px solid var(--line);background:var(--surface-2);color:var(--ink-2);font:700 .9rem/1 inherit;cursor:pointer;vertical-align:middle}
+.qy-help[aria-expanded="true"]{background:var(--accent-soft,var(--good-soft));color:var(--accent-text,var(--good))}
+.qy-hint{margin:6px 0 0}
+.qy-line{margin:2px 0 0;color:var(--ink-2);font-size:.95rem}
+
+.qy-stall{display:grid;gap:12px}
+.qy-top{display:flex;align-items:center;gap:12px}
+.qy-top h3{margin:0;overflow-wrap:anywhere}
+.qy-tile{position:relative;flex:none;display:inline-grid;place-items:center;width:56px;height:56px;border-radius:16px;background:var(--surface-2);border:1px solid var(--line);font-size:1.9rem}
+.qy-tile i{position:absolute;right:-6px;bottom:-6px;font-style:normal;font-size:1.2rem}
+.qy-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+
+.qy-till{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:var(--radius-sm);background:var(--surface-2)}
+.qy-till>div{display:grid;min-width:0}
+.qy-till small{color:var(--muted);font-size:.85rem}
+.qy-till strong{font-size:1.6rem;font-variant-numeric:tabular-nums;line-height:1.2}
+.qy-till .btn{flex:none;min-width:120px}
+
+.qy-tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.qy-tabs::-webkit-scrollbar{display:none}
+.qy-tabs>button{min-height:44px}
+.qy-part{display:grid;gap:10px}
+.qy-part h4{margin:6px 0 0}
+
+.qy-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.qy-person,.qy-up{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;border-radius:var(--radius-sm);border:1px solid var(--line);background:var(--surface)}
+.qy-person .grow,.qy-up .grow{display:grid;gap:2px;min-width:140px;flex:1 1 160px}
+.qy-person small,.qy-up small{color:var(--muted);font-size:.85rem}
+.qy-person-act{display:flex;align-items:center;gap:8px;margin-left:auto}
+.qy-step{display:inline-flex;align-items:center;gap:6px}
+.qy-step b{min-width:34px;text-align:center;font-variant-numeric:tabular-nums}
+.qy-step .btn{min-width:44px;min-height:44px}
+.qy-up.on{border-color:var(--good)}
+.qy-up-emoji{font-size:1.6rem;flex:none}
+.qy-have{color:var(--good);font-weight:800;font-size:1.2rem}
+
+.qy-order>button{min-height:44px}
+.qy-days{list-style:none;margin:0;padding:0;display:grid;gap:2px;font-size:.9rem}
+.qy-days li{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;padding:4px 2px;border-bottom:1px dashed var(--line)}
+.qy-days b.up{color:var(--good)}
+.qy-days b.down{color:var(--bad)}
+
+.qy-fund{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:end}
+
+.qy-chips{display:flex;flex-wrap:wrap;gap:8px}
+.qy-chip{min-height:44px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-weight:700;cursor:pointer}
+.qy-chip.on{border-color:var(--accent,var(--good));background:var(--accent-soft,var(--good-soft))}
+.qy-chip:disabled{opacity:.45;cursor:not-allowed}
+.qy-places{display:grid;gap:8px}
+.qy-place{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:10px 12px;border-radius:var(--radius-sm);border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.qy-place .grow{display:grid;gap:2px}
+.qy-place small{color:var(--muted)}
+.qy-place.on{border-color:var(--accent,var(--good));box-shadow:0 0 0 2px var(--accent-soft,var(--good-soft))}
+
+@media (max-width:420px){
+  .qy-fund{grid-template-columns:1fr 1fr}
+  .qy-fund .bk-field{grid-column:1/-1}
+}

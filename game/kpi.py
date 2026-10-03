@@ -66,6 +66,7 @@ FEATURES = (
     ('story', ('st_', 'ev_')),
     ('fair', ('fair_',)),
     ('jobs', ('job_', 'select_career')),
+    ('quay', ('jr_quay',)),
 )
 FEATURE_KEYS = tuple(k for k, _ in FEATURES) + ('work',)
 
@@ -340,6 +341,13 @@ def xu(state) -> int | None:
             for t in b.get('terms') or ():
                 if type(t) is dict and type(t.get('amount')) is int:
                     total += t['amount']
+        q = j.get('quay') if type(j) is dict else None   # 🏪 the counters' fund and till (game/quay.py)
+        if type(q) is dict:
+            for st in q.get('stalls') or ():
+                if type(st) is dict:
+                    for k in ('fund', 'till'):
+                        if type(st.get(k)) is int:
+                            total += st[k]
         cs = state.get('careers')
         if type(cs) is dict:
             for c in cs.values():
