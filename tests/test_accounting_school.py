@@ -174,4 +174,76 @@ class AccountingSchoolTests(unittest.TestCase):
         with self.assertRaises(GameError):self.school.validate(self.s)
 
 
+class ReleasedKeys(unittest.TestCase):
+    """Saves keep every answer a released build graded right (num_cute, 1.4.27: spaces put back moved 3 keys)."""
+    def setUp(self):
+        from game import accounting_school as school
+        from game import accounting_content as content
+        self.school, self.content = school, content
+
+    def test_answer_keys_never_move_silently(self):
+        import json, os
+        with open(os.path.join(os.path.dirname(__file__), 'accounting_released_keys.json'), encoding='utf-8') as f:
+            released = json.load(f)
+        now = {q['id']: q['_key'] for l in self.content.LESSONS.values() for q in l['questions']}
+        now.update({q['id']: q['_key'] for bank in self.content.EXAM_BANK.values() for q in bank})
+        moved = sorted(qid for qid, key in released.items() if qid in now and json.loads(json.dumps(now[qid])) != key)
+        self.assertEqual(moved, [], 'a released answer key changed (choice ids follow the prompt letters): '
+                         'put the old key in accounting_school.LEGACY_KEYS, then refresh tests/accounting_released_keys.json')
+
+    def test_legacy_keys_point_away_from_today_s(self):
+        qs = {q['id']: q for l in self.content.LESSONS.values() for q in l['questions']}
+        qs.update({q['id']: q for bank in self.content.EXAM_BANK.values() for q in bank})
+        for qid, old in self.school.LEGACY_KEYS.items():
+            self.assertIn(qid, qs)
+            self.assertIn(old, [o['id'] for o in qs[qid]['options']])
+            self.assertNotEqual(qs[qid]['_key'], old)
+
+    def lesson_with(self, qid):
+        return next(l for l in self.content.LESSONS.values() if any(q['id'] == qid for q in l['questions']))
+
+    def test_a_practice_answer_saved_under_the_old_key_still_loads(self):
+        s = new_state(); self.school.migrate(s)
+        qid = 'vn_business_vouchers_practice_2'
+        lesson = self.lesson_with(qid)
+        self.school.action(s, 'as_open', {'lesson': lesson['id']})
+        s['accounting_school']['progress'][lesson['id']]['answers'][qid] = self.school.LEGACY_KEYS[qid]
+        s['accounting_school']['progress'][lesson['id']]['attempts'] = 1
+        validate_state(s)
+        s['accounting_school']['selected'] = lesson['id']
+        card = next(q for q in self.school.view(s)['lesson']['questions'] if q['id'] == qid)
+        q = next(q for q in lesson['questions'] if q['id'] == qid)
+        self.assertEqual(card['answer'], q['_key'])      # the solved card shows today's right option
+        s['accounting_school']['progress'][lesson['id']]['answers'][qid] = next(o['id'] for o in q['options'] if o['id'] not in (q['_key'], self.school.LEGACY_KEYS[qid]))
+        with self.assertRaises(GameError): self.school.validate(s)
+
+    def test_the_old_key_is_wrong_for_a_new_answer(self):
+        s = new_state(); self.school.migrate(s)
+        qid = 'vn_business_b01_practice_3'
+        lesson = self.lesson_with(qid)
+        self.school.action(s, 'as_open', {'lesson': lesson['id']})
+        out = self.school.action(s, 'as_answer', {'lesson': lesson['id'], 'question': qid, 'answer': self.school.LEGACY_KEYS[qid]})
+        self.assertFalse(out['correct'])
+        self.assertNotIn(qid, s['accounting_school']['progress'][lesson['id']]['answers'])
+
+    def test_an_exam_graded_by_the_old_key_keeps_its_score_and_certificate(self):
+        t = AccountingSchoolTests('test_old_save_migration_and_engine_dispatch'); t.setUp()
+        t.learn('basic'); t.sit('basic')
+        t.learn('vn_business')
+        school = self.school; s = t.s; qid = 'vn_business_demanddeposit_exam'
+        attempt = 1
+        while qid not in school._draw(s, 'vn_business', attempt): attempt += 1
+        rec = s['accounting_school']['exams'].setdefault('vn_business', dict(attempts=0, score=0, best=0, certificate=None, last=None))
+        rec['attempts'] = attempt - 1
+        t.sit('vn_business')
+        paper = rec['last']; self.assertIn(qid, paper['qs'])
+        for p in (paper, rec['certificate']['proof']): p['answers'][qid] = school.LEGACY_KEYS[qid]   # answered before 1.4.27
+        validate_state(s)                                  # the stored score was the old key's grade
+        self.assertNotEqual(school._grade('vn_business', paper), rec['score'])
+        review = school.view(s)['review']['vn_business']['questions']
+        self.assertTrue(all(r['correct'] for r in review))
+        rec['score'] -= 1
+        with self.assertRaises(GameError): school.validate(s)
+
+
 if __name__ == '__main__': unittest.main()

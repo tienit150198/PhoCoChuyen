@@ -1,3 +1,11 @@
+# v1.4.29 — 📒 Học kế toán: bản lưu cũ không còn bị khóa
+
+Phản ánh của người chơi (num_cute, góp ý #108): "cứ hiện đáp án đã lưu chưa được chấm đúng… ấn vào học bằng cũng không cho vào".
+
+- Mã phương án đúng của câu trắc nghiệm suy từ chữ của đề (`accounting_content.choice`). 1.4.27 thêm lại dấu cách nên 3 câu đổi mã (`vn_business_vouchers_practice_2` o1→o2, `vn_business_b01_practice_3` o2→o0, `vn_business_demanddeposit_exam` o1→o0). Người đã làm đúng các câu này trước 1.4.27 bị `validate` từ chối cả bản lưu → mọi thao tác báo lỗi.
+- `accounting_school.LEGACY_KEYS`: đáp án đã lưu đúng theo mã cũ vẫn hợp lệ; điểm thi/chứng nhận chấm theo mã cũ vẫn khớp; thẻ bài đã giải hiện phương án đúng hiện tại; trả lời mới vẫn chấm theo mã hiện tại.
+- `tests/accounting_released_keys.json`: ảnh chụp mọi mã đáp án đã phát hành; sửa chữ làm đổi mã sẽ làm test đỏ.
+
 # v1.4.28 — 🔥 Thưởng x3 tính đủ cả ngày
 
 Chủ game: "nghe bảo lương x3 nhưng mà chưa tăng đúng kìa".
