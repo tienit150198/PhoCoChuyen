@@ -74,6 +74,8 @@ export function close(){
 }
 
 /* ================================================================ the overlay */
+/** ↗️ and the words apart: in the flare, when the runway fills the window, the button shrinks to the arrow. */
+function gaLabel(){const s=tr('↗️ BAY LẠI'),i=s.indexOf(' ');return i>0?`<span class="ic">${esc(s.slice(0,i))}</span><span class="tx">${esc(s.slice(i+1))}</span>`:esc(s);}
 function build(){
   close();
   const el=document.createElement('div');
@@ -81,11 +83,10 @@ function build(){
   el.innerHTML=`<canvas class="pl-fly-cv" aria-hidden="true"></canvas>
     <div class="pl-fly-top"><span class="pl-fly-phase"></span><button type="button" class="pl-fly-fd" aria-pressed="true">${esc(tr('🟣 Gợi ý'))}</button><button type="button" class="pl-fly-fast">${esc(tr('⏩ Bay nhanh'))}</button></div>
     <p class="pl-fly-say" role="status" aria-live="polite" hidden></p>
-    <p class="pl-fly-tip" hidden></p>
-    <button type="button" class="pl-fly-ga" hidden>${esc(tr('↗️ BAY LẠI'))}</button>
+    <div class="pl-fly-help" hidden><p class="pl-fly-tip" hidden></p><p class="pl-fly-keys" hidden>${esc(tr('← → nghiêng · ↑ ↓ mũi (↓ kéo lên) · W/S ga · G bay lại'))}</p></div>
+    <button type="button" class="pl-fly-ga" aria-label="${esc(tr('↗️ BAY LẠI'))}" hidden>${gaLabel()}</button>
     <div class="pl-fly-yoke" aria-label="${esc(tr('Cần lái: kéo để lái'))}"><span class="pl-fly-knob" aria-hidden="true"></span><small>${esc(tr('Kéo để lái'))}</small></div>
     <div class="pl-fly-thr" role="slider" aria-label="${esc(tr('Cần ga'))}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><span class="pl-fly-thr-fd" aria-hidden="true" hidden></span><span class="pl-fly-thr-knob" aria-hidden="true"></span><small>${esc(tr('Cần ga'))}</small></div>
-    <p class="pl-fly-keys" hidden>${esc(tr('← → nghiêng · ↑ ↓ mũi (↓ kéo lên) · W/S ga · G bay lại'))}</p>
     <div class="pl-fly-ask career-job pl" hidden></div>`;
   (document.querySelector('#sheet[open]')||document.body).append(el);
   F.el=el;F.cv=el.querySelector('canvas');F.c=F.cv.getContext('2d',{alpha:false});
@@ -144,7 +145,7 @@ function onKey(e){
   if(e.target?.closest?.('input,textarea,select,.pl-fly-ask'))return;
   e.preventDefault();e.stopPropagation();
   const k=e.key.length===1?e.key.toLowerCase():e.key;
-  if(e.type==='keydown'){if(k==='g'&&!e.repeat)goAround('player');F.keys.add(k);F.el.querySelector('.pl-fly-keys').hidden=true;}
+  if(e.type==='keydown'){if(k==='g'&&!e.repeat)goAround('player');F.keys.add(k);F.kbd=true;F.el.querySelector('.pl-fly-keys').hidden=true;tidy();}
   else F.keys.delete(k);
 }
 /** This frame's stick: the pad (or the windscreen) wins over the keys; keys ease in and out. */
@@ -167,12 +168,13 @@ function say(text,{key='',ms=3200,now=false}={}){
 function show(line){
   F.say=line.text;F.sayUntil=F.time+line.ms/1000;
   const p=F.el?.querySelector('.pl-fly-say');if(p){p.textContent=line.text;p.hidden=false;}
+  tidy();
 }
 function talkTick(){
   if(!F.say||F.time<F.sayUntil)return;
   const next=F.queue.shift();
   if(next){show(next);return;}
-  F.say='';const p=F.el?.querySelector('.pl-fly-say');if(p)p.hidden=true;
+  F.say='';const p=F.el?.querySelector('.pl-fly-say');if(p)p.hidden=true;tidy();
 }
 /** The first time each part comes up: one short line on how. */
 function tip(part,text){
@@ -182,7 +184,43 @@ function tip(part,text){
   seen.push(part);store(TIPS,JSON.stringify(seen.slice(-12)));
   F.tip=tr(text);F.tipUntil=F.time+9;
   const p=F.el.querySelector('.pl-fly-tip');p.textContent=F.tip;p.hidden=false;
-  if(!matchMedia('(pointer:coarse)').matches)F.el.querySelector('.pl-fly-keys').hidden=false;
+  // The keyboard line only where there is a keyboard: a mouse, or a key already pressed (never on a bare touch screen).
+  const kb=F.el.querySelector('.pl-fly-keys');kb.classList.toggle('kbd',!!F.kbd);
+  kb.hidden=!(F.kbd||matchMedia('(hover:hover) and (pointer:fine)').matches);
+  tidy();
+}
+/** Nothing over the windscreen overlaps: the captain's line first, then BAY LẠI, the tip, the keyboard line last.
+ *  BAY LẠI keeps to the right edge at the horizon (the runway and the PAPI stay in the middle), moving down below the line or up above the tip. */
+function tidy(){
+  const el=F.el;if(!el||F.hidden||!F.L)return;
+  const q=c=>el.querySelector(c),say=q('.pl-fly-say'),ga=q('.pl-fly-ga'),help=q('.pl-fly-help'),tipP=q('.pl-fly-tip'),keys=q('.pl-fly-keys'),ask=q('.pl-fly-ask');
+  const top0=el.getBoundingClientRect().top,box=e=>e.getBoundingClientRect();
+  const hit=(a,b)=>a.left<b.right-1&&b.left<a.right-1&&a.top<b.bottom+5&&b.top<a.bottom+5;
+  const askOn=!ask.hidden&&!!ask.innerHTML;
+  help.hidden=askOn||(tipP.hidden&&keys.hidden);
+  if(!ga.hidden){
+    // BAY LẠI keeps to the right edge: the height nearest the horizon that clears the overlays beside it, the runway and the PAPI;
+    // when the runway fills the window (the flare on a small phone) it shrinks to its arrow first
+    const e0=el.getBoundingClientRect(),V=F.L.view,pts=F.rwyPts||[],lo=box(q('.pl-fly-top')).bottom-top0+8,hi=V.h-8,base=V.h*.42;
+    const spot=(withHelp,rwy)=>{
+      const g=box(ga),gh=g.height||52,gl=g.left-e0.left,gr=g.right-e0.left;
+      const band=r=>r.right-e0.left>gl-6&&r.left-e0.left<gr+6?[r.top-top0,r.bottom-top0]:null;   // only what shares its column
+      const ws=[!say.hidden&&band(box(say)),withHelp&&!help.hidden&&band(box(help))].filter(Boolean);
+      const free=t=>t>=lo&&t+gh<=hi&&ws.every(([a,b])=>t+gh+8<=a||t>=b+8)&&(!rwy||!pts.some(([x,y])=>x>gl-10&&x<gr+10&&y>t-10&&y<t+gh+10));
+      for(let d=0;d<=V.h;d+=4)for(const t of [base-d,base+d])if(free(t))return t;
+      return null;};
+    ga.classList.remove('mini');
+    let top=spot(true,true);
+    if(top===null){ga.classList.add('mini');top=spot(true,true);}
+    if(top===null&&!help.hidden){top=spot(false,true);if(top!==null){keys.hidden=true;tipP.hidden=true;help.hidden=true;}}   // the tip makes way
+    if(top===null){ga.classList.remove('mini');top=spot(true,false)??spot(false,false)??base;}   // no clear sky: at least off the words
+    ga.style.top=Math.round(top)+'px';
+  }
+  for(const p of [keys,tipP]){   // still in the way: the keyboard line goes first, then the tip
+    if(help.hidden||p.hidden)continue;
+    const h=box(help);
+    if((!ga.hidden&&hit(box(ga),h))||(!say.hidden&&hit(box(say),h))){p.hidden=true;help.hidden=tipP.hidden&&keys.hidden;}
+  }
 }
 function chip(text){const p=F.el?.querySelector('.pl-fly-phase');const s=tr(text);if(p&&p.textContent!==s)p.textContent=s;}
 
@@ -224,7 +262,7 @@ function start(){
 }
 function setPhase(name,extra={}){
   F.phase=name;F.ph={t0:F.time,said:new Set(),...extra};
-  const ga=F.el.querySelector('.pl-fly-ga');ga.hidden=name!=='approach'||!canAround();ga.classList.remove('hot');
+  const ga=F.el.querySelector('.pl-fly-ga');ga.hidden=name!=='approach'||!canAround();ga.classList.remove('hot');tidy();
   F.el.dataset.phase=name;
   F.el.classList.toggle('auto',['climb','cruise','descent','ask','around','hold'].includes(name));
   if(name!=='ask'&&F.ask){F.ask='';const box=F.el.querySelector('.pl-fly-ask');box.innerHTML='';box.hidden=true;}
@@ -630,7 +668,8 @@ function frame(now){
     if(tv!==F.thrShown){F.thrShown=tv;th.style.setProperty('--thr',String(S.Tt));th.setAttribute('aria-valuenow',String(tv));}
     const hint=thrHint(),hv=hint===null?-1:Math.round(hint*50);
     if(hv!==F.thrFd){F.thrFd=hv;const m=th.querySelector('.pl-fly-thr-fd');m.hidden=hv<0;if(hv>=0)th.style.setProperty('--thrfd',String(hint));}
-    if(F.tip&&F.time>F.tipUntil){F.tip='';F.el.querySelector('.pl-fly-tip').hidden=true;}
+    if(F.tip&&F.time>F.tipUntil){F.tip='';F.el.querySelector('.pl-fly-tip').hidden=true;F.el.querySelector('.pl-fly-keys').hidden=true;}
+    if(F.seenCheck%6===0)tidy();
     draw();
   }catch(error){console.error(error);leave('error');}
 }
@@ -651,6 +690,7 @@ globalThis.__plFly={
     return {phase:F.phase,open:!!F.el,kt:S.V/KT,ft:S.h/FT,th:S.th/D2R,ph:S.ph/D2R,psi:S.psi/D2R,x:S.x,z:S.z,T:S.T,Tt:S.Tt,ground:S.ground,
       fdTh:d.th/D2R,fdPh:d.ph/D2R,thrHint:thrHint(),steer:d.steer||0,stable:j?.stable??null,why:j?.why||'',say:F.say,ask:!!F.ask,busy:F.busy};},
   stats:()=>{const s=F.stats;return {frames:s.n,avg:s.n?s.sum/s.n:0,max:s.max,lite:F.lite,dpr:F.dpr};},
+  marks:()=>F.rwyPts||[],
 };
 
 /* ================================================================ drawing */
@@ -755,6 +795,7 @@ function draw(){
   c.fillStyle=g;c.fillRect(C.cx-big,hy,big*2,big*2);
   if(sc.hills.length)hills(c,hy,sc);
   for(const p of sc.patches)polygon(c,p.pts,p.col);
+  if(F.phase!=='approach'||sc.bare)F.rwyPts=null;
   if(!sc.bare)runway(c,sc,w);
   boxes(c,sc);
   if(sc.night)cityLights(c,sc);
@@ -798,6 +839,14 @@ function runway(c,sc,w){
     for(let z=-60;z>=-660;z-=60){dot(point(0,.5,z),'#fffbe8',2);if(z%180===0)for(let x=-12;x<=12;x+=4)dot(point(x,.5,z),'#fffbe8',1.6);}
   }
   papi(c,night||bright);
+  if(F.phase==='approach'&&F.seenCheck%6===5)F.rwyPts=rwyMarks();
+}
+/** The runway's edges, centre line and PAPI as they sit on the screen now (the bank turned in): BAY LẠI keeps off them. */
+function rwyMarks(){
+  const out=[],co=Math.cos(-S.ph),si=Math.sin(-S.ph),add=p=>{if(!p)return;const dx=p[0]-C.cx,dy=p[1]-C.cyy;out.push([C.cx+dx*co-dy*si,C.cyy+dx*si+dy*co]);};
+  for(let z=0;z<=LEN;z+=60){add(point(-HALF-1,.3,z));add(point(HALF+1,.3,z));add(point(0,.3,z));}
+  const pp=point(-HALF-22,.6,AIM);if(pp){const gap=Math.max(5,Math.min(30,9*C.f/pp[2]));for(let i=0;i<4;i++)add([pp[0]-(3-i)*gap,pp[1]]);}
+  return out;
 }
 /** PAPI: four lights left of the runway at the aiming point; each white above its angle, red below. */
 function papi(c,glow){
@@ -888,12 +937,24 @@ function panel(c){
   pfd(c,px,py,pw,ph);
   // a line of small readouts under the attitude: throttle, wind, who flies, the gear
   const y=py+ph+17;
-  c.font='600 12px system-ui,-apple-system,sans-serif';c.textBaseline='middle';
   const thr=Math.round(S.T*100),wind=Math.round(Math.abs(F.wx?.cw||0)/KT);
-  c.fillStyle='#9fb0c2';c.textAlign='left';c.fillText(`${tr('CẦN GA')} ${thr}%`,px+4,y);
-  const bx=px+4+c.measureText(`${tr('CẦN GA')} 100%`).width+6;c.fillStyle='#3d4a59';c.fillRect(bx,y-4,40,8);c.fillStyle=thr>85?'#f0b44c':'#6fd38a';c.fillRect(bx,y-4,40*S.T,8);
-  c.textAlign='center';c.fillStyle=wind>28?'#ff7a6b':'#9fb0c2';c.fillText(wind?`${tr('GIÓ')} ${(F.wx?.cw||0)>0?'→':'←'} ${wind} kt`:tr('GIÓ nhẹ'),px+pw*.5,y);
-  c.textAlign='right';c.fillStyle=S.ap?'#6fd38a':'#d6dde6';c.fillText(S.ap?tr('LÁI TỰ ĐỘNG'):tr('BẠN CẦM LÁI'),px+pw-4,y);
+  const lt=`${tr('CẦN GA')} ${thr}%`,wt=wind?`${tr('GIÓ')} ${(F.wx?.cw||0)>0?'→':'←'} ${wind} kt`:tr('GIÓ nhẹ'),rt=S.ap?tr('LÁI TỰ ĐỘNG'):tr('BẠN CẦM LÁI');
+  // three readouts that never run into each other: on a narrow phone the bar goes, then the type shrinks
+  let fs=12,bar=40,lw=0,ww=0,rw=0;
+  for(;;){
+    c.font=`600 ${fs}px system-ui,-apple-system,sans-serif`;
+    lw=c.measureText(`${tr('CẦN GA')} 100%`).width;ww=c.measureText(wt).width;rw=c.measureText(rt).width;
+    const free=pw-8-lw-rw-(bar?bar+6:0);
+    if(free>=ww+20||fs<=9)break;
+    if(bar)bar=0;else fs--;
+  }
+  c.textBaseline='middle';
+  c.fillStyle='#9fb0c2';c.textAlign='left';c.fillText(lt,px+4,y);
+  const bx=px+4+lw+6;
+  if(bar){c.fillStyle='#3d4a59';c.fillRect(bx,y-4,bar,8);c.fillStyle=thr>85?'#f0b44c':'#6fd38a';c.fillRect(bx,y-4,bar*S.T,8);}
+  const l=bar?bx+bar:px+4+lw,r=px+pw-4-rw;
+  c.textAlign='center';c.fillStyle=wind>28?'#ff7a6b':'#9fb0c2';c.fillText(wt,(l+r)/2,y);
+  c.textAlign='right';c.fillStyle=S.ap?'#6fd38a':'#d6dde6';c.fillText(rt,px+pw-4,y);
 }
 function pfd(c,x,y,w,h){
   const R=8;c.fillStyle='#07090c';roundRect(c,x,y,w,h,R);c.fill();

@@ -170,9 +170,17 @@
 .pl-fly-fd[aria-pressed="false"]{opacity:.6}
 .pl-fly-say{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 56px);transform:translateX(-50%);margin:0;max-width:min(520px,calc(100% - 24px));width:max-content;
   padding:8px 14px;border-radius:14px;background:rgb(10 14 20 / 72%);color:#fff;font-weight:700;font-size:15px;line-height:1.3;text-align:center;pointer-events:none;box-shadow:0 4px 14px rgb(0 0 0 / 30%)}
-.pl-fly-tip{position:absolute;left:50%;top:calc(var(--pl-fly-view) - 120px);transform:translateX(-50%);margin:0;max-width:min(460px,calc(100% - 24px));width:max-content;
+/* the first-time tip and the keyboard line stack at the foot of the window, never on top of each other */
+.pl-fly-help{position:absolute;left:50%;bottom:calc(100% - var(--pl-fly-view) + 14px);transform:translateX(-50%);width:max-content;max-width:min(460px,calc(100% - 24px));
+  display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
+.pl-fly-help[hidden]{display:none}
+.pl-fly-tip{margin:0;max-width:100%;
   padding:7px 12px;border-radius:12px;background:#fff7d6;color:#3b2f0b;font-size:13px;font-weight:600;line-height:1.3;text-align:center;pointer-events:none;box-shadow:0 4px 14px rgb(0 0 0 / 25%)}
 .pl-fly-ga{position:absolute;right:10px;top:calc(var(--pl-fly-view) * .42);min-height:52px;padding:8px 14px;border-radius:14px;border:2px solid #fff;background:rgb(10 14 20 / 60%);color:#fff;font-weight:800;font-size:14px;letter-spacing:.02em}
+@media (max-width:440px){.pl-fly-ga{right:6px;min-height:44px;padding:6px 10px;font-size:13px;border-radius:12px}}
+.pl-fly-ga.mini{min-width:48px;min-height:48px;padding:0;border-radius:50%;font-size:18px}
+.pl-fly-ga .tx{margin-left:.3em}
+.pl-fly-ga.mini .tx{display:none}
 .pl-fly-ga.hot{background:#d9532f;border-color:#ffd7c9;animation:pl-fly-hot 1s ease-in-out infinite}
 @keyframes pl-fly-hot{50%{box-shadow:0 0 0 8px rgb(217 83 47 / 35%)}}
 .pl-fly-yoke,.pl-fly-thr{position:absolute;border-radius:22px;border:1px solid rgb(255 255 255 / 18%);background:rgb(255 255 255 / 6%);touch-action:none;display:grid;place-items:center;transition:opacity .25s}
@@ -191,7 +199,9 @@
 /* wide screens: beside the instruments */
 .pl-fly[data-layout="wide"] .pl-fly-yoke{left:16px;width:min(220px,calc(50% - 260px));min-width:150px;top:calc(var(--pl-fly-view) + 12px);bottom:16px}
 .pl-fly[data-layout="wide"] .pl-fly-thr{right:16px;top:calc(var(--pl-fly-view) + 12px);bottom:16px}
-.pl-fly-keys{position:absolute;left:50%;bottom:calc(100% - var(--pl-fly-view) + 26px);transform:translateX(-50%);margin:0;padding:5px 12px;border-radius:999px;background:rgb(10 14 20 / 65%);color:#d6dde6;font-size:12px;white-space:nowrap;pointer-events:none}
+.pl-fly-keys{margin:0;max-width:100%;padding:5px 12px;border-radius:14px;background:rgb(10 14 20 / 65%);color:#d6dde6;font-size:12px;line-height:1.35;text-align:center;pointer-events:none}
+/* no keyboard line on a bare touch screen (pilot_fly.js adds .kbd once a key is pressed) */
+@media (hover:none),(pointer:coarse){.pl-fly-keys:not(.kbd){display:none}}
 /* the autopilot flies: the controls rest */
 .pl-fly.auto .pl-fly-yoke,.pl-fly.auto .pl-fly-thr{opacity:.25;pointer-events:none}
 /* a decision while the autopilot flies: the workbench's own panel, over the instruments */
