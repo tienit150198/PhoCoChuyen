@@ -17,6 +17,10 @@ aimed at another workplace than the current one):
 In progress means the workplace's day is open and either a job was started
 (one work step taken), customers are waiting, or a promised order is due. A
 closed day, a place you only looked at, or an empty counter costs nothing.
+Neither does leaving once the place's closing time has come (dayclock.past_close):
+no new customer walks in then, so the work in hand simply waits for you to come
+back and khép ca; nothing is cancelled (#140: a shop left open at 21:30 must not
+turn every other place into a fine).
 
 The penalty (deterministic, rolled from ids, applied once per abandonment):
 
@@ -239,11 +243,16 @@ def assess(s: dict, cid: str) -> dict | None:
     trust = min(TRUST_MAX, min(TRUST_ONE_MAX, TRUST_BASE + TRUST_JOB * len(jobs) + len(waiting) // 2) * n)
     kind = _kind(cid, c)
     story = bool((s.get('journey') or {}).get('story'))
+    from . import dayclock as dc
+    closing = dc.past_close(c, cid)  # closing time: leaving costs nothing, the work waits
+    if closing:
+        story = False
     return dict(career=cid, place=_place(cid), task=(jobs[0]['title'] if jobs else waiting[0]['title'])[:120],
                 started=len(jobs), waiting=len(waiting), leaving=len(waiting) + sum(1 for t in jobs if not kept(c, t)),
                 fine=fine if story else 0, trust=trust if story else 0,
                 trust_kind=kind, trust_name=TRUST_NAMES[kind], trust_now=trust_value(s, cid),
-                pocket='wallet' if _employed(cid) else 'fund', offence=n, warn=n >= 2, soft=not story)
+                pocket='wallet' if _employed(cid) else 'fund', offence=n, warn=n >= 2, soft=not story,
+                **({'closing': True} if closing else {}))
 
 
 def _what(x: dict) -> str:
@@ -268,6 +277,9 @@ def check(s: dict, target: str, p: dict, internal: bool = False) -> dict | None:
         return None
     if x['soft']:
         # Free sandbox (no story): nothing is charged; the work simply waits.
+        if x.get('closing'):
+            return dict(soft=True, closing=True, career=cur, place=x['place'], task=x['task'],
+                        text=f'{x["place"]} đã tới giờ đóng cửa. Việc dở vẫn giữ nguyên, lúc nào quay lại thì khép ca nhé.')
         return dict(soft=True, career=cur, place=x['place'], task=x['task'],
                     text=f'Việc ở {x["place"]} vẫn đang dở: {x["task"]}. Quay lại làm nốt nhé.')
     e.need(p.get('confirm') is True, message(x) + ' Chọn “Vẫn đi” nếu bạn chắc chắn.', 'abandon_confirm')

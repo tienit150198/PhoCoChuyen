@@ -9953,7 +9953,9 @@
   "🛵 Giao hàng: chọn [[Tự lái]] để tự chạy xe tới nhà khách. Muốn nhanh thì chọn bấm nhanh.": "🛵 Delivery: pick [[Drive]] to ride to the customer's house. In a hurry? Pick quick tap.",
   "✈️ Phi công: chọn [[Tự bay]] để tự cất cánh, tránh mây giông, hạ cánh. Muốn nhanh thì [[Bay nhanh]].": "✈️ Pilot: pick [[Fly it]] to take off, steer round storms and land. In a hurry? [[Quick flight]].",
   "🚜 Nông trại: [[Tự đi]] để đi quanh vườn, đổi [[Góc nhìn]] thứ nhất hay thứ ba. [[Bấm nhanh]] là kiểu cũ.": "🚜 Farm: [[Walk]] to walk around, switch the [[View]] between first and third person. [[Quick tap]] is the old way.",
-  "❓ Cách làm từng nghề có trong Hướng dẫn nghề (nút ? ở màn làm việc).": "❓ Each job's how-to is in the Job guides (the ? button on the work screen)."
+  "❓ Cách làm từng nghề có trong Hướng dẫn nghề (nút ? ở màn làm việc).": "❓ Each job's how-to is in the Job guides (the ? button on the work screen).",
+  "$1 đã tới giờ đóng cửa. Việc dở vẫn giữ nguyên, lúc nào quay lại thì khép ca nhé.": "$1 has reached closing time. Your unfinished work stays put; come back and close the shift whenever you like.",
+  "Việc ở $1 vẫn đang dở: $2. Quay lại làm nốt nhé.": "Work at $1 is still unfinished: $2. Come back and finish it."
  },
  "patterns": {
   "$1 Đi xe": "$1 Ride",

@@ -323,5 +323,53 @@ class EveryWorkplace(unittest.TestCase):
                 public_state(s)
 
 
+class ClosingTime(unittest.TestCase):
+    """#140: a shop left open past closing time (a sale half rung up, customers still queued)
+    must not turn every other place into the "Bỏ dở việc" fine that sends you back."""
+
+    def setUp(self):
+        from game import dayclock as dc
+        self.dc = dc
+        self.s = open_place(story(), 'grocery')
+        self.t = start_first(self.s, 'grocery')
+        self.c = self.s['careers']['grocery']
+
+    def late(self):
+        self.c['turn'] += 60  # the clock walks 20 minutes per step and stops at closing
+        self.assertTrue(self.dc.past_close(self.c, 'grocery'))
+
+    def test_before_closing_it_is_still_abandoning(self):
+        with self.assertRaises(GameError) as cm:
+            apply_action(self.s, 'cafe_bakery', 'select_career')
+        self.assertEqual(cm.exception.code, 'abandon_confirm')
+
+    def test_at_closing_you_just_walk_over(self):
+        self.late()
+        x = public_state(self.s)['abandon']['preview']
+        self.assertTrue(x['soft'] and x['closing'])  # the client gate shows no fine dialog
+        self.assertEqual((x['fine'], x['trust']), (0, 0))
+        money, trust = self.c['money'], self.c['incidents']['trust']
+        s, r = apply_action(self.s, 'cafe_bakery', 'select_career')  # no confirm needed
+        self.assertEqual(s['current'], 'cafe_bakery')
+        self.assertTrue(r['abandon']['soft'] and r['abandon']['closing'])
+        self.assertIn('khép ca', r['abandon']['text'])
+        g = s['careers']['grocery']
+        self.assertEqual((g['money'], g['incidents']['trust']), (money, trust))
+        self.assertEqual(next(t for t in g['tasks'] if t['id'] == self.t['id'])['status'], 'in_progress')
+        self.assertIsNone(s['journey'].get('abandon'))
+        s, _ = apply_action(s, 'cafe_bakery', 'start_day')
+        self.assertTrue(s['careers']['cafe_bakery']['open'])
+        validate_state(s)
+
+    def test_coming_back_lets_you_close_the_shift(self):
+        self.late()
+        s, _ = apply_action(self.s, 'cafe_bakery', 'select_career')
+        s, r = apply_action(s, 'grocery', 'select_career')
+        self.assertNotIn('abandon', r)
+        s, _ = apply_action(s, 'grocery', 'end_day', {'carry_event': True})
+        self.assertFalse(s['careers']['grocery']['open'])
+        validate_state(s)
+
+
 if __name__ == '__main__':
     unittest.main()
