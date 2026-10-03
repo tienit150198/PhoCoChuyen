@@ -58,6 +58,7 @@ NOTES = {
     'ice_cream': 'Tiệm mở sau giờ cơm trưa; 16:30 trường tan học là đông nhất.',
     'nail': 'Trưa đông dân văn phòng tranh thủ giờ nghỉ; tối thứ sáu, cuối tuần kín lịch.',
     'pagoda': 'Bốn giờ sáng thỉnh chuông, 11:00 cúng ngọ; ngày rằm tối có lễ cầu an.',
+    'photobooth': 'Tiệm mở từ trưa; 17:00 học sinh tan trường, tối cuối tuần chợ đêm đông nhất.',
     'homestay': 'Quầy lễ tân trực tới 22:00; khách tới muộn gọi chuông, sáng mai bàn giao.',
     'milk_tea': 'Ngày đông khách có thể bán quá giờ, muộn nhất 23:00.',
     'corp_accounting': 'Tăng ca được tới 20:00 nếu xin phép trưởng phòng.',

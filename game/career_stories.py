@@ -1194,6 +1194,43 @@ ARCS = {
                 ('na', 'Thầy ơi, con viết về thầy trong bài văn luôn rồi!'),
                 ('me', 'Con sẽ thỉnh chuông chậm và đều, như thầy.')]),
         ]),
+    'photobooth': dict(
+        title='Ba giây của chị Lam', emoji='📸',
+        keepsake=dict(emoji='🎞️', name='Dải ảnh đầu tiên của tiệm Tách Tách', desc='Chị Lam đội bờm tai thỏ chụp thử ngày mở tiệm. Bốn ô, ô nào cũng cười, màu đã hơi phai.'),
+        cast={'lam': _p('Chị Lam', '📸', 'Chủ tiệm Tách Tách', 'photobooth_npc_01'),
+              'nhi': _p('Bé Nhi', '🎒', 'Học sinh lớp 11A1', 'photobooth_npc_02'),
+              'chin': _p('Ông Chín', '👴', 'Hưu trí, đi cùng bà Chín', 'photobooth_npc_04'),
+              'phong': _p('Thầy Phong', '🎓', 'Chủ nhiệm 12A3', 'photobooth_npc_07')},
+        beats=[
+            _b('Cái rèm buồng chụp', '🎞️', 'Chị Lam kéo tấm rèm nhung đỏ, bật cây đèn vòng, đưa bạn cái khăn lau kính.', [
+                ('lam', 'Mười lăm năm chụp ảnh cưới, chị học được một điều: người ta nhớ tấm ảnh cả đời, chứ không nhớ giá tiền.'),
+                ('lam', 'Sáng nào cũng lau kính, chụp thử phông trống. Kính bẩn một chút là ảnh cả ngày mờ.'),
+                ('me', 'Dạ, lau kính, xem cuộn mực, chụp thử rồi mới mở tiệm.')]),
+            _b('Hội bạn 11A1', '🎒', 'Năm giờ chiều, bốn đứa mặc đồng phục ùa vào, tranh nhau bờm tai thỏ.', [
+                ('nhi', 'Chị ơi, tấm này đứa nào nhắm mắt là cả hội giận nó một tuần đó!'),
+                ('lam', 'Đếm ba-hai-một xong đừng bấm liền. Đợi tụi nhỏ đứng yên, mở mắt, rồi mới bấm.'),
+                ('me', 'Ba… hai… một… đợi nửa nhịp… tách!')],
+                _c('Một bạn nhỏ trong nhóm cứ đứng nép ra rìa khung',
+                   _o('a', 'Mời bạn ấy đứng giữa, cầm bảng chữ', [('nhi', 'Đúng rồi, nó là lớp trưởng mà hay mắc cỡ lắm!')], rel='nhi'),
+                   _o('b', 'Hỏi chị Lam cách xếp chỗ cho nhóm đông', [('lam', 'Người thấp đứng trước, người cao ngồi ghế sau. Ai cũng thấy mặt.')], rel='lam'))),
+            _b('Năm mươi năm', '👴', 'Ông Chín dắt bà Chín vào, tay cầm một xấp ảnh cũ cột dây thun.', [
+                ('chin', 'Năm nào hai ông bà cũng chụp một tấm. Năm nay là tấm thứ năm mươi.'),
+                ('chin', 'Bà cười chậm lắm, con đợi bà nghe.'),
+                ('me', 'Dạ, con đợi bà cười rồi mới bấm.')],
+                _c('Bà Chín ngại đèn chói',
+                   _o('a', 'Hạ đèn xuống dịu, kéo ghế cho bà ngồi', [('chin', 'Đó, bà cười rồi kìa. Y như hồi con gái.')], rel='chin'),
+                   _o('b', 'Hỏi chị Lam chỉnh đèn cho người lớn tuổi', [('lam', 'Đèn dịu, chếch một bên. Ánh sáng mềm thì nếp nhăn cũng đẹp.')], rel='lam'))),
+            _b('Ảnh kỷ yếu', '🎓', 'Thầy Phong dẫn cả nhóm học trò mặc áo tốt nghiệp, đứng chen nhau trước tấm phông.', [
+                ('phong', 'Mấy đứa này sắp đi mỗi đứa một nơi. Thầy muốn mỗi đứa giữ một dải.'),
+                ('me', 'Thầy đứng giữa nha thầy. Mũ tốt nghiệp đội lệch một chút cho vui.'),
+                ('phong', 'Tấm này thầy dán lên bảng tin, để khóa sau nhìn mà học.')]),
+            _b('Ba giây', '📸', 'Tối muộn, chị Lam gỡ dải ảnh phai màu ở góc tường, đặt vào tay bạn.', [
+                ('lam', 'Dải ảnh chị chụp thử ngày mở tiệm. Ô nào cũng cười, vì lúc đó chị vui thật.'),
+                ('lam', 'Mai chị đi chụp đám cưới cho đứa em. Buồng chụp giao em nghe.'),
+                ('nhi', 'Cả lớp em hỏi tiệm chụp ở đâu, em chỉ tới đây hết!'),
+                ('chin', 'Tấm thứ năm mươi treo ngay giữa phòng khách rồi.'),
+                ('me', 'Em sẽ đợi đủ ba giây, để ô nào cũng là nụ cười thật.')]),
+        ]),
     # ------------------------------------------------------------ ✈️ Hãng bay Cánh Cò
     'pilot': dict(
         title='Đường bay ra đảo', emoji='🛩️',

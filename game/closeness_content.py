@@ -59,6 +59,7 @@ STALL = {
     'homestay': dict(name='Hũ mứt dâu của homestay', emoji='🍓', price=4, tags=('sweet', 'fruit')),
     'boba': dict(name='Ly trà sữa của tiệm', emoji='🧋', price=3, tags=('sweet',)),
     'ice_cream': dict(name='Hộp kem dừa của tiệm', emoji='🍨', price=4, tags=('sweet',)),
+    'photobooth': dict(name='Dải ảnh bốn ô khung dễ thương', emoji='🎞️', price=4, tags=('gift',)),
     'nail': dict(name='Chậu sen đá nhỏ trên bàn nail', emoji='🪴', price=4, tags=('flower',)),
 }
 
