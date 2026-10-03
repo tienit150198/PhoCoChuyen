@@ -337,24 +337,46 @@ export const bindClassApi=api=>{if(api)classApi=api;};
 /** "Kế hoạch lớp" shows one page at a time: data-cl-tab on a button picks it (also on a link that opens the dock). */
 export const classTab={now:'today'};
 if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e.target?.closest?.('[data-cl-tab]');if(!b)return;classTab.now=b.dataset.clTab;if(!b.dataset.action)setTimeout(rerender,0);},true);  // after the click: re-rendering now would detach the target and read as a tap outside the sheet
+/* A reply's rules go through the command queue (in order with the other taps) with later:true, so the
+ * server answers right after the rules. Rewording a line (op 'voice': the question, a parent's message, then
+ * the reaction to the answer) changes no rule and takes the model seconds, so it runs off the queue: other
+ * taps never wait for it, and a question being reworded shows "typing" for VOICE_HOLD at most, then the
+ * scripted line and the answers (the AI wording replaces it when it comes). Before, the model's wait sat in
+ * the queue and disabled the answers: the class looked frozen for up to 25 s ("trả lời học sinh mà bị đứng"). */
+export const VOICE_HOLD=2000;
 const clPending={},clVoiced=new Set(),clError={};
 export const classAiOn=()=>!!(classApi?.ai?.configured&&classApi?.state?.settings?.aiConsent);
 const rerender=()=>classApi?.dispatchEvent(new CustomEvent('state',{detail:{}}));
 const clQueued=(api,fn)=>{const job=api.queue.then(fn,fn);api.queue=job.catch(()=>{});return job;};
 const clRid=()=>globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`;
+const held=p=>performance.now()-p.at<VOICE_HOLD;
+/** The answers wait: a reply on its way, or a question still being reworded (for VOICE_HOLD at most). */
+const blocking=p=>!!p&&(!p.voice||p.hide==='first'&&held(p));
+/** "Typing…" shows: a reply on its way, a reaction being reworded, a question for VOICE_HOLD. */
+const typingNow=p=>!!p&&(!p.voice||p.hide==='last'||held(p));
 
-async function classSend(body,key,text){
-  const api=classApi;if(!api||clPending[key])return null;
-  clPending[key]={text:text||''};delete clError[key];rerender();
-  const rid=clRid(),send=()=>clQueued(api,()=>api.post('/api/ai/class',{...body,request_id:rid,expected_revision:api.revision},25000));
+export async function classSend(body,key,text,{hide='first'}={}){
+  const api=classApi,voice=body.op==='voice',prev=clPending[key];
+  // One reply at a time per thread; a reply may go while its line is still being reworded, a voice never cuts in.
+  if(!api||prev&&(voice||!prev.voice))return null;
+  const mine={text:text||'',voice,hide:voice?hide:null,at:performance.now()};
+  clPending[key]=mine;delete clError[key];rerender();
+  if(voice&&hide==='first')setTimeout(()=>{if(clPending[key]===mine)rerender();},VOICE_HOLD+50);
+  const rid=clRid(),since=api.accepted,post=()=>api.post('/api/ai/class',{...body,request_id:rid,expected_revision:api.revision,...voice?{}:{later:true}},25000);
+  const send=voice?post:()=>clQueued(api,post);
   try{
     let data;
     try{data=await send();}
     catch(error){if(error.status===409&&error.data?.state){api.accept(error.data);data=await send();}else throw error;}
-    delete clPending[key];api.accept(data);return data;
+    if(clPending[key]===mine)delete clPending[key];
+    // An answer older than a state adopted meanwhile (a tap that landed while the model wrote) is left out.
+    if(!api.accept(data,since))rerender();
+    // The rules are in (later): now the reaction is reworded, off the queue. An older server voiced it already.
+    if(!voice&&data?.reason==='later'&&classAiOn())classSend({kind:body.kind,pupil:body.pupil,...body.task?{task:body.task}:{},op:'voice'},key,'',{hide:'last'});
+    return data;
   }catch(error){
-    delete clPending[key];
-    if(body.op!=='voice')clError[key]=error.status?(error.message||'Chưa gửi được.'):'Mất kết nối máy chủ. Thử lại nhé.';
+    if(clPending[key]===mine)delete clPending[key];
+    if(!voice)clError[key]=error.status?(error.message||'Chưa gửi được.'):'Mất kết nối máy chủ. Thử lại nhé.';
     rerender();return null;
   }
 }
@@ -363,7 +385,10 @@ export function classVoice(key,body){
   if(!classAiOn()||clVoiced.has(key)||clPending[key])return;
   clVoiced.add(key);setTimeout(()=>classSend({...body,op:'voice'},key,''),30);
 }
-export const classWaiting=key=>!!clPending[key];
+/** A reply on its way (the step "Trả lời …" then waits). A line being reworded does not hide the step. */
+export const classWaiting=key=>{const p=clPending[key];return !!p&&!p.voice;};
+/** The question is hidden behind "typing…" while it is reworded (VOICE_HOLD at most). */
+export const classVoicing=key=>{const p=clPending[key];return !!p&&p.voice&&p.hide==='first'&&held(p);};
 
 /** Chat bubbles for class lines: the teacher on the right, AI lines carry a badge. */
 export function clBubbles(lines,key,{typing='',mine=''}={}){
@@ -371,13 +396,15 @@ export function clBubbles(lines,key,{typing='',mine=''}={}){
     const me=l.who==='teacher',ai=l.mode==='ai';
     return `<div class="cl-bub ${me?'me':'them'}${ai?' ai':''}"${me||ai?' data-no-translate':''}>${ai?`<span class="cl-ai" title="${esc('Lời gốc: '+(l.canonical||''))}" aria-label="Câu này do AI viết">AI</span>`:''}<p>${esc(l.text)}</p></div>`;
   };
-  const wait=clPending[key];
-  const pend=wait?`${wait.text?`<div class="cl-bub me pending" data-no-translate><p>${esc(wait.text)}</p></div>`:''}<div class="cl-bub them typing" role="status" aria-label="${esc(typing||'Đang trả lời…')}"><span class="cl-dots" aria-hidden="true"><i></i><i></i><i></i></span></div>`:'';
+  const wait=clPending[key],last=lines[lines.length-1];
+  // A reaction being reworded: "typing…" stands where its scripted words will be (they show if the model fails).
+  if(wait?.hide==='last'&&last&&last.who!=='teacher'&&last.mode==='scripted')lines=lines.slice(0,-1);
+  const pend=typingNow(wait)?`${wait.text?`<div class="cl-bub me pending" data-no-translate><p>${esc(wait.text)}</p></div>`:''}<div class="cl-bub them typing" role="status" aria-label="${esc(typing||'Đang trả lời…')}"><span class="cl-dots" aria-hidden="true"><i></i><i></i><i></i></span></div>`:'';
   return `<div class="cl-thread" role="log" aria-live="polite">${lines.map(row).join('')}${pend}</div>${clError[key]?`<p class="cl-err" role="alert">${esc(clError[key])}</p>`:''}`;
 }
 /** Scripted answers as full-width choices + a short typed answer (≤ max chars). */
 export function clReply(key,body,options,max,placeholder){
-  const busy=!!clPending[key],id='cl-in-'+key.replace(/[^a-z0-9]/gi,'-');
+  const busy=blocking(clPending[key]),id='cl-in-'+key.replace(/[^a-z0-9]/gi,'-');
   const chips=options.map(o=>`<button type="button" class="cl-chip" data-action="clChip" data-cl="${esc(key)}" data-body="${esc(JSON.stringify({...body,option:o.id}))}" data-label="${esc(o.label)}"${busy?' disabled':''}>${esc(o.label)}</button>`).join('');
   return `<div class="cl-reply"><div class="cl-chips" role="group" aria-label="Câu soạn sẵn">${chips}</div><form class="cl-form" data-cl-form="${esc(key)}" data-body="${esc(JSON.stringify(body))}"><textarea id="${id}" name="text" data-preserve rows="2" maxlength="${max}" required placeholder="${esc(placeholder)}" aria-label="${esc(placeholder)}"></textarea><button type="submit" class="btn primary"${busy?' disabled':''}>Gửi</button></form><small class="cl-mode">${classAiOn()?'✨ Nhân vật trả lời bằng AI · đừng gõ thông tin thật':'Gõ câu của bạn hoặc chọn một câu ở trên'} · tối đa ${max} ký tự</small></div>`;
 }
@@ -391,7 +418,7 @@ if(typeof document!=='undefined'){
   document.addEventListener('submit',e=>{
     const f=e.target;if(!(f instanceof HTMLFormElement)||!f.dataset.clForm||!classApi)return;
     e.preventDefault();e.stopPropagation();
-    const ta=f.querySelector('textarea'),text=(ta?.value||'').trim();if(!text||clPending[f.dataset.clForm])return;
+    const ta=f.querySelector('textarea'),text=(ta?.value||'').trim();if(!text||blocking(clPending[f.dataset.clForm]))return;
     ta.value='';classSend({...JSON.parse(f.dataset.body||'{}'),op:'reply',text},f.dataset.clForm,text);
   },true);
   document.addEventListener('keydown',e=>{
@@ -405,7 +432,7 @@ function askPanel(t,R){
   const key='ask:'+t.id,body={kind:'pupil',pupil:A.kid,task:t.id};
   if(A.state==='quiet')return section('✏️',`${esc(A.name)} có điều muốn hỏi`,`<div class="cl-ask quiet"><p class="tt-tip">${esc(A.clue)}</p><div class="tt-options">${act(esc(A.invite),'lesson_invite',{task:t.id},'tt-option')}</div></div>`,'Nhút nhát');
   if(A.state==='up'&&A.lines[0]?.mode==='scripted'&&!A.result)classVoice(key,body);
-  const voicing=clPending[key]&&!clPending[key].text&&A.state==='up';
+  const voicing=classVoicing(key)&&A.state==='up';
   const lines=voicing?A.lines.slice(1):A.lines;
   const thread=clBubbles(lines,key,{typing:`${A.name} đang hỏi…`});
   const tag={good:['green','💡 Hiểu ra'],ok:['amber','🤔 Còn lăn tăn'],poor:['danger','😶 Ngại hỏi'],ignored:['danger','✋ Hạ tay']}[A.result];
