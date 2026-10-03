@@ -11,7 +11,7 @@ the same database, two phones (390×844) with 300 xu each, then:
   3. Một mình: Lan alone, frame Phim cũ; the save button downloads a PNG; then Tết rộn ràng with a 🎲 pose and
      Dán sticker, each with its own colour;
   4. the lobby and a room at 320 and 430 px wide, and "Phố đêm".
-1.5.4 (thirty poses, the fair's frames): a pose made together reaches the whole room, the 🎲 picks one; Thu and Bảo
+1.5.5 (thirty poses, the fair's frames): a pose made together reaches the whole room, the 🎲 picks one; Thu and Bảo
 join by code: four in the room, a pose for all and poses changing between the shots, strips in Hội chợ đêm with the
 colours Dịu and Đen trắng and the words; the pose picker, the countdown and the strips at 390 and 1280 px.
 Each strip is also saved at full size (the page's own renderer, ×3) as strip-*.png. Fails on console errors, page

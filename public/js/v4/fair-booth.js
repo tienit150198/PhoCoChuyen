@@ -18,7 +18,7 @@
  * fair.js owns the dialog and passes its helpers in (setup); its render() patches the page in place and calls mount()
  * after: the booth's stage lives on a canvas in a data-fh-live slot, drawn when the room changes and by
  * requestAnimationFrame only while a shoot runs.
- * 1.5.4 (owner 03/10: "làm đẹp hơn nha, nhiều dáng với đẹp hơn nha"): thirty poses (./booth-poses.js: the character's
+ * 1.5.5 (owner 03/10: "làm đẹp hơn nha, nhiều dáng với đẹp hơn nha"): thirty poses (./booth-poses.js: the character's
  * arms, hands, head and face really move; nine are made together, picking one sets it for the whole room:
  * booth_set {pose, all: true}, an older live service sets only one's own), a 🎲 that picks one (and the same for the
  * friends), the fair's own frames, backdrops, stickers and colours (./photo-frames.js FAIR_*), the words and the date
