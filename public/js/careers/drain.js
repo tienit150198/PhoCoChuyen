@@ -8,6 +8,7 @@
  * The server decides everything; one tap sends one command. */
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
+import {planBox,stockLines,figures} from './plan_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
 import {data,cc,lower,tile,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,debtBook,troubleLast} from './street_kit.js';
 
@@ -206,6 +207,16 @@ export default {
   },
   input(el,x){return kitInput(el,x);},
   tick(root){keepBarAboveFooter(root);},
+  // Day summary: "Ngày mai" first (parts and gloves in the store, who still owes, the morning's book), one way to
+  // the store, the day's figures folded.
+  summary(sum,x){
+    if(!sum||sum.jobs==null)return '';
+    const owe=(data(x).debts||[]).filter(d=>d.state==='open'),due=owe.reduce((n,d)=>n+(Number(d.owed)||0)-(Number(d.paid)||0),0);
+    const plan=[...stockLines(x),owe.length?`📒 Còn ${owe.length} người nợ · ${x.fmt(due)} xu`:'',
+      typeof sum.note==='string'&&sum.note?`<span aria-hidden="true">🧰</span> ${x.esc(sum.note)}`:''];
+    const rows=[['Việc đã làm',sum.jobs],['Thông tận gốc',sum.cleared],['Thông tạm',sum.temp],['Tiền công (xu)',sum.earned],['Nói thách (xu)',sum.overcharged]];
+    return planBox(x,{lines:plan,go:['📦 Mở kho vật tư','inventory'],more:[`🛵 Hôm nay · ${sum.jobs} việc · ${sum.earned||0} xu`,figures(x,rows,Array.isArray(sum.lines)?sum.lines:[])]});
+  },
   actions:{...tillActions,...kitActions},
   dock:[['inventory','box','Kho vật tư','Ống xi-phông, găng tay…']],
 };

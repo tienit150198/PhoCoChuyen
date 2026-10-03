@@ -82,3 +82,15 @@
 .career-job.cg .cg-counter{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 6px}
 .career-job.cg .cg-counter .btn{min-height:44px}
 .career-job.cg .cg-watch{border-color:#b8921d}
+
+/* Day summary: "🌅 Ngày mai" first, the day's figures folded under one line (careers/plan_kit.js). */
+.pk-plan .section-title{margin:0 0 6px}
+.pk-list{margin:0 0 8px;padding:0;list-style:none;display:grid;gap:4px;font-size:.9rem}
+.pk-list li{padding:6px 10px;border-radius:10px;background:var(--surface-2);overflow-wrap:anywhere}
+.btn.pk-go{min-height:44px}
+.pk-plan+.pk-more{margin-top:10px}
+.pk-more>summary{display:flex;align-items:center;gap:6px;min-height:44px;cursor:pointer;list-style:none;font-weight:700}
+.pk-more>summary::-webkit-details-marker{display:none}
+.pk-more>summary::after{content:"▸";margin-left:auto;color:var(--muted);font-weight:400}
+.pk-more[open]>summary::after{content:"▾"}
+.pk-lines{margin:8px 0 0;padding-left:18px}
