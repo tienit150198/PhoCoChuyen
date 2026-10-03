@@ -69,7 +69,7 @@ export function plan(port,has={}){
   {const s=Lo.board;stall('board',[s.x-30,s.y-18,s.x+30,s.y],[s.x,s.y-62],50*big,[s.x,s.y+40],[s.x+40*big,s.y-122*big]);}
   {const s=Lo.loan;stall('loan',[s.x-35,s.y-18,s.x+35,s.y],[s.x,s.y-56],48*big,[s.x,s.y+40],[s.x-44*big,s.y-62*big]);}
   {const s=Lo.xs;stall('xs',[s.x-62,s.y-20,s.x+38,s.y],[s.x-8,s.y-58],50*big,[s.x,s.y+36],[s.x+58*big,s.y-84*big]);}
-  {const s=Lo.pb,hw=s.w/2;stall('pb',[s.x-hw,s.y-20,s.x+hw,s.y],[s.x,s.y-70*big],56*big,[s.x,s.y+24],[s.x+hw+6*big,s.y-150*big]);}
+  {const s=Lo.pb,hw=s.w/2;stall('pb',[s.x-hw,s.y-20,s.x+hw,s.y],[s.x,s.y-70*big],56*big,[s.x,s.y+24],[s.x+hw+16*big,s.y-176*big]);}
   const g=Lo.gate,entry=[g.x,g.y-40];
   blocks.push([g.x-g.w/2-8,g.y-14,g.x-g.w/2+8,g.y],[g.x+g.w/2-8,g.y-14,g.x+g.w/2+8,g.y]);
   spots.push(S('gate','look',[g.x,g.y-150],62*big,entry,{line:LOOKS.gate}));

@@ -25,7 +25,7 @@ export function setup(ctx){
   const {S,F,go,list,bar,esc,food}=ctx;
   const W=S.walk={el:null,cv:null,c:null,say:null,bg:null,bgKey:'',port:false,k:1,ox:0,oy:0,dpr:1,cw:0,ch:0,
     me:null,arrive:null,raf:0,last:0,drawn:0,time:0,sayAt:0,ok:null,down:null,at:'',playing:''};
-  const has=()=>({dt:!!F().knife,loan:!!F().cash,xs:!!F().scratch});   // dt: anh Sáu's stall, the phóng dao since it replaced the phi tiêu
+  const has=()=>({dt:!!F().knife,loan:!!F().cash,xs:!!F().scratch,pb:!!F().photo});   // dt: anh Sáu's stall, the phóng dao since it replaced the phi tiêu
   const pl=()=>plan(W.port,has());
   const CR=crowd({state:()=>S.env?.api?.state,redraw:()=>{W.drawn=0;},still});
   /** Scene point → fractions of the floor (what the others get: their fairground may be the other layout). */
@@ -162,7 +162,7 @@ export function setup(ctx){
     W.drawn=now||1;draw();
   }
   function backdrop(){
-    const key=[W.port,W.cv.width,W.cv.height,has().dt,has().loan].join('|');
+    const key=[W.port,W.cv.width,W.cv.height,has().dt,has().loan,has().xs,has().pb].join('|');
     if(W.bg&&W.bgKey===key)return W.bg;
     const bg=W.bg||document.createElement('canvas');bg.width=W.cv.width;bg.height=W.cv.height;
     const c=bg.getContext('2d');c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,bg.width,bg.height);
@@ -179,7 +179,7 @@ export function setup(ctx){
       const items=props(c,p,o),fl=p.floor,base=W.port?.92:.78,depth=y=>.94+.12*(y-fl[1])/Math.max(1,fl[3]-fl[1]);
       items.push([W.me.y+.5,()=>drawMe(c,base*depth(W.me.y))]);
       items.push(...CR.items(c,{xy:(u,v)=>[fl[0]+u*(fl[2]-fl[0]),fl[1]+v*(fl[3]-fl[1])],scale:y=>base*depth(y),px:base*W.k*W.dpr,t:W.time,
-        snap:q=>nearestFree(p,q),key:[W.port,p.has.dt,p.has.loan,p.has.xs].join('|'),stand:id=>p.spots.find(q=>q.id===id)?.stand||null}));
+        snap:q=>nearestFree(p,q),key:[W.port,p.has.dt,p.has.loan,p.has.xs,p.has.pb].join('|'),stand:id=>p.spots.find(q=>q.id===id)?.stand||null}));
       items.sort((a,b)=>a[0]-b[0]);for(const [,fn] of items)fn();
       const near=p.spots.find(s=>s.kind==='stall'&&Math.hypot(W.me.x-s.stand[0],W.me.y-s.stand[1])<30);
       marks(c,p,o,near?.id||null);

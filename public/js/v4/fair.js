@@ -14,6 +14,7 @@ import {language} from './i18n.js';
 import {words,callLine,MC,ACTS,CROWD,STICKERS,MODE_STICKER} from './fair-loto.js';
 import {setup as knifeSetup} from './fair-knife.js';
 import {setup as scratchSetup} from './fair-scratch.js';
+import {setup as boothSetup} from './fair-booth.js';
 
 const FACES=['bau','cua','tom','ca','ga','nai'];
 const FACE_NAME={bau:'Bầu',cua:'Cua',tom:'Tôm',ca:'Cá',ga:'Gà',nai:'Nai'};
@@ -21,7 +22,7 @@ const GOURD='<svg class="fh-gourd" viewBox="0 0 40 48" aria-hidden="true"><path 
 const FACE_ART={bau:GOURD,cua:'🦀',tom:'🦐',ca:'🐟',ga:'🐓',nai:'🦌'};
 const art=f=>`<span class="fh-art" aria-hidden="true">${FACE_ART[f]||'❔'}</span>`;
 const TITLE_NAMES={f_kinh2:'🎎 Kinh đôi rộn ràng',f_nguoc:'🙃 Đọc ngược như xuôi',f_hu:'🏺 Ôm hũ đêm hội',f_loto:'🎱 Thần lô tô hội chợ',f_bao:'🌪️ Trúng bão bầu cua',f_raid:'🚨 Bị công an hỏi thăm',f_oaq:'🪨 Cao tay ô ăn quan',f_ring:'💍 Tay ném vòng thần sầu',f_dart:'🎯 Mắt thần phi tiêu'};
-const GAMES={home:['🏮','Cổng hội'],oaq:['🪨','Ô ăn quan'],ring:['💍','Ném vòng cổ chai'],bc:['🦀','Bầu cua'],lt:['🎱','Lô tô'],dt:['🗡️','Phóng dao'],xs:['🎟️','Vé số cào'],xd:['🕯️','Chiếu trong'],board:['🏆','Bảng vàng'],loan:['💸','Vay nóng'],food:['🍡','Hàng ăn vặt']};
+const GAMES={home:['🏮','Cổng hội'],oaq:['🪨','Ô ăn quan'],ring:['💍','Ném vòng cổ chai'],bc:['🦀','Bầu cua'],lt:['🎱','Lô tô'],dt:['🗡️','Phóng dao'],xs:['🎟️','Vé số cào'],xd:['🕯️','Chiếu trong'],board:['🏆','Bảng vàng'],loan:['💸','Vay nóng'],food:['🍡','Hàng ăn vặt'],pb:['📸','Chụp ảnh']};
 const MINI_BOARD='<svg viewBox="0 0 64 40" aria-hidden="true"><rect x="2" y="6" width="60" height="28" rx="14" fill="#e9c98f" stroke="#8a5a26" stroke-width="2"/><path d="M14 6v28M50 6v28M14 20h36M23 6v28M32 6v28M41 6v28" stroke="#8a5a26" stroke-width="1.6"/><circle cx="8" cy="20" r="4" fill="#5b4636"/><circle cx="56" cy="20" r="4" fill="#5b4636"/><g fill="#7a8b99"><circle cx="18" cy="13" r="1.8"/><circle cx="27" cy="27" r="1.8"/><circle cx="36" cy="13" r="1.8"/><circle cx="45" cy="27" r="1.8"/><circle cx="20" cy="28" r="1.8"/><circle cx="38" cy="25" r="1.8"/></g></svg>';
 const MINI_BOTTLES='<svg viewBox="0 0 64 40" aria-hidden="true"><g stroke="#2d5a3d" stroke-width="1.4"><path d="M12 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#7cc79a"/><path d="M28 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#8fb6e8"/><path d="M44 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#f0b46a"/></g><ellipse cx="34" cy="10" rx="7" ry="2.6" fill="none" stroke="#e2462d" stroke-width="2.4"/></svg>';
 const CHIPS=[1,2,5,10];
@@ -89,6 +90,7 @@ function sfx(kind){
     case'clink':tone(2350,.3,.03);tone(3150,.22,.02,.035);break;
     case'miss':tone(190,.14,.04,0,'sine',120);break;
     case'scratch':rattle(0,1);break;
+    case'shutter':rattle(0,2);tone(1900,.05,.022,0,'square',900);break;
   }
 }
 
@@ -112,7 +114,7 @@ function dialog(){
     const el=e.target.closest('[data-fh]');if(!el||!d.contains(el)||el.disabled)return;
     e.preventDefault();S.anchor=el.dataset.fhKey||'';S.anchorAt=performance.now();onClick(el.dataset.fh,el.dataset,el);
   });
-  d.addEventListener('close',()=>{pauseLoto();ltMusic();stopRing();KN?.stop();clearInterval(S.tick);S.tick=null;S.flash=null;});
+  d.addEventListener('close',()=>{pauseLoto();ltMusic();stopRing();KN?.stop();PB?.leave();clearInterval(S.tick);S.tick=null;S.flash=null;});
   S.dlg=d;return d;
 }
 export async function openFair(env,data={}){
@@ -130,7 +132,7 @@ export async function openFair(env,data={}){
   const d=dialog();
   if(data?.tab)S.tab=data.tab;
   else if(!f.open)S.tab='home';
-  else if(!(S.tab==='lt'&&f.loto?.stage==='play')&&!(S.tab==='oaq'&&f.oaq?.stage==='play')&&!(S.tab==='xs'&&XS?.live())&&!(S.tab==='dt'&&f.knife?.run&&['play','choice'].includes(f.knife.run.stage)))S.tab='home';   // back at the gate unless a game is going on
+  else if(!(S.tab==='lt'&&f.loto?.stage==='play')&&!(S.tab==='oaq'&&f.oaq?.stage==='play')&&!(S.tab==='xs'&&XS?.live())&&!(S.tab==='pb'&&PB?.live())&&!(S.tab==='dt'&&f.knife?.run&&['play','choice'].includes(f.knife.run.stage)))S.tab='home';   // back at the gate unless a game is going on
   if(!S.bc.say)S.bc.say=pick(DEALER.idle);
   if(!S.xd.say)S.xd.say=pick(HOST.idle);
   if(!d.open){d.showModal();d.scrollTop=0;}
@@ -147,7 +149,7 @@ export async function fairAction(action,data,el,env){
   if(action!=='fair')return false;
   await openFair(env,data);return true;
 }
-const animating=()=>!!KN?.busy()||!!XS?.busy()||S.bc.phase!=='idle'||S.xd.phase!=='idle'||S.busy||!!S.oaq.anim||S.ring.taps.length>0&&!S.ring.result;
+const animating=()=>!!KN?.busy()||!!XS?.busy()||!!PB?.busy()||S.bc.phase!=='idle'||S.xd.phase!=='idle'||S.busy||!!S.oaq.anim||S.ring.taps.length>0&&!S.ring.result;
 
 async function send(action,payload={}){
   const {api}=S.env;
@@ -205,6 +207,7 @@ function render(){
   keep(()=>{const root=S.dlg.querySelector('.fh-root');tplEl.innerHTML=page();
     const box=document.createElement('div');box.append(tplEl.content);morph(root,Object.assign(box,{className:root.className}));});
   if(S.tab==='xs')XS?.mount();   // a new ticket's silver: painted once, then left to the finger
+  if(S.tab==='pb')PB?.mount();   // the photobooth's stage: its canvas, drawn when the room changes
   if(S.tab==='dt')KN?.mount();   // the phóng dao board: its canvas, drawn by its own frames
   if(S.dlg.getAttribute('aria-busy')!==String(S.busy))S.dlg.setAttribute('aria-busy',String(S.busy));
   const walking=walkOn();if(S.dlg.classList.contains('fh-walking')!==walking)S.dlg.classList.toggle('fh-walking',walking);
@@ -249,7 +252,7 @@ function nav(){
   return `<nav class="fh-nav" aria-label="Hội chợ">${btn(back,'tab',{tab:'home'},'ghost small fh-back',' data-fh-key="home"')}<b><span aria-hidden="true">${e}</span> ${esc(l)}</b></nav>`;
 }
 /** The small-stake stalls: what is left of today's loss cap. */
-const xuLine=tab=>{const x=F().today_xu;if(!x||!GAMES[tab]||tab==='home'||tab==='board'||tab==='loan'||tab==='food')return '';const n=(x[tab==='dt'?'kn':tab]||0)-(tab==='xs'?xsHold():0);   // the dt tab is the phóng dao ('kn')
+const xuLine=tab=>{const x=F().today_xu;if(!x||!GAMES[tab]||tab==='home'||tab==='board'||tab==='loan'||tab==='food'||tab==='pb')return '';const n=(x[tab==='dt'?'kn':tab]||0)-(tab==='xs'?xsHold():0);   // the dt tab is the phóng dao ('kn')
   return `<p class="fh-luck-left">💰 Hôm nay kiếm ở ${esc(GAMES[tab][1])}: <b>${n>0?'+':n<0?'−':''}${xu(Math.abs(n))}</b></p>`;};
 const luckLine=()=>{const t=F().today||{};if(R().nocap)return '';return `<p class="fh-luck-left">🎟️ Thử vận hôm nay còn chơi được <b>${xu(t.left)}</b> <small>(thua tối đa ${xu(R().cap)} mỗi ngày)</small></p>`;};
 const flash=()=>`<p class="fh-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
@@ -258,7 +261,7 @@ function page(){
   const f=F();
   if(!f.show&&!f.over&&!f.soon)return head()+`<div class="sheet-body fh-body">${closedCard(true)}</div>`;
   if(!f.open&&S.tab!=='board')return head()+`<div class="sheet-body fh-body">${closedCard()}${S.env?.api?.state?.journey?.story?btn('🏆 Xem Bảng vàng hội chợ','tab',{tab:'board'},'cream full'):''}${note()}</div>`;
-  const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView,loan:loanView,food:foodView,dt:()=>F().knife?kn().view():homeView(),xs:()=>F().scratch?xs().view():homeView()};
+  const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView,loan:loanView,food:foodView,dt:()=>F().knife?kn().view():homeView(),xs:()=>F().scratch?xs().view():homeView(),pb:()=>F().photo?pb().view():homeView()};
   const body=(views[S.tab]||homeView)(),luck=['bc','xd'].includes(S.tab)||S.tab==='lt'&&!G();   // the newer lô tô: only the wallet limits it
   return head()+giftPop()+`<div class="sheet-body fh-body">${f.open?strip():''}${f.open?nav():''}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${f.open?xuLine(S.tab):''}${body}${note()}</div>`;
 }
@@ -292,7 +295,7 @@ function gateList(){
       ${luck('lt','🎱','Gánh lô tô',f.ganh?`Cô Bảy hô số, vé từ ${xu(Math.min(...Object.values(f.ganh.tiers)))} · ${esc(f.ganh.names?.[f.ganh.modes?.[0]?.[1]]||'')}`:`Tờ dò ${xu(r.loto_price)}, kinh ăn ${xu(r.loto_prize)}`)}
       ${luck('xd','🕯️','Chiếu trong',`Cược ${r.xd_min}–${r.xd_max} xu`,'<span class="fh-warnchip">🚨 công an</span>')}
     </div>
-    ${loanRow()}${foodRow()}
+    ${loanRow()}${foodRow()}${photoRow()}
     <button type="button" class="fh-goldlink" data-fh="tab" data-tab="board" data-fh-key="g-board"><span aria-hidden="true">🏆</span><span class="grow"><b>Bảng vàng hội chợ</b><small>${m>0?`Bạn đang lời ${xu(m)}`:m<0?`Bạn đang lỗ ${xu(-m)}`:'Ai thắng nhiều xu nhất đứng đầu'} · Top 1 khi hội tàn thành 👑 Vua trò chơi</small></span><span aria-hidden="true">›</span></button>
   </section>`;
 }
@@ -915,6 +918,14 @@ let XS=null;
 const xs=()=>XS??=scratchSetup({S,F,btn,say,xu,esc,send,render,sfx,pick,reduce});
 const xsHold=()=>XS?XS.hold():0;
 
+/* ---- 📸 Chụp ảnh (tab 'pb'): ./fair-booth.js (set up on first use, with this file's helpers; an older server sends no `photo`: no booth) ---- */
+let PB=null;
+const pb=()=>PB??=boothSetup({S,F,btn,say,xu,esc,send,render,sfx,pick,reduce});
+function photoRow(){
+  const p=F().photo;if(!p)return '';
+  return `<button type="button" class="fh-goldlink fh-pblink" data-fh="tab" data-tab="pb" data-fh-key="g-pb"><span aria-hidden="true">📸</span><span class="grow"><b>Buồng chụp ảnh</b><small>Chụp một mình, với bạn bè hay người lạ · ${xu(p.price)} một lượt 4 kiểu</small></span><span aria-hidden="true">›</span></button>`;
+}
+
 /* ---- 🏆 Bảng vàng ---- */
 async function loadBoard(force=false){
   const ed=F().board;if(!ed||S.board.loading)return;
@@ -1038,7 +1049,7 @@ async function onClick(op,data){
   const b=S.bc,x=S.xd;
   switch(op){
     case'close':S.dlg.close();return;
-    case'tab':S.tab=data.tab;S.flash=null;S.anchor='';if(S.tab!=='lt')pauseLoto();ltMusic();render();S.dlg.scrollTop=0;if(S.tab==='board')loadBoard();if(S.tab==='lt')resumeLoto();if(S.tab==='ring')startRingLoop();if(S.tab==='dt'&&F().knife)kn().start();return;
+    case'tab':if(S.tab==='pb'&&data.tab!=='pb')PB?.leave();S.tab=data.tab;S.flash=null;S.anchor='';if(S.tab!=='lt')pauseLoto();ltMusic();render();S.dlg.scrollTop=0;if(S.tab==='board')loadBoard();if(S.tab==='lt')resumeLoto();if(S.tab==='ring')startRingLoop();if(S.tab==='dt'&&F().knife)kn().start();return;
     case'oaqstart':oaqStart(data.lv==='kho'?'kho':'de');return;
     case'oaqsel':{if(S.oaq.anim||S.busy)return;const c=Number(data.c);S.oaq.sel=S.oaq.sel===c?null:c;S.oaq.quit=false;sfx('mark');render();return;}   // owner 03/10: change or unpick the ô freely until a direction is chosen
     case'oaqmove':oaqMove(Number(data.d)===-1?-1:1);return;
@@ -1078,5 +1089,6 @@ async function onClick(op,data){
     case'ltmusic':{const on=!musicPref();try{localStorage.setItem(LT_MUSIC,on?'1':'0');}catch{/* storage blocked */}ltMusic();render();return;}
     default:if(op.startsWith('kn'))kn().click(op,data);
       else if(op.startsWith('xs'))xs().click(op,data);
+      else if(op.startsWith('pb'))pb().click(op,data);
   }
 }
