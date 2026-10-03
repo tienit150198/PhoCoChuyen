@@ -240,7 +240,8 @@ async def new_player(r: Run):
         if pick['kind'] == 'none':
             r.problem(f'stuck on the first customer: {pick}')
             return
-        await p.eval_on_selector(pick.get('sel') or '[data-fd-pick]', 'e=>e.click()')
+        # The page may re-render between the pick and the press: a control that is gone is simply picked again.
+        await p.evaluate('s=>document.querySelector(s)?.click()', pick.get('sel') or '[data-fd-pick]')
         await r.wait(650)
     else:
         r.problem('the first customer was not served in 60 presses')

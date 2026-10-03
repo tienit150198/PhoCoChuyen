@@ -182,7 +182,7 @@ async def play(browser, base: str, cid: str, shots: Path | None, max_steps: int 
                 out['problems'].append(f'stuck: pressing "{pick.get("text")}" changes nothing')
                 break
             sel = pick.get('sel') or '[data-fd-pick]'
-            await page.eval_on_selector(sel, 'e=>e.click()')
+            await page.evaluate('s=>document.querySelector(s)?.click()', sel)   # re-rendered meanwhile: picked again next round
             await page.wait_for_timeout(650)
             for msg in await toasts():
                 if msg not in seen_errors:
