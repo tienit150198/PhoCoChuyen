@@ -182,6 +182,11 @@ async def play(browser, base: str, cid: str, shots: Path | None, max_steps: int 
                 out['problems'].append(f'stuck: pressing "{pick.get("text")}" changes nothing')
                 break
             sel = pick.get('sel') or '[data-fd-pick]'
+            # A timed button (a shutter, a stop tap) names the moment to press it: wait for that, as a player would.
+            wait = await page.eval_on_selector(sel, "e=>(e.closest('[data-fd-wait]')||e).getAttribute('data-fd-wait')")
+            if wait:
+                with contextlib.suppress(Exception):
+                    await page.wait_for_selector(wait, timeout=15000)
             await page.eval_on_selector(sel, 'e=>e.click()')
             await page.wait_for_timeout(650)
             for msg in await toasts():
