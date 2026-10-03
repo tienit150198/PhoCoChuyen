@@ -13,10 +13,17 @@
  * when the game server sells tickets (api.state.fair.photo; an older one: no booth on the fairground).
  * fair.js owns the dialog and passes its helpers in (setup); its render() patches the page in place and calls mount()
  * after: the booth's stage lives on a canvas in a data-fh-live slot, drawn when the room changes and by
- * requestAnimationFrame only while a shoot runs. */
+ * requestAnimationFrame only while a shoot runs.
+ * 1.5.2 (owner 03/10: "làm đẹp hơn nha, nhiều dáng với đẹp hơn nha"): thirty poses (./booth-poses.js: the character's
+ * arms, hands, head and face really move; nine are made together, picking one sets it for the whole room:
+ * booth_set {pose, all: true}, an older live service sets only one's own), a 🎲 that picks one (and the same for the
+ * friends), the fair's own frames, backdrops, stickers and colours (./photo-frames.js FAIR_*), the words and the date
+ * on the strip, a countdown with a ring and the shots dropping in. An id a client does not know is drawn as its
+ * default (pose 'dung', frame 'dem_hoi', backdrop 'kem'): the 1.5.1 client in the same room keeps working. */
 import {live} from './live.js';
-import {lookOf,figureOf,paintPlayer,CANVAS} from './look.js';
-import {FRAMES,FRAME,BACKDROPS,PROPS,STICKERS,FILTERS,draw as drawPrint,paintShot,thumb} from './photo-frames.js';
+import {lookOf,CANVAS} from './look.js';
+import {FRAMES,FAIR_FRAMES,FRAME,BACKDROPS,FAIR_BACKDROPS,PROPS,STICKERS,FAIR_STICKERS,FAIR_FILTERS,draw as drawPrint,paintShot,thumb} from './photo-frames.js';
+import {POSES,POSE,known as knownPose,paintPeople,poseThumb} from './booth-poses.js';
 import {t as tr} from './i18n.js';
 
 const SHOOTER={name:'Chị Mai chụp ảnh',emoji:'👩🏻‍🦰',
@@ -25,17 +32,22 @@ const SHOOTER={name:'Chị Mai chụp ảnh',emoji:'👩🏻‍🦰',
   room:['Đông vui quá! Chọn dáng đi rồi sẵn sàng nha.','Ai cũng sẵn sàng là chụp liền!'],
   shoot:['Cười lên nào!','Tạo dáng đi, sắp chụp rồi!','Đẹp lắm, giữ nguyên nha!'],
   done:['Xinh xỉu! Lưu ảnh về máy liền nha.','Dải ảnh đẹp quá trời, chụp thêm lượt nữa không?']};
-const POSES=[['dung','🧍','Đứng thẳng'],['vay','👋','Vẫy tay'],['v','✌️','Chữ V'],['tim','🫶','Thả tim'],['hoan_ho','🙌','Hoan hô'],['nhay','🤸','Nhảy lên'],['nghieng','😊','Nghiêng đầu']];
-const POSE_IDS=new Set(POSES.map(p=>p[0]));
 const PROP_IDS=new Set(PROPS.map(p=>p.id));
-const ARMS={vay:{r:[38,-98]},v:{r:[30,-84]},tim:{l:[-8,-56],r:[8,-56]},hoan_ho:{l:[-40,-104],r:[40,-104]},nhay:{l:[-40,-108],r:[40,-108]}};
-const SHOTS=4,GAP=3200,STICKER_MAX=8,TICKET='mnl.fair.pbticket';
+// the booth's frames: its own first, then the photobooth career's best for the fair, then the rest
+const FIRST=['dem_hoi','tet','kawaii','pho_co','retro','trung_thu'];
+const BOOTH_FRAMES=[...FAIR_FRAMES,...FIRST.map(id=>FRAME[id]).filter(Boolean),...FRAMES.filter(f=>!FIRST.includes(f.id))];
+const BGS=[...FAIR_BACKDROPS,...BACKDROPS],BG_IDS=new Set(BGS.map(b=>b.id));
+const STICKS=[...STICKERS,...FAIR_STICKERS];
+// the words on the strip
+const TEXTS=[['hoi','🏮','Hội chợ','Hội chợ Phố Có Chuyện'],['vui','🎉','Vui hết nấc','Vui hết nấc!'],['ban','💞','Bạn thân','Bạn thân mãi đỉnh'],['none','🚫','Không chữ','']];
+const SHOTS=4,GAP=3200,STICKER_MAX=8,TICKET='mnl.fair.pbticket',PRINT_SCALE=3;
 const CELL=[260,162];   // one photo of the strip (./photo-frames.js stripBox): the stage has its shape
 
 export function setup(ctx){
   const {S,F,btn,say,xu,esc,send,render,sfx,pick,reduce}=ctx;
-  const D=S.pb={step:'lobby',mode:null,room:null,me:null,frame:'dem_hoi',bg:'kem',pose:'dung',prop:'none',say:'',
+  const D=S.pb={step:'lobby',mode:null,room:null,me:null,frame:'hoi_dem',bg:'day_den',pose:'dung',prop:'none',say:'',
     ticket:readTicket(),paying:false,ready:false,waitUntil:0,shoot:null,shots:[],flash:0,count:0,filter:'none',stickers:[],
+    text:'hoi',date:true,tab:'solo',
     url:'',blob:null,building:false,cv:null,raf:0,thumbs:{},sent:{},pendingJoin:false,tick:0};
   const P=()=>F().photo||null;
 
@@ -65,7 +77,8 @@ export function setup(ctx){
     return [{pid:'me',name:st.name||tr('Bạn'),lk:lookOf(st),g:st.journey?.gender??null,pose:D.pose,prop:D.prop,ready:true}];
   }
   const frameId=()=>{const id=D.mode!=='solo'&&D.room?D.room.frame:D.frame;return FRAME[id]?id:'dem_hoi';};
-  const bgId=()=>{const id=D.mode!=='solo'&&D.room?D.room.bg:D.bg;return BACKDROPS.some(b=>b.id===id)?id:'kem';};
+  const bgId=()=>{const id=D.mode!=='solo'&&D.room?D.room.bg:D.bg;return BG_IDS.has(id)?id:'kem';};
+  const many=()=>D.mode!=='solo'&&!!D.room&&(D.room.people||[]).length>1;
   const mine=()=>people().find(p=>p.pid===D.me||D.mode==='solo')||null;
   const look=()=>{const st=myState();return {look:lookOf(st),g:st.journey?.gender??null};};
 
@@ -76,7 +89,7 @@ export function setup(ctx){
       const fresh=!D.room||D.room.room!==f.room;
       D.room=f;D.me=f.me;D.pendingJoin=false;
       if(D.step==='lobby'||D.step==='wait'){D.step='room';D.mode=f.mode==='stranger'?'stranger':'friends';D.say=pick(SHOOTER.room);sfx('open');}
-      const me=(f.people||[]).find(p=>p.pid===f.me);if(me){D.pose=POSE_IDS.has(me.pose)?me.pose:'dung';D.prop=PROP_IDS.has(me.prop)?me.prop:'none';D.ready=!!me.ready;}
+      const me=(f.people||[]).find(p=>p.pid===f.me);if(me){if(me.pose!==D.pose&&POSE[me.pose]?.group)D.tab='group';D.pose=knownPose(me.pose)?me.pose:'dung';D.prop=PROP_IDS.has(me.prop)?me.prop:'none';D.ready=!!me.ready;}
       if(fresh)S.flash=null;
       redraw();
     });
@@ -98,7 +111,7 @@ export function setup(ctx){
     live.on('down',lost);live.on('welcome',lost);
   }
   function redraw(){if(S.tab==='pb'&&S.dlg?.open)render();else drawStage();}
-  function toLobby(){stopLoop();D.step='lobby';D.mode=null;D.room=null;D.ready=false;D.shoot=null;D.pendingJoin=false;}
+  function toLobby(){stopLoop();D.step='lobby';D.tab='solo';D.mode=null;D.room=null;D.ready=false;D.shoot=null;D.pendingJoin=false;}
 
   /** Leave whatever shared thing is going on (the tab changes, the sheet closes). */
   function leave(){
@@ -118,16 +131,27 @@ export function setup(ctx){
     if(!/^[A-Z0-9]{4}$/.test(code)){S.flash={text:'Mã phòng có 4 ký tự, gồm chữ và số nha.',kind:'warn'};render();el?.focus();return;}
     D.mode='friends';S.flash=null;D.pendingJoin=live.send({t:'booth_join',code,...look()});render();
   }
-  function set(k,v){
-    if(k==='pose'&&!POSE_IDS.has(v))return;if(k==='prop'&&v!=='none'&&!PROP_IDS.has(v))return;
-    if(k==='frame'&&!FRAME[v])return;if(k==='bg'&&!BACKDROPS.some(b=>b.id===v))return;
+  /** k: frame, bg (the host), pose, prop (one's own). A group pose (or the 🎲 with friends) is for everyone in the
+   * room: booth_set {pose, all: true} (an older live service reads only `pose`: then it is one's own). */
+  function set(k,v,all=false){
+    if(k==='pose'&&!knownPose(v))return;if(k==='prop'&&v!=='none'&&!PROP_IDS.has(v))return;
+    if(k==='frame'&&!FRAME[v])return;if(k==='bg'&&!BG_IDS.has(v))return;
     D[k]=v;
     if(D.mode!=='solo'&&D.room){
       if((k==='frame'||k==='bg')&&!isHost())return;
-      live.send({t:'booth_set',[k]:v});
-      if(k==='frame'||k==='bg')D.room[k]=v;else{const me=D.room.people.find(p=>p.pid===D.me);if(me)me[k]=v;}
+      const everyone=k==='pose'&&(all||POSE[v]?.group)&&many();
+      live.send(everyone?{t:'booth_set',pose:v,all:true}:{t:'booth_set',[k]:v});
+      if(k==='frame'||k==='bg')D.room[k]=v;
+      else for(const p of D.room.people)if(p.pid===D.me||everyone)p[k]=v;
     }
     sfx('mark');redraw();
+  }
+  /** 🎲: a pose for me; with friends, often one made together, for the whole room. */
+  function dice(){
+    const cur=mine()?.pose||D.pose,group=many()&&Math.random()<.65;
+    const pool=POSES.filter(p=>p.group===group&&p.id!==cur&&p.id!=='dung');
+    const pick1=pool[Math.floor(Math.random()*pool.length)];
+    if(pick1){if(pick1.group)D.tab='group';else if(!many())D.tab='solo';set('pose',pick1.id,many());}
   }
   async function ready(){
     if(D.ready||!inRoom())return;
@@ -160,8 +184,10 @@ export function setup(ctx){
     D.step='shoot';D.say=pick(SHOOTER.shoot);S.flash=null;render();loop();
   }
   function capture(){
-    const ppl=people().map(p=>({pid:p.pid,name:p.name,lk:p.lk,g:p.g,pose:POSE_IDS.has(p.pose)?p.pose:'dung',prop:PROP_IDS.has(p.prop)?p.prop:'none'}));
-    D.shots.push({people:ppl,bg:bgId()});D.flash=performance.now();sfx('shutter');
+    const ppl=people().map(p=>({pid:p.pid,name:p.name,lk:p.lk,g:p.g,pose:knownPose(p.pose)?p.pose:'dung',prop:PROP_IDS.has(p.prop)?p.prop:'none'}));
+    const shot={people:ppl,bg:bgId()};
+    try{const cv=document.createElement('canvas');cv.width=CELL[0];cv.height=CELL[1];paintCell(cv.getContext('2d'),shot,CELL[0],CELL[1]);shot.mini=cv;}catch{/* the stage goes without it */}
+    shot.at=performance.now();D.shots.push(shot);D.flash=shot.at;sfx('shutter');
   }
   function tickShoot(now){
     const s=D.shoot;if(!s)return false;
@@ -174,78 +200,68 @@ export function setup(ctx){
   }
   function loop(){
     cancelAnimationFrame(D.raf);
-    const step=()=>{D.raf=0;const now=performance.now();const on=tickShoot(now)||now-D.flash<450;drawStage(now);if(on&&S.dlg?.open)D.raf=requestAnimationFrame(step);};
+    const step=()=>{D.raf=0;const now=performance.now();const on=tickShoot(now)||now-D.flash<520;drawStage(now);if(on&&S.dlg?.open)D.raf=requestAnimationFrame(step);};
     D.raf=requestAnimationFrame(step);
   }
   function stopLoop(){cancelAnimationFrame(D.raf);D.raf=0;D.shoot=null;D.count=0;}
 
-  /* ---- drawing the characters ---- */
-  /** One person (feet at the origin, 1 = the game's own size): their look, the pose, the prop. */
-  function figure(c,p,t=0){
-    const pose=POSE_IDS.has(p.pose)?p.pose:'dung',arms=ARMS[pose]||null,F0=figureOf(p.lk||{},p.g);
-    c.save();
-    if(pose==='nhay'){c.translate(0,-16);}
-    if(pose==='nghieng')c.rotate(-.12);
-    if(pose==='nhay'){c.save();c.translate(0,16);CANVAS.E(c,0,0,22,6,'#81644833');c.restore();}
-    paintPlayer(c,F0,CANVAS,arms);
-    if(pose==='v'){const [x,y]=arms.r;CANVAS.L(c,x-2,y-5,x-6,y-17,F0.skin.hand,3.4);CANVAS.L(c,x+2,y-5,x+5,y-17,F0.skin.hand,3.4);}
-    if(pose==='tim')CANVAS.heart(c,0,-60,.5,'#e8335a');
-    prop(c,p.prop,arms,F0);
-    c.restore();
-  }
-  function star(c,x,y,R,r,fill){c.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,d=i%2?r:R;c.lineTo(x+Math.cos(a)*d,y+Math.sin(a)*d);}c.closePath();c.fillStyle=fill;c.fill();}
-  function prop(c,id,arms,F0){
-    const {R,E,L,P,heart,bloom}=CANVAS,hand=arms?.r||[25,-36],[hx,hy]=hand;
-    switch(id){
-      case'mu_tiec':c.save();c.translate(10,-112);c.rotate(.28);P(c,[[-14,0],[14,0],[0,-38]],'#5bb6d9');for(let i=1;i<4;i++){const y=-38*i/4,w=14*(1-i/4);L(c,-w,y,w,y,'#f2c84b',3);}E(c,0,-39,5,5,'#e2574c');c.restore();break;
-      case'non_la':P(c,[[-46,-104],[46,-104],[0,-142]],'#efd79a');L(c,-46,-104,46,-104,'#c9a75a',2.5);L(c,-30,-115,30,-115,'#d8bc72',1.2);L(c,-16,-126,16,-126,'#d8bc72',1.2);break;
-      case'mu_tn':P(c,[[-38,-118],[0,-132],[38,-118],[0,-104]],'#1f2a44');R(c,-20,-118,40,14,'#1f2a44',4);E(c,0,-118,3,2.4,'#f2c84b');L(c,0,-118,24,-113,'#f2c84b',1.6);L(c,24,-113,25,-98,'#f2c84b',3);break;
-      case'tai_tho':c.strokeStyle='#ffffff';c.lineWidth=4;c.beginPath();c.arc(0,-84,34,Math.PI*1.1,Math.PI*1.9);c.stroke();
-        for(const s of [-1,1]){c.save();c.translate(s*15,-130);c.rotate(s*.2);E(c,0,0,8,22,'#ffffff');E(c,0,2,4,15,'#ffb3cf');c.restore();}break;
-      case'vuong_mien':P(c,[[-20,-110],[-21,-132],[-10,-120],[0,-136],[10,-120],[21,-132],[20,-110]],'#f2c84b');E(c,0,-117,3.2,3.2,'#e2574c');E(c,-12,-115,2.4,2.4,'#5bb6d9');E(c,12,-115,2.4,2.4,'#5bb6d9');break;
-      case'kinh_tim':heart(c,-11,-75,.36,'#e8335a');heart(c,11,-75,.36,'#e8335a');L(c,-4,-80,4,-80,'#e8335a',2);break;
-      case'kinh_ram':R(c,-21,-85,19,13,'#1d1d24',6);R(c,2,-85,19,13,'#1d1d24',6);L(c,-2,-80,2,-80,'#1d1d24',2);E(c,-15,-81,3,1.6,'#ffffff55');break;
-      case'bang_chu':{R(c,-30,-44,60,26,'#fffaf0',5,'#c79879',2);const w=tr('VUI QUÁ!');c.font='900 11px "Trebuchet MS",sans-serif';c.fillStyle='#d0567f';c.textAlign='center';c.textBaseline='middle';c.fillText(w,0,-30.5,54);
-        E(c,-29,-32,6,6,F0.skin.hand);E(c,29,-32,6,6,F0.skin.hand);break;}
-      case'hoa':for(let i=0;i<5;i++)bloom(c,hx-7+(i%3)*7,hy-12+Math.floor(i/3)*7,6,['#ff8fab','#f2c84b','#ffffff','#d9506c','#ffb3cf'][i]);P(c,[[hx-8,hy-2],[hx+6,hy-2],[hx-1,hy+14]],'#9cc58a');E(c,hx,hy,6,6,F0.skin.hand);break;
-      case'bong_bay':{const bx=hx+10,by=hy-58;c.strokeStyle='#9c7b6a';c.lineWidth=1.2;c.beginPath();c.moveTo(hx,hy);c.quadraticCurveTo(hx+14,hy-24,bx,by+20);c.stroke();
-        E(c,bx,by,15,18,'#e2574c');P(c,[[bx-3,by+18],[bx+3,by+18],[bx,by+14]],'#e2574c');E(c,bx-5,by-6,3.4,6,'#ffffff66');E(c,hx,hy,6,6,F0.skin.hand);break;}
-      case'long_den':{L(c,hx,hy,hx+8,hy-30,'#8b5e3c',2.4);const lx=hx+14,ly=hy-26;star(c,lx,ly+14,15,6.8,'#c0392b');star(c,lx,ly+14,11.5,5.2,'#f2c84b');E(c,lx,ly+14,2.6,2.6,'#fff3c4');E(c,hx,hy,6,6,F0.skin.hand);break;}
-    }
-  }
-  /** One photo of w × h: the backdrop (./photo-frames.js), then the people side by side, the first on the left. */
-  function paintCell(c,shot,w,h){
+  /* ---- drawing the characters (./booth-poses.js: the look, the pose, the prop; whole, side by side) ---- */
+  /** One photo of w × h: the backdrop (./photo-frames.js), then the people, the first on the left. Returns their x. */
+  function paintCell(c,shot,w,h,scale=0){
     paintShot(c,{backdrop:shot.bg||'kem',people:[],light:'soft'},w,h);
-    const ppl=shot.people||[],n=Math.max(1,ppl.length),s=Math.min(h*.8/150,w/(n*64));   // the whole person, hats and ears in the picture
-    ppl.forEach((p,i)=>{const x=w*(i+.5)/n,y=h*.96;c.save();c.translate(x,y);c.scale(s,s);try{figure(c,p);}catch(e){console.warn('chụp ảnh: look',e);}c.restore();});
+    try{return paintPeople(c,shot.people||[],w,h,{sign:tr('VUI QUÁ!'),scale});}catch(e){console.warn('chụp ảnh: look',e);return [];}
   }
 
   /* ---- the stage: the booth seen from the camera, names under the people, the count, the flash ---- */
   function drawStage(now=performance.now()){
     const cv=D.cv;if(!cv?.isConnected)return;
-    const c=cv.getContext('2d'),dpr=cv.width/Math.max(1,cv.clientWidth||1),W=CELL[0],H=CELL[1],k=cv.width/W;
+    const c=cv.getContext('2d'),W=CELL[0],H=CELL[1],k=cv.width/W;
     c.setTransform(k,0,0,k,0,0);c.clearRect(0,0,W,H);
     const ppl=D.step==='lobby'?people().slice(0,1):people();
-    try{paintCell(c,{people:ppl,bg:bgId()},W,H);}catch(e){console.warn('chụp ảnh: stage',e);}
-    // the curtain's edges and the marquee over the booth
+    const at=paintCell(c,{people:ppl,bg:bgId()},W,H);
+    // the curtain's edges and the marquee over the booth (its bulbs run while the camera counts)
     const g=c.createLinearGradient(0,0,22,0);g.addColorStop(0,'#8f1f2a');g.addColorStop(1,'#c8323a00');c.fillStyle=g;c.fillRect(0,0,22,H);
     const g2=c.createLinearGradient(W,0,W-22,0);g2.addColorStop(0,'#8f1f2a');g2.addColorStop(1,'#c8323a00');c.fillStyle=g2;c.fillRect(W-22,0,22,H);
-    for(let i=0;i<13;i++){const on=reduce()||Math.floor(now/260+i)%3!==0;CANVAS.E(c,6+i*(W-12)/12,4,2.6,2.6,on?'#ffe28a':'#b98f4a');}
-    const n=Math.max(1,ppl.length);c.textAlign='center';c.textBaseline='middle';c.font='700 8px "Trebuchet MS",sans-serif';
-    ppl.forEach((p,i)=>{if(D.step==='lobby')return;const x=W*(i+.5)/n,name=String(p.name||tr('Khách đi hội')).slice(0,18),tw=c.measureText(name).width+(p.ready&&D.mode!=='solo'?14:8);
-      c.fillStyle='rgba(255,250,240,.88)';c.beginPath();c.roundRect(x-tw/2,H-13,tw,11,5.5);c.fill();c.fillStyle='#4a3226';c.fillText((p.ready&&D.mode!=='solo'?'✓ ':'')+name,x,H-7.2);});
-    if(D.count){c.fillStyle='#00000040';c.fillRect(0,0,W,H);c.font='900 64px "Trebuchet MS",sans-serif';c.fillStyle='#fff';c.strokeStyle='#4a2a66';c.lineWidth=4;c.strokeText(String(D.count),W/2,H/2+2);c.fillText(String(D.count),W/2,H/2+2);}
-    const fl=now-D.flash;if(D.flash&&fl<450){c.fillStyle=`rgba(255,255,255,${(1-fl/450)*.92})`;c.fillRect(0,0,W,H);}
-    if(D.step==='shoot'&&D.shoot){c.font='800 9px "Trebuchet MS",sans-serif';c.fillStyle='#fff';c.fillText(`${tr('Kiểu')} ${Math.min(D.shoot.n,D.shoot.done+1)}/${D.shoot.n}`,W-30,16);}
-    void dpr;
+    const fast=D.count?110:260;
+    for(let i=0;i<13;i++){const on=reduce()||Math.floor(now/fast+i)%3!==0;CANVAS.E(c,6+i*(W-12)/12,4,2.6,2.6,on?'#ffe28a':'#b98f4a');}
+    c.textAlign='center';c.textBaseline='middle';c.font='700 8px "Trebuchet MS",sans-serif';
+    if(D.step!=='lobby')ppl.forEach((p,i)=>{
+      const x=at[i]?.x??W*(i+.5)/ppl.length,room=ppl.length>1?Math.min(...at.map((a,j)=>j===i?Infinity:Math.abs(a.x-x)),W)-6:W*.6;
+      const tick=p.ready&&D.mode!=='solo'?'✓ ':'';let name=String(p.name||tr('Khách đi hội')).slice(0,18);
+      while(name.length>3&&c.measureText(tick+name).width+8>room)name=name.slice(0,-2)+'…';
+      const tw=c.measureText(tick+name).width+8;
+      c.fillStyle='rgba(255,250,240,.88)';c.beginPath();c.roundRect(x-tw/2,H-13,tw,11,5.5);c.fill();c.fillStyle='#4a3226';c.fillText(tick+name,x,H-7.2);});
+    // the shots taken so far: small prints dropping in at the bottom right
+    if(D.step==='shoot'){D.shots.forEach((sh,i)=>{if(!sh.mini)return;const age=now-(sh.at||0),drop=Math.min(1,age/380),x=W-28-i*7,y=H-26-(1-drop)*40;
+      c.save();c.translate(x,y);c.rotate((i%2?.08:-.06));c.fillStyle='#fff';c.shadowColor='#0005';c.shadowBlur=3;c.fillRect(-15,-11,30,24);c.shadowColor='transparent';c.drawImage(sh.mini,-13.5,-9.5,27,17);c.restore();});
+      c.font='800 9px "Trebuchet MS",sans-serif';
+      const n=D.shoot?.n||SHOTS;for(let i=0;i<n;i++)CANVAS.E(c,W/2-(n-1)*6+i*12,15,3.4,3.4,i<D.shots.length?'#ffd36e':'#ffffff88');}
+    if(D.count&&D.shoot){
+      const s=D.shoot,due=s.t0+s.gap*(s.done+1),left=(due-now)/1000,frac=Math.max(0,Math.min(1,D.count-left)),pop=1+.35*Math.pow(1-Math.min(1,frac*3),2);
+      c.fillStyle='#14082a3a';c.fillRect(0,0,W,H);
+      c.save();c.translate(W/2,H/2-4);
+      c.beginPath();c.arc(0,0,30,0,Math.PI*2);c.fillStyle='#ffffffd8';c.fill();
+      c.lineWidth=4.5;c.lineCap='round';c.strokeStyle='#ffd36e55';c.beginPath();c.arc(0,0,30,0,Math.PI*2);c.stroke();
+      c.strokeStyle='#ff8fab';c.beginPath();c.arc(0,0,30,-Math.PI/2,-Math.PI/2+Math.PI*2*frac);c.stroke();
+      c.scale(pop,pop);c.font='900 38px "Trebuchet MS",sans-serif';c.fillStyle='#5a2d82';c.fillText(String(D.count),0,2);c.restore();
+      const word=tr(D.count===3?'Sẵn sàng…':D.count===2?'Tạo dáng!':'Cười lên!');
+      c.font='900 11px "Trebuchet MS",sans-serif';const ww=c.measureText(word).width+16;
+      c.fillStyle='#5a2d82e6';c.beginPath();c.roundRect(W/2-ww/2,H/2+31,ww,16,8);c.fill();c.fillStyle='#fff';c.fillText(word,W/2,H/2+39.5);
+    }
+    const fl=now-D.flash;if(D.flash&&fl<520){const a=fl<80?.95:(1-(fl-80)/440)*.95;c.fillStyle=`rgba(255,255,255,${Math.max(0,a)})`;c.fillRect(0,0,W,H);}
   }
 
   /* ---- the strip ---- */
   const vnDate=()=>{const p=new Intl.DateTimeFormat('en-GB',{day:'2-digit',month:'2-digit',year:'2-digit',timeZone:'Asia/Ho_Chi_Minh'}).formatToParts(new Date());const g=t=>p.find(x=>x.type===t)?.value||'';return [g('day'),g('month'),g('year')];};
-  function printCanvas(scale=2){
+  const textOf=()=>(TEXTS.find(x=>x[0]===D.text)||TEXTS[0])[3];
+  function printCanvas(scale=PRINT_SCALE){
     const cv=document.createElement('canvas'),[d,m,y]=vnDate(),names=[...new Set(D.shots.flatMap(s=>s.people.map(p=>p.name||'')).filter(Boolean))].slice(0,4).join(' · ');
-    drawPrint(cv,{layout:'strip',shots:D.shots},frameId(),{stickers:D.stickers,date:`${d}.${m}.${y}`,filter:D.filter,caption:`${tr('Hội chợ Phố Có Chuyện')} · ${d}/${m}`},
-      {scale,t:tr,brand:names,paintShot:(c,shot,w,h)=>paintCell(c,shot,w,h)});
+    try{cv.getContext('2d',{willReadFrequently:true});}catch{/* the plain one */}
+    // the same size of people in all four photos (the smallest one fits)
+    let sc=Infinity;for(const sh of D.shots){try{sc=Math.min(sc,paintPeople(null,sh.people,CELL[0],CELL[1],{measure:true}));}catch{/* each fits on its own */}}
+    const text=textOf();
+    drawPrint(cv,{layout:'strip',shots:D.shots},frameId(),{stickers:D.stickers,filter:D.filter,title:text?tr(text):'',caption:D.date?`${d}/${m}/20${y}`:''},
+      {scale,t:tr,brand:names,paintShot:(c,shot,w,h)=>paintCell(c,shot,w,h,Number.isFinite(sc)?sc:0)});
     return cv;
   }
   let building=0;
@@ -299,10 +315,10 @@ export function setup(ctx){
     const ppl=people(),host=isHost(),r=D.room,shooting=D.step==='shoot'||!!r?.shooting,me=mine();
     const code=D.mode==='friends'&&r?.code?`<div class="fh-pb-code-chip"><span>Mã phòng</span><b>${esc(r.code)}</b>${btn('📋 Chép mã','pbcopy',{},'cream small',' data-fh-key="pbcopy"')}</div>`:'';
     const list=D.mode==='solo'?'':`<ul class="fh-pb-people">${ppl.map(p=>`<li><span class="fh-pb-tick${p.ready?' on':''}" aria-hidden="true">${p.ready?'✓':'…'}</span><b>${esc(p.name||tr('Khách đi hội'))}</b>${p.pid===r.host?'<em>👑 chủ phòng</em>':''}${p.pid===D.me?'<em>bạn</em>':''}<small>${p.ready?'sẵn sàng':'đang chọn dáng'}</small>${host&&p.pid!==D.me&&D.mode==='friends'?btn('Mời ra','pbkick',{pid:p.pid},'ghost small',` data-fh-key="pbkick-${esc(p.pid)}"`):''}</li>`).join('')}${D.mode==='friends'&&ppl.length<(r.cap||4)?`<li class="empty"><span aria-hidden="true">＋</span><small>Còn ${(r.cap||4)-ppl.length} chỗ: gửi mã cho bạn bè</small></li>`:''}</ul>`;
-    const fr=frameId(),frames=`<div class="fh-pb-sec"><b>Khung ảnh</b>${host?'':'<small>chủ phòng chọn</small>'}</div><div class="fh-pb-frames" role="group" aria-label="Khung ảnh">${FRAMES.map(f=>`<button type="button" class="fh-pb-frame${fr===f.id?' on':''}" data-fh="pbframe" data-v="${f.id}" aria-pressed="${fr===f.id}" data-fh-key="pbframe-${f.id}"${host&&!shooting?'':' disabled'}><img alt="" src="${frameThumb(f.id)}"><span><i aria-hidden="true">${f.emoji}</i> ${esc(f.name)}</span></button>`).join('')}</div>`;
-    const bg=bgId(),bgs=`<div class="fh-pb-sec"><b>Phông nền</b></div><div class="fh-pb-chips" role="group" aria-label="Phông nền">${BACKDROPS.map(b=>chip('pbbg',b.id,bg===b.id,`<span aria-hidden="true">${b.emoji}</span> ${esc(b.name)}`,b.name,!host||shooting)).join('')}</div>`;
+    const fr=frameId(),frames=`<div class="fh-pb-sec"><b>Khung ảnh</b>${host?'':'<small>chủ phòng chọn</small>'}</div><div class="fh-pb-frames" role="group" aria-label="Khung ảnh">${BOOTH_FRAMES.map(f=>`<button type="button" class="fh-pb-frame${fr===f.id?' on':''}" data-fh="pbframe" data-v="${f.id}" aria-pressed="${fr===f.id}" data-fh-key="pbframe-${f.id}"${host&&!shooting?'':' disabled'}><img alt="" src="${frameThumb(f.id)}"><span><i aria-hidden="true">${f.emoji}</i> ${esc(f.name)}</span></button>`).join('')}</div>`;
+    const bg=bgId(),bgs=`<div class="fh-pb-sec"><b>Phông nền</b></div><div class="fh-pb-chips" role="group" aria-label="Phông nền">${BGS.map(b=>chip('pbbg',b.id,bg===b.id,`<span aria-hidden="true">${b.emoji}</span> ${esc(b.name)}`,b.name,!host||shooting)).join('')}</div>`;
     const pose=me?.pose||D.pose,pr=me?.prop||D.prop;
-    const poses=`<div class="fh-pb-sec"><b>Dáng của bạn</b>${shooting?'<small>đổi dáng giữa các kiểu nha</small>':''}</div><div class="fh-pb-chips" role="group" aria-label="Dáng">${POSES.map(([id,e,n])=>chip('pbpose',id,pose===id,`<span aria-hidden="true">${e}</span> ${esc(n)}`,n)).join('')}</div>`;
+    const poses=poseView(pose,shooting);
     const props=`<div class="fh-pb-sec"><b>Đạo cụ</b></div><div class="fh-pb-chips" role="group" aria-label="Đạo cụ">${chip('pbprop','none',pr==='none','<span aria-hidden="true">🚫</span> Không','Không')}${PROPS.map(p=>chip('pbprop',p.id,pr===p.id,`<span aria-hidden="true">${p.emoji}</span> ${esc(p.name)}`,p.name)).join('')}</div>`;
     let act='';
     const why=payWhy(),price=xu(P()?.price||5);
@@ -316,17 +332,28 @@ export function setup(ctx){
       act=`<div class="fh-go fh-pb-act"><span>${esc(line)}</span>${readyBtn}${goBtn}</div>`;
     }
     return `${code}${stage()}${list}${act}${why&&!D.ticket&&D.step!=='shoot'?`<p class="fh-why">${esc(why)}: cần ${price} để chụp.</p>`:''}
-      ${poses}${props}${frames}${bgs}
+      ${poses}${frames}${bgs}${props}
       <div class="fh-go">${btn(D.mode==='solo'?'‹ Đổi cách chụp':'Rời phòng','pbout',{},'ghost small',' data-fh-key="pbout"')}</div>`;
+  }
+  /** The pose picker: tiles of one's own character in each pose; with friends, the poses made together too. */
+  function poseView(pose,shooting){
+    const st=myState(),lk=lookOf(st),g=st.journey?.gender??null,grp=many();
+    const tab=grp&&(D.tab==='group')?'group':'solo';
+    const tabs=grp?`<div class="fh-pb-tabs" role="group" aria-label="Loại dáng">${[['solo','🙋','Một người'],['group','👯','Cả nhóm']].map(([v,e,n])=>`<button type="button" class="fh-pb-tab${tab===v?' on':''}" data-fh="pbtab" data-v="${v}" aria-pressed="${tab===v}" data-fh-key="pbtab-${v}"><span aria-hidden="true">${e}</span> ${n}</button>`).join('')}</div>`:'';
+    const list=POSES.filter(p=>p.group===(tab==='group'));
+    const tiles=list.map(p=>`<button type="button" class="fh-pb-pose${pose===p.id?' on':''}" data-fh="pbpose" data-v="${p.id}" aria-pressed="${pose===p.id}" data-fh-key="pbpose-${p.id}" title="${esc(p.name)}"><img alt="" src="${poseThumb(lk,g,p.id,128)}" width="64" height="64"><span><i aria-hidden="true">${p.emoji}</i> ${esc(p.name)}</span></button>`).join('');
+    return `<div class="fh-pb-sec fh-pb-posehead"><b>Dáng</b>${shooting?'<small>đổi giữa các kiểu</small>':''}${btn('🎲 Ngẫu nhiên','pbdice',{},'cream small fh-pb-dice',' data-fh-key="pbdice"')}</div>
+      ${tabs}${tab==='group'?'<p class="fh-pb-hint">Chọn là cả phòng cùng dáng</p>':''}<div class="fh-pb-poses" role="group" aria-label="Dáng">${tiles}</div>`;
   }
   function printView(){
     const img=D.url?`<img class="fh-pb-print" src="${D.url}" alt="${esc(tr('Dải ảnh hội chợ'))}">`:`<div class="fh-pb-print wait" role="status">${esc('Đang in ảnh…')}</div>`;
-    const filters=`<div class="fh-pb-sec"><b>Bộ lọc</b></div><div class="fh-pb-chips" role="group" aria-label="Bộ lọc">${FILTERS.map(f=>chip('pbfilter',f.id,D.filter===f.id,esc(f.name),f.name)).join('')}</div>`;
-    const stickers=`<div class="fh-pb-sec"><b>Sticker</b><small>${D.stickers.length}/${STICKER_MAX}</small></div><div class="fh-pb-chips" role="group" aria-label="Sticker">${STICKERS.map(s=>chip('pbsticker',s.id,D.stickers.includes(s.id),`<span aria-hidden="true">${s.emoji}</span> ${esc(s.name)}`,s.name,!D.stickers.includes(s.id)&&D.stickers.length>=STICKER_MAX)).join('')}</div>`;
+    const filters=`<div class="fh-pb-sec"><b>Màu ảnh</b></div><div class="fh-pb-chips" role="group" aria-label="Màu ảnh">${FAIR_FILTERS.map(f=>chip('pbfilter',f.id,D.filter===f.id,esc(f.name),f.name)).join('')}</div>`;
+    const words=`<div class="fh-pb-sec"><b>Chữ</b></div><div class="fh-pb-chips" role="group" aria-label="Chữ">${TEXTS.map(([id,e,n])=>chip('pbtext',id,D.text===id,`<span aria-hidden="true">${e}</span> ${esc(n)}`,n)).join('')}${chip('pbdate','1',D.date,'<span aria-hidden="true">📅</span> Ngày','Ngày')}</div>`;
+    const stickers=`<div class="fh-pb-sec"><b>Sticker</b><small>${D.stickers.length}/${STICKER_MAX}</small></div><div class="fh-pb-chips" role="group" aria-label="Sticker">${STICKS.map(s=>chip('pbsticker',s.id,D.stickers.includes(s.id),`<span aria-hidden="true">${s.emoji}</span> ${esc(s.name)}`,s.name,!D.stickers.includes(s.id)&&D.stickers.length>=STICKER_MAX)).join('')}</div>`;
     const again=D.mode==='solo'||D.room?btn('📸 Chụp lượt nữa','pbagain',{},'cream',' data-fh-key="pbagain"'):'';
     return `<div class="fh-pb-printbox">${img}</div>
       <div class="fh-go">${btn('⬇️ Lưu ảnh','pbsave',{},'primary big',D.blob?' data-fh-key="pbsave"':' disabled data-fh-key="pbsave"')}${again}</div>
-      ${filters}${stickers}
+      ${filters}${words}${stickers}
       <div class="fh-go">${btn(D.mode==='solo'?'‹ Về buồng chụp':'Rời phòng','pbout',{},'ghost small',' data-fh-key="pbout"')}</div>
       <p class="fh-rule">Bộ lọc và sticker chỉ đổi trên ảnh của bạn. Ảnh không lưu lên máy chủ: lưu về máy để giữ nha.</p>`;
   }
@@ -367,8 +394,12 @@ export function setup(ctx){
       case'pbgo':go();return true;
       case'pbshoot':shootSolo();return true;
       case'pbkick':kick(data.pid);return true;
-      case'pbfilter':if(FILTERS.some(f=>f.id===data.v)){D.filter=data.v;build();render();}return true;
-      case'pbsticker':{const v=data.v;if(!STICKERS.some(s=>s.id===v))return true;const i=D.stickers.indexOf(v);if(i>=0)D.stickers.splice(i,1);else if(D.stickers.length<STICKER_MAX)D.stickers.push(v);build();render();return true;}
+      case'pbdice':dice();return true;
+      case'pbtab':if(data.v==='solo'||data.v==='group'){D.tab=data.v;render();}return true;
+      case'pbfilter':if(FAIR_FILTERS.some(f=>f.id===data.v)){D.filter=data.v;build();render();}return true;
+      case'pbtext':if(TEXTS.some(x=>x[0]===data.v)){D.text=data.v;build();render();}return true;
+      case'pbdate':D.date=!D.date;build();render();return true;
+      case'pbsticker':{const v=data.v;if(!STICKS.some(s=>s.id===v))return true;const i=D.stickers.indexOf(v);if(i>=0)D.stickers.splice(i,1);else if(D.stickers.length<STICKER_MAX)D.stickers.push(v);build();render();return true;}
       case'pbsave':save();return true;
       case'pbagain':D.step='room';D.shots=[];D.say=pick(SHOOTER.room);if(D.url){URL.revokeObjectURL(D.url);D.url='';D.blob=null;}render();return true;
     }
@@ -378,7 +409,8 @@ export function setup(ctx){
   const live_=()=>D.step!=='lobby';
 
   /* ---- test hooks (scripts/browser_fair_booth.py) ---- */
-  globalThis.__fairBooth={state:()=>({shared:shared(),step:D.step,mode:D.mode,me:D.me,room:D.room&&{...D.room},ticket:D.ticket,ready:D.ready,shots:D.shots.length,url:!!D.url,frame:frameId(),bg:bgId(),filter:D.filter,stickers:[...D.stickers]}),
+  globalThis.__fairBooth={state:()=>({shared:shared(),step:D.step,mode:D.mode,me:D.me,room:D.room&&{...D.room},ticket:D.ticket,ready:D.ready,shots:D.shots.length,url:!!D.url,frame:frameId(),bg:bgId(),filter:D.filter,stickers:[...D.stickers],
+      pose:mine()?.pose||D.pose,text:D.text,date:D.date,count:D.count}),
     print:(scale=1)=>printCanvas(scale).toDataURL('image/png')};
 
   return {view,mount,click,leave,busy,live:live_};

@@ -18,6 +18,9 @@ Two ways in
 In a room
 * The host picks the frame and the backdrop (`booth_set {frame, bg}`; public/js/v4/photo-frames.js FRAMES, BACKDROPS); everyone picks their own pose and prop (`booth_set {pose, prop}`);
   ids are short lowercase words (ID), the list is the client's (an id a client does not know is drawn as the default).
+  `booth_set {pose, all: true}` (1.5.2: a pose made together, or the 🎲 with friends) gives everyone in the room that
+  pose; anyone may, everyone can change theirs after. A service before it reads only `pose` (one's own pose); a client
+  before it never sends `all` and draws a pose it does not know as 'dung'.
 * `booth_ready`: the player has paid their ticket (fair_photo on the game server; the client sends this after it).
   `booth_go` (the host, when everyone is ready): `booth_shoot {n, gap, id}` to all, each client counts down and
   shoots n photos gap ms apart; the readies are used up (the next shoot is paid again).
@@ -30,7 +33,7 @@ Frames (client → server; replies in brackets)
   booth_make {look, g}         [booth_room {room, code, mode, host, me, frame, bg, cap, people: [{pid, name, lk, g, pose,
                                 prop, ready}], shooting}]
   booth_join {code, look, g}   [booth_room]          booth_find {look, g}   [booth_wait {secs}] or [booth_room]
-  booth_set {frame?, bg?, pose?, prop?}  booth_ready {}  booth_go {}  booth_kick {pid}
+  booth_set {frame?, bg?, pose?, all?, prop?}  booth_ready {}  booth_go {}  booth_kick {pid}
   booth_cancel {} [booth_left {why: 'cancel'}]      booth_out {} [booth_left {why: 'out'}]
 Server pushes: booth_room (after every change, to everyone in it), booth_shoot {n, gap, id}, booth_none {why},
 booth_left {why: other | kick | blocked | idle}.
@@ -302,7 +305,9 @@ class BoothFeature(Feature):
             if 'bg' in f:
                 d['bg'] = clean_id(f.get('bg'), 'kem')
         if 'pose' in f:
-            m.pose = clean_id(f.get('pose'), 'dung')
+            pose = clean_id(f.get('pose'), 'dung')
+            for x in (d['people'].values() if f.get('all') is True else (m,)):   # a pose made together: the whole room
+                x.pose = pose
         if 'prop' in f:
             m.prop = clean_id(f.get('prop'), 'none')
         d['last'] = time.monotonic()

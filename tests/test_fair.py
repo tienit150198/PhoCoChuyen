@@ -1320,6 +1320,39 @@ class FairPhoto(FairBase):
         self.assertEqual(s['journey']['wallet'], 50)
 
 
+class FairPhotoPreviousServer(FairBase):
+    """1.5.2 makes the booth prettier (poses, frames, colours) all in the browser and the live service: a save with
+    shoots on it is what 1.5.1 writes, and the 1.5.1 build (MNL_PREV_TREE) keeps and accepts it both ways."""
+
+    def prev_tree(self):
+        old = os.environ.get('MNL_PREV_TREE') or str(Path(__file__).resolve().parents[2] / '_rel151' / 'mot-ngay-lam-nghe')
+        if not (Path(old) / 'game' / 'engine.py').is_file():
+            self.skipTest('no 1.5.1 tree (MNL_PREV_TREE)')
+        return old
+
+    def test_a_save_with_shoots_crosses_the_151_build(self):
+        import subprocess
+        import sys
+        old = self.prev_tree()
+        s = story(40)
+        for mode in ('solo', 'friends', 'stranger'):
+            s, _ = self.act(s, 'fair_photo', mode=mode)
+        validate_state(s)
+        prog = ('import json,sys;from game.engine import validate_state,migrate_state;s=json.load(sys.stdin);'
+                's=migrate_state(s);validate_state(s);print(json.dumps(s))')
+        env = dict(os.environ, PYTHONPATH=old)
+        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(s), capture_output=True, text=True, cwd=old, env=env,
+                             encoding='utf-8', timeout=300)
+        self.assertEqual(out.returncode, 0, out.stderr[-3000:])
+        back = json.loads(out.stdout)
+        self.assertEqual(back['journey']['history'][-1], s['journey']['history'][-1])
+        self.assertEqual(back['journey']['wallet'], 40 - 3 * fp.PRICE)
+        back = migrate_state(back)
+        validate_state(back)
+        back, r = self.act(back, 'fair_photo')
+        self.assertEqual(r['fair']['n'], 4)
+
+
 class FairCash(FairBase):
     """🎁 tiền vốn and 💸 vay nóng (game/fair_cash.py)."""
     def test_the_gift_once_per_edition_and_not_winnings(self):
