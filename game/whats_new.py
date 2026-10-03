@@ -32,6 +32,17 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.6.0", date="2026-10-04", items=(
+        dict(emoji="🗺️", text="Màn hình chính giờ là bản đồ phố: đi dạo rồi bước vào nơi làm việc. Muốn danh sách cũ thì bấm 📋 Danh sách."),
+        dict(emoji="🛵", text="Có xe là chạy được quanh phố, hội chợ và đi dạo! Xe đỗ ngay cửa, bấm nút để đổi xe hoặc đi bộ."),
+        dict(emoji="🛵", text="Giao hàng có chế độ Tự lái: tự chạy xe máy qua phố, dừng trước nhà có người vẫy tay. Muốn nhanh thì bấm ⏩ Đi nhanh."),
+        dict(emoji="🚜", text="Nông trại: tự đi trong vườn góc nhìn thứ nhất hoặc thứ ba, thấy luống khát hay chín, chạy xe máy chở hàng tới khách!"),
+        dict(emoji="🏪", text="Quầy của bạn: tự đặt menu, giá, tên quầy, màu mái, trang trí; không thuê ai cũng tự đứng bán được."),
+        dict(emoji="📱", text="Bật Bán online: đóng gói đơn, tự chạy xe giao hoặc gọi shipper; mỗi ngày vài chuyện oái oăm vui vui."),
+        dict(emoji="📸", text="Chụp ảnh hội chợ đẹp hơn: 30 dáng (có dáng cả nhóm), nút 🎲, 6 khung mới, chỉnh màu ảnh, thêm chữ và ngày lên ảnh."),
+        dict(emoji="💸", text="Chuyển khoản bạn bè: mở Ngân hàng, chọn bạn, gửi xu kèm lời nhắn. Bạn ấy nhận ngay khi vào game."),
+        dict(emoji="🛠️", text="Lớp học báo đúng chỗ sai; xin lỗi kèm hoàn tiền có thể khiến khách sửa sao; trông trẻ, giúp việc, nấu cơm hiện rõ tiền công."),
+    )),
     dict(version="1.5.4", date="2026-10-03", items=(
         dict(emoji="📸", text="Buồng chụp hội chợ mở 24/24: tự nối lại khi rớt mạng, mã phòng giữ 2 phút để rủ bạn vào chụp chung."),
         dict(emoji="🧋", text="Quầy trà sữa: chọn nguyên liệu hiện ngay, không còn khựng. Lớp học: bấm trả lời học sinh không còn bị đứng."),

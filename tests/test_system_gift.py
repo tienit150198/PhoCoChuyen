@@ -301,7 +301,7 @@ class Schema(unittest.TestCase):
     def test_postgres_table_matches(self):
         self.assertGreaterEqual(pg_schema.SCHEMA_VERSION, 4)
         t = pg_schema.TABLE['system_gifts']
-        self.assertEqual([c for c, _ in t['columns']], ['id', 'sid', 'coins', 'title', 'text', 'status', 'created', 'applied_at', 'seen_at'])
+        self.assertEqual([c for c, _ in t['columns']], ['id', 'sid', 'coins', 'title', 'text', 'status', 'created', 'applied_at', 'seen_at', 'granted_by'])
         self.assertEqual(t['key'], ('id',))
         self.assertIn('CREATE TABLE IF NOT EXISTS system_gifts', pg_schema.TABLES_DDL)
         self.assertIn('system_gifts (sid, status)', pg_schema.INDEX_DDL)

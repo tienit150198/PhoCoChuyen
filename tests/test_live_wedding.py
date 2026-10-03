@@ -112,6 +112,10 @@ class Room(WedCase):
         self.assertNotIn(sg, ok)
         await self.ticks(at - 1, 62)
         self.assertEqual(self.rows("SELECT * FROM live_effects WHERE sid=?", sg), [])
+        for _ in range(40):                                 # the minute grants land asynchronously after the tick
+            if len(self.rows("SELECT * FROM live_effects WHERE kind='coins' AND id LIKE 'wedm:%'")) >= 4:
+                break
+            await asyncio.sleep(0.05)
         self.assertEqual(len(self.rows("SELECT * FROM live_effects WHERE kind='coins' AND id LIKE 'wedm:%'")), 4, '3 guests and the groom')
         self.assertEqual((await g.expect('wed_xu'))['why'], 'account')
         await c.call('walk_out', 'walk_left')

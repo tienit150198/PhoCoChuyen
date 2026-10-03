@@ -333,6 +333,7 @@ class Store:
             db.executescript(lb.lbt.SCHEMA)  # 🏅 Danh hiệu tuần of the boards (game/lb_titles.py)
             db.executescript(mr.SCHEMA)  # Hôn nhân (game/marriage.py): codes, rings, proposals, couples, weddings, effects, news, friends, joint fund
             db.executescript(sg.SCHEMA)  # 🎁 Quà từ Phố Có Chuyện (game/system_gift.py)
+            sg.migrate(db);db.executescript(sg.INDEXES)  # 🎁 granted_by on older files, then the "Quà đã tặng" index
             db.executescript(lc.SCHEMA)  # 💬 Chat tables of the live service (game/live_chat.py, live/)
             lc.migrate(db)  # 📌 chat_messages.adm on older files
             db.executescript(ldt.SCHEMA)  # 💕 Dates of the live service: live_dates, date_bonds (game/live_dating.py, live/dating.py)

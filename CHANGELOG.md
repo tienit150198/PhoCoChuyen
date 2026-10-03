@@ -1,3 +1,14 @@
+# v1.6.0 — 🗺️ phố đi dạo, 🛵 tự lái & đi xe, 🚜 nông trại góc nhìn, 🏪 quầy v2 + bán online, 📸 photobooth đẹp, 💸 chuyển khoản bạn bè
+
+- Màn hình chính là bản đồ phố (`public/js/v4/town-walk.js`); danh sách Hành trình vẫn còn (📋 Danh sách, Cài đặt → Màn hình chính).
+- Giao hàng Tự lái góc nhìn thứ nhất (`public/js/careers/delivery_drive.js`), lệnh server giữ nguyên (`dl_plan`/`dl_ride`); ⏩ Đi nhanh làm đường lui.
+- Nông trại góc nhìn thứ nhất/thứ ba, chạy xe máy giao hàng.
+- Đi xe của mình trong phố, hội chợ, đi dạo (`public/js/v4/ride.js`); live: trường tùy chọn `r`/`v`, frame `ride`. Không tốn xăng.
+- Quầy v2 (`game/quay.py`): tự đứng quầy, menu & giá, trang trí, hình quầy canvas, bán online, 26 tình huống; sửa lỗi bấm tự cuộn lên.
+- Photobooth hội chợ: 30 dáng (9 dáng nhóm, `booth_set` thêm `all` tùy chọn), khung, nền, sticker, lọc màu, chữ & ngày trên dải ảnh.
+- Chuyển khoản bạn bè (`game/bank_xfer.py`, bảng `bank_xfers`, `bank_xfer_days`, PG schema 15): hạn mức gửi 2.000/ngày, nhận 3.000/ngày, tài khoản ≥3 ngày & ≥10 ngày sống, bạn ≥60 phút; 30 ngày chưa nhận thì hoàn.
+- Sửa: gợi ý câu chọn nhiều đáp án nói đúng chỗ sai (`game/procedures.py`, feedback #124); hoàn tiền/xin lỗi có thể làm khách sửa sao (`feedback.amends`); trông trẻ/giúp việc/nấu cơm hiện tiền công.
+
 # v1.5.4 — 📸 buồng chụp hội chợ luôn mở, tự nối lại; 🧋 trà sữa không khựng; 🧑‍🏫 lớp học không đứng
 
 - Buồng chụp hội chợ: sảnh vẽ lại theo trạng thái socket live, nối lại ngay khi mở buồng (`live.reconnect(true)`), bỏ chữ "đang nghỉ"; rớt mạng trong phòng bạn bè thì tự `booth_join` lại. `live/booth.py`: người cuối mất socket được giữ chỗ 120 giây (`GRACE_SECS`, `away`), mã phòng vẫn dùng được.
