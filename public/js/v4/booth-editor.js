@@ -5,7 +5,8 @@
  * it with the corner handle or two fingers (or the mouse wheel), tap to pick one, ✕ to take it off, bring it to the
  * front, undo, clear all. Only on this player's own copy: nothing goes to the server or to the friends in the room.
  *
- *   createEditor({onPick, onChange, t, max}) → editor
+ *   createEditor({onPick, onChange, t, max, seen}) → editor   seen() → [top, bottom] of the page the player sees
+ *     (viewport px, without a tray over it); a new sticker lands in the middle of the strip's part in there
  *     editor.items            [{id, x, y, s, r}]  x, y the centre and s the box side, in strip widths; r radians
  *     editor.sel              the picked item's index (-1: none)
  *     editor.attach(canvas)   the on-screen canvas (its CSS width sets the size); listeners once per canvas
@@ -23,7 +24,7 @@ import {drawDeco,decoSprite,knownDeco,DECO_FILL} from './booth-stickers.js';
 const MIN_S=.06,MAX_S=1.1,UNDO=60;
 const HANDLE=13;   // CSS px: the corner handles' radius (a finger's worth with the slack below)
 
-export function createEditor({onPick=()=>{},onChange=()=>{},t=s=>s,max=200}={}){
+export function createEditor({onPick=()=>{},onChange=()=>{},t=s=>s,max=200,seen=()=>null}={}){
   const ed={items:[],sel:-1,cv:null,base:null,aspect:3};
   const hist=[];let raf=0,gest=null;const ptrs=new Map();
 
@@ -153,7 +154,9 @@ export function createEditor({onPick=()=>{},onChange=()=>{},t=s=>s,max=200}={}){
   /** The middle of the strip as it is on screen now (strip widths), so a new sticker lands where the player looks. */
   function middle(){
     const g=css();if(!g)return ed.aspect/2;
-    const top=Math.max(0,-g.b.top),bot=Math.min(g.h,(globalThis.innerHeight||g.h)-g.b.top);
+    let v=null;try{v=seen();}catch{/* the window then */}
+    const [vt,vb]=Array.isArray(v)?v:[0,globalThis.innerHeight||g.h];
+    const top=Math.max(0,vt-g.b.top),bot=Math.min(g.h,vb-g.b.top);
     return bot>top?((top+bot)/2)/g.w:ed.aspect/2;
   }
   ed.add=(id,y)=>{

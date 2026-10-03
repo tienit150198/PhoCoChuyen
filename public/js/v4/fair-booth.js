@@ -317,7 +317,15 @@ export function setup(ctx){
   /* The strip on screen is the ×2 print (the editor draws its stickers over it); the saved picture is the ×3 print with
    * the stickers drawn on it at full size, made again a moment after the last change (and at once on save). */
   let building=0;
-  function edit(){return D.ed||(D.ed=createEditor({t:tr,max:DECO_MAX,onPick:()=>render(),onChange:()=>{D.dirty=true;render();exportSoon();}}));}
+  /** What of the page the player sees: the sheet, less the tray where it sits over the strip (phones: stuck at the bottom). */
+  function seen(){
+    const sh=S.dlg?.querySelector('.fh-sheet')||S.dlg,ed=S.dlg?.querySelector('.fh-pb-ed'),tray=S.dlg?.querySelector('.fh-pb-tray');
+    let top=0,bot=globalThis.innerHeight||0;
+    if(sh){const r=sh.getBoundingClientRect();top=Math.max(top,r.top);bot=Math.min(bot,r.bottom);}
+    if(ed&&tray){const a=ed.getBoundingClientRect(),b=tray.getBoundingClientRect();if(b.left<a.right&&b.right>a.left&&b.top>top)bot=Math.min(bot,b.top);}
+    return bot>top?[top,bot]:null;
+  }
+  function edit(){return D.ed||(D.ed=createEditor({t:tr,max:DECO_MAX,seen,onPick:()=>render(),onChange:()=>{D.dirty=true;render();exportSoon();}}));}
   function build(){
     if(!D.shots.length)return;
     const me=++building;D.building=true;

@@ -338,6 +338,9 @@ async def run(shots: Path) -> list:
             await deco_add(c, 'tim', 3)
             check(await poll(c.page, f"({ST}).deco.n===3", 4) and (await d.page.evaluate(ST))['deco']['n'] == 0,
                   "the editor is one's own copy: Thu's stickers are not on Bảo's strip")
+            tray_top = await c.page.evaluate("document.querySelector('.fh-sheet .fh-pb-tray').getBoundingClientRect().top")
+            ys = [round(it['y']) for it in await on_screen(c)]
+            check(all(0 < y < tray_top for y in ys), f'new stickers land where Thu looks, above the tray ({ys}, tray at {round(tray_top)})')
             await c.page.evaluate("document.querySelector('.fh-sheet .fh-pb-edit').scrollIntoView({block:'start'})")
             await shot(c, '09j-four-editor-390')
             url = await save_final(c, 'four-editor-thu')
