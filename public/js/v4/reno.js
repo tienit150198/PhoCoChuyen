@@ -14,6 +14,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {Sound} from '../audio.js';
 import * as A from './deco-art.js';
+import {setup as walkSetup} from './home-walk.js';
 
 const S={dlg:null,env:null,tab:'deco',room:'',edit:false,held:null,sel:'',drawer:'bag',cat:'',busy:false,flash:null,
   undo:[],undoKey:'',press:null,drag:null,dragEnd:0,resetStrip:false,toTop:false,pop:'',cheer:false,photo:null,listening:false,lastLv:-1,
@@ -88,7 +89,7 @@ function dialog(){
   d.addEventListener('pointerup',onUp);
   d.addEventListener('pointercancel',onCancel);
   d.addEventListener('cancel',e=>{if(S.held||S.sel){e.preventDefault();S.held=null;S.sel='';render();}});
-  d.addEventListener('close',()=>{S.flash=null;S.held=null;S.sel='';S.photo=null;S.drag=null;S.press=null;S.try=null;floatGhost(null);catsStop();});
+  d.addEventListener('close',()=>{S.flash=null;S.held=null;S.sel='';S.photo=null;S.drag=null;S.press=null;S.try=null;floatGhost(null);catsStop();hw().reset();});
   S.dlg=d;return d;
 }
 
@@ -112,7 +113,7 @@ async function send(action,payload={},opts={}){
   const {api}=S.env;S.busy=true;paintBusy();
   try{
     const r=await api.command(action,payload);
-    S.flash=r.duplicate&&!opts.loud?S.flash:{text:[r.message,...(r.effects||[]).filter(Boolean)].filter(Boolean).join(' '),kind:'good'};
+    S.flash=opts.flash===false?null:r.duplicate&&!opts.loud?S.flash:{text:[r.message,...(r.effects||[]).filter(Boolean)].filter(Boolean).join(' '),kind:'good'};
     return r;
   }catch(e){
     if(!e.quiet){S.flash={text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};if(!opts.silent)sfx('error');}
@@ -120,6 +121,9 @@ async function send(action,payload={},opts={}){
   }finally{S.busy=false;render();}
 }
 const ask=(title,msg,label,cost)=>S.env.confirmAction(title,msg,label,cost?{cost,pocket:POCKET}:undefined);
+/** 🚶 the character walking around the room when not decorating (v4/home-walk.js), made on first use. */
+let HW=null;
+const hw=()=>HW??=walkSetup({S,A,V,roomOf,inRoom,hostFor,send,render,sfx,calm,roomSvg});
 
 /* ---- the layout, as the client sees it (free units; game/deco.py check) ---- */
 const roomOf=id=>(V()?.rooms||[]).find(r=>r.id===id)||null;
@@ -279,15 +283,29 @@ function roomMarkup(rm,opts={}){
     if(photo){out.push(body);continue;}
     const [bx,by,bw,bh]=bbox(it,a);
     const sel=S.sel===o.id,pop=S.pop===o.id,ghost=S.held?.src==='room'&&S.held.uid===o.id;
-    out.push(`<g class="dc-it${sel?' sel':''}${pop?' pop':''}${ghost?' ghost':''}" data-uid="${esc(o.id)}" data-k="${esc(o.k)}"${o.q.on?` data-on="${esc(o.q.on)}"`:''} tabindex="${edit?0:-1}" role="button" aria-label="${esc(it.name)}"><g class="dc-piece">${body}</g>`
+    out.push(`<g class="dc-it${sel?' sel':''}${pop?' pop':''}${ghost?' ghost':''}" data-uid="${esc(o.id)}" data-k="${esc(o.k)}"${o.q.on?` data-on="${esc(o.q.on)}"`:''}${frontY(rm,G,o,list)} tabindex="0" role="button" aria-label="${esc(it.name)}"><g class="dc-piece">${body}</g>`
       +`<rect class="dc-hit" x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="6"/>${sel?`<rect class="dc-selbox" x="${bx-3}" y="${by-3}" width="${bw+6}" height="${bh+6}" rx="9"/>`:''}${pop?sparkles(bx,by,bw,bh):''}</g>`);
   }
   out.push(catsMarkup(rm,G,list,photo));
+  if(!edit&&!photo)out.push(hw().markup(rm,G));
   out.push(A.roomFront(rm,G));
   out.push(A.roomLight(G,Lt,glows,uid));
   out.push('<g class="dc-preview" pointer-events="none"></g>');
   const name=`${rm.name}: ${list.map(o=>o.it.name).join(', ')||'chưa bày gì'}`;
   return {G,svg:`<svg class="dc-room${edit?' edit':''}${S.held?' holding':''} lt-${Lt.phase}" viewBox="0 0 ${G.W} ${G.H}" role="group" aria-label="${esc(name)}" data-room="${esc(rm.id)}">${out.join('')}</svg>`};
+}
+
+/** ` data-y="…"`: how far forward a piece stands (its front edge; a small thing: what it stands on), for the walking
+ * character's depth (v4/home-walk.js). Wall pieces and rugs: none (always behind). */
+function frontY(rm,G,o,list){
+  if(o.it.spot==='wall'||o.it.spot==='rug')return '';
+  let y;
+  if(o.q.on){const h=hostFor(rm,o.q,list);
+    if(h?.fix){if(h.fix.layer==='wall')return '';y=G.FY+(h.fix.y+h.fix.h)*A.FR;}
+    else if(h?.it){if(h.it.spot==='wall')return '';y=A.anchor(h.it,h.q,G,hostFor(rm,h.q,list))[1];}
+    else return '';
+  }else y=A.anchor(o.it,o.q,G)[1];
+  return ` data-y="${y.toFixed(1)}"`;
 }
 
 /* ---- 🐈 the cats: Mochi always, Bơ too once the room is Rất ấm cúng. They wander and nap on rugs, beds, sofas
@@ -431,6 +449,7 @@ async function onClick(op,data){
       if(await ask(what,body,`Sửa · ${xu(cost)}`,cost)){const res=await send('jr_reno_fix',{part:data.part,cost,confirm:true});if(res)sfx('success');}return;}
     case'up':{const r=R(),p=r.parts.find(x=>x.id===data.part);if(!p?.up)return;
       if(await ask(`${p.up.name}?`,`${PART(p.id).name} như mới, bền hơn. Ấm cúng +${CR().cozy_lv}.`,`Làm · ${xu(p.up.cost)}`,p.up.cost)){const res=await send('jr_reno_up',{part:p.id,lv:p.up.lv,cost:p.up.cost,confirm:true});if(res)sfx('success');}return;}
+    default:if(op.startsWith('hw'))await hw().click(op,data);return;   // 🧊 the fridge (v4/home-walk.js)
   }
 }
 
@@ -498,7 +517,9 @@ async function pickSkin(part,skin){
  * Delete puts it back in the bag. Nudges wait a moment and go as one move. ---- */
 function onKey(e){
   const g=e.target.closest?.('g[data-uid]');
-  if(g&&(e.key==='Enter'||e.key===' ')){e.preventDefault();if(!S.edit)S.edit=true;S.sel=S.sel===g.dataset.uid?'':g.dataset.uid;render();focusSel();return;}
+  if(g&&(e.key==='Enter'||e.key===' ')&&!S.edit){e.preventDefault();hw().tap(roomOf(S.room),{x:0,y:0},g.dataset.uid);return;}   // 🚶 walk up to it and use it
+  if(!S.edit&&e.target.closest?.('svg.dc-room')&&hw().key(roomOf(S.room),e))return;
+  if(g&&(e.key==='Enter'||e.key===' ')){e.preventDefault();S.sel=S.sel===g.dataset.uid?'':g.dataset.uid;render();focusSel();return;}
   if(!S.edit||!S.sel||S.busy||!e.target.closest?.('svg.dc-room'))return;   // the keys belong to the room, not the drawer
   const p=placed(S.sel);if(!p)return;
   const step=e.shiftKey?U:4,d={ArrowLeft:[-step,0],ArrowRight:[step,0],ArrowUp:[0,-step],ArrowDown:[0,step]}[e.key];
@@ -626,7 +647,7 @@ async function onUp(e){
   }
   if(p.kind!=='room')return;   // a card: its click event holds it
   const svg=roomSvg();if(!svg)return;
-  if(!S.edit){S.edit=true;S.sel=p.uid;sfx('click');render();return;}
+  if(!S.edit){hw().tap(roomOf(S.room),svgPoint(svg,e.clientX,e.clientY),p.uid);return;}   // 🚶 walk there (a piece: use it)
   if(S.held){
     const rm=roomOf(S.room),it=heldItem(),pt=svgPoint(svg,e.clientX,e.clientY);
     if(p.uid&&p.uid!==S.held.uid&&S.held.src==='room'&&!(it?.spot==='top')){S.held=null;S.sel=p.uid;render();return;}
@@ -691,7 +712,7 @@ const levelIdx=total=>{const ls=[...(CD().levels||[])].sort((a,b)=>a.min-b.min);
 function paintBusy(){S.dlg?.setAttribute('aria-busy',String(S.busy));S.dlg?.querySelectorAll('[data-dc]').forEach(b=>{if(b.tagName==='BUTTON')b.disabled=S.busy;});}
 function render(){
   if(!S.dlg)return;
-  catsFreeze();
+  catsFreeze();hw().freeze();
   const body=S.dlg.querySelector('.dc-body'),top=body?.scrollTop,strip=S.dlg.querySelector('.dc-strip'),left=strip?.scrollLeft;
   const v=V();
   if(v&&S.undoKey!==v.place.key){S.undoKey=v.place.key;S.undo=[];CATS.room='';}
@@ -702,13 +723,13 @@ function render(){
   const s2=S.dlg.querySelector('.dc-strip');if(s2&&left!=null&&!S.resetStrip)s2.scrollLeft=left;
   S.dlg.setAttribute('aria-busy',String(S.busy));
   S.pop='';S.resetStrip=false;S.toTop=false;
-  catsResume();
+  catsResume();hw().resume();hw().paint();
   if(!CATS.timer&&S.dlg.open)CATS.timer=setTimeout(catsTick,1800);
 }
 function head(v){
   const pl=v?.place;
   return `<header class="sheet-head bk-head rn-head"><button class="icon-btn" type="button" data-dc="back" aria-label="Về Nhà của bạn">${icon('back',21)}</button>
-    <div class="grow"><span class="eyebrow">${pl?.repairs?'TRONG NHÀ':'BÀY TRÍ PHÒNG'}</span><h2 id="dc-title">${pl?`${pl.emoji} ${esc(pl.name)}`:'Nhà của bạn'}</h2></div>
+    <div class="grow"><span class="eyebrow">${pl?.repairs?'TRONG NHÀ':S.edit?'BÀY TRÍ PHÒNG':'TRONG PHÒNG'}</span><h2 id="dc-title">${pl?`${pl.emoji} ${esc(pl.name)}`:'Nhà của bạn'}</h2></div>
     <button class="icon-btn" type="button" data-dc="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
 }
 const flash=()=>`<p class="bk-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
@@ -731,7 +752,7 @@ function decoPage(v){
   const bar=S.edit
     ?`<div class="dc-actions">${btn('↶ Hoàn tác','undo',{},'ghost',S.undo.length?'':' disabled')}${btn('🎒 Cất hết','pickAll',{},'ghost',v.items.length?'':' disabled')}${btn('✓ Xong','done',{},'primary')}</div>`
     :`<div class="dc-actions">${btn(v.items.length?'✏️ Bày trí phòng':'✏️ Bắt đầu bày trí','edit',{},'primary')}${btn('📸 Chụp phòng','photo',{},'ghost')}</div>`;
-  const stage=`<div class="dc-stage">${roomTabs(v)}<div class="dc-roomwrap">${svg}${S.edit?'':'<span class="dc-hint" aria-hidden="true">Chạm phòng để bày trí</span>'}</div>${S.edit?(S.held?heldBar(v):S.sel?tools(v):''):''}${tip}${bar}${S.edit&&!wide?drawer(v):''}</div>`;
+  const stage=`<div class="dc-stage">${roomTabs(v)}<div class="dc-roomwrap">${svg}${S.edit?'':`${hw().hint(v,rm)}${hw().sayHTML()}`}</div>${S.edit?(S.held?heldBar(v):S.sel?tools(v):''):hw().panel(v,rm)}${tip}${bar}${S.edit&&!wide?drawer(v):''}</div>`;
   return `<div class="dc-grid">${stage}<div class="dc-side">${relaxCard(v,rm)}${S.edit&&wide?drawer(v):''}${cozyCard(v)}${guestCard(v)}${setsCard(v)}${placeNote(v)}</div></div>`;
 }
 function roomTabs(v){

@@ -215,6 +215,46 @@
 .rn-fixall{margin-top:8px}
 .hs-facts.rn-facts{margin-top:12px}
 
+/* 🚶 Ở nhà (v4/home-walk.js): the character walking in the room, the line over them, the fridge */
+.hw-me{transition-property:transform;transition-timing-function:ease-in-out;transition-duration:0ms;pointer-events:none}
+.hw-say{position:absolute;z-index:2;max-width:min(240px,74%);margin:0;transform:translate(-50%,-100%);padding:8px 12px;border-radius:14px;background:#fffaf0;color:#4a3226;font-size:.88rem;font-weight:600;line-height:1.35;box-shadow:0 4px 14px rgba(0,0,0,.25);pointer-events:none}
+.hw-say::after{content:"";position:absolute;left:50%;bottom:-6px;margin-left:-6px;border:6px solid transparent;border-bottom:0;border-top-color:#fffaf0}
+.hw-say[hidden]{display:none}
+.hw-fridge-door{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px}
+.hw-fridge-door p{flex:1 1 200px;margin:0}
+.hw-fridge-door .btn{min-height:44px}
+.hw-fridge{display:grid;gap:8px;border-color:var(--accent)}
+.hw-fridge-top{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px}
+.hw-fridge-top h3{flex:1 1 auto;margin:0;min-width:0}
+.hw-cap{padding:3px 10px;border-radius:999px;background:var(--surface-2);color:var(--ink-2);font-weight:800;font-size:.85rem;font-variant-numeric:tabular-nums}
+.hw-fridge .btn{min-height:44px}
+.hw-now{display:flex;flex-wrap:wrap;gap:6px;margin:0}
+.hw-now span{padding:3px 10px;border-radius:999px;background:var(--surface-2);color:var(--ink-2);font-weight:700;font-size:.82rem}
+.hw-ico{flex:none;display:inline-grid;place-items:center;width:36px;height:36px;border-radius:10px;background:var(--surface-2);font-size:1.3rem;line-height:1}
+.hw-name{flex:1;min-width:0}
+.hw-name b{overflow-wrap:anywhere}
+.hw-name small{display:block;color:var(--muted);font-size:.82rem}
+.hw-name small span{white-space:nowrap}
+.hw-name em{display:block;font-style:normal;color:var(--warn);font-weight:700;font-size:.8rem}
+.hw-n{font-style:normal;font-weight:800;color:var(--good);font-variant-numeric:tabular-nums}
+.hw-in{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.hw-in li{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-sm);border:1px solid var(--good);background:var(--good-soft)}
+.hw-in .btn{flex:none;min-width:84px}
+.hw-empty{margin:0;color:var(--muted);font-size:.9rem}
+.hw-sub{margin:4px 0 0;font-size:.95rem}
+.hw-why{margin:0;color:var(--warn);font-weight:700;font-size:.88rem}
+.hw-shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(136px,1fr));gap:6px}
+.hw-buy{display:flex;align-items:center;gap:8px;min-height:52px;padding:6px 8px;border-radius:var(--radius-sm);border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.88rem;line-height:1.25;text-align:left;cursor:pointer}
+.hw-buy:not(:disabled):hover{border-color:var(--accent)}
+.hw-buy:not(:disabled):active{transform:scale(.97)}
+.hw-buy:disabled{opacity:.72;cursor:not-allowed}
+.hw-buy:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.hw-fridge .bk-hint{margin:0}
+@media (prefers-reduced-motion:no-preference){
+  body:not(.reduce-motion) .hw-fig.walk{animation:hw-bob .32s ease-in-out infinite alternate}
+}
+@keyframes hw-bob{from{transform:translateY(0)}to{transform:translateY(-3px)}}
+
 @media (min-width:720px){
   .hs-facts.rn-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
   .dc-grid{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);align-items:start}

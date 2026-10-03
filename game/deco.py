@@ -99,6 +99,11 @@ def _rx():
     return relax
 
 
+def _fr():
+    from . import fridge
+    return fridge
+
+
 def layer_of(k: str) -> str:
     return ITEMS[k]['spot']
 
@@ -1255,6 +1260,9 @@ def public(s: dict) -> dict | None:
     acts = _rx().view(s, L)
     if acts:
         out['relax'] = acts
+    fridge = _fr().view(s, L)   # 🧊 game/fridge.py (a page loaded before ignores it)
+    if fridge:
+        out['fridge'] = fridge
     return out
 
 
