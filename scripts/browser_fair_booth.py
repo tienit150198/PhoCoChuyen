@@ -8,9 +8,13 @@ the same database, two phones (390×844) with 300 xu each, then:
      (5 xu each, the wallets drop) and get ready, the host shoots: 3-2-1 × 4 on both phones, then the strip
      (frame Tết, then Trung thu after "Chụp lượt nữa"); Minh's own filter and stickers;
   2. Người lạ: both look for a stranger and are paired into one room, shoot in the frame Dễ thương;
-  3. Một mình: Lan alone, frame Phim cũ; the save button downloads a PNG;
+  3. Một mình: Lan alone, frame Phim cũ; the save button downloads a PNG; then Tết rộn ràng with a 🎲 pose and
+     Dán sticker, each with its own colour;
   4. the lobby and a room at 320 and 430 px wide, and "Phố đêm".
-Each strip is also saved at full size (the page's own renderer) as strip-*.png. Fails on console errors, page
+1.5.5 (thirty poses, the fair's frames): a pose made together reaches the whole room, the 🎲 picks one; Thu and Bảo
+join by code: four in the room, a pose for all and poses changing between the shots, strips in Hội chợ đêm with the
+colours Dịu and Đen trắng and the words; the pose picker, the countdown and the strips at 390 and 1280 px.
+Each strip is also saved at full size (the page's own renderer, ×3) as strip-*.png. Fails on console errors, page
 errors or HTTP 5xx.
 
   MNL_PY=python3.12 MNL_PYTHONPATH=… python scripts/browser_fair_booth.py [--shots DIR]
@@ -44,7 +48,7 @@ def seed(db: str, token: str, name: str) -> None:
     def me(s):
         s['name'] = name
         s['settings']['whatsNewSeen'] = wn.newer(s['settings'].get('whatsNewSeen', ''), wn.LATEST)
-        s['journey'].update(gender='female' if name == 'Lan' else 'male', intro=True, wallet=300)
+        s['journey'].update(gender='female' if name in ('Lan', 'Thu') else 'male', intro=True, wallet=300)
     mr._mutate(store, {store.key(token): me})
     store.close_pool()
 
@@ -65,7 +69,10 @@ async def run(shots: Path) -> list:
             browser = await pw.chromium.launch()
             a = await phone(browser, base, 'Lan', problems, intro=False)
             b = await phone(browser, base, 'Minh', problems, intro=False)
-            for p, name in ((a, 'Lan'), (b, 'Minh')):
+            c = await phone(browser, base, 'Thu', problems, intro=False)
+            d = await phone(browser, base, 'Bảo', problems, intro=False)
+            for p, name in ((a, 'Lan'), (b, 'Minh'), (c, 'Thu'), (d, 'Bảo')):
+                await p.ctx.add_init_script("try{localStorage.setItem('mnl.home','list')}catch(e){}")  # the list as home (the town is the default): the fair's row
                 token = next(c['value'] for c in await p.ctx.cookies() if c['name'] == 'mnl_session')
                 seed(db, token, name)
                 await p.page.reload()
@@ -85,7 +92,7 @@ async def run(shots: Path) -> list:
                 await p.page.screenshot(path=str(shots / f'{name}.png'))
 
             async def save_strip(p, name):
-                url = await p.page.evaluate("globalThis.__fairBooth.print(1)")
+                url = await p.page.evaluate("globalThis.__fairBooth.print(3)")
                 (shots / f'strip-{name}.png').write_bytes(base64.b64decode(url.split(',', 1)[1]))
 
             async def open_fair(p):
@@ -112,8 +119,9 @@ async def run(shots: Path) -> list:
                 await p.page.locator(sel).first.scroll_into_view_if_needed()
                 await p.page.click(sel)
 
-            async def shoot_round(host, others, frame_id, tag):
-                """Everyone pays and gets ready, the host shoots; both phones end on their strip."""
+            async def shoot_round(host, others, frame_id, tag, between=()):
+                """Everyone pays and gets ready, the host shoots; every phone ends on its strip. between: (after shot n,
+                phone, op, v) clicks made while the camera counts (poses change between the shots)."""
                 ppl = [host] + others
                 before = [await p.page.evaluate(WALLET) for p in ppl]
                 for p in ppl:
@@ -127,7 +135,11 @@ async def run(shots: Path) -> list:
                 for p in ppl:
                     check(await poll(p.page, f"({ST}).step==='shoot'", 5), f'{tag}: {p.name} sees the countdown')
                 await host.page.wait_for_timeout(2300)
-                await shot(host, f'{tag}-countdown-{host.name}')
+                await host.page.evaluate("document.querySelector('.fh-sheet .fh-pb-booth')?.scrollIntoView({block:'center'})")
+                await host.page.screenshot(path=str(shots / f'{tag}-countdown-{host.name}.png'))
+                for n, p, op, v in between:
+                    await poll(host.page, f"({ST}).shots>={n}", 8)
+                    await click(p, op, v)
                 for p in ppl:
                     check(await poll(p.page, f"({ST}).step==='print'&&({ST}).url", 25), f'{tag}: {p.name} gets the strip')
                     st = await p.page.evaluate(ST)
@@ -177,14 +189,15 @@ async def run(shots: Path) -> list:
             await a.page.evaluate("document.querySelector('.fh-sheet').scrollTop=0")
             await shot(a, '05-friends-strip-tet-Lan')
             await save_strip(a, 'tet')
-            await click(b, 'pbfilter', 'co_dien')
-            for s in ('tim', 'sao', 'vuong_mien'):
+            await click(b, 'pbfilter', 'film')
+            for s in ('tim', 'sao', 'phao_hoa'):
                 await click(b, 'pbsticker', s)
-            check(await poll(b.page, f"({ST}).filter==='co_dien'&&({ST}).stickers.length===3&&({ST}).url", 5), "B's own filter and stickers")
+            await click(b, 'pbtext', 'ban')
+            check(await poll(b.page, f"({ST}).filter==='film'&&({ST}).stickers.length===3&&({ST}).text==='ban'&&({ST}).url", 5), "B's own colour, stickers and words")
             check((await a.page.evaluate(ST))['filter'] == 'none', "B's filter stays on B's strip")
             await b.page.evaluate("document.querySelector('.fh-sheet').scrollTop=0")
             await shot(b, '06-friends-strip-tet-Minh-filter')
-            await save_strip(b, 'tet-co-dien-stickers')
+            await save_strip(b, 'tet-film-stickers')
             # another round in another frame
             for p in (a, b):
                 await click(p, 'pbagain')
@@ -198,6 +211,65 @@ async def run(shots: Path) -> list:
             await save_strip(a, 'trung-thu')
             await a.page.evaluate("document.querySelector('.fh-sheet').scrollTop=0")
             await shot(a, '08-friends-strip-trung-thu')
+
+            # ---------------- 1b. poses made together, the 🎲, four friends ----------------
+            for p in (a, b):
+                await click(p, 'pbagain')
+            await click(a, 'pbtab', 'group')
+            await click(a, 'pbpose', 'tim_to')
+            check(await poll(b.page, f"({ST}).room.people.every(p=>p.pose==='tim_to')&&({ST}).pose==='tim_to'", 5), 'a pose made together reaches the whole room')
+            await click(b, 'pbtab', 'solo')
+            await click(b, 'pbpose', 'v')
+            check(await poll(a.page, f"({ST}).room.people.some(p=>p.pose==='v')&&({ST}).pose==='tim_to'", 5), 'then each one their own pose again')
+            before = (await b.page.evaluate(ST))['pose']
+            await click(b, 'pbdice')
+            check(await poll(b.page, f"({ST}).pose!=='{before}'", 5), 'the 🎲 picks another pose')
+            for p in (c, d):
+                await open_fair(p)
+                await p.page.evaluate("document.querySelector('.fh-sheet .fh-wlist')?.setAttribute('open','');document.querySelector('.fh-sheet [data-tab=\"pb\"]').click()")
+                await p.page.wait_for_selector('.fh-sheet .fh-pb', timeout=6000)
+                await poll(p.page, f"({ST}).shared", 10)
+                await p.page.fill('.fh-sheet .fh-pb-code', code)
+                await p.page.keyboard.press('Enter')
+            check(await poll(a.page, f"({ST}).room?.people?.length===4", 8), 'four friends in the room')
+            await click(a, 'pbframe', 'hoi_dem')
+            await click(a, 'pbbg', 'day_den')
+            await click(a, 'pbtab', 'group')
+            await click(a, 'pbpose', 'khoac_vai')
+            await click(c, 'pbprop', 'tai_tho')
+            await click(d, 'pbprop', 'non_la')
+            check(await poll(d.page, f"({ST}).room.people.every(p=>p.pose==='khoac_vai')&&({ST}).frame==='hoi_dem'", 5), 'four: one pose for all, the frame Hội chợ đêm')
+            await a.page.evaluate("document.querySelector('.fh-sheet').scrollTop=0")
+            await shot(a, '09a-four-room-390')
+            await a.page.evaluate("document.querySelector('.fh-sheet .fh-pb-posehead').scrollIntoView({block:'start'})")
+            await shot(a, '09b-pose-picker-group-390')
+            await c.page.evaluate("document.querySelector('.fh-sheet .fh-pb-posehead').scrollIntoView({block:'start'})")
+            await shot(c, '09c-pose-picker-solo-390')
+            await shoot_round(a, [b, c, d], 'hoi_dem', '09d-four', between=((1, a, 'pbpose', 'tim_to'), (2, a, 'pbpose', 'cung_nhay'), (3, b, 'pbdice', None)))
+            await save_strip(a, 'four-hoi-dem')
+            await click(c, 'pbfilter', 'mo')
+            await click(c, 'pbtext', 'vui')
+            await click(d, 'pbfilter', 'den_trang')
+            await click(d, 'pbdate', '1')
+            check(await poll(c.page, f"({ST}).filter==='mo'&&({ST}).url", 6) and await poll(d.page, f"({ST}).filter==='den_trang'&&!({ST}).date&&({ST}).url", 6), "four: each one's colour and words")
+            await save_strip(c, 'four-mo-vui')
+            await save_strip(d, 'four-den-trang')
+            await d.page.evaluate("document.querySelector('.fh-sheet').scrollTop=0")
+            await shot(d, '09e-four-strip-390')
+            # the same on a desktop
+            await a.page.set_viewport_size(dict(width=1280, height=900))
+            await a.page.wait_for_timeout(500)
+            await a.page.evaluate("document.querySelector('.fh-sheet').scrollTop=0")
+            await shot(a, '09f-four-strip-1280')
+            await click(a, 'pbagain')
+            await a.page.evaluate("document.querySelector('.fh-sheet').scrollTop=0")
+            await shot(a, '09g-four-room-1280')
+            await a.page.evaluate("document.querySelector('.fh-sheet .fh-pb-posehead').scrollIntoView({block:'start'})")
+            await shot(a, '09h-pose-picker-1280')
+            await a.page.set_viewport_size(dict(width=390, height=844))
+            for p in (c, d):
+                await click(p, 'pbout')
+            check(await poll(a.page, f"({ST}).room?.people?.length===2", 5), 'Thu and Bảo leave')
             await click(b, 'pbout')
             check(await poll(a.page, f"({ST}).room?.people?.length===1", 5), 'B leaves: A sees it')
             await click(a, 'pbout')
@@ -246,6 +318,28 @@ async def run(shots: Path) -> list:
                 await click(a, 'pbsave')
             d = await dl.value
             check(d.suggested_filename.endswith('.png'), f'the strip downloads as a PNG ({d.suggested_filename})')
+            for frame, bg, filt, text, tag in (('tet_vui', 'hoa_dao', 'am', 'hoi', 'tet-solo'), ('sticker', 'pastel', 'trong', 'none', 'sticker-solo')):
+                await click(a, 'pbagain')
+                await click(a, 'pbframe', frame)
+                await click(a, 'pbbg', bg)
+                await click(a, 'pbprop', 'none')
+                await click(a, 'pbdice')
+                await click(a, 'pbshoot')
+                await a.page.wait_for_timeout(2300)
+                await a.page.evaluate("document.querySelector('.fh-sheet .fh-pb-booth')?.scrollIntoView({block:'center'})")
+                await a.page.screenshot(path=str(shots / f'13b-solo-countdown-{tag}.png'))
+                for n in (1, 2, 3):
+                    await poll(a.page, f"({ST}).shots>={n}", 8)
+                    await click(a, 'pbdice')
+                check(await poll(a.page, f"({ST}).step==='print'&&({ST}).url", 25), f'solo: the strip in {frame}')
+                await click(a, 'pbfilter', filt)
+                await click(a, 'pbtext', text)
+                await poll(a.page, f"({ST}).filter==='{filt}'&&({ST}).url", 6)
+                await save_strip(a, tag)
+            await a.page.set_viewport_size(dict(width=1280, height=900))
+            await a.page.evaluate("document.querySelector('.fh-sheet').scrollTop=0")
+            await shot(a, '13c-solo-strip-1280')
+            await a.page.set_viewport_size(dict(width=390, height=844))
 
             # ---------------- 4. widths and the dark theme ----------------
             await click(a, 'pbagain')

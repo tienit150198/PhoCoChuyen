@@ -117,6 +117,18 @@ class Friends(BoothCase):
         r = await self.last(a)
         me = {p['pid']: p for p in r['people']}[b.pid]
         self.assertEqual((me['pose'], me['prop']), ('dung', 'none'))
+        await b.send(t='booth_set', pose='tim_to', all=True)   # a pose made together: the whole room takes it
+        r = await self.last(a)
+        self.assertEqual([p['pose'] for p in r['people']], ['tim_to', 'tim_to'])
+        await a.send(t='booth_set', pose='v')   # then each one their own again
+        r = await self.last(b)
+        self.assertEqual({p['pid']: p['pose'] for p in r['people']}, {a.pid: 'v', b.pid: 'tim_to'})
+        await a.send(t='booth_set', pose='nhay', all='yes')   # only a real true is for everyone
+        r = await self.last(b)
+        self.assertEqual({p['pid']: p['pose'] for p in r['people']}, {a.pid: 'nhay', b.pid: 'tim_to'})
+        await b.send(t='booth_set', pose='<b>', all=True)   # an odd id: the default, for everyone
+        r = await self.last(a)
+        self.assertEqual([p['pose'] for p in r['people']], ['dung', 'dung'])
         self.assertEqual((await b.call('booth_go', 'error'))['code'], 'host')
         await a.send(t='booth_ready')
         self.assertEqual((await a.call('booth_go', 'error'))['code'], 'not_ready')

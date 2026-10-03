@@ -1320,6 +1320,46 @@ class FairPhoto(FairBase):
         self.assertEqual(s['journey']['wallet'], 50)
 
 
+class FairPhotoPreviousServer(FairBase):
+    """1.5.5 makes the booth prettier (poses, frames, colours) all in the browser and the live service: a save with
+    shoots on it is what 1.5.1-1.5.4 write, and those builds (MNL_PREV_TREE, or ../_rel154 … ../_rel151 next to the
+    checkout) keep and accept it both ways."""
+
+    def prev_trees(self):
+        root = Path(__file__).resolve().parents[2]
+        if os.environ.get('MNL_PREV_TREE'):
+            cands = [os.environ['MNL_PREV_TREE']]
+        else:
+            cands = [str(root / f'_rel{v}' / 'mot-ngay-lam-nghe') for v in ('154', '153', '152', '151')]
+        trees = [t for t in cands if (Path(t) / 'game' / 'engine.py').is_file()]
+        if not trees:
+            self.skipTest('no 1.5.1-1.5.4 tree (MNL_PREV_TREE)')
+        return trees
+
+    def test_a_save_with_shoots_crosses_the_previous_builds(self):
+        import subprocess
+        import sys
+        prog = ('import json,sys;from game.engine import validate_state,migrate_state;s=json.load(sys.stdin);'
+                's=migrate_state(s);validate_state(s);print(json.dumps(s))')
+        for old in self.prev_trees():
+            with self.subTest(tree=old):
+                s = story(40)
+                for mode in ('solo', 'friends', 'stranger'):
+                    s, _ = self.act(s, 'fair_photo', mode=mode)
+                validate_state(s)
+                env = dict(os.environ, PYTHONPATH=old)
+                out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(s), capture_output=True, text=True,
+                                     cwd=old, env=env, encoding='utf-8', timeout=300)
+                self.assertEqual(out.returncode, 0, out.stderr[-3000:])
+                back = json.loads(out.stdout)
+                self.assertEqual(back['journey']['history'][-1], s['journey']['history'][-1])
+                self.assertEqual(back['journey']['wallet'], 40 - 3 * fp.PRICE)
+                back = migrate_state(back)
+                validate_state(back)
+                back, r = self.act(back, 'fair_photo')
+                self.assertEqual(r['fair']['n'], 4)
+
+
 class FairCash(FairBase):
     """🎁 tiền vốn and 💸 vay nóng (game/fair_cash.py)."""
     def test_the_gift_once_per_edition_and_not_winnings(self):
