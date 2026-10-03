@@ -8,6 +8,7 @@
  * The server decides everything; one tap sends one command. */
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
+import {planBox,stockLines,figures} from './plan_kit.js';
 import {data,cc,lower,stockOf,tile,meter,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,troubleLast} from './street_kit.js';
 
 const W=(x,k)=>(cc(x).waste||{})[k]||{name:k,emoji:'🗑️',bin:'con_lai',sharp:false};
@@ -188,6 +189,16 @@ export default {
   },
   input(el,x){return kitInput(el,x);},
   tick(root){keepBarAboveFooter(root);},
+  // Day summary: "Ngày mai" first (gloves and masks for the next shift, fees still to collect), one way to the
+  // gear store, the day's figures folded.
+  summary(sum,x){
+    if(!sum||sum.bags==null)return '';
+    const stock=stockLines(x),fees=(data(x).fees?.rows||[]).filter(r=>r.state==='open').length;
+    const plan=[...(stock.length?stock:[typeof sum.note==='string'&&sum.note?`<span aria-hidden="true">🧤</span> ${x.esc(sum.note)}`:'']),
+      fees?`🧾 Còn ${fees} hộ chưa đóng phí vệ sinh`:''];
+    const rows=[['Túi rác đã gom',sum.bags],['Túi nhầm ngăn',sum.wrong],['Món nguy hại đã tách',sum.hazards],['Tiền ve chai (xu)',sum.ve_chai],['Túi để lại qua đêm',sum.overnight]];
+    return planBox(x,{lines:plan,go:['📦 Mở kho đồ bảo hộ','inventory'],more:[`🛒 Ca thu gom · ${sum.bags} túi`,figures(x,rows,Array.isArray(sum.lines)?sum.lines:[])]});
+  },
   actions:{...kitActions,
     async feeRow(d,el,x){x.ui.feeRow=x.ui.feeRow===d.row?null:d.row;x.render();},
     async feeStrict(d,el,x){const b=x.ui.amt??={},v=Number(b[d.key]===undefined||b[d.key]===''?d.def:b[d.key]);
