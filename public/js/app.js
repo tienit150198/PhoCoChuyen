@@ -887,10 +887,21 @@ function stockDesk(cap){
     :`<article class="card order-row wh-parcel"><div class="row spread"><div class="grow"><strong>${esc(p.name)} · ${s.qty} món</strong><small class="muted block">${esc(s.supplier_emoji||'🚚')} ${esc(s.supplier_name||'')} · đã trả ${fmt(s.cost)} xu</small></div>${pill('ĐANG GIAO','amber')}</div><p class="wh-eta">Dự kiến nhận: <b>${esc(s.eta_label||'')}</b>${s.left_label?` · ${esc(s.left_label)}`:''}</p><span class="wh-prog" aria-hidden="true"><i style="width:${Math.round((s.progress||0)*100)}%"></i></span>${s.late_note?`<p class="wh-late">⚠️ ${esc(s.late_note)}</p>`:''}</article>`;};
   const pick=sups.length?`<details class="wh-sups wh-sups-fold" data-fold="wh-sups"><summary><span class="wh-sups-k">Nhập từ</span><b>${sup?`<span aria-hidden="true">${esc(sup.emoji||'🚚')}</span> ${esc(sup.name)}`:''}</b><small>${esc(sup?.quote?.label||sup?.window||'')}</small></summary><div class="wh-sup-list" role="radiogroup" aria-label="Chọn nhà cung cấp">${sups.map(s=>`<button type="button" role="radio" aria-checked="${s.id===supId}" class="wh-sup${s.id===supId?' on':''}" data-wh-sup="${esc(s.id)}"><span class="wh-sup-name"><span aria-hidden="true">${esc(s.emoji||'🚚')}</span> ${esc(s.name)}</span><b>${esc(s.quote?.label||s.window||'')}</b><small>${esc(priceWord(s.factor))} · ${esc(s.window||'')}</small></button>`).join('')}</div>${sup?.note?`<p class="dw-hint">${esc(sup.note)}</p>`:''}</details>`:'';
   const row=p=>{const q=c.stock[p.id],on=onWay(p.id),held=q-c.available[p.id],room_=Math.max(0,cap-q-on),max=Math.min(6,room_),state=q===0?'out':q+on<=2?'low':'';
+    // The bill sits on the order button and follows the number ("Đặt 3 · 108 xu", whBill), priced as whOrder charges.
+    const qty=Math.min(Math.max(1,max),state?Math.min(4,Math.max(1,max)):1),can=!!(max&&c.open&&!vansFull),cost=Math.max(1,Math.ceil(p.cost*qty*(sup?.factor??1)));
     const lots=care?.batches?.filter(b=>b.lot===p.id)||[],first=lots.find(b=>!b.flag),flagged=lots.filter(b=>b.flag).reduce((n,b)=>n+b.qty,0);
     return `<div class="inventory-row inv-row ${state}">${itemArt(p.icon||'box',45,p.color)}<div class="grow"><h4>${esc(p.name)}${mb?'':` · ${esc(p.id)}`}</h4><small><b class="inv-big">${q}</b>/${cap} trên kệ${on?` · <span class="inv-flag info">+${on} đang giao</span>`:''}${held?` · đang giữ ${held}`:''} · ${fmt(p.cost)} xu/món</small>${!mb&&(first||flagged)?`<small class="block">${first?`HSD gần nhất: ngày ${first.exp}`:''}${flagged?` · <b class="wh-bad">${flagged} hộp cần rút</b>`:''}</small>`:''}<span class="inv-bar" aria-hidden="true"><i style="width:${Math.round(q/cap*100)}%"></i><i class="on" style="width:${Math.round(on/cap*100)}%"></i></span></div>`+
-      `<span class="inv-row-act"><input class="input" type="number" id="qty-${p.id}" min="1" max="${Math.max(1,max)}" value="${Math.min(Math.max(1,max),state?Math.min(4,Math.max(1,max)):1)}" aria-label="Số nhập ${esc(p.name)}" style="width:72px"${max?'':' disabled'}><button type="button" class="btn small${state&&max&&!vansFull?' primary':''}" data-wh-order="${esc(p.id)}"${max&&c.open&&!vansFull?'':' disabled'}>${!max?'Kệ đầy':vansFull?`Đủ ${SHIP_CAP} kiện`:c.open?'Đặt nhập':mb?'Mở tiệm trước':'Mở quầy trước'}</button>${!mb?(c.held_lots.includes(p.id)?commandButton('Cô Thu kiểm lại','ph_release',{lot:p.id},'small primary'):commandButton('Tạm giữ','ph_quarantine',{lot:p.id},'small ghost')):''}</span></div>`;};
+      `<span class="inv-row-act">${whQty(p,max,qty)}<button type="button" class="btn small${state&&max&&!vansFull?' primary':''}" data-wh-order="${esc(p.id)}"${can?` data-cost="${p.cost}" data-factor="${sup?.factor??1}" data-money="${c.money}"`:''}${can&&cost<=c.money?'':' disabled'}>${!max?'Kệ đầy':vansFull?`Đủ ${SHIP_CAP} kiện`:!c.open?(mb?'Mở tiệm trước':'Mở quầy trước'):whLabel(qty,cost,c.money)}</button>${!mb?(c.held_lots.includes(p.id)?commandButton('Cô Thu kiểm lại','ph_release',{lot:p.id},'small primary'):commandButton('Tạm giữ','ph_quarantine',{lot:p.id},'small ghost')):''}</span></div>`;};
   return strip+(waiting.length?`<h3>Kiện hàng</h3>${arrived.map(parcel).join('')}${waiting.filter(s=>!s.ready_now).map(parcel).join('')}<div class="divider"></div>`:'')+pick+`<h3>Hàng trên kệ</h3>${list.map(row).join('')}`;
+}
+/** Quantity with − / + (44 px) around the number for a stock-desk row; disabled when the shelf is full. */
+const whQty=(p,max,qty)=>`<span class="wh-qty"><button type="button" class="btn ghost" data-wh-step="-1" aria-label="Bớt một"${max>1?'':' disabled'}>−</button><input class="input" type="number" id="qty-${p.id}" min="1" max="${Math.max(1,max)}" value="${qty}" inputmode="numeric" aria-label="Số nhập ${esc(p.name)}"${max?'':' disabled'}><button type="button" class="btn ghost" data-wh-step="1" aria-label="Thêm một"${max>1?'':' disabled'}>+</button></span>`;
+const whLabel=(q,cost,money)=>cost>money?`Thiếu ${fmt(cost-money)} xu`:`Đặt ${q} · ${fmt(cost)} xu`;
+/** The order button of a stock-desk row as the number changes: what the parcel costs, or the shortfall (disabled). */
+function whBill(input){
+  const b=input?.closest('.inv-row')?.querySelector('[data-wh-order][data-cost]');if(!b)return;
+  const q=Math.max(1,Math.min(Number(input.max)||1,Math.floor(Number(input.value))||1)),cost=Math.max(1,Math.ceil(Number(b.dataset.cost)*q*Number(b.dataset.factor))),money=Number(b.dataset.money)||0;
+  b.disabled=cost>money;b.textContent=whLabel(q,cost,money);
 }
 async function whOrder(item){
   const c=room(),id=career(),desk=c.stock_desk||{},sups=desk.suppliers||[],picked=ui.whSup?.[id],supId=sups.some(s=>s.id===picked)?picked:(desk.default||sups[0]?.id),sup=sups.find(s=>s.id===supId)||{factor:1,name:'nhà cung cấp',quote:{}};
@@ -1000,8 +1011,9 @@ async function csCallSend(task,body){
   }finally{csCallPending=null;renderSheet();}
 }
 document.addEventListener('click',async e=>{
-  const el=e.target.closest?.('[data-wh-tab],[data-wh-sup],[data-wh-order],[data-wh-open],[data-cs-pick]');if(!el||el.disabled||ui.busy)return;
-  if(el.dataset.whTab){ui.whTab=el.dataset.whTab;renderSheet(false);}
+  const el=e.target.closest?.('[data-wh-tab],[data-wh-sup],[data-wh-order],[data-wh-open],[data-wh-step],[data-cs-pick]');if(!el||el.disabled||ui.busy)return;
+  if(el.dataset.whStep){const input=el.parentElement.querySelector('input');if(input){input.value=String(Math.max(1,Math.min(Number(input.max)||1,(Math.floor(Number(input.value))||1)+Number(el.dataset.whStep))));whBill(input);}}
+  else if(el.dataset.whTab){ui.whTab=el.dataset.whTab;renderSheet(false);}
   else if(el.dataset.whSup){(ui.whSup??={})[career()]=el.dataset.whSup;renderSheet();}
   else if(el.dataset.whOrder)await whOrder(el.dataset.whOrder);
   else if(el.dataset.whOpen!==undefined){ui.whTab=el.dataset.whOpen||ui.whTab;openSheet('warehouse');}
@@ -1345,6 +1357,7 @@ document.addEventListener('input',e=>{
   if(L.fb.m?.feedbackInput(e.target,env()))return;
   if(e.target.dataset.draft&&activeTask())draft(activeTask())[e.target.dataset.draft]=e.target.value;
   if(e.target.id==='library-search'){ui.libraryQuery=e.target.value;renderSheet();}
+  if(e.target.closest?.('.wh-qty'))whBill(e.target);
 });
 document.addEventListener('change',async e=>{
   const el=e.target;
