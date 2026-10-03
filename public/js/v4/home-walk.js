@@ -89,10 +89,10 @@ export function setup(ctx){
   }
   const meEl=()=>roomSvg()?.querySelector('.hw-me');
   /** Put the figure among the pieces by where its feet are going: behind what stands further forward (reno.js marks each
-   * floor piece with its front edge, data-y). */
+   * floor piece with its front edge, data-y; the spouse's pieces in a shared home too). */
   function order(){
     const el=meEl();if(!el)return;
-    const y=W.to?.y??W.y,next=[...el.parentNode.querySelectorAll(':scope>g.dc-it[data-y]')].find(g=>+g.dataset.y>y+2);
+    const y=W.to?.y??W.y,next=[...el.parentNode.querySelectorAll(':scope>g.dc-it[data-y],:scope>g.dc-mate[data-y]')].find(g=>+g.dataset.y>y+2);
     const before=next||el.parentNode.querySelector(':scope>.dc-cats')||el;
     if(before!==el&&el.nextSibling!==before)el.parentNode.insertBefore(el,before);
   }

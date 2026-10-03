@@ -299,7 +299,7 @@ function roomMarkup(rm,opts={}){
     const g=A.glowAt(it,a[0],a[1],o.q.f);if(g)glows.push(g);
     const body=(o.q.on?A.contact(it,a[0],a[1]):'')+A.pieceAt(it,a[0],a[1],o.q.f,o.mate?o.c:tintOf(o.id));
     if(photo){out.push(body);continue;}
-    if(o.mate){out.push(`<g class="dc-mate" pointer-events="none" aria-hidden="true">${body}</g>`);continue;}   // the spouse's: not ours to move
+    if(o.mate){out.push(`<g class="dc-mate"${frontY(rm,G,o,all)} pointer-events="none" aria-hidden="true">${body}</g>`);continue;}   // the spouse's: not ours to move (data-y: the walking figure goes behind it too)
     const [bx,by,bw,bh]=bbox(it,a);
     const sel=S.sel===o.id,pop=S.pop===o.id,ghost=S.held?.src==='room'&&S.held.uid===o.id;
     out.push(`<g class="dc-it${sel?' sel':''}${pop?' pop':''}${ghost?' ghost':''}" data-uid="${esc(o.id)}" data-k="${esc(o.k)}"${o.q.on?` data-on="${esc(o.q.on)}"`:''}${frontY(rm,G,o,list)} tabindex="0" role="button" aria-label="${esc(it.name)}"><g class="dc-piece">${body}</g>`
