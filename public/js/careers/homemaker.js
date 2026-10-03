@@ -9,7 +9,7 @@
  * The server decides everything; one tap sends one command. */
 import {nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
-import {data,cc,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,debtBook,troubleLast,tile} from './street_kit.js';
+import {data,cc,pane,notesPage,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,debtBook,troubleLast,tile} from './street_kit.js';
 
 const steps=t=>t.needs?.steps||[];
 const cur=t=>steps(t)[t.at]||null;
@@ -19,9 +19,9 @@ const kindLabel=(x,k)=>(cc(x).kinds||{})[k]||'';
 const TYPE_ICON={pick:'👆',sort:'🗂️',order:'🔢',choose:'💬',haggle:'🤝',receipt:'📒'};
 
 /* ------------------------------------------------------------ the family notebook */
+const notes=x=>`<ul class="nt-notes">${(cc(x).notebook||[]).map(n=>`<li><span aria-hidden="true">${x.esc(n.emoji)}</span><div><b>${x.esc(n.who)}</b><small>${x.esc(n.text)}</small></div></li>`).join('')}</ul>`;
 function notebook(x,auto=false){
-  const rows=(cc(x).notebook||[]).map(n=>`<li><span aria-hidden="true">${x.esc(n.emoji)}</span><div><b>${x.esc(n.who)}</b><small>${x.esc(n.text)}</small></div></li>`).join('');
-  return pane(x,'nt-notebook','📒 Sổ tay nhà',`<ul class="nt-notes">${rows}</ul>`,auto,'nt-notebook');
+  return pane(x,'nt-notebook','📒 Sổ tay nhà',notes(x),auto,'nt-notebook');
 }
 
 /* ------------------------------------------------------------ the job card */
@@ -168,6 +168,8 @@ export default {
     return wrap(`${top(x)}${dayBar(x)}${notebook(x,true)}${debtBook(x,d.debts,'nt_chase')}`);
   },
   input(el,x){return kitInput(el,x);},
+  // The notebook opened from the scene, the bar or Thêm: a page of its own (app.js 'carPage').
+  page(view,x){return view==='car:notes'?notesPage(x,{cls:'nt',eyebrow:'Nhà chị Thảo',title:'📒 Sổ tay nhà',body:notes(x)}):'';},
   tick(root){keepBarAboveFooter(root);},
   actions:{...kitActions,async notes(d,el,x){(x.ui.pane??={})['nt-notebook']=true;x.render();setTimeout(()=>document.querySelector('.nt-notebook')?.scrollIntoView({block:'center'}),0);}},
   dock:[['car:notes','book','Sổ tay nhà','Ai ăn gì, uống thuốc gì'],['car:intro','question','Giới thiệu nghề','Công việc & sao']],

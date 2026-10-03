@@ -6,7 +6,7 @@
  * The server decides everything; one tap sends one command. */
 import {nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
-import {data,cc,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,tile} from './street_kit.js';
+import {data,cc,pane,notesPage,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,tile} from './street_kit.js';
 
 const steps=t=>t.needs?.steps||[];
 const cur=t=>steps(t)[t.at]||null;
@@ -15,9 +15,9 @@ const kindLabel=(x,k)=>(cc(x).kinds||{})[k]||'';
 const TYPE_ICON={pick:'👆',sort:'🗂️',order:'🔢',choose:'💬',tally:'📒'};
 
 /* ------------------------------------------------------------ the board by the kitchen door */
+const notes=x=>`<ul class="pg-notes">${(cc(x).notebook||[]).map(n=>`<li><span aria-hidden="true">${x.esc(n.emoji)}</span><div><b>${x.esc(n.who)}</b><small>${x.esc(n.text)}</small></div></li>`).join('')}</ul>`;
 function notebook(x,auto=false){
-  const rows=(cc(x).notebook||[]).map(n=>`<li><span aria-hidden="true">${x.esc(n.emoji)}</span><div><b>${x.esc(n.who)}</b><small>${x.esc(n.text)}</small></div></li>`).join('');
-  return pane(x,'pg-notebook','🔔 Bảng nội quy',`<ul class="pg-notes">${rows}</ul>`,auto,'pg-notebook');
+  return pane(x,'pg-notebook','🔔 Bảng nội quy',notes(x),auto,'pg-notebook');
 }
 
 /* ------------------------------------------------------------ the job card */
@@ -128,6 +128,8 @@ export default {
     return wrap(`${top(x)}${dayBar(x)}${notebook(x,true)}`);
   },
   input(el,x){return kitInput(el,x);},
+  // The notebook opened from the scene, the bar or Thêm: a page of its own (app.js 'carPage').
+  page(view,x){return view==='car:notes'?notesPage(x,{cls:'pg',eyebrow:'Chùa Gió Lành',title:'🔔 Bảng nội quy',body:notes(x)}):'';},
   tick(root){keepBarAboveFooter(root);},
   actions:{...kitActions,async notes(d,el,x){(x.ui.pane??={})['pg-notebook']=true;x.render();setTimeout(()=>document.querySelector('.pg-notebook')?.scrollIntoView({block:'center'}),0);}},
   dock:[['car:notes','book','Bảng nội quy','Thời khóa, hương đèn, bếp chay'],['car:intro','question','Giới thiệu nghề','Công việc & sao']],

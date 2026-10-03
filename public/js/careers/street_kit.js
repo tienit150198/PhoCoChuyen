@@ -22,6 +22,15 @@ export function pane(x,key,summary,body,auto=false,cls=''){
   return `<div class="sk-pane ${cls}${open?' open':''}"><button type="button" class="sk-pane-sum" data-action="car:pane" data-key="${x.esc(key)}" data-open="${open?1:0}" aria-expanded="${open}">${summary}</button>${open?`<div class="sk-pane-body">${body}</div>`:''}</div>`;
 }
 
+/** A career's notebook as a page of its own (app.js view 'carPage'): what its dock entry (Bảng nội quy, Sổ tay nhà)
+ * opens from the scene, the bar or Thêm, where the work sheet and its pane are not on screen. `cls`: the career's
+ * work-screen classes, so the list keeps its look. */
+export function notesPage(x,{cls,eyebrow,title,body}){
+  return `<header class="sheet-head"><div class="grow"><span class="eyebrow">${x.esc(eyebrow)}</span><h2>${title}</h2></div><button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${x.icon('x',21)}</button></header>`+
+    `<div class="sheet-body"><div class="career-job sk ${cls} sk-notes-page">${body}</div></div>`+
+    `<footer class="sheet-foot"><p></p><div class="row wrap"><button type="button" class="btn ghost" data-action="close">Đóng</button><button type="button" class="btn primary" data-action="workbench">Vào việc</button></div></footer>`;
+}
+
 /** The "what this job is" card: shown until the player starts (`go` = the career's intro command). */
 export function introCard(x,go,icon){
   const d=data(x),i=cc(x).intro;if(!i||(d.intro&&!x.ui.intro))return '';
