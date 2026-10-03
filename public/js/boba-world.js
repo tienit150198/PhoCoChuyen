@@ -17,7 +17,7 @@ import {areaList,areaOf,planOf,areaSpots,areaTap,enterArea,autoArea,focusDoor,do
 import shop from './scenes/shop.js';
 import {language} from './v4/i18n.js';
 import {daylight} from './v4/dayclock.js';
-import {watch,CHECK} from './scenes/reads.js';   // what the room read of the game: a new state keeps its backdrop unless that changed
+import {watch,CHECK} from './scenes/room-watch.js';   // what the room read of the game: a new state keeps its backdrop unless that changed
 import {figure,paintLegs,paintHairBack,paintTop,paintHairFront,paintAcc} from './v4/look.js';  // Tủ đồ: the player's look
 const themes={
  teacher:{primary:'#8ca97c',dark:'#556e46',light:'#f0f2dc',mint:'#e5d8ac',wall:'#fcf5df',awning:'#b5c897',title:'Lớp học Mầm Nắng',sub:'CÙNG THỬ · CÙNG HIỂU · CÙNG TIẾN BỘ',shelves:['Góc học liệu','Hộp đồ lớp mình']},
@@ -440,7 +440,7 @@ export class BobaWorld extends World {
  /** The backdrop is drawn once into an offscreen canvas and blitted each frame. It is redrawn when the
   * size, pixel ratio, layout, scene, area, language or reduced motion changes; when a new state (rev counts
   * update()/setupObjects()) changes something the paint read of the game (this.c, this.state, this.game,
-  * noted by scenes/reads.js: a served order moves the queue on the order screen, a tick of the clock does
+  * noted by scenes/room-watch.js: a served order moves the queue on the order screen, a tick of the clock does
   * not); and, for scenes whose room animates with world time (clouds, steam, lanterns…), at most every
   * ROOM_TICK seconds, so walking and people stay at full rate while the room's slow ambience ticks along.
   * After a long idle spell (World.longIdle) that ambience holds still until the player is back. A room can
@@ -462,7 +462,7 @@ export class BobaWorld extends World {
   * making the whole room repaint with world time; nothing the room draws after it may overlap it. Painting
   * straight onto a canvas (a career preview, layers off), it is drawn there and then. */
  ambient(draw){if(this.ambience)this.ambience.push([this.ctx.getTransform(),draw]);else draw(this.ctx);}
- /** Dev check (scenes/reads.js CHECK): a backdrop kept through a new state must be what painting it now gives,
+ /** Dev check (scenes/room-watch.js CHECK): a backdrop kept through a new state must be what painting it now gives,
   * at the same world time. Counts in globalThis.__mnlBackdrop {kept, bad}; a difference is logged. */
  checkBackdrop(L){const D=globalThis.__mnlBackdrop??={kept:0,bad:0};D.kept++;
    const cv=globalThis.document.createElement('canvas');cv.width=L.canvas.width;cv.height=L.canvas.height;

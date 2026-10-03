@@ -1,5 +1,18 @@
 {
  "strings": {
+  "CHỤP ẢNH": "TAKE PHOTOS",
+  "Mai trời": "Tomorrow's sky",
+  "Rủ bạn vô buồng chụp ảnh đi, khung Tết đẹp lắm!": "Bring a friend into the photo booth, the Tết frame is lovely!",
+  "Nghề mới Bán phở ở quán phở Cây Si: chần bánh, chan nước dùng nóng, nêm vừa miệng từng khách.": "New career: sell phở at Cây Si: blanch the noodles, ladle hot broth, season it the way each guest likes.",
+  "Nghề mới Bán cơm ở Cơm tấm Dì Bảy: lên dĩa sườn bì chả nóng hổi, đông khách giờ trưa.": "New career: sell broken rice at Dì Bảy's: plate up hot pork chop, skin and egg cake for the lunch rush.",
+  "Nghề mới Chụp photobooth ở Tiệm ảnh Tách Tách. Hội chợ cũng có photobooth: chụp một mình, với người lạ hay rủ bạn!": "New career: photobooth at Tách Tách studio. The fair has a booth too: shoot alone, with strangers or with friends!",
+  "Bước vào tận nhà, phòng trọ hay ký túc xá. Có tủ lạnh cất đồ ăn, đói thì lấy ra ăn.": "Walk into your home, rented room or dorm. A fridge keeps your food; eat when you're hungry.",
+  "Đám cưới: gửi phong bì thoải mái, có mức 500 xu. Mạng chập chờn cũng không bao giờ bị trừ tiền hai lần.": "Weddings: give as many envelopes as you like, up to 500 xu. A shaky network never charges you twice.",
+  "Nông trại có phân bón lá thúc: luống rau lớn nhanh hơn.": "The farm has leaf fertiliser: beds grow faster.",
+  "Cuối ngày có mục Ngày mai để chuẩn bị trước; nhiều nghề dễ nhìn, dễ bấm hơn trên điện thoại.": "The day summary has a Tomorrow section to prepare ahead; many careers are easier to read and tap on phones.",
+  "Đánh giá chỉ ghi “Đã trả lời” khi bạn trả lời thật. Nhận xét sau chuyến bay thì không cần trả lời.": "Reviews say “Replied” only when you really replied. Notes after a flight need no reply.",
+  "Nhận xét sau chuyến bay, không cần trả lời.": "A note after the flight, no reply needed.",
+  "Sửa lỗi game đứng ở màn hình tải trên Cốc Cốc và trình duyệt có bật chặn quảng cáo.": "Fixed the game stuck on the loading screen in Cốc Cốc and browsers with an ad blocker.",
   "Nhân viên giờ kiếm thêm cho tiệm: mỗi việc làm xong +3 xu (vui vẻ +4), cộng khi khép ca. Sự cố nhân viên cũng hiếm hơn hẳn.": "Staff now earn for the shop: +3 coins per finished job (+4 when cheerful), paid at close. Staff incidents are also much rarer.",
   "Menu “Tiền & nhà” đổi tên thành “Ngân hàng & nhà” cho dễ tìm.": "The “Money & home” menu is now “Bank & home”, easier to find.",
   "Thưởng việc của đội": "Team job bonus",

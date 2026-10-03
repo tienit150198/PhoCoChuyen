@@ -1,5 +1,5 @@
 """The room backdrop cache (public/js/boba-world.js backdrop()): a new state repaints the room only when something
-the paint read of the game changed (public/js/scenes/reads.js, checked with node in tests/scene_reads.mjs), and
+the paint read of the game changed (public/js/scenes/room-watch.js, checked with node in tests/scene_reads.mjs), and
 the milk tea room keeps its moving bits (clouds past the window, fairy lights) out of it (BobaWorld.ambient), so it
 is painted once instead of every ROOM_TICK. In the browser, ?deltacheck=1 on localhost also paints each kept
 backdrop again and compares the pixels (globalThis.__mnlBackdrop)."""
@@ -23,7 +23,7 @@ class SceneReadsTest(unittest.TestCase):
 
     def test_wired_in(self):
         world = (JS / 'boba-world.js').read_text(encoding='utf-8')
-        self.assertIn("import {watch,CHECK} from './scenes/reads.js'", world)
+        self.assertIn("import {watch,CHECK} from './scenes/room-watch.js'", world)
         backdrop = world.split(' backdrop(){', 1)[1].split('\n draw(){', 1)[0]
         key = re.search(r"const key=\[(.*?)\]\.join", backdrop).group(1)
         self.assertNotIn('this.rev', key)          # a new state alone does not repaint ...

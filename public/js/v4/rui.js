@@ -1,5 +1,5 @@
 /** 🛡️ Rủi ro & bảo hiểm (game/rui.py → state.rui) and 💰 Tiệm vàng Kim Phát (game/vang.py → state.vang).
- * - A centred card opens by itself at a calm moment (v4/popup-gate.js, after the gift, "Có gì mới" and the x3 week):
+ * - A centred card opens by itself at a calm moment (v4/break-gate.js, after the gift, "Có gì mới" and the x3 week):
  *   a warning with its prevention, or a story card with its choices. One short line, one obvious button, the rest
  *   behind "?". Each card opens by itself once a session; the "Bảo hiểm" page shows it again.
  * - The "Bảo hiểm" page (data-action="rui"): the policies, the gear, what is broken. The "Tiệm vàng" page
@@ -7,7 +7,7 @@
  * Every rule and number lives on the server; this file renders and sends jr_rui_* / jr_vang_* commands.
  * Styles: /css/whatsnew.css (the card's shell) + /css/rui.css. app.js loads this module lazily (ruiBoot, ruiAction). */
 import {icon,escapeHTML as esc} from '../icons.js';
-import {quiet,turn,want} from './popup-gate.js';
+import {quiet,turn,want} from './break-gate.js';
 
 const S={env:null,pop:null,page:null,view:'',busy:false,flash:null,done:null,timer:0,calm:0,seen:new Set(),qty:10,listening:false};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');

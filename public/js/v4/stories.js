@@ -7,7 +7,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {avatar,emojiOf} from './journey.js';
 import {lookOf} from './look.js';
 import {firstDay} from './onboard.js';
-import {quiet,turn,want,whenQuiet} from './popup-gate.js';
+import {quiet,turn,want,whenQuiet} from './break-gate.js';
 
 let E=null;
 let cur=null;              // {id, shown, answered:{reply,note,label}|null, keepsake}
@@ -84,7 +84,7 @@ function close(){
 function dismiss(){if(cur&&!cur.answered)snoozed.add(cur.id);close();}
 
 /** Called by the journey after its own scenes: show the next due beat, if any, at a break point
- * (v4/popup-gate.js): never over the day summary, the evening, the work screen or another card, and after
+ * (v4/break-gate.js): never over the day summary, the evening, the work screen or another card, and after
  * a gift, "Có gì mới" and the x3 card. Not quiet yet: it asks again when the sheet closes. */
 export function maybeStory(){
   const st=stories();if(!st||!E)return;

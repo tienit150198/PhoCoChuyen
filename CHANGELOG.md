@@ -1,3 +1,20 @@
+# v1.5.0 — 🍜 Bán phở, 🍚 Bán cơm, 📸 Photobooth, 🏠 vào nhà & tủ lạnh, 🧧 phong bì
+
+- Nghề mới: Bán phở (quán phở Cây Si), Bán cơm (Cơm tấm Dì Bảy), Photobooth (Tiệm ảnh Tách Tách). Tuần x3 đang chạy giữ nguyên lịch các nghề cũ.
+- Hội chợ: photobooth chụp một mình / với người lạ / với bạn bằng mã, dải ảnh có khung tải về PNG.
+- Vào nhà, phòng trọ, KTX; tủ lạnh (`game/fridge.py`) cất đồ ăn.
+- Đám cưới: phong bì không giới hạn, mức 500 xu từ ngày sống 3. Nút gửi tự quản trạng thái bận (không bị tap guard chung nuốt), mất phản hồi thì gửi lại cùng request id, server trả "đã gửi" thay vì "không đủ xu" cho lần gửi lại (e63e643).
+- Nông trại: phân bón lá thúc. 🌅 Ngày mai trong tổng kết ngày cho các nghề; năm đợt chỉnh UI theo nghề.
+- Đánh giá: nhãn "Đã trả lời" chỉ khi người chơi đã trả lời; nhận xét của tổ bay (đóng ngay, `fb.own`) ghi "không cần trả lời" (Yuika, chat 03/10).
+
+# v1.4.33 — 🌐 Cốc Cốc / trình chặn quảng cáo không còn kẹt màn hình tải
+
+Chủ game: "game vào bằng Cốc Cốc không được… tới bước tải cuối thấy dừng luôn".
+
+- `public/js/scenes/reads.js` chứa chuỗi `ads.js` ("re-ads.js"): luật chặn quảng cáo chung (bộ chặn có sẵn của Cốc Cốc, uBlock, AdGuard) chặn file này, cả đồ thị module của `app.js` hỏng, trang đứng ở màn hình tải (thống kê lỗi client: ~135 lần/ngày `app.js` + `reads.js`). Đổi tên `scenes/room-watch.js`; `v4/popup-gate.js` → `v4/break-gate.js` (chữ "popup").
+- `tests/test_asset_names.py`: không file nào trang tải có tên mà bộ chặn quảng cáo bắt (trừ `telemetry.js`, `analytics-preferences.js`: tải sau, lỗi được bắt).
+- Kiểm bằng trình duyệt với luật chặn `ads.js|popup`: 1.4.32 kẹt màn hình tải, 1.4.33 vào game.
+
 # v1.4.32 — 🧑‍🍳 Nhân viên kiếm thêm cho tiệm
 
 Chủ game: "cho nhân viên làm có thêm tiền thưởng khi thuê nhân viên", đổi tên nhóm menu.

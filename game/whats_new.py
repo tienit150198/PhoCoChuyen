@@ -32,6 +32,19 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.5.0", date="2026-10-03", items=(
+        dict(emoji="🍜", text="Nghề mới Bán phở ở quán phở Cây Si: chần bánh, chan nước dùng nóng, nêm vừa miệng từng khách."),
+        dict(emoji="🍚", text="Nghề mới Bán cơm ở Cơm tấm Dì Bảy: lên dĩa sườn bì chả nóng hổi, đông khách giờ trưa."),
+        dict(emoji="📸", text="Nghề mới Chụp photobooth ở Tiệm ảnh Tách Tách. Hội chợ cũng có photobooth: chụp một mình, với người lạ hay rủ bạn!"),
+        dict(emoji="🏠", text="Bước vào tận nhà, phòng trọ hay ký túc xá. Có tủ lạnh cất đồ ăn, đói thì lấy ra ăn."),
+        dict(emoji="🧧", text="Đám cưới: gửi phong bì thoải mái, có mức 500 xu. Mạng chập chờn cũng không bao giờ bị trừ tiền hai lần."),
+        dict(emoji="🌱", text="Nông trại có phân bón lá thúc: luống rau lớn nhanh hơn."),
+        dict(emoji="🌅", text="Cuối ngày có mục Ngày mai để chuẩn bị trước; nhiều nghề dễ nhìn, dễ bấm hơn trên điện thoại."),
+        dict(emoji="⭐", text="Đánh giá chỉ ghi “Đã trả lời” khi bạn trả lời thật. Nhận xét sau chuyến bay thì không cần trả lời."),
+    )),
+    dict(version="1.4.33", date="2026-10-03", items=(
+        dict(emoji="🌐", text="Sửa lỗi game đứng ở màn hình tải trên Cốc Cốc và trình duyệt có bật chặn quảng cáo."),
+    )),
     dict(version="1.4.32", date="2026-10-03", items=(
         dict(emoji="🧑‍🍳", text="Nhân viên giờ kiếm thêm cho tiệm: mỗi việc làm xong +3 xu (vui vẻ +4), cộng khi khép ca. Sự cố nhân viên cũng hiếm hơn hẳn."),
         dict(emoji="🏦", text="Menu “Tiền & nhà” đổi tên thành “Ngân hàng & nhà” cho dễ tìm."),
