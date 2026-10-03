@@ -51,6 +51,7 @@ from . import fair as fh  # 🏮 Hội chợ dân gian
 from . import x3_week as x3w  # 🔥 Nghề x3 trong tuần
 from . import needs as nd  # 🍚 No bụng, 😴 Tỉnh táo
 from . import chua as cg  # 🛕 Đi chùa
+from . import promotion as pm  # 🎖️ Thăng tiến, 🧑‍💼 Ca quản lý
 
 ORIGINAL=("mother_baby","pharmacy","accounting","customer_care")
 UI_THEMES=("kem","tra_xanh","dem","bien","keo")
@@ -595,6 +596,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     if mod:no_tick|=set(mod.SPEC.get('no_tick',()))
     no_tick|=CARE_FREE
     if action.startswith("cl_"):need(c["open"],"Mở ca trước khi làm hoạt động lớp nhé.")
+    no_tick|={"pm_answer","pm_ask","pm_close"}  # 🎖️ the review and closing the board take no time; a manager's moves do
     if action not in no_tick and not action.startswith(("ops_","fb_","job_","soc_","cl_","inc_","hap_",*life.NEW_ACTION_PREFIXES)):c["turn"]+=1
     if action.startswith(life.NEW_ACTION_PREFIXES):
         result.update(life.handle(s,c,career,action,p))
@@ -617,6 +619,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         result.update(fbk.action(s,c,career,action,p,internal))
     elif action.startswith("job_"):
         result.update(emp.action(s,c,career,action,p))
+    elif action.startswith("pm_"):  # 🎖️ the review, 🧑‍💼 the manager's board (game/promotion.py)
+        result.update(pm.action(s,c,career,action,p))
     elif action.startswith("cl_"):
         from . import classroom
         result.update(classroom.action(s,c,career,action,p))
@@ -629,10 +633,11 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         if emp.required(career):
             emp.first_day_hire(s,c,career)
             need(c["job"]["status"]=="hired","Nghề này cần được tuyển dụng trước. Mở mục Xin việc để ứng tuyển nhé.","not_hired")
+        manager=pm.check_start(s,c,career,p)  # 🧑‍💼 {manager: true}: the team takes the day's customers
         c["open"]=True;c["started"]=True;c["shift_summary"]=None
         ops.on_start(s,c,career)
         inv.on_open(s,c,career)  # kho: ghi nhịp mở ca cho đồng hồ giao hàng
-        target={"calm":2,"festival":4}.get(c["life"]["mode"],3)  # the day's pace is rolled at the previous close
+        target=0 if manager else {"calm":2,"festival":4}.get(c["life"]["mode"],3)  # the day's pace is rolled at the previous close
         unfinished=[t for t in c["tasks"] if t["status"] not in ("completed","referred","cancelled")]
         slots=[int(t["id"].split("-")[-1]) for t in c["tasks"] if t["day"]==c["day"]]
         first=max(slots,default=-1)+1
@@ -653,6 +658,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         care_notes+=care_start(s,c,career)
         # A career may word its own opening (SPEC['open_line']: the air crew report for duty, no shop door).
         result["message"]=(mod.SPEC.get("open_line") if mod else None) or "Đã mở cửa. Khách đang tới, mình bắt đầu từ một người nhé."
+        line=pm.on_start(s,c,career,p)
+        if line:result["message"]=line
     elif action=="end_day":
         need(c["open"],"Ca chưa mở.")
         need(not c["event"] or c["event"]["stage"]=="resolved" or p.get("carry_event"),"Bạn còn một chuyện đang xử lý. Có thể tiếp tục hoặc chọn mang sang ngày sau.")
@@ -678,6 +685,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         summary["happen"]=hap_summary
         left=ab.on_close(s,c,career,oldday)
         if left:summary["abandon"]=left
+        promo=pm.on_close(s,c,career,summary)  # 🎖️ a good day counts; a manager shift still open closes (its pay is in the net)
+        if promo:summary["promo"]=promo
         # The day's figures once everything has closed: the salary and the career's own closing are in, and
         # owner transfers are not (journey._transfer keeps them out of earnings/costs). The fund's change since the
         # morning is not used: a withdrawal larger than the morning fund clamps day_start_money at 0 and lost the
@@ -689,6 +698,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         log(s,c,"day",f"Khép ngày {oldday}; {summary['completed']} việc xong, {summary['carried']} việc được giữ lại.")
         result.update(message="Một ngày nữa đã có câu chuyện để nhớ.",summary=summary)
     elif action=="more_work":
+        need(not pm.managing(s,c,career),"Hôm nay bạn làm quản lý: giao việc cho đội nhé.","manager_shift")
         gate=more_gate(c,career)
         if gate:raise GameError(gate["error"],gate.get("code","invalid_action"))
         slot=_next_slot(c)
@@ -1076,6 +1086,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     elif action=="reset_career":
         need(p.get("confirm")=="BAT DAU LAI","Cần xác nhận trước khi xóa nghề.")
         ar.record([s["careers"][career]],"reset",career)  # the previous record stays in the archive
+        pm.forget(s,career)  # 🎖️ the place's steps start again too
         s["careers"][career]=initial_career(career);return s,dict(message="Đã bắt đầu lại riêng nghề này.")
     else:raise GameError("Thao tác không được hỗ trợ.","unknown_action")
     life.update_patience(c,action,p,prior_mistakes)
@@ -1180,6 +1191,8 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
         c["happen"]=haps.public(raw,cid,s)
         c["inventory"]=inv.public(raw,cid)
         c["job"]=emp.public(raw,cid,s)
+        c["promo"]=pm.public(s,raw,cid)  # 🎖️ Thăng tiến; the 🧑‍💼 board while a manager shift runs
+
         c["data"]=mod.public_data(raw) if mod and hasattr(mod,'public_data') else tree_copy(raw["ext"]["data"])
         if cid in CARE_CAREERS:
             cp=care_public(raw,cid)
