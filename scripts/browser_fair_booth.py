@@ -72,6 +72,7 @@ async def run(shots: Path) -> list:
             c = await phone(browser, base, 'Thu', problems, intro=False)
             d = await phone(browser, base, 'Bảo', problems, intro=False)
             for p, name in ((a, 'Lan'), (b, 'Minh'), (c, 'Thu'), (d, 'Bảo')):
+                await p.ctx.add_init_script("try{localStorage.setItem('mnl.home','list')}catch(e){}")  # the list as home (the town is the default): the fair's row
                 token = next(c['value'] for c in await p.ctx.cookies() if c['name'] == 'mnl_session')
                 seed(db, token, name)
                 await p.page.reload()
