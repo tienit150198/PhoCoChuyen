@@ -1119,6 +1119,43 @@ ARCS = {
                 ('chip', 'Con vẽ tiệm kem dán lên tủ rồi nè! Có cô với có {anh} luôn!'),
                 ('me', 'Con sẽ múc viên nào cũng tròn, như cô.')]),
         ]),
+    'com': dict(
+        title='Chén nước mắm của dì Bảy', emoji='🍚',
+        keepsake=dict(emoji='🫙', name='Cái cối đá giã tỏi ớt', desc='Cối đá của bà ngoại dì Bảy. Tỏi ớt giã tay trong cối này, chén nước mắm mới thơm đúng vị quán.'),
+        cast={'bay': _p('Dì Bảy', '👩‍🍳', 'Chủ quán cơm', 'com_npc_01'),
+              'binh': _p('Chú Bình', '🛵', 'Xe ôm đầu hẻm', 'com_npc_02'),
+              'ngan': _p('Chị Ngân', '🧾', 'Kế toán công ty gần chợ', 'com_npc_03'),
+              'suong': _p('Bà Sương', '📿', 'Khách ăn chay ngày rằm', 'com_npc_06')},
+        beats=[
+            _b('Bốn giờ sáng', '🔥', 'Trời còn tối, dì Bảy đã nhóm xong bếp than, hai nồi cơm reo trên xe.', [
+                ('bay', 'Gạo tấm hút ít nước, con đổ lưng đốt tay thôi. Đổ một đốt là nhão cả nồi.'),
+                ('bay', 'Nồi cơm trắng thì một đốt. Cơm mà hỏng là cả buổi sáng hỏng theo.'),
+                ('me', 'Dạ, con đặt ngón tay đo từng nồi.')]),
+            _b('Miếng sườn cháy cạnh', '🍖', 'Chú Bình dựng xe ôm, ngồi xuống ghế nhựa quen thuộc đầu bàn.', [
+                ('binh', 'Cơm tấm ngon là miếng sườn hơi cháy cạnh, thơm mùi than.'),
+                ('bay', 'Cháy cạnh khác cháy khét nghe con. Mỗi mặt chừng tám tới mười sáu giây, trở một lần.'),
+                ('binh', 'Mà giữa miếng thịt không được hồng. Chú ăn sườn quán này mười năm rồi.')],
+                _c('Chú Bình hỏi bí quyết nướng sườn',
+                   _o('a', 'Đếm giây từng mặt, trở đúng một lần', [('binh', 'Vậy là ra nghề rồi đó con.')], rel='binh'),
+                   _o('b', 'Hỏi chú thích sườn nướng kỹ hay vừa', [('binh', 'Chín tới, cháy cạnh chút xíu. Vậy là chú ăn hết dĩa.')], rel='binh'))),
+            _b('Mười hai giờ trưa', '🧾', 'Chị Ngân gửi danh sách bốn hộp cơm cho cả phòng, ghi từng dòng.', [
+                ('ngan', 'Hộp nào nước mắm cũng để riêng nha em, rưới vô là về tới nơi cơm nhão hết.'),
+                ('ngan', 'Có một hộp chay của chị Hà: không hành mỡ, nước tương nha.'),
+                ('me', 'Dạ, em ghi tên từng hộp lên nắp luôn.')]),
+            _b('Ngày rằm', '🌕', 'Bà Sương ghé quán, tay lần tràng hạt.', [
+                ('suong', 'Mỡ hành quán phi bằng mỡ heo phải không con? Bà ăn chay nên dặn trước.'),
+                ('bay', 'Dạ, dĩa chay thì muỗng chén riêng, nước tương, không mỡ hành, không canh tôm.'),
+                ('suong', 'Quán nhớ bà ăn chay, bà mừng lắm.')],
+                _c('Bà Sương hỏi canh có chay không',
+                   _o('a', 'Nói thật: canh nấu tôm khô, bà dùng trà đá nha', [('suong', 'Thật thà vậy bà mới yên tâm.')], rel='suong'),
+                   _o('b', 'Luộc riêng cho bà chén canh rau', [('suong', 'Con chu đáo quá. Bà cảm ơn nghe.')], rel='suong'))),
+            _b('Cái cối đá', '🫙', 'Tối dọn quán, dì Bảy rửa cái cối đá, lau khô rồi đặt vào tay bạn.', [
+                ('bay', 'Cối này của bà ngoại dì. Nước mắm quán ngon là nhờ giã tay trong cối này.'),
+                ('bay', 'Mai dì đi tái khám ở bệnh viện. Quán giao con, cối cũng giao con.'),
+                ('binh', 'Giao đúng người rồi. Dĩa nào nó xới cũng đủ cơm.'),
+                ('ngan', 'Cả phòng chị vẫn đặt cơm quán mình nha {anh}!'),
+                ('me', 'Con sẽ nếm từng chén nước mắm, như dì.')]),
+        ]),
     'nail': dict(
         title='Cây dũa của chị Diệp', emoji='💅',
         keepsake=dict(emoji='🪮', name='Cây dũa thủy tinh của chị Diệp', desc='Chị Diệp mua từ hồi mới học nghề ở spa. Rửa là sạch, hấp là dùng lại, dũa bao nhiêu móng vẫn mịn.'),
