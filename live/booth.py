@@ -18,7 +18,7 @@ Two ways in
 In a room
 * The host picks the frame and the backdrop (`booth_set {frame, bg}`; public/js/v4/photo-frames.js FRAMES, BACKDROPS); everyone picks their own pose and prop (`booth_set {pose, prop}`);
   ids are short lowercase words (ID), the list is the client's (an id a client does not know is drawn as the default).
-  `booth_set {pose, all: true}` (1.5.2: a pose made together, or the 🎲 with friends) gives everyone in the room that
+  `booth_set {pose, all: true}` (1.5.3: a pose made together, or the 🎲 with friends) gives everyone in the room that
   pose; anyone may, everyone can change theirs after. A service before it reads only `pose` (one's own pose); a client
   before it never sends `all` and draws a pose it does not know as 'dung'.
 * `booth_ready`: the player has paid their ticket (fair_photo on the game server; the client sends this after it).

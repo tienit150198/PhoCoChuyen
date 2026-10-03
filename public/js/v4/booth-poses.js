@@ -26,7 +26,7 @@ const INK='#705140',LIP='#b17c69',MOUTH='#a8434b',TONGUE='#ef8a98';
 // [id, emoji, name, group]; the first seven are the 1.5.1 poses (same ids: older clients in the room still know them)
 const ROWS=[
   ['dung','🧍','Đứng thẳng',0],['v','✌️','Chữ V',0],['vay','👋','Vẫy tay',0],['tim','🫶','Bắn tim',0],
-  ['tim_nho','🤏','Tim mini',0],['tim_dau','💗','Tim trên đầu',0],['ma','🥰','Chống má',0],['nhay_mat','😉','Nháy mắt',0],
+  ['tim_nho','🤏','Tim nhỏ',0],['tim_dau','💗','Tim trên đầu',0],['ma','🥰','Chống má',0],['nhay_mat','😉','Nháy mắt',0],
   ['hoan_ho','🙌','Hoan hô',0],['nhay','🤸','Nhảy lên',0],['nghieng','😊','Nghiêng đầu',0],['like','👍','Like',0],
   ['ngau','😎','Ngầu',0],['ngai','🙈','Ngại ngùng',0],['suy_nghi','🤔','Suy nghĩ',0],['cuoi','😆','Cười lớn',0],
   ['ngac','😮','Ngạc nhiên',0],['meo','🐱','Tay mèo',0],['gong','💪','Gồng cơ',0],['hon_gio','😘','Hôn gió',0],
@@ -166,9 +166,13 @@ function withProp(sp,prop){
   if(prop==='bang_chu')return {sp:{...sp,arms:{l:null,r:null}},hold:{at:[0,-36],side:1}};
   if(sp.arms.r==null)return {sp,hold:{at:[25,-36],side:1}};
   if(sp.arms.l==null)return {sp,hold:{at:[-25,-36],side:-1}};
-  // both hands busy: the right one lets go; the left keeps its gesture only when it is one of its own (on its side)
-  const l=sp.arms.l,keep=l==='hide'||(!sp.both&&l.h[0]<-14);
-  return {sp:{...sp,arms:{l:keep?l:null,r:null}},hold:{at:[25,-36],side:1}};
+  // both hands busy: the lower hand lets go (the raised one makes the pose: a half heart, a V); the other keeps its
+  // gesture only when it is one of its own (on its side); arms that make one gesture together both let go
+  const {l,r}=sp.arms,y=a=>a==='hide'?-1e3:a.h[1];
+  const side=sp.both||r==='hide'||l==='hide'||y(r)>=y(l)?1:-1,other=side>0?l:r;
+  const keep=!sp.both&&(other==='hide'||-side*other.h[0]>14);
+  const arms=side>0?{l:keep?l:null,r:null}:{l:null,r:keep?r:null};
+  return {sp:{...sp,arms},hold:{at:[side*25,-36],side}};
 }
 
 /* ---------------------------------------------------------------- the face */

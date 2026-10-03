@@ -124,7 +124,7 @@ export const FAIR_STICKERS=[
   {id:'long_den',name:'Lồng đèn',emoji:'🏮'},{id:'phao_hoa',name:'Pháo hoa',emoji:'🎆'},{id:'keo_bong',name:'Kẹo bông',emoji:'🍭'},{id:'mat_cuoi',name:'Mặt cười',emoji:'😊'},
 ];
 export const FAIR_FILTERS=[
-  {id:'none',name:'Gốc'},{id:'mo',name:'Dịu'},{id:'am',name:'Ấm'},{id:'trong',name:'Trong'},{id:'film',name:'Phim'},
+  {id:'none',name:'Ảnh gốc'},{id:'mo',name:'Dịu'},{id:'am',name:'Ấm'},{id:'trong',name:'Trong trẻo'},{id:'film',name:'Phim'},
   {id:'den_trang',name:'Đen trắng'},{id:'hong',name:'Hồng'},{id:'lanh',name:'Mát'},
 ];
 

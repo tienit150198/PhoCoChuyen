@@ -1321,36 +1321,40 @@ class FairPhoto(FairBase):
 
 
 class FairPhotoPreviousServer(FairBase):
-    """1.5.2 makes the booth prettier (poses, frames, colours) all in the browser and the live service: a save with
-    shoots on it is what 1.5.1 writes, and the 1.5.1 build (MNL_PREV_TREE) keeps and accepts it both ways."""
+    """1.5.3 makes the booth prettier (poses, frames, colours) all in the browser and the live service: a save with
+    shoots on it is what 1.5.1/1.5.2 write, and those builds (MNL_PREV_TREE, or ../_rel152 and ../_rel151 next to the
+    checkout) keep and accept it both ways."""
 
-    def prev_tree(self):
-        old = os.environ.get('MNL_PREV_TREE') or str(Path(__file__).resolve().parents[2] / '_rel151' / 'mot-ngay-lam-nghe')
-        if not (Path(old) / 'game' / 'engine.py').is_file():
-            self.skipTest('no 1.5.1 tree (MNL_PREV_TREE)')
-        return old
+    def prev_trees(self):
+        root = Path(__file__).resolve().parents[2]
+        cands = [os.environ['MNL_PREV_TREE']] if os.environ.get('MNL_PREV_TREE') else             [str(root / f'_rel{v}' / 'mot-ngay-lam-nghe') for v in ('152', '151')]
+        trees = [t for t in cands if (Path(t) / 'game' / 'engine.py').is_file()]
+        if not trees:
+            self.skipTest('no 1.5.2/1.5.1 tree (MNL_PREV_TREE)')
+        return trees
 
-    def test_a_save_with_shoots_crosses_the_151_build(self):
+    def test_a_save_with_shoots_crosses_the_previous_builds(self):
         import subprocess
         import sys
-        old = self.prev_tree()
-        s = story(40)
-        for mode in ('solo', 'friends', 'stranger'):
-            s, _ = self.act(s, 'fair_photo', mode=mode)
-        validate_state(s)
         prog = ('import json,sys;from game.engine import validate_state,migrate_state;s=json.load(sys.stdin);'
                 's=migrate_state(s);validate_state(s);print(json.dumps(s))')
-        env = dict(os.environ, PYTHONPATH=old)
-        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(s), capture_output=True, text=True, cwd=old, env=env,
-                             encoding='utf-8', timeout=300)
-        self.assertEqual(out.returncode, 0, out.stderr[-3000:])
-        back = json.loads(out.stdout)
-        self.assertEqual(back['journey']['history'][-1], s['journey']['history'][-1])
-        self.assertEqual(back['journey']['wallet'], 40 - 3 * fp.PRICE)
-        back = migrate_state(back)
-        validate_state(back)
-        back, r = self.act(back, 'fair_photo')
-        self.assertEqual(r['fair']['n'], 4)
+        for old in self.prev_trees():
+            with self.subTest(tree=old):
+                s = story(40)
+                for mode in ('solo', 'friends', 'stranger'):
+                    s, _ = self.act(s, 'fair_photo', mode=mode)
+                validate_state(s)
+                env = dict(os.environ, PYTHONPATH=old)
+                out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(s), capture_output=True, text=True,
+                                     cwd=old, env=env, encoding='utf-8', timeout=300)
+                self.assertEqual(out.returncode, 0, out.stderr[-3000:])
+                back = json.loads(out.stdout)
+                self.assertEqual(back['journey']['history'][-1], s['journey']['history'][-1])
+                self.assertEqual(back['journey']['wallet'], 40 - 3 * fp.PRICE)
+                back = migrate_state(back)
+                validate_state(back)
+                back, r = self.act(back, 'fair_photo')
+                self.assertEqual(r['fair']['n'], 4)
 
 
 class FairCash(FairBase):
