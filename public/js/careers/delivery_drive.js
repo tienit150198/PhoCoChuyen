@@ -124,9 +124,11 @@ export function buildWorld(nodes){
       }
     }
   }
+  // A tree stands on the pavement between two junctions, never out in a crossing street.
+  const tree=(x,y,r,along)=>{const d=along-Math.round(along/B)*B;if(Math.abs(d)>HW+2.5)trees.push({x,y,r});};
   // Street furniture: lamps and trees along the pavements, a name sign and (on some corners) lights at junctions.
-  for(let i=0;i<=GX;i++)for(let y=10;y<GY*B;y+=20){if(Math.abs(y%B)<9||Math.abs(y%B)>B-9)continue;const s=(y/20|0)%2?1:-1;lamps.push({x:i*B+s*(HW+.6),y});if(R()<.6)trees.push({x:i*B-s*(HW+1.4),y:y+5+R()*4,r:1.2+R()*.6});}
-  for(let j=0;j<=GY;j++)for(let x=10;x<GX*B;x+=20){if(Math.abs(x%B)<9||Math.abs(x%B)>B-9)continue;const s=(x/20|0)%2?1:-1;lamps.push({x,y:j*B+s*(HW+.6)});if(R()<.6)trees.push({x:x+5+R()*4,y:j*B-s*(HW+1.4),r:1.2+R()*.6});}
+  for(let i=0;i<=GX;i++)for(let y=10;y<GY*B;y+=20){if(Math.abs(y%B)<9||Math.abs(y%B)>B-9)continue;const s=(y/20|0)%2?1:-1;lamps.push({x:i*B+s*(HW+.6),y});if(R()<.6){const ty=y+(y%B<B/2?1:-1)*(5+R()*4);tree(i*B-s*(HW+1.4),ty,1.2+R()*.6,ty);}}
+  for(let j=0;j<=GY;j++)for(let x=10;x<GX*B;x+=20){if(Math.abs(x%B)<9||Math.abs(x%B)>B-9)continue;const s=(x/20|0)%2?1:-1;lamps.push({x,y:j*B+s*(HW+.6)});if(R()<.6){const tx=x+(x%B<B/2?1:-1)*(5+R()*4);tree(tx,j*B-s*(HW+1.4),1.2+R()*.6,tx);}}
   const LIT=new Set(['1,1','3,1','5,1','1,3','3,3','5,3','3,2','2,2','4,2']);
   for(let i=0;i<=GX;i++)for(let j=0;j<=GY;j++){
     signs.push({x:i*B-HW-1.2,y:j*B+HW+1.2,v:STREETS_V[i],h:STREETS_H[j]});
@@ -173,6 +175,7 @@ globalThis.__dlDrive={
   state:()=>{const T=S.opts&&S.world?.marks[S.opts.target];return {x:S.x,y:S.y,a:S.a,v:S.v,at:S.at,target:S.opts?.target||null,sending:S.sending,
     gate:T?{x:T.gate.x,y:T.gate.y,gy:T.gate.gy}:null,wp:T?waypoint(S.x,S.y,T.gate):null,running:!!S.raf,B,HW};},
   reset:()=>{S.frames=[];S.cost=[];},
+  look:o=>{S.dbg=o||null;if(S.opts&&o)Object.assign(S.opts,o);S.pal=null;},   // checks only: {minute, weather}
 };
 
 const ARROW='<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 3 4 13h5v8h6v-8h5z" fill="currentColor"/></svg>';
@@ -217,6 +220,7 @@ const live=()=>!!(S.el?.isConnected&&S.el.closest('dialog[open],#sheet[open]')&&
 export function mount(slot,opts){
   if(S.fail)return false;
   try{if(!S.el)build();}catch(error){S.fail=true;console.warn('Tự lái: không vẽ được',error);opts.fail?.();return false;}
+  if(S.dbg)Object.assign(opts,S.dbg);
   S.opts=opts;S.slot=slot;
   const key=JSON.stringify(Object.entries(opts.nodes||{}).map(([k,n])=>[k,n.x,n.y]));
   if(key!==S.nodesKey){S.world=buildWorld(opts.nodes);S.nodesKey=key;S.at=null;}

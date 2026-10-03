@@ -45,6 +45,10 @@ for(const b of boxes){
   for(let i=0;i<=6;i++)assert.ok(b.x1<=i*B-FRONT+.01||b.x0>=i*B+FRONT-.01||b.y1<=-FRONT||b.y0>=4*B+FRONT,`a building stands on street x=${i*B}`);
   for(let j=0;j<=4;j++)assert.ok(b.y1<=j*B-FRONT+.01||b.y0>=j*B+FRONT-.01||b.x1<=-FRONT||b.x0>=6*B+FRONT,`a building stands on street y=${j*B}`);
 }
+// Trees and lamps stand on the pavements, not on a street.
+assert.ok(W.trees.length>40,'the pavements have trees');
+for(const t of W.trees)assert.ok(!onRoad(t.x,t.y,-.6),`a tree on the street at ${t.x.toFixed(1)},${t.y.toFixed(1)}`);
+for(const l of W.lamps)assert.ok(!onRoad(l.x,l.y,0),`a lamp on the street at ${l.x.toFixed(1)},${l.y.toFixed(1)}`);
 let overlaps=0;
 for(let i=0;i<boxes.length;i++)for(let j=i+1;j<boxes.length;j++){
   const p=boxes[i],q=boxes[j];if(p.L&&q.L&&p.L===q.L)continue;   // one stop's own parts
