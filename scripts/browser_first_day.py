@@ -69,6 +69,9 @@ CMD = """async ([action,payload,career])=>{
   const d=await r.json();return {status:r.status,error:d.error||null};
 }"""
 
+# A step that is a tap-to-stop on a live bar: a player watches it and stops it on the line, so wait for that.
+STOP_WAIT = {'pho': "()=>{const e=document.querySelector('#sheet[open] [data-ph-pour]');return !e||parseFloat(e.textContent)>=(+e.dataset.lo + +e.dataset.hi)/2;}"}
+
 STATE = """async (cid)=>{const s=await fetch('/api/state').then(r=>r.json());const c=s.state.careers[cid]||{};
   return {served:(c.metrics||{}).served||0,open:!!c.open,revision:s.revision,current:s.state.current,job:(c.job||{}).status||null};}"""
 
@@ -182,6 +185,13 @@ async def play(browser, base: str, cid: str, shots: Path | None, max_steps: int 
                 out['problems'].append(f'stuck: pressing "{pick.get("text")}" changes nothing')
                 break
             sel = pick.get('sel') or '[data-fd-pick]'
+            if cid in STOP_WAIT:   # polled: the page's CSP has no unsafe-eval for wait_for_function
+                for _ in range(60):
+                    if await page.evaluate(STOP_WAIT[cid]):
+                        break
+                    await page.wait_for_timeout(200)
+                pick = await page.evaluate(PICK)   # the bar may have been drawn again meanwhile
+                sel = pick.get('sel') or '[data-fd-pick]'
             await page.eval_on_selector(sel, 'e=>e.click()')
             await page.wait_for_timeout(650)
             for msg in await toasts():
