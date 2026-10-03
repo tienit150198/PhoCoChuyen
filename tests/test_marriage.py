@@ -567,7 +567,7 @@ class WeddingTests(Base):
         rid = self.ring(self.b)
         with self.assertRaises(mr.MarriageError):
             self.act(self.b, 'propose', code=self.code(self.a), ring=rid, message='hem')
-        self.clock.t += W.REMARRY_DAYS * DAY + 1
+        self.clock.t += W.REMARRY_HOURS * 3600 + 1
         self.act(self.b, 'propose', code=self.code(self.a), ring=rid, message='hem')
 
     def test_divorce_after_wedding(self):

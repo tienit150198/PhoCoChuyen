@@ -515,7 +515,7 @@ function couple(){
   const result=w?.status==='done'&&w.result?resultCard(w):'';
   const word=married?'LY HON':'HUY';
   const danger=`<details class="mr-card mr-danger"><summary>${married?'Ly hôn':'Hủy hôn ước'}</summary>
-    <p>${married?'Ly hôn thì hai bạn thôi là vợ chồng, nhãn “Đã về chung một nhà” được gỡ.':'Hủy hôn ước thì kế hoạch cưới dừng lại, tiền cọc không hoàn lại.'} Cả hai cần ${S.catalog.limits.remarry_days} ngày trước khi tính chuyện mới.</p>
+    <p>${married?'Ly hôn thì hai bạn thôi là vợ chồng, nhãn “Đã về chung một nhà” được gỡ.':'Hủy hôn ước thì kế hoạch cưới dừng lại, tiền cọc không hoàn lại.'} Cả hai cần ${S.catalog.limits.remarry_hours??3} tiếng trước khi tính chuyện mới.</p>
     <label class="field" for="mr-confirm">Gõ <b>${word}</b> để xác nhận<input class="input" id="mr-confirm" data-mr-field="confirm" value="${esc(S.confirm)}" autocomplete="off" spellcheck="false"></label>
     ${btn(married?'Ly hôn':'Hủy hôn ước','divorce',{},'danger',S.confirm.trim()?'':' disabled')}</details>`;
   const split=married?`<p class="mr-hint">Nếu chia tay: quỹ chung chia đôi (lẻ 1 xu thuộc về người không đệ đơn); ai còn nợ thì trả từ phần của mình trước, phần nợ còn lại được xóa.</p>`:'';
