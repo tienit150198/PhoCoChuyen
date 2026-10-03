@@ -1,3 +1,11 @@
+# v1.5.1 — 🎖️ Thăng tiến & ca quản lý, 🏪 quầy riêng, 🧹🍲👶 ba nghề nội trợ, 🛡️ rủi ro & tiệm vàng, ✨ UI gọn
+
+- Thăng tiến mọi nghề (`game/promotion.py`): 4 bậc, không giáng chức; làm thuê tăng lương 8–35%, chủ quán thêm tip khách quen; từ bậc 3 mở Ca quản lý (chia việc, kiểm việc, gỡ rối, chốt ca).
+- Quầy riêng (`game/quay.py`): xe đẩy / sạp / ki-ốt, nhân viên NPC tự đặt lương, thu két; thuê người chơi khác một ca (bảng `quay_jobs`), lương là chuyển khoản giữ trước, trả một lần.
+- Nghề mới: Giúp việc theo giờ (`giupviec`), Nấu cơm gia đình (`naucom`), Bảo mẫu trông trẻ (`babysitter`). Lịch x3 của các nghề cũ không đổi.
+- Rủi ro đời sống (`game/rui.py`): luôn báo trước, có cách phòng, trần theo tài sản, không bao giờ nợ, người mới được miễn; bảo hiểm sức khỏe / xe / nhà, đồ an toàn. Tiệm vàng Kim Phát (`game/vang.py`).
+- UI gọn: toast ≤8 chữ bấm để mở đủ, thẻ ví cuối ngày dạng chip (có chip 🔥 x3), x3 / ngân hàng / chip "Hôm nay" gấp chi tiết.
+
 # v1.5.0 — 🍜 Bán phở, 🍚 Bán cơm, 📸 Photobooth, 🏠 vào nhà & tủ lạnh, 🧧 phong bì
 
 - Nghề mới: Bán phở (quán phở Cây Si), Bán cơm (Cơm tấm Dì Bảy), Photobooth (Tiệm ảnh Tách Tách). Tuần x3 đang chạy giữ nguyên lịch các nghề cũ.

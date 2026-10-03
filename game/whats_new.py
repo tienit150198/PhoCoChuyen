@@ -32,6 +32,17 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.5.1", date="2026-10-03", items=(
+        dict(emoji="🎖️", text="Thăng tiến cho mọi nghề: làm tốt để lên chức, thêm thu nhập; từ bậc 3 mở 🧑‍💼 Ca quản lý, chia việc cho cả đội!"),
+        dict(emoji="🏪", text="Quầy của bạn: mở xe đẩy, sạp chợ hay ki-ốt, tự đặt lương nhân viên, nhớ thu két mỗi ngày."),
+        dict(emoji="💼", text="Làm thêm: nhận ca ở quầy của người chơi khác, làm đúng nghề mình giỏi, khép ca là nhận lương."),
+        dict(emoji="🤝", text="Thuê người chơi: đăng ca cho người khác tới đứng quầy, lương giữ sẵn, trả đúng một lần."),
+        dict(emoji="🧹", text="Nghề mới: Giúp việc theo giờ. Dọn từng phòng đúng khăn, đúng chai, từ trên xuống, giữ đồ quý cho khách, khách quen boa thêm."),
+        dict(emoji="🍲", text="Nghề mới Nấu cơm gia đình: nghe chủ nhà dặn, đi chợ vừa tiền, nấu nóng hổi hợp cả nhà rồi ghi sổ chợ rõ ràng!"),
+        dict(emoji="👶", text="Nghề mới: Bảo mẫu trông trẻ! Mỗi ngày một gia đình: đọc giấy dặn, cho bé ăn, ru ngủ, dỗ bé, bàn giao thật lòng."),
+        dict(emoji="🛡️", text="Mua bảo hiểm, sắm két sắt để yên tâm trước chuyện bất ngờ. 💰 Tiệm vàng Kim Phát mở cửa: mua vàng, chờ giá lên!"),
+        dict(emoji="✨", text="Màn hình gọn hơn, ít chữ hơn: thông báo ngắn, bấm vào để xem đủ; chi tiết gấp gọn trong “Xem thêm”."),
+    )),
     dict(version="1.5.0", date="2026-10-03", items=(
         dict(emoji="🍜", text="Nghề mới Bán phở ở quán phở Cây Si: chần bánh, chan nước dùng nóng, nêm vừa miệng từng khách."),
         dict(emoji="🍚", text="Nghề mới Bán cơm ở Cơm tấm Dì Bảy: lên dĩa sườn bì chả nóng hổi, đông khách giờ trưa."),
