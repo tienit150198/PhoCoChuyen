@@ -35,7 +35,7 @@ function cartCard(x,compact=false){
 /* ------------------------------------------------------------ the lane */
 function laneStrip(t,x){
   const at=t.at||0,started=t.stage!=='prep';
-  const houses=stopsOf(t).map((s,i)=>{const n=s.bags.length,done=s.bags.filter(b=>b.loaded).length;
+  const houses=stopsOf(t).map((s,i)=>{const n=s.bags.length,done=s.bags.filter(b=>b.loaded||b.refused).length;
     return `<li class="${i===at&&started?'here':''} ${done===n?'done':''}"><span class="rc-house" aria-hidden="true">${done===n?'✅':'🏠'}</span><small>${x.esc(s.house)}</small><b>${done}/${n}</b>${i===at&&started?'<i class="rc-me" aria-hidden="true">🛒</i>':''}</li>`;}).join('');
   const n=t.needs||{};
   return `<section class="rc-lane" aria-label="Ngõ"><div class="rc-lane-head"><b>${x.esc(n.name||'')}</b><span class="tag ${t.late?'danger':'green'}">⏰ tới ${hm(n.until||0)}</span></div><ol class="rc-houses">${houses}</ol></section>`;
@@ -103,7 +103,7 @@ function roundSteps(t,x){
     rows.push({ok:null,label:'Bỏ túi vào đúng ngăn',go:{sel:`[data-bag="${b.id}"] .rc-tos`,label:'👉 Chọn ngăn cho túi'},pulse:''});
   }
   if(s&&s.bags.some(b=>b.open&&misSorted(x,b))&&!(t.noted||[]).includes(si))rows.push({ok:null,label:'Nhắc nhà này phân loại',go:{cmd:'rac_note',payload:{task:t.id,stop:si},label:'📝 Nhắc nhà này phân loại'}});
-  if(s&&s.bags.every(b=>b.loaded)&&si<stopsOf(t).length-1)rows.push({ok:null,label:'Tới nhà sau',go:{cmd:'rac_next',payload:{task:t.id},label:`🛒 Tới ${x.esc(stopsOf(t)[si+1].house)}`}});
+  if(s&&s.bags.every(b=>b.loaded||b.refused)&&si<stopsOf(t).length-1)rows.push({ok:null,label:'Tới nhà sau',go:{cmd:'rac_next',payload:{task:t.id},label:`🛒 Tới ${x.esc(stopsOf(t)[si+1].house)}`}});
   return rows;
 }
 function guide(t,x){
