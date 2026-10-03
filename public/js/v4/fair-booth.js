@@ -462,7 +462,7 @@ export function setup(ctx){
     if(D.step==='lobby')wake();
     if(D.mode&&D.mode!=='solo'&&D.step!=='lobby'&&D.step!=='wait'&&D.step!=='print'&&!D.room&&!D.pendingJoin)toLobby();
     const body=D.step==='wait'?waiting():D.step==='print'?printView():D.step==='lobby'?lobby():roomView();
-    const wide=D.step!=='wait'&&D.step!=='print'&&D.step!=='lobby';   // the room: booth and picker side by side on a wide screen
+    const wide=D.step!=='wait'&&D.step!=='lobby';   // the room and the strip: side by side with their pickers on a wide screen
     return `<section class="fh-stall fh-pb${wide?' fh-pb-wide':''}" aria-label="Chụp ảnh">${say(SHOOTER,D.say)}${body}</section>`;
   }
 
