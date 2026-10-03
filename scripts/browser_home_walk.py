@@ -260,19 +260,25 @@ async def main():
                 expect('Bụng no rồi' in why, f'with the reason ({why!r})')
                 await shot('05-full')
                 if w == 390:
-                    # an empty wallet: storing is disabled with the reason
-                    def poor(s):
-                        s['journey']['wallet'] = 1
-                        hungry(s)
-                    mutate(db, token, poor)
-                    await reload()
-                    await open_inside()
-                    await room('kitchen')
-                    await tap_piece('tu_lanh')
-                    await page.wait_for_selector('.hw-fridge', timeout=4000)
-                    expect(await (await fridge_btn('hwBuy', 'com_hop')).is_disabled(), 'no money: storing is disabled')
-                    why = await page.inner_text('.hw-fridge .hw-buy[data-item="com_hop"] em')
-                    expect('Chưa đủ xu' in why, f'with the reason ({why!r})')
+                    # a thin wallet: the dear foods say why under them; an empty one: one line for the whole shop
+                    for xu in (3, 1):
+                        def poor(s, xu=xu):
+                            s['journey']['wallet'] = xu
+                            hungry(s)
+                        mutate(db, token, poor)
+                        await reload()
+                        await open_inside()
+                        await room('kitchen')
+                        await tap_piece('tu_lanh')
+                        await page.wait_for_selector('.hw-fridge', timeout=4000)
+                        expect(await (await fridge_btn('hwBuy', 'com_hop')).is_disabled(), f'{xu} xu: storing a hộp cơm is disabled')
+                        ems = await page.locator('.hw-fridge .hw-buy em').all_inner_texts()
+                        shared = await page.locator('.hw-fridge .hw-why').all_inner_texts()
+                        if xu == 3:
+                            expect(not await (await fridge_btn('hwBuy', 'sua')).is_disabled(), '3 xu: the milk can still be bought')
+                            expect(len(ems) == 2 and all('Chưa đủ xu' in e for e in ems) and not shared, f'3 xu: the reason under the 2 dear ones ({ems}, {shared})')
+                        else:
+                            expect(not ems and len(shared) == 1 and 'Chưa đủ xu' in shared[0], f'1 xu: one shared reason ({ems}, {shared})')
                     await see('.hw-fridge')
                     await shot('06-poor')
                 # ---- 3. the dorm: the shared fridge
@@ -295,6 +301,9 @@ async def main():
                     await (await fridge_btn('hwBuy', 'sua')).click()
                     await page.wait_for_timeout(500)
                 expect(await (await fridge_btn('hwBuy', 'flan')).is_disabled(), 'the shelf is full')
+                ems = await page.locator('.hw-fridge .hw-buy em').count()
+                shared = await page.locator('.hw-fridge .hw-why').all_inner_texts()
+                expect(not ems and len(shared) == 1 and 'Tủ đầy rồi' in shared[0], f'full: one shared reason ({ems}, {shared})')
                 await see('.hw-fridge')
                 await shot('08-dorm-shelf')
                 await fits('dorm fridge')

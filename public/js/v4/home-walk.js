@@ -207,12 +207,14 @@ export function setup(ctx){
     const have=inside.length?`<ul class="hw-in">${inside.map(x=>`<li><span class="hw-ico" aria-hidden="true">${x.emoji}</span><span class="hw-name"><b>${esc(x.name)}</b> <i class="hw-n">×${x.n}</i><small>${x.eat?`<em>${esc(x.eat)}</em>`:esc(gainOf(x))}</small></span>`
       +`${btn('🍽️ Ăn','hwEat',{item:x.id},'primary small',x.eat?' disabled':'')}</li>`).join('')}</ul>`
       :'<p class="hw-empty">Tủ còn trống. Cất vài món bên dưới, đói thì lấy ra ăn.</p>';
+    // one reason for the whole shop when every food has it (the fridge is full, the wallet pays for none); per food only when it differs
+    const why0=F.foods[0]?.buy||'',common=why0&&F.foods.every(x=>x.buy===why0)?why0:'';
     const shop=F.foods.map(x=>`<button type="button" class="hw-buy" data-dc="hwBuy" data-item="${esc(x.id)}"${x.buy||S.busy?' disabled':''}><span class="hw-ico" aria-hidden="true">${x.emoji}</span>`
-      +`<span class="hw-name"><b>${esc(x.name)}</b><small><span>${x.price} xu</span> · <span>${esc(gainOf(x))}</span></small>${x.buy?`<em>${esc(x.buy)}</em>`:''}</span></button>`).join('');
+      +`<span class="hw-name"><b>${esc(x.name)}</b><small><span>${x.price} xu</span> · <span>${esc(gainOf(x))}</span></small>${x.buy&&x.buy!==common?`<em>${esc(x.buy)}</em>`:''}</span></button>`).join('');
     return `<section class="bk-card hw-fridge" aria-label="${esc(shelf(F))}"><div class="hw-fridge-top"><h3><span aria-hidden="true">🧊</span> ${esc(shelf(F))}</h3><span class="hw-cap">${F.used}/${F.cap} món</span>${btn('Đóng tủ','hwClose',{},'ghost small')}</div>`
       +`<p class="bk-flash hw-note ${W.note?.kind||''}" role="status" aria-live="polite">${W.note?esc(W.note.text):''}</p>`
       +`<p class="hw-now"><span>🍚 No bụng ${F.full}</span><span>😴 Tỉnh táo ${F.wake}</span></p>${have}`
-      +`<h4 class="hw-sub">🛒 Đi chợ cất tủ</h4><div class="hw-shop">${shop}</div><p class="bk-hint">Mua bằng tiền trong ví. Đói lúc nào thì lấy ra ăn lúc đó.</p></section>`;
+      +`<h4 class="hw-sub">🛒 Đi chợ cất tủ</h4>${common?`<p class="hw-why">🔒 ${esc(common)}</p>`:''}<div class="hw-shop">${shop}</div><p class="bk-hint">Mua bằng tiền trong ví. Đói lúc nào thì lấy ra ăn lúc đó.</p></section>`;
   }
   const btn=(label,op,data={},cls='',extra='')=>`<button type="button" class="btn ${cls}" data-dc="${op}"${Object.entries(data).map(([k,v])=>` data-${k}="${esc(v)}"`).join('')}${S.busy?' disabled':''}${extra}>${label}</button>`;
   /** The hint on the room (markup): the fridge's, else how to walk until the first tap. */

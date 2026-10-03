@@ -242,6 +242,7 @@
 .hw-in .btn{flex:none;min-width:84px}
 .hw-empty{margin:0;color:var(--muted);font-size:.9rem}
 .hw-sub{margin:4px 0 0;font-size:.95rem}
+.hw-why{margin:0;color:var(--warn);font-weight:700;font-size:.88rem}
 .hw-shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(136px,1fr));gap:6px}
 .hw-buy{display:flex;align-items:center;gap:8px;min-height:52px;padding:6px 8px;border-radius:var(--radius-sm);border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.88rem;line-height:1.25;text-align:left;cursor:pointer}
 .hw-buy:not(:disabled):hover{border-color:var(--accent)}
