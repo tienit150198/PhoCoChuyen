@@ -636,10 +636,37 @@ html:not([data-layout="phone"]) .fh-walking .fh-body>:not(.fh-walk):not(.fh-stri
 .fh-pb-pose.on{border-color:#8a4bb8;box-shadow:inset 0 0 0 2px #8a4bb8;background:color-mix(in srgb,#8a4bb8 12%,var(--surface));font-weight:800}
 @media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .fh-pb-pose:active{transform:scale(.96)}}
 @media (min-width:700px){.fh-pb-poses{grid-template-columns:repeat(auto-fill,minmax(88px,1fr))}.fh-pb-pose img{width:72px;height:72px}}
+/* the room on one screen: the booth (what the camera takes), the shoot button and the tabs stay up while the picker scrolls */
+.fh-pb-room{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;width:100%;min-width:0}
+.fh-pb-room>*{min-width:0}
+.fh-pb-top{position:sticky;top:0;z-index:4;padding:14px 0 6px;background:var(--surface);box-shadow:-16px 0 0 var(--surface),16px 0 0 var(--surface),0 10px 12px -12px rgba(40,20,60,.45)}
+.fh-pb-top .fh-pb-booth{width:min(100%,420px,calc((40vh - 34px) * 1.605 + 24px));margin:4px auto 6px}
+@supports (height:1dvh){.fh-pb-top .fh-pb-booth{width:min(100%,420px,calc((40dvh - 34px) * 1.605 + 24px))}}
+.fh-pb-top .fh-go{margin:4px 0 0;gap:8px}
+.fh-pb-top .fh-go>span{font-size:.86rem}
+.fh-pb-top .fh-go .btn.big{min-height:44px}
+.fh-pb-top .fh-pb-act>span{flex:1 1 100%}
+.fh-pb-top .fh-pb-act .btn{flex:1 1 0;min-width:0;min-height:44px}
+.fh-pb-top .fh-why{margin:4px 0 0;font-size:.82rem}
+.fh-pb-panes{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;margin:8px 0 0;padding:4px;border-radius:14px;background:var(--surface-2)}
+.fh-pb-pane{display:grid;justify-items:center;align-content:center;gap:1px;min-width:0;min-height:44px;padding:3px 2px;border:0;border-radius:11px;background:transparent;font:inherit;color:var(--ink-2);cursor:pointer}
+.fh-pb-pane span{font-size:1.05rem;line-height:1.1}
+.fh-pb-pane b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.74rem;font-weight:700}
+.fh-pb-pane.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px rgba(60,30,80,.18),inset 0 0 0 2px #8a4bb8}
+.fh-pb-pane.on b{font-weight:800}
+@media (max-width:419px){.fh-pb-panes{gap:2px;padding:3px}.fh-pb-pane{padding:3px 1px}.fh-pb-pane b{font-size:.66rem;letter-spacing:-.02em}}
+.fh-pb-panebody{min-width:0;padding-top:8px}
+.fh-pb-panebody>.fh-pb-sec:first-child{margin-top:0}
+.fh-pb-panebody>.fh-pb-hint:first-child{margin-top:0}
+@media (min-width:700px){
+  .fh-pb-room{grid-template-columns:minmax(0,400px) minmax(0,1fr);gap:20px;align-items:start}
+  .fh-pb-top{padding:10px 0 4px;box-shadow:none}
+  html:not([data-layout="phone"]) .fh-walking .fh-body>.fh-stall.fh-pb.fh-pb-wide{max-width:900px}
+  .fh-pb-top .fh-pb-booth{width:min(100%,calc((62vh - 34px) * 1.605 + 24px))}
+  .fh-pb-panebody{padding-top:10px}
+}
 html[data-theme="dem"] .fh-pb-pose img{background:radial-gradient(circle at 50% 40%,#4a3a5f,#2c2238)}
 /* Biểu cảm: a row of close-ups swiped sideways */
-.fh-pb-faces{display:grid;grid-auto-flow:column;grid-auto-columns:76px;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;padding:2px 2px 8px;scrollbar-width:thin}
-@media (min-width:700px){.fh-pb-faces{grid-auto-columns:88px}}
 /* the sticker editor: the strip (stickers dragged on it) and its tray, the tray kept in reach while the strip scrolls */
 .fh-pb-edit{display:grid;gap:8px;align-items:start}
 .fh-pb-edit .fh-pb-printbox{margin:4px 0 0}
