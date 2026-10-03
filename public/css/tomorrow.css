@@ -1,0 +1,15 @@
+/* "🌅 Ngày mai" in a career's day-summary block (public/js/careers/tomorrow_kit.js), the milk tea pattern:
+   tomorrow's lines first, one button, the day's figures folded under it. Theme tokens only (Đêm too). */
+.tm-plan .section-title{margin:0 0 6px}
+.tm-list{margin:0 0 8px;padding:0;list-style:none;display:grid;gap:4px;font-size:.9rem}
+.tm-list li{padding:6px 10px;border-radius:10px;background:var(--surface-2);overflow-wrap:anywhere;line-height:1.4}
+.tm-list li.tm-calm{color:var(--good,var(--ink-2))}
+.btn.tm-go{min-height:44px}
+.tm-more{margin-top:10px}
+.tm-more>summary{display:flex;align-items:center;gap:6px;min-height:44px;font-weight:700;cursor:pointer;list-style:none}
+.tm-more>summary::-webkit-details-marker{display:none}
+.tm-more>summary::after{content:"▸";margin-left:auto;color:var(--muted);font-weight:400}
+.tm-more[open]>summary::after{content:"▾"}
+.tm-more .kv{margin-top:4px}
+.tm-lines{margin:8px 0 0;padding-left:18px}
+.tm-lines li{margin:2px 0;overflow-wrap:anywhere}
