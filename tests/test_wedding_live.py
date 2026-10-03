@@ -285,6 +285,59 @@ class Envelopes(WedBase):
         self.assertEqual(e.exception.code, 'not_open', 'the party is over')
 
 
+    def test_quick_and_concurrent_envelopes_each_recorded_once(self):
+        """Back to back, then from two threads at once while the guest's save also moves (the minute money paid on
+        another request): every envelope with its own request id is either written exactly once (debit, both halves)
+        or refused with an error the client shows; never "already sent" for one that was not."""
+        import threading
+        a, b, wid, at = self.couple()
+        g = self.user('khach', wallet=5000)
+        self.guest_at(wid, g)
+        self.clock.t = at + 60
+        sent, errors, quiet = [], [], []
+
+        def give(rid):
+            try:
+                out = self.give(g, wid, 50, rid)
+            except mr.MarriageError as x:
+                errors.append((rid, x.code))
+                return
+            (sent if out['changed'] else quiet).append(rid)
+        for i in range(8):                                          # back to back
+            give(f'rid-fast-{i:04d}')
+        self.assertEqual((len(sent), errors, quiet), (8, [], []))
+
+        def burst(tag):
+            for i in range(6):
+                give(f'rid-{tag}-{i:04d}')
+
+        def wallet_moves():                                         # the save changes under the envelopes
+            for i in range(6):
+                mr._mutate_retry(self.store, {self.sid(g): lambda s: s['journey'].__setitem__('wallet', s['journey']['wallet'] + 1)})
+        threads = [threading.Thread(target=burst, args=(t,)) for t in ('t1', 't2')] + [threading.Thread(target=wallet_moves)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(60)
+        self.assertEqual(quiet, [], 'no new envelope answered "already sent"')
+        self.assertTrue(all(code == 'busy' for _, code in errors), errors)   # a refusal the client toasts
+        debits = [r['id'] for r in self.rows("SELECT id FROM marriage_effects WHERE sid=? AND id LIKE 'wenv:%'", self.sid(g))]
+        self.assertEqual(sorted(debits), sorted(f'wenv:{wid}:{rid}' for rid in sent), 'each sent envelope written once')
+        halves = self.rows("SELECT id FROM live_effects WHERE id LIKE 'wedenv:%'")
+        self.assertEqual(len(halves), 2 * len(sent))
+        self.assertEqual(self.wallet(g), 5000 + 6 - 50 * len(sent), 'the wallet paid exactly the envelopes written')
+        again = self.give(g, wid, 50, sent[-1])                     # a real double tap is still "already sent"
+        self.assertFalse(again['changed'])
+        import sqlite3
+
+        def clash(*_a, **_k):
+            raise sqlite3.IntegrityError('another row')
+        with patch('game.wedding_live.grant', clash), self.assertRaises(mr.MarriageError) as e:
+            self.give(g, wid, 50, 'rid-clash-0001')                 # not a double tap: an error, nothing written
+        self.assertEqual(e.exception.code, 'busy')
+        self.assertFalse(self.rows("SELECT 1 FROM marriage_effects WHERE id=?", f'wenv:{wid}:rid-clash-0001'))
+        self.assertEqual(self.wallet(g), 5000 + 6 - 50 * len(sent))
+
     def test_no_cap_a_pure_transfer(self):
         """Many envelopes at one wedding until the wallet is empty: the couple gets exactly what left the guest's wallet,
         and an envelope the wallet cannot cover is refused (never below 0)."""

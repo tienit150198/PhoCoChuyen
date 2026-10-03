@@ -382,7 +382,9 @@ def envelope(store, sid: str, display: str, d: dict) -> dict:
             grant(db, p[side], 'coins', amount // 2, f'wedenv:{wid}:{side}:{rid}', dict(src='env'))
     try:
         mr._mutate_retry(store, {sid: fn}, ops)
-    except dbm.IntegrityError:   # the same rid twice (a double tap)
+    except dbm.IntegrityError:   # the same rid twice (a double tap); anything else is an error the client shows
+        with store.connect() as db:
+            mr.need(db.execute('SELECT 1 FROM marriage_effects WHERE id=?', (eid,)).fetchone(), 'Chưa gửi được, thử lại nhé.', 'busy', 409)
         return dict(message='Phong bì này đã gửi rồi.', changed=False, quiet=True, rid=rid)
     return dict(message=f'Đã gửi phong bì {amount} xu mừng {names["a"]} & {names["b"]} 🧧', changed=True, quiet=True, rid=rid)
 
