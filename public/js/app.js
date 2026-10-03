@@ -281,7 +281,7 @@ const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREE
 const RAIL_GROUPS=[
   ['pho','building','Khu phố',['fair','liveWalk','liveWed','nhom','phone','social','town','rank']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
-  ['tien','coin','Tiền & nhà',['money','bank','house','garage']],
+  ['tien','coin','Ngân hàng & nhà',['money','bank','house','garage']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
   ['minh','gift','Của mình',['jrWardrobe','album','passport','workshop','journal','accountingSchool']],
 ];

@@ -95,7 +95,7 @@ export function wealthHTML(state,o={}){
     (P.debt?`<div class="bad"><small>Tổng nợ</small><b data-wl-debt="${P.debt}">${minus(P.debt)}</b></div>`:'')+`</section>`);
   if(P.wallet!=null)parts.push(section('Ví',row('👛','Tiền mặt',P.wallet<0?minus(-P.wallet):xu(P.wallet),{cls:P.wallet<0?'bad':'',id:'wallet',sub:P.wallet<0?'đang nợ tiền phòng':''}),link('Sổ ví','stView',{view:'wallet'})));
   if(P.bank){
-    // A plain button into Ngân hàng Phố on the first row (feedback #110: since the bank sits in the "Tiền & nhà"
+    // A plain button into Ngân hàng Phố on the first row (feedback #110: since the bank sits in the "Ngân hàng & nhà"
     // hub, a player looking from their money did not see the small "Chi tiết" link).
     const B=P.bank,go=`<button type="button" class="btn small" data-action="bank"><span aria-hidden="true">🏦</span> ${B.open?'Vào Ngân hàng':'Mở tài khoản'}</button>`;let rows='';
     if(!B.open)rows=row('🏦','Chưa mở tài khoản','',{id:'bank-none',extra:go});
