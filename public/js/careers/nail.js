@@ -6,6 +6,7 @@
  * The server decides everything; one tap sends one command. Hints say what comes next, never the answer. */
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
+import {tomorrowCard} from './tomorrow_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
 import {data,cc,lower,act,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions} from './street_kit.js';
 
@@ -74,7 +75,7 @@ function prepPanel(t,x){
   const c=t.cond||{},rm=t.rm||{},noOld=c.old==='none'?'Không có sơn cũ':'';
   const kit=btn(x,'🪵 Bóc bộ dũa mới','nl_kit',{task:t.id},'',t.file?'Đã bóc cho khách này':!have(x,'dua')?'Hết dũa':'');
   const soak=rm.wrap!=null?`<span class="nl-soak" data-nl-soak="${Number(rm.wrap)}" data-nl-full="${Number(cc(x).soak_s||20)}">🥡 Đang ủ</span>`:'';
-  const old=`<div class="nl-row">${btn(x,'🧪 Lau acetone','nl_remove',{task:t.id,how:'wipe'},'small',noOld||(rm.off||rm.wiped?'Đã sạch sơn cũ':''))}
+  const old=`<div class="nl-row nl-old">${btn(x,'🧪 Lau acetone','nl_remove',{task:t.id,how:'wipe'},'small',noOld||(rm.off||rm.wiped?'Đã sạch sơn cũ':''))}
     ${btn(x,'🪵 Dũa mặt gel','nl_remove',{task:t.id,how:'file'},'small',noOld||(rm.off?'Đã tháo xong':''))}
     ${btn(x,'🥡 Đắp bông, quấn giấy bạc','nl_remove',{task:t.id,how:'wrap'},'small',noOld||(rm.off?'Đã tháo xong':rm.wrap!=null?'Đang ủ':''))}
     ${btn(x,'✋ Gỡ giấy bạc','nl_remove',{task:t.id,how:'unwrap'},'small',rm.wrap==null?'Chưa quấn giấy bạc':'')}
@@ -92,8 +93,8 @@ function prepPanel(t,x){
   return `<section class="card nl-prep"><h4>🪵 Chuẩn bị móng</h4><div class="nl-row">${kit}</div>
     <h4 class="section-title">Tháo sơn cũ</h4>${old}
     <h4 class="section-title">Sửa, nối móng</h4><div class="nl-row">${fix}${tip}</div>
-    <h4 class="section-title">Dáng và độ dài ${t.shape?`<small>đang: ${x.esc(lower(SHAPE(x,t.shape)))}, ${x.esc(LEN(x,t.len))}</small>`:''}</h4><div class="nl-row">${shapes}</div><div class="nl-row">${lens}</div><div class="nl-row">${file}</div>
-    <h4 class="section-title">Da viền móng</h4><div class="nl-row">${cuts}</div>${blood}</section>`;
+    <h4 class="section-title">Dáng và độ dài ${t.shape?`<small>đang: ${x.esc(lower(SHAPE(x,t.shape)))}, ${x.esc(LEN(x,t.len))}</small>`:''}</h4><div class="nl-shape"><div class="nl-row">${shapes}</div><div class="nl-row">${lens}</div><div class="nl-row">${file}</div></div>
+    <h4 class="section-title">Da viền móng</h4><div class="nl-row nl-cuts">${cuts}</div>${blood}</section>`;
 }
 
 /* ------------------------------------------------------------ polish, the lamp, art, finishing */
@@ -159,13 +160,14 @@ function serveSteps(t,x){
   const d=data(x),n=t.needs||{},c=t.cond,coats=t.coats||[],rows=[];
   if(!d.shop?.open)rows.push({ok:null,label:'Mở tiệm xong mới làm',go:null});
   rows.push({ok:c?true:null,label:'Xem móng khách',go:{cmd:'nl_inspect',payload:{task:t.id},label:'🔍 Xem móng khách'}});
-  if(c&&c.old!=='none'){const rm=t.rm||{};rows.push({ok:rm.off||rm.wiped?true:null,label:'Tháo sơn cũ',note:rm.wrap!=null?'đang ủ':''});}
-  rows.push({ok:t.shape?true:null,label:'Dũa dáng, độ dài'});
-  rows.push({ok:t.cut?true:null,label:'Làm da viền móng'});
+  // Steps the player works out on the table: the bottom button points at the place (👆), never does them.
+  if(c&&c.old!=='none'){const rm=t.rm||{};rows.push({ok:rm.off||rm.wiped?true:null,label:'Tháo sơn cũ',note:rm.wrap!=null?'đang ủ':'',go:c&&!(rm.off||rm.wiped)?{sel:'.nl-old'}:null});}
+  rows.push({ok:t.shape?true:null,label:'Dũa dáng, độ dài',go:c&&!t.shape?{sel:'.nl-shape'}:null});
+  rows.push({ok:t.cut?true:null,label:'Làm da viền móng',go:c&&!t.cut?{sel:'.nl-cuts'}:null});
   if(t.bleed&&!t.staunch)rows.push({ok:false,label:'Cầm máu cho khách',go:{cmd:'nl_staunch',payload:{task:t.id},label:'🩹 Ép bông cầm máu'}});
   if(n.polish){
-    rows.push({ok:coats.some(k=>k.l==='color')?true:null,label:'Sơn màu khách chọn'});
-    if(coats.some(k=>k.p==='gel'&&k.cure==null))rows.push({ok:null,label:'Còn lớp gel chưa hơ đèn'});
+    rows.push({ok:coats.some(k=>k.l==='color')?true:null,label:'Sơn màu khách chọn',go:c&&!coats.some(k=>k.l==='color')?{sel:'.nl-polish'}:null});
+    if(coats.some(k=>k.p==='gel'&&k.cure==null))rows.push({ok:null,label:'Còn lớp gel chưa hơ đèn',go:{sel:'.nl-cure'}});
   }
   return rows;
 }
@@ -228,4 +230,8 @@ export default {
     async pick(d,el,x){x.ui[d.key]=d.val;x.render();},
   },
   dock:[['inventory','box','Kho tiệm nail','Nhập gel, sơn, dũa, giấy bạc…']],
+  // Day summary: "🌅 Ngày mai" (tools to steam, the shelf) first, the day folded.
+  summary(data,x){
+    return tomorrowCard(x,data,{lift:/^♨️|^Dự báo ngày mai/,title:'💅 Sổ tiệm hôm nay'});
+  },
 };

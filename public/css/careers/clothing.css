@@ -274,3 +274,6 @@
 .career-job.ao .ao-swatch small{color:var(--ao-muted);font-weight:600}
 .career-job.ao .ao-bar{flex-wrap:wrap}
 .career-job.ao .ao-bar>.asm-next{flex:1 1 100%}
+/* Tap targets ≥ 44 px: the order slip's fold header, its tappable chips (asm_kit) and the size chart fold. */
+.career-job.ao button.asm-pin-head,.career-job.ao button.asm-chip{min-height:44px}
+.career-job.ao .fold>summary{min-height:44px;padding-top:11px;padding-bottom:11px}

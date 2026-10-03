@@ -128,7 +128,7 @@
 .career-job.rp .tile:disabled{cursor:not-allowed}
 .career-job.rp .tile:focus-visible,.career-job.rp .btn:focus-visible,.career-job.rp summary:focus-visible{outline:3px solid var(--rp-info);outline-offset:2px}
 .career-job.rp .btn{min-height:44px}
-.career-job.rp .btn.small{min-height:40px}
+.career-job.rp .btn.small{min-height:44px}
 .career-job.rp .btn.rp-ok{background:var(--rp-s2);border-color:var(--rp-good);color:var(--rp-ink)}
 
 .career-job.rp .rp-consent{display:flex;width:100%;margin-top:10px;text-align:left;justify-content:flex-start;background:var(--rp-s2);border:1px dashed var(--rp-line)}
@@ -270,3 +270,5 @@ body.reduce-motion .career-job.rp .rp-big,html.reduce-motion .career-job.rp .rp-
 .career-job.rp .asm-pin .rp-steps{margin-top:2px}
 .career-job.rp .asm-pin~.workbench .wb-side{top:calc(var(--asm-top,0px) + var(--asm-pin,0px) + 10px)}
 .career-job.rp .rp-acc>.asm-need{left:auto;right:6px}
+/* Tap targets ≥ 44 px: the order slip's fold header and its tappable chips (asm_kit). */
+.career-job.rp button.asm-pin-head,.career-job.rp button.asm-chip{min-height:44px}

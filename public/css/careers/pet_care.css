@@ -166,7 +166,7 @@
 .career-job.pc .pc-foot{gap:6px;margin:0}
 .career-job.pc .pc-stats{gap:6px}
 .career-job.pc .pc-rules{padding:10px 12px;border-radius:var(--pc-rs);background:var(--pc-s1);border:1px solid var(--pc-line)}
-.career-job.pc .pc-rules summary,.career-job.pc .pc-kennel-box>summary,.career-job.pc .pc-cues summary{cursor:pointer;min-height:40px;padding:9px 0;line-height:1.4}
+.career-job.pc .pc-rules summary,.career-job.pc .pc-kennel-box>summary,.career-job.pc .pc-cues summary{cursor:pointer;min-height:44px;padding:11px 0;line-height:1.4}
 .career-job.pc .pc-rules ul{margin:6px 0 0;padding-left:18px;display:grid;gap:4px;font-size:.9em;line-height:1.45}
 .career-job.pc .pc-kennel-box>summary small{display:inline;color:var(--pc-muted)}
 .career-job.pc .pc-kennel-box[open]>summary{margin-bottom:8px}
@@ -261,7 +261,7 @@
 .career-job.pc .pc-todo-fold>summary small{display:inline;color:var(--pc-muted)}
 .career-job.pc .checklist li.gd-todo{min-height:44px;align-items:center;cursor:pointer}
 .career-job.pc details.pc-today{padding:0 12px}
-.career-job.pc details.pc-today>summary{min-height:40px}
+.career-job.pc details.pc-today>summary{min-height:44px}
 .career-job.pc details.pc-today>small{padding:0 0 8px}
 .career-job.pc .pc-more{display:grid;gap:8px}
 .career-job.pc .pc-more .pc-rules{margin:0}

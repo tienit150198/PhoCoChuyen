@@ -8,6 +8,7 @@ import {Sound} from '../audio.js';
 import {reqList,fold} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,firstTime,todoAttrs,todoArrow} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
+import {tomorrowCard,shelfLines} from './tomorrow_kit.js';
 
 const DONE=['completed','referred','cancelled'];
 const USE_EMOJI={sleep:'🌙',bath:'🛁',feed:'🍼',play:'🧸',wear:'🧦',card:'💌'};
@@ -552,6 +553,9 @@ export default {
     if(!data||data.sold==null)return '';
     const row=(l,v)=>`<div class="kv-row"><span>${l}</span><b>${v}</b></div>`;
     const care=Array.isArray(data.care?.lines)&&data.care.lines.length?`<h4 class="section-title space-top">🍼 Góc bỉm sữa & khách quen</h4><ul class="mb-care-log">${data.care.lines.map(l=>`<li>${x.esc(l)}</li>`).join('')}</ul>`:'';
-    return `<article class="card space-top"><h4 class="section-title">🎁 Tiệm quà hôm nay</h4><div class="kv">${row('Đơn quà đã trao',data.sold)}${data.advised?row('Lần tư vấn an toàn',data.advised):''}${data.returns?row('Ca đổi trả',data.returns):''}${data.events?row('Chuyện bất ngờ',data.events):''}${data.fines?row('Tiền phạt',`${data.fines} xu`):''}</div>${care}</article>`;
+    // "🌅 Ngày mai" first (the shelf: what ran out or runs low, parcels at the door or on the way; one way to Kho),
+    // the day's figures folded under it.
+    const kv=`<div class="kv">${row('Đơn quà đã trao',data.sold)}${data.advised?row('Lần tư vấn an toàn',data.advised):''}${data.returns?row('Ca đổi trả',data.returns):''}${data.events?row('Chuyện bất ngờ',data.events):''}${data.fines?row('Tiền phạt',`${data.fines} xu`):''}</div>`;
+    return tomorrowCard(x,{},{shelf:shelfLines(x.room,x.content.products),kho:'warehouse',title:'🎁 Tiệm quà hôm nay',more:kv+care});
   },
 };

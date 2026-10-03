@@ -6,6 +6,7 @@
 import {reqList,fold} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
 import {restockFor,restockButton} from '../v4/restock.js';
+import {tomorrowCard} from './tomorrow_kit.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {blend,mix,levelOk,levelText,bowlCheck,previewInputs,recipeWant,target} from './salon_mix.js';
 const CHEM=['color','bleach','toner'];
@@ -858,4 +859,8 @@ export default {
   },
   tapStop:op=>op==='sl_rinse',
   dock:[['inventory','box','Kho','Thuốc & vật tư']],
+  // Day summary: "🌅 Ngày mai" (tomorrow's appointments, who still waits, the forecast, the shelf) first.
+  summary(data,x){
+    return tomorrowCard(x,data,{lift:/^(Ngày mai có hẹn|Còn \d+ khách hẹn|Dự báo ngày mai)/,title:'💇 Sổ tiệm hôm nay'});
+  },
 };

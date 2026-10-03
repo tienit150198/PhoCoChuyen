@@ -5,6 +5,7 @@ import {reqList,fold} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,goAttrs,highlight,stepLine} from '../v4/guide.js';
 import {restockFor,restockGo} from '../v4/restock.js';
 import {keepBarAboveFooter} from './food_kit.js';
+import {tomorrowCard} from './tomorrow_kit.js';
 import * as SF from './stage_fold.js';
 const JOB_ICON={groom:'🛁',board:'🏠',feed:'🥣',adopt:'🏡'};
 const SPECIES_EMOJI={dog:'🐶',cat:'🐱'};
@@ -873,4 +874,8 @@ export default {
     },
   },
   dock:[['inventory','box','Kho','Sữa tắm, hạt, bông']],
+  // Day summary: "🌅 Ngày mai" (the boarders' night, the forecast, the shelf) first, the day folded.
+  summary(data,x){
+    return tomorrowCard(x,data,{lift:/^(Khu lưu trú|Dự báo ngày mai)/,title:'🐾 Sổ tiệm hôm nay',labels:{staying:'Bé đang ở lại',free:'Chuồng trống'}});
+  },
 };
